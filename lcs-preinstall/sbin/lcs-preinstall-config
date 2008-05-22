@@ -1,0 +1,164 @@
+#!/bin/sh
+
+# /usr/sbin/lcs-preinstall-config
+
+set -e
+
+. /usr/share/slis/slis-common.sh
+load_slis_config
+
+case "$1" in
+    possible)
+        if [ -e "/etc/mysql/my.cnf" ] && lcs-test-mysql; then
+            exit 0
+        else
+            exit 1
+        fi
+    ;;
+    needed)
+	exit 0
+    ;;
+    configure)
+        #
+        # Fixation du mot de passe root MySQL si ce n'est pas déja fait
+        #
+        if [ ! -e /root/.my.cnf ]; then
+            mysqladmin password $MYSQLPW
+            echo "[client]
+                password=$MYSQLPW
+                user=root" > /root/.my.cnf
+                chmod 600 /root/.my.cnf
+            mysqladmin reload -u root -p$MYSQLPW
+        fi
+        #
+        # On ne conserve pas le mdp mysql dans lcs.conf
+        #
+        sed -i s/"MYSQLPW=.*"/"MYSQLPW=''\t\t\t\t#mot de passe root MySQL"/g /etc/lcs/lcs.conf
+        #
+        # Si lcs_db existe on la drop
+        #
+        if [ -d /var/lib/mysql/lcs_db ];then
+             mysql -e "DROP DATABASE lcs_db;"
+        fi
+        #
+        # Traitement du dump sql
+        #
+        LCSFULLDOMAIN=$HOSTNAME.$DOMAIN
+        sed -e "s|@@VERSION_NUM@@|"$VERSION_NUM"|g" \
+            -e "s|@@HOSTNAME@@|"$HOSTNAME"|g" \
+            -e "s|@@LCSDOMAIN@@|"$DOMAIN"|g" \
+            -e "s|@@LCSFULLDOMAIN@@|"$LCSFULLDOMAIN"|g" \
+            -e "s|@@LDAP_RID@@|"$LDAP_RID"|g" \
+            -e "s|@@LDAPSERVER@@|"$LDAP_SERVER"|g" \
+            -e "s|@@LDAP_MASTER_SERVER@@|"$LDAP_MASTER_SERVER"|g" \
+            -e "s|@@LDAPPORT@@|"$LDAP_PORT"|g" \
+            -e "s|@@BASEDN@@|"$LDAP_BASE_DN"|g" \
+            -e "s|@@ADMINRDN@@|"cn=$LDAP_ADMIN_RDN"|g" \
+            -e "s|@@ADMINPASSWD@@|"$LDAP_ADMIN_PW"|g" \
+            -e "s|@@PEOPLERDN@@|"ou=$LDAP_PEOPLE_RDN"|g" \
+            -e "s|@@GROUPSRDN@@|"ou=$LDAP_GROUPS_RDN"|g" \
+            -e "s|@@COMPUTERSRDN@@|"ou=$LDAP_COMPUTERS_RDN"|g" \
+            -e "s|@@PARKSRDN@@|"ou=$LDAP_PARKS_RDN"|g" \
+            -e "s|@@RIGHTSRDN@@|"ou=$LDAP_RIGHTS_RDN"|g" \
+            -e "s|@@TRASHRDN@@|"ou=$LDAP_TRASH_RDN"|g" \
+            -e "s|@@NTP_SERVER@@|"$NTP_SERVER"|g" \
+            -e "s|@@GATEWAY@@|"$GATEWAY"|g" \
+            -e "s|@@IPLCS@@|"$IPADDR0"|g" \
+            -e "s|@@NETWORK@@|"$NETWORK"|g" \
+            -e "s|@@NETMASK@@|"$NETMASK0"|g" \
+            -e "s|@@DNS1@@|"$DNS_PRIMARY"|g" \
+            -e "s|@@DNS2@@|"$DNS_SECONDARY"|g" \
+            -e "s|@@XENNET@@|"$XEN_NETWORK"|g" \
+            -e "s|@@RELAYHOST@@|"$RELAY_HOST"|g" \
+            -e "s|@@MTAIP@@|"$MTA_IP"|g" \
+            -e "s|@@VLANSC@@|"$VLANSC"|g" \
+            -e "s|@@VLANADMINISTRATIF@@|"$VLANADMINISTRATIF"|g" \
+            -e "s|@@VLANPEDA1@@|"$VLANPEDA1"|g" \
+            -e "s|@@VLANPEDA2@@|"$VLANPEDA2"|g" \
+            -e "s|@@VLANPEDA3@@|"$VLANPEDA3"|g" \
+            -e "s|@@VLANPEDA4@@|"$VLANPEDA4"|g" \
+            -e "s|@@CACHEDIRSIZE@@|"$CACHEDIRSIZE"|g" \
+            -e "s|@@SE3IP@@|"$SE3_IP"|g" \
+            -e "s|@@SE3NETBIOS@@|"$SE3_NETBIOS"|g" \
+            -e "s|@@SE3DOMAIN@@|"$SE3_DOMAIN"|g" \
+            -e "s|@@URLMAJTGZ@@|"$URL_MAJTGZ"|g" \
+            -e "s|@@URLMAJMD5@@|"$URL_MAJMD5"|g" \
+            -e "s|@@URLMAJPLUG@@|"$URL_MAJPLUG"|g" \
+            -e "s|@@URLMAJMOD@@|"$URL_MAJMOD"|g" \
+            -e "s|@@UIDPOLICY@@|"$UID_POLICY"|g" \
+            -e "s|@@DEFAULTSHELL@@|"$DEFAULT_SHELL"|g" \
+            -e "s|@@TYPEGROUPS@@|"$TYPE_GROUPS"|g" \
+            -e "s|@@COUNTRYNAME@@|$COUNTRYNAME|g" \
+            -e "s|@@PROVINCENAME@@|$PROVINCENAME|g" \
+            -e "s|@@LOCALITYNAME@@|$LOCALITYNAME|g" \
+            -e "s|@@ORGANIZATIONNAME@@|$ORGANIZATIONNAME|g" \
+            -e "s|@@ORGANIZATIONALUNITNAME@@|$ORGANIZATIONALUNITNAME|g" \
+            /etc/lcs/sql/lcs_db.sql.in >/etc/lcs/sql/lcs_db.sql
+            #
+            # Creation base lcs_db 
+            #
+            mysqladmin create lcs_db
+            #
+            # Import du dump sql
+            #
+            mysql lcs_db < /etc/lcs/sql/lcs_db.sql
+            rm /etc/lcs/sql/lcs_db.sql
+            #
+            # Creation utilisateur lcsmgr si celui-ci n'existe pas
+            #
+            if [ -z "`mysql -e "SELECT User FROM mysql.user WHERE user='lcsmgr_';"`" ]; then
+                mysql -e "INSERT INTO mysql.user  VALUES ('localhost', 'lcsmgr', PASSWORD( '$LCSMGRPASS' ) , 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '', '', '', '', '0', '0', '0', '0');"
+                mysql -e "INSERT INTO mysql.db VALUES ( 'localhost', 'lcs_db', 'lcsmgr', 'Y', 'Y', 'Y', 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N');"
+                mysqladmin reload
+            fi
+            #
+            # Mise à l'heure du serveur
+            #
+            if [ ! -z $NTP_SERVER ]; then
+                echo "Mise à l'heure du serveur"
+                /usr/sbin/ntpdate -s $NTP_SERVER
+            fi
+        #
+        # Re-Configuration du reseau
+        #
+        hostname $HOSTNAME
+
+        echo "127.0.0.1       localhost
+127.0.1.1       $HOSTNAME.$DOMAIN  $HOSTNAME
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts" > /etc/hosts
+
+
+        echo "# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+#allow-hotplug $EXTERNAL_IF_DEV
+#iface $EXTERNAL_IF_DEV inet dhcp
+
+auto $EXTERNAL_IF_DEV
+iface $EXTERNAL_IF_DEV inet static
+        address $IPADDR0
+        netmask $NETMASK0
+        network $NETWORK
+        broadcast $BROADCAST
+        gateway $GATEWAY" > /etc/network/interfaces
+        echo "En fin d'installation, veuillez recharger le service réseau :
+        /etc/init.d/networking force-reload
+        "
+    ;;
+    *)
+        echo "usage: $0 {configure|possible|needed}" >&2
+        exit 1
+    ;;
+esac

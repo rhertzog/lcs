@@ -1,0 +1,9 @@
+#!/bin/bash
+# lcs-test-mysql
+
+if  mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1 ;
+then
+        exit 0
+else
+        exit 1
+fi

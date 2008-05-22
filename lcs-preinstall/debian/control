@@ -1,0 +1,17 @@
+Source: lcs-preinstall
+Source: lcs-preinstall
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+
+Package: lcs-preinstall
+Architecture: all
+Depends: slis-common, sudo, make, pwgen, ntpdate, mysql-server, at
+Description: LCS pre-install task
+ This package prepare the installation of a LCS server
+    - create lcs_db
+    - puts params in lcs_db from lcs.conf
+    - network configuration
+    - setting time

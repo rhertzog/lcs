@@ -1,0 +1,180 @@
+-- phpMyAdmin SQL Dump
+-- version 2.11.1
+-- http://www.phpmyadmin.net
+--
+-- Serveur: localhost
+-- Généré le : Jeu 29 Novembre 2007 à 17:01
+-- Version du serveur: 4.0.24
+-- Version de PHP: 4.3.10-22
+
+
+--
+-- Base de données: `lcs_db`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `applis`
+--
+
+CREATE TABLE IF NOT EXISTS `applis` (
+  `id` smallint(1) NOT NULL auto_increment,
+  `name` varchar(20) NOT NULL default '',
+  `value` varchar(100) NOT NULL default '0',
+  `descr` varchar(50) default NULL,
+  `num_maj` smallint(5) unsigned NOT NULL default '0',
+  `version` varchar(10) NOT NULL default '',
+  `chemin` varchar(50) NOT NULL default '',
+  `type` char(1) NOT NULL default '',
+  UNIQUE KEY `id` (`id`),
+  KEY `id_2` (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=30 ;
+
+--
+-- Contenu de la table `applis`
+--
+
+INSERT INTO `applis` (`id`, `name`, `value`, `descr`, `num_maj`, `version`, `chemin`, `type`) VALUES
+(1, 'url_accueil', '/lcs/accueil.php', 'Page d''accueil LCS', 0, '', '', ''),
+(2, 'barre1', '1', 'Barre icones BioZen', 0, '', '', ''),
+(3, 'barre2', '0', 'Barre icones FullFat', 0, '', '', ''),
+(4, 'url_logo', 'http://wawadeb.crdp.ac-caen.fr/lcsdoc/', 'url logo LCS', 0, '', '', '');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `params`
+--
+
+CREATE TABLE IF NOT EXISTS `params` (
+  `id` smallint(5) unsigned NOT NULL auto_increment,
+  `name` varchar(20) NOT NULL default '',
+  `value` varchar(100) NOT NULL default '',
+  `srv_id` smallint(4) NOT NULL default '0',
+  `descr` varchar(50) NOT NULL default '',
+  `cat` tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `id_2` (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=73 ;
+
+--
+-- Contenu de la table `params`
+--
+
+INSERT INTO `params` (`id`, `name`, `value`, `srv_id`, `descr`, `cat`) VALUES
+(1, 'hostname', '@@HOSTNAME@@', 0, 'Nom d''hote de machine LCS', 0),
+(2, 'baseurl', 'http://@@LCSFULLDOMAIN@@/', 0, 'Adresse de l''interface LCS', 1),
+(3, 'ldaprid', '@@LDAP_RID@@', 0, 'Identificateur de replica', 0),
+(4, 'ldap_server', '@@LDAPSERVER@@', 0, 'Adresse du serveur LDAP', 2),
+(5, 'ldap_master_server', '@@LDAP_MASTER_SERVER@@', 0, 'Adresse du serveur LDAP', 2),
+(6, 'ldap_port', '@@LDAPPORT@@', 0, 'Port LDAP', 2),
+(7, 'ldap_base_dn', '@@BASEDN@@', 0, 'Dn de base de l''annuaire', 2),
+(8, 'adminRdn', '@@ADMINRDN@@', 0, 'dn Relatif de l''administrateur de l''annuaire', 2),
+(9, 'adminPw', '@@ADMINPASSWD@@', 0, 'Mot de passe d''administrateur de l''annuaire', 2),
+(10, 'peopleRdn', '@@PEOPLERDN@@', 0, 'dn Relatif de la branche People', 2),
+(11, 'groupsRdn', '@@GROUPSRDN@@', 0, 'dn Relatif de la branche Groups', 2),
+(12, 'computersRdn', '@@COMPUTERSRDN@@', 0, 'dn Relatif de la branche Computers', 2),
+(13, 'rightsRdn', '@@RIGHTSRDN@@', 0, 'dn Relatif de la branche Droits', 2),
+(14, 'parksRdn', '@@PARKSRDN@@', 0, 'dn Relatif de la branche Parks', 2),
+(15, 'trashRdn', '@@TRASHRDN@@', 0, 'dn Relatif de la branche Trash', 2),
+(16, 'elevesRdn', 'cn=Eleves', 0, 'Eleves Rdn', 2),
+(17, 'profsRdn', 'cn=Profs', 0, 'Professeurs Rdn', 2),
+(18, 'urlmajtgz', '@@URLMAJTGZ@@', 0, 'Adresse de mise à jour archives TGZ', 1),
+(19, 'urlmajmd5', '@@URLMAJMD5@@', 0, 'Adresse de mise à jour des MD5 sommes', 1),
+(20, 'urlmajplug', '@@URLMAJPLUG@@', 0, 'Adresse de mise à jour des plugins LCS', 1),
+(21, 'urlmajmod', '@@URLMAJMOD@@', 0, 'Adresse de mise à jour des modules LCS', 1),
+(22, 'majnbr', '0', 0, 'Indice de mis a jour', 4),
+(23, 'VER', '@@VERSION_NUM@@', 0, 'No de version', 4),
+(24, 'country', '@@COUNTRYNAME@@', 0, 'Nom du pays sur deux lettres', 4),
+(25, 'province', '@@PROVINCENAME@@', 0, 'Nom de la province', 4),
+(26, 'locality', '@@LOCALITYNAME@@', 0, 'Nom de la ville', 4),
+(27, 'organization', '@@ORGANIZATIONNAME@@', 0, 'Nom de l''établissement', 4),
+(28, 'organizationalunit', '@@ORGANIZATIONALUNITNAME@@', 0, 'Nom de l''unité organisationnelle', 4),
+(29, 'se3Ip', '@@SE3IP@@', 0, 'Adresse du serveur SE3 (optionnel)', 1),
+(31, 'domain', '@@LCSDOMAIN@@', 0, 'Nom du domaine DNS', 1),
+(32, 'se3netbios', '@@SE3NETBIOS@@', 0, 'Nom NetBios du serveur Se3', 1),
+(33, 'se3domain', '@@SE3DOMAIN@@', 0, 'Domain SE3', 1),
+(34, 'uidPolicy', '@@UIDPOLICY@@', 0, 'Type de login', 1),
+(35, 'defaultshell', '@@DEFAULTSHELL@@', 0, 'Shell par défaut', 1),
+(36, 'type_Equipe_Matiere', '@@TYPEGROUPS@@', 0, 'Type grp. Equipe Matiere (groupOfNames posixGroup)', 4),
+(37, 'pla_bind', '0', 0, 'Droits sur l''annuaire pour PhpLdapAdmin', 2),
+(38, 'gateway', '@@GATEWAY@@', 0, 'Passerelle par défaut LCS', 4),
+(39, 'iplcs', '@@IPLCS@@', 0, 'Adresse IP LCS', 4),
+(40, 'network', '@@NETWORK@@', 0, 'Adresse réseau', 4),
+(41, 'netmask', '@@NETMASK@@', 0, 'Masque réseau', 4),
+(42, 'dns1', '@@DNS1@@', 0, 'DNS primaire', 4),
+(43, 'dns2', '@@DNS2@@', 0, 'DNS secondaire', 4),
+(44, 'xennet', '@@XENNET@@', 0, 'Reseau Xen', 4),
+(45, 'relayhost', '@@RELAYHOST@@', 0, 'Hote relais smtp', 4),
+(46, 'mtaip', '@@MTAIP@@', 0, 'Local @IP serveur smtp', 4),
+(47, 'ntpserv', '@@NTP_SERVER@@', 0, 'Serveur de temps', 1),
+(48, 'vlansc', '@@VLANSC@@', 0, 'VLAN Service commun', 4),
+(49, 'vlanadmin', '@@VLANADMINISTRATIF@@', 0, 'VLAN Administratif', 4),
+(50, 'vlanpeda1', '@@VLANPEDA1@@', 0, 'VLAN Pedagogique 1', 4),
+(51, 'vlanpeda2', '@@VLANPEDA2@@', 0, 'VLAN Pedagogique 2', 4),
+(52, 'vlanpeda3', '@@VLANPEDA3@@', 0, 'VLAN Pedagogique 3', 4),
+(53, 'vlanpeda4', '@@VLANPEDA4@@', 0, 'VLAN Pedagogique 4', 4),
+(54, 'cachedirsize', '@@CACHEDIRSIZE@@', 0, 'Taille du cache squid', 4);
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `personne`
+--
+
+CREATE TABLE IF NOT EXISTS `personne` (
+  `id` smallint(5) NOT NULL auto_increment,
+  `last_log` varchar(14) default NULL,
+  `act_log` varchar(14) default NULL,
+  `login` varchar(60) NOT NULL default '',
+  `stat` smallint(6) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `personne`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `sessions`
+--
+
+CREATE TABLE IF NOT EXISTS `sessions` (
+  `id` smallint(5) unsigned NOT NULL auto_increment,
+  `sess` varchar(20) NOT NULL default '',
+  `mdp` varchar(20) NOT NULL default '0',
+  `idpers` smallint(5) unsigned NOT NULL default '0',
+  `remote_ip` varchar(32) default NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `id_2` (`id`,`sess`),
+  KEY `id` (`id`,`sess`)
+) TYPE=MyISAM AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `sessions`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `statusages`
+--
+
+CREATE TABLE IF NOT EXISTS `statusages` (
+  `grp` varchar(15) NOT NULL default '',
+  `appli` varchar(20) NOT NULL default '',
+  `timestamp` varchar(14) NOT NULL default '',
+  `source` char(3) NOT NULL default ''
+) TYPE=MyISAM;
+
+--
+-- Contenu de la table `statusages`
+--
+
