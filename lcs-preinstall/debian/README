@@ -1,6 +1,10 @@
 The Debian Package lcs-preinstall
 ----------------------------
 
-Comments regarding the Package
+LCS preinstall
+================
 
-Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>, Wed, 21 May 2008 21:57:13 +0200
+    Preinstallation pour preparation de l'installation de LCS sur Debian Etch
+
+
+Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>, Thu, 22 May 2008 14:07:14 +0200
