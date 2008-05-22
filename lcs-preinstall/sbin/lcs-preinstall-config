@@ -93,7 +93,7 @@ case "$1" in
             -e "s|@@LOCALITYNAME@@|$LOCALITYNAME|g" \
             -e "s|@@ORGANIZATIONNAME@@|$ORGANIZATIONNAME|g" \
             -e "s|@@ORGANIZATIONALUNITNAME@@|$ORGANIZATIONALUNITNAME|g" \
-            /etc/lcs/sql/lcs_db.sql.in >/etc/lcs/sql/lcs_db.sql
+            /var/lib/lcs/preinstall/lcs_db.sql.in > /var/lib/lcs/preinstall/lcs_db.sql
             #
             # Creation base lcs_db 
             #
@@ -101,8 +101,8 @@ case "$1" in
             #
             # Import du dump sql
             #
-            mysql lcs_db < /etc/lcs/sql/lcs_db.sql
-            rm /etc/lcs/sql/lcs_db.sql
+            mysql lcs_db < /var/lib/lcs/preinstall/lcs_db.sql
+            rm -f /var/lib/lcs/preinstall/lcs_db.sql
             #
             # Creation utilisateur lcsmgr si celui-ci n'existe pas
             #
