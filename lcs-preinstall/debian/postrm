@@ -34,7 +34,7 @@ case "$1" in
         #        
         mysql -e "DELETE FROM mysql.user WHERE user = 'lcsmgr'"  > /dev/null 2>&1
         mysqladmin reload > /dev/null 2>&1
-        if [ "$1" == "purge" ]; then
+        if [ "$1" = "purge" ]; then
             rm -R /etc/lcs
             echo "Avant de réinstaller lcs-preinstall, vous devrez remettre en place le fichier de configuration LCS (/etc/lcs/lcs.conf)"
         fi
