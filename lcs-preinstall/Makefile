@@ -6,8 +6,8 @@ all:
 install:
 
 # install lcs conf
-	install -d $(DESTDIR)/var/lib/lcs/preinstall/sql
-	install -m 0660 conf/sql/* $(DESTDIR)/var/lib/lcs/preinstall/sql
+	install -d $(DESTDIR)/var/lib/lcs/preinstall
+	install -m 0660 conf/* $(DESTDIR)/var/lib/lcs/preinstall
 
 # install sbin
 	install -d $(DESTDIR)/usr/sbin
