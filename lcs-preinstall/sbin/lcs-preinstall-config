@@ -20,21 +20,6 @@ case "$1" in
     ;;
     configure)
         #
-        # Fixation du mot de passe root MySQL si ce n'est pas déja fait
-        #
-        if [ ! -e /root/.my.cnf ]; then
-            mysqladmin password $MYSQLPW
-            echo "[client]
-                password=$MYSQLPW
-                user=root" > /root/.my.cnf
-                chmod 600 /root/.my.cnf
-            mysqladmin reload -u root -p$MYSQLPW
-        fi
-        #
-        # On ne conserve pas le mdp mysql dans lcs.conf
-        #
-        sed -i s/"MYSQLPW=.*"/"MYSQLPW=''\t\t\t\t#mot de passe root MySQL"/g /etc/lcs/lcs.conf
-        #
         # Si lcs_db existe on la drop
         #
         if [ -d /var/lib/mysql/lcs_db ];then
@@ -106,11 +91,26 @@ case "$1" in
             #
             # Creation utilisateur lcsmgr si celui-ci n'existe pas
             #
-            if [ -z "`mysql -e "SELECT User FROM mysql.user WHERE user='lcsmgr_';"`" ]; then
+            if [ -z "`mysql -e "SELECT User FROM mysql.user WHERE user='lcsmgr';"`" ]; then
                 mysql -e "INSERT INTO mysql.user  VALUES ('localhost', 'lcsmgr', PASSWORD( '$LCSMGRPASS' ) , 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '', '', '', '', '0', '0', '0', '0');"
                 mysql -e "INSERT INTO mysql.db VALUES ( 'localhost', 'lcs_db', 'lcsmgr', 'Y', 'Y', 'Y', 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N');"
                 mysqladmin reload
             fi
+            #
+            # Fixation du mot de passe root MySQL si ce n'est pas déja fait
+            #
+            if [ ! -e /root/.my.cnf ]; then
+                mysqladmin password $MYSQLPW
+                echo "[client]
+                password=$MYSQLPW
+                user=root" > /root/.my.cnf
+                chmod 600 /root/.my.cnf
+                mysqladmin reload -u root -p$MYSQLPW
+            fi
+            #
+            # On ne conserve pas le mdp mysql dans lcs.conf
+            #
+            sed -i s/"MYSQLPW=.*"/"MYSQLPW=''\t\t\t\t#mot de passe root MySQL"/g /etc/lcs/lcs.conf
             #
             # Mise à l'heure du serveur
             #
@@ -118,12 +118,12 @@ case "$1" in
                 echo "Mise à l'heure du serveur"
                 /usr/sbin/ntpdate -s $NTP_SERVER
             fi
-        #
-        # Re-Configuration du reseau
-        #
-        hostname $HOSTNAME
+            #
+            # Re-Configuration du reseau
+            #
+            hostname $HOSTNAME
 
-        echo "127.0.0.1       localhost
+            echo "127.0.0.1       localhost
 127.0.1.1       $HOSTNAME.$DOMAIN  $HOSTNAME
 
 # The following lines are desirable for IPv6 capable hosts
