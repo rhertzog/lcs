@@ -51,6 +51,7 @@ case "$1" in
             -e "s|@@IPLCS@@|"$IPADDR0"|g" \
             -e "s|@@NETWORK@@|"$NETWORK"|g" \
             -e "s|@@NETMASK@@|"$NETMASK0"|g" \
+            -e "s|@@BROADCAST@@|"$BROADCAST"|g" \
             -e "s|@@DNS1@@|"$DNS_PRIMARY"|g" \
             -e "s|@@DNS2@@|"$DNS_SECONDARY"|g" \
             -e "s|@@XENNET@@|"$XEN_NETWORK"|g" \
