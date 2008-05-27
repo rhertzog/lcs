@@ -31,12 +31,6 @@ case "$1" in
             [ ! -e /etc/lcs/lcs.conf ] && exit_fatal "missing /etc/lcs/lcs.conf"
             . /etc/lcs/lcs.conf
             #
-            # make symbolic link too slis.conf
-            #
-            if [ ! -e /etc/slis/slis.conf ]; then
-                ln -s /etc/lcs/lcs.conf /etc/slis/slis.conf
-            fi
-            #
             # only if first configuration
             #
 	   if [ "$2" = "" ]; then
