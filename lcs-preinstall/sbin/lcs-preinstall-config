@@ -3,9 +3,17 @@
 # /usr/sbin/lcs-preinstall-config
 
 set -e
+function exit_fatal 
+{
+	echo "Fatal: $1" >&2
+	exit 0
+}
 
 . /usr/share/slis/slis-common.sh
-load_slis_config
+
+# Load LCS config
+[ ! -e /etc/lcs/lcs.conf ] && exit_fatal "missing /etc/lcs/lcs.conf"
+. /etc/lcs/lcs.conf
 
 case "$1" in
     possible)
