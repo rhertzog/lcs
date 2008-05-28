@@ -28,6 +28,15 @@ case "$1" in
     ;;
     configure)
         #
+        # Detection mode AUTO pour les password lcsmgr et root MySQL
+        #
+        if [ -z $MYSQLPW ] || [ $MYSQLPW = "AUTO" ]; then
+            MYSQLPW=`pwgen -1 -s 8`
+        fi
+        if [ -z $LCSMGRPASS ] || [ $LCSMGRPASS = "AUTO" ]; then
+            LCSMGRPASS=`pwgen -1 -s 8`
+        fi
+        #
         # Si lcs_db existe on la drop
         #
         if [ -d /var/lib/mysql/lcs_db ];then
