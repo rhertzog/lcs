@@ -28,7 +28,7 @@ case "$1" in
     ;;
     configure)
         #
-        # Detection mode AUTO pour les password lcsmgr et root MySQL
+        # Detection mode AUTO pour les password ldap lcsmgr et root MySQL
         #
         if [ -z $MYSQLPW ] || [ $MYSQLPW = "AUTO" ]; then
             MYSQLPW=`pwgen -1 -s 8`
