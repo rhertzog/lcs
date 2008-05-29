@@ -30,7 +30,6 @@ function get_lcsdb_params
     echo "$PARAMS"
 }
 
-echo "DEBUG Var1 : $1 Var2 : $2"
 case "$1" in
     configure)
             #
