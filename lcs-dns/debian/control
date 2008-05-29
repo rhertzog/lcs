@@ -1,0 +1,11 @@
+Source: lcs-dns
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+
+Package: lcs-dns
+Architecture: all
+Depends: lcs-peinstall, bind9, dnsutils, hostname
+Description: Install DNS capability on LCS server

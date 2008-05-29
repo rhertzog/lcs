@@ -1,0 +1,11 @@
+lcs-dns (2.1~1) unstable; urgency=low
+
+  * Setting in conformity with Debian Installer
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 29 May 2008 11:44:00 +0200
+
+lcs-dns (2.0) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 May 2008 14:07:14 +0200
