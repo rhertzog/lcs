@@ -32,9 +32,15 @@ case "$1" in
         #
         if [ -z $MYSQLPW ] || [ $MYSQLPW = "AUTO" ]; then
             MYSQLPW=`pwgen -1 -s 8`
+            perl -pe "s/MYSQLPW.*/MYSQLPW=\\\"$MYSQLPW\\\"/" -i /etc/lcs/lcs.conf
         fi
         if [ -z $LCSMGRPASS ] || [ $LCSMGRPASS = "AUTO" ]; then
             LCSMGRPASS=`pwgen -1 -s 8`
+         perl -pe "s/LCSMGRPASS.*/LCSMGRPASS=\\\"$LCSMGRPASS\\\"/" -i /etc/lcs/lcs.conf
+        fi
+        if [ -z $LDAP_ADMIN_PW ] || [ $LDAP_ADMIN_PW = "AUTO" ]; then
+            LDAP_ADMIN_PW=`pwgen -1 -s 8`
+            perl -pe "s/LDAP_ADMIN_PW.*/LDAP_ADMIN_PW=\\\"$LDAP_ADMIN_PW\\\"/" -i /etc/lcs/lcs.conf
         fi
         #
         # Si lcs_db existe on la drop
