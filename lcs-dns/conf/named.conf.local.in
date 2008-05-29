@@ -1,0 +1,8 @@
+zone "#LCSDOMAIN#" {
+	type master;
+	file "/etc/bind/localnet.db";
+};
+zone "#LCSNETREV#.in-addr.arpa" {
+	type master;
+	file "/etc/bind/localnet.rev";
+};
