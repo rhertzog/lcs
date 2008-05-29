@@ -7,5 +7,5 @@ Standards-Version: 3.6.2
 
 Package: lcs-dns
 Architecture: all
-Depends: lcs-peinstall, bind9, dnsutils, hostname
+Depends: lcs-preinstall, bind9, dnsutils, hostname
 Description: Install DNS capability on LCS server
