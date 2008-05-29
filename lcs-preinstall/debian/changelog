@@ -1,3 +1,9 @@
+lcs-preinstall (2.0-2) unstable; urgency=low
+
+  * Mise en place du mode AUTO pour les passwords dans lcs.conf 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 27 May 2008 17:17:39 +0200
+
 lcs-preinstall (2.0-1) unstable; urgency=low
 
   * Suppression du lien symbolique slis.conf -> /etc/lcs/lcs.conf desormais pris en charge par les paquets SLIS (ldapedu...). 
