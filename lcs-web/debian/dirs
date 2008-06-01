@@ -1,9 +1,4 @@
-etc/
-etc/cron.d
 etc/lcs
-etc/lcs/apache2
-etc/lcs/webalizer
-etc/skel
 etc/skel/Documents
 etc/skel/Maildir
 etc/skel/Maildir/cur
@@ -11,10 +6,6 @@ etc/skel/Maildir/new
 etc/skel/Maildir/tmp
 etc/skel/public_html
 root/LcsMaj
-usr/lib
-usr/lib/cgi-bin
-usr/lib/perl5
-usr/sbin
 usr/share/doc/lcs
 usr/share/lcs
 var/lib/lcs
