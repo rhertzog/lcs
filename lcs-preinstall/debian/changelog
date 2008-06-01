@@ -1,3 +1,8 @@
+lcs-preinstall (2.0-3~1) UNRELEASED; urgency=low
+
+  * Ajout de dependances avec : ldapedu-server, lcs-dns, interfacedu-lcs , lcs-openssh
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 27 May 2008 17:17:39 +0200
+
 lcs-preinstall (2.0-2) unstable; urgency=low
 
   * Mise en place du mode AUTO pour les passwords dans lcs.conf 
