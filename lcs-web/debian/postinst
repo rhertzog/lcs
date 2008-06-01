@@ -19,6 +19,8 @@ case "$1" in
 	       . /usr/share/slis/slis-common.sh
 	       handle_initial_config lcs-web-config 60
 	   fi
+           # Fix rights on lcs-web tree
+           /usr/sbin/lcs-web-fixrights
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
@@ -29,6 +31,5 @@ case "$1" in
         exit 1
     	;;
 esac
-
 
 exit 0
