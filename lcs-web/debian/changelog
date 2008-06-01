@@ -1,0 +1,14 @@
+lcs-web (2.1~1) UNRELEASED; urgency=low
+
+  * Setting in conformity with Debian Installer
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 31 May 2008 20:50:00 +0200
+
+lcs-web (2.0) unstable; urgency=low
+
+  * Web interface for LCS Linux Communication Server
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 31 May 2008 20:50:00 +0200
+
+
+

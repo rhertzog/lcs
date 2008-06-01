@@ -1,0 +1,10 @@
+Fichiers originaux de /var/www/lcs/ :
+accueil.php
+applis.php
+index.php
+statandgo.php
+
+Ces fichiers sont mis en place dans l'arborescence LCS à l'install initial du paquet lcs-web et sont remplacés par les fichiers de lcs-monlcs de /var/lib/lcs/monlcs/Mod/Lcs/
+
+
+

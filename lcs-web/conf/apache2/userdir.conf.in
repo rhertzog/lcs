@@ -1,0 +1,19 @@
+<IfModule mod_userdir.c>
+        UserDir public_html
+        UserDir disabled root
+
+        <Directory /home/*/public_html>
+                php_admin_flag safe_mode On
+                php_admin_value open_basedir .:../:/tmp
+                AllowOverride FileInfo AuthConfig Limit
+                Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+        </Directory>
+
+        <Directory /home/*/./public_html>
+                php_admin_flag safe_mode On
+                php_admin_value open_basedir .:../:/tmp
+                AllowOverride FileInfo AuthConfig Limit
+                Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+        </Directory>
+</IfModule>
+

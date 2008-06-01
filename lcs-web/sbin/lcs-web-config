@@ -1,0 +1,161 @@
+#!/bin/sh
+
+# /usr/sbin/lcs-web-config
+
+set -e
+function exit_fatal {
+	echo "Fatal: $1" >&2
+	exit 0
+}
+
+. /usr/share/slis/slis-common.sh
+
+# Load LCS config
+[ ! -e /etc/lcs/lcs.conf ] && exit_fatal "missing /etc/lcs/lcs.conf"
+. /etc/lcs/lcs.conf
+
+case "$1" in
+    possible)
+        # Is the LDAP server reachable ?
+        if ldapsearch -x "(uid=admin)($LDAP_BASE_DN)" 2>/dev/null | grep -q "^dn: "; then
+            exit 0
+        else
+            exit 1
+        fi
+    ;;
+    needed)
+	exit 0
+    ;;
+    configure)
+        # Configure LCS Web
+        #
+        # Install Perl modules
+        #
+        echo "Installation modules Perl"
+        cd /var/lib/lcs/web/Modules-perl
+        tar -xzf Crypt-SmbHash-0.02.tar.gz
+        tar -xzf Encode-compat-0.05.tar.gz
+        cd Crypt-SmbHash-0.02
+        perl Makefile.PL > /dev/null 2>&1
+        make > /dev/null 2>&1
+        make install > /dev/null 2>&1
+        cd ../Encode-compat-0.05
+        perl Makefile.PL > /dev/null 2>&1
+        make > /dev/null 2>&1
+        make install > /dev/null 2>&1
+        cd ~/
+        rm -R /var/lib/lcs/web/Modules-perl/Crypt-SmbHash-0.02
+        rm -R /var/lib/lcs/web/Modules-perl/Encode-compat-0.05
+        #
+        # Patch /etc/skel/public_html/index.html.in
+        #
+        cp /etc/skel/public_html/index.html.in /etc/skel/public_html/index.html
+        sed -i s/##HOST##/$DOMAIN/g /etc/skel/public_html/index.html
+        #
+        # Patch files /etc/LcSeConfig.php.in /var/www/index.html.in  /var/www/lcs/includes/config.inc.in 
+        #
+        echo "Patch des fichiers de conf LCS"
+        sed -e "s|@@PASSWORD@@|"$MYSQLPW"|g" /etc/LcSeConfig.ph.in > /etc/LcSeConfig.ph
+        chmod 640 /etc/LcSeConfig.ph
+        chown root:www-data /etc/LcSeConfig.ph
+        sed -e "s|@@PASSWORD@@|"$LCSMGRPASS"|g" /var/www/lcs/includes/config.inc.in > /var/www/lcs/includes/config.inc.php
+        chown www-data:www-data /var/www/lcs/includes/config.inc.php
+        #
+        # Réinitialisation password account admin lcs if initial install
+        #
+        if [ "$2" = "" ]; then
+            echo "Réinitialisation du mpd du compte admin lcs"
+            /usr/share/lcs/sbin/userChangePwd.pl admin admin
+        fi
+        #
+        # Add right stats_can_read
+        #
+        if ! ldapsearch -x "(cn=stats_can_read)($LDAP_BASE_DN)" 2>/dev/null | grep -q "^dn: "; then
+            echo "dn: cn=stats_can_read,ou=Rights,$LDAP_BASE_DN
+objectClass: groupOfNames
+cn: stats_can_read
+member: uid=admin,ou=People,$LDAP_BASE_DN" > /tmp/stats_can_read.ldif
+            ldapadd -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /tmp/stats_can_read.ldif
+            rm -f /tmp/stats_can_read.ldif
+        fi
+        #
+        # Create webmaster.etab account
+        #
+        if [ `getent passwd webmaster.etab | wc -l` = "0" ]; then
+            echo "Creation compte webmaster.etab"
+            UIDPOLICY=`mysql -se "select value from lcs_db.params where name='uidpolicy';"`
+            mysql -se "UPDATE lcs_db.params SET value = '1' WHERE name = 'uidpolicy';"
+            /usr/share/lcs/sbin/userAdd.pl Webmaster Etab `pwgen -1 -s` 20081212 M Profs
+            #force uid to 5001
+            echo "dn: uid=webmaster.etab,ou=People,$LDAP_BASE_DN
+changetype : modify
+replace : uidnumber
+uidnumber : 5001" > /tmp/uid_admin.ldif
+            ldapmodify -x -D "$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /tmp/uid_admin.ldif
+            rm -f /tmp/uid_admin.ldif
+            # ReInstallation original uidpolicy 
+            mysql -se "UPDATE lcs_db.params SET value = '$UIDPOLICY' WHERE name = 'uidpolicy';"
+        fi
+        if [ ! -d /home/webmaster.etab ];then
+                mkdir /home/webmaster.etab
+        fi
+        chown webmaster.etab:www-data /home/webmaster.etab
+        chmod 770 /home/webmaster.etab
+        cp -a /etc/skel/* /home/webmaster.etab/
+        chown -R webmaster.etab:www-data /home/webmaster.etab/public_html
+        chown -R webmaster.etab:www-data /home/webmaster.etab/Maildir
+        chmod -R 700 /home/webmaster.etab/Maildir
+        #
+        # dir.conf
+        #
+        echo "mise en place dir.conf"
+        cp /var/lib/lcs/web/apache2/dir.conf.in /etc/apache2/mods-available/dir.conf
+        chmod 644 /etc/apache2/mods-available/dir.conf
+        #
+        # Desactivate lcs virtualhost of interfacedu-lcs
+        #
+        echo "Mise en place virtualhosts"
+        a2dissite lcs > /dev/null 2>&1
+        #
+        # Installation real lcs virtualhost 
+        #
+        cp /var/lib/lcs/web/apache2/virtualhost.lcs.in /etc/apache2/sites-available/$LCSFULLDOMAIN
+        sed -i "s/#LCSDOMAIN#/$DOMAIN/g" /etc/apache2/sites-available/$LCSFULLDOMAIN
+        sed -i "s/#LCSFULLDOMAIN#/$LCSFULLDOMAIN/g" /etc/apache2/sites-available/$LCSFULLDOMAIN
+        sed -i "s/#IPADDR0#/$IPADDR0/g" /etc/apache2/sites-available/$LCSFULLDOMAIN
+        a2ensite $LCSFULLDOMAIN > /dev/null 2>&1
+        #
+        # Installation www.#DOMAIN# virtualhost 
+        #
+        cp /var/lib/lcs/web/apache2/virtualhost.www.in /etc/apache2/sites-available/www.$DOMAIN
+        sed -i s/#IPADDR0#/$IPADDR0/g /etc/apache2/sites-available/www.$DOMAIN
+        sed -i s/#LCSDOMAIN#/$DOMAIN/g /etc/apache2/sites-available/www.$DOMAIN
+        a2ensite www.$DOMAIN > /dev/null 2>&1
+        #
+        # Installation menu.d if not present
+        #
+        if [ ! -d /var/www/lcs/includes/menu.d ]; then
+            cp -r /var/lib/lcs/web/menu.d /var/www/lcs/includes
+        fi
+        #
+        # Installation files common files lcs and monlcs 
+        #
+        if [ "$2" = "" ]; then
+            cp /var/lib/lcs/web/varwwwlcs/*.php /var/www/lcs/
+        fi
+        #
+        # Configuration webalizer
+        #
+        echo "Configuration webalizer"
+        cp /var/lib/lcs/web/webalizer/webalizer.conf.in /etc/webalizer/
+        sed -i s/#HOSTNAME#/`hostname`/g /etc/webalizer/webalizer.conf
+        #
+        # restart apache2
+        #
+        invoke-rc.d apache2ctl restart
+    ;;
+    *)
+        echo "usage: $0 {configure|possible|needed}" >&2
+        exit 1
+    ;;
+esac

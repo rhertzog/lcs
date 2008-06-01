@@ -1,0 +1,34 @@
+#! /bin/sh
+# postinst script for LCS web
+set -e
+
+# lecture d'un parametre lcs dans lcs_db.params
+
+function get_lcsdb_params
+{
+PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
+echo "$PARAMS"
+}
+
+case "$1" in
+	install|configure)
+            #
+            # only if first configuration
+            #
+	   if [ "$2" = "" ]; then
+	       . /usr/share/slis/slis-common.sh
+	       handle_initial_config lcs-web-config 60
+	   fi
+    	;;
+
+    	abort-upgrade|abort-remove|abort-deconfigure)
+    	;;
+
+    	*)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    	;;
+esac
+
+
+exit 0

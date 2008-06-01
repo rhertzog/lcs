@@ -1,0 +1,123 @@
+.slidesinfo           { text-align: center;
+		      }
+
+.slidesinfo h1.title  { color: #005a9C;
+                        font-family: Arial;
+                        font-weight: bold;
+                      }
+
+.slidesinfo h4.date  { color: #005a9C;
+                        font-family: sans-serif;
+                        font-size: small;
+                     }
+
+.slidesinfo h1.author {
+	color: orange;
+	font-size: small;
+	}
+
+.section   h1.title   { text-align: center;
+                        color: red;
+                        font-family: Arial;
+                      }
+.foil                 { font-family: verdana,sans-serif;
+                        font-size: x-large;
+			color: #404044;
+                      }
+.foil      h1.title   { text-align: center;
+			font-family: Arial, sans-serif;
+			font-size: x-large;
+                        color: orange;
+                        background-color: #00599b;
+			padding-top: 0pt;
+			margin-top: 0pt;
+                      }
+
+.mediaobject          { text-align: center;
+                      }
+
+/* ====================================================================== */
+
+span.navheader        { font-family: sans-serif;
+                        font-size: 10pt;
+                        font-weight: bold;
+                        color: #005a9C;
+                      }
+
+span.navfooter        { font-family: sans-serif;
+                        font-size: 8pt;
+                      }
+
+span.navfooter a      { color: orange; }
+
+/* ====================================================================== */
+
+.toc                  { font-weight: bold;
+                        font-size: 10pt;
+			color: #404044;
+                      }
+
+.toc a                { text-decoration: none; }
+.toc a:link           { color: #00599b; }
+.toc a:visited        { color: #00599b; }
+
+.toc .toc-section a         { color: orange; }
+.toc .toc-section a:link    { color: orange; }
+.toc .toc-section a:visited { color: orange; }
+
+.toc .toc-titlefoil a         { color: #404044; }
+.toc .toc-titlefoil a:link    { color: #404044; }
+.toc .toc-titlefoil a:visited { color: #404044; }
+
+.toc .toc-foil a         { color: #00599b; }
+.toc .toc-foil a:link    { color: #00599b; }
+.toc .toc-foil a:visited { color: #00599b; }
+
+.toc-slidesinfo       { font-family: sans-serif;
+                        font-weight: bold;
+                        text-align: center;
+                      }
+
+.toc-titlefoil        { font-family: sans-serif;
+                        font-weight: bold;
+                        text-align: center;
+                      }
+
+.toc-section          { font-family: sans-serif;
+                        margin-left: 0.25in;
+                        text-indent: -0.25in;
+	                font-weight: bold;
+                        color: red;
+                      }
+
+.toc-foil             { font-family: sans-serif;
+                        font-size: 10pt;
+                        margin-left: 0.25in;
+                        text-indent: -0.4in;
+	                font-weight: bold;
+                        color: blue;
+                      }
+
+/* ====================================================================== */
+/* jlk modif */
+tt {
+    font-family: neep, courier, monospace;
+    font-size: 12pt;
+    font-weight: bold;
+ 
+   }
+
+span.acronym {
+    text-decoration: small-caps;
+    font-weight: bold;
+}
+
+span.abbrev {
+    font-family: monospace;
+    font-weight: bold;
+}
+
+tt.computeroutput {
+    font-family: neep, courier, monospace;
+    font-weight: bold;
+}

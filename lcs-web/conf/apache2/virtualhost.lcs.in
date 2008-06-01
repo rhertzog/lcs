@@ -1,0 +1,42 @@
+NameVirtualHost *:80
+<VirtualHost *:80>
+	ServerAdmin admin@#LCSDOMAIN#
+	ServerName #LCSFULLDOMAIN#
+        #############################################################
+        # Cette directive sera validée à l'install. de lcs-apache2ssl
+        #RedirectMatch ^(.*)$ https://#LCSFULLDOMAIN#$1
+        #############################################################
+	DocumentRoot /var/www
+	<Directory /var/www/>
+                php_admin_value open_basedir /var/www:/usr/share/lcs:/var/lib/lcs/import_comptes:/var/log/lcs:/home:/tmp
+		Options FollowSymLinks MultiViews
+		AllowOverride None
+		Order allow,deny
+		allow from all
+	</Directory>
+
+	ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+	<Directory "/usr/lib/cgi-bin">
+		AllowOverride None
+		Options ExecCGI -MultiViews +SymLinksIfOwnerMatch
+		Order allow,deny
+		Allow from all
+	</Directory>
+
+        Alias /aide_fr "/usr/share/doc/lcs/aide_fr"
+        Alias /doc "/usr/share/doc/lcs"
+        <Directory "/usr/share/doc/lcs/">
+            Options Indexes MultiViews FollowSymLinks
+            AllowOverride None
+            Order deny,allow
+            Allow from All
+        </Directory>
+	ErrorLog /var/log/apache2/error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	CustomLog /var/log/apache2/access.log combined
+</VirtualHost>
+Include /etc/lcs/apache.conf

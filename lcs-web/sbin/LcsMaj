@@ -1,0 +1,126 @@
+#!/bin/bash
+# /usr/sbin/LcsMaj version du 02-08-07
+#
+# Mise a jour des paquets logiciels du serveur
+#
+apt-get update
+apt-get -y upgrade
+#
+# Récupération des paramètres de connexion à la base
+#
+if [ -e /var/www/lcs/includes/config.inc.php ]; then
+  HOSTAUTH=`cat /var/www/lcs/includes/config.inc.php | grep "HOSTAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
+  DBAUTH=`cat /var/www/lcs/includes/config.inc.php | grep "DBAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
+  USERAUTH=`cat /var/www/lcs/includes/config.inc.php | grep "USERAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
+  PASSAUTH=`cat /var/www/lcs/includes/config.inc.php | grep "PASSAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
+else
+  echo "Fichier de configuration LCS inaccessible"
+  exit 1
+fi
+#
+# Declarations
+#
+MYSQLCNX="mysql -h $HOSTAUTH $DBAUTH -u $USERAUTH -p$PASSAUTH -N"
+WGETOPTIONS="-nv -o wget.log -T 5 -t 2"
+#
+# lecture urlmaj des tgz
+#
+URLMAJTGZ=`echo "SELECT value FROM params WHERE name='urlmajtgz'" | $MYSQLCNX`
+if [ -z "$URLMAJTGZ" ]; then
+  echo "Impossible d'accéder aux paramètres URLMAJTGZ LCS"
+  exit 1
+fi
+#
+# lecture urlmaj des sommes de controles
+#
+URLMAJMD5=`echo "SELECT value FROM params WHERE name='urlmajmd5'" | $MYSQLCNX`
+if [ -z "$URLMAJMD5" ]; then
+  echo "Impossible d'accéder aux paramètres URLMAJMD5 LCS"
+  exit 1
+fi
+#
+# Lecture de l'indice de maj actuel du LCS
+#
+MAJNBR=`echo "SELECT value FROM params WHERE name='majnbr'" | $MYSQLCNX`
+if [ -z "$MAJNBR" ]; then
+  echo "Impossible d'accéder aux paramètres MAJNBR LCS"
+  exit 1
+fi
+cd /root/LcsMaj
+#
+# DL des fichiers md5
+#
+wget $URLMAJMD5/maj*.md5 $WGETOPTIONS -N
+
+echo "Indice de maj actuelle : $MAJNBR"
+
+#
+# Application des scripts de maj
+#
+
+NEXT_MINOR_MAJ=$(( $MAJNBR+1 ))
+NEXT_MAJOR_MAJ=$(( (($MAJNBR /10) * 10) + 10 ))
+
+while [ -e maj$NEXT_MINOR_MAJ.md5  ] || [ -e maj$NEXT_MAJOR_MAJ.md5 ]; do
+
+  if [ -e maj$NEXT_MINOR_MAJ.md5 ]
+  then
+    MAJNBR=$NEXT_MINOR_MAJ
+  elif [ -e maj$NEXT_MAJOR_MAJ.md5 ]
+  then
+    MAJNBR=$NEXT_MAJOR_MAJ
+  fi
+    
+  #echo "###DBG### application de maj$MAJNBR.sh"
+  #
+  # DL des fichiers d'archives
+  #
+  wget $URLMAJTGZ/maj$MAJNBR.tgz $WGETOPTIONS
+  # Si le serveur ne repond pas -> exit
+  if [ `grep -c maj wget.log` == 0 ]; then
+      echo "Serveur des archives de mise a jour indisponible !"
+      rm wget.log
+      exit 1 
+  fi 
+  #
+  # On s'assure que l'archive de maj existe
+  #
+  if [ -e maj$MAJNBR.tgz ]; then
+    #
+    # Verification de la validite du telechargement
+    #
+    RESULT=`/usr/bin/md5sum maj$MAJNBR.tgz`
+    RESULT1=`cat maj$MAJNBR.md5`
+    if [ "$RESULT" = "$RESULT1" ]; then
+      tar zxf maj$MAJNBR.tgz
+      #
+      # Application du script de maj
+      #
+      echo "Application de la mise a jour N° $MAJNBR"
+      ./maj$MAJNBR.sh
+      #
+      # Update de l'indice de maj du LCS
+      #      
+      echo "UPDATE params SET value='$MAJNBR' WHERE name='majnbr'"| $MYSQLCNX      
+      rm *.tgz maj*.sh wget.log
+    else
+      # Si validite du telechargement non conforme -> exit
+      echo "L'archive de mise a jour N° $MAJNBR n'est pas conforme, operation annulee !" 
+      rm maj*.tgz wget.log
+      exit 1
+    fi
+  else
+    echo "Le telechargement de l'archive de mise a jour N° $MAJNBR a echouee, opération annulee !"
+    exit 1
+  fi
+  
+  NEXT_MINOR_MAJ=$(( $MAJNBR+1 ))
+  NEXT_MAJOR_MAJ=$(( (($MAJNBR /10) * 10) + 10 ))
+done
+
+echo "Toutes les révisions ou mises à jour disponibles ont été appliquées."
+
+
+
+
+

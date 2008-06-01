@@ -1,0 +1,1 @@
+30 18 * * * root /usr/share/lcs/scripts/lcs_sauve_ldap.sh
