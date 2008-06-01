@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# Fixation des droits sur les arborescences LCS web
+#
+chown root:root /etc/LcSeConfig.ph.in
+chown root:root /etc/profile
+chown root:root /etc/sudoers.in
+chown root:root /var/www
+chown -R www-data:www-data /var/www/*
+
+chown root:root /usr/lib/cgi-bin
+chmod 755 /usr/lib/cgi-bin
+chown root:www-data /usr/lib/cgi-bin/gep2.cgi
+chmod 750 /usr/lib/cgi-bin/gep2.cgi
+
+chown root:root /usr/share/lcs
+chown -R www-data:www-data /usr/share/lcs/Plugins
+chown -R www-data:www-data /usr/share/lcs/Modules
+
+chown root:root /usr/share/lcs/sbin
+chmod 750 /usr/share/lcs/sbin/*
+chown -R root:www-data /usr/share/lcs/sbin/*
+chown root:root /usr/share/lcs/sbin/webmasterCorrect.pl
+chown root:root /usr/share/lcs/sbin/CaenDeploy.sh
+
+chown root:root /usr/share/lcs/scripts
+chmod 700 /usr/share/lcs/scripts/*
+chown root:root /usr/share/lcs/scripts/*
+chown www-data:www-data /usr/share/lcs/scripts/*.php
+chown www-data:www-data /usr/share/lcs/scripts/execution_script_plugin.sh
+chown www-data:www-data /usr/share/lcs/scripts/gestpack.sh
+chown www-data:www-data /usr/share/lcs/scripts/ntlmpass.pl
+chown www-data:www-data /usr/share/lcs/scripts/unixPassword.pl
+
+if [ ! -d /etc/sudoers.etch ];then
+    mv /etc/sudoers /etc/sudoers.etch
+fi
+cp /var/lic/lcs/web/sudoers.in /etc/sudoers
+chown root:root /etc/sudoers
+chmod 440 /etc/sudoers
+
+chown root:root /usr/sbin/LcsMaj
+chmod 700 /usr/sbin/LcsMaj
+
+mkdir -p /var/log/lcs
+chown www-data /var/log/lcs
+chmod 750 /var/log/lcs
+
+mkdir -p  /var/lib/lcs/import_comptes
+chown www-data:root /var/lib/lcs/import_comptes
+chmod 755 /var/lib/lcs/import_comptes
+
+chown root:root /etc/cron.d/lcsldapsav
+chmod 644 /etc/cron.d/lcsldapsav
