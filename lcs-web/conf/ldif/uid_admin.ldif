@@ -1,4 +1,0 @@
-dn: uid=webmaster.etab,ou=People,$LDAP_BASE_DN
-changetype : modify
-replace : uidnumber
-uidnumber : 5001
