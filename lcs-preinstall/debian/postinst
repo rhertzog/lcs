@@ -26,11 +26,6 @@ function exit_fatal
 case "$1" in
     configure)
             #
-            # Read LCS params LCS from /etc/lcs/lcs.conf
-            #
-            [ ! -e /etc/lcs/lcs.conf ] && exit_fatal "missing /etc/lcs/lcs.conf"
-            . /etc/lcs/lcs.conf
-            #
             # only if first configuration
             #
 	   if [ "$2" = "" ]; then
