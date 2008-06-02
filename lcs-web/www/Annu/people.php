@@ -73,7 +73,7 @@
       // Ouverture/Fermeture Espace web
       exec ("ls -ld /home/".$user["uid"]."/public_html", $ReturnValue);
       $droits = explode(" ", $ReturnValue[0]); 
-      if ($droits[4] == "root") {
+      if ($droits[3] == "root") {
         echo "<li><a href=\"adm_WebPerso.php?uid=".$user["uid"]."&toggle=1"."\">Activer l'espace <em>Web</em></a>\n";
       } else {
         echo "<li><a href=\"adm_WebPerso.php?uid=".$user["uid"]."&toggle=0"."\">Désactiver l'espace <em>Web</em></a>\n";
