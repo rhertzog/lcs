@@ -33,6 +33,10 @@ install:
 	install -d $(DESTDIR)/usr/sbin
 	install -m 0750 sbin/* $(DESTDIR)/usr/sbin
 
+# install lcs web skel
+	install -d $(DESTDIR)/etc/skel
+	install -m 0750 skel/* $(DESTDIR)/etc/skel
+
 # install lcs web www
 	install -d $(DESTDIR)/var/www
 	install -m 0750 www/* $(DESTDIR)/var/www
