@@ -8,7 +8,7 @@ NameVirtualHost *:80
         #############################################################
 	DocumentRoot /var/www
 	<Directory /var/www/>
-                php_admin_value open_basedir /var/www:/usr/share/lcs:/var/lib/lcs/import_comptes:/var/log/lcs:/home:/tmp
+                php_admin_value open_basedir /var/www:/usr/share/lcs:/var/lib/lcs/import_comptes:/var/lib/mysql:/var/log/lcs:/home:/tmp
 		Options FollowSymLinks MultiViews
 		AllowOverride None
 		Order allow,deny
