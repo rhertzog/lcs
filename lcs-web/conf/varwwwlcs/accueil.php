@@ -75,10 +75,7 @@ echo "<HTML>\n
 
   echo "<blockquote>\n";
   // Affichage du menu espace web si l'espace perso existe
-  if ( is_dir("/home/".$login) && is_dir("/home/".$login."/public_html") 
-			       && is_dir("/home/".$login."/usr")
-			       && is_dir("/home/".$login."/bin")
-			       && is_dir("/home/".$login."/lib") ) {
+  if ( is_dir("/home/".$login) && is_dir("/home/".$login."/public_html") ) {
     if ( $ftpclient ) echo "<img src=\"images/bt-V1-2.jpg\" align=\"center\"><a href=\"statandgo.php?use=clientftp\">Espace web « LCS »</a><br>\n";
     if ( $pma ) echo "<img src=\"images/bt-V1-3.jpg\" align=\"center\"><a href=\"statandgo.php?use=pma\">Gestion base de données « LCS »</a><br>\n";
     if ( $se3netbios != "" && $se3domain != "" && $smbwebclient )
