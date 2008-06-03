@@ -9,8 +9,10 @@ lcs-web (2.1~1) UNRELEASED; urgency=low
   * Add missing dependency on slis-common.
   * Fix rights of many files. General cleanup of lintian warnings.
   * Fix makefile to actually install files.
+  * Add php5-cli dependency for PHP script
+    /usr/share/lcs/scripts/import_comptes.php.
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 31 May 2008 20:50:00 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 03 Jun 2008 19:12:59 +0200
 
 lcs-web (2.0) unstable; urgency=low
 
