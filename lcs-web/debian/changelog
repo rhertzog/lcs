@@ -1,6 +1,12 @@
 lcs-web (2.1~1) UNRELEASED; urgency=low
 
+  [ Jean-Luc Chretien ]
   * Setting in conformity with Debian Installer
+
+  [ Raphael Hertzog ]
+  * Misc fixes to lcs-web-config.
+  * Switch to debhelper 5.
+  * Add missing dependency on slis-common.
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 31 May 2008 20:50:00 +0200
 

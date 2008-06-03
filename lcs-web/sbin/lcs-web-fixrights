@@ -32,7 +32,7 @@ chown www-data:www-data /usr/share/lcs/scripts/gestpack.sh
 chown www-data:www-data /usr/share/lcs/scripts/ntlmpass.pl
 chown www-data:www-data /usr/share/lcs/scripts/unixPassword.pl
 
-if [ ! -d /etc/sudoers.etch ];then
+if [ ! -e /etc/sudoers.etch ];then
     mv /etc/sudoers /etc/sudoers.etch
 fi
 cp /var/lic/lcs/web/sudoers.in /etc/sudoers

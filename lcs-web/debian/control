@@ -2,11 +2,11 @@ Source: lcs-web
 Section: misc
 Priority: optional
 Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
-Build-Depends: debhelper (>= 4.0.0)
+Build-Depends: debhelper (>= 5)
 Standards-Version: 3.6.2
 
 Package: lcs-web
 Architecture: all
-Depends: lcs-preinstall, libtext-unaccent-perl, libcrypt-smbhash-perl, python, webalizer, lynx
+Depends: lcs-preinstall, libtext-unaccent-perl, libcrypt-smbhash-perl, python, webalizer, lynx, slis-common
 Description: Install WEB services on LCS server
  This package install WEB services on LCS server project.
