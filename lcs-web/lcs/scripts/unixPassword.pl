@@ -2,7 +2,6 @@
 
 # $Id$
 #use Crypt::SmbHash;
-use Encode::compat;
 use Encode qw(encode decode);
 
 $password = $ARGV[0];

@@ -29,24 +29,6 @@ case "$1" in
     configure)
         # Configure LCS Web
         #
-        # Install Perl modules
-        #
-        echo "Installation modules Perl"
-        cd /var/lib/lcs/web/Modules-perl
-        tar -xzf Crypt-SmbHash-0.02.tar.gz
-        tar -xzf Encode-compat-0.05.tar.gz
-        cd Crypt-SmbHash-0.02
-        perl Makefile.PL > /dev/null 2>&1
-        make > /dev/null 2>&1
-        make install > /dev/null 2>&1
-        cd ../Encode-compat-0.05
-        perl Makefile.PL > /dev/null 2>&1
-        make > /dev/null 2>&1
-        make install > /dev/null 2>&1
-        cd ~/
-        rm -R /var/lib/lcs/web/Modules-perl/Crypt-SmbHash-0.02
-        rm -R /var/lib/lcs/web/Modules-perl/Encode-compat-0.05
-        #
         # Patch /etc/skel/public_html/index.html.in
         #
         cp /etc/skel/public_html/index.html.in /etc/skel/public_html/index.html

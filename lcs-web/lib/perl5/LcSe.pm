@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 
 use CGI qw(:standard :html3);
-use Encode::compat;
 use Encode qw(encode decode);
 use Text::Unaccent;
 use Net::LDAP;

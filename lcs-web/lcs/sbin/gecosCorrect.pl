@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 
 use Net::LDAP;
-use Encode::compat;
 use Encode qw(encode decode);
 #use Text::Unaccent;
 
