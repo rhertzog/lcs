@@ -1,1 +1,0 @@
-shlibs:Depends=libc6 (>= 2.3.6-6), libpam0g (>= 0.76), libssl0.9.8 (>= 0.9.8c-1), libssp0 (>= 4.1.1-12), zlib1g (>= 1:1.2.1)
