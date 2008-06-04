@@ -1,0 +1,52 @@
+#! /bin/sh
+
+set -e
+
+# lecture d'un parametre lcs dans lcs_db.params
+get_lcsdb_params() {
+mysqlpass=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
+PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql -u lcsmgr -p$mysqlpass lcs_db -N`
+echo "$PARAMS"
+}
+
+configure() {
+    # Inscription Module lcs-squirrelmail dans lcs_db.params
+    SQUIR=`/usr/bin/mysql -e "SELECT id from lcs_db.applis WHERE name='mail';"`
+    VER=$(dpkg-query -f '${Version}' -W lcs-squirrelmail)
+    if [ -z "$SQUIR" ]; then
+	mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', 'squirrelmail', '1', 'webmail squirrelmail', '0', '$VER', '/usr/share/squirrelmail', 'M');"
+    fi
+
+    # Acquisition des params lcs
+    LDAP_SERVER=$(get_lcsdb_params ldap_server)
+    LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
+    # squirrelmail_reconfigure.sh <LDAP_SERVER> <LDAP_BASE_DN>
+    /usr/share/lcs/scripts/squirrelmail_reconfigure.sh $LDAP_SERVER $LDAP_BASE_DN
+
+    # Ajout Include apache2
+    FQN=`hostname -f`
+    echo "Include /etc/squirrelmail/apache.conf" >> /etc/apache2/sites-available/$FQN
+    invoke-rc.d apache2 restart >/dev/null
+}
+
+case "$1" in
+    possible)
+        if pgrep -u mysql mysqld >/dev/null; then
+            exit 0
+        else
+            exit 1
+        fi
+    ;;
+    needed)
+        exit 0
+    ;;
+    configure)
+        configure
+    ;;
+    "")
+        if $0 possible && $0 needed; then
+            $0 configure
+        fi
+    ;;
+esac
+

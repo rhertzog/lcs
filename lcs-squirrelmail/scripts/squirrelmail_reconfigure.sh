@@ -1,0 +1,43 @@
+#!/bin/bash
+# Configure courrier squirrelmail sur LCS
+# jLCF <(°_-)/> on 18 Jan. 2008
+#
+IN_CONFIG_PATH="/etc/lcs/squirrelmail"
+
+if [ -z "$1" ] || [ -z "$2" ];
+then
+        echo "Usage: squirrelmail_reconfigure.sh <LDAP_SERVER> <LDAP_BASE_DN>"
+        exit 0
+fi
+LDAP_SERVER="$1"
+LDAP_BASE_DN="$2"
+#
+# Authentification LCS Squirrelmail
+#
+cp /etc/lcs/squirrelmail/redirect.php /usr/share/squirrelmail/src/
+cp /etc/lcs/squirrelmail/page_header.php /usr/share/squirrelmail/functions/
+#
+# Configuration squirrelmail
+#
+cp /etc/lcs/squirrelmail/config.php.in /etc/squirrelmail/config.php
+#
+# Gestion du carnet d'adresses ldap
+#
+cp /etc/squirrelmail/config_local.php /etc/squirrelmail/config_local.php.lcssav
+echo "<?" > /etc/squirrelmail/config_local.php
+echo "/* LDAP CONFGURATION */" >> /etc/squirrelmail/config_local.php
+echo "\$ldap_server[0] = array(" >> /etc/squirrelmail/config_local.php
+echo -e "\t'host' => '$LDAP_SERVER',">> /etc/squirrelmail/config_local.php
+echo -e "\t'base' => '$LDAP_BASE_DN',">> /etc/squirrelmail/config_local.php
+echo -e "\t'name' => 'Annuaire de tous les utilisateurs',">> /etc/squirrelmail/config_local.php
+echo -e "\t'protocol' => 2">> /etc/squirrelmail/config_local.php
+echo -e ");">> /etc/squirrelmail/config_local.php
+echo "?>" >> /etc/squirrelmail/config_local.php
+#
+# apache2
+#
+RESULT=`grep '^Include /etc/squirrelmail/apache.conf' /etc/apache2/sites-available/default | wc -l`
+if [ "$RESULT" = "0" ]; then
+    echo "Include /etc/squirrelmail/apache.conf" >> /etc/apache2/sites-available/default
+    /etc/init.d/apache2 reload > /dev/null 2>&1
+fi
