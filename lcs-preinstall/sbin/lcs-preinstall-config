@@ -3,8 +3,7 @@
 # /usr/sbin/lcs-preinstall-config
 
 set -e
-function exit_fatal 
-{
+exit_fatal() {
 	echo "Fatal: $1" >&2
 	exit 0
 }
@@ -38,7 +37,7 @@ case "$1" in
         fi
         if [ -z $LCSMGRPASS ] || [ $LCSMGRPASS = "AUTO" ]; then
             LCSMGRPASS=`pwgen -1 -s 8`
-         perl -pe "s/LCSMGRPASS.*/LCSMGRPASS=\\\"$LCSMGRPASS\\\"/" -i /etc/lcs/lcs.conf
+            perl -pe "s/LCSMGRPASS.*/LCSMGRPASS=\\\"$LCSMGRPASS\\\"/" -i /etc/lcs/lcs.conf
         fi
         if [ -z $LDAP_ADMIN_PW ] || [ $LDAP_ADMIN_PW = "AUTO" ]; then
             LDAP_ADMIN_PW=`pwgen -1 -s 8`
@@ -142,7 +141,7 @@ case "$1" in
             #
             if [ ! -z $NTP_SERVER ]; then
                 echo "Mise à l'heure du serveur"
-                /usr/sbin/ntpdate -s $NTP_SERVER
+                /usr/sbin/ntpdate -s $NTP_SERVER || true
             fi
             #
             # Re-Configuration du reseau
