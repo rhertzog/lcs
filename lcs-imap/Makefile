@@ -12,8 +12,8 @@ install:
 	install -m 755 scripts/* $(DESTDIR)/usr/share/lcs/scripts/
 	
 	# install doc
-	install -d $(DESTDIR)/usr/share/doc/lcs/smtp/html
-	install -m 644 doc-html/* $(DESTDIR)/usr/share/doc/lcs/smtp/html/
+	install -d $(DESTDIR)/usr/share/doc/lcs/imap/html
+	install -m 644 doc-html/* $(DESTDIR)/usr/share/doc/lcs/imap/html/
 	
 	# install sbin
 	install -d $(DESTDIR)/usr/sbin
