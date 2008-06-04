@@ -17,8 +17,8 @@ if [ ! -d $1 ]; then
 	cp -a /etc/skel/* /home/$1/
 	chown -R $1:www-data /home/$1/Maildir
 	chmod -R 700 /home/$1/Maildir
-	chmod 770 /home/$1/public_html
-	chmod 660 /home/$1/public_html/index.html
+	chmod 775 /home/$1/public_html
+	chmod 664 /home/$1/public_html/index.html
 			
 	# si eleve
 	if [ $2 = "eleves" ]; then
@@ -37,8 +37,8 @@ else
 	if [ ! -d $1/public_html ]; then
 	        # Creation du rep public_html
 		cp -a /etc/skel/public_html /home/$1/
-                chmod 770 /home/$1/public_html
-		chmod 660 /home/$1/public_html/index.html
+                chmod 775 /home/$1/public_html
+		chmod 664 /home/$1/public_html/index.html
 		# si eleve
 	        if [ $2 = "eleves" ]; then
 		     chown -R root:root /home/$1/public_html
