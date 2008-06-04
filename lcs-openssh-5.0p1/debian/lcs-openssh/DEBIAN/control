@@ -1,0 +1,13 @@
+Package: lcs-openssh
+Version: 5.0p1-1LCS~4
+Section: net
+Priority: extra
+Architecture: i386
+Depends: libc6 (>= 2.3.6-6), libpam0g (>= 0.76), libssl0.9.8 (>= 0.9.8c-1), libssp0 (>= 4.1.1-12), zlib1g (>= 1:1.2.1)
+Replaces: openssh-client, openssh-server
+Installed-Size: 1688
+Maintainer: simc <simon.cavey@crdp.ac-caen.fr>
+Description: OpenSSH with 2nd daemons chroot sftp
+ OpenSSH with 2 daemons. Normal SSH on port 22.
+ And chrooted sftp listening on port 2222.
+ For chroot home directory must by owned by root.
