@@ -29,6 +29,9 @@ case "$1" in
     configure)
         # Configure LCS Web
         #
+        # Add LCS profile conf in etc
+        mv /etc/profile /etc/profile.lcsav
+        cp /var/lib/lcs/web/profile /etc/profile
         # Patch /etc/skel/public_html/index.html.in
         sed -e "s/##HOST##/$DOMAIN/g" /etc/skel/public_html/index.html.in \
 	    >/etc/skel/public_html/index.html
