@@ -65,7 +65,7 @@ member: uid=admin,ou=People,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
 changetype : modify
 replace : uidnumber
 uidnumber : 5001" > /var/lib/lcs/uid_admin.ldif
-            ldapmodify -x -D "$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/uid_admin.ldif
+            ldapmodify -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/uid_admin.ldif
             rm -f /var/lib/lcs/uid_admin.ldif
             # ReInstallation original uidpolicy 
             mysql -se "UPDATE lcs_db.params SET value = '$UIDPOLICY' WHERE name = 'uidpolicy';"
