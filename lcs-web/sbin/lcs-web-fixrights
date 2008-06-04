@@ -35,7 +35,7 @@ chown www-data:www-data /usr/share/lcs/scripts/unixPassword.pl
 if [ ! -e /etc/sudoers.etch ];then
     mv /etc/sudoers /etc/sudoers.etch
 fi
-cp /var/lib/lcs/web/sudoers.in /etc/sudoers
+cp /etc/sudoers.in /etc/sudoers
 chown root:root /etc/sudoers
 chmod 440 /etc/sudoers
 
