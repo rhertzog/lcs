@@ -17,25 +17,24 @@ set -e
 # the debian-policy package
 #
 
-function exit_fatal 
-{
+exit_fatal() {
 	echo "Fatal: $1" >&2
 	exit 0
 }
 
 case "$1" in
     configure)
-            #
-            # only if first configuration
-            #
-	   if [ "$2" = "" ]; then
-	       . /usr/share/slis/slis-common.sh
-	       handle_initial_config lcs-preinstall-config 10
-	   fi
-            #
-            # Locales configuration
-            #
-            /usr/sbin/lcs-locale-reconfigure-fr
+	#
+	# only if first configuration
+	#
+	if [ "$2" = "" ]; then
+	    . /usr/share/slis/slis-common.sh
+	    handle_initial_config lcs-preinstall-config 10
+	fi
+	#
+	# Locales configuration
+	#
+	lcs-locale-reconfigure-fr
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
