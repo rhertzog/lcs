@@ -34,18 +34,6 @@ else
         # Si le repertoire de l'utilisateur existe
         chown $1:www-data $1
 	chmod 770 $1	
-	if [ ! -d $1/bin ]; then
-	        # Creation du rep bin
-		cp -a /etc/skel/bin /home/$1/
-	fi;
-	if [ ! -d $1/usr ]; then
-	        # Creation du rep usr
-		cp -a /etc/skel/usr /home/$1/
-	fi;
-	if [ ! -d $1/lib ]; then
-	        # Creation du rep lib
-		cp -a /etc/skel/lib /home/$1/
-	fi;
 	if [ ! -d $1/public_html ]; then
 	        # Creation du rep public_html
 		cp -a /etc/skel/public_html /home/$1/
