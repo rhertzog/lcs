@@ -11,25 +11,25 @@ echo "$PARAMS"
 }
 
 case "$1" in
-	install|configure)
+        install|configure)
             #
             # only if first configuration
             #
-	   if [ "$2" = "" ]; then
-	       . /usr/share/slis/slis-common.sh
-	       handle_initial_config lcs-web-config 60
-	   fi
+           if [ "$2" = "" ]; then
+               . /usr/share/slis/slis-common.sh
+               handle_initial_config lcs-web-config 60
+           fi
            # Fix rights on lcs-web tree
            /usr/sbin/lcs-web-fixrights
-    	;;
+            ;;
 
-    	abort-upgrade|abort-remove|abort-deconfigure)
-    	;;
+            abort-upgrade|abort-remove|abort-deconfigure)
+            ;;
 
-    	*)
+            *)
         echo "postinst called with unknown argument \`$1'" >&2
         exit 1
-    	;;
+            ;;
 esac
 
 #DEBHELPER#
