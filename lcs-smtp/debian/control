@@ -1,0 +1,13 @@
+Source: lcs-smtp
+Section: web
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.6.2
+
+Package: lcs-smtp
+Architecture: all
+Depends: lcs-web, postfix, postfix-ldap, slis-common
+Description: Setup SMTP service on LCS server
+ This package will configure the postfix server for use within
+ the LCS server project.
