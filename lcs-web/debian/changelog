@@ -1,7 +1,8 @@
-lcs-web (2.1~1) UNRELEASED; urgency=low
+lcs-web (2.0-2~1) UNRELEASED; urgency=low
 
   [ Jean-Luc Chretien ]
   * Setting in conformity with Debian Installer
+
 
   [ Raphael Hertzog ]
   * Misc fixes to lcs-web-config.
@@ -13,6 +14,7 @@ lcs-web (2.1~1) UNRELEASED; urgency=low
     /usr/share/lcs/scripts/import_comptes.php.
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 03 Jun 2008 19:12:59 +0200
+
 
 lcs-web (2.0) unstable; urgency=low
 
