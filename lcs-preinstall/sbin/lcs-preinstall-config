@@ -11,7 +11,7 @@ exit_fatal() {
 . /usr/share/slis/slis-common.sh
 
 # erase prefix LCS_ in lcs.conf
-sed -i s/^LCS_//g /etc/lcs.conf
+sed -i s/^LCS_//g /etc/lcs/lcs.conf
 # Load LCS config
 [ ! -e /etc/lcs/lcs.conf ] && exit_fatal "missing /etc/lcs/lcs.conf"
 . /etc/lcs/lcs.conf
