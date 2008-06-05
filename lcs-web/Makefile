@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 # Makefile for lcs-web
-# A TERMINER 01/06/08 jLCF <(-_°)/> !!!!
+
 all:
 
 install:
