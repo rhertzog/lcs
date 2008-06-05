@@ -7,6 +7,7 @@ chown root:root /etc/profile
 chown root:root /etc/sudoers.in
 chown root:root /var/www
 chown -R www-data:www-data /var/www/*
+chmod 600 /var/www/lcs/includes/privateKey.py
 
 chown root:root /usr/lib/cgi-bin
 chmod 755 /usr/lib/cgi-bin
