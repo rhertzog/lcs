@@ -4,7 +4,7 @@
    Administration serveur LCS «Editions des parametres»
    AdminLCS/edit_params.php
    Equipe Tice académie de Caen
-   derniere mise a jour : 23/05/2008
+   derniere mise a jour : 05/06/2008
    Distribué selon les termes de la licence GPL
    ============================================= */
 
@@ -43,7 +43,7 @@ function aff_param_form($cat)
 	if ($result) {
 		while ($r=mysql_fetch_array($result)) {
 			$texte_form .= "<TR><TD COLSPAN=\"2\">".$r["descr"]." (<EM><FONT color=\"red\">".$r["name"]."</FONT></EM>)</TD>";
-			if ( $r["name"] == "ldap_port" ) {
+			if ( $r["name"] == "ldap_port" || $cat == 3) {
 				$texte_form .= "<TD>".$r["value"]."</TD></TR>\n";
 				$texte_form .= "<INPUT TYPE=\"hidden\" SIZE=\"25\" VALUE=\"".$r["value"]."\" NAME=\"form_".$r["name"]."\">";
 			} else
@@ -59,17 +59,17 @@ if (!isset($cat)) $cat=0;
 if ((!isset($submit)) and (!isset($queri))) {
 // Affichage du form de mise à jour des paramètres
 	print "<FORM METHOD=\"post\">\n";
-	if ( $cat==1 )
+	if ( $cat==0 || $cat==1 )
 		mktable("Paramètres serveur",aff_param_form(1));
-	if ( $cat==2 )
+	if ( $cat==0 || $cat==2 )
 		mktable("Paramètres LDAP",aff_param_form(2));
-	if ( $cat==3 )
+	if ( $cat==0 || $cat==3 )
 		mktable("Paramètres Réseau",aff_param_form(3));
-	if ( $cat==4 )
+	if ( $cat==0 || $cat==4 )
         	mktable("Paramètres VLANS",aff_param_form(5));
-	if ( $cat==5 )
+	if ( $cat==0 || $cat==5 )
         	mktable("Certificats SSL",aff_param_form(5));
-	if ( $cat==10 )
+	if ( $cat==0 || $cat==10 )
         	mktable("Paramètres cachés",aff_param_form(10));
 
 	print "<BR><DIV ALIGN=\"center\"><INPUT TYPE=\"submit\" VALUE=\"".gettext("Valider")."\"></DIV>";
