@@ -1,4 +1,4 @@
-dn: uid=webmaster.etab,ou=People,ou=#PEOPLE#,#BASEDN#
+dn: uid=webmaster.etab,ou=#PEOPLE#,#BASEDN#
 uid: webmaster.etab
 cn: Webmaster Etab
 givenName: webmasterE
