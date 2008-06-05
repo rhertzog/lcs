@@ -1,0 +1,17 @@
+dn: uid=webmaster.etab,ou=People,ou=#PEOPLE#,#BASEDN#
+uid: webmaster.etab
+cn: Webmaster Etab
+givenName: webmasterE
+sn: Etab
+mail: webmaster.etab@#MAILDOMAIN#
+objectClass: top
+objectClass: posixAccount
+objectClass: shadowAccount
+objectClass: person
+objectClass: inetOrgPerson
+loginShell: /bin/true
+gidNumber: 5005
+homeDirectory: /home/webmaster.etab
+userPassword: {crypt}*LOCKED*
+gecos: Webmaster Etab,20081212,M,N
+uidNumber: 5001
