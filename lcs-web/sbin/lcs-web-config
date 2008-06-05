@@ -60,29 +60,33 @@ member: uid=admin,ou=People,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
         # Create webmaster.etab account
         if ! getent passwd webmaster.etab >/dev/null; then
             echo "Creation compte webmaster.etab"
-            UIDPOLICY=`mysql -se "select value from lcs_db.params where name='uidpolicy';"`
-            mysql -se "UPDATE lcs_db.params SET value = '1' WHERE name = 'uidpolicy';"
-            /usr/share/lcs/sbin/userAdd.pl Webmaster Etab `pwgen -1 -s` 20081212 M Profs
-            #force uid to 5001
-            echo "dn: uid=webmaster.etab,ou=People,$LDAP_BASE_DN
-changetype : modify
-replace : uidnumber
-uidnumber : 5001" > /var/lib/lcs/uid_admin.ldif
-            ldapmodify -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/uid_admin.ldif
-            rm -f /var/lib/lcs/uid_admin.ldif
-            # ReInstallation original uidpolicy 
-            mysql -se "UPDATE lcs_db.params SET value = '$UIDPOLICY' WHERE name = 'uidpolicy';"
-        fi
-
-        if [ ! -d /home/webmaster.etab ];then
+            sed -e "s|#PEOPLE#|$LDAP_PEOPLE_RDN|g" \
+                -e "s|#BASEDN#|$LDAP_BASE_DN|g" \
+                -e "s|#MAILDOMAIN#|$LDAP_MAIL_DOMAIN|g" \
+                /var/lib/lcs/web/ldif/webmasteretab.ldif.in > /var/lib/lcs/web/ldif/webmasteretab.ldif
+            ldapadd -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/web/ldif/webmasteretab.ldif
+#            UIDPOLICY=`mysql -se "select value from lcs_db.params where name='uidpolicy';"`
+#            mysql -se "UPDATE lcs_db.params SET value = '1' WHERE name = 'uidpolicy';"
+#            /usr/share/lcs/sbin/userAdd.pl Webmaster Etab `pwgen -1 -s` 20081212 M Profs
+#            #force uid to 5001
+#            echo "dn: uid=webmaster.etab,ou=People,$LDAP_BASE_DN
+#changetype : modify
+#replace : uidnumber
+#uidnumber : 5001" > /var/lib/lcs/uid_admin.ldif
+#            ldapmodify -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/uid_admin.ldif
+#            rm -f /var/lib/lcs/uid_admin.ldif
+#            # ReInstallation original uidpolicy 
+#            mysql -se "UPDATE lcs_db.params SET value = '$UIDPOLICY' WHERE name = 'uidpolicy';"
+            if [ ! -d /home/webmaster.etab ];then
                 mkdir /home/webmaster.etab
+            fi
+            chown webmaster.etab:www-data /home/webmaster.etab
+            chmod 770 /home/webmaster.etab
+            cp -a /etc/skel/* /home/webmaster.etab/
+            chown -R webmaster.etab:www-data /home/webmaster.etab/public_html
+            chown -R webmaster.etab:www-data /home/webmaster.etab/Maildir
+            chmod -R 700 /home/webmaster.etab/Maildir
         fi
-        chown webmaster.etab:www-data /home/webmaster.etab
-        chmod 770 /home/webmaster.etab
-        cp -a /etc/skel/* /home/webmaster.etab/
-        chown -R webmaster.etab:www-data /home/webmaster.etab/public_html
-        chown -R webmaster.etab:www-data /home/webmaster.etab/Maildir
-        chmod -R 700 /home/webmaster.etab/Maildir
         #
         # dir.conf
         #
