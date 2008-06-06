@@ -35,6 +35,7 @@ case "$1" in
         # Patch /etc/skel/public_html/index.html.in
         sed -e "s/##HOST##/$DOMAIN/g" /etc/skel/public_html/index.html.in \
 	    >/etc/skel/public_html/index.html
+        rm /etc/skel/public_html/index.html.in
         # Patch files /etc/LcSeConfig.php.in /var/www/index.html.in /var/www/lcs/includes/config.inc.in 
         echo "Patch des fichiers de conf LCS"
         sed -e "s|@@PASSWORD@@|"$MYSQLPW"|g" /etc/LcSeConfig.ph.in >/etc/LcSeConfig.ph
@@ -65,25 +66,16 @@ member: uid=admin,ou=People,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
                 -e "s|#MAILDOMAIN#|$LDAP_MAIL_DOMAIN|g" \
                 /var/lib/lcs/web/ldif/webmasteretab.ldif.in > /var/lib/lcs/web/ldif/webmasteretab.ldif
             ldapadd -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/web/ldif/webmasteretab.ldif
-#            UIDPOLICY=`mysql -se "select value from lcs_db.params where name='uidpolicy';"`
-#            mysql -se "UPDATE lcs_db.params SET value = '1' WHERE name = 'uidpolicy';"
-#            /usr/share/lcs/sbin/userAdd.pl Webmaster Etab `pwgen -1 -s` 20081212 M Profs
-#            #force uid to 5001
-#            echo "dn: uid=webmaster.etab,ou=People,$LDAP_BASE_DN
-#changetype : modify
-#replace : uidnumber
-#uidnumber : 5001" > /var/lib/lcs/uid_admin.ldif
-#            ldapmodify -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/uid_admin.ldif
-#            rm -f /var/lib/lcs/uid_admin.ldif
-#            # ReInstallation original uidpolicy 
-#            mysql -se "UPDATE lcs_db.params SET value = '$UIDPOLICY' WHERE name = 'uidpolicy';"
             if [ ! -d /home/webmaster.etab ];then
                 mkdir /home/webmaster.etab
             fi
-            chown webmaster.etab:www-data /home/webmaster.etab
-            chmod 770 /home/webmaster.etab
+            chown root:lcs-users /home/webmaster.etab
+            chmod 750 /home/webmaster.etab
             cp -a /etc/skel/* /home/webmaster.etab/
-            chown -R webmaster.etab:www-data /home/webmaster.etab/public_html
+            chown -R webmaster.etab:lcs-users /home/webmaster.etab/public_html
+            chown -R webmaster.etab:lcs-users /home/webmaster.etab/Documents
+            chmod 770 /home/webmaster.etab/public_html /home/webmaster.etab/Documents
+
             chown -R webmaster.etab:www-data /home/webmaster.etab/Maildir
             chmod -R 700 /home/webmaster.etab/Maildir
         fi
