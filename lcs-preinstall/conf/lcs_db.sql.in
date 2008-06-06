@@ -90,7 +90,7 @@ INSERT INTO `params` (`id`, `name`, `value`, `srv_id`, `descr`, `cat`) VALUES
 (20, 'groupsRdn', '@@GROUPSRDN@@', 0, 'dn Relatif de la branche Groups', 2),
 (21, 'computersRdn', '@@COMPUTERSRDN@@', 0, 'dn Relatif de la branche Computers', 2),
 (22, 'rightsRdn', '@@RIGHTSRDN@@', 0, 'dn Relatif de la branche Droits', 2),
-(23, 'parksRdn', '@@PARKSRDN@@', 0, 'dn Relatif de la branche Parks', 2),
+(23, 'parcsRdn', '@@PARKSRDN@@', 0, 'dn Relatif de la branche Parks', 2),
 (24, 'trashRdn', '@@TRASHRDN@@', 0, 'dn Relatif de la branche Trash', 2),
 (25, 'elevesRdn', 'cn=Eleves', 0, 'Eleves Rdn', 2),
 (26, 'profsRdn', 'cn=Profs', 0, 'Professeurs Rdn', 2),
