@@ -6,7 +6,7 @@
    Paramètres de la base lcs_db
    jLCF <(-_°)/> jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice académie de Caen
-   Version du 14/02/2008
+   Derniere modification 06/06/2008
    ============================================= */
 
 # Mode DEBUG LCS
@@ -39,6 +39,8 @@ $dn = array();
   $dn["groups"] = "$groupsRdn,$ldap_base_dn";
   $dn["rights"] = "$rightsRdn,$ldap_base_dn";
   $dn["trash"]  = "$trashRdn,$ldap_base_dn";
+  $dn["parcs"] = "$parcsRdn,$ldap_base_dn";
+  $dn["computers"] = "$computersRdn,$ldap_base_dn";
 #  $dn["radius"]  = "$radiusRdn,$ldap_base_dn";
 
 $adminDn = $adminRdn.",".$ldap_base_dn;
