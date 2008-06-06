@@ -37,7 +37,7 @@ $elevesDn     = "$elevesRdn,$groupsDn";
 $profsDn      = "$profsRdn,$groupsDn";
 $droitsDn     = "$rightsRdn,$baseDn";
 $computersDn  = "$computersRdn,$baseDn";
-$parcDn       = "$parcRdn,$baseDn";
+$parcDn       = "$parcsRdn,$baseDn";
 
 # Optionnelles ou induites
 # ------------------------
