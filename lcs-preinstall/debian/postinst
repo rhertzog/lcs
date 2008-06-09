@@ -35,6 +35,10 @@ case "$1" in
 	# Locales configuration
 	#
 	lcs-locale-reconfigure-fr
+	#
+	# SSH configuration
+	#
+	lcs-sshd-config
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
