@@ -1,16 +1,42 @@
 <?php
 
-/* $Id$ */
-/* Dernière modification : 16/06/2007 */
+
+   /**
+   * Fonctions pour l'import sconet
+
+   * @Version $Id: crob_ldap_functions.php 3011 2008-06-04 14:54:36Z crob $
+
+   * @Projet LCS / SambaEdu
+
+   * @Auteurs Stephane Boireau
+
+   * @Note
+
+   * @Licence Distribue sous la licence GPL
+   */
+
+   /**
+
+   * file: crob_ldap_functions.inc.php
+   * @Repertoire: includes/
+   */
+
+
+
 
 //================================================
-// Fonction de génération de mot de passe récupérée sur TotallyPHP
-// Aucune mention de licence pour ce script...
 
-/*
- * The letter l (lowercase L) and the number 1
- * have been removed, as they can be mistaken
- * for each other.
+/**
+
+* Fonction de generation de mot de passe recuperee sur TotallyPHP
+* Aucune mention de licence pour ce script...
+
+* @Parametres
+* @Return 1 ou 0
+
+* The letter l (lowercase L) and the number 1
+* have been removed, as they can be mistaken
+* for each other.
 */
 
 function createRandomPassword($nb_chars) {
@@ -32,6 +58,15 @@ function createRandomPassword($nb_chars) {
 }
 //================================================
 
+/**
+
+* Fonction qui retourne la date et l'heure
+
+* @Parametres
+* @Return jour/moi/annee heure:mn:seconde
+
+*/
+
 function date_et_heure() {
 	$instant = getdate();
 	$annee = $instant['year'];
@@ -46,39 +81,67 @@ function date_et_heure() {
 	return $retour;
 }
 
+
+//================================================
+
+/**
+
+* Lit le fichier ssmtp et en retourne le contenu
+
+* @Parametres
+* @Return
+
+*/
+
 function lireSSMTP() {
 	$chemin_ssmtp_conf="/etc/ssmtp/ssmtp.conf";
 
 	$tabssmtp=array();
 
-	$fich=fopen($chemin_ssmtp_conf,"r");
-	if(!$fich){
+	if(file_exists($chemin_ssmtp_conf)) {
+		$fich=fopen($chemin_ssmtp_conf,"r");
+		if(!$fich){
+			return false;
+		}
+		else{
+			while(!feof($fich)){
+				$ligne=fgets($fich,4096);
+				if(strstr($ligne,"root=")){
+					unset($tabtmp);
+					$tabtmp=explode('=',$ligne);
+					$tabssmtp["root"]=trim($tabtmp[1]);
+				}
+				elseif(strstr($ligne,"mailhub=")){
+					unset($tabtmp);
+					$tabtmp=explode('=',$ligne);
+					$tabssmtp["mailhub"]=trim($tabtmp[1]);
+				}
+				elseif(strstr($ligne,"rewriteDomain=")){
+					unset($tabtmp);
+					$tabtmp=explode('=',$ligne);
+					$tabssmtp["rewriteDomain"]=trim($tabtmp[1]);
+				}
+			}
+			fclose($fich);
+
+			return $tabssmtp;
+		}
+	}
+	else {
 		return false;
 	}
-	else{
-		while(!feof($fich)){
-			$ligne=fgets($fich,4096);
-			if(strstr($ligne,"root=")){
-				unset($tabtmp);
-				$tabtmp=explode('=',$ligne);
-				$tabssmtp["root"]=trim($tabtmp[1]);
-			}
-			elseif(strstr($ligne,"mailhub=")){
-				unset($tabtmp);
-				$tabtmp=explode('=',$ligne);
-				$tabssmtp["mailhub"]=trim($tabtmp[1]);
-			}
-			elseif(strstr($ligne,"rewriteDomain=")){
-				unset($tabtmp);
-				$tabtmp=explode('=',$ligne);
-				$tabssmtp["rewriteDomain"]=trim($tabtmp[1]);
-			}
-		}
-		fclose($fich);
-
-		return $tabssmtp;
-	}
 }
+
+
+//================================================
+
+/**
+
+* Affiche le texte ou le contenu d'un fichier
+* @Parametres texte
+* @Return
+
+*/
 
 function my_echo($texte){
 	global $echo_file, $dest_mode;
@@ -101,11 +164,33 @@ function my_echo($texte){
 	}
 }
 
+
+//================================================
+
+/**
+
+* remplace les accents
+* @Parametres chaine a traiter
+* @Return la chaine sans accents
+
+*/
+
 function remplace_accents($chaine){
 	//$retour=strtr(ereg_replace("¼","OE",ereg_replace("½","oe",$chaine)),"ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü","AAAEEEEIIOOUUUCcaaaeeeeiioouuu");
 	$retour=strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$chaine"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz");
 	return $retour;
 }
+
+
+//================================================
+
+/**
+
+* Retourne des infos sur l'admin ldap
+* @Parametres
+* @Return
+
+*/
 
 function get_infos_admin_ldap(){
 	//global $dn;
@@ -113,7 +198,7 @@ function get_infos_admin_ldap(){
 
 	$adminLdap=array();
 
-	// Etablir la connexion au serveur et la sélection de la base?
+	// Etablir la connexion au serveur et la selection de la base?
 
 	$sql="SELECT value FROM params WHERE name='adminRdn'";
 	$res1=mysql_query($sql);
@@ -133,16 +218,26 @@ function get_infos_admin_ldap(){
 }
 
 
+//================================================
+
+/**
+
+* test si l'ou trash existe sinon la cree
+* @Parametres
+* @Return
+
+*/
+
 
 function test_creation_trash(){
 	global $ldap_server, $ldap_port, $dn, $ldap_base_dn;
 	global $error;
 	$error="";
 
-	// Paramètres
+	// Parametres
 	// Aucun
 
-	// Tableau retourné
+	// Tableau retourne
 	$tab=array();
 
 	fich_debug("======================\n");
@@ -154,7 +249,7 @@ function test_creation_trash(){
 		if($r){
 			$attribut=array("ou","objectClass");
 
-			// A REVOIR... LE TEST MERDOUILLE... IL A L'AIR DE RETOURNER vrai même si ou=Trash n'existe pas
+			// A REVOIR... LE TEST MERDOUILLE... IL A L'AIR DE RETOURNER vrai meme si ou=Trash n'existe pas
 
 			$result=ldap_search($ds,$ldap_base_dn,"ou=Trash",$attribut);
 			fich_debug("ldap_search($ds,\"$ldap_base_dn\",\"ou=Trash\",$attribut)\n");
@@ -166,7 +261,7 @@ function test_creation_trash(){
 			else{
 				fich_debug("La branche Trash n'existe pas.\n");
 
-				// On va la créér.
+				// On va la creer.
 				unset($attributs);
 				$attributs=array();
 				$attributs["ou"]="Trash";
@@ -177,7 +272,7 @@ function test_creation_trash(){
 				$r=@ldap_bind($ds,$adminLdap["adminDn"],$adminLdap["adminPw"]); // Bind admin LDAP
 				if($r){
 					$dn_entree="ou=Trash,".$ldap_base_dn;
-					fich_debug("Création de la branche: ");
+					fich_debug("Cr&#233;ation de la branche: ");
 					$result=ldap_add($ds,"$dn_entree",$attributs);
 					if(!$result){
 						$error="Echec d'ajout de l'entree ou=Trash";
@@ -212,13 +307,23 @@ function test_creation_trash(){
 }
 
 
+//================================================
+
+/**
+
+* Ajoute une entree dans l'annuaire
+* @Parametres
+* @Return
+
+*/
+
 
 function add_entry ($entree, $branche, $attributs){
 	global $ldap_server, $ldap_port, $dn;
 	global $error;
 	$error="";
 
-	// Paramètres:
+	// Parametres:
 	/*
 		$entree: uid=toto
 		$branche: people, groups,... ou rights
@@ -257,12 +362,22 @@ function add_entry ($entree, $branche, $attributs){
 }
 
 
+//================================================
+
+/**
+
+* Supprime une entree de l'annuaire
+* @Parametres
+* @Return
+
+*/
+
 function del_entry ($entree, $branche){
 	global $ldap_server, $ldap_port, $dn;
 	global $error;
 	$error="";
 
-	// Paramètres:
+	// Parametres:
 	/*
 		$entree: uid=toto
 		$branche: people, groups,... ou rights
@@ -300,16 +415,25 @@ function del_entry ($entree, $branche){
 
 
 
+//================================================
+
+/**
+
+* Modifie une entree dans l'annuaire
+* @Parametres
+* @Return
+
+*/
 
 function modify_entry ($entree, $branche, $attributs){
 	global $ldap_server, $ldap_port, $dn;
 	global $error;
 	$error="";
 
-	// Je ne suis pas sûr d'avoir bien saisi le fonctionnement de la fonction ldap_modify() de PHP
-	// Du coup, je lui ai préféré les fonctions ldap_mod_add(), ldap_mod_del() et ldap_mod_replace() utilisées dans ma fonction modify_attribut()
+	// Je ne suis pas sur d'avoir bien saisi le fonctionnement de la fonction ldap_modify() de PHP
+	// Du coup, je lui ai prefere les fonctions ldap_mod_add(), ldap_mod_del() et ldap_mod_replace() utilisees dans ma fonction modify_attribut()
 
-	// Paramètres:
+	// Parametres:
 	/*
 		$entree: uid=toto
 		$branche: people, groups,... ou rights
@@ -346,21 +470,31 @@ function modify_entry ($entree, $branche, $attributs){
 }
 
 
+//================================================
+
+/**
+
+* Modifie un attribut dans l'annuaire
+* @Parametres
+* @Return
+
+*/
+
 
 function modify_attribut ($entree, $branche, $attributs, $mode){
 	global $ldap_server, $ldap_port, $dn;
 	global $error;
 	$error="";
 
-	// Paramètres:
+	// Parametres:
 	/*
 		$entree: uid=toto
 		$branche: people, groups,... ou rights
-		$attribut: tableau associatif des attributs à modifier
+		$attribut: tableau associatif des attributs a modifier
 		$mode: add replace ou del
 
 		// Pour del aussi, il faut fournir la bonne valeur de l'attribut pour que cela fonctionne
-		// On peut ajouter, modifier, supprimer plusieurs attributs à la fois.
+		// On peut ajouter, modifier, supprimer plusieurs attributs a la fois.
 	*/
 
 	$ds=@ldap_connect($ldap_server,$ldap_port);
@@ -405,7 +539,7 @@ function modify_attribut ($entree, $branche, $attributs, $mode){
 
 /*
 function crob_init() {
-	// Récupération de variables dans la base MySQL se3db
+	// Recuperation de variables dans la base MySQL se3db
 	//global $domainsid,$uidPolicy;
         global $defaultgid,$domain,$defaultshell,$domainsid;
 
@@ -464,9 +598,19 @@ function crob_init() {
 */
 
 
+//================================================
+
+/**
+
+* Active le mode debug
+* @Parametres
+* @Return
+
+*/
+
 function fich_debug($texte){
-	// Passer la variable ci-dessous à 1 pour activer l'écriture d'infos de débuggage dans /tmp/debug_se3lcs.txt
-	// Il conviendra aussi d'ajouter des appels fich_debug($texte) là où vous en avez besoin;o).
+	// Passer la variable ci-dessous a 1 pour activer l'ecriture d'infos de debuggage dans /tmp/debug_se3lcs.txt
+	// Il conviendra aussi d'ajouter des appels fich_debug($texte) la ou vous en avez besoin;o).
 	$debug=0;
 
 	if($debug==1){
@@ -476,6 +620,15 @@ function fich_debug($texte){
 	}
 }
 
+//================================================
+
+/**
+
+* Cree l'uid a partir du nom prenom et de la politique de login
+* @Parametres
+* @Return
+
+*/
 
 function creer_uid($nom,$prenom){
 	global $uidPolicy;
@@ -495,22 +648,22 @@ function creer_uid($nom,$prenom){
 	fich_debug("\$dn=$dn\n");
 
 /*
-	# Il faudrait améliorer la fonction pour gérer les "Le goff Martin" qui devraient donner "Le_goff-Martin"
-	# Actuellement, on passe tous les espaces à _
+	# Il faudrait ameliorer la fonction pour gerer les "Le goff Martin" qui devraient donner "Le_goff-Martin"
+	# Actuellement, on passe tous les espaces a _
 */
 
-	// Récupération de l'uidPolicy (et du sid)
-	//crob_init(); Ne sert à rien !!!
+	// Recuperation de l'uidPolicy (et du sid)
+	//crob_init(); Ne sert a rien !!!
 	//echo "<p>\$uidPolicy=$uidPolicy</p>";
 
-	// Filtrer certains caractères:
+	// Filtrer certains caracteres:
 	//nom=$(echo "$nom" | tr " àâäéèêëîïôöùûü" "-aaaeeeeiioouuu" | sed -e "s/'//g")
 	//$nom=strtolower(strtr("$nom"," 'àâäéèêëîïôöùûüçÇÂÄÊËÎÏÔÖÙÛÜ","__aaaeeeeiioouuucCAAEEIIOOUUU"));
 	//$prenom=strtolower(strtr("$prenom"," 'àâäéèêëîïôöùûüçÇÂÄÊËÎÏÔÖÙÛÜ","__aaaeeeeiioouuucCAAEEIIOOUUU"));
 	$nom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz"));
 	$prenom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz"));
 
-	fich_debug("Après filtrage...\n");
+	fich_debug("Apr&#232;s filtrage...\n");
 	fich_debug("\$nom=$nom\n");
 	fich_debug("\$prenom=$prenom\n");
 
@@ -522,11 +675,11 @@ function creer_uid($nom,$prenom){
 	/*
 	# Valeurs de l'uidPolicy
 	#	0: prenom.nom
-	#	1: prenom.nom tronqué à 19
-	#	2: pnom tronqué à 19
-	#	3: pnom tronqué à 8
-	#	4: nomp tronqué à 8
-	#	5: nomprenom tronqué à 18
+	#	1: prenom.nom tronque a 19
+	#	2: pnom tronque a 19
+	#	3: pnom tronque a 8
+	#	4: nomp tronque a 8
+	#	5: nomprenom tronque a 18
 	*/
 
 	switch($uidPolicy){
@@ -563,18 +716,18 @@ function creer_uid($nom,$prenom){
 	fich_debug("\$uid=$uid\n");
 	fich_debug("\$ERREUR=$ERREUR\n");
 
-	// Pour faire disparaitre les caractères spéciaux restants:
+	// Pour faire disparaitre les caracteres speciaux restants:
 	$uid=ereg_replace("[^a-z_.-]","",$uid);
 
-	fich_debug("Après filtrage...\n");
+	fich_debug("Apr&#232;s filtrage...\n");
 	fich_debug("\$uid=$uid\n");
 
 	$test_caract1=substr($uid,0,1);
 	if(strlen(ereg_replace("[a-z]","",$test_caract1))!=0){
-		$error="Le premier caractère de l'uid n'est pas une lettre.";
+		$error="Le premier caract&#232;re de l'uid n'est pas une lettre.";
 	}
 	else{
-		// Début de l'uid... pour les doublons...
+		// Debut de l'uid... pour les doublons...
 		$prefuid=substr($uid,0,strlen($uid)-1);
 		$prefuid2=substr($uid,0,strlen($uid)-2);
 		// Ou renseigner un uid_initial ou uid_souche
@@ -603,7 +756,7 @@ function creer_uid($nom,$prenom){
 							$ok_uid="oui";
 							for($i=0;$i<$info["count"];$i++){
 								//echo "<p>";
-								// En principe, il n'y a qu'un uid par entrée...
+								// En principe, il n'y a qu'un uid par entree...
 								for($loop=0;$loop<$info[$i]["uid"]["count"]; $loop++) {
 									//echo "\$info[$i][\"uid\"][$loop]=".$info[$i]["uid"][$loop]."<br />\n";
 									if($info[$i]["uid"][$loop]==$uid){
@@ -621,7 +774,7 @@ function creer_uid($nom,$prenom){
 						}
 					}
 					else{
-						$error="Echec de la lecture des entrées...";
+						$error="Echec de la lecture des entr&#233;es...";
 						fich_debug("\$error=$error\n");
 					}
 					@ldap_free_result($result);
@@ -645,9 +798,9 @@ function creer_uid($nom,$prenom){
 		return false;
 	}
 	//elseif($cpt>=10){
-		//$error="Il y a au moins 10 uid en doublon...<br />On en est à $uid<br />Etes-vous sûr qu'il n'y a pas des personnes qui ont quitté l'établissement?";
+		//$error="Il y a au moins 10 uid en doublon...<br />On en est &#224; $uid<br />Etes-vous s&#251;r qu'il n'y a pas des personnes qui ont quitt&#233; l'&#233;tablissement?";
 	elseif($cpt>=100){
-		$error="Il y a au moins 100 uid en doublon...<br />On en est à $uid<br />Etes-vous sûr qu'il n'y a pas des personnes qui ont quitté l'établissement?";
+		$error="Il y a au moins 100 uid en doublon...<br />On en est &#224; $uid<br />Etes-vous s&#251;r qu'il n'y a pas des personnes qui ont quitt&#233; l'&#233;tablissement?";
 		echo "error=$error<br />\n";
 		fich_debug("\$error=$error\n");
 		return false;
@@ -658,6 +811,17 @@ function creer_uid($nom,$prenom){
 	}
 }
 
+
+
+//================================================
+
+/**
+
+* Tester si l'employeeNumber est dans l'annuaire ou non...
+* @Parametres
+* @Return
+
+*/
 
 
 function verif_employeeNumber($employeeNumber){
@@ -681,12 +845,24 @@ function verif_employeeNumber($employeeNumber){
 	if(count($tab)>0){return $tab;}else{return false;}
 }
 
+
+//================================================
+
+/**
+
+* Tester si un uid existe ou non dans l'annuaire pour $nom et $prenom sans employeeNumber ... ce qui correspondrait a un compte cree a la main.
+* @Parametres
+* @Return
+
+*/
+
+
 function verif_nom_prenom_sans_employeeNumber($nom,$prenom){
 	global $ldap_server, $ldap_port, $dn;
 	global $error;
 	$error="";
 	// Tester si un uid existe ou non dans l'annuaire pour $nom et $prenom sans employeeNumber...
-	// ... ce qui correspondrait à un compte créé à la main.
+	// ... ce qui correspondrait a un compte cree a la main.
 
 	$attribut=array("uid");
 	$tab1=array();
@@ -709,7 +885,7 @@ function verif_nom_prenom_sans_employeeNumber($nom,$prenom){
 			}
 		}
 
-		// On ne cherche à traiter que le cas d'une seule correspondance.
+		// On ne cherche a traiter que le cas d'une seule correspondance.
 		// S'il y en a plus, on ne pourra pas identifier...
 		if($trouve==1){
 			return $uid;
@@ -724,16 +900,27 @@ function verif_nom_prenom_sans_employeeNumber($nom,$prenom){
 }
 
 
+//================================================
+
+/**
+
+* Obtient un tableau avecc les attributs
+* @Parametres $attribut doit etre un tableau d'une seule valeur  Ex.: $attribut[0]="uidNumber";
+
+* @Return un tableau avec les attributs
+
+*/
+
 function get_tab_attribut($branche, $filtre, $attribut){
 	global $ldap_server, $ldap_port, $dn;
 	global $error;
 	$error="";
 
-	// Paramètres
-	// $attribut doit être un tableau d'une seule valeur.
+	// Parametres
+	// $attribut doit etre un tableau d'une seule valeur.
 	// Ex.: $attribut[0]="uidNumber";
 
-	// Tableau retourné
+	// Tableau retourne
 	$tab=array();
 
 	fich_debug("======================\n");
@@ -762,11 +949,11 @@ function get_tab_attribut($branche, $filtre, $attribut){
 					rsort($tab);
 				}
 				else{
-					fich_debug("\$info vide... @ldap_get_entries($ds,$result) n'a rien donné.\n");
+					fich_debug("\$info vide... @ldap_get_entries($ds,$result) n'a rien donn&#233;.\n");
 				}
 			}
 			else{
-				$error="Echec de la lecture des entrées: ldap_search($ds,".$dn[$branche].",\"$filtre\",$attribut)";
+				$error="Echec de la lecture des entr&#233;es: ldap_search($ds,".$dn[$branche].",\"$filtre\",$attribut)";
 				fich_debug("\$error=$error\n");
 			}
 			@ldap_free_result($result);
@@ -791,6 +978,16 @@ function get_tab_attribut($branche, $filtre, $attribut){
 }
 
 
+//================================================
+
+/**
+
+* Recherche le premier uidNumber disponible  On demarre les uid a 1001, mais admin est en 5000:
+* @Parametres
+
+* @Return
+
+*/
 
 
 function get_first_free_uidNumber(){
@@ -798,8 +995,8 @@ function get_first_free_uidNumber(){
 	global $error;
 	$error="";
 
-	// On démarre les uid à 1001, mais admin est en 5000:
-	// unattend est en 1000 chez moi... mais cela peut changer avec des établissements dont l'annuaire SE3 date d'avant l'ajout d'unattend
+	// On demarre les uid a 1001, mais admin est en 5000:
+	// unattend est en 1000 chez moi... mais cela peut changer avec des etablissements dont l'annuaire SE3 date d'avant l'ajout d'unattend
 	$first_uidNumber=1000;
 	$last_uidNumber=4999;
 	//$last_uidNumber=1200;
@@ -825,8 +1022,8 @@ function get_first_free_uidNumber(){
 	*/
 
 	/*
-	// Méthode OK, mais on risque la pénurie des uidNumber entre 1000 et 5000
-	// à ne pas récupérer des uidNumber d'utilisateurs qui ont quitté l'établissement
+	// Methode OK, mais on risque la penurie des uidNumber entre 1000 et 5000
+	// a ne pas recuperer des uidNumber d'utilisateurs qui ont quitte l'etablissement
 	//$last_uidNumber=1473;
 	$uidNumber=$last_uidNumber;
 	while((!in_array($uidNumber,$tab))&&($uidNumber>$first_uidNumber)){
@@ -864,9 +1061,9 @@ function get_first_free_uidNumber(){
 	}
 
 	/*
-	// Ou: On mixe les deux méthodes:
+	// Ou: On mixe les deux methodes:
 	// C'EST UNE FAUSSE SOLUTION:
-	// Quand tout va être rempli la première fois, on va commencer à récupérer des uidNumber par le haut dès qu'un uidNumber va se libérer et on va ré-affecter des uidNumber utilisés récemment.
+	// Quand tout va etre rempli la premiere fois, on va commencer a recuperer des uidNumber par le haut des qu'un uidNumber va se liberer et on va re-affecter des uidNumber utilises recemment.
 	$uidNumber=$last_uidNumber;
 	while((!in_array($uidNumber,$tab))&&($uidNumber>$first_uidNumber)){
 		$uidNumber--;
@@ -874,7 +1071,7 @@ function get_first_free_uidNumber(){
 	}
 	$uidNumber++;
 	if(($uidNumber>$last_uidNumber)||(in_array($uidNumber,$tab))){
-		// On commence à réaffecter des uidNumber libres par le bas
+		// On commence a reaffecter des uidNumber libres par le bas
 		$uidNumber=$first_uidNumber;
 		while((in_array($uidNumber,$tab))&&($uidNumber<$last_uidNumber)){
 			$uidNumber++;
@@ -897,9 +1094,19 @@ function get_first_free_uidNumber(){
 }
 
 
+//================================================
+
+/**
+
+* Recherche le premier gidNumber disponible
+* @Parametres
+
+* @Return
+
+*/
 
 
-function get_first_free_gidNumber(){
+function get_first_free_gidNumber($start=NULL){
 	global $ldap_server, $ldap_port, $dn;
 	global $error;
 	$error="";
@@ -918,6 +1125,11 @@ function get_first_free_gidNumber(){
 	$first_gidNumber=2000;
 	$last_gidNumber=4999;
 	//$last_gidNumber=2010;
+
+	if((isset($start))&&(strlen(ereg_replace("[0-9]","",$start))==0)&&($start>=$first_gidNumber)) {
+		$first_gidNumber=$start;
+		$last_gidNumber=64000;
+	}
 
 	unset($attribut);
 	$attribut=array();
@@ -968,14 +1180,14 @@ function get_first_free_gidNumber(){
 	else{
 		return $gidNumber;
 	}
-	// Pour contrôler:
+	// Pour controler:
 	// ldapsearch -xLLL gidNumber | grep gidNumber | sed -e "s/^gidNumber: //" | sort -n -r | uniq | head
 	// ldapsearch -xLLL gidNumber | grep gidNumber | sed -e "s/^gidNumber: //" | sort -n -r | uniq | tail
 }
 
 /*
 function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
-	// Récupérer le gidNumber par défaut -> lcs-users (1000) ou slis (600)
+	// Recuperer le gidNumber par defaut -> lcs-users (1000) ou slis (600)
 	global $defaultgid,$domain,$defaultshell,$domainsid,$uidPolicy;
 
 	fich_debug("================\n");
@@ -1001,7 +1213,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	fich_debug("\$prenom=$prenom\n");
 
 
-	// Récupérer un uidNumber:
+	// Recuperer un uidNumber:
 	//$uidNumber=get_first_free_uidNumber();
 	if(!get_first_free_uidNumber()){return false;exit();}
 	$uidNumber=get_first_free_uidNumber();
@@ -1012,7 +1224,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 
 
 	// Faut-il interdire les espaces dans le password? les apostrophes?
-	// Comment le script ntlmpass.pl prend-il le paramètre? sans les apostrophes?
+	// Comment le script ntlmpass.pl prend-il le parametre sans les apostrophes?
 
 	$ntlmpass=explode(" ",exec("$pathscripts/ntlmpass.pl '$password'"));
 
@@ -1031,7 +1243,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	$attribut["mail"]="$uid@$domain";
 	$attribut["objectClass"]="top";
 
-	// Comme la clé est toujours objectClass, cela pose un problème: un seul attribut objectClass est ajouté (le dernier défini)
+	// Comme la cle est toujours objectClass, cela pose un probleme: un seul attribut objectClass est ajoute (le dernier defini)
 	//$attribut["objectClass"]="posixAccount";
 	//$attribut["objectClass"]="shadowAccount";
 	//$attribut["objectClass"]="person";
@@ -1062,7 +1274,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 
 	$result=add_entry("uid=$uid","people",$attribut);
 	if($result){
-		// Reste à ajouter les autres attributs objectClass
+		// Reste a ajouter les autres attributs objectClass
 		unset($attribut);
 		$attribut=array();
 		$attribut["objectClass"]="posixAccount";
@@ -1092,8 +1304,20 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 }
 */
 
+
+//================================================
+
+/**
+
+* Ajoute un utilisateur dans l'annuaire LDAP
+* @Parametres
+
+* @Return
+
+*/
+
 function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
-	// Récupérer le gidNumber par défaut -> lcs-users (1000) ou slis (600)
+	// Recuperer le gidNumber par defaut -> lcs-users (1000) ou slis (600)
 	global $defaultgid,$domain,$defaultshell,$domainsid,$uidPolicy;
 
 	fich_debug("================\n");
@@ -1119,7 +1343,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	fich_debug("\$prenom=$prenom\n");
 
 
-	// Récupérer un uidNumber:
+	// Recuperer un uidNumber:
 	//$uidNumber=get_first_free_uidNumber();
 	if(!get_first_free_uidNumber()){return false;exit();}
 	$uidNumber=get_first_free_uidNumber();
@@ -1130,7 +1354,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 
 
 	// Faut-il interdire les espaces dans le password? les apostrophes?
-	// Comment le script ntlmpass.pl prend-il le paramètre? sans les apostrophes?
+	// Comment le script ntlmpass.pl prend-il le parametre sans les apostrophes?
 
 	$ntlmpass=explode(" ",exec("$pathscripts/ntlmpass.pl '$password'"));
 
@@ -1149,7 +1373,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	$attribut["mail"]="$uid@$domain";
 	//$attribut["objectClass"]="top";
 	/*
-	// Comme la clé est toujours objectClass, cela pose un problème: un seul attribut objectClass est ajouté (le dernier défini)
+	// Comme la cle est toujours objectClass, cela pose un probleme: un seul attribut objectClass est ajoute (le dernier defini)
 	$attribut["objectClass"]="posixAccount";
 	$attribut["objectClass"]="shadowAccount";
 	$attribut["objectClass"]="person";
@@ -1189,7 +1413,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 
 	if($result){
 		/*
-		// Reste à ajouter les autres attributs objectClass
+		// Reste a ajouter les autres attributs objectClass
 		unset($attribut);
 		$attribut=array();
 		$attribut["objectClass"]="posixAccount";
@@ -1220,5 +1444,53 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	} else return false;
 }
 
+
+//================================================
+
+/**
+
+* Verifie et corrige le Gecos
+* @Parametres
+
+* @Return
+
+*/
+
+function verif_et_corrige_gecos($uid,$nom,$prenom,$naissance,$sexe){
+	// Verification/correction du GECOS
+
+	// Correction du nom/prenom fournis
+	$nom=remplace_accents(traite_espaces($nom));
+	$prenom=remplace_accents(traite_espaces($prenom));
+
+	$nom=ereg_replace("[^a-z_-]","",strtolower("$nom"));
+	$prenom=ereg_replace("[^a-z_-]","",strtolower("$prenom"));
+
+	$nom=ucfirst(strtolower($nom));
+	$prenom=ucfirst(strtolower($prenom));
+
+	unset($attribut);
+	$attribut=array("gecos");
+	$tab=get_tab_attribut("people", "uid=$uid", $attribut);
+	if(count($tab)>0){
+		if("$tab[0]"!="$prenom $nom,$naissance,$sexe,N"){
+			unset($attributs);
+			$attributs=array();
+			$attributs["gecos"]="$prenom $nom,$naissance,$sexe,N";
+			$attributs["cn"]="$prenom $nom";
+			$attributs["givenName"]=strtolower($prenom).strtoupper(substr($nom,0,1));
+			$attributs["sn"]="$nom";
+			my_echo("Correction de l'attribut 'gecos': ");
+			if(modify_attribut ("uid=$uid", "people", $attributs, "replace")){
+				my_echo("<font color='green'>SUCCES</font>");
+			}
+			else{
+				my_echo("<font color='red'>ECHEC</font>");
+				$nb_echecs++;
+			}
+			my_echo("<br />\n");
+		}
+	}
+}
 
 ?>
