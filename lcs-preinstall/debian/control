@@ -7,7 +7,7 @@ Standards-Version: 3.6.2
 
 Package: lcs-preinstall
 Architecture: all
-Depends: slis-common, sudo, make, pwgen, ntpdate, mysql-server, at, ldapedu-server, lcs-dns, interfacedu-lcs , lcs-openssh
+Depends: slis-common, sudo, make, pwgen, ntpdate, mysql-server, at, ldapedu-server, lcs-dns, interfacedu-lcs , openssh-server
 Description: LCS pre-install task
  This package prepare the installation of a LCS server
     - create lcs_db
