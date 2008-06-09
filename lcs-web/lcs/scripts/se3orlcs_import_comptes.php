@@ -6,7 +6,7 @@
 	// ===========================================================
 	// AJOUTS: 20070914 boireaus
 	//if($argc < 11 || in_array($argv[1], array('--help', '-help', '-h', '-?'))){
-	if($argc < 14 || in_array($argv[1], array('--help', '-help', '-h', '-?'))){
+	if($argc < 15 || in_array($argv[1], array('--help', '-help', '-h', '-?'))){
 	// ===========================================================
 		$chaine="USAGE: Vous devez passer en paramètres (dans l'ordre):\n";
 		$chaine.="       . Le type du fichier 'csv' ou 'xml';\n";
@@ -27,6 +27,9 @@
 		$chaine.="       . 'y' ou 'n' selon que vous souhaitez créer Cours ou non.\n";
 		$chaine.="       . 'y' ou 'n' selon que vous souhaitez créer Matières ou non.\n";
 		// ===========================================================
+		$chaine.="       . 'y' ou 'n' selon que vous souhaitez corriger ou non les attributs\n";
+		$chaine.="                    gecos, cn, sn et givenName si des différences sont trouvées.\n";
+		// ===========================================================
 
 
 
@@ -43,7 +46,8 @@
 		else{
 			// Récupérer les adresses,... dans le /etc/ssmtp/ssmtp.conf
 			unset($tabssmtp);
-			require ("/var/www/se3/import_sconet/crob_ldap_functions.php");
+			#require ("/var/www/se3/import_sconet/crob_ldap_functions.php");
+			require ("/var/www/se3/includes/crob_ldap_functions.php");
 			$tabssmtp=lireSSMTP();
 			// Contrôler les champs affectés...
 			if(isset($tabssmtp["root"])){
@@ -91,6 +95,8 @@
 	$creer_equipes_vides=$argv[11];
 	$creer_cours=$argv[12];
 	$creer_matieres=$argv[13];
+	// ===========================================================
+	$corriger_gecos_si_diff=$argv[14];
 	// ===========================================================
 
 	// Chemins:

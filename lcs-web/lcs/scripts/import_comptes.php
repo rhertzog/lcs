@@ -495,6 +495,13 @@
 								//$eleve[$numero]["nom"]=ereg_replace("[^[:space:][:alpha:]]", "", $tabtmp[$index[0]]);
 								$eleve[$numero]["nom"]=ereg_replace("[^a-zA-ZÀÄÂÉÈÊËÎÏÔÖÙÛÜ½¼Ççàäâéèêëîïôöùûü_ -]", "", $tabtmp[$index[0]]);
 								$eleve[$numero]["prenom"]=ereg_replace("[^a-zA-ZÀÄÂÉÈÊËÎÏÔÖÙÛÜ½¼Ççàäâéèêëîïôöùûü_ -]", "", $tabtmp[$index[1]]);
+
+								// =============================================
+								// On ne retient que le premier prénom: 20071101
+								$tab_tmp_prenom=explode(" ",$eleve[$numero]["prenom"]);
+								$eleve[$numero]["prenom"]=$tab_tmp_prenom[0];
+								// =============================================
+
 								//$nom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz"));
 								//$prenom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz"));
 
@@ -772,7 +779,7 @@
 								if(strstr($ligne[$cpt],"<".$tab_champs_eleve[$loop].">")){
 									$tmpmin=strtolower($tab_champs_eleve[$loop]);
 									$eleves[$i]["$tmpmin"]=extr_valeur($ligne[$cpt]);
-									//my_echo("\$eleves[$i][\"$tmpmin\"]=".$eleves[$i]["$tmpmin"]."<br />\n");
+									my_echo("\$eleves[$i][\"$tmpmin\"]=".$eleves[$i]["$tmpmin"]."<br />\n");
 									break;
 								}
 							}
@@ -992,6 +999,13 @@
 				my_echo("<td style='color: blue;'>$i</td>\n");
 				my_echo("<td>".$eleves[$i]["elenoet"]."</td>\n");
 				my_echo("<td>".$eleves[$i]["nom"]."</td>\n");
+
+				// =============================================
+				// On ne retient que le premier prénom: 20071101
+				$tab_tmp_prenom=explode(" ",$eleves[$i]["prenom"]);
+				$eleves[$i]["prenom"]=$tab_tmp_prenom[0];
+				// =============================================
+
 				my_echo("<td>".$eleves[$i]["prenom"]."</td>\n");
 				my_echo("<td>".$eleves[$i]["code_sexe"]."</td>\n");
 				my_echo("<td>".$eleves[$i]["date_naiss"]."</td>\n");
@@ -2337,6 +2351,13 @@
 			my_echo("<td>".$prof[$cpt]["civilite"]."</td>\n");
 			my_echo("<td>".$prof[$cpt]["nom_usage"]."</td>\n");
 			my_echo("<td>".$prof[$cpt]["nom_patronymique"]."</td>\n");
+
+			// =============================================
+			// On ne retient que le premier prénom: 20071101
+			$tab_tmp_prenom=explode(" ",$prof[$cpt]["prenom"]);
+			$prof[$cpt]["prenom"]=$tab_tmp_prenom[0];
+			// =============================================
+
 			my_echo("<td>".$prof[$cpt]["prenom"]."</td>\n");
 			my_echo("<td>".$prof[$cpt]["date_naissance"]."</td>\n");
 			my_echo("<td>".$prof[$cpt]["grade"]."</td>\n");
@@ -2718,6 +2739,18 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 			if($tab=verif_employeeNumber($employeeNumber)){
 				my_echo("<p>Uid existant pour employeeNumber=$employeeNumber: $tab[0]<br />\n");
 				$uid=$tab[0];
+
+				// ================================
+				// Vérification/correction du GECOS
+				if($corriger_gecos_si_diff=='y'){
+					$nom=remplace_accents(traite_espaces($prof[$cpt]["nom_usage"]));
+					$prenom=remplace_accents(traite_espaces($prof[$cpt]["prenom"]));
+					if($prof[$cpt]["sexe"]==1){$sexe="M";}else{$sexe="F";}
+					$naissance=$date;
+					verif_et_corrige_gecos($uid,$nom,$prenom,$naissance,$sexe);
+				}
+				// ================================
+
 			}
 			else{
 				my_echo("<p>Pas encore d'uid pour employeeNumber=$employeeNumber<br />\n");
@@ -2933,6 +2966,17 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 		if($tab=verif_employeeNumber($employeeNumber)){
 			my_echo("<p>Uid existant pour employeeNumber=$employeeNumber: $tab[0]<br />\n");
 			$uid=$tab[0];
+
+			// ================================
+			// Vérification/correction du GECOS
+			if($corriger_gecos_si_diff=='y'){
+				$nom=remplace_accents(traite_espaces($eleve[$numero]["nom"]));
+				$prenom=remplace_accents(traite_espaces($eleve[$numero]["prenom"]));
+				$sexe=$eleve[$numero]["sexe"];
+				$naissance=$eleve[$numero]["date"];
+				verif_et_corrige_gecos($uid,$nom,$prenom,$naissance,$sexe);
+			}
+			// ================================
 		}
 		else{
 			my_echo("<p>Pas encore d'uid pour employeeNumber=$employeeNumber<br />\n");
@@ -3040,11 +3084,22 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 				my_echo(".<br />\n");
 			}
 
+			// Témoin pour repérer les appartenances à plusieurs classes
+			$temoin_plusieurs_classes="n";
+
 			// Ajout de l'élève au tableau de la classe:
 			$attribut=array("memberuid");
 			$memberUid=get_tab_attribut("groups", "(&(cn=Classe_".$prefix."$div)(memberuid=$uid))", $attribut);
 			if(count($memberUid)>0){
 				my_echo("$uid est déjà membre de la classe $div.<br />\n");
+
+				// Ajout d'un test:
+				// L'élève est-il membre d'autres classes.
+				$attribut=array("memberuid");
+				$test_memberUid=get_tab_attribut("groups", "(&(cn=Classe_*)(memberuid=$uid))", $attribut);
+				if(count($test_memberUid)>1){
+					$temoin_plusieurs_classes="y";
+				}
 			}
 			else{
 				my_echo("Ajout de $uid au tableau de la classe $div.<br />\n");
@@ -3059,6 +3114,47 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 				}
 				if($ind_classe!=-1){
 					$tab_classe[$ind_classe]["eleves"][]=$uid;
+				}
+
+
+				// Ajout d'un test:
+				// L'élève est-il membre d'autres classes.
+				$attribut=array("memberuid");
+				$test_memberUid=get_tab_attribut("groups", "(&(cn=Classe_*)(memberuid=$uid))", $attribut);
+				if(count($test_memberUid)>0){
+					$temoin_plusieurs_classes="y";
+				}
+			}
+
+			// Ajout d'un test:
+			// L'élève est-il membre d'autres classes.
+			if($temoin_plusieurs_classes=="y") {
+				$attribut=array("cn");
+				$cn_classes_de_l_eleve=get_tab_attribut("groups", "(&(cn=Classe_*)(memberuid=$uid))", $attribut);
+				if(count($cn_classes_de_l_eleve)>0){
+					for($loop=0;$loop<count($cn_classes_de_l_eleve);$loop++){
+						// Exclure Classe_.$prefix.$div
+						if($cn_classes_de_l_eleve[$loop]!="Classe_".$prefix.$div){
+							my_echo("Suppression de l'appartenance de $uid à la classe ".$cn_classes_de_l_eleve[$loop]." : ");
+
+							unset($attr);
+							$attr=array();
+							$attr["memberuid"]=$uid;
+							if($simulation!="y"){
+								if(modify_attribut ("cn=".$cn_classes_de_l_eleve[$loop], "groups", $attr, "del")) {
+									my_echo("<font color='green'>SUCCES</font>");
+								}
+								else{
+									my_echo("<font color='red'>ECHEC</font>");
+									$nb_echecs++;
+								}
+							}
+							else{
+								my_echo("<font color='blue'>SIMULATION</font>");
+							}
+							my_echo(".<br />\n");
+						}
+					}
 				}
 			}
 		}
@@ -3926,6 +4022,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 	}
 	else{
 		my_echo("</h3>\n");
+		my_echo("<blockquote>\n");
 		my_echo("<p>Création des Matières non demandée.</p>\n");
 	}
 
@@ -4077,7 +4174,8 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 					//$attributs["objectClass"]="posixGroup";
 					//$attributs["objectClass"]="groupOfNames";
 					// Il faudrait ajouter un test sur le fait qu'il reste un gidNumber dispo...
-					$gidNumber=get_first_free_gidNumber();
+					//$gidNumber=get_first_free_gidNumber();
+					$gidNumber=get_first_free_gidNumber(10000);
 					if($gidNumber!=false){
 						$attributs["gidNumber"]="$gidNumber";
 						// Ou récupérer un nom long du fichier de STS...
@@ -4353,7 +4451,8 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 						//$attributs["objectClass"]="posixGroup";
 						//$attributs["objectClass"]="groupOfNames";
 						// Il faudrait ajouter un test sur le fait qu'il reste un gidNumber dispo...
-						$gidNumber=get_first_free_gidNumber();
+						//$gidNumber=get_first_free_gidNumber();
+						$gidNumber=get_first_free_gidNumber(10000);
 						if($gidNumber!=false){
 							$attributs["gidNumber"]="$gidNumber";
 							// Ou récupérer un nom long du fichier de STS...
@@ -4597,7 +4696,8 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 					//$attributs["objectClass"]="posixGroup";
 					//$attributs["objectClass"]="groupOfNames";
 					// Il faudrait ajouter un test sur le fait qu'il reste un gidNumber dispo...
-					$gidNumber=get_first_free_gidNumber();
+					//$gidNumber=get_first_free_gidNumber();
+					$gidNumber=get_first_free_gidNumber(10000);
 					if($gidNumber!=false){
 						$attributs["gidNumber"]="$gidNumber";
 						// Ou récupérer un nom long du fichier de STS...
@@ -4697,6 +4797,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 	}
 	else{
 		my_echo("</h3>\n");
+		my_echo("<blockquote>\n");
 		my_echo("<p>Création des Cours non demandée.</p>\n");
 	}
 
