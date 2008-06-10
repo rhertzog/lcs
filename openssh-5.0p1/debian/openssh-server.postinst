@@ -97,32 +97,6 @@ disable_config_option() {
 }
 
 
-rename_config_option() {
-	oldoption="$1"
-	newoption="$2"
-
-	value="$(get_config_option "$oldoption")"
-	[ "$value" ] || return 0
-
-	perl -le '
-		$oldoption = $ARGV[0]; $newoption = $ARGV[1];
-		while (<STDIN>) {
-			chomp;
-			(my $match = $_) =~ s/\s+/ /g;
-			# TODO: actually only one "=" allowed after option
-			if ($match =~ s/^(\s*)\Q$oldoption\E([[:space:]=]+)/$1$newoption$2/i) {
-				$_ = $match;
-			}
-			print;
-		}' \
-		"$oldoption" "$newoption" \
-		< /etc/ssh/sshd_config > /etc/ssh/sshd_config.dpkg-new
-	chown --reference /etc/ssh/sshd_config /etc/ssh/sshd_config.dpkg-new
-	chmod --reference /etc/ssh/sshd_config /etc/ssh/sshd_config.dpkg-new
-	mv /etc/ssh/sshd_config.dpkg-new /etc/ssh/sshd_config
-}
-
-
 remove_obsolete_gssapi() {
 	disable_config_option GSSAPINoMICAuthentication
 	disable_config_option GSSUseSessionCCache
@@ -282,12 +256,6 @@ create_sshdconfig() {
 		    remove_obsolete_gssapi
 		fi
 
-		# This option was renamed in 3.8p1, but we never took care
-		# of adjusting the configuration file until now.
-		if dpkg --compare-versions "$oldversion" lt 1:4.7p1-8; then
-		    rename_config_option KeepAlive TCPKeepAlive
-		fi
-
 		return 0
 	    fi
 	fi
@@ -405,19 +373,9 @@ fix_conffile_permissions() {
 	chmod 644 /etc/default/ssh
 }
 
-remove_old_init_links() {
-	# Yes, this only works with the SysV init script layout. I know.
-	# The important thing is that it doesn't actually *break* with
-	# file-rc ...
-	if [ -e /etc/rc2.d/S20ssh ]; then
-		update-rc.d -f ssh remove >/dev/null 2>&1
-	fi
-	rm -f /etc/rc0.d/K20ssh /etc/rc6.d/K20ssh
-}
-
 setup_init() {
 	if [ -x /etc/init.d/ssh ]; then
-		update-rc.d ssh start 16 2 3 4 5 . stop 84 1 . >/dev/null
+		update-rc.d ssh defaults >/dev/null
 		if [ -x /usr/sbin/invoke-rc.d ]; then
 			invoke-rc.d ssh restart
 		else
@@ -430,19 +388,6 @@ commit_transfer_conffile () {
 	CONFFILE="$1"
 	if [ -e "$CONFFILE.moved-by-preinst" ]; then
 		rm -f "$CONFFILE.moved-by-preinst"
-	fi
-}
-
-commit_mv_conffile () {
-	OLDCONFFILE="$1"
-	NEWCONFFILE="$2"
-
-	if [ -e "$OLDCONFFILE.moving" ]; then
-		echo "Preserving user changes to $NEWCONFFILE ..."
-		mv -f "$NEWCONFFILE" "$NEWCONFFILE.dpkg-new"
-		mv -f "$OLDCONFFILE.moving" "$NEWCONFFILE"
-	elif [ -e "$OLDCONFFILE.dpkg-old" ]; then
-		rm -f "$OLDCONFFILE.dpkg-old"
 	fi
 }
 
@@ -460,18 +405,10 @@ setup_sshd_user
 if dpkg --compare-versions "$2" lt 1:3.6.1p2-2; then
     fix_conffile_permissions
 fi
-if dpkg --compare-versions "$2" lt 1:4.6p1-1; then
-    remove_old_init_links
-fi
 setup_init
 commit_transfer_conffile /etc/default/ssh
 commit_transfer_conffile /etc/init.d/ssh
 commit_transfer_conffile /etc/pam.d/ssh
-commit_mv_conffile /etc/pam.d/ssh /etc/pam.d/sshd
-# Renamed to /etc/ssh/moduli in 2.9.9 (!)
-if dpkg --compare-versions "$2" lt 1:4.7p1-1; then
-    rm -f /etc/ssh/primes
-fi
 
 
 db_stop
