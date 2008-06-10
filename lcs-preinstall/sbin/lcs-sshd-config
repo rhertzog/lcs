@@ -92,4 +92,12 @@ Match group !admins
 	   AllowTcpForwarding no
 EOF
 
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d ssh restart
+else
+	/etc/init.d/ssh restart
+fi
+
+
+
 
