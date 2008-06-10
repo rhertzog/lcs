@@ -25,9 +25,8 @@
    */
 
 
-        if ( file_exists("/var/www/se3") )
-	   include "se3orlcs_import_sconet.php";
-        else include "includes/se3orlcs_import_sconet.php";
+
+        include "se3orlcs_import_sconet.php";
 
 	if (is_admin("Annu_is_admin",$login)=="Y") {
                 require ( $pathlcsorse3."config.inc.php");
