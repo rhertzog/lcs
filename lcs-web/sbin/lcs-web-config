@@ -107,6 +107,9 @@ member: uid=admin,ou=People,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
 	    >/etc/apache2/sites-available/www.$DOMAIN
         a2ensite www.$DOMAIN
 
+        # Enable mod rewrite
+        a2enmod rewrite
+
         # Installation menu.d if not present
         if [ ! -d /var/www/lcs/includes/menu.d ]; then
             cp -r /var/lib/lcs/web/menu.d /var/www/lcs/includes
@@ -118,6 +121,9 @@ member: uid=admin,ou=People,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
         # Configuration webalizer
         echo "Configuration webalizer"
         sed -e "s/#HOSTNAME#/`hostname`/g" /var/lib/lcs/web/webalizer/webalizer.conf.in >/etc/webalizer/webalizer.conf
+
+        # For compatibilty with old plugins
+        ln -sf /usr/sbin/apache2ctl /usr/sbin/apachectl
 
         # restart apache2
         invoke-rc.d apache2 restart
