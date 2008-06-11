@@ -6,7 +6,7 @@ lcs-preinstall (2.0-3~2) UNRELEASED; urgency=low
   [ Simon Cavey ]
   * Replace lcs-openssh by openssh-server 
   * Add script lcs-sshd-config in postinst
--- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 11 Jun 2008 09:47:39 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 11 Jun 2008 09:47:39 +0200
 
 lcs-preinstall (2.0-3~1) UNRELEASED; urgency=low
 
