@@ -1,7 +1,13 @@
 lcs-web (2.1~2) UNRELEASED; urgency=low
 
      [ Jean-Luc Chretien ]
-   *  Change parcDn in /etc/LcSeConfig.php.in
+   * Enable mode rewrite
+   * Add temporaly a symbolic link on to apachectl for compatibilty with old lcs plugins
+   * New rights on homes users
+   * Release accounts import with sconet
+   * Fix many littles things in lcs-web-config
+   * Add parcs and computers in config.inc.in for compatibilty with se3internet 
+   * Change parcDn in /etc/LcSeConfig.php.in
    * little change on /var/www/lcs/Admin/edit_params.php
    * Rights on privateKey and skel
    * Correct path for folder doc html
