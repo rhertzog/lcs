@@ -1,5 +1,5 @@
 <?
-/* lcs/auth.php version du : 06/02/2007 implanté par lcs-spip_1.07*/
+/* lcs/auth.php version du : 06/02/2007 */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
