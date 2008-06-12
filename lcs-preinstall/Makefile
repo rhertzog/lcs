@@ -7,7 +7,7 @@ install:
 
 # install lcs conf
 	install -d $(DESTDIR)/var/lib/lcs/preinstall
-	install -m 0660 conf/* $(DESTDIR)/var/lib/lcs/preinstall
+	cp -a conf/* $(DESTDIR)/var/lib/lcs/preinstall
 
 # install sbin
 	install -d $(DESTDIR)/usr/sbin
