@@ -33,9 +33,11 @@ case "$1" in
         mv /etc/profile /etc/profile.lcsav
         cp /var/lib/lcs/web/profile /etc/profile
         # Patch /etc/skel/public_html/index.html.in
-        sed -e "s/##HOST##/$DOMAIN/g" /etc/skel/public_html/index.html.in \
-	    >/etc/skel/public_html/index.html
-        rm /etc/skel/public_html/index.html.in
+	if [ -e /etc/skel/public_html/index.html.in ]; then
+	    sed -e "s/##HOST##/$DOMAIN/g" /etc/skel/public_html/index.html.in \
+		>/etc/skel/public_html/index.html
+	    rm /etc/skel/public_html/index.html.in
+	fi
         # Patch files /etc/LcSeConfig.php.in /var/www/index.html.in /var/www/lcs/includes/config.inc.in 
         echo "Patch des fichiers de conf LCS"
         sed -e "s|@@PASSWORD@@|"$MYSQLPW"|g" /etc/LcSeConfig.ph.in >/etc/LcSeConfig.ph
