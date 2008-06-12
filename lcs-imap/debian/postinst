@@ -7,7 +7,7 @@ case "$1" in
            # only if first configuration
 	   if [ "$2" = "" ]; then
 	       . /usr/share/slis/slis-common.sh
-	       handle_initial_config lcs-imap-config 40
+	       handle_initial_config lcs-imap-config 80
 	   fi
     	;;
 
