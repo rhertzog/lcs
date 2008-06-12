@@ -39,6 +39,10 @@ case "$1" in
 	# SSH configuration
 	#
 	lcs-sshd-config
+        #
+        # Temporaly configuration pam
+        #
+        cp /var/lib/lcs/preinstall/pam/* /etc/pam.d/
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
