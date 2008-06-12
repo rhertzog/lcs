@@ -86,10 +86,18 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 
 UsePAM yes
 
-Match group !admins
-	   ChrootDirectory /home/%u
-	   ForceCommand internal-sftp
-	   AllowTcpForwarding no
+#Match group !admins
+#	   ChrootDirectory /home/%u
+#	   ForceCommand internal-sftp
+#	   AllowTcpForwarding no
+
+Match group sftp-allowed
+          ChrootDirectory /home/%u
+          ForceCommand internal-sftp
+
+Match group lcs-users
+          ForceCommand /bin/false
+
 EOF
 
 if [ -x /usr/sbin/invoke-rc.d ]; then
