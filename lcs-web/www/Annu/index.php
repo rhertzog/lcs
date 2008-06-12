@@ -3,11 +3,9 @@
    Projet LCS : Linux Communication Server
    Consultation de l'annuaire LDAP
    Annu/index.php
-   [LCS CoreTeam]
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
    Equipe Tice académie de Caen
-   V 1.4-9 maj : 18/05/05
+   Derniere modification 12 Juin 2008
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -63,10 +61,12 @@
     <li><a href=\"delete_right.php\">Enlever un droit d'administration</a></li>
     </ul>\n";
   }
+/*
   if (ldap_get_right("annu_is_admin",$login)=="Y") {
   echo "<ul>
     <li><a href=\"mod_shell.php\">Modification du shell des utilisateurs</a></li>
     </ul>\n";
-  }  
+  }
+*/  
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>
