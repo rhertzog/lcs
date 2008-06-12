@@ -1,3 +1,10 @@
+lcs-web (2.1~4) UNRELEASED; urgency=low
+
+      [ Jean-Luc Chretien ]
+      * Add new skin by Yannick Chistel
+			      
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 12 Jun 2008 17:30:06 +0200
+
 lcs-web (2.1~3) UNRELEASED; urgency=low
 
   [ Jean-Luc Chretien ]
@@ -12,7 +19,7 @@ lcs-web (2.1~3) UNRELEASED; urgency=low
   * Make lcs-web-config idempotent. It should be able to run again without
     failing.
 
- -- Jean-Luc Chretien <jlcf@localhost.localdomain>  Thu, 12 Jun 2008 13:30:06 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 12 Jun 2008 13:30:06 +0200
 
 lcs-web (2.1~2) UNRELEASED; urgency=low
 
