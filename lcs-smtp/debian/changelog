@@ -3,5 +3,7 @@ lcs-smtp (2.1~1) UNRELEASED; urgency=low
   [ Jean-Luc Chretien ]
   * Initial release of the new package.
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 03 Jun 2008 19:12:59 +0200
+  [ Raphael Hertzog ]
+  * Call postfix-reconfigure correctly even when some parameters are empty.
 
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 03 Jun 2008 19:12:59 +0200
