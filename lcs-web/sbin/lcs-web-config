@@ -109,6 +109,13 @@ member: uid=admin,ou=People,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
 
         # Enable mod rewrite
         a2enmod rewrite
+        cp /var/lib/lcs/web/apache2/userdir.conf.in /etc/apache2/mods-available/userdir.conf
+        sed -i s/#FQN#/$LCSFULLDOMAIN/g /etc/apache2/mods-available/userdir.conf
+
+        # Include path in php.ini
+        grep -v ^include_path= /etc/php5/apache2/php.ini > /tmp/php.in
+        echo "include_path=\".:./includes/:/usr/share/php/smarty/libs/\"" >> /tmp/php.in
+        cp  /tmp/php.in /etc/php5/apache2/php.ini
 
         # Installation menu.d if not present
         if [ ! -d /var/www/lcs/includes/menu.d ]; then
