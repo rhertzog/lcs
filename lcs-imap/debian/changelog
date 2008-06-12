@@ -1,3 +1,10 @@
+lcs-imap (2.1~2) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien]
+    * Modify handle_initial_config order
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 12 Jun 2008 18:35:19 +0200
+
 lcs-imap (2.1~1) UNRELEASED; urgency=low
 
   [ Jean-Luc Chretien ]
