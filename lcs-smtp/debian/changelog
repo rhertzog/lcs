@@ -1,9 +1,17 @@
+lcs-smtp (2.1~2) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien]
+  * Modify handle_initial_config order
+  
+  [ Raphael Hertzog ]
+  * Call postfix-reconfigure correctly even when some parameters are empty.
+
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 12 Jun 2008 18:29:09 +0200
+
 lcs-smtp (2.1~1) UNRELEASED; urgency=low
 
   [ Jean-Luc Chretien ]
   * Initial release of the new package.
-
-  [ Raphael Hertzog ]
-  * Call postfix-reconfigure correctly even when some parameters are empty.
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 03 Jun 2008 19:12:59 +0200
