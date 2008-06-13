@@ -12,7 +12,7 @@ get_lcsdb_params() {
 configure() {
     mysqlpass=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
     # Inscription Module lcs-squirrelmail dans lcs_db.params
-    SQUIR=`echo "SELECT id from lcs_db.applis WHERE name='mail';"| mysql -u lcsmgr -p$mysqlpass lcs_db -N`
+    SQUIR=`echo "SELECT id from lcs_db.applis WHERE name='squirrelmail';"| mysql -u lcsmgr -p$mysqlpass lcs_db -N`
     VER=$(dpkg-query -f '${Version}' -W lcs-squirrelmail)
     if [ -z "$SQUIR" ]; then
 	echo "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', 'squirrelmail', '1', 'webmail squirrelmail', '0', '$VER', '/usr/share/squirrelmail', 'M');"| mysql -u lcsmgr -p$mysqlpass lcs_db 
