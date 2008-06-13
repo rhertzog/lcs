@@ -19,6 +19,9 @@ install:
 	install -d $(DESTDIR)/usr/sbin
 	install -m 755 sbin/* $(DESTDIR)/usr/sbin/
 
+	# install lcs imap www
+	install -d $(DESTDIR)/var/www
+	cp -a www/* $(DESTDIR)/var/www/
 clean:
 
 
