@@ -1,3 +1,11 @@
+lcs-web (2.1~5) UNRELEASED; urgency=low
+
+      [ Jean-Luc Chretien ]
+      * Correct sommes problems in folder doc
+      * Add images for doc aide_fr
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 13 Jun 2008 14:55:22 +0200
+
 lcs-web (2.1~4) UNRELEASED; urgency=low
 
       [ Jean-Luc Chretien ]
