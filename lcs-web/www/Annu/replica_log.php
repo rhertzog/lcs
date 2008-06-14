@@ -8,7 +8,7 @@ if ( $servertype== "SE3") {
     textdomain ('se3-annu');
 }
 
-// on rappelle la page tant que le résultat ErrReplica.txt n'existe pas
+// on rappelle la page tant que le resultat ErrReplica.txt n'existe pas
 // $comment = $_GET['comment'];
 
 if($_POST['action']=="ok" || (!file_exists("/tmp/ErrReplica.txt"))) {
@@ -39,10 +39,10 @@ $action = $_POST['action'];
 $type = $_POST['type'];
 $status = $_POST['status'];
 
-echo "<h1>".gettext("Réplication de l'annuaire LDAP")."</h1>";
+echo "<h1>".gettext("R&#233;plication de l'annuaire LDAP")."</h1>";
 
 if (is_admin("system_is_admin",$login)!="Y")
-	die (gettext("Vous n'avez pas les droits suffisants pour accéder à cette fonction")."</BODY></HTML>");
+	die (gettext("Vous n'avez pas les droits suffisants pour acc&#233;der &#224; cette fonction")."</BODY></HTML>");
 
 //Lance le script mkslurpd
 if ($action == "ok") {
@@ -52,7 +52,7 @@ if ($action == "ok") {
 
 
 if ($type=="anonymous") {	
-	echo"<H3>".gettext("Log les différences entre les deux annuaires")."</H3>";
+	echo"<H3>".gettext("Log les diff&#233;rences entre les deux annuaires")."</H3>";
 }
 elseif ($type=="only_pass") {
 	echo"<H3>".gettext("Synchronisation partielle de l'annuaire esclave")."</H3>";
@@ -79,7 +79,7 @@ if(file_exists("/tmp/ErrReplica.txt") && $action != "0") {
 			<table align="center" border="2">
 	  		<tbody>
 	    		  <tr>
-	      		    <td align="center"><? echo gettext("Veuillez patienter"); ?></td>
+	      		    <td align="center"><?php echo gettext("Veuillez patienter"); ?></td>
 	    		  </tr>
 	    		  <tr>
 	      		    <td>

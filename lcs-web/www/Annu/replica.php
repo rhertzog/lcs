@@ -28,15 +28,15 @@ if ( $servertype=="SE3" ) {
 }
 
 if (is_admin("system_is_admin",$login)!="Y")
-	die (gettext("Vous n'avez pas les droits suffisants pour accéder à cette fonction")."</BODY></HTML>");
+	die (gettext("Vous n'avez pas les droits suffisants pour acc&#233;der &#224; cette fonction")."</BODY></HTML>");
 
-$texte_alert=gettext("Attention vous risquez de perdre le contrôle de votre serveur. Voir la documentation avant de mettre cela en oeuvre. Etes vous sure de vouloir continuer ?");
+$texte_alert=gettext("Attention vous risquez de perdre le contr&#244;le de votre serveur. Voir la documentation avant de mettre cela en oeuvre. Etes vous sure de vouloir continuer ?");
 
 ?>
 <script language="JavaScript">
 	function areyousure()
 	{
-		var messageb = "<? echo "$texte_alert"; ?>";
+		var messageb = "<?php echo "$texte_alert"; ?>";
 		if (confirm(messageb))
 			return true;
 		else
@@ -44,11 +44,11 @@ $texte_alert=gettext("Attention vous risquez de perdre le contrôle de votre serv
 	}
 </script>
 
-<?
+<?php
 // Aide
 $_SESSION["pageaide"]="R%C3%A9plication_d%27annuaires";
 
-echo "<h1>".gettext("Réplication de l'annuaire LDAP")."</h1>";
+echo "<h1>".gettext("R&#233;plication de l'annuaire LDAP")."</h1>";
 
 
 // *******************************//
@@ -59,14 +59,14 @@ $syncrepl = $_POST['syncrepl'];
 
 
 // ######################################################################
-// ################### Création du champ manquant #########################
+// ################### Creation du champ manquant #########################
 
 $result=mysql_query("SELECT name from params where name='replica_status'");
 $num = mysql_numrows( $result);
 if ($num == "0" ) {
-	$resultat=mysql_query("INSERT into params set id='NULL', name='replica_status', value='0', srv_id='0',descr='Etat du serveur de réplication',cat='4'");
+	$resultat=mysql_query("INSERT into params set id='NULL', name='replica_status', value='0', srv_id='0',descr='Etat du serveur de r&#233;plication',cat='4'");
 	$resultat=mysql_query("UPDATE params set descr='Adresse du serveur Lcs ou Slis (optionnel)' where name='lcsIp'");
-	$resultat=mysql_query("INSERT into params set id='NULL', name='replica_ip', value='', srv_id='0',descr='Adresse IP du serveur de réplication',cat='4'");
+	$resultat=mysql_query("INSERT into params set id='NULL', name='replica_ip', value='', srv_id='0',descr='Adresse IP du serveur de r&#233;plication',cat='4'");
 
 }
 
@@ -87,7 +87,7 @@ if ($action != "") {
 if ($action == "Ok" || $replica=="0") { 
 	// Test la connexion au serveur LDAP maitre ou esclave
 	if ($replica == "1" || $replica == "2" || $replica == "3" || $replica == "4") {
-		// test la validité de l'ip
+		// test la validite de l'ip
 		if (!is_string($ip)) { $ok = 0;}
 		$ip_long = ip2long($ip);
 		$ip_revers = long2ip($ip_long);
@@ -117,9 +117,9 @@ if ($action == "Ok" || $replica=="0") {
 		if ($ldapconn) {    //Connexion au serveur LDAP   
 			$ldapbind = @ldap_bind($ldapconn, $admin_dn, $adminPw);    // Identification    
 			if ($ldapbind) {        
-				$ldap_ok="1";  // Connexion LDAP réussie
+				$ldap_ok="1";  // Connexion LDAP reussie
 			} else {
-				$ldap_ok="0"; // Connexion LDAP échouée
+				$ldap_ok="0"; // Connexion LDAP echouee
 			}
 		} else {
 			$ldap_ok="0";
@@ -135,13 +135,13 @@ if ($action == "Ok" || $replica=="0") {
   	  		while ($r=mysql_fetch_array($resultat)) {
         			$IP_ldap=$r[2];
 			}
-		//On vérifie l'état antérieur avant de modifier		
+		//On verifie l'etat anterieur avant de modifier		
 		$result=mysql_query("SELECT * from params where name='replica_status'");
 		if ($result)
 	    		while ($r=mysql_fetch_array($result)) {
 	       			$maitre=$r[2];
 			}
-		if ($maitre=="2" || $maitre=="4") { // était en esclave avant on recupére l'adresse ip du maitre	
+		if ($maitre=="2" || $maitre=="4") { // etait en esclave avant on recupere l'adresse ip du maitre	
 			$result=mysql_query("SELECT * from params where name='replica_ip'");
 		   	if ($result)
 	    	   		while ($r=mysql_fetch_array($result)) {
@@ -159,7 +159,7 @@ if ($action == "Ok" || $replica=="0") {
 			$ip = "";
 			$options = "-e";
 			$resultat=mysql_query("UPDATE params set cat='2' where name='ldap_server'");
-			//Si on était esclave avant on doit changer l'IP
+			//Si on etait esclave avant on doit changer l'IP
 
 			if ($maitre == $replica) {
 				$resultat=mysql_query("UPDATE params set value='' where name='replica_ip'");
@@ -175,7 +175,7 @@ if ($action == "Ok" || $replica=="0") {
 		}
 
 		if ($replica == "1" || $replica == "3") {
-			//si pas de compte indiqué on utilise le compte AdmRdn et le MdP AdmPw
+			//si pas de compte indique on utilise le compte AdmRdn et le MdP AdmPw
 			$options = "-c -m";  
 			$resultat=mysql_query("UPDATE params set cat='4' where name='ldap_server'");
 	 		if ($maitre == $replica) {
@@ -191,7 +191,7 @@ if ($action == "Ok" || $replica=="0") {
 		}
 			
 		if ($replica == "2" || $replica == "4") {	
-			//si pas de compte indiqué on utilise le compte AdmRdn et le MdP AdmPw
+			//si pas de compte indique on utilise le compte AdmRdn et le MdP AdmPw
 			$options = "-c -s";  
 			$resultat=mysql_query("UPDATE params set cat='4' where name='ldap_server'");
 			if ($maitre == $replica) {
@@ -228,11 +228,9 @@ if ($replica == "") {
 }
 
 
-// Vérification si l'annuaire est déporté
+// Verification si l'annuaire est deporte
 $nom_svr=exec('/bin/hostname');
 $ip_svr=gethostbyname($nom_svr);
-
-
 if (($ip_svr == $ldap_server) || ($ldap_server == "localhost") || ($ldap_server == "127.0.0.1")) {
 	$ldap_deport = "no";
 } else {
@@ -246,50 +244,53 @@ if (($ip_svr == $ldap_server) || ($ldap_server == "localhost") || ($ldap_server 
 
 ?>
 
-<H3><? echo gettext("Mise en place de la réplication de l'annuaire"); ?></H3>
+<H3><?php echo gettext("Mise en place de la r&#233;plication de l'annuaire"); ?></H3>
 
   <form name = "auth" action="replica.php" method="post">
       <table border="0" width="90%">
 	  <tbody>
 	    <tr>
 		<td colspan=3>
-		<font color="orange"><center><? echo gettext("Attention, la mise en place de la réplication peut provoquer la perte de votre annuaire, <br>Il est vivement conseillé de faire une sauvegarde de celui-ci avant toute modification."); ?></center></font><br><br>
-		<?
+		<font color="orange"><center><?php echo gettext("Attention, la mise en place de la r&#233;plication peut provoquer la perte de votre annuaire, <br>Il est vivement conseill&#233; de faire une sauvegarde de celui-ci avant toute modification."); ?></center></font><br><br>
+		<?php
 		if ($ldap_deport=="yes") {
 		?>
-		<font color="orange"><center><? echo gettext("Votre annuaire est actuellement déporté sur une autre machine. Il risque donc de ne contenir aucune entrée. Vous ne pouvez pas en conséquence le placer comme serveur d'annuaire maître"); ?></center></font><br><br>
-		<? } ?>
+		<font color="orange"><center><?php echo gettext("Votre annuaire est actuellement d&#233;port&#233; sur une autre machine. Il risque donc de ne contenir aucune entr&#233;e. Vous ne pouvez pas en cons&#233;quence le placer comme serveur d'annuaire ma&#238;tre"); ?></center></font><br><br>
+		<?php } ?>
 		</td>
 	    </tr>
 	    <tr>
-	      <td><? echo gettext("Etat du serveur"); ?>&nbsp; :&nbsp;</td>
+	      <td><?php echo gettext("Etat du serveur"); ?>&nbsp; :&nbsp;</td>
 	      <td>
 		<input type="hidden" name="action" value="SUB">
                 <select name="replica" onchange=submit()>
-		  <? 
-		  // Cas ou l'annuaire est déporté
+<!--
+		  <?php 
+		  // Cas ou l'annuaire est deporte
 		  if ($ldap_deport=="no") {
 		  ?>
-	          <option <?php if ($replica_status == "0") {echo "selected"; } ?> value="0"><? echo gettext("Serveur non répliqué"); ?></option>
-		  <option <?php if ($replica_status == "1") {echo "selected"; } ?> value="1"><? echo gettext("Serveur LDAP principal"); ?></option>
-		  <? } ?>
-		  <option <?php if ($replica_status == "2") {echo "selected"; } ?> value="2"><? echo gettext("Serveur LDAP secondaire"); ?></option>
-		 <?
-		// Cas ou l'annuaire est déporté
+	          <option <?php if ($replica_status == "0") {echo "selected"; } ?> value="0"><?php echo gettext("Serveur non r&#233;pliqu&#233;"); ?></option>
+		  <option <?php if ($replica_status == "1") {echo "selected"; } ?> value="1"><?php echo gettext("Serveur LDAP principal"); ?></option>
+		  <?php } ?>
+		  <option <?php if ($replica_status == "2") {echo "selected"; } ?> value="2"><?php echo gettext("Serveur LDAP secondaire"); ?></option>
+-->
+		 <?php
+		// Cas ou l'annuaire est deporte
 		 if ($ldap_deport=="no") {
 		?>
-		  <option <?php if ($replica_status == "3") {echo "selected"; } ?> value="3"><? echo gettext("Serveur LDAP principal (méthode syncrepl)"); ?></option>
-		  <? } ?>
-		  <option <?php if ($replica_status == "4") {echo "selected"; } ?> value="4"><? echo gettext("Serveur LDAP secondaire (méthode syncrepl)"); ?></option>
+	          <option <?php if ($replica_status == "0") {echo "selected"; } ?> value="0"><?php echo gettext("Serveur non r&#233;pliqu&#233;"); ?></option>
+		  <option <?php if ($replica_status == "3") {echo "selected"; } ?> value="3"><?php echo gettext("Serveur LDAP principal (m&#233;thode syncrepl)"); ?></option>
+		  <?php } ?>
+		  <option <?php if ($replica_status == "4") {echo "selected"; } ?> value="4"><?php echo gettext("Serveur LDAP secondaire (m&#233;thode syncrepl)"); ?></option>
 		</select>
 	      </td>
               <td>
 <?php
 if ($ldap_deport=="no") {
-echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Vous pouvez choisir de mettre en place une réplication, ou de la supprimer pour votre annuaire LDAP.<br>Le but est de disposer d\'un second annuaire sur une seconde machine.<br> Pour cela vous avez quatre possibilités :<br><br><b>Serveur LDAP principal (ou maître)</b><br>Cette machine dispose de l\'annuaire de réferrence. Les autres machines, ne disposeront que d\'une réplique. Seule les modifications faites sur l\'annuaire de cette machine seront prises en compte.<br><br><b>Serveur LDAP secondaire (ou esclave)</b><br>Cette machine ne disposera que d\'une réplique de l\'annuaire du serveur principal.<br><br><b>Serveur principal (méthode syncrepl)</b><br>Même chose que pour le serveur LDAP principal, mais la méthode change. Celle-ci est plus performante que la précédente, mais ne peut fonctionner avec tous les serveurs. Voir la documentation.<br><br><b>Serveur secondaire (méthode syncrepl)</b><br>Idem, mais attention cette option détruit complétement l\'annuaire local (il est sauvegardé automatiquement dans /var/se3/save).<br><br><b>Attention</b><br>Toutes les entrées existant dans cet annuaire et n\'existant pas sur le maître seront perdues.<br><br>Si vous souhaitez déporter l\'annuaire sur une autre machine, il vous faut aller dans le mode sans échec, et indiquer l\'adresse IP du serveur disposant de votre annuaire.<br><br><b>Il est vivement conseillé de faire une sauvegarde de votre annuaire avant de faire des modifications.</b> ')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
+echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Vous pouvez choisir de mettre en place une r&#233;plication, ou de la supprimer pour votre annuaire LDAP.<br>Le but est de disposer d\'un second annuaire sur une seconde machine.<br> Pour cela vous avez quatre possibilit&#233;s :<br><br><b>Serveur LDAP principal (ou ma&#238;tre)</b><br>Cette machine dispose de l\'annuaire de r&#233;ferrence. Les autres machines, ne disposeront que d\'une r&#233;plique. Seule les modifications faites sur l\'annuaire de cette machine seront prises en compte.<br><br><b>Serveur LDAP secondaire (ou esclave)</b><br>Cette machine ne disposera que d\'une r&#233;plique de l\'annuaire du serveur principal.<br><br><b>Serveur principal (m&#233;thode syncrepl)</b><br>M&#234;me chose que pour le serveur LDAP principal, mais la m&#233;thode change. Celle-ci est plus performante que la pr&#233;c&#233;dente, mais ne peut fonctionner avec tous les serveurs. Voir la documentation.<br><br><b>Serveur secondaire (m&#233;thode syncrepl)</b><br>Idem, mais attention cette option d&#233;truit compl&#233;tement l\'annuaire local (il est sauvegard&#233; automatiquement dans /var/se3/save).<br><br><b>Attention</b><br>Toutes les entr&#233;es existant dans cet annuaire et n\'existant pas sur le ma&#238;tre seront perdues.<br><br>Si vous souhaitez d&#233;porter l\'annuaire sur une autre machine, il vous faut aller dans le mode sans &#233;chec, et indiquer l\'adresse IP du serveur disposant de votre annuaire.<br><br><b>Il est vivement conseill&#233; de faire une sauvegarde de votre annuaire avant de faire des modifications.</b> ')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
 } else {
 
-echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Votre annuaire LDAP est actuellement déporté sur un autre serveur. Il est possible qu\'il ne contienne aucune entrée. Vous ne pouvez donc pas le définir comme maître, au risque d\'en perdre le contrôle.<br>Pour le reconstruire complétement à partir de votre serveur LDAP actuel, placez vous en esclave méthode syncrepl et l\'autre serveur en maître. Il vous sera alors possible de le rebasculer en maître par la suite.<br><b>Attention : toute modification sur l\'annuaire peut avoir des conséquences importantes. Il est donc conseillé de le sauvegarder avant.')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
+echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Votre annuaire LDAP est actuellement d&#233;port&#233; sur un autre serveur. Il est possible qu\'il ne contienne aucune entr&#233;e. Vous ne pouvez donc pas le d&#233;finir comme ma&#238;tre, au risque d\'en perdre le contr&#244;le.<br>Pour le reconstruire compl&#233;tement &#224; partir de votre serveur LDAP actuel, placez vous en esclave m&#233;thode syncrepl et l\'autre serveur en ma&#238;tre. Il vous sera alors possible de le rebasculer en ma&#238;tre par la suite.<br><b>Attention : toute modification sur l\'annuaire peut avoir des cons&#233;quences importantes. Il est donc conseill&#233; de le sauvegarder avant.')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
 }
 ?>
 
@@ -323,7 +324,7 @@ if ($replica == "1" || $replica == "2" || $replica_status=="1" || $replica_statu
 	
 	// recup l'adresse IP du maitre dans la base sql	      
 	if($replica== "2" || $replica_status=="2" || $replica == "4" || $replica_status == "4") {
-		echo"<td>".gettext("Adresse IP du serveur maître")."  :&nbsp;</td>";
+		echo"<td>".gettext("Adresse IP du serveur ma&#238;tre")."  :&nbsp;</td>";
 		$resultat=mysql_query("SELECT * from params where name='ldap_server'");
 		if ($resultat)
   			while ($r=mysql_fetch_array($resultat)) {
@@ -342,7 +343,7 @@ if ($replica == "1" || $replica == "2" || $replica_status=="1" || $replica_statu
         <td>
 
 <?php
-	echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Adresse IP du serveur maître</b><br>Vous devez indiquer l\'adresse IP du serveur LDAP maître.<br><br><b>Adresse IP du serveur esclave</b><br>Vous devez indiquer l\'adresse IP du serveur esclave.<br><br><b>Attention</b> Afin de pouvoir mettre en place la réplication, il faut que le serveur distant (maître ou esclve) soit joignable.')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
+	echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Adresse IP du serveur ma&#238;tre</b><br>Vous devez indiquer l\'adresse IP du serveur LDAP ma&#238;tre.<br><br><b>Adresse IP du serveur esclave</b><br>Vous devez indiquer l\'adresse IP du serveur esclave.<br><br><b>Attention</b> Afin de pouvoir mettre en place la r&#233;plication, il faut que le serveur distant (ma&#238;tre ou esclve) soit joignable.')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
 	echo "</td>\n";
 	echo "</tr>\n";
 
@@ -352,22 +353,22 @@ if ($replica == "1" || $replica == "2" || $replica_status=="1" || $replica_statu
 		<tr>
 			<td></td>
 	      		<td align="left">
-			<?
+			<?php
 	      		echo"<input type=\"hidden\" name=\"replica\" value=\"$replica\">";
 			?>
 			<input type="hidden" name="action" value="Ok">
-			<input type="submit" value="<? echo gettext("Modifier"); ?>">
+			<input type="submit" value="<?php echo gettext("Modifier"); ?>">
                       </td>
 		      <td></td>
 		    </tr>
-		<? } ?>    
+		<?php } ?>    
 	  </tbody>
         </table>
       </form>
 
 	<?php
 
-//log l'état de la réplication
+//log l'etat de la replication
 
 $result=mysql_query("SELECT * from params where name='replica_status'");
 if ($result)
@@ -381,7 +382,7 @@ if ($status == "1" || $status == "2" || $status == "3" || $status == "4") {
 	if ($status == "2" || $status == "4") { $options = "s"; }
 ?>
 	<br>
-	<H3><? echo gettext("Contrôler et synchroniser les annuaires"); ?></H3>
+	<H3><?php echo gettext("Contr&#244;ler et synchroniser les annuaires"); ?></H3>
   	<form action="replica_log.php" method="post">
 	  <input type="hidden" name="ip" value=<?php echo "$replica_ip"; ?>>
 	  <input type="hidden" name="status" value=<?php echo"$options"; ?>>
@@ -391,43 +392,43 @@ if ($status == "1" || $status == "2" || $status == "3" || $status == "4") {
 	   <tbody>
 	    <tr>
 	       <td align='left'><input type="radio" name="type" value="anonymous" checked="on"></td>
-	       <td><? echo gettext("Comparer les deux annuaires"); ?></td>
+	       <td><?php echo gettext("Comparer les deux annuaires"); ?></td>
 		<td>
-		<?
-		echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Compare les annuaires entre le serveur principal (maître) et le serveur secondaire (esclave).<br><br>Cette fonction ne modifie  aucun des deux annuaires. ')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
+		<?php
+		echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Compare les annuaires entre le serveur principal (ma&#238;tre) et le serveur secondaire (esclave).<br><br>Cette fonction ne modifie  aucun des deux annuaires. ')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
 		?>
 		</td>	
 	   </tr>
 	   <tr>
-	       <td align="center" colspan="3" height="51"><font color="orange"><? echo gettext("Il est vivement conseillé pour les deux autres choix de faire un export LDAP avant"); ?></font></td>
+	       <td align="center" colspan="3" height="51"><font color="orange"><?php echo gettext("Il est vivement conseill&#233; pour les deux autres choix de faire un export LDAP avant"); ?></font></td>
 	   <tr>
 	   
 	       <td align='left'><input type="radio" name="type" value="only_pass"></td>
-	      <td><? echo gettext("Ajouter les entrées manquantes et synchroniser les mots de passe (par rapport au maître)"); ?></td>
+	      <td><?php echo gettext("Ajouter les entr&#233;es manquantes et synchroniser les mots de passe (par rapport au ma&#238;tre)"); ?></td>
 		<td>
-		<?
-		echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Cette option va modifier les entrées de l\'annuaire secondaire (esclave) en modifiant les entrées qui ne sont pas identiques, entre le maître et l\'esclave.<br> Les entrées du serveur secondaire (esclave) seront modifiées.')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
+		<?php
+		echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Cette option va modifier les entr&#233;es de l\'annuaire secondaire (esclave) en modifiant les entr&#233;es qui ne sont pas identiques, entre le ma&#238;tre et l\'esclave.<br> Les entr&#233;es du serveur secondaire (esclave) seront modifi&#233;es.')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
 		?>
 		</td>
 	   </tr>
 	   <tr>
 
 	       <td align='left' height="51"><input type="radio" name="type" value="full"></td>
-	       <td><? echo gettext("Synchroniser la totalité des deux annuaires (par rapport au maître)"); ?></td>
+	       <td><?php echo gettext("Synchroniser la totalit&#233; des deux annuaires (par rapport au ma&#238;tre)"); ?></td>
 		<td>
-		<?
-		echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Cette option va modifier les entrées de l\'annuaire secondaire (esclave) en modifiant les entrées qui ne sont pas identiques entre le maître et l\'esclave, et en ajoutant les entrées manquantes  et en supprimant les entrées en trop dans l\'esclave.<br><br><b>Les entrées du serveur secondaire (esclave) seront modifiées, voire supprimées</b>.')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
+		<?php
+		echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Cette option va modifier les entr&#233;es de l\'annuaire secondaire (esclave) en modifiant les entr&#233;es qui ne sont pas identiques entre le ma&#238;tre et l\'esclave, et en ajoutant les entr&#233;es manquantes  et en supprimant les entr&#233;es en trop dans l\'esclave.<br><br><b>Les entr&#233;es du serveur secondaire (esclave) seront modifi&#233;es, voire supprim&#233;es</b>.')")."\"><img name=\"action_image2\"  src=\"$path_img/help-info.gif\"></u>\n";
 		?>
 	       </td>
 	   </tr>		
 	   <tr>
 	       
-	       <td align="center" colspan='2'><input type="submit" value="<? echo gettext("Contrôler la réplication"); ?>"><td>
+	       <td align="center" colspan='2'><input type="submit" value="<?php echo gettext("Contr&#244;ler la r&#233;plication"); ?>"><td>
 	   </tr>
 	  </tbody>
 	</table>  
    </form>	
-<?
+<?php
 } 
   
 include $pathlcsorse3."pdp.inc.php";
