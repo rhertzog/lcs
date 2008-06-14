@@ -29,7 +29,7 @@ include("modules_commun.php");
 
 parsage_du_fichier_xml(); // utilisée par la fonction maj_dispo afin de ne pas parser à chaque appel de la fonction
 
-$query="SELECT * from applis where type='M'";
+$query="SELECT * from applis where type='M' OR type='S'";
 $result=mysql_query($query);
 if ($result) 
 	{
