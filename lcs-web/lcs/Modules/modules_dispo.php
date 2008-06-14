@@ -30,7 +30,7 @@ include("modules_commun.php");
 parsage_du_fichier_xml();
 
 // recherche des Modules installés
-$result = mysql_query("SELECT name,version FROM applis WHERE type='M'");
+$result = mysql_query("SELECT name,version FROM applis WHERE type='M' OR type='S'");
 while($row = mysql_fetch_object($result))
 	  $Modules_installes[$row->name] = $row->version;
 mysql_free_result($result);
