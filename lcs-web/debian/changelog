@@ -5,6 +5,9 @@ lcs-web (2.1~6) UNRELEASED; urgency=low
       * General cleanup for replica LDAP (mkSlapdConf.sh, replica.php, replica_log.php)
       * Change of politic for givenName attribut
 
+      [ Philippe Leclerc ]
+      * Add type module S in modules_installes.php
+
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 13 Jun 2008 14:55:22 +0200
 
 lcs-web (2.1~5) UNRELEASED; urgency=low
