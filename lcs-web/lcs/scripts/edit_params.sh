@@ -1,5 +1,5 @@
 #!/bin/bash
-# edit_params.sh version du 18/10/2007
+# edit_params.sh version du 14/06/2008
 
 # Fichiers de configuration
 PATH2SLAPD="/etc/ldap/slapd.conf"
@@ -7,9 +7,10 @@ PATH2LDAP="/etc/ldap/ldap.conf"
 PATH2PAM_LDAP="/etc/pam_ldap.conf"
 PATH2LIBNSS_LDAP="/etc/libnss-ldap.conf"
 PATH2IMAP_LDAP="/etc/courier/authldaprc"
-PATH2SPIP_LDAP="/usr/share/lcs/spip/ecrire/inc_connect.php3"
+PATH2SPIP_LDAP="/usr/share/lcs/spip/config/connect.php"
 PATH2MAIN="/etc/postfix/main.cf"
 PATH2LMHOSTS="/etc/samba/lmhosts"
+PATH2SQUIDCONF="/etc/squid/squid.conf"
 
 # Fichiers de configuration temporaires
 PATH2SLAPD_TMP="/etc/ldap/slapd.conf.tmp"
@@ -17,8 +18,9 @@ PATH2LDAP_TMP="/etc/ldap/ldap.conf.tmp"
 PATH2PAM_LDAP_TMP="/etc/pam_ldap.conf.tmp"
 PATH2LIBNSS_LDAP_TMP="/etc/libnss-ldap.conf.tmp"
 PATH2IMAP_LDAP_TMP="/etc/courier/authldaprc.tmp"
-PATH2SPIP_LDAP_TMP="/usr/share/lcs/spip/ecrire/inc_connect.php3.tmp"
+PATH2SPIP_LDAP_TMP="/usr/share/lcs/spip/config/connect.php.tmp"
 PATH2MAIN_TMP="/etc/postfix/main.cf.tmp"
+PATH2SQUIDCONF_TMP="/etc/squid/squid.conf.tmp"
 
 while read TYPE OLD NEW; do
   # Modification du mdp admin ldap
@@ -27,7 +29,7 @@ while read TYPE OLD NEW; do
     echo "Old : $OLD New : $NEW"
     # Modification de /etc/ldap/slapd.conf
     # ------------------------------------
-    # Modification de l'entrée userPassword dans l'annuaire
+    # Modification de l'entree userPassword dans l'annuaire
     #------------------------------------------------------
     /usr/share/lcs/sbin/admChangePwd.pl $OLD $NEW
     # Suppression de la ligne correspondant a l'ancien mdp 
@@ -64,7 +66,7 @@ while read TYPE OLD NEW; do
     rm $PATH2PAM_LDAP_TMP
     # Modification du fichier ldap.conf
     # ---------------------------------
-    # suppression de la ligne HOST (le cas échéant)
+    # suppression de la ligne HOST (le cas echeant)
     cat $PATH2LDAP | sed -e "/HOST/d" > $PATH2LDAP_TMP
     # Ajout du nouvel HOST
     cat $PATH2LDAP_TMP | sed -e "/BASE dc=/i\\" -e"HOST  $NEW" > $PATH2LDAP
@@ -142,14 +144,14 @@ while read TYPE OLD NEW; do
   fi
   # Modification du fichier /etc/samba/lmhosts (pour smbwebclient)
   # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-  # (olecam 19/12/2006: déclaration de l'IP du SE3, utile s'il se trouve derrière une passerelle)
+  # (olecam 19/12/2006: declaration de l'IP du SE3, utile s'il se trouve derriere une passerelle)
   if [ "$TYPE" = "se3Ip" -o "$TYPE" = "se3netbios" ]; then
     echo "Old : $OLD New : $NEW"
     ## recuperation des variables necessaires pour interoger mysql ###
     if [ -e /root/.my.cnf ]; then
 	. /root/.my.cnf 2>/dev/null
     else
-        echo "Fichier de conf inaccessible désolé !!"
+        echo "Fichier de conf inaccessible desole !!"
         echo "le script ne peut se poursuivre"
         exit 1
     fi
