@@ -6,6 +6,7 @@ if ( $servertype=="SE3" ) {
     // Cas du SE3
     $path_script="/usr/share/se3/scripts";
     $path_img="../elements/images";
+    $hidden_cat="4";
     require "entete.inc.php";
     require "ihm.inc.php";
     require "config.inc.php";
@@ -18,6 +19,7 @@ if ( $servertype=="SE3" ) {
     $pathlcsorse3="../lcs/includes/";
     $path_script="/usr/share/lcs/scripts";
     $path_img="../images";
+    $hidden_cat="10";
     include ("../lcs/includes/headerauth.inc.php");
     include ("../Annu/includes/ldap.inc.php");
     include ("../Annu/includes/ihm.inc.php");
@@ -64,9 +66,9 @@ $syncrepl = $_POST['syncrepl'];
 $result=mysql_query("SELECT name from params where name='replica_status'");
 $num = mysql_numrows( $result);
 if ($num == "0" ) {
-	$resultat=mysql_query("INSERT into params set id='NULL', name='replica_status', value='0', srv_id='0',descr='Etat du serveur de r&#233;plication',cat='4'");
+	$resultat=mysql_query("INSERT into params set id='NULL', name='replica_status', value='0', srv_id='0',descr='Etat du serveur de r&#233;plication',cat='$hidden_cat'");
 	$resultat=mysql_query("UPDATE params set descr='Adresse du serveur Lcs ou Slis (optionnel)' where name='lcsIp'");
-	$resultat=mysql_query("INSERT into params set id='NULL', name='replica_ip', value='', srv_id='0',descr='Adresse IP du serveur de r&#233;plication',cat='4'");
+	$resultat=mysql_query("INSERT into params set id='NULL', name='replica_ip', value='', srv_id='0',descr='Adresse IP du serveur de r&#233;plication',cat='$hidden_cat'");
 
 }
 
@@ -177,7 +179,7 @@ if ($action == "Ok" || $replica=="0") {
 		if ($replica == "1" || $replica == "3") {
 			//si pas de compte indique on utilise le compte AdmRdn et le MdP AdmPw
 			$options = "-c -m";  
-			$resultat=mysql_query("UPDATE params set cat='4' where name='ldap_server'");
+			$resultat=mysql_query("UPDATE params set cat='$hidden_cat' where name='ldap_server'");
 	 		if ($maitre == $replica) {
 				$resultat=mysql_query("UPDATE params set value='$ip' where name='replica_ip'");
 			}
@@ -193,7 +195,7 @@ if ($action == "Ok" || $replica=="0") {
 		if ($replica == "2" || $replica == "4") {	
 			//si pas de compte indique on utilise le compte AdmRdn et le MdP AdmPw
 			$options = "-c -s";  
-			$resultat=mysql_query("UPDATE params set cat='4' where name='ldap_server'");
+			$resultat=mysql_query("UPDATE params set cat='$hidden_cat' where name='ldap_server'");
 			if ($maitre == $replica) {
 				$resultat=mysql_query("UPDATE params set value='$ip' where name='ldap_server'");
 			} else {
