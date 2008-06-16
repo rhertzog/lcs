@@ -1,3 +1,9 @@
+lcs-preinstall (2.0-3~4) UNRELEASED; urgency=low
+  [ Jean-Luc Chretien ]
+  * Remove pam configuration, this task is now in ldapedu 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 16 Jun 2008 16:12:52 +0200
+
 lcs-preinstall (2.0-3~3) UNRELEASED; urgency=low
 
   [ Jean-Luc Chretien ]
