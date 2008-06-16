@@ -3,7 +3,6 @@ lcs-web (2.1~6) UNRELEASED; urgency=low
       [ Jean-Luc Chretien ]
       * Correct test for spip in barre.php
       * General cleanup for replica LDAP (mkSlapdConf.sh, replica.php, replica_log.php)
-      * Change of politic for givenName attribut
 
       [ Philippe Leclerc ]
       * Add type module S in modules_installes.php
