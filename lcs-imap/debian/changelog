@@ -1,3 +1,10 @@
+lcs-imap (2.1~5) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien]
+        * Correct install imap www files
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 16 Jun 2008 17:32:57 +0200
+
 lcs-imap (2.1~4) UNRELEASED; urgency=low
 
   [ Jean-Luc Chretien]
