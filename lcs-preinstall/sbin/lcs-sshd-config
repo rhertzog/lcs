@@ -71,6 +71,8 @@ ChallengeResponseAuthentication no
 
 X11Forwarding no
 X11DisplayOffset 10
+AllowTcpForwarding no
+
 PrintMotd no
 PrintLastLog yes
 TCPKeepAlive yes
@@ -87,17 +89,21 @@ Subsystem       sftp     internal-sftp
 
 UsePAM yes
 
-#Match group !admins
-#	   ChrootDirectory /home/%u
-#	   ForceCommand internal-sftp
-#	   AllowTcpForwarding no
-
 Match group sftp-allowed
           ChrootDirectory /home/%u
           ForceCommand internal-sftp
 
 Match group lcs-users
           ForceCommand /bin/false
+
+Match group admins
+	ChrootDirectory /home/%u
+        ForceCommand internal-sftp
+	AllowTcpForwarding yes
+	PermitTunnel yes
+Match user root
+	AllowTcpForwarding yes
+	PermitTunnel yes
 
 EOF
 
