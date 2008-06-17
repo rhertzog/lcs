@@ -142,7 +142,7 @@ case "$1" in
             #
             # Re-Configure HOSTNAME if necessary
             #
-            if [ $HOSTNAME_MUST_BE_RECONFIGURE = "1" ]; then
+            if [ "$HOSTNAME_MUST_BE_RECONFIGURE" = "1" ]; then
                 echo "127.0.0.1     localhost
 127.0.1.1       $LCSFULLDOMAIN      $HOSTNAME
 
