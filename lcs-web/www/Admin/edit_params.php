@@ -66,7 +66,7 @@ if ((!isset($submit)) and (!isset($queri))) {
 	if ( $cat==0 || $cat==3 )
 		mktable("Paramètres Réseau",aff_param_form(3));
 	if ( $cat==0 || $cat==4 )
-        	mktable("Paramètres VLANS",aff_param_form(5));
+        	mktable("Paramètres VLANS",aff_param_form(4));
 	if ( $cat==0 || $cat==5 )
         	mktable("Certificats SSL",aff_param_form(5));
 	if ( $cat==0 || $cat==10 )
