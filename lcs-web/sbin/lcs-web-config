@@ -105,7 +105,7 @@ member: uid=admin,ou=People,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
         # Installation www.#DOMAIN# virtualhost 
         sed -e "s/#IPADDR0#/$IPADDR0/g" \
             -e "s/#LCSDOMAIN#/$DOMAIN/g" \
-	    /var/lib/lcs/web/apache2/virtualhost.www.in
+	    /var/lib/lcs/web/apache2/virtualhost.www.in \
 	    >/etc/apache2/sites-available/www.$DOMAIN
         a2ensite www.$DOMAIN
 
