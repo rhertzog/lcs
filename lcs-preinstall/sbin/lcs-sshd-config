@@ -100,10 +100,10 @@ Match group admins
 	ChrootDirectory /home/%u
         ForceCommand internal-sftp
 	AllowTcpForwarding yes
-	PermitTunnel yes
+
 Match user root
 	AllowTcpForwarding yes
-	PermitTunnel yes
+
 
 EOF
 
