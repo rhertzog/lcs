@@ -3,6 +3,7 @@ lcs-web (2.1~8) UNRELEASED; urgency=low
       [ Jean-Luc Chretien ]
       * Drop folder conf/apache2
       * Search to drop /etc/lcs/apache.conf
+      * Correct link "aide" in statandgo.php
 
 lcs-web (2.1~7) UNRELEASED; urgency=low
 
