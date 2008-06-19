@@ -4,7 +4,9 @@
 set -e
 case "$1" in
 	purge|remove)
-
+          # Drop directives for lcs-web
+          rm -f /etc/apache2/lcs-main/55_lcs.conf
+          invoke-rc.d apache2 force-reload
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
