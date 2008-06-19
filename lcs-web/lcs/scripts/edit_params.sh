@@ -1,5 +1,5 @@
 #!/bin/bash
-# edit_params.sh version du 18/06/2008
+# edit_params.sh version du 14/06/2008
 
 # Fichiers de configuration
 PATH2SLAPD="/etc/ldap/slapd.conf"
@@ -75,7 +75,7 @@ while read TYPE OLD NEW; do
     # ---------------------------------------
     cat $PATH2IMAP_LDAP | sed -e "s/$OLD/$NEW/g" > $PATH2IMAP_LDAP_TMP
     mv $PATH2IMAP_LDAP_TMP $PATH2IMAP_LDAP
-    # Modification du fichier /usr/share/lcs/spip/config/connect.php3
+    # Modification du fichier /usr/share/lcs/spip/ecrire/inc_connect.php3
     # -------------------------------------------------------------------
     if [ -e $PATH2SPIP_LDAP  ]; then
       cat $PATH2SPIP_LDAP | sed -e "s/\"$OLD\"/\"$NEW\"/g" > $PATH2SPIP_LDAP_TMP

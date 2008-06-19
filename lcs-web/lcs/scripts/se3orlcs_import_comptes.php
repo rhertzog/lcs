@@ -133,4 +133,9 @@
 		// Il faudra appliquer un correct SID lors de l'installation d'un se3
 		if (!isset($domainsid)) $domainsid ="S-0-0-00-0000000000-000000000-0000000000";
 	}
+
+	// AJOUT: 20080610
+	$attribut_pseudo="initials";
+	$controler_pseudo="y";
+	$corriger_givenname_si_diff="y";
 ?>

@@ -2742,13 +2742,33 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 
 				// ================================
 				// Vérification/correction du GECOS
-				if($corriger_gecos_si_diff=='y'){
+				if($corriger_gecos_si_diff=='y') {
 					$nom=remplace_accents(traite_espaces($prof[$cpt]["nom_usage"]));
 					$prenom=remplace_accents(traite_espaces($prof[$cpt]["prenom"]));
 					if($prof[$cpt]["sexe"]==1){$sexe="M";}else{$sexe="F";}
 					$naissance=$date;
 					verif_et_corrige_gecos($uid,$nom,$prenom,$naissance,$sexe);
 				}
+				// ================================
+
+				// ================================
+				// Vérification/correction du givenName
+				if($corriger_givenname_si_diff=='y') {
+					$prenom=strtolower(remplace_accents(traite_espaces($prof[$cpt]["prenom"])));
+					//my_echo("Test de la correction du givenName: verif_et_corrige_givenname($uid,$prenom)<br />\n");
+					verif_et_corrige_givenname($uid,$prenom);
+				}
+				// ================================
+
+				// ================================
+				// Vérification/correction du pseudo
+				//if($annuelle=="y") {
+					if($controler_pseudo=='y') {
+						$nom=remplace_accents(traite_espaces($prof[$cpt]["nom_usage"]));
+						$prenom=strtolower(remplace_accents(traite_espaces($prof[$cpt]["prenom"])));
+						verif_et_corrige_pseudo($uid,$nom,$prenom);
+					}
+				//}
 				// ================================
 
 			}
@@ -2969,13 +2989,33 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 
 			// ================================
 			// Vérification/correction du GECOS
-			if($corriger_gecos_si_diff=='y'){
+			if($corriger_gecos_si_diff=='y') {
 				$nom=remplace_accents(traite_espaces($eleve[$numero]["nom"]));
 				$prenom=remplace_accents(traite_espaces($eleve[$numero]["prenom"]));
 				$sexe=$eleve[$numero]["sexe"];
 				$naissance=$eleve[$numero]["date"];
 				verif_et_corrige_gecos($uid,$nom,$prenom,$naissance,$sexe);
 			}
+			// ================================
+
+			// ================================
+			// Vérification/correction du givenName
+			if($corriger_givenname_si_diff=='y') {
+				$prenom=strtolower(remplace_accents(traite_espaces($eleve[$numero]["prenom"])));
+				//my_echo("Test de la correction du givenName: verif_et_corrige_givenname($uid,$prenom)<br />\n");
+				verif_et_corrige_givenname($uid,$prenom);
+			}
+			// ================================
+
+			// ================================
+			// Vérification/correction du pseudo
+			//if($annuelle=="y") {
+				if($controler_pseudo=='y') {
+					$nom=remplace_accents(traite_espaces($eleve[$numero]["nom"]));
+					$prenom=strtolower(remplace_accents(traite_espaces($eleve[$numero]["prenom"])));
+					verif_et_corrige_pseudo($uid,$nom,$prenom);
+				}
+			//}
 			// ================================
 		}
 		else{

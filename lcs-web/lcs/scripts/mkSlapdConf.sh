@@ -370,6 +370,16 @@ then
     serveurs="$ldap_server $replica_ip"
     # touch syncrepl vide pour indiquer la methode
     touch /etc/ldap/syncrepl.conf
+    # Creation du fichier syncprov.conf
+    if [ ! -e /etc/ldap/syncprov.conf ]
+    then
+echo "moduleload syncprov
+sessionlog   123 500
+overlay syncprov
+syncprov-checkpoint 50 5
+syncprov-sessionlog 50" >  /etc/ldap/syncprov.conf
+    fi
+    echo "include  /etc/ldap/syncprov.conf" >> /etc/ldap/slapd.conf
 fi
 
 ################################################################################# 
