@@ -10,7 +10,7 @@ if ($use=="Applis") $urluse="applis.php";
 elseif ($use=="Annu") $urluse="../Annu/";
 elseif ($use=="Forum") $urluse="../Forum/";
 elseif ($use=="Admin") $urluse="../Admin/index.php";
-elseif ($use=="Aide") $urluse="../lcs-doc/";
+elseif ($use=="Aide") $urluse="../doc/";
 elseif ( ! isset($urluse) ) {
     # Cas des paquets modules
     #echo "on examine le cas des modules $use<br>";
