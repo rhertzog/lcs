@@ -81,43 +81,10 @@ member: uid=admin,ou=People,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
             chown -R webmaster.etab:www-data /home/webmaster.etab/Maildir
             chmod -R 700 /home/webmaster.etab/Maildir
         fi
-        #
-        # dir.conf
-        #
-        echo "mise en place dir.conf"
-        cp /var/lib/lcs/web/apache2/dir.conf.in /etc/apache2/mods-available/dir.conf
-        chmod 644 /etc/apache2/mods-available/dir.conf
-        #
-        # Desactivate lcs virtualhost of interfacedu-lcs
-        #
-        echo "Mise en place virtualhosts"
-        a2dissite lcs > /dev/null 2>&1
-
-        # Installation real lcs virtualhost 
-        LCSFULLDOMAIN="$HOSTNAME.$DOMAIN"
-        sed -e "s/#LCSDOMAIN#/$DOMAIN/g" \
-	    -e "s/#LCSFULLDOMAIN#/$LCSFULLDOMAIN/g" \
-	    -e "s/#IPADDR0#/$IPADDR0/g" \
-	    /var/lib/lcs/web/apache2/virtualhost.lcs.in \
-	    >/etc/apache2/sites-available/$LCSFULLDOMAIN
-        a2ensite $LCSFULLDOMAIN
-
-        # Installation www.#DOMAIN# virtualhost 
-        sed -e "s/#IPADDR0#/$IPADDR0/g" \
-            -e "s/#LCSDOMAIN#/$DOMAIN/g" \
-	    /var/lib/lcs/web/apache2/virtualhost.www.in \
-	    >/etc/apache2/sites-available/www.$DOMAIN
-        a2ensite www.$DOMAIN
-
-        # Enable mod rewrite
-        a2enmod rewrite
-        cp /var/lib/lcs/web/apache2/userdir.conf.in /etc/apache2/mods-available/userdir.conf
-        sed -i s/#FQN#/$LCSFULLDOMAIN/g /etc/apache2/mods-available/userdir.conf
-
-        # Include path in php.ini
-        grep -v ^include_path= /etc/php5/apache2/php.ini > /tmp/php.in
-        echo "include_path=\".:./includes/:/usr/share/php/smarty/libs/\"" >> /tmp/php.in
-        cp  /tmp/php.in /etc/php5/apache2/php.ini
+        # add include lcs apache configuration
+        cat >/etc/apache2/lcs-main/60_lcs.conf <<EOF
+Include /etc/lcs/apache.conf
+EOF
 
         # Installation menu.d if not present
         if [ ! -d /var/www/lcs/includes/menu.d ]; then
