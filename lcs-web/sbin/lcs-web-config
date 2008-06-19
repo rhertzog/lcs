@@ -77,13 +77,13 @@ member: uid=admin,ou=People,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
             chown -R webmaster.etab:lcs-users /home/webmaster.etab/public_html
             chown -R webmaster.etab:lcs-users /home/webmaster.etab/Documents
             chmod 770 /home/webmaster.etab/public_html /home/webmaster.etab/Documents
-
             chown -R webmaster.etab:www-data /home/webmaster.etab/Maildir
             chmod -R 700 /home/webmaster.etab/Maildir
         fi
         # add include lcs apache configuration
-        cat >/etc/apache2/lcs-main/60_lcs.conf <<EOF
-Include /etc/lcs/apache.conf
+        cat >/etc/apache2/lcs-main/55_lcs.conf <<EOF
+Alias /Plugins/ /usr/share/lcs/Plugins/
+Alias /Modules/ /usr/share/lcs/Modules/
 EOF
 
         # Installation menu.d if not present
