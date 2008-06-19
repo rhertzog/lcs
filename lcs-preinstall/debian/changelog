@@ -3,6 +3,12 @@ lcs-preinstall (2.0-3~5) UNRELEASED; urgency=low
   [ Jean-Luc Chretien ]
   * Remove PermitTunnel in match sections
 
+  [ Raphael Hertzog ]
+  * Use 389 as default value for LDAP_PORT if none is given.
+  * Use 127.0.0.1 as default value for LDAP_SERVER/LDAP_MASTER_SERVER if none is given.
+  * Use 123 as default value for LDAP_RID is none is given.
+  * Other shell cleanups in sbin/lcs-preinstall-config at the same time.
+
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 Jun 2008 14:52:22 +0200
 
 lcs-preinstall (2.0-3~4) UNRELEASED; urgency=low

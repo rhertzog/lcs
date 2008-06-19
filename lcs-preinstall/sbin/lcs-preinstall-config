@@ -31,22 +31,22 @@ case "$1" in
         #
         # Detect mode AUTO for ldap lcsmgr and root MySQL passorwds
         #
-        if [ -z $MYSQLPW ] || [ $MYSQLPW = "AUTO" ]; then
+        if [ -z "$MYSQLPW" ] || [ "$MYSQLPW" = "AUTO" ]; then
             MYSQLPW=`pwgen -1 -s 8`
             perl -pe "s/MYSQLPW.*/MYSQLPW=\\\"$MYSQLPW\\\"/" -i /etc/lcs/lcs.conf
         fi
-        if [ -z $LCSMGRPASS ] || [ $LCSMGRPASS = "AUTO" ]; then
+        if [ -z "$LCSMGRPASS" ] || [ "$LCSMGRPASS" = "AUTO" ]; then
             LCSMGRPASS=`pwgen -1 -s 8`
             perl -pe "s/LCSMGRPASS.*/LCSMGRPASS=\\\"$LCSMGRPASS\\\"/" -i /etc/lcs/lcs.conf
         fi
-        if [ -z $LDAP_ADMIN_PW ] || [ $LDAP_ADMIN_PW = "AUTO" ]; then
+        if [ -z "$LDAP_ADMIN_PW" ] || [ "$LDAP_ADMIN_PW" = "AUTO" ]; then
             LDAP_ADMIN_PW=`pwgen -1 -s 8`
             perl -pe "s/LDAP_ADMIN_PW.*/LDAP_ADMIN_PW=\\\"$LDAP_ADMIN_PW\\\"/" -i /etc/lcs/lcs.conf
         fi
         #
         # if lcs_db exist then drop
         #
-        if [ -d /var/lib/mysql/lcs_db ];then
+        if [ -d /var/lib/mysql/lcs_db ]; then
              mysql -e "DROP DATABASE lcs_db;"
         fi
         #
@@ -57,10 +57,10 @@ case "$1" in
             -e "s|@@HOSTNAME@@|"$HOSTNAME"|g" \
             -e "s|@@LCSDOMAIN@@|"$DOMAIN"|g" \
             -e "s|@@LCSFULLDOMAIN@@|"$LCSFULLDOMAIN"|g" \
-            -e "s|@@LDAP_RID@@|"$LDAP_RID"|g" \
-            -e "s|@@LDAPSERVER@@|"$LDAP_SERVER"|g" \
-            -e "s|@@LDAP_MASTER_SERVER@@|"$LDAP_MASTER_SERVER"|g" \
-            -e "s|@@LDAPPORT@@|"$LDAP_PORT"|g" \
+            -e "s|@@LDAP_RID@@|"${LDAP_RID:-123}"|g" \
+            -e "s|@@LDAPSERVER@@|"${LDAP_SERVER:-127.0.0.1}"|g" \
+            -e "s|@@LDAP_MASTER_SERVER@@|"${LDAP_MASTER_SERVER:-127.0.0.1}"|g" \
+            -e "s|@@LDAPPORT@@|"${LDAP_PORT:-389}"|g" \
             -e "s|@@BASEDN@@|"$LDAP_BASE_DN"|g" \
             -e "s|@@ADMINRDN@@|"cn=$LDAP_ADMIN_RDN"|g" \
             -e "s|@@ADMINPASSWD@@|"$LDAP_ADMIN_PW"|g" \
@@ -125,19 +125,19 @@ case "$1" in
             # Put root MySQL password in .my.cnf if not exist
             #
             if [ ! -e /root/.my.cnf ]; then
-                mysqladmin password $MYSQLPW
+                mysqladmin password "$MYSQLPW"
                 echo "[client]
                 password=$MYSQLPW
                 user=root" > /root/.my.cnf
                 chmod 600 /root/.my.cnf
-                mysqladmin reload -u root -p$MYSQLPW
+                mysqladmin reload -u root "-p$MYSQLPW"
             fi
             #
             # Put Time on server
             #
-            if [ ! -z $NTP_SERVER ]; then
+            if [ -n "$NTP_SERVER" ]; then
                 echo "Mise à l'heure du serveur"
-                /usr/sbin/ntpdate -s $NTP_SERVER || true
+                /usr/sbin/ntpdate -s "$NTP_SERVER" || true
             fi
             #
             # Re-Configure HOSTNAME if necessary
