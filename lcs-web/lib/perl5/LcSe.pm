@@ -256,7 +256,7 @@ sub processGepUser {
 
   my ( $uniqueNumber, $nom, $prenom, $date, $sexe, $password ) = @_;
   if ($password eq 'undef') { $password = $date }
-  ( $uid, $cn, $givenName, $sn, $crypt, $gecos ) = gep2posixAccount( $prenom, $nom, $password, $date, $sexe );
+  ( $uid, $cn, $givenName, $pseudo, $sn, $crypt, $gecos ) = gep2posixAccount( $prenom, $nom, $password, $date, $sexe );
   # S'il existe un UID issu du fichier f_uid on le prend
   $uid = $Admin_UID{$uniqueNumber} || $uid;
   # Recherche EMPLOYEENUMBER correspondant dans l'annuaire
@@ -354,8 +354,9 @@ sub addUserEntry {
   @entry = (
 	    'uid',            $uid,
 	    'cn',             $cn,
-	    'givenname',      $givenName,
+	    'givenName',      $givenName,
 	    'sn',             $sn,
+            'initials',        $pseudo,
 	    'mail',           "$uid\@$domain",
 	    'objectClass',    'top',
 	    'objectClass',    'posixAccount',
@@ -642,18 +643,20 @@ sub gep2posixAccount {
   $crypt = crypt $password, $salt;
 
   # Génération de cn, givenName et sn
-  $cn = ucfirst($prenom1);
-  $cn = "$cn $sn";  
-  $givenName = $prenom1 . $firstletter_nom;
+  $sn = unac_string('utf8',$sn);
+  $prenom = unac_string('utf8',$prenom1);
+  $Uprenom = ucfirst($prenom);
+  $cn = "$Uprenom $sn";
+  $givenName = $Uprenom;
+  $pseudo = $prenom . $firstletter_nom;
 
   # Génération du gecos
   if ($sexe eq '1') { $sexe = 'M' }
   if ($sexe eq '2') { $sexe = 'F' }
 
-  $unacn = unac_string('utf8', ($cn));
-  $gecos = "$unacn,$date,$sexe,N";
+  $gecos = "$cn,$date,$sexe,N";
 
-  @data = ( $uid, $cn, $givenName, $sn, $crypt, $gecos );
+  @data = ( $uid, $cn, $givenName, $pseudo, $sn, $crypt, $gecos );
   return @data;
 }
 
