@@ -36,9 +36,4 @@ if (($shell eq '/bin/bash' || $shell eq '/bin/true') && $homeDirectory =~ /(.*)\
                 replace => { 'homeDirectory' => "$1" } 
 	);
 }
-if ($shell eq '/usr/lib/sftp-server' && $homeDirectory !~ /\/\.\//) {
-	$res = $lcs_ldap->modify(
-		$dnToModify,
-		replace => { 'homeDirectory' => "$homeDirectory/./" }
-	);
-}
+
