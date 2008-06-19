@@ -4,6 +4,10 @@ lcs-squirrelmail (2.1~4) UNRELEASED; urgency=low
     * Correct typo on name in mysql request  in lcs-squirrelmail-config
     * Add postrm for remove squirrelmail in lcs_db.params
       
+  [ Raphael Hertzog ]
+  * Change apache configuration to match the new interfacedu-lcs
+    packaging.
+
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 13 Jun 2008 14:03:43 +0200
 
 lcs-squirrelmail (2.1~3) UNRELEASED; urgency=low

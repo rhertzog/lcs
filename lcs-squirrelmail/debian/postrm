@@ -3,18 +3,15 @@
 
 set -e
 case "$1" in
-	purge|remove)
-            if pgrep -u mysql mysqld >/dev/null; then
-                mysql -e "DELETE FROM lcs_db.applis WHERE name = 'squirrelmail';"
-            fi
-            FQN=`hostname -f`
-            grep -v "Include /etc/squirrelmail/apache.conf" /etc/apache2/sites-available/$FQN >> /tmp/$FQN
-            mv /tmp/$FQN /etc/apache2/sites-available/$FQN
-            invoke-rc.d apache2 reload > /dev/null 2>&1
+    purge|remove)
+	if pgrep -u mysql mysqld >/dev/null; then
+	    mysql -e "DELETE FROM lcs_db.applis WHERE name = 'squirrelmail';"
+	fi
+	rm -f /etc/apache2/lcs-main/60_squirrelmail.conf
+	invoke-rc.d apache2 reload >/dev/null 2>&1
         ;;
 
-	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
         ;;
 
     *)

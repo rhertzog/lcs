@@ -9,6 +9,7 @@ case "$1" in
 	       . /usr/share/slis/slis-common.sh
 	       handle_initial_config lcs-squirrelmail-config 95
 	   fi
+	   echo "Include /etc/squirrelmail/apache.conf" >/etc/apache2/lcs-main/60_squirrelmail.conf
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)

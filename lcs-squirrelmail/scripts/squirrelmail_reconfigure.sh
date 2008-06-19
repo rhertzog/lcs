@@ -33,11 +33,4 @@ echo -e "\t'name' => 'Annuaire de tous les utilisateurs',">> /etc/squirrelmail/c
 echo -e "\t'protocol' => 2">> /etc/squirrelmail/config_local.php
 echo -e ");">> /etc/squirrelmail/config_local.php
 echo "?>" >> /etc/squirrelmail/config_local.php
-#
-# apache2
-#
-RESULT=`grep '^Include /etc/squirrelmail/apache.conf' /etc/apache2/sites-available/default | wc -l`
-if [ "$RESULT" = "0" ]; then
-    echo "Include /etc/squirrelmail/apache.conf" >> /etc/apache2/sites-available/default
-    /etc/init.d/apache2 reload > /dev/null 2>&1
-fi
+

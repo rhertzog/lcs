@@ -23,11 +23,6 @@ configure() {
     LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
     # squirrelmail_reconfigure.sh <LDAP_SERVER> <LDAP_BASE_DN>
     /usr/share/lcs/scripts/squirrelmail_reconfigure.sh $LDAP_SERVER $LDAP_BASE_DN
-
-    # Ajout Include apache2
-    FQN=`hostname -f`
-    echo "Include /etc/squirrelmail/apache.conf" >> /etc/apache2/sites-available/$FQN
-    invoke-rc.d apache2 restart >/dev/null
 }
 
 case "$1" in
