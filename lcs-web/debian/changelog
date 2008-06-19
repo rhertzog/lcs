@@ -1,8 +1,9 @@
 lcs-web (2.1~7) UNRELEASED; urgency=low
-      [ Jean-Luc Chretien ]
 
+      [ Jean-Luc Chretien ]
+      * New apache2 configuration in interfacedu-lcs
       * Modifications for givenName in import sconet and import txt (LcSe.pm, crob_ldap_functions.php,import_comptes.php, se3orlcs_import_comptes.php) 
-      * Add syncprov.conf for replica LDAP
+      * Add syncprov.conf for replica LDAP mkSlapdConf.sh, edit_params.sh
       * Correct appli Annu mod_user_entry.php, mod_entry.php, ldap.inc.php, ihm.inc.php
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Jun 2008 21:48:00 +0200
