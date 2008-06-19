@@ -1,6 +1,0 @@
-<VirtualHost *:80>
-        ServerAdmin webmaster.etab@#LCSDOMAIN#
-        ServerName www.#LCSDOMAIN#
-        DocumentRoot /home/webmaster.etab/public_html
-        CustomLog /var/log/apache2/www.#LCSDOMAIN#-access.log common
-</VirtualHost>
