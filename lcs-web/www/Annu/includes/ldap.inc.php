@@ -5,7 +5,7 @@
    Annu/includes/ldap.inc.php
    « jLCF » jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice académie de Caen
-   Derniere version : 24/01/2008
+   Derniere version : 16/06/2008
    ============================================= */
 
 // Fonctions de comparaison utilisées dans la fonction usort
@@ -65,14 +65,7 @@ function duree ($t0,$t1) {
   $temps = ( $tfin - $tini );
   return ($temps);
 }
-//----------------------------------------------------------
-// Retourne un tableau avec les variables d'un utilisateur
-// $mode : true => recherche
-//                   - de l'ensemble des parametres utilisateur
-//                   - des groupes d'appartenance
-// $mode = false => recherche
-//                    - de quelques parametres utilisateur
-/*
+
 function people_get_variables ($uid, $mode)
 {
   global $ldap_server, $ldap_port, $dn;
@@ -84,93 +77,8 @@ function people_get_variables ($uid, $mode)
     "uid",				// login
     "cn",				// Prenom  Nom
     "sn",				// Nom
-    "givenname",			// Pseudo
-    "mail",				// Mail
-    "telephonenumber",
-    "homedirectory",                    // Home directory personnal web space
-    "description",
-    "loginshell",
-    "gecos"				// Date de naissance,Sexe (F/M),
-  );
-
-
-  $ldap_group_attr = array (
-    "cn",
-    "owner",
-    "description",  // Description de l'equipe
-    "member"
-  );
-
-  $ds = @ldap_connect ( $ldap_server, $ldap_port );
-  if ( $ds ) {
-    $r = @ldap_bind ( $ds ); // Bind anonyme
-    if ($r) {
-      $result = @ldap_read ( $ds, "uid=".$uid.",".$dn["people"], "(objectclass=posixAccount)", $ldap_people_attr );
-      if ($result) {
-        $info = @ldap_get_entries ( $ds, $result );
-        if ( $info["count"]) {
-          // Traitement du champ gecos pour extraction de date de naissance, sexe
-          $gecos = $info[0]["gecos"][0];
-          $tmp = split ("[\,\]",$info[0]["gecos"][0],4);
-          $ret_people = array (
-              "uid"			=> $info[0]["uid"][0],
-              "nom"			=> stripslashes( utf8_decode($info[0]["sn"][0]) ),
-              "fullname"		=> stripslashes( utf8_decode($info[0]["cn"][0]) ),
-              "pseudo"		        => utf8_decode($info[0]["givenname"][0]),
-              "email"		        => $info[0]["mail"][0],
-              "tel"			=> $info[0]["telephonenumber"][0],
-              "homedirectory" 	        => $info[0]["homedirectory"][0],
-              "description"	        => utf8_decode($info[0]["description"][0]),
-              "shell"			=> $info[0]["loginshell"][0],
-              "sexe"			=> $tmp[2]
-            );
-        }
-        @ldap_free_result ( $result );
-      }
-       if ($mode) {
-        // Recherche des groupes d'appartenance dans la branche Groups
-        $filter = "(|(&(objectclass=groupOfNames)(member= uid=$uid,".$dn["people"]."))(&(objectclass=groupOfNames)(owner= uid=$uid,".$dn["people"]."))(&(objectclass=posixGroup)(memberuid=$uid)))";
-        $result = @ldap_list ( $ds, $dn["groups"], $filter, $ldap_group_attr );
-        if ($result) {
-          $info = @ldap_get_entries ( $ds, $result );
-          if ( $info["count"]) {
-            for ($loop=0; $loop<$info["count"];$loop++) {
-              if ($info[$loop]["member"][0] == "") $typegr="posixGroup"; else $typegr="groupOfNames";
-              $ret_group[$loop] = array (
-                "cn"           => $info[$loop]["cn"][0],
-                "owner"        => $info[$loop]["owner"][0],
-                "description"  => utf8_decode($info[$loop]["description"][0]),
-                "type" => $typegr
-              );
-            }
-            usort($ret_group, "cmp_cn");
-          }
-          @ldap_free_result ( $result );
-        }
-      } // Fin recherche des groupes
-    } else {
-      $error = "Echec du bind anonyme";
-    }
-    @ldap_close ( $ds );
-  } else {
-    $error = "Erreur de connection au serveur LDAP";
-  }
-
-  return array($ret_people, $ret_group);
-}
-*/
-function people_get_variables ($uid, $mode)
-{
-  global $ldap_server, $ldap_port, $dn;
-  global $error;
-  $error="";
-
-  // LDAP attribute
-  $ldap_people_attr = array(
-    "uid",				// login
-    "cn",				// Prenom  Nom
-    "sn",				// Nom
-    "givenname",			// Pseudo
+    "givenname",			// Prenom
+    "initials",                         // Pseudo
     "mail",				// Mail
     "telephonenumber",
     "homedirectory",                    // Home directory personnal web space
@@ -201,7 +109,9 @@ function people_get_variables ($uid, $mode)
               "uid"			=> $info[0]["uid"][0],
               "nom"			=> stripslashes( utf8_decode($info[0]["sn"][0]) ),
               "fullname"		=> stripslashes( utf8_decode($info[0]["cn"][0]) ),
-              "pseudo"		        => utf8_decode($info[0]["givenname"][0]),
+              "prenom"		        => utf8_decode($info[0]["givenname"][0]),
+              "pseudo"		        => utf8_decode($info[0]["initials"][0]),
+              "gecos"                   => utf8_decode($info[0]["gecos"][0]),
               "email"		        => $info[0]["mail"][0],
               "tel"			=> $info[0]["telephonenumber"][0],
               "homedirectory" 	        => $info[0]["homedirectory"][0],

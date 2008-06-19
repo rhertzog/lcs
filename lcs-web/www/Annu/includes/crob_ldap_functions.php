@@ -4,7 +4,7 @@
    /**
    * Fonctions pour l'import sconet
 
-   * @Version $Id: crob_ldap_functions.php 3011 2008-06-04 14:54:36Z crob $
+   * @Version $Id: crob_ldap_functions.php 3047 2008-06-18 07:42:50Z crob $
 
    * @Projet LCS / SambaEdu
 
@@ -1319,6 +1319,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	// Recuperer le gidNumber par defaut -> lcs-users (1000) ou slis (600)
 	global $defaultgid,$domain,$defaultshell,$domainsid,$uidPolicy;
+	global $attribut_pseudo;
 
 	fich_debug("================\n");
 	fich_debug("add_user:\n");
@@ -1333,8 +1334,10 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 
 
 	// crob_init(); Ne sert a rien !!!!
-	$nom=ereg_replace("[^a-z_-]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz")));
-	$prenom=ereg_replace("[^a-z_-]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz")));
+	//$nom=ereg_replace("[^a-z_-]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz")));
+	//$prenom=ereg_replace("[^a-z_-]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz")));
+	$nom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom")))),"'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","_AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz")));
+	$prenom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom")))),"'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","_AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz")));
 
 	$nom=ucfirst(strtolower($nom));
 	$prenom=ucfirst(strtolower($prenom));
@@ -1366,7 +1369,10 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	$attribut["uid"]="$uid";
 	$attribut["cn"]="$prenom $nom";
 
-	$attribut["givenName"]=strtolower($prenom).strtoupper(substr($nom,0,1));
+	//$attribut["givenName"]=strtolower($prenom).strtoupper(substr($nom,0,1));
+	$attribut["givenName"]=ucfirst(strtolower($prenom));
+	//$attribut["$attribut_pseudo"]=strtolower($prenom).strtoupper(substr($nom,0,1));
+	$attribut["$attribut_pseudo"]=ereg_replace(" ","_",strtolower($prenom).strtoupper(substr($nom,0,1)));
 
 	$attribut["sn"]="$nom";
 
@@ -1490,6 +1496,122 @@ function verif_et_corrige_gecos($uid,$nom,$prenom,$naissance,$sexe){
 			}
 			my_echo("<br />\n");
 		}
+	}
+}
+
+/**
+
+* Verifie et corrige le givenName
+* @Parametres
+
+* @Return
+
+*/
+
+function verif_et_corrige_givenname($uid,$prenom) {
+	// Verification/correction du givenName
+
+	// Correction du nom/prenom fournis
+	$prenom=remplace_accents(traite_espaces($prenom));
+
+	$prenom=ereg_replace("[^a-z_-]","",strtolower("$prenom"));
+
+	// FAUT-IL LA MAJUSCULE?
+	$prenom=ucfirst(strtolower($prenom));
+
+	unset($attribut);
+	//$attribut=array("givenName");
+	$attribut=array("givenname");
+	$tab=get_tab_attribut("people", "uid=$uid", $attribut);
+	//my_echo("\$tab=get_tab_attribut(\"people\", \"uid=$uid\", \$attribut)<br />");
+	//my_echo("count(\$tab)=".count($tab)."<br />");
+	if(count($tab)>0){
+		//my_echo("\$tab[0]=".$tab[0]." et \$prenom=$prenom<br />");
+		if("$tab[0]"!="$prenom") {
+			unset($attributs);
+			$attributs=array();
+			//$attributs["givenName"]=strtolower($prenom);
+			$attributs["givenName"]=$prenom;
+			my_echo("Correction de l'attribut 'givenName': ");
+			if(modify_attribut ("uid=$uid", "people", $attributs, "replace")) {
+				my_echo("<font color='green'>SUCCES</font>");
+			}
+			else{
+				my_echo("<font color='red'>ECHEC</font>");
+				$nb_echecs++;
+			}
+			my_echo("<br />\n");
+		}
+	}
+}
+
+/**
+
+* Verifie et corrige le pseudo
+* @Parametres
+
+* @Return
+
+*/
+
+function verif_et_corrige_pseudo($uid,$nom,$prenom) {
+	// Verification/correction de l'attribut choisi pour le pseudo
+	global $attribut_pseudo;
+	global $annuelle;
+
+	// En minuscules pour la recherche:
+	$attribut_pseudo_min=strtolower($attribut_pseudo);
+
+	// Correction du nom/prenom fournis
+	$nom=remplace_accents(traite_espaces($nom));
+	$prenom=remplace_accents(traite_espaces($prenom));
+
+	$nom=ereg_replace("[^a-z_-]","",strtolower("$nom"));
+	$prenom=ereg_replace("[^a-z_-]","",strtolower("$prenom"));
+
+	unset($attribut);
+	$attribut=array("$attribut_pseudo_min");
+	$tab=get_tab_attribut("people", "uid=$uid", $attribut);
+	//my_echo("\$tab=get_tab_attribut(\"people\", \"uid=$uid\", \$attribut)<br />");
+	//my_echo("count(\$tab)=".count($tab)."<br />");
+
+	$tmp_pseudo=strtolower($prenom).strtoupper(substr($nom,0,1));
+	if(count($tab)>0){
+		// Si le pseudo existe déjà, on ne réinitialise le pseudo que lors d'un import annuel
+		if($annuelle=="y") {
+			//my_echo("\$tab[0]=".$tab[0]." et \$prenom=$prenom<br />");
+			//$tmp_pseudo=strtolower($prenom).strtoupper(substr($nom,0,1));
+			if("$tab[0]"!="$tmp_pseudo") {
+				unset($attributs);
+				$attributs=array();
+				$attributs["$attribut_pseudo"]=$tmp_pseudo;
+				my_echo("Correction de l'attribut '$attribut_pseudo': ");
+				if(modify_attribut ("uid=$uid", "people", $attributs, "replace")) {
+					my_echo("<font color='green'>SUCCES</font>");
+				}
+				else{
+					my_echo("<font color='red'>ECHEC</font>");
+					$nb_echecs++;
+				}
+				my_echo("<br />\n");
+			}
+		}
+	}
+	else {
+		// L'attribut pseudo n'existait pas:
+		unset($attributs);
+		$attributs=array();
+		//$attributs["$tmp_pseudo"]=strtolower($prenom).strtoupper(substr($nom,0,1));
+		$attributs["$attribut_pseudo"]=$tmp_pseudo;
+		my_echo("Renseignement de l'attribut '$attribut_pseudo': ");
+		if(modify_attribut("uid=$uid", "people", $attributs, "add")) {
+			my_echo("<font color='green'>SUCCES</font>");
+		}
+		else{
+			my_echo("<font color='red'>ECHEC</font>");
+			$nb_echecs++;
+		}
+		my_echo("<br />\n");
 	}
 }
 

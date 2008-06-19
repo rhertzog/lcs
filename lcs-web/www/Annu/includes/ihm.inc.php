@@ -2,11 +2,11 @@
 /* =============================================
    Projet LCS-SE3
    Consultation de l'annuaire LDAP
-   Annu/Search.php
+   Annu/includes/ihm.inc.php
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
    « wawa »  olivier.lecluse@crdp.ac-caen.fr
-   Equipe Tice académie de Caen
-   Derniere mise à jour 08/05/2008
+   Equipe Tice academie de Caen
+   Derniere mise à jour 18/06/2008
    Distribué selon les termes de la licence GPL
    ============================================= */
 
@@ -14,12 +14,27 @@
 $char_spec = "&_#@£%§:!?*$";
 
 // Remplace les caractères accentués par leurs equivalents
+
 // et l'espace par underscore
 function enleveaccents($chaine){
   $chaine = strtr($chaine,
                   "ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ ",
                   "aaaaaaaaaaaaooooooooooooeeeeeeeecciiiiiiiiuuuuuuuuynn_");
   return $chaine;
+}
+
+function unac_string_with_space ($chaine){
+  $motif="ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüıÿÑñ¾";
+  $motifr="aaaaaaaaaaaaooooooooooooeeeeeeeecciiiiiiiiuuuuuuuuyynnY";
+  $retour=strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$chaine")))),"$motif","$motifr");
+  return $retour;
+}
+
+function unac_string_with_underscore ($chaine){
+  $motif="ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ¾ ";
+  $motifr="aaaaaaaaaaaaooooooooooooeeeeeeeecciiiiiiiiuuuuuuuuynnY_";
+  $retour=strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$chaine")))),"$motif","$motifr");
+  return $retour;
 }
 
 // Verification de l'intitulé d'un groupe
@@ -98,7 +113,6 @@ function verifPseudo($pseudo) {
 // Verification du champ description
 function verifDescription($entree) {
   $motif = "/^[a-zA-Z0-9\s,.;\"\'\/:&ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ-]{0,80}$/";
-
   if ( preg_match($motif, stripslashes($entree)) ) {
      $ret= true;
   } else {
@@ -188,7 +202,7 @@ function  aff_mnu_search($user_type)
      <ul>
        <li><a href=\"search.php\">Effectuer une recherche...</a></li>
        <li><a href=\"me.php\">Voir ma fiche</a></li>
-       <li><a href=\"mod_entry.php\">Changer de pseudo...</a></li>
+       <li><a href=\"mod_entry.php\">Modifier ma fiche</a></li>
        <li><a href=\"mod_pwd.php\">Changer de mot de passe...</a></li>
      </ul>\n";
   }
