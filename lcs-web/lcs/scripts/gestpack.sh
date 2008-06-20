@@ -13,7 +13,7 @@
 echo "<? \$flip=0;\$verrou=1;?>" > /usr/share/lcs/Modules/flag.php
 
 # La source ne peut être qu'un ftp du crdp
-if [ "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian sarge Lcs" -o "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian sarge LcsXP" -o "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian sarge LcsTesting"  -o "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian etch Lcs"   -o "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian etch LcsXP"  -o "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian etch LcsTesting" ] ; then 
+if [ "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian sarge Lcs" -o "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian sarge LcsXP" -o "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian sarge LcsTesting"  -o "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian etch Lcs"   -o "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian etch LcsXP"  -o "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian etch LcsTesting"  -o "$1" = "deb ftp://debian.crdp.ac-caen.fr/debian etch LcsDev" ] ; then 
 
 # Par sécurité, on modifie le sources.list pour n'installer que des paquets Crdp-Caen ou sûrs !!!
 if [ "$2" = "install" ];then
