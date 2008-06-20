@@ -1,12 +1,12 @@
-lcs-web (2.1~8) UNRELEASED; urgency=low
+lcs-web (2.1~8) lcs2.0; urgency=low
 
       [ Jean-Luc Chretien ]
       * Drop folder conf/apache2
       * Search to drop /etc/lcs/apache.conf
       * Correct link "aide" in statandgo.php
-      * Drop 55_lcs.conf in postrm
+      * Drop 55_lcs.conf in postrm 
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 Jun 2008 21:27:45 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 20 Jun 2008 08:54:28 +0200
 
 lcs-web (2.1~7) UNRELEASED; urgency=low
 
