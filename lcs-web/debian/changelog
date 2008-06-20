@@ -1,4 +1,4 @@
-lcs-web (2.1~8) lcs2.0; urgency=low
+lcs-web (2.1~8) UNRELEASED; urgency=low
 
       [ Jean-Luc Chretien ]
       * Drop folder conf/apache2
