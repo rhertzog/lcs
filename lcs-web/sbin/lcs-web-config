@@ -80,12 +80,18 @@ member: uid=admin,ou=People,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
             chown -R webmaster.etab:www-data /home/webmaster.etab/Maildir
             chmod -R 700 /home/webmaster.etab/Maildir
         fi
-        # add include lcs apache configuration
+        # add include lcs apache configuration 55_lcs.conf
         cat >/etc/apache2/lcs-main/55_lcs.conf <<EOF
 Alias /Plugins/ /usr/share/lcs/Plugins/
 Alias /Modules/ /usr/share/lcs/Modules/
 EOF
-
+        # add include lcs apache configuration 15_files.conf
+        cat >/etc/apache2/lcs-main/15_files.conf <<EOF
+<Files *.py>
+Order allow,deny
+Deny from all
+</Files>
+EOF
         # Installation menu.d if not present
         if [ ! -d /var/www/lcs/includes/menu.d ]; then
             cp -r /var/lib/lcs/web/menu.d /var/www/lcs/includes
