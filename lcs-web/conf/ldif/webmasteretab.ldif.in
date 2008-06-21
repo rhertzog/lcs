@@ -1,8 +1,9 @@
 dn: uid=webmaster.etab,ou=#PEOPLE#,#BASEDN#
 uid: webmaster.etab
 cn: Webmaster Etab
-givenName: webmasterE
+givenName: webmaster
 sn: Etab
+initials: webmasterE
 mail: webmaster.etab@#MAILDOMAIN#
 objectClass: top
 objectClass: posixAccount
