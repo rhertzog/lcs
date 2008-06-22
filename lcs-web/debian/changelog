@@ -1,13 +1,20 @@
-lcs-web (2.1~9) UNRELEASED; urgency=low
-      
+lcs-web (2.1~10) UNRELEASED; urgency=low
+
+      [ Jean-Luc Chretien ]
+      * Correct link lcs-doc to doc  ihm.inc.php and modules_installes.php
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 22 Jun 2008 18:30:32 +0200
+
+lcs-web (2.1~9) lcs20; urgency=low
+
       [ Jean-Luc Chretien ]
       * Correct givenName and initials for webmaster.etab account
-      * Add 15_files.conf in apache2 lcs-main for deny acces to .py files 
+      * Add 15_files.conf in apache2 lcs-main for deny acces to .py files
 
       [ Philippe Leclerc ]
-      * Add LcsDev repository in gestpack.sh 
+      * Add LcsDev repository in gestpack.sh
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 21 Jun 2008 16:03:23 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 21 Jun 2008 17:11:32 +0200
 
 lcs-web (2.1~8) lcs20; urgency=low
 
