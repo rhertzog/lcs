@@ -44,7 +44,7 @@ if ($result)
 		  echo "<TD>" . $r->name . "</TD>\n";
 		  echo "<TD>" . $r->descr . "</TD>\n";
 		  echo "<TD>" . $r->version . "</TD>\n";
-          echo "<TD><A HREF=\"../../lcs-doc/" . $r->name . "/html/index.html\" TITLE=\"Aide\"><IMG SRC=\"../Plugins/Images/plugins_help.png\" ALT=\"Aide\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\" /></A></TD>\n";
+          echo "<TD><A HREF=\"../../doc/" . $r->name . "/html/index.html\" TITLE=\"Aide\"><IMG SRC=\"../Plugins/Images/plugins_help.png\" ALT=\"Aide\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\" /></A></TD>\n";
 		  if ($v != false)
 		  	echo "<TD><A HREF=\"modules_install.php?p=" . $plug["serveur"] . "&n=" .$r->name  . "\"><IMG SRC=\"../Plugins/Images/plugins_maj.png\" TITLE=\"Mettre à jour\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
 			else
