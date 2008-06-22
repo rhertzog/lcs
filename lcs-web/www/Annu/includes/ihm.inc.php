@@ -6,7 +6,7 @@
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
    « wawa »  olivier.lecluse@crdp.ac-caen.fr
    Equipe Tice academie de Caen
-   Derniere mise à jour 18/06/2008
+   Derniere mise à jour 22/06/2008
    Distribué selon les termes de la licence GPL
    ============================================= */
 
@@ -192,7 +192,7 @@ function  aff_mnu_search($user_type)
            <li><a href=\"add_sous-group.php\">un sous-groupe...</a></li>
          </ul>
        </li>
-       <li><a href=\"../lcs-doc/web/html/import/\">Générer les comptes de l'annuaire...</a></li>
+       <li><a href=\"../doc/web/html/import/\">Générer les comptes de l'annuaire...</a></li>
      </ul>\n";
 
 
