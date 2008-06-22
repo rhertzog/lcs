@@ -1,9 +1,9 @@
-lcs-web (2.1~10) UNRELEASED; urgency=low
+lcs-web (2.1~10) lcs20; urgency=low
 
       [ Jean-Luc Chretien ]
-      * Correct link lcs-doc to doc  ihm.inc.php and modules_installes.php
+      * Correct link lcs-doc to doc  ihm.inc.php and modules_installes.php 
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 22 Jun 2008 18:30:32 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 22 Jun 2008 20:16:13 +0200
 
 lcs-web (2.1~9) lcs20; urgency=low
 
