@@ -8,8 +8,9 @@ lcs-web (2.1~11) UNRELEASED; urgency=low
 
     [ Philippe Leclerc ]
     * change mail to squirrelmail in select_briques.php
+    * alignment UTF8 and register_long_arrays in select_briques.php
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 24 Jun 2008 10:12:36 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 24 Jun 2008 18:14:25 +0200
 
 lcs-web (2.1~10) lcs20; urgency=low
 
