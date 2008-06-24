@@ -1,0 +1,56 @@
+/*
+body { 
+  background-color: #F8F8FF;
+}
+*/
+body	{
+	background: url(../../../i/lcsLogo.jpg) ghostwhite top left no-repeat fixed;
+	color: #404044;
+	margin: 2%;
+	margin-left: 60px;
+	margin-right: 6%;
+	font-family: sans-serif;
+	text-align: justify;
+	}
+h1 {
+  color: #486591;
+  text-align: center;  
+}
+div.node { 
+  padding-bottom:     1ex;
+  padding-left:       2em;
+}
+
+div.cloud { 
+  padding-bottom:     1ex;
+  padding-left:       2em;
+  background-color:   #C6DEC9;
+  border-width:       2px;
+  border-style:       solid;
+  border-color:       #127521;
+}
+
+div.content { 
+  border-width:       1px;
+  border-style:   dashed;
+  border-color:       #C0C0C0;
+}
+
+img.hideshow { 
+  padding-right: 1ex;
+}
+
+img.ilink { 
+  border-width: 0px;
+  padding-left: 1ex;
+}
+
+/* for notes and image export, fc, 18.7.2005. */
+.images {
+ width:50%;
+}
+
+.notes {
+ margin-left:10%;
+ color:#0000FF;
+}
