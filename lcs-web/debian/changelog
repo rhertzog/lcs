@@ -4,6 +4,7 @@ lcs-web (2.1~11) UNRELEASED; urgency=low
     * Modify debian/rules for decompress *.swf
     * Modify accueil.php, applis.php, validate W3C and  move in /var/www/lcs
     * Add a freemind documentation for lcs-web
+    * Temporary change $baseurl to http://$_SERVER[SERVER_NAME]/ while waiting for a cleaner solution
 
     [ Philippe Leclerc ]
     * change mail to squirrelmail in select_briques.php
