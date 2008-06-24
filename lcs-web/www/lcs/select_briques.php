@@ -1,4 +1,7 @@
-<? /* lcs/select_briques.php derniere mise a jour : 10/12/2007 */
+<?
+ /* lcs/select_briques.php derniere mise a jour : 24/06/2008
+conformité UTF8 et register_long_arrays = Off
+ */
 require "./includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
 require "../Annu/includes/ihm.inc.php";
@@ -6,9 +9,17 @@ require "../Annu/includes/ihm.inc.php";
 list ($idpers,$login)= isauth();
 if ($idpers == "0") header("Location:$urlauth");
 
+//conformité register_long_arrays =off
+			if (isset($_POST['squirrelmail'])) $squirrelmail=$_POST['squirrelmail']; else $squirrelmail="" ;
+			if (isset($_POST['barreamine'])) $barreamine=$_POST['barreamine'] ;else $barreamine="";
+			if (isset($_POST['burpeda'])) $burpeda=$_POST['burpeda'];else $burpeda="";
+			if (isset($_POST['submit'])) $submit=$_POST['submit'];else $submit="";
+			if (isset($_POST['url_accueil'])) $url_accueil=$_POST['url_accueil'];else $url_accueil="";
+			if (isset($_POST['url_logo'])) $url_logo=$_POST['url_logo'];else $url_logo ="";
+
 $html = "
 <head>\n
-        <title>...::: Sélection briques fonctionnelles LCS  :::...</title>\n
+        <title>...::: S&eacute;lection briques fonctionnelles LCS  :::...</title>\n
         <link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n
 </head>\n
 <body>\n";
@@ -23,7 +34,7 @@ if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
                 	while ($r=mysql_fetch_array($result))
                         	$$r["name"]=$r["value"];				
         	else
-                	die ("paramètres absents de la base de données !");
+                	die ("param&egrave;tres absents de la base de donn&eacute;es !");
         	// Presentation du formulaire
         	$html .= "<form action='select_briques.php' method='post'>\n";
  		$html .= "  <table border='0'>\n";
@@ -66,6 +77,8 @@ if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
         	$html .="</form>\n";
         	echo $html;
 	} else {
+			
+			
         	// Mise a jour des parametres dans la table briques
         	$query="SELECT * from applis";
         	$result=mysql_query($query);
@@ -87,18 +100,7 @@ if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
         	}
         	echo $html;
         	if ($result1 && $modif)
-                	print "<div class=alert_msg>".gettext("Vos choix ont été pris en compte ! ")."</div>\n";
-        	elseif (!$modif)
-              		print "<div class=alert_msg>".gettext("Aucune modification n'a été apportée  ! ")."</div>\n";
-        	else
-        		print "<div class=error_msg>".gettext("Oops: la requete ") . "<STRONG>$query1</STRONG>" . gettext(" a provoqué une erreur !!!")."</div>";
-	}
-	mysql_free_result($result);
-} else 
-	echo "$html<div class=alert_msg>".gettext("Cette fonctionnalité, nécessite les droits d'administrateur du serveur LCS !")."</div>";
-require ("./includes/pieds_de_page.inc.php");
-?>
-pte ! ")."</div>\n";
+                	print "<div class=alert_msg>".gettext("Vos choix ont &eacute;t&eacute; pris en compte ! ")."</div>\n";
         	elseif (!$modif)
               		print "<div class=alert_msg>".gettext("Aucune modification n'a &eacute;t&eacute; apport&eacute;e  ! ")."</div>\n";
         	else
