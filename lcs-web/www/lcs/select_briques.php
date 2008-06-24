@@ -98,3 +98,5 @@ if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
 	echo "$html<div class=alert_msg>".gettext("Cette fonctionnalité, nécessite les droits d'administrateur du serveur LCS !")."</div>";
 require ("./includes/pieds_de_page.inc.php");
 ?>
+e.inc.php");
+?>
