@@ -1,3 +1,15 @@
+lcs-web (2.1~11) UNRELEASED; urgency=low
+
+    [ Jean-Luc Chretien ]
+    * Modify debian/rules for decompress *.swf
+    * Modify accueil.php, applis.php, validate W3C and  move in /var/www/lcs
+    * Add a freemind documentation for lcs-web
+
+    [ Philippe Leclerc ]
+    * change mail to squirrelmail in select_briques.php
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 24 Jun 2008 10:12:36 +0200
+
 lcs-web (2.1~10) lcs20; urgency=low
 
       [ Jean-Luc Chretien ]
