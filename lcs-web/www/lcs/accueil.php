@@ -34,17 +34,17 @@ echo "<html>\n
         <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n
         <link  href='../style.css' rel='StyleSheet' type='text/css'>\n
       </head>\n
-      <body>\n
-      	<h3>Bonjour&nbsp;" . $user["fullname"] ."</h3>\n";
-?>
+      <body>\n";
 
-<div align='CENTER'>
-    <h1>
-        <img src="images/home.jpg" alt="Home" align="middle" border=0>Bienvenue sur votre espace perso LCS
-    </h1>
-</div>
-<ul>
-<?
+echo "<h4>Bonjour&nbsp;" . $user["fullname"] ."</h4>\n
+<div align='center'>\n
+    <h5 style='text-align:left'>\n
+        <img src='images/home.jpg' widht='40' height='40' alt='Home' align='middle' border='0'>
+        Bienvenue sur votre espace perso LCS
+    </h5>\n
+</div>\n
+<ul>\n";
+
   if (!displogin($idpers)) {
     echo "<li><tt>Félicitation, vous venez de vous connecter pour la 1ère fois sur votre
           espace perso Lcs. Afin de garantir la confidentialité de vos données, nous
