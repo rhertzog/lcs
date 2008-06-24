@@ -1,5 +1,4 @@
 Fichiers originaux de /var/www/lcs/ :
-accueil.php
 applis.php
 index.php
 statandgo.php
