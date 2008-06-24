@@ -25,7 +25,7 @@ if ( is_dir( "/usr/share/doc/lcs/clientftp" ) ) {
     echo "<h3><a href=\"clientftp/html/\">Accès espace personnel <em>clientftp</em></a></h3>";
 }
 if ( is_dir( "/usr/share/doc/lcs/monlcs" ) ) {
-    echo "<h3><a href=\"monlcs/html/\">Accès espace personnel <em>clientftp</em></a></h3>";
+    echo "<h3><a href=\"monlcs/html/\">Portail de ressources pédagogiques <em>Mon LCS</em></a></h3>";
 }
 ?>
 <hr />
