@@ -39,8 +39,8 @@ if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
                 echo ">spip</option>\n";
                 echo "                   </select>\n</td></tr>\n";
 */
-        	echo "        <tr><td>Webmail (squirrelmail)</td><td><input type='checkbox' name='mail'";
-        	if ($mail=="1") echo "checked";
+        	echo "        <tr><td>Webmail (squirrelmail)</td><td><input type='checkbox' name='squirrelmail'";
+        	if ($squirrelmail=="1") echo "checked";
         	echo " ></td></tr>\n";
 
 		if ( file_exists("/var/www/burpeda") ) {
@@ -98,5 +98,14 @@ if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
 	echo "$html<div class=alert_msg>".gettext("Cette fonctionnalité, nécessite les droits d'administrateur du serveur LCS !")."</div>";
 require ("./includes/pieds_de_page.inc.php");
 ?>
-e.inc.php");
+pte ! ")."</div>\n";
+        	elseif (!$modif)
+              		print "<div class=alert_msg>".gettext("Aucune modification n'a &eacute;t&eacute; apport&eacute;e  ! ")."</div>\n";
+        	else
+        		print "<div class=error_msg>".gettext("Oops: la requete ") . "<STRONG>$query1</STRONG>" . gettext(" a provoqu&eacute; une erreur !!!")."</div>";
+	}
+	mysql_free_result($result);
+} else 
+	echo "$html<div class=alert_msg>".gettext("Cette fonctionnalit&eacute;, n&eacute;cessite les droits d'administrateur du serveur LCS !")."</div>";
+require ("./includes/pieds_de_page.inc.php");
 ?>
