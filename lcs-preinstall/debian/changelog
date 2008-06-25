@@ -1,9 +1,9 @@
-lcs-preinstall (2.0-3~6) UNRELEASED; urgency=low
+lcs-preinstall (2.0-3~6) lcs20; urgency=low
 
   [ Jean-Luc Chretien ]
   * Add a Match user spip.mnager in sshd_config 
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 25 Jun 2008 16:12:53 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 25 Jun 2008 16:58:37 +0200
 
 lcs-preinstall (2.0-3~5) lcs20; urgency=low
 
