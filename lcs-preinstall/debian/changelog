@@ -2,6 +2,7 @@ lcs-preinstall (2.0-3~6) lcs20; urgency=low
 
   [ Jean-Luc Chretien ]
   * Add a Match user spip.mnager in sshd_config 
+  * Add a section upgrade in postrm
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 25 Jun 2008 16:58:37 +0200
 
