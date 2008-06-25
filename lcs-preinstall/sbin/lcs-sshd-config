@@ -89,6 +89,10 @@ Subsystem       sftp     internal-sftp
 
 UsePAM yes
 
+Match user spip.manager
+          ChrootDirectory /usr/share/lcs/spip
+          ForceCommand internal-sftp
+
 Match group sftp-allowed
           ChrootDirectory /home/%u
           ForceCommand internal-sftp
