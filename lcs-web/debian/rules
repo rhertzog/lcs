@@ -64,7 +64,7 @@ binary-indep: build install
 	dh_installman
 	dh_link
 	dh_strip
-	dh_compress -X *.swf
+	dh_compress -X.swf -X.js
 	dh_fixperms
 #	dh_perl
 #	dh_python

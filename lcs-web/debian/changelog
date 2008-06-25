@@ -1,4 +1,18 @@
-lcs-web (2.1~11) UNRELEASED; urgency=low
+lcs-web (2.1~12) lcs20; urgency=low
+
+    [ Jean-Luc Chretien ]
+    * Modify directice -X of dh_compress in debian/rules
+    * Validate sftp-lcs.html, lcsweb.html and index.html in folder doc
+
+    [Yvonick Fortin]
+    * Changing of the picture lcs-spip in order to have a lcs-spip 2.0 screenshot in the onboard documentation(i/Forum.png)
+
+    [ Philippe Leclerc ]
+    * Re-alignment UTF8 and register_long_arrays in select_briques.php
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 25 Jun 2008 13:45:37 +0200
+
+lcs-web (2.1~11) lcs20; urgency=low
 
     [ Jean-Luc Chretien ]
     * Modify debian/rules for decompress *.swf
