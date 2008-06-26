@@ -1,10 +1,18 @@
 <?
-/* lcs/auth.php version du : 06/02/2007 */
+/* lcs/auth.php version du : 26/06/2008 */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
+
+// register global
+if (isset($_POST['dummy'])) $dummy=$_POST['dummy']; else $dummy="" ;
+if (isset($_POST['string_auth'])) $string_auth=$_POST['string_auth']; else $string_auth="" ;
+if (isset($_POST['time'])) $time=$_POST['time']; else $time="" ;
+if (isset($_POST['client_ip'])) $client_ip=$_POST['client_ip']; else $client_ip="" ;
+if (isset($_POST['timestamp'])) $timestamp=$_POST['timestamp']; else $timestamp="" ;
+
         if ($login) {
-                // Décodage de la chaine d'authentification coté serveur avec une clé privée
+                // Decodage de la chaine d'authentification cote serveur avec une cle privee
                 exec ("/usr/bin/python ".$basedir."lcs/includes/decode.py '$string_auth'",$AllOutPut,$ReturnValue);
                 // Extraction des parametres
                 $tmp = split ("[\|]",$AllOutPut[0],4);
@@ -26,22 +34,31 @@ include ("./includes/jlcipher.inc.php");
                 // Interpretation erreurs
                 if ($error)   {
                         // Log en cas d'echec
-                        $fp=fopen($logpath."/auth.log","a");
+                        $fp=fopen($logpath."/error.log","a");
                         if($fp) {
                                 fputs($fp,"[".$MsgError[$error]."] ".date("j/m/y:H:i")."|ip requete : ".$ip_src."|remote ip : ".remote_ip()."|Login : ".$login."|TimeStamp srv : ".time()."|TimeTotal : ".$timetotal."\n");
                                 fclose($fp);
                         }
                         // Redirection vers la page d'authentification
                         header("Location:auth.php?error=$error");
-		} elseif ( file_exists ("/usr/share/lcs/spip/spip_session_lcs.php") ) {
-                    // Ouverture d'une session spip
-                    header("Location:../spip/spip_session_lcs.php?action=login");
                 } else {
-                    echo "<script language=\"JavaScript\" type=\"text/javascript\">\n";
-                    echo "<!--\n";
-                    echo "top.location.href = '../lcs/index.php?url_redirect=accueil.php';\n";
-                    echo "//-->\n";
-                    echo "</script>\n";
+                      // log en cas de succes
+                        // Log en cas de succes
+                        $fp=fopen($logpath."/acces.log","a");
+                        if($fp) {
+                                fputs($fp,remote_ip()." [".date("j/m/y:H:i")."]"." Login : ".$login."\n");
+                                fclose($fp);
+                        }
+                        if ( file_exists ("/usr/share/lcs/spip/spip_session_lcs.php") ) {
+                            // Ouverture d'une session spip
+                            header("Location:../spip/spip_session_lcs.php?action=login");
+                        } else {
+                            echo "<script language=\"JavaScript\" type=\"text/javascript\">\n";
+                            echo "<!--\n";
+                            echo "top.location.href = '../lcs/index.php?url_redirect=accueil.php';\n";
+                            echo "//-->\n";
+                            echo "</script>\n";
+                        }
                 }
         } 
         header_crypto_html("...::: Authentification LCS :::...");
@@ -76,13 +93,13 @@ crypto_nav();
 // Affichage des erreurs
 switch ($error) {
          case "1" :
-                echo "<div class='alert_msg'>L'adresse source de votre authentification a changée, veuillez vous réauthentifier !</div>";
+                echo "<div class='alert_msg'>L'adresse source de votre authentification a chang&#233;e, veuillez vous r&#233;authentifier !</div>";
                 break;
         case "2" :
-                echo "<div class='alert_msg'>Votre délais d'authentification est dépassé, veuillez vous réauthentifier !</div>";
+                echo "<div class='alert_msg'>Votre d&#233;lais d'authentification est d&#233;pass&#233;, veuillez vous r&#233;authentifier !</div>";
                 break;
         case "3" :
-                echo "<div class='alert_msg'>Votre délais d'authentification est dépassé et votre adresse source a changée, veuillez vous réauthentifier !</div>";
+                echo "<div class='alert_msg'>Votre d&#233;lais d'authentification est d&#233;pass&#233; et votre adresse source a chang&#233;e, veuillez vous r&#233;authentifier !</div>";
                 break;
         case "4" :
                 echo "<div class='alert_msg'>Erreur d'authentification !</div> ";
