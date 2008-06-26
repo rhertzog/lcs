@@ -4,6 +4,9 @@ lcs-web (2.1~13) UNRELEASED; urgency=low
     * Add dh_compress directive -X.mm in debian/rules
     * Add 5 px width on Admin/menu.php
     * Remove /etc/lcs/apache.conf
+    * Add a logrotate script for log acces and error lcs
+    * Modify auth.php : UTF-8 compatibility and resgister global
+    * Modify statandgo.php for detecting modules type S
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 26 Jun 2008 09:44:58 +0200
 
