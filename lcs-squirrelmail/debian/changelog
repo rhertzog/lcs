@@ -1,3 +1,10 @@
+lcs-squirrelmail (2.1~6) lcs20; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Execute lcs-squirrelmail-config at each configure from postinst 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 26 Jun 2008 10:19:30 +0200
+
 lcs-squirrelmail (2.1~5) UNRELEASED; urgency=low
 
   [ Raphael Hertzog ]
