@@ -15,14 +15,16 @@ configure() {
     SQUIR=`echo "SELECT id from lcs_db.applis WHERE name='squirrelmail';"| mysql -u lcsmgr -p$mysqlpass lcs_db -N`
     VER=$(dpkg-query -f '${Version}' -W lcs-squirrelmail)
     if [ -z "$SQUIR" ]; then
-	echo "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', 'squirrelmail', '1', 'webmail squirrelmail', '0', '$VER', '/usr/share/squirrelmail', 'M');"| mysql -u lcsmgr -p$mysqlpass lcs_db 
+	echo "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', 'squirrelmail', '1', 'webmail squirrelmail', '0', '$VER', '/usr/share/squirrelmail', 'S');"| mysql -u lcsmgr -p$mysqlpass lcs_db 
     fi
-
     # Acquisition des params lcs
     LDAP_SERVER=$(get_lcsdb_params ldap_server)
     LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
     # squirrelmail_reconfigure.sh <LDAP_SERVER> <LDAP_BASE_DN>
     /usr/share/lcs/scripts/squirrelmail_reconfigure.sh $LDAP_SERVER $LDAP_BASE_DN
+
+    echo "Include /etc/squirrelmail/apache.conf" >/etc/apache2/lcs-main/60_squirrelmail.conf
+    invoke-rc.d apache2 reload
 }
 
 case "$1" in
