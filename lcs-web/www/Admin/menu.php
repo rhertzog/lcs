@@ -102,14 +102,14 @@ function menuprint($login)
 
     for ($idmenu=0; $idmenu<count($liens); $idmenu++)
     {
-        echo "<div id=\"menu$idmenu\" style=\"position:absolute; left:10px; top:12px; width:200px; z-index:" . $idmenu ." ";
+        echo "<div id=\"menu$idmenu\" style=\"position:absolute; left:10px; top:12px; width:205px; z-index:" . $idmenu ." ";
         if ($idmenu!=$menu) {
             echo "; visibility: hidden";
         }
         echo "\">\n";
 
         echo "
-        <table width=\"200\" border=\"0\" cellspacing=\"3\" cellpadding=\"6\">\n";
+        <table width=\"205\" border=\"0\" cellspacing=\"3\" cellpadding=\"6\">\n";
 		$ldapright["lcs_is_admin"]=ldap_get_right("lcs_is_admin",$login);
 
         for ($menunbr=1; $menunbr<count($liens); $menunbr++)
