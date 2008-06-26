@@ -2,6 +2,10 @@
 # postinst script for LCS apache2ssl
 set -e
 
+
+MODULE="apache2ssl"
+
+
 # lecture d'un parametre lcs dans lcs_db.params
 
 function get_lcsdb_params() {
@@ -11,7 +15,65 @@ function get_lcsdb_params() {
 
 case "$1" in
 	install|configure)
-
+            #
+            # Inscription du module dans applis.lcs_db
+            #
+            APACHE2SSL=`/usr/bin/mysql -e "SELECT id from lcs_db.applis WHERE name='apache2ss';"`
+            VER=$(dpkg-query -f '${Version}' -W lcs-apache2ssl)
+            if [ -z "$APACHE2SSL" ]; then
+                /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Acces au service web via https  ', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'S');"
+            fi
+            #
+            # Enable mode ssl
+            #
+            echo "Enable mode ssl"
+            a2enmod ssl
+            #
+            # Generation certificat
+            #
+            echo "Generation certificat SSL"
+            FQN=`hostname -f`
+            DOMAIN=$(get_lcsdb_params domain)
+            COUNTRYNAME=$(get_lcsdb_params country)
+            PROVINCENAME=$(get_lcsdb_params province)
+            LOCALITYNAME=$(get_lcsdb_params locality)
+            ORGANIZATIONNAME=$(get_lcsdb_params organization)
+            ORGANIZATIONALUNITNAME=$(get_lcsdb_params organizationalunit)
+            # apache2-ssl-cert.sh <FQN> <DOMAIN> <COUNTRYNAME> <PROVINCENAME> <LOCALITYNAME> <ORGANIZATIONNAME> <ORGANIZATIONALUNITNAME>
+            /usr/share/lcs/scripts/apache2-ssl-cert.sh $FQN $DOMAIN $COUNTRYNAME $PROVINCENAME $LOCALITYNAME $ORGANIZATIONNAME $ORGANIZATIONALUNITNAME
+            #
+            # Directive Listen
+            #
+            echo "Ajout Directive Listen"
+            echo "Listen 443" >> /etc/apache2/ports.conf
+            #
+            # Mise en place menu Certificat Apache SSL
+            #
+            echo "Mise en place menu Certificat Apache SSL"
+            mv /var/www/lcs/includes/menu.d/50services.inc /tmp/50services.inc
+            if [ `grep '\"/Admin/apachecert.php",\"lcs_is_admin\",' /tmp/50services.inc | wc -l` = "1" ]; then
+                sed /tmp/50services.inc -e "s/.*apachecert.php.*/\t\t\"Certificat Apache SSL\",\"\/Admin\/apachecert.php\",\"lcs_is_admin\",/" > /var/www/lcs/includes/menu.d/50services.inc
+            else
+                sed /tmp/50services.inc -e "s/.*apachecert.php.*/\t\t\"Certificat Apache SSL\",\"\/Admin\/apachecert.php\",\"lcs_is_admin\"/" > /var/www/lcs/includes/menu.d/50services.inc
+            fi
+            rm /tmp/50services.inc
+            #
+            # Ajout entrée sudoers
+            #
+            echo "Ajout entrée sudoers pour apache2-ssl-cert.sh"
+            if [ `grep 'Cmnd_Alias APACHESSLCERT' /etc/sudoers | wc -l` = "0" ]; then
+                echo "Cmnd_Alias APACHESSLCERT = /usr/share/lcs/scripts/apache2-ssl-cert.sh" >> /etc/sudoers
+                echo "www-data ALL=NOPASSWD:APACHESSLCERT" >> /etc/sudoers
+            fi
+            #
+            # Rechargement configuration Apache2
+            #
+            echo "Rechargement configuration Apache2 dans 1mn"
+            echo "/etc/init.d/apache2 restart" > /tmp/apache2sslreload
+            echo "sleep 2" >> /tmp/apache2sslreload
+            echo "rm /tmp/apache2sslreload" >> /tmp/apache2sslreload
+            chmod +x /tmp/apache2sslreload
+            at now+1minutes < /tmp/apache2sslreload
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
