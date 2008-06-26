@@ -14,7 +14,7 @@ elseif ($use=="Aide") $urluse="../doc/";
 elseif ( ! isset($urluse) ) {
     # Cas des paquets modules
     #echo "on examine le cas des modules $use<br>";
-    $query="SELECT  name, value from applis where type='M' order by name";
+    $query="SELECT  name, value from applis where type='M' or type='S' order by name";
     $result=mysql_query($query);
     if ($result) {
         while ( $r=mysql_fetch_object($result) ) {
