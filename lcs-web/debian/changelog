@@ -1,3 +1,11 @@
+lcs-web (2.1~13) UNRELEASED; urgency=low
+
+    [ Jean-Luc Chretien ] 
+    * Add dh_compress directive -X.mm in debian/rules
+    * Add 5 px width on Admin/menu.php
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 26 Jun 2008 09:44:58 +0200
+
 lcs-web (2.1~12) lcs20; urgency=low
 
     [ Jean-Luc Chretien ]
