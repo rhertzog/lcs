@@ -1,0 +1,6 @@
+apache2ssl (2.0) unstable; urgency=low
+
+      [ Jean-Luc Chretien ]
+      * Change letter M to S in module registration postinst
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 16 Jun 2008 14:50:00 +0200

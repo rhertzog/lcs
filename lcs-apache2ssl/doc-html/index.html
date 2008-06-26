@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>LCS apache2ssl</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <style type="text/css" media="all">@import "../../c/c.css";</style>
+</head>
+<body>
+<h2 style="text-align:center">Documentation <span class="acronym">LCS apache2ssl</span></h2>
+<h3>Version : Paquet lcs-apache2ssl #VER#</h3>
+<p>Installation du service <span class="acronym">ssl pour le serveur web (apache2)</span> sur <span class="acronym">LCS</span>.</p>
+<h3>Apache2 SSL LCS, principe de fonctionnement</h3>
+<p></p>
+<h3>Apache2 SSL LCS, renouvellement du certificat serveur</h3>
+<p>A l'installation du module <span class="acronym">lcs-apache2ssl</span>, un certificat est généré pour une péridoe de un an.</p>
+<p>Il sera nécessaire de regénérer le certificat une fois cette période arrivée à son terme.</p>
+<p>Cette action de régénération du certificat est possible, via l'interface web d'administration et le menu : Administration >Services Intranet >Certificat Apache SSL ou en ligne de commande grace au script <tt class="filename">/usr/share/lcs/scripts/apache2-ssl-cert.sh</tt>.</p>
+<h4>Usage :</h4>
+<pre class="programlisting">
+apache2-ssl-cert.sh
+    &lt;FQN> &lt;DOMAIN> &lt;COUNTRYNAME> &lt;PROVINCENAME> 
+    &lt;LOCALITYNAME> &lt;ORGANIZATIONNAME> &lt;ORGANIZATIONALUNITNAME>
+</pre>
+<h4>Définitions des paramètres :</h4>
+<ul>
+    <li>&lt;FQN> : Nom de domaine pleinement qualifié</li>
+    <li>&lt;DOMAIN> : Domaine</li>
+    <li>&lt;COUNTRYNAME> : Nom du pays sur deux lettres (ex: FR)</li>
+    <li>&lt;PROVINCENAME> : Nom de la province (ex: Basse Normandie)</li>
+    <li>&lt;LOCALITYNAME> : Nom de la ville</li>
+    <li>&lt;ORGANIZATIONNAME> : Nom de l'établissement</li>
+    <li>&lt;ORGANIZATIONALUNITNAME> : Nom de l'unité organisationnelle (ex : Lycée, collège...</li>
+</ul>
+
+</body>
+</html>

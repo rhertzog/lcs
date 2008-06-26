@@ -1,0 +1,65 @@
+#! /bin/sh
+# postrm script for LCS apache2ssl
+
+set -e
+MODULE="apache2ssl"
+
+case "$1" in
+	purge|remove)
+        #
+        # Désincription du module
+        #
+        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1
+        #
+        # Désactivation menu Certificat Apache SSL
+        #
+        mv /var/www/lcs/includes/menu.d/50services.inc /tmp/50services.inc
+        if [ `grep '\"/Admin/apachecert.php",\"lcs_is_admin\",' /tmp/50services.inc | wc -l` = "1" ]; then
+            sed /tmp/50services.inc -e "s/.*apachecert.php.*/#\t\t\"Certificat Apache SSL\",\"\/Admin\/listesdiff.php\",\"lcs_is_admin\",/" > /var/www/lcs/includes/menu.d/50services.inc
+        else
+            sed /tmp/50services.inc -e "s/.*apachecert.php.*/#\t\t\"Certificat Apache SSL\",\"\/Admin\/listesdiff.php\",\"lcs_is_admin\"/" > /var/www/lcs/includes/menu.d/50services.inc
+        fi
+        rm /tmp/50services.inc
+        #
+        # Désactivation mod ssl
+        #
+        a2dismod  ssl
+        #
+        # Désactivation Listen
+        #
+        grep -v "Listen 443" /etc/apache2/ports.conf > /tmp/ports.conf
+        mv /tmp/ports.conf /etc/apache2/ports.conf
+        #
+        # Desactivation sudoers APACHESSLCERT
+        #
+        grep -v APACHESSLCERT /etc/sudoers > /tmp/sudoers
+        mv /tmp/sudoers /etc/
+        chmod 440 /etc/sudoers
+        #
+        # Effacement des certificats
+        #
+        rm -Rf /etc/apache2/ssl/* > /dev/null 2>&1
+        #
+        # Rechargement configuration Apache2
+        #
+        echo "Rechargement configuration Apache2 dans 1mn"
+        echo "/etc/init.d/apache2 restart" > /tmp/apache2sslreload
+        echo "sleep 2" >> /tmp/apache2sslreload
+        echo "rm /tmp/apache2sslreload" >> /tmp/apache2sslreload
+        chmod +x /tmp/apache2sslreload
+        at now+1minutes < /tmp/apache2sslreload
+        ;;
+
+	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+        ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+
+esac
+
+#DEBHELPER#
+
+exit 0
