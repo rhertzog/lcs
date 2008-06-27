@@ -1,11 +1,11 @@
-apache2ssl (2.1~1) UNRELEASED; urgency=low
+lcs-apache2ssl (2.1~1) UNRELEASED; urgency=low
 
   [ Jean-Luc Chretien ]    
   * Reorganization tree structure of the sources of the package 
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Jun 2008 14:39:54 +0200
 
-apache2ssl (2.0) unstable; urgency=low
+lcs-apache2ssl (2.0) unstable; urgency=low
 
   [ Jean-Luc Chretien ]
   * Change letter M to S in module registration postinst
