@@ -44,8 +44,10 @@ case "$1" in
             #
             # Directive Listen
             #
-            echo "Ajout Directive Listen"
-            echo "Listen 443" >> /etc/apache2/ports.conf
+            if grep -q "Listen 1443" /etc/apache2/ports.conf; then
+              echo "Ajout Directive Listen"
+              echo "Listen 443" >> /etc/apache2/ports.conf
+            fi
             #
             # Mise en place menu Certificat Apache SSL
             #
