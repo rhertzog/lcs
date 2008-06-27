@@ -13,6 +13,10 @@ install:
 	install -d $(DESTDIR)/etc/cron.d
 	install -m 644 cron/* $(DESTDIR)/etc/cron.d/
 
+# install lcs web logrotate
+	install -d $(DESTDIR)/etc/logrotate.d
+	install -m 644 logrotate/* $(DESTDIR) /etc/logrotate.d/
+
 # install doc
 	install -d $(DESTDIR)/usr/share/doc/lcs
 	cp -a doc/* $(DESTDIR)/usr/share/doc/lcs/
