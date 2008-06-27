@@ -1,3 +1,10 @@
+lcs-preinstall (2.0-3~7) lcs20; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Modify the order of Match section group lcs-users
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Jun 2008 13:45:15 +0200
+
 lcs-preinstall (2.0-3~6) lcs20; urgency=low
 
   [ Jean-Luc Chretien ]
