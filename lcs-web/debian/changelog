@@ -1,4 +1,4 @@
-lcs-web (2.1~13) UNRELEASED; urgency=low
+lcs-web (2.1~13) lcs20; urgency=low
 
     [ Jean-Luc Chretien ] 
     * Add dh_compress directive -X.mm in debian/rules
