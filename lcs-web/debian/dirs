@@ -1,5 +1,4 @@
 etc/lcs
-etc/logrotate.d
 etc/skel/Documents
 etc/skel/Maildir
 etc/skel/Maildir/cur
