@@ -15,7 +15,7 @@ install:
 
 # install lcs web logrotate
 	install -d $(DESTDIR)/etc/logrotate.d
-	install -m 644 logrotate/* $(DESTDIR) /etc/logrotate.d/
+	install -m 644 logrotate/* $(DESTDIR)/etc/logrotate.d/
 
 # install doc
 	install -d $(DESTDIR)/usr/share/doc/lcs
