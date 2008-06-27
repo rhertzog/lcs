@@ -58,6 +58,10 @@ case "$1" in
             fi
             rm /tmp/50services.inc
             #
+            # Enable lcs-ssl
+            #
+            a2ensite lcs-ssl
+            #
             # Ajout entrée sudoers
             #
             echo "Ajout entrée sudoers pour apache2-ssl-cert.sh"

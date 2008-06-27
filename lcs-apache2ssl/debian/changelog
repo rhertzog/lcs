@@ -1,3 +1,10 @@
+lcs-apache2ssl (2.1~2) lcs20; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Add enable and disable lcs-ssl in postinst and postrm
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Jun 2008 17:07:23 +0200
+
 lcs-apache2ssl (2.1~1) UNRELEASED; urgency=low
 
   [ Jean-Luc Chretien ]    

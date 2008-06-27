@@ -25,6 +25,10 @@ case "$1" in
         #
         a2dismod  ssl
         #
+        # Disable lcs-ssl
+        #
+        a2dissite lcs-ssl
+        #
         # Désactivation Listen
         #
         grep -v "Listen 443" /etc/apache2/ports.conf > /tmp/ports.conf
