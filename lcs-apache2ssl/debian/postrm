@@ -30,7 +30,9 @@ case "$1" in
         #
         # Disable lcs-ssl
         #
-        a2dissite lcs-ssl >/dev/null
+        if [ -e  /etc/apache2/sites-enabled/lcs-ssl ];then
+          a2dissite lcs-ssl >/dev/null
+        fi
         #
         # Désactivation Listen
         #
@@ -38,7 +40,7 @@ case "$1" in
         #
         # Desactivation sudoers APACHESSLCERT
         #
-        if [ `grep 'SECTION_APACHE2SSL' /etc/sudoers | wc -l` = "1" ]; then
+        if [ `grep 'BEGIN_SECTION_APACHE2SSL' /etc/sudoers | wc -l` = "1" ]; then
           section_mgr --remove apache2ssl /etc/sudoers
         fi
         #
