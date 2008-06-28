@@ -46,7 +46,7 @@ case "$1" in
             #
             # Add directive Listen
             #
-            if grep -q "Listen 443" /etc/apache2/ports.conf; then
+            if ! grep -q "Listen 443" /etc/apache2/ports.conf; then
               echo "Ajout Directive Listen"
               echo "Listen 443" >> /etc/apache2/ports.conf
             fi

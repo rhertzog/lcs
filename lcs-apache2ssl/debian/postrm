@@ -44,7 +44,7 @@ case "$1" in
         #
         # Effacement des certificats
         #
-        rm -Rf /etc/apache2/ssl/server.*
+        rm -f /etc/apache2/ssl/server.*
         #
         # Apache2 differed restarting for web interface install module
         #
