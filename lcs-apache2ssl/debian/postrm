@@ -3,6 +3,7 @@
 
 set -e
 MODULE="apache2ssl"
+APACHE2CONF="/etc/apache2/lcs-main/01_redirect.conf"
 
 case "$1" in
 	purge|remove)
@@ -15,11 +16,14 @@ case "$1" in
         #
         mv /var/www/lcs/includes/menu.d/50services.inc /tmp/50services.inc
         if [ `grep '\"/Admin/apachecert.php",\"lcs_is_admin\",' /tmp/50services.inc | wc -l` = "1" ]; then
-            sed /tmp/50services.inc -e "s/.*apachecert.php.*/#\t\t\"Certificat Apache SSL\",\"\/Admin\/listesdiff.php\",\"lcs_is_admin\",/" > /var/www/lcs/includes/menu.d/50services.inc
+          sed -i "s/.*apachecert.php.*/#\t\t\"Certificat Apache SSL\",\"\/Admin\/listesdiff.php\",\"lcs_is_admin\",/" /var/www/lcs/includes/menu.d/50services.inc
         else
-            sed /tmp/50services.inc -e "s/.*apachecert.php.*/#\t\t\"Certificat Apache SSL\",\"\/Admin\/listesdiff.php\",\"lcs_is_admin\"/" > /var/www/lcs/includes/menu.d/50services.inc
+            sed -i "s/.*apachecert.php.*/#\t\t\"Certificat Apache SSL\",\"\/Admin\/listesdiff.php\",\"lcs_is_admin\"/" /var/www/lcs/includes/menu.d/50services.inc
         fi
-        rm /tmp/50services.inc
+        #
+        # Remove redirect rule
+        #
+        rm -f $APACHE2CONF
         #
         # Désactivation mod ssl
         #
@@ -31,27 +35,28 @@ case "$1" in
         #
         # Désactivation Listen
         #
-        grep -v "Listen 443" /etc/apache2/ports.conf > /tmp/ports.conf
-        mv /tmp/ports.conf /etc/apache2/ports.conf
+         sed -i "/Listen 443/d" /etc/apache2/ports.conf
         #
         # Desactivation sudoers APACHESSLCERT
         #
-        grep -v APACHESSLCERT /etc/sudoers > /tmp/sudoers
-        mv /tmp/sudoers /etc/
-        chmod 440 /etc/sudoers
+        if [ `grep 'SECTION_APACHE2SSL' /etc/sudoers | wc -l` = "0" ]; then
+          section_mgr --remove apache2ssl /etc/sudoers
+        fi
         #
         # Effacement des certificats
         #
-        rm -Rf /etc/apache2/ssl/* > /dev/null 2>&1
+        rm -Rf /etc/apache2/ssl/server.*
         #
-        # Rechargement configuration Apache2
+        # Apache2 differed restarting for web interface install module
         #
-        echo "Rechargement configuration Apache2 dans 1mn"
-        echo "/etc/init.d/apache2 restart" > /tmp/apache2sslreload
-        echo "sleep 2" >> /tmp/apache2sslreload
-        echo "rm /tmp/apache2sslreload" >> /tmp/apache2sslreload
-        chmod +x /tmp/apache2sslreload
-        at now+1minutes < /tmp/apache2sslreload
+        if which at >/dev/null; then
+          echo "Rechargement configuration Apache2 dans 1mn"
+          at now+1minutes <<END
+/etc/init.d/apache2 restart
+sleep 2
+END
+        fi
+
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
