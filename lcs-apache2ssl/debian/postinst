@@ -87,7 +87,6 @@ EOF
 /etc/init.d/apache2 restart
 sleep 2
 END
-        fi
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
