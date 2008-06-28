@@ -14,7 +14,6 @@ case "$1" in
         #
         # Désactivation menu Certificat Apache SSL
         #
-        mv /var/www/lcs/includes/menu.d/50services.inc /tmp/50services.inc
         if [ `grep '\"/Admin/apachecert.php",\"lcs_is_admin\",' /tmp/50services.inc | wc -l` = "1" ]; then
           sed -i "s/.*apachecert.php.*/#\t\t\"Certificat Apache SSL\",\"\/Admin\/listesdiff.php\",\"lcs_is_admin\",/" /var/www/lcs/includes/menu.d/50services.inc
         else
