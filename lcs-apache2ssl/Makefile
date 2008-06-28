@@ -5,6 +5,10 @@ all:
 
 install:
 
+# install lcs web conf
+	install -d $(DESTDIR)/var/lib/lcs/apache2ssl
+	cp -a conf/* $(DESTDIR)/var/lib/lcs/apache2ssl/
+
 # install apache2 conf
 	mkdir -p $(DESTDIR)/etc/apache2
 	cp -R apache/* $(DESTDIR)/etc/apache2/
