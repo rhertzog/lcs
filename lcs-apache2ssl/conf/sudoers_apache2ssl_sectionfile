@@ -1,0 +1,2 @@
+Cmnd_Alias APACHESSLCERT = /usr/share/lcs/scripts/apache2-ssl-cert.sh
+www-data ALL=NOPASSWD:APACHESSLCERT
