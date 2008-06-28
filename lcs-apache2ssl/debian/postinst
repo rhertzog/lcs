@@ -54,7 +54,7 @@ case "$1" in
             # Validate menu Certificat Apache SSL
             #
             echo "Mise en place menu Certificat Apache SSL"
-            if [ `grep '\"/Admin/apachecert.php",\"lcs_is_admin\",' /tmp/50services.inc | wc -l` = "1" ]; then
+            if [ `grep '\"/Admin/apachecert.php",\"lcs_is_admin\",' /var/www/lcs/includes/menu.d/50services.inc | wc -l` = "1" ]; then
                 sed -i "s/.*apachecert.php.*/\t\t\"Certificat Apache SSL\",\"\/Admin\/apachecert.php\",\"lcs_is_admin\",/" /var/www/lcs/includes/menu.d/50services.inc
             else
                 sed -i "s/.*apachecert.php.*/\t\t\"Certificat Apache SSL\",\"\/Admin\/apachecert.php\",\"lcs_is_admin\"/" /var/www/lcs/includes/menu.d/50services.inc
