@@ -97,9 +97,6 @@ EOF
             cp -r /var/lib/lcs/web/menu.d /var/www/lcs/includes
         fi
 
-        # Installation files common files lcs and monlcs 
-	cp /var/lib/lcs/web/varwwwlcs/*.php /var/www/lcs/
-
         # Configuration webalizer
         echo "Configuration webalizer"
         sed -e "s/#HOSTNAME#/`hostname`/g" /var/lib/lcs/web/webalizer/webalizer.conf.in >/etc/webalizer/webalizer.conf
