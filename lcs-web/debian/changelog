@@ -1,3 +1,14 @@
+lcs-web (2.1~14) UNRELEASED; urgency=low
+
+    [ Jean-Luc Chretien ]
+    * Add a missing dh_compress directive -X.mm in debian/rules
+    * Correct some W3C errors in html documentation
+    * Move statando.php from lcs-monlcs to lcs-web
+    * Misc changes in lcs/index.php
+    * Modify webalizer.conf.in
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sun,  6 Jul 2008 15:33:00 +0200
+
 lcs-web (2.1~13) lcs20; urgency=low
 
     [ Jean-Luc Chretien ] 
