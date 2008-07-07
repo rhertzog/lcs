@@ -2,14 +2,6 @@
 # postinst script for LCS web
 set -e
 
-# lecture d'un parametre lcs dans lcs_db.params
-
-function get_lcsdb_params
-{
-PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
-echo "$PARAMS"
-}
-
 case "$1" in
 	install|configure)
             #
