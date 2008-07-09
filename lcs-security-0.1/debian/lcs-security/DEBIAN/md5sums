@@ -1,0 +1,4 @@
+046149a3aa2f8bff945eca62fdfb80fa  usr/share/doc/lcs-security/changelog.Debian.gz
+88dcad35bd601da137cb1125891223f4  usr/share/doc/lcs-security/copyright
+d63a64383cc31c39e4c0120d3f2a91d9  usr/share/doc/lcs-security/README.Debian
+d41d8cd98f00b204e9800998ecf8427e  usr/sbin/lcs-security-config.sh

@@ -1,0 +1,14 @@
+Source: lcs-security
+Section: net
+Priority: optional
+Maintainer: Simon Cavey <simon.cavey@crdp.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-security
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, fail2ban (>= 0.8)
+Description: Ajouts de configuration pour securiser LCS
+ Ajout de lcs-auth sur fail2ban
+ Ajout d'un fichier jail.local pour adapter la configuration
+ de fail2ban a LCS.
