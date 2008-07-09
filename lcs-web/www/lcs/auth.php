@@ -36,7 +36,7 @@ if (isset($_POST['timestamp'])) $timestamp=$_POST['timestamp']; else $timestamp=
                         // Log en cas d'echec
                         $fp=fopen($logpath."/error.log","a");
                         if($fp) {
-                                fputs($fp,date("M j H:i:s ").$MsgError[$error] ." for login $login |TimeStamp srv : ".time()."|TimeTotal : ".$timetotal." from ip requete : ".$ip_src." | remote ip : ".remote_ip()."\n");
+				fputs($fp,"[".date("D M d H:i:s Y")."] [".$MsgError[$error]."] [client ".$ip_src."] [remote ip : ".remote_ip()."] [Login : ".$login."] [TimeStamp srv : ".time()."] [TimeTotal : ".$timetotal."] \n");
                                 fclose($fp);
                         }
                         // Redirection vers la page d'authentification
