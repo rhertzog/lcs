@@ -1,0 +1,39 @@
+[ssh]
+
+enabled = true
+port    = ssh,2222
+filter  = sshd
+logpath  = /var/log/auth.log
+maxretry = 6
+
+[apache]
+
+enabled = true
+port    = http,https
+filter  = apache-auth
+logpath = /var/log/apache*/*error.log
+maxretry = 6
+
+[apache-noscript]
+
+enabled = true
+port    = http,https
+filter  = apache-noscript
+logpath = /var/log/apache*/*error.log
+maxretry = 6
+
+[apache-overflows]
+
+enabled = true
+port    = http,https
+filter  = apache-overflows
+logpath = /var/log/apache*/*error.log
+maxretry = 2
+
+[lcs-auth]
+
+enabled = true
+port    = http,https
+filter  = lcs-auth
+logpath = /var/log/lcs/error.log
+maxretry = 6

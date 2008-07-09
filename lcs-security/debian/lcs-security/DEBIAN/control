@@ -1,0 +1,12 @@
+Package: lcs-security
+Version: 0.1-1
+Section: unknown
+Priority: extra
+Architecture: i386
+Depends: fail2ban (>= 0.8)
+Installed-Size: 72
+Maintainer: Simon Cavey <simon.cavey@crdp.ac-caen.fr>
+Description: Ajouts de configuration pour securiser LCS
+ Ajout de lcs-auth sur fail2ban
+ Ajout d'un fichier jail.local pour adapter la configuration
+ de fail2ban a LCS.
