@@ -12,8 +12,9 @@ lcs-web (2.1~14.1) UNRELEASED; urgency=low
   * Fix lcs-web-config to properly fail if there's no lcs.conf.
   * Don't reinitialize the admin password as it's now a responsibility of
     ldapedu-server.
+  * Fix various lintian warnings.
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon,  7 Jul 2008 19:57:00 +0200
+ -- Raphael Hertzog <hertzog@debian.org>  Wed, 23 Jul 2008 17:35:10 +0200
 
 lcs-web (2.1~13) lcs20; urgency=low
 
@@ -149,7 +150,7 @@ lcs-web (2.1~2) UNRELEASED; urgency=low
    * Rights on privateKey and skel
    * Correct path for folder doc html
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wend, 06 Jun 2008 10:20:59 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 06 Jun 2008 10:20:59 +0200
 
 lcs-web (2.1~1) UNRELEASED; urgency=low
 
