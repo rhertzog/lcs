@@ -1,4 +1,4 @@
-lcs-web (2.1~14) UNRELEASED; urgency=low
+lcs-web (2.1~14.1) UNRELEASED; urgency=low
 
     [ Jean-Luc Chretien ]
     * Add a missing dh_compress directive -X.mm in debian/rules
@@ -7,6 +7,11 @@ lcs-web (2.1~14) UNRELEASED; urgency=low
     * Misc changes in lcs/index.php
     * Modify webalizer.conf.in
     * Modify log format in auth.php for beter compatibily with fail2ban
+
+  [ Raphael Hertzog ]
+  * Fix lcs-web-config to properly fail if there's no lcs.conf.
+  * Don't reinitialize the admin password as it's now a responsibility of
+    ldapedu-server.
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon,  7 Jul 2008 19:57:00 +0200
 

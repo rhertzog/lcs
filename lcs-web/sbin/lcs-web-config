@@ -3,9 +3,10 @@
 # /usr/sbin/lcs-web-config
 
 set -e
+
 exit_fatal() {
 	echo "Fatal: $1" >&2
-	exit 0
+	exit 1
 }
 
 . /usr/share/slis/slis-common.sh
@@ -45,10 +46,6 @@ case "$1" in
         chown root:www-data /etc/LcSeConfig.ph
         sed -e "s|@@PASSWORD@@|"$LCSMGRPASS"|g" /var/www/lcs/includes/config.inc.in >/var/www/lcs/includes/config.inc.php
         chown www-data:www-data /var/www/lcs/includes/config.inc.php
-
-        # Réinitialisation password account admin lcs if initial install
-	echo "Réinitialisation du mpd du compte admin lcs"
-	/usr/share/lcs/sbin/userChangePwd.pl admin admin
 
         # Add right stats_can_read
         if ! ldapsearch -x "(cn=stats_can_read)($LDAP_BASE_DN)" 2>/dev/null | grep -q "^dn: "; then
