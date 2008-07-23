@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # /usr/sbin/lcs-openssh-config
-if [ -e /etc/ssh/sshd_config ] ; then 
-            mv /etc/ssh/sshd_config /etc/ssh/sshd_config.no-lcs
+if [ ! -e /etc/ssh/sshd_config.no-lcs ] ; then 
+    mv /etc/ssh/sshd_config /etc/ssh/sshd_config.no-lcs
 fi
 
-cat <<EOF > /etc/ssh/sshd_config
+cat >/etc/ssh/sshd_config <<EOF
 # Package generated configuration file
 # See the sshd(8) manpage for details
 

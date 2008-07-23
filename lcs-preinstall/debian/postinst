@@ -32,10 +32,6 @@ case "$1" in
 	    handle_initial_config lcs-preinstall-config 10
 	fi
 	#
-	# Locales configuration
-	#
-	lcs-locale-reconfigure-fr
-	#
 	# SSH configuration
 	#
 	lcs-sshd-config
