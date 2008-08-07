@@ -28,6 +28,7 @@ mydestination = #DOMAIN#
 		localhost
 		localhost.#DOMAIN#
 mynetworks = 127.0.0.0/8,#XEN_NETWORK#,#LAN_NETWORK#
+masquerade_domains = #DOMAIN#
 home_mailbox = Maildir/
 local_recipient_maps =
 alias_maps = hash:/etc/aliases, ldap:/etc/postfix/ldap-aliases.cf
