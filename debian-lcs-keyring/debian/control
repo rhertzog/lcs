@@ -1,0 +1,13 @@
+Source: debian-lcs-keyring
+Section: unknown
+Priority: extra
+Maintainer: simc <simon.cavey@crdp.ac-caen.fr>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.7.3
+Homepage: <insert the upstream URL, if relevant>
+
+Package: debian-lcs-keyring
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>

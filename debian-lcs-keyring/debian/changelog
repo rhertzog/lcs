@@ -1,0 +1,6 @@
+debian-lcs-keyring (1.0-1) stable; urgency=low
+
+  [ simc ]
+  * Initial release CRDP lcs-keyrings
+
+ -- Simon CAVEY <simon.cavey@crdp.ac-caen.fr>  Fri, 12 Sep 2008 00:46:38 +0200
