@@ -1,3 +1,5 @@
+5e9eea9dc58f9870aaa1a83ac224c11e  usr/share/keyrings/debian-lcs-removed-keys.gpg
+b489da830c715fe4fd9a3befa9132958  usr/share/keyrings/debian-lcs-keys.gpg
+c1636a0b149ff7b92410286a282fd7ba  usr/share/doc/debian-lcs-keyring/changelog.Debian.gz
 6a994415d6eb7e2d79265c879ab3c000  usr/share/doc/debian-lcs-keyring/copyright
-7aafdb202cb1650972073ad59318e4ad  usr/share/doc/debian-lcs-keyring/changelog.Debian.gz
 0e007fcc714e9d8f9e98c37de10b61c8  usr/share/doc/debian-lcs-keyring/README.Debian

@@ -1,10 +1,9 @@
 Package: debian-lcs-keyring
-Version: 1.0-1
-Architecture: amd64
-Maintainer: simc <simon.cavey@crdp.ac-caen.fr>
-Installed-Size: 44
+Version: 1.0-1~3
 Section: unknown
 Priority: extra
-Homepage: <insert the upstream URL, if relevant>
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Architecture: i386
+Installed-Size: 64
+Maintainer: simc <simon.cavey@crdp.ac-caen.fr>
+Description: GPG Lcs debian keys
+ GPG Lcs debian keys form CRDP repository

@@ -1,4 +1,4 @@
-debian-lcs-keyring (1.0-1) stable; urgency=low
+debian-lcs-keyring (1.0-1~3) stable; urgency=low
 
   [ simc ]
   * Initial release CRDP lcs-keyrings
