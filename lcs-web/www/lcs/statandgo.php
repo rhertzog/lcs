@@ -1,5 +1,5 @@
 <?php
-/* lcs/statandgo.php version du :  01/07/2008 */
+/* lcs/statandgo.php version du :  18/09/2008 */
 require ("./includes/headerauth.inc.php");
 require ("../Annu/includes/ldap.inc.php");
 #
@@ -30,8 +30,9 @@ if ( ereg ("^1" , $VER ) ) {
 } else $urldoc="../doc/";
 
 if ($use=="Applis") $urluse="applis.php";
-elseif ($use=="Accueil") $urluse=$url_accueil;
-elseif ($use=="Accueil2") $urluse="/lcs/accueil.php";
+elseif ($use=="Accueil") {
+  if ( is_dir ("/var/www/monlcs") ) $urluse="/monlcs/"; else $urluse="/lcs/accueil.php";
+} elseif ($use=="Accueil2") $urluse="/lcs/accueil.php";
 elseif ($use=="Annu") $urluse="../Annu/";
 elseif ($use=="Admin") $urluse="../Admin/index.php";
 elseif ($use=="Aide") $urluse=$urldoc;

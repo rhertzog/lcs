@@ -1,5 +1,5 @@
 <?php
-/* lcs/barre.php derniere mise a jour : 12/06/2008 */
+/* lcs/barre.php derniere mise a jour : 18/09/2008 */
 require "includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
 require "../Annu/includes/ihm.inc.php";
@@ -12,7 +12,7 @@ else
     die ("paramètres absents de la base de données");
 mysql_free_result($result);
 
-if ( $barre1 == 1 ) $path ="barre1"; else $path ="barre2";
+$path ="barre1";
 
 list ($idpers, $login)= isauth();
 
@@ -140,7 +140,7 @@ function MM_preloadImages() { //v3.0
 <?
 if ( $idpers==0 ) {
  	// Un utilisateur n'est pas authentifié  
-   	echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Accueil\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c3','images/$path/BP_r1_c3_f2.gif','images/$path/BP_r1_c3_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c3','images/$path/BP_r1_c3_f3.gif',1);\" ><img name=\"BP_r1_c3\" title=\"Authentification\" alt=\"Authentification\" src=\"images/$path/BP_r1_c3.gif\"  border=\"0\"></a></div>\n";
+   	echo "<div class=\"bouton\"><a href=\"auth.php\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c3','images/$path/BP_r1_c3_f2.gif','images/$path/BP_r1_c3_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c3','images/$path/BP_r1_c3_f3.gif',1);\" ><img name=\"BP_r1_c3\" title=\"Authentification\" alt=\"Authentification\" src=\"images/$path/BP_r1_c3.gif\"  border=\"0\"></a></div>\n";
    	echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Aide\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c8','images/$path/BP_r1_c8_f2.gif','images/$path/BP_r1_c8_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c8','images/$path/BP_r1_c8_f3.gif',1);\" ><img name=\"BP_r1_c8\" title=\"Aide\" alt=\"Aide\" src=\"images/$path/BP_r1_c8.gif\"  border=\"0\"></a></div>\n";
         echo "<div class=\"bouton\"></div>\n";	
 	echo "<div class=\"deconnect\"><img title=\"Déconnecté\" alt=\"Déconnecté\" src=\"images/deconnect.png\" width=\"26\" height=\"9\"  hspace=\"5\" align=\"bottom\" border=\"0\"></div>\n";
