@@ -7,6 +7,8 @@ lcs-web (2.1~14.1) UNRELEASED; urgency=low
     * Misc changes in lcs/index.php
     * Modify webalizer.conf.in
     * Modify log format in auth.php for beter compatibily with fail2ban
+    * Add cron task for lcsmaj
+    * Some modifications on barre.php, statandgo.php, select_briques.php concerning url_accueil and the selection of the applications
 
   [ Raphael Hertzog ]
   * Fix lcs-web-config to properly fail if there's no lcs.conf.
