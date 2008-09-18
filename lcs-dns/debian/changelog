@@ -1,3 +1,9 @@
+lcs-dns (2.1) LcsXP; urgency=low
+
+  * Release lcs-dns 2.1
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Sep 2008 11:17:34 +0200
+
 lcs-dns (2.1~1) UNRELEASED; urgency=low
 
   * Setting in conformity with Debian Installer
