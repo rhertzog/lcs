@@ -1,4 +1,9 @@
-lcs-preinstall (2.0-3~7.2) UNRELEASED; urgency=low
+lcs-preinstall (2.0-3) LcsXP; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Fix ldap root password retrieving (already done by ldapedu-server) if mode AUTO 
+
+-- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 25 Sept 2008 17:59:31 +0200
 
   [ Raphael Hertzog ]
   * Fix lcs-preinstall-config to fail correctly if there's no lcs.conf.
