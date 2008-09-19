@@ -1,15 +1,16 @@
-lcs-smtp (2.1~2) UNRELEASED; urgency=low
+lcs-smtp (2.1) LcsXP; urgency=low
 
   [ Jean-Luc Chretien]
   * Modify handle_initial_config order
-  
+  * Release package for 2.1 LcsXP version
+
   [ Raphael Hertzog ]
   * Call postfix-reconfigure correctly even when some parameters are empty.
 
   [ Philippe Le Brouster ]
   * Add masquerade_domains option by default in postfix main.cf
 
- -- Philippe Le Brouster <plb@ac-grenoble.fr>  Thu, 07 Aug 2008 21:10:23 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Sep 2008 14:47:34 +0200
 
 lcs-smtp (2.1~1) UNRELEASED; urgency=low
 
