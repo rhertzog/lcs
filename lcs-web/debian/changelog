@@ -1,4 +1,4 @@
-lcs-web (2.1~14.1) UNRELEASED; urgency=low
+lcs-web (2.1) LcsXP; urgency=low
 
     [ Jean-Luc Chretien ]
     * Add a missing dh_compress directive -X.mm in debian/rules
@@ -9,6 +9,8 @@ lcs-web (2.1~14.1) UNRELEASED; urgency=low
     * Modify log format in auth.php for beter compatibily with fail2ban
     * Add cron task for lcsmaj
     * Some modifications on barre.php, statandgo.php, select_briques.php concerning url_accueil and the selection of the applications
+    * Remove old folder barre2 and barre_old
+    * Generate password for setup page
 
   [ Raphael Hertzog ]
   * Fix lcs-web-config to properly fail if there's no lcs.conf.
