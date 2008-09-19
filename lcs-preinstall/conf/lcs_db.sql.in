@@ -37,9 +37,7 @@ CREATE TABLE IF NOT EXISTS `applis` (
 
 INSERT INTO `applis` (`id`, `name`, `value`, `descr`, `num_maj`, `version`, `chemin`, `type`) VALUES
 (1, 'url_accueil', '/lcs/accueil.php', 'Page d''accueil LCS', 0, '', '', ''),
-(2, 'barre1', '1', 'Barre icones BioZen', 0, '', '', ''),
-(3, 'barre2', '0', 'Barre icones FullFat', 0, '', '', ''),
-(4, 'url_logo', 'http://wawadeb.crdp.ac-caen.fr/lcsdoc/', 'url logo LCS', 0, '', '', '');
+(2, 'url_logo', 'http://wawadeb.crdp.ac-caen.fr/lcsdoc/', 'url logo LCS', 0, '', '', '');
 
 -- --------------------------------------------------------
 
