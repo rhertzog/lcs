@@ -30,6 +30,13 @@ case "$1" in
     configure)
         # Configure LCS Web
         #
+        # generate passwor for setup page
+        #
+        if [ -z "$LOCAL_ADMIN_PW" ] || [ "$LOCAL_ADMIN_PW" = "AUTO" ]; then
+          LOCAL_ADMIN_PW=`pwgen -1 -s 8`
+        fi
+        /usr/bin/htpasswd -bc /var/www/setup/.htpasswd admin $LOCAL_ADMIN_PW
+        #
         # Add LCS profile conf in etc
         mv /etc/profile /etc/profile.lcsav
         cp /var/lib/lcs/web/profile /etc/profile
