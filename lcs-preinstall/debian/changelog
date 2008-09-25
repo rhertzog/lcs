@@ -1,3 +1,10 @@
+lcs-preinstall (2.0-4~2) UNRELEASED; urgency=low
+
+  * Changed the priority used by handle_initial_config for
+    lcs-preinstall-config to 55
+
+ -- Philippe Le Brouster <plb@ac-grenoble.fr>  Thu, 25 Sep 2008 17:01:40 +0200
+
 lcs-preinstall (2.0-3) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
