@@ -14,11 +14,11 @@ filter  = apache-auth
 logpath = /var/log/apache*/*error.log
 maxretry = 6
 
-[apache-bruteforce.conf]
+[apache-bruteforce]
 
 enabled = true
 port    = http,https
-filter  = apache-bruteforce.conf
+filter  = apache-bruteforce
 logpath = /var/log/apache*/*error.log
 maxretry = 6
 
@@ -38,21 +38,12 @@ filter  = lcs-auth
 logpath = /var/log/lcs/error.log
 maxretry = 6
 
-[courierimap]
+[courierauth]
 
-enabled  = true
-port     = imap2,imaps
+enabled  = false
+port     = imap2,imap3,imaps
 filter   = courierlogin
-failregex = imapd: LOGIN FAILED.*ip=\[.*:<HOST>\]
 logpath  = /var/log/mail.log
-maxretry = 5
 
-[courierimap]
 
-enabled  = true
-port     = imap2,imaps
-filter   = courierlogin
-failregex = imapd: LOGIN FAILED.*ip=\[.*:<HOST>\]
-logpath  = /var/log/mail.log
-maxretry = 5
 
