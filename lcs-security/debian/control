@@ -1,5 +1,5 @@
 Source: lcs-security
-Section: net
+Section: misc
 Priority: optional
 Maintainer: Simon Cavey <simon.cavey@crdp.ac-caen.fr>
 Build-Depends: debhelper (>= 5)
