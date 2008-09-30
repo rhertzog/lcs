@@ -1,3 +1,9 @@
+lcs-security (0.1-5) stable; urgency=low
+
+  * fix match level
+
+ -- simc <simc@etchdev32>  Tue, 30 Sep 2008 15:28:09 +0200
+
 lcs-security (0.1-4) stable; urgency=low
 
   * fix revision

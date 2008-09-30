@@ -12,7 +12,7 @@ enabled = true
 port    = http,https
 filter  = apache-auth
 logpath = /var/log/apache*/*error.log
-maxretry = 6
+maxretry = 20
 
 [apache-bruteforce]
 
@@ -20,7 +20,7 @@ enabled = true
 port    = http,https
 filter  = apache-bruteforce
 logpath = /var/log/apache*/*error.log
-maxretry = 6
+maxretry = 20
 
 [apache-overflows]
 
@@ -28,7 +28,7 @@ enabled = true
 port    = http,https
 filter  = apache-overflows
 logpath = /var/log/apache*/*error.log
-maxretry = 2
+maxretry = 6
 
 [lcs-auth]
 
@@ -44,6 +44,4 @@ enabled  = false
 port     = imap2,imap3,imaps
 filter   = courierlogin
 logpath  = /var/log/mail.log
-
-
-
+maxretry = 6
