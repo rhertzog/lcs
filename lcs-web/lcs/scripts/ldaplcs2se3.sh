@@ -1,7 +1,7 @@
 #!/bin/bash
 # Connection d'un LCS sur l'annuaire ldap SE3
 # Olivier lecluse & Jean-Luc Chretien
-# 20/09/2007
+# 02/10/2008
 
 # recuperation des params bdd
 
@@ -104,6 +104,13 @@ fi
 
 ldapadd -x -c -h $LDAPIP -D $ADMINRDN,$BASEDN -w $ADMINPW -f /tmp/addse3.ldif
 
+# modif de la conf postfix 
+echo "server_host = $LDAPIP">/etc/postfix/ldap-aliases.cf
+echo "search_base = $BASEDN">>/etc/postfix/ldap-aliases.cf
+echo "query_filter = (mail=%s@$DOMAIN)">>/etc/postfix/ldap-aliases.cf
+echo "result_attribute = uid">>/etc/postfix/ldap-aliases.cf
+chmod 644 /etc/postfix/ldap-aliases.cf
+
 # Modif de la conf Lcs pour pointer sur SE3
 echo "ldap_server $OLDLDAPIP $LDAPIP">/tmp/params_lcs
 /usr/share/lcs/scripts/edit_params.sh 
@@ -111,17 +118,11 @@ echo "ldap_server $OLDLDAPIP $LDAPIP">/tmp/params_lcs
 # Modif du param ldap_server dans la BDD
 echo "UPDATE params SET value=\"$LDAPIP\" WHERE name='ldap_server'" | mysql -h $dbhost $dbname -u $dbuser -p$dbpass -N
 
-# modif de la conf postfix 
-echo "server_host = $LDAPIP">/etc/postfix/ldap-aliases.cf
-echo "search_base = $BASEDN">>/etc/postfix/ldap-aliases.cf
-echo "query_filter = (mail=%s@$DOMAIN)">>/etc/postfix/ldap-aliases.cf
-echo "result_attribute = uid">>/etc/postfix/ldap-aliases.cf
-chmod 644 /etc/postfix/ldap-aliases.cf
-/etc/init.d/postfix restart
-
 # Application des droits
 if [ -d /home/admin ]; then
 	rm -r /home/admin
 fi
 chown -R webmaster.etab /home/webmaster.etab/public_html/
 chgrp -R lcs-users /home/*
+/usr/share/lcs/sbin/groupAddUser.pl www-data lcs-users
+/etc/init.d/apache2 restart
