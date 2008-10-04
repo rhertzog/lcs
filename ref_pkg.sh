@@ -23,15 +23,24 @@ fi
     
 #======== Référencement du paquet si c'est un modules LCS ===================     
 # by misterphi
+Module=`echo $1 | cut -d- -f2`
+
 if [ "$4" == "LCS" ];then
 	cd ../../../../LCS/LCS2.0/sources/trunk/
-	elif [ "$4" != "BacASable" ];then
+	CheminDoc="../tags/$1/$2/usr/share/doc/lcs/$Module/html"
+	Deb="DEBIAN"
+	elif [ "$4" == "BacASable" ];then
+	CheminDoc="$1/doc-html"
+	Deb="debian"
+	else
 	echo "repository errone"
 	exit
 fi
+
 	
+
 # test si le paquet est un module 
-if grep -q ", 'M');\"$" $1/DEBIAN/postinst || grep -q ", 'S');\"$" $1/DEBIAN/postinst ; then
+if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postinst ; then
 	echo "Voulez vous referencer le module $1 (O/N)"
     	read reponse
     	if [  "$reponse" = "O" ] || [  "$reponse" = "o" ] ; then
@@ -68,7 +77,7 @@ if grep -q ", 'M');\"$" $1/DEBIAN/postinst || grep -q ", 'S');\"$" $1/DEBIAN/pos
 		# 
 		# le paquet est-il déjŕ référencé dans le xml ?
 		#
-		Module=`echo $1 | cut -d- -f2`
+		
 		if grep -q $Module moduleslcs.xml;then
 			#paquet déja référencé 
 			#on récupčre le n° ligne de la section 
@@ -124,8 +133,9 @@ if grep -q ", 'M');\"$" $1/DEBIAN/postinst || grep -q ", 'S');\"$" $1/DEBIAN/pos
 		fi
 		cd $Repcourant
 		#suppression des .svn de la doc
-		if [ -e ../tags/$1/$2/usr/share/doc/lcs/$Module/html ];then
-		cp -r  ../tags/$1/$2/usr/share/doc/lcs/$Module/html /tmp/$Module'_html'
+			
+		if [ -e $CheminDoc ];then
+		cp -r  $CheminDoc /tmp/$Module'_html'
 		rm -rf /tmp/$Module'_html'/.svn
 		scp -r -P 2222 /tmp/$Module'_html' pacman@193.49.64.20:/var/www/linux/modules$depot/Docs/
 						
@@ -139,8 +149,8 @@ if grep -q ", 'M');\"$" $1/DEBIAN/postinst || grep -q ", 'S');\"$" $1/DEBIAN/pos
 			rm section.txt
 		fi
 		else
-		echo "Le repertoire tags/$1/$2 n existe pas "
-		echo "Pas de documentation transférée" 
+		echo "Le repertoire $cheminDoc n'existe pas "
+		echo "Pas de documentation transferee" 
 		fi
 	fi
 else
