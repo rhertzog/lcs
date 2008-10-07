@@ -5,7 +5,7 @@ lcs-web (2.1-1~1) Unreleased; urgency=low
 
   [ Philippe Leclerc ]
   * Modify gestpack.sh to point to lcs.crdp
-
+  * Modify modules_desinstallation for lcs.crdp
  -- Misterphi <philippe.leclerc1@ac-caen.fr>  Fri,  3 Oct 2008 21:36:57 +0200
 
 
