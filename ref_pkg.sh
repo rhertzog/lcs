@@ -27,7 +27,7 @@ Module=`echo $1 | cut -d- -f2`
 
 if [ "$4" == "LCS" ];then
 	cd ../../../../LCS/LCS2.0/sources/trunk/
-	CheminDoc="../tags/$1/$2/usr/share/doc/lcs/$Module/html"
+	CheminDoc="$1/usr/share/doc/lcs/$Module/html"
 	Deb="DEBIAN"
 	elif [ "$4" == "BacASable" ];then
 	CheminDoc="$1/doc-html"
@@ -105,7 +105,7 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 			echo "	<version ver=\"$2\"> \\"  >>section.txt
 			echo "		<ID>1</ID> \\" >> section.txt
 			echo "		<etat>1</etat> \\" >> section.txt
-			echo "		<serveur type=\"http\">deb http://lcs.crdp.ac-caen.fr/etch $depot main \\" >> section.txt
+			echo "		<serveur type=\"http\">deb http://lcs.crdp.ac-caen.fr/etch $depot main</serveur>\\" >> section.txt
 			echo "		<aide type=\"http\">http://linux.crdp.ac-caen.fr/modules$depot/Docs/$Module""_html/index.html</aide>\\" >> section.txt
 			echo "		<type>M</type>\\" >> section.txt
 			echo "	</version>\\" >> section.txt
@@ -136,7 +136,7 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 			
 		if [ -e $CheminDoc ];then
 		cp -r  $CheminDoc /tmp/$Module'_html'
-		rm -rf /tmp/$Module'_html'/.svn
+		rm -rf /tmp/$Module'_html'/.svn /tmp/$Module'_html'/*/.svn
 		scp -r -P 2222 /tmp/$Module'_html' pacman@193.49.64.20:/var/www/linux/modules$depot/Docs/
 						
 		#
