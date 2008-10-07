@@ -36,7 +36,7 @@ creation_ecran($fecran,$msgIntro);
 ecrit_ecran($fecran, "<H3>Desinstallation de </H3><B>" . $nommodule." ".$version. " le ". date('d/m/Y à H\hi')."</B>");
 ecrit_ecran($fecran,"<H3>Execution du script</H3>");
 //commande de désinstallation
-$cmd= "/usr/bin/sudo -H -u root /usr/share/lcs/scripts/gestpack.sh 'deb ftp://debian.crdp.ac-caen.fr/debian sarge Lcs' 'remove  --purge' lcs-".$nommodule;
+$cmd= "/usr/bin/sudo -H -u root /usr/share/lcs/scripts/gestpack.sh 'deb http://lcs.crdp.ac-caen.fr/etch Lcs main' 'remove  --purge' lcs-".$nommodule;
 //on place la commande dans le fichier jobat
 $jobfile="/usr/share/lcs/Modules/jobat";
 $job= fopen($jobfile,"w");
