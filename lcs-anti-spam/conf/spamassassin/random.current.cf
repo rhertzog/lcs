@@ -1,0 +1,212 @@
+#William Stearns <wstearns@pobox.com>
+#http://www.stearns.org/sa-blacklist/
+#release: 2004052501
+
+describe rantext1 Random text 1
+full     rantext1 /%RANDOM_WORD/i
+score    rantext1 2.0
+
+describe rantext2 Random text 2
+full     rantext2 /%RND_WORD/i
+score    rantext2 2.0
+
+describe rantext3 Random text 3
+full     rantext3 /%RANDOM_TEXT/i
+score    rantext3 2.0
+
+describe rantext4 Random text 4
+full     rantext4 /%RND_UC_CHAR/i
+score    rantext4 2.0
+
+describe rantext5 Random text 5
+full     rantext5 /%RANDOM_CHAR/i
+score    rantext5 2.0
+
+describe rantext6 Random text 6
+full     rantext6 /%RND_LC_CHAR/i
+score    rantext6 2.0
+
+describe rantext7 Random text 7
+full     rantext7 /%RANDOM_NUMBER/i
+score    rantext7 2.0
+
+describe rantext8 Random text 8
+full     rantext8 /%RND_TEXT/i
+score    rantext8 2.0
+
+describe rantext9 Random text 9
+full     rantext9 /%RND_SYB/i
+score    rantext9 2.0
+
+describe rantext10 Random text 10
+full     rantext10 /%RANDLOWCHAR/i
+score    rantext10 2.0
+
+describe rantext11 Random text 11
+full     rantext11 /%RND_CHAR/i
+score    rantext11 2.0
+
+describe rantext12 Random text 12
+full     rantext12 /%RND_PHRASE/i
+score    rantext12 2.0
+
+describe rantext13 Random text 13
+full     rantext13 /RNDLET/
+score    rantext13 2.0
+
+describe rantext14 Random text 14
+full     rantext14 /%CUSTOM1/i
+score    rantext14 2.0
+
+describe rantext15 Random text 15
+full     rantext15 /%RND_MEDS_LIST/i
+score    rantext15 2.0
+
+describe rantext16 Random text 16
+full     rantext16 /%RND_ALL_OTHER_MEDS/i
+score    rantext16 2.0
+
+describe rantext17 Random text 17
+full     rantext17 /%RND_/i
+score    rantext17 2.0
+
+describe rantext18 Random text 18
+full     rantext18 /%RANDOM_/i
+score    rantext18 2.0
+
+describe rantext19 Random text 19
+full     rantext19 /%RND_MEDS_[0-9]PILLS/i
+score    rantext19 2.0
+
+describe rantext20 Random text 20
+full     rantext20 /%\[random\]/i
+score    rantext20 2.0
+
+describe rantext21 Random text 21
+full     rantext21 /%rnd_host/i
+score    rantext21 2.0
+
+describe rantext22 Random text 22
+full     rantext22 /\@RND_FROM_DOMAIN/i
+score    rantext22 2.0
+
+describe rantext23 Random text 23
+full     rantext23 /%custom_domain/i
+score    rantext23 2.0
+
+describe rantext24 Random text 24
+full     rantext24 /%RND_AD_[0-9]/i
+score    rantext24 2.0
+
+describe rantext25 Random text 25
+full     rantext25 /%RND_URL/i
+score    rantext25 2.0
+
+describe rantext26 Random text 26
+full     rantext26 /%RND_IMA/i
+score    rantext26 2.0
+
+describe rantext27 Random text 27
+full     rantext27 /\#\#randomword\#\#/i
+score    rantext27 2.0
+
+describe rantext28 Random text 28
+full     rantext28 /%MULTI_NAME/i
+score    rantext28 2.0
+
+describe rantext29 Random text 29
+full     rantext29 /%FEM_NAME/i
+score    rantext29 2.0
+
+describe rantext30 Random text 30
+full     rantext30 /\$RandomWord\$/i
+score    rantext30 2.0
+
+describe rantext31 Random text 31
+full     rantext31 /%CURRENT_DATE_TIME/i
+score    rantext31 2.0
+
+describe rantext32 Random text 32
+full     rantext32 /RND_DATE_TIME/i
+score    rantext32 2.0
+
+describe rantext33 Random text 33
+full     rantext33 /RND_DIGIT/i
+score    rantext33 2.0
+
+describe rantext34 Random text 34
+full     rantext34 /%custom_url/i
+score    rantext34 2.0
+
+describe rantext35 Random text 35
+full     rantext35 /%RNDUCCHAR/i
+score    rantext35 2.0
+
+describe rantext36 Random text 36
+full     rantext36 /%RNDLCCHAR/i
+score    rantext36 2.0
+
+describe rantext37 Random text 37
+full     rantext37 /%RNDDIGIT/i
+score    rantext37 2.0
+
+describe rantext38 Random text 38
+full     rantext38 /%MFROM/i
+score    rantext38 2.0
+
+describe rantext39 Random text 39
+full     rantext39 /%CHARSET/i
+score    rantext39 2.0
+
+describe rantext40 Random text 40
+full     rantext40 /%FROM_USER/i
+score    rantext40 2.0
+
+describe rantext41 Random text 41
+full     rantext41 /%MESSAGEID/i
+score    rantext41 2.0
+
+describe rantext42 Random text 42
+full     rantext42 /%RECEIVED/i
+score    rantext42 2.0
+
+describe rantext43 Random text 43
+full     rantext43 /%REC_WITH/i
+score    rantext43 2.0
+
+describe rantext44 Random text 44
+full     rantext44 /%CUSTOM_RNDSHIT/i
+score    rantext44 2.0
+
+describe rantext45 Random text 45
+full     rantext45 /%CUSTOM_RNDPH/i
+score    rantext45 2.0
+
+describe rantext46 Random text 46
+full     rantext46 /%CUSTOM_RNDURL/i
+score    rantext46 2.0
+
+describe rantext47 Random text 47
+full     rantext47 /%CUSTOM_REMOVELNK/i
+score    rantext47 2.0
+
+describe rantext48 Random text 48
+full     rantext48 /%FIRST_NAME/i
+score    rantext48 2.0
+
+describe rantext49 Random text 49
+full     rantext49 /%FIRS_NAME/i
+score    rantext49 2.0
+
+describe rantext50 Random text 50
+full     rantext50 /%LAS_NAME/i
+score    rantext50 2.0
+
+describe rantext51 Random text 51
+full     rantext51 /%HEADER_RANDOMIZER_TAG/i
+score    rantext51 2.0
+
+describe rantext52 Random text 52
+full     rantext52 /%ENCODED_RECIPIENT_LIST/i
+score    rantext52 2.0
+

@@ -1,0 +1,462 @@
+# Fred's Header rules
+# Version:  1.04.08
+# Created:  08/20/2003
+# Modified: 01/02/2007
+# Changes:  Just to make sure everyone gets the newest copy of this file!
+# License:  Artistic - see http://www.rulesemporium.com/license.txt
+# Current Maintainer: Frederic Tarasevicius - tech2@i-is.com
+# Current Home: http://www.rulesemporium.com/rules/88_FVGT_headers.cf
+
+
+header   HELO_EQ_ADELPHIA	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.adelphia\.net /i
+score    HELO_EQ_ADELPHIA	0.456
+#counts  HELO_EQ_ADELPHIA	103s/1h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HELO_EQ_AT		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.at /i
+score    HELO_EQ_AT		0.424
+#counts  HELO_EQ_AT		41s/0h of 41669 corpus (34069s/7600h FVGT) 03/27/06
+
+header   HELO_EQ_AU		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.au /
+score    HELO_EQ_AU		0.377
+#counts  HELO_EQ_AU		22s/0h of 42052 corpus (34124s/7928h FVGT) 04/27/06
+
+header   HELO_EQ_BIZ		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.biz /i
+score    HELO_EQ_BIZ		0.288
+#counts  HELO_EQ_BIZ		28s/4h of 41669 corpus (34069s/7600h FVGT) 03/27/06
+
+header   HELO_EQ_BLUEYON	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.blueyonder\.co\.uk /i
+score    HELO_EQ_BLUEYON	1.4
+#counts  HELO_EQ_BLUEYON	88s/0h of 41736 corpus (34126s/7610h FVGT) 03/29/06
+
+header	 HELO_EQ_BR		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.br /i
+score	 HELO_EQ_BR		0.955
+#counts  HELO_EQ_BR		267s/0h of 41669 corpus (34069s/7600h FVGT) 03/27/06
+
+header   HELO_EQ_CLUBINTERNET	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.club-internet\.fr /i
+score    HELO_EQ_CLUBINTERNET	0.781
+#counts  HELO_EQ_CLUBINTERNET	8s/0h of 41745 corpus (34134s/7611h FVGT) 03/29/06
+
+header	 HELO_EQ_CPE		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=cpe/i
+score	 HELO_EQ_CPE		0.5
+#counts  HELO_EQ_CPE		252s/0h of 41665 corpus (34068s/7597h FVGT) 03/25/06
+
+header	 HELO_EQ_CUST		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.customer/i
+score	 HELO_EQ_CUST		0.245
+#counts  HELO_EQ_CUST		14s/1h of 41669 corpus (34069s/7600h FVGT) 03/27/06
+
+header   HELO_EQ_CZ		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.cz /i
+score    HELO_EQ_CZ		0.445
+#counts  HELO_EQ_CZ		16s/0h of 41669 corpus (34069s/7600h FVGT) 03/27/06
+
+header   HELO_EQ_DE		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.de /i
+score    HELO_EQ_DE		0.35
+#counts  HELO_EQ_DE		101s/2h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_DIALUP		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+dialup[^ ]+ /i
+score    HELO_EQ_DIALUP		0.862
+#counts  HELO_EQ_DIALUP		12s/0h of 41736 corpus (34126s/7610h FVGT) 03/29/06
+
+header   HELO_EQ_DIP_DIALIN	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.dip\.t-dialin\.net /
+score    HELO_EQ_DIP_DIALIN	1.573
+#counts  HELO_EQ_DIP_DIALIN	38s/0h of 41745 corpus (34134s/7611h FVGT) 03/29/06
+
+header   HELO_EQ_DK		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.dk /i
+score    HELO_EQ_DK		1.009
+#counts  HELO_EQ_DK		8s/0h of 41914 corpus (34073s/7841h FVGT) 04/12/06
+
+header   HELO_EQ_DSL		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+(?!(?:[a-z]dsl|dsl[a-z]))[-.]?dsl[-.]?/
+score    HELO_EQ_DSL		1.129
+#counts  HELO_EQ_DSL		903s/1h of 41670 corpus (34061s/7609h FVGT) 03/27/06
+
+header   HELO_EQ_DYNAMIC	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+dynamic[^ ]+ /
+score    HELO_EQ_DYNAMIC	1.144
+#counts  HELO_EQ_DYNAMIC	319s/0h of 41968 corpus (34130s/7838h FVGT) 04/11/06
+
+header   HELO_EQ_FR		X-Spam-Relays-Untrusted =~ /[^\]]+ helo=[^ ]+\.fr /i
+score    HELO_EQ_FR		0.35
+#counts  HELO_EQ_FR		125s/1h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_GEOCITIES	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=geocities\.com /i
+score    HELO_EQ_GEOCITIES	3.531
+#counts  HELO_EQ_GEOCITIES	24s/0h of 41745 corpus (34134s/7611h FVGT) 03/29/06
+
+header   HELO_EQ_HU		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.hu /i
+score    HELO_EQ_HU		1.35
+#counts  HELO_EQ_HU		33s/0h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_INSIGHT_CL	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.client\.insightbb.com /i
+score    HELO_EQ_INSIGHT_CL	2.35
+#counts  HELO_EQ_INSIGHT_CL	27s/0h of 41745 corpus (34134s/7611h FVGT) 03/29/06
+
+header   HELO_EQ_INTERBUS	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.interbusiness\.it /i
+score    HELO_EQ_INTERBUS	0.644
+#counts  HELO_EQ_INTERBUS	46s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HELO_EQ_INTERBUSNESS	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=host.{5,13}\.pool.{5,13}\.interbusiness\.it /
+score    HELO_EQ_INTERBUSNESS	1.111
+#counts  HELO_EQ_INTERBUSNESS	14s/0h of 41789 corpus (34114s/7675h FVGT) 04/06/06
+
+header   HELO_EQ_IP_192_168	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=192\.168\.\d{1,3}\.\d{1,3}/
+score    HELO_EQ_IP_192_168	0.853
+#counts  HELO_EQ_IP_192_168	196s/0h of 41684 corpus (34086s/7598h FVGT) 03/27/06
+
+header   HELO_EQ_IP_ADDR	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=\!?(?!(?:127\.0\.0\.1|192\.168\.|10\.))\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/
+describe HELO_EQ_IP_ADDR	HELO using IP Address (not private)
+score    HELO_EQ_IP_ADDR	1.119
+#counts  HELO_EQ_IP_ADDR	6221s/9h of 54920 corpus (47340s/7580h FVGT) 03/25/06
+
+header   HELO_EQ_IT		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.it /i
+score    HELO_EQ_IT		0.635
+#counts  HELO_EQ_IT		87s/0h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_JP		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.jp /i
+score    HELO_EQ_JP		1.244
+#counts  HELO_EQ_JP		203s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HELO_EQ_LOCALHOST	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]?localhost[^ ]? /i
+score    HELO_EQ_LOCALHOST	0.457
+#counts  HELO_EQ_LOCALHOST	536s/2h of 41736 corpus (34126s/7610h FVGT) 03/29/06
+
+header   HELO_EQ_LT4		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]{1,4} by=/i
+score    HELO_EQ_LT4		0.442
+#counts  HELO_EQ_LT4		557s/42h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HELO_EQ_MINDSPRING	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=user-.{5,30}\.cable\.mindspring\.com /i
+score    HELO_EQ_MINDSPRING	0.45
+#counts  HELO_EQ_MINDSPRING	41s/0h of 41719 corpus (34108s/7611h FVGT) 03/28/06
+
+header   HELO_EQ_MODEMCABLE	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+(?:modem|cable)[^ ]+ /i
+score    HELO_EQ_MODEMCABLE	0.768
+#counts  HELO_EQ_MODEMCABLE	446s/1h of 41719 corpus (34108s/7611h FVGT) 03/28/06
+
+header   HELO_EQ_MX		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.mx /i
+score    HELO_EQ_MX		0.535
+#counts  HELO_EQ_MX		111s/0h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_MY		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.my /i
+score    HELO_EQ_MY		0.35
+#counts  HELO_EQ_MY		16s/0h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_NE_JP		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.ne\.jp /i
+score    HELO_EQ_NE_JP		1.244
+#counts  HELO_EQ_NE_JP		182s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HELO_EQ_NL		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.nl /i
+score    HELO_EQ_NL		0.55
+#counts  HELO_EQ_NL		100s/1h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_PL		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.pl /i
+score    HELO_EQ_PL		1.135
+#counts  HELO_EQ_PL		148s/0h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_PPPOE		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=pppoe-\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}/i
+score    HELO_EQ_PPPOE		0.35
+#counts  HELO_EQ_PPPOE		1s/0h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_RO		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.ro /i
+score    HELO_EQ_RO		1.235
+#counts  HELO_EQ_RO		22s/0h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_RU		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.ru /i
+score    HELO_EQ_RU		0.595
+#counts  HELO_EQ_RU		482s/1h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_SE		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.se /i
+score    HELO_EQ_SE		0.35
+#counts  HELO_EQ_SE		12s/1h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_SHAWCABLE_2	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=\w{1}\d{7,14}.{4,25}.\w{2,4}\.shawcable\.net /i
+score    HELO_EQ_SHAWCABLE_2	1.45
+#counts  HELO_EQ_SHAWCABLE_2	40s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HELO_EQ_SK		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.sk /i
+score    HELO_EQ_SK		1.35
+#counts  HELO_EQ_SK		19s/0h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_SPEEDYTERRA	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=\d{3}-\d{1,3}-\d{1,3}-\d{1,3}\.speedyterra\.com\.br /
+score    HELO_EQ_SPEEDYTERRA	3.0
+#counts  HELO_EQ_SPEEDYTERRA	3s/0h of 41745 corpus (34134s/7611h FVGT) 03/29/06
+
+header   HELO_EQ_TELESP		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=\d{2,3}-\d{1,3}-\d{1,3}-\d{1,3}\.dsl\.telesp\.net\.br /i
+score    HELO_EQ_TELESP		1.245
+#counts  HELO_EQ_TELESP		104s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HELO_EQ_TR		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.tr /i
+score    HELO_EQ_TR		0.935
+#counts  HELO_EQ_TR		27s/0h of 41719 corpus (34108s/7611h FVGT) 03/28/06
+
+header   HELO_EQ_TW		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.tw /i
+score    HELO_EQ_TW		1.335
+#counts  HELO_EQ_TW		146s/0h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_EQ_VERIZON_POOL	X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=pool-\d.{5,30}\.verizon\.net /i
+score    HELO_EQ_VERIZON_POOL	1.495
+#counts  HELO_EQ_VERIZON_POOL	369s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HELO_EQ_VN		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.vn /i
+score    HELO_EQ_VN		1.335
+#counts  HELO_EQ_VN		9s/0h of 41686 corpus (34078s/7608h FVGT) 03/27/06
+
+header   HELO_IS_SMALL6		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[a-z0-9].{3}(?:\.)?[a-z]{2} by=/
+score    HELO_IS_SMALL6		0.556
+#counts  HELO_IS_SMALL6		862s/3h of 15320 corpus (7719s/7601h FT) 03/25/06
+
+header   __HOST_EQ_BIZ		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.biz /
+meta     HELO_MISMATCH_BIZ	(HELO_EQ_BIZ && !__HOST_EQ_BIZ)
+score    HELO_MISMATCH_BIZ	0.443
+#counts  HELO_MISMATCH_BIZ	21s/4h of 41914 corpus (34073s/7841h FVGT) 04/12/06
+
+header   __HOST_EQ_BR		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.br /
+meta     HELO_MISMATCH_BR	(HELO_EQ_BR && !__HOST_EQ_BR)
+score    HELO_MISMATCH_BR	2.4
+#counts  HELO_MISMATCH_BR	15s/0h of 41914 corpus (34073s/7841h FVGT) 04/12/06
+
+header   __HELO_EQ_COM		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.com /i
+header   __HOST_EQ_COM		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.com /
+meta     HELO_MISMATCH_COM	(__HELO_EQ_COM && !__HOST_EQ_COM)
+score    HELO_MISMATCH_COM	0.553
+#counts  HELO_MISMATCH_COM	8287s/186h of 41736 corpus (34126s/7610h FVGT) 03/29/06
+
+header   __HOST_EQ_DE		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.de /
+meta     HELO_MISMATCH_DE	(HELO_EQ_DE && !__HOST_EQ_DE)
+score    HELO_MISMATCH_DE	1.448
+#counts  HELO_MISMATCH_DE	20s/1h of 41914 corpus (34073s/7841h FVGT) 04/12/06
+
+header   __HOST_EQ_DK		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.dk /
+meta     HELO_MISMATCH_DK	(HELO_EQ_DK && !__HOST_EQ_DK)
+score    HELO_MISMATCH_DK	1.7
+#counts  HELO_MISMATCH_DK	4s/0h of 41914 corpus (34073s/7841h FVGT) 04/12/06
+
+header   __HELO_EQ_HU		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.hu /
+meta     HELO_MISMATCH_HU	(__HELO_EQ_HU && !HOST_EQ_HU)
+score    HELO_MISMATCH_HU	2.443
+#counts  HELO_MISMATCH_HU	24s/0h of 41914 corpus (34073s/7841h FVGT) 04/12/06
+
+header   __HELO_EQ_INFO		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.info /i
+header   __HOST_EQ_INFO		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.info /
+meta     HELO_MISMATCH_INFO	(__HELO_EQ_INFO && !__HOST_EQ_INFO)
+score    HELO_MISMATCH_INFO	1.448
+#counts  HELO_MISMATCH_INFO	324s/0h of 41745 corpus (34134s/7611h FVGT) 03/29/06
+
+header   __HELO_EQ_NET		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.net /i
+header   __HOST_EQ_NET		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.net /
+meta     HELO_MISMATCH_NET	(__HELO_EQ_NET && !__HOST_EQ_NET)
+score    HELO_MISMATCH_NET	0.611
+#counts  HELO_MISMATCH_NET	913s/32h of 41736 corpus (34126s/7610h FVGT) 03/29/06
+
+header   __HOST_EQ_NL		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.nl /
+meta     HELO_MISMATCH_NL	(HELO_EQ_NL && !__HOST_EQ_NL)
+score    HELO_MISMATCH_NL	1.448
+#counts  HELO_MISMATCH_NL        100s/0h of 41914 corpus (34073s/7841h FVGT) 04/12/06
+
+header   __HELO_EQ_ORG		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.org /i
+header   __HOST_EQ_ORG		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.org /
+meta     HELO_MISMATCH_ORG	(__HELO_EQ_ORG && !__HOST_EQ_ORG)
+score    HELO_MISMATCH_ORG	0.611
+#counts  HELO_MISMATCH_ORG	91s/5h of 41736 corpus (34126s/7610h FVGT) 03/29/06
+
+
+meta     HELO_MISMATCH_PL	(HELO_EQ_PL && !HOST_EQ_PL)
+score    HELO_MISMATCH_PL	1.448
+#counts   HELO_MISMATCH_PL         50s/0h of 8775 corpus (5426s/3349h AxB) 04/20/06
+#counts   HELO_MISMATCH_PL         16s/0h of 13312 corpus (7439s/5873h CT) 04/20/06
+#counts   HELO_MISMATCH_PL         0s/0h of 22953 corpus (17240s/5713h MY) 04/20/06
+#counts   HELO_MISMATCH_PL         2s/0h of 15656 corpus (7711s/7945h FT) 04/20/06
+#counts   HELO_MISMATCH_PL         25s/0h of 42071 corpus (34145s/7926h FVGT) 04/20/06
+#counts   HELO_MISMATCH_PL         17s/0h of 93047 corpus (65257s/27790h ML) 04/20/06
+
+header	 __HOST_EQ_RU		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.ru /
+meta     HELO_MISMATCH_RU	(HELO_EQ_RU && !__HOST_EQ_RU)
+score    HELO_MISMATCH_RU	3.1
+#counts  HELO_MISMATCH_RU	630s/0h of 41968 corpus (34130s/7838h FVGT) 04/11/06
+
+meta     HELO_MISMATCH_SK	(HELO_EQ_SK && !HOST_EQ_SK)
+score    HELO_MISMATCH_SK	0.9
+#counts  HELO_MISMATCH_SK	10s/0h of 41914 corpus (34073s/7841h FVGT) 04/12/06
+
+header   __HOST_EQ_TW		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.tw /
+meta     HELO_MISMATCH_TW	(HELO_EQ_TW && !__HOST_EQ_TW)
+score    HELO_MISMATCH_TW	0.994
+#counts  HELO_MISMATCH_TW	6s/0h of 41914 corpus (34073s/7841h FVGT) 04/12/06
+
+header   __HOST_EQ_UK		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.uk /
+header   __HELO_EQ_UK		X-Spam-Relays-Untrusted =~ /^[^\]]+ helo=[^ ]+\.uk /
+meta     HELO_MISMATCH_UK	(__HELO_EQ_UK && !__HOST_EQ_UK)
+score    HELO_MISMATCH_UK	1.749
+#counts  HELO_MISMATCH_UK	21s/0h of 41968 corpus (34130s/7838h FVGT) 04/11/06
+
+header   HOST_EQ_AT		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.at /i
+score    HOST_EQ_AT		0.745
+#counts  HOST_EQ_AT		54s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_AU		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.au /i
+score    HOST_EQ_AU		0.327
+#counts  HOST_EQ_AU		67s/0h of 42052 corpus (34124s/7928h FVGT) 04/27/06
+
+header	 HOST_EQ_BR		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.br /i
+score	 HOST_EQ_BR		1.295
+
+
+header   HOST_EQ_BROADBND	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+(?!(?:[a-z]broadband|broadband[a-z]))\.?broadband\.?[^ ]+ /i
+score    HOST_EQ_BROADBND	1.118
+#counts  HOST_EQ_BROADBND	98s/0h of 41719 corpus (34108s/7611h FVGT) 03/28/06
+
+header   HOST_EQ_CHARTER	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=\d{2,3}-\d{1,3}-\d{1,3}-\d{1,3}.{5,20}\.charter\.com /i
+score    HOST_EQ_CHARTER	1.295
+#counts  HOST_EQ_CHARTER	523s/0h of 41719 corpus (34108s/7611h FVGT) 03/28/06
+
+header   HOST_EQ_CLUBINTERNET	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.club-internet\.fr /i
+score    HOST_EQ_CLUBINTERNET	0.663
+#counts  HOST_EQ_CLUBINTERNET	22s/0h of 41745 corpus (34134s/7611h FVGT) 03/29/06
+
+header   HOST_EQ_CPE		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=cpe[^ ]+ /i
+score    HOST_EQ_CPE		0.979
+#counts  HOST_EQ_CPE		960s/6h of 41719 corpus (34108s/7611h FVGT) 03/28/06
+
+header   HOST_EQ_CZ		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.cz /
+score    HOST_EQ_CZ		0.904
+#counts  HOST_EQ_CZ		41s/0h of 41745 corpus (34134s/7611h FVGT) 03/29/06
+
+header   HOST_EQ_DHCP		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+dhcp[^ ]+ /i
+score    HOST_EQ_DHCP		1.295
+#counts  HOST_EQ_DHCP		584s/0h of 41719 corpus (34108s/7611h FVGT) 03/28/06
+
+header   HOST_EQ_DIALUP		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+dialup[^ ]+ /i
+score    HOST_EQ_DIALUP		0.862
+#counts  HOST_EQ_DIALUP		44s/0h of 41745 corpus (34134s/7611h FVGT) 03/29/06
+
+header   HOST_EQ_DIP_TDIAL	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.dip\.t-dialin\.net /i
+score    HOST_EQ_DIP_TDIAL	2.144
+#counts  HOST_EQ_DIP_TDIAL	169s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_DYN_OPTON	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.dyn\.optonline\.net /
+score    HOST_EQ_DYN_OPTON	2.124
+#counts  HOST_EQ_DYN_OPTON	5s/0h of 42105 corpus (34265s/7840h FVGT) 04/10/06
+
+header   HOST_EQ_HU		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.hu /i
+score    HOST_EQ_HU		1.245
+#counts  HOST_EQ_HU		92s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_IP_MCLEODUSA	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+-\d{2,3}\.ip\.mcleodusa\.net /
+score    HOST_EQ_IP_MCLEODUSA	1.111
+#counts  HOST_EQ_IP_MCLEODUSA	7s/0h of 41789 corpus (34114s/7675h FVGT) 04/06/06
+
+header   HOST_EQ_IT		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.it /i
+score    HOST_EQ_IT		1.245
+#counts  HOST_EQ_IT		201s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_JP		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.jp /i
+score    HOST_EQ_JP		1.265
+#counts  HOST_EQ_JP		506s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_MINDSPRING	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=user-.{5,30}\.cable\.mindspring\.com /
+score    HOST_EQ_MINDSPRING	2.2
+#counts  HOST_EQ_MINDSPRING	147s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_MODEMCABLE	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+(?:modem|cable)[^ ]+ /i
+score    HOST_EQ_MODEMCABLE	1.368
+#counts  HOST_EQ_MODEMCABLE	1132s/1h of 41719 corpus (34108s/7611h FVGT) 03/28/06
+
+header   HOST_EQ_NE_JP		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.ne\.jp /i
+score    HOST_EQ_NE_JP		2.599
+#counts  HOST_EQ_NE_JP		430s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_NL		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.nl /i
+score    HOST_EQ_NL		1.545
+#counts  HOST_EQ_NL		264s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_PE		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.pe /i
+score    HOST_EQ_PE		1.445
+#counts  HOST_EQ_PE		91s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_PL		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.pl /i
+score    HOST_EQ_PL		1.95
+#counts  HOST_EQ_PL		870s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_RO		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.ro /
+score    HOST_EQ_RO		0.904
+#counts  HOST_EQ_RO		44s/0h of 41745 corpus (34134s/7611h FVGT) 03/29/06
+
+header   HOST_EQ_RU		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.ru /i
+score    HOST_EQ_RU		0.875
+#counts  HOST_EQ_RU		136s/1h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_SHAWCAB	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.\w{2}\.shawcable\.net /
+score    HOST_EQ_SHAWCAB	1.8
+#counts  HOST_EQ_SHAWCAB	198s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_SHAWCABLE	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=\w{1}\d{7,14}\w{1}\d{3,5}\w{1}\d{2,4}\.\w{2,4}\.shawcable\.net /
+score    HOST_EQ_SHAWCABLE	1.222
+#counts  HOST_EQ_SHAWCABLE	23s/0h of 41949 corpus (34112s/7837h FVGT) 04/11/06
+
+header   HOST_EQ_SK		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.sk /
+score    HOST_EQ_SK		0.555
+#counts  HOST_EQ_SK		15s/0h of 41949 corpus (34112s/7837h FVGT) 04/11/06
+
+header   HOST_EQ_STATIC		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.static[^ ]+ /i
+score    HOST_EQ_STATIC		1.172
+#counts  HOST_EQ_STATIC		239s/1h of 41719 corpus (34108s/7611h FVGT) 03/28/06
+
+header   HOST_EQ_STATICB	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=static[^ ]+ /i
+score    HOST_EQ_STATICB	1.372
+#counts  HOST_EQ_STATICB	91s/0h of 42070 corpus (34144s/7926h FVGT) 04/19/06
+
+header   HOST_EQ_STATICIP	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+staticIP[^ ]+ /i
+score    HOST_EQ_STATICIP	1.511
+#counts  HOST_EQ_STATICIP	95s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+header   HOST_EQ_TISCALI	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.ppp\.tiscali\.fr /i
+score    HOST_EQ_TISCALI	4.5
+#counts  HOST_EQ_TISCALI	23s/0h of 41745 corpus (34134s/7611h FVGT) 03/29/06
+
+header   HOST_EQ_USERONOCOM	X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.user\.ono\.com /
+score    HOST_EQ_USERONOCOM	1.444
+#counts  HOST_EQ_USERONOCOM	29s/0h of 41789 corpus (34114s/7675h FVGT) 04/06/06
+
+header   HOST_EQ_VN		X-Spam-Relays-Untrusted =~ /^[^\]]+ rdns=[^ ]+\.vn /i
+score    HOST_EQ_VN		0.45
+#counts  HOST_EQ_VN		207s/0h of 41722 corpus (34113s/7609h FVGT) 03/27/06
+
+meta     HOST_MISMATCH_AU	(HOST_EQ_AU && !HELO_EQ_AU)
+score    HOST_MISMATCH_AU	2.444
+#counts  HOST_MISMATCH_AU	45s/0h of 42052 corpus (34124s/7928h FVGT) 04/27/06
+
+meta     HOST_MISMATCH_COM	(__HOST_EQ_COM && !__HELO_EQ_COM)
+score    HOST_MISMATCH_COM	0.311
+#counts  HOST_MISMATCH_COM	1343s/131h of 41968 corpus (34130s/7838h FVGT) 04/11/06
+
+meta     HOST_MISMATCH_NET	(__HOST_EQ_NET && !__HELO_EQ_NET)
+score    HOST_MISMATCH_NET	0.311
+#counts  HOST_MISMATCH_NET	4887s/261h of 41968 corpus (34130s/7838h FVGT) 04/11/06
+
+header   IP_NOT_FRIENDLY	X-Spam-Relays-Untrusted =~ /^[^\]]+ ip=6[79]\./
+score    IP_NOT_FRIENDLY	0.334
+#counts  IP_NOT_FRIENDLY	2449s/248h of 41736 corpus (34126s/7610h FVGT) 03/29/06
+
+header   RELAY_IS_203		X-Spam-Relays-Untrusted =~ /^[^\]]+ ip=203\./
+score    RELAY_IS_203		0.994
+#counts  RELAY_IS_203		635s/4h of 54918 corpus (47338s/7580h FVGT) 03/25/06
+
+header   RELAY_IS_220		X-Spam-Relays-Untrusted =~ /^[^\]]+ ip=220\./
+score    RELAY_IS_220		2.118
+#counts  RELAY_IS_220		1978s/0h of 54918 corpus (47338s/7580h FVGT) 03/25/06
+
+header   RELAY_IS_221		X-Spam-Relays-Untrusted =~ /^[^\]]+ ip=221\./
+score    RELAY_IS_221		2.222
+#counts  RELAY_IS_221		2111s/0h of 54918 corpus (47338s/7580h FVGT) 03/25/06
+
+header   RELAY_IS_222		X-Spam-Relays-Untrusted =~ /^[^\]]+ip=222\./
+score    RELAY_IS_222		2.179
+#counts  RELAY_IS_222		896s/0h of 126194 corpus (82621s/43573h DOC) 04/06/06
+#counts  RELAY_IS_222		230s/0h of 83917 corpus (58924s/24993h ML) 04/06/06
+#counts  RELAY_IS_222		553s/0h of 18245 corpus (15173s/3072h ) 04/06/06
+#counts  RELAY_IS_222		409s/0h of 12272 corpus (6601s/5671h CT) 04/06/06
+#counts  RELAY_IS_222		1751s/0h of 41789 corpus (34114s/7675h FVGT) 04/06/06
+
+
+######################################################################
+# ^^ THESE RULES REQUIRE THAT YOU HAVE TRUSTED_NETWORKS SET PROPERLY #
+######################################################################
+
+
+# EOF

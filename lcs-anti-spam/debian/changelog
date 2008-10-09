@@ -1,0 +1,12 @@
+lcs-anti-spam (1.0) stable; urgency=low
+
+  * first version
+
+ -- simc <simon.cavey@crdp.ac-caen.fr>  Wed,  8 Oct 2008 23:47:54 +0200
+
+lcs-anti-spam (0.1-1) unstable; urgency=low
+
+  * Initial release   
+
+ -- simc <simon.cavey@crdp.ac-caen.fr>  Tue, 30 Sep 2008 16:39:26 +0200
+

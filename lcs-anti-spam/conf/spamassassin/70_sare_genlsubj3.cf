@@ -1,0 +1,672 @@
+# SARE "General Subject" Ruleset for SpamAssassin - File 3
+# Version:  01.03.12
+# Created:  2004-09-13
+# Modified: 2005-12-27
+# Usage instructions and documentation are found in 70_sare_genlsubj0.cf 
+#@@# Revision History:  Full Revision History stored in 70_sare_genlsubj.log
+#@@# 01.03.12: Dec 27 2005
+#@@#           Minor score updates based on additional mass-check
+#@@#           Archived from file 3: SARE_SUB_SPECIAL_BANG
+#@@#           Archived from file 3: SARE_SUB_TONER
+#@@#           Moved file 0 to file 3: SARE_SUB_LINES_CREDIT, after splitting from SARE_SUB_NEW_CREDIT
+#@@#           Moved file 1 to file 3: SARE_SUB_ALL_LEAD
+#@@#           Moved file 1 to file 3: SARE_SUB_ASSIST
+#@@#           Moved file 1 to file 3: SARE_SUB_CONFIDENTIAL
+#@@#           Moved file 1 to file 3: SARE_SUB_DOLLARS
+#@@#           Moved file 1 to file 3: SARE_SUB_FORECLOSURE
+#@@#           Moved file 1 to file 3: SARE_SUB_FOREVER
+#@@#           Moved file 1 to file 3: SARE_SUB_FREE_SAMPLE
+#@@#           Moved file 1 to file 3: SARE_SUB_MORTGAGE
+#@@#           Moved file 1 to file 3: SARE_SUB_PORN_WORD10
+#@@#           Moved file 1 to file 3: SARE_SUB_SEXY
+#@@#           Moved file 1 to file 3: SARE_SUB_YOUNGER
+#@@#           Moved file 3 to file 1: SARE_SUB_SURVEY
+#@@#           Moved file 3 to file 4: SARE_SUB_BIGGER
+#@@#           Moved file 3 to file 4: SARE_SUB_BULK_EMAIL
+#@@#           Moved file 3 to file 4: SARE_SUB_GROW_BUSINESS
+
+########  ######################   ##################################################
+#  Rule definitions to avoid --lint errors on archived/moved rules. 
+########  ######################   ##################################################
+
+meta      __SARE_SUB_FALSE         __FROM_AOL_COM && !__FROM_AOL_COM
+meta      SARE_SUB_WEBMASTER2      __SARE_SUB_FALSE
+meta      SARE_SUB_LAST_CHANCE     __SARE_SUB_FALSE
+meta      SARE_SUB_THOU_CLI        __SARE_SUB_FALSE
+meta      SARE_SUB_BETTER          __SARE_SUB_FALSE
+meta      SARE_SUB_BRKING_NEWS     __SARE_SUB_FALSE
+meta      SARE_SUB_CHRISTIAN       __SARE_SUB_FALSE
+meta      SARE_SUB_COMMA_LEAD      __SARE_SUB_FALSE
+meta      SARE_SUB_FREE            __SARE_SUB_FALSE
+meta      SARE_SUB_SAVE_UP_TO      __SARE_SUB_FALSE
+meta      SARE_SUB_WIN             __SARE_SUB_FALSE
+meta      SARE_SUB_KICKBACK        __SARE_SUB_FALSE
+meta      SARE_SUB_DEBTS_COURT     __SARE_SUB_FALSE
+meta      SARE_SUB_ACQUISITION     __SARE_SUB_FALSE
+meta      SARE_SUB_FOR_WOMEN       __SARE_SUB_FALSE
+meta      SARE_SUB_AGING           __SARE_SUB_FALSE
+meta      SARE_SUB_CALL_NOW        __SARE_SUB_FALSE
+meta      SARE_SUB_EXCITING_NEW    __SARE_SUB_FALSE
+meta      SARE_SUB_LETTERS_NUMS    __SARE_SUB_FALSE
+meta      SARE_SUB_WEBMASTER       __SARE_SUB_FALSE
+meta      SARE_SUB_BETTER_OB1      __SARE_SUB_FALSE
+meta      SARE_SUB_FREE_BANG       __SARE_SUB_FALSE
+meta      SARE_SUB_MEDICAL_NEWS    __SARE_SUB_FALSE
+meta      SARE_SUB_PERFECT         __SARE_SUB_FALSE
+meta      SARE_SUB_YOUR_WOMAN      __SARE_SUB_FALSE
+meta      SARE_SUB_BE_HERE         __SARE_SUB_FALSE
+meta      SARE_SUB_COPYDVD         __SARE_SUB_FALSE
+meta      SARE_SUB_INKJET          __SARE_SUB_FALSE
+meta      SARE_SUB_LOOKING_FOR     __SARE_SUB_FALSE
+meta      SARE_SUB_PHYSICIAN       __SARE_SUB_FALSE
+meta      SARE_SUB_PRICES_CAP      __SARE_SUB_FALSE
+meta      SARE_SUB_PROFILE         __SARE_SUB_FALSE
+meta      SARE_SUB_SAVE_PCT        __SARE_SUB_FALSE
+meta      SARE_SUB_STRONG          __SARE_SUB_FALSE
+meta      SARE_SUB_WINNER          __SARE_SUB_FALSE
+meta      SARE_SUB_TONER           __SARE_SUB_FALSE
+meta      SARE_SUB_SPECIAL_BANG    __SARE_SUB_FALSE
+meta      SARE_SUB_BIGGER          __SARE_SUB_FALSE
+meta      SARE_SUB_GROW_BUSINESS   __SARE_SUB_FALSE
+meta      SARE_SUB_BULK_EMAIL      __SARE_SUB_FALSE
+
+########  ######################   ##################################################
+#  Category:  __rules used by primary rules below
+########  ######################   ##################################################
+
+# Attempt to identify simple subject obfuscation by character insertion
+header    __SARE_SUB_OBFU_ASTER    Subject =~ /[a-zA-Z0]\*[a-zA-Z]/     
+header    __SARE_SUB_OBFU_CARAT    Subject =~ /[a-zA-Z0]\^[a-zA-Z]/
+header    __SARE_SUB_OBFU_COLON    Subject =~ /[a-zA-Z0]:[a-zA-Z]/
+header    __SARE_SUB_OBFU_COMMA    Subject =~ /[a-zA-Z0],[a-zA-Z]/
+header    __SARE_SUB_OBFU_SLASH    Subject =~ /[a-zA-Z0]\/[a-zA-Z]/
+header    __SARE_SUB_OBFU_LQUOT    Subject =~ /[a-zA-Z0]`[a-zA-Z]/
+header    __SARE_SUB_OBFU_PERIOD   Subject =~ /[a-zA-Z0]\.[a-zA-Z]/
+header    __SARE_SUB_OBFU_2PER     Subject =~ /[a-zA-Z0]\.\.[a-zA-Z]/
+header    __SARE_SUB_OBFU_PIPE     Subject =~ /[a-zA-Z0]\|[a-zA-Z]/
+header    __SARE_SUB_OBFU_PLUS     Subject =~ /[a-zA-Z0]\+[a-zA-Z]/
+header    __SARE_SUB_OBFU_QUOTE    Subject =~ /[a-zA-Z0]"[a-zA-Z]/
+header    __SARE_SUB_OBFU_SCOLON   Subject =~ /[a-zA-Z0];[a-zA-Z]/
+header    __SARE_SUB_OBFU_USCORE   Subject =~ /[a-zA-Z0]_[a-zA-Z]/
+header    __SARE_SUB_OBFU_HTTP     Subject =~ m*http://*i
+
+########  ######################   ##################################################
+#  Category:  Adult/Porn 
+########  ######################   ##################################################
+
+header    SARE_SUB_NEXT_DOOR       Subject =~ /n(?:ex|xe)t door/i
+describe  SARE_SUB_NEXT_DOOR       Adult spammer phrasing
+score     SARE_SUB_NEXT_DOOR       0.102
+#ham      SARE_SUB_NEXT_DOOR       confirmed (2)
+#hist     SARE_SUB_NEXT_DOOR       Richard Gray, Feb 21 2005
+#counts   SARE_SUB_NEXT_DOOR       6s/3h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_NEXT_DOOR       59s/0h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_NEXT_DOOR       3s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#counts   SARE_SUB_NEXT_DOOR       1s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_NEXT_DOOR       1s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_NEXT_DOOR       0s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_NEXT_DOOR       4s/0h of 54902 corpus (17729s/37173h JH-3.01) 03/13/05
+#counts   SARE_SUB_NEXT_DOOR       0s/2h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_NEXT_DOOR       10s/2h of 49034 corpus (44877s/4157h MY) 06/11/05
+
+header    SARE_SUB_PORN_WORD10     Subject =~ /\b(?:hstoett|o(?:the|teh|het|hte|eht|eth)r|stpuid|stupid|disgusting|shy|married|brand new|dirty|average|amateur|amatuer|amtauer|real|beautiful|hot|sexy|sxey|n(?:ast|ats|tas|tsa|sta|sat)y|wet|cute).{1,3}(?:(?:step|grand)?[\-_]?(?:mo|om)ms?|house[\-_]?wi[fvr]es?|(?:cow)?girls?|moms?|w(?:om[ae]|o[ae]m|[ae]om|[ae]mo|m[ae]o|mo[ae])n|neigbhour|neighbour|neighbuor|(?:teen|tnee)(?:ager|agre|arge)?s?|s(?:lu|ul)ts?|bitehcs|bitches)\b/i
+describe  SARE_SUB_PORN_WORD10     Adult spammer words
+score     SARE_SUB_PORN_WORD10     0.190
+#ham      SARE_SUB_PORN_WORD10     verified (many) 
+#hist     SARE_SUB_PORN_WORD10     Richard Gray, Feb 21 2005
+#hist     SARE_SUB_PORN_WORD10     Bob Menschel, Jun 12 2005 -- Added word boundaries
+#counts   SARE_SUB_PORN_WORD10     77s/31h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_PORN_WORD10     499s/3h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_PORN_WORD10     9s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_PORN_WORD10     4s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_PORN_WORD10     14s/0h of 11269 corpus (6578s/4691h CT) 06/11/05
+#counts   SARE_SUB_PORN_WORD10     26s/20h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_PORN_WORD10     17s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_PORN_WORD10     18s/10h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_PORN_WORD10     25s/10h of 54902 corpus (17729s/37173h JH-3.01) 03/13/05
+#counts   SARE_SUB_PORN_WORD10     34s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_PORN_WORD10     27s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_PORN_WORD10     95s/0h of 49034 corpus (44877s/4157h MY) 06/11/05
+
+########  ######################   ##################################################
+#  Category:  Black market items, services, activities, scams, frauds
+########  ######################   ##################################################
+
+header    SARE_SUB_ASSIST          Subject =~ /^\s*Assistance\s*$/i
+describe  SARE_SUB_ASSIST          Subject contains spammer subject - fraud/scam
+score     SARE_SUB_ASSIST          0.139
+#ham      SARE_SUB_ASSIST          verified (1) 
+#hist     SARE_SUB_ASSIST          Created by Bob Menschel Jul 23 2004
+#counts   SARE_SUB_ASSIST          5s/1h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_ASSIST          26s/0h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_ASSIST          0s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_ASSIST          1s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_ASSIST          0s/0h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+#counts   SARE_SUB_ASSIST          0s/0h of 11030 corpus (6598s/4432h CT) 03/10/05
+
+########  ######################   ##################################################
+#  Category:  Credit, debt, lending, mortgage, borrowing, investment, financing
+########  ######################   ##################################################
+
+header    SARE_SUB_DEBT            Subject =~ /\bdebt\b/i
+describe  SARE_SUB_DEBT            Spammer subject - credit or money
+score     SARE_SUB_DEBT            0.662
+#ham      SARE_SUB_DEBT            "Asians on Tsunami Relief: Drop the Debt" and related, social issues newsletters
+#counts   SARE_SUB_DEBT            427s/28h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_DEBT            829s/55h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_DEBT            1s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_DEBT            19s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_DEBT            24s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_SUB_DEBT            63s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_DEBT            5s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_DEBT            7s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_DEBT            73s/0h of 36108 corpus (12627s/23481h JH) 08/14/04 TM2 SA3.0-pre2
+#counts   SARE_SUB_DEBT            6s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_DEBT            30s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_DEBT            216s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+
+header    SARE_SUB_INVESTMENTS     Subject =~ /(?:(?:invest(?:ing|ments?|or)|promotion|stock\W*market).(?:alert|assistance|bulletin|data|forecast|funds|insight|knowledge|like|member|news|opp|option|profile|program|proposal|rewards|surprise|update|workshop)|(?:\$\d+.{0,10}|better.{0,30}|business|easy|fund.{0,30}|joint|make\W*an|proven|real\W*estate|secrets?.{0,30}|secured|smart|stock|time\W*to|your|zero)\W*invest(?:ing|ments?)|help.{1,10}invest)/i
+describe  SARE_SUB_INVESTMENTS     Spammer subject - credit or money
+score     SARE_SUB_INVESTMENTS     0.632
+#ham      SARE_SUB_INVESTMENTS     "A short survey about your investments" from valid survey company, to survey member
+#counts   SARE_SUB_INVESTMENTS     290s/44h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_INVESTMENTS     355s/12h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_INVESTMENTS     3s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_INVESTMENTS     55s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_INVESTMENTS     3s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_INVESTMENTS     28s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_INVESTMENTS     19s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_INVESTMENTS     28s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_INVESTMENTS     5s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_INVESTMENTS     38s/0h of 36108 corpus (12627s/23481h JH) 08/14/04 TM2 SA3.0-pre2
+#counts   SARE_SUB_INVESTMENTS     2s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_SUB_INVESTMENTS     4s/0h of 10824 corpus (6376s/4448h CT) 05/04/05
+
+header    SARE_SUB_INVESTORS       Subject =~ /investors/i
+describe  SARE_SUB_INVESTORS       Spammer subject - credit or money
+score     SARE_SUB_INVESTORS       0.473
+#ham      SARE_SUB_INVESTORS       Washington Post newsletter
+#counts   SARE_SUB_INVESTORS       246s/51h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_INVESTORS       1024s/21h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_INVESTORS       10s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_INVESTORS       9s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_INVESTORS       27s/0h of 11030 corpus (6598s/4432h CT) 03/10/05
+#counts   SARE_SUB_INVESTORS       54s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_INVESTORS       4s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_INVESTORS       46s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_INVESTORS       54s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#counts   SARE_SUB_INVESTORS       20s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+
+header    SARE_SUB_LINES_CREDIT    Subject =~ /lines?\W*of\W*credit/i
+describe  SARE_SUB_LINES_CREDIT    Spammer subject - credit or money
+score     SARE_SUB_LINES_CREDIT    0.222
+#ham      SARE_SUB_LINES_CREDIT    email from BofA to customers
+#counts   SARE_SUB_LINES_CREDIT    55s/13h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_LINES_CREDIT    74s/8h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_LINES_CREDIT    9s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_LINES_CREDIT    0s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_SUB_LINES_CREDIT    0s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+#counts   SARE_SUB_LINES_CREDIT    1s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_LINES_CREDIT    1s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+
+header    SARE_SUB_MORTGAGE        Subject =~ /(?:(?:\%|2nd|best|competitive|easy|EZ|fixed|for\W*your|great|home|instant|loans\W*and|lowest|\bno|online|rate|second)..?mortgage|mortgages?\W*(?:broker|gone|hunt|interest|lead|loan|notif(?:ication|y)|quote|r.?[a\@].?t.?e.?s?|refinanc(?:e|ing)|shopping|too\W*high|verification)|mortgage.{1,30}reduced|(?:\$\d|compete|find|pay(ing|ment)|qualify|search|shopping).{1,30}mortgage)/i
+describe  SARE_SUB_MORTGAGE        Spammer subject - credit or money
+score     SARE_SUB_MORTGAGE        0.367
+#hist     SARE_SUB_MORTGAGE        removed "mortgage manager", used in email from user's bank
+#ham      SARE_SUB_MORTGAGE        Mortgage Rates
+#counts   SARE_SUB_MORTGAGE        196s/65h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_MORTGAGE        813s/24h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_MORTGAGE        6s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_MORTGAGE        18s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_SUB_MORTGAGE        73s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_MORTGAGE        12s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_MORTGAGE        32s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_MORTGAGE        64s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_MORTGAGE        152s/0h of 49034 corpus (44877s/4157h MY) 06/11/05
+#counts   SARE_SUB_MORTGAGE        17s/3h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_MORTGAGE        31s/3h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+
+########  ######################   ##################################################
+#  Category:  Gambling, Lotto, Sweepstakes, Winnings, Losses
+########  ######################   ##################################################
+
+header    SARE_SUB_CASINO          Subject =~ /\bc[a\@]sin[o0]/i
+describe  SARE_SUB_CASINO          Spammer subject - gambling
+score     SARE_SUB_CASINO          0.555 
+#stype    SARE_SUB_CASINO          max:0.555
+#hist     SARE_SUB_CASINO          score max set to 0.555 to keep in line with other rules with similar hit rates
+#counts   SARE_SUB_CASINO          131s/14h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_CASINO          163s/26h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_CASINO          4s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_CASINO          2s/0h of 11030 corpus (6598s/4432h CT) 03/10/05
+#counts   SARE_SUB_CASINO          147s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_CASINO          1s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_CASINO          1s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_CASINO          53s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_CASINO          75s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_CASINO          21s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_CASINO          80s/0h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+
+########  ######################   ##################################################
+#  Category:  Insurance
+########  ######################   ##################################################
+
+header    SARE_SUB_CAR_INSURANCE   Subject =~ /(?:car|auto(?:mobile)?) insurance/i
+describe  SARE_SUB_CAR_INSURANCE   Spammer subject - insurance
+score     SARE_SUB_CAR_INSURANCE   0.625
+#ham      SARE_SUB_CAR_INSURANCE   adv in subcribed opt-in newsletter (1)
+#counts   SARE_SUB_CAR_INSURANCE   151s/17h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_CAR_INSURANCE   266s/25h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_CAR_INSURANCE   1s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_CAR_INSURANCE   0s/1h of 11030 corpus (6598s/4432h CT) 03/10/05
+#counts   SARE_SUB_CAR_INSURANCE   41s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_CAR_INSURANCE   3s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_CAR_INSURANCE   0s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_CAR_INSURANCE   2s/0h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+#counts   SARE_SUB_CAR_INSURANCE   4s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_CAR_INSURANCE   38s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_CAR_INSURANCE   45s/0h of 49034 corpus (44877s/4157h MY) 06/11/05
+
+########  ######################   ##################################################
+#  Category:  Marketing, Pricing, Selling, Buying 
+########  ######################   ##################################################
+
+header    SARE_SUB_AS_LOW_AS       Subject =~ /as low as/i
+describe  SARE_SUB_AS_LOW_AS       Subject contains apparent spammer phrasing
+score     SARE_SUB_AS_LOW_AS       0.115
+#hist     SARE_SUB_AS_LOW_AS       RM_spc_AsLowAs
+#counts   SARE_SUB_AS_LOW_AS       8s/36h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_AS_LOW_AS       226s/12h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_AS_LOW_AS       1s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_AS_LOW_AS       19s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_AS_LOW_AS       3s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_AS_LOW_AS       31s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_AS_LOW_AS       164s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_AS_LOW_AS       16s/1h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_AS_LOW_AS       19s/0h of 38751 corpus (15270s/23481h JH-SA3.0rc1) 08/30/04
+#counts   SARE_SUB_AS_LOW_AS       1s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_AS_LOW_AS       7s/0h of 11030 corpus (6598s/4432h CT) 03/10/05
+
+header    SARE_SUB_BETTER_DEAL     Subject =~ /better deal/i   
+describe  SARE_SUB_BETTER_DEAL     common spammer phrasing
+score     SARE_SUB_BETTER_DEAL     0.458
+#hist     SARE_SUB_BETTER_DEAL     Created by Bob Menschel Apr 04 2004
+#ham      SARE_SUB_BETTER_DEAL     Washington Post email newsletter
+#counts   SARE_SUB_BETTER_DEAL     23s/3h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_BETTER_DEAL     10s/1h of 102867 corpus (66500s/36367h RM) 12/07/04
+#counts   SARE_SUB_BETTER_DEAL     4s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_BETTER_DEAL     5s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_BETTER_DEAL     8s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_BETTER_DEAL     1s/0h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+#counts   SARE_SUB_BETTER_DEAL     0s/0h of 11030 corpus (6598s/4432h CT) 03/10/05
+
+header    SARE_SUB_CURRENT_NEWS    Subject =~ /^(?:\[[^\]]+\])\s*Current News\s*$/i
+describe  SARE_SUB_CURRENT_NEWS    Spammer phrasing - Marketing
+score     SARE_SUB_CURRENT_NEWS    0.555
+#stype    SARE_SUB_CURRENT_NEWS    spamp
+#hist     SARE_SUB_CURRENT_NEWS    Bob Menschel, June 18 2005
+#counts   SARE_SUB_CURRENT_NEWS    0s/0h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_CURRENT_NEWS    5s/0h of 314117 corpus (149011s/165106h RM) 06/19/05
+#counts   SARE_SUB_CURRENT_NEWS    1s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_CURRENT_NEWS    0s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_SUB_CURRENT_NEWS    0s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+########  ######################   ##################################################
+#  Category:  Medical
+########  ######################   ##################################################
+
+header    SARE_SUB_CONSULTATION    Subject =~ /\bconsultations?\b/i
+describe  SARE_SUB_CONSULTATION    Spammer subject - medical
+score     SARE_SUB_CONSULTATION    0.297
+#ham      SARE_SUB_CONSULTATION    Job.com CareerTools 
+#counts   SARE_SUB_CONSULTATION    27s/19h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_CONSULTATION    334s/48h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_CONSULTATION    5s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_SUB_CONSULTATION    24s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_CONSULTATION    50s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_CONSULTATION    7s/6h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_CONSULTATION    26s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_CONSULTATION    37s/0h of 43961 corpus (40110s/3851h MY) 05/04/05
+#counts   SARE_SUB_CONSULTATION    0s/0h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+#max      SARE_SUB_CONSULTATION    4s/0h of 36108 corpus (12627s/23481h JH) 08/14/04 TM2 SA3.0-pre2
+
+header    SARE_SUB_FREE_SAMPLE     Subject =~ /\bf.?r.?e.?e.?\s+s.?a.?m.?p.?l.?e/i
+describe  SARE_SUB_FREE_SAMPLE     Common spammer subject header -- Medical
+score     SARE_SUB_FREE_SAMPLE     0.422
+#ham      SARE_SUB_FREE_SAMPLE     confirmed (1)
+#hist     SARE_SUB_FREE_SAMPLE     Created by Bob Menschel Aug 20 2004
+#counts   SARE_SUB_FREE_SAMPLE     40s/9h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_FREE_SAMPLE     35s/0h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_FREE_SAMPLE     19s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_FREE_SAMPLE     1s/0h of 54902 corpus (17729s/37173h JH-3.01) 03/13/05
+#max      SARE_SUB_FREE_SAMPLE     10s/0h of 38751 corpus (15270s/23481h JH-SA3.0rc1) 08/30/04
+#counts   SARE_SUB_FREE_SAMPLE     15s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#counts   SARE_SUB_FREE_SAMPLE     1s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_FREE_SAMPLE     4s/0h of 11269 corpus (6578s/4691h CT) 06/11/05
+
+header    SARE_SUB_YOUNGER         Subject =~ /\bYOUNGER\b/i
+describe  SARE_SUB_YOUNGER         Spammer subject - medical
+score     SARE_SUB_YOUNGER         0.258
+#ham      SARE_SUB_YOUNGER         confirmed (5) Some from AARP
+#counts   SARE_SUB_YOUNGER         35s/21h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_YOUNGER         217s/13h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_YOUNGER         2s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_YOUNGER         4s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#counts   SARE_SUB_YOUNGER         24s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_YOUNGER         2s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_YOUNGER         5s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_YOUNGER         10s/0h of 36108 corpus (12627s/23481h JH) 08/14/04 TM2 SA3.0-pre2
+#counts   SARE_SUB_YOUNGER         21s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_YOUNGER         9s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_YOUNGER         54s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+
+########  ######################   ##################################################
+#  Category:  Real Estate
+########  ######################   ##################################################
+
+header    SARE_SUB_FORECLOSURE     Subject =~ /Foreclosure/i
+describe  SARE_SUB_FORECLOSURE     Spammer subject - real estate
+score     SARE_SUB_FORECLOSURE     0.470
+#ham      SARE_SUB_FORECLOSURE     emails discussing a foreclosure
+#counts   SARE_SUB_FORECLOSURE     93s/27h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_FORECLOSURE     280s/9h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_FORECLOSURE     32s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_FORECLOSURE     9s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_FORECLOSURE     1s/0h of 55803 corpus (18630s/37173h JH-3.01) 06/10/05
+#max      SARE_SUB_FORECLOSURE     8s/0h of 36108 corpus (12627s/23481h JH) 08/14/04 TM2 SA3.0-pre2
+#counts   SARE_SUB_FORECLOSURE     57s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_FORECLOSURE     104s/0h of 49034 corpus (44877s/4157h MY) 06/11/05
+#counts   SARE_SUB_FORECLOSURE     0s/0h of 11030 corpus (6598s/4432h CT) 03/10/05
+
+########  ######################   ##################################################
+#  Category:  Software
+########  ######################   ##################################################
+
+header    SARE_SUB_DOWNLOAD        Subject =~ /(?:downloadable\W*software|(?:available\W*for|cds\W*(?:and|or)|easy|free\W*to)\W*download|download(?:ing)\W*(?:(?:for\W*)?free|games|movies|music|now|software|under|video))/i
+describe  SARE_SUB_DOWNLOAD        Spammer subject - software
+score     SARE_SUB_DOWNLOAD        0.182
+#counts   SARE_SUB_DOWNLOAD        76s/8h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_DOWNLOAD        101s/3h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_DOWNLOAD        4s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_DOWNLOAD        6s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#counts   SARE_SUB_DOWNLOAD        15s/18h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_DOWNLOAD        14s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_DOWNLOAD        10s/1h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_DOWNLOAD        19s/1h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_DOWNLOAD        3s/2h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+#max      SARE_SUB_DOWNLOAD        26s/0h of 38389 corpus (14908s/23481h JH) 08/14/04 TM2 SA3.0-pre2
+#counts   SARE_SUB_DOWNLOAD        0s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#max      SARE_SUB_DOWNLOAD        1s/0h of 5906 corpus (1036s/4870h ft) 06/11/05
+
+########  ######################   ##################################################
+#  Category:  Spamming and Spammers
+########  ######################   ##################################################
+
+########  ######################   ##################################################
+#  Category:  Generic words and phrases
+########  ######################   ##################################################
+
+header    SARE_SUB_ALL_LEAD        Subject =~ /^All\s/          # no /i
+describe  SARE_SUB_ALL_LEAD        Subject matches common spam pattern
+score     SARE_SUB_ALL_LEAD        0.199
+#hist     SARE_SUB_ALL_LEAD        LW_ALL_SUB, Aug 16 2004, Loren Wilton
+#counts   SARE_SUB_ALL_LEAD        134s/73h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_ALL_LEAD        613s/53h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_ALL_LEAD        22s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#counts   SARE_SUB_ALL_LEAD        56s/1h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_ALL_LEAD        8s/1h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_ALL_LEAD        43s/2h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_ALL_LEAD        50s/2h of 43961 corpus (40110s/3851h MY) 05/04/05
+#counts   SARE_SUB_ALL_LEAD        23s/2h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+
+header    SARE_SUB_BOOST           Subject =~ /(?:boost.{1,20}(?:(?:cable|PC).{1,10}speed|confidence|in\W*bed|(?:love|se.?x)\W*life|mileage|size|stamina)|(?:manhood|muscle|sex|super).{0,30}boost)/i
+describe  SARE_SUB_BOOST           subject has likely spammer phrase or word
+score     SARE_SUB_BOOST           0.661
+#ham      SARE_SUB_BOOST           boost your Mileage Plus balance (United Airlines), July 2005
+#counts   SARE_SUB_BOOST           42s/3h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_BOOST           244s/0h of 115478 corpus (94289s/21189h RM) 04/24/04
+#counts   SARE_SUB_BOOST           1s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_BOOST           3s/0h of 11030 corpus (6598s/4432h CT) 03/10/05
+#counts   SARE_SUB_BOOST           1s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_BOOST           2s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_BOOST           6s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_BOOST           17s/0h of 36108 corpus (12627s/23481h JH) 08/14/04 TM2 SA3.0-pre2
+#counts   SARE_SUB_BOOST           21s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_BOOST           0s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_BOOST           17s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+
+header    SARE_SUB_BREAKTHRU       Subject =~ /Breakthrough/i
+describe  SARE_SUB_BREAKTHRU       subject has likely spammer phrase or word
+score     SARE_SUB_BREAKTHRU       0.224
+#counts   SARE_SUB_BREAKTHRU       62s/26h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_BREAKTHRU       73s/37h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_BREAKTHRU       0s/1h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_BREAKTHRU       5s/0h of 11269 corpus (6578s/4691h CT) 06/11/05
+#counts   SARE_SUB_BREAKTHRU       29s/1h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_BREAKTHRU       5s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_BREAKTHRU       13s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_BREAKTHRU       15s/3h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_BREAKTHRU       39s/3h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_BREAKTHRU       5s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_BREAKTHRU       8s/0h of 38389 corpus (14908s/23481h JH) 08/14/04 TM2 SA3.0-pre2
+
+header    SARE_SUB_CARTRIDGE       Subject =~/Cartridge/i
+describe  SARE_SUB_CARTRIDGE       subject has likely spammer phrase or word
+score     SARE_SUB_CARTRIDGE       0.312
+#counts   SARE_SUB_CARTRIDGE       131s/29h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_CARTRIDGE       276s/36h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_CARTRIDGE       1s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_CARTRIDGE       1s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_CARTRIDGE       4s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_SUB_CARTRIDGE       50s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_CARTRIDGE       1s/1h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_CARTRIDGE       2s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_CARTRIDGE       29s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_CARTRIDGE       94s/0h of 49034 corpus (44877s/4157h MY) 06/11/05
+#counts   SARE_SUB_CARTRIDGE       3s/8h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+
+header    SARE_SUB_CONFIDENTIAL    Subject =~ /(?:confidential.+\b(?:assist|assured|brand|business|delivery|discreet|embarrass|info|med(?:icine)?|offer|opportunity|orders|prescription|shopping|stock)|(?:assistance|business|mutual|priv(?:at)?e|relationship|strict?ly|urgent).+confiden[tc]ial|\bconfidant\b|can i confide|Fwd: Confidential)/i
+describe  SARE_SUB_CONFIDENTIAL    subject has likely spammer phrase or word
+score     SARE_SUB_CONFIDENTIAL    0.538
+#hist     SARE_SUB_CONFIDENTIAL    SARE_SUB_CONFID_P and SARE_SUB_CONF_INFO merged and renamed July 24 2004
+#ham      SARE_SUB_CONFIDENTIAL    organization's emails flagged: "- confidential"
+#counts   SARE_SUB_CONFIDENTIAL    75s/10h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_CONFIDENTIAL    163s/6h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_CONFIDENTIAL    2s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_CONFIDENTIAL    3s/0h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+#counts   SARE_SUB_CONFIDENTIAL    0s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_CONFIDENTIAL    1s/0h of 10824 corpus (6376s/4448h CT) 05/04/05
+#counts   SARE_SUB_CONFIDENTIAL    0s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#max      SARE_SUB_CONFIDENTIAL    1s/0h of 5906 corpus (1036s/4870h ft) 06/11/05
+#counts   SARE_SUB_CONFIDENTIAL    11s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_CONFIDENTIAL    0s/1h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_CONFIDENTIAL    8s/1h of 32844 corpus (32843s/3308h MY) 01/16/05
+
+header    SARE_SUB_FIND_YOUR       Subject =~ /find your/i
+describe  SARE_SUB_FIND_YOUR       subject has likely spammer phrase or word
+score     SARE_SUB_FIND_YOUR       0.722
+#ham      SARE_SUB_FIND_YOUR       WebMD: Find Your Ideal Weight, July 2004
+#counts   SARE_SUB_FIND_YOUR       132s/8h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_FIND_YOUR       244s/14h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_FIND_YOUR       3s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_FIND_YOUR       4s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#counts   SARE_SUB_FIND_YOUR       43s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_FIND_YOUR       1s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#max      SARE_SUB_FIND_YOUR       8s/2h of 7500 corpus (1767s/5733h ft) 09/18/05
+#counts   SARE_SUB_FIND_YOUR       8s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_FIND_YOUR       77s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_FIND_YOUR       111s/0h of 49034 corpus (44877s/4157h MY) 06/11/05
+#counts   SARE_SUB_FIND_YOUR       1s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_FIND_YOUR       3s/0h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+
+header    SARE_SUB_FOREVER         Subject =~ /for\W*?ever\b/i
+describe  SARE_SUB_FOREVER         subject has likely spammer phrase or word
+score     SARE_SUB_FOREVER         0.170
+#counts   SARE_SUB_FOREVER         120s/12h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_FOREVER         227s/13h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_FOREVER         2s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_FOREVER         29s/55h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_FOREVER         1s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_FOREVER         29s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_FOREVER         38s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_FOREVER         50s/0h of 49034 corpus (44877s/4157h MY) 06/11/05
+#counts   SARE_SUB_FOREVER         15s/10h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+#counts   SARE_SUB_FOREVER         5s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_SUB_FOREVER         8s/0h of 11030 corpus (6598s/4432h CT) 03/10/05
+
+header    SARE_SUB_GETRID          Subject =~ /\bget rid of\b/i
+describe  SARE_SUB_GETRID          subject has likely spammer phrase or word
+score     SARE_SUB_GETRID          0.556
+#counts   SARE_SUB_GETRID          172s/7h of 428457 corpus (182181s/246276h RM) 12/24/05
+#counts   SARE_SUB_GETRID          5s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_GETRID          6s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#counts   SARE_SUB_GETRID          15s/13h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_GETRID          6s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_GETRID          64s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_GETRID          9s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_GETRID          32s/0h of 43961 corpus (40110s/3851h MY) 05/04/05
+#counts   SARE_SUB_GETRID          2s/7h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+
+header    SARE_SUB_INCHES          Subject =~ /(?:(?:\d.*|add?|enlarge|gain|in.?crease|lose|more|shed)(?:ed|s)?\b.{1,30}\binch(?:es)?\b|inches\W*added)/i
+describe  SARE_SUB_INCHES          subject has likely spammer phrase or word
+score     SARE_SUB_INCHES          0.221
+#ham      SARE_SUB_INCHES          price of a "7 inch saw blade", "42 inch plasma TV"
+#counts   SARE_SUB_INCHES          56s/33h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_INCHES          94s/26h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_INCHES          3s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_INCHES          6s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#counts   SARE_SUB_INCHES          33s/6h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_INCHES          27s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_INCHES          21s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_INCHES          44s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_INCHES          4s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_INCHES          24s/0h of 38389 corpus (14908s/23481h JH) 08/14/04 TM2 SA3.0-pre2
+#counts   SARE_SUB_INCHES          0s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#max      SARE_SUB_INCHES          32s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+header    SARE_SUB_INEXPEN         Subject =~ /Inexpensive [xvp]./i
+describe  SARE_SUB_INEXPEN         Subject matches common spam pattern
+score     SARE_SUB_INEXPEN         0.739
+#hist     SARE_SUB_INEXPEN         LW_INEX_SUB, Aug 16 2004, Loren Wilton
+#counts   SARE_SUB_INEXPEN         17s/0h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_INEXPEN         94s/0h of 114218 corpus (81068s/33150h RM) 01/15/05
+#counts   SARE_SUB_INEXPEN         1s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_INEXPEN         6s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_INEXPEN         1s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_INEXPEN         2s/0h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+#max      SARE_SUB_INEXPEN         5s/0h of 18198 corpus (15674s/2524h JH) 08/16/04
+#counts   SARE_SUB_INEXPEN         4s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_INEXPEN         0s/0h of 49034 corpus (44877s/4157h MY) 06/11/05
+#max      SARE_SUB_INEXPEN         10s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_INEXPEN         2s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_INEXPEN         2s/0h of 11030 corpus (6598s/4432h CT) 03/10/05
+
+header    SARE_SUB_JOB             Subject =~ /(?:(?:dead\W*end|does\W*your|dream|find\W*people|get\W*(?:a|the)(?:\W*better)?|(?:keep|quit)\W*(?:your|their)(?:\W*day)?|real|run\W*your|that\W*great|wanna|with\W*a\W*new|(?:yo)?ur\W*(?:current|full\W*time))\W*job|good\W*jobs|global\W*job\W*vacancy|success\W*job\W*story|job\W*(?:confirmation|feel\W*like|journal|opportunity|you\W*want)|joboffer)/i
+describe  SARE_SUB_JOB             subject has likely spammer phrase or word
+score     SARE_SUB_JOB             0.271
+#counts   SARE_SUB_JOB             24s/18h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_JOB             86s/41h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_JOB             16s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_JOB             4s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#counts   SARE_SUB_JOB             7s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_JOB             1s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_JOB             23s/0h of 38389 corpus (14908s/23481h JH) 08/14/04 TM2 SA3.0-pre2
+#counts   SARE_SUB_JOB             38s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_JOB             9s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_JOB             17s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+
+header    SARE_SUB_MINUTES         Subject =~ /\d.?minutes/i
+describe  SARE_SUB_MINUTES         subject has likely spammer phrase or word
+score     SARE_SUB_MINUTES         0.405
+#ham      SARE_SUB_MINUTES         confirmed 
+#counts   SARE_SUB_MINUTES         294s/65h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_MINUTES         509s/67h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_MINUTES         12s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_MINUTES         5s/2h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_MINUTES         23s/2h of 11269 corpus (6578s/4691h CT) 06/11/05
+#counts   SARE_SUB_MINUTES         114s/12h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_MINUTES         12s/2h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_MINUTES         61s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_MINUTES         65s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_MINUTES         80s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_MINUTES         50s/2h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+
+header    SARE_SUB_SEXY            Subject =~ /\bsexy\b/i
+describe  SARE_SUB_SEXY            subject has likely spammer phrase or word
+score     SARE_SUB_SEXY            0.266
+#counts   SARE_SUB_SEXY            113s/56h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_SEXY            435s/17h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_SEXY            21s/0h of 7659 corpus (6205s/1454h AxB) 12/25/05
+#counts   SARE_SUB_SEXY            10s/0h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_SEXY            15s/0h of 10824 corpus (6376s/4448h CT) 05/04/05
+#counts   SARE_SUB_SEXY            28s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_SEXY            9s/0h of 9833 corpus (4917s/4916h FT) 12/25/05
+#counts   SARE_SUB_SEXY            40s/0h of 40312 corpus (30637s/9675h ML) 12/25/05
+#counts   SARE_SUB_SEXY            47s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#counts   SARE_SUB_SEXY            10s/1h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+
+header    SARE_SUB_TAKE            Subject =~ /^take (?:a (?:chance|look|moment|step|trip|vacation)|advant|cont|once|the)./i
+describe  SARE_SUB_TAKE            Subject matches common spam pattern
+score     SARE_SUB_TAKE            0.652
+#hist     SARE_SUB_TAKE            LW_TAKES_SUB, Aug 16 2004, Loren Wilton
+#counts   SARE_SUB_TAKE            219s/37h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_TAKE            383s/18h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_SUB_TAKE            4s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_SUB_TAKE            8s/0h of 11030 corpus (6598s/4432h CT) 03/10/05
+#counts   SARE_SUB_TAKE            41s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_TAKE            1s/1h of 9833 corpus (4917s/4916h FT) 12/25/05
+#max      SARE_SUB_TAKE            2s/1h of 7500 corpus (1767s/5733h ft) 09/18/05
+#counts   SARE_SUB_TAKE            43s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_TAKE            81s/0h of 49034 corpus (44877s/4157h MY) 06/11/05
+#counts   SARE_SUB_TAKE            7s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_TAKE            18s/0h of 18198 corpus (15674s/2524h JH) 08/16/04
+
+########  ######################   ##################################################
+# Category: Technical Rules
+########  ######################   ##################################################
+
+header    SARE_SUB_DOLLARS         Subject =~ /^\s*(?:\w+ )?(?:\w+: )?\$\d+\s*$/
+describe  SARE_SUB_DOLLARS         Short dollar amount subject
+score     SARE_SUB_DOLLARS         0.365
+#ham      SARE_SUB_DOLLARS         confirmed (2) 
+#hist     SARE_SUB_DOLLARS         Created by Bob Menschel Jul 17 2004
+#hist     SARE_SUB_DOLLARS         Added optional Make to front of string Jul 19 2004
+#hist     SARE_SUB_DOLLARS         Added optional Account: to front of string Aug 1 2004
+#hist     SARE_SUB_DOLLARS         Generalized to 0/1/2 words Aug 10 2004
+#hist     SARE_SUB_DOLLARS         Bugzilla submission 3645, Jul 28 2004
+#counts   SARE_SUB_DOLLARS         4s/6h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_DOLLARS         1503s/0h of 70699 corpus (43133s/27566h RM) 10/02/04
+#counts   SARE_SUB_DOLLARS         1s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_DOLLARS         36s/0h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#max      SARE_SUB_DOLLARS         75s/0h of 54154 corpus (16979s/37175h JH-3.01) 02/01/05
+#counts   SARE_SUB_DOLLARS         0s/0h of 49034 corpus (44877s/4157h MY) 06/11/05
+#max      SARE_SUB_DOLLARS         65s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_DOLLARS         5s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+
+header    SARE_SUB_LEAD_CHAR2      Subject =~ m'^[-<>=]{2}.*'
+describe  SARE_SUB_LEAD_CHAR2      Subject starts with spamsign characters
+score     SARE_SUB_LEAD_CHAR2      0.723
+#ham      SARE_SUB_LEAD_CHAR2      from firstplacesoftware.com
+#hist     SARE_SUB_LEAD_CHAR2      Created by Bob Menschel May 18 2004
+#counts   SARE_SUB_LEAD_CHAR2      719s/22h of 428457 corpus (182181s/246276h RM) 12/24/05
+#counts   SARE_SUB_LEAD_CHAR2      27s/0h of 74216 corpus (34905s/39311h DOC) 12/25/05
+#counts   SARE_SUB_LEAD_CHAR2      4s/0h of 40676 corpus (35385s/5291h MY) 12/25/05
+#max      SARE_SUB_LEAD_CHAR2      18s/0h of 18153 corpus (15872s/2281h MY) 05/20/04
+#counts   SARE_SUB_LEAD_CHAR2      3s/1h of 54018 corpus (16845s/37173h JH-3.01) 06/11/05
+#counts   SARE_SUB_LEAD_CHAR2      0s/1h of 11553 corpus (6185s/5368h CT) 12/25/05
+#max      SARE_SUB_LEAD_CHAR2      2s/3h of 11030 corpus (6598s/4432h CT) 03/10/05
+
+header    SARE_SUB_PAREN_NUM2      Subject =~ /^\s*[<[]\d{1,3}[>\]].*[<[]\d{1,3}[>\]]/
+describe  SARE_SUB_PAREN_NUM2      subject has [00]subject[00] or <> or {}
+score     SARE_SUB_PAREN_NUM2      0.278
+#ham      SARE_SUB_PAREN_NUM2      confirmed (1) 
+#hist     SARE_SUB_PAREN_NUM2      Created by Bob Menschel Aug 27 2004
+#counts   SARE_SUB_PAREN_NUM2      0s/0h of 428457 corpus (182181s/246276h RM) 12/24/05
+#max      SARE_SUB_PAREN_NUM2      125s/1h of 118869 corpus (71079s/47790h RM) 02/06/05
+#counts   SARE_SUB_PAREN_NUM2      5s/0h of 54902 corpus (17729s/37173h JH-3.01) 03/13/05
+#counts   SARE_SUB_PAREN_NUM2      0s/0h of 27726 corpus (24280s/3446h MY) 02/27/05
+#max      SARE_SUB_PAREN_NUM2      12s/0h of 32844 corpus (32843s/3308h MY) 01/16/05
+#counts   SARE_SUB_PAREN_NUM2      0s/0h of 11030 corpus (6598s/4432h CT) 03/10/05
+
+# EOF
+

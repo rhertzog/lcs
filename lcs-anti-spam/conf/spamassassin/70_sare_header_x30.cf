@@ -1,0 +1,99 @@
+# SARE Header Abuse Ruleset for SpamAssassin -- Not for SA 3.0
+# Version:  01.03.16
+# Created:  2004-04-25
+# Modified: 2005-10-28
+
+# Usage instructions and documentation in 70_sare_header0.cf 
+
+# Full Revision History / Change Log in 70_sare_header.log
+#@@# 01.03.16  Oct 28 2005
+#@@#           Minor score updates based on additional mass-check
+
+#####################################################################################
+#         SARE Message-ID rules
+########  ######################   ##################################################
+
+header    __SARE_MSGID_ALL_CAPS    MESSAGEID =~ /<[A-Z]{17,}\@/  # no /i
+meta      SARE_MSGID_ALL_CAPS      __SARE_MSGID_ALL_CAPS && !MSGID_SPAM_CAPS
+describe  SARE_MSGID_ALL_CAPS      Ratware all-caps message-id 
+score     SARE_MSGID_ALL_CAPS      2.222
+#hist     SARE_MSGID_ALL_CAPS      Created by Bob Menschel May 28 2004
+#hist     SARE_MSGID_ALL_CAPS      Modified Aug 10 2004 to meta to avoid 3.0.0 duplication
+#V300     SARE_MSGID_ALL_CAPS      SA 3.0.0 has similar rule, no length, exclude mailcity, whowhere
+#counts   SARE_MSGID_ALL_CAPS      3579s/0h of 65901 corpus (40664s/25237h RM) 08/19/04
+#max      SARE_MSGID_ALL_CAPS      10870s/0h of 89431 corpus (67434s/21997h) 05/28/04
+#counts   SARE_MSGID_ALL_CAPS      0s/0h of 20489 corpus (17189s/3300h MY) 01/30/05
+#max      SARE_MSGID_ALL_CAPS      1461s/0h of 17050 corpus (14617s/2433h MY) 08/08/04
+#counts   SARE_MSGID_ALL_CAPS      0s/0h of 54176 corpus (16997s/37179h JH-3.01) 02/01/05
+#counts   SARE_MSGID_ALL_CAPS      0s/0h of 10853 corpus (6391s/4462h CT) 05/16/05
+#counts   SARE_MSGID_ALL_CAPS      0s/0h of 2500 corpus (531s/1969h ft) 05/17/05
+
+header    MSGID_SPAM_CAPS          Message-ID =~ /^\s*<?[A-Z]+\@(?!(?:mailcity|whowhere)\.com)/
+score     MSGID_SPAM_CAPS          3.520 3.520 4.070 4.400 # scores from 3.1.0
+#hist     MSGID_SPAM_CAPS          Distrib: SA 2.64, 3.0.x, 3.1.x
+header    __SARE_MSGID_ALL_CAPYH   MESSAGEID =~ /<[A-Z]+\@yahoo.com>/  # no /i
+meta      SARE_MSGID_ALL_CAPYH     __SARE_MSGID_ALL_CAPYH && !MSGID_SPAM_CAPS
+describe  SARE_MSGID_ALL_CAPYH     Ratware all-caps message-id 
+score     SARE_MSGID_ALL_CAPYH     1.666
+#hist     SARE_MSGID_ALL_CAPYH     Created by Bob Menschel May 15 2004
+#note     SARE_MSGID_ALL_CAPYM     Most emails that match __SARE_MSGID_ALL_CAPYH fall into SARE_MSGID_ALL_CAPS
+#counts   SARE_MSGID_ALL_CAPYH     0s/0h of 274235 corpus (109066s/165169h RM) 05/15/05
+#max      SARE_MSGID_ALL_CAPYH     1s/0h of 65901 corpus (40664s/25237h RM) 08/19/04
+#counts   SARE_MSGID_ALL_CAPYH     0s/0h of 54176 corpus (16997s/37179h JH-3.01) 02/01/05
+#counts   SARE_MSGID_ALL_CAPYH     0s/0h of 20489 corpus (17189s/3300h MY) 01/30/05
+#counts   SARE_MSGID_ALL_CAPYH     0s/0h of 10853 corpus (6391s/4462h CT) 05/16/05
+
+#####################################################################################
+#         SARE Received Header Rules
+########  ######################   ##################################################
+
+header    __SARE_RECV_FORGE_OUTB   Received =~ /\.mr\.outblaze\.com/
+meta      SARE_RECV_FORGE_OUTBLZ   __SARE_RECV_FORGE_OUTB && !FAKE_OUTBLAZE_RCVD
+describe  SARE_RECV_FORGE_OUTBLZ   Known forgery on received line 
+score     SARE_RECV_FORGE_OUTBLZ   3.333
+#stype    SARE_RECV_FORGE_OUTBLZ   spamgg
+#hist     SARE_RECV_FORGE_OUTBLZ   Bob Apthorpe: RAA_FORGED_FROM_OUTBLAZE 
+#hist     SARE_RECV_FORGE_OUTBLZ   Aug 10 2004, Bob Menschel, modified into meta to avoid 3.0.0 duplication
+#V300     SARE_RECV_FORGE_OUTBLZ   FAKE_OUTBLAZE_RCVD
+#counts   SARE_RECV_FORGE_OUTBLZ   492s/0h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_RECV_FORGE_OUTBLZ   91s/0h of 54176 corpus (16997s/37179h JH-3.01) 02/01/05
+#counts   SARE_RECV_FORGE_OUTBLZ   9s/0h of 45478 corpus (41529s/3949h MY) 05/16/05
+#max      SARE_RECV_FORGE_OUTBLZ   37s/0h of 17050 corpus (14617s/2433h MY) 08/08/04
+#counts   SARE_RECV_FORGE_OUTBLZ   24s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_RECV_FORGE_OUTBLZ   3s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+#####################################################################################
+#         SARE Miscellaneous and X-Header header rules 
+########  ######################   ##################################################
+
+header    SARE_HEAD_XAUTH_WARN     X-Authentication-Warning =~ /^(?:[a-z]{4,20}[\-\.\,]? ){2,8}/    # no /i, trailing space
+describe  SARE_HEAD_XAUTH_WARN     Fake X-Authentication-Warning header
+score     SARE_HEAD_XAUTH_WARN     0.653
+#hist     SARE_HEAD_XAUTH_WARN     LW_AUTH_WARN
+#V300     SARE_HEAD_XAUTH_WARN     X_AUTH_WARN_FAKED
+#counts   SARE_HEAD_XAUTH_WARN     0s/0h of 274235 corpus (109066s/165169h RM) 05/15/05
+#max      SARE_HEAD_XAUTH_WARN     504s/0h of 85084 corpus (62489s/22595h RM) 06/08/04
+#counts   SARE_HEAD_XAUTH_WARN     35s/1h of 54176 corpus (16997s/37179h JH-3.01) 02/01/05
+#max      SARE_HEAD_XAUTH_WARN     44s/0h of 38398 corpus (14914s/23484h JH) 08/14/04 TM2 SA3.0-pre2
+#counts   SARE_HEAD_XAUTH_WARN     0s/0h of 20489 corpus (17189s/3300h MY) 01/30/05
+#max      SARE_HEAD_XAUTH_WARN     14s/0h of 17050 corpus (14617s/2433h MY) 08/08/04
+#counts   SARE_HEAD_XAUTH_WARN     0s/0h of 10853 corpus (6391s/4462h CT) 05/16/05
+
+header    __SARE_HEAD_XORIP_NOIP   X-Originating-IP !~ /\[?(\d{1,3}\.){3}\d{1,3}\]?/ [if-unset: 0.0.0.0]
+meta      SARE_HEAD_XORIP_NOTIP    __SARE_HEAD_XORIP_NOIP && !X_ORIG_IPNOT_IPV4
+describe  SARE_HEAD_XORIP_NOTIP    Improperly formatted X-Originating-IP header 
+score     SARE_HEAD_XORIP_NOTIP    3.333
+#stype    SARE_HEAD_XORIP_NOTIP    spamg
+#hist     SARE_HEAD_XORIP_NOTIP    Sylvain Robitaille, SR_hxo_OrigIPNotIP
+#hist     SARE_RECV_XORIP_NOTIP    Aug 10 2004, Bob Menschel, modified into meta to avoid 3.0.0 duplication
+#V300     SARE_HEAD_XORIP_NOTIP    X_ORIG_IPNOT_IPV4
+#counts   SARE_HEAD_XORIP_NOTIP    8s/0h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_HEAD_XORIP_NOTIP    3881s/0h of 91714 corpus (74113s/17601h RM) 01/23/04 
+#counts   SARE_HEAD_XORIP_NOTIP    0s/0h of 32586 corpus (9341s/23245h JH) 06/10/04
+#counts   SARE_HEAD_XORIP_NOTIP    0s/0h of 20489 corpus (17189s/3300h MY) 01/30/05
+#max      SARE_HEAD_XORIP_NOTIP    27s/0h of 17050 corpus (14617s/2433h MY) 08/08/04
+#counts   SARE_HEAD_XORIP_NOTIP    2s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_HEAD_XORIP_NOTIP    6s/2h of 10853 corpus (6391s/4462h CT) 05/16/05
+
+#EOF
+
