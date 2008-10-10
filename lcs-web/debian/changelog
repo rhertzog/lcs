@@ -1,13 +1,18 @@
 lcs-web (2.1-1~1) Unreleased; urgency=low
 
-    [ Jean-Luc Chretien ]
-    * Add ldaplcs2se3.sh script to plug LCS on SE3 Ldap service
+  [ Jean-Luc Chretien ]
+  * Add ldaplcs2se3.sh script to plug LCS on SE3 Ldap service
 
   [ Philippe Leclerc ]
   * Modify gestpack.sh to point to lcs.crdp
   * Modify modules_desinstallation for lcs.crdp
- -- Misterphi <philippe.leclerc1@ac-caen.fr>  Fri,  3 Oct 2008 21:36:57 +0200
 
+  [ Philippe Le Brouster ]
+  * Allowed more possible APT repositories to be used by gestpack.sh.
+  * Considered using the existing sources.list instead of using
+    ftp.fr.debian.org.
+
+ -- Misterphi <philippe.leclerc1@ac-caen.fr>  Fri,  3 Oct 2008 21:36:57 +0200
 
 lcs-web (2.1) LcsXP; urgency=low
 
