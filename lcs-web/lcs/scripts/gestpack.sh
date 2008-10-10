@@ -12,8 +12,7 @@
 # on positionne les drapeaux indiquant le début de l'opération. flip nécessaire pour la page auto refresh 
 echo "<? \$flip=0;\$verrou=1;?>" > /usr/share/lcs/Modules/flag.php
 
-if [[ "$1" =~ "^deb ftp://debian.crdp.ac-caen.fr/debian" \
-    || "$1" =~ "^deb http://lcs.crdp.ac-caen.fr/etch " \
+if [[ "$1" =~ "^deb http://lcs.crdp.ac-caen.fr/etch " \
     || "$1" =~ "^deb http://ftp.slis.fr/" \
     || "$1" =~ "^deb http://ftp.grenoble.slis.fr/" ]]; then
 

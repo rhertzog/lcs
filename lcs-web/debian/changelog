@@ -11,6 +11,7 @@ lcs-web (2.1-1~2) Unreleased; urgency=low
   * Allowed more possible APT repositories to be used by gestpack.sh.
   * Considered using the existing sources.list instead of using
     ftp.fr.debian.org.
+  * Removed the old lcs repository (forgetting) from the gestpack.sh checks.
 
  -- Misterphi <philippe.leclerc1@ac-caen.fr>  Fri,  3 Oct 2008 21:36:57 +0200
 
