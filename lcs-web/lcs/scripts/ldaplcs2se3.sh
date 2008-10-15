@@ -1,7 +1,7 @@
 #!/bin/bash
 # Connection d'un LCS sur l'annuaire ldap SE3
 # Olivier lecluse & Jean-Luc Chretien
-# 02/10/2008
+# 15/10/2008
 
 # recuperation des params bdd
 
@@ -92,7 +92,9 @@ ldapsearch -xLLL -h 127.0.0.1 -D $ADMINRDN,$BASEDN -w $ADMINPW "cn=lcs-users" > 
 ldapsearch -xLLL -h 127.0.0.1 -D $ADMINRDN,$BASEDN -w $ADMINPW "cn=lcs_is_admin" >> /tmp/addse3.ldif
 ldapsearch -xLLL -h 127.0.0.1 -D $ADMINRDN,$BASEDN -w $ADMINPW "cn=slis_is_admin" >> /tmp/addse3.ldif
 ldapsearch -xLLL -h 127.0.0.1 -D $ADMINRDN,$BASEDN -w $ADMINPW "cn=stats_can_read" >> /tmp/addse3.ldif
-ldapsearch -xLLL -h 127.0.0.1 -D $ADMINRDN,$BASEDN -w $ADMINPW "uid=webmaster.etab" |grep -v uidNumber | grep ":" >> /tmp/addse3.ldif
+echo "dn: uid=webmaster.etab,$PEOPLERDN,$BASEDN" >> /tmp/addse3.ldif
+ldapsearch -xLLL -h 127.0.0.1 -D $ADMINRDN,$BASEDN -w $ADMINPW "uid=webmaster.etab" |grep -v uidNumber | grep -v "^dn: " | grep ":" >> /tmp/addse3.ldif
+
 getent passwd 598 || OKW=1
 if [ "$OKW" = "1" ]; then
 	echo "uidNumber: 598" >> /tmp/addse3.ldif
