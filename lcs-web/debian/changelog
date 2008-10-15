@@ -2,6 +2,7 @@ lcs-web (2.1-1~2) Unreleased; urgency=low
 
   [ Jean-Luc Chretien ]
   * Add ldaplcs2se3.sh script to plug LCS on SE3 Ldap service
+  * Fix truncate DN for webmaster.etab account ldif 
 
   [ Philippe Leclerc ]
   * Modify gestpack.sh to point to lcs.crdp
