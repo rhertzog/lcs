@@ -31,6 +31,10 @@ case "$1" in
     ;;
     configure)
         #
+        # Comment cdrom source in sources list
+        #
+        sed -i s/"^deb cdrom"/"#deb cdrom"/g /etc/apt/sources.list
+        #
         # Detect mode AUTO for ldap lcsmgr and root MySQL passorwds
         #
         if [ -z "$MYSQLPW" ] || [ "$MYSQLPW" = "AUTO" ]; then
