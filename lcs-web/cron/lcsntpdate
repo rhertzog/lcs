@@ -1,0 +1,2 @@
+# Mise a l'heure du serveur
+0 8 * * *       root    /usr/sbin/ntpdate -s `/usr/bin/mysql -sne "select value from lcs_db.params where name='ntpserv'"`> /dev/null 2>&1
