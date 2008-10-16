@@ -28,3 +28,6 @@ www-data ALL=NOPASSWD:IMPORTSCONET
 
 Cmnd_Alias PAQUETS = /usr/share/lcs/scripts/gestpack.sh 
 www-data ALL=NOPASSWD:PAQUETS
+
+Cmnd_Alias USERDIRPHP = /usr/share/lcs/scripts/userdirphp.sh
+www-data ALL=NOPASSWD:USERDIRPHP
