@@ -1,0 +1,13 @@
+#BEGIN SECTION #USER#
+<DirectoryMatch /home/#USER#/public_html>
+    AddType application/x-httpd-php .php
+    <FilesMatch "\.(php|php3|php4|php5|phtml)$">
+      Order allow,deny
+      Allow from all
+    </FilesMatch>
+    php_admin_flag safe_mode Off
+    php_admin_value open_basedir .:../:/tmp
+    AllowOverride Limit AuthConfig
+    Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+</DirectoryMatch>
+#END SECTION #USER#
