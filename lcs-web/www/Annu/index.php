@@ -3,14 +3,14 @@
    Projet LCS : Linux Communication Server
    Consultation de l'annuaire LDAP
    Annu/index.php
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice academie de Caen
-   Derniere modification 12 Juin 2008
+   Equipe Tice académie de Caen
+   Derniere mise à jour : 16/10/2008
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
 
+  $action= $_GET[action];
 
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
@@ -57,9 +57,15 @@
 
   aff_mnu_search(is_admin("Annu_is_admin",$login));
   if (ldap_get_right("lcs_is_admin",$login)=="Y") {
-  echo "<ul>
+    echo "<ul>
     <li><a href=\"delete_right.php\">Enlever un droit d'administration</a></li>
+    <li><a href=\"userdirphptype.php?action=list\">Gestion du type php des espaces web de publication</a></li>
     </ul>\n";
   }
+  if (ldap_get_right("annu_is_admin",$login)=="Y") {
+  echo "<ul>
+    <li><a href=\"mod_shell.php\">Modification du shell des utilisateurs</a></li>
+    </ul>\n";
+  }  
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>

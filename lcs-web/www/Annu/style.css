@@ -196,7 +196,6 @@ pre.programlisting {
 	padding-left: 1em;
 	padding-right: 1em;
 	background-color: lightgrey;
-#	color: AntiqueWhite4;
 	color: black;
 }
 
@@ -211,3 +210,9 @@ tt.shell {
 	color: #ff8f00; 
 	font-size: medium;
         }
+
+span.important {
+      color: orange;
+      font-size: medium;
+      font-weight: bold;
+}

@@ -3,15 +3,16 @@
    Projet LCS : Linux Communication Server
    Consultation de l'annuaire LDAP
    Annu/people.php
-   [LCS CoreTeam]
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
-   Equipe Tice académie de Caen
-   Derniere mise à jour : 20/03/2006
+   Equipe Tice academie de Caen
+   Derniere mise à jour : 16/10/2008
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
+
+  $uid = $_GET[uid];
+  $toggle = $_GET[toggle];
+  $action = $_Get[action];
 
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
@@ -77,6 +78,19 @@
         echo "<li><a href=\"adm_WebPerso.php?uid=".$user["uid"]."&toggle=1"."\">Activer l'espace <em>Web</em></a>\n";
       } else {
         echo "<li><a href=\"adm_WebPerso.php?uid=".$user["uid"]."&toggle=0"."\">Désactiver l'espace <em>Web</em></a>\n";
+        // Gestion du type php
+        // Cas des groupes principaux autres qu'Eleves
+        exec ("/usr/bin/sudo /usr/share/lcs/scripts/userdirphp.sh exist $uid", $ReturnExist);
+        if ($ReturnExist[0] == "No" ) {
+          exec ("/usr/bin/sudo /usr/share/lcs/scripts/userdirphp.sh nbr", $ReturnNbr);
+          if ( $ReturnNbr[0] < 5 )
+            echo "<li><a href=\"userdirphptype.php?uid=".$user["uid"]."&action=add"."\">Autoriser le type php</a>\n</li>\n";
+          else
+            echo "<li><a href=\"userdirphptype.php?action=list"."\">Liste des utilisateurs possédant le type php</a>\n</li>\n";
+        } elseif ($ReturnExist[0] == "Yes" )
+          echo "<li><a href=\"userdirphptype.php?uid=".$user["uid"]."&action=rm"."\">Retirer le type php</a>\n</li>\n";
+        else
+        echo "<li>Impossible de modifier le type php.</li>\n"; 
       }
       // Ouverture/Fermeture Espace bdd perso
       //Creation du nom de la base de donnees
@@ -91,6 +105,20 @@
       }
       echo "</ul>\n";
     } else {
+      // Gestion du type php
+      // Cas des groupes principaux autres qu'Eleves
+      exec ("/usr/bin/sudo /usr/share/lcs/scripts/userdirphp.sh exist $uid", $ReturnExist);
+      if ($ReturnExist[0] == "No" ) {
+        exec ("/usr/bin/sudo /usr/share/lcs/scripts/userdirphp.sh nbr", $ReturnNbr);
+        if ( $ReturnNbr[0] < 5 )
+            echo "<li><a href=\"userdirphptype.php?uid=".$user["uid"]."&action=add"."\">Autoriser le type php</a>\n</li>\n";
+        else
+            echo "<li><a href=\"userdirphptype.php?action=list"."\">Liste des utilisateurs possédant le type php</a>\n</li>\n";
+      } elseif ($ReturnExist[0] == "Yes" )
+        echo "<li><a href=\"userdirphptype.php?uid=".$user["uid"]."&action=rm"."\">Retirer le type php</a>\n</li>\n";
+      else
+        echo "<li>Impossible de modifier le type php.</li>\n";
+      echo "</ul>\n";
       echo "</ul>\n";
     }
   } // Fin affichage menu people_admin
