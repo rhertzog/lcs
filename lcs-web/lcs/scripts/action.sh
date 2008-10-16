@@ -1,9 +1,9 @@
 #!/bin/bash
-# action.sh odronnancement d'une action sur le serveur LcSe3
-# Version du 02/11/2004
+# action.sh ordonnancement d'une action sur le serveur LcSe3
+# Version du 16/10/2008
 
 #$1 action : halt, reboot, settime, update, synchro_mdp
-#$2 serveur ntp
+#$2 server ntp for settime crypt passwd for synchro_mdp
 
 case $1 in
   halt)
@@ -20,8 +20,7 @@ case $1 in
     apt-get -y dist-upgrade &
     exit 0;;  
   synchro_mdp)
-    cryptpasswd=`getent shadow admin | perl -ne '/:(.*)/;@result=split(/:/,$1);print $result[0];'`
-    echo "admin:$cryptpasswd" > /var/www/setup/.htpasswd
+    /usr/bin/htpasswd  -bc /var/www/setup/.htpasswd admin $2
     chown root:www-data /var/www/setup/.htpasswd
     chmod 640 /var/www/setup/.htpasswd  
     exit 0;;  
