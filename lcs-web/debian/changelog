@@ -2,7 +2,10 @@ lcs-web (2.1-1~2) Unreleased; urgency=low
 
   [ Jean-Luc Chretien ]
   * Add ldaplcs2se3.sh script to plug LCS on SE3 Ldap service
-  * Fix truncate DN for webmaster.etab account ldif 
+  * Fix truncate DN for webmaster.etab account ldif in ldaplcs2se3.sh
+  * Add cron task lcsntpdate
+  * Fix bug synchro admin password in "action on the server"
+  * Add web interface in application Annu for php type in user space web publication 
 
   [ Philippe Leclerc ]
   * Modify gestpack.sh to point to lcs.crdp
