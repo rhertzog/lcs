@@ -5,7 +5,17 @@ lcs-web (2.1-1~2) Unreleased; urgency=low
   * Fix truncate DN for webmaster.etab account ldif in ldaplcs2se3.sh
   * Add cron task lcsntpdate
   * Fix bug synchro admin password in "action on the server"
-  * Add web interface in application Annu for php type in user space web publication 
+  * Add web interface in application Annu for php type in user space web publication
+  * Remove add, update some folders files and images  :
+    * lcs/bitmaps
+    * lcs/images/Xldap.png
+    * Add lcs/images/ bt-V2-3.png
+    * Remove : lcs-web : lcs/images/bt_2_1...bt_2_4.jpg, bt_2_4_1...bt_2_6.jpg, config.png
+    * Update lcs/images/bt-V1-2.jpg,  bt-V1-3.jpg, bt-V1-4.jpg
+  * Update some files in lcs/fdecran :
+    * Add in lcs/fdecran : admin.png, annu.png, forum.png, monlcs.png, aide.png, connexion.png, index.png, webmail.png
+    * Remove in lcs/fdecran : intrainternet.jpg, serveurweb.jpg, sondintru.jpg, supervis.jpg, trafflocal.jpg
+
 
   [ Philippe Leclerc ]
   * Modify gestpack.sh to point to lcs.crdp
