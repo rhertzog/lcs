@@ -17,6 +17,7 @@ lcs-web (2.1-1~2) Unreleased; urgency=low
     * Remove in lcs/fdecran : intrainternet.jpg, serveurweb.jpg, sondintru.jpg, supervis.jpg, trafflocal.jpg
   * Add lcs/c/lcs.css to prepare remove style.css
   * Modify for new theme and W3C validation  : lcs/auth.php, accueil.php, applis.php
+  * Modify edit_params.sh for configuration postfix ldap aliases
 
   [ Philippe Leclerc ]
   * Modify gestpack.sh to point to lcs.crdp
