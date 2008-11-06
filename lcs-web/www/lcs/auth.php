@@ -1,5 +1,5 @@
 <?
-/* lcs/auth.php version du : 07/07/2008 */
+/* lcs/auth.php version du : 17/10/2008 */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
@@ -63,27 +63,27 @@ if (isset($_POST['timestamp'])) $timestamp=$_POST['timestamp']; else $timestamp=
         } 
         header_crypto_html("...::: Authentification LCS :::...");
 ?>
-                <H3>Authentification</H3>
-                <P>Afin de pouvoir rentrer dans votre espace perso LCS, vous devez fournir un identifiant et un mot de passe. En cas d'oubli, contactez <A HREF='mailto:<? echo $MelAdminLCS ?>?subject=Mot de passe Intranet'>l'administrateur du système</A>.
-                <form name = "auth" action="auth.php" method="post" onSubmit = "encrypt(document.auth)" >
+                <h3>Authentification</h3>
+                <p>Afin de pouvoir rentrer dans votre espace perso LCS, vous devez fournir un identifiant et un mot de passe. En cas d'oubli, contactez <a href='mailto:<? echo $MelAdminLCS ?>?subject=Mot de passe Intranet'>l'administrateur du système</a>.</p>
+                <form name = "auth" action="auth.php" method="post" onsubmit = "encrypt(document.auth)" >
                         <table border='0'>
                                 <tr>
                                         <td>Identifiant :&nbsp;</td>
-                                        <td><input type="text" name="login" size="20" maxlength="30"><br></td>
+                                        <td><input type="text" name="login" size="20" maxlength="30"/><br /></td>
                                 </tr>
                                 <tr>
                                         <td>Mot de passe :&nbsp;</td>
                                         <td>
-                                                <input type= "password" value="" name="dummy" size="20"  maxlength="30">
-                                                <input type="hidden" name="string_auth" value="">
-                                                <input type="hidden" name="time" value="">
-                                                <input type="hidden" name="client_ip" value="<? echo remote_ip(); ?>">
-                                                <input type="hidden" name="timestamp" value="<? echo time(); ?>">
+                                                <input type= "password" value="" name="dummy" size="20"  maxlength="30"/>
+                                                <input type="hidden" name="string_auth" value=""/>
+                                                <input type="hidden" name="time" value=""/>
+                                                <input type="hidden" name="client_ip" value="<? echo remote_ip(); ?>"/>
+                                                <input type="hidden" name="timestamp" value="<? echo time(); ?>"/>
                                         </td>
                                 </tr>
                                 <tr align="left">
                                         <td>&nbsp;</td>
-                                        <td><input type="submit" value="Valider"><br></td>
+                                        <td><input type="submit" value="Valider"/><br /></td>
                                 </tr>
                         </table>
                 </form>

@@ -4,7 +4,7 @@
    accueil.php
    jLCF : jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice académie de Caen
-   derniere mise a jour : 24/06/2008
+   derniere mise a jour : 25/10/2008
    ============================================= */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -27,23 +27,21 @@ else
     die ("paramètres absents de la base de données");
 @mysql_free_result($result);
 
-echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-echo "<html>\n
-      <head>\n
-        <title>Accueil LCS</title>
-        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n
-        <link  href='../style.css' rel='StyleSheet' type='text/css'>\n
-      </head>\n
-      <body>\n";
-
-echo "<h4>Bonjour&nbsp;" . $user["fullname"] ."</h4>\n
-<div align='center'>\n
-    <h5 style='text-align:left'>\n
-        <img src='images/home.jpg' widht='40' height='40' alt='Home' align='middle' border='0'>
-        Bienvenue sur votre espace perso LCS
-    </h5>\n
-</div>\n
-<ul>\n";
+$html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
+    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
+$html .= "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\">\n";
+$html .= "<head>\n";
+$html .= "  <title>Accueil LCS</title>\n";
+$html .= "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\n";
+$html .= "  <link  href='c/lcs.css' rel='StyleSheet' type='text/css'/>\n";
+$html .= "</head>\n";
+$html .= "<body class='accueil'>\n";
+$html .= "<h4>Bonjour&nbsp;" . $user["fullname"] ."</h4>\n";
+$html .= "<div align='center'>\n";
+$html .= "<h5 style='text-align:left'>Bienvenue sur votre espace perso LCS</h5>\n";
+$html .= "</div>\n";
+$html .= "<ul>\n";
+echo $html;
 
   if (!displogin($idpers)) {
     echo "<li><tt>Félicitation, vous venez de vous connecter pour la 1ère fois sur votre
@@ -59,7 +57,7 @@ echo "<h4>Bonjour&nbsp;" . $user["fullname"] ."</h4>\n
   }
 
   echo "</ul>\n";
-  echo "<br>&nbsp;\n";
+  echo "<br />&nbsp;\n";
 
   // Affichage d'un message d'alerte pour le renouvellement des clés d'authentification
   if ( $is_admin=="Y" && detect_key_orig() ) {
@@ -87,10 +85,27 @@ echo "<h4>Bonjour&nbsp;" . $user["fullname"] ."</h4>\n
   // Affichage du menu espace web si l'espace perso existe
   if ( is_dir("/home/".$login) && is_dir("/home/".$login."/public_html") && is_dir("/home/".$login."/Documents")) {
     if ( !isset($monlcs) ){ 
-        if ( $ftpclient ) echo "<img src=\"images/bt-V1-2.jpg\" alt=\"ftpclient\" align=\"middle\"><a href=\"statandgo.php?use=clientftp\">Espace web « LCS »</a><br>\n";
-        if ( $pma ) echo "<img src=\"images/bt-V1-3.jpg\" alt=\"pma\" align=\"middle\"><a href=\"statandgo.php?use=pma\">Gestion base de données « LCS »</a><br>\n";
-        if ( $se3netbios != "" && $se3domain != "" && $smbwebclient )
-	   echo "<img src=\"images/bt-V1-4.jpg\" alt=\"smbwebclient\" align=\"middle\"><a href=\"statandgo.php?use=smbwebclient\">Accès au serveur de fichiers «Se3»</A><br>\n";
+      $html = "<table width='100%' border='0' cellspacing='10'>\n";
+      if ( $ftpclient ) {
+        $html .= "<tr>\n";
+        $html .= "  <td width='80'><img src='images/bt-V1-2.jpg' alt='ftpclient' align='middle' /></td>\n";
+        $html .= "  <td><a href='statandgo.php?use=clientftp'>Espace web « LCS »</a></td>\n";
+        $html .= "</tr>\n";
+      }
+      if ( $pma ) {
+        $html .= "<tr>\n";
+        $html .= "  <td width='80'><img src='images/bt-V1-3.jpg' alt='phpmyadmin' align='middle' /></td>\n";
+        $html .= "  <td><a href='statandgo.php?use=pma'>Gestion base de données « LCS »</a></td>\n";
+        $html .= "</tr>\n";
+      }
+      if ( $se3netbios != "" && $se3domain != "" && $smbwebclient ) {
+        $html .= "<tr>\n";
+        $html .= "  <td width='80'><img src='images/bt-V1-4.jpg' alt='smbwebclient' align='middle' /></td>\n";
+        $html .= "  <td><a href='statandgo.php?use=smbwebclient'>Accès au serveur de fichiers «Se3»</a></td>\n";
+        $html .= "</tr>\n";
+      }
+      $html .= "</table>\n";
+      echo $html;
     }
   }   else {
           // Pb sur espace perso utilisateur
