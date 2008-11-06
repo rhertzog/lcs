@@ -20,10 +20,11 @@ configure() {
     VLANPEDA4=$(get_lcsdb_params vlanpeda4)
     LAN_NETWORKS_TMP="$VLANSC $VLANADMINISTRATIF $VLANPEDA1 $VLANPEDA2 $VLANPEDA3 $VLANPEDA4"
     LAN_NETWORKS=`echo $LAN_NETWORKS_TMP | sed -e "s/ /,/g"`
+    LDAP_SERVER=$(get_lcsdb_params ldap_server)
     LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
     RELAY_HOST=$(get_lcsdb_params relayhost)
-    # postfix_reconfigure.sh <FQDN> <DOMAIN> <LOCAL_DOMAIN> <NETWORK> <BASEDN> <RELAYHOST> <XEN_NETWORK>"
-    /usr/share/lcs/scripts/postfix_reconfigure.sh "$FQN" "$DOMAIN" "" "$LAN_NETWORKS" "$LDAP_BASE_DN" "$RELAY_HOST"
+    # postfix_reconfigure.sh <FQDN> <DOMAIN> <LOCAL_DOMAIN> <NETWORK> <LDAP_SERVER> <BASEDN> <RELAYHOST> <XEN_NETWORK>"
+    /usr/share/lcs/scripts/postfix_reconfigure.sh "$FQN" "$DOMAIN" "" "$LAN_NETWORKS" "$LDAP_SERVER" "$LDAP_BASE_DN" "$RELAY_HOST"
     newaliases
 }
 
