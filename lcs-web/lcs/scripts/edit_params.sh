@@ -1,5 +1,5 @@
 #!/bin/bash
-# edit_params.sh version du 14/06/2008
+# edit_params.sh version du 06/11/2008
 
 # Fichiers de configuration
 PATH2SLAPD="/etc/ldap/slapd.conf"
@@ -9,6 +9,7 @@ PATH2LIBNSS_LDAP="/etc/libnss-ldap.conf"
 PATH2IMAP_LDAP="/etc/courier/authldaprc"
 PATH2SPIP_LDAP="/usr/share/lcs/spip/config/connect.php"
 PATH2MAIN="/etc/postfix/main.cf"
+PATH2LDAPALIASES="/etc/postfix/ldap-aliases.cf"
 PATH2LMHOSTS="/etc/samba/lmhosts"
 PATH2SQUIDCONF="/etc/squid/squid.conf"
 
@@ -20,6 +21,7 @@ PATH2LIBNSS_LDAP_TMP="/etc/libnss-ldap.conf.tmp"
 PATH2IMAP_LDAP_TMP="/etc/courier/authldaprc.tmp"
 PATH2SPIP_LDAP_TMP="/usr/share/lcs/spip/config/connect.php.tmp"
 PATH2MAIN_TMP="/etc/postfix/main.cf.tmp"
+PATH2LDAPALIASES_TMP="/etc/postfix/ldap-aliases.tmp"
 PATH2SQUIDCONF_TMP="/etc/squid/squid.conf.tmp"
 
 while read TYPE OLD NEW; do
@@ -85,6 +87,12 @@ while read TYPE OLD NEW; do
     # ---------------------------------
     cat $PATH2MAIN | sed -e "s/$OLD/$NEW/g" > $PATH2MAIN_TMP
     mv $PATH2MAIN_TMP $PATH2MAIN
+    # Modification de /etc/postfix/ldap-aliases.cf
+    #---------------------------------------------
+    if [ -e /etc/postfix/ldap-aliases.cf ]; then
+      cat $PATH2LDAPALIASES | sed -e "s/$OLD/$NEW/g" > $PATH2LDAPALIASES_TMP
+      mv $PATH2LDAPALIASES_TMP $PATH2LDAPALIASES
+    fi
   fi
   # Modification du base dn
   # =-=-=-=-=-=-=-=-=-=-=-=
@@ -118,6 +126,12 @@ while read TYPE OLD NEW; do
     # ---------------------------------
     cat $PATH2MAIN | sed -e "s/$OLD/$NEW/g" > $PATH2MAIN_TMP
     mv $PATH2MAIN_TMP $PATH2MAIN
+    # Modification de /etc/postfix/ldap-aliases.cf
+    #---------------------------------------------
+    if [ -e /etc/postfix/ldap-aliases.cf ]; then
+      cat $PATH2LDAPALIASES | sed -e "s/$OLD/$NEW/g" > $PATH2LDAPALIASES_TMP
+      mv $PATH2LDAPALIASES_TMP $PATH2LDAPALIASES
+    fi
   fi
   # Modification de l'admin Rdn
   # =-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -177,6 +191,6 @@ sleep 2
 # Redemarrage du service courier
 /etc/init.d/courier-authdaemon restart
 /etc/init.d/courier-imap restart
-
+/etc/init.d/postfix restart
 # Nettoyage
 rm /tmp/params_lcs
