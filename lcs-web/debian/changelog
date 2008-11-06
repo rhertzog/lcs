@@ -15,7 +15,8 @@ lcs-web (2.1-1~2) Unreleased; urgency=low
   * Update some files in lcs/fdecran :
     * Add in lcs/fdecran : admin.png, annu.png, forum.png, monlcs.png, aide.png, connexion.png, index.png, webmail.png
     * Remove in lcs/fdecran : intrainternet.jpg, serveurweb.jpg, sondintru.jpg, supervis.jpg, trafflocal.jpg
-
+  * Add lcs/c/lcs.css to prepare remove style.css
+  * Modify for new theme and W3C validation  : lcs/auth.php, accueil.php, applis.php
 
   [ Philippe Leclerc ]
   * Modify gestpack.sh to point to lcs.crdp
@@ -27,9 +28,10 @@ lcs-web (2.1-1~2) Unreleased; urgency=low
     ftp.fr.debian.org.
   * Removed the old lcs repository (forgetting) from the gestpack.sh checks.
 
- -- Misterphi <philippe.leclerc1@ac-caen.fr>  Fri,  3 Oct 2008 21:36:57 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu,  6 Nov 2008 13:13:32 +0100
 
 lcs-web (2.1) LcsXP; urgency=low
+
 
     [ Jean-Luc Chretien ]
     * Add a missing dh_compress directive -X.mm in debian/rules
