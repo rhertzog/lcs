@@ -2,9 +2,9 @@
  /* =============================================
    Projet LcSE3 : Gestion des comptes orphelins
    Admin/ldap_cleaner.php
-   Equipe Tice académie de Caen
-   derniere mise a jour : 26/03/2008
-   Distribué selon les termes de la licence GPL
+   Equipe Tice academie de Caen
+   derniere mise a jour : 07/11/2008
+   Distribue selon les termes de la licence GPL
    ============================================= */
 
 include ("../lcs/includes/headerauth.inc.php");
@@ -190,7 +190,7 @@ function search_people_trash ($filter) {
     } else $error = "Echec du bind en admin";
     @ldap_close ( $ds );
   } else $error = "Erreur de connection au serveur LDAP";
-  // Tri du tableau par ordre alphabétique
+  // Tri du tableau par ordre alphabetique
   if (count($ret)) usort($ret, "cmp_name");
   return $ret;
 } // Fin function search_people_trash
@@ -212,25 +212,25 @@ function draw_table_result ( $msg_cat, $type1, $type2, $type3 ) {
 } // Fin function draw_table_result 
 // Messages d'aide
 function msgaide($msg) {
-    return ("&nbsp;<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('".$msg."')")."\"><img name=\"action_image2\"  src=\"../images/help-info.gif\"></u>");
+    return ("&nbsp;<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('".$msg."')")."\"><img name=\"action_image2\"  src=\"../images/help-info.gif\" ALT=\"Infos\"></u>");
 }
-$msg1="Recherche les comptes des utilisateurs qui ne sont plus affectés à un groupe principal et transfert ces comptes à la corbeille.";
-$msg2="Visualise la liste des comptes transférés dans la corbeille.";
-$msg3="Permet de réactiver un ou des comptes sous reserve que les uid et/ou les uidNumber de ces comptes soient encore libre.";
-$msg4="Efface les répertoitres homes des utilsiteurs situés dans la corbeille.";
-$msg5="Supprime les comptes de la corbeille !<br/><strong>ATTENTION</strong> : Ne supprimer les comptes de la corbeille que lorsque vous avez effectué l\'effacement des homes sur l\'ensemble des serveurs qui partagent votre annuaire avec votre LCS ou votre SE3.";
-$msg6="Ce compte, n\'est pas récupérable car il possède un uid ou un uidnumber désormais occupé.";
+$msg1="Recherche les comptes des utilisateurs qui ne sont plus affect&#233;s &#224; un groupe principal et transfert ces comptes &#224; la corbeille.";
+$msg2="Visualise la liste des comptes transf&#233;r&#233;s dans la corbeille.";
+$msg3="Permet de r&#233;activer un ou des comptes sous reserve que les uid et/ou les uidNumber de ces comptes soient encore libre.";
+$msg4="Efface les r&#233;pertoitres homes des utilsiteurs situ&#233;s dans la corbeille.";
+$msg5="Supprime les comptes de la corbeille !<br/><strong>ATTENTION</strong> : Ne supprimer les comptes de la corbeille que lorsque vous avez effectu&#233; l\'effacement des homes sur l\'ensemble des serveurs qui partagent votre annuaire avec votre LCS ou votre SE3.";
+$msg6="Ce compte, n\'est pas r&#233;cup&#233;rable car il poss&#232;de un uid ou un uidnumber d&#233;sormais occup&#233;.";
 // Messages 
-$msg_confirm = "Avant de vider la corbeille, assurez vous d\'avoir préalablement nettoyé les homes des comptes orphelins sur l'ensemble des serveurs qui partagent votre annuaire avec le LCS.<br>";
+$msg_confirm = "Avant de vider la corbeille, assurez vous d\'avoir pr&#233;alablement nettoy&#233; les homes des comptes orphelins sur l'ensemble des serveurs qui partagent votre annuaire avec le LCS.<br>";
 $msg_confirm .= "<a href=\"ldap_cleaner.php?do=4&phase=1\" target=\"main\">Nettoyage !</a>";
 
-// Vérification de l'authentification 
+// Verification de l'authentification 
 list ($idpers, $login)= isauth();
 if ($idpers == "0") header("Location:$urlauth");
 
 $sambadomain=search_sambadomain ();
-
-echo "<HTML>\n";
+echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
+echo "<HTML>\n"; 
 echo "	<HEAD>\n";
 echo "		<TITLE>...::: Interface d'administration Serveur LCS :::...</TITLE>\n";
 
@@ -257,27 +257,27 @@ elseif ( isset($_GET['do']) )
 // Cas 1 : Transfert des utilisateurs dans la Trash
 if( $do==1 && $phase!=1 ) {
 	### DEBUG echo "debug2 do:$do phase:$phase<br>";
-	echo "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?do=1&phase=1'\">\n";
+	echo "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?do=1&amp;phase=1'\">\n";
 }
 // Cas 2 : Examiner le contenu de la poubelle
 if( $do==2 && $phase!=1 ) {
 	### DEBUG echo "debug2 do:$do phase:$phase<br>";
-	echo "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?do=2&phase=1'\">\n";
+	echo "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?do=2&amp;phase=1'\">\n";
 }
 // Cas 3 : Effacer les «homes» des comptes orphelins
 if( $do==3 && $phase!=1 ) {
 	### DEBUG echo "debug2 do:$do phase:$phase<br>";
-	echo "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?do=3&phase=1'\">\n";
+	echo "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?do=3&amp;phase=1'\">\n";
 }
 // Cas 4 : Vider la corbeille
 if( $do==4 && $phase==1 ) {
 	### DEBUG echo "debug2 do:$do phase:$phase<br>";
-	echo "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?do=4&phase=2'\">\n";
+	echo "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?do=4&amp;phase=2'\">\n";
 }
-// Cas 10 : Récupération des utilisateurs de Trash vers People
+// Cas 10 : Recuperation des utilisateurs de Trash vers People
 if( $do==10 && $phase==2 ) {
 	### DEBUG echo "debug2 $do $phase<br>";
-	echo "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?do=10&phase=3'\">\n";
+	echo "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?do=10&amp;phase=3'\">\n";
 }
 // Fin traitement des redirections
 
@@ -288,12 +288,13 @@ echo "	<BODY>\n";
 if (is_admin("lcs_is_admin",$login)=="Y") {
 
 	$html = "<div style=\"margin-bottom: 15%\"><H1>Gestion des comptes orphelins</H1>\n";
-
+	$html.="<UL>";
 	if ($do !="1") 	$html .= "<li><a href=\"ldap_cleaner.php?do=1\" target=\"main\">Transfert des comptes orphelins dans la corbeille</a>".msgaide($msg1)."</li>\n";
 	if ($do !="2") 	$html .= "<li><a href=\"ldap_cleaner.php?do=2\" target=\"main\">Examiner le contenu de la corbeille</a>".msgaide($msg2)."</li>\n";
-			$html .= "<li><a href=\"ldap_cleaner.php?do=10\" target=\"main\">Récupération de comptes orphelins depuis la corbeille</a>".msgaide($msg3)."</li>\n";
+			$html .= "<li><a href=\"ldap_cleaner.php?do=10\" target=\"main\">R&#233;cup&#233;ration de comptes orphelins depuis la corbeille</a>".msgaide($msg3)."</li>\n";
 	if ($do !="3") 	$html .= "<li><a href=\"ldap_cleaner.php?do=3\" target=\"main\">Effacer les «homes» des comptes orphelins</a>".msgaide($msg4)."</li>\n";
 	if ($do !="4") 	$html .= "<li><a href=\"ldap_cleaner.php?do=4\" target=\"main\">Vider la corbeille</a>".msgaide($msg5)."</li>\n";
+	$html.="</ul>";	
 	$html .="<p></p>";
 	echo $html;
 
@@ -303,12 +304,12 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 			// Transfert des comptes orphelins dans la corbeille
 			if ( $phase != 1 )
 				// Affichage du sablier
-				echo "<div align='center'><img src=\"Images/wait.gif\" title=\"Patientez...\" align=\"middle\" border=\"0\">&nbsp;Transfert des comptes orphelins dans la corbeille en cours. Veuillez patienter...</div>";
+				echo "<div align='center'><img src=\"Images/wait.gif\" title=\"Patientez...\" align=\"middle\" border=\"0\" ALT=\"Patientez\">&nbsp;Transfert des comptes orphelins dans la corbeille en cours. Veuillez patienter...</div>";
 			else {
 				// Transfert des comptes orphelins dans la corbeille
         			exec ("$scriptsbinpath/searchAndDelete.pl" ,$AllOutPut,$ReturnValue);
         			if ($ReturnValue == "0")
-					echo "Le transfert des  comptes orphelins dans la corbeille s'est déroulé avec succès.<br>";
+					echo "Le transfert des  comptes orphelins dans la corbeille s'est d&#233;roul&#233; avec succ&#232;s.<br>";
 				else
           				echo "<div class=error_msg>Echec du tansfert des  comptes orphelins dans la corbeille !</div>";
 			}		
@@ -333,16 +334,16 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
       	}				
 			break;
 		case 3 :
-			// Nettoyage des répertoires home
+			// Nettoyage des repertoires home
 			if ( $phase != 1 )
 				// Affichage du sablier
-				echo "<div align='center'><img src=\"Images/wait.gif\" title=\"Patientez...\" align=\"middle\" border=\"0\">&nbsp;Le nettoyage des répertoires «homes» est en cours. Veuillez patienter...</div>";
+				echo "<div align='center'><img src=\"Images/wait.gif\" title=\"Patientez...\" align=\"middle\" border=\"0\" ALT=\"Patientez\">&nbsp;Le nettoyage des r&#233;pertoires «homes» est en cours. Veuillez patienter...</div>";
 			else {		
         			exec ("/usr/bin/sudo $scriptsbinpath/delHome.pl" ,$AllOutPut,$ReturnValue);
         			if ($ReturnValue == "0")
-					echo "Le nettoyage des répertoires «home» s'est déroulé avec succès.<br>";
+					echo "Le nettoyage des r&#233;pertoires «home» s'est d&#233;roul&#233; avec succ&#232;s.<br>";
 				else
-          				echo "<div class=error_msg>Echec du nettoyage des répertoires «home» !</div>";
+          				echo "<div class=error_msg>Echec du nettoyage des r&#233;pertoires «home» !</div>";
 			}					
 			break;
 		case 4;
@@ -352,24 +353,24 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 				echo "<div class=error_msg>$msg_confirm</div>";
 			elseif ($phase == 1 )
 				// Affichage du sablier
-				echo "<div align='center'><img src=\"Images/wait.gif\" title=\"Patientez...\" align=\"middle\" border=\"0\">&nbsp;Vidage de la corbeille en cours. Veuillez patienter...</div>";
+				echo "<div align='center'><img src=\"Images/wait.gif\" title=\"Patientez...\" align=\"middle\" border=\"0\" ALT=\"Patientez\">&nbsp;Vidage de la corbeille en cours. Veuillez patienter...</div>";
 			elseif ($phase == 2 ) {
-				#echo "Le nettoyage de la corbeille s'est déroulé avec succès.<br>";
+				#echo "Le nettoyage de la corbeille s'est deroule avec succ&#232;s.<br>";
 				$users = search_people_trash ("cn=*");
       				for ($loop=0; $loop<count($users);$loop++) {
 			        	$entry="uid=".$users[$loop]["uid"].",".$dn["trash"];
 					exec ("$scriptsbinpath/entryDel.pl $entry" ,$AllOutPut,$ReturnValue);
       				}				
 				$users = search_people_trash ("cn=*");
-				if (count($users) == 0 ) echo "Le nettoyage de la corbeille s'est déroulé avec succès.<br>";
+				if (count($users) == 0 ) echo "Le nettoyage de la corbeille s'est d&#233;roul&#233; avec succ&#232;s.<br>";
 				else echo "<div class=error_msg>Echec du nettoyage de la corbeille !</div>";				
 			}
 			break;
 		case 10;
-			// Récupération de comptes orphelins
+			// Recuperation de comptes orphelins
 			// Choix d'un filtre de recherche
 			if ( $phase != 1 && $phase != 2 && $phase != 3) {
-				$html="<p><u>Recherche des comptes orphelins à transférer</u> :</p>\n"; 
+				$html="<p><u>Recherche des comptes orphelins &#224; transf&#233;rer</u> :</p>\n"; 
 				$html.="<div style='margin-left: 40px'>\n";
 				$html.="<form action='ldap_cleaner.php?do=10' method = 'post'>\n";
 				$html.="Filtre de recherche&nbsp;";
@@ -390,25 +391,25 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
                                     if ($filtre!="*") $filtre="*".$filtre."*";
 				if ($filter_type == "commence" ) $filtre=$filtre."*";
 				if ($filter_type == "finit" ) $filtre="*".$filtre; 
-				// Recherche des utilisateurs répondant au critere
+				// Recherche des utilisateurs repondant au critere
 				$users = search_people_trash ("cn=$filtre");
 				echo "<div align='center'><img src=\"Images/";
 				if (count($users) == 0 ) echo "Poubelle_vide.png";
 				else echo "Poubelle_pleine.png";
 				echo "\" alt=\"Corbeille\" width=\"51\" height=\"65\" align=\"middle\" border=\"0\">&nbsp;Il y a <STRONG>".count($users)."</STRONG> utilisateur";
 				if ( count($users) >= 2 ) echo "s"; 
-				echo "&nbsp;dans la corbeille qui répond";
+				echo "&nbsp;dans la corbeille qui r&#233;pond";
 				if ( count($users) >= 2 ) echo "ent"; 
 				echo " au «<em>filtre</em>» de recherche.</div>\n";
 				// Affichage de la liste des utilisateurs a recuperer
 				if ( count($users) > 0) {
 					$html="<form action='ldap_cleaner.php?do=10' method = 'post'>\n";
-					// Tableau d'affichage des résultats
-					draw_table_result ("Catégorie", "Eleve", "Professeur", "Administratif");
+					// Tableau d'affichage des resultats
+					draw_table_result ("Cat&#233;gorie", "Eleve", "Professeur", "Administratif");
       					for ($loop=0; $loop<count($users);$loop++) {
 						$html.="<tr><td style='width: 300px;'>".utf8_decode( $users[$loop]["cn"] )."</td>\n";
                                                 $NoRecup = false;
-                                                # test si on peut récupérer le compte
+                                                # test si on peut recuperer le compte
                                                 $attribut[0]="uidnumber";
                                                 $tab=get_tab_attribut("people", "uid=*", $attribut);
                                                 for($i=0;$i<count($tab);$i++){
@@ -427,7 +428,7 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
                                                     }  
                                                 }
                                                 if ( $NoRecup ) {
-						  $html.="<td colspan='3' style='align: center; width: 150px; font-size:0.7em; font-weight:bold; color:#FDAF4E;'>&nbsp;Ce compte n'est pas récupérable.&nbsp;".msgaide($msg6)."</td>\n";
+						  $html.="<td colspan='3' style='align: center; width: 150px; font-size:0.7em; font-weight:bold; color:#FDAF4E;'>&nbsp;Ce compte n'est pas r&#233;cup&#233;rable.&nbsp;".msgaide($msg6)."</td>\n";
                                                 } else {
 						  $html.="<td style='align: center; width: 50px;'><input type='radio' name='cat[$loop]' value='".$users[$loop]["uid"]."@@Eleves'></td>\n";
 						  $html.="<td style='width: 50px;'><input type='radio' name='cat[$loop]' value='".$users[$loop]["uid"]."@@Profs'></td>\n";
@@ -438,15 +439,15 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 					$html.="<input type='hidden' name='phase' Value='2'>\n";
 					$html.="<input type='hidden' name='nbr' Value='$loop'>\n";
 					$html.="<div style='margin-left: 200px'>\n";
-					$html.="<input type='submit' Value='Récupérer'>\n";
-					$html.=" <input type='reset' Value='Réinitialisier'>\n";
+					$html.="<input type='submit' Value='R&#233;cup&#233;rer'>\n";
+					$html.=" <input type='reset' Value='R&#233;initialisier'>\n";
 					$html.="</form></div>\n";	
 						
-				} else $html = "<div class='alert_msg'>Pas de transfert à effectuer !</div>\n";
+				} else $html = "<div class='alert_msg'>Pas de transfert &#224; effectuer !</div>\n";
 				echo $html;	
 			} elseif ( $phase == 2 ) {
 				// Transfert des comptes de trash -> peoples et positionnement des groupes principaux
-				// Transfert des utilisateurs sélectionné dans /tmp/list_recup
+				// Transfert des utilisateurs selectionne dans /tmp/list_recup
 				for ($loop=0; $loop<$nbr;$loop++) {
 					if ( isset($cat[$loop]) ) {
 						$tmp = $cat[$loop];
@@ -454,12 +455,12 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 					}						
 				}
 				// Affichage du sablier
-				echo "<div align='center'><img src=\"Images/wait.gif\" title=\"Patientez...\" align=\"middle\" border=\"0\"> Récupération des comptes orphelins en cours. Veuillez patienter...</div>";
+				echo "<div align='center'><img src=\"Images/wait.gif\" title=\"Patientez...\" align=\"middle\" border=\"0\" ALT=\"Patientez\"> R&#233;cup&#233;ration des comptes orphelins en cours. Veuillez patienter...</div>";
 			} elseif ( $phase == 3 ) {
-				// Récuperation des utilisateurs sélectionnés
+				// Recuperation des utilisateurs selectionnes
 				if ( file_exists("/tmp/list_recup") ) {
 					$fd = fopen("/tmp/list_recup", "r");
-					draw_table_result ("Récupération dans la catégorie", "Eleve", "Professeur", "Administratif");
+					draw_table_result ("R&#233;cup&#233;ration dans la cat&#233;gorie", "Eleve", "Professeur", "Administratif");
 					while ( !feof($fd) ) {
 						$tmp = fgets($fd, 255);
 				        	$trash_member=explode("@@", $tmp);
@@ -468,7 +469,7 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 						// uid => $trash_member[0]
 						// Categorie $trash_member[1]
 						if ( $trash_member[0] != "" ) {
-							// Lecture des params de l'utilisateur sélectionné dans la trash
+							// Lecture des params de l'utilisateur selectionne dans la trash
 							$user = search_people_trash ("uid=$trash_member[0]");
 							// Positionnement des constantes "objectclass"
 							if ( $sambadomain!="0" ) $user[0]["sambaacctflags"]="[U          ]";
@@ -520,7 +521,7 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 							 echo "------------------------------------------<br>";
                                                         }
 							### FIN DEBUG						
-							// Modification de l'entrée dn ou=Trash -> ou=People
+							// Modification de l'entree dn ou=Trash -> ou=People
 	    	 					$ds = @ldap_connect ( $ldap_server, $ldap_port );
       							if ( $ds ) {
 	          						$r = @ldap_bind ( $ds, $adminDn, $adminPw ); // Bind en admin
@@ -537,7 +538,7 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 									}
 							}
 							@ldap_close ( $ds );
-							// Affichage des utilisateurs récupérés
+							// Affichage des utilisateurs recuperes
 							$html="<tr><td style='width: 300px;'>";
 							if ( $recup )  $html.="<a href='../Annu/people.php?uid=".$user[0]["uid"]."'>";
 							$html.=utf8_decode( $user[0]["cn"] );
@@ -553,19 +554,19 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 								$html.="<td style='text-align: center; width: 50px;'>";
 								if ( $categorie == "Administratifs" ) $html.="<b>X</b>"; else $html.="&nbsp;";
 								$html.="</td></tr>\n";
-							} else $html.="<td colspan='3' style='color: #ff8f00; text-align: center; width: 50px;'>Compte irrécupérable !</td></tr>\n";
+							} else $html.="<td colspan='3' style='color: #ff8f00; text-align: center; width: 50px;'>Compte irr&#233;cup&#233;rable !</td></tr>\n";
 							echo $html;			
 						}				
 					}
 					fclose($fd);
 					unlink ("/tmp/list_recup");
 					echo "</tbody>\n</table>\n";
-				} else  echo "<div class=error_msg>Vous n'avez pas sélectionné d'utilisateur(s) à récupérer!</div>";
+				} else  echo "<div class=error_msg>Vous n'avez pas s&#233;lectionn&#233; d'utilisateur(s) &#224; r&#233;cup&#233;rer!</div>";
 			}		
 		break; // Fin case
                 
 	}
-} else echo "Vous n'avez pas les droits nécessaires pour cette action...";
+} else echo "Vous n'avez pas les droits n&#233;cessaires pour cette action...";
 echo "</div>";	
 include ("../lcs/includes/pieds_de_page.inc.php");
 ?>
