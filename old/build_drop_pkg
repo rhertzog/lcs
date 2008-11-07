@@ -1,0 +1,245 @@
+#!/bin/bash
+# Jean-Luc Chretien Projet LCS <jean-luc.chretien@tice.ac-caen.fr>
+# Version du : 14/05/2008 
+# $1 : repertoire source du paquet
+# $2 : N° de version
+# $3 : Distribution : sarge ou etch
+# $4 : Branche
+# $5 : Nom du mainteneur du paquet
+# $6 : Mail du mainteneur
+# $7 : (optionnel) Nécessaire uniquement si le module est nouveau dans la branche (c.a.d s'il n'existe pas de version antérieure). 
+# Ce paramètre doit correspondre à la description du module qui sera insérée dans lcs_db.applis (voir le postinst)
+
+if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ] || [ -z "$5" ] || [ -z "$6" ]; then
+        echo "Script destiné à fabriquer un paquet Debian LCS-*"
+        echo ""
+        echo "Usage : build_pkg <repertoire source du paquet> <N° de Version> <distribution> <branche de destination> <\"Nom mainteneur\"> <\"Mail mainteneur\">"
+        echo "La distribution est sarge ou etch"
+        echo "Les branches possibles sont : stable testing experimentale (ou xp) developpement (ou dev)"
+        exit
+fi
+
+if [ "$3" != "etch" -a "$3" != "sarge" ]; then
+    echo "Les distributions possibles sont : sarge etch"
+    exit
+fi
+
+if [ "$4" != "stable" -a "$4" != "testing" -a "$4" != "experimentale" -a "$4" != "xp" -a "$4" != "developpement" -a "$4" != "dev"]; then
+    echo "Les branches possibles sont : stable testing experimentale (ou xp)  developpement  (ou dev)"
+    exit
+fi
+
+if [ "$4" == "stable" ];then
+    BRANCHE="Lcs"
+elif [ "$4" == "testing" ];then
+    BRANCHE="LcsTesting"
+elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
+    BRANCHE="LcsXP"
+elif [ "$4" == "developpement" -o "$4" == "dev" ];then
+    BRANCHE="LcsDev"
+fi
+
+
+echo "Nom de l'applicatif : $1"
+echo "Tag de version : $2"
+echo "Distribution : $3"
+echo "Branche de destination : $4"
+NAMEPAQ="$1_$2_all.deb"
+echo "Nom du paquet : $NAMEPAQ"
+echo "Mainteneur : $5 <$6>"
+export DEBFULLNAME="$5"
+export DEBEMAIL="$6"
+
+if [ -d $1 ]; then
+    cd $1
+    MODULE=`echo "$1"|cut -d '-' -f 2`
+    # Patche Num version dans rep doc et commit
+    if [ -e doc/$MODULE/html/index.html ]; then
+        sed -i s/#VER#/$2/g doc/$MODULE/html/index.html
+        svn commit -m "Mise ne place numero de version dans la documentation" doc/$MODULE/html/index.html
+    else
+        echo "Pas de fichier index.html a patcher"
+    fi
+    # Réalisation du paquet
+    svn-buildpackage -rfakeroot -e$6
+    if [ -e ../build-area/$1_$2_all.deb ]; then
+        echo "Tansfert du paquet $1_$2_all.deb sur le depot local $3 $BRANCHE"
+        if [ -d /home/ftp/debian/dists/$3 ] && [ -d /home/ftp/debian/dists/$3/$BRANCHE/binary-i386 ] ;then
+            cp  ../build-area/$1_$2_all.* /home/ftp/debian/dists/$3/$BRANCHE/binary-i386/
+            #
+            # Mise à jour du depot local de paquets
+            #
+            echo "Mise à jour du depot local de paquets $3 $BRANCHE"
+            CHEMIN=`pwd`
+            cd /home/ftp/debian/
+            dpkg-scanpackages dists/$3/$BRANCHE/binary-i386 /dev/null | gzip -f9 > dists/$3/$BRANCHE/binary-i386/Packages.gz 
+        else
+            echo "Le repertoire /home/ftp/debian/dists/$3/$BRANCHE n'existe pas."
+            echo "le paquet n'a pas ete depose !"
+        fi
+        #
+        # On transfert le paquet sur le depot central CRDP Debian
+        #
+        echo "Voulez vous transferer le paquet $1_$2_all.deb sur le depot central CRDP Debian ? [O/n]"
+        read REP
+        if [ ! "$REP" = "n" ] && [ ! "$REP" = "N" ] ; then
+            scp -P 2222 /home/ftp/debian/dists/$3/$BRANCHE/binary-i386/$1_$2_all.* pacman@193.49.66.139:/home/ftp/debian/dists/$3/$BRANCHE/binary-i386/
+            if [ "$3" == "sarge" ];then
+                if [ "$BRANCHE" == "Lcs" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs sarge Lcs'
+                elif [ "$BRANCHE" == "LcsTesting" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs sarge LcsTesting'
+                elif [ "$BRANCHE" == "LcsXP" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs sarge LcsXP'
+                else
+                    echo "Pas de scanpackage distant"
+                fi 
+            elif [ "$3" == "etch" ];then
+                if [ "$BRANCHE" == "Lcs" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs etch Lcs'
+                elif [ "$BRANCHE" == "LcsTesting" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs etch LcsTesting'
+                elif [ "$BRANCHE" == "LcsXP" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs etch LcsXP'
+                elif [ "$BRANCHE" == "LcsDev" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs etch LcsDev'
+                else
+                    echo "Pas de scanpackage distant"
+                fi             
+            else
+                echo "Pas de scanpackage distant"
+            fi
+        fi
+#======== Référencement du paquet si c'est un modules LCS ===================     
+# by misterphi
+cd $CHEMIN
+cd ../
+
+#test si le paquet est un module 
+if grep -q ", 'M');\"$" $1/debian/postinst || grep -q ", 'S');\"$" $1/debian/postinst ; then
+	echo "Voulez vous referencer ce module (O/N)"
+    	read reponse
+    	if [  "$reponse" = "O" ] || [  "$reponse" = "o" ] ; then
+		
+		#
+		#mise en forme de l'url du xml
+		#		
+		if [ "$3" == "sarge" ];then
+			if [ "$4" == "stable" ];then
+  	  			depot="Lcs"
+			elif [ "$4" == "testing" ];then
+  	 		 	depot="LcsTesting"
+			elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
+	   		 	depot="LcsXP"
+			fi
+		fi
+
+		if [ "$3" == "etch" ];then
+			if [ "$4" == "stable" ];then
+	    			depot="LcsEtch"
+			elif [ "$4" == "testing" ];then
+	   			 depot="LcsEtchTesting"
+			elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
+	   			 depot="LcsEtchXP"
+			elif [ "$4" == "developpement" -o "$4" == "dev" ];then
+	   			 depot="LcsEtchDev"
+			fi
+		fi
+		
+		Repcourant=`pwd`
+		#
+		# on télécharge le xml correspondant
+		#
+		cd /tmp;
+		if [ -e moduleslcs.xml ]; then 
+			rm /tmp/moduleslcs.xml
+		fi
+		echo "Telechargement du fichier xml"	
+		urlxml="http://linux.crdp.ac-caen.fr/modules$depot/moduleslcs.xml"
+		wget -q --cache=off $urlxml
+		echo "Modification du fichier xml"
+		# 
+		# le paquet est-il déjà référencé dans le xml ?
+		#
+		Module=`echo $1 | cut -d- -f2`
+		if grep -q $Module moduleslcs.xml;then
+			#paquet déja référencé 
+			#on récupère le n° ligne de la section 
+			filtre="nom=\"$Module"
+			nligne=`grep -n $filtre moduleslcs.xml | cut -d: -f1`
+			#on pointe sur la ligne contenant la  version
+			let nligne+=2
+			#on modifie le n° de version
+			cat moduleslcs.xml | sed $nligne,$nligne"s/\".*\"/\"$2\"/g" > moduleslcs.tmp
+		else
+			#nouveau paquet
+			#affectation de l'intitulé 
+			if [ -z "$7" ]; then
+				intitule=$Module
+			else
+				intitule=$7
+			fi		
+			# on récupère le n° de la dernière ligne
+			filtre="</modules>"
+			lastligne=`grep -n $filtre moduleslcs.xml | cut -d: -f1`
+			#on crée un fichier d'insertion sed
+			echo $lastligne"i\\" > section.txt
+			echo "	<module nom=\"$Module\"> \\" >>section.txt
+			echo "	<intitule>$intitule</intitule> \\"  >>section.txt
+			echo "	<version ver=\"$2\"> \\"  >>section.txt
+			echo "		<ID>1</ID> \\" >> section.txt
+			echo "		<etat>1</etat> \\" >> section.txt
+			echo "		<serveur type=\"ftp\">deb ftp://debian.crdp.ac-caen.fr/debian $3 $BRANCHE</serveur>\\" >> section.txt
+			echo "		<aide type=\"http\">http://linux.crdp.ac-caen.fr/modules$depot/Docs/$Module""_html/index.html</aide>\\" >> section.txt
+			echo "		<type>M</type>\\" >> section.txt
+			echo "	</version>\\" >> section.txt
+			echo "	</module>\\" >> section.txt
+			echo "" >> section.txt
+	
+			#
+			#on ajoute la nouvelle section 
+			#
+			cat moduleslcs.xml | sed -f section.txt > moduleslcs.tmp
+		fi
+
+		#
+		#on pousse le xml sur linux.crdp
+		#
+		echo "Transfert du fichier xml modifie "
+		scp -P 2222 /tmp/moduleslcs.tmp pacman@193.49.64.20:/var/www/linux/modules$depot/moduleslcs.xml
+				
+		#
+		#on pousse la doc du paquet sur linux.crdp
+		#		
+		echo "Transfert de la documentation sur le depot"
+		if [ -e /tmp/$Module'_html' ]; then
+			rm -rf /tmp/$Module'_html'
+		fi
+		cd $Repcourant
+		#suppression des .svn de la doc
+		cp -r  $1/doc-html /tmp/$Module'_html'
+		rm -rf /tmp/$Module'_html'/.svn
+		scp -r -P 2222 /tmp/$Module'_html' pacman@193.49.64.20:/var/www/linux/modules$depot/Docs/
+						
+		#
+		#Nettoyage 
+		#
+		cd /tmp
+		rm moduleslcs.*
+		rm -rf $Module'_html'
+		if [ -e section.txt ]; then
+			rm section.txt
+		fi
+	fi
+else
+	echo " ce paquet n'est pas un module LCS, il n'a donc pas ete refrence dans le fichier xml."	
+fi
+
+#======= Fin de la section référencement du module ==========================
+
+    else
+        echo "build-area/$1_$2_all.deb n'existe pas !"
+    fi
+else
+    echo "Ce paquet $1 n'existe pas !"
+fi
