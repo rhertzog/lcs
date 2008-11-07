@@ -1,0 +1,36 @@
+#!/bin/sh
+# lcs-phpsysinfo-config
+
+case "$1" in
+    possible)
+        # Is  lcs-main exist ?
+        if [ -d /etc/apache2/lcs-main ]; then
+            exit 0
+        else
+            exit 1
+        fi
+    ;;
+    needed)
+	exit 0
+    ;;
+    configure)
+        #
+        # Put directive open_basedir in 65_phpsysinfo.conf
+        #
+        cat >/etc/apache2/lcs-main/65_phpsysinfo.conf <<EOF
+Alias /phpsysinfo/ /usr/share/phpsysinfo/
+<Directory /usr/share/phpsysinfo>
+    php_admin_value open_basedir ../:/usr/bin/lspci:/etc:/bin:/proc:/usr/share/phpsysinfo:/etc/phpsysinfo
+</Directory>
+EOF
+            #
+            # Reload apache2
+            #
+            echo "Reload apache2"
+            invoke-rc.d apache2 reload > /dev/null 2>&1
+    ;;
+    *)
+        echo "usage: $0 {configure|possible|needed}" >&2
+        exit 1
+    ;;
+esac
