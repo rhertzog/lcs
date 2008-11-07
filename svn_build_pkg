@@ -51,17 +51,6 @@ export DEBEMAIL="$6"
 
 if [ -d $1 ]; then
     cd $1
-    MODULE=`echo "$1"|cut -d '-' -f 2`
-    # Patche Num version dans rep doc et commit
-    if [ -e doc/html/index.html ]; then
-        sed -i s/#VER#/$2/g doc/html/index.html
-        svn commit -m "Mise ne place numero de version dans la documentation" doc/html/index.html
-    elif [ -e doc-html/index.html ]; then
-        sed -i s/#VER#/$2/g doc-html/index.html
-        svn commit -m "Mise ne place numero de version dans la documentation" doc-html/index.html
-    else
-        echo "Pas de fichier index.html a patcher"
-    fi
     # Réalisation du paquet
     svn-buildpackage -rfakeroot -e$6
     if [ -e ../build-area/$1_$2_all.deb ]; then
