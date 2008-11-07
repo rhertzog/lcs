@@ -7,7 +7,7 @@ install:
 
 # install lcs phpsysinfo conf
 	install -d $(DESTDIR)/var/lib/lcs/phpsysinfo
-	install -m 750 conf/* $(DESTDIR)/var/lib/lcs/phpsysinfo/
+	install -o www-data -g www-data -m 755 conf/* $(DESTDIR)/var/lib/lcs/phpsysinfo/
 
 # install doc
 	install -d $(DESTDIR)/usr/share/doc/lcs/phpsysinfo/html
