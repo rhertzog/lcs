@@ -19,11 +19,13 @@ $MsgError[4]="Authentification error";
 function header_crypto_html( $titre)
 {
         ?>
-<HTML>
-        <HEAD>
-                <TITLE><?echo $titre ?></TITLE>
-                <link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>
-		<meta http-equiv="Pragma" content="No-Cache">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
+        <head>
+                <title><?echo $titre ?></title>
+                <link  href='c/lcs.css' rel='StyleSheet' type='text/css'/>
+		<meta http-equiv="Pragma" content="No-Cache"/>
                 <script language = 'javascript' type = 'text/javascript' src="../lcs/crypto.js"></script>
                 <script language = 'javascript' type = 'text/javascript' src="../lcs/public_key.js"></script>
                 <script language = 'javascript' type = 'text/javascript'>
@@ -68,8 +70,8 @@ function header_crypto_html( $titre)
 
                         // -->
                 </script>
-        </HEAD>
-        <BODY>
+        </head>
+        <body class="auth">
 <?
 }
 
@@ -78,9 +80,9 @@ function crypto_nav()
          global   $HTTP_USER_AGENT;
         // Affichage logo crypto
         if (eregi("Mozilla/4.7", $HTTP_USER_AGENT)) {
-                echo " <a HREF='../lcs/auth_lcs.html' onClick='auth_popup(); return false' TARGET='_blank'><img src='../lcs/images/no_crypto.gif' alt='Crytpage des mots de passe actif !' width=48 height=48 border=0></a>";
+                echo " <a href='../lcs/auth_lcs.html' onclick='auth_popup(); return false' target='_blank'><img src='../lcs/images/no_crypto.gif' alt='Crytpage des mots de passe actif !' width='48' height='48' border='0' /></a>";
         } else {
-                echo " <a HREF='../lcs/auth_lcs.html' onClick='auth_popup(); return false' TARGET='_blank'><img src='../lcs/images/crypto.gif' alt='Attention, avec ce navigateur votre mot de passe va circuler en clair sur le réseau !' width=48 height=48 border=0></a>";
+                echo " <a href='../lcs/auth_lcs.html' onclick='auth_popup(); return false' target='_blank'><img src='../lcs/images/crypto.gif' alt='Attention, avec ce navigateur votre mot de passe va circuler en clair sur le réseau !' width='48' height='48' border='0' /></a>";
         }
 }
 
