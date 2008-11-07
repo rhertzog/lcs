@@ -34,7 +34,7 @@
 ";
 
   $information = "
-<p>Pour ajouter un membre &#224; cette liste, <a href='search.php'>Recherchez</a> un utilisateur et suivez le lien <tt class='computeroutput'>&#171;Autorisez le type php&#187;</tt></p>
+<p>Pour ajouter un membre &#224; cette liste, <a href='search.php'>Recherchez</a> un utilisateur et suivez le lien <tt class='computeroutput'>&#171;Autoriser le type php&#187;</tt></p>
 ";
 
   list ($idpers,$login)= isauth();
