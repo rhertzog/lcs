@@ -1,0 +1,32 @@
+phpsysinfo (2.1)  UNRELEASED; urgency=low
+
+    [Jean-Luc Chretien] 
+    * Correct style css in lcs template
+    * Change lcs_background.gif for a transparent image
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu,  6 Nov 2008 13:39:43 +0100
+
+phpsysinfo (2.0~4)
+    [Jean-Luc Chretien]
+    * Correct test possible in lcs-phpsysinfo-config
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 21 Jun 2008 17:08:45 +0200
+
+phpsysinfo (2.0~3)
+    [Jean-Luc Chretien]
+    * Replace the section in apache.conf by 65_phpsysinfo.conf in apache2/lcs-main
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 Jun 2008 21:27:45 +0200
+
+phpsysinfo (2.0~2)
+    [Jean-Luc Chretien]
+    * Add lcs-web an slis-common dependency
+    * Add handle_initial_config 70 and lcs-config-phpsysinfo
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 12 Jun 2008 13:30:06 +0200
+
+phpsysinfo (2.0~1)
+    * Replace apache2 reload by invoke-rc.d apache2
+
+phpsysinfo (2.0)
+    * Configuration phpsysinfo pour LCS
