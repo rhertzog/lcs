@@ -4,12 +4,16 @@
 if [ ! -e /etc/ssh/sshd_config.no-lcs ] ; then 
     mv /etc/ssh/sshd_config /etc/ssh/sshd_config.no-lcs
 fi
+if [ ! -e /etc/issue.net.no-lcs ] ; then
+    mv /etc/issue.net /etc/issue.net.no-lcs
+fi
+
 
 cat >/etc/issue.net <<EOFISSUE
 Bienvenu sur :
  _     ____ ____
 | |   / ___/ ___|
-| |  | |   \___ \
+| |  | |   \___ \\
 | |__| |___ ___) |
 |_____\____|____/
 

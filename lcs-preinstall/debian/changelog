@@ -1,8 +1,10 @@
-lcs-preinstall (2.0-4) UNRELEASED; urgency=low
+lcs-preinstall (2.0-5) LcsXP; urgency=low
 
+  [ Simon Cavey ]
   * Add SSH LCS Banner
+  * Fixe ssh config when removed
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri,  7 Nov 2008 11:49:35 +0100
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri,  7 Nov 2008 13:13:55 +0100
 
   * Comment cdrom source in sources list
 

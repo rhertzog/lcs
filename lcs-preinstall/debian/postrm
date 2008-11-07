@@ -38,6 +38,17 @@ case "$1" in
             rm -R /etc/lcs
             echo "Avant de réinstaller lcs-preinstall, vous devrez remettre en place le fichier de configuration LCS (/etc/lcs/lcs.conf)"
         fi
+	#
+	# Suppression de la configuration SSH LCS
+	#
+	# /usr/sbin/lcs-openssh-config
+	if [ -e /etc/ssh/sshd_config.no-lcs ] ; then 
+    		mv /etc/ssh/sshd_config.no-lcs /etc/ssh/sshd_config
+	fi
+	if [ -e /etc/issue.net.no-lcs ] ; then
+    		mv /etc/issue.net.no-lcs /etc/issue.net
+	fi
+	
         ;;
 
         upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
