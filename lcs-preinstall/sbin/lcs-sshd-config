@@ -10,7 +10,7 @@ fi
 
 
 cat >/etc/issue.net <<EOFISSUE
-Bienvenu sur :
+Bienvenue sur :
  _     ____ ____
 | |   / ___/ ___|
 | |  | |   \___ \\
