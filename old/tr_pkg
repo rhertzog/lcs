@@ -1,0 +1,72 @@
+#!/bin/bash
+# Jean-Luc Chretien Projet LCS <jean-luc.chretien@tice.ac-caen.fr>
+# Version du : 13/05/2008 
+
+if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
+        echo "Script destiné à transférer un paquet Debian LCS-*"
+        echo ""
+        echo "Usage : tr_pkg <repertoire source du paquet> <N° de Version> <distribution> <branche de destination>"
+        echo "La distribution est sarge ou etch"
+        echo "Les branches possibles sont : stable testing experimentale (ou xp) developpement (ou dev)"
+        exit
+fi
+
+if [ "$3" != "etch" -a "$3" != "sarge" ]; then
+    echo "Les distributions possibles sont : sarge etch"
+    exit
+fi
+
+if [ "$4" != "stable" -a "$4" != "testing" -a "$4" != "experimentale" -a "$4" != "xp" -a "$4" != "developpement" -a "$4" != "dev" ]; then
+    echo "Les branches possibles sont : stable testing experimentale (ou xp)  developpement  (ou dev)"
+    exit
+fi
+
+if [ "$4" == "stable" ];then
+    BRANCHE="Lcs"
+elif [ "$4" == "testing" ];then
+    BRANCHE="LcsTesting"
+elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
+    BRANCHE="LcsXP"
+elif [ "$4" == "developpement" -o "$4" == "dev" ];then
+    BRANCHE="LcsDev"
+fi
+
+
+echo "Nom de l'applicatif : $1"
+echo "Tag de version : $2"
+echo "Distribution : $3"
+echo "Branche de destination : $4"
+
+        #
+        # On transfert le paquet sur le depot central CRDP Debian
+        #
+        echo "Voulez vous transferer le paquet $1_$2_all.deb sur le depot central CRDP Debian ? [O/n]"
+        read REP
+        if [ ! "$REP" = "n" ] && [ ! "$REP" = "N" ] ; then
+            scp -P 2222 /home/ftp/debian/dists/$3/$BRANCHE/binary-i386/$1_$2_all.* pacman@193.49.66.139:/home/ftp/debian/dists/$3/$BRANCHE/binary-i386/
+            if [ "$3" == "sarge" ];then
+                if [ "$BRANCHE" == "Lcs" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs sarge Lcs'
+                elif [ "$BRANCHE" == "LcsTesting" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs sarge LcsTesting'
+                elif [ "$BRANCHE" == "LcsXP" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs sarge LcsXP'
+                else
+                    echo "Pas de scanpackage distant"
+                fi 
+            elif [ "$3" == "etch" ];then
+                if [ "$BRANCHE" == "Lcs" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs etch Lcs'
+                elif [ "$BRANCHE" == "LcsTesting" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs etch LcsTesting'
+                elif [ "$BRANCHE" == "LcsXP" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs etch LcsXP'
+                elif [ "$BRANCHE" == "LcsDev" ];then
+                    ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs etch LcsDev'
+                else
+                    echo "Pas de scanpackage distant"
+                fi             
+            else
+                echo "Pas de scanpackage distant"
+            fi
+        fi
