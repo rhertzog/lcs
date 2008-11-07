@@ -5,6 +5,19 @@ if [ ! -e /etc/ssh/sshd_config.no-lcs ] ; then
     mv /etc/ssh/sshd_config /etc/ssh/sshd_config.no-lcs
 fi
 
+cat >/etc/issue.net <<EOFISSUE
+Bienvenu sur :
+ _     ____ ____
+| |   / ___/ ___|
+| |  | |   \___ \
+| |__| |___ ___) |
+|_____\____|____/
+
+Linux Communication Server
+http://lcs.crdp.ac-caen.fr
+
+EOFISSUE
+
 cat >/etc/ssh/sshd_config <<EOF
 # Package generated configuration file
 # See the sshd(8) manpage for details
@@ -79,7 +92,7 @@ TCPKeepAlive yes
 #UseLogin no
 
 #MaxStartups 10:30:60
-#Banner /etc/issue.net
+Banner /etc/issue.net
 
 # Allow client to pass locale environment variables
 AcceptEnv LANG LC_*
