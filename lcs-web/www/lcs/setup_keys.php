@@ -1,27 +1,29 @@
-<?php   /* lcs/setup_keys.php maj : 28/11/2003 */
+<?php   /* lcs/setup_keys.php maj : 8/11/2008 */ 
 require "./includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
 require "../Annu/includes/ihm.inc.php";
 
-list ($idpers,$login)= isauth();
+list ($idpers,$login)= isauth(); 
 if ($idpers == "0") header("Location:$urlauth");
 
-// Calcul du random seed
+// Calcul du random seed 
 $allow = "abcdef0123456789";
-srand((double)microtime()*1000000);
+srand((double)microtime()*1000000); 
 for($j=0; $j<2; $j++) {
         $RandomSeed .=  $allow[rand()%strlen($allow)];
 }
 for  ($i=0; $i<1023; $i++) {
-        $tmp="";
-        for($j=0; $j<2; $j++) {
+        $tmp=""; 
+        for($j=0; $j<2; $j++) { 
                 $tmp .= $allow[rand()%strlen($allow)];
         }
         $RandomSeed.=" ".$tmp." ";
-}
-?>
+}  
+echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
+echo "<HTML>\n";  
+?> 
 <head>
-<title>...::: LCS  renouvellement clès d'authentification  :::...</title>
+<title>...::: LCS  renouvellement cl&#233;s d'authentification  :::...</title>
 <link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>
                 <script language = 'javascript' type = 'text/javascript' src="../lcs/crypto.js"></script>
                 <script language = 'javascript' type = 'text/javascript' src="../lcs/public_key.js"></script>
@@ -169,7 +171,7 @@ function dec(f) {
 function encrypt(f) {
         encode = f.p.value+"|"+f.q.value+"|"+f.pq.value+"|"+f.d.value+"|"+f.e.value;
         f.keys.value=rsaEncode(public_key_e,public_key_pq,encode);
-        // Reset des valeurs des clés pour ne pas les transmettre en clair
+        // Reset des valeurs des cl&#233;s pour ne pas les transmettre en clair
         f.p.value="";
         f.q.value="";
         f.pq.value="";
@@ -327,12 +329,12 @@ seed('<? echo $RandomSeed
 <body>
 
 <? if ( is_admin("Lcs_is_admin",$login) == "Y" ) { ?>
-<div align="center"><h2>Génération d'un nouveau jeu de clés d'authentification</h2></div>
+<div align="center"><h2>G&#233;n&#233;ration d'un nouveau jeu de cl&#233;s d'authentification</h2></div>
 <p>
 <form name="t" action="save_keys.php" method="post">
-<p>Longueur de la clé en octets : <input type=text name=keylen size=3 value=8>&nbsp;&nbsp;
+<p>Longueur de la cl&#233; en octets : <input type=text name=keylen size=3 value=8>&nbsp;&nbsp;
 <input type="hidden" name="keygen" value="true">
-<input type="button" value="Génération des clés" onClick="genkey(document.t.keylen.value,document.t)"><br>
+<input type="button" value="G&#233;n&#233;ration des cl&#233;s" onClick="genkey(document.t.keylen.value,document.t)"><br>
 <hr width="80%">
         prime factor p : <input type=text name=p value="<? echo $p ?>" size=30><br>
         prime factor q : <input type=text name=q value="<? echo $q ?>" size=30><br>
@@ -341,16 +343,17 @@ seed('<? echo $RandomSeed
         Public exponent (e): <input type=text name=e value="<? echo $e ?>" size=5><br>
 <hr width="80%">
 <div align='center'>
-        <h2>Vérification des clés</h2>
-        <input name='text' rows='8', cols='50' value='Texte à crypter'>
+        <h2>V&#233;rification des cl&#233;s</h2>
+        <input name='text' size=20 maxlength=50 value='Texte &#224; crypter'>
         <input type='button' value='Cryptage' onClick='enc(document.t)'>
-        <input type='button' value='Décryptage' onClick='dec(document.t)'>
+        <input type='button' value='D&#233;cryptage' onClick='dec(document.t)'>
         <input type='hidden' name='keys' value=''>
-        <p><input type='submit' value='Vérification des clés OK ? Sauvegarde des clés !' onClick='encrypt(document.t)'>
+        <p><input type='submit' value='V&#233;rification des cl&#233;s OK ? Sauvegarde des cl&#233;s !' onClick='encrypt(document.t)'>
 </div>
+</form>
 <?php
 } else {
-        echo "<div class=alert_msg>".gettext("Cette fonctionnalité, nécessite les droits d'administrateur du serveur LCS !")."</div>";
+        echo "<div class=alert_msg>".gettext("Cette fonctionnalit&#233;, n&#233;cessite les droits d'administrateur du serveur LCS !")."</div>";
 }
 include ("./includes/pieds_de_page.inc.php");
 ?>
