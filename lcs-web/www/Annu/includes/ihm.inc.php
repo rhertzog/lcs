@@ -6,14 +6,14 @@
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
    « wawa »  olivier.lecluse@crdp.ac-caen.fr
    Equipe Tice academie de Caen
-   Derniere mise à jour 22/06/2008
+   Derniere mise a jour08/11/2008
    Distribué selon les termes de la licence GPL
    ============================================= */
 
 # Model caracteres speciaux pour les mots de passe
 $char_spec = "&_#@£%§:!?*$";
 
-// Remplace les caractères accentués par leurs equivalents
+// Remplace les caracteres accentues par leurs equivalents
 
 // et l'espace par underscore
 function enleveaccents($chaine){
@@ -37,8 +37,8 @@ function unac_string_with_underscore ($chaine){
   return $retour;
 }
 
-// Verification de l'intitulé d'un groupe
-// L'intitulé d'un groupe ne doit pas commencer et finir par les mots :
+// Verification de l'intitule d'un groupe
+// L'intitule d'un groupe ne doit pas commencer et finir par les mots :
 //   Classe, Cours, Equipe, Matiere
 
 function verifIntituleGrp ($intitule) {
@@ -52,10 +52,10 @@ function verifIntituleGrp ($intitule) {
   return $ret;
 }
 
-// Verification de la validité d'un mot de passe
-// longueur de 4 à 8 caractères
-// composé de lettre et d'au moins un chiffre ou des caractères
-// spéciaux suivants : $char_spec
+// Verification de la validite d'un mot de passe
+// longueur de 4 à 8 caracteres
+// compose de lettre et d'au moins un chiffre ou des caracteres
+// speciaux suivants : $char_spec
 
 function verifPwd ($password) {
   global $char_spec;
@@ -135,7 +135,8 @@ function verifTel ($tel) {
 
 function header_html()
 {
-  echo "<HTML>
+  echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n
+  			<HTML>
           <HEAD>
 			<TITLE>Interface d'administration LCS</TITLE>
             <LINK  href='style.css' rel='StyleSheet' type='text/css'>
@@ -182,9 +183,9 @@ function  aff_mnu_search($user_type)
     // Affichage menu admin
     echo"
      <ul>
-       <li><a href=\"search.php\">Effectuer une recherche...</a> (pour d'éventuelles modifications)</li>
+       <li><a href=\"search.php\">Effectuer une recherche...</a> (pour d'&#233;ventuelles modifications)</li>
        <li><a href=\"me.php\">Voir ma fiche</a></li>
-       <li><a href=\"mod_entry.php\">Modifier mon entrée dans l'annuaire...</a></li>
+       <li><a href=\"mod_entry.php\">Modifier mon entr&#233;e dans l'annuaire...</a></li>
        <li>Ajouter :
          <ul>
            <li><a href=\"add_user.php\">un utilisateur...</a></li>
@@ -192,7 +193,7 @@ function  aff_mnu_search($user_type)
            <li><a href=\"add_sous-group.php\">un sous-groupe...</a></li>
          </ul>
        </li>
-       <li><a href=\"../doc/web/html/import/\">Générer les comptes de l'annuaire...</a></li>
+       <li><a href=\"../doc/web/html/import/\">G&#233;n&#233;rer les comptes de l'annuaire...</a></li>
      </ul>\n";
 
 
@@ -208,7 +209,7 @@ function  aff_mnu_search($user_type)
   }
 }
 
-// Affichage de la barre remorquée de haut de page
+// Affichage de la barre remorque de haut de page
 // mode 1  : lien Annuaire
 // mode 2  : lien Annuaire -> Recherche
 // mode 3  : lien Annuaire -> Lien Recherche
@@ -243,7 +244,7 @@ function aff_trailer ($mode)
       echo "</h2>";
     }
     echo "<CENTER>
-            <IMG SRC=\"$imagespath/line.png\"WIDTH=\"90%\" HEIGHT=\"2\" BORDER=\"0\">
+            <IMG SRC=\"$imagespath/line.png\"WIDTH=\"90%\" HEIGHT=\"2\" BORDER=\"0\" ALT=\"----\">
           </CENTER><BR>\n";
 }
 
