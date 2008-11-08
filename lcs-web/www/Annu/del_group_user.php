@@ -6,8 +6,8 @@
    [LCS CoreTeam]
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
    « oluve » olivier.le_monnier@crdp.ac-caen.fr
-   Equipe Tice académie de Caen
-   Derniere mise à jour : 20/03/2006
+   Equipe Tice academie de Caen
+   Derniere mise a jour : 08/11/2008
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -21,20 +21,20 @@
   if (is_admin("Annu_is_admin",$login)=="Y")
 	  {
 	  list($user, $groups)=people_get_variables($uid, true);
-	  //première passe -> affichage du formulaire
+	  //premiere passe -> affichage du formulaire
 	  if (!isset($_POST['delgrp']))
 	  {echo "<H2>".$user["fullname"]."</H2>\n";
 	  if ($user["description"]) echo "<p>".$user["description"]."</p>";
 	  //Affichage des groupes
 	  if ( count($groups) ) 
 		{
-		echo "<U>Membre des groupes</U> :<BR><UL>\n";
+		echo "<U>Membre des groupes</U> :<BR>\n";
 		echo '<form action="del_group_user.php?uid='.$uid.'" method="post">';
 		for ($loop=0; $loop < count ($groups)  ; $loop++)
 			{
 			if ( ($groups[$loop]["cn"] != "Profs") && ($groups[$loop]["cn"] != "Eleves") && ($groups[$loop]["cn"] != "Administratifs") )
 				{
-				echo "<input type='checkbox' name='grp[]' value='".$groups[$loop]["cn"]."' />";
+				echo "<input type='checkbox' name='grp[]' value='".$groups[$loop]["cn"]."' >";
 				if ($groups[$loop]["type"]=="posixGroup")
 				echo "<font color=\"#1E90FF\"><STRONG>".$groups[$loop]["cn"]."</STRONG> </font>";
 				echo "<font size=\"-2\"> ".$groups[$loop]["description"];
@@ -43,21 +43,21 @@
 				echo "</font><BR>\n";
 				}
 			}
-		echo "<h4>Supprimer les groupes d'appartenance sélectionnés </h4>";
+		echo "<h4>Supprimer les groupes d'appartenance s&#233;lectionn&#233;s </h4>";
 		echo '<p align ="center"><input type="submit" name="delgrp" value="Lancer la requête"></p></form>';
 			
 		}
 		}//fin du formulaire
 		
-		else //deuxième passe ->Traitement du formulaire
+		else //deuxieme passe ->Traitement du formulaire
 			{
 			$grps=$_POST['grp'];
 	
-			// Affichage message d'erreur si aucun groupe selectionné
+			// Affichage message d'erreur si aucun groupe selectionne
 			if (!count($grps) )
 				{
 				echo "<div class=error_msg>
-					  Vous devez sélectionner au moins un groupe à supprimer !
+					  Vous devez s&#233;lectionner au moins un groupe &#224; supprimer !
 					</div>\n";
 				}
 			else 
@@ -74,7 +74,7 @@
 					exec ("$scriptsbinpath/groupDelUser.pl $useruid $grps[$loop] ",$AllOutPut,$ReturnValue);
 					echo $grps[$loop]."&nbsp;\t\t";
 					if ($ReturnValue == 0 ) 
-						echo "<stong><strong>Réussi</strong></strong><BR>\n";
+						echo "<stong><strong>R&#233;ussi</strong></strong><BR>\n";
 						else  echo "<font color=\"orange\">Echec</font><BR>\n";}
 						
 				}
@@ -85,7 +85,7 @@
 
 	else//si pas admin 
 	{
-    echo "<div class=error_msg>Cette application, nécessite les droits d'administrateur du serveur LCS !</div>";
+    echo "<div class=error_msg>Cette application, n&#233;cessite les droits d'administrateur du serveur LCS !</div>";
 	}	
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>
