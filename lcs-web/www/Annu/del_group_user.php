@@ -16,6 +16,7 @@
  
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
+  $uid=$_GET['uid'];
   header_html();
   aff_trailer ("31");
   if (is_admin("Annu_is_admin",$login)=="Y")
