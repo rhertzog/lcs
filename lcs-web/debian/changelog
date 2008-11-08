@@ -29,7 +29,13 @@ lcs-web (2.1-1~2) Unreleased; urgency=low
     ftp.fr.debian.org.
   * Removed the old lcs repository (forgetting) from the gestpack.sh checks.
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu,  6 Nov 2008 13:13:32 +0100
+  [ Philippe Leclerc ]
+  * Validation W3C ldap_cleaner.php,eff_vide_groups.php,del_group_user.php,add_group.php,ihm.inc.php,
+    setup_keys.php, save_keys.php
+  * delete mod_owner_group.php
+  
+
+ -- misterphi <philippe.leclerc1@ac-caen.fr>  Sat,  8 Nov 2008 21:32:55 +0100
 
 lcs-web (2.1) LcsXP; urgency=low
 
