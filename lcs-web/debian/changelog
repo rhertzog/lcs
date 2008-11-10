@@ -1,4 +1,4 @@
-lcs-web (2.1-1~2) Unreleased; urgency=low
+lcs-web (2.1-1) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
   * Add ldaplcs2se3.sh script to plug LCS on SE3 Ldap service
@@ -22,6 +22,9 @@ lcs-web (2.1-1~2) Unreleased; urgency=low
   [ Philippe Leclerc ]
   * Modify gestpack.sh to point to lcs.crdp
   * Modify modules_desinstallation for lcs.crdp
+  * Validation W3C ldap_cleaner.php,eff_vide_groups.php,del_group_user.php,add_group.php,ihm.inc.php,
+    setup_keys.php, save_keys.php
+  * delete mod_owner_group.php
 
   [ Philippe Le Brouster ]
   * Allowed more possible APT repositories to be used by gestpack.sh.
@@ -29,13 +32,7 @@ lcs-web (2.1-1~2) Unreleased; urgency=low
     ftp.fr.debian.org.
   * Removed the old lcs repository (forgetting) from the gestpack.sh checks.
 
-  [ Philippe Leclerc ]
-  * Validation W3C ldap_cleaner.php,eff_vide_groups.php,del_group_user.php,add_group.php,ihm.inc.php,
-    setup_keys.php, save_keys.php
-  * delete mod_owner_group.php
-  
-
- -- misterphi <philippe.leclerc1@ac-caen.fr>  Sat,  8 Nov 2008 21:32:55 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 10 Nov 2008 09:46:31 +0100
 
 lcs-web (2.1) LcsXP; urgency=low
 
