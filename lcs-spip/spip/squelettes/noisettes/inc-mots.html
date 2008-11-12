@@ -1,0 +1,41 @@
+[(#REM) Mots clé pour la navigation ]
+		<h3 class="menu-titre"><:mots_clefs:></h3>
+		<dl id="myAccordion">
+				<BOUCLE_groupes(GROUPES_MOTS spip_rmc_rubs_groupes){id_rubrique}{id_rubrique=0}{!id_groupe ?}>
+				#SET{idrubric,#ID_RUBRIQUE}
+					<dt class="someClass myAccordionActive">#TITRE</dt>
+					<dd>
+						<ul>
+						<BOUCLE_mots(MOTS){id_groupe}>
+						<B_mots_exclus><BOUCLE_mots_exclus(SPIP_RMC_MOTS_EXCLUS){id_rubrique=#GET{idrub}}{id_mot_exclu=#ID_MOT}>
+						</BOUCLE_mots_exclus></B_mots_exclus>
+							<li>
+								<a href="#URL_PAGE{mot}&id_mot=#ID_MOT&id_rubrique=#GET{idrubric}" title="Voir les articles liés au mot-clé #TITRE">
+									[(#LOGO_MOT|!=''|?{[(#LOGO_MOT||image_reduire{16,16} ) ],<img src="[(#CHEMIN{i/tag_blue.png})]" alt="mot-clé" />})] 
+									[(#TITRE)]
+								</a>
+							</li>
+						<//B_mots_exclus>
+						</BOUCLE_mots>
+						</ul>
+					</dd>
+				</BOUCLE_groupes>	
+		</dl>
+<script type="text/javascript">
+	
+	$(document).ready(
+		function()
+		{
+			$('#myAccordion').Accordion(
+				{
+					headerSelector	: 'dt',
+					panelSelector	: 'dd',
+					activeClass		: 'myAccordionActive',
+					hoverClass		: 'myAccordionHover',
+					panelHeight		: 100,
+					speed			: 200
+				}
+			);
+		}
+	);
+</script>

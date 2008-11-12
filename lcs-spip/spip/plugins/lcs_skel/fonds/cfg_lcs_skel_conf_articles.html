@@ -1,0 +1,390 @@
+#CACHE{0}
+<!-- titre=<multi>[fr]Personnalisation de l'affichage public - Articles</multi>-->
+<!-- descriptif=<multi>[fr]Personnalisation du squelette. Affichage des articles</multi>
+<br /><a href="<?$_SERVER['REQUEST_URI']?>/doc/spip/html/lcs_skel.html#conf_generale" class="spip_out" title="Voir la doc">Vers documentation</a>
+-->
+<!-- refus=Rien &agrave; faire par ici!
+<br />Vous ne pouvez pas acceder &agrave; ce formulaire !
+<br />Vous devez &ecirc;tre administrateur et connect&eacute;.
+ -->
+
+<!-- nom=lcs_skel_conf -->
+<!-- casier=articles -->
+
+<!-- onglet=lcs_skel_conf -->
+<!-- liens*=lcs_skel_conf -->
+<!-- liens*=lcs_skel_conf_accueil -->
+<!-- liens*=lcs_skel_conf_rubriques -->
+<!-- liens*=lcs_skel_conf_articles -->
+<!-- liens*=lcs_skel_conf_couleurs -->
+<!-- liens*=lcs_skel_conf_background -->
+<!-- liens*=lcs_skel_conf_slide_show-->
+<!-- liens*=lcs_skel_conf_infos_legales-->
+<!-- liens*=lcs_skel_conf_credits-->
+<!-- liens*=lcs_skel_conf_save-->
+
+<!-- icone=img_pack/logo_lsc_24.png-->
+
+<form method="post" name="form" id="form_cfg_lcs_skel">[(#ENV{_cfg_}|form_hidden)]
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+	<fieldset>
+		<legend>Nombre de colonnes</legend>
+		<ul>
+			<li>
+				<span class="titre">Nombre de colonnes</span>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label>2 colonnes
+					<input type="radio" name="nb_cols_art" value="2" [(#ENV{nb_cols_art}|=={2}|?{checked,''})] id="nb_cols_art"/></label>
+					<label>3 colonnes
+					<input type="radio" name="nb_cols_art" value="3" [(#ENV{nb_cols_art}|=={3}|?{checked,''})] id="nb_cols_art3"/></label>
+					<div class="help_text"><:lcsskel:help_nombre_colonnes_text_article:></div>
+				</div>
+			</li>
+		[(#CONFIG{lcs_skel_conf/articles/nb_cols_art}|=={2}|?{' '})
+		]
+			<li id="pos_cols_art">
+				<span class="titre">Position de la colonne lat&eacute;rale</span>
+				<div class="labels_cfg_lcs_skel">
+					<label>&agrave; gauche
+					<input type="radio" name="pos_cols_art" value="gauche" [(#ENV{pos_cols_art}|=={gauche}|?{checked,''})] /></label>
+					<label>&agrave; droite
+					<input type="radio" name="pos_cols_art" value="droite" [(#ENV{pos_cols_art}|=={droite}|?{checked,''})] /></label>
+				</div>
+			</li>
+		</ul>
+	</fieldset>
+]
+[(#REM)]
+	<fieldset>
+		<legend>Affichage et position des blocs jumeaux</legend>
+		<ul>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="affbj_art" class="affCheckbox" value="oui" [checked="(#ENV{affbj_art}|?{checked})"] id="affbj_art" /> Afficher les blocs jumeaux
+					</label>
+					<div class="help_text"><:lcsskel:help_blocs_jumeaux:></div>
+				</div>
+			</li>
+		</ul>
+		<div id="blocjumo_art">
+			<ul>
+				<li>
+					<span class="titre"><:lcsskel:contenu_blocs_jumeaux:></span>
+					<br class="leon" />
+					<div class="labels_cfg_lcs_skel" id="bj">
+						<span class="demi gauche border_d titre-demi"><:lcsskel:a_gauche_m:></span>
+						<span class="demi gauche border_g titre-demi"><:lcsskel:a_droite_m:></span>
+						<div class="leon border_h">
+							<span class="help_conf">&nbsp;?&nbsp;</span>
+							<div class="demi gauche border_d">
+								<label>
+								<input type="radio" name="ctnblocg_art" value="art_freres" class="bj_g"[ (#ENV{ctnblocg_art}|=={art_freres}|?{checked,''})] />Articles fr&egrave;res</label><br />
+							</div>
+							<div class="demi gauche border_g">
+								<label>
+								<input type="radio" name="ctnblocd_art" value="art_freres" class="bj_d"[ (#ENV{ctnblocd_art}|=={art_freres}|?{checked,''})] />Articles fr&egrave;res</label><br />
+							</div>
+							<div class="help_text leon"><:lcsskel:help_colonne_articles_meme_rubrique:></div>
+						</div>
+						<div class="leon border_h">
+							<span class="help_conf">&nbsp;?&nbsp;</span>
+							<div class="demi gauche border_d">
+								<label>
+								<input type="radio" name="ctnblocg_art" value="art_mots_arts" class="bj_g"[ (#ENV{ctnblocg_art}|=={art_mots_arts}|?{checked,''})] />Articles des mots-cl&eacute;</label><br />
+							</div>
+							<div class="demi gauche border_g">
+								<label>
+								<input type="radio" name="ctnblocd_art" value="art_mots_arts" class="bj_d"[ (#ENV{ctnblocd_art}|=={art_mots_arts}|?{checked,''})] />Articles des mots-cl&eacute;</label><br />
+							</div>
+							<div class="help_text leon"><:lcsskel:help_bj_articles_mots:></div>
+						</div>
+					[(#REM)affichage a tester 
+						<div class="leon border_h">
+							<span class="help_conf">&nbsp;?&nbsp;</span>
+							<div class="demi gauche border_d">
+								<label>
+								<input type="radio" name="ctnblocg_art" value="breves" class="bj_g"[ (#ENV{ctnblocg}|=={breves}|?{checked,''})] />Br&egrave;ves</label><br />
+								<div class="bj_param_g">
+									<label>
+									<select name="nb_breves_bj_g_art">
+										<option value=""[(#ENV{nb_breves_bj_g_art}|?{selected="selected",''})]>  </option>
+										<option value="3"[(#ENV{nb_breves_bj_g_art}|=={3}|?{selected="selected",''})]> 3 </option>
+										<option value="5"[(#ENV{nb_breves_bj_g_art}|=={5}|?{selected="selected",''})]> 5 </option>
+										<option value="10"[(#ENV{nb_breves_bj_g_art}|=={10}|?{selected="selected",''})]> 10 </option>
+									</select>&nbsp;Nombre de br&egrave;ves 
+									</label><br />
+									<label>
+									<input type="checkbox" name="defilbreves_bj_g_art" value="oui" [checked="(#ENV{defilbreves_bj_g_art}|?{checked})" ] />D&eacute;filement des br&egrave;ves</label>
+								</div>
+							</div>
+							<div class="demi gauche border_g">
+								<label>
+								<input type="radio" name="ctnblocd_art" value="breves" class="bj_d"[ (#ENV{ctnblocd_art}|=={breves}|?{checked,''})] />Br&egrave;ves</label><br />
+								<div class="bj_param_d">
+									<label>
+									<select name="nb_breves_bj_d_art">
+										<option value=""[(#ENV{nb_breves_bj_d_art}|?{selected="selected",''})]>  </option>
+										<option value="3"[(#ENV{nb_breves_bj_d_art}|=={3}|?{selected="selected",''})]> 3 </option>
+										<option value="5"[(#ENV{nb_breves_bj_d_art}|=={5}|?{selected="selected",''})]> 5 </option>
+										<option value="10"[(#ENV{nb_breves_bj_d_art}|=={10}|?{selected="selected",''})]> 10 </option>
+									</select>&nbsp;Nombre de br&egrave;ves 
+									</label><br />
+									<label>
+									<input type="checkbox" name="defilbreves_bj_d_art" value="oui"[ checked="(#ENV{defilbreves_bj_d_art}|?{checked})" ] />D&eacute;filement des br&egrave;ves</label>
+								</div>
+							</div>
+							<div class="help_text leon"><:lcsskel:help_bj_breves:></div>
+						</div>
+					]
+						<div class="leon border_h">
+							<span class="help_conf">&nbsp;?&nbsp;</span>
+							<div class="demi gauche border_d">
+								<label>
+								<input type="radio" name="ctnblocg_art" value="calendrier_mini" class="bj_g"[ (#ENV{ctnblocg_art}|=={calendrier_mini}|?{checked,''})] />Calendrier</label><br />
+							</div>
+							<div class="demi gauche border_g">
+								<label>
+								<input type="radio" name="ctnblocd_art" value="calendrier_mini" class="bj_d"[ (#ENV{ctnblocd_art}|=={calendrier_mini}|?{checked,''})] />Calendrier</label><br />
+							</div>
+							<div class="help_text leon"><:lcsskel:help_bj_calendrier_mini:></div>
+						</div>
+					[(#REM)	
+						<div class="leon border_h">
+							<span class="help_conf">&nbsp;?&nbsp;</span>
+							<div class="demi gauche border_d">
+								<label>
+								<input type="radio" name="ctnblocg_art" value="mots" class="bj_g" [(#ENV{ctnblocg_art}|=={mots}|?{checked,''})] />Mots-cl&eacute;</label><br />
+								<div class="bj_param_g" style="padding-left:10px">
+									<label>
+									<input type="radio" name="type_mots_bj_g_art" value="nuage" class="no_bj"[ (#ENV{type_mots_bj_g_art}|=={nuage}|?{checked,''})] />Nuage de mots</label><br />
+									<label>
+									<input type="radio" name="type_mots_bj_g_art" value="mots_acc" class="no_bj"[ (#ENV{type_mots_bj_g_art}|?{'',checked})][ (#ENV{type_mots_bj_g_art}|=={mots_acc}|?{checked,''})] />Accord&eacute;on</label>
+								</div>
+							</div>
+							<div class="demi gauche border_g">
+								<label>
+								<input type="radio" name="ctnblocd_art" value="mots" class="bj_d" [(#ENV{ctnblocd_art}|=={mots}|?{checked,''})] />Mots-cl&eacute;</label><br />
+								<div class="bj_param_d" style="padding-left:10px">
+									<label>
+									<input type="radio" name="type_mots_bj_d_art" value="nuage" class="no_bj"[ (#ENV{type_mots_bj_d_art}|=={nuage}|?{checked,''})] />Nuage de mots</label><br />
+									<label>
+									<input type="radio" name="type_mots_bj_d_art" value="mots_acc" class="no_bj"[ (#ENV{type_mots_bj_d_art}|?{'',checked})][ (#ENV{type_mots_bj_d_art}|=={mots_acc}|?{checked,''})] />Accord&eacute;on</label>
+								</div>
+							</div>
+							<div class="help_text leon"><:lcsskel:help_bj_mots:></div>
+						</div>
+					[(#CONFIG{plugin}|match{METEO}|?{' '})	
+						<div class="leon border_h">
+							<span class="help_conf">&nbsp;?&nbsp;</span>
+							<div class="demi gauche border_d">
+								<label>
+								<input type="radio" name="ctnblocg_art" value="meteo" class="bj_g"[ (#ENV{ctnblocg_art}|=={meteo}|?{checked,''})] />M&eacute;t&eacute;o</label><br />
+							</div>
+							<div class="demi gauche border_g">
+								<label>
+								<input type="radio" name="ctnblocd_art" value="meteo" class="bj_d"[ (#ENV{ctnblocd_art}|=={meteo}|?{checked,''})] />M&eacute;t&eacute;o</label><br />
+							</div>
+							<div class="help_text leon"><:lcsskel:help_bj_meteo:></div>
+						</div>
+					]
+					]
+						<br class="leon" />
+					</div>
+				</li>
+			</ul>
+		</div>
+	</fieldset>
+
+<script type="text/javascript"><!--
+
+    $("#bj div.border_d input[@type=radio]")<!-- cote gauche-->
+	.not('.no_bj').bind('change', function() {
+		var $nextDivGart = $(this).parents('div').children('div.bj_param_g');
+		var $visDivGart = $('.border_d').find('div.bj_param_g:visible');
+		var $offRadGart = $visDivGart.find('input[@type=radio][@checked]');
+		var $offCheckGart = $visDivGart.find('input[@type=checkbox][@checked]');
+		var $offSelGart = $visDivGart.find('select option:selected');
+		($offRadGart.length) ? $offRadGart.removeAttr('checked') : '';
+		($offCheckGart.length) ? $offCheckGart.removeAttr('checked') : '';
+		($offSelGart.length) ? $offSelGart.removeAttr('selected') : '';
+
+		if ($visDivGart.length) {
+			$visDivGart.slideUp('slow', function() {
+				$nextDivGart.slideDown('slow');
+			});
+		} else {
+			$nextDivGart.slideToggle('slow');
+		}
+		  
+	});
+    $("#bj div.border_g input[@type=radio]")<!-- cote droit-->
+	.not('.no_bj').bind('change', function() {
+		var $nextDivDart = $(this).parents('div').children('div.bj_param_d');
+		var $visDivDart = $('.border_g').find('div.bj_param_d:visible');
+ 		var $offRadDart = $visDivDart.find('input[@type=radio][@checked]');
+		var $offCheckDart = $visDivDart.find('input[@type=checkbox][@checked]');
+		var $offSelDart = $visDivDart.find('select option:selected');
+		($offRadDart.length) ? $offRadDart.removeAttr('checked') : '';
+		($offCheckDart.length) ? $offCheckDart.removeAttr('checked') : '';
+		($offSelDart.length) ? $offSelDart.removeAttr('selected') : '';
+
+		if ($visDivDart.length) {
+			$visDivDart.slideUp('slow', function() {
+				$nextDivDart.slideDown('slow');
+			});
+		} else {
+			$nextDivDart.slideToggle('slow');
+		}
+		  
+	});
+	$('div.bj_param_g').hide();
+	$('#bj input.bj_g:checked').parents('div').children('div.bj_param_g').show();
+	$('div.bj_param_d').hide();
+	$('#bj input.bj_d:checked').parents('div').children('div.bj_param_d').show();
+// --></script>
+<script type="text/javascript"><!--
+	$('#affbj_art')
+	.bind('change', function() {
+            $('#blocjumo_art').slideToggle('slow');
+	})
+	if ($('#affbj_art:checked').length == 0)
+		$('#blocjumo_art').hide();
+
+	$('#nb_cols_art')
+	.bind('change', function() {
+            $('#pos_cols_art').slideToggle('slow');
+	})
+	if ($('#nb_cols_art:checked').length == 0)
+		$('#pos_cols_art').hide();
+
+	$('#nb_cols_art3')
+	.bind('change', function() {
+            $('#pos_cols_art').hide();
+	})
+	if ($('#nb_cols_art3:checked').length != 0)
+		$('#pos_cols_art').hide();
+
+// --></script>
+	<fieldset>
+		<legend>[(#CONFIG{lcs_skel_conf/articles/nb_cols_art}|=={3}|?{Contenu des blocs lat&eacute;raux,Contenu du bloc lat&eacute;ral})]</legend>
+		<ul>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="arts_mm_rub" value="oui" class="affCheckbox" [checked="(#ENV{arts_mm_rub}|?{checked})"] id="arts_mm_rub" /> Afficher les articles fr&egrave;res
+					</label>
+					<div class="help_text"><:lcsskel:help_colonne_articles_meme_rubrique:></div>
+				</div>
+				<div class="deplier_conf">
+				[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+					<span class="titre">Position des articles  fr&egrave;res</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Colonne de gauche
+						<input type="radio" name="pos_arts_mm_rub" value="gauche" [(#ENV{pos_arts_mm_rub}|=={gauche}|?{checked,''})] /></label>
+						<label>Colonne de droite
+						<input type="radio" name="pos_arts_mm_rub" value="droite" [(#ENV{pos_arts_mm_rub}|=={droite}|?{checked,''})] /></label>
+					</div>
+				]
+				[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})
+					<input type="hidden" name="pos_arts_mm_rub" value="droite" />
+				]
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="arts_mots_arts" value="oui" class="affCheckbox" [checked="(#ENV{arts_mots_arts}|?{checked})"] id="arts_mots_arts" /> Afficher les articles associ&eacute;s aux m&ecirc;mes mots-cl&eacute;
+					</label>
+					<div class="help_text"><:lcsskel:help_colonne_articles_mots_article:></div>
+				</div>
+				<div class="deplier_conf">
+				[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+					<span class="titre">Position des articles  associ&eacute;s aux m&ecirc;mes mots</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Colonne de gauche
+						<input type="radio" name="pos_arts_mots_arts" value="gauche" [(#ENV{pos_arts_mots_arts}|=={gauche}|?{checked,''})] /></label>
+						<label>Colonne de droite
+						<input type="radio" name="pos_arts_mots_arts" value="droite" [(#ENV{pos_arts_mots_arts}|=={droite}|?{checked,''})] /></label>
+					</div>
+				]
+				[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})
+					<input type="hidden" name="pos_arts_mots_arts" value="droite" />
+				]
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="affagenda_art" value="oui" class="affCheckbox" [checked="(#ENV{affagenda_art}|?{checked})"] id="affagenda_art" /> Afficher l&rsquo;agenda
+					</label>
+					<div class="help_text"><:lcsskel:help_colonne_agenda:></div>
+				</div>
+				<div class="deplier_conf">
+				[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+					<span class="titre">Position de l&rsquo;agenda</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Colonne de gauche
+						<input type="radio" name="pos_agenda_art" value="gauche" [(#ENV{pos_agenda_art}|=={gauche}|?{checked,''})] /></label>
+						<label>Colonne de droite
+						<input type="radio" name="pos_agenda_art" value="droite" [(#ENV{pos_agenda_art}|=={droite}|?{checked,''})] /></label>
+					</div>
+				]
+				[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})
+					<input type="hidden" name="pos_agenda_art" value="droite" />
+				]
+				</div>
+			</li>
+		</ul>
+	</fieldset>
+	
+<script type="text/javascript"><!--
+	$('.affCheckbox')
+		.bind('change', function() {
+            $(this).parents('li')
+			.children('div.deplier_conf')
+			.slideToggle('slow');
+	})
+		$('div.deplier_conf').hide();
+		$('.affCheckbox:checked')
+		.parents('li')
+		.children('div.deplier_conf').show();
+// --></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('div.help_text').prepend('<span class=\'help_close\'>&nbsp;X&nbsp;</span>');
+        $('form#form_cfg_lcs_skel div.help_text').hide(); 
+        $('form#form_cfg_lcs_skel span.help_conf').click(function() {
+		  var $boutton = $(this);
+          var $nextDiv = $(this).siblings('div.help_text');
+          var $visibleSiblings = $('form#form_cfg_lcs_skel')
+				.find('div.help_text:visible');
+           var $hideSiblings = $('form#form_cfg_lcs_skel')
+				.find('span.help_conf:hidden');
+      
+          if ($visibleSiblings.length) {
+            $visibleSiblings.slideUp('slow', function() {
+              $nextDiv.slideToggle('slow');
+			  $hideSiblings.fadeIn('slow');
+ 			 $boutton.fadeOut('slow');
+          });
+          } else {
+             $nextDiv.slideToggle('fast');
+			 $boutton.fadeOut('slow');
+          }
+        });
+		$('form#form_cfg_lcs_skel span.help_close').click(function() {
+				$(this).parent().slideUp('slow');
+				$(this).parents('.labels_cfg_lcs_skel')
+				.find('span.help_conf:hidden').fadeIn('slow');
+		});
+	});
+</script>
+	
+		<input type="submit" name="_cfg_ok" value="<:OK:>" />
+		<input type="reset" value="<:Reset:>" />
+		<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+</form>
+
+ 

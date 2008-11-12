@@ -1,0 +1,44 @@
+[(#ENV{largeur}|?{#SET{width,#ENV{largeur}},#SET{width,500}})]
+[(#ENV{hauteur}|?{#SET{height,#ENV{hauteur}},#SET{height,320}})]
+[(#ENV{largeur_vignette}|?{#SET{itemwidth,#ENV{largeur_vignette}},#SET{itemwidth,135}})]
+[(#ENV{hauteur_vignette}|?{#SET{itemheight,#ENV{hauteur_vignette}},#SET{itemheight,101}})]
+[(#ENV{vignette_mini}|?{#SET{itemminwidth,#ENV{vignette_mini}},#SET{itemminwidth,63}})]
+[(#ENV{reflection}|?{#SET{reflections,#ENV{reflection}},#SET{reflections,.5}})]
+<div id="carousel" style="[width:(#GET{width})px;][height:(#GET{height})px;]">
+<B_afficher_doc_rub>
+	<BOUCLE_afficher_doc_rub(DOCUMENTS) {id_rubrique=#ENV{rub}} {par date} {inverse} {mode=document}{extension IN png,jpg,gif}{doublons}>
+		[<a href="#URL_DOCUMENT" class="thickbox" title=" ">
+			(#EMBED_DOCUMENT|inserer_attribut{alt,#TITRE}|inserer_attribut{style,width:100%;height:100%})
+		</a>]
+	</BOUCLE_afficher_doc_rub>
+</B_afficher_doc_rub>
+<B_afficher_doc_art>
+	<BOUCLE_afficher_doc_art(DOCUMENTS) {id_article=#ENV{art}} {par date} {inverse} {mode=document}{extension IN png,jpg,gif}{doublons}>
+		[<a href="#URL_DOCUMENT" class="thickbox" title=" ">
+			(#EMBED_DOCUMENT||image_reduire{[(#GET{itemwidth})],[(#GET{itemheight})]}|inserer_attribut{alt,#TITRE})
+		</a>]
+	</BOUCLE_afficher_doc_art>
+</B_afficher_doc_art>
+</div>
+<div id="carousel_text">
+#ENV{largeur_vignette}
+</div>	
+<script type="text/javascript">
+	window.onload = 
+	function()
+		{
+			jQuery('#carousel').Carousel(
+				{
+					itemWidth: #GET{itemwidth},
+					itemHeight: #GET{itemheight},
+					itemMinWidth: #GET{itemminwidth},
+					items: 'a',
+					reflections: #GET{reflections},
+					rotationSpeed: 1.8
+				}
+			);
+		}
+	
+
+</script>
+

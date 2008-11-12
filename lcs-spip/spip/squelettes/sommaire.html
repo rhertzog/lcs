@@ -1,0 +1,235 @@
+#CACHE{24*3600}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+[(#CONFIG{lcs_skel_conf/sommaire/affblocjumo}|?{[(#SET{posbljm,[(#CONFIG{lcs_skel_conf/sommaire/posblocjumo})]})],''})]
+[(#CONFIG{lcs_skel_conf/sommaire/affblocjumo_2}|?{[(#SET{posbljm_2,[(#CONFIG{lcs_skel_conf/sommaire/posblocjumo_2})]})],''})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg}|?{[(#SET{ctn_bloc_g,[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg})]})],[(#SET{ctn_bloc_g,breves})]})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd}|?{[(#SET{ctn_bloc_d,[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd})]})],[(#SET{ctn_bloc_d,sites})]})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg_2}|?{[(#SET{ctn_bloc_g_2,[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg_2})]})],[(#SET{ctn_bloc_g_2,messages})]})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd_2}|?{[(#SET{ctn_bloc_d_2,[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd_2})]})],[(#SET{ctn_bloc_d_2,syndic})]})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg}|=={art_bloc}|?{[(#SET{idartg,[(#CONFIG{lcs_skel_conf/sommaire/idart_blocg})]})],''})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd}|=={art_bloc}|?{[(#SET{idartd,[(#CONFIG{lcs_skel_conf/sommaire/idart_blocd})]})],''})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg_2}|=={art_bloc}|?{[(#SET{idartg_2,[(#CONFIG{lcs_skel_conf/sommaire/idart_blocg_2})]})],''})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd_2}|=={art_bloc}|?{[(#SET{idartd_2,[(#CONFIG{lcs_skel_conf/sommaire/idart_blocd_2})]})],''})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg}|=={mots}|?{#SET{ctn_bloc_g,#CONFIG{lcs_skel_conf/sommaire/type_mots_bj_g}}})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd}|=={mots}|?{#SET{ctn_bloc_d,#CONFIG{lcs_skel_conf/sommaire/type_mots_bj_d}}})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg_2}|=={mots}|?{#SET{ctn_bloc_g_2,#CONFIG{lcs_skel_conf/sommaire/type_mots_bj_g_2}}})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd_2}|=={mots}|?{#SET{ctn_bloc_d_2,#CONFIG{lcs_skel_conf/sommaire/type_mots_bj_d_2}}})]
+
+[(#GET{affbljm}|=={oui}|?{' '})
+	[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg}|=={innerfade}|?{' '})#SET{insert_innerfade,oui}]
+	[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd}|=={innerfade}|?{' '})#SET{insert_innerfade,oui}]
+	[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg}|=={cycle}|?{' '})#SET{insert_cycle,oui}]
+	[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd}|=={cycle}|?{' '})#SET{insert_cycle,oui}]
+]
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+[(#SET{pos_menu,[(#CONFIG{lcs_skel_conf/sommaire/pos_menu})]})] [(#SET{pos_agenda,[(#CONFIG{lcs_skel_conf/sommaire/pos_agenda})]})]  
+[(#SET{pos_breves,[(#CONFIG{lcs_skel_conf/sommaire/pos_breves})]})] [(#SET{pos_mots,[(#CONFIG{lcs_skel_conf/sommaire/pos_mots})]})] 
+[(#SET{pos_sites,[(#CONFIG{lcs_skel_conf/sommaire/pos_sites})]})] [(#SET{pos_syndic,[(#CONFIG{lcs_skel_conf/sommaire/pos_syndic})]})] 
+[(#SET{pos_messages,[(#CONFIG{lcs_skel_conf/sommaire/pos_messages})]})] [(#SET{pos_auteurs,[(#CONFIG{lcs_skel_conf/sommaire/pos_auteurs})]})]  
+[(#SET{pos_lienpodcast,[(#CONFIG{lcs_skel_conf/sommaire/pos_lienpodcast})]})] [(#SET{pos_meteo,[(#CONFIG{lcs_skel_conf/sommaire/pos_meteo})]})] 
+[(#SET{pos_cyclart,[(#CONFIG{lcs_skel_conf/sommaire/pos_cyclart})]})][(#SET{pos_maj,[(#CONFIG{lcs_skel_conf/sommaire/pos_maj})]})]
+[(#SET{pos_artspopup,[(#CONFIG{lcs_skel_conf/sommaire/pos_artspopup})]})]
+]
+<head>
+<title>#NOM_SITE_SPIP</title>
+ [(#INCLURE{fond=noisettes/inc-head})]
+[(#REM) appel du js les coins arrondis et les colonnes]
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftycube.js})"></script>]
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftyLayout.js})"></script>]
+
+[(#REM) appel du js pour les cycles d'images ou autres]
+[<script type="text/javascript" src="(#CHEMIN{scripts/jquery.cycle.all.pack.js})"></script>]
+
+[(#INCLURE{fond=noisettes/inc-conf_skel})]
+
+</head>
+<body id="body">
+<div id="header">
+	[(#INCLURE{fond=noisettes/inc-entete})]
+	[(#INCLURE{fond=noisettes/inc-menuonglets}{sommaire=activelink})]
+</div>[(#REM)header]
+<div id="container">
+	<div  id="content">
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+	<div id="troiscols">
+]
+[(#REM)******Affichage par defaut si lcs_skel non activé***************]
+	[(#CONFIG{plugin}|match{LCS_SKEL}|?{'',' '})[(#INCLURE{fond=noisettes/inc-listarticles}{page=sommaire}{pagin=#ENV{debut_articles}}{self=#SELF})]]
+
+[(#REM) edito]
+	[(#REM) on elimine cet affichage ds le cas de l'affichage des articles avec pagination superieure à O]
+	[(#ENV{debut_articles}|?{'',' '})
+		[(#CONFIG{lcs_skel_conf/sommaire/affedito}|?{' '})
+			[(#INCLURE{fond=noisettes/inc-edito}{mot_edito=#GET{mot_edito}})]
+		]	
+			
+		[(#REM)Affichage conditionnel des blocs jumeaux (boites a coucou) - haut]
+		[(#GET{posbljm}|=={haut}|?{' '})
+		<ul [(#GET{ctn_bloc_g}|=={cycle}|?{id="intro_ifade",[(#GET{ctn_bloc_d}|=={cycle}|?{id="intro_ifade",id="intro"})]})]>
+			[(#GET{ctn_bloc_g}|?{' '})
+			<li id="boite_g"[(#GET{ctn_bloc_g}|=={cycle}|?{' '}) style="background:transparent;"]>
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_g})]}{idart=#GET{idartg}}{bloc=bj_g})]
+			</li>
+			]
+			[(#GET{ctn_bloc_d}|?{' '})
+			<li id="boite_d"[(#GET{ctn_bloc_d}|=={cycle}|?{' '}) style="background:transparent;"]>
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_d})]}{idart=#GET{idartd}}{bloc=bj_d})]
+			</li>
+			]
+		</ul>
+		]
+		[(#GET{posbljm_2}|=={haut}|?{' '})
+		<ul id="intro_2">
+			[(#GET{ctn_bloc_g_2}|?{' '})
+			<li id="boite_g_2">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_g_2})]}{idart=#GET{idartg_2}}{bloc=bj_g_2})]
+			</li>
+			]
+			[(#GET{ctn_bloc_d_2}|?{' '})
+			<li id="boite_d_2">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_d_2})]}{idart=#GET{idartd_2}}{bloc=bj_d_2})]
+			</li>
+			]
+		</ul>
+		]
+	] [(#REM) fin affichage pagination]
+		
+		[(#CONFIG{lcs_skel_conf/sommaire/afflistart}|?{' '})
+			[(#INCLURE{fond=noisettes/inc-listarticles}{page=sommaire}{pagin=#ENV{debut_articles}}{self=#SELF})]
+		]
+	[(#REM) on elimine cet affichage ds le cas de l'affichage des articles avec pagination superieure à O]
+		[(#ENV{debut_articles}|?{'',' '})
+		[(#CONFIG{lcs_skel_conf/sommaire/afflistrub}||=={oui}|?{' '})[(#INCLURE{fond=noisettes/inc-list_rubriques})] ]
+
+		[(#REM)Affichage conditionnel des blocs jumeaux (boites a coucou) - bas]
+		[(#GET{posbljm}|=={bas}|?{' '})
+		<ul [(#GET{ctn_bloc_g}|=={cycle}|?{id="intro_ifade",[(#GET{ctn_bloc_d}|=={cycle}|?{id="intro_ifade",id="intro"})]})]>
+			[(#GET{ctn_bloc_g}|?{' '})
+			<li id="boite_g"[(#GET{ctn_bloc_g}|=={cycle}|?{' '}) style="background:transparent;"]>
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_g})]}{idart=#GET{idartg}}{bloc=bj_g})]
+			</li>
+			]
+			[(#GET{ctn_bloc_d}|?{' '})
+			<li id="boite_d"[(#GET{ctn_bloc_d}|=={cycle}|?{' '}) style="background:transparent;"]>
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_d})]}{idart=#GET{idartd}}{bloc=bj_d})]
+			</li>
+			]
+		</ul>
+		]
+		[(#GET{posbljm_2}|=={bas}|?{' '})
+		<ul id="intro_2">
+			[(#GET{ctn_bloc_g_2}|?{' '})
+			<li id="boite_g_2">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_g_2})]}{idart=#GET{idartg_2}}{bloc=bj_g_2})]
+			</li>
+			]
+			[(#GET{ctn_bloc_d_2}|?{' '})
+			<li id="boite_d_2">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_d_2})]}{idart=#GET{idartd_2}}{bloc=bj_d_2})]
+			</li>
+			]
+		</ul>
+		]
+	] [(#REM) fin affichage pagination(2)]
+	
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+	</div>[(#REM)troiscols]
+	<div id="side2">
+		[(#GET{pos_menu}|=={gauche}|?{' '})[(#INCLURE{fond=noisettes/inc-rubriques})]]	
+		[(#GET{pos_mots}|=={gauche}|?{' '})
+			[(#CONFIG{plugin}|match{REC_MC}|?{' '})
+				[(#CONFIG{lcs_skel_conf/sommaire/affmots}|=={oui}|?{' '})
+					[(#CONFIG{lcs_skel_conf/sommaire/type_mots}|=={accordeon}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-mots_acc})</div>]]
+					[(#CONFIG{lcs_skel_conf/sommaire/type_mots}|=={nuage}|?{' '})[<div class="rubriques">(#MODELE{nuage})</div>]]
+				]
+			]
+		]
+		[(#CONFIG{lcs_skel_conf/sommaire/affagenda}|=={oui}|?{' '})
+			[(#GET{pos_agenda}|=={gauche}|?{' '})[(#CONFIG{plugin}|match{AGENDA}|?{' '}) [<div class="rubriques">(#CALENDRIER_MINI{#ENV{date},'date',#SELF})</div>]]]
+		]
+		[(#GET{pos_cyclart}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affcyclart}|=={oui}|?{' '})	[<div class="rubriques">(#INCLURE{fond=noisettes/inc-cycle-text})</div>]]
+		]
+		[(#GET{pos_breves}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affbreves}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-breves}{bloc=side})</div>]]
+		]
+		[(#GET{pos_sites}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affsites}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-sites}{bloc=side})</div>]]
+		]
+		[(#GET{pos_syndic}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affsyndic}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-syndic}{bloc=side})</div>]]
+		]
+		[(#GET{pos_messages}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affmessages}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-messages}{bloc=side})</div>]]
+		]
+		[(#GET{pos_auteurs}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affauteurs}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-auteurs})</div>]]
+		]
+		[(#GET{pos_meteo}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affmeteo}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-meteo})</div>]]
+		]
+		[(#GET{pos_lienpodcast}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/afflienpodcast}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-lien-podcast})</div>]]
+		]
+		[(#GET{pos_maj}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affartspopup}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-arts_populr})</div>]]
+		]
+		[(#GET{pos_maj}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/afflienpodcast}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-maj})</div>]]
+		]
+	</div>[(#REM)side2]
+]
+	</div>[(#REM)content]
+	<div id="side">
+		[(#CONFIG{lcs_skel_conf/recherche}=={oui}|?{'',' '})[(#FORMULAIRE_RECHERCHE)]]
+		[(#GET{pos_menu}|!={gauche}|?{' '})[(#INCLURE{fond=noisettes/inc-rubriques})]]
+		[(#GET{pos_mots}|!={gauche}|?{' '})
+			[(#CONFIG{plugin}|match{REC_MC}|?{' '})
+				[(#CONFIG{lcs_skel_conf/sommaire/affmots}|=={oui}|?{' '})
+					[(#CONFIG{lcs_skel_conf/sommaire/type_mots}|=={accordeon}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-mots_acc})</div>]]
+					[(#CONFIG{lcs_skel_conf/sommaire/type_mots}|=={nuage}|?{' '})[<div class="rubriques">(#MODELE{nuage})</div>]]
+				]
+			]
+		]
+		[(#CONFIG{lcs_skel_conf/sommaire/affagenda}|=={oui}|?{' '})
+			[(#GET{pos_agenda}|!={gauche}|?{' '})[(#CONFIG{plugin}|match{AGENDA}|?{' '}) [(#ENV{date}|?{' '})[<div class="rubriques">(#CALENDRIER_MINI{#ENV{date},'date',#SELF})</div>]]]]
+		]
+		[(#GET{pos_cyclart}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affcyclart}|=={oui}|?{' '})	[<div class="rubriques">(#INCLURE{fond=noisettes/inc-cycle_articles}{bloc=side})</div>]]
+		]
+		[(#GET{pos_breves}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affbreves}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-breves}{bloc=side})</div>]]
+		]
+		[(#GET{pos_sites}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affsites}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-sites}{bloc=side})</div>]]
+		]
+		[(#GET{pos_syndic}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affsyndic}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-syndic}{bloc=side})</div>]]
+		]
+		[(#GET{pos_messages}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affmessages}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-messages}{bloc=side})</div>]]
+		]
+		[(#GET{pos_auteurs}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affauteurs}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-auteurs}{ajax}{env})</div>]]
+		]
+		[(#GET{pos_meteo}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affmeteo}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-meteo}{bloc=side})</div>]]
+		]
+		[(#GET{pos_lienpodcast}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/afflienpodcast}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-lien-podcast})</div>]]
+		]
+		[(#GET{pos_maj}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affartspopup}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-arts_populr})</div>]]
+		]
+		[(#GET{pos_maj}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affmaj}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-maj})</div>]]
+		]
+	</div>[(#REM)side]
+
+	<div id="footer">
+		[(#INCLURE{fond=noisettes/inc-pied})]
+	</div>[(#REM)footer]
+</div>[(#REM)container]
+</body>
+</html>

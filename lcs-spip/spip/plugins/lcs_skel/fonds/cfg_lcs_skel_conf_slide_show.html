@@ -1,0 +1,87 @@
+#CACHE{0}
+<!-- descriptif=Page de configuration de la pr&eacute;sentation Slide Show (S5) 
+<br /><a href="<?$_SERVER['REQUEST_URI']?>/doc/spip/html/lcs_skel.html#conf_generale" class="spip_out" title="Voir la doc">Vers documentation</a>
+-->
+<!-- refus=Rien &agrave; faire par ici!
+<br />Vous ne pouvez pas acceder &agrave; ce formulaire !
+<br />Vous devez &ecirc;tre administrateur et connect&eacute;.
+ -->
+
+<!-- nom=lcs_skel_conf -->
+
+<!-- titre=Configuration SlideShow -->
+<!-- casier=s5 -->
+
+
+<!-- liens*=lcs_skel_conf -->
+<!-- liens*=lcs_skel_conf_entete -->
+<!-- liens*=lcs_skel_conf_accueil -->
+<!-- liens*=lcs_skel_conf_rubriques -->
+<!-- liens*=lcs_skel_conf_articles -->
+<!-- liens*=lcs_skel_conf_couleurs -->
+<!-- liens*=lcs_skel_conf_background -->
+<!-- liens*=lcs_skel_conf_slide_show-->
+<!-- liens*=lcs_skel_conf_infos_legales-->
+<!-- liens*=lcs_skel_conf_credits-->
+<!-- liens*=lcs_skel_conf_save-->
+
+<!-- onglet=non -->
+
+<!-- icone=img_pack/logo_lsc_24.png-->
+
+<form method="post" name="form" id="form_cfg_lcs_skel">[(#ENV{_cfg_}|form_hidden)]
+	<fieldset>
+		<legend>Diaporama d&rsquo;articles</legend>
+			<dl class="annonce">
+				Vous pouvez afficher une série d'articles sous forme de diaporama (façon PowerPoint). 
+				Choisissez la rubrique dont chaque sous-rubrique correspondra à une présentation
+			</dl>
+			<ul>
+			<span class="titre">S&eacute;lectionnez la rubrique de votre choix</span>
+				<div class="labels_cfg_lcs_skel">
+					<label for="id_rub_s5">Rubrique : </label>
+					<select name="id_rub_s5">
+						<option value=""[(#ENV{id_rub_s5}|?{'',selected="selected"})]> </option>
+						<BOUCLE_s5_rub(RUBRIQUES){racine}{par num titre}{par titre}>
+							<option value="#ID_RUBRIQUE"[(#ENV{id_rub_s5}|=={#ID_RUBRIQUE}|?{selected="selected",''})]>[[(#ID_RUBRIQUE)]][ - (#TITRE|supprimer_numero)]</option>
+						</BOUCLE_s5_rub>
+					</select><br />
+				</div>
+			</li>
+			[(#CONFIG{lcs_skel_conf/s5/id_rub_s5}|?{' '})
+			<li><span class="titre">S&eacute;lectionnez le thème graphique par rubrique<span></li>
+			]
+			[(#CONFIG{lcs_skel_conf/s5/id_rub_s5}|?{#SET{s5rub,#CONFIG{lcs_skel_conf/s5/id_rub_s5}},#SET{s5rub,999999999}})]
+			<BOUCLE_racine(RUBRIQUES){id_parent=#GET{s5rub}}{par num titre}>
+					<? $theme='#ENV{theme_s5_#ID_RUBRIQUE}'; ?>
+			<li>
+			<div class="labels_cfg_lcs_skel">
+			<label for="theme_s5_#ID_RUBRIQUE">#TITRE</label>
+			<select name="theme_s5_#ID_RUBRIQUE" id="theme_s5_#ID_RUBRIQUE">
+				<?php
+					$rep = "../squelettes/s5-slideshow/ui/";
+					$dir = opendir($rep); 
+					$selected='';
+					while ($d = readdir($dir)) {
+						if(is_dir($rep.$d)&& ($d!='.')&& ($d!='..')) {
+						if($d==$theme ){ $s="selected='selected'";} else {$s='';}
+						echo '<option value="'.$d.'" '.$s.'>'.$d.'</option>';
+						}
+					}
+					closedir($dir);
+					$theme='';
+				?>
+			</select>
+			</div>
+		</li>
+		</BOUCLE_racine>
+			</ul>
+	</fieldset>
+	<p>
+		<input type="submit" name="_cfg_ok" value="<:OK:>" />
+		<input type="reset" value="<:Reset:>" />
+		<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+	</p>
+</form>
+
+ 

@@ -1,0 +1,100 @@
+<plugin>
+	<nom>Le Couteau Suisse</nom>
+	<icon>img/couteau-50.gif</icon>
+	<version>1.7.16.12</version>
+	<auteur>Patrice Vanneufville
+_ &#169; 2007-2008 - Distribu&#233; sous licence GPL
+	</auteur>
+	<etat> <!-- Etat du plugin, au choix : dev (developpement), test, stable, experimental -->
+	stable
+	</etat>
+	<description>
+R&#233;unit en un seul plugin une liste de petites fonctionnalit&#233;s nouvelles et utiles am&#233;liorant la gestion de votre site SPIP.
+
+Chacun de ces outils peut &#234;tre activ&#233; ou non par l'utilisateur sur [la page d'administration du plugin->./?exec=admin_couteau_suisse] et g&#233;rer un certain nombre de variables : cliquer sur {{Configuration}}, puis choisir l'onglet {{Le Couteau Suisse}}.
+
+Les cat&#233;gories disponibles sont : Administration, Am&#233;liorations typographiques, Raccourcis typographiques, Affichage public, Balises, filtres, crit&#232;res.
+
+D&#233;couvrez dans ce plugin vos outils favoris : {Exposants typographiques}, {Guillemets typographiques}, {Belles puces}, {Un sommaire pour vos articles}, {Smileys}, {Supprime le num&#233;ro}, {Belles URLs}, {SPIP et les liens... externes}, {Pas de forums anonymes}, {D&#233;coupe en pages et onglets}, etc., etc.
+
+N'h&#233;sitez pas &#224; consulter les articles de documentation du plugin publi&#233;s sur : [spip-contrib.net->http://www.spip-contrib.net/Le-Couteau-Suisse].
+
+Compatibilit&#233; : SPIP toutes versions 1.9x
+	</description>
+	<lien>[->http://www.spip-contrib.net/Le-Couteau-Suisse]</lien> <!-- URI de documentation -->
+	<options> <!-- fichier options (comme l'ancien mes_options.php) charge a chaque hit !! ne surtout pas l'appeler mes_options -->
+	cout_options.php
+	</options>
+	<fonctions> <!-- fichier fonctions charge a chaque recalcul (comme l'ancien mes_fonctions.php) !! ne surtout pas l'appeler mes_fonctions -->
+	cout_fonctions.php
+	</fonctions>
+	<!-- prefixe des fonctions, filtres et fichers de votre plugin :
+		toutes vos fonctions doivent commencer par ce prefixe suivi de _ (ici : couteau_suisse_ma_fonction() par exemple)
+		C'est par ailleurs conseille pour les noms de fichier
+		Deux plugin ne peuvent pas avoir le meme prefixe, donc ne gardez pas celui la ! :)
+		-->
+	<prefix>couteau_suisse</prefix>
+	<install>cout_pipelines.php</install>
+	<chemin dir='' />
+	<!-- Definitions des fonctions qui s'inserent dans les pipelines -->
+	<pipeline>
+		<!-- pipeline qui permet de modifier les pages publiques html issues du cache ou du calcul avant leur envoi au navigateur
+		il permet de modifier n'importe quoi, mais est execute a chaque fois et ne profite pas du cache
+		il est donc a reserver pour des plugins qui ne sont pas utilises en production de preference
+		-->
+		<nom>affichage_final</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>insert_head</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>ajouter_onglets</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>header_prive</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>affiche_gauche</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>affiche_droite</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>affiche_milieu</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>nettoyer_raccourcis_typo</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>pre_propre</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>pre_typo</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>post_propre</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>post_typo</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>BT_gadgets</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>BT_toolbox</nom>
+		<inclure>cout_pipelines.php</inclure>
+	</pipeline>
+</plugin>

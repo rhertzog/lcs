@@ -1,0 +1,21 @@
+[(#CONFIG{lcs_skel_conf/rubriques/nbsous_rub}|?{[(#CONFIG{lcs_skel_conf/rubriques/nbsous_rub}|=={tout}|?{#SET{nbrub,100000000},#SET{nbrub,#CONFIG{lcs_skel_conf/rubriques/nbsous_rub}}})],#SET{nbrub,100000000}})]
+
+<B_rubriques>
+[(#REM) ]
+<h3 class="titre-list"><:rubriques:></h3>
+
+<dl class="bloc" style="margin-left:5em">
+	<BOUCLE_rubriques(RUBRIQUES){branche}{!id_rubrique}{par num titre,titre}>
+		<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+			[<a href="#URL_RUBRIQUE">
+			<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{50,60}|sinon{[(#LOGO_SITE||reduire_image{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
+			<em>[, (#DATE|affdate_jourcourt)][, par (#LESAUTEURS)]</em>
+		</dt>		
+		<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+			[(#DESCRIPTIF)]
+			<div class="suite"> <a href="#URL_RUBRIQUE">Aller &agrave; la rubrique #TITRE...</a></div>
+			<br class="leon" />
+		</dd>
+	</BOUCLE_rubriques>
+</dl>
+</B_rubriques>

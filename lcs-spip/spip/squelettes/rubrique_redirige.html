@@ -1,0 +1,10 @@
+#CACHE{0}
+		<BOUCLE_art_plud1(ARTICLES) {id_rubrique} {1,1}>
+			<INCLURE{fond=rubrique-normal}{id_rubrique}>
+		</BOUCLE_art_plud1>
+		<BOUCLE_art_1seul(ARTICLES) {id_rubrique} {0,1}>
+			<INCLURE{fond=article}{id_rubrique}{id_article}>
+		</BOUCLE_art_1seul>
+			<INCLURE{fond=rubrique-normal}{id_rubrique}>
+		<//B_art_1seul>
+		<//B_art_plud1>

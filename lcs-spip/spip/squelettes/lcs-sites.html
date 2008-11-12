@@ -1,0 +1,77 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+[(#REM)
+[(#CONFIG{lcs_skel_conf/sommaire/affblocjumo}|?{[(#SET{affbljm,[(#CONFIG{lcs_skel_conf/sommaire/affblocjumo})]})],[(#SET{affbljm,non})]})]
+[(#CONFIG{lcs_skel_conf/sommaire/afflistart}|?{[(#SET{afflsart,[(#CONFIG{lcs_skel_conf/sommaire/afflistart})]})],[(#SET{afflsart,oui})]})]
+[(#GET{affbljm}|=={oui}|?{[(#SET{posbljm,[(#CONFIG{lcs_skel_conf/sommaire/posblocjumo})]})],''})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg}|?{[(#SET{ctn_bloc_g,[(#CONFIG{lcs_skel_conf/sommaire/ctnblocg})]})],[(#SET{ctn_bloc_g,breves})]})]
+[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd}|?{[(#SET{ctn_bloc_d,[(#CONFIG{lcs_skel_conf/sommaire/ctnblocd})]})],[(#SET{ctn_bloc_d,sites})]})]
+]
+<head>
+<title>#NOM_SITE_SPIP</title>
+
+[(#INCLURE{fond=noisettes/inc-head})]
+<script type="text/javascript" src="[(#CHEMIN{scripts/niftycube.js})]"></script>
+<script type="text/javascript" src="[(#CHEMIN{scripts/niftyLayout.js})]"></script>
+[(#INCLURE{fond=noisettes/inc-conf_skel})]
+</head>
+<body>
+[(#REM)
+<div id="header">
+	[(#INCLURE{fond=noisettes/inc-entete})]
+	[(#INCLURE{fond=noisettes/inc-menuonglets})]
+</div>
+]
+<div id="container" style="padding:0; width:400px">
+	<div  id="content" class="monlcs">
+	#ENV{mot}
+	[(#REM) Grande boite edito]
+	<B_sites>
+		<BOUCLE_sites(SITES){id_rubrique ?}{id_mot ?}{!par date}>
+		<dl class="bloc" style="clear:both">
+			<dt  class="annonce">
+				<a href="#URL_SITE" title="[(#DESCRIPTIF|supprimer_tags)]" class="spip_out">#NOM_SITE</a>
+			</dt>
+			<dd class="annonce">
+				<a href="#URL_SITE" title="[(#DESCRIPTIF|supprimer_tags)]" class="spip_out"><img src="http://open.thumbshots.org/image.aspx?url=#URL_SITE" style="float:right; border:1px solid #369" alt="Voir"/></a>
+				[(#REM)
+				<a href="#URL_SITE" title="[(#DESCRIPTIF|supprimer_tags)]" class="spip_out"><img src="http://www.thumbalizr.com/api/?url=#URL_SITE/&width=50" style="float:right" /></a>
+				]
+				[(#DESCRIPTIF|supprimer_tags)]
+				
+				[(#URL_SYNDIC|?{' '})
+				<div class="site_rss">S'abonner à ce site :<br />
+					<span class="gauche"><a href="#URL_SYNDIC" title="S'abonner au flux rss de #TITRE"> Flux RSS <img src="[(#CHEMIN{i/pp_rssIcon_36.gif})]" alt="" /></a></span>
+					[(#CONFIG{plugin}|match{LCS_SKEL}|?{' '})
+						<span><a href="[(#URL_SYNDIC|url_itunes)]" title="S'abonner au podcast de #TITRE"> Podcast  <img src="[(#CHEMIN{i/pp_itunesIcon_36.gif})]" alt="" /></a></span>
+					]
+				</div>
+				]
+			<br class="leon" />
+			</dd>
+		</dl>
+		<B_articles>
+		<dl class="bloc fil_or">
+			<BOUCLE_articles(SYNDIC_ARTICLES) {id_syndic} {age<180} {!par date}{0,5}>
+				<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+					<a href="[(#URL_ARTICLE)]" class="spip_out">#TITRE</a>
+				</dt>
+				<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+					[<span class="enclosures">(#TAGS|afficher_enclosures)</span>]
+					<small>[(#DATE|affdate_court)][, <:par_auteur:> (#LESAUTEURS)][ &mdash; <em>(#TAGS|afficher_tags)</em>]</small>
+					[<div class="texte">(#DESCRIPTIF|couper{150}|image_reduire{300})</div>]
+				</dd>
+			</BOUCLE_articles>
+		</dl>
+		</B_articles>
+		</BOUCLE_sites>
+	</B_sites>
+	</div>
+	<div id="footer" style="width:auto">
+		--
+	</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+LCS phpsysinfo for  Debian
+----------------------------
+
+-- Jean-Luc Chretien    <jean-luc.chretien@tice.ac-caen.fr>  V 2.1 Thu,  6 Nov 2008
+
+USAGE
+
+  SPIP en tant que CSM/Forum LCS
+  
+CONFIGURATION
+
+La configuration du paquet est prise en charge par le script postinst du paquet
+
+
+  
+
+
