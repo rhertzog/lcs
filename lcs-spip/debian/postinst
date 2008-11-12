@@ -10,7 +10,7 @@ PATHMAJ="/var/lib/lcs/$MODULE"
 APACHECONF="/etc/lcs/apache.conf"
 
 LCSAPACHE2PATH="/etc/apache2/lcs-main/"
-APACHE2CONF=$LCSAPACH2PATH"75_spip.conf"
+APACHE2CONF=$LCSAPACHE2PATH"75_spip.conf"
 
 DOMAINE=`hostname -d`
 DOMAINENAME=`hostname -f`
