@@ -11,7 +11,7 @@ install:
 
 # install doc
 	install -d $(DESTDIR)/usr/share/doc/lcs/spip/html
-	cp -a doc/* $(DESTDIR)/usr/share/doc/lcs/spip/html/
+	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/spip/html/
 
 # install spip
 	install -d $(DESTDIR)/usr/share/lcs/spip
