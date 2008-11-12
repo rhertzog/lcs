@@ -15,10 +15,9 @@ if [ -d /usr/share/lcs/$1/ecrire/data ]; then
     chown spip.manager /usr/share/lcs/$1/ecrire/data
 fi
 chmod g+w /usr/share/lcs/$1/ecrire/
-# Squelette spip lcs
-chown -R spip.manager /usr/share/lcs/$1/lcs_skel
+
 chown spip.manager /usr/share/lcs/$1/config/mes_options.php
-chown spip.manager /usr/share/lcs/$1/lcs_skel/mes_fonctions.php
+
 # Mise en place d'un repertoire plugins
 chown -R spip.manager:www-data /usr/share/lcs/$1/plugins
 
