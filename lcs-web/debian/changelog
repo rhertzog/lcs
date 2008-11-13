@@ -1,3 +1,11 @@
+lcs-web (2.1-2~1) UNRELEASED; urgency=low
+
+  [ Philippe Leclerc ]
+  * Modify filter in gestpack.sh
+  * Replace rm by rm -f in modules_installation.php & modules_desinstallation.php
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 13 Nov 2008 11:32:48 +0100
+
 lcs-web (2.1-1) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
