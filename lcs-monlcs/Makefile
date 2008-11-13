@@ -11,7 +11,7 @@ install:
 
 # install doc-html
 	install -d $(DESTDIR)/usr/share/doc/lcs/monlcs/html
-	install -m 755 doc-html/* $(DESTDIR)/usr/share/doc/lcs/monlcs/html/
+	install doc-html/* $(DESTDIR)/usr/share/doc/lcs/monlcs/html/
 
 # install lcs monlcs www
 	install -d $(DESTDIR)/var/www
