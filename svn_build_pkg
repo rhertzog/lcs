@@ -52,7 +52,7 @@ export DEBEMAIL="$6"
 
 if [ -d $1 ]; then
   cd $1
-  if [ $7 = "lintian" ]; then
+  if [ "$7" = "lintian" ]; then
     VALIDATE="--svn-lintian"
   fi
   svn-buildpackage $VALIDATE -rfakeroot -e$6
