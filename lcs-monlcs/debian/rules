@@ -16,7 +16,7 @@ build-stamp: configure-stamp
 
 	# Add here commands to compile the package.
 	$(MAKE)
-	#docbook-to-man debian/lcs-phpsysinfo.sgml > lcs-phpsysinfo.1
+	#docbook-to-man debian/lcs-monlcs.sgml > lcs-monlcs.1
 
 	touch build-stamp
 
@@ -36,8 +36,8 @@ install: build
 	dh_clean -k 
 	dh_installdirs
 
-	# Add here commands to install the package into debian/lcs-phpsysinfo.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/lcs-phpsysinfo
+	# Add here commands to install the package into debian/lcs-monlcs.
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/lcs-monlcs
 
 
 # Build architecture-dependent files here.
