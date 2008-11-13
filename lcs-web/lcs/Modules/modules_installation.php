@@ -23,7 +23,7 @@ $description = $d;
 $md5 = $s;
 $nf="lcs-".$n;
 //on supprime éventuellement les résidus d'un processus interrompu  
-$net=" rm /tmp/ecran_install*";
+$net=" rm -f /tmp/ecran_install*";
 exec($net,$x,$y);
 //création du fichier /tmp/ecran_install_nom_module.html
 $fecran = cree_nom_fichier_ecran($nf);
