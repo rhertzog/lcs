@@ -1,27 +1,26 @@
-lcs-monlcs (2.1-1~1 ) UNRELEASED; urgency=low
- [Jean-Luc Chretien]
- * Correct changelog with section UNRELEASED
- * Restructuring the architecture of the package (svn_builpackage compatibilty)
- 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 13 Oct 2008 17:53:00 +0200
+lcs-monlcs (2.1-1) LcsXP; urgency=low
 
- [ Sebastien Tack ] 
- * Bug correction for multiple targets in "Scenarios"
- * Remove debug information
- * Add cleanaccent function
- * Missing noaccent function
- * Fix monlcs_is_admin right when updating contextual menu
- * Add contextuals tutorials for "scenario"
- * modify sql install script
- * adjust zindex when note saving
+  [ Jean-Luc Chretien ]
+  * Correct changelog with section UNRELEASED
+  * Restructuring the architecture of the package (svn_builpackage compatibilty)
+
+  [ Sebastien Tack ]
+  * Bug correction for multiple targets in Scenarios
+  * Remove debug information
+  * Add cleanaccent function
+  * Missing noaccent function
+  * Fix monlcs_is_admin right when updating contextual menu
+  * Add contextuals tutorials for "scenario"
+  * modify sql install script
+  * adjust zindex when note saving
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 13 Nov 2008 10:56:56 +0100
 
 lcs-monlcs (2.1) LcsXP; urgency=low
 
  [Jean-Luc Chretien]
  * Release package in LcsXP 2.1 version with rev 1908
  * ReBack to #PASS# in /var/lib/lcs/monlcs/Mod/Config/config.inc.ph
-
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 21 Sep 2008 18:41:34 +0200
 
  [ Sebastien Tack ] 
  * bugs on description renaming when student viewing mode
@@ -67,6 +66,8 @@ lcs-monlcs (2.1) LcsXP; urgency=low
  * Move statandgo.php in lcs-web 
  * Modify lcs_db.applis accueil_url with /monlcs/ value in lcs-web-config
  * Modify lcs_db.applis accueil_url with /lcs/accueil.php value in postrm
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 21 Sep 2008 18:41:34 +0200
 
 lcs-monlcs (2.0-6~6) lcs20; urgency=low
 
@@ -124,6 +125,3 @@ lcs-monlcs (2.0-6~1) UNRELEASED; urgency=low
 
 lcs-monlcs (2.0)
 Version beta de test
-
-
-
