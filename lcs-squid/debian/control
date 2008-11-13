@@ -1,0 +1,15 @@
+Source: lcs-squid
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+
+Package: lcs-squid
+Architecture: all
+Depends: lcs-preinstall, squid, iptables
+Description: Squid proxy/cache configuration for LCS
+   squid proxy/cache transparent configuration for LCS
+
+
+
