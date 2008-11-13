@@ -27,7 +27,7 @@ $description = $row->descr;
 $repdes = $row->chemin;
 mysql_free_result($result);
 //on supprime éventuellement les résidus d'un processus interrompu  
-$net=" rm /tmp/ecran_install*";
+$net=" rm -f /tmp/ecran_install*";
 exec($net,$x,$y);
 //création du fichier /tmp/ecran_install_nom_module.html
 $nf="lcs-".$nommodule;
