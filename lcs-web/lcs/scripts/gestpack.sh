@@ -1,9 +1,9 @@
 #!/bin/bash
 # ===================================================================
 # Projet LCS : Linux Communication Server
-# par Misterphi le 28/01/2008
+# par Misterphi le 13/11/2008
 # gestion des modules par interface web
-# scripts d'apt-get sudoïfié
+# scripts d'apt-get sudoifie
 # paramètres passés :	$1=source du paquet; 
 #				$2= action (install/remove);
 #				$3= nom du paquet
@@ -12,15 +12,13 @@
 # on positionne les drapeaux indiquant le début de l'opération. flip nécessaire pour la page auto refresh 
 echo "<? \$flip=0;\$verrou=1;?>" > /usr/share/lcs/Modules/flag.php
 
-if [[ "$1" =~ "^deb http://lcs.crdp.ac-caen.fr/etch " \
-    || "$1" =~ "^deb http://ftp.slis.fr/" \
-    || "$1" =~ "^deb http://ftp.grenoble.slis.fr/" ]]; then
-
-    if [ "$2" = "install" ]; then
-        cp /etc/apt/sources.list /etc/apt/sources.tmp
-        if [ "$(grep '$1' /etc/apt/sources.list)" = "" ]; then
-            echo $1 >> /etc/apt/sources.list
-        fi
+#on recherche un depot similaire a $1
+Depot=`grep \`echo $1 | cut -d"/" -f3\` /etc/apt/sources.list`
+if [ -n "$Depot" ];then
+ 
+	if [ "$2" = "install" ]; then
+   cp /etc/apt/sources.list /etc/apt/sources.tmp
+   sed -i "s#$Depot#$1#g" /etc/apt/sources.list
     fi
 
     #on simule une cli dans la page web
@@ -58,6 +56,7 @@ if [[ "$1" =~ "^deb http://lcs.crdp.ac-caen.fr/etch " \
 
     #pour que le script puisse effacer le fichier temporaire
     chown www-data:www-data /tmp/ecran_install_$3.html
+
 fi
 #on positionne les drapeaux indiquant la FIN de l'opération, flip pour arrêter l'auto refresh
 echo "<? \$flip=1;\$verrou=0;?>" > /usr/share/lcs/Modules/flag.php
