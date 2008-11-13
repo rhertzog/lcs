@@ -1,0 +1,4 @@
+dn: cn=monlcs_is_admin,ou=Rights,#BASEDN#
+objectClass: groupOfNames
+cn: monlcs_is_admin
+member: uid=admin,ou=People,#BASEDN# 

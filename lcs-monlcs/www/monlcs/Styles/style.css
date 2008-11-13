@@ -1,0 +1,106 @@
+embed, object {
+     position: absolute;
+     z-index: 0;
+     padding: 0px;
+     margin: 0px; 
+
+}
+
+
+
+	.multipleSelectBoxControl span{	/* Labels above select boxes*/
+		font-family:arial;
+		font-size:11px;
+		font-weight:bold;
+	}
+	.multipleSelectBoxControl div select{	/* Select box layout */
+		font-family:arial;
+		height:100%;
+	}
+	.multipleSelectBoxControl input{	/* Small butons */
+		width:25px;	
+	}
+	
+	.multipleSelectBoxControl div{
+		float:left;
+	}
+		
+	.multipleSelectBoxDiv
+	
+
+#gauche {
+position: absolute;
+align: right:0;
+width: 200px;
+height: 400px;
+overflow: auto;
+}
+#pied {
+height: 30px;
+background-color: #99CC99;
+}
+
+span.tabs {
+	cursor: hand;
+}
+body {
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:12px;
+}
+#tabs {
+	float: left;
+}
+#container {
+	width:800px;
+}
+#contentRoot {
+	height: 600px;
+	clear: both;
+	border: 1px solid #ccc;
+	background-image : url(../Images/espperso.jpg); 
+}
+#content {
+	height: 600px;
+	clear: both;
+	border: 1px solid #ccc;
+}
+.ressources {
+	
+	clear: both;
+	background-color: #fff;
+}
+#load {
+	position:absolute;
+	left: 770px;
+	top: 40px;
+	width: 30px;
+	height: 30px;
+	background-image : url(../Images/OK.jpg); 
+	display: none;
+}
+#sloganText{ font-size: 25px; margin-left: 15px; line-height: 100px; }
+div.divWindow{ 
+position: absolute; border: 2px solid black; padding:0px; margin:0px; overflow: hidden; background: white;
+}
+div.dToolbar{ 
+background-color: #C9C9C9; width:100%; border-bottom: 1px solid black; padding: 0px; margin: 0px; 
+}
+span.ToolTitle{ 
+float: left; line-height: 20px; font-size: 12px; font-weight: bold; padding-left: 10px; 
+}
+span.ToolButtons{ 
+float: right; margin: 0px; padding:0px;
+}
+button.ToolButtons{ 
+width: 20px; height: 20px; font-size: 12px; font-weight: bold;  margin: 0px; padding:0px;
+}
+iframe.ifContent{
+width: 100%; height:100%; border:0; overflow: auto;
+padding: 0;
+}
+.winFoot{ 
+background-color: #C0C0C0; height: 15px; border-top: 1px solid black; font-weight: bold; 
+}
+.winFootSpan{
+float:right;width:15px;font-size:5px;line-height:15px;background:green;cursor:pointer;
+}
