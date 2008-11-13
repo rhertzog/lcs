@@ -1,0 +1,15 @@
+lcs-squid (2.1~2) UNRELEASED; urgency=low
+  [Jean-Luc Chretien]
+  * Fix problem configuration cache size and chown spool squid folder
+  * Restructuring the architecture of the package (svn_builpackage compatibilty)
+
+lcs-squid (2.1~2) lcs20; urgency=low
+  [Jean-Luc Chretien]
+  * Add an extend description in debian/control
+
+lcs-squid (2.0)
+  [Jean-Luc Chretien]
+  * Initial release
+
+
+
