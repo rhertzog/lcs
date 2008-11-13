@@ -50,7 +50,7 @@ if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
     PRESENT=`ldapsearch -xLLL "cn=monlcs_is_admin" | wc -l`
     if [ "$PRESENT" == "0" ]; then
         echo "Mise en place du droit monlcs_is_admin dans l'annuaire"
-    	cp -a $CONF/Ldif/monlcs.ldif.orig $CONF/Ldif/monlcs.ldif
+    	cp -a $CONF/Ldif/monlcs.ldif.in $CONF/Ldif/monlcs.ldif
     	sed -i "s/#BASEDN#/$LDAP_BASE_DN/g" $CONF/Ldif/monlcs.ldif
         ldapadd -x -w $LDAP_ADMIN_PW -D $LDAP_ADMIN_RDN,$LDAP_BASE_DN -h $LDAP_SERVER -f $CONF/Ldif/monlcs.ldif
         rm $CONF/Ldif/monlcs.ldif
