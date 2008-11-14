@@ -26,7 +26,7 @@ broken_vary_encoding allow apache
 #Default:
 # cache_dir aufs Directory-Name Mbytes L1 L2 [options]
 
-cache_dir ufs /var/spool/squid #CACHEDIRSIZE# 16 256
+cache_dir ufs /var/spool/squid 100 16 256
 
 #  TAG: access_log
 #  To log the request via syslog specify a filepath of "syslog"
