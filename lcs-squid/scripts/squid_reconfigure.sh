@@ -83,5 +83,5 @@ fi
 #
 # Restart squid
 #
-/usr/sbin/invoke-rc.d restart > /dev/null
+/usr/sbin/invoke-rc.d restart squid > /dev/null
 
