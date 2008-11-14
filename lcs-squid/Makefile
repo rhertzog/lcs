@@ -14,8 +14,8 @@ install:
 	install -m 750 -o root -g root conf/init.d/iptables $(DESTDIR)/etc/init.d/
 
 # install scripts squid
-	install -d $(DESTDIR)/usr/share/lcs/Scripts
-	install -m 750 -o root -g root scripts/* $(DESTDIR)/usr/share/lcs/Scripts/
+	install -d $(DESTDIR)/usr/share/lcs/scripts
+	install -m 750 -o root -g root scripts/* $(DESTDIR)/usr/share/lcs/scripts/
 
 # install doc-html squid
 	install -d $(DESTDIR)/usr/share/doc/lcs/squid
