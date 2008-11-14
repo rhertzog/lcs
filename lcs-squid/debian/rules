@@ -16,7 +16,7 @@ build-stamp: configure-stamp
 
 	# Add here commands to compile the package.
 	$(MAKE)
-	#docbook-to-man debian/squid.sgml > lcs-squid.1
+	#docbook-to-man debian/lcs-squid.sgml > lcs-squid.1
 
 	touch build-stamp
 
