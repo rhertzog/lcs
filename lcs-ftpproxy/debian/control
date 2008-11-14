@@ -1,0 +1,12 @@
+Source: lcs-ftpproxy
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+
+Package: lcs-ftpproxy
+Architecture: all
+Depends: lcs-preinstall, ftp-proxy, iptables, lcs-squid
+Description: ftp proxy/cache configuration for LCS
+   ftp proxy/cache transparent configuration for LCS based on ftpproxy

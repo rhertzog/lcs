@@ -1,0 +1,24 @@
+#! /bin/sh
+# postrm script for LCS ftpproxy
+
+set -e
+case "$1" in
+	purge|remove)
+        NUM=`iptables -t nat -L --line-numbers | grep  2121 | cut -d ' ' -f 1`
+        if [ -n "$NUM" ];then
+            iptables -D  PREROUTING $NUM -t nat 
+            /etc/init.d/iptables save active
+        fi
+        ;;
+
+	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+        ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+
+esac
+
+exit 0

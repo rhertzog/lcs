@@ -1,0 +1,58 @@
+#! /bin/sh
+# postinst script for LCS ftpproxy
+set -e
+
+# lecture d'un parametre lcs dans lcs_db.params
+function get_lcsdb_params
+{
+PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
+echo "$PARAMS"
+}
+
+case "$1" in
+	install|configure)
+        #
+        # Acquisition des params lcs
+        #
+        NETMASK0=$(get_lcsdb_params netmask)
+        NETWORK=$(get_lcsdb_params network)
+        #
+        # Mise en place de la règle iptable
+        #
+        NUM=`iptables -t nat -L --line-numbers | grep  2121 | cut -d ' ' -f 1`
+        if [ -z $NUM ]; then
+            iptables -t nat -I PREROUTING -d ! $NETWORK/$NETMASK0 -p TCP --dport 21 -j REDIRECT --to-ports 2121
+        fi
+        #
+        # Sauvegarde dans  /var/lib/iptables/
+        #
+        /etc/init.d/iptables save active
+        #
+        # Mise en place fichier de configuration ftp-proxy
+        #
+        cp -a /var/lib/lcs/ftpproxy/ftp-proxy.conf.in /etc/proxy-suite/ftp-proxy.conf
+        #
+        # Repertoire de log
+        #
+        rm -f /var/log/ftp-proxy.log
+        mkdir -p /var/log/ftp-proxy
+        chown nobody /var/log/ftp-proxy
+        #
+        # Redémarrage ftp-proxy
+        #
+        /usr/sbin/invoke-rc.d ftp-proxy restart
+    	;;
+
+    	abort-upgrade|abort-remove|abort-deconfigure)
+    	;;
+
+    	*)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    	;;
+esac
+
+
+exit 0
+
+

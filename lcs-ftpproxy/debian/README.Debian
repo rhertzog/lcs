@@ -1,0 +1,16 @@
+LCS ftpproxy
+-------------
+-- Jean-Luc Chretien    <jean-luc.chretien@tice.ac-caen.fr>
+
+USAGE
+
+
+  
+CONFIGURATION
+
+La configuration du paquet est prise en charge par le script postinst du paquet
+
+
+  
+
+
