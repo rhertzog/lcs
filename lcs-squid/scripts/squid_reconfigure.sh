@@ -2,12 +2,12 @@
 # LCS squid_reconfigure.sh
 # Jean-Luc Chretien <(-_°)/> <jean-luc.chretien@tice.ac-caen.fr
 
-IN_CONFIG_PATH="/etc/lcs/squid"
+IN_CONFIG_PATH="/var/lib/lcs/squid/"
 CONFIG_PATH="/etc/squid"
 
 if [ -z "$3" ];
 then
-        echo "Usage: squid_reconfigure.sh <DOMAIN> <CACHEDIRSIZE> <VLANSC> <VLANADMINISTRATIF> <VLANPEDA1> <VLANPEDA2> <VLANPEDA3> <VLANPEDA4>"
+        echo "Usage: squid_reconfigure.sh <DOMAIN> <VLANSC> <VLANADMINISTRATIF> <VLANPEDA1> <VLANPEDA2> <VLANPEDA3> <VLANPEDA4>"
         echo "<DOMAIN> : Nom de domaine,"
         echo "<VLANSC> : Adresse/masque du Vlan service commun,"
         echo "<VLANADMINISTRATIF> : Adresse/masque du VLAN ADMINISTRATIF,"
