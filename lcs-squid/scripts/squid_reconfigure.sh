@@ -5,7 +5,7 @@
 IN_CONFIG_PATH="/var/lib/lcs/squid/"
 CONFIG_PATH="/etc/squid"
 
-if [ -z "$3" ];
+if [ -z "$2" ];
 then
         echo "Usage: squid_reconfigure.sh <DOMAIN> <VLANSC> <VLANADMINISTRATIF> <VLANPEDA1> <VLANPEDA2> <VLANPEDA3> <VLANPEDA4>"
         echo "<DOMAIN> : Nom de domaine,"
