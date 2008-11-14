@@ -27,7 +27,6 @@ VLANPEDA3="$6"
 VLANPEDA4="$7"
 
 sed -e "s|#DOMAIN#|$DOMAIN|g" \
-    -e "s|#CACHEDIRSIZE#|$CACHEDIRSIZE|g" \
 $IN_CONFIG_PATH/squid.conf.in > $CONFIG_PATH/squid.conf
 
 if [ -n "$VLANSC" ]; then
