@@ -76,7 +76,7 @@ if [ `grep '/var/spool/squid' /etc/fstab | wc -l` = 1 ]; then
   # remplacement
   ligne=`cat /etc/squid/squid.conf |grep cache_dir | grep -v "#"`
   sub="cache_dir ufs /var/spool/squid $squidpart 16 256"
-  sed -i '' "s#$ligne#$sub#g" /etc/squid/squid.conf
+  sed -i 's#$ligne#$sub#g' /etc/squid/squid.conf
   chown proxy:proxy /var/spool/squid
 fi
 #
