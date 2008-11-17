@@ -1,11 +1,3 @@
-lcs-web (2.1-2~1) UNRELEASED; urgency=low
-
-  [ Philippe Leclerc ]
-  * Modify filter in gestpack.sh
-  * Replace rm by rm -f in modules_installation.php & modules_desinstallation.php
-
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 13 Nov 2008 11:32:48 +0100
-
 lcs-web (2.1-1) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
@@ -33,6 +25,10 @@ lcs-web (2.1-1) LcsXP; urgency=low
   * Validation W3C ldap_cleaner.php,eff_vide_groups.php,del_group_user.php,add_group.php,ihm.inc.php,
     setup_keys.php, save_keys.php
   * delete mod_owner_group.php
+  * Modify filter in gestpack.sh
+  * Replace rm by rm -f in modules_installation.php & modules_desinstallation.php
+
+
 
   [ Philippe Le Brouster ]
   * Allowed more possible APT repositories to be used by gestpack.sh.
@@ -40,7 +36,7 @@ lcs-web (2.1-1) LcsXP; urgency=low
     ftp.fr.debian.org.
   * Removed the old lcs repository (forgetting) from the gestpack.sh checks.
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 10 Nov 2008 09:46:31 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 17 Nov 2008 15:28:34 +0100
 
 lcs-web (2.1) LcsXP; urgency=low
 
