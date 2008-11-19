@@ -1,3 +1,9 @@
+lcs-dns (2.1-2~1) LcsXP; urgency=low
+
+  * add primary dns in resolv.conf
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 19 Nov 2008 11:12:12 +0100
+
 lcs-dns (2.1-1) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
@@ -9,7 +15,7 @@ lcs-dns (2.1-1) LcsXP; urgency=low
   [ simc ]
   * fix resolv.conf
 
- -- simc <simc@UltraMeuh.simc.be>  Fri, 26 Sep 2008 11:54:04 +0200
+ --  Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 26 Sep 2008 11:54:04 +0200
 
 lcs-dns (2.1~1) UNRELEASED; urgency=low
 

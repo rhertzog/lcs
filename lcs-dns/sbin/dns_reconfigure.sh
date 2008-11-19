@@ -90,4 +90,5 @@ mv $IN_CONFIG_PATH/localnet.rev /etc/bind/localnet.rev
 rm /etc/resolv.conf
 echo "search $5" > /etc/resolv.conf
 echo "nameserver localhost" >> /etc/resolv.conf
+echo "nameserver $DNS_PRIMARY" >> /etc/resolv.conf
 invoke-rc.d bind9 force-reload  > /dev/null 2>&1
