@@ -1,0 +1,11 @@
+#!/bin/bash
+# sauvegarde des bases de donnees MySQL en .sql
+# Simon CAVEY     simon.cavey@crdp.ac-caen.fr
+## creation du depot de backup
+mkdir -p /var/backups/ldap/
+if [ -d /var/backups/ldap ]; then
+	tar czf /var/backups/1week_ago_ldap.tgz /var/backups/ldap/*
+fi
+
+slapcat > /var/backups/ldap/export.ldif
+cp /var/lib/ldap/DB_CONFIG /var/backups/ldap/
