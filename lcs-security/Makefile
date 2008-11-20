@@ -10,7 +10,7 @@ install:
 	install -d $(DESTDIR)/etc/cron.weekly
 	cp -a conf/* $(DESTDIR)/etc/
 	chmod 755  $(DESTDIR)/etc/cron.weekly/lcs-save-sql
-        chmod 755  $(DESTDIR)/etc/cron.weekly/lcs-save-ldap
+	chmod 755  $(DESTDIR)/etc/cron.weekly/lcs-save-ldap
 	# install sbin
 	install -d $(DESTDIR)/usr/sbin
 	install -m 755 sbin/* $(DESTDIR)/usr/sbin/
