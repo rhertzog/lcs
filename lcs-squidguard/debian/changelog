@@ -1,0 +1,23 @@
+lcs-squidguard (2.1)  LcsXP; urgency=low
+
+    [Jean-Luc Chretien]
+    * Restructuring the architecture of the package (svn_builpackage compatibilty)
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 14 Nov 2008 17:44:17 +0100
+
+lcs-squidguard (2.1~3) lcs20; urgency=low
+    [ Jean-Luc Chretien ]
+    * Modify apache2 configuration for specific open_basedir in postinst and postrm
+
+lcs-squidguard (2.1~1) lcs20; urgency=low
+    [ Philippe Leclerc ]
+    * Mise en place du dispositif de filtrage des acces internet via se3-internet.
+    * Ajout de la gestion whitelists.
+
+lcs-squidguard (2.0-1)
+    [ Jean-Luc Chretien ]
+    * Correct rights on whitelists
+
+lcs-squidguard (2.0)
+    [ Jean-Luc Chretien ]
+    *  Initial release

@@ -1,0 +1,85 @@
+#! /bin/sh
+# postinst script for LCS squidguard
+set -e
+VER="2.1"
+
+# lecture d'un parametre lcs dans lcs_db.params
+function get_lcsdb_params
+{
+PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
+echo "$PARAMS"
+}
+
+case "$1" in
+	install|configure)
+	#
+	# restauration des black&white listes
+	if [ -e /tmp/db ]; then
+	 echo "Restore black & white lists"
+	 rm -rf /var/lib/squidguard/db
+	 mv /tmp/db /var/lib/squidguard/
+	fi
+        #
+        # fixation des droits
+        #
+        echo "Fix rights on LCS squidGuard"
+        chown root:root /var/lib/lcs/squidguard
+        chmod 755 /var/lib/lcs/squidguard
+	chown -R proxy:www-data /var/lib/lcs/squidguard/lcs_wl
+	chown -R proxy:www-data /var/lib/lcs/squidguard/lcs_bl
+        mkdir -p /var/lib/squidguard/db/blacklists
+	cp -a /var/lib/lcs/squidguard/lcs_bl /var/lib/squidguard/db/blacklists/lcs
+        chown -R proxy:www-data /var/lib/squidguard/db
+        chown -R www-data:www-data /var/www/Squidguard
+        chown -R www-data:www-data /var/www/lcs/includes/menu.d/90internet.inc
+        #
+        # Actions liees a une installation initiale
+        #
+        if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
+          #
+          # Acquisition nom de domaine
+          #
+          DOMAIN=`hostname -f`
+          #
+          # Configuration Squid
+          #
+          echo "redirect_program /usr/bin/squidGuard" >> /etc/squid/squid.conf
+          echo "redirect_children 32" >> /etc/squid/squid.conf
+          #
+          # Configuration squidGuard
+          #
+          cp /var/lib/lcs/squidguard/squidGuard.conf.lcs /etc/squid/squidGuard.conf
+          sed -i s/#REDIRECT#/$DOMAIN/g /etc/squid/squidGuard.conf
+          #
+          # Installation des listes noires
+          #
+           echo "SquidGuard blacklists installation in one minute"
+          at now+1minutes <<END
+/usr/sbin/getBlacklists.sh
+invoke-rc.d squid reload
+END
+          #
+          # add open_basedir directives configuration 25_squidguard.conf
+          #
+        cat >/etc/apache2/lcs-main/25_squidguard.conf <<EOF
+<Directory /var/www/Squidguard>
+   php_admin_value open_basedir /var/www:/usr/share/lcs:/var/lib/squidguard/db
+</Directory>
+EOF
+          invoke-rc.d apache2 reload
+	fi
+    	;;
+	
+    	abort-upgrade|abort-remove|abort-deconfigure)
+    	;;
+
+    	*)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    	;;
+esac
+
+
+exit 0
+
+

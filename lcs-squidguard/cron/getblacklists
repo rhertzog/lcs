@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+# get squidGuard Blacklists
+
+set -e
+
+/usr/share/lcs/sbin/getBlacklists.sh
