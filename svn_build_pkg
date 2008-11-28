@@ -33,10 +33,10 @@ if [ "$4" == "stable" ];then
     INCOMING="lcs"
 elif [ "$4" == "testing" ];then
     BRANCHE="LcsTesting"
-    INCOMING="testing"
+    INCOMING="lcs-testing"
 elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
     BRANCHE="LcsXP"
-    INCOMING="xp"
+    INCOMING="lcs-xp"
 fi
 
 
