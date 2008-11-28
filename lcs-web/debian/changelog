@@ -1,3 +1,10 @@
+lcs-web (2.1-1~1) LcsXP; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Replacing image BP_r1_c1.gif because not visible with IE7
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 28 Nov 2008 09:20:08 +0100
+
 lcs-web (2.1-1) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
