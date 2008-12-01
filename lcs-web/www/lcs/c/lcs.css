@@ -9,11 +9,11 @@ body	{
 }
 
 body.auth	{
-	background: url(/lcs/fdecran//connexion.png)  #f8f8ff no-repeat center 50px
+	background: url(/lcs/fdecran/connexion.png)  #f8f8ff no-repeat center 50px
 }
 
 body.accueil	{
-	background: url(/lcs/fdecran//index.png)  #f8f8ff no-repeat center 100px
+	background: url(/lcs/fdecran/index.png)  #f8f8ff no-repeat center 100px
 }
 
 a:link, a:visited {color: #0080ff}
