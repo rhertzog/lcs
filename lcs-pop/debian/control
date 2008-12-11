@@ -1,0 +1,13 @@
+Source: lcs-pop
+Section: web
+Priority: optional
+Maintainer: Philippe Le Brouster <plb@ac-grenoble.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.6.2
+
+Package: lcs-pop
+Architecture: all
+Depends: slis-common, lcs-imap, courier-pop, mailx
+Description: Setup POP service on LCS server according to the pop3 service
+ This package will configure the courier POP server for use within the
+ LCS server project.

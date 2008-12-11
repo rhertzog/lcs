@@ -1,0 +1,5 @@
+lcs-pop (2.1~1) UNRELEASED; urgency=low
+
+  * Initial release of the new package.
+
+ -- Philippe Le Brouster <plb@ac-grenoble.fr>  Thu, 11 Dec 2008 14:24:46 +0100
