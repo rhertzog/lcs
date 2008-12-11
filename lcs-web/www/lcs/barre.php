@@ -1,5 +1,5 @@
 <?php
-/* lcs/barre.php derniere mise a jour : 18/09/2008 */
+/* lcs/barre.php derniere mise a jour : 12/06/2008 */
 require "includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
 require "../Annu/includes/ihm.inc.php";
@@ -22,6 +22,7 @@ list ($idpers, $login)= isauth();
 <head>
   <title>...::: Barre LCS 2.0 :::...</title>
   <meta HTTP-EQUIV="Content-Type" CONTENT="tetx/html; charset=ISO-8859-1">
+  <script type="text/javascript" src="/lib/js/prototype.js"></script>
 <style type="text/css">
 body	{
 	margin-right: 6%;
@@ -126,18 +127,37 @@ function MM_preloadImages() { //v3.0
 </head>
 
 <body bgcolor="#f8f8ff" onLoad="MM_preloadImages('images/<? echo $path ?>/BP_r1_c3_f2.gif','images/<? echo $path ?>/BP_r1_c3_f3.gif','images/<? echo $path ?>/BP_r1_c4_f2.gif','images/<? echo $path ?>/BP_r1_c4_f3.gif','images/<? echo $path ?>/BP_r1_c5_f2.gif','images/<? echo $path ?>/BP_r1_c5_f3.gif','images/<? echo $path ?>/BP_r1_c6_f2.gif','images/<? echo $path ?>/BP_r1_c6_f3.gif','images/<? echo $path ?>/BP_r1_c7_f2.gif','images/<? echo $path ?>/BP_r1_c7_f3.gif','images/<? echo $path ?>/BP_r1_c8_f2.gif','images/<? echo $path ?>/BP_r1_c8_f3.gif','images/<? echo $path ?>/BP_r1_c10_f2.gif','images/<? echo $path ?>/BP_r1_c10_f3.gif');">
+
+
+<?php
+// Cas service MrT
+   if ( $login && ($lcs_cas == 1) && !isset($_COOKIE['tgt'])) {
+
+	echo "<script type='text/javascript'>
+        // <![CDATA[
+        var params = '?toto=1';
+        new Ajax.Request('/lcs/includes/log2cas_ajax.php',{ method: 'post', onSuccess: function(requester){
+           if (requester.responseText)
+		alert(requester.responseText);
+	}});
+
+        //]]>
+        </script>\n";
+  }
+?>
+
 <div id="entete">
     <div id="blocleft">
     <!-- Logo LCS -->
         <div class="logo">
-   	    <a href="<? echo $url_logo ?>" target="principale">
-		<img name="BP_r1_c1" title="Documentation LCS" alt="Documentation LCS" src="images/<? echo $path ?>/BP_r1_c1.gif" border="0">   		
+   	    <a href="<?php echo $url_logo ?>" target="principale">
+		<img name="BP_r1_c1" title="Documentation LCS" alt="Documentation LCS" src="images/<?php echo $path ?>/BP_r1_c1.gif" border="0">   		
 	   </a>
         </div>      
         <!-- Espace -->
         <div class="bouton"></div>
         <!-- Mon LCS -->
-<?
+<?php
 if ( $idpers==0 ) {
  	// Un utilisateur n'est pas authentifié  
    	echo "<div class=\"bouton\"><a href=\"auth.php\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c3','images/$path/BP_r1_c3_f2.gif','images/$path/BP_r1_c3_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c3','images/$path/BP_r1_c3_f3.gif',1);\" ><img name=\"BP_r1_c3\" title=\"Authentification\" alt=\"Authentification\" src=\"images/$path/BP_r1_c3.gif\"  border=\"0\"></a></div>\n";
