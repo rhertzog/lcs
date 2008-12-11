@@ -110,6 +110,7 @@ case "$1" in
             -e "s|@@LOCALITYNAME@@|$LOCALITYNAME|g" \
             -e "s|@@ORGANIZATIONNAME@@|$ORGANIZATIONNAME|g" \
             -e "s|@@ORGANIZATIONALUNITNAME@@|$ORGANIZATIONALUNITNAME|g" \
+            -e "s|@@RNE@@|$RNE|g" \
             /var/lib/lcs/preinstall/lcs_db.sql.in > /var/lib/lcs/preinstall/lcs_db.sql
             #
             # Create base lcs_db 
