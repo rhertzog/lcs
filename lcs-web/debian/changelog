@@ -1,9 +1,15 @@
-lcs-web (2.1-1~1) LcsXP; urgency=low
+lcs-web (2.1-2~1) UNRELEASED; urgency=low
 
   [ Jean-Luc Chretien ]
   * Replacing image BP_r1_c1.gif because not visible with IE7
+  * Add prototype an jquery js in /var/www/lib/js
+  * Add CAS service features by MrT :
+    * lcs/include/functions.inc.php
+    * lcs/include/log2cas-ajax.php, 
+    * lcs/include/mkTicket/rb
+    * lcs/barre.php
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 28 Nov 2008 09:20:08 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 11 Dec 2008 18:01:14 +0100
 
 lcs-web (2.1-1) LcsXP; urgency=low
 
