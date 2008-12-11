@@ -4,12 +4,57 @@
    functions.inc.php
    jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice académie de Caen
-   Derniere mise à jour 27/11/2007
+   Derniere mise à jour 11/12/2008
    ============================================= */
 
 // Clé privée pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
 include ("/var/www/lcs/includes/xoft.php");
+
+    #########
+    #Ajour MrT pour CAS
+ 
+    function get_rand_letters($length=29){
+       $MAX = 4294619050;
+       mt_srand(time());
+       $r = (integer) time();
+       $r .= 'r';
+       for ($x=0;$x<8;$x++) {
+           $r .= strtoupper(dechex($r % mt_rand(1,$MAX)));
+       }
+       return substr($r,0,$length);
+    }
+ 
+
+    function redirect_2($url) {
+
+  	echo "<script language=\"JavaScript\" type=\"text/javascript\">\n";
+        echo "<!--\n";
+        echo "top.location.href = '$url';\n";
+        echo "//-->\n";
+        echo "</script>\n";
+
+	}
+
+    function redirect2($url)
+	{
+		@MYSQL_CLOSE();
+
+		echo '
+		<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+		   "http://www.w3.org/TR/html4/loose.dtd">
+		<html>
+		<head>
+		<title>..::LCS::..</title
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="refresh" content="0; url='.$url.'">
+		</head>
+		<body>
+                </body>
+		</html>';
+		exit();
+	}
+    #########
 
     function dispstats($idpers)
     {
@@ -237,7 +282,17 @@ include ("/var/www/lcs/includes/xoft.php");
                 // Destruction du cookie smbwebclient
                 setcookie("SmbWebClientID","", 0,"/","",0);
 		// Destruction des cookies squirrelmail
-		setcookie("PHPSESSID","", 0,"/squirrelmail/","",0);
+		######################################################################
+                # Ajour MrT pour CAS
+                ######################################################################
+               // Destruction du cookie tgt
+                  $t=$_COOKIE['tgt'];
+		  $query="DELETE from casserver.casserver_tgt where ticket='$t'";
+		  $result=@mysql_query($query) or die($query);
+		  setcookie("lt","", 0,"/","",0);
+		  setcookie("tgt","", 0,"/","",0);
+                  setcookie("GRR","", 0,"/","",0);
+		######################################################################
 	        setcookie("SQMSESSID","", 0,"/","",0);
 		setcookie("key","", 0,"/squirrelmail/","",0);
 		// Destruction des cookies Plugins LCS
@@ -266,6 +321,7 @@ include ("/var/www/lcs/includes/xoft.php");
         endif;
         // transfert dans last_log
         $result=mysql_db_query("$DBAUTH","UPDATE personne SET last_log=$act_log WHERE id=$idpers", $authlink);
+	
     }
 
 function ldap_get_right_search ($type,$search_filter,$ldap)
