@@ -11,7 +11,10 @@ include ("../../Annu/includes/ihm.inc.php");
 	
 //sur le lcs ?
 list ($idpers, $login)= isauth();
-	
+
+if ($idpers)
+	$password = urldecode(xoft_decode($HTTP_COOKIE_VARS['LCSuser'], $key_priv));
+
 if ($login)  {
 
  if($_SERVER['REQUEST_METHOD']==='POST') {  // REQUIRE POST OR DIE
@@ -22,7 +25,7 @@ if ($login)  {
  $Temp_Output=''; 
  
   $username=$login;
-  $password='06d3f9023fc40a223300d3a5bddf5827';
+  
   $service = "http://".$hostname.".".$domain."/lcs/index.php?url_redirect=accueil.php";
   //on casse le cookie tgt
   //setcookie('tgt',"",0,"/","",0);
@@ -65,11 +68,10 @@ if ($login)  {
  
  	define('POSTURL', 'https://'.$hostname.'.'.$domain.':8443/login');
  	define('POSTVARS', "username=$username&password=$password&lt=$lt&service=".$_POST['service']);  // POST VARIABLES TO BE SENT
- 
-
+        
  	$ch = curl_init(POSTURL);
 	ob_start();
- 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+ 	curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
  	curl_setopt($ch,CURLOPT_SSL_VERIFYHOST, 0);
  	curl_setopt($ch, CURLOPT_POST, 1);
  	curl_setopt($ch, CURLOPT_POSTFIELDS, POSTVARS);
@@ -89,7 +91,7 @@ if ($login)  {
 		//echo("Votre serveur CAS vous a attribué le ticket: $ticket[1] \n Vous avez dès lors accès aux applications SSO.");
 		
 	} else {
-		echo "Attention vous n'&#234;tes pas identifi&#233; sur le serveur CAS! Contactez votre administrateur.";
+		echo "Attention vous n'êtes pas identifié sur le serveur CAS! Contactez votre administrateur.";
 	}
 	
 	//echo $Rec_Data;

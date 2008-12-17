@@ -1,5 +1,7 @@
 lcs-web (2.1-2~1) UNRELEASED; urgency=low
-
+  [ Sébastien TACK]
+   * modify lcs/include/log2cas-ajax.php for clean user LDAP binding whith rubycas-lcs, 
+  
   [ Jean-Luc Chretien ]
   * Replacing image BP_r1_c1.gif because not visible with IE7
   * Add prototype an jquery js in /var/www/lib/js
