@@ -65,7 +65,7 @@ h5 {
 
 h6 {
   color: #0040df;
-  margin-left: %4;
+  margin-left: 4%;
   font-weight: normal;
 }
 
@@ -78,6 +78,6 @@ span.abbrev {
 }
 
 span.filename { 
-  font-family: fixed, courier, monospace
+  font-family: fixed, courier, monospace;
   color: #404044
  }
