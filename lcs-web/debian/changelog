@@ -10,6 +10,7 @@ lcs-web (2.1-2~1) UNRELEASED; urgency=low
     * lcs/include/log2cas-ajax.php, 
     * lcs/include/mkTicket/rb
     * lcs/barre.php
+  * Various minor error correction syntax
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 11 Dec 2008 18:01:14 +0100
 
