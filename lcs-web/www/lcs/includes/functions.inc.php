@@ -281,18 +281,15 @@ include ("/var/www/lcs/includes/xoft.php");
                 setcookie(md5($Nom_Appli.$VER."_admin"),"",0,"/","",0);
                 // Destruction du cookie smbwebclient
                 setcookie("SmbWebClientID","", 0,"/","",0);
+                // Destruction cookie tgt service CAS
+                $t=$_COOKIE['tgt'];
+                if ( isset($t) ) {
+	           $query="DELETE from casserver.casserver_tgt where ticket='$t'";
+	           $result=@mysql_query($query) or die($query);
+	           setcookie("lt","", 0,"/","",0);
+	           setcookie("tgt","", 0,"/","",0);
+                }
 		// Destruction des cookies squirrelmail
-		######################################################################
-                # Ajour MrT pour CAS
-                ######################################################################
-               // Destruction du cookie tgt
-                  $t=$_COOKIE['tgt'];
-		  $query="DELETE from casserver.casserver_tgt where ticket='$t'";
-		  $result=@mysql_query($query) or die($query);
-		  setcookie("lt","", 0,"/","",0);
-		  setcookie("tgt","", 0,"/","",0);
-                  setcookie("GRR","", 0,"/","",0);
-		######################################################################
 	        setcookie("SQMSESSID","", 0,"/","",0);
 		setcookie("key","", 0,"/squirrelmail/","",0);
 		// Destruction des cookies Plugins LCS
