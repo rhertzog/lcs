@@ -1,0 +1,7 @@
+/var/log/casserver/*.log {
+        weekly
+        missingok
+        rotate 52
+        compress
+        notifempty
+}
