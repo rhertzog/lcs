@@ -1,5 +1,5 @@
 #!/bin/bash
-# edit_params.sh version du 06/11/2008
+# edit_params.sh version du 19/12/2008
 
 # Fichiers de configuration
 PATH2SLAPD="/etc/ldap/slapd.conf"
@@ -12,7 +12,7 @@ PATH2MAIN="/etc/postfix/main.cf"
 PATH2LDAPALIASES="/etc/postfix/ldap-aliases.cf"
 PATH2LMHOSTS="/etc/samba/lmhosts"
 PATH2SQUIDCONF="/etc/squid/squid.conf"
-
+PATH2CASCONF="/etc/rubycas-lcs/config.yml"
 # Fichiers de configuration temporaires
 PATH2SLAPD_TMP="/etc/ldap/slapd.conf.tmp"
 PATH2LDAP_TMP="/etc/ldap/ldap.conf.tmp"
@@ -88,10 +88,16 @@ while read TYPE OLD NEW; do
     cat $PATH2MAIN | sed -e "s/$OLD/$NEW/g" > $PATH2MAIN_TMP
     mv $PATH2MAIN_TMP $PATH2MAIN
     # Modification de /etc/postfix/ldap-aliases.cf
-    #---------------------------------------------
-    if [ -e /etc/postfix/ldap-aliases.cf ]; then
+    #------------------------------------------------------------
+    if [ -e $PATH2LDAPALIASES ]; then
       cat $PATH2LDAPALIASES | sed -e "s/$OLD/$NEW/g" > $PATH2LDAPALIASES_TMP
       mv $PATH2LDAPALIASES_TMP $PATH2LDAPALIASES
+    fi
+    # Modification de /etc/rubycas-lcs/config.yml
+    #--------------------------------------------------------------
+    if [ -e $PATH2CASCONF ]; then
+      cat $PATH2CASCONF | sed -e "s/$OLD/$NEW/g" > $PATH2CASCONF_TMP
+      mv $PATH2CASCONF_TMP $PATH2CASCONF
     fi
   fi
   # Modification du base dn
@@ -127,10 +133,16 @@ while read TYPE OLD NEW; do
     cat $PATH2MAIN | sed -e "s/$OLD/$NEW/g" > $PATH2MAIN_TMP
     mv $PATH2MAIN_TMP $PATH2MAIN
     # Modification de /etc/postfix/ldap-aliases.cf
-    #---------------------------------------------
-    if [ -e /etc/postfix/ldap-aliases.cf ]; then
+    #-----------------------------------------------------------
+    if [ -e $PATH2LDAPALIASES ]; then
       cat $PATH2LDAPALIASES | sed -e "s/$OLD/$NEW/g" > $PATH2LDAPALIASES_TMP
       mv $PATH2LDAPALIASES_TMP $PATH2LDAPALIASES
+    fi
+    # Modification de /etc/rubycas-lcs/config.yml
+    #-------------------------------------------------------------
+    if [ -e $PATH2CASCONF ]; then
+      cat $PATH2CASCONF | sed -e "s/$OLD/$NEW/g" > $PATH2CASCONF_TMP
+      mv $PATH2CASCONF_TMP $PATH2CASCONF
     fi
   fi
   # Modification de l'admin Rdn
@@ -171,26 +183,28 @@ while read TYPE OLD NEW; do
         echo "le script ne peut se poursuivre"
         exit 1
     fi
-    #MYSQL_PASSWORD=$(grep -r ^password /root/.my.cnf |cut -d= -f2)
     SE3IP=$(mysql -u $user -p$password lcs_db -N -s -e "SELECT value FROM params WHERE name='se3Ip'")
     SE3NETBIOS=$(mysql -u $user -p$password lcs_db -N -s -e "SELECT value FROM params WHERE name='se3netbios'")
     echo "# File automatically maintained LCS (edit_params.sh): do not edit manually!" >$PATH2LMHOSTS
     if [ "$SE3IP" != "" -a "$SE3NETBIOS" != "" ] ; then
-      # Déclaration du serveur SE3 dans /etc/samba/lmhosts
+      # Declaration du serveur SE3 dans /etc/samba/lmhosts
       # --------------------------------------------------
       echo -e "$SE3IP\t$SE3NETBIOS" >>$PATH2LMHOSTS
     fi
   fi
 done < /tmp/params_lcs
 
-# Arret/Demarrage du service ldap
+# Start/Stop ldap service
 /etc/init.d/slapd stop
 sleep 2  
 /etc/init.d/slapd start
-
-# Redemarrage du service courier
-/etc/init.d/courier-authdaemon restart
-/etc/init.d/courier-imap restart
-/etc/init.d/postfix restart
-# Nettoyage
+# Restart courier services
+invoke-rc.d courier-authdaemon restart
+invoke-rc.d courier-imap restart
+invoke-rc.d postfix restart
+# Restart CAS service
+if [ -e /etc/init.d/rubycas-lcs ]; then
+	invoke-rc.d rubycas-lcs restart
+fi
+# Cleaning
 rm /tmp/params_lcs
