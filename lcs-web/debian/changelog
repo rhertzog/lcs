@@ -12,7 +12,8 @@ lcs-web (2.1-2~1) UNRELEASED; urgency=low
     * lcs/include/mkTicket/rb
     * lcs/barre.php
   * Various minor error correction syntax in some css and html files
-  * Modify edit_params.sh for CAS service configuration 
+  * Modify edit_params.sh for CAS service configuration
+  * Remove CAS cookies if exist in close_session
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Dec 2008 15:30:41 +0100
 
