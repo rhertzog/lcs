@@ -1,18 +1,20 @@
 lcs-web (2.1-2~1) UNRELEASED; urgency=low
-  [ Sébastien TACK]
-   * modify lcs/include/log2cas-ajax.php for clean user LDAP binding whith rubycas-lcs, 
-  
+
+  [ Sebastien TACK]
+   * modify lcs/include/log2cas-ajax.php for clean user LDAP binding whith rubycas-lcs,
+
   [ Jean-Luc Chretien ]
   * Replacing image BP_r1_c1.gif because not visible with IE7
   * Add prototype an jquery js in /var/www/lib/js
   * Add CAS service features by MrT :
     * lcs/include/functions.inc.php
-    * lcs/include/log2cas-ajax.php, 
+    * lcs/include/log2cas-ajax.php,
     * lcs/include/mkTicket/rb
     * lcs/barre.php
-  * Various minor error correction syntax
+  * Various minor error correction syntax in some css and html files
+  * Modify edit_params.sh for CAS service configuration 
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 11 Dec 2008 18:01:14 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Dec 2008 15:30:41 +0100
 
 lcs-web (2.1-1) LcsXP; urgency=low
 
