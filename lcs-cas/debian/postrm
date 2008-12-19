@@ -11,7 +11,19 @@ case "$1" in
         # unsubscribe module cas
         #
         mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1
-
+        #
+        # Stop CAS service
+        #
+        invoke-rc.d rubycas-lcs stop
+        #
+        # Desactivate lcs log2cas
+        #
+        /usr/bin/mysql -e "UPDATE lcs_db.params SET value='0' WHERE name='lcs_cas';"
+        #
+        # Remove rc.d system V rubycas-lc
+        #
+        rm -f /etc/init.d/rubycas-lcs
+        update-rc.d rubycas-lcs remove
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
