@@ -92,7 +92,7 @@ function init_config() {
 
 	if ($modifs) ecrire_metas();
 
-	@calculer_langues_utilisees();
+	calculer_langues_utilisees();
 }
 
 

@@ -72,11 +72,21 @@ function ajouter_tags($matches, $item) {
 		$type = ($match[3] == 'category' OR $match[3] == 'directory')
 			? 'directory':'tag';
 		$mot = supprimer_tags($match[0]);
-		if (!strlen($mot)) break;
+		if (!strlen($mot)
+		AND !strlen($mot = extraire_attribut($match[0], 'label')))
+			break;
 		// rechercher un url
-		if ($url = extraire_attribut($match[0], 'domain')
-		OR $url = extraire_attribut($match[0], 'resource')
-		OR $url = extraire_attribut($match[0], 'url'))
+		if ($url = extraire_attribut($match[0], 'domain')) {
+			// category@domain est la racine d'une url qui se prolonge
+			// avec le contenu text du tag <category> ; mais dans SPIP < 2.0
+			// on donnait category@domain = #URL_RUBRIQUE, et
+			// text = #TITRE_RUBRIQUE ; d'ou l'heuristique suivante sur le slash
+			if (substr($url, -1) == '/')
+				$url .= rawurlencode($mot);
+		}
+		else if ($url = extraire_attribut($match[0], 'resource')
+		OR $url = extraire_attribut($match[0], 'url')
+		)
 			{}
 
 		## cas particuliers
@@ -86,10 +96,18 @@ function ajouter_tags($matches, $item) {
 				'http://www.flickr.com/photos/tags/'.rawurlencode($petit).'/'))
 					$tags[] = $t;
 			$mot = '';
-		} else {
-			# type del.icio.us
+		}
+		else if (
+			// cas atom1, a faire apres flickr
+			$scheme = extraire_attribut($match[0], 'scheme')
+			AND $term = extraire_attribut($match[0], 'term')
+		) {
+				$url = suivre_lien($scheme,$term);
+		}
+		else {
+			# type delicious.com
 			foreach(explode(' ', $mot) as $petit)
-				if (preg_match(',<rdf[^>]* resource=["\']([^>]*/'
+				if (preg_match(',<rdf\b[^>]*\bresource=["\']([^>]*/'
 				.preg_quote(rawurlencode($petit),',').')["\'],i',
 				$item, $m)) {
 					$mot = '';
@@ -103,7 +121,6 @@ function ajouter_tags($matches, $item) {
 	}
 	return $tags;
 }
-
 
 // Retablit le contenu des blocs [[CDATA]] dans un tableau
 // http://doc.spip.org/@cdata_echappe_retour
@@ -142,7 +159,7 @@ function analyser_backend($rss, $url_syndic='') {
 	$rss = preg_replace(',<(/?)(dc):,i', '<\1', $rss);
 
 	// chercher auteur/lang dans le fil au cas ou les items n'en auraient pas
-	list($header) = preg_split(',<(item|entry)[:[:space:]>],', $rss, 2);
+	list($header) = preg_split(',<(item|entry)[\:[:space:]>],', $rss, 2);
 	if (preg_match_all(
 	',<(author|creator)>(.*)</\1>,Uims',
 	$header, $regs, PREG_SET_ORDER)) {
@@ -162,7 +179,7 @@ function analyser_backend($rss, $url_syndic='') {
 		$langue_du_site = $match[3];
 
 	$items = array();
-	if (preg_match_all(',<(item|entry)([:[:space:]][^>]*)?'.
+	if (preg_match_all(',<(item|entry)([\:[:space:]][^>]*)?'.
 	'>(.*)</\1>,Uims',$rss,$r, PREG_PATTERN_ORDER))
 		$items = $r[0];
 
@@ -268,12 +285,12 @@ function analyser_backend($rss, $url_syndic='') {
 			$data['lesauteurs'] = $les_auteurs_du_site;
 
 		// Description
-		if (preg_match(',<((description|summary)([:[:space:]][^>]*)?)'
-		.'>(.*)</\2[:>[:space:]],Uims',$item,$match)) {
+		if (preg_match(',<((description|summary)([\:[:space:]][^>]*)?)'
+		.'>(.*)</\2[\:>[:space:]],Uims',$item,$match)) {
 			$data['descriptif'] = trim($match[4]);
 		}
-		if (preg_match(',<((content)([:[:space:]][^>]*)?)'
-		.'>(.*)</\2[:>[:space:]],Uims',$item,$match)) {
+		if (preg_match(',<((content)([\:[:space:]][^>]*)?)'
+		.'>(.*)</\2[\:>[:space:]],Uims',$item,$match)) {
 			$data['content'] = trim($match[4]);
 		}
 

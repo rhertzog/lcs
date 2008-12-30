@@ -55,7 +55,7 @@ function init_entete($titre='', $id_rubrique=0) {
 		verifForm();
 		$("#page")
 		.mouseover(function(){
-			changestyle("garder-recherche");
+			if (window.changestyle) changestyle("garder-recherche");
 		});
 	'
 	.
@@ -182,15 +182,10 @@ function init_body($rubrique='accueil', $sous_rubrique='accueil', $id_rubrique='
 
 		if ($auth_can_disconnect) {
 			$alt=_T('icone_deconnecter');
-                        /* Modif. LCS 21/09/07
 			$res .= "<a href='".
 			  generer_url_action("logout","logout=prive") .
 			  "' class='icone26' onmouseover=\"changestyle('bandeaudeconnecter');\" onfocus=\"changestyle('bandeaudeconnecter');\" onblur=\"changestyle('bandeaudeconnecter');\">" .
 			  http_img_pack("deconnecter-24.gif", "$alt", "") .
-			  "</a>";
-                        */
-		          $res .= "<a href='../../lcs/logout.php' class='icone26' onmouseover=\"changestyle('bandeaudeconnecter','visibility', 'visible');\">".
-			  http_img_pack("deconnecter-24.gif", "", "").
 			  "</a>";
 		}
 		$res .= "</td>"

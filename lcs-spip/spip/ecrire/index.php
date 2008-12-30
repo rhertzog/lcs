@@ -1,11 +1,5 @@
 <?php
 
-include "/var/www/lcs/includes/headerauth.inc.php";
-list ($idpers,$login)= isauth();
-if ($idpers == "0") { 
-    header("Location:$urlauth");
-    break;
-}
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *

@@ -66,7 +66,7 @@ debut_gauche();
 //
  if ($spip_display != 4) {
 	  $iconifier = charger_fonction('iconifier', 'inc');
-	  echo $iconifier('id_syndic', 0, 'configuration');
+	  echo $iconifier('id_syndic', 0, 'configuration', true);
  }
 
 echo pipeline('affiche_gauche',array('args'=>array('exec'=>'configuration'),'data'=>''));
@@ -87,7 +87,7 @@ echo avertissement_config();
 
 	// initialiser adresse_site au besoin
 	if (strlen($GLOBALS['meta']["adresse_site"])<10) {
-		ecrire_meta('adresse_site', preg_replace(",/$,", "", url_de_base()));
+		ecrire_meta('adresse_site', preg_replace(",/$,", "", url_de_base()),'non');
 		ecrire_metas();
 	}
 	$adresse_site = entites_html($GLOBALS['meta']["adresse_site"]);

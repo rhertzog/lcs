@@ -19,7 +19,7 @@ if (!defined("_ECRIRE_INC_VERSION")) return;
 // http://doc.spip.org/@redirige_par_entete
 function redirige_par_entete($url, $equiv='') {
 
-	$url = strtr($url, "\n\r", "  ");
+	$url = trim(strtr($url, "\n\r", "  "));
 	# en theorie on devrait faire ca tout le temps, mais quand la chaine
 	# commence par ? c'est imperatif, sinon l'url finale n'est pas la bonne
 	if ($url[0]=='?')
@@ -27,6 +27,16 @@ function redirige_par_entete($url, $equiv='') {
 
 	if ($x = _request('transformer_xml'))
 		$url = parametre_url($url, 'transformer_xml', $x, '&');
+
+	// ne pas laisser passer n'importe quoi dans l'url
+	$url = str_replace(array('<','"'),array('&lt;','&quot;'),$url);
+	// interdire les url inline avec des pseudo-protocoles :
+	if (
+		(preg_match(",data:,i",$url) AND preg_match("/base64\s*,/i",$url))
+		OR preg_match(",(javascript|mailto):,i",$url)
+		)
+		$url ="./";
+
 	// Il n'y a que sous Apache que setcookie puis redirection fonctionne
 
 	if (!$equiv OR ereg("^Apache", $GLOBALS['SERVER_SOFTWARE'])) {
