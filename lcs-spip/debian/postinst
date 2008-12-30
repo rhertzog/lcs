@@ -1,5 +1,5 @@
 #!/bin/sh
-VER="2.1-1"
+VER="2.1-2"
 MODULE="spip"
 VERAPPLI="1.9.2"
 INDICEMAJNBR="5"
