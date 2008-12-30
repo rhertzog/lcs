@@ -1,3 +1,9 @@
+lcs-spip (2.1-2) LcsXP; urgency=low
+  [ Jean-Luc Chretien  ]
+      * Update spip 1.9.2c to 1.9.2g
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 30 Dec 2008 16:36:15 +0100
+
 lcs-spip (2.1-1) UNRELEASED; urgency=low
   [ Jean-Luc Chretien  ]
     * Correct test apache2 config in postinst
