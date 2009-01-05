@@ -135,7 +135,6 @@ function MM_preloadImages() { //v3.0
 
 	echo "<script type='text/javascript'>
         // <![CDATA[
-        var params = '?toto=1';
         new Ajax.Request('/lcs/includes/log2cas_ajax.php',{ method: 'post', onSuccess: function(requester){
            if (requester.responseText)
 		alert(requester.responseText);

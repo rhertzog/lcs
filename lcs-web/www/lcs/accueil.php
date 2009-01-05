@@ -4,7 +4,7 @@
    accueil.php
    jLCF : jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice académie de Caen
-   derniere mise a jour : 25/10/2008
+   derniere mise a jour : 5/01/2009
    ============================================= */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -33,7 +33,7 @@ $html .= "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\">\n";
 $html .= "<head>\n";
 $html .= "  <title>Accueil LCS</title>\n";
 $html .= "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\n";
-$html .= "  <link  href='c/lcs.css' rel='StyleSheet' type='text/css'/>\n";
+$html .= "  <link  href='../c/lcs.css' rel='StyleSheet' type='text/css'/>\n";
 $html .= "</head>\n";
 $html .= "<body class='accueil'>\n";
 $html .= "<h4>Bonjour&nbsp;" . $user["fullname"] ."</h4>\n";
