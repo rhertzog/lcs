@@ -13,7 +13,7 @@ include ("../../Annu/includes/ihm.inc.php");
 list ($idpers, $login)= isauth();
 
 if ($idpers)
-	$password = urldecode(xoft_decode($HTTP_COOKIE_VARS['LCSuser'], $key_priv));
+	$password = urldecode(xoft_decode($_COOKIE['LCSuser'], $key_priv));
 
 if ($login)  {
 

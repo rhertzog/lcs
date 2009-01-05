@@ -4,7 +4,7 @@
    functions.inc.php
    jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice académie de Caen
-   Derniere mise à jour 11/12/2008
+   Derniere mise à jour 05/01/2009
    ============================================= */
 
 // Clé privée pour cryptage du cookie LCSuser dans fonction open_session()
@@ -118,11 +118,11 @@ include ("/var/www/lcs/includes/xoft.php");
                 - Si oui, renvoie idpers : Id de la personne
         */
 
-        global $HTTP_COOKIE_VARS,$authlink, $DBAUTH;
+        global $authlink, $DBAUTH;
 
         $idpers=0;$login="";
-        if (! empty($HTTP_COOKIE_VARS["LCSAuth"])) {
-            $sess=$HTTP_COOKIE_VARS["LCSAuth"];
+        if (! empty($_COOKIE["LCSAuth"])) {
+            $sess=$_COOKIE["LCSAuth"];
             $result=@mysql_db_query("$DBAUTH","SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'", $authlink);
             if ($result && mysql_num_rows($result) ) {
 		// Split ip variable too take first ip only

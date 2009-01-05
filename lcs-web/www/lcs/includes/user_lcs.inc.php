@@ -4,7 +4,7 @@
    Projet LCS : Linux Communication Server
    lcs/includes/user_lcs.inc.php
    Equipe Tice académie de Caen
-   V 1.0 maj : 10/01/2003
+   V 1.0 maj : 05/01/2009
 ============================================= */
 include ("/var/www/lcs/includes/config.inc.php");
 include ("/var/www/Annu/includes/ldap.inc.php");
@@ -28,11 +28,11 @@ function auth_lcs()
                 - Si oui, renvoie le login
         */
 
-       global $HTTP_COOKIE_VARS, $authlink,$DBAUTH;
+       global $authlink,$DBAUTH;
 
        $ret= "";
-       if (!empty($HTTP_COOKIE_VARS["LCSAuth"])) {
-               $sess=$HTTP_COOKIE_VARS["LCSAuth"];
+       if (!empty($_COOKIE["LCSAuth"])) {
+               $sess=$_COOKIE["LCSAuth"];
                $result=mysql_db_query("$DBAUTH","SELECT  idpers,  remote_ip FROM sessions WHERE sess='$sess'", $authlink);
                if ($result && mysql_num_rows($result) ) {
                        $ip_session = mysql_result($result,0,1);

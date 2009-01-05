@@ -4,7 +4,7 @@
    lcs/includes/jlcipher.inc.php
    jLCF >:>  jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice académie de Caen
-   V 1.4 maj : 13/10/2004
+   Derniere version : 05/01/2009
    ============================================= */
 
 # Constantes j-LCipher
@@ -24,7 +24,7 @@ function header_crypto_html( $titre)
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
         <head>
                 <title><?echo $titre ?></title>
-                <link  href='c/lcs.css' rel='StyleSheet' type='text/css'/>
+                <link  href='../c/lcs.css' rel='StyleSheet' type='text/css'/>
 		<meta http-equiv="Pragma" content="No-Cache"/>
                 <script language = 'javascript' type = 'text/javascript' src="../lcs/crypto.js"></script>
                 <script language = 'javascript' type = 'text/javascript' src="../lcs/public_key.js"></script>
