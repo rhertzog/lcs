@@ -3,7 +3,7 @@
    Projet LcSE3 Ex&#233;cution d'une action sur le serveur
    Admin/action.php
    Equipe Tice acad&#233;mie de Caen
-   Derniere mis a jour : 16/10/2008
+   Derniere mis a jour : 05/01/2009
    Distribue selon les termes de la licence GPL
    ============================================= */
 
@@ -70,7 +70,7 @@ if (is_admin("system_is_admin",$login)=="Y") {
 		if ( $action == "settime" )
 			exec ("/usr/bin/sudo /usr/share/lcs/scripts/action.sh $action $ntpserv" , $AllOutput, $ReturnValue);
 		elseif ( $action == "synchro_mdp" ) {
-                        $pass = urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
+                        $pass = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
 			exec ("/usr/bin/sudo /usr/share/lcs/scripts/action.sh $action $pass" , $AllOutput, $ReturnValue);
                 } else
 			exec ("/usr/bin/sudo /usr/share/lcs/scripts/action.sh $action" , $AllOutput, $ReturnValue);			
