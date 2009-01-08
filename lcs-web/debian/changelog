@@ -1,10 +1,12 @@
 lcs-web (2.1-2~2) UNRELEASED; urgency=low
+
   [ Jean-Luc Chretien ]
   * Install random private_key in lcs/include/private_key.inc.php
   * Replace $_HTTP_COOKIE_VARS by $_COOKIE
   * Move lcs.css in /var/www
+  * Add mailing_list.cf in edit_params.sh
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon,  5 Jan 2009 15:28:13 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu,  8 Jan 2009 10:08:59 +0100
 
 lcs-web (2.1-2~1) UNRELEASED; urgency=low
 
