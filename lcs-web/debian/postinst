@@ -11,6 +11,14 @@ case "$1" in
 	       . /usr/share/slis/slis-common.sh
 	       handle_initial_config lcs-web-config 60
 	   fi
+
+           # Generate private_key file if no exist
+           if [ ! -e /var/www/lcs/includes/private_key.inc.php ]; then
+              PRIVKEY=`perl -e '@c=("A".."Z","a".."z",0..9);print join("",@c[map{rand @c}(1..32)]),"\n"'`
+              sed -e "s|@@PRIVKEY@@|$PRIVKEY|g" /var/www/lcs/includes/private_key.in >/var/www/lcs/includes/private_key.inc.php
+              chown www-data /var/www/lcs/includes/private_key.inc.php
+              chmod 640 /var/www/lcs/includes/private_key.inc.php
+           fi
            # Fix rights on lcs-web tree
            /usr/sbin/lcs-web-fixrights
     	;;
