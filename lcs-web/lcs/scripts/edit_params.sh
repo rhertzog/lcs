@@ -1,5 +1,5 @@
 #!/bin/bash
-# edit_params.sh version du 19/12/2008
+# edit_params.sh version du 08/01/2009
 
 # Fichiers de configuration
 PATH2SLAPD="/etc/ldap/slapd.conf"
@@ -10,6 +10,7 @@ PATH2IMAP_LDAP="/etc/courier/authldaprc"
 PATH2SPIP_LDAP="/usr/share/lcs/spip/config/connect.php"
 PATH2MAIN="/etc/postfix/main.cf"
 PATH2LDAPALIASES="/etc/postfix/ldap-aliases.cf"
+PATH2MAILINGLIST="/etc/postfix/mailing_list.cf"
 PATH2LMHOSTS="/etc/samba/lmhosts"
 PATH2SQUIDCONF="/etc/squid/squid.conf"
 PATH2CASCONF="/etc/rubycas-lcs/config.yml"
@@ -22,6 +23,7 @@ PATH2IMAP_LDAP_TMP="/etc/courier/authldaprc.tmp"
 PATH2SPIP_LDAP_TMP="/usr/share/lcs/spip/config/connect.php.tmp"
 PATH2MAIN_TMP="/etc/postfix/main.cf.tmp"
 PATH2LDAPALIASES_TMP="/etc/postfix/ldap-aliases.tmp"
+PATH2MAILINGLIST_TMP="/etc/postfix/mailing_list.tmp"
 PATH2SQUIDCONF_TMP="/etc/squid/squid.conf.tmp"
 
 while read TYPE OLD NEW; do
@@ -93,6 +95,12 @@ while read TYPE OLD NEW; do
       cat $PATH2LDAPALIASES | sed -e "s/$OLD/$NEW/g" > $PATH2LDAPALIASES_TMP
       mv $PATH2LDAPALIASES_TMP $PATH2LDAPALIASES
     fi
+    # Modification de /etc/postfix/mailing_list.cf
+    #------------------------------------------------------------
+    if [ -e $PATH2MAILINGLIST ]; then
+      cat $PATH2MAILINGLIST | sed -e "s/$OLD/$NEW/g" > $PATH2MAILINGLIST_TMP
+      mv $PATH2MAILINGLIST_TMP $PATH2MAILINGLIST
+    fi
     # Modification de /etc/rubycas-lcs/config.yml
     #--------------------------------------------------------------
     if [ -e $PATH2CASCONF ]; then
@@ -137,6 +145,12 @@ while read TYPE OLD NEW; do
     if [ -e $PATH2LDAPALIASES ]; then
       cat $PATH2LDAPALIASES | sed -e "s/$OLD/$NEW/g" > $PATH2LDAPALIASES_TMP
       mv $PATH2LDAPALIASES_TMP $PATH2LDAPALIASES
+    fi
+    # Modification de /etc/postfix/mailing_list.cf
+    #------------------------------------------------------------
+    if [ -e $PATH2MAILINGLIST ]; then
+      cat $PATH2MAILINGLIST | sed -e "s/$OLD/$NEW/g" > $PATH2MAILINGLIST_TMP
+      mv $PATH2MAILINGLIST_TMP $PATH2MAILINGLIST
     fi
     # Modification de /etc/rubycas-lcs/config.yml
     #-------------------------------------------------------------
