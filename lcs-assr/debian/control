@@ -1,0 +1,14 @@
+Source: lcs-assr
+Section: misc
+Priority: extra
+Maintainer: simon cavey <simon.cavey@crdp.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-assr
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, rsync
+Description: ASSR for LCS
+ attestations scolaires de securite routiere
+ ajout du support de l ASSR pour le telechargement
+ de l application serveur web assr

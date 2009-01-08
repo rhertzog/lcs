@@ -1,3 +1,9 @@
+lcs-security (0.1-7) stable; urgency=low
+
+  * Fix save scripts
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 20 Nov 2008 16:41:27 +0100
+
 lcs-security (0.1-6) stable; urgency=low
 
   * Add ldap and myslq weekly backup
