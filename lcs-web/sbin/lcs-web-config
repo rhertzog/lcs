@@ -54,7 +54,7 @@ case "$1" in
         sed -e "s|@@PASSWORD@@|"$LCSMGRPASS"|g" /var/www/lcs/includes/config.inc.in >/var/www/lcs/includes/config.inc.php
         chown www-data:www-data /var/www/lcs/includes/config.inc.php
         # Generate private_key file
-        PRIVKEY='perl -e '@c=("A".."Z","a".."z",0..9);print join("",@c[map{rand @c}(1..32)]),"\n"''
+        PRIVKEY=`perl -e '@c=("A".."Z","a".."z",0..9);print join("",@c[map{rand @c}(1..32)]),"\n"'`
         sed -e "s|@@PRIVKEY@@|$PRIVKEY|g" /var/www/lcs/includes/private_key.in >/var/www/lcs/includes/private_key.inc.php
         chown www-data /var/www/lcs/includes/private_key.inc.php
         chmod 640 /var/www/lcs/includes/private_key.inc.php
