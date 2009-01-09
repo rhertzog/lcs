@@ -13,16 +13,18 @@
 	Le service CAS implant&#233; sur LCS est bas&#233; sur <a href="http://code.google.com/p/rubycas-server/" title="rubycas-server">rubycas-server</a>
 </h4>	
 <p>Ceci permet la mise en place de m&#233;canismes SSO (Single Sign On - Authentification unique) c'est &#224; dire la possibilit&#233; d'acc&#232;der &#224; des sites tiers sans nouvelle authentification de l'utlisateur.</p>
-<p>Ceci permet aussi d'exploiter une autre fa&ccedil;on d'installer des applications sur le LCS. GRR, Moodle, Claroline et bien d'autres encore autorisent une authentification en mode CAS/SSO </p>
+<p>Ceci permet aussi d'exploiter une autre fa&ccedil;on d'installer des applications sur le LCS. GRR, Moodle, Claroline et bien d'autres encore qui autorisent une authentification en mode CAS/SSO 
+Ces applications utilisent généralement la librairie cliente php_cas fournie par l'ESUP. Une application doit donc être cassifi&#233;e pour s'int&#233;grer dans un syst&#232;me CAS.
+</p>
 
-<p>Par exemple en int&#233;grant un service CAS sur LCS il devient possible d'acc&#232der en SSO au site tv <a href="http://www.lesite.tv/" title="lesite.tv">lesite.tv (L'espace vid&#233;o des enseignants et des &#233;l&#232;ves)</a></p>
-<p>En quoi consiste un serveur CAS ? CAS signifie Central Authentication System, disposer d'un serveur CAS permet donc de disposer d'un syst&#232;me d'identification centralis&#233e des utilisateurs. Comment cela fonctionne t-il ?
+<p>Par exemple en int&#233;grant un service CAS sur LCS il devient possible d'acc&#232;der en SSO au site tv <a href="http://www.lesite.tv/" title="lesite.tv">lesite.tv (L'espace vid&#233;o des enseignants et des &#233;l&#232;ves)</a></p>
+<p>En quoi consiste un serveur CAS ? CAS signifie Central Authentication System, disposer d'un serveur CAS permet donc de disposer d'un syst&#232;me d'identification centralis&#233;e des utilisateurs. Comment cela fonctionne t-il ?
 </p>
 <p><img src="http://rubycas-server.googlecode.com/files/basic_cas_single_signon_mechanism_diagram.png"></img></p>
 <p> Sur le LCS il a fallu tenir compte de l'&#233;xistant pour int&#233;grer ce m&#233;canisme.
 	<ol>
 		<li>L'utilisateur tente d'acc&#232;der &#224; une ressource prot&#233;g&#233;e par authentification. Par exemple le site.tv</li>
-		<li>Le fournisseur tiers interroge le serveur CAS du LCS qui a &#233mis la requ&ecirc;te. En fait sur le LCS l'utilisateur est identifi&#233; au moment de sa connexion au LCS. Il se voit attribu&#233; un ticket TGT qu'il conserve le temps de sa connexion  </li>
+		<li>Le fournisseur tiers interroge le serveur CAS du LCS qui a &#233;mis la requ&ecirc;te. En fait sur le LCS l'utilisateur est identifi&#233; au moment de sa connexion au LCS. Il se voit attribu&#233; un ticket TGT qu'il conserve le temps de sa connexion  </li>
 		<li>Donc c&ocirc;t&#233; LCS les &#233;tapes 2 et 3 sont r&#233;alis&#233;es &#224; la connexion. L'appel au site.tv se fait donc avec un ticket de service que le LCS transmets au site tiers. </li>
 		<li>Le site tiers (site.tv dans notre exemple) doit maintenant v&#233;rifier la validit&#233; de ce ticket en transmettant ce ticket sur le serveur CAS du LCS. Il recoit d&#232;s lors une r&#233;ponse CAS contenant le profil utilisateur.</li>
 		<li>Si l'&#233;tape pr&#233;c&#233;dente est concluante, l'utilisateur acc&#232;de sans identification &#224; mais avec le bon profil &#224; la page d'accueil du site.tv</li>	
@@ -34,6 +36,7 @@
 	<li>S'assurer que l'&#233;tablissement dispose bien d'un abonnement ! Trivial mais bon, il faut commencer par l&#224;</li>
 	<li>V&#233;rifier que le param&#232;tre RNE est bien renseign&#233; dans la page param&#232;tre serveur du LCS.</li>
 	<li>Acqu&#233;rir un certificat sign&#233; d'un autorit&#233; de certification reconnue ou installer le certificat acad&#233;mique auto-sign&#233;</li>
+	<li>Disposer des scripts d'acc&#232;s au siteTV (en préparation) et ajouter le lien sur le LCS.</li>
 </ol>
 </p>
 </body>
