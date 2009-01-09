@@ -1,5 +1,9 @@
-lcs-pop (2.1~1) UNRELEASED; urgency=low
+lcs-pop (2.1~1) LcsXP; urgency=low
 
+  [ Philippe Le Brouster ]
   * Initial release of the new package.
 
- -- Philippe Le Brouster <plb@ac-grenoble.fr>  Thu, 11 Dec 2008 14:24:46 +0100
+  [ Jean-Luc Chretien ]
+  * Upload package in LcsXP Tree
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri,  9 Jan 2009 10:26:40 +0100
