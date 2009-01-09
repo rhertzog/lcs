@@ -1,8 +1,11 @@
-lcs-preinstall (2.1-1~1) UNRELEASED; urgency=low
-  [ Jean-Luc Chretien]
-  * Add rne and lcs_cas fields for LCS CAS Service 
+lcs-preinstall (2.1-1~1) LcsXP; urgency=low
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 11 Dec 2008 18:01:14 +0100
+  [ Jean-Luc Chretien]
+  * Add rne and lcs_cas fields for LCS CAS Service
+  * Add rsync dependency
+  * Upload package in LcsXP Tree 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri,  9 Jan 2009 10:31:33 +0100
 
 lcs-preinstall (2.1) LcsXP; urgency=low
   [ Simon Cavey ]
