@@ -1,6 +1,12 @@
+lcs-assr (2.0) unstable; urgency=low
+
+  * move to vhost config and script fix
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri,  9 Jan 2009 14:12:36 +0100
+
 lcs-assr (1.0-1) unstable; urgency=low
 
   * Initial release 
 
- -- Simon CAVEY <simon.cavey@crdp.ac-caen.fr>  Thu,  8 Jan 2009 16:49:40 +0100
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu,  8 Jan 2009 16:49:40 +0100
 

@@ -1,7 +1,7 @@
-#!bin/bash
+#!/bin/bash
 ## Apache 2
- mv /etc/apache2/lcs-main/95_assr.conf.disable /etc/apache2/lcs-main/95_assr.conf
- /etc/init.d/apache2 reload
+ a2ensite lcs-assr 
+/etc/init.d/apache2 reload
 
 ## Bind
  

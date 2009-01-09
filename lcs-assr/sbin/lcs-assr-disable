@@ -1,5 +1,6 @@
- mv /etc/apache2/lcs-main/95_assr.conf /etc/apache2/lcs-main/95_assr.conf.disable
- /etc/init.d/apache2 reload
+#!/bin/bash
+a2dissite lcs-assr 
+/etc/init.d/apache2 reload
 
 oldserial=`cat /etc/bind/localnet.db | grep -i serial`
 newserial=`date +"%Y%m%d"`"01; serial"

@@ -1,0 +1,10 @@
+<VirtualHost *:80>
+        DocumentRoot  /home/serveurassr/
+        ErrorLog /var/log/apache2/lcs-assr.error.log
+        CustomLog /var/log/apache2/lcs-assr.access.log combined
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+        ServerName assr
+</VirtualHost>
+

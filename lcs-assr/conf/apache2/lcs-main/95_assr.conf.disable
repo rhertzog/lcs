@@ -1,5 +1,0 @@
-<VirtualHost @@IPLCS@@>
-  DocumentRoot /home/serveurassr/
-  ServerName assr.@@DOMAINE@@
-  ServerAlias assr
-</VirtualHost>
