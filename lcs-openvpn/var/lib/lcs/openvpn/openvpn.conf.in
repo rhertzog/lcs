@@ -1,0 +1,38 @@
+local @@LOCALIP@@
+port @@VPNPORT@@
+proto udp
+dev tun
+mode server
+tls-server
+tun-mtu 1500
+mssfix 1200
+;fragment 1200
+persist-key
+persist-tun
+ca /usr/share/lcs/openvpn/keys/ca.crt
+cert /usr/share/lcs/openvpn/keys/@@CERT@@.crt
+key /usr/share/lcs/openvpn/keys/@@CERT@@.key  # This file should be kept secret
+dh /usr/share/lcs/openvpn/keys/dh@@DH@@.pem
+tls-auth /usr/share/lcs/openvpn/keys/ta.key 0 # This file is secret
+ifconfig @@VPNIP1@@ @@VPNIP2@@
+route @@VPNNET@@ @@VPNNETMASQ@@
+push "@@VPNNET@@ @@VPNNETMASQ@@"
+; Configuration options
+;push "route @@VLAN1@@ 255.255.255.0"
+;push "route @@VLAN2@@ 255.255.255.0"
+;push "route @@VLAN3@@ 255.255.255.0"
+;ccd-exclusive
+;client-to-client
+client-config-dir ccd
+keepalive 10 120
+comp-lzo
+cipher BF-CBC
+max-clients 15
+user nobody
+group nogroup
+chroot /etc/openvpn
+status /var/log/openvpn/status.log
+log-append /var/log/openvpn/openvpn.log
+verb 4
+status-version 2
+mute 10

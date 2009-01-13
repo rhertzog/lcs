@@ -1,0 +1,93 @@
+#!/bin/bash
+
+##
+# Configuration inital de OpenVPN
+# Projet LCS 2
+# auteur : Simon CAVEY 
+# creation : 04/01/2009 modification
+##
+
+. /etc/lcs/lcs.conf
+# création d'un subnet pour le vpn
+# vpn en 192.168.X.0
+# on prend X le 3ieme octet de l'ip lcs
+# et si non libre on test les subnet les uns après les autres
+
+THIPOCTET=`echo $IPADDR0 | cut -f 3 -d .`
+VPNNET="192.168."$THIPOCTET".0"
+VPNNETMASQ=255.255.255.0
+DH=1024
+VPNPORT=1193
+
+CHECK=`route -n |grep $VPNNET |wc -l`
+
+function veriffreesub () {
+	if [ $CHECK -ne 0 ]; then
+		THIPOCTET=`expr $THIPOCTET + 1`
+		VPNNET="192.168."$THIPOCTET".0"
+		CHECK=`route -n |grep $VPNNET |wc -l`
+		veriffreesub
+	fi
+}
+
+veriffreesub
+echo plage ip pour vpn $VPNNET
+
+## ajout des entrées mysql
+
+sed -e "s|@@VPNPORT@@|$VPNPORT|g" \
+sed -e "s|@@VPNNET@@|"$VPNNET"|g" \
+sed -e "s|@@VPNNETMASQ@@|"$VPNNETMASQ"|g" \
+sed -e "s|@@CERTNAME@@|"$HOSTNAME"|g" \
+sed -e "s|@@DH@@|"$DH"|g" \
+/var/lib/lcs/openvpn/params.sql.in > /var/lib/lcs/openvpn/params.sql
+
+mysql lcs_db < /var/lib/lcs/openvpn/params.sql
+rm -f /var/lib/lcs/openvpn/params.sql
+
+## creation du fichier de config openvpn.conf
+SMALLVPNNET=`echo $IPADDR0 | cut -f 1-3 -d .`
+VPNIP1=$SMALLVPNNET.1
+VPNIP2=$SMALLVPNNET.2
+sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
+sed -e "s|@@VPNPORT@@|$VPNPORT|g" \
+sed -e "s|@@VPNNET@@|"$VPNNET"|g" \
+sed -e "s|@@VPNNETMASQ@@|"$VPNNETMASQ"|g" \
+sed -e "s|@@VPNIP1@@|"$VPNIP1"|g" \
+sed -e "s|@@VPNIP2@@|"$VPNIP2"|g" \
+sed -e "s|@@DH@@|"$DH"|g" \
+sed -e "s|@@CERT@@|"$HOSTNAME"|g" \
+/var/lib/lcs/openvpn/openvpn.conf.in > /etc/openvpn/openvpn.conf
+
+## creation fichier de config openssl.cnf
+sslpassword=`pwgen 8 1`
+sed -e "s|@@passwd@@|"$sslpassword"|g" /var/lib/lcs/openvpn/openssl.cnf.in > /etc/lcs/openvpn/openssl.cnf
+
+## On lance le scipt de génération du certif
+/usr/share/lcs/sbin/lcs-openvpn-generserveur.sh
+## On genere les certifs pour admin : 
+/usr/share/lcs/sbin/lcs-openvpn-generclient.sh admin
+
+## on ajoute les entr�es sudo pour la generation des clients
+chmod 700  /etc/sudoers
+echo "Cmnd_Alias GENVPNCLI = /usr/share/lcs/sbin/lcs-openvpn-generclient.sh" >> /etc/sudoers
+echo "www-data ALL=NOPASSWD:GENVPNCLI" >> /etc/sudoers
+chmod 440  /etc/sudoers
+
+## On corrige les droits
+chown -R www-data /var/log/openvpn
+chown -R www-data /usr/share/lcs/openvpn/templates_c/
+
+## On relance les services 
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d apache2 restart
+else
+	/etc/init.d/apache2 restart
+fi
+
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d openvpn restart
+else
+	/etc/init.d/openvpn restart
+fi
+

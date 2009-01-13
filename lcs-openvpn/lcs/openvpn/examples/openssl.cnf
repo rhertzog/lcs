@@ -1,0 +1,98 @@
+#
+# OpenSSL configuration
+#
+# NOTE: Where you see the "KEY_" tag commented out,
+#       change corresponding key to the same value
+#       as it is in easy-rsa/vars file
+#
+
+HOME				= .
+RANDFILE			= $ENV::HOME/.rnd
+
+[ ca ]
+default_ca			= SECTION_ca_default
+
+[ req ]
+#- - - - - - - - - - - - - - -	= $ENV::KEY_SIZE
+default_bits			= 1024
+default_keyfile 		= privkey.pem
+distinguished_name		= SECTION_req_distinguished_name
+attributes			= SECTION_req_attributes
+x509_extensions			= SECTION_req_x509_ext
+string_mask 			= nombstr
+
+[ SECTION_ca_default ]
+dir				= /usr/local/etc/openvpn/keys
+certs				= $dir/pem
+new_certs_dir			= $dir/newpem
+crl_dir				= $dir/crl
+crl				= $dir/crl.pem 
+database			= $dir/database.txt
+serial				= $dir/serial 
+certificate			= $dir/ca.crt	 
+private_key			= $dir/ca.key	 
+RANDFILE			= $dir/.rand
+default_days			= 3650
+default_crl_days		= 30
+default_md			= md5
+preserve			= no
+x509_extensions			= SECTION_ca_default_x509_ext
+policy				= SECTION_ca_default_policy
+
+[ SECTION_ca_default_x509_ext ]
+basicConstraints		= CA:FALSE
+nsComment			= "OpenSSL Generated Certificate"
+subjectKeyIdentifier		= hash
+authorityKeyIdentifier		= keyid,issuer:always
+
+[ SECTION_ca_default_policy ]
+countryName			= match
+stateOrProvinceName		= supplied
+localityName			= supplied
+organizationName		= match
+organizationalUnitName		= optional
+commonName			= supplied
+emailAddress			= supplied
+
+[ SECTION_req_distinguished_name ]
+countryName			= "Country Name (2 letter code)"
+#- - - - - - - - - - - - - - -	= $ENV::KEY_COUNTRY
+countryName_default		= "CA"
+countryName_min			= 2
+countryName_max			= 2
+stateOrProvinceName		= "State or Province Name (full name)"
+#- - - - - - - - - - - - - - -	= $ENV::KEY_PROVINCE
+stateOrProvinceName_default	= "ON"
+localityName			= "City Name (or town, village etc)"
+#- - - - - - - - - - - - - - -	= $ENV::KEY_CITY
+localityName_default		= "Toronto"
+0.organizationName		= "Organization Name (eg, company)"
+#- - - - - - - - - - - - - - -	= $ENV::KEY_ORG
+0.organizationName_default	= "Lake Ontario"
+organizationalUnitName		= "Organizational Unit Name (eg, department)"
+organizationalUnitName_default	= "IT"
+commonName			= "Common Name (eg, person's or server's name)"
+commonName_max			= 64
+emailAddress			= "E-mail Address"
+#- - - - - - - - - - - - - - -	= $ENV::KEY_EMAIL
+emailAddress_default		= "user@lake.on.ca"
+emailAddress_max		= 40
+
+[ SECTION_req_attributes ]
+challengePassword		= A challenge password
+challengePassword_min		= 4
+challengePassword_max		= 20
+unstructuredName		= An optional company name
+
+[ SECTION_req_x509_ext ]
+basicConstraints		= CA:true
+subjectKeyIdentifier		= hash
+authorityKeyIdentifier		= keyid:always,issuer:always
+
+#[ server ]
+#basicConstraints		= CA:FALSE
+#nsCertType			= server
+#nsComment			= "OpenSSL Generated Server Certificate"
+#subjectKeyIdentifier		= hash
+#authorityKeyIdentifier		= keyid,issuer:always
+

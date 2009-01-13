@@ -1,0 +1,33 @@
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+--
+-- Base de données: `lcs_db`
+--
+-- Structure de la table `params`
+--
+
+CREATE TABLE IF NOT EXISTS `params` (
+  `id` smallint(5) unsigned NOT NULL auto_increment,
+  `name` varchar(20) NOT NULL default '',
+  `value` varchar(100) NOT NULL default '',
+  `srv_id` smallint(4) NOT NULL default '0',
+  `descr` varchar(50) NOT NULL default '',
+  `cat` tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `id_2` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=106 ;
+
+--
+-- Contenu de la table `params`
+--
+
+INSERT INTO `params` (`id`, `name`, `value`, `srv_id`, `descr`, `cat`) VALUES
+(100, 'vpnnet', '@@VPNNET@@', 0, 'reseau pour les connexion vpn', 11),
+(101, 'vpnnetmasq', '@@VPNNETMASQ@@', 0, 'masque de reseau pour les connexion vpn', 11),
+(102, 'vpnport', '@@VPNPORT@@', 0, 'Port pour openvpn', 11),
+(103, 'vpncert', '@@CERTNAME@@', 0, 'nom du certificat serveur openvpn', 11),
+(104, 'vpndh', '@@DH@@', 0, 'taille de hashage (RSA)', 11),
+(105, 'vpnvlan', '@@VPNVLAN@@', 0, 'activer la propagation des vlans par le vpn', 11);
+
+

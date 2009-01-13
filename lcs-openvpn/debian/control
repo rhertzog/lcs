@@ -1,0 +1,15 @@
+Source: lcs-openvpn
+Section: unknown
+Priority: extra
+Maintainer: simc <simon.cavey@crdp.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-openvpn
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, openvpn, smarty, zip
+Description: Provide a implementation of Openvn whith WebGUI
+ Provide a implementation of Openvn whith WebGUI
+ a openvpn to LCS with automatique CA generation
+ and web GUI base on Openvpn Web Gui 0.3 to
+ manage the VPN
