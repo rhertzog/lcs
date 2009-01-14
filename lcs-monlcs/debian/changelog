@@ -5,6 +5,7 @@ lcs-monlcs (2.1-1) LcsXP; urgency=low
   * Restructuring the architecture of the package (svn_builpackage compatibilty)
 
   [ Sebastien Tack ]
+  * div user too big and then overlap on right menu button - correcting
   * Remove phantom image url from style.css
   * Bug correction for multiple targets in Scenarios
   * Remove debug information

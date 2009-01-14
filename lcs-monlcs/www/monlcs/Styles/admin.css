@@ -228,14 +228,15 @@ a:hover{
 
 
 #img_user {
-	position: absolute;
-	background-image: url(../images/user.gif);
-	background-repeat: no-repeat;
-	width: 25px;
-	height: 20px;
-	right: -105px;
-	top: 0px;
+        position: absolute;
+        background-image: url(../images/user.gif);
+        background-repeat: no-repeat;
+        width: 12px;
+        height: 20px;
+        right: -92px;
+        top: 0px;
 }
+
 #view_others {
 	position: absolute;
 	width: 25px;
