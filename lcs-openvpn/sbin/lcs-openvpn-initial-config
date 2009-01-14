@@ -80,9 +80,6 @@ echo "Cmnd_Alias GENVPNCLI = /usr/share/lcs/sbin/lcs-openvpn-generclient.sh" >> 
 echo "www-data ALL=NOPASSWD:GENVPNCLI" >> /etc/sudoers
 chmod 440  /etc/sudoers
 
-## On corrige les droits
-chown -R www-data /var/log/openvpn
-chown -R www-data /usr/share/lcs/openvpn/templates_c/
 
 ## On relance les services 
 if [ -x /usr/sbin/invoke-rc.d ]; then
@@ -97,3 +94,6 @@ else
 	/etc/init.d/openvpn restart
 fi
 
+## On corrige les droits
+chown -R www-data /var/log/openvpn
+chown -R www-data /usr/share/lcs/openvpn/templates_c/

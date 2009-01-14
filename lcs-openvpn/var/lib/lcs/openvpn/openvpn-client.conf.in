@@ -1,7 +1,7 @@
 client
 dev tun 
 proto udp
-remote @@FULLDOMAINE@@ @@PORT@@
+remote @@FULLDOMAINE@@ @@VPNPORT@@
 resolv-retry infinite
 nobind
 tls-client

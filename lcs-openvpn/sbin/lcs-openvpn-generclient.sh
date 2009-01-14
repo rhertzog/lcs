@@ -41,7 +41,7 @@ fi
 
 ##
 if test $KEY_DIR; then
-	KEY_COMMONNAME=$1
+	export KEY_COMMONNAME=$1
         cd $KEY_DIR && \
         openssl req -days 3650 -nodes -new -keyout $1.key -out $1.csr -config $KEY_CONFIG -batch && \
         openssl ca -days 3650 -out $1.crt -in $1.csr -config $KEY_CONFIG -batch && \
@@ -64,6 +64,6 @@ sed -i'' "s/@@VPNPORT@@/$VPNPORT/g" /home/$1/Documents/vpn/lcs.ovpn
 sed -i'' "s/@@USER@@/$1/g" /home/$1/Documents/vpn/lcs.ovpn
 chown $1 /home/$1/Documents/vpn
 cd  /home/$1/Documents/vpn 
-zip configuration-vpn.zip *
+zip -rq configuration-vpn.zip *
 rm -r lcs*
 chown $1 /home/$1/Documents/vpn/configuration-vpn.zip

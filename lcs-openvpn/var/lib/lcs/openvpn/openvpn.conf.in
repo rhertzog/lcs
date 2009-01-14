@@ -16,7 +16,7 @@ dh /usr/share/lcs/openvpn/keys/dh@@DH@@.pem
 tls-auth /usr/share/lcs/openvpn/keys/ta.key 0 # This file is secret
 ifconfig @@VPNIP1@@ @@VPNIP2@@
 route @@VPNNET@@ @@VPNNETMASQ@@
-push "@@VPNNET@@ @@VPNNETMASQ@@"
+push "route @@VPNNET@@ @@VPNNETMASQ@@"
 ; Configuration options
 ;push "route @@VLAN1@@ 255.255.255.0"
 ;push "route @@VLAN2@@ 255.255.255.0"
