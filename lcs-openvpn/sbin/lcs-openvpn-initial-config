@@ -18,6 +18,8 @@ VPNNET="192.168."$THIPOCTET".0"
 VPNNETMASQ=255.255.255.0
 DH=1024
 VPNPORT=1193
+HOSTNAME=`hostname`
+FULLDOMAINE=`hostname -f`
 
 CHECK=`route -n |grep $VPNNET |wc -l`
 
@@ -36,10 +38,10 @@ echo plage ip pour vpn $VPNNET
 ## ajout des entrées mysql
 
 sed -e "s|@@VPNPORT@@|$VPNPORT|g" \
-sed -e "s|@@VPNNET@@|"$VPNNET"|g" \
-sed -e "s|@@VPNNETMASQ@@|"$VPNNETMASQ"|g" \
-sed -e "s|@@CERTNAME@@|"$HOSTNAME"|g" \
-sed -e "s|@@DH@@|"$DH"|g" \
+-e "s|@@VPNNET@@|"$VPNNET"|g" \
+-e "s|@@VPNNETMASQ@@|"$VPNNETMASQ"|g" \
+-e "s|@@CERTNAME@@|"$HOSTNAME"|g" \
+-e "s|@@DH@@|"$DH"|g" \
 /var/lib/lcs/openvpn/params.sql.in > /var/lib/lcs/openvpn/params.sql
 
 mysql lcs_db < /var/lib/lcs/openvpn/params.sql
@@ -50,18 +52,22 @@ SMALLVPNNET=`echo $IPADDR0 | cut -f 1-3 -d .`
 VPNIP1=$SMALLVPNNET.1
 VPNIP2=$SMALLVPNNET.2
 sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
-sed -e "s|@@VPNPORT@@|$VPNPORT|g" \
-sed -e "s|@@VPNNET@@|"$VPNNET"|g" \
-sed -e "s|@@VPNNETMASQ@@|"$VPNNETMASQ"|g" \
-sed -e "s|@@VPNIP1@@|"$VPNIP1"|g" \
-sed -e "s|@@VPNIP2@@|"$VPNIP2"|g" \
-sed -e "s|@@DH@@|"$DH"|g" \
-sed -e "s|@@CERT@@|"$HOSTNAME"|g" \
+-e "s|@@VPNPORT@@|$VPNPORT|g" \
+-e "s|@@VPNNET@@|"$VPNNET"|g" \
+-e "s|@@VPNNETMASQ@@|"$VPNNETMASQ"|g" \
+-e "s|@@VPNIP1@@|"$VPNIP1"|g" \
+-e "s|@@VPNIP2@@|"$VPNIP2"|g" \
+-e "s|@@DH@@|"$DH"|g" \
+-e "s|@@CERT@@|"$HOSTNAME"|g" \
 /var/lib/lcs/openvpn/openvpn.conf.in > /etc/openvpn/openvpn.conf
 
 ## creation fichier de config openssl.cnf
 sslpassword=`pwgen 8 1`
 sed -e "s|@@passwd@@|"$sslpassword"|g" /var/lib/lcs/openvpn/openssl.cnf.in > /etc/lcs/openvpn/openssl.cnf
+
+## Patch des fichier de config interface web
+sed -i'' "s/@@HOSTNAME@@/$HOSTNAME/g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /usr/share/lcs/openvpn/config.inc
 
 ## On lance le scipt de génération du certif
 /usr/share/lcs/sbin/lcs-openvpn-generserveur.sh

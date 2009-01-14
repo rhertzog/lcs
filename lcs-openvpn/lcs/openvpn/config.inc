@@ -5,10 +5,10 @@ if (!defined ("LOCAL_SECURITY_KEY"))
 // OPENVPN-WEB-GUI ________________________
 
 // Change: your company name
-$config['Company_Name']          = '@hostname@';
+$config['Company_Name']          = '@@HOSTNAME@@';
 $config['Company_Logo']          = 'img/OpenVPN-small.gif';
 // Change: your company home page
-$config['URL_Home_Page']         = 'http://openvpn-web-gui.sourceforge.net/';
+$config['URL_Home_Page']         = '@@FULLDOMAINE@@';
 $config['AUTH_REALM']            = $config['Company_Name'] .' OpenVPN Web GUI v.0.3.2a LCS';
 // What files to include into ZIP
 $config['Download']['ZIP']['.pem']    = true;
@@ -37,7 +37,7 @@ $config['Plugins']['systemcheck']['Folder'] = 'systemcheck';
 $config['openvpn']['folder']     = '/etc/openvpn/';
 // Change: configuration and status file names
 $config['openvpn']['config']     = $config['openvpn']['folder'] .'openvpn.conf';
-$config['openvpn']['status']     = $config['openvpn']['folder'] .'status.log';
+$config['openvpn']['status']     = '/var/log/openvpn/status.log';
 
 // OPENSSL ________________________________
 

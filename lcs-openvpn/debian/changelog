@@ -1,3 +1,9 @@
+lcs-openvpn (0.7-2~1) unstable; urgency=low
+
+  * fixe sed and gui params
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 14 Jan 2009 14:38:04 +0100
+
 lcs-openvpn (0.7-1~1) unstable; urgency=low
 
   * fixe sed parameter in client config
