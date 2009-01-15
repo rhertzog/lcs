@@ -1,3 +1,9 @@
+lcs-openvpn (0.8-1~2) unstable; urgency=low
+
+  * lcs-openvpn : no CDD config fix and vista compatibility ip route
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 15 Jan 2009 21:52:07 +0100
+
 lcs-openvpn (0.8-1~1) unstable; urgency=low
 
   * fixe clients zip
