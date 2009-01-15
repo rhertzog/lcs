@@ -15,6 +15,7 @@ key /usr/share/lcs/openvpn/keys/@@CERT@@.key  # This file should be kept secret
 dh /usr/share/lcs/openvpn/keys/dh@@DH@@.pem
 tls-auth /usr/share/lcs/openvpn/keys/ta.key 0 # This file is secret
 ifconfig @@VPNIP1@@ @@VPNIP2@@
+ifconfig-pool @@SMALLVPNNET@@.4 @@SMALLVPNNET@@.250
 route @@VPNNET@@ @@VPNNETMASQ@@
 push "route @@VPNNET@@ @@VPNNETMASQ@@"
 ; Configuration options

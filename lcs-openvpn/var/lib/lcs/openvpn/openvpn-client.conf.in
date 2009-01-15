@@ -15,6 +15,7 @@ tls-auth lcs/ta.key 1
 cipher BF-CBC
 pull
 comp-lzo
+route-method exe
+route-delay 2 
 verb 2
 mute 5
-

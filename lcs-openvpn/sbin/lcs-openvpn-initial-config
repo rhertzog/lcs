@@ -54,6 +54,7 @@ VPNIP2=$SMALLVPNNET.2
 sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
 -e "s|@@VPNPORT@@|$VPNPORT|g" \
 -e "s|@@VPNNET@@|"$VPNNET"|g" \
+-e "s|@@SMALLVPNNET@@|"$SMALLVPNNET"|g" \
 -e "s|@@VPNNETMASQ@@|"$VPNNETMASQ"|g" \
 -e "s|@@VPNIP1@@|"$VPNIP1"|g" \
 -e "s|@@VPNIP2@@|"$VPNIP2"|g" \
