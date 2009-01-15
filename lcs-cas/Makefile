@@ -18,8 +18,8 @@ install:
 	install -m 0700 -o root -g root sbin/* $(DESTDIR)/usr/sbin/
 
 # install lcs cas doc-html
-	install -d $(DESTDIR)/usr/share/doc/lcs/cas
-	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/cas/
+	install -d $(DESTDIR)/usr/share/doc/lcs/cas/html
+	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/cas/html/
 
 clean:
 
