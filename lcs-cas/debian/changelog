@@ -1,8 +1,9 @@
-lcs-cas (2.0) UNRELEASED; urgency=low
+lcs-cas (2.0) LcsXP; urgency=low
+
+  [ Sebastien tack ]
   * update documentation
-  
-  -- sebastien Tack <tack.sebastien@wanadoo.fr> Fri, 02 Jan 2009 18:20:07 +0100
-  
+
+  [ jean-Luc Chretien ]
   * Initial release.
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Dec 2008 10:56:07 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 15 Jan 2009 19:52:21 +0100
