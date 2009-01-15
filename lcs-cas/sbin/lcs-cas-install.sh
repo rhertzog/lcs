@@ -41,11 +41,15 @@ ORGANIZATIONALUNITNAME=$(get_lcsdb_params organizationalunit)
 LDAP_SERVER=$(get_lcsdb_params ldap_server)
 LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
 #
-# Update systeme gem
+# Update system gem
 #
 gem update --system
-mv /usr/bin/gem /usr/bin/gem.old
-ln -s /usr/bin/gem1.8 /usr/bin/gem
+if [ ! -e /usr/bin/gem.old ]; then
+  if [ -e /usr/bin/gem1.8 ]; then
+    mv /usr/bin/gem /usr/bin/gem.old
+    ln -s /usr/bin/gem1.8 /usr/bin/gem
+  fi
+fi
 #
 # Install packages for gem mysql 
 #
@@ -69,7 +73,7 @@ fi
 #
 #
 adduser  $USERRUN --disabled-password --gecos 'CAS Server Account,,,' --shell /bin/bash --no-create-home --home $USERHOME
-mkdir $USERHOME
+#mkdir $USERHOME
 mkdir $CONF
 cp /usr/lib/ruby/gems/1.8/gems/rubycas-lcs-$VER/config.example.yml  $CONF/config.yml
 #
