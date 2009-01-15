@@ -48,7 +48,7 @@ mysql lcs_db < /var/lib/lcs/openvpn/params.sql
 rm -f /var/lib/lcs/openvpn/params.sql
 
 ## creation du fichier de config openvpn.conf
-SMALLVPNNET=`echo $IPADDR0 | cut -f 1-3 -d .`
+SMALLVPNNET=`echo $VPNNET | cut -f 1-3 -d .`
 VPNIP1=$SMALLVPNNET.1
 VPNIP2=$SMALLVPNNET.2
 sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
