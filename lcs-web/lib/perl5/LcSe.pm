@@ -431,12 +431,12 @@ sub normalize {
 
 sub isAdmin {
 
-  $isAdmin = 'Y';
+  $isAdmin = 'N';
   # Identification de l'utilisateur
   # ===============================
   # Récupération du cookie
   %cookies = fetch CGI::Cookie;
-  $session = $cookies{'LCSAuth'}->value;
+   if (exists $cookies{'LCSAuth'} ) { $session = $cookies{'LCSAuth'}->value; }
   # Connexion MySql
   $lcs_db = DBI->connect('DBI:mysql:lcs_db', $mysqlServerUsername, $mysqlServerPw);
   $requete = $lcs_db->prepare("select idpers from sessions where (sess = '$session')");
@@ -470,8 +470,8 @@ sub isAdmin {
   foreach $entry ($res->entries) {
     @cn  = $entry->get('cn');
   }
-  if ($cn[0] ne 'Annu_is_admin') {
-     $isAdmin = "N";
+  if ($cn[0] eq 'Annu_is_admin') {
+     $isAdmin = "Y";
   }
   $lcs_ldap->unbind();
   return $isAdmin;
