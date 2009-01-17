@@ -1,3 +1,11 @@
+lcs-web (2.1-2~3) UNREALESED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  
+  * Correct LcSe.pm function isAdmin
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 17 Jan 2009 17:50:08 +0100
+
 lcs-web (2.1-2~2) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
