@@ -48,8 +48,8 @@ if (!isset($_POST['login']))
 else {
 	echo "<div align=center>";
         $login=$_POST['login'];
-        exec("/usr/share/lcs/sbin/lcs-openvpn-generclient.sh $login");
-        echo "g&eacute;n&eacute;ration du certificat pour ".$login termin&eacute;;
+        exec("sudo /usr/share/lcs/sbin/lcs-openvpn-generclient.sh $login");
+        echo "g&eacute;n&eacute;ration du certificat pour ".$login." termin&eacute;";
         echo "l'utilisateur a re&ccedil;u la proc&eacutedure par e-mail pour utiliser le VPN";
 	echo "</div>";
 }

@@ -1,3 +1,10 @@
+lcs-openvpn (0.9-1~2) unstable; urgency=low
+
+  [ Simon Cavey ]
+  * Bug fix
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 22 Jan 2009 19:57:18 +0100
+
 lcs-openvpn (0.9-1~1) unstable; urgency=low
 
   * Fix configuration local net, remove sudo entries and interface
