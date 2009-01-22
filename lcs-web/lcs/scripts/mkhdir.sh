@@ -1,5 +1,5 @@
 #!/bin/bash
-# Creation du repertoire de l'utilisateur mkhdir.sh 09/06/2008
+# Creation du repertoire de l'utilisateur mkhdir.sh 22/01/2009
 # $1 : login
 # $2 : group eleves ou profs
 # $3 : passwd
@@ -65,6 +65,11 @@ else
             mkdir  /home/$1/Documents
             chown $1:lcs-users /home/$1/Documents
             chmod 770 /home/$1/Documents
+        fi
+        if [ ! -d $1/Maidir ]; then
+            cp -r /etc/skel/Maildir /home/$1/
+            chown -R $1:www-data /home/$1/Maildir
+	    chmod -R 700 /home/$1/Maildir
         fi
 fi
 exit 0
