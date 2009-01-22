@@ -1,10 +1,12 @@
 lcs-web (2.1-2~3) UNREALESED; urgency=low
 
   [ Jean-Luc Chretien ]
-  
-  * Correct LcSe.pm function isAdmin
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 17 Jan 2009 17:50:08 +0100
+  * Correct LcSe.pm function isAdmin
+  * Add $_POST for login in auth.php
+  * Change DEBIAN_PRIORITY & DEBIAN_FRONTEND in /usr/sbin/LcsMaj 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Jan 2009 11:35:03 +0100
 
 lcs-web (2.1-2~2) LcsXP; urgency=low
 
