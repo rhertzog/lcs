@@ -5,6 +5,7 @@ include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
 
 // register global
+if (isset($_POST['login'])) $dummy=$_POST['login']; else $dummy="" ;
 if (isset($_POST['dummy'])) $dummy=$_POST['dummy']; else $dummy="" ;
 if (isset($_POST['string_auth'])) $string_auth=$_POST['string_auth']; else $string_auth="" ;
 if (isset($_POST['time'])) $time=$_POST['time']; else $time="" ;
