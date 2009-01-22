@@ -1,3 +1,9 @@
+lcs-openvpn (0.9-1~1) unstable; urgency=low
+
+  * Fix configuration local net, remove sudo entries and interface
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 22 Jan 2009 16:51:39 +0100
+
 lcs-openvpn (0.8-2~3) unstable; urgency=low
 
   * add client generation interface

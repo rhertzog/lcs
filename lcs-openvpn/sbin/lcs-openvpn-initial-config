@@ -60,6 +60,8 @@ sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
 -e "s|@@VPNIP2@@|"$VPNIP2"|g" \
 -e "s|@@DH@@|"$DH"|g" \
 -e "s|@@CERT@@|"$HOSTNAME"|g" \
+-e "s|@@NETWORK@@|"$NETWORK"|g" \
+-e "s|@@NETMASK0@@|"$NETMASK0"|g" \
 /var/lib/lcs/openvpn/openvpn.conf.in > /etc/openvpn/openvpn.conf
 
 ## creation fichier de config openssl.cnf

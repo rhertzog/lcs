@@ -18,6 +18,7 @@ ifconfig @@VPNIP1@@ @@VPNIP2@@
 ifconfig-pool @@SMALLVPNNET@@.4 @@SMALLVPNNET@@.250
 route @@VPNNET@@ @@VPNNETMASQ@@
 push "route @@VPNNET@@ @@VPNNETMASQ@@"
+push "route @@NETWORK@@ @@NETMASK0@@"
 ; Configuration options
 ;push "route @@VLAN1@@ 255.255.255.0"
 ;push "route @@VLAN2@@ 255.255.255.0"

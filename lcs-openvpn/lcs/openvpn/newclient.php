@@ -15,7 +15,7 @@ $msgIntro = "<H1>Gestion LCS OpenVPN</H1>\n";
 list ($idpers, $login)= isauth();
 
 if (ldap_get_right("lcs_is_admin",$login)!="Y")
-  die (gettext("Vous n'avez pas les droits suffisants pour accï¿½der ï¿½ cette fonction")."</BODY></HTML>");
+  die (gettext("Vous n'avez pas les droits suffisants pour acc&egrave;der &agrave; cette fonction")."</BODY></HTML>");
 
 function mktable($title, $content) {
         echo "<h3>$title</h3>\n";
@@ -27,6 +27,7 @@ if (!isset($_POST['login']))
   if ($idpers == "0") header("Location:$urlauth");
   $uids = search_uids ("(cn=Profs)", "half");
   $people = search_people_groups ($uids,"(sn=*)","cat");
+  echo "<div align=center>";
   if (count($people)) {
     echo "Il y a ".count($people)." membre";
     if ( count($people) >1 ) echo "s";
@@ -37,7 +38,7 @@ if (!isset($_POST['login']))
         echo "<option value=".$people[$loop]["uid"].">".$people[$loop]["fullname"]." ".$people[$loop]["sexe"]."</option>";
     }
         echo "</select></br><input type='submit' value='Valider' /> ";
-     echo "</form>";
+     echo "</form></div>";
      }
      else {
         echo " <strong>Pas de membres</strong> dans le groupe Profs.<br>";
@@ -45,11 +46,12 @@ if (!isset($_POST['login']))
 }
 
 else {
+	echo "<div align=center>";
         $login=$_POST['login'];
-        echo $login;
         exec("/usr/share/lcs/sbin/lcs-openvpn-generclient.sh $login");
-        echo "generation du certificat pour".$login;
-        echo "l utilisateur a reçu la procedure par e-mail pour utiliser le VP";
+        echo "g&eacute;n&eacute;ration du certificat pour ".$login termin&eacute;;
+        echo "l'utilisateur a re&ccedil;u la proc&eacutedure par e-mail pour utiliser le VPN";
+	echo "</div>";
 }
 
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");
