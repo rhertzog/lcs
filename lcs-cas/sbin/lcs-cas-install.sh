@@ -43,12 +43,28 @@ LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
 #
 # Update system gem
 #
-gem update --system
-if [ ! -e /usr/bin/gem.old ]; then
-  if [ -e /usr/bin/gem1.8 ]; then
-    mv /usr/bin/gem /usr/bin/gem.old
-    ln -s /usr/bin/gem1.8 /usr/bin/gem
-  fi
+VERGEM=`gem -v | sed s/"\."//g`
+if [ $VERGEM -lt "131" ];then
+	cd /var/lib/lcs/cas/
+	if [ -e rubygems-update-1.3.1.gem ]; then
+  		rm rubygems-update-1.3.1.gem 
+	fi
+	wget http://lcs.crdp.ac-caen.fr/gems/rubygems-update-1.3.1.gem 
+	if [ -e rubygems-update-1.3.1.gem   ]; then
+  		gem install rubygems-update-1.3.1.gem 
+	else
+  		echo "ERROR no rubygems-update-1.3.1 gem to install !"
+  		exit 1
+	fi
+	gem install rubygems-update-1.3.1.gem
+	chmod +x /var/lib/gems/1.8/bin/update_rubygems
+	/var/lib/gems/1.8/bin/update_rubygems
+	if [ ! -e /usr/bin/gem.old ]; then
+  		if [ -e /usr/bin/gem1.8 ]; then
+    			mv /usr/bin/gem /usr/bin/gem.old
+    			ln -s /usr/bin/gem1.8 /usr/bin/gem
+  		fi
+	fi
 fi
 #
 # Install packages for gem mysql 
@@ -58,7 +74,6 @@ apt-get -y install ruby1.8-dev build-essential libmysqlclient15-dev
 # Install gems 
 #
 gem install picnic activerecord ruby-net-ldap activerecord mysql
-cd /var/lib/lcs/cas/
 if [ -e rubycas-lcs-$VER.gem  ]; then
   rm rubycas-lcs-$VER.gem
 fi
