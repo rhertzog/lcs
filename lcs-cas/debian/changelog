@@ -1,10 +1,11 @@
-lcs-cas (2.1~1) LcsXP; urgency=low
+lcs-cas (2.1~2) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
   * Modify section update rubygem in lcs-cas-install.sh
   * Modify lc-cas html documentation for XHTML 1.0 Transitional validation
+  * Correct postinst description field
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Jan 2009 13:42:29 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Jan 2009 14:42:29 +0100
 
 lcs-cas (2.0) LcsXP; urgency=low
 

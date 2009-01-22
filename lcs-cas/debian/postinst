@@ -3,7 +3,7 @@
 set -e
 
 MODULE="cas"
-DESCIPTION=""
+DESCRIPTION="SSO CAS (Central Authentification Service)"
 PATHMOD="/var/lib/lcs/$MODULE"
 INDICEMAJNBR="0"
 
