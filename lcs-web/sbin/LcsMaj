@@ -1,5 +1,9 @@
 #!/bin/bash
-# /usr/sbin/LcsMaj version du 02-08-07
+# /usr/sbin/LcsMaj version du 22-01-2009
+DEBIAN_PRIORITY="critical"
+DEBIAN_FRONTEND="noninteractive"
+export  DEBIAN_FRONTEND
+export  DEBIAN_PRIORITY
 #
 # Mise a jour des paquets logiciels du serveur
 #
@@ -119,7 +123,10 @@ while [ -e maj$NEXT_MINOR_MAJ.md5  ] || [ -e maj$NEXT_MAJOR_MAJ.md5 ]; do
 done
 
 echo "Toutes les révisions ou mises à jour disponibles ont été appliquées."
-
+DEBIAN_PRIORITY="high"
+DEBIAN_FRONTEND="dialog"
+export  DEBIAN_PRIORITY
+export  DEBIAN_FRONTEND 
 
 
 
