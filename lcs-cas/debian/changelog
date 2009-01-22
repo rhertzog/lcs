@@ -1,9 +1,16 @@
+lcs-cas (2.1~1) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Modify section update rubygem in lcs-cas-install.sh
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Jan 2009 13:42:29 +0100
+
 lcs-cas (2.0) LcsXP; urgency=low
 
   [ Sebastien tack ]
   * update documentation
 
-  [ jean-Luc Chretien ]
+  [ Jean-Luc Chretien ]
   * Initial release.
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 15 Jan 2009 19:52:21 +0100
