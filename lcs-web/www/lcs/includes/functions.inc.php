@@ -3,11 +3,11 @@
    Projet LCS : Linux Communication Server
    functions.inc.php
    jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice académie de Caen
-   Derniere mise à jour 05/01/2009
+   Equipe Tice academie de Caen
+   Derniere mise a jour 22/01/2009
    ============================================= */
 
-// Clé privée pour cryptage du cookie LCSuser dans fonction open_session()
+// Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
 include ("/var/www/lcs/includes/xoft.php");
 
@@ -242,9 +242,8 @@ include ("/var/www/lcs/includes/xoft.php");
                 // Création Espace Perso Utilisateur 
                 if ( !@is_dir("/home/".$login) ||  (@is_dir("/home/".$login) && 
                                                   ( !@is_dir("/home/".$login."/public_html")
-                                                  || !@is_dir("/home/".$login."/bin")
-                                                  || !@is_dir("/home/".$login."/usr")
-                                                  || !@is_dir("/home/".$login."/lib"))) ) {
+                                                  || !@is_dir("/home/".$login."/Maildir")
+                                                  || !@is_dir("/home/".$login."/Documents"))) ) {
                       #system ("echo \"DBG >> Creation Espace perso\" >> /tmp/log.lcs"); 
 		      if ( is_eleve($login) ) $group="eleves"; else $group="profs";
 		      exec ("/usr/bin/sudo /usr/share/lcs/scripts/mkhdir.sh $login $group $cryptpasswd > /dev/null 2>&1");
