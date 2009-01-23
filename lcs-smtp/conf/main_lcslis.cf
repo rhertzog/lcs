@@ -24,9 +24,9 @@ myhostname = #FQDN#
 myorigin = #DOMAIN#
 mydestination = #DOMAIN#
 		#FQDN#
-		#LOCAL_DOMAIN#
 		localhost
 		localhost.#DOMAIN#
+		#LOCAL_DOMAIN#
 mynetworks = 127.0.0.0/8,#XEN_NETWORK#,#LAN_NETWORK#
 masquerade_domains = #DOMAIN#
 home_mailbox = Maildir/
