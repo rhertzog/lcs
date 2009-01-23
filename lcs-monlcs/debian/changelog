@@ -1,3 +1,13 @@
+lcs-monlcs (2.1-2~1)  UNRELEASED; urgency=low
+  [ Jean-Luc Chretien ]
+  * Correct changelog with section UNRELEASED
+   
+  [ Sebastien Tack ]
+  * update of Snoopy class for magpieRSS
+  * div user too big and then overlap on right menu button - correcting
+    
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 23 Jan 2009 15:07:21 +0100
+
 lcs-monlcs (2.1-1) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
@@ -5,8 +15,6 @@ lcs-monlcs (2.1-1) LcsXP; urgency=low
   * Restructuring the architecture of the package (svn_builpackage compatibilty)
 
   [ Sebastien Tack ]
-  * update of Snoopy class for magpieRSS
-  * div user too big and then overlap on right menu button - correcting
   * Remove phantom image url from style.css
   * Bug correction for multiple targets in Scenarios
   * Remove debug information
