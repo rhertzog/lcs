@@ -1,7 +1,7 @@
 #!/bin/bash
 # Make main.cf / ldap-aliases.cf 
 # GrosQuicK  Mon, 3 Dec 2007
-# Modify by jLCF <(°_-)/> on 6 Nov. 2008
+# Modify by jLCF <(°_-)/> on 23 Janv. 2009
 #
 IN_CONFIG_PATH="/etc/lcs/postfix"
 
@@ -36,19 +36,12 @@ sed -i s/,,/,/g  /etc/postfix/main.cf
 #set the mailname
 echo "$DOMAIN" > /etc/mailname
 
-# Add alias map with ldap search filter on mail attribute
-# if not exist (must be in main_lcslis.cf sample file)
-RESULT=`cat /etc/postfix/main.cf | egrep "ldap-aliases.cf"`
-if   [ "$RESULT" = "" ] ; then
-	echo "alias_maps = hash:/etc/aliases, ldap:/etc/postfix/ldap-aliases.cf" >> /etc/postfix/main.cf
-fi
-# test if include for mailing list aliases is in place on old main.cf
-# and put it if necessary
 if [ -e /etc/postfix/main.cf.lcssav ]; then
     RESULT=`cat /etc/postfix/main.cf.lcssav | grep "mailing_list.cf"`
     if   [ "$RESULT" != "" ] ; then
-	echo "# Include mainling list configuration" >> /etc/postfix/main.cf
-	echo "alias_maps = ldap:/etc/postfix/mailing_list.cf" >> /etc/postfix/main.cf
+	grep -v 'alias_maps' /etc/postfix/main.cf > /etc/postfix/main.cf.lcssav
+	echo "alias_maps = hash:/etc/aliases, ldap:/etc/postfix/ldap-aliases.cf, ldap:/etc/postfix/mailing_list.cf" >> /etc/postfix/main.cf.lcssav
+	mv  /etc/postfix/main.cf.lcssav  /etc/postfix/main.cf
     fi
 fi
 # ldap-aliases map
