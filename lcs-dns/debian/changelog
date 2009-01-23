@@ -1,4 +1,4 @@
-lcs-dns (2.1-2~2) LcsXP; urgency=low
+lcs-dns (2.1-2) LcsXP; urgency=low
 
   [ Simon Cavey ]
   * add primary dns in resolv.conf
