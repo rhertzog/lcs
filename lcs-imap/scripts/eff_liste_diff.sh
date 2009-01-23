@@ -1,8 +1,8 @@
 #!/bin/bash
 FILE="/etc/postfix/mailing_list.cf"
 echo "# mailing list desactivated" >$FILE
-# remove mailing_list aliases on main.cf
-mv /etc/postfix/main.cf /etc/postfix/main.cf.lcssav
-sed '/mailing_list.cf/d' /etc/postfix/main.cf.lcssav > /etc/postfix/main.cf
+grep -v 'alias_maps' /etc/postfix/main.cf > /etc/postfix/main.cf.lcssav
+echo "alias_maps = hash:/etc/aliases, ldap:/etc/postfix/ldap-aliases.cf" >> /etc/postfix/main.cf.lcssav
+mv  /etc/postfix/main.cf.lcssav  /etc/postfix/main.cf
 
-/etc/init.d/postfix restart
+/etc/init.d/postfix reload
