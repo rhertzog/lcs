@@ -1,5 +1,5 @@
 <?php
-# /var/www/Admin/listesdiff.php derniere version du : 7/11/08
+# /var/www/Admin/listesdiff.php derniere version du : 23/01/09
 include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
@@ -48,7 +48,7 @@ if (is_admin("system_is_admin",$login)=="Y") {
 	$main .= "result_attribute = memberUid,mail\n";
         $main .= "bind = no\n";
 	$main .= "special_result_attribute = member\n";
-        $main .= "alias_maps = hash:/etc/aliases, ldap:ldapsource\n";
+        $main .= "alias_maps = ldap:ldapsource\n";
         $main .= "#</listediffusionldap>";
          exec("/usr/bin/sudo /usr/share/lcs/scripts/add_liste_diff.sh \"$main\" ");
     }
