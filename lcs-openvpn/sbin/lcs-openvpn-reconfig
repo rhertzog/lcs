@@ -1,0 +1,16 @@
+#!/bin/bash
+if [ -z "$1" ];
+then
+        echo "Usage: lcs-openvpn-reconfig <port> <vpn-network> <vpn-network-mask> <vlan-01> <nb-vpn-connexion>"
+        exit 0
+fi
+
+
+
+
+
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d openvpn restart
+else
+	/etc/init.d/openvpn restart
+fi

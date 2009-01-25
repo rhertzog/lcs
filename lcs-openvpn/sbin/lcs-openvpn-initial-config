@@ -4,7 +4,7 @@
 # Configuration inital de OpenVPN
 # Projet LCS 2
 # auteur : Simon CAVEY 
-# creation : 04/01/2009 modification
+# creation : 04/01/2009 modification 23/01/2009
 ##
 
 . /etc/lcs/lcs.conf
@@ -20,7 +20,8 @@ DH=1024
 VPNPORT=1193
 HOSTNAME=`hostname`
 FULLDOMAINE=`hostname -f`
-
+VLAN=0
+VPNCONNEXIONS=10
 CHECK=`route -n |grep $VPNNET |wc -l`
 
 function veriffreesub () {
@@ -42,6 +43,8 @@ sed -e "s|@@VPNPORT@@|$VPNPORT|g" \
 -e "s|@@VPNNETMASQ@@|"$VPNNETMASQ"|g" \
 -e "s|@@CERTNAME@@|"$HOSTNAME"|g" \
 -e "s|@@DH@@|"$DH"|g" \
+-e "s|@@VPNVLAN@@|"$VLAN"|g" \
+-e "s|@@VPNCONNEXIONS@@|"$VPNCONNEXIONS"|g" \
 /var/lib/lcs/openvpn/params.sql.in > /var/lib/lcs/openvpn/params.sql
 
 mysql lcs_db < /var/lib/lcs/openvpn/params.sql
@@ -72,6 +75,10 @@ sed -e "s|@@passwd@@|"$sslpassword"|g" /var/lib/lcs/openvpn/openssl.cnf.in > /et
 sed -i'' "s/@@HOSTNAME@@/$HOSTNAME/g" /usr/share/lcs/openvpn/config.inc
 sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /usr/share/lcs/openvpn/config.inc
 
+## On adapt le mail pour les utilisateurs
+sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /var/lib/lcs/openvpn/openvpn-mail-client.in
+
+
 ## On lance le scipt de génération du certif
 /usr/share/lcs/sbin/lcs-openvpn-generserveur.sh
 ## On genere les certifs pour admin : 
@@ -79,7 +86,7 @@ sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /usr/share/lcs/openvpn/config.inc
 
 ## on ajoute les entr�es sudo pour la generation des clients
 chmod 700  /etc/sudoers
-echo "Cmnd_Alias GENVPNCLI = /usr/share/lcs/sbin/lcs-openvpn-generclient.sh" >> /etc/sudoers
+echo "Cmnd_Alias GENVPNCLI = /usr/share/lcs/sbin/lcs-openvpn-generclient.sh, /usr/share/lcs/sbin/lcs-openvpn-reconfig" >> /etc/sudoers
 echo "www-data ALL=NOPASSWD:GENVPNCLI" >> /etc/sudoers
 chmod 440  /etc/sudoers
 

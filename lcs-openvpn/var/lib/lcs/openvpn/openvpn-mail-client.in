@@ -1,0 +1,26 @@
+Bonjour,
+
+Pour vous connecter au réseau de votre etablissement, 
+
+Si vous êtes sous Windows:
+1) Télécharger et installez le client OpenVPN a l'adresse : 
+   http://@@FULLDOMAINE@@/openvpn/downloads/
+
+2) Connectez vous sur le LCS, Utilisez l'application Client FTP
+   puis dans Documents/vpn
+   Téléchargé le fichier configuration-vpn.zip
+
+3) Décompressez le contenu du fichier zip dans : 
+   c:\Program Files\openvpn\config\
+   Accessible dans le menu démarrer sous le nom :
+   OpenVPN configuration Directory
+
+4) une fois les fichiers en place, un simple clique droits sur l'icone 
+   OpenVPN-GUI situé dans la barre des tâches, puis Connect vous ouvre 
+   la connexion.
+
+
+Pour plus de détail consulutez la documentation LCS.
+
+
+Bonne Utilisation du VPN.

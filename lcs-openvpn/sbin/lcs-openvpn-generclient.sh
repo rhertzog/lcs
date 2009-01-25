@@ -67,3 +67,4 @@ cd  /home/$1/Documents/vpn
 zip -rq configuration-vpn.zip *
 rm -r lcs*
 chown $1 /home/$1/Documents/vpn/configuration-vpn.zip
+mail -s "Utilisation du VPN-LCS" $1@$FULLNAME < /var/lib/lcs/openvpn/openvpn-mail-client.in 
