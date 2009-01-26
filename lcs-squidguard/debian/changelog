@@ -1,3 +1,9 @@
+lcs-squidguard (2.1-2~2) LcsXP; urgency=low
+
+  * audio-video bug fix blacklist
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 26 Jan 2009 15:00:22 +0100
+
 lcs-squidguard (2.1-2~1) LcsXP; urgency=low
 
   * Adding option for squidguard audio-video blacklist

@@ -205,10 +205,10 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		$html .= "Validation liste noire forums : <input type='checkbox' value='forumsOn' name='forums'";
 		if ( $status[1] == "forumsOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
 		$html .= "Validation liste noire audio et video (YouTube, DailyMotion, Deezer,...): <input type='checkbox' value='audiovideoOn' name='audiovideo'";
-                if ( $status[0] == "audiovideoOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
+                if ( $status[2] == "audiovideoOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
                 
 		$html .= "Liste noire nationale : <input type='checkbox' value='bl_full' name='bl'";
-		if ( $status[2] == "bl_full") $html.="CHECKED><br>\n"; else $html.="><br>\n";	
+		if ( $status[3] == "bl_full") $html.="CHECKED><br>\n"; else $html.="><br>\n";	
 		$html .= "Liste noire LCS : <input type='checkbox' value='On' name='bl_lcs' CHECKED disabled><br>\n"; 
 		$html .= "	<input type='hidden' value='1' name='modif_status'>\n";
 		$html .= "	<input type='submit' value='Modifier'></td>\n";	
