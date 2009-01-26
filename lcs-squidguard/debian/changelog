@@ -1,3 +1,9 @@
+lcs-squidguard (2.1-2~4) LcsXP; urgency=low
+
+  * Add patch for lcs-squidguard blog blacklist upgrade
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Jan 2009 00:48:09 +0100
+
 lcs-squidguard (2.1-2~3) LcsXP; urgency=low
 
   * lcs-squidguard : Add blog blacklists

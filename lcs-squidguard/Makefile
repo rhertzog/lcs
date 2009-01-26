@@ -25,6 +25,10 @@ install:
 	install -d $(DESTDIR)/usr/share/doc/lcs/squidguard
 	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/squidguard/
 
+# install lcs squidguard lib
+	install -d $(DESTDIR)/var/lib
+	cp -a lib/* $(DESTDIR)/var/lib/
+
 # install lcs squidguard www
 	install -d $(DESTDIR)/var/www
 	cp -a www/* $(DESTDIR)/var/www/

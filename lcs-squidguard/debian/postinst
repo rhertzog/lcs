@@ -69,7 +69,10 @@ EOF
           invoke-rc.d apache2 reload
 	fi
     	;;
-	
+        upgrade)
+	for i in /etc/squid/squidGuard.conf*; do patch -b -f $i /var/lib/lcs/lcs-squidguard/patch-blog; done
+	squidGuard -C blog
+	;;
     	abort-upgrade|abort-remove|abort-deconfigure)
     	;;
 
