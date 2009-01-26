@@ -81,6 +81,19 @@ case $ARG in
        cat /etc/squid/squidGuard.conf | sed -e "s/!webmail //g" > /etc/squid/squidGuard.conf.tmp
        mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
    ;;
+   audiovideoOn)
+       echo "Liste noire webmail validi?1/2e"
+       RES=`grep '!audiovideo' /etc/squid/squidGuard.conf`
+       if [ "x$RES" = "x" ]; then
+         cat /etc/squid/squidGuard.conf | sed -e "s/pass /pass !audiovideo /g" > /etc/squid/squidGuard.conf.tmp
+         mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+       fi
+   ;;
+   audiovideoOff)
+       echo "Liste noire webmail di?1/2validi?1/2e"
+       cat /etc/squid/squidGuard.conf | sed -e "s/!audiovideo //g" > /etc/squid/squidGuard.conf.tmp
+       mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+   ;;
    forumsOn)
        echo "Liste noire forums validée"
        RES=`grep '!forums' /etc/squid/squidGuard.conf`
@@ -115,7 +128,13 @@ case $ARG in
 	  echo "$RET bl_lcs"
 	else
 	  echo "$RET bl_full"
-	fi    
+	fi
+	RES=`grep '!audiovideo' /etc/squid/squidGuard.conf`
+        if [ "x$RES" = "x" ]; then
+          RET="audiovideoOff"
+        else
+          RET="audiovideoOn"
+        fi    
    ;;
    help)
    	# Aide en ligne
@@ -129,11 +148,13 @@ case $ARG in
 	echo "webmailOff : Pas de filtage des webmail"
 	echo "forumsOn : Filtrage des forums via la liste noire forums"
 	echo "forumsOff : Pas de filtage des forums"        
+	echo "audiovideoOn : Filtrage audio et video (youtube, dailymotion,....) via la liste noire audiovideo"
+        echo "audiovideoOff : Pas de filtage audio et video"
 	echo "reload : Recharge la configuration squidGuard"
 	echo "status: Retourne le status des configurations squidGuard"
 	echo "se3_internet : Met en place le fichier squidGuard.conf adapté au dispositif se3-internet"
    ;;
    *)
-       echo "usage: $0 (lcs|lcs_db|raz_db|bl_lcs|bl_full|webmailOn|webmailOff|forumsOn|forumsOff|reload|status|help)"
+       echo "usage: $0 (lcs|lcs_db|raz_db|bl_lcs|bl_full|webmailOn|webmailOff|forumsOn|forumsOff|audiovideoOn|audiovideoOff|reload|status|help)"
    ;;
 esac
