@@ -9,6 +9,10 @@ dest lcs {
 dest webmail {
   domainlist	blacklists/webmail/domains
 }
+dest blog {
+  domainlist    blacklists/blog/domains
+  urllist       blacklists/blog/urls
+}
 dest forums {
   domainlist	blacklists/forums/domains
   urllist       blacklists/forums/urls

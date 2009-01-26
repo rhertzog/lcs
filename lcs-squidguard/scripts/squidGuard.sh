@@ -94,6 +94,19 @@ case $ARG in
        cat /etc/squid/squidGuard.conf | sed -e "s/!audio-video //g" > /etc/squid/squidGuard.conf.tmp
        mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
    ;;
+   blogOn)
+       echo "Liste noire blog validi?1/2e"
+       RES=`grep '!blog' /etc/squid/squidGuard.conf`
+       if [ "x$RES" = "x" ]; then
+         cat /etc/squid/squidGuard.conf | sed -e "s/pass /pass !blog /g" > /etc/squid/squidGuard.conf.tmp
+         mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+       fi
+   ;;
+   blogOff)
+       echo "Liste noire blog di?1/2validi?1/2e" 
+       cat /etc/squid/squidGuard.conf | sed -e "s/!blog //g" > /etc/squid/squidGuard.conf.tmp
+       mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+   ;;	
    forumsOn)
        echo "Liste noire forums validée"
        RES=`grep '!forums' /etc/squid/squidGuard.conf`
@@ -123,12 +136,18 @@ case $ARG in
 	else
 	  RET="$RET forumsOn"
 	fi       
-		RES=`grep '!audio-video' /etc/squid/squidGuard.conf`
+	RES=`grep '!audio-video' /etc/squid/squidGuard.conf`
         if [ "x$RES" = "x" ]; then
           RET="$RET audiovideoOff"
         else
           RET="$RET audiovideoOn"
         fi  
+	RES=`grep '!blog' /etc/squid/squidGuard.conf`
+        if [ "x$RES" = "x" ]; then
+          RET="$RET blogOff"
+        else
+          RET="$RET blogOn"
+        fi
    	RES=`grep '!ads' /etc/squid/squidGuard.conf`
 	if [ "x$RES" = "x" ]; then
 	  echo "$RET bl_lcs"

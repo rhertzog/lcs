@@ -23,6 +23,7 @@ $list_del = $_POST['list_del'];
 $raz_db = $_POST['raz_db'];
 $webmail = $_POST['webmail'];
 $audiovideo =  $_POST['audiovideo'];
+$blog = $_POST['blog'];
 $forums = $_POST['forums'];
 $bl_full = $_POST['bl_full'];
 $bl_lcs = $_POST['bl_lcs'];
@@ -120,6 +121,8 @@ echo $html;
 if ( $modif_status ) {
 	if ( $audiovideo == "audiovideoOn" ) $cmd = $audiovideo; else $cmd = "audiovideoOff";
         exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+	if ( $blog == "blogOn" ) $cmd = $blog; else $cmd = "blogOff";
+        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
 	if ( $webmail == "webmailOn" ) $cmd = $webmail; else $cmd = "webmailOff";
 	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
  	if ( $forums == "forumsOn" ) $cmd = $forums; else $cmd = "forumsOff";
@@ -206,9 +209,10 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		if ( $status[1] == "forumsOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
 		$html .= "Validation liste noire audio et video (YouTube, DailyMotion, Deezer,...): <input type='checkbox' value='audiovideoOn' name='audiovideo'";
                 if ( $status[2] == "audiovideoOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
-                
+                $html .= "Validation liste noire blog (Skyblog,...): <input type='checkbox' value='blogOn' name='blog'";
+                if ( $status[3] == "blogOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
 		$html .= "Liste noire nationale : <input type='checkbox' value='bl_full' name='bl'";
-		if ( $status[3] == "bl_full") $html.="CHECKED><br>\n"; else $html.="><br>\n";	
+		if ( $status[4] == "bl_full") $html.="CHECKED><br>\n"; else $html.="><br>\n";	
 		$html .= "Liste noire LCS : <input type='checkbox' value='On' name='bl_lcs' CHECKED disabled><br>\n"; 
 		$html .= "	<input type='hidden' value='1' name='modif_status'>\n";
 		$html .= "	<input type='submit' value='Modifier'></td>\n";	
