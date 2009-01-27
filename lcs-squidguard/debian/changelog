@@ -1,10 +1,16 @@
+lcs-squidguard (2.1-2~5) unstable; urgency=low
+
+  * remove-reinstall fix
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Jan 2009 11:32:29 +0100
+
 lcs-squidguard (2.1-2~4) unstable; urgency=low
 
   [ Simon Cavey ]
   * Add patch for lcs-squidguard blog blacklist upgrade
   * bug fix
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Jan 2009 01:22:07 +0100
+ -- simc <simc@etchdev32>  Tue, 27 Jan 2009 11:32:18 +0100
 
 lcs-squidguard (2.1-2~3) LcsXP; urgency=low
 
