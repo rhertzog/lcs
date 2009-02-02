@@ -1,4 +1,4 @@
-lcs-squid (2.1-1~2) LcsXP; urgency=low
+lcs-squid (2.1-1) LcsXP; urgency=low
 
   * Fix typo in cache_dir_size configuration 
 
