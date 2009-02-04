@@ -6,6 +6,12 @@
 # Configuration des certificats ssl-imap avec le bon domaine.
 
 domaine=`hostname -f`
-sed -i.bak s/"CN=localhost"/"CN=$domaine"/g /etc/courier/imapd.cnf
+source /etc/lcs/lcs.conf
+sed -i'' s/"CN=localhost"/"CN=$domaine"/g /etc/courier/imapd.cnf
+sed -i'' s/"C=US"/"C=$COUNTRYNAME"/g /etc/courier/imapd.cnf
+sed -i'' s/"ST=NY"/"ST=$PROVINCENAME"/g /etc/courier/imapd.cnf
+sed -i'' s/"L=New York"/"L=$LOCALITYNAME"/g /etc/courier/imapd.cnf
+sed -i'' s/"emailAddress=postmaster@example.com"/"emailAddress=admin@$domaine"/g /etc/courier/imapd.cnf
 rm /etc/courier/imapd.pem
 dpkg-reconfigure courier-imap-ssl
+

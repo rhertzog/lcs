@@ -1,0 +1,12 @@
+Source: lcs-imap-ssl
+Section: misc
+Priority: extra
+Maintainer: Simon Cavey <simon.cavey@crdp.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-imap-ssl
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, courier-imap-ssl
+Description: imap-ssl Auto configuration for lcs 
+ configure imap-ssl on debian lcs 2
