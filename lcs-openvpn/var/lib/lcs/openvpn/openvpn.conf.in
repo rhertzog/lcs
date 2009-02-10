@@ -38,3 +38,6 @@ log-append /var/log/openvpn/openvpn.log
 verb 4
 status-version 2
 mute 10
+push "echo "
+push "echo Bienvenu sur le VPN "
+push "echo "
