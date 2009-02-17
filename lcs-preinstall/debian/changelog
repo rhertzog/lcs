@@ -1,4 +1,4 @@
-lcs-preinstall (2.1-1) LcsTesting; urgency=low
+lcs-preinstall (2.1-1) LcsXP; urgency=low
 
   * change sshd chroot order for root login
 
