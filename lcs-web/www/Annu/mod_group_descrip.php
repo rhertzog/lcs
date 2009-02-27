@@ -2,12 +2,10 @@
 /* =============================================
    Projet LCS-SE3
    Consultation de l'annuaire LDAP
-   Annu/Search.php
+   Annu/mod_group_descrip.php
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
-   « wawa »  olivier.lecluse@crdp.ac-caen.fr
    Equipe Tice académie de Caen
-   V 1.3 maj : 10/10/2003
+   Derniere modification : 27/02/2009
    Distribué selon les termes de la licence GPL
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
@@ -65,6 +63,10 @@
 
             echo "La description du groupe&nbsp;<strong>".$group[0]["cn"]."</strong>&nbsp;à été modifiée avec succès.</br>\n";
             echo "<u>Nouvelle description</u> :&nbsp;".stripslashes($description)."<BR>\n";
+
+			# Generate samba's configuration (group's shares)
+			if(is_executable("/usr/share/lcs/sbin/lcs-smb-config")) 
+				exec("sudo /usr/share/lcs/scripts/execution_script_plugin.sh /usr/share/lcs/sbin/lcs-smb-config &");
 
           } else {
             echo "<strong>Echec de la modification du groupe".$group[0]["cn"].", veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB modification de la description d'un groupe>l'administrateur du système</A><BR>\n";
