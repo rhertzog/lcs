@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Version du 05/10/07
+# Version du 27/02/09
 #   - Recherche des comptes présents dans ou=People et membre d'aucun groupe.
 #   - déplacement vers ou=Trash
 
@@ -74,7 +74,7 @@ foreach $people ($peoples->entries) {
   next if ($memberOfAGroupOfNames->entries)[0];
   $memberOfAPosixGroup   = $lcs_ldap->search(base     => "$groupsDn",
 					     scope    => 'one',
-					     filter   => "memberUid=$uid");
+					     filter   => "(&(!(cn=overfill))(memberUid=$uid))");
   warn $memberOfAPosixGroup->error if $memberOfAPosixGroup->code;
   next if ($memberOfAPosixGroup->entries)[0];
   # Désactivation du compte SAMBA et déplacement le cas échéant
