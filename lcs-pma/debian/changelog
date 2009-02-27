@@ -1,0 +1,6 @@
+lcs-pma (2.1~5) UNRELEASED; urgency=low
+
+  * Initial release.
+  * base sur PhpMyAdmin 3.1.2
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 27 Feb 2009 15:51:08 +0100
