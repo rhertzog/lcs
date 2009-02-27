@@ -28,13 +28,13 @@ if [ "$4" != "stable" -a "$4" != "testing" -a "$4" != "experimentale" -a "$4" !=
     exit
 fi
 
-if [ "$4" == "stable" ];then
+if [ "$4" = "stable" ];then
     BRANCHE="Lcs"
     INCOMING="lcs"
-elif [ "$4" == "testing" ];then
+elif [ "$4" = "testing" ];then
     BRANCHE="LcsTesting"
     INCOMING="lcs-testing"
-elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
+elif [ "$4" = "experimentale" -o "$4" == "xp" ];then
     BRANCHE="LcsXP"
     INCOMING="lcs-xp"
 fi
