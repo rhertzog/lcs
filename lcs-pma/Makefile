@@ -13,7 +13,7 @@ install:
 	install -d $(DESTDIR)/usr/share/doc/lcs/pma/html
 	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/pma/html/
 
-# install spip
+# install pma
 	install -d $(DESTDIR)/usr/share/lcs/pma
 	cp -a pma/* $(DESTDIR)/usr/share/lcs/pma
 
