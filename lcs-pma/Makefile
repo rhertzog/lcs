@@ -15,7 +15,7 @@ install:
 
 # install spip
 	install -d $(DESTDIR)/usr/share/lcs/pma
-	cp -a spip/* $(DESTDIR)/usr/share/lcs/pma
+	cp -a pma/* $(DESTDIR)/usr/share/lcs/pma
 
 clean:
 
