@@ -1,0 +1,6 @@
+lcs-pla (2.1~3-1) unstable; urgency=low
+
+  * Initial release (svn_builpackage compatibilty)
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun,  1 Mar 2009 18:29:14 +0100
+
