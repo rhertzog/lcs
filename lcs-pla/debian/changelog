@@ -1,4 +1,4 @@
-lcs-pla (2.1~3) XP;urgency=low
+lcs-pla (2.1~3) UNRELEASED;urgency=low
 
   * Initial release (svn_builpackage compatibilty)
   * add Makefile
