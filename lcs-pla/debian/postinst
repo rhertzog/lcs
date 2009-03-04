@@ -65,6 +65,9 @@ fi
 # Mise en place de 20.annu.inc
 #
 echo "Activation du lien dans le menu d'administration"
+#suppression des liens pla commentés
+grep -v '\	"Explorateur LDAP' /var/www/lcs/includes/menu.d/20annu.inc > /tmp/20annu.tmp
+mv /tmp/20annu.tmp /var/www/lcs/includes/menu.d/20annu.inc
 
 if ! grep -q '\	"Explorateur LDAP' /var/www/lcs/includes/menu.d/20annu.inc 
 then
