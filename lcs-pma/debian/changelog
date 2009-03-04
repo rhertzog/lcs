@@ -1,8 +1,9 @@
-lcs-pma (2.1~6) UNRELEASED; urgency=low
+lcs-pma (2.1~6) LcsXP; urgency=low
 
   * Update documentation html
+  * Change version number in control, postinst and README files
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue,  3 Mar 2009 11:29:39 +0100
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed,  4 Mar 2009 15:56:34 +0100
 
 lcs-pma (2.1~5) UNRELEASED; urgency=low
 
