@@ -93,7 +93,7 @@ fi
 # cas de la nouvelle configuration apache
 if [ ! -e $APACHE2CONF ]; then
   cat >$APACHE2CONF <<EOF
-Alias /pla/ /usr/share/lcs/pla/
+Alias /$MODULE/ /usr/share/lcs/$MODULE/
 EOF
   /etc/init.d/apache2 reload > /dev/null 2>&1
 fi
