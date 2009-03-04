@@ -1,6 +1,6 @@
 Source: lcs-pla
 Section: misc
-Priority:optionnal
+Priority: optionnal
 Maintainer: Philippe Leclerc <philippe.leclerc1@ac-caen.fr>
 Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
