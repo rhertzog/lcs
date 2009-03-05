@@ -3,8 +3,10 @@ lcs-web (2.1-2~4) LcsXP; urgency=low
   [ Jean-Luc Chretien ]
   
   * Correct create user home folder in mkhdir.sh and functions.inc.php 
+  * Correct filter in searchAndDelete.pl
+  * Modify : groupAdd.pl, groupDel.pl, userAdd.pl, mod-group-descrip.php for CyberSchool project
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Jan 2009 17:21:33 +0100
+ -- Chretien jean-Luc <jean-luc.chretien@tice.ac-caen.fr>  Thu, 05 Mar 2009 11:02:30 +0100
 
 lcs-web (2.1-2~3) LcsXP; urgency=low
 
