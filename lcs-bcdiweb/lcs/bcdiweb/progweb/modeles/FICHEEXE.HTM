@@ -1,0 +1,27 @@
+<!-- Modele FICHEEXE Ecrans Oct modifié RM 07/02/08-->
+  <#SI VALEUR BASEBIBLIO=0><div>
+  <script type="text/javascript">
+    ch_aff="";
+	val="<#MARGUERITE>"
+	if (val>"") ch_aff+='<img src="<#CONST REP_MODELES>'+val+'.gif" height=30> &nbsp;';
+	val="<#PICTOGRAMME>"
+	if (val>"") ch_aff+='<img src="<#CONST REP_MODELES>Picto-'+val+'.gif" height=30> &nbsp;';
+	if ("<#Champ Exemplaires Statut>"!="Mis au pilon") {
+	  val="<#Champ /Java Exemplaires Cote E.>";
+	  if (val!="") ch_aff+="<BR>Cote&nbsp;<B>"+val+"</B><BR>";
+	  val="<#Champ /Java Exemplaires Code Exemplaire>" ;
+	  if (val=="") val="<#Champ Exemplaires N° Exemplaire>";
+	  if (val!="") ch_aff+="Ex.&nbsp;"+val+"<BR>";
+	  ch_aff+="<#Champ /Java Exemplaires Emplacement>";
+	  ces="<#Champ /Java Exemplaires Situation>";
+	  if(ces=="Disponible") ces='OK'
+	  else
+	   if(ces=="Sorti") ces='PE'
+	  else ces='NO'
+	  ch_aff+='<div class=\"disponibilite'+ces+'\">';
+	  ch_aff+="<#Champ /Java Exemplaires Statut> - <#Champ /Java Exemplaires Situation><\/div>"
+	  document.write(ch_aff);
+	}
+  </script>
+  </div><#FINSI VALEUR BASEBIBLIO=0>
+

@@ -1,0 +1,8 @@
+<EXEMPLAIRES>
+<DOCUMENT_D><#Champ Documents Document></DOCUMENT_D>
+<SORTI_LE_P><#Champ Prets Sorti le></SORTI_LE_P>
+<RETOUR_PREVU_LE_P><#Champ Prets Retour prévu le></RETOUR_PREVU_LE_P>
+<SUPPORT_D><#Champ Documents Support></SUPPORT_D>
+</EXEMPLAIRES>
+
+

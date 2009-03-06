@@ -1,0 +1,2 @@
+#!/bin/bash
+smbmount //###IPBCDI###/bcdi3 /home/BcdiPlug/Data/ -o username=###USR###,###PWD###,ip=###IPBCDI###

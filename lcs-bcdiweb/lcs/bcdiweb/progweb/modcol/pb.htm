@@ -1,0 +1,2634 @@
+<!-- Résultat : 7 réponses -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- Ecrans RM 06/10/07 modifié MG/RM 03/01/08 -->
+<!-- venant du formulaire INDEX.HTM -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+
+<link rel="stylesheet" href="../modlyc/print.css" type="text/css" media="print">
+<link href="../modlyc/bcdi.css" rel="stylesheet" type="text/css" media="screen">
+
+<meta http-equiv="Pragma" content="no-cache">
+
+<noscript>Votre navigateur n'autorise pas la gestion des scripts Javascript, vous ne pouvez pas utiliser BCDI Web</noscript>
+<SCRIPT type="text/javascript">
+<!--
+var maxReponses=100
+var fichierEnCours="LISTENOT.HTM"
+var vel="";
+var ch_aff="";
+var plur_rep="";
+var plur_pan="";
+var FicOrigine="INDEX.HTM";
+if (FicOrigine=="") FicOrigine="INDEX.HTM";
+FicOrigine=FicOrigine.toUpperCase();
+var FicPanier='PANIER.HTM';
+var nbReponses=7;
+var nudoc=0;
+var tableOuverte=false;
+var boolTemp=false;
+if (nbReponses>1) plur_rep="s";
+if (0>1) plur_pan="s";
+
+function fonctionnementElectre(n)
+{
+   if (nbReponses != 0)
+   {
+      if (n==1) ch="<!-- Résultats affichés avec les ressources Electre ! -->"
+      else
+      if (n==0) ch="<!--  Les ressources Electre ne sont pas demandées. -->"
+      else
+      if (n==-1) ch="Erreur d'identification par la cyberlibrairie de Poitiers."
+      else if (n==-2) ch="Erreur d'identification par les services Electre."
+      else if (n==-3) ch="Erreur de session Electre."
+      else if (n==-4) ch="Les ressources Electre ne sont pas accessibles."
+      else ch="&nbsp"
+      document.getElementById('FONCTIONNEMENT_ELECTRE').innerHTML=ch
+    }
+}
+
+function reserver(num,nbResa,nbDispo,nbSortis,ancre) {
+  sDis=(nbDispo==0) ? "" : ((nbDispo==1) ? "  1 exemplaire disponible\n" : "  "+nbDispo+" exemplaires disponibles\n")
+  sSor=(nbSortis==0) ? "" : ((nbSortis==1) ? "  1 exemplaire sorti\n" : "  "+nbSortis+" exemplaires sortis\n")
+  ch="Votre réservation sera en position "+(nbResa+1)+" pour\n"+sDis+sSor+"\n"
+  if (0<1)
+   ch+="S\'identifier en vue de réserver ?"
+  else
+   ch+="Confirmer votre demande de réservation ?"
+  if (confirm(ch))
+   window.location.href="?FAIRE=ENREGISTRER_RESERVATION&NR=4&NP=2&B=1&FICHIERORIGINE=LISTENOT&NUMERO_DOCUMENT="+num+"&RESULTAT=RECHERCHE&IDENTIFIANT=0&ANCRE=FICHE"+ancre
+}
+
+function rajouterClass(nom,valeur)
+{
+  if (valeur!="")
+  ch_aff+='<div class="fiche100pr100"><div class="intitule100">'+nom+'</div><div>'+valeur+'</div></div>';
+}
+
+function rajouterStrong(nom,valeur)
+{
+  if (valeur!="")
+  ch_aff+='<strong>'+nom+'</strong>'+valeur+'<br>';
+}
+
+function pagination()
+{
+  ch_nb="10";
+  if (ch_nb>="0") nb=parseInt(ch_nb)
+  else nb=10;
+  if ((nbReponses>nb) && (nb>0))
+   document.write('<div class=\"pagination\"><b>Page 1<\/b>&nbsp;&nbsp;&nbsp;<\/div>');
+}
+
+function onCheckBoxClic(obj)
+{
+  document.forms[0].ANCRE.value="FICHE"+obj.value;
+  nb_coche_change=0;
+  if (obj.name>"CKPANIER0")
+    nb_coche_change++;
+  else
+  {
+    coche=obj.checked;
+    nb=0;
+    for (i=0;i<document.forms[0].elements.length;i++)
+    {
+      nom=document.forms[0].elements[i].name;
+      if ((nom>"CKPANIER0") && (nom<"CKPANIER:") && !(document.forms[0].elements[i].checked==(coche)))
+      {
+        document.forms[0].elements[i].checked=(coche);
+        nb_coche_change++;
+      }
+    }
+  }
+  document.forms[0].SELECT1.value=nb_coche_change;
+  if (nb_coche_change>0) {document.forms[0].SELECT1.click()};
+}
+
+function init()
+{
+  chFormat="LISTENOT".toUpperCase();
+  chClassement="PERTINENCE";
+  toutes_les_coches=true;
+  toutAjouterPresent=false;
+  nb_coches=0;
+
+  var elem=document.getElementsByTagName("input");
+  for(i=0;i<elem.length;i++)
+  {
+    if (elem[i].name=="CHANGER_FORMAT") elem[i].checked=(elem[i].value.substr(0,4)==chFormat.substr(0,4))
+    else if (elem[i].name=="CHANGER_CLASSEMENT") elem[i].checked=(elem[i].value.substr(0,4)==chClassement.substr(0,4))
+    else if (elem[i].name=="CKPANIER0") toutAjouterPresent=true
+    else if (elem[i].type=="checkbox") {
+      if (toutes_les_coches)
+      {
+        nb_coches++
+        toutes_les_coches=elem[i].checked
+      }
+    }
+  }
+  if (toutAjouterPresent) document.forms[0].CKPANIER0.checked=(toutes_les_coches && (nb_coches>0));
+
+  ch="";
+  if (("BCDIWEB"=="BCDIWEB") && (ch>""))
+  {
+    ref=window.location.href
+    p=ref.indexOf("#");
+    if (p>=0)
+      ref=ref.substring(0,p)
+    window.location.href=ref+"#"+ch;
+  }
+}
+
+function ChangeFormat(obj)
+{
+  document.forms[1].NB_FICHES_PAR_PAGE.value=(obj.value=="TOUT_BIBLIO") ? 0 : 10;
+  document.forms[1].FORMAT.value=obj.value;
+  document.forms[1].submit();
+}
+
+function ChangeClassement(obj)
+{
+  document.forms[1].CLASSEMENT.value=obj.value;
+  document.forms[1].submit();
+}
+
+function VidePanier(obj)
+{
+  document.forms[0].VIDERPANIER.value='Vider le panier';
+  document.forms[0].submit();
+}
+
+function gestionmenu(filecible,ou)
+{
+  var affonglet=(filecible==FicOrigine) ? "ON" : "OFF" ;
+  if(ou=="face"){document.write('<div class=\"menu'+affonglet+'\"><div class=\"menu'+affonglet+'gauche\"><\/div><div class=\"menu'+affonglet+'txt\">')};
+  if(ou=="bg"){document.write('<\/div><div class=\"menu'+affonglet+'droite\"><\/div><\/div>')};
+}
+
+if(0<1 && FicOrigine==FicPanier){document.write('<meta http-equiv=\"refresh\" content=\"0;URL=/bcdiweb2008/bcdiweb.cgi/demolyc?fichier=LISTENOT.HTM&MODELE=index.htm\" \ TARGET="_self">')}
+
+function DivStatus( nom, numero )
+{
+      var divID = nom + numero;
+      PcH = true;
+      if ( document.getElementById && document.getElementById( divID ) ) // Pour les navigateurs récents
+          Pdiv = document.getElementById( divID );
+      else if ( document.all && document.all[ divID ] ) // Pour les veilles versions
+          Pdiv = document.all[ divID ];
+      else if ( document.layers && document.layers[ divID ] ) // Pour les très veilles versions
+          Pdiv = document.layers[ divID ];
+      else
+          PcH = false;
+      if ( PcH )
+          Pdiv.className = ( Pdiv.className == 'cachediv' ) ? '' : 'cachediv';
+}
+
+function cachtxtvide(ordre)
+{
+  document.write((ordre=="1") ? "<div class=\"visionno\">" : "<\/div>")
+}
+
+function ouvrirTable(tr) {
+  if (!tableOuverte) {
+    tableOuverte=true;
+    document.write('<TABLE>');
+    if (tr) document.write('<TR>');
+  }
+}
+
+function fermerTable(tr) {
+  if (tableOuverte) {
+    tableOuverte=false;
+    if (tr) document.write('</TR>');
+    document.write('</TABLE>');
+  }
+}
+
+function envoyerTexte(sorte) {
+
+  if (!tableOuverte) {
+    tableOuverte=true;
+    ch='<TABLE width="100%">';
+  }
+  else ch=""
+  libelle=(sorte=="BIO") ? "Biographie" : (sorte=="TDM") ? "Table des matières" : "4ème de couverture" ;
+  if ("BCDIWEB"=="BCDIWEB") {
+	ch+='<tr style="cursor:pointer;" onClick="javascript:window.open(';
+	ch+="'/bcdiweb2008/bcdiweb.cgi/demolyc?"+sorte+"="+nudoc+"','"+sorte+"','";
+	ch+="top=100,left=10,width=300,height=100,";
+	ch+="toolbar=no,location=no,directories=no,status=no,menubar=no,resizable=yes,scrollbars=yes,copyhistory=no\'";
+	ch+=')"><td><img src="../modlyc/'+sorte+'.gif" alt="'+libelle+'" title="'+libelle+'" width=14 height=20 hspace=1 vspace=1 border=0></td><td style="font-size:10px" valign=center>'+libelle+'</td></tr>';
+  }
+  else {
+    ch+='<tr><td><A HREF="/bcdiweb2008/bcdiweb.cgi/demolyc?'+sorte+'='+nudoc+'"><img src="../modlyc/'
+    ch+=sorte+'.gif" alt="'+libelle+'" title="'+libelle+'" width=14 height=20 hspace=1 vspace=1 border=0></a></td><td style="font-size:10px" valign=center><A HREF="/bcdiweb2008/bcdiweb.cgi/demolyc?'+sorte+'='+nudoc+'">'+libelle+'</a></td></tr>';
+  }
+  document.write(ch);
+}
+ch=(FicOrigine==FicPanier) ? "Panier" : "Résultat";
+document.write("<title>&nbsp;"+ch+" - C R D P DE POITOU CHARENTES - POITIERS CEDEX</title>")
+
+-->
+</script>
+<style type "text/css">
+.TDxfp7
+	{
+	visibility : visible;
+	color : #0000FF; 
+	font-size: 9px;
+	}
+</style>
+</HEAD>
+
+<body onload="javascript:init()">
+<form action="/bcdiweb2008/bcdiweb.cgi/demolyc" method="POST" TARGET="_self">
+
+<div class="zonemenu">
+  <div class="fxcal">
+    <div class="menucalibre">&nbsp;</div>
+
+    <SCRIPT type="text/javascript">
+      if(FicOrigine=="AVANCEE-THEME.HTM"){gestionmenu("AVANCEE-THEME.HTM","face");}
+      else{gestionmenu("index.htm","face");}
+      document.write('<a href="/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&amp;fichier=LISTENOT.HTM&MODELE=index.htm" TARGET="_self">Recherche simple</a>')
+
+      if(FicOrigine=="AVANCEE-THEME.HTM"){gestionmenu("AVANCEE-THEME.HTM","bg");}
+      else{gestionmenu("index.htm","bg");}
+
+      gestionmenu("AVANCEE-THEME.HTM","face");
+      document.write('<a href="/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&amp;fichier=LISTENOT.HTM&MODELE=AVANCEE-THEME.htm" TARGET="_self">Recherche avancée</a>')
+      gestionmenu("AVANCEE-THEME.HTM","bg");
+
+      if(FicOrigine=="RECH-THESAURUS.HTM"){gestionmenu("RECH-THESAURUS.HTM","face");}
+      else{gestionmenu("VisitTh.htm","face");}
+      document.write('<a href="/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&amp;fichier=LISTENOT.HTM&MODELE=VisitTh.htm" TARGET="_self">Recherche par thésaurus</a>')
+
+      if(FicOrigine=="RECH-THESAURUS.HTM"){gestionmenu("RECH-THESAURUS.HTM","bg");}
+      else{gestionmenu("VisitTh.htm","bg");}
+  </script>
+
+<script type="text/javascript">
+  <!--
+  var nbTry = 0
+  function tryClose()
+  {
+	nbTry++
+	ch="La configuration de ce navigateur n'autorise pas sa fermeture programmée.\nFermez vous-même la fenêtre pour vous déconnecter !"
+	if (nbTry>1)
+	  alert(ch)
+	else
+	{
+	  t1 = new Date();
+	  window.close();
+	  t2 = new Date();
+	  possible = (t2.getTime()-t1.getTime()>50) // il y a eu une demande de confirmation
+	  if (possible) {nbTry = 0} else {alert(ch)}
+	}
+  }
+  if (0>0) {
+	ch="<div class='menuOFFp'><div class='menuOFFgauchep'><\/div><div><a href='/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&fichier=PANIER.htm&FICHIERORIGINE=Panier.htm"
+	if ("BCDIWEB"=="BCDI") ch+="&resultat=panier&format=listenot.htm&classement=DATE PARUTION; SUPPORT; TITRE";
+	ch+="' class='menupaniertxt'><span class='menupaniertxt2'>Mon panier<\/span> (0 fiche";
+	if (0>1) ch+="s";
+	ch+=")<\/a><\/div><div class='menuOFFdroitep'><\/div><\/div>";
+  }
+  else {
+    ch='<div class=\"menuOFF\"><div class=\"menuOFFgauche\"><\/div><div class=\"menuOFFtxt\">';
+    ch+='<span class="pasdepanier">Mon panier<\/span><\/div><div class=\"menuOFFdroite\"><\/div><\/div>';
+  }
+  document.write(ch);
+
+//  if("1"!="NON" && "BCDIWEB"=="BCDIWEB" && 0==0){
+  if(1!=0){
+    if(0==0) {
+      document.write('<div class="menuOFF">')
+      document.write('<div class="menuOFFgauche">&nbsp;</div>')
+      document.write('<div class="menuOFFtxtcompte"><a href="/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&fichier='+fichierEnCours+'&modele=identification.htm" title="Il faut s\'identifier pour voir le compte-lecteur" TARGET="_self">Mon compte</a></div>')
+      document.write('<div class="menuOFFdroite">&nbsp;</div>')
+      document.write('</div>')
+
+      document.write('<div class="menuOFF">')
+      document.write('<div class="menuOFFgauche">&nbsp;</div>')
+      document.write('<div class="menuOFFtxtcompte"><a href="/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&fichier='+fichierEnCours+'&modele=identification.htm" title="Il faut s\'identifier pour voir le compte-lecteur ou pour réserver" TARGET="_self">Identification</a></div>')
+      document.write('<div class="menuOFFdroite">&nbsp;</div>')
+      document.write('</div>')
+    }
+    else {
+      document.write('<div class="menuOFF">')
+      document.write('<div class="menuOFFgauche">&nbsp;</div>')
+      document.write('<div class="menuOFFtxtcompte"><a href="/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&fichier='+fichierEnCours+'&modele=AccueilCompte.htm" TARGET="_self">Mon compte</a></div>')
+      document.write('<div class="menuOFFdroite">&nbsp;</div>')
+      document.write('</div>')
+
+      document.write('<div class="menuOFF">')
+      document.write('<div class="menuOFFgauche">&nbsp;</div>')
+      ch="La configuration de ce navigateur n'autorise pas sa fermeture programmée.\nFermez vous-même la fenêtre pour vous déconnecter !"
+// on ferme
+      document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:tryClose();" title="(déconnecter )">Déconnexion</div>')
+// ou on réinitialise
+/*
+      ch="'?DECONNECTER=OUI&NP=2'";
+      document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:window.location.href='+ch+'" title="(déconnecter )">Déconnexion</div>')
+*/
+      document.write('<div class="menuOFFdroite">&nbsp;</div>')
+      document.write('</div>')
+    }
+  }
+  -->
+  </script>
+
+  </div>
+</div>
+
+<SCRIPT type="text/javascript">
+  <!--
+  document.write('<div class=\"menuseparat\">&nbsp;<\/div>');
+  -->
+</script>
+
+<div class="menuzonedatag">
+  <div class="menuzonedata" bgcolor="22EEEE">
+    <SCRIPT type="text/javascript">
+    <!--
+      if ("BCDIWEB"=="BCDIWEB")
+       document.write('<div class="txt100pr100"><a class="imprime" href="javascript:window.print()">Imprimer cette page</a></div>');
+    -->
+    </script>
+
+    <div class="infosrech">
+
+      <BR><strong>&#8226;</strong>
+      <script type="text/javascript">
+      <!--
+        if(FicOrigine==FicPanier){document.write('Nombre de fiche'+plur_pan+' dans votre panier :');}
+        else{document.write('Résultat de votre recherche :');}
+      -->
+      </script>
+       <strong>7
+
+      <script type="text/javascript">
+      <!--
+        document.write("fiche"+plur_rep)
+      -->
+      </script>
+      </strong>
+    </div>
+
+	<script type="text/javascript">
+    <!--
+      if(FicOrigine!=FicPanier){document.write("<div>&nbsp;</div><div class='infosequation'><strong>&#8226;<\/strong> Mot(s) recherché(s) : <strong>LOUP<\/strong><\/div>");}
+    -->
+    </script>
+
+    <div class="txt100pr100">&nbsp;</div>
+
+    <div class="txt100pr100">
+    <script type="text/javascript">
+    <!--
+            if (nbReponses<2) cachtxtvide('1');
+    -->
+    </script>
+      <div class="classementformat">&#8226;&nbsp;Classer les résultats par : </div>
+        <script type="text/javascript">
+        <!--
+          if ((FicOrigine=='INDEX.HTM') || (FicOrigine=='AVANCEE-THEME.HTM'))
+           document.write('<div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="PERTINENCE"  onClick="ChangeClassement(this)">Pertinence</div>')
+        -->
+        </script>
+
+      <div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="TITRE" onClick="ChangeClassement(this)">Titre</div>
+      <div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="AUTEUR, TITRE" onClick="ChangeClassement(this)">Auteur</div>
+      <div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="SUPPORT, TITRE" onClick="ChangeClassement(this)">Support</div>
+      <div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="DATE PARUTION, TITRE" onClick="ChangeClassement(this)">Date</div>
+    </div>
+	<script type="text/javascript">
+	<!--
+			if (nbReponses<2) cachtxtvide('2');
+			if (nbReponses==0) cachtxtvide('1');
+	-->
+	</script>
+
+    <div class="txt100pr100">
+      <div class="classementformat">&#8226;&nbsp;Choisir le format d'affichage : </div>
+      <div class="alignpuce"><INPUT type="radio" id="CHANGER_FORMAT" name="CHANGER_FORMAT" value="LISTENOT" onClick="ChangeFormat(this)">Complet</div>
+
+      <div class="alignpuce"><INPUT type="radio" id="CHANGER_FORMAT" name="CHANGER_FORMAT" value="BIBLIO" onClick="ChangeFormat(this)">Liste&nbsp;&nbsp;</div>
+	  <script type="text/javascript">
+	  <!--
+		boolTemp=((nbReponses>maxReponses) || (nbReponses<=10))
+		if (boolTemp) cachtxtvide('1');
+	  -->
+	  </script>
+      <div class="alignpuce" style="width: 260px;" ><INPUT type="radio" id="CHANGER_FORMAT" name="CHANGER_FORMAT" value="TOUT_BIBLIO" onClick="ChangeFormat(this)">Tout au format liste</div>
+	  <script type="text/javascript">
+	  <!--
+		if (boolTemp) cachtxtvide('2');
+	  -->
+	  </script>
+
+    </div>
+	<script type="text/javascript">
+    <!--
+            if (nbReponses==0) cachtxtvide('2');
+    -->
+    </script>
+
+    <div class="pointille">&nbsp;</div>
+    <div class="menuzonedata">
+      <div class="txt100pr100">
+      <SCRIPT type="text/javascript">
+        <!--
+        if(FicOrigine==FicPanier){document.write('<INPUT type="submit" Name="VIDERPANIER" Value="Vider le panier" class=\"boutviderpanier\">');}
+        else document.write('<a class="modif" href="/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&MODIFIER=INDEX.HTM" TARGET="_self">Modifier la recherche<\/a>');
+        if ((nbReponses != 0) && (FicOrigine!=FicPanier) && ("LISTENOT"=="LISTENOT")) document.write('<div class="ajout2">Tout ajouter au panier&nbsp;<INPUT TYPE="CHECKBOX" id="CKPANIER" NAME="CKPANIER0" onclick="onCheckBoxClic(this)"><\/div>');
+      -->
+      </script>
+      </div>
+      <div class="txt100pr100">
+      <script type="text/javascript">
+      <!--
+        pagination();
+      -->
+      </script>
+      </div>
+    <br><table width=90%><tr><td class="titre" align="center" ><span id="FONCTIONNEMENT_ELECTRE"></span></td></tr></table>
+	<script type="text/javascript">
+    <!--
+      if (nbReponses == 0)
+        document.write('<div align=\"center\" class=\"alerte\">Aucun résultat à votre recherche<br><br><\/div>')
+    -->
+    </script>
+
+<!-- résultat 7 réponses -->
+<!-- Affichage suivant le modèle C:\1.90_web\modlyc\LISTENOT.HTM --><BR><BR>
+
+
+      <div class="zoneclaire">
+        <div class="ficheicone">
+		<a name="FICHE1"></a><img src="../modlyc/SUPPORT-PERIODIQUE.gif" alt=""><div>N°1/7</div><div class="exemplairesmall">Périodique</div>
+        <script type="text/javascript">
+        <!--
+          if (0 == 1)
+          {
+            nudoc=""
+            if (0 == 1) {
+              ch='<img src="../electre/" width=60 height=98 hspace=2 border=0 alt="Couverture"'
+			  if (0 == 1)
+                if ("BCDIWEB"=="BCDIWEB") {
+				ch+=' style="cursor:pointer;" onClick="javascript:window.open(\'/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=\',\'IMAGE\','
+                ch+='\'toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no\' )"'
+              }
+			  else
+				ch='<A HREF="/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=">'+ch+'></A'
+              document.write(ch+'>')
+			}
+            if (0 == 1) envoyerTexte('BIO')
+            if (0 == 1) envoyerTexte('ARGUMENT')
+            if (0 == 1) envoyerTexte('TDM')
+            fermerTable(false);
+          }
+        -->
+		</script>
+        </div class="ficheicone">
+        <div class="fiche">
+
+
+  
+<!-- Fichier FicheLycee.htm -->
+	<div class="zoneafftxt">
+  <div class="fiche100pr100">
+	<script type="text/javascript">
+	  var typeNotice="Article";
+	  var typeDocument="Texte imprimé";
+	  var supportNotice="Périodique";
+
+	  var noticeGenerale=(typeNotice=="Notice générale");
+	  var docRessourceEnLigne=(typeDocument=="Ressource en ligne");
+	  var docRessourceElectronique=(typeDocument=="Ressource électronique");
+// DebFichLyc
+	  if (noticeGenerale)
+	  {
+		ch_aff=supportNotice;
+		ch_aff+=" (11/2005) ";
+		ch_aff+="Enquête, reportage / Article de périodique  <i>(Texte imprimé)</i><br/><br/>";
+		chDocument="Courrier de la nature 223";
+		nbNotices=5;
+		if (nbNotices>1)
+		 chDocument='<a href="/bcdiweb2008/bcdiweb.cgi/demolyc?EQ:Identité D.=LLBNHBLL0603103235000266" title="Voir les '+nbNotices+' correspondantes">'+chDocument+'</a>';
+		ch_aff+="<div class='titre'>"+chDocument+"</div>";
+	  }
+	  else
+	  {
+		ch_aff=typeNotice+" de "+supportNotice;
+		ch_aff+=" dans <i>Courrier de la nature 223</i>";
+		ch_aff+=" (11/2005) ";
+		ch_aff+=", p.27-35  <i>(Texte imprimé)</i><br/>";
+		ch_aff+="<div class='titre'>Ethiopie : la fin du <font color=#336600><b><i>loup</i></b></font> d\'Abyssinie ?</div>";
+	  }
+	  ch_aff+="<br/><br/>";
+	  rajouterStrong("Résumé  : ","Etude de la biodiversité du parc national de Balé en Ethiopie en 2005. Le cas du <font color=#336600><b><i>loup</i></b></font> d\'Abyssinie : les solutions pour sauvegarder l\'espèce. La pression humaine. Encadrés : l\'adaptation des plantes et des fleurs aux conditions extrêmes de l\'Ethiopie ; le rat-taupe géant.");
+	  rajouterStrong("Descripteurs  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=biodiversite&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">biodiversité</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=loup&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\"><font color=#336600><b><i>loup</i></b></font></A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=%7Eprotection+des+animaux%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">protection des animaux</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=%7Eanimal+en+voie+de+disparition%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">animal en voie de disparition</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=Ethiopie&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Ethiopie</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=2000-&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">2000-</A>");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  ch_aff+="<hr/>";
+	  rajouterStrong("Auteurs  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7EThonnerieux%2C+yves%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Thonnérieux, Yves</A>");
+	  rajouterStrong(" ","");
+	  vel="223";
+	  if (vel!="") vel=", "+vel;
+	  rajouterStrong("Collection  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Collection=%7ELe+courrier+de+la+nature+(1977)%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Le Courrier de la Nature (1977)</A>"+vel);
+	  rajouterStrong("Date de parution  : ","11/2005");
+	  ch_aff+="<br/>";
+
+// FichCompLyc
+
+
+// PourCiterLyc Affichage Optionnel bouton fiche complète
+
+	  ch_aff+='<div id="txtaffiche-1"  class="cachediv">';
+
+	  if (!noticeGenerale) rajouterStrong("Natures  : ","Enquête, reportage / Article de périodique");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  rajouterStrong("Disciplines : ","");
+	  if (noticeGenerale) rajouterStrong("Collation  : ","p.27-35");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  rajouterStrong("Issn  : ","0011-0477");
+	  rajouterStrong(" ","");
+	  if (noticeGenerale) rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  ch_aff+="<br/>";
+
+
+	  ch_aff+="<i><b>Pour citer le document : </b></i><BR>";
+	  NoticesAuteurs="Thonnérieux, Yves";
+	  if (NoticesAuteurs!="") ch_aff+="Thonnérieux, Yves. ";
+
+	// cas I. du cahier des charges page 11
+	  if ((supportNotice=="Internet") || ((docRessourceEnLigne) && (supportNotice!="Périodique")))
+	  {
+		
+		//
+		// 
+		
+		//
+		
+	  }
+	  // cas II.
+	  else if ((docRessourceEnLigne) && (supportNotice=="Périodique"))
+	  {
+		ch_aff+="Ethiopie : la fin du loup d\'Abyssinie ?. ";
+		ch_aff+="Le Courrier de la Nature (1977) [en ligne], ";
+		ch_aff+="11/2005, ";
+		ch_aff+="223, ";
+		dateNotice="11/2005";
+		ch_aff+='date de mise à jour ' + dateNotice + ' ';
+		dateNotice="20/03/2006";
+		if (dateNotice=="") dateNotice="11/01/2006";
+		ch_aff+='[consulté le ' + dateNotice+ ']';
+		NoticesCollation="p.27-35";
+		if (NoticesCollation!="") ch_aff+=", p.27-35";
+		ch_aff+=". &lt;&gt; ";
+	  }
+	  // cas III
+	  else if ((docRessourceElectronique) && (supportNotice!="Internet"))
+	  {
+		if (noticeGenerale)
+		{
+		  ch_aff+="Ethiopie : la fin du loup d\'Abyssinie ? ";
+		  ch_aff+="[Périodique]. ";
+		  DocumentsEditeur="";
+		  if (DocumentsEditeur!="") ch_aff+=", ";
+		  ch_aff+="11/2005.";
+		  NoticesCollation="p.27-35";
+		  if (NoticesCollation!="") ch_aff+="p.27-35. ";
+		  DocumentsCollection="Le Courrier de la Nature (1977)";
+		  if (DocumentsCollection!="") ch_aff+="Le Courrier de la Nature (1977)";
+		  DocumentsNumColl="223";
+		  if (DocumentsNumColl!="") ch_aff+=", 223.";
+		}
+		else if ((typeNotice=="Partie") || (typeNotice=="Contribution"))
+		{
+		  
+		  //
+		  
+		}
+		else
+		{
+		  ch_aff+="Ethiopie : la fin du loup d\'Abyssinie ?. ";
+		  DocumentsCollection="Le Courrier de la Nature (1977)";
+		  if (DocumentsCollection!="") ch_aff+="Le Courrier de la Nature (1977) ";
+		  ch_aff+="[Périodique], ";
+		  ch_aff+="11/2005, ";
+		  ch_aff+="223"
+		  NoticesCollation="p.27-35";
+		  if (NoticesCollation!="") ch_aff+=", p.27-35";
+		}
+		// cas IV
+	  }
+	  else if (supportNotice=="Périodique")
+	  {
+		ch_aff+="Ethiopie : la fin du loup d\'Abyssinie ?. ";
+		ch_aff+="Le Courrier de la Nature (1977), ";
+		ch_aff+="11/2005, ";
+		ch_aff+="223, ";
+		ch_aff+="p.27-35";
+	  }
+	  else if (noticeGenerale)
+	  {
+		ch_aff+="Ethiopie : la fin du loup d\'Abyssinie ?. ";
+		DocumentsEditeur="";
+		if (DocumentsEditeur!="") ch_aff+=", ";
+		ch_aff+="11/2005";
+		NoticesCollation="p.27-35";
+		if (NoticesCollation!="") ch_aff+=". p.27-35";
+		DocumentsCollection=". Le Courrier de la Nature (1977)";
+	    if (DocumentsCollection!="") ch_aff+=". Le Courrier de la Nature (1977)";
+		DocumentsNumColl="223";
+		if (DocumentsNumColl!="") ch_aff+=", 223.";
+	  }
+	  else
+	  {
+	  
+	  //
+		
+	  }
+	  ch_aff+='<br/><br/></div>'; // pour le DIV cachediv
+	  document.write(ch_aff);
+	</script>
+  </div>
+</div class="zoneafftxt">
+<!-- Fin du fichier FicheLycee.htm -->
+  
+
+
+		<script type="text/javascript">
+		<!--
+		  vel="Exemplaire  :"
+		  if (vel=="") cachtxtvide('1');
+		-->
+		</script>
+		<script type="text/javascript">
+		<!--
+		  vel=""
+		  if (vel!="") cachtxtvide('0');
+		-->
+		</script>
+          <div class="zoneexemplaire">
+		  <script type="text/javascript">
+		  <!--
+			if (0==1) {
+			  val=""
+			  if (val!="") val=' align="center">'+val+'&nbsp;';
+			}
+			else
+//			  if (""=="") val=">Exemplaire(s)"; else val=">Cote(s) et exemplaire(s)";
+              val=">Pour trouver le document";
+			if (val!="") val='<div class="zoneexemplairetitre"'+val+'</div>';
+            document.write(val);
+          -->
+          </script>
+		  
+			  
+            <div>
+			  <B>Courrier de la nature 223</B> - paru le 11/2005 -
+            </div>
+			  
+		  
+		  
+            <div class="zoneexemplairetxt"><!-- Modele FICHEEXE Ecrans Oct modifié RM 07/02/08-->
+  <div>
+  <script type="text/javascript">
+  <!--
+  if (0==0)
+  {
+    ch_aff="";
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/'+val+'.gif" height=30> &nbsp;';
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/Picto-'+val+'.gif" height=30> &nbsp;';
+	if ("En-service"!="Mis au pilon") {
+	  val="";
+	  if (val!="") ch_aff+="<BR>Cote&nbsp;<B>"+val+"</B><BR>";
+	  val="" ;
+	  if (val=="") val="772";
+	  if (val!="") ch_aff+="Ex.&nbsp;"+val+"<BR>";
+	  ch_aff+="";
+	  ces="Disponible";
+	  if(ces=="Disponible") ces='OK'
+	  else
+	   if(ces=="Sorti") ces='PE'
+	  else ces='NO'
+	  ch_aff+='<div class=\"disponibilite'+ces+'\">';
+	  ch_aff+="En-service - Disponible<\/div>"
+	  document.write(ch_aff);
+	}
+  } // BASEBIBLIO
+  -->
+  </script>
+
+  </div></div>
+
+          </div>
+        <script type="text/javascript">
+       <!--
+    if (vel=="") cachtxtvide('2');
+    -->
+  </script>
+          <div class="fiche100pr100">&nbsp;</div>
+        </div class="fiche">
+		<!--div class="fiche100pr100"-->
+        <div class="ajout"><a href="javascript:DivStatus( 'txtaffiche-', '1' )">Afficher / Masquer la fiche complète</a></div>
+        <div class="ajout2">Ajouter au panier&nbsp;<INPUT type="Hidden" name="AVEC1596" value="1596"><INPUT type="CheckBox" id="CKPANIER" name="CKPANIER1596" value="1" onclick="onCheckBoxClic(this)"></div>
+          <script type="text/javascript">
+          <!--
+            val='<input type="button" value="Réserver" onClick="reserver(366,1,1,0,1)">'
+            if ((val!="") && (val.indexOf("<!--")<0))
+             val='<div class="ajout2">'+val+'</div>'
+            document.write(val);
+          -->
+          </script>
+		<!--/div-->
+      </div class="zoneclaire">
+
+
+
+      <div class="zoneclaire">
+        <div class="ficheicone">
+		<a name="FICHE2"></a><img src="../modlyc/SUPPORT-LIVRE.gif" alt=""><div>N°2/7</div><div class="exemplairesmall">Livre</div>
+        <script type="text/javascript">
+        <!--
+          if (1 == 1)
+          {
+            nudoc="9782725622699"
+            if (1 == 1) {
+              ch='<img src="../electre/IMGT9782725622699.jpg" width=60 height=98 hspace=2 border=0 alt="Couverture"'
+			  if (1 == 1)
+                if ("BCDIWEB"=="BCDIWEB") {
+				ch+=' style="cursor:pointer;" onClick="javascript:window.open(\'/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=9782725622699\',\'IMAGE\','
+                ch+='\'toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no\' )"'
+              }
+			  else
+				ch='<A HREF="/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=9782725622699">'+ch+'></A'
+              document.write(ch+'>')
+			}
+            if (0 == 1) envoyerTexte('BIO')
+            if (1 == 1) envoyerTexte('ARGUMENT')
+            if (0 == 1) envoyerTexte('TDM')
+            fermerTable(false);
+          }
+        -->
+		</script>
+        </div class="ficheicone">
+        <div class="fiche">
+
+
+  
+<!-- Fichier FicheLycee.htm -->
+	<div class="zoneafftxt">
+  <div class="fiche100pr100">
+	<script type="text/javascript">
+	  var typeNotice="Notice générale";
+	  var typeDocument="Texte imprimé";
+	  var supportNotice="Livre";
+
+	  var noticeGenerale=(typeNotice=="Notice générale");
+	  var docRessourceEnLigne=(typeDocument=="Ressource en ligne");
+	  var docRessourceElectronique=(typeDocument=="Ressource électronique");
+// DebFichLyc
+	  if (noticeGenerale)
+	  {
+		ch_aff=supportNotice;
+		ch_aff+=" (2003) ";
+		ch_aff+="Séquence pédagogique  <i>(Texte imprimé)</i><br/><br/>";
+		chDocument="10 séquences pour lire : \"L\'oeil du <font color=#336600><b><i>loup</i></b></font>\" de Daniel Pennac";
+		nbNotices=1;
+		if (nbNotices>1)
+		 chDocument='<a href="/bcdiweb2008/bcdiweb.cgi/demolyc?EQ:Identité D.=0301076192" title="Voir les '+nbNotices+' correspondantes">'+chDocument+'</a>';
+		ch_aff+="<div class='titre'>"+chDocument+"</div>";
+	  }
+	  else
+	  {
+		ch_aff=typeNotice+" de "+supportNotice;
+		ch_aff+=" dans <i></i>";
+		ch_aff+=" (2003) ";
+		ch_aff+=", 38 p. + 15 fiches  <i>(Texte imprimé)</i><br/>";
+		ch_aff+="<div class='titre'>10 séquences pour lire : \"L\'oeil du <font color=#336600><b><i>loup</i></b></font>\" de Daniel Pennac</div>";
+	  }
+	  ch_aff+="<br/><br/>";
+	  rajouterStrong("Résumé  : ","Outils pour la lecture intégrale d\'un roman en classe : \"L\'oeil du <font color=#336600><b><i>loup</i></b></font>\". Une partie méthodologique destinée à l\'enseignant et 25 fiches pour les élèves.");
+	  rajouterStrong("Descripteurs  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=%7Eapprentissage+de+la+lecture%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">apprentissage de la lecture</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=lecture&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">lecture</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=%7Elitterature+de+jeunesse%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">littérature de jeunesse</A>");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  ch_aff+="<hr/>";
+	  rajouterStrong("Auteurs  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7ECoute%2C+bernard%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Couté, Bernard</A>");
+	  rajouterStrong("Editeurs  : ","Retz");
+	  vel="";
+	  if (vel!="") vel=", "+vel;
+	  rajouterStrong(" ",""+vel);
+	  rajouterStrong("Date de parution  : ","2003");
+	  ch_aff+="<br/>";
+
+// FichCompLyc
+
+
+// PourCiterLyc Affichage Optionnel bouton fiche complète
+
+	  ch_aff+='<div id="txtaffiche-2"  class="cachediv">';
+
+	  if (!noticeGenerale) rajouterStrong("Natures  : ","Séquence pédagogique");
+	  rajouterStrong("Publics  : ","Enseignant");
+	  rajouterStrong("Niveaux  : ","CM2 / Cycle 3 / Ecole élémentaire / Ecole primaire / Collège / Secondaire");
+	  rajouterStrong("Disciplines : ","Littérature, poésie et livre jeunesse / Lecture / Langage et langue française - Éducation littéraire");
+	  if (noticeGenerale) rajouterStrong("Collation  : ","38 p. + 15 fiches");
+	  rajouterStrong(" ","");
+	  rajouterStrong("Isbn  : ","2-7256-2269-7");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  if (noticeGenerale) rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  ch_aff+="<br/>";
+
+
+	  ch_aff+="<i><b>Pour citer le document : </b></i><BR>";
+	  NoticesAuteurs="Couté, Bernard";
+	  if (NoticesAuteurs!="") ch_aff+="Couté, Bernard. ";
+
+	// cas I. du cahier des charges page 11
+	  if ((supportNotice=="Internet") || ((docRessourceEnLigne) && (supportNotice!="Périodique")))
+	  {
+		
+			ch_aff+="10 séquences pour lire : \"L\'oeil du loup\" de Daniel Pennac [en ligne]. ";
+			DocumentsEditeur="Retz";
+			if (DocumentsEditeur!="") ch_aff+="Retz, ";
+			dateNotice="2003"
+			ch_aff+=dateNotice + ', ';
+			dateNotice="2003";
+			ch_aff+='date de mise à jour ' + dateNotice + ' ';
+			dateNotice="10/03/2006";
+			if (dateNotice=="") dateNotice="11/06/2003";
+			ch_aff+='[consulté le ' + dateNotice+ ']. ';
+			NoticesCollation="38 p. + 15 fiches";
+			if (NoticesCollation!="") ch_aff+="38 p. + 15 fiches. ";
+			DocumentsCollection="";
+			if (DocumentsCollection!="") ch_aff+="";
+			DocumentsNumColl="";
+			if (DocumentsNumColl!="") ch_aff+=", ";
+			ch_aff+=". &lt;&gt; "
+		
+		//
+		// 
+		
+		//
+		
+	  }
+	  // cas II.
+	  else if ((docRessourceEnLigne) && (supportNotice=="Périodique"))
+	  {
+		ch_aff+="10 séquences pour lire : \"L\'oeil du loup\" de Daniel Pennac. ";
+		ch_aff+=" [en ligne], ";
+		ch_aff+="2003, ";
+		ch_aff+=", ";
+		dateNotice="2003";
+		ch_aff+='date de mise à jour ' + dateNotice + ' ';
+		dateNotice="10/03/2006";
+		if (dateNotice=="") dateNotice="11/06/2003";
+		ch_aff+='[consulté le ' + dateNotice+ ']';
+		NoticesCollation="38 p. + 15 fiches";
+		if (NoticesCollation!="") ch_aff+=", 38 p. + 15 fiches";
+		ch_aff+=". &lt;&gt; ";
+	  }
+	  // cas III
+	  else if ((docRessourceElectronique) && (supportNotice!="Internet"))
+	  {
+		if (noticeGenerale)
+		{
+		  ch_aff+="10 séquences pour lire : \"L\'oeil du loup\" de Daniel Pennac ";
+		  ch_aff+="[Livre]. ";
+		  DocumentsEditeur="Retz";
+		  if (DocumentsEditeur!="") ch_aff+="Retz, ";
+		  ch_aff+="2003.";
+		  NoticesCollation="38 p. + 15 fiches";
+		  if (NoticesCollation!="") ch_aff+="38 p. + 15 fiches. ";
+		  DocumentsCollection="";
+		  if (DocumentsCollection!="") ch_aff+="";
+		  DocumentsNumColl="";
+		  if (DocumentsNumColl!="") ch_aff+=", .";
+		}
+		else if ((typeNotice=="Partie") || (typeNotice=="Contribution"))
+		{
+		  
+		  //
+		  
+		}
+		else
+		{
+		  ch_aff+="10 séquences pour lire : \"L\'oeil du loup\" de Daniel Pennac. ";
+		  DocumentsCollection="";
+		  if (DocumentsCollection!="") ch_aff+=" ";
+		  ch_aff+="[Livre], ";
+		  ch_aff+="2003, ";
+		  ch_aff+=""
+		  NoticesCollation="38 p. + 15 fiches";
+		  if (NoticesCollation!="") ch_aff+=", 38 p. + 15 fiches";
+		}
+		// cas IV
+	  }
+	  else if (supportNotice=="Périodique")
+	  {
+		ch_aff+="10 séquences pour lire : \"L\'oeil du loup\" de Daniel Pennac. ";
+		ch_aff+=", ";
+		ch_aff+="2003, ";
+		ch_aff+=", ";
+		ch_aff+="38 p. + 15 fiches";
+	  }
+	  else if (noticeGenerale)
+	  {
+		ch_aff+="10 séquences pour lire : \"L\'oeil du loup\" de Daniel Pennac. ";
+		DocumentsEditeur="Retz";
+		if (DocumentsEditeur!="") ch_aff+="Retz, ";
+		ch_aff+="2003";
+		NoticesCollation="38 p. + 15 fiches";
+		if (NoticesCollation!="") ch_aff+=". 38 p. + 15 fiches";
+		DocumentsCollection=". ";
+	    if (DocumentsCollection!="") ch_aff+=". ";
+		DocumentsNumColl="";
+		if (DocumentsNumColl!="") ch_aff+=", .";
+	  }
+	  else
+	  {
+	  
+	  //
+		
+	  }
+	  ch_aff+='<br/><br/></div>'; // pour le DIV cachediv
+	  document.write(ch_aff);
+	</script>
+  </div>
+</div class="zoneafftxt">
+<!-- Fin du fichier FicheLycee.htm -->
+  
+
+
+		<script type="text/javascript">
+		<!--
+		  vel="Exemplaire  :"
+		  if (vel=="") cachtxtvide('1');
+		-->
+		</script>
+		<script type="text/javascript">
+		<!--
+		  vel=""
+		  if (vel!="") cachtxtvide('0');
+		-->
+		</script>
+          <div class="zoneexemplaire">
+		  <script type="text/javascript">
+		  <!--
+			if (0==1) {
+			  val="Cote  :"
+			  if (val!="") val=' align="center">'+val+'&nbsp;843.0073 COU';
+			}
+			else
+//			  if ("Cote  :"=="") val=">Exemplaire(s)"; else val=">Cote(s) et exemplaire(s)";
+              val=">Pour trouver le document";
+			if (val!="") val='<div class="zoneexemplairetitre"'+val+'</div>';
+            document.write(val);
+          -->
+          </script>
+		  
+		  
+            <div class="zoneexemplairetxt"><!-- Modele FICHEEXE Ecrans Oct modifié RM 07/02/08-->
+  <div>
+  <script type="text/javascript">
+  <!--
+  if (0==0)
+  {
+    ch_aff="";
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/'+val+'.gif" height=30> &nbsp;';
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/Picto-'+val+'.gif" height=30> &nbsp;';
+	if ("En-service"!="Mis au pilon") {
+	  val="843.0073 COU";
+	  if (val!="") ch_aff+="<BR>Cote&nbsp;<B>"+val+"</B><BR>";
+	  val="9782725622699" ;
+	  if (val=="") val="1961";
+	  if (val!="") ch_aff+="Ex.&nbsp;"+val+"<BR>";
+	  ch_aff+="";
+	  ces="Disponible";
+	  if(ces=="Disponible") ces='OK'
+	  else
+	   if(ces=="Sorti") ces='PE'
+	  else ces='NO'
+	  ch_aff+='<div class=\"disponibilite'+ces+'\">';
+	  ch_aff+="En-service - Disponible<\/div>"
+	  document.write(ch_aff);
+	}
+  } // BASEBIBLIO
+  -->
+  </script>
+
+  </div></div>
+
+          </div>
+        <script type="text/javascript">
+       <!--
+    if (vel=="") cachtxtvide('2');
+    -->
+  </script>
+          <div class="fiche100pr100">&nbsp;</div>
+        </div class="fiche">
+		<!--div class="fiche100pr100"-->
+        <div class="ajout"><a href="javascript:DivStatus( 'txtaffiche-', '2' )">Afficher / Masquer la fiche complète</a></div>
+        <div class="ajout2">Ajouter au panier&nbsp;<INPUT type="Hidden" name="AVEC3170" value="3170"><INPUT type="CheckBox" id="CKPANIER" name="CKPANIER3170" value="2" onclick="onCheckBoxClic(this)"></div>
+          <script type="text/javascript">
+          <!--
+            val='<input type="button" value="Réserver" onClick="reserver(1049,2,1,0,2)">'
+            if ((val!="") && (val.indexOf("<!--")<0))
+             val='<div class="ajout2">'+val+'</div>'
+            document.write(val);
+          -->
+          </script>
+		<!--/div-->
+      </div class="zoneclaire">
+
+
+
+      <div class="zoneclaire">
+        <div class="ficheicone">
+		<a name="FICHE3"></a><img src="../modlyc/SUPPORT-VIDEOCASSETTE.gif" alt=""><div>N°3/7</div><div class="exemplairesmall">Vidéocassette</div>
+        <script type="text/javascript">
+        <!--
+          if (0 == 1)
+          {
+            nudoc=""
+            if (0 == 1) {
+              ch='<img src="../electre/" width=60 height=98 hspace=2 border=0 alt="Couverture"'
+			  if (0 == 1)
+                if ("BCDIWEB"=="BCDIWEB") {
+				ch+=' style="cursor:pointer;" onClick="javascript:window.open(\'/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=\',\'IMAGE\','
+                ch+='\'toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no\' )"'
+              }
+			  else
+				ch='<A HREF="/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=">'+ch+'></A'
+              document.write(ch+'>')
+			}
+            if (0 == 1) envoyerTexte('BIO')
+            if (0 == 1) envoyerTexte('ARGUMENT')
+            if (0 == 1) envoyerTexte('TDM')
+            fermerTable(false);
+          }
+        -->
+		</script>
+        </div class="ficheicone">
+        <div class="fiche">
+
+
+  
+<!-- Fichier FicheLycee.htm -->
+	<div class="zoneafftxt">
+  <div class="fiche100pr100">
+	<script type="text/javascript">
+	  var typeNotice="Notice générale";
+	  var typeDocument="Document projeté, vidéo";
+	  var supportNotice="Vidéocassette";
+
+	  var noticeGenerale=(typeNotice=="Notice générale");
+	  var docRessourceEnLigne=(typeDocument=="Ressource en ligne");
+	  var docRessourceElectronique=(typeDocument=="Ressource électronique");
+// DebFichLyc
+	  if (noticeGenerale)
+	  {
+		ch_aff=supportNotice;
+		ch_aff+=" (1999) ";
+		ch_aff+="Documentaire  <i>(Document projeté, vidéo)</i><br/><br/>";
+		chDocument="Faune sauvage de l\'Auvergne et du Limousin";
+		nbNotices=1;
+		if (nbNotices>1)
+		 chDocument='<a href="/bcdiweb2008/bcdiweb.cgi/demolyc?EQ:Identité D.=MBJEPNDL0084361" title="Voir les '+nbNotices+' correspondantes">'+chDocument+'</a>';
+		ch_aff+="<div class='titre'>"+chDocument+"</div>";
+	  }
+	  else
+	  {
+		ch_aff=typeNotice+" de "+supportNotice;
+		ch_aff+=" dans <i></i>";
+		ch_aff+=" (1999) ";
+		ch_aff+=", 1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.  <i>(Document projeté, vidéo)</i><br/>";
+		ch_aff+="<div class='titre'>Faune sauvage de l\'Auvergne et du Limousin</div>";
+	  }
+	  ch_aff+="<br/><br/>";
+	  rajouterStrong("Résumé  : ","Présentation de nombreux animaux vivant dans les montagnes, forêts, bocages, milieux aquatiques de cette région. Rappel des animaux disparus (ours, <font color=#336600><b><i>loup</i></b></font>...).Description des espèces animales actuelles que l\'on a réintroduit et de leur comportement (ragondin, castor, cigogne, mouflon, cerf, chevreuil, chamois, marmotte...). Les mesures prises pour préserver les espèces menacées (loutre, saumon...).");
+	  rajouterStrong("Descripteurs  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=%7EAuvergne+%3A+region%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Auvergne : région</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=%7ELimousin+%3A+region%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Limousin : région</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=animal&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">animal</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=%7Eprotection+des+animaux%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">protection des animaux</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=%7Erelation+homme-nature%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">relation homme-nature</A>");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  ch_aff+="<hr/>";
+	  rajouterStrong("Auteurs  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7EBouchardy%2C+christian%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Bouchardy, Christian</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7EBoulade%2C+yves%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Boulade, Yves</A>");
+	  rajouterStrong("Editeurs  : ","Catiche");
+	  vel="";
+	  if (vel!="") vel=", "+vel;
+	  rajouterStrong(" ",""+vel);
+	  rajouterStrong("Date de parution  : ","1999");
+	  ch_aff+="<br/>";
+
+// FichCompLyc
+
+
+// PourCiterLyc Affichage Optionnel bouton fiche complète
+
+	  ch_aff+='<div id="txtaffiche-3"  class="cachediv">';
+
+	  if (!noticeGenerale) rajouterStrong("Natures  : ","Documentaire");
+	  rajouterStrong("Publics  : ","Elève");
+	  rajouterStrong("Niveaux  : ","Tous niveaux");
+	  rajouterStrong("Disciplines : ","");
+	  if (noticeGenerale) rajouterStrong("Collation  : ","1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  if (noticeGenerale) rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  ch_aff+="<br/>";
+
+
+	  ch_aff+="<i><b>Pour citer le document : </b></i><BR>";
+	  NoticesAuteurs="Bouchardy, Christian / Boulade, Yves";
+	  if (NoticesAuteurs!="") ch_aff+="Bouchardy, Christian / Boulade, Yves. ";
+
+	// cas I. du cahier des charges page 11
+	  if ((supportNotice=="Internet") || ((docRessourceEnLigne) && (supportNotice!="Périodique")))
+	  {
+		
+			ch_aff+="Faune sauvage de l\'Auvergne et du Limousin [en ligne]. ";
+			DocumentsEditeur="Catiche";
+			if (DocumentsEditeur!="") ch_aff+="Catiche, ";
+			dateNotice="1999"
+			ch_aff+=dateNotice + ', ';
+			dateNotice="1999";
+			ch_aff+='date de mise à jour ' + dateNotice + ' ';
+			dateNotice="14/03/2006";
+			if (dateNotice=="") dateNotice="12/01/2001";
+			ch_aff+='[consulté le ' + dateNotice+ ']. ';
+			NoticesCollation="1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.";
+			if (NoticesCollation!="") ch_aff+="1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.. ";
+			DocumentsCollection="";
+			if (DocumentsCollection!="") ch_aff+="";
+			DocumentsNumColl="";
+			if (DocumentsNumColl!="") ch_aff+=", ";
+			ch_aff+=". &lt;&gt; "
+		
+		//
+		// 
+		
+		//
+		
+	  }
+	  // cas II.
+	  else if ((docRessourceEnLigne) && (supportNotice=="Périodique"))
+	  {
+		ch_aff+="Faune sauvage de l\'Auvergne et du Limousin. ";
+		ch_aff+=" [en ligne], ";
+		ch_aff+="1999, ";
+		ch_aff+=", ";
+		dateNotice="1999";
+		ch_aff+='date de mise à jour ' + dateNotice + ' ';
+		dateNotice="14/03/2006";
+		if (dateNotice=="") dateNotice="12/01/2001";
+		ch_aff+='[consulté le ' + dateNotice+ ']';
+		NoticesCollation="1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.";
+		if (NoticesCollation!="") ch_aff+=", 1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.";
+		ch_aff+=". &lt;&gt; ";
+	  }
+	  // cas III
+	  else if ((docRessourceElectronique) && (supportNotice!="Internet"))
+	  {
+		if (noticeGenerale)
+		{
+		  ch_aff+="Faune sauvage de l\'Auvergne et du Limousin ";
+		  ch_aff+="[Vidéocassette]. ";
+		  DocumentsEditeur="Catiche";
+		  if (DocumentsEditeur!="") ch_aff+="Catiche, ";
+		  ch_aff+="1999.";
+		  NoticesCollation="1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.";
+		  if (NoticesCollation!="") ch_aff+="1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.. ";
+		  DocumentsCollection="";
+		  if (DocumentsCollection!="") ch_aff+="";
+		  DocumentsNumColl="";
+		  if (DocumentsNumColl!="") ch_aff+=", .";
+		}
+		else if ((typeNotice=="Partie") || (typeNotice=="Contribution"))
+		{
+		  
+		  //
+		  
+		}
+		else
+		{
+		  ch_aff+="Faune sauvage de l\'Auvergne et du Limousin. ";
+		  DocumentsCollection="";
+		  if (DocumentsCollection!="") ch_aff+=" ";
+		  ch_aff+="[Vidéocassette], ";
+		  ch_aff+="1999, ";
+		  ch_aff+=""
+		  NoticesCollation="1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.";
+		  if (NoticesCollation!="") ch_aff+=", 1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.";
+		}
+		// cas IV
+	  }
+	  else if (supportNotice=="Périodique")
+	  {
+		ch_aff+="Faune sauvage de l\'Auvergne et du Limousin. ";
+		ch_aff+=", ";
+		ch_aff+="1999, ";
+		ch_aff+=", ";
+		ch_aff+="1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.";
+	  }
+	  else if (noticeGenerale)
+	  {
+		ch_aff+="Faune sauvage de l\'Auvergne et du Limousin. ";
+		DocumentsEditeur="Catiche";
+		if (DocumentsEditeur!="") ch_aff+="Catiche, ";
+		ch_aff+="1999";
+		NoticesCollation="1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.";
+		if (NoticesCollation!="") ch_aff+=". 1 vidéocassette VHS 1/2 pouce, 47 min. : coul. , SECAM, sonore.";
+		DocumentsCollection=". ";
+	    if (DocumentsCollection!="") ch_aff+=". ";
+		DocumentsNumColl="";
+		if (DocumentsNumColl!="") ch_aff+=", .";
+	  }
+	  else
+	  {
+	  
+	  //
+		
+	  }
+	  ch_aff+='<br/><br/></div>'; // pour le DIV cachediv
+	  document.write(ch_aff);
+	</script>
+  </div>
+</div class="zoneafftxt">
+<!-- Fin du fichier FicheLycee.htm -->
+  
+
+
+		<script type="text/javascript">
+		<!--
+		  vel="Exemplaire  :"
+		  if (vel=="") cachtxtvide('1');
+		-->
+		</script>
+		<script type="text/javascript">
+		<!--
+		  vel=""
+		  if (vel!="") cachtxtvide('0');
+		-->
+		</script>
+          <div class="zoneexemplaire">
+		  <script type="text/javascript">
+		  <!--
+			if (0==1) {
+			  val="Cote  :"
+			  if (val!="") val=' align="center">'+val+'&nbsp;590 BOU';
+			}
+			else
+//			  if ("Cote  :"=="") val=">Exemplaire(s)"; else val=">Cote(s) et exemplaire(s)";
+              val=">Pour trouver le document";
+			if (val!="") val='<div class="zoneexemplairetitre"'+val+'</div>';
+            document.write(val);
+          -->
+          </script>
+		  
+		  
+            <div class="zoneexemplairetxt"><!-- Modele FICHEEXE Ecrans Oct modifié RM 07/02/08-->
+  <div>
+  <script type="text/javascript">
+  <!--
+  if (0==0)
+  {
+    ch_aff="";
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/'+val+'.gif" height=30> &nbsp;';
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/Picto-'+val+'.gif" height=30> &nbsp;';
+	if ("En-service"!="Mis au pilon") {
+	  val="590 BOU";
+	  if (val!="") ch_aff+="<BR>Cote&nbsp;<B>"+val+"</B><BR>";
+	  val="" ;
+	  if (val=="") val="755";
+	  if (val!="") ch_aff+="Ex.&nbsp;"+val+"<BR>";
+	  ch_aff+="Fonds audiovisuel";
+	  ces="Disponible";
+	  if(ces=="Disponible") ces='OK'
+	  else
+	   if(ces=="Sorti") ces='PE'
+	  else ces='NO'
+	  ch_aff+='<div class=\"disponibilite'+ces+'\">';
+	  ch_aff+="En-service - Disponible<\/div>"
+	  document.write(ch_aff);
+	}
+  } // BASEBIBLIO
+  -->
+  </script>
+
+  </div></div>
+
+          </div>
+        <script type="text/javascript">
+       <!--
+    if (vel=="") cachtxtvide('2');
+    -->
+  </script>
+          <div class="fiche100pr100">&nbsp;</div>
+        </div class="fiche">
+		<!--div class="fiche100pr100"-->
+        <div class="ajout"><a href="javascript:DivStatus( 'txtaffiche-', '3' )">Afficher / Masquer la fiche complète</a></div>
+        <div class="ajout2">Ajouter au panier&nbsp;<INPUT type="Hidden" name="AVEC2852" value="2852"><INPUT type="CheckBox" id="CKPANIER" name="CKPANIER2852" value="3" onclick="onCheckBoxClic(this)"></div>
+          <script type="text/javascript">
+          <!--
+            val='<input type="button" value="Réserver" onClick="reserver(916,0,1,0,3)">'
+            if ((val!="") && (val.indexOf("<!--")<0))
+             val='<div class="ajout2">'+val+'</div>'
+            document.write(val);
+          -->
+          </script>
+		<!--/div-->
+      </div class="zoneclaire">
+
+
+
+      <div class="zoneclaire">
+        <div class="ficheicone">
+		<a name="FICHE4"></a><img src="../modlyc/SUPPORT-LIVRE.gif" alt=""><div>N°4/7</div><div class="exemplairesmall">Livre</div>
+        <script type="text/javascript">
+        <!--
+          if (1 == 1)
+          {
+            nudoc="9782840552369"
+            if (0 == 1) {
+              ch='<img src="../electre/IMGT9782840552369.jpg" width=60 height=98 hspace=2 border=0 alt="Couverture"'
+			  if (0 == 1)
+                if ("BCDIWEB"=="BCDIWEB") {
+				ch+=' style="cursor:pointer;" onClick="javascript:window.open(\'/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=9782840552369\',\'IMAGE\','
+                ch+='\'toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no\' )"'
+              }
+			  else
+				ch='<A HREF="/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=9782840552369">'+ch+'></A'
+              document.write(ch+'>')
+			}
+            if (0 == 1) envoyerTexte('BIO')
+            if (0 == 1) envoyerTexte('ARGUMENT')
+            if (0 == 1) envoyerTexte('TDM')
+            fermerTable(false);
+          }
+        -->
+		</script>
+        </div class="ficheicone">
+        <div class="fiche">
+
+
+  
+<!-- Fichier FicheLycee.htm -->
+	<div class="zoneafftxt">
+  <div class="fiche100pr100">
+	<script type="text/javascript">
+	  var typeNotice="Notice générale";
+	  var typeDocument="Texte imprimé";
+	  var supportNotice="Livre";
+
+	  var noticeGenerale=(typeNotice=="Notice générale");
+	  var docRessourceEnLigne=(typeDocument=="Ressource en ligne");
+	  var docRessourceElectronique=(typeDocument=="Ressource électronique");
+// DebFichLyc
+	  if (noticeGenerale)
+	  {
+		ch_aff=supportNotice;
+		ch_aff+=" (1998) ";
+		ch_aff+="Bande dessinée  <i>(Texte imprimé)</i><br/><br/>";
+		chDocument="De cape et de crocs. 3, L\'archipel du danger";
+		nbNotices=1;
+		if (nbNotices>1)
+		 chDocument='<a href="/bcdiweb2008/bcdiweb.cgi/demolyc?EQ:Identité D.=BSC0003022299" title="Voir les '+nbNotices+' correspondantes">'+chDocument+'</a>';
+		ch_aff+="<div class='titre'>"+chDocument+"</div>";
+	  }
+	  else
+	  {
+		ch_aff=typeNotice+" de "+supportNotice;
+		ch_aff+=" dans <i></i>";
+		ch_aff+=" (1998) ";
+		ch_aff+=", 48 p. : ill. en coul. ; 32 x 23 cm  <i>(Texte imprimé)</i><br/>";
+		ch_aff+="<div class='titre'>De cape et de crocs. 3, L\'archipel du danger</div>";
+	  }
+	  ch_aff+="<br/><br/>";
+	  rajouterStrong("Résumé  : ","Suite des aventures de <font color=#336600><b><i>Loup</i></b></font> et Renard qui voguent en compagnie du lapin Eusèbe à bord du Hollandais Volant à destination des îles Tangerines et de leur trésor. Les rencontres sont nombreuses : pirates (occasion de délivrer une belle captive), tempête, monstre marin. Les auteurs accumulent de façon parodique les épisodes mémorables : les héros font naufrage, visitent une île étrange, rencontrent un savant, des cannibales, Robinson, tentent l\'expérience d\'un bateau des airs...");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  ch_aff+="<hr/>";
+	  rajouterStrong("Auteurs  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7EAyroles%2C+alain%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Ayroles, Alain</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7EMasbou%2C+jean-luc%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Masbou, Jean-Luc</A>");
+	  rajouterStrong("Editeurs  : ","Delcourt");
+	  vel="";
+	  if (vel!="") vel=", "+vel;
+	  rajouterStrong("Collection  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Collection=%7ETerres+de+legendes%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Terres de légendes</A>"+vel);
+	  rajouterStrong("Date de parution  : ","1998");
+	  ch_aff+="<br/>";
+
+// FichCompLyc
+
+
+// PourCiterLyc Affichage Optionnel bouton fiche complète
+
+	  ch_aff+='<div id="txtaffiche-4"  class="cachediv">';
+
+	  if (!noticeGenerale) rajouterStrong("Natures  : ","Bande dessinée");
+	  rajouterStrong("Publics  : ","Elève");
+	  rajouterStrong("Niveaux  : ","Collège / Secondaire");
+	  rajouterStrong("Disciplines : ","");
+	  if (noticeGenerale) rajouterStrong("Collation  : ","48 p. : ill. en coul. ; 32 x 23 cm");
+	  rajouterStrong(" ","");
+	  rajouterStrong("Isbn  : ","2-84055-236-1");
+	  rajouterStrong("Issn  : ","1248-5144");
+	  rajouterStrong(" ","");
+	  if (noticeGenerale) rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  ch_aff+="<br/>";
+
+
+	  ch_aff+="<i><b>Pour citer le document : </b></i><BR>";
+	  NoticesAuteurs="Ayroles, Alain / Masbou, Jean-Luc";
+	  if (NoticesAuteurs!="") ch_aff+="Ayroles, Alain / Masbou, Jean-Luc. ";
+
+	// cas I. du cahier des charges page 11
+	  if ((supportNotice=="Internet") || ((docRessourceEnLigne) && (supportNotice!="Périodique")))
+	  {
+		
+			ch_aff+="De cape et de crocs. 3, L\'archipel du danger [en ligne]. ";
+			DocumentsEditeur="Delcourt";
+			if (DocumentsEditeur!="") ch_aff+="Delcourt, ";
+			dateNotice="1998"
+			ch_aff+=dateNotice + ', ';
+			dateNotice="1998";
+			ch_aff+='date de mise à jour ' + dateNotice + ' ';
+			dateNotice="14/03/2006";
+			if (dateNotice=="") dateNotice="19/01/2001";
+			ch_aff+='[consulté le ' + dateNotice+ ']. ';
+			NoticesCollation="48 p. : ill. en coul. ; 32 x 23 cm";
+			if (NoticesCollation!="") ch_aff+="48 p. : ill. en coul. ; 32 x 23 cm. ";
+			DocumentsCollection="Terres de légendes";
+			if (DocumentsCollection!="") ch_aff+="Terres de légendes";
+			DocumentsNumColl="";
+			if (DocumentsNumColl!="") ch_aff+=", ";
+			ch_aff+=". &lt;&gt; "
+		
+		//
+		// 
+		
+		//
+		
+	  }
+	  // cas II.
+	  else if ((docRessourceEnLigne) && (supportNotice=="Périodique"))
+	  {
+		ch_aff+="De cape et de crocs. 3, L\'archipel du danger. ";
+		ch_aff+="Terres de légendes [en ligne], ";
+		ch_aff+="1998, ";
+		ch_aff+=", ";
+		dateNotice="1998";
+		ch_aff+='date de mise à jour ' + dateNotice + ' ';
+		dateNotice="14/03/2006";
+		if (dateNotice=="") dateNotice="19/01/2001";
+		ch_aff+='[consulté le ' + dateNotice+ ']';
+		NoticesCollation="48 p. : ill. en coul. ; 32 x 23 cm";
+		if (NoticesCollation!="") ch_aff+=", 48 p. : ill. en coul. ; 32 x 23 cm";
+		ch_aff+=". &lt;&gt; ";
+	  }
+	  // cas III
+	  else if ((docRessourceElectronique) && (supportNotice!="Internet"))
+	  {
+		if (noticeGenerale)
+		{
+		  ch_aff+="De cape et de crocs. 3, L\'archipel du danger ";
+		  ch_aff+="[Livre]. ";
+		  DocumentsEditeur="Delcourt";
+		  if (DocumentsEditeur!="") ch_aff+="Delcourt, ";
+		  ch_aff+="1998.";
+		  NoticesCollation="48 p. : ill. en coul. ; 32 x 23 cm";
+		  if (NoticesCollation!="") ch_aff+="48 p. : ill. en coul. ; 32 x 23 cm. ";
+		  DocumentsCollection="Terres de légendes";
+		  if (DocumentsCollection!="") ch_aff+="Terres de légendes";
+		  DocumentsNumColl="";
+		  if (DocumentsNumColl!="") ch_aff+=", .";
+		}
+		else if ((typeNotice=="Partie") || (typeNotice=="Contribution"))
+		{
+		  
+		  //
+		  
+		}
+		else
+		{
+		  ch_aff+="De cape et de crocs. 3, L\'archipel du danger. ";
+		  DocumentsCollection="Terres de légendes";
+		  if (DocumentsCollection!="") ch_aff+="Terres de légendes ";
+		  ch_aff+="[Livre], ";
+		  ch_aff+="1998, ";
+		  ch_aff+=""
+		  NoticesCollation="48 p. : ill. en coul. ; 32 x 23 cm";
+		  if (NoticesCollation!="") ch_aff+=", 48 p. : ill. en coul. ; 32 x 23 cm";
+		}
+		// cas IV
+	  }
+	  else if (supportNotice=="Périodique")
+	  {
+		ch_aff+="De cape et de crocs. 3, L\'archipel du danger. ";
+		ch_aff+="Terres de légendes, ";
+		ch_aff+="1998, ";
+		ch_aff+=", ";
+		ch_aff+="48 p. : ill. en coul. ; 32 x 23 cm";
+	  }
+	  else if (noticeGenerale)
+	  {
+		ch_aff+="De cape et de crocs. 3, L\'archipel du danger. ";
+		DocumentsEditeur="Delcourt";
+		if (DocumentsEditeur!="") ch_aff+="Delcourt, ";
+		ch_aff+="1998";
+		NoticesCollation="48 p. : ill. en coul. ; 32 x 23 cm";
+		if (NoticesCollation!="") ch_aff+=". 48 p. : ill. en coul. ; 32 x 23 cm";
+		DocumentsCollection=". Terres de légendes";
+	    if (DocumentsCollection!="") ch_aff+=". Terres de légendes";
+		DocumentsNumColl="";
+		if (DocumentsNumColl!="") ch_aff+=", .";
+	  }
+	  else
+	  {
+	  
+	  //
+		
+	  }
+	  ch_aff+='<br/><br/></div>'; // pour le DIV cachediv
+	  document.write(ch_aff);
+	</script>
+  </div>
+</div class="zoneafftxt">
+<!-- Fin du fichier FicheLycee.htm -->
+  
+
+
+		<script type="text/javascript">
+		<!--
+		  vel="Exemplaire  :"
+		  if (vel=="") cachtxtvide('1');
+		-->
+		</script>
+		<script type="text/javascript">
+		<!--
+		  vel=""
+		  if (vel!="") cachtxtvide('0');
+		-->
+		</script>
+          <div class="zoneexemplaire">
+		  <script type="text/javascript">
+		  <!--
+			if (0==1) {
+			  val="Cote  :"
+			  if (val!="") val=' align="center">'+val+'&nbsp;BD AYR';
+			}
+			else
+//			  if ("Cote  :"=="") val=">Exemplaire(s)"; else val=">Cote(s) et exemplaire(s)";
+              val=">Pour trouver le document";
+			if (val!="") val='<div class="zoneexemplairetitre"'+val+'</div>';
+            document.write(val);
+          -->
+          </script>
+		  
+		  
+            <div class="zoneexemplairetxt"><!-- Modele FICHEEXE Ecrans Oct modifié RM 07/02/08-->
+  <div>
+  <script type="text/javascript">
+  <!--
+  if (0==0)
+  {
+    ch_aff="";
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/'+val+'.gif" height=30> &nbsp;';
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/Picto-'+val+'.gif" height=30> &nbsp;';
+	if ("En-service"!="Mis au pilon") {
+	  val="BD AYR";
+	  if (val!="") ch_aff+="<BR>Cote&nbsp;<B>"+val+"</B><BR>";
+	  val="9782840552369" ;
+	  if (val=="") val="362";
+	  if (val!="") ch_aff+="Ex.&nbsp;"+val+"<BR>";
+	  ch_aff+="";
+	  ces="Disponible";
+	  if(ces=="Disponible") ces='OK'
+	  else
+	   if(ces=="Sorti") ces='PE'
+	  else ces='NO'
+	  ch_aff+='<div class=\"disponibilite'+ces+'\">';
+	  ch_aff+="En-service - Disponible<\/div>"
+	  document.write(ch_aff);
+	}
+  } // BASEBIBLIO
+  -->
+  </script>
+
+  </div></div>
+
+          </div>
+        <script type="text/javascript">
+       <!--
+    if (vel=="") cachtxtvide('2');
+    -->
+  </script>
+          <div class="fiche100pr100">&nbsp;</div>
+        </div class="fiche">
+		<!--div class="fiche100pr100"-->
+        <div class="ajout"><a href="javascript:DivStatus( 'txtaffiche-', '4' )">Afficher / Masquer la fiche complète</a></div>
+        <div class="ajout2">Ajouter au panier&nbsp;<INPUT type="Hidden" name="AVEC3458" value="3458"><INPUT type="CheckBox" id="CKPANIER" name="CKPANIER3458" value="4" onclick="onCheckBoxClic(this)"></div>
+          <script type="text/javascript">
+          <!--
+            val='<input type="button" value="Réserver" onClick="reserver(1359,0,1,0,4)">'
+            if ((val!="") && (val.indexOf("<!--")<0))
+             val='<div class="ajout2">'+val+'</div>'
+            document.write(val);
+          -->
+          </script>
+		<!--/div-->
+      </div class="zoneclaire">
+
+
+
+      <div class="zoneclaire">
+        <div class="ficheicone">
+		<a name="FICHE5"></a><img src="../modlyc/SUPPORT-LIVRE.gif" alt=""><div>N°5/7</div><div class="exemplairesmall">Livre</div>
+        <script type="text/javascript">
+        <!--
+          if (1 == 1)
+          {
+            nudoc="9782940199020"
+            if (0 == 1) {
+              ch='<img src="../electre/IMGT9782940199020.jpg" width=60 height=98 hspace=2 border=0 alt="Couverture"'
+			  if (0 == 1)
+                if ("BCDIWEB"=="BCDIWEB") {
+				ch+=' style="cursor:pointer;" onClick="javascript:window.open(\'/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=9782940199020\',\'IMAGE\','
+                ch+='\'toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no\' )"'
+              }
+			  else
+				ch='<A HREF="/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=9782940199020">'+ch+'></A'
+              document.write(ch+'>')
+			}
+            if (0 == 1) envoyerTexte('BIO')
+            if (0 == 1) envoyerTexte('ARGUMENT')
+            if (0 == 1) envoyerTexte('TDM')
+            fermerTable(false);
+          }
+        -->
+		</script>
+        </div class="ficheicone">
+        <div class="fiche">
+
+
+  
+<!-- Fichier FicheLycee.htm -->
+	<div class="zoneafftxt">
+  <div class="fiche100pr100">
+	<script type="text/javascript">
+	  var typeNotice="Notice générale";
+	  var typeDocument="Texte imprimé";
+	  var supportNotice="Livre";
+
+	  var noticeGenerale=(typeNotice=="Notice générale");
+	  var docRessourceEnLigne=(typeDocument=="Ressource en ligne");
+	  var docRessourceElectronique=(typeDocument=="Ressource électronique");
+// DebFichLyc
+	  if (noticeGenerale)
+	  {
+		ch_aff=supportNotice;
+		ch_aff+=" (1997) ";
+		ch_aff+="Bande dessinée  <i>(Texte imprimé)</i><br/><br/>";
+		chDocument="Hey ! Vous avez pas vu le Père Noël ?";
+		nbNotices=1;
+		if (nbNotices>1)
+		 chDocument='<a href="/bcdiweb2008/bcdiweb.cgi/demolyc?EQ:Identité D.=BSC0003022745" title="Voir les '+nbNotices+' correspondantes">'+chDocument+'</a>';
+		ch_aff+="<div class='titre'>"+chDocument+"</div>";
+	  }
+	  else
+	  {
+		ch_aff=typeNotice+" de "+supportNotice;
+		ch_aff+=" dans <i></i>";
+		ch_aff+=" (1997) ";
+		ch_aff+=", 36 p. : ill. en coul. ; 26 x 17 cm  <i>(Texte imprimé)</i><br/>";
+		ch_aff+="<div class='titre'>Hey ! Vous avez pas vu le Père Noël ?</div>";
+	  }
+	  ch_aff+="<br/><br/>";
+	  rajouterStrong("Résumé  : ","Un matin de Noël, François découvre l\'horrible vérité : le Père Noël n\'existe pas ! Pour démontrer l\'erreur de cette affirmation honteuse assénée par des parents ignobles, le \"fiston\" part à la recherche du Père Noël. Dans une échappée aux couleurs lumineuses et picturales, François et son chien rencontrent un ours sympa et un <font color=#336600><b><i>loup</i></b></font> blessé qui l\'aident dans sa quête. En prime : six pages sur la réalisation d\'une BD.");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  ch_aff+="<hr/>";
+	  rajouterStrong("Auteurs  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7EMathis%2C+jean-marc%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Mathis, Jean-Marc</A>");
+	  rajouterStrong("Editeurs  : ","Paquet");
+	  vel="";
+	  if (vel!="") vel=", "+vel;
+	  rajouterStrong(" ",""+vel);
+	  rajouterStrong("Date de parution  : ","1997");
+	  ch_aff+="<br/>";
+
+// FichCompLyc
+
+
+// PourCiterLyc Affichage Optionnel bouton fiche complète
+
+	  ch_aff+='<div id="txtaffiche-5"  class="cachediv">';
+
+	  if (!noticeGenerale) rajouterStrong("Natures  : ","Bande dessinée");
+	  rajouterStrong("Publics  : ","Elève");
+	  rajouterStrong("Niveaux  : ","Collège / Secondaire");
+	  rajouterStrong("Disciplines : ","");
+	  if (noticeGenerale) rajouterStrong("Collation  : ","36 p. : ill. en coul. ; 26 x 17 cm");
+	  rajouterStrong(" ","");
+	  rajouterStrong("Isbn  : ","2-940199-02-7");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  if (noticeGenerale) rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  ch_aff+="<br/>";
+
+
+	  ch_aff+="<i><b>Pour citer le document : </b></i><BR>";
+	  NoticesAuteurs="Mathis, Jean-Marc";
+	  if (NoticesAuteurs!="") ch_aff+="Mathis, Jean-Marc. ";
+
+	// cas I. du cahier des charges page 11
+	  if ((supportNotice=="Internet") || ((docRessourceEnLigne) && (supportNotice!="Périodique")))
+	  {
+		
+			ch_aff+="Hey ! Vous avez pas vu le Père Noël ? [en ligne]. ";
+			DocumentsEditeur="Paquet";
+			if (DocumentsEditeur!="") ch_aff+="Paquet, ";
+			dateNotice="1997"
+			ch_aff+=dateNotice + ', ';
+			dateNotice="1997";
+			ch_aff+='date de mise à jour ' + dateNotice + ' ';
+			dateNotice="14/03/2006";
+			if (dateNotice=="") dateNotice="19/01/2001";
+			ch_aff+='[consulté le ' + dateNotice+ ']. ';
+			NoticesCollation="36 p. : ill. en coul. ; 26 x 17 cm";
+			if (NoticesCollation!="") ch_aff+="36 p. : ill. en coul. ; 26 x 17 cm. ";
+			DocumentsCollection="";
+			if (DocumentsCollection!="") ch_aff+="";
+			DocumentsNumColl="";
+			if (DocumentsNumColl!="") ch_aff+=", ";
+			ch_aff+=". &lt;&gt; "
+		
+		//
+		// 
+		
+		//
+		
+	  }
+	  // cas II.
+	  else if ((docRessourceEnLigne) && (supportNotice=="Périodique"))
+	  {
+		ch_aff+="Hey ! Vous avez pas vu le Père Noël ?. ";
+		ch_aff+=" [en ligne], ";
+		ch_aff+="1997, ";
+		ch_aff+=", ";
+		dateNotice="1997";
+		ch_aff+='date de mise à jour ' + dateNotice + ' ';
+		dateNotice="14/03/2006";
+		if (dateNotice=="") dateNotice="19/01/2001";
+		ch_aff+='[consulté le ' + dateNotice+ ']';
+		NoticesCollation="36 p. : ill. en coul. ; 26 x 17 cm";
+		if (NoticesCollation!="") ch_aff+=", 36 p. : ill. en coul. ; 26 x 17 cm";
+		ch_aff+=". &lt;&gt; ";
+	  }
+	  // cas III
+	  else if ((docRessourceElectronique) && (supportNotice!="Internet"))
+	  {
+		if (noticeGenerale)
+		{
+		  ch_aff+="Hey ! Vous avez pas vu le Père Noël ? ";
+		  ch_aff+="[Livre]. ";
+		  DocumentsEditeur="Paquet";
+		  if (DocumentsEditeur!="") ch_aff+="Paquet, ";
+		  ch_aff+="1997.";
+		  NoticesCollation="36 p. : ill. en coul. ; 26 x 17 cm";
+		  if (NoticesCollation!="") ch_aff+="36 p. : ill. en coul. ; 26 x 17 cm. ";
+		  DocumentsCollection="";
+		  if (DocumentsCollection!="") ch_aff+="";
+		  DocumentsNumColl="";
+		  if (DocumentsNumColl!="") ch_aff+=", .";
+		}
+		else if ((typeNotice=="Partie") || (typeNotice=="Contribution"))
+		{
+		  
+		  //
+		  
+		}
+		else
+		{
+		  ch_aff+="Hey ! Vous avez pas vu le Père Noël ?. ";
+		  DocumentsCollection="";
+		  if (DocumentsCollection!="") ch_aff+=" ";
+		  ch_aff+="[Livre], ";
+		  ch_aff+="1997, ";
+		  ch_aff+=""
+		  NoticesCollation="36 p. : ill. en coul. ; 26 x 17 cm";
+		  if (NoticesCollation!="") ch_aff+=", 36 p. : ill. en coul. ; 26 x 17 cm";
+		}
+		// cas IV
+	  }
+	  else if (supportNotice=="Périodique")
+	  {
+		ch_aff+="Hey ! Vous avez pas vu le Père Noël ?. ";
+		ch_aff+=", ";
+		ch_aff+="1997, ";
+		ch_aff+=", ";
+		ch_aff+="36 p. : ill. en coul. ; 26 x 17 cm";
+	  }
+	  else if (noticeGenerale)
+	  {
+		ch_aff+="Hey ! Vous avez pas vu le Père Noël ?. ";
+		DocumentsEditeur="Paquet";
+		if (DocumentsEditeur!="") ch_aff+="Paquet, ";
+		ch_aff+="1997";
+		NoticesCollation="36 p. : ill. en coul. ; 26 x 17 cm";
+		if (NoticesCollation!="") ch_aff+=". 36 p. : ill. en coul. ; 26 x 17 cm";
+		DocumentsCollection=". ";
+	    if (DocumentsCollection!="") ch_aff+=". ";
+		DocumentsNumColl="";
+		if (DocumentsNumColl!="") ch_aff+=", .";
+	  }
+	  else
+	  {
+	  
+	  //
+		
+	  }
+	  ch_aff+='<br/><br/></div>'; // pour le DIV cachediv
+	  document.write(ch_aff);
+	</script>
+  </div>
+</div class="zoneafftxt">
+<!-- Fin du fichier FicheLycee.htm -->
+  
+
+
+		<script type="text/javascript">
+		<!--
+		  vel="Exemplaire  :"
+		  if (vel=="") cachtxtvide('1');
+		-->
+		</script>
+		<script type="text/javascript">
+		<!--
+		  vel=""
+		  if (vel!="") cachtxtvide('0');
+		-->
+		</script>
+          <div class="zoneexemplaire">
+		  <script type="text/javascript">
+		  <!--
+			if (0==1) {
+			  val="Cote  :"
+			  if (val!="") val=' align="center">'+val+'&nbsp;BD MAT';
+			}
+			else
+//			  if ("Cote  :"=="") val=">Exemplaire(s)"; else val=">Cote(s) et exemplaire(s)";
+              val=">Pour trouver le document";
+			if (val!="") val='<div class="zoneexemplairetitre"'+val+'</div>';
+            document.write(val);
+          -->
+          </script>
+		  
+		  
+            <div class="zoneexemplairetxt"><!-- Modele FICHEEXE Ecrans Oct modifié RM 07/02/08-->
+  <div>
+  <script type="text/javascript">
+  <!--
+  if (0==0)
+  {
+    ch_aff="";
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/'+val+'.gif" height=30> &nbsp;';
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/Picto-'+val+'.gif" height=30> &nbsp;';
+	if ("En-service"!="Mis au pilon") {
+	  val="BD MAT";
+	  if (val!="") ch_aff+="<BR>Cote&nbsp;<B>"+val+"</B><BR>";
+	  val="9782940199020" ;
+	  if (val=="") val="284";
+	  if (val!="") ch_aff+="Ex.&nbsp;"+val+"<BR>";
+	  ch_aff+="";
+	  ces="Disponible";
+	  if(ces=="Disponible") ces='OK'
+	  else
+	   if(ces=="Sorti") ces='PE'
+	  else ces='NO'
+	  ch_aff+='<div class=\"disponibilite'+ces+'\">';
+	  ch_aff+="En-service - Disponible<\/div>"
+	  document.write(ch_aff);
+	}
+  } // BASEBIBLIO
+  -->
+  </script>
+
+  </div></div>
+
+          </div>
+        <script type="text/javascript">
+       <!--
+    if (vel=="") cachtxtvide('2');
+    -->
+  </script>
+          <div class="fiche100pr100">&nbsp;</div>
+        </div class="fiche">
+		<!--div class="fiche100pr100"-->
+        <div class="ajout"><a href="javascript:DivStatus( 'txtaffiche-', '5' )">Afficher / Masquer la fiche complète</a></div>
+        <div class="ajout2">Ajouter au panier&nbsp;<INPUT type="Hidden" name="AVEC3536" value="3536"><INPUT type="CheckBox" id="CKPANIER" name="CKPANIER3536" value="5" onclick="onCheckBoxClic(this)"></div>
+          <script type="text/javascript">
+          <!--
+            val='<input type="button" value="Réserver" onClick="reserver(1437,0,1,0,5)">'
+            if ((val!="") && (val.indexOf("<!--")<0))
+             val='<div class="ajout2">'+val+'</div>'
+            document.write(val);
+          -->
+          </script>
+		<!--/div-->
+      </div class="zoneclaire">
+
+
+
+      <div class="zoneclaire">
+        <div class="ficheicone">
+		<a name="FICHE6"></a><img src="../modlyc/SUPPORT-LIVRE.gif" alt=""><div>N°6/7</div><div class="exemplairesmall">Livre</div>
+        <script type="text/javascript">
+        <!--
+          if (1 == 1)
+          {
+            nudoc="9782020323499"
+            if (0 == 1) {
+              ch='<img src="../electre/IMGT9782020323499.jpg" width=60 height=98 hspace=2 border=0 alt="Couverture"'
+			  if (0 == 1)
+                if ("BCDIWEB"=="BCDIWEB") {
+				ch+=' style="cursor:pointer;" onClick="javascript:window.open(\'/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=9782020323499\',\'IMAGE\','
+                ch+='\'toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no\' )"'
+              }
+			  else
+				ch='<A HREF="/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=9782020323499">'+ch+'></A'
+              document.write(ch+'>')
+			}
+            if (0 == 1) envoyerTexte('BIO')
+            if (0 == 1) envoyerTexte('ARGUMENT')
+            if (0 == 1) envoyerTexte('TDM')
+            fermerTable(false);
+          }
+        -->
+		</script>
+        </div class="ficheicone">
+        <div class="fiche">
+
+
+  
+<!-- Fichier FicheLycee.htm -->
+	<div class="zoneafftxt">
+  <div class="fiche100pr100">
+	<script type="text/javascript">
+	  var typeNotice="Notice générale";
+	  var typeDocument="Texte imprimé";
+	  var supportNotice="Livre";
+
+	  var noticeGenerale=(typeNotice=="Notice générale");
+	  var docRessourceEnLigne=(typeDocument=="Ressource en ligne");
+	  var docRessourceElectronique=(typeDocument=="Ressource électronique");
+// DebFichLyc
+	  if (noticeGenerale)
+	  {
+		ch_aff=supportNotice;
+		ch_aff+=" (1998) ";
+		ch_aff+="Album  <i>(Texte imprimé)</i><br/><br/>";
+		chDocument="Mon chaperon rouge";
+		nbNotices=1;
+		if (nbNotices>1)
+		 chDocument='<a href="/bcdiweb2008/bcdiweb.cgi/demolyc?EQ:Identité D.=BSC0003023874" title="Voir les '+nbNotices+' correspondantes">'+chDocument+'</a>';
+		ch_aff+="<div class='titre'>"+chDocument+"</div>";
+	  }
+	  else
+	  {
+		ch_aff=typeNotice+" de "+supportNotice;
+		ch_aff+=" dans <i></i>";
+		ch_aff+=" (1998) ";
+		ch_aff+=", 40 p. : ill. en coul. ; 33 x 23 cm  <i>(Texte imprimé)</i><br/>";
+		ch_aff+="<div class='titre'>Mon chaperon rouge</div>";
+	  }
+	  ch_aff+="<br/><br/>";
+	  rajouterStrong("Résumé  : ","A travers le conte de Charles Perrault, \"Le Petit Chaperon Rouge\", découvre l\'univers de la nuit et ses peurs : le diable, le <font color=#336600><b><i>loup</i></b></font>, les bruits inquiétants.");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  ch_aff+="<hr/>";
+	  rajouterStrong("Auteurs  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7EIkhlef%2C+anne%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Ikhlef, Anne</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7EGauthier%2C+alain%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Gauthier, Alain</A>");
+	  rajouterStrong("Editeurs  : ","Seuil");
+	  vel="";
+	  if (vel!="") vel=", "+vel;
+	  rajouterStrong(" ",""+vel);
+	  rajouterStrong("Date de parution  : ","1998");
+	  ch_aff+="<br/>";
+
+// FichCompLyc
+
+
+// PourCiterLyc Affichage Optionnel bouton fiche complète
+
+	  ch_aff+='<div id="txtaffiche-6"  class="cachediv">';
+
+	  if (!noticeGenerale) rajouterStrong("Natures  : ","Album");
+	  rajouterStrong("Publics  : ","Elève");
+	  rajouterStrong("Niveaux  : ","Classe de 6e / Collège / Secondaire");
+	  rajouterStrong("Disciplines : ","");
+	  if (noticeGenerale) rajouterStrong("Collation  : ","40 p. : ill. en coul. ; 33 x 23 cm");
+	  rajouterStrong(" ","");
+	  rajouterStrong("Isbn  : ","2-02-032349-4");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  if (noticeGenerale) rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  ch_aff+="<br/>";
+
+
+	  ch_aff+="<i><b>Pour citer le document : </b></i><BR>";
+	  NoticesAuteurs="Ikhlef, Anne / Gauthier, Alain";
+	  if (NoticesAuteurs!="") ch_aff+="Ikhlef, Anne / Gauthier, Alain. ";
+
+	// cas I. du cahier des charges page 11
+	  if ((supportNotice=="Internet") || ((docRessourceEnLigne) && (supportNotice!="Périodique")))
+	  {
+		
+			ch_aff+="Mon chaperon rouge [en ligne]. ";
+			DocumentsEditeur="Seuil";
+			if (DocumentsEditeur!="") ch_aff+="Seuil, ";
+			dateNotice="1998"
+			ch_aff+=dateNotice + ', ';
+			dateNotice="1998";
+			ch_aff+='date de mise à jour ' + dateNotice + ' ';
+			dateNotice="14/03/2006";
+			if (dateNotice=="") dateNotice="19/01/2001";
+			ch_aff+='[consulté le ' + dateNotice+ ']. ';
+			NoticesCollation="40 p. : ill. en coul. ; 33 x 23 cm";
+			if (NoticesCollation!="") ch_aff+="40 p. : ill. en coul. ; 33 x 23 cm. ";
+			DocumentsCollection="";
+			if (DocumentsCollection!="") ch_aff+="";
+			DocumentsNumColl="";
+			if (DocumentsNumColl!="") ch_aff+=", ";
+			ch_aff+=". &lt;&gt; "
+		
+		//
+		// 
+		
+		//
+		
+	  }
+	  // cas II.
+	  else if ((docRessourceEnLigne) && (supportNotice=="Périodique"))
+	  {
+		ch_aff+="Mon chaperon rouge. ";
+		ch_aff+=" [en ligne], ";
+		ch_aff+="1998, ";
+		ch_aff+=", ";
+		dateNotice="1998";
+		ch_aff+='date de mise à jour ' + dateNotice + ' ';
+		dateNotice="14/03/2006";
+		if (dateNotice=="") dateNotice="19/01/2001";
+		ch_aff+='[consulté le ' + dateNotice+ ']';
+		NoticesCollation="40 p. : ill. en coul. ; 33 x 23 cm";
+		if (NoticesCollation!="") ch_aff+=", 40 p. : ill. en coul. ; 33 x 23 cm";
+		ch_aff+=". &lt;&gt; ";
+	  }
+	  // cas III
+	  else if ((docRessourceElectronique) && (supportNotice!="Internet"))
+	  {
+		if (noticeGenerale)
+		{
+		  ch_aff+="Mon chaperon rouge ";
+		  ch_aff+="[Livre]. ";
+		  DocumentsEditeur="Seuil";
+		  if (DocumentsEditeur!="") ch_aff+="Seuil, ";
+		  ch_aff+="1998.";
+		  NoticesCollation="40 p. : ill. en coul. ; 33 x 23 cm";
+		  if (NoticesCollation!="") ch_aff+="40 p. : ill. en coul. ; 33 x 23 cm. ";
+		  DocumentsCollection="";
+		  if (DocumentsCollection!="") ch_aff+="";
+		  DocumentsNumColl="";
+		  if (DocumentsNumColl!="") ch_aff+=", .";
+		}
+		else if ((typeNotice=="Partie") || (typeNotice=="Contribution"))
+		{
+		  
+		  //
+		  
+		}
+		else
+		{
+		  ch_aff+="Mon chaperon rouge. ";
+		  DocumentsCollection="";
+		  if (DocumentsCollection!="") ch_aff+=" ";
+		  ch_aff+="[Livre], ";
+		  ch_aff+="1998, ";
+		  ch_aff+=""
+		  NoticesCollation="40 p. : ill. en coul. ; 33 x 23 cm";
+		  if (NoticesCollation!="") ch_aff+=", 40 p. : ill. en coul. ; 33 x 23 cm";
+		}
+		// cas IV
+	  }
+	  else if (supportNotice=="Périodique")
+	  {
+		ch_aff+="Mon chaperon rouge. ";
+		ch_aff+=", ";
+		ch_aff+="1998, ";
+		ch_aff+=", ";
+		ch_aff+="40 p. : ill. en coul. ; 33 x 23 cm";
+	  }
+	  else if (noticeGenerale)
+	  {
+		ch_aff+="Mon chaperon rouge. ";
+		DocumentsEditeur="Seuil";
+		if (DocumentsEditeur!="") ch_aff+="Seuil, ";
+		ch_aff+="1998";
+		NoticesCollation="40 p. : ill. en coul. ; 33 x 23 cm";
+		if (NoticesCollation!="") ch_aff+=". 40 p. : ill. en coul. ; 33 x 23 cm";
+		DocumentsCollection=". ";
+	    if (DocumentsCollection!="") ch_aff+=". ";
+		DocumentsNumColl="";
+		if (DocumentsNumColl!="") ch_aff+=", .";
+	  }
+	  else
+	  {
+	  
+	  //
+		
+	  }
+	  ch_aff+='<br/><br/></div>'; // pour le DIV cachediv
+	  document.write(ch_aff);
+	</script>
+  </div>
+</div class="zoneafftxt">
+<!-- Fin du fichier FicheLycee.htm -->
+  
+
+
+		<script type="text/javascript">
+		<!--
+		  vel="Exemplaire  :"
+		  if (vel=="") cachtxtvide('1');
+		-->
+		</script>
+		<script type="text/javascript">
+		<!--
+		  vel=""
+		  if (vel!="") cachtxtvide('0');
+		-->
+		</script>
+          <div class="zoneexemplaire">
+		  <script type="text/javascript">
+		  <!--
+			if (0==1) {
+			  val="Cote  :"
+			  if (val!="") val=' align="center">'+val+'&nbsp;A IKH';
+			}
+			else
+//			  if ("Cote  :"=="") val=">Exemplaire(s)"; else val=">Cote(s) et exemplaire(s)";
+              val=">Pour trouver le document";
+			if (val!="") val='<div class="zoneexemplairetitre"'+val+'</div>';
+            document.write(val);
+          -->
+          </script>
+		  
+		  
+            <div class="zoneexemplairetxt"><!-- Modele FICHEEXE Ecrans Oct modifié RM 07/02/08-->
+  <div>
+  <script type="text/javascript">
+  <!--
+  if (0==0)
+  {
+    ch_aff="";
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/'+val+'.gif" height=30> &nbsp;';
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/Picto-'+val+'.gif" height=30> &nbsp;';
+	if ("En-service"!="Mis au pilon") {
+	  val="A IKH";
+	  if (val!="") ch_aff+="<BR>Cote&nbsp;<B>"+val+"</B><BR>";
+	  val="9782020323499" ;
+	  if (val=="") val="155";
+	  if (val!="") ch_aff+="Ex.&nbsp;"+val+"<BR>";
+	  ch_aff+="";
+	  ces="Disponible";
+	  if(ces=="Disponible") ces='OK'
+	  else
+	   if(ces=="Sorti") ces='PE'
+	  else ces='NO'
+	  ch_aff+='<div class=\"disponibilite'+ces+'\">';
+	  ch_aff+="En-service - Disponible<\/div>"
+	  document.write(ch_aff);
+	}
+  } // BASEBIBLIO
+  -->
+  </script>
+
+  </div></div>
+
+          </div>
+        <script type="text/javascript">
+       <!--
+    if (vel=="") cachtxtvide('2');
+    -->
+  </script>
+          <div class="fiche100pr100">&nbsp;</div>
+        </div class="fiche">
+		<!--div class="fiche100pr100"-->
+        <div class="ajout"><a href="javascript:DivStatus( 'txtaffiche-', '6' )">Afficher / Masquer la fiche complète</a></div>
+        <div class="ajout2">Ajouter au panier&nbsp;<INPUT type="Hidden" name="AVEC3665" value="3665"><INPUT type="CheckBox" id="CKPANIER" name="CKPANIER3665" value="6" onclick="onCheckBoxClic(this)"></div>
+          <script type="text/javascript">
+          <!--
+            val='<input type="button" value="Réserver" onClick="reserver(1566,0,1,0,6)">'
+            if ((val!="") && (val.indexOf("<!--")<0))
+             val='<div class="ajout2">'+val+'</div>'
+            document.write(val);
+          -->
+          </script>
+		<!--/div-->
+      </div class="zoneclaire">
+
+
+
+      <div class="zoneclaire">
+        <div class="ficheicone">
+		<a name="FICHE7"></a><img src="../modlyc/SUPPORT-DISQUE COMPACT.gif" alt=""><div>N°7/7</div><div class="exemplairesmall">Disque compact</div>
+        <script type="text/javascript">
+        <!--
+          if (0 == 1)
+          {
+            nudoc=""
+            if (0 == 1) {
+              ch='<img src="../electre/" width=60 height=98 hspace=2 border=0 alt="Couverture"'
+			  if (0 == 1)
+                if ("BCDIWEB"=="BCDIWEB") {
+				ch+=' style="cursor:pointer;" onClick="javascript:window.open(\'/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=\',\'IMAGE\','
+                ch+='\'toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no\' )"'
+              }
+			  else
+				ch='<A HREF="/bcdiweb2008/bcdiweb.cgi/demolyc?IMAGE=">'+ch+'></A'
+              document.write(ch+'>')
+			}
+            if (0 == 1) envoyerTexte('BIO')
+            if (0 == 1) envoyerTexte('ARGUMENT')
+            if (0 == 1) envoyerTexte('TDM')
+            fermerTable(false);
+          }
+        -->
+		</script>
+        </div class="ficheicone">
+        <div class="fiche">
+
+
+  
+<!-- Fichier FicheLycee.htm -->
+	<div class="zoneafftxt">
+  <div class="fiche100pr100">
+	<script type="text/javascript">
+	  var typeNotice="Notice générale";
+	  var typeDocument="Enregistrement sonore";
+	  var supportNotice="Disque compact";
+
+	  var noticeGenerale=(typeNotice=="Notice générale");
+	  var docRessourceEnLigne=(typeDocument=="Ressource en ligne");
+	  var docRessourceElectronique=(typeDocument=="Ressource électronique");
+// DebFichLyc
+	  if (noticeGenerale)
+	  {
+		ch_aff=supportNotice;
+		ch_aff+=" (1999) ";
+		ch_aff+="Musique  <i>(Enregistrement sonore)</i><br/><br/>";
+		chDocument="J\'ai vu le <font color=#336600><b><i>loup</i></b></font>, le renard, le lion";
+		nbNotices=1;
+		if (nbNotices>1)
+		 chDocument='<a href="/bcdiweb2008/bcdiweb.cgi/demolyc?EQ:Identité D.=ACJEPNDL0084217" title="Voir les '+nbNotices+' correspondantes">'+chDocument+'</a>';
+		ch_aff+="<div class='titre'>"+chDocument+"</div>";
+	  }
+	  else
+	  {
+		ch_aff=typeNotice+" de "+supportNotice;
+		ch_aff+=" dans <i></i>";
+		ch_aff+=" (1999) ";
+		ch_aff+=", 1 coffret de 2 compact-disques + 1 notice  <i>(Enregistrement sonore)</i><br/>";
+		ch_aff+="<div class='titre'>J\'ai vu le <font color=#336600><b><i>loup</i></b></font>, le renard, le lion</div>";
+	  }
+	  ch_aff+="<br/><br/>";
+	  rajouterStrong("Résumé  : ","Répertoire de chansons écrites, composées et interprétées par les trois québécois.");
+	  rajouterStrong("Descripteurs  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=chanson&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">chanson</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Descripteurs=%7EQuebec+%3A+province%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Québec : province</A>");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  ch_aff+="<hr/>";
+	  rajouterStrong("Auteurs  : ","<A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7ELeclerc%2C+felix%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Leclerc, Félix</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7EVigneault%2C+gilles%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Vigneault, Gilles</A> / <A HREF=\"/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&EQ:Auteurs=%7ECharlebois%2C+robert%7E&LANGAGE=TEXTESEUL&CLASSEMENT=PERTINENCE\" TARGET=\"_self\">Charlebois, Robert</A>");
+	  rajouterStrong("Editeurs  : ","GSMusique");
+	  vel="";
+	  if (vel!="") vel=", "+vel;
+	  rajouterStrong(" ",""+vel);
+	  rajouterStrong("Date de parution  : ","1999");
+	  ch_aff+="<br/>";
+
+// FichCompLyc
+
+
+// PourCiterLyc Affichage Optionnel bouton fiche complète
+
+	  ch_aff+='<div id="txtaffiche-7"  class="cachediv">';
+
+	  if (!noticeGenerale) rajouterStrong("Natures  : ","Musique");
+	  rajouterStrong("Publics  : ","Elève");
+	  rajouterStrong("Niveaux  : ","Tous niveaux");
+	  rajouterStrong("Disciplines : ","");
+	  if (noticeGenerale) rajouterStrong("Collation  : ","1 coffret de 2 compact-disques + 1 notice");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  rajouterStrong(" ","");
+	  rajouterStrong("N° Normalisé  : ","VLCC 99-1");
+	  if (noticeGenerale) rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  rajouterStrong("Ressource liée : ","");
+	  ch_aff+="<br/>";
+
+
+	  ch_aff+="<i><b>Pour citer le document : </b></i><BR>";
+	  NoticesAuteurs="Leclerc, Félix / Vigneault, Gilles / Charlebois, Robert";
+	  if (NoticesAuteurs!="") ch_aff+="Leclerc, Félix / Vigneault, Gilles / Charlebois, Robert. ";
+
+	// cas I. du cahier des charges page 11
+	  if ((supportNotice=="Internet") || ((docRessourceEnLigne) && (supportNotice!="Périodique")))
+	  {
+		
+			ch_aff+="J\'ai vu le loup, le renard, le lion [en ligne]. ";
+			DocumentsEditeur="GSMusique";
+			if (DocumentsEditeur!="") ch_aff+="GSMusique, ";
+			dateNotice="1999"
+			ch_aff+=dateNotice + ', ';
+			dateNotice="1999";
+			ch_aff+='date de mise à jour ' + dateNotice + ' ';
+			dateNotice="14/03/2006";
+			if (dateNotice=="") dateNotice="12/01/2001";
+			ch_aff+='[consulté le ' + dateNotice+ ']. ';
+			NoticesCollation="1 coffret de 2 compact-disques + 1 notice";
+			if (NoticesCollation!="") ch_aff+="1 coffret de 2 compact-disques + 1 notice. ";
+			DocumentsCollection="";
+			if (DocumentsCollection!="") ch_aff+="";
+			DocumentsNumColl="";
+			if (DocumentsNumColl!="") ch_aff+=", ";
+			ch_aff+=". &lt;&gt; "
+		
+		//
+		// 
+		
+		//
+		
+	  }
+	  // cas II.
+	  else if ((docRessourceEnLigne) && (supportNotice=="Périodique"))
+	  {
+		ch_aff+="J\'ai vu le loup, le renard, le lion. ";
+		ch_aff+=" [en ligne], ";
+		ch_aff+="1999, ";
+		ch_aff+=", ";
+		dateNotice="1999";
+		ch_aff+='date de mise à jour ' + dateNotice + ' ';
+		dateNotice="14/03/2006";
+		if (dateNotice=="") dateNotice="12/01/2001";
+		ch_aff+='[consulté le ' + dateNotice+ ']';
+		NoticesCollation="1 coffret de 2 compact-disques + 1 notice";
+		if (NoticesCollation!="") ch_aff+=", 1 coffret de 2 compact-disques + 1 notice";
+		ch_aff+=". &lt;&gt; ";
+	  }
+	  // cas III
+	  else if ((docRessourceElectronique) && (supportNotice!="Internet"))
+	  {
+		if (noticeGenerale)
+		{
+		  ch_aff+="J\'ai vu le loup, le renard, le lion ";
+		  ch_aff+="[Disque compact]. ";
+		  DocumentsEditeur="GSMusique";
+		  if (DocumentsEditeur!="") ch_aff+="GSMusique, ";
+		  ch_aff+="1999.";
+		  NoticesCollation="1 coffret de 2 compact-disques + 1 notice";
+		  if (NoticesCollation!="") ch_aff+="1 coffret de 2 compact-disques + 1 notice. ";
+		  DocumentsCollection="";
+		  if (DocumentsCollection!="") ch_aff+="";
+		  DocumentsNumColl="";
+		  if (DocumentsNumColl!="") ch_aff+=", .";
+		}
+		else if ((typeNotice=="Partie") || (typeNotice=="Contribution"))
+		{
+		  
+		  //
+		  
+		}
+		else
+		{
+		  ch_aff+="J\'ai vu le loup, le renard, le lion. ";
+		  DocumentsCollection="";
+		  if (DocumentsCollection!="") ch_aff+=" ";
+		  ch_aff+="[Disque compact], ";
+		  ch_aff+="1999, ";
+		  ch_aff+=""
+		  NoticesCollation="1 coffret de 2 compact-disques + 1 notice";
+		  if (NoticesCollation!="") ch_aff+=", 1 coffret de 2 compact-disques + 1 notice";
+		}
+		// cas IV
+	  }
+	  else if (supportNotice=="Périodique")
+	  {
+		ch_aff+="J\'ai vu le loup, le renard, le lion. ";
+		ch_aff+=", ";
+		ch_aff+="1999, ";
+		ch_aff+=", ";
+		ch_aff+="1 coffret de 2 compact-disques + 1 notice";
+	  }
+	  else if (noticeGenerale)
+	  {
+		ch_aff+="J\'ai vu le loup, le renard, le lion. ";
+		DocumentsEditeur="GSMusique";
+		if (DocumentsEditeur!="") ch_aff+="GSMusique, ";
+		ch_aff+="1999";
+		NoticesCollation="1 coffret de 2 compact-disques + 1 notice";
+		if (NoticesCollation!="") ch_aff+=". 1 coffret de 2 compact-disques + 1 notice";
+		DocumentsCollection=". ";
+	    if (DocumentsCollection!="") ch_aff+=". ";
+		DocumentsNumColl="";
+		if (DocumentsNumColl!="") ch_aff+=", .";
+	  }
+	  else
+	  {
+	  
+	  //
+		
+	  }
+	  ch_aff+='<br/><br/></div>'; // pour le DIV cachediv
+	  document.write(ch_aff);
+	</script>
+  </div>
+</div class="zoneafftxt">
+<!-- Fin du fichier FicheLycee.htm -->
+  
+
+
+		<script type="text/javascript">
+		<!--
+		  vel="Exemplaire  :"
+		  if (vel=="") cachtxtvide('1');
+		-->
+		</script>
+		<script type="text/javascript">
+		<!--
+		  vel=""
+		  if (vel!="") cachtxtvide('0');
+		-->
+		</script>
+          <div class="zoneexemplaire">
+		  <script type="text/javascript">
+		  <!--
+			if (0==1) {
+			  val="Cote  :"
+			  if (val!="") val=' align="center">'+val+'&nbsp;M LEC';
+			}
+			else
+//			  if ("Cote  :"=="") val=">Exemplaire(s)"; else val=">Cote(s) et exemplaire(s)";
+              val=">Pour trouver le document";
+			if (val!="") val='<div class="zoneexemplairetitre"'+val+'</div>';
+            document.write(val);
+          -->
+          </script>
+		  
+		  
+            <div class="zoneexemplairetxt"><!-- Modele FICHEEXE Ecrans Oct modifié RM 07/02/08-->
+  <div>
+  <script type="text/javascript">
+  <!--
+  if (0==0)
+  {
+    ch_aff="";
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/'+val+'.gif" height=30> &nbsp;';
+	val=""
+	if (val>"") ch_aff+='<img src="../modlyc/Picto-'+val+'.gif" height=30> &nbsp;';
+	if ("En-service"!="Mis au pilon") {
+	  val="M LEC";
+	  if (val!="") ch_aff+="<BR>Cote&nbsp;<B>"+val+"</B><BR>";
+	  val="" ;
+	  if (val=="") val="691";
+	  if (val!="") ch_aff+="Ex.&nbsp;"+val+"<BR>";
+	  ch_aff+="Fonds sonore";
+	  ces="Disponible";
+	  if(ces=="Disponible") ces='OK'
+	  else
+	   if(ces=="Sorti") ces='PE'
+	  else ces='NO'
+	  ch_aff+='<div class=\"disponibilite'+ces+'\">';
+	  ch_aff+="En-service - Disponible<\/div>"
+	  document.write(ch_aff);
+	}
+  } // BASEBIBLIO
+  -->
+  </script>
+
+  </div></div>
+
+          </div>
+        <script type="text/javascript">
+       <!--
+    if (vel=="") cachtxtvide('2');
+    -->
+  </script>
+          <div class="fiche100pr100">&nbsp;</div>
+        </div class="fiche">
+		<!--div class="fiche100pr100"-->
+        <div class="ajout"><a href="javascript:DivStatus( 'txtaffiche-', '7' )">Afficher / Masquer la fiche complète</a></div>
+        <div class="ajout2">Ajouter au panier&nbsp;<INPUT type="Hidden" name="AVEC2923" value="2923"><INPUT type="CheckBox" id="CKPANIER" name="CKPANIER2923" value="7" onclick="onCheckBoxClic(this)"></div>
+          <script type="text/javascript">
+          <!--
+            val='<input type="button" value="Réserver" onClick="reserver(981,0,1,0,7)">'
+            if ((val!="") && (val.indexOf("<!--")<0))
+             val='<div class="ajout2">'+val+'</div>'
+            document.write(val);
+          -->
+          </script>
+		<!--/div-->
+      </div class="zoneclaire">
+
+
+
+    <script type="text/javascript">
+    <!--
+      // ATTENTION : L'appel de cette function doit impérativement se faire APRES la balise FIN_LISTE
+      fonctionnementElectre(1)
+    -->
+    </script>
+
+      <div class="txt100pr100">
+      <script type="text/javascript">
+        <!--
+        pagination();
+        -->
+      </script>
+      </div>
+      <div class="txt100pr100">&nbsp;</div>
+    </div>
+  </div>
+
+  <div class="menuzonedatafooter">
+    <div class="menuzonedatafooterg"></div>
+    <div class="menuzonedatafooterd"></div>
+  </div>
+<INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="LISTENOT">
+<INPUT type="hidden" name="np" value="2">
+<INPUT type="hidden" name="nr" value="4">
+<INPUT type="hidden" name="b" value="1">
+<INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="INDEX.HTM">
+<INPUT TYPE="HIDDEN" NAME="LANGAGE" VALUE="DICO">
+<INPUT TYPE="HIDDEN" NAME="AFFOPTIONS" VALUE="">
+<INPUT type="SUBMIT" Name="SELECT1" Value="" class="hide">
+<INPUT type="HIDDEN" NAME="FORMAT" value="LISTENOT">
+<INPUT type="HIDDEN" NAME="CLASSEMENT" value="PERTINENCE">
+<INPUT type="HIDDEN" NAME="EXPERT" VALUE="LOUP">
+<INPUT type="HIDDEN" NAME="ANCRE" VALUE="">
+<INPUT type="HIDDEN" NAME="RESULTAT" VALUE="RECHERCHE">
+</form>
+
+<form action="/bcdiweb2008/bcdiweb.cgi/demolyc" method="POST" TARGET="_self">
+<INPUT type="HIDDEN" NAME="EXPERT" VALUE="LOUP">
+<INPUT type="HIDDEN" NAME="FORMAT" value="LISTENOT">
+<INPUT type="HIDDEN" NAME="CLASSEMENT" value="PERTINENCE">
+<INPUT type="hidden" name="np" value="2">
+<INPUT type="hidden" name="nr" value="4">
+<INPUT type="hidden" name="b" value="1">
+<INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="LISTENOT">
+<INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="INDEX.HTM">
+<INPUT TYPE="HIDDEN" NAME="LANGAGE" VALUE="DICO">
+<INPUT TYPE="HIDDEN" NAME="AFFOPTIONS" VALUE="">
+<INPUT type="HIDDEN" NAME="NB_FICHES_PAR_PAGE" VALUE="10">
+<INPUT type="HIDDEN" NAME="ANCRE" VALUE="">
+<INPUT type="HIDDEN" NAME="RESULTAT" VALUE="RECHERCHE">
+</FORM>
+
+<div class="TDxfp7"  align="center"><img src="../modlyc/logo.jpg" title="Base mise en ligne grâce à&#010;BCDI Web  Version 1.90 (27/05/2008)&#010;développé pour le CRDP de POITOU-CHARENTES&#010;par Raymond MOHSEN et René PUYHAUBERT" border="0"></div>
+</body>
+</html>

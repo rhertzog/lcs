@@ -1,0 +1,437 @@
+<!-- Ecrans RM 10/12/06 -->
+<#VAR RECHERCHE=THESAURUS>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Recherche par thésaurus</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Pragma" content="no-cache">
+<link href="<#CONST REP_MODELES>bcdi.css" rel="stylesheet" type="text/css" media="screen">
+
+<noscript>Votre navigateur n'autorise pas la gestion des scripts Javascript, vous ne pouvez pas utiliser BCDI Web</noscript>
+<script language="JavaScript">
+var fichierEnCours="RECH-THESAURUS.HTM"
+var delai_de_frappe=700 // millisecondes
+var Derouler=false // A priori, on ne déroule pas les restrictions.
+var DernierCode=0 // pour fKeyUp
+var en_timer=false
+var chpAlister=""
+var idTimer=""
+var nomChpFocus=""
+
+function fKeyUp(event,nom)
+{
+  chpAlister=nom
+  if (en_timer) window.clearTimeout(idTimer)
+  idTimer=window.setTimeout("init_liste()",delai_de_frappe)
+  en_timer=true
+  if (!event)
+  if (window.event) event=window.event
+  if (event)
+  {
+     if (typeof(event.keyCode)=="number")
+      DernierCode=event.keyCode;
+     else if (typeof(event.which)=="number")
+      DernierCode=event.which;
+     else if (typeof(event.charCode)=="number")
+      DernierCode=event.charCode;
+//alert(DernierCode)
+  }
+}
+
+if (parent.frames.length > 0)
+  window.top.location.href = location.href;
+
+  function DivStatus( nom, numero )
+    {
+      var divID = nom + numero;
+
+      if(divID=="c2"){var value=''; document.forms[0].ThemePole3Case2.value=value;}
+      else
+      if(divID=="b2"){var value=''; document.forms[0].ThemePole2Case2.value=value;}
+	  else
+      if(divID=="a2"){var value=''; document.forms[0].ThemePole1Case2.value=value;}
+
+      if ( document.getElementById && document.getElementById( divID ) ) // Pour les navigateurs récents
+        {
+          Pdiv = document.getElementById( divID );
+          PcH = true;
+         }
+      else if ( document.all && document.all[ divID ] ) // Pour les veilles versions
+        {
+          Pdiv = document.all[ divID ];
+          PcH = true;
+        }
+      else if ( document.layers && document.layers[ divID ] ) // Pour les très veilles versions
+        {
+          Pdiv = document.layers[ divID ];
+          PcH = true;
+        }
+      else
+          PcH = false;
+
+      if ( PcH )
+          Pdiv.className = ( Pdiv.className == 'cachediv' ) ? '' : 'cachediv';
+    }
+
+function BasculerRestrictions() { DivStatus( 'txt', '3' ); DivStatus( 'txt', '6' ); }
+
+
+function effacer()
+{
+  document.forms[0].reset()
+  for (i=0;i<document.forms[0].elements.length;i++)
+  {
+    if (document.forms[0].elements[i].type=="text") document.forms[0].elements[i].value=""
+    if (document.forms[0].elements[i].type=="checkbox") document.forms[0].elements[i].checked=false
+  }
+}
+
+function tube(ch)
+{
+  while (ch.substring(0,1)==" ")
+  {
+   ch=ch.substring(1,ch.length)
+  }
+  return "|"+ch+"|"
+}
+
+
+function ParDefaut(ch,defaut)
+{
+  while (ch.substring(0,1)==" ")
+  {
+   ch=ch.substring(1,ch.length)
+  }
+  if (ch=="")
+   ch=defaut
+  return ch
+}
+
+function Refermer(valeur,lettre)
+{
+  if (valeur <= " ")
+    DivStatus( lettre, '2' )
+  else
+    DivStatus( lettre , '1' )
+}
+
+function ChangerOptions(nom,valeur)
+{
+  if (valeur>'') {
+    var selectBox = document.getElementById(nom);
+    for (var i=0; i<selectBox.options.length; i++) {
+      if (selectBox.options[i].text==valeur) {
+        selectBox.options[i].selected = true;
+        if (i>0) Derouler=true;
+      }
+    }
+  }
+}
+
+function InitChecked()
+{
+  chComment=ParDefaut("<#COMMENT>","TOUS")
+  chClassement=ParDefaut("<#CLASSEMENT>","TITRE")
+  if (chClassement=="PERTINENCE") chClassement="TITRE"
+  chFormat=ParDefaut("<#FORMAT>","LISTENOT")
+  chNature=tube("<#TYPEDENATURE>")
+  chSupport=tube("<#SUPPORT1>")
+  chAutopostage=ParDefaut("<#AUTOPOSTAGE>","")
+
+  for (i=0;i<document.forms[0].elements.length;i++)
+  {
+    if (document.forms[0].elements[i].name=="COMMENT")
+    document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chComment)
+    else
+    if (document.forms[0].elements[i].name=="CLASSEMENT")
+    document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chClassement)
+    else
+    if (document.forms[0].elements[i].name=="AUTOPOSTAGE")
+    document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chAutopostage)
+    else
+    if (document.forms[0].elements[i].name=="TYPEDENATURE")
+    {
+      ch="|"+document.forms[0].elements[i].value+"|"
+      document.forms[0].elements[i].checked=(chNature.indexOf(ch)>=0)
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+    else
+    if (document.forms[0].elements[i].name=="SUPPORT1")
+    {
+      ch="|"+document.forms[0].elements[i].value+"|"
+      document.forms[0].elements[i].checked=(chSupport.indexOf(ch)>=0)
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+    else
+    if ((document.forms[0].elements[i].name.substring(0,4)=="DATE") && !(document.forms[0].elements[i].value=="")) Derouler=true
+    else
+    if (document.forms[0].elements[i].name.substring(0,5)=="DISPO")
+    {
+      document.forms[0].elements[i].checked=!("<#DISPONIBLES>"=="")
+	  if (document.forms[0].elements[i].checked) Derouler=true
+    }
+  }
+  ChangerOptions('GENRES',"<#GENRES>")
+  ChangerOptions('NATURES',"<#NATURES>")
+  ChangerOptions('NIVEAUX',"<#NIVEAUX>")
+  ChangerOptions('DISCIPLINES',"<#DISCIPLINES>")
+  ChangerOptions('PUBLICS',"<#PUBLICS>")
+  ancienFichierMaitre="<#VAR FICHIER-MAITRE>";
+<#VAR FICHIER-MAITRE=RECH-THESAURUS.HTM>
+  if (ancienFichierMaitre!="<#VAR FICHIER-MAITRE>") {effacer(); Derouler=false;}
+  if (Derouler) BasculerRestrictions()
+
+/*
+  Refermer("<#THEMEPOLE1CASE2>",'a')
+  Refermer("<#THEMEPOLE2CASE2>",'b')
+  Refermer("<#THEMEPOLE3CASE2>",'c')
+*/
+
+  nomChpFocus=ParDefaut("<#FOCUS>","THEMEPOLE1CASE1")
+  try
+  {
+	document.forms[0].elements[nomChpFocus].focus();
+  }
+  catch (ex)
+  {
+    nomChpFocus="THEMEPOLE1CASE1"
+    document.forms[0].THEMEPOLE1CASE1.focus();
+  }  
+}
+
+function SansParametre(url,param)  // on enlève un champ de la liste des paramètres d'une URL
+{
+  p=url.indexOf("?"+param+"=");
+  if (p<0)
+    p=url.indexOf("&"+param+"=");
+  if (p>=0)
+  {
+    ch=url.substring(0,p)
+    reste=url.substr(p+1,10000)
+    p=reste.indexOf("&");
+    if (p>0)
+      ch+="&"+reste.substr(p+1,10000)
+    url=ch
+  }
+  return(url)
+}
+function RajouterParametre(url,nom,valeur)  // on rajoute un champ de la liste des paramètres d'une URL
+{
+  url=SansParametre(url,nom)
+  if (valeur=="") valeur=" "
+  {
+    p=url.indexOf("?");
+    if (p<0)
+      url+="?"
+    else
+      url+="&"
+    url+=nom+"="+escape(valeur)
+  }
+  return(url)
+}
+function valeurs_checkees(NomChp)
+{
+  res=""
+  ListeElements=document.getElementsByName(NomChp)
+  if (ListeElements.length>0)
+  {
+    for(var j=0; j<ListeElements.length; j++)
+    {
+      if (ListeElements[j].checked)
+      {
+        if (res>" ")
+          res+="|"
+        res+=ListeElements[j].value
+      }
+    }
+  }
+  return(res)
+}
+function init_liste(chp)  // renvoie le formulaire avec la liste correspondant au début de saisie
+{
+  if ((DernierCode>0) && ((DernierCode<32) || (DernierCode>=40)))
+{
+  if (en_timer) window.clearTimeout(idTimer)
+  en_timer=false
+  ch=window.location.href;
+  for (i=0;i<document.forms[0].elements.length;i++) {
+	obj=document.forms[0].elements[i]
+	nom=obj.name
+	upNom=nom.toUpperCase()
+	if (upNom.substr(0,5)=="THEME")
+	{
+	  ch=RajouterParametre(ch,upNom,obj.value)
+	  if (nomChpFocus==nom) ch=RajouterParametre(ch,"THESAURUS_DESCRIPTEURS",obj.value)
+	}
+  }
+//  ch=RajouterParametre(ch,"CLASSEMENT",valeurs_checkees("CLASSEMENT"))
+  ch=RajouterParametre(ch,"SUPPORT1",valeurs_checkees("SUPPORT1"))
+  ch=RajouterParametre(ch,"TYPEDENATURE",valeurs_checkees("TYPEDENATURE"))
+  ch=RajouterParametre(ch,"DISPO",valeurs_checkees("DISPONIBILITE"))
+  if (nomChpFocus>"") ch=RajouterParametre(ch,"FOCUS",nomChpFocus)
+//  ch=RajouterParametre(ch,"FICHIER",document.forms[0].FICHIER.value)
+//  ch=RajouterParametre(ch,"NP",document.forms[0].NP.value)
+  window.location.href=ch;
+}
+}
+
+function decode(ch)
+{
+  st="";
+  p=0;
+  while (p<ch.length)
+  {
+	c=ch.charAt(p++);
+	if ((c=="%") && (ch.charAt(p)=="2") && ((ch.charAt(p+1)=="2") || (ch.charAt(p+1)=="7")))
+    {
+      p++;
+      if (ch.charAt(p)=="2")
+        c='"'
+      else
+        c="'"
+      p++;
+    }
+    st+=c;
+  }
+  return(st)
+}
+
+function maj_saisie() // recopie la valeur de la liste déroulante dans la zone de saisie
+{
+  var suite="+++";
+  pour=document.getElementById(nomChpFocus)
+  pour.focus();
+  ch=document.forms[0].LISTE_DESCRIPTEURS.value
+  if (ch.indexOf(suite)==0)
+  {
+    ch=ch.substr(suite.length,255)
+    pour.value=decode(ch)
+    chpAlister=nomChpFocus
+    init_liste()
+  }
+  else document.getElementById(nomChpFocus).value=decode(ch)
+}
+function surFocus(obj)
+{
+  nomChpFocus=obj.name
+  if (obj.createTextRange)
+  {
+	var range = obj.createTextRange();
+	range.collapse(false);range.select();
+  }
+}
+</script>
+
+</head>
+
+<body onLoad="javascript:InitChecked()">
+<form action="#" name="recherche" method="post">
+<INPUT TYPE="HIDDEN" NAME="NP" VALUE="<#VALEUR NUMERO_PANIER>"><INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="<#FICHIER>">
+<INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="RECH-THESAURUS.HTM"><INPUT TYPE="HIDDEN" NAME="RESTRICTIONS" VALUE="OUI"><INPUT TYPE="HIDDEN" NAME="LANGAGE" VALUE="THESAURUS"><INPUT TYPE="HIDDEN" NAME="FORMAT" VALUE="LISTENOT">
+<INPUT TYPE="HIDDEN" NAME="FORMULAIRE_RECHERCHE" VALUE="RECH-THESAURUS" >
+<div class="zonemenu">
+  <div class="fxcal">
+  <div class="menucalibre">&nbsp;</div>
+  <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=index.htm">Recherche thématique</a></div><div class="menuOFFdroite"></div></div>
+  <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=rech-criteres.htm">Recherche par critères</a></div>  <div class="menuOFFdroite"></div></div>
+  <div class="menuON"><div class="menuONgauche"></div><div class="menuONtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=VisitTh.htm">Recherche par thésaurus</a></div><div class="menuONdroite"></div></div>
+
+<#INCLUDE INCLUDE-PANIER-COMPTE.htm>
+
+</div>
+
+<div class="menuseparatsuite">
+  <div class="txt100pr100">&nbsp;</div>
+  <div class="menucalibre">&nbsp;</div>
+  <a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=VisitTh.htm" class="menuseparatlienOFF" title="Recherche rapide">Recherche simple</a>
+  <a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=rech-thesaurus.htm" class="menuseparatlienON" title="Recherche avancée">Recherche experte</a>
+  <div class="txt100pr100">&nbsp;</div>
+</div>
+
+
+<div class="menuzonedatag">
+    <div class="menuzonedata"><br>
+                <!-- div class="tridroite">
+                  <div class="tridroitetitre">Classement des résultats</div>
+                    <input name="CLASSEMENT" type="radio" value="TITRE"> Titre
+                  <br><input name="CLASSEMENT" type="radio" value="AUTEUR, TITRE"> Auteur
+                  <br><input name="CLASSEMENT" type="radio" value="SUPPORT, TITRE"> Support
+                  <br><input name="CLASSEMENT" type="radio" value="DATE PARUTION, TITRE"> Date
+                  <br>
+                </div -->
+                <div class="txt10">
+                  <div class="txt0"><b>Je cherche :</b>&nbsp;</div>
+				  <input id="THEMEPOLE1CASE1" name="THEMEPOLE1CASE1" value="<#THEMEPOLE1CASE1>" type="text" class="inputTermeTh" onkeyup="fKeyUp(event,this.name)" onFocus="surFocus(this)">
+				</div>
+				<!-- div ID="a1">&nbsp;<b><a href="javascript:DivStatus( 'a', '1' );javascript:DivStatus( 'a', '2' )" class="plusmoins" title="Ajouter un champ supplémentaire">+</a></b></div -->
+				<div ID="a2">
+				  &nbsp;Ou&nbsp;<input id="THEMEPOLE1CASE2" name="THEMEPOLE1CASE2" value="<#THEMEPOLE1CASE2>" type="text" class="inputTermeTh" onkeyup="fKeyUp(event,this.name)" onFocus="surFocus(this)">
+                  &nbsp;
+                  <!-- b><a href="javascript:DivStatus( 'a', '1' );javascript:DivStatus( 'a', '2' )" class="plusmoins" title="Masquer ce champ">-</a></b -->
+                </div>
+
+                <br>
+                <br>
+
+                <div class="txt10">
+                  <div class="txt0">&nbsp;Et&nbsp;</div>
+                  <input id="THEMEPOLE2CASE1" name="THEMEPOLE2CASE1" value="<#THEMEPOLE2CASE1>" type="text" class="inputTermeTh" onkeyup="fKeyUp(event,this.name)" onFocus="surFocus(this)">
+      </div>
+                  <!-- div ID="b1">&nbsp;<b><a href="javascript:DivStatus( 'b', '1' );javascript:DivStatus( 'b', '2' )" class="plusmoins" title="Ajouter un champ supplémentaire">+</a></b></div -->
+                  <div ID="b2">
+				  &nbsp;Ou&nbsp;<input id="THEMEPOLE2CASE2" name="THEMEPOLE2CASE2" value="<#THEMEPOLE2CASE2>" type="text" class="inputTermeTh" onkeyup="fKeyUp(event,this.name)" onFocus="surFocus(this)">
+				  &nbsp;
+				  <!-- b><a href="javascript:DivStatus( 'b', '1' );javascript:DivStatus( 'b', '2' )" class="plusmoins" title="Masquer ce champ">-</a></b -->
+				  </div>
+
+				  <br>
+				  <br>
+
+				  <div class="txt10">
+				  <div class="txt0">&nbsp;Et&nbsp;</div>
+				  <input id="THEMEPOLE3CASE1" name="THEMEPOLE3CASE1" value="<#THEMEPOLE3CASE1>" type="text" class="inputTermeTh" onkeyup="fKeyUp(event,this.name)" onFocus="surFocus(this)">
+	  </div>
+				  <!-- div ID="c1">&nbsp;<b><a href="javascript:DivStatus( 'c', '1' );javascript:DivStatus( 'c', '2' )" class="plusmoins" title="Ajouter un champ supplémentaire">+</a></b></div -->
+				  <div ID="c2">
+                  &nbsp;Ou&nbsp;<input id="THEMEPOLE3CASE2" name="THEMEPOLE3CASE2" value="<#THEMEPOLE3CASE2>" type="text" class="inputTermeTh" onkeyup="fKeyUp(event,this.name)" onFocus="surFocus(this)">
+                  &nbsp;
+                  <!-- b><a href="javascript:DivStatus( 'c', '1' );javascript:DivStatus( 'c', '2' )" class="plusmoins" title="Masquer ce champ">-</a></b -->
+                  </div>
+
+                  <br>
+                  <br>
+                  <div class="txt10">
+                    <div class="txt0">&nbsp;Sauf :&nbsp;</div>
+					<input id="THEMESAUFCASE1" name="THEMESAUFCASE1" value="<#THEMESAUFCASE1>" type="text" class="inputTermeTh" onkeyup="fKeyUp(event,this.name)" onFocus="surFocus(this)">
+                  </div>
+
+                  <br><br><br><br>
+                  <div class="zoneclass">
+                  <div class="classementformat2">Elargir aux :</div>
+                    <div class="alignpuce2"><input name="AUTOPOSTAGE" type="radio" value="SPECIFIQUE"> Termes spécifiques</div>
+                  <div class="alignpuce2"><input name="AUTOPOSTAGE" type="radio" value="GENERIQUE"> Termes génériques</div>
+                  <div class="alignpuce2"><input name="AUTOPOSTAGE" type="radio" value="ASSOCIE"> Termes associés</div>
+                  <div class="alignpuce2"><input name="AUTOPOSTAGE" type="radio" value="" checked="checked"> Aucun</div>
+
+    </div>
+<div class="ListeF2Th" ID="LISTE_POUR_DESCRIPTEUR">
+  <div class="tridroitetitre">Liste des descripteurs</div>
+  <select name="LISTE_DESCRIPTEURS" value="Liste descripteurs" onChange="maj_saisie()" size="7" class="select600">
+  <#LISTE THESAURUS DESCRIPTEURS LARGEUR=60>
+  </select>
+</div>
+
+                  <br><br>
+
+                <div class="txt4"><div class="txt2"><a href="javascript:BasculerRestrictions()">Restrictions de recherche</a></div>
+                <div align="center"><input name="Rechercher" type="submit" value="Rechercher" class="bouton1">
+                <input name="Effacer" type="button" value="Effacer" class="bouton2" onclick="effacer()"></div></div>
+    </div></div>
+
+  <#INCLUDE INCLUDE-RESTRICTIONS.htm>
+
+</form>
+</body>
+</html>

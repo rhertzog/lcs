@@ -1,0 +1,267 @@
+<!-- Index sans choix pour Dico -->
+<!-- Ecrans RM 10/12/06 -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Recherche rapide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Pragma" content="no-cache">
+<link href="<#CONST REP_MODELES>bcdi.css" rel="stylesheet" type="text/css">
+
+<script language="JavaScript">
+
+var Derouler=false // A priori, on ne déroule pas les restrictions.
+
+  function DivStatus( nom, numero )
+    {
+      var divID = nom + numero;
+      if ( document.getElementById && document.getElementById( divID ) ) // Pour les navigateurs récents
+        {
+          Pdiv = document.getElementById( divID );
+          PcH = true;
+         }
+      else if ( document.all && document.all[ divID ] ) // Pour les veilles versions
+        {
+          Pdiv = document.all[ divID ];
+          PcH = true;
+        }
+      else if ( document.layers && document.layers[ divID ] ) // Pour les très veilles versions
+        {
+          Pdiv = document.layers[ divID ];
+          PcH = true;
+        }
+      else
+          PcH = false;
+      if ( PcH )
+          Pdiv.className = ( Pdiv.className == 'cachediv' ) ? '' : 'cachediv';
+    }
+
+function effacer()
+{
+  document.forms[0].reset()
+  for (i=0;i<document.forms[0].elements.length;i++)
+  if (document.forms[0].elements[i].type=="text") document.forms[0].elements[i].value=""
+}
+
+function tube(ch)
+{
+  while (ch.substring(0,1)==" ")
+   ch=ch.substring(1,ch.length)
+  return "|"+ch+"|"
+}
+function ParDefaut(ch,defaut)
+{
+  while (ch.substring(0,1)==" ")
+   ch=ch.substring(1,ch.length)
+  if (ch=="")
+   ch=defaut
+  return ch
+}
+function InitChecked()
+{
+  chComment=ParDefaut("<#COMMENT>","TOUS")
+  chLangage=ParDefaut("<#LANGAGE>","DICO")
+  chClassement=ParDefaut("<#CLASSEMENT>","TITRE")
+  chFormat=ParDefaut("<#FORMAT>","LISTENOT")
+  chNature=tube("<#TYPEDENATURE>")
+  chSupport=tube("<#SUPPORT1>")
+
+  for (i=0;i<document.forms[0].elements.length;i++)
+  {
+    if (document.forms[0].elements[i].name=="AUTOPOSTAGE")
+    {document.forms[0].elements[i].checked=!("<#AUTOPOSTAGE>"=="")}
+    else
+/*
+    if (document.forms[0].elements[i].name=="LANGAGE")
+    {document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chLangage)}
+    else
+*/
+    if (document.forms[0].elements[i].name=="COMMENT")
+    {document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chComment)}
+    else
+    if (document.forms[0].elements[i].name=="CLASSEMENT")
+    {document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chClassement)}
+  else
+    if (document.forms[0].elements[i].name=="TYPEDENATURE")
+    {
+      ch="|"+document.forms[0].elements[i].value+"|"
+      document.forms[0].elements[i].checked=(chNature.indexOf(ch)>=0)
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+    else
+    if (document.forms[0].elements[i].name=="SUPPORT1")
+    {
+      ch="|"+document.forms[0].elements[i].value+"|"
+      document.forms[0].elements[i].checked=(chSupport.indexOf(ch)>=0)
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+    else
+    if ((document.forms[0].elements[i].name.substring(0,4)=="DATE") && !(document.forms[0].elements[i].value=="")) Derouler=true
+    else
+    if (document.forms[0].elements[i].name.substring(0,5)=="DISPO")
+    {
+      document.forms[0].elements[i].checked=!("<#DISPONIBLES>"=="")
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+  }
+  if (Derouler)
+  DivStatus( 'txt', '3' )
+}
+</script>
+
+</head><body onLoad="javascript:InitChecked()">
+<noscript>Votre navigateur n'autorise pas la gestion des scripts Javascript, vous ne pouvez pas utiliser BCDI Web</noscript>
+
+<form action="<#URLDLL>" name="recherche" method="post">
+
+<div class="zonemenu">
+  <div class="fxcal">
+  <div class="menucalibre">&nbsp;</div>
+  <div class="menuON">
+    <div class="menuONgauche"></div>
+    <div class="menuONtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=index.htm">Recherche thématique</a></div>
+    <div class="menuONdroite"></div>
+  </div>
+  <div class="menuOFF">
+    <div class="menuOFFgauche"></div>
+    <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-criteres.htm">Recherche par critères</a></div>
+    <div class="menuOFFdroite"></div>
+  </div>
+  <div class="menuOFF">
+    <div class="menuOFFgauche"></div>
+    <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-thesaurus.htm">Recherche par Thésaurus</a></div>
+    <div class="menuOFFdroite"></div>
+  </div>
+
+  <script type="text/javascript">
+  <!--
+  if (<#VALEUR NOMBRE_PANIER>>0){
+  var plur="";
+  if (<#VALEUR NOMBRE_PANIER>>1){ plur="s";}
+  document.write("<div class='menuOFFp'><div class='menuOFFgauchep'><\/div><div><a href='<#URLDLL>?np=<#NUMERO_PANIER>&b=1&Resultat=Panier&FICHIERORIGINE=Panier.htm&CHANGER_CLASSEMENT=TITRE' class='menupaniertxt' ");
+  document.write("><span class='menupaniertxt2'>Voir mon panier<\/span> (<#VALEUR NOMBRE_PANIER> fiche");
+  document.write(plur);
+  document.write(")<\/a><\/div><div class='menuOFFdroitep'><\/div><\/div>");
+  }
+  else{      
+  document.write('<div class=\"menuOFF\"><div class=\"menuOFFgauche\"><\/div><div class=\"menuOFFtxt\">');
+  document.write('<span class="pasdepanier">Votre panier est vide<\/span>');
+  document.write('<\/div><div class=\"menuOFFdroite\"><\/div><\/div>');
+  }
+
+   -->
+  </script>
+
+  <div class='txt'>&nbsp;&nbsp;</div>
+  <script type="text/javascript">
+  <!--
+  if("<#CONST AFFCOMPTE>"=="NON" || "<#LOGICIEL>"=="BCDI"){document.write('<div class="cachediv">');}
+  -->
+  </script>
+  <div class="menuOFF">
+    <div class="menuOFFgauche">&nbsp;</div>
+    <div class="menuOFFtxtcompte"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=identification.htm">Mon compte</a></div>
+    <div class="menuOFFdroite">&nbsp;</div>
+  </div>
+  <script type="text/javascript">
+  <!--
+  if("<#CONST AFFCOMPTE>"=="NON" || "<#LOGICIEL>"=="BCDI"){document.write('</div>');}
+  -->
+  </script
+></div>
+
+
+<div class="menuseparatsuite">
+  <div class="txt100pr100">&nbsp;</div>
+  <div class="menucalibre">&nbsp;</div>
+  <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=index.htm" class="menuseparatlienON" title="recherche rapide">Recherche rapide</a>
+  <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-avancee.htm" class="menuseparatlienOFF" title="Recherche avancée">Recherche avancée</a>
+  <div class="txt100pr100">&nbsp;</div>
+</div>
+
+
+<div class="menuzonedatag">
+    
+    <div class="menuzonedata">  
+                <br>
+                  <div class="tridroite">
+                  <div class="tridroitetitre">Classement des résultats par : </div>
+                      <input name="CLASSEMENT" type="radio" value="PERTINENCE" checked> Pertinence
+                    <br><input name="CLASSEMENT" type="radio" value="TITRE"> Titre
+                  <br><input name="CLASSEMENT" type="radio" value="AUTEUR, TITRE"> Auteur
+                  <br><input name="CLASSEMENT" type="radio" value="SUPPORT, TITRE"> Support
+                  <br><input name="CLASSEMENT" type="radio" value="DATE PARUTION, TITRE"> Date
+                </div>
+                 <br><div class="txt"><b>Je cherche :</b>&nbsp;</div><div class="zoneinputrech">
+     <input name="QUOI" type="text" value="<#QUOI>" class="input">
+    </div>
+                <div class="zoneinputrech">
+          <p><br>
+            <input name="COMMENT" type="radio" value="TOUS"  checked>
+            Tous les mots
+            <input name="COMMENT" type="radio" value="UN" >
+            Un des mots 
+            <input name="COMMENT" type="radio" value="EXACT" >
+            L&rsquo;expression exacte </p>
+<!--
+          <p><INPUT  name ="LANGAGE"type="radio" value="TexteSeul">Sans Dico&nbsp;&nbsp;&nbsp;&nbsp;
+             <INPUT  name ="LANGAGE" type="radio" value="DICO"> Avec Dico &nbsp;
+             <INPUT  type="Checkbox" name="AUTOPOSTAGE"> Elargir
+-->
+
+</p>
+        </div>
+
+                <div class="txt4"><div class="txt2"><a href="javascript:DivStatus( 'txt', '3' )">Restrictions de recherche</a></div>
+                <div align="center"><input name="Rechercher" type="submit" value="Rechercher" class="bouton1">
+                <input name="Effacer" type="button" value="Effacer" class="bouton2" onclick="effacer()"></div></div>
+
+    </div></div>
+    
+    <div id="txt3" class='cachediv'>
+    <div class="menuzonedatagoption">
+    <div class="menuzonedataoption">
+    <div class="txt4"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Restreindre :</b><br>
+      <#BOUCLE CHAMP="TYPES NATURE" TEXTE="<div class='support'><input name='TYPEDENATURE' type='checkbox' value='?VALEUR?'>?VALEUR?</div>">
+    </div>
+    <div class="txt4"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Restreindre aux supports suivants :</b><br>
+     <#BOUCLE CHAMP="Support N." TEXTE="<div class='support'><input name='SUPPORT1' type='checkbox' value='?VALEUR?' ><img src='<#CONST REP_MODELES>PUCE?VALEUR MAJ?.gif' width=26 height=26>?VALEUR?</div>">
+    </div>
+    <div class="txt4">
+      <div class="txt5"><div class="zonedate1"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Date de parution =</b>&nbsp;</div><div class="zonedate2"><input name="DATEEGAL" type="text" class="input100" value="<#DATEEGAL>"> <span class="gris">(jj/mm/aaaa)</span></div></div>
+      <div class="txt5">
+        <div class="zonedate1"><b>Avant </b>&nbsp;</div><div class="zonedate2"><input name="DATEINF" type="text" class="input100" value="<#DATEINF>"> <span class="gris">(jj/mm/aaaa)</span></div>
+      </div>
+      <div class="txt5">
+        <div class="zonedate1"><b>Après </b>&nbsp;</div><div class="zonedate2"><input name="DATESUP" type="text" class="input100" value="<#DATESUP>"> <span class="gris">(jj/mm/aaaa)</span></div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+    <!--
+    if("<#CONST AFFDISPONIBILITE>"=="NON"){document.write('<div class="cachediv">');}
+    -->
+    </script>
+    <div class="txt4"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Documents disponibles</b>
+    <input name="DISPONIBLES" value="DISPONIBLE" type="checkbox"></div>
+    <script type="text/javascript">
+    <!--
+    if("<#CONST AFFDISPONIBILITE>"=="NON"){document.write('</div>');}
+    -->
+    </script>
+  </div></div></div></div>
+  <div class="menuzonedatafooter"><div class="menuzonedatafooterg"></div><div class="menuzonedatafooterd"></div></div>
+
+<!-- s'il n'y a pas de choix pour dico : -->
+<INPUT  name ="LANGAGE" type="HIDDEN" value="DICO">
+
+<INPUT TYPE="HIDDEN" NAME="np" VALUE="<#VALEUR NUMERO_PANIER>">
+<INPUT TYPE="HIDDEN" NAME="hidden1" VALUE="ch">
+<INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="INDEX.HTM">
+<INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="INDEX.HTM">
+<input name="FORMAT" type="HIDDEN" value="LISTENOT">
+</form>
+</body>
+</html>
+

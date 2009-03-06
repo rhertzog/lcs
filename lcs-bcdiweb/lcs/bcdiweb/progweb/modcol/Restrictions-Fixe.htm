@@ -1,0 +1,27 @@
+<div style="background-color:yellow;border: 1px solid #000000;"> 
+<br/>
+  <span  style="margin-left:20px"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""></span>
+  <span style="width:60px;"><b>Natures  : </b></span>
+  <select id="NATURES" name="NATURES" class="deroulant18x173"  style="width:250px;">
+	<option selected>Tous</option><#OPTION_NATURES largeur=40>
+  </select>
+  &nbsp;&nbsp;<i>(par exemple, roman, bande dessinée...)</i>
+<br/>
+<br/>
+  <span  style="margin-left:20px"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""></span>
+  <span style="width:60px;"><b>Genres : </b></span>
+  <select id="GENRES" name="GENRES" class="deroulant18x173"  style="width:250px;">
+	<option selected>Tous</option><#OPTION_GENRES largeur=40>
+  </select>
+  &nbsp;&nbsp;<i>(par exemple, policier, historique...)</i>
+<br/>
+<br/>
+<!--div class="txt4"-->
+  <span  style="margin-left:20px"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Type de documents :</b></span>
+<br/>
+  <div  style="margin-left:20px">
+  <#BOUCLE CHAMP="Support N." TEXTE="<span style='height:28px;width:155px;'><input name='SUPPORT1' type='checkbox' value='?VALEUR?' checked ><img src='<#CONST REP_MODELES>PUCE?VALEUR MAJ?.gif' width=26 height=26>?VALEUR?</span>">
+  </div>  
+<br/>
+</div>
+

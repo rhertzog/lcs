@@ -1,0 +1,368 @@
+<!-- Ecrans RM 10/12/06 -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Thésaurus</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Pragma" content="no-cache">
+<link href="<#CONST REP_MODELES>bcdi.css" rel="stylesheet" type="text/css" media="screen">
+
+<noscript>Votre navigateur n'autorise pas la gestion des scripts Javascript, vous ne pouvez pas utiliser BCDI Web</noscript>
+<script language="JavaScript">
+<!--
+
+/*
+Cette function est inutile car elle ne fait que palier à un
+Bloquer les caractères étendues du filtre HTTP du Firewall ISA SERVER 2003
+function SansAccents(ch) {
+  var ch2 = '';
+  for(i=0; i<ch.length; i++)
+  {
+    x = ch.charAt(i);
+    if(x=='à' || x=='â' || x=='ä') x='a';
+    if(x=='é' || x=='è' || x=='ê' || x=='ë') x='e';
+    if(x=='î' || x=='ï') x='i';
+    if(x=='ô' || x=='ö') x='o';
+    if(x=='ù' || x=='û' || x=='ü') x='u';
+    if(x=='ç') x='c';
+
+    if(x=='À' || x=='Â' || x=='Ä') x='A';
+    if(x=='È' || x=='É' || x=='Ê' || x=='Ë') x='E';
+    if(x=='Î' || x=='Ï') x='I';
+    if(x=='Ô' || x=='Ö') x='O';
+    if(x=='Ù' || x=='Û' || x=='Ü') x='U';
+    if(x=='Ç') x='c';
+
+    ch2 += x;
+  }
+  return ch2;
+}
+*/
+function Changeliste(obj)
+{
+  document.forms[0].TYPE_LISTE.value=obj.value;
+  document.forms[0].submit();
+}
+
+  function DivStatus( nom, numero )
+    {
+      var divID = nom + numero;
+      if ( document.getElementById && document.getElementById( divID ) ) // Pour les navigateurs récents
+        {
+          Pdiv = document.getElementById( divID );
+          PcH = true;
+         }
+      else if ( document.all && document.all[ divID ] ) // Pour les veilles versions
+        {
+          Pdiv = document.all[ divID ];
+          PcH = true;
+        }
+      else if ( document.layers && document.layers[ divID ] ) // Pour les très veilles versions
+        {
+          Pdiv = document.layers[ divID ];
+          PcH = true;
+        }
+      else
+          PcH = false;
+
+      if ( PcH )
+          Pdiv.className = ( Pdiv.className == 'cachediv' ) ? '' : 'cachediv';
+    }
+
+function ParDefaut(ch,defaut)
+{
+  while (ch.substring(0,1)==" ")
+  {
+   ch=ch.substring(1,ch.length)
+  }
+  if (ch=="")
+   ch=defaut
+  return ch
+}
+function InitChecked()
+{
+  chTypeListe=ParDefaut("<#TYPE_LISTE>","ALPHABETIQUE")
+  for (i=0;i<document.forms[0].elements.length;i++)
+   if (document.forms[0].elements[i].name=="TYPE_LISTE")
+    {document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chTypeListe)}
+}
+
+function recopier(ch)
+{
+  p=0
+  while((ch.charCodeAt(p)==9))
+  p++
+  if (p>0)
+    ch=ch.substr(p,100)
+  document.forms[0].THESAURUS_MOT.value=ch
+  document.forms[0].Rechercher.click()
+}
+function recopier_title(obj)
+{
+  recopier(obj.title)
+}
+function recopier_value(obj)
+{
+  recopier(obj.value)
+}
+function tabulation(ch)
+{
+  p=0
+  while((ch.charCodeAt(p)==9))
+  p++
+  ch=""
+  if (p>0)
+   for (var i=1; i<=p; i++)
+     ch="&nbsp;&nbsp;&nbsp;" + ch + "*"
+  document.write(ch)
+}
+
+ function premaj(mot) {
+      var m=mot.charAt(0).toUpperCase() +
+       mot.substring(1).toLowerCase();
+      return m;
+   }
+
+function Remplace(expr,a,b) {
+      var i=0
+      while (i!=-1) {
+         i=expr.indexOf(a,i);
+         if (i>=0) {
+            expr=expr.substring(0,i)+b+expr.substring(i+a.length);
+            i+=b.length;
+         }
+      }
+      return expr
+   }
+
+function InitPage()
+{
+  if ((document.forms[0].THESAURUS_MOT.value!="") && ("<#CHAMP THESAURUS DESCRIPTEURS>"==""))
+   document.forms[0].submit();
+}
+-->
+</script>
+
+</HEAD>
+<body  onload="InitChecked(); InitPage();">
+<form action="<#URLDLL>" name="recherche" method="post">
+<INPUT TYPE="HIDDEN" NAME="np" VALUE="<#VALEUR NUMERO_PANIER>"><INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="VISITTH.HTM"><INPUT TYPE="HIDDEN" NAME="MODELE" VALUE="VISITTH.HTM"><INPUT TYPE="HIDDEN" NAME="FAIRE" VALUE="VISITER_THESAURUS"><INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="<#FICHIER>"><INPUT TYPE="HIDDEN" NAME="FORMAT" VALUE="LISTENOT">
+<div class="zonemenu">
+  <div class="fxcal">
+  <div class="menucalibre">&nbsp;</div>
+  <div class="menuOFF">
+    <div class="menuOFFgauche"></div>
+    <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=index.htm">Recherche thématique</a></div>
+    <div class="menuOFFdroite"></div>
+  </div>
+  <div class="menuOFF">
+    <div class="menuOFFgauche"></div>
+    <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-criteres.htm">Recherche par critères</a></div>
+    <div class="menuOFFdroite"></div>
+  </div>
+  <div class="menuON">
+    <div class="menuONgauche"></div>
+    <div class="menuONtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-thesaurus.htm">Recherche par Thésaurus</a></div>
+    <div class="menuONdroite"></div>
+  </div>
+
+  <script type="text/javascript">
+  <!--
+  if (<#VALEUR NOMBRE_PANIER>>0){
+  var plur="";
+  if (<#VALEUR NOMBRE_PANIER>>1){ plur="s";}
+  document.write("<div class='menuOFFp'><div class='menuOFFgauchep'><\/div><div><a href='<#URLDLL>?np=<#NUMERO_PANIER>&fichier=Panier.htm&FICHIERORIGINE=Panier.htm' class='menupaniertxt' ");
+  document.write("><span class='menupaniertxt2'>Voir mon panier<\/span> (<#VALEUR NOMBRE_PANIER> fiche");
+  document.write(plur);
+  document.write(")<\/a><\/div><div class='menuOFFdroitep'><\/div><\/div>");
+  }
+  else{      
+  document.write('<div class=\"menuOFF\"><div class=\"menuOFFgauche\"><\/div><div class=\"menuOFFtxt\">');
+  document.write('<span class="pasdepanier">Votre panier est vide<\/span>');
+  document.write('<\/div><div class=\"menuOFFdroite\"><\/div><\/div>');
+  }
+  if("<#CONST AFFCOMPTE>"=="NON" || "<#LOGICIEL>"=="BCDI"){document.write('<div class="cachediv">');}
+  -->
+  </script>
+
+  <div class="menuOFF">
+    <div class="menuOFFgauche">&nbsp;</div>
+    <div class="menuOFFtxtcompte"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=identification.htm">Mon compte</a></div>
+    <div class="menuOFFdroite">&nbsp;</div>
+  </div>
+  <script type="text/javascript">
+  <!--
+  if("<#CONST AFFCOMPTE>"=="NON" || "<#LOGICIEL>"=="BCDI"){document.write('</div>');}
+  -->
+  </script>
+</div>
+
+<div class="menuseparatsuite">
+  <div class="txt100pr100">&nbsp;</div>
+  <div class="menucalibre">&nbsp;</div>
+  <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-thesaurus.htm" class="menuseparatlienOFF" title="recherche">Recherche par thésaurus</a>
+  <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=VisitTh.htm" class="menuseparatlienON" title="Visualisation">Visualisation du Thésaurus</a>
+  <div class="txt100pr100">&nbsp;</div>
+</div>
+
+  <div class="menuseparatsuite2">
+    <div class="menucalibre">&nbsp;</div>
+    <div class="menuseparatlienvisitth">Mot(s) recherché(s) : <INPUT id="txtRechercher" type="text" name="THESAURUS_MOT"  class="threch" value="<#THESAURUS_MOT>"><INPUT id="SubRechercher" type="submit" value="Rechercher" name="Rechercher"  class="thbout">
+    </div>
+  </div>
+
+  <div class="menuzonedatag">
+    <div class="menuzonedata">
+      <br>
+      <div class="thn1">
+        <INPUT id="Radio1" type="radio" value="ALPHABETIQUE" name="TYPE_LISTE" onClick="javascript:Changeliste(this)"><span class="gris">Liste alphabétique</span><br>
+        <INPUT id="Radio2" type="radio" value="THEMATIQUE" name="TYPE_LISTE" onClick="javascript:Changeliste(this)"><span class="gris">Liste thématique</span><br><br>
+        <INPUT id="Radio3" type="radio" value="PERMUTE" name="TYPE_LISTE" onClick="javascript:Changeliste(this)"><span class="gris">Index Permuté</span><br><br>
+        <#BOUCLE CHAMP="THESAURUS_MOTS" TEXTE="<a href='#' class='thaltern' name='MOTS' title=|?VALEUR?|  onClick='javascript:recopier_title(this)'><script type=|text/javascript|>tabulation(|?VALEUR?|)</script>?VALEUR?</a>">
+      </div>
+      <div class="thn2">
+      
+        <div class="thzone0">
+          <div class="themploi">
+            <div ms_positioning="FlowLayout"><strong>Employé pour :</strong></div>
+              <div ms_1d_layout="TRUE" class="gris">
+              <script type="text/javascript">
+              <!--
+              var vel='abc';
+              if(vel==""){document.write('<div class="legergris">Aucun non-descripteur<\/div>'); cachtxtvide('1');}
+              -->
+              </script>  
+                <#BOUCLE CHAMP="THESAURUS_EMPLOYES" TEXTE="<div name='EMPLOI'>?VALEUR?</div>">
+              <script type="text/javascript">
+              <!--
+              var vel='abc';
+              if(vel==""){cachtxtvide('2');}                
+              -->
+              </script>  
+            </div>
+            
+          </div>    
+        </div>
+      
+        <div class="thzone1">            
+          <div class="thgene">
+            <DIV ms_positioning="FlowLayout" class="thtitre">Générique</DIV>
+            
+            <script type="text/javascript">
+            <!--
+            var vel='abc';
+            if(vel==""){document.write('<div class="legergris">Aucun terme générique<\/div>');cachtxtvide('1');}                
+            -->
+            </script>
+            <div class="thtitregene">
+            <#BOUCLE CHAMP="THESAURUS_GENERIQUES" TEXTE="<a href='#' class='thtitregene' name='GENE' title=|?VALEUR?| onmouseover='this.style.cursor=|hand|' onClick='javascript:recopier_title(this)'><script type=|text/javascript|>premaj(|?VALEUR?|)</script>?VALEUR?</a>">
+            </div>
+            <script type="text/javascript">
+            <!--
+            var vel='abc';
+            if(vel==""){cachtxtvide('2');}                
+            -->
+            </script>
+            
+          </div>
+          
+          <div class="flbas1">&nbsp;</div>
+          
+          <div class="thdes">
+                      <div id="DIV1" ms_positioning="text2D" class="thtitre">Descripteur</DIV>
+            <div ms_positioning="FlowLayout">
+              <div ms_1d_layout="TRUE">  
+                <script type="text/javascript">
+                <!--
+                var vel='abc';
+                if(vel==""){document.write('<div align="center" class="legergris"><br><br>Aucun descripteur<\/div>'); cachtxtvide('1');}                
+                -->
+                </script>
+                <div class="thtitredesc"><#CHAMP THESAURUS DESCRIPTEURS></div>
+                <script type="text/javascript">
+                <!--
+                var vel='abc';
+                if(vel==""){cachtxtvide('2');}
+                -->
+                </script>
+                <script type="text/javascript">
+                <!--
+                if (<#VALEUR NOMBRE_NOTICES>>0)
+                {
+                 if (<#VALEUR NOMBRE_NOTICES>==1)
+                  chn='la fiche associée'
+                  else
+                  chn='les <#VALEUR NOMBRE_NOTICES> fiches associées'
+//               ch='<a href=\"<#URLDLL>?np=<#VALEUR NUMERO_PANIER>&EQ:Descripteurs=~'+SansAccents("<#CHAMP THESAURUS DESCRIPTEURS>")+'~&FICHIERORIGINE=VISITTH.HTM\" class=\"thassociees\">';
+                 ch='<a href=\"<#URLDLL>?np=<#VALEUR NUMERO_PANIER>&EQ:Descripteurs=~'+escape("<#CHAMP THESAURUS DESCRIPTEURS>")+'~&FICHIERORIGINE=VISITTH.HTM\" class=\"thassociees\">';
+                  ch+='Voir '+chn+'';
+                  ch+='</a>';
+                }
+                else
+                  ch="" 
+                document.write(ch)
+                -->
+                </script>  
+                        
+              </div>      
+            </div>
+          </div>          
+                    
+          <div class="flbas2">&nbsp;</div>          
+            
+          <div class="thspe">
+            <div ms_positioning="FlowLayout" class="thtitre">Spécifique(s)</div> 
+            <div ms_1d_layout="TRUE" class="thzonespe">
+            <script type="text/javascript">
+            <!--
+            var vel='abc';
+            if(vel==""){document.write('<div align="center" class="legergris"><br><br>Aucun terme spécifique<\/div>'); cachtxtvide('1');}                
+            -->
+            </script>  
+                <#BOUCLE CHAMP="THESAURUS_SPECIFIQUES" TEXTE="<a href='#' id='SelTS' name='SelTS' onClick='javascript:recopier_title(this)' title=|?VALEUR?|>?VALEUR?</a>">
+            <script type="text/javascript">
+            <!--
+            var vel='abc';
+            if(vel==""){cachtxtvide('2');}                
+            -->
+            </script>                         
+                      </div>
+             
+          </div>
+        </div>
+
+        
+        <div class="thzone2">
+                  
+          <div class="flbas3">&nbsp;</div>  
+          
+          <div class="thaussi">
+            <div ms_positioning="FlowLayout"><b>Voir aussi :</b></div>
+            <div ms_1d_layout="TRUE" class="thzonespe">
+            <script type="text/javascript">
+            <!--
+            var vel='abc';
+            if(vel==""){document.write('<div class="legergris">Aucun terme associé<\/div>'); cachtxtvide('1');}
+            -->
+            </script>
+              <#BOUCLE CHAMP="THESAURUS_ASSOCIES" TEXTE="<a href='#' name='ASSO' title=|?VALEUR?| onClick='javascript:recopier_title(this)'> ?VALEUR?</a>">
+            <script type="text/javascript">
+            <!--
+            var vel='abc';
+            if(vel==""){cachtxtvide('2');}
+            -->
+            </script>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+<div class="menuzonedatafooter">
+  <div class="menuzonedatafooterg"></div>
+  <div class="menuzonedatafooterd"></div>
+</div>    
+</form>
+</body>
+</html>

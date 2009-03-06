@@ -1,0 +1,12 @@
+Source: lcs-bcdiweb
+Section: misc
+Priority: extra
+Maintainer: Simon Cavey <simon.cavey@crdp.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-bcdiweb
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-web
+Description: lcs BCDI support in web interface
+ Ancien plugin BCDI desormais en module
