@@ -9,7 +9,7 @@ install:
 	install -d $(DESTDIR)/etc/apache2/lcs-main
 	install -d $(DESTDIR)/etc/cron.d
 
-	# install web-gui
+	# install web
 	install -d $(DESTDIR)/usr/share/lcs/bcdiweb
 	install -d $(DESTDIR)/usr/share/lcs/bcdiweb/Admin
 	install -d $(DESTDIR)/usr/share/lcs/bcdiweb/Images
@@ -21,10 +21,6 @@ install:
 	# Lcs menu et log
 	install -d $(DESTDIR)/var
 	cp -a var/* $(DESTDIR)/var	
-
-	# install sbin
-	install -d $(DESTDIR)/usr/share/lcs/sbin
-	install -m 755 sbin/* $(DESTDIR)/usr/share/lcs/sbin/
 
 clean:
 
