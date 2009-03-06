@@ -1,6 +1,13 @@
+lcs-bcdiweb (1.91-1~2) unstable; urgency=low
+
+  * bugfix and path change
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sat,  7 Mar 2009 00:28:45 +0100
+
 lcs-bcdiweb (1.91-1~1) unstable; urgency=low
 
+  [ Simon Cavey ]
   * Initial release
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri,  6 Mar 2009 12:10:27 +0100
+ -- simc <simc@etchdev32>  Sat,  7 Mar 2009 00:28:37 +0100
 
