@@ -8,7 +8,7 @@ install:
 	install -d $(DESTDIR)/etc/apache2
 	install -d $(DESTDIR)/etc/apache2/lcs-main
 	install -d $(DESTDIR)/etc/cron.d
-
+	cp -a conf/* $(DESTDIR)/etc
 	# install web
 	install -d $(DESTDIR)/usr/share/lcs/bcdiweb
 	install -d $(DESTDIR)/usr/share/lcs/bcdiweb/Admin

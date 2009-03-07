@@ -1,3 +1,9 @@
+lcs-bcdiweb (1.91-1~5) unstable; urgency=low
+
+  * fix Makefile
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sat,  7 Mar 2009 11:15:41 +0100
+
 lcs-bcdiweb (1.91-1~4) unstable; urgency=low
 
   * rsync for windows and image path fix
