@@ -4,7 +4,7 @@ require ("en-tete.php");
 
 <H1>Installation du m&eacute;canisme de r&eacute;plication sur le serveur BCDI</H1>
 <UL>
-<LI>T&eacute;l&eacute;chargez le <A HREF="Admin/cwRsync_Server_2.0.10.3001_Installer.exe">programme d'installation</A> du programme de synchronisation</LI>
+<LI>T&eacute;l&eacute;chargez le <A HREF="cwRsync_Server_2.0.10.3001_Installer.exe">programme d'installation</A> du programme de synchronisation</LI>
 <LI>Lancez l'installationi en validant les choix par d&eacute;faut</LI>
 <LI>Editez le fichier <CODE>C:\Program Files\cwRsyncServer\rsyncd.conf</CODE> &agrave; l'aide du bloc notes</LI>
 <LI>Placez-y le contenu suivant
