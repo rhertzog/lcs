@@ -22,6 +22,7 @@ set -e
 case "$1" in
     purge|remove)
 	rm -r /home/BcdiPlug
+	mysql -e "DELETE FROM lcs_db.applis WHERE applis.id = 38 LIMIT 1"
     ;;
 
     *)

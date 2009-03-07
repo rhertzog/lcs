@@ -1,3 +1,9 @@
+lcs-bcdiweb (1.91-1~3) unstable; urgency=low
+
+  * Add mysql entry
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sat,  7 Mar 2009 02:46:12 +0100
+
 lcs-bcdiweb (1.91-1~2) unstable; urgency=low
 
   * bugfix and path change
