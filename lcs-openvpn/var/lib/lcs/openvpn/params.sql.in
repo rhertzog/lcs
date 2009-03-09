@@ -28,7 +28,8 @@ INSERT INTO `params` (`id`, `name`, `value`, `srv_id`, `descr`, `cat`) VALUES
 (102, 'vpnport', '@@VPNPORT@@', 0, 'Port pour openvpn', 11),
 (103, 'vpncert', '@@CERTNAME@@', 0, 'nom du certificat serveur openvpn', 11),
 (104, 'vpndh', '@@DH@@', 0, 'taille de hashage (RSA)', 11),
-(105, 'vpnvlan', '@@VPNVLAN@@', 0, 'activer la propagation des vlans par le vpn', 11);
-(106, 'vpnconnexions', '@@VPNCONNEXIONS@@', 0, 'Nombre de connexions sumultannees sur le vpn', 11);
+(105, 'vpnvlan', '@@VPNVLAN@@', 0, 'activer la propagation des vlans par le vpn', 11),
+(106, 'vpnconnexions', '@@VPNCONNEXIONS@@', 0, 'Nombre de connexions sumultannees sur le vpn', 11),
+(107, 'vpnclienttoclient', '@@VPNCLIENTTOCLIENT@@', 0, 'authorise les connexions entre les clients du vpn', 11);
 
 

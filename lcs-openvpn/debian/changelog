@@ -1,3 +1,14 @@
+lcs-openvpn (2.1-1~1) unstable; urgency=low
+
+  * fix sql params insert
+  * Add mysql client-to-client params
+  * correct mysql max-clients params
+  * pre-release reconfig script
+  * update initial config
+  * add ipcalc depends for vlan calculs
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 10 Mar 2009 01:36:10 +0100
+
 lcs-openvpn (0.9-1~3) unstable; urgency=low
 
   * Add User mail

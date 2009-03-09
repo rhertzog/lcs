@@ -20,16 +20,13 @@ route @@VPNNET@@ @@VPNNETMASQ@@
 push "route @@VPNNET@@ @@VPNNETMASQ@@"
 push "route @@NETWORK@@ @@NETMASK0@@"
 ; Configuration options
-;push "route @@VLAN1@@ 255.255.255.0"
-;push "route @@VLAN2@@ 255.255.255.0"
-;push "route @@VLAN3@@ 255.255.255.0"
 ;ccd-exclusive
 ;client-to-client
 client-config-dir ccd
 keepalive 10 120
 comp-lzo
 cipher BF-CBC
-max-clients 15
+max-clients @@VPNCONNEXIONS@@
 user nobody
 group nogroup
 chroot /etc/openvpn

@@ -22,6 +22,7 @@ HOSTNAME=`hostname`
 FULLDOMAINE=`hostname -f`
 VLAN=0
 VPNCONNEXIONS=10
+VPNCLIENTTOCLIENT=0
 CHECK=`route -n |grep $VPNNET |wc -l`
 
 function veriffreesub () {
@@ -45,6 +46,7 @@ sed -e "s|@@VPNPORT@@|$VPNPORT|g" \
 -e "s|@@DH@@|"$DH"|g" \
 -e "s|@@VPNVLAN@@|"$VLAN"|g" \
 -e "s|@@VPNCONNEXIONS@@|"$VPNCONNEXIONS"|g" \
+-e "s|@@VPNCLIENTTOCLIENT@@|"$VPNCLIENTTOCLIENT"|g \
 /var/lib/lcs/openvpn/params.sql.in > /var/lib/lcs/openvpn/params.sql
 
 mysql lcs_db < /var/lib/lcs/openvpn/params.sql
@@ -65,6 +67,7 @@ sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
 -e "s|@@CERT@@|"$HOSTNAME"|g" \
 -e "s|@@NETWORK@@|"$NETWORK"|g" \
 -e "s|@@NETMASK0@@|"$NETMASK0"|g" \
+-e "s|@@VPNCONNEXIONS@@|"$VPNCONNEXIONS"|g" \
 /var/lib/lcs/openvpn/openvpn.conf.in > /etc/openvpn/openvpn.conf
 
 ## creation fichier de config openssl.cnf
