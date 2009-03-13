@@ -3,6 +3,8 @@ lcs-monlcs (2.1-2~1)  UNRELEASED; urgency=low
   * Correct changelog with section UNRELEASED
    
   [ Sebastien Tack ]
+  * adding flv and geogebra modules
+  * prepare the academic export/import 
   * update of Snoopy class for magpieRSS
   * div user too big and then overlap on right menu button - correcting
     
