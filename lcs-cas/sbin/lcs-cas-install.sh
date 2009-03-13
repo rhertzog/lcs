@@ -4,13 +4,9 @@
 # 
 # Get LCS params in lcs_db
 function get_lcsdb_params() {
-	PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
-	echo "$PARAMS"
+    PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
+    echo "$PARAMS"
 }
-#
-# Gem rubycas-lcs version to install
-#
-VER="0.7.1.1"
 #
 # rubycas-lcs configuration and path
 #
@@ -74,22 +70,25 @@ apt-get -y install ruby1.8-dev build-essential libmysqlclient15-dev
 # Install gems 
 #
 gem install picnic activerecord ruby-net-ldap activerecord mysql
-if [ -e rubycas-lcs-$VER.gem  ]; then
-  rm rubycas-lcs-$VER.gem
+if [ -e rubycas-lcs-latest.gem  ]; then
+  rm rubycas-lcs-latest.gem
 fi
-wget http://lcs.crdp.ac-caen.fr/gems/rubycas-lcs-$VER.gem
-if [ -e rubycas-lcs-$VER.gem  ]; then
-  gem install rubycas-lcs-$VER.gem
+wget http://lcs.crdp.ac-caen.fr/gems/rubycas-lcs-latest.gem
+if [ -e rubycas-lcs-latest.gem  ]; then
+    gem install rubycas-lcs-latest.gem
+    VER=`gem list | grep rubycas-lcs | cut -d '(' -f 2 | cut -d ',' -f 1 | cut -d ')' -f 1`
+    mv rubycas-lcs-latest.gem rubycas-lcs-$VER.gem
 else
-  echo "ERROR no rubycas-lcs-$VER gem to install !"
+  echo "ERROR no rubycas-lcs-latest gem to install !"
   exit 1
 fi
 #
 #
 #
-adduser  $USERRUN --disabled-password --gecos 'CAS Server Account,,,' --shell /bin/bash --no-create-home --home $USERHOME
-#mkdir $USERHOME
-mkdir $CONF
+if [ `getent passwd $USERRUN | wc -l` = "0" ]; then
+    adduser  $USERRUN --disabled-password --gecos 'CAS Server Account,,,' --shell /bin/bash --no-create-home --home $USERHOME
+fi
+mkdir -p $CONF
 cp /usr/lib/ruby/gems/1.8/gems/rubycas-lcs-$VER/config.example.yml  $CONF/config.yml
 #
 # LCSMGR PASS
@@ -160,3 +159,4 @@ apt-get -y remove --purge binutils build-essential cpp cpp-4.1 dpkg-dev g++ g++-
 # Start rubycas-lcs service
 #
 invoke-rc.d rubycas-lcs start
+exit 0
