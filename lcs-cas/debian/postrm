@@ -14,7 +14,9 @@ case "$1" in
         #
         # Stop CAS service
         #
-        invoke-rc.d rubycas-lcs stop
+        if [ -e /etc/init.d/rubycas-lcs ]; then
+            invoke-rc.d rubycas-lcs stop
+        fi
         #
         # Desactivate lcs log2cas
         #
