@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<geogebra format="3.01">
+<gui>
+	<show algebraView="true" auxiliaryObjects="false" algebraInput="true" cmdList="true"/>
+	<splitDivider loc="250" locVertical="400" horizontal="true"/>
+	<font  size="12"/>
+</gui>
+<euclidianView>
+	<size  width="639" height="534"/>
+	<coordSystem xZero="215.0" yZero="315.0" scale="50.0" yscale="50.0"/>
+	<evSettings axes="true" grid="false" pointCapturing="3" pointStyle="0" rightAngleStyle="1"/>
+	<bgColor r="255" g="255" b="255"/>
+	<axesColor r="0" g="0" b="0"/>
+	<gridColor r="192" g="192" b="192"/>
+	<lineStyle axes="1" grid="10"/>
+	<axis id="0" show="true" label="" unitLabel="" tickStyle="1" showNumbers="true"/>
+	<axis id="1" show="true" label="" unitLabel="" tickStyle="1" showNumbers="true"/>
+</euclidianView>
+<kernel>
+	<continuous val="false"/>
+	<decimals val="2"/>
+	<angleUnit val="degree"/>
+	<coordStyle val="0"/>
+</kernel>
+<construction title="toto" author="MrT" date="">
+<element type="point" label="A">
+	<show object="true" label="true"/>
+	<objColor r="0" g="0" b="255" alpha="0.0"/>
+	<labelMode val="0"/>
+	<animation step="0.1"/>
+	<fixed val="false"/>
+	<breakpoint val="false"/>
+	<coords x="1.0" y="2.0" z="1.0"/>
+	<coordStyle style="cartesian"/>
+	<pointSize val="3"/>
+</element>
+<element type="point" label="B">
+	<show object="true" label="true"/>
+	<objColor r="0" g="0" b="255" alpha="0.0"/>
+	<labelMode val="0"/>
+	<animation step="0.1"/>
+	<fixed val="false"/>
+	<breakpoint val="false"/>
+	<coords x="-1.7" y="-1.78" z="1.0"/>
+	<coordStyle style="cartesian"/>
+	<pointSize val="3"/>
+</element>
+<element type="point" label="C">
+	<show object="true" label="true"/>
+	<objColor r="0" g="0" b="255" alpha="0.0"/>
+	<labelMode val="0"/>
+	<animation step="0.1"/>
+	<fixed val="false"/>
+	<breakpoint val="false"/>
+	<coords x="1.58" y="-1.6" z="1.0"/>
+	<coordStyle style="cartesian"/>
+	<pointSize val="3"/>
+</element>
+<command name="Line">
+	<input a0="A" a1="C"/>
+	<output a0="a"/>
+</command>
+<element type="line" label="a">
+	<show object="true" label="true"/>
+	<objColor r="0" g="0" b="0" alpha="0.0"/>
+	<labelMode val="0"/>
+	<breakpoint val="false"/>
+	<coords x="3.6" y="0.5800000000000001" z="-4.76"/>
+	<lineStyle thickness="2" type="0"/>
+	<eqnStyle style="implicit"/>
+</element>
+<command name="Line">
+	<input a0="B" a1="C"/>
+	<output a0="b"/>
+</command>
+<element type="line" label="b">
+	<show object="true" label="true"/>
+	<objColor r="0" g="0" b="0" alpha="0.0"/>
+	<labelMode val="0"/>
+	<breakpoint val="false"/>
+	<coords x="-0.17999999999999994" y="3.2800000000000002" z="5.532400000000001"/>
+	<lineStyle thickness="2" type="0"/>
+	<eqnStyle style="implicit"/>
+</element>
+<command name="Line">
+	<input a0="B" a1="A"/>
+	<output a0="c"/>
+</command>
+<element type="line" label="c">
+	<show object="true" label="true"/>
+	<objColor r="0" g="0" b="0" alpha="0.0"/>
+	<labelMode val="0"/>
+	<breakpoint val="false"/>
+	<coords x="-3.7800000000000002" y="2.7" z="-1.6199999999999999"/>
+	<lineStyle thickness="2" type="0"/>
+	<eqnStyle style="implicit"/>
+</element>
+</construction>
+</geogebra>
