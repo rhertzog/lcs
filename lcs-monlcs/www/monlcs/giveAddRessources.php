@@ -112,6 +112,7 @@ echo "<table><tr><td><div onclick=javascript:viewUrl2(); >$view_img</div></td><t
 ."<tr><td colspan=2><input type=checkbox id=statut  onclick=javascript:checkStatus(); />&nbsp;Visible par tous (publique)</td></tr>"
 ."<tr><td colspan=2><input type=checkbox id=statutP onclick=javascript:checkStatusP();  />&nbsp;Visible par profs/administratifs</td></tr>"
 ."<tr><td colspan=2><input type=checkbox id=RSS  /> La ressource est un flux RSS</td></tr></table>"
+//."<tr><td colspan=2><input type=checkbox id=siteTV  /> La ressource est une vid&eacute;o siteTV <br /> &nbsp;(mettre le jeton de la vid&eacute;o dans la case URL<br />&nbsp; example: 0523.0026.00 )</td></tr></table>"
 ."<input type=\"hidden\" name=\"filename\" id=\"filename\">";
 ?>
 

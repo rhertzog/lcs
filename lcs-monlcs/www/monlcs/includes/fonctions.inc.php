@@ -533,4 +533,66 @@ exit();
 }
 
 
+function patchUrl($url,$base) {
+	
+	$base = substr($base,0,-1);
+	$array_test = explode('/',$url);
+	
+	if (eregi('http',$array_test[0])) {
+		return(implode('/',$array_test));
+		}
+
+	if ($array_test[0] == '..' || $array_test[0] == null ) {
+		$array_test[0] = $base;
+		return(implode('/',$array_test));
+		}
+
+	
+
+	
+}
+
+function patchToXml2($string) {
+	return htmlentities($string, ENT_QUOTES, 'UTF-8');
+}
+
+function patchToXml($in_string) {
+                $str = $in_string;
+		$str = ereg_replace('&amp;', '&', $str);
+               
+                $str = ereg_replace('&deg;', '&#176;', $str);
+                $str = ereg_replace('&nbsp;', '&#160;', $str);
+                $str = ereg_replace('&ccedil;', '&#231;', $str);
+
+                $str = ereg_replace('&agrave;',  '&#224;', $str);
+                $str = ereg_replace('&acirc;',  '&#226;', $str);
+                $str = ereg_replace('&auml;',  '&#228;', $str);
+
+                $str = ereg_replace('&egrave;', '&#232;', $str);
+                $str = ereg_replace('&eacute;', '&#233;', $str);
+                $str = ereg_replace('&ecirc;', '&#234;', $str);
+                $str = ereg_replace('&euml;', '&#235;', $str);
+
+                $str = ereg_replace('&icirc;', '&#238;', $str);
+                $str = ereg_replace('&iuml;', '&#239;', $str);
+
+                $str = ereg_replace('&ocirc;', '&#244;', $str);
+                $str = ereg_replace('&ouml;', '&#246;', $str);
+
+                $str = ereg_replace('&ugrave;', '&#249;', $str);
+                $str = ereg_replace('&ucirc;', '&#251;', $str);
+                $str = ereg_replace('&uuml;', '&#252;', $str);
+
+                $str = ereg_replace('<', '&lt;', $str);
+                $str = ereg_replace('>', '&gt;', $str);
+                $str = ereg_replace("'", "&#92;&#39;", $str);
+                $str = ereg_replace('"', "&#34;", $str);
+                $str = ereg_replace('=', '&#61;', $str);
+		$str = ereg_replace('&', '&amp;', $str);
+
+                Return($str);
+        }
+
+
+
 ?>

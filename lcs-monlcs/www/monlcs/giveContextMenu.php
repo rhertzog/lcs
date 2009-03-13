@@ -33,6 +33,11 @@ $content2 .="<div onclick=javascript:giveRessources('$id'); class=menuitems titl
 
 }
 
+//if ($id == 'import_acad') {
+//	$content2 .="<div onclick=javascript:fetchScen(); class=menuitems title=Importer_ce_sc&#233;nario>Importer ce sc&#233;nario.</div>";
+//	die(stringForJavascript($content2));
+
+//}
 
 if (is_scenarii($id)) {
 	$content2 .="<div onclick=javascript:showTuto(); class=menuitems title=Tutoriels>Tutoriels</div>";
@@ -55,8 +60,14 @@ if (!eregi('perso',$id) && !eregi('rss',$id) || is_scenarii($id)) {
 }
 
 
-if (is_scenarii($id)) 
+if (is_scenarii($id)) {
 	$content2 .="<div onclick=javascript:scenario('$id'); class=menuitems title=Sc&eacute;nario>Cr&eacute;er un nouveau sc&eacute;nario</div>";
+#########################################################################################################################################################################
+# Ajout pour Publication ACAD
+
+	//$content2 .="<div onclick=javascript:scen_acad_pub(); class=menuitems title=Publication&nbsp;acad&eacute;mique>Publication&nbsp;acad&eacute;mique</div>";
+#########################################################################################################################################################################
+	}
 	 
 if (($ML_Adm =='Y') && ($id != 'scenario_choix') && (!is_perso_tab($id)) && !eregi('perso',$id))
 	$content2 .="<div onclick=javascript:publish('$id'); class=menuitems title=\"Figer\">Figer des ressources !</div>";

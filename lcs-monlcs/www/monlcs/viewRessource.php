@@ -63,7 +63,7 @@ $content .= "'width=$width"."px".",height=$height"."px".",left=$posx"."px".",top
 $content .= "resize=1,scrolling=1,center=0'";
 $content .= ");";
 
-
+$content .= "fixZindex(ajaxWind$id);";
 
 }
 print stringForJavascript($content);

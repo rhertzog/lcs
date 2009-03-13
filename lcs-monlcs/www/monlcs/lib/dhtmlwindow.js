@@ -429,6 +429,12 @@ function OpenWin(fen){
 				if (lien != ' rien') {
 					window.frames["_iframe-"+parent.id].location=lien;
 					parent.setSize(640,480);
+					var mZ = maxZindex()+1;
+					parent.style.zIndex = mZ;
+					parent.zIndexValue = mZ;
+					parent.onmousedown = function() {
+						return true;
+					}
 				}
 					
 			}});	

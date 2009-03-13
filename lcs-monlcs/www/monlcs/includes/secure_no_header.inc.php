@@ -5,6 +5,7 @@
  require_once("$BASEDIR/Annu/includes/ihm.inc.php");
  define('ACCUEIL_LCS',"../../lcs/auth.php");
  require_once('config.inc.php');
+ require_once('config_acad.inc.php');
  require_once('fonctions.inc.php');
  list ($idpers,$uid)= isauth();
  if ($idpers == "0")

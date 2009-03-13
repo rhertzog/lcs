@@ -83,7 +83,17 @@
 
 	function check_vignette() {
     
-   		if (vignette_mode == 'rien') {
+		//if ($('siteTV').checked) {
+		//	var urlView = 'http://www.lesite.tv/g_images/298_175/'+$('urlAdd').value+'.jpg';
+		
+              	//	var ajaxWindCmd6=dhtmlwindow.open('ajaxWindCmd6','iframe',urlView,'Miniature','width=250px,height=200px,left=250px,top=150px,resize=1,scrolling=1,center=0');	
+		//	pretty_cmd(ajaxWindCmd6);
+ 			
+
+		//	return true;
+		//}
+
+		if (vignette_mode == 'rien') {
 			alert('Aucune vignette');
        		return true;
 		}
@@ -407,6 +417,12 @@
 
 	function addUrl() {
 
+		if ($('urlAdd').value == '') {
+			alert('Le champ Url est vide!');
+			return true;
+		}
+
+
 		var urlV = 'null';
 		if (vignette_mode == 'rien')
 			urlV = 'null';
@@ -415,15 +431,21 @@
 		if ((vignette_mode == 'upload') && ($('filename').value != ''))
 			urlV =  escape('./vignettes/'+$('filename').value);
 		
-
-		var params = '?url='+escape($('urlAdd').value)+'&titre='+escape(cleanaccent($('titreAdd').value))+'&statut='+$('statut').checked+'&rss='+$('RSS').checked+'&url_vignette='+urlV;
+		//var isSiteTV = $('siteTV').checked;
+		var params;
+		//if (isSiteTV)
+		//	params = '?sitetv='+$('urlAdd').value+'&url='+escape('/lcs/includes/cas_sitetv2.php?vid='+($('urlAdd').value));
+		//else
+			params = '?sitetv=0&url='+escape($('urlAdd').value);
+		params += '&titre='+escape(cleanaccent($('titreAdd').value))+'&statut='+$('statut').checked+'&rss='+$('RSS').checked+'&url_vignette='+urlV;
 		params += '&descrAdd='+escape(cleanaccent($('descrAdd').value));
 		params += '&statutP='+$('statutP').checked;
-
+		
+		
 		var ajax0 = new Ajax.Request('addRessources.php', { method: 'post', parameters: params, onComplete: function(requester) {
-       		alert(requester.responseText);
+       			alert(requester.responseText);
 			giveRessources(tab_active);	
-       	}});
+       		}});
 	}
 	
 
@@ -1030,8 +1052,27 @@
 	}
 
 	function viewUrl2() {
-		var lurl = escape($('urlAdd').value);
-		var ltitre = escape(cleanaccent($('titreAdd').value));
+		var lurl;
+		//if ($('siteTV').checked)
+		//	lurl = escape('/lcs/includes/cas_sitetv2.php?vid='+$('urlAdd').value);
+
+		//else
+			lurl = escape($('urlAdd').value);
+		
+		//patch videos en flv
+		var trouveFlv = /\.flv$/;
+		if (trouveFlv.exec(lurl)) {
+			lurl = escape('/monlcs/modules/flv/flvplayer.swf?file='+$('urlAdd').value);
+		}
+		
+		//patch videos en ggb
+		var trouveGgb = /\.ggb$/;
+		if (trouveGgb.exec(lurl)) {
+			lurl = escape('/monlcs/modules/geogebra/viewer.php?ggb='+$('urlAdd').value);
+		}
+
+		
+        	var ltitre = escape(cleanaccent($('titreAdd').value));
 		var ajaxWindCmd3=dhtmlwindow.open('ajaxWindCmd3','iframe',unescape(lurl),unescape(ltitre),'width=410px,height=250px,left=5px,top=60px,resize=1,scrolling=1,center=0');	
 		pretty_cmd(ajaxWindCmd3);
 	}
@@ -1111,8 +1152,23 @@
 		var mZ = maxZindex()+5;
 		d.style.zIndex = mZ;
 		d.zIndexvalue = mZ;
+		d.onmousedown = function() {
+			return true;
+		}
 		
 	}
+
+	function fixZindex(d) {
+		
+		var mZ = maxZindex()+1;
+		d.style.zIndex = mZ;
+		d.zIndexvalue = mZ;
+		d.onmousedown = function() {
+			return true;
+		}
+		
+	}
+
 
 	function desinhibit_close(d) {
 		var sourceobj =$(d).controls;

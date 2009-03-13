@@ -3,7 +3,6 @@ include "includes/secure_no_header.inc.php";
 
 $content2 ="";
 
-
 $sqlx = "SELECT * from `ml_zones` where user='all' or user='$uid' order by rang ;";
 
 $curseur=mysql_query($sqlx) or die("$sql requete invalide");
@@ -47,6 +46,11 @@ if (!is_eleve($uid)  && ($u == 'all') && ($nom_onglet != 'Sc&eacute;narios')) {
 	$content2.="	<a href=# id=perso".($id-1)." class=tabs >Proposer</a>";
 
 }
+//if (!is_eleve($uid)  && ($u == 'all') && ($nom_onglet == 'Sc&eacute;narios')) {
+//	$content2.="	<a href=# id=import_acad class=tabs >Importer du d&#233;pot acad&#233;mique</a>";
+//}
+
+
 
 $content2.="</div>";
 

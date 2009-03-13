@@ -17,6 +17,11 @@
 		die(stringForJavascript($content));
 	}
 
+	if ($tab == 'import_acad') {
+		$content .="liste_acad();";
+		die(stringForJavascript($content));
+	}
+
 	if (eregi('perso',$tab) ) {
 		if (!is_scenarii($tab))
 			$content .= "propose();";

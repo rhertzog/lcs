@@ -43,8 +43,15 @@ if (!is_eleve($uid) && ( ($id == 'bureau') || (is_scenarii($id)) || ($id == 'vs'
 }
 
 
-if (is_scenarii($id))
+if (is_scenarii($id)) {
 	$content2 .="<div onclick=javascript:scenario('$id'); class=menuitems title=Sc&eacute;nario>Cr&eacute;er un nouveau sc&eacute;nario</div>";
+#########################################################################################################################################################################
+# Ajout pour Publication ACAD
+
+	//$content2 .="<div onclick=javascript:scen_acad_pub(); class=menuitems title=Publication&nbsp;acad&eacute;mique>Publication&nbsp;acad&eacute;mique</div>";
+#########################################################################################################################################################################
+
+	}
 
 if (($ML_Adm ==  'Y') && ($id != 'scenario_choix') )
 	$content2 .="<div onclick=javascript:publish('$id'); class=menuitems title=Figer>Figer des ressources !</div>";
