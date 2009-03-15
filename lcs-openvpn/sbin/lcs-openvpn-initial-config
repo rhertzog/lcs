@@ -19,7 +19,7 @@ VPNNETMASQ=255.255.255.0
 DH=1024
 VPNPORT=1193
 HOSTNAME=`hostname`
-FULLDOMAINE=`hostname -f`
+FULLDOMAINE=`hostname -f`
 VLAN=0
 VPNCONNEXIONS=10
 VPNCLIENTTOCLIENT=0
@@ -46,7 +46,7 @@ sed -e "s|@@VPNPORT@@|$VPNPORT|g" \
 -e "s|@@DH@@|"$DH"|g" \
 -e "s|@@VPNVLAN@@|"$VLAN"|g" \
 -e "s|@@VPNCONNEXIONS@@|"$VPNCONNEXIONS"|g" \
--e "s|@@VPNCLIENTTOCLIENT@@|"$VPNCLIENTTOCLIENT"|g \
+-e "s|@@VPNCLIENTTOCLIENT@@|"$VPNCLIENTTOCLIENT"|g" \
 /var/lib/lcs/openvpn/params.sql.in > /var/lib/lcs/openvpn/params.sql
 
 mysql lcs_db < /var/lib/lcs/openvpn/params.sql
@@ -110,3 +110,4 @@ fi
 ## On corrige les droits
 chown -R www-data /var/log/openvpn
 chown -R www-data /usr/share/lcs/openvpn/templates_c/
+
