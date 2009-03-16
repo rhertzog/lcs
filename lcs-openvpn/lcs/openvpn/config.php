@@ -17,7 +17,7 @@ function mktable($title, $content) {
 if (!isset($_POST['submit'])) {
         echo "Parametre de Lcs-OpenVPN ";
         echo "<table border=\"0\"><form method=post>";
-        $result=mysql_query("SELECT * from lcs_db.params WHERE id between 100 and 106 ORDER BY `id`");
+        $result=mysql_query("SELECT * from lcs_db.params WHERE id between 100 and 107 ORDER BY `id`");
         if ($result) {
                 while ($r=mysql_fetch_array($result)) {
                         echo "<tr><td colspan=\"2\">".$r["descr"]." (<em><font color=\"red\">".$r["name"]."</font></em>)</td>";
@@ -42,7 +42,14 @@ if (isset($_POST['submit'])) {
 	$clienttoclient=$_POST['form_vpnclienttoclient'];
 	$vpnconnexion=$_POST['form_vpnconnexions'];
 	exec("sudo -H /usr/share/lcs/sbin/lcs-openvpn-reconfig $vpnport $vpnnet $vpnnetmasq $vpndh $vpnvlan $vpnconnexions $clienttoclient $vpncert");
-        echo "$vpnnet, $vpnnetmasq, $vpnport, $vpncert, $vpndh, $vpnvlan $vpnconnexions";
+        echo " port : $vpnport </br>
+	netwok : $vpnnet </br>
+	netmasq : $vpnnetmasq </br>
+	certif : $vpncert </br>
+	dh :  $vpndh </br>
+	vlan : $vpnvlan </br>
+	nb de connexions : $vpnconnexions </br> 
+	connexion entre les clients : $clienttoclient </br>";
 }
 
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");

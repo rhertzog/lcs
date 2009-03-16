@@ -1,3 +1,9 @@
+lcs-openvpn (2.1-1~4) unstable; urgency=low
+
+  * fix params 107
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 16 Mar 2009 14:20:11 +0100
+
 lcs-openvpn (2.1-1~3) unstable; urgency=low
 
   * enable configuration interface
