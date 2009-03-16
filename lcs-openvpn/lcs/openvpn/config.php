@@ -40,7 +40,7 @@ if (isset($_POST['submit'])) {
         $vpndh==$_POST['form_vpndh'];
         $vpnvlan=$_POST['form_vpnvlan'];
 	$clienttoclient=$_POST['form_vpnclienttoclient'];
-	$vpnconnexion=$_POST['form_vpnconnexions'];
+	$vpnconnexions=$_POST['form_vpnconnexions'];
 	exec("sudo -H /usr/share/lcs/sbin/lcs-openvpn-reconfig $vpnport $vpnnet $vpnnetmasq $vpndh $vpnvlan $vpnconnexions $clienttoclient $vpncert");
         echo " port : $vpnport </br>
 	netwok : $vpnnet </br>

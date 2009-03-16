@@ -1,3 +1,9 @@
+lcs-openvpn (2.1-1~5) unstable; urgency=low
+
+  * add missing S
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 16 Mar 2009 16:04:58 +0100
+
 lcs-openvpn (2.1-1~4) unstable; urgency=low
 
   * fix params 107
