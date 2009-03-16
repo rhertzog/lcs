@@ -1,3 +1,10 @@
+lcs-web (2.1-2) LcsXP; urgency=low
+
+  * add lcsVersion.sh
+  * remove tilde to testing release
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 16 Mar 2009 10:23:38 +0100
+
 lcs-web (2.1-2~4) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
