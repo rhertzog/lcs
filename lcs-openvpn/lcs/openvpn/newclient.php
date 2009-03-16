@@ -49,8 +49,8 @@ else {
 	echo "<div align=center>";
         $login=$_POST['login'];
         exec("sudo /usr/share/lcs/sbin/lcs-openvpn-generclient.sh $login");
-        echo "g&eacute;n&eacute;ration du certificat pour ".$login." termin&eacute;";
-        echo "l'utilisateur a re&ccedil;u la proc&eacutedure par e-mail pour utiliser le VPN";
+        echo "g&eacute;n&eacute;ration du certificat pour ".$login." termin&eacute; </br>";
+        echo "l'utilisateur a re&ccedil;u la proc&eacute;dure par e-mail pour utiliser le VPN";
 	echo "</div>";
 }
 

@@ -36,7 +36,6 @@ sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
 -e "s|@@VPNCONNEXIONS@@|"$VPNCONNEXIONS"|g" \
 /var/lib/lcs/openvpn/openvpn.conf.in > /etc/openvpn/openvpn.conf
 
-
 if [ $VLAN = 1 ]; then
 	echo "### Configuration VLAN ###" >> /etc/openvpn/openvpn.conf
 	if [! -z $VLANPEDA1 ]; then

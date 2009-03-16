@@ -32,20 +32,18 @@ if (!isset($_POST['submit'])) {
 
 if (isset($_POST['submit'])) {
         echo "Traitement des modification";
-        echo "le Service openvpn va redemarrer pour prendre en compte les modifications";
-        $vpnnet==$_POST['vpnnet'];
-        $vpnnetmasq==$_POST['vpnnetmasq'];
-        $vpnport==$_POST['vpnport'];
-        $vpncert==$_POST['vpncert'];
-        $vpndh==$_POST['vpndh'];
-        $vpnvlan==$_POST['vpnvlan'];
-	$vpnconnexion==$_POST['vpnconnexions'];
-        #exec("sudo /usr/share/lcs/sbin/lcs-openvpn-reconfig.sh $vpnnet, $vpnnetmasq, $vpnport, $vpncert, $vpndh, $vpnvlan $vpnconnexions");
+        echo "le Service openvpn va redemarrer pour prendre en compte les modifications </br>";
+        $vpnnet=$_POST['form_vpnnet'];
+        $vpnnetmasq=$_POST['form_vpnnetmasq'];
+        $vpnport=$_POST['form_vpnport'];
+        $vpncert=$_POST['form_vpncert'];
+        $vpndh==$_POST['form_vpndh'];
+        $vpnvlan=$_POST['form_vpnvlan'];
+	$clienttoclient=$_POST['form_vpnclienttoclient'];
+	$vpnconnexion=$_POST['form_vpnconnexions'];
+	exec("sudo -H /usr/share/lcs/sbin/lcs-openvpn-reconfig $vpnport $vpnnet $vpnnetmasq $vpndh $vpnvlan $vpnconnexions $clienttoclient $vpncert");
         echo "$vpnnet, $vpnnetmasq, $vpnport, $vpncert, $vpndh, $vpnvlan $vpnconnexions";
-
-
 }
-
 
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");
 ?>
