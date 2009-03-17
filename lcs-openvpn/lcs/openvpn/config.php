@@ -3,6 +3,8 @@
 
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include ("/var/www/Annu/includes/ldap.inc.php");
+include ("/var/www/Annu/includes/ihm.inc.php");
+header_html();
 $msgIntro = "<H1>Gestion LCS OpenVPN</H1>\n";
 list ($idpers, $login)= isauth();
 

@@ -5,37 +5,43 @@ Pour vous connecter au reseau de votre etablissement,
 Si vous etes sous Windows:
 1) Telechargez et installez le client OpenVPN a l'adresse : 
    http://@@FULLDOMAINE@@/openvpn/downloads/
-
 2) Connectez vous sur le LCS, Utilisez l'application Client FTP
    puis dans Documents/vpn
    Telechargez le fichier configuration-vpn.zip
-
 3) Decompressez le contenu du fichier zip dans : 
    c:\Program Files\openvpn\config\
    Accessible dans le menu demarrer sous le nom :
    OpenVPN configuration Directory
-
 4) une fois les fichiers en place, un simple clique droits sur l'icone 
    OpenVPN-GUI situe dans la barre des taches, puis Connect vous ouvre 
    la connexion.
 
 
-Pour plus de detail consulutez la documentation LCS.
+Pour plus de details consultez la documentation LCS.
+http://wwdeb.crdp.ac-caen.fr/LcsDoc/index.php/Installer_et_se_connecter_%C3%A0_lcs-openvpn
+------------------------------
 
 Si vous etes sous Mac OS 10.4 ou supperieur
 
 1) Telechargez et installez le client OpenVPN a l'adresse :
    http://@@FULLDOMAINE@@/openvpn/downloads/Tunnelblick_3.0b10.dmg 
    et installez l'application.
+2) Lancer une fois l'Application pour finir l'installation.
+	Un tunnel doit apparaitre a proximite de l'heure dans la barre de menu.
+Puis quittez en cliquant sur le tunnel puis quitter
 
-2) Connectez vous sur le LCS, Utilisez l'application Client FTP
+3) Connectez vous sur le LCS, Utilisez l'application Client FTP
    puis dans Documents/vpn
    Telechargez le fichier configuration-vpn.zip
 3)  Decompressez le contenu du fichier zip dans :
+	votre espace utilisateur (maison, home))
 	Bibliotheque/openvpn
 	changer le nom de lcs.ovpn par lcs.conf
+	supprimez le fichier openvpn.conf 
 4) Lancer Tunnelblick
 5) Cliquer sur le Tunnel en haut a droite de votre ecran puis connecter lcs
+
+------------------------------
 
 Si vous etes sous Linux Debian ou Ubuntu
 
@@ -54,6 +60,7 @@ Si vous etes sous Linux Debian ou Ubuntu
 	
 Par defaut le vpn sera lance au demarrage de votre ordinateur linux
 
-Pour plus de detail consulutez la documentation LCS.
+Pour plus de details consultez la documentation LCS.
+------------------------------
 
 Bonne Utilisation du VPN.
