@@ -1,0 +1,7 @@
+#!/bin/bash
+echo " Ceci est le script de mise à jour de 0.2 à 0.3 du plugin Cdt";
+mv /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp1
+cat /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp1 | sed -e "s/0.2/0.3/g" > /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp2
+cat /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp2 | sed '/^$VER_PLUG/a\$FLAG_RESTRICT=0;' > /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php
+rm /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp1
+rm /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp2
