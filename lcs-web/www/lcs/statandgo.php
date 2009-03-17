@@ -57,7 +57,7 @@ elseif ( ! isset($urluse) ) {
 }
 if (  ! isset ($module) && ! isset($urluse) ) {
     # Cas des plugins 
-    $query="SELECT chemin, name, value from applis where type='P' order by name";
+    $query="SELECT chemin, name, value from applis where type='P' OR type='N' order by name";
     $result=mysql_query($query);
     if ($result) {
         while ( $r=mysql_fetch_object($result) ) {

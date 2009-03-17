@@ -292,7 +292,7 @@ include ("/var/www/lcs/includes/xoft.php");
 	        setcookie("SQMSESSID","", 0,"/","",0);
 		setcookie("key","", 0,"/squirrelmail/","",0);
 		// Destruction des cookies Plugins LCS
-		$query="SELECT chemin from applis where type='P' and value='1'";
+		$query="SELECT chemin from applis where ( type='P' OR type='N' ) and value='1'";
 		$result=@mysql_query($query);
 		if ($result) {
 			while ($r=@mysql_fetch_object($result)) {

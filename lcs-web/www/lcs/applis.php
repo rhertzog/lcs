@@ -74,7 +74,7 @@ if ( $se3netbios != "" && $se3domain != "" && $smbwebclient ) {
 }
 
 // Liens dynamiques vers les plugins installés 
-$query="SELECT * from applis where type='P' order by name";
+$query="SELECT * from applis where type='P' OR type='N' order by name";
 $result=mysql_query($query);
 if ($result) {
         while ($r=mysql_fetch_object($result)) {
