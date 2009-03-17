@@ -1,0 +1,2 @@
+# Synchro comptes Grr <-> LDAP
+0 0 * * 1,2,3,4,5       www-data    /usr/share/lcs/Plugins/Grr/Admin/synchro_comptes_lcs.sh > /dev/null 2>&1

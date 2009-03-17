@@ -1,0 +1,12 @@
+Source: lcs-grr
+Section: misc
+Priority: optional
+Maintainer: Philippe Leclerc <philippe.leclerc1@ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-grr
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-web
+Description: Install Gestion de ressources on LCS server
+ Gestion de ressources

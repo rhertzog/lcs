@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+#### Variable a positionner en fonction du plugin
+NAMEPLUGIN="Grr"
+####
+#
+PATH2PLUGIN="/usr/share/lcs/Plugins/$NAMEPLUGIN"
+echo "Script d'installation du plugin Grr";
+#
+# Ajout de l'adresse mel d'admin dans la table params
+#
+DOMAIN=`hostname -d`
+
+mysql -e "INSERT INTO grr_plug.grr_utilisateurs VALUES ('admin', 'Administrateur', 'grr', '', 'admin@$DOMAIN', 'administrateur', 'actif', 0, 0, '', '', '','ext');"
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('webmaster_email', 'admin@$DOMAIN');"
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('technical_support_email', 'admin@$DOMAIN');"
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('grr_url', 'http://lcs.$DOMAIN/Plugins/Grr/');"
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('sso_statut', 'lcs');"
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('lcs_statut_prof', 'utilisateur');"
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('lcs_statut_eleve', 'visiteur');"
+
+#mv $PATH2PLUGIN/Admin/lcs-grr /etc/cron.d/
+#
+# Import comptes profs LDAP dans base Grr
+#
+#$PATH2PLUGIN/Admin/synchro_comptes_lcs.sh
+
+#
+#
+# Nettoyage
+#
+rm $PATH2PLUGIN/Admin/install_mysql.sql
+mv $PATH2PLUGIN/Admin/install_mysql.sq $PATH2PLUGIN/Admin/install_mysql.sql

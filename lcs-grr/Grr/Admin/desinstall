@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Script de desinstallation du plugin Grr";
+#rm /etc/cron.d/lcs-grr
