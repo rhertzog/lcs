@@ -1,3 +1,9 @@
+lcs-imap-ssl (2.1-1) LcsXP; urgency=low
+
+  * reduce sed in config
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 17 Mar 2009 16:47:38 +0100
+
 lcs-imap-ssl (2.0-1) LcsXP; urgency=low
 
   * Initial release 
