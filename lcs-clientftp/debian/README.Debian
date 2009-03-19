@@ -1,0 +1,12 @@
+LCS module clientftp pour Debian
+--------------------------------
+-- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+
+USAGE
+
+Le module LCS clientftp est un ensemble de scripts PHP réalisant la fonction explorateur de fichier  via un navigateur web
+il est basé sur basé sur ofb filebrowser. 0.1.7.2 
+
+CONFIGURATION
+
+La configuration du paquet est prise en charge par le script postinst du paquet

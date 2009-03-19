@@ -1,0 +1,7 @@
+lcs-clientftp (2.2~1) LcsXP; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Initial release for svn_builpackage compatibilty
+  * add Makefile
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 Mar 2009 16:44:01 +0100

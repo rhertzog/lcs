@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Modules LCS Clientftp</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <style type="text/css" media="all">@import "../../c/c.css";</style>
+</head>
+<body>
+
+<h1>Documentation Module LCS Clientftp-ofb</h1>
+<h2>Version :</h2>
+
+<ul>
+<li>Paquet module : 2.2~1</li>
+<li> OFB : 0.1.7.2</li>
+<li> Site officiel d'ofb filebrowser <a href="http://sourceforge.net/projects/filebrowser/" title="ofb filbrowser">http://sourceforge.net/projects/filebrowser/</a></li>
+<li>Responsable du projet : Marek Blotny</li>
+<li>E-Mail: marek_bl at users.sourceforge.net</li>
+</ul>
+
+<h3>Limitation des access :</h3>
+<p>Pour limiter l'accès uniquement depuis l'intranet de l'établissement au répertoire <tt class="computeroutput">public_html</tt> ou à l'un de ses sous-répertoires, il est possible de créer une fichier <tt class="computeroutput">.htaccess</tt>.</p>
+
+<h3>Synthaxe du fichier <tt class="computeroutput">.htaccess</tt> :</h3>
+<p>Le fichier <tt class="computeroutput">.htaccess</tt> à déposé dans le répertoire à protéger sera :</p>
+<pre class="programlisting">
+#lcs-restrictions d'acces
+order deny,allow
+deny from all
+allow from @IPLAN@
+errordocument 403 "../Err/403.html"
+</pre>
+
+
+<h4>Comment créer le fichier <tt class="computeroutput">.htaccess</tt> à l'aide de clientftp-ofb :</h4>
+
+<ul>
+    <li>Créer un fichier de nom <tt class="computeroutput">.htaccess.txt</tt></li>
+    <li>Editer le fichier et copier / coller le contenu ci-dessus</li>
+    <li>Renommer le fichier <tt class="computeroutput">.htaccess.txt</tt> en <tt class="computeroutput">.htaccess</tt></li>
+</ul>
+
+
+<h3>Upload d'une archive auto-extractible :</h3>
+<p>Si vous uploadez un fichier de nom  <tt class="computeroutput">lcsofbupload.zip</tt> , celui ci, sera décompressé automatiquement.</p>
+
+</body>
+</html>

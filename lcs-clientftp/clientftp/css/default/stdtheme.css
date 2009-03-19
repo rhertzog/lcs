@@ -1,0 +1,91 @@
+body {	font: 11px Verdana, Arial, sans-serif;
+border: 0px; margin: 0px; padding: 0px; width: 100%; height: 100%; }
+
+.bodyBackground {
+    background: url(/lcs/fdecran/espaceweb.jpg) ghostwhite 80% 10% no-repeat fixed;
+    border-top: 1px solid gray 
+}
+
+div#contentMainFrame { width: 750px; margin-left: auto; margin-right: auto; }
+
+div#bannerDiv { margin-bottom : 20px; margin-top: 5px; 
+border: 0px; border-color: #7D7D7D; border-style: solid; }
+
+div#logoDiv {}
+
+span#title { font-size: 1.2em; font-weight: bold; padding: .75em; color: #AAAAAA; 
+text-align: center; font-family: trebuchet ms, tahoma, verdana, arial, helvetica; }
+
+div#menuDiv { float:right; vertical-align: top; }
+
+div#underBannerDiv {}
+
+div#directoryFormDiv, div#renameFormDiv, div#fileFormDiv, div#uploadFormDiv  { 
+    width: 450px; 
+    margin-left: auto; 
+    margin-right: auto; 
+    padding: 5px; 
+    margin-top: 5px; 
+    margin-bottom: 5px; 
+    background: #C4D1DF; 
+    height:10%;
+}
+
+div#contentIconsDiv { width: 500px; }
+
+div#optionsBorder { width:200px; float:right; margin-left:2px; margin-bottom:5px; padding:3px; }
+div#contentBorder { float:left; padding:3px; }
+
+div#optionsBoxInnerDiv,div#traySelectedEntryActions,div#detailedContentInnerDiv,div#statisticsContentInnerDiv,div#traySelectedEntry,div#entriesTrayInnerDiv, div#trayButtons 
+{ border: solid 1px; border-color: #CCCCCC; }
+
+.title { padding-top: 3px; padding-bottom: 3px; margin-bottom: 0px; font-size: 12px; 
+color: #003399; text-align: center; background-color: #CCCCCC; }
+
+div#detailedContentInnerDiv, div#entriesTrayInnerDiv { text-align: center; padding-top: 10px; padding-bottom: 5px; }
+div#detailedContentInnerDiv ul {text-align: left;}
+div#traySelectedEntryActions { background-color: #F1F1F1; text-align:right; padding-top:2px; padding-bottom:2px; padding-left:5px; padding-right:5px; }
+
+#location { font-size: 12px; font-weight: bold; color: #003399; padding: 5px; margin-bottom: 5px; }
+
+.iconPict {}
+.iconLabel {}
+.iconEntry { float:left; text-align:center; margin-top:2px; margin-bottom:2px; width:83px; height:60px; }
+.button { font-size: 14px; color: white; background-color: gray; border: 0px; }
+.textfield { font-size: 9px; color: #333333; border: solid 1px; border-color: #DBDBDB; }
+.popupMenuItem { width: 90px; border: solid 1px; border-color: #FFFFFF; padding: 4px; background-color: #DBDBDB; }
+
+.entryrow { cursor: pointer; }
+
+div#entriesTrayInnerDiv span {margin-top:-16px; float:left; margin-left:23px; }
+.trayEntry { text-align:left; vertical-align: middle;}
+.trayEntrySelected { text-align:left; background-color:#F1F1F1; vertical-align: middle; }
+
+li { margin-left:-10px;  list-style-type:disc;}
+
+.td75 { width: 65px; text-align: right; padding-right: 5px; }
+
+.td100perc { width: 350px; text-align: left; }
+
+#contentListDiv tr:hover { background-color: #CCCCCC; cursor: pointer; }
+
+a { font-size: 10px; font-weight: bold; color: #003399; text-decoration: none; }
+a:hover { color: #000033; text-decoration: underline; }
+
+#debug { width: 100%; }
+
+#fileContentEditDiv { 
+    text-align: center; 
+    width: 250px; 
+    height: 100px; 
+    vertical-align: middle; 
+    position: absolute;
+    top: 45px; 
+    left: 50px; 
+    margin: 0px; 
+}
+
+#fileContentEditForm textarea {
+    filter:alpha(opacity=80); -moz-opacity:0.8; opacity:0.8;
+    border:solid 1px #CCC;
+}
