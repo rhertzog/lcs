@@ -5,13 +5,22 @@
    Annu/add_user_group.php
    [LCS CoreTeam]
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
    Equipe Tice académie de Caen
-   V 1.4 maj : 08/10/04
+   V 1.4 maj : 20/03/2009
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
+  
+  $new_categorie=$_POST['new_categorie'];
+  $classe_gr=$_POST['classe_gr'];
+  $matiere_gr=$_POST['matiere_gr'];
+  $cours_gr=$_POST['cours_gr'];
+  $equipe_gr=$_POST['equipe_gr'];
+  $autres_gr=$_POST['autres_gr'];
+  $categorie=$_POST['categorie'];
+  $add_user_group=$_POST['add_user_group'];  
+  
 
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
@@ -36,11 +45,12 @@
       }
       // Affichage boite de réaffectation du groupe principal
       if ( $categorie ) {
-      	$html = "<table>\n";
+      	$html = "   <form action='add_user_group.php?uid=$uid' method='post'>\n";
+      	$html .= "<table>\n";
         $html .= " <tr>\n";
-        $html .= " <td><u>Membre de la catégorie</u> :&nbsp;</td>\n";
+        $html .= " <td><u>Membre de la cat&#233;gorie</u> :&nbsp;</td>\n";
         $html .= " <td>\n";
-        $html .= "   <form action='add_user_group.php?uid=$uid' method='post'>\n";
+        
         $html .= "     <select name='new_categorie'>\n";
         if ($categorie == "Administratifs" ) {
         	$html .= "      <option>Administratifs</option>\n";
@@ -62,10 +72,11 @@
 	echo $html;     
       } else {
       // Affichage du menu d'affectation de l'utilisateur a une categorie principal
-        $html = "<table>\n <tr>\n";
-        $html .= "  <td><u>Affectation de l'utilisateur à une catégorie </u> :&nbsp;</td>\n";
+      	$html = "    <form action='add_user_group.php?uid=$uid' method='post'>\n";
+        $html.= "<table>\n <tr>\n";
+        $html .= "  <td><u>Affectation de l'utilisateur &#224; une cat&#233;gorie </u> :&nbsp;</td>\n";
         $html .= "  <td>\n";
-        $html .= "    <form action='add_user_group.php?uid=$uid' method='post'>\n";
+        
         $html .= "      <select name='new_categorie'>\n";
 	$html .= "            <option>Eleves</option>\n";
 	$html .= "            <option>Profs</option>\n";
@@ -174,7 +185,7 @@
          $html .= "    </tr>\n";
          $html .= "    <tr>\n";
          $html .= "      <td>\n";
-         $html .= "        <input type='reset' value='Réinitialiser la sélection'>\n";
+         $html .= "        <input type='reset' value='R&#233;initialiser la s&#233;lection'>\n";
          $html .= "      </td>\n";
       } else {
          $html = "<table>\n";
@@ -184,7 +195,7 @@
       $html .= "      <td >\n";
       $html .= "        <input type='hidden' name='categorie' value='$categorie'>\n";
       $html .= "        <input type='hidden' name='add_user_group' value='true'>\n";
-      $html .= "        <input type='submit' value='Lancer la requête'>\n";
+      $html .= "        <input type='submit' value='Lancer la requ&#234;te'>\n";
       $html .= "      </td>\n";
       $html .= "      <td></td>\n";
       $html .= "    </tr>\n";
@@ -200,23 +211,23 @@
         // Affectation de l'utilisateur à la categorie $new_categorie
         exec("$scriptsbinpath/groupAddUser.pl $uid $new_categorie" ,$AllOutPut,$ReturnValue1);
         if ( $ReturnValue1==0 && $ReturnValue1==0) {
-          echo "L'utilisateur <strong>$uid</strong> a été réaffecté de la catégorie <b>$categorie</b> à la catégorie <b>$new_categorie</b>.</BR></BR>\n";
+          echo "L'utilisateur <strong>$uid</strong> a &#233;t&#233; r&#233;affect&#233; de la cat&#233;gorie <b>$categorie</b> &#224; la cat&#233;gorie <b>$new_categorie</b>.</BR></BR>\n";
         } else {
           echo "<div class=error_msg>
-                    La réaffectation de catégorie $categorie vers $new_categorie de l'utilisateur
-                    <font color='#0080ff'>$uid</font> a échouée
-                    , veuillez contacter <A HREF='mailto:$MelAdminLCS?subject=PB Reaffectation categorie $categorie vers $new_categorie de $uid'>l'administrateur du système</A>
+                    La r&#233;affectation de cat&#233;gorie $categorie vers $new_categorie de l'utilisateur
+                    <font color='#0080ff'>$uid</font> a &#233;chou&#233;
+                    , veuillez contacter <A HREF='mailto:$MelAdminLCS?subject=PB Reaffectation categorie $categorie vers $new_categorie de $uid'>l'administrateur du syst&#232;me</A>
                 </div><BR>\n";
         }
       } elseif ( !$categorie && $new_categorie ) {
         exec("$scriptsbinpath/groupAddUser.pl $uid $new_categorie" ,$AllOutPut,$ReturnValue);
         if ( $ReturnValue==0 ) {
-          echo "L'utilisateur <strong>$uid</strong> a été affecté à la catégorie <b>$new_categorie</b>.</BR></BR>\n";
+          echo "L'utilisateur <strong>$uid</strong> a &#233;t&#233; affect&#233; &#224; la cat&#233;gorie <b>$new_categorie</b>.</BR></BR>\n";
         } else {
           echo "<div class=error_msg>
-                    L'affectation à la catégorie $new_categorie de l'utilisateur
-                    <font color='#0080ff'>$uid</font> à échouée
-                    , veuillez contacter <A HREF='mailto:$MelAdminLCS?subject=PB Affectation categorie $new_categorie de $uid'>l'administrateur du système</A>
+                    L'affectation &#224; la cat&#233;gorie $new_categorie de l'utilisateur
+                    <font color='#0080ff'>$uid</font> a &#233;chou&#233;
+                    , veuillez contacter <A HREF='mailto:$MelAdminLCS?subject=PB Affectation categorie $new_categorie de $uid'>l'administrateur du syst&#232;me</A>
                 </div><BR>\n";
         }
       }
@@ -232,7 +243,7 @@
           exec("$scriptsbinpath/groupAddUser.pl $uid $classe_gr[$loop]" ,$AllOutPut,$ReturnValue);
           echo $classe_gr[$loop]."&nbsp;";
           if ($ReturnValue == 0 ) {
-            echo "<stong><strong>Réussi</strong></strong><BR>";
+            echo "<stong><strong>R&#233;ussi</strong></strong><BR>";
           } else { echo "<font color=\"orange\">Echec</font><BR>"; $err++; }
         }
       }
@@ -242,7 +253,7 @@
           exec("$scriptsbinpath/groupAddUser.pl $uid $matiere_gr[$loop]" ,$AllOutPut,$ReturnValue);
           echo $matiere_gr[$loop]."&nbsp;";
           if ($ReturnValue == 0 ) {
-            echo "<strong>Réussi</strong><BR>";
+            echo "<strong>R&#233;ussi</strong><BR>";
           } else { echo "</strong><font color=\"orange\">Echec</font></strong><BR>"; $err++; }
         }
       }
@@ -252,7 +263,7 @@
           exec("$scriptsbinpath/groupAddUser.pl $uid $cours_gr[$loop]" ,$AllOutPut,$ReturnValue);
           echo $cours_gr[$loop]."&nbsp;";
           if ($ReturnValue == 0 ) {
-            echo "<strong>Réussi</strong><BR>";
+            echo "<strong>R&#233;ussi</strong><BR>";
           } else { echo "</strong><font color=\"orange\">Echec</font></strong><BR>"; $err++; }
         }
       }
@@ -262,7 +273,7 @@
           exec("$scriptsbinpath/groupAddUser.pl $uid $equipe_gr[$loop]" ,$AllOutPut,$ReturnValue);
           echo $equipe_gr[$loop]."&nbsp;";
           if ($ReturnValue == 0 ) {
-            echo "<strong>Réussi</strong><BR>";
+            echo "<strong>R&#233;ussi</strong><BR>";
           } else { echo "</strong><font color=\"orange\">Echec</font></strong><BR>"; $err++; }
         }
       }
@@ -272,7 +283,7 @@
           exec("$scriptsbinpath/groupAddUser.pl $uid $autres_gr[$loop]" ,$AllOutPut,$ReturnValue);
           echo $autres_gr[$loop]."&nbsp;";
           if ($ReturnValue == 0 ) {
-            echo "<strong>Réussi</strong><BR>";
+            echo "<strong>R&#233;ussi</strong><BR>";
           } else { echo "</strong><font color=\"orange\">Echec</font></strong><BR>"; $err++; }
         }
       }
@@ -280,12 +291,12 @@
       // Compte rendu
       if ($err ) {
         echo "<div class=error_msg>
-                Veuillez contacter <A HREF='mailto:$MelAdminLCS?subject=PB Affectation de $uid a des groupes secondaires !'>l'administrateur du système</A>
+                Veuillez contacter <A HREF='mailto:$MelAdminLCS?subject=PB Affectation de $uid a des groupes secondaires !'>l'administrateur du syst&#232;me</A>
               </div><BR>\n";
       }
     }
   } else {
-    echo "<div class=error_msg>Cette application, nécessite les droits d'administrateur du serveur LCS !</div>";
+    echo "<div class=error_msg>Cette application, n&#233;cessite les droits d'administrateur du serveur LCS !</div>";
   }
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>
