@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-VER="#VER#"
+VER=$(dpkg-query -f '${Version}' -W lcs-dummy)
 MODULE="clientftp"
 VERAPPLI="0.1.7.2"
 INDICEMAJNBR="0"
