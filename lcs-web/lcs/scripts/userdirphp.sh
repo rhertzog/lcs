@@ -15,6 +15,16 @@ NBRUSER=`grep '#BEGIN SECTION' $FILECONF 2>/dev/null | wc -l`
 # Determination si $2 est present dans FILECONF
 USEREXIST=`grep '#BEGIN SECTION '$2 $FILECONF 2>/dev/null | wc -l`
 
+# lecture d'un parametre lcs dans lcs_db.params
+get_lcsdb_params() {
+    mysqlpass=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
+    PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql -u lcsmgr -p$mysqlpass lcs_db -N`
+    echo "$PARAMS"
+}
+
+# Get LDAP server adress
+LDAP_SERVER=$(get_lcsdb_params ldap_server)
+
 userexistinfileconf ()
 {
   # Determination si $1 est present dans FILECONF
@@ -23,7 +33,7 @@ userexistinfileconf ()
 }
 
 # Determination si $2 est present dans le base LDAP
-USEREXISTINLDAP=`ldapsearch -xLL uid=$2 | grep uid: | wc -l`
+USEREXISTINLDAP=`ldapsearch -xLL -h $LDAP_SERVER uid=$2 | grep uid: | wc -l`
 
 if [ $DBG = "true" ]; then
    echo "Login : $2"
