@@ -3,7 +3,7 @@
    Projet LCS : Linux Communication Server
    Consultation de l'annuaire LDAP
    Annu/add_sous-group.php
-   Equipe Tice académie de Caen
+   Equipe Tice academie de Caen
    V 1.4 maj : 15/03/2007
    ============================================= */
 include "../lcs/includes/headerauth.inc.php";
@@ -19,11 +19,11 @@ aff_trailer ("8");
 if (is_admin("Annu_is_admin",$login)=="Y") {
 echo "<form action=\"affichageleve.php\" method=\"post\">";
 echo "<table border=\"0\">";
-echo "<TD><B>Nouveau groupe :</B></TD>";
-echo "<TR><TD>Intitulé :</TD><td><input type=\"text\" name=\"cn\" value=\"$cn\" size=\"20\"></TD></TR><BR>";
-echo "<TR><TD>Description :</TD><td><input type=\"text\" name=\"description\" value=\"$description\" size=\"40\"></TD></TR><BR><BR>";
+echo "<TR><TD><B>Nouveau groupe :</B></TD></TR>";
+echo "<TR><TD>Intitul&#233; :</TD><td><input type=\"text\" name=\"cn\" value=\"$cn\" size=\"20\"></TD></TR>";
+echo "<TR><TD>Description :</TD><td><input type=\"text\" name=\"description\" value=\"$description\" size=\"40\"></TD></TR>";
 echo "</table><BR>";
-echo "<B>Sélectionner le(s) groupe(s) dans le(s)quel(s) se situent les personnes a mettre dans le groupe ci-dessus : </B><BR><BR>";
+echo "<B>S&#233;lectionner le(s) groupe(s) dans le(s)quel(s) se situent les personnes a mettre dans le groupe ci-dessus : </B><BR><BR>";
 
 // Etablissement des listes des groupes disponibles
 $list_groups=search_groups("(&(cn=*) $filter )");
@@ -52,7 +52,7 @@ for ($loop=0; $loop < count ($list_groups) ; $loop++) {
             $autres[$m]["description"] = $list_groups[$loop]["description"];
             $m++;}
   }
-// Affichage des boites de sélection des nouveaux groupes secondaires
+// Affichage des boites de selection des nouveaux groupes secondaires
 ?>
 <table border="0" cellspacing="10">
 <tr>
@@ -63,32 +63,32 @@ for ($loop=0; $loop < count ($list_groups) ; $loop++) {
 <tr>
 <td valign="top">
 <?
-echo "<select name= \"classe_gr[]\" value=\"classe_gr\" size=\"10\" multiple=\"multiple\">\n";
+echo "<select name= \"classe_gr[]\"  size=\"10\" multiple=\"multiple\">\n";
     for ($loop=0; $loop < count ($classe) ; $loop++) {
 	echo "<option value=".$classe[$loop]["cn"].">".$classe[$loop]["cn"];
     }
     echo "</select>";
     echo "</td>";
     echo "<td>\n";
-    echo "<select name= \"equipe_gr[]\" value=\"$equipe_gr\" size=\"10\" multiple=\"multiple\">\n";
+    echo "<select name= \"equipe_gr[]\"  size=\"10\" multiple=\"multiple\">\n";
     for ($loop=0; $loop < count ($equipe) ; $loop++) {
 	echo "<option value=".$equipe[$loop]["cn"].">".$equipe[$loop]["cn"];
     }
     echo "</select></td>\n";
     echo "<td valign=\"top\">
-    <select name=\"autres_gr[]\" value=\"$autres_gr\" size=\"5\" multiple=\"multiple\">";
+    <select name=\"autres_gr[]\"  size=\"5\" multiple=\"multiple\">";
     for ($loop=0; $loop < count ($autres) ; $loop++) {
-	echo "<option value=".$autres[$loop]["cn"].">".$autres[$loop]["cn"];
+	echo "<option value='".$autres[$loop]["cn"]."'>".$autres[$loop]["cn"];
     }
     echo "</select></td></tr></table>";
     echo " <input type=\"submit\" value=\"valider\">
-	   <input type=\"reset\" value=\"Réinitialiser la sélection\">";
+	   <input type=\"reset\" value=\"R&#233;initialiser la s&#233;lection\">";
     
-    echo "</form></small>";
+    echo "</form>";
     
     
 	
 }//fin is_admin	
-else echo "Vous n'avez pas les droits nécessaires pour ouvrir cette page...";
+else echo "Vous n'avez pas les droits n&#233;cessaires pour ouvrir cette page...";
 include ("../lcs/includes/pieds_de_page.inc.php");
 ?>
