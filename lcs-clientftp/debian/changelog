@@ -1,4 +1,4 @@
-lcs-clientftp (2.2~2) UNRELEASED; urgency=low
+lcs-clientftp (2.2~2) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
   * Correct num version in postinst
