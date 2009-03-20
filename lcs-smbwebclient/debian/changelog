@@ -1,4 +1,4 @@
-lcs-smbwebclient (2.2~1) UNRELEASED; urgency=low
+lcs-smbwebclient (2.2~1) LcsXP; urgency=low
 
   * Initial release for svn_builpackage compatibilty)
   * add Makefile
