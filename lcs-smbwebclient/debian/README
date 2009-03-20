@@ -1,0 +1,21 @@
+README, version :2.2~1 Thu, 19 Mar 2009 10:29:37 +0100
+
+Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+
+LCS module : smbwebclient - Readme
+===========================
+Un ensemble de scripts PHP pour accéder au serveur de fichier Se3 depuis le LCS.
+
+Version #VER#
+-----------
+Possibilité de masquer des répertoires
+
+Version 1.1
+-----------
+lcs-smbwebclient est basé sur smbwebclient <http://smbwebclient.sourceforge.net/> version : 2.9 et l'authentification est intégrée au LCS.
+
+Le fichier original de la version 2.9 officielle est disponible dans le répertoire :
+/var/lib/lcs/smbwebclient/Orig 
+
+Le fichier diff disponible dans le répertoire :
+/var/lib/lcs/smbwebclient/Mod

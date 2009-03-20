@@ -1,0 +1,58 @@
+#! /bin/sh
+set -e
+
+MODULE="smbwebclient"
+APACHECONF="/etc/lcs/apache.conf"
+APACHE2CONF="/etc/apache2/lcs-main/71_smbwebclient.conf"
+
+case "$1" in
+    purge|remove)
+        #
+        # Suppression de l'alias 
+        #
+        # cas de l'ancienne conf apache
+        if [ -e $APACHECONF ]; then
+          grep -v 'Alias /$MODULE/ /usr/share/lcs/$MODULE/' $APACHECONF > /tmp/apache.conf
+          mv /tmp/apache.conf $APACHECONF
+          if [ -e /etc/init.d/apache2 ]; then
+            /etc/init.d/apache2 reload > /dev/null 2>&1
+          else
+            /etc/init.d/apache reload > /dev/null 2>&1
+          fi
+        fi
+        # cas de la nouvelle configuration apache
+        if [ -e $APACHE2CONF ]; then
+          rm -r $APACHE2CONF
+          invoke-rc.d apache2 reload > /dev/null 2>&1
+        fi
+        #
+        # Desinscription du module de la table lcs_db.applis
+        #
+        /usr/bin/mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';"
+        #
+        # Desinscription du param shareview
+        #
+        /usr/bin/mysql -e "DELETE FROM lcs_db.params WHERE name = 'shareview' ;"
+        #
+        # Nettoyage des repertoires
+        # 
+        if [ -e /usr/share/lcs/$MODULE ]; then
+	   rm -R /usr/share/lcs/$MODULE
+        fi
+        if [ -e /var/lib/lcs/$MODULE ]; then
+	   rm -R /var/lib/lcs/$MODULE
+        fi
+        exit 0
+        ;;
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+    ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+
+esac
+
+exit 0
