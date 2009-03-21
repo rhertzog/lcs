@@ -1,5 +1,5 @@
 #!/bin/bash
-# edit_params.sh version du 08/01/2009
+# edit_params.sh version du 20/03/2009
 
 # Fichiers de configuration
 PATH2SLAPD="/etc/ldap/slapd.conf"
@@ -25,6 +25,7 @@ PATH2MAIN_TMP="/etc/postfix/main.cf.tmp"
 PATH2LDAPALIASES_TMP="/etc/postfix/ldap-aliases.tmp"
 PATH2MAILINGLIST_TMP="/etc/postfix/mailing_list.tmp"
 PATH2SQUIDCONF_TMP="/etc/squid/squid.conf.tmp"
+PATH2CASCONF_TMP="/etc/rubycas-lcs/config.yml.tmp"
 
 while read TYPE OLD NEW; do
   # Modification du mdp admin ldap
