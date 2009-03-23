@@ -1,14 +1,19 @@
 #!/bin/bash
-## Apache 2
- a2ensite lcs-assr 
-/etc/init.d/apache2 reload
 
-## Bind
- 
-cp /etc/bind/localnet.db /etc/bind/localnet.db.noassr
-oldserial=`cat /etc/bind/localnet.db | grep -i serial`
-newserial=`date +"%Y%m%d"`"01; serial"
-sed -i'' 's/"$oldserial"/"$newserial"/g' /etc/bind/localnet.db
-echo "assr            IN      CNAME   lcs">>/etc/bind/localnet.db
+result=`grep assr /etc/bind/localnet.db`
 
-/etc/init.d/bind9 reload
+if [ "$result" = 1 ]; then
+        ## Bind
+        cp /etc/bind/localnet.db /etc/bind/localnet.db.noassr
+        oldserial=`cat /etc/bind/localnet.db | grep -i serial`
+        newserial=`date +"%Y%m%d"`"01; serial"
+        sed -i'' 's/"$oldserial"/"$newserial"/g' /etc/bind/localnet.db
+        echo "assr            IN      CNAME   lcs">>/etc/bind/localnet.db
+        /etc/init.d/bind9 reload
+        ## Apache 2
+        a2ensite lcs-assr
+        /etc/init.d/apache2 reload
+
+else
+        echo "assr deja actif"
+fi
