@@ -4,7 +4,9 @@
 # see: dh_installdeb(1)
 
 set -e
-
+VER="2.1-2~1"
+MODULE="imap-ssl"
+INDICEMAJNBR="0"
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
 #        * <old-postinst> `abort-upgrade' <new version>
@@ -21,6 +23,10 @@ set -e
 case "$1" in
     configure)
 	/usr/share/lcs/sbin/lcs-imap-ssl-config
+	#
+    # Inscription du module dans applis.lcs_db
+    #
+    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Courrier imap vi ssl', '$INDICEMAJNBR', '$VER', '', 'S');"
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
