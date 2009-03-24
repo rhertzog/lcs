@@ -5,13 +5,19 @@
    Annu/peoples_list.php
    [LCS CoreTeam]
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
    Equipe Tice académie de Caen
-   V 1.4-5 maj : 17/12/2004
+    maj : 24/03/2009
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
+  
+  $nom=$_POST['nom'];
+  $prenom=$_POST['prenom'];
+  $priority_name=$_POST['priority_name'];
+  $priority_surname=$_POST['priority_surname'];
+  $priority_classe=$_POST['priority_classe'];
+  $classe=$_POST['classe'];
 
   list ($idpers)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
@@ -87,9 +93,9 @@
     #############
     if (count($users)) {
       if (count($users)==1) {
-        echo "<p><STRONG>".count($users)."</STRONG> utilisateur répond à ces critères de recherche</p>\n";
+        echo "<p><STRONG>".count($users)."</STRONG> utilisateur r&#233;pond &#224; ces crit&#232;res de recherche</p>\n";
       } else {
-        echo "<p><STRONG>".count($users)."</STRONG> utilisateurs répondent à ces critères de recherche</p>\n";
+        echo "<p><STRONG>".count($users)."</STRONG> utilisateurs r&#233;pondent &#224; ces crit&#232;res de recherche</p>\n";
       }
 
       echo "<UL>\n";
@@ -98,7 +104,7 @@
       }
       echo "</UL>\n";
     } else {
-        echo " <STRONG>Pas de résultats</STRONG> correspondant aux critères sélectionnés.<BR>\n";
+        echo " <STRONG>Pas de r&#233;sultats</STRONG> correspondant aux crit&#232;res s&#233;lectionn&#233;s.<BR>\n";
     }
 
   } elseif ($classe) {
@@ -128,9 +134,9 @@
        #############
        if (count($people)) {
          if (count($people)==1) {
-           echo "<p><STRONG>".count($people)."</STRONG> utilisateur répond à ces critères de recherche.</p>\n";
+           echo "<p><STRONG>".count($people)."</STRONG> utilisateur r&#233;pond &#224; ces crit&#232;res de recherche.</p>\n";
          } else {
-           echo "<p><STRONG>".count($people)."</STRONG> utilisateurs répondent à ces critères de recherche.</p>\n";
+           echo "<p><STRONG>".count($people)."</STRONG> utilisateurs r&#233;pondent &#224; ces crit&#232;res de recherche.</p>\n";
          }
          // affichage des résultats
          echo "<table border=\"0\">\n";
@@ -156,13 +162,13 @@
          }
          echo "</table>\n";
        } else {
-           echo " <STRONG>Pas de résultats</STRONG> correspondant aux critères sélectionnés.<BR>
+           echo " <STRONG>Pas de r&#233;sultats</STRONG> correspondant aux crit&#232;res s&#233;lectionn&#233;s.<BR>
                   Retour au <A href=\"index.php\">formulaire de recherche</A>...<BR>\n";
        }
   } else {
        // Aucun critères de recherche
-       echo " <STRONG>Pas de résultats !</STRONG><BR>
-       Veuillez compléter au moins l'un des trois champs (nom, prénom, classe) du <A href=\"index.php\">formulaire de recherche</A> !<BR>\n";
+       echo " <STRONG>Pas de r&#233;sultats !</STRONG><BR>
+       Veuillez compl&#233;ter au moins l'un des trois champs (nom, pr&#233;nom, classe) du <A href=\"index.php\">formulaire de recherche</A> !<BR>\n";
   }
 
 

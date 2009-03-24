@@ -2,13 +2,13 @@ lcs-web (2.1-3~1) UNRELEASED; urgency=low
 
   [ Philippe Leclerc ]
   * taken into account applications type N in applis.php,statango.php,functions.inc.php,modules_installes.php and modules_dispos.php
-  * validate W3C Annu/add_sous-group.php & Annu/affichageleve.php
-
+  * validate W3C Annu/ add_sous-group.php affichageleve.php search.php peoples_list.php groups_list.php
+	
   [ Jean Luc Chretien ]
   * Add LDAP_SERVER adress in userdirphp.sh
   * Correct edit_params.sh  for service CAS LDAP reconfiguration
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 20 Mar 2009 17:14:09 +0100
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 24 Mar 2009 15:54:34 +0100
 
 lcs-web (2.1-2) LcsXP; urgency=low
 

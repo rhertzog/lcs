@@ -5,13 +5,14 @@
    Annu/Search.php
    [LCS CoreTeam]
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
    Equipe Tice académie de Caen
-   V 1.3 maj : 21/11/2003
+   maj : 24/03/2009
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
+  
+  
 
   list ($idpers)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
@@ -64,7 +65,7 @@
       </table>
     </form>
     <!-- Recherche d'un groupe (classe, Equipe, Cours ...) -->
-        <h2>Rechercher un groupe (classe, équipe, cours ...)</h2>
+        <h2>Rechercher un groupe (classe, &#233;quipe, cours ...)</h2>
     <form action="groups_list.php" method = post>
       <table>
 	<tbody>

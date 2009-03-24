@@ -4,15 +4,17 @@
    Consultation de l'annuaire LDAP
    Annu/groups_list.php
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
    « wawa »  olivier.lecluse@crdp.ac-caen.fr
    Equipe Tice académie de Caen
-   Derniere mise à jour  : 07/05/2007
+   Derniere mise à jour  : 24/03/2009
    Distribué selon les termes de la licence GPL
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
+  
+  $priority_group=$_POST['priority_group'];
+  $group=$_POST['group'];
 
   list ($idpers)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
@@ -47,9 +49,9 @@
   // affichage de la liste des groupes trouvés
   if (count($groups)) {
     if (count($groups)==1) {
-      echo "<p><STRONG>".count($groups)."</STRONG> groupe répond à ces critères de recherche</p>\n";
+      echo "<p><STRONG>".count($groups)."</STRONG> groupe r&#233;pond &#224; ces crit&#232;res de recherche</p>\n";
     } else {
-      echo "<p><STRONG>".count($groups)."</STRONG> groupes répondent à ces critères de recherche</p>\n";
+      echo "<p><STRONG>".count($groups)."</STRONG> groupes r&#233;pondent &#224; ces crit&#232;res de recherche</p>\n";
     }
     echo "<UL>\n";
     /*
@@ -70,7 +72,7 @@
 
     echo "</UL>\n";
   } else {
-    echo "<STRONG>Pas de résultats</STRONG> correspondant aux critères sélectionnés.<BR>";
+    echo "<STRONG>Pas de r&#233;sultats</STRONG> correspondant aux crit&#232;res s&#233;lectionn&#233;s.<BR>";
   }
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>
