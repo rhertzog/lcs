@@ -179,9 +179,6 @@ echo "TLSCACertificatePath /etc/ldap/
 TLSCertificateFile /etc/ldap/slapd.pem
 TLSCertificateKeyFile /etc/ldap/slapd.pem
 
-# Schema check allows for forcing entries to
-# match schemas for their objectClasses's
-schemacheck	on
 allow bind_v2
 
 # Where clients are refered to if no

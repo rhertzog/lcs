@@ -74,7 +74,7 @@ while read TYPE OLD NEW; do
     # suppression de la ligne HOST (le cas echeant)
     cat $PATH2LDAP | sed -e "/HOST/d" > $PATH2LDAP_TMP
     # Ajout du nouvel HOST
-    cat $PATH2LDAP_TMP | sed -e "/BASE dc=/i\\" -e"HOST  $NEW" > $PATH2LDAP
+    cat $PATH2LDAP_TMP | sed -e "/BASE/i\\" -e"HOST  $NEW" > $PATH2LDAP
     rm $PATH2LDAP_TMP
     # Modification de /etc/courier/authldaprc
     # ---------------------------------------
