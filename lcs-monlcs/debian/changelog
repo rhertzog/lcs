@@ -3,6 +3,10 @@ lcs-monlcs (2.1-2~1)  UNRELEASED; urgency=low
   * Correct changelog with section UNRELEASED
    
   [ Sebastien Tack ]
+  * managing URL with quotes
+  * simplification for integration of SPIP ressources into monlcs
+  * adding upload for ggb flv pdf swf
+  * autoconversion pdf2swf with swftools
   * adding flv and geogebra modules
   * prepare the academic export/import 
   * update of Snoopy class for magpieRSS
