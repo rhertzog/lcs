@@ -1,3 +1,9 @@
+lcs-monlcs (2.1-2~3) Lcs; urgency=low
+
+  * adding swftools depends
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 26 Mar 2009 14:07:52 +0100
+
 lcs-monlcs (2.1-2~2)  Lcs; urgency=low
   [ Sebastien Tack ]
   * managing URL with quotes
