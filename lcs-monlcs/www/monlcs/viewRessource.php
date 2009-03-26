@@ -1,6 +1,13 @@
 <?php
 include "includes/secure_no_header.inc.php";
 
+/*
+article=12 
+$baseurl/spip/?page=lcs-article&article= ($baseurl/spip/?page=lcs-article&article=12)
+site=123
+$baseurl/spip/?page=lcs-site&site=123
+*/
+
 $id = $_POST['id'];
 $maxY = $_POST['maxY'];
 $minX = $_POST['minX'];
@@ -36,7 +43,8 @@ $rss = mysql_result($curseur,$x,'RSS_template');
 
 $url = mysql_result($curseur,$x,'url');
 if (eregi('.swf',$url))
-				$url='giveCleanFlash.php?url='.$url;
+	$urlAffiche ='giveCleanFlash.php?url='.urlencode($url);
+
 $url_vignette = mysql_result($curseur,$x,'url_vignette');
 
 if ($rss !='null') {
@@ -55,8 +63,8 @@ if ($url_vignette != null) {
 	else
 		$urlAffiche = $url_vignette;
 	}
-else
-	$urlAffiche = $url;
+else if (!eregi('.swf',$url))
+	$urlAffiche = urlencode($url);
 
 $content .= "ajaxWind$id=dhtmlwindow.open('ajaxWind$id','iframe','$urlAffiche','$titre',";
 $content .= "'width=$width"."px".",height=$height"."px".",left=$posx"."px".",top=$posy"."px".",";

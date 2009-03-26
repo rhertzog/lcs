@@ -20,6 +20,19 @@
 	var floating_window_skin = 1;
 	var up = true;
 
+	function addslashes( str ) {
+    		return (str+'').replace(/([\\"'])/g, "\\$1").replace(/\0/g, "\\0");
+	}
+
+	function stripslashes(str) {
+		str=str.replace(/\\'/g,'\'');
+		str=str.replace(/\\"/g,'"');
+		str=str.replace(/\\\\/g,'\\');
+		str=str.replace(/\\0/g,'\0');
+	return str;
+	}
+
+
 
 	function noaccent(chaine) {
   		temp = chaine.replace(/[àâä]/gi,"a")
@@ -118,7 +131,7 @@
 
 	function jsUpload(upload_field) {
     		var re_text = /\.gif|\.png|\.jpg|\.jpeg/i;
-              var filename = upload_field.value;
+                var filename = upload_field.value;
 		
     		if (filename.search(re_text) == -1) {
         		alert("Il faut fournir une image gif png jpg ou jpeg");
@@ -132,9 +145,57 @@
     		temp = filename.split('\\');
     		if (temp.length > 1 )
     			image = temp[temp.length-1];
-    		alert("Le fichier a été téléchargé");
+    		alert("Le fichier est en cours de chargement. Ceci est plus ou moins long en fonction de la taille du fichier. Patientez SVP. Merci.");
     		return true;
 	}
+
+	function jsUpload2(upload_field) {
+    		var re_text = /\.pdf|\.ggb|\.swf|\.flv/i;
+                var filename = upload_field.value;
+		if (filename.search(re_text) == -1) {
+        		alert("Il faut fournir un fichier pdf ou ggb ou swf ou flv"); 
+        		upload_field.form.reset();
+        		return false;
+    		}
+
+		var temp = new Array();
+    		temp = filename.split('.');
+    		if (temp.length > 1 )
+    			extension = trim(temp[temp.length-1]);
+
+		if ('pdf' == extension ) {
+			extension = 'swf';
+			filename = filename.replace('.pdf','.swf');
+		}
+
+		var url = './chkRessHome.php';
+		var fichier = '/~'+user+'/monlcs_'+extension+'/'+addslashes(filename);
+		var params = 'file='+escape(fichier);
+			
+		//test ajax si le fichier existe deja
+			new Ajax.Request(url,{ method: 'post', parameters: params, onComplete: function(requester) {
+				if ('1' != trim(requester.responseText)) {
+					upload_field.form.submit();
+    					$('urlAdd').value = fichier;
+					alert("Le fichier est en cours de chargement. Ceci est plus ou moins long en fonction de la taille du fichier. Patientez SVP. Merci.");
+				} else {
+					var rep = confirm("Le fichier se trouve deja dans votre home utilisateur souhaitez vous le mettre a jour ? S'il s'agit d'un fichier different mais portant le meme nom songez a le renommer ");
+                                	if (rep) {
+						upload_field.form.submit();
+    						$('urlAdd').value = fichier;
+						alert("Le fichier est en cours de chargement. Ceci est plus ou moins long en fonction de la taille du fichier. Patientez SVP. Merci.");
+
+					}	
+				}
+	        		upload_field.form.reset();
+
+			}});
+		
+
+
+    		return true;
+	}
+	
 
 	function maxZindex() {
 		var max = 0;
@@ -1070,6 +1131,21 @@
 		if (trouveGgb.exec(lurl)) {
 			lurl = escape('/monlcs/modules/geogebra/viewer.php?ggb='+$('urlAdd').value);
 		}
+		
+		//patch article spip
+		var trouveArticleSpip = /^spip_article/;
+		if (trouveArticleSpip.exec(trim(lurl))) {
+			lurl = unescape(lurl);
+			lurl = lurl.replace('spip_article','/spip/?page=lcs-article&id_article');
+			//$('urlAdd').value = lurl;
+		}
+		//patch site spip
+		var trouveSiteSpip = /^spip_site/;
+		if (trouveSiteSpip.exec(trim(lurl))) {
+			lurl = unescape(lurl);
+			lurl = lurl.replace('spip_site','/spip/?page=lcs-sites&id_rubrique');
+			//$('urlAdd').value = lurl;
+		}
 
 		
         	var ltitre = escape(cleanaccent($('titreAdd').value));
@@ -1560,7 +1636,8 @@ var ajax0 = new Ajax.Updater('view_note','viewNote.php', { method: 'post', param
 		getMaxCoords();
 		var params = "?id="+parseInt(id)+"&maxX="+parseInt(maxX)+"&maxY="+parseInt(maxY)+"&maxScreen="+parseInt(maxScreen)+"&minY="+parseInt(minY)+"&minX="+parseInt(minX);
 		new Ajax.Updater('content','viewRessource.php',{ method: 'post',  parameters:params, onComplete: function(requester) {
-			eval(requester.responseText);
+			eval(unescape(requester.responseText));
+			
 			getMaxCoords();
 			//$('dhtmlgoodies_floating_window0').style.zIndex = 0;
 		}});
@@ -1725,8 +1802,8 @@ var ajax0 = new Ajax.Updater('view_note','viewNote.php', { method: 'post', param
 		var params = onglet+'&mode='+mode+'&user='+user;
 		Element.show('spinner');
 		new Ajax.Updater('content','process2.php',{ method: 'post',  parameters: params, onComplete: function(requester) {
-			//alert(requester.responseText);
-			eval(requester.responseText);
+			//alert(unescape(requester.responseText));
+			eval(unescape(requester.responseText));
 			getMaxCoords();
        		$('ie5menu').style.display='block';
 			var z=liste_fen_actives();

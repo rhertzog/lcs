@@ -96,7 +96,7 @@
 						else
 							$urlAffiche = $url_vignette;
 					} else
-						$urlAffiche = $url;
+						$urlAffiche = urlencode($url);	
 					$content .= "var ajaxWind$idR=dhtmlwindow.open('ajaxWind$idR','iframe','$urlAffiche','$titre',";
 					$content .= "'width=$width"."px".",height=$height"."px".",left=$posx"."px".",top=$posy"."px".",";
 					$content .= "resize=1,scrolling=1,center=0'";
@@ -178,7 +178,7 @@
 					$_urlAffiche = $_url_vignette;
 			}
 			else
-				$_urlAffiche = $_url;
+				$_urlAffiche = urlencode($_url);
 			$content .= "var ajaxWind$idRe=dhtmlwindow.open('ajaxWind$idRe','iframe','$_urlAffiche','$_titre',";
 			$content .= "'width=$ww"."px".",height=$hh"."px".",left=$xx"."px".",top=$yy"."px".",";
 			$content .= "resize=1,scrolling=1,center=0'";
@@ -288,7 +288,7 @@
 								$skel_urlAffiche = $skel_url_vignette;
 						}
 						else
-							$skel_urlAffiche = $skel_url;
+							$skel_urlAffiche = urlencode($skel_url);
 						$content .= "var ajaxWind$skel_idRe=dhtmlwindow.open('ajaxWind$skel_idRe','iframe','$skel_urlAffiche','$skel_titre',";
 						$content .= "'width=$skel_ww"."px".",height=$skel_hh"."px".",left=$skel_xx"."px".",top=$skel_yy"."px".",";
 						$content .= "resize=1,scrolling=1,center=0'";

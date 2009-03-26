@@ -101,6 +101,8 @@ if ($_POST) {
 			else
 			$urlAffiche = $url;
 			
+			$urlAffiche = urlencode($urlAffiche);			
+
 			$content = "var ajaxWind$ref=dhtmlwindow.open('ajaxWind$ref','iframe','$urlAffiche','$titre',";
 			$content .= "'width=$width"."px".",height=$height"."px".",left=$posx"."px".",top=$posy"."px".",";
 			$content .= "resize=1,scrolling=1,center=0'";

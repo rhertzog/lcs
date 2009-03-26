@@ -14,21 +14,38 @@ $url = htmlspecialchars(urldecode($url));
 //patch pour video en flv
 $test = array_reverse(explode('.',$url));
 if ($test && $test[0] == 'flv' && !eregi('monlcs/modules/flv/flvPlayer.swf',$url)) {
-        $url = $baseurl."monlcs/modules/flv/flvplayer.swf?file=$url";
+        //$url = $baseurl."monlcs/modules/flv/flvplayer.swf?file=$url";
+        $url = "/monlcs/modules/flv/flvplayer.swf?file=$url&autoStart=false";
         //die($url);
 }
 
 //patch pour fichier geogebra
 $test = array_reverse(explode('.',$url));
 if ($test && $test[0] == 'ggb' && !eregi('monlcs/modules/geogebra/viewer.php',$url)) {
-        $url = $baseurl."monlcs/modules/geogebra/viewer.php?ggb=$url";
+        //$url = $baseurl."monlcs/modules/geogebra/viewer.php?ggb=$url";
+        $url = "/monlcs/modules/geogebra/viewer.php?ggb=$url";
         //die($url);
 }
 
 
+
+//patch article spip
+     if (eregi("^spip_article",$url)) {
+                        $url = str_replace('spip_article','/spip/?page=lcs-article&id_article',$url);
+           }
+     
+//patch site spip
+     if (eregi("^spip_site",$url)) {
+			$url = str_replace('spip_site','/spip/?page=lcs-sites&id_rubrique',$url);
+           }
+        
+        
+
 //patch pour widgets NetVibes non W3C compliant
 $url = str_replace( $pattern, $repl, $url);
 
+//patch pour apostrophes
+$url = str_replace( "'", '%27', $url);
 
 
 if ($sitetv == 0) {

@@ -3,7 +3,10 @@ if ($_GET)
 	extract($_GET);
 
 $foo = "flash";
-	
+$url = stripslashes(urldecode($url));	
+if (eregi('/monlcs/modules/flv/',$url))
+	$url .= '&autoStart=false';
+//die($url);
 $content = "<HTML>"
 ."<HEAD>"
 ."<TITLE>mon_lcs</TITLE>"

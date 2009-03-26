@@ -398,8 +398,8 @@ function OpenWin(fen){
 	var url='donneUrl.php';
 	var strParams = '?ref='+frame+'&tab='+tab_active;
 	new Ajax.Request(url,{ method: 'post' , parameters:strParams , onComplete: function(requester) {
-        	var lien = requester.responseText;
-		
+        	var lien = stripslashes(unescape(requester.responseText));
+		//alert(lien);
 		if (lien != ' rien') 
 			window.open(lien);
 			
@@ -424,7 +424,7 @@ function OpenWin(fen){
 			var url='donneUrl.php';
 					
 			new Ajax.Request(url,{ method: 'post' , parameters:strParams , onComplete: function(requester) {
-        			var lien = requester.responseText;
+        			var lien = stripslashes(unescape(requester.responseText));
 				
 				if (lien != ' rien') {
 					window.frames["_iframe-"+parent.id].location=lien;
@@ -444,7 +444,8 @@ function OpenWin(fen){
 			image.setAttribute("src", dhtmlwindow.imagefiles[6]);
 			var url = 'giveVignette.php';
 			new Ajax.Request(url,{ method: 'post' , parameters:strParams , onComplete: function(requester) {
-        			var code = requester.responseText;
+        			var code = stripslashes(unescape(requester.responseText));
+				//alert(code);
 				if (code != ' rien') 
 						eval(code);
 			}});	

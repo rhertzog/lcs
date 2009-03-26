@@ -1,6 +1,6 @@
 <?php
 
-$ggb = 'https://lcetch.crdp.ac-caen.fr/monlcs/modules/geogebra/ggb1.ggb';
+//$ggb = 'https://lcetch.crdp.ac-caen.fr/monlcs/modules/geogebra/ggb1.ggb';
 
 if ($_POST || $_GET) {
 
@@ -8,9 +8,13 @@ if ($_POST || $_GET) {
 	extract($_GET);
 }
 
+//if eregi('/~',$ggb)
+//	$ggb = str_replace('/monlcs/modules/geogebra')
+
+
 ?>
 
-<applet name="ggbApplet" code="geogebra.GeoGebraApplet" codebase="./" archive="http://www.geogebra.org/webstart/geogebra.jar" width="100%" height="100%">
+<applet name="ggbApplet" code="geogebra.GeoGebraApplet" codebase="/" archive="http://www.geogebra.org/webstart/geogebra.jar" width="100%" height="100%">
 
 	<param name="filename" value="<?php echo $ggb; ?>">
 	<param name="framePossible" value="false">
