@@ -1,13 +1,14 @@
-lcs-monlcs (2.1-2~1)  UNRELEASED; urgency=low
-  [ Jean-Luc Chretien ]
-  * Correct changelog with section UNRELEASED
-   
-  [ Sebastien Tack ]
+lcs-monlcs (2.1-2~2)  UNRELEASED; urgency=low
+ [ Sebastien Tack ]
   * managing URL with quotes
   * simplification for integration of SPIP ressources into monlcs
-  * adding upload for ggb flv pdf swf
+  * adding upload for ggb flv pdf swf in user's home
   * autoconversion pdf2swf with swftools
   * adding flv and geogebra modules
+
+lcs-monlcs (2.1-2~1)  LcsXP; urgency=low
+  [ Jean-Luc Chretien ]
+  * Correct changelog with section UNRELEASED
   * prepare the academic export/import 
   * update of Snoopy class for magpieRSS
   * div user too big and then overlap on right menu button - correcting
