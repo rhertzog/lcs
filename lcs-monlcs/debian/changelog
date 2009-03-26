@@ -1,4 +1,4 @@
-lcs-monlcs (2.1-2~2)  UNRELEASED; urgency=low
+lcs-monlcs (2.1-2~2)  Lcs; urgency=low
  [ Sebastien Tack ]
   * managing URL with quotes
   * simplification for integration of SPIP ressources into monlcs
