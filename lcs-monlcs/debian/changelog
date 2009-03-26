@@ -1,12 +1,12 @@
 lcs-monlcs (2.1-2~2)  Lcs; urgency=low
- [ Sebastien Tack ]
+  [ Sebastien Tack ]
   * managing URL with quotes
   * simplification for integration of SPIP ressources into monlcs
   * adding upload for ggb flv pdf swf in user's home
   * autoconversion pdf2swf with swftools
   * adding flv and geogebra modules
 
--- Sebastien TACK <sebastien.tack@ac-caen.fr>  Thu, 26 Mar 2009 11:48:21 +0100
+ -- Sebastien TACK <sebastien.tack@ac-caen.fr>  Thu, 26 Mar 2009 11:48:21 +0100
 
 lcs-monlcs (2.1-2~1)  LcsXP; urgency=low
   [ Jean-Luc Chretien ]
