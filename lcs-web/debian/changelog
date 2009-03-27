@@ -7,9 +7,9 @@ lcs-web (2.1-3~1) UNRELEASED; urgency=low
   [ Jean Luc Chretien ]
   * Add LDAP_SERVER adress in userdirphp.sh
   * Correct edit_params.sh  for service CAS LDAP reconfiguration and ldapd.conf
-  * Remove schemacheck directive in mkSlapdConf.sh 
+  * Remove schemacheck directive and update index in mkSlapdConf.sh  
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 26 Mar 2009 11:02:44 +0100
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Mar 2009 15:52:08 +0100
 
 lcs-web (2.1-2) LcsXP; urgency=low
 
