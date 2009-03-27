@@ -1,3 +1,0 @@
-<?
-$BASEDIR = "/var/www";
-?>

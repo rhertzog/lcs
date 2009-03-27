@@ -104,14 +104,15 @@ else
     let MAJNBR+=1
     if [ -e $PATHPLUG/Admin/Maj/mysql.$MAJNBR ]; then
     echo "Execution des instructions MySQL des mises a jour"
-    fi
+    
         while [ -e $PATHPLUG/Admin/Maj/mysql.$MAJNBR ]; do
             echo " - Application du script mysql.$MAJNBR"
             mysql < $PATHPLUG/Admin/Maj/mysql.$MAJNBR
             let MAJNBR+=1
 	done
-	
-	#--------------
+    fi
+
+    #--------------
     #Insertion LDAP
     #--------------
     
@@ -121,15 +122,16 @@ else
     echo "Insertion des entrees LDAP"
     #recuperation des parametres LDAP
 	PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
-    fi
+    
    
         while [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; do
             echo " - Application du script ldap.$MAJNBR"
             ldapadd -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/Maj/ldap.$MAJNBR
             let MAJNBR+=1
 	done
-	
-	#---------------------
+    fi
+
+    #---------------------
     #Execution des scripts
     #---------------------
     
@@ -141,7 +143,8 @@ else
             let MAJNBR+=1
 	done
 	
-	
+  fi
+  # fin de la maj par les scripts mysql,ldap,bash
 	
 	#---------------------------------
 	# Mise a jour du Numero de version
@@ -155,7 +158,7 @@ else
         #
         # Fin de la mise a jour
         #
-	fi    
+	    
 fi
 	#
 	# 
