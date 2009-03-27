@@ -162,7 +162,6 @@ include         /etc/ldap/schema/nis.schema
 include         /etc/ldap/schema/inetorgperson.schema
 include         /etc/ldap/schema/ltsp.schema
 include         /etc/ldap/schema/samba.schema
-include         /etc/ldap/schema/samba3.schema
 include         /etc/ldap/schema/printer.schema" > /etc/ldap/slapd.conf
 
 if [ -e "/etc/ldap/schema/RADIUS-LDAPv3.schema" ]
@@ -218,11 +217,13 @@ directory	\"/var/lib/ldap\"
 
 checkpoint 512 30
 
-index      objectClass,uidNumber,gidNumber                  eq
-index      cn,sn,uid,displayName                            sub,eq
-index      memberUid,mail,givenname                         eq,subinitial
-index      sambaSID,sambaPrimaryGroupSID,sambaDomainName    eq
-index	   entryCSN,entryUUID				    eq
+index      objectClass,uidNumber,gidNumber,uniqueMember,member  eq
+index      cn,sn,uid,displayName,l                              pres,sub,eq
+index      memberUid,mail,givenname                             eq,subinitial
+index      sambaSID,sambaPrimaryGroupSID,sambaDomainName        eq
+index      sambaSIDList,sambaGroupType                          eq
+index      entryCSN,entryUUID                                   eq
+index      default                                              sub
 
 # Save the time that the entry gets modified
 lastmod on
