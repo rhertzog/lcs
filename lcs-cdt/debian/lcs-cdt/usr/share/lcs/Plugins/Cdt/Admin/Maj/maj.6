@@ -1,5 +1,0 @@
-#!/bin/bash
-echo " Ceci est le script de mise à jour de 0.6 à 0.61 du plugin Cdt";
-mv /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp
-cat /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp | sed -e "s/0.6/0.61/g" > /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php
-rm /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp
