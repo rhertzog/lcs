@@ -169,10 +169,10 @@ then
 echo "include         /etc/ldap/schema/RADIUS-LDAPv3.schema" >> /etc/ldap/slapd.conf
 fi 
 
-if [ -e "/etc/ldap/schema/apple.schema" ]
-then
-echo "include         /etc/ldap/schema/apple.schema" >> /etc/ldap/slapd.conf
-fi 
+#if [ -e "/etc/ldap/schema/apple.schema" ]
+#then
+#echo "include         /etc/ldap/schema/apple.schema" >> /etc/ldap/slapd.conf
+#fi 
 
 echo "TLSCACertificatePath /etc/ldap/
 TLSCertificateFile /etc/ldap/slapd.pem
