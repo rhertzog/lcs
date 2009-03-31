@@ -198,13 +198,13 @@
 			new Ajax.Request(url,{ method: 'post', parameters: params, onComplete: function(requester) {
 				if ('1' != trim(requester.responseText)) {
 					upload_field.form.submit();
-    					$('urlAdd').value = fichier;
+    					$('urlAdd').value = stripslashes(fichier);
 					alert("Le fichier est en cours de chargement. Ceci est plus ou moins long en fonction de la taille du fichier. Patientez SVP. Merci.");
 				} else {
 					var rep = confirm("Le fichier se trouve deja dans votre home utilisateur souhaitez vous le mettre a jour ? S'il s'agit d'un fichier different mais portant le meme nom songez a le renommer ");
                                 	if (rep) {
 						upload_field.form.submit();
-    						$('urlAdd').value = fichier;
+    						$('urlAdd').value = stripslashes(fichier);
 						alert("Le fichier est en cours de chargement. Ceci est plus ou moins long en fonction de la taille du fichier. Patientez SVP. Merci.");
 
 					}	
