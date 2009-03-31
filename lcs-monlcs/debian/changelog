@@ -1,3 +1,13 @@
+lcs-monlcs (2.1-2~4)  Lcs; urgency=low
+  [ Sebastien Tack ]
+  * bugs on URL with space
+  * reload resource when resizing
+  * adding upload for mm Freemind resource
+  * bug on filename when upload on non Firefox Browser
+  *-bug on popup window when browser is Safari
+   
+ -- Sebastien TACK <sebastien.tack@ac-caen.fr>  Tue, 31 Mar 2009 08:48:21 +0100
+
 lcs-monlcs (2.1-2~3) Lcs; urgency=low
 
   * adding swftools depends

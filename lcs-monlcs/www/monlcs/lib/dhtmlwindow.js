@@ -212,6 +212,9 @@ move:function(t, e){
 resize:function(t, e){
 	t.style.width=Math.max(dhtmlwindow.width+dhtmlwindow.distancex, 150)+"px"
 	t.contentarea.style.height=Math.max(dhtmlwindow.contentheight+dhtmlwindow.distancey, 100)+"px"
+	var id = '_iframe-'+t.id
+	window.frames[id].location.reload(true)
+
 },
 
 enablecontrols:function(e){
@@ -388,27 +391,37 @@ function mini(t) {
 	dhtmlwindow.minimize(button,t);
 }
 
-function OpenWin(fen){
-	var lien ='?';
-	var frame = fen.id;
-	var frameId = window.frames['_iframe-'+frame];
-	
-	
-	if (lien == '?') {
-	var url='donneUrl.php';
-	var strParams = '?ref='+frame+'&tab='+tab_active;
-	new Ajax.Request(url,{ method: 'post' , parameters:strParams , onComplete: function(requester) {
-        	var lien = stripslashes(unescape(requester.responseText));
-		//alert(lien);
-		if (lien != ' rien') 
-			window.open(lien);
-			
-		}
-		});
+
+	function ouvreFenetre(lien) {
+			if (trim(lien) != 'rien') {
+				var safari = new RegExp("Safari", "i");
+				if (safari.exec(navigator.userAgent) != null) {
+					document.location = lien;
+					return(false);
+				} else {
+					window.open(lien);
+				}
+			}
+
 	}
+
+
+	function OpenWin(fen){
+		var lien ='?';
+		var frame = fen.id;
+		var frameId = window.frames['_iframe-'+frame];
 	
 	
-}
+		if (lien == '?') {
+			var url='donneUrl.php';
+			var strParams = '?ref='+frame+'&tab='+tab_active;
+			new Ajax.Request(url,{ method: 'post' , parameters:strParams , onComplete: function(requester) {
+        			var lien = stripslashes(unescape(requester.responseText));
+				ouvreFenetre(lien);
+			}});
+		}
+	}
+
 
 
 	function MaxInsideWin(parent) {

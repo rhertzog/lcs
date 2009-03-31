@@ -8,8 +8,7 @@ if ($_POST || $_GET) {
 	extract($_GET);
 }
 
-//if eregi('/~',$ggb)
-//	$ggb = str_replace('/monlcs/modules/geogebra')
+	$ggb = str_replace(' ','%20',$ggb)
 
 
 ?>

@@ -41,7 +41,7 @@
 		else
 			$content .="<td>-</td>";
 		$content.="<td>";
-		$content.="<div onclick=view_Url('".$X->id."','".$X->url."');>$view_img</div>"
+		$content.="<div onclick=view_Url('".$X->id."','".str_replace(' ','%20',$X->url)."');>$view_img</div>"
 		."</td>"
 		."<td class=nom>$X->titre </td>"
 		."<td class=nom>$R->setter</td>";

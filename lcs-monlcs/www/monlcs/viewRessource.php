@@ -1,12 +1,6 @@
 <?php
 include "includes/secure_no_header.inc.php";
 
-/*
-article=12 
-$baseurl/spip/?page=lcs-article&article= ($baseurl/spip/?page=lcs-article&article=12)
-site=123
-$baseurl/spip/?page=lcs-site&site=123
-*/
 
 $id = $_POST['id'];
 $maxY = $_POST['maxY'];
@@ -27,8 +21,6 @@ $max = mysql_num_rows($curseur);
 for ($x=0;$x<mysql_num_rows($curseur);$x++) {
 $id = mysql_result($curseur,$x,'id');
 
-$width = 400;
-$height = 300;
 
 if ( ($maxX + $width) >  $maxScreen) {
 	$posx = 5;
@@ -42,6 +34,16 @@ if ( ($maxX + $width) >  $maxScreen) {
 $rss = mysql_result($curseur,$x,'RSS_template');
 
 $url = mysql_result($curseur,$x,'url');
+
+if (eregi('_pdf.swf',$url)) {
+	$width = 550;
+	$height = 750;
+} else {
+	$width = 400;
+	$height = 300;
+}
+
+
 if (eregi('.swf',$url))
 	$urlAffiche ='giveCleanFlash.php?url='.urlencode($url);
 

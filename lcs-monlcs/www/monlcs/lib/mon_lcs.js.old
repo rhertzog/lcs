@@ -150,10 +150,10 @@
 	}
 
 	function jsUpload2(upload_field) {
-    		var re_text = /\.pdf|\.ggb|\.swf|\.flv/i;
+    		var re_text = /\.pdf|\.ggb|\.swf|\.flv|\.mm|\.pr/i;
                 var filename = upload_field.value;
 		if (filename.search(re_text) == -1) {
-        		alert("Il faut fournir un fichier pdf ou ggb ou swf ou flv"); 
+        		alert("Il faut fournir un fichier pdf ou ggb ou swf ou flv ou mm ou pr"); 
         		upload_field.form.reset();
         		return false;
     		}
@@ -1146,8 +1146,17 @@
 			lurl = lurl.replace('spip_site','/spip/?page=lcs-sites&id_rubrique');
 			//$('urlAdd').value = lurl;
 		}
-
-		
+		//patch fichier mm
+		var trouveMm = /\.mm$/;
+		if (trouveMm.exec(lurl)) {
+			lurl = escape('/monlcs/modules/mm/?'+$('urlAdd').value);
+		}
+		//patch fichier pr
+		var trouvePr = /\.pr$/;
+		if (trouvePr.exec(lurl)) {
+			lurl = escape('http://www.squeakland.org/launcher/?'+$('urlAdd').value);
+		}
+	
         	var ltitre = escape(cleanaccent($('titreAdd').value));
 		var ajaxWindCmd3=dhtmlwindow.open('ajaxWindCmd3','iframe',unescape(lurl),unescape(ltitre),'width=410px,height=250px,left=5px,top=60px,resize=1,scrolling=1,center=0');	
 		pretty_cmd(ajaxWindCmd3);

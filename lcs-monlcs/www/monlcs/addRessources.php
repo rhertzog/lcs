@@ -27,6 +27,13 @@ if ($test && $test[0] == 'ggb' && !eregi('monlcs/modules/geogebra/viewer.php',$u
         //die($url);
 }
 
+//patch pour fichier mm
+$test = array_reverse(explode('.',$url));
+if ($test && $test[0] == 'mm' && !eregi('monlcs/modules/mm/',$url)) {
+        $url = "/monlcs/modules/mm/?$url";
+        //die($url);
+}
+
 
 
 //patch article spip
