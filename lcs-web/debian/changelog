@@ -3,14 +3,15 @@ lcs-web (2.1-3~1) Lcs; urgency=low
   [ Philippe Leclerc ]
   * taken into account applications type N in applis.php,statango.php,functions.inc.php,modules_installes.php and modules_dispos.php
   * validate W3C Annu/ add_sous-group.php affichageleve.php search.php peoples_list.php groups_list.php
-	
+  * delete apt-get option --force-yes in gestpack.sh
+
   [ Jean Luc Chretien ]
   * Add LDAP_SERVER adress in userdirphp.sh
   * Correct edit_params.sh  for service CAS LDAP reconfiguration and ldapd.conf
-  * Remove schemacheck directive and update index in mkSlapdConf.sh  
-  * Comment apple.schema in mkSlapdConf.sh 
+  * Remove schemacheck directive and update index in mkSlapdConf.sh
+  * Comment apple.schema in mkSlapdConf.sh
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 30 Mar 2009 14:29:18 +0200
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 31 Mar 2009 16:56:46 +0200
 
 lcs-web (2.1-2) LcsXP; urgency=low
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # ===================================================================
 # Projet LCS : Linux Communication Server
-# par Misterphi le 13/11/2008
+# par Misterphi le 31/03/2009
 # gestion des modules par interface web
 # scripts d'apt-get sudoifie
 # paramètres passés :	$1=source du paquet; 
@@ -30,7 +30,7 @@ if [ -n "$Depot" ];then
 
     #on lance le processus
     apt-get update | sed -e "s/$/<BR>/g" >>  /tmp/ecran_install_$3.html 
-    apt-get --force-yes $2 -y $3 | sed -e "s/$/<BR>/g" >>  /tmp/ecran_install_$3.html
+    apt-get $2 -y $3 | sed -e "s/$/<BR>/g" >>  /tmp/ecran_install_$3.html
 
     #on teste l'état du paquet, et on affiche le résultat
     vartest=`dpkg -l $3 | grep ii | wc -l`
