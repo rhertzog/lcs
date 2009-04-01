@@ -1,9 +1,8 @@
 #! /bin/sh
 # postinst script for LCS monlcs
 set -e
-VER="2.1-1"
 MODULE="monlcs"
-VERAPPLI="1.0"
+VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
 INDICEMAJNBR="0"
 
 CONF="/var/lib/lcs/$MODULE"
