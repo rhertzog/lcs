@@ -1,5 +1,6 @@
 lcs-monlcs (2.1-2~4)  Lcs; urgency=low
   [ Sebastien Tack ]
+  * bugs on unicode caracters from browsers
   * bugs on URL with space
   * reload resource when resizing
   * adding upload for mm Freemind resource

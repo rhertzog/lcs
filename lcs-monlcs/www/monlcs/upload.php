@@ -1,6 +1,7 @@
 <?php
 
  	include "includes/secure_no_header.inc.php";
+ 	//include "includes/fonctions.inc.php";
  	
 
 	if (!isset($_FILES["Filedata"]) || !is_uploaded_file($_FILES["Filedata"]["tmp_name"]) || $_FILES["Filedata"]["error"] != 0) {
@@ -11,7 +12,7 @@
 		//deplacer le fichier ici
                 $upload_dir = "/home/".$uid."/public_html";
 		$filename = trim($_FILES['Filedata']['name']); // file name
-		$filename = str_replace(' ','_',$filename);
+		$filename = noaccent(htmlentities(urldecode(str_replace(' ','_',$filename))));
 		$ext = array_reverse(explode('.',$filename));
 		$extension = trim($ext[0]);
 		$filebody = implode('.',array_reverse(array_slice($ext,1)));

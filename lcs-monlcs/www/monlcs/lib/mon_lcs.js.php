@@ -40,14 +40,40 @@
 
 
 	function noaccent(chaine) {
-  		temp = chaine.replace(/[אגה]/gi,"a")
+		temp = escape(chaine).replace(/[אגה]/gi,"a")
   		temp = temp.replace(/[יטךכ]/gi,"e")
-  		temp = temp.replace(/[מן]/gi,"i")
+	     	temp = temp.replace(/[מן]/gi,"i")
   		temp = temp.replace(/[פצ]/gi,"o")
   		temp = temp.replace(/[שûü]/gi,"u")
   		temp = temp.replace(/[ח]/gi,"c")
   		temp = temp.replace(/[']/gi,"_")
-  		return temp
+		
+		//encodage url	
+
+		temp = temp.replace(/%E2/gi,"a")
+		temp = temp.replace(/%E4/gi,"a")
+		temp = temp.replace(/%E0/gi,"a")
+                temp = temp.replace(/%E9/gi,"e")
+		temp = temp.replace(/%E8/gi,"e")
+		temp = temp.replace(/%EA/gi,"e")
+		temp = temp.replace(/%EB/gi,"e")
+		temp = temp.replace(/%EE/gi,"i")
+		temp = temp.replace(/%EF/gi,"i")
+		temp = temp.replace(/%F4/gi,"o")
+		temp = temp.replace(/%F6/gi,"o")
+		temp = temp.replace(/%FB/gi,"u")
+		temp = temp.replace(/%FC/gi,"u")
+		temp = temp.replace(/%F9/gi,"u")
+		temp = temp.replace(/%5C/gi,"/")
+		temp = temp.replace(/%20/gi,' ')
+
+		//encodage unicode
+		temp = temp.replace(/%u0300/gi,"")
+		temp = temp.replace(/%u0302/gi,"")
+		temp = temp.replace(/%u0308/gi,"")
+		temp = temp.replace(/%u0301/gi,"")
+
+		return (temp)
 	}
 
 	function cleanaccent(chaine) {
@@ -156,7 +182,9 @@
 
 	function jsUpload2(upload_field) {
     		var re_text = /\.pdf|\.ggb|\.swf|\.flv|\.mm/i;
-                var filename = upload_field.value;
+                var filename = noaccent(upload_field.value);
+		filename = filename.replace(/ /gi,'_')
+
 		if (filename.search(re_text) == -1) {
         		alert("Il faut fournir un fichier pdf ou ggb ou swf ou flv ou mm"); 
         		upload_field.form.reset();
@@ -180,9 +208,6 @@
 		temp = filename.split('/');
     		if (temp.length > 1 )
 			filename = temp[temp.length-1];
-		filename = filename.replace(' ','_');
-		//alert(filename);
-
 
 		var url = './chkRessHome.php';
 		
@@ -199,7 +224,7 @@
 				if ('1' != trim(requester.responseText)) {
 					upload_field.form.submit();
     					$('urlAdd').value = stripslashes(fichier);
-					alert("Le fichier est en cours de chargement. Ceci est plus ou moins long en fonction de la taille du fichier. Patientez SVP. Merci.");
+					alert("Le fichier est en cours de chargement. Ceci est plus ou moins long en fonction de la taille du fichier. Apres le click, merci de patientez SVP.");
 				} else {
 					var rep = confirm("Le fichier se trouve deja dans votre home utilisateur souhaitez vous le mettre a jour ? S'il s'agit d'un fichier different mais portant le meme nom songez a le renommer ");
                                 	if (rep) {
