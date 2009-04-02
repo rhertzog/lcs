@@ -73,25 +73,99 @@ $ch=$_GET['div'];
 <head>
 <title>Cahier de textes numérique</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+#navlist
+{
+color: white;
+background:#336699;
+border-bottom: 0.2em solid #336699;
+border-right: 0.2em solid #336699;
+padding: 0 1px;
+margin-left: 0;
+width: 12em;
+font: normal 0.8em Verdana, sans-serif;
+}
+
+#navlist li
+{
+list-style: none;
+margin: 0;
+font-size: 1em;
+}
+
+#navlist a
+{
+display: block;
+text-decoration: none;
+margin-bottom: 0.5em;
+margin-top: 0.5em;
+color: white;
+background: rgb(0,64,128);
+border-width: 1px;
+border-style: solid;
+border-color: #5bd #035 #068 #6cf;
+border-left: 1em solid #fc0;
+padding: 0.25em 0em 0.4em 0.75em;
+}
+
+#navlist a#courant { border-color: #5bd #035 #068 #f30; }
+
+#navlist a
+
+
+{
+width: 99%;
+/* necessaire seulement pour Internet Explorer */
+}
+
+#navlist a
+{
+voice-family: "\"}\"";
+voice-family: inherit;
+width: 9.6em;
+/* Tantek-hack should only used if Internet-Explorer 6 is in standards-compliant mode */
+}
+
+#navcontainer>#navlist a
+{
+width: auto;
+/* only necessary if you use the hacks above for the Internet Explorer */
+}
+
+#navlist a:hover, #navlist a#courant:hover
+{	
+background: #28b;
+border-color: rgb(51,51,51) #6cf #5bd #fc0;
+padding: 0.4em 0.35em 0.25em 0.9em;
+}
+
+#navlist a:active, #navlist a#courant:active
+{
+background: #336699;
+border-color: #069 #6cf #5bd white;
+padding: 0.4em 0.35em 0.25em 0.9em;
+}
+</style>
 </head>
 
 <body bgcolor="#FFFFFF" link="#000000" vlink="#000000" alink="#000000" BACKGROUND="../images/espperso.jpg">
  <style>
-<!--
+ <!--
 a:link {text-decoration:none; color: #000FF; font-family:   arial, verdana ; font-size :10pt }
 a:visited {text-decoration: none; color: #999999; font-family: arial, verdana ; font-size: 10pt}
 a:active {text-decoration: none; color: #000099; font-family: arial, verdana ; font-size: 10pt}
 a:hover {text-decoration: none; color: #990000; font-family: arial, verdana ; font-size: 10pt}
 a.actif:link {text-decoration:none;color: #ff0000;background-color: #4169E1; font-family:   arial, verdana ; font-size : 10pt }
 
-body {}
 <?
 if (eregi('msie', $HTTP_USER_AGENT) )
 echo '
 #boite { position:absolute; top:45px; left:160px;}';
 else echo '
 #boite { position:absolute; top:40px; left:140px; }';
+
 ?>
+
 -->
 </style>
 
@@ -328,16 +402,25 @@ if($cible==""){$cible=($numero[0]);}
 //création de la barre de menu , couleur de fond # pour cellule active
 	//création du tableau , onglets élèves
 	
-	echo("<div align='left'><table  border='1' bordercolor='#C0C0C0'  cellspacing='0' cellpadding='0' bgcolor='#E6E6FA'>");
+	echo("<div align='left'><table  border='1' bordercolor='#C0C0C0'  cellspacing='0' cellpadding='0' bgcolor='#336699'>");
 	echo "<tr><td align='center' bgcolor='#000066'><b><font face=\"arial\"color=\"#FFFFFF\"size=2> Rubriques  </font></b></td></tr>";
+?>
+<tr><td>
+<div id="navcontainer">
+<ul id="navlist">
+<?		
 	for($x=0;$x < $nb;$x++)
 		{
 		if ($cible == ($numero[$x])) 
+		
 			{
-			echo("<tr><td   bgcolor='#4169E1' color='#ffffff'><font face=\"arial\"color=\"#FFFFFF\"size=2><b><div align='center' color='#FFFFFF'>
+				echo ("<li id='active'><a href='cahier_text_eleve.php?nvlkzei5qd1egz65=cv5e8daérfz8ge69&é&rubrique=
+			$numero[$x]&mlec547trg2s5hy=$ch&tsmp=$tsmp' id='courant'>&nbsp;$mat[$x]&nbsp;<br>&nbsp;$pref[$x]  $prof[$x]&nbsp;"."</a></li>");
+			
+			/*echo("<tr><td   bgcolor='#4169E1' color='#ffffff'><font face=\"arial\"color=\"#FFFFFF\"size=2><b><div align='center' color='#FFFFFF'>
 			&nbsp $mat[$x] &nbsp<br> &nbsp $pref[$x]   $prof[$x]&nbsp".
 			"</a></div></B></font></td></tr>");
-			//if (($restr[$x]) &&  $_SESSION['saclasse']!=$ch && $_SESSION['cequi']!="prof" && $_SESSION['cequi']!="administratif") $noAff=true;
+			//if (($restr[$x]) &&  $_SESSION['saclasse']!=$ch && $_SESSION['cequi']!="prof" && $_SESSION['cequi']!="administratif") $noAff=true;*/	
 			if ($visa[$x]) {
 			$vis="ok";
 			$datv=$datvisa[$x];
@@ -346,12 +429,21 @@ if($cible==""){$cible=($numero[0]);}
 			}
 			else 
 			{
-			echo("<tr><td ><div align='center'><a href='cahier_text_eleve.php?nvlkzei5qd1egz65=cv5e8daérfz8ge69&é&rubrique=
+			echo ("<li><a href='cahier_text_eleve.php?nvlkzei5qd1egz65=cv5e8daérfz8ge69&é&rubrique=
+			$numero[$x]&mlec547trg2s5hy=$ch&tsmp=$tsmp'>&nbsp;$mat[$x]&nbsp;<br>&nbsp;$pref[$x]  $prof[$x]&nbsp;"."</a></li>");
+			/*echo("<tr><td ><div align='center'><a href='cahier_text_eleve.php?nvlkzei5qd1egz65=cv5e8daérfz8ge69&é&rubrique=
 			$numero[$x]&mlec547trg2s5hy=$ch&tsmp=$tsmp'>&nbsp $mat[$x] &nbsp <br> &nbsp $pref[$x]  $prof[$x] &nbsp "."</a></div></td></tr>");
+			*/
 			}
+		
+		
 		}
-	echo('<tr VALIGN=TOP ><td  align="center" ><img src="../images/author1.png" onMouseover="this.src=\'../images/author.png\'"
+	 
+	echo '</ul></div>';
+	echo '</td></tr>';	
+	echo('<tr VALIGN=TOP ><td  align="center" bgcolor="#FFFFFF"><img src="../images/author1.png" onMouseover="this.src=\'../images/author.png\'"
 		onMouseout="this.src=\'../images/author1.png\'" border="0"></td></tr></table></div></td>');
+		
 	}
 else 
 	{ 
@@ -389,7 +481,7 @@ if ($_SESSION['version']=">=432") setlocale(LC_TIME,"french");
 		  $jour=LeJour(strToTime($ligne[5]));
 		  echo ("  
 		  <TR VALIGN=TOP >
-				<TD  align=left WIDTH=30% BGCOLOR=\"#4169E1\"> 
+				<TD  align=left WIDTH=30% BGCOLOR=\"#336699\"> 
 					<font face=\"Arial\"color=\"#FFFFFF\"size=2><B>Séance du  ".$jour." $ligne[0]</B></font>
 					</td><td>
 				</TD>

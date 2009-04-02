@@ -52,7 +52,10 @@ if (mysql_num_rows($result)==0)
 include_once("../Includes/fonctions.inc.php");	
 require_once("../Includes/class.inputfilter_clean.php");
 include_once ('../Includes/markdown.php'); //convertisseur txt-->HTML
-
+if (mysql_num_rows($result)>7) 
+{$x=mysql_num_rows($result);
+$delta=40*((($x-1) - (($x-1) % 7)) / 7);
+}
 ?>
 
 <! cahier_textes_prof.php version 1.0 par Ph LECLERC - Lgt "Arcisse de Caumont" 14400 BAYEUX - philippe.leclerc1@ac-caen.fr >
@@ -139,6 +142,79 @@ tinyMCE.init({
 });
 
 </script>
+<style type="text/css">
+#navlist
+{
+color: white;
+background:#336699;
+border-bottom: 0.2em solid #336699;
+border-right: 0.2em solid #336699;
+padding: 0 1px;
+margin-left: 0;
+margin-bottom: 0;
+width: 10em;
+font: normal 0.8em Verdana, sans-serif;
+}
+
+#navlist li
+{
+list-style: none;
+margin: 0;
+font-size: 1em;
+}
+
+#navlist a
+{
+display: block;
+text-decoration: none;
+
+color: white;
+background: rgb(0,64,128);
+border-width: 1px;
+border-style: solid;
+border-color: #5bd #035 #068 #6cf;
+border-left: 1em solid #fc0;
+padding: 0.25em 0.5em 0.4em 0.75em;
+}
+
+#navlist a#courant { border-color: #5bd #035 #068 #f30; }
+
+#navlist a
+
+
+{
+width: 99%;
+/* necessaire seulement pour Internet Explorer */
+}
+
+#navlist a
+{
+voice-family: "\"}\"";
+voice-family: inherit;
+width: 9.6em;
+/* Tantek-hack should only used if Internet-Explorer 6 is in standards-compliant mode */
+}
+
+#navcontainer>#navlist a
+{
+width: auto;
+/* only necessary if you use the hacks above for the Internet Explorer */
+}
+
+#navlist a:hover, #navlist a#courant:hover
+{	
+background: #28b;
+border-color: rgb(51,51,51) #6cf #5bd #fc0;
+padding: 0.4em 0.35em 0.25em 0.9em;
+}
+
+#navlist a:active, #navlist a#courant:active
+{
+background: #336699;
+border-color: #069 #6cf #5bd white;
+padding: 0.4em 0.35em 0.25em 0.9em;
+}
+</style>
 </head>
 
 <body  link="#000000" vlink="#000000" alink="#000000" BACKGROUND="../images/espperso.jpg" >
@@ -151,19 +227,20 @@ a:hover {text-decoration: none; color: #990000; background-color: #FFFFCC ;font-
 
 body { }
 <?
+$test=80;
 if (eregi('msie', $HTTP_USER_AGENT) )
 echo '
-#boite1 { position:absolute; top:73px; left:10px;  z-index:1; }
-#boite2 { position:absolute; top:175px; left:200px;height:30px;z-index:1;  }
-#boite3 { position:absolute; top:255px; left:10px; z-index:1; }
-#boite4 { position:absolute; top:280px; left:700px;   }
-#boite5 { position:absolute; top:490px; left:10px;   }';
+#boite1 { position:absolute; top:'.($delta+73).'px; left:10px;  z-index:1; }
+#boite2 { position:absolute; top:'.($delta+175).'px; left:200px;height:30px;z-index:1;  }
+#boite3 { position:absolute; top:'.($delta+255).'px; left:10px; z-index:1; }
+#boite4 { position:absolute; top:'.($delta+280).'px; left:670px;   }
+#boite5 { position:absolute; top:'.($delta+490).'px; left:10px;   }';
 else echo '
-#boite1 { position:absolute; top:50px; left:10px;  z-index:1; }
-#boite2 { position:absolute; top:200px; left:200px;height:30px;z-index:1;  }
-#boite3 { position:absolute; top:215px; left:10px; z-index:1; }
-#boite4 { position:absolute; top:260px; left:720px;   }
-#boite5 { position:absolute; top:425px; left:10px;   }
+#boite1 { position:absolute; top:'.($delta+55).'px; left:10px;  z-index:1; }
+#boite2 { position:absolute; top:'.($delta+200).'px; left:200px;height:30px;z-index:1;  }
+#boite3 { position:absolute; top:'.($delta+220).'px; left:10px; z-index:1; }
+#boite4 { position:absolute; top:'.($delta+260).'px; left:690px;   }
+#boite5 { position:absolute; top:'.($delta+425).'px; left:10px;   }
 #bouton {
      margin-left: auto;
      margin-right: auto;
@@ -209,7 +286,8 @@ require_once ('../Includes/config.inc.php');
 if (isset($_GET['com'])&& isset($_GET['rubrique'])) 
 	{
 	//l'article existe il ?
-	$rq = "SELECT login  FROM cahiertxt	WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}')";	//$rq = "SELECT login FROM cahiertxt WHERE id_rubrique = 'toto' AND  (login='{$_SESSION['login']}')";
+	$rq = "SELECT login  FROM cahiertxt	WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}')";
+	//$rq = "SELECT login FROM cahiertxt WHERE id_rubrique = 'toto' AND  (login='{$_SESSION['login']}')";
  // lancer la requête
 	$result = @mysql_query ($rq) or die (mysql_error());
 	$nb = mysql_num_rows($result);
@@ -361,26 +439,37 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 	
 //on calcule la largeur des onglets
 if($cible==""){$cible=($numero[0]);}
-$pourcen = 100/$nb;
+if ($nb<7) $nmax=7;
+ else $nmax=$nb;
+ 
+//création de la barre de menu 
+echo("<table  border='1'  cellspacing='0' cellpadding='0'>");	
+echo '<tr><div id="navcontainer">';
 
-//création de la barre de menu , couleur de fond # pour l'onglet actif
-echo("<table width='100%' border='1' bordercolor='#E6E6FF'  cellspacing='0' cellpadding='0'><tr bgcolor='#cccccc' >");
-for($x=0;$x < $nb;$x++)
+for($x=0;$x < $nmax;$x++)
 	{
 		if ($cible == ($numero[$x]))
-			{
-			echo("<td width='$pourcen%' bgcolor='#4169E1' color='#ffffff'><font face=\"arial\"color=\"#FFFFFF\"size=2>
-			<B><div align='center' color='#FFFFFF'><B> $mat[$x]<br>$clas[$x]"."</a></div></td>");
-			//contenu du post-it de la rubrique active
+			{//cellule active				
+			echo ("<td ><ul id='navlist'><a href='cahier_texte_prof.php?rubrique=$numero[$x]'
+			'onmouseover=\"window.status='';return true\" id='courant'>$mat[$x]<br>$clas[$x] "."</a></td></ul>");	
 			$contenu_postit=$com[$x];
 			}
 		else 
 			{
-			echo("<td width='$pourcen%'><div align='center'><a href='cahier_texte_prof.php?rubrique=$numero[$x]'
-			'onmouseover=\"window.status='';return true\" >$mat[$x]<br>$clas[$x]</a></div></td>");
+			if (!isset($mat[$x])) $mat[$x]="&nbsp;";
+			if (!isset($clas[$x])) $clas[$x]="&nbsp; ";
+			if (!isset($numero[$x]))
+			echo ("<td><ul id='navlist'><a href='#'>$mat[$x]<br>$clas[$x]"."</a></td></ul>");
+			else
+			echo ("<td width='12em'><ul id='navlist'><a href='cahier_texte_prof.php?rubrique=$numero[$x]'
+			'onmouseover=\"window.status='';return true\" >$mat[$x]<br>$clas[$x]"."</a></td></ul>");
 			}
+			//on change de ligne tous les 7 onglets
+			if (($x+1) % 7==0 ) echo '</tr><tr>';
 	}
-echo("</tr></table>");
+
+echo '</div></tr></table>';
+
 
 //Affichage d'une boite de confirmation d'effacement
 if (isset($_POST["suppr"]))
@@ -534,7 +623,7 @@ $result = @mysql_query ($rq) or die (mysql_error());
 // Combien y a-t-il d'enregistrements ?
 $nb2 = mysql_num_rows($result); 
 
-echo('<div  id="boite5" ><TABLE WIDTH=100% BORDER=1 CELLPADDING=1 CELLSPACING=1  >
+echo('<div  id="boite5" ><TABLE WIDTH=960px BORDER=0CELLPADDING=1 CELLSPACING=1  >
 	');
 while ($ligne = mysql_fetch_array($result, MYSQL_NUM)) 
 	  { 
@@ -546,11 +635,11 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  //debut
 	  echo ("  <TR><TD color=\"#FFFFFF\" ></TD></TR>	  
 	  <TR VALIGN=middle >
-	  <TD align=center WIDTH=25% BGCOLOR=\"#4169E1\">
+	  <TD align=center WIDTH=25% BGCOLOR=\"#336699\">
 	  <font face=\"Arial\"color=\"#FFFFFF\"size=2><B>Séance du ".$jour." $ligne[0]</B></font></TD>");
 	  echo "<FORM ACTION='";
 	  echo htmlentities($_SERVER["PHP_SELF"]);
-	  echo "' METHOD='POST'><td align=left WIDTH=15% colspan=1>
+	  echo "' METHOD='POST'><td align=left WIDTH=17% colspan=1>
 	  <input type='hidden' name='number' value= '";
 	  echo $ligne[4];
 	  echo "' ><input type='hidden' name='rubriq' value= '";
@@ -561,9 +650,9 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  </form>"."
 	  <TD color=\"#FFFFFF\" ></TD></TR>
 	  <TR VALIGN=TOP >
-	  <TD align=left WIDTH=100% colspan=3 BGCOLOR=\"#E6E6FA\"><font face='Arial' color='#0000cc' size=2>$textcours</font></TD></TR>";
+	  <TD align=left  colspan=3 BGCOLOR=\"#E6E6FA\"><font face='Arial' color='#0000cc' size=2>$textcours</font></TD></TR>";
 	  if($ligne[2]!="") 
-	  echo ("<TR VALIGN=TOP ><TD WIDTH=100% colspan=3 BGCOLOR=\"#E6E6FA\"><font face=\"Arial\"color=\"#cc0000\"size=2>
+	  echo ("<TR VALIGN=TOP ><TD  colspan=3 BGCOLOR=\"#E6E6FA\"><font face=\"Arial\"color=\"#cc0000\"size=2>
 	  <B>A faire pour le :</B> $ligne[3] <BR> </font><font face=\"Arial\"color=\"#009900\"size=2>$textafaire</font></TR>");
 	  //fin
 	  echo("<TR></TR><TR></TR><TR></TR><TR></TR><TR></TR><TR></TR>");
@@ -573,9 +662,9 @@ echo "</table>";
 include ('../Includes/pied.inc');
 echo "</div>";  
 if (eregi('msie', $HTTP_USER_AGENT) )
-echo '<div  style="top:70;left:660; position:absolute;">';
+echo '<div  style="top:'.(70+$delta).';left:630; position:absolute;">';
 else 
-echo '<div  style="top:30; left:660; position:absolute;">';
+echo '<div  style="top:'.(30+$delta).'; left:638; position:absolute;">';
 
 ?>
 <SCRIPT language="Javascript" src="../Includes/barre_java.js"></SCRIPT>

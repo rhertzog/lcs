@@ -59,6 +59,80 @@ session_name("Cdt_Lcs");
 	<META NAME="CREATED" CONTENT="20041027;9273332">
 	<META NAME="CHANGED" CONTENT="20041029;16402790">
 	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+#navlist
+{
+color: white;
+background:#336699;
+border-bottom: 0.2em solid #336699;
+border-right: 0.2em solid #336699;
+padding: 0 1px;
+margin-left: 0;
+margin-bottom: 0;
+width: 10em;
+font: normal 0.8em Verdana, sans-serif;
+}
+
+#navlist li
+{
+list-style: none;
+margin: 0;
+font-size: 1em;
+}
+
+#navlist a
+{
+display: block;
+text-decoration: none;
+
+color: white;
+background: rgb(0,64,128);
+border-width: 1px;
+border-style: solid;
+border-color: #5bd #035 #068 #6cf;
+border-left: 1em solid #fc0;
+padding: 0.25em 0.5em 0.4em 0.75em;
+}
+
+#navlist a#courant { border-color: #5bd #035 #068 #f30; }
+
+#navlist a
+
+
+{
+width: 99%;
+/* necessaire seulement pour Internet Explorer */
+}
+
+#navlist a
+{
+voice-family: "\"}\"";
+voice-family: inherit;
+width: 9.6em;
+/* Tantek-hack should only used if Internet-Explorer 6 is in standards-compliant mode */
+}
+
+#navcontainer>#navlist a
+{
+width: auto;
+/* only necessary if you use the hacks above for the Internet Explorer */
+}
+
+#navlist a:hover, #navlist a#courant:hover
+{	
+background: #28b;
+border-color: rgb(51,51,51) #6cf #5bd #fc0;
+padding: 0.4em 0.35em 0.25em 0.9em;
+}
+
+#navlist a:active, #navlist a#courant:active
+{
+background: #336699;
+border-color: #069 #6cf #5bd white;
+padding: 0.4em 0.35em 0.25em 0.9em;
+}
+</style>
+	
 </HEAD>
 <BODY LANG="fr-FR" TEXT="#000000" BACKGROUND="../images/espperso.jpg">
 <style>
@@ -278,37 +352,43 @@ if ($nb>0)
 	( cliquer sur un onglet pour <B><FONT SIZE="3" color="#660000">Modifier</FONT></B> la rubrique associée ) </H4>');
 	
 	//création du tableau , onglets prof
-	echo("<div align='left'><table width='100%' border='1' bordercolor='#E6E6FF'  cellspacing='0' cellpadding='0'><tr bgcolor='#cccccc' >");
-	for($x=0;$x < $nb;$x++)
-		{
-		if ($x==0) 
-			{
-			echo("<td width='$pourcen%' bgcolor='#4169E1'><div align='center'><B><a href='config_ctxt.php?modrub=erg45er5ze&num=$numero[$x]'title='Modifier cette rubrique'>$mat[$x]<br>$clas[$x]"."</a></b></div></td>");
-			}
-			else 
-			{
-			echo("<td width='$pourcen%'><div align='center'><a href='config_ctxt.php?modrub=erg45er5ze&num=$numero[$x]'title='Modifier cette rubrique'>$mat[$x]<br>$clas[$x]</a></div></td>");
-			}
-		}
+	echo("<div align='center'><table border='1' bordercolor='#E6E6FF'  cellspacing='0' cellpadding='0'>");
+	echo '<tr><div id="navcontainer">';
+	if ($nb<7) $nmax=7;
+ 	else $nmax=$nb;
+	for($x=0;$x < $nmax;$x++)
+		{	if (!isset($mat[$x])) $mat[$x]="&nbsp;";
+			if (!isset($clas[$x])) $clas[$x]="&nbsp; ";
+			if (!isset($numero[$x]))
+			echo "<td><ul id='navlist'><a href='#'>".$mat[$x]."<br>".$clas[$x]."</a></td></ul>";
+			else
+			echo "<td width='12em'><ul id='navlist'><a href='config_ctxt.php?modrub=erg45er5ze&num=". $numero[$x]."' title='Modifier cette rubrique'>".$mat[$x]."<br>".$clas[$x]."</a></td></ul>";
+		
+			//on change de ligne tous les 7 onglets
+			if (($x+1) % 7==0 ) echo '</tr><tr>';
+	}
+		
 	echo("</tr></table></div><br>");
 	echo ('<H4> Aspect des onglets du cahier de textes des élèves
 	( cliquer sur un onglet pour <B><FONT SIZE="3" color="#660000">Supprimer</FONT></B> la rubrique associée )</H4>');
 	
 //création du tableau , onglets élèves
-	echo("<div align='left'><table width='100%' border='1' bordercolor='#E6E6FF'  cellspacing='0' cellpadding='0'><tr bgcolor='#cccccc' >");
-	for($x=0;$x < $nb;$x++)
-		{
-		if ($x==0) 
-			{
-			echo("<td width='$pourcen%' bgcolor='#4169E1'><div align='center'><B><a href='config_ctxt.php?suppr=yes&numong=$numero[$x]'title='Supprimer cette rubrique'>$mat[$x]<br>$pref[$x]  $prof[$x]"."</a></b></div></td>");
-			}
-			else 
-			{
-			echo("<td width='$pourcen%'><div align='center'><a href='config_ctxt.php?suppr=yes&numong=$numero[$x]'title='Supprimer cette rubrique'>$mat[$x]<br>$pref[$x]  $prof[$x]</a></div></td>");
-			}
-		}
+	echo("<div align='center'><table border='1' bordercolor='#E6E6FF'  cellspacing='0' cellpadding='0'>");
+		for($x=0;$x < $nmax;$x++)
+		{	if (!isset($mat[$x])) $mat[$x]="&nbsp;";
+			if (!isset($pref[$x])) $pref[$x]="&nbsp; ";
+			if (!isset($prof[$x])) $prof[$x]="&nbsp; ";
+			if (!isset($numero[$x]))
+			echo "<td><ul id='navlist'><a href='#'>".$mat[$x]."<br>".$pref[$x] .$prof[$x]."</a></td></ul>";
+			else
+			echo "<td width='12em'><ul id='navlist'><a href='config_ctxt.php?suppr=yes&numong=$numero[$x]'title='Supprimer cette rubrique'>$mat[$x]<br>$pref[$x]  $prof[$x]</a></td></ul>";
+		
+			//on change de ligne tous les 7 onglets
+			if (($x+1) % 7==0 ) echo '</tr><tr>';
+	}	
 	echo("</tr></table></div><br>");
 	}
+	
 //ouverture d'un popup de confirmation de suppression
 if (isset($_GET["suppr"])){
 echo "<script type='text/javascript'>";
