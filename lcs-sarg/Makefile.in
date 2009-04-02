@@ -1,0 +1,106 @@
+# Makefile.in for sarg
+
+CC 		= @CC@
+BINDIR   	= @BINDIR@
+IBINDIR   	= -DBINDIR=\"@BINDIR@\"
+MANDIR		= @MANDIR@
+SYSCONFDIR	= @SYSCONFDIR@
+HTMLDIR		= @HTMLDIR@
+ISYSCONFDIR	= -DSYSCONFDIR=\"@SYSCONFDIR@\"
+IHTMLDIR	= -DHTMLDIR=\"@HTMLDIR@\"
+CFLAGS 		= @CFLAGS@
+CPPFLAGS	= @CPPFLAGS@
+LDFLAGS 	= @LDFLAGS@
+DEFS            = @DEFS@ 
+LIBS            = @LIBS@ 
+SRCDIR 		= .
+VPATH 		= .
+INSTALL 	= cp
+
+INSTALL_PROGRAM = $(INSTALL)
+
+SRCS = util.c log.c report.c topuser.c email.c sort.c html.c \
+       totger.c index.c getconf.c usage.c decomp.c ip2name.c \
+       useragent.c exclude.c convlog.c totday.c repday.c datafile.c\
+       indexonly.c splitlog.c lastlog.c topsites.c siteuser.c css.c \
+       smartfilter.c denied.cauthfail.c language.c charset.c \
+       squidguard_log.c squidguard_report.c auth.c download.c grepday.c \
+       dansguardian_log.c dansguardian_report.c realtime.c
+OBJS = util.o log.o report.o topuser.o email.o sort.o html.o \
+       totger.o index.o getconf.o usage.o decomp.o ip2name.o \
+       useragent.o exclude.o convlog.o totday.o repday.o datafile.o \
+       indexonly.o splitlog.o lastlog.o topsites.o siteuser.o css.o \
+       smartfilter.o denied.o authfail.o language.o charset.o \
+       squidguard_log.o squidguard_report.o auth.o download.o grepday.o \
+       dansguardian_log.o dansguardian_report.o realtime.o
+
+DISTFILES = $(SRCS)
+
+all: sarg
+
+.c.o:
+	$(CC) -c -I. $(CPPFLAGS) $(DEFS) $(CFLAGS) $(IBINDIR) $(ISYSCONFDIR) $(IHTMLDIR) $<
+
+sarg: $(OBJS)
+	$(CC) $(LDFLAGS) $(LIBS) $(OBJS) $(LIBCRYPT) -o $@
+
+install: all
+	-@if test ! -d $(DESTDIR)$(BINDIR); then \
+		echo "creating $(DESTDIR)$(BINDIR)"; \
+		mkdir $(DESTDIR)$(BINDIR); \
+	fi
+	-@if test ! -d $(DESTDIR)$(MANDIR); then \
+		echo "creating $(DESTDIR)$(MANDIR)"; \
+		mkdir -p $(DESTDIR)$(MANDIR); \
+	fi
+	-@if test ! -d $(DESTDIR)$(SYSCONFDIR); then \
+		echo "creating $(DESTDIR)$(SYSCONFDIR)"; \
+		mkdir $(DESTDIR)$(SYSCONFDIR); \
+	fi
+	-@if test ! -d $(DESTDIR)$(SYSCONFDIR)/languages; then \
+		echo "Creating $(DESTDIR)$(SYSCONFDIR)/languages"; \
+		mkdir $(DESTDIR)$(SYSCONFDIR)/languages; \
+	fi
+	-@if test ! -d $(DESTDIR)$(SYSCONFDIR)/fonts; then \
+		echo "Creating $(DESTDIR)$(SYSCONFDIR)/fonts"; \
+		mkdir $(DESTDIR)$(SYSCONFDIR)/fonts; \
+	fi
+	$(INSTALL_PROGRAM) sarg $(DESTDIR)$(BINDIR)/sarg
+	chmod 755 $(DESTDIR)$(BINDIR)/sarg
+	$(INSTALL_PROGRAM) sarg.1 $(DESTDIR)$(MANDIR)/sarg.1
+	chmod 755 $(DESTDIR)$(MANDIR)/sarg.1
+	@if test ! -f $(DESTDIR)$(SYSCONFDIR)/sarg.conf; then \
+		echo "cp $(DESTDIR)$(SYSCONFDIR)/sarg.conf"; \
+		cp sarg.conf $(DESTDIR)$(SYSCONFDIR)/sarg.conf; \
+	else \
+		cp sarg.conf $(DESTDIR)$(SYSCONFDIR)/sarg.conf.default; \
+	fi
+	cp -r ./languages $(DESTDIR)$(SYSCONFDIR);
+	cp ./exclude_codes $(DESTDIR)$(SYSCONFDIR);
+	cp ./user_limit_block $(DESTDIR)$(SYSCONFDIR);
+	cp -r ./images $(DESTDIR)$(SYSCONFDIR);
+	#cp -r ./sarg-php $(DESTDIR)$(SYSCONFDIR);
+	cp -r ./fonts $(DESTDIR)$(SYSCONFDIR);
+	#cp -r ./css.tpl $(DESTDIR)$(SYSCONFDIR);
+	-@if test -d $(DESTDIR)$(HTMLDIR); then \
+		cp -r ./sarg-php $(DESTDIR)$(HTMLDIR);	\
+	fi
+
+uninstall:
+	rm -f $(BINDIR)/sarg
+	rm -f $(MANDIR)/sarg.1
+
+TAGS: $(SRCS)
+	etags $(SRCS)
+
+clean:
+	rm -f sarg *.o core
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status config.cache config.log
+
+realclean: distclean
+	rm -f TAGS
+

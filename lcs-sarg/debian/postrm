@@ -1,0 +1,25 @@
+#! /bin/sh
+# postrm script for LCS sarg
+
+set -e
+case "$1" in
+	purge|remove)
+            #
+            # Comment menu statistiques squid in menu 40stats.inc
+            #
+            if [ -e /var/www/lcs/includes/menu.d/40stats.inc ]; then
+                sed -i "s/.*Mandataire.*/#\t\"Mandataire cache\",\"..\/squid-reports\/\",\"lcs_is_admin\",/" /var/www/lcs/includes/menu.d/40stats.inc
+            fi
+        ;;
+
+	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+        ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+
+esac
+
+exit 0

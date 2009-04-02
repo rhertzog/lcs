@@ -1,0 +1,144 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH SARG 1 "September 25, 2004"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+sarg \- Squid Analysis Report Generator
+.SH SYNOPSIS
+.B sarg
+.RI [ options ]
+.SH DESCRIPTION
+\fBsarg\fP is a logfile parser and anylizer for the \fBSquid Web Proxy Cache\fP,
+which can be found at \fBhttp://www.squid-cache.org/\fP.
+This manual page documents briefly the
+.B sarg
+command.  More information is available at \fBhttp://sarg.sourceforge.net/\fP.
+This manual page was originally written for the Debian distribution
+because the author didn't include one in favor of documentation
+in the GNU Info format; see below.
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics, 
+.\" respectively.
+\fBsarg\fP is a tool that allows you to view "where" your users are going to on
+the Internet. \fBsarg\fP generates reports in HTML, with fields such as: users,
+IP Addresses, bytes, sites, and times.  These HTML files can appear in your
+web server's directory for browsing by users or administrators.  You may also
+have \fBsarg\fP email the reports to the Squid Cache administrator.
+.PP
+\fBsarg\fP can take the \fBsquid\fP access log as its input, or optionally the
+\fBsquidGuard http://www.squidguard.org/\fP Squid filter/redirector logfile format.
+.SH OPTIONS
+A summary of options is included below.
+.TP
+.B \-h
+Show summary of options.
+.TP
+.B \-a [hostname|ip address]
+Limits report to records containing the specified hostname/ip address
+.TP
+.B \-b filename
+Enables UserAgent log and writes it to
+.IR "filename".
+.TP
+.B \-c filename
+Uses
+.IR "filename"
+as the exclude files to select records that are not counted.
+.TP
+.B \-d date
+Uses
+.IR "date"
+as the timelimit during logfile processing. Format for
+.IR "date"
+is
+.B dd/mm/yyyy-dd/mm/yyyy
+.TP
+.B \-e email
+Sends report to
+.IR "email"
+(stdout for console).
+.TP
+.B \-f filename
+Reads configuration from
+.IR "filename".
+.TP
+.B \-g e|u
+Sets date format in generated reports.
+.br
+\fBe\fP = Europe -> dd/mm/yy
+.br
+\fBu\fP = USA    -> mm/dd/yy
+.TP
+.B \-i
+Generates reports by user and ip address.
+.br
+\fBNOTE:\fP This requires the 'report_type'
+option in config file to contain "users_sites".
+.TP
+.B \-l filename
+Uses
+.IR "filename"
+as the input log.
+.TP
+.B \-n
+Enables ip address resolution.
+.TP
+.B \-o dir
+Writes report in
+.IR "dir".
+.TP
+.B \-p
+Generates reports using ip address instead of userid.
+.TP
+.B \-s string
+Limits report to the site specified by
+.IR "string
+[eg. www.debian.org]
+.TP
+.B \-t string
+Limits records counted in statistics based on time-of-day. Format for
+\fIstring\fP is \fBHH\fP or \fBHH:MM\fP or \fBHH:MM:SS\fP.
+.TP
+.B \-u user
+Limits reports to \fIuser\fP activities.
+.TP
+.B \-w dir
+Uses \fIdir\fP for temporary files.
+.TP
+.B \-x
+Writes messages on processes to \fBSTDOUT\fP
+.TP
+.B \-x
+Writes debug messages to \fBSTDOUT\fP
+.TP
+.B \-convert
+Convert the logfile's date/time field to human-readable.
+.TP
+.B \-split
+Split the log file by date in \fB-d\fP parameter.
+.SH FILES
+.BR /etc/squid/sarg.conf
+.br
+.B /var/log/squid/access.log
+.br
+.B /var/log/squid/squidGuard.log
+.SH SEE ALSO
+squid(8)
+.SH AUTHOR
+This manual page was written by Luigi Gangitano <gangitano@lugroma3.org>,
+for the Debian GNU/Linux system (but may be used by others).  Revised
+by Billy Newsom.
