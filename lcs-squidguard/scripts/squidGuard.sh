@@ -106,7 +106,72 @@ case $ARG in
        echo "Liste noire blog di?1/2validi?1/2e" 
        cat /etc/squid/squidGuard.conf | sed -e "s/!blog //g" > /etc/squid/squidGuard.conf.tmp
        mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
-   ;;	
+   ;;
+   malwareOn)
+       echo "Liste noire malware validi?1/2e"
+       RES=`grep '!malware' /etc/squid/squidGuard.conf`
+       if [ "x$RES" = "x" ]; then
+         cat /etc/squid/squidGuard.conf | sed -e "s/pass /pass !malware /g" > /etc/squid/squidGuard.conf.tmp
+         mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+       fi
+   ;;
+   malwareOff)
+       echo "Liste noire malware di?1/2validi?1/2e" 
+       cat /etc/squid/squidGuard.conf | sed -e "s/!malware //g" > /etc/squid/squidGuard.conf.tmp
+       mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+   ;;
+   adsOn)
+       echo "Liste noire publicite validi?1/2e"
+       RES=`grep '!ads' /etc/squid/squidGuard.conf`
+       if [ "x$RES" = "x" ]; then
+         cat /etc/squid/squidGuard.conf | sed -e "s/pass /pass !ads /g" > /etc/squid/squidGuard.conf.tmp
+         mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+       fi
+   ;;
+   adsOff)
+       echo "Liste noire publicite di?1/2validi?1/2e"
+       cat /etc/squid/squidGuard.conf | sed -e "s/!ads //g" > /etc/squid/squidGuard.conf.tmp
+       mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+   ;;
+   redirecteursOn)
+       echo "Liste noire redirecteurs validi?1/2e"
+       RES=`grep '!redirector' /etc/squid/squidGuard.conf`
+       if [ "x$RES" = "x" ]; then
+         cat /etc/squid/squidGuard.conf | sed -e "s/pass /pass !redirector /g" > /etc/squid/squidGuard.conf.tmp
+         mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+       fi
+   ;;
+   redirecteursOff)
+       echo "Liste noire redirecteurs di?1/2validi?1/2e" 
+       cat /etc/squid/squidGuard.conf | sed -e "s/!redirector //g" > /etc/squid/squidGuard.conf.tmp
+       mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+   ;;
+   maketingwareOn)
+       echo "Liste noire maketingware validi?1/2e"
+       RES=`grep '!maketingware' /etc/squid/squidGuard.conf`
+       if [ "x$RES" = "x" ]; then
+         cat /etc/squid/squidGuard.conf | sed -e "s/pass /pass !maketingware /g" > /etc/squid/squidGuard.conf.tmp
+         mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+       fi
+   ;;
+   maketingwareOff)
+       echo "Liste noire maketingware di?1/2validi?1/2e" 
+       cat /etc/squid/squidGuard.conf | sed -e "s/!maketingware //g" > /etc/squid/squidGuard.conf.tmp
+       mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+   ;;
+   phishingOn)
+       echo "Liste noire phishing validi?1/2e"
+       RES=`grep '!phishing' /etc/squid/squidGuard.conf`
+       if [ "x$RES" = "x" ]; then
+         cat /etc/squid/squidGuard.conf | sed -e "s/pass /pass !phishing /g" > /etc/squid/squidGuard.conf.tmp
+         mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+       fi
+   ;;
+   phishingOff)
+       echo "Liste noire phishing di?1/2validi?1/2e" 
+       cat /etc/squid/squidGuard.conf | sed -e "s/!phishing //g" > /etc/squid/squidGuard.conf.tmp
+       mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
+   ;;
    forumsOn)
        echo "Liste noire forums validée"
        RES=`grep '!forums' /etc/squid/squidGuard.conf`
