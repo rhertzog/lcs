@@ -78,19 +78,20 @@ if [ -d $1 ]; then
         read REP
         if [ ! "$REP" = "n" ] && [ ! "$REP" = "N" ] ; then
             echo "Transfert du paquet $1_$2_all.deb distribution $3 :"
-            if [ "$3" == "sarge" ];then
+            if [ "$3" = "sarge" ];then
                 scp -P 2222 /home/ftp/debian/dists/$3/$BRANCHE/binary-i386/$1_$2_all.* pacman@193.49.66.139:/home/ftp/debian/dists/$3/$BRANCHE/binary-i386/
-                if [ "$BRANCHE" == "Lcs" ];then
+                if [ "$BRANCHE" = "Lcs" ];then
                     ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs sarge Lcs'
-                elif [ "$BRANCHE" == "LcsTesting" ];then
+                elif [ "$BRANCHE" = "LcsTesting" ];then
                     ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs sarge LcsTesting'
-                elif [ "$BRANCHE" == "LcsXP" ];then
+                elif [ "$BRANCHE" = "LcsXP" ];then
                     ssh -p 2222 -l pacman 193.49.66.139 '/home/pacman/scanpackageslcs sarge LcsXP'
                 else
                     echo "Pas de scanpackage distant"
                 fi 
-            elif [ "$3" == "etch" ];then
-                echo " Méthode dput"
+            elif [ "$3" = "etch" ];then
+                cd $CHEMIN
+                echo " Méthode dput $CHEMIN"
                 dput $INCOMING ../build-area/$1_$2_i386.changes
             else
                 echo "Pas de transfert, distribution $3 inconnue !"
