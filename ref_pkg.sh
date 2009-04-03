@@ -1,46 +1,31 @@
 #!/bin/bash
 # Misterphi 
-# Version du : 04/10/2008 
+# Version du : 03/04/2009 
 # $1 : repertoire source du paquet
 # $2 : N° de version
 # $3 : Branche stable, testing ou xp
-# $4 : Repository :BacASable ou LCS
-# $5 : (optionnel) Nécessaire uniquement si le module est nouveau dans la branche (c.a.d s'il n'existe pas de version antérieure). 
-# Ce paramčtre doit correspondre ŕ la description du module qui sera insérée dans lcs_db.applis (voir le postinst)
+# $4 : (optionnel) Necessaire uniquement si le module est nouveau dans la branche (c.a.d s'il n'existe pas de version anterieure). 
+# Ce parametre doit correspondre a la description du module qui sera inseree dans lcs_db.applis (voir le postinst)
 
 
-if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4"  ]; then
-        echo "Script destiné referencer un paquet Debian LCS-*"
+if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] ; then
+        echo "Script destine referencer un paquet Debian LCS-*"
         echo ""
-        echo "Usage : ref_pkg <repertoire source du paquet> <N° de Version>  <branche de destination> <Repository> <description>"
+        echo "Usage : ref_pkg <repertoire source du paquet> <N° de Version>  <branche de destination> <description>"
         echo "Les branches possibles sont : stable testing experimentale (ou xp) "
-        echo "Les repository possibles sont BacASable ou LCS"
-        echo "Exemple : ./ref_pkg.sh lcs-pla 2.1~2 xp LCS 'Administration web serveur LDAPLCS' "
+        echo "Exemple : ./ref_pkg.sh lcs-pla 2.1~2 xp 'Administration web serveur LDAPLCS' "
         exit
 fi
 
-
     
-#======== Référencement du paquet si c'est un modules LCS ===================     
+#======== Referencement du paquet si c'est un modules LCS ===================     
 # by misterphi
 Module=`echo $1 | cut -d- -f2`
+CheminDoc="$1/doc-html"
+Deb="debian"
 
-if [ "$4" == "LCS" ];then
-	cd ../../../../LCS/LCS2.0/sources/trunk/
-	CheminDoc="$1/usr/share/doc/lcs/$Module/html"
-	Deb="DEBIAN"
-	elif [ "$4" == "BacASable" ];then
-	CheminDoc="$1/doc-html"
-	Deb="debian"
-	else
-	echo "repository errone"
-	exit
-fi
-
-	
-
-# test si le paquet est un module 
-if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postinst ; then
+# test si le paquet est un module
+if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postinst || grep -q ", 'N');\"$" $1/$Deb/postinst ; then
 	echo "Voulez vous referencer le module $1 (O/N)"
     	read reponse
     	if [  "$reponse" = "O" ] || [  "$reponse" = "o" ] ; then
@@ -64,7 +49,7 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 		
 		Repcourant=`pwd`
 		#
-		# on télécharge le xml correspondant
+		# on telecharge le xml correspondant
 		#
 		cd /tmp;
 		if [ -e moduleslcs.xml ]; then 
@@ -75,12 +60,12 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 		wget -q --cache=off $urlxml
 		echo "Modification du fichier xml"
 		# 
-		# le paquet est-il déjŕ référencé dans le xml ?
+		# le paquet est-il deja reference dans le xml ?
 		#
 		
 		if grep -q $Module moduleslcs.xml;then
-			#paquet déja référencé 
-			#on récupčre le n° ligne de la section 
+			#paquet deja reference 
+			#on recupere le n° ligne de la section 
 			filtre="nom=\"$Module"
 			nligne=`grep -n $filtre moduleslcs.xml | cut -d: -f1`
 			#on pointe sur la ligne contenant la  version
@@ -89,16 +74,16 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 			cat moduleslcs.xml | sed $nligne,$nligne"s/\".*\"/\"$2\"/g" > moduleslcs.tmp
 		else
 			#nouveau paquet
-			#affectation de l'intitulé 
-			if [ -z "$5" ]; then
+			#affectation de l'intitule 
+			if [ -z "$4" ]; then
 				intitule=$Module
 			else
-				intitule=$5
+				intitule=$4
 			fi		
-			# on récupčre le n° de la derničre ligne
+			# on recupere le n° de la derničre ligne
 			filtre="</modules>"
 			lastligne=`grep -n $filtre moduleslcs.xml | cut -d: -f1`
-			#on crée un fichier d'insertion sed
+			#on cree un fichier d'insertion sed
 			echo $lastligne"i\\" > section.txt
 			echo "	<module nom=\"$Module\"> \\" >>section.txt
 			echo "	<intitule>$intitule</intitule> \\"  >>section.txt
@@ -157,5 +142,5 @@ else
 	echo " ce paquet n'est pas un module LCS, il n'a donc pas ete refrence dans le fichier xml."	
 fi
 
-#======= Fin de la section référencement du module ==========================    
+#======= Fin de la section refeerencement du module ==========================    
 
