@@ -10,13 +10,13 @@ require ("en-tete.php");
 
 // Verifie les droits
 if (is_admin("lcs_is_admin",$login)=="Y") {
-$PTP="/usr/share/lcs/Plugins/Bcdiweb";
+$PTP="/usr/share/lcs/bcdiweb";
 echo "<H1>Actualisation des donn&eacute;es</H1>\n";
 
 if (isset($_GET["rsync"])) {
 	system("$PTP/scripts/syncbcdi.sh");
 } else if (isset($_GET["cron"])) {
-	system("echo \"$min $hour * * 0-5 www-data  /usr/share/lcs/Plugins/Bcdiweb/scripts/syncbcdi.sh\" > /etc/cron.d/bcdiweb");
+	system("echo \"$min $hour * * 0-5 www-data  /usr/share/lcs/bcdiweb/scripts/syncbcdi.sh\" > /etc/cron.d/bcdiweb");
 } else
 
 {					       

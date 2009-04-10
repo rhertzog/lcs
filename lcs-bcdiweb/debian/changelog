@@ -1,3 +1,9 @@
+lcs-bcdiweb (1.91-1~6) unstable; urgency=low
+
+  * bugfix : path in conf files
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 10 Apr 2009 13:00:52 +0200
+
 lcs-bcdiweb (1.91-1~5) unstable; urgency=low
 
   * fix Makefile

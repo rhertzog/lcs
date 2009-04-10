@@ -22,7 +22,7 @@ case "$1" in
     configure)
 	mkdir -p /home/BcdiPlug/Data
 	chown -R www-data /home/BcdiPlug
-	mysql -e "INSERT INTO lcs_db.applis VALUES(38, 'Bcdiweb', '1', 'Plugin BCDI Web pour Lcs', 2, '1.91', 'Bcdiweb', 'P');"
+	mysql -e "INSERT INTO lcs_db.applis VALUES(38, 'Bcdiweb', '1', 'Plugin BCDI Web pour Lcs', 2, '1.91', '../bcdiweb', 'P');"
 	 if [ -x /usr/sbin/invoke-rc.d ]; then
                 invoke-rc.d apache2 restart
         else
