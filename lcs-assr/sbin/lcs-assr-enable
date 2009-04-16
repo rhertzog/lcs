@@ -1,8 +1,8 @@
 #!/bin/bash
 
-result=`grep assr /etc/bind/localnet.db`
+result=`grep assr /etc/bind/localnet.db|wc -l`
 
-if [ "$result" = 1 ]; then
+if [ "$result" = 0 ]; then
         ## Bind
         cp /etc/bind/localnet.db /etc/bind/localnet.db.noassr
         oldserial=`cat /etc/bind/localnet.db | grep -i serial`

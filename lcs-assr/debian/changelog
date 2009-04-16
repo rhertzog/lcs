@@ -1,3 +1,9 @@
+lcs-assr (2.1~2) Lcs; urgency=low
+
+  * assr-ensable detection fix
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 16 Apr 2009 10:39:47 +0200
+
 lcs-assr (2.1~1) Lcs; urgency=low
 
   * change lcs-assr-enable add check
