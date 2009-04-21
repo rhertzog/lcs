@@ -1,3 +1,9 @@
+lcs-monlcs (2.1-2) Lcs; urgency=low
+
+  * make a working release
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 21 Apr 2009 13:29:24 +0200
+
 lcs-monlcs (2.1-2~4) UNRELEASED; urgency=low
   [ Jean Luc Chretien ]
   * Mark changelog package UNRELEASED
