@@ -1,9 +1,9 @@
-lcs-spip (2.1-3~1) UNRELEASED; urgency=low
+lcs-spip (2.1-3~1) Lcs; urgency=low
 
   * Add .htacess in tmp
   * Update 1.9.2g to 1.9.2h
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 21 Apr 2009 09:57:03 +0200
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 21 Apr 2009 16:15:29 +0200
 
 lcs-spip (2.1-2) LcsXP; urgency=low
   [ Jean-Luc Chretien  ]
