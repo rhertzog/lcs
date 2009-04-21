@@ -12,8 +12,7 @@ case "$1" in
         #
         # cas de l'ancienne conf apache
         if [ -e $APACHECONF ]; then
-          grep -v 'Alias /$MODULE/ /usr/share/lcs/$MODULE/' $APACHECONF > /tmp/apache.conf
-          mv /tmp/apache.conf $APACHECONF
+          sed -i "/# Debut section spip/,/# Fin section spip/d" $APACHECONF
           if [ -e /etc/init.d/apache ]; then
             /etc/init.d/apache reload > /dev/null 2>&1
           fi
