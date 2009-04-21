@@ -1,15 +1,15 @@
 <svn_revision><text_version>
-Origine svn://zone.spip.org/spip/branches/spip-1.9.2 le mercredi 24 décembre 2008, 10:30:10 (UTC+0100)
-Revision: 13534
-Dernier commit 2008-12-24 10:04:45 +0100 (Wed, 24 Dec 2008)
+Origine svn://zone.spip.org/spip/branches/spip-1.9.2 le lundi 13 avril 2009, 19:33:07 (UTC+0200)
+Revision: 13886
+Dernier commit 2009-04-13 10:39:51 +0200 (Mon, 13 Apr 2009)
 Voir http://trac.rezo.net/trac/spip/browser/branches/spip-1.9.2
-Archive: http://files.spip.org/spip/archives/SPIP-v1-9-2g.zip
+Archive: http://files.spip.org/spip/archives/SPIP-v1-9-2h.zip
 </text_version>
 <uri>http://trac.rezo.net/trac/spip/browser/branches/spip-1.9.2</uri>
-<archive>http://files.spip.org/spip/archives/SPIP-v1-9-2g.zip</archive>
+<archive>http://files.spip.org/spip/archives/SPIP-v1-9-2h.zip</archive>
 <origine>svn://zone.spip.org/spip/branches/spip-1.9.2</origine>
-<date_production>mercredi 24 décembre 2008, 10:30:10 (UTC+0100)</date_production>
-<revision>13534</revision>
-<commit>2008-12-24 10:04:45 +0100 (Wed, 24 Dec 2008)</commit>
+<date_production>lundi 13 avril 2009, 19:33:07 (UTC+0200)</date_production>
+<revision>13886</revision>
+<commit>2009-04-13 10:39:51 +0200 (Mon, 13 Apr 2009)</commit>
 </svn_revision>
-<archivelist>branches/spip-1.9.2/ --revision 13534;archives/SPIP-v1-9-2g;spip</archivelist>
+<archivelist>branches/spip-1.9.2/ --revision 13886;archives/SPIP-v1-9-2h;spip</archivelist>

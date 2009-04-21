@@ -944,7 +944,8 @@ function spip_initialisation($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 	define('_DIR_SKELS', $ti . "cache/skel/");
 	define('_DIR_TMP', $ti);
 
-	define('_FILE_META', $ti . 'meta_cache.txt');
+	# attention .php obligatoire pour ecrire_fichier_securise
+	define('_FILE_META', $ti . 'meta_cache.php');
 
 	define('_DIR_VAR', $ta);
 
@@ -1093,7 +1094,7 @@ function spip_initialisation($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 
 	// Lire les meta cachees et initier le noyau (espace public uniquement)
 	$GLOBALS['noyau'] = array();
-	if (lire_fichier(_FILE_META, $meta)) {
+	if (lire_fichier_securise(_FILE_META, $meta)) {
 		$GLOBALS['meta'] = @unserialize($meta);
 		if (_DIR_RESTREINT
 		AND isset($GLOBALS['meta']['noyau'])
