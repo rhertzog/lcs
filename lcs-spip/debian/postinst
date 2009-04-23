@@ -1,9 +1,8 @@
 #!/bin/sh
-VER="2.1-2"
 MODULE="spip"
-VERAPPLI="1.9.2"
+VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
+VERAPPLI="1.9.2h"
 INDICEMAJNBR="5"
-
 CONF="/var/lib/lcs/$MODULE"
 PATHMOD="/usr/share/lcs/$MODULE"
 PATHMAJ="/var/lib/lcs/$MODULE"
