@@ -1,8 +1,10 @@
 lcs-monlcs (2.1-3) Lcs; urgency=low
 
+  [ Simon Cavey ]
   * missing mm module player directory
-
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 23 Apr 2009 15:36:24 +0200
+  * remove backup file
+	 
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 27 Apr 2009 12:54:40 +0200
 
 lcs-monlcs (2.1-2) Lcs; urgency=low
 
