@@ -1,9 +1,12 @@
-lcs-imap (2.1-2~1) LcsXP; urgency=low
+lcs-imap (2.1-2) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * Modify add and remove mailing list in listesdiff.php, add_liste_diff.sh and eff_liste_diff.sh
 
- -- Chretien jean-Luc <jean-luc.chretien@tice.ac-caen.fr>  Thu, 05 Mar 2009 11:29:15 +0100
+  [ Simon Cavey ]
+  * remove tilde to release
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 27 Apr 2009 17:53:31 +0200
 
 lcs-imap (2.1-1) LcsXP; urgency=low
 
