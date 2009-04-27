@@ -1,19 +1,23 @@
-lcs-smtp (2.1-2~1) LcsXP; urgency=low
-  [ Jean-Luc Chretien]
-  * Correct directive alias_maps in main_lcslis.cf and postfix_reconfigure  
+lcs-smtp (2.1-2) Lcs; urgency=low
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 23 Jan 2009 14:37:31 +0100
+  [ Jean-Luc Chretien ]
+  * Correct directive alias_maps in main_lcslis.cf and postfix_reconfigure
+
+  [ Simon Cavey ]
+  * remove tilde to release
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 27 Apr 2009 18:03:34 +0200
 
 lcs-smtp (2.1-1) LcsXP; urgency=low
 
-  [ Jean-Luc Chretien]
+  [ Jean-Luc Chretien ]
   * Fix localhost setting in postfix-reconfigure and lcs-smtp-config
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 10 Nov 2008 09:52:16 +0100
 
 lcs-smtp (2.1) LcsXP; urgency=low
 
-  [ Jean-Luc Chretien]
+  [ Jean-Luc Chretien ]
   * Modify handle_initial_config order
   * Release package for 2.1 LcsXP version
 
