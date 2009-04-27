@@ -1,4 +1,4 @@
-lcs-pop (2.1~1) LcsXP; urgency=low
+lcs-pop (2.1) Lcs; urgency=low
 
   [ Philippe Le Brouster ]
   * Initial release of the new package.
@@ -6,4 +6,7 @@ lcs-pop (2.1~1) LcsXP; urgency=low
   [ Jean-Luc Chretien ]
   * Upload package in LcsXP Tree
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri,  9 Jan 2009 10:26:40 +0100
+  [ simc ]
+  * remove tilde to release
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 27 Apr 2009 17:59:24 +0200
