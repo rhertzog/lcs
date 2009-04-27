@@ -1,3 +1,9 @@
+lcs-clientftp (2.2) Lcs; urgency=low
+
+  * make a working release
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 27 Apr 2009 15:33:10 +0200
+
 lcs-clientftp (2.2~2) LcsXP; urgency=low
 
   [ Jean-Luc Chretien ]
