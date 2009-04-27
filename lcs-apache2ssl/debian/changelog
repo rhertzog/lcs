@@ -1,4 +1,4 @@
-lcs-apache2ssl (2.1~3) lcs20; urgency=low
+lcs-apache2ssl (2.1) lcs20; urgency=low
 
   [ Jean-Luc Chretien ]
   * Misc fixes on postinst and postrm
