@@ -1,5 +1,5 @@
 <?php
-/* Derniere mise à jour 15/01/2007 */
+/* Derniere mise à jour 28/04/2009 */
 	if (!isset($Modules_commun))
 		{ 
 		  $Modules_commun = true;
@@ -184,24 +184,15 @@
 						       // renvoi 0 si v1 est égale à v2
 						       // renvoi 1 si v1 est moins récente que v2
 			{
-				$sepv1 = recherche_sep($v1);
-				$sepv2 = recherche_sep($v2);
-
-				$tv1 = @explode($sepv1,$v1);
-				$tv2 = @explode($sepv2,$v2);
-				
-				// on complète les sous versions à 0 s'il y a lieu
-				for($i = count($tv1); $i < count($tv2); $i++)
-					$tv1[$i] = 0;
-				for($i = count($tv2); $i < count($tv1); $i++)
-					$tv2[$i] = 0;
-			
-				for($i = 0; $i < count($tv1); $i++)
-					{
-					  if ($tv1[$i] > $tv2[$i]) return -1;
-					  if ($tv1[$i] < $tv2[$i]) return 1;
-					}
-				return 0;
+				$cmd_cmp= "dpkg --compare-versions ".$v1." gt ".$v2;  	
+				exec($cmd_cmp,$rien,$ret_val);
+				if ($ret_val == 0)	return -1;
+				$cmd_cmp= "dpkg --compare-versions ".$v1." lt ".$v2;  	
+				exec($cmd_cmp,$rien,$ret_val);
+				if ($ret_val == 0)	return 1;
+				$cmd_cmp= "dpkg --compare-versions ".$v1." eq ".$v2;  	
+				exec($cmd_cmp,$rien,$ret_val);
+				if ($ret_val == 0)	return 0;
 			}
 
 		function get_nom_de_fichier($url) // renvoi seulement le nom de fichier de l'url (sans la base)

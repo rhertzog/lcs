@@ -1,3 +1,9 @@
+lcs-web (2.1-5~1) Lcs; urgency=low
+
+  * use dpkg --compare-versions in function version_moins_recente 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 28 Apr 2009 15:56:40 +0200
+
 lcs-web (2.1-4) Lcs; urgency=low
 
   * remove tilde to release release error
