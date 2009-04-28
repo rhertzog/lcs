@@ -1,3 +1,9 @@
+lcs-pma (2.1) LcsXP; urgency=low
+
+  * remove tilde to release
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 28 Apr 2009 11:39:39 +0200
+
 lcs-pma (2.1~6) LcsXP; urgency=low
 
   * Update documentation html
