@@ -2,13 +2,8 @@
 
 include "includes/secure_no_header.inc.php";
 
-//mysql_connect($host,$user,$passDB) or die('Connexion mysql impossible!');
-//mysql_select_db($DB) or die('Base inconnue!');
-
 if ($_POST)
 	extract($_POST);
-
-
 
 $content2 = "<div class=menuitems title=$id><B> Menu</B></div>";
 $content2 .="<HR />";
@@ -33,11 +28,11 @@ $content2 .="<div onclick=javascript:giveRessources('$id'); class=menuitems titl
 
 }
 
-//if ($id == 'import_acad') {
-//	$content2 .="<div onclick=javascript:fetchScen(); class=menuitems title=Importer_ce_sc&#233;nario>Importer ce sc&#233;nario.</div>";
-//	die(stringForJavascript($content2));
+if ($id == 'import_acad' && (trim($activate_acad_monlcs) == '1') ) {
+	$content2 .="<div onclick=javascript:fetchScen(); class=menuitems title=Importer_ce_sc&#233;nario>Importer ce sc&#233;nario.</div>";
+	die(stringForJavascript($content2));
 
-//}
+}
 
 if (is_scenarii($id)) {
 	$content2 .="<div onclick=javascript:showTuto(); class=menuitems title=Tutoriels>Tutoriels</div>";
@@ -64,8 +59,8 @@ if (is_scenarii($id)) {
 	$content2 .="<div onclick=javascript:scenario('$id'); class=menuitems title=Sc&eacute;nario>Cr&eacute;er un nouveau sc&eacute;nario</div>";
 #########################################################################################################################################################################
 # Ajout pour Publication ACAD
-
-	//$content2 .="<div onclick=javascript:scen_acad_pub(); class=menuitems title=Publication&nbsp;acad&eacute;mique>Publication&nbsp;acad&eacute;mique</div>";
+	if (trim($activate_acad_monlcs) == '1')
+		$content2 .="<div onclick=javascript:scen_acad_pub(); class=menuitems title=Publication&nbsp;acad&eacute;mique>Publication&nbsp;acad&eacute;mique</div>";
 #########################################################################################################################################################################
 	}
 	 

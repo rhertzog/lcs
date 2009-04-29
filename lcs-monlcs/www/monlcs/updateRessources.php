@@ -1,12 +1,16 @@
 <?
 include "includes/secure_no_header.inc.php";
+if ($_POST)
+	extract($_POST);
+	if (trim($filtre) == 'undefined')	
+		$filtre = '';
+
 if ($ML_Adm == 'Y' )
 	$content ='<p>Attention! Vous avez le droit monlcs_is_admin.<br /> Toute suppression sera définitive!</p>';
 else
 	$content ='';;
 	###############################
-	$content .= "&nbsp;<div><label for=filtre_ress>Filtre:&nbsp;</label><input id=filtre_ress></input><input type=button onclick=javascript:chgFiltreRess(); Value=Ok></input></div><br />";	
-
+	$content .= "&nbsp;<div><label for=filtre_ress>Filtre:&nbsp;</label><input id=filtre_ress value=".$filtre."></input><input type=button onclick=javascript:chgFiltreRess(); Value=Ok></input></div><br />";	
 	###############################
 $content .= "<table id=cmd>";
 $content .="<tr>"
@@ -49,8 +53,10 @@ $ListeRss = array();
 
 		$pattern = $baseurl.'/~';
 		if ( (!eregi($pattern,$Url) && ($User != $uid)) || ($User == $uid) ) {
-			if ($Type == 'null' )
-				$ListeRess[] = $Titre."#".$Ress;
+			if ($Type == 'null' ) {
+				if ( ( trim($filtre) == 'undefined' ) || (trim($filtre) == '' ) || eregi($filtre,$Titre))
+					$ListeRess[] = $Titre."#".$Ress;
+			}
 			else
 				$ListeRss[] = $Titre."#".$Ress;
 		}

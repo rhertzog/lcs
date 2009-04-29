@@ -27,7 +27,7 @@ var floating_window_skin = 1;
 <script type="text/javascript" src="./fckeditor/fckeditor.js"></script>
 <script type="text/javascript" src="./lib/floating_window_with_tabs.js"></script>
 <script type="text/javascript" src="./lib/lazierLoad.js"></script>
-<script type="text/javascript" src="./lib/mon_lcs.js"></script>
+<script type="text/javascript" src="./lib/mon_lcs.js.php"></script>
 <script type="text/javascript">
 var mode='other';
 var user='<? echo $uid; ?>';

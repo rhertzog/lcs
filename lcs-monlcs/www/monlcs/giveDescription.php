@@ -8,7 +8,8 @@ if ($_POST) {
 		die("Erreur d'indetifiant!");
 	$descr = mysql_result($c,0,'descr');
 	$owner = mysql_result($c,0,'owner');
-	if (($descr == NULL) && ($owner == $uid))
+	
+	if (($descr == NULL) && ($owner == $user))
 		die('Changer description');
 	if ($descr == NULL) 
 		die('Aucune description');

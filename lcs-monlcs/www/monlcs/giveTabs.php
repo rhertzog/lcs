@@ -46,10 +46,12 @@ if (!is_eleve($uid)  && ($u == 'all') && ($nom_onglet != 'Sc&eacute;narios')) {
 	$content2.="	<a href=# id=perso".($id-1)." class=tabs >Proposer</a>";
 
 }
-//if (!is_eleve($uid)  && ($u == 'all') && ($nom_onglet == 'Sc&eacute;narios')) {
-//	$content2.="	<a href=# id=import_acad class=tabs >Importer du d&#233;pot acad&#233;mique</a>";
-//}
 
+if (trim($activate_acad_monlcs) == '1') {
+	if (!is_eleve($uid)  && ($u == 'all') && ($nom_onglet == 'Sc&eacute;narios')) {
+		$content2.="	<a href=# id=import_acad class=tabs >Importer du d&#233;pot acad&#233;mique</a>";
+	}
+}
 
 
 $content2.="</div>";

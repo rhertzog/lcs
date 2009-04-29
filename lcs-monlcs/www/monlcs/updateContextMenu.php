@@ -47,8 +47,8 @@ if (is_scenarii($id)) {
 	$content2 .="<div onclick=javascript:scenario('$id'); class=menuitems title=Sc&eacute;nario>Cr&eacute;er un nouveau sc&eacute;nario</div>";
 #########################################################################################################################################################################
 # Ajout pour Publication ACAD
-
-	//$content2 .="<div onclick=javascript:scen_acad_pub(); class=menuitems title=Publication&nbsp;acad&eacute;mique>Publication&nbsp;acad&eacute;mique</div>";
+	if (trim($activate_acad_monlcs) == '1')
+		$content2 .="<div onclick=javascript:scen_acad_pub(); class=menuitems title=Publication&nbsp;acad&eacute;mique>Publication&nbsp;acad&eacute;mique</div>";
 #########################################################################################################################################################################
 
 	}

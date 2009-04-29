@@ -31,8 +31,8 @@
 	$r['code'] = curl_getinfo($ch,CURLINFO_HTTP_CODE);
         $r['cr'] = curl_exec($ch);
         $r['ce'] = curl_errno($ch);
-	//$retourDistant = utf8_decode(curl_exec($ch));
-	die(print_r($r));
+	$retourDistant = utf8_decode(curl_exec($ch));
+	//die(print_r($r));
 	curl_close($ch);
 	
 	die($retourDistant);

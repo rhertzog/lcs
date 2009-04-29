@@ -1,8 +1,9 @@
 <?php 
 	require "/var/www/monlcs/includes/secure_no_header.inc.php";
 	require "/var/www/lcs/includes/headerauth.inc.php";
-	//die($baseurl) 
+ 
 ?>
+	var activate_acad_monlcs = "<?php echo $activate_acad_monlcs ?>";
 	var encours='';
 	var mode = 'user';
 	var sauver_note = false;
@@ -105,6 +106,17 @@
 		return myString.replace(/^\s+/g,'').replace(/\s+$/g,'')
 	} 
 
+	function chgFiltreRess() {
+		var filtre = trim($('filtre_ress').value);
+		var url = 'updateRessources.php';
+		var params = '?filtre='+escape(cleanaccent(filtre));
+		new Ajax.Request(url,{ method: 'post', parameters: params, onComplete: function(requester) {
+			$('tab2').innerHTML = requester.responseText;
+			var liste = liste_filtree('helpR');
+			enablePopup(liste);	
+
+		}});
+	}	
 	
 
 	function gen_vignette() {
@@ -910,7 +922,7 @@
 		}	
 		
 		var real_id = parseInt(id.substr(5,4));
-		var params = '?id='+real_id;
+		var params = '?id='+real_id+'&mode='+mode+'&user='+user;
 			
 		var help_mode;	
 
@@ -934,6 +946,7 @@
 
 		new Ajax.Request(url,{ method: 'post', parameters: params, onComplete: function(requester) {
 			if (trim(requester.responseText) != 'Changer description') {
+				
 				$('descr_popup').innerHTML = requester.responseText;
 				Element.show('descr_popup');	
 			} else 
@@ -945,7 +958,7 @@
 		}
 
 	function gestHelpUpdate(help_mode,real_id,probe) {
-	
+		
 		var new_descr = prompt('Changer la description',unescape(probe));
 				if ( (trim(new_descr) == '') || (new_descr == 'null') )
 					return false;
@@ -964,8 +977,9 @@
 	}
 	
 	function wantChangeDescr(id) {
+		
 		Element.hide('descr_popup');
-		var params = '?id='+id+'&mode=other&user='+user;
+		var params = '?id='+id+'&mode='+mode+'&user='+user;
 		new Ajax.Request('canChangeDescription.php',{ method: 'post', parameters: params, onComplete: function(requester) {
 			var rep = trim(requester.responseText);
 			if (trim(rep) == 'ko')
@@ -1176,8 +1190,6 @@
                         lurl = escape('/monlcs/modules/flv/flvplayer.swf?file='+$('urlAdd').value);
                 }
 
-
-
 		//patch swf
 		var trouveSwf = /\_pdf.swf$/;
 		if (trouveSwf.exec(lurl)) {
@@ -1212,7 +1224,7 @@
 			lurl = escape('/monlcs/modules/mm/?'+$('urlAdd').value);
 		}
 	
-        	var ltitre = escape(cleanaccent($('titreAdd').value));
+        	var ltitre = $('titreAdd').value;
 		var ajaxWindCmd3=dhtmlwindow.open('ajaxWindCmd3','iframe',unescape(lurl),unescape(ltitre),'width='+width+',height='+height+',left=5px,top=60px,resize=1,scrolling=1,center=0');	
 		pretty_cmd(ajaxWindCmd3);
 	}
