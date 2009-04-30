@@ -1,3 +1,10 @@
+lcs-web (2.1-5) Lcs; urgency=low
+
+ * Correct typo in html documentation
+ * Remove tilde to stable release
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 30 Apr 2009 09:45:23 +0200
+
 lcs-web (2.1-5~1) Lcs; urgency=low
 
   * use dpkg --compare-versions in function version_moins_recente 
