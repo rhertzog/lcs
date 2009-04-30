@@ -103,7 +103,8 @@
 
 					var titre = $(id+'_titre_ress').innerHTML;
 					var url = $(id+'_url').innerHTML;
-					var Expression = new RegExp("swf","g");
+					url = url.replace("&amp;","&");
+					// var Expression = new RegExp("swf","g");
 				       //if ( Expression.test(url) )
 					//	url = './giveCleanFlash?url='+url;
 					var brique ={id: id,type: type,content: url,titre: titre,x: x,y: y,z: z,w: w,h: h,vignette: vignette}

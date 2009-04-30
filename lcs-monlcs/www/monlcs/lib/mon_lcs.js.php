@@ -194,7 +194,7 @@
 
 	function jsUpload2(upload_field) {
     		var re_text = /\.pdf|\.ggb|\.swf|\.flv|\.mm/i;
-                var filename = noaccent(upload_field.value);
+                var filename = noaccent(trim(upload_field.value));
 		filename = filename.replace(/ /gi,'_')
 
 		if (filename.search(re_text) == -1) {

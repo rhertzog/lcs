@@ -1,3 +1,11 @@
+lcs-monlcs (2.1-4~2) UNRELEASED; urgency=low
+
+  [ Sebastien Tack ]
+  * bug on space when uploading on filename
+  * bug on reading spip article when viewing academic resources ( conversion &amp; to & )
+  
+ -- Sebastien Tack <sebastien.tack@ac-caen.fr>  Thu, 30 Apr 2009 11:26:40 +0200
+
 lcs-monlcs (2.1-4~1) UNRELEASED; urgency=low
 
   [ Sebastien Tack ]
