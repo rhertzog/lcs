@@ -1,5 +1,5 @@
 <?php
-/* $Id: polish-utf-8.inc.php 11963 2008-11-23 20:09:15Z lem9 $ */
+/* $Id: polish-utf-8.inc.php 12304 2009-03-24 12:56:58Z nijel $ */
 
 $charset = 'utf-8';
 $text_dir = 'ltr';
@@ -992,7 +992,7 @@ $strFieldInsertFromFileTempDirNotExists = 'Błąd podczas przesuwania wrzuconego
 $strViewName = 'Nazwa perspektywy';
 $strOptions = 'Opcje';
 $strFiles = 'Pliki';
-$strMysqlLibDiffersServerVersion = 'Wersja %s biblioteki MySQL dla PHP różni się od wersji %s serwera MySQL. Może to powodować niespodziewane zachowani Może to powodować nieprzewidywale zachowanie.';
+$strMysqlLibDiffersServerVersion = 'Wersja %s biblioteki MySQL dla PHP różni się od wersji %s serwera MySQL. Może to powodować nieprzewidywale zachowanie.';
 $strRoutines = 'Procedury i funkcje';
 $strRoutineReturnType = 'Zwracany typ';
 $strControluserFailed = 'Połączenie dla użytkownika kontrolnego zdefiniowanego w pliku konfiguracyjnym nie powiodło się.';
@@ -1229,7 +1229,7 @@ $strSetupServers_password_desc = 'Należy pozostawić puste w przypadku innego n
 $strSetupServers_nopassword_name = 'Łącz się bez hasła';
 $strSetupServers_nopassword_desc = 'Ma być podejmowana próba łączenia się bez hasła';
 $strSetupServers_SignonSession_name = 'Signon session name';  //to translate
-$strSetupServers_SignonSession_desc = 'See [a@http://wiki.cihar.com/pma/auth_types#signon]authentication types[/a] for an example';  //to translate
+$strSetupServers_SignonSession_desc = 'See [a@http://wiki.phpmyadmin.net/pma/auth_types#signon]authentication types[/a] for an example';  //to translate
 $strSetupServers_SignonURL_name = 'Signon URL';  //to translate
 $strSetupServers_LogoutURL_name = 'Logout URL';  //to translate
 $strSetupServers_auth_swekey_config_name = 'SweKey config file';  //to translate
@@ -1251,16 +1251,16 @@ $strSetupServers_ShowDatabasesCommand_desc = 'Polecenie SQL do pobrania dostępn
 $strSetupServers_CountTables_name = 'Zliczaj tabele';
 $strSetupServers_CountTables_desc = 'Zliczaj tabele podczas pokazywania listy bazy danych';
 $strSetupServers_pmadb_name = 'Baza danych PMA';
-$strSetupServers_pmadb_desc = 'Baza danych używana prze funkcje związków, zakładek i generowania PDF-ów. Pełna informacja znajduje się na stronie [a@http://wiki.cihar.com/pma/pmadb]pmadb[/a]. Puste pole oznacza brak obsługi. Domyślna wartość: [kbd]phpmyadmin[/kbd]';
+$strSetupServers_pmadb_desc = 'Baza danych używana prze funkcje związków, zakładek i generowania PDF-ów. Pełna informacja znajduje się na stronie [a@http://wiki.phpmyadmin.net/pma/pmadb]pmadb[/a]. Puste pole oznacza brak obsługi. Domyślna wartość: [kbd]phpmyadmin[/kbd]';
 $strSetupServers_controluser_name = 'Control user';  //to translate
-$strSetupServers_controluser_desc = 'A special MySQL user configured with limited permissions, more information available on [a@http://wiki.cihar.com/pma/controluser]wiki[/a]';  //to translate
+$strSetupServers_controluser_desc = 'A special MySQL user configured with limited permissions, more information available on [a@http://wiki.phpmyadmin.net/pma/controluser]wiki[/a]';  //to translate
 $strSetupServers_controlpass_name = 'Control user password';  //to translate
 $strSetupServers_verbose_check_name = 'Verbose check';  //to translate
 $strSetupServers_verbose_check_desc = 'Disable if you know that your pma_* tables are up to date. This prevents compatibility checks and thereby increases performance';  //to translate
 $strSetupServers_bookmarktable_name = 'Tabela zakładek';
-$strSetupServers_bookmarktable_desc = 'Leave blank for no [a@http://wiki.cihar.com/pma/bookmark]bookmark[/a] support, default: [kbd]pma_bookmark[/kbd]';  //to translate
+$strSetupServers_bookmarktable_desc = 'Leave blank for no [a@http://wiki.phpmyadmin.net/pma/bookmark]bookmark[/a] support, default: [kbd]pma_bookmark[/kbd]';  //to translate
 $strSetupServers_relation_name = 'Tabela związków';
-$strSetupServers_relation_desc = 'Leave blank for no [a@http://wiki.cihar.com/pma/relation]relation-links[/a] support, default: [kbd]pma_relation[/kbd]';  //to translate
+$strSetupServers_relation_desc = 'Leave blank for no [a@http://wiki.phpmyadmin.net/pma/relation]relation-links[/a] support, default: [kbd]pma_relation[/kbd]';  //to translate
 $strSetupServers_table_info_name = 'Display fields table';  //to translate
 $strSetupServers_table_info_desc = 'Table to describe the display fields, leave blank for no support; default: [kbd]pma_table_info[/kbd]';  //to translate
 $strSetupServers_table_coords_name = 'PDF schema: table coordinates';  //to translate
@@ -1315,8 +1315,8 @@ $strSetupConfirm_name = 'Potwierdzanie zapytań DROP';
 $strSetupConfirm_desc = 'Czy w wypadku ryzyka utraty danych ma być pokazywane ostrzeżenie (&quot;Czy na pewno wykonać…&quot;)';
 $strSetupQueryHistoryDB_name = 'Permanentna historia zapytań';
 $strSetupQueryHistoryDB_desc = 'Enable if you want DB-based query history (requires pmadb). If disabled, this utilizes JS-routines to display query history (lost by window close).';  //to translate
-$strSetupQueryHistoryMax_name = 'Długośc history zapytań';
-$strSetupQueryHistoryMax_desc = 'Ile zapytań na być przechowaywanych w historii';
+$strSetupQueryHistoryMax_name = 'Długość historii zapytań';
+$strSetupQueryHistoryMax_desc = 'Ile zapytań ma być przechowywanych w historii';
 $strSetupIgnoreMultiSubmitErrors_name = 'Ignoruj błędy w ciągu instrukcji';
 $strSetupIgnoreMultiSubmitErrors_desc = 'Włączenie powoduje, że phpMyAdmin będzie kontynuował obliczanie zapytania składającego się z wielu instrukcji, nawet jeśli wykonanie którejś z nich nie udało się';
 $strSetupVerboseMultiSubmit_name = 'Verbose multiple statements';  //to translate

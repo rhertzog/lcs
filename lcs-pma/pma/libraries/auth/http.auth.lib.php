@@ -5,7 +5,6 @@
        $PHP_AUTH_PW = $_LCS['pass'];
    }
 
-
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * Set of functions used to run http authentication.

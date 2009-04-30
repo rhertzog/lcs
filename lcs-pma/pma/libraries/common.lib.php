@@ -7,12 +7,11 @@
      $_LCS['login']=$login;
  }
  // fin jlcf modif 1/3
-
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * Misc functions used all over the scripts.
  *
- * @version $Id: common.lib.php 12163 2009-01-01 21:39:21Z lem9 $
+ * @version $Id: common.lib.php 12334 2009-04-04 13:06:20Z helmo $
  */
 
 /**
@@ -793,14 +792,15 @@ function PMA_getTableList($db, $tables = null, $limit_offset = 0, $limit_count =
             // Do not check exact row count here,
             // if row count is invalid possibly the table is defect
             // and this would break left frame;
-            // but we can check row count if this is a view,
+            // but we can check row count if this is a view or the
+            // information_schema database
             // since PMA_Table::countRecords() returns a limited row count
             // in this case.
 
             // set this because PMA_Table::countRecords() can use it
             $tbl_is_view = PMA_Table::isView($db, $table['Name']);
 
-            if ($tbl_is_view) {
+            if ($tbl_is_view || 'information_schema' == $db) {
                 $table['Rows'] = PMA_Table::countRecords($db, $table['Name'],
                         $return = true);
             }
@@ -1029,6 +1029,10 @@ function PMA_showMessage($message, $sql_query = null, $type = 'notice')
     echo '<div align="' . $GLOBALS['cell_align_left'] . '">' . "\n";
 
     if ($message instanceof PMA_Message) {
+        if (isset($GLOBALS['special_message'])) {
+            $message->addMessage($GLOBALS['special_message']);
+            unset($GLOBALS['special_message']);
+        }
         $message->display();
         $type = $message->getLevel();
     } else {
@@ -2207,7 +2211,7 @@ function PMA_listNavigator($count, $pos, $_url_params, $script, $frame, $max_cou
         echo "\n", '<form action="./', basename($script), '" method="post" target="', $frame, '">', "\n";
         echo PMA_generate_common_hidden_inputs($_url_params);
         echo PMA_pageselector(
-            $script . PMA_generate_common_url($_url_params) . '&',
+            $script . PMA_generate_common_url($_url_params) . '&amp;',
                 $max_count,
                 floor(($pos + 1) / $max_count) + 1,
                 ceil($count / $max_count));
@@ -2555,7 +2559,7 @@ function PMA_printable_bit_value($value, $length) {
 function PMA_extractFieldSpec($fieldspec) {
     $first_bracket_pos = strpos($fieldspec, '(');
     if ($first_bracket_pos) {
-        $spec_in_brackets = chop(substr($fieldspec, $first_bracket_pos + 1, (strpos($fieldspec, ')') - $first_bracket_pos - 1)));
+        $spec_in_brackets = chop(substr($fieldspec, $first_bracket_pos + 1, (strrpos($fieldspec, ')') - $first_bracket_pos - 1)));
         // convert to lowercase just to be sure
         $type = strtolower(chop(substr($fieldspec, 0, $first_bracket_pos)));
     } else {
