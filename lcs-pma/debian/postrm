@@ -23,7 +23,7 @@ APACHE2CONF="/etc/apache2/lcs-main/66_pma.conf"
 
 
 case "$1" in
-    purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    purge|remove)
      #
         # Suppression de l'alias 
         #
@@ -55,10 +55,13 @@ case "$1" in
     
     ;;
 
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+        ;;
     *)
         echo "postrm called with unknown argument \`$1'" >&2
         exit 1
-    ;;
 esac
 
 # dh_installdeb will replace this with shell code automatically

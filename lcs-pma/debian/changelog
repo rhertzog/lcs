@@ -1,8 +1,9 @@
 lcs-pma (2.1-2~1) UNRELEASED; urgency=low
 
   * upgrade phpmyadmin in version 3.1.4
-  
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 30 Apr 2009 11:54:46 +0200
+  * add preinst for correct bug in postrm in previous versions
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun,  3 May 2009 17:16:18 +0200
 
 lcs-pma (2.1-1) LcsXP; urgency=low
 
