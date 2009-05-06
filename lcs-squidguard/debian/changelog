@@ -1,3 +1,9 @@
+lcs-squidguard (2.1-2~6) unstable; urgency=low
+
+  * add lcs-squid depend
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed,  6 May 2009 19:26:37 +0200
+
 lcs-squidguard (2.1-2~5) unstable; urgency=low
 
   * remove-reinstall fix
