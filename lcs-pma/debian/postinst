@@ -4,7 +4,7 @@
 # see: dh_installdeb(1)
 
 set -e
-VER="2.1-2~1"
+VER="2.1-2"
 MODULE="pma"
 VERAPPLI="3.1.4"
 INDICEMAJNBR="0"

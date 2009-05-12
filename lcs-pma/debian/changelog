@@ -1,3 +1,9 @@
+lcs-pma (2.1-2) LCS; urgency=low
+
+  * remove tilde to release
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 12 May 2009 10:10:06 +0200
+
 lcs-pma (2.1-2~1) LCS; urgency=low
 
   * upgrade phpmyadmin in version 3.1.4
