@@ -11,14 +11,13 @@
 
 # Cmnd alias specification
 Cmnd_Alias LCS = /usr/share/lcs/scripts/mkhdir.sh, /usr/share/lcs/scripts/webperso.sh, /usr/share/lcs/scripts/chacces.sh
-Cmnd_Alias SQUIDGUARD = /usr/share/lcs/scripts/squidGuard.sh
-Cmnd_Alias LCS1 = /usr/share/lcs/scripts/action.sh, /usr/share/lcs/scripts/edit_params.sh, /usr/share/lcs/sbin/delHome.pl 
+Cmnd_Alias LCS1 = /usr/share/lcs/scripts/action.sh, /usr/share/lcs/scripts/edit_params.sh, /usr/share/lcs/sbin/delHome.pl, /usr/share/lcs/sbin/userDel.pl
 Cmnd_Alias LCS2 = /usr/share/lcs/scripts/mkSlapdConf.sh, /usr/share/lcs/sbin/mkslurpd
+Cmnd_Alias SQUIDGUARD = /usr/share/lcs/scripts/squidGuard.sh
 Cmnd_Alias PLUGINS = /usr/share/lcs/scripts/execution_script_plugin.sh
 # User privilege specification
 root	ALL=(ALL) ALL
 www-data ALL=NOPASSWD:LCS,NOPASSWD:SQUIDGUARD,NOPASSWD:LCS1,NOPASSWD:LCS2,NOPASSWD:PLUGINS
-
 
 Cmnd_Alias LISTDIFFLDAP =  /usr/share/lcs/scripts/eff_liste_diff.sh, /usr/share/lcs/scripts/add_liste_diff.sh
 www-data ALL=NOPASSWD:LISTDIFFLDAP
