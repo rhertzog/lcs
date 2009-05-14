@@ -45,7 +45,7 @@
          || ( ($naissance && verifDateNaissance($naissance)) && ($userpwd && !verifPwd($userpwd)) )  // date de naissance mais password invalide
        ) {
       ?>
-      <form name="auth" action="add_user.php" methode="post" onSubmit="encrypt(document.auth)">
+      <form name="auth" action="add_user.php" method="post" onSubmit="encrypt(document.auth)">
         <table border="0">
           <tbody>
             <tr>
