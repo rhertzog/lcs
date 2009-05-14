@@ -1,10 +1,9 @@
-lcs-web (2.1-6~2) UNRELEASED; urgency=low
+lcs-web (2.1-6~3) UNRELEASED; urgency=low
 
   * Modify sudoers and user_del.php
   * Modify add_user.php for register global 
-  * 
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 May 2009 15:49:14 +0200
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 May 2009 15:53:50 +0200
 
 lcs-web (2.1-5) Lcs; urgency=low
 
