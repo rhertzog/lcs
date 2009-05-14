@@ -27,7 +27,7 @@
     } else {
         exec ("/usr/bin/sudo $scriptsbinpath/userDel.pl $uid",$AllOutPut,$ReturnValue);
         if ($ReturnValue == "0") {
-          echo "Le compte <strong>$uid</strong> a &eacute;t&eacute; effac&eacute; avec succ&eagrave;s !<br />\n";
+          echo "Le compte <strong>$uid</strong> a &eacute;t&eacute; effac&eacute; avec succ&egrave;s !<br />\n";
         } else {
           echo "<div class=error_msg>
                   Echec, l'utilisateur $uid n'a pas &eacute;t&eacute; effac&eacute; !
