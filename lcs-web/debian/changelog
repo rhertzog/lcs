@@ -1,7 +1,14 @@
+lcs-web (2.1-6~1) UNRELEASED; urgency=low
+
+  * Modify sudoers and user_del.php
+  * Modify add_user.php for register global 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 May 2009 14:12:43 +0200
+
 lcs-web (2.1-5) Lcs; urgency=low
 
- * Correct typo in html documentation
- * Remove tilde to stable release
+  * Correct typo in html documentation
+  * Remove tilde to stable release
 
  -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 30 Apr 2009 09:45:23 +0200
 
