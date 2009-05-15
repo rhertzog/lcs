@@ -7,6 +7,6 @@ Standards-Version: 3.6.2
 
 Package: lcs-phpsysinfo
 Architecture: all
-Depends: slis-common, lcs-web, phpsysinfo (>= 2.5.1-6)
+Depends: slis-common, lcs-web, phpsysinfo
 Description: Installation de phpsysinfo sur LCS
  This package installs phpsysinfo and a lcs theme the LCS project
