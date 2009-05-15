@@ -1,9 +1,16 @@
+lcs-openvpn (2.1-2) Lcs; urgency=low
+
+  * update changlog to 2.1-2 release
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 15 May 2009 14:48:54 +0200
+
 lcs-openvpn (2.1-1) Lcs-XP; urgency=low
 
+  [ Simon Cavey ]
   * config style
   * user guide improved
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 17 Mar 2009 17:33:28 +0100
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 15 May 2009 14:48:32 +0200
 
 lcs-openvpn (2.1-1~5) unstable; urgency=low
 
