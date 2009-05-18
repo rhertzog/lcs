@@ -19,6 +19,7 @@ USERHOME="/var/lib/lcs/cas"
 PATH_RUBYCAS_CERT=$CONF
 IN_CONFIG_PATH=$USERHOME
 RUBYCAS_CERT_TT="openssl.cas.in" # template opensll cert for cas
+PICNICVERSION=0.7.1
 
 #
 # get LCSMGR PASS
@@ -69,7 +70,8 @@ apt-get -y install ruby1.8-dev build-essential libmysqlclient15-dev
 # 
 # Install gems 
 #
-gem install picnic activerecord ruby-net-ldap activerecord mysql
+gem install picnic --version $PICNICVERSION
+gem install activerecord ruby-net-ldap activerecord mysql
 if [ -e rubycas-lcs-latest.gem  ]; then
   rm rubycas-lcs-latest.gem
 fi

@@ -1,3 +1,9 @@
+lcs-cas (2.2~1) Lcs; urgency=low
+
+  * fix picnic required version
+
+ -- Simon CAVEY <simon.cavey@crdp.ac-caen.fr>  Mon, 18 May 2009 19:41:58 +0200
+
 lcs-cas (2.1) Lcs; urgency=low
 
   * make a working release
