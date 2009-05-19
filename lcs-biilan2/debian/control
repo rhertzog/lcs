@@ -1,0 +1,12 @@
+Source: lcs-biilan2
+Section: misc
+Priority: optional
+Maintainer: Philippe Leclerc <philippe.leclerc1@ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-biilan2
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-web
+Description: Install Gestion du B2I v2 on LCS server
+ Gestion du B2I v2
