@@ -5,7 +5,7 @@
 
 set -e
 
-VER="2.1"
+VER="2.1~1"
 MODULE="Biilan2"
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
 INDICEMAJNBR="1"
