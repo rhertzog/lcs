@@ -1,5 +1,5 @@
 <?php
-## Modification LCS du 07/11/2007
+## Modification LCS du 23/05/2009
 include "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers,$login_username) = isauth();
 if ($idpers) {
@@ -36,13 +36,6 @@ require_once(SM_PATH . 'functions/imap.php');
 require_once(SM_PATH . 'functions/plugin.php');
 require_once(SM_PATH . 'functions/constants.php');
 require_once(SM_PATH . 'functions/page_header.php');
-
-/* Before starting the session, the base URI must be known. Assuming */
-/* that this file is in the src/ subdirectory (or something).        */
-if (!function_exists('sqm_baseuri')){
-    require_once(SM_PATH . 'functions/display_messages.php');
-}
-$base_uri = sqm_baseuri();
 
 header('Pragma: no-cache');
 $location = get_location();
@@ -81,6 +74,22 @@ if (!isset($login_username)) {
 
 if (!sqsession_is_registered('user_is_logged_in')) {
     do_hook ('login_before');
+
+    /**
+     * Regenerate session id to make sure that authenticated session uses
+     * different ID than one used before user authenticated.  This is a
+     * countermeasure against session fixation attacks.
+     * NB: session_regenerate_id() was added in PHP 4.3.2 (and new session
+     *     cookie is only sent out in this call as of PHP 4.3.3), but PHP 4
+     *     is not vulnerable to session fixation problems in SquirrelMail
+     *     because it prioritizes $base_uri subdirectory cookies differently
+     *     than PHP 5, which is otherwise vulnerable.  If we really want to,
+     *     we could define our own session_regenerate_id() when one does not
+     *     exist, but there seems to be no reason to do so.
+     */
+    if (function_exists('session_regenerate_id')) {
+        session_regenerate_id();
+    }
 
     $onetimepad = OneTimePadCreate(strlen($secretkey));
     $key = OneTimePadEncrypt($secretkey, $onetimepad);
