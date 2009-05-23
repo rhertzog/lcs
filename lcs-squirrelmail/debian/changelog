@@ -1,3 +1,9 @@
+lcs-squirrelmail (2.2) Lcs; urgency=low
+
+  * Update redirect.php
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 23 May 2009 15:40:58 +0200
+
 lcs-squirrelmail (2.1) LcsXP; urgency=low
   [ Jean-Luc Chretien ]
   * Release package in LcsXP 2.1 version 
