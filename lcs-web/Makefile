@@ -9,9 +9,13 @@ install:
 	install -d $(DESTDIR)/var/lib/lcs/web
 	cp -a conf/* $(DESTDIR)/var/lib/lcs/web/
 
-# install lcs web cron
+# install lcs web cron.d
 	install -d $(DESTDIR)/etc/cron.d
-	install -m 644 cron/* $(DESTDIR)/etc/cron.d/
+	install -m 644 cron.d/* $(DESTDIR)/etc/cron.d/
+
+# install lcs web cron.monthly
+	install -d $(DESTDIR)/etc/cron.monthly
+	install -m 755 cron.monthly/* $(DESTDIR)/etc/cron.monthly/
 
 # install lcs web logrotate
 	install -d $(DESTDIR)/etc/logrotate.d
