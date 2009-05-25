@@ -1,0 +1,33 @@
+#!/bin/bash
+DATE=`date +%Y%m`
+HOSTNAME=`hostname -f`
+PATH2STATS="/home/superviseur"
+NAME=$DATE"_"$HOSTNAME
+# Make Folder supervision if not exist
+if [ ! -d $PATH2STATS ]; then
+	mkdir $PATH2STATS
+fi
+# File statusages
+echo "grp;appli;timestamp;source" > /tmp/statusages.csv
+mysql -se "select * from lcs_db.statusages" >> /tmp/statusages.csv
+cat /tmp/statusages.csv | sed -e "s/\t/;/g" > $PATH2STATS/statusages_$NAME.csv
+rm /tmp/statusages.csv
+mysql -se "TRUNCATE lcs_db.statusages"
+# File statlcs
+nbrpeople=`ldapsearch -xLLL '(&(uid=*)(objectclass=person))' uid | grep People | wc -l`
+nbrprofs=`ldapsearch -xLLL '(cn=profs)' memberUid | grep memberUid | wc -l`
+nbreleves=`ldapsearch -xLLL '(cn=eleves)' memberUid | grep memberUid | wc -l`
+nbradministratifs=`ldapsearch -xLLL '(cn=administratifs)' memberUid | grep memberUid | wc -l`
+nbrgrpclasses=`ldapsearch -xLLL '(cn=Classe*)' cn | grep cn: | wc -l`
+ldapsearch -xLLL '(&(uid=*)(objectclass=person))' uid | grep uid: |sed -e "s/^uid: //" |  while read RES
+do
+  if [ -d /home/$RES ]; then
+        let TOTAL=TOTAL+1
+        echo $TOTAL  > /tmp/nbr
+  fi
+done
+nbrcomptesactifs=`cat /tmp/nbr`
+rm /tmp/nbr
+echo "nbrpeople;nbrprofs;nbreleves;nbradministratifs;nbrgrpclasses;nbrcomptesactifs" > $PATH2STATS/statlcs_$NAME.csv
+echo "$nbrpeople;$nbrprofs;$nbreleves;$nbradministratifs;$nbrgrpclasses;$nbrcomptesactifs" >> $PATH2STATS/statlcs_$NAME.csv
+exit 0
