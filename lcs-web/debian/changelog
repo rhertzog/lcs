@@ -1,3 +1,9 @@
+lcs-web (2.1-7) Lcs; urgency=low
+
+  * Testing release
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 25 May 2009 16:23:52 +0200
+
 lcs-web (2.1-7~1) Lcs; urgency=low
 
   * Add CR in cron task lcsmaj and lcsntpdate 
