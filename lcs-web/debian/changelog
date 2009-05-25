@@ -1,3 +1,14 @@
+lcs-web (2.1-7~1) Lcs; urgency=low
+
+  * Add CR in cron task lcsmaj and lcsntpdate 
+  * Find path for rubycas-lcs and isaac in mkTicket.rb 
+  * Little cleaning in log2cas_ajax.php
+  * Add wz_tooltip.js 5.31 in /var/www/lib/js
+  * Add statusages in cron.monthly
+  * Modify Makefile  
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 25 May 2009 15:56:11 +0200
+
 lcs-web (2.1-6) Lcs; urgency=low
 
   * Modify sudoers and user_del.php
