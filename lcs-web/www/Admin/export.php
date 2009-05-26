@@ -2,7 +2,7 @@
  /* =============================================
    Projet LcSE3 : Export LDIF
    AdminLCS/export_ldif.php
-   Equipe Tice académie de Caen
+   Equipe Tice academie de Caen
    V 1.4 maj : 02/02/2004
    Distribué selon les termes de la licence GPL
    ============================================= */
@@ -14,6 +14,8 @@ include ("../Annu/includes/ihm.inc.php");
 list ($idpers, $login)= isauth();
 if ($idpers == "0") header("Location:$urlauth");
 
+//register global
+$filtre=$_POST['filtre'];
 
 if (is_admin("lcs_is_admin",$login)=="Y") {
 	if (isset($filtre)) {

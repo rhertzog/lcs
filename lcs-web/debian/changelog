@@ -1,9 +1,10 @@
 lcs-web (2.1-8~1) UNRELEASED; urgency=low
 
   * Modify delete_right.php, del_user_group.php, add_list_user_group.php, mod_group_descrip.php,
-	mod_pwd.php,mod_user_entry.php,mod_shell.php for registers globals   
+  * mod_pwd.php,mod_user_entry.php,mod_shell.php,export.php, export_ldif.php 
+  * for registers globals 
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 26 May 2009 14:28:12 +0200
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 26 May 2009 16:51:03 +0200
 
 lcs-web (2.1-7) Lcs; urgency=low
 
