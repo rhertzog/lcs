@@ -2,9 +2,9 @@
 /* =============================================
    Projet LcSe3 : Gestion des droits
    Annu/delete_right.php
-   Equipe Tice académie de Caen
-   V 1.4 maj : 02/07/2007
-   Distribué selon les termes de la licence GPL
+   Equipe Tice academie de Caen
+   V 1.4 maj : 19 /05/2009
+   Distribue selon les termes de la licence GPL
    ============================================= */
 include "../lcs/includes/headerauth.inc.php";
 include "includes/ldap.inc.php";
@@ -13,13 +13,21 @@ include "includes/ihm.inc.php";
 list ($idpers,$login)= isauth();
 if ($idpers == "0") header("Location:$urlauth");
 
+//modif register
+$right=$_POST['right'];
+$filtrecomp=$_POST['filtrecomp'];
+$old_rights=$_POST['old_rights'];
+$delete_right=$_POST['delete_right'];
+$type=$_POST['type'];
+
+
 header_html();
 
 if (ldap_get_right("lcs_is_admin",$login)=="Y") {
   aff_trailer ("1");
-    // Affichage du formulaire de sélection des droits
+    // Affichage du formulaire de selection des droits
     if (!isset($right)) {
-        echo "<H3>Sélection du droit à retirer</H3>";
+        echo "<H3>S&#233;lection du droit &#224; retirer</H3>";
         $list_rights=search_machines("objectclass=groupOfNames","rights");
         if ( count($list_rights)>0) {
             echo "<FORM method=\"post\">\n";  
@@ -43,7 +51,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
         echo "</FORM>\n";
         // Lecture des membres du droit
         $mp_all=gof_members($right,"rights",0);
-        // Filtrage selon critère
+        // Filtrage selon critere
         if ("$filtrecomp"=="") $mp=$mp_all;
         else {
             $lmloop=0;
@@ -56,7 +64,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
         if ( count($mp)>15) $size=15; else $size=count($mp);
         if ( count($mp)>0) {
             $form = "<form action=\"delete_right.php\" method=\"post\">\n";
-            $form.="<p>Sélectionnez les personnes ou groupes à priver du droit:</p>\n";
+            $form.="<p>S&#233;lectionnez les personnes ou groupes &#224; priver du droit:</p>\n";
             $form.="<p><select size=\"".$size."\" name=\"old_rights[]\" multiple=\"multiple\">\n";
             echo $form;
             for ($loop=0; $loop < count($mp); $loop++) {
@@ -74,22 +82,22 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
             $form.="<input type=\"hidden\" name=\"delete_right\" value=\"true\">\n";
             $form.="<input type=\"hidden\" name=\"right\" value=\"$right\">\n";
 	    $form.="<input type=\"hidden\" name=\"type\" value=\"$type\">\n";
-            $form.="<input type=\"reset\" value=\"Réinitialiser la sélection\">\n";
+            $form.="<input type=\"reset\" value=\"R&#233;initialiser la s&#233;lection\">\n";
             $form.="<input type=\"submit\" value=\"Valider\">\n";
             $form.="</form>\n";
             echo $form;
         } else {
-            $message =  gettext("Il n'y a rien à supprimer !");
+            $message =  gettext("Il n'y a rien &#224; supprimer !");
             echo $message;
         }
     } else {
         // Suppression des droits
             echo "<H3>Modification du droit <U>$right</U></H3>";
-            echo "<P>Vous avez sélectionné ". count($old_rights)." droit(s)<BR>\n";
+            echo "<P>Vous avez s&#233;lectionn&#233; ". count($old_rights)." droit(s)<BR>\n";
             for ($loop=0; $loop < count($old_rights); $loop++) {
                 $pers=$old_rights[$loop];
                 $pers=extract_login ($pers);
-                echo "Suppression de ".extract_login($pers)." du droit <U>$right</U><BR>";
+                echo "Suppression de ".$pers." du droit <U>$right</U><BR>";
                 $pDn = "cn=".$right.",".$rightsRdn.",".$ldap_base_dn;
                 if ($type=="utilisateur") $persDn = "uid=$pers".",".$peopleRdn.",".$ldap_base_dn;
 		else $persDn = "cn=$pers".",".$groupsRdn.",".$ldap_base_dn;		

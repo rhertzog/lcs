@@ -3,10 +3,10 @@
    Projet LCS-SE3
    Consultation de l'annuaire LDAP
    Annu/mod_group_descrip.php
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice académie de Caen
-   Derniere modification : 27/02/2009
-   Distribué selon les termes de la licence GPL
+   Â« jLCF >:> Â» jean-luc.chretien@tice.ac-caen.fr
+   Equipe Tice academie de Caen
+   Derniere modification : 26/05/2009
+   Distribue selon les termes de la licence GPL
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -14,6 +14,12 @@
 
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
+
+//modif register
+$description=$_POST['description'];
+if ( isset($_POST['cn']))  $cn = $_POST['cn'];
+elseif ( isset($_GET['cn'])) $cn = $_GET['cn'];
+$mod_descrip=$_POST['mod_descrip'];
 
   header_html();
   aff_trailer ("3");
@@ -36,7 +42,7 @@
 	      <td align="left">
                 <input type="hidden" name="cn" value="<? echo $cn ?>">
                 <input type="hidden" name="mod_descrip" value="true">
-                <input type="submit" value="Lancer la requête">
+                <input type="submit" value="Lancer la requ&#234;te">
               </td>
 	    </tr>
 	  </tbody>
@@ -47,7 +53,7 @@
         if ( !$description ) {
           echo "<div class=\"error_msg\">Vous devez saisir une description pour ce groupe !</div><BR>\n";
         } elseif (!verifDescription($description)) {
-          echo "<div class=error_msg>Le champ description comporte des caractères interdits !</div><br>\n";
+          echo "<div class=error_msg>Le champ description comporte des caract&#232;res interdits !</div><br>\n";
         }
       }
     } else {
@@ -61,7 +67,7 @@
         if ($r) {
           if (@ldap_modify ($ds, "cn=".$group[0]["cn"].",".$dn["groups"],$entry)) {
 
-            echo "La description du groupe&nbsp;<strong>".$group[0]["cn"]."</strong>&nbsp;à été modifiée avec succès.</br>\n";
+            echo "La description du groupe&nbsp;<strong>".$group[0]["cn"]."</strong>&nbsp;&#224; &#233;t&#233; modifi&#233;e avec succ&#232;s.</br>\n";
             echo "<u>Nouvelle description</u> :&nbsp;".stripslashes($description)."<BR>\n";
 
 			# Generate samba's configuration (group's shares)
@@ -69,17 +75,17 @@
 				exec("sudo /usr/share/lcs/scripts/execution_script_plugin.sh /usr/share/lcs/sbin/lcs-smb-config &");
 
           } else {
-            echo "<strong>Echec de la modification du groupe".$group[0]["cn"].", veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB modification de la description d'un groupe>l'administrateur du système</A><BR>\n";
+            echo "<strong>Echec de la modification du groupe".$group[0]["cn"].", veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB modification de la description d'un groupe>l'administrateur du syst&#232;me</A><BR>\n";
           }
         }
         @ldap_close ( $ds );
       } else {
-        echo "Erreur de connection à l'annuaire, veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB connection a l'annuaire'>l'administrateur du système</A>administrateur<BR>\n";
+        echo "Erreur de connection &#224; l'annuaire, veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB connection a l'annuaire'>l'administrateur du syst&#232;me</A>administrateur<BR>\n";
       }
     }
 
   } else {
-    echo "<div class=error_msg>Cette fonctionnalité, nécessite les droits d'administrateur du serveur LCS !</div>";
+    echo "<div class=error_msg>Cette fonctionnalit&#233;, n&#233;cessite les droits d'administrateur du serveur LCS !</div>";
   }
 
   include ("../lcs/includes/pieds_de_page.inc.php");

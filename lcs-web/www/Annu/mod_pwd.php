@@ -4,10 +4,9 @@
    Consultation de l'annuaire LDAP
    Annu/mod_pwd.php
    [LCS CoreTeam]
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
-   Equipe Tice académie de Caen
-   V 1.4-2 maj : 08/11/2004
+   Â« jLCF >:> Â» jean-luc.chretien@tice.ac-caen.fr
+   Equipe Tice academie de Caen
+   26/05/2009
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -17,6 +16,17 @@
 
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
+  
+//modif register
+$old_password=$_POST['old_password'];
+$dummy=$_POST['dummy'];
+$string_auth=$_POST['string_auth'];
+$dummy1=$_POST['dummy1'];
+$string_auth1=$_POST['string_auth1'];
+$mod_pwd=$_POST['mod_pwd'];
+
+
+  
   #header_crypto_html("Modification mot de passe");
   #aff_trailer ("5");
   if ($mod_pwd) {
@@ -75,17 +85,17 @@
     // Affichage des erreurs
     if( $mod_pwd )  {
       // Affichage des messages d'alerte
-      // Vérification de l'ancien mot de passe
+      // Verification de l'ancien mot de passe
       if (!user_valid_passwd ( $login, $old_password ) ) {
-        echo gettext("<div class='error_msg'>Votre mot de passe actuel est erroné !</div><BR>\n");
+        echo gettext("<div class='error_msg'>Votre mot de passe actuel est erron&#233; !</div><BR>\n");
        }
-      // Vérification du nouveau mot de passe
+      // Verification du nouveau mot de passe
        elseif ( !verifPwd($new_password)  ) {
-         echo gettext("<div class='error_msg'>Vous devez proposer un mot de passe d'une longueur comprise entre 4 et 8 caractères alphanumériques avec éventuellement les caractères spéciaux suivants $char_spec</div><BR>\n");
+         echo gettext("<div class='error_msg'>Vous devez proposer un mot de passe d'une longueur comprise entre 4 et 8 caract&#232;res alphanum&#233;riques avec &#233;ventuellement les caract&#232;res sp&#233;ciaux suivants $char_spec</div><BR>\n");
       }
-      // Vérification de la cohérence des deux mots de passe
+      // Verification de la coherence des deux mots de passe
        elseif ( $new_password != $verif_password ) {
-        echo gettext("<div class='error_msg'>La vérification de votre nouveau mot de passe a échouée !</div><BR>\n");
+        echo gettext("<div class='error_msg'>La v&#233;rification de votre nouveau mot de passe a &#233;chou&#233; !</div><BR>\n");
       }
     }
   } else {    
@@ -93,8 +103,8 @@
     if ( userChangedPwd($login, $new_password) ) {
       // On reposte le cookie LCSuser en cas de succes du changement du mot de passe
       setcookie("LCSuser", xoft_encode( urlencode($new_password) ,$key_priv), 0,"/","",0);
-      $html = "<strong>Votre mot de passe a été modifié avec succès.</strong><br>\n";
-    } else $html = "<div class='error_msg'>Echec de la modification de votre mot de passe, veuillez contacter <A HREF='mailto:$MelAdminLCS?subject=PB changement mot de passe'>l'administrateur du système</A></div><BR>\n";
+      $html = "<strong>Votre mot de passe a &#233;t&#233; modifi&#233; avec succ&#232;s.</strong><br>\n";
+    } else $html = "<div class='error_msg'>Echec de la modification de votre mot de passe, veuillez contacter <A HREF='mailto:$MelAdminLCS?subject=PB changement mot de passe'>l'administrateur du syst&#232;me</A></div><BR>\n";
     header_crypto_html("Modification mot de passe");
     aff_trailer ("5");    
     echo $html;

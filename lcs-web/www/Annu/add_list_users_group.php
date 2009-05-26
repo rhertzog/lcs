@@ -4,10 +4,9 @@
    Consultation de l'annuaire LDAP
    Annu/add_list_users_group.php
    [LCS CoreTeam]
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
-   Equipe Tice académie de Caen
-   V 1.3 maj : 10/10/2003
+   Â« jLCF >:> Â» jean-luc.chretien@tice.ac-caen.fr
+   Equipe Tice academie de Caen
+   26/10/2009
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -15,6 +14,13 @@
 
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
+  
+//modif register
+$new_uids=$_POST['new_uids'];
+if ( isset($_POST['cn']))  $cn = $_POST['cn'];
+elseif ( isset($_GET['cn'])) $cn = $_GET['cn'];
+$add_list_users_group=$_POST['add_list_users_group']; 
+  
   header_html();
   aff_trailer ("31");
    if (is_admin("Annu_is_admin",$login)=="Y") {
@@ -45,21 +51,11 @@
       } elseif   ( ereg ("Classe_", $cn) ) {
         // Recherche de la liste des Eleves appartenant a une classe
         $uids_eleves_classes =   search_uids ("(cn=Classe_*)", "half");
-        ##DEBUG
-        #echo "Eleves Classes>".  count($uids_eleves_classes)."<BR>";
-        #for ($i=0; $i < count($uids_eleves_classes ); $i++ ) {
-        #echo $uids_eleves_classes[$i]["uid"]."<BR>";
-        #}
-        ##DEBUG
+        
         // Recherche de la liste des Eleves
         $uids_eleves = search_uids ("(cn=Eleves)", "half");
-        ##DEBUG
-        #echo "Eleves >".  count($uids_eleves)."<BR>";
-        #for ($i=0; $i < count($uids_eleves); $i++ ) {
-        #echo $uids_eleves[$i]["uid"]."<BR>";
-        #}
-        ##DEBUG
-        // Recherche des Eleves qui ne sont pas affectés à une classe
+        
+        // Recherche des Eleves qui ne sont pas affect&#233;s &#224; une classe
         $k=0;
         for ($i=0; $i < count($uids_eleves); $i++ ) {
           $affect = false;
@@ -75,19 +71,12 @@
             }
         }
         $people_new_members = search_people_groups ($uids_eleves_no_affect,"(sn=*)","cat");
-        ##DEBUG
-        #echo "---->".  count($uids_eleves_no_affect)."<BR>";
-        #for ($i=0; $i < count($uids_eleves_no_affect); $i++ ) {
-        # echo $uids_eleves_no_affect[$i]["uid"]."<BR>";
-        # echo $people_new_members[$i]["fullname"]."<BR>";
-        #}
-        ##DEBUG
-      }
-      // Affichage de la liste dans une boite de sélection
+              }
+      // Affichage de la liste dans une boite de s&#233;lection
       if   ( count($people_new_members)>15) $size=15; else $size=count($people_new_members);
       if ( count($people_new_members)>0) {
         $form = "<form action=\"add_list_users_group.php\" method=\"post\">\n";
-        $form.="<p>Sélectionnez les membres à ajouter au groupe :</p>\n";
+        $form.="<p>S&#233;lectionnez les membres &#224; ajouter au groupe :</p>\n";
         $form.="<p><select size=\"".$size."\" name=\"new_uids[]\" multiple=\"multiple\">\n";
         echo $form;
         for ($loop=0; $loop < count($people_new_members); $loop++) {
@@ -96,12 +85,12 @@
         $form="</select></p>\n";
         $form.="<input type=\"hidden\" name=\"cn\" value=\"$cn\">\n";
         $form.="<input type=\"hidden\" name=\"add_list_users_group\" value=\"true\">\n";
-        $form.="<input type=\"reset\" value=\"Réinitialiser la sélection\">\n";
+        $form.="<input type=\"reset\" value=\"R&#233;initialiser la s&#233;lection\">\n";
         $form.="<input type=\"submit\" value=\"Valider\">\n";
         $form.="</form>\n";
         echo $form;
       } else {
-        echo "<font color=\"orange\">Vous ne pouvez pas ajouter d'élèves car il n'existe plus d'élèves non affectés à des classes !!</font><BR>";
+        echo "<font color=\"orange\">Vous ne pouvez pas ajouter d'&#233;l&#232;ves car il n'existe plus d'&#233;l&#232;ves non affect&#233;s &#224; des classes !!</font><BR>";
       }
     }   else {
       // Ajout des membres au groupe
@@ -110,12 +99,12 @@
           exec("$scriptsbinpath/groupAddUser.pl  $new_uids[$loop] $cn" ,$AllOutPut,$ReturnValue);
           echo  "Ajout de l'utilisateur&nbsp;".$new_uids[$loop]."&nbsp;";
           if ($ReturnValue == 0 ) {
-            echo "<strong>Réussi</strong><BR>";
+            echo "<strong>R&#233;ussi</strong><BR>";
           } else { echo "</strong><font color=\"orange\">Echec</font></strong><BR>"; $err++; }
        }
     }
   } else {
-    echo "<div class=error_msg>Cette application, nécessite les droits d'administrateur du serveur LCS !</div>";
+    echo "<div class=error_msg>Cette application, n&#233;cessite les droits d'administrateur du serveur LCS !</div>";
   }
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>

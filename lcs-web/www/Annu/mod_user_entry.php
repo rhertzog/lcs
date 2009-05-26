@@ -3,7 +3,7 @@
    Projet LCS : Linux Communication Server
    Consultation de l'annuaire LDAP
    Annu/mod_user_entry.php
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
+   Â« jLCF >:> Â» jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
    Derniere version : 16/06/2008
    ============================================= */
@@ -113,7 +113,7 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
 	      <td align="left">
                 <input type="hidden" name="uid" value="<? echo $uid ?>">
                 <input type="hidden" name="user_entry" value="true">
-                <input type="submit" value="Lancer la requête">
+                <input type="submit" value="Lancer la requ&#234;te">
               </td>
 	    </tr>
 	  </tbody>
@@ -127,7 +127,7 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
         // verification des saisies
         // nom prenom
         if ( !verifEntree($nom) || !verifEntree($prenom) ) {
-          echo "<div class=\"error_msg\">Les champs nom et prenom, doivent comporter au minimum 1 et au maximum 20 caractères alphab&#233;tiques.</div><BR>\n";
+          echo "<div class=\"error_msg\">Les champs nom et prenom, doivent comporter au minimum 1 et au maximum 20 caract&#232;res alphab&#233;tiques.</div><BR>\n";
         }
         //pseudo
         if ( !verifPseudo($pseudo) ) {
@@ -144,8 +144,8 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
         // mot de passe
         if ( $userpwd && !verifPwd($userpwd) ) {
           echo "<div class='error_msg'>
-                 Vous devez proposer un mot de passe d'une longueur comprise entre 4 et 8 caractères
-                 alphanum&#233;riques avec &#233;ventuellement les caractères sp&#233;ciaux suivants ($char_spec)
+                 Vous devez proposer un mot de passe d'une longueur comprise entre 4 et 8 caract&#232;res
+                 alphanum&#233;riques avec &#233;ventuellement les caract&#232;res sp&#233;ciaux suivants ($char_spec)
                 </div><BR>\n";
         }
         // fin verification des saisies
@@ -154,12 +154,12 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
       // Changement du mot de passe
       if ( $userpwd && verifPwd($userpwd) ) {
         if ( userChangedPwd($uid, $userpwd) ) {
-          $html = "<strong>Le mot de passe a &#233;t&#233; modifi&#233; avec succès.</strong><br>\n";
+          $html = "<strong>Le mot de passe a &#233;t&#233; modifi&#233; avec succ&#232;s.</strong><br>\n";
           if ( $login == $uid )
             // Cas du changement de son propre mot de passe, on reposte le cookie LCSuser
             setcookie("LCSuser", xoft_encode( urlencode($userpwd) ,$key_priv), 0,"/","",0);
         } else
-          $html = "<div class='error_msg'>Echec de la modification du mot de passe, veuillez contacter <A HREF='mailto:$MelAdminLCS?subject=PB changement mot de passe'>l'administrateur du système</A></div><BR>\n";
+          $html = "<div class='error_msg'>Echec de la modification du mot de passe, veuillez contacter <A HREF='mailto:$MelAdminLCS?subject=PB changement mot de passe'>l'administrateur du syst&#232;me</A></div><BR>\n";
       }
       header_crypto_html("Modification fiche utilisateur");
       aff_trailer ("4");
@@ -207,14 +207,14 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
                        } else exit;
                        // fin ecriture fichier de log
                    }
-                   echo "<strong>Les entr&#233;es ont &#233;t&#233; modifi&#233;es avec succès.</strong><BR>\n";
+                   echo "<strong>Les entr&#233;es ont &#233;t&#233; modifi&#233;es avec succ&#232;s.</strong><BR>\n";
               } else {
-                echo "<strong>Echec de la modification, veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB modification entrees utilisateur'>l'administrateur du système</A><BR>\n";
+                echo "<strong>Echec de la modification, veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB modification entrees utilisateur'>l'administrateur du syst&#232;me</A><BR>\n";
               }
           }
           @ldap_close ( $ds );
       } else {
-          echo "Erreur de connection  &#224;l'annuaire, veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB connection a l'annuaire'>l'administrateur du système</A>administrateur<BR>\n";
+          echo "Erreur de connection  &#224;l'annuaire, veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB connection a l'annuaire'>l'administrateur du syst&#232;me</A>administrateur<BR>\n";
       }
       // Fin modification des entrees
     }
