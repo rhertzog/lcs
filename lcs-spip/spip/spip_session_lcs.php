@@ -1,6 +1,7 @@
 <?php /* spip/spip_session_lcs.php dernière revision : 03/11/2008 */
 $DBG = false;
-
+//register global
+$action=$_GET['action'];
 function fich_debug($texte){
         global $DBG;
 	if($DBG){
