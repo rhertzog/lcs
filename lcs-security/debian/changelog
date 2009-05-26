@@ -1,3 +1,9 @@
+lcs-security (2.2) intrepid; urgency=low
+
+  * Make a testing release
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 26 May 2009 14:49:54 +0200
+
 lcs-security (0.1-7) stable; urgency=low
 
   * Fix save scripts
