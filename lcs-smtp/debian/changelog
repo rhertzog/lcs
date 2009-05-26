@@ -1,3 +1,9 @@
+lcs-smtp (2.2) Lcs; urgency=low
+
+  * Make a testing release 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 26 May 2009 17:16:58 +0200
+
 lcs-smtp (2.1-2) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
