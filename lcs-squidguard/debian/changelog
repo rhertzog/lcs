@@ -1,3 +1,9 @@
+lcs-squidguard (2.2) intrepid; urgency=low
+
+  * Make a testing release
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 26 May 2009 17:21:20 +0200
+
 lcs-squidguard (2.1-2~6) unstable; urgency=low
 
   * add lcs-squid depend
