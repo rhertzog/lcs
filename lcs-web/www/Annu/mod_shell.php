@@ -17,15 +17,13 @@
   if ($idpers == "0") header("Location:$urlauth");
   
   //modif register
-//$shell_orig=$_POST['shell_orig'];
-//$shell_mod=$_POST['shell_mod'];
-//$phase=$_POST['phase'];
-if ( isset($_POST['phase']))  $cn = $_POST['phase'];
-elseif ( isset($_GET['phase'])) $cn = $_GET['phase'];
-if ( isset($_POST['shell_orig']))  $cn = $_POST['shell_orig'];
-elseif ( isset($_GET['shell_orig'])) $cn = $_GET['shell_orig'];
-if ( isset($_POST['shell_mod']))  $cn = $_POST['shell_mod'];
-elseif ( isset($_GET['shell_mod'])) $cn = $_GET['shell_mod'];    
+if ( isset($_POST['phase']))  $phase = $_POST['phase'];
+elseif ( isset($_GET['phase'])) $phase = $_GET['phase'];
+if ( isset($_POST['shell_orig']))  $shell_orig = $_POST['shell_orig'];
+elseif ( isset($_GET['shell_orig'])) $shell_orig = $_GET['shell_orig'];
+if ( isset($_POST['shell_mod']))  $shell_mod = $_POST['shell_mod'];
+elseif ( isset($_GET['shell_mod'])) $shell_mod = $_GET['shell_mod'];
+    
   // en-tete
   $html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
   $html  = "<HTML>\n";
