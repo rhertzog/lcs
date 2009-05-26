@@ -1,7 +1,11 @@
 <?php
-/* lcs/statandgo.php version du :  18/09/2008 */
+/* lcs/statandgo.php version du :  26/05/2009 */
 require ("./includes/headerauth.inc.php");
 require ("../Annu/includes/ldap.inc.php");
+
+//register global
+$use=$_GET['use'];
+
 #
 # Determination de url_accueil et version du LCS
 #
