@@ -1,8 +1,8 @@
-lcs-preinstall (2.4~1) Lcs; urgency=low
+lcs-preinstall (2.4) Lcs; urgency=low
 
   * Make a stable release 2.4 
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 14:11:24 +0200
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 14:19:44 +0200
 
 lcs-preinstall (2.1-1) LcsXP; urgency=low
 
