@@ -1,3 +1,9 @@
+lcs-web (2.4) Lcs; urgency=low
+
+  * Make a stable release 2.4
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 13:40:05 +0200
+
 lcs-web (2.4~1) Lcs; urgency=low
 
   [ Philippe Leclerc ]
