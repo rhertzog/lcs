@@ -17,6 +17,8 @@ set -e
 # the debian-policy package
 #
 
+VER=$(dpkg-query -f '${Version}' -W lcs-preinstall)
+
 exit_fatal() {
 	echo "Fatal: $1" >&2
 	exit 0
@@ -35,6 +37,10 @@ case "$1" in
 	# SSH configuration
 	#
 	lcs-sshd-config
+        #
+        # Update version in lcs_db.params
+        #
+        /usr/bin/mysql -e "UPDATE lcs_db.params SET value='$VER' WHERE name='VER';"
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
