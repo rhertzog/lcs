@@ -1,14 +1,14 @@
+lcs-monlcs (2.4) Lcs; urgency=low
+
+  * Build a stable release 2.4 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 15:57:33 +0200
+
 lcs-monlcs (2.1-4~2) UNRELEASED; urgency=low
 
   [ Sebastien Tack ]
   * bug on space when uploading on filename
   * bug on reading spip article when viewing academic resources ( conversion &amp; to & )
-  
- -- Sebastien Tack <sebastien.tack@ac-caen.fr>  Thu, 30 Apr 2009 11:26:40 +0200
-
-lcs-monlcs (2.1-4~1) UNRELEASED; urgency=low
-
-  [ Sebastien Tack ]
   * bug on popup description
   * adding filter for ressources list
   * adding boolean parameter for academic export
