@@ -1,10 +1,15 @@
-lcs-web (2.1-8~1) UNRELEASED; urgency=low
+lcs-web (2.4~1) Lcs; urgency=low
 
+  [ Philippe Leclerc ]
   * Modify delete_right.php, del_user_group.php, add_list_user_group.php, mod_group_descrip.php,
   * mod_pwd.php,mod_user_entry.php,mod_shell.php,export.php, export_ldif.php 
   * for registers globals 
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 26 May 2009 16:51:03 +0200
+  [ Jean Luc Chretien ]
+  * Modify Annu/mod_shell.php
+  * Make XP release 2.4 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 13:32:02 +0200
 
 lcs-web (2.1-7) Lcs; urgency=low
 
