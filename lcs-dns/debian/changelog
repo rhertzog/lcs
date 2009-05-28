@@ -1,3 +1,9 @@
+lcs-dns (2.4) Lcs; urgency=low
+
+  * Make a stable release 2.4
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 14:36:29 +0200
+
 lcs-dns (2.1-2) LcsXP; urgency=low
 
   [ Simon Cavey ]
