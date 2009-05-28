@@ -1,3 +1,9 @@
+lcs-pop (2.4) Lcs; urgency=low
+
+  * Build a stable release 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 15:30:58 +0200
+
 lcs-pop (2.1) Lcs; urgency=low
 
   [ Philippe Le Brouster ]
