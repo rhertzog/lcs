@@ -1,8 +1,14 @@
+lcs-pla (2.4.1) Lcs; urgency=low
+
+  * remove tidle for release
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 28 May 2009 22:50:18 +0200
+
 lcs-pla (2.4.1~1) Lcs; urgency=low
 
   * automatic change number version in postinst
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 28 May 2009 21:47:07 +0200
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 28 May 2009 22:48:14 +0200
 
 lcs-pla (2.4) Lcs; urgency=low
 
