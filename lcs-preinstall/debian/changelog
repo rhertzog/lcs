@@ -1,3 +1,9 @@
+lcs-preinstall (2.4.2~1) Lcs; urgency=low
+
+  * add assist user allowed to make TCP Tunnel
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue,  2 Jun 2009 17:07:37 +0200
+
 lcs-preinstall (2.4.1) Lcs; urgency=low
 
   * Make a stable release 2.4 

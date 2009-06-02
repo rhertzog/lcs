@@ -113,6 +113,11 @@ Match user spip.manager
           ChrootDirectory /usr/share/lcs/spip
           ForceCommand internal-sftp
 
+Match user assist
+	ChrootDirectory /home/%u
+	AllowTcpForwarding yes
+	ForceCommand internal-sftp
+
 Match group sftp-allowed
           ChrootDirectory /home/%u
           ForceCommand internal-sftp
