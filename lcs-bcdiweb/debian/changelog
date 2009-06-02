@@ -1,3 +1,9 @@
+lcs-bcdiweb (1.91-1~7) unstable; urgency=low
+
+  * fix missing upgrade in postrm script
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue,  2 Jun 2009 18:04:16 +0200
+
 lcs-bcdiweb (1.91-1~6) unstable; urgency=low
 
   * bugfix : path in conf files

@@ -24,6 +24,8 @@ case "$1" in
 	rm -r /home/BcdiPlug
 	mysql -e "DELETE FROM lcs_db.applis WHERE applis.id = 38 LIMIT 1"
     ;;
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
 
     *)
         echo "postrm called with unknown argument \`$1'" >&2
