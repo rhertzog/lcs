@@ -1,3 +1,9 @@
+lcs-web (2.4.1) UNRELEASED; urgency=low
+
+  * Modify LcsMaj : test if mysql service is up before update
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 03 Jun 2009 10:47:10 +0200
+
 lcs-web (2.4) Lcs; urgency=low
 
   * Make a stable release 2.4
