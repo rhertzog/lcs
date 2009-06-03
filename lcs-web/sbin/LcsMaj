@@ -5,12 +5,23 @@ DEBIAN_FRONTEND="noninteractive"
 export  DEBIAN_FRONTEND
 export  DEBIAN_PRIORITY
 #
-# Mise a jour des paquets logiciels du serveur
+# Mise a jour des paquets logiciels du serveur si mysql repond
 #
-apt-get update
-apt-get -y upgrade
+if  mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1 ; then
+    apt-get update
+    apt-get -y install mysql-server
+    apt-get -y --force-yes upgrade
+else
+    echo "Service Mysql inaccessible, report de la mise a jour systeme."
+    exit 1
+fi
+# Avant de passer les maj differentielle on reteste si le service mysql repond
+if ! mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1; then
+    echo "Service Mysql inaccessible, report de la mise a jour differentielle."
+    exit 1
+fi
 #
-# Récupération des paramètres de connexion à la base
+# Recuperation des parametres de connexion a la base
 #
 if [ -e /var/www/lcs/includes/config.inc.php ]; then
   HOSTAUTH=`cat /var/www/lcs/includes/config.inc.php | grep "HOSTAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
@@ -122,7 +133,7 @@ while [ -e maj$NEXT_MINOR_MAJ.md5  ] || [ -e maj$NEXT_MAJOR_MAJ.md5 ]; do
   NEXT_MAJOR_MAJ=$(( (($MAJNBR /10) * 10) + 10 ))
 done
 
-echo "Toutes les révisions ou mises à jour disponibles ont été appliquées."
+echo "Toutes les revisions ou mises a jour disponibles ont ete appliquees."
 DEBIAN_PRIORITY="high"
 DEBIAN_FRONTEND="dialog"
 export  DEBIAN_PRIORITY
