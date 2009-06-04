@@ -1,3 +1,9 @@
+lcs-dns (2.4.1) Lcs; urgency=low
+
+  * fix machine 50 ip in localnet.db.in
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu,  4 Jun 2009 17:56:54 +0200
+
 lcs-dns (2.4) Lcs; urgency=low
 
   * Make a stable release 2.4
