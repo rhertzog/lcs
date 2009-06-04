@@ -1,10 +1,11 @@
-lcs-web (2.4.1) Lcs; urgency=low
+lcs-web (2.4.2) Lcs; urgency=low
 
   * Modify LcsMaj : test if mysql service is up before update
   * Remove asr.sh script now in lcs-assr package  
   * Make a stable release 
+  * Redirect standard output to /dev/null in lcsldapsav cron task
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2009 15:54:19 +0200
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2009 17:48:54 +0200
 
 lcs-web (2.4) Lcs; urgency=low
 
