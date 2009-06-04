@@ -1,12 +1,13 @@
-lcs-preinstall (2.4.2~1) Lcs; urgency=low
+lcs-preinstall (2.4.2) Lcs; urgency=low
 
   [ Simon Cavey ]
   * add assist user allowed to make TCP Tunnel
  
   [ Jean Luc Chretien ]
   * Add update version number LCS in postinst 
+  * Make a stable release 
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 03 Jun 2009 10:46:07 +0200
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2009 15:52:31 +0200
 
 lcs-preinstall (2.4.1) Lcs; urgency=low
 
