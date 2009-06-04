@@ -1,8 +1,9 @@
-lcs-web (2.4.1) UNRELEASED; urgency=low
+lcs-web (2.4.1~1) Lcs; urgency=low
 
   * Modify LcsMaj : test if mysql service is up before update
+  * Remove asr.sh script now in lcs-assr package  
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 03 Jun 2009 10:47:10 +0200
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2009 14:40:14 +0200
 
 lcs-web (2.4) Lcs; urgency=low
 
