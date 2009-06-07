@@ -14,7 +14,7 @@ install:
 	install -m 644 etc/default/* $(DESTDIR)/etc/default/
 
 # install lcs etc conf init.d
-	install -d $(DESTDIR)/etc/default
+	install -d $(DESTDIR)/etc/init.d
 	install -m 755 etc/init.d/* $(DESTDIR)/etc/init.d/
 
 # install sbin
