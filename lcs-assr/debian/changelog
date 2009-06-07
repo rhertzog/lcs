@@ -1,3 +1,9 @@
+lcs-assr (2.4) Lcs; urgency=low
+
+  * changing vhost name in module-lcs-assr to fix ip vhost
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun,  7 Jun 2009 21:00:22 +0200
+
 lcs-assr (2.1) Lcs; urgency=low
 
   * Add return in bind config

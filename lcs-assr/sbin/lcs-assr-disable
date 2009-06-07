@@ -1,5 +1,5 @@
 #!/bin/bash
-a2dissite lcs-assr 
+a2dissite module-lcs-assr 
 /etc/init.d/apache2 reload
 
 oldserial=`cat /etc/bind/localnet.db | grep -i serial`

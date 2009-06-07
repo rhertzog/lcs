@@ -12,7 +12,7 @@ if [ "$result" = 0 ]; then
 	echo "assr            IN      CNAME   lcs">>/etc/bind/localnet.db
         /etc/init.d/bind9 reload
         ## Apache 2
-        a2ensite lcs-assr
+        a2ensite module-lcs-assr
         /etc/init.d/apache2 reload
 
 else
