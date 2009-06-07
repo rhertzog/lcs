@@ -1,3 +1,11 @@
+lcs-preinstall (2.4.3~1) Lcs; urgency=low
+
+  * Remove Listening in 2222 port for curent ssh config
+  * Adding new instancie of SSH on port 2222 chroot restricted and
+    whithout root login
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun,  7 Jun 2009 19:56:26 +0200
+
 lcs-preinstall (2.4.2) Lcs; urgency=low
 
   [ Simon Cavey ]

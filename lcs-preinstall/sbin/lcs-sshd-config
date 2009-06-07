@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# Simon CAVEY - CRDP de Basse-Normandie
+# Projet LCS - Equipe TICE Académie de Caen
+# Script de mise en place de la configuration ssh.
 # /usr/sbin/lcs-openssh-config
 if [ ! -e /etc/ssh/sshd_config.no-lcs ] ; then 
     mv /etc/ssh/sshd_config /etc/ssh/sshd_config.no-lcs
@@ -22,13 +24,13 @@ http://lcs.crdp.ac-caen.fr
 
 EOFISSUE
 
+## fichier de config de SSH
 cat >/etc/ssh/sshd_config <<EOF
 # Package generated configuration file
 # See the sshd(8) manpage for details
 
 # What ports, IPs and protocols we listen for
 Port 22
-Port 2222
 # Use these options to restrict which interfaces/protocols sshd will bind to
 #ListenAddress ::
 #ListenAddress 0.0.0.0
@@ -132,12 +134,305 @@ Match group lcs-users
 
 EOF
 
+## On creer le fichier de config pour le 2 ieme SSH 
+cat >/etc/ssh/sshd_config_sftp <<EOFSSH2
+# Package generated configuration file
+# See the sshd(8) manpage for details
+
+# What ports, IPs and protocols we listen for
+Port 2222
+# Use these options to restrict which interfaces/protocols sshd will bind to
+#ListenAddress ::
+#ListenAddress 0.0.0.0
+Protocol 2
+# HostKeys for protocol version 2
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_dsa_key
+#Privilege Separation is turned on for security
+UsePrivilegeSeparation yes
+
+# Lifetime and size of ephemeral version 1 server key
+KeyRegenerationInterval 3600
+ServerKeyBits 768
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO
+
+# Authentication:
+LoginGraceTime 120
+PermitRootLogin no
+StrictModes yes
+
+RSAAuthentication yes
+PubkeyAuthentication yes
+#AuthorizedKeysFile     %h/.ssh/authorized_keys
+#AuthorizedKeysFile     %h/.ssh/authorized_keys
+
+# Don't read the user's ~/.rhosts and ~/.shosts files
+IgnoreRhosts yes
+# For this to work you will also need host keys in /etc/ssh_known_hosts
+RhostsRSAAuthentication no
+# similar for protocol version 2
+HostbasedAuthentication no
+# Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication
+#IgnoreUserKnownHosts yes
+
+# To enable empty passwords, change to yes (NOT RECOMMENDED)
+PermitEmptyPasswords no
+
+# Change to yes to enable challenge-response passwords (beware issues with
+# some PAM modules and threads)
+ChallengeResponseAuthentication no
+
+# Change to no to disable tunnelled clear text passwords
+#PasswordAuthentication yes
+
+# Kerberos options
+#KerberosAuthentication no
+#KerberosGetAFSToken no
+#KerberosOrLocalPasswd yes
+#KerberosTicketCleanup yes
+
+# GSSAPI options
+#GSSAPIAuthentication no
+#GSSAPICleanupCredentials yes
+
+X11Forwarding no
+X11DisplayOffset 10
+AllowTcpForwarding no
+
+PrintMotd no
+PrintLastLog yes
+TCPKeepAlive yes
+#UseLogin no
+
+#MaxStartups 10:30:60
+Banner /etc/issue.net
+
+# Allow client to pass locale environment variables
+AcceptEnv LANG LC_*
+
+#Subsystem sftp /usr/lib/openssh/sftp-server
+Subsystem       sftp     internal-sftp
+
+UsePAM yes
+
+Match user spip.manager
+          ChrootDirectory /usr/share/lcs/spip
+          ForceCommand internal-sftp
+
+Match user assist
+        ChrootDirectory /home/%u
+        AllowTcpForwarding yes
+        ForceCommand internal-sftp
+
+Match group sftp-allowed
+          ChrootDirectory /home/%u
+          ForceCommand internal-sftp
+
+Match group admins
+        ChrootDirectory /home/%u
+        ForceCommand internal-sftp
+        AllowTcpForwarding yes
+
+Match group lcs-users
+          ForceCommand /bin/false
+
+EOFSSH2
+
+cat >/etc/init.d/lcs-sftp <<EOFINITSSH2
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:		lcs-sftp
+# Required-Start:	$remote_fs $syslog
+# Required-Stop:	$remote_fs $syslog
+# Default-Start:	2 3 4 5
+# Default-Stop:		1
+# Short-Description:	OpenBSD Secure Shell server
+### END INIT INFO
+
+set -e
+
+# /etc/init.d/lcs-sftp: start and stop the OpenBSD "secure shell(tm)" daemon
+
+test -x /usr/sbin/sshd || exit 0
+( /usr/sbin/sshd -\? 2>&1 | grep -q OpenSSH ) 2>/dev/null || exit 0
+
+export SSHD_OOM_ADJUST=-17
+if test -f /etc/default/lcs-sftp; then
+    . /etc/default/lcs-sftp
+fi
+
+. /lib/lsb/init-functions
+
+if [ -n "$2" ]; then
+    SSHD_OPTS="$SSHD_OPTS $2"
+fi
+
+# Are we running from init?
+run_by_init() {
+    ([ "$previous" ] && [ "$runlevel" ]) || [ "$runlevel" = S ]
+}
+
+check_for_no_start() {
+    # forget it if we're trying to start, and /etc/ssh/sshd_not_to_be_run exists
+    if [ -e /etc/ssh/sshd_not_to_be_run ]; then 
+	if [ "$1" = log_end_msg ]; then
+	    log_end_msg 0
+	fi
+	if ! run_by_init; then
+	    log_action_msg "OpenBSD Secure Shell server not in use (/etc/ssh/sshd_not_to_be_run)"
+	fi
+	exit 0
+    fi
+}
+
+check_dev_null() {
+    if [ ! -c /dev/null ]; then
+	if [ "$1" = log_end_msg ]; then
+	    log_end_msg 1 || true
+	fi
+	if ! run_by_init; then
+	    log_action_msg "/dev/null is not a character device!"
+	fi
+	exit 1
+    fi
+}
+
+check_privsep_dir() {
+    # Create the PrivSep empty dir if necessary
+    if [ ! -d /var/run/lcs-sftp ]; then
+	mkdir /var/run/lcs-sftp
+	chmod 0755 /var/run/lcs-sftp
+    fi
+}
+
+check_config() {
+    if [ ! -e /etc/ssh/sshd_not_to_be_run ]; then
+	/usr/sbin/sshd -t || exit 1
+    fi
+}
+
+export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
+
+case "$1" in
+  start)
+	check_privsep_dir
+	check_for_no_start
+	check_dev_null
+	log_daemon_msg "Starting OpenBSD Secure Shell server" "lcs-sftp"
+	if start-stop-daemon --start --quiet --oknodo --pidfile /var/run/lcs-sftp.pid --exec /usr/sbin/sshd -- $SSHD_OPTS; then
+	    log_end_msg 0
+	else
+	    log_end_msg 1
+	fi
+	;;
+  stop)
+	log_daemon_msg "Stopping OpenBSD Secure Shell server" "lcs-sftp"
+	if start-stop-daemon --stop --quiet --oknodo --pidfile /var/run/lcs-sftp.pid; then
+	    log_end_msg 0
+	else
+	    log_end_msg 1
+	fi
+	;;
+
+  reload|force-reload)
+	check_for_no_start
+	check_config
+	log_daemon_msg "Reloading OpenBSD Secure Shell server's configuration" "lcs-sftp"
+	if start-stop-daemon --stop --signal 1 --quiet --oknodo --pidfile /var/run/lcs-sftp.pid --exec /usr/sbin/sshd; then
+	    log_end_msg 0
+	else
+	    log_end_msg 1
+	fi
+	;;
+
+  restart)
+	check_privsep_dir
+	check_config
+	log_daemon_msg "Restarting OpenBSD Secure Shell server" "lcs-sdft"
+	start-stop-daemon --stop --quiet --oknodo --retry 30 --pidfile /var/run/lcs-sftp.pid
+	check_for_no_start log_end_msg
+	check_dev_null log_end_msg
+	if start-stop-daemon --start --quiet --oknodo --pidfile /var/run/lcs-sftp.pid --exec /usr/sbin/sshd -- $SSHD_OPTS; then
+	    log_end_msg 0
+	else
+	    log_end_msg 1
+	fi
+	;;
+
+  try-restart)
+	check_privsep_dir
+	check_config
+	log_daemon_msg "Restarting OpenBSD Secure Shell server" "lcs-sftp"
+	set +e
+	start-stop-daemon --stop --quiet --retry 30 --pidfile /var/run/lcs-sftp.pid
+	RET="$?"
+	set -e
+	case $RET in
+	    0)
+		# old daemon stopped
+		check_for_no_start log_end_msg
+		check_dev_null log_end_msg
+		if start-stop-daemon --start --quiet --oknodo --pidfile /var/run/lcs-sftp.pid --exec /usr/sbin/sshd -- $SSHD_OPTS; then
+		    log_end_msg 0
+		else
+		    log_end_msg 1
+		fi
+		;;
+	    1)
+		# daemon not running
+		log_progress_msg "(not running)"
+		log_end_msg 0
+		;;
+	    *)
+		# failed to stop
+		log_progress_msg "(failed to stop)"
+		log_end_msg 1
+		;;
+	esac
+	;;
+
+  status)
+	status_of_proc -p /var/run/lcs-sftp.pid /usr/sbin/sshd sshd && exit 0 || exit $?
+	;;
+
+  *)
+	log_action_msg "Usage: /etc/init.d/lcs-sftp {start|stop|reload|force-reload|restart|try-restart|status}"
+	exit 1
+esac
+
+exit 0
+
+EOFINITSSH2
+
+## On rend le fichier init executable
+chmod 755 /etc/init.d/lcs-sftp
+
+## On creer le fichier de parametre indiquant a ssh le fichier de config.
+cat >/etc/default/lcs-sftp <<EOFSFTPDEFAULT
+# Default settings for lcs-sftp. This file is sourced by /bin/sh from
+# /etc/init.d/lcs-sftp.
+
+# Options to pass to sshd
+SSHD_OPTS="-f /etc/ssh/sshd_config_sftp"
+
+EOFSFTPDEFAULT
+
+update-rc.d lcs-sftp defaults 17 17
+
 if [ -x /usr/sbin/invoke-rc.d ]; then
 	invoke-rc.d ssh restart
 else
 	/etc/init.d/ssh restart
 fi
 
-
+if [ -x /usr/sbin/invoke-rc.d ]; then
+        invoke-rc.d lcs-sftp restart
+else
+        /etc/init.d/lcs-sftp restart
+fi
 
 
