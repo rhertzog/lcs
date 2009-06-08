@@ -1,0 +1,15 @@
+Source: lcs-sysinfo
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+
+Package: lcs-sysinfo
+Architecture: all
+Depends: slis-common, apache2 | httpd, lcs-web, lsscsi, lsb-release
+Replaces: lcs-phpsysinfo, phpsysinfo
+Conflicts: lcs-phpsysinfo, phpsysinfo
+Suggests: lm-sensors, hddtemp
+Description: Install phpsysinfo on LCS server
+ This package install phpsysinfo and a lcs theme on LCS server

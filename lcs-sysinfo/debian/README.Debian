@@ -1,0 +1,17 @@
+LCS sysinfo for  Debian
+----------------------------
+
+-- Jean-Luc Chretien    <jean-luc.chretien@tice.ac-caen.fr>  V 2.4  08 Juin 2009
+
+USAGE
+
+  Installation et configuration phpsysinfo pour LCS
+  
+CONFIGURATION
+
+La configuration du paquet est prise en charge par le script postinst du paquet
+
+
+  
+
+

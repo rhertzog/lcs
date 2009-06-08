@@ -1,0 +1,5 @@
+lcs-sysinfo (2.4~3) Lcs; urgency=low
+
+  * Install phpsysinfo 3.0~rc7 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 08 Jun 2009 19:58:59 +0200
