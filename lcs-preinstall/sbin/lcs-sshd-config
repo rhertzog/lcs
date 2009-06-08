@@ -242,7 +242,7 @@ Match group lcs-users
 EOFSSH2
 
 ## On ajoute lcs-sftp au boot
-if [ ! -e /etc/init.d/lcs-sftp ] ; then 
+if [ -e /etc/init.d/lcs-sftp ] ; then 
     update-rc.d lcs-sftp defaults 17 17
     if [ -x /usr/sbin/invoke-rc.d ]; then
         invoke-rc.d lcs-sftp restart
