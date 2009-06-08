@@ -1,4 +1,4 @@
-lcs-preinstall (2.4.3~3) Lcs; urgency=low
+lcs-preinstall (2.4.3) Lcs; urgency=low
 
   [ Simon Cavey ]
   * Remove Listening in 2222 port for curent ssh config
@@ -8,8 +8,10 @@ lcs-preinstall (2.4.3~3) Lcs; urgency=low
     fix bug with $ in postinst
   * correct add lcs-sftp to init.d in lcs-sshd-config
   * remove lcs-sftp when removing lcs-preinstall
+  * change ssh instancies reload order
+  * correct small init.d misstake
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon,  8 Jun 2009 10:26:40 +0200
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon,  8 Jun 2009 12:26:14 +0200
 
 lcs-preinstall (2.4.2) Lcs; urgency=low
 

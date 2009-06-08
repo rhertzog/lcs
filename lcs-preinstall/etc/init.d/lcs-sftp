@@ -108,7 +108,7 @@ case "$1" in
   restart)
 	check_privsep_dir
 	check_config
-	log_daemon_msg "Restarting OpenBSD Secure Shell server" "lcs-sdft"
+	log_daemon_msg "Restarting OpenBSD Secure Shell server" "lcs-sftp"
 	start-stop-daemon --stop --quiet --oknodo --retry 30 --pidfile /var/run/lcs-sftp.pid
 	check_for_no_start log_end_msg
 	check_dev_null log_end_msg
