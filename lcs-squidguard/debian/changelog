@@ -1,8 +1,15 @@
+lcs-squidguard (2.4.1~1) Lcs; urgency=low
+
+  * fix bug with blog patch durinig initial install
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue,  9 Jun 2009 18:28:45 +0200
+
 lcs-squidguard (2.4) Lcs; urgency=low
 
-  * Build a stable release 2.4 
+  [ Jean Luc Chretien ]
+  * Build a stable release 2.4
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 15:41:14 +0200
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue,  9 Jun 2009 18:26:38 +0200
 
 lcs-squidguard (2.2) intrepid; urgency=low
 

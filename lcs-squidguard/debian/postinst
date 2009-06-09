@@ -53,25 +53,28 @@ case "$1" in
           #
           # Installation des listes noires
           #
-           echo "SquidGuard blacklists installation in one minute"
-          at now+1minutes <<END
-/usr/sbin/getBlacklists.sh
-invoke-rc.d squid reload
-END
+          echo "SquidGuard blacklists installation in one minute"
+	  at now+1minutes <<END
+	  /usr/sbin/getBlacklists.sh
+	  invoke-rc.d squid reload
+	  END
           #
           # add open_basedir directives configuration 25_squidguard.conf
           #
-        cat >/etc/apache2/lcs-main/25_squidguard.conf <<EOF
-<Directory /var/www/Squidguard>
-   php_admin_value open_basedir /var/www:/usr/share/lcs:/var/lib/squidguard/db
-</Directory>
+	cat >/etc/apache2/lcs-main/25_squidguard.conf <<EOF
+	<Directory /var/www/Squidguard>
+	   php_admin_value open_basedir /var/www:/usr/share/lcs:/var/lib/squidguard/db
+	</Directory>
 EOF
           invoke-rc.d apache2 reload
 	fi
 	## Upgrade blog
-	patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-blog
-	squidGuard -C blog
-	squid -k reconfigure
+	grep blog squidGuard.conf
+	if [ $? = 1 ] ; then
+		patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-blog
+		squidGuard -C blog
+		squid -k reconfigure
+	fi
     	;;
     	abort-upgrade|abort-remove|abort-deconfigure)
     	;;
