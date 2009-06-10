@@ -69,8 +69,9 @@ EOF
           invoke-rc.d apache2 reload
 	fi
 	## Upgrade blog
-	res=`grep blog /etc/squid/squidGuard.conf`
-	if [ -z $res ] ; then
+	if grep blog /etc/squid/squidGuard.conf ; then
+		echo "blog deja present dans le fichier de configuration"
+	else
 		echo "ajout des blog au fichier de configuration squidguard"
 		patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-blog
 		squidGuard -C blog
