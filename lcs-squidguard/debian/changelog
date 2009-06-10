@@ -1,3 +1,9 @@
+lcs-squidguard (2.4.1~4) Lcs; urgency=low
+
+  * fix blog test now silent
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 10 Jun 2009 20:46:26 +0200
+
 lcs-squidguard (2.4.1~3) Lcs; urgency=low
 
   * fix bug with blog patch durinig initial install
