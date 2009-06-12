@@ -24,7 +24,7 @@ $userpwd=$_POST['userpwd'];
 $shell=$_POST['shell'];
 $password=$_POST['password'];
 $string_auth=$_POST['string_auth'];
-
+$pseudo=$_POST['pseudo'];
 list ($idpers,$login)= isauth();
 if ($idpers == "0") header("Location:$urlauth");
 
@@ -52,7 +52,7 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
 	    </tr>
 	    <tr>
                 <td width="27%">Pr&#233;nom :&nbsp;</td>
-                <td width="73%" colspan="2"><input type="text" name="prenom" value="<?php echo $user[0]["prenom"]?>" size="20"></td>
+                <td width="73%" colspan="2"><input type="text" name="prenom" value="<?php  echo $user[0]['prenom'];?>" size="20"></td>
 	    </tr>
 	    <tr>
 	      <td>Nom&nbsp;:&nbsp;</td>
@@ -66,7 +66,7 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
 	    </tr>
 	    <tr>
 	      <td>Pseudo&nbsp;:&nbsp;</td>
-	      <td colspan="2"><input type="text" name="pseudo" value="<?php echo $user[0]["pseudo"]?>" size="20"></td>
+	      <td colspan="2"><input type="text" name="pseudo" value="<?php echo $user[0]['pseudo']?>" size="20"></td>
 	    </tr>
 	    <tr>
 	      <td><em>Shell&nbsp;</em> :&nbsp;</td>
@@ -89,7 +89,7 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
 	    </tr>
 	    <tr>
 	      <td>T&#233;l&#233;phone :&nbsp;</td>
-	      <td colspan="2"><input type="text" name="telephone" value="<?php echo $user[0]["tel"] ?>" size="10"></td>
+	      <td colspan="2"><input type="text" name="telephone" value="<?php echo $user[0]['tel']; ?>" size="10"></td>
 	    </tr>
 	    <? } else {
 	    	echo "<input type=\"hidden\" name=\"pseudo\" value=\"".$user[0]["pseudo"]."\" size=\"20\">";

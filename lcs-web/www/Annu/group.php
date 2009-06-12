@@ -3,12 +3,11 @@
    Projet LCS-SE3
    Consultation de l'annuaire LDAP
    Annu/Search.php
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
-   « wawa »  olivier.lecluse@crdp.ac-caen.fr
-   Equipe Tice académie de Caen
-   Derniere modifications : 07/05/2007
-   Distribué selon les termes de la licence GPL
+   Â« jLCF >:> Â» jean-luc.chretien@tice.ac-caen.fr
+   Â« wawa Â»  olivier.lecluse@crdp.ac-caen.fr
+   Equipe Tice academie de Caen
+   Derniere modification : 29/05/2009
+   Distribue selon les termes de la licence GPL
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -16,7 +15,9 @@
 
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
-
+  
+  $filter=$_GET['filter'];
+  
   header_html();
   aff_trailer ("3");
   #$TimeStamp_0=microtime();
@@ -32,8 +33,8 @@
   # Fin DEBUG #
   #############
   if (count($people)) {
-    // affichage des résultats
-    // Nettoyage des _ dans l'intitulé du groupe
+    // affichage des resultats
+    // Nettoyage des _ dans l'intitule du groupe
     $intitule =  strtr($filter,"_"," ");
     echo "<U>Groupe</U> : $intitule <font size=\"-2\">".$group[0]["description"]."</font><BR>\n";
     echo "Il y a ".count($people)." membre";
@@ -66,8 +67,8 @@
     echo " <STRONG>Pas de membres</STRONG> dans le groupe $filter.<BR>";
   }
 
-  // Modifié par Wawa
-  // Affichage de l'équipe pédagogique associée à la classe
+  // Modifi&#233; par Wawa
+  // Affichage de l'equipe pedagogique associe &#224; la classe
 
   if (ereg("Classe",$filter,$matche))
   {
@@ -75,7 +76,7 @@
     $uids2 = search_uids ("(cn=".$filter2.")", "half");
     $people2 = search_people_groups ($uids2,"(sn=*)","cat");
     if (count($people2)) {
-      // affichage des résultats
+      // affichage des resultats
       echo "<BR><U>Professeurs de la classe</U> : <a href=\"group.php?filter=$filter2\">$filter2</A><BR>\n";
       echo "<table border=0>\n";
       for ($loop=0; $loop < count($people2); $loop++) {
@@ -98,7 +99,7 @@
       echo "</table><BR>\n";
     }
   }
-  // Affichage du rebond sur la classe associée à une équipe pédagogique
+  // Affichage du rebond sur la classe associee &#224; une equipe pdagogique
 
   if (ereg("Equipe",$filter,$matche))
   {
@@ -106,8 +107,8 @@
     $uids2 = search_uids ("(cn=".$filter2.")","half");
     $people2 = search_people_groups ($uids2,"(sn=*)","cat");
     if (count($people2)) {
-      // affichage des résultats
-      echo "<BR>Il y a ".count($people2)." élèves dans la <a href=\"group.php?filter=$filter2\">$filter2</A> associée à cette équipe.\n";
+      // affichage des resultats
+      echo "<BR>Il y a ".count($people2)." &#233;l&#232;ves dans la <a href=\"group.php?filter=$filter2\">$filter2</A> associ&#233;e &#224; cette &#233;quipe.\n";
       echo "<BR>\n";
     }
   }
@@ -127,15 +128,15 @@
       /*
       if ( ereg("Equipe_",$filter) ) {
         if ( $owner )
-          echo "<li><a href=\"mod_owner_group.php?cn=$filter&owner=$owner\">Réaffecter le professeur principal</a></li>\n";
+          echo "<li><a href=\"mod_owner_group.php?cn=$filter&owner=$owner\">R&#233;affecter le professeur principal</a></li>\n";
         else
           echo "<li><a href=\"mod_owner_group.php?cn=$filter\">Affecter un professeur principal</a></li>\n";
       }
       */
     }
     if (ldap_get_right("lcs_is_admin",$login) == "Y")
-        // Affichage du menu "Déléguer un droit à un groupe"
-        echo "<li><a href=\"add_group_right.php?cn=$filter\">Déléguer un droit à ce groupe</a></li>\n";
+        // Affichage du menu "Deleguer un droit &#224; un groupe"
+        echo "<li><a href=\"add_group_right.php?cn=$filter\">D&#233;l&#233;guer un droit &#224; ce groupe</a></li>\n";
     echo "</ul>\n";
   } // Fin Affichage menu admin
   include ("../lcs/includes/pieds_de_page.inc.php");

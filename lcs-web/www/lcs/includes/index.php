@@ -6,7 +6,7 @@
 </head>
 <body bgcolor= "ghostwhite" >
 <br><br><br><br><br>
-<div align="center"><h3>Vous n'avez pas la permission d'accéder au contenu de ce répertoire !</h1></div>
+<div align="center"><h3>Vous n'avez pas la permission d'acc&#233;der au contenu de ce r&#233;pertoire !</h1></div>
 <br><br><br><br><br>
 </body>
 </html>

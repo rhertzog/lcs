@@ -6,10 +6,19 @@
     <TITLE>...::: Interface d'administration Serveur LCS :::...</TITLE>
     <LINK  href='../Annu/style.css' rel='StyleSheet' type='text/css'>
 <?php
+$dpid=$_GET['dpid'];
+$majp=$_GET['majp'];
+$p=$_GET['p'];
+$v=$_GET['v'];
+$s=$_GET['s'];
+$d=$_GET['d'];
+$n=$_GET['n'];
+$stop=$_GET['stop'];
+
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include("plugins_commun.php");
-if(empty($QUERY_STRING)) $QSTRING = "";
-else $QSTRING = $QUERY_STRING;
+if(empty($_SERVER['QUERY_STRING'])) $QSTRING = "";
+else $QSTRING = $_SERVER['QUERY_STRING'];
 ?>
     <SCRIPT TYPE="text/javascript">
 	<!--
@@ -32,11 +41,11 @@ else $QSTRING = $QUERY_STRING;
         }                
 	if (isset($dpid)) { // il s'agit d'une desinstallation
 		$fecran = cree_nom_fichier_ecran($dpid);
-                $MSG = "Désinstallation";
+                $MSG = "D&#233;sinstallation";
         }                
-	if (isset($majp)) { // il s'agit d'une mise à jour
+	if (isset($majp)) { // il s'agit d'une mise a jour
 		$fecran = cree_nom_fichier_ecran($majp);
-                $MSG = "Mise à jour";
+                $MSG = "Mise &#224; jour";
         }                
 	if (file_exists($fecran))
 		{
@@ -56,5 +65,5 @@ if (!isset($stop)) {
 <?        
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");		
 if (isset($stop))
-	unlink($fecran); // si on arrète le rafraichissement, on supprime le fichier d'écran.
+	unlink($fecran); // si on arrete le rafraichissement, on supprime le fichier d'ecran.
 ?>

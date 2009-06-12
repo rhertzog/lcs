@@ -3,8 +3,8 @@
    Projet LCS : Linux Communication Server
    lcs/includes/jlcipher.inc.php
    jLCF >:>  jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice académie de Caen
-   Derniere version : 05/01/2009
+   Equipe Tice academie de Caen
+   Derniere version : 08/06/2009
    ============================================= */
 
 # Constantes j-LCipher
@@ -82,7 +82,7 @@ function crypto_nav()
         if (eregi("Mozilla/4.7", $HTTP_USER_AGENT)) {
                 echo " <a href='../lcs/auth_lcs.html' onclick='auth_popup(); return false' target='_blank'><img src='../lcs/images/no_crypto.gif' alt='Crytpage des mots de passe actif !' width='48' height='48' border='0' /></a>";
         } else {
-                echo " <a href='../lcs/auth_lcs.html' onclick='auth_popup(); return false' target='_blank'><img src='../lcs/images/crypto.gif' alt='Attention, avec ce navigateur votre mot de passe va circuler en clair sur le réseau !' width='48' height='48' border='0' /></a>";
+                echo " <a href='../lcs/auth_lcs.html' onclick='auth_popup(); return false' target='_blank'><img src='../lcs/images/crypto.gif' alt='Attention, avec ce navigateur votre mot de passe va circuler en clair sur le r&#233;seau !' width='48' height='48' border='0' /></a>";
         }
 }
 

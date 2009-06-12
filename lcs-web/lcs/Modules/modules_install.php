@@ -11,14 +11,14 @@ if (isset($verrou)){
 	</HEAD>
 	<BODY>
 	<H1>Gestion des Modules LCS</H1>
-	<div class='alert_msg'>Un autre processus d'Installation/Désinstallation est en cours. Attendez qu'il se termine ... </div>
+	<div class='alert_msg'>Un autre processus d'Installation/D&#233;sinstallation est en cours. Attendez qu'il se termine ... </div>
 	</BODY></HTML>";exit;}
 	}
 ?>
 
 <FRAMESET ROWS="0,*" BORDER="NO">
-	<FRAME SRC="modules_installation.php?<?php echo $QUERY_STRING; ?>">
-	<FRAME SRC="modules_refecran.php?<?php echo $QUERY_STRING; ?>" NAME="ecran" ID="ecran">
+	<FRAME SRC="modules_installation.php?<?php echo $_SERVER['QUERY_STRING']; ?>">
+	<FRAME SRC="modules_refecran.php?<?php echo $_SERVER['QUERY_STRING']; ?>" NAME="ecran" ID="ecran">
 </FRAMESET>
 </HTML>
 

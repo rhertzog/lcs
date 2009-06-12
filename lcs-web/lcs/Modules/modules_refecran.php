@@ -1,5 +1,10 @@
 <?
 session_start();
+$dpid=$_GET['dpid'];
+$p=$_GET['p'];
+$v=$_GET['v'];
+$n=$_GET['n'];
+$d=$_GET['d'];
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -12,8 +17,8 @@ session_start();
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include("modules_commun.php");
 include ("flag.php");
-if(empty($QUERY_STRING)) $QSTRING = "";
-else $QSTRING = $QUERY_STRING;
+if(empty($_SERVER['QUERY_STRING'])) $QSTRING = "";
+else $QSTRING = $_SERVER['QUERY_STRING'];
 ?>
     <SCRIPT TYPE="text/javascript">
 	<!--
@@ -39,14 +44,14 @@ else $QSTRING = $QUERY_STRING;
 		
 	if (!isset($_SESSION['nommod'])) {
 		$result = mysql_query("SELECT * FROM applis WHERE id='$dpid'");
-		if (!$result) die("Erreur lors de la requète MySQL");
+		if (!$result) die("Erreur lors de la requ&#234;te MySQL");
 		$row = mysql_fetch_object($result);
 		$_SESSION['nommod']= $row->name;
 		}
 		
 		$nf="lcs-".$_SESSION['nommod'];
 		$fecran = cree_nom_fichier_ecran($nf);
-                $MSG = "Désinstallation";
+                $MSG = "D&#233;sinstallation";
         }                
 	              
 	if (file_exists($fecran))

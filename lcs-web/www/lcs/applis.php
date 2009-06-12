@@ -1,5 +1,5 @@
 <?php 
-/* lcs/applis.php derniere mise a jour : 25/10/2008 */
+/* lcs/applis.php derniere mise a jour : 08/06/2009 */
 
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -14,7 +14,7 @@ if ($result)
     while ($r=mysql_fetch_array($result))
                 $$r["name"]=$r["value"];
 else
-    die ("paramètres absents de la base de données");
+    die ("param&#232;tres absents de la base de donn&#233;es");
 mysql_free_result($result);
 // verification de l'authentification
 list ($idpers, $login)= isauth();
@@ -43,7 +43,7 @@ $liste['Images'][] = "images/bt-V2-3.png";
 $liste['Liens'][] = "statandgo.php?use=Annu";
 $liste['Titres'][] = "Annuaire des utilisateurs";
 
-// Affichage des Menus users non privilégiés
+// Affichage des Menus users non privilegies
 
   // lecture lcs_applis 
   $query="SELECT  name, value from applis where type='M' order by name";
@@ -65,7 +65,7 @@ if ( $ftpclient ) {
 if ( $pma ) {
   $liste['Images'][] = "images/bt-V1-3.jpg";
   $liste['Liens'][] = "statandgo.php?use=pma";
-  $liste['Titres'][] = "Gestion base de données";
+  $liste['Titres'][] = "Gestion base de donn&#233;es";
 }
 if ( $se3netbios != "" && $se3domain != "" && $smbwebclient ) {
   $liste['Images'][] = "images/bt-V1-4.jpg";
@@ -73,7 +73,7 @@ if ( $se3netbios != "" && $se3domain != "" && $smbwebclient ) {
   $liste['Titres'][] = "Client SE3";
 }
 
-// Liens dynamiques vers les plugins installés 
+// Liens dynamiques vers les plugins installes 
 $query="SELECT * from applis where type='P' OR type='N' order by name";
 $result=mysql_query($query);
 if ($result) {

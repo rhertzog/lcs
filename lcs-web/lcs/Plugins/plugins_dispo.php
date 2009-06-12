@@ -1,11 +1,11 @@
 <?
 /* =============================================
    Projet LCS-SE3
-   Administration serveur LCS «Liste des plugins disponibles»
+   Administration serveur LCS Â«Liste des plugins disponiblesÂ»
    AdminLCS/plugins_dispo.php
-   Equipe Tice académie de Caen
-   maj : 12/01/2005
-   Distribué selon les termes de la licence GPL
+   Equipe Tice academie de Caen
+   maj : 02/06/2009
+   Distribue selon les termes de la licence GPL
    ============================================= */
 
 include ("/var/www/lcs/includes/headerauth.inc.php");
@@ -14,7 +14,9 @@ $msgIntro = "<H1>Gestion des Plugins LCS</H1>\n";
 list ($idpers, $login)= isauth();
 
 if (ldap_get_right("lcs_is_admin",$login)!="Y")
-  die (gettext("Vous n'avez pas les droits suffisants pour accéder à cette fonction")."</BODY></HTML>");
+  die (gettext("Vous n'avez pas les droits suffisants pour acc&#233;der &#224; cette fonction")."</BODY></HTML>");
+
+$aff_der_ver=$_POST['aff_der_ver'];
 
 include("plugins_commun.php");
         echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
@@ -29,7 +31,7 @@ include("plugins_commun.php");
 
 parsage_du_fichier_xml();
 
-// recherche des plugins installés
+// recherche des plugins installes
 $result = mysql_query("SELECT name,version FROM applis WHERE type='P'");
 while($row = mysql_fetch_object($result))
 	  $plugins_installes[$row->name] = $row->version;
@@ -40,17 +42,17 @@ reset($plugins);
 if ( count($plugins) > count($plugins_installes ) ) {
   // affichage du choix de visualisation
   echo "<H3>Type d'affichage</H3>\n";
-  echo "<FORM ACTION=\"$PHP_SELF\" METHOD=\"POST\" NAME=\"form\">\n";
+  echo "<FORM ACTION=\"".$_SERVER['PHP_SELF']."\" METHOD=\"POST\" NAME=\"form\">\n";
   echo "<TABLE WIDTH=\"100%\" BORDER=\"0\">\n";
   echo "<TR ALIGN=\"CENTER\">";
   echo "<TD><INPUT TYPE=\"RADIO\" NAME=\"aff_der_ver\" VALUE=\"0\" " . ($aff_der_ver == 0 ? "CHECKED" : "") . " onClick=\"form.submit()\">Toutes les versions</TD>\n";
-  echo "<TD><INPUT TYPE=\"RADIO\" NAME=\"aff_der_ver\" VALUE=\"1\" " . ($aff_der_ver == 1 || !isset($aff_der_ver) ?  "CHECKED" : "")  ." onClick=\"form.submit()\">Seulement la dernière version</TD>\n";
+  echo "<TD><INPUT TYPE=\"RADIO\" NAME=\"aff_der_ver\" VALUE=\"1\" " . ($aff_der_ver == 1 || !isset($aff_der_ver) ?  "CHECKED" : "")  ." onClick=\"form.submit()\">Seulement la derni&#232;re version</TD>\n";
   echo "</TR>\n";
   echo "</TABLE>\n";
   echo "</FORM>\n";
   // Affichage des plugins suivant le choix de visualiation
   echo "<H3>Plugins disponibles</H3>\n";
-  // création du tableau suivant les plugins dispos et déjà installés
+  // creation du tableau suivant les plugins dispos et deja installes
   echo "<FONT SIZE=2>\n";
   echo "<TABLE BORDER=1 WIDTH=100%>";
 

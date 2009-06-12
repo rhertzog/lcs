@@ -1,26 +1,29 @@
 <?
 /* =============================================
    Projet LCS-SE3
-   Administration serveur LCS «Editions des parametres»
+   Administration serveur LCS Â«Editions des parametresÂ»
    AdminLCS/edit_params.php
-   Equipe Tice académie de Caen
-   derniere mise a jour : 05/06/2008
-   Distribué selon les termes de la licence GPL
+   Equipe Tice academie de Caen
+   derniere mise a jour : 04/06/2009
+   Distribue selon les termes de la licence GPL
    ============================================= */
-
-if ($SCRIPT_NAME != "/setup/index.php") {
+if ($_SERVER['SCRIPT_NAME'] != "/setup/index.php") {
 	include ("../lcs/includes/headerauth.inc.php");
 	include ("../Annu/includes/ldap.inc.php");
-	$msgIntro = "<H1>Paramétrage général LCS</H1>\n";
+	$msgIntro = "<H1>Param&#233;trage g&#233;n&#233;ral LCS</H1>\n";
 	list ($idpers, $login)= isauth();
 	if (ldap_get_right("lcs_is_admin",$login)!="Y")
-        die (gettext("Vous n'avez pas les droits suffisants pour accéder à cette fonction")."</BODY></HTML>");
+        die (gettext("Vous n'avez pas les droits suffisants pour acc&#233;der &#224; cette fonction")."</BODY></HTML>");
 } else {
 	// mode sans echec
 	include ("../lcs/includes/headerauth.inc.php");
-	$msgIntro = "<H1>Paramétrage général LCS (mode sans échec)</H1>\n";
-	@mysql_select_db($DBAUTH) or die("Impossible de se connecter à la base $DBAUTH.");
+	$msgIntro = "<H1>Param&#233;trage g&#233;n&#233;ral LCS (mode sans &#233;chec)</H1>\n";	
+	@mysql_select_db($DBAUTH) or die("Impossible de se connecter &#224; la base $DBAUTH.");
 }
+
+if ( isset($_POST['cat']))  $cat = $_POST['cat'];
+elseif ( isset($_GET['cat'])) $cat = $_GET['cat'];
+$submit= $_POST['submit'];
 
 	echo "<HTML>\n";
 	echo "	<HEAD>\n";
@@ -35,7 +38,7 @@ function mktable($title, $content) {
 	echo $content;
 }
 
-// Affiche le formulaire des paramètres correspondant à la catégorie $cat
+// Affiche le formulaire des parametres correspondant a la categorie $cat
 function aff_param_form($cat)
 {
 	$texte_form="<TABLE BORDER=\"1\">";
@@ -57,20 +60,20 @@ function aff_param_form($cat)
 if (!isset($cat)) $cat=0;
 
 if ((!isset($submit)) and (!isset($queri))) {
-// Affichage du form de mise à jour des paramètres
-	print "<FORM METHOD=\"post\">\n";
+// Affichage du form de mise a jour des parametres
+	print "<FORM  METHOD=\"post\">\n";
 	if ( $cat==0 || $cat==1 )
-		mktable("Paramètres serveur",aff_param_form(1));
+		mktable("Param&#232;tres serveur",aff_param_form(1));
 	if ( $cat==0 || $cat==2 )
-		mktable("Paramètres LDAP",aff_param_form(2));
+		mktable("Param&#232;tres LDAP",aff_param_form(2));
 	if ( $cat==0 || $cat==3 )
-		mktable("Paramètres Réseau",aff_param_form(3));
+		mktable("Param&#232;tres R&#233;seau",aff_param_form(3));
 	if ( $cat==0 || $cat==4 )
-        	mktable("Paramètres VLANS",aff_param_form(4));
+        	mktable("Param&#232;tres VLANS",aff_param_form(4));
 	if ( $cat==0 || $cat==5 )
         	mktable("Certificats SSL",aff_param_form(5));
 	if ( $cat==0 || $cat==10 )
-        	mktable("Paramètres cachés",aff_param_form(10));
+        	mktable("Param&#232;tres cach&#233;s",aff_param_form(10));
 
 	print "<BR><DIV ALIGN=\"center\"><INPUT TYPE=\"submit\" VALUE=\"".gettext("Valider")."\"></DIV>";
 	print "<INPUT TYPE=\"hidden\" VALUE=\"$cat\" NAME=\"submit\">";
@@ -80,9 +83,9 @@ if ((!isset($submit)) and (!isset($queri))) {
 if (isset($submit)) {
 // Traitement du Form
 
-// Détection des paramètres modifiés et fabrication de la requete de mise a jour
+// Detection des parametres modifies et fabrication de la requete de mise a jour
 	if ( ( file_exists ("/tmp/params_lcs") ) ||  !( $fp = fopen("/tmp/params_lcs", "w") ) )
-		die (gettext("Création du fichier de passage des parametres impossible. Recommencez plus tard et assurez-vous qu'aucun fichier params_lcs n'est présent dans ")."/tmp.");
+		die (gettext("Cr&#233;ation du fichier de passage des parametres impossible. Recommencez plus tard et assurez-vous qu'aucun fichier params_lcs n'est pr&#233;sent dans ")."/tmp.");
 	$query="SELECT * from params";
 	if ($submit != 0) $query .= " WHERE cat=$submit";
 	$result=mysql_query($query);
@@ -90,80 +93,80 @@ if (isset($submit)) {
 		$i=0;
 		while ($r=mysql_fetch_array($result)) {
 			$formname="form_".$r["name"];
-			if ($$formname!=$r["value"]) {
-			// Mise à jour de la base de données
-				$queri="UPDATE params SET value=\"".$$formname."\" WHERE name=\"".$r["name"]."\"";
+			if ($_POST[$formname]!=$r["value"]) {
+			// Mise a jour de la base de donneees
+				$queri="UPDATE params SET value=\"".$_POST[$formname]."\" WHERE name=\"".$r["name"]."\"";
 				$result1=mysql_query($queri);
 				if ($result1)
-					print gettext("Modification du paramètre ").
+					print gettext("Modification du param&#232;tre ").
 					"<EM><FONT color=\"red\">".$r["name"].
 					"</FONT></EM> ". gettext("de ")."<STRONG>".$r["value"].
-					"</STRONG>".gettext(" en ")."<STRONG>".$$formname."</STRONG>"."<BR>\n";
+					"</STRONG>".gettext(" en ")."<STRONG>".$_POST[$formname]."</STRONG>"."<BR>\n";
 				else
-					print gettext("oops: la requete ") . "<STRONG>$queri</STRONG>" . gettext(" a provoqué une erreur");
-				// Récupération des variables qui ont changées et qui nécessitent une modification des fichiers de conf
+					print gettext("oops: la requete ") . "<STRONG>$queri</STRONG>" . gettext(" a provoqu&#233; une erreur");
+				// Recuperation des variables qui ont change et qui necessitent une modification des fichiers de conf
 				if (($r["cat"]==2) && ($r["name"] != "pla_bind")) {
                     			if ($r["name"]=="adminPw") {
                         			$ldappass_old=$r["value"];
-                        			$ldappass_new=$$formname;
+                        			$ldappass_new=$_POST[$formname];
 						fwrite ($fp,"adminPw	$ldappass_old	$ldappass_new\n");
                     			}
 					if ($r["name"]=="ldap_server") {
 						$ldap_server_old = $r["value"];
-						$ldap_server_new = $$formname;
+						$ldap_server_new = $_POST[$formname];
 						fwrite ($fp,"ldap_server	$ldap_server_old	$ldap_server_new\n");
 					} else if ($r["name"]=="ldap_port") {
 						$ldap_port_old = $r["value"];
-						$ldap_port_new = $$formname;
+						$ldap_port_new = $_POST[$formname];
 						fwrite ($fp,"ldap_port	$ldap_port_old	$ldap_port_new\n");
 					} else if ($r["name"]=="ldap_base_dn") {
 						$ldap_base_dn_old = $r["value"];
-						$ldap_base_dn_new = $$formname;
+						$ldap_base_dn_new = $_POST[$formname];
 						fwrite ($fp,"ldap_base_dn	$ldap_base_dn_old	$ldap_base_dn_new \n");
 					} else if ($r["name"]=="adminRdn") {
 						$ldap_adminRdn_old = $r["value"];
-						$ldap_adminRdn_new = $$formname;
+						$ldap_adminRdn_new = $_POST[$formname];
 						fwrite ($fp,"adminRdn	$ldap_adminRdn_old	$ldap_adminRdn_new\n");
 					}
 				}
 
 				// olecam 15 dec 2006: signaler les modifs sur se3Ip et se3netbios afin de mettre
-                                // à jour /etc/samba/lmhosts
+                                // a; jour /etc/samba/lmhosts
 				if ($r["cat"]==1) {
                                         if ($r["name"]=="se3Ip") {
                                                 $se3Ip_old = $r["value"];
-                                                $se3Ip_new = $$formname;
+                                                $se3Ip_new = $_POST[$formname];
                                                 fwrite ($fp,"se3Ip      $se3Ip_old      $se3Ip_new\n");
                                         }else if ($r["name"]=="se3netbios") {
                                                 $se3netbios_old = $r["value"];
-                                                $se3netbios_new = $$formname;
+                                                $se3netbios_new = $_POST[$formname];
                                                 fwrite ($fp,"se3netbios $se3netbios_old      $se3netbios_new\n");
                                         }
                                 }
 /*
 				if ($r["cat"]==1) {
 					if ($r["name"]=="se3Ip" || $r["name"]=="se3netbios") {
-						# Il faudra mettre à jour le fichier /etc/samba/lmhosts
+						# Il faudra mettre &#224; jour le fichier /etc/samba/lmhosts
 						$update_lmhosts=1;
 					}
 				}
 */
-				// Mise à jour des variables du config
-				$$r["name"]=$$formname;
+				// Mise a jour des variables du config
+				$$r["name"]=$_POST[$formname];
 				$i++;
 			}
 		}
 
-		if ($i == 0) print gettext("Aucun paramètre n'a été modifié\n");
+		if ($i == 0) print gettext("Aucun param&#232;tre n'a &#233;t&#233; modifi&#233;\n");
 
 		mysql_free_result($result);
-	} else print gettext ("oops: Erreur inattendue de lecture des anciens paramètres\n");
+	} else print gettext ("oops: Erreur inattendue de lecture des anciens param&#232;tres\n");
 	fclose($fp);
-	// Effacement du fichier si rien n'y a été inscrit
+	// Effacement du fichier si rien n'y a ete inscrit
 	if (filesize("/tmp/params_lcs")!=0) {
 	        # execution du script de modification
 		exec ("/usr/bin/sudo /usr/share/lcs/scripts/edit_params.sh");
-		print gettext("les fichiers de configuration ont été modifiés afin de prendre en compte les nouveaux paramètres.");
+		print gettext("les fichiers de configuration ont &#233;t&#233; modifi&#233;s afin de prendre en compte les nouveaux param&#232;tres.");
 	} else unlink ("/tmp/params_lcs");
 }
 

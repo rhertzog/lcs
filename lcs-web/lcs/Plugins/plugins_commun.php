@@ -1,5 +1,5 @@
 <?php
-/* Derniere mise à jour 15/01/2007 */
+/* Derniere mise Ã  jour 09/06/2009 */
 	if (!isset($plugins_commun))
 		{ 
 		  $plugins_commun = true;
@@ -48,7 +48,7 @@
 			        exec($cmd,$ctn,$ret_val);
 				for($i = 0; $i < count($ctn); $i++)	
 					{
-						$ligne = explode("=",$ctn[$i]); // on sépare les variable des valeurs lors des affectations
+						$ligne = explode("=",$ctn[$i]); // on separe les variable des valeurs lors des affectations
 						$ligne[0] = str_replace(" ","",$ligne[0]); // on retire tous les blancs
 						if ($ligne[0] == "\$mysqlServerUsername")
 							{
@@ -189,7 +189,7 @@
 			   unlink($fichiertmp);
 			}							      
 
-		function est_un_chiffre($c) // renvoi vrai si le caractère est un chiffre
+		function est_un_chiffre($c) // renvoi vrai si le caractere est un chiffre
 			{
 			  switch($c)
 				{
@@ -198,7 +198,7 @@
 			  return false;
 			}
 
-		// recherche du caratère séparateur	
+		// recherche du caratere separateur	
                 function recherche_sep($v)
 		        {
 		           for ($i = 0; $i < strlen($v); $i++)
@@ -208,9 +208,9 @@
 			   
 			}
 		
-		function version_moins_recente($v1,$v2) // renvoi -1 si v1 est plus récente que v2
-						       // renvoi 0 si v1 est égale à v2
-						       // renvoi 1 si v1 est moins récente que v2
+		function version_moins_recente($v1,$v2) // renvoi -1 si v1 est plus recente que v2
+						       // renvoi 0 si v1 est egale Ã  v2
+						       // renvoi 1 si v1 est moins recente que v2
 			{
 				$sepv1 = recherche_sep($v1);
 				$sepv2 = recherche_sep($v2);
@@ -218,7 +218,7 @@
 				$tv1 = @explode($sepv1,$v1);
 				$tv2 = @explode($sepv2,$v2);
 				
-				// on complète les sous versions à 0 s'il y a lieu
+				// on complete les sous versions Ã  0 s'il y a lieu
 				for($i = count($tv1); $i < count($tv2); $i++)
 					$tv1[$i] = 0;
 				for($i = count($tv2); $i < count($tv1); $i++)
@@ -238,7 +238,7 @@
 			  return substr($url,$pos+1);
 			}
 
-		function creation_log($p,$v,$t) // crée le fichier de log d'un plugin $p de version $v du type $t (installation/desinstallation/maj)
+		function creation_log($p,$v,$t) // cree le fichier de log d'un plugin $p de version $v du type $t (installation/desinstallation/maj)
 			{
 				global $chemin_des_logs;
 				switch($t)
@@ -253,10 +253,10 @@
 				switch($t)
 					{
 					  case "1" : $action = "l'installation"; break;
-					  case "2" : $action = "la désinstallation"; break;
-					  case "3" : $action = "la mise à jour"; break;
+					  case "2" : $action = "la dÃ©sinstallation"; break;
+					  case "3" : $action = "la mise Ã  jour"; break;
 					}
-				fputs($df,">>>Début de " . $action . " du plugin $p (version $v) le " . date("d/m/Y à H\hi") . "\n"); 
+				fputs($df,">>>DÃ©but de " . $action . " du plugin $p (version $v) le " . date("d/m/Y Ã  H\hi") . "\n"); 
 				fclose($df);
 				return $fichier;
 			}
@@ -270,12 +270,12 @@
 			  fclose($df);
 			}
 			
-		function cree_nom_fichier_ecran($p) // construit le nom du fichier html de la succesion des écrans d'installation
+		function cree_nom_fichier_ecran($p) // construit le nom du fichier html de la succession des ecrans d'installation
 			{
 			  return "/tmp/ecran_install_" . $p . ".html";
 			}  
 			  
-		function creation_ecran($f,$msgIntro) // crée le fichier temporaire des suites d'écran lors de l'install
+		function creation_ecran($f,$msgIntro) // cree le fichier temporaire des suites d'ecran lors de l'install
 			{
 			  $df = fopen($f,"w");
 			  fputs($df,"<HTML>\n");
@@ -288,14 +288,14 @@
 			  fclose($df);
 			}
 		
-		function ecrit_ecran($f,$s) // écrit dans le fichier $f la ligne $s
+		function ecrit_ecran($f,$s) // ecrit dans le fichier $f la ligne $s
 			{
 			  $df = fopen($f,"a");
 			  fputs($df,$s);
 			  fclose($df);
 			}
 
-		function maj_dispo($pname) // renvoi n tableau de paramètres s'il existe une maj disponible
+		function maj_dispo($pname) // renvoi n tableau de parametres s'il existe une maj disponible
 			{
 			  global $plugins;
  			  reset($plugins);
@@ -309,18 +309,16 @@
 				    mysql_free_result($result);
 					
 				  }
-			  if (isset($plugins[$pname])) // le plugin est présent dans le fichier xml
+			  if (isset($plugins[$pname])) // le plugin est present dans le fichier xml
 			  	
 				{
-		          	  uksort($plugins[$pname]["version"],"version_moins_recente"); // on trie de la plus récente à la moins récente
-			  	  list($v,$plug) = each($plugins[$pname]["version"]); // on sélectionne la dernière version
+		          	  uksort($plugins[$pname]["version"],"version_moins_recente"); // on trie de la plus recente a la moins recente
+			  	  list($v,$plug) = each($plugins[$pname]["version"]); // on selectionne la derniere version
 		          	  if (version_moins_recente($v,$version) == -1)
 				  	  return array ($v,$plug);
-					  //Début de modif Phil : s'il n'y a qu'une version, renvoie un tableau  avec $v=false pour ne pas afficher le lien de  maj
-					  if (version_moins_recente($v,$version) == 0)
+				  	  if (version_moins_recente($v,$version) == 0)
 				  	  return array ("",$plug);
-					  //fin de modif
-				}
+					  				}
 			  return false;
 			}
 			

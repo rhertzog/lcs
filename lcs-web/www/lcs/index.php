@@ -1,4 +1,5 @@
 <?
+$url_redirect=$_GET['url_redirect'];
 require  "../lcs/includes/headerauth.inc.php";
 $query = "SELECT * from applis";
 $result=@mysql_db_query("$DBAUTH",$query, $authlink);

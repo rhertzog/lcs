@@ -1,11 +1,11 @@
 <?
 /* =============================================
    Projet LCS
-   Administration serveur LCS «Liste des Modules disponibles»
+   Administration serveur LCS Â«Liste des Modules disponiblesÂ»
    AdminLCS/Modules_dispo.php
-   Equipe Tice académie de Caen
-   16/02/2008
-   Distribué selon les termes de la licence GPL
+   Equipe Tice academie de Caen
+   2/06/2009
+   Distribue selon les termes de la licence GPL
    ============================================= */
 
 include ("/var/www/lcs/includes/headerauth.inc.php");
@@ -14,7 +14,7 @@ $msgIntro = "<H1>Gestion des Modules LCS</H1>\n";
 list ($idpers, $login)= isauth();
 
 if (ldap_get_right("lcs_is_admin",$login)!="Y")
-  die (gettext("Vous n'avez pas les droits suffisants pour accéder à cette fonction")."</BODY></HTML>");
+  die (gettext("Vous n'avez pas les droits suffisants pour acc&#233;der &#224; cette fonction")."</BODY></HTML>");
 
 include("modules_commun.php");
         echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
@@ -29,7 +29,7 @@ include("modules_commun.php");
 
 parsage_du_fichier_xml();
 
-// recherche des Modules installés
+// recherche des Modules installes
 $result = mysql_query("SELECT name,version FROM applis WHERE type='M' OR type='N' OR type='S'");
 while($row = mysql_fetch_object($result))
 	  $Modules_installes[$row->name] = $row->version;
@@ -37,9 +37,9 @@ mysql_free_result($result);
 
 reset($Modules);
 
-  // Affichage des Modules suivant le choix de visualiation
+  
   echo "<H3>Modules disponibles</H3>\n";
-  // création du tableau suivant les Modules dispos et déjà installés
+  // creation du tableau suivant les Modules dispos et deja installes
   echo "<FONT SIZE=2>\n";
   echo "<TABLE BORDER=1 WIDTH=100%>";
 
@@ -67,7 +67,7 @@ $mod_dispo=false;
 		
 	}
 	
- if (!$mod_dispo) echo "<DIV class=\"alert_msg\">AUCUN dans la branche sélectionnée. Vérifiez la valeur de <b>urlmajmod</b> dans les paramètres serveur !</DIV>\n";
+ if (!$mod_dispo) echo "<DIV class=\"alert_msg\">AUCUN dans la branche s&#233;lectionn&#233;e. V&#233;rifiez la valeur de <b>urlmajmod</b> dans les param&#232;tres serveur !</DIV>\n";
  echo "</TABLE>";
 
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");

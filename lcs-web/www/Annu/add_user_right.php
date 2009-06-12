@@ -3,12 +3,11 @@
    Projet LCS-SE3
    Consultation de l'annuaire LDAP
    annu/add_user_right.php
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
-   « wawa »  olivier.lecluse@crdp.ac-caen.fr
-   Equipe Tice académie de Caen
-   V 1.4 maj : 08/10/2004
-   Distribué selon les termes de la licence GPL
+   Â« jLCF >:> Â» jean-luc.chretien@tice.ac-caen.fr
+   Â« wawa Â»  olivier.lecluse@crdp.ac-caen.fr
+   Equipe Tice academie de Caen
+   V 1.4 maj : 29/05/2009
+   Distribue selon les termes de la licence GPL
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -16,6 +15,13 @@
 
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
+  
+  if ( isset($_POST['uid']))  $uid = $_POST['uid'];
+  elseif ( isset($_GET['uid'])) $uid = $_GET['uid'];
+  $action = $_POST['action'];
+  $delrights = $_POST['delrights'];
+  $newrights = $_POST['newrights'];
+  
   header_html();
 
   aff_trailer ("3");
@@ -24,10 +30,10 @@
     if ($action == "AddRights") {
       // Inscription des droits dans l'annuaire   
       echo "<H3>Inscription des droits pour <U>$uid</U></H3>";
-      echo "<P>Vous avez sélectionné ". count($newrights)." droit(s)\n";
+      echo "<P>Vous avez s&#233;lectionn&#233; ". count($newrights)." droit(s)\n";
       for ($loop=0; $loop < count($newrights); $loop++) {
         $right=$newrights[$loop];
-        echo "<div style='margin-left: 40px;'>Délégation du droit <U>$right</U> à l'utilisateur $uid</div>\n";
+        echo "<div style='margin-left: 40px;'>D&#233;l&#233;gation du droit <U>$right</U> &#224; l'utilisateur $uid</div>\n";
         $cDn = "uid=$uid,$peopleRdn,$ldap_base_dn";
         $pDn = "cn=$right,$rightsRdn,$ldap_base_dn";
         exec ("$scriptsbinpath/groupAddEntry.pl \"$cDn\" \"$pDn\"");
@@ -37,7 +43,7 @@
     if ( $action == "DelRights" ) {
       // Suppression des droits dans l'annuaire   
       echo "<H3>Suppression des droits pour <U>$uid</U></H3>";
-      echo "<P>Vous avez sélectionné ". count($delrights)." droit(s)<BR>\n";
+      echo "<P>Vous avez s&#233;lectionn&#233; ". count($delrights)." droit(s)<BR>\n";
       for ($loop=0; $loop < count($delrights); $loop++) {
         $right=$delrights[$loop];
         echo "<div style='margin-left: 40px;'>Suppression du droit <U>$right</U> pour l'utilisateur $uid</div>\n";
@@ -49,9 +55,9 @@
     } 
     list($user, $groups)=people_get_variables($uid, true);
     // Affichage du nom et de la description de l'utilisateur
-    echo "<H3>Délégation de droits à ". $user["fullname"] ." (<U>$uid</U>)</H3>\n";
-    echo "<P>Sélectionnez les droits à supprimer (liste de gauche) ou à ajouter (liste de droite) ";
-    echo "et validez à l'aide du bouton correspondant.</P>\n";
+    echo "<H3>D&#233;l&#233;gation de droits &#224; ". $user["fullname"] ." (<U>$uid</U>)</H3>\n";
+    echo "<P>S&#233;lectionnez les droits &#224; supprimer (liste de gauche) ou &#224; ajouter (liste de droite) ";
+    echo "et validez &#224; l'aide du bouton correspondant.</P>\n";
     // Lecture des droits disponibles
     $userDn="uid=$uid,$peopleRdn,$ldap_base_dn";     
     $list_possible_rights=search_machines("(!(member=$userDn))","rights");
@@ -99,7 +105,7 @@
 <? 
 
   } else {
-    echo "<div class=error_msg>Cette application, nécessite les droits d'administrateur du serveur LCS !</div>";
+    echo "<div class=error_msg>Cette application, n&#233;cessite les droits d'administrateur du serveur LCS !</div>";
   }
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>

@@ -5,12 +5,13 @@ include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
 
 // register global
-if (isset($_POST['login'])) $login=$_POST['login']; else $dummy="" ;
+if (isset($_POST['login'])) $login=$_POST['login']; else $login="" ;
 if (isset($_POST['dummy'])) $dummy=$_POST['dummy']; else $dummy="" ;
 if (isset($_POST['string_auth'])) $string_auth=$_POST['string_auth']; else $string_auth="" ;
 if (isset($_POST['time'])) $time=$_POST['time']; else $time="" ;
 if (isset($_POST['client_ip'])) $client_ip=$_POST['client_ip']; else $client_ip="" ;
 if (isset($_POST['timestamp'])) $timestamp=$_POST['timestamp']; else $timestamp="" ;
+$error=$_GET['error'];
 
         if ($login) {
                 // Decodage de la chaine d'authentification cote serveur avec une cle privee

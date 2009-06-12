@@ -4,9 +4,9 @@
    Consultation de l'annuaire LDAP
    Annu/del_user.php
    [LCS CoreTeam]
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
+   &#171; jLCF >:> &#187; jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   derniere modification : 14 Mai 2009
+   derniere modification : 08/062009
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -19,7 +19,7 @@
   aff_trailer ("3");
   if (is_admin("Annu_is_admin",$login)=="Y") {
     $uid=$_GET['uid'];
-    // suppression d'un d'utilisateur
+    // suppression d'un d'utilisateur 
     if ($uid == "admin" )  {
       echo "<div class=error_msg>Vous ne pouvez pas effacer le compte administrateur !</div>";
     } elseif (!$uid)  {
@@ -38,7 +38,7 @@
         }
     }
   } else {
-    echo "<div class=error_msg>Cette fonctionnalit&eacute;, nécessite les droits d'administrateur du serveur LCS !</div>";
+    echo "<div class=error_msg>Cette fonctionnalit&eacute;, n&#233;cessite les droits d'administrateur du serveur LCS !</div>";
   }
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>

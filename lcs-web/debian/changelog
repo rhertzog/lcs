@@ -1,3 +1,9 @@
+lcs-web (2.4.3~1) UNRELEASED; urgency=low
+
+  * Modify many files in /var/www and /usr/share/lcs for register global off compatibylity
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri,  5 Jun 2009 06:04:03 +0200
+
 lcs-web (2.4.2) Lcs; urgency=low
 
   * Modify LcsMaj : test if mysql service is up before update

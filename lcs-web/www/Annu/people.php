@@ -4,7 +4,7 @@
    Consultation de l'annuaire LDAP
    Annu/people.php
    Equipe Tice academie de Caen
-   Derniere mise à jour : 16/10/2008
+   Derniere mise a jour : 08/06/2008
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -46,17 +46,17 @@
       $login1=split ("[\,\]",ldap_dn2ufn($groups[$loop]["owner"]),2);
       if ( $uid == $login1[0] ) echo "<strong><font color=\"#ff8f00\">&nbsp;(professeur principal)</font></strong>";
       echo "</font></LI>\n";
-      // Teste si nécessité d'affichage menu Ouverture/Fermeture Bdd et espace web perso des Eleves
+      // Teste si n&#233;cessit&#233; d'affichage menu Ouverture/Fermeture Bdd et espace web perso des Eleves
       if ($groups[$loop]["cn"]=="Eleves") $ToggleAff=1;
     }
     echo "</UL>";
   }
   if (!is_dir ("/home/".$user["uid"]) ) {
-    echo "<P><font color=\"orange\">L'utilisateur&nbsp;</font>".$user["fullname"]."<font color=\"orange\">&nbsp;n'a pas encore initialisé son espace perso.</font></p>\n";
+    echo "<P><font color=\"orange\">L'utilisateur&nbsp;</font>".$user["fullname"]."<font color=\"orange\">&nbsp;n'a pas encore initialis&#233; son espace perso.</font></p>\n";
   } else {
     echo "<br>Pages perso : <a href=\"../~".$user["uid"]."/\"><tt>".$baseurl."~".$user["uid"]."</tt></a><br>\n";
   }
-   echo "Adresse mèl : <a href=\"mailto:".$user["email"]."\"><tt>".$user["email"]."</a></tt><br>\n";
+   echo "Adresse m&#232;l : <a href=\"mailto:".$user["email"]."\"><tt>".$user["email"]."</a></tt><br>\n";
   // Affichage Menu people_admin
   if (is_admin("Annu_is_admin",$login) == "Y" ) {
   ?>
@@ -68,7 +68,7 @@
 	<li><a href="del_group_user.php?uid=<? echo $user["uid"] ?>">Supprimer des groupes d'appartenance</a><br>
   <?
     if (ldap_get_right("Lcs_is_admin",$login)=="Y") {
-    	echo "<li><a href=\"add_user_right.php?uid=" . $user["uid"] ."\">Gérer les droits</a><br>";
+    	echo "<li><a href=\"add_user_right.php?uid=" . $user["uid"] ."\">G&#233;rer les droits</a><br>";
     }
     if ( $ToggleAff==1 && @is_dir ("/home/".$user["uid"]."/public_html") ) {
       // Ouverture/Fermeture Espace web
@@ -77,7 +77,7 @@
       if ($droits[3] == "root") {
         echo "<li><a href=\"adm_WebPerso.php?uid=".$user["uid"]."&toggle=1"."\">Activer l'espace <em>Web</em></a>\n";
       } else {
-        echo "<li><a href=\"adm_WebPerso.php?uid=".$user["uid"]."&toggle=0"."\">Désactiver l'espace <em>Web</em></a>\n";
+        echo "<li><a href=\"adm_WebPerso.php?uid=".$user["uid"]."&toggle=0"."\">D&#233;sactiver l'espace <em>Web</em></a>\n";
         // Gestion du type php
         // Cas des groupes principaux autres qu'Eleves
         exec ("/usr/bin/sudo /usr/share/lcs/scripts/userdirphp.sh exist $uid", $ReturnExist);
@@ -86,7 +86,7 @@
           if ( $ReturnNbr[0] < 5 )
             echo "<li><a href=\"userdirphptype.php?uid=".$user["uid"]."&action=add"."\">Autoriser le type php</a>\n</li>\n";
           else
-            echo "<li><a href=\"userdirphptype.php?action=list"."\">Liste des utilisateurs possédant le type php</a>\n</li>\n";
+            echo "<li><a href=\"userdirphptype.php?action=list"."\">Liste des utilisateurs poss&#233;dant le type php</a>\n</li>\n";
         } elseif ($ReturnExist[0] == "Yes" )
           echo "<li><a href=\"userdirphptype.php?uid=".$user["uid"]."&action=rm"."\">Retirer le type php</a>\n</li>\n";
         else
@@ -101,11 +101,11 @@
       if ( !is_dir ("/var/lib/mysql/$userDb") ) {
         echo "<li><a href=\"adm_BddPerso.php?uid=".$user["uid"]."&toggle=1"."\">Activer la <em>base de donn&eacute;es</em></a><br>\n";
       } else {
-        echo "<li><a href=\"adm_BddPerso.php?uid=".$user["uid"]."&toggle=0"."\">Désactiver la <em>base de donn&eacute;es</em></a><br>\n";
+        echo "<li><a href=\"adm_BddPerso.php?uid=".$user["uid"]."&toggle=0"."\">D&#233;sactiver la <em>base de donn&eacute;es</em></a><br>\n";
       }
       echo "</ul>\n";
     } else {
-      // Gestion du type php
+      // Gestion du type php 
       // Cas des groupes principaux autres qu'Eleves
       exec ("/usr/bin/sudo /usr/share/lcs/scripts/userdirphp.sh exist $uid", $ReturnExist);
       if ($ReturnExist[0] == "No" ) {
@@ -113,7 +113,7 @@
         if ( $ReturnNbr[0] < 5 )
             echo "<li><a href=\"userdirphptype.php?uid=".$user["uid"]."&action=add"."\">Autoriser le type php</a>\n</li>\n";
         else
-            echo "<li><a href=\"userdirphptype.php?action=list"."\">Liste des utilisateurs possédant le type php</a>\n</li>\n";
+            echo "<li><a href=\"userdirphptype.php?action=list"."\">Liste des utilisateurs poss&#233;dant le type php</a>\n</li>\n";
       } elseif ($ReturnExist[0] == "Yes" )
         echo "<li><a href=\"userdirphptype.php?uid=".$user["uid"]."&action=rm"."\">Retirer le type php</a>\n</li>\n";
       else
@@ -124,11 +124,11 @@
   } // Fin affichage menu people_admin
 
 
-  // Test de l'appartenance à la classe
+  // Test de l'appartenance &#224; la classe
   if ((tstclass($login,$user["uid"])==1) and (ldap_get_right("sovajon_is_admin",$login)=="Y") and ($login != $user["uid"])) {
   echo "<br>\n";
   echo "<ul style=\"color: red;\">\n";
-  echo "<li><a href=\"mod_user_entry.php?uid=".$user["uid"]."\">Modifier le compte de mon élève ...</a><br>\n";
+  echo "<li><a href=\"mod_user_entry.php?uid=".$user["uid"]."\">Modifier le compte de mon &#233;l&#232;ve ...</a><br>\n";
   echo "</ul>\n";
   }
 

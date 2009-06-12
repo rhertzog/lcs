@@ -6,7 +6,7 @@
    [LCS CoreTeam]
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice académie de Caen
-   V 1.4 maj : 20/03/2009
+   V 1.4 maj : 29/05/2009
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -20,7 +20,7 @@
   $autres_gr=$_POST['autres_gr'];
   $categorie=$_POST['categorie'];
   $add_user_group=$_POST['add_user_group'];  
-  
+  $uid=$_GET['uid'];
 
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");

@@ -3,9 +3,9 @@
 	Projet LCS : Linux Communication Server
 	jLCF >:>  jean-luc.chretien@tice.ac-caen.fr
 				-
-Statistiques d'usages des LCS de l'académie de CAEN
+Statistiques d'usages des LCS de l'academie de CAEN
 				-
-			 31/03/2007
+			 08/06/2009
 		 par philippe LECLERC
 	       philippe.leclerc1@ac-caen.fr
 		     - script statusage.php -
@@ -16,7 +16,7 @@ include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
 
-//Vérification de l'authentification
+//Verification de l'authentification
 list ($idpers, $login)= isauth();
 if ($idpers == "0")    header("Location:$urlauth");
 ?>
@@ -29,11 +29,11 @@ if ($idpers == "0")    header("Location:$urlauth");
   </HEAD>
   
 <?
-//Vérification du droit de lecture des stats
+//Verification du droit de lecture des stats
 if (ldap_get_right("stats_can_read",$login)=="Y")
 
 	{
-	//si la date des stats est passée en paramètre
+	//si la date des stats est passee en parametre
 	if (isset($_GET['when']))
 		{
 		$when=addSlashes(strip_tags(stripslashes($_GET['when'])));
@@ -60,7 +60,7 @@ if (ldap_get_right("stats_can_read",$login)=="Y")
 	
 	}
 	
-else echo "<div class=alert_msg>Vous n'avez pas les droits suffisants pour accéder à cette page !</div>\n";
+else echo "<div class=alert_msg>Vous n'avez pas les droits suffisants pour acc&#233;der &#224; cette page !</div>\n";
 
 include ("../lcs/includes/pieds_de_page.inc.php");
 ?>

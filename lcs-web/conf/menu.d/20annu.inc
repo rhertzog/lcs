@@ -6,7 +6,7 @@ $liens1=array(array(
         "Restauration base LDAP","import_ldif.php","lcs_is_admin",
        	"Nettoyage des comptes","ldap_cleaner.php","lcs_is_admin",
         "Nettoyage de l'annuaire","eff_vide_groups.php","lcs_is_admin",
-	"Réplication","../Annu/replica.php","lcs_is_admin"
+	"R&#233;plication","../Annu/replica.php","lcs_is_admin"
         ));
 $liens=array_merge($liens,$liens1);
 ?>

@@ -1,5 +1,5 @@
 <?php
-/* Derniere mise à jour 28/04/2009 */
+/* Derniere mise a jour 09/06/2009  */
 	if (!isset($Modules_commun))
 		{ 
 		  $Modules_commun = true;
@@ -161,7 +161,7 @@
 			   unlink($fichiertmp);
 			}							      
 
-		function est_un_chiffre($c) // renvoi vrai si le caractère est un chiffre
+		function est_un_chiffre($c) // renvoi vrai si le caractere est un chiffre
 			{
 			  switch($c)
 				{
@@ -170,7 +170,7 @@
 			  return false;
 			}
 
-		// recherche du caratère séparateur	
+		// recherche du caratere separateur	
                 function recherche_sep($v)
 		        {
 		           for ($i = 0; $i < strlen($v); $i++)
@@ -180,9 +180,9 @@
 			   
 			}
 		
-		function version_moins_recente($v1,$v2) // renvoi -1 si v1 est plus récente que v2
-						       // renvoi 0 si v1 est égale à v2
-						       // renvoi 1 si v1 est moins récente que v2
+		function version_moins_recente($v1,$v2) // renvoi -1 si v1 est plus recente que v2
+						       // renvoi 0 si v1 est egale Ã  v2
+						       // renvoi 1 si v1 est moins recente que v2
 			{
 				$cmd_cmp= "dpkg --compare-versions ".$v1." gt ".$v2;  	
 				exec($cmd_cmp,$rien,$ret_val);
@@ -202,12 +202,12 @@
 			}
 
 		
-		function cree_nom_fichier_ecran($p) // construit le nom du fichier html de la succesion des écrans d'installation
+		function cree_nom_fichier_ecran($p) // construit le nom du fichier html de la succesion des ecrans d'installation
 			{
 			  return "/tmp/ecran_install_" . $p . ".html";
 			}  
 			  
-		function creation_ecran($f,$msgIntro) // crée le fichier temporaire des suites d'écran lors de l'install
+		function creation_ecran($f,$msgIntro) // cree le fichier temporaire des suites d'ecran lors de l'install
 			{
 			  $df = fopen($f,"w");
 			  fputs($df,"<HTML>\n");
@@ -220,14 +220,14 @@
 			  fclose($df);
 			}
 		
-		function ecrit_ecran($f,$s) // écrit dans le fichier $f la ligne $s
+		function ecrit_ecran($f,$s) // ecrit dans le fichier $f la ligne $s
 			{
 			  $df = fopen($f,"a");
 			  fputs($df,$s);
 			  fclose($df);
 			}
 
-		function maj_dispo($pname) // renvoi n tableau de paramètres s'il existe une maj disponible
+		function maj_dispo($pname) // renvoi n tableau de parametres s'il existe une maj disponible
 			{
 			  global $Modules;
  			  reset($Modules);
@@ -241,17 +241,16 @@
 				    mysql_free_result($result);
 					
 				  }
-			  if (isset($Modules[$pname])) // le Module est présent dans le fichier xml
+			  if (isset($Modules[$pname])) // le Module est present dans le fichier xml
 			  	
 				{
-		          	  uksort($Modules[$pname]["version"],"version_moins_recente"); // on trie de la plus récente à la moins récente
-			  	  list($v,$Mod) = each($Modules[$pname]["version"]); // on sélectionne la dernière version
+		          	  uksort($Modules[$pname]["version"],"version_moins_recente"); // on trie de la plus recente a la moins recente
+			  	  list($v,$Mod) = each($Modules[$pname]["version"]); // on sÃ©lectionne la derniÃ¨re version
 		          	  if (version_moins_recente($v,$version) == -1)
 				  	  return array ($v,$Mod);
-					  //Début de modif Phil : s'il n'y a qu'une version, renvoie un tableau  avec $v=false pour ne pas afficher le lien de  maj
 					  if (version_moins_recente($v,$version) == 0)
 				  	  return array ("",$Mod);
-					  //fin de modif
+					  
 				}
 			  return false;
 			}

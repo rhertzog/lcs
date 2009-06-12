@@ -3,8 +3,8 @@
    Projet LCS : Linux Communication Server
    accueil.php
    jLCF : jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice académie de Caen
-   derniere mise a jour : 5/01/2009
+   Equipe Tice academie de Caen
+   derniere mise a jour : 08/06/2009
    ============================================= */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -24,7 +24,7 @@ if ($result)
     while ($r=@mysql_fetch_array($result)) 
                $monlcs=$r["value"];
 else
-    die ("paramètres absents de la base de données");
+    die ("param&#232;tres absents de la base de donn&#233;es");
 @mysql_free_result($result);
 
 $html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
@@ -44,8 +44,8 @@ $html .= "<ul>\n";
 echo $html;
 
   if (!displogin($idpers)) {
-    echo "<li><tt>Félicitation, vous venez de vous connecter pour la 1ère fois sur votre
-          espace perso Lcs. Afin de garantir la confidentialité de vos données, nous
+    echo "<li><tt>F&#233;licitation, vous venez de vous connecter pour la 1&#232;re fois sur votre
+          espace perso Lcs. Afin de garantir la confidentialit&#233; de vos donn&#233;es, nous
           vous encourageons, a changer votre mot de passe <a href=\"../Annu/mod_pwd.php\">en suivant ce lien... </a>
           </tt></li>\n";
   } else {
@@ -59,15 +59,15 @@ echo $html;
   echo "</ul>\n";
   echo "<br />&nbsp;\n";
 
-  // Affichage d'un message d'alerte pour le renouvellement des clés d'authentification
+  // Affichage d'un message d'alerte pour le renouvellement des cles d'authentification
   if ( $is_admin=="Y" && detect_key_orig() ) {
         echo "<div class='alert_msg'>
-                        Veuillez renouveler votre<b> jeu de clés d'authentification</b> «LCS» en suivant ce&nbsp;
+                        Veuillez renouveler votre<b> jeu de cl&#233;s d'authentification</b> &#171;LCS&#187; en suivant ce&nbsp;
                         <a href='setup_keys.php'>lien...</a>
         </div>\n";
   }
 
-  // Affichage des Menus users non privilégiés
+  // Affichage des Menus users non privilegies
 
   // lecture lcs_applis 
   $query="SELECT  name, value from applis where type='M' order by name";
@@ -89,19 +89,19 @@ echo $html;
       if ( $ftpclient ) {
         $html .= "<tr>\n";
         $html .= "  <td width='80'><img src='images/bt-V1-2.jpg' alt='ftpclient' align='middle' /></td>\n";
-        $html .= "  <td><a href='statandgo.php?use=clientftp'>Espace web « LCS »</a></td>\n";
+        $html .= "  <td><a href='statandgo.php?use=clientftp'>Espace web &#171; LCS &#187;</a></td>\n";
         $html .= "</tr>\n";
       }
       if ( $pma ) {
         $html .= "<tr>\n";
         $html .= "  <td width='80'><img src='images/bt-V1-3.jpg' alt='phpmyadmin' align='middle' /></td>\n";
-        $html .= "  <td><a href='statandgo.php?use=pma'>Gestion base de données « LCS »</a></td>\n";
+        $html .= "  <td><a href='statandgo.php?use=pma'>Gestion base de donn&#233;es &#171; LCS &#187;</a></td>\n";
         $html .= "</tr>\n";
       }
       if ( $se3netbios != "" && $se3domain != "" && $smbwebclient ) {
         $html .= "<tr>\n";
         $html .= "  <td width='80'><img src='images/bt-V1-4.jpg' alt='smbwebclient' align='middle' /></td>\n";
-        $html .= "  <td><a href='statandgo.php?use=smbwebclient'>Accès au serveur de fichiers «Se3»</a></td>\n";
+        $html .= "  <td><a href='statandgo.php?use=smbwebclient'>Acc&#232;s au serveur de fichiers &#171;Se3&#187;</a></td>\n";
         $html .= "</tr>\n";
       }
       $html .= "</table>\n";
@@ -109,8 +109,8 @@ echo $html;
     }
   }   else {
           // Pb sur espace perso utilisateur
-          echo "<P><B><font color=\"orange\">La création de votre espace personnel (/home/$login) a échoué ou son arborescence comporte une anomalie de structure !</B>
-          , veuillez contacter <a href='mailto:$MelAdminLCS?subject=PB creation Espace perso LCS de $login'>l'administrateur du système</a>
+          echo "<P><B><font color=\"orange\">La cr&#233;ation de votre espace personnel (/home/$login) a &#233;chou&#233; ou son arborescence comporte une anomalie de structure !</B>
+          , veuillez contacter <a href='mailto:$MelAdminLCS?subject=PB creation Espace perso LCS de $login'>l'administrateur du syst&#232;me</a>
            </font></P>\n";
   }
   echo "</blockquote>\n";

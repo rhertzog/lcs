@@ -3,18 +3,18 @@
    Projet LCS : Linux Communication Server
    config.inc.php
    Fichier de configuration de l'authentification
-   Paramètres de la base lcs_db
-   jLCF <(-_°)/> jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice académie de Caen
-   Derniere modification 24/06/2008
+   Parametres de la base lcs_db
+   jLCF <(-_Â°)/> jean-luc.chretien@tice.ac-caen.fr
+   Equipe Tice academie de Caen
+   Derniere modification 08/06/2009
    ============================================= */
 
-# Mode DEBUG LCS
+# Mode DEBUG LCS 
 #---------------
 $DEBUG = false;
 $MsgD  = "DEBUG >> ";
 
-# Paramètres MySQL
+# Param&#232;tres MySQL
 #----------------------
 $HOSTAUTH="localhost";
 $USERAUTH="lcsmgr";
@@ -24,13 +24,13 @@ $DBAUTH="lcs_db";
 # Recuperation des parametres LCS depuis la bdd
 # -----------------------------------------------------
 $authlink = mysql_connect($HOSTAUTH,$USERAUTH,$PASSAUTH);
-@mysql_select_db($DBAUTH) or die("Impossible de se connecter à la base $DBAUTH.");
+@mysql_select_db($DBAUTH) or die("Impossible de se connecter &#224; la base $DBAUTH.");
 $result=mysql_query("SELECT * from params where srv_id=0");
 if ($result)
 while ($r=mysql_fetch_array($result))
 $$r["name"]=$r["value"];
 else
-die ("paramètres absents de la base de donnée");
+die ("param&#232;tres absents de la base de donn&#233;e");
 mysql_free_result($result);
 # ------------------------------------------------------
 
@@ -45,13 +45,13 @@ $dn = array();
 
 $adminDn = $adminRdn.",".$ldap_base_dn;
 
-# Paramètres Admin LCS
+# Parametres Admin LCS
 $MelAdminLCS="@@MelAdminLCS@@";
 
-# Paramètres Appli
+# Parametres Appli
 $Nom_Appli = "LCS";
 
-# Paramètres divers
+# Parametres divers
 $Pool  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 $Pool .= "abcdefghijklmnopqrstuvwxyz";
 $Pool .= "1234567890";
