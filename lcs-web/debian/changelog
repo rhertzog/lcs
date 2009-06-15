@@ -1,12 +1,13 @@
-lcs-web (2.4.3~1) Lcs; urgency=low
+lcs-web (2.4.3~2) Lcs; urgency=low
 
   [ Philippe Leclerc ]
   * Modify many files in /var/www and /usr/share/lcs for register global off compatibylity
 
   [ Jean Luc Chretien ]
   * Modify lcs-web-config and mkhdir.sh for Lenny support 
+  * Add a transitional script for switching register_globals On/Off
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 15 Jun 2009 16:03:55 +0200
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 15 Jun 2009 16:56:54 +0200
 
 lcs-web (2.4.2) Lcs; urgency=low
 
