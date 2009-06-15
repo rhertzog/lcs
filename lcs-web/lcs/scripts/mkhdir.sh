@@ -15,7 +15,7 @@ if [ ! -d $1 ]; then
 	chown root:lcs-users $1
 	chmod 750 $1 
 	cp -r /etc/skel/* /home/$1/
-	chown -R $1:www-data /home/$1/Maildir
+	chown -R $1:lcs-users /home/$1/Maildir
 	chmod -R 700 /home/$1/Maildir
 
         chown $1:lcs-users /home/$1/Documents
@@ -68,7 +68,7 @@ else
         fi
         if [ ! -d $1/Maidir ]; then
             cp -r /etc/skel/Maildir /home/$1/
-            chown -R $1:www-data /home/$1/Maildir
+            chown -R $1:lcs-users /home/$1/Maildir
 	    chmod -R 700 /home/$1/Maildir
         fi
 fi
