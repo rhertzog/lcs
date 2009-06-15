@@ -18,7 +18,7 @@ exit_fatal() {
 case "$1" in
     possible)
         # Is the LDAP server reachable ?
-        if pgrep -u mysql mysqld >/dev/null && ldapsearch -x "(uid=admin)($LDAP_BASE_DN)" 2>/dev/null | grep -q "^dn: "; then
+        if pgrep -u mysql mysqld >/dev/null && ldapsearch -x -b $LDAP_BASE_DN uid=admin 2>/dev/null | grep -q "^dn: "; then
             exit 0
         else
             exit 1
