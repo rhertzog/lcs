@@ -1,3 +1,10 @@
+lcs-squirrelmail (2.4.1~1) Lcs; urgency=low
+
+  * Modify for Debian lenny compatibilty
+  * Add divert on redirect.php and page_header.php 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 17 Jun 2009 13:33:49 +0200
+
 lcs-squirrelmail (2.4) Lcs; urgency=low
 
   * Make a stable release 2.4 

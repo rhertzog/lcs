@@ -4,6 +4,12 @@
 set -e
 case "$1" in
     purge|remove)
+        if [ "$1" = remove ]; then
+            dpkg-divert --remove --package lcs-squirrelmail --rename \
+                        --divert /usr/share/squirrelmail/src/redirect.php.lcs /usr/share/squirrelmail/src/redirect.php
+            dpkg-divert --remove --package lcs-squirrelmail --rename \
+                        --divert /usr/share/squirrelmail/functions/page_header.php.lcs /usr/share/squirrelmail/functions/page_header.php   
+        fi
 	if pgrep -u mysql mysqld >/dev/null; then
 	    mysql -e "DELETE FROM lcs_db.applis WHERE name = 'squirrelmail';"
 	fi
@@ -23,3 +29,6 @@ esac
 #DEBHELPER#
 
 exit 0
+
+
+
