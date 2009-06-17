@@ -5,9 +5,9 @@
  *
  * Prints the page header (duh)
  *
- * @copyright &copy; 1999-2006 The SquirrelMail Project Team
+ * @copyright &copy; 1999-2007 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: page_header.php,v 1.148.2.27 2006/06/14 14:25:41 indiri69 Exp $
+ * @version $Id: page_header.php 12538 2007-07-14 19:04:00Z kink $
  * @package squirrelmail
  */
 
@@ -32,17 +32,17 @@ function displayHtmlHeader( $title = 'SquirrelMail', $xtra = '', $do_hook = TRUE
 
     if ( !isset( $custom_css ) || $custom_css == 'none' ) {
         if ($theme_css != '') {
-            echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"$theme_css\" />";
+            echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"$theme_css\">";
         }
     } else {
         echo '<link rel="stylesheet" type="text/css" href="' .
-             $base_uri . 'themes/css/'.$custom_css.'" />';
+             $base_uri . 'themes/css/'.$custom_css.'">';
     }
 
     if ($squirrelmail_language == 'ja_JP') {
         // Why is it added here? Header ('Content-Type:..) is used in i18n.php
         echo "<!-- \xfd\xfe -->\n";
-        echo '<meta http-equiv="Content-type" content="text/html; charset=euc-jp" />' . "\n";
+        echo '<meta http-equiv="Content-type" content="text/html; charset=euc-jp">' . "\n";
     }
 
     if ($do_hook) {
@@ -53,14 +53,14 @@ function displayHtmlHeader( $title = 'SquirrelMail', $xtra = '', $do_hook = TRUE
 
     /* work around IE6's scrollbar bug */
     echo <<<ECHO
-<!--[if IE 6]>
 <style type="text/css">
+<!--[if IE 6]>
 /* avoid stupid IE6 bug with frames and scrollbars */
 body {
     width: expression(document.documentElement.clientWidth - 30);
 }
-</style>
 <![endif]-->
+</style>
 
 ECHO;
 
@@ -84,24 +84,20 @@ function displayInternalLink($path, $text, $target='') {
 
 function displayPageHeader($color, $mailbox, $xtra='', $session=false) {
 
-    global $hide_sm_attributions, $PHP_SELF, $frame_top,
+    global $hide_sm_attributions, $frame_top,
            $compose_new_win, $compose_width, $compose_height,
            $attachemessages, $provider_name, $provider_uri,
            $javascript_on, $default_use_mdn, $mdn_user_support,
-           $startMessage;
+           $startMessage, $org_title;
 
     sqgetGlobalVar('base_uri', $base_uri, SQ_SESSION );
     sqgetGlobalVar('delimiter', $delimiter, SQ_SESSION );
-    $module = substr( $PHP_SELF, ( strlen( $PHP_SELF ) - strlen( $base_uri ) ) * -1 );
-    if ($qmark = strpos($module, '?')) {
-        $module = substr($module, 0, $qmark);
-    }
     if (!isset($frame_top)) {
         $frame_top = '_top';
     }
 
     if ($session) {
-        $compose_uri = $base_uri.'src/compose.php?mailbox='.urlencode($mailbox).'&amp;attachedmessages=true&amp;session='."$session";
+        $compose_uri = $base_uri.'src/compose.php?mailbox='.urlencode($mailbox).'&amp;session='."$session";
     } else {
         $compose_uri = $base_uri.'src/compose.php?newmessage=1';
         $session = 0;
@@ -109,8 +105,9 @@ function displayPageHeader($color, $mailbox, $xtra='', $session=false) {
 
     // only output JavaScript if actually turned on
     if($javascript_on || strpos($xtra, 'new_js_autodetect_results.value') ) {
-        switch ( $module ) {
-        case 'src/read_body.php':
+        if ( !defined('PAGE_NAME') ) define('PAGE_NAME', NULL);
+        switch ( PAGE_NAME ) {
+        case 'read_body':
             $js ='';
 
             // compose in new window code
@@ -136,11 +133,7 @@ function displayPageHeader($color, $mailbox, $xtra='', $session=false) {
             if($default_use_mdn && $mdn_user_support) {
                 $js .= "function sendMDN() {\n".
                          "    mdnuri=window.location+'&sendreceipt=1';\n" .
-                         "    if (window.top != window.self) {\n" .
-                         "      var newwin = window.open(mdnuri,'right');\n" .
-                         "    } else {\n " .
-                         "      var newwin = window.location = mdnuri;\n" .
-                         "    }\n" .
+                         "    window.location = mdnuri;\n" .
                        "\n}\n\n";
             }
 
@@ -150,10 +143,10 @@ function displayPageHeader($color, $mailbox, $xtra='', $session=false) {
                       "\n<!--\n" . $js . "// -->\n</script>\n";
             }
 
-            displayHtmlHeader ('SquirrelMail', $js);
+            displayHtmlHeader($org_title, $js);
             $onload = $xtra;
           break;
-        case 'src/compose.php':
+        case 'compose':
             $js = '<script language="JavaScript" type="text/javascript">' .
              "\n<!--\n" .
              "var alreadyFocused = false;\n" .
@@ -195,7 +188,7 @@ function displayPageHeader($color, $mailbox, $xtra='', $session=false) {
             $js .= "// -->\n".
                  "</script>\n";
             $onload = 'onload="checkForm();"';
-            displayHtmlHeader ('SquirrelMail', $js);
+            displayHtmlHeader($org_title, $js);
             break;
 
         default:
@@ -245,11 +238,11 @@ function displayPageHeader($color, $mailbox, $xtra='', $session=false) {
 
 
         $onload = 'onload="checkForm();"';
-        displayHtmlHeader ('SquirrelMail', $js);
+        displayHtmlHeader($org_title, $js);
       } // end switch module
     } else {
         // JavaScript off
-        displayHtmlHeader ('SquirrelMail');
+        displayHtmlHeader($org_title);
         $onload = '';
     }
 
@@ -271,7 +264,7 @@ function displayPageHeader($color, $mailbox, $xtra='', $session=false) {
     }
     echo  "      </td>\n"
         . html_tag( 'td', '', 'right' ) ."<b>\n";
-    // Modification LCS du 07/11/2007
+    // Modify for LCS on 17/06/09 squirrelmail 1.4.15
     //displayInternalLink ('src/signout.php', _("Sign Out"), $frame_top);
     echo "</b></td>\n"
         . "   </tr>\n"
@@ -313,11 +306,10 @@ function displayPageHeader($color, $mailbox, $xtra='', $session=false) {
 /* blatently copied/truncated/modified from the above function */
 function compose_Header($color, $mailbox) {
 
-    global $delimiter, $hide_sm_attributions, $base_uri, $PHP_SELF,
+    global $delimiter, $hide_sm_attributions, $base_uri,
            $data_dir, $username, $frame_top, $compose_new_win;
 
 
-    $module = substr( $PHP_SELF, ( strlen( $PHP_SELF ) - strlen( $base_uri ) ) * -1 );
     if (!isset($frame_top)) {
         $frame_top = '_top';
     }
@@ -325,8 +317,9 @@ function compose_Header($color, $mailbox) {
     /*
         Locate the first displayable form element
     */
-    switch ( $module ) {
-    case 'src/search.php':
+    if ( !defined('PAGE_NAME') ) define('PAGE_NAME', NULL);
+    switch ( PAGE_NAME ) {
+    case 'search':
         $pos = getPref($data_dir, $username, 'search_pos', 0 ) - 1;
         $onload = "onload=\"document.forms[$pos].elements[2].focus();\"";
         displayHtmlHeader (_("Compose"));
@@ -380,4 +373,3 @@ function compose_Header($color, $mailbox) {
     echo "<body text=\"$color[8]\" bgcolor=\"$color[4]\" link=\"$color[7]\" vlink=\"$color[7]\" alink=\"$color[7]\" $onload>\n\n";
 }
 
-?>

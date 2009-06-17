@@ -1,5 +1,5 @@
 <?php
-## Modification LCS du 23/05/2009
+## Modify for LCS on 17/06/09 squirrelmail 1.4.15
 include "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers,$login_username) = isauth();
 if ($idpers) {
@@ -8,17 +8,19 @@ if ($idpers) {
   $js_autodetect_results = "on";
 }
 ## Fin Modification LCS
-
 /**
  * Prevents users from reposting their form data after a successful logout.
  *
  * Derived from webmail.php by Ralf Kraudelt <kraude@wiwi.uni-rostock.de>
  *
- * @copyright &copy; 1999-2006 The SquirrelMail Project Team
+ * @copyright &copy; 1999-2007 The SquirrelMail Project Team
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version $Id: redirect.php,v 1.72.2.14 2006/12/02 15:10:13 kink Exp $
+ * @version $Id: redirect.php 12848 2008-01-04 07:18:01Z pdontthink $
  * @package squirrelmail
  */
+
+/** This is the redirect page */
+define('PAGE_NAME', 'redirect');
 
 /**
  * Path for SquirrelMail required files.
@@ -40,7 +42,6 @@ require_once(SM_PATH . 'functions/page_header.php');
 header('Pragma: no-cache');
 $location = get_location();
 
-session_set_cookie_params (0, $base_uri);
 sqsession_is_active();
 
 sqsession_unregister ('user_is_logged_in');
@@ -63,8 +64,7 @@ if (!sqgetGlobalVar('mailtodata', $mailtodata)) {
 
 set_up_language($squirrelmail_language, true);
 /* Refresh the language cookie. */
-setcookie('squirrelmail_language', $squirrelmail_language, time()+2592000,
-          $base_uri);
+sqsetcookie('squirrelmail_language', $squirrelmail_language, time()+2592000, $base_uri);
 
 if (!isset($login_username)) {
     include_once(SM_PATH .  'functions/display_messages.php' );
@@ -114,7 +114,7 @@ if (!sqsession_is_registered('user_is_logged_in')) {
 
     $username = $login_username;
     sqsession_register ($username, 'username');
-    setcookie('key', $key, 0, $base_uri);
+    sqsetcookie('key', $key, 0, $base_uri);
     do_hook ('login_verified');
 
 }
@@ -133,11 +133,10 @@ $attachment_common_types_parsed = array();
 sqsession_register($attachment_common_types, 'attachment_common_types');
 sqsession_register($attachment_common_types_parsed, 'attachment_common_types_parsed');
 
-$debug = false;
 
 if ( sqgetGlobalVar('HTTP_ACCEPT', $http_accept, SQ_SERVER) &&
     !isset($attachment_common_types_parsed[$http_accept]) ) {
-    attachment_common_parse($http_accept, $debug);
+    attachment_common_parse($http_accept);
 }
 
 /* Complete autodetection of Javascript. */
@@ -164,15 +163,18 @@ $redirect_url = 'webmail.php';
 
 if ( sqgetGlobalVar('session_expired_location', $session_expired_location, SQ_SESSION) ) {
     sqsession_unregister('session_expired_location');
-    if ( strpos($session_expired_location, 'compose.php') !== FALSE ) {
+    if ( $session_expired_location == 'compose' ) {
         $compose_new_win = getPref($data_dir, $username, 'compose_new_win', 0);
         if ($compose_new_win) {
-            $redirect_url = $session_expired_location;
-        } elseif ( strpos($session_expired_location, 'webmail.php') === FALSE ) {
-            $redirect_url = 'webmail.php?right_frame=compose.php';
+            // do not prefix $location here because $session_expired_location is set to the PAGE_NAME
+            // of the last page
+            $redirect_url = $session_expired_location . '.php';
+        } else {
+            $redirect_url = 'webmail.php?right_frame=' . urlencode($session_expired_location . '.php');
         }
-    } else {
-        $redirect_url = 'webmail.php?right_frame=' . urldecode($session_expired_location);
+    } else if ($session_expired_location != 'webmail'
+            && $session_expired_location != 'left_main') {
+        $redirect_url = 'webmail.php?right_frame=' . urlencode($session_expired_location . '.php');
     }
     unset($session_expired_location);
 }
@@ -190,7 +192,7 @@ header("Location: $redirect_url");
 
 /* --------------------- end main ----------------------- */
 
-function attachment_common_parse($str, $debug) {
+function attachment_common_parse($str) {
     global $attachment_common_types, $attachment_common_types_parsed;
 
     $attachment_common_types_parsed[$str] = true;
@@ -216,4 +218,3 @@ function attachment_common_parse($str, $debug) {
     sqsession_register($attachment_common_types, 'attachment_common_types');
 }
 
-?>
