@@ -4,11 +4,11 @@
    Consultation de l'annuaire LDAP
    Annu/includes/ldap.inc.php
    « jLCF » jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice académie de Caen
-   Derniere version : 16/06/2008
+   Equipe Tice academie de Caen
+   Derniere version : 18 Juin 2009
    ============================================= */
 
-// Fonctions de comparaison utilisées dans la fonction usort
+// Fonctions de comparaison utilisees dans la fonction usort
 
 function cmp_fullname ($a, $b) {
     return strcmp($a["fullname"], $b["fullname"]);
@@ -30,7 +30,7 @@ function cmp_cn ($a, $b) {
     return strcmp($a["cn"], $b["cn"]);
 }
 
-// Retourne un login à partir d'un dn
+// Retourne un login a partir d'un dn
 function extract_login ($dn) {
   $login = split ("[\,\]",$dn,4);
   $login = split ("[\=\]",$login[0],2);
@@ -237,13 +237,13 @@ function search_people ($filter) {
   } else {
     $error = "Erreur de connection au serveur LDAP";
   }
-  // Tri du tableau par ordre alphabétique
+  // Tri du tableau par ordre alphabetique
   if (count($ret)) usort($ret, "cmp_name");
   return $ret;
 }
 
 /*
-// Recherche des uids dans des classes et equipes répondant au critère $filter  dans la branche Groups
+// Recherche des uids dans des classes et equipes repondant au critere $filter  dans la branche Groups
 function search_uids ($filter, $mode) {
   global $ldap_server, $ldap_port, $dn, $ldap_classe_attr, $ldap_equipe_attr;
   global $error;
@@ -299,7 +299,7 @@ function search_uids ($filter, $mode) {
       }
       }
       if (ereg("Classe",$filter,$matche)||ereg("Matiere",$filter,$matche)||ereg("Equipe",$filter,$matche)) {
-        // Modifié par Wawa: filter2 supprimé
+        // Modifie par Wawa: filter2 supprime
          if ($mode=="full") {
            $filter2 = ereg_replace("Classe_","Equipe_",$filter);
          } else {  $filter2=$filter; }
@@ -391,7 +391,7 @@ function search_uids ($filter, $mode) {
   return $ret;
 }
 
-// Recherche une liste de groupes répondants aux critères fixés par
+// Recherche une liste de groupes repondants aux criteres fixes par
 // la variable $filter
 // retourne un tableau $groups avec le cn et la description de chaque groupe
 
@@ -436,9 +436,9 @@ function search_groups ($filter) {
 }
 
 // Recherche des utilisateurs dans la branche people a partir
-// d'un tableau d'uids nons triés
-// $order = "cat"   => Tri par catégorie (Eleves, Equipe...)
-//          "group" => Tri par intitulé de group (ex: 1GEA, TGEA...)
+// d'un tableau d'uids nons tries
+// $order = "cat"   => Tri par categorie (Eleves, Equipe...)
+//          "group" => Tri par intitule de group (ex: 1GEA, TGEA...)
 
 function search_people_groups ($uids,$filter,$order) {
   global $ldap_server, $ldap_port, $dn;
@@ -490,10 +490,10 @@ function search_people_groups ($uids,$filter,$order) {
   
   if (count($ret)) { 
     # Correction tri du tableau
-    # Tri par critere catégorie ou intitulé de groupe
+    # Tri par critere categorie ou intitule de groupe
     if ( $order == "cat" ) usort ($ret, "cmp_cat");
       elseif ( $order == "group" ) usort ($ret, "cmp_group");
-    # Recherche du nombre de catégories ou d'intitulés de groupe
+    # Recherche du nombre de categories ou d'intitules de groupe
     $i = 0;
     for ( $loop=0; $loop < count($ret); $loop++) {
 	 	if ( $ret[$loop][$order] != $ret[$loop-1][$order]) {
@@ -514,7 +514,7 @@ function search_people_groups ($uids,$filter,$order) {
     	}      
     	# Tri alpabetique des sous tableaux
     	for ( $loop=0; $loop < count($ret_tmp); $loop++) usort ($ret_tmp[$loop], "cmp_name");
-    	# Réassemblage des tableaux temporaires
+    	# Reassemblage des tableaux temporaires
         $ret_final=array();
     	for ($loop=0; $loop < count($tab_order); $loop++)  $ret_final = array_merge ($ret_final, $ret_tmp[$loop]);
     	return $ret_final;
@@ -630,7 +630,7 @@ function tstclass($prof,$eleve)
   return $tstclass;
 }
 
-// Fonctions de modifications des entrées LDAP
+// Fonctions de modifications des entrees LDAP
 // -------------------------------------------
 
 // Changement mot de passe
@@ -638,10 +638,10 @@ function userChangedPwd($uid, $userpwd) {
   global $scriptsbinpath;
   exec ("$scriptsbinpath/userChangePwd.pl '$uid' '$userpwd'",$AllOutPut,$ReturnValue);
   if ($ReturnValue == "0") {
-    // Resynchro du mdp admin pour le mode sans échec
+    // Resynchro du mdp admin pour le mode sans echec
     if ( $uid == "admin" ) {
     	$action = "synchro_mdp";
-    	exec ("/usr/bin/sudo /usr/share/lcs/scripts/action.sh $action");
+    	exec ("/usr/bin/sudo /usr/share/lcs/scripts/action.sh $action $userpwd");
     }
     return true;	
   } else return false;
@@ -673,7 +673,7 @@ function user_valid_passwd ( $login, $password ) {
         $error = "Login invalide";
       }
     } else {
-      $error = "L'Authentification a échouée";
+      $error = "L'Authentification a &#233;chou&#233;e";
     }
     @ldap_unbind ($ds);
     @ldap_close ($ds);
@@ -684,7 +684,7 @@ function user_valid_passwd ( $login, $password ) {
   return $ret;
 }
 
-// Recherche si l'utilisateur connecté a le droit de créer un salon sur le Chat
+// Recherche si l'utilisateur connecte a le droit de creer un salon sur le Chat
 // Retourne true si login appartient au groupe :
 // Profs ou Administration ou si login = admin
 // Retourne false dans les autres cas
@@ -710,7 +710,7 @@ function create_room ($login) {
       if (!$r) {
         $error = "Echec du bind anonyme";
       } else {
-        // Recherche du groupe d'appartenance de l'utilisateur connecté
+        // Recherche du groupe d'appartenance de l'utilisateur connecte
         $result=@ldap_list ($ds, $dn["groups"], $filter, $ldap_groups_attr);
         if ($result) {
           $info = @ldap_get_entries( $ds, $result );
