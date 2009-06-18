@@ -229,11 +229,11 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		if ( $status[5] == "marketingwareOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
 		$html .= "Validation liste noire phishing : <input type='checkbox' value='phishingOn' name='phishing'";
 		if ( $status[6] == "phishingOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
-		$html .= "Liste noire nationale : <input type='checkbox' value='bl_full' name='bl'";
 		$html .= "Validation liste noire redirecteurs (proxy en ligne,....) : <input type='checkbox' value='redirecteursOn' name='redirecteurs'";
 		if ( $status[8] == "redirecteursOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
 		$html .= "Liste noire LCS : <input type='checkbox' value='On' name='bl_lcs' CHECKED disabled><br>\n"; 
 		if ( $status[9] == "bl_full") $html.="CHECKED><br>\n"; else $html.="><br>\n";	
+		$html .= "Liste noire nationale : <input type='checkbox' value='bl_full' name='bl'";
 		$html .= "	<input type='hidden' value='1' name='modif_status'>\n";
 		$html .= "	<input type='submit' value='Modifier'></td>\n";	
 		$html .= "</form>\n";
