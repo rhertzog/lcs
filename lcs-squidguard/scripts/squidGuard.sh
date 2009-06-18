@@ -237,7 +237,13 @@ case $ARG in
         else
           RET="$RET blogOn"
         fi
-   	RES=`grep '!ads' /etc/squid/squidGuard.conf`
+	RES=`grep '!redirector' /etc/squid/squidGuard.conf`
+        if [ "x$RES" = "x" ]; then
+          RET="$RET redirecteursOff"
+        else
+          RET="$RET redirecteursOn"
+        fi
+   	RES=`grep '!bl_full' /etc/squid/squidGuard.conf`
 	if [ "x$RES" = "x" ]; then
 	  echo "$RET bl_lcs"
 	else
