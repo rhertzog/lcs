@@ -765,6 +765,11 @@ function creer_uid($nom,$prenom){
 										//$uid=substr($uid,0,strlen($uid)-strlen($cpt)).$cpt;
 										//$uid=$prefuid.$cpt;
 										$uid=substr($uid_souche,0,strlen($uid_souche)-strlen($cpt)).$cpt;
+										if(($uidPolicy==0) 
+										   || (($uidPolicy==1 || $uidPolicy==2) && strlen($uid)<19) 
+										   || (($uidPolicy==4 || $uidPolicy==5) && strlen($uid)<8)){
+											$uid=$uid_souche.$cpt;
+										} 
 										fich_debug("Doublons... \$uid=$uid\n");
 										$cpt++;
 									}
