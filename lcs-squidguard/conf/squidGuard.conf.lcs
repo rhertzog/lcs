@@ -44,6 +44,18 @@ dest hacking {
 dest mail {
   domainlist	blacklists/mail/domains
 }
+dest malware {
+  domainlist    blacklists/malware/domains
+  urllist       blacklists/malware/urls
+}
+dest marketingware {
+  domainlist    blacklists/marketingware/domains
+  urllist       blacklists/marketingware/urls
+}
+dest phishing {
+  domainlist    blacklists/phishing/domains
+  urllist       blacklists/phishing/urls
+}
 dest porn {
   domainlist	blacklists/porn/domains
   urllist	blacklists/porn/urls
@@ -51,6 +63,10 @@ dest porn {
 dest proxy {
   domainlist	blacklists/proxy/domains
   urllist	blacklists/proxy/urls
+}
+dest redirector {
+  domainlist    blacklists/redirector/domains
+  urllist       blacklists/redirector/urls
 }
 dest violence {
   domainlist	blacklists/violence/domains

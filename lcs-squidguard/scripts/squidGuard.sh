@@ -207,6 +207,30 @@ case $ARG in
         else
           RET="$RET audiovideoOn"
         fi  
+	RES=`grep '!ads' /etc/squid/squidGuard.conf`
+        if [ "x$RES" = "x" ]; then
+          RET="$RET  adsOff"
+        else
+          RET="$RET adsOn"
+        fi
+        RES=`grep '!malware' /etc/squid/squidGuard.conf`
+        if [ "x$RES" = "x" ]; then
+          RET="$RET malwareOff"
+        else
+          RET="$RET malwareOn"
+        fi
+        RES=`grep '!maketingware' /etc/squid/squidGuard.conf`
+        if [ "x$RES" = "x" ]; then
+          RET="$RET maketingwareOff"
+        else
+          RET="$RET maketingwareOn"
+        fi
+        RES=`grep '!phishing' /etc/squid/squidGuard.conf`
+        if [ "x$RES" = "x" ]; then
+          RET="$RET phishingOff"
+        else
+          RET="$RET phishingOn"
+        fi
 	RES=`grep '!blog' /etc/squid/squidGuard.conf`
         if [ "x$RES" = "x" ]; then
           RET="$RET blogOff"
@@ -234,11 +258,20 @@ case $ARG in
 	echo "forumsOff : Pas de filtage des forums"        
 	echo "audiovideoOn : Filtrage audio et video (youtube, dailymotion,....) via la liste noire audiovideo"
         echo "audiovideoOff : Pas de filtage audio et video"
+	echo "malwareOn : Filtage malware"
+        echo "malwareOff : Pas de filtage malware"
+        echo "adsOn : Filtage publicite"
+        echo "adsOff : Pas de filtage publicite"
+        echo "redirecteursOn : Filtage proxy redirecteurs"
+        echo "redirecteursOff : Pas de filtage proxy redirecteurs"
+        echo "phishingOn : Filtage phishing"
+        echo "phishingOff : Pas de filtage phishing"
 	echo "reload : Recharge la configuration squidGuard"
 	echo "status: Retourne le status des configurations squidGuard"
 	echo "se3_internet : Met en place le fichier squidGuard.conf adapté au dispositif se3-internet"
    ;;
    *)
-       echo "usage: $0 (lcs|lcs_db|raz_db|bl_lcs|bl_full|webmailOn|webmailOff|forumsOn|forumsOff|audiovideoOn|audiovideoOff|reload|status|help)"
+       echo "usage: $0 
+(lcs|lcs_db|raz_db|bl_lcs|bl_full|webmailOn|webmailOff|forumsOn|forumsOff|audiovideoOn|audiovideoOff|malwareOn|malwareOff|adsOn|adsOff|redirecteursOn|redirecteursOff|redirecteursOn|redirecteursOff|phishingOn|phishingOff|reload|status|help)"
    ;;
 esac

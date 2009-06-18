@@ -77,6 +77,42 @@ EOF
 		squidGuard -C blog
 		squid -k reconfigure
 	fi
+        ## Upgrade redirector
+        if grep -q redirector /etc/squid/squidGuard.conf ; then
+                echo "redirector deja present dans le fichier de configuration"
+        else
+                echo "ajout des redirector au fichier de configuration squidguard"
+                patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-redirector
+                squidGuard -C redirector
+                squid -k reconfigure
+        fi
+        ## Upgrade malware
+        if grep -q malware /etc/squid/squidGuard.conf ; then
+                echo "malware deja present dans le fichier de configuration"
+        else
+                echo "ajout des malware au fichier de configuration squidguard"
+                patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-malware
+                squidGuard -C malware
+                squid -k reconfigure
+        fi
+        ## Upgrade marketingware
+        if grep -q marketingware /etc/squid/squidGuard.conf ; then
+                echo "marketingware deja present dans le fichier de configuration"
+        else
+                echo "ajout des marketingware au fichier de configuration squidguard"
+                patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-marketingware
+                squidGuard -C marketingware
+                squid -k reconfigure
+        fi
+	## Upgrade phishing
+        if grep -q phishing /etc/squid/squidGuard.conf ; then
+                echo "phishing deja present dans le fichier de configuration"
+        else
+                echo "ajout des phishing au fichier de configuration squidguard"
+                patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-phishing
+                squidGuard -C phishing
+                squid -k reconfigure
+        fi
     	;;
     	abort-upgrade|abort-remove|abort-deconfigure)
     	;;

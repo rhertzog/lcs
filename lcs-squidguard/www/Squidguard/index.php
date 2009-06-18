@@ -121,6 +121,16 @@ echo $html;
 if ( $modif_status ) {
 	if ( $audiovideo == "audiovideoOn" ) $cmd = $audiovideo; else $cmd = "audiovideoOff";
         exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+	if ( $malware == "malwareOn" ) $cmd = $malware; else $cmd = "malwareOff";
+        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+        if ( $ads == "adsOn" ) $cmd = $ads; else $cmd = "adsOff";
+        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+        if ( $redirecteurs == "redirecteursOn" ) $cmd = $redirecteurs; else $cmd = "redirecteursOff";
+        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+        if ( $marketingware == "marketingwareOn" ) $cmd = $marketingware; else $cmd = "marketingwareOff";
+        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+        if ( $phishing == "phishingOn" ) $cmd = $phishing; else $cmd = "phishingOff";
+        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
 	if ( $blog == "blogOn" ) $cmd = $blog; else $cmd = "blogOff";
         exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
 	if ( $webmail == "webmailOn" ) $cmd = $webmail; else $cmd = "webmailOff";
@@ -217,7 +227,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		if ( $status[5] == "adsOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
 		$html .= "Validation liste noire redirecteurs (proxy en ligne,....) : <input type='checkbox' value='redirecteursOn' name='redirecteurs'";
 		if ( $status[6] == "redirecteursOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
-		$html .= "Validation liste noire maketingware : <input type='checkbox' value='marketingwareOn' name='marketingware'";
+		$html .= "Validation liste noire marketingware : <input type='checkbox' value='marketingwareOn' name='marketingware'";
 		if ( $status[7] == "marketingwareOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
 		$html .= "Validation liste noire phishing : <input type='checkbox' value='phishingOn' name='phishing'";
 		if ( $status[8] == "phishingOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";

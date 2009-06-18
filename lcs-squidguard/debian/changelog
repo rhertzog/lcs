@@ -1,3 +1,10 @@
+lcs-squidguard (2.4.2~1) Lcs; urgency=low
+
+  * fixing bug in web page
+  * adding new blacklisk patch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 18 Jun 2009 18:07:45 +0200
+
 lcs-squidguard (2.4.1) Lcs; urgency=low
 
   * fix blog test now silent

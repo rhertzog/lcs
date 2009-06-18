@@ -1,0 +1,13 @@
+--- squidGuard.conf.nomarket    2009-06-18 14:33:07.000000000 +0200
++++ squidGuard.conf     2009-06-18 14:32:13.000000000 +0200
+@@ -48,6 +48,10 @@
+   domainlist    blacklists/malware/domains
+   urllist       blacklists/malware/urls
+ }
++dest marketingware {
++  domainlist    blacklists/marketingware/domains
++  urllist       blacklists/marketingware/urls
++}
+ dest porn {
+   domainlist   blacklists/porn/domains
+   urllist      blacklists/porn/urls
