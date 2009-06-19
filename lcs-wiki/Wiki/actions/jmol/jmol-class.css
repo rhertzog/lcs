@@ -1,0 +1,69 @@
+/** Jmol css class **/
+
+fieldset.jmol-frame {
+	border: none;
+}
+
+p.jmol-applet, p.jmol-applet {
+	margin: 0;
+	border: solid grey 1px;
+	}
+
+h1.jmol-applet {
+	font-size: 1em;
+	text-align: center;
+	text-transform: uppercase;
+	}
+
+a.jmol-link {
+	margin: 0em;
+	padding: 0.25em;
+	font-weight: bold;
+	text-decoration: none;
+	/*-moz-border-radius: 0.5em;*/
+	}
+	 a.jmol-link, a.jmol-link:link, a.jmol-link:visited  {
+		color: red;
+		}
+	a:hover.jmol-link {
+		color: navy;
+		background: lightgrey;
+		}
+
+input.jmol-button {
+	text-align: center;
+	color: navy;
+	font-weight: bold;
+	/*width: 16em;*/
+	cursor: pointer;
+	}
+
+input.jmol-radio {
+	text-align: left;
+	}
+
+dd.jmol-radio, dt.jmol-radio {
+	color: navy;
+	text-align: left;
+	}
+dd.jmol-radio {
+	margin-left: 0.5em;
+	}
+dt.jmol-radio {
+	font-weight: bold;
+	color: red;
+	}
+span.jmol-box {
+	color: red;
+	font-weight: bold;
+	}
+
+select.jmol-select, option.jmol-select {
+	font-weight: bold;
+	color: navy;
+	}
+
+fieldset.jmol-text {
+	font-weight: bold;
+	color: red;
+	}

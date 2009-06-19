@@ -1,0 +1,60 @@
+body { background-color: #F5F5F5; color: black; font-family: 'Lucida Grande', Verdana, Geneva, Lucida, Arial, Helvetica, sans-serif; }
+
+a:link{color:#557; background-color: transparent;}
+a:visited{color:#557; background-color: transparent;}
+a:hover {color: #ff0032; background: #e8e8e8;}
+
+body, p, td, li, input, select, textarea { font-family: 'Lucida Grande', Verdana, Geneva, Lucida, Arial, Helvetica, sans-serif; font-size: 13px; }
+h4, h5,h3 { margin: 0px; padding: 0px; text-align:left;}
+h1, h2  {margin: 0px; padding: 0px; text-align:center;}
+ul { margin-top: 0px; padding-top: 0px; padding-bottom: 0px; }
+ol { margin-top: 0px; padding-top: 0px; padding-bottom: 0px; }
+form { margin: 0px; padding: 0px; }
+tt { color: Navy; }
+
+
+.error { color: #CC3333; font-weight: bold; }
+.indent { margin-left: 40px; }
+.additions { color: #008800; }
+.deletions { color: #880000; }
+.add { font-weight: bold; color:#c00; text-decoration: underline; }
+.del { font-style: italic; color:#c00; text-decoration: line-through; }
+.header { padding: 2px; padding-top: 0px; }
+.page { background-color: #FFFFFF; padding: 10px; border-left-width: 1px;
+	border-left-style: solid;
+	border-left-color: #ccc;
+	border-right-width: 1px;
+	border-right-style: solid;
+	border-right-color: #ccc;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #ccc;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #ccc;
+}
+.prev_alert { background-color: red; color: white; font-size: 1.7em; font-weight: bold; margin-bottom: 5px; }
+.edit { width: 100%; height: 400px; }
+.footer { background-color: #f9f4f4;padding: 5px; }
+.code { background: #FFFFFF; border: solid #888888 2px; font-family: 'Courier New', Courier; color: black; font-size: 10pt; width: 100%; overflow: scroll; padding: 3px; }
+.revisioninfo { color: #AAAAAA; padding-bottom: 20px; }
+
+
+.copyright { font-size: 11px; color: #AAAAAA; text-align: right; }
+.copyright A { color: #AAAAAA; }
+.searchbox { background: #FFFFF8;  padding: 0px; margin: 0px; 
+	border-left-width: 1px;
+	border-left-style: solid;
+	border-left-color: #ccc;
+	border-right-width: 1px;
+	border-right-style: solid;
+	border-right-color: #ccc;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #ccc;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #ccc;
+}
+.debug { font-size: 11px; color: #888888; }
+

@@ -1,0 +1,179 @@
+body { margin : 10px;
+	padding : 0px;
+	font-family : Verdana,Arial,Geneva,Helvetica,sans-serif;
+	font-size : 12px;
+	background: #686868;
+	color : #000000;
+}
+
+body, p, td, li, input, select, textarea 
+{ 
+	font-family: Verdana, Geneva, Lucida, Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.3; 
+}
+h1 { font-size : 1.9em; text-align: center;
+}
+h2, h3, h4, h5 {
+	 margin: 0px; padding: 0px; 
+}
+
+a:link{color:#557; background-color: transparent;}
+a:visited{color:#557; background-color: transparent;}
+a:hover {color: #557; text-decoration : none; }
+ul { margin-top: 0px; padding-top: 0px; padding-bottom: 0px; list-style-image: url(fleche.png); list-style-type: circle}
+ol { margin-top: 0px; padding-top: 0px; padding-bottom: 0px;}
+form { margin: 0px; padding: 0px; }
+tt { color: Navy; }
+hr { border: 0px; color: #cccccc; /* Internet Explorer */ background-color: #cccccc; height: 1px; }
+
+.logosite { position: fixed; right: 14px;  top: 11px; left: auto; }
+.wiki_name { float: left; margin: 0px 15px 0px 10px; font-size: 150%; }
+.page_name { font-size: 150%; }
+
+.error { color: #CC3333; font-weight: bold; }
+.indent { margin-left: 40px; }
+.additions { color: #008800; }
+.deletions { color: #880000; }
+.add { font-weight: bold; color: #c00; text-decoration: underline; }
+.del { font-style: italic; color: #c00; text-decoration: line-through; }
+.header { padding: 2px; padding-top: 0px }
+
+.attach_margin05em { margin: 0.5em;}             /* marge de 0.5 em autour de l'image*/
+.attach_margin1em { margin: 1em;}                /* marge de 1em autour de l'image*/
+.attach_left {float: left;}                      /* bloc flotant à gauche */
+.attach_right {float: right;}                    /* bloc flotant à droite */
+.attach_center {text-align: center;}
+.attach_noborder {border-width: 0px;}            /* pas de bordure */
+.attach_vmiddle {vertical-align: text-bottom;}   /* aligenement vertical au milieu */
+
+
+.hr_clear { clear: both; visibility: hidden; }
+.include_right { float: right; width: 17%; } /* bloc flotant à droite */
+.include_left { float: left; width: 17%; } /* bloc flotant à gauche */
+.include_solid_border { border: solid; padding: 2px; } /* encadré noir */
+.include_gray_background { background-color: #f9f4f4; } /* fond gris */
+.include_small_fonts { font-size: 0.8em; } /* petites polices */
+.include_big_fonts { font-size: 1.2em; } /* grandes polces */
+.include_height10em { height: 10em; overflow: scroll; } /* boite de 10em de hauteur, avec ascenseur */
+.include_height15em { height: 15em; overflow: scroll; }
+.include_height30em { height: 30em; overflow: scroll; }
+.include_height60em { height: 60em; overflow: scroll; }
+
+.trail_table { line-height: 30px;}
+.trail_button { color: #993333; }
+
+.header2 {
+	padding: 2px; 
+	padding-top: 0px;  
+	margin-bottom: 4px;
+}
+
+.menu_column {
+	background: #f9f4f4 url("images/fond2_jaune.jpg")  fixed 0 0; 
+	vertical-align: top; 
+	width: 200px; 
+	border: 1px solid #cc9933;
+	padding:5px;
+}
+.body_column {
+	vertical-align: top; 
+	border: none;
+	padding:0px;
+}
+.table-haut { 
+	background: #f9f4f4 url("images/fond2_jaune.jpg")  fixed 0 0;
+	border-left-width: 1px;
+	border-left-style: solid;
+	border-left-color: #cc9933;
+	border-right-width: 1px;
+	border-right-style: solid;
+	border-right-color: #cc9933;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #cc9933;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #cc9933;
+	padding: 10px;
+ }
+div.math_inline { display: inline; }
+div.math_center { text-align: center; }
+
+/*Pour les ajouts de couleurs.*/
+.rouge {color:red;} 
+.vert {color:#33ff33;}
+.bleu {color:blue;}
+.surbrillance {background-color:yellow;}
+.centrer {text-align:center;}
+.pointille {border:2px dotted red;}
+.handout {display: none;}
+.floatr {display: none;}
+
+/*Gestion tableau csv*/
+.csvtable {
+	border: thin solid #a6a6a6;
+	border-collapse: collapse;
+	
+}
+
+.csvtable th {
+	font-family: monospace;
+	border: thin solid #a6a6a6;
+	padding: 5px;
+	background-color: #dddddd;text-align: center; }
+
+.csvtable td {
+	font-family: monospace;
+	border: thin solid #a6a6a6;
+	padding: 5px;
+	background-color: #fff; 
+	color: #006;text-align: left;
+}
+
+#page_v {background-color: #fff; color: #160076; padding: 25px; margin: 45px; text-align: justify; border: 1px #160076 solid;}
+
+/* postit note-style information box */
+#note {
+
+        font-size: 10pt;
+        float: right;
+        width: 200px;
+        border: 1px solid #AAAAAA;
+        margin: -10px 10px 10px 10px;
+        padding: 0px;
+        background-color: #FFF900;
+        text-align: justify;
+        vertical-align: top;
+}
+
+#note hr {
+        height: 1px;
+        border: 1px solid #AAAAAA;
+        width: 100%;
+}
+
+#note .title {
+        text-align: center;
+        font-weight: bold;
+        background-color: #EEE800;
+        border-bottom: 1px solid #AAAAAA;
+
+}
+
+#note #text {
+        padding: 4px;
+        
+}
+/*Action toc*/
+#sommaire {float: right; border: 1px solid #ccc; padding: 10px; margin: 10px; background: #eee;}
+#sommaire a {color:#505050; background-color: transparent;text-decoration:none;border-bottom: 0px dotted #505050;}
+div.toc { margin-bottom: 0px; padding-bottom: 0px; }
+div.toc1 { margin-left: 1em; }
+div.toc1 img { border: 0px; }
+div.toc2 { margin-left: 2.5em; }
+div.toc2 img { border: 0px; }
+div.toc3 { margin-left: 3.9em; }
+div.toc3 img { border: 0px; }
+div.toc4 { margin-left: 5.1em; }
+div.toc4 img { border: 0px; }
+div.toc5 { margin-left: 6.5em; }
+div.toc5 img { border: 0px; }

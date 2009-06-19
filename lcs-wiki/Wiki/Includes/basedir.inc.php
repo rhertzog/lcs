@@ -1,0 +1,5 @@
+<?php
+
+$BASEDIR="/var/www";
+
+?>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MAIN>
+<GEODOCMANAGER aligngrille="false" angle="0" colgrille="-3618616" comauto="false" commentaires="&lt;html&gt;&#10;  &lt;head&gt;&#10;&#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#10;      Voici un triangle r&amp;#233;alis&amp;#233; &amp;#224; partir du crroisement de trois droites. Que &#10;      peut-on conclure sur la somme des angles int&amp;#233;rieurs de ce triangle?  &#10;    &lt;/p&gt;&#10;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#10;      &#10;    &lt;/p&gt;&#10;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#10;      Si vous d&amp;#233;placez les sommets composant ce triangle, est-ce que la somme &#10;      est modifi&amp;#233;e?&#10;    &lt;/p&gt;&#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;" debx="-18.3645" deby="-13.09" desgrille="1" eq="0" finx="18.3645" finy="13.09" gradx="1.0" grady="1.0" grilx="1.0" grily="1.0" rapport="1.0" visaxe="false" visgrad="true" visgrille="false" visnb="false"/>
+<GEOVECTOR>
+<AXE fictif="false" nom="(Ox)" vertical="false">
+<GEOASPECTLIGNE couleur="-65536" dash="0" epaisseur="0" istrace="false" visible="false"/>
+</AXE>
+<AXE fictif="false" nom="(Oy)" vertical="true">
+<GEOASPECTLIGNE couleur="-65536" dash="0" epaisseur="0" istrace="false" visible="false"/>
+</AXE>
+<POINTINTERDROITE d1="(Ox)" d2="(Oy)" fictif="false" nom="o">
+<GEOASPECTPOINT affichenom="true" couleur="-65536" decx="-5" decy="-7" font="Dialog" istrace="false" style="0" symbole="1" taille="12" visible="false"/>
+</POINTINTERDROITE>
+<POINTLIBRE nom="A" x="-9.506940080618168" y="5.580997213318358">
+<GEOASPECTPOINT affichenom="true" couleur="-16777216" decx="-5" decy="-7" font="Dialog" istrace="false" style="0" symbole="5" taille="12" visible="true"/>
+</POINTLIBRE>
+<POINTLIBRE nom="B" x="1.385626894341108" y="6.004383208811475">
+<GEOASPECTPOINT affichenom="true" couleur="-16777216" decx="-5" decy="-7" font="Dialog" istrace="false" style="0" symbole="5" taille="12" visible="true"/>
+</POINTLIBRE>
+<POINTLIBRE nom="C" x="-3.4255775998988547" y="-0.885261626940153">
+<GEOASPECTPOINT affichenom="true" couleur="-16777216" decx="-5" decy="-7" font="Dialog" istrace="false" style="0" symbole="5" taille="12" visible="true"/>
+</POINTLIBRE>
+<DROITEPTS fictif="false" nom="" p1="A" p2="B">
+<GEOASPECTLIGNE couleur="-16777216" dash="0" epaisseur="0" istrace="false" visible="true"/>
+</DROITEPTS>
+<DROITEPTS fictif="false" nom="" p1="B" p2="C">
+<GEOASPECTLIGNE couleur="-16777216" dash="0" epaisseur="0" istrace="false" visible="true"/>
+</DROITEPTS>
+<DROITEPTS fictif="false" nom="" p1="C" p2="A">
+<GEOASPECTLIGNE couleur="-16777216" dash="0" epaisseur="0" istrace="false" visible="true"/>
+</DROITEPTS>
+<ANGLE nom="BCA" p1="B" p2="C" p3="A" rapport="0.2">
+<GEOASPECTANGLE barre="false" couleur="-16777216" dash="0" epaisseur="0" istrace="false" nbtraits="1" type="0" visible="true"/>
+</ANGLE>
+<ANGLE nom="ABC" p1="A" p2="B" p3="C" rapport="0.2">
+<GEOASPECTANGLE barre="false" couleur="-16777216" dash="0" epaisseur="0" istrace="false" nbtraits="1" type="0" visible="true"/>
+</ANGLE>
+<ANGLE nom="CAB" p1="C" p2="A" p3="B" rapport="0.2">
+<GEOASPECTANGLE barre="false" couleur="-16777216" dash="0" epaisseur="0" istrace="false" nbtraits="1" type="0" visible="true"/>
+</ANGLE>
+<OBSERVANGLE angle="CAB" apres0="°" avant0="angle(CAB)=" decx="0.4649548023233496" decy="1.23166835052543" ispdependent="true" nbapres="1" nbavant="1" nom="T1" p="A" type="1">
+<GEOASPECTOBSERV couleur="-16777216" font="Dialog" istrace="false" precision="2" style="0" taille="12" visible="true"/>
+</OBSERVANGLE>
+<OBSERVANGLE angle="ABC" apres0="°" avant0="angle(ABC)=" decx="-0.11238973698544541" decy="-0.769792719078394" ispdependent="true" nbapres="1" nbavant="1" nom="T2" p="B" type="1">
+<GEOASPECTOBSERV couleur="-16777216" font="Dialog" istrace="false" precision="2" style="0" taille="12" visible="true"/>
+</OBSERVANGLE>
+<OBSERVANGLE angle="BCA" apres0="°" avant0="angle(BCA)=" decx="0.734382254000788" decy="0.6543238112166351" ispdependent="true" nbapres="1" nbavant="1" nom="T3" p="C" type="1">
+<GEOASPECTOBSERV couleur="-16777216" font="Dialog" istrace="false" precision="2" style="0" taille="12" visible="true"/>
+</OBSERVANGLE>
+</GEOVECTOR>
+</MAIN>
