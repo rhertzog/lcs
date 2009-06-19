@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#### Variable a positionner en fonction du plugin
+NAMEPLUGIN="Gedowl"
+####
+#
+PATH2PLUGIN="/usr/share/lcs/Plugins/$NAMEPLUGIN"
+echo "Script d'installation du plugin Gedowl";
+#
+# Nettoyage
+#
+rm $PATH2PLUGIN/Admin/install_mysql.sql
+mv $PATH2PLUGIN/Admin/install_mysql.sq $PATH2PLUGIN/Admin/install_mysql.sql
+#
+#
+#
+
+#
+#Installation de pdftotext
+#
+#
+if [ ! -e /usr/bin/pdftotext ] ; then
+
+	echo "Installation de pdftotext"
+	apt-get -qq  update
+	apt-get -y -q install xpdf-utils
+	if [ ! -e /usr/bin/pdftotext ]; then
+		echo "Une ERREUR est survenue lors de l\'installation de pdftotext" 
+		else echo "pdftotext a été installé"
+	fi
+	echo "Installation d'ImageMagick"
+	apt-get -qq  update
+	apt-get -y -q install imagemagick
+	if [ ! -e /usr/bin/convert ]; then
+		echo "Une ERREUR est survenue lors de l\'installation d'ImageMagick" 
+		else echo "ImageMagick a été installé"
+	fi
+fi
+#
+#cas d'un sarge et php4 
+#
+if [  -e /etc/php4 ] ; then
+#
+echo "# Debut section gedowl plugin" >> /etc/lcs/apache.conf
+echo "<Directory /usr/share/lcs/Plugins/Gedowl/Documents>" >> /etc/lcs/apache.conf
+echo "       Deny From all ">> /etc/lcs/apache.conf
+echo "</Directory>" >> /etc/lcs/apache.conf
+echo "# Fin section gedowl plugin" >> /etc/lcs/apache.conf
+# Redémarrage apache
+#
+echo "Apache sera redémarré dans une minute"
+at now +1 minutes < /usr/share/lcs/Plugins/Gedowl/Admin/jobat
+fi
+#
+#cas d'un etch et php5 
+if [  -e /etc/php5 ] ; then
+#
+echo "# Debut section gedowl plugin" >> /etc/apache2/lcs-main/70_gedowl.conf
+echo "<Directory /usr/share/lcs/Plugins/Gedowl/Documents>" >> /etc/apache2/lcs-main/70_gedowl.conf
+echo "       Deny From all ">> /etc/apache2/lcs-main/70_gedowl.conf
+echo "</Directory>" >> /etc/apache2/lcs-main/70_gedowl.conf
+echo "# Fin section gedowl plugin" >> /etc/apache2/lcs-main/70_gedowl.conf
+# Redémarrage apache2
+#
+echo "Apache2 sera redémarré dans une minute"
+at now +1 minutes < /usr/share/lcs/Plugins/Gedowl/Admin/jobat2
+fi

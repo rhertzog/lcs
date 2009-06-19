@@ -1,0 +1,187 @@
+#!/bin/sh
+# postinst script 
+#
+# see: dh_installdeb(1)
+
+set -e
+
+MODULE="Gedowl"
+VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
+PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
+INDICEMAJNBR="2"
+DESCRIPT="Gestion Electronique de Documents"
+CONF="/var/lib/lcs/$MODULE"
+
+case "$1" in
+   install| configure)
+ 
+CHEMIN=`pwd`   
+#   
+# execution du patchconf
+#	
+	if [ -e $PATHPLUG/Admin/patchconf ]; then
+	echo "Execution du script patchconf"
+	cd $PATHPLUG/Admin
+	$PATHPLUG/Admin/patchconf
+	else
+	echo "Pas de patchconf a executer"
+	fi
+
+# test si le plugin est installe
+TEST=`mysql -se "SELECT type FROM lcs_db.applis WHERE name='$MODULE';"`
+	
+if [ "$2" = "" -o "$2" = "$VER" ] && [ "$TEST" != "P" ]; then
+
+#----------------
+#install initiale 
+#----------------
+    
+    #-----------------------------    
+    #installation de la base mysql
+    #-----------------------------
+    
+    if [ -e $PATHPLUG/Admin/install_mysql.sql ]; then
+    echo "Installation de la base MySQL"
+    mysql < $PATHPLUG/Admin/install_mysql.sql
+    else
+	echo "Pas de base mysql a installer"
+	fi
+	
+	#-----------------------------
+    #Execution du script d'install
+    #-----------------------------
+    
+    if [ -e $PATHPLUG/Admin/install ]; then
+    echo "Execution du script d installation"
+    $PATHPLUG/Admin/install
+    else
+	echo "Pas de script d installation a executer"
+	fi
+	
+    #------------------------------
+    #Insertion dans l'annuaire ldap
+    #------------------------------
+    
+    if [ -e $PATHPLUG/Admin/install_ldap.ldif ]; then
+    echo "Insertion dans l'annuaire ldap"
+    #recuperation des parametres LDAP
+	PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
+    ldapadd -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/install_ldap.ldif
+    else
+	echo "Pas d entrees LDAP a inserer"
+	fi
+    
+    #-------------------------------
+    # Inscription dans applis.lcs_db
+    #-------------------------------
+    
+    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', '$DESCRIPT', '$INDICEMAJNBR', '$VER', '$MODULE', 'N');"
+
+else
+
+#-----------
+#Mise a jour
+#-----------
+	
+    echo "Mise a jour du paquet module LCS $MODULE de $2 vers $VER"
+    
+    #-------------------------------------------------------
+    # Lecture de l'indice de maj dans la table lcs_db.applis
+    #-------------------------------------------------------
+    
+    REF=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE';"`
+    MAJNBR=$REF
+    let MAJNBR+=1
+    if [ ! -e $PATHPLUG/Admin/Maj/maj.$MAJNBR ]; then
+	echo "Pas de script de mise a jour a appliquer !"
+    else
+    
+    #--------------------------------
+    #Execution des instructions mysql
+    #--------------------------------
+    
+    MAJNBR=$REF
+    let MAJNBR+=1
+    if [ -e $PATHPLUG/Admin/Maj/mysql.$MAJNBR ]; then
+    echo "Execution des instructions MySQL des mises a jour"
+    
+        while [ -e $PATHPLUG/Admin/Maj/mysql.$MAJNBR ]; do
+            echo " - Application du script mysql.$MAJNBR"
+            mysql < $PATHPLUG/Admin/Maj/mysql.$MAJNBR
+            let MAJNBR+=1
+	done
+    fi
+
+    #--------------
+    #Insertion LDAP
+    #--------------
+    
+    MAJNBR=$REF
+    let MAJNBR+=1
+    if [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; then
+    echo "Insertion des entrees LDAP"
+    #recuperation des parametres LDAP
+	PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
+    
+   
+        while [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; do
+            echo " - Application du script ldap.$MAJNBR"
+            ldapadd -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/Maj/ldap.$MAJNBR
+            let MAJNBR+=1
+	done
+    fi
+
+    #---------------------
+    #Execution des scripts
+    #---------------------
+    
+    MAJNBR=$REF
+    let MAJNBR+=1
+        while [ -e $PATHPLUG/Admin/Maj/maj.$MAJNBR ]; do
+            echo "Application du script Maj$MAJNBR"
+            $PATHPLUG/Admin/Maj/maj.$MAJNBR
+            let MAJNBR+=1
+	done
+	
+  fi
+  # fin de la maj par les scripts mysql,ldap,bash
+	
+	#---------------------------------
+	# Mise a jour du Numero de version
+	#---------------------------------
+	
+	
+        #
+        # Inscription du module dans applis.lcs_db
+        #
+        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER', type='N' WHERE name='$MODULE' ;" 
+        #
+        # Fin de la mise a jour
+        #
+	    
+fi
+	#
+	# 
+	echo "Changement des droits sur l'arborescence du module"
+	#
+	$CONF/Scripts/chown.sh $MODULE
+	cd $CHEMIN
+	echo "Fin de l'installation"
+;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+# dh_installdeb will replace this with shell code automatically
+# generated by other debhelper scripts.
+
+#DEBHELPER#
+
+exit 0
+
