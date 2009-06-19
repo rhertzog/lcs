@@ -74,7 +74,6 @@ fi
 	done
 
 	sed -i "s/#MODUL#/$REP/g" lcs-$1/debian/postinst
-	sed -i "s/#VER#/$2/g" lcs-$1/debian/postinst
 	sed -i "s/#NUMMAJ#/$INDICEMAJ/g" lcs-$1/debian/postinst
 	sed -i "s/#DESCR#/$3/g" lcs-$1/debian/postinst
 

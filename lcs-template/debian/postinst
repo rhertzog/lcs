@@ -5,8 +5,8 @@
 
 set -e
 
-VER="#VER#"
 MODULE="#MODUL#"
+VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
 INDICEMAJNBR="#NUMMAJ#"
 DESCRIPT="#DESCR#"
