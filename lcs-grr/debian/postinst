@@ -5,8 +5,9 @@
 
 set -e
 
-VER="0.4"
 MODULE="Grr"
+module=`echo $MODULE | tr [:upper:] [:lower:]`
+VER=$(dpkg-query -f '${Version}' -W lcs-$module)
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
 INDICEMAJNBR="0"
 DESCRIPT="Gestion de ressources"

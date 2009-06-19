@@ -5,8 +5,9 @@
 
 set -e
 
-VER="2.1~1"
 MODULE="Biilan2"
+module=`echo $MODULE | tr [:upper:] [:lower:]`
+VER=$(dpkg-query -f '${Version}' -W lcs-$module)
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
 INDICEMAJNBR="1"
 DESCRIPT="Gestion du B2I v2"

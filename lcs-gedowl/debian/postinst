@@ -6,7 +6,8 @@
 set -e
 
 MODULE="Gedowl"
-VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
+module=`echo $MODULE | tr [:upper:] [:lower:]`
+VER=$(dpkg-query -f '${Version}' -W lcs-$module)
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
 INDICEMAJNBR="2"
 DESCRIPT="Gestion Electronique de Documents"
