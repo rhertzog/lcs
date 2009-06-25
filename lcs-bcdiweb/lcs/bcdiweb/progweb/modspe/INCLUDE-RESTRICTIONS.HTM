@@ -1,0 +1,263 @@
+<!-- 17/11/2008 INCLUDE-RESTRICTIONS.HTM -->
+  <div id="txt6">
+    <div class="menuzonedatafooter">
+      <div class="menuzonedatafooterg"></div>
+      <div class="menuzonedatafooterd"></div>
+    </div>
+  </div>
+
+  <div id="txt3" class='cachediv'>
+    <div class="menuzonedatagoption">
+      <div class="menuzonedataoption">
+
+	  
+	  
+	  
+	  
+	  
+        <div class="txt4"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Restreindre :</b><br>
+      <#BOUCLE CHAMP="TYPES NATURE" TEXTE="<div class='support'><input name='TYPEDENATURE' type='checkbox' value='?VALEUR?'>?VALEUR?</div>">
+        </div>
+        <div class="txt4"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Restreindre aux supports suivants :</b><br>
+     <#BOUCLE CHAMP="Support" TEXTE="<div class='support' style='height:28px;'><input name='SUPPORT1' type='checkbox' value='?VALEUR?' ><img src='<#CONST REP_MODELES>PUCE?VALEUR MAJ?.gif' width=26 height=26>?VALEUR?</div>">
+        </div>
+        <div class="txt4">
+          <div class="txt5">
+		  
+<table>
+		<tr>
+		<td align="rigth">
+			<img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><font size="-1"><b>Date de parution =</b>&nbsp;</font>
+		</td>
+		<td> 
+		<input name="DATEEGAL" type="text" class="input100" value="<#DATEEGAL>"> <font size="-1">(jj/mm/aaaa)&nbsp;&nbsp;&nbsp;</font>
+		</td>
+		<td align="rigth">
+			<#SI AFFNATURES=OUI>
+			&nbsp;<img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt="">&nbsp;
+			<#SINON AFFNATURES=OUI>
+			&nbsp;
+			<#FINSI AFFNATURES=OUI>
+		</td>
+		<td>
+			<#SI AFFNATURES=OUI>
+			<font size="-1"><b>Natures =</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>
+			<#SINON AFFNATURES=OUI>
+			&nbsp;
+			<#FINSI AFFNATURES=OUI>
+		</td>
+		<Td>
+		<#SI AFFNATURES=OUI>
+		 <select id="NATURES" name="NATURES">
+              <option selected>Tous</option><#OPTION_NATURES largeur=40>
+              </select>
+			  &nbsp;&nbsp;&nbsp;
+		<#SINON AFFNATURES=OUI>
+		&nbsp;
+		<#FINSI AFFNATURES=OUI>
+		</td>
+		
+		</tr>
+
+		<tr>
+		<td align="right">
+			<font size="-1"><b>Avant&nbsp;</b>&nbsp;</font>
+		</td>
+		<td> 
+		<input name="DATEINF" type="text" class="input100" value="<#DATEINF>"> <font size="-1">(jj/mm/aaaa)</font>
+		</td>
+		<td align="rigth">
+		<#SI AFFGENRES=OUI>
+			&nbsp;<img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt="">&nbsp;
+			<#SINON AFFGENRES=OUI>
+			&nbsp;
+			<#FINSI AFFGENRES=OUI>
+		</td>
+		<td>
+		<#SI AFFGENRES=OUI>
+		<font size="-1"><b>Genres =</b>&nbsp;</font>
+		<#SINON AFFGENRES=OUI>
+		&nbsp;
+		<#FINSI AFFGENRES=OUI>
+		</td>
+		<Td>
+		<#SI AFFGENRES=OUI>
+		 <select id="GENRES" name="GENRES">
+              <option selected>Tous</option><#OPTION_GENRES largeur=40>
+              </select>
+			<#SINON AFFGENRES=OUI>
+			&nbsp;
+			<#FINSI AFFGENRES=OUI>
+		</td>
+		
+		</tr>
+		<tr>
+		<td align="right">
+			<font size="-1"><b>Après&nbsp;</b>&nbsp;</font>
+		</td>
+		<td> 
+		<input name="DATESUP" type="text" class="input100" value="<#DATESUP>"> <font size="-1">(jj/mm/aaaa)</font>
+		</td>
+		<td align="right">
+		<#SI AFFDISCIPLINES=OUI>
+		&nbsp;<img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt="">&nbsp;
+		<#SINON AFFDISCIPLINES=OUI>
+		&nbsp;
+		<#FINSI AFFDISCIPLINES=OUI>
+		</td>
+		<td>
+		<#SI AFFDISCIPLINES=OUI>
+		<font size="-1"><b>Disciplines =</b>&nbsp;</font>
+		<#SINON AFFDISCIPLINES=OUI>
+		&nbsp;
+		<#FINSI AFFDISCIPLINES=OUI>
+		</td>
+		<Td>
+		<#SI AFFDISCIPLINES=OUI>
+		 <select id="DISCIPLINES" name="DISCIPLINES">
+              <option selected>Tous</option><#OPTION_DISCIPLINES largeur=40>
+              </select>
+		<#SINON AFFDISCIPLINES=OUI>
+		&nbsp;
+		<#FINSI AFFDISCIPLINES=OUI>
+		</td>	
+		</tr>
+		
+		<tr>
+		<td>&nbsp;</td><td>&nbsp;</td>
+		<td align="rigth">
+		<#SI AFFNIVEAUX=OUI>
+		&nbsp;<img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt="">&nbsp;
+		<#SINON AFFNIVEAUX=OUI>
+		&nbsp;
+		<#FINSI AFFNIVEAUX=OUI>
+		</td>
+		<td>
+		<#SI AFFNIVEAUX=OUI>
+		<font size="-1"><b>Niveaux =</b>&nbsp;</font>
+		<#SINON AFFNIVEAUX=OUI>
+		&nbsp;
+		<#FINSI AFFNIVEAUX=OUI>
+		</td>
+		<Td>
+		<#SI AFFNIVEAUX=OUI>
+		 <select id="NIVEAUX" name="NIVEAUX">
+              <option selected>Tous</option><#OPTION_NIVEAUX largeur=40>
+              </select>
+		<#SINON AFFNIVEAUX=OUI>
+		&nbsp;
+		<#FINSI AFFNIVEAUX=OUI>
+			  </td>
+		
+		</tr>
+		
+		
+		<tr>
+		<td>&nbsp;</td><td>&nbsp;</td>
+		<td align="rigth">
+		<#SI AFFPUBLICS=OUI>
+		&nbsp;<img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt="">&nbsp;
+		<#SINON AFFPUBLICS=OUI>
+		&nbsp;
+		<#FINSI AFFPUBLICS=OUI>
+		</td>
+		<td>
+		<#SI AFFPUBLICS=OUI>
+		<font size="-1"><b>Publics =</b>&nbsp;</font>
+		<#SINON AFFPUBLICS=OUI>
+		&nbsp;
+		<#FINSI AFFPUBLICS=OUI>
+		</td>
+		<Td>
+		<#SI AFFPUBLICS=OUI>
+		 <select id="PUBLICS" name="PUBLICS">
+              <option selected>Tous</option><#OPTION_PUBLICS largeur=40>
+              </select>
+		<#SINON AFPUBLICS=OUI>
+		&nbsp;
+		<#FINSI AFFPUBLICS=OUI>
+		</td>
+		
+		</tr>
+		
+		
+		
+		<tr>
+		<td>&nbsp;</td><td>&nbsp;</td>
+		<td align="right">
+		<#SI AFFCENTRESINTERET=OUI>
+		&nbsp;<img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt="">&nbsp;
+		<#SINON AFFCENTRESINTERET=OUI>
+		&nbsp;
+		<#FINSI AFFCENTRESINTERET=OUI>
+		</td>
+		<td>
+		<#SI AFFCENTRESINTERET=OUI>
+		<font size="-1"><b>Centres d'intérêt =</b>&nbsp;</font>
+		<#SINON AFFCENTRESINTERET=OUI>
+		&nbsp;
+		<#FINSI AFFCENTRESINTERET=OUI>
+		</td>
+		<td align="rigth">
+		<#SI AFFCENTRESINTERET=OUI>
+            <select id="CENTRE D'INTERET" name="CENTRE D'INTERET">
+              <option selected>Tous</option><#OPTION_CENTRE_D_INTERET largeur=40>
+            </select>
+		<#SINON AFFCENTRESINTERET=OUI>
+		&nbsp;
+		<#FINSI AFFCENTRESINTERET=OUI>
+		</td>
+		
+		</tr>
+	  <tr>
+		<td>&nbsp;</td><td>&nbsp;</td>
+		<td align="right">
+		<#SI AFFLANGUE=OUI>
+			&nbsp;<img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt="">&nbsp;
+		<#SINON AFFLANGUE=OUI>
+		&nbsp;
+		<#FINSI AFFLANGUE=OUI>
+		</td>
+		<td>
+		<#SI AFFLANGUE=OUI>
+		<font size="-1"><b>Langue =</b>&nbsp;</font>
+		<#SINON AFFLANGUE=OUI>
+		&nbsp;
+		<#FINSI AFFLANGUE=OUI>
+		</td>
+		<td>
+		<#SI AFFLANGUE=OUI>
+			 <select id="LANGUE" name="LANGUE">
+			  <option selected>Tous</option><#OPTION_LANGUE largeur=40>
+			</select>
+		<#SINON AFFLANGUE=OUI>
+		&nbsp;
+		<#FINSI AFFLANGUE=OUI>
+		</td>
+		</tr>
+</table>
+          </div>
+        </div>
+		<#SI AFFDISPONIBLE=OUI>
+        <script type="text/javascript">
+        <!--
+        if("<#CONST AFFDISPONIBILITE>"=="NON"){document.write('<div class="cachediv">');}
+        -->
+        </script>
+          <div class="txt4"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Documents disponibles</b>
+          <input name="DISPONIBLES" value="DISPONIBLE" type="checkbox">
+<input name="DISPONIBLES" value="" type="hidden">
+          </div>
+        <script type="text/javascript">
+        <!--
+        if("<#CONST AFFDISPONIBILITE>"=="NON"){document.write('</div>');}
+        -->
+        </script>
+      </div>
+	  <#FINSI AFFDISPONIBLE=OUI>
+    </div>
+    <div class="menuzonedatafooter">
+      <div class="menuzonedatafooterg"></div>
+      <div class="menuzonedatafooterd"></div>
+    </div>
+  </div>
