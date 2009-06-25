@@ -1,0 +1,12 @@
+Source: lcse3-monitor
+Section: misc
+Priority: optional
+Maintainer: William Pottier <william.pottier@allprogrammic.com
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+
+Package: lcse3-monitor
+Architecture: all
+Depends: sudo, make, hwinfo
+Description: Gest Etab
+ gestEtab monitor

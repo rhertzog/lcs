@@ -1,0 +1,35 @@
+#!/usr/bin/php
+<?php
+error_reporting(E_ALL);
+
+include('/usr/share/gestEtab/autoload.php');
+
+
+if(isset($_SERVER["argv"][1])) {
+    $monitor = new Monitor();
+    $xml = $monitor->GenerateToXML();
+
+    if($_SERVER["argv"][1] == '--auto') {
+        $monitor->SendToPlateforme();
+    }
+    elseif($_SERVER["argv"][1] == '--file' && isset($_SERVER["argv"][2])) {
+        $file = $_SERVER["argv"][2];
+        file_put_contents($file, $xml);
+    }
+    elseif($_SERVER["argv"][1] == '--xml') {
+        echo $xml;
+    }
+    else {
+        echo "\nUsage :\n";
+        echo "\t--auto\tenvoi un diagnostique au helpdesk\n";
+        echo "\t--file <filename>\tsauvegarde le diagnostique dans le fichier filename\n";
+        echo "\t--xml\técrit le diagnostique sur la sortie standart\n";
+    }
+}
+else {
+    echo "\nUsage :\n";
+    echo "\t--auto\tenvoi un diagnostique au helpdesk\n";
+    echo "\t--file <filename>\tsauvegarde le diagnostique dans le fichier filename\n";
+    echo "\t--xml\técrit le diagnostique sur la sortie standart\n";
+}
+?>
