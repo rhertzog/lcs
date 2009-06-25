@@ -1,7 +1,7 @@
 <RESERVATIONS>
-<DOCUMENT_R><#Champ Reservations Document></DOCUMENT_R>
+<TITRE_NG_R><#Champ Reservations Titre Ng></TITRE_NG_R>
 <DATE_DE_SAISIE_R><#Champ Reservations Date de Saisie></DATE_DE_SAISIE_R>
 <RESERVE_POUR_LE_R><#Champ Reservations Réservé pour le></RESERVE_POUR_LE_R>
 <DUREE_R><#Champ Reservations Durée></DUREE_R>
-<SUPPORT_D><#Champ Documents Support></SUPPORT_D>
+<SUPPORT_N><#Champ Notices Support></SUPPORT_N>
 </RESERVATIONS>

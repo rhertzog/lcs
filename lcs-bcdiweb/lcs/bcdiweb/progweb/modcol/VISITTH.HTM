@@ -1,3 +1,4 @@
+<!-- 17/11/2008 VISITTH.HTM -->
 <!-- Ecrans RM 10/12/06 -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
@@ -238,14 +239,14 @@ function InitPage()
 </HEAD>
 <body  onload="InitChecked(); GererChercher(); InitPage();">
 <form action="<#URLDLL>" name="recherche" method="post">
-<INPUT TYPE="HIDDEN" NAME="np" VALUE="<#VALEUR NUMERO_PANIER>">
-<INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="VISITTH.HTM">
-<INPUT TYPE="HIDDEN" NAME="MODELE" VALUE="VISITTH.HTM">
-<INPUT TYPE="HIDDEN" NAME="FAIRE" VALUE="VISITER_THESAURUS">
-<INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="<#FICHIER>">
-<INPUT TYPE="HIDDEN" NAME="FORMAT" VALUE="LISTENOT">
-<INPUT TYPE="HIDDEN" NAME="FORMULAIRE_RECHERCHE" VALUE="VISITTH" >
-<INPUT TYPE="HIDDEN" NAME="CLASSEMENT" VALUE="PERTINENCE">
+<INPUT TYPE="HIDDEN" NAME="np" VALUE="<#VALEUR NUMERO_PANIER>"/>
+<INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="VISITTH.HTM"/>
+<INPUT TYPE="HIDDEN" NAME="MODELE" VALUE="VISITTH.HTM"/>
+<INPUT TYPE="HIDDEN" NAME="FAIRE" VALUE="VISITER_THESAURUS"/>
+<INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="<#FICHIER>"/>
+<INPUT TYPE="HIDDEN" NAME="FORMAT" VALUE="LISTENOT"/>
+<INPUT TYPE="HIDDEN" NAME="FORMULAIRE_RECHERCHE" VALUE="VISITTH"/>
+<INPUT TYPE="HIDDEN" NAME="CLASSEMENT" VALUE="PERTINENCE"/>
 <div class="zonemenu">
   <div class="fxcal">
   <div class="menucalibre">&nbsp;</div>
@@ -256,16 +257,16 @@ function InitPage()
   </div>
   <div class="menuOFF">
 	<div class="menuOFFgauche"></div>
-	<div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=VISITTH.HTM&MODELE=AVANCEE-THEME.htm">Recherche avancée</a></div>
+	<div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=VISITTH.HTM&MODELE=AVANCEE-THEME.htm">Recherche avanc&eacute;e</a></div>
 	<div class="menuOFFdroite"></div>
   </div>
   <div class="menuON">
 	<div class="menuONgauche"></div>
-	<div class="menuONtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=VISITTH.HTM&MODELE=VisitTh.htm">Recherche par thésaurus</a></div>
+	<div class="menuONtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=VISITTH.HTM&MODELE=VisitTh.htm">Recherche par th&eacute;saurus</a></div>
 	<div class="menuONdroite"></div>
   </div>
 
-	<#INCLUDE INCLUDE-PANIER-COMPTE.htm>
+	<#INCLUDE INCLUDE-PANIER-COMPTE.HTM>
 
 </div>
 
@@ -273,14 +274,14 @@ function InitPage()
   <div class="txt100pr100">&nbsp;</div>
   <div class="menucalibre">&nbsp;</div>
   <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=VisitTh.htm" class="menuseparatlienON" title="Recherche simple">Recherche simple</a>
-  <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=EXPERT-THESAURUS.htm" class="menuseparatlienOFF" title="Recherche experte">Recherche experte</a>
+  <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=EXPERT-THESAURUS.HTM" class="menuseparatlienOFF" title="Recherche experte">Recherche experte</a>
   <div class="txt100pr100">&nbsp;</div>
 </div>
 
 	<div class="menuseparatsuite2">
 		<div class="menucalibre">&nbsp;</div>
-		<div class="menuseparatlienvisitth"><INPUT id="txtRechercher" type="text" name="THESAURUS_MOT"  class="threch" value="<#THESAURUS_MOT>">
-				<INPUT id="SubRechercher" type="submit" value="Visiter" name="Visiter"  class="thbout">
+		<div class="menuseparatlienvisitth"><INPUT id="txtRechercher" type="text" name="THESAURUS_MOT"  class="threch" value="<#THESAURUS_MOT>"/>
+				<INPUT id="SubRechercher" type="submit" value="Visiter" name="Visiter"  class="thbout"/>
 		</div>
 	</div>
 
@@ -308,9 +309,9 @@ function InitPage()
     <div class="menuzonedata">
       <br>
       <div class="thn1">
-        <INPUT id="Radio1" type="radio" value="ALPHABETIQUE" name="TYPE_LISTE" onClick="javascript:Changeliste(this)"><span class="gris">Liste alphabétique</span><br>
-		<INPUT id="Radio2" type="radio" value="THEMATIQUE" name="TYPE_LISTE" onClick="javascript:Changeliste(this)"><span class="gris">Liste thématique</span><br>
-		<!-- INPUT id="Radio3" type="radio" value="PERMUTE" name="TYPE_LISTE" onClick="javascript:Changeliste(this)"><span class="gris">Index Permuté</span><br><br -->
+		<INPUT id="Radio1" type="radio" value="ALPHABETIQUE" name="TYPE_LISTE" onClick="javascript:Changeliste(this)"><span class="gris">Liste alphabétique</span><br>
+		<INPUT id="Radio2" type="radio" value="PERMUTEE" name="TYPE_LISTE" onClick="javascript:Changeliste(this)"><span class="gris">Liste permutée</span><br>
+		<INPUT id="Radio3" type="radio" value="THEMATIQUE" name="TYPE_LISTE" onClick="javascript:Changeliste(this)"><span class="gris">Liste thématique</span><br>
 		<br>
         <#BOUCLE CHAMP="THESAURUS_MOTS" TEXTE="<a class='thaltern' name='MOTS' title=|?VALEUR?| onClick='javascript:visiter_mot(this)' ><span style='cursor:pointer'>&nbsp;<script type=|text/javascript|>tabulation(|?VALEUR?|)</script></span></a>">
 	  </div>
@@ -461,6 +462,7 @@ function InitPage()
 <form action="<#URLDLL>" name="recherche2" method="post">
 <INPUT TYPE="HIDDEN" NAME="np" VALUE="<#VALEUR NUMERO_PANIER>">
 <INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="VISITTH.HTM">
+<INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="VISITTH.HTM">
 <INPUT TYPE="HIDDEN" NAME="FORMAT" VALUE="LISTENOT">
 <INPUT TYPE="HIDDEN" NAME="FORMULAIRE_RECHERCHE" VALUE="VISITTH" >
 <INPUT TYPE="HIDDEN" NAME="CLASSEMENT" VALUE="PERTINENCE">

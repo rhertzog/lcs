@@ -80,10 +80,11 @@ function BasculerRestrictions() { DivStatus( 'txt', '3' ); DivStatus( 'txt', '6'
 function effacer()
 {
   document.forms[0].reset()
-  for (i=0;i<document.forms[0].elements.length;i++)
+  for (i=0;i<document.forms[0].elements.length;i++)  with (document.forms[0].elements[i])
   {
-    if (document.forms[0].elements[i].type=="text") document.forms[0].elements[i].value=""
-    if (document.forms[0].elements[i].type=="checkbox") document.forms[0].elements[i].checked=false
+	if (type=="text") value=""
+	if (type=="checkbox") checked=false
+	if (type=="select-one") options[0].selected = true;
   }
 }
 
@@ -118,14 +119,14 @@ function Refermer(valeur,lettre)
 
 function ChangerOptions(nom,valeur)
 {
-  if (valeur>'') {
-    var selectBox = document.getElementById(nom);
-    for (var i=0; i<selectBox.options.length; i++) {
-      if (selectBox.options[i].text==valeur) {
-        selectBox.options[i].selected = true;
-        if (i>0) Derouler=true;
-      }
-    }
+  selectBox = document.getElementById(nom);
+  if (selectBox.options.length>0) {
+	if (valeur=='') valeur=selectBox.options[0].text;
+	for (var i=0; i<selectBox.options.length; i++)
+	if (selectBox.options[i].text==valeur) {
+	  selectBox.options[i].selected = true;
+	  if (i>0) Derouler=true;
+	}
   }
 }
 
@@ -200,36 +201,27 @@ function InitChecked()
   }  
 }
 
-function SansParametre(url,param)  // on enlève un champ de la liste des paramètres d'une URL
-{
-  p=url.indexOf("?"+param+"=");
-  if (p<0)
-    p=url.indexOf("&"+param+"=");
-  if (p>=0)
-  {
-    ch=url.substring(0,p)
-    reste=url.substr(p+1,10000)
-    p=reste.indexOf("&");
-    if (p>0)
-      ch+="&"+reste.substr(p+1,10000)
-    url=ch
-  }
-  return(url)
-}
 function RajouterParametre(url,nom,valeur)  // on rajoute un champ de la liste des paramètres d'une URL
 {
-  url=SansParametre(url,nom)
-  if (valeur=="") valeur=" "
+  rajout=nom+"="+escape(valeur);
+  nom=nom.toUpperCase();
+  urlUp=url.toUpperCase()+"&";
+  p=urlUp.indexOf("?"+nom+"=");
+  if (p<0) p=urlUp.indexOf("&"+nom+"=");
+  if (p<0) {
+	p=url.indexOf("?");
+	if (p<0) url+="?"; else url+="&";
+	url+=rajout;
+  }
+  else
   {
-    p=url.indexOf("?");
-    if (p<0)
-      url+="?"
-    else
-      url+="&"
-    url+=nom+"="+escape(valeur)
+	p+=1
+	q=urlUp.indexOf("&",p);
+	url=url.substr(0,p)+rajout+url.substr(q)
   }
   return(url)
 }
+
 function valeurs_checkees(NomChp)
 {
   res=""
@@ -333,11 +325,11 @@ function surFocus(obj)
 <div class="zonemenu">
   <div class="fxcal">
   <div class="menucalibre">&nbsp;</div>
-  <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=index.htm">Recherche thématique</a></div><div class="menuOFFdroite"></div></div>
-  <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=rech-criteres.htm">Recherche par critères</a></div>  <div class="menuOFFdroite"></div></div>
-  <div class="menuON"><div class="menuONgauche"></div><div class="menuONtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=VisitTh.htm">Recherche par thésaurus</a></div><div class="menuONdroite"></div></div>
+  <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=index.htm">Recherche th&eacute;matique</a></div><div class="menuOFFdroite"></div></div>
+  <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=rech-criteres.htm">Recherche par crit&egrave;res</a></div>  <div class="menuOFFdroite"></div></div>
+  <div class="menuON"><div class="menuONgauche"></div><div class="menuONtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=VisitTh.htm">Recherche par th&eacute;saurus</a></div><div class="menuONdroite"></div></div>
 
-<#INCLUDE Include-Panier-Compte.htm>
+<#INCLUDE INCLUDE-PANIER-COMPTE.HTM>
 
 </div>
 
@@ -429,7 +421,7 @@ function surFocus(obj)
                 <input name="Effacer" type="button" value="Effacer" class="bouton2" onclick="effacer()"></div></div>
     </div></div>
 
-  <#INCLUDE Include-Restrictions.htm>
+  <#INCLUDE INCLUDE-RESTRICTIONS.HTM>
 
 </form>
 </body>

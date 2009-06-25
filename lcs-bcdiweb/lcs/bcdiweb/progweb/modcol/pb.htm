@@ -1,3 +1,4 @@
+<!-- 17/11/2008 pb.htm -->
 <!-- Résultat : 7 réponses -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <!-- Ecrans RM 06/10/07 modifié MG/RM 03/01/08 -->
@@ -60,7 +61,7 @@ function reserver(num,nbResa,nbDispo,nbSortis,ancre) {
   else
    ch+="Confirmer votre demande de réservation ?"
   if (confirm(ch))
-   window.location.href="?FAIRE=ENREGISTRER_RESERVATION&NR=4&NP=2&B=1&FICHIERORIGINE=LISTENOT&NUMERO_DOCUMENT="+num+"&RESULTAT=RECHERCHE&IDENTIFIANT=0&ANCRE=FICHE"+ancre
+   window.location.href="?FAIRE=ENREGISTRER_RESERVATION&NR=4&NP=2&B=1&FICHIERORIGINE=LISTENOT&NUMERO_NOTICE="+num+"&RESULTAT=RECHERCHE&IDENTIFIANT=0&ANCRE=FICHE"+ancre
 }
 
 function rajouterClass(nom,valeur)
@@ -290,7 +291,7 @@ document.write("<title>&nbsp;"+ch+" - C R D P DE POITOU CHARENTES - POITIERS CED
 	}
   }
   if (0>0) {
-	ch="<div class='menuOFFp'><div class='menuOFFgauchep'><\/div><div><a href='/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&fichier=PANIER.htm&FICHIERORIGINE=Panier.htm"
+	ch="<div class='menuOFFp'><div class='menuOFFgauchep'><\/div><div><a href='/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&fichier=PANIER.HTM&FICHIERORIGINE=PANIER.HTM"
 	if ("BCDIWEB"=="BCDI") ch+="&resultat=panier&format=listenot.htm&classement=DATE PARUTION; SUPPORT; TITRE";
 	ch+="' class='menupaniertxt'><span class='menupaniertxt2'>Mon panier<\/span> (0 fiche";
 	if (0>1) ch+="s";
@@ -320,7 +321,7 @@ document.write("<title>&nbsp;"+ch+" - C R D P DE POITOU CHARENTES - POITIERS CED
     else {
       document.write('<div class="menuOFF">')
       document.write('<div class="menuOFFgauche">&nbsp;</div>')
-      document.write('<div class="menuOFFtxtcompte"><a href="/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&fichier='+fichierEnCours+'&modele=AccueilCompte.htm" TARGET="_self">Mon compte</a></div>')
+      document.write('<div class="menuOFFtxtcompte"><a href="/bcdiweb2008/bcdiweb.cgi/demolyc?np=2&fichier='+fichierEnCours+'&modele=ACCUEILCOMPTE.HTM" TARGET="_self">Mon compte</a></div>')
       document.write('<div class="menuOFFdroite">&nbsp;</div>')
       document.write('</div>')
 

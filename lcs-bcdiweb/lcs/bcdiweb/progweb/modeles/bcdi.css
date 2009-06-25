@@ -11,7 +11,7 @@
 
 
 .zonemenu {
-    width: 100%;
+    width: 99%;
     float: left;
     margin-top: 20px;   
 }
@@ -240,7 +240,7 @@
     border: 1px solid #FFFFFF;
 }
 
-.menuONtxt a,  {
+.menuONtxt a  {
     text-decoration: none;
 }
 
@@ -592,13 +592,13 @@
     border: 1px solid #999999;
 }
 
-.input200, {
+.input200 {
     color: #000000;
     background-color: #FFFFFF;
     width: 200px;
     border: 1px solid #999999;
 }
-.inputTermeTh, {
+.inputTermeTh {
     color: #000000;
     background-color: #FFFFFF;
     width: 150px;
@@ -744,9 +744,9 @@ hide {
     visibility: hidden;
 }
 
-.show{
-    visibility: show;
-    overflow: show; 
+.show {
+    visibility: visible;
+    overflow: visible;
     position: absolute;
 }
 
@@ -784,7 +784,7 @@ hide {
 }
 
 .boutaffiche {
-    float: left;    
+    float: left;
 }
 
 .resume, .titre, .ajout{
@@ -857,7 +857,7 @@ hide {
     padding-right: 1%;
     padding-bottom: 2px;
     padding-left: 1%;
-    float: None;    
+    float: None;
 }
 
 .fiche {
@@ -977,7 +977,7 @@ hide {
     color: #000000;
     background-color: #FFFFFF;
     width: 350px;
-    border: 1px solid #999999;  
+    border: 1px solid #999999;
 }
 
 .thzone0{
@@ -1379,7 +1379,7 @@ a {text-decoration: none;}
 }
 
 .zonepret {
-    float: left;
+    float:left;
     width:97%;
 
     background-color:#FFFFFF;
@@ -1387,7 +1387,7 @@ a {text-decoration: none;}
 }
 
 .zonepretimg{
-    float:center;
+/*    float:center;   RM center n'existe pas */
     background-color: #f9f8f4;
     
 }
@@ -1503,7 +1503,7 @@ pre a:hover {
     font-weight: bold;
     text-decoration:none;
 }
-.deroulant18x173_____________ {
+.deroulant18x173 {
     font-family: Arial, Helvetica, sans-serif, Tahoma;
     font-size: 12px;
     color: #000000;
@@ -1512,14 +1512,13 @@ pre a:hover {
     border: 2px outset #CCCCCC;
 }
 
-; Rajout de AQ le 14 mai 2007 :
+/*; Rajout de AQ le 14 mai 2007 : */
 .inputcapture {
 color: #000000;
-background-color: #F8F8F8; 
+background-color: #F8F8F8;
 width: 150px;
 border: 1px solid #999999;
-
-} 
+}
 .capturebout{
 background-color: #EEEEEE;
 color: #666666;
@@ -1540,7 +1539,7 @@ color:#FFFFFF;
 .thbout2 {
 background-color:#FFFFFF;
 color:#000000;
-marging: 3px;
+/* marging: 3px; RM marging n'existe pas */
 font-weight: bold;
 border: 1px solid #999999; 
 }
@@ -1564,7 +1563,7 @@ border-bottom-color: #babab8;
 .thbout {
 background-color:#FFFFFF;
 color:#000000;
-marging: 3px;
+/* marging: 3px; RM marging n'existe pas */
 font-weight: bold;
 
 } 

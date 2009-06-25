@@ -1,3 +1,9 @@
+lcs-bcdiweb (2.0-1~1) Lcs; urgency=low
+
+  * update for BCDI Version 2
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 25 Jun 2009 12:38:20 +0200
+
 lcs-bcdiweb (1.91-1~7) unstable; urgency=low
 
   * fix missing upgrade in postrm script

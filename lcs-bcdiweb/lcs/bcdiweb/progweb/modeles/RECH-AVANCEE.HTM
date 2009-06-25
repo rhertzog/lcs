@@ -1,3 +1,4 @@
+<!-- 17/11/2008 RECH-AVANCEE.HTM -->
 <#VAR RECHERCHE=THEME>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
@@ -50,10 +51,11 @@ function BasculerRestrictions() { DivStatus( 'txt', '3' ); DivStatus( 'txt', '6'
 function effacer()
 {
   document.forms[0].reset()
-  for (i=0;i<document.forms[0].elements.length;i++)
+  for (i=0;i<document.forms[0].elements.length;i++)  with (document.forms[0].elements[i])
   {
-    if (document.forms[0].elements[i].type=="text") document.forms[0].elements[i].value=""
-    if (document.forms[0].elements[i].type=="checkbox") document.forms[0].elements[i].checked=false
+	if (type=="text") value=""
+	if (type=="checkbox") checked=false
+	if (type=="select-one") options[0].selected = true;
   }
 }
 
@@ -72,24 +74,26 @@ function ParDefaut(ch,defaut)
   return ch
 }
 
+/*
 function Refermer(valeur,lettre)
 {
   if (valeur <= " ")
-    DivStatus( lettre, '2' )
+	DivStatus( lettre, '2' )
   else
-    DivStatus( lettre , '1' )
+	DivStatus( lettre , '1' )
 }
+*/
 
 function ChangerOptions(nom,valeur)
 {
-  if (valeur>'') {
-    var selectBox = document.getElementById(nom);
-    for (var i=0; i<selectBox.options.length; i++) {
-      if (selectBox.options[i].text==valeur) {
-        selectBox.options[i].selected = true;
-        if (i>0) Derouler=true;
-      }
-    }
+  selectBox = document.getElementById(nom);
+  if (selectBox.options.length>0) {
+	if (valeur=='') valeur=selectBox.options[0].text;
+	for (var i=0; i<selectBox.options.length; i++)
+	if (selectBox.options[i].text==valeur) {
+	  selectBox.options[i].selected = true;
+	  if (i>0) Derouler=true;
+	}
   }
 }
 
@@ -97,6 +101,7 @@ function InitChecked()
 {
   chComment=ParDefaut("<#COMMENT>","TOUS")
   chClassement=ParDefaut("<#CLASSEMENT>","PERTINENCE")
+  chLangage=ParDefaut("<#LANGAGE>","DICO").substr(0,4)
   chFormat=ParDefaut("<#FORMAT>","LISTENOT")
   chNature=tube("<#TYPEDENATURE>")
   chSupport=tube("<#SUPPORT1>")
@@ -107,7 +112,10 @@ function InitChecked()
     else
     if (document.forms[0].elements[i].name=="CLASSEMENT")
     document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chClassement)
-    else
+	else
+    if (document.forms[0].elements[i].name=="LANGAGE")
+    {document.forms[0].elements[i].checked=(document.forms[0].elements[i].value.substr(0,4)==chLangage)}
+	else
     if (document.forms[0].elements[i].name=="TYPEDENATURE")
     {
       ch="|"+document.forms[0].elements[i].value+"|"
@@ -135,14 +143,16 @@ function InitChecked()
   ChangerOptions('NIVEAUX',"<#NIVEAUX>")
   ChangerOptions('DISCIPLINES',"<#DISCIPLINES>")
   ChangerOptions('PUBLICS',"<#PUBLICS>")
+  ChangerOptions("CENTRE D'INTERET","<#CENTRE_D_INTERET>")
   ancienFichierMaitre="<#VAR FICHIER-MAITRE>";
 <#VAR FICHIER-MAITRE=RECH-AVANCEE.HTM>
   if (ancienFichierMaitre!="<#VAR FICHIER-MAITRE>") {effacer(); Derouler=false;}
   if (Derouler) BasculerRestrictions()
-
+/*
   Refermer("<#THEMEPOLE1CASE2>",'a')
   Refermer("<#THEMEPOLE2CASE2>",'b')
   Refermer("<#THEMEPOLE3CASE2>",'c')
+*/
 }
 
 </script>
@@ -156,97 +166,87 @@ function InitChecked()
 <INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="RECH-AVANCEE.HTM">
 <INPUT TYPE="HIDDEN" NAME="RESTRICTIONS" VALUE="OUI">
 <INPUT TYPE="HIDDEN" NAME="FORMAT" VALUE="LISTENOT">
-<INPUT TYPE="HIDDEN" NAME="LANGAGE" VALUE="DICO">
 <INPUT TYPE="HIDDEN" NAME="CLASSEMENT" VALUE="PERTINENCE">
+<INPUT TYPE="HIDDEN" NAME="AUTOPOSTAGE" VALUE="">
 <INPUT TYPE="HIDDEN" NAME="FORMULAIRE_RECHERCHE" VALUE="RECH-AVANCEE" >
 <div class="zonemenu">
   <div class="fxcal">
-    <div class="menucalibre">&nbsp;</div>
-    <div class="menuON"><div class="menuONgauche"></div><div class="menuONtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-AVANCEE.HTM&MODELE=index.htm">Recherche thématique</a></div><div class="menuONdroite"></div>
-    </div>
-    <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-AVANCEE.HTM&MODELE=rech-criteres.htm">Recherche par critères</a></div>  <div class="menuOFFdroite"></div>
-    </div>
-    <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-AVANCEE.HTM&MODELE=VisitTh.htm">Recherche par thésaurus</a></div><div class="menuOFFdroite"></div>
-    </div>
+	<div class="menucalibre">&nbsp;</div>
+	<div class="menuON"><div class="menuONgauche"></div><div class="menuONtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-AVANCEE.HTM&MODELE=index.htm">Recherche th&eacute;matique</a></div><div class="menuONdroite"></div>
+	</div>
+	<div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-AVANCEE.HTM&MODELE=rech-criteres.htm">Recherche par crit&egrave;res</a></div>  <div class="menuOFFdroite"></div>
+	</div>
+	<div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-AVANCEE.HTM&MODELE=VisitTh.htm">Recherche par th&eacute;saurus</a></div><div class="menuOFFdroite"></div>
+	</div>
 
-<#INCLUDE Include-Panier-Compte.htm>
+<#INCLUDE INCLUDE-PANIER-COMPTE.HTM>
 
   </div>
 
   <div class="menuseparatsuite">
-    <div class="txt100pr100">&nbsp;</div>
-    <div class="menucalibre">&nbsp;</div>
+	<div class="txt100pr100">&nbsp;</div>
+	<div class="menucalibre">&nbsp;</div>
   <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-AVANCEE.HTM&MODELE=index.htm" class="menuseparatlienOFF" title="recherche rapide">Recherche rapide</a>
-  <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-AVANCEE.HTM&MODELE=rech-avancee.htm" class="menuseparatlienON" title="Recherche avancée">Recherche avancée</a>
+  <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-AVANCEE.HTM&MODELE=rech-avancee.htm" class="menuseparatlienON" title="Recherche avancée">Recherche avanc&eacute;e</a>
   <font size="+1"><B>&nbsp;&nbsp;&nbsp;&nbsp;<#CONST NOM_BASE></B></font>
     <div class="txt100pr100">&nbsp;</div>
   </div>
   <div class="menuzonedatag">
     <div class="menuzonedata"><br>
-      <!-- div class="tridroite">
-        <div class="tridroitetitre">Classement des résultats par : </div>
-      <input name="CLASSEMENT" type="radio" value="PERTINENCE" checked> Pertinence
-      <br><input name="CLASSEMENT" type="radio" value="TITRE"> Titre
-      <br><input name="CLASSEMENT" type="radio" value="AUTEUR, TITRE"> Auteur
-      <br><input name="CLASSEMENT" type="radio" value="SUPPOR, TITRET"> Support
-      <br><input name="CLASSEMENT" type="radio" value="DATE PARUTION, TITRE"> Date
-      </div -->
-    <br>
-      <div class="txt10">
-        <div class="txt0"><b>Je cherche :</b>&nbsp;</div>
-      <input name="THEMEPOLE1CASE1" value="<#THEMEPOLE1CASE1>" type="text" class="input200">
-      </div>
-      <div ID="a1">&nbsp;<b><a href="javascript:DivStatus( 'a', '1' );javascript:DivStatus( 'a', '2' )" class="plusmoins" title="Ajouter un champ supplémentaire">+</a></b></div>
-      <div ID="a2">
-      &nbsp;Ou&nbsp;<input name="THEMEPOLE1CASE2" value="<#THEMEPOLE1CASE2>" type="text" class="input200">
-      &nbsp;<b><a href="javascript:DivStatus( 'a', '1' );javascript:DivStatus( 'a', '2' )" class="plusmoins" title="Masquer ce champ">-</a></b>
-      </div>
+	<br>
+	  <div class="txt10">
+		<div class="txt0"><b>Je cherche :</b>&nbsp;</div>
+	  <input name="THEMEPOLE1CASE1" value="<#THEMEPOLE1CASE1>" type="text" class="input200">
+		  &nbsp;Ou&nbsp;<input name="THEMEPOLE1CASE2" value="<#THEMEPOLE1CASE2>" type="text" class="input200">
+	  </div>
 
-    <br><br>
+	<br><br>
 
-      <div class="txt10">
-        <div class="txt0">&nbsp;Et&nbsp;</div>
-      <input name="THEMEPOLE2CASE1"  value="<#THEMEPOLE2CASE1>" type="text" class="input200">
-      </div>
-      <div ID="b1">&nbsp;<b><a href="javascript:DivStatus( 'b', '1' );javascript:DivStatus( 'b', '2' )" class="plusmoins" title="Ajouter un champ supplémentaire">+</a></b></div>
-      <div ID="b2">
-      &nbsp;Ou&nbsp;<input name="THEMEPOLE2CASE2"  value="<#THEMEPOLE2CASE2>" type="text" class="input200">
-      &nbsp;<b><a href="javascript:DivStatus( 'b', '1' );javascript:DivStatus( 'b', '2' )" class="plusmoins" title="Masquer ce champ">-</a></b>
-      </div>
+	  <div class="txt10">
+		<div class="txt0">&nbsp;Et&nbsp;</div>
+	  <input name="THEMEPOLE2CASE1"  value="<#THEMEPOLE2CASE1>" type="text" class="input200">
+	  &nbsp;Ou&nbsp;<input name="THEMEPOLE2CASE2"  value="<#THEMEPOLE2CASE2>" type="text" class="input200">
+	  </div>
 
-    <br><br>
+	<br><br>
 
-      <div class="txt10">
-        <div class="txt0">&nbsp;Et&nbsp;</div>
-      <input name="THEMEPOLE3CASE1"  value="<#THEMEPOLE3CASE1>" type="text" class="input200">
-      </div>
-      <div ID="c1">&nbsp;<b><a href="javascript:DivStatus( 'c', '1' );javascript:DivStatus( 'c', '2' )" class="plusmoins" title="Ajouter un champ supplémentaire">+</a></b></div>
-      <div ID="c2">
-      &nbsp;Ou&nbsp;<input name="THEMEPOLE3CASE2"  value="<#THEMEPOLE3CASE2>" type="text" class="input200">
-      &nbsp;<b><a href="javascript:DivStatus( 'c', '1' );javascript:DivStatus( 'c', '2' )" class="plusmoins" title="Masquer ce champ">-</a></b>
-      </div>
+	  <div class="txt10">
+		<div class="txt0">&nbsp;Et&nbsp;</div>
+		<input name="THEMEPOLE3CASE1"  value="<#THEMEPOLE3CASE1>" type="text" class="input200">
+			&nbsp;Ou&nbsp;<input name="THEMEPOLE3CASE2"  value="<#THEMEPOLE3CASE2>" type="text" class="input200">
+	  </div>
 
-    <br><br>
+	<br><br>
 
-      <div class="txt10">
-        <div class="txt0">&nbsp;Sauf :&nbsp;</div>
-      <input name="THEMESAUFCASE1" value="<#THEMESAUFCASE1>" type="text" class="input200">
-      </div>
+	  <div class="txt10">
+		<div class="txt0">&nbsp;Sauf :&nbsp;</div>
+	  <input name="THEMESAUFCASE1" value="<#THEMESAUFCASE1>" type="text" class="input200">
+	  </div>
 
-    <br><br>
-
-      <div class="txt4">
-        <p>&nbsp;</p>
-        <div class="txt2"><a href="javascript:BasculerRestrictions()">Restrictions de recherche</a></div>
-        <div align="center">
-          <input name="Rechercher" type="submit" value="Rechercher" class="bouton1">
-          <input name="Effacer" type="button" value="Effacer" class="bouton2" onclick="effacer()">
-        </div>
-      </div>
-    </div>
+	<br>
+	<#SI AFFDICO=OUI>
+		   <br>
+		   <div>
+			 <INPUT  name ="LANGAGE" type="radio" value="TEXTESEUL" onclick="elargir(false)">Sans Dico&nbsp;&nbsp;&nbsp;&nbsp;
+			 <INPUT  name ="LANGAGE" type="radio" value="DICO" onclick="elargir(true)"> Avec Dico &nbsp;
+			 <font size=-1><i>(mots équivalents)</i></font>
+		   </div>
+		   <#SINON AFFDICO=OUI>
+		   <INPUT TYPE=HIDDEN NAME=LANGAGE VALUE=TEXTESEUL>
+		   <#FINSI AFFDICO=OUI>
+	<br>
+	  <div class="txt4">
+		<p>&nbsp;</p>
+		<div class="txt2"><a href="javascript:BasculerRestrictions()">Restrictions de recherche</a></div>
+		<div align="center">
+		  <input name="Rechercher" type="submit" value="Rechercher" class="bouton1">
+		  <input name="Effacer" type="button" value="Effacer" class="bouton2" onclick="effacer()">
+		</div>
+	  </div>
+	</div>
   </div>
 
-  <#INCLUDE Include-Restrictions.htm>
+  <#INCLUDE INCLUDE-RESTRICTIONS.HTM>
 
 </div>
 </form>

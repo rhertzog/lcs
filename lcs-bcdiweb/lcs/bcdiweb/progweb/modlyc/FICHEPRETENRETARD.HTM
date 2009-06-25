@@ -1,11 +1,16 @@
+<!-- 17/04/2009  FICHEPRETENRETARD.HTM -->
 <tr class="zonepret">
   <td class="zonepretimg" width="80" align="center" valign="middle">
-    <img src="<#CONST REP_MODELES>SUPPORT-<#Champ Documents Support MAJ>.gif">
+	<img src="<#CONST REP_MODELES>SUPPORT-<#Champ Notices Support MAJ>.gif">
   </td>
   <td><BR>
-    <strong><#Champ Documents Support></strong><BR>
-    <I><#Champ Documents Document></I> <#Intitule Exemplaires Cote E.><#Champ Exemplaires Cote E.>, n° <#Champ Exemplaires N° exemplaire>,<BR>
-    <span class="gris">Sorti le <#Champ Prets Sorti le>, retour prévu le <#Champ Prets Retour prévu le> (rappel n° <#Champ Prets Nombre de rappels>)</span>
-    <BR>&nbsp;
+	<strong><#Champ Notices Support></strong><BR>
+<I><#Champ Exemplaires Exemplaire></I>
+<#SI Champ Exemplaires Code exemplaire#>
+n°<#Champ Exemplaires Code exemplaire>
+<#FINSI Champ Exemplaires Code exemplaire#>
+<BR>
+	<span class="gris">Sorti le <#Champ Prets Sorti le>, retour prévu le <#Champ Prets Retour prévu le> (rappel n° <#Champ Prets Rappels>)</span>
+	<BR>&nbsp;
   </td>
 </tr>

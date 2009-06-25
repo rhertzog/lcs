@@ -1,3 +1,4 @@
+<!--  15/04/2009 FICHEEXE.HTM -->
 <!-- Modele FICHEEXE Ecrans Oct modifié RM 07/02/08-->
   <#SI VALEUR BASEBIBLIO=0><div>
   <script type="text/javascript">
@@ -9,10 +10,17 @@
 	if ("<#Champ Exemplaires Statut>"!="Mis au pilon") {
 	  val="<#Champ /Java Exemplaires Cote E.>";
 	  if (val!="") ch_aff+="<BR>Cote&nbsp;<B>"+val+"</B><BR>";
+	  <#SI AFFNUMEXE=OUI>
 	  val="<#Champ /Java Exemplaires Code Exemplaire>" ;
 	  if (val=="") val="<#Champ Exemplaires N° Exemplaire>";
 	  if (val!="") ch_aff+="Ex.&nbsp;"+val+"<BR>";
-	  ch_aff+="<#Champ /Java Exemplaires Emplacement>";
+	  <#FINSI AFFNUMEXE=OUI>
+	  <#SI AFFEMPLACEMENT=OUI>
+	  val="<#Champ /Java Exemplaires Emplacement>";
+          if (val!="") ch_aff+="<b>Lieu :</b> <#Champ /Java Exemplaires Emplacement>";
+	<#SINON AFFEMPLACEMENT=OUI>
+		 if (val!="") ch_aff+="<#Champ /Java Exemplaires Emplacement>";
+	<#FINSI AFFEMPLACEMENT=OUI>
 	  ces="<#Champ /Java Exemplaires Situation>";
 	  if(ces=="Disponible") ces='OK'
 	  else

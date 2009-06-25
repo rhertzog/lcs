@@ -13,7 +13,7 @@ use File::Copy;
 #A lancer en tant que SuperUtilisateur (su ou root)
 my $sourcearchori=`pwd`;
 chomp $sourcearchori;
-my $version_cgi="Bcdi Web v. 1.90";
+my $version_cgi="Bcdi Web v. 2.0";
 my $archivebcdiweb="BcdiWebLinux.tar.gz";
 my $emplacement_installation_cgi="/usr/bcdiserv/progweb";
 my $chemin_apacheconf="/etc/httpd/conf/httpd.conf";
@@ -96,7 +96,7 @@ sub menu{
     my $menu=<<"FIN_MENU";
                    *************************************************
                    *      Paramétrage d\'une base de données       *
-                   *        pour BCDIWEB v. 1.90 sous Linux        *
+                   *        pour BCDIWEB v. 2.0 sous Linux         *
                    *************************************************
 
   
@@ -440,7 +440,8 @@ my %repertoire_modeles=(
 		  }
 		  else{
 		      my $copie_nom_base=lc($nom_base);
-		      $param[1]="$emplacement_installation_cgi/trav"."$copie_nom_base"."/cache";
+		      $param[1]="$emplacement_installation_cgi"."/cache";
+		    #  $param[1]="$emplacement_installation_cgi/trav"."$copie_nom_base"."/cache";
 		      if ( ! -e $param[1] ){
 			  mkdir ($param[1],0770) or die "Impossible de créer $param[1] : $:!\n";
 		      }

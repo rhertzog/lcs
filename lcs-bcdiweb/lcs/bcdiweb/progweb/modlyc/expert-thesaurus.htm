@@ -1,3 +1,4 @@
+<!-- 17/11/2008 expert-thesaurus.htm -->
 <!-- Ecrans RM 10/12/06 -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
@@ -80,10 +81,11 @@ function BasculerRestrictions() { DivStatus( 'txt', '3' ); DivStatus( 'txt', '6'
 function effacer()
 {
   document.forms[0].reset()
-  for (i=0;i<document.forms[0].elements.length;i++)
+  for (i=0;i<document.forms[0].elements.length;i++)  with (document.forms[0].elements[i])
   {
-    if (document.forms[0].elements[i].type=="text") document.forms[0].elements[i].value=""
-    if (document.forms[0].elements[i].type=="checkbox") document.forms[0].elements[i].checked=false
+	if (type=="text") value=""
+	if (type=="checkbox") checked=false
+	if (type=="select-one") options[0].selected = true;
   }
 }
 
@@ -333,11 +335,11 @@ function surFocus(obj)
 <div class="zonemenu">
   <div class="fxcal">
   <div class="menucalibre">&nbsp;</div>
-  <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=index.htm">Recherche thématique</a></div><div class="menuOFFdroite"></div></div>
-  <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=rech-criteres.htm">Recherche par critères</a></div>  <div class="menuOFFdroite"></div></div>
-  <div class="menuON"><div class="menuONgauche"></div><div class="menuONtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=VisitTh.htm">Recherche par thésaurus</a></div><div class="menuONdroite"></div></div>
+  <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=index.htm">Recherche th&eacute;matique</a></div><div class="menuOFFdroite"></div></div>
+  <div class="menuOFF"><div class="menuOFFgauche"></div><div class="menuOFFtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=rech-criteres.htm">Recherche par crit&egrave;res</a></div>  <div class="menuOFFdroite"></div></div>
+  <div class="menuON"><div class="menuONgauche"></div><div class="menuONtxt"><a href="<#URLDLL>?NP=<#NUMERO_PANIER>&fichier=RECH-THESAURUS.HTM&MODELE=VisitTh.htm">Recherche par th&eacute;saurus</a></div><div class="menuONdroite"></div></div>
 
-<#INCLUDE Include-Panier-Compte.htm>
+<#INCLUDE INCLUDE-PANIER-COMPTE.HTM>
 
 </div>
 
@@ -429,7 +431,7 @@ function surFocus(obj)
                 <input name="Effacer" type="button" value="Effacer" class="bouton2" onclick="effacer()"></div></div>
     </div></div>
 
-  <#INCLUDE Include-Restrictions.htm>
+  <#INCLUDE INCLUDE-RESTRICTIONS.HTM>
 
 </form>
 </body>

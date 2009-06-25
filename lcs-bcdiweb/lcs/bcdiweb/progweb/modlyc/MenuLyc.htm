@@ -1,3 +1,4 @@
+<!-- 17/11/2008 MenuLyc.htm -->
 <script language="JavaScript">
 <!--
 var Derouler=false // A priori, on ne déroule pas les restrictions.
@@ -21,11 +22,11 @@ var fichierEnCours="INDEX.HTM"
 function effacer()
 {
   document.forms[0].reset()
-  for (i=0;i<document.forms[0].elements.length;i++)
-  with (document.forms[0].elements[i])
+  for (i=0;i<document.forms[0].elements.length;i++)  with (document.forms[0].elements[i])
   {
 	if (type=="text") value=""
 	if (type=="checkbox") checked=false
+	if (type=="select-one") options[0].selected = true;
 	if (name=="LANGAGE") checked=(value=="DICO")
   }
 }
@@ -81,14 +82,14 @@ function BasculerRestrictions() { DivStatus( 'txt', '3' ); DivStatus( 'txt', '6'
 
 function ChangerOptions(nom,valeur)
 {
-  if (valeur>'') {
-    var selectBox = document.getElementById(nom);
-    for (var i=0; i<selectBox.options.length; i++) {
-      if (selectBox.options[i].text==valeur) {
-        selectBox.options[i].selected = true;
-        if (i>0) Derouler=true;
-      }
-    }
+  selectBox = document.getElementById(nom);
+  if (selectBox.options.length>0) {
+	if (valeur=='') valeur=selectBox.options[0].text;
+	for (var i=0; i<selectBox.options.length; i++)
+	if (selectBox.options[i].text==valeur) {
+	  selectBox.options[i].selected = true;
+	  if (i>0) Derouler=true;
+	}
   }
 }
 
@@ -163,26 +164,26 @@ function InitChecked()
     <div class="menucalibre">&nbsp;</div>
     <div class="menuON">
       <div class="menuONgauche"></div>
-      <div class="menuONtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=INDEX.HTM&MODELE=index.htm">Recherche thématique</a></div>
-      <div class="menuONdroite"></div>
-    </div>
-    <div class="menuOFF">
-      <div class="menuOFFgauche"></div>
-      <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=INDEX.HTM&MODELE=rech-criteres.htm">Recherche par critères</a></div>
-      <div class="menuOFFdroite"></div>
-    </div>
-    <div class="menuOFF">
-      <div class="menuOFFgauche"></div>
-      <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=INDEX.HTM&MODELE=VisitTh.htm">Recherche par thésaurus</a></div>
-      <div class="menuOFFdroite"></div>
-    </div>
-    <#INCLUDE Include-Panier-Compte.htm>
+	  <div class="menuONtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=INDEX.HTM&MODELE=index.htm">Recherche th&eacute;matique</a></div>
+	  <div class="menuONdroite"></div>
+	</div>
+	<div class="menuOFF">
+	  <div class="menuOFFgauche"></div>
+	  <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=INDEX.HTM&MODELE=rech-criteres.htm">Recherche par crit&egrave;res</a></div>
+	  <div class="menuOFFdroite"></div>
+	</div>
+	<div class="menuOFF">
+	  <div class="menuOFFgauche"></div>
+	  <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=INDEX.HTM&MODELE=VisitTh.htm">Recherche par th&eacute;saurus</a></div>
+	  <div class="menuOFFdroite"></div>
+	</div>
+	<#INCLUDE INCLUDE-PANIER-COMPTE.HTM>
   </div>
   <div class="menuseparatsuite">
-    <div class="txt100pr100">&nbsp;</div>
-    <div class="menucalibre">&nbsp;</div>
-    <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=index.htm" class="menuseparatlienON" title="recherche rapide">Recherche rapide</a>
-    <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-avancee.htm" class="menuseparatlienOFF" title="Recherche avancée">Recherche avancée</a>
+	<div class="txt100pr100">&nbsp;</div>
+	<div class="menucalibre">&nbsp;</div>
+	<a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=index.htm" class="menuseparatlienON" title="recherche rapide">Recherche rapide</a>
+	<a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-avancee.htm" class="menuseparatlienOFF" title="Recherche avancée">Recherche avanc&eacute;e</a>
     <font size="+1"><B>&nbsp;&nbsp;&nbsp;&nbsp;<#CONST NOM_BASE><#VAR ECRAN></B></font>
     <div class="txt100pr100">&nbsp;</div>
   </div>
@@ -219,5 +220,5 @@ function InitChecked()
       </div>
     </div>
   </div>
-  <#INCLUDE Include-Restrictions.htm>
+  <#INCLUDE INCLUDE-RESTRICTIONS.HTM>
 </div>

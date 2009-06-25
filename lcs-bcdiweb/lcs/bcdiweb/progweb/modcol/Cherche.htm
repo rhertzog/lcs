@@ -1,12 +1,17 @@
-<!-- Fichier Cherche.htm -->
+<!-- Fichier Cherche.htm  06/01/2009 -->
 <#SI RECHERCHE=THEME><#VAR EXTENSION=PLUS><#SINON RECHERCHE=THEME><#SI RECHERCHE=THESAURUS><#VAR EXTENSION=PLUS><#SINON RECHERCHE=THESAURUS><#VAR EXTENSION=MOINS><#FINSI RECHERCHE=THESAURUS><#FINSI RECHERCHE=THEME>
-<#SI RECHERCHE=THESAURUS><#VAR EVENEMENT=onkeyup="fKeyUp(event,this.name)" onFocus="surFocus(this)"><#SINON RECHERCHE=THESAURUS><#VAR EVENEMENT=""><#FINSI RECHERCHE=THESAURUS>
+<#SI RECHERCHE=THESAURUS>
+<#VAR EVENEMENT=onkeyup="fKeyUp(event,this.name)" onFocus="surFocus(this)">
+<#SINON RECHERCHE=THESAURUS>
+<#VAR EVENEMENT="">
+<#VAR AVEC_COMPARAISON=OUI>
+<#FINSI RECHERCHE=THESAURUS>
 <script language="JavaScript">
 function DonnerFocus(nom)
 {
   if (document.getElementsByName(nom).length==1)
   if (document.getElementsByName(nom)[0].type=="text")
-    document.getElementsByName(nom)[0].focus();
+	document.getElementsByName(nom)[0].focus();
 }
 
   <#SI RECHERCHE=TITRE>
@@ -19,13 +24,20 @@ aChp=new Array('titre')
 var aBalFic_Chp=new Array("<#AUTEURS_AUTEUR>")
 var aFic_Chp=new Array('AUTEURS_AUTEUR')
 aChp=new Array('auteur')
-	<#SINON RECHERCHE=AUTEUR><!-- autres -->
-	  <#SI RECHERCHE=AUTRES>
-var aBalFic_Chp=new Array("<#COLLECTIONS_COLLECTION>","<#EDITEURS_EDITEUR>")
-var aFic_Chp=new Array('COLLECTIONS_COLLECTION','EDITEURS_EDITEUR')
-aChp=new Array('collection','editeur')
-	  <#SINON RECHERCHE=AUTRES> // THESAURUS
-var delai_de_frappe=700 // millisecondes
+	<#SINON RECHERCHE=AUTEUR>
+	  <#SI RECHERCHE=COLLECTION>
+<#VAR AVEC_COMPARAISON=NON>
+var aBalFic_Chp=new Array("<#COLLECTIONS_COLLECTION>")
+var aFic_Chp=new Array('COLLECTIONS_COLLECTION')
+aChp=new Array('collection')
+	  <#SINON RECHERCHE=COLLECTION>
+	  <#SI RECHERCHE=EDITEUR>
+<#VAR AVEC_COMPARAISON=NON>
+var aBalFic_Chp=new Array("<#EDITEURS_EDITEUR>")
+var aFic_Chp=new Array('EDITEURS_EDITEUR')
+aChp=new Array('editeur')
+	  <#SINON RECHERCHE=EDITEUR> // THESAURUS
+var delai_de_frappe=3000 // millisecondes
 var DernierCode=0 // pour fKeyUp
 var en_timer=false
 var chpAlister=""
@@ -43,33 +55,23 @@ function ParDefaut(ch,defaut)
   return ch
 }
 
-function SansParametre(url,param)  // on enlève un champ de la liste des paramètres d'une URL
-{
-  p=url.indexOf("?"+param+"=");
-  if (p<0)
-    p=url.indexOf("&"+param+"=");
-  if (p>=0)
-  {
-    ch=url.substring(0,p)
-    reste=url.substr(p+1,10000)
-    p=reste.indexOf("&");
-    if (p>0)
-      ch+="&"+reste.substr(p+1,10000)
-    url=ch
-  }
-  return(url)
-}
 function RajouterParametre(url,nom,valeur)  // on rajoute un champ de la liste des paramètres d'une URL
 {
-  url=SansParametre(url,nom)
-  if (valeur=="") valeur=" "
+  rajout=nom+"="+escape(valeur);
+  nom=nom.toUpperCase();
+  urlUp=url.toUpperCase()+"&";
+  p=urlUp.indexOf("?"+nom+"=");
+  if (p<0) p=urlUp.indexOf("&"+nom+"=");
+  if (p<0) {
+	p=url.indexOf("?");
+	if (p<0) url+="?"; else url+="&";
+	url+=rajout;
+  }
+  else
   {
-    p=url.indexOf("?");
-    if (p<0)
-      url+="?"
-    else
-      url+="&"
-    url+=nom+"="+escape(valeur)
+	p+=1
+	q=urlUp.indexOf("&",p);
+	url=url.substr(0,p)+rajout+url.substr(q)
   }
   return(url)
 }
@@ -84,12 +86,12 @@ function fKeyUp(event,nom)
   if (window.event) event=window.event
   if (event)
   {
-     if (typeof(event.keyCode)=="number")
-      DernierCode=event.keyCode;
-     else if (typeof(event.which)=="number")
-      DernierCode=event.which;
-     else if (typeof(event.charCode)=="number")
-      DernierCode=event.charCode;
+	 if (typeof(event.keyCode)=="number")
+	  DernierCode=event.keyCode;
+	 else if (typeof(event.which)=="number")
+	  DernierCode=event.which;
+	 else if (typeof(event.charCode)=="number")
+	  DernierCode=event.charCode;
   }
 }
 
@@ -131,6 +133,7 @@ function init_liste(chp)  // renvoie le formulaire avec la liste correspondant a
   ch=RajouterParametre(ch,"SUPPORT1",valeurs_checkees("SUPPORT1"))
   ch=RajouterParametre(ch,"TYPEDENATURE",valeurs_checkees("TYPEDENATURE"))
   ch=RajouterParametre(ch,"DISPO",valeurs_checkees("DISPONIBILITE"))
+  ch=RajouterParametre(ch,"AUTOPOSTAGE",valeurs_checkees("AUTOPOSTAGE"))
   ch=RajouterParametre(ch,"FOCUS",chpAlister)
 //  if (nomChpFocus>"") ch=RajouterParametre(ch,"FOCUS",nomChpFocus)
 //  ch=RajouterParametre(ch,"FICHIER",document.forms[0].FICHIER.value)
@@ -151,7 +154,7 @@ function decode(ch)
       if (ch.charAt(p)=="2")
         c='"'
       else
-        c="'"
+		c="'"
       p++;
     }
     st+=c;
@@ -183,19 +186,22 @@ function surFocus(obj)
 	range.collapse(false);range.select();
   }
 }
-	  <#FINSI RECHERCHE=AUTRES>
+	  <#FINSI RECHERCHE=EDITEUR>
+	  <#FINSI RECHERCHE=COLLECTION>
 	<#FINSI RECHERCHE=AUTEUR>
   <#FINSI RECHERCHE=TITRE>
 var etOu=("<#THEMEPOLE1CASE2>"!=""); // vrai si ou
 function elargir(dico)
 {
+  avecAutopostage=(document.getElementsByName("AUTOPOSTAGE").length>0);
+  if (document.getElementsByName("LANGAGE").length>0)
   if (dico)
-    document.getElementsByName("LANGAGE")[0].value="DICO"
+	document.getElementsByName("LANGAGE")[0].value="DICO"
   else {
-    document.getElementsByName("LANGAGE")[0].value="TEXTESEUL"
-    document.forms[0].AUTOPOSTAGE.checked=false;
+	document.getElementsByName("LANGAGE")[0].value="TEXTESEUL"
+	if (avecAutopostage) document.forms[0].AUTOPOSTAGE.checked=false;
   }
-  document.forms[0].AUTOPOSTAGE.disabled=!dico;
+  if (avecAutopostage) document.forms[0].AUTOPOSTAGE.disabled=!dico;
 }
 function majNom2()
 {
@@ -215,28 +221,43 @@ function changeEtOu() {
   majNom2()
 }
 
+function affecterComment() { // Si que THEMEPOLE1CASE1 est rempli, recherche exacte
+<#SI CONFIGURATION=SIMPLE>
+  if (document.getElementById("THEMEPOLE2").value<"!") {
+	document.getElementById("COMMENT").value="EXACT";
+	document.getElementById("QUOI").value=document.getElementById("THEMEPOLE1CASE1").value;
+  }
+<#FINSI CONFIGURATION=SIMPLE>
+}
 </script>
-<INPUT TYPE="HIDDEN" NAME="NP" VALUE="<#VALEUR NUMERO_PANIER>">
-<INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="<#FICHIER>">
-<INPUT TYPE="HIDDEN" NAME="RESTRICTIONS" VALUE="OUI">
-<INPUT TYPE="HIDDEN" NAME="LANGAGE" VALUE="<#SI RECHERCHE=THEASURUS>THESAURUS<#SINON RECHERCHE=THEASURUS>DICO<#FINSI RECHERCHE=THEASURUS>">
-<INPUT TYPE="HIDDEN" NAME="FORMAT" VALUE="LISTENOT">
-<INPUT TYPE="HIDDEN" NAME="FOCUS" VALUE="<#FOCUS>">
+<INPUT TYPE="HIDDEN" NAME="NP" VALUE="<#VALEUR NUMERO_PANIER>"/>
+<INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="<#FICHIER>"/>
+<INPUT TYPE="HIDDEN" NAME="RESTRICTIONS" VALUE="OUI"/>
+<INPUT TYPE="HIDDEN" NAME="FORMAT" VALUE="LISTENOT"/>
+<INPUT TYPE="HIDDEN" NAME="FOCUS" VALUE="<#FOCUS>"/>
 <#SI EXTENSION#PLUS>
   <#SI RECHERCHE=TITRE>
-	<input type="HIDDEN" id="TITRE" name="TITRE" value="<#NOTICES_TITRE>">
-	<input type="HIDDEN" name="COMPARE_TITRE" value="<#COMPARE_TITRE>">
+	<input type="HIDDEN" id="TITRE" name="TITRE" value="<#NOTICES_TITRE>"/>
+	<input type="HIDDEN" name="COMPARE_TITRE" value="<#COMPARE_TITRE>"/>
+	<input type="HIDDEN" name="LANGAGE" value="TEXTESEUL"/>
   <#SINON RECHERCHE=TITRE>
 	<#SI RECHERCHE=AUTEUR>
-	  <input type="HIDDEN" id="AUTEUR" name="AUTEUR" value="<#AUTEURS_AUTEUR>">
-	  <input type="HIDDEN" name="COMPARE_AUTEUR" value="<#COMPARE_AUTEUR>">
+	  <input type="HIDDEN" id="AUTEUR" name="AUTEUR" value="<#AUTEURS_AUTEUR>"/>
+	  <input type="HIDDEN" name="COMPARE_AUTEUR" value="<#COMPARE_AUTEUR>"/>
+	  <input type="HIDDEN" name="LANGAGE" value="TEXTESEUL"/>
 	<#SINON RECHERCHE=AUTEUR>
-	  <#SI RECHERCHE=AUTRES>
-		<input type="HIDDEN" id="COLLECTION" name="COLLECTION" value="<#COLLECTIONS_COLLECTION>">
-		<input type="HIDDEN" name="COMPARE_COLLECTION" value="<#COMPARE_COLLECTION>">
-		<input type="HIDDEN" id="EDITEUR" name="EDITEUR" value="<#EDITEURS_EDITEUR>">
-		<input type="HIDDEN" name="COMPARE_EDITEUR" value="<#COMPARE_EDITEUR>">
-	  <#FINSI RECHERCHE=AUTRES>
+	  <#SI RECHERCHE=COLLECTION>
+		<input type="HIDDEN" id="COLLECTION" name="COLLECTION" value="<#COLLECTIONS_COLLECTION>"/>
+		<input type="HIDDEN" name="COMPARE_COLLECTION" value="<#COMPARE_COLLECTION>"/>
+	  <#SINON RECHERCHE=COLLECTION>
+		<#SI RECHERCHE=EDITEUR>
+		  <input type="HIDDEN" id="EDITEUR" name="EDITEUR" value="<#EDITEURS_EDITEUR>"/>
+		  <input type="HIDDEN" name="COMPARE_EDITEUR" value="<#COMPARE_EDITEUR>"/>
+		  <input type="HIDDEN" name="LANGAGE" value="TEXTESEUL"/>
+		<#SINON RECHERCHE=EDITEUR>
+		  <INPUT TYPE="HIDDEN" NAME="LANGAGE" VALUE="<#SI RECHERCHE=THESAURUS>THESAURUS<#SINON RECHERCHE=THESAURUS>INDEFINI<#FINSI RECHERCHE=THESAURUS>"/>
+		<#FINSI RECHERCHE=EDITEUR>
+	  <#FINSI RECHERCHE=COLLECTION>
 	<#FINSI RECHERCHE=AUTEUR>
   <#FINSI RECHERCHE=TITRE>
 
@@ -247,12 +268,12 @@ function decode(ch)
   p=0;
   while (p<ch.length)
   {
-    c=ch.charAt(p++);
-    if ((c=="%") && (ch.charAt(p)=="2") && ((ch.charAt(p+1)=="2") || (ch.charAt(p+1)=="7")))
-    {
-      p++;
-      if (ch.charAt(p)=="2")
-        c='"'
+	c=ch.charAt(p++);
+	if ((c=="%") && (ch.charAt(p)=="2") && ((ch.charAt(p+1)=="2") || (ch.charAt(p+1)=="7")))
+	{
+	  p++;
+	  if (ch.charAt(p)=="2")
+		c='"'
 	  else
 		c="'"
 	  p++;
@@ -306,47 +327,47 @@ no=0; EnteteListe();
 	<#SI RECHERCHE=AUTEUR>
 	  <#LISTE AUTEURS AUTEUR LARGEUR=60>
 	<#SINON RECHERCHE=AUTEUR>
+	 <#SI RECHERCHE=COLLECTION>
 	  <#LISTE COLLECTIONS COLLECTION LARGEUR=60>
-	  <SCRIPT type="text/javascript">BasListe();EnteteListe();</SCRIPT>
+	 <#SINON RECHERCHE=COLLECTION>
 	  <#LISTE EDITEURS EDITEUR LARGEUR=60>
+	 <#FINSI RECHERCHE=COLLECTION>
 	<#FINSI RECHERCHE=AUTEUR>
   <#FINSI RECHERCHE=TITRE>
 <SCRIPT type="text/javascript">BasListe();</SCRIPT>
+<#SINON EXTENSION#PLUS>
+<#SI RECHERCHE=THESAURUS>  <INPUT TYPE="HIDDEN" NAME="LANGAGE" VALUE="THESAURUS"/><#FINSI RECHERCHE=THESAURUS>
 <#FINSI EXTENSION#PLUS>
 <SCRIPT type="text/javascript">if (!ie) document.write('<br/>'); </SCRIPT>
 <div style="background-color:<#VAR COULTHEME>; border:1px solid #000000; font-family:Times New Roman">
-    <br/>&nbsp;
+	<br/>&nbsp;
  <#SI EXTENSION=PLUS>
 <table><tr>
   <#SI RECHERCHE=THEME>
-    <td width="120" align="right" valign="top"><b>Je cherche des </b></td>
-    <td width=4>&nbsp;</td>
-    <td width=300><input name="TYPEDENATURE" type="checkbox" value="Fiction" checked>Fictions <i><b><span style="font-size:12px">(des histoires racontées, inventées...)</b></i></span></td>
-    <td width=20>&nbsp;</td>
-    <td><input name="TYPEDENATURE" type="checkbox" value="Documentaire" checked="Yes">Documentaires <i><b><span style="font-size:12px">(des informations...)</span></b></i></td>
+	<td width="120" align="right" valign="top"><b>Je cherche des </b></td>
+	<td width=4>&nbsp;</td>
+	<td width=300><input name="TYPEDENATURE" type="checkbox" value="Fiction" checked />Fictions <i><b><span style="font-size:12px">(des histoires racontées, inventées...)</b></i></span></td>
+	<td width=20>&nbsp;</td>
+	<td><input name="TYPEDENATURE" type="checkbox" value="Documentaire" checked="Yes"/>Documentaires <i><b><span style="font-size:12px">(des informations...)</span></b></i></td>
   </tr><tr>
-    <td align="right" valign="top">
-      <br/><b> parlant de </b><br/>
+	<td align="right" valign="top">
+	  <br/><b> parlant de </b><br/>
   <#SINON RECHERCHE=THEME>
-    <td align="right" valign="top">
-      <b> Je cherche </b><br/>
+	<td align="right" valign="top">
+	  <b> Je cherche </b><br/>
   <#FINSI RECHERCHE=THEME>
 <#SI CONFIGURATION=SIMPLE>
-    <span style="font-size: 8px;">&nbsp;</span><br/>
-    <input type="HIDDEN" id="THEMEPOLE1CASE2" name="THEMEPOLE1CASE2">
-    <input type="HIDDEN" id="THEMEPOLE2CASE1" name="THEMEPOLE2CASE1">
-<!--
-    <input id="CONJONCTION_ET" name="CONJONCTION" type="radio" value="ET" onClick="changeEtOu()" checked >
-    <span style="font-family:courier"><b>Et de</b><br/></span>
-    <input id="CONJONCTION_OU" name="CONJONCTION" type="radio" value="OU" onClick="changeEtOu()" checked >
-    <span style="font-family:courier"><b>Ou de</b><br/></span>
--->
-    <span style="font-size:8px"><br/></span>
-    <span style="font-size:12px">Et</span>
-    <input id="CONJONCTION_ET" name="CONJONCTION" type="radio" value="ET" onClick="changeEtOu()" checked >
-    <span style="font-size:12px">&nbsp;&nbsp;ou</span>
-    <input id="CONJONCTION_OU" name="CONJONCTION" type="radio" value="OU" onClick="changeEtOu()" checked >
-    <span style="font-size:14px"><b>&nbsp;&nbsp;&nbsp;&nbsp;de</b></span>
+	<span style="font-size: 8px;">&nbsp;</span><br/>
+	<input type="HIDDEN" id="THEMEPOLE1CASE2" name="THEMEPOLE1CASE2"/>
+	<input type="HIDDEN" id="THEMEPOLE2CASE1" name="THEMEPOLE2CASE1"/>
+	<input type="HIDDEN" id="COMMENT" name="COMMENT" value="TOUS"/>
+	<input type="HIDDEN" id="QUOI" name="QUOI" value=""/>
+	<span style="font-size:8px"><br/></span>
+	<span style="font-size:12px">Et</span>
+	<input id="CONJONCTION_ET" name="CONJONCTION" type="radio" value="ET" onClick="changeEtOu()" checked />
+	<span style="font-size:12px">&nbsp;&nbsp;ou</span>
+	<input id="CONJONCTION_OU" name="CONJONCTION" type="radio" value="OU" onClick="changeEtOu()" checked />
+	<span style="font-size:14px"><b>&nbsp;&nbsp;&nbsp;&nbsp;de</b></span>
 <#SINON CONFIGURATION=SIMPLE>
 <br/><b> et <br/>&nbsp;
 <br/> et <br/>&nbsp;
@@ -355,44 +376,44 @@ no=0; EnteteListe();
   </td>
   <td>&nbsp;</td>
   <td valign="top"><#SI RECHERCHE=THEME><br/><#FINSI RECHERCHE=THEME>
-    <input id="THEMEPOLE1CASE1" name="THEMEPOLE1CASE1" value="<#THEMEPOLE1CASE1>" class="input200" <#VAR EVENEMENT>>
+	<input id="THEMEPOLE1CASE1" name="THEMEPOLE1CASE1" value="<#THEMEPOLE1CASE1>" class="input200" <#VAR EVENEMENT> />
 <#SI CONFIGURATION=SIMPLE>
-    <span style="font-size:12px"><i>(par exemple : Egypte, eau)</i></span>
-    <br />&nbsp;<br/>
-    <input id="THEMEPOLE2" name="THEMEPOLE2" value="<#THEMEPOLE2>" class="input200" onkeyup="majNom2()">
-	<span style="font-size:12px"><i>(par exemple : Religion, pollution)</i></span>
+	<span style="font-size:12px"><br><i>(par exemple : Egypte, eau...)</i></span>
+	<br />&nbsp;<br/>
+	<input id="THEMEPOLE2" name="THEMEPOLE2" value="<#THEMEPOLE2>" class="input200" onkeyup="majNom2()"/>
+	<span style="font-size:12px"><br><i>(par exemple : religion, pollution...)</i></span>
 <SCRIPT type="text/javascript">
   document.getElementById("CONJONCTION_OU").checked=(etOu)
   document.getElementById("CONJONCTION_ET").checked=(!etOu)
   changeEtOu();
 </SCRIPT>
 <#SINON CONFIGURATION=SIMPLE>
-      <br/>&nbsp;<br/>
-      <input id="THEMEPOLE2CASE1" name="THEMEPOLE2CASE1" value="<#THEMEPOLE2CASE1>" type="text" class="input200" <#VAR EVENEMENT>>
-      <br/>&nbsp;<br/>
-      <input id="THEMEPOLE3CASE1" name="THEMEPOLE3CASE1" value="<#THEMEPOLE3CASE1>" type="text" class="input200" <#VAR EVENEMENT>>
-      <br/>&nbsp;<br/>
-      <input id="THEMESAUFCASE1" name="THEMESAUFCASE1" value="<#THEMESAUFCASE1>" type="text" class="input200" <#VAR EVENEMENT>>
-      &nbsp;
-    </td><td valign="top"><#SI RECHERCHE=THEME><br/><#FINSI RECHERCHE=THEME>
-      <span><b>ou</b>&nbsp;</span>
-      <br/>&nbsp;<br/>
-      <span><b>ou</b>&nbsp;</span>
-      <br/>&nbsp;<br/>
-      <span><b>ou</b>&nbsp;</span>
-    </td><td valign="top"><#SI RECHERCHE=THEME><br/><#FINSI RECHERCHE=THEME>
-      <span>
-        <input id="THEMEPOLE1CASE2" name="THEMEPOLE1CASE2" value="<#THEMEPOLE1CASE2>" type="text" class="input200" <#VAR EVENEMENT>>
-      </span>
-      <br/>&nbsp;<br/>
-      <span>
-        <input id="THEMEPOLE2CASE2" name="THEMEPOLE2CASE2" value="<#THEMEPOLE2CASE2>" type="text" class="input200" <#VAR EVENEMENT>>
-      </span>
-      <br/>&nbsp;<br/>
-      <span>
-        <input id="THEMEPOLE3CASE2" name="THEMEPOLE3CASE2" value="<#THEMEPOLE3CASE2>" type="text" class="input200" <#VAR EVENEMENT>>
-        &nbsp;
-      </span>
+	  <br/>&nbsp;<br/>
+	  <input id="THEMEPOLE2CASE1" name="THEMEPOLE2CASE1" value="<#THEMEPOLE2CASE1>" type="text" class="input200" <#VAR EVENEMENT> />
+	  <br/>&nbsp;<br/>
+	  <input id="THEMEPOLE3CASE1" name="THEMEPOLE3CASE1" value="<#THEMEPOLE3CASE1>" type="text" class="input200" <#VAR EVENEMENT> />
+	  <br/>&nbsp;<br/>
+	  <input id="THEMESAUFCASE1" name="THEMESAUFCASE1" value="<#THEMESAUFCASE1>" type="text" class="input200" <#VAR EVENEMENT> />
+	  &nbsp;
+	</td><td valign="top"><#SI RECHERCHE=THEME><br/><#FINSI RECHERCHE=THEME>
+	  <span><b>ou</b>&nbsp;</span>
+	  <br/>&nbsp;<br/>
+	  <span><b>ou</b>&nbsp;</span>
+	  <br/>&nbsp;<br/>
+	  <span><b>ou</b>&nbsp;</span>
+	</td><td valign="top"><#SI RECHERCHE=THEME><br/><#FINSI RECHERCHE=THEME>
+	  <span>
+		<input id="THEMEPOLE1CASE2" name="THEMEPOLE1CASE2" value="<#THEMEPOLE1CASE2>" type="text" class="input200" <#VAR EVENEMENT> />
+	  </span>
+	  <br/>&nbsp;<br/>
+	  <span>
+		<input id="THEMEPOLE2CASE2" name="THEMEPOLE2CASE2" value="<#THEMEPOLE2CASE2>" type="text" class="input200" <#VAR EVENEMENT> />
+	  </span>
+	  <br/>&nbsp;<br/>
+	  <span>
+		<input id="THEMEPOLE3CASE2" name="THEMEPOLE3CASE2" value="<#THEMEPOLE3CASE2>" type="text" class="input200" <#VAR EVENEMENT> />
+		&nbsp;
+	  </span>
 
 <#FINSI CONFIGURATION=SIMPLE>
   </td>
@@ -400,32 +421,36 @@ no=0; EnteteListe();
   </tr><tr>
 		<td><b>Elargir aux </b></td>
 		<td colspan=4 style="font-size: 12px;">
-        <input name="AUTOPOSTAGE" type="radio" value="SPECIFIQUE"> Termes spécifiques&nbsp;&nbsp;
-		<input name="AUTOPOSTAGE" type="radio" value="GENERIQUE"> Termes génériques&nbsp;&nbsp;
-		<input name="AUTOPOSTAGE" type="radio" value="ASSOCIE"> Termes associés&nbsp;&nbsp;
-        <input name="AUTOPOSTAGE" type="radio" value="" checked="checked"> Aucun
-        </td>
+		<input name="AUTOPOSTAGE" type="radio" value="SPECIFIQUE"/> Termes spécifiques&nbsp;&nbsp;
+		<input name="AUTOPOSTAGE" type="radio" value="GENERIQUE"/> Termes génériques&nbsp;&nbsp;
+		<input name="AUTOPOSTAGE" type="radio" value="ASSOCIE"/> Termes associés&nbsp;&nbsp;
+		<input name="AUTOPOSTAGE" type="radio" value="" checked /> Aucun
+		</td>
 </tr></table>
-      <div class="ListeF2Th" ID="LISTE_POUR_DESCRIPTEUR">
-        <div class="tridroitetitre">Liste des descripteurs</div>
-        <select name="LISTE_DESCRIPTEURS" value="Liste descripteurs" onChange="maj_saisie()" size="7" class="select600">
-          <#LISTE THESAURUS DESCRIPTEURS LARGEUR=60>
-        </select>
-      </div>
+	  <div class="ListeF2Th" ID="LISTE_POUR_DESCRIPTEUR">
+		<div class="tridroitetitre">Liste des descripteurs</div>
+		<select name="LISTE_DESCRIPTEURS" value="Liste descripteurs" onChange="maj_saisie()" size="7" class="select600">
+		  <#LISTE THESAURUS DESCRIPTEURS LARGEUR=60>
+		</select>
+	  </div>
   <SCRIPT type="text/javascript">DonnerFocus("<#FOCUS>");</script></#si>
 <#SINON RECHERCHE=THESAURUS>
 </tr><tr>
   <td>&nbsp;</td><td>&nbsp;</td>
   <td>
-    <INPUT  name ="LANGAGEVISIBLE" type="radio" value="DICO" onclick="elargir(true)" checked> Avec le dictionnaire&nbsp;
-    <i><b><span style="font-size:12px">(chercher des mots équivalents)</b></i></span><br/>
-    <INPUT  name ="LANGAGEVISIBLE"type="radio" value="TEXTESEUL" onclick="elargir(false)">Sans le dictionnaire<br>&nbsp;
+	<INPUT  name ="LANGAGEVISIBLE" type="radio" value="DICO" onclick="elargir(true)" checked /> Avec le dictionnaire&nbsp;
+	<i><b><span style="font-size:12px">(chercher des mots équivalents)</b></i></span><br/>
+	<INPUT  name ="LANGAGEVISIBLE"type="radio" value="TEXTESEUL" onclick="elargir(false)"/>Sans le dictionnaire<br>&nbsp;
   </td>
   <td>&nbsp;</td>
-    <td valign="top">
-    <INPUT  type="Checkbox" name="AUTOPOSTAGE" value="SPECIFIQUE">&nbsp;Elargir la recherche
-    <span style="font-size:12px"><i><b>(chercher des thèmes proches)</b></i></span>
-  </td></tr></table>
+	<td valign="top">
+<!--	<INPUT  type="Checkbox" name="AUTOPOSTAGE" value="SPECIFIQUE"/>&nbsp;Elargir la recherche
+	<span style="font-size:12px"><i><b>(chercher des thèmes proches)</b></i></span>
+  C'est fait en résultat de recherche
+-->
+	&nbsp;</td>
+	<INPUT  type="HIDDEN" name="AUTOPOSTAGE" value=""/>
+  </tr></table>
 <#FINSI RECHERCHE=THESAURUS>
 
 <#SINON EXTENSION=PLUS>
@@ -447,38 +472,29 @@ function escapeApostrophe(ch)
 	escapeApostrophe+=c
   }
 }
-var delai_de_frappe=700 // millisecondes
-function SansParametre(url,param)  // on enlève un champ de la liste des paramètres d'une URL
-{
-  p=url.indexOf("?"+param+"=");
-  if (p<0)
-	p=url.indexOf("&"+param+"=");
-  if (p>=0)
-  {
-	ch=url.substring(0,p)
-	reste=url.substr(p+1)
-	p=reste.indexOf("&");
-	if (p>0)
-	  ch+="&"+reste.substr(p+1)
-	url=ch
-  }
-  return(url)
-}
+var delai_de_frappe=3000 // millisecondes
+
 function RajouterParametre(url,nom,valeur)  // on rajoute un champ de la liste des paramètres d'une URL
 {
-  url=SansParametre(url,nom)
-  if (valeur=="") valeur=" ";
-  if (valeur!="not exist")
-  {
+  rajout=nom+"="+escape(valeur);
+  nom=nom.toUpperCase();
+  urlUp=url.toUpperCase()+"&";
+  p=urlUp.indexOf("?"+nom+"=");
+  if (p<0) p=urlUp.indexOf("&"+nom+"=");
+  if (p<0) {
 	p=url.indexOf("?");
-	if (p<0)
-	  url+="?"
-	else
-	  url+="&"
-	url+=nom+"="+escape(valeur)
+	if (p<0) url+="?"; else url+="&";
+	url+=rajout;
+  }
+  else
+  {
+	p+=1
+	q=urlUp.indexOf("&",p);
+	url=url.substr(0,p)+rajout+url.substr(q)
   }
   return(url)
 }
+
 function valeurs_checkees(NomChp)
 {
   res=""
@@ -645,9 +661,9 @@ function affecterHidden(obj) // et effacer l'autre champ
 	comp="CONTIENT"
   }
   nom=c+nom.substr(1);
-<#SI RECHERCHE#AUTRES>
+<#SI AVEC_COMPARAISON=OUI>
   if (obj.value>"") document.getElementsByName(nom)[0].value="";
-<#FINSI RECHERCHE#AUTRES>
+<#FINSI AVEC_COMPARAISON=OUI>
   document.getElementsByName("COMPARE_"+nomChamp)[0].value=comp
   maj_compare(document.getElementsByName("COMPARE_"+nomChamp)[0])
 }
@@ -662,39 +678,69 @@ for(var n=0; n<aFic_Chp.length; n++)
   if (compare=="COMMENCE") compare="A_"; else compare="B_"
   document.write('<tr>');
   document.write('<td colspan=3>');
-  if (n>0) document.write('<br/>&nbsp;');
-  document.write('<b>&nbsp;&nbsp;&nbsp;Je cherche un')
-  if ((n==0) && (aFic_Chp.length==2)) document.write('e'); // unE collection
-  if ((n==1) && (aFic_Chp.length==2)) document.write(' éditeur</b>');  
-  if ((n==0) && (aFic_Chp.length==2)) document.write(' '+NomChp+'</b>');
-  document.write('</td></tr><tr>')
-  document.write('<td width=160 align=right>Commençant par ');
-  <#SI RECHERCHE#AUTRES> document.write('<br/>&nbsp;<b>ou</b> <br/>contenant le(s) mot(s)<br/>&nbsp;');<#FINSI RECHERCHE#AUTRES>
+
+ if (n>0) document.write('<br/>&nbsp;');
+   document.write('<b>&nbsp;&nbsp;&nbsp;Je cherche un')
+<#SI RECHERCHE=COLLECTION> document.write('e'); <#FINSI RECHERCHE=COLLECTION>
+	   document.write(' '+NomChp+'</b>')
+		 document.write('</td></tr><tr>')
+
+	document.write('<td width=160 align=right>Commençant par ');
+<#SI RECHERCHE=COLLECTION> document.write('<br/><br/><br/><br/><br/>'); <#FINSI RECHERCHE=COLLECTION>
+  <#SI AVEC_COMPARAISON=OUI> document.write('<br/>&nbsp;<b>ou</b> <br/>contenant le(s) mot(s)<br/>&nbsp;');<#FINSI AVEC_COMPARAISON=OUI>
+
   document.write('</td><td>&nbsp;&nbsp;</td><td  valign="top">');
   if (compare=="A_") val=aBalFic_Chp[n]; else val="";
   document.write('<input width=100% type="text" id="A_'+NomChpUp+'" name="A_'+NomChpUp+'" value="'+val+'" onkeyup="affecterHidden(this);fKeyUp(event,this.name);"')
   document.write(' ONFOCUS="MontreListe(this); if (this.createTextRange) {var range = this.createTextRange();')
-  document.write('range.collapse(false);range.select();}" class="input200">');
-  <#SI RECHERCHE#AUTRES>
+  document.write('range.collapse(false);range.select();}" class="input200"/>');
+  <#SI AVEC_COMPARAISON=OUI>
 	if (compare=="B_") val=aBalFic_Chp[n]; else val="";
 	<#SI RECHERCHE=TITRE>
-	document.write('<br/><span style="font-size:12px"><i>(par exemple : les aventures de)</i></span><br/><input width=200 type="text" id="B_'+NomChpUp+'" name="B_'+NomChpUp+'" value="'+val+'" onkeyup="affecterHidden(this);" class="input200">');
-    document.write('<br/><span style="font-size:12px"><i>(par exemple : Tintin)</i></span><br/>');
+	document.write('<br/><span style="font-size:12px"><i>(par exemple : les aventures de)</i></span><br/><input width=200 type="text" id="B_'+NomChpUp+'" name="B_'+NomChpUp+'" value="'+val+'" onkeyup="affecterHidden(this);" class="input200"/>');
+	document.write('<br/><span style="font-size:12px"><i>(par exemple : Tintin)</i></span><br/>');
 	<#FINSI RECHERCHE=TITRE>
 	<#SI RECHERCHE=AUTEUR>
-	document.write('<br/><span style="font-size:12px"><i>(par exemple : Hugo)</i></span><br/><input width=200 type="text" id="B_'+NomChpUp+'" name="B_'+NomChpUp+'" value="'+val+'" onkeyup="affecterHidden(this);" class="input200">');
-    document.write('<br/><span style="font-size:12px"><i>(par exemple : Victor Hugo)</i></span><br/>');
+	document.write('<br/><span style="font-size:12px"><i>(par exemple : Hugo)</i></span><br/><input width=200 type="text" id="B_'+NomChpUp+'" name="B_'+NomChpUp+'" value="'+val+'" onkeyup="affecterHidden(this);" class="input200"/>');
+	document.write('<br/><span style="font-size:12px"><i>(par exemple : Victor Hugo)</i></span><br/>');
 	<#FINSI RECHERCHE=AUTEUR>
-  <#FINSI RECHERCHE#AUTRES>
+  <#FINSI AVEC_COMPARAISON=OUI>
   document.write('</td>');
   document.write('</tr>');
   DonnerFocus(compare+"<#FOCUS>");
   DonnerFocus("<#FOCUS>");
 }
-document.write('</table>');
 </SCRIPT>
+</table>
+<#SI RECHERCHE=EDITEUR> <br><br><br><br><#FINSI RECHERCHE=EDITEUR>
+<#SI RECHERCHE=COLLECTION>
+<br/><br/><hr><br/>
+<table width=90%>
+  <tr><td width=12> </td><td align="right" valign="top">
+	  <b>    sur le thème </b><br/>
+	<span style="font-size:8px"><br/><br/></span>
+	<span style="font-size:12px">Et</span>
+	<input id="CONJONCTION_ET" name="CONJONCTION" type="radio" value="ET" onClick="changeEtOu()" checked />
+	<span style="font-size:12px">  ou</span>
+	<input id="CONJONCTION_OU" name="CONJONCTION" type="radio" value="OU" onClick="changeEtOu()"/>
+  </td>
+  <td> </td>
+  <td valign="top">
+	<input id="THEMEPOLE1CASE1" name="THEMEPOLE1CASE1" value="<#THEMEPOLE1CASE1>" class="input200"/>
+	<span style="font-size:12px"><i> (par exemple : Egypte, eau)</i></span>
+	<br/><br/>
+	<input id="THEMEPOLE2" name="THEMEPOLE2" value="<#THEMEPOLE2>" class="input200" onkeyup="majNom2()"/>
+	<span style="font-size:12px"><i> (par exemple : Religion, pollution)</i></span>
+  </td></tr>
+  <tr><td width=12> </td><td> </td><td> </td><td>
+	<INPUT  name ="LANGAGEVISIBLE" type="radio" value="DICO" onclick="elargir(true)" checked /> Avec le dictionnaire&nbsp;
+	<i><b><span style="font-size:12px">(chercher des mots équivalents)</b></i></span><br/>
+	<INPUT  name ="LANGAGEVISIBLE"type="radio" value="TEXTESEUL" onclick="elargir(false)"/>Sans le dictionnaire<br>&nbsp;
+  </td></tr>
+  </table>
+<#SINON RECHERCHE=COLLECTION>
 <br/>&nbsp;
+<#FINSI RECHERCHE=COLLECTION>
 <#FINSI EXTENSION=PLUS>
 </div>
 <!-- Fin du Fichier Cherche.htm -->
-
