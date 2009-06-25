@@ -7,6 +7,7 @@ Standards-Version: 3.6.2
 
 Package: lcse3-monitor
 Architecture: all
-Depends: sudo, make, hwinfo
-Description: Gest Etab
- gestEtab monitor
+Depends: sudo, make, hwinfo, php5-curl
+Description: outils deporte de monitoring pour Lcs et SE3
+  lcse3  monitor realise une remonte d'information toute les heures
+  vers le serveur central. 
