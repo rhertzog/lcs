@@ -1,9 +1,11 @@
-lcs-squidguard (2.4.2~5) Lcs; urgency=low
+lcs-squidguard (2.4.2) Lcs; urgency=low
 
+  [ Simon Cavey ]
   * fix: checkbox bug
   * add missing picture
+  * add missing variable
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 26 Jun 2009 01:35:48 +0200
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 26 Jun 2009 01:52:03 +0200
 
 lcs-squidguard (2.4.2~4) Lcs; urgency=low
 

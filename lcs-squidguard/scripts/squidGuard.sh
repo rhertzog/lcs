@@ -146,17 +146,17 @@ case $ARG in
        cat /etc/squid/squidGuard.conf | sed -e "s/!redirector //g" > /etc/squid/squidGuard.conf.tmp
        mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
    ;;
-   maketingwareOn)
-       echo "Liste noire maketingware validi?1/2e"
-       RES=`grep '!maketingware' /etc/squid/squidGuard.conf`
+   marketingwareOn)
+       echo "Liste noire marketingware validi?1/2e"
+       RES=`grep '!marketingware' /etc/squid/squidGuard.conf`
        if [ "x$RES" = "x" ]; then
-         cat /etc/squid/squidGuard.conf | sed -e "s/pass /pass !maketingware /g" > /etc/squid/squidGuard.conf.tmp
+         cat /etc/squid/squidGuard.conf | sed -e "s/pass /pass !marketingware /g" > /etc/squid/squidGuard.conf.tmp
          mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
        fi
    ;;
-   maketingwareOff)
-       echo "Liste noire maketingware di?1/2validi?1/2e" 
-       cat /etc/squid/squidGuard.conf | sed -e "s/!maketingware //g" > /etc/squid/squidGuard.conf.tmp
+   marketingwareOff)
+       echo "Liste noire marketingware di?1/2validi?1/2e" 
+       cat /etc/squid/squidGuard.conf | sed -e "s/!marketingware //g" > /etc/squid/squidGuard.conf.tmp
        mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
    ;;
    phishingOn)
