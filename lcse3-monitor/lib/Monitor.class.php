@@ -661,7 +661,7 @@ class Monitor {
 
         foreach($crons as $cron) {
             $path = '/etc/cron.d/'.$cron;
-            if(is_file($path) && $cron == 'gestetab-monitor') {
+            if(is_file($path) && $cron == 'lcse3-monitor') {
                 $file = $path;
                 break;
             }
