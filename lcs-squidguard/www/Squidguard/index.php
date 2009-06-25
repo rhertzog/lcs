@@ -24,6 +24,11 @@ $raz_db = $_POST['raz_db'];
 $webmail = $_POST['webmail'];
 $audiovideo =  $_POST['audiovideo'];
 $blog = $_POST['blog'];
+$malware = $_POST['malware'];
+$ads = $_POST['ads'];
+$phishing= $_POST['phishing'];
+$redirecteurs = $_POST['redirecteurs'];
+$ = $_POST['blog'];
 $forums = $_POST['forums'];
 $bl_full = $_POST['bl_full'];
 $bl_lcs = $_POST['bl_lcs'];
@@ -232,8 +237,9 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		$html .= "Validation liste noire redirecteurs (proxy en ligne,....) : <input type='checkbox' value='redirecteursOn' name='redirecteurs'";
 		if ( $status[8] == "redirecteursOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
 		$html .= "Liste noire LCS : <input type='checkbox' value='On' name='bl_lcs' CHECKED disabled><br>\n"; 
-		if ( $status[9] == "bl_full") $html.="CHECKED><br>\n"; else $html.="><br>\n";	
-		$html .= "Liste noire nationale : <input type='checkbox' value='bl_full' name='bl'";
+		if ( $status[9] == "bl_full") $html.="CHECKED><br>\n"; else $html.="
+<br>\n";	
+		$html .= "Liste noire nationale : <input type='checkbox' value='bl_full' name='bl'>";
 		$html .= "	<input type='hidden' value='1' name='modif_status'>\n";
 		$html .= "	<input type='submit' value='Modifier'></td>\n";	
 		$html .= "</form>\n";

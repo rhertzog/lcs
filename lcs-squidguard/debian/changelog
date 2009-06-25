@@ -1,3 +1,10 @@
+lcs-squidguard (2.4.2~5) Lcs; urgency=low
+
+  * fix: checkbox bug
+  * add missing picture
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 26 Jun 2009 01:35:48 +0200
+
 lcs-squidguard (2.4.2~4) Lcs; urgency=low
 
   * fix bug in blacklists order
