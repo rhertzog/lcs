@@ -1,3 +1,9 @@
+lcse3-monitor (2.4.1~2) Lcs; urgency=low
+
+  * upload by lcs svn
+
+ -- William POTTIER <william.pottier@allprogrammic.com>  Thu, 25 Jun 2009 19:13:01 +0200
+
 lcse3-monitor (2.4.1~1) Lcs; urgency=low
 
   * cron sur random
