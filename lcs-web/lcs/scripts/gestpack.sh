@@ -14,7 +14,7 @@ echo "<? \$flip=0;\$verrou=1;?>" > /usr/share/lcs/Modules/flag.php
 
 #on recherche un depot similaire a $1
 Depot=`grep \`echo $1 | cut -d"/" -f3\` /etc/apt/sources.list`
-if [ -n "$Depot"] || [ "$2" = "remove  --purge" ] ;then
+if [ -n "$Depot" ] || [ "$2" = "remove  --purge" ] ;then
 
 	if [ "$2" = "install" ]; then
   cp /etc/apt/sources.list /etc/apt/sources.tmp
