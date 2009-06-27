@@ -3,8 +3,8 @@
    Projet LCS : Linux Communication Server
    Consultation de l'annuaire LDAP
    Annu/constitutiongroupe.php
-   Equipe Tice académie de Caen
-   V 1.4 maj : 15/03/2007
+   Equipe Tice academie de Caen
+   V 1.4 maj : 27/06/2009
    ============================================= */
 include "../lcs/includes/headerauth.inc.php";
 include "includes/ldap.inc.php";
@@ -15,7 +15,8 @@ if ($idpers == "0") header("Location:$urlauth");
 
 header_html();
 aff_trailer ("8");
-
+$cn=$_POST['cn'];
+$eleves=$_POST['eleves'];
 if (is_admin("Annu_is_admin",$login)=="Y") { 
 	// Ajout des membres au groupe
 	echo "<H4>Ajout des membres au groupe : <A href=\"/Annu/group.php?filter=$cn\">$cn</A></H4>\n";
@@ -23,7 +24,7 @@ if (is_admin("Annu_is_admin",$login)=="Y") {
 		exec("$scriptsbinpath/groupAddUser.pl  $eleves[$loop] $cn" ,$AllOutPut,$ReturnValue);
 		echo  "Ajout de l'utilisateur&nbsp;".$eleves[$loop]."&nbsp;";
 		if ($ReturnValue == 0 ) {
-			echo "<strong>Réussi</strong><BR>";
+			echo "<strong>R&#233;ussi</strong><BR>";
 		} else { 
 			echo "</strong><font color=\"orange\">Echec</font></strong><BR>"; $err++; 
 		}
