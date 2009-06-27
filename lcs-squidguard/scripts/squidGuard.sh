@@ -219,11 +219,11 @@ case $ARG in
         else
           RET="$RET malwareOn"
         fi
-        RES=`grep '!maketingware' /etc/squid/squidGuard.conf`
+        RES=`grep '!marketingware' /etc/squid/squidGuard.conf`
         if [ "x$RES" = "x" ]; then
-          RET="$RET maketingwareOff"
+          RET="$RET marketingwareOff"
         else
-          RET="$RET maketingwareOn"
+          RET="$RET marketingwareOn"
         fi
         RES=`grep '!phishing' /etc/squid/squidGuard.conf`
         if [ "x$RES" = "x" ]; then

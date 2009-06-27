@@ -1,3 +1,9 @@
+lcs-squidguard (2.4.3) Lcs; urgency=low
+
+  * fixing last interface bug with marketingware blacklist
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sat, 27 Jun 2009 21:01:56 +0200
+
 lcs-squidguard (2.4.2) Lcs; urgency=low
 
   [ Simon Cavey ]
