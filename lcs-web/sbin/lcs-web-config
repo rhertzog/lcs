@@ -18,7 +18,7 @@ exit_fatal() {
 case "$1" in
     possible)
         # Is the LDAP server reachable ?
-        if pgrep -u mysql mysqld >/dev/null && ldapsearch -x -b $LDAP_BASE_DN uid=admin 2>/dev/null | grep -q "^dn: "; then
+        if pgrep -u mysql mysqld >/dev/null && ldapsearch -x -b $LDAP_BASE_DN uid=admin 2>/dev/null | grep -q "^dn: " && getent group lcs-users >/dev/null; then
             exit 0
         else
             exit 1
@@ -60,7 +60,7 @@ case "$1" in
         chmod 640 /var/www/lcs/includes/private_key.inc.php
  
         # Add right stats_can_read
-        if ! ldapsearch -x "(cn=stats_can_read)($LDAP_BASE_DN)" 2>/dev/null | grep -q "^dn: "; then
+        if ! ldapsearch -b $LDAP_BASE_DN -x cn=stats_can_read 2>/dev/null | grep -q "^dn: "; then
             echo "dn: cn=stats_can_read,ou=Rights,$LDAP_BASE_DN
 objectClass: groupOfNames
 cn: stats_can_read
