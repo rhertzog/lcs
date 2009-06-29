@@ -60,11 +60,11 @@ case "$1" in
         chmod 640 /var/www/lcs/includes/private_key.inc.php
  
         # Add right stats_can_read
-        if ! ldapsearch -b $LDAP_BASE_DN -x cn=stats_can_read 2>/dev/null | grep -q "^dn: "; then
-            echo "dn: cn=stats_can_read,ou=Rights,$LDAP_BASE_DN
+        if ! ldapsearch -b "ou=$LDAP_RIGHTS_RDN,$LDAP_BASE_DN" -x "cn=stats_can_read" 2>/dev/null | grep -q "^dn: "; then
+            echo "dn: cn=stats_can_read,ou=$LDAP_RIGHTS_RDN,$LDAP_BASE_DN
 objectClass: groupOfNames
 cn: stats_can_read
-member: uid=admin,ou=People,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
+member: uid=admin,ou=$LDAP_PEOPLE_RDN,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
             ldapadd -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/stats_can_read.ldif
             rm -f /var/lib/lcs/stats_can_read.ldif
         fi
