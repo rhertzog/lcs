@@ -610,17 +610,12 @@ sub gep2posixAccount {
   $nom =~ s/'//; #';
   if ($nom =~ /\s/) {
     @noms = (split / /,$nom);
-    $nom1 = $noms[0];
-    if (length($noms[0]) < 4) {
-      $nom1 .= "_" . $noms[1];
-      $separator = ' ';
-    } else {
-      $separator = '-';
-    }
     foreach $nom_partiel (@noms) {
-      $sn .= ucfirst($nom_partiel) . $separator;
+    	$sn .= ucfirst($nom_partiel) . " ";
+	$nom1 .= $nom_partiel."_"; 
     }
     chop $sn;
+    chop $nom1; 
   } else {
     $nom1 = $nom;
     $sn = ucfirst($nom);
