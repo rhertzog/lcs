@@ -1,3 +1,15 @@
+lcs-web (2.4.3~3) Lcs; urgency=low
+
+  * Modify passwd synchro in Annu/includes/ldap.inc.php (contrib Sandrine)
+  * Modify gep2posixAccount function in LcSe.pm (contrib Sandrine)
+  * Modify crob_ldap_functions.php line 768 to 772 (contrib Sandrine)
+  * Add /usr/sbin/lcs-etch2lenny for upgrade LCS Etch to Lenny
+  * Modify ldap filter and test possible in lcs-web-config
+  * Modify constitutiongroupe.php for register_globals off
+  * Fixing bug remove process in gestpack.sh   
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 29 Jun 2009 18:42:51 +0200
+
 lcs-web (2.4.3~2) Lcs; urgency=low
 
   [ Philippe Leclerc ]
