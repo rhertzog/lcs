@@ -1,3 +1,9 @@
+lcs-security (2.4.1) unstable; urgency=low
+
+  * apache-bruteforce Add exeption for gif, ico, png, jpg and jpeg files extention
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 01 Jul 2009 21:41:13 +0200
+
 lcs-security (2.4) Lcs; urgency=low
 
   * Make a stable release 2. 
