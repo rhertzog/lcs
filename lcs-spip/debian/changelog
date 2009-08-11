@@ -1,3 +1,9 @@
+lcs-spip (2.4.1) Lcs; urgency=low
+
+  * Build a stable release 2.4.1 for spip update1.9.2h to 1.9.2i
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 11 Aug 2009 11:59:38 +0200
+
 lcs-spip (2.4.1~1) Lcs; urgency=low
 
   *  Update 1.9.2h to 1.9.2i
