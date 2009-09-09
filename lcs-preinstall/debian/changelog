@@ -1,3 +1,9 @@
+lcs-preinstall (2.4.4) Lcs; urgency=low
+
+  * change sshd chroot order for admins TCP tunnel
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed,  9 Sep 2009 13:10:15 +0200
+
 lcs-preinstall (2.4.3) Lcs; urgency=low
 
   [ Simon Cavey ]

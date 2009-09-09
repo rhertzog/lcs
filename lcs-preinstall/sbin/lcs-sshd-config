@@ -120,14 +120,14 @@ Match user assist
 	AllowTcpForwarding yes
 	ForceCommand internal-sftp
 
-Match group sftp-allowed
-          ChrootDirectory /home/%u
-          ForceCommand internal-sftp
-
 Match group admins
 	ChrootDirectory /home/%u
         ForceCommand internal-sftp
 	AllowTcpForwarding yes
+
+Match group sftp-allowed
+          ChrootDirectory /home/%u
+          ForceCommand internal-sftp
 
 Match group lcs-users
           ForceCommand /bin/false
@@ -227,14 +227,14 @@ Match user assist
         AllowTcpForwarding yes
         ForceCommand internal-sftp
 
-Match group sftp-allowed
-          ChrootDirectory /home/%u
-          ForceCommand internal-sftp
-
 Match group admins
         ChrootDirectory /home/%u
         ForceCommand internal-sftp
         AllowTcpForwarding yes
+
+Match group sftp-allowed
+          ChrootDirectory /home/%u
+          ForceCommand internal-sftp
 
 Match group lcs-users
           ForceCommand /bin/false
