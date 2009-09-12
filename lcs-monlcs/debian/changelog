@@ -1,3 +1,10 @@
+lcs-monlcs (2.4-1~1) LcsXP; urgency=low
+
+  [ Sebastien Tack ]
+  * update FCKEditor to 2.6.4.1
+
+ -- Sebastien Tack <sebastien.tack@ac-caen.fr>  Wed, 29 Apr 2009 15:03:40 +0200
+
 lcs-monlcs (2.4) Lcs; urgency=low
 
   * Build a stable release 2.4 
