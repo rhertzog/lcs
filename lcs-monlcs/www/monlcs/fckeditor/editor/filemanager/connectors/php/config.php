@@ -1,7 +1,7 @@
 <?php
 /*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -24,20 +24,19 @@
 
 global $Config ;
 include('/var/www/monlcs/includes/secure_no_header.inc.php');
-
 // SECURITY: You must explicitly enable this "connector". (Set it to "true").
 // WARNING: don't just set "$Config['Enabled'] = true ;", you must be sure that only
 //		authenticated users can access this file or use some kind of session checking.
 $Config['Enabled'] = true ;
 
-
 // Path to user files relative to the document root.
-
+//POUR MONLCS
 $Config['UserFilesPath'] = "$baseurl~".$uid."/Documents/" ;
 // Fill the following value it you prefer to specify the absolute path for the
 // user files directory. Useful if you are using a virtual directory, symbolic
 // link or alias. Examples: 'C:\\MySite\\userfiles\\' or '/root/mysite/userfiles/'.
 // Attention: The above 'UserFilesPath' must point to the same directory.
+//POUR MONLCS
 $Config['UserFilesAbsolutePath'] = "/home/".$uid."/public_html/Documents/" ;
 
 // Due to security issues with Apache modules, it is recommended to leave the
