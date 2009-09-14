@@ -1,3 +1,9 @@
+lcs-web (2.4.3~4) Lcs; urgency=low
+
+  * fix assist home directory for LCS2 SFTP
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 15 Sep 2009 01:09:57 +0200
+
 lcs-web (2.4.3~3) Lcs; urgency=low
 
   [ Jean Luc Chretien ]

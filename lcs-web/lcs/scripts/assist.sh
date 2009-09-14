@@ -27,9 +27,12 @@ echo "login: assist"
 echo "passw: $PASS"
 echo "ce compte expirera dans une heure"
 
+### On adapte les droit pour LCS 2
+chown root\:lcs-users /home/assist
+chmod 750 /home/assist
+
 # Le compte expirera dans une heure
 echo  "/usr/share/lcs/sbin/userDel.pl assist" | at now+1 hour
-
 # Mise en place des droits se3_is_admin et lcs_is_admin
 peopleRdn=`mysql lcs_db -B -N -e "select value from params where name='peopleRdn'"`
 ldap_base_dn=`mysql lcs_db -B -N -e "select value from params where name='ldap_base_dn'"`
