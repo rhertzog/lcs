@@ -4,7 +4,7 @@
 # Configuration inital de OpenVPN
 # Projet LCS 2
 # auteur : Simon CAVEY 
-# creation : 04/01/2009 modification 23/01/2009
+# creation : 04/01/2009 modification 23/09/2009
 ##
 
 . /etc/lcs/lcs.conf
@@ -23,6 +23,7 @@ FULLDOMAINE=`hostname -f`
 VLAN=0
 VPNCONNEXIONS=10
 VPNCLIENTTOCLIENT=0
+VPNMASQUERADE=0
 CHECK=`route -n |grep $VPNNET |wc -l`
 
 function veriffreesub () {
@@ -47,6 +48,7 @@ sed -e "s|@@VPNPORT@@|$VPNPORT|g" \
 -e "s|@@VPNVLAN@@|"$VLAN"|g" \
 -e "s|@@VPNCONNEXIONS@@|"$VPNCONNEXIONS"|g" \
 -e "s|@@VPNCLIENTTOCLIENT@@|"$VPNCLIENTTOCLIENT"|g" \
+-e "s|@@VPNMASQUERADE@@|"$VPNMASQUERADE"|g" \
 /var/lib/lcs/openvpn/params.sql.in > /var/lib/lcs/openvpn/params.sql
 
 mysql lcs_db < /var/lib/lcs/openvpn/params.sql
@@ -81,7 +83,6 @@ sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /usr/share/lcs/openvpn/config.inc
 ## On adapt le mail pour les utilisateurs
 sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /var/lib/lcs/openvpn/openvpn-mail-client.in
 
-
 ## On lance le scipt de génération du certif
 /usr/share/lcs/sbin/lcs-openvpn-generserveur.sh
 ## On genere les certifs pour admin : 
@@ -92,6 +93,27 @@ chmod 700  /etc/sudoers
 echo "Cmnd_Alias GENVPNCLI = /usr/share/lcs/sbin/lcs-openvpn-generclient.sh, /usr/share/lcs/sbin/lcs-openvpn-reconfig" >> /etc/sudoers
 echo "www-data ALL=NOPASSWD:GENVPNCLI" >> /etc/sudoers
 chmod 440  /etc/sudoers
+
+#
+# installation DNS
+#
+sed -e "s|@@DOMAIN@@|"$DOMAIN"|g" \
+    -e "s|@@VPNNET@@|$VPNNET|g" \
+/var/lib/lcs/openvpn/named.conf.vpn.in > /etc/bind/named.conf.vpn
+
+sed -e "s|@@DOMAIN@@|"$DOMAIN"|g" \
+    -e "s|@@VPNNET@@|"$VPNNAT"|g" \
+    -e "s|@@FULLDOMAIN@@|"$FULLDOMAINE"|g " \
+    -e "s|@@SMALLVPNNET@@|"$SMALLVPNNET"|g " \
+    -e "s|@@SERIAL@@|"1"|g " \
+/var/lib/lcs/openvpn/vpnnet.db.in > /etc/bind/vpnnet.db
+
+
+sed -e "s|@@DOMAIN@@|"$DOMAIN"|g" \
+    -e "s|@@SERIAL@@|"1"|g " \
+/var/lib/lcs/openvpn/vpnnet.rev.in > /etc/bind/vpnnet.rev
+
+echo 'include "/etc/bind/named.conf.vpn";' >> /etc/bind/named.conf
 
 
 ## On relance les services 
@@ -106,6 +128,12 @@ if [ -x /usr/sbin/invoke-rc.d ]; then
 else
 	/etc/init.d/openvpn restart
 fi
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d bind9 restart
+else
+	/etc/init.d/bind9 restart
+fi
+
 
 ## On corrige les droits
 chown -R www-data /var/log/openvpn

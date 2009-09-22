@@ -1,6 +1,10 @@
-lcs-openvpn (2.4) Lcs; urgency=low
+lcs-openvpn (2.4~1) Lcs; urgency=low
 
   * fix missing upgrade in postrm script
+  * add masquerade option
+  * change postinstall
+  * add mysql lcs-module regitration
+  * add DNS for vpn clients
 
  -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue,  2 Jun 2009 17:12:55 +0200
 

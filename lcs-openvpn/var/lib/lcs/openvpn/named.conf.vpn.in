@@ -1,0 +1,8 @@
+zone "vpn.@@DOMAIN@@" {
+	type master;
+	file "/etc/bind/vpnnet.db";
+};
+zone "@@VPNNET@@.in-addr.arpa" {
+	type master;
+	file "/etc/bind/vpnnet.rev";
+};

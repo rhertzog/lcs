@@ -4,6 +4,9 @@
 # see: dh_installdeb(1)
 
 set -e
+MODULE="openvpn"
+VER="2.4"
+INDICEMAJNBR="0"
 
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -20,17 +23,41 @@ set -e
 
 case "$1" in
     configure)
-	/usr/share/lcs/sbin/lcs-openvpn-initial-config
-	if [ -x /usr/sbin/invoke-rc.d ]; then
-                invoke-rc.d openvpn restart
-        else
+	if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
+	    /usr/share/lcs/sbin/lcs-openvpn-initial-config
+	    if [ -x /usr/sbin/invoke-rc.d ]; then
+		invoke-rc.d openvpn restart
+            else
                 /etc/init.d/openvpn restart
-        fi	
+            fi	
+#
+# Inscription du module dans applis.lcs_db
+#
+	    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'VPN par openvpn en SSL', '$INDICEMAJNBR', '$VER', '', 'S');"
+	    else
+	    echo "Mise ajour du paquet module LCS $MODULE de $2 vers $VER"
+# mise a jour dans lcs_db.applis
+	    TEST=`mysql -se "SELECT type FROM lcs_db.applis WHERE name='$MODULE';"`
+	    if 	[ "$TEST" != "S" ]; then
+		/usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'VPN par openvpn en SSL', '$INDICEMAJNBR', '$VER', '', 'S');"
+	    else
+		/usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';"
+	    fi
+#
+# Fin de la mise a jour
+#
+	    echo "Termine."
+    fi
+    if dpkg --compare-versions $preversion lt 2.4; then
+	## update mysql
+	mysql -e "INSERT INTO `params` (`id`, `name`, `value`, `srv_id`, `descr`, `cat`) VALUES (108, 'vpnmasquerade', '0', 0, 'ip du LCS est utilise en NAT pour les clients de vpn', 11);"
+	
+    fi
     ;;
-
+    
     abort-upgrade|abort-remove|abort-deconfigure)
-    ;;
-
+	;;
+    
     *)
         echo "postinst called with unknown argument \`$1'" >&2
         exit 1

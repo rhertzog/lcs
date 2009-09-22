@@ -35,6 +35,12 @@ case "$1" in
 	sed -i'' '/^www-data ALL=NOPASSWD:GENVPNCLI/d' /etc/sudoers
 	sed -i'' '/^Cmnd_Alias GENVPNCLI/d' /etc/sudoers
 	chmod 440  /etc/sudoers
+	#
+        # Désincription du module
+        #
+        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1
+        #
+
 	;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)

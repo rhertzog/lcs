@@ -5,7 +5,7 @@
 
 if [ -z "$1" ];
 then
-        echo "Usage: lcs-openvpn-reconfig <port> <vpn-network> <vpn-network-mask> <dh> <vlan-01> <nb-vpn-connexion> <client-to-client-01> <cert>"
+        echo "Usage: lcs-openvpn-reconfig <port> <vpn-network> <vpn-network-mask> <dh> <vlan-01> <nb-vpn-connexion> <client-to-client-01> <cert> <masquerade>"
         exit 0
 fi
 
@@ -21,6 +21,7 @@ VLAN=$5
 VPNCONNEXIONS=$6
 CLIENTTOCLIENT=$7
 CERT=$8
+VPNMASQUERADE=$9
 
 sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
 -e "s|@@VPNPORT@@|$VPNPORT|g" \
@@ -64,6 +65,16 @@ else
 fi
 
 
+if [ $MASQUERADE = 1 ]; then
+    echo "iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE" >> /etc/network/if-up.d/lcs-openvpn-masquerade
+    chmod +x  /etc/network/if-up.d/lcs-openvpn-masquerade
+    iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE
+else
+    if [ -e /etc/network/if-up.d/lcs-openvpn-masquerade ]
+	rm /etc/network/if-up.d/lcs-openvpn-masquerade
+	iptables -t nat -D POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE
+    fi
+fi    
 
 if [ -x /usr/sbin/invoke-rc.d ]; then
 	invoke-rc.d openvpn restart
@@ -79,4 +90,4 @@ mysql -e "UPDATE lcs_db.params SET value = $DH WHERE params.id =104 LIMIT 1 ;"
 mysql -e "UPDATE lcs_db.params SET value = $VLAN WHERE params.id =105 LIMIT 1 ;"
 mysql -e "UPDATE lcs_db.params SET value = $VPNCONNEXIONS WHERE params.id =106 LIMIT 1 ;"
 mysql -e "UPDATE lcs_db.params SET value = $CLIENTTOCLIENT WHERE params.id =107 LIMIT 1 ;"
-
+mysql -e "UPDATE lcs_db.params SET value = $VPNMASQUERADE WHERE params.id =108 LIMIT 1 ;"
