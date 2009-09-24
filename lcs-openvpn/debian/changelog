@@ -1,3 +1,9 @@
+lcs-openvpn (2.4~2) Lcs; urgency=low
+
+  * update postinst
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 24 Sep 2009 23:55:21 +0200
+
 lcs-openvpn (2.4~1) Lcs; urgency=low
 
   * fix missing upgrade in postrm script

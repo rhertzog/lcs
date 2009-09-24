@@ -4,6 +4,7 @@
 # see: dh_installdeb(1)
 
 set -e
+
 MODULE="openvpn"
 VER="2.4"
 INDICEMAJNBR="0"
@@ -20,7 +21,6 @@ INDICEMAJNBR="0"
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-
 case "$1" in
     configure)
 	if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
@@ -30,6 +30,11 @@ case "$1" in
             else
                 /etc/init.d/openvpn restart
             fi	
+	    if dpkg --compare-versions $preversion lt 2.4; then
+# update mysql
+		mysql -e "INSERT INTO `params` (`id`, `name`, `value`, `srv_id`, `descr`, `cat`) VALUES (108, 'vpnmasquerade', '0', 0, 'ip du LCS est utilise en NAT pour les clients de vpn', 11);"
+		
+	    fi
 #
 # Inscription du module dans applis.lcs_db
 #
@@ -47,11 +52,6 @@ case "$1" in
 # Fin de la mise a jour
 #
 	    echo "Termine."
-    fi
-    if dpkg --compare-versions $preversion lt 2.4; then
-	## update mysql
-	mysql -e "INSERT INTO `params` (`id`, `name`, `value`, `srv_id`, `descr`, `cat`) VALUES (108, 'vpnmasquerade', '0', 0, 'ip du LCS est utilise en NAT pour les clients de vpn', 11);"
-	
     fi
     ;;
     
