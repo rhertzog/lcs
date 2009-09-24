@@ -1,18 +1,18 @@
-<?
+<?php
 /* =============================================
    Projet LCS : Linux Communication Server
    functions.inc.php
    jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   Derniere mise a jour 22/01/2009
+   Derniere mise a jour 24/09/2009
    ============================================= */
 
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
 include ("/var/www/lcs/includes/xoft.php");
 
-    #########
-    #Ajour MrT pour CAS
+    #############
+    # CAS Section
  
     function get_rand_letters($length=29){
        $MAX = 4294619050;
@@ -54,7 +54,7 @@ include ("/var/www/lcs/includes/xoft.php");
 		</html>';
 		exit();
 	}
-    #########
+    ######### END CAS section
 
     function dispstats($idpers)
     {
@@ -254,7 +254,7 @@ include ("/var/www/lcs/includes/xoft.php");
                       @mysql_close();
                       @mysql_connect("localhost", $login, $passwd );
                       if ( mysql_error() ) {
-                          exec ("/usr/sbin/mysqlPasswInit.pl $login $passwd");
+                          exec ("$scriptsbinpath/mysqlPasswInit.pl $login $passwd");
                           #system ("echo \"DBG >> Réinit mdp mysql $login $passwd\" >> /tmp/log.lcs");
                       }
                       @mysql_close();
