@@ -1,3 +1,9 @@
+lcs-openvpn (2.4~3) Lcs; urgency=low
+
+  * update config menu
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 25 Sep 2009 00:22:04 +0200
+
 lcs-openvpn (2.4~2) Lcs; urgency=low
 
   * update postinst
