@@ -6,7 +6,7 @@
 set -e
 
 MODULE="openvpn"
-VER="2.4"
+VER="2.4~3"
 INDICEMAJNBR="0"
 
 # summary of how this script can be called:

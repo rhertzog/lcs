@@ -42,7 +42,7 @@ case "$1" in
         mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1
         #
 
-	sed -i'' '/named.conf.vpn/d' /etc/openvpn/openvpn.conf
+	sed -i'' '/named.conf.vpn/d' /etc/bind/named.conf
 	if [ -x /usr/sbin/invoke-rc.d ]; then
 	    invoke-rc.d bind9 restart
 	else
