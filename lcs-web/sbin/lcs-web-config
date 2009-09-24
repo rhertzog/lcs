@@ -30,7 +30,7 @@ case "$1" in
     configure)
         # Configure LCS Web
         #
-        # generate passwor for setup page
+        # generate password for setup page
         #
         if [ -z "$LOCAL_ADMIN_PW" ] || [ "$LOCAL_ADMIN_PW" = "AUTO" ]; then
           LOCAL_ADMIN_PW=`pwgen -1 -s 8`
@@ -101,6 +101,14 @@ Order allow,deny
 Deny from all
 </Files>
 EOF
+
+        # Generate private_key file if no exist
+        if [ ! -e /var/www/lcs/includes/private_key.inc.php ]; then
+            PRIVKEY=`perl -e '@c=("A".."Z","a".."z",0..9);print join("",@c[map{rand @c}(1..32)]),"\n"'`
+            sed -e "s|@@PRIVKEY@@|$PRIVKEY|g" /var/www/lcs/includes/private_key.in >/var/www/lcs/includes/private_key.inc.php
+            chown www-data /var/www/lcs/includes/private_key.inc.php
+            chmod 640 /var/www/lcs/includes/private_key.inc.php
+        fi
         # Installation menu.d if not present
         if [ ! -d /var/www/lcs/includes/menu.d ]; then
             cp -r /var/lib/lcs/web/menu.d /var/www/lcs/includes
