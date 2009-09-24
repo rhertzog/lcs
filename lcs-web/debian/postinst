@@ -11,8 +11,14 @@ case "$1" in
 	       . /usr/share/slis/slis-common.sh
 	       handle_initial_config lcs-web-config 60
 	   fi
+           # Restore .htpasswd if exist
+           if [ -e /tmp/lcswebsetupacces ]; then
+                mv /tmp/lcswebsetupacces /var/www/setup/.htpasswd
            # ReGenerate .htpasswd if not exist
-
+           elif [ ! -e /var/www/setup/.htpasswd ]; then
+                LOCAL_ADMIN_PW=`pwgen -1 -s 8`
+                /usr/bin/htpasswd -bc /var/www/setup/.htpasswd admin $LOCAL_ADMIN_PW
+           fi
            # Fix rights on lcs-web tree
            /usr/sbin/lcs-web-fixrights
     	;;

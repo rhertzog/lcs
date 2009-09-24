@@ -1,0 +1,24 @@
+#! /bin/sh
+# preinst script for LCS WEB
+
+set -e
+case "$1" in
+install)
+
+;;
+abort-upgrade)
+;;
+upgrade)
+	#
+        # sauvegarde setup/.htpasswd 
+        #
+	if [ -e /var/www/setup/.htpasswd ]; then
+	   mv /var/www/setup/.htpasswd /tmp/lcswebsetupacces
+	fi
+;;
+*)
+echo "preinst called with unknown argument \`$1'" >&2
+exit 1
+;;
+esac
+exit 0
