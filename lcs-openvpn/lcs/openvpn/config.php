@@ -52,7 +52,8 @@ if (isset($_POST['submit'])) {
 	dh :  $vpndh </br>
 	vlan : $vpnvlan </br>
 	nb de connexions : $vpnconnexions </br> 
-	connexion entre les clients : $clienttoclient </br>";
+	connexion entre les clients : $clienttoclient </br>
+	option masquerade : $vpnmasquerade<br>";
 }
 
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");

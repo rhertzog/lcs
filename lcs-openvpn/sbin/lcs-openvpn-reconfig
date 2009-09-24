@@ -65,7 +65,7 @@ else
 fi
 
 
-if [ $MASQUERADE = 1 ]; then
+if [ $VPNMASQUERADE = 1 ]; then
     echo "iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE" >> /etc/network/if-up.d/lcs-openvpn-masquerade
     chmod +x  /etc/network/if-up.d/lcs-openvpn-masquerade
     iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE
