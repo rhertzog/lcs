@@ -1,5 +1,6 @@
 #!/bin/bash
-# /usr/sbin/LcsMaj version du 22-01-2009
+# /usr/sbin/LcsMaj version du 24-09-2010
+PATH="/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/share/lcs/sbin:/usr/share/lcs/scripts"
 DEBIAN_PRIORITY="critical"
 DEBIAN_FRONTEND="noninteractive"
 export  DEBIAN_FRONTEND
