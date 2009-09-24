@@ -31,6 +31,7 @@ case "$1" in
 	mysql -e "DELETE FROM lcs_db.params WHERE params.id = 105 LIMIT 1;"
 	mysql -e "DELETE FROM lcs_db.params WHERE params.id = 106 LIMIT 1;"
 	mysql -e "DELETE FROM lcs_db.params WHERE params.id = 107 LIMIT 1;"
+	mysql -e "DELETE FROM lcs_db.params WHERE params.id = 108 LIMIT 1;"
 	chmod 700  /etc/sudoers
 	sed -i'' '/^www-data ALL=NOPASSWD:GENVPNCLI/d' /etc/sudoers
 	sed -i'' '/^Cmnd_Alias GENVPNCLI/d' /etc/sudoers
@@ -41,6 +42,12 @@ case "$1" in
         mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1
         #
 
+	sed -i'' '/named.conf.vpn/d' /etc/openvpn/openvpn.conf
+	if [ -x /usr/sbin/invoke-rc.d ]; then
+	    invoke-rc.d bind9 restart
+	else
+	    /etc/init.d/bind9 restart
+	fi
 	;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
