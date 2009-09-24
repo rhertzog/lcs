@@ -1,5 +1,5 @@
 <?
-/* lcs/auth.php version du : 26/05/2009 */
+/* lcs/auth.php version du : 23/09/2009 */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
@@ -98,10 +98,10 @@ switch ($error) {
                 echo "<div class='alert_msg'>L'adresse source de votre authentification a chang&#233;, veuillez vous r&#233;authentifier !</div>";
                 break;
         case "2" :
-                echo "<div class='alert_msg'>Votre d&#233;lais d'authentification est d&#233;pass&#233;, veuillez vous r&#233;authentifier !</div>";
+                echo "<div class='alert_msg'>Votre d&#233;lai d'authentification est d&#233;pass&#233;, veuillez vous r&#233;authentifier !</div>";
                 break;
         case "3" :
-                echo "<div class='alert_msg'>Votre d&#233;lais d'authentification est d&#233;pass&#233; et votre adresse source a chang&#233;, veuillez vous r&#233;authentifier !</div>";
+                echo "<div class='alert_msg'>Votre d&#233;lai d'authentification est d&#233;pass&#233; et votre adresse source a chang&#233;, veuillez vous r&#233;authentifier !</div>";
                 break;
         case "4" :
                 echo "<div class='alert_msg'>Erreur d'authentification !</div> ";
