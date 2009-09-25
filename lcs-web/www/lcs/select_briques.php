@@ -1,6 +1,6 @@
 <?
- /* lcs/select_briques.php derniere mise a jour : 18/09/2008
-conformité UTF8 et register_long_arrays = Off
+ /* lcs/select_briques.php derniere mise a jour : 24/09/2009
+conformite UTF8 et register_long_arrays = Off
  */
 require "./includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
@@ -9,7 +9,7 @@ require "../Annu/includes/ihm.inc.php";
 list ($idpers,$login)= isauth();
 if ($idpers == "0") header("Location:$urlauth");
 
-//conformité register_long_arrays =off
+//conformite register_long_arrays =off
 if (isset($_POST['squirrelmail'])) $squirrelmail=$_POST['squirrelmail']; else $squirrelmail="" ;
 if (isset($_POST['submit'])) $submit=$_POST['submit'];else $submit="";
 if (isset($_POST['url_accueil'])) $url_accueil=$_POST['url_accueil'];else $url_accueil="";
@@ -21,10 +21,10 @@ $html = "
         <link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n
 </head>\n
 <body>\n";
-$html .= "<div align='center'><h2>Configuration des liens et validation webmail</h2></div>\n";
+$html .= "<div align='center'><h2>Configuration des liens LCS</h2></div>\n";
 
 if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
-	// Lecture des paramètres dans la table briques
+	// Lecture des parametres dans la table briques
 	$query="SELECT * from applis";
 	$result=@mysql_db_query("$DBAUTH",$query, $authlink);
 	if (!$submit) {
@@ -37,11 +37,6 @@ if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
         	$html .= "<form action='select_briques.php' method='post'>\n";
  		$html .= "  <table border='0'>\n";
         	echo $html;
-
-        	echo "        <tr><td>Webmail (squirrelmail)</td><td><input type='checkbox' name='squirrelmail'";
-        	if ($squirrelmail=="1") echo "checked";
-        	echo " ></td></tr>\n";
-
         	$html = "         <tr>\n<td>Page d'accueil LCS (URL) </td><td><input size='40' type='text' name='url_accueil' value='$url_accueil'></td></tr>\n";
         	$html .= "         <tr><td> Lien Logo LCS (URL) </td><td><input size='40' type='text' name='url_logo' value='$url_logo'></td></tr>\n";		
         	$html .="  </table>\n";
@@ -59,14 +54,13 @@ if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
                           if  ($$r["name"] == "on") $$r["name"] ="1"; else $$r["name"] ="0";
                         #echo "DEBUG >> ".$r["name"]." ".$$r["name"]." ".$r["value"]."<br>";
 	                if ($r["value"]!=$$r["name"] && $r["type"]!="P") {
-                 	    // Mise à jour de la base de données
+                 	    // Mise a jour de la base de donnees
                    	    $query1="UPDATE applis SET value=\"".$$r["name"]."\" WHERE name=\"".$r["name"]."\"";
                    	    $result1=mysql_query($query1);
                    	    $modif=true;
                 	}                        
                     }
                 }
-
         	echo $html;
         	if ($result1 && $modif)
                 	print "<div class=alert_msg>".gettext("Vos choix ont &eacute;t&eacute; pris en compte ! ")."</div>\n";
