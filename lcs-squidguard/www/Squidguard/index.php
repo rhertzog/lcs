@@ -4,7 +4,7 @@
    Gestion des balacklist squidGuard
    squidGuard/index.php
    Equipe Tice académie de Caen
-   Dernière modification :02 Mai 08
+   Dernière modification : 25 Sept 09
    Distribué selon les termes de la licence GPL
    ============================================= */
 
@@ -20,6 +20,7 @@ $path2wl="/var/lib/squidguard/db/whitelists/";
 // Initialisation variables :
 // Methode POST
 $list_del = $_POST['list_del'];
+$list_add = $_POST['list_add'];
 $raz_db = $_POST['raz_db'];
 $webmail = $_POST['webmail'];
 $audiovideo =  $_POST['audiovideo'];
@@ -33,6 +34,7 @@ $forums = $_POST['forums'];
 $bl_full = $_POST['bl_full'];
 $bl_lcs = $_POST['bl_lcs'];
 $modif_status = $_POST['modif_status'];
+$action = $_POST['action'];
 
 function is_ip($ip) {
    $ip = trim($ip);
