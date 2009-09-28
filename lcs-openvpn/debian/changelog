@@ -1,8 +1,12 @@
 lcs-openvpn (2.4~4) Lcs; urgency=low
 
+  [ Simon Cavey ]
   * fix reconfig script
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 25 Sep 2009 00:58:43 +0200
+  [ Simon Cavey ]
+  * add DNS and WINS options
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 28 Sep 2009 18:41:52 +0200
 
 lcs-openvpn (2.4~3) Lcs; urgency=low
 
