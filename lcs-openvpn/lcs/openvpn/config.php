@@ -47,7 +47,8 @@ if (isset($_POST['submit'])) {
 	$vpnwins=$_POST['form_vpnwins'];
 	$vpndnsclient=$_POST['form_vpndnsclient'];
 	exec("sudo -H /usr/share/lcs/sbin/lcs-openvpn-reconfig $vpnport $vpnnet $vpnnetmasq $vpndh $vpnvlan $vpnconnexions $clienttoclient $vpncert $vpnmasquerade $vpnwins $vpndnsclient");
-        echo " port : $vpnport </br>
+        
+        echo "port : $vpnport </br>
 	netwok : $vpnnet </br>
 	netmasq : $vpnnetmasq </br>
 	certif : $vpncert </br>
@@ -55,7 +56,12 @@ if (isset($_POST['submit'])) {
 	vlan : $vpnvlan </br>
 	nb de connexions : $vpnconnexions </br> 
 	connexion entre les clients : $clienttoclient </br>
-	option masquerade : $vpnmasquerade<br>";
+	option masquerade : $vpnmasquerade</br>
+	option WINS : $vpnwins</br>
+	option DNS : $vpndnsclient</br>";
+	
+	echo "<p>Changements valide.</p>"
+		
 }
 
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");

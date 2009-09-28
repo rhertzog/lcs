@@ -22,8 +22,8 @@ VPNCONNEXIONS=$6
 CLIENTTOCLIENT=$7
 CERT=$8
 VPNMASQUERADE=$9
-VPNWINS=$10
-VPNDNSCLIENT=$11
+VPNWINS=${10}
+VPNDNSCLIENT=${11}
 FULLDOMAINE=`hostname -f`
 
 sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
@@ -75,7 +75,7 @@ if [ $VPNMASQUERADE = 1 ]; then
 	 Vos clients VPN sont donc vu par les autres stations par l'adresse IP du LCS" \
 	 | mail -s "Activation de l'option masquerade lcs-openvpn" admin@$DOMAIN
 else
-    if [ -e /etc/network/if-up.d/lcs-openvpn-masquerade ]
+    if [ -e /etc/network/if-up.d/lcs-openvpn-masquerade ]; then
 	rm /etc/network/if-up.d/lcs-openvpn-masquerade
 	iptables -t nat -D POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE
     fi
@@ -95,7 +95,7 @@ fi
 
 sed -e "s|@@DOMAIN@@|"$DOMAIN"|g" \
     -e "s|@@VPNNET@@|"$VPNNAT"|g" \
-    -e "s|@@FULLDOMAIN@@|"$FULLDOMAINE"|g " \
+    -e "s|@@FULLDOMAINE@@|"$FULLDOMAINE"|g " \
     -e "s|@@SMALLVPNNET@@|"$SMALLVPNNET"|g " \
     -e "s|@@SERIAL@@|"2"|g " \
 /var/lib/lcs/openvpn/vpnnet.db.in > /etc/bind/vpnnet.db
@@ -113,14 +113,14 @@ else
 	/etc/init.d/openvpn restart
 fi
 
-mysql -e "UPDATE lcs_db.params SET value = $VPNNET WHERE params.id =100 LIMIT 1 ;"
-mysql -e "UPDATE lcs_db.params SET value = $VPNNETMASQ WHERE params.id =101 LIMIT 1 ;"
-mysql -e "UPDATE lcs_db.params SET value = $VPNPORT WHERE params.id =102 LIMIT 1 ;"
-mysql -e "UPDATE lcs_db.params SET value = $CERT WHERE params.id =103 LIMIT 1 ;"
-mysql -e "UPDATE lcs_db.params SET value = $DH WHERE params.id =104 LIMIT 1 ;"
-mysql -e "UPDATE lcs_db.params SET value = $VLAN WHERE params.id =105 LIMIT 1 ;"
-mysql -e "UPDATE lcs_db.params SET value = $VPNCONNEXIONS WHERE params.id =106 LIMIT 1 ;"
-mysql -e "UPDATE lcs_db.params SET value = $CLIENTTOCLIENT WHERE params.id =107 LIMIT 1 ;"
-mysql -e "UPDATE lcs_db.params SET value = $VPNMASQUERADE WHERE params.id =108 LIMIT 1 ;"
-mysql -e "UPDATE lcs_db.params SET value = $VPNWINS WHERE params.id =109 LIMIT 1 ;"
-mysql -e "UPDATE lcs_db.params SET value = $VPNDNSCLIENT WHERE params.id =110 LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNNET' WHERE params.id =100 LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNNETMASQ' WHERE params.id =101 LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNPORT' WHERE params.id =102 LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$CERT' WHERE params.id =103 LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$DH' WHERE params.id =104 LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VLAN' WHERE params.id =105 LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNCONNEXIONS' WHERE params.id =106 LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$CLIENTTOCLIENT' WHERE params.id =107 LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNMASQUERADE' WHERE params.id =108 LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNWINS' WHERE params.id =109 LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNDNSCLIENT' WHERE params.id =110 LIMIT 1 ;"
