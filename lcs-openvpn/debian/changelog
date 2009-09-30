@@ -1,3 +1,9 @@
+lcs-openvpn (2.4) Lcs; urgency=low
+
+  * update MacOSX tunnelblick to 3.0b18
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 30 Sep 2009 15:12:21 +0200
+
 lcs-openvpn (2.4~4) Lcs; urgency=low
 
   [ Simon Cavey ]

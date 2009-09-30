@@ -4,7 +4,7 @@ Pour vous connecter au reseau de votre etablissement,
 
 Si vous etes sous Windows:
 1) Telechargez et installez le client OpenVPN a l'adresse : 
-   http://@@FULLDOMAINE@@/openvpn/downloads/
+   http://@@FULLDOMAINE@@/openvpn/downloads/openvpn-windows-gui-install.exe   
 2) Connectez vous sur le LCS, Utilisez l'application Client FTP
    puis dans Documents/vpn
    Telechargez le fichier configuration-vpn.zip
@@ -24,7 +24,7 @@ http://wwdeb.crdp.ac-caen.fr/LcsDoc/index.php/Installer_et_se_connecter_%C3%A0_l
 Si vous etes sous Mac OS 10.4 ou supperieur
 
 1) Telechargez et installez le client OpenVPN a l'adresse :
-   http://@@FULLDOMAINE@@/openvpn/downloads/Tunnelblick_3.0b10.dmg 
+   http://@@FULLDOMAINE@@/openvpn/downloads/Tunnelblick_macosx.dmg 
    et installez l'application.
 2) Lancer une fois l'Application pour finir l'installation.
 	Un tunnel doit apparaitre a proximite de l'heure dans la barre de menu.
