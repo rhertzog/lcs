@@ -1,3 +1,9 @@
+lcs-anti-spam (2.4.3) Lcs; urgency=low
+
+  * add postrm to remove myslq entry
+
+ -- Simon Cavey <simon.caveys@crdp.ac-caen.fr>  Thu,  1 Oct 2009 15:46:14 +0200
+
 lcs-anti-spam (2.4.2) Lcs; urgency=low
 
   * add mysql entries for modules status
