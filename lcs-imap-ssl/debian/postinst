@@ -4,8 +4,8 @@
 # see: dh_installdeb(1)
 
 set -e
-VER="2.1-2~1"
 MODULE="imap-ssl"
+VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
 INDICEMAJNBR="0"
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
