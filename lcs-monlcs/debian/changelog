@@ -1,3 +1,9 @@
+lcs-monlcs (2.4.1) Lcs; urgency=low
+
+  * remove tilde
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu,  1 Oct 2009 16:03:06 +0200
+
 lcs-monlcs (2.4.1~1) LcsXP; urgency=low
 
   [ Sebastien Tack ]
