@@ -60,7 +60,7 @@ if (isset($_POST['submit'])) {
 	option WINS : $vpnwins</br>
 	option DNS : $vpndnsclient</br>";
 	
-	echo "<p>Changements valide.</p>"
+	echo "<p>Changements valide.</p>";
 		
 }
 
