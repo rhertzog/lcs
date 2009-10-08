@@ -1,0 +1,32 @@
+<?php 
+	require_once('../include/common.inc.php'); 
+	require_once('../include/helpdesk.inc.php'); 
+	if ($_POST)
+		$params = $_POST; 
+
+	//$url = URL_API."/toto"; 	
+	$url = URL_API."/giveTickets"; 	
+	//$url = URL_ROOT."/Tickets/GetAssignedTickets";
+	$response = $HD->getProxy()->process($url);
+	//die(htmlentities($response));
+	$headers = $HD->getProxy()->getHeaders();
+	if (eregi('200 OK',$headers[0])) {
+		if ( eregi('application/xml',$HD->getProxy()->getContentType()) ) {
+			@$XML  = new SimpleXMLElement($response);
+                	$tickets =  $XML->tickets->ticket;
+			foreach ($tickets as $ticket) {
+				echo "<div>";
+				//foreach($ticket as $t) {
+					echo "<BR /><A href=\"#\" id=\"ticket$ticket->id\" class=\"ticket\">$ticket->title ($ticket->updated_at)</A>";
+				//}
+				echo "</div>";
+			}
+		}
+		else
+			print($HD->getProxy()->getContentType());
+
+	}
+		
+else
+		echo "HTTP ERROR ".$headers[0];	
+?>

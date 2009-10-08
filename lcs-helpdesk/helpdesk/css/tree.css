@@ -1,0 +1,61 @@
+body{
+		
+		background-repeat:no-repeat;
+		padding-top:5px;	
+		line-height:130%;
+
+	}
+ul, .folder {
+	margin: 0px;
+	padding: 0px;
+	margin-left: 1px;
+	padding-left:20px;
+	font-family: "Trebuchet MS", "Lucida Sans Unicode", Arial, sans-serif;
+	font-size: 1em;
+	
+	}
+img {
+	
+}
+	#ajaxMessage{
+		margin-top:10px;
+		font-size:0.9em;
+		color:red;
+	
+	}
+	#expandCollapse{
+		font-size:0.9em;
+	}
+	a{
+		color:#000;
+		font-family:arial;
+	}
+	
+	#dhtmlgoodies_tree{
+		margin:0px;
+		padding:0px;
+		margin-left:10px;
+	}
+	#dhtmlgoodies_tree ul{	/* Sub menu groups */
+		margin-left:20px;	/* Left spacing */
+		padding-left:0px;
+		display:none;	/* Initially hide sub nodes */
+	}
+	#dhtmlgoodies_tree li{	/* Nodes */
+		list-style-type:none;
+		vertical-align:middle;
+		
+	}
+	#dhtmlgoodies_tree li a{	/* Node links */
+		color:#000;
+		text-decoration:none;
+		font-family:arial;
+		font-size: 1em;
+		padding-left:2px;
+	}
+	#dhtmlgoodies_tree input{
+		width:200px;
+		font-size:1em;
+		margin-left:2px;
+		font-family:arial;
+	}
