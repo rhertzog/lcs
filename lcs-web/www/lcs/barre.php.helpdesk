@@ -194,8 +194,8 @@ if ( $idpers==0 ) {
 # inclusion helpdesk
 ######################
 
-	$test_helpdesk = exec("dpkg -l | grep lcs-helpdesk | cut -d\"-\" -f2  | cut -d\" \" -f 1");
-	if (trim($test_helpdesk) == 'helpdesk') {
+	$test_helpdesk = exec("dpkg -l | grep lcs-helpdesk | cut -d\" \" -f1");
+	if (trim($test_helpdesk) == 'ii') {
 		$administrator = (is_admin('Lcs_is_admin', $login) == "Y");
 		$debian_version = exec('cat /etc/debian_version');
         	//ETCH OU LENNY
