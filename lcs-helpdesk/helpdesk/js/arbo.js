@@ -4,7 +4,7 @@ CRDP Basse Normandie
 Septembre 2008
  */
 	
-var repImages = '/lcs/images/';
+var repImages = '/helpdesk/images/';
 imagePlus = 'dhtmlgoodies_plus.gif';
 imageMinus = 'dhtmlgoodies_minus.gif';
 imageRien = 'dhtmlgoodies_rien.gif';
