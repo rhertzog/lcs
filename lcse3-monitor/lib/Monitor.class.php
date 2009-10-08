@@ -165,7 +165,34 @@ class Monitor {
 </LCSInformations>';
     }
 
-    private function GetSE3Informations() {
+private function GetSE3Informations() {
+
+        $user = exec("cat /var/www/se3/includes/config.inc.php | grep \"dbuser=\" | cut -d\"=\" -f2 | cut -d\";\" -f1");
+        $pass = exec("cat /var/www/se3/includes/config.inc.php | grep \"dbpass=\" | cut -d\"=\" -f2 | cut -d\";\" -f1");
+        $host = exec("cat /var/www/se3/includes/config.inc.php | grep \"dbhost=\" | cut -d\"=\" -f2 | cut -d\";\" -f1");
+        $name = exec("cat /var/www/se3/includes/config.inc.php | grep \"dbname=\" | cut -d\"=\" -f2 | cut -d\";\" -f1");
+
+
+        $user = str_replace('"','',$user);
+        $pass = str_replace('"','',$pass);
+        $host = str_replace('"','',$host);
+        $name = str_replace('"','',$name);
+        // Lit la BDD
+        $results['BDD'] = array();
+        try {
+            $dbh = new PDO('mysql:host='.$host.';dbname='.$name, $user, $pass);
+            foreach($dbh->query('SELECT * FROM params') as $row) {
+                if(trim($row['name']) != '') {
+                    $results['BDD']['se3_'.trim($row['name'])] = $row['value'];
+                }
+            }
+            $dbh = null;
+        } catch (PDOException $e) {
+            $results['BDD'] = "Erreur !: " . $e->getMessage() . "<br/>";
+        }
+
+        return '<SE3Informations>'.CommonFunctions::ArrayToXML($results).'</SE3Informations>';
+
 
     }
 
