@@ -201,7 +201,7 @@ if ( $idpers==0 ) {
         	//ETCH OU LENNY
 
 		if ($administrator && $debian_version != '3.1') {
-                	echo "<div id=\"HelpDesk\" class=\"HelpDesk\"><A target=\"principale\" href=\"/Modules/helpdesk/\"><img style=\"width: 60%;\" title=\"HelpDesk Academique\" src=\"/lcs/images/sos.png\" border=\"0\"></img></div></A>";
+                	echo "<div id=\"HelpDesk\" class=\"HelpDesk\"><A target=\"principale\" href=\"/helpdesk/\"><img style=\"width: 60%;\" title=\"HelpDesk Academique\" src=\"/lcs/images/sos.png\" border=\"0\"></img></div></A>";
         	}
         	//CAS DE SARGE - lien vers inscription helpdesk
         	if ($administrator && $debian_version == '3.1') {
