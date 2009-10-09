@@ -2,11 +2,9 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    config.inc.php
-   Fichier de configuration de l'authentification
-   Parametres de la base lcs_db
-   jLCF <(-_Â°)/> jean-luc.chretien@tice.ac-caen.fr
+   jLCF <(-_°)/> jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   Derniere modification 08/06/2009
+   Derniere modification 09/10/2009
    ============================================= */
 
 # Mode DEBUG LCS 
@@ -41,7 +39,7 @@ $dn = array();
   $dn["trash"]  = "$trashRdn,$ldap_base_dn";
   $dn["parcs"] = "$parcsRdn,$ldap_base_dn";
   $dn["computers"] = "$computersRdn,$ldap_base_dn";
-#  $dn["radius"]  = "$radiusRdn,$ldap_base_dn";
+# $dn["radius"]  = "$radiusRdn,$ldap_base_dn";
 
 $adminDn = $adminRdn.",".$ldap_base_dn;
 
@@ -62,8 +60,8 @@ $secook= 0;
 # Chemins
 $basedir="/var/www/";
 $basedir_perso="/home/";
-$baseurl="http://$_SERVER[SERVER_NAME]/";
-if ( @$SERVER_PORT=="443" ) 
+$baseurl="http://".$_SERVER['SERVER_NAME']."/";
+if ( @$_SERVER['SERVER_PORT']=="443" ) 
     $baseurl=ereg_replace("http","https",$baseurl);
 $urlauth=$baseurl."lcs/auth.php";
 $imagespath="../images";
