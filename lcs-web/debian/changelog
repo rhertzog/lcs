@@ -1,3 +1,14 @@
+lcs-web (2.4.4~1) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien]
+  * Fix port detection in config.inc.ph for register_globals Off
+
+  [ Sebastien Tack]
+  * Add Ext JS: Cross-Browser Rich Internet Application Framework in /var/www/lib/js
+  * Modify barre.php for helpdesk 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 09 Oct 2009 10:47:29 +0200
+
 lcs-web (2.4.3) Lcs; urgency=low
 
   *  Make a stable release
