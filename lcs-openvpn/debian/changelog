@@ -1,3 +1,9 @@
+lcs-openvpn (2.4.2~1) Lcs; urgency=low
+
+  * remove statics entries in lcs_db.params
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun, 11 Oct 2009 20:16:08 +0200
+
 lcs-openvpn (2.4.1) Lcs; urgency=low
 
   * add missing ;

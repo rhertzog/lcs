@@ -40,9 +40,9 @@ case "$1" in
 ### mise a jour de lcs-openvpn
 		if dpkg --compare-versions $preversion lt 2.4 ; then
                 # update mysql maj 2.4
-		mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES (108, 'vpnmasquerade', '0', 0, 'ip du LCS est utilise en NAT pour les clients de vpn', 11);"
-		mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES (109, 'vpnwins', 'aucun', 0, 'ip du serveur WINS generalement IP du SE3', 11);"
-		mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES (110, 'vpndnsclient', '0', 0, 'Utiliser le LCS en serveur DNS sur le VPN', 11);"
+		mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES ('', 'vpnmasquerade', '0', 0, 'ip du LCS est utilise en NAT pour les clients de vpn', 11);"
+		mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES ('', 'vpnwins', 'aucun', 0, 'ip du serveur WINS generalement IP du SE3', 11);"
+		mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES ('', 'vpndnsclient', '0', 0, 'Utiliser le LCS en serveur DNS sur le VPN', 11);"
 		fi
 
 		echo "Mise ajour du paquet module LCS $MODULE de $2 vers $VER"

@@ -19,7 +19,7 @@ function mktable($title, $content) {
 if (!isset($_POST['submit'])) {
         echo "Parametre de Lcs-OpenVPN ";
         echo "<table border=\"0\"><form method=post>";
-        $result=mysql_query("SELECT * from lcs_db.params WHERE id between 100 and 110 ORDER BY `id`");
+        $result=mysql_query("SELECT * FROM `params` WHERE name IN (\'vpnnet\', \'vpnnetmasq\', \'vpnport\', \'vpncert\', \'vpndh\', \'vpnvlan\', \'vpnconnexions\', \'vpnclienttoclient\', \'vpnmasquerade\' , \'vpnwins\', \'vpndnsclient\') ORDER BY `id`");
         if ($result) {
                 while ($r=mysql_fetch_array($result)) {
                         echo "<tr><td colspan=\"2\">".$r["descr"]." (<em><font color=\"red\">".$r["name"]."</font></em>)</td>";
