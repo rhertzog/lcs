@@ -5,7 +5,7 @@
         items: ['->','-',
 	{
                     
-		    text: 'R&#233;pondre',
+		    text: '%TEXT_REP%',
                     id: 'btnRep_ticket_%ROWID%',
                     handler : answer_show,
                     

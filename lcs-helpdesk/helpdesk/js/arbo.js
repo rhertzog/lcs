@@ -14,7 +14,7 @@ choix_niveau = '?';
 function HideAll() {
     var liste = document.getElementsByClassName('img_tree');
     for (var i = 0; i < liste.length; i++) {
-        if ($('folder'+parseInt(i)))
+        if ($('folder'+parseInt(i)) && (i>0) )
             HideShow($('folder'+parseInt(i)));
     }
 }
@@ -128,7 +128,6 @@ function link_tree(container, ajax) {
 
                                 var liste2 = document.getElementsByClassName('cat_tree');
                                 	for (var i = 0; i < liste2.length; i++) {
-
 						liste2[i].onclick = function() {
 							//alert(this.innerHTML);
 							if (receiver) {
@@ -138,6 +137,10 @@ function link_tree(container, ajax) {
 							}
 							return false;
 						}
+						liste2[i].onmousedown = function() {
+							this.style.cursor = 'pointer';
+						}
+
 					}
 
 

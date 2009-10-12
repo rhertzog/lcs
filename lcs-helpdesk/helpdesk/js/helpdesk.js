@@ -48,17 +48,18 @@
 			var url = '/helpdesk/ajaxlib/editTicket.php';
 			ticket = ligne.id;
 			var params = '?ticket='+ticket;
-			params += '&title='+(ligne.data.title);
-			params += '&description='+(ligne.data.description);
-			params += '&categorie='+(ligne.data.categorie);
-			params += '&submitter='+(ligne.data.suivipar);
+			params += '&title='+escape(ligne.data.title);
+			params += '&description='+escape(ligne.data.description);
+			params += '&categorie='+escape(ligne.data.categorie);
+			params += '&submitter='+escape(ligne.data.suivipar);
+			params += '&statut='+escape(ligne.data.statut);
 			
 			try {
 					Ext.getCmp('mainTab').remove(Ext.getCmp('showTicket'));
 					openTab('showTicket', ligne.data.title, url, null, params); 
 			}
 			catch(e) {
-				//alert(e);
+				Ext.Msg.alert(e);
 			}
 		} 
 
@@ -124,7 +125,7 @@
 					if (appListe) {
 						appListe.show();
 						init_tree($('arbo_link'));
-						//HideAll();	
+						HideAll();	
 					}
 				}});
 			}

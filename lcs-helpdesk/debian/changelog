@@ -1,5 +1,11 @@
-lcs-helpdesk (2.4-1~1) unstable; urgency=low
+lcs-helpdesk (2.4.1~2) unrealeased; urgency=low
+
+  * lcs-helpdesk: modifs demandees par wawa  
+
+ -- Sebastien TACK <sebastien.tack@ac-caen.fr>  Mon,  11 Oct 2009 09:58:50 +0200
+
+lcs-helpdesk (2.4.1~1) unreleased; urgency=low
 
   * Initial release.
 
- -- Sebastien TACK <sebastien.tack@ac-caen.fr>  Thu, 08 Oct 2009 13:00:08 +0100
+ -- Sebastien TACK <sebastien.tack@ac-caen.fr>  Thu, 8 Oct 2009 13:00:08 +0100
