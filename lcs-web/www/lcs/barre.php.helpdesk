@@ -193,19 +193,12 @@ if ( $idpers==0 ) {
 ######################
 # inclusion helpdesk
 ######################
-
-	$test_helpdesk = exec("dpkg -l | grep lcs-helpdesk | cut -d\" \" -f1");
-	if (trim($test_helpdesk) == 'ii') {
-		$administrator = (is_admin('Lcs_is_admin', $login) == "Y");
-		$debian_version = exec('cat /etc/debian_version');
-        	//ETCH OU LENNY
-
-		if ($administrator && $debian_version != '3.1') {
+	//TODO gestion de l'url Helpdesk du fichier de conf du paquet lcse3-monitor
+	if ($helpdesk == '1') {
+		$administrator = ( (is_admin('Lcs_is_admin', $login) == "Y")  || (is_admin('System_is_admin', $login) == "Y"));
+		
+		if ($administrator) {
                 	echo "<div id=\"HelpDesk\" class=\"HelpDesk\"><A target=\"principale\" href=\"/helpdesk/\"><img style=\"width: 60%;\" title=\"HelpDesk Academique\" src=\"/lcs/images/sos.png\" border=\"0\"></img></div></A>";
-        	}
-        	//CAS DE SARGE - lien vers inscription helpdesk
-        	if ($administrator && $debian_version == '3.1') {
-                	echo "<div id=\"HelpDesk\" class=\"HelpDesk\"><A target=\"principale\" href=\"https://helpdesk.crdp.ac-caen.fr/Client\"><img style=\"width: 60%;\" title=\"HelpDesk Academique\" src=\"/lcs/images/sos.png\" border=\"0\"></img></A></div>";
         	}
 	}
 #####################
