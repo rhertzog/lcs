@@ -194,7 +194,7 @@ if ( $idpers==0 ) {
 # inclusion helpdesk
 ######################
 	//TODO gestion de l'url Helpdesk du fichier de conf du paquet lcse3-monitor
-	if ($helpdesk == '1') {
+	if ( isset($helpdesk) && $helpdesk == '1') {
 		$administrator = ( (is_admin('Lcs_is_admin', $login) == "Y")  || (is_admin('System_is_admin', $login) == "Y"));
 		
 		if ($administrator) {
