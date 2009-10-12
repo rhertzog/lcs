@@ -23,6 +23,9 @@ install:
 	install -d $(DESTDIR)/usr/share/lcs/openvpn/templates
 	install -d $(DESTDIR)/usr/share/lcs/openvpn/templates_c
 	cp -a lcs/* $(DESTDIR)/usr/share/lcs
+	# install doc
+	install -d $(DESTDIR)/usr/share/doc/lcs/openvpn/html
+	install -m 644 doc-html/* $(DESTDIR)/usr/share/doc/lcs/imap/html/
 	# Lcs menu et log
 	install -d $(DESTDIR)/var
 	cp -a var/* $(DESTDIR)/var	

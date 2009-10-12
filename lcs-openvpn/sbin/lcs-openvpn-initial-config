@@ -24,6 +24,9 @@ VLAN=0
 VPNCONNEXIONS=10
 VPNCLIENTTOCLIENT=0
 VPNMASQUERADE=0
+VPNWINS="aucun"
+VPNDNSCLIENT="0"
+
 CHECK=`route -n |grep $VPNNET |wc -l`
 
 function veriffreesub () {
@@ -49,6 +52,8 @@ sed -e "s|@@VPNPORT@@|$VPNPORT|g" \
 -e "s|@@VPNCONNEXIONS@@|"$VPNCONNEXIONS"|g" \
 -e "s|@@VPNCLIENTTOCLIENT@@|"$VPNCLIENTTOCLIENT"|g" \
 -e "s|@@VPNMASQUERADE@@|"$VPNMASQUERADE"|g" \
+-e "s|@@VPNWINS@@|"$VPNWINS"|g" \
+-e "s|@@VPNDNSCLIENT@@|"$VPNDNSCLIENT"|g" \
 /var/lib/lcs/openvpn/params.sql.in > /var/lib/lcs/openvpn/params.sql
 
 mysql lcs_db < /var/lib/lcs/openvpn/params.sql
@@ -107,7 +112,6 @@ sed -e "s|@@DOMAIN@@|"$DOMAIN"|g" \
     -e "s|@@SMALLVPNNET@@|"$SMALLVPNNET"|g " \
     -e "s|@@SERIAL@@|"1"|g " \
 /var/lib/lcs/openvpn/vpnnet.db.in > /etc/bind/vpnnet.db
-
 
 sed -e "s|@@DOMAIN@@|"$DOMAIN"|g" \
     -e "s|@@SERIAL@@|"1"|g " \

@@ -5,7 +5,7 @@
 
 if [ -z "$1" ];
 then
-        echo "Usage: lcs-openvpn-reconfig <port> <vpn-network> <vpn-network-mask> <dh> <vlan-01> <nb-vpn-connexion> <client-to-client-01> <cert> <masquerade>"
+        echo "Usage: lcs-openvpn-reconfig <port> <vpn-network> <vpn-network-mask> <dh> <vlan-01> <nb-vpn-connexion> <client-to-client-01> <cert> <masquerade> <wins> <dnsclient-O1>"
         exit 0
 fi
 
@@ -68,7 +68,7 @@ else
 fi
 
 if [ $VPNMASQUERADE = 1 ]; then
-    echo "iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE" >> /etc/network/if-up.d/lcs-openvpn-masquerade
+    echo "iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE" > /etc/network/if-up.d/lcs-openvpn-masquerade
     chmod +x  /etc/network/if-up.d/lcs-openvpn-masquerade
     iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE
     echo "Attention la mise en place de l'option masquerade a ete active.\

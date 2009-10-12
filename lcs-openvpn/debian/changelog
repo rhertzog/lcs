@@ -1,3 +1,12 @@
+lcs-openvpn (2.4.2~2) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * Non-maintainer upload.
+  * fixing initial install missing params
+  * adding simple html documentation
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 12 Oct 2009 19:51:46 +0200
+
 lcs-openvpn (2.4.2~1) Lcs; urgency=low
 
   * remove statics entries in lcs_db.params
