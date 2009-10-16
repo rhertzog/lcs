@@ -1720,12 +1720,12 @@ if (! isset($SMBWEBCLIENT_CLASS)) {
 	
 	list ($idpers,$login)= isauth();
 
-	if(ldap_get_right("smbweb_is_open",$login)!='Y') {
+	if(@ldap_get_right("smbweb_is_open",$login)!='Y') {
                 $swc = new smbwebclient;
                 $swc->NoRun('noright');
 	}
 	else {
-		if(ldap_get_right("lcs_is_admin",$login)=='Y') {
+		if(@ldap_get_right("lcs_is_admin",$login)=='Y') {
 			$acces="y";
 		}
 		else {
