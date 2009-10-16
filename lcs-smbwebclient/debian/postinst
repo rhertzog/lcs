@@ -20,6 +20,10 @@ if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
     # Inscription du params shareview dans lcs_db.params
     #
     /usr/bin/mysql -e "INSERT INTO lcs_db.params VALUES (NULL, 'shareview', 'Docs/Classes/Progs', '0', 'Partages Visibles avec smbwebclient', '1');"
+    #
+    # Add smb_is_open right if not exist
+    #
+    $CONF/Maj/maj2.sh
 else
     echo "Mise à jour du paquet module LCS $MODULE de $2 vers $VER"
     #
