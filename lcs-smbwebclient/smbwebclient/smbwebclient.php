@@ -392,6 +392,41 @@ function smbwebclient ()
 		$this->mimeTypes[$a[0]] = $a[1];
 	}
 }
+function NoRun ($condition)
+{
+    $msg_head="
+            <style type=\"text/css\">
+                body {text-align:center}
+                div {width:60%;
+                     margin:0 auto;
+                     background-position:left; 
+                     background-repeat:no-repeat;
+                     background-image:url(../Annu/images/warning.png)
+                }
+            </style>
+              ";
+    if ( $condition == "passdef" ) {
+        $msg_passdef = $msg_head;
+        $msg_passdef .= "
+            <div>
+                <h5>Vous n'avez pas le droit d'accéder à l'application Client SE3 car vous n'avez pas changé votre mot de passe.</h5>
+                <h5>Vous pouvez changer votre mot de passe, en suivant <a href=\"../Annu/mod_pwd.php\" title=\"Modification mot de passe\">ce lien...</a></h5>
+            </div>
+            ";
+        $page = $this->Page('Accès non autorisé',$msg_passdef);
+    } elseif ( $condition == "noright" ) {
+        $msg_noright = $msg_head;
+        $msg_noright .= "
+            <div>
+                <h5>Vous n'avez pas le droit d'accéder à l'application Client SE3.</h5>
+                <h5>Contactez votre adminsitrateur pour obtenir ce droit !</h5>
+            </div>
+                        ";
+        $page = $this->Page('Accès non autorisé',$msg_noright);
+    }
+    print $page;
+    exit;
+}
 
 function Run ()
 {
@@ -1502,6 +1537,8 @@ function _SmbClient ($command='', $path='', $message='', $dumpFile=false)
 		}
 	}
 	$cmdline = $this->cfgSmbClient.' '.$smbcmd.' '.$options.' -N ';
+        # Modify for Lenny
+	#$cmdline = $this->cfgSmbClient.' '.$smbcmd.' '.$options.' ';
 
 
 	if ($message <> '') $cmdline = "echo ".escapeshellarg($message).' | '.$cmdline;
@@ -1640,20 +1677,85 @@ function _DirectoryName ($path='')
 
 }
 
+// Fonction extraite de /var/www/Annu/includes/ldap.inc.php
+function user_valid_passwd ( $login, $password ) {
+  global $ldap_server, $ldap_port, $dn;
+  $filter = "(userpassword=*)";
+  $ret = false;
+  $DEBUG = false;
+
+  $ds = @ldap_connect ( $ldap_server, $ldap_port );
+  if ( $ds ) {
+    $r = @ldap_bind ( $ds,"uid=".$login.",".$dn["people"] , $password );
+    if ( $r ) {
+      $read_result=@ldap_read ($ds, "uid=".$login.",".$dn["people"], $filter);
+      if ($read_result) {
+        $entrees = @ldap_get_entries($ds,$read_result);
+        if ($entrees[0]["userpassword"][0]) {
+          $ret= true;
+        } else {
+          $error = "Mot de passe invalide";
+        }
+      } else {
+        $error = "Login invalide";
+      }
+    } else {
+      $error = "L'Authentification a échouée";
+    }
+    @ldap_unbind ($ds);
+    @ldap_close ($ds);
+  } else {
+    $error = "Erreur de connection au serveur LDAP";
+  }
+  if ($DEBUG) echo "$error<BR>\n";
+  return $ret;
+}
 
 ###################################################################
 # MAIN SECTION - come on !
 ###################################################################
 
 if (! isset($SMBWEBCLIENT_CLASS)) {
-    include "/var/www/lcs/includes/headerauth.inc.php";
-    list ($idpers,$login)= isauth();
-    $swc = new smbwebclient;
-    $swc->cfgSambaRoot = strtoupper($se3domain);
-    $swc->cfgDefaultServer = strtoupper($se3netbios);
-    $swc->ShareView = $shareview;
-    $swc->Login = $login;
-    $swc->Run();
+	include "/var/www/lcs/includes/headerauth.inc.php";
+	
+	list ($idpers,$login)= isauth();
+
+	if(ldap_get_right("smbweb_is_open",$login)!='Y') {
+                $swc = new smbwebclient;
+                $swc->NoRun('noright');
+	}
+	else {
+		if(ldap_get_right("lcs_is_admin",$login)=='Y') {
+			$acces="y";
+		}
+		else {
+			// Test du changement du mot de passe
+			include("/var/www/Annu/includes/crob_ldap_functions.php");
+			$attribut=array("gecos");
+			$tab=get_tab_attribut("people", "uid=$login", $attribut);
+			// On ne doit avoir (au plus (*)) qu'un gecos par utilisateur.
+			// (*) admin n'a pas de gecos
+			$tab2=explode(",",$tab[0]);
+			
+			//echo "<p>\$login=$login<br />";
+			//echo "Naissance=".$tab2[1]."<br />";
+			if(user_valid_passwd($login,$tab2[1])) {$acces="n";} else {$acces="y";}
+		}
+
+		if($acces=="y") {
+			//echo "Accès autorisé.";
+			$swc = new smbwebclient;
+			$swc->cfgSambaRoot = strtoupper($se3domain);
+			$swc->cfgDefaultServer = strtoupper($se3netbios);
+			$swc->ShareView = $shareview;
+			$swc->Login = $login;
+			$swc->Run();
+		}
+		else {
+			$swc = new smbwebclient;
+                        $swc->NoRun('passdef');
+		}
+	}
 }
 
 
