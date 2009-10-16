@@ -4,7 +4,7 @@ set -e
 VER=$(dpkg-query -f '${Version}' -W lcs-smbwebclient)
 MODULE="smbwebclient"
 VERAPPLI="2.9"
-INDICEMAJNR="2"
+INDICEMAJNBR="2"
 
 CONF="/var/lib/lcs/$MODULE"
 PATHMOD="/usr/share/lcs/$MODULE"
