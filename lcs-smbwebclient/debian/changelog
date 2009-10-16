@@ -1,3 +1,9 @@
+lcs-smbwebclient (2.4.1~1) UNRELEASED; urgency=low
+
+  * Add smbweb_is_open right and password policy acces 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 16 Oct 2009 13:55:05 +0200
+
 lcs-smbwebclient (2.4) Lcs; urgency=low
 
   * Build a stable release 2.4 
