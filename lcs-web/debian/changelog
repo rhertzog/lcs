@@ -1,11 +1,15 @@
-lcs-web (2.4.4~1) UNRELEASED; urgency=low
+lcs-web (2.4.4~2) UNRELEASED; urgency=low
 
-  [ Jean-Luc Chretien]
+  [ Jean Luc Chretien ]
   * Fix port detection in config.inc.ph for register_globals Off
 
-  [ Sebastien Tack]
+  [ Sebastien Tack ]
   * Add Ext JS: Cross-Browser Rich Internet Application Framework in /var/www/lib/js
   * Modify barre.php for helpdesk 
+
+  [ Raphaël Hertzog ]
+  * Modify lcs-web-config to setup a more strict Apache configuration so
+    that *.py? files can't be downloaded.
 
  -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 09 Oct 2009 10:47:29 +0200
 

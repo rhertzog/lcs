@@ -96,10 +96,10 @@ Alias /Modules/ /usr/share/lcs/Modules/
 EOF
         # add include lcs apache configuration 15_files.conf
         cat >/etc/apache2/lcs-main/15_files.conf <<EOF
-<Files *.py>
+<FilesMatch "\.py.?$">
 Order allow,deny
 Deny from all
-</Files>
+</FilesMatch>
 EOF
 
         # Generate private_key file if no exist
