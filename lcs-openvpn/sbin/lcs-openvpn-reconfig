@@ -42,18 +42,18 @@ sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
 
 if [ $VLAN = 1 ]; then
 	echo "### Configuration VLAN ###" >> /etc/openvpn/openvpn.conf
-	if [! -z $VLANPEDA1 ]; then
-		networkvlanpeda1=ipcalc $VLANPEDA1 | grep ^Address | cut -f 2 -d ":" |cut -f 4 -d " "
+	if [ -n $VLANPEDA1 ]; then
+		networkvlanpeda1=`ipcalc $VLANPEDA1 | grep ^Address | cut -f 2 -d ":" |cut -f 4 -d " "`
 		masqvlanpeda1=`ipcalc $VLANPEDA1 | grep ^Netmask | cut -f 2 -d ":" |cut -f 1 -d "="`
 		echo "push \"route $networkvlanpeda1 $masqvlanpeda1\" \#VLANPEDAGO1" >> /etc/openvpn/openvpn.conf
 	fi
-	if [! -z $VLANPEDA2 ]; then
-                networkvlanpeda2=ipcalc $VLANPEDA2 | grep ^Address | cut -f 2 -d ":" |cut -f 4 -d " "
+	if [ -n $VLANPEDA2 ]; then
+                networkvlanpeda2=`ipcalc $VLANPEDA2 | grep ^Address | cut -f 2 -d ":" |cut -f 4 -d " "`
                 masqvlanpeda2=`ipcalc $VLANPEDA2 | grep ^Netmask | cut -f 2 -d ":" |cut -f 1 -d "="`
                 echo "push \"route $networkvlanpeda2 $masqvlanpeda2\" \#VLANPEDAGO2" >> /etc/openvpn/openvpn.conf
         fi
-	if [! -z $VLANPEDA3 ]; then
-                networkvlanpeda3=ipcalc $VLANPEDA3 | grep ^Address | cut -f 2 -d ":" |cut -f 4 -d " "
+	if [ -n $VLANPEDA3 ]; then
+                networkvlanpeda3=`ipcalc $VLANPEDA3 | grep ^Address | cut -f 2 -d ":" |cut -f 4 -d " "`
                 masqvlanpeda3=`ipcalc $VLANPEDA3 | grep ^Netmask | cut -f 2 -d ":" |cut -f 1 -d "="`
                 echo "push \"route $networkvlanpeda3 $masqvlanpeda3\" \#VLANPEDAGO3" >> /etc/openvpn/openvpn.conf
         fi

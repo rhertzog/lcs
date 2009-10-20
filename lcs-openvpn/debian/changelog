@@ -1,3 +1,10 @@
+lcs-openvpn (2.4.2~3) Lcs; urgency=low
+
+  * fixing vlan propagation
+  * fixing interface
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 21 Oct 2009 01:50:48 +0200
+
 lcs-openvpn (2.4.2~2) Lcs; urgency=low
 
   [ Simon Cavey ]
@@ -5,7 +12,7 @@ lcs-openvpn (2.4.2~2) Lcs; urgency=low
   * fixing initial install missing params
   * adding simple html documentation
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 12 Oct 2009 19:51:46 +0200
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 21 Oct 2009 01:49:52 +0200
 
 lcs-openvpn (2.4.2~1) Lcs; urgency=low
 
