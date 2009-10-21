@@ -409,7 +409,7 @@ function NoRun ($condition)
         $msg_passdef = $msg_head;
         $msg_passdef .= "
             <div>
-                <h5>Vous n'avez pas le droit d'acc&#233;der &#233; l'application Client SE3 car vous n'avez pas chang&#233; votre mot de passe.</h5>
+                <h5>Vous n'avez pas le droit d'acc&#233;der &#225; l'application Client SE3 car vous n'avez pas chang&#233; votre mot de passe.</h5>
                 <h5>Vous pouvez changer votre mot de passe, en suivant <a href=\"../Annu/mod_pwd.php\" title=\"Modification mot de passe\">ce lien...</a></h5>
             </div>
             ";
@@ -418,7 +418,7 @@ function NoRun ($condition)
         $msg_noright = $msg_head;
         $msg_noright .= "
             <div>
-                <h5>Vous n'avez pas le droit d'acc&#233;der &#233; l'application Client SE3.</h5>
+                <h5>Vous n'avez pas le droit d'acc&#233;der &#225; l'application Client SE3.</h5>
                 <h5>Contactez votre adminsitrateur pour obtenir ce droit !</h5>
             </div>
                         ";
