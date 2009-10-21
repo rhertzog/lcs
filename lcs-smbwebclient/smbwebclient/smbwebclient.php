@@ -409,20 +409,20 @@ function NoRun ($condition)
         $msg_passdef = $msg_head;
         $msg_passdef .= "
             <div>
-                <h5>Vous n'avez pas le droit d'accéder à l'application Client SE3 car vous n'avez pas changé votre mot de passe.</h5>
+                <h5>Vous n'avez pas le droit d'acc&#233;der &#233; l'application Client SE3 car vous n'avez pas chang&#233; votre mot de passe.</h5>
                 <h5>Vous pouvez changer votre mot de passe, en suivant <a href=\"../Annu/mod_pwd.php\" title=\"Modification mot de passe\">ce lien...</a></h5>
             </div>
             ";
-        $page = $this->Page('Accès non autorisé',$msg_passdef);
+        $page = $this->Page('Acc&#232;s non autoris&#233;',$msg_passdef);
     } elseif ( $condition == "noright" ) {
         $msg_noright = $msg_head;
         $msg_noright .= "
             <div>
-                <h5>Vous n'avez pas le droit d'accéder à l'application Client SE3.</h5>
+                <h5>Vous n'avez pas le droit d'acc&#233;der &#233; l'application Client SE3.</h5>
                 <h5>Contactez votre adminsitrateur pour obtenir ce droit !</h5>
             </div>
                         ";
-        $page = $this->Page('Accès non autorisé',$msg_noright);
+        $page = $this->Page('Acc&#232;s non autoris&#233;',$msg_noright);
     }
     print $page;
     exit;
@@ -904,7 +904,7 @@ function View ()
 	$lines = $this->ViewForm ($this->type, $style, $headers);
 	foreach ($this->results as $file => $data) {
 
-	# jLCF modif (à cause de la limitation des 13 caractères de samba 2
+	# jLCF modif (a cause de la limitation des 13 caracteres de samba 2)
     	$tmp = split (" ",$data['comment'],3);
         if ($tmp[0] == "Home" && $file == substr( $tmp[2],0,13) ) $file = $tmp[2];
 	# Fin jLCF modif
@@ -1743,7 +1743,7 @@ if (! isset($SMBWEBCLIENT_CLASS)) {
 		}
 
 		if($acces=="y") {
-			//echo "Accès autorisé.";
+			//echo "Acces autorise.";
 			$swc = new smbwebclient;
 			$swc->cfgSambaRoot = strtoupper($se3domain);
 			$swc->cfgDefaultServer = strtoupper($se3netbios);
