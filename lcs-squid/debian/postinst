@@ -50,8 +50,11 @@ case "$1" in
         # Configuration de /etc/sysctl.conf
         #
         # Enable packet forwarding for IPv4
-        #net.ipv4.conf.default.forwarding=1
+        #net.ipv4.conf.default.forwarding=1 for Etch
         sed -i.sav s/"#net.ipv4.conf.default.forwarding=1"/"net.ipv4.conf.default.forwarding=1"/g /etc/sysctl.conf
+        #net.ipv4.ip_forward=1 for Lenny
+        sed -i s/"#net.ipv4.ip_forward=1"/"net.ipv4.ip_forward=1"/g /etc/sysctl.conf        
+        # 
         # Enable Spoof protection (reverse-path filter)
         #net.ipv4.conf.default.rp_filter=1
         sed -i s/"#net.ipv4.conf.default.rp_filter=1"/"net.ipv4.conf.default.rp_filter=1"/g /etc/sysctl.conf
@@ -73,5 +76,3 @@ esac
 
 
 exit 0
-
-
