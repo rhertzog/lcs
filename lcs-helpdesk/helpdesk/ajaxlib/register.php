@@ -6,6 +6,8 @@
 	//	$params = $_GET; 
 
 	$data = array();
+	$data[]= "domaine=".urlencode($domain);	
+
 	foreach($params as $k=>$v) {
 		//if ($k == 'login')
 		//	$v .= '@'. $domain;

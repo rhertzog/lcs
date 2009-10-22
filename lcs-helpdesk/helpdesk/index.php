@@ -2,16 +2,6 @@
 /* helpdesk/index.php derniere mise a jour : 10/2009 */
 require_once "./include/common.inc.php";
 
-
-
-$result=@mysql_db_query("$DBAUTH","SELECT * from applis", $authlink);
-if ($result)
-    while ($r=mysql_fetch_array($result))
-                $$r["name"]=$r["value"];
-else
-    die ("paramètres absents de la base de données");
-mysql_free_result($result);
-
 list ($idpers, $login)= isauth();
 $administrator = (is_admin('Lcs_is_admin', $login) == "Y");
 

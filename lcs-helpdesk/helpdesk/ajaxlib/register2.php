@@ -15,7 +15,9 @@
 			}
 			else {
 				$json = file_get_contents('../templates/register.tpl');
-				$json = str_replace('%LOGIN%',"$login@$domain",$json);
+				//$json = str_replace('%LOGIN%',"$login@$domain",$json);
+				$acad_login = strtolower($array_user['prenom']).".".strtolower($array_user['nom'])."@ac-caen.fr";
+				$json = str_replace('%LOGIN%',"$acad_login",$json);
 			}
 			$json = str_replace('%NOM%',$array_user['nom'],$json);
 			$json = str_replace('%PRENOM%',$array_user['prenom'],$json);
