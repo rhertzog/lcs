@@ -1,4 +1,4 @@
-lcs-openvpn (2.4.2~3) Lcs; urgency=low
+lcs-openvpn (2.4.2) Lcs; urgency=low
 
   * fixing vlan propagation
   * fixing interface
