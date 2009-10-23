@@ -7,20 +7,35 @@ case "$1" in
             #
             # only if first configuration
             #
-	   if [ "$2" = "" ]; then
+	    if [ "$2" = "" ]; then
 	       . /usr/share/slis/slis-common.sh
 	       handle_initial_config lcs-web-config 60
-	   fi
-           # Restore .htpasswd if exist
-           if [ -e /tmp/lcswebsetupacces ]; then
+            elif [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.4; then
+                echo "Policy acces to .py*"
+                # Modify include lcs apache configuration 15_files.conf
+                cat >/etc/apache2/lcs-main/15_files.conf <<EOF
+<FilesMatch "\.py.?$">
+Order allow,deny
+Deny from all
+</FilesMatch>
+EOF
+                # restart apache2
+                invoke-rc.d apache2 restart
+            fi
+            # 	   
+            # Restore .htpasswd if exist
+            #
+            if [ -e /tmp/lcswebsetupacces ]; then
                 mv /tmp/lcswebsetupacces /var/www/setup/.htpasswd
-           # ReGenerate .htpasswd if not exist
-           elif [ ! -e /var/www/setup/.htpasswd ]; then
+            # ReGenerate .htpasswd if not exist
+            elif [ ! -e /var/www/setup/.htpasswd ]; then
                 LOCAL_ADMIN_PW=`pwgen -1 -s 8`
                 /usr/bin/htpasswd -bc /var/www/setup/.htpasswd admin $LOCAL_ADMIN_PW
-           fi
-           # Fix rights on lcs-web tree
-           /usr/sbin/lcs-web-fixrights
+            fi
+            #
+            # Fix rights on lcs-web tree
+            #
+            /usr/sbin/lcs-web-fixrights
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
