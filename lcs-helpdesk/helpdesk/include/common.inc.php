@@ -51,10 +51,10 @@ function liste_admins() {
 }
 
 
-	list ($idpers, $login)= isauth();
+	list ($idpers, $_login)= isauth();
 	
 	
-	if (is_admin('Lcs_is_admin', $login) != "Y") {
+	if (is_admin('Lcs_is_admin', $_login) != "Y") {
 		redirect_2('/lcs/auth.php');
 	}
 
@@ -63,12 +63,12 @@ function liste_admins() {
 	//define('URL_API', URL_ROOT."/LcsAPI");
 	
 	if (!isset($_SESSION['user'])) {
-		$sess_user = base64_encode($login);
+		$sess_user = base64_encode($_login);
 		$_SESSION['user'] = $sess_user;
 	}	
 	
-	$login = base64_decode($_SESSION['user']);
-	$res_array_user = people_get_variables($login,false);
-    $array_user = $res_array_user[0];
+	$_login = base64_decode($_SESSION['user']);
+	$res_array_user = people_get_variables($_login,false);
+    	$array_user = $res_array_user[0];
 	$HD = new HelpDeskAuth($array_user);
 ?>
