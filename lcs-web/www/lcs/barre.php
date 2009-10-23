@@ -183,9 +183,6 @@ if ( $idpers==0 ) {
    	echo "<div class=\"bouton\"></div>\n";
    	// Deconnection LCS
    	echo "<div class=\"bouton\"><a href=\"logout.php\" onMouseOut=\"MM_nbGroup('out');\" onMouseOver=\"MM_nbGroup('over','BP_r1_c10','images/$path/BP_r1_c10_f2.gif','images/$path/BP_r1_c10_f3.gif',1);\" onClick=\"MM_nbGroup('down','navbar1','BP_r1_c10','images/$path/BP_r1_c10_f3.gif',1);\" ><img name=\"BP_r1_c10\" title=\"D&#233;connection\" alt=\"D&#233;connection\" src=\"images/$path/BP_r1_c10.gif\" border=\"0\"></a></div>\n";
-        // HelpDesk
-	if ( $helpdesk=='1' && ( (is_admin('Lcs_is_admin', $login) == "Y")  || (is_admin('System_is_admin', $login) == "Y") ) ) 
-   	    echo "<div class=\"bouton\"><a href=\"/helpdesk/\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\" onMouseOver=\"MM_nbGroup('over','BP_r1_c11','images/$path/helpdesk-surv.gif','images/$path/helpdesk-on.gif',1);\" onClick=\"MM_nbGroup('down','navbar1','BP_r1_c11','images/$path/helpdesk-on.gif',1);\" ><img name=\"BP_r1_c11\" title=\"Helpdesk\" alt=\"Helpdesk\" src=\"images/$path/helpdesk-off.gif\" border=\"0\"></a></div>\n";	
         // Info connect
 	echo "<div class=\"connexion\"><img src=\"images/connect.png\" alt=\"Login\" width=\"26\" height=\"9\"  hspace=\"5\" align=\"bottom\" border=\"0\"><font class=\"login\">$login</font></div>\n";	
 }
