@@ -1,9 +1,10 @@
-lcs-web (2.4.4~2) UNRELEASED; urgency=low
+lcs-web (2.4.4~2) Lcs; urgency=low
 
   [ Jean Luc Chretien ]
   * Fix port detection in config.inc.ph for register_globals Off
-  * Add three helpdesk icones
+  * Add three helpdesk ChiconesTel
   * Modify barre.php for helpdesk
+  * Modify postinst for update acces policy to .py*
 
   [ Sebastien Tack ]
   * Add Ext JS: Cross-Browser Rich Internet Application Framework in /var/www/lib/js
@@ -12,7 +13,7 @@ lcs-web (2.4.4~2) UNRELEASED; urgency=low
   * Modify lcs-web-config to setup a more strict Apache configuration so
     that *.py? files can't be downloaded.
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 21 Oct 2009 18:11:40 +0200
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 23 Oct 2009 13:32:59 +0200
 
 lcs-web (2.4.3) Lcs; urgency=low
 
