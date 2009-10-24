@@ -86,16 +86,13 @@ class HelpDeskAuth {
 	private $urlAUTH;
 
 	public function __construct($array_user) {
-		//$this->ticketID = trim(exec('cat /etc/lcs/etab.conf'));
-		//$this->urlHelpDesk = URL_API."/auth?token=$this->ticketID&user=".$user_mail;
-        	//die( $this->urlHelpDesk);	
+		
 		$this->config = new ConfigLoader();
 		$this->ticketID = $this->config->tokenEtab;
 		$this->urlHD = $this->config->urlHelpDesk;
 		$this->urlAPI = $this->urlHD."LcsAPI";
 		$this->array_user = $array_user;	
 		$this->proxy = new Proxy();
-		//die(var_dump($this));
 
 	}
 
@@ -125,11 +122,11 @@ class HelpDeskAuth {
 
 		try {
     			$this->proxy = new Proxy();
-				//$user_mail = $this->array_user['email'];
-				$user_mail = $this->array_user['prenom'].'.'.$this->array_user['nom'].'@ac-caen.fr';
-			        $this->urlAUTH = $this->urlAPI."/auth?token=$this->ticketID&user=".$user_mail;
-				$this->response = $this->proxy->process($this->urlAUTH);
-			    //die($this->response);
+			//$user_mail = $this->array_user['email'];
+			$user_mail = $this->array_user['prenom'].'.'.$this->array_user['nom'].'@ac-caen.fr';
+			$this->urlAUTH = $this->urlAPI."/auth?token=$this->ticketID&user=".$user_mail;
+			$this->response = $this->proxy->process($this->urlAUTH);
+			//die($this->response);
 		} 
 		catch (Exception $e) {
     			$this->message = $e->getMessage();

@@ -28,8 +28,8 @@ body	{
 <script type='text/javascript' src='/lib/js/prototype.js'></script>
 
 <?php if ($administrator) {  
-	if (!$_SESSION['user']) {
-		$_SESSION['user']= base64_encode($login);
+	if (!$_SESSION['userHD']) {
+		$_SESSION['userHD']= base64_encode($login);
 	}
  }
  ?>	

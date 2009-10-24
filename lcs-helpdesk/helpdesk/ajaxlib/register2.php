@@ -2,7 +2,7 @@
 
 	//si mustRegister alors on charge le form register
 	
-	if ($HD->authenticate($user))
+	if ($HD->authenticate())
 		{
 			if ($_POST)
 				extract($_POST);

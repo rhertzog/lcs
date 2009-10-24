@@ -21,7 +21,7 @@
 	$info = explode('@',$_POST['login']);
 		
 	$sess_user = base64_encode($info[0]);
-	$_SESSION['user'] = $sess_user;
+	$_SESSION['userHD'] = $sess_user;
 	
 	die('SUCCESS');
 	
