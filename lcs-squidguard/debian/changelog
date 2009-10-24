@@ -1,8 +1,9 @@
 lcs-squidguard (2.4.4~1) UNRELEASED; urgency=low
 
   * index.php : Add variables in register globals section 
+  * Correct cron.daily task getBlacklists
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 25 Sep 2009 16:33:15 +0200
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 24 Oct 2009 14:35:10 +0200
 
 lcs-squidguard (2.4.3) Lcs; urgency=low
 
