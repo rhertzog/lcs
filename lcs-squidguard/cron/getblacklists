@@ -4,4 +4,4 @@
 
 set -e
 
-/usr/share/lcs/sbin/getBlacklists.sh
+/usr/sbin/getBlacklists.sh
