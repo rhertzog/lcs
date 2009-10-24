@@ -1,5 +1,11 @@
 <?php
-/* lcs/barre.php derniere mise a jour : 23/10/2009 */
+/* lcs/barre.php derniere mise a jour : 24/10/2009 */
+// HelpDesk Ajout variable session userHD pour memoriser choix user helpdesk autre qu'admin
+// Necesité de reinitialiser cette variable.  
+
+session_start();
+$_SESSION['userHD'] = null;
+
 require "includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
 require "../Annu/includes/ihm.inc.php";
