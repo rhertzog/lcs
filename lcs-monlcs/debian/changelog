@@ -1,3 +1,10 @@
+lcs-monlcs (2.4.2~1) UNRELEASED; urgency=low
+
+  [ Sebastien Tack ]
+  * update module geogebra
+
+ -- Sebastien Tack <sebastien.tack@ac-caen.fr>  Sat, 24 Oct 2009 18:15:40 +0200
+
 lcs-monlcs (2.4.1) Lcs; urgency=low
 
   * remove tilde
