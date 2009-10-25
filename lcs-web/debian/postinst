@@ -21,7 +21,13 @@ Deny from all
 EOF
                 # restart apache2
                 invoke-rc.d apache2 restart
-            fi
+	elif [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.5; then
+	# nettoyage de sudoers :
+	chmod 700  /etc/sudoers
+	sed -i'' '/www-data/d' /etc/sudoers
+	sed -i'' '/lcs/d' /etc/sudoers
+	chmod 440  /etc/sudoers
+	fi
             # 	   
             # Restore .htpasswd if exist
             #
@@ -37,7 +43,7 @@ EOF
             #
             /usr/sbin/lcs-web-fixrights
             #
-            # Update sudo
+            # Update sudoers
             # 
             /usr/sbin/lcs-make-sudoers
     	;;

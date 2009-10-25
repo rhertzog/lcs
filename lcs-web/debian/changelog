@@ -1,3 +1,10 @@
+lcs-web (2.4.5~2) Lcs; urgency=low
+
+  * fix lcs-web-fixright
+  * remove old sudo entries
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 26 Oct 2009 01:17:57 +0100
+
 lcs-web (2.4.5~1) Lcs; urgency=low
 
   * integrating lcs-make-sudoers
