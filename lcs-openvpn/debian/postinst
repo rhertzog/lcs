@@ -27,6 +27,7 @@ case "$1" in
 	if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
 ### Install initiale
 	    /usr/share/lcs/sbin/lcs-openvpn-initial-config
+	    /usr/sbin/lcs-make-sudoers
 	    if [ -x /usr/sbin/invoke-rc.d ]; then
 		invoke-rc.d openvpn restart
             else
@@ -52,6 +53,9 @@ case "$1" in
 		/usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'VPN par openvpn en SSL', '$INDICEMAJNBR', '$VER', '', 'S');"
 	    else
 		/usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';"
+	    fi
+	    if dpkg --compare-versions $preversion lt 2.4.3 ; then
+	    	/usr/sbin/lcs-make-sudoers
 	    fi
 #
 # Fin de la mise a jour

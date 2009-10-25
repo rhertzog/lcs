@@ -1,0 +1,2 @@
+Cmnd_Alias GENVPNCLI = /usr/share/lcs/sbin/lcs-openvpn-generclient.sh, /usr/share/lcs/sbin/lcs-openvpn-reconfig
+www-data ALL=NOPASSWD:GENVPNCLI

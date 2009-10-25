@@ -94,10 +94,8 @@ sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /var/lib/lcs/openvpn/openvpn-mail-cl
 /usr/share/lcs/sbin/lcs-openvpn-generclient.sh admin
 
 ## on ajoute les entrées sudo pour la generation des clients
-chmod 700  /etc/sudoers
-echo "Cmnd_Alias GENVPNCLI = /usr/share/lcs/sbin/lcs-openvpn-generclient.sh, /usr/share/lcs/sbin/lcs-openvpn-reconfig" >> /etc/sudoers
-echo "www-data ALL=NOPASSWD:GENVPNCLI" >> /etc/sudoers
-chmod 440  /etc/sudoers
+## now in /etc/lcs/sudo.d with lcs-preinstall lcs-make-sudoers
+##
 
 #
 # installation DNS

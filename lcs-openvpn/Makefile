@@ -9,6 +9,7 @@ install:
 	install -d $(DESTDIR)/etc/apache2/lcs-main
 	install -d $(DESTDIR)/etc/lcs
 	install -d $(DESTDIR)/etc/lcs/openvpn
+	install -d $(DESTDIR)/etc/lcs/sudo.d
 	cp -a conf/* $(DESTDIR)/etc/
 
 	# install web-gui
