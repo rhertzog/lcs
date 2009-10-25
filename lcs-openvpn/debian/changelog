@@ -1,3 +1,9 @@
+lcs-openvpn (2.4.5~1) Lcs; urgency=low
+
+  * integrating lcs-make-sudoers
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun, 25 Oct 2009 15:10:04 +0100
+
 lcs-openvpn (2.4.2) Lcs; urgency=low
 
   * fixing vlan propagation
