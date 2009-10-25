@@ -54,7 +54,7 @@ case "$1" in
 	    else
 		/usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';"
 	    fi
-	    if dpkg --compare-versions $preversion lt 2.4.3 ; then
+	    if dpkg --compare-versions $preversion lt 2.4.5 ; then
 	    	/usr/sbin/lcs-make-sudoers
 	    fi
 #
