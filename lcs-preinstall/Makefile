@@ -17,6 +17,10 @@ install:
 	install -d $(DESTDIR)/etc/init.d
 	install -m 755 etc/init.d/* $(DESTDIR)/etc/init.d/
 
+# install lcs etc conf sudo.d
+	install -d $(DESTDIR)/etc/lcs
+	install -d $(DESTDIR)/etc/lcs/sudo.d
+	
 # install sbin
 	install -d $(DESTDIR)/usr/sbin
 	install -m 0750 sbin/* $(DESTDIR)/usr/sbin
