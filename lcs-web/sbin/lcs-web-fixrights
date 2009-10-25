@@ -4,11 +4,10 @@
 #
 chown root:root /etc/LcSeConfig.ph.in
 chown root:root /etc/profile
-chown root:root /etc/sudoers.in
+root:root /etc/lcs/sudo.d/01-lcs-web
 chown root:root /var/www
 chown -R www-data:www-data /var/www/*
 chmod 600 /var/www/lcs/includes/privateKey.py
-
 chown root:root /usr/lib/cgi-bin
 chmod 755 /usr/lib/cgi-bin
 chown root:www-data /usr/lib/cgi-bin/gep2.cgi
@@ -32,13 +31,6 @@ chown www-data:www-data /usr/share/lcs/scripts/execution_script_plugin.sh
 chown www-data:www-data /usr/share/lcs/scripts/gestpack.sh
 chown www-data:www-data /usr/share/lcs/scripts/ntlmpass.pl
 chown www-data:www-data /usr/share/lcs/scripts/unixPassword.pl
-
-if [ ! -e /etc/sudoers.etch ];then
-    mv /etc/sudoers /etc/sudoers.etch
-fi
-cp /etc/sudoers.in /etc/sudoers
-chown root:root /etc/sudoers
-chmod 440 /etc/sudoers
 
 chown root:root /usr/sbin/LcsMaj
 chmod 700 /usr/sbin/LcsMaj

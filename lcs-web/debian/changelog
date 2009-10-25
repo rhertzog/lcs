@@ -1,3 +1,9 @@
+lcs-web (2.4.5~1) Lcs; urgency=low
+
+  * integrating lcs-make-sudoers
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun, 25 Oct 2009 14:11:57 +0100
+
 lcs-web (2.4.4) Lcs; urgency=low
 
   * Make a stable release candidate 

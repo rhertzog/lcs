@@ -36,6 +36,10 @@ EOF
             # Fix rights on lcs-web tree
             #
             /usr/sbin/lcs-web-fixrights
+            #
+            # Update sudo
+            # 
+            /usr/sbin/lcs-make-sudoers
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
