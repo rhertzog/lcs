@@ -5,6 +5,10 @@ all:
 
 install:
 
+# install lcs squidguard conf sudo
+	install -d $(DESTDIR)/etc/lcs/sudo.d
+	cp -a etc/sudo.d/* $(DESTDIR)/etc/lcs/sudo.d/
+                
 # install lcs squidguard conf
 	install -d $(DESTDIR)/var/lib/lcs/squidguard
 	cp -a conf/* $(DESTDIR)/var/lib/lcs/squidguard/

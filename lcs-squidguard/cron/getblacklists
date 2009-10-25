@@ -4,4 +4,4 @@
 
 set -e
 
-/usr/sbin/getBlacklists.sh
+/usr/sbin/lcs-squidguard-getBlacklists.sh
