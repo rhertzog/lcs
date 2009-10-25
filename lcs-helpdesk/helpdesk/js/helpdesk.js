@@ -48,15 +48,15 @@
 			var url = '/helpdesk/ajaxlib/editTicket.php';
 			ticket = ligne.id;
 			var params = '?ticket='+ticket;
-			params += '&title='+escape(ligne.data.title);
-			params += '&description='+escape(ligne.data.description);
-			params += '&categorie='+escape(ligne.data.categorie);
-			params += '&submitter='+escape(ligne.data.suivipar);
-			params += '&statut='+escape(ligne.data.statut);
-			
+			params += '&title='+encodeURIComponent(ligne.data.title);
+			params += '&description='+encodeURIComponent(ligne.data.description);
+			params += '&categorie='+encodeURIComponent(ligne.data.categorie);
+			params += '&submitter='+encodeURIComponent(ligne.data.suivipar);
+			params += '&statut='+encodeURIComponent(ligne.data.statut);
+			//alert(params);
 			try {
 					Ext.getCmp('mainTab').remove(Ext.getCmp('showTicket'));
-					openTab('showTicket', ligne.data.title, url, null, params); 
+					openTab('showTicket', escape(ligne.data.title), escape(url), null, params); 
 			}
 			catch(e) {
 				Ext.Msg.alert(e);
@@ -68,7 +68,8 @@
 			if (link) {
 				new Ajax.Request(link, { method: 'post', parameters: params, onComplete: function(xhr) {
 					var elem = xhr.responseText;
-				
+					//alert(elem);
+			
 					var myTabPanel = Ext.getCmp('mainTab');
 					try {
 						eval(elem);
