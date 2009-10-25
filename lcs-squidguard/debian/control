@@ -7,6 +7,6 @@ Standards-Version: 3.6.2
 
 Package: lcs-squidguard
 Architecture: all
-Depends: lcs-preinstall (> 2.4.4), lcs-web, squid, squidguard, patch, lcs-squid
+Depends: lcs-preinstall (>> 2.4.4), lcs-web, squid, squidguard, patch, lcs-squid
 Description: Filtering rules for the Squidguard proxy
  Install SquidGuard a URL redirector used to use blacklists with the proxysoftware Squid
