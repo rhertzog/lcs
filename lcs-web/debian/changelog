@@ -1,4 +1,4 @@
-lcs-web (2.4.5~2) Lcs; urgency=low
+lcs-web (2.4.5~3) Lcs; urgency=low
 
   * fix lcs-web-fixright
   * remove old sudo entries
