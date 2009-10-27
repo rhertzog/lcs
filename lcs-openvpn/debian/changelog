@@ -1,3 +1,9 @@
+lcs-openvpn (2.4.5) Lcs; urgency=low
+
+  * remove tilde
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Oct 2009 17:17:56 +0100
+
 lcs-openvpn (2.4.5~2) Lcs; urgency=low
 
   * add remove sudo when remove package
