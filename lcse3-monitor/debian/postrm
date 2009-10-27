@@ -23,13 +23,16 @@ case "$1" in
         purge|remove)
 		
 		update-rc.d -f lcse3-monitor remove
-                
-        ##### REMOVE sudoers entry
-        if [ "`cat /etc/sudoers | grep GESTETABMONITOR`" ]; then
-                sed -i 's/^\(www-data.*\),NOPASSWD:GESTETABMONITOR\(.*\)$/\1\2/'  /etc/sudoers
-                sed -i '/^Cmnd_Alias GESTETABMONITOR.*$/d' /etc/sudoers
-                /etc/init.d/sudo restart
-        fi
+	if [ -e /usr/sbin/lcs-make-sudoers ]; then
+	        /usr/sbin/lcs-make-sudoers
+        else        
+        	##### REMOVE sudoers entry
+        	if [ "`cat /etc/sudoers | grep GESTETABMONITOR`" ]; then
+                	sed -i 's/^\(www-data.*\),NOPASSWD:GESTETABMONITOR\(.*\)$/\1\2/'  /etc/sudoers
+                	sed -i '/^Cmnd_Alias GESTETABMONITOR.*$/d' /etc/sudoers
+                	/etc/init.d/sudo restart
+        	fi
+        fi	
         ;;
 
         upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)	

@@ -29,26 +29,28 @@ CRONNUMBER=$[ ( $RANDOM % 60 )  + 1 ];
 /bin/sed -i'' -e "s#{CRONRAND}#${CRONNUMBER}#g" \
             "/etc/cron.d/lcse3-monitor"
 
+if [ -e /usr/sbin/lcs-make-sudoers ]; then
+	/usr/sbin/lcs-make-sudoers
+else	
+	##### ADD good line in /etc/sudoers.conf if necessary and restart sudo
+	TEMOIN_CHGT_SUDO="n"
+	# TEST=$(grep "NOPASSWD:GESTETABMONITOR" /etc/sudoers)
+	if [ ! "$(grep "NOPASSWD:GESTETABMONITOR" /etc/sudoers)" ]; then
+        	# Insertion de l'autorisation de lancement par www-data
+        	sed -i 's/^\(www-data.*\)$/\1,NOPASSWD:GESTETABMONITOR/' /etc/sudoers
+        	TEMOIN_CHGT_SUDO="y"
+	fi
 
-##### ADD good line in /etc/sudoers.conf if necessary and restart sudo
-TEMOIN_CHGT_SUDO="n"
-# TEST=$(grep "NOPASSWD:GESTETABMONITOR" /etc/sudoers)
-if [ ! "$(grep "NOPASSWD:GESTETABMONITOR" /etc/sudoers)" ]; then
-        # Insertion de l'autorisation de lancement par www-data
-        sed -i 's/^\(www-data.*\)$/\1,NOPASSWD:GESTETABMONITOR/' /etc/sudoers
-        TEMOIN_CHGT_SUDO="y"
-fi
+	# TEST=$(cat /etc/sudoers | grep "Cmnd_Alias GESTETABMONITOR")
+	if [ ! "$(grep "Cmnd_Alias GESTETABMONITOR" /etc/sudoers)" ]; then
+        	# On insère toute la ligne des commandes
+        	sed -i 's|^\(# Cmnd alias specification.*\)$|\1\nCmnd_Alias GESTETABMONITOR=/usr/sbin/gestEtabMonitor|' /etc/sudoers
+        	TEMOIN_CHGT_SUDO="y"
+	fi
 
-# TEST=$(cat /etc/sudoers | grep "Cmnd_Alias GESTETABMONITOR")
-
-if [ ! "$(grep "Cmnd_Alias GESTETABMONITOR" /etc/sudoers)" ]; then
-        # On insère toute la ligne des commandes
-        sed -i 's|^\(# Cmnd alias specification.*\)$|\1\nCmnd_Alias GESTETABMONITOR=/usr/sbin/gestEtabMonitor|' /etc/sudoers
-        TEMOIN_CHGT_SUDO="y"
-fi
-
-if [ "$TEMOIN_CHGT_SUDO" = "y" ]; then
-        /etc/init.d/sudo restart
+	if [ "$TEMOIN_CHGT_SUDO" = "y" ]; then
+        	/etc/init.d/sudo restart
+	fi
 fi
 
 if [ -e /etc/init.d/lcse3-monitor ] ; then 

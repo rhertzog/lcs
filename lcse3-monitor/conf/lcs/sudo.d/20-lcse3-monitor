@@ -1,0 +1,2 @@
+Cmnd_Alias GESTETABMONITOR=/usr/sbin/gestEtabMonitor
+www-data ALL=NOPASSWD:GESTETABMONITOR

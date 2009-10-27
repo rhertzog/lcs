@@ -1,3 +1,9 @@
+lcse3-monitor (2.4.5~1) Lcs; urgency=low
+
+  * now use lcs-make-sudoers if existe
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Oct 2009 17:35:07 +0100
+
 lcse3-monitor (2.4.1~5) Lcs; urgency=low
 
   * implement getSE3informations 

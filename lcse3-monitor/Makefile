@@ -7,7 +7,8 @@ install:
 
 # install conf
 	install -d $(DESTDIR)/etc/gestEtab
-	install -m 0660 conf/* $(DESTDIR)/etc/gestEtab
+	install -d $(DESTDIR)/etc/lcs/sudo.d
+	install -m 0660 conf/* $(DESTDIR)/etc
 
 # install sbin
 	install -d $(DESTDIR)/usr/sbin
