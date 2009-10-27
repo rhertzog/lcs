@@ -1,3 +1,9 @@
+lcs-openvpn (2.4.5~2) Lcs; urgency=low
+
+  * add remove sudo when remove package
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Oct 2009 13:52:09 +0100
+
 lcs-openvpn (2.4.5~1) Lcs; urgency=low
 
   * integrating lcs-make-sudoers

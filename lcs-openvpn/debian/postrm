@@ -51,6 +51,8 @@ case "$1" in
 	else
 	    /etc/init.d/bind9 restart
 	fi
+	### mise a jour sudoers
+	 /usr/sbin/lcs-make-sudoers
 	;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
