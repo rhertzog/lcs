@@ -8,6 +8,7 @@ case "$1" in
           rm -f /etc/apache2/lcs-main/55_lcs.conf
           rm -f /etc/apache2/lcs-main/15_files.conf
           invoke-rc.d apache2 force-reload
+	  /usr/sbin/lcs-make-sudoers        
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
