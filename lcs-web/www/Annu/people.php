@@ -57,6 +57,7 @@
     echo "<br>Pages perso : <a href=\"../~".$user["uid"]."/\"><tt>".$baseurl."~".$user["uid"]."</tt></a><br>\n";
   }
    echo "Adresse m&#232;l : <a href=\"mailto:".$user["email"]."\"><tt>".$user["email"]."</a></tt><br>\n";
+   if (!is_eleve($login) && $user["uid"]==$login ) echo "<br><a href=\"mod_mail.php\">Rediriger mes mails vers une boite personnelle</a>";
   // Affichage Menu people_admin
   if (is_admin("Annu_is_admin",$login) == "Y" ) {
   ?>
@@ -69,6 +70,7 @@
   <?
     if (ldap_get_right("Lcs_is_admin",$login)=="Y") {
     	echo "<li><a href=\"add_user_right.php?uid=" . $user["uid"] ."\">G&#233;rer les droits</a><br>";
+    	if ($user["uid"]!=$login) echo "<li><a href=\"mod_mail.php?uid=" . $user["uid"] ."\">Rediriger les mails</a> en ".$user["email"]."<br>";
     }
     if ( $ToggleAff==1 && @is_dir ("/home/".$user["uid"]."/public_html") ) {
       // Ouverture/Fermeture Espace web
