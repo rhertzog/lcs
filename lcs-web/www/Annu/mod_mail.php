@@ -26,48 +26,46 @@
 	//traitement du formulaire
 if ((isset($_POST['Valider']))&& (isset($_POST['adr_mail'])) )
 	{
-	
-		$nom_fichier=$log2."/.forward";
 		if ($_POST['adr_mail']!="") $contenu=$_POST['adr_mail']; else $contenu="aucune";
 		if ($_POST['choix']=="yes" && $_POST['adr_mail']!="")
 		$contenu2= $log2."@".$hostn;
 				
 		$fichier_script_sudo = "/usr/share/lcs/scripts/execution_script_plugin.sh";
-		$script="'/usr/share/lcs/scripts/redir.sh ".$contenu." ". $nom_fichier. " ".$contenu2."'";
+		$script="'/usr/share/lcs/scripts/redir.sh ".$contenu." ". $log2. " ".$contenu2."'";
 		$cmd = "/usr/bin/sudo -u root " . $fichier_script_sudo . " " . $script;
 		exec($cmd,$lignes_retournees,$ret_val);
 		if ($ret_val!=0) $message= '<div class="error_msg"> L\'op&#233;ration a &#233;chou&#233;</div>';
 		else 
 		{
-		exec ("/usr/bin/sudo /usr/share/lcs/scripts/chacces.sh 660 ".$log2.":lcs-users"." /home/".$nom_fichier,$rien, $retour);
+		exec ("/usr/bin/sudo /usr/share/lcs/scripts/chacces.sh 660 ".$log2.":lcs-users"." /home/".$log2."/.forward",$rien, $retour);
 		if 	($retour==0)
 			{
 			$nom_file="/home/admin/Documents/mailredir.txt";
 			$datte=date("d:m:Y H:i");
 			$fichier=fopen($nom_file,"a");
 			if ($contenu=="aucune") 
-			{
-			$message ='<P><B>Les mails ne sont plus redirig&#233;s.</B>';
-			fputs($fichier, $datte . " Annulation redirection ". $log2." \n ");
-			fclose($fichier);
-			}
+				{
+				$message ='<P><B>Les mails ne sont plus redirig&#233;s.</B>';
+				fputs($fichier, $datte . " Annulation redirection ". $log2." \n ");
+				fclose($fichier);
+				}
 			else 
-			{
-			fputs($fichier, $datte . " - ". $log2. " vers ".$_POST['adr_mail']." \n ");
-			fclose($fichier);
-			$message= '<P><B>La boite a &#233;t&#233; redirig&#233;e.</B> <br> - Un mail de confirmation  a &#233;t&#233; envoy&#233; <br>';
-			//destinataire
-					$mailTo2=$log2;
-					//Le sujet
-					$mailSubject = "Redirection de mails";
-					//Le  message
-					$mailBody ="Message automatique ( Ne pas répondre ! ): \n \n Les mails en ".$log2."@".$hostn." sont d&#233;sormais renvoy&#233;s vers  ".$_POST['adr_mail'];
-					//l'expéditeur
-					$mailHeaders = "From: LCS";
-					//envoi mail
-					 //mail($mailTo, $mailSubject, $mailBody, $mailHeaders);
-					 mail($mailTo2, $mailSubject, $mailBody, $mailHeaders);
-			}
+				{
+				fputs($fichier, $datte . " - ". $log2. " vers ".$_POST['adr_mail']." \n ");
+				fclose($fichier);
+				$message= '<P><B>La boite a &#233;t&#233; redirig&#233;e.</B> <br> - Un mail de confirmation  a &#233;t&#233; envoy&#233; <br>';
+				//destinataire
+						$mailTo2=$log2;
+						//Le sujet
+						$mailSubject = "Redirection de mails";
+						//Le  message
+						$mailBody ="Message automatique ( Ne pas répondre ! ): \n \n Les mails en ".$log2."@".$hostn." sont d&#233;sormais renvoy&#233;s vers  ".$_POST['adr_mail'];
+						//l'expéditeur
+						$mailHeaders = "From: LCS";
+						//envoi mail
+						 //mail($mailTo, $mailSubject, $mailBody, $mailHeaders);
+						 mail($mailTo2, $mailSubject, $mailBody, $mailHeaders);
+				}
 			}
 			else $message='<div class="error_msg">La redirection a &#233;chou&#233 ! </div>';
 		}	
@@ -134,8 +132,12 @@ function test_email (my_email) {
           <td> - Faut il conserver dans la boite du Lcs, une copie des mails redirig&#233;s ?</B></td>
           <td>
           <P>
-          <input type="radio" name="choix" value="yes"checked> OUI
-		  <input type="radio" name="choix" value="no" > NON
+          <input type="radio" name="choix" value="yes"
+          <? if (($copie!="" && $adresse!="") || $adresse =="") echo "checked";?>
+          > OUI
+		  <input type="radio" name="choix" value="no" 
+		  <? if ($copie=="" && $adresse!="")  echo "checked";?>
+		  > NON
 		  <input type="hidden" name="uid" value= "<? echo $log2; ?>">
 		  </P>
           </td></tr><tr></tr>

@@ -1,8 +1,9 @@
 lcs-web (2.4.6~1) Lcs; urgency=low
 
   * add scripts for redirect email
+  * filename forward registered hard in scripts 
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 29 Oct 2009 22:41:37 +0100
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 30 Oct 2009 00:59:31 +0100
 
 lcs-web (2.4.5) Lcs; urgency=low
 
