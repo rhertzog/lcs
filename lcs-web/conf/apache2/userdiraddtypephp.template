@@ -5,7 +5,6 @@
       Order allow,deny
       Allow from all
     </FilesMatch>
-    php_admin_flag safe_mode Off
     php_admin_value open_basedir .:../:/tmp
     AllowOverride Limit AuthConfig
     Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
