@@ -1,9 +1,13 @@
 lcs-web (2.4.6~1) Lcs; urgency=low
 
+  [ Philippe Leclerc ]
   * add scripts for redirect email
   * filename forward registered hard in scripts 
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 30 Oct 2009 00:59:31 +0100
+  [ Jean-Luc Chretien ]
+  * Fixing safe_mode On for type php users in public_html in userdiraddtypephp.template
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 05 Nov 2009 11:08:35 +0100
 
 lcs-web (2.4.5) Lcs; urgency=low
 
