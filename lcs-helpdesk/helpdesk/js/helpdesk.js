@@ -56,7 +56,7 @@
 			//alert(params);
 			try {
 					Ext.getCmp('mainTab').remove(Ext.getCmp('showTicket'));
-					openTab('showTicket', escape(ligne.data.title), escape(url), null, params); 
+					openTab('showTicket', ligne.data.title, escape(url), null, params); 
 			}
 			catch(e) {
 				Ext.Msg.alert(e);
