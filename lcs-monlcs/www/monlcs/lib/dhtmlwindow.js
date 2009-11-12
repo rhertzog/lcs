@@ -272,10 +272,9 @@ restore:function(button, t){
 	t.style.top=parseInt(t.lasty)+dhtmlwindow.scroll_top+"px"
 	t.style.width=parseInt(t.lastwidth)+"px"
 	//Ajout mrT
-	//var id = '_iframe-'+t.id
-	//window.frames[id].location.reload(true)
-	//SaveWindowProperties(t)
-
+ 	var mZ = maxZindex()+5
+        t.style.zIndex = mZ
+        t.zIndexValue = mZ
 },
 
 

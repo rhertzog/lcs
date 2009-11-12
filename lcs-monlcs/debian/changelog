@@ -2,6 +2,7 @@ lcs-monlcs (2.4.2~1) UNRELEASED; urgency=low
 
   [ Sebastien Tack ]
   * update module geogebra
+  * modif js dhtmlwindow pour fixer Zindex ko lorsque fenetre reduite
 
  -- Sebastien Tack <sebastien.tack@ac-caen.fr>  Sat, 24 Oct 2009 18:15:40 +0200
 
