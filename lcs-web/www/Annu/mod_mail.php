@@ -76,6 +76,9 @@ if ((isset($_POST['Valider']))&& (isset($_POST['adr_mail'])) )
 							//Le sujet
 							$mailSubject = "Redirection de mails";
 							//Le  message
+							if ($contenu=="aucune")
+							$mailBody ="Message automatique ( Ne pas repondre ! ): \n \n Les mails a destination de ".$log2."@".$hostn." ne sont  plus rediriges ";
+							else
 							$mailBody ="Message automatique ( Ne pas repondre ! ): \n \n Les mails a destination de ".$log2."@".$hostn." sont desormais renvoyes vers l adresse : ".$_POST['adr_mail'];
 							//l'expéditeur
 							$mailHeaders = "From: LCS";
