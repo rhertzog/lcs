@@ -11,64 +11,81 @@
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
   include ("../lcs/includes/jlcipher.inc.php");
+  $query="SELECT value from applis where name='squirrelmail'";
+  $result=mysql_query($query);
+  if ($result) 
+	{
+          if ( mysql_num_rows($result) !=0 ) {
+          $r=mysql_fetch_object($result);
+          $test_squir=$r->value;
+          }
+          else $test_squir="0";
+          }
+          else $test_squir="0";
+  mysql_free_result($result);
+         
   list ($idpers,$login)= isauth();
-  if (($idpers == "0") || is_eleve($login) ) header("Location:$urlauth");
+  if (($idpers == "0") ) header("Location:$urlauth");
+  if ( is_eleve($login) || $test_squir=="0") header("Location:index.php");
   $cmd="hostname -d";
   exec($cmd,$hn,$retour);
   $hostn= $hn[0];
-  if (is_admin("Lcs_is_admin",$login) == "Y" ) {
+  if (is_admin("Lcs_is_admin",$login) == "Y" )
+  	{
 	if (isset($_GET[uid])) $log2=$_GET[uid];
 	elseif (isset($_POST[uid])) $log2=$_POST[uid];
 	else $log2=$login;
 	}
 	else 
 	$log2=$login;
-	//traitement du formulaire
+	
+//traitement du formulaire
+		
 if ((isset($_POST['Valider']))&& (isset($_POST['adr_mail'])) )
 	{
 		if ($_POST['adr_mail']!="") $contenu=$_POST['adr_mail']; else $contenu="aucune";
-		if ($_POST['choix']=="yes" && $_POST['adr_mail']!="")
-		$contenu2= $log2."@".$hostn;
-				
+		if ($_POST['choix']=="oui" && $_POST['adr_mail']!="")
+		$contenu2= $log2."@".$hostn;				
 		$fichier_script_sudo = "/usr/share/lcs/scripts/execution_script_plugin.sh";
 		$script="'/usr/share/lcs/scripts/redir.sh ".$contenu." ". $log2. " ".$contenu2."'";
 		$cmd = "/usr/bin/sudo -u root " . $fichier_script_sudo . " " . $script;
 		exec($cmd,$lignes_retournees,$ret_val);
 		if ($ret_val!=0) $message= '<div class="error_msg"> L\'op&#233;ration a &#233;chou&#233;</div>';
 		else 
-		{
-		exec ("/usr/bin/sudo /usr/share/lcs/scripts/chacces.sh 660 ".$log2.":lcs-users"." /home/".$log2."/.forward",$rien, $retour);
-		if 	($retour==0)
 			{
-			$nom_file="/home/admin/Documents/mailredir.txt";
-			$datte=date("d:m:Y H:i");
-			$fichier=fopen($nom_file,"a");
-			if ($contenu=="aucune") 
+			exec ("/usr/bin/sudo /usr/share/lcs/scripts/chacces.sh 660 ".$log2.":lcs-users"." /home/".$log2."/.forward",$rien, $retour);
+			if 	($retour==0)
 				{
-				$message ='<P><B>Les mails ne sont plus redirig&#233;s.</B>';
-				fputs($fichier, $datte . " Annulation redirection ". $log2." \n ");
-				fclose($fichier);
+				$datte=date("Y:m:d H:i:s");
+				if ($contenu=="aucune") 
+					{
+					$message ='<P><B>Les mails ne sont plus redirig&#233;s.</B>';
+					}
+				else
+					{
+					$message.= '<P><B>La boite a &#233;t&#233; redirig&#233;e.</B> <br> - Un mail de confirmation  a &#233;t&#233; envoy&#233; <br>';
+					}
+					$cmd = "INSERT INTO redirmail (faitpar,pour,vers,copie,date,remote_ip) VALUES ('$login','$log2','$contenu', '{$_POST['choix']}','$datte', '{$_SERVER['REMOTE_ADDR']}');";
+			
+					if(!mysql_query($cmd))  $message.="Erreur insertion base de donn&#233;es  ";
+				  
+//envoi mail de confirmation			
+			
+							//destinataire
+							$mailTo2=$log2;
+							//Le sujet
+							$mailSubject = "Redirection de mails";
+							//Le  message
+							$mailBody ="Message automatique ( Ne pas repondre ! ): \n \n Les mails a destination de ".$log2."@".$hostn." sont desormais renvoyes vers l adresse : ".$_POST['adr_mail'];
+							//l'expéditeur
+							$mailHeaders = "From: LCS";
+							//envoi mail
+							 //mail($mailTo, $mailSubject, $mailBody, $mailHeaders);
+							 mail($mailTo2, $mailSubject, $mailBody, $mailHeaders);
+					
 				}
-			else 
-				{
-				fputs($fichier, $datte . " - ". $log2. " vers ".$_POST['adr_mail']." \n ");
-				fclose($fichier);
-				$message= '<P><B>La boite a &#233;t&#233; redirig&#233;e.</B> <br> - Un mail de confirmation  a &#233;t&#233; envoy&#233; <br>';
-				//destinataire
-						$mailTo2=$log2;
-						//Le sujet
-						$mailSubject = "Redirection de mails";
-						//Le  message
-						$mailBody ="Message automatique ( Ne pas répondre ! ): \n \n Les mails en ".$log2."@".$hostn." sont d&#233;sormais renvoy&#233;s vers  ".$_POST['adr_mail'];
-						//l'expéditeur
-						$mailHeaders = "From: LCS";
-						//envoi mail
-						 //mail($mailTo, $mailSubject, $mailBody, $mailHeaders);
-						 mail($mailTo2, $mailSubject, $mailBody, $mailHeaders);
-				}
-			}
-			else $message='<div class="error_msg">La redirection a &#233;chou&#233 ! </div>';
-		}	
+				else $message='<div class="error_msg">La redirection a &#233;chou&#233 ! </div>';
+			}	
 	}
 
 // Si $log2, on récupère les datas de l'utilisateur
@@ -88,17 +105,15 @@ if ((isset($_POST['Valider']))&& (isset($_POST['adr_mail'])) )
 			$adresse=$redirect[0];
 			$ligne=fgetcsv($fp,128);
 			$copie=$ligne[0];
-			
 			}
 		}
-		
 	}
 		
 //affichage du formulaire
         header_crypto_html("Redirection des mails");
         aff_trailer ("5"); 
                 
-    ?>
+?>
 <script type="text/javascript">
 function writediv(texte)
      {
@@ -117,7 +132,7 @@ function test_email (my_email) {
 
   </script>
       <h3><u>Redirection des mails</u></h3>
-      <p>Rediriger les mails en <span class="important"><?echo $log2.'@'.$hostn;?> 
+      <p>Rediriger les mails &agrave; destination de  <span class="important"><?echo $log2.'@'.$hostn;?> 
 		</span> vers une boite personnelle</p>
 	<? if ($adresse!="")
 	echo "<p>Pour annuler la redirection, vider le champs ci-dessous et valider.</p>";?>	
@@ -132,10 +147,10 @@ function test_email (my_email) {
           <td> - Faut il conserver dans la boite du Lcs, une copie des mails redirig&#233;s ?</B></td>
           <td>
           <P>
-          <input type="radio" name="choix" value="yes"
+          <input type="radio" name="choix" value="oui"
           <? if (($copie!="" && $adresse!="") || $adresse =="") echo "checked";?>
           > OUI
-		  <input type="radio" name="choix" value="no" 
+		  <input type="radio" name="choix" value="non" 
 		  <? if ($copie=="" && $adresse!="")  echo "checked";?>
 		  > NON
 		  <input type="hidden" name="uid" value= "<? echo $log2; ?>">
@@ -147,9 +162,8 @@ function test_email (my_email) {
           </tr>
         </table>
       </form>
-    <?
-    if ($message!="") echo $message;
-       
-      
+<?
+  if ($message!="") echo $message;
+  mysql_close();
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>

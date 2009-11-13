@@ -16,6 +16,20 @@
 
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
+  //test si squirrelmail est installe pour redirection mails
+  $query="SELECT value from applis where name='squirrelmail'";
+  $result=mysql_query($query);
+  if ($result) 
+	{
+          if ( mysql_num_rows($result) !=0 ) {
+          $r=mysql_fetch_object($result);
+          $test_squir=$r->value;
+          }
+          else $test_squir="0";
+          }
+          else $test_squir="0";
+   //fin test squirrelmail
+   
   header_html();
   aff_trailer ("3");
   #$TimeStamp_0=microtime();
@@ -57,7 +71,7 @@
     echo "<br>Pages perso : <a href=\"../~".$user["uid"]."/\"><tt>".$baseurl."~".$user["uid"]."</tt></a><br>\n";
   }
    echo "Adresse m&#232;l : <a href=\"mailto:".$user["email"]."\"><tt>".$user["email"]."</a></tt><br>\n";
-   if (!is_eleve($login) && $user["uid"]==$login ) echo "<br><a href=\"mod_mail.php\">Rediriger mes mails vers une boite personnelle</a>";
+   if (!is_eleve($login) && $user["uid"]==$login && $test_squir=="1") echo "<br><a href=\"mod_mail.php\">Rediriger mes mails vers une boite personnelle</a>";
   // Affichage Menu people_admin
   if (is_admin("Annu_is_admin",$login) == "Y" ) {
   ?>
@@ -70,7 +84,7 @@
   <?
     if (ldap_get_right("Lcs_is_admin",$login)=="Y") {
     	echo "<li><a href=\"add_user_right.php?uid=" . $user["uid"] ."\">G&#233;rer les droits</a><br>";
-    	if ($user["uid"]!=$login) echo "<li><a href=\"mod_mail.php?uid=" . $user["uid"] ."\">Rediriger les mails</a> en ".$user["email"]."<br>";
+    	if ($user["uid"]!=$login && $test_squir=="1") echo "<li><a href=\"mod_mail.php?uid=" . $user["uid"] ."\">Rediriger les mails</a> <br>";
     }
     if ( $ToggleAff==1 && @is_dir ("/home/".$user["uid"]."/public_html") ) {
       // Ouverture/Fermeture Espace web

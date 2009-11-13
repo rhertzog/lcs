@@ -22,7 +22,9 @@ open SQL, ">/tmp/UserSql.tmp";
 print SQL
   "use mysql;\n",
   "delete from db   where user='$uid';\n",
-  "delete from user where user='$uid';\n";
+  "delete from user where user='$uid';\n",
+  "use lcs_db;\n",
+  "delete from redirmail where pour='$uid';\n";
 system("mysqladmin -f -u$mysqlServerUsername -p$mysqlServerPw drop $dbName");
 system("mysql -f -u$mysqlServerUsername -p$mysqlServerPw < /tmp/UserSql.tmp");
 
