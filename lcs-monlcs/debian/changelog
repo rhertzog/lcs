@@ -1,4 +1,4 @@
-lcs-monlcs (2.4.2~1) UNRELEASED; urgency=low
+lcs-monlcs (2.4.2~1) Lcs; urgency=low
 
   [ Sebastien Tack ]
   * update module geogebra
