@@ -1,0 +1,12 @@
+Source: lcs-casmrt
+Section: SSO
+Priority: optional
+Maintainer: Sebastien TACK <sebastien.tack@ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-casmrt
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-apache2ssl, php5
+Description: CAS ServerFor LCS  written with Symfony 
+ This package allows to dispose a native CAS Server for LCS

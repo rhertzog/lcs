@@ -1,0 +1,83 @@
+CasTgt:
+  tableName: cas_tgt
+  actAs: { Timestampable: ~ }
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      autoincrement: true
+    ticket:
+      type: string(255)
+      default: ''
+      notnull: true
+    client_hostname:
+      type: string(255)
+      default: ''
+      notnull: true
+    username:
+      type: string(255)
+      default: ''
+      notnull: true
+    extra_attributes: string(2147483647)
+
+CasSt:
+  tableName: cas_st
+  actAs: { Timestampable: ~ }
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      autoincrement: true
+    ticket:
+      type: string(255)
+      default: ''
+      notnull: true
+    service:
+      type: string(2147483647)
+      default: ''
+      notnull: true
+    client_hostname:
+      type: string(255)
+      default: ''
+      notnull: true
+    username:
+      type: string(255)
+      default: ''
+      notnull: true
+    type:
+      type: string(255)
+      default: ''
+      notnull: true
+    consumed: timestamp(25)
+    proxy_granting_ticket_id: integer(4)
+    tgt_id: integer(4)
+  relations:
+    CasPt: { local: proxy_granting_ticket_id, foreign: id, foreignAlias: CasPts, onDelete: CASCADE }
+    CasTgt: { local: tgt_id, foreign: id, foreignAlias: CasTgts, onDelete: CASCADE }
+
+CasserverPgt:
+  tableName: cas_pgt
+  actAs: { Timestampable: ~ }
+  columns:
+    id:
+      type: integer(4)
+      primary: true
+      autoincrement: true
+    ticket:
+      type: string(255)
+      default: ''
+      notnull: true
+    client_hostname:
+      type: string(255)
+      default: ''
+      notnull: true
+    iou:
+      type: string(255)
+      default: ''
+      notnull: true
+    service_ticket_id:
+      type: integer(4)
+      default: ''
+      notnull: true
+  relations:
+    CasSt: { local: service_ticket_id, foreign: id, foreignAlias: CasSts, onDelete: CASCADE }
