@@ -4,7 +4,7 @@
 
 <table id="login-box">
 	<tr><td colspan="2"><div id="headline-container"><strong>CAS</strong> Central Login</div></td></tr>
-	<tr><td id="logo-container"><img src="/symf_cas/css/themes/simple/logo.png" id="logo"/></td>
+	<tr><td id="logo-container"><img src="/casmrt/css/themes/simple/logo.png" id="logo"/></td>
 	    <td id="login-form-container">
 	<form method="post" id="login-form" action="<?php echo url_for('CAS/login'); ?>" 
 	    onsubmit="submitbutton = document.getElementById('login-submit'); submitbutton.value='Please wait...'; submitbutton.disabled=true; return true;">
