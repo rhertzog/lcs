@@ -15,8 +15,8 @@ $sf_user->setAttribute('dn',$dn);
     <?php include_metas() ?>
     <?php include_title() ?>
     <link rel="shortcut icon" href="/favicon.ico" />
-    <link type="text/css" rel="stylesheet" href="/symf/css/themes/cas.css"/>
-    <link type="text/css" rel="stylesheet" href="/symf/css/themes/simple/theme.css"/>
+    <link type="text/css" rel="stylesheet" href="/casmrt/css/themes/cas.css"/>
+    <link type="text/css" rel="stylesheet" href="/casmrt/css/themes/simple/theme.css"/>
   
 </head>
   <body>
