@@ -23,7 +23,7 @@
 	//die($url);
         echo "<script language=\"JavaScript\" type=\"text/javascript\">\n";
         echo "<!--\n";
-        echo "top.location.href = '".$url."';\n";
+        echo "document.location.href = '".$url."';\n";
         echo "//-->\n";
         echo "</script>\n";
 

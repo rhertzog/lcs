@@ -97,7 +97,7 @@ public function getLogin() {
 	}
 	else {
 	
-		$random_string = md5(date('Y-m-d H:M:S'));
+		$random_string = md5(date('Y-m-d H:i:s'));
 		$tgt = new CasTgt();
     		$tgt->setUserName($user);
     		$tgt->ticket = "TGC-".$random_string;
@@ -117,7 +117,7 @@ public function getLogin() {
 private function generate_service_ticket($service,$user) {
     if (isset($service)) {
     	$st = new CasSt();
-    	$random_string = md5(date('Y-m-d H:M:S'));	
+    	$random_string = md5(date('Y-m-d H:i:s'));	
     	$st->ticket = "ST-".$random_string;
 	$st->type='ServiceTicket';
     	$st->username = $user;
@@ -203,7 +203,7 @@ public function executeProxyValidate(sfWebRequest $request) {
 	$service = $request->getParameter('service');
 	
 	$tgt = $this->generate_tgt_cookie($this->usr);
-	
+	//return $this->renderText($this->usr." ".$tgt);
 	if (isset($service)) {
 		$this->ServiceTicket = $this->generate_service_ticket($service,$this->usr);
 		$this->url=$service.'?ticket='.$this->ServiceTicket;
