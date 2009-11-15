@@ -13,7 +13,7 @@ if ($_POST || $_GET) {
 
 ?>
 
-<applet name="ggbApplet" code="geogebra.GeoGebraApplet" codebase="/monlcs/modules/geogebra/" archive="./geogebra.jar" width="100%" height="100%">
+<applet name="ggbApplet" code="geogebra.GeoGebraApplet" codebase="/" archive="/monlcs/modules/geogebra/geogebra.jar" width="100%" height="100%">
 
 	<param name="filename" value="<?php echo $ggb; ?>">
 	<param name="framePossible" value="false">
