@@ -74,26 +74,50 @@ public function getLogin() {
                  }
         }
 
-	return $info;
+	return $this->renderText(var_dump($info));
  }
 
   private function generate_tgt_cookie($user) {
-    	$random_string = md5(date('Y-m-d H:m:s'));	
-    	setcookie('tgt-cas',"TGC-".$random_string,0,"/","",0);
-    	$tgt = new CasTgt();
-    	$tgt->setUserName($user);
-    	$tgt->ticket = "TGC-".$random_string;
-    	$tgt->client_hostname = $_SERVER['REMOTE_ADDR'];
-    	$tgt->save();
-    	$this->getUser()->setAttribute('tgt_id',$tgt->id);
+    		
+    	if (empty($user))
+		return;
+	
+	
+	$trouve_tgt = Doctrine::getTable('CasTgt')->createQuery('e')
+					       ->where('e.username = ?',array($user) )
+    						->andWhere('e.client_hostname = ?', array($_SERVER['REMOTE_ADDR']))
+						->execute();
+	$this->probe = $trouve_tgt->getFirst();
 
-    return $tgt->ticket;
+	if ($this->probe) {
+		setcookie('tgt-cas', $this->probe->ticket, 0, "/", "",0);
+		$this->getUser()->setAttribute('tgt',$this->probe->ticket);
+		$this->getUser()->setAttribute('tgt_id',$this->probe->id);
+
+	}
+	else {
+	
+		$random_string = md5(date('Y-m-d H:M:S'));
+		$tgt = new CasTgt();
+    		$tgt->setUserName($user);
+    		$tgt->ticket = "TGC-".$random_string;
+    		$tgt->client_hostname = $_SERVER['REMOTE_ADDR'];
+    		$tgt->save();
+    		
+		setcookie('tgt-cas', $tgt->ticket, 0, "/", "",0);
+		$this->getUser()->setAttribute('tgt',$tgt->ticket); 
+		$this->getUser()->setAttribute('tgt_id',$tgt->id);   	
+	}
+	
+	
+
+    return $this->getUser()->getAttribute('tgt');
  }
   
 private function generate_service_ticket($service,$user) {
     if (isset($service)) {
     	$st = new CasSt();
-    	$random_string = md5(date('Y-m-d H:m:s'));	
+    	$random_string = md5(date('Y-m-d H:M:S'));	
     	$st->ticket = "ST-".$random_string;
 	$st->type='ServiceTicket';
     	$st->username = $user;
@@ -169,17 +193,24 @@ public function executeProxyValidate(sfWebRequest $request) {
 	//user_LCS
 
 	$this->usr = $this->getLogin();
+	if (empty($this->usr)) {
+		$this->getResponse()->setCookie('tgt-cas', null, 0, "/", "",0);
+    		$this->getUser()->setAttribute('tgt',null);
+
+		return;
+	}
+	
 	$service = $request->getParameter('service');
 	
-	$tgt_gen = $this->generate_tgt_cookie($this->usr);
-	$this->getUser()->setAttribute('tgt',$tgt_gen);
-
+	$tgt = $this->generate_tgt_cookie($this->usr);
+	
 	if (isset($service)) {
 		$this->ServiceTicket = $this->generate_service_ticket($service,$this->usr);
 		$this->url=$service.'?ticket='.$this->ServiceTicket;
 		
 	}
 
+	return;
 	
   }
 }
