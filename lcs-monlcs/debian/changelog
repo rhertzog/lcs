@@ -1,3 +1,10 @@
+lcs-monlcs (2.4.2~2) UNRELEASED; urgency=low
+
+  * missing jar for geogebra module
+  * adjusting codebase and archive attributes for Applet in viewer.php  
+
+ -- Sebastien Tack <>  Sun, 15 Nov 2009 10:54:45 +0200
+
 lcs-monlcs (2.4.2~1) Lcs; urgency=low
 
   [ Sebastien Tack ]
