@@ -8,6 +8,10 @@ lcs-web (2.4.6~1) Lcs; urgency=low
   [ Jean-Luc Chretien ]
   * Fixing safe_mode On for type php users in public_html in userdiraddtypephp.template
 
+  [ Philippe Le Brouster ]
+  * Add the scripts to manage the ldap rights (add or delete a right to an
+    user).
+
  -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Mon,  2 Nov 2009 00:05:49 +0100
 
 lcs-web (2.4.5) Lcs; urgency=low
