@@ -15,8 +15,8 @@ echo "<H1>Configuration de BCDIWEB</H1>\n";
 
 if (isset($_GET["orgname"])) {
 	system("cat $PTP/progweb/bcdiweb_Data.in | sed -e \"s/###ORGA###/".$_GET["orgname"]."/g\" | sed -e \"s/###GRIFFE###/".$_GET["griffe"]."/g\" | sed -e \"s/###MAIL###/".$_GET["mail"]."/g\" > $PTP/progweb/bcdiweb_Data.ini");
-	system("cat $PTP/scripts/syncbcdi.sh.in | sed -e \"s/###IPBCDI###/".$_GET["ipbcdi"]."/g\" > $PTP/scripts/syncbcdi.sh");
-	chmod ("$PTP/scripts/syncbcdi.sh",0755);
+	system("cat $PTP/scripts/syncbcdi.sh.in | sed -e \"s/###IPBCDI###/".$_GET["ipbcdi"]."/g\" > $PTP/scripts/lcs-syncbcdi.sh");
+	chmod ("$PTP/scripts/lcs-syncbcdi.sh",0755);
 	echo "BcdiWeb configur&eacute;";
 } else
 

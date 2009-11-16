@@ -2,3 +2,4 @@
 echo "Demarrage de la synchro des donnees... <BR>"
 rsync --recursive --times rsync://###IPBCDI###/bcdi /home/BcdiPlug/Data
 echo "fin de la synchro des donnees<BR>"
+chown -R www-data /home/BcdiPlug/Data
