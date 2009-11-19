@@ -83,7 +83,7 @@ test1=$(gem list picnic | grep picnic)
 if [ "$test1" = "picnic (0.7.1)" ]; then
 	echo "Le gem $test1 est present on ne l'installera pas"
 else
-	echo "Le gem $test1 n'est pas present on l'installe"
+	echo "Le gem n'est pas present on l'installe"
   	gem install picnic --version $PICNICVERSION --no-ri --no-rdoc
 fi
 
@@ -91,7 +91,7 @@ test1=$(gem list ruby-net-ldap | grep ruby-net-ldap)
 if [ "$test1" = "ruby-net-ldap (0.0.4)" ]; then
 	echo "Le gem $test1 est present on ne l'installera pas"
 else
-	echo "Le gem $test1 n'est pas present on l'installe"
+	echo "Le gem n'est pas present on l'installe"
   	gem install ruby-net-ldap --version 0.0.4 --no-ri --no-rdoc
 fi
 
@@ -99,7 +99,7 @@ test1=$(gem list mysql | grep mysql)
 if [ "$test1" = "mysql (2.7)" ]; then
 	echo "Le gem $test1 est present on ne l'installera pas"
 else
-	echo "Le gem $test1 n'est pas present on l'installe"
+	echo "Le gem n'est pas present on l'installe"
   	gem install mysql --version 2.7 --no-ri --no-rdoc
 fi
 
