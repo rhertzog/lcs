@@ -32,7 +32,12 @@ case "$1" in
 	    handle_initial_config lcs-preinstall-config 55
         else
             if  mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1 ; then
+		# Update LCS Version param
                 mysql -e "UPDATE lcs_db.params SET value='$VERSIONLCS' WHERE name='VER'"
+		# Update lcs_db with table redirmail
+		if dpkg --compare-versions $2 lt 2.4.6 ; then
+			mysql -f < /var/lib/lcs/preinstall/lcs_db-table-redirmail.sql
+		fi
             fi 
 	fi
 	#
