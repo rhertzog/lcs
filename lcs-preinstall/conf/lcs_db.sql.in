@@ -188,3 +188,22 @@ CREATE TABLE IF NOT EXISTS `statusages` (
 -- Contenu de la table `statusages`
 --
 
+
+-- --------------------------------------------------------
+
+
+--
+-- Structure de la table `redirmail`
+--
+
+CREATE TABLE IF NOT EXISTS `redirmail` (
+  `id` smallint(6) NOT NULL auto_increment,
+  `faitpar` text NOT NULL,
+  `pour` text NOT NULL,
+  `vers` text NOT NULL,
+  `copie` varchar(3) NOT NULL,
+  `date` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `remote_ip` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1  ;
+
