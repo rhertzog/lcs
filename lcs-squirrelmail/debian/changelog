@@ -1,3 +1,9 @@
+lcs-squirrelmail (2.4.1~2) Lcs; urgency=low
+
+  * Fix problem with dpkg-divert when remove package
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 Nov 2009 14:16:10 +0100
+
 lcs-squirrelmail (2.4.1~1) Lcs; urgency=low
 
   * Modify for Debian lenny compatibilty
