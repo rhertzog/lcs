@@ -1,16 +1,10 @@
-<?
-  /* =============================================
-   Projet LCS : Linux Communication Server
-   lcs/includes/jlcipher.inc.php
-   jLCF >:>  jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice academie de Caen
-   Derniere version : 08/06/2009
-   ============================================= */
+<?php
+/* lcs/includes/jlcipher.inc.php derniere modification : 20/11/2009 */
 
-# Constantes j-LCipher
+# Constantes
 $MaxLifeTime = "20"; /* seconde */
 
-# Messages d'erreur  j-LCipher
+# Messages d'erreur
 $MsgError[1]="Possible spoof IP source address";
 $MsgError[2]="MaxTimeLife expire";
 $MsgError[3]=$MsgError[1]." and ".$MsgError[2];
@@ -23,7 +17,7 @@ function header_crypto_html( $titre)
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
         <head>
-                <title><?echo $titre ?></title>
+                <title><?php echo $titre ?></title>
                 <link  href='../c/lcs.css' rel='StyleSheet' type='text/css'/>
 		<meta http-equiv="Pragma" content="No-Cache"/>
                 <script language = 'javascript' type = 'text/javascript' src="../lcs/crypto.js"></script>
@@ -35,7 +29,7 @@ function header_crypto_html( $titre)
                                 auth_popupWin = window.open("../lcs/auth_lcs.html","auth_lcs","width=600,height=400,resizable=no,scrollbars=no,toolbar=no,menubar=no,status=no");
                                 auth_popupWin.focus();
                         }
-                <? if ( eregi("Authentification", $titre)) { ?>
+                <?php if ( preg_match("/Authentification/i", $titre)) { ?>
                         function encrypt(f) {
                                 var endTime=new Date();
                                 f.time.value =  (endTime.getTime()-startTime.getTime())/1000.0;
@@ -52,7 +46,7 @@ function header_crypto_html( $titre)
                         }
 
                         timerStart();
-                <? } else { ?>
+                <?php } else { ?>
 
                         function encrypt(f) {
                                 if (f.dummy.value!="") {
@@ -63,23 +57,27 @@ function header_crypto_html( $titre)
                                         f.string_auth1.value=rsaEncode(public_key_e,public_key_pq,f.dummy1.value);
                                         f.dummy1.value="******";
                                 }
+                                if (f.dummy2.value!="") {
+                                        f.string_auth2.value=rsaEncode(public_key_e,public_key_pq,f.dummy2.value);
+                                        f.dummy2.value="******";
+                                }
 				return true;
                         }
 
-                <? } ?>
+                <?php } ?>
 
                         // -->
                 </script>
         </head>
         <body class="auth">
-<?
+<?php
 }
 
 function crypto_nav()
 {
          global   $HTTP_USER_AGENT;
         // Affichage logo crypto
-        if (eregi("Mozilla/4.7", $HTTP_USER_AGENT)) {
+        if (preg_match("/Mozilla\/4.7/i", $HTTP_USER_AGENT)) {
                 echo " <a href='../lcs/auth_lcs.html' onclick='auth_popup(); return false' target='_blank'><img src='../lcs/images/no_crypto.gif' alt='Crytpage des mots de passe actif !' width='48' height='48' border='0' /></a>";
         } else {
                 echo " <a href='../lcs/auth_lcs.html' onclick='auth_popup(); return false' target='_blank'><img src='../lcs/images/crypto.gif' alt='Attention, avec ce navigateur votre mot de passe va circuler en clair sur le r&#233;seau !' width='48' height='48' border='0' /></a>";
@@ -89,7 +87,7 @@ function crypto_nav()
 function detect_key_orig()
 {
         $myFile = file( "public_key.js");
-        if ( eregi("103891665,103273136,154427652,173536111,49193",$myFile[1])) return true;  else return false; 
+        if ( preg_match("/103891665,103273136,154427652,173536111,49193/i",$myFile[1])) return true;  else return false; 
 }
 
 ?>

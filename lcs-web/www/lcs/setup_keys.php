@@ -1,3 +1,8 @@
+
+
+
+
+
 <?php   /* lcs/setup_keys.php maj : 8/11/2008 */ 
 require "./includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
@@ -326,21 +331,17 @@ seed('<? echo $RandomSeed
 // -->
 </script>
 </head>
-<body>
+<body onLoad="genkey(8,document.t)">
 
 <? if ( is_admin("Lcs_is_admin",$login) == "Y" ) { ?>
-<div align="center"><h2>G&#233;n&#233;ration d'un nouveau jeu de cl&#233;s d'authentification</h2></div>
-<p>
 <form name="t" action="save_keys.php" method="post">
-<p>Longueur de la cl&#233; en octets : <input type=text name=keylen size=3 value=8>&nbsp;&nbsp;
-<input type="hidden" name="keygen" value="true">
-<input type="button" value="G&#233;n&#233;ration des cl&#233;s" onClick="genkey(document.t.keylen.value,document.t)"><br>
-<hr width="80%">
-        prime factor p : <input type=text name=p value="<? echo $p ?>" size=30><br>
-        prime factor q : <input type=text name=q value="<? echo $q ?>" size=30><br>
-        Public Modulo (p*q): <input type=text name=pq value="<? echo $pq ?>" size=50><br>
-        Private exponent (d): <input type=text name=d  value="<? echo $d ?>" size=50 ><br>
-        Public exponent (e): <input type=text name=e value="<? echo $e ?>" size=5><br>
+<div align="center"><h2>G&#233;n&#233;ration d'un nouveau jeu de cl&#233;s d'authentification</h2>
+    <!-- prime factor p : --><input type=hidden name=p value="<? echo $p ?>" size=30>
+    <!-- prime factor q : --><input type=hidden name=q value="<? echo $q ?>" size=30>
+    <!-- Public Modulo (p*q): --><input type=hidden name=pq value="<? echo $pq ?>" size=50>
+    <!-- Private exponent (d): --><input type=hidden name=d  value="<? echo $d ?>" size=50 >
+    <!-- Public exponent (e): --><input type=hidden name=e value="<? echo $e ?>" size=5>
+</div>
 <hr width="80%">
 <div align='center'>
         <h2>V&#233;rification des cl&#233;s</h2>

@@ -4,7 +4,7 @@
    functions.inc.php
    jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   Derniere mise a jour 24/09/2009
+   Derniere mise a jour 20/11/2009
    ============================================= */
 
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
@@ -55,6 +55,12 @@ include ("/var/www/lcs/includes/xoft.php");
 		exit();
 	}
     ######### END CAS section
+
+    function decodekey($key)
+    {
+        exec ("/usr/bin/python /usr/share/lcs/privatekey/decode.py '$key' 2>/dev/null",$result,$ReturnValue);
+        return $result[0];
+    }
 
     function dispstats($idpers)
     {
@@ -144,7 +150,7 @@ include ("/var/www/lcs/includes/xoft.php");
 
     function mksessid()
     {
-        /* Fabrique un N° de session aléatoire */
+        /* Fabrique un N° de session aleatoire */
         global $Pool, $SessLen,$authlink, $DBAUTH;
 
         $count=10;
@@ -200,10 +206,10 @@ include ("/var/www/lcs/includes/xoft.php");
 
     function open_session($login, $passwd, $cryptpasswd)
     {
-      /* Vérifie le login et le mot de passe sur l'annuaire ldap
-          ouvre une session et crée le home et la bdd en cas de succès
+      /* Verifie le login et le mot de passe sur l'annuaire ldap
+          ouvre une session et cree le home et la bdd en cas de succes
           Renvoie :
-                * true en cas de succès de la création du home et de la bdd
+                * true en cas de succes de la creation du home et de la bdd
                 * false dans les autres cas
       */
         global $urlauth, $authlink, $DBAUTH, $key_priv;
@@ -218,7 +224,7 @@ include ("/var/www/lcs/includes/xoft.php");
                         $stat=mysql_result($result,0,1)+1;
                         mysql_free_result($result);
                 else :
-                       // le login n'est pas encore dans la base... creation de l'entrée
+                       // le login n'est pas encore dans la base... creation de l'entree
                         $result=mysql_db_query("$DBAUTH","INSERT INTO personne  VALUES ('', '', '', '$login', '')", $authlink);
                         $query="SELECT id, stat FROM personne WHERE login='$login'";
                         $result=mysql_db_query("$DBAUTH",$query, $authlink);
@@ -239,7 +245,7 @@ include ("/var/www/lcs/includes/xoft.php");
                 $result=mysql_db_query("$DBAUTH","INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip')", $authlink);
                 $result=mysql_db_query("$DBAUTH","UPDATE personne SET stat=$stat WHERE id=$idpers");
                 set_act_login($idpers);
-                // Création Espace Perso Utilisateur 
+                // Creation Espace Perso Utilisateur 
                 if ( !@is_dir("/home/".$login) ||  (@is_dir("/home/".$login) && 
                                                   ( !@is_dir("/home/".$login."/public_html")
                                                   || !@is_dir("/home/".$login."/Maildir")
@@ -248,14 +254,14 @@ include ("/var/www/lcs/includes/xoft.php");
 		      if ( is_eleve($login) ) $group="eleves"; else $group="profs";
 		      exec ("/usr/bin/sudo /usr/share/lcs/scripts/mkhdir.sh $login $group $cryptpasswd > /dev/null 2>&1");
                 } else { 
-                      // Vérification acces bdd et réinitialisation le cas échéant
+                      // Verification acces bdd et reinitialisation le cas echeant
                       #
-                      #system ("echo \"DBG >> Vérif. acces mysql $login $passwd\" >> /tmp/log.lcs");
+                      #system ("echo \"DBG >> Verif. acces mysql $login $passwd\" >> /tmp/log.lcs");
                       @mysql_close();
                       @mysql_connect("localhost", $login, $passwd );
                       if ( mysql_error() ) {
                           exec ("$scriptsbinpath/mysqlPasswInit.pl $login $passwd");
-                          #system ("echo \"DBG >> Réinit mdp mysql $login $passwd\" >> /tmp/log.lcs");
+                          #system ("echo \"DBG >> Reinit mdp mysql $login $passwd\" >> /tmp/log.lcs");
                       }
                       @mysql_close();
                 }      
@@ -321,7 +327,7 @@ include ("/var/www/lcs/includes/xoft.php");
     }
 
 function ldap_get_right_search ($type,$search_filter,$ldap)
-// Recherche si $nom est présent dans le droit $type
+// Recherche si $nom est present dans le droit $type
 {
 	global $dn;
 	$ret="N";
@@ -337,7 +343,7 @@ function ldap_get_right_search ($type,$search_filter,$ldap)
 
 
 function ldap_get_right($type,$login)
-// Determine si $login à le droit $type
+// Determine si $login a le droit $type
 {
     global $ldap_server, $ldap_port, $adminDn, $adminPw, $dn;
 
@@ -356,45 +362,44 @@ function ldap_get_right($type,$login)
             echo "Invalid Admin's login for LDAP Server";
         } else {
 
-			// Recherche du nom exact
+            // Recherche du nom exact
             $search_filter = "(member=$nom)";
-			$ret=ldap_get_right_search ($type,$search_filter,$ldap,$base_search);
-			if ($ret=="N") {
-            // Recherche sur les Posixgroups d'appartenance
+            $ret=ldap_get_right_search ($type,$search_filter,$ldap,$base_search);
+            if ($ret=="N") {
+                // Recherche sur les Posixgroups d'appartenance
             	$result1 = @ldap_list ( $ldap, $dn["groups"], "memberUid=$login", array ("cn") );
             	if ($result1) {
-            	$info = @ldap_get_entries ( $ldap, $result1 );
-           		if ( $info["count"]) {
-					$loop=0;
-					while (($loop < $info["count"]) && ($ret=="N")){
-						$search_filter = "(member=cn=".$info[$loop]["cn"][0].",".$dn["groups"].")";
-						$ret=ldap_get_right_search ($type,$search_filter,$ldap,$base_search,$search_attributes);
-						$loop++;
+                    $info = @ldap_get_entries ( $ldap, $result1 );
+                    if ( $info["count"]) {
+                        $loop=0;
+                        while (($loop < $info["count"]) && ($ret=="N")){
+                            $search_filter = "(member=cn=".$info[$loop]["cn"][0].",".$dn["groups"].")";
+                            $ret=ldap_get_right_search ($type,$search_filter,$ldap,$base_search,$search_attributes);
+                            $loop++;
                 	}
-            	}
-            	@ldap_free_result ( $result1 );
-            	}
-			}
-			if ($ret=="N") {
-            // Recherche sur les GroupsOfNames d'appartenance
+                    }
+                    @ldap_free_result ( $result1 );
+                }
+            }
+            if ($ret=="N") {
+                // Recherche sur les GroupsOfNames d'appartenance
             	$result1 = @ldap_list ( $ldap, $dn["groups"], "member=uid=$login,".$dn["people"], array ("cn") );
             	if ($result1) {
-            	$info = @ldap_get_entries ( $ldap, $result1 );
-           		if ( $info["count"]) {
-					$loop=0;
-					while (($loop < $info["count"]) && ($ret=="N")){
-						$search_filter = "(member=cn=".$info[$loop]["cn"][0].",".$dn["groups"].")";
-						$ret=ldap_get_right_search ($type,$search_filter,$ldap,$base_search,$search_attributes);
-						$loop++;
+                    $info = @ldap_get_entries ( $ldap, $result1 );
+                    if ( $info["count"]) {
+                        $loop=0;
+                        while (($loop < $info["count"]) && ($ret=="N")){
+                            $search_filter = "(member=cn=".$info[$loop]["cn"][0].",".$dn["groups"].")";
+                            $ret=ldap_get_right_search ($type,$search_filter,$ldap,$base_search,$search_attributes);
+                            $loop++;
                 	}
+            	   }
+            	   @ldap_free_result ( $result1 );
             	}
-            	@ldap_free_result ( $result1 );
-            	}
-			}
+            }
         }
-    ldap_close ($ldap);
+        ldap_close ($ldap);
     }
     return $ret;
 }
-
 ?>

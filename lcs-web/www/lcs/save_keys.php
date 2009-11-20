@@ -1,11 +1,15 @@
-<?php   /* lcs/save_keys.php maj : 7/11/2008 */ 
+<?php   /* lcs/save_keys.php maj : 20/11/2009 */
+
 require "./includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
 require "../Annu/includes/ihm.inc.php";
 
 list ($idpers,$login)= isauth();
 if ($idpers == "0") header("Location:$urlauth");
+
+// Register globals
 $keys=$_POST['keys'];
+
 echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 echo "<HTML>\n";  
 ?>
@@ -20,8 +24,7 @@ echo "<HTML>\n";
 <?php
 if ( is_admin("Lcs_is_admin",$login) == "Y" )  {
         // Decodage de la chaine d'authentification cote serveur avec une cle privee
-        exec ("/usr/bin/python ".$basedir."lcs/includes/decode.py '$keys'",$AllOutPut,$ReturnValue);
-        $tmp = split ("[\|\]",$AllOutPut[0],5);
+        $tmp = preg_split ("/[\|]/",decodekey($keys),5);
         $p = $tmp[0];
         $q = $tmp[1];
         $pq = $tmp[2];
@@ -39,11 +42,17 @@ if ( is_admin("Lcs_is_admin",$login) == "Y" )  {
                         // sauvegarde de la cle privee
                         $private_key="#[ [d], [p], [q] ]\n";
                         $private_key.="value=[[$d],[$p],[$q]]\n";
-                        $fp=@fopen("includes/privateKey.py","w");
+                        $fp=@fopen("/usr/share/lcs/privatekey/privateKey.py","w");
                         if($fp) {
                                 fputs($fp,$private_key."\n");
                                 fclose($fp);
-                                echo "<div align='center'>".gettext("Votre nouvelle paire de cl&#233;s a &#233;t&#233; sauvegard&#233;e avec succ&#232;s.")."</div>\n";
+                                $msg = "<div align='center'>\n";
+                                $msg .= "<p>".gettext("Votre nouvelle paire de cl&#233;s a &#233;t&#233; sauvegard&#233;e avec succ&#232;s.")."</p>\n";
+                                $msg .= "<img src='images/warning.png' alt='Attention !' title='Attention !' />\n";
+                                $msg .= "<p>".gettext("Lors de la prochaine authentification, il faudra que vous vidiez le cache de votre navigateur.")."</p>\n";
+                                $msg .= "</div>\n";
+                                echo $msg;
+
                         } else {
                                 echo "<div align='center'><b>ERREUR</b> : ".gettext("Impossible de sauvegarder la nouvelle cl&#233; priv&#233;e.")."</div>\n";
                         }

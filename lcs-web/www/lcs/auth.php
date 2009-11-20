@@ -1,10 +1,10 @@
-<?
-/* lcs/auth.php version du : 23/09/2009 */
+<?php
+/* lcs/auth.php version du : 20/11/2009 */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
 
-// register global
+// register globals
 if (isset($_POST['login'])) $login=$_POST['login']; else $login="" ;
 if (isset($_POST['dummy'])) $dummy=$_POST['dummy']; else $dummy="" ;
 if (isset($_POST['string_auth'])) $string_auth=$_POST['string_auth']; else $string_auth="" ;
@@ -14,10 +14,8 @@ if (isset($_POST['timestamp'])) $timestamp=$_POST['timestamp']; else $timestamp=
 $error=$_GET['error'];
 
         if ($login) {
-                // Decodage de la chaine d'authentification cote serveur avec une cle privee
-                exec ("/usr/bin/python ".$basedir."lcs/includes/decode.py '$string_auth'",$AllOutPut,$ReturnValue);
-                // Extraction des parametres
-                $tmp = split ("[\|]",$AllOutPut[0],4);
+                // Decodage de la chaine d'authentification cote serveur avec une cle privee extraction des parametres
+                $tmp = preg_split ("/[\|]/",decodekey($string_auth),4);
                 $pass = $tmp[0];
                 $ip_src = $tmp[1];
                 $timestamp = $tmp[2];
@@ -66,7 +64,7 @@ $error=$_GET['error'];
         header_crypto_html("...::: Authentification LCS :::...");
 ?>
                 <h3>Authentification</h3>
-                <p>Afin de pouvoir rentrer dans votre espace perso LCS, vous devez fournir un identifiant et un mot de passe. En cas d'oubli, contactez <a href='mailto:<? echo $MelAdminLCS ?>?subject=Mot de passe Intranet'>l'administrateur du système</a>.</p>
+                <p>Afin de pouvoir rentrer dans votre espace perso LCS, vous devez fournir un identifiant et un mot de passe. En cas d'oubli, contactez <a href='mailto:<? echo $MelAdminLCS ?>?subject=Mot de passe Intranet'>l'administrateur du systï¿½me</a>.</p>
                 <form name = "auth" action="auth.php" method="post" onsubmit = "encrypt(document.auth)" >
                         <table border='0'>
                                 <tr>
