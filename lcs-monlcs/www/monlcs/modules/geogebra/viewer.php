@@ -1,15 +1,15 @@
 <?php
-
-//$ggb = 'https://lcetch.crdp.ac-caen.fr/monlcs/modules/geogebra/ggb1.ggb';
+require_once('/var/www/lcs/includes/headerauth.inc.php');
+$ggb = '/monlcs/modules/geogebra/ggb1.ggb';
 
 if ($_POST || $_GET) {
 
 	extract($_POST);
 	extract($_GET);
 }
-
-	$ggb = str_replace(' ','%20',$ggb)
-
+	
+	$ggb = str_replace(' ','%20',$ggb);
+	$ggb = $baseurl.$ggb;
 
 ?>
 
