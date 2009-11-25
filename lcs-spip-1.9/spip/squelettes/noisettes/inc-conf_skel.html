@@ -1,0 +1,178 @@
+[(#REM) parametrage des styles]
+
+[(#REM) largeur d'affichage]
+[(#CONFIG{lcs_skel_conf/larg_page}|?{[(#SET{larg,[(#CONFIG{lcs_skel_conf/larg_page})]})],[(#SET{larg,57})]})]
+[(#GET{larg}|=={800}|?{' '})]
+
+[(#REM) position des blocs]
+[(#CONFIG{lcs_skel_conf/position}|=={left}|?{[(#SET{poscontent,right})],[(#SET{poscontent,left})]})]
+[(#SET{posside,#CONFIG{lcs_skel_conf/position}})]
+
+<style type="text/css">
+body {
+[color:(#CONFIG{lcs_skel_conf/couleurs/color3});]
+[background-color:(#CONFIG{lcs_skel_conf/couleurs/color1});]
+[background-image: url("(#CFG_CHEMIN{lcs_skel_conf/upload/img_body})");]
+[(#CONFIG{lcs_skel_conf/upload/img_body_pos_h}|?{' '})background-position:[(#CONFIG{lcs_skel_conf/upload/img_body_pos_h})] [(#CONFIG{lcs_skel_conf/upload/img_body_pos_v})];]
+[background-repeat:(#CONFIG{lcs_skel_conf/upload/img_body_repeat});]
+[font-family:(#CONFIG{lcs_skel_conf/police});]
+[(#REM)
+[font-size:(#CONFIG{lcs_skel_conf/taille_police});]
+]
+}
+
+a,a:visited,a:active,
+div#content dl.bloc dt.deux a,
+div#content dl.bloc dt.un a {[color:(#CONFIG{lcs_skel_conf/couleurs/color4});]}
+a:hover{[color:(#CONFIG{lcs_skel_conf/couleurs/color5});]}
+div#container,ul#nav li.activelink a,ul#nav li.activelink a:hover {[background:(#CONFIG{lcs_skel_conf/couleurs/color2});]}
+
+div#header{
+[background-color:(#CONFIG{lcs_skel_conf/couleurs/color21});]
+}
+div#entete{
+[background-image: url("(#CFG_CHEMIN{lcs_skel_conf/entete/logo_entete})");]
+[(#CONFIG{lcs_skel_conf/entete/logo_entete_pos_h}|?{' '})background-position:[(#CONFIG{lcs_skel_conf/entete/logo_entete_pos_h})] [(#CONFIG{lcs_skel_conf/entete/logo_entete_pos_v})];]
+[background-repeat:(#CONFIG{lcs_skel_conf/entete/logo_entete_repeat});]
+}
+[(#REM) a supprimer apres tests
+[(#CONFIG{lcs_skel_conf/entete/afflogosite}|?{#SET{affls,#CONFIG{lcs_skel_conf/entete/afflogosite}},#SET{affls,oui}})]
+
+div#entete {[(#GET{affls}|=={oui}|?{' '})
+	[background-image: url("(#LOGO_SITE_SPIP||extraire_attribut{src})");background-repeat:no-repeat;]}
+]
+]
+div#entete h1{[(#CONFIG{lcs_skel_conf/entete/titre_pos_h}|?{padding-left:[(#CONFIG{lcs_skel_conf/entete/titre_pos_h})px],padding-left:150px})]}
+[(#CONFIG{lcs_skel_conf/entete/affimg_entete_bg}|=={oui}|?{' '})
+	div#entete.info{background-image: url("[(#CFG_CHEMIN{lcs_skel_conf/entete/img_entete_bg})]");background-repeat:no-repeat;}
+]
+ul#nav a{[background:(#CONFIG{lcs_skel_conf/couleurs/color23});][color:(#CONFIG{lcs_skel_conf/couleurs/color24});]}
+ul#nav a:hover{[background:(#CONFIG{lcs_skel_conf/couleurs/color25});][color:(#CONFIG{lcs_skel_conf/couleurs/color26});]}
+
+div#content dl.bloc dt.annonce,div#content dl.bloc dt.annonce a,div#content dl.bloc dt.cartouche,div#content dl.bloc dt.cartouche a{
+[background:(#CONFIG{lcs_skel_conf/couleurs/color30});][color:(#CONFIG{lcs_skel_conf/couleurs/color31});]
+}
+div#content dl.bloc dd.annonce,div#content dl.bloc dd.cartouche{
+[background:(#CONFIG{lcs_skel_conf/couleurs/color33});][color:(#CONFIG{lcs_skel_conf/couleurs/color34});]
+}
+div#content dl.bloc dt.un,div#content dl.bloc dd.un {
+[background:(#CONFIG{lcs_skel_conf/couleurs/color35});][color:(#CONFIG{lcs_skel_conf/couleurs/color36});]
+}
+div#content dl.bloc dt.deux,div#content dl.bloc dd.deux {
+[background:(#CONFIG{lcs_skel_conf/couleurs/color37});][color:(#CONFIG{lcs_skel_conf/couleurs/color38});]
+}
+ul#intro li#boite_g,ul#intro li#boite_d,ul#intro_2 li#boite_g_2,ul#intro_2 li#boite_d_2,ul#intro_ifade li#boite_g,ul#intro_ifade li#boite_d{[background:(#CONFIG{lcs_skel_conf/couleurs/color50});]}
+ul#intro h3,ul#intro h3 a,ul#intro_2 h3,ul#intro_2 h3 a,ul#intro_ifade h3,ul#intro_ifade h3 a{[color:(#CONFIG{lcs_skel_conf/couleurs/color51});]}
+ul#intro p,ul#intro dl,ul#intro_2 p,ul#intro_2 dl,ul#intro_ifade p,ul#intro_ifade dl{[background:(#CONFIG{lcs_skel_conf/couleurs/color52});][color:(#CONFIG{lcs_skel_conf/couleurs/color53});]}
+
+div#side,div#side2{[background:(#CONFIG{lcs_skel_conf/couleurs/color70});]}
+div#side div.rubriques h3.menu-titre,div#side div.rubriques h3.menu-titre a,div#side2 div.rubriques h3.menu-titre,div#side2 div.rubriques h3.menu-titre a{[background:(#CONFIG{lcs_skel_conf/couleurs/color71});][color:(#CONFIG{lcs_skel_conf/couleurs/color72});]}
+div#side div.rubriques ul,div#side div.rubriques dl,div#side2 div.rubriques ul,div#side2 div.rubriques dl{[background:(#CONFIG{lcs_skel_conf/couleurs/color73});][color:(#CONFIG{lcs_skel_conf/couleurs/color74});]}
+
+div#side div.rubriques ul li a,div#side2 div.rubriques ul li a{
+[background:(#CONFIG{lcs_skel_conf/couleurs/color80});][color:(#CONFIG{lcs_skel_conf/couleurs/color81});]
+[border-bottom:1px solid (#CONFIG{lcs_skel_conf/couleurs/color82});][border-left:4px solid (#CONFIG{lcs_skel_conf/couleurs/color82});]
+}
+div#side div.rubriques ul li a:hover,div#side2 div.rubriques ul li a:hover{
+[background:(#CONFIG{lcs_skel_conf/couleurs/color83});][color:(#CONFIG{lcs_skel_conf/couleurs/color84});]
+[border-bottom:1px solid (#CONFIG{lcs_skel_conf/couleurs/color85});][border-left:4px solid (#CONFIG{lcs_skel_conf/couleurs/color85});]
+}
+div#side div.rubriques ul li a.on,div#side2 div.rubriques ul li a.on{
+[background:(#CONFIG{lcs_skel_conf/couleurs/color86});][color:(#CONFIG{lcs_skel_conf/couleurs/color87});]
+[border-bottom:1px solid (#CONFIG{lcs_skel_conf/couleurs/color88});][border-right:4px solid (#CONFIG{lcs_skel_conf/couleurs/color88});]
+}
+div#footer {[background:(#CONFIG{lcs_skel_conf/couleurs/color90});]}
+div#footer,div#footer a,div#footer a:hover,div#footer:visited{[color:(#CONFIG{lcs_skel_conf/couleurs/color91});]}
+
+[(#REM) conf de la taille de police - A PARFAIRE
+div#content dl,div#side div,div#footer p{[font-size:(#CONFIG{lcs_skel_conf/taille_police});]}
+div#minical,div#minical table,div#minical ul.evenements,div#minical ul.evenements li a{font-size:12px}
+]
+
+[(#GET{larg}|=={800}|?{' '})
+	div#header h1,div#menu,div#container{width:57em;}
+	div#content{width:41em}
+	ul#intro li,ul#intro_2 li,ul#intro_ifade li,ul.blocsjumo li{width:19.7em}
+	div#side{width:13.5em}
+	div#footer,div#copy{width:55.7em}
+	[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+		div#content{width:43.5em;margin-right:0;padding-right:0}
+		div#side,div#side2{width:11.5em}
+		div#troiscols{width:31em}
+		ul#intro li,ul#intro_2 li,ul#intro_ifade li,ul.blocsjumo li{width:14.7em}
+]
+]
+[(#GET{larg}|=={1024}|?{' '})
+div#header h1,div#menu,div#container{width:73em;}
+div#content{width:52.73em}
+div#side{width:17.3em}
+ul#intro li,ul#intro_2 li,ul#intro_ifade li,ul.blocsjumo li{width:25em}
+div#footer,div#copy{width:71.7em}
+	[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+		div#content{width:57em;margin-right:0;padding-right:0}
+		div#side,div#side2{width:14em}
+		div#troiscols{width:41.4em}
+		ul#intro li,ul#intro_2 li,ul#intro_ifade li,ul.blocsjumo li{width:19.9em}
+	]
+]
+[(#GET{larg}|=={tout}|?{' '})
+div#header h1,div#menu,div#container{width:98%;}
+div#content{width:73%}
+ul#intro li,ul#intro_2 li,ul#intro_ifade li,ul.blocsjumo li{width:48%}
+div#side{width:22%}
+div#footer,div#copy{width:auto}
+	[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+		div#content{width:80%;margin-right:0;padding-right:0}
+		div#side{width:16.5%;float:right}
+		div#side2{width:18%}
+		div#troiscols{width:80%;}
+		ul#intro li,ul#intro_2 li,ul#intro_ifade li,ul.blocsjumo li{width:48%;margin:0 1%}
+	]
+]
+
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+	#SET{posside,right} #SET{poscontent,left}
+]
+div#content {[float:(#GET{poscontent});]}
+div#side {[float:(#GET{posside});]}
+
+[(#REM) surcharge : correction de la position des onglets du couteau suisse]
+div.onglets_bloc .onglets_contenu {
+	top:-12px;
+}
+
+[(#REM) sucharge spip.css]
+div#documents_joints{margin:0 1.5em;}
+
+[(#REM) SURCHARGE menudep]
+div#side div.rubriques ul.menu li div{background-color:#fff}
+div.srub{background-color:#fff}
+
+[(#REM) SURCHARGE muage]
+ul.nuage li{font-size:.8em}
+
+[(#REM) SURCHARGE jolie recherche]
+div#recherche-style form div{padding-bottom:0;margin-bottom:0;}
+
+[(#REM) SURCHARGE muage]
+dl.nuage dd{display:inline;font-size:.9em;line-height:1.5em;margin:0 .5em;padding:0}
+
+
+</style>
+[(#REM) pour la conf des onglets voir inc-menuonglets ]
+
+
+<!--[if IE]>
+<style type="text/css">
+ul#nav{margin-top:0}
+div#side{margin-right:.7em}
+</style>
+<! endif -->
+<!--[if lte IE 7]>
+<style type="text/css">
+div.table {width:auto;}
+div.caption {display:table-caption;width:auto;}
+div.td {display:block;border:thin solid blue;float:left;}
+div.end {width:auto;float:none;}
+</style>
+<![endif]-->

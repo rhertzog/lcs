@@ -1,0 +1,299 @@
+#CACHE{0}
+<!-- titre=<multi>[fr]Personnalisation de l'affichage public - Couleurs</multi>-->
+<!-- descriptif=<multi>[fr]Personnalisation du squelette - </multi>
+<br /><a href="<?$_SERVER['REQUEST_URI']?>/doc/spip/html/lcs_skel.html#conf_generale" class="spip_out" title="Voir la doc">Vers documentation</a>
+-->
+<!-- nom=lcs_skel_conf -->
+<!-- refus=Rien &agrave; faire par ici!
+<br />Vous ne pouvez pas acceder &agrave; ce formulaire !
+<br />Vous devez &ecirc;tre administrateur et connect&eacute;.
+ -->
+<!-- casier=couleurs -->
+
+<!-- onglet=lcs_skel_conf -->
+<!-- liens*=lcs_skel_conf -->
+<!-- liens*=lcs_skel_conf_accueil -->
+<!-- liens*=lcs_skel_conf_rubriques -->
+<!-- liens*=lcs_skel_conf_articles -->
+<!-- liens*=lcs_skel_conf_couleurs -->
+<!-- liens*=lcs_skel_conf_background -->
+<!-- liens*=lcs_skel_conf_slide_show-->
+<!-- liens*=lcs_skel_conf_infos_legales-->
+<!-- liens*=lcs_skel_conf_credits-->
+<!-- liens*=lcs_skel_conf_save-->
+
+<!-- icone=img_pack/logo_lsc_24.png-->
+<!-- head=<link rel='stylesheet' href='../plugins/lcs_skel/css/farbtastic.css' type='text/css' />
+<script langage='javascript' src='../plugins/lcs_skel/scripts/farbtastic.js'></script>
+<style type='text/css'>
+.colorpicker { border:2px solid #ccc; text-align:center; margin:0.5em auto; height:auto; width:200px; display:inlight}
+.colorpicker_bar { background-color:#ccc; height:1.5em; text-align:right; padding-right:0.5em; color:black; }
+.colorpicker_close {display:inline; height: 1em; padding:0 2px; font-weight:bold; margin: 0 0 0 auto; border:1px solid transparent;}
+.colorpicker_close:hover { border:1px solid #888; background:white}
+.colorpicker_hide { height:auto; display:block; }
+.hover { cursor:pointer; }
+.fondl{display:inline;float:tight}
+</style>
+<script type='text/javascript'>
+	var colorpicker_is_active = false;
+	$(document).ready(function() {
+		$('.cfg_couleur').each(function(){
+			$(this).css('background-color',$(this).attr('value'));
+			/* pas de id : on en cree un aleatoire */
+			if (!$(this).attr('id')){ 
+				$(this).attr('id', parseInt(10000*Math.random()));
+			}
+		});
+		$('.cfg_couleur').click(function() { 
+			if(colorpicker_is_active) return(false);
+			var color_dest = $(this).attr('id');
+			$(this).addClass('colorpicker_hide');
+			$(this).after('<div class=\'colorpicker\'><div class=\'colorpicker_bar\'><div class=\'colorpicker_close\'>X</div></div><div id=\'colorpicker\'></div></div>');
+			$('#colorpicker').css({display:'block'}).farbtastic('#'+color_dest);
+			colorpicker_is_active = true;
+			$('.colorpicker_close').hover(function(){
+				$(this).addClass('hover');
+			},function(){
+				$(this).removeClass('hover');
+			});
+			$('.colorpicker_close').click( function() { 
+				$(this).removeClass('colorpicker_hide');
+				$('.colorpicker').empty().remove();
+				colorpicker_is_active = false;
+			});
+		});
+	});
+</script>-->
+<!-- descriptif=<multi>[fr]Personnalisation du squelette. Choix des couleurs</multi>
+<br /><a href="http://tispip.etab.ac-caen.fr/spip.php?article202" class="spip_out">Vers documentation</a>
+<br  />
+<div style="margin:10px 0  0">
+Pour choisir votre couleur, s&eacute;lectionnez un champ du formulaire,cliquez  dans un cercle et d&eacute;placez votre curceur.
+Vous pouvez &eacute;galement saisir votre couleur directement dans le champ concerné, soit en hexad&eacute;cimal, soit en litt&eacute;ral, ce qui permet notamment de saisir le valeur &rsquo;transparent&rsquo;. 
+</div>-->
+
+<form method="post" name="form" id="form_cfg_lcs_skel">[(#ENV{_cfg_}|form_hidden)]
+	<fieldset class="labels_cfg_lcs_skel">
+		<legend>G&eacute;n&eacute;ral</legend>
+		
+		<span class="help_conf">&nbsp;?&nbsp;</span>
+		<div class="help_text"><:lcsskel:help_couleurs:></div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color1">Fond d&apos;&eacute;cran :</label></div>
+			<input type="text" name="color1" id="color1" class="fondl cfg_couleur" size="7" value="[(#ENV{color1}|?{#ENV{color1},#757D88})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color2">Fond de page :</label></div>
+			<input type="text" name="color2" id="color2"  class="fondl cfg_couleur" size="7"  value="[(#ENV{color2}|?{#ENV{color2},#fff})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color3">Textes :</label></div>
+			<input type="text" name="color3" id="color3"  class="fondl cfg_couleur" size="7"  value="[(#ENV{color3}|?{#ENV{color3},#003366})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color4">Liens :</label></div>
+			<input type="text" name="color4" id="color4"  class="fondl cfg_couleur" size="7"  value="[(#ENV{color4}|?{#ENV{color4},#369})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color5">Liens au survol :</label></div>
+			<input type="text" name="color5" id="color5"  class="fondl cfg_couleur" size="7"  value="[(#ENV{color5}|?{#ENV{color5},#ff6600})]" />
+		</div>
+  	</fieldset>
+	<fieldset>
+		<legend>Ent&ecirc;te</legend>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color21">Fond de l&apos;ent&ecirc;te :</label></div>
+			<input type="text" name="color21" id="color21"  class="fondl cfg_couleur" size="7" value="[(#ENV{color21}|?{#ENV{color21},#595D66})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color22">Titre du site :</label></div>
+			<input type="text" name="color22" id="color22"  class="fondl cfg_couleur" size="7"  value="[(#ENV{color22}|?{#ENV{color22},white})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color23">Fond des onglets :</label></div>
+			<input type="text" name="color23" id="color23"  class="fondl cfg_couleur" size="7"  value="[(#ENV{color23}|?{#ENV{color23},#999999})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color24">Texte des onglets :</label></div>
+			<input type="text" name="color24" id="color24"  class="fondl cfg_couleur" size="7"  value="[(#ENV{color24}|?{#ENV{color24},#ffffcc})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color25">Fond des onglets au survol :</label></div>
+			<input type="text" name="color25" id="color25"  class="fondl cfg_couleur" size="7"  value="[(#ENV{color25}|?{#ENV{color25},#dddddd})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color26">Texte des onglets au survol :</label></div>
+			<input type="text" name="color26" id="color26"  class="fondl cfg_couleur" size="7"  value="[(#ENV{color26}|?{#ENV{color26},#336699})]" />
+		</div>
+	</fieldset>
+	<fieldset>
+		<legend>Colonne centrale</legend>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color30">Fond de titre de l&rsquo;article "Annonce" :</label></div>
+			<input type="text" name="color30" id="color30"  class="fondl cfg_couleur" size="7" value="[(#ENV{color30}|?{#ENV{color30},#ffcc33})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color31">Titre de l&rsquo;article "Annonce" :</label></div>
+			<input type="text" name="color31" id="color31"  class="fondl cfg_couleur" size="7" value="[(#ENV{color31}|?{#ENV{color31},#336699})]" />
+		</div>
+		[(#REM)
+		<div class="form-item">
+			<div class="label_couleur"><label for="color32">Titre de l&rsquo;article "Annonce" au survol :</label></div>
+			<input type="text" name="color32" id="color32"  class="fondl cfg_couleur" size="7" value="[(#ENV{color32}|?{#ENV{color32},#ff6600})]" />
+		</div>
+		]
+		<div class="form-item">
+			<div class="label_couleur"><label for="color33">Fond du corps de l&rsquo;article "Annonce" :</label></div>
+			<input type="text" name="color33" id="color33"  class="fondl cfg_couleur" size="7" value="[(#ENV{color33}|?{#ENV{color33},#ffee99})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color34">Textes du corps de l&rsquo;article "Annonce" :</label></div>
+			<input type="text" name="color34" id="color34"  class="fondl cfg_couleur" size="7" value="[(#ENV{color34}|?{#ENV{color34},#336699})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color35">Fond des liste d'articles un/deux :</label></div>
+			<input type="text" name="color35" id="color35"  class="fondl cfg_couleur" size="7" value="[(#ENV{color35}|?{#ENV{color35},#eeeeee})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color36">Textes des liste d'articles un/deux : :</label></div>
+			<input type="text" name="color36" id="color36"  class="fondl cfg_couleur" size="7" value="[(#ENV{color36}|?{#ENV{color36},#336699})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color37">Fond des liste d'articles deux/deux :</label></div>
+			<input type="text" name="color37" id="color37"  class="fondl cfg_couleur" size="7" value="[(#ENV{color37}|?{#ENV{color37},#dddddd})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color38">Textes des liste d'articles deux/deux :</label></div>
+			<input type="text" name="color38" id="color38"  class="fondl cfg_couleur" size="7" value="[(#ENV{color38}|?{#ENV{color38},#003366})]" />
+		</div>
+	</fieldset>
+	<fieldset>
+		<legend>Blocs jumeaux</legend>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color50">Fond de titre et cadre des blocs :</label></div>
+			<input type="text" name="color50" id="color50"  class="fondl cfg_couleur" size="7" value="[(#ENV{color50}|?{#ENV{color50},#cccccc})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color51">Titres des blocs :</label></div>
+			<input type="text" name="color51" id="color51"  class="fondl cfg_couleur" size="7" value="[(#ENV{color51}|?{#ENV{color51},#336699})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color52">Fond de contenu des blocs:</label></div>
+			<input type="text" name="color52" id="color52"  class="fondl cfg_couleur" size="7" value="[(#ENV{color52}|?{#ENV{color52},#ffffff})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color53">Textes des blocs :</label></div>
+			<input type="text" name="color53" id="color53"  class="fondl cfg_couleur" size="7" value="[(#ENV{color53}|?{#ENV{color53},#003366})]" />
+		</div>
+	</fieldset>
+	<fieldset>
+		<legend>Colonne latt&eacute;rale</legend>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color70">Fond de la colonne latt&eacute;rale :</label></div>
+			<input type="text" name="color70" id="color70"  class="fondl cfg_couleur" size="7" value="[(#ENV{color70}|?{#ENV{color70},#cccccc})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color71">Fond des titres des blocs :</label></div>
+			<input type="text" name="color71" id="color71"  class="fondl cfg_couleur" size="7" value="[(#ENV{color71}|?{#ENV{color71},#ffcc33})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color72">Titres des blocs :</label></div>
+			<input type="text" name="color72" id="color72"  class="fondl cfg_couleur" size="7" value="[(#ENV{color72}|?{#ENV{color72},#336699})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color73">Fond des blocs :</label></div>
+			<input type="text" name="color73" id="color73"  class="fondl cfg_couleur" size="7" value="[(#ENV{color73}|?{#ENV{color73},#ffffff})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color74">Textes des blocs :</label></div>
+			<input type="text" name="color74" id="color74"  class="fondl cfg_couleur" size="7" value="[(#ENV{color74}|?{#ENV{color74},#003366})]" />
+		</div>
+	</fieldset>
+	<fieldset>
+		<legend>Menu lat&eacute;ral</legend>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color80">Fond du lien :</label></div>
+			<input type="text" name="color80" id="color80"  class="fondl cfg_couleur" size="7" value="[(#ENV{color80}|?{#ENV{color80},#ffffff})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color81">Textes du lien :</label></div>
+			<input type="text" name="color81" id="color81"  class="fondl cfg_couleur" size="7" value="[(#ENV{color81}|?{#ENV{color81},#336699})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color82">Bordure du lien :</label></div>
+			<input type="text" name="color82" id="color82"  class="fondl cfg_couleur" size="7" value="[(#ENV{color82}|?{#ENV{color82},#FFCC33})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color80">Fond du lien au survol :</label></div>
+			<input type="text" name="color83" id="color83"  class="fondl cfg_couleur" size="7" value="[(#ENV{color83}|?{#ENV{color83},#ffcc33})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color84">Textes du lien au survol :</label></div>
+			<input type="text" name="color84" id="color84"  class="fondl cfg_couleur" size="7" value="[(#ENV{color84}|?{#ENV{color84},#120a02})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color85">Bordure du lien au survol :</label></div>
+			<input type="text" name="color85" id="color85"  class="fondl cfg_couleur" size="7" value="[(#ENV{color85}|?{#ENV{color85},#120a02})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color86">Fond du lien expos&eacute; :</label></div>
+			<input type="text" name="color86" id="color86"  class="fondl cfg_couleur" size="7" value="[(#ENV{color86}|?{#ENV{color86},#120a02})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color87">Textes du lien expos&eacute; :</label></div>
+			<input type="text" name="color87" id="color87"  class="fondl cfg_couleur" size="7" value="[(#ENV{color87}|?{#ENV{color87},#ffcc33})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color88">Bordure du lien expos&eacute; :</label></div>
+			<input type="text" name="color88" id="color88"  class="fondl cfg_couleur" size="7" value="[(#ENV{color88}|?{#ENV{color88},#ffcc33})]" />
+		</div>
+	</fieldset>
+	<fieldset>
+		<legend>Pied de page</legend>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color90">Fond du pied de page :</label></div>
+			<input type="text" name="color90" id="color90"  class="fondl cfg_couleur" size="7" value="[(#ENV{color90}|?{#ENV{color90},#595D66})]" />
+		</div>
+		<div class="form-item">
+			<div class="label_couleur"><label for="color91">Textes du pied de page :</label></div>
+			<input type="text" name="color91" id="color91"  class="fondl cfg_couleur" size="7" value="[(#ENV{color91}|?{#ENV{color91},#ffffff})]" />
+		</div>
+	</fieldset>
+	<p>
+		<input type="submit" name="_cfg_ok" value="<:OK:>" />
+		<input type="reset" value="<:Reset:>" />
+		<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+	</p>
+</form>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('div.help_text').prepend('<span class=\'help_close\'>&nbsp;X&nbsp;</span>');
+        $('form#form_cfg_lcs_skel div.help_text').hide(); 
+        $('form#form_cfg_lcs_skel span.help_conf').click(function() {
+		  var $boutton = $(this);
+          var $nextDiv = $(this).siblings('div.help_text');
+          var $visibleSiblings = $('form#form_cfg_lcs_skel')
+				.find('div.help_text:visible');
+           var $hideSiblings = $('form#form_cfg_lcs_skel')
+				.find('span.help_conf:hidden');
+      
+          if ($visibleSiblings.length) {
+            $visibleSiblings.slideUp('slow', function() {
+              $nextDiv.slideToggle('slow');
+			  $hideSiblings.fadeIn('slow');
+ 			 $boutton.fadeOut('slow');
+          });
+          } else {
+             $nextDiv.slideToggle('fast');
+			 $boutton.fadeOut('slow');
+          }
+        });
+		$('form#form_cfg_lcs_skel span.help_close').click(function() {
+				$(this).parent().slideUp('slow');
+				$(this).parents('.labels_cfg_lcs_skel')
+				.find('span.help_conf:hidden').fadeIn('slow');
+		});
+	});
+</script>
+
+ 

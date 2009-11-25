@@ -1,0 +1,28 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>#NOM_SITE_SPIP</title>
+[(#INCLURE{fond=noisettes/inc-head})]
+<script type="text/javascript" src="[(#CHEMIN{scripts/niftycube.js})]"></script>
+<script type="text/javascript" src="[(#CHEMIN{scripts/niftyLayout.js})]"></script>
+<script type="text/javascript" src="[(#CHEMIN{scripts/jquery.jcarousel.js})]"></script>
+<link rel="stylesheet" type="text/css" href="[(#CHEMIN{c/jquery.jcarousel.css})]" />
+<link rel="stylesheet" type="text/css" href="[(#CHEMIN{c/skin.css})]" />
+<script type="text/javascript" src="[(#CHEMIN{scripts/interface.js})]"></script>
+
+
+[(#INCLURE{fond=noisettes/inc-conf_skel})]
+</head>
+<body>
+
+<div id="container" style="width:400px">
+	<div id="content" style="width:auto">
+	[(#MODELE{search_sites_cdi})]
+	</div><!-- fin content -->
+	<div id="footer" style="width:auto">
+	--
+	</div>
+</div><!-- fin container -->
+</body>
+</html>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<plugin>
+	<!--  
+
+	// player plugin.xml
+
+	// $LastChangedRevision$
+	// $LastChangedBy$
+	// $LastChangedDate$
+	
+	 -->
+	<nom> <!-- Nom du plugin -->
+	Lecteur Multim&eacute;dia en Flash (MP3,flv)
+	</nom>
+	<auteur>	<!-- Auteur du plugin -->
+	<a href="http://trac.spip.org/trac/spip-zone/browser/_plugins_">BoOz</a>, <a href="http://trac.spip.org/trac/spip-zone/browser/_plugins_branche_stable_/_spip_1_9_0_/dewplayer">C&#233;dric</a>,  <a href="http://monsitespip.com/spip.php?article12">Iago (francois.vachon@iago.ca)</a>, erational.
+		</auteur>
+	<version>
+	0.64
+	</version>
+	<etat>
+	dev
+	</etat>
+	<description>
+	- Remplace automatiquement les liens vers un fichier de format mp3 par un lecteur mp3 en flash permettant d'&#233;couter ce fichier.<br />
+	- Le mod&#232;le doc.html, fait la m&#234;me chose en utilisant la balise permettant d'afficher la vignette du document.<br />
+	- Avec le plugin jQuery, et la balise #INSERT_HEAD, ajoute un lecteur devant les liens enclosures MP3<br />
+	- Avec <code>#MODELE{playliste}</code> vous pouvez afficher une playliste des derniers mp3 
+	- Avec <code>[(#MODELE{playliste_video}{id_article=XX})]</code> vous pouvez afficher une playliste video.
+(requiert l'activation du plugin -jQuery si version de SPIP &lt; 1.9.2)
+_ <a href="?exec=player_admin">configurer le plugin</a> || 
+	<a href="http://spip-zone.info/spip.php?article18">documentation</a>
+	</description>
+	<options>player_options.php</options>
+	<fonctions>player_fonctions.php</fonctions>
+	<prefix>Player</prefix>
+	
+	<install>base/player_install.php</install>
+	
+	<!-- Definitions des fonctions qui s'inserent dans les pipelines 
+	La liste des pipelines disponibles est dans ecrire/inc_version ($spip_pipeline = ... ) 
+	-->
+	<pipeline>
+		<nom>post_propre</nom>
+		<inclure>player_fonctions.php</inclure>
+	</pipeline>
+	<pipeline>
+		<!-- les css du plugin dans l'espace privé -->
+		<nom>header_prive</nom>
+		<inclure>inc/player_pipeline_header_prive.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>ajouter_onglets</nom>
+		<inclure>inc/player_pipeline_ajouter_onglets.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>insert_head</nom>
+	</pipeline>
+	<pipeline>
+		<nom>affichage_final</nom>
+		<inclure>player_fonctions.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>affiche_milieu</nom>
+		<inclure>inc/player_pipeline_affiche_milieu.php</inclure>
+	</pipeline>
+	<!-- Le parametre action est facultatif : en son absence la fonction portant le nom du pipeline est appelee. Le parametre inclure est facultatif.	-->
+</plugin>

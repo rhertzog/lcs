@@ -1,0 +1,50 @@
+		
+	[(#REM) exclusion des articles du secteur s5]
+		[(#CONFIG{lcs_skel_conf/s5/id_rub_s5}|?{[(#SET{idrubs5,[(#CONFIG{lcs_skel_conf/s5/id_rub_s5})]})],[(#SET{idrubs5,-1})]})]
+		<BOUCLE_articles_exclus_rub(RUBRIQUES){id_parent=#GET{idrubs5}}>
+		<BOUCLE_articles_exclus(ARTICLES){id_rubrique}{par date}{doublons slide}> </BOUCLE_articles_exclus>
+		</BOUCLE_articles_exclus_rub>
+		
+	[(#SET{nbarts,5})]
+	[(#REM) exclusion des articles edito si affichage en page d'accueil]
+		[(#ENV{page}|=={sommaire}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/mot_edito}|?{[(#SET{edito_exclu,#CONFIG{lcs_skel_conf/sommaire/mot_edito}})],[(#SET{edito_exclu,Editorial})]})]
+			[(#CONFIG{lcs_skel_conf/sommaire/nbarticles}|?{[(#SET{nbarts,[(#CONFIG{lcs_skel_conf/sommaire/nbarticles})]})]})]
+		]
+		[(#REM) exclusion des articles edito si affichage en page d'accueil]
+		<BOUCLE_exclure_edito(ARTICLES){titre_mot=#GET{edito_exclu}}{doublons edito}> </BOUCLE_exclure_edito>
+
+		[(#ENV{page}|=={rubrique}|?{' '})
+			[(#CONFIG{lcs_skel_conf/rubriques/nbarts_rub}|?{[(#SET{nbarts,[(#CONFIG{lcs_skel_conf/rubriques/nbarts_rub})]})]})]
+		]
+
+	[(#REM) Liste des articles]
+		<B_articles>
+		[(#ANCRE_PAGINATION)]
+	[(#REM) 
+		<h2 class="titre"><:derniers_articles:></h2>
+	]
+	[(#REM) a debuger
+		[(#ENV{pagin}|!={''}|?{#SET{nbarts,10}})] 
+	]
+		<dl class="bloc">
+		<BOUCLE_articles (ARTICLES){id_rubrique ?}{id_mot ?}{id_auteur ?}{par date} {inverse} {pagination #GET{nbarts}} {doublons slide} {doublons edito}>
+			<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+				[(#CONFIG{plugin}|match{LCS_SKEL}|?{' '})
+				<em><a href="#URL_RUBRIQUE" title="Aller &agrave; la rubrique [(#ID_RUBRIQUE|titre_parent)]" class="droite">[(#ID_RUBRIQUE|titre_parent|supprimer_numero)]</a></em>
+				]
+				[<a href="#URL_ARTICLE">
+					<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{50,60}|sinon{[(#LOGO_SITE||reduire_image{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
+					<br /><em>[Publi&eacute; le (#DATE|affdate_jourcourt)][, par (#LESAUTEURS)]</em>
+			</dt>		
+			<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+				[(#INTRODUCTION|image_reduire{100}|couper{200})]
+				<div class="suite"> <a href="#URL_ARTICLE"><:suite:>...</a></div>
+			</dd>
+			</BOUCLE_articles>
+			[<dd class="pagination">
+				<span class="ligne1">#GRAND_TOTAL <:articles:></span>
+				<span class="ligne2">(#PAGINATION)</span>
+			</dd>]<!-- pagination -->
+		</dl>
+		</B_articles>

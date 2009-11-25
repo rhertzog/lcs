@@ -1,0 +1,62 @@
+<B_syndic>
+#SET{nbsyndics,3}
+[(#ENV{bloc}|=={side}|?{' '})
+	[(#CONFIG{lcs_skel_conf/sommaire/nb_syndics}|?{#SET{nbsyndics,#CONFIG{lcs_skel_conf/sommaire/nb_syndics}}})]
+	[(#CONFIG{lcs_skel_conf/sommaire/defilsyndic}|?{#SET{defil_syndics,1}})]
+	[(#ID_RUBRIQUE|?{' '})
+		[(#CONFIG{lcs_skel_conf/rubriques/nb_syndics_rub}|?{#SET{nbsyndics,#CONFIG{lcs_skel_conf/rubriques/nb_syndics_rub}}})]
+		[(#CONFIG{lcs_skel_conf/rubriques/defilsyndics_rub}|?{#SET{defil_syndics,1}})]
+	]
+]
+[(#ENV{bloc}|=={bj_g}|?{' '})
+	[(#CONFIG{lcs_skel_conf/sommaire/nb_syndics_bj_g}|?{#SET{nbsyndics,#CONFIG{lcs_skel_conf/sommaire/nb_syndics_bj_g}}})]
+	[(#CONFIG{lcs_skel_conf/sommaire/defilsyndics_bj_g}|?{#SET{defil_syndics,1}})]
+	[(#ID_RUBRIQUE|?{' '})
+		[(#CONFIG{lcs_skel_conf/rubriques/nb_syndics_bj_g_rub}|?{#SET{nbsyndics,#CONFIG{lcs_skel_conf/rubriques/nb_syndics_bj_g_rub}}})]
+		[(#CONFIG{lcs_skel_conf/rubriques/defilsyndics_bj_g_rub}|?{#SET{defil_syndics,1}})]
+	]
+]
+[(#ENV{bloc}|=={bj_d}|?{' '})
+	[(#CONFIG{lcs_skel_conf/sommaire/nb_syndics_bj_d}|?{#SET{nbsyndics,#CONFIG{lcs_skel_conf/sommaire/nb_syndics_bj_d}}})]
+	[(#CONFIG{lcs_skel_conf/sommaire/defilsyndics_bj_d}|?{#SET{defil_syndics,1}})]
+	[(#ID_RUBRIQUE|?{' '})
+		[(#CONFIG{lcs_skel_conf/rubriques/nb_syndics_bj_d_rub}|?{#SET{nbsyndics,#CONFIG{lcs_skel_conf/rubriques/nb_syndics_bj_d_rub}}})]
+		[(#CONFIG{lcs_skel_conf/rubriques/defilsyndics_bj_d_rub}|?{#SET{defil_syndics,1}})]
+	]
+]
+[(#ENV{bloc}|=={bj_g_2}|?{' '})
+	[(#CONFIG{lcs_skel_conf/sommaire/nb_syndics_bj_g_2}|?{#SET{nbsyndics,#CONFIG{lcs_skel_conf/sommaire/nb_syndics_bj_g_2}}})]
+	[(#CONFIG{lcs_skel_conf/sommaire/defilsyndics_bj_g_2}|?{#SET{defil_syndics,1}})]
+]
+[(#ENV{bloc}|=={bj_d_2}|?{' '})
+	[(#CONFIG{lcs_skel_conf/sommaire/nb_syndics_bj_d_2}|?{#SET{nbsyndics,#CONFIG{lcs_skel_conf/sommaire/nb_syndics_bj_d_2}}})]
+	[(#CONFIG{lcs_skel_conf/sommaire/defilsyndics_bj_d_2}|?{#SET{defil_syndics,1}})]
+]
+s		[(#REM) Affichage articles syndiques]
+	<h3 class="menu-titre">Derniers articles syndiqu&eacute;s</h3>
+	<dl id="podcasts" class="demi_boite">
+		<BOUCLE_syndic(SYNDIC_ARTICLES){age<180} {par date}{inverse} {0,3}>
+			<dt style="margin-bottom:.5em">
+				<a href="spip.php?page=sites" title="[Voir (#NOM_SITE|supprimer_tags|entites_html)]" class="spip_out">
+					[(#LOGO_SITE||image_reduire{16,16}|sinon{<img src="[(#CHEMIN{i/world_go.png})]" alt="[(#DESCRIPTIF|supprimer_tags|entites_html)]" /> }) ]
+					[(#NOM_SITE|supprimer_tags) - ]
+				</a>
+				<a href="#URL_ARTICLE" class="spip_out" style="display:block">[(#TITRE|supprimer_tags)]</a>
+				<small>[(#DATE|affdate_court)][, <:par_auteur:> (#LESAUTEURS|retour_rss)][ - (#TAGS|afficher_enclosures)][ &mdash; <em>(#TAGS|afficher_tags)</em>]</small>
+			[<span style="display:block;font-size:.95em">(#DESCRIPTIF|retour_rss|couper{50}|image_reduire{36})</span>]
+			</dt>
+			
+		</BOUCLE_syndic>
+	</dl>
+[(#GET{defil_syndics}|?{' '})
+<script type="text/javascript">
+$('#podcasts').cycle({ 
+	fx:     'scrollUp', 
+    timeout: 6000, 
+    pause:   1 ,
+	delay:  -3000,
+ 	height: 110
+	});
+</script>
+]
+</B_syndic>

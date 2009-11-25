@@ -1,0 +1,20 @@
+#SET{nb_ac,5}
+[(#ENV{bloc}|?{' '})[(#ENV{bloc}|=={side}|?{' '})[(#CONFIG{lcs_skel_conf/sommaire/nb_cyclart}|?{' '})#SET{nb_ac,#CONFIG{lcs_skel_conf/sommaire/nb_cyclart}}]]]
+<h3 class="menu-titre">Derniers articles</h3>
+<dl id="s8" class="pics">
+		<BOUCLE_cycle_art(ARTICLES){id_secteur!=#CONFIG{lcs_skel_conf/s5/id_rub_s5}}{!par date}{0,#GET{nb_ac}}>
+						[<dd style="margin:5px;padding:0"><a href="#URL_ARTICLE" title="#_cycle:TITRE">
+							[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{65}|sinon{[(#LOGO_SITE_SPIP||reduire_image{65})]}|inserer_attribut{style,float:right})]<strong>(#TITRE) : </strong></a>
+								[<span style="font-size:.9em;">(#INTRODUCTION|supprimer_tags|couper{150})</span>]</dd>]
+						
+		</BOUCLE_cycle_art>
+</dl>
+<script type="text/javascript">
+$('#s8').cycle({ 
+	fx:     'scrollUp', 
+    timeout: 7050, 
+    pause:   1 ,
+	delay:  -5674,
+ 	height: 150
+	});
+</script>

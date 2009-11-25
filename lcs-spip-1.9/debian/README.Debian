@@ -1,0 +1,17 @@
+LCS spip for  Debian
+----------------------------
+
+-- Jean-Luc Chretien    <jean-luc.chretien@tice.ac-caen.fr>  V 2.4.1 Mon, 10 Aug 2009
+
+USAGE
+
+  SPIP en tant que CSM/Forum LCS
+  
+CONFIGURATION
+
+La configuration du paquet est prise en charge par le script postinst du paquet
+
+
+  
+
+

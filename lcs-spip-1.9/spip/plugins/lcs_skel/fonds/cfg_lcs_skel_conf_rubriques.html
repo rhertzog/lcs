@@ -1,0 +1,753 @@
+#CACHE{0}
+<!-- titre=<multi>[fr]Personnalisation de l'affichage public - Rubriques</multi>-->
+<!-- descriptif=<multi>[fr]Personnalisation du squelette. Affichage des rubriques</multi>
+<br /><a href="<?$_SERVER['REQUEST_URI']?>/doc/spip/html/lcs_skel.html#conf_generale" class="spip_out" title="Voir la doc">Vers documentation</a>
+-->
+<!-- refus=Rien &agrave; faire par ici!
+<br />Vous ne pouvez pas acceder &agrave; ce formulaire !
+<br />Vous devez &ecirc;tre administrateur et connect&eacute;.
+ -->
+<!-- nom=lcs_skel_conf -->
+<!-- casier=rubriques -->
+
+<!-- onglet=lcs_skel_conf -->
+<!-- liens*=lcs_skel_conf -->
+<!-- liens*=lcs_skel_conf_accueil -->
+<!-- liens*=lcs_skel_conf_rubriques -->
+<!-- liens*=lcs_skel_conf_articles -->
+<!-- liens*=lcs_skel_conf_couleurs -->
+<!-- liens*=lcs_skel_conf_background -->
+<!-- liens*=lcs_skel_conf_slide_show-->
+<!-- liens*=lcs_skel_conf_infos_legales-->
+<!-- liens*=lcs_skel_conf_credits-->
+<!-- liens*=lcs_skel_conf_save-->
+
+<!-- icone=img_pack/logo_lsc_24.png-->
+
+<form method="post" name="form" id="form_cfg_lcs_skel">[(#ENV{_cfg_}|form_hidden)]
+	<p>
+
+	<fieldset>
+		<legend><:lcsskel:affichage_blocs_jumeaux:></legend>
+		<ul>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="affbj_rub" value="oui" [checked="(#ENV{affbj_rub}|?{checked})"] id="affbj_rub" /> <:lcsskel:afficher_blocs_jumeaux:>
+					</label>
+					<div class="help_text"><:lcsskel:help_blocs_jumeaux:></div>
+				</div>
+			</li>
+		</ul>
+	<div id="blocjumo_rub">
+		<ul>
+			<li>
+				<span class="titre"><:lcsskel:contenu_blocs_jumeaux:></span>
+				<br class="leon" />
+				<div class="labels_cfg_lcs_skel" id="bj">
+					<span class="demi gauche border_d titre-demi"><:lcsskel:a_gauche_m:></span>
+					<span class="demi gauche border_g titre-demi"><:lcsskel:a_droite_m:></span>
+					<div class="leon border_h">
+						<span class="help_conf">&nbsp;?&nbsp;</span>
+						<div class="demi gauche border_d">
+							<label>
+							<input type="radio" name="ctnblocg_rub" value="breves" class="bj_g"[ (#ENV{ctnblocg_rub}|=={breves}|?{checked,''})] />Br&egrave;ves</label><br />
+							<div class="bj_param_g">
+								<label>
+								<select name="nb_breves_bj_g_rub">
+									<option value=""[(#ENV{nb_breves_bj_g_rub}|?{selected="selected",''})]>  </option>
+									<option value="3"[(#ENV{nb_breves_bj_g_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+									<option value="5"[(#ENV{nb_breves_bj_g_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+									<option value="10"[(#ENV{nb_breves_bj_g_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+								</select>&nbsp;Nombre de br&egrave;ves 
+								</label><br />
+								<label>
+								<input type="checkbox" name="defilbreves_bj_g_rub" value="oui" [checked="(#ENV{defilbreves_bj_g_rub}|?{checked})" ] />D&eacute;filement des br&egrave;ves</label>
+							</div>
+						</div>
+						<div class="demi gauche border_g">
+							<label>
+							<input type="radio" name="ctnblocd_rub" value="breves" class="bj_d"[ (#ENV{ctnblocd_rub}|=={breves}|?{checked,''})] />Br&egrave;ves</label><br />
+							<div class="bj_param_d">
+								<label>
+								<select name="nb_breves_bj_d_rub">
+									<option value=""[(#ENV{nb_breves_bj_d_rub}|?{selected="selected",''})]>  </option>
+									<option value="3"[(#ENV{nb_breves_bj_d_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+									<option value="5"[(#ENV{nb_breves_bj_d_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+									<option value="10"[(#ENV{nb_breves_bj_d_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+								</select>&nbsp;Nombre de br&egrave;ves 
+								</label><br />
+								<label>
+								<input type="checkbox" name="defilbreves_bj_d_rub" value="oui"[ checked="(#ENV{defilbreves_bj_d_rub}|?{checked})" ] />D&eacute;filement des br&egrave;ves</label>
+							</div>
+						</div>
+						<div class="help_text leon"><:lcsskel:help_bj_breves:></div>
+					</div>
+					<div class="leon border_h">
+						<span class="help_conf">&nbsp;?&nbsp;</span>
+						<div class="demi gauche border_d">
+							<label>
+							<input type="radio" name="ctnblocg_rub" value="sites" class="bj_g"[ (#ENV{ctnblocg_rub}|=={sites}|?{checked,''})] />Sites</label><br />
+							<div class="bj_param_g">
+								<label>
+								<select name="nb_sites_bj_g_rub">
+									<option value=""[(#ENV{nb_sites_bj_g_rub}|?{selected="selected",''})]>  </option>
+									<option value="3" [(#ENV{nb_sites_bj_g_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+									<option value="5" [(#ENV{nb_sites_bj_g_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+									<option value="10" [(#ENV{nb_sites_bj_g_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+								</select>&nbsp;Nombre de sites
+								</label><br />
+								<label>
+								<input type="checkbox" name="defilsites_bj_g_rub" value="oui"[ checked="(#ENV{defilsites_bj_g_rub}|?{checked})" ] />D&eacute;filement des sites</label>
+							</div>
+						</div>
+						<div class="demi gauche border_g">
+							<label>
+							<input type="radio" name="ctnblocd_rub" value="sites"  class="bj_d"[ (#ENV{ctnblocd_rub}|=={sites}|?{checked,''})] />Sites</label><br />
+							<div class="bj_param_d">
+								<label>
+								<select name="nb_sites_bj_d_rub">
+									<option value=""[(#ENV{nb_sites_bj_d_rub}|?{selected="selected",''})]>  </option>
+									<option value="3"[(#ENV{nb_sites_bj_d_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+									<option value="5"[(#ENV{nb_sites_bj_d_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+									<option value="10"[(#ENV{nb_sites_bj_d_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+								</select>&nbsp;Nombre de sites 
+								</label><br />
+								<label>
+								<input type="checkbox" name="defilsites_bj_d_rub" value="oui"[ checked="(#ENV{defilsites_bj_d_rub}|?{checked})"] />D&eacute;filement des sites</label>
+							</div>
+						</div>
+						<div class="help_text leon"><:lcsskel:help_bj_sites:></div>
+					</div>
+					<div class="leon border_h">
+						<span class="help_conf">&nbsp;?&nbsp;</span>
+						<div class="demi gauche border_d">
+							<label>
+							<input type="radio" name="ctnblocg_rub" value="syndic" class="bj_g"[ (#ENV{ctnblocg_rub}|=={syndic}|?{checked,''})] />Syndics</label><br />
+							<div class="bj_param_g">
+								<label>
+								<select name="nb_syndics_bj_g_rub">
+									<option value=""[(#ENV{nb_syndics_bj_g_rub}|?{selected="selected",''})]>  </option>
+									<option value="3"[(#ENV{nb_syndics_bj_g_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+									<option value="5"[(#ENV{nb_syndics_bj_g_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+									<option value="10"[(#ENV{nb_syndics_bj_g_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+								</select>&nbsp;Nombre d&rsquo;articles 
+								</label><br />
+								<label>
+								<input type="checkbox" name="defilsyndics_bj_g_rub" value="oui"[ checked="(#ENV{defilsyndics_bj_g_rub}|?{checked})" ] />D&eacute;filement des articles</label>
+							</div>
+						</div>
+						<div class="demi gauche border_g">
+							<label>
+							<input type="radio" name="ctnblocd_rub" value="syndic" class="bj_d"[ (#ENV{ctnblocd_rub}|=={syndic}|?{checked,''})] />Syndics</label><br />
+							<div class="bj_param_d">
+								<label>
+								<select name="nb_syndics_bj_d_rub">
+									<option value=""[(#ENV{nb_syndics_bj_d_rub}|?{selected="selected",''})]>  </option>
+									<option value="3"[(#ENV{nb_syndics_bj_d_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+									<option value="5"[(#ENV{nb_syndics_bj_d_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+									<option value="10"[(#ENV{nb_syndics_bj_d_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+								</select>&nbsp;Nombre d&rsquo;articles 
+								</label><br />
+								<label>
+								<input type="checkbox" name="defilsyndics_bj_d_rub" value="oui"[ checked="(#ENV{defilsyndics_bj_d_rub}|?{checked})" ] />D&eacute;filement des articles</label>
+							</div>
+						</div>
+						<div class="help_text leon"><:lcsskel:help_bj_syndics:></div>
+					</div>
+					<div class="leon border_h">
+						<span class="help_conf">&nbsp;?&nbsp;</span>
+						<div class="demi gauche border_d">
+							<label>
+							<input type="radio" name="ctnblocg_rub" value="messages" class="bj_g"[ (#ENV{ctnblocg_rub}|=={messages}|?{checked,''})] />Messages</label><br />
+							<div class="bj_param_g">
+								<label>
+								<select name="nb_messages_bj_g_rub">
+									<option value=""[(#ENV{nb_messages_bj_g_rub}|?{selected="selected",''})]>  </option>
+									<option value="3"[(#ENV{nb_messages_bj_g_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+									<option value="5"[(#ENV{nb_messages_bj_g_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+									<option value="10"[(#ENV{nb_messages_bj_g_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+								</select>&nbsp;Nombre de messages
+								</label><br />
+								<label>
+								<input type="checkbox" name="defilmessages_bj_g_rub" value="oui"[ checked="(#ENV{defilmessages_bj_g_rub}|?{checked})" ] />D&eacute;filement des messages</label>
+							</div>
+						</div>
+						<div class="demi gauche border_g">
+							<label>
+							<input type="radio" name="ctnblocd_rub" value="messages" class="bj_d"[ (#ENV{ctnblocd_rub}|=={messages}|?{checked,''})] />Messages</label><br />
+							<div class="bj_param_d">
+								<label>
+								<select name="nb_messages_bj_d_rub">
+									<option value=""[(#ENV{nb_messages_bj_d_rub}|?{selected="selected",''})]>  </option>
+									<option value="3"[(#ENV{nb_messages_bj_d_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+									<option value="5"[(#ENV{nb_messages_bj_d_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+									<option value="10"[(#ENV{nb_messages_bj_d_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+								</select>&nbsp;Nombre de messages 
+								</label><br />
+								<label>
+								<input type="checkbox" name="defilmessages_bj_d_rub" value="oui"[ checked="(#ENV{defilmessages_bj_d_rub}|?{checked})" ] />D&eacute;filement des messages</label>
+							</div>
+						</div>
+						<div class="help_text leon"><:lcsskel:help_bj_messages:></div>
+					</div>
+					[(#REM)affichage a tester ]
+					<div class="leon border_h">
+						<span class="help_conf">&nbsp;?&nbsp;</span>
+						<div class="demi gauche border_d">
+							<label>
+							<input type="radio" name="ctnblocg_rub" value="mots" class="bj_g" [(#ENV{ctnblocg_rub}|=={mots}|?{checked,''})] />Mots-cl&eacute;</label><br />
+							<div class="bj_param_g" style="padding-left:10px">
+								<label>
+								<input type="radio" name="type_mots_bj_g_rub" value="nuage" class="no_bj"[ (#ENV{type_mots_bj_g_rub}|=={nuage}|?{checked,''})] />Nuage de mots</label><br />
+								<label>
+								<input type="radio" name="type_mots_bj_g_rub" value="mots_acc" class="no_bj"[ (#ENV{type_mots_bj_g_rub}|?{'',checked})][ (#ENV{type_mots_bj_g_rub}|=={mots_acc}|?{checked,''})] />Accord&eacute;on</label>
+							</div>
+						</div>
+						<div class="demi gauche border_g">
+							<label>
+							<input type="radio" name="ctnblocd_rub" value="mots" class="bj_d" [(#ENV{ctnblocd_rub}|=={mots}|?{checked,''})] />Mots-cl&eacute;</label><br />
+							<div class="bj_param_d" style="padding-left:10px">
+								<label>
+								<input type="radio" name="type_mots_bj_d_rub" value="nuage" class="no_bj"[ (#ENV{type_mots_bj_d_rub}|=={nuage}|?{checked,''})] />Nuage de mots</label><br />
+								<label>
+								<input type="radio" name="type_mots_bj_d_rub" value="mots_acc" class="no_bj"[ (#ENV{type_mots_bj_d_rub}|?{'',checked})][ (#ENV{type_mots_bj_d_rub}|=={mots_acc}|?{checked,''})] />Accord&eacute;on</label>
+							</div>
+						</div>
+						<div class="help_text leon"><:lcsskel:help_bj_mots:></div>
+					</div>
+					
+					<div class="leon border_h">
+						<span class="help_conf">&nbsp;?&nbsp;</span>
+						<div class="demi gauche border_d">
+							<label>
+							<input type="radio" name="ctnblocg_rub" value="auteurs" class="bj_g"[ (#ENV{ctnblocg_rub}|=={auteurs}|?{checked,''})] />Auteurs</label><br />
+						</div>
+						<div class="demi gauche border_g">
+							<label>
+							<input type="radio" name="ctnblocd_rub" value="auteurs" class="bj_d"[ (#ENV{ctnblocd_rub}|=={auteurs}|?{checked,''})] />Auteurs</label><br />
+						</div>
+						<div class="help_text leon"><:lcsskel:help_bj_auteurs:></div>
+					</div>
+					
+				[(#CONFIG{plugin}|match{METEO}|?{' '})	
+					<div class="leon border_h">
+						<span class="help_conf">&nbsp;?&nbsp;</span>
+						<div class="demi gauche border_d">
+							<label>
+							<input type="radio" name="ctnblocg_rub" value="meteo" class="bj_g"[ (#ENV{ctnblocg_rub}|=={meteo}|?{checked,''})] />M&eacute;t&eacute;o</label><br />
+						</div>
+						<div class="demi gauche border_g">
+							<label>
+							<input type="radio" name="ctnblocd_rub" value="meteo" class="bj_d"[ (#ENV{ctnblocd_rub}|=={meteo}|?{checked,''})] />M&eacute;t&eacute;o</label><br />
+						</div>
+						<div class="help_text leon"><:lcsskel:help_bj_meteo:></div>
+					</div>
+				]
+					<div class="leon border_h">
+						<span class="help_conf">&nbsp;?&nbsp;</span>
+						<div class="demi gauche border_d">
+							<label>
+							<input type="radio" name="ctnblocg_rub" value="art_bloc_rub" class="bj_g"[ (#ENV{ctnblocg_rub}|=={art_bloc_rub}|?{checked,''})] />Article</label><br />
+							<div class="bj_param_g">
+								<select name="idart_blocg_rub" style="width:150px;margin-left:15px">
+									<option value=""[(#ENV{idart_blocg_rub}|?{'',selected="selected"})]>[(#TITRE|couper{24})]</option>
+									<BOUCLE_art_blocg(ARTICLES){par num titre,titre}>
+										<option value="#ID_ARTICLE"[(#ENV{idart_blocg_rub}|=={#ID_ARTICLE}|?{selected="selected",''})]>[(#TITRE|couper{24})]</option>
+									</BOUCLE_art_blocg>
+								</select>
+							</div>
+						</div>
+						<div class="demi gauche border_g">
+							<label>
+							<input type="radio" name="ctnblocd_rub" value="art_bloc_rub" class="bj_d"[ (#ENV{ctnblocd_rub}|=={art_bloc_rub}|?{checked,''})] />Article</label><br />
+							<div class="bj_param_d">
+								<select name="idart_blocd_rub" style="width:150px;margin-left:15px">
+									<option value=""[ (#ENV{idart_blocd_rub}|?{'',selected="selected"})]>[(#TITRE|couper{24})]</option>
+									<BOUCLE_art_blocd(ARTICLES){par num titre,titre}>
+										<option value="#ID_ARTICLE"[(#ENV{idart_blocd_rub}|=={#ID_ARTICLE}|?{selected="selected",''})]>[(#TITRE|couper{24})]</option>
+									</BOUCLE_art_blocd>
+								</select><br />
+							</div>
+						</div>
+						<div class="help_text leon"><:lcsskel:help_bj_article:></div>
+					</div>
+					<br class="leon" />
+				</div>
+			</li>
+		</ul>
+		
+[(#REM) script pour la visibilité ou non des options des blocs jumeaux en fonction du choix]
+<script type="text/javascript"><!--
+
+    $("#bj div.border_d input[@type=radio]")<!-- cote gauche-->
+	.not('.no_bj').bind('change', function() {
+		var $nextDivGrub = $(this).parents('div').children('div.bj_param_g');
+		var $visDivGrub = $('.border_d').find('div.bj_param_g:visible');
+		var $offRadGrub = $visDivGrub.find('input[@type=radio][@checked]');
+		var $offCheckGrub = $visDivGrub.find('input[@type=checkbox][@checked]');
+		var $offSelGrub = $visDivGrub.find('select option:selected');
+		($offRadGrub.length) ? $offRadGrub.removeAttr('checked') : '';
+		($offCheckGrub.length) ? $offCheckGrub.removeAttr('checked') : '';
+		($offSelGrub.length) ? $offSelGrub.removeAttr('selected') : '';
+
+		if ($visDivGrub.length) {
+			$visDivGrub.slideUp('slow', function() {
+				$nextDivGrub.slideDown('slow');
+			});
+		} else {
+			$nextDivGrub.slideToggle('slow');
+		}
+		  
+	});
+    $("#bj div.border_g input[@type=radio]")<!-- cote droit-->
+	.not('.no_bj').bind('change', function() {
+		var $nextDivDrub = $(this).parents('div').children('div.bj_param_d');
+		var $visDivDrub = $('.border_g').find('div.bj_param_d:visible');
+ 		var $offRadDrub = $visDivDrub.find('input[@type=radio][@checked]');
+		var $offCheckDrub = $visDivDrub.find('input[@type=checkbox][@checked]');
+		var $offSelDrub = $visDivDrub.find('select option:selected');
+		($offRadDrub.length) ? $offRadDrub.removeAttr('checked') : '';
+		($offCheckDrub.length) ? $offCheckDrub.removeAttr('checked') : '';
+		($offSelDrub.length) ? $offSelDrub.removeAttr('selected') : '';
+
+		if ($visDivDrub.length) {
+			$visDivDrub.slideUp('slow', function() {
+				$nextDivDrub.slideDown('slow');
+			});
+		} else {
+			$nextDivDrub.slideToggle('slow');
+		}
+		  
+	});
+	$('div.bj_param_g').hide();
+	$('#bj input.bj_g:checked').parents('div').children('div.bj_param_g').show();
+	$('div.bj_param_d').hide();
+	$('#bj input.bj_d:checked').parents('div').children('div.bj_param_d').show();
+// --></script>
+		<ul>
+			<li>
+				<span class="titre">Position des blocs jumeaux</span>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label><input type="radio" name="posblocjumo_rub" value="haut" [(#ENV{posblocjumo_rub}|=={haut}|?{checked,''})] />
+					En haut de page <em>(Apr&eacute;s l&apos;&eacute;dito et avant la liste d&apos;articles)</em></label>
+					<br />
+					<label><input type="radio" name="posblocjumo_rub" value="bas" [(#ENV{posblocjumo_rub}|=={bas}|?{checked,''})] />
+					En bas de page <em>(Apr&eacute;s  la liste d&apos;articles)</em></label>
+					<div class="help_text"><:lcsskel:help_position_blocs_jumeaux:></div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	</fieldset>
+<script type="text/javascript"><!--
+	$('#affbj_rub')
+	.bind('change', function() {
+            $('#blocjumo_rub').slideToggle('slow');
+	})
+	if ($('#affbj_rub:checked').length == 0)
+		$('#blocjumo_rub').hide();
+// --></script>
+
+
+	<fieldset>
+		<legend>Liste d&apos;articles</legend>
+		<ul>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="afflistart_rub" value="oui" [checked="(#ENV{afflistart_rub}|?{checked})"] id="afflistart_rub" /> <:lcsskel:afficher_liste_articles_rubrique:>
+					</label>
+					<div class="help_text"><:lcsskel:help_derniers_articles_rubrique:></div>
+					<div id="cfglistart_rub">
+						<label for="nbarts_rub">Nombre d&apos;articles &agrave; afficher : </label>
+						<select name="nbarts_rub">
+							<option value=" "[(#ENV{nbarts_rub}|?{'',selected="selected"})]> </option>
+							<option value="3"[(#ENV{nbarts_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+							<option value="5"[(#ENV{nbarts_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+							<option value="10"[(#ENV{nbarts_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+						</select>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</fieldset>
+<script type="text/javascript"><!--
+	$('#afflistart_rub')
+	.bind('change', function() {
+            $('#cfglistart_rub').slideToggle('slow');
+	})
+	if ($('#afflistart_rub:checked').length == 0)
+		$('#cfglistart_rub').hide();
+	
+// --></script>
+	<fieldset>
+		<legend>Liste des sous-rubriques</legend>
+		<ul>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="afflistsousrub_rub" value="oui" [checked="(#ENV{afflistsousrub_rub}|?{checked})"] id="afflistsousrub_rub" /> Afficher la liste des sous-rubriques de la rubrique en cours
+					</label>
+					<div class="help_text"><:lcsskel:help_liste_ss_rub_rubriques:></div>
+				[(#REM) est-ce bien utile ?
+					<div id="cfglistsousrub_rub">
+						<span class="help_conf">&nbsp;?&nbsp;</span>
+						<label class="titre"><input type="checkbox" name="afflistss_ss_rub" value="oui" [checked="(#ENV{afflistss_ssrub_rub}|?{checked})"] id="afflistss_ssrub_rub" /> Afficher toute la descendance des sous_rubriques
+						</label>
+						<div class="help_text"><:lcsskel:help_liste_ss_ss_rub_rubriques:></div>
+					</div>
+				]
+				</div>
+			</li>
+		</ul>
+	</fieldset>
+<script type="text/javascript"><!--
+	$('#afflistsousrub_rub')
+	.bind('change', function() {
+            $('#cfglistsousrub_rub').slideToggle('slow');
+	})
+	if ($('#afflistsousrub_rub:checked').length == 0)
+		$('#cfglistsousrub_rub').hide();
+	
+// --></script>
+	<fieldset>
+		<legend>Liste des sites de la rubrique</legend>
+		<ul>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="afflistsites_rub" value="oui" id="afflistsites_rub"[ checked="(#ENV{afflistsites_rub}|?{checked})"] id="afflistsites_rub" /> Afficher la liste des derniers sites r&eacute;f&eacute;renc&eacute;s de la rubrique en cours
+					</label>
+					<div class="help_text"><:lcsskel:help_liste_ss_ss_rub_rubriques:></div>
+					[(#REM)]
+					<div id="cfglistsites_rub">
+						<label for="nbsites_rub">Nombre de sites &agrave; afficher : </label>
+						<select name="nbsites_rub">
+							<option value=" "[(#ENV{nbsites_rub}|?{'',selected="selected"})]> </option>
+							<option value="3"[(#ENV{nbsites_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+							<option value="5"[(#ENV{nbsites_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+							<option value="10"[(#ENV{nbsites_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+						</select>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</fieldset>
+<script type="text/javascript"><!--
+	$('#afflistsites_rub')
+	.bind('change', function() {
+            $('#cfglistsites_rub').slideToggle('slow');
+	})
+	if ($('#afflistsites_rub:checked').length == 0)
+		$('#cfglistsites_rub').hide();
+	
+// --></script>
+	<fieldset>
+		<legend>Contenu du bloc lat&eacute;ral</legend>
+		<ul>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="affagenda_rub" value="oui" class="affCheckbox"  [checked="(#ENV{affagenda_rub}|?{checked})"] id="affagenda_rub" /> Afficher l&rsquo;agenda
+					</label>
+					<div class="help_text"><:lcsskel:help_colonne_agenda:></div>
+				</div>
+				<div id="cfgagenda" class="deplier_conf">
+				[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+					<span class="titre">Position de l&rsquo;agenda</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Colonne de gauche
+						<input type="radio" name="pos_agenda_rub" value="gauche" [(#ENV{pos_agenda_rub}|=={gauche}|?{checked,''})] /></label>
+						<label>Colonne de droite
+						<input type="radio" name="pos_agenda_rub" value="droite" [(#ENV{pos_agenda_rub}|=={droite}|?{checked,''})] /></label>
+					</div>
+				]
+				[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})
+					<input type="hidden" name="pos_agenda_rub" value="droite" />
+				]
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="affmots_rub" id="affmots_rub" class="affCheckbox" value="oui" [checked="(#ENV{affmots_rub}|?{checked})"] />Afficher les mots-cl&eacute;
+					</label>
+					<div class="help_text"><:lcsskel:help_colonne_mots:></div>
+				</div>
+				<div id="cfgmots_rub" class="deplier_conf">
+					<span class="titre">Type d&rsquo;affichage des mots-cl&eacute;</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Nuage de mots
+						<input type="radio" name="type_mots_rub" value="nuage" [(#ENV{type_mots_rub}|=={nuage}|?{checked,''})] /></label>
+						<label>Accord&eacute;on
+						<input type="radio" name="type_mots_rub" value="accordeon" [(#ENV{type_mots_rub}|=={accordeon}|?{checked,''})] /></label>
+					</div>
+				[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+					<span class="titre">Position des mots-cl&eacute;</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Colonne de gauche
+						<input type="radio" name="pos_mots_rub" value="gauche" [(#ENV{pos_mots_rub}|=={gauche}|?{checked,''})] /></label>
+						<label>Colonne de droite
+						<input type="radio" name="pos_mots_rub" value="droite" [(#ENV{pos_mots_rub}|=={droite}|?{checked,''})] /></label>
+					</div>
+				]
+				[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})
+					<input type="hidden" name="pos_mots_rub" value="droite" />
+				]
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="affbreves_rub" class="affCheckbox" value="oui" [checked="(#ENV{affbreves_rub}|?{checked})"] id="affbreves_rub" />Afficher les br&egrave;ves
+					</label>
+					<div class="help_text"><:lcsskel:help_colonne_breves_rub:></div>
+				</div>
+				<div id="cfgbreves" class="deplier_conf">
+					<div class="labels_cfg_lcs_skel">
+						<label for="nb_breves_rub">Nombre de br&egrave;ves &agrave; afficher : </label>
+						<select name="nb_breves_rub">
+							<option value=""[(#ENV{nb_breves_rub}|?{selected="selected",''})]>  </option>
+							<option value="3"[(#ENV{nb_breves_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+							<option value="5"[(#ENV{nb_breves_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+							<option value="10"[(#ENV{nb_breves_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+						</select>
+					</div>
+					<div class="labels_cfg_lcs_skel">
+						<label class="titre"><input type="checkbox" name="defilbreves_rub" value="oui" [checked="(#ENV{defilbreves_rub}|?{checked})" ]/> D&eacute;filement des br&egrave;ves
+						</label>
+					</div>
+				[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+					<span class="titre">Position des br&egrave;ves</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Colonne de gauche
+						<input type="radio" name="pos_breves_rub" value="gauche" [(#ENV{pos_breves_rub}|=={gauche}|?{checked,''})] /></label>
+						<label>Colonne de droite
+						<input type="radio" name="pos_breves_rub" value="droite" [(#ENV{pos_breves_rub}|=={droite}|?{checked,''})] /></label>
+					</div>
+				]
+				[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})
+					<input type="hidden" name="pos_breves_rub" value="droite" />
+				]
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="affsites_rub" class="affCheckbox" value="oui" [checked="(#ENV{affsites_rub}|?{checked})"] id="affsites" />Afficher les sites
+					</label>
+					<div class="help_text"><:lcsskel:help_colonne_sites_rub:></div>
+				</div>
+				<div id="cfgsites" class="deplier_conf">
+					<div class="labels_cfg_lcs_skel">
+						<label for="nb_sites_rub">Nombre de sites &agrave; afficher : </label>
+						<select name="nb_sites_rub">
+							<option value=""[(#ENV{nb_sites_rub}|?{selected="selected",''})]>  </option>
+							<option value="3"[(#ENV{nb_sites_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+							<option value="5"[(#ENV{nb_sites_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+							<option value="10"[(#ENV{nb_sites_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+						</select>
+					</div>
+					<div class="labels_cfg_lcs_skel">
+						<label class="titre"><input type="checkbox" name="defilsites_rub" value="oui" [checked="(#ENV{defilsites_rub}|?{checked})" ]/> D&eacute;filement des sites
+						</label>
+					</div>
+				[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+					<span class="titre">Position des sites</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Colonne de gauche
+						<input type="radio" name="pos_sites_rub" value="gauche" [(#ENV{pos_sites_rub}|=={gauche}|?{checked,''})] /></label>
+						<label>Colonne de droite
+						<input type="radio" name="pos_sites_rub" value="droite" [(#ENV{pos_sites_rub}|=={droite}|?{checked,''})] /></label>
+					</div>
+				]
+				[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})
+					<input type="hidden" name="pos_sites_rub" value="droite" />
+				]
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="affsyndic_rub" class="affCheckbox" value="oui" [checked="(#ENV{affsyndic_rub}|?{checked})"] id="affsyndic" />Afficher les articles des sites syndiqu&eacute;s
+					</label>
+					<div class="help_text"><:lcsskel:help_colonne_syndics_rub:></div>
+				</div>
+				<div id="cfgsyndic" class="deplier_conf">
+					<div class="labels_cfg_lcs_skel">
+						<label for="nb_syndics_rub">Nombre d&rsquo;articles syndiqu&eacute;s &agrave; afficher : </label>
+						<select name="nb_syndics_rub">
+							<option value=""[(#ENV{nb_syndics_rub}|?{selected="selected",''})]>  </option>
+							<option value="3"[(#ENV{nb_syndics_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+							<option value="5"[(#ENV{nb_syndics_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+							<option value="10"[(#ENV{nb_syndics_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+						</select>
+					</div>
+					<div class="labels_cfg_lcs_skel">
+						<label class="titre"><input type="checkbox" name="defilsyndic_rub" value="oui" [checked="(#ENV{defilsyndic_rub}|?{checked})" ]/> D&eacute;filement des articles des sites syndiqu&eacute;s
+						</label>
+					</div>
+				[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+					<span class="titre">Position des sites syndiqu&eacute;s</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Colonne de gauche
+						<input type="radio" name="pos_syndic_rub" value="gauche" [(#ENV{pos_syndic_rub}|=={gauche}|?{checked,''})] /></label>
+						<label>Colonne de droite
+						<input type="radio" name="pos_syndic_rub" value="droite" [(#ENV{pos_syndic_rub}|=={droite}|?{checked,''})] /></label>
+					</div>
+				]
+				[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})
+					<input type="hidden" name="pos_syndic_rub" value="droite" />
+				]
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="affmessages_rub" class="affCheckbox" value="oui" [checked="(#ENV{affmessages_rub}|?{checked})"] id="affmessages" />Afficher les messages
+					</label>
+					<div class="help_text"><:lcsskel:help_colonne_messages_rub:></div>
+				</div>
+				<div id="cfgmessages" class="deplier_conf">
+					<div class="labels_cfg_lcs_skel">
+						<label for="nb_messages_rub">Nombre de messages &agrave; afficher : </label>
+						<select name="nb_messages_rub">
+							<option value=""[(#ENV{nb_messages_rub}|?{selected="selected",''})]>  </option>
+							<option value="3"[(#ENV{nb_messages_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+							<option value="5"[(#ENV{nb_messages_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+							<option value="10"[(#ENV{nb_messages_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+						</select>
+					</div>
+					<div class="labels_cfg_lcs_skel">
+						<label class="titre"><input type="checkbox" name="defilmessages_rub" value="oui" [checked="(#ENV{defilmessages_rub}|?{checked})" ]/> D&eacute;filement des messages
+						</label>
+					</div>
+				[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+					<span class="titre">Position des messages</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Colonne de gauche
+						<input type="radio" name="pos_messages_rub" value="gauche" [(#ENV{pos_messages_rub}|=={gauche}|?{checked,''})] /></label>
+						<label>Colonne de droite
+						<input type="radio" name="pos_messages_rub" value="droite" [(#ENV{pos_messages_rub}|=={droite}|?{checked,''})] /></label>
+					</div>
+				]
+				[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})
+					<input type="hidden" name="pos_messages_rub" value="droite" />
+				]
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="affauteurs_rub" value="oui" class="affCheckbox" [checked="(#ENV{affauteurs_rub}|?{checked})"] id="affauteurs" />Afficher les auteurs
+					</label>
+					<div class="help_text"><:lcsskel:help_colonne_auteurs_rub:></div>
+				</div>
+				<div id="cfgauteurs" class="deplier_conf">
+				[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+					<span class="titre">Position des auteurs</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Colonne de gauche
+						<input type="radio" name="pos_auteurs_rub" value="gauche" [(#ENV{pos_auteurs_rub}|=={gauche}|?{checked,''})] /></label>
+						<label>Colonne de droite
+						<input type="radio" name="pos_auteurs_rub" value="droite" [(#ENV{pos_auteurs_rub}|=={droite}|?{checked,''})] /></label>
+					</div>
+				]
+				[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})
+					<input type="hidden" name="pos_auteurs_rub" value="droite" />
+				]
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<span class="help_conf">&nbsp;?&nbsp;</span>
+					<label class="titre"><input type="checkbox" name="afflienpodcast_rub" value="oui" class="affCheckbox" [checked="(#ENV{afflienpodcast_rub}|?{checked})"] id="afflienpodcast" />Afficher les liens Podcast, fil RSS et lettre d&rsquo;information
+					</label>
+					<div class="help_text"><:lcsskel:help_colonne_rss_rub:></div>
+				</div>
+				<div id="cflienpodcast" class="deplier_conf">
+				[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+					<span class="titre">Position du lien Podcast</span>
+					<div class="labels_cfg_lcs_skel">
+						<label>Colonne de gauche
+						<input type="radio" name="pos_lienpodcast_rub" value="gauche" [(#ENV{pos_lienpodcast_rub}|=={gauche}|?{checked,''})] /></label>
+						<label>Colonne de droite
+						<input type="radio" name="pos_lienpodcast_rub" value="droite" [(#ENV{pos_lienpodcast_rub}|=={droite}|?{checked,''})] /></label>
+					</div>
+				]
+				[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})
+					<input type="hidden" name="pos_lienpodcast_rub" value="droite" />
+				]
+				</div>
+			</li>
+		</ul>
+	</fieldset>
+<script type="text/javascript"><!--
+	$('.affCheckbox')
+		.bind('change', function() {
+            $(this).parents('li')
+			.children('div.deplier_conf')
+			.slideToggle('slow');
+		//on remet la conf des noisettes non affichees a 0
+		var on = $(this).is(':not(:checked)');
+		$(this).parents('li')
+		.children('div.deplier_conf')
+		$(this).parents('li')
+		.children('div.deplier_conf')
+		.find('input[@type=checkbox]')
+			.attr('disabled', on ? 'disabled' : '');
+		$(this).parents('li')
+		.children('div.deplier_conf')
+		.find('input[@type=radio]')
+			.attr('disabled', on ? 'disabled' : '');
+		$(this).parents('li')
+		.children('div.deplier_conf')
+		.find('select option:selected')
+			.removeAttr(on ? 'selected' : '')
+		.end();
+	})
+		$('div.deplier_conf').hide();
+		$('.affCheckbox:checked')
+		.parents('li')
+		.children('div.deplier_conf').show();
+// --></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('div.help_text').prepend('<span class=\'help_close\'>&nbsp;X&nbsp;</span>');
+        $('form#form_cfg_lcs_skel div.help_text').hide(); 
+        $('form#form_cfg_lcs_skel span.help_conf').click(function() {
+		  var $boutton = $(this);
+          var $nextDiv = $(this).siblings('div.help_text');
+          var $visibleSiblings = $('form#form_cfg_lcs_skel')
+				.find('div.help_text:visible');
+           var $hideSiblings = $('form#form_cfg_lcs_skel')
+				.find('span.help_conf:hidden');
+      
+          if ($visibleSiblings.length) {
+            $visibleSiblings.slideUp('slow', function() {
+              $nextDiv.slideToggle('slow');
+			  $hideSiblings.fadeIn('slow');
+ 			 $boutton.fadeOut('slow');
+          });
+          } else {
+             $nextDiv.slideToggle('fast');
+			 $boutton.fadeOut('slow');
+          }
+        });
+		$('form#form_cfg_lcs_skel span.help_close').click(function() {
+				$(this).parent().slideUp('slow');
+				$(this).parents('.labels_cfg_lcs_skel')
+				.find('span.help_conf:hidden').fadeIn('slow');
+		});
+	});
+</script>
+	<p>
+		<input type="submit" name="_cfg_ok" value="<:OK:>" />
+		<input type="reset" value="<:Reset:>" />
+		<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+	</p>
+</form>
+
+ 

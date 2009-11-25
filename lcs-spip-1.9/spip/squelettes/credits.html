@@ -1,0 +1,234 @@
+#CACHE{24*3600}
+[(#CONFIG{lcs_skel_conf/credits/minist_en}|?{#SET{minstr_en,#CONFIG{lcs_skel_conf/credits/minist_en}},#SET{minstr_en,oui}})]
+[(#CONFIG{lcs_skel_conf/credits/ac_caen}|?{#SET{ac_caen,#CONFIG{lcs_skel_conf/credits/ac_caen}},#SET{ac_caen,oui}})]
+[(#CONFIG{lcs_skel_conf/credits/crdp_bn}|?{#SET{crdp,#CONFIG{lcs_skel_conf/credits/crdp_bn}},#SET{crdp,oui}})]
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})[(#SET{pos_menu,droite})] [(#SET{pos_agenda,droite})] [(#SET{pos_breve,droite})] [(#SET{pos_mots,droite})] 
+[(#SET{pos_sites,droite})] [(#SET{pos_syndic,droite})] [(#SET{pos_messages,droite})] [(#SET{pos_auteurs,droite})] [(#SET{pos_lienpodcast,droite})]
+]
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+[(#SET{pos_menu,[(#CONFIG{lcs_skel_conf/sommaire/pos_menu})]})] [(#SET{pos_agenda,[(#CONFIG{lcs_skel_conf/sommaire/pos_agenda})]})]  
+[(#SET{pos_breves,[(#CONFIG{lcs_skel_conf/sommaire/pos_breves})]})] [(#SET{pos_mots,[(#CONFIG{lcs_skel_conf/sommaire/pos_mots})]})] 
+[(#SET{pos_sites,[(#CONFIG{lcs_skel_conf/sommaire/pos_sites})]})] [(#SET{pos_syndic,[(#CONFIG{lcs_skel_conf/sommaire/pos_syndic})]})] 
+[(#SET{pos_messages,[(#CONFIG{lcs_skel_conf/sommaire/pos_messages})]})] [(#SET{pos_auteurs,[(#CONFIG{lcs_skel_conf/sommaire/pos_auteurs})]})]  
+[(#SET{pos_lienpodcast,[(#CONFIG{lcs_skel_conf/sommaire/pos_lienpodcast})]})] 
+]
+<head>
+<title>#NOM_SITE_SPIP</title>
+[(#INCLURE{fond=noisettes/inc-head})]
+<script type="text/javascript" src="[(#CHEMIN{scripts/niftycube.js})]"></script>
+<script type="text/javascript" src="[(#CHEMIN{scripts/niftyLayout.js})]"></script>
+[(#INCLURE{fond=noisettes/inc-conf_skel})]
+</head>
+<body>
+<div id="header">
+	[(#INCLURE{fond=noisettes/inc-entete})]
+	[(#INCLURE{fond=noisettes/inc-menuonglets})]
+</div>
+<div id="container">
+	<div  id="content">
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+	<div id="troiscols">
+]
+	[(#REM) Grande boite edito	]
+		<dl class="bloc">
+			<dt class="annonce">
+				<:lcsskel:nos_partenaires:>
+			</dt>		
+			<dd class="annonce">
+				<ul class="credits">
+				[(#GET{minstr_en}|=={oui}|?{' '})
+					<li>
+						<a href="http://www.education.gouv.fr/" title="<:lcsskel:ministere_en:>">
+							[<img src="(#CHEMIN{i/logo_mnstr_en.jpg})" alt="<:lcsskel:ministere_en:>" />]
+							<br /><span><:lcsskel:ministere_en:></span>
+						</a>
+					</li>
+				]
+				[(#GET{ac_caen}|=={oui}|?{' '})
+					<li>
+						<a href="http://www.ac-caen.fr/" title="<:lcsskel:ac_caen:>">
+							[<img src="(#CHEMIN{i/logo_ac-caen_01-t.png})" alt="<:lcsskel:ac_caen:>" />]
+							<br /><span><:lcsskel:ac_caen:></span>
+						</a>
+					</li>
+				]
+				[(#GET{crdp}|=={oui}|?{' '})
+					<li>
+						<a href="http://www.crdp.ac-caen.fr/" title="<:lcsskel:crdp_bn:>">
+							[<img src="(#CHEMIN{i/logo_crdp_bn_100.png})" alt="<:lcsskel:crdp_bn:>" />]
+							<br /><span><:lcsskel:crdp_bn:></span>
+						</a>
+					</li>
+				]
+				[(#CONFIG{lcs_skel_conf/credits/crbn}|=={oui}|?{' '})
+					<li>
+						<a href="http://www.cr-basse-normandie.fr/" title="<:lcsskel:cr_bn:>">
+							[<img src="(#CHEMIN{i/logo_crbn_100.jpg})" alt="<:lcsskel:cr_bn:>" />]
+							<br /><span><:lcsskel:cr_bn:></span>
+						</a>
+					</li>
+				]
+				[(#CONFIG{lcs_skel_conf/credits/calvados}|=={oui}|?{' '})
+					<li>
+						<a href="http://www.ac-caen.fr/" title="<:lcsskel:dpt_calvados:>">
+							[<img src="(#CHEMIN{i/logo_calvados.jpg})" style="width:100px;height:69px" alt="<:lcsskel:dpt_calvados:>" />]
+							<br /><span><:lcsskel:dpt_calvados:></span>
+						</a>
+					</li>
+				]
+				[(#CONFIG{lcs_skel_conf/credits/manche}|=={oui}|?{' '})
+					<li>
+						<a href="http://www.ac-caen.fr/" title="<:lcsskel:dpt_manche:>">
+							[<img src="(#CHEMIN{i/logo_manche.jpg})" style="width:75px;height:100px" alt="<:lcsskel:dpt_manche:>" />]
+							<br /><span><:lcsskel:dpt_manche:></span>
+						</a>
+					</li>
+				]
+				[(#CONFIG{lcs_skel_conf/credits/orne}|=={oui}|?{' '})
+					<li>
+						<a href="http://www.ac-caen.fr/" title="<:lcsskel:dpt_orne:>">
+							[<img src="(#CHEMIN{i/logo_orne.gif})" style="width:100px;height:75px" alt="<:lcsskel:dpt_orne:>" />]
+							<br /><span><:lcsskel:dpt_orne:></span>
+						</a>
+					</li>
+				]
+				[(#CONFIG{lcs_skel_conf/credits/partenr_1}|?{' '})
+					<li>
+						[<a href="(#CONFIG{lcs_skel_conf/credits/web_partenr_1})" title="[(#CONFIG{lcs_skel_conf/credits/partenr_1})]">]
+							[<img src="(#CONFIG{lcs_skel_conf/credits/logo_partenr_1})" alt="[(#CONFIG{lcs_skel_conf/credits/partenr_1})]" />]
+							<br /><span>[(#CONFIG{lcs_skel_conf/credits/partenr_1})]</span>
+						[(#CONFIG{lcs_skel_conf/credits/web_partenr_1}|?{' '})</a>]
+					</li>
+				]
+				[(#CONFIG{lcs_skel_conf/credits/partenr_2}|?{' '})
+					<li>
+						[<a href="(#CONFIG{lcs_skel_conf/credits/web_partenr_2})" title="[(#CONFIG{lcs_skel_conf/credits/partenr_2})]">]
+							[<img src="(#CONFIG{lcs_skel_conf/credits/logo_partenr_2})" alt="[(#CONFIG{lcs_skel_conf/credits/partenr_2})]" />]
+							<br /><span>[(#CONFIG{lcs_skel_conf/credits/partenr_2})]</span>
+						[(#CONFIG{lcs_skel_conf/credits/web_partenr_2}|?{' '})</a>]
+					</li>
+				]
+				[(#CONFIG{lcs_skel_conf/credits/partenr_3}|?{' '})
+					<li>
+						[<a href="(#CONFIG{lcs_skel_conf/credits/web_partenr_3})" title="[(#CONFIG{lcs_skel_conf/credits/partenr_3})]">]
+							[<img src="(#CONFIG{lcs_skel_conf/credits/logo_partenr_3})" alt="[(#CONFIG{lcs_skel_conf/credits/partenr_3})]" />]
+							<br /><span>[(#CONFIG{lcs_skel_conf/credits/partenr_3})]</span>
+						[(#CONFIG{lcs_skel_conf/credits/web_partenr_3}|?{' '})</a>]
+					</li>
+				]
+				[(#CONFIG{lcs_skel_conf/credits/partenr_4}|?{' '})
+					<li>
+						[<a href="(#CONFIG{lcs_skel_conf/credits/web_partenr_4})" title="[(#CONFIG{lcs_skel_conf/credits/partenr_4})]">]
+							[<img src="(#CONFIG{lcs_skel_conf/credits/logo_partenr_4})" alt="[(#CONFIG{lcs_skel_conf/credits/partenr_4})]" />]
+							<br /><span>[(#CONFIG{lcs_skel_conf/credits/partenr_4})]</span>
+						[(#CONFIG{lcs_skel_conf/credits/web_partenr_4}|?{' '})</a>]
+					</li>
+				]
+				</ul>
+				<br class="leon" />
+				[(#CONFIG{lcs_skel_conf/credits/text_credits}|?{' '})
+				<ul>
+					<li>
+						#CONFIG{lcs_skel_conf/credits/text_credits}
+					</li>
+				</ul>
+				]
+				<span>&nbsp;</span>
+			</dd>
+			<dt class="un">
+				Supports Techniques
+			</dt>
+			<dd class="un">
+			</dd>
+			<dd class="un">
+				<ul>
+					<li>Ce site est propuls&eacute; par <a href="http://www.spip.net/fr" title="Voir le site de Spip">SPIP</a> et TiSpiP-sKeLeT.</li>
+					<li>
+						<img src="[(#CHEMIN{i/logo_Tispip6_grs.png})]" alt="gnu" style="width:50px;height:54px;vertical-align:middle;float:left" />
+						<strong>TiSpiP-sKeLeT</strong> est une r&eacute;alisation de l&rsquo;Equipe TICE du CRDP de Basse-Normandie et est distribu&eacute; sous license <a href="http://www.gnu.org/licenses/gpl.txt" title="GNU General Public License">GNU GPL</a>.<br class="leon"/>
+							<br />Auteur : <em>Dominique Lepaisant</em>
+							<br />Logos : <em>Yannick Chistel</em>
+							<br />Icones : <a href="http://www.famfamfam.com/" title="Voir le site Famfamfam">Famfamfam</a>
+						<br class="leon" />
+					</li>
+					<li>
+						<img src="[(#CHEMIN{i/logo_gnu.png})]" alt="gnu" style="width:50px;height:50px;vertical-align:middle;float:right" />
+						<strong>CopyLeft&copy;TiSpiP-sKeLeT</strong>
+						<br class="leon" />
+					</li>
+				</ul>
+			</dd>
+		</dl>
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+	</div>[(#REM)troiscols]
+	<div id="side2">
+		[(#GET{pos_menu}|=={gauche}|?{' '})[(#INCLURE{fond=noisettes/inc-rubriques})]]	
+		[(#CONFIG{lcs_skel_conf/sommaire/affagenda}|=={oui}|?{' '})
+			[(#GET{pos_agenda}|=={gauche}|?{' '})[(#CONFIG{plugin}|match{AGENDA}|?{' '}) [<div class="rubriques">(#CALENDRIER_MINI{#ENV{date},'date',#SELF})</div>]]]
+		]
+		[(#GET{pos_breves}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affbreves}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-breves})</div>]]
+		]
+		[(#GET{pos_mots}|=={gauche}|?{' '})
+			[(#CONFIG{plugin}|match{REC_MC}|?{' '})
+				[(#CONFIG{lcs_skel_conf/sommaire/affmots}|=={oui}|?{' '})[<div class="rubriques">(#MODELE{nuage})</div>]]
+			]
+		]
+		[(#GET{pos_sites}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affsites}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-sites})</div>]]
+		]
+		[(#GET{pos_syndic}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affsyndic}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-syndic})</div>]]
+		]
+		[(#GET{pos_messages}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affmessages}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-messages})</div>]]
+		]
+		[(#GET{pos_auteurs}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affauteurs}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-auteurs})</div>]]
+		]
+		[(#GET{pos_lienpodcast}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/afflienpodcast}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-lien-podcast})</div>]]
+		]
+	</div>[(#REM)side2]
+]
+	</div>[(#REM)content]
+
+	<div id="side">
+		[(#GET{pos_menu}|!={gauche}|?{' '})[(#INCLURE{fond=noisettes/inc-rubriques})]]	
+		[(#CONFIG{lcs_skel_conf/sommaire/affagenda}|=={oui}|?{' '})
+			[(#GET{pos_agenda}|!={gauche}|?{' '})[(#CONFIG{plugin}|match{AGENDA}|?{' '}) [<div class="rubriques">(#CALENDRIER_MINI{#ENV{date},'date',#SELF})</div>]]]
+		]
+		[(#GET{pos_breves}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affbreves}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-breves})</div>]]
+		]
+		[(#GET{pos_mots}|!={gauche}|?{' '})
+			[(#CONFIG{plugin}|match{REC_MC}|?{' '})
+				[(#CONFIG{lcs_skel_conf/sommaire/affmots}|=={oui}|?{' '})[<div class="rubriques">(#MODELE{nuage})</div>]]
+			]
+		]
+		[(#GET{pos_sites}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affsites}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-sites})</div>]]
+		]
+		[(#GET{pos_syndic}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affsyndic}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-syndic})</div>]]
+		]
+		[(#GET{pos_messages}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affmessages}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-messages})</div>]]
+		]
+		[(#GET{pos_auteurs}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affauteurs}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-auteurs})</div>]]
+		]
+		[(#GET{pos_lienpodcast}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/afflienpodcast}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-lien-podcast})</div>]]
+		]
+	</div>
+
+	<div id="footer">
+		[(#INCLURE{fond=noisettes/inc-pied})]
+	</div>
+
+</div>
+</body>
+</html>

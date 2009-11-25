@@ -1,0 +1,29 @@
+<B_breves>
+[(#CONFIG{lcs_skel_conf/sommaire/nb_breves}|?{' '})
+	#SET{nbbrev,#CONFIG{lcs_skel_conf/sommaire/nb_breves}}
+	,
+	#SET{nbbrev,3}
+]
+	<h3 class="menu-titre">Br&egrave;ves</h3>
+	<dl id="breves" class="demi_boite cycle_breves">
+		<BOUCLE_breves(BREVES) {id_secteur ?} {id_rubrique ?}{par date}{inverse}{0,#GET{nbbrev}}>
+			<dt>
+				<a href="#URL_BREVE">[(#LOGO_RUBRIQUE||image_reduire{16,16}|sinon{<img src="[(#CHEMIN{i/bp_r1_c8_f2_24.gif})]" alt='' />}) ]#TITRE</a>
+				<small class="breve_info"> ([(#DATE|affdate)])</small>
+			</dt>
+			<dd>[(#INTRODUCTION|couper{50})]</dd>
+		</BOUCLE_breves>
+	</dl>
+<script type="text/javascript">
+
+[(#CONFIG{lcs_skel_conf/sommaire/defilbreves}|=={oui}|?{' '})
+$('#breves').cycle({ 
+	fx:     'scrollUp', 
+    timeout: 5999, 
+    pause:   1 ,
+	delay:  -1497,
+ 	height: 150
+	});
+</script>
+]
+</B_breves><//B_breves>

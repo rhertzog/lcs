@@ -1,0 +1,240 @@
+#CACHE{0}
+<!-- titre=<multi>[fr]Personnalisation de l&rsquo;affichage public - Cr&eacute;dits</multi>-->
+<!-- descriptif=<multi>[fr]Personnalisation du squelette - Configuration des cr&eacute;</multi>
+<br /><a href="<?$_SERVER['REQUEST_URI']?>/doc/spip/html/lcs_skel.html#conf_generale" class="spip_out" title="Voir la doc">Vers documentation</a>
+-->
+<!-- refus=Rien &agrave; faire par ici!
+<br />Vous ne pouvez pas acceder &agrave; ce formulaire !
+<br />Vous devez &ecirc;tre administrateur et connect&eacute;.
+ -->
+
+<!-- nom=lcs_skel_conf -->
+<!-- casier=credits -->
+
+<!-- onglet=lcs_skel_conf -->
+<!-- liens*=lcs_skel_conf -->
+<!-- liens*=lcs_skel_conf_accueil -->
+<!-- liens*=lcs_skel_conf_rubriques -->
+<!-- liens*=lcs_skel_conf_articles -->
+<!-- liens*=lcs_skel_conf_couleurs -->
+<!-- liens*=lcs_skel_conf_background -->
+<!-- liens*=lcs_skel_conf_slide_show-->
+<!-- liens*=lcs_skel_conf_infos_legales-->
+<!-- liens*=lcs_skel_conf_credits-->
+<!-- liens*=lcs_skel_conf_save-->
+
+<!-- icone=img_pack/logo_lsc_24.png-->
+
+<form method="post" name="form" id="form_cfg_lcs_skel">[(#ENV{_cfg_}|form_hidden)]
+	<fieldset>
+		<legend>Partenaires </legend>
+		<div  class="labels_cfg_lcs_skel">
+			&nbsp;<span class="help_conf">&nbsp;?&nbsp;</span><br class="leon"/>
+			<div class="help_text leon"><:lcsskel:help_partenaires:></div>
+		</div>
+		<ul>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<label>
+					<input type="checkbox" name="minist_en" value="oui" [checked="(#ENV{minist_en}|?{checked})"] id="minist_en" />Minist&egrave;re de l&rsquo;&eacute;ducation nationale</label>
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<label>
+					<input type="checkbox" name="ac_caen" value="oui" [checked="(#ENV{ac_caen}|?{checked})"] id="ac_caen" />Acad&eacute;mie de Caen</label>
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<label>
+					<input type="checkbox" name="crdp_bn" value="oui" [checked="(#ENV{crdp_bn}|?{checked})"] id="crdp_bn" />CRDP de Basse Normandie</label>
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<label>
+					<input type="checkbox" name="crbn" value="oui" [checked="(#ENV{crbn}|?{checked})"] id="crbn" />Conseil R&eacute;gional de Basse-Normandie</label>
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<label>
+					<input type="checkbox" name="calvados" value="oui" [checked="(#ENV{calvados}|?{checked})"] id="calvados" />D&eacute;partement du Calvados</label>
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<div class="alert">
+					</div>
+					<label>
+					<input type="checkbox" name="manche" value="oui" [checked="(#ENV{manche}|?{checked})"] id="manche" />D&eacute;partement de la Manche</label>
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<label>
+					<input type="checkbox" name="orne" value="oui" [checked="(#ENV{orne}|?{checked})"] id="orne" />D&eacute;partement de la Manche</label>
+				</div>
+			</li>
+		</ul>
+	</fieldset>
+	<fieldset>
+		<legend>Autres partenaires </legend>
+		<div class="alert">
+			Pour un affichage correct, la hauteur et la largeur maxi des logos ne doivent pas d&eacute;passer 100px.
+		</div>
+		<ul>
+			<li>
+				<span class="titre">1er Partenaire </span>
+				<div class="labels_cfg_lcs_skel">
+					<span class="demi_label"><label for="taille_titre">Nom du 1er partenaire : </label></span>
+					<input type="text" name="partenr_1" size="20" value="[(#ENV{partenr_1}|?{#ENV{partenr_1},''})]" />
+					<br />	
+					<span class="demi_label"><label for="taille_titre">Site web : </label></span>
+					<input type="text" name="web_partenr_1" size="20" value="[(#ENV{web_partenr_1}|?{#ENV{web_partenr_1},''})]" />
+					<br />	
+					<span class="demi_label"><label for="logo_partenr_1" class="com">Charger le logo :</label></span>
+					<input type="file" name="logo_partenr_1" id="logo_partenr_1" value="" size="20" style="width:45px" />
+					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{logo_partenr_1})</span>]
+					[(#ENV{partenr_1}|?{' '})
+					<h3>1er Partenaire</h3>
+					<dl>		
+						<dt>
+						[(#CFG_CHEMIN{lcs_skel_conf/credits/logo_partenr_1}|image_reduire{100}) ]- #ENV{partenr_1} -  #ENV{web_partenr_1}
+						</dt>
+					</dl>
+					]
+				</div>
+			</li>
+			<li>
+				<span class="titre">2nd Partenaire </span>
+				<div class="labels_cfg_lcs_skel">
+					<span class="demi_label"><label for="taille_titre">Nom du 2nd partenaire : </label></span>
+					<input type="text" name="partenr_2" size="20" value="[(#ENV{partenr_2}|?{#ENV{partenr_2},''})]" />
+					<br />	
+					<span class="demi_label"><label for="taille_titre">Site web : </label></span>
+					<input type="text" name="web_partenr_2" size="20" value="[(#ENV{web_partenr_2}|?{#ENV{web_partenr_2},''})]" />
+					<br />	
+					<span class="demi_label"><label for="logo_partenr_2" class="com">Charger le logo :</label></span>
+					<input type="file" name="logo_partenr_2" id="logo_partenr_2" value="" size="20" style="width:45px" />
+					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{logo_partenr_2})</span>]
+					[(#ENV{partenr_2}|?{' '})
+					<h3>2nd Partenaire</h3>
+					<dl>		
+						<dt>
+						[(#CFG_CHEMIN{lcs_skel_conf/credits/logo_partenr_2}|image_reduire{100}) ]- #ENV{partenr_2} -  #ENV{web_partenr_2}
+						</dt>
+					</dl>
+					]
+				</div>
+			</li>
+			<li>
+				<span class="titre">3&egrave;me Partenaire </span>
+				<div class="labels_cfg_lcs_skel">
+					<span class="demi_label"><label for="taille_titre">Nom du 3&egrave;me partenaire : </label></span>
+					<input type="text" name="partenr_3" size="20" value="[(#ENV{partenr_3}|?{#ENV{partenr_3},''})]" />
+					<br />	
+					<span class="demi_label"><label for="taille_titre">Site web : </label></span>
+					<input type="text" name="web_partenr_3" size="20" value="[(#ENV{web_partenr_3}|?{#ENV{web_partenr_3},''})]" />
+					<br />	
+					<span class="demi_label"><label for="logo_partenr_3" class="com">Charger le logo :</label></span>
+					<input type="file" name="logo_partenr_3" id="logo_partenr_3" value="" size="20" style="width:45px" />
+					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{logo_partenr_3})</span>]
+					[(#ENV{partenr_3}|?{' '})
+					<h3>3&egrave;me Partenaire</h3>
+					<dl>		
+						<dt>
+						[(#CFG_CHEMIN{lcs_skel_conf/credits/logo_partenr_3}|image_reduire{100}) ]- #ENV{partenr_3} -  #ENV{web_partenr_3}
+						</dt>
+					</dl>
+					]
+				</div>
+			</li>
+			<li>
+				<span class="titre">4&egrave;me Partenaire </span>
+				<div class="labels_cfg_lcs_skel">
+					<span class="demi_label"><label for="taille_titre">Nom du 4&egrave;me partenaire : </label></span>
+					<input type="text" name="partenr_4" size="20" value="[(#ENV{partenr_4}|?{#ENV{partenr_4},''})]" />
+					<br />	
+					<span class="demi_label"><label for="taille_titre">Site web : </label></span>
+					<input type="text" name="web_partenr_4" size="20" value="[(#ENV{web_partenr_4}|?{#ENV{web_partenr_4},''})]" />
+					<br />	
+					<span class="demi_label"><label for="logo_partenr_4" class="com">Charger le logo :</label></span>
+					<input type="file" name="logo_partenr_4" id="logo_partenr_4" value="" size="20" style="width:45px" />
+					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{logo_partenr_4})</span>]
+					[(#ENV{partenr_4}|?{' '})
+					<h3>4&egrave;me Partenaire</h3>
+					<dl>		
+						<dt>
+						[(#CFG_CHEMIN{lcs_skel_conf/credits/logo_partenr_4}|image_reduire{100}) ]- #ENV{partenr_4} -  #ENV{web_partenr_4}
+						</dt>
+					</dl>
+					]
+				</div>
+			</li>
+			<li>
+				<div class="labels_cfg_lcs_skel">
+					<label class="titre"><input type="checkbox" name="afftext_credit" class="affCheckbox" value="oui" [checked="(#ENV{afftext_credit}|?{checked})"] id="afftext_credit" /> Afficher un texte personnel
+					</label>
+				</div>
+			</li>
+			<li id="cfgtext_credit">
+			<div class="labels_cfg_lcs_skel">
+				<label for="text_credit">Texte personnel</label>
+				<textarea name="text_credit" rows="7" style="width:100%;">[(#ENV{text_credit}|?{' '})#ENV{text_credit}]</textarea>
+			</div>
+			[(#ENV{text_credit}|?{' '})
+			<span style="font-size:1.2em;font-weight;bold">Votre texte :</span>
+			<div class="alert">
+				#ENV{text_credit}
+			</div>
+			]
+			</li>
+		</ul>
+	</fieldset>
+<script type="text/javascript"><!--
+	$('#afftext_credit')
+	.bind('change', function() {
+            $('#cfgtext_credit').slideToggle('slow');
+	})
+	if ($('#afftext_credit:checked').length == 0)
+		$('#cfgtext_credit').hide();
+// --></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('div.help_text').prepend('<span class=\'help_close\'>&nbsp;X&nbsp;</span>');
+        $('form#form_cfg_lcs_skel div.help_text').hide(); 
+        $('form#form_cfg_lcs_skel span.help_conf').click(function() {
+		  var $boutton = $(this);
+          var $nextDiv = $(this).siblings('div.help_text');
+          var $visibleSiblings = $('form#form_cfg_lcs_skel')
+				.find('div.help_text:visible');
+           var $hideSiblings = $('form#form_cfg_lcs_skel')
+				.find('span.help_conf:hidden');
+      
+          if ($visibleSiblings.length) {
+            $visibleSiblings.slideUp('slow', function() {
+              $nextDiv.slideToggle('slow');
+			  $hideSiblings.fadeIn('slow');
+ 			 $boutton.fadeOut('slow');
+          });
+          } else {
+             $nextDiv.slideToggle('fast');
+			 $boutton.fadeOut('slow');
+          }
+        });
+		$('form#form_cfg_lcs_skel span.help_close').click(function() {
+				$(this).parent().slideUp('slow');
+				$(this).parents('.labels_cfg_lcs_skel')
+				.find('span.help_conf:hidden').fadeIn('slow');
+		});
+	});
+</script>
+	
+	<p>
+		<input type="submit" name="_cfg_ok" value="<:OK:>" />
+		<input type="reset" value="<:Reset:>" />
+		<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+	</p>
+</form>

@@ -1,0 +1,21 @@
+README, version : 2.4.1 Mon, 10 Aug 2009
+
+Jean-Luc Chretien    <jean-luc.chretien@tice.ac-caen.fr>
+
+LCS spip
+==============
+
+  SPIP en tant que CSM/Forum LCS
+
+    -SSO LCS
+    -Squelette LCS
+    -Plugin LCS + CFG: Configuration du theme
+    -Largeur de page, nombre de colonnes, couleurs, images d'arrière-plan, contenu, affichage et position des différen,ts blocs, etc...
+    - Autres plugins :
+      - Spip-liste : gestion de listes de diffusion
+      - Recherche multi-critères par mots-clé
+      - Accès restreint par groupes : gestion des accés aux contenu
+      - Lecteur Multimédia en Flash (MP3,flv)
+      - Agenda
+      -  Formulaires & Tables : Création de formulaires et sondages
+      - ...

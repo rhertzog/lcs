@@ -1,0 +1,13 @@
+	[(#REM) article precedent - article suivant ]
+		<div class="droite" style="width:120px">
+		<!-- le lien vers l'article suivant, par ordre chronologique-->
+		<BOUCLE_encours(ARTICLES){id_article}>
+		<BOUCLE_suivant(ARTICLES){id_rubrique}{age_relatif<0}{par date}{0,1}>
+			<span style="float:right;"> <a href='#URL_ARTICLE' title='[Aller &agrave; : "(#TITRE|texte_backend)]'><img src="[(#CHEMIN{i/next.gif})]" alt="Article suivant" style="margin:0 .5em" /></a></span>
+		</BOUCLE_suivant>
+		<!-- le lien vers l'article precedent par ordre chronologique-->
+		<BOUCLE_precedent(ARTICLES){id_rubrique}{age_relatif>=0}{par date}{inverse}{1,1}>
+			<span style="float:right;"><a href='#URL_ARTICLE' title='[Aller &agrave; : "(#TITRE|texte_backend)"]'><img src="[(#CHEMIN{i/previous.gif})]" alt="Article précédent" style="margin:0 1em" /></a></span>
+		</BOUCLE_precedent>
+		</BOUCLE_encours>
+		</div>

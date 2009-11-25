@@ -1,0 +1,114 @@
+#CACHE{24*3600}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<BOUCLE_principale(AUTEURS){id_auteur}>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+[(#CONFIG{lcs_skel_conf/nb_cols}|!={3}|?{' '})[(#SET{pos_menu,droite})] [(#SET{pos_agenda,droite})] [(#SET{pos_breve,droite})] [(#SET{pos_mots,droite})] 
+[(#SET{pos_sites,droite})] [(#SET{pos_syndic,droite})] [(#SET{pos_messages,droite})] [(#SET{pos_auteurs,droite})] [(#SET{pos_lienpodcast,droite})]
+]
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+[(#SET{pos_menu,[(#CONFIG{lcs_skel_conf/sommaire/pos_menu})]})] [(#SET{pos_agenda,[(#CONFIG{lcs_skel_conf/sommaire/pos_agenda})]})]  
+[(#SET{pos_breves,[(#CONFIG{lcs_skel_conf/sommaire/pos_breves})]})] [(#SET{pos_mots,[(#CONFIG{lcs_skel_conf/sommaire/pos_mots})]})] 
+[(#SET{pos_sites,[(#CONFIG{lcs_skel_conf/sommaire/pos_sites})]})] [(#SET{pos_syndic,[(#CONFIG{lcs_skel_conf/sommaire/pos_syndic})]})] 
+[(#SET{pos_messages,[(#CONFIG{lcs_skel_conf/sommaire/pos_messages})]})] [(#SET{pos_auteurs,[(#CONFIG{lcs_skel_conf/sommaire/pos_auteurs})]})]  
+[(#SET{pos_lienpodcast,[(#CONFIG{lcs_skel_conf/sommaire/pos_lienpodcast})]})] 
+]
+<head>
+<title>#NOM_SITE_SPIP</title>
+[(#INCLURE{fond=noisettes/inc-head})]
+<script type="text/javascript" src="[(#CHEMIN{scripts/niftycube.js})]"></script>
+<script type="text/javascript" src="[(#CHEMIN{scripts/niftyLayout.js})]"></script>
+[(#INCLURE{fond=noisettes/inc-conf_skel})]
+</head>
+<body>
+<div id="header">
+	[(#INCLURE{fond=noisettes/inc-entete})]
+	[(#INCLURE{fond=noisettes/inc-menuonglets})]
+</div>
+<div id="container">
+	<div  id="content">
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+	<div id="troiscols">
+]
+      		<div id="hierarchie">
+				<a href="#URL_SITE_SPIP/"><:accueil_site:></a> &gt; <:info_auteurs:>[(#CONFIG{plugin}|match{LCS_SKEL}|?{[ &gt; [(#NOM|prenom) ](#NOM|nom)],[ &gt; (#NOM)]})]
+      		</div>
+	[(#REM) Grande boite edito]
+		<dl class="bloc"> 
+			<dt class="cartouche">
+				[(#LOGO_AUTEUR||image_reduire{100,100})]
+	  			<span>[(#CONFIG{plugin}|match{LCS_SKEL}|?{[[(#NOM|prenom) ](#NOM|nom)],[(#NOM)]})]</span>
+			</dt>
+			<dd class="cartouche">
+				[<p class="soustitre"><:voir_en_ligne:> : <a href="(#URL_SITE)" class="spip_out">[(#NOM_SITE|sinon{[(#URL_SITE|couper{80})]})]</a></p>]
+				[(#BIO)]
+				[(#FORMULAIRE_ECRIRE_AUTEUR)]
+			</dd>
+		</dl>
+
+		[(#REM) Liste des articles]
+		[(#CONFIG{lcs_skel_conf/sommaire/nbarticles}|?{[(#SET{nbarts,[(#CONFIG{lcs_skel_conf/sommaire/nbarticles})]})],[(#SET{nbarts,5})]})]
+		<B_articles>
+		[(#ANCRE_PAGINATION)]
+		[(#REM) 
+		<h2 class="titre"><:derniers_articles:></h2>
+		]
+		[(#ENV{debut_articles}|?{'',' '})] 
+
+		<dl class="bloc">
+			<BOUCLE_articles (ARTICLES){id_auteur}{!par date}{pagination #GET{nbarts}} {doublons}>
+			<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+				<BOUCLE_rub_art(RUBRIQUES){id_rubrique}><em><a href="#URL_RUBRIQUE" title="Aller &agrave; la rubrique [(#TITRE|supprimer_tags)]" class="droite">[(#TITRE|supprimer_tags)]</a></em></BOUCLE_rub_art>
+				[<a href="#URL_ARTICLE">
+					<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{50,60}|sinon{[(#LOGO_SITE||reduire_image{50,60})]})]</span>(#TITRE|supprimer_tags|supprimer_numero)</a>]
+					<em>[, (#DATE|affdate_jourcourt)]</em>
+			</dt>		
+			<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+				[(#INTRODUCTION|couper{200})]
+				<div class="suite"> <a href="#URL_ARTICLE"><:suite:>...</a></div>
+			</dd>
+			</BOUCLE_articles>
+			[<dd class="pagination">
+				<span class="ligne1">#GRAND_TOTAL <:articles:></span>
+				<span class="ligne2">(#PAGINATION)</span>
+			</dd>]<!-- pagination -->
+		</dl>
+		</B_articles>
+
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+	</div>[(#REM)troiscols]
+	<div id="side2">
+		[(#GET{pos_menu}|=={gauche}|?{' '})[(#INCLURE{fond=noisettes/inc-rubriques})]]	
+		[(#GET{pos_sites}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/affsites}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-sites})</div>]]
+		]
+		[(#GET{pos_auteurs}|=={gauche}|?{' '})
+			[<div class="rubriques">(#INCLURE{fond=noisettes/inc-auteurs})</div>]
+		]
+		[(#GET{pos_lienpodcast}|=={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/afflienpodcast}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-lien-podcast})</div>]]
+		]
+	</div>[(#REM)side2]
+]
+	</div>[(#REM)content]
+
+	<div id="side">
+		[(#CONFIG{lcs_skel_conf/recherche}=={oui}|?{'',' '})[(#FORMULAIRE_RECHERCHE)]]
+		[(#GET{pos_menu}|!={gauche}|?{' '})[(#INCLURE{fond=noisettes/inc-rubriques})]]
+		[(#GET{pos_auteurs}|!={gauche}|?{' '})
+			[<div class="rubriques">(#INCLURE{fond=noisettes/inc-auteurs}{ajax}{env})</div>]
+		]
+		[(#GET{pos_lienpodcast}|!={gauche}|?{' '})
+			[(#CONFIG{lcs_skel_conf/sommaire/afflienpodcast}|=={oui}|?{' '})[<div class="rubriques">(#INCLURE{fond=noisettes/inc-lien-podcast})</div>]]
+		]
+	</div>
+
+	<div id="footer">
+		[(#INCLURE{fond=noisettes/inc-pied})]
+	</div>
+
+</div>
+</body>
+</html>
+</BOUCLE_principale>
+[(#INCLURE{fond=page404})]
+<//B_principale>

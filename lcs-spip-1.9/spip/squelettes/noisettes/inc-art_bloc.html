@@ -1,0 +1,9 @@
+		<BOUCLE_art_bloc(ARTICLES){id_article=#ENV{idart}}>
+<h3 class="menu-titre"><a href="#URL_ARTICLE" title="#TITRE">[(#TITRE)]</a></h3>
+<dl >
+						<dd style="margin:5px;padding:0">
+							[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{75}|sinon{[(#LOGO_SITE_SPIP||reduire_image{75})]}|inserer_attribut{style,float:right})]
+								[<span style="font-size:.9em;">(#TEXTE|supprimer_tags|couper{150})</span>]</dd>
+						
+</dl>
+		</BOUCLE_art_bloc>
