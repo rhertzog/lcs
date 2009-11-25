@@ -19,9 +19,11 @@ USERHOME="/var/lib/lcs/cas"
 PATH_RUBYCAS_CERT=$CONF
 IN_CONFIG_PATH=$USERHOME
 RUBYCAS_CERT_TT="openssl.cas.in" # template opensll cert for cas
-PICNICVERSION=0.7.1
-MYSQLVERSION=0.7.1
-
+# Fix gem version to install
+ACTIVERECORDVERSION=2.3.4
+PICNICVERSIONVERSION=0.7.1
+RUBYNETLDAPVERSION=0.0.4
+MYSQLVERSION=2.7
 #
 # get LCSMGR PASS
 #
@@ -49,12 +51,11 @@ if [ $VERGEM -lt "131" ];then
 	fi
 	wget http://lcs.crdp.ac-caen.fr/gems/rubygems-update-1.3.1.gem 
 	if [ -e rubygems-update-1.3.1.gem   ]; then
-  		gem install rubygems-update-1.3.1.gem --no-ri --no=rdoc 
+  		gem install rubygems-update-1.3.1.gem --no-ri --no-rdoc 
 	else
   		echo "ERROR no rubygems-update-1.3.1 gem to install !"
   		exit 1
 	fi
-	gem install rubygems-update-1.3.1.gem --no-ri --no-rdoc
 	chmod +x /var/lib/gems/1.8/bin/update_rubygems
 	/var/lib/gems/1.8/bin/update_rubygems
 	if [ ! -e /usr/bin/gem.old ]; then
@@ -71,38 +72,10 @@ apt-get -y install ruby1.8-dev build-essential libmysqlclient15-dev
 # 
 # Install gems 
 #
-test1=$(gem list activerecord | grep activerecord)
-if [ "$test1" = "activerecord (2.3.4)" ]; then
-	echo "Le gem $test1 est present on ne l'installera pas"
-else
-	echo "Le gem n'est pas present on l'installe"
-	gem install activerecord --no-ri --no-rdoc
-fi
-
-test1=$(gem list picnic | grep picnic)
-if [ "$test1" = "picnic (0.7.1)" ]; then
-	echo "Le gem $test1 est present on ne l'installera pas"
-else
-	echo "Le gem n'est pas present on l'installe"
-  	gem install picnic --version $PICNICVERSION --no-ri --no-rdoc
-fi
-
-test1=$(gem list ruby-net-ldap | grep ruby-net-ldap)
-if [ "$test1" = "ruby-net-ldap (0.0.4)" ]; then
-	echo "Le gem $test1 est present on ne l'installera pas"
-else
-	echo "Le gem n'est pas present on l'installe"
-  	gem install ruby-net-ldap --version 0.0.4 --no-ri --no-rdoc
-fi
-
-test1=$(gem list mysql | grep mysql)
-if [ "$test1" = "mysql (2.7)" ]; then
-	echo "Le gem $test1 est present on ne l'installera pas"
-else
-	echo "Le gem n'est pas present on l'installe"
-  	gem install mysql --version 2.7 --no-ri --no-rdoc
-fi
-
+gem install activerecord --version $ACTIVERECORDVERSION --no-ri --no-rdoc
+gem install picnic --version $PICNICVERSION --no-ri --no-rdoc
+gem install ruby-net-ldap --version $RUBYNETLDAPVERSION --no-ri --no-rdoc
+gem install mysql --version $MYSQLVERSION --no-ri --no-rdoc
 
 if [ -e rubycas-lcs-latest.gem  ]; then
   rm rubycas-lcs-latest.gem
