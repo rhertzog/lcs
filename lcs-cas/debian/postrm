@@ -14,7 +14,7 @@ case "$1" in
         #
         # Stop CAS service
         #
-        if [ -e /etc/init.d/rubycas-lcs ]; then
+        if [ -e /etc/init.d/rubycas-lcs ] && [ -e /var/run/rubycas-lcs/casserver.pid ]; then
             invoke-rc.d rubycas-lcs stop
         fi
         #
@@ -22,7 +22,7 @@ case "$1" in
         #
         /usr/bin/mysql -e "UPDATE lcs_db.params SET value='0' WHERE name='lcs_cas';"
         #
-        # Remove rc.d system V rubycas-lc
+        # Remove rc.d system V rubycas-lcs
         #
         rm -f /etc/init.d/rubycas-lcs
         update-rc.d rubycas-lcs remove

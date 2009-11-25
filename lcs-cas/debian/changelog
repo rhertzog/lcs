@@ -1,6 +1,6 @@
 lcs-cas (2.4.1~1) UNRELEASED; urgency=low
 
-  *  Modify lcs-cas-install.sh for clean install
+  * Modify lcs-cas-install.sh for clean install
   * Modify control dependances for Lenny install
 
  -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 25 Nov 2009 18:07:03 +0100
