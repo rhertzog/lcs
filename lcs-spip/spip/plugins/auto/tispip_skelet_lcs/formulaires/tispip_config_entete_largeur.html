@@ -1,0 +1,68 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=entete-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg">
+	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+	
+	<form method="post" action="#SELF">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+
+<fieldset>
+	<legend>Largeur de l&rsquo;arri&egrave;rre-plan de l&rsquo;ent&ecirc;te</legend>
+		<ul>
+			<li class="ligne">
+						<a href='[(#CHEMIN{fonds/inc/aide/inc-help.html})]' class='boxy' title='Aide : Dimensionsde l&rsquo;ent&ecirc;te'>?</a>
+					<label>
+					<input type="radio" name="largeur_entete" value="ecran"[ (#CONFIG{tispipskelet_conf/entete/largeur_entete}|?{'',checked="checked"})] [(#CONFIG{tispipskelet_conf/entete/largeur_entete}|=={ecran}|?{checked="checked",''})] />Largeur de l&rsquo;&eacute;cran</label>
+			</li>
+			<li class="ligne">
+					<label>
+					<input type="radio" name="largeur_entete" value="page"[ (#CONFIG{tispipskelet_conf/entete/largeur_entete}|=={page}|?{checked="checked",''})] />Largeur de la page</label>
+			</li>
+			<li class="ligne">
+					<label>
+					<input type="radio" name="largeur_entete" value="colonne"[ (#CONFIG{tispipskelet_conf/entete/largeur_entete}|=={colonne}|?{checked="checked",''})] />Largeur des colonnes</label>
+			</li>
+		</ul>
+</fieldset>
+
+<fieldset>
+	<legend>Largeur du contenu l&rsquo;ent&ecirc;te</legend>
+		<ul>
+			<li class="ligne">
+						<a href='[(#CHEMIN{fonds/inc/aide/inc-help.html})]' class='boxy' title='Aide : Dimensionsde l&rsquo;ent&ecirc;te'>?</a>
+					<label>
+					<input type="radio" name="largeur_ctn_entete" value="ecran"[ (#CONFIG{tispipskelet_conf/entete/largeur_ctn_entete}|?{'',checked="checked"})] [(#CONFIG{tispipskelet_conf/entete/largeur_ctn_entete}|=={ecran}|?{checked="checked",''})] />Largeur de l&rsquo;&eacute;cran</label>
+			</li>
+			<li class="ligne">
+					<label>
+					<input type="radio" name="largeur_ctn_entete" value="page"[ (#CONFIG{tispipskelet_conf/entete/largeur_ctn_entete}|=={page}|?{checked="checked",''})] />Largeur de la page</label>
+			</li>
+			<li class="ligne">
+					<label>
+					<input type="radio" name="largeur_ctn_entete" value="colonne"[ (#CONFIG{tispipskelet_conf/entete/largeur_ctn_entete}|=={colonne}|?{checked="checked",''})] />Largeur des colonnes</label>
+			</li>
+		</ul>
+</fieldset>
+
+
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			
+			<div style="text-align:center;margin-bottom:25px;">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

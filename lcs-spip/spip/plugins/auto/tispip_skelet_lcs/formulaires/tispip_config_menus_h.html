@@ -1,0 +1,95 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg">
+[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+
+<form method="post" action="#SELF" style="margin-bottom:25px;">
+	<div> #ACTION_FORMULAIRE{#SELF} 
+
+	<fieldset>
+		<legend>Menu de navigation horizontal</legend>
+		<ul>
+			<li class="ligne">
+					<label><input type="checkbox" name="affmenuh" value="oui" [checked="(#ENV{affmenuh}|?{checked})" ]id="aff_menuh"/><:tispipskelet:afficher_menu_horizontal:>
+					</label>
+			</li>
+[(#CONFIG{tispipskelet_conf/affmenuh}|oui)
+		</ul >
+					<ul id="cfg_menuh">
+						<li class="demi">
+							<label for="menuh_posleft">
+							<:tispipskelet:a_gauche:></label>
+							<input type="radio" name="menuhoriz_pos" value="left" [(#ENV{menuhoriz_pos}|=={left}|?{checked,''})] id="menuh_posleft" />
+						</li>
+						<li class="demi">
+							<label for="menuh_postight">
+							<:tispipskelet:a_droite:></label>
+							<input type="radio" name="menuhoriz_pos" value="right" [(#ENV{menuhoriz_pos}|=={right}|?{checked,''})] id="menuh_postight" />
+						</li>
+						<li class="ligne_280">
+							<label for="menuh_accueil"><:tispipskelet:afficher_lien_accueil:></label>
+							<input type="checkbox" name="menuh_accueil" value="oui" [checked="(#ENV{menuh_accueil}|?{checked})" ]id="menuh_accueil" />
+							
+						</li>
+						<li class="ligne_280">
+							<label for="menuh_hauteur" ><:tispipskelet:haut_case_menu_horiz:></label>
+							<input type="text" name="menuh_hauteur" id="menuh_hauteur" size="4" value="[(#ENV{menuh_hauteur,25})]" />
+						</li>
+						<li class="ligne_280">
+							<label for="menuh_largeur"><:tispipskelet:larg_case_menu_horiz:></label>
+							<input type="text" name="menuh_largeur" id="menuh_largeur" size="4" value="[(#ENV{menuh_largeur,120})]" />
+						</li>
+						<li class="ligne_280">
+							<label for="menuh_color_text"><:tispipskelet:couleurtexte:></label>
+							<input type="text" name="menuh_color_text" id="menuh_color_text" class="palette" size="7" value="[(#ENV{menuh_color_text,#003366})]" />
+						</li>
+						<li class="ligne_280">
+							<label for="menuh_color_bg"><:tispipskelet:couleur_arriere_plan:></label>
+							<input type="text" name="menuh_color_bg" id="menuh_color_bg"  class="palette" size="7"  value="[(#ENV{menuh_color_bg,#ffcc33})]" />
+						</li>
+						<li class="ligne_280">
+							<label for="menuh_color_text_survol"><:tispipskelet:couleur_texte_survol:></label>
+							<input type="text" name="menuh_color_text_survol" id="menuh_color_text_survol" class="palette" size="7" value="[(#ENV{menuh_color_text_survol,#ff6600})]" />
+						</li>
+						<li class="ligne_280">
+								<label for="menuh_color_bg_survol"><:tispipskelet:couleur_arriere_plan_survol:></label>
+								<input type="text" name="menuh_color_bg_survol" id="menuh_color_bg_survol"  class="palette" size="7"  value="[(#ENV{menuh_color_bg_survol,#ffffff})]" />
+						</li>
+						<li class="ligne_280">
+								<label for="menuh_color_barre"><:tispipskelet:couleur_arriere_plan_barre_menu:></label>
+								<input type="text" name="menuh_color_barre" id="menuh_color_barre"  class="palette" size="7"  value="[(#ENV{menuh_color_barre,#dddddd})]" />
+						</li>
+					</ul>
+<script type="text/javascript"><!--
+	//cacher l'affichage de la conf
+	$('#aff_menuh')
+	.bind('change', function() {
+            $('#cfg_menuh').slideToggle('slow');
+	})
+	if ($('#aff_menuh:checked').length == 0)
+		$('#cfg_menuh').hide();
+
+// --></script>
+]
+	</fieldset>
+ 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+		
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

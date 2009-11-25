@@ -1,0 +1,8 @@
+<BOUCLE_partenaires(FOR){debut=1}{fin=10}{par 1}>
+[(#COMPTEUR_BOUCLE|=={1}|oui)
+		<INCLURE{fond=fonds/inc/inc-conf_partenaires_autres}{rang=#COMPTEUR_BOUCLE}{env}{ajax}>
+]
+[(#CONFIG{tispipskelet_conf/credits/partenr_#EVAL{#COMPTEUR_BOUCLE -1}}|oui)
+		<INCLURE{fond=fonds/inc/inc-conf_partenaires_autres}{rang=#COMPTEUR_BOUCLE}{env}{ajax}>
+]
+</BOUCLE_partenaires>

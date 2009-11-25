@@ -1,0 +1,79 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg">
+
+	<form method="post" action="#SELF" style="margin-bottom:25px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+			[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+			<fieldset>
+				<legend>Nombre de colonnes</legend>
+				<ul>
+					<li class="demi">
+						<label for="nb_cols_art2">2 colonnes</label>
+						[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{[(#SET{check3, checked="checked"})],[(#SET{check2, checked="checked"})]})]
+						<input type="radio" name="nb_cols_art" id="nb_cols_art2" value="2" [(#ENV{nb_cols_art}|=={2}|?{checked="checked"})] />
+					</li>
+					<li class="demi">
+						<a href='[(#CHEMIN{fonds/inc/aide/inc-help.html})]' class='boxy' title='Aide : Nombre de colonnes de la page Article'>?</a>
+						<label for="nb_cols_art3">3 colonnes</label>
+						<input type="radio" name="nb_cols_art" id="nb_cols_art3" value="3" [(#ENV{nb_cols_art}|=={3}|?{checked="checked"})] />
+					</li>
+				</ul>
+				[(#CONFIG{tispipskelet_conf/articles/nb_cols_art}|=={2}|?{' '})
+				<ul id="pos_cols_art" >
+					<li class="demi">
+						<label>&agrave; gauche
+						<input type="radio" name="pos_cols_art" value="gauche" [(#ENV{pos_cols_art}|=={gauche}|?{checked,''})] /></label>
+					</li>
+					<li class="demi">
+						<label>&agrave; droite
+						<input type="radio" name="pos_cols_art" value="droite" [(#ENV{pos_cols_art}|=={droite}|?{checked,''})] /></label>
+					</li>
+				</ul>
+				]
+			</fieldset>
+			[(#ENV{nb_cols}|=={2}|?{' '})
+			]		
+			
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			<div style="text-align:center;margin-bottom:15px;">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+<script type="text/javascript"><!--
+
+	$('#nb_cols_art2')
+	.bind('change', function() {
+            $('#pos_cols_art').slideToggle('slow');
+	})
+	if ($('#nb_cols_art2:checked').length == 0)
+		$('#pos_cols_art').hide();
+
+	$('#nb_cols_art3')
+	.bind('change', function() {
+            $('#pos_cols_art').hide();
+	})
+	if ($('#nb_cols_art3:checked').length != 0)
+		$('#pos_cols_art').hide();
+
+	    $("#nb_cols_art3").bind('change', function() {
+			var $offRad = $('#pos_cols_art li').find('input[@type=radio][@checked]');
+			($offRad.length) ? $offRad.removeAttr('checked') : '';
+	    })
+
+// --></script>
+			
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

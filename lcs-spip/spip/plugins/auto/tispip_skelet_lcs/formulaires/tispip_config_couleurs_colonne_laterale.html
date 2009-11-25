@@ -1,0 +1,50 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=couleurs -->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:25px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+	<fieldset>
+		<legend>Couleurs de la colonne latt&eacute;rale</legend>
+		<ul>
+			<li class="ligne_240">
+				<label for="color70">Fond de la colonne latt&eacute;rale :</label>
+				<input type="text" name="color70" id="color70"  class="palette" size="7" value="[(#ENV{color70}|?{#ENV{color70},#cccccc})]" />
+			</li>
+			<li class="ligne_240">
+				<label for="color71">Fond des titres des blocs :</label>
+					<input type="text" name="color71" id="color71"  class="palette" size="7" value="[(#ENV{color71}|?{#ENV{color71},#ffcc33})]" />
+			</li>
+			<li class="ligne_240">
+				<label for="color72">Titres des blocs :</label>
+					<input type="text" name="color72" id="color72"  class="palette" size="7" value="[(#ENV{color72}|?{#ENV{color72},#336699})]" />
+			</li>
+			<li class="ligne_240">
+				<label for="color73">Fond des blocs :</label>
+					<input type="text" name="color73" id="color73"  class="palette" size="7" value="[(#ENV{color73}|?{#ENV{color73},#ffffff})]" />
+			</li>
+			<li class="ligne_240">
+				<label for="color74">Textes des blocs :</label>
+					<input type="text" name="color74" id="color74"  class="palette" size="7" value="[(#ENV{color74}|?{#ENV{color74},#003366})]" />
+			</li>
+		</ul>
+	</fieldset>
+		 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

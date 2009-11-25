@@ -1,0 +1,60 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:25px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend>Liste des sites de la rubrique</legend>
+				<ul>
+					<li class="ligne">
+						<label>
+							<input type="checkbox" name="afflistsites" value="oui" id="afflistsites"[ checked="(#ENV{afflistsites}|?{checked})"] id="afflistsites" /> 
+							Afficher la liste des derniers sites r&eacute;f&eacute;renc&eacute;s de la rubrique en cours
+						</label>
+					</li>
+					<li id="cfglistsites">
+						<label for="nbsites">Nombre de sites &agrave; afficher : </label>
+						<select name="nbsites">
+							<option value=" "[(#ENV{nbsites}|?{'',selected="selected"})]> </option>
+							<option value="3"[(#ENV{nbsites}|=={3}|?{selected="selected",''})]> 3 </option>
+							<option value="5"[(#ENV{nbsites}|=={5}|?{selected="selected",''})]> 5 </option>
+							<option value="10"[(#ENV{nbsites}|=={10}|?{selected="selected",''})]> 10 </option>
+						</select>
+					</li>
+				</ul>
+			</fieldset>
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+
+			<script type="text/javascript"><!--
+				$(function() {
+				  $('.boxy').boxy();
+				});
+				
+				//cacher la conf de la liste de sites
+				$('#afflistsites')
+				.bind('change', function() {
+			            $('#cfglistsites').slideToggle('slow');
+				})
+				if ($('#afflistsites:checked').length == 0)
+					$('#cfglistsites').hide();
+	
+			// --></script>
+			
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

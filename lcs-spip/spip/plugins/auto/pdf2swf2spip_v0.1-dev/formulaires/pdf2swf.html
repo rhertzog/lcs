@@ -1,0 +1,23 @@
+#ENV**{icone}
+<div id="boite_pdf2swf" class="formulaire_spip formulaire_pdf2swf" style="display:none;">
+	<form action="#URL_ACTION_AUTEUR{'pdf2swf_convert','id_article='#ENV{id_article},#URL_ECRIRE{articles}}" method="POST" enctype="multipart/form-data">
+		<ul>
+			<li>
+				<label for='fichier_pdf'><:pdfswf:choix_fichier:></label>
+				<input type='file' name='fichier_pdf' id='fichier_pdf' size="10" />
+			</li>
+			<li>
+				<p class="explications">
+					<:pdfswf:attacher_fichier_pdf:>
+				</p>
+				<label for='attacher_pdf_oui'><:pdfswf:oui:></label>
+				<input type='radio' name='attacher_pdf' value='1' id='attacher_pdf_oui' />
+				<input type='radio' name='attacher_pdf' value='0' id='attacher_pdf_non' checked='checked' />
+				<label for='attacher_pdf_non'><:pdfswf:non:></label>
+			</li>
+		</ul>
+		<p class="boutons">
+			<input type="submit" name="Valider" value="<:bouton_valider:>" class="submit" />
+		</p>
+	</form>
+</div>

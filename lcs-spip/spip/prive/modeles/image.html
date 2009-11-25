@@ -1,0 +1,25 @@
+<BOUCLE_tous (DOCUMENTS types_documents) {id_document=#ID} {tout}>[(#INCLUS
+|=={image}|?{<span class='spip_document_#ID_DOCUMENT spip_documents[ spip_documents_(#ENV{align})][ (#ENV{class})] spip_lien_ok'[
+	 style='float:(#ENV{align}|match{left|right});[ width:(#LARGEUR)px;]']>[
+	<a href="(#ENV{lien})"[
+		class="(#ENV{lien_class})"]>]<img src='#URL_DOCUMENT'
+		[ width="(#LARGEUR)"][ height="(#HAUTEUR)"][
+			title="(#TITRE|texte_backend)"]
+			alt="[(#TITRE|texte_backend)]" />[(#ENV{lien}|?{</a>})]</span>})
+][(#INCLUS
+|=={embed}|?{' ',''})
+<div class='spip_document_#ID_DOCUMENT spip_documents[ spip_documents_(#ENV{align})]'[
+style='[(#ENV{align}|match{^(left|right)$}|?{' '})float:#ENV{align};] (#ENV{align,center}|=={center}|?{'',' '})']>
+<object	data='#URL_DOCUMENT' 
+	type='#MIME_TYPE'[
+	width='(#ENV{largeur}?{'', #LARGEUR})'][
+	height='(#ENV{hauteur}?{'', #HAUTEUR})']
+	[(#ENV*|env_to_attributs)] >
+	<param name='src' value='#URL_DOCUMENT' />
+	[(#ID_DOCUMENT|appliquer_filtre{#MIME_TYPE})]
+</object>[
+<div class='spip_doc_titre'><strong>(#TITRE)</strong></div>
+][
+<div class='spip_doc_descriptif'>(#DESCRIPTIF|PtoBR)[(#NOTES|PtoBR)]</div>
+]</div>]
+</BOUCLE_tous>

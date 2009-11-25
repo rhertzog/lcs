@@ -1,0 +1,63 @@
+<!-- interpreter=non -->
+<!-- descriptif=<multi>[fr]Configuration g&eacute;n&eacute;rale de l&rsquo;affichage public </multi> -->
+<!-- boite=<multi>[fr]Personnalisation de l'affichage public - Page d'accueil</multi>-->
+<!-- onglet=TiSpiP_Pages -->
+
+<!-- liens*=TiSpiP_Pages -->
+<!-- liens*=TiSpiP_Entete -->
+<!-- liens*=TiSpiP_Menus -->
+<!-- liens*=TiSpiP_Couleurs -->
+<!-- liens*=TiSpiP_Accueil -->
+<!-- liens*=TiSpiP_Rubrique -->
+<!-- liens*=TiSpiP_Article -->
+<!-- liens*=TiSpiP_Mentions -->
+<!-- liens*=TiSpiP_Credits -->
+<!-- liens*=TiSpiP_Diaporama-S5 -->
+
+#CACHE{0}
+
+[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+	<ul>
+	<li><a href="[(#SELF|parametre_url{aide,menu_v})]" title="" class="ajax">Menus verticaux </a>
+	[(#ENV{aide}|?{' '})#ENV{aide}
+   <INCLURE{fond=fonds/inc/aide/inc-help_menu_v}>
+   ]
+   </li>
+</ul>
+</div>]
+
+	<ul>
+	<li>
+	#SET{rapports, #ARRAY}
+   #SET{rapports, #GET{rapports}|array_merge{#ARRAY{1, fifi}}}  
+   #SET{rapports, #GET{rapports}|array_merge{#ARRAY{2, lulu}}}  
+   #SET{rapports, #GET{rapports}|array_merge{#ARRAY{3, dede}}}  
+ #FOREACH{ARRAY{rapports}}
+ </li>
+   <li>
+   #SET{compt,15}
+   <BOUCLE_ttest(CONDITION){si #GET{compt}|>{5}}>
+      #SET{compt, #EVAL{1-#GET{compt}}}
+
+</BOUCLE_ttest>
+#GET{compt}
+vrai
+</B_ttest>      
+faux#GET{compt}
+<//B_ttest>
+</li>
+<li>
+#FOREACH{CONFIG{tispipskelet_conf/sommaire}}
+</li>
+	</ul>
+
+<script type='text/javascript'>
+$(function() {
+  $('.boxy').boxy();
+});
+
+</script>
+
+[(#REM)
+#CFG_ARBO{tispipskelet_conf}
+]

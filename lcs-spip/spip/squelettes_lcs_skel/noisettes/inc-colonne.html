@@ -1,0 +1,10 @@
+		[(#CONFIG{lcs_skel_conf/affmenuv}|?{' '})
+			[(#CONFIG{lcs_skel_conf[/(#ENV{casier})]/pos_menu}|=={#ENV{colonne}}|?{' '})[(#CONFIG{lcs_skel_conf/type_menu}|?{[(#INCLURE{fond=noisettes/inc-#CONFIG{lcs_skel_conf/type_menu}})],[(#INCLURE{fond=noisettes/inc-rubriques})]})]]
+		]
+<BOUCLE_contenu-colonne(FOR){debut=1}{fin=10}{par 1}> 
+	[(#CONFIG{lcs_skel_conf[/(#ENV{casier})]/[ctn(#ENV{bloc})]_#COMPTEUR_BOUCLE}|oui)
+		 	[(#SET{ctn, [(#CONFIG{lcs_skel_conf[/(#ENV{casier})]/[ctn(#ENV{bloc})]_#COMPTEUR_BOUCLE})]})]
+	 	[(#SET{bloc,[(#ENV{bloc})]_#COMPTEUR_BOUCLE})]
+		 <div class="rubriques"><INCLURE{fond=noisettes/inc-#GET{ctn}}{casier=#ENV{casier}}{bloc=#GET{bloc}}{ajax}{env}></div>
+	]	
+</BOUCLE_contenu-colonne>

@@ -1,0 +1,62 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<BOUCLE_principale(ARTICLES){id_article}>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>#NOM_SITE_SPIP</title>
+<INCLURE{fond=noisettes/inc-head}>
+<script type="text/javascript" src="[(#CHEMIN{scripts/jquery.jcarousel.js})]"></script>
+<link rel="stylesheet" type="text/css" href="[(#CHEMIN{c/jquery.jcarousel.css})]" />
+<link rel="stylesheet" type="text/css" href="[(#CHEMIN{c/skin.css})]" />
+<script type="text/javascript" src="[(#CHEMIN{scripts/interface.js})]"></script>
+</head>
+<body>
+
+<div id="container" style="width:400px">
+	<div id="content" style="width:auto">
+	[(#REM) Fil d'Ariane ]
+		<div id="hierarchie"><a href="#URL_SITE_SPIP/"><:accueil_site:></a><BOUCLE_ariane(HIERARCHIE){id_article}> &gt; <a href="#URL_RUBRIQUE">[(#TITRE|couper{80})]</a></BOUCLE_ariane>[ &gt; (#TITRE|couper{80})]</div>
+		<dl class="bloc"> 
+			<dt class="cartouche">
+				#DEBUT_SURLIGNE
+				[<p class="[(#CONFIG{lcs_skel_conf/wiki/id_rub_wiki}|=={#ID_RUBRIQUE}|?{' '})#EDIT{surtitre}] surtitre">(#SURTITRE)</p>]
+				<span class="[(#CONFIG{lcs_skel_conf/wiki/id_rub_wiki}|=={#ID_RUBRIQUE}|?{' '})#EDIT{titre}] titre">#TITRE</span>
+				[<p class="[(#CONFIG{lcs_skel_conf/wiki/id_rub_wiki}|=={#ID_RUBRIQUE}|?{' '})#EDIT{soustitre}] soustitre">(#SOUSTITRE)</p>]
+				#FIN_SURLIGNE
+			</dt>
+			<dd class="date">
+				<em>[(#DATE|nom_jour) ][(#DATE|affdate)][, <:par_auteur:> (#LESAUTEURS)]</em>
+			</dd>
+			<dd class="tags">
+				<B_mots_art><img src="[(#CHEMIN{i/tag_blue.png})]" alt='' /><strong> Tags :</strong><BOUCLE_mots_art(MOTS) {id_article} {par titre} {", "}>
+					<a href="#URL_MOT" rel="tag">#TITRE</a>
+				</BOUCLE_mots_art>
+			</dd>
+			<dd>
+			#DEBUT_SURLIGNE
+			[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{200,200}|inserer_attribut{style,float:right})]
+			[<div class="[(#CONFIG{lcs_skel_conf/wiki/id_rub_wiki}|=={#ID_RUBRIQUE}|?{' '})#EDIT{chapo}] chapo">(#CHAPO)</div>]
+			<br class="nettoyeur" />
+			[<p class="[(#CONFIG{lcs_skel_conf/wiki/id_rub_wiki}|=={#ID_RUBRIQUE}|?{' '})#EDIT{hyperlien}] lien"><:voir_en_ligne:> : <a href="(#URL_SITE)" class="spip_out">[(#NOM_SITE|sinon{[(#URL_SITE|couper{80})]})]</a></p>]
+			[<div class="[(#CONFIG{lcs_skel_conf/wiki/id_rub_wiki}|=={#ID_RUBRIQUE}|?{' '})#EDIT{texte}] texte">(#TEXTE|image_reduire{520,0})</div>]
+			[<div class="notes">(#NOTES)</div>]
+			#FIN_SURLIGNE
+			</dd>
+			[<dd class="krousl">(#INCLURE{fond=noisettes/inc-carrousel}{id_article})</dd>]
+			[(#INCLURE{fond=noisettes/inc-jcarousel}{id_article})]
+			[(#INCLURE{fond=noisettes/inc-portfolio}{id_article})]
+			[(#INCLURE{fond=noisettes/inc-documents}{id_article})]
+			[<dd class="ps"><h2><:info_ps:></h2>#DEBUT_SURLIGNE<div class="#EDIT{ps}">(#PS)</div>#FIN_SURLIGNE</dd>]
+		</dl>
+	</div><!-- fin content -->
+	<div id="footer" style="width:auto">
+	--
+	</div>
+</div><!-- fin container -->
+</body>
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftycube.js})"></script>]
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftyLayout.js})"></script>]
+</html>
+</BOUCLE_principale>
+[(#INCLURE{fond=page404})]
+<//B_principale>

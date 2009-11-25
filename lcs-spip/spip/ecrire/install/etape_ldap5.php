@@ -1,0 +1,36 @@
+<?php
+
+/***************************************************************************\
+ *  SPIP, Systeme de publication pour l'internet                           *
+ *                                                                         *
+ *  Copyright (c) 2001-2009                                                *
+ *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
+ *                                                                         *
+ *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
+ *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
+\***************************************************************************/
+
+if (!defined("_ECRIRE_INC_VERSION")) return;
+include_spip('inc/headers');
+
+// http://doc.spip.org/@install_etape_ldap5_dist
+function install_etape_ldap5_dist()
+{
+	if (!@file_exists(_FILE_CONNECT_TMP))
+		redirige_url_ecrire('install');
+
+	ecrire_meta('ldap_statut_import', _request('statut_ldap'));
+
+	echo install_debut_html('AUTO', ' onload="document.getElementById(\'suivant\').focus();return false;"');
+
+	echo info_etape(_T('info_ldap_ok'), info_progression_etape(5,'etape_ldap','install/'), _T('info_terminer_installation'));
+
+	echo generer_form_ecrire('install', (
+		"<input type='hidden' name='etape' value='3' />" .
+		"<input type='hidden' name='ldap_present' value='true' />" 
+		. bouton_suivant()));
+
+	echo install_fin_html();
+}
+
+?>

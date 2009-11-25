@@ -1,0 +1,16 @@
+#CACHE{24*3600}
+[(#SET{idart,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]idart_art_bloc_[(#ENV{bloc})]})]})]
+[(#SET{titre_art,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]titre_art_bloc_[(#ENV{bloc})]})]})]
+[(#SET{overflow_art,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]overflow_art_bloc_[(#ENV{bloc})],hidden})]})]
+	<h3 class="menu-titre">Traduire</h3>
+	<dl id="art_bloc_#ENV{bloc}" class="demi_boite" style="[height:(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]haut_art_bloc_[(#ENV{bloc})]})px;][overflow-y:(#GET{overflow_art})]">
+		<dd style="margin:0 5px;padding:0;padding:0;margin:0;">
+<div id="google_translate_element" style="margin:0 auto;"></div><script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'fr',
+    includedLanguages: 'de,en,ar,be,bg,da,es,et,fi,fr,el,hu,ga,is,it,nl,no,pl,pt,ro,ru,cs'
+  }, 'google_translate_element');
+}
+</script><script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>		</dd>
+	</dl>

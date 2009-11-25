@@ -1,0 +1,128 @@
+LCS-SKEL 2.0
+
+Nouvelle version du LCS-SKEL.
+Suite aux demandes répétées et non moins justifiées de collègues, le squelette du Forum Spip-Lcs à fait peau neuve. 
+Entièrement reconstruit, il est maintenant présenté sous forme de plugin et, surtout, est entièrement (ou presque) paramétrable depuis l'espace privé de Spip. 
+
+
+
+CARACTERISTIQUES GENERALES ET TECHNIQUES
+Outre toutes les fonctions propres à Spip, Lcs-Skel vous offre d'autres possibilités de présentation propres au squelette. L'utilisation de ces fonctions se veut triviale, mais peut encore être simplifiée, nous attendons vos critiques, suggestions et propositions.
+- Affichage d'une annonce ou éditorial en page d'accueil
+- Possibilité de créer des Slides Show (S5 d'Eric Meyer, adaptation du portage sous spip de Pierre Bourgeois, Emmanuel Saint-James, Fil)
+- Possibilité de transformer une rubrique racine en wiki.
+- Carrousel d'images.
+- Affichage paramétrable depuis l'espace privé (couleurs, fonds de pages, position et affichage des blocs, largeurs de page, ...).
+- Présenté sous forme de plugin.
+- Valide XHTML 1.0 Strict.
+- Testé sous Firefox, IE7, iPhone, Opéra, Linx [bien sûr, des bugs sont à craindre sous IE6]
+Afin de satisfaire aux normes d'accessibilité, aucune police n'est définie par défaut, c'est celle du navigateur qui est appliquée. 
+Pour les mêmes raisons, il ne contient aucun raccourci clavier spécifique.
+
+CONFIGURATION
+Pour accéder aux pages de configuration du squelette, aller à l'espace privé , onglet "Configuration" sous-onglet "Configuration Lcs-Skel". vous arrivez sur la page de configuration générale. 
+Sur la gauche, l'accés à l'aide en ligne, les liens vers les autres pages de configuration du squelette. (ces liens peuvent s'afficher à droite en fonction de votre configuration d'écran)
+
+CONFIGURATION GENERALE : (tispipskelet_conf)
+
+Détail des champs : 
+- Largeur affichée (800, 1024, ou largeur de l'écran). Il est possible dans les prochaines versions d'ajouter d'autres largeurs si nécessaire. [FAIT]
+- Positon de la colonne latérale (à gauche ou à droite), contenant entre autres le menu et le mini-agenda. [FAIT]
+- Police de caractères. [FAIT]
+- Taille de la police de caractères. **N'est pas nécessaire puisque la taille de police est modifiable via les raccourcis clavier**[FAIT]
+- Adresse mèl du contact. [A FAIRE]
+- Nom et adresse mèl du responsable d'édition. [A FAIRE]
+- Le menu horizontal par onglets. Vous pouvez sélectionner les onglets que vous désirez afficher sur toutes les pages. [FAIT]
+-* Onglet Accueil -> Vers la page d'accueil
+-* Onglet Privé -> Vers la page de login et du profil de l'utilisateur [PAGE A CREER]
+-* Onglet Plan -> Vers le plan du site [PAGE A CREER]
+-* Onglet Contact -> Vers la page contact : Cette page contient un formulaire permettant de contacter non seulement l'administrateur du LCS, mais aussi les membres de l'équipe TICE conceptrice du squelette. Par défaut, l'administrateur du lcs répond à l'adresse admin@lcs.XXXXXXXXXXXX-ac-caen.fr. Vous pouvez spécifier une adresse différente dans la configuration du squelette. 
+-* Onglet Evénements -> Vers la page Evenements : Nécessite l'activation des plugins Agenda et Widget Calendrier [PAGE A CREER]
+-* Onglet Recherche -> Vers la page de recherche multicritères. (nécessite l'activation du plugin "Recherche Multi-Critères")[FAIT]
+-* Onglet Article -> Vers l'article de votre choix. Vous pouvez dans ce cas, modifier l'intitulé de l'onclet, notamment dans le cas au le titre de l'article est trop long. Si vous laissez le titre de l'article, celui-ci est tronqué à 16 caractères.
+-* Onglet Rubrique -> Vers la rubrique de votre choix. (même possibilités que pour l'onglet "Article")
+
+PAGE D'ACCUEIL :
+- Affichage des blocs jumeaux. [FAIT]
+- Contenu des blocs jumeaux. [FAIT]
+- Nombre d'articles affichés du plus récent au moins récent. [FAIT]
+- Contenu de la colonne latérale. [FAIT]
+
+PAGE RUBRIQUE : .
+- Affichage des blocs jumeaux. [FAIT]
+- Contenu des blocs jumeaux. [FAIT]
+- Nombre d'articles de la rubrique  affichés du plus récent au moins récent. [FAIT]
+- Contenu de la colonne latérale. [FAIT]
+
+PAGE ARTICLE :
+
+PAGE AUTEUR : 
+
+AUTRES PAGES : 
+
+COULEURS :
+- Les couleurs des différentes zones et des polices. (le nombre de couleurs est volontairement limité) [FAIT]
+
+IMAGE D'ARRIERE PLAN :
+- Choix de l'image d'arrière plan
+- Répétition de l'image
+- Alignement de l'image
+
+
+PLUGINS
+Un certain nombre de plugins sont livrés avec Lcs-Skel, certains sont indispensables, d'autres sont conseillés mais n'impactent pas le fonctionnement du squelette s'il ne sont pas validés.
+
+PLUGINS INDISPENSABLES
+Pour personnaliser l'affichage avec Lcs-Skel, il est indispensable d'avoir activé les plugins suivants CFG et Lcs-Skel (voir INSTALLATION). 
+Si vous n'activez pas Lcs-Skel, c'est le squelette de la dist de spip qui sera utilisé, et avec Lcs-Skel activé mais sans CFG, Lcs-Skel sera utilisé mais ne sera pas paramétrable.
+
+PLUGINS FACULTATIFS CONSEILLES
+
+BARRE TYPO et ENLUMINURES TYPOGRAPHIQUES : Indissociables l'un de l'autre, offrent des boutons supplémentaires de formatage de texte dans la page de saisie des articles, rubriques, forums...
+
+AGENDA et WIDGETS CALENDAR: Indissociables l'un de l'autre, au dela de l'affichage du calendrier, l'agenda vous permet de gérer des "évènements" (voir GESTION DES EVENEMENTS).
+
+RECHERCHE MULTI-CRITERES : Permet la recherche d'articles en sélectionnant plusieurs mots clé (voir l'article "De l'intérêt de l'utilisation des mots-clé"). De plus, ce plugin vous permet d'exclure des mots clé de l'affichage public. (l'utilité de cette fonction est de moins en moins grande, du fait de l'abandon de l'usage des mots-clé pour gerer l'affichage)
+
+ACCES GROUPE : Gestion de l'accés restreint à certaines parties du site, tant dans l'espace privé que dans l'espace public. 
+Ce plugin  doit faire l'objet d'une adaptation au Lcs pour l'import des statuts (prof, éléves et adminstratifs) et des groupes classes.
+
+FORMULAIRES ET TABLES : Création de formulaires et gestion des données.
+
+CRAYONS : Ce plugin permet de transformer votre squelette en wiki. Son utilisation est volontairement limitée à une rubrique de votre choix.[ A FAIRE ]
+
+COUTEAU SUISSE : Une multitude d'outils tant pour la gestion de l'espace privé que pour l'affichage public. Il est conseillé d'activer les "lames" suivantes : 
+
+SPIP-LISTES : Listes de diffusion internes et/ou publiques. Peut notamment être utilisée pour créer une news-letter.
+
+SESSION : Récupération des infos sur le visiteur connecté (Doit être activé pour l'utilisation de la page profil)
+
+DW2 : Gestion des documents et des téléchargements. Trés utile pour avoir une vue d'ensemble des documents et images, ainsi que les stats sur les documents téléchargés.
+
+PLUGINS GADGETS
+
+METEO : Le temps  dans votre région de votre région.
+
+Vous pouvez bien entendu installer vous même d'autres plugins Spip parmi les trés nombreux disponibles. Veillez toutefois à vous assurer de leur compatibilité avec les plugins installés.
+
+ORGANISATION ET CONTENU DES DOSSIERS
+
+- ACTION : VIDE
+- C : feuiles de style CSS
+- FONDS : fichiers de configuration du squelette (espace privé)
+- FORMULAIRES : formulaires de l'espace public
+- I : images du squelette
+- IMG_PACK : images du plugin
+- LANG : fichiers de lang (actuellement, uniquement le français)
+- NOISETTES : fichiers inclus
+- SCRIPTS : sripts javascript
+
+
+TODO
+
+Proposer une version 3 colonnes
+Proposer le wiki sur n'importe quel article par mot clé
+Adapter au multilinguisme (en cours)
+Créer la page événements (evenements.html)
+Créer la conf Wiki
+Modifier la fonction Podcast (noisettes/inc-podcast.html - podcast.html)

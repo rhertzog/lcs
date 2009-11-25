@@ -1,0 +1,14 @@
+<B_tt_breves>
+<div class="favoris">
+	<h2>Br&egrave;ves</h2>
+	<ul>
+		<BOUCLE_tt_breves(BREVES){par date}>
+			<li>
+				<a href="#URL_BREVE">[(#LOGO_RUBRIQUE||reduire_image{24,24}|sinon{<img src="#DOSSIER_SQUELETTE/i/bp_r1_c8_f2_24.gif" alt='' />}) ]#TITRE</a>
+				<span class="breve_info"> ([(#DATE|affdate)])</span>
+			</li>
+		</BOUCLE_tt_breves>
+	</ul>
+</div>
+</B_tt_breves>
+

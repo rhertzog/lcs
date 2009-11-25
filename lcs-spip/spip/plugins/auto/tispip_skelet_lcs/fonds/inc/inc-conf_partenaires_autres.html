@@ -1,0 +1,28 @@
+		[(#ENV{rang}|=={1}|oui) #SET{nomrang,er}]
+		[(#ENV{rang}|=={2}|oui) #SET{nomrang,nd}]
+		<ul>
+			<li class="ligne_200">
+					<label for="taille_titre">Nom du #ENV{rang} #GET{nomrang, &egrave;me} partenaire : </label>
+					<input type="text" name="partenr_#ENV{rang}" size="20" value="[(#CONFIG{tispipskelet_conf/credits/partenr_#ENV{rang}}|?{[(#CONFIG{tispipskelet_conf/credits/partenr_[(#ENV{rang})]})],''})]" />
+				</li>
+				<li class="ligne_200">
+					<label for="taille_titre">Site web : </label>
+					<input type="text" name="web_partenr_#ENV{rang}" size="20" value="[(#CONFIG{tispipskelet_conf/credits/web_partenr_#ENV{rang}}|?{#CONFIG{tispipskelet_conf/credits/web_partenr_#ENV{rang}},''})]" />
+				</li>
+				<li class="ligne_200">
+					<label for="logo_partenr_#ENV{rang}" class="com">Charger le logo :</label>
+					<input type="file" name="logo_partenr_#ENV{rang}" id="logo_partenr_#ENV{rang}" value="" size="20" style="width:45px" />
+					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{logo_partenr_#ENV{rang}})</span>]
+				</li>
+
+					[(#CONFIG{tispipskelet_conf/credits/partenr_#ENV{rang}}|?{' '})
+				<li class="ligne">
+					<h3>#ENV{rang} #GET{nomrang, &egrave;me} Partenaire</h3>
+					<dl>		
+						<dt>
+						[(#CFG_CHEMIN{tispipskelet_conf/credits/logo_partenr_#ENV{rang}}|image_reduire{100}) ]- #ENV{partenr_#ENV{rang}} -  #ENV{web_partenr_#ENV{rang}}
+						</dt>
+					</dl>
+				</li>
+					]
+			</ul>

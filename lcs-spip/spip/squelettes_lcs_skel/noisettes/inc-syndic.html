@@ -1,0 +1,32 @@
+#SET{nb_syndic,#CONFIG{lcs_skel_conf/sommaire/nb_syndic_#ENV{bloc}}}
+#SET{defil_syndic,#CONFIG{lcs_skel_conf/sommaire/defil_syndic_#ENV{bloc}}}
+#SET{haut_syndic,#CONFIG{lcs_skel_conf/sommaire/haut_syndic_#ENV{bloc}}}
+#SET{titre_syndic,#CONFIG{lcs_skel_conf/sommaire/titre_syndic_#ENV{bloc}}}
+		[(#REM) Affichage articles syndiques]
+<B_syndic>
+	<h3 class="menu-titre">[(#GET{titre_sites}|?{#GET{titre_syndic},Derniers articles syndiqu&eacute;s})]</h3>
+	<dl id="podcasts_#ENV{bloc}" class="demi_boite blocElement" style="margin:0;[height:(#GET{haut_syndic})px;]">
+		<BOUCLE_syndic(SYNDIC_ARTICLES){age<180} {par date}{inverse} {0,#GET{nb_syndic}}>
+			<dd style="padding:5px;margin:0;">
+				<a href="spip.php?page=sites" title="[Voir (#NOM_SITE|supprimer_tags|entites_html)]" class="spip_out">
+					[(#LOGO_SITE||image_reduire{16,16}|sinon{<img src="[(#CHEMIN{i/world_go.png})]" alt="[(#DESCRIPTIF|supprimer_tags|entites_html)]" /> }) ]
+					[(#NOM_SITE|supprimer_tags) - ]
+				</a>
+				<a href="#URL_ARTICLE" class="spip_out" style="display:block">[(#TITRE|supprimer_tags)]</a>
+				<small>[(#DATE|affdate_court)][, <:par_auteur:> (#LESAUTEURS|retour_rss)][ - (#TAGS|afficher_enclosures)][ &mdash; <em>(#TAGS|afficher_tags)</em>]</small>
+			[<span style="display:block;font-size:.95em">(#DESCRIPTIF|retour_rss|couper{50}|image_reduire{36})</span>]
+			</dd>
+		</BOUCLE_syndic>
+	</dl>
+[(#GET{defil_syndic}|?{' '})
+<script type="text/javascript">
+$('#podcasts_#ENV{bloc}').cycle({ 
+	fx:     'scrollUp', 
+    timeout: 6000, 
+    pause:   1 ,
+	delay:  -3000[,
+ 	height: (#GET{haut_syndic})]
+	});
+</script>
+]
+</B_syndic>

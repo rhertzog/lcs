@@ -1,0 +1,26 @@
+#CACHE{24*3600}
+[(#REM) Blocs jumeaux - page accueil uniquement - A adapter pour toutes les pages
+             Twin Blocks - Only for home page - to adapt to all pages]
+
+(#SET{ctnblocg,[(#CONFIG{lcs_skel_conf/[(#ENV{casier})/]ctnblocg[(#ENV{bloc})]})]})]
+[(#SET{ctnblocd,[(#CONFIG{lcs_skel_conf/[(#ENV{casier})/]ctnblocd[(#ENV{bloc})]})]})]
+[(#CONFIG{lcs_skel_conf/[(#ENV{casier})/]posblocjumo[(#ENV{bloc})]}|=={#ENV{posblocj}}|?{' '})
+			[(#GET{ctnblocg}|=={mots}|?{
+				[(#SET{ctnblocg,[(#CONFIG{lcs_skel_conf/[(#ENV{casier})/]type_mots_bj_g[(#ENV{bloc})]})]})]
+			})]
+			[(#GET{ctnblocd}|=={mots}|?{
+				[(#SET{ctnblocd,[(#CONFIG{lcs_skel_conf/[(#ENV{casier})/]type_mots_bj_d[(#ENV{bloc})]})]})]
+			})]
+				<ul [(#GET{ctnblocg}|=={cycle}|?{id="intro_ifade",[(#CONFIG{lcs_skel_conf/[(#ENV{casier})/]ctnblocd#ENV{bloc}}|=={cycle}|?{id="intro_ifade",id="intro"})]})]>
+					[(#GET{ctnblocg}|?{' '})
+						<li id="boite_g"[(#GET{ctn_bloc_g#ENV{bloc}}|=={cycle}|?{' '}) style="background:transparent;"]>
+							<INCLURE{fond=noisettes/inc-#GET{ctnblocg}}{bloc=bj_g}{casier=#ENV{casier}}{id_rubrique}{env}{ajax}>
+						</li>
+					]
+					[(#GET{ctnblocd}|?{' '})
+						<li id="boite_d"[(#GET{ctn_bloc_d#ENV{bloc}}|=={cycle}|?{' '}) style="background:transparent;"]>
+							<INCLURE{fond=noisettes/inc-#GET{ctnblocd}}{bloc=bj_d}{casier=#ENV{casier}}{id_rubrique}{env}{ajax}>
+						</li>
+					]
+				</ul>
+]

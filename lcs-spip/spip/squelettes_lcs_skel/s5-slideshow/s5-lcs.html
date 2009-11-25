@@ -1,0 +1,58 @@
+#SET{s5,#DOSSIER_SQUELETTE/ui}
+<BOUCLE_s5(RUBRIQUES){id_rubrique}>
+[(#CONFIG{lcs_skel_conf/s5/theme_s5_#ID_RUBRIQUE}|?{#SET{ui,#CONFIG{lcs_skel_conf/s5/theme_s5_#ID_RUBRIQUE}},#SET{ui,yatil}})]
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
+<html dir="#LANG_DIR" lang="#LANG">
+<head>
+<title>[(#TITRE|textebrut) - ][(#NOM_SITE_SPIP|textebrut)]</title>
+[<meta name="description" content="(#INTRODUCTION|couper{150}|textebrut)" />]
+<INCLURE{fond=inc-head}>
+[(#REM) Lien vers le flux RSS de la rubrique ]
+<link rel="alternate" type="application/rss+xml" title="<:syndiquer_rubrique:>" href="[(#URL_PAGE{backend}|parametre_url{id_rubrique,#ID_RUBRIQUE})]" />
+
+
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+
+<link rel="stylesheet" href="#GET{s5}/#GET{ui}/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="#GET{s5}/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="#GET{s5}/default/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="#GET{s5}/default/opera.css" type="text/css" media="projection" id="operaFix" />
+<!-- S5 JS -->
+<script src="#GET{s5}/default/slides.js" type="text/javascript"></script>
+<style type='text/css' media="all">
+.slide h1 {text-transform: none} // corrige les majuscules forcees de S5
+</style>
+</head>
+<body>
+<div id='page'>
+[(#REM) layout pas affiche en mode impression]
+<div class="layout">
+	<div id="controls"><!-- DO NOT EDIT --></div>
+	<div id="currentSlide"><!-- DO NOT EDIT --></div>
+	<div id="header"></div>
+	<div id="footer">
+		<h1>S5 Testbed</h1>
+		<h2>Your computer &#8226; Today's date</h2>
+	</div>
+</div>[(#REM) layout 
+
+<div class="presentation">
+		[(#REM) suivantes = les articles ]
+		<BOUCLE_slides(ARTICLES){id_rubrique}{par num titre, titre}>
+		<div class="slide">
+			<h1>#TITRE</h1>
+			[<span style="float:right; width:[(#LOGO_ARTICLE||extraire_attribut{width})]px;">(#LOGO_ARTICLE|right)</span>]
+			[(#TEXTE||image_reduire{500}|class_incrementer|paragrapher|sinon{&nbsp;})]
+			[<div class="notes">(#NOTES)</div>]
+			[<div class="notes">(#NOTES)</div>]
+		</div>
+		</BOUCLE_slides>
+</div>
+</div>
+
+</body>
+</html>
+</BOUCLE_s5>

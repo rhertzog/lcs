@@ -1,0 +1,31 @@
+<BOUCLE_test_for(FOR){debut=1}{fin=10}{par 1}>
+	[(#SET{ctnbloc, [(#CONFIG{tispipskelet_conf/[(#ENV{id})/]ctn[(#ENV{bloc})][_(#COMPTEUR_BOUCLE)]})]})]
+	[(#SET{bloc, [(#ENV{bloc})]_#COMPTEUR_BOUCLE})]
+[(#REM)
+	- [(#GET{ctnbloc})]<br />
+ 	- [(#GET{bloc})]<br />
+  	- [(#GET{contenu})]<br />
+ 	- [(#GET{titre})]<br />
+]
+
+[(#COMPTEUR_BOUCLE|=={1}|oui)
+	[(#SET{contenu, ctn#GET{bloc}})]
+	[(#SET{titre, Rang#COMPTEUR_BOUCLE})]
+	<li style="margin:0;padding:10px 0 0 0;">
+		<INCLURE{fond=fonds/inc/inc-select_choix_contenu_bloc}{contenu=#GET{contenu}}{titre=#GET{titre}}{env}{ajax}>
+	</li>
+]
+[(#GET{ctnbloc}|oui)
+	<li style="margin:0;padding:0 0 10px 0; border:0px;">
+		<span id="help_menu_dep" class="help_conf" style="font-size:.9em;font-weight:normal;">&nbsp;&Eacute;diter&nbsp;</span>
+		<div class="help_text">
+			<INCLURE{fond=fonds/inc/inc-conf_contenu_noisette}{bloc=#GET{bloc}}{ctnbloc=#GET{ctnbloc}}{env}{ajax}>
+		</div>
+	</li>
+	[(#SET{contenu, ctn[(#ENV{bloc})]_[(#EVAL{1+#COMPTEUR_BOUCLE})]})]
+	[(#SET{titre, Rang[(#EVAL{1+#COMPTEUR_BOUCLE})]})]
+	<li style="margin:0;padding:10px 0;">
+		<INCLURE{fond=fonds/inc/inc-select_choix_contenu_bloc}{contenu=#GET{contenu}}{titre=#GET{titre}}{env}{ajax}>
+	</li>
+]
+</BOUCLE_test_for>

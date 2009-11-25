@@ -1,0 +1,38 @@
+[(#ID_RUBRIQUE|?{#SET{idrub,#ID_RUBRIQUE},#SET{idrub,0}})]
+[(#SET{titre_mots,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]titre_mots[_(#ENV{bloc})]})]})]
+	<h3 class="menu-titre">[(#GET{titre_mots,[(#ID_GROUPE|?{Autres groupes de mots,<:mots_clefs:>})]})]</h3>
+<B_groupes>
+  <dl class="acc_list" id="acc">
+	<BOUCLE_groupes(GROUPES_MOTS){par num titre}{par titre}{!id_groupe ?}>
+				#SET{idrubric,#ID_RUBRIQUE}
+		<dt class="acc_head">[(#TITRE|supprimer_numero)]</dt>
+		<dd class="acc_body">
+			<BOUCLE_mots(MOTS){id_groupe}>
+				<B_mots_exclus><BOUCLE_mots_exclus(SPIP_RMC_MOTS_EXCLUS){id_rubrique=#GET{idrubric}}{id_mot_exclu=#ID_MOT}> </BOUCLE_mots_exclus></B_mots_exclus>
+				<a href="#URL_PAGE{mot}&amp;id_mot=#ID_MOT&amp;id_rubrique=#GET{idrubric}" title="Voir les articles liés au mot-clé #TITRE">
+					[(#LOGO_MOT|!=''|?{[(#LOGO_MOT||image_reduire{16,16} ) ],<img src="[(#CHEMIN{i/tag_blue.png})]" alt="mot-clé" />})] 
+					[(#TITRE|supprimer_numero)]
+				</a>
+				<//B_mots_exclus>
+			</BOUCLE_mots>
+		</dd>
+ 	</BOUCLE_groupes>	
+ </dl>     
+<script type="text/javascript">
+      $(document).ready(function() {
+        $('dl.acc_list> dd').hide(); 
+        $('dl.acc_list> dt').click(function() {
+          var $nextDiv = $(this).next();
+          var $visibleSiblings = $nextDiv.siblings('dd:visible');
+       
+          if ($visibleSiblings.length ) {
+            $visibleSiblings.slideUp('slow', function() {
+              $nextDiv.slideToggle('slow');
+            });
+          } else {
+             $nextDiv.slideToggle('slow');
+          }
+        });
+      });
+</script>
+</B_groupes>

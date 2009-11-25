@@ -1,0 +1,193 @@
+.formulaire_tispip li {
+padding:4px 10px 3px 130px;
+}
+.formulaire_erreur {
+}
+p.formulaire_message, p.message {
+	background:#336699;
+	color:#cccccc;
+	margin:5px 20px;
+	padding:5px;
+	font-weight:bold;
+}
+.formulaire_spip li label{
+	font-weight:normal;
+}
+
+li.ligne{
+	padding-left:0;
+}
+li.ligne label{
+	margin-left:0;
+	width:90%;
+}
+li.ligne_70{
+/*	background:red; */
+	padding-left:70px;
+}
+li.ligne_70 label{
+	margin-left:-65px;
+	width:65px;
+}
+li.ligne_80{
+/*	background:red; */
+	padding-left:80px;
+}
+li.ligne_80 label{
+	margin-left:-75px;
+	width:75px;
+}
+li.ligne_100{
+/*	background:red; */
+	padding-left:100px;
+}
+li.ligne_100 label{
+	margin-left:-95px;
+	width:95px;
+}
+li.ligne_120{
+/*	background:red; */
+	padding-left:120px;
+}
+li.ligne_120 label{
+	margin-left:-115px;
+	width:115px;
+}
+li.ligne_140{
+/*	background:red; */
+	padding-left:140px;
+}
+li.ligne_140 label{
+	margin-left:-135px;
+	width:135px;
+}
+li.ligne_160{
+/*	background:red; */
+	padding-left:160px;
+}
+li.ligne_160 label{
+	margin-left:-155px;
+	width:155px;
+}
+li.ligne_180{
+/*	background:red; */
+	padding-left:180px;
+}
+li.ligne_180 label{
+	margin-left:-175px;
+	width:175px;
+}
+li.ligne_200{
+/*	background:red; */
+	padding-left:200px;
+}
+li.ligne_200 label{
+	margin-left:-195px;
+	width:195px;
+}
+li.ligne_220{
+/*	background:red; */
+	padding-left:220px;
+}
+li.ligne_220 label{
+	margin-left:-215px;
+	width:215px;
+}
+li.ligne_240{
+/*	background:red; */
+	padding-left:240px;
+}
+li.ligne_240 label{
+	margin-left:-235px;
+	width:235px;
+}
+li.ligne_280{
+/*	background:orange; */
+	padding-left:280px;
+}
+li.ligne_280 label{
+	margin-left:-275px;
+	width:275px;
+}
+li.demi{
+	margin:0;
+	padding:10px 0;
+	float:left;
+	clear:none;
+	width:50%;
+}
+li.demi label{
+	float:left;
+	margin:0;
+	padding:0;
+	width:auto;
+	text-align:right;
+}
+li.tiers{
+	margin:0;
+	padding:5px 0;
+	float:left;
+	clear:none;
+	width:33%;
+	border-right:1px solid #aaa;
+}
+li.tiers label{
+	float:left;
+	margin:0;
+	padding:0;
+	width:auto;
+}
+.tspip_formo {
+background-color:#FFFFFF;
+background-position:center bottom;
+border:1px solid #97D2E1;
+display:block;
+float:none;
+font-size:12px;
+margin-top:0;
+padding:3px;
+width:100%;
+}
+div.3boutons{
+	text-align:center;
+	margin-bottom:15px;
+}
+
+div.cadre_padding span.item_nom{
+	float:left;
+	display:block;
+	clear:both;
+	width:40%;
+}
+div.cadre_padding span.item_valeur{
+	float:left;
+	display:block;
+	width:55%;
+}
+div.annonce{background:#fff;border:1px solid #999;padding:5px 10px;margin:0 10px 5px;}
+
+a.boxy2thickbox{
+	display:block; float:right;width:24px;height:19px;background:transparent url(images/aide-cdt2_24.png) no-repeat center center;text-decoration:none;
+}
+#TB_title{background:#444444;color:#fefefe;font-zize:1.1em;}
+#TB_ajaxWindowTitle{font-size:1.3em;}
+#TB_closeAjaxWindow{}
+#TB_closeWindowButton{background:url(images/cross.png) no-repeat right center;padding-right:20px;}
+
+/*Vielles classes*/
+div.cadre_padding ul{padding-left:.5em}
+.help_conf,.help_close{font-weight:bold;float:right;cursor:pointer;cursor:hand; font-size:1.2em;border:1px solid #777;-moz-border-radius:3px}
+.help_conf{background:#fff}
+.help_conf_b{background:#369;color:#fff}
+.help_close{margin:0 0 5px 5px;color:#000;background:#ddd}
+.demi{width:45%;padding:3px O}
+.gauche{float:left}
+.droite{float:right}
+.border_g{border-left:1px solid #ccc}
+.border_d{border-right:1px solid #ccc}
+.border_h{border-top:1px solid #ccc}
+.border_b{border-bottom:1px solid #ccc}
+.label_couleur{width:55%;float:left;border-bottom:1px solid #ccc}
+span.demi_label{width:40%;float:left;border-bottom:1px solid #ccc}
+.leon{clear:both}
+

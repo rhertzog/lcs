@@ -1,0 +1,94 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg">
+
+	<form method="post" action="#SELF" style="margin-bottom:25px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+			[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+			<fieldset>
+				<legend><:tispipskelet:largeur_page:></legend>
+				<ul>
+					<li class="ligne_240">
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=273&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title='Aide : Largeur de la page'>&nbsp;</a>
+						<label for="larg_page"><:tispipskelet:selectionner_largeur:></label>
+						<select name="larg_page" style="width:100px;" id="larg_page" class="fondo">
+							<option value=""[(#ENV{larg_page}|?{'',selected="selected"})]>  </option>
+							<option value="800"[ (#ENV{larg_page}|=={800}|?{selected="selected",''})]> 800 <:tispipskelet:pixels:> </option>
+							<option value="1024"[ (#ENV{larg_page}|=={1024}|?{selected="selected",''})]> 1024 <:tispipskelet:pixels:> </option>
+							<option value="tout"[ (#ENV{larg_page}|=={tout}|?{selected="selected",''})]> <:tispipskelet:largeur_ecran:> </option>
+						</select>
+					</li>
+				</ul>
+			</fieldset>
+			<fieldset>
+				<legend><:tispipskelet:nb_colonnes:></legend>
+				<ul>
+					<li class="demi">
+						<label for="nb_cols2"><:tispipskelet:2_colonnes:></label>
+						<input type="radio" name="nb_cols" value="2" id="nb_cols2" [(#ENV{nb_cols}|=={2}|?{checked='checked',''})] />
+					</li>
+					<li class="demi" style="width:48%">
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=274&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title='Aide : Nombre de colonnes'>&nbsp;</a>
+						<label for="nb_cols3"><:tispipskelet:3_colonnes:></label>
+						<input type="radio" name="nb_cols" value="3" id="nb_cols3" [(#ENV{nb_cols}|=={3}|?{checked='checked',''})] />
+					</li>
+					<li id="posColDefaut"></li>
+				</ul>
+			</fieldset>
+		 	<fieldset id="posblocs">
+				<legend><:tispipskelet:position_colonne:></legend>
+					<ul>
+						<li class="demi">
+						<label for="posColLeft"><:tispipskelet:a_gauche:></label>
+						<input type="radio" name="position" value="left" [(#ENV{position}|=={left}|?{checked="checked",''})] id="posColLeft" />
+					</li>
+					<li class="demi">
+						<label for="posColRight"><:tispipskelet:a_droite:></label>
+						<input type="radio" name="position" value="right" [(#ENV{position}|=={right}|?{checked="checked",''})] id="posColRight" />
+					</li>
+				</ul>
+				<script type="text/javascript"><!--
+						$('#nb_cols2')
+						.bind('change', function() {
+					            $('#posblocs').slideDown('slow');
+								$('#test_pos_menu').empty();
+						})
+						if ($('#nb_cols2:checked').length == 0)
+							$('#posblocs').hide();
+					
+						$('#nb_cols3')
+						.bind('change', function() {
+					            $('#posblocs').slideUp('slow');
+								$('#posColDefaut').append('<input  name="position" type="hidden" value="" />');
+								 $('#posColLeft').removeAttr('checked');
+								 $('#posColRight').removeAttr('checked');
+					})
+						if ($('#nb_cols3:checked').length != 0)
+							$('#posblocs').hide();
+							$('#posColDefaut').append('<input  name="position" type="hidden" value="" />');
+							
+				// --></script>
+			</fieldset>
+			 [(#ENV{nb_cols}|=={2}|?{' '})
+			]		
+			
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			
+			<div style="text-align:center;margin-bottom:15px;">
+				<input type="submit" name="_cfg_ok" class="fondo" value="<:cfg:OK:>" />
+				<input type="reset" class="fondo" value="<:cfg:Reset:>" />
+				<input type="submit" class="fondo" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

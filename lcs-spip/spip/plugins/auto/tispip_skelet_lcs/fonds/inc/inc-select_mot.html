@@ -1,0 +1,6 @@
+							<select name="#ENV{mot}" id="#ENV{mot}" style="width:120px">
+								<option value=""[ (#ENV{#ENV{mot}}|?{'',selected="selected"})]>  </option>
+								<BOUCLE_mot_edito(MOTS){par titre}{tout}>
+								<option value="[(#TITRE|supprimer_numero)]"[ (#ENV{#ENV{mot}}|=={[(#TITRE|supprimer_numero)]}|?{selected="selected",''})]> [(#TITRE|supprimer_numero)] </option>
+								</BOUCLE_mot_edito>
+							</select>

@@ -1,0 +1,27 @@
+[<p class='formulaire_ok'>(#ENV*{message_ok})</p>]
+[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+[(#EDITABLE|oui)
+	<form action='#ENV{action}' method='post'>
+		#ACTION_FORMULAIRE{#ENV{action}}
+		<ul>
+			<li style="padding-left:130px;margin-bottom:10px;border-bottom:1px solid #ccc;">
+				<label for='nom_contact' style="margin-left:-125px;width:125px;float:left;">Votre nom</label>
+				[<span class='erreur'>(#ENV**{erreurs}|table_valeur{nom_contact})</span>]
+				<input type='text' name='nom_contact' id='nom_contact' value='#ENV{nom_contact}' size="30" />
+			</li>
+			<li style="padding-left:130px;margin-bottom:10px;border-bottom:1px solid #ccc;">
+				<label for='email_contact' style="margin-left:-125px;width:125px;float:left;">Votre email</label>
+				[<span class='erreur'>(#ENV**{erreurs}|table_valeur{email_contact})</span>]
+				<input type='text' name='email_contact' id='email_contact'  value='#ENV{email_contact}' size="30" />
+			</li>
+			<li style="padding-left:130px;margin-bottom:10px;border-bottom:1px solid #ccc;">
+				<label for='message_contact' style="margin-left:-125px;width:125px;float:left;">Votre message</label>
+				[<span class='erreur'>(#ENV**{erreurs}|table_valeur{message_contact})</span>]
+				<textarea name='message_contact'  id='messsage_contact' rows="7" cols="15">#ENV{message_contact}</textarea>
+			</li>
+			<li style="text-align:center">
+				<input type='submit' name='ok' value='ok' style="margin:auto;"/>
+			</li>
+		</ul>
+	</form>
+]

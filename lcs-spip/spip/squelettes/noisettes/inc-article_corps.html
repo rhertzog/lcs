@@ -1,0 +1,56 @@
+[(#SET{wiki,[(#CONFIG{tispipskelet_conf/articles/afficher_wiki_#ID_ARTICLE})]})]
+<BOUCLE_article_corps(ARTICLES){id_article}>
+		<dl class="bloc"> 
+			<dt class="cartouche">
+				#DEBUT_SURLIGNE
+				[<p class="[(#GET{wiki}|=={1}|oui)#EDIT{surtitre}] surtitre">(#SURTITRE)</p>]
+				<span class="[(#GET{wiki}|=={1}|oui)#EDIT{titre}] titre">[(#TITRE|supprimer_tags|supprimer_numero)]</span>
+				[<p class="[(#GET{wiki}|=={1}|oui)#EDIT{soustitre}] soustitre">(#SOUSTITRE)</p>]
+				#FIN_SURLIGNE
+			</dt>
+			<dd class="date">
+				<em>
+					.[(#CONFIG{tispipskelet_conf/articles/aff_datepubart}|?{'',' '})[:&nbsp;Publi&eacute; le (#DATE|nom_jour) ][(#DATE|affdate)]&nbsp;:]
+					[(#CONFIG{tispipskelet_conf/articles/aff_datemodart}|?{'',' '})[:&nbsp;Modifi&eacute; le (#DATE_MODIF|nom_jour) ][(#DATE_MODIF|affdate)]&nbsp;:]
+					[(#CONFIG{tispipskelet_conf/articles/aff_auteurart}|?{'',' '})[:&nbsp;<:par_auteur:> (#LESAUTEURS)&nbsp;:]].
+				</em>
+			</dd>
+			<B_mots_art>
+			<dd class="tags">
+				<img src="[(#CHEMIN{i/tag_blue.png})]" alt='' /><strong> Tags :</strong><BOUCLE_mots_art(MOTS) {id_article} {par titre} {", "}>
+					<a href="#URL_MOT" rel="tag">[(#TITRE|supprimer_tags)]</a>
+				</BOUCLE_mots_art>
+			</dd>
+			</B_mots_art>
+				[(#REM) Inclure le modele des liens de traductions 
+				#MODELE{article_traductions}
+				]
+			<dd class="corpart">
+			#DEBUT_SURLIGNE
+			[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{200,200}|inserer_attribut{style,float:right})]
+			[<div class="[(#GET{wiki}|=={1}|oui)#EDIT{chapo}] chapo">(#CHAPO)</div>]
+			
+				[<div class="[(#GET{wiki}|=={1}|oui)#EDIT{texte}] texte" [(#CONFIG{tispipskelet_conf/articles/textart_justify}|oui) style="text-align: justify;" ]>(#TEXTE|image_reduire{520,0})</div>]
+			
+			[<div class="notes">(#NOTES)</div>]
+			[<p class="[(#GET{wiki}|=={1}|oui)#EDIT{hyperlien}] lien"><:voir_en_ligne:> : <a href="(#URL_SITE)" class="spip_out">[(#NOM_SITE|sinon{[(#URL_SITE|couper{80})]})]</a></p>]
+			#FIN_SURLIGNE
+			</dd>
+			[(#INCLURE{fond=noisettes/inc-carrousel}{id_article})]
+			[(#INCLURE{fond=noisettes/inc-jcarousel}{id_article})]
+			[(#INCLURE{fond=noisettes/inc-portfolio}{id_article})]
+
+			[(#REM) Autres documents joints a l'article ou a la rubrique]
+			[(#CONFIG{tispipskelet_conf/articles/afficher_docs_#ID_ARTICLE}|!={0}|?{' '})
+				[(#INCLURE{fond=noisettes/inc-documents}{id_article})]
+			]			
+			
+			[<dd class="[(#GET{wiki}|=={1}|oui)#EDIT{ps}] ps"><h2><:info_ps:></h2>#DEBUT_SURLIGNE<div class="#EDIT{ps}">(#PS)</div>#FIN_SURLIGNE</dd>]
+			[(#PARAMETRES_FORUM|oui)<div class="forum-repondre-message">
+				<INCLURE{fond=noisettes/inc-repondre_article}{ajax}{id_article}{env}{texte=article}>
+			</div> ]
+				[(#REM) Forum de l'article ]
+				<a href="#forum" name="forum" id="forum"></a>
+				<INCLURE{fond=noisettes/inc-forum}{id_rubrique}{id_article}{env}{ajax} />
+		</dl>
+</BOUCLE_article_corps>

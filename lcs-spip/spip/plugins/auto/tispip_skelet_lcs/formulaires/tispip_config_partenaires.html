@@ -1,0 +1,60 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=mentions -->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg">
+	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+	
+	<form method="post" action="#SELF">
+		<div style="margin-bottom:25px;"> #ACTION_FORMULAIRE{#SELF} 
+	<fieldset>
+		<legend>Partenaires </legend>
+		<ul>
+			<li class="ligne">
+					<label>
+					<input type="checkbox" name="minist_en" value="oui" [checked="(#ENV{minist_en}|?{checked})"] id="minist_en" />Minist&egrave;re de l&rsquo;&eacute;ducation nationale</label>
+			</li>
+			<li class="ligne">
+					<label>
+					<input type="checkbox" name="ac_caen" value="oui" [checked="(#ENV{ac_caen}|?{checked})"] id="ac_caen" />Acad&eacute;mie de Caen</label>
+			</li>
+			<li class="ligne">
+					<label>
+					<input type="checkbox" name="crdp_bn" value="oui" [checked="(#ENV{crdp_bn}|?{checked})"] id="crdp_bn" />CRDP de Basse Normandie</label>
+			</li>
+			<li class="ligne">
+					<label>
+					<input type="checkbox" name="crbn" value="oui" [checked="(#ENV{crbn}|?{checked})"] id="crbn" />Conseil R&eacute;gional de Basse-Normandie</label>
+				</li>
+			<li class="ligne">
+					<label>
+					<input type="checkbox" name="calvados" value="oui" [checked="(#ENV{calvados}|?{checked})"] id="calvados" />D&eacute;partement du Calvados</label>
+			</li>
+			<li class="ligne">
+				<div class="labels_cfg_tispipskelet">
+					<label>
+					<input type="checkbox" name="manche" value="oui" [checked="(#ENV{manche}|?{checked})"] id="manche" />D&eacute;partement de la Manche</label>
+			</li>
+			<li class="ligne">
+					<label>
+					<input type="checkbox" name="orne" value="oui" [checked="(#ENV{orne}|?{checked})"] id="orne" />D&eacute;partement de l&rsquo;Orne</label>
+			</li>
+		</ul>
+	</fieldset>
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

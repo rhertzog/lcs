@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>#NOM_SITE_SPIP - Abonnement</title>
+[<meta name="description" content="(#DESCRIPTIF_SITE_SPIP|couper{150}|textebrut)" />]
+<INCLURE{fond=noisettes/inc-head}>
+</head>
+<body>
+	<div id="grand_container">
+		<div id="header">
+			[(#INCLURE{fond=noisettes/inc-entete})]
+			[(#INCLURE{fond=noisettes/inc-menuonglets}{contact=activelink})]
+		</div>
+		<div id="container">
+			[(#CONFIG{tispipskelet_conf/affmenuh}|?{' '})
+				[(#INCLURE{fond=noisettes/inc-menu-horiz})]
+			]
+			<div  id="content">
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			<div id="troiscols">
+		]
+		
+			[(#REM) Grande boite edito	]
+				<dl class="bloc">
+					<dt class="annonce">
+						S'abonner à la newsletter
+					</dt>		
+					<dd class="annonce">
+						<div class='cadre'>
+					
+							[(#ENV{d}|?{'',' '})
+							]
+							#FORMULAIRE_ABONNEMENT
+							<br />
+							[(#ENV{d}|?{' ',''})
+							]
+							#FORMULAIRE_MODIF_ABONNEMENT
+						</div>
+					</dd>
+				</dl>
+
+				[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+					</div>[(#REM)troiscols]
+				<div id="side2">
+					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}{casier=sommaire}>
+				</div>[(#REM)side2]
+				]
+			</div>[(#REM)content]
+			<div id="side">
+				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}{casier=sommaire}>
+			</div>[(#REM)side]
+					
+			<div id="clear_copy"></div>
+		</div>[(#REM)container]
+	</div>[(#REM)grand_container]
+	
+	<div id="footer">
+		[(#INCLURE{fond=noisettes/inc-pied})]
+	</div>[(#REM) footer]
+	
+	[(#INCLURE{fond=noisettes/inc-copy})]
+	
+	[(#REM) appel du js les coins arrondis et les colonnes]
+	[<script type="text/javascript" src="(#CHEMIN{scripts/niftycube.js})"></script>]
+	[<script type="text/javascript" src="(#CHEMIN{scripts/niftyLayout.js})"></script>]
+	
+</body>
+</html>

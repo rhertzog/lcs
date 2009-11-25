@@ -1,0 +1,16 @@
+		[(#REM) Affichage des podcasts]
+	<h3 class="menu-titre">Derniers podcasts</h3>
+	<dl id="podcasts" class="demi_boite">
+		<BOUCLE_syndic(SYNDIC_ARTICLES){id_syndic} {age<180} {par date}{inverse} {0,1}>
+			<dt><a href="#URL_ARTICLE" class="spip_out">#TITRE</a>
+				
+				<small>[(#TAGS|afficher_enclosures)][(#DATE|affdate_court)][, <:par_auteur:> (#LESAUTEURS)][ &mdash; <em>(#TAGS|afficher_tags)</em>]</small>
+			</dt>
+			[<dd>(#DESCRIPTIF|couper{50}|image_reduire{100})
+			</dd>]
+		</BOUCLE_podcast></B_podcast>
+		<dt>
+		Aucun site syndiqu&eacute; dans cette rubrique
+		</dt>
+	<//syndic>
+	</dl>

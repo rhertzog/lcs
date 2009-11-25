@@ -1,0 +1,15 @@
+[(#REM)articles les plus populaires]
+#SET{nb_artspopulr,#CONFIG{lcs_skel_conf/sommaire/nb_arts_populr_#ENV{bloc}}}
+#SET{defil_artspopulr,#CONFIG{lcs_skel_conf/sommaire/defil_arts_populr_#ENV{bloc}}}
+#SET{haut_artspopulr,#CONFIG{lcs_skel_conf/sommaire/haut_arts_populr_#ENV{bloc}}}
+#SET{titre_artspopulr,#CONFIG{lcs_skel_conf/sommaire/titre_arts_populr_#ENV{bloc}}}
+
+<B_hitparade>
+<h3 class="menu-titre">[(#GET{titre_sites}|?{#GET{titre_sites},Vous avez aim&eacute;})]</h3>
+	<dl id="populr_#ENV{bloc}" class="demi_boite blocElement" style="margin:0;[height:(#GET{haut_artspopulr})px;]">
+<BOUCLE_hitparade(ARTICLES){par popularite}{inverse}{0,#GET{nb_artspopulr}}>
+<dd>
+<span style="border-bottom:1px solid #aaa;display:block"><a href="#URL_ARTICLE" title="[(#INTRODUCTION|couper{80}|texte_backend)]">#TITRE (popularité : #POPULARITE %)</a></span></dd>
+</BOUCLE_hitparade>
+</dl>
+</B_hitparade>

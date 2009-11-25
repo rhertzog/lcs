@@ -1,0 +1,46 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=couleurs -->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:25px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend>Couleur des blocs jumeaux</legend>
+				<ul>
+					 <li class="ligne_240">
+						<label for="color50">Fond de titre et cadre des blocs :</label>
+						<input type="text" name="color50" id="color50"  class="palette" size="7" value="[(#ENV{color50}|?{#ENV{color50},#cccccc})]" />
+					</li>
+					 <li class="ligne_240">
+						<label for="color51">Titres des blocs :</label>
+						<input type="text" name="color51" id="color51"  class="palette" size="7" value="[(#ENV{color51}|?{#ENV{color51},#336699})]" />
+					</li>
+					 <li class="ligne_240">
+						<label for="color52">Fond de contenu des blocs:</label>
+						<input type="text" name="color52" id="color52"  class="palette" size="7" value="[(#ENV{color52}|?{#ENV{color52},#ffffff})]" />
+					</li>
+					 <li class="ligne_240">
+						<label for="color53">Textes des blocs :</label>
+						<input type="text" name="color53" id="color53"  class="palette" size="7" value="[(#ENV{color53}|?{#ENV{color53},#003366})]" />
+					</li>
+				</ul>
+			</fieldset>
+		 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

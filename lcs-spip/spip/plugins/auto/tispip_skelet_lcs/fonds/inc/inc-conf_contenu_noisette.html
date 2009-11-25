@@ -1,0 +1,238 @@
+[(#ENV{ctnbloc}|=={art_bloc}|?{[(#SET{titre_ctnbloc,article})][(#SET{idart,oui})][(#SET{intro,oui})][(#SET{long_intro,oui})][(#SET{afflogo,oui})][(#SET{haut,oui})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={breves}|?{[(#SET{titre_ctnbloc, br&egrave;ves})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{long_intro,oui})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={sites}|?{[(#SET{titre_ctnbloc,sites})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{long_intro,oui})][(#SET{rub,oui})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={syndic}|?{[(#SET{titre_ctnbloc,articles syndiqu&eacute;s})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={mots}|?{[(#SET{titre_ctnbloc,mots-cl&eacute;})][(#SET{conf,tout})][(#SET{confmots,oui})][(#SET{haut,oui})]})]
+[(#ENV{ctnbloc}|=={messages}|?{[(#SET{titre_ctnbloc,messages})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={auteurs}|?{[(#SET{titre_ctnbloc,auteurs})][(#SET{nb,oui})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={cyclart}|?{[(#SET{titre_ctnbloc,articles})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{long_intro,oui})][(#SET{afflogo,oui})][(#SET{conf,tout})]})]
+  [(#REM) A mettre ajour]
+[(#ENV{ctnbloc}|=={arts_rub}|?{[(#SET{titre_ctnbloc,articles d&rsquo;une rubrique})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{idrub,oui})][(#SET{conf,tout})]})]  
+
+[(#ENV{ctnbloc}|=={arts_mot}|?{[(#SET{titre_ctnbloc,articles li&eacute;s &agrave; un mot-cl&eacute;})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{idmot,oui})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={arts_populr}|?{[(#SET{titre_ctnbloc,articles les plus populaires})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={cycle}|?{[(#SET{titre_ctnbloc,cycle d&rsquo;images})][(#SET{conf,cyclimg})]})]
+[(#ENV{ctnbloc}|=={perso}|?{[(#SET{titre_ctnbloc,bloc personnel})][(#SET{titre_ctnbloc,Liens perso.})][(#SET{url,oui})][(#SET{imgfile,oui})][(#SET{text,oui})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={meme-rub}|?{[(#SET{titre_ctnbloc,Articles de la m&ecirc;me rubrique})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={rss_podcast}|?{[(#SET{titre_ctnbloc,Rss et Podcast})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={abonnement}|?{[(#SET{titre_ctnbloc,Abonnement})][(#SET{conf,tout})][(#SET{haut,oui})]})]
+[(#ENV{ctnbloc}|=={agenda}|?{[(#SET{titre_ctnbloc,Agenda})][(#SET{conf,tout})][(#SET{affsirub,oui})]})]
+[(#ENV{ctnbloc}|=={formulaires}|?{[(#SET{titre_ctnbloc,Formulaires})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{haut,oui})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={recherche}|?{[(#SET{titre_ctnbloc,Recherche})][(#SET{conf,tout})]})]
+[(#ENV{ctnbloc}|=={prive}|?{[(#SET{titre_ctnbloc,Priv&eacute;})][(#SET{conf,tout})]})]
+
+[(#SET{titrebloc,[titre_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{nbbloc,[nb_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{defilbloc,[defil_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{hauteurbloc,[haut_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{idartbloc,[idart_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#REM) A mettre ajour]
+[(#SET{idrub,[idrub_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{introbloc,[intro_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{introlongbloc,[intro_long_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{idrubbloc,[idrub_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{idmotbloc,[idmot_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{textbloc,[text_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{textlienbloc,[textlien_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{urlbloc,[url_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{imgbloc,[img_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{afflogobloc,[afflogo_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{affsirubbloc,[affsirub_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+[(#SET{overflowbloc,[overflow_(#ENV{ctnbloc})_[(#ENV{bloc})]]})]
+
+[(#GET{conf}|=={tout}|?{' '})
+				<ul class="ligne voir_conf"  style="margin:5px;border:1px solid #aaa;background:#fff;font-size:.9em;color:#666;padding-bottom:0;">
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="[(#GET{titrebloc})]" style="margin:0;padding:0;width:150px;;float:left;clear:none;">
+							[Titre du bloc  (#GET{titre_ctnbloc})]
+						</label>
+							<input type="text" name="[(#GET{titrebloc})]" id="[(#GET{titrebloc})]" maxlength="50" value="[(#ENV{[(#GET{titrebloc})]}|?{[(#ENV{[(#GET{titrebloc})]})]})]"  />
+					</li>
+[(#GET{idrub}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="#GET{idrubbloc}" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Num&eacute;ro<em>(id)</em> de la rubrique </label>
+							<input type="text" name="[(#GET{idrubbloc})]" id="[(#GET{idrubbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idrubbloc})]}|?{[(#ENV{[(#GET{idrubbloc})]})], 1})]"  />
+					</li>
+]
+[(#GET{idmot}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="#GET{idmotbloc}" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Num&eacute;ro<em>(id)</em> du mot-cl&eacute;</label>
+							<input type="text" name="[(#GET{idmotbloc})]" id="[(#GET{idmotbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idmotbloc})]}|?{[(#ENV{[(#GET{idmotbloc})]})], 1})]"  />
+					</li>
+]
+
+[(#GET{text}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="#GET{textbloc}" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Texte libre</label>
+							<textarea name="[(#GET{textbloc})]" id="[(#GET{textbloc})]" cols="20" rows="4">[(#ENV{[(#GET{textbloc})]})]</textarea>
+					</li>
+]
+[(#GET{url}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="#GET{textlienbloc}" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Texte du lien</label>
+							<input type="text" name="[(#GET{textlienbloc})]" id="[(#GET{textlienbloc})]" size="20" value="[(#ENV{[(#GET{textlienbloc})]})]" />
+					</li>
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="#GET{urlbloc}" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Url du lien</label>
+							<input type="text" name="[(#GET{urlbloc})]" id="[(#GET{urlbloc})]" size="20" value="[(#ENV{[(#GET{urlbloc})]}|?{[(#ENV{[(#GET{urlbloc})]})]})]" />
+					</li>
+]
+[(#GET{imgfile}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="[(#GET{imgbloc})]" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Image du lien :</label>
+						<input type="file" name="[(#GET{imgbloc})]" id="[(#GET{imgbloc})]" value=" " size="15" />
+						[<span class='erreur'>(#ENV**{erreurs}|table_valeur{[(#GET{imgbloc})]})</span>]
+						<br />	
+						[Image actuelle : (#ENV{[(#GET{imgbloc})]}|?{[(#CFG_CHEMIN{tispipskelet_conf/[(#ENV{id})/][(#GET{imgbloc})]}|image_reduire{50})],Aucune image})]						
+					</li>
+]						
+[(#GET{nb}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="[(#GET{nbbloc})]" style="margin:0;padding:0;width:150px;float:left;clear:none;">
+							 [&nbsp;Nombre de (#GET{titre_ctnbloc}) ]
+						</label>
+							<select name="[(#GET{nbbloc})]" id="[(#GET{nbbloc})]" style="width:50px;">
+								<option value=""[ (#ENV{[(#GET{nbbloc})]}|?{selected="selected",''})]>  </option>
+								<option value="3"[ (#ENV{[(#GET{nbbloc})]}|=={3}|?{selected="selected",''})]> 3 </option>
+								<option value="5"[ (#ENV{[(#GET{nbbloc})]}|=={5}|?{selected="selected",''})]> 5 </option>
+								<option value="10"[ (#ENV{[(#GET{nbbloc})]}|=={10}|?{selected="selected",''})]> 10 </option>
+							</select>
+					</li>
+]
+
+[(#GET{idart}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="[(#GET{idartbloc})]" style="margin:0;padding:0;width:150px;;float:left;clear:none;">
+							[Num&eacute;ro <em>(id)</em> de  l&rsquo;(#GET{titre_ctnbloc}) ]
+						</label>
+							<input type="text" name="[(#GET{idartbloc})]" id="[(#GET{idartbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idartbloc})]}|?{[(#ENV{[(#GET{idartbloc})]})], 1})]"  />
+					</li>
+]
+[(#REM) A mettre ajour]
+[(#GET{rub}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="[(#GET{idrub})]" style="margin:0;padding:0;width:150px;;float:left;clear:none;">
+							[Limiter l&rsquo;affichage des sites &agrave; la rubrique (#GET{titre_ctnbloc}) ]
+						</label>
+							<input type="text" name="[(#GET{rub})]" id="[(#GET{idrub})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idrub})]}|?{[(#ENV{[(#GET{idartbloc})]})], 1})]"  />
+					</li>
+]
+
+[(#GET{intro}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0;">
+						<label style="width:200px;clear:none;margin:0;padding:0;">
+						<input type="radio" name="[(#GET{introbloc})]" id="[(#GET{introbloc})_texte]" value="texte" [(#ENV{[(#GET{introbloc})]}|=={texte}|?{checked="checked",''})] />
+						Afficher le texte entier
+						</label>
+					</li>
+					<li style="margin:0;padding:10px 0;">
+						<label style="width:200px;clear:none;margin:0;padding:0;">
+						<input type="radio" name="[(#GET{introbloc})]" id="[(#GET{introbloc})_intro]" value="intro" [(#ENV{[(#GET{introbloc})]}|=={intro}|?{checked="checked",''})] />
+						N&rsquo;afficher que l&rsquo;introduction
+						</label>
+					</li>
+]
+
+[(#GET{long_intro}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;" [(#GET{intro}|=={oui}|?{' '}) id="cfg_[(#GET{introlongbloc})]"]>
+						<label for="[(#GET{introlongbloc})]" style="margin:0;padding:0;width:140px;;float:left;clear:none;">
+							Longueur de l&rsquo;intro.
+						</label>
+							<input type="text" name="[(#GET{introlongbloc})]" id="[(#GET{introlongbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{hauteurbloc})]}|?{[(#ENV{[(#GET{introlongbloc})]})], 150})]"  />Caract.
+					</li>
+]
+[(#GET{afflogo}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label style="margin:0;padding:0;width:140px;;float:left;clear:none;">
+							<input type="checkbox" name="[(#GET{afflogobloc})]" id="[(#GET{afflogobloc})]" value="oui"[ checked="(#ENV{[(#GET{afflogobloc})]}|?{checked})" ] />
+							Afficher le logo
+						</label>
+					</li>
+]
+
+[(#GET{defil}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="[(#GET{defilbloc})]" style="margin:0;padding:0;width:150px;;float:left;clear:none;">
+							[D&eacute;filement des  (#GET{titre_ctnbloc}) ]
+						</label>
+							<input type="checkbox" name="[(#GET{defilbloc})]" id="[(#GET{defilbloc})]" value="oui"[ checked="(#ENV{[(#GET{defilbloc})]}|?{checked})" ]/>
+					</li>
+]
+[(#GET{confmots}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label style="margin:0;padding:0;width:150px;float:left;clear:none;">
+							<input type="radio" name="type_mots_#ENV{bloc}" value="nuage" class="no_bj"[ (#ENV{type_mots_#ENV{bloc}}|=={nuage}|?{checked,''})] />
+							Nuage de mots
+						</label>
+					</li>
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label style="margin:0;padding:0;width:150px;float:left;clear:none;">
+							<input type="radio" name="type_mots_#ENV{bloc}" value="mots_acc" class="no_bj"[ (#ENV{type_mots_#ENV{bloc}}|=={mots_acc}|?{checked,''})] />
+							Accord&eacute;on
+						</label>
+					</li>
+]
+[(#GET{haut}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="[(#GET{hauteurbloc})]" style="margin:0;padding:0;width:140px;;float:left;clear:none;">
+							[Hauteur du bloc  (#GET{titre_ctnbloc})<em> (en pixelx)</em> ]
+						</label>
+							<input type="text" name="[(#GET{hauteurbloc})]" id="[(#GET{hauteurbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{hauteurbloc})]}|?{[(#ENV{[(#GET{hauteurbloc})]})], 150})]"  />&nbsp;px
+					</li>
+					<li style="margin:0;padding:10px 0;">
+						<label style="width:200px;clear:none;margin:0;padding:0;">
+						<input type="checkbox" name="[(#GET{overflowbloc})]" id="[(#GET{overflowbloc})]" value="scroll" [(#ENV{[(#GET{overflowbloc})]}|=={scroll}|?{checked="checked",''})] />
+						Afficher un ascenseur vertical si le texte d&eacute;borde du cadre.
+						</label>
+					</li>
+]
+[(#GET{affsirub}|=={oui}|?{' '})
+					<li style="margin:0;padding:10px 0 0 0;">
+						<label for="[(#GET{affsirubbloc})]" style="margin:0;padding:0;width:150px;;float:left;clear:none;">
+							N&rsquo;afficher l&rsquo;agenda  que dans les secteurs contenants des &eacute;v&eacute;nements
+						</label>
+							<input type="checkbox" name="[(#GET{affsirubbloc})]" id="[(#GET{daffsirubbloc})]" value="oui"[ checked="(#ENV{[(#GET{affsirubbloc})]}|?{checked})" ]/>
+					</li>
+]
+[(#ENV{ctnbloc}|=={rss_podcast}|?{' '})
+					<li style="margin:0;padding:10px 0;">
+						<label style="width:200px;clear:none;margin:0;padding:0;">
+						<input type="checkbox" name="podcast_#ENV{bloc}" id="podcast_#ENV{bloc}" [(#ENV{podcast_#ENV{bloc}}|oui)checked="checked"] />
+						Afficher le lien podcast
+						</label>
+					</li>
+]
+<li style="margin:0;padding:10px 0 0 0;"><small>Id du bloc : [(#ENV{ctnbloc})_[(#ENV{bloc})]]</small></li>
+				</ul>
+]
+
+[(#GET{conf}|=={cyclimg}|?{' '})
+			<INCLURE{fond=fonds/inc/inc-conf_cycle_img}{bloc=#ENV{bloc}}{env}{ajax}>
+]
+
+[(#GET{conf}|non)
+				<ul class="ligne">
+					<li style="margin:0;padding:0;">
+					[(#ENV{ctnbloc}|=={agenda}|?{
+						"Les paramétrages et fonctionnalités du mini-calendrier sont en cours de r&eacute;alisation. Une très prochaine m&agrave;j viendra valider ces fonctionnalités"
+					})]
+					[(#ENV{ctnbloc}|non)"S&eacute;lectionnez un contenu dans la liste ci-dessus."]
+					</li>
+				</ul>
+]
+				<script type="text/javascript"><!--
+						$('#[(#GET{introbloc})_intro]')
+						.bind('change', function() {
+					            $('#cfg_[(#GET{introlongbloc})]').slideDown('slow');
+						})
+						if ($('#[(#GET{introbloc})_intro]:checked').length == 0)
+							$('#cfg_[(#GET{introlongbloc})]').hide();
+					
+						$('#[(#GET{introbloc})_texte]')
+						.bind('change', function() {
+					            $('#cfg_[(#GET{introlongbloc})]').slideUp('slow');
+						})
+						if ($('#[(#GET{introbloc})_texte:checked').length != 0)
+							$('#cfg_[(#GET{introlongbloc})]').hide();
+							
+				// --></script>

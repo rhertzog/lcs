@@ -1,0 +1,175 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+[(#SET{pos_menu,[(#CONFIG{tispipskelet_conf/sommaire/pos_menu})]})] [(#SET{pos_agenda,[(#CONFIG{tispipskelet_conf/sommaire/pos_agenda})]})]  
+[(#SET{pos_breves,[(#CONFIG{tispipskelet_conf/sommaire/pos_breves})]})] [(#SET{pos_mots,[(#CONFIG{tispipskelet_conf/sommaire/pos_mots})]})] 
+[(#SET{pos_sites,[(#CONFIG{tispipskelet_conf/sommaire/pos_sites})]})] [(#SET{pos_syndic,[(#CONFIG{tispipskelet_conf/sommaire/pos_syndic})]})] 
+[(#SET{pos_messages,[(#CONFIG{tispipskelet_conf/sommaire/pos_messages})]})] [(#SET{pos_auteurs,[(#CONFIG{tispipskelet_conf/sommaire/pos_auteurs})]})]  
+[(#SET{pos_lienpodcast,[(#CONFIG{tispipskelet_conf/sommaire/pos_lienpodcast})]})] 
+]
+<head>
+<title>#NOM_SITE_SPIP</title>
+[(#INCLURE{fond=noisettes/inc-head})]
+[<script type="text/javascript" src="(#CHEMIN{scripts/pde.js})"></script>]
+
+<link rel="stylesheet" href="#CHEMIN{c/agenda.css}" type="text/css" /> 
+<link rel="stylesheet" href="#CHEMIN{c/calendrier.css}" type="text/css" /> 
+<script type="text/javascript" src="#EVAL{_DIR_JAVASCRIPT}layer.js"> </script> 
+<script type="text/javascript" src="#CHEMIN{scripts/presentation.js}"> </script> 
+[(#INCLURE{fond=noisettes/inc-conf_skel})]
+</head>
+<body>
+<div id="header">
+	[(#INCLURE{fond=noisettes/inc-entete})]
+	[(#INCLURE{fond=noisettes/inc-menuonglets}{evenement=activelink})]
+</div>
+<div id="container">
+	[(#CONFIG{tispipskelet_conf/affmenuh}|?{' '})
+		[(#INCLURE{fond=noisettes/inc-menu-horiz})]
+	]
+	<div  id="content">
+[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+	<div id="troiscols">
+]
+	[(#REM) titre]
+		<dl class="bloc">
+				<dt class="annonce">
+					Les &eacute;v&eacute;nements &agrave; venir...
+				</dt>		
+				<dd class="annonce">
+
+ <BOUCLE_article_annes(EVENEMENTS){par date}{age<=0}>
+	<BOUCLE_article_recent(EVENEMENTS) {mois_relatif<0}{par date}> </BOUCLE_article_recent>
+
+	<B_lesevenements_edit>               
+		<div class="events">
+			<a href="<h3>[(#DATE_DEBUT|nom_mois)] [(#DATE_DEBUT|annee|unique)]</h3>
+				<ul>
+				<BOUCLE_lesevenements_edit(EVENEMENTS){agendafull date_debut,date_fin, mois,  (#DATE_DEBUT|annee), (#DATE_DEBUT|mois)}{id_mot?}{par date}{tout}{doublons}>
+<li><BOUCLE_auteur_1(AUTEURS){id_article}><a href="[(#URL_AUTEUR|parametre_url{lang,#ENV{lang}})]" title="#AUTEUR">#NOM</a> - </BOUCLE_auteur_1><a href="[(#URL_ARTICLE|parametre_url{id_evenement,#ID_EVENEMENT}|parametre_url{date,#DATE_DEBUT})]" title="#TITRE">[(#TITRE|supprimer_numero|couper{80})]</a>
+<br/><small>[(#DATE_DEBUT|jour|=={[(#DATE_FIN|jour)]}|?{
+ le [(#DATE_DEBUT|nom_jour)] [(#DATE_DEBUT|affdate)]
+[(#HORAIRE|=={oui}|?{
+  [(#REM) memes heures ?]
+    [(#DATE_DEBUT|=={#DATE_FIN}|?{ <:a:>  
+[(#DATE_DEBUT|heures)]h[(#DATE_DEBUT|minutes)],''})]
+  [(#REM) pas memes heures ?]
+    [(#DATE_DEBUT|!={#DATE_FIN}|?{<:from:>
+[(#DATE_DEBUT|heures)]:[(#DATE_DEBUT|minutes)] <:a:>
+[(#DATE_FIN|heures)]:[(#DATE_FIN|minutes)],''})]
+,''})]
+,
+[(#DATE_DEBUT|nom_jour)] [(#DATE_DEBUT|affdate)]
+[(#HORAIRE|=={oui}|?{ :
+ [(#DATE_DEBUT|heures)]H[(#DATE_DEBUT|minutes)],''})] <:a:>
+[(#DATE_FIN|nom_jour)]
+ [(#DATE_FIN|affdate)] [(#HORAIRE|=={oui}|?{ :
+ [(#DATE_FIN|heures)]H[(#DATE_FIN|minutes)],''})]  })]
+[-&nbsp;<:lieu:>&nbsp;: (#LIEU)]</small>
+</li>
+
+ </BOUCLE_lesevenements_edit>
+ </ul>
+                        </div>
+          </B_lesevenements_edit>
+
+          <//B_lesevenements_edit>         
+                                </B_article_recent>
+                               
+                                </BOUCLE_article_annes>
+                        </B_article_annes>
+                                               
+                <//B_article_annes>
+
+				</dd>
+		</dl>
+
+<B_agenda>
+[(#REM) 
+<h2 class="titre"><:evenements:></h2>
+]
+<dl class="bloc">
+	<BOUCLE_agenda(EVENEMENTS){par date}{inverse}{statut=publie}>
+		<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+				<BOUCLE_rub_art(RUBRIQUES){id_rubrique}>[(#ENV{page}|=={rubrique}|?{'',' '})<em><a href="#URL_RUBRIQUE" title="Aller &agrave; la rubrique [(#TITRE|supprimer_tags)]" class="droite">[(#TITRE|supprimer_tags)]</a></em>]</BOUCLE_rub_art>
+			[<a href="#URL_ARTICLE" [title="(#DESCRIPTIF|textebrut|entites_html)"]>
+			<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{50,60}|sinon{[(#LOGO_SITE||reduire_image{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
+			<em>D&eacute;but : [(#DATE_DEBUT|nom_jour) ][(#DATE_DEBUT|jour) ][(#DATE_DEBUT|nom_mois)] [ : (#DATE_FIN|heures)][:(#DATE_FIN|minutes)][:(#DATE_FIN|secondes)]<br />
+				[Fin : (#DATE_FIN|jour) ][(#DATE_FIN|nom_mois)] [ : (#DATE_FIN|heures)][:(#DATE_FIN|minutes)][:(#DATE_FIN|secondes)][, par (#LESAUTEURS)]</em>
+		</dt>		
+		<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+			[(#INTRODUCTION|couper{200})]
+			<div class="suite"> <a href="#URL_ARTICLE"><:suite:>...</a></div>
+		</dd>
+	</BOUCLE_agenda>
+</dl>
+</B_agenda>
+
+		
+		[(#REM)Affichage conditionnel des blocs jumeaux (boites a coucou) - haut]
+		[(#GET{a_faire/posbljm}|=={haut}|?{' '})
+		<ul id="intro">
+			<li id="boite_g">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_g})]})]
+			</li>
+			<li id="boite_d">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_d})]})]
+			</li>
+		</ul>
+		]
+		[(#GET{a_faire/posbljm_2}|=={haut}|?{' '})
+		<ul id="intro_2">
+			<li id="boite_g_2">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_g_2})]})]
+			</li>
+			<li id="boite_d_2">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_d_2})]})]
+			</li>
+		</ul>
+		]
+
+		[(#REM)Affichage conditionnel des blocs jumeaux (boites a coucou) - bas]
+		[(#GET{a_faire/posbljm}|=={bas}|?{' '})
+		<ul id="intro">
+			<li id="boite_g">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_g})]})]
+			</li>
+			<li id="boite_d">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_d})]})]
+			</li>
+		</ul>
+		]
+		[(#GET{a_faire/posbljm_2}|=={bas}|?{' '})
+		<ul id="intro_2">
+			<li id="boite_g_2">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_g_2})]})]
+			</li>
+			<li id="boite_d_2">
+				[(#INCLURE{fond=noisettes/inc-[(#GET{ctn_bloc_d_2})]})]
+			</li>
+		</ul>
+		]
+
+[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+	</div>[(#REM)troiscols]
+	<div id="side2">
+			<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}>
+	</div>[(#REM)side2]
+]
+	</div>[(#REM)content]
+
+	<div id="side">
+		<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}>
+	</div>
+
+	<div id="footer">
+		[(#INCLURE{fond=noisettes/inc-pied})]
+	</div>
+
+</div>
+[(#REM) appel du js les coins arrondis et les colonnes]
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftycube.js})"></script>]
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftyLayout.js})"></script>]
+</body>
+</html>

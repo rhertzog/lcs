@@ -1,0 +1,28 @@
+	[(#REM) lien vers itunes ]
+	[(#CONFIG{lcs_skel_conf/sommaire/affnewsletter}|?{#SET{newsleter,1}})]
+	[(#CONFIG{lcs_skel_conf/sommaire/affpodcast}|?{#SET{podcast,1}})]
+	[(#CONFIG{lcs_skel_conf/rubriques/affnewsletter_rub}|?{#SET{newsleter,1}})]
+<h3 class="menu-titre">Suivre la vie du site</h3>
+<dl id="lien-podcast" class="demi_boite">
+	[(#CONFIG{plugin}|match{SPIPLISTES}|?{' '})
+		[(#GET{newsleter}|?{' '})
+			<dt class="titre_boite">S'abonner &agrave; la newsletter</dt>
+			<dd style="text-align:center;margin:.37em 0 0 0;font-size:.72em">
+				<a href="spip.php?page=abonnement" title="S'abonner &agrave; la newsletter">
+			 		[<img src=" (#CHEMIN{img_pack/mailer_casquette.gif})" alt="Facteur" />]
+					<b style="line-height:2em">S'abonner</b>
+				</a>
+			</dd>
+		]
+	]
+	<dt class="titre_boite">[(#GET{podcast}|?{' '})Podcast et ]Fil RSS</dt>
+	<dd style="text-align:center;margin:.5em;">
+		[(#CONFIG{plugin}|match{LCS_SKEL}|?{' '})
+			[(#GET{podcast}|?{' '})
+				<a href="[(#URL_SITE_SPIP|url_itunes)?page=podcast]" title="Vers iTunes"><img src="[(#CHEMIN{i/podcast1.png})]" width="64" height="72" alt="" /></a>
+			]
+		]
+		<a href="[(#URL_PAGE{backend[,(#ID_RUBRIQUE|?{id_rubrique=#ID_RUBRIQUE})]})]" title="S'abonner au fil RSS"><img src="[(#CHEMIN{i/pp_rssIcon.png})]" alt="" /></a>
+	</dd>
+</dl>
+

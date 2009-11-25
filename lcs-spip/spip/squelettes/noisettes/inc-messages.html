@@ -1,0 +1,38 @@
+#SET{nb_messages,#CONFIG{tispipskelet_conf/sommaire/nb_messages_#ENV{bloc}}}
+#SET{defil_messages,#CONFIG{tispipskelet_conf/sommaire/defil_messages_#ENV{bloc}}}
+#SET{haut_messages,#CONFIG{tispipskelet_conf/sommaire/haut_messages_#ENV{bloc}}}
+#SET{titre_messages,#CONFIG{tispipskelet_conf/sommaire/titre_messages_#ENV{bloc}}}
+[(#PARAMETRES_FORUM|?) Cette balise (invisible) provoque le recalcul du forum la premiere fois qu'un message est poste (cf. inc/invalideur). ]
+
+[(#REM) Nombre total de messages ]
+[(#REM) Messages du forum ]
+<B_forums>
+<h3 class="menu-titre">[(#GET{titre_breves}|?{#GET{titre_breves},Derniers messages})]</h3>
+<dl id="messages" class="demi_boite" style="font-size:1em">
+	<dt>
+		<BOUCLE_decompte(FORUMS) {id_rubrique ?}{id_article ?}{id_breve ?}{id_syndic ?} {plat}></BOUCLE_decompte>
+			[<small><strong>(#TOTAL_BOUCLE|>{0}|?{#TOTAL_BOUCLE,''}) [(#TOTAL_BOUCLE|=={1}|?{<:message:>,<:messages_forum:>}) sur le site]</strong></small>]
+		<//B_decompte>
+	</dt>
+	<dd id="messages_cycle">
+	<BOUCLE_forums(FORUMS) {id_rubrique ?}{id_article ?}{id_breve ?}{id_syndic ?} {par date}{inverse}{0,#GET{nb_messages}}>
+		<a href="spip.php?page=article&amp;id_article=#ID_ARTICLE#forum#ID_FORUM" name="forum#ID_FORUM" id="forum#ID_FORUM"><img src="[(#CHEMIN{i/user_comment.png})]" alt="[(#DESCRIPTIF|supprimer_tags|entites_html)]" />[ (#TITRE)]
+		<span style="display:block"><small>[(#DATE|affdate_jourcourt)][&nbsp;(#DATE|heures)][:(#DATE|minutes)][(#CONFIG{plugin}|match{TISPIPSKELET}|?{[<span>, <:par_auteur:>[(#NOM|prenom) ](#NOM|nom)</span>],[<span style="display:block">, <:par_auteur:>(#NOM)</span>]})]</small></span>
+		</a>
+	</BOUCLE_forums>
+	</dd>
+</dl>
+[(#GET{defil_messages}|?{' '})
+<script type="text/javascript">
+$('#messages_cycle').cycle({ 
+	fx:     'scrollUp', 
+    timeout: 5999, 
+    pause:   1 ,
+	delay:  -2534[,
+ 	height: (#GET{haut_messages})]
+
+	});
+</script>
+]
+
+</B_forums><//B_forums>

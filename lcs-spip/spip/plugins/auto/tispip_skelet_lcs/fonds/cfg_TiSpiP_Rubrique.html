@@ -1,0 +1,43 @@
+<!-- interpreter=non -->
+<!-- titre=Personnalisation de l'affichage public-->
+<!-- descriptif=<multi>[fr]Configuration de la page d'accueil.<br />
+	Vous diposez, pour chaque élément d'une aide en ligne contextuelle. Cliquez sur le point d'intérrogation 
+	<span style="background:#ccc;">&nbsp;?&nbsp;</span> 
+	pour afficher cette aide. <br />La documentation complète<a href	="http://tispip-mutual.etab.ac-caen.fr" title="Documentation TiSpiP-sKeLeT"> est visible ici</a>
+	</multi> -->
+<!-- boite=<multi>[fr]Personnalisation de l'affichage public - Rubrique</multi>-->
+<!-- onglet=TiSpiP_Pages -->
+
+<!-- liens*=TiSpiP_Pages -->
+<!-- liens*=TiSpiP_Entete -->
+<!-- liens*=TiSpiP_Menus -->
+<!-- liens*=TiSpiP_Couleurs -->
+<!-- liens*=TiSpiP_Accueil -->
+<!-- liens*=TiSpiP_Rubrique -->
+<!-- liens*=TiSpiP_Article -->
+<!-- liens*=TiSpiP_Mentions -->
+<!-- liens*=TiSpiP_Credits -->
+<!-- liens*=TiSpiP_Diaporama-S5 -->
+
+
+<!-- icone=img_pack/logo_lcs2_24_24.png -->
+#CACHE{0}
+	[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+	  #FORMULAIRE_TISPIP_CONFIG_BLOCSJUMOS{rubriques}
+	</div>]
+	[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+	  #FORMULAIRE_TISPIP_CONFIG_LISTE_ARTICLES{rubriques}
+	</div>]
+	[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+	   #FORMULAIRE_TISPIP_CONFIG_LISTE_RUBRIQUES{rubriques}
+	</div>]
+	[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+	   #FORMULAIRE_TISPIP_CONFIG_LISTE_SITES{rubriques}
+	</div>]
+	[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+	   #FORMULAIRE_TISPIP_CONFIG_COLONNES{rubriques}
+	</div>]
+[(#REM)
+]
+[(#REM)]
+#CFG_ARBO{tispipskelet_conf/rubriques}

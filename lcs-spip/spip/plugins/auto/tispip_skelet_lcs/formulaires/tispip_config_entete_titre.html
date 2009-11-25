@@ -1,0 +1,166 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=entete-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg">
+	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+	
+	<form method="post" action="#SELF">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+
+	<fieldset>
+		<legend>Logo et titre du site</legend>
+		<ul>
+			<li class="ligne">
+					<label class="titre"><input type="checkbox" name="afflogosite" value="oui" [checked="(#ENV{afflogosite}|?{checked})"] id="afflogosite" /> Afficher le logo du site
+					</label>
+			</li>
+		</ul>
+		<ul id="aff_img_palogo">
+			<li class="ligne">
+					<label class="titre"><input type="checkbox" name="affimgpalogo" value="oui" [checked="(#ENV{affimgpalogo}|?{checked})" ][(#ENV{afflogosite}|?{' disabled="disabled"'})] id="affimgpalogo" /> Afficher une image autre que le logo
+					</label>
+			</li>
+		</ul>
+		<ul id="img_palogo" class="labels_cfg_tispipskelet">
+			<li class="ligne_240">
+					<label class="com">Charger l'&rsquo;image :
+					<input type="file" name="imgpalogo" value="" size="30" /></label>
+					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{imgpalogo})</span>]
+			</li>
+			[<li>(#ENV{imgpalogo}|?{[(#CFG_CHEMIN{tispipskelet_conf/entete/imgpalogo}|image_reduire{100})],Aucune image})
+			</li>]
+		</ul>
+		<ul>
+			<li class="ligne">
+					<label class="titre"><input type="checkbox" name="afftitresite" value="oui" [checked="(#ENV{afftitresite}|?{checked})" ] id="afftitresite" /> Afficher le titre du site
+					</label>
+			</li>
+		</ul>
+		<ul id="cfgtitresite">
+			<li class="ligne_240">
+				<label for="titre_couleur">Titre du site :</label>
+				<input type="text" name="titre_couleur" id="titre_couleur"  class="palette" size="7"  value="[(#ENV{titre_couleur}|?{#ENV{titre_couleur},white})]" />
+			</li>
+			<li class="ligne">
+				<span class="titre">Police du titre</span>
+				#SET{tispip,TiSpiP-sKeLeT}
+				<div class="labels_cfg_tispipskelet">
+					<span>S&eacute;lectionnez la police de caract&egrave;res du titre : </span><br />
+					<label>
+					<input type="radio" name="police_titre" value="bungle_city" [(#ENV{police_titre}|=={bungle_city}|?{checked,''})] />Bungle City : [(#GET{tispip}||image_typo{taille=14,police=bungle_city.ttf,couleur=#336699})]</label><br />
+					<label>
+					<input type="radio" name="police_titre" value="burnstow" [(#ENV{police_titre}|=={burnstow}|?{checked,''})] />BurnStown Dam : [(#GET{tispip}||image_typo{taille=14,police=burnstow.ttf,couleur=#336699})]</label><br />
+					<label>
+					<input type="radio" name="police_titre" value="captainpodd" [(#ENV{police_titre}|=={captainpodd}|?{checked,''})] />Captain Podd : [(#GET{tispip}||image_typo{taille=14,police=captainpodd.ttf,couleur=#336699})]</label><br />
+					<label>
+					<input type="radio" name="police_titre" value="cutting_corners" [(#ENV{police_titre}|=={cutting_corners}|?{checked,''})] />Cutting Corners : [(#GET{tispip}||image_typo{taille=14,police=cutting_corners.ttf,couleur=#336699})]</label><br />
+					<label>
+					<input type="radio" name="police_titre" value="croobie" [(#ENV{police_titre}|=={croobie}|?{checked,''})] />Croobie : [(#GET{tispip}||image_typo{taille=14,police=croobie.ttf,couleur=#336699})]</label><br />
+					<label>
+					<input type="radio" name="police_titre" value="dustismo" [(#ENV{police_titre}|=={dustismo}|?{checked,''})] />Dustismo : [(#GET{tispip}||image_typo{taille=14,police=dustismo.ttf,couleur=#336699})]</label><br />
+					<label>
+					<input type="radio" name="police_titre" value="eyerhyme" [(#ENV{police_titre}|=={eyerhyme}|?{checked,''})] />Eyerhyme : [(#GET{tispip}||image_typo{taille=14,police=eyerhyme.ttf,couleur=#336699})]</label><br />
+					<label>
+					<input type="radio" name="police_titre" value="WCManoNegraBoldBta" [(#ENV{police_titre}|=={WCManoNegraBoldBta}|?{checked,''})] />Mano Negra : [(#GET{tispip}||image_typo{taille=14,police=WCManoNegraBoldBta.ttf,couleur=#336699})]</label><br />
+				</div>
+			</li>
+			<li class="ligne_240">
+					<label for="taille_titre">Taille de police du titre (en pixels)</label>
+					<input type="text" name="taille_titre" id="taille_titre" size="4" value="[(#ENV{taille_titre}|?{#ENV{taille_titre},24})]" />
+			</li>
+			<li class="ligne_240">
+					<label for="largeur_titre">Largeur du titre <em>(en pixels)</em></label>
+					<input type="text" name="largeur_titre" id="largeur_titre" size="4" value="[(#ENV{largeur_titre}|?{#ENV{largeur_titre},400})]" />
+			</li>
+			<li class="ligne_240">
+					<label for="hauteur_ligne_titre">Hauteur de ligne du titre <em>(en pixels, si sur plusieurs lignes)</em></label>
+					<input type="text" name="hauteur_ligne_titre" size="4" id="hauteur_ligne_titre" value="[(#ENV{hauteur_ligne_titre}|?{#ENV{hauteur_ligne_titre},135})]" />
+			</li>
+			<li class="ligne_240">
+					<label for="padding_titre">Marge interne du titre <em>(en pixels)</em></label>
+					<input type="text" name="padding_titre" size="4" id="padding_titre" value="[(#ENV{padding_titre}|?{#ENV{padding_titre},0})]" />
+			</li>
+			<li class="ligne_240">
+					<label for="align_titre">Alignement du titre <em>(si sur plusieurs lignes)</em></label>
+					<select name="align_titre" id="align_titre" style="width:75px;">
+						<option value=""  [(#ENV{align_titre}|non) selected="selected"]></option>
+						<option value="left" [(#ENV{align_titre}|=={left}|?{selected="selected"})]>&Agrave; gauche</option>
+						<option value="center" [(#ENV{align_titre}|=={center}|?{selected="selected"})]>Au centre</option>
+						<option value="right" [(#ENV{align_titre}|=={right}|?{selected="selected"})]>&Agrave; droite</option>
+					</select>
+			</li>
+			<li class="ligne_240">
+					<label for="titre_pos_v">Distance du titre &agrave; partir du haut de l&rsquo;&eacute;cran <em>(en pixels)</em></label>
+					<input type="text" name="titre_pos_v" id="titre_pos_v" size="4" value="[(#ENV{titre_pos_v}|?{#ENV{titre_pos_v},10})]" />
+			</li>
+			<li class="ligne_240">
+					<label for="titre_pos_h">Distance du titre &agrave; partir de la gauche de l&rsquo;&eacute;cran <em>(en pixels)</em></label>
+					<input type="text" name="titre_pos_h" id="titre_pos_h" size="4" value="[(#ENV{titre_pos_h}|?{#ENV{titre_pos_h},150})]" />
+			</li>
+		</ul>
+	</fieldset>
+<script type="text/javascript"><!--
+	$('#affimgpalogo')
+	.bind('change', function() {
+            $('#img_palogo').slideToggle('slow');
+	})
+	if ($('#affimgpalogo:checked').length == 0)
+		$('#img_palogo').hide();
+
+	$('#afflogosite')
+	.bind('change', function() {
+		var on = $(this).is(':checked');
+		$(this)
+		.parents('fieldset')
+		.find('#affimgpalogo')
+			.attr('disabled', on ? 'disabled' : '')
+		.end();
+	})
+	
+	$('#affimgpalogo')
+	.bind('change', function() {
+		var on = $(this).is(':checked');
+		$(this)
+		.parents('fieldset')
+		.find('#afflogosite')
+			.attr('disabled', on ? 'disabled' : '')
+		.end();
+	})
+	
+	$('#afftitresite')
+	.bind('change', function() {
+            $('#cfgtitresite').slideToggle('slow');
+	})
+	if ($('#afftitresite:checked').length == 0)
+		$('#cfgtitresite').hide();
+
+// --></script>
+
+<script type="text/javascript"><!--
+$(document).ready(
+	$(function() {
+	  $('.boxy').boxy();
+	});
+);
+// --></script>
+
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			
+			<div style="text-align:center;margin-bottom:25px;">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

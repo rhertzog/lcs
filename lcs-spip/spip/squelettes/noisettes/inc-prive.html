@@ -1,0 +1,53 @@
+	[(#REM) bloc de contenu entièrement parametrable ]
+#SET{nb_prive,#CONFIG{tispipskelet_conf/sommaire/nb_prive_#ENV{bloc}}}
+#SET{text_prive,#CONFIG{tispipskelet_conf/sommaire/text_prive_#ENV{bloc}}}
+#SET{haut_prive,#CONFIG{tispipskelet_conf/sommaire/haut_prive_#ENV{bloc}}}
+#SET{textlien_prive,#CONFIG{tispipskelet_conf/sommaire/textlien_prive_#ENV{bloc}}}
+#SET{titre_prive,#CONFIG{tispipskelet_conf/sommaire/titre_prive_#ENV{bloc}}}
+#SET{url_prive,#CONFIG{tispipskelet_conf/sommaire/url_prive_#ENV{bloc}}}
+#SET{img_prive,#CONFIG{tispipskelet_conf/sommaire/img_prive_#ENV{bloc}}}
+
+
+[(#SESSION{statut}|=={0minirezo}|?{' '})#SET{statut,administrateur}]
+[(#SESSION{statut}|=={1comite}|?{' '})#SET{statut,r&eacute;dacteur}]
+[(#SESSION{statut}|=={6forum}|?{' '})#SET{statut,visiteur}]
+
+[<h3 class="menu-titre" id="titre_prive_#ENV{bloc}">
+	<img src="[(#CHEMIN{i/user.png})]" alt="D&eacute;plier" style="float:left;" />	
+	(#GET{titre_prive,Participer...})
+</h3>]
+<dl id="prive_#ENV{bloc}" class="demi_boite blocElement" [(#GET{titre_prive}|non) style="padding:0;margin0;"] >
+	<dt>
+	<img src="[(#CHEMIN{i/plus.gif})]" alt="D&eacute;plier" style="float:right;cursor:pointer;"  id="boutton_prive_#ENV{bloc}" />	
+				Bonjour #SESSION{nom} 
+	</dt>
+	<dd style="margin-left:5px;" id="bloc_prive_#ENV{bloc}">
+		Vous &ecirc;tes #GET{statut}, vous pouvez agir sur cet espace.<br/>
+		Que souhaitez-vous faire ? Choisissez dans ces options : 
+		<br />
+					[<a href="ecrire/">(#SESSION{statut}|=={6forum}?{:: Visitez votre interface de r&eacute;daction})</a><br/>]
+					[<a href="ecrire/?exec=articles_edit&new=oui"><img src="[(#CHEMIN{i/layout_add.png})]" alt="" /> (#SESSION{statut}|match{1comite|0minirezo}|?{ Commencer un nouvel article})</a><br/>]
+					[<a href="ecrire/"><img src="[(#CHEMIN{i/layout_edit.png})]" alt="" /> (#SESSION{statut}|=={0minirezo}?{ Agir sur les articles propos&eacute;s})</a><br/>]
+					[<a href="ecrire/?exec=controle_forum"><img src="[(#CHEMIN{i/page_white_delete.png})]" alt="" /> (#SESSION{statut}|=={0minirezo}?{ Effacer un message abusif})</a><br/>]
+					[<a href="ecrire/"><img src="[(#CHEMIN{i/door_in.png})]" alt="" /> (#SESSION{statut}|match{1comite|0minirezo}|?{ Acc&eacute;der &agrave; l'espace priv&eacute;})</a><br/>]
+					[<a href="ecrire/?exec=auteurs"><img src="[(#CHEMIN{i/status_busy.png})]" alt="" /> (#SESSION{id_auteur}|=={1}?{ Supprimer un membre})</a><br/>]
+					[<a href="ecrire/?exec=cfg&cfg=TiSpiP_Pages"><img src="[(#CHEMIN{i/cog_add.png})]" alt="" /> (#SESSION{id_auteur}|=={1}?{ Configurer TiSpiP-sKeLeT})</a><br/>]
+					
+					[<a href="ecrire/?exec=auteur_infos&amp;id_auteur=[(#SESSION{id_auteur})]"><img src="[(#CHEMIN{i/user.png})]" alt="" /> (#SESSION{statut}|match{1comite|0minirezo}|?{Modifier mon profil})</a><br/>]
+	</dd>
+<script type="text/javascript"><!--
+         $(document).ready(function(){
+               $('#boutton_prive_#ENV{bloc}').toggle(
+                    function(){ // you can add as much here as you'd like
+                         $('#bloc_prive_#ENV{bloc}').show('normal');
+                         $('#boutton_prive_#ENV{bloc}').attr('src','[(#CHEMIN{i/minus.gif})]');
+                    }, function() { // same here
+                         $('#bloc_prive_#ENV{bloc}').hide('normal');
+                         $('#boutton_prive_#ENV{bloc}').attr('src','[(#CHEMIN{i/plus.gif})]');
+                    });
+
+          });	
+          
+		$('#bloc_prive_#ENV{bloc}').hide();
+// --></script>
+</dl>

@@ -1,0 +1,85 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<BOUCLE_principale(ARTICLES){id_article}>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+		[(#CONFIG{tispipskelet_conf/articles/nb_cols_art}|=={2}|?{' '})
+			[(#CONFIG{tispipskelet_conf/articles/pos_cols_art}|=={gauche}|?{
+				[(#SET{pos_side,left})][(#SET{pos_content,right})]
+				,
+				[(#SET{pos_side,right})][(#SET{pos_content,left})]
+			})]
+			[(#CONFIG{tispipskelet_conf/sommaire/pos_menu}|=={gauche}|?{' '})#SET{side,2}]
+		]
+<head>
+<title>#NOM_SITE_SPIP</title>
+<INCLURE{fond=noisettes/inc-head}>
+<link rel="stylesheet" type="text/css" href="[(#CHEMIN{c/jcarousel/skin.css})]" />
+
+<script type="text/javascript" src="[(#CHEMIN{scripts/interface.js})]"></script>
+<script type="text/javascript" src="[(#CHEMIN{scripts/mon-carrousel.js})]"></script>
+<script type="text/javascript" src="[(#CHEMIN{lib/swfobject.js})]"></script>
+</head>
+<body>
+	<div id="grand_container">
+		<div id="header">
+			[(#INCLURE{fond=noisettes/inc-entete})]
+			[(#INCLURE{fond=noisettes/inc-menuonglets}{id_rubrique}{id_article})]
+		</div>
+		<div id="container">
+			[(#CONFIG{tispipskelet_conf/affmenuh}|?{' '})
+				[(#INCLURE{fond=noisettes/inc-menu-horiz}{id_rubrique}{id_article})]
+			]
+			<div id="content"[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})[ style="float:(#GET{pos_content})"]]>
+			[(#CONFIG{tispipskelet_conf/articles/nb_cols_art}|=={3}|?{' '})
+			[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+				<div id="troiscols" style="display:inline;">
+			]
+			]
+				<div class="droite" style="width:50px">#ARTICLE_PDF</div>
+				<div class="droite" style="width:120px">
+				<!-- le lien vers l'article suivant, par ordre chronologique-->
+				<BOUCLE_suivant(ARTICLES){id_rubrique}{age_relatif<0}{par date}{0,1}>
+					<span style="float:right;"> <a href="#URL_ARTICLE" title="[Aller &agrave; : (#TITRE|texte_backend|supprimer_numero)]"><img src="[(#CHEMIN{i/next.gif})]" alt="Article suivant" style="margin:0 .5em" /></a></span>
+				</BOUCLE_suivant>
+				<!-- le lien vers l'article precedent par ordre chronologique-->
+				<BOUCLE_precedent(ARTICLES){id_rubrique}{age_relatif>=0}{par date}{inverse}{1,1}>
+					<span style="float:right;"><a href="#URL_ARTICLE" title="[Aller &agrave; : (#TITRE|texte_backend|supprimer_numero)]"><img src="[(#CHEMIN{i/previous.gif})]" alt="Article pr&eacute;c&eacute;dent" style="margin:0 1em" /></a></span>
+				</BOUCLE_precedent>
+				</div>
+		        [(#REM) Fil d'Ariane ]
+				<INCLURE{fond=noisettes/inc-hierarchie}{id_article}{env}>
+		
+				[(#REM)Affichagedu contenu de l'article]
+				<INCLURE{fond=noisettes/inc-article_corps}{env}>
+		
+				[(#REM)Affichage conditionnel des blocs jumeaux ]
+				[(#CONFIG{tispipskelet_conf/articles/affblocjumo}|oui)
+				<INCLURE{fond=noisettes/inc-blocs_jumos}{posblocj=haut}{casier=rubriques}>
+				]
+				
+		
+				[(#REM) Forum de l'article ]
+				<a href="#forum" name="forum" id="forum"></a>
+				<INCLURE{fond=noisettes/inc-forum}{id_article} />
+			
+			[(#CONFIG{tispipskelet_conf/articles/nb_cols_art}|=={3}|?{' '})
+			[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+				</div>[(#REM) fin troiscol]
+				<div id="side2">
+					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{id_rubrique}{bloc=col_g}{casier=articles}{env}{ajax}>
+				</div>[(#REM) fin side2]
+			]
+			]
+			</div><!-- fin content -->
+		
+			<div id="side[(#GET{side})]"[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})[ style="float:(#GET{pos_side});margin:.7em"]]>
+				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}{id_rubrique}{casier=articles}{env}{ajax}>
+			</div><!-- fin side -->
+			
+	<INCLURE{fond=noisettes/inc-fin_page}>
+			
+</body>
+</html>
+</BOUCLE_principale>
+[(#INCLURE{fond=page404})]
+<//B_principale>

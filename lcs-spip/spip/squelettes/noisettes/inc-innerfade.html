@@ -1,0 +1,30 @@
+#SET{larg_img,240}
+[(#CONFIG{tispipskelet_conf/larg_page}|=={800}|?{' '})
+	#SET{larg_img,240}
+	[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+		#SET{larg_img,180}
+	]
+]
+[(#CONFIG{tispipskelet_conf/larg_page}|=={1024}|?{' '}) 
+	#SET{larg_img,300}
+	[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+		#SET{larg_img,240}
+	]
+]
+[(#CONFIG{tispipskelet_conf/larg_page}|=={tout}|?{' '}) #SET{larg_img,300}]
+<dl id="portfolio" style="margin:5px;padding:0 10px 5px 0">
+			<BOUCLE_rotator(ARTICLES){titre_mot=Slideshow-accueil}>
+				<BOUCLE_docs_rotator(DOCUMENTS){id_article}{par date}{inverse}{mode=document}{extension IN png,jpg,gif}{0,1}>
+	<dd style="margin:0 5px;">
+						[<a href="#URL_ARTICLE" title="">
+							(#EMBED_DOCUMENT|inserer_attribut{alt,#TITRE}|image_reduire{[(#GET{larg_img})],[(#GET{larg_img})]})
+						</a><br />]
+	<span style="margin:0 5px;font-weight:bold;width:100%;text-align:center;font-size:.9em">
+						[<a href="#URL_ARTICLE" title="">
+							(#_rotator:TITRE)
+						</a>]
+	</span>
+	</dd>
+				</BOUCLE_docs_rotator>
+			</BOUCLE_rotator>
+</dl>

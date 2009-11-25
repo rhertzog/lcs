@@ -1,0 +1,9 @@
+lcs-spip (2.4.2.0.10~1) UNRELEASED; urgency=low
+
+  [ Jean Luc Chretien ]
+  * Update spip 2-0-10
+  * Release lcs skel with TiSpip and add Chistel header
+  * Correct spip_session_lcs.php for spip 2.0.10
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 22 Nov 2009 17:52:53 +0100
+

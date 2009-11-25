@@ -1,0 +1,43 @@
+[(#REM)
+        Insère un lecteur FreepapeR
+][(#REM)
+        L'id du document à visualiser suit le nom du modèle
+]
+<BOUCLE_pdf(DOCUMENTS){id_document=#ID_PDFSWF}{doublons}>
+[(#REM)
+	[(#SET{url_swf,[(#URL_DOCUMENT|texte_script)]})]
+]
+	[(#SET{url_swf,[(#URL_SITE_SPIP)/][(#FICHIER|texte_script)]})]
+	[(#SET{idswf,#ID_DOCUMENT})]
+</BOUCLE_pdf>
+[(#REM)
+<object width="380" height="500" type="application/x-shockwave-flash" trace="false" altcontentid="freepaper_[(#GET{idswf})]" id="freepaper_[(#GET{idswf})]_ready" class="freepaper" data="#CHEMIN{swf/freepaper.0.8.1.swf}">
+<param name="width" value="#ENV{largeur,350}"/>
+<param name="height" value="#ENV{hauteur,450}"/>
+<param name="wmode" value="#ENV{wmode,window}"/>
+<param name="allowFullScreen" value="true"/>
+<param name="flashvars" value="xmlDataPath=[(#CHEMIN{xml/freepaper.xml})]&amp;swfURL=#GET{url_swf}"/>
+</object>
+]
+	<div id="pdf2swf_[(#GET{idswf})]">
+		<a href="http://www.adobe.com/go/getflashplayer">
+			<img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Télécharger le plugin Flash player" />
+		</a>
+	</div>
+
+	<script type="text/javascript">
+		// <![CDATA[
+		
+		var so = new SWFObject("[(#CHEMIN{swf/freepaper.0.8.1.swf})]", "freepaper_[(#GET{idswf})]_ready", "#ENV{largeur,380}", "#ENV{hauteur,400}", "6", "#efefef");
+		so.addVariable("flashVarText", "Chargement..."); // this line is optional, but this example uses the variable and displays this text inside the flash movie
+	   so.addVariable("xmlDataPath", "[(#CHEMIN{xml/freepaper.xml})]"); 
+	   so.addVariable("swfURL", "#GET{url_swf}");
+	   so.addParam("wmode", "#ENV{wmode,window}");
+	   so.addParam("allowFullScreen", "#GET{afs_swf,true}");
+	   so.addParam("trace", "true"); 
+
+		so.write("pdf2swf_[(#GET{idswf})]");
+		
+		// ]]>
+	</script>
+

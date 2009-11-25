@@ -1,0 +1,30 @@
+<BOUCLE_test_for(FOR){debut=1}{fin=10}{par 1}>
+	[(#SET{un_lien, [(#CONFIG{tispipskelet_conf/url_lien_menu[_(#COMPTEUR_BOUCLE)]})]})]
+	[(#COMPTEUR_BOUCLE|=={1}|oui)
+		[(#SET{bloc, menu[_(#COMPTEUR_BOUCLE)]})]
+		[(#SET{titre, Rang#COMPTEUR_BOUCLE})]
+			<li class="ligne_240">
+						<label for="nom_lien_menu_#COMPTEUR_BOUCLE">Texte du lien</label>
+							<input type="text" name="nom_lien_menu_#COMPTEUR_BOUCLE" id="nom_lien_menu_#COMPTEUR_BOUCLE" size="20" value="[(#ENV{nom_lien_menu_#COMPTEUR_BOUCLE})]" />
+			</li>
+			<li class="ligne_240">
+						<label for="url_lien_menu_#COMPTEUR_BOUCLE">Url du lien</label>
+							<input type="text" name="url_lien_menu_#COMPTEUR_BOUCLE" id="url_lien_menu_#COMPTEUR_BOUCLE" size="20" value="[(#ENV{url_lien_menu_#COMPTEUR_BOUCLE})]" />
+			</li>
+	]
+	
+
+
+[(#GET{un_lien}|oui)
+	[(#SET{rang, menu_[(#EVAL{1+#COMPTEUR_BOUCLE})]})]
+	[(#SET{titre, Rang[(#EVAL{1+#COMPTEUR_BOUCLE})]})]
+			<li class="ligne_240">
+						<label for="nom_lien_menu_#COMPTEUR_BOUCLE">Texte du lien</label>
+							<input type="text" name="nom_lien_menu_#GET{rang}" id="nom_lien_menu_#GET{rang}" size="20" value="[(#ENV{nom_lien_menu_#GET{rang}})]" />
+			</li>
+			<li class="ligne_240">
+						<label for="url_lien_menu_#COMPTEUR_BOUCLE">Url du lien</label>
+							<input type="text" name="url_lien_menu_#GET{rang}" id="url_lien_menu_#GET{rang}" size="20" value="[(#ENV{url_lien_menu_#GET{rang}})]" />
+			</li>
+]
+</BOUCLE_test_for>

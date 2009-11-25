@@ -1,0 +1,114 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+[(#CONFIG{tispipskelet_conf/s5/id_rub_s5}|?{[(#SET{idrubs5,[(#CONFIG{tispipskelet_conf/s5/id_rub_s5})]})],[(#SET{idrubs5,-1})]})]
+
+<head>
+<title>#NOM_SITE_SPIP - Plan du site</title>
+	<meta name="description" content="Plan du site [(#NOM_SITE_SPIP)]" />
+<INCLURE{fond=noisettes/inc-head}>
+</head>
+<body>
+	<div id="grand_container">
+		<div id="header">
+			[(#INCLURE{fond=noisettes/inc-entete})]
+			[(#INCLURE{fond=noisettes/inc-menuonglets}{plan=activelink})]
+		</div>
+		<div id="container">
+			[(#CONFIG{tispipskelet_conf/affmenuh}|?{' '})
+				[(#INCLURE{fond=noisettes/inc-menu-horiz})]
+			]
+			<div  id="content">
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			<div id="troiscols">
+		]
+				<dl class="bloc">
+					<dt class="cartouche">
+						<:plan_site:>
+					</dt>
+				</dl>
+						<BOUCLE_secteurs(RUBRIQUES) {racine} {par titre}>
+		
+				<dl class="bloc">
+					<dt class="cartouche">
+						<a href="#URL_RUBRIQUE">[(#TITRE|supprimer_tags)]</a>
+					</dt>
+					<dd>
+						[(#REM) Articles et sous-rubriques ]
+							<B_articles_racine>
+							<ul class="plan">
+								<BOUCLE_articles_racine(ARTICLES) {id_rubrique} {par titre}>
+								<li><a href="#URL_ARTICLE"><img src="[(#CHEMIN{i/page_go.png})]" alt=" " />[ (#TITRE|supprimer_tags)]</a></li>
+								</BOUCLE_articles_racine>
+							</ul>
+							</B_articles_racine>
+		
+							<B_rubriques>
+							<ul class="plan">
+								<BOUCLE_rubriques(RUBRIQUES) {id_parent} {par titre}>
+								<li><strong><a href="#URL_RUBRIQUE"><img src="[(#CHEMIN{i/package_go.png})]" alt=" " />[ (#TITRE|supprimer_tags)]</a></strong>
+		
+									<B_articles>
+									<ul class="plan">
+										<BOUCLE_articles(ARTICLES) {id_rubrique} {par titre}>
+										<li><a href="#URL_ARTICLE"><img src="[(#CHEMIN{i/page_go.png})]" alt=" " />[ (#TITRE|supprimer_tags)]</a></li>
+										</BOUCLE_articles>
+									</ul>
+									</B_articles>
+		
+									<BOUCLE_sous_rubriques(BOUCLE_rubriques)></BOUCLE_sous_rubriques>
+		
+								</li>
+								</BOUCLE_rubriques>
+		
+							</ul>
+							</B_rubriques>
+					</dd>
+				</dl>
+		
+				<ul class="blocsjumo">
+						<B_breves>
+					<li>
+						[(#REM) Breves ]
+							<h3 class="menu-titre"><:breves:></h3>
+							<dl style="font-size:.9em">
+								<BOUCLE_breves(BREVES) {id_secteur} {par date}{inverse}>
+								<dt><a href="#URL_BREVE"><img src="[(#CHEMIN{i/note_go.png})]" alt='' />[ (#TITRE|supprimer_tags)]</a></dt>
+								</BOUCLE_breves>
+							</dl>
+					</li>
+						</B_breves>
+						<B_sites>
+					<li>
+						[(#REM) Sur le Web ]
+							<h3 class="menu-titre"><:sites_web:></h3>
+							<dl style="font-size:.9em">
+								<BOUCLE_sites(SITES) {id_secteur} {par nom_site}>
+								<dt>
+									<a href="[(#ID_SYNDIC|generer_url_entite{'site'})]" title="[(#DESCRIPTIF|supprimer_tags)]" class="spip_out">
+										[(#LOGO_SITE||image_reduire{16,16}|sinon{<img src="[(#CHEMIN{i/world_go.png})]" alt='' />}) ][(#NOM_SITE|supprimer_tags)]
+									</a>
+								</dt>
+								</BOUCLE_sites>
+							</dl>
+					</li>
+						</B_sites>
+				</ul>
+						</BOUCLE_secteurs>
+		
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			</div>[(#REM)troiscols]
+			<div id="side2">
+					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}>
+			</div>[(#REM)side2]
+		]
+			</div>[(#REM)content]
+		
+			<div id="side">
+				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}>
+			</div>
+			
+	<INCLURE{fond=noisettes/inc-fin_page}>
+			
+</body>
+</html>

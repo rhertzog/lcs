@@ -1,0 +1,118 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=entete-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg">
+	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+	
+	<form method="post" action="#SELF">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+
+	<fieldset>
+		<legend>Image et commentaires &agrave; droite de l&rsquo;ent&ecirc;te</legend>
+		<ul>
+			<li class="ligne">
+					<label class="titre"><input type="checkbox" name="afftextentete" value="oui" [checked="(#ENV{afftextentete}|?{checked})" ] id="afftextentete" /> Afficher un texte &agrave; droite de l&rsquo;ent&ecirc;te
+					</label>
+				</li>
+		</ul>
+		<ul id="texte_entete" >
+			<li class="ligne">
+					<label>
+					<input type="radio" name="texte_entete" value="descriptif-site" [(#ENV{texte_entete}|=={descriptif-site}|?{checked="checked",''})] />Descriptif du site</label>
+					<div class="descriptif">[(#DESCRIPTIF_SITE_SPIP|?{#DESCRIPTIF_SITE_SPIP,<:tispipskelet:info_descriptif:>})]</div>
+			</li>
+			<li class="ligne">
+					<label>
+					<input type="radio" name="texte_entete" value="textlibre" [(#ENV{texte_entete}|=={textlibre}|?{checked="checked",''})] />Texte libre</label><br class="leon" /><br />
+			</li>
+			<li class="ligne_280">
+						<label for="color_texte_entete">Couleur du texte :</label>
+						<input type="text" name="color_texte_entete" id="color_texte_entete"  class="palette" size="7"  value="[(#ENV{color_texte_entete}|?{#ENV{color_texte_entete},#000000})]" />
+			</li>
+			<li class="ligne_280">
+					<label for="text_libre_entete" >Votre texte</label>
+					<textarea name="text_libre_entete" id="text_libre_entete"  rows="4" cols="40" style="width:100%;">[(#ENV{texte_entete}|=={textlibre}|?{#ENV{text_libre_entete}})]</textarea>
+			</li>
+		</ul>
+		<ul>
+			<li class="ligne">
+					<label class="titre"><input type="checkbox" name="affimg_entete" value="oui" [checked="(#ENV{affimg_entete}|?{checked})" ] id="affimg_entete" /> Afficher une image &agrave; droite de l&rsquo;ent&ecirc;te</label>
+			</li>
+		</ul>
+		<ul id="cfgimg_entete">
+			<li>
+					<label>Charger l'&rsquo;image :
+					<input type="file" name="img_entete" value=" " size="30" /></label>
+					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{img_entete})</span>]
+			</li>
+			[<li>Image actuelle : (#ENV{img_entete}|?{[(#CFG_CHEMIN{tispipskelet_conf/entete/img_entete}|image_reduire{100})],Aucune image})
+			</li>]
+		</ul>
+		<ul>
+			<li class="ligne">
+					<label class="titre"><input type="checkbox" name="affimg_entete_bg" value="oui" [checked="(#ENV{affimg_entete_bg}|?{checked})" ] id="affimg_entete_bg" /> Afficher une image d&rsquo;arri&egrave;re plan &agrave; droite de l&rsquo;ent&ecirc;te
+					</label>
+				</li>
+				<li id="cfgimg_entete_bg" class="labels_cfg_tispipskelet">
+					<label>Charger l'&rsquo;image :
+					<input type="file" name="img_entete_bg" value=" " size="30" /></label>
+					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{img_entete_bg})</span>]
+		
+					<h5>Image d&rsquo;arri&egrave;re plan actuelle</h5>
+					<dl>		
+						<dt>[(#ENV{img_entete_bg}|?{[(#CFG_CHEMIN{tispipskelet_conf/entete/img_entete_bg}|image_reduire{100})],Aucune image})]</dt>
+					</dl>
+			</li>
+		</ul>
+	</fieldset>
+<script type="text/javascript"><!--
+	$('#afftextentete')
+	.bind('change', function() {
+            $('#texte_entete').slideToggle('slow');
+	})
+	if ($('#afftextentete:checked').length == 0)
+		$('#texte_entete').hide();
+
+	$('#affimg_entete')
+	.bind('change', function() {
+            $('#cfgimg_entete').slideToggle('slow');
+	})
+	if ($('#affimg_entete:checked').length == 0)
+		$('#cfgimg_entete').hide();
+
+	$('#affimg_entete_bg')
+	.bind('change', function() {
+            $('#cfgimg_entete_bg').slideToggle('slow');
+	})
+	if ($('#affimg_entete_bg:checked').length == 0)
+		$('#cfgimg_entete_bg').hide();
+// --></script>
+
+<script type="text/javascript"><!--
+$(document).ready(
+	$(function() {
+	  $('.boxy').boxy();
+	});
+);
+// --></script>
+
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			
+			<div style="text-align:center;margin-bottom:25px;">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

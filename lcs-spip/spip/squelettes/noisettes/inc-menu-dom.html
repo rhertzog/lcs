@@ -1,0 +1,131 @@
+	[(#SET{titre_menu,[(#CONFIG{tispipskelet_conf/titre_menu})]})]
+<BOUCLE_exclure(RUBRIQUES){titre_mot=_exclure_menu_}{doublons}></BOUCLE_exclure>
+<B_rubriques>
+	[(#SET{plus,[(#CONFIG{tispipskelet_conf/img_menu})_xx.png]})] 
+	[(#SET{minus,[(#CONFIG{tispipskelet_conf/img_menu})_yy.png]})]
+	[(#SET{vide,[(#CONFIG{tispipskelet_conf/img_menu})_zz.png]})]
+<script type="text/javascript">
+<!--
+/*
+* Menu accordeon recursif multi-niveaux
+* Auteur : domZ (domz@simc.be)
+* copyleft 2009
+*/
+
+$(document).ready( function () {
+	
+    // On selectionne tous les items de liste"
+	$(".menunavdom li").each( function () {
+		//on recherche si les rubiques listees comportent des sous-rubriques
+		if($(this).children("ul").find("li").length !=0) {
+			// si oui, on place l'image plus.gif devant le lien et on ajoute la classe toggleSubMenu
+			$(this).prepend("<img src='[(#CHEMIN{img_pack/menu-dom/[(#GET{plus,folder_xx.png})]})]' alt='D&eacute;plier' class='bouton' />");
+			$(this).addClass("toggleSubMenu");
+		} else {
+			//sinon on place une image transparente
+	 		$(this).prepend("<img src='[(#CHEMIN{img_pack/menu-dom/[(#GET{vide,folder_zz.png})]})]' alt='' class='vielle_fille' />");
+		}
+   }) ;
+   
+    // On cache les sous-menus
+    // sauf celui ou ceux qui portent la classe " open_at_load" :
+    $(".menunavdom ul.subMenu:not('.open_at_load')").hide();
+    // on ajoute une image cliquable minus au passage à celui qui porte cette classe
+    // on ajoute egalement la class open au li parent
+	$('ul.open_at_load').parent('li').addClass("open").children('img').attr({ src: "[(#CHEMIN{img_pack/menu-dom/[(#GET{minus,folder_yy.png})]})]", alt: "Plier" });
+	  
+    // On modifie l'evenement "click" sur l'image plus.gif dans les items de liste
+    // qui portent la classe "toggleSubMenu" :
+	$(".menunavdom li.toggleSubMenu > img.bouton").click( function () {
+        // Si le sous-menu etait deja ouvert, on le referme :
+		if ($(this).next('a').next("ul.subMenu:visible").length != 0) {
+            $(this).next('a').next("ul.subMenu:visible").slideUp("normal", function () { 
+				$(this).parent().removeClass("open") 
+			});
+            $(this).attr({ src: "[(#CHEMIN{img_pack/menu-dom/[(#GET{plus,folder_xx.png})]})]", alt: " " });
+		}
+        // Si le sous-menu est cache, on ferme les autres s'ils sont ouverts, sauf les parents et on l'affiche :
+		else {
+			$(".menunavdom ul.subMenu:visible").not($(this).parents('ul.subMenu:visible')).slideUp("normal", function () {
+				$(this).removeClass("open").parents('ul.submenu').find('img')
+					.attr({ src: "[(#CHEMIN{img_pack/menu-dom/[(#GET{plus,folder_xx.png})]})]", alt: "D&eacute;plier" });
+					$(this).parent().removeClass("open") ;
+			});
+  			$(".menunavdom li.toggleSubMenu > img.bouton").each( function () {
+				$(this).attr({ src: "[(#CHEMIN{img_pack/menu-dom/[(#GET{plus,folder_xx.png})]})]", alt: "D&eacute;plier" });
+			});
+			$(this).next('a').next("ul.subMenu").slideDown("normal", function () {
+				$(this).parent('li.toggleSubMenu').addClass("open") ;
+				$(this).parents('li.toggleSubMenu').children('img').attr({ src: "[(#CHEMIN{img_pack/menu-dom/[(#GET{minus,folder_yy.png})]})]", alt: "Plier" });
+			});
+         $(this).attr({ src: "[(#CHEMIN{img_pack/menu-dom/[(#GET{minus,folder_yy.png})]})]", alt: " " });
+		}
+		 // On empêche le navigateur de suivre le lien :
+		 return false;
+	});
+
+} ) ;
+// -->
+
+</script>
+<div class="rubriques" style="padding-bottom:5px">
+	<h3 class="menu-titre">[(#GET{titre_menu,Navigation})]</h3>
+	<ul class="menunavdom">
+		[(#CONFIG{tispipskelet_conf/lien_accueil_menu}|oui)
+			<li class="secteur">
+				<a href="spip.php?page=sommaire"[ (#ENV{page}|=={accueil}|oui)class="on"] title="Aller &agrave; la page d'accueil">
+					[(#CONFIG{tispipskelet_conf/strong_menu}|?{<strong>Accueil</strong>,Accueil})]
+				</a>
+			</li>
+		]
+		<BOUCLE_rubriques(RUBRIQUES) {racine} {par num titre, titre}{doublons}>
+			<li class="secteur[ (#EXPOSE)]">
+				<a href="#URL_RUBRIQUE"[ class="(#EXPOSE)"]>
+					[(#CONFIG{tispipskelet_conf/strong_menu}|?{<strong>[(#TITRE|supprimer_numero|couper{80})]</strong>,[(#TITRE|supprimer_numero|couper{80})]})]
+				</a>
+				<!-- affichage des articles des secteurs s'il y en a -->
+			[(#REM)
+				[(#CONFIG{tispipskelet_conf/aff_articles_menu}|oui)
+					[(#EXPOSE|oui) #SET{class,open_at_load} ]
+					<INCLURE{fond=noisettes/inc-menu_articles}{id_rubrique}{class=#GET{class,noclass}}>
+				]
+			]
+				<B_sous_rubriques>
+					<ul class="subMenu[ (#EXPOSE|?{open_at_load})]">
+						<BOUCLE_sous_rubriques(RUBRIQUES) {id_parent} {par num titre, titre}>
+							<li>
+								<a href="#URL_RUBRIQUE"[ class="(#EXPOSE)"]>
+									[(#CONFIG{tispipskelet_conf/strong_menu}|?{<strong>[(#TITRE|supprimer_numero|couper{80})]</strong>,[(#TITRE|supprimer_numero|couper{80})]})]
+								</a>
+							[(#REM)
+								[(#CONFIG{tispipskelet_conf/aff_articles_menu}|oui)
+									[(#EXPOSE|?{#SET{class, open_at_load} toto })]
+									<INCLURE{fond=noisettes/inc-menu_articles}{id_rubrique}{class=#GET{class,noclass}}>
+								]
+							]
+								<BOUCLE_re(BOUCLE_sous_rubriques)></BOUCLE_re>	
+							</li>
+						</BOUCLE_sous_rubriques>
+					</ul>
+				</B_sous_rubriques>
+			</li>
+		</BOUCLE_rubriques>
+		<BOUCLE_les_groupes(FOR){debut=1}{fin=10}{par 1}>
+			<INCLURE{fond=noisettes/inc-menu-dom_mots}{rang=#COMPTEUR_BOUCLE}{id_groupe}{id_mot}>
+		</BOUCLE_les_groupes>
+		<BOUCLE_items_perso(FOR){debut=1}{fin=10}{par 1}>
+			[(#CONFIG{tispipskelet_conf/url_lien_menu_#COMPTEUR_BOUCLE}|oui)
+				<INCLURE{fond=noisettes/inc-menu-dom_itemsperso}{rang=#COMPTEUR_BOUCLE}{id_groupe}{id_mot}>
+			]
+		</BOUCLE_items_perso>
+	</ul>
+	[(#REM)
+	<script type="text/javascript"><!--
+		$(document).ready(function() {
+			$('ul.subMenu li').css('opacity',0.8);
+		});
+	-->
+	</script>
+	]
+</div>
+</B_rubriques>

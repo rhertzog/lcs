@@ -1,0 +1,28 @@
+#CACHE{24*3600}
+<BOUCLE_blocs_jumos(FOR){debut=1}{fin=10}{par 1}>
+[(#REM) Blocs jumeaux (boites a coucou)]
+[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]posblocjumo}|=={#ENV{posblocj}}|?{' '})
+	[(#SET{ctnblocg#COMPTEUR_BOUCLE,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]ctnbj_g_[(#COMPTEUR_BOUCLE)]})]})]
+	[(#SET{ctnblocd#COMPTEUR_BOUCLE,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]ctnbj_d_[(#COMPTEUR_BOUCLE)]})]})]
+	[(#GET{ctnblocg#COMPTEUR_BOUCLE}|=={mots}|?{
+		[(#SET{ctnblocg#COMPTEUR_BOUCLE,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]type_mots_bj_g_[(#COMPTEUR_BOUCLE)]})]})]
+	})]
+	[(#GET{ctnblocd#COMPTEUR_BOUCLE)}|=={mots}|?{
+		[(#SET{ctnblocd#COMPTEUR_BOUCLE,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]type_mots_bj_d_[(#COMPTEUR_BOUCLE)]})]})]
+	})]
+		[(#GET{ctnblocg[(#COMPTEUR_BOUCLE)],[(#GET{ctnblocd[(#COMPTEUR_BOUCLE)]})]}|?{' '})
+	<ul [(#GET{ctnblocg#COMPTEUR_BOUCLE}|=={cycle}|?{id="intro_ifade",[(#GET{ctnblocd#COMPTEUR_BOUCLE}|=={cycle}|?{id="intro_ifade",id="intro_#COMPTEUR_BOUCLE"})]})] class="intro">
+		[(#GET{ctnblocg#COMPTEUR_BOUCLE}|!={''}|oui)
+			<li class="boite_g" id="boite_g_#COMPTEUR_BOUCLE"[(#GET{ctnblocg#COMPTEUR_BOUCLE}|=={cycle}|?{' '}) style="background:transparent;"]>
+				<INCLURE{fond=noisettes/inc-#GET{ctnblocg#COMPTEUR_BOUCLE}}{bloc=bj_g_#COMPTEUR_BOUCLE}{casier=#ENV{casier}}{id_rubrique}{env}{ajax}>
+			</li>
+		]
+		[(#GET{ctnblocd#COMPTEUR_BOUCLE}|?{' '})
+			<li class="boite_g" id="boite_d_#COMPTEUR_BOUCLE"[(#GET{ctnblocd#COMPTEUR_BOUCLE}|=={cycle}|?{' '}) style="background:transparent;"]>
+				<INCLURE{fond=noisettes/inc-#GET{ctnblocd#COMPTEUR_BOUCLE}}{bloc=bj_d_#COMPTEUR_BOUCLE}{casier=#ENV{casier}}{id_rubrique}{env}{ajax}>
+			</li>
+		]
+	</ul>
+	]
+]
+</BOUCLE_blocs_jumos>

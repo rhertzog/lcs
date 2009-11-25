@@ -1,0 +1,46 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg">
+	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+	
+	<form method="post" action="#SELF">
+		<div style="margin-bottom:25px;"> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend><:tispipskelet:affichage_mef_article:></legend>
+				<ul>
+					<li class="ligne">
+						<label><input type="checkbox" name="aff_datepubart" value="non" [checked="(#ENV{aff_datepubart}|?{checked})"] /><:tispipskelet:afficher_date_publication_non:>
+						</label>
+					</li>
+					<li class="ligne">
+						<label><input type="checkbox" name="aff_datemodart" value="non" [checked="(#ENV{aff_datemodart}|?{checked})"] /><:tispipskelet:afficher_date_modif_non:>
+						</label>
+					</li>
+					<li class="ligne">
+						<label><input type="checkbox" name="aff_auteurart" value="non" [checked="(#ENV{aff_auteurart}|?{checked})"] /><:tispipskelet:afficher_auteur_non:>
+						</label>
+					</li>
+					<li class="ligne">
+						<label><input type="checkbox" name="textart_justify" value="textart_justify" [checked="(#ENV{textart_justify}|?{checked})"] /><:tispipskelet:justifier_texte:>
+						</label>
+					</li>
+				</ul>
+			</fieldset>
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

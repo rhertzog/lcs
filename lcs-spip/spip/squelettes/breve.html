@@ -1,0 +1,85 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<B_principale_breve>
+<BOUCLE_principale_breve(BREVES) {id_breve}>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>#NOM_SITE_SPIP</title>
+<INCLURE{fond=noisettes/inc-head}>
+[<meta name="description" content="(#INTRODUCTION|couper{150}|textebrut)" />]
+</head>
+<body>
+<div id="grand_container">
+<div id="header">
+	[(#INCLURE{fond=noisettes/inc-entete})]
+	[(#INCLURE{fond=noisettes/inc-menuonglets})]
+</div>
+<div id="container">
+	[(#CONFIG{tispipskelet_conf/affmenuh}|?{' '})
+		[(#INCLURE{fond=noisettes/inc-menu-horiz})]
+	]
+	<div  id="content">
+[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+	<div id="troiscols">
+]
+		<div class="hierarchie">
+			<h5><b><a href="#URL_SITE_SPIP/"><:accueil_site:></a><BOUCLE_ariane(HIERARCHIE){id_rubrique}> &gt; <a href="#URL_RUBRIQUE">[(#TITRE|supprimer_tags|supprimer_numero|couper{80})]</a></BOUCLE_ariane>[ &gt; (#TITRE|supprimer_tags|supprimer_numero|couper{80})]</b></h5>
+      	</div>
+	[(#REM) Grande boite edito]
+		<dl class="bloc"> 
+			#DEBUT_SURLIGNE
+			<dt class="cartouche">
+			[(#LOGO_BREVE_RUBRIQUE||image_reduire{200,200})]
+			<span>[(#TITRE|supprimer_tags)]</span>
+			</dt>
+			<dd class="date">
+				<em>[(#DATE|nom_jour) ][(#DATE|affdate)][, <:par_auteur:> (#LESAUTEURS)]</em>
+			</dd>
+			<dd class="tags">
+				<B_mots_art><img src="[(#CHEMIN{i/tag_blue.png})]" alt='' /><strong> Tags :</strong><BOUCLE_mots_art(MOTS) {id_breve} {par titre} {", "}>
+					<a href="#URL_MOT" rel="tag">[(#TITRE|supprimer_tags)]</a>
+				</BOUCLE_mots_art>
+			</dd>
+			<dd>
+				#TEXTE
+			[<p class="[(#CONFIG{lcs_skel_conf/wiki/id_rub_wiki}|=={#ID_RUBRIQUE}|?{' '})#EDIT{hyperlien}] lien"><:voir_en_ligne:> : <a href="(#URL_SITE)" class="spip_out">[(#NOM_SITE|sinon{[(#URL_SITE|couper{80})]})]</a></p>]
+			</dd>
+			#FIN_SURLIGNE
+		</dl>
+
+[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+	</div>[(#REM)troiscols]
+	<div id="side2">
+			<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}>
+	</div>[(#REM)side2]
+]
+	</div>[(#REM)content]
+
+	<div id="side">
+		<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}>
+	</div>
+
+			[(#CONFIG{tispipskelet_conf/pied_ds_page}|oui)
+				<div id="footer" style="margin-top:10px">
+					[(#INCLURE{fond=noisettes/inc-pied})]
+				</div>[(#REM) footer]
+			]
+			<div id="clear_copy"></div>
+		</div>[(#REM)container]
+	</div>[(#REM)grand_container]
+	
+[(#CONFIG{tispipskelet_conf/pied_ds_page}|non)
+	<div id="footer" style="margin-top:10px">
+		[(#INCLURE{fond=noisettes/inc-pied})]
+	</div>[(#REM) footer]
+]
+[(#INCLURE{fond=noisettes/inc-copy})]
+
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftycube.js})"></script>]
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftyLayout.js})"></script>]
+</body>
+</html>
+</BOUCLE_principale_breve>
+</B_principale_breve>
+[(#INCLURE{fond=page404})]
+<//B_principale_breve>

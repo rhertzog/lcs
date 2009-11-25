@@ -1,0 +1,79 @@
+#CACHE{0}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<BOUCLE_principale(RUBRIQUES){id_rubrique}>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>#NOM_SITE_SPIP</title>
+<INCLURE{fond=noisettes/inc-head}>
+</head>
+<body>
+<div id="header">
+	[(#INCLURE{fond=noisettes/inc-entete})]
+	[(#INCLURE{fond=noisettes/inc-menuonglets}{id_rubrique})]
+</div>
+<div id="container">
+	<div id="content">
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+	<div id="troiscols">
+]
+	<div id="hierarchie">
+		<a href="#URL_SITE_SPIP/"><:accueil_site:></a><BOUCLE_ariane(HIERARCHIE){id_rubrique}> &gt; <a href="#URL_RUBRIQUE">[(#TITRE|couper{80})]</a></BOUCLE_ariane>[ &gt; (#TITRE|couper{80})]
+	</div>
+		<dl class="bloc">
+			<dt class="cartouche">
+					[(#LOGO_RUBRIQUE||image_reduire{100}|sinon{[(#LOGO_SITE_SPIP||image_reduire{100})]}|inserer_attribut{style,float:right})][(#TITRE|supprimer_numero)]
+			</dt>
+			<dd class="cartouche">
+				[<em><:dernier_ajout:> : (#DATE|affdate_jourcourt).</em>]
+				[<div class="chapo">(#DESCRIPTIF)</div>]
+				[<div class="chapo">(#TEXTE)</div>]
+			</dd>
+			[(#INCLURE{fond=noisettes/inc-documents}{id_rubrique})]
+		</dl>
+
+		[(#CONFIG{lcs_skel_conf/rubriques/affbj_rub}|?{' '})
+			<INCLURE{fond=noisettes/inc-blocs_jumos_rub}{id_rubrique}{posblocj=haut}>
+		]
+		
+		[(#INCLURE{fond=noisettes/inc-carrousel}{id_rubrique})]
+		
+		[(#CONFIG{lcs_skel_conf/rubriques/afflistart_rub}|?{' '})
+			[(#INCLURE{fond=noisettes/inc-listarticles}{id_rubrique}{page=rubrique}{pagin=#ENV{debut_articles}}{self=#SELF}{ajax}{env})]
+		]
+		
+		[(#CONFIG{lcs_skel_conf/rubriques/afflistsousrub_rub}|=={oui}|?{' '})
+			<div>
+				[(#INCLURE{fond=noisettes/inc-list_rubriques}{id_rubrique}{self=#SELF})]
+			</div>
+		]
+		[(#CONFIG{lcs_skel_conf/rubriques/afflistsites_rub}|=={oui}|?{' '})
+			[(#INCLURE{fond=noisettes/inc-list_sites}{id_rubrique}{self=#SELF})]
+		]
+		[(#CONFIG{lcs_skel_conf/rubriques/affbj_rub}|?{' '})
+			<INCLURE{fond=noisettes/inc-blocs_jumos_rub}{id_rubrique}{posblocj=bas}>
+		]
+
+[(#CONFIG{lcs_skel_conf/nb_cols}|=={3}|?{' '})
+	</div>
+	<div id="side2">
+		<INCLURE{fond=noisettes/inc-colonne_rub}{id_rubrique}{colonne=gauche}>
+	</div>
+]
+		</div><!-- fin content -->
+
+	<div id="side">
+		<INCLURE{fond=noisettes/inc-colonne_rub}{id_rubrique}{colonne=droite}>
+		</div><!-- fin side -->
+
+	<div id="footer">
+		[(#INCLURE{fond=noisettes/inc-pied}{id_rubrique})]
+	</div><!-- fin footer -->
+
+</div><!-- fin container -->
+</body>
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftycube.js})"></script>]
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftyLayout.js})"></script>]
+</html>
+</BOUCLE_principale>
+[(#INCURE{fond=page404})]
+<//B_principale>

@@ -1,0 +1,524 @@
+<?xml version="1.0"?>
+<log>
+<logentry
+   revision="3023">
+<author>dom0</author>
+<date>2009-11-20T00:15:20.322074Z</date>
+<msg>Lcs-spip2: Tispip: Change the call of geogebra.jar</msg>
+</logentry>
+<logentry
+   revision="3022">
+<author>dom0</author>
+<date>2009-11-19T23:52:18.847963Z</date>
+<msg>Lcs-spip2: Tispip: Oups! height of header</msg>
+</logentry>
+<logentry
+   revision="3021">
+<author>dom0</author>
+<date>2009-11-19T23:40:20.138307Z</date>
+<msg>Lcs-spip2: Tispip: Add google translate</msg>
+</logentry>
+<logentry
+   revision="3020">
+<author>dom0</author>
+<date>2009-11-19T22:25:16.047533Z</date>
+<msg>Lcs-spip2: Tispip: Import / export configuration display</msg>
+</logentry>
+<logentry
+   revision="3019">
+<author>dom0</author>
+<date>2009-11-19T21:15:42.958297Z</date>
+<msg>Lcs-spip2: Tispip: Call scripts for image galleries in the pages "articles" only when necessary (except for stylesheets)</msg>
+</logentry>
+<logentry
+   revision="3018">
+<author>dom0</author>
+<date>2009-11-19T20:48:17.325082Z</date>
+<msg>Removing unnecessary files from test import / export</msg>
+</logentry>
+<logentry
+   revision="3017">
+<author>dom0</author>
+<date>2009-11-19T20:41:00.544325Z</date>
+<msg>Remove the directory tmp useless</msg>
+</logentry>
+<logentry
+   revision="3016">
+<author>dom0</author>
+<date>2009-11-19T20:26:17.510856Z</date>
+<msg>Lcs-spip2: Tispip: image for background header</msg>
+</logentry>
+<logentry
+   revision="3014">
+<author>dom0</author>
+<date>2009-11-19T16:10:13.830157Z</date>
+<msg>Lcs-spip2: Tispip: Show loaded image in the upload form</msg>
+</logentry>
+<logentry
+   revision="3007">
+<author>dom0</author>
+<date>2009-11-17T20:41:51.931364Z</date>
+<msg>Lcs-spip2: Tispip: - propose a "scroll" in the blocks if the display is outside the div vertically</msg>
+</logentry>
+<logentry
+   revision="3006">
+<author>dom0</author>
+<date>2009-11-17T20:29:49.449606Z</date>
+<msg>Lcs-spip2: Tispip: - Title of list-items on home page</msg>
+</logentry>
+<logentry
+   revision="3002">
+<author>dom0</author>
+<date>2009-11-15T15:27:58.888577Z</date>
+<msg>Lcs-spip2: Tispip: - import/export of graphics configurations (test)</msg>
+</logentry>
+<logentry
+   revision="2997">
+<author>dom0</author>
+<date>2009-11-15T00:39:22.876713Z</date>
+<msg>Lcs-spip : Tispip : rename cfg_TiSpiP_Restauration to cfg_TiSpiP_Import</msg>
+</logentry>
+<logentry
+   revision="2996">
+<author>dom0</author>
+<date>2009-11-15T00:38:00.728137Z</date>
+<msg>Lcs-spip2 : Tispip : rename cfg_TiSpiP_Sauvegarde to cfg_TiSpiP_Export</msg>
+</logentry>
+<logentry
+   revision="2995">
+<author>dom0</author>
+<date>2009-11-14T20:28:17.496862Z</date>
+<msg>Lcs-spip2: Tispip: - files for "mon-lcs"</msg>
+</logentry>
+<logentry
+   revision="2990">
+<author>dom0</author>
+<date>2009-11-13T15:01:36.480740Z</date>
+<msg>Lcs-spip2: Tispip: - css for image "close help"</msg>
+</logentry>
+<logentry
+   revision="2987">
+<author>dom0</author>
+<date>2009-11-13T00:33:21.304143Z</date>
+<msg>Lcs-spip2: Tispip: - Add image "close help"</msg>
+</logentry>
+<logentry
+   revision="2986">
+<author>dom0</author>
+<date>2009-11-12T22:33:52.935426Z</date>
+<msg>Lcs-spip2: Tispip: - Fix footer position</msg>
+</logentry>
+<logentry
+   revision="2985">
+<author>dom0</author>
+<date>2009-11-12T14:24:23.454848Z</date>
+<msg>Lcs-spip2: Tispip: - Test for update 4</msg>
+</logentry>
+<logentry
+   revision="2984">
+<author>dom0</author>
+<date>2009-11-12T13:54:12.114140Z</date>
+<msg>Lcs-spip2: Tispip: - Test for update</msg>
+</logentry>
+<logentry
+   revision="2983">
+<author>dom0</author>
+<date>2009-11-12T13:35:02.813635Z</date>
+<msg>Lcs-spip2: Tispip: - Revision number</msg>
+</logentry>
+<logentry
+   revision="2981">
+<author>dom0</author>
+<date>2009-11-12T12:35:13.757061Z</date>
+<msg>Lcs-spip2: Tispip: - Test for update</msg>
+</logentry>
+<logentry
+   revision="2980">
+<author>dom0</author>
+<date>2009-11-12T08:08:35.842427Z</date>
+<msg>Lcs-spip2: Tispip: - Test backup of a display configuration (with background images)</msg>
+</logentry>
+<logentry
+   revision="2979">
+<author>dom0</author>
+<date>2009-11-11T18:30:37.115540Z</date>
+<msg>Lcs-spip2: Tispip: Display in the validation page plugins, a link to the configuration pages of the public display</msg>
+</logentry>
+<logentry
+   revision="2978">
+<author>dom0</author>
+<date>2009-11-11T18:27:41.654963Z</date>
+<msg>Lcs-spip2: Tispip: Modifs for first install</msg>
+</logentry>
+<logentry
+   revision="2977">
+<author>dom0</author>
+<date>2009-11-11T18:26:43.542652Z</date>
+<msg>Lcs-spip2: Tispip: just a test</msg>
+</logentry>
+<logentry
+   revision="2976">
+<author>dom0</author>
+<date>2009-11-11T14:37:08.810267Z</date>
+<msg>Lcs-spip2: Tispip: 	
+- Fixed css styles of the search
+- Fixed css styles and display of the link to the homepage of the navigation menu-mm (mouse over)
+- Fixed css styles and display of the link to the homepage of the navigation menu-dom (click)  </msg>
+</logentry>
+<logentry
+   revision="2975">
+<author>dom0</author>
+<date>2009-11-11T14:31:41.541125Z</date>
+<msg>Lcs-spip2: Tispip:  - Add parameters in the private "nuts"</msg>
+</logentry>
+<logentry
+   revision="2974">
+<author>dom0</author>
+<date>2009-11-11T14:30:28.415003Z</date>
+<msg>Lcs-spip2: Tispip:  - Changing the call context sensitive help</msg>
+</logentry>
+<logentry
+   revision="2973">
+<author>dom0</author>
+<date>2009-11-11T14:27:18.960415Z</date>
+<msg>Lcs-spip2: Tispip:  - Changing the call of forums in the pages "article" </msg>
+</logentry>
+<logentry
+   revision="2972">
+<author>dom0</author>
+<date>2009-11-11T12:10:20.517854Z</date>
+<msg>Lcs-spip2: Tispip:  - Changing the call of forums in the pages "article" </msg>
+</logentry>
+<logentry
+   revision="2971">
+<author>dom0</author>
+<date>2009-11-11T12:08:23.314046Z</date>
+<msg>Lcs-spip2: Tispip:  Passage of the form response to an article processing ajax </msg>
+</logentry>
+<logentry
+   revision="2970">
+<author>dom0</author>
+<date>2009-11-10T22:50:38.538276Z</date>
+<msg>Lcs-spip2: Tispip:  modif footer</msg>
+</logentry>
+<logentry
+   revision="2969">
+<author>dom0</author>
+<date>2009-11-10T20:34:36.638930Z</date>
+<msg>Lcs-spip2: Tispip:  Remove farbtastic css and images</msg>
+</logentry>
+<logentry
+   revision="2968">
+<author>dom0</author>
+<date>2009-11-10T17:36:48.528144Z</date>
+<msg>Lcs-spip2: Tispip:  Debug vertical menu hover. Compatibility with the vertical menu click (you keep the conf from one to another)</msg>
+</logentry>
+<logentry
+   revision="2967">
+<author>dom0</author>
+<date>2009-11-10T17:27:22.556556Z</date>
+<msg>Lcs-spip2: Tispip:  Fixed bug in footer</msg>
+</logentry>
+<logentry
+   revision="2966">
+<author>dom0</author>
+<date>2009-11-10T17:26:24.090347Z</date>
+<msg>Lcs-spip2: Tispip:  correction  text in TiSpiP_Article</msg>
+</logentry>
+<logentry
+   revision="2965">
+<author>dom0</author>
+<date>2009-11-10T17:25:46.296523Z</date>
+<msg>Lcs-spip2: Tispip:  correction bug css dynamic menus vertical
+correction bug css dynamic for text in header (right)</msg>
+</logentry>
+<logentry
+   revision="2964">
+<author>dom0</author>
+<date>2009-11-10T08:25:17.447467Z</date>
+<msg>Lcs-spip2: Tispip:  	
+Change links to the pages of contextual help in the pages of display configuration</msg>
+</logentry>
+<logentry
+   revision="2963">
+<author>dom0</author>
+<date>2009-11-10T08:23:40.220739Z</date>
+<msg>Lcs-spip2: Tispip:  Fixed hover menu folder for compatibility with the setup menu-dom</msg>
+</logentry>
+<logentry
+   revision="2962">
+<author>dom0</author>
+<date>2009-11-09T21:45:55.023237Z</date>
+<msg>Removing the plugin spip "Menudepr"</msg>
+</logentry>
+<logentry
+   revision="2956">
+<author>dom0</author>
+<date>2009-11-08T19:57:50.862204Z</date>
+<msg>Lcs-spip2: Tispip: -An other test for background image in header</msg>
+</logentry>
+<logentry
+   revision="2955">
+<author>dom0</author>
+<date>2009-11-08T15:03:46.368104Z</date>
+<msg>Lcs-spip2: Tispip: - fix bug on update template files according to the number of revision</msg>
+</logentry>
+<logentry
+   revision="2954">
+<author>dom0</author>
+<date>2009-11-08T14:45:15.412182Z</date>
+<msg>Lcs-spip2: Tispip: - Update template files according to the number of revision</msg>
+</logentry>
+<logentry
+   revision="2953">
+<author>dom0</author>
+<date>2009-11-08T14:43:03.999162Z</date>
+<msg>Lcs-spip2: Tispip: - Display the choice of browser tabs based plugins validated
+- Display links to configuration pages TiSPiP only for admin</msg>
+</logentry>
+<logentry
+   revision="2949">
+<author>jlcf</author>
+<date>2009-11-07T16:36:30.144643Z</date>
+<msg>lcs-spip2 : Correct spip_session_lcs.php for spip 2</msg>
+</logentry>
+<logentry
+   revision="2945">
+<author>dom0</author>
+<date>2009-11-07T16:15:19.512797Z</date>
+<msg>Lcs-spip2: Tispip:  revision number</msg>
+</logentry>
+<logentry
+   revision="2943">
+<author>dom0</author>
+<date>2009-11-07T16:09:20.052958Z</date>
+<msg>Lcs-spip2: Tispip:  fix the position of background and title in the header</msg>
+</logentry>
+<logentry
+   revision="2941">
+<author>dom0</author>
+<date>2009-11-07T09:31:40.382967Z</date>
+<msg>Lcs-spip2: Tispip:  revision number</msg>
+</logentry>
+<logentry
+   revision="2940">
+<author>dom0</author>
+<date>2009-11-07T09:25:08.908047Z</date>
+<msg>Lcs-spip2: Tispip:  Fix page "abonnement"</msg>
+</logentry>
+<logentry
+   revision="2939">
+<author>dom0</author>
+<date>2009-11-07T09:08:05.058222Z</date>
+<msg>Lcs-spip2: Tispip:  Display message for admins</msg>
+</logentry>
+<logentry
+   revision="2938">
+<author>dom0</author>
+<date>2009-11-07T09:06:31.099845Z</date>
+<msg>Lcs-spip2: Tispip:  correct home link in the menu</msg>
+</logentry>
+<logentry
+   revision="2937">
+<author>dom0</author>
+<date>2009-11-07T01:17:58.316795Z</date>
+<msg>Lcs-spip2: Tispip:  correct spip link in the footer
+- correct link to the configuration TiSpiP</msg>
+</logentry>
+<logentry
+   revision="2936">
+<author>dom0</author>
+<date>2009-11-06T23:17:02.743760Z</date>
+<msg>Lcs-spip2: Tispip:  Fixed the default conf of the page "Rubriques"</msg>
+</logentry>
+<logentry
+   revision="2935">
+<author>dom0</author>
+<date>2009-11-06T22:17:05.359695Z</date>
+<msg>Lcs-spip2: Tispip:  Fixed the default conf of the background of the header (ChistLDesign)</msg>
+</logentry>
+<logentry
+   revision="2934">
+<author>dom0</author>
+<date>2009-11-06T22:15:15.738833Z</date>
+<msg>Lcs-spip2: Tispip:  Add image for message admins</msg>
+</logentry>
+<logentry
+   revision="2932">
+<author>dom0</author>
+<date>2009-11-06T15:45:33.584721Z</date>
+<msg>Lcs-spip2: Tispip:  revision number</msg>
+</logentry>
+<logentry
+   revision="2931">
+<author>dom0</author>
+<date>2009-11-06T15:43:20.808115Z</date>
+<msg>Lcs-spip2: Tispip: 	
+Changing the position of buttons spip
+- Change the header</msg>
+</logentry>
+<logentry
+   revision="2930">
+<author>dom0</author>
+<date>2009-11-06T15:31:08.197703Z</date>
+<msg>Lcs-spip2: Tispip: revision number</msg>
+</logentry>
+<logentry
+   revision="2929">
+<author>dom0</author>
+<date>2009-11-06T15:27:34.111370Z</date>
+<msg>Lcs-spip2: Tispip: New background img in header by Mr Chistel</msg>
+</logentry>
+<logentry
+   revision="2927">
+<author>dom0</author>
+<date>2009-11-06T14:42:06.877675Z</date>
+<msg>Lcs-spip2: Tispip: No background img in header</msg>
+</logentry>
+<logentry
+   revision="2926">
+<author>dom0</author>
+<date>2009-11-06T14:02:21.973867Z</date>
+<msg>Lcs-spip2: Tispip:Fixed bug on the link to the private area  in the tab bar</msg>
+</logentry>
+<logentry
+   revision="2925">
+<author>dom0</author>
+<date>2009-11-06T14:00:21.125399Z</date>
+<msg>Lcs-spip2: Tispip: Fixed display bug in the menus when configuring two columns</msg>
+</logentry>
+<logentry
+   revision="2917">
+<author>jlcf</author>
+<date>2009-11-05T18:48:07.521780Z</date>
+<msg>lcs-spip2 : Update to version 2.0.10
+</msg>
+</logentry>
+<logentry
+   revision="2914">
+<author>dom0</author>
+<date>2009-11-05T13:56:33.539242Z</date>
+<msg>Lcs-spip2: Tispip: Adding revision number</msg>
+</logentry>
+<logentry
+   revision="2913">
+<author>dom0</author>
+<date>2009-11-05T13:40:16.882156Z</date>
+<msg>Lcs-spip2: Tispip: modifs default conf for header</msg>
+</logentry>
+<logentry
+   revision="2912">
+<author>dom0</author>
+<date>2009-11-05T13:39:14.594448Z</date>
+<msg>Lcs-spip2: Add conf for background image in container</msg>
+</logentry>
+<logentry
+   revision="2911">
+<author>dom0</author>
+<date>2009-11-05T13:31:40.265996Z</date>
+<msg>Lcs-spip2: Tispip; background image for footer</msg>
+</logentry>
+<logentry
+   revision="2910">
+<author>dom0</author>
+<date>2009-11-05T13:25:02.346012Z</date>
+<msg>Lcs-spip2: Tispip; corrected text</msg>
+</logentry>
+<logentry
+   revision="2909">
+<author>dom0</author>
+<date>2009-11-05T13:20:03.430550Z</date>
+<msg>Lcs-spip2: Tispip; Css for message update</msg>
+</logentry>
+<logentry
+   revision="2908">
+<author>dom0</author>
+<date>2009-11-05T13:17:46.371341Z</date>
+<msg>Lcs-spip2: Tispip; Show message in private area if an update is available for TiSpip</msg>
+</logentry>
+<logentry
+   revision="2907">
+<author>dom0</author>
+<date>2009-11-05T13:02:23.764845Z</date>
+<msg>Lcs-spip2: Tispip; put spip buttons on the bottom right of the screen</msg>
+</logentry>
+<logentry
+   revision="2902">
+<author>dom0</author>
+<date>2009-11-01T22:00:59.015219Z</date>
+<msg>Lcs-spip2: Tispip; fixed bug in footer</msg>
+</logentry>
+<logentry
+   revision="2901">
+<author>dom0</author>
+<date>2009-11-01T09:29:05.711685Z</date>
+<msg>Lcs-spip2: Tispip : Fixed bug version (footer inc-copy)</msg>
+</logentry>
+<logentry
+   revision="2897">
+<author>dom0</author>
+<date>2009-10-29T06:51:44.492688Z</date>
+<msg>Lcs-spip : Tispip : images in background of footer</msg>
+</logentry>
+<logentry
+   revision="2896">
+<author>dom0</author>
+<date>2009-10-28T22:11:37.885671Z</date>
+<msg>Lcs-spip : Tispip : add file spip_formulaire.css</msg>
+</logentry>
+<logentry
+   revision="2895">
+<author>dom0</author>
+<date>2009-10-28T19:29:12.960082Z</date>
+<msg>Lcs-spip : Tispip : add file inc-fin_page</msg>
+</logentry>
+<logentry
+   revision="2894">
+<author>dom0</author>
+<date>2009-10-27T23:29:50.638361Z</date>
+<msg>Lcs-spip : Tispip : correction link "Home" in footer</msg>
+</logentry>
+<logentry
+   revision="2893">
+<author>dom0</author>
+<date>2009-10-27T23:21:00.801099Z</date>
+<msg>Lcs-spip : Tispip : Changing the footer
+Creating file inc-fin_page.html  and inclusion in all pages</msg>
+</logentry>
+<logentry
+   revision="2892">
+<author>dom0</author>
+<date>2009-10-27T23:09:25.521801Z</date>
+<msg>Lcs-spip : Tispip : Fixed text formatting items (articles)</msg>
+</logentry>
+<logentry
+   revision="2879">
+<author>dom0</author>
+<date>2009-10-26T21:21:45.130351Z</date>
+<msg>Lcs-spip : Tispip : Fixed bug in conf "rubrique" on install</msg>
+</logentry>
+<logentry
+   revision="2875">
+<author>dom0</author>
+<date>2009-10-25T20:36:23.252907Z</date>
+<msg>Lcs-spip : tispip : Fixed bug in the dynamic style sheet. 
+- patch css(IE) in an external file</msg>
+</logentry>
+<logentry
+   revision="2857">
+<author>dom0</author>
+<date>2009-10-23T21:04:12.037759Z</date>
+<msg>Lcs-spip: Tispip: 
+- Correction of the vertical position of the title</msg>
+</logentry>
+<logentry
+   revision="2856">
+<author>dom0</author>
+<date>2009-10-23T21:02:48.901357Z</date>
+<msg>Lcs-spip: Tispip: 	
+- Display version number in the footer
+- Fixed link "Home" menu
+- Correction of the horizontal position of the image background of the header
+- Correction of the vertical position of the title</msg>
+</logentry>
+</log>

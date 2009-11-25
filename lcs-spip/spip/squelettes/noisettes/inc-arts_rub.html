@@ -1,0 +1,41 @@
+[(#SET{idmot_arts_rub,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]idmot_arts_rub_[(#ENV{bloc})]})]})]
+[(#SET{nb_arts_rub,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]nb_arts_rub_[(#ENV{bloc})]})]})]
+[(#SET{defil_arts_rub,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]defil_arts_rub_[(#ENV{bloc})]})]})]
+[(#SET{haut_arts_rub,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]haut_arts_rub_[(#ENV{bloc})]})]})]
+[(#SET{titre_arts_rub,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]titre_arts_rub_[(#ENV{bloc})]})]})]
+[(#SET{intro_long_arts_rub,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]intro_long_arts_rub_[(#ENV{bloc})]})]})]
+<B_art_bloc_rub>
+	<BOUCLE_art_bloc_rub(RUBRIQUES){id_rubrique=#GET{idrub_arts_rub, 1}}{par num titre}{!par date}>
+		<h3 class="menu-titre">
+			<a href="#URL_RUBRIQUE" title="#TITRE" style="line-height:36px;vertical-align:middle;">
+				[(#LOGO_RUBRIQUE||reduire_image{36}|sinon{[(#LOGO_SITE_SPIP||reduire_image{36})]}|inserer_attribut{style,float:left;vertical-align:middle})]
+				[(#GET{titre_arts_rub,[(#TITRE|supprimer_numero)]})]
+			</a>
+		</h3>
+		<dl id="art#ENV{bloc}">
+			<BOUCLE_cycle_art_rub(ARTICLES){id_rubrique=#GET{idrub_arts_rub, 1}}{id_secteur!=#CONFIG{tispipskelet_conf/s5/id_rub_s5}}{!par date}{0,#GET{nb_arts_rub,5}}>
+				[<dt style="margin:0;padding:5px">
+					<a href="#URL_ARTICLE" title="#_cycle:TITRE">
+						[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{65}|inserer_attribut{style,float:right})]
+						<strong>(#TITRE|supprimer_numero) : </strong>
+					</a><br />
+					[<span style="font-size:.9em;">(#INTRODUCTION|couper{350})</span>]
+				</dd>]
+			</BOUCLE_cycle_art_rub>
+		</dl>
+	</BOUCLE_art_bloc_rub>
+
+[(#GET{defil_arts_rub}|?{' '})
+
+<script type="text/javascript">
+$('#art#ENV{bloc}').cycle({ 
+	fx:     'scrollUp', 
+    timeout: 5999, 
+    pause:   1 ,
+	delay:  -5300[,
+ 	height: (#GET{haut_arts_rub})]
+	});
+</script>
+]
+
+</B_art_bloc_rub>

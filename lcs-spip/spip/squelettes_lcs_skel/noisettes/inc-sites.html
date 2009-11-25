@@ -1,0 +1,32 @@
+#SET{nb_sites,#CONFIG{lcs_skel_conf/sommaire/nb_sites_#ENV{bloc}}}
+#SET{defil_sites,#CONFIG{lcs_skel_conf/sommaire/defil_sites_#ENV{bloc}}}
+#SET{haut_sites,#CONFIG{lcs_skel_conf/sommaire/haut_sites_#ENV{bloc}}}
+#SET{titre_sites,#CONFIG{lcs_skel_conf/sommaire/titre_sites_#ENV{bloc}}}
+<B_sites>
+<h3 class="menu-titre">[(#GET{titre_sites}|?{#GET{titre_sites},Sur le web})]</h3>
+<dl id="sites#ENV{bloc}" class="demi_boite blocElement"[ style="height:(#GET{haut_sites})px;"]>
+		<dd id="sites_cycle#ENV{bloc}">
+			<BOUCLE_sites(SITES){id_secteur ?}{id_rubrique ?}{!par num nom_site}{!par date}{0,#GET{nb_sites}}>
+				<div class="slide"[(#GET{defil_sites}|?{'',' '}) style="border-bottom:1px solid #aaa;margin:0"]>
+					<a href="#URL_SITE" title="[(#DESCRIPTIF|supprimer_tags)]" class="spip_out">
+						[(#LOGO_SITE||image_reduire{16,16}|sinon{<img src="[(#CHEMIN{i/world_go.png})]" alt='' />}) ][(#NOM_SITE|supprimer_tags)]
+					</a>
+					<span style="display:block">[(#DESCRIPTIF|couper{150})]</span>
+				</div>
+			</BOUCLE_sites>
+		</dd>
+		<dd class="lien"><a href="spip.php?page=sites" title="">Voir tous les sites</a></dd>
+</dl>
+[(#GET{defil_sites}|?{' '})
+
+<script type="text/javascript">
+$('#sites_cycle#ENV{bloc}').cycle({ 
+	fx:     'scrollUp', 
+    timeout: 5999, 
+    pause:   1 ,
+	delay:  -5300[,
+ 	height: (#GET{haut_sites})]
+	});
+</script>
+]
+</B_sites><//B_sites>

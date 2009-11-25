@@ -1,0 +1,19 @@
+<BOUCLE_test_for(FOR){debut=1}{fin=10}{par 1}>
+	[(#SET{groupe, [(#CONFIG{tispipskelet_conf/groupe_menu[_(#COMPTEUR_BOUCLE)]})]})]
+	[(#COMPTEUR_BOUCLE|=={1}|oui)
+		[(#SET{groupe_menu, groupe_menu[_(#COMPTEUR_BOUCLE)]})]
+		[(#SET{titre, Rang#COMPTEUR_BOUCLE})]
+		<li class="ligne_240">
+			<label for="groupe_menu">Afficher un groupe de mots-clé</label>
+			<INCLURE{fond=fonds/inc/inc-select_groupes_mot}{groupe=#GET{groupe_menu}}{env}{ajax}>
+		</li>
+	]
+[(#GET{groupe}|oui)
+	[(#SET{groupe_menu, groupe_menu_[(#EVAL{1+#COMPTEUR_BOUCLE})]})]
+	[(#SET{titre, Rang[(#EVAL{1+#COMPTEUR_BOUCLE})]})]
+	<li class="ligne_240">
+			<label for="groupe_menu">Afficher un [(#EVAL{1+#COMPTEUR_BOUCLE})]<sup>ème</sup> groupe de mots-clé</label>
+			<INCLURE{fond=fonds/inc/inc-select_groupes_mot}{groupe=#GET{groupe_menu}}{env}{ajax}>
+	</li>
+]
+</BOUCLE_test_for>

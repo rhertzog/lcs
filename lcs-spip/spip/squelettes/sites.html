@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>#NOM_SITE_SPIP</title>
+	<meta name="description" content="[(#NOM_SITE_SPIP)]" />
+<INCLURE{fond=noisettes/inc-head}>
+</head>
+<body>
+	<div id="grand_container">
+		<div id="header">
+			[(#INCLURE{fond=noisettes/inc-entete})]
+			[(#INCLURE{fond=noisettes/inc-menuonglets})]
+		</div>
+		<div id="container">
+			[(#CONFIG{tispipskelet_conf/affmenuh}|?{' '})
+				[(#INCLURE{fond=noisettes/inc-menu-horiz})]
+			]
+			<div  id="content">
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			<div id="troiscols">
+		]
+			[(#REM) Grande boite edito]
+		[(#INCLURE{fond=noisettes/inc-list_sites}{self=#SELF}{page=sites})]
+		[(#CONFIG{tispipskelet_conf/sites/showhide_syndic}|=={oui}|?{' '})]
+		
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			</div>[(#REM)troiscols]
+			<div id="side2">
+					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}>
+			</div>[(#REM)side2]
+		]
+			</div>[(#REM)content]
+		
+			<div id="side">
+				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}>
+			</div>
+			
+	<INCLURE{fond=noisettes/inc-fin_page}>
+			
+</body>
+</html>

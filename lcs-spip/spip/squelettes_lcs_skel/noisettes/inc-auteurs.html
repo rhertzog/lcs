@@ -1,0 +1,11 @@
+#SET{nb_auteur,#CONFIG{lcs_skel_conf/sommaire/nb_auteur_#ENV{bloc}}}
+#SET{haut_auteur,#CONFIG{lcs_skel_conf/sommaire/haut_auteur_#ENV{bloc}}}
+#SET{titre_auteur,#CONFIG{lcs_skel_conf/sommaire/titre_auteur_#ENV{bloc}}}
+<B_auteurs>
+<h3 class="menu-titre">[(#GET{titre_auteurs}|?{#GET{titre_aiueturs},Sur le web})]</h3>
+<dl id="auteurs" class="demi_boite">
+		<BOUCLE_auteurs(AUTEURS) {par nom}{0,#GET{nb_auteurs}}>
+				<dt><a href="#URL_AUTEUR">[(#LOGO_AUTEUR||reduire_image{16,16}|sinon{<img src="[(#CHEMIN{i/user.png})]" alt='' />}) ][(#NOM|prenom) ][(#NOM|nom)]</a> </dt>
+		</BOUCLE_auteurs>
+</dl>
+</B_auteurs><//B_auteurs>

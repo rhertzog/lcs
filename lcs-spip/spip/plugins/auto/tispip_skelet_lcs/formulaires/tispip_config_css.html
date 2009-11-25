@@ -1,0 +1,43 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=css -->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:25px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend>Agir sur la feuille de style</legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+				<ul>
+					<li class="ligne">
+						<a href='[(#CHEMIN{fonds/inc/aide/inc-help.html})]' class='boxy' title='Aide : Agir sur la feuille de style'>?</a>
+						<label for="conf_css_01">Saisir les classes CSS : </label>
+						<textarea name="conf_css_01" rows="10" style="width:80%;margin:10px;" id="conf_css_01">[(#ENV{conf_css_01})]</textarea>
+					</li>
+					[(#REM)
+					<li>
+						<label for="css_menudom_texte">A compl&eacute;ter : </label>
+						<textarea name="css_menudom_texte" rows="2" style="width:auto;" id="css_menudom_texte">[(#ENV{css_menudom_texte})]</textarea>
+					</li>
+					]
+				</ul>
+			</fieldset>
+		 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

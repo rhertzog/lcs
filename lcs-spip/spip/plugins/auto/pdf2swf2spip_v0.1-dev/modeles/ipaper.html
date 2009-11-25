@@ -1,0 +1,26 @@
+[(#REM)
+        Insère un lecteur iPaper
+][(#REM)
+        L'id du document à visualiser suit le nom du modèle
+]
+<BOUCLE_ipaper(DOCUMENTS){id_document=#ID_IPAPER}{doublons}>
+	[(#SET{url_swf,[(#FICHIER|texte_script)]})]
+	[(#SET{idswf,#ID_DOCUMENT})]
+</BOUCLE_ipaper>
+<script type="text/javascript" src='http://www.scribd.com/javascripts/view.js'></script>
+[(#CONFIG{ipaper/pubid_ipaper}|?{' '})
+<div id='embedded_flash_[(#GET{idswf})]' >
+     <a href='http://www.scribd.com'>Scribd</a>
+</div>
+]<script type="text/javascript">
+	// <![CDATA[
+   var scribd_doc = scribd.Document.getDocFromUrl('#GET{url_swf}', '#CONFIG{ipaper/pubid_ipaper}');
+      scribd_doc.addParam('height', #ENV{hauteur,400});
+      scribd_doc.addParam('width', #ENV{largeur,380} );
+      scribd_doc.addParam('page', #ENV{page,1});
+      scribd_doc.addParam('mode', '#ENV{mode,book}');
+      scribd_doc.addParam('public', #ENV{public,false});  
+      scribd_doc.write('embedded_flash_[(#GET{idswf})]'); 
+      scribd_doc.addParam( 'jsapi_version', 1 );
+	// ]]>
+</script>

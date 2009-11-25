@@ -1,0 +1,66 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg">
+[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+
+<form method="post" action="#SELF" style="margin-bottom:25px;">
+	<div> #ACTION_FORMULAIRE{#SELF} 
+
+	<fieldset>
+		<legend>Menu de navigation vertical</legend>
+		<ul>
+			<li class="ligne_240">
+						<a href='[(#CHEMIN{fonds/inc/aide/inc-help_menu_v.html})]' class='boxy' title="Aide : Afficher un menu vertical">?</a>
+						<label><input type="checkbox" name="affmenuv" value="oui" [checked="(#ENV{affmenuv}|?{checked})" ]id="aff_menuv"/><:tispipskelet:afficher_menu_vertical:>
+					</label>
+			</li>
+		</ul>
+		<ul id="cfg_menuv">
+			<li class="ligne_240">
+			<label>Choisissez votre menu</label>
+				<select name="type_menu" id="[(#ENV{type_menu})]" style="width:130px">
+					<option value=""[ (#CONFIG{tispipskelet_conf/type_menu}|?{'',selected="selected"})]>  </option>
+					<option value="menu-spip"[ (#CONFIG{tispipskelet_conf/type_menu}|=={menu-spip}|?{selected="selected"})]>Menu standart</option>
+					<option value="menu-dom"[ (#CONFIG{tispipskelet_conf/type_menu}|=={menu-dom}|?{selected="selected"})]>Menu d&eacute;pliant au click</option>
+					<option value="menu-mm"[ (#CONFIG{tispipskelet_conf/type_menu}|=={menu-mm}|?{selected="selected"})]>Menu d&eacute;pliant au survol</option>
+					<option value="menu-deroul_v"[ (#CONFIG{tispipskelet_conf/type_menu}|=={menu-deroul_v}|?{selected="selected"})]>Menu d&eacute;roulant vertical</option>
+				</select>
+			</li>
+			<li class="ligne">
+			[(#CONFIG{tispipskelet_conf/type_menu}|?{' '})
+			<INCLURE{fond=fonds/inc/inc-conf_menu_v}{type_menu=#CONFIG{tispipskelet_conf/type_menu}}{env}{ajax}>
+			]
+			</li>
+		</ul>
+<script type="text/javascript"><!--
+	//cacher l'affichage de la conf
+	$('#aff_menuv')
+	.bind('change', function() {
+            $('#cfg_menuv').slideToggle('slow');
+	})
+	if ($('#aff_menuv:checked').length == 0)
+		$('#cfg_menuv').hide();
+
+// --></script>
+	</fieldset>
+ 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+		
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

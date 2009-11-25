@@ -1,0 +1,114 @@
+<style>
+.news_style{// To indicate is news content
+display:none;
+}
+
+
+.news_show // where news todisplay
+{
+position:absolute;/*important*/
+background-color: white;
+color:black;
+font: normal 100% "Arial", "Lucida Grande",Verdana, Sans-Serif;
+clip:rect(0px 350px 150px 0px);/*important*/
+}
+
+
+.news_border// wrap .news_news for border
+{
+background-color: white;
+width:352px;
+height:152px;
+font: normal 100% "Arial", "Lucida Grande",Verdana, Sans-Serif;
+border: 1px solid gray;
+padding: 5px 5px 5px 5px;
+}
+
+
+.news_mark // wrap images button and news title
+{
+background-color:white ;
+font: normal 70% "Arial", "Lucida Grande",Verdana, Sans-Serif;
+border: 0px solid gray;
+width:363px;
+height:35px;
+color:black;
+text-align:center;
+}
+
+
+.news_title // news title display style
+{
+font: bold 120% "Arial", "Lucida Grande",Verdana, Sans-Serif;
+border: 0px solid gray;
+padding: 5px 0px 9px 5px;
+color:black;
+}
+
+
+.news_show img // option this
+{
+margin-left: 5px;
+margin-right: 5px;
+}
+
+
+.buttondiv // for images button
+{
+position: absolute;
+padding: 5px 5px 5px 5px;
+background-color:white ;
+border: 1px solid gray;
+/*border-top-color: white;*/
+border-top:none;
+height:20px;
+}
+
+
+.news_move // for inside news slide style
+{
+position: relative; /*important*/
+}
+
+
+</style>
+<script type="text/javascript"  src="[(#CHEMIN{scripts/jquery.easynews.plus.js})]"></script>
+<script>
+$(document).ready(function(){
+var newsoption = {
+firstname: "mynews",
+secondname: "showhere",
+thirdname:"news_display",
+fourthname:"news_button" ,
+playingtitle:"Actuellement :",
+nexttitle:"Article suivant :",
+prevtitle:"Article pr&eacute;c&eacute;dent :",
+newsspeed:'8000',
+isauto:'1',
+imagedir:"[(#CHEMIN{i/img_artslide/})]",
+effectis:'2',
+newscountname:"test",
+disablenewscount:false
+}
+$.init_plus(newsoption);
+});
+</script>
+<div id="silde_arts" style="width:auto;border:1px solid grey">
+	<div id="mynews"  style="display:none">
+		<BOUCLE_slide_article(ARTICLES){id_rubrique=1}{par num titre,titre}{!par date}>
+			<div id="news#COMPTEUR_BOUCLE" class="news_style" rel="#TITRE" >
+				<h3 style="text-align:center"><strong>#TITRE</strong></h3>
+				[(#INTRODUCTION|propre|image_reduire{150,99999})]
+			</div>
+		</BOUCLE_slide_article>
+	</div>
+	<div  id="showhere"></div>
+	<div class="buttondiv" id="news_button" style="text-align:center">
+		<img src="[(#CHEMIN{i/img_artslide/prev.gif})]" align="absmiddle" id="news_prev" />
+		<img src="[(#CHEMIN{i/img_artslide/pause.gif})]" align="absmiddle" id="news_pause" />
+		<img src="[(#CHEMIN{i/img_artslide/next.gif})]" align="absmiddle" id="news_next" />
+	</div>
+	[(#REM)	]
+
+	<div id="news_display" style="text-align:center;font-weight:bold"></div>
+</div>
