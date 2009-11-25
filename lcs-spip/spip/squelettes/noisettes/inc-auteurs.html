@@ -1,8 +1,0 @@
-<B_auteurs>
-<h3 class="menu-titre">Auteurs</h3>
-<dl id="auteurs" class="demi_boite">
-		<BOUCLE_auteurs(AUTEURS) {par nom}>
-				<dt><a href="#URL_AUTEUR">[(#LOGO_AUTEUR||reduire_image{16,16}|sinon{<img src="[(#CHEMIN{i/user.png})]" alt='' />}) ][(#NOM|prenom) ][(#NOM|nom)]</a> </dt>
-		</BOUCLE_auteurs>
-</dl>
-</B_auteurs><//B_auteurs>

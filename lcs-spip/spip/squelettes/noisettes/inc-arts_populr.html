@@ -1,7 +1,0 @@
-[(#REM)articles les plus populaires]
-<p style="border:1px solid #666; padding:.3em">
-<strong>Vous avez aim&eacute;</strong><br />
-<BOUCLE_hitparade(ARTICLES){par popularite}{inverse}{0,10}>
-<span style="border-bottom:1px solid #aaa;display:block"><a href="#URL_ARTICLE" title="[(#INTRODUCTION|couper{80}|texte_backend)]"style="font-size:.8em">#TITRE (popularité : #POPULARITE %)</a></span>
-</BOUCLE_hitparade>
-</p>
