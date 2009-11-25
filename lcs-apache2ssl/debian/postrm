@@ -40,9 +40,7 @@ case "$1" in
         #
         # Desactivation sudoers APACHESSLCERT
         #
-        if [ `grep 'BEGIN_SECTION_APACHE2SSL' /etc/sudoers | wc -l` = "1" ]; then
-          section_mgr --remove apache2ssl /etc/sudoers
-        fi
+	/usr/sbin/lcs-make-sudoers
         #
         # Effacement des certificats
         #

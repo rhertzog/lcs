@@ -74,10 +74,7 @@ EOF
             #
             # Add sudoers section
             #
-            echo "Ajout entrée sudoers pour apache2-ssl-cert.sh"
-            if [ `grep 'SECTION_APACHE2SSL' /etc/sudoers | wc -l` = "0" ]; then
-              section_mgr --add apache2ssl /var/lib/lcs/apache2ssl/sudoers_apache2ssl_sectionfile /etc/sudoers
-            fi
+		/usr/sbin/lcs-make-sudoers
             #
             #  Apache2 differed restarting for web interface install module
             #

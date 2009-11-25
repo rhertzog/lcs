@@ -1,3 +1,9 @@
+lcs-apache2ssl (2.4.5~1) Lcs; urgency=low
+
+  * introduce lcs-make-sudoers
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 25 Nov 2009 10:52:20 +0100
+
 lcs-apache2ssl (2.4) Lcs; urgency=low
 
   * Make a stable release 
