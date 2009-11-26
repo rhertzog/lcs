@@ -5,14 +5,14 @@ lcs-web (2.4.6~1) Lcs; urgency=low
   * filename forward registered hard in scripts
   * add scripts for display log in Administration menu	
 
-  [ Jean-Luc Chretien ]
-  * Fixing safe_mode On for type php users in public_html in userdiraddtypephp.template
-
   [ Philippe Le Brouster ]
-  * Add the scripts to manage the ldap rights (add or delete a right to an
-    user).
+  * Add the scripts to manage the ldap rights (add or delete a right to an user).
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Mon,  2 Nov 2009 00:05:49 +0100
+  [ Jean-Luc Chretien ]
+  * Fixing safe_mode On for type php users in public_html in userdiraddtypephp.template 
+  * Move python script outside the web tree
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 26 Nov 2009 14:13:08 +0100
 
 lcs-web (2.4.5) Lcs; urgency=low
 
