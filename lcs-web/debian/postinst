@@ -10,17 +10,6 @@ case "$1" in
 	    if [ "$2" = "" ]; then
 	       . /usr/share/slis/slis-common.sh
 	       handle_initial_config lcs-web-config 60
-            elif [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.4; then
-                echo "Policy acces to .py*"
-                # Modify include lcs apache configuration 15_files.conf
-                cat >/etc/apache2/lcs-main/15_files.conf <<EOF
-<FilesMatch "\.py.?$">
-Order allow,deny
-Deny from all
-</FilesMatch>
-EOF
-                # restart apache2
-                invoke-rc.d apache2 restart
             fi
             # 	   
             # Restore .htpasswd if exist
