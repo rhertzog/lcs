@@ -1,8 +1,7 @@
 #!/bin/sh
 #
-# $Id: create-release.sh 12196 2009-01-19 17:26:59Z lem9 $
+# $Id: create-release.sh 12967 2009-09-13 12:21:48Z lem9 $
 # vim: expandtab sw=4 ts=4 sts=4:
-#
 #
 
 KITS="all-languages english"
@@ -175,8 +174,9 @@ Todo now:
     version 2.7.0 gets two tags: RELEASE_2_7_0 and STABLE
     version 2.7.1-rc1 gets RELEASE_2_7_1RC1 and TESTING
 
- 2. upload the files to SF (procedure explained on the sf.net Admin/File Releases page)
- 3. add files to SF files page (cut and paste changelog since last release)
+ 2. prepare a phpMyAdmin-xxx-notes.html explaining in short the goal of
+    this release and paste into it the ChangeLog for this release
+ 3. upload the files and the notes file to SF (procedure explained on the sf.net Project Admin/File Manager help page)
  4. add SF news item to phpMyAdmin project
  5. update web page:
         - add MD5s to website/data/md5sums.py in SVN
@@ -205,9 +205,3 @@ Todo now:
 END
 
 fi
-
-# Removed due to not needed thanks to clever scripting by Robbat2
-# 9. update the demo subdirectory:
-#        - in htdocs, cvs update phpMyAdmin
-#        - and don't forget to give write rights for the updated scripts to the
-#          whole group

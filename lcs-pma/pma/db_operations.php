@@ -9,7 +9,8 @@
  *  - adding tables
  *  - viewing PDF schemas
  *
- * @version $Id: db_operations.php 12011 2008-11-28 12:47:41Z nijel $
+ * @version $Id: db_operations.php 13034 2009-10-12 21:47:40Z lem9 $
+ * @package phpMyAdmin
  */
 
 /**
@@ -71,7 +72,6 @@ if (strlen($db) && (! empty($db_rename) || ! empty($db_copy))) {
             // will handle them after the tables
             /**
              * @todo support a view of a view
-             * @todo support triggers 
              */
             if (PMA_Table::isView($db, $each_table)) {
                 $views[] = $each_table;
@@ -96,6 +96,11 @@ if (strlen($db) && (! empty($db_rename) || ! empty($db_copy))) {
             }
 
             if ($this_what != 'nocopy') {
+                // keep the triggers from the original db+table
+                // (third param is empty because delimiters are only intended 
+                //  for importing via the mysql client or our Import feature)
+                $triggers = PMA_DBI_get_triggers($db, $each_table, '');
+
                 if (! PMA_Table::moveCopy($db, $each_table, $newname, $each_table,
                     isset($this_what) ? $this_what : 'data', $move, 'db_copy'))
                 {
@@ -104,6 +109,16 @@ if (strlen($db) && (! empty($db_rename) || ! empty($db_copy))) {
                     $sql_query = $back . $sql_query;
                     break;
                 }
+                // apply the triggers to the destination db+table
+                if ($triggers) {
+                    PMA_DBI_select_db($newname);
+                    foreach ($triggers as $trigger) {
+                        PMA_DBI_query($trigger['create']);
+                    }
+                    unset($trigger);
+                }
+                unset($triggers); 
+
                 if (isset($GLOBALS['add_constraints'])) {
                     $GLOBALS['sql_constraints_query_full_db'] .= $GLOBALS['sql_constraints_query'];
                     unset($GLOBALS['sql_constraints_query']);
@@ -184,7 +199,9 @@ if (strlen($db) && (! empty($db_rename) || ! empty($db_copy))) {
         }
 
         if (! $_error && $move) {
-            // cleanup pmadb stuff for this db
+            /**
+             * cleanup pmadb stuff for this db
+             */
             require_once './libraries/relation_cleanup.lib.php';
             PMA_relationsCleanupDatabase($db);
 
@@ -416,7 +433,7 @@ if (!$is_information_schema) {
 <?php
         $choices = array(
             'structure' => $strStrucOnly,
-            'data'      => $strStrucData, 
+            'data'      => $strStrucData,
             'dataonly'  => $strDataOnly);
         PMA_generate_html_radio('what', $choices, 'data', true);
         unset($choices);
@@ -610,7 +627,7 @@ if ($cfgRelation['pdfwork'] && $num_tables > 0) { ?>
         <?php
         while ($pages = @PMA_DBI_fetch_assoc($test_rs)) {
             echo '                <option value="' . $pages['page_nr'] . '">'
-                . $pages['page_nr'] . ': ' . $pages['page_descr'] . '</option>' . "\n";
+                . $pages['page_nr'] . ': ' . htmlspecialchars($pages['page_descr']) . '</option>' . "\n";
         } // end while
         PMA_DBI_free_result($test_rs);
         unset($test_rs);

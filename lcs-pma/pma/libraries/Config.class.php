@@ -3,12 +3,19 @@
 /**
  *
  *
- * @version $Id: Config.class.php 12379 2009-04-25 11:28:17Z lem9 $
+ * @version $Id: Config.class.php 13085 2009-10-30 16:13:24Z lem9 $
+ * @package phpMyAdmin
  */
+
+/**
+ * Load vendor configuration.
+ */
+require_once('./libraries/vendor_config.php');
 
 /**
  * Configuration class
  *
+ * @package phpMyAdmin
  */
 class PMA_Config
 {
@@ -85,7 +92,7 @@ class PMA_Config
      */
     function checkSystem()
     {
-        $this->set('PMA_VERSION', '3.1.4');
+        $this->set('PMA_VERSION', '3.2.3');
         /**
          * @deprecated
          */
@@ -297,7 +304,8 @@ class PMA_Config
      */
     function __wakeup()
     {
-        if (! $this->checkConfigSource()
+        if (SKIP_MTIME_CONFIG_CHECK
+          || ! $this->checkConfigSource()
           || $this->source_mtime !== filemtime($this->getSource())
           || $this->default_source_mtime !== filemtime($this->default_source)
           || $this->error_config_file
@@ -595,9 +603,10 @@ class PMA_Config
 
                 // Host and port
                 if (PMA_getenv('HTTP_HOST')) {
-                    if (strpos(PMA_getenv('HTTP_HOST'), ':') !== false) {
-                        list($url['host'], $url['port']) =
-                            explode(':', PMA_getenv('HTTP_HOST'));
+                    // Prepend the scheme before using parse_url() since this is not part of the RFC2616 Host request-header
+                    $parsed_url = parse_url($url['scheme'] . '://' . PMA_getenv('HTTP_HOST'));
+                    if (!empty($parsed_url['host'])) {
+                        $url = $parsed_url;
                     } else {
                         $url['host'] = PMA_getenv('HTTP_HOST');
                     }

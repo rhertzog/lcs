@@ -27,7 +27,8 @@
  * page for it to work, I recommend '<link rel="stylesheet" type="text/css"
  * href="syntax.css.php" />' at the moment.)
  *
- * @version $Id: sqlparser.lib.php 12194 2009-01-18 12:20:16Z lem9 $
+ * @version $Id: sqlparser.lib.php 12991 2009-09-17 17:05:14Z lem9 $
+ * @package phpMyAdmin
  */
 if (! defined('PHPMYADMIN')) {
     exit;
@@ -55,15 +56,21 @@ if (! defined('PMA_MINIMUM_COMMON')) {
     }
 
     if (!defined('DEBUG_TIMING')) {
-        // currently we don't need the $pos (token position in query)
-        // for other purposes than LIMIT clause verification,
-        // so many calls to this function do not include the 4th parameter
+        /**
+         * currently we don't need the $pos (token position in query)
+         * for other purposes than LIMIT clause verification,
+         * so many calls to this function do not include the 4th parameter
+         */
         function PMA_SQP_arrayAdd(&$arr, $type, $data, &$arrsize, $pos = 0)
         {
             $arr[] = array('type' => $type, 'data' => $data, 'pos' => $pos);
             $arrsize++;
         } // end of the "PMA_SQP_arrayAdd()" function
     } else {
+        /**
+         * This is debug variant of above.
+         * @ignore
+         */
         function PMA_SQP_arrayAdd(&$arr, $type, $data, &$arrsize, $pos = 0)
         {
             global $timer;
@@ -151,7 +158,7 @@ if (! defined('PMA_MINIMUM_COMMON')) {
     {
         global $SQP_errorString;
         $debugstr = 'ERROR: ' . $message . "\n";
-        $debugstr .= 'SVN: $Id: sqlparser.lib.php 12194 2009-01-18 12:20:16Z lem9 $' . "\n";
+        $debugstr .= 'SVN: $Id: sqlparser.lib.php 12991 2009-09-17 17:05:14Z lem9 $' . "\n";
         $debugstr .= 'MySQL: '.PMA_MYSQL_STR_VERSION . "\n";
         $debugstr .= 'USR OS, AGENT, VER: ' . PMA_USR_OS . ' ' . PMA_USR_BROWSER_AGENT . ' ' . PMA_USR_BROWSER_VER . "\n";
         $debugstr .= 'PMA: ' . PMA_VERSION . "\n";
@@ -338,7 +345,7 @@ if (! defined('PMA_MINIMUM_COMMON')) {
                         $debugstr = $GLOBALS['strSQPBugUnclosedQuote'] . ' @ ' . $startquotepos. "\n"
                                   . 'STR: ' . htmlspecialchars($quotetype);
                         PMA_SQP_throwError($debugstr, $sql);
-                        return $sql;
+                        return $sql_array;
                     }
 
                     // If the quote is the first character, it can't be
@@ -489,7 +496,7 @@ if (! defined('PMA_MINIMUM_COMMON')) {
                             $debugstr = $GLOBALS['strSQPBugInvalidIdentifer'] . ' @ ' . ($count1+1) . "\n"
                                       . 'STR: ' . htmlspecialchars(PMA_substr($sql, $count1, $count2 - $count1));
                             PMA_SQP_throwError($debugstr, $sql);
-                            return $sql;
+                            return $sql_array;
                         }
                     }
                     if ($is_digit && (!$is_hex_digit) && (($c2 == 'e') || ($c2 == 'E'))) {
@@ -578,7 +585,7 @@ if (! defined('PMA_MINIMUM_COMMON')) {
                             break;
                     }
                     PMA_SQP_arrayAdd($sql_array, 'punct' . $t_suffix, $punct_data, $arraysize);
-                } elseif (PMA_STR_binarySearchInArr($punct_data, $allpunct_list_pair, $allpunct_list_pair_size)) {
+                } elseif ($punct_data == $GLOBALS['sql_delimiter'] || PMA_STR_binarySearchInArr($punct_data, $allpunct_list_pair, $allpunct_list_pair_size)) {
                     // Ok, we have one of the valid combined punct expressions
                     PMA_SQP_arrayAdd($sql_array, 'punct', $punct_data, $arraysize);
                 } else {
@@ -606,7 +613,7 @@ if (! defined('PMA_MINIMUM_COMMON')) {
                         $debugstr =  $GLOBALS['strSQPBugUnknownPunctuation'] . ' @ ' . ($count1+1) . "\n"
                                   . 'STR: ' . htmlspecialchars($punct_data);
                         PMA_SQP_throwError($debugstr, $sql);
-                        return $sql;
+                        return $sql_array;
                     }
                     PMA_SQP_arrayAdd($sql_array, 'punct', $punct_data, $arraysize);
                     continue;
@@ -620,7 +627,7 @@ if (! defined('PMA_MINIMUM_COMMON')) {
             $debugstr = 'C1 C2 LEN: ' . $count1 . ' ' . $count2 . ' ' . $len .  "\n"
                       . 'STR: ' . $GLOBALS['PMA_substr']($sql, $count1, $count2 - $count1) . "\n";
             PMA_SQP_bug($debugstr, $sql);
-            return $sql;
+            return $sql_array;
 
         } // end while ($count2 < $len)
 
@@ -1150,7 +1157,7 @@ if (! defined('PMA_MINIMUM_COMMON')) {
                         break;
                 } // end switch
 
-                if ($subresult['querytype'] == 'SELECT' 
+                if ($subresult['querytype'] == 'SELECT'
                  && ! $in_group_concat
                  && ! ($seen_subquery && $arr[$i - 1]['type'] == 'punct_bracket_close_round')) {
                     if (!$seen_from) {
@@ -1448,6 +1455,8 @@ if (! defined('PMA_MINIMUM_COMMON')) {
         $first_reserved_word = '';
         $current_identifier = '';
         $unsorted_query = $arr['raw']; // in case there is no ORDER BY
+        $number_of_brackets = 0;
+        $in_subquery = false;
 
         for ($i = 0; $i < $size; $i++) {
 //DEBUG echo "Loop2 <strong>"  . $arr[$i]['data'] . "</strong> (" . $arr[$i]['type'] . ")<br />";
@@ -1464,8 +1473,24 @@ if (! defined('PMA_MINIMUM_COMMON')) {
             //
             // this code is not used for confirmations coming from functions.js
 
+            if ($arr[$i]['type'] == 'punct_bracket_open_round') {
+                $number_of_brackets++;
+            }
+
+            if ($arr[$i]['type'] == 'punct_bracket_close_round') {
+                $number_of_brackets--;
+                if ($number_of_brackets == 0) {
+                    $in_subquery = false;
+                }
+            }
+
             if ($arr[$i]['type'] == 'alpha_reservedWord') {
                 $upper_data = strtoupper($arr[$i]['data']);
+
+                if ($upper_data == 'SELECT' && $number_of_brackets > 0) {
+                    $in_subquery = true;
+                }
+
                 if (!$seen_reserved_word) {
                     $first_reserved_word = $upper_data;
                     $subresult['querytype'] = $upper_data;
@@ -1489,7 +1514,7 @@ if (! defined('PMA_MINIMUM_COMMON')) {
                     }
                 }
 
-                if ($upper_data == 'LIMIT') {
+                if ($upper_data == 'LIMIT' && ! $in_subquery) {
                     $section_before_limit = substr($arr['raw'], 0, $arr[$i]['pos'] - 5);
                     $in_limit = TRUE;
                     $seen_limit = TRUE;
@@ -1705,7 +1730,7 @@ if (! defined('PMA_MINIMUM_COMMON')) {
                     $limit_clause .= $sep;
                 }
             }
-            if ($after_limit && $seen_limit) { 
+            if ($after_limit && $seen_limit) {
                 $section_after_limit .= $arr[$i]['data'] . $sep;
             }
 
@@ -1735,6 +1760,7 @@ if (! defined('PMA_MINIMUM_COMMON')) {
         $foreign_key_number = -1;
         $seen_create_table = FALSE;
         $seen_create = FALSE;
+        $seen_alter = FALSE;
         $in_create_table_fields = FALSE;
         $brackets_level = 0;
         $in_timestamp_options = FALSE;
@@ -1753,6 +1779,10 @@ if (! defined('PMA_MINIMUM_COMMON')) {
 
                 if ($upper_data == 'CREATE') {
                     $seen_create = TRUE;
+                }
+
+                if ($upper_data == 'ALTER') {
+                    $seen_alter = TRUE;
                 }
 
                 if ($upper_data == 'TABLE' && $seen_create) {
@@ -1916,11 +1946,13 @@ if (! defined('PMA_MINIMUM_COMMON')) {
                 }
 
                 if ($seen_references) {
+                    if ($seen_alter && $brackets_level > 0) {
+                        $foreign[$foreign_key_number]['ref_index_list'][] = $identifier;
                     // here, the first bracket level corresponds to the
                     // bracket of CREATE TABLE
                     // so if we are on level 2, it must be the index list
                     // of the foreign key REFERENCES
-                    if ($brackets_level > 1) {
+                    } elseif ($brackets_level > 1) {
                         $foreign[$foreign_key_number]['ref_index_list'][] = $identifier;
                     } elseif ($arr[$i+1]['type'] == 'punct_qualifier') {
                         // identifier is `db`.`table`

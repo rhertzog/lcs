@@ -1,5 +1,5 @@
 <?php
-/* $Id: georgian-utf-8.inc.php 12304 2009-03-24 12:56:58Z nijel $ */
+/* $Id: georgian-utf-8.inc.php 12645 2009-07-13 17:21:02Z lem9 $ */
 
 /**
  * Translation by Kakha Mchedlidze <kahka at gmail.com>
@@ -196,6 +196,7 @@ $strCreateTable  = 'ცხრილის შექმნა';
 $strCreateUserDatabase = 'მონაცემთა ბაზა მომხმარებლისთვის';
 $strCreateUserDatabaseName = 'იგივე სახელის მქონე მონაცემთა ბაზის შექმნა და ყველა პრივილეგიის მინიჭება';
 $strCreateUserDatabaseNone = 'არაა';
+$strCreateUserDatabasePrivileges = 'ყველა პრივილეგიის მინიჭება მონაცემთა ბაზისთვის &quot;%s&quot;';
 $strCreateUserDatabaseWildcard = 'Grant all privileges on wildcard name (username\_%)';
 $strCreationDates = 'Creation/Update/Check dates';
 $strCriteria = 'კრიტერია';
@@ -782,6 +783,7 @@ $strServerTabVariables = 'ცვლადები';
 $strServerTrafficNotes = '<b>Server traffic</b>: These tables show the network traffic statistics of this MySQL server since its startup.';
 $strServerVars = 'სერვერის ცვლადები და პარამეტრები';
 $strServerVersion = 'სერვერის ვერსია';
+$strSessionGCWarning = 'Your PHP parameter [a@http://php.net/manual/en/session.configuration.php#ini.session.gc-maxlifetime@]session.gc_maxlifetime[/a] is lower that cookie validity configured in phpMyAdmin, because of this, your login will expire sooner than configured in phpMyAdmin.';
 $strSessionStartupErrorGeneral = 'Cannot start session without errors, please check errors given in your PHP and/or webserver log file and configure your PHP installation properly.';
 $strSessionValue = 'სესიის მნიშვნელობა';
 $strSetEnumVal = 'If field type is "enum" or "set", please enter the values using this format: \'a\',\'b\',\'c\'...<br />If you ever need to put a backslash ("\") or a single quote ("\'") amongst those values, precede it with a backslash (for example \'\\\\xyz\' or \'a\\\'b\').';
@@ -1007,21 +1009,19 @@ $strSetupSaveDir_desc = 'Directory where exports can be saved on server';
 $strSetupSaveDir_name = 'დირექტორიის შენახვა';
 $strSetupServerAuthConfigMsg = 'You set the [kbd]config[/kbd] authentication type and included username and password for auto-login, which is not a desirable option for live hosts. Anyone who knows or guesses your phpMyAdmin URL can directly access your phpMyAdmin panel. Set [a@?page=servers&amp;mode=edit&amp;id=%1$d#tab_Server]authentication type[/a] to [kbd]cookie[/kbd] or [kbd]http[/kbd].';
 $strSetupServerExtensionMsg = 'You should use mysqli for performance reasons';
-$strSetupServerNoPasswordRootMsg = 'You allow for connecting to the server as root without a password.';
 $strSetupServersAdd = 'ახალი სერვერის დამატება';
 $strSetupServers_AllowDeny_order_desc = 'Leave blank if not used';
 $strSetupServers_AllowDeny_order_name = 'Host authentication order';
 $strSetupServers_AllowDeny_rules_desc = 'Leave blank for defaults';
 $strSetupServers_AllowDeny_rules_name = 'Host authentication rules';
-$strSetupServers_AllowNoPasswordRoot_name = 'Allow root without password';
 $strSetupServers_AllowRoot_name = 'root-ით შესვლის ნებართვა';
 $strSetupServers_auth_swekey_config_desc = 'The path for the config file for [a@http://swekey.com]SweKey hardware authentication[/a] (not located in your document root; suggested: /etc/swekey.conf)';
 $strSetupServers_auth_swekey_config_name = 'SweKey config file';
 $strSetupServers_auth_type_desc = 'Authentication method to use';
 $strSetupServers_auth_type_name = 'ავთენტიფიკაციის ტიპი';
-$strSetupServers_bookmarktable_desc = 'Leave blank for no [a@http://wiki.phpmyadmin.net/pma/bookmark]bookmark[/a] support, default: [kbd]pma_bookmark[/kbd]';
+$strSetupServers_bookmarktable_desc = 'Leave blank for no [a@http://wiki.phpmyadmin.net/pma/bookmark]bookmark[/a] support, suggested: [kbd]pma_bookmark[/kbd]';
 $strSetupServers_bookmarktable_name = 'ცხრილის ჩანიშვნა';
-$strSetupServers_column_info_desc = 'Leave blank for no column comments/mime types, default: [kbd]pma_column_info[/kbd]';
+$strSetupServers_column_info_desc = 'Leave blank for no column comments/mime types, suggested: [kbd]pma_column_info[/kbd]';
 $strSetupServers_column_info_name = 'Column information table';
 $strSetupServers_compress_desc = 'MySQL სერვერთან კავშირის შეკუმშვა';
 $strSetupServers_compress_name = 'კავშირის შეკუმშვა';
@@ -1032,7 +1032,7 @@ $strSetupServers_controluser_desc = 'A special MySQL user configured with limite
 $strSetupServers_controluser_name = 'Control user';
 $strSetupServers_CountTables_desc = 'Count tables when showing database list';
 $strSetupServers_CountTables_name = 'ცხრილების დათვლა';
-$strSetupServers_designer_coords_desc = 'Leave blank for no Designer support, default: [kbd]designer_coords[/kbd]';
+$strSetupServers_designer_coords_desc = 'Leave blank for no Designer support, suggested: [kbd]pma_designer_coords[/kbd]';
 $strSetupServers_designer_coords_name = 'Designer table';
 $strSetupServers_DisableIS_desc = 'More information on [a@http://sf.net/support/tracker.php?aid=1849494]PMA bug tracker[/a] and [a@http://bugs.mysql.com/19588]MySQL Bugs[/a]';
 $strSetupServers_DisableIS_name = 'INFORMATION_SCHEMA-ის გამოყენების აკრძალვა';
@@ -1042,7 +1042,7 @@ $strSetupServers_extension_desc = 'What PHP extension to use; you should use mys
 $strSetupServers_extension_name = 'გამოსაყენებელი PHP გაფართოება';
 $strSetupServers_hide_db_desc = 'Hide databases matching regular expression (PCRE)';
 $strSetupServers_hide_db_name = 'მონაცემთა ბაზების დამალვა';
-$strSetupServers_history_desc = 'Leave blank for no SQL query history support, default: [kbd]pma_history[/kbd]';
+$strSetupServers_history_desc = 'Leave blank for no SQL query history support, suggested: [kbd]pma_history[/kbd]';
 $strSetupServers_history_name = 'SQL query history table';
 $strSetupServers_host_desc = 'Hostname where MySQL server is running';
 $strSetupServers_host_name = 'სერვერის ჰოსტის სახელი';
@@ -1053,13 +1053,13 @@ $strSetupServers_only_db_desc = 'You can use MySQL wildcard characters (% and _)
 $strSetupServers_only_db_name = 'Show only listed databases';
 $strSetupServers_password_desc = 'Leave empty if not using config auth';
 $strSetupServers_password_name = 'Password for config auth';
-$strSetupServers_pdf_pages_desc = 'Leave blank for no PDF schema support, default: [kbd]pma_pdf_pages[/kbd]';
+$strSetupServers_pdf_pages_desc = 'Leave blank for no PDF schema support, suggested: [kbd]pma_pdf_pages[/kbd]';
 $strSetupServers_pdf_pages_name = 'PDF schema: pages table';
-$strSetupServers_pmadb_desc = 'Database used for relations, bookmarks, and PDF features. See [a@http://wiki.phpmyadmin.net/pma/pmadb]pmadb[/a] for complete information. Leave blank for no support. Default: [kbd]phpmyadmin[/kbd]';
+$strSetupServers_pmadb_desc = 'Database used for relations, bookmarks, and PDF features. See [a@http://wiki.phpmyadmin.net/pma/pmadb]pmadb[/a] for complete information. Leave blank for no support. Suggested: [kbd]phpmyadmin[/kbd]';
 $strSetupServers_pmadb_name = 'PMA-ის მონაცემთა ბაზა';
 $strSetupServers_port_desc = 'Port on which MySQL server is listening, leave empty for default';
 $strSetupServers_port_name = 'სერვერის პორტი';
-$strSetupServers_relation_desc = 'Leave blank for no [a@http://wiki.phpmyadmin.net/pma/relation]relation-links[/a] support, default: [kbd]pma_relation[/kbd]';
+$strSetupServers_relation_desc = 'Leave blank for no [a@http://wiki.phpmyadmin.net/pma/relation]relation-links[/a] support, suggested: [kbd]pma_relation[/kbd]';
 $strSetupServers_relation_name = 'Relation table';
 $strSetupServers_ShowDatabasesCommand_desc = 'SQL command to fetch available databases';
 $strSetupServers_ShowDatabasesCommand_name = 'SHOW DATABASES command';
@@ -1071,9 +1071,9 @@ $strSetupServers_socket_desc = 'Socket on which MySQL server is listening, leave
 $strSetupServers_socket_name = 'Server socket';
 $strSetupServers_ssl_desc = '';
 $strSetupServers_ssl_name = 'SSL-ის გამოყენება';
-$strSetupServers_table_coords_desc = 'Leave blank for no PDF schema support, default: [kbd]pma_table_coords[/kbd]';
+$strSetupServers_table_coords_desc = 'Leave blank for no PDF schema support, suggested: [kbd]pma_table_coords[/kbd]';
 $strSetupServers_table_coords_name = 'PDF schema: table coordinates';
-$strSetupServers_table_info_desc = 'Table to describe the display fields, leave blank for no support; default: [kbd]pma_table_info[/kbd]';
+$strSetupServers_table_info_desc = 'Table to describe the display fields, leave blank for no support; suggested: [kbd]pma_table_info[/kbd]';
 $strSetupServers_table_info_name = 'Display fields table';
 $strSetupServers_user_desc = 'Leave empty if not using config auth';
 $strSetupServers_user_name = 'User for config auth';
@@ -1136,6 +1136,8 @@ $strSetupZipDumpExportWarning = '[a@?page=form&amp;formset=features#tab_Import_e
 $strSetupZipDumpImportWarning = '[a@?page=form&amp;formset=features#tab_Import_export]Zip decompression[/a] requires functions (%s) which are unavailable on this system.';
 $strSetupZipDump_name = 'ZIP';
 $strShowAll = 'ყველას ჩვენება';
+$strShowBinaryContents = 'ორობითი შიგთავსის ჩვენება';
+$strShowBLOBContents = 'Show BLOB contents';
 $strShowColor = 'ფერის ჩვენება';
 $strShowDatadictAs = 'Data Dictionary Format';
 $strShowFullQueries = 'Show Full Queries';
@@ -1290,6 +1292,7 @@ $strStandInStructureForView = 'Stand-in structure for view';
 $strStatCheckTime = 'Last check';
 $strStatCreateTime = 'შეიქმნა';
 $strStatement = 'Statements';
+$strStatic = 'სტატიკური';
 $strStatisticsOverrun = 'On a busy server, the byte counters may overrun, so those statistics as reported by the MySQL server may be incorrect.';
 $strStatUpdateTime = 'უკანასკნელი განახლება';
 $strStatus = 'მდგომარეობა';
@@ -1447,5 +1450,19 @@ $strYes = 'დიახ';
 
 $strZeroRemovesTheLimit = 'Note: Setting these options to 0 (zero) removes the limit.';
 $strZip = '"zip-ით შეკუმშული"';
-$strFixed = 'fixed';
+
+$strLoginWithoutPassword = 'Login without a password is forbidden by configuration (see AllowNoPassword)';  //to translate
+$strSetupServerNoPasswordMsg = 'You allow for connecting to the server without a password.';  //to translate
+$strSetupServers_AllowNoPassword_name = 'Allow logins without a password';  //to translate
+$strHostTableExplanation = 'When Host table is used, this field is ignored and values stored in Host table are used instead.';  //to translate
+$strGetMoreThemes = 'Get more themes!';  //to translate
+$strNoneDefault = 'None';  //to translate
+$strConfigDirectoryWarning = 'Directory [code]config[/code], which is used by the setup script, still exists in your phpMyAdmin directory. You should remove it once phpMyAdmin has been configured.';  //to translate
+$strRemoveCRLF = 'Remove CRLF characters within fields';  //to translate
+$strDoNotAutoIncrementZeroValues = 'Do not use AUTO_INCREMENT for zero values';  //to translate
+$strAndSmall = 'and';  //to translate
+$strReplicationStatus = 'Replication status';  //to translate
+$strReplicationStatusInfo = 'This MySQL server works as %s in <b>replication</b> process. For further information about replication status on the server, please visit the <a href="#replication">replication section</a>.';  //to translate
+$strReplicationStatus_master = 'Master status';  //to translate
+$strReplicationStatus_slave = 'Slave status';  //to translate
 ?>

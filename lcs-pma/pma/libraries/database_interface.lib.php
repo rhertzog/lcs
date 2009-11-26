@@ -3,7 +3,8 @@
 /**
  * Common Option Constants For DBI Functions
  *
- * @version $Id: database_interface.lib.php 12240 2009-02-18 09:17:28Z rabus $
+ * @version $Id: database_interface.lib.php 13025 2009-10-03 19:25:26Z helmo $
+ * @package phpMyAdmin
  */
 if (! defined('PHPMYADMIN')) {
     exit;
@@ -20,7 +21,7 @@ define('PMA_DBI_GETVAR_SESSION', 1);
 define('PMA_DBI_GETVAR_GLOBAL', 2);
 
 /**
- * Checks one of the mysql extensions 
+ * Checks one of the mysql extensions
  *
  * @param   string  $extension  mysql extension to check
  */
@@ -187,8 +188,8 @@ function PMA_DBI_get_tables($database, $link = null)
 /**
  * usort comparison callback
  *
- * @param   string  $a first argument to sort 
- * @param   string  $b second argument to sort 
+ * @param   string  $a first argument to sort
+ * @param   string  $b second argument to sort
  *
  * @return  integer  a value representing whether $a should be before $b in the
  *                   sorted array or not
@@ -240,13 +241,15 @@ function PMA_usort_comparison_callback($a, $b)
  * @param   resource        $link           mysql link
  * @param   integer         $limit_offset   zero-based offset for the count
  * @param   boolean|integer $limit_count    number of tables to return
+ * @param   string          $sort_by        table attribute to sort by
+ * @param   string          $sort_order     direction to sort (ASC or DESC)
  * @return  array           list of tables in given db(s)
  */
-function PMA_DBI_get_tables_full($database, $table = false,
-    $tbl_is_group = false, $link = null, $limit_offset = 0, $limit_count = false)
+function PMA_DBI_get_tables_full($database, $table = false, $tbl_is_group = false, $link = null,
+     $limit_offset = 0, $limit_count = false, $sort_by = 'Name', $sort_order = 'ASC')
 {
     require_once './libraries/Table.class.php';
-    
+
     if (true === $limit_count) {
         $limit_count = $GLOBALS['cfg']['MaxTableList'];
     }
@@ -310,9 +313,37 @@ function PMA_DBI_get_tables_full($database, $table = false,
             WHERE ' . (PMA_IS_WINDOWS ? '' : 'BINARY') . ' `TABLE_SCHEMA` IN (\'' . implode("', '", $this_databases) . '\')
               ' . $sql_where_table;
 
+      // Sort the tables
+      if ($sort_by == 'Name' && $GLOBALS['cfg']['NaturalOrder']) {
+          // This crazy bit of SQL was inspired by a post here:
+          // http://forums.mysql.com/read.php?10,34908,35959#msg-35959
+
+          // Find the longest table name
+          $max_name_sql = "SELECT MAX(LENGTH(TABLE_NAME)) FROM `information_schema`.`TABLES`
+                           WHERE `TABLE_SCHEMA` IN ('" . implode("', '", $this_databases) . "')"; 
+          $max_name_array = PMA_DBI_fetch_result($max_name_sql);
+          $max_name_length = $max_name_array[0];
+
+          // Put the CASE statement SQL together.
+          $sql_case = '';
+          for ($i = 1; $i < $max_name_length; $i++) {
+              $sql_case .= " when substr(Name, $i) between '0' and '9' then $i";
+          }
+          $sql_case .= " ELSE $max_name_length end) ";
+
+          // Add the CASE statement to the main SQL
+          $sql .= " ORDER BY left(Name, (CASE ";
+          $sql .= $sql_case . "-1) $sort_order, 0+substr(Name, CASE";
+          $sql .= $sql_case . $sort_order;
+      } else {
+          // Just let MySQL sort as it normally does
+          $sql .= " ORDER BY $sort_by $sort_order";
+      }
+
       if ($limit_count) {
           $sql .= ' LIMIT ' . $limit_count . ' OFFSET ' . $limit_offset;
       }
+
       $tables = PMA_DBI_fetch_result($sql, array('TABLE_SCHEMA', 'TABLE_NAME'),
           null, $link);
       unset($sql_where_table, $sql);
@@ -333,6 +364,31 @@ function PMA_DBI_get_tables_full($database, $table = false,
             }
 
             $each_tables = PMA_DBI_fetch_result($sql, 'Name', null, $link);
+
+            // Sort naturally if the config allows it and we're sorting
+            // the Name column.
+            if ($sort_by == 'Name' && $GLOBALS['cfg']['NaturalOrder']) {
+                uksort($each_tables, 'strnatcasecmp');
+
+                if ($sort_order == 'DESC') {
+                    $each_tables = array_reverse($each_tables);
+                }
+            } else {
+                // Prepare to sort by creating array of the selected sort
+                // value to pass to array_multisort
+                foreach ($each_tables as $table_name => $table_data) {
+                    ${$sort_by}[$table_name] = strtolower($table_data[$sort_by]);
+                }
+
+                if ($sort_order == 'DESC') {
+                    array_multisort($$sort_by, SORT_DESC, $each_tables);
+                } else {
+                    array_multisort($$sort_by, SORT_ASC, $each_tables);
+                }
+
+                // cleanup the temporary sort array
+                unset($$sort_by);
+            }
 
             if ($limit_count) {
                 $each_tables = array_slice($each_tables, $limit_offset, $limit_count);
@@ -381,7 +437,8 @@ function PMA_DBI_get_tables_full($database, $table = false,
                 $each_tables[$table_name]['CREATE_OPTIONS']    =& $each_tables[$table_name]['Create_options'];
                 $each_tables[$table_name]['TABLE_COMMENT']     =& $each_tables[$table_name]['Comment'];
 
-                if (strtoupper($each_tables[$table_name]['Comment']) === 'VIEW') {
+                if (strtoupper($each_tables[$table_name]['Comment']) === 'VIEW'
+                        && $each_tables[$table_name]['Engine'] == NULL) {
                     $each_tables[$table_name]['TABLE_TYPE'] = 'VIEW';
                 } else {
                     /**
@@ -395,15 +452,15 @@ function PMA_DBI_get_tables_full($database, $table = false,
         }
     }
 
-    if ($GLOBALS['cfg']['NaturalOrder']) {
-        foreach ($tables as $key => $val) {
-            uksort($tables[$key], 'strnatcasecmp');
-        }
-    }
-    
     // cache table data
     // so PMA_Table does not require to issue SHOW TABLE STATUS again
-    PMA_Table::$cache = $tables;
+    // Note: I don't see why we would need array_merge_recursive() here,
+    // as it creates double entries for the same table (for example a double
+    // entry for Comment when changing the storage engine in Operations)
+    // Note 2: Instead of array_merge(), simply use the + operator because
+    //  array_merge() renumbers numeric keys starting with 0, therefore
+    //  we would lose a db name thats consists only of numbers
+    PMA_Table::$cache = PMA_Table::$cache + $tables;
 
     if (! is_array($database)) {
         if (isset($tables[$database])) {
@@ -519,7 +576,7 @@ function PMA_DBI_get_databases_full($database = null, $force_stats = false,
 
         // display only databases also in official database list
         // f.e. to apply hide_db and only_db
-        $drops = array_diff(array_keys($databases), $GLOBALS['pma']->databases);
+        $drops = array_diff(array_keys($databases), (array) $GLOBALS['pma']->databases);
         if (count($drops)) {
             foreach ($drops as $drop) {
                 unset($databases[$drop]);
@@ -534,7 +591,7 @@ function PMA_DBI_get_databases_full($database = null, $force_stats = false,
             $databases[$database_name]['SCHEMA_NAME']      = $database_name;
 
             if ($force_stats) {
-                require_once 'mysql_charsets.lib.php';
+                require_once './libraries/mysql_charsets.lib.php';
 
                 $databases[$database_name]['DEFAULT_COLLATION_NAME']
                     = PMA_getDbCollation($database_name);
@@ -559,8 +616,13 @@ function PMA_DBI_get_databases_full($database = null, $force_stats = false,
                         += $row['Max_data_length'];
                     $databases[$database_name]['SCHEMA_INDEX_LENGTH']
                         += $row['Index_length'];
-                    $databases[$database_name]['SCHEMA_DATA_FREE']
-                        += $row['Data_free'];
+
+                    // for InnoDB, this does not contain the number of 
+                    // overhead bytes but the total free space
+                    if ('InnoDB' != $row['Engine']) {
+                        $databases[$database_name]['SCHEMA_DATA_FREE']
+                            += $row['Data_free'];
+                    }
                     $databases[$database_name]['SCHEMA_LENGTH']
                         += $row['Data_length'] + $row['Index_length'];
                 }
@@ -1239,7 +1301,7 @@ function PMA_DBI_get_procedures_or_functions($db, $which, $link = null)
 function PMA_DBI_get_definition($db, $which, $name, $link = null)
 {
     $returned_field = array(
-        'PROCEDURE' => 'Create Procedure', 
+        'PROCEDURE' => 'Create Procedure',
         'FUNCTION'  => 'Create Function',
         'EVENT'     => 'Create Event'
     );
@@ -1253,29 +1315,42 @@ function PMA_DBI_get_definition($db, $which, $name, $link = null)
  * @uses    PMA_DBI_fetch_result()
  * @param   string              $db     db name
  * @param   string              $table  table name
+ * @param   string              $delimiter  the delimiter to use (may be empty)
  *
  * @return  array               information about triggers (may be empty)
  */
-function PMA_DBI_get_triggers($db, $table)
+function PMA_DBI_get_triggers($db, $table, $delimiter = '//')
 {
     $result = array();
 
+    if (! $GLOBALS['cfg']['Server']['DisableIS']) {
     // Note: in http://dev.mysql.com/doc/refman/5.0/en/faqs-triggers.html
     // their example uses WHERE TRIGGER_SCHEMA='dbname' so let's use this
     // instead of WHERE EVENT_OBJECT_SCHEMA='dbname'
-    $triggers = PMA_DBI_fetch_result("SELECT TRIGGER_SCHEMA, TRIGGER_NAME, EVENT_MANIPULATION, ACTION_TIMING, ACTION_STATEMENT, EVENT_OBJECT_SCHEMA, EVENT_OBJECT_TABLE FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA= '" . PMA_sqlAddslashes($db,true) . "' and EVENT_OBJECT_TABLE = '" . PMA_sqlAddslashes($table, true) . "';");
+        $triggers = PMA_DBI_fetch_result("SELECT TRIGGER_SCHEMA, TRIGGER_NAME, EVENT_MANIPULATION, ACTION_TIMING, ACTION_STATEMENT, EVENT_OBJECT_SCHEMA, EVENT_OBJECT_TABLE FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA= '" . PMA_sqlAddslashes($db,true) . "' and EVENT_OBJECT_TABLE = '" . PMA_sqlAddslashes($table, true) . "';");
+    } else {
+        $triggers = PMA_DBI_fetch_result("SHOW TRIGGERS FROM " . PMA_sqlAddslashes($db,true) . " LIKE '" . PMA_sqlAddslashes($table, true) . "';");
+    }
 
     if ($triggers) {
-        $delimiter = '//';
         foreach ($triggers as $trigger) {
+            if ($GLOBALS['cfg']['Server']['DisableIS']) {
+                $trigger['TRIGGER_NAME'] = $trigger['Trigger'];
+                $trigger['ACTION_TIMING'] = $trigger['Timing'];
+                $trigger['EVENT_MANIPULATION'] = $trigger['Event'];
+                $trigger['EVENT_OBJECT_TABLE'] = $trigger['Table'];
+                $trigger['ACTION_STATEMENT'] = $trigger['Statement'];
+            }
             $one_result = array();
             $one_result['name'] = $trigger['TRIGGER_NAME'];
             $one_result['action_timing'] = $trigger['ACTION_TIMING'];
             $one_result['event_manipulation'] = $trigger['EVENT_MANIPULATION'];
 
-            $one_result['full_trigger_name'] = PMA_backquote($trigger['TRIGGER_SCHEMA']) . '.' . PMA_backquote($trigger['TRIGGER_NAME']);
+            // do not prepend the schema name; this way, importing the
+            // definition into another schema will work
+            $one_result['full_trigger_name'] = PMA_backquote($trigger['TRIGGER_NAME']);
             $one_result['drop'] = 'DROP TRIGGER IF EXISTS ' . $one_result['full_trigger_name'];
-            $one_result['create'] = 'CREATE TRIGGER ' . $one_result['full_trigger_name'] . ' ' . $trigger['ACTION_TIMING']. ' ' . $trigger['EVENT_MANIPULATION'] . ' ON ' . PMA_backquote($trigger['EVENT_OBJECT_SCHEMA']) . '.' . PMA_backquote($trigger['EVENT_OBJECT_TABLE']) . "\n" . ' FOR EACH ROW ' . $trigger['ACTION_STATEMENT'] . "\n" . $delimiter . "\n";
+            $one_result['create'] = 'CREATE TRIGGER ' . $one_result['full_trigger_name'] . ' ' . $trigger['ACTION_TIMING']. ' ' . $trigger['EVENT_MANIPULATION'] . ' ON ' . PMA_backquote($trigger['EVENT_OBJECT_TABLE']) . "\n" . ' FOR EACH ROW ' . $trigger['ACTION_STATEMENT'] . "\n" . $delimiter . "\n";
 
             $result[] = $one_result;
         }

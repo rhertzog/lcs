@@ -3,7 +3,8 @@
 /**
  * displays the pma logo, links and db and server selection in left frame
  *
- * @version $Id: navigation_header.inc.php 11336 2008-06-21 15:01:27Z lem9 $
+ * @version $Id: navigation_header.inc.php 11986 2008-11-24 11:05:40Z nijel $
+ * @package phpMyAdmin
  */
 if (! defined('PHPMYADMIN')) {
     exit;
@@ -61,9 +62,9 @@ if ($GLOBALS['cfg']['LeftDisplayLogo']) {
         // Logout for advanced authentication
         if ($GLOBALS['cfg']['Server']['auth_type'] != 'config') {
             echo ($GLOBALS['cfg']['MainPageIconic'] ? '' : ' - ');
-             // jlcf modif 1/1 
+            // jlcf modif 1/1
               if ( !isset($_LCS['login']) ) {
-                  echo '<a href="index.php?' . $query_url . '&amp;old_usr=' 
+                  echo '<a href="index.php?' . $query_url . '&amp;old_usr='
                       .urlencode($PHP_AUTH_USER) . '" target="_parent"'
                       .' title="' . $strLogout . '" >'
                       .( $GLOBALS['cfg']['MainPageIconic']
@@ -72,7 +73,7 @@ if ($GLOBALS['cfg']['LeftDisplayLogo']) {
                           : $strLogout )
                       .'</a>' . "\n";
               }
-              // fin jlcf modif 1/1
+              // fin jlcf modif 1/1 
         } // end if ($GLOBALS['cfg']['Server']['auth_type'] != 'config'
 
         $anchor = 'querywindow.php?' . PMA_generate_common_url($db, $table);

@@ -1,3 +1,10 @@
+lcs-pma (2.4.2~1) Lcs; urgency=low
+
+  * update to phpMyAdmin-3.2.3
+  * add theme paradice
+	
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 26 Nov 2009 11:58:11 +0100
+
 lcs-pma (2.4.1) Lcs; urgency=low
 
   * remove tilde for release
