@@ -21,17 +21,24 @@ Deny from all
 EOF
                 # restart apache2
                 invoke-rc.d apache2 restart
-	
-	fi
+            fi
             # 	   
             # Restore .htpasswd if exist
             #
-            if [ -e /tmp/lcswebsetupacces ]; then
-                mv /tmp/lcswebsetupacces /var/www/setup/.htpasswd
+            if [ -e /var/lib/lcs/tmp/lcswebsetupacces ]; then
+                mv /var/lib/lcs/tmp/lcswebsetupacces /var/www/setup/.htpasswd
             # ReGenerate .htpasswd if not exist
             elif [ ! -e /var/www/setup/.htpasswd ]; then
                 LOCAL_ADMIN_PW=`pwgen -1 -s 8`
                 /usr/bin/htpasswd -bc /var/www/setup/.htpasswd admin $LOCAL_ADMIN_PW
+            fi
+            #
+            # Restore public and private keys
+            #
+            if [ -e /var/lib/lcs/tmp/public_key.js ]; then
+                mv /var/lib/lcs/tmp/public_key.js /var/www/lcs/public_key.js
+                mv /var/lib/lcs/tmp/privateKey.py /usr/share/lcs/privatekey/privateKey.py
+                rm -f /var/lib/lcs/tmp
             fi
             #
             # Fix rights on lcs-web tree
