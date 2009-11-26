@@ -27,7 +27,7 @@ case "$1" in
             if [ -e /var/lib/lcs/tmp/public_key.js ]; then
                 mv /var/lib/lcs/tmp/public_key.js /var/www/lcs/public_key.js
                 mv /var/lib/lcs/tmp/privateKey.py /usr/share/lcs/privatekey/privateKey.py
-                rm -f /var/lib/lcs/tmp
+                rm -rf /var/lib/lcs/tmp
             fi
             #
             # Fix rights on lcs-web tree
