@@ -94,14 +94,6 @@ member: uid=admin,ou=$LDAP_PEOPLE_RDN,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_re
 Alias /Plugins/ /usr/share/lcs/Plugins/
 Alias /Modules/ /usr/share/lcs/Modules/
 EOF
-        # add include lcs apache configuration 15_files.conf
-        cat >/etc/apache2/lcs-main/15_files.conf <<EOF
-<FilesMatch "\.py.?$">
-Order allow,deny
-Deny from all
-</FilesMatch>
-EOF
-
         # Generate private_key file if no exist
         if [ ! -e /var/www/lcs/includes/private_key.inc.php ]; then
             PRIVKEY=`perl -e '@c=("A".."Z","a".."z",0..9);print join("",@c[map{rand @c}(1..32)]),"\n"'`
