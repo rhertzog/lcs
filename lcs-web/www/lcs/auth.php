@@ -64,7 +64,7 @@ $error=$_GET['error'];
         header_crypto_html("...::: Authentification LCS :::...");
 ?>
                 <h3>Authentification</h3>
-                <p>Afin de pouvoir rentrer dans votre espace perso LCS, vous devez fournir un identifiant et un mot de passe. En cas d'oubli, contactez <a href='mailto:<? echo $MelAdminLCS ?>?subject=Mot de passe Intranet'>l'administrateur du syst�me</a>.</p>
+                <p>Afin de pouvoir rentrer dans votre espace perso LCS, vous devez fournir un identifiant et un mot de passe. En cas d'oubli, contactez <a href='mailto:<? echo $MelAdminLCS ?>?subject=Mot de passe Intranet'>l'administrateur du syst&eacute;me</a>.</p>
                 <form name = "auth" action="auth.php" method="post" onsubmit = "encrypt(document.auth)" >
                         <table border='0'>
                                 <tr>
