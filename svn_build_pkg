@@ -1,6 +1,6 @@
 #!/bin/bash
 # Jean-Luc Chretien Projet LCS <jean-luc.chretien@tice.ac-caen.fr>
-# Version du : 10/11/2008 
+# Version du : 25/11/2009
 # $1 : repertoire source du paquet
 # $2 : Num de version
 # $3 : Distribution : sarge ou etch
@@ -9,7 +9,7 @@
 # $6 : Mail du mainteneur
 # $7 : Verification lintian
 if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ] || [ -z "$5" ] || [ -z "$6" ]; then
-        echo "Script destiné à fabriquer un paquet Debian LCS-*"
+        echo "Script destine a fabriquer un paquet Debian LCS-*"
         echo ""
         echo "Usage : build_pkg <repertoire source du paquet> <Num de Version> <distribution> <branche de destination> <\"Nom mainteneur\"> <\"Mail mainteneur\"> <lintian>"
         echo "La distribution est sarge ou etch"
@@ -61,9 +61,9 @@ if [ -d $1 ]; then
         if [ -d /home/ftp/debian/dists/$3 ] && [ -d /home/ftp/debian/dists/$3/$BRANCHE/binary-i386 ] ;then
             cp  ../build-area/$1_$2_all.* /home/ftp/debian/dists/$3/$BRANCHE/binary-i386/
             #
-            # Mise à jour du depot local de paquets
+            # Mise a jour du depot local de paquets
             #
-            echo "Mise à jour du depot local de paquets $3 $BRANCHE"
+            echo "Mise a jour du depot local de paquets $3 $BRANCHE"
             CHEMIN=`pwd`
             cd /home/ftp/debian/
             dpkg-scanpackages dists/$3/$BRANCHE/binary-i386 /dev/null | gzip -f9 > dists/$3/$BRANCHE/binary-i386/Packages.gz 
@@ -91,7 +91,7 @@ if [ -d $1 ]; then
                 fi 
             elif [ "$3" = "etch" ];then
                 cd $CHEMIN
-                echo " Méthode dput $CHEMIN"
+                echo " Methode dput $CHEMIN"
                 dput $INCOMING ../build-area/$1_$2_i386.changes
             else
                 echo "Pas de transfert, distribution $3 inconnue !"
