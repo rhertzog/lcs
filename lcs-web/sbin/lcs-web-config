@@ -53,12 +53,13 @@ case "$1" in
         chown root:www-data /etc/LcSeConfig.ph
         sed -e "s|@@PASSWORD@@|"$LCSMGRPASS"|g" /var/www/lcs/includes/config.inc.in >/var/www/lcs/includes/config.inc.php
         chown www-data:www-data /var/www/lcs/includes/config.inc.php
-        # Generate private_key file
-        PRIVKEY=`perl -e '@c=("A".."Z","a".."z",0..9);print join("",@c[map{rand @c}(1..32)]),"\n"'`
-        sed -e "s|@@PRIVKEY@@|$PRIVKEY|g" /var/www/lcs/includes/private_key.in >/var/www/lcs/includes/private_key.inc.php
-        chown www-data /var/www/lcs/includes/private_key.inc.php
-        chmod 640 /var/www/lcs/includes/private_key.inc.php
- 
+        # Generate private_key file if no exist
+        if [ ! -e /var/www/lcs/includes/private_key.inc.php ]; then
+            PRIVKEY=`perl -e '@c=("A".."Z","a".."z",0..9);print join("",@c[map{rand @c}(1..32)]),"\n"'`
+            sed -e "s|@@PRIVKEY@@|$PRIVKEY|g" /var/www/lcs/includes/private_key.in >/var/www/lcs/includes/private_key.inc.php
+            chown www-data /var/www/lcs/includes/private_key.inc.php
+            chmod 640 /var/www/lcs/includes/private_key.inc.php
+        fi
         # Add right stats_can_read
         if ! ldapsearch -b "ou=$LDAP_RIGHTS_RDN,$LDAP_BASE_DN" -x "cn=stats_can_read" 2>/dev/null | grep -q "^dn: "; then
             echo "dn: cn=stats_can_read,ou=$LDAP_RIGHTS_RDN,$LDAP_BASE_DN
@@ -94,13 +95,6 @@ member: uid=admin,ou=$LDAP_PEOPLE_RDN,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_re
 Alias /Plugins/ /usr/share/lcs/Plugins/
 Alias /Modules/ /usr/share/lcs/Modules/
 EOF
-        # Generate private_key file if no exist
-        if [ ! -e /var/www/lcs/includes/private_key.inc.php ]; then
-            PRIVKEY=`perl -e '@c=("A".."Z","a".."z",0..9);print join("",@c[map{rand @c}(1..32)]),"\n"'`
-            sed -e "s|@@PRIVKEY@@|$PRIVKEY|g" /var/www/lcs/includes/private_key.in >/var/www/lcs/includes/private_key.inc.php
-            chown www-data /var/www/lcs/includes/private_key.inc.php
-            chmod 640 /var/www/lcs/includes/private_key.inc.php
-        fi
         # Installation menu.d if not present
         if [ ! -d /var/www/lcs/includes/menu.d ]; then
             cp -r /var/lib/lcs/web/menu.d /var/www/lcs/includes
