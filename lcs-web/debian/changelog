@@ -1,4 +1,4 @@
-lcs-web (2.4.6~2) Lcs; urgency=low
+lcs-web (2.4.6~3) Lcs; urgency=low
 
   [ Philippe Leclerc ]
   * add scripts for redirect email
@@ -12,7 +12,7 @@ lcs-web (2.4.6~2) Lcs; urgency=low
   * Fixing safe_mode On for type php users in public_html in userdiraddtypephp.template 
   * Move python script outside the web tree
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Nov 2009 15:25:21 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Nov 2009 15:47:17 +0100
 
 lcs-web (2.4.5) Lcs; urgency=low
 
