@@ -62,7 +62,7 @@ if ($test_squir=="0") {
 				<th>Adresse perso</th>
 				<th>Copie</th>
 				<th>Date</th>
-				<th>Remote IP</th>
+				<th>Adresse IP</th>
 			</tr>';
           while ($r=mysql_fetch_object($result))
 	  	{ 
