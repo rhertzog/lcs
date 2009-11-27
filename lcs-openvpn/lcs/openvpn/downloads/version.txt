@@ -1,2 +1,2 @@
-Tunnelblick 3.0b18
-openvpn-gui 1.0.3-fr
+Tunnelblick 3.0b22
+openvpn-gui 2.1_rc22
