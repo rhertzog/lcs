@@ -17,7 +17,7 @@ install:
 	install -d $(DESTDIR)/usr/share/lcs/Plugins/bcdiweb/scripts
 	install -d $(DESTDIR)/usr/share/lcs/Plugins/bcdiweb/Temp
 	cp -a lcs/* $(DESTDIR)/usr/share/lcs
-	chown -R www-data $(DESTDIR)/usr/share/lcs/bcdiweb
+	chown -R www-data $(DESTDIR)/usr/share/lcs/Plugins/bcdiweb
 	# Lcs menu et log
 	install -d $(DESTDIR)/var
 	cp -a var/* $(DESTDIR)/var	
