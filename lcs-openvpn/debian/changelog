@@ -1,4 +1,4 @@
-lcs-openvpn (2.4.6) Lcs; urgency=low
+lcs-openvpn (2.4.6~1) Lcs; urgency=low
 
   * updating macos client now working in 64 bits
 
