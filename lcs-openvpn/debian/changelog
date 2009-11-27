@@ -1,3 +1,9 @@
+lcs-openvpn (2.4.6) Lcs; urgency=low
+
+  * updating macos client now working in 64 bits
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 27 Nov 2009 12:52:53 +0100
+
 lcs-openvpn (2.4.5) Lcs; urgency=low
 
   * remove tilde
