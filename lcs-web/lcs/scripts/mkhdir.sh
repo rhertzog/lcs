@@ -5,7 +5,7 @@
 # $3 : passwd
 
 # Decodage du mot de passe
-PASSWD=`/usr/bin/python /var/www/lcs/includes/decode.py $3 | perl -ne '/(.*)/;@result=split(/\|/,$1);print $result[0];'`
+PASSWD=`/usr/bin/python /usr/share/lcs/privatekey/decode.py $3 | perl -ne '/(.*)/;@result=split(/\|/,$1);print $result[0];'`
 
 cd /home
 
