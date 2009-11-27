@@ -4,12 +4,19 @@ set -e
 
 case "$1" in
 	install|configure)
-            #
-            # only if first configuration
-            #
+
 	    if [ "$2" = "" ]; then
-	       . /usr/share/slis/slis-common.sh
-	       handle_initial_config lcs-web-config 60
+                #
+                # only if first configuration
+                #
+                . /usr/share/slis/slis-common.sh
+                handle_initial_config lcs-web-config 60
+            elif [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.6; then
+                #
+                # Update menu.d/40stats.inc
+                #
+                UPDATE40STATS="      \"Log redirection mails\",\"/Admin/mail_rediriges.php\",\"lcs_is_admin\","
+                sed -i "7 a\\$UPDATE40STATS" /var/www/lcs/includes/menu.d/40stats.inc
             fi
             # 	   
             # Restore .htpasswd if exist
