@@ -10,12 +10,12 @@ install:
 	install -d $(DESTDIR)/etc/cron.d
 	cp -a conf/* $(DESTDIR)/etc
 	# install web
-	install -d $(DESTDIR)/usr/share/lcs/bcdiweb
-	install -d $(DESTDIR)/usr/share/lcs/bcdiweb/Admin
-	install -d $(DESTDIR)/usr/share/lcs/bcdiweb/Images
-	install -d $(DESTDIR)/usr/share/lcs/bcdiweb/progweb
-	install -d $(DESTDIR)/usr/share/lcs/bcdiweb/scripts
-	install -d $(DESTDIR)/usr/share/lcs/bcdiweb/Temp
+	install -d $(DESTDIR)/usr/share/lcs/Plugins/bcdiweb
+	install -d $(DESTDIR)/usr/share/lcs/Plugins/bcdiweb/Admin
+	install -d $(DESTDIR)/usr/share/lcs/Plugins/bcdiweb/Images
+	install -d $(DESTDIR)/usr/share/lcs/Plugins/bcdiweb/progweb
+	install -d $(DESTDIR)/usr/share/lcs/Plugins/bcdiweb/scripts
+	install -d $(DESTDIR)/usr/share/lcs/Plugins/bcdiweb/Temp
 	cp -a lcs/* $(DESTDIR)/usr/share/lcs
 	chown -R www-data $(DESTDIR)/usr/share/lcs/bcdiweb
 	# Lcs menu et log
