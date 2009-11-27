@@ -11,37 +11,43 @@
 
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include ("/var/www/Annu/includes/ldap.inc.php");
-$msgIntro = "<H1>Historique de la redirection des mails</H1>\n";
+
+$head = "<html>\n";
+$head .= "	<head>\n";
+$head .= "         <title>...::: Interface d'administration Serveur LCS :::...</title>\n";
+$head .= "         <link rel='stylesheet' href='./style/stylesort.css' />\n";
+$head .= "         <link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n";
+$head .= "         <script type='text/javascript' src='./js/script.js'></script>\n";
+$head .= "	</head>\n";
+$head .= "	<body>\n";
+
+$msgIntro = "<h1>Historique de la redirection des mails</h1>\n";
+
 list ($idpers, $login)= isauth();
 
-if (ldap_get_right("lcs_is_admin",$login)!="Y")
-  die (gettext("Vous n'avez pas les droits suffisants pour accéder à cette fonction")."</BODY></HTML>");
- //test si squirrelmail est installe pour redirection mails
-  $query="SELECT value from applis where name='squirrelmail'";
-  $result=mysql_query($query);
-  if ($result) 
-	{
-          if ( mysql_num_rows($result) !=0 ) {
+
+if (ldap_get_right("lcs_is_admin",$login)!="Y") {
+    echo $head;
+    die (gettext("Vous n'avez pas les droits suffisants pour acc&eacute;der &agrave; cette fonction")."</body></html>");
+}
+
+//test si squirrelmail est installe pour redirection mails
+$query="SELECT value from applis where name='squirrelmail'";
+$result=mysql_query($query);
+if ($result) {
+    if ( mysql_num_rows($result) !=0 ) {
           $r=mysql_fetch_object($result);
           $test_squir=$r->value;
-          }
-          else $test_squir="0";
-          }
-          else $test_squir="0";
+    } else $test_squir="0";
+} else $test_squir="0";
 
-   //fin test squirrelmail
+//fin test squirrelmail
 
-
-	echo "<HTML>\n";
-	echo "	<HEAD>\n";
-	echo "		<TITLE>...::: Interface d'administration Serveur LCS :::...</TITLE>\n";
-	echo "		<link rel='stylesheet' href='./style/stylesort.css' />\n";
-	echo "		<LINK  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n";
-	echo "<script type='text/javascript' src='./js/script.js'></script> 		\n";
-	echo "	</HEAD>\n";
-    	echo "	<BODY>\n";
-	if ($test_squir=="0")die (gettext("<div class='error_msg'>Cette fonction n&eacute;cessite Squirrelmail fonctionnel</div>")."</BODY></HTML>");
-	
+if ($test_squir=="0") {
+    echo $head;
+    die (gettext("<div class='error_msg'>Cette fonction n&eacute;cessite Squirrelmail fonctionnel</div>")."</body></html>");
+}
+        echo $head;	
 	echo $msgIntro;
 	$query="SELECT * from redirmail where 1 order by `id` ASC ";
 	$result=mysql_query($query);
@@ -60,26 +66,26 @@ if (ldap_get_right("lcs_is_admin",$login)!="Y")
 			</tr>';
           while ($r=mysql_fetch_object($result))
 	  	{ 
-		  echo "<TR>\n";
-		  echo "<TD>" .$r->faitpar.  "</TD>\n";
-		  echo "<TD>" .$r->pour. "</TD>\n";                  
- 		  echo "<TD>".$r->vers."</TD>\n";		  
-		  echo "<TD>".$r->copie."</TD>\n";		  
-		  echo "<TD>".$r->date."</TD>\n";
-		  echo "<TD>".$r->remote_ip."</TD>\n";
-		  echo "</TR>\n";
+		  echo "<tr>\n";
+		  echo "<td>" .$r->faitpar.  "</td>\n";
+		  echo "<td>" .$r->pour. "</td>\n";
+ 		  echo "<td>".$r->vers."</td>\n";		  
+		  echo "<td>".$r->copie."</td>\n";		  
+		  echo "<td>".$r->date."</td>\n";
+		  echo "<td>".$r->remote_ip."</td\n";
+		  echo "</tr>\n";
 		}
-          echo "</TABLE>";
+          echo "</table>";
           echo '</div>
 			<script type="text/javascript">
 			var sorter=new table.sorter("sorter");
 			sorter.init("sorter",4);
 			</script>';
           } else {
-              echo "<H3>Pas d'adresse mail redirig&eacute;e.</H3>\n";      
+              echo "<h3>Pas d'adresse mail redirig&eacute;e.</h3>\n";      
           }
         }
-        
+
 	mysql_free_result($result);
         mysql_close();
 	include ("/var/www/lcs/includes/pieds_de_page.inc.php");
