@@ -7,7 +7,7 @@ set -e
 
 MODULE="pla"
 VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
-VERAPPLI="0.9.8.5"
+VERAPPLI="1.2.0.4"
 INDICEMAJNBR="0"
 
 CONF="/var/lib/lcs/$MODULE"
