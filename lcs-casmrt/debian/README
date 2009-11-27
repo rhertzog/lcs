@@ -1,7 +1,0 @@
-README, version : 2.1~1   08/10/2009
-
-Sebastien TACK <sebastien.tack@ac-caen.fr>
-
-LCS module : casmrt - Readme
-===========================
-Un module permettant l'implementation d'un serveur CAS uniquement ecrit en PHP5 sur le framework MVC Symfony

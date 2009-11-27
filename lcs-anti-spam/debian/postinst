@@ -5,8 +5,8 @@
 
 set -e
 preversion=$2
-MODULE="lcs-anti-spam"
-VER="2.4.3"
+MODULE="anti-spam"
+VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
 INDICEMAJNBR="0"
 
 # summary of how this script can be called:
