@@ -1,8 +1,8 @@
-lcs-preinstall (2.4.6~1) UNRELEASED; urgency=low
+lcs-preinstall (2.4.6~1) Lcs; urgency=low
 
   * Modify sql dump for redirectmail table log
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 Nov 2009 15:45:09 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Nov 2009 14:43:48 +0100
 
 lcs-preinstall (2.4.5) Lcs; urgency=low
 
