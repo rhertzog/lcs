@@ -15,6 +15,8 @@ case "$1" in
                 #
                 # Update menu.d/40stats.inc
                 #
+                mv /var/www/lcs/includes/menu.d/40stats.inc /var/www/lcs/includes/menu.d/40stats.in
+                grep -v redirection /var/www/lcs/includes/menu.d/40stats.in  > /var/www/lcs/includes/menu.d/40stats.inc
                 UPDATE40STATS="      \"Log redirection mails\",\"/Admin/mail_rediriges.php\",\"lcs_is_admin\","
                 sed -i "7 a\\$UPDATE40STATS" /var/www/lcs/includes/menu.d/40stats.inc
             fi
