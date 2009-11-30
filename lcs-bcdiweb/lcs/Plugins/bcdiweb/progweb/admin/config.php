@@ -10,7 +10,7 @@ require ("en-tete.php");
 
 // Verifie les droits
 if (is_admin("lcs_is_admin",$login)=="Y") {
-$PTP="/usr/share/lcs/bcdiweb";
+$PTP="/usr/share/lcs/Plugins/bcdiweb";
 echo "<H1>Configuration de BCDIWEB</H1>\n";
 
 if (isset($_GET["orgname"])) {

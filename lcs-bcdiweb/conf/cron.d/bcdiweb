@@ -1,1 +1,1 @@
-0 13 * * 0-5 www-data  /usr/share/lcs/bcdiweb/scripts/lcs-syncbcdi.sh
+0 13 * * 0-5 www-data  /usr/share/lcs/Plugins/bcdiweb/scripts/lcs-syncbcdi.sh

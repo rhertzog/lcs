@@ -4,6 +4,10 @@
 # see: dh_installdeb(1)
 
 set -e
+preversion=$2
+MODULE="bcdiweb"
+VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
+INDICEMAJNBR="0"
 
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -20,14 +24,25 @@ set -e
 
 case "$1" in
     configure)
+    if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
+    	 ### Install initiale
 	mkdir -p /home/BcdiPlug/Data
 	chown -R www-data /home/BcdiPlug
-	mysql -e "INSERT INTO lcs_db.applis VALUES(38, 'Bcdiweb', '1', 'Plugin BCDI Web pour Lcs', 2, '2.04', '../bcdiweb', 'P');"
+	mysql -e "INSERT INTO lcs_db.applis VALUES('', '$MODULE', '1', 'Plugin BCDI Web pour Lcs', '$INDICEMAJNBR', '$VER', 'bcdiweb', 'P');"
 	 if [ -x /usr/sbin/invoke-rc.d ]; then
                 invoke-rc.d apache2 restart
         else
                 /etc/init.d/apache2 restart
-        fi		
+        fi
+      else
+          ### mise a jour de lcs-bcdiweb
+          if dpkg --compare-versions $preversion lt 2.4 ; then
+           mysql -e "DELETE FROM lcs_db.params WHERE params.name = 'Bcdiweb' LIMIT 1;"
+           mysql -e "INSERT INTO lcs_db.applis VALUES('', '$MODULE', '1', 'Plugin BCDI Web pour Lcs', '$INDICEMAJNBR', '$VER', 'bcdiweb', 'P');"		
+	   
+	  fi
+	fi
+	/usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';"
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
