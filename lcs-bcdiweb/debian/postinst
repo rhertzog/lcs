@@ -43,7 +43,8 @@ case "$1" in
 	  fi
 	fi
 	/usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';"
-    ;;
+	chown www-data -R /usr/share/lcs/Plugins/bcdiweb	
+	;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
     ;;

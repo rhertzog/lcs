@@ -21,8 +21,8 @@ set -e
 
 case "$1" in
     purge|remove)
-	rm -r /home/BcdiPlug
-	mysql -e "DELETE FROM lcs_db.applis WHERE applis.name = Bcdiweb	 LIMIT 1"
+	rm -rf /home/BcdiPlug
+	mysql -e "DELETE FROM lcs_db.applis WHERE applis.name ='bcdiweb' "
     ;;
     upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
     ;;
