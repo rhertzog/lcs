@@ -1,0 +1,15 @@
+#!/bin/bash
+echo " Ceci est le script de mise à jour de 0.3 à 0.4 du plugin Gepi";
+if [  -e /etc/php5 ] ; then
+#
+echo "<Directory /usr/share/lcs/Plugins/Gepi>" >> /etc/apache2/lcs-main/71_gepi.conf
+echo "       php_value register_globals 0" >> /etc/apache2/lcs-main/71_gepi.conf
+echo "</Directory>" >> /etc/apache2/lcs-main/71_gepi.conf
+#
+# Redémarrage apache2
+#
+echo "Apache2 sera redémarré dans une minute"
+at now +1 minutes < /usr/share/lcs/Plugins/Gepi/Admin/jobat2
+fi
+# par precaution, on dump la base
+mysqldump --opt gepi_plug > /root/backup_gepi_plug.sql

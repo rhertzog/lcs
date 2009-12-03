@@ -1,0 +1,42 @@
+.abs_menu span {
+width: 50px; padding: 2px 20px 2px 20px; background-color: silver; margin-left: 3%;
+}
+.abs_menu span:hover {
+background-color: grey; cursor: pointer;
+}
+#aff_result {
+background-color: lightblue;
+}
+.lienWeb{
+color: blue; cursor: pointer;
+}
+.ok{
+color: green;
+}
+.no{
+color: red;
+}
+#presentations{
+padding: 10px 5px 10px 5px; width: 200px;
+}
+#presentations td{
+padding: 10px 5px 10px 5px; background-color: silver; color: white; font-weight: bold; text-align: center;
+}
+._center td{
+text-align: center; border: 1px solid pink;
+}
+#table_liste_absents th {
+text-align: center; color: white; background-color: silver;
+}
+#table_liste_absents tr td {
+border: 1px solid grey; text-align: center; padding: 2px 2px 2px 2px;
+}
+.gras {
+font-weight: bold;
+}
+.lig1{
+background-color:silver;
+}
+.lig2{
+background-color:white;
+}
