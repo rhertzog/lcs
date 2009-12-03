@@ -1,3 +1,11 @@
+lcs-smbwebclient (2.4.2) Lcs; urgency=low
+
+  * Build a stable release for Etch and Lenny
+  * Remove -N option in smbclient request
+  * Add include and remove function valid_passwd
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 03 Dec 2009 14:26:17 +0100
+
 lcs-smbwebclient (2.4.1) Lcs; urgency=low
 
   * Build a stable release 2.4.1
