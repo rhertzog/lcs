@@ -323,7 +323,7 @@ var $strings = array (
 		),
 	'ro' => array('Reteaua Windows','Nume','Marime','Comentarii','Modificat','Tip','m/d/Y h:i','Print','Sterge selectia','Fisier Nou','Renunta','Fisier Director','Fisier %s','Trimite mesaj popup','Sus','Director nou'),
 	'nl' => array('Windows Netwerk','Naam','Grootte','Commentaar','Gewijzigd','Soort','d/m/Y h:i','Afdrukken','Selectie verwijderen','Nieuw bestand','Selectie afbreken','Bestandsmap','Bestand %s','Stuur een popup bericht','Omhoog','Nieuwe map'),
-	'cs' => array('S&iacute;&#357; Windows','N&aacute;zev','Velikost','Pozn&aacute;mka','Zm&#283;n&#283;no','Typ','m&#283;s&iacute;c/den/rok hodina:minuta','Tisk','Smazat vybran&eacute;','Nov&yacute; soubor (nahr&aacute;t)','Zrušit v&yacute;ber','Nov&yacute; adres&aacute;&#345;','Soubor %s','Poslat zpr&aacute;vu','Nahoru','Nov&yacute; adres&aacute;&#345;'),
+	'cs' => array('S&iacute;&#357; Windows','N&aacute;zev','Velikost','Pozn&aacute;mka','Zm&#283;n&#283;no','Typ','m&#283;s&iacute;c/den/rok hodina:minuta','Tisk','Smazat vybran&eacute;','Nov&yacute; soubor (nahr&aacute;t)','Zruï¿½it v&yacute;ber','Nov&yacute; adres&aacute;&#345;','Soubor %s','Poslat zpr&aacute;vu','Nahoru','Nov&yacute; adres&aacute;&#345;'),
 	'da' => array('Windows Netv&aelig;rk','Navn','St&oslash;relse','Kommentar','Sidst &aelig;ndret','Type','d.m.Y t:i','Print fil','Slet valgte emner','Ny fil (upload)','Afbryd valgte job','Fil mappe','File %s','Send popup besked','Up','Ny mappe'),
 	'sv' => array('Windows N&auml;tverk','Namn','Storlek','Kommentar','&Auml;ndrad','Typ','Y/m/d H:i','Skriv ut','Ta bort markerad','Ny fil','Avbryt markerad','Filkatalog','Fil %s','Skicka ett popup-meddelande','Upp','Ny katalog'),
 	'de' => array('Windows Netzwerk','','Gr&ouml;&szlig;e','Bemerkung(en)','Ge&auml;ndert','Typ','d.m.Y H:i','Datei drucken','Markierte Datei(en) l&ouml;schen','Neue Datei (hochladen)','Abbruch der ausgew&auml;hlten Aktion','Dateiordner','Datei %s','Nachricht senden','Aufw&auml;rts','Neuer Ordner'),
@@ -334,17 +334,17 @@ var $strings = array (
 	'et' => array('Windowsi v&otilde;rk','Nimi','Suurus','Kommentaarid','Muudetud','','d/m/Y h:i','Tr&uuml;ki','Kustuta valitud','Uus fail','T&uuml;hista valitud','Kataloog','Fail %s','Saada popup teade','&Uuml;les','Uus kataloog'),
 	'uk' => array('&#1052;&#1077;&#1088;&#1077;&#1078;&#1072; &#1042;&#1110;&#1085;&#1076;&#1086;&#1074;&#1079;','&#1030;&#1084;\'&#1103;','&#1056;&#1086;&#1079;&#1084;&#1110;&#1088;','&#1050;&#1086;&#1084;&#1077;&#1085;&#1090;&#1072;&#1088;&#1110;','&#1047;&#1084;&#1110;&#1085;&#1077;&#1085;&#1080;&#1081;','','d.m.Y h:i','&#1044;&#1088;&#1091;&#1082;&#1091;&#1074;&#1072;&#1090;&#1080;','&#1042;&#1080;&#1076;&#1072;&#1083;&#1080;&#1090;&#1080; &#1074;&#1110;&#1076;&#1084;&#1110;&#1095;&#1077;&#1085;&#1077;','&#1053;&#1086;&#1074;&#1080;&#1081; &#1092;&#1072;&#1081;&#1083;','&#1042;&#1110;&#1076;&#1084;&#1110;&#1085;&#1080;&#1090;&#1080; &#1074;&#1110;&#1076;&#1084;&#1110;&#1095;&#1077;&#1085;&#1077;','','','','',''),
 	'bg' => array('&#1059;&#1080;&#1085;&#1076;&#1086;&#1091;&#1089; &#1084;&#1088;&#1077;&#1078;&#1072;','&#1048;&#1084;&#1077;','&#1056;&#1072;&#1079;&#1084;&#1077;&#1088;','&#1050;&#1086;&#1084;&#1077;&#1085;&#1090;&#1072;&#1088;','&#1055;&#1088;&#1086;&#1084;&#1103;&#1085;&#1072;','&#1058;&#1080;&#1087;','&#1084;/&#1076;/&#1075; &#1063;:&#1084;&#1080;&#1085;','&#1055;&#1077;&#1095;&#1072;&#1090;','&#1048;&#1079;&#1090;&#1088;&#1080;&#1081; &#1080;&#1079;&#1073;&#1088;&#1072;&#1085;&#1080;&#1090;&#1077;','&#1053;&#1086;&#1074; &#1092;&#1072;&#1081;&#1083;','&#1054;&#1090;&#1082;&#1072;&#1078;&#1080; &#1080;&#1079;&#1073;&#1086;&#1088;','&#1055;&#1072;&#1087;&#1082;&#1072;','&#1060;&#1072;&#1081;&#1083; %','&#1048;&#1079;&#1087;&#1088;&#1072;&#1090;&#1080; &#1089;&#1098;&#1086;&#1073;&#1097;&#1077;&#1085;&#1080;&#1077;','&#1053;&#1072;&#1075;&#1086;&#1088;&#1077;','&#1053;&#1086;&#1074;&#1072; &#1087;&#1072;&#1087;&#1082;&#1072;'),
-	'sr' => array('Windows mreža','Ime','veli&#269;ina','komentari','promenjen','tip','d/m/Y h:i','Odštampaj','Obriši selektovano','Nova datoteka','Odustajem od izabranog','Direktorijum','','Pošalji poruku','Nazad','Novi direktorijum'),
-	'hr' => array('Windows mreža','Naziv','Veli&#269;ina','Komentar','Modificirano','','','Ispiši','Obriši selektirano','Nova datoteka','','','','','',''),
+	'sr' => array('Windows mreï¿½a','Ime','veli&#269;ina','komentari','promenjen','tip','d/m/Y h:i','Odï¿½tampaj','Obriï¿½i selektovano','Nova datoteka','Odustajem od izabranog','Direktorijum','','Poï¿½alji poruku','Nazad','Novi direktorijum'),
+	'hr' => array('Windows mreï¿½a','Naziv','Veli&#269;ina','Komentar','Modificirano','','','Ispiï¿½i','Obriï¿½i selektirano','Nova datoteka','','','','','',''),
 	'lv' => array('Windows T&#299;kls','Nosaukums','Izm&#275;rs','Koment&#257;ri','Izmain&#299;ts','','m/d/g s:m','Druk&#257;t','Dz&#275;st izv&#275;l&#275;tos','Jauns fails','Atcelt izv&#275;l&#275;tos','','','','',''),
 	'fi' => array('Windows Verkko','Nimi','Koko','Kommentit','Muokattu','Tyyppi','p/k/v t:m','Tulosta','Poista valitut','Uusi tiedosto','Peruuta valinta','Tiedosto kansio','Tiedosto %s','L&auml;het&auml; popup viesti','Yl&ouml;s','Uusi kansio'),
 	'hu' => array('Windows h&aacute;l&oacute;zat','N&eacute;v','M&eacute;ret','Megjegyz&eacute;s','M&oacute;dos&iacute;tva','T&iacute;pus','h/n/&Eacute; &oacute;:p','Nyomtat','Kiv&aacute;lasztottak t&ouml;rl&eacute;se','&Uacute;j &aacute;llom&aacute;ny','Kijel&ouml;l&eacute;s elvet&eacute;se','Mappa','F&aacute;jl','El&#337;ugr&oacute; &uuml;zenet k&uuml;ld&eacute;se','Fel','&Uacute;j mappa'),
 	'pt-br' => array('Rede Windows','Nome','Tamanho','Coment&aacute;rios','Modificado','Tipo','d/m/Y h:i','Imprimir','Apagar selecionados','Novo arquivo','Cancelar Sele&ccedil;&atilde;o','Pasta de arquivo','Arquivo %s','Enviar Mensagem','Acima','Nova Pasta'),
 	'th' => array('Samba Server','&#3594;&#3639;&#3656;&#3629;','&#3586;&#3609;&#3634;&#3604;','&#3627;&#3617;&#3634;&#3618;&#3648;&#3627;&#3605;&#3640;','&#3611;&#3619;&#3633;&#3610;&#3611;&#3619;&#3640;&#3591;&#3621;&#3656;&#3634;&#3626;&#3640;&#3604;','&#3594;&#3609;&#3636;&#3604;','&#3648;&#3604;&#3639;&#3629;&#3609;/&#3623;&#3633;&#3609;/&#3611;&#3637; &#3594;&#3633;&#3656;&#3623;&#3650;&#3617;&#3591;','&#3614;&#3636;&#3617;&#3614;&#3660; File','&#3621;&#3610;&#3626;&#3636;&#3656;&#3591;&#3607;&#3637;&#3656;&#3648;&#3621;&#3639;&#3629;&#3585;&#3652;&#3623;&#3657;','&#3626;&#3656;&#3591; File &#3648;&#3586;&#3657;&#3634;&#3652;&#3611;&#3648;&#3585;&#3655;&#3610;','&#3618;&#3585;&#3648;&#3621;&#3636;&#3585;&#3626;&#3636;&#3656;&#3591;&#3607;&#3637;&#3656;&#3648;&#3621;&#3639;&#3629;&#3585;&#3652;&#3623;&#3657;','','','&#3626;&#3656;&#3591;&#3586;&#3657;&#3629;&#3588;&#3623;&#3634;&#3617; Popup','&#3585;&#3621;&#3633;&#3610;&#3652;&#3611;&#3585;&#3656;&#3629;&#3609;&#3627;&#3609;&#3657;&#3634;','&#3626;&#3619;&#3657;&#3634;&#3591; Folder &#3651;&#3627;&#3617;&#3656;'),
 	'zh-tw' => array('&#35222;&#31383;&#32178;&#36335;','&#21517;&#31281;','&#22823;&#23567;','&#35498;&#26126;','&#20462;&#27491;','&#22411;&#24335;','','&#27284;&#26696;&#21015;&#21360;','&#21034;&#38500;&#36984;&#38917;','&#26032;&#27284;&#26696;(&#19978;&#20659;)','&#21462;&#28040;&#25152;&#36984;&#30340;&#24037;&#20316;','&#27284;&#26696;&#36039;&#26009;&#22846;','&#27284;&#26696;%s','&#20659;&#36865;&#35338;&#24687;','&#19978;&#19968;&#38913;','&#26032;&#36039;&#26009;&#22846;'),
-	'sl' => array('Windows Omrežje','Ime','Velikost','Komentarji','Sprememba','Tip','m/d/y H:i','Natisni','Izbriši izbrano','Nova datoteka','Prekli&#269;i izbrano','Mapa','Datoteka %s','Pošlji sporo&#269;ilo','Gor','Nova mapa'),
+	'sl' => array('Windows Omreï¿½je','Ime','Velikost','Komentarji','Sprememba','Tip','m/d/y H:i','Natisni','Izbriï¿½i izbrano','Nova datoteka','Prekli&#269;i izbrano','Mapa','Datoteka %s','Poï¿½lji sporo&#269;ilo','Gor','Nova mapa'),
 	'id' => array('Jaringan Windows','Nama','Ukuran','Komentar','Terakhir diubah','Tipe','bulan/tanggal/tahun  Jam:menit','Cetak file ini','Hapus item yang dipilih','File baru ( upload )','Batalkan pekerjaan yang dipilih','File dalam folder','','Kirim pesan popup','Naik','Folder baru'),
-	'lt' => array('Windows Tinklas','Vardas','Dydis','Komentarai','Pakeista','Tipas','m/d/Y H:i','Spausdinti byl&#261;','Trinti parinktus','&#302;kelti byl&#261;','Nutraukti parinktas užduotis','Katalogas','Byla %s','Si&#371;sti žinut&#281;','Aukštyn','Naujas katalogas'),
+	'lt' => array('Windows Tinklas','Vardas','Dydis','Komentarai','Pakeista','Tipas','m/d/Y H:i','Spausdinti byl&#261;','Trinti parinktus','&#302;kelti byl&#261;','Nutraukti parinktas uï¿½duotis','Katalogas','Byla %s','Si&#371;sti ï¿½inut&#281;','Aukï¿½tyn','Naujas katalogas'),
 	'pt' => array('rede windows','Nome','Tamanho','Comentario','Modificado','Tipo','d/m/Y h:i','Imprimir Ficheiro','Apagar a Selec&ccedil;&atilde;o','Novo Ficheiro','Cancelar a Selec&ccedil;&atilde;o','Ficheiro','Ficheiro %s','Enviar uma mensagem Instantanea','Para Cima','Nova Pasta'),
 	'sk' => array('Sie&#357; Windows','Meno','Ve&#318;kos&#357;','Pozn&aacute;mky','Zmenen&eacute;','Typ','m/d/Y H:i','Vytla&#269;i&#357; s&uacute;bor','Vymaza&#357; vybran&eacute; polo&#382;ky','Nov&yacute; s&uacute;bor (upload)','Zru&#353;i&#357; vybran&eacute; &uacute;lohy','Adres&aacute;r','S&uacute;bor %s','Posla&#357; popup spr&aacute;vu','Hore','Nov&yacute; adres&aacute;r'),
 	'zh' => array('Windows &#32593;&#32476;','&#22995;&#21517;','&#22823;&#23567;','&#27880;&#37322;','&#20462;&#25913;','&#31867;&#22411;','&#26376;/&#26085;/&#24180; &#26102;:&#20998;','&#25171;&#21360;&#19968;&#20010;&#25991;&#20214;','&#21024;&#38500;&#36873;&#25321;&#39033;&#30446;','&#26032;&#24314;&#25991;&#20214;(&#19978;&#20256;)','&#21462;&#28040;&#36873;&#25321;&#23545;&#35937;','&#25991;&#20214;&#22841;','&#25991;&#20214;','&#21457;&#36865;&#19968;&#20010;&#24377;&#20986;&#28040;&#24687;','&#21521;&#19978;','&#26032;&#24314;&#25991;&#20214;&#22841;'),
@@ -1536,10 +1536,9 @@ function _SmbClient ($command='', $path='', $message='', $dumpFile=false)
 			case 'SMB_AUTH_ARG': $smbcmd .= ' -U '.escapeshellarg($this->user.'%'.$this->pw);
 		}
 	}
-	$cmdline = $this->cfgSmbClient.' '.$smbcmd.' '.$options.' -N ';
         # Modify for Lenny
-	#$cmdline = $this->cfgSmbClient.' '.$smbcmd.' '.$options.' ';
-
+	#$cmdline = $this->cfgSmbClient.' '.$smbcmd.' '.$options.' -N ';
+	$cmdline = $this->cfgSmbClient.' '.$smbcmd.' '.$options.' ';
 
 	if ($message <> '') $cmdline = "echo ".escapeshellarg($message).' | '.$cmdline;
 
@@ -1610,8 +1609,8 @@ function _ParseSmbClient ($cmdline, $dumpFile=false)
 				# with attribute ?
 				if (preg_match("/^(.*)[ ]+([D|H|A|S|R]+)$/", trim($regs[1]), $regs2)) {
 					$attr = trim($regs2[2]);
-                                        $val=(strpos($attr,'H') === false) ? 'Pas Caché' : 'Caché';
-					if ($val!='Caché') $name = trim($regs2[1]);
+                                        $val=(strpos($attr,'H') === false) ? 'Pas Cachï¿½' : 'Cachï¿½';
+					if ($val!='Cachï¿½') $name = trim($regs2[1]);
                                         #$name = trim($regs2[1]);
                                         #exec ("echo \"nom : $name attr : $attr pst : $val\n\" >> /tmp/smblog");
 				} else {
@@ -1677,47 +1676,13 @@ function _DirectoryName ($path='')
 
 }
 
-// Fonction extraite de /var/www/Annu/includes/ldap.inc.php
-function user_valid_passwd ( $login, $password ) {
-  global $ldap_server, $ldap_port, $dn;
-  $filter = "(userpassword=*)";
-  $ret = false;
-  $DEBUG = false;
-
-  $ds = @ldap_connect ( $ldap_server, $ldap_port );
-  if ( $ds ) {
-    $r = @ldap_bind ( $ds,"uid=".$login.",".$dn["people"] , $password );
-    if ( $r ) {
-      $read_result=@ldap_read ($ds, "uid=".$login.",".$dn["people"], $filter);
-      if ($read_result) {
-        $entrees = @ldap_get_entries($ds,$read_result);
-        if ($entrees[0]["userpassword"][0]) {
-          $ret= true;
-        } else {
-          $error = "Mot de passe invalide";
-        }
-      } else {
-        $error = "Login invalide";
-      }
-    } else {
-      $error = "L'Authentification a échouée";
-    }
-    @ldap_unbind ($ds);
-    @ldap_close ($ds);
-  } else {
-    $error = "Erreur de connection au serveur LDAP";
-  }
-  if ($DEBUG) echo "$error<BR>\n";
-  return $ret;
-}
-
 ###################################################################
 # MAIN SECTION - come on !
 ###################################################################
 
 if (! isset($SMBWEBCLIENT_CLASS)) {
 	include "/var/www/lcs/includes/headerauth.inc.php";
-	
+	include "/var/www/Annu/includes/ldap.inc.php";
 	list ($idpers,$login)= isauth();
 
 	if(@ldap_get_right("smbweb_is_open",$login)!='Y') {
@@ -1757,6 +1722,5 @@ if (! isset($SMBWEBCLIENT_CLASS)) {
 		}
 	}
 }
-
 
 ?>
