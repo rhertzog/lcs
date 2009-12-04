@@ -1,0 +1,118 @@
+
+.t3 { 
+	margin:0 1px;
+	padding:2px;
+	text-align:center;
+	color: #1b2c68;
+	font-size:16px;
+	display: block;
+	background:url(../images/fd-tit-menu-der-cdt.png) no-repeat;
+}
+#deroul-bloc{
+	float:right;
+	background:url(../images/fond-cdt-drt.png) no-repeat;
+	margin-top:16px;
+	width: 300px;
+	height:450px;
+}
+#deroul-menu{
+	float:left;
+	margin:80px 0 0 5px;
+	width:60px;
+}
+#deroul-contenu{
+	float:left;
+	margin:40px 5px 0 0;
+	width:210px;
+	height:360px;
+	overflow:hidden;
+}
+#deroul-contenu a{
+	text-decoration:none;
+	font-size:12px;
+}
+#deroul-contenu p{
+	margin:5px 0;
+	height:auto;
+	width:auto;
+	font-size: 0.9em;
+}
+#deroulants .deroulant 
+{ 
+   clear:left;
+   height:360px; 
+   padding:5px; 
+   zoom:1 /* ie */ 
+} 
+#deroulants ul 
+{  
+   float:left;
+   margin:0; 
+   padding:0 
+}
+
+#deroulants img{
+	border:none;
+	padding:0;
+	text-align:center;
+}
+
+#deroulants li 
+{ 
+   float:left;
+   margin-bottom:-1px; 
+   list-style-type:none; 
+   padding:2px; 
+   border:none; 
+}
+
+#deroulants li a:hover, #deroulants li a:visited 
+{ 
+   background: none;
+   border:none;
+   color: #000;
+}
+
+#deroulants li.actif 
+{ 
+   border:0px solid #000;  
+} 
+#deroulants li.actif a 
+{ 
+   text-decoration:none;
+   background:none;
+} 
+#deroulants h3 
+{ 
+   margin-top:0 
+}
+#aide-memoire{
+	background:#e5e5e5;
+	float:left;
+	text-align:left;
+	width:195px;
+	margin:10px 0px;
+}
+#aide-memoire-contenu{
+	float:left;
+	margin:0;
+	width:195px;
+	height:300px;
+	text-align:center;
+	padding:4px 0;
+	overflow: auto;
+}
+#aide-memoire-contenu img{
+	float:right;
+	margin:0;
+	width:15%;
+	padding:0;
+}
+#bt-erg{
+	background:url('../images/bt-cdt-enregistrer.png') no-repeat;
+	color:white;
+	font-size:12px;
+	border:none;
+	height:20px;
+	width:120px;
+}

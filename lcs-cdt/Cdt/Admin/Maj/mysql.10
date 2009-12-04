@@ -1,0 +1,3 @@
+Use cdt_plug;
+ALTER TABLE `cahiertxt` ADD `on_off` TINYINT( 1 )  NOT NULL DEFAULT '0';
+ALTER TABLE `cahiertxt` ADD `datevisibi` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP; 

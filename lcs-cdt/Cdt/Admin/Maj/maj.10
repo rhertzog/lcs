@@ -1,0 +1,4 @@
+!/bin/bash
+echo " Ceci est le script de mise a jour de 1.02 a 2.0 du plugin Cdt";
+sed -i "s/1.01/1.02/g" ../../Includes/config.inc.php
+sed -i "s/1.02/2.0/g" ../../Includes/config.inc.php
