@@ -1,3 +1,9 @@
+lcs-squidguard (2.4.6) Lcs; urgency=low
+
+  * fix initial install
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 08 Dec 2009 15:59:27 +0000
+
 lcs-squidguard (2.4.5) Lcs; urgency=low
 
   * remove tilde

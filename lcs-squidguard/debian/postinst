@@ -55,7 +55,7 @@ case "$1" in
           #
           echo "SquidGuard blacklists installation in one minute"
 	  at now+1minutes <<END
-	  /usr/sbin/getBlacklists.sh
+	  /usr/sbin/lcs-squidguard-getBlacklists.sh
 	  invoke-rc.d squid reload
 END
           #
