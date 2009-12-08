@@ -1,3 +1,9 @@
+lcs-security (2.4.2) Lcs; urgency=low
+
+  * add exeption for css
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue,  8 Dec 2009 10:35:10 +0100
+
 lcs-security (2.4.1) unstable; urgency=low
 
   * apache-bruteforce Add exeption for gif, ico, png, jpg and jpeg files extention
