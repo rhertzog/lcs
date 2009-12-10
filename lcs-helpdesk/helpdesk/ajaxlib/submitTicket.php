@@ -11,6 +11,7 @@
 	$data = array();
 	foreach($params as $k=>$v) {
 		$v = str_replace('\"','"',$v);
+		$v = str_replace("\'","'",$v);
 		$data[]= "$k=".urlencode($v);	
 	}
 
