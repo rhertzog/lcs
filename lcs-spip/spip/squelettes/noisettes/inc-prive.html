@@ -12,19 +12,21 @@
 [(#SESSION{statut}|=={1comite}|?{' '})#SET{statut,r&eacute;dacteur}]
 [(#SESSION{statut}|=={6forum}|?{' '})#SET{statut,visiteur}]
 
-[<h3 class="menu-titre" id="titre_prive_#ENV{bloc}">
+<h3 class="menu-titre" id="titre_prive_#ENV{bloc}">
 	<img src="[(#CHEMIN{i/user.png})]" alt="D&eacute;plier" style="float:left;" />	
-	(#GET{titre_prive,Participer...})
-</h3>]
+		[(#SESSION{statut}|?{[(#GET{titre_prive,Participer...})],Se connecter})]
+</h3>
 <dl id="prive_#ENV{bloc}" class="demi_boite blocElement" [(#GET{titre_prive}|non) style="padding:0;margin0;"] >
-	<dt>
+[	<dt>
 	<img src="[(#CHEMIN{i/plus.gif})]" alt="D&eacute;plier" style="float:right;cursor:pointer;"  id="boutton_prive_#ENV{bloc}" />	
-				Bonjour #SESSION{nom} 
-	</dt>
+				Bonjour (#SESSION{nom}) 
+	</dt>]
 	<dd style="margin-left:5px;" id="bloc_prive_#ENV{bloc}">
+	[(#SESSION{statut}|oui)
 		Vous &ecirc;tes #GET{statut}, vous pouvez agir sur cet espace.<br/>
 		Que souhaitez-vous faire ? Choisissez dans ces options : 
-		<br />
+		<br />]
+	[(#SESSION{statut}|non)<a href="../lcs/auth.php" title="Se connecter au LCS" style="display:block;text-align:center;"><img src="../lcs/images/barre1/mon_LCS_BP_r1_c3.gif" alt="Se connecter" style="margin:auto" /></a><br/>]
 					[<a href="ecrire/">(#SESSION{statut}|=={6forum}?{:: Visitez votre interface de r&eacute;daction})</a><br/>]
 					[<a href="ecrire/?exec=articles_edit&new=oui"><img src="[(#CHEMIN{i/layout_add.png})]" alt="" /> (#SESSION{statut}|match{1comite|0minirezo}|?{ Commencer un nouvel article})</a><br/>]
 					[<a href="ecrire/"><img src="[(#CHEMIN{i/layout_edit.png})]" alt="" /> (#SESSION{statut}|=={0minirezo}?{ Agir sur les articles propos&eacute;s})</a><br/>]
@@ -35,6 +37,7 @@
 					
 					[<a href="ecrire/?exec=auteur_infos&amp;id_auteur=[(#SESSION{id_auteur})]"><img src="[(#CHEMIN{i/user.png})]" alt="" /> (#SESSION{statut}|match{1comite|0minirezo}|?{Modifier mon profil})</a><br/>]
 	</dd>
+[(#SESSION{statut}|oui)
 <script type="text/javascript"><!--
          $(document).ready(function(){
                $('#boutton_prive_#ENV{bloc}').toggle(
@@ -50,4 +53,4 @@
           
 		$('#bloc_prive_#ENV{bloc}').hide();
 // --></script>
-</dl>
+]</dl>
