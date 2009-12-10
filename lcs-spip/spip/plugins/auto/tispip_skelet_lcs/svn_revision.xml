@@ -1,6 +1,49 @@
 <?xml version="1.0"?>
 <log>
 <logentry
+   revision="3097">
+<author>dom0</author>
+<date>2009-12-10T08:11:48.326480Z</date>
+<msg>lcs-spip : Block "private"  : displays a link to the authentication page LCS if the visitor is not logged in</msg>
+</logentry>
+<logentry
+   revision="3096">
+<author>dom0</author>
+<date>2009-12-10T08:09:12.942534Z</date>
+<msg>lcs-spip : Fixed css style mini-calendar</msg>
+</logentry>
+<logentry
+   revision="3094">
+<author>dom0</author>
+<date>2009-12-08T21:30:53.155828Z</date>
+<msg>lcs-spip : move login.html from squelettes/ to plugins/auto/tispip_skelet_lcs/</msg>
+</logentry>
+<logentry
+   revision="3088">
+<author>dom0</author>
+<date>2009-12-07T08:07:38.035962Z</date>
+<msg>lcs-spip: Redirect spip login form to login form LCS</msg>
+</logentry>
+<logentry
+   revision="3086">
+<author>dom0</author>
+<date>2009-12-05T14:59:31.386215Z</date>
+<msg>lcs-spip: Removal tools "media" become useless</msg>
+</logentry>
+<logentry
+   revision="3038">
+<author>jlcf</author>
+<date>2009-11-25T16:04:20.426869Z</date>
+<msg>lcs-spip : move lcs-spip from bacasable to trunk, update in 2.10 version
+</msg>
+</logentry>
+<logentry
+   revision="3030">
+<author>dom0</author>
+<date>2009-11-20T21:40:28.013788Z</date>
+<msg>Lcs-spip2: Tispip: Revision number</msg>
+</logentry>
+<logentry
    revision="3023">
 <author>dom0</author>
 <date>2009-11-20T00:15:20.322074Z</date>
@@ -453,72 +496,5 @@ Changing the position of buttons spip
 <author>dom0</author>
 <date>2009-11-01T09:29:05.711685Z</date>
 <msg>Lcs-spip2: Tispip : Fixed bug version (footer inc-copy)</msg>
-</logentry>
-<logentry
-   revision="2897">
-<author>dom0</author>
-<date>2009-10-29T06:51:44.492688Z</date>
-<msg>Lcs-spip : Tispip : images in background of footer</msg>
-</logentry>
-<logentry
-   revision="2896">
-<author>dom0</author>
-<date>2009-10-28T22:11:37.885671Z</date>
-<msg>Lcs-spip : Tispip : add file spip_formulaire.css</msg>
-</logentry>
-<logentry
-   revision="2895">
-<author>dom0</author>
-<date>2009-10-28T19:29:12.960082Z</date>
-<msg>Lcs-spip : Tispip : add file inc-fin_page</msg>
-</logentry>
-<logentry
-   revision="2894">
-<author>dom0</author>
-<date>2009-10-27T23:29:50.638361Z</date>
-<msg>Lcs-spip : Tispip : correction link "Home" in footer</msg>
-</logentry>
-<logentry
-   revision="2893">
-<author>dom0</author>
-<date>2009-10-27T23:21:00.801099Z</date>
-<msg>Lcs-spip : Tispip : Changing the footer
-Creating file inc-fin_page.html  and inclusion in all pages</msg>
-</logentry>
-<logentry
-   revision="2892">
-<author>dom0</author>
-<date>2009-10-27T23:09:25.521801Z</date>
-<msg>Lcs-spip : Tispip : Fixed text formatting items (articles)</msg>
-</logentry>
-<logentry
-   revision="2879">
-<author>dom0</author>
-<date>2009-10-26T21:21:45.130351Z</date>
-<msg>Lcs-spip : Tispip : Fixed bug in conf "rubrique" on install</msg>
-</logentry>
-<logentry
-   revision="2875">
-<author>dom0</author>
-<date>2009-10-25T20:36:23.252907Z</date>
-<msg>Lcs-spip : tispip : Fixed bug in the dynamic style sheet. 
-- patch css(IE) in an external file</msg>
-</logentry>
-<logentry
-   revision="2857">
-<author>dom0</author>
-<date>2009-10-23T21:04:12.037759Z</date>
-<msg>Lcs-spip: Tispip: 
-- Correction of the vertical position of the title</msg>
-</logentry>
-<logentry
-   revision="2856">
-<author>dom0</author>
-<date>2009-10-23T21:02:48.901357Z</date>
-<msg>Lcs-spip: Tispip: 	
-- Display version number in the footer
-- Fixed link "Home" menu
-- Correction of the horizontal position of the image background of the header
-- Correction of the vertical position of the title</msg>
 </logentry>
 </log>
