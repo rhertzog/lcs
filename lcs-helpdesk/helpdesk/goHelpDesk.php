@@ -31,7 +31,7 @@ require_once('./include/common.inc.php');
 			else	
 				$json .= "var domaine=null;";
 
-			if (eregi('mustRegister="1"',$rep)) {
+			if (eregi('mustRegister="',$rep)) {
 				if ($login == 'admin')
 					$json .= 'var mustRegister=2;';
 				else	

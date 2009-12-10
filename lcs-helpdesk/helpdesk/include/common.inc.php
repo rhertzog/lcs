@@ -39,14 +39,12 @@ function liste_admins() {
         @ldap_unbind ($ds);
         @ldap_close ($ds);
         foreach ($info[0]['member'] as $admin) { 
-                if (!is_numeric($admin) && !eregi('uid=admin',$admin)) {
-                        //$admin = str_replace(',ou=People,dc=','@',$admin);
-                        //$admin = str_replace(',dc=','.',$admin);
-                        //$admin = str_replace('uid=','',$admin);
-			$info = explode('uid=',$admin);
-			$info2 = explode(',ou=',$info[1]);
-			$flux .= "<option>$info2[0]</option>";
-                }
+	   if (!is_numeric($admin) && !eregi('uid=admin',$admin) && !eregi('cn=admin',$admin)) {
+        	$admin = str_replace(',ou=People,dc=','@',$admin);
+                $admin = str_replace(',dc=','.',$admin);
+                $admin = str_replace('uid=','',$admin);
+                $flux .= "<option>$admin</option>";
+           }
         }
         return $flux;
         
