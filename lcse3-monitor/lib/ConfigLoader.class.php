@@ -7,7 +7,7 @@
  * @property-read string ifnetwork interface reseau principale
  */
 class ConfigLoader {
-    private $etabConfFile = '/etc/gestEtab/etab.conf';
+    private $etabConfFile = '/etc/lcse3-monitor/etab.conf';
 
     private $datas = array();
 

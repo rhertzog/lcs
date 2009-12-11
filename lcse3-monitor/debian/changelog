@@ -1,3 +1,9 @@
+lcse3-monitor (2.4.5~2) Lcs; urgency=low
+
+  * moving config-files
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 11 Dec 2009 11:08:41 +0000
+
 lcse3-monitor (2.4.5~1) Lcs; urgency=low
 
   * now use lcs-make-sudoers if existe

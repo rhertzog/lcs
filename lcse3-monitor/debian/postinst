@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for gestEtab-monitor
+# postinst script for lcse3-monitor
 #
 # see: dh_installdeb(1)
 
@@ -58,12 +58,12 @@ if [ -e /etc/init.d/lcse3-monitor ] ; then
 fi
 
 #patch le fichier de conf
-if [ -e /etc/gestEtab/etab.conf.patch ] ; then 
-	patch /etc/gestEtab/etab.conf /etc/gestEtab/etab.conf.patch
-	rm /etc/gestEtab/etab.conf.patch
+if [ -e /etc/lcse3-monitor/etab.conf.patch ] ; then 
+	patch /etc/lcse3-monitor/etab.conf /etc/lcse3-monitor/etab.conf.patch
+	rm /etc/lcse3-monitor/etab.conf.patch
 fi
 
-echo "lcse3-monitor est correctement installe. Si c'est votre premiere installation pensez à editer le fichier /etc/gestEtab/etab.conf pour configurer le systeme."
+echo "lcse3-monitor est correctement installe. Si c'est votre premiere installation pensez à editer le fichier  /etc/glcse3-monitor/etab.conf pour configurer le systeme."
         ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

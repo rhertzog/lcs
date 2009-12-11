@@ -6,9 +6,9 @@ all:
 install:
 
 # install conf
-	install -d $(DESTDIR)/etc/gestEtab
+	install -d $(DESTDIR)/etc/lcse3-monitor
 	install -d $(DESTDIR)/etc/lcs/sudo.d
-	install -m 0660 conf/gestEtab/* $(DESTDIR)/etc/gestEtab
+	install -m 0660 conf/gestEtab/* $(DESTDIR)/etc/lcse3-monitor
 	install -m 0660 conf/lcs/sudo.d/* $(DESTDIR)/etc/lcs/sudo.d
 	
 # install sbin
