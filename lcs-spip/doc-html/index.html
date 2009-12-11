@@ -17,61 +17,8 @@
 <h2>Nouveautés par rapport à la version précédente</h2>
 <p>Mise à jour SPIP de 1.9.2 en 2.0.10</p>
 <p>Evolution du squelette LCS avec l'intégration de TiSpiP-sKeLeT dans sa version complète</p>
-<p>Le squelette <i class="emphasis">LCS</i> de <i class="emphasis">SPIP</i> est désormais le squelette TiSpiP et est installé dans un répertoire dédié situé en :
- <tt class="computeroutput">/usr/share/lcs/spip/squelette/</tt>
-Il est entièrement personnalisable depuis l'espace privé <a href="lcs_skel_spip2.html">[pour en savoir plus...]</a></p>
-
-<h2>Nouveautés par rapport à la version 1.0.9</h2>
-<h2>Nouveautés par rapport à la version 1.0.8</h2>
-<p>Evolution du squelette spip lcs <a href="lcs_skel.html">[pour en savoir plus...]</a></p>
-<p>Correction sur ouverture de session spip-lcs.</p>
-<h2>Nouveautés par rapport à la version 1.0.7</h2>
-<p>Evolution du squelette spip lcs <a href="lcs_skel.html">[pour en savoir plus...]</a></p>
-<h2>Nouveautés par rapport à la version 1.0.6</h2>
-<p>Mise à jour de spip 1.8.3  en 1.9.2c.</p>
-<p>Evolution du squelette spip lcs <a href="lcs_skel.html">[pour en savoir plus...]</a></p>
-<h2>Nouveautés par rapport à la version 1.0.5</h2>
-<p>Mise à jour de spip 1.8.3  en 1.9.1.</p>
-<h2>Nouveautés par rapport à la version 1.0.4</h2>
-<p>Mise à jour de spip 1.8.2 g en 1.8.3.</p>
-<p>Evolution du squelette spip lcs <a href="lcs_skel.html">[pour en savoir plus...]</a></p>
-<h2>Nouveautés par rapport à la version 1.0.3</h2>
-<p>Modification des scripts d'authentification/désauthentification de spip-LCS.</p>
-<h2>Nouveautés par rapport à la version 1.0.2</h2>
-<h3>Squelette LCS :</h3>
-<p>
-Le squelette <i class="emphasis">LCS</i> de <i class="emphasis">SPIP</i>, est désormais installé dans un répertoire dédié situé en :
- <tt class="computeroutput">/usr/share/lcs/spip/lcs_skel/</tt>
-L'utilisateur <i class="emphasis">spip.manager</i> possède les droits d'écriture sur ce répertoire et peut par conséquent adapter le squelette à ses besoins.
-</p>
-<h3>Filtres Audio et Vidéo dans les articles <span style="font-size: small">(une autre méthode est disponible dans le <a href="lcs_skel.html#video">nouveau squelette</a>)</span></h3>
-<h4>Deux expressions peuvent etre intégrées dans un article :</h4>
-<ul>
-<li>flashflv : Pour diffuser un document au format flv dans un lecteur flash,</li>
-<li>flashmp3 : Pour diffuser un document audio au format mp3 dans un lecteur flash.</li>
-</ul>
-<h5>Balise audio :</h5>
-
-<pre class="programlisting">
-&#060;flashmp3=login_utilisateur/nom_du_document.mp3&#062;Description&#060;/flashmp3&#062;
-</pre>
-<p>Le document au format mp3 devra se trouver dans le répertoire public_html de l'utilisateur "login_utilisateur".</p>
-
-<h5>Balise vidéo :</h5>
-
-<pre class="programlisting">
-&#060;flashflv=login_utilisateur/nom_du_document.flv&#062;Description&#060;/flashflv&#062;
-</pre>
-<p>Il est a noter que le document sera diffusé dans une taille de 200x160 pixels et que si il existe dans le même répertoire (le public_html de l'utilisateur) un fichier image du même nom que le document flv, cette image apparaitra dans le lecteur tant que la lecture ne sera pas demandée.</p>
-<h6>Comment obtenir un document au format flv ?</h6>
-<p>A partir d'un fichier avi, mpg...</p>
-<p>Convertir celui au format flv avec ffmpeg</p>
-<p>Commande : <tt class="computeroutput">ffmpeg -i video.avi -ab 56 -ar 22050 test.flv</tt></p>
-<h3>Utilisateur spip.manager</h3>
-<p>Un utilisateur (login: spip.manager) est disponible, son répertoire home est localisé en <tt class="computeroutput">/usr/share/spip/</tt> et il possède les droits d'écriture sur le répertoire du squelette <tt class="computeroutput">lcs-skel</tt>.
-Cet utilisateur est pourvu du shell <tt class="computeroutput">sftp-server</tt> et son mot de passe a été initialisé avec une valeur aléatoire lors de l'installation du paquet <i class="emphasis">Debian lcs-spip</i>. Pour pouvoir utiliser ce compte, il faudra réinitialiser son mot de passe à l'aide de l'interface web d'administration <i class="emphasis">LCS</i>.
-</p>
-<h3>Sauvegarde et restauration de la base de données <i class="emphasis">SPIP</i></h3>
-<p>En se connectant en sftp à l'aide du compte spip.manager, il sera possible de créer le fichier <tt class="computeroutput">adminxxxx</tt> demandé pour la confirmation de la sauvegarde de la base de données <i class="emphasis">SPIP</i>.</p>
+<p>Le squelette <i class="emphasis">LCS</i> de <i class="emphasis">SPIP</i> est désormais le squelette <a href="http://tispip.etab.ac-caen.fr" title="TiSpiP-sKeLeT">TiSpiP</a> et est installé dans un répertoire dédié situé en :
+ <tt class="computeroutput">/usr/share/lcs/spip/squelettes/</tt>
+Il est entièrement personnalisable depuis l'espace privé.  <a href="lcs_skel_spip2.html">[pour en savoir plus...]</a></p>
 </body>
 </html>
