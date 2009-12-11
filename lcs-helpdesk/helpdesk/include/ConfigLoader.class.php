@@ -6,7 +6,7 @@
  * @property-read int isProductionServer indique si le serveur est un serveur de prod
  */
 class ConfigLoader {
-    private $etabConfFile = '/etc/gestEtab/etab.conf';
+    private $etabConfFile = '/etc/lcse3-monitor/etab.conf';
 
     private $datas = array();
 
