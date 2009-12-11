@@ -1,3 +1,9 @@
+lcs-bcdiweb (2.4.5~4) Lcs; urgency=low
+
+  * fix url
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 11 Dec 2009 13:53:26 +0000
+
 lcs-bcdiweb (2.4.5~3) Lcs; urgency=low
 
   * correct uninstall

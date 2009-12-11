@@ -28,7 +28,7 @@ case "$1" in
     	 ### Install initiale
 	mkdir -p /home/BcdiPlug/Data
 	chown -R www-data /home/BcdiPlug
-	mysql -e "INSERT INTO lcs_db.applis VALUES('', '$MODULE', '1', 'Plugin BCDI Web pour Lcs', '$INDICEMAJNBR', '$VER', 'bcdiweb', 'P');"
+	mysql -e "INSERT INTO lcs_db.applis VALUES('', '$MODULE', '1', 'Plugin BCDI Web pour Lcs', '$INDICEMAJNBR', '$VER', 'bcdiweb/progweb', 'P');"
 	 if [ -x /usr/sbin/invoke-rc.d ]; then
                 invoke-rc.d apache2 restart
         else
