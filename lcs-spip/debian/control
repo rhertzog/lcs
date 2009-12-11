@@ -7,6 +7,6 @@ Standards-Version: 3.6.2
 
 Package: lcs-spip
 Architecture: all
-Depends: apache2|apache, php5-common|php4-common, php5-cli|php4-cli, pwgen
+Depends: apache2|apache, php5-common, php5-cli, php5-xsl, pwgen
 Description: Install CMS SPIP2 on LCS server 
  This package sets up CMS spip with plugins, skel and many features on LCS server.
