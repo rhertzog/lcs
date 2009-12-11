@@ -5,7 +5,3 @@ if [ -e /etc/gestEtab/etab.conf ] ; then
 	cp /etc/gestEtab/etab.conf /etc/gestEtab/etab.conf.backup
 fi
 
-if [ -e /etc/gestEtab/etab.conf ] ; then
-        mv /etc/gestEtab/etab.conf /etc/lcse3-monitor/etab.conf
-        rm -rf /etc/gestEtab
-fi

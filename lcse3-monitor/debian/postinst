@@ -63,6 +63,11 @@ if [ -e /etc/lcse3-monitor/etab.conf.patch ] ; then
 	rm /etc/lcse3-monitor/etab.conf.patch
 fi
 
+if [ -e /etc/gestEtab/etab.conf.backup ] ; then
+        mv /etc/gestEtab/etab.conf /etc/lcse3-monitor/etab.conf
+        rm -rf /etc/gestEtab
+fi
+
 echo "lcse3-monitor est correctement installe. Si c'est votre premiere installation pensez à editer le fichier  /etc/glcse3-monitor/etab.conf pour configurer le systeme."
         ;;
 
