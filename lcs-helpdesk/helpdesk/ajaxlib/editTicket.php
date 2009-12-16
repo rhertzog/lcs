@@ -13,5 +13,6 @@
 	$json = str_replace('%CATEGORIE%',utf8_decode($categorie),$json);
 	$json = str_replace('%SUBMITTER%',utf8_decode($submitter),$json);
 	$json = str_replace('%DESCRIPTION%',utf8_decode($description),$json);
+	$json = str_replace('%USER%',utf8_decode(ucwords($array_user['prenom']).' '.strtoupper($array_user['nom'])),$json);
 	die($json);
 ?>

@@ -1,3 +1,98 @@
+//var ticket_id = '-1';
+var windowModifReply = new Ext.Window({
+        title: 'Modification de la réponse',
+        width: 600,
+        height:350,
+        minWidth: 300,
+        minHeight: 200,
+        layout: 'fit',
+        plain:true,
+        bodyStyle:'padding:5px;',
+        buttonAlign:'center',
+        closeAction: 'hide',
+        autoScroll: true,
+        items: new Ext.FormPanel({
+            labelWidth: 75, // label settings here cascade unless overridden
+            url: '/helpdesk/ajaxlib/modifReply.php',
+            frame:true,
+            id: 'formModifReply',
+            bodyStyle:'padding:5px 5px 0',
+            labelAlign: 'top',
+            width: 550,
+            defaults: {width: 320},
+            autoScroll: true,
+            defaultType: 'textfield',
+            layout: 'fit',
+            items: [{
+                    xtype: 'panel',
+                    layout: 'border',
+                    items : [
+                        {
+                            xtype: 'panel',
+                            region: 'center',
+                            layout: 'form',
+                            items: [
+                                
+                                {
+                                    xtype: 'hidden',
+				    name: 'ticket_id',
+                                    id: 'modifTicketId'+ticket,
+							    },
+								{
+                                    xtype: 'hidden',
+				    name: 'ticket_reply_id',
+                                    id: 'modifReplyId'+ticket,
+									
+                                },
+                                {
+                                    xtype: 'textfield',
+                                    fieldLabel: 'Titre',
+                                    id: 'modifReplyTitle'+ticket,
+				    name: 'title',
+				    anchor:'95%'
+                                }, {
+                                    xtype: 'htmleditor',
+                                    fieldLabel: 'Contenu',
+				    id: 'modifReplyContent'+ticket,
+                                    name: 'content',
+                                    anchor:'95%',
+                                    height: 150,
+                                },
+                            ]
+                        }
+                    ]
+                }],
+            buttons: [{
+                    text: 'Enregistrer',
+                    handler: function() {
+                        Ext.getCmp('formModifReply').getForm().submit({
+                                                    method:'POST',
+                                                    reset: true,
+                                                    waitTitle:'Modification du post',
+                                                    waitMsg:'Envoi des données...',
+                                                    success: function(form, action) {
+                                                        try {
+								windowModifReply.hide();
+                                                        	//storeTickets.load();
+								storeTicketReplies.load();                   									
+                                                        	Ext.Msg.alert('', 'Post modifi&#233;.');	
+							} catch (error) {
+								Ext.Msg.alert('ERREUR',error );
+							}
+														
+                                                    },
+                                                    failure: function(form, action){
+                                                        objRep = Ext.util.JSON.decode(response.responseText);
+                                                        Ext.Msg.alert('Echec de la modification...', objRep.reason);
+                                                    }
+                                                });
+                    
+                    }
+                }]
+        })
+    });
+
+
  var toolBar1 = new Ext.Toolbar({
         xtype: 'toolbar',
         region: 'north',
@@ -126,6 +221,23 @@ var comp =  new Ext.Panel({
                     cm: TicketRepliesColModel,
                     autoExpandColumn: 'resume',
                     plugins: RepliesExpander,
+		    listeners: {
+                        rowdblclick: function(grid, rowindex) {
+                            
+							rowTicketRep = storeTicketReplies.getAt(rowindex);
+							rowTicket =  Ext.getCmp('grid2_tickets').getStore().getById(ticket);
+							var user = '%USER% ';
+							if ((rowTicket.data.statut == 'en attente de traitement') && (rowTicket.data.submitter == user)) {
+								windowModifReply.show();
+								Ext.getCmp('modifReplyTitle'+ticket).setValue(rowTicket.data.title);
+								Ext.getCmp('modifReplyContent'+ticket).setValue(rowTicketRep.data.content);
+								Ext.getCmp('modifTicketId'+ticket).setValue(ticket);	
+								Ext.getCmp('modifReplyId'+ticket).setValue(rowTicketRep.id);	
+							}
+							
+							 
+                        }
+                },
                 }
             ],	
 });

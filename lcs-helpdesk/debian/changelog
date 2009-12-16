@@ -1,3 +1,9 @@
+lcs-helpdesk (2.4.1~4) unrealeased; urgency=low
+
+  * enabling for submitter of ticket title and description modification before handling 
+
+ -- Sebastien TACK <sebastien.tack@ac-caen.fr>  Wed,  16 Dec 2009 18:20:50 +0200
+
 lcs-helpdesk (2.4.1~3) unrealeased; urgency=low
 
   * Non-maintainer upload.
