@@ -7,5 +7,5 @@ LCS module : helpdesk - Readme
 Un module permettant un acces SSO a la platefrome HelpDesk Academique
 
 Attention: il faut bien configurer au prealable le paquet lcse3-monitor.
-Ce module utilise le même fichier de configuration. /etc/gestEtab/etab.conf
+Ce module utilise le même fichier de configuration. /etc/lcse3-monitor/etab.conf
 
