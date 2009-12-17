@@ -46,6 +46,41 @@ if [ -z "$URLMAJTGZ" ]; then
   echo "Impossible d'accéder aux paramètres URLMAJTGZ LCS"
   exit 1
 fi
+
+#
+# LcsMaj black-listes
+# Liste des valeurs incorrect pour LCS 2
+#
+## source LCS 1.4 pour le passage a woody
+if [ $URLMAJTGZ = "ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ-W2S" ]; then
+  clear
+  echo "************ Mise a jour" INTERROMPUE ***************"
+  echo "serveur de mise a jour URLMAJTGZ incompatible avec cette vesion de LCS"
+  echo "valeur par defaut : ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ-ETCH"
+  echo "************ Mise a jour" INTERROMPUE ***************"
+  exit 1   
+fi
+## source LCS 1.4
+if [ $URLMAJTGZ = "ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ" ]; then
+  clear
+  echo "************ Mise a jour" INTERROMPUE ***************"
+  echo "serveur de mise a jour URLMAJTGZ incompatible avec cette vesion de LCS"
+  echo "valeur par defaut : ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ-ETCH"
+  echo "************ Mise a jour" INTERROMPUE ***************"
+  exit 1
+fi
+## source LCS 1.4 XP
+if [ $URLMAJTGZ = "ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ-XP" ]; then
+  clear
+  echo "************ Mise a jour" INTERROMPUE ***************"
+  echo "serveur de mise a jour URLMAJTGZ incompatible avec cette vesion de LCS"
+  echo "valeur par defaut : ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ-ETCH"
+  echo "************ Mise a jour" INTERROMPUE ***************"
+  exit 1
+fi            
+
+
+
 #
 # lecture urlmaj des sommes de controles
 #

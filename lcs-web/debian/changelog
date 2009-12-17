@@ -1,3 +1,9 @@
+lcs-web (2.4.6~4) Lcs; urgency=low
+
+  * LcsMaj : add URLMAJTGZ Black-list
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 18 Dec 2009 00:16:02 +0100
+
 lcs-web (2.4.6~3) Lcs; urgency=low
 
   [ Philippe Leclerc ]
