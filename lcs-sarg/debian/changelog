@@ -1,8 +1,9 @@
-lcs-sarg (2.1~2) Lcc; urgency=low
+lcs-sarg (2.1~3) Lcs; urgency=low
 
+  [ Jean-Luc Chretien ]
   * Release for Lenny.
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 07 Dec 2009 19:52:34 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Dec 2009 14:14:54 +0100
 
 lcs-sarg (2.1~1) Lcs; urgency=low
 
