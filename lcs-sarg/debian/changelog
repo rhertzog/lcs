@@ -1,10 +1,11 @@
-lcs-sarg (2.1~4) Lcs; urgency=low
+lcs-sarg (2.4.6) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * Release for Lenny.
   * Modify where is the access.log file in sarg.conf
+  * Make a stable release for LCS 2.4.6 
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 15 Dec 2009 08:42:37 +0100
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 15 Dec 2009 09:33:24 +0100
 
 lcs-sarg (2.1~1) Lcs; urgency=low
 
