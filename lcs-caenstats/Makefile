@@ -9,7 +9,7 @@ install:
                      
 	# install home superviseur
 	install -d $(DESTDIR)/home/superviseur
-	install -m 750 home/* $(DESTDIR)/home
+	cp -a  home/* $(DESTDIR)/home
                                          
 clean:
                                         
