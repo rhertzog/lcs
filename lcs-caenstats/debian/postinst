@@ -20,6 +20,8 @@ set -e
 
 case "$1" in
     configure)
+    useradd -K UID_MIN=100 -K UID_MAX=999 superviseur
+    chown superviseur\:lcs-users /home/superviseur 
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
