@@ -10,12 +10,8 @@ class Proxy {
         	curl_setopt($this->ch, CURLOPT_VERBOSE, 1);
 		curl_setopt ($this->ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($this->ch,CURLOPT_SSL_VERIFYHOST,0);
-		//curl_setopt ($this->ch, CURLOPT_TIMEOUT, 1);
 		curl_setopt($this->ch, CURLOPT_CRLF, true);
-		//curl_setopt($this->ch, CURLOPT_COOKIESESSION, TRUE);
 		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, TRUE);
-		//curl_setopt($this->ch, CURLOPT_COOKIEFILE, "cookiefile");
-		//curl_setopt($this->ch, CURLOPT_COOKIEJAR, "cookiefile");
 	}
 
 	public function __destruct() {
@@ -34,6 +30,26 @@ class Proxy {
 			return $this->ContentType;
 	}
 
+	public function addPostData($nom_champ, $valeur)
+    	{   
+        	if (!isset($this->_post[$nom_champ]) && !is_array($valeur)) {
+            		$this->_post[$nom_champ] = $valeur;
+            		return TRUE;
+        	} else {
+            		return FALSE;
+        	}
+    	}
+
+	public function addPostFile($nom_champ, $fichier)
+    	{
+        	if (is_file($fichier)) {
+            		$this->_post[$nom_champ] = '@' . realpath($fichier);
+        	} else {
+            	throw new Exception("Le fichier '$fichier' n'existe pas ou n'est pas un fichier régulier");
+        	}
+    	}
+
+
 	public function process($url, $data = null, $verb = 'GET') {
 		try {
 
@@ -42,13 +58,17 @@ class Proxy {
 			curl_setopt($this->ch, CURLOPT_COOKIE, $cookie);
 			curl_setopt($this->ch, CURLOPT_HEADER, true);
 			curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
-			if ($verb == 'POST') {
-				curl_setopt($this->ch, CURLOPT_POST, 1 );
-				if( is_array($data) ) {
-					$postData = implode('&', $data);
-					curl_setopt($this->ch, CURLOPT_POSTFIELDS, $postData );
+			  if ($verb == 'POST') {
+                                curl_setopt($this->ch, CURLOPT_POST, 1 );
+                                if( is_array($data) ) {
+                                        $postData = implode('&', $data);
+                                        curl_setopt($this->ch, CURLOPT_POSTFIELDS, $postData );
+                                } else {
+                                        $postData = $this->_post;
+                                        curl_setopt($this->ch, CURLOPT_POSTFIELDS, $postData );
+	
 				}
-			}
+                        }
 
 			$response = curl_exec($this->ch);
 			$this->error = curl_error($this->ch);

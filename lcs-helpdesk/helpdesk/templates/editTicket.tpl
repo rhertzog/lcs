@@ -1,4 +1,22 @@
 //var ticket_id = '-1';
+
+var windowVignettes = new Ext.Window({
+		id: 'winVignettes',
+        title: 'Joindre un fichier',
+        width: 400,
+        height:200,
+        minWidth: 200,
+        minHeight: 200,
+        layout: 'fit',
+        plain:true,
+        bodyStyle:'padding:5px;',
+        buttonAlign:'center',
+        closeAction: 'hide',
+        items: [{ html: '<div id="form_vignette" style="margin-left: 40px; margin-top: 20px;">Loading ...</div>' }], 
+           
+        
+    });
+
 var windowModifReply = new Ext.Window({
         title: 'Modification de la réponse',
         width: 600,
@@ -104,7 +122,15 @@ var windowModifReply = new Ext.Window({
                     id: 'btnRep_ticket_%ROWID%',
                     handler : answer_show,
                     
+                },'-'
+	, {
+                    
+		    text: 'Joindre',
+                    id: 'btnJoin',
+                    handler : join,
+                    
                 },'-'	
+	
 	],
  });
 
@@ -241,5 +267,30 @@ var comp =  new Ext.Panel({
                 }
             ],	
 });
+/*
+function jsUpload(upload_field) {
+    	    var re_text = /\.gif|\.png|\.jpg|\.jpeg|\.pdf/i;
+            var filename = upload_field.value;
+		
+    		if (filename.search(re_text) == -1) {
+        		alert("Il faut fournir une image gif png jpg ou jpeg ou un PDF");
+        		upload_field.form.reset();
+        		return false;
+    		}
+
+    		upload_field.form.submit();
+		upload_field.form.reset();
+    		return true;
+}
+*/
+function join() {
+	windowVignettes.show();
+	var url = '/helpdesk/ajaxlib/upload.php';
+        var params= null;
+		new Ajax.Request(url,{ method: 'post', parameters: params, onComplete: function(xhr) {
+			$('form_vignette').innerHTML = xhr.responseText;
+			$('ticket_id').value = ticket;
+      	}});
+}
 
 storeTicketReplies.startAutoRefresh(10, null,null, true);

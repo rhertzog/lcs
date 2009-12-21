@@ -1,3 +1,9 @@
+lcs-helpdesk (2.4.1~5) unrealeased; urgency=low
+
+  * addind SSO upload functionality on tickets 
+
+ -- Sebastien TACK <sebastien.tack@ac-caen.fr>  Mon,  21 Dec 2009 11:12:30 +0200
+
 lcs-helpdesk (2.4.1~4) unrealeased; urgency=low
 
   * enabling for submitter of ticket title and description modification before handling 

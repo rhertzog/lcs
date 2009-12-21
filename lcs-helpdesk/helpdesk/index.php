@@ -39,6 +39,7 @@ body	{
 	<script type='text/javascript' src='/lib/js/ext/ext-all-debug.js'></script>
 	<script type='text/javascript' src='/helpdesk/js/RowExpander.js'></script>
 	<script type="text/javascript" src="/helpdesk/js/helpdesk.js"></script>
+	<script type="text/javascript" src="/helpdesk/js/upload.js"></script>
 	<script type='text/javascript'>
 		function init() {
 			doHelpDesk(true);

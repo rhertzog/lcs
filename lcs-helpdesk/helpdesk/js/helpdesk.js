@@ -4,6 +4,22 @@
 		var ticket = null;
 		//var ds = null;		
 
+function jsUpload(upload_field) {
+            var re_text = /\.gif|\.png|\.jpg|\.jpeg|\.pdf/i;
+            var filename = upload_field.value;
+
+                if (filename.search(re_text) == -1) {
+                        alert("Il faut fournir une image gif png jpg ou jpeg ou un PDF");
+                        upload_field.form.reset();
+                        return false;
+                }
+
+                upload_field.form.submit();
+                alert('le fichier est soumis');
+		upload_field.form.reset();
+                return true;
+}
+
 
 function inspect(obj, maxLevels, level)
 {
