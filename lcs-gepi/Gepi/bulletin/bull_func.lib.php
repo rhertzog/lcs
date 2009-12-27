@@ -1,6 +1,6 @@
 <?php
 
-/* $Id: bull_func.lib.php 3846 2009-11-30 16:28:21Z crob $ */
+/* $Id: bull_func.lib.php 3862 2009-12-04 16:35:10Z crob $ */
 
 include("../cahier_notes/visu_releve_notes_func.lib.php");
 
@@ -2587,7 +2587,8 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 									if ($matiere[$ident_eleve_aff][$id_periode][$m]['moy_eleve']>=15) { $place_eleve=0;}
 									*/
 									if(isset($tab_bull['eleve'][$i]['aid_b'][$m]['place_eleve'])) {
-										$place_eleve=$tab_bull['eleve'][$i]['aid_b'][$m]['place_eleve'];
+										//$place_eleve=$tab_bull['eleve'][$i]['aid_b'][$m]['place_eleve'];
+										$place_eleve=$tab_bull['eleve'][$i]['aid_b'][$m]['place_eleve']-1;
 									}
 								}
 								$data_grap=array();
@@ -3453,7 +3454,8 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 								if ($matiere[$ident_eleve_aff][$id_periode][$m]['moy_eleve']>=15) { $place_eleve=0;}
 								*/
 								if(isset($tab_bull['place_eleve'][$m][$i])) {
-									$place_eleve=$tab_bull['place_eleve'][$m][$i];
+									//$place_eleve=$tab_bull['place_eleve'][$m][$i];
+									$place_eleve=$tab_bull['place_eleve'][$m][$i]-1;
 								}
 							}
 							$data_grap[0]=$tab_bull['quartile1_grp'][$m];
@@ -3875,7 +3877,8 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 									if ($matiere[$ident_eleve_aff][$id_periode][$m]['moy_eleve']>=15) { $place_eleve=0;}
 									*/
 									if(isset($tab_bull['eleve'][$i]['aid_e'][$m]['place_eleve'])) {
-										$place_eleve=$tab_bull['eleve'][$i]['aid_e'][$m]['place_eleve'];
+										//$place_eleve=$tab_bull['eleve'][$i]['aid_e'][$m]['place_eleve'];
+										$place_eleve=$tab_bull['eleve'][$i]['aid_e'][$m]['place_eleve']-1;
 									}
 								}
 								$data_grap=array();
@@ -4194,7 +4197,7 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 							if (($info_bulletin[$ident_eleve_aff][$id_periode]['moy_general_eleve']>=12) and ($info_bulletin[$ident_eleve_aff][$id_periode]['moy_general_eleve']<15)) { $place_eleve=1;}
 							if ($info_bulletin[$ident_eleve_aff][$id_periode]['moy_general_eleve']>=15) { $place_eleve=0;}
 							*/
-							$place_eleve=$tab_bull['place_eleve_classe'][$i];
+							$place_eleve=$tab_bull['place_eleve_classe'][$i]-1;
 						}
 						$data_grap_classe[0]=$tab_bull['quartile1_classe_gen'];
 						$data_grap_classe[1]=$tab_bull['quartile2_classe_gen'];

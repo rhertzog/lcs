@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_eleve.php 3323 2009-08-05 10:06:18Z crob $
+ * $Id: edit_eleve.php 3903 2009-12-11 20:47:50Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -138,7 +138,11 @@ if ($action == "rendre_inactif") {
 	}
 
 } elseif ($action == "supprimer") {
-	if ($gepiSettings['ldap_write_access']) {
+	$ldap_write_access=false;
+
+	//if ($gepiSettings['ldap_write_access']) {
+	if ($gepiSettings['ldap_write_access']=='yes') {
+		//echo "\$ldap_write_access<br />";
 		$ldap_write_access = true;
 		$ldap_server = new LDAPServer;
 	}
@@ -214,6 +218,7 @@ if ($action == "rendre_inactif") {
 		}
 	}
 } elseif ($action == "change_auth_mode") {
+	$ldap_write_access = false;
 	if ($gepiSettings['ldap_write_access'] == "yes") {
 		$ldap_write_access = true;
 		$ldap_server = new LDAPServer;
@@ -300,6 +305,7 @@ if(mysql_num_rows($quels_eleves)==0){
 	require("../lib/footer.inc.php");
 	die;
 }
+//echo " | <a href='impression_bienvenue.php?mode=eleve'>Fiches bienvenue</a>";
 echo "</p>\n";
 
 //echo "<p><b>Actions par lot</b> :";
