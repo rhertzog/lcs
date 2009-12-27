@@ -12,6 +12,8 @@ PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
 INDICEMAJNBR="5"
 DESCRIPT="Gestion de suivi des resultats scolaires"
 CONF="/var/lib/lcs/$MODULE"
+DOC="/usr/share/doc/lcs/Gepi/html/index.html"
+REV=`cat $PATHPLUG/lib/global.inc | grep 'gepiSvnRev' | cut -d'"' -f2 `
 
 case "$1" in
    install| configure)
@@ -161,6 +163,11 @@ else
         #
 	    
 fi
+	#
+	# Patch de la documentation
+	#
+	sed -i "s/#version#/$VER/g" $DOC
+	sed -i "s/#rev#/$REV/g" $DOC 
 	#
 	# 
 	echo "Changement des droits sur l'arborescence du module"
