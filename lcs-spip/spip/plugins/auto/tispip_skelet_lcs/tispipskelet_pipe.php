@@ -126,6 +126,15 @@ function affiche_message_admins () {
 		
 				$flux["data"] = $data.$ret;
 			}
+
+			if ($exec == "auteurs") {
+				$data = $flux["data"];
+				$res = icone_horizontale(_T("Nettoyer les comptes"), generer_url_ecrire("accorder_comptes_lcs"), _DIR_PLUGIN_TISPIPSKELET."img_pack/nettoyer_comptes_lcs_spip.png", "", false);
+				$ret = bloc_des_raccourcis($res);
+
+				$flux["data"] = $data.$ret;
+			}
+
 		}	
 		
 		$id_rubrique = $flux['args']['id_rubrique'];

@@ -75,6 +75,8 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'choix_images_menu_dom'=>'Choisir les images cliquables pour d&eacute;plier/replier le menu',
 'conf' => 'Configuration',
 'conf_public' => 'Affichage public',
+'confirmer_creer_zone_eleves'=>'ATTENTION ! Vous allez cr&eacute;er une zone dont l&rsquo;acc&egrave;s ne sera autoris&eacute; qu&rsquo;aux seuls &eacute;l&egrave;ves de la classe de ',
+'confirmer_creer_zone_eleves_2'=>'D&eacute;sirez vous vraiment cr&eacute;er cette zone ? ',
 'contenu_blocs_jumeaux'=>'Contenu des blocs jumeaux',
 'contenu_pied_de_page' => 'Contenu du pied de page',
 'contenu_blocs_jumeaux_2'=>'Contenu du deuxi&egrave;me couple de blocs jumeaux',
@@ -88,6 +90,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'cr_bn' =>'Conseil R&eacute;gional de Basse-Normandie',
 'crdp_bn' => 'CRDP de Basse-Normandie',
 'credits' => 'Cr&eacute;dits',
+'creer_zone'=>'Cr&eacute;er cette zone',
 
 //D
 ''=>'',
@@ -206,6 +209,19 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 //I
 ''=> '',
+'info_accorder_comptes_spip_lcs'=> '<strong>Nettoyage des comptes du forum</strong> : <br />Cette page vous permet d&rsquo;effectuer un "nettoyage" des comptes du forum, en les mettant en concordance avec l&rsquo;annuaire du Lcs. Elle liste les auteurs pr&eacute;sents dans la base du forum, mais n&rsquo;existant plus dans l&rsquo;annuaire du Lcs. <br />Vous pouvez ensuite soit supprimer ces auteurs un par un, soit les supprimer par lots de vingt auteurs (<em>ce qui correspond &agrave; une page affich&eacute;e</em>), soit par lots de cent auteurs.<br />A noter que ces auteurs ne sont pas compl&eacute;tement supprim&eacute;s de la base, seul leur statut est modifi&eacute;, inhibant leur affichage tant dans l&rsquo;espace public que dans l&rsquo;espace priv&eacute;',
+
+'info_config_page'=> 'Glissez/glissez un item de la liste ci-dessous et d&eacute;posez le sur la zone \"titre\" d&rsquo;une colonne. Compl&eacute ensuite le formulaire affich&eacute;',
+'info_creer_zones_groupes_ldap'=>'Cette page est destin&eacute;e &agrave; la cr&eacute;ation des <a href=\"http://www.spip-contrib.net/Le-plugin-Acces-Restreint\" title=\"Documentation du plugin Acc&egrave;s-restreint\">zones d&rsquo;acc&egrave;s restreint</a>, issues des groupes de l&rsquo;annuaire LCS.
+Elle liste les groupes principaux (Administratifs, Profs, Eleves) et les groupes secondaires Equipe, Classe, Matiere, Cours.  
+Vous pouvez cr&eacute;er une zone d&rsquo;acc&egrave;s restreint pour chaque groupe (s&eacute;par&eacute;ment ou  par type).
+Chaque zone cr&eacute;&eacute;e &agrave; partir de l&rsquo;annuaire sera automatiquement peupl&eacute;e par les membres du groupe correspondant, ceci lors de la premi&egrave;re connexion. 
+<h5>Propositions d&rsquo;&eacute;volutions : </h5>
+<ul>
+<li> Pemettre la cr&eacute;ation de tous les groupes de l&rsquo;annuaire quel qu&rsquo;il soit.</li>
+<li> A la cr&eacute;ation du zone/groupe, cr&eacute;er &eacute;galement une rubrique de m&ecirc;me nom que le groupe (et la zone) et l&rsquo;associer &agrave; la zone cr&eacute;&eacute;e</li>
+<li>Permettre d&rsquo;associer les Equipes et les Classes portant le m&ecirc;me intitul&eacute; hors pr&eacute;fixe pour l&rsquo;acc&egrave;s &agrave; une m&ecirc;me zone (est-ce pertinent ???)</li>
+</ul>',
 'info_descriptif'=> 'Veuillez saisir un descriptif dans la [configuration du site->?exec=conf?exec=configuration]. ',
 'insert_bord' =>'Couleur de bordure du tableau. <i>Vous pouvez l&apos;indiquer en litt&eacute;ral (c.&agrave;.d. blue, red, etc...) ou en hexad&eacute;cimal </i>',
 'insert_bord_rub' =>'Couleur de bordure du tableau. <i>Vous pouvez l&apos;indiquer en litt&eacute;ral (c.&agrave;.d. blue, red, etc...) ou en hexad&eacute;cimal </i>',
@@ -241,6 +257,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'menu_spip'=> 'Menu spip de base (Original)',
 'menu_dom'=> 'Menu d&eacute;pliant au clic',
 'modif_css' => 'Modifier les styles css',
+'modifier_zone'=>'Modifier cette zone',
 
 //N
 'nb_articles_editorial' => 'Nombre d&apos;articles "Editorial" &agrave; afficher : ',
@@ -314,6 +331,8 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 //V
 ''=> '',
+
+'validation_ie'=> 'Validation IE7 IE8. Cochez cette case pour activer la correction des biugs d&rsquo;affichage sous Internet Explorer (7 et 8).',
 'voir_aide'=> 'Voir l&rsquo;aide sur cet &eacute;l&eacute;ment',
 
 //Z

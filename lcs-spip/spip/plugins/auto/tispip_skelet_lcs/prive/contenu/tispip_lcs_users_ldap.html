@@ -1,0 +1,15 @@
+[(#REM)
+/**
+ * Plugin Lcs-TiSpiP pour spip2.0
+ * Mise en concordance des auteurs avec l'annuaire
+ * Licence GPL (c) 2006-2008 dOM0
+ * 
+ */
+]
+<div class="ajax">
+[(#ENV{afficher}|=={actifs}|oui)
+[(#INCLURE{fond=prive/editer/tispip_lcs_users_ldap}{all_users_lcs=#ENV{all_users_lcs}}{env}{ajax})]
+]
+[(#ENV{afficher}|=={poubelle}|oui)
+<a href="[(#SELF|parametre_url{all_users_lcs,#ENV{all_users_lcs}}|parametre_url{afficher,actifs})]" class="ajax">Afficher les auteurs mis dans la [(#INCLURE{fond=prive/contenu/tispip_lcs_users_ldap_poubl}{env}{ajax})]
+]<div>
