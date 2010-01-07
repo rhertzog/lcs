@@ -1,8 +1,12 @@
-lcs-web (2.4.6~4) Lcs; urgency=low
+lcs-web (2.4.6~4) UNRELEASED; urgency=low
 
+  [ Simon Cavey ]
   * LcsMaj : add URLMAJTGZ Black-list
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 18 Dec 2009 00:16:02 +0100
+  [ Jean-Luc Chrétien ]
+  *  Add gloabl in functions.inc.php open_session
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Jan 2010 14:24:09 +0100
 
 lcs-web (2.4.6~3) Lcs; urgency=low
 
