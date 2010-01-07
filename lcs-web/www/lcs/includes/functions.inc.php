@@ -4,7 +4,7 @@
    functions.inc.php
    jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   Derniere mise a jour 20/11/2009
+   Derniere mise a jour 08/01/2010
    ============================================= */
 
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
@@ -85,7 +85,7 @@ include ("/var/www/lcs/includes/xoft.php");
 
         if ($idpers):
             /* Renvoie le timestamp du dernier login */
-            $result=mysql_db_query("$DBAUTH","SELECT DATE_FORMAT(last_log,'%d/%m/%Y à %T' ) FROM personne WHERE id=$idpers", $authlink);
+            $result=mysql_db_query("$DBAUTH","SELECT DATE_FORMAT(last_log,'%d/%m/%Y ï¿½ %T' ) FROM personne WHERE id=$idpers", $authlink);
             if ($result && mysql_num_rows($result)):
                 $der_log=mysql_result($result,0,0);
                 mysql_free_result($result);
@@ -150,7 +150,7 @@ include ("/var/www/lcs/includes/xoft.php");
 
     function mksessid()
     {
-        /* Fabrique un N° de session aleatoire */
+        /* Fabrique un Nï¿½ de session aleatoire */
         global $Pool, $SessLen,$authlink, $DBAUTH;
 
         $count=10;
@@ -187,7 +187,7 @@ include ("/var/www/lcs/includes/xoft.php");
                 if (!$r) {
                         $error = "Echec du bind anonyme";
                 } else {
-                        // Recherche du groupe d'appartenance de l'utilisateur connecté
+                        // Recherche du groupe d'appartenance de l'utilisateur connectï¿½
                         $result=@ldap_list ($ds, $dn["groups"], $filter, $ldap_groups_attr);
                         if ($result) {
                                 $info = @ldap_get_entries( $ds, $result );
@@ -212,7 +212,7 @@ include ("/var/www/lcs/includes/xoft.php");
                 * true en cas de succes de la creation du home et de la bdd
                 * false dans les autres cas
       */
-        global $urlauth, $authlink, $DBAUTH, $key_priv;
+        global $urlauth, $scriptsbinpath, $authlink, $DBAUTH, $key_priv;
         // Verifie le couple login/password sur l'annuaire ldap
         $auth_ldap = user_valid_passwd ( $login , $passwd );
         if ($auth_ldap) :
