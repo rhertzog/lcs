@@ -57,6 +57,9 @@ case "$1" in
 	    if dpkg --compare-versions $preversion lt 2.4.5 ; then
 	    	/usr/sbin/lcs-make-sudoers
 	    fi
+	    # Activation de l'ip forward.
+	    echo "1" /proc/sys/net/ipv4/ip_forward
+	    
 #
 # Fin de la mise a jour
 #
