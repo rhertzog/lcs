@@ -1,4 +1,4 @@
-lcs-openvpn (2.4.6~2) Lcs; urgency=low
+lcs-openvpn (2.4.6) Lcs; urgency=low
 
   * updating windows client now work in vista and 7 64 bits
   * updating macos client now working in 64 bits
