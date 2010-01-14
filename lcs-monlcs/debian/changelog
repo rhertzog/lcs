@@ -1,17 +1,11 @@
-lcs-monlcs (2.4.2~2) UNRELEASED; urgency=low
+lcs-monlcs (2.4.6) Lcs; urgency=low
 
   * missing jar for geogebra module
   * adjusting codebase and archive attributes for Applet in viewer.php  
-
- -- Sebastien Tack <>  Sun, 15 Nov 2009 10:54:45 +0200
-
-lcs-monlcs (2.4.2~1) Lcs; urgency=low
-
-  [ Sebastien Tack ]
   * update module geogebra
   * modif js dhtmlwindow pour fixer Zindex ko lorsque fenetre reduite
 
- -- Sebastien Tack <sebastien.tack@ac-caen.fr>  Sat, 24 Oct 2009 18:15:40 +0200
+ -- Sebastien Tack <>  Sun, 15 Nov 2009 10:54:45 +0200
 
 lcs-monlcs (2.4.1) Lcs; urgency=low
 
