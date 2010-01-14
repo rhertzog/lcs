@@ -1,17 +1,15 @@
-lcs-preinstall (2.4.6~1) Lcs; urgency=low
+lcs-preinstall (2.4.6) Lcs; urgency=low
 
+  [ Jean-Luc Chretien ]
   * Modify sql dump for redirectmail table log
+  * Update version number in postinst
+  * Cleaning changelog
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Nov 2009 14:43:48 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jan 2010 12:00:39 +0100
 
 lcs-preinstall (2.4.5) Lcs; urgency=low
 
-  * remove tilde
-
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Oct 2009 17:18:47 +0100
-
-lcs-preinstall (2.4.5~2) Lcs; urgency=low
-
+  [ Simon Cavey ]
   * add remove sudo when remove package
   * introduce lcs-make-sudoers
 
