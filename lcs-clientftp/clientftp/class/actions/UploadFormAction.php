@@ -38,16 +38,18 @@ class UploadFormAction extends ActionTemplate {
 		$smarty->assign('result', 'failed');
 		
 		if(isset($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
-						
+                        # Debut LCS jLCF modif 1
+                        $_FILES['file']['name'] = utf8_encode($_FILES['file']['name']);
+                        # Fin LCS jLCF modif 1						
 			// base + relative
 			$relativePath = Browser :: getRelativePath($_REQUEST['relativePath']);
 			$directory = realpath(Browser :: getBrowserRoot() . $relativePath);
-                        # Debut LCS jLCF modif 1
+                        # Debut LCS jLCF modif 2
              		if ( $directory == "/home/$user" ) { 
                           Browser_Utilities :: log("[UploadFormAction.perform] path root upload not permit : $directory/". $_FILES['file']['name'], "warn");
                           $smarty->assign('result', 'failed');
                         } else {
-                          # Fin LCS jLCF modif 1	
+                          # Fin LCS jLCF modif 2	
 			  // base + relative + name
 			  $uploadfile = $directory.
 					Browser_Utilities :: getSeparator().
@@ -64,7 +66,7 @@ class UploadFormAction extends ActionTemplate {
 				} else {
 					// success !!
 					$smarty->assign('result', 'success');
-					# LCS jLCF modif
+					# Debut LCS jLCF modif 3
 					exec ("/usr/bin/sudo /usr/share/lcs/scripts/chacces.sh 660 $user $uploadfile");
                                         # test si archive auto unzip
                                         if ( ereg ("/lcsofbupload.zip$", $uploadfile ) ) {
@@ -76,6 +78,7 @@ class UploadFormAction extends ActionTemplate {
                                             exec ("/bin/rm -R $dirtmp");
                                             unlink ($uploadfile);
                                         }
+                                        # Fin LCS jLCF modif 3
 					// create thumbnail for a file
 					// if it's a graphical file and if in configuration this option is enabled
 					if (BrowserHelper :: isGraphicalFile($_FILES['file']['name']) && Browser_Utilities :: getValueFromConfiguration("browser.thumbnail.create") == "true") {
@@ -86,7 +89,7 @@ class UploadFormAction extends ActionTemplate {
 				$smarty->assign('result', 'failed');
 				Browser_Utilities :: log("[UploadFormAction.perform] file name is not allowed: ". $_FILES['file']['name'], "warn");
 			}
-                      } # LCS jLCF modif 1 fermeture accolade
+                      } # LCS jLCF modif 2 fermeture accolade
 		}
 		
 		$smarty->assign('labels', Browser_Utilities :: loadProperites("conf". Browser_Utilities :: getSeparator() .Browser_Utilities :: getValueFromConfiguration("resource.labels.file")));
