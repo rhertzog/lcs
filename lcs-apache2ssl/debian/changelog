@@ -1,8 +1,12 @@
-lcs-apache2ssl (2.4.5~1) Lcs; urgency=low
+lcs-apache2ssl (2.4.6) Lcs; urgency=low
 
+  [ Simon Cavey ]
   * introduce lcs-make-sudoers
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 25 Nov 2009 10:52:20 +0100
+  [ Jean-Luc Chrétien ]
+  * Cleaning changelog 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jan 2010 13:17:21 +0100
 
 lcs-apache2ssl (2.4) Lcs; urgency=low
 
@@ -14,25 +18,13 @@ lcs-apache2ssl (2.1) lcs20; urgency=low
 
   [ Jean-Luc Chretien ]
   * Misc fixes on postinst and postrm
+  * Add enable and disable lcs-ssl in postinst and postrm
+  * Reorganization tree structure of the sources of the package 
 
-  [ Simon CaveyY ]
+  [ Simon Cavey ]
   * remove tilde to release
 
  -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 27 Apr 2009 17:20:00 +0200
-
-lcs-apache2ssl (2.1~2) lcs20; urgency=low
-
-  [ Jean-Luc Chretien ]
-  * Add enable and disable lcs-ssl in postinst and postrm
-
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Jun 2008 17:07:23 +0200
-
-lcs-apache2ssl (2.1~1) UNRELEASED; urgency=low
-
-  [ Jean-Luc Chretien ]    
-  * Reorganization tree structure of the sources of the package 
-
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Jun 2008 14:39:54 +0200
 
 lcs-apache2ssl (2.0) unstable; urgency=low
 
