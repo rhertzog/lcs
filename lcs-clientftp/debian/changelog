@@ -1,4 +1,4 @@
-lcs-clientftp (2.4.6~1) UNRELEASED; urgency=low
+lcs-clientftp (2.4.6~1) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * Modif class UploadFormAction.php for fixing charset in file name
