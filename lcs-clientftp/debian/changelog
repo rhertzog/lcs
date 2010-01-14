@@ -1,3 +1,11 @@
+lcs-clientftp (2.4.6~1) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Modif class UploadFormAction.php for fixing charset in file name
+  * Add types docx, xlsx and pptx in system.properties
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jan 2010 16:05:22 +0100
+
 lcs-clientftp (2.4) Lcs; urgency=low
 
   * Make a stable release 2.4 
@@ -6,21 +14,14 @@ lcs-clientftp (2.4) Lcs; urgency=low
 
 lcs-clientftp (2.2) Lcs; urgency=low
 
+  [ Jean-Luc Chretien ]
   * make a working release
-
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 27 Apr 2009 15:33:10 +0200
-
-lcs-clientftp (2.2~2) LcsXP; urgency=low
-
-  [ Jean-Luc Chretien ]
   * Correct num version in postinst
-
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 20 Mar 2009 16:43:10 +0100
-
-lcs-clientftp (2.2~1) LcsXP; urgency=low
-
-  [ Jean-Luc Chretien ]
   * Initial release for svn_builpackage compatibilty
   * add Makefile
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 Mar 2009 16:44:01 +0100
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 27 Apr 2009 15:33:10 +0200
+
+
+
+
