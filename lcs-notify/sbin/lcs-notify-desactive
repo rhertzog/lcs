@@ -4,4 +4,4 @@
 # Simon CAVEY
 # Projet LCS : 16/01/2010
 
-cp  /var/lib/lcs/notify/listchanges.conf.org /etc/apt/listchanges.conf
+cp  /var/lib/lcs/lcs-notify/listchanges.conf.org /etc/apt/listchanges.conf

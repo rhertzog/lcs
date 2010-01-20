@@ -7,4 +7,4 @@
 FULLDOMAINE=`hostname -f`
 USER=admin
 LCSADMIN=$USER@$FULLDOMAINE
-sed -e "s|@@LCSADMIN@@|"$LCSADMIN"|g" /var/lib/lcs/notify/listchanges.conf.lcs > /etc/apt/listchanges.conf
+sed -e "s|@@LCSADMIN@@|"$LCSADMIN"|g" /var/lib/lcs/lcs-notify/listchanges.conf.lcs > /etc/apt/listchanges.conf

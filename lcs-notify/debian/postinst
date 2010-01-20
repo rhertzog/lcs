@@ -27,7 +27,7 @@ case "$1" in
     configure)
     if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
 ### Install initiale
-	 /usr/sbin/lcs-notify-active
+	 /sbin/lcs-notify-active
     #
     #Inscription du module dans applis.lcs_db 
     #
@@ -42,7 +42,7 @@ case "$1" in
 	/usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';"
 	fi
 
-	/usr/sbin/lcs-notify-active
+	/sbin/lcs-notify-active
 	#
 	# Fin de la mise a jour
 	#
