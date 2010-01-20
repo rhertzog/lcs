@@ -23,7 +23,7 @@ MODULE="notify"
 
 case "$1" in
     purge|remove)
-	/usr/sbin/lcs-notify-desactive
+	/sbin/lcs-notify-desactive
 	#
         # DA(C)sincription du module
         #
