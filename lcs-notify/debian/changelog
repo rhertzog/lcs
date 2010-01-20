@@ -1,4 +1,4 @@
-lcs-notify (2.4.6) Lcs; urgency=low
+lcs-notify (2.4.6~1) Lcs; urgency=low
 
   * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
 
