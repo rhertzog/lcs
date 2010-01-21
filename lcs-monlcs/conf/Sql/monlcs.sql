@@ -315,6 +315,23 @@ REPLACE INTO `ml_rss` (`id`, `user`, `url`, `type`) VALUES
 
 -- --------------------------------------------------------
 
+-- phpMyAdmin SQL Dump
+-- version 3.2.3
+-- http://www.phpmyadmin.net
+--
+-- Serveur: localhost
+-- Généré le : Jeu 14 Janvier 2010 à 12:54
+-- Version du serveur: 5.0.32
+-- Version de PHP: 5.2.12-0.dotdeb.0
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+--
+-- Base de données: `monlcs_db`
+--
+
+-- --------------------------------------------------------
+
 --
 -- Structure de la table `ml_scenarios`
 --
@@ -323,6 +340,7 @@ CREATE TABLE IF NOT EXISTS `ml_scenarios` (
   `id` int(11) NOT NULL auto_increment,
   `id_scen` int(11) NOT NULL,
   `id_ressource` int(11) NOT NULL default '0',
+  `enabled` tinyint(4) NOT NULL default '1',
   `cible` varchar(255) NOT NULL default 'admin',
   `type` varchar(125) NOT NULL default 'ressource',
   `matiere` varchar(255) NOT NULL default '?',
@@ -336,33 +354,34 @@ CREATE TABLE IF NOT EXISTS `ml_scenarios` (
   `setter` varchar(125) NOT NULL default '',
   `descr` text,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=153 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=154 ;
 
 --
 -- Contenu de la table `ml_scenarios`
 --
 
-REPLACE INTO `ml_scenarios` (`id`, `id_scen`, `id_ressource`, `cible`, `type`, `matiere`, `titre`, `x`, `y`, `z`, `w`, `h`, `min`, `setter`, `descr`) VALUES
-(34, 0, 37, 'Eleves', 'ressource', 'Matiere_MATHS', 'Math1', 499, 243, 50, 219, 163, 'N', 'tacks', 'Calcul de vitesse moyenne loufoque.'),
-(19, 0, 36, 'Eleves', 'ressource', 'Matiere_MATHS', 'Math1', 8, 57, 50, 362, 140, 'N', 'tacks', 'Calcul de vitesse moyenne loufoque.'),
-(33, 0, 3, 'Eleves', 'note', 'Matiere_MATHS', 'Math1', 376, 57, 50, 345, 139, 'N', 'tacks', 'Calcul de vitesse moyenne loufoque.'),
-(21, 0, 2, 'Eleves', 'ressource', 'Matiere_MATHS', 'Math1', 9, 243, 50, 483, 165, 'N', 'tacks', 'Calcul de vitesse moyenne loufoque.'),
-(47, 1, 12, 'Eleves', 'ressource', 'Matiere_FRANC', 'Lecture', 12, 59, 50, 428, 374, 'N', 'admin', 'Exemple de livre realise avec Didapages.'),
-(52, 1, 12, 'Profs', 'ressource', 'Matiere_FRANC', 'Lecture', 12, 59, 50, 428, 374, 'N', 'admin', 'Exemple de livre realise avec Didapages.'),
-(53, 2, 59, 'Eleves', 'ressource', 'Matiere_PH-CH', 'Lune', 383, 57, 50, 500, 403, 'N', 'admin', 'D&eacute;couverte des phases de la lune.'),
-(56, 2, 57, 'Eleves', 'ressource', 'Matiere_PH-CH', 'Lune', 6, 60, 50, 369, 210, 'N', 'admin', 'D&eacute;couverte des phases de la lune.'),
-(60, 3, 112, 'Eleves', 'ressource', 'Matiere_HIGEO', 'Reperage', 3, 55, 50, 632, 423, 'N', 'admin', 'Epreuve de rep&eacute;rage avec Google Maps.'),
-(61, 3, 11, 'Eleves', 'note', 'Matiere_HIGEO', 'Reperage', 650, 55, 50, 432, 423, 'N', 'admin', 'Epreuve de rep&eacute;rage avec Google Maps.'),
-(62, 3, 112, 'Profs', 'ressource', 'Matiere_HIGEO', 'Reperage', 3, 55, 50, 632, 423, 'N', 'admin', 'Epreuve de rep&eacute;rage avec Google Maps.'),
-(63, 3, 11, 'Profs', 'note', 'Matiere_HIGEO', 'Reperage', 650, 55, 50, 432, 423, 'N', 'admin', 'Epreuve de rep&eacute;rage avec Google Maps.'),
-(78, 2, 14, 'Eleves', 'note', 'Matiere_PH-CH', 'Lune', 7, 318, 50, 369, 138, 'N', 'admin', 'D&eacute;couverte des phases de la lune.'),
-(79, 2, 14, 'Eleves', 'note', 'Matiere_PH-CH', 'Lune', 7, 318, 50, 369, 138, 'N', 'admin', 'D&eacute;couverte des phases de la lune.'),
-(80, 2, 14, 'Eleves', 'note', 'Matiere_PH-CH', 'Lune', 7, 318, 50, 369, 138, 'N', 'admin', 'D&eacute;couverte des phases de la lune.'),
-(81, 4, 132, 'Eleves', 'ressource', 'Matiere_EDCIV', 'La_loi', 5, 56, 50, 512, 473, 'N', 'tacks', 'Le parcours d''une loi.'),
-(84, 4, 15, 'Eleves', 'note', 'Matiere_EDCIV', 'La_loi', 522, 56, 50, 290, 125, 'N', 'tacks', 'Le parcours d''une loi.'),
-(97, 5, 136, 'Eleves', 'ressource', 'Matiere_HIGEO', 'Moyen age', 5, 55, 50, 400, 300, 'N', 'admin', 'Epreuve sur le moyen-&acirc;ge.'),
-(101, 5, 138, 'Eleves', 'ressource', 'Matiere_HIGEO', 'Moyen age', 5, 398, 50, 400, 300, 'N', 'admin', 'Epreuve sur le moyen-&acirc;ge.'),
-(102, 5, 137, 'Eleves', 'ressource', 'Matiere_HIGEO', 'Moyen age', 411, 55, 50, 400, 300, 'N', 'admin', 'Epreuve sur le moyen-&acirc;ge.');
+INSERT INTO `ml_scenarios` (`id`, `id_scen`, `id_ressource`, `enabled`, `cible`, `type`, `matiere`, `titre`, `x`, `y`, `z`, `w`, `h`, `min`, `setter`, `descr`) VALUES
+(34, 0, 37, 1, 'Eleves', 'ressource', 'Matiere_MATHS', 'Math1', 499, 243, 50, 219, 163, 'N', 'tacks', 'Calcul de vitesse moyenne loufoque.'),
+(19, 0, 36, 1, 'Eleves', 'ressource', 'Matiere_MATHS', 'Math1', 8, 57, 50, 362, 140, 'N', 'tacks', 'Calcul de vitesse moyenne loufoque.'),
+(33, 0, 3, 1, 'Eleves', 'note', 'Matiere_MATHS', 'Math1', 376, 57, 50, 345, 139, 'N', 'tacks', 'Calcul de vitesse moyenne loufoque.'),
+(21, 0, 2, 1, 'Eleves', 'ressource', 'Matiere_MATHS', 'Math1', 9, 243, 50, 483, 165, 'N', 'tacks', 'Calcul de vitesse moyenne loufoque.'),
+(47, 1, 12, 1, 'Eleves', 'ressource', 'Matiere_FRANC', 'Lecture', 12, 59, 50, 428, 374, 'N', 'admin', 'Exemple de livre realise avec Didapages.'),
+(52, 1, 12, 1, 'Profs', 'ressource', 'Matiere_FRANC', 'Lecture', 12, 59, 50, 428, 374, 'N', 'admin', 'Exemple de livre realise avec Didapages.'),
+(53, 2, 59, 1, 'Eleves', 'ressource', 'Matiere_PH-CH', 'Lune', 383, 57, 50, 500, 403, 'N', 'admin', 'D&eacute;couverte des phases de la lune.'),
+(56, 2, 57, 1, 'Eleves', 'ressource', 'Matiere_PH-CH', 'Lune', 6, 60, 50, 369, 210, 'N', 'admin', 'D&eacute;couverte des phases de la lune.'),
+(60, 3, 112, 1, 'Eleves', 'ressource', 'Matiere_HIGEO', 'Reperage', 3, 55, 50, 632, 423, 'N', 'admin', 'Epreuve de rep&eacute;rage avec Google Maps.'),
+(61, 3, 11, 1, 'Eleves', 'note', 'Matiere_HIGEO', 'Reperage', 650, 55, 50, 432, 423, 'N', 'admin', 'Epreuve de rep&eacute;rage avec Google Maps.'),
+(62, 3, 112, 1, 'Profs', 'ressource', 'Matiere_HIGEO', 'Reperage', 3, 55, 50, 632, 423, 'N', 'admin', 'Epreuve de rep&eacute;rage avec Google Maps.'),
+(63, 3, 11, 1, 'Profs', 'note', 'Matiere_HIGEO', 'Reperage', 650, 55, 50, 432, 423, 'N', 'admin', 'Epreuve de rep&eacute;rage avec Google Maps.'),
+(78, 2, 14, 1, 'Eleves', 'note', 'Matiere_PH-CH', 'Lune', 7, 318, 50, 369, 138, 'N', 'admin', 'D&eacute;couverte des phases de la lune.'),
+(79, 2, 14, 1, 'Eleves', 'note', 'Matiere_PH-CH', 'Lune', 7, 318, 50, 369, 138, 'N', 'admin', 'D&eacute;couverte des phases de la lune.'),
+(80, 2, 14, 1, 'Eleves', 'note', 'Matiere_PH-CH', 'Lune', 7, 318, 50, 369, 138, 'N', 'admin', 'D&eacute;couverte des phases de la lune.'),
+(81, 4, 132, 1, 'Eleves', 'ressource', 'Matiere_EDCIV', 'La_loi', 5, 56, 50, 512, 473, 'N', 'tacks', 'Le parcours d''une loi.'),
+(84, 4, 15, 1, 'Eleves', 'note', 'Matiere_EDCIV', 'La_loi', 522, 56, 50, 290, 125, 'N', 'tacks', 'Le parcours d''une loi.'),
+(97, 5, 136, 1, 'Eleves', 'ressource', 'Matiere_HIGEO', 'Moyen age', 5, 55, 50, 400, 300, 'N', 'admin', 'Epreuve sur le moyen-&acirc;ge.'),
+(101, 5, 138, 1, 'Eleves', 'ressource', 'Matiere_HIGEO', 'Moyen age', 5, 398, 50, 400, 300, 'N', 'admin', 'Epreuve sur le moyen-&acirc;ge.'),
+(102, 5, 137, 1, 'Eleves', 'ressource', 'Matiere_HIGEO', 'Moyen age', 411, 55, 50, 400, 300, 'N', 'admin', 'Epreuve sur le moyen-&acirc;ge.'),
+(153, 6, 263, 1, 'Eleves', 'ressource', 'Matiere_TECHN', 'math1', 5, 60, 106, 666, 370, 'N', 'tacks', 'Angle au centre');
 
 -- --------------------------------------------------------
 
