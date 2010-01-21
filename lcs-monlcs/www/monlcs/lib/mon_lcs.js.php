@@ -39,6 +39,22 @@
 	}
 
 
+	function commuteScen(idScen) {
+                var status;
+		var reg = new RegExp("unlocked", "i");
+		var img = $('img_lock'+parseInt(idScen)).src;
+		var test = reg.exec(img);
+		if (test == 'unlocked')   {
+			status = 'locked';
+		} 
+		else
+			status = 'unlocked';
+	        $('img_lock'+parseInt(idScen)).src = '/monlcs/images/'+status+'.png';
+		var url = 'ajax.lib.php';
+		var params = '?action=commute_scenario&id='+parseInt(idScen);
+		new Ajax.Request(url,{ method: 'post', parameters: params, onComplete: function(xhr) {}});
+
+	}
 
 	function noaccent(chaine) {
 		temp = escape(chaine).replace(/[авд]/gi,"a")
