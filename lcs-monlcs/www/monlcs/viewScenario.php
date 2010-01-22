@@ -87,7 +87,7 @@ extract($_GET);
 			var params = '?id_scen=<?php echo $id ?>';
 			new Ajax.Request(url, {parameters: params, method: 'post', onComplete: function (xhr){
 				try {
-					alert(xhr.responseText);
+					//alert(xhr.responseText);
 					eval(xhr.responseText);
 				} catch (err) {
 					alert(err);
