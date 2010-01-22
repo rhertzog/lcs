@@ -1,3 +1,10 @@
+lcs-security (2.4.6) Lcs; urgency=low
+
+  * Modify control file description
+  * Make a stable release
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jan 2010 15:00:34 +0100
+
 lcs-security (2.4.2) Lcs; urgency=low
 
   * add exeption for css

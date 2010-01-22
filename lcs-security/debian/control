@@ -8,7 +8,6 @@ Standards-Version: 3.7.2
 Package: lcs-security
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, fail2ban (>= 0.8)
-Description: Ajouts de configuration pour securiser LCS
- Ajout de lcs-auth sur fail2ban
- Ajout d'un fichier jail.local pour adapter la configuration
- de fail2ban a LCS.
+Description: Add somes configurations and security services on LCS
+ Add lcs-auth on fail2ban service
+ Add jail.local file for modify configuration of fail2ban on LCS
