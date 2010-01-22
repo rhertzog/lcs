@@ -1,19 +1,21 @@
 #!/bin/bash
 # Misterphi 
-# Version du : 03/04/2009 
+# Version du : 22/01/2010 
 # $1 : repertoire source du paquet
 # $2 : N° de version
-# $3 : Branche stable, testing ou xp
-# $4 : (optionnel) Necessaire uniquement si le module est nouveau dans la branche (c.a.d s'il n'existe pas de version anterieure). 
+# $3 : Distribution : etch ou lenny
+# $4 : Branche : stable, testing ou xp
+# $5 : (optionnel) Necessaire uniquement si le module est nouveau dans la branche (c.a.d s'il n'existe pas de version anterieure). 
 # Ce parametre doit correspondre a la description du module qui sera inseree dans lcs_db.applis (voir le postinst)
 
 
-if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] ; then
+if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ] ; then
         echo "Script destine referencer un paquet Debian LCS-*"
         echo ""
-        echo "Usage : ref_pkg <repertoire source du paquet> <N° de Version>  <branche de destination> <description>"
+        echo "Usage : ref_pkg <repertoire source du paquet> <N° de Version> <Distribution> <branche de destination> <description>"
+        echo "Les distributions possibles sont etch ou lenny"
         echo "Les branches possibles sont : stable testing experimentale (ou xp) "
-        echo "Exemple : ./ref_pkg.sh lcs-pla 2.1~2 xp 'Administration web serveur LDAPLCS' "
+        echo "Exemple : ./ref_pkg.sh lcs-pla 2.1~2 lenny xp 'Administration web serveur LDAPLCS' "
         exit
 fi
 
@@ -33,18 +35,38 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 		#
 		#mise en forme de l'url du xml
 		#		
-		
-			if [ "$3" == "stable" ];then
+		if [ "$3" == "etch" ];then
+			if [ "$4" == "stable" ];then
   	  			depot="Lcs"
-			elif [ "$3" == "testing" ];then
+  	  			br="Lcs"
+			elif [ "$4" == "testing" ];then
   	 		 	depot="LcsTesting"
-			elif [ "$3" == "experimentale" -o "$3" == "xp" ];then
+  	 		 	br="LcsTesting"
+			elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
 	   		 	depot="LcsXP"
+	   		 	br="LcsXP"
 			else 
 			echo "branche erronee"
-			exit
+			exit 
+			fi
+		elif [ "$3" == "lenny" ];then
+			if [ "$4" == "stable" ];then
+  	  			depot="Lennycs"
+  	  			br="Lcs"
+			elif [ "$4" == "testing" ];then
+  	 		 	depot="LennycsTesting"
+  	 		 	br="LcsTesting"
+			elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
+	   		 	depot="LennycsXP"
+	   		 	br="Lcs"
+			else 
+			echo "branche erronee"
+			exit 
+			fi
+		else
+		echo "Distribution erronee"
+		exit 
 		fi
-
 		
 		
 		Repcourant=`pwd`
@@ -75,10 +97,10 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 		else
 			#nouveau paquet
 			#affectation de l'intitule 
-			if [ -z "$4" ]; then
+			if [ -z "$5" ]; then
 				intitule=$Module
 			else
-				intitule=$4
+				intitule=$5
 			fi		
 			# on recupere le n° de la derničre ligne
 			filtre="</modules>"
@@ -90,7 +112,7 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 			echo "	<version ver=\"$2\"> \\"  >>section.txt
 			echo "		<ID>1</ID> \\" >> section.txt
 			echo "		<etat>1</etat> \\" >> section.txt
-			echo "		<serveur type=\"http\">deb http://lcs.crdp.ac-caen.fr/etch $depot main</serveur>\\" >> section.txt
+			echo "		<serveur type=\"http\">deb http://lcs.crdp.ac-caen.fr/$3 $br main</serveur>\\" >> section.txt
 			echo "		<aide type=\"http\">http://linux.crdp.ac-caen.fr/modules$depot/Docs/$Module""_html/index.html</aide>\\" >> section.txt
 			echo "		<type>M</type>\\" >> section.txt
 			echo "	</version>\\" >> section.txt
