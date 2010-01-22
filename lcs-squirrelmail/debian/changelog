@@ -1,15 +1,11 @@
-lcs-squirrelmail (2.4.1~2) Lcs; urgency=low
+lcs-squirrelmail (2.4.6) Lcs; urgency=low
 
+  [ Jean-Luc Chretien ]
   * Fix problem with dpkg-divert when remove package
-
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 Nov 2009 14:16:10 +0100
-
-lcs-squirrelmail (2.4.1~1) Lcs; urgency=low
-
   * Modify for Debian lenny compatibilty
-  * Add divert on redirect.php and page_header.php 
+  * Add divert on redirect.php and page_header.php
 
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 17 Jun 2009 13:33:49 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jan 2010 14:27:59 +0100
 
 lcs-squirrelmail (2.4) Lcs; urgency=low
 
