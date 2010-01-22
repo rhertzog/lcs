@@ -1,10 +1,10 @@
-lcs-clientftp (2.4.6~1) Lcs; urgency=low
+lcs-clientftp (2.4.6) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * Modif class UploadFormAction.php for fixing charset in file name
   * Add types docx, xlsx and pptx in system.properties
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jan 2010 16:05:22 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jan 2010 14:02:56 +0100
 
 lcs-clientftp (2.4) Lcs; urgency=low
 
