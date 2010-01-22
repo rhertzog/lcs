@@ -1,4 +1,4 @@
-lcs-imap-ssl (2.4.1~1) Unreleased; urgency=low
+lcs-imap-ssl (2.4.6) Unreleased; urgency=low
 
   * automatic number version in postinst
 
