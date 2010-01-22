@@ -19,7 +19,7 @@ chmod g+w /usr/share/lcs/$1/ecrire/
 chown spip.manager /usr/share/lcs/$1/config/mes_options.php
 
 # Mise en place d'un repertoire plugins
-chown -R spip.manager:www-data /usr/share/lcs/$1/plugins
+chown -R www-data:www-data /usr/share/lcs/$1/plugins
 chmod -R 770 /usr/share/lcs/$1/plugins
 
 
