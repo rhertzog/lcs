@@ -1,10 +1,12 @@
-lcs-spip (2.4.2.0.10~4) Lcs; urgency=low
+lcs-spip (2.4.6~1) Lcs; urgency=low
 
-  [ Jean Luc Chretien ]
+  [ Jean Luc Chretien & Dominique Lepaisant ]
   * Update spip 2-0-10
   * Release lcs skel with TiSpip and add Chistel header
   * Correct spip_session_lcs.php for spip 2.0.10
   * Add php5-xls dependence
   * Clean embedded html documentation
+  * Clean old lcs skel folder
+  * Change owner on plugin folder
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 11 Dec 2009 16:32:13 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jan 2010 17:10:52 +0100
