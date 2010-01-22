@@ -85,7 +85,7 @@ include ("/var/www/lcs/includes/xoft.php");
 
         if ($idpers):
             /* Renvoie le timestamp du dernier login */
-            $result=mysql_db_query("$DBAUTH","SELECT DATE_FORMAT(last_log,'%d/%m/%Y � %T' ) FROM personne WHERE id=$idpers", $authlink);
+            $result=mysql_db_query("$DBAUTH","SELECT DATE_FORMAT(last_log,'%d/%m/%Y &agrave; %T' ) FROM personne WHERE id=$idpers", $authlink);
             if ($result && mysql_num_rows($result)):
                 $der_log=mysql_result($result,0,0);
                 mysql_free_result($result);
