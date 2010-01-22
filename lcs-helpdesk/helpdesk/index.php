@@ -1,9 +1,9 @@
 <?php
-/* helpdesk/index.php derniere mise a jour : 10/2009 */
+/* helpdesk/index.php derniere mise a jour : 01/2010 Auteur MrT Equipe TICE CRDP BAsse Normandie */
 require_once "./include/common.inc.php";
 
 list ($idpers, $login)= isauth();
-$administrator = (is_admin('Lcs_is_admin', $login) == "Y");
+$administrator = (is_admin('Lcs_is_admin', $login) == "Y") || (is_admin('System_is_admin', $login) == "Y");
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

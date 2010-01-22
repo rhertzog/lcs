@@ -31,7 +31,7 @@ if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
     #
     # Inscription du module dans applis.lcs_db
     #
-    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Acces SSO a la plateforme HelpDesk academique', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'M');"
+    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Acces SSO a la plateforme HelpDesk academique', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'S');"
 else
     echo "Mise a jour du paquet module LCS $MODULE de $2 vers $VER"
     #
@@ -55,7 +55,7 @@ else
         #
         # Inscription du module dans applis.lcs_db
         #
-        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';" 
+        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', type='S', version='$VER' WHERE name='$MODULE';" 
         #
         # Fin de la mise a jour
         #

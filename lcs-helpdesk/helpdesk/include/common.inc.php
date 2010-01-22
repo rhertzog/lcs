@@ -14,7 +14,7 @@ function liste_admins() {
         global $error;
         //die(print_r($dn));
         $error="";
-        $filter = "cn=lcs_is_admin*";
+        $filter = "cn=system_is_admin*";
         $ldap_groups_attr = array (
         // LDAP attribute
                 "cn",
@@ -55,7 +55,7 @@ function liste_admins() {
 
 	list ($idpers, $login)= isauth();
 	//die($login);	
-	if (is_admin('Lcs_is_admin', $login) != "Y") {
+	if (is_admin('system_is_admin', $login) != "Y") {
 		redirect_2('/lcs/auth.php');
 	}
 
