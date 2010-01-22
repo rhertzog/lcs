@@ -1,4 +1,4 @@
-lcs-cas (2.4.1) Lcs; urgency=low
+lcs-cas (2.4.6) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * Clening changelog
@@ -6,7 +6,7 @@ lcs-cas (2.4.1) Lcs; urgency=low
   * Modify control dependances for Lenny install
   * Fix problem when remove and purge package 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jan 2010 14:35:45 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jan 2010 14:45:16 +0100
 
 lcs-cas (2.4) Lcs; urgency=low
 
