@@ -1,7 +1,0 @@
-[(#REM) appel du fichier mots-cle choisi]
-[(#CONFIG{lcs_skel_conf/sommaire/type_mots_#ENV{bloc}}|oui)
-<INCLURE{fond=noisettes/inc-#CONFIG{lcs_skel_conf/sommaire/type_mots_#ENV{bloc}}}>
-]
-[(#CONFIG{lcs_skel_conf/sommaire/type_mots_#ENV{bloc}}|non)
-<INCLURE{fond=noisettes/inc-mots}>
-]
