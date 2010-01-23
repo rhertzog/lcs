@@ -1,7 +1,7 @@
 #!/bin/bash
 # Misterphi 
 # Version du : 22/01/2010 
-# $1 : repertoire source du paquet
+# $1 : repertoire source du paquet ( doit commencer obligatoirement par lcs- )  
 # $2 : N° de version
 # $3 : Distribution : etch ou lenny
 # $4 : Branche : stable, testing ou xp
@@ -22,7 +22,8 @@ fi
     
 #======== Referencement du paquet si c'est un modules LCS ===================     
 # by misterphi
-Module=`echo $1 | cut -d- -f2`
+Mod=$1
+Module=`echo ${Mod:4}`
 CheminDoc="$1/doc-html"
 Deb="debian"
 
