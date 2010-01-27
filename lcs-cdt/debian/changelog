@@ -2,8 +2,8 @@ lcs-cdt (2.0~1) LCS; urgency=low
 
   * update to cdt2.0
   * update to cdt2.05
-
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 27 Jan 2010 21:21:56 +0100
+  * lower name of appli in lcs_db
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 27 Jan 2010 21:49:13 +0100
 
 lcs-cdt (1.03~1) LCS; urgency=low
 
