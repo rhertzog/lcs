@@ -89,6 +89,12 @@ include ('./Includes/data.inc.php');
  					{		
  					$_SESSION['saclasse'][$x]=decripte_classe($_GET['cl'.$x]);
  					$_SESSION['parentde'][$x]=decripte_uid($_GET['ef'.$x],$_SESSION['saclasse'][$x]);
+ 					//enregistrement stats
+ 					$date=date("YmdHis");
+ 					# Enregistrement dans la table statusages
+					#
+					$result=mysql_db_query("$DBAUTH","INSERT INTO statusages VALUES ('Parent', 'Cdt', '$date', 'wan')", $authlink);
+					#
  					}
  				}
 			}
