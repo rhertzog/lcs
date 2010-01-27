@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * $Id: prof_ajout_abs.php 3989 2010-01-03 15:41:59Z jjacquard $
+ * $Id: prof_ajout_abs.php 4041 2010-01-23 14:46:08Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -808,12 +808,32 @@ if( ( $classe == 'toutes'  or ( $classe == '' and $eleve_initial == '' ) and $et
 if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initial != '' ) AND $msg_erreur === '') {
 
     // Ajout d'un test sur la période active
-    $sql = "SELECT DISTINCT num_periode FROM periodes WHERE verouiller = 'N' ORDER BY num_periode";
+	if($classe!='') {
+	    $sql = "SELECT DISTINCT num_periode FROM periodes p, j_groupes_classes jgc WHERE jgc.id_classe=p.id_classe AND jgc.id_groupe='$classe' AND p.verouiller='N' ORDER BY num_periode";
+	}
+	else {
+	    $sql = "SELECT DISTINCT num_periode FROM periodes WHERE verouiller = 'N' ORDER BY num_periode";
+	}
+	//echo "$sql<br />";
     $periode_active = mysql_query($sql) OR DIE('Impossible de récupérer le numéro de la période active' . $sql . '<br />--> ' . mysql_error());
     $periode = mysql_fetch_array($periode_active);
     //echo '<pre>'; print_r($periode); echo'</pre>'; exit();
     $nbre_per = count($periode);
     $_periode = isset($periode[0]) ? $periode[0] : '1';
+
+    // ======================== Correctif : On récupère la période actuelle si elle a été paramétrée dans l'emploi du temps
+
+    $req_periode_courante = mysql_query("SELECT numero_periode FROM edt_calendrier WHERE
+                                        debut_calendrier_ts < ".date("U")." AND
+                                        fin_calendrier_ts > ".date("U")."
+                            ");
+    if ($rep_periode_courante = mysql_fetch_array($req_periode_courante)) {
+        if ($rep_periode_courante["numero_periode"] != 0) {
+            $_periode = $rep_periode_courante["numero_periode"];
+        }
+    }
+    //echo $_periode."<br/>";
+    // ======================== fin de correctif
 
 	// on vérifie que l'enseignement envoyé n'est pas une AID
 	$test = explode("|", $classe);

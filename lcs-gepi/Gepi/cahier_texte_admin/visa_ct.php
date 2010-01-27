@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: visa_ct.php 3215 2009-06-15 13:35:50Z jjocal $
+ * @version: $Id: visa_ct.php 4038 2010-01-22 20:41:14Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -90,7 +90,7 @@ if (isset($_POST['visa_ct'])) {
       $aujourdhui = date("U");
 
 
-      $sql_insertion_visa = "INSERT INTO `ct_entry` VALUES (NULL, '00:00:00', '".$id_groupe."', '".$aujourdhui."', '".$id_prop."', '".$texte_visa_cdt."', 'y', 'y')";
+      $sql_insertion_visa = "INSERT INTO `ct_entry` VALUES (NULL, '00:00:00', '".$id_groupe."', '".$aujourdhui."', '".$id_prop."', '0', '".$texte_visa_cdt."', 'y', 'y')";
       //echo $sql_insertion_visa;
       $insertion_visa = sql_query($sql_insertion_visa);
       if ($error == 'no') {

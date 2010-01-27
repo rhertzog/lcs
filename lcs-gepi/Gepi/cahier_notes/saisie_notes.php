@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: saisie_notes.php 3661 2009-10-23 06:10:23Z crob $
+ * @version: $Id: saisie_notes.php 4043 2010-01-25 13:41:34Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -1671,10 +1671,15 @@ echo "</tr></table>\n";
 //===================================
 if((isset($id_devoir))&&($id_devoir!=0)) {
 	echo "<div style='position: fixed; top: 220px; right: 200px; text-align:center;'>\n";
-	//javascript_tab_stat('tab_stat_',$nombre_lignes);
-	javascript_tab_stat('tab_stat_',$num_id);
+		echo "<div id='div_tableau_stat_et_photo'>\n";
+			echo "<a href=\"#\" onclick=\"document.getElementById('div_tableau_stat_et_photo').style.display='none';return false;\">";
+			echo "<img src='../images/icons/close16.png' width='16' height='16' alt='Cacher le tableau et/ou la photo' title='Cacher le tableau et/ou la photo' />\n";
+			echo "</a>\n";
+			//javascript_tab_stat('tab_stat_',$nombre_lignes);
+			javascript_tab_stat('tab_stat_',$num_id);
 
-	echo "<br />\n<div id='div_photo_eleve'></div>\n";
+			echo "<br />\n<div id='div_photo_eleve'></div>\n";
+		echo "</div>\n";
 	echo "</div>\n";
 
 	echo "<script type='text/javascript'>
