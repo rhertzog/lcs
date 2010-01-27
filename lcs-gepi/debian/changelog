@@ -1,3 +1,9 @@
+lcs-gepi (2.0~3) LCS; urgency=low
+
+  * update files to revision 4043 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 27 Jan 2010 12:14:32 +0100
+
 lcs-gepi (2.0~2) LCS; urgency=low
 
   * update to revision 3948
