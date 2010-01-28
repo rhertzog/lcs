@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# Makefile for lcs-Cdt
+# Makefile for lcs-cdt
 
 all:
 
@@ -7,8 +7,8 @@ install:
 
 
 # install doc
-	install -d $(DESTDIR)/usr/share/doc/lcs/Cdt/html
-	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/Cdt/html/
+	install -d $(DESTDIR)/usr/share/doc/lcs/cdt/html
+	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/cdt/html/
 
 # install Cdt
 	install -d $(DESTDIR)/usr/share/lcs/Plugins/Cdt

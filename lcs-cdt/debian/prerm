@@ -6,6 +6,7 @@
 set -e
 
 MODULE="Cdt"
+module="cdt"
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
 # summary of how this script can be called:
 #        * <postrm> `remove'
@@ -28,7 +29,7 @@ CHEMIN=`pwd`
         #
         # Desinscription du module de la table lcs_db.applis
         #
-        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';";
+        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE' OR name = '$module';";
         #
         
         #
