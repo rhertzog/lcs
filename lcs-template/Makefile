@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# Makefile for lcs-#MODUL#
+# Makefile for lcs-#modul#
 
 all:
 
@@ -7,8 +7,8 @@ install:
 
 
 # install doc
-	install -d $(DESTDIR)/usr/share/doc/lcs/#MODUL#/html
-	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/#MODUL#/html/
+	install -d $(DESTDIR)/usr/share/doc/lcs/#modul#/html
+	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/#modul#/html/
 
 # install #MODUL#
 	install -d $(DESTDIR)/usr/share/lcs/Plugins/#MODUL#
