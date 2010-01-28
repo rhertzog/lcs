@@ -3,4 +3,4 @@ frontend=mail
 email_address=@@LCSADMIN@@
 confirm=0
 save_seen=/var/lib/apt/listchanges.db
-which=news
+which=both
