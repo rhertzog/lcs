@@ -38,6 +38,7 @@ fi
 	tar xzvf $1-$2.tgz
 	#extraction du nom de repertoire de l'appli
 	REP=`tar -tzf $1-$2.tgz | grep 'patchconf' | cut -d"/" -f1`
+	rep=`echo $REP | tr [:upper:] [:lower:]`
 	dh_make --createorig -s -n
 	#nettoyage
 	cd debian
@@ -91,7 +92,8 @@ fi
 	
 	echo "Patch du Makefile"
 	sed -i "s/#MODUL#/$REP/g" lcs-$1/Makefile
-	
+	sed -i "s/#modul#/$rep/g" lcs-$1/Makefile
+
 	#-----------------
 	#patch du control
 	#-----------------
