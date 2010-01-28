@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# Makefile for lcs-Gepi
+# Makefile for lcs-gepi
 
 all:
 
@@ -7,8 +7,8 @@ install:
 
 
 # install doc
-	install -d $(DESTDIR)/usr/share/doc/lcs/Gepi/html
-	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/Gepi/html/
+	install -d $(DESTDIR)/usr/share/doc/lcs/gepi/html
+	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/gepi/html/
 
 # install Gepi
 	install -d $(DESTDIR)/usr/share/lcs/Plugins/Gepi
