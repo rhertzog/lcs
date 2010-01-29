@@ -63,6 +63,11 @@ case "$1" in
         #
         #squid_reconfigure.sh <DOMAIN> <VLANSC> <VLANADMINISTRATIF> <VLANPEDA1> <VLANPEDA2> <VLANPEDA3> <VLANPEDA4>
         /usr/share/lcs/scripts/squid_reconfigure.sh "$DOMAIN" "$VLANSC" "$VLANADMINISTRATIF" "$VLANPEDA1" "$VLANPEDA2" "$VLANPEDA3" "$VLANPEDA4"
+    	#
+    	# modification du nombre de jours de log
+    	#
+    	sed -i'' 's/rotate 2/rotate 365/g'  /etc/logrotate.d/squid
+    	
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
