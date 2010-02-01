@@ -1,0 +1,2 @@
+#!/bin/bash
+cat /usr/share/lcs/openvpn/keys/index.txt|cut -f 5 -d "/"| cut -f 2 -d "="
