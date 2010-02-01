@@ -552,8 +552,17 @@ function patchUrl($url,$base) {
 	
 }
 
+
 function patchToXml2($string) {
 	return htmlentities($string, ENT_QUOTES, 'UTF-8');
+}
+
+function patchToXml3($string) {
+	
+	$string = str_replace('&amp;','&',$string);
+        $string = str_replace('&nbsp;','&#32;',$string);
+	$ret = html_entity_decode($string, ENT_QUOTES, 'UTF-8');
+	return $ret;
 }
 
 function patchToXml($in_string) {

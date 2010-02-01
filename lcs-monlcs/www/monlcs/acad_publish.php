@@ -1,8 +1,9 @@
 <?
+	session_start();
+
 	include "includes/secure_no_header.inc.php";
 	if($_POST) {
 		extract($_POST);
-
 		#################################################################################################################################
 		# Modifié par MrT le 13 novembre 2008
 		# Fonction: dépot académique pour scénarios MonLCS
@@ -17,6 +18,7 @@
 		$now = date("Y-m-d H:i:s");
        		$jeton = 'SC_'.md5("$baseurl/$uid/scenario/$id_scen/");
        	
+                $_SESSION['jeton'] = $jeton;
 		//sauvegarde en sql
 	    	       		
 		$sql = "DELETE FROM `monlcs_db`.`ml_acad_propose` WHERE `jeton` = '$jeton' ;"; 

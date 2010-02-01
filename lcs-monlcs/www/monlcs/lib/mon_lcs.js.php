@@ -225,8 +225,12 @@
     			extension = trim(temp[temp.length-1]);
 
 		if ('pdf' == extension ) {
-			extension = 'swf';
-			filename = filename.replace('.pdf','_pdf.swf');
+			//demander
+			var quest = prompt('Int&#233;grer le fichier pdf au format flash ou pdf ?:','flash');
+			if (quest == 'flash') {
+				extension = 'swf';
+				filename = filename.replace('.pdf','_pdf.swf');
+			}
 		}
 
 		//ne recuperer que le fichier.extension

@@ -1,5 +1,5 @@
 <?php
-	header('Content-Type: text/xml; charset=utf-8');
+	header('Content-Type: text/xml; charset: utf-8');
 	include('/var/www/lcs/includes/headerauth.inc.php');
 	include('/var/www/monlcs/includes/config.inc.php');
 	include('/var/www/monlcs/includes/fonctions.inc.php');
@@ -24,9 +24,6 @@
 			if (mysql_num_rows($c) == 0 ) {
 				$output.="<erreur>Jeton invalide</erreur>";
 			} else {
-				//peter le jeton pour le rendre inaccessible apres acquisition?
-				//$sql2 ="DELETE from monlcs_db.ml_acad_propose where jeton='$jeton'";
-				//$c2 = mysql_query($sql2) or die("ERREUR SQL: $sql2");
 
 				$R = mysql_fetch_object($c);
                                 $code = $R->jeton;
@@ -44,12 +41,14 @@
 					for($x=0;$x<mysql_num_rows($cc);$x++) {
 						$infos = mysql_fetch_object($cc);
 						if ($x == 0) {
-							$output.="<etab>$baseurl</etab>\n";
-							$output.="<matiere>$infos->matiere</matiere>\n";
-							$clean_t1 = patchToXml($infos->titre);
-							$output.="<titre>$clean_t1</titre>\n";
-							$clean_d1 = patchToXml($infos->descr);
-							$output.="<description>$clean_d1</description>\n";
+							$output.="<etab><![CDATA[$baseurl]]></etab>\n";
+							$output.="<matiere><![CDATA[$infos->matiere]]></matiere>\n";
+							//$clean_t1 = $infos->titre;
+							$clean_t1 = patchToXml3($infos->titre);
+							$output.="<titre><![CDATA[$clean_t1]]></titre>\n";
+							//$clean_d1 = $infos->descr;
+							$clean_d1 = patchToXml3($infos->descr);
+							$output.="<description><![CDATA[$clean_d1]]></description>\n";
 						}
 						
 					        if ( !in_array($infos->type.$infos->id_ressource,$tabRess)) {
@@ -62,16 +61,18 @@
 								$tabRess[] = $infos->type.$infos->id_ressource;
 								$infos2 = mysql_fetch_object($c2);
 								$clean_url = patchUrl($infos2->url,$baseurl);
-								$output.="<url>".patchToXml($clean_url)."</url>\n";
-								$clean_titre = patchToXml($infos2->titre);
-								$output.="<titre_ress>$clean_titre</titre_ress>\n";
+								$output.="<url><![CDATA[".$clean_url."]]></url>\n";
+								//$clean_titre = $infos2->titre;
+								$clean_titre = patchToXml3($infos2->titre);
+								$output.="<titre_ress><![CDATA[$clean_titre]]></titre_ress>\n";
 								$check_RSS = $infos2->RSS_template;
 								$output.="<rss>$check_RSS</rss>\n";
 								$output.="<vignette>$infos2->url_vignette</vignette>\n";
 								$output.="<owner>".$infos2->owner."@".$baseurl."</owner>\n";
 								$output.="<statut>$infos2->statut</statut>\n";
-								$clean_d2 = patchToXML($infos2->descr);
-								$output.="<descr_ress>$clean_d2</descr_ress>\n";
+								//$clean_d2 = $infos2->descr;
+								$clean_d2 = patchToXML3($infos2->descr);
+								$output.="<descr_ress><![CDATA[$clean_d2]]></descr_ress>\n";
 								$output.="<created_at>$infos2->ajoutee_le</created_at>\n";
 							}
 							
@@ -80,11 +81,17 @@
 								$c2 = mysql_query($sql2) or die("ERREUR SQL: $sql2");
 								$tabRess[] = $infos->type.$infos->id_ressource;
 								$infos2 = mysql_fetch_object($c2);
-								$clean_msg = patchToXml($infos2->msg);
+								//traitement des &nbsp; incompatibles en utf-8
+								$code = htmlentities($infos2->msg);
+								$code = str_replace('&amp;','&',$code);
+								$code = str_replace('&nbsp;','&#32;',$code);
+							
+								$clean_msg = "<![CDATA[".patchToXml3($code)."]]>";
 								$output.="<note_msg>$clean_msg</note_msg>\n";
 								$output.="<note_setter>".$infos2->setter."@".$baseurl."</note_setter>\n";
-								$clean_titre = patchToXml($infos2->titre);
-								$output.="<note_title>$clean_titre</note_title>\n";
+								$clean_titre = patchToXml3($infos2->titre);
+								//$clean_titre = $infos2->titre;
+								$output.="<note_title><![CDATA[".$clean_titre."]]></note_title>\n";
 
 							}
 
@@ -111,8 +118,5 @@
 
 	$output .= "\n";
 	$output .="</response>";
-	//$output = mb_convert_encoding($output,"HTML-ENTITIES","auto");
-	$output = utf8_encode($output);
 	print($output);
-
 ?>

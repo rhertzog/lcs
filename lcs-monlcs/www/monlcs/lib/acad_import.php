@@ -3,6 +3,12 @@
    include("../includes/config_acad.inc.php");
 ?>
 			var acad_container;
+
+
+			function addTabAsUrl(link) {
+				window.open(link);
+			}
+
 			function listdyn() {
 
 				var url = '<? echo "$dir_url_distant/UpdateListeSection.php"; ?>';
@@ -80,7 +86,7 @@
 				Element.hide('spinner');
 			
 				var liste = document.getElementsByClassName('jeton_link');
-				var size = parseInt(330+liste.length*150);
+				var size = parseInt(530+liste.length*150);
 				
 				$('ajaxWindCmd778').setSize(800,size);
 

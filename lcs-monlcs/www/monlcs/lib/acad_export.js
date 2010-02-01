@@ -16,7 +16,7 @@
 				'ajaxWindCmd777',
 				'iframe',goto,
 				'Transmission du scénario',
-				'width=355px,height=410px,left=350px,top=50px,resize=1,scrolling=1'
+				'width=505px,height=410px,left=350px,top=50px,resize=1,scrolling=1'
 				);
                         pretty_cmd(ajaxWindCmd777);
 
