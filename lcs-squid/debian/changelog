@@ -1,4 +1,4 @@
-lcs-squid (2.4.6~1) Lcs; urgency=low
+lcs-squid (2.4.6) Lcs; urgency=low
 
   * change squid logrotate to 365 days
 
