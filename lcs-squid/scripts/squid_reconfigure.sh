@@ -2,7 +2,7 @@
 # LCS squid_reconfigure.sh
 # Jean-Luc Chretien <(-_°)/> <jean-luc.chretien@tice.ac-caen.fr
 
-IN_CONFIG_PATH="/var/lib/lcs/squid/"
+IN_CONFIG_PATH="/var/lib/lcs/squid"
 CONFIG_PATH="/etc/squid"
 
 if [ -z "$2" ];
@@ -78,6 +78,13 @@ if [ `grep '/var/spool/squid' /etc/fstab | wc -l` = 1 ]; then
   sub="cache_dir ufs /var/spool/squid $squidpart 16 256"
   sed -i "s#$ligne#$sub#g" /etc/squid/squid.conf
   chown proxy:proxy /var/spool/squid
+fi
+#
+# Ajout entrees squidGuard le cas echeant
+#
+if !  grep -q redirect_program /etc/squid/squid.conf && [ -e /etc/squid/squidGuard.conf ]; then
+    echo "redirect_program /usr/bin/squidGuard" >> /etc/squid/squid.conf
+    echo "redirect_children 32" >> /etc/squid/squid.conf
 fi
 #
 # Restart squid
