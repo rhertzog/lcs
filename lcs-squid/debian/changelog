@@ -1,4 +1,4 @@
-lcs-squid (2.4.6.1~1) UNRELEASED; urgency=low
+lcs-squid (2.4.6.1) Lcs; urgency=low
 
   * Modify squid-reconfigure.sh for adding squidGuard entries if necessary 
 
