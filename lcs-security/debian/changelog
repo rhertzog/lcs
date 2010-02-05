@@ -1,3 +1,9 @@
+lcs-security (2.4.6.1) Lcs; urgency=low
+
+  * fixing regex in apache-bruteforce filter
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri,  5 Feb 2010 13:43:18 +0100
+
 lcs-security (2.4.6) Lcs; urgency=low
 
   * Modify control file description
