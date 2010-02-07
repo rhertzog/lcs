@@ -67,7 +67,8 @@
 								$output.="<titre_ress><![CDATA[$clean_titre]]></titre_ress>\n";
 								$check_RSS = $infos2->RSS_template;
 								$output.="<rss>$check_RSS</rss>\n";
-								$output.="<vignette>$infos2->url_vignette</vignette>\n";
+								$vignette = str_replace('./',$baseurl.'monlcs/',$infos2->url_vignette);
+								$output.="<vignette>$vignette</vignette>\n";
 								$output.="<owner>".$infos2->owner."@".$baseurl."</owner>\n";
 								$output.="<statut>$infos2->statut</statut>\n";
 								//$clean_d2 = $infos2->descr;
