@@ -4,9 +4,10 @@
 	if ($_POST) {
 		extract($_POST);
 		
-		$titre =html_entity_decode($titre);
-		$titre = htmlentities((urldecode($titre)));
+		//$titre = html_entity_decode($titre);
+		$titre = htmlentities(utf8_decode(urldecode($titre)));
 		$descr = htmlentities(utf8_decode(urldecode($descr)));
+		$titre_ress = htmlentities(utf8_decode(urldecode($titre_ress)));
 		//alimenter ml_scenarios
 		//rechercher idR ditinguer MODULE - NOTE - RETROUVER ID sinon créer la ressource a partir de $content.
 		$idR = -1;
@@ -18,19 +19,14 @@
 				//dans le cas d'un module on sort
 			//}
 				
-                        $sql = "select * from monlcs_db.ml_ressources where url = '".htmlentities($content)."'";
-                        $c = mysql_query($sql) or die ("ERR ". $sql);
+                       $sql = "select * from monlcs_db.ml_ressources where url = '".htmlentities($content)."'";
+                       $c = mysql_query($sql) or die ("ERR ". $sql);
  	               if (mysql_num_rows($c) != 0) {
         	              	$res = mysql_fetch_object($c);
 				$idR = $res->id;
 				
                        } else {
-        	              
-				 $sqlN = "select id from monlcs_db.ml_ressources ORDER bY id DESC LIMIT 1;";
-				$cN = mysql_query($sqlN) or die ("ERR ". $sqlN);
-				$res = mysql_fetch_object($cN);
-				$maxN = trim($res->id);
-				$idR =$maxN+1.0;
+        	                $idR = '';
 				$date = date('Y-m-d');
 				$sqlR ="INSERT INTO `monlcs_db`.`ml_ressources` ("
 				."`id` ,"
@@ -44,11 +40,18 @@
 				."`descr`"
 				.")"
 				." VALUES ("
-				."'$idR' , '$titre_ress', '$content', 'null', '$uid', 'private', '$date', NULL ,'$descrAdd'"
+				."'$idR' , '$titre_ress', '$content', 'null', '$uid', 'private', '$date', '$vignette' ,'$descrAdd'"
 				.");";
 				//die($sqlR);
 				$cR=mysql_query($sqlR) or die("ERR $sqlR");
+				
+				$sqlId ="SELECT * FROM `monlcs_db`.`ml_ressources` WHERE titre='$titre_ress' and owner ='$uid' LIMIT 1;";
+				$cId = mysql_query($sqlId) or die ("ERR ". $sqlId);
+				$resId = mysql_fetch_object($cId);
+				$idR = $resId->id;
+
 			}
+		
 		}
 		
 		if (trim($type) =='note') {
@@ -77,7 +80,6 @@
 		}
 		
 		
-	
 		
 		$cible[0]='';
 		$cible[strlen($cible)-1]='';

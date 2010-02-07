@@ -202,11 +202,13 @@
 								params += "&type=" + liste_ress[i].type;
 								params += "&min=" + 'N';
 								params += '&matiere='+$('matiere').value;
-								params += '&titre_ress='+encodeURI(liste_ress[i].titre);
+								params += '&titre_ress='+liste_ress[i].titre;
 								if ('note' == liste_ress[i].type)
 									params += '&content='+encodeURI(liste_ress[i].content);
 								else
 									params += '&content='+escape(liste_ress[i].content);
+								
+								params += '&vignette='+escape(liste_ress[i].vignette);
 								params += '&cible='+escape(cible);
 								//alert(params);
 								new Ajax.Request('saveScenAcad.php',{ method: 'post', parameters: params, onComplete: function(requester) {
@@ -229,7 +231,8 @@
                 Element.show('spinner');
                 Element.hide('ressourcesAcad');
                 new Ajax.Updater('ressourcesAcad','processScenAcad.php',{ method: 'post', parameters: params, onComplete: function(requester) {
-                        var ajaxWindCmd1=dhtmlwindow.open(
+        	try {        
+	                 var ajaxWindCmd1=dhtmlwindow.open(
 				'ajaxWindCmd1',
 				'inline',
 				$('ressourcesAcad').innerHTML,
@@ -246,22 +249,28 @@
                         var ress_params="";
                         for (var i=0;i<compte_ress;i++){
                         //alert(i);
-                                flux_ress += '<br />&nbsp;<span><input type="checkbox" id="check_ress_'+parseInt(i)+'"></input><img id="chk_ress_'+parseInt(i)+'" style="height: 1.2em;"></img>&nbsp;'
-					   + '<span id="ress_titre'+parseInt(i)+'">'+liste_ress[i].titre+'</span>';
+                           flux_ress += '<br />&nbsp;<span><input type="checkbox" id="check_ress_'+parseInt(i)+'"></input><img id="chk_ress_'+parseInt(i)+'" style="height: 1.2em;"></img>&nbsp;'
+			             + '<span id="ress_titre'+parseInt(i)+'">'+liste_ress[i].titre+'</span>';
                                 
                                 //lancer une requete pour voir si les ressources sont presentes sinon les ajouter
                         }
 			$('scen-toto').innerHTML = flux_ress;
 			//alert(flux_ress);
+			//alert(compte_ress);
 			 for (var i=0;i<compte_ress;i++){
 				ress_params = '?titre='+encodeURI(liste_ress[i].titre)
 					     +'&type='+encodeURI(liste_ress[i].type)
 					     +'&id='+parseInt(i);  
 					if ('note' == liste_ress[i].type)
 							ress_params += '&content='+encodeURI(liste_ress[i].content);
-					else
-							ress_params += '&content='+escape(liste_ress[i].content);
+					else {
+							//liste_ress[i].content = escape(liste_ress[i].content);
+							//liste_ress[i].content = liste_ress[i].content.replace('%25','%');
+							//liste_ress[i].content = liste_ress[i].content.replace('%u2329','lang');
 							
+							//alert(unescape(liste_ress[i].content));
+							ress_params =  ress_params + '&content='+escape(liste_ress[i].content);
+					}		
 					    
 					     
 					   
@@ -275,6 +284,10 @@
                         }
 
                         Element.hide('spinner');   
-                }});
+                
+		} catch (err) {
+			alert(err);
+		}
+		}});
         }
 
