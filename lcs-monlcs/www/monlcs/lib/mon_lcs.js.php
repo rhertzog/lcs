@@ -226,8 +226,9 @@
 
 		if ('pdf' == extension ) {
 			//demander
-			var quest = prompt('Int&#233;grer le fichier pdf au format flash ou pdf ?:','flash');
-			if (quest == 'flash') {
+			//var quest = prompt('Int&#233;grer le fichier pdf au format flash ou pdf ?:','flash');
+			//if (quest == 'flash') {
+			if ((confirm("Voulez-vous importer ce fichier au format flash SWF ?"))) {
 				extension = 'swf';
 				filename = filename.replace('.pdf','_pdf.swf');
 			}
