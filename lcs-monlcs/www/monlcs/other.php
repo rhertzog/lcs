@@ -27,7 +27,10 @@ var floating_window_skin = 1;
 <script type="text/javascript" src="./fckeditor/fckeditor.js"></script>
 <script type="text/javascript" src="./lib/floating_window_with_tabs.js"></script>
 <script type="text/javascript" src="./lib/lazierLoad.js"></script>
+<script type="text/javascript" src="./lib/acad_import.php"></script>
 <script type="text/javascript" src="./lib/mon_lcs.js.php"></script>
+<script type="text/javascript" src="./lib/acad_export.js"></script>
+
 <script type="text/javascript">
 var mode='other';
 var user='<? echo $uid; ?>';
@@ -76,6 +79,9 @@ var user='<? echo $uid; ?>';
 <div id="virtualMenu"></div>
 <div id="warning_other"></div>
 <div id="descr_popup"></div>
+<span id="id_scen" style="display: none;"></span>
+<div id="fiches_acad_list" style="display: none;"></div>
+
 </body>
 </html>
 

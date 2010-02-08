@@ -9,6 +9,43 @@
 				window.open(link);
 			}
 
+			function liste_fiches() {
+				var id_scen = $('id_scen').innerHTML;
+				var params = '?action=getToken&id_scen='+id_scen+'&profil='+quiC; 
+				new Ajax.Request("ajax.lib.php",{ method: 'get', parameters: params, onSuccess: function(xhr) {
+                                        if (trim(xhr.responseText) == '') {
+						alert('Aucune fiches');
+						return false;
+					}
+					//requete vers la plateforme
+					Element.show('spinner');
+					var url = '<? echo "$dir_url_distant/UpdateListeFiche.php"; ?>';
+					var complement='token='+trim(xhr.responseText);
+					var params='url='+encodeURIComponent(url)+'&complement='+encodeURIComponent(complement);
+					new Ajax.Updater("fiches_acad_list","curl_send.php",{ method: 'get', parameters: params, onComplete: function(xhr) {
+						//alert(xhr.responseText);
+						Element.hide('spinner');
+						var ajaxWindCmd788=dhtmlwindow.open(
+                        				'ajaxWindCmd788',
+                        				'div',
+                        				'fiches_acad_list',
+                        				'Fiches disponibles',
+                        				'width=800px,height=330px,left=35px,top=70px,resize=1,scrolling=1,center=0'
+                        			);
+                        			pretty_cmd(ajaxWindCmd788);
+						var liste = document.getElementsByClassName('acad_link_file');
+						alert(liste.length);
+						for (var i=0;i < liste.length-1; i++) {
+							liste[i].onclick = function() {
+								addTabAsUrl(this.getAttribute('tag'));
+							}
+						}
+						return true;
+ 	                               }});
+                                }});
+
+			}
+
 			function listdyn() {
 
 				var url = '<? echo "$dir_url_distant/UpdateListeSection.php"; ?>';

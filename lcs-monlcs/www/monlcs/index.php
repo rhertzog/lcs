@@ -86,6 +86,8 @@ var user='<? echo $uid; ?>';
 <div id="view_others" title="Voir le MonLCS d'un autre utilisateur"></div>
 <div id="descr_popup"></div>
 <div id="div_acad_import"></div>
+<span id="id_scen" style="display: none;"></span>
+<div id="fiches_acad_list" style="display: none;"></div>
 
 </body>
 </html>

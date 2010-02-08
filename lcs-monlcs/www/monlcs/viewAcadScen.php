@@ -1,4 +1,6 @@
-<? header("text/javascript");
+<? 
+	session_start();
+	header("text/javascript");
 	include "includes/secure_no_header.inc.php";
 	$content = "";
 
@@ -7,6 +9,7 @@
 	if ($_GET) 
 		extract($_GET);
 	
+	$_SESSION['tokenImport'] = $jeton;
 	$url = "$dir_url_distant/cache_xml/$jeton.xml";
 	
 	
@@ -61,12 +64,7 @@
 	
 
 	}
-
-	//TODO ajouter le jeton SCENARIO a la table
-	
-	$sql = "REPLACE INTO `monlcs_db`.`ml_acad_propose` (`id`, `jeton`, `etab`, `uid`, `id_ress`, `type`, `menu`, `date`) 
-	VALUES (NULL, \'$jeton\', \'$baseurl\', \'$uid\', \'-1\', \'scen\', \'scenarioAcad\', \'2010-02-04 16:09:41\');";
-	//$c = @mysql_query($sql) or die("ERREUR SQL: $sql");	
+	//die(var_dump($_SESSION));
 	print(stringForJavascript($content));
 	
 ?>

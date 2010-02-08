@@ -22,6 +22,11 @@
 		die(stringForJavascript($content));
 	}
 
+	if ($tab == 'fiches_acad') {
+		$content .="liste_fiches();";
+		die(stringForJavascript($content));
+	}
+
 	if (eregi('perso',$tab) ) {
 		if (!is_scenarii($tab))
 			$content .= "propose();";

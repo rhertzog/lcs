@@ -1,4 +1,5 @@
 <?
+	session_start();
 	include "includes/secure_no_header.inc.php";
 
 	if ($_POST) {
@@ -117,6 +118,15 @@
 				//$msg .= " <BR />Success $sqlX";
 				}
 			}//foreach
+
+			//memorisation du jeton pour visionnement fiches
+			$sqlToken = " REPLACE INTO `monlcs_db`.`ml_scenarios_token` (
+                                        
+				`id_scen` ,
+				`token` 
+			) VALUES ('$id_scen', '".$_SESSION['tokenImport']."');";
+			$cToken = mysql_query($sqlToken) or die("Erreur SQL: $sqlToken");
+
 		}//if
 		
 		//die($sqlX);

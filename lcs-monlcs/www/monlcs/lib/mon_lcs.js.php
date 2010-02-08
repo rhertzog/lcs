@@ -821,6 +821,7 @@
 
 	function viewScen(idS) {
 		id_scen = idS;
+		$('id_scen').innerHTML = idS;
 		purge();
 		
 		var params =  '?id_scen='+id_scen;
@@ -1875,8 +1876,10 @@ var ajax0 = new Ajax.Updater('view_note','viewNote.php', { method: 'post', param
 
 
 	function getTabData(tab) {
-		
-		id_scen = -1;
+		if ( (tab != 'fiches_acad') ) {
+			id_scen = -1;
+			$('id_scen').innerHTML ='';
+		}
 		$('dhtmlgoodies_floating_window0').style.display = 'none';
 	
 		var onglet = 'id='+ tab;
