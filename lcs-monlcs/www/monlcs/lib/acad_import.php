@@ -34,7 +34,7 @@
                         			);
                         			pretty_cmd(ajaxWindCmd788);
 						var liste = document.getElementsByClassName('acad_link_file');
-						alert(liste.length);
+						//alert(liste.length);
 						for (var i=0;i < liste.length-1; i++) {
 							liste[i].onclick = function() {
 								addTabAsUrl(this.getAttribute('tag'));
