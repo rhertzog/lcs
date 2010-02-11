@@ -1,3 +1,12 @@
+lcs-monlcs (2.4.7~1) Unreleased; urgency=low
+
+  * major update
+  * changes for academic scenarios platform adjustment  
+  * choice SWF/PDF when pdf upload
+  * allowing enable or disable scenarios
+
+ -- Sebastien Tack <>  Sun, 15 Nov 2009 10:54:45 +0200
+
 lcs-monlcs (2.4.6) Lcs; urgency=low
 
   * missing jar for geogebra module
