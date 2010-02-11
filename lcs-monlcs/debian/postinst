@@ -3,7 +3,7 @@
 set -e
 MODULE="monlcs"
 VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
-INDICEMAJNBR="0"
+INDICEMAJNBR="1"
 
 CONF="/var/lib/lcs/$MODULE"
 PATHMOD="/var/www/$MODULE"
