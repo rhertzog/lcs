@@ -13,6 +13,10 @@ install:
 	install -d $(DESTDIR)/etc/cron.d
 	install -m 644 cron.d/* $(DESTDIR)/etc/cron.d/
 
+# install lcs web cron.daily
+	install -d $(DESTDIR)/etc/cron.daily
+	install -m 755 cron.daily/* $(DESTDIR)/etc/cron.daily/
+
 # install lcs web cron.monthly
 	install -d $(DESTDIR)/etc/cron.monthly
 	install -m 755 cron.monthly/* $(DESTDIR)/etc/cron.monthly/
