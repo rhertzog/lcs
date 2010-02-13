@@ -1,0 +1,29 @@
+#!/bin/sh
+# /etc/cron.daily/webalizerlcs : Webalizer LCS  daily maintenance script
+
+AUTHLCS="<?php
+include '/var/www/lcs/includes/headerauth.inc.php';
+include '/var/www/Annu/includes/ldap.inc.php';
+include '/var/www/Annu/includes/ihm.inc.php';
+list (\$idpers,\$login)= isauth();
+if (\$idpers == '0') header(\"Location:\$urlauth\");
+if ( ldap_get_right(\"system_is_admin\",\$login)!=\"Y\" && ldap_get_right(\"lcs_is_admin\",\$login)!=\"Y\" ) {
+    echo \"Vous n'avez pas les droits d'acces a cette application !\";
+    die();
+}
+?>"
+
+WEBALIZERPATH="/var/www/webalizer"
+
+for HTMLFILE in $WEBALIZERPATH/*.html
+do
+     if [ -e $HTMLFILE ]; then
+        NAMEFILE=`echo "$HTMLFILE" | cut -d / -f 5 | cut -d . -f 1`
+        echo "$AUTHLCS" > $WEBALIZERPATH/$NAMEFILE.php
+        cat $WEBALIZERPATH/$NAMEFILE.html >> $WEBALIZERPATH/$NAMEFILE.php
+        rm -f $WEBALIZERPATH/$NAMEFILE.html
+     fi
+done
+if [ -e  $WEBALIZERPATH/index.php ]; then
+     sed -i s/.html/.php/g $WEBALIZERPATH/index.php
+fi
