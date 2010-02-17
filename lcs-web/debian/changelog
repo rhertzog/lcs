@@ -1,9 +1,9 @@
-lcs-web (2.4.6.2) UNRELEASED; urgency=low
+lcs-web (2.4.6.2) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * Add cron.daily task webalizer.lcs for limited acces to webalizer reports
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 12 Feb 2010 17:00:19 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 17 Feb 2010 16:09:43 +0100
 
 lcs-web (2.4.6.1) Lcs; urgency=low
 
