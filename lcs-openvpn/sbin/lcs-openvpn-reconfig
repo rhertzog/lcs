@@ -68,13 +68,12 @@ else
 fi
 
 if [ $VPNMASQUERADE = 1 ]; then
-    echo "iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE" >> /etc/network/if-up.d/lcs-openvpn-masquerade
+    echo "iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE" > /etc/network/if-up.d/lcs-openvpn-masquerade
     chmod +x  /etc/network/if-up.d/lcs-openvpn-masquerade
     iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE
     /etc/init.d/fail2ban stop
-    iptables-save
+    iptables-save >> /var/lib/iptables/active 
     /etc/init.d/fail2ban start
-       
     echo "Attention la mise en place de l'option masquerade a ete active.\
 	 Vos clients VPN sont donc vu par les autres stations par l'adresse IP du LCS" \
 	 | mail -s "Activation de l'option masquerade lcs-openvpn" admin@$DOMAIN
@@ -82,6 +81,9 @@ else
     if [ -e /etc/network/if-up.d/lcs-openvpn-masquerade ]; then
 	rm /etc/network/if-up.d/lcs-openvpn-masquerade
 	iptables -t nat -D POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE
+	/etc/init.d/fail2ban stop
+	iptables-save >> /var/lib/iptables/active 
+	/etc/init.d/fail2ban start
     fi
 fi    
 
@@ -92,7 +94,8 @@ else
 fi
 
 if [ $VPNDNSCLIENT = 1 ]; then
-        echo "push \"dhcp-option DNS $IPADDR0\"" >> /etc/openvpn/openvpn.conf
+    sed -i'' '/"named.conf.vpn"/d' /etc/bind/named.conf
+    echo "push \"dhcp-option DNS $IPADDR0\"" >> /etc/openvpn/openvpn.conf
 else
         sed -i'' '/"dhcp-option DNS"/d' /etc/openvpn/openvpn.conf
 fi
