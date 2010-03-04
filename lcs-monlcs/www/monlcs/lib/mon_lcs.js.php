@@ -209,12 +209,13 @@
 	}
 
 	function jsUpload2(upload_field) {
-    		var re_text = /\.pdf|\.ggb|\.swf|\.flv|\.mm/i;
+    		var re_text = /\.pdf|\.ggb|\.swf|\.flv|\.mm|\.mp3|\.gif|\.png|\.jpg|\.jpeg/i;
+
                 var filename = noaccent(trim(upload_field.value));
 		filename = filename.replace(/ /gi,'_')
 
 		if (filename.search(re_text) == -1) {
-        		alert("Il faut fournir un fichier pdf ou ggb ou swf ou flv ou mm"); 
+        		alert("Il faut fournir une image ou un fichier mp3 ou pdf ou ggb ou swf ou flv ou mm"); 
         		upload_field.form.reset();
         		return false;
     		}
@@ -1158,27 +1159,29 @@
 	function viewRSS(url) {
 
 		var lurl = ''+escape(url);
+		//alert(lurl);
 		createARSSBox(lurl,1,false,5);
 		rssSave();
 	}
 
-	function giveRSS() {
-
-		$('rssContainer').innerHTML='';
-		$('rssContainer').style.display='none';
-
-		new Ajax.Updater('rssContainer','rssSpace.php',{ method: 'post', parameters: params, onComplete: function(requester) {
-			$('rssContainer').style.display='block';	
-			$('addNewFeed').style.display='none';
-			initDragableBoxesScript();
-			deleteAllDragableBoxes();
-			//recuperer ici les fils RSS de l'user
-			new Ajax.Request('rssForUser.php',{ method: 'post', parameters: params, onComplete: function(requester) {
-				eval(requester.responseText);
-			}});
-		}});
-	}
-
+ 	function giveRSS() {
+        
+                $('rssContainer').innerHTML='';
+                $('rssContainer').style.display='none';
+        
+                new Ajax.Updater('rssContainer','rssSpace.php',{ method: 'post', parameters: params, onComplete: function(requester) {
+                        $('rssContainer').style.display='block';
+                        $('addNewFeed').style.display='none';
+                        initDragableBoxesScript();
+                        deleteAllDragableBoxes();
+                        //recuperer ici les fils RSS de l'user
+                        new Ajax.Request('rssForUser.php',{ method: 'post', parameters: params, onComplete: function(requester) {
+        
+                                //alert(requester.responseText);
+                                eval(requester.responseText);
+                        }});
+                }});
+        }
 
 	function givePropose() {
 		

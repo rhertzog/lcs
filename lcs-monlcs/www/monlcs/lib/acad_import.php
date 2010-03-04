@@ -11,7 +11,7 @@
 
 			function liste_fiches() {
 				var id_scen = $('id_scen').innerHTML;
-				var params = '?action=getToken&id_scen='+id_scen+'&profil='+quiC; 
+				var params = '?action=getToken&id_scen='+id_scen+'&profil='+trim(quiC); 
 				new Ajax.Request("ajax.lib.php",{ method: 'get', parameters: params, onSuccess: function(xhr) {
                                         if (trim(xhr.responseText) == '') {
 						alert('Aucune fiches');
@@ -20,7 +20,7 @@
 					//requete vers la plateforme
 					Element.show('spinner');
 					var url = '<? echo "$dir_url_distant/UpdateListeFiche.php"; ?>';
-					var complement='token='+trim(xhr.responseText);
+					var complement='token='+trim(xhr.responseText)+'&profil='+trim(quiC);
 					var params='url='+encodeURIComponent(url)+'&complement='+encodeURIComponent(complement);
 					new Ajax.Updater("fiches_acad_list","curl_send.php",{ method: 'get', parameters: params, onComplete: function(xhr) {
 						//alert(xhr.responseText);

@@ -8,8 +8,21 @@ if ($id == 'actu') {
 }
 //dans les scenarios les eleves et les autres profs n'ont aucun droit
 if ($id == 'scenario_choix') {
-	if (is_eleve($uid))
-		die('Aucune action possible ...');
+
+        if (is_eleve($uid)) {
+        #########################################################################################################################################################################
+        # Ajout pour Publication ACAD
+                if (trim($activate_acad_monlcs) == '1') {
+                        $content2 .="<div onclick=javascript:liste_fiches(); class=menuitems title=Fiches&nbsp;du&nbsp;depot&nbsp;acad&eacute;mique>Fiches&nbsp;associ&eacute;es</div>";
+                        die(stringForJavascript($content2));
+                } else { 
+                        die('Aucune action possible');
+
+                }
+        #########################################################################################################################################################################
+
+        }
+
 	
 	if ($ML_Adm != 'Y') {
 	
@@ -47,8 +60,10 @@ if (is_scenarii($id)) {
 	$content2 .="<div onclick=javascript:scenario('$id'); class=menuitems title=Sc&eacute;nario>Cr&eacute;er un nouveau sc&eacute;nario</div>";
 #########################################################################################################################################################################
 # Ajout pour Publication ACAD
-	if (trim($activate_acad_monlcs) == '1')
+	if (trim($activate_acad_monlcs) == '1') {
 		$content2 .="<div onclick=javascript:scen_acad_pub(); class=menuitems title=Publication&nbsp;acad&eacute;mique>Publication&nbsp;acad&eacute;mique</div>";
+		$content2 .="<div onclick=javascript:liste_fiches(); class=menuitems title=Fiches&nbsp;du&nbsp;depot&nbsp;acad&eacute;mique>Fiches&nbsp;associ&eacute;es</div>";
+	}
 #########################################################################################################################################################################
 
 	}

@@ -15,23 +15,28 @@ if ($id == 'actu') {
 	}
 
 if ($id == 'scenario_choix') {
-	if (is_eleve($uid))
-		die('Aucune action possible ...');
+	if (is_eleve($uid)) { 
+        	if (trim($activate_acad_monlcs) == '1') {                                                                
+                	$content2 .="<div onclick=javascript:liste_fiches(); class=menuitems title=Fiches&nbsp;du&nbsp;depot&nbsp;acad&eacute;mique>Fiches&nbsp;associ&eacute;es</div>";
+			die(stringForJavascript($content2));
+        	} else 
+			die('Aucune action possible');
+	}
+		
 }
+	
 
 
 
 if ($id == 'rss') {
-if ($mode == 'user')
-	$content2 .="<div onclick=javascript:rssSave(); class=menuitems title=Sauver_les_flux>Enregistrer les modifications</div>";
-$content2 .="<div onclick=javascript:giveRessources('$id'); class=menuitems title=Ressources>Ressources</div>";
-
+	if ($mode == 'user')
+		$content2 .="<div onclick=javascript:rssSave(); class=menuitems title=Sauver_les_flux>Enregistrer les modifications</div>";
+	$content2 .="<div onclick=javascript:giveRessources('$id'); class=menuitems title=Ressources>Ressources</div>";
 }
 
 if ($id == 'import_acad' && (trim($activate_acad_monlcs) == '1') ) {
 	$content2 .="<div onclick=javascript:fetchScen(); class=menuitems title=Importer_ce_sc&#233;nario>Importer ce sc&#233;nario.</div>";
 	die(stringForJavascript($content2));
-
 }
 
 if (is_scenarii($id)) {
@@ -59,8 +64,10 @@ if (is_scenarii($id)) {
 	$content2 .="<div onclick=javascript:scenario('$id'); class=menuitems title=Sc&eacute;nario>Cr&eacute;er un nouveau sc&eacute;nario</div>";
 #########################################################################################################################################################################
 # Ajout pour Publication ACAD
-	if (trim($activate_acad_monlcs) == '1')
+	if (trim($activate_acad_monlcs) == '1') {
 		$content2 .="<div onclick=javascript:scen_acad_pub(); class=menuitems title=Publication&nbsp;acad&eacute;mique>Publication&nbsp;acad&eacute;mique</div>";
+		$content2 .="<div onclick=javascript:liste_fiches(); class=menuitems title=Fiches&nbsp;du&nbsp;depot&nbsp;acad&eacute;mique>Fiches&nbsp;associ&eacute;es</div>";
+	}
 #########################################################################################################################################################################
 	}
 	 

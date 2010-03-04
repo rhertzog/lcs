@@ -47,6 +47,7 @@
 
 	function add_window(id,type,content,titre,x,y,w,h,vignette) {
 		var dhtml_w;
+		//alert(content);
 		//alert(vignette);
 		//alert(id+','+type+','+content+','+x+','+y+','+w+','+h);
 		if (type != 'note') {
@@ -67,7 +68,8 @@
 			dhtml_w=dhtmlwindow.open(
                         	'ajaxWindNote'+id,
 	                        'inline',
-        	                HTMLDecode(content),
+        	                //HTMLDecode(content),
+				content,
 	                        titre,
                         	'width='+w+'px,height='+h+'px,left='+x+'px,top='+y+'px,resize=1,scrolling=1,center=0'
                         );
@@ -119,7 +121,9 @@
 					var z = parseInt($(id+'_z').innerHTML);
 					var w = parseInt($(id+'_w').innerHTML);
 					var h = parseInt($(id+'_h').innerHTML);
-					var msg = HTMLDecode($(id+'_note_msg').innerHTML);
+					//var msg = HTMLDecode($(id+'_note_msg').innerHTML);
+					var msg = $(id+'_note_msg').innerHTML;
+					//alert(msg);
 					var titre = $(id+'_note_title').innerHTML;
 					var brique ={id: id,type: type,content: msg,titre: titre,x: x,y: y,z: z,w: w,h: h}
 					liste_ress[i] = brique;
@@ -264,11 +268,6 @@
 					if ('note' == liste_ress[i].type)
 							ress_params += '&content='+encodeURI(liste_ress[i].content);
 					else {
-							//liste_ress[i].content = escape(liste_ress[i].content);
-							//liste_ress[i].content = liste_ress[i].content.replace('%25','%');
-							//liste_ress[i].content = liste_ress[i].content.replace('%u2329','lang');
-							
-							//alert(unescape(liste_ress[i].content));
 							ress_params =  ress_params + '&content='+escape(liste_ress[i].content);
 					}		
 					    

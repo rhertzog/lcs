@@ -17,7 +17,7 @@
 		$extension = trim($ext[0]);
 		$filebody = implode('.',array_reverse(array_slice($ext,1)));
 
-		if (!in_array($extension,array('flv','pdf','ggb','swf','mm','pr')))
+		if (!in_array($extension,array('flv','pdf','ggb','swf','mm','pr','mp3','gif','png','jpg','jpeg')))
 			die ("Erreur d'extension de fichier !");
 		
 		if (!is_dir($upload_dir.'/monlcs_'.$extension.'/')) {

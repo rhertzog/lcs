@@ -33,7 +33,8 @@ if (isset($_POST['fileframe']))
             $filename = $_FILES['file']['name']; // file name 
             move_uploaded_file($_FILES['file']['tmp_name'], $upload_dir.'/'.$filename);
             // main action -- move uploaded file to $upload_dir 
-            $result = 'OK';
+            $resultStatus = 'OK';
+            $result_msg = 'Le fichier nous est bien parvenu';
         }
         elseif ($_FILES['file']['error'] == UPLOAD_ERR_INI_SIZE)
             $result_msg = 'La taille de votre image est trop grande cf php.ini ';
@@ -47,9 +48,13 @@ if (isset($_POST['fileframe']))
     echo '<script language="JavaScript" type="text/javascript">'."\n";
     echo 'var parDoc = window.parent.document;';
    
-    if ($result == 'OK')
+    if ($resultStatus == 'OK')
     {
         echo 'parDoc.getElementById("filename").value = "'.$filename.'";';
+	echo "alert('Le fichier nous est bien parvenu');";
+    } else {
+	echo "alert('".$result_msg."');";
+
     }
 
     echo "\n".'</script></body></html>';

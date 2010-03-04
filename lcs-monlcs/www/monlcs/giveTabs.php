@@ -51,9 +51,9 @@ if (trim($activate_acad_monlcs) == '1') {
 	if (!is_eleve($uid)  && ($u == 'all') && ($nom_onglet == 'Sc&eacute;narios')) {
 		$content2.="	<a href=# id=import_acad class=tabs >Importer du d&#233;pot acad&#233;mique</a>";
 	}
-	if (($u == 'all') && ($nom_onglet == 'Sc&eacute;narios')) {
-		$content2.="	<a href=# id=fiches_acad class=tabs >Fiches associ&#233;es</a>";
-	}
+	//if (($u == 'all') && ($nom_onglet == 'Sc&eacute;narios')) {
+	//	$content2.="	<a href=# id=fiches_acad class=tabs >Fiches associ&#233;es</a>";
+	//}
 }
 
 

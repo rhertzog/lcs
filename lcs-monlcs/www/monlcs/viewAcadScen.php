@@ -53,7 +53,8 @@
 					else
 					        $val2 = utf8_decode($entry_item->asXML());
 					$arr_ress[][$cle2]=$val2;
-					$retour .= "<div class=info2 id=ress".$compte."_".$cle2.">".utf8_decode(strip_tags($entry_item))."</div>";
+					
+					$retour .= "<div class=info2 id=ress".$compte."_".$cle2.">".utf8_decode($entry_item)."</div>";
 				}
 				$retour.="</div>";
 			}

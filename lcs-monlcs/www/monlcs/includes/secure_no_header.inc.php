@@ -3,7 +3,7 @@
  require_once("$BASEDIR/lcs/includes/headerauth.inc.php");
  require_once("$BASEDIR/Annu/includes/ldap.inc.php");
  require_once("$BASEDIR/Annu/includes/ihm.inc.php");
- define('ACCUEIL_LCS',"../../lcs/auth.php");
+ define('ACCUEIL_LCS',"/lcs/auth.php");
  require_once('config.inc.php');
  require_once('config_acad.inc.php');
  require_once('fonctions.inc.php');
