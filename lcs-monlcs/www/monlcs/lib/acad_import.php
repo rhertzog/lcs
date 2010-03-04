@@ -30,7 +30,7 @@
                         				'div',
                         				'fiches_acad_list',
                         				'Fiches disponibles',
-                        				'width=800px,height=330px,left=35px,top=70px,resize=1,scrolling=1,center=0'
+                        				'width=400px,height=330px,left=35px,top=70px,resize=1,scrolling=1,center=0'
                         			);
                         			pretty_cmd(ajaxWindCmd788);
 						var liste = document.getElementsByClassName('acad_link_file');
