@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_appreciations.php 3798 2009-11-25 17:21:41Z crob $
+* $Id: saisie_appreciations.php 4103 2010-02-27 13:12:57Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -194,7 +194,9 @@ if (isset($_POST['is_posted'])) {
 
 	if($msg=='') {
 		// A partir de là, toutes les appréciations ont été sauvegardées proprement, on vide la table tempo
-		$effacer = mysql_query("DELETE FROM matieres_appreciations_tempo WHERE id_groupe = '".$id_groupe."'")
+		$sql="DELETE FROM matieres_appreciations_tempo WHERE id_groupe = '".$id_groupe."';";
+		//echo "$sql<br />";
+		$effacer = mysql_query($sql)
 		OR die('Erreur dans l\'effacement de la table temporaire (1) :'.mysql_error());
 	}
 
@@ -532,23 +534,35 @@ function focus_suivant(num){
 	// ====================== Modif pour la sauvegarde en ajax =================
 $restauration = isset($_GET["restauration"]) ? $_GET["restauration"] : NULL;
 	// On teste s'il existe des données dans la table matieres_appreciations_tempo
-	$sql_test = mysql_query("SELECT login FROM matieres_appreciations_tempo WHERE id_groupe = '" . $current_group["id"] . "'");
+	//$sql="SELECT login FROM matieres_appreciations_tempo WHERE id_groupe = '" . $current_group["id"] . "';";
+	//$sql="SELECT * FROM matieres_appreciations_tempo WHERE id_groupe = '" . $current_group["id"] . "';";
+	//echo "$sql<br />";
+	$sql="SELECT * FROM matieres_appreciations_tempo mat, matieres_appreciations ma WHERE mat.id_groupe='".$current_group["id"]."' AND mat.id_groupe=ma.id_groupe AND mat.periode=ma.periode AND mat.login=ma.login AND mat.appreciation!=ma.appreciation;";
+	//echo "$sql<br />";
+	$sql_test = mysql_query($sql);
 	$test = mysql_num_rows($sql_test);
-		if ($test !== 0 AND $restauration == NULL) {
-			// On envoie un message à l'utilisateur
-			echo "
-			<p class=\"red\">Certaines appréciations n'ont pas été enregistrées lors de votre dernière saisie.<br />
-				Elles sont indiquées ci-dessous en rouge. Voulez-vous les restaurer ?
-			</p>
-			<p class=\"red\">
-			<a href=\"./saisie_appreciations.php?id_groupe=".$current_group["id"]."&amp;restauration=oui\">OUI</a>
-			(elles remplaceront alors la saisie précédente)
-			 -
-			<a href=\"./saisie_appreciations.php?id_groupe=".$current_group["id"]."&amp;restauration=non\">NON</a>
-			(elles seront alors définitivement perdues)
-			</p>
-			";
+	if ($test !== 0 AND $restauration == NULL) {
+		/*
+		$temoin_diff=0;
+		while($lig_mapt=mysql_fetch_object($sql_test)) {
+			
 		}
+		*/
+
+		// On envoie un message à l'utilisateur
+		echo "
+		<p class=\"red\">Certaines appréciations n'ont pas été enregistrées lors de votre dernière saisie.<br />
+			Elles sont indiquées ci-dessous en rouge. Voulez-vous les restaurer ?
+		</p>
+		<p class=\"red\">
+		<a href=\"./saisie_appreciations.php?id_groupe=".$current_group["id"]."&amp;restauration=oui\">OUI</a>
+		(elles remplaceront alors la saisie précédente)
+			-
+		<a href=\"./saisie_appreciations.php?id_groupe=".$current_group["id"]."&amp;restauration=non\">NON</a>
+		(elles seront alors définitivement perdues)
+		</p>
+		";
+	}
 
 	// Dans tous les cas, si $restauration n'est pas NULL, il faut vider la table tempo des appréciations de ce groupe
 
@@ -700,21 +714,26 @@ foreach ($liste_eleves as $eleve_login) {
 			//
 			if ($restauration != "oui" AND $restauration != "non") {
 				// On récupère l'appréciation tempo pour la rajouter à $eleve_app
-				$app_t_query = mysql_query("SELECT * FROM matieres_appreciations_tempo WHERE
-					(login='$eleve_login' AND id_groupe = '" . $current_group["id"] . "' AND periode='$k')");
+				//$sql="SELECT * FROM matieres_appreciations_tempo WHERE (login='$eleve_login' AND id_groupe = '" . $current_group["id"] . "' AND periode='$k');";
+				$sql="SELECT mat.* FROM matieres_appreciations_tempo mat, matieres_appreciations ma WHERE
+					(mat.login='$eleve_login' AND mat.id_groupe = '" . $current_group["id"] . "' AND mat.periode='$k' AND mat.id_groupe=ma.id_groupe AND mat.periode=ma.periode AND mat.login=ma.login AND mat.appreciation!=ma.appreciation);";
+				//echo "$sql<br />";
+				$app_t_query = mysql_query($sql);
 				$verif_t = mysql_num_rows($app_t_query);
 				if ($verif_t != 0) {
 					$eleve_app_t = "\n".'<p>Appréciation non enregistrée : <span style="color: red;">'.@mysql_result($app_t_query, 0, "appreciation").'</span></p>';
-				}else{
+				} else {
 					$eleve_app_t = '';
 				}
-			}else{
+			} else {
 				$eleve_app_t = '';
 			}
 
 			// Appel des appréciations (en vérifiant si une restauration est demandée ou non)
 			if ($restauration == "oui") {
-				$app_query = mysql_query("SELECT * FROM matieres_appreciations_tempo WHERE (login='$eleve_login' AND id_groupe = '" . $current_group["id"] . "' AND periode='$k')");
+				$sql="SELECT * FROM matieres_appreciations_tempo WHERE (login='$eleve_login' AND id_groupe = '" . $current_group["id"] . "' AND periode='$k');";
+				//echo "$sql<br />";
+				$app_query = mysql_query($sql);
 				// Si la sauvegarde ne donne rien pour cet élève, on va quand même voir dans la table définitive
 				$verif = mysql_num_rows($app_query);
 				if ($verif == 0){

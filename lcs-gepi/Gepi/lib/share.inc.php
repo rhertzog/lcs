@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: share.inc.php 3645 2009-10-20 13:10:22Z jjocal $
+ * $Id: share.inc.php 4085 2010-02-11 07:45:14Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
@@ -2802,6 +2802,39 @@ function debug_var(){
 	echo "</blockquote>\n";
 
 
+	echo "<p>Variables envoyées en FILES: ";
+	if(count($_FILES)==0) {
+		echo "aucune";
+	}
+	else {
+		echo "(<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
+	}
+	echo "</p>\n";
+	echo "<blockquote>\n";
+	echo "<div id='container_debug_var_$cpt_debug'>\n";
+	$cpt_debug++;
+	echo "<table summary=\"Tableau de debug sur FILES\">";
+	foreach($_FILES as $file => $val){
+		echo "<tr><td valign='top'>\$_FILES['".$file."']=</td><td>".$val;
+
+		if(is_array($_FILES[$file])) {
+			echo " (<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
+			echo "<table id='container_debug_var_$cpt_debug' summary=\"Tableau de debug\">\n";
+			foreach($_FILES[$file] as $key => $value) {
+				echo "<tr><td>\$_FILES['$file'][$key]=</td><td>$value</td></tr>\n";
+			}
+			echo "</table>\n";
+			//echo "<script type='text/javascript'>affiche_debug_var('debug_var_$post',tab_etat_debug_var[$cpt_debug]);</script>\n";
+			$cpt_debug++;
+		}
+
+		echo "</td></tr>\n";
+	}
+	echo "</table>\n";
+	echo "</div>\n";
+	echo "</blockquote>\n";
+
+
 	echo "<p>Variables envoyées en SERVER: ";
 	if(count($_SERVER)==0) {
 		echo "aucune";
@@ -2871,53 +2904,59 @@ $_elenoet_ou_loginc : selon les cas, soir l'elenoet de l'élève ou bien lelogin d
 $repertoire : "eleves" ou "personnels"
 $arbo : niveau d'aborescence (1 ou 2).
 */
-function nom_photo($_elenoet_ou_login,$repertoire="eleves",$arbo=1){
-  if ($arbo==2) $chemin = "../"; else $chemin = "";
-  if (($repertoire != "eleves") and ($repertoire != "personnels")) {
-     return "";
-     die();
-  }
-  if (getSettingValue("active_module_trombinoscopes")!='y') {
-     return "";
-     die();
-  }
-   // Cas des élèves
-   if ($repertoire == "eleves") {
-     // En multisite, le login est préférable à l'ELENOET
-     if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y'){
-       // On récupère l'INE de cet élève
-       $sql = 'SELECT login FROM eleves WHERE elenoet = "'.$_elenoet_ou_login.'"';
-       $query = mysql_query($sql);
-       $_elenoet_ou_login = mysql_result($query, 'login');
-     }
-    	$photo="";
-	    if(file_exists($chemin."../photos/eleves/$_elenoet_ou_login.jpg")){
-		    $photo="$_elenoet_ou_login.jpg";
-	    } else {
-		    if(file_exists($chemin."../photos/eleves/".sprintf("%05d",$_elenoet_ou_login).".jpg")) {
-			      $photo=sprintf("%05d",$_elenoet_ou_login).".jpg";
-		    } else {
-			    for($i=0;$i<5;$i++){
-				    if(substr($_elenoet_ou_login,$i,1)=="0"){
-					      $test_photo=substr($_elenoet_ou_login,$i+1);
-    					  if(file_exists($chemin."../photos/eleves/".$test_photo.".jpg")){
-		     				  $photo=$test_photo.".jpg";
-					   	    break;
-					      }
-				    }
-			    }
-		    }
-	   }
-	 // Cas des non-élèves
-   } else {
-      $_elenoet_ou_login = md5(strtolower($_elenoet_ou_login));
-	    if(file_exists($chemin."../photos/personnels/$_elenoet_ou_login.jpg")){
-		      $photo="$_elenoet_ou_login.jpg";
-	    } else {
-	        $photo = "-";
-      }
-   }
-   return $photo;
+function nom_photo($_elenoet_ou_login,$repertoire="eleves",$arbo=1) {
+	if ($arbo==2) {$chemin = "../";} else {$chemin = "";}
+	if (($repertoire != "eleves") and ($repertoire != "personnels")) {
+		return "";
+		die();
+	}
+	if (getSettingValue("active_module_trombinoscopes")!='y') {
+		return "";
+		die();
+	}
+	// Cas des élèves
+	if ($repertoire == "eleves") {
+		// En multisite, le login est préférable à l'ELENOET
+		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+			// On récupère l'INE de cet élève
+			$sql = 'SELECT login FROM eleves WHERE elenoet = "'.$_elenoet_ou_login.'"';
+			$query = mysql_query($sql);
+			$_elenoet_ou_login = mysql_result($query, 'login');
+		}
+
+		$photo="";
+		if($_elenoet_ou_login!='') {
+			if(file_exists($chemin."../photos/eleves/$_elenoet_ou_login.jpg")) {
+				$photo="$_elenoet_ou_login.jpg";
+			}
+			else {
+				if(file_exists($chemin."../photos/eleves/".sprintf("%05d",$_elenoet_ou_login).".jpg")) {
+					$photo=sprintf("%05d",$_elenoet_ou_login).".jpg";
+				} else {
+					for($i=0;$i<5;$i++){
+						if(substr($_elenoet_ou_login,$i,1)=="0"){
+							$test_photo=substr($_elenoet_ou_login,$i+1);
+							//if(file_exists($chemin."../photos/eleves/".$test_photo.".jpg")){
+							if(($test_photo!='')&&(file_exists($chemin."../photos/eleves/".$test_photo.".jpg"))) {
+								$photo=$test_photo.".jpg";
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	// Cas des non-élèves
+	else {
+		$_elenoet_ou_login = md5(strtolower($_elenoet_ou_login));
+			if(file_exists($chemin."../photos/personnels/$_elenoet_ou_login.jpg")){
+				$photo="$_elenoet_ou_login.jpg";
+			} else {
+				$photo = "-";
+		}
+	}
+	return $photo;
 }
 
 function insert_confirm_abandon(){

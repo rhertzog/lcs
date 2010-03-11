@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: bull_index.php 3834 2009-11-29 09:08:59Z crob $
+* $Id: bull_index.php 4124 2010-03-10 12:59:40Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -1584,7 +1584,9 @@ else {
 
 			if ($affiche_rang == 'y'){
 				// On teste la présence d'au moins un coeff pour afficher la colonne des coef
+				//echo "<p>On teste la présence d'au moins un coeff pour afficher la colonne des coef<br />SELECT coef FROM j_groupes_classes WHERE (id_classe='".$id_classe."' and coef > 0)<br />";
 				$test_coef = mysql_num_rows(mysql_query("SELECT coef FROM j_groupes_classes WHERE (id_classe='".$id_classe."' and coef > 0)"));
+				//echo "\$test_coef=$test_coef<br />";
 				include("../lib/calcul_rang.inc.php");
 			}
 
@@ -1690,6 +1692,8 @@ else {
 
 			// Variables récupérées de calcul_moy_gen.inc.php
 			// $current_group est un tableau obtenu par get_group()
+			// Avec un indice $j correspondant à une boucle sur les groupes.
+			// On a ainsi des indices: $current_group[$j]['name'],...
 			$tab_bulletin[$id_classe][$periode_num]['groupe']=$current_group;
 
 			// Variables récupérées de calcul_moy_gen.inc.php
@@ -1749,6 +1753,12 @@ else {
 				$tab_bulletin[$id_classe][$periode_num]['quartile5_grp'][$j]=0;
 				$tab_bulletin[$id_classe][$periode_num]['quartile6_grp'][$j]=0;
 			}
+
+			/*
+			echo "<p>\$current_group[0]['name']=".$current_group[0]['name']."<br />";
+			echo "\$current_eleve_login[0]=$current_eleve_login[0]<br />";
+			echo "\$place_eleve_grp[0][0]=".$place_eleve_grp[0][0]."<br /></p>";
+			*/
 
 			$tab_bulletin[$id_classe][$periode_num]['place_eleve']=$place_eleve_grp;
 			$tab_bulletin[$id_classe][$periode_num]['quartile1_grp']=$quartile1_grp;
@@ -1920,18 +1930,28 @@ else {
 						$tab_ele['etab_ville'] = @mysql_result($data_etab, 0, "ville");
 
 						if ($tab_ele['etab_niveau']!='') {
-						foreach ($type_etablissement as $type_etab => $nom_etablissement) {
-							if ($tab_ele['etab_niveau'] == $type_etab) {
-								$tab_ele['etab_niveau_nom']=$nom_etablissement;
+							foreach ($type_etablissement as $type_etab => $nom_etablissement) {
+								if ($tab_ele['etab_niveau'] == $type_etab) {
+									$tab_ele['etab_niveau_nom']=$nom_etablissement;
+								}
 							}
-						}
-						if ($tab_ele['etab_cp']==0) {
-							$tab_ele['etab_cp']='';
-						}
-						if ($tab_ele['etab_type']=='aucun')
-							$tab_ele['etab_type']='';
-						else
-							$tab_ele['etab_type']= $type_etablissement2[$tab_ele['etab_type']][$tab_ele['etab_niveau']];
+							if ($tab_ele['etab_cp']==0) {
+								$tab_ele['etab_cp']='';
+							}
+							/*
+							if ($tab_ele['etab_type']=='aucun')
+								$tab_ele['etab_type']='';
+							else
+								$tab_ele['etab_type']= $type_etablissement2[$tab_ele['etab_type']][$tab_ele['etab_niveau']];
+							}
+							*/
+							if (($tab_ele['etab_type']=='aucun')||($tab_ele['etab_type']=='')||($tab_ele['etab_niveau']=='')) {
+								$tab_ele['etab_type']='';
+							}
+							else {
+								$tab_ele['etab_type']= $type_etablissement2[remplace_accents($tab_ele['etab_type'],'')][remplace_accents($tab_ele['etab_niveau'],'')];
+								//echo "\$type_etablissement2[".$tab_ele['etab_type']."][".$tab_ele['etab_niveau']."]=".$type_etablissement2[remplace_accents($tab_ele['etab_type'],'')][remplace_accents($tab_ele['etab_niveau'],'')]."<br />\n";
+							}
 						}
 					}
 
@@ -2024,11 +2044,14 @@ else {
 
 					// Rang
 					if ($affiche_rang == 'y'){
-						$rang = sql_query1("select rang from j_eleves_classes where (
+						$sql="select rang from j_eleves_classes where (
 						periode = '".$periode_num."' and
 						id_classe = '".$id_classe."' and
 						login = '".$current_eleve_login[$i]."' )
-						");
+						";
+						//echo "<p>$sql<br />";
+						$rang = sql_query1($sql);
+						//echo "$rang<br />";
 						if (($rang == 0)||($rang == -1)) {
 							$rang = "-";
 						}
@@ -2179,6 +2202,16 @@ else {
 										$tab_ele['aid_b'][$zz]['aid_note_min']=$aid_note_min;
 										$tab_ele['aid_b'][$zz]['place_eleve']=$place_eleve;
 									}
+
+									if ($type_note == 'no') {
+										$tab_ele['aid_b'][$zz]['aid_note']='-';
+										$tab_ele['aid_b'][$zz]['aid_statut']='';
+										$tab_ele['aid_b'][$zz]['aid_note_moyenne']='-';
+										$tab_ele['aid_b'][$zz]['aid_note_max']='-';
+										$tab_ele['aid_b'][$zz]['aid_note_min']='-';
+										//$tab_ele['aid_b'][$zz]['place_eleve']=$place_eleve;
+									}
+
 									$tab_ele['aid_b'][$zz]['aid_appreciation']=$current_eleve_aid_appreciation;
 
 									//echo "\$tab_ele['aid_b'][$z]['aid_appreciation']=".$tab_ele['aid_b'][$z]['aid_appreciation']."<br />";
@@ -2317,6 +2350,16 @@ else {
 										$tab_ele['aid_e'][$zz]['aid_note_min']=$aid_note_min;
 										$tab_ele['aid_e'][$zz]['place_eleve']=$place_eleve;
 									}
+
+									if ($type_note == 'no') {
+										$tab_ele['aid_e'][$zz]['aid_note']='-';
+										$tab_ele['aid_e'][$zz]['aid_statut']='';
+										$tab_ele['aid_e'][$zz]['aid_note_moyenne']='-';
+										$tab_ele['aid_e'][$zz]['aid_note_max']='-';
+										$tab_ele['aid_e'][$zz]['aid_note_min']='-';
+										//$tab_ele['aid_e'][$zz]['place_eleve']=$place_eleve;
+									}
+
 									$tab_ele['aid_e'][$zz]['aid_appreciation']=$current_eleve_aid_appreciation;
 
 									//echo "\$tab_ele['aid_e'][$z]['aid_appreciation']=".$tab_ele['aid_e'][$z]['aid_appreciation']."<br />";
