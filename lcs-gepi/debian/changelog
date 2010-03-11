@@ -1,3 +1,9 @@
+lcs-gepi (2.4.1) LCS; urgency=low
+
+  * update to revision 4103
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 11 Mar 2010 17:19:10 +0100
+
 lcs-gepi (2.4.0) LCS; urgency=low
 
   * fixing path to doc and lower name in prerm 
