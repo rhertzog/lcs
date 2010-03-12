@@ -1,3 +1,10 @@
+lcs-squirrelmail (2.4.7~1) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Fix update module version number when update package  
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 12 Mar 2010 11:47:16 +0100
+
 lcs-squirrelmail (2.4.6) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
