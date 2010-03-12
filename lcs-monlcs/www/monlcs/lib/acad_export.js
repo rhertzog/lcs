@@ -25,6 +25,7 @@
 
         }
 
+
         function liste_acad() {
 
                 new Ajax.Updater('acad','acad_import.php',{ method: 'post', parameters: params, onComplete: function(requester) {
@@ -38,7 +39,7 @@
                         );
                         pretty_cmd(ajaxWindCmd778);
                         init_synchro(ajaxWindCmd778);
-
+			Event.observe('getJeton','click',viewJeton,false);
                 }});
 
 

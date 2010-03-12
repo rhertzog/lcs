@@ -141,7 +141,12 @@
 		}		
 
 	
+			 function viewJeton() {
+                		var jeton = $('jeton').value;
+				voirAcadScen(jeton);
+			 }
 		    
+
 			 function init_synchro(elem) {
 				acad_container = elem;				
 				Event.observe('btnSearch','click',acad_send,false);

@@ -42,6 +42,7 @@
 						$infos = mysql_fetch_object($cc);
 						if ($x == 0) {
 							$output.="<etab><![CDATA[$baseurl]]></etab>\n";
+							$output.="<auteur><![CDATA[".$infos->setter."@".$baseurl."]]></auteur>\n";
 							$output.="<matiere><![CDATA[$infos->matiere]]></matiere>\n";
 							//$clean_t1 = $infos->titre;
 							$clean_t1 = patchToXml3($infos->titre);

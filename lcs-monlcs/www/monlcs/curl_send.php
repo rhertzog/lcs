@@ -17,8 +17,6 @@
 		$url=str_replace('%3D','=',$url);
 		$url=str_replace('%26','&',$url);
 		//die($url);
-		//if (eregi('type_etab',$complement))
-		//	die(htmlentities($url));
 	}
 	
 	$ch = curl_init($url);

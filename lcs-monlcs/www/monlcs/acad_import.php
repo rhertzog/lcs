@@ -1,6 +1,14 @@
 <? include('./includes/config.inc.php'); ?>
 
-		
+		<div>
+			<fieldset>
+				<legend>Jeton:</legend>
+				&nbsp;<strong>Jeton:</strong> (<A href="http://www2.crdp.ac-caen.fr/web/guest/cataress">cf Moteur de recherche du CRDP</A>)&nbsp;
+				&nbsp;<input id="jeton" name="jeton" value="SC_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" size="40"></input> 
+				&nbsp;<input id="getJeton" type="button" value="Voir"></input>
+			</fieldset>
+
+		</div>
 		<div>
 			<fieldset>
 				<legend><input id="chkSearchByDomain" type="checkbox">&nbsp;Domaine:</legend> 

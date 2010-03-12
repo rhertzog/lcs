@@ -26,16 +26,20 @@
 	
 		if ( ($extension == 'pdf') && !is_dir($upload_dir.'/monlcs_swf') )
 				mkdir($upload_dir.'/monlcs_swf',0770);
-	
-		move_uploaded_file($_FILES['Filedata']['tmp_name'], $upload_dir.'/monlcs_'.$extension.'/'.$filename);
- 		
-		if (preg_match('#\.[pdf]+$#is',$filename)) {
+		try {
+			move_uploaded_file($_FILES['Filedata']['tmp_name'], $upload_dir.'/monlcs_'.$extension.'/'.$filename);
+
+		  if (preg_match('#\.[pdf]+$#is',$filename)) {
 			$viewer = '/var/www/monlcs/modules/rfxview.swf';
 			$src = $upload_dir.'/monlcs_'.$extension.'/'.$filename;
 			$dest = $upload_dir.'/monlcs_swf/'.$filebody.'_pdf.swf';
 			exec("pdf2swf -z -S -w \"$src\" -o \"$dest\" ");
 			exec("swfcombine -z $viewer viewport=".'"'.$dest.'"'." -o \"$dest\" ");	
 
+		  }
+
+		} catch (Exception $e) {
+			$result_msg = $e->getMessage();
 		}
 
 		$result = 'OK';
@@ -45,9 +49,10 @@
 
     		if ($result == 'OK')
     		{
-        		echo 'parDoc.getElementById("filename").value = "'.$filename.'";';
-		}
- 		echo "\n".'</script></body></html>';
+			echo "alert('Le fichier est bien parvenu');";
+		} else
+			echo "alert('$result_msg');";
+		echo "\n".'</script></body></html>';
 		exit(); // do not go futher
 
 	}
