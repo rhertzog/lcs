@@ -1,3 +1,10 @@
+lcs-apache2ssl (2.4.7~1) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chrétien ]
+  *  Fix update module version number when update package
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 12 Mar 2010 14:48:55 +0100
+
 lcs-apache2ssl (2.4.6) Lcs; urgency=low
 
   [ Simon Cavey ]
