@@ -1,8 +1,8 @@
 <?php
-/* lcs/barre.php derniere mise a jour : 24/10/2009 */
+/* lcs/barre.php derniere mise a jour : 13/03/2010 */
+
 // HelpDesk Ajout variable session userHD pour memoriser choix user helpdesk autre qu'admin
 // Necesité de reinitialiser cette variable.  
-
 session_start();
 $_SESSION['userHD'] = null;
 
@@ -10,10 +10,10 @@ require "includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
 require "../Annu/includes/ihm.inc.php";
 
-$result=@mysql_db_query("$DBAUTH","SELECT * from applis", $authlink);
+$result=@mysql_db_query("$DBAUTH","SELECT * from applis WHERE type='M' OR type='S'", $authlink);
 if ($result)
     while ($r=mysql_fetch_array($result))
-                $$r["name"]=$r["value"];
+                $$r["name"]=$r["type"];
 else
     die ("param&#232;tres absents de la base de donn&#233;es");
 mysql_free_result($result);
@@ -136,7 +136,7 @@ function MM_preloadImages() { //v3.0
 
 
 <?php
-// Cas service MrT
+// Cas service
    if ( $login && ($lcs_cas == 1) && !isset($_COOKIE['tgt'])) {
 
 	echo "<script type='text/javascript'>
@@ -174,16 +174,16 @@ if ( $idpers==0 ) {
  	// Un utilisateur est authentifie
 	echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Accueil\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c3','images/$path/mon_LCS_BP_r1_c3_f2.gif','images/$path/mon_LCS_BP_r1_c3_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c3','images/$path/mon_LCS_BP_r1_c3_f3.gif',1);\" ><img name=\"BP_r1_c3\" title=\"Mon LCS\" alt=\"Mon LCS\" src=\"images/$path/mon_LCS_BP_r1_c3.gif\" border=\"0\"></a></div>\n";
    	echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Applis\" target=\"principale\"  onMouseOut=\"MM_nbGroup('out');\" onMouseOver=\"MM_nbGroup('over','BP_r1_c4','images/$path/BP_r1_c4_f2.gif','images/$path/BP_r1_c4_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c4','images/$path/BP_r1_c4_f3.gif',1);\" ><img name=\"BP_r1_c4\" title=\"Applications\" alt=\"Applications\" src=\"images/$path/BP_r1_c4.gif\" border=\"0\"></a></div>\n";
-	if ( $squirrelmail==1 ) // Webmail
+	if ( isset($squirrelmail) ) // Webmail
    		echo "<div class=\"bouton\"><a href=\"statandgo.php?use=squirrelmail\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\" onMouseOver=\"MM_nbGroup('over','BP_r1_c5','images/$path/BP_r1_c5_f2.gif','images/$path/BP_r1_c5_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c5','images/$path/BP_r1_c5_f3.gif',1);\" ><img name=\"BP_r1_c5\" title=\"Webmail\" alt=\"Webmail\"  src=\"images/$path/BP_r1_c5.gif\" border=\"0\"></a></div>\n";
-	if ($spip==1) // CMS
+	if ( isset($spip) ) // CMS
    		echo "<div class=\"bouton\"><a href=\"statandgo.php?use=spip\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c6','images/$path/BP_r1_c6_f2.gif','images/$path/BP_r1_c6_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c6','images/$path/BP_r1_c6_f3.gif',1);\" ><img name=\"BP_r1_c6\" title=\"Forum\" alt=\"Forum\" src=\"images/$path/BP_r1_c6.gif\" border=\"0\"></a></div>\n";	
         if ( is_admin("Lcs_is_admin",$login) == "Y" ) // acces au menu d'administration	
-   	echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Admin\" target=\"principale\"onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c7','images/$path/BP_r1_c7_f2.gif','images/$path/BP_r1_c7_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c7','images/$path/BP_r1_c7_f3.gif',1);\" ><img name=\"BP_r1_c7\" title=\"Administration\" alt=\"Administration\" src=\"images/$path/BP_r1_c7.gif\" border=\"0\"></a></div>\n";
+   	    echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Admin\" target=\"principale\"onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c7','images/$path/BP_r1_c7_f2.gif','images/$path/BP_r1_c7_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c7','images/$path/BP_r1_c7_f3.gif',1);\" ><img name=\"BP_r1_c7\" title=\"Administration\" alt=\"Administration\" src=\"images/$path/BP_r1_c7.gif\" border=\"0\"></a></div>\n";
 	// Aide
    	echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Aide\" target=\"principale\"  onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c8','images/$path/BP_r1_c8_f2.gif','images/$path/BP_r1_c8_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c8','images/$path/BP_r1_c8_f3.gif',1);\" ><img name=\"BP_r1_c8\" title=\"Aide\" alt=\"Aide\" src=\"images/$path/BP_r1_c8.gif\" border=\"0\"></a></div>\n";
         // HelpDesk
-	if ( $helpdesk=='1' && ( (is_admin('Lcs_is_admin', $login) == "Y")  || (is_admin('System_is_admin', $login) == "Y") ) ) 
+	if ( isset($helpdesk) && ( (is_admin('Lcs_is_admin', $login) == "Y")  || (is_admin('System_is_admin', $login) == "Y") ) ) 
    	    echo "<div class=\"bouton\"><a href=\"/helpdesk/\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\" onMouseOver=\"MM_nbGroup('over','BP_r1_c11','images/$path/helpdesk-surv.gif','images/$path/helpdesk-on.gif',1);\" onClick=\"MM_nbGroup('down','navbar1','BP_r1_c11','images/$path/helpdesk-on.gif',1);\" ><img name=\"BP_r1_c11\" title=\"Helpdesk\" alt=\"Helpdesk\" src=\"images/$path/helpdesk-off.gif\" border=\"0\"></a></div>\n";	
 	// Case vierge
    	echo "<div class=\"bouton\"></div>\n";
