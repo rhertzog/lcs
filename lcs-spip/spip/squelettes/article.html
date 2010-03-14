@@ -4,6 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
 		[(#CONFIG{tispipskelet_conf/articles/nb_cols_art}|=={2}|?{' '})
 			[(#CONFIG{tispipskelet_conf/articles/pos_cols_art}|=={gauche}|?{
+				[(#SET{style_bloc, padding:10px 10px 0;})]
 				[(#SET{pos_side,left})][(#SET{pos_content,right})]
 				,
 				[(#SET{pos_side,right})][(#SET{pos_content,left})]
@@ -13,10 +14,14 @@
 <head>
 <title>#NOM_SITE_SPIP</title>
 <INCLURE{fond=noisettes/inc-head}>
-<link rel="stylesheet" type="text/css" href="[(#CHEMIN{c/jcarousel/skin.css})]" />
-
+<!--
+<link rel="stylesheet" type="text/css" href="[(#CHEMIN{lib/ImageFlow_1.2.1/imageflow.packed.css})]" />
+-->
 <script type="text/javascript" src="[(#CHEMIN{scripts/interface.js})]"></script>
-<script type="text/javascript" src="[(#CHEMIN{scripts/mon-carrousel.js})]"></script>
+<!--
+<script type="text/javascript" src="[(#CHEMIN{lib/ImageFlow_1.2.1/imageflow.js})]"></script>
+-->
+
 <script type="text/javascript" src="[(#CHEMIN{lib/swfobject.js})]"></script>
 </head>
 <body>
@@ -50,7 +55,7 @@
 				<INCLURE{fond=noisettes/inc-hierarchie}{id_article}{env}>
 		
 				[(#REM)Affichagedu contenu de l'article]
-				<INCLURE{fond=noisettes/inc-article_corps}{env}>
+				<INCLURE{fond=noisettes/inc-article_corps}{env}{style_bloc=#GET{style_bloc}}>
 		
 				[(#REM)Affichage conditionnel des blocs jumeaux ]
 				[(#CONFIG{tispipskelet_conf/articles/affblocjumo}|oui)
@@ -60,19 +65,19 @@
 		
 				[(#REM) Forum de l'article ]
 				<a href="#forum" name="forum" id="forum"></a>
-				<INCLURE{fond=noisettes/inc-forum}{id_article} />
+				<INCLURE{fond=noisettes/inc-forum}{id_article}{style_bloc=#GET{style_bloc}} />
 			
 			[(#CONFIG{tispipskelet_conf/articles/nb_cols_art}|=={3}|?{' '})
 			[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
 				</div>[(#REM) fin troiscol]
-				<div id="side2">
+				<div id="side2" class="colonne">
 					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{id_rubrique}{bloc=col_g}{casier=articles}{env}{ajax}>
 				</div>[(#REM) fin side2]
 			]
 			]
 			</div><!-- fin content -->
 		
-			<div id="side[(#GET{side})]"[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})[ style="float:(#GET{pos_side});margin:.7em"]]>
+			<div id="side[(#GET{side})]"[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})[ style="float:(#GET{pos_side});margin:.7em"]] class="colonne">
 				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}{id_rubrique}{casier=articles}{env}{ajax}>
 			</div><!-- fin side -->
 			

@@ -41,7 +41,7 @@
 						<em><a href="#URL_RUBRIQUE" title="Aller &agrave; la rubrique [(#ID_RUBRIQUE|titre_parent)]" class="droite">[(#ID_RUBRIQUE|titre_parent)]</a></em>
 						]
 						[<a href="#URL_ARTICLE">
-							<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{50,60}|sinon{[(#LOGO_SITE_SPIP||reduire_image{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
+							<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{50,60}|sinon{[(#LOGO_SITE_SPIP||image_reduire{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
 							<em>[, (#DATE|affdate_jourcourt)][, par (#LESAUTEURS)]</em>
 					</dt>		
 					<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
@@ -56,7 +56,7 @@
 				<BOUCLE_rubriques (RUBRIQUES){id_mot}{id_rubrique ?} {par num titre} {par titre}{inverse}>
 					<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
 						[<a href="#URL_RUBRIQUE">
-							<span class="gauche">[(#LOGO_RUBRIQUE||reduire_image{50,60}|sinon{[(#LOGO_SITE_SPIP||reduire_image{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
+							<span class="gauche">[(#LOGO_RUBRIQUE||image_reduire{50,60}|sinon{[(#LOGO_SITE_SPIP||image_reduire{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
 							<em>[, (#DATE|affdate_jourcourt)][, par (#LESAUTEURS)]</em>
 					</dt>		
 					<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
@@ -71,7 +71,7 @@
 				<BOUCLE_parent(RUBRIQUES){id_mot}{id_parent} {par num titre} {par titre}{inverse}>
 					<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
 						[<a href="#URL_RUBRIQUE">
-							<span class="gauche">[(#LOGO_RUBRIQUE||reduire_image{50,60}|sinon{[(#LOGO_SITE_SPIP||reduire_image{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
+							<span class="gauche">[(#LOGO_RUBRIQUE||image_reduire{50,60}|sinon{[(#LOGO_SITE_SPIP||image_reduire{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
 							<em>[, (#DATE|affdate_jourcourt)][, par (#LESAUTEURS)]</em>
 					</dt>		
 					<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
@@ -89,7 +89,7 @@
 						<em><a href="#URL_RUBRIQUE" title="Aller &agrave; la rubrique [(#ID_RUBRIQUE|titre_parent)]" class="droite">[(#ID_RUBRIQUE|titre_parent)]</a></em>
 						]
 						[<a href="#URL_SITE">
-							<span class="gauche">[(#LOGO_SITE||reduire_image{50,60}|sinon{[(#LOGO_SITE||reduire_image{50,60})]})]</span>(#NOM_SITE)</a>]
+							<span class="gauche">[(#LOGO_SITE||image_reduire{50,60}|sinon{[(#LOGO_SITE||image_reduire{50,60})]})]</span>(#NOM_SITE)</a>]
 					</dt>		
 					<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
 						[(#DESCRIPTIF)]
@@ -101,13 +101,13 @@
 		
 		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
 			</div>[(#REM)troiscols]
-			<div id="side2">
+			<div id="side2" class="colonne">
 					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}{id_mot}>
 			</div>[(#REM)side2]
 		]
 			</div>[(#REM)content]
 		
-			<div id="side">
+			<div id="side" class="colonne">
 				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}{id_mot}>
 			</div>
 			

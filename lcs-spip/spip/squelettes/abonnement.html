@@ -39,30 +39,18 @@
 					</dd>
 				</dl>
 
-				[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
-					</div>[(#REM)troiscols]
-				<div id="side2">
-					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}{casier=sommaire}>
-				</div>[(#REM)side2]
-				]
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			</div>[(#REM)troiscols]
+			<div id="side2" class="colonne">
+					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}>
+			</div>[(#REM)side2]
+		]
 			</div>[(#REM)content]
-			<div id="side">
-				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}{casier=sommaire}>
-			</div>[(#REM)side]
-					
-			<div id="clear_copy"></div>
-		</div>[(#REM)container]
-	</div>[(#REM)grand_container]
-	
-	<div id="footer">
-		[(#INCLURE{fond=noisettes/inc-pied})]
-	</div>[(#REM) footer]
-	
-	[(#INCLURE{fond=noisettes/inc-copy})]
-	
-	[(#REM) appel du js les coins arrondis et les colonnes]
-	[<script type="text/javascript" src="(#CHEMIN{scripts/niftycube.js})"></script>]
-	[<script type="text/javascript" src="(#CHEMIN{scripts/niftyLayout.js})"></script>]
-	
+		
+			<div id="side" class="colonne">
+				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}>
+			</div>
+			
+	<INCLURE{fond=noisettes/inc-fin_page}>
 </body>
 </html>

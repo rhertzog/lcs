@@ -77,13 +77,13 @@
 				</dl>
 		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
 			</div>[(#REM)troiscols]
-			<div id="side2">
+			<div id="side2" class="colonne">
 					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}>
 			</div>[(#REM)side2]
 		]
 			</div>[(#REM)content]
 		
-			<div id="side">
+			<div id="side" class="colonne">
 				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}>
 			</div>
 			

@@ -79,12 +79,12 @@
 		
 		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
 			</div>[(#REM) fin troiscol]
-			<div id="side2">
+			<div id="side2" class="colonne">
 				<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}{casier=rubriques}{env}{ajax}>
 			</div>[(#REM) fin side2]
 		]
 				</div>[(#REM) fin content ]
-			<div id="side">
+			<div id="side" class="colonne">
 				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}{casier=rubriques}{env}{ajax}>
 			</div>[(#REM) fin side ]
 			

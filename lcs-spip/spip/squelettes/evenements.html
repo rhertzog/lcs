@@ -41,7 +41,7 @@
 				<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
 						<BOUCLE_rub_art(RUBRIQUES){id_rubrique}>[(#ENV{page}|=={rubrique}|?{'',' '})<em><a href="#URL_RUBRIQUE" title="Aller &agrave; la rubrique [(#TITRE|supprimer_tags)]" class="droite">[(#TITRE|supprimer_tags)]</a></em>]</BOUCLE_rub_art>
 					[<a href="#URL_ARTICLE" [title="(#DESCRIPTIF|textebrut|entites_html)"]>
-					<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{50,60}|sinon{[(#LOGO_SITE||reduire_image{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
+					<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{50,60}|sinon{[(#LOGO_SITE||image_reduire{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
 					<em>D&eacute;but : [(#DATE_DEBUT|nom_jour) ][(#DATE_DEBUT|jour) ][(#DATE_DEBUT|nom_mois)] [ : (#DATE_FIN|heures)][:(#DATE_FIN|minutes)][:(#DATE_FIN|secondes)]<br />
 						[Fin : (#DATE_FIN|jour) ][(#DATE_FIN|nom_mois)] [ : (#DATE_FIN|heures)][:(#DATE_FIN|minutes)][:(#DATE_FIN|secondes)][, par (#LESAUTEURS)]</em>
 				</dt>		
@@ -55,12 +55,12 @@
 		
 		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
 			</div>[(#REM) fin troiscol]
-			<div id="side2">
+			<div id="side2" class="colonne">
 				<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}{env}{ajax}>
 			</div>[(#REM) fin side2]
 		]
 				</div>[(#REM) fin content ]
-			<div id="side">
+			<div id="side" class="colonne">
 				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}{env}{ajax}>
 			</div>[(#REM) fin side ]
 			

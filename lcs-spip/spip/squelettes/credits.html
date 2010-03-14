@@ -119,10 +119,10 @@
 						]
 						</ul>
 						<br class="leon" />
-						[(#CONFIG{tispipskelet_conf/credits/text_credits}|?{' '})
+						[
 						<ul>
 							<li>
-								#CONFIG{tispipskelet_conf/credits/text_credits}
+								(#CONFIG{tispipskelet_conf/credits/text_credit})
 							</li>
 						</ul>
 						]
@@ -154,12 +154,12 @@
 				</dl>
 		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
 			</div>[(#REM) fin troiscol]
-			<div id="side2">
+			<div id="side2" class="colonne">
 				<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}{env}{ajax}>
 			</div>[(#REM) fin side2]
 		]
 				</div>[(#REM) fin content ]
-			<div id="side">
+			<div id="side" class="colonne">
 				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}{env}{ajax}>
 			</div>[(#REM) fin side ]
 			

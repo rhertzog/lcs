@@ -51,7 +51,7 @@
 					<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
 						<BOUCLE_rub_art(RUBRIQUES){id_rubrique}><em><a href="#URL_RUBRIQUE" title="Aller &agrave; la rubrique [(#TITRE|supprimer_tags)]" class="droite">[(#TITRE|supprimer_tags)]</a></em></BOUCLE_rub_art>
 						[<a href="#URL_ARTICLE">
-							<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{50,60}|sinon{[(#LOGO_SITE||reduire_image{50,60})]})]</span>(#TITRE|supprimer_tags|supprimer_numero)</a>]
+							<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{50,60}|sinon{[(#LOGO_SITE||image_reduire{50,60})]})]</span>(#TITRE|supprimer_tags|supprimer_numero)</a>]
 							<em>[, (#DATE|affdate_jourcourt)][, par (#LESAUTEURS)]</em>
 					</dt>		
 					<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
@@ -68,13 +68,13 @@
 		
 		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
 			</div>[(#REM)troiscols]
-			<div id="side2">
+			<div id="side2" class="colonne">
 					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}>
 			</div>[(#REM)side2]
 		]
 			</div>[(#REM)content]
 		
-			<div id="side">
+			<div id="side" class="colonne">
 				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}>
 			</div>
 			

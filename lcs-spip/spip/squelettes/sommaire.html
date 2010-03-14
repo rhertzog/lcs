@@ -36,8 +36,10 @@
 				]	
 		
 		[(#REM)Affichage conditionnel des blocs jumeaux - a modifier  - haut]
-				[(#CONFIG{tispipskelet_conf/sommaire/posblocjumo}|=={haut}|?{' '})
-				<INCLURE{fond=noisettes/inc-blocs_jumos}{posblocj=haut}{casier=sommaire}>
+				[(#CONFIG{tispipskelet_conf/sommaire/affblocjumo}|?{' '})
+					[(#CONFIG{tispipskelet_conf/sommaire/posblocjumo}|=={haut}|?{' '})
+					<INCLURE{fond=noisettes/inc-blocs_jumos}{posblocj=haut}{casier=sommaire}>
+					]
 				]
 				
 		[(#REM)Affichage de la liste d'articles]
@@ -58,12 +60,12 @@
 			
 				[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
 					</div>[(#REM)troiscols]
-				<div id="side2">
+				<div id="side2" class="colonne">
 					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}{casier=sommaire}>
 				</div>[(#REM)side2]
 				]
 			</div>[(#REM)content]
-			<div id="side">
+			<div id="side" class="colonne">
 				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}{casier=sommaire}>
 			</div>[(#REM)side]
 			
