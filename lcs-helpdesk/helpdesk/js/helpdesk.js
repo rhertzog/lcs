@@ -215,10 +215,11 @@ function inspect(obj, maxLevels, level)
 		}
 
 		function submitTicket() {
+			//alert('titi');
 			var params = '?category_id=' + $('category_id').value;
-			params += '&title=' + escape($('ticket_title').value);
-			params += '&description=' + escape($('ticket_description').value);
-			
+			params += '&title=' + encodeURIComponent($('ticket_title').value);
+			params += '&description=' + encodeURIComponent($('ticket_description').value);
+			//alert(params);
 			if ($('category_id').value == -1) {
 				alert('Merci de choisir une categorie.');
 				return true;
