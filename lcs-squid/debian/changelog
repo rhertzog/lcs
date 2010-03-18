@@ -1,3 +1,9 @@
+lcs-squid (2.4.6.2~1) Lcs; urgency=low
+
+  * Build squid.conf only on first install
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Mar 2010 14:43:05 +0100
+
 lcs-squid (2.4.6.1) Lcs; urgency=low
 
   * Modify squid-reconfigure.sh for adding squidGuard entries if necessary 
