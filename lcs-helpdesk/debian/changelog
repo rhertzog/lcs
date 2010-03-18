@@ -1,15 +1,10 @@
-lcs-helpdesk (2.4.7~2) UNRELEASED; urgency=low
+lcs-helpdesk (2.4.7~2) Lcs; urgency=low
 
   * fix on escaping parameters on ticket submitting
-
- -- Sebastien TACK <sebastien.tack@ac-caen.fr>  Mon,  15 Mar 2010 08:33:13 +0200
-
-lcs-helpdesk (2.4.7~1) UNRELEASED; urgency=low
-
   * replacing right from lcs_is_admin to system_is_admin for HelpDesk access
   * update module type from M  to S to avoid apparition in MonLCS context  
 
- -- Sebastien TACK <sebastien.tack@ac-caen.fr>  Wed,  22 Jan 2010 15:33:31 +0200
+ -- Sebastien TACK <sebastien.tack@ac-caen.fr>  Mon,  15 Mar 2010 08:33:13 +0200
 
 lcs-helpdesk (2.4.6) Lcs; urgency=low
 
