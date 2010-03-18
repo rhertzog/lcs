@@ -4,7 +4,7 @@ include "/var/www/lcs/includes/headerauth.inc.php";
 include "/var/www/Annu/includes/ldap.inc.php";
 list ($idpers,$login)= isauth();
 if ($idpers == "0") header("Location:$urlauth");
-if (ldap_get_right("system_is_admin",$login)!="Y") {
+if ( ldap_get_right("system_is_admin",$login)!="Y" && ldap_get_right("lcs_is_admin",$login)!="Y" ) {
 	echo "Vous n'avez pas les droits d'acces a cette application !";
 	die();
 }
