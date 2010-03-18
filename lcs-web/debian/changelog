@@ -1,9 +1,9 @@
-lcs-web (2.4.6.3~1) UNRELEASED; urgency=low
+lcs-web (2.4.6.3) Lcs; urgency=low
 
   * Remove cron task ldap save, this task was move in lcs-security package
   * Fix problem of the missing link in webmail barre.php 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 13 Mar 2010 17:22:08 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Mar 2010 10:01:51 +0100
 
 lcs-web (2.4.6.2) Lcs; urgency=low
 
