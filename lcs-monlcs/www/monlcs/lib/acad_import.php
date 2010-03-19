@@ -4,10 +4,32 @@
 ?>
 			var acad_container;
 
+			function incremente_scenario(id_scen) {
+				//alert(id_scen);
+				var params2 = '?action=getToken&id_scen='+id_scen+'&profil='+trim(quiC);
+                                new Ajax.Request("ajax.lib.php",{ method: 'get', parameters: params2, onSuccess: function(xhr) {
+					var jeton = xhr.responseText;
+								
+					var url = '<? echo $dir_url_distant."/compteur.php"; ?>';
+					var complement='scen='+trim(jeton)+'&requester=lcs&etab=_DOMAIN_';
+					var params = 'url='+encodeURIComponent(url)+'&complement='+encodeURIComponent(complement);
+					//requete ajax vers curl_send
+					new Ajax.Request("curl_send.php",{ method: 'post', parameters: params, onSuccess: function(xhr) {
+						alert(xhr.responseText);
+					}});
+				
+				}});
+	
+			}
 
 			function addTabAsUrl(link) {
 				window.open(link);
 			}
+			
+			function goSuiv() {
+				alert('pas cable');
+			}
+
 
 			function liste_fiches() {
 				var id_scen = $('id_scen').innerHTML;
@@ -123,7 +145,7 @@
 				Element.hide('spinner');
 			
 				var liste = document.getElementsByClassName('jeton_link');
-				var size = parseInt(530+liste.length*150);
+				var size = parseInt(630+liste.length*150);
 				
 				$('ajaxWindCmd778').setSize(800,size);
 

@@ -1,7 +1,10 @@
 <?php
-    //script qui lance un script sur un autre domaine a partir du serveur
-	//require_once("domxml-php4-php5.php");
-		
+        //script qui lance un script sur un autre domaine a partir du serveur
+
+	require_once('/var/www/lcs/includes/config.inc.php');
+	require_once('/var/www/lcs/includes/headerauth.inc.php');
+
+	
 	if ($_GET)
 		extract($_GET);
 	
@@ -13,9 +16,11 @@
 		$url ='http://www.google.fr';
 	
 	if ($complement) {
+		$complement = str_replace('_DOMAIN_', urlencode($domain),$complement);
 		$url = urldecode($url).'?'.urlencode(utf8_decode($complement));
 		$url=str_replace('%3D','=',$url);
 		$url=str_replace('%26','&',$url);
+
 		//die($url);
 	}
 	

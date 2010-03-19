@@ -35,7 +35,7 @@
                         'div',
                         'acad',
                         'Dépot académique',
-                        'width=800px,height=330px,left=35px,top=70px,resize=1,scrolling=1,center=0'
+                        'width=800px,height=430px,left=35px,top=70px,resize=1,scrolling=1,center=0'
                         );
                         pretty_cmd(ajaxWindCmd778);
                         init_synchro(ajaxWindCmd778);
@@ -209,7 +209,7 @@
 								params += '&matiere='+$('matiere').value;
 								params += '&titre_ress='+liste_ress[i].titre;
 								if ('note' == liste_ress[i].type)
-									params += '&content='+encodeURI(liste_ress[i].content);
+									params += '&content='+encodeURIComponent(liste_ress[i].content);
 								else
 									params += '&content='+escape(liste_ress[i].content);
 								
@@ -218,11 +218,13 @@
 								//alert(params);
 								new Ajax.Request('saveScenAcad.php',{ method: 'post', parameters: params, onComplete: function(requester) {
 									//alert(requester.responseText);
-									//getTabData('scenario_choix');			
+									//getTabData('scenario_choix');
 								}});
 							}
 						}					
 					}
+					//SCRIPT INCREMENTATION NB TELECHARGEMENT PLATEFORME
+					incremente_scenario(id_scen);
 					alert('L\'import du scénario s\'est bien déroulé.');
 					
 		}});

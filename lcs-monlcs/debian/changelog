@@ -1,8 +1,14 @@
+lcs-monlcs (2.4.7~3) Unreleased; urgency=low
+
+  * academic import: download scenario count implementation 
+
+ -- Sebastien Tack <sebastien.tack@ac-caen.fr>>  Wed, 19 Mar 2010 15:50:04 +0200
+
 lcs-monlcs (2.4.7~2) Unreleased; urgency=low
 
   * fixes bugs and amelioration for academic export
 
- -- Sebastien Tack <>  Thu, 04 Mar 2010 14:10:32 +0200
+ -- Sebastien Tack <sebastien.tack@ac-caen.fr>>  Thu, 04 Mar 2010 14:10:32 +0200
 
 lcs-monlcs (2.4.7~1) Unreleased; urgency=low
 
@@ -11,7 +17,7 @@ lcs-monlcs (2.4.7~1) Unreleased; urgency=low
   * choice SWF/PDF when pdf upload
   * allowing enable or disable scenarios
 
- -- Sebastien Tack <>  Tue, 02 Fev 2010 11:22:42 +0200
+ -- Sebastien Tack <sebastien.tack@ac-caen.fr>  Tue, 02 Fev 2010 11:22:42 +0200
 
 lcs-monlcs (2.4.6) Lcs; urgency=low
 
