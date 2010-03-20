@@ -59,7 +59,7 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
   	 		 	br="LcsTesting"
 			elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
 	   		 	depot="LennycsXP"
-	   		 	br="Lcs"
+	   		 	br="LcsXP"
 			else 
 			echo "branche erronee"
 			exit 
