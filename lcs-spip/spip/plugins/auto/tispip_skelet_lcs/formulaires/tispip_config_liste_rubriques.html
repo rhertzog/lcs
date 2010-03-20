@@ -8,19 +8,27 @@
 	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
 	
 	<form method="post" action="#SELF">
-		<div style="margin-bottom:25px;"> #ACTION_FORMULAIRE{#SELF} 
+		<div style="margin-bottom:5px;"> #ACTION_FORMULAIRE{#SELF} 
 			<fieldset>
 				<legend>Liste des rubriques</legend>
 				<ul>
 					<li class="ligne_280">
-						<a href='[(#CHEMIN{fonds/inc/aide/inc-help.html})]' class='boxy' title='Aide : Afficher la liste des rubriques'>?</a>
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=310&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Liste de rubriques et sous-rubriques">&nbsp;</a>
 						<label>
-							<input type="checkbox" name="afflistrub" value="oui" [checked="(#ENV{afflistrub}|?{checked})" ]/> 
+							<input type="checkbox" name="afflistrub" id="afflistrub" value="oui" [checked="(#ENV{afflistrub}|?{checked})" ]/> 
 							Afficher un plan des rubriques
 						</label>
 					</li>
+					<li id="cfg_listrubs">
+					<select name="afficher_rubs" id="afficher_rubs" class="forml spip_xx-small">
+					<option value="liste">Liste de premier niveau</option>
+					<option value="liste" disabled="disabled">Liste sous arborescence</option>
+					<option value="portfolio" disabled="disabled">Portfolio</option>
+					</select>
+					</li>
 				</ul>
 			</fieldset>
+			[(#REM)
 			<fieldset>
 				<legend>Afficher un portfolio des sous rubriques</legend>
 				<ul>
@@ -31,16 +39,25 @@
 								<input type="text" name="portfolio_rubs" id="portfolio_rubs" maxlength="3" size="2" value="[(#ENV{portfolio_rubs})]"  />
 						</li>
 				</ul>
-			</fieldset>
+			</fieldset>]
 			<div style="text-align:center">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>
-</div>
+<script type="text/javascript"><!--
+	//cacher l'affichage de la conf
+	$('#afflistrub')
+	.bind('change', function() {
+            $('#cfg_listrubs').slideToggle('slow');
+	})
+	if ($('#afflistrub:checked').length == 0)
+		$('#cfg_listrubs').hide();
 
+// --></script>
+</div>
 ]
 
 [(#ENV{editable}|non)

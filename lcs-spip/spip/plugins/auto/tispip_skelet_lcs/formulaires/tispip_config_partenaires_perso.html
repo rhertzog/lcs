@@ -4,35 +4,35 @@
 <!-- casier=credits -->
 #CACHE{0}
 [(#ENV{editable}|oui)
-<div class="formulaire_spip formulaire_cfg">
-	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
-	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
-	
-	<form method="post" action="#SELF">
-		<div style="margin-bottom:25px;"> #ACTION_FORMULAIRE{#SELF} 
-	<fieldset>
-		<legend>Texte personnalis&eacute;</legend>
-		<ul>
-			<li class="ligne">
-					<label><input type="checkbox" name="afftext_credit" class="affCheckbox" value="oui" [checked="(#ENV{afftext_credit}|?{checked})"] id="afftext_credit" /> Afficher un texte personnel
-					</label>
-			</li>
-		</ul>
-		<ul id="cfgtext_credit">
-			<li class="ligne_200">
-				<label for="text_credit">Texte personnel</label>
-				<textarea name="text_credit" rows="7">[(#ENV{text_credit}|?{' '})#ENV{text_credit}]</textarea>
-			</li>
-			[(#ENV{text_credit}|?{' '})
-			<li>
-			<h3>Votre texte :</h3>
-			<div class="alert">
-				#ENV{text_credit}
-			</div>
-			</li>
-			]
-		</ul>
-	</fieldset>
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend>Texte personnalis&eacute;</legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+				<ul>
+					<li class="ligne_280">
+							<label for="afftext_credit">Afficher un texte personnel</label>
+							<input type="checkbox" name="afftext_credit" class="affCheckbox" value="oui" [checked="(#ENV{afftext_credit}|?{checked})"] id="afftext_credit" /> 
+							
+					</li>
+				</ul>
+				<ul id="cfgtext_credit">
+					<li class="ligne_200">
+						<label for="text_credit">Texte personnel</label>
+						<textarea name="text_credit" rows="7" class="fondl spip_xx-small">[(#ENV{text_credit}|?{' '})#ENV{text_credit}]</textarea>
+					</li>
+					[(#ENV{text_credit}|?{' '})
+					<li>
+					<h3>Votre texte :</h3>
+					<div class="alert">
+						#ENV{text_credit}
+					</div>
+					</li>
+					]
+				</ul>
+			</fieldset>
 <script type="text/javascript"><!--
 	$('#afftext_credit')
 	.bind('change', function() {
@@ -42,9 +42,9 @@
 		$('#cfgtext_credit').hide();
 // --></script>
 			<div style="text-align:center">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>

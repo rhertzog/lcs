@@ -4,26 +4,24 @@
 <!-- casier=mentions -->
 #CACHE{0}
 [(#ENV{editable}|oui)
-<div class="formulaire_spip formulaire_cfg">
-	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
-	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
-	
-	<form method="post" action="#SELF">
-		<div style="margin-bottom:25px;"> #ACTION_FORMULAIRE{#SELF} 
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+	<div> #ACTION_FORMULAIRE{#SELF} 
 	<fieldset>
 		<legend><:tispipskelet:propriete_intellectuelle:></legend>
+		[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+		[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
+		
 		<ul>
-			<li class="ligne">
-				<label>
-					<input type="checkbox" name="affprotect_intellect" value="oui" id="affprop_intello"[(#ENV{affprotect_intellect}|=={oui}|?{checked,''})] />
-					Afficher le texte sur la propri&eacute;t&eacute; intellectuelle
-				</label>
+			<li class="ligne_280">
+				<label for="affprop_intello">Afficher le texte sur la propri&eacute;t&eacute; intellectuelle</label>
+				<input type="checkbox" name="affprotect_intellect" value="oui" id="affprop_intello"[(#ENV{affprotect_intellect}|=={oui}|?{checked,''})] />
 			</li>
 		</ul>
 		<ul id="cfgprop_intello">
 			<li class="ligne">
-					<label for="protect_intellect">Proposition de texte sur la protection des informations nominatives</label>
-					<textarea name="protect_intellect" id="protect_intellect" rows="7" style="clear:both;display:block;width:80%;margin:10px auto;">[(#ENV{protect_intellect}|?{
+				<label for="protect_intellect">Proposition de texte sur la protection des informations nominatives</label>
+				<textarea name="protect_intellect" id="protect_intellect" rows="7" style="clear:both;display:block;width:80%;margin:10px auto;" class="fondl spip_xx-small">[(#ENV{protect_intellect}|?{
 						#ENV{protect_intellect} 
 						,
 						<:tispipskelet:propriete_intellectuelle_texte_1:>
@@ -56,9 +54,9 @@
 			
 			// --></script>
 			<div style="text-align:center">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>

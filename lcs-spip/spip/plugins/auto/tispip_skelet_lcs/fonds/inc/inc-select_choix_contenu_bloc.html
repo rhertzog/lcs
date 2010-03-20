@@ -1,11 +1,12 @@
-<label style="margin:0;padding:0;width:100%;">[(#TITRE)]
-<select name="#ENV{contenu}" id="#ENV{contenu}" style="width:140px;margin-left:5px">
+<label style="margin:0;padding:0;width:180px;">[(#TITRE)]
+<select name="#ENV{contenu}" id="#ENV{contenu}" style="width:130px;margin-left:5px" class="fondl spip_xx-small">
 	<option value=""[ (#ENV{#ENV{contenu}}|?{'',selected="selected"})]>  </option>
 [(#ENV{id}|=={articles}|oui)	
 	<option value="meme-rub"[ (#ENV{#ENV{contenu}}|=={meme-rub}|?{selected="selected",''})]>Articles de la m&ecirc;me rubrique </option>
 	<option value="art_mots_arts"[ (#ENV{#ENV{contenu}}|=={art_mots_arts}|?{selected="selected",''})]>Articles li&eacute;s aux m&ecirc;mes mots-clé </option>
 ]
 	<option value="cyclart"[ (#ENV{#ENV{contenu}}|=={cyclart}|?{selected="selected",''})]> Derniers articles[(#ENV{id}|=={rubriques}|oui) de la rubrique] </option>
+	<option value="cyclart_modif"[ (#ENV{#ENV{contenu}}|=={cyclart_modif}|?{selected="selected",''})]> Derniers articles modifi&eacute;s[(#ENV{id}|=={rubriques}|oui) de la rubrique] </option>
 [(#CONFIG{activer_breves}|=={oui}|oui)
 	<option value="breves"[ (#ENV{#ENV{contenu}}|=={breves}|?{selected="selected",''})]> Derni&egrave;res br&egrave;ves[(#ENV{id}|=={rubriques}|oui) du secteur]  </option>
 ]
@@ -45,6 +46,6 @@
 ]
 	<option value="perso"[ (#ENV{#ENV{contenu}}|=={perso}|?{selected="selected",''})]>Contenu perso.</option>
 	<option value="google_trad"[ (#ENV{#ENV{contenu}}|=={google_trad}|?{selected="selected",''})]>Traduction (Google)</option>
-	<option value="prive"[ (#ENV{#ENV{contenu}}|=={prive}|?{selected="selected",''})]>Priv&eacute; (affiche les liens vers l&rsquo;espace priv&eacute; si le visiteur est connect&eacute;)</option>
+	<option value="prive"[ (#ENV{#ENV{contenu}}|=={prive}|?{selected="selected",''})]>Espace Priv&eacute;</option>
 </select>
 </label>

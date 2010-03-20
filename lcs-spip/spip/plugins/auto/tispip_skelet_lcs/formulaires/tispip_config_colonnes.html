@@ -4,7 +4,7 @@
 #CACHE{0}
 [(#ENV{editable}|oui)
 <div class="formulaire_spip formulaire_cfg formulaire_tispip">
-	<form method="post" action="#SELF" style="margin-bottom:25px;">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
 		<div> #ACTION_FORMULAIRE{#SELF} 
 			<fieldset>
 				<legend>Contenu [(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{'des colonnes lat&eacute;rales ','de la colonne lat&eacute;rale'})]</legend>
@@ -14,18 +14,23 @@
 				<ul class="deux_colonnes" id="cfgcol">
 					<li class="une_colonne gauche" style="margin:0;padding:10px 0;clear:none; [width:(#CONFIG{tispipskelet_conf/nb_cols}|!={3}|?{100%, 49%;border-right:1px solid #aaa;float:right});] ">
 						<ul>
-							<li style="text-align:center;margin:0;padding:10px 0;">
+							<li style="text-align:center;margin:0;padding:3px 0;">
 								[(#CONFIG{tispipskelet_conf/nb_cols}|!={3}|?{' '})
 									<input type="hidden" name="pos_menu" value="droite" />
 								]
-								<a href='[(#CHEMIN{fonds/inc/aide/inc-help_colonne.html})]' class='boxy boxyColonnes' title='Configurer les colonnes'>?</a>
-								<strong>Colonne de  [(#CONFIG{tispipskelet_conf/position}|=={left}|?{gauche,droite})]</strong>
+			<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=311&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Contenu des colonnes latérales">&nbsp;</a>
+								<strong>Colonne de  [(#ENV{id}|=={articles}|?{
+									[(#CONFIG{tispipskelet_conf/articles/pos_cols_art}|=={gauche}|?{gauche,droite})]
+									,
+									[(#CONFIG{tispipskelet_conf/position}|=={left}|?{gauche,droite})]
+									})]
+								</strong>
 							</li>
 							[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
 							<li style="margin:0;padding:10px 0;">
 								<label style="width:200px;clear:none;margin:0;padding:0;">
 								<input type="radio" name="pos_menu" value="droite" [(#ENV{pos_menu}|=={droite}|?{checked="checked",''})] />
-								Menu à droite
+								Menu à [(#CONFIG{tispipskelet_conf/articles/pos_cols_art}|=={gauche}|?{gauche,droite})]
 
 								</label>
 							</li>
@@ -35,10 +40,15 @@
 					</li>
 					
 					
-[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+[(#SET{acg,non})]					
+[(#ENV{id}|=={articles}|non)
+[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{#SET{acg,oui}})]]
+[(#ENV{id}|=={articles}|oui)
+[(#CONFIG{tispipskelet_conf/articles/nb_cols_art}|!={2}|?{#SET{acg,oui}})]]
+[(#GET{acg}|=={oui}|oui)
 					<li class="une_colonne droite" style="margin:0;padding:10px 0;float:left;clear:none;width:50%">
 						<ul>
-							<li style="text-align:center;margin:0;padding:10px 0;">
+							<li style="text-align:center;margin:0;padding:3px 0 7px;">
 								<strong>Colonne de  gauche</strong>
 							</li>
 							<li style="margin:0;padding:10px 0;">
@@ -62,9 +72,9 @@
 			</script>
 			
 			<div style="text-align:center">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>

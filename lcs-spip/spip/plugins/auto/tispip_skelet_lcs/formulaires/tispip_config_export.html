@@ -1,26 +1,17 @@
 <div id="TsP_form_export" class="formulaire_spip" >
 #SET{message_retour_export,#EVAL{$_GET['message']}}
-	<form action="#URL_ACTION_AUTEUR{'tispipskelet_conf_exporte','id_rubrique='#ENV{id_rubrique},#URL_ECRIRE{cfg&cfg=TiSpiP_Export}}" method="POST">
-		<ul>
-[(#GET{message_retour_export}|?{
-			<li class="ligne">
-				<div class="annonce">
-					[(#GET{message_retour_export})]
-				</div>
-			</li>
-			,
-			<li class="ligne_240">
+	<form action="#URL_ACTION_AUTEUR{'tispipskelet_conf_exporte','id_rubrique='#ENV{id_rubrique},#SELF}" method="POST">
+				[
+					(#GET{message_retour_export})
+				]
+			<ul>
+		<li class="ligne_240">
 				<label for="nom_conf"><:tispipskelet:nom_conf_export:></label>
-				<input type="text" name="nom_conf" id="nom_conf" size="20" value=""/>
+				<input type="text" name="nom_conf" id="nom_conf" size="20" class="fondl spip_xx-small" style="width:70px;" value=""/>
 			</li>
-})]
 		</ul>
 		<p class="boutons">
-[(#GET{message_retour_export}|?{
-			<a href="./?exec=cfg&cfg=TiSpiP_Export">Retour</a>
-			,
 			<input type="submit" name="Valider" value="<:tispipskelet:sauvegarder:>" class="submit fondo" />
-})]
 		</p>
 	</form>
 </div>

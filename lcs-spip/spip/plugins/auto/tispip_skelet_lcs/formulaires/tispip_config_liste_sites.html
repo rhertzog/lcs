@@ -5,25 +5,61 @@
 #CACHE{0}
 [(#ENV{editable}|oui)
 <div class="formulaire_spip formulaire_cfg formulaire_tispip">
-	<form method="post" action="#SELF" style="margin-bottom:25px;">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
 		<div> #ACTION_FORMULAIRE{#SELF} 
+		[(#SET{choix_sitesrub,[(#CONFIG{tispipskelet_conf/[(#ENV{id})]/rubs_type_sites,liste})]})]
 			<fieldset>
 				<legend>Liste des sites de la rubrique</legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message">(#ENV*{message_ok})</p>]
 				<ul>
-					<li class="ligne">
-						<label>
-							<input type="checkbox" name="afflistsites" value="oui" id="afflistsites"[ checked="(#ENV{afflistsites}|?{checked})"] id="afflistsites" /> 
-							Afficher la liste des derniers sites r&eacute;f&eacute;renc&eacute;s de la rubrique en cours
-						</label>
+					<li class="ligne_280">
+						<label for="afflistsites">Afficher la liste des derniers sites r&eacute;f&eacute;renc&eacute;s de la rubrique en cours</label>
+						<input type="checkbox" name="afflistsites" id="afflistsites" value="oui"[ checked="(#ENV{afflistsites}|?{checked})"] />
+						<br />
 					</li>
-					<li id="cfglistsites">
-						<label for="nbsites">Nombre de sites &agrave; afficher : </label>
-						<select name="nbsites">
-							<option value=" "[(#ENV{nbsites}|?{'',selected="selected"})]> </option>
-							<option value="3"[(#ENV{nbsites}|=={3}|?{selected="selected",''})]> 3 </option>
-							<option value="5"[(#ENV{nbsites}|=={5}|?{selected="selected",''})]> 5 </option>
-							<option value="10"[(#ENV{nbsites}|=={10}|?{selected="selected",''})]> 10 </option>
+				</ul>
+				<ul id="cfglistsites">
+					<li class="ligne_280">
+						<label for="rubs_type_sites"><:tispipskelet:afficher_sites_rubrique:> en cours</label>
+						<select name="rubs_type_sites" id="rubs_type_sites"  class="fondl spip_xx-small" onchange="$('ul.rub_typesites').hide();$('ul#rubsites_'+this.value).show();">
+							<option value="liste" [(#GET{choix_sitesrub}|=={liste}|oui) selected='selected']><:tispipskelet:afficher_liste:></option>
+							<option value="portfolio" [(#GET{choix_sitesrub}|=={portfolio}|oui) selected='selected']><:tispipskelet:afficher_portfolio:></option>
 						</select>
+					</li>
+				</ul>
+				<ul class="rub_typesites" id="rubsites_liste" [(#GET{choix_sitesrub}|!={liste}|oui) style="display:none"] >
+					<li class="ligne_280">
+					<label for="type_liste_sites">Type de liste </label>
+						<select name="type_liste_sites" id="type_liste_sites" class="fondl spip_xx-small">
+							<option value="liste">Liste d&eacute;taill&eacute;e</option>
+							<option value="liste_simple" disabled="disabled">Liste simple</option>
+						</sselect>
+					</li>
+				</ul>
+				<ul class="rub_typesites" id="rubsites_portfolio" [(#GET{choix_sitesrub}|!={portfolio}|oui) style="display:none"]>
+							<li class="ligne_280">
+								<label for="type_prtfl_sites">Type de portfolio </label>
+								<select name="type_prtfl_sites" id="type_prtfl_sites" class="fondl spip_xx-small">
+									<option value="logo_thumbshot" [(#GET{type_prtfl_sitesrub}|=={logo_thumbshot}|oui) selected='selected']>Capture d'écran (thumbshot)</option> 
+									<option value="list_syndics" [(#GET{type_prtfl_sitesrub}|=={list_syndics}|oui) selected='selected']>Derniers articles</option> 
+									<option value="descriptif" [(#GET{type_prtfl_sitesrub}|=={descriptif}|oui) selected='selected'] disabled="disabled">Descriptif</option> 
+								</select>
+							</li>	
+							<li class="ligne_280">
+								<label for="nb_col_prtfl_sites">Nombre de colonnes : </label>
+								<select name="nb_col_prtfl_rubs" id="nb_col_prtfl_rubs" class="fondl spip_xx-small">
+									<option value="47" [(#GET{nbcol_prtfl_rubsrub}|=={47}|oui) selected='selected']>2</option> 
+									<option value="32" [(#GET{nbcol_prtfl_rubsrub}|=={32}|oui) selected='selected']>3</option> 
+									<option value="23" [(#GET{nbcol_prtfl_rubsrub}|=={23}|oui) selected='selected']>4</option> 
+									<option value="18.5" [(#GET{nbcol_prtfl_rubsrub}|=={18.5}|oui) selected='selected']>5</option> 
+								</select>
+							</li>	
+				</ul>
+				<ul>
+					<li class="ligne_280">
+						<label for="nbsites">Pagination : </label>
+						<input type="text" name="nbsites" size="3" maxlenght="2" class="fondl spip_xx-small" value="[(#ENV{nbsites,5})]" />
 					</li>
 				</ul>
 			</fieldset>
@@ -45,9 +81,9 @@
 			// --></script>
 			
 			<div style="text-align:center">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>

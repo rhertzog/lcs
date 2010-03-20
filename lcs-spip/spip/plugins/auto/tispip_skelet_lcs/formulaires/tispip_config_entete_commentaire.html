@@ -4,30 +4,30 @@
 <!-- casier=entete-->
 #CACHE{0}
 [(#ENV{editable}|oui)
-<div class="formulaire_spip formulaire_cfg">
-	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
-	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
-	
-	<form method="post" action="#SELF">
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
 		<div> #ACTION_FORMULAIRE{#SELF} 
 
 	<fieldset>
 		<legend>Image et commentaires &agrave; droite de l&rsquo;ent&ecirc;te</legend>
+		[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+		[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
 		<ul>
-			<li class="ligne">
-					<label class="titre"><input type="checkbox" name="afftextentete" value="oui" [checked="(#ENV{afftextentete}|?{checked})" ] id="afftextentete" /> Afficher un texte &agrave; droite de l&rsquo;ent&ecirc;te
-					</label>
-				</li>
+			<li class="ligne_280">
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=313&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="A droite de l'entête">&nbsp;</a>
+				<label class="titre" for="afftextentete">Afficher un texte &agrave; droite de l&rsquo;ent&ecirc;te</label>
+				<input type="checkbox" name="afftextentete" value="oui" [checked="(#ENV{afftextentete}|?{checked})" ] id="afftextentete" /> 
+			</li>
 		</ul>
 		<ul id="texte_entete" >
-			<li class="ligne">
-					<label>
-					<input type="radio" name="texte_entete" value="descriptif-site" [(#ENV{texte_entete}|=={descriptif-site}|?{checked="checked",''})] />Descriptif du site</label>
+			<li class="ligne_280">
+					<label for="texte_entetedescriptif-site">Descriptif du site</label>
+					<input type="radio" name="texte_entete" id="texte_entetedescriptif-site" value="descriptif-site" [(#ENV{texte_entete}|=={descriptif-site}|?{checked="checked",''})] />
 					<div class="descriptif">[(#DESCRIPTIF_SITE_SPIP|?{#DESCRIPTIF_SITE_SPIP,<:tispipskelet:info_descriptif:>})]</div>
 			</li>
-			<li class="ligne">
-					<label>
-					<input type="radio" name="texte_entete" value="textlibre" [(#ENV{texte_entete}|=={textlibre}|?{checked="checked",''})] />Texte libre</label><br class="leon" /><br />
+			<li class="ligne_280">
+					<label for="textlibre">Texte libre</label>
+					<input type="radio" name="texte_entete" id="textlibre" value="textlibre" [(#ENV{texte_entete}|=={textlibre}|?{checked="checked",''})] />
 			</li>
 			<li class="ligne_280">
 						<label for="color_texte_entete">Couleur du texte :</label>
@@ -35,38 +35,38 @@
 			</li>
 			<li class="ligne_280">
 					<label for="text_libre_entete" >Votre texte</label>
-					<textarea name="text_libre_entete" id="text_libre_entete"  rows="4" cols="40" style="width:100%;">[(#ENV{texte_entete}|=={textlibre}|?{#ENV{text_libre_entete}})]</textarea>
+					<textarea name="text_libre_entete" id="text_libre_entete"  rows="4" cols="30" style="width:210px;">[(#ENV{texte_entete}|=={textlibre}|?{#ENV{text_libre_entete}})]</textarea>
 			</li>
 		</ul>
 		<ul>
-			<li class="ligne">
-					<label class="titre"><input type="checkbox" name="affimg_entete" value="oui" [checked="(#ENV{affimg_entete}|?{checked})" ] id="affimg_entete" /> Afficher une image &agrave; droite de l&rsquo;ent&ecirc;te</label>
+			<li class="ligne_280">
+					<label class="titre"> Afficher une image &agrave; droite de l&rsquo;ent&ecirc;te</label>
+					<input type="checkbox" name="affimg_entete" value="oui" [checked="(#ENV{affimg_entete}|?{checked})" ] id="affimg_entete" />
 			</li>
 		</ul>
 		<ul id="cfgimg_entete">
-			<li>
-					<label>Charger l'&rsquo;image :
-					<input type="file" name="img_entete" value=" " size="30" /></label>
+			<li class="ligne_280">
+					<label>Charger l'&rsquo;image :</label>
+					<input type="file" name="img_entete" value=" " size="15" class="fondl spip_xx-small" />
 					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{img_entete})</span>]
 			</li>
 			[<li>Image actuelle : (#ENV{img_entete}|?{[(#CFG_CHEMIN{tispipskelet_conf/entete/img_entete}|image_reduire{100})],Aucune image})
 			</li>]
 		</ul>
 		<ul>
-			<li class="ligne">
-					<label class="titre"><input type="checkbox" name="affimg_entete_bg" value="oui" [checked="(#ENV{affimg_entete_bg}|?{checked})" ] id="affimg_entete_bg" /> Afficher une image d&rsquo;arri&egrave;re plan &agrave; droite de l&rsquo;ent&ecirc;te
-					</label>
-				</li>
-				<li id="cfgimg_entete_bg" class="labels_cfg_tispipskelet">
-					<label>Charger l'&rsquo;image :
-					<input type="file" name="img_entete_bg" value=" " size="30" /></label>
-					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{img_entete_bg})</span>]
-		
-					<h5>Image d&rsquo;arri&egrave;re plan actuelle</h5>
-					<dl>		
-						<dt>[(#ENV{img_entete_bg}|?{[(#CFG_CHEMIN{tispipskelet_conf/entete/img_entete_bg}|image_reduire{100})],Aucune image})]</dt>
-					</dl>
+			<li class="ligne_280">
+				<label class="titre">Afficher une image d&rsquo;arri&egrave;re plan &agrave; droite de l&rsquo;ent&ecirc;te</label>
+				<input type="checkbox" name="affimg_entete_bg" value="oui" [checked="(#ENV{affimg_entete_bg}|?{checked})" ] id="affimg_entete_bg" /> 				
 			</li>
+		</ul>
+		<ul id="cfgimg_entete_bg">
+			<li class="ligne_280 labels_cfg_tispipskelet">
+				<label>Charger l'&rsquo;image :</label>
+				<input type="file" name="img_entete_bg" value=" " size="15" class="fondl spip_xx-small" />
+				[<span class='erreur'>(#ENV**{erreurs}|table_valeur{img_entete_bg})</span>]
+			</li>
+			[<li>Image d&rsquo;arri&egrave;re plan actuelle : (#ENV{img_entete_bg}|?{[(#CFG_CHEMIN{tispipskelet_conf/entete/img_entete_bg}|image_reduire{100})],Aucune image})
+			</li>]
 		</ul>
 	</fieldset>
 <script type="text/javascript"><!--
@@ -102,10 +102,10 @@ $(document).ready(
 
 			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
 			
-			<div style="text-align:center;margin-bottom:25px;">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			<div style="text-align:center;">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>

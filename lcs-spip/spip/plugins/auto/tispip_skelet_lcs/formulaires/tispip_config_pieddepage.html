@@ -4,15 +4,15 @@
 #CACHE{0}
 [(#ENV{editable}|oui)
 <div class="formulaire_spip formulaire_cfg formulaire_tispip">
-	<form method="post" action="#SELF" style="margin-bottom:25px;">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
 		<div> #ACTION_FORMULAIRE{#SELF} 
-			[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
-			[<p class="formulaire_message">(#ENV*{message_ok})</p>]
 			<fieldset>
 				<legend><:tispipskelet:contenu_pied_de_page:></legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message">(#ENV*{message_ok})</p>]
 				<div class="annonce">Le pied de page contient au minimum la barre de navigation. Il est &agrave; diff&eacute;rencier du copyleft situé en bas de l&rsquo;&eacute;cran et non param&eacute;trable</div>
 				<ul>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=276&TB_iframe=true&width=700&height=500' class='thickbox boxy2thickbox' title="Aide : Contenu du pied de page">&nbsp;</a>
 						<label for="aff_desc_pdp">Afficher le descriptif du site sous la barre de navigation du pied de page</label>
 						<input type="checkbox" name="aff_desc_pdp" value="oui" id="aff_desc_pdp" [(#ENV{aff_desc_pdp}|oui)checked="checked"] />
@@ -22,30 +22,30 @@
 			<fieldset>
 				<legend><:tispipskelet:position_pied_de_page:></legend>
 				<ul>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=276&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Aide : Position et taille du pied de page">&nbsp;</a>
-						<label for="pied_ds_page_oui">Afficher le pied de page <strong>dans</strong> la page</label>
-						<input type="radio" name="pied_ds_page" value="oui" id="pied_ds_page_oui" [(#ENV{pied_ds_page}|oui)checked="checked"] />
-					<br />
-						<label for="pied_ds_page_non">Afficher le pied de page <strong>sous</strong> la page toujours en bas de l&rsquo;&eacute;cran</label>
-						<input type="radio" name="pied_ds_page" value="non" id="pied_ds_page_non" [(#ENV{pied_ds_page}|=={non}|oui)checked="checked"][(#ENV{pied_ds_page}|non)checked="checked"] />
+						<label for="pied_ds_page">Positions du pied de page</label>
+						<select name="pied_ds_page" id="pied_ds_page" class="fondl spip_xx-small" style="width:155px;">
+							<option value="oui" [(#ENV{pied_ds_page}|=={oui}|oui)selected="selected"]>Afficher DANS la page</option>
+							<option value="non" [(#ENV{pied_ds_page}|=={non}|oui)selected="selected"][(#ENV{pied_ds_page}|non)selected="selected"]>Afficher SOUS la page</option>
+						</select>
 					</li>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<label for="marge_lateral_pdp">Marges latérales du pied de page</label>
-						<input type="text" name="marge_lateral_pdp" id="marge_lateral_pdp" size="3" value="[(#ENV{marge_lateral_pdp,5})]" />
+						<input type="text" name="marge_lateral_pdp" id="marge_lateral_pdp" size="3" value="[(#ENV{marge_lateral_pdp,5})]" class="fondl spip_xx-small" />
 					</li>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<label for="marge_bas_pdp">Marge inf&eacute;rieure du menu de navigation de pied de page</label>
-						<input type="text" name="marge_bas_pdp" id="marge_bas_pdp" size="2" value="[(#ENV{marge_bas_pdp,10})]" />
+						<input type="text" name="marge_bas_pdp" id="marge_bas_pdp" size="3" value="[(#ENV{marge_bas_pdp,10})]" class="fondl spip_xx-small" />
 					</li>
 				</ul>
 			</fieldset>
 		 		
 			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
 			<div style="text-align:center">
-				<input type="submit" name="_cfg_ok" class="fondo" value="<:cfg:OK:>" />
-				<input type="reset" class="fondo" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" class="fondo" value="<:Supprimer:>" />
+				<input type="submit" name="_cfg_ok" class="fondo spip_xx-small" value="<:cfg:OK:>" />
+				<input type="reset" class="fondo spip_xx-small" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" class="fondo spip_xx-small" value="<:Supprimer:>" />
 			</div>
 		</div>
 	</form>

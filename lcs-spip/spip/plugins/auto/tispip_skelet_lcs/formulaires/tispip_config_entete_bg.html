@@ -4,132 +4,51 @@
 <!-- casier=entete-->
 #CACHE{0}
 [(#ENV{editable}|oui)
-<div class="formulaire_spip formulaire_cfg">
-	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
-	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
-	
-	<form method="post" action="#SELF">
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
 		<div> #ACTION_FORMULAIRE{#SELF} 
 			<fieldset>
-				<legend>Arri&egrave;re plan</legend>
-					<ul>
-						<li class=ligne_280>
-							<label for="couleur_entete">Couleur d&rsquo;arrière-plan :</label>
-								<input type="text" name="couleur_entete" id="couleur_entete" class="palette" size="7" value="[(#ENV{couleur_entete,#ffffff})]" />
-							</li>
-						<li class="ligne">
-								<a href='[(#CHEMIN{fonds/inc/aide/inc-help.html})]' class='boxy' title='Aide : Arri&egrave;re plan'>?</a>
-								<label class="titre"><input type="checkbox" name="affgradient_entete" value="oui" [checked="(#ENV{affgradient_entete}|?{checked})"] id="affgradient_entete" /> Afficher d&eacute;grad&eacute; de couleurs
-								</label>
-						</li>
-					</ul>
-					[(#CONFIG{tispipskelet_conf/entete/affgradient_entete}|oui)		
-					<ul id="cfggradient_entete">
-						<li class=ligne_280>
-							<label for="gradientstart_entete">Couleur de d&eacute;pard :</label>
-								<input type="text" name="gradientstart_entete" id="gradientstart_entete" class="palette" size="7" value="[(#ENV{gradientstart_entete}|?{#ENV{gradientstart_entete},#ffffff})]" />
-							</li>
-							<li class=ligne_280>
-							<label for="gradientend_entete">Couleur d&rsquo;arriv&eacute;e :</label>
-								<input type="text" name="gradientend_entete" id="gradientend_entete"  class="palette" size="7"  value="[(#ENV{gradientend_entete}|?{#ENV{gradientend_entete},#000000})]" />
-							</li>
-						<li class="ligne">
-							<span style="font-style=underscore">Orientation du d&eacute;grad&eacute; </span>
-							<ul>
-								<li class="demi">
-									<label>
-									<input type="radio" name="dirgradient_entete" value="vertical" id="posV" [(#ENV{dirgradient_entete}|=={vertical}|?{checked="checked",''})] />Horizontal</label>
-								</li>
-								<li class="demi">
-									<label>
-									<input type="radio" name="dirgradient_entete" value="horizontal" id="posH" [(#ENV{dirgradient_entete}|=={horizontal}|?{checked="checked",''})] />Vertical</label>
-								</li>
-							</ul>
-						</li>
-						<li class="ligne">
-								<span style="font-style=underscore">Position du d&eacute;grad&eacute; </span><br />
-							<ul>
-								<li class="demi">
-									<label>
-									<input type="radio" name="posgradient_entete" value="left" class="noPosH" [(#ENV{posgradient_entete}|=={left}|?{checked="checked",''})] />&Agrave; gauche</label>
-								</li>
-								<li class="demi">
-									<label>
-									<input type="radio" name="posgradient_entete" value="right" class="noPosH" [(#ENV{posgradient_entete}|=={right}|?{checked="checked",''})] />&Agrave; droite</label>
-								</li>
-								<li class="demi">
-									<label>
-									<input type="radio" name="posgradient_entete" value="top" class="noPosV" [(#ENV{posgradient_entete}|=={top}|?{checked="checked",''})] />En haut</label>
-								</li>
-								<li class="demi">
-									<label>
-									<input type="radio" name="posgradient_entete" value="bottom" class="noPosV" [(#ENV{posgradient_entete}|=={bottom}|?{checked="checked",''})] />En bas</label>
-								</li>
-							</ul>
-						</li>
-						<li class="ligne">
-							<label>Longueur du d&eacute;grad&eacute;(en pixels)
-							<input type="text" name="gradientlenght_entete" size="4" value="[(#ENV{gradientlenght_entete}|?{#ENV{gradientlenght_entete},''})]" /></label>
-						</li>
-					</ul>
-					]
-			<script type="text/javascript"><!--
-				$('#posH')
-					.bind('change', function() {
-					var on = $(this).is(':checked');
-					$('.noPosH').attr('disabled', on ? 'disabled' : '');
-					$('.noPosV').removeAttr('disabled');
-				})
-				$('#posV')
-					.bind('change', function() {
-					var on = $(this).is(':checked');
-					$('.noPosV').attr('disabled', on ? 'disabled' : '');
-					$('.noPosH').removeAttr('disabled');
-				})	
-				$(function() {
-					var onV = $('#posV').is(':checked');
-					$('.noPosV').attr('disabled', onV ? 'disabled' : '');
-					var onH = $('#posH').is(':checked');
-					$('.noPosH').attr('disabled', onH ? 'disabled' : '');
-				});
-			// --></script>
-					<ul>
-						<li class="ligne">
-								<label class="titre"><input type="checkbox" name="affimgbg_entete" value="oui" [checked="(#ENV{affimgbg_entete}|?{checked})"] id="affimgbg_entete" /> Afficher une image d&rsquo;arri&egrave;re plan
-								</label>
-						</li>
-					</ul>
-					<ul id="imgbg_entete">
-						<li class="ligne_240">
+				<legend>Image d&rsquo;arri&egrave;re plan de l'ent&ecirc;te</legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
+				<ul>
+					<li class="ligne_280">
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=293&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Image d&rsquo;arri&egrave;re plan de l'ent&ecirc;te">&nbsp;</a>
+						<label class="titre"> Afficher une image d&rsquo;arri&egrave;re plan</label>
+						<input type="checkbox" name="affimgbg_entete" value="oui" [checked="(#ENV{affimgbg_entete}|?{checked})"] id="affimgbg_entete" />
+					</li>
+				</ul>
+				<ul id="imgbg_entete">
+						<li class="ligne_280">
 								<label for="logo_entete">Charger l'&rsquo;image d&rsquo;arri&egrave;re plan :</label>
-								<input type="file" name="logo_entete" id="logo_entete" value=" " size="15" />
+								<input type="file" name="logo_entete" id="logo_entete" value=" " size="15" class="fondo spip_xx-small" />
 								[<span class='erreur'>(#ENV**{erreurs}|table_valeur{logo_entete})</span>]
 					
 						</li>
 						[<li class="ligne">
 							Image actuelle : (#ENV{logo_entete}|?{[(#CFG_CHEMIN{tispipskelet_conf/entete/logo_entete}|image_reduire{100})],Aucune image})
 						</li>]
-						<li class="ligne_240">
+						<li class="ligne_280">
 								<label for="logo_entete_repeat">R&eacute;p&eacute;tition de l&rsquo;image : </label>
-								<select name="logo_entete_repeat" id="logo_entete_repeat" style="width:120px">
+								<select name="logo_entete_repeat" id="logo_entete_repeat" style="width:120px" class="fondl spip_xx-small">
 									<option value=""[(#ENV{logo_entete_repeat}|?{selected="selected",''})]>  </option>
 									<option value="no-repeat"[(#ENV{logo_entete_repeat}|=={no-repeat}|?{selected="selected",''})]> Pas de r&eacute;p&eacute;tition </option>
 									<option value="repeat-x"[(#ENV{logo_entete_repeat}|=={repeat-x}|?{selected="selected",''})]> R&eacute;p&eacute;tition horizontale</option>
 									<option value="repeat-y"[(#ENV{logo_entete_repeat}|=={repeat-y}|?{selected="selected",''})]> R&eacute;p&eacute;tition verticale </option>
 								</select>
 						</li>
-						<li class="ligne_240">
+						<li class="ligne_280">
 								<label for="logo_entete_pos_h">Position horizontale de l&rsquo;image : </label>
-								<select name="logo_entete_pos_h" id="logo_entete_pos_h" style="width:120px">
+								<select name="logo_entete_pos_h" id="logo_entete_pos_h" style="width:120px" class="fondl spip_xx-small">
 									<option value=""[(#ENV{logo_entete_pos_h}|?{selected="selected",''})]>  </option>
 									<option value="left"[(#ENV{logo_entete_pos_h}|=={left}|?{selected="selected",''})]> A gauche </option>
 									<option value="center"[(#ENV{logo_entete_pos_h}|=={center}|?{selected="selected",''})]> Au centre </option>
 									<option value="right"[(#ENV{logo_entete_pos_h}|=={right}|?{selected="selected",''})]> A droite </option>
 								</select>
 						</li>
-						<li class="ligne_240">
+						<li class="ligne_280">
 								<label for="logo_entete_pos_v">Position verticale de l&rsquo;image : </label>
-								<select name="logo_entete_pos_v" id="logo_entete_pos_v" style="width:120px">
+								<select name="logo_entete_pos_v" id="logo_entete_pos_v" style="width:120px" class="fondl spip_xx-small">
 									<option value=""[(#ENV{logo_entete_pos_v}|?{selected="selected",''})]>  </option>
 									<option value="top"[(#ENV{logo_entete_pos_v}|=={top}|?{selected="selected",''})]> En haut </option>
 									<option value="center"[(#ENV{logo_entete_pos_v}|=={center}|?{selected="selected",''})]> Au centre </option>
@@ -152,21 +71,14 @@
 				})
 				if ($('#affgradient_entete:checked').length == 0)
 					$('#cfggradient_entete').hide();
-					
-				$('#affdegrade_entete')
-				.bind('change', function() {
-			            $('#cfgdegrade_entete').slideToggle('slow');
-				})
-				if ($('#affdegrade_entete:checked').length == 0)
-					$('#cfgdegrade_entete').hide();
 			// --></script>
 			
 			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
 			
-			<div style="text-align:center;margin-bottom:25px;">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			<div style="text-align:center;">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>

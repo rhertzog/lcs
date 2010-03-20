@@ -1,0 +1,39 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend><:tispipskelet:Divers:></legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+		
+				<ul>
+					<li class="ligne_280">
+			<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=312&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Bugs d'affichage sous MSIE">&nbsp;</a>
+						<label>
+							<input type="checkbox" name="aff_nifty" class="affCheckbox" id="aff_nifty" value="non" [(#ENV{aff_nifty}|?{checked="checked"}) ]/>
+							<:tispipskelet:validation_ie:> 
+						</label>
+					</li>
+				</ul>
+			</fieldset>
+		 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" class="fondo spip_xx-small" value="<:cfg:OK:>" />
+				<input type="reset" class="fondo spip_xx-small" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" class="fondo spip_xx-small" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

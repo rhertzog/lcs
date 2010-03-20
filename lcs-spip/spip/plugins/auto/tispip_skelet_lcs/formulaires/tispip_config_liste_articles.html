@@ -4,41 +4,36 @@
 #CACHE{0}
 [(#ENV{editable}|oui)
 <div class="formulaire_spip formulaire_cfg">
-	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
-	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
 	
-	<form method="post" action="#SELF">
-		<div style="margin-bottom:25px;"> #ACTION_FORMULAIRE{#SELF} 
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
 			<fieldset>
 				<legend><:tispipskelet:derniers_articles:></legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message">(#ENV*{message_ok})</p>]
 				<ul>
-					<li class="ligne">
-						<a href='[(#CHEMIN{fonds/inc/aide/inc-help.html})]' class='boxy' title='Aide : Afficher la liste des derniers articles'>?</a>
-						<label><input type="checkbox" name="afflistart"  id="afflistart" value="oui" [(#CONFIG{tispipskelet_conf/[(#ENV{id})/]afflistart}|?{checked="checked"}) ]/> <:tispipskelet:afficher_liste_articles:>
-						</label>
+					<li class="ligne_280">
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=309&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Liste des derniers articles">&nbsp;</a>
+						<label for="afflistart"><:tispipskelet:afficher_liste_articles:></label>
+						<input type="checkbox" name="afflistart" id="afflistart" value="oui" [(#CONFIG{tispipskelet_conf/[(#ENV{id})/]afflistart}|?{checked="checked"}) ]/> 
 					</li>
 				</ul>`
 				<ul id="cfg_listart">
 				<li class="ligne_280">
 					<label for="titre_listarticles">Titre de la liste d'articles</label>
-					<input type="text" name="titre_listarticles" id="titre_listarticles"  value="[(#CONFIG{tispipskelet_conf/[(#ENV{id})/]titre_listarticles})]"  size="20" />
+					<input type="text" name="titre_listarticles" id="titre_listarticles"  value="[(#CONFIG{tispipskelet_conf/[(#ENV{id})/]titre_listarticles})]"  size="20" class="forml spip_xx-small" />
 				</li>
 					<li class="ligne_280">
-						<label for="nbarticles" style="margin-left:-235px;width:235px;">Nombre d&apos;articles &agrave; afficher : </label>
-						<select name="nbarticles" id="nbarticles" style="width:50px">
-							<option value=""[ (#CONFIG{tispipskelet_conf/[(#ENV{id})/]nbarticles}|?{selected="selected",''})]>  </option>
-							<option value="3"[ (#CONFIG{tispipskelet_conf/[(#ENV{id})/]nbarticles}|=={3}|?{selected="selected",''})]> 3 </option>
-							<option value="5"[ (#CONFIG{tispipskelet_conf/[(#ENV{id})/]nbarticles}|=={5}|?{selected="selected",''})]> 5 </option>
-							<option value="10"[ (#CONFIG{tispipskelet_conf/[(#ENV{id})/]nbarticles}|=={10}|?{selected="selected",''})]> 10 </option>
-						</select>
+						<label for="nbarticles">Nombre d&apos;articles &agrave; afficher : </label>
+						<INCLURE{fond=fonds/inc/inc-select_2n_jusk_n}{debut=1}{fin=10}{optionName=nbarticles}{env}>
 					</li>
 					<li class="ligne_280">
-						<label><input type="checkbox" name="datepublistarticles" value="non" [checked="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]datepublistarticles}|?{checked})"] /><:tispipskelet:afficher_date_publication_non:>
-						</label>
+						<label id="datepublistarticles"><:tispipskelet:afficher_date_publication_non:></label>
+						<input type="checkbox" name="datepublistarticles" id="datepublistarticles" value="non" [checked="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]datepublistarticles}|?{checked})"] />
 					</li>
 					<li class="ligne_280">
-						<label><input type="checkbox" name="auteurlistarticles" value="non" [checked="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]auteurlistarticles}|?{checked})"] /><:tispipskelet:afficher_auteur_non:>
-						</label>
+						<label for="auteurlistarticles"><:tispipskelet:afficher_auteur_non:></label>
+						<input type="checkbox" name="auteurlistarticles" id="auteurlistarticles" value="non" [checked="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]auteurlistarticles}|?{checked})"] />
 					</li>
 				</ul>
 			</fieldset>
@@ -57,9 +52,9 @@
 
 			
 			<div style="text-align:center">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>

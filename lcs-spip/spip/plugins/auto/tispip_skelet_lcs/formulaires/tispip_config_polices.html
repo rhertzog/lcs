@@ -3,19 +3,19 @@
 <!-- nom=tispipskelet_conf-->
 #CACHE{0}
 [(#ENV{editable}|oui)
-<div class="formulaire_spip formulaire_cfg">
-	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
-	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
 	
-	<form method="post" action="#SELF">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
 		<div> #ACTION_FORMULAIRE{#SELF} 
 			<fieldset>
 				<legend><:tispipskelet:police:></legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
 				<ul>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=275&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title='Aide : Police de caract&egrave;res'>&nbsp;</a>
 						<label for="police"><:tispipskelet:selectionner_police:></label>
-						<select name="police" style="width:150px" id="police" class="fondo">
+						<select name="police" style="width:150px" id="police" class="fondl spip_xx-small">
 								<option value=""[ (#ENV{police}|?{'',selected="selected"})]>  </option>
 								<option value="Arial"[ (#ENV{police}|=={Arial}|?{selected="selected",''})]> Arial </option>
 								<option value="Century Gothic"[ (#ENV{police}|=={Century Gothic}|?{selected="selected",''})]> Century Gothic </option>
@@ -34,7 +34,7 @@
 
 			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
 			
-			<div style="text-align:center;margin-bottom:15px;">
+			<div style="text-align:center;">
 				<input type="submit" name="_cfg_ok" class="fondo" value="<:cfg:OK:>" />
 				<input type="reset" class="fondo" value="<:cfg:Reset:>" />
 				<input type="submit" class="fondo" name="_cfg_delete" value="<:Supprimer:>" />
@@ -43,8 +43,7 @@
 	</form>
 </div>
 
-]
-
-[(#ENV{editable}|non)
+][
+(#ENV{editable}|non)
 Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
 ]

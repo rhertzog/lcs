@@ -1,15 +1,15 @@
-<BOUCLE_test_for(FOR){debut=1}{fin=10}{par 1}>
+<BOUCLE_liens_menu(POUR){tableau 1:10}>
 	[(#SET{un_lien, [(#CONFIG{tispipskelet_conf/url_lien_menu[_(#COMPTEUR_BOUCLE)]})]})]
 	[(#COMPTEUR_BOUCLE|=={1}|oui)
 		[(#SET{bloc, menu[_(#COMPTEUR_BOUCLE)]})]
 		[(#SET{titre, Rang#COMPTEUR_BOUCLE})]
-			<li class="ligne_240">
-						<label for="nom_lien_menu_#COMPTEUR_BOUCLE">Texte du lien</label>
-							<input type="text" name="nom_lien_menu_#COMPTEUR_BOUCLE" id="nom_lien_menu_#COMPTEUR_BOUCLE" size="20" value="[(#ENV{nom_lien_menu_#COMPTEUR_BOUCLE})]" />
+			<li class="ligne_280">
+				<label for="nom_lien_menu_#COMPTEUR_BOUCLE">Afficher un lien perso<em class="droite">Titre du lien :&nbsp;</em></label>
+				<input type="text" name="nom_lien_menu_#COMPTEUR_BOUCLE" id="nom_lien_menu_#COMPTEUR_BOUCLE" size="20" value="[(#ENV{nom_lien_menu_#COMPTEUR_BOUCLE})]" class="fondl spip_xx-small" onfocus="$('#li_lien_menu_#COMPTEUR_BOUCLE').show();" onblur="this.value==''?$('#li_lien_menu_#COMPTEUR_BOUCLE').hide():'';" />
 			</li>
-			<li class="ligne_240">
-						<label for="url_lien_menu_#COMPTEUR_BOUCLE">Url du lien</label>
-							<input type="text" name="url_lien_menu_#COMPTEUR_BOUCLE" id="url_lien_menu_#COMPTEUR_BOUCLE" size="20" value="[(#ENV{url_lien_menu_#COMPTEUR_BOUCLE})]" />
+			<li class="ligne_280" style="[(#ENV{nom_lien_menu_#COMPTEUR_BOUCLE}|non)display:none;]border-top:0;border-bottom:1px solid #e3e3ef;" id="li_lien_menu_#COMPTEUR_BOUCLE">
+				<label for="url_lien_menu_#COMPTEUR_BOUCLE"><em class="droite">Url du lien :&nbsp;</em></label>
+				<input type="text" name="url_lien_menu_#COMPTEUR_BOUCLE" id="url_lien_menu_#COMPTEUR_BOUCLE" size="20" value="[(#ENV{url_lien_menu_#COMPTEUR_BOUCLE})]" class="fondl spip_xx-small" />
 			</li>
 	]
 	
@@ -18,13 +18,13 @@
 [(#GET{un_lien}|oui)
 	[(#SET{rang, menu_[(#EVAL{1+#COMPTEUR_BOUCLE})]})]
 	[(#SET{titre, Rang[(#EVAL{1+#COMPTEUR_BOUCLE})]})]
-			<li class="ligne_240">
-						<label for="nom_lien_menu_#COMPTEUR_BOUCLE">Texte du lien</label>
-							<input type="text" name="nom_lien_menu_#GET{rang}" id="nom_lien_menu_#GET{rang}" size="20" value="[(#ENV{nom_lien_menu_#GET{rang}})]" />
+			<li class="ligne_280">
+				<label for="nom_lien_#GET{rang}">Texte du lien</label>
+				<input type="text" name="nom_lien_#GET{rang}" id="nom_lien_#GET{rang}" size="20" value="[(#ENV{nom_lien_#GET{rang}})]" class="fondl spip_xx-small" onfocus="$('#li_lien_#GET{rang}').show();" onblur="this.value==''?$('#li_lien_#GET{rang}').hide():'';" />
 			</li>
-			<li class="ligne_240">
-						<label for="url_lien_menu_#COMPTEUR_BOUCLE">Url du lien</label>
-							<input type="text" name="url_lien_menu_#GET{rang}" id="url_lien_menu_#GET{rang}" size="20" value="[(#ENV{url_lien_menu_#GET{rang}})]" />
+			<li class="ligne_280" style="[(#ENV{nom_lien_#GET{rang}}|non)display:none;]" id="li_lien_#GET{rang}">
+				<label for="url_lien_#GET{rang}">Url du lien</label>
+				<input type="text" name="url_lien_#GET{rang}" id="url_lien_#GET{rang}" size="20" value="[(#ENV{url_lien_#GET{rang}})]" class="fondl spip_xx-small" />
 			</li>
 ]
-</BOUCLE_test_for>
+</BOUCLE_liens_menu>

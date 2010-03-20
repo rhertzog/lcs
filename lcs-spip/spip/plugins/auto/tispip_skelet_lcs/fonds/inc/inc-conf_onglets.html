@@ -20,7 +20,7 @@
 				<li class="tiers" style="font-size:.8em">Validez le plugin "Agenda" pour afficher l'onglet "Evénements"</li>
 		})]
 				<li class="tiers">
-						<label><input type="checkbox" name="[(#CONFIG{plugin}|match{REC_MC}|?{form_recherche,recherche})]" value="oui" [checked="(#ENV{recherche}|?{checked})" ]/>[(#CONFIG{plugin}|match{REC_MC}|?{Onglet, Formulaire}) ]<strong>Recherche</strong>
+						<label><input type="checkbox" name="recherche" value="oui" [checked="(#ENV{recherche}|?{checked})" ]/>Formulaire<strong>Recherche</strong>
 						</label>
 				</li>
 				<li class="tiers" style="width:32%;">
@@ -28,9 +28,11 @@
 						</label>
 				</li>
 				<li class="tiers" style="width:49%;clear:both;">
+				[(#CONFIG{plugin}|match{REC_MC}|?{' '})
+						<label><input type="checkbox" name="form_recherche" value="oui" [checked="(#ENV{form_recherche}|?{checked})" ]/>Onglet <strong>Recherche avanc&eacute;</strong>]
+				</li>
 						<label><input type="checkbox" name="plan_freemind" value="oui" [checked="(#ENV{plan_freemind}|?{checked})" ]/> Onglet <strong> Plan Freemind </strong>
 						</label>
-				</li>
 				<li class="tiers" style="width:50%;">
 				</li>
 			[(#REM) a terminer doit ouvrir un div avec liste des rubriques si value=oui]

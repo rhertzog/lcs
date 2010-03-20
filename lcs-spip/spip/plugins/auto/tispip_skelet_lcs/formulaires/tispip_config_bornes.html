@@ -15,19 +15,19 @@
 			<li class="ligne_240">
 							<label for="borne_effect"><:tispipskelet:cycle_transition:>Nature de la transition</label>
 							<select name="borne_effect">
-								[(#INCLURE{fond=cycle-effet}{val_actuel=#ENV{borne_effect}})]
+								[(#INCLURE{fond=fonds/inc/inc-cycle-effet}{val_actuel=#ENV{borne_effect}})]
 							</select>
 			</li>
 			<li class="ligne_240">
 							<label for="borne_duree">Durée d&rsquo;affichage<em>(en milisecondes)</em></label>
 							<select name="borne_duree">
-								[(#INCLURE{fond=cycle-duree}{val_actuel=#ENV{borne_duree}})]
+								[(#INCLURE{fond=fonds/inc/inc-cycle-duree}{val_actuel=#ENV{borne_duree}})]
 							</select>
 			</li>
 			<li class="ligne_240">
 							<label for="borne_time">Durée de la transition<em>(en milisecondes)</em></label>
 							<select name="borne_time">
-								[(#INCLURE{fond=cycle-transition}{val_actuel=#ENV{borne_time}})]
+								[(#INCLURE{fond=fonds/inc/inc-cycle-transition}{val_actuel=#ENV{borne_time}})]
 							</select>
 			</li>
 			<li class="ligne_240">

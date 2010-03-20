@@ -1,17 +1,17 @@
 		[(#ENV{rang}|=={1}|oui) #SET{nomrang,er}]
 		[(#ENV{rang}|=={2}|oui) #SET{nomrang,nd}]
 		<ul>
-			<li class="ligne_200">
+			<li class="ligne_280">
 					<label for="taille_titre">Nom du #ENV{rang} #GET{nomrang, &egrave;me} partenaire : </label>
-					<input type="text" name="partenr_#ENV{rang}" size="20" value="[(#CONFIG{tispipskelet_conf/credits/partenr_#ENV{rang}}|?{[(#CONFIG{tispipskelet_conf/credits/partenr_[(#ENV{rang})]})],''})]" />
+					<input type="text" name="partenr_#ENV{rang}" size="20" value="[(#CONFIG{tispipskelet_conf/credits/partenr_#ENV{rang}}|?{[(#CONFIG{tispipskelet_conf/credits/partenr_[(#ENV{rang})]})],''})]" class="fondl spip_xx-small" />
 				</li>
-				<li class="ligne_200">
+				<li class="ligne_280">
 					<label for="taille_titre">Site web : </label>
-					<input type="text" name="web_partenr_#ENV{rang}" size="20" value="[(#CONFIG{tispipskelet_conf/credits/web_partenr_#ENV{rang}}|?{#CONFIG{tispipskelet_conf/credits/web_partenr_#ENV{rang}},''})]" />
+					<input type="text" name="web_partenr_#ENV{rang}" size="20" value="[(#CONFIG{tispipskelet_conf/credits/web_partenr_#ENV{rang}}|?{#CONFIG{tispipskelet_conf/credits/web_partenr_#ENV{rang}},''})]" class="fondl spip_xx-small" />
 				</li>
-				<li class="ligne_200">
+				<li class="ligne_280">
 					<label for="logo_partenr_#ENV{rang}" class="com">Charger le logo :</label>
-					<input type="file" name="logo_partenr_#ENV{rang}" id="logo_partenr_#ENV{rang}" value="" size="20" style="width:45px" />
+					<input type="file" name="logo_partenr_#ENV{rang}" id="logo_partenr_#ENV{rang}" value="" size="20" style="width:45px" class="fondl spip_xx-small" />
 					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{logo_partenr_#ENV{rang}})</span>]
 				</li>
 

@@ -2,18 +2,14 @@
 [(#ENV{type_menu}|=={menu-dom}|oui)[(#SET{icones,oui})][(#SET{lien_accueil,oui})][(#SET{mots,oui})][(#SET{lienperso,oui})]	]		
 [(#ENV{type_menu}|=={menu-spip}|oui)[(#SET{logo,oui})][(#SET{lien_accueil,oui})]	]						
 [(#ENV{type_menu}|=={menu-deroul_v}|oui)[(#SET{deroul_gauche,oui})][(#SET{lien_accueil,oui})]]						
-					<ul>
-						<li class="ligne_240" >
-							<label for="titre_menu">
-								Titre du menu
-							</label>
-								<input type="text" name="titre_menu" id="titre_menu" maxlength="50" value="[(#ENV{titre_menu}|?{[(#ENV{titre_menu})]})]"  />
+					<ul style="padding-left: 0px;">
+						<li class="ligne_280" >
+							<label for="titre_menu">Titre du menu</label>
+							<input type="text" name="titre_menu" id="titre_menu" maxlength="50" value="[(#ENV{titre_menu}|?{[(#ENV{titre_menu})]})]" class="fondl spip_xx-small" />
 						</li>
 [(#GET{icones}|oui)		
 						<li class="ligne" >
-							<label for="folder">
-								Choix des bouttons
-							</label>
+							<label for="folder">Choix des bouttons</label>
 						</li>
 						<li class="ligne" style="width:75px;clear:none;float:left;">
 							<label style="width:88px">
@@ -51,47 +47,51 @@
 							</label>
 						</li>
 ]
-
+						<li class="ligne_280" >
+							<label for="taille_police_menu">Taille de police<em>(en pixels)</em></label>
+							<input type="text" name="taille_police_menu" id="taille_police_menu" maxlength="2" size="2" value="[(#ENV{taille_police_menu})]" class="fondl spip_xx-small" />
+						</li>
+						<li class="ligne_280">
+							<label for="strong_menu_dom"><:tispipskelet:texte_gras:></label>
+								<input type="checkbox" name="strong_menu_dom" id="strong_menu_dom" value="oui" [(#CONFIG{tispipskelet_conf/strong_menu_dom}|=={oui}|?{checked="checked",''})] id="strong_menu_dom" />
+						</li>
 [(#GET{affarticles}|oui)		
-						<li class="ligne">
-							<label>
-								<input type="checkbox" name="aff_articles_menu" value="oui" [(#ENV{aff_articles_menu}|=={oui}|?{checked="checked",''})] id="aff_articles_menu" />
-								Afficher les articles.
-							</label>
+						<li class="ligne_280">
+							<label for="aff_articles_menu">Afficher les articles.</label>
+								<input type="checkbox" name="aff_articles_menu" id="aff_articles_menu" value="oui" [(#ENV{aff_articles_menu}|=={oui}|?{checked="checked",''})] id="aff_articles_menu" />
 						</li>
 ]
 [(#GET{logo}|oui)		
-						<li class="ligne">
-							<label>
+						<li class="ligne_280">
+							<label for="icon_menu"><:tispipskelet:afficher_icones:></label>
 								<input type="checkbox" name="icon_menu" value="oui" [(#ENV{icon_menu}|=={oui}|?{checked="checked",''})] id="icon_menu" />
-								<:tispipskelet:afficher_icones:>
-							</label>
 						</li>
 ]
 [(#ENV{type_menu}|=={menu-dep}|oui)					
-						<li class="ligne">
-							<label>
-								<input type="checkbox" name="icon_menu_dep" value="oui" [(#CONFIG{tispipskelet_conf/icon_menu_dep}|=={oui}|?{checked="checked",''})] id="icon_menu-dep" /><:tispipskelet:afficher_icones:>
-								</label>
+						<li class="ligne_280">
+							<label for="icon_menu_dep"><:tispipskelet:afficher_icones:></label>
+								<input type="checkbox" name="icon_menu_dep" value="oui" [(#CONFIG{tispipskelet_conf/icon_menu_dep}|=={oui}|?{checked="checked",''})] id="icon_menu-dep" />
 							[(#CONFIG{plugin}|match{MENUDEP}|?{'',' '})
 								<div style="text-align:center;color:#f00;font-size:10px;font-style:italic"><:tispipskelet:help_choix_menu_dep_off:></div>
 							]
 						</li>
 ]
 [(#GET{deroul_gauche}|oui)		
-						<li class="ligne">
-							<label>
+						<li class="ligne_280">
+							<label for="menu_dv_gauche"><:tispipskelet:menu_deroul_gauche:></label>
 								<input type="checkbox" name="menu_dv_gauche" value="oui" [(#CONFIG{tispipskelet_conf/menu_dv_gauche}|=={oui}|?{checked="checked",''})] id="menu_dv_gauche" />
-								<:tispipskelet:menu_deroul_gauche:>
-								</label>
 						</li>
 ]
 [(#GET{lien_accueil}|oui)
-						<li class="ligne">
-							<label>
-								<input type="checkbox" name="lien_accueil_menu" value="oui"  [(#CONFIG{tispipskelet_conf/lien_accueil_menu}|=={oui}|?{checked="checked",''})] id="lien_accueil_menu" />
-								<:tispipskelet:afficher_lien_accueil:>
-							</label>
+						<li class="ligne_280">
+							<label for="lien_accueil_menu"><:tispipskelet:afficher_lien_accueil:></label>
+								<input type="checkbox" name="lien_accueil_menu"  value="oui"  [(#CONFIG{tispipskelet_conf/lien_accueil_menu}|=={oui}|?{checked="checked",''})] id="lien_accueil_menu" />
+						</li>
+]
+[(#ENV{type_menu}|=={menu-dom}|oui)
+						<li class="ligne_280">
+							<label for="no_rubs_menu_v"><:tispipskelet:afficher_rubriques_non:></label>
+								<input type="checkbox" name="no_rubs_menu_v" id="no_rubs_menu_v" value="oui"  [(#CONFIG{tispipskelet_conf/no_rubs_menu_v}|=={oui}|?{checked="checked",''})]  />
 						</li>
 ]
 [(#GET{mots}|oui)
@@ -100,10 +100,5 @@
 [(#GET{lienperso}|oui)
 							<INCLURE{fond=fonds/inc/inc-conf_menu_v_liens}{env}{ajax}>
 ]
-						<li class="ligne">
-							<label>
-								<input type="checkbox" name="strong_menu_dom" value="oui" [(#CONFIG{tispipskelet_conf/strong_menu_dom}|=={oui}|?{checked="checked",''})] id="strong_menu_dom" /><:tispipskelet:texte_gras:>
-							</label>
-						</li>
 
 					</ul>

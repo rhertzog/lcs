@@ -5,7 +5,7 @@
 #CACHE{0}
 [(#ENV{editable}|oui)
 <div class="formulaire_spip formulaire_cfg formulaire_tispip">
-	<form method="post" action="#SELF" style="margin-bottom:25px;">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
 		<div> #ACTION_FORMULAIRE{#SELF} 
 			<fieldset>
 				<legend><:tispipskelet:animation_accueil:></legend>
@@ -18,18 +18,18 @@
 		
 				<ul id="anim_accueil">
 					<li class="ligne">
-								<a href='http://tispip-mutual.etab.ac-caen.fr/spip.php?page=aide&id_article=18&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Animation Flash en page d'accueil">?</a>
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=293&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Animation Flash en page d'accueil">&nbsp;</a>
 						<label>
-							<input type="checkbox" name="affanim"  class="affCheckbox" value="oui" [checked="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]affanim}|?{checked})"] id="affanim" /> Afficher une animation en page d&rsquo;accueil
+							<input type="checkbox" name="affanim"  class="affCheckbox" value="oui" [checked="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]affanim}|?{checked})"] id="affanim" class="fondl spip_xx-small" /> Afficher une animation en page d&rsquo;accueil
 						</label>
 						<ul id="conf_anim" style="clear:both">
 							<li class="ligne_240">
 								<label for="anim_accueil"><:tispipskelet:animation_id:> :</label>
-								<input type="text" name="anim_accueil"[ value="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]anim_accueil})"] size="4" id="anim_accueil"  />
+								<input type="text" name="anim_accueil"[ value="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]anim_accueil})"] size="4" id="anim_accueil"  class="fondl spip_xx-small" />
 							</li>
 							<li class="ligne_240">
 								<label for="larg_anim_accueil"><:tispipskelet:animation_largeur:> :</label>
-								<input type="text" name="larg_anim_accueil"[ value="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]larg_anim_accueil})"] size="4" id="larg_anim_accueil"  />
+								<input type="text" name="larg_anim_accueil"[ value="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]larg_anim_accueil})"] size="4" id="larg_anim_accueil"  class="fondl spip_xx-small" />
 							</li>
 						</ul>
 					<li>
@@ -52,9 +52,9 @@
 			// --></script>
 			
 			<div style="text-align:center">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>

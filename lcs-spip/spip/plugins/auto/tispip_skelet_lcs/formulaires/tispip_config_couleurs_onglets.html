@@ -5,32 +5,35 @@
 #CACHE{0}
 [(#ENV{editable}|oui)
 <div class="formulaire_spip formulaire_cfg formulaire_tispip">
-	<form method="post" action="#SELF" style="margin-bottom:25px;">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
 		<div> #ACTION_FORMULAIRE{#SELF} 
 			<fieldset class="labels_cfg_tispipskelet">
-				<legend>Couleurs des onglets</legend>
+				<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=314#couleur_onglets&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Couleurs des onglets" style="margin:5px">&nbsp;</a>
+				<legend style="width:80%;float:left;">Couleurs des onglets</legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message">(#ENV*{message_ok})</p>]
 				<ul>
-					<li class="ligne_200">
+					<li class="ligne_280">
 						<label for="color23">Fond des onglets :</label>
 						<input type="text" name="color23" id="color23"  class="palette" size="7"  value="[(#ENV{color23}|?{#ENV{color23},#999999})]" />
 					</li>
-					<li class="ligne_200">
+					<li class="ligne_280">
 						<label for="color24">Texte des onglets :</label>
 						<input type="text" name="color24" id="color24"  class="palette" size="7"  value="[(#ENV{color24}|?{#ENV{color24},#ffffcc})]" />
 					</li>
-					<li class="ligne_200">
+					<li class="ligne_280">
 						<label for="color25">Fond des onglets au survol :</label>
 						<input type="text" name="color25" id="color25"  class="palette" size="7"  value="[(#ENV{color25}|?{#ENV{color25},#dddddd})]" />
 					</li>
-					<li class="ligne_200">
+					<li class="ligne_280">
 						<label for="color26">Texte des onglets au survol :</label>
 						<input type="text" name="color26" id="color26"  class="palette" size="7"  value="[(#ENV{color26}|?{#ENV{color26},#336699})]" />
 					</li>
-					<li class="ligne_200">
+					<li class="ligne_280">
 						<label for="color92">Fond de l&rsquo;onglet actif :</label>
 						<input type="text" name="color92" id="color92"  class="palette" size="7"  value="[(#ENV{color92}|?{#ENV{color92},#dddddd})]" />
 					</li>
-					<li class="ligne_200">
+					<li class="ligne_280">
 						<label for="color93">Texte de l&rsquo;onglet actif :</label>
 						<input type="text" name="color93" id="color93"  class="palette" size="7"  value="[(#ENV{color93}|?{#ENV{color93},#336699})]" />
 					</li>
@@ -39,9 +42,9 @@
 		 		
 			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
 			<div style="text-align:center">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>

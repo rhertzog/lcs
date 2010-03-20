@@ -3,36 +3,32 @@
 <!-- nom=tispipskelet_conf-->
 #CACHE{0}
 [(#ENV{editable}|oui)
-<div class="formulaire_spip formulaire_cfg">
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
 
-	<form method="post" action="#SELF" style="margin-bottom:25px;">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
 		<div> #ACTION_FORMULAIRE{#SELF} 
 			[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
 			[<p class="formulaire_message">(#ENV*{message_ok})</p>]
 			<fieldset>
 				<legend>Nombre de colonnes</legend>
 				<ul>
-					<li class="demi">
-						<label for="nb_cols_art2">2 colonnes</label>
-						[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{[(#SET{check3, checked="checked"})],[(#SET{check2, checked="checked"})]})]
-						<input type="radio" name="nb_cols_art" id="nb_cols_art2" value="2" [(#ENV{nb_cols_art}|=={2}|?{checked="checked"})] />
-					</li>
-					<li class="demi">
-						<a href='[(#CHEMIN{fonds/inc/aide/inc-help.html})]' class='boxy' title='Aide : Nombre de colonnes de la page Article'>?</a>
-						<label for="nb_cols_art3">3 colonnes</label>
-						<input type="radio" name="nb_cols_art" id="nb_cols_art3" value="3" [(#ENV{nb_cols_art}|=={3}|?{checked="checked"})] />
+					<li class="ligne_280">
+					<label for="nb_cols_art">Choisir le nombre de colonnes</label>
+					<select name="nb_cols_art" id="nb_cols_art" style="" class="fondl spip_xx-small" >
+						<option value="2" [(#ENV{nb_cols_art}|=={2}|?{selected="selected"})]>2 colonnes</option>
+						<option value="3" [(#ENV{nb_cols_art}|=={3}|?{selected="selected"})]>3 colonnes</option>
+					</select>
 					</li>
 				</ul>
 				[(#CONFIG{tispipskelet_conf/articles/nb_cols_art}|=={2}|?{' '})
-				<ul id="pos_cols_art" >
-					<li class="demi">
-						<label>&agrave; gauche
-						<input type="radio" name="pos_cols_art" value="gauche" [(#ENV{pos_cols_art}|=={gauche}|?{checked,''})] /></label>
-					</li>
-					<li class="demi">
-						<label>&agrave; droite
-						<input type="radio" name="pos_cols_art" value="droite" [(#ENV{pos_cols_art}|=={droite}|?{checked,''})] /></label>
-					</li>
+				<ul id="pos_cols_art_li" >
+					<li class="ligne_280">
+						<label for="pos_cols_art">Position des colonnes</label>
+						<select name="pos_cols_art" id="pos_cols_art" class="fondl spip_xx-small">
+						<option value="" [(#ENV{pos_cols_art}|=={''}|?{selected="selected"})]> </option>
+						<option value="gauche" [(#ENV{pos_cols_art}|=={gauche}|?{selected="selected"})]>&agrave; gauche</option>
+						<option value="droite" [(#ENV{pos_cols_art}|=={droite}|?{selected="selected"})]>&agrave; droite</option>
+						</select>
 				</ul>
 				]
 			</fieldset>
@@ -40,10 +36,10 @@
 			]		
 			
 			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
-			<div style="text-align:center;margin-bottom:15px;">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			<div style="text-align:center;">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>
@@ -52,11 +48,16 @@
 ]
 <script type="text/javascript"><!--
 
-	$('#nb_cols_art2')
-	.bind('change', function() {
-            $('#pos_cols_art').slideToggle('slow');
+	$('#nb_cols_art').change(function() {
+           if(this.value== 2) {
+			$('#pos_cols_art_li').show();
+		}else{
+			$('#pos_cols_art_li').hide();
+		}
+
 	})
-	if ($('#nb_cols_art2:checked').length == 0)
+	/*
+	if ($('#nb_cols_art:selected').value() != "2")
 		$('#pos_cols_art').hide();
 
 	$('#nb_cols_art3')
@@ -70,7 +71,7 @@
 			var $offRad = $('#pos_cols_art li').find('input[@type=radio][@checked]');
 			($offRad.length) ? $offRad.removeAttr('checked') : '';
 	    })
-
+*/
 // --></script>
 			
 

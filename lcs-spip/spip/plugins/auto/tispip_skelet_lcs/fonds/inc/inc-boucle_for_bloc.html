@@ -24,19 +24,19 @@
 			<li class="ligne_140">
 				<label for="cycle_effect_#ENV{bloc}">Nature de la transition</label>
 				<select name="cycle_effect_#ENV{bloc}" id="cycle_effect" style="width:75px;">
-					<INCLURE{fond=cycle-effet}{val_actuel=#ENV{cycle_effect_#ENV{bloc}}}>
+					<INCLURE{fond=fonds/inc/inc-cycle-effet}{val_actuel=#ENV{cycle_effect_#ENV{bloc}}}>
 				</select>
 			</li>
 			<li class="ligne_140">
 				<label for="cycle_duree_#ENV{bloc}">Durée d&rsquo;affichage<em>(en milisecondes)</em></label>
 				<select name="cycle_duree_#ENV{bloc}" id="cycle_duree" style="width:75px">
-					<INCLURE{fond=cycle-duree}{val_actuel=#ENV{cycle_duree_#ENV{bloc}}}>
+					<INCLURE{fond=fonds/inc/inc-cycle-duree}{val_actuel=#ENV{cycle_duree_#ENV{bloc}}}>
 				</select>
 			</li>
 			<li class="ligne_140">
 				<label for="cycle_time_#ENV{bloc}">Durée de la transition<em>(en milisecondes)</em></label>
 				<select name="cycle_time_#ENV{bloc}" id="cycle_time" style="width:75px;">
-					<INCLURE{fond=cycle-transition}{val_actuel=#ENV{cycle_time_#ENV{bloc}}}>
+					<INCLURE{fond=fonds/inc/inc-cycle-transition}{val_actuel=#ENV{cycle_time_#ENV{bloc}}}>
 				</select>
 			</li>
 			<li class="ligne">

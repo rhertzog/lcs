@@ -4,14 +4,13 @@
 <!-- casier=mentions -->
 #CACHE{0}
 [(#ENV{editable}|oui)
-<div class="formulaire_spip formulaire_cfg">
-	[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
-	[<p class="formulaire_message">(#ENV*{message_ok})</p>]
-	
-	<form method="post" action="#SELF">
-		<div style="margin-bottom:25px;"> #ACTION_FORMULAIRE{#SELF} 
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
 			<fieldset>
 				<legend>Coordonn&eacute;es de l&rsquo;&eacute;tablissement</legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message">(#ENV*{message_ok})</p>]
 				<ul>
 					<li class="ligne">
 						<div class="help_text">
@@ -19,60 +18,59 @@
 						Elle pr&eacute;cise que les soci&eacute;t&eacute;s, associations, collectivit&eacute;s etc. qui exploitent un site Web doivent quant &agrave; elles indiquer &quot;leur d&eacute;nomination ou leur raison sociale et leur si&egrave;ge social, leur num&eacute;ro de t&eacute;l&eacute;phone et, s&rsquo;il s&rsquo;agit d&rsquo;entreprises assujetties aux formalit&eacute;s d&rsquo;inscription au registre du commerce et des soci&eacute;t&eacute;s ou au r&eacute;pertoire des m&eacute;tiers, le num&eacute;ro de leur inscription, leur capital social, l&rsquo;adresse de leur si&egrave;ge social&quot;.
 						</div>
 					</li>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<label for="adresse">Adresse <em>(Obligatoire)</em></label>
-						<textarea name="adresse" id="adresse" rows="4" cols="16">[(#ENV{adresse})]</textarea>
+						<textarea name="adresse" id="adresse" rows="4" cols="16" class="fondl spip_xx-small">[(#ENV{adresse})]</textarea>
 					</li>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<label for="telephone">T&eacute;l&eacute;phone <em>(Obligatoire)</em></label>
-						<input type="text" name="telephone" id="telephone" size="20" value="[(#ENV{telephone})]"/>
+						<input type="text" name="telephone" id="telephone" size="20" value="[(#ENV{telephone})]" class="fondl spip_xx-small" />
 					</li>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<label for="telecopie">T&eacute;l&eacute;copie</label>
-						<input type="text" name="telecopie" id="telecopie" size="20" value="[(#ENV{telecopie})]"/>
+						<input type="text" name="telecopie" id="telecopie" size="20" value="[(#ENV{telecopie})]" class="fondl spip_xx-small" />
 					</li>
 				</ul>
 			</fieldset>
 			<fieldset>
 				<legend>Directeur de la publication</legend>
 				<ul>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<label for="dir_pub">Nom Pr&eacute;nom <em> (Obligatoire)</em></label>
-						<input type="text" name="dir_pub" id="dir_pub" size="20" value="[(#ENV{dir_pub})]"/>
+						<input type="text" name="dir_pub" id="dir_pub" size="20" value="[(#ENV{dir_pub})]" class="fondl spip_xx-small" />
 					</li>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<label for="mel_dir_pub" style="width:20%;">Adresse courriel</label>
-						<input type="text" name="mel_dir_pub" id="mel_dir_pub" size="20" value="[(#ENV{mel_dir_pub})]"/>
+						<input type="text" name="mel_dir_pub" id="mel_dir_pub" size="20" value="[(#ENV{mel_dir_pub})]" class="fondl spip_xx-small" />
 					</li>
 				</ul>
 			</fieldset>
 			<fieldset>
 				<legend>Responsable d&rsquo;&eacute;dition</legend>
 				<ul>
-					<li class="ligne_240">
+					<li class="ligne_280">
 							<label for="dir_edit">Nom Pr&eacute;nom <em> (Obligatoire)</em></label>
-							<input type="text" name="dir_edit" id="dir_edit" size="20" value="[(#ENV{dir_edit})]"/>
+							<input type="text" name="dir_edit" id="dir_edit" size="20" value="[(#ENV{dir_edit})]" class="fondl spip_xx-small" />
 					</li>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<label for="mel_dir_edit">Adresse courriel</label>
-						<input type="text" name="mel_dir_edit" id="mel_dir_edit" size="20" value="[(#ENV{mel_dir_edit})]"/>
-						</div>
+						<input type="text" name="mel_dir_edit" id="mel_dir_edit" size="20" value="[(#ENV{mel_dir_edit})]" class="fondl spip_xx-small" />
 					</li>
 				</ul>
 			</fieldset>
 			<fieldset>
 				<legend>H&eacute;bergeur</legend>
 				<ul>
-					<li class="ligne_240">
+					<li class="ligne_280">
 						<label for="hebergeur">Nom de l&rsquo;h&eacute;bergeur</label>
-						<input type="text" name="hebergeur" id="hebergeur" size="20" value="[(#ENV{hebergeur}|?{#ENV{hebergeur},CRDP de Basse-Normandie})]"/>
+						<input type="text" name="hebergeur" id="hebergeur" size="20" value="[(#ENV{hebergeur}|?{#ENV{hebergeur},CRDP de Basse-Normandie})]" class="fondl spip_xx-small" />
 					</li>
 				</ul>
 			</fieldset>
 			<div style="text-align:center">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>
@@ -81,5 +79,5 @@
 ]
 
 [(#ENV{editable}|non)
-Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+Vous devez &ecirc;tre connect&eacute; en administrateur pour pouvoir utiliser ce formulaire.
 ]

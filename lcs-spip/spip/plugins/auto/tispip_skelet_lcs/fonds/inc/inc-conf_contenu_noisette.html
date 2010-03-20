@@ -6,7 +6,8 @@
 [(#ENV{ctnbloc}|=={messages}|?{[(#SET{titre_ctnbloc,messages})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{conf,tout})]})]
 [(#ENV{ctnbloc}|=={auteurs}|?{[(#SET{titre_ctnbloc,auteurs})][(#SET{nb,oui})][(#SET{conf,tout})]})]
 [(#ENV{ctnbloc}|=={cyclart}|?{[(#SET{titre_ctnbloc,articles})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{long_intro,oui})][(#SET{afflogo,oui})][(#SET{conf,tout})]})]
-  [(#REM) A mettre ajour]
+ [(#ENV{ctnbloc}|=={cyclart_modif}|?{[(#SET{titre_ctnbloc,articles modifi&eacute;s})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{long_intro,oui})][(#SET{afflogo,oui})][(#SET{conf,tout})]})]
+ [(#REM) A mettre ajour]
 [(#ENV{ctnbloc}|=={arts_rub}|?{[(#SET{titre_ctnbloc,articles d&rsquo;une rubrique})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{idrub,oui})][(#SET{conf,tout})]})]  
 
 [(#ENV{ctnbloc}|=={arts_mot}|?{[(#SET{titre_ctnbloc,articles li&eacute;s &agrave; un mot-cl&eacute;})][(#SET{nb,oui})][(#SET{defil,oui})][(#SET{haut,oui})][(#SET{idmot,oui})][(#SET{conf,tout})]})]
@@ -46,41 +47,41 @@
 						<label for="[(#GET{titrebloc})]" style="margin:0;padding:0;width:150px;;float:left;clear:none;">
 							[Titre du bloc  (#GET{titre_ctnbloc})]
 						</label>
-							<input type="text" name="[(#GET{titrebloc})]" id="[(#GET{titrebloc})]" maxlength="50" value="[(#ENV{[(#GET{titrebloc})]}|?{[(#ENV{[(#GET{titrebloc})]})]})]"  />
+							<input type="text" name="[(#GET{titrebloc})]" id="[(#GET{titrebloc})]" maxlength="50" value="[(#ENV{[(#GET{titrebloc})]}|?{[(#ENV{[(#GET{titrebloc})]})]})]" class="fondl spip_xx-small" />
 					</li>
 [(#GET{idrub}|=={oui}|?{' '})
 					<li style="margin:0;padding:10px 0 0 0;">
 						<label for="#GET{idrubbloc}" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Num&eacute;ro<em>(id)</em> de la rubrique </label>
-							<input type="text" name="[(#GET{idrubbloc})]" id="[(#GET{idrubbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idrubbloc})]}|?{[(#ENV{[(#GET{idrubbloc})]})], 1})]"  />
+							<input type="text" name="[(#GET{idrubbloc})]" id="[(#GET{idrubbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idrubbloc})]}|?{[(#ENV{[(#GET{idrubbloc})]})], 1})]" class="fondl spip_xx-small" />
 					</li>
 ]
 [(#GET{idmot}|=={oui}|?{' '})
 					<li style="margin:0;padding:10px 0 0 0;">
 						<label for="#GET{idmotbloc}" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Num&eacute;ro<em>(id)</em> du mot-cl&eacute;</label>
-							<input type="text" name="[(#GET{idmotbloc})]" id="[(#GET{idmotbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idmotbloc})]}|?{[(#ENV{[(#GET{idmotbloc})]})], 1})]"  />
+							<input type="text" name="[(#GET{idmotbloc})]" id="[(#GET{idmotbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idmotbloc})]}|?{[(#ENV{[(#GET{idmotbloc})]})], 1})]" class="fondl spip_xx-small" />
 					</li>
 ]
 
 [(#GET{text}|=={oui}|?{' '})
 					<li style="margin:0;padding:10px 0 0 0;">
 						<label for="#GET{textbloc}" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Texte libre</label>
-							<textarea name="[(#GET{textbloc})]" id="[(#GET{textbloc})]" cols="20" rows="4">[(#ENV{[(#GET{textbloc})]})]</textarea>
+							<textarea name="[(#GET{textbloc})]" id="[(#GET{textbloc})]" cols="20" rows="4" class="fondl spip_xx-small">[(#ENV{[(#GET{textbloc})]})]</textarea>
 					</li>
 ]
 [(#GET{url}|=={oui}|?{' '})
 					<li style="margin:0;padding:10px 0 0 0;">
 						<label for="#GET{textlienbloc}" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Texte du lien</label>
-							<input type="text" name="[(#GET{textlienbloc})]" id="[(#GET{textlienbloc})]" size="20" value="[(#ENV{[(#GET{textlienbloc})]})]" />
+							<input type="text" name="[(#GET{textlienbloc})]" id="[(#GET{textlienbloc})]" size="20" value="[(#ENV{[(#GET{textlienbloc})]})]" class="fondl spip_xx-small" />
 					</li>
 					<li style="margin:0;padding:10px 0 0 0;">
 						<label for="#GET{urlbloc}" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Url du lien</label>
-							<input type="text" name="[(#GET{urlbloc})]" id="[(#GET{urlbloc})]" size="20" value="[(#ENV{[(#GET{urlbloc})]}|?{[(#ENV{[(#GET{urlbloc})]})]})]" />
+							<input type="text" name="[(#GET{urlbloc})]" id="[(#GET{urlbloc})]" size="20" value="[(#ENV{[(#GET{urlbloc})]}|?{[(#ENV{[(#GET{urlbloc})]})]})]" class="fondl spip_xx-small" />
 					</li>
 ]
 [(#GET{imgfile}|=={oui}|?{' '})
 					<li style="margin:0;padding:10px 0 0 0;">
 						<label for="[(#GET{imgbloc})]" style="margin:0;padding:0;width:150px;;float:left;clear:none;">Image du lien :</label>
-						<input type="file" name="[(#GET{imgbloc})]" id="[(#GET{imgbloc})]" value=" " size="15" />
+						<input type="file" name="[(#GET{imgbloc})]" id="[(#GET{imgbloc})]" value=" " size="15" class="fondl spip_xx-small" />
 						[<span class='erreur'>(#ENV**{erreurs}|table_valeur{[(#GET{imgbloc})]})</span>]
 						<br />	
 						[Image actuelle : (#ENV{[(#GET{imgbloc})]}|?{[(#CFG_CHEMIN{tispipskelet_conf/[(#ENV{id})/][(#GET{imgbloc})]}|image_reduire{50})],Aucune image})]						
@@ -91,7 +92,7 @@
 						<label for="[(#GET{nbbloc})]" style="margin:0;padding:0;width:150px;float:left;clear:none;">
 							 [&nbsp;Nombre de (#GET{titre_ctnbloc}) ]
 						</label>
-							<select name="[(#GET{nbbloc})]" id="[(#GET{nbbloc})]" style="width:50px;">
+							<select name="[(#GET{nbbloc})]" id="[(#GET{nbbloc})]" style="width:50px;" class="fondl spip_xx-small">
 								<option value=""[ (#ENV{[(#GET{nbbloc})]}|?{selected="selected",''})]>  </option>
 								<option value="3"[ (#ENV{[(#GET{nbbloc})]}|=={3}|?{selected="selected",''})]> 3 </option>
 								<option value="5"[ (#ENV{[(#GET{nbbloc})]}|=={5}|?{selected="selected",''})]> 5 </option>
@@ -105,7 +106,7 @@
 						<label for="[(#GET{idartbloc})]" style="margin:0;padding:0;width:150px;;float:left;clear:none;">
 							[Num&eacute;ro <em>(id)</em> de  l&rsquo;(#GET{titre_ctnbloc}) ]
 						</label>
-							<input type="text" name="[(#GET{idartbloc})]" id="[(#GET{idartbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idartbloc})]}|?{[(#ENV{[(#GET{idartbloc})]})], 1})]"  />
+							<input type="text" name="[(#GET{idartbloc})]" id="[(#GET{idartbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idartbloc})]}|?{[(#ENV{[(#GET{idartbloc})]})], 1})]" class="fondl spip_xx-small" />
 					</li>
 ]
 [(#REM) A mettre ajour]
@@ -114,7 +115,7 @@
 						<label for="[(#GET{idrub})]" style="margin:0;padding:0;width:150px;;float:left;clear:none;">
 							[Limiter l&rsquo;affichage des sites &agrave; la rubrique (#GET{titre_ctnbloc}) ]
 						</label>
-							<input type="text" name="[(#GET{rub})]" id="[(#GET{idrub})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idrub})]}|?{[(#ENV{[(#GET{idartbloc})]})], 1})]"  />
+							<input type="text" name="[(#GET{rub})]" id="[(#GET{idrub})]" maxlength="3" size="2" value="[(#ENV{[(#GET{idrub})]}|?{[(#ENV{[(#GET{idartbloc})]})], 1})]" class="fondl spip_xx-small" />
 					</li>
 ]
 
@@ -138,13 +139,13 @@
 						<label for="[(#GET{introlongbloc})]" style="margin:0;padding:0;width:140px;;float:left;clear:none;">
 							Longueur de l&rsquo;intro.
 						</label>
-							<input type="text" name="[(#GET{introlongbloc})]" id="[(#GET{introlongbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{hauteurbloc})]}|?{[(#ENV{[(#GET{introlongbloc})]})], 150})]"  />Caract.
+							<input type="text" name="[(#GET{introlongbloc})]" id="[(#GET{introlongbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{hauteurbloc})]}|?{[(#ENV{[(#GET{introlongbloc})]})], 150})]" class="fondl spip_xx-small" />Caract.
 					</li>
 ]
 [(#GET{afflogo}|=={oui}|?{' '})
 					<li style="margin:0;padding:10px 0 0 0;">
 						<label style="margin:0;padding:0;width:140px;;float:left;clear:none;">
-							<input type="checkbox" name="[(#GET{afflogobloc})]" id="[(#GET{afflogobloc})]" value="oui"[ checked="(#ENV{[(#GET{afflogobloc})]}|?{checked})" ] />
+							<input type="checkbox" name="[(#GET{afflogobloc})]" id="[(#GET{afflogobloc})]" value="oui"[ checked="(#ENV{[(#GET{afflogobloc})]}|?{checked})" ]class="fondl spip_xx-small" />
 							Afficher le logo
 						</label>
 					</li>
@@ -153,9 +154,9 @@
 [(#GET{defil}|=={oui}|?{' '})
 					<li style="margin:0;padding:10px 0 0 0;">
 						<label for="[(#GET{defilbloc})]" style="margin:0;padding:0;width:150px;;float:left;clear:none;">
+							<input type="checkbox" name="[(#GET{defilbloc})]" id="[(#GET{defilbloc})]" value="oui"[ checked="(#ENV{[(#GET{defilbloc})]}|?{checked})"] class="fondl spip_xx-small" />
 							[D&eacute;filement des  (#GET{titre_ctnbloc}) ]
 						</label>
-							<input type="checkbox" name="[(#GET{defilbloc})]" id="[(#GET{defilbloc})]" value="oui"[ checked="(#ENV{[(#GET{defilbloc})]}|?{checked})" ]/>
 					</li>
 ]
 [(#GET{confmots}|=={oui}|?{' '})
@@ -177,7 +178,7 @@
 						<label for="[(#GET{hauteurbloc})]" style="margin:0;padding:0;width:140px;;float:left;clear:none;">
 							[Hauteur du bloc  (#GET{titre_ctnbloc})<em> (en pixelx)</em> ]
 						</label>
-							<input type="text" name="[(#GET{hauteurbloc})]" id="[(#GET{hauteurbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{hauteurbloc})]}|?{[(#ENV{[(#GET{hauteurbloc})]})], 150})]"  />&nbsp;px
+							<input type="text" name="[(#GET{hauteurbloc})]" id="[(#GET{hauteurbloc})]" maxlength="3" size="2" value="[(#ENV{[(#GET{hauteurbloc})]}|?{[(#ENV{[(#GET{hauteurbloc})]})], 150})]" class="fondl spip_xx-small" />&nbsp;px
 					</li>
 					<li style="margin:0;padding:10px 0;">
 						<label style="width:200px;clear:none;margin:0;padding:0;">
@@ -220,19 +221,3 @@
 					</li>
 				</ul>
 ]
-				<script type="text/javascript"><!--
-						$('#[(#GET{introbloc})_intro]')
-						.bind('change', function() {
-					            $('#cfg_[(#GET{introlongbloc})]').slideDown('slow');
-						})
-						if ($('#[(#GET{introbloc})_intro]:checked').length == 0)
-							$('#cfg_[(#GET{introlongbloc})]').hide();
-					
-						$('#[(#GET{introbloc})_texte]')
-						.bind('change', function() {
-					            $('#cfg_[(#GET{introlongbloc})]').slideUp('slow');
-						})
-						if ($('#[(#GET{introbloc})_texte:checked').length != 0)
-							$('#cfg_[(#GET{introlongbloc})]').hide();
-							
-				// --></script>
