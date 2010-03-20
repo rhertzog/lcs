@@ -21,8 +21,34 @@ Appel du copyleft
 	</div>[(#REM)grand_container]
 	
 	<INCLURE{fond=noisettes/inc-copy}>
-[(#CONFIG{tispipskelet_conf/aff_nifty}|=={non}|?{'',' '})	
-	[(#REM) appel du js les coins arrondis et les colonnes]
-		[<script type="text/javascript" src="(#CHEMIN{scripts/niftycube.js})"></script>]
-		[<script type="text/javascript" src="(#CHEMIN{scripts/niftyLayout.js})"></script>]
-]	
+		<script type="text/javascript" src="[(#CHEMIN{javascript/jquery.corner.js})]"></script>
+<script type="text/javascript"><!--
+function equilibre(){
+	$('.colonne').height('auto'); 
+	var highestCol = Math.max($('#side').height(),$('#side2').height(),$('#content').height());
+	$('.colonne').height(highestCol); 
+}
+	$(document).ready(function() {
+		$('li.boite_g').corner('top 5px');
+		$('h3.menu-titre').corner('top 5px');
+		$('#footer').corner('5px');
+		$('div.colonne').corner('8px');
+		$('dt.annonce,dt.cartouche,dt.un,dt.deux,').corner('top 5px');
+		setTimeout(function() {
+			equilibre(); 
+		}, 500);
+	});
+		var highestCol = Math.max($('#side').height(),$('#side2').height(),$('#content').height());
+		$('.colonne').height(highestCol);
+
+/*
+$(".colonne").each(function(){
+   $(">*", this)
+     .bind("change",function(){
+     	alert('alerte');
+      });
+ });
+*/
+
+		
+--></script>
