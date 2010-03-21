@@ -16,7 +16,7 @@
 	[(#GET{podcast}|oui)
 		<a href="[(#URL_SITE_SPIP|url_itunes)?page=podcast]" title="Vers iTunes"><img src="[(#CHEMIN{i/podcast1.png})]" width="64" height="72" alt="" /></a>
 	]
-		<a href="[(#URL_PAGE{backend[,(#ID_RUBRIQUE|?{id_rubrique=#ID_RUBRIQUE})]})]" title="S'abonner au fil RSS"><img src="[(#CHEMIN{i/pp_rssIcon.png})]" alt="" /></a>
+		<a href="[(#URL_PAGE{backend}|parametre_url{id_rubrique, #ID_RUBRIQUE})]" title="S'abonner au fil RSS"><img src="[(#CHEMIN{i/pp_rssIcon.png})]" alt="" /></a>
 	</dd>
 </dl>
 
