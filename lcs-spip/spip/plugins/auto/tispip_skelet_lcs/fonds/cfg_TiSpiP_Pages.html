@@ -1,5 +1,7 @@
 <!-- interpreter=non -->
-<!-- descriptif=<multi>[fr]Configuration g&eacute;n&eacute;rale de l&rsquo;affichage public </multi> -->
+<!-- descriptif=<multi>[fr]Configuration g&eacute;n&eacute;rale de l&rsquo;affichage public </multi>
+#FOREACH{env}
+ -->
 <!-- titre=Personnalisation de l'affichage public-->
 <!-- nom=tispipskelet_conf -->
 
@@ -45,6 +47,9 @@
 
 [<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
    #FORMULAIRE_TISPIP_CONFIG_PIEDDEPAGE
+</div>]
+[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+   #FORMULAIRE_TISPIP_CONFIG_DIVERS_PAGE
 </div>]
 <script type='text/javascript'>
 $(function() {

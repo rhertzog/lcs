@@ -5,34 +5,24 @@
 #CACHE{0}
 [(#ENV{editable}|oui)
 <div class="formulaire_spip formulaire_cfg formulaire_tispip">
-	<form method="post" action="#SELF" style="margin-bottom:25px;">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
 		<div> #ACTION_FORMULAIRE{#SELF} 
-				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
-				[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
-		
+			[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+			[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
 			<fieldset>
-				<a href='[(#CHEMIN{fonds/inc/aide/inc-help_menu_couleurs_bordures.html})]' class='boxy' title="Couleurs et bordures du menu vertical">?</a>
-				<legend style="width:80%">Couleur du menu vertical</legend>
+			<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=277&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Couleurs des menus" style="margin:5px">&nbsp;</a>
+				<legend style="width:80%;float:left;">Couleur du menu vertical</legend>
 				<INCLURE{fond=fonds/inc/inc-conf_couleurs_menu_v}{env}{ajax}>
 			</fieldset>
-			<fieldset>
-				<legend>Marges et bordures du menu vertical</legend>
-				<INCLURE{fond=fonds/inc/inc-conf_marges_menu_v}{type_menu=#CONFIG{tispipskelet_conf/type_menu}}{env}{ajax}>
-			</fieldset>
-		 		
-		 		
 			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
 			<div style="text-align:center">
-				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
-				<input type="reset" value="<:cfg:Reset:>" />
-				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
 			</div>
 		</div>
 	</form>
 </div>
-
-]
-
-[(#ENV{editable}|non)
+][(#ENV{editable}|non)
 Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
 ]

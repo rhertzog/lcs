@@ -31,11 +31,10 @@
 	[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
 	   #FORMULAIRE_TISPIP_CONFIG_EDITO
 	</div>]
-	
+
 	[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
-	   #FORMULAIRE_TISPIP_CONFIG_COULEURS_COLONNE_CENTRALE
+	   #FORMULAIRE_TISPIP_CONFIG_COULEURS_EDITO
 	</div>]
-	
 	
 	[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
 	   #FORMULAIRE_TISPIP_CONFIG_BLOCSJUMOS{sommaire}
@@ -59,6 +58,9 @@
 	   #FORMULAIRE_TISPIP_CONFIG_LISTE_RUBRIQUES{sommaire}
 	</div>]
 
+	[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+	   #FORMULAIRE_TISPIP_CONFIG_COULEURS_LISTES
+	</div>]
 	
 	[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
 	   #FORMULAIRE_TISPIP_CONFIG_COLONNES{sommaire}
@@ -68,31 +70,5 @@
 	   #FORMULAIRE_TISPIP_CONFIG_COULEURS_COLONNE_LATERALE
 	</div>]
 	
-[(#REM)]
-
-				<script type="text/javascript"><!--
-// affichage de l'aide
-	$(document).ready(function() {
-		$('div.help_text').prepend("<span class='help_close' style='font-size:.8em;font-weight:normal;'>&nbsp;Fermer&nbsp;</span>");/*placer le boutton de fermeture dans chaque div d'aide*/
-        $('div.help_text').hide(); /*fermer ts les div d'aide*/
-		/* la fonction*/
-        $('span.help_conf').click(function() {
-		  var $boutton = $(this);/*le boutton d'appel de l'aide*/
-          var $nextDiv = $(this).siblings('div.help_text');/*le div d'aide qui suit le boutton cliqué*/
-          var $visibleSiblings = $('div.formulaire_tispip')
-				.find('div.help_text:visible');/*tous les divs d'aide visibles qui suivent le formulaire - normalement, il n'y en a qu'un seul*/
-           var $hideSiblings = $('div.formulaire_tispip')
-				.find('span.help_conf:hidden'); /*le boutton caché - celui qiu précéde le div d'aide ouvert*/
-             $nextDiv.slideToggle('fast');/*si on avait aucun div d'aide d'ouvert on limite à l'ouverture du div suivant le boutton cliqué*/
-			 $boutton.fadeOut('slow');/*et on cache le boutton cliqué*/
-       });
-		$('span.help_close').click(function() {
-				$(this).parent().slideUp('slow');/*au clic sur la croix de fermuture on ferme le div d'aide contenant*/
-				$(this).parents('li')
-				.find('span.help_conf:hidden').fadeIn('slow');/*et on montre le boutton d'appel caché*/
-		});
-	});
-				// --></script>
-
 [(#REM)]
 #CFG_ARBO{tispipskelet_conf/sommaire}

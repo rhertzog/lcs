@@ -30,9 +30,11 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'affichage_menus_onglets' => 'Choix des menus et onglets de navigation',
 'affichage_onglets' => 'Affichage des onglets',
 'affichage_personnaliser' => 'Personnaliser l&rsquo;affichage',
+'afficher_articles_rubrique'=>'Afficher les articles de la rubrique',
 'afficher_auteur_non'=> 'Ne pas afficher les auteurs',
 'afficher_blocs_jumeaux'=>'Afficher les blocs jumeaux',
 'afficher_blocs_jumeaux_2'=>'Afficher un deuxi&egrave;me couple de blocs jumeaux',
+'afficher_dans_menus'=> 'Afficher dans les menus',
 'afficher_date_publication_non'=> 'Ne pas afficher la date de publication',
 'afficher_date_modif_non'=> 'Ne pas afficher la date de derni&egrave;re  modification',
 'afficher_documents_joints'=> 'Afficher les documents joints',
@@ -59,6 +61,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'animation_id'=> ' Id de de l&rsquo;image ou l&rsquo;animation',
 'animation_largeur'=> 'Largeur de l&rsquo;image ou de l&rsquo;animation',
 'article_complet'=> 'Article complet',
+'article_wiki'=> 'Editer depuis l&rsquo;espace public.',
 //B
 ''=>'',
 'breve'=>'br&egave;ve',
@@ -94,7 +97,9 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 //D
 ''=>'',
+'dimensions_entete'=>'Dimensions de l&rsquo;ent&ecirc;te',
 'derniers_articles'=>'Derniers articles',
+'divers' =>'Divers',
 'dpt_calvados' =>'D&eacute;partement du Calvados',
 'dpt_manche' => 'D&eacute;partement de la Manche',
 'dpt_orne' => 'D&eacute;partement de l&rsquo;Orne',
@@ -116,6 +121,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 //H
 ''=>'',
 'hauteur_bloc'=> 'Hauteur du bloc',
+'hauteur_entete'=>'Hauteur de l&rsquo;ent&ecirc;te',
 'help_animation_accueil'=> 'Pour afficher une image ou une animation en page d&rsquo;accueil, saisissez simplement l&rsquo;id <em>(num&eacute;ro d&rsquo;identification)</em> du <strong>document</strong> &agrave; afficher.<br />Vous devez avoir pr&eacute;alablement import&eacute; votre document dans une rubrique ou un article.<br />Vous pouvez <strong>r&eacute;duire</strong> la largeur,  la hauteur dera proportionellement redimensionn&eacute;e.',
 'haut_case_menu_horiz'=>'Hauteur des cases du menu (en pixels)',
 'help_aff_onglets_text' => 'Affiche la barre d&rsquo;onglets horizontale. Si vous affichez la barre et qu&rsquo;aucun onglet n&rsquo;est s&eacute;lectionn&eacute;, les onglets "Accueil" et "Priv&eacute;" seront s&eacute;l&eacute;ctionn&eacute;s par d&eacute;faut.',
@@ -209,6 +215,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 //I
 ''=> '',
+'importer_exporter_conf'=> 'Importer/exporter une configuration d\affichage.',
 'info_accorder_comptes_spip_lcs'=> '<strong>Nettoyage des comptes du forum</strong> : <br />Cette page vous permet d&rsquo;effectuer un "nettoyage" des comptes du forum, en les mettant en concordance avec l&rsquo;annuaire du Lcs. Elle liste les auteurs pr&eacute;sents dans la base du forum, mais n&rsquo;existant plus dans l&rsquo;annuaire du Lcs. <br />Vous pouvez ensuite soit supprimer ces auteurs un par un, soit les supprimer par lots de vingt auteurs (<em>ce qui correspond &agrave; une page affich&eacute;e</em>), soit par lots de cent auteurs.<br />A noter que ces auteurs ne sont pas compl&eacute;tement supprim&eacute;s de la base, seul leur statut est modifi&eacute;, inhibant leur affichage tant dans l&rsquo;espace public que dans l&rsquo;espace priv&eacute;',
 
 'info_config_page'=> 'Glissez/glissez un item de la liste ci-dessous et d&eacute;posez le sur la zone \"titre\" d&rsquo;une colonne. Compl&eacute ensuite le formulaire affich&eacute;',
@@ -239,6 +246,8 @@ Chaque zone cr&eacute;&eacute;e &agrave; partir de l&rsquo;annuaire sera automat
 //L
 ''=> '',
 'larg_case_menu_horiz'=> 'Largeur des cases du menu (en pixels)',
+'largeur_arriere_plan_entete'=>'Largeur de l&rsquo;arri&egrave;rre-plan de l&rsquo;ent&ecirc;te',
+'largeur_contenu_entete'=>'Largeur du contenu de l&rsquo;ent&ecirc;te',
 'largeur_ecran' => 'Largeur de l&rsquo;&eacute;cran',
 'largeur_page' => 'Largeur de la page',
 'le_site' => 'Le site',
@@ -251,11 +260,12 @@ Chaque zone cr&eacute;&eacute;e &agrave; partir de l&rsquo;annuaire sera automat
 'modifier_police' =>'Modifler la police de caract&egrave;res',
 'mois' =>'mois',
 'menu_dep'=> 'Menu d&eacute;pliant au survol',
-'menu_dom'=> 'Menu d&eacute;pliant au clic',
 'menu_deroul_vertical'=> 'Menu d&eacute;roulant (au survol)',
 'menu_deroul_gauche'=> 'Menu d&eacute;roulant &agrave; gauche',
-'menu_spip'=> 'Menu spip de base (Original)',
 'menu_dom'=> 'Menu d&eacute;pliant au clic',
+'menu_horizontal'=> 'Menu horizontal',
+'menu_spip'=> 'Menu spip de base (Original)',
+'menu_vertical'=> 'Menu vertical',
 'modif_css' => 'Modifier les styles css',
 'modifier_zone'=>'Modifier cette zone',
 
@@ -276,6 +286,7 @@ Chaque zone cr&eacute;&eacute;e &agrave; partir de l&rsquo;annuaire sera automat
 
 //P
 ''=> '',
+'par_defaut_uc'=> 'Par d&eacute;faut',
 'plus_images_un_article' => 'Toutes les images d&rsquo;un seul article',
 'police' =>'Police de caract&egrave;res',
 'position_colonne' =>'Position de la colonne lat&eacute;rale',
