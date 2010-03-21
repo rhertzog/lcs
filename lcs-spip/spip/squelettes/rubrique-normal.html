@@ -26,13 +26,13 @@
 			</div>
 				<dl class="bloc">
 					<dt class="cartouche">
-							[(#LOGO_RUBRIQUE||reduire_image{100}|sinon{[(#LOGO_SITE_SPIP||reduire_image{100})]}|inserer_attribut{style,float:right})]
+							[(#LOGO_RUBRIQUE||image_reduire{100}|sinon{[(#LOGO_SITE_SPIP||image_reduire{100})]}|inserer_attribut{style,float:right})]
 							[(#TITRE|supprimer_numero)]
 					</dt>
 					<dd class="cartouche">
 						[<em><:dernier_ajout:> : (#DATE|affdate_jourcourt).</em>]
 						[<div class="chapo">(#DESCRIPTIF)</div>]
-						[<div class="chapo">(#TEXTE)</div>]
+						[<div class="chapo">(#TEXTE||image_reduire{550})</div>]
 							<br class="leon" />
 					</dd>
 					[(#INCLURE{fond=noisettes/inc-documents}{id_rubrique})]
@@ -55,19 +55,15 @@
 				]
 		
 					[(#CONFIG{tispipskelet_conf/rubriques/afflistart}|?{' '})
+						[(#CONFIG{tispipskelet_conf/rubriques/afficher_articles_#ID_RUBRIQUE}|!={non}|oui)
 						<INCLURE{fond=noisettes/inc-listarticles}{id_rubrique}{page=rubrique}{casier=rubriques}{ajax}{env}>
-					]
+					]]
 		[(#REM) Affichage des rubriques. On autorise et on choisit le type en global puis on choisit le type rub par rub]
-				[(#CONFIG{tispipskelet_conf/rubriques/afflistrub}|oui)
-					[(#INCLURE{fond=noisettes/inc-[(#CONFIG{tispipskelet_conf/[rubriques/afficher_rubrique_(#ID_RUBRIQUE)],[(#CONFIG{tispipskelet_conf/rubriques/listssrub,liste})]})_rubriques]}{id_rubrique}{env}{ajax})]
-				]
+					[(#INCLURE{fond=noisettes/inc-[(#CONFIG{tispipskelet_conf/[rubriques/afficher_rubrique_(#ID_RUBRIQUE)],[(#CONFIG{tispipskelet_conf/rubriques/listssrub,liste})]})_rubriques]}{casier=rubriques}{id_rubrique}{env}{ajax})]
 				
 		[(#REM) Affichage des sites. On autorise en global et on choisit le type rub par rub]
-				[(#CONFIG{tispipskelet_conf/rubriques/afflistsites}|oui)
-					[(#CONFIG{tispipskelet_conf/[rubriques/afficher_site_(#ID_RUBRIQUE)]}|!={vide}|?{' '})
-					[(#INCLURE{fond=noisettes/inc-[(#CONFIG{tispipskelet_conf/[rubriques/afficher_site_(#ID_RUBRIQUE)],[(#CONFIG{tispipskelet_conf/rubriques/listsites,liste})]})_sites]}{id_rubrique}{env}{ajax})]
-					]
-				]
+					[(#INCLURE{fond=noisettes/inc-[(#CONFIG{tispipskelet_conf/[rubriques/afficher_site_(#ID_RUBRIQUE)],[(#CONFIG{tispipskelet_conf/rubriques/listsites,liste})]})_sites]}{id_rubrique}{casier=rubriques}{env}{ajax})]
+
 		[(#REM)Affichage conditionnel des blocs jumeaux (  - a modifier - ) - haut]
 				[(#CONFIG{tispipskelet_conf/rubriques/posblocjumo}|=={bas}|?{' '})
 				<INCLURE{fond=noisettes/inc-blocs_jumos}{posblocj=haut}{casier=rubriques}>
