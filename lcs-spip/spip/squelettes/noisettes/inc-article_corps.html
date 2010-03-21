@@ -1,11 +1,11 @@
 [(#SET{wiki,[(#CONFIG{tispipskelet_conf/articles/afficher_wiki_#ID_ARTICLE})]})]
 <BOUCLE_article_corps(ARTICLES){id_article}>
-		<dl class="bloc"> 
+		<dl class="bloc"[ style="(#ENV{style_bloc})"]> 
 			<dt class="cartouche">
 				#DEBUT_SURLIGNE
-				[<p class="[(#GET{wiki}|=={1}|oui)#EDIT{surtitre}] surtitre">(#SURTITRE)</p>]
-				<span class="[(#GET{wiki}|=={1}|oui)#EDIT{titre}] titre">[(#TITRE|supprimer_tags|supprimer_numero)]</span>
-				[<p class="[(#GET{wiki}|=={1}|oui)#EDIT{soustitre}] soustitre">(#SOUSTITRE)</p>]
+				[<p class="[(#GET{wiki}|=={oui}|oui)#EDIT{surtitre}] surtitre">(#SURTITRE)</p>]
+				<span class="[(#GET{wiki}|=={oui}|oui)#EDIT{titre}] titre">[(#TITRE|supprimer_tags|supprimer_numero)]</span>
+				[<p class="[(#GET{wiki}|=={oui}|oui)#EDIT{soustitre}] soustitre">(#SOUSTITRE)</p>]
 				#FIN_SURLIGNE
 			</dt>
 			<dd class="date">
@@ -27,13 +27,16 @@
 				]
 			<dd class="corpart">
 			#DEBUT_SURLIGNE
-			[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{200,200}|inserer_attribut{style,float:right})]
-			[<div class="[(#GET{wiki}|=={1}|oui)#EDIT{chapo}] chapo">(#CHAPO)</div>]
+			#SET{dim_logo,#CONFIG{tispipskelet_conf/articles/dim_logo_art,150}}
+			[(#CONFIG{tispipskelet_conf/articles/art_logo_align}|=={left}|?{#SET{style_logo,float:left;margin-right:10px;},#SET{style_logo,float:right;margin-left:10px;} })]
+			[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{#GET{dim_logo},#GET{dim_logo}}
+			|inserer_attribut{style,#GET{style_logo}})]
+			[<div class="[(#GET{wiki}|=={oui}|oui)#EDIT{chapo}] chapo">(#CHAPO)</div>]
 			
-				[<div class="[(#GET{wiki}|=={1}|oui)#EDIT{texte}] texte" [(#CONFIG{tispipskelet_conf/articles/textart_justify}|oui) style="text-align: justify;" ]>(#TEXTE|image_reduire{520,0})</div>]
+				[<div class="[(#GET{wiki}|=={oui}|oui)#EDIT{texte}] texte" [(#CONFIG{tispipskelet_conf/articles/textart_justify}|oui) style="text-align: justify;" ]>(#TEXTE|image_reduire{520,0})</div>]
 			
 			[<div class="notes">(#NOTES)</div>]
-			[<p class="[(#GET{wiki}|=={1}|oui)#EDIT{hyperlien}] lien"><:voir_en_ligne:> : <a href="(#URL_SITE)" class="spip_out">[(#NOM_SITE|sinon{[(#URL_SITE|couper{80})]})]</a></p>]
+			[<p class="[(#GET{wiki}|=={oui}|oui)#EDIT{hyperlien}] lien"><:voir_en_ligne:> : <a href="(#URL_SITE)" class="spip_out">[(#NOM_SITE|sinon{[(#URL_SITE|couper{80})]})]</a></p>]
 			#FIN_SURLIGNE
 			</dd>
 			[(#INCLURE{fond=noisettes/inc-carrousel}{id_article})]
@@ -41,11 +44,11 @@
 			[(#INCLURE{fond=noisettes/inc-portfolio}{id_article})]
 
 			[(#REM) Autres documents joints a l'article ou a la rubrique]
-			[(#CONFIG{tispipskelet_conf/articles/afficher_docs_#ID_ARTICLE}|!={0}|?{' '})
+			[(#CONFIG{tispipskelet_conf/articles/afficher_docs_#ID_ARTICLE}|!={non}|?{' '})
 				[(#INCLURE{fond=noisettes/inc-documents}{id_article})]
 			]			
 			
-			[<dd class="[(#GET{wiki}|=={1}|oui)#EDIT{ps}] ps"><h2><:info_ps:></h2>#DEBUT_SURLIGNE<div class="#EDIT{ps}">(#PS)</div>#FIN_SURLIGNE</dd>]
+			[<dd class="[(#GET{wiki}|=={oui}|oui)#EDIT{ps}] ps"><h2><:info_ps:></h2>#DEBUT_SURLIGNE<div class="#EDIT{ps}">(#PS)</div>#FIN_SURLIGNE</dd>]
 			[(#PARAMETRES_FORUM|oui)<div class="forum-repondre-message">
 				<INCLURE{fond=noisettes/inc-repondre_article}{ajax}{id_article}{env}{texte=article}>
 			</div> ]
