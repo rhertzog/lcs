@@ -1,40 +1,29 @@
+						[(#SET{nb_cols_conf,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]nb_col_prtfl_rubs[_(#ENV{id_rubrique})]})]})]
+						[(#SET{pagin_conf,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]pagin_prtfl_rubs[_(#ENV{id_rubrique})]})]})]
+						[(#SET{haut_bloc_prtfl,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]haut_prtfl_rubs[_(#ENV{id_rubrique})]})]})]
 [(#REM)*****************************************************************
-		Contenu - Colonne centrale - Portfolio de tous les systèmes 
+		Contenu - Colonne centrale - Portfolio de toutes les sous-rubriques
 		Pagination par ordre alphabétique total ou excusif
 	 ***************************************************************** ]
 <B_sous_rubriques>
 [(#ANCRE_PAGINATION)]
-[(#SET{conf_ligne,2})]
-[(#SET{ligne,#GET{conf_ligne}})]
-[(#PAGINATION|oui)
-	<div>
-		<dl>
-			<dd class="pagination">
+	[<div class="pagination">
 				<span class="ligne1">#GRAND_TOTAL sous-rubriques</span>
-				[(#ENV{lettre}|non)
-					[<span class="ligne1"  style="float:left;"><a href='[(#SELF|parametre_url{lettre, A})]' style="float:right;display:block" class="ajax" title="#ENV{lettre}">Affichage exclusif par lettre initiale</a></span>
-					<span class="pagination ligne2">(#PAGINATION)</span>]
-				]
-				[(#ENV{lettre}|oui)
-					<span class="ligne1"  style="float:left;"><a href='[(#SELF|parametre_url{lettre, ""})]' style="float:right;display:block" class="ajax" title="#ENV{lettre}">Affichage total</a></span>
-					<span class="pagination ligne2"><INCLURE{fond=noisettes/inc-systemes_pagination_alpha}{lettre=#ENV{lettre,A}}{id_rubrique}></span>
-				]
+					<span class="pagination ligne2">(#PAGINATION)</span>
 				<br class="leon" />
-			</dd>
-		</dl><!-- pagination -->
-	</div>
-]
-[(#REM)*****************************************************************
+	</div><!-- pagination -->
+][(#REM)*****************************************************************
 		Contenu - Colonne centrale - Portfolio - Passer la pagination en parametre ??
 	 ***************************************************************** ]
-						<BOUCLE_sous_rubriques(RUBRIQUES) {id_parent} {par titre} {titre==^(#ENV{lettre,''})} {pagination 16}>
-							<div class="portfolio_rubs" style="width:48.5%;float:left;text-align:center;margin:2px;background:#fff;border:1px solid [(#COMPTEUR_BOUCLE|alterner{#ddd, #bbb, #999})];overflow:hidden;[clear:(#COMPTEUR_BOUCLE|alterner{both, none});]">
-								<div class="titre" style="background: [(#COMPTEUR_BOUCLE|alterner{#ddd, #bbb, #999})]; height:45px;overflow:hidden;">
+						<BOUCLE_sous_rubriques(RUBRIQUES) {id_parent} {par num titre, titre} {pagination #GET{pagin_conf,12}}>
+							<div class="portfolio_rubs" style="[width:(#GET{nb_cols_conf,32})%;][height:(#GET{haut_bloc_prtfl,150})px;]">
+								<h3 class="titre" style="margin:0;padding:5px 2px;color:#aaa;font-size:.9em;">
+	[<a href="#URL_RUBRIQUE" [title="(#TITRE|supprimer_numero)"] style="display:block;float:right;">(#LOGO_RUBRIQUE||image_reduire{0,30})</a>]
 									<strong><a href="#URL_RUBRIQUE" [title="(#TITRE|supprimer_numero)"]>[(#TITRE|supprimer_numero||couper{50})]</a></strong>
-								</div>
-						      	[<a href="#URL_RUBRIQUE" [title="(#TITRE|supprimer_numero)"] style="display:block;">(#LOGO_RUBRIQUE||reduire_image{0,50})</a>]
-									[<small><:dernier_ajout:> &ndash; (#DATE|nom_jour) ][(#DATE|affdate).</small>]
-									<div style="text-align:left;font-size:.8em"><INCLURE{fond=noisettes/inc-list_articles}{id_rubrique}></div>
+								</h3>
+							
+						      [(#REM)										[<small><:dernier_ajout:> &ndash; (#DATE|nom_jour) ][(#DATE|affdate).</small>] ]
+									<div style="text-align:left;font-size:.8em;overflow:auto;border-top:1px solid #ddd;height:125px;"><INCLURE{fond=noisettes/inc-list_articles}{id_rubrique}></div>
 							</div><!-- portfolio_syst -->
 						</BOUCLE_sous_rubriques>
 
@@ -45,20 +34,15 @@
 [(#REM)*****************************************************************
 		Contenu - Colonne centrale - Portfolio - Pagination
 	 ***************************************************************** ]
-	<div>
-		<dl>
-			<dd class="pagination">
-				<span class="ligne1">#GRAND_TOTAL syt&egrave;mes</span>
-				[(#ENV{lettre}|non)
-					[<span class="ligne1"  style="float:left;"><a href='[(#SELF|parametre_url{lettre, A})]' style="float:right;display:block" class="ajax" title="#ENV{lettre}">Affichage exclusif par lettre initiale</a></span>
-					<span class="pagination ligne2">(#PAGINATION)</span>]
-				]
-				[(#ENV{lettre}|oui)
-					<span class="ligne1"  style="float:left;"><a href='[(#SELF|parametre_url{lettre, ""})]' style="float:right;display:block" class="ajax" title="#ENV{lettre}">Affichage total</a></span>
-					<span class="pagination ligne2"><INCLURE{fond=noisettes/inc-systemes_pagination_alpha}{lettre=#ENV{lettre,A}}{id_rubrique}></span>
-				]
-			</dd>
-		</dl><!-- pagination -->
-	</div>
-					</B_sous_rubriques>
-
+	[<div class="pagination">
+				<span class="ligne1">#GRAND_TOTAL sous-rubriques</span>
+					<span class="pagination ligne2">(#PAGINATION)</span>
+				<br class="leon" />
+	</div><!-- pagination -->
+]					</B_sous_rubriques>
+<script type="text/javascript"><!--
+	$('div.portfolio_rubs').each(function() {
+		var hdivdiv = $(this).height() - $("> h3", this).height() ;
+		$("> div", this).height(hdivdiv);
+	});
+--></script>

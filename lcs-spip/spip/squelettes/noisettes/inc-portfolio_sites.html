@@ -1,73 +1,57 @@
+#SET{portfolio_sites,#ENV{id_rubrique}}
 [(#SET{mot,[(#CONFIG{tispipskelet_conf/rubriques/mot_portfolio_sites})]})]
 <B_verif_portfolio_sites><BOUCLE_verif_portfolio_sites(MOTS){id_rubrique}{tout}>
 [(#TITRE|=={#GET{mot,portfolio_sites}}|oui)#SET{portfolio_sites,#ID_RUBRIQUE}]
  </BOUCLE_verif_portfolio_sites></B_verif_portfolio_sites></B_verif_portfolio_sites>
-
+						[(#SET{nb_cols_conf,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]nb_col_prtfl_sites[_(#ENV{id_rubrique})]})]})]
+						[(#SET{pagin_conf,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]pagin_prtfl_sites[_(#ENV{id_rubrique})]})]})]
+						[(#SET{type_conf,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]type_prtfl_sites[_(#ENV{id_rubrique})]})]})]
 <B_sites>
 [(#REM)*****************************************************************
 		Contenu - Colonne centrale - Portfolio de tous les systèmes 
 		Pagination par ordre alphabétique total ou excusif
 	 ***************************************************************** ]
 [(#ANCRE_PAGINATION)]
-[(#SET{conf_ligne,2})]
-[(#SET{ligne,#GET{conf_ligne}})]
-[(#PAGINATION|oui)
-	<div>
-		<dl>
-			<dd class="pagination">
+	<div class="pagination">
 				<span class="ligne1">#GRAND_TOTAL sites</span>
-				[(#ENV{lettre}|non)
-					[<span class="ligne1"  style="float:left;"><a href='[(#SELF|parametre_url{lettre, A})]' style="float:right;display:block" class="ajax" title="#ENV{lettre}">Affichage exclusif par lettre initiale</a></span>
-					<span class="pagination ligne2">(#PAGINATION)</span>]
-				]
-				[(#ENV{lettre}|oui)
-					<span class="ligne1"  style="float:left;"><a href='[(#SELF|parametre_url{lettre, ""})]' style="float:right;display:block" class="ajax" title="#ENV{lettre}">Affichage total</a></span>
-					<span class="pagination ligne2"><INCLURE{fond=noisettes/inc-systemes_pagination_alpha}{lettre=#ENV{lettre,A}}{id_rubrique}></span>
-				]
+
+					[<span class="pagination ligne2">(#PAGINATION)</span>]
 				<br class="leon" />
-			</dd>
-		</dl><!-- pagination -->
-	</div>
-]
+	</div><!-- pagination -->
 [(#REM)*****************************************************************
 		Contenu - Colonne centrale - Portfolio - Passer la pagination en parametre ??
 	 ***************************************************************** ]
 	 
-						<BOUCLE_sites(SITES) {id_rubrique=#GET{portfolio_sites}}{par nom_site} {nom_site==^(#ENV{lettre,''})} {pagination 16}>
-							<div class="portfolio_rubs" style="width:23.5%;float:left;margin:2px;background:#fff;border:1px solid [(#COMPTEUR_BOUCLE|alterner{#ddd, #eee})];overflow:hidden;[clear:(#COMPTEUR_BOUCLE|alterner{both, none, none,none});]height:120px;">
-								<h3 class="titre" style="background: [(#COMPTEUR_BOUCLE|alterner{#ddd, #eee})]; overflow:hidden;margin:0;padding:5px 2px;color:#369;text-align:center;font-size:1.1em;height:35px">
+						<BOUCLE_sites(SITES) {id_rubrique=#GET{portfolio_sites}}{par num nom_site}{par nom_site} {nom_site==^(#ENV{lettre,''})} {pagination #GET{pagin_conf,12}}>
+							<div class="portfolio_rubs" style="[width:(#GET{nb_cols_conf,32})%;]">
+								<h3 class="titre" style="margin:0;padding:5px 2px;color:#aaa;font-size:.9em;">
 									<a href="#URL_SITE" [title="(#TITRE|supprimer_numero)"] style="color:#369;display:block;margin:auto 0;">[(#NOM_SITE|supprimer_numero||couper{50})]</a>
 								</h3>
 
+[(#GET{type_conf}|=={list_syndics}|non)
 								<a href="#URL_SITE" title="[(#DESCRIPTIF|supprimer_tags)]" class="spip_out" style="display:block;text-align:center;height:90px;vertical-align:middle;" >
-									[(#LOGO_SITE||image_reduire{70,999999}|inserer_attribut{style,margin:auto}|sinon{<img src="http://open.thumbshots.org/image.aspx?url=#URL_SITE" alt="" style="margin: auto; " />})]
+								[(#REM)]
+									[(#LOGO_SITE||image_reduire{120,999999}|inserer_attribut{style,margin:auto}|sinon{<img src="http://open.thumbshots.org/image.aspx?url=#URL_SITE" alt="" style="margin: auto; " />})]
 								</a>
-
-[(#REM)
-								<INCLURE{fond=noisettes/inc-list_syndic}{id_syndic}>
 ]
-							</div><!-- portfolio_syst -->
+
+[(#GET{type_conf}|=={list_syndics}|oui)
+								<div style="text-align:left;font-size:.8em;overflow:auto;border-top:1px solid #ddd;height:125px;"><INCLURE{fond=noisettes/inc-list_syndics}{id_syndic}></div>
+]
+							</div><!-- portfolio_rubs -->
 						</BOUCLE_sites>
 [(#REM)*****************************************************************
 		Contenu - Colonne centrale - Portfolio - on impose le retour à la ligne
 	 ***************************************************************** ]
 					<div class="leon">&nbsp;</div>
+<em style="float:right;font-size:.8em;"><a href="http://www.thumbshots.com" target="_blank" title="Thumbnails Previews by Thumbshots" style="color:#ccc;">Thumbnails powered by Thumbshots</a></em>
 [(#REM)*****************************************************************
 		Contenu - Colonne centrale - Portfolio - Pagination
 	 ***************************************************************** ]
-	<div>
-		<dl>
-			<dd class="pagination">
+	<div class="pagination">
 				<span class="ligne1">#GRAND_TOTAL sites</span>
-				[(#ENV{lettre}|non)
-					[<span class="ligne1"  style="float:left;"><a href='[(#SELF|parametre_url{lettre, A})]' style="float:right;display:block" class="ajax" title="#ENV{lettre}">Affichage exclusif par lettre initiale</a></span>
-					<span class="pagination ligne2">(#PAGINATION)</span>]
-				]
-				[(#ENV{lettre}|oui)
-					<span class="ligne1"  style="float:left;"><a href='[(#SELF|parametre_url{lettre, ""})]' style="float:right;display:block" class="ajax" title="#ENV{lettre}">Affichage total</a></span>
-					<span class="pagination ligne2"><INCLURE{fond=noisettes/inc-systemes_pagination_alpha}{lettre=#ENV{lettre,A}}{id_rubrique}></span>
-				]
-			</dd>
-		</dl><!-- pagination -->
-	</div>
+
+					[<span class="pagination ligne2">(#PAGINATION)</span>]
+				<br class="leon" />
+	</div><!-- pagination -->
 </B_sites>
