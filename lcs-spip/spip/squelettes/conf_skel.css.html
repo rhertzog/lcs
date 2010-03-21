@@ -32,6 +32,7 @@ body {[color:(#CONFIG{tispipskelet_conf/couleurs/color3});][background-color:(#C
 	[background-image: url((#CFG_CHEMIN{tispipskelet_conf/upload/img_body}));]
 	background-position:[(#CONFIG{tispipskelet_conf/upload/img_body_pos_h, left})] [ (#CONFIG{tispipskelet_conf/upload/img_body_pos_v, top})];
 	[background-repeat:(#CONFIG{tispipskelet_conf/upload/img_body_repeat});]
+	[background-attachment :(#CONFIG{tispipskelet_conf/upload/img_body_attachement});]
 ]
 [font-family:(#CONFIG{tispipskelet_conf/police});]
 }
@@ -53,7 +54,7 @@ div#header{
 ]
 
 [(#REM)]
-div#degrade, div#backimg{height:[(#CONFIG{tispipskelet_conf/entete/hauteur_entete,136})]px;	}
+div#header,div#degrade, div#backimg,div#entete{height:[(#CONFIG{tispipskelet_conf/entete/hauteur_entete,136})]px;	}
 
 
 div#entete h1{
@@ -94,6 +95,7 @@ div#container{
 		[background-repeat:(#CONFIG{tispipskelet_conf/upload/img_conteneur_repeat,  repeat-x repeat-y});]
 	]
 }
+div#content dl.bloc {margin:0;padding:0 0 10px;}
 div#content dl.bloc dt.annonce,
 div#content dl.bloc dt.annonce a,
 div#content dl.bloc dt.cartouche,
@@ -115,12 +117,13 @@ ul.intro li.boite_g,ul.intro li.boite_d,ul.intro_2 li.boite_g_2,ul.intro_2 li.bo
 ul.intro h3,ul.intro h3 a,ul.intro_2 h3,ul.intro_2 h3 a,ul.intro_ifade h3,ul.intro_ifade h3 a{[color:(#CONFIG{tispipskelet_conf/couleurs/color51});]}
 ul.intro p,ul.intro dl,ul.intro_2 p,ul.intro_2 dl,ul.intro_ifade p,ul.intro_ifade dl{[background:(#CONFIG{tispipskelet_conf/couleurs/color52});][color:(#CONFIG{tispipskelet_conf/couleurs/color53});]}
 
-dd.corpart{[background:(#CONFIG{tispipskelet_conf/couleurs/color39})]}
+.corpart{[background:(#CONFIG{tispipskelet_conf/couleurs/color39})]}
+.corpart ul.spip {margin-left:1em;padding-left:1em;}
 
 div#side,div#side2{[background:(#CONFIG{tispipskelet_conf/couleurs/color70});]}
 div#side div.rubriques h3.menu-titre,div#side div.rubriques h3.menu-titre a,div#side2 div.rubriques h3.menu-titre,div#side2 div.rubriques h3.menu-titre a{[background:(#CONFIG{tispipskelet_conf/couleurs/color71});][color:(#CONFIG{tispipskelet_conf/couleurs/color72});]}
-div#side div.rubriques ul,div#side div.rubriques dl,div#side2 div.rubriques ul,div#side2 div.rubriques dl,div#side2 div.rubriques table,div#side 
 [(#REM)
+div#side div.rubriques ul,div#side div.rubriques dl,div#side2 div.rubriques ul,div#side2 div.rubriques dl,div#side2 div.rubriques table,div#side 
 div.rubriques{
 		[background:(#CONFIG{tispipskelet_conf/couleurs/couleur_bloc_col});]
 	[(#CONFIG{tispipskelet_conf/upload/aff_bg_bloc_col}|=={oui}|oui)
@@ -131,7 +134,9 @@ div.rubriques{
 	]
 }
 ]
+[(#REM)
 div.rubriques dl.blocElement dd, div.rubriques dl.blocElement dd{font-size:.85em;}
+]
 div.rubriques dl.blocElement dt, div.rubriques dl.blocElement dt{font-size:.9em;}
 div.rubriques table{[background:(#CONFIG{tispipskelet_conf/couleurs/color73});][color:(#CONFIG{tispipskelet_conf/couleurs/color74});]}
 [(#REM) menu horizontal _et vertical ?_]
@@ -140,13 +145,17 @@ div.rubriques table{[background:(#CONFIG{tispipskelet_conf/couleurs/color73});][
 
 #mdh_nav a {[background-color:(#CONFIG{tispipskelet_conf/menuh_color_bg});][color:(#CONFIG{tispipskelet_conf/menuh_color_text});][height:(#CONFIG{tispipskelet_conf/menuh_hauteur})px;]}
 #mdh_nav a, #mdh_nav li ul, #mdh_nav li ul a,#mdh_nav li a.daddyleft {[width:(#CONFIG{tispipskelet_conf/menuh_largeur})px;]}
-#mdh_nav li ul ul {[margin-left:(#CONFIG{tispipskelet_conf/menuh_largeur})px;]}
 #mdh_nav a:hover,#mdh_nav ul.vertul a:hover {[color:(#CONFIG{tispipskelet_conf/menuh_color_text_survol});][background:(#CONFIG{tispipskelet_conf/menuh_color_bg_survol});]}
-#mdh_nav li a.sfhover{[background:(#CONFIG{tispipskelet_conf/menuh_color_text_survol});][color: (#CONFIG{tispipskelet_conf/menuh_color_bg_survol})]}
 #mdh_nav a.on {[color:(#CONFIG{tispipskelet_conf/menuh_color_text_survol});][background:(#CONFIG{tispipskelet_conf/menuh_color_bg_survol})]}
+#mdh_nav li li{position:relative;}
+#mdh_nav li ul ul {[margin-left:(#CONFIG{tispipskelet_conf/menuh_largeur})px;];position:absolute;top:0; }
+#mdh_nav li a{text-align:center;}
+#mdh_nav li li a{text-align:right;}
+#mdh_nav li.gauche li a{text-align:left;}
+#mdh_nav li a.sfhover{[background:(#CONFIG{tispipskelet_conf/menuh_color_text_survol});][color: (#CONFIG{tispipskelet_conf/menuh_color_bg_survol})]}
 #mdh_nav li a.daddy{background:[(#CONFIG{tispipskelet_conf/menuh_color_bg})] url([(#CHEMIN{c/next_15.gif})]) center right no-repeat [;color:(#CONFIG{tispipskelet_conf/menuh_color_text})]}
-#mdh_nav li a.daddyleft{text-indent:18px;background:[(#CONFIG{tispipskelet_conf/menuh_color_bg})] url([(#CHEMIN{c/prev_15.gif})]) center left no-repeat [;color:(#CONFIG{tispipskelet_conf/menuh_color_text})]}
-#mdh_nav li ul.agauchetoute { margin: -1.75em 0 0 [-(#CONFIG{tispipskelet_conf/menuh_largeur})px;]}
+#mdh_nav li a.daddyleft{background:[(#CONFIG{tispipskelet_conf/menuh_color_bg})] url([(#CHEMIN{c/prec_15.gif})]) center left no-repeat [;color:(#CONFIG{tispipskelet_conf/menuh_color_text})]}
+#mdh_nav li li a span{padding-left:15px;padding-right:15px;display:block;}
  
 [(#REM) surcharge menu vertical_]
 #mdh_nav li.vert a {height:auto;width: auto;}
@@ -158,10 +167,14 @@ div.rubriques table{[background:(#CONFIG{tispipskelet_conf/couleurs/color73});][
 [(#REM) surcharge menu vertical deroulant a gauche_]
 [(#CONFIG{tispipskelet_conf/menu_dv_gauche}|?{' '})
 	#mdh_nav li.vert ul.vertul, #mdh_nav li.vert ul.vertul ul {margin-left: -9.8em;}
-	#mdh_nav li a.daddy,#mdh_nav li a.daddyleft,#mdh_nav li.vert a.daddy{background:[(#CONFIG{tispipskelet_conf/menuh_color_bg})] url([(#CHEMIN{c/prev_15.gif})]) center left no-repeat [;color:(#CONFIG{tispipskelet_conf/menuh_color_text})]}
-	#mdh_nav li a{padding-left:15px}
+	#mdh_nav li.vert a.daddy{background:[(#CONFIG{tispipskelet_conf/menuh_color_bg})] url([(#CHEMIN{c/prec_15.gif})]) center left no-repeat [;color:(#CONFIG{tispipskelet_conf/menuh_color_text})]}
 ]
 
+/* portfolio_sites */
+div.portfolio_rubs{float:left;margin:2px 1px;background:#fff;border:1px solid #ddd;overflow:hidden;clear:none;height:120px;}
+
+
+/* mise a jour */
 p.maj{[border:1px solid (#CONFIG{tispipskelet_conf/couleurs/color72});]font-size:.7em;padding:.3em;[color:(#CONFIG{tispipskelet_conf/couleurs/color72});]}
 
 [(#REM) conf de la taille de police - A PARFAIRE
@@ -173,6 +186,7 @@ div#minical,div#minical table,div#minical ul.evenements,div#minical ul.evenement
 ul.menunavdom li a{display:block;[color:(#CONFIG{tispipskelet_conf/couleurs/color_text_lien_menu,#999999});][background:(#CONFIG{tispipskelet_conf/couleurs/color_fond_lien_menu,#ffffff});][border-color:(#CONFIG{tispipskelet_conf/couleurs/color_bord_lien_menu,#999999});][margin-bottom:(#CONFIG{tispipskelet_conf/couleurs/marge_v_menu,5})px;]border-width:[ (#CONFIG{tispipskelet_conf/couleurs/larg_bord_menu_top,1})]px[ (#CONFIG{tispipskelet_conf/couleurs/larg_bord_menu_right,1})px][ (#CONFIG{tispipskelet_conf/couleurs/larg_bord_menu_bottom,1})px][ (#CONFIG{tispipskelet_conf/couleurs/larg_bord_menu_left,1})px;]
 border-style:solid;padding-bottom:5px;padding-left:20px;padding-top:5px;}
 
+ul.menunavdom,ul.menunavdom li,ul.menunavdom li a{[font-size:(#CONFIG{tispipskelet_conf/taille_police_menu})px;]}
 ul.menunavdom li a:hover,ul.menunavdom li.open a:hover,ul.menunavdom li a.on:hover{[color:(#CONFIG{tispipskelet_conf/couleurs/color_text_lien_menu_survol,#ffcc33});][background:(#CONFIG{tispipskelet_conf/couleurs/color_fond_lien_menu_survol,#222222});][border-color: (#CONFIG{tispipskelet_conf/couleurs/color_bord_lien_menu_survol,#ff6600});]}
 
 ul.menunavdom li.open a{[color:(#CONFIG{tispipskelet_conf/couleurs/color_text_lien_menu_ouvert});][background:(#CONFIG{tispipskelet_conf/couleurs/color_fond_lien_menu_ouvert});][border-color:(#CONFIG{tispipskelet_conf/couleurs/color_bord_lien_menu_ouvert});]}
@@ -257,6 +271,7 @@ span.jourEvnmt a{border:1px solid red;padding:2px 2px 0;-moz-border-radius:5px;f
 		div#troiscols{width:31em}
 		ul.intro li,ul.intro_2 li,ul.intro_ifade li,ul.blocsjumo li{width:14.7em}
 		.formulaire_spip li{width:210px;}
+		.rubriques .formulaire_spip li{width:100px;}
 		.formulaire_forum li{width:auto;}
 ]
 ]
@@ -356,6 +371,11 @@ div.onglets_bloc .onglets_contenu {
 	top:-12px;
 }
 
+[(#REM) surcharge barre markitup dans l'espace public - crayons ]
+.markItUp .markItUpHeader ul li {
+	width:auto;
+}
+
 [(#REM) sucharge spip.css]
 div#documents_joints{margin:0 1.5em;}
 div.texte {margin:5px;}
@@ -370,6 +390,11 @@ form#formulaire_recherche{width:130px;margin:5px 30px;}
 div.rubriques .formulaire_spip input{width:100px;}
 div.rubriques .formulaire_spip input.submit{width:40px;}
 div.rubriques #formulaire_recherche {background:transparent;}
+div.miniform{font-size:10px;}
+div.miniform fieldset{background:#fff;padding:0;}
+div.miniform li.editer_session{display:none;}
+div.rubriques div.miniform .formulaire_spip li{width:100%;}
+div.rubriques div.miniform .formulaire_spip input.submit{width:100px;}
 
 [(#REM) SURCHARGE menudep]
 div#side div.rubriques ul.menu li div{background-color:#fff}
@@ -516,6 +541,9 @@ Feuille de style Agenda, par Daniel Faivre, 2007-2009
 	top:8px;
 	width:25px;
 	z-index:999;
+	[(#EVAL{_DIR_PLUGIN_TISPIPSKELET}|=={plugins/auto/tispip_skelet_lcs/}|non)
+	display:none;
+	]
 }
 div.up {
 	background-image:url([(#CHEMIN{i/up.png})]);
