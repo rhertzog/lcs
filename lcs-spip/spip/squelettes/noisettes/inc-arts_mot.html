@@ -9,7 +9,7 @@
 <BOUCLE_mot_bloc(MOTS){id_mot=#GET{idmot_arts_mot, 1}}>
 <h3 class="menu-titre">
 	<a href="#URL_MOT" title="[Aller &agrave; (#TITRE|texte_backend)]" style="line-height:36px;vertical-align:middle;">
-		[(#LOGO_MOT||reduire_image{36}|sinon{[(#LOGO_SITE_SPIP||reduire_image{36})]}|inserer_attribut{style,float:left;vertical-align:middle;margin-right:10px})]
+		[(#LOGO_MOT||image_reduire{36}|sinon{[(#LOGO_SITE_SPIP||image_reduire{36})]}|inserer_attribut{style,float:left;vertical-align:middle;margin-right:10px})]
 		[(#GET{titre_arts_mot,[(#TITRE|supprimer_numero)]})]
 	</a>
 </h3>
@@ -17,7 +17,7 @@
 	<BOUCLE_cycle_art_mot(ARTICLES){id_mot}{id_secteur!=#CONFIG{tispipskelet_conf/s5/id_rub_s5}}{!par date}{0,#GET{nb_arts_mot, 5}}>
 		[<dt style="margin:0 5px;padding:5px">
 			<a href="#URL_ARTICLE" title="#_cycle:TITRE">
-				[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{65}|inserer_attribut{style,float:right})]
+				[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{65}|inserer_attribut{style,float:right})]
 				<strong>(#TITRE|supprimer_numero) : </strong>
 			</a><br />
 			[<span style="font-size:.9em;">(#INTRODUCTION|couper{#GET{intro_long_arts_mot, 350}})</span>]

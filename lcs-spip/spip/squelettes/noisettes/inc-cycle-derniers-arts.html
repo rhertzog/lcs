@@ -20,7 +20,7 @@
 <dl id="s8" class="pics">
 		<BOUCLE_cycle_art(ARTICLES){!par date}{0,6}>
 						[<dd style="margin:5px;padding:0"><a href="#URL_ARTICLE" title="#_cycle:TITRE">
-							[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{75}|sinon{[(#LOGO_SITE_SPIP||reduire_image{75})]}|inserer_attribut{style,float:right})]<strong>(#TITRE) : </strong></a>
+							[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{75}|sinon{[(#LOGO_SITE_SPIP||image_reduire{75})]}|inserer_attribut{style,float:right})]<strong>(#TITRE) : </strong></a>
 								[<span style="font-size:.9em;">(#INTRODUCTION|supprimer_tags|couper{150})</span>]</dd>]
 						
 		</BOUCLE_cycle_art>

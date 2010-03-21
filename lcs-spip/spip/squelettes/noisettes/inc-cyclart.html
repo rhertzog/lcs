@@ -12,7 +12,7 @@
 		<dt>
 			<a href="#URL_ARTICLE" title="[(#TITRE|supprimer_numero)] [(#GET{defil_cyclart}|non) - [(#INTRODUCTION|supprimer_tags|couper{#GET{intro_long_cyclart,150}})] ]" [(#GET{defil_cyclart}|non) class="pretty"]>
 				[(#GET{afflogo_cyclart}|oui)
-					[(#LOGO_ARTICLE_RUBRIQUE||reduire_image{48}|sinon{[(#LOGO_SITE_SPIP||reduire_image{48})]}|inserer_attribut{style,float:right})]
+					[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{48}|sinon{[(#LOGO_SITE_SPIP||image_reduire{48})]}|inserer_attribut{style,float:right})]
 				]
 				[(#TITRE|supprimer_numero)] 
 			</a><br />

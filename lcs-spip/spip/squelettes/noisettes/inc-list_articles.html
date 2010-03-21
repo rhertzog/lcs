@@ -1,16 +1,17 @@
 <B_list_articles>
-<dl style="padding:0;margin:0;">
+<ul style="padding:0;margin:0;">
 	<BOUCLE_list_articles(ARTICLES){id_rubrique ?}{!par date}{par num titre,titre}>
-		<dt style="font-size:.9em;padding:0;margin:0;">		
+		<li style="font-size:1em;padding:2px;margin:0;line-height:12px;">		
+		<img src="[(#CHEMIN{i/page_go.png})]" alt="" width="12" />
 			[<a href="#URL_ARTICLE">(#TITRE|supprimer_numero|supprimer_tags)</a>]
-			<em style="font-size:.9em;">[, (#DATE|affdate_jourcourt)][, par (#LESAUTEURS)]</em>
-		</dt>		
+			<em style="font-size:.8em;">[, (#DATE|affdate_jourcourt)][, par (#LESAUTEURS)]</em>
 [(#REM)
-		<dd style="font-size:.8em;padding:0;margin:0;">
+		<div style="font-size:.8em;padding:0;margin:0;">
 			[(#DESCRIPTIF)]
-			<div> <a href="#URL_ARTICLE">suite...</a></div>
-		</dd>
+			<span class="droite"> <a href="#URL_ARTICLE">suite...</a></span>
+		</div>
  ]
+		</li>
 	</BOUCLE_list_articles>
-</dl>
+</ul>
 </B_list_articles>

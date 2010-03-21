@@ -8,7 +8,7 @@ la premiere fois qu'un message est poste (cf. inc/invalideur). ]
 
 [(#REM) Messages du forum ]
 <B_forums>
-		<dl>
+		<dl[ style="(#ENV{style_bloc})"]>
 			<dd>
 				<ul class="forum-total">
 					<BOUCLE_forums(FORUMS) {id_rubrique ?}{id_article ?}{id_breve ?}{id_syndic ?} {par date}>
