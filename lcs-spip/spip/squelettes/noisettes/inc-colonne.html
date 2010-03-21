@@ -8,7 +8,7 @@
 				[(#CONFIG{tispipskelet_conf/type_menu}|?{[(#INCLURE{fond=noisettes/inc-#CONFIG{tispipskelet_conf/type_menu}}{env})],[(#INCLURE{fond=noisettes/inc-rubriques})]}{env})]]
 			]
 		]
-<BOUCLE_contenu-colonne(FOR){debut=1}{fin=10}{par 1}> 
+<BOUCLE_contenu-colonne(POUR){tableau 1:10}> 
 	[(#CONFIG{tispipskelet_conf[/(#ENV{casier})]/[ctn(#ENV{bloc})]_#COMPTEUR_BOUCLE}|oui)
 		 	[(#SET{ctn, [(#CONFIG{tispipskelet_conf[/(#ENV{casier})]/[ctn(#ENV{bloc})]_#COMPTEUR_BOUCLE})]})]
 	 	[(#SET{bloc,[(#ENV{bloc})]_#COMPTEUR_BOUCLE})]
