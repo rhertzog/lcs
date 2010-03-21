@@ -50,9 +50,7 @@
 		})]
 		[(#SESSION{id_auteur}|?{' '})<li id="deconnect"><a href='[(#URL_LOGOUT{spip.php?page=sommaire})]' class="deconnect">Se d&eacute;connecter</a></li>]
 ]
-		[(#CONFIG{plugin}|match{REC_MC}|?{'',' '})
 			[(#CONFIG{tispipskelet_conf/recherche}|=={oui}|oui)<li>	[(#FORMULAIRE_RECHERCHE)]</li>]
-		]
 [(#CONFIG{tispipskelet_conf/affonglets}|?{'',' '})<li style="background:transparent"><a href="#" title="" style="background:transparent">&nbsp;</a></li>]
 	</ul>
 <a name="top"></a>
