@@ -17,16 +17,26 @@
 		[(#SESSION{statut}|?{[(#GET{titre_prive,Participer...})],Se connecter})]
 </h3>
 <dl id="prive_#ENV{bloc}" class="demi_boite blocElement" [(#GET{titre_prive}|non) style="padding:0;margin0;"] >
-[	<dt>
+<dt>
 	<img src="[(#CHEMIN{i/plus.gif})]" alt="D&eacute;plier" style="float:right;cursor:pointer;"  id="boutton_prive_#ENV{bloc}" />	
-				Bonjour (#SESSION{nom}) 
-	</dt>]
-	<dd style="margin-left:5px;" id="bloc_prive_#ENV{bloc}">
+				 Bonjour 	[ (#SESSION{nom}) ]
+	</dt>
+	[(#SESSION{statut}|non)
+	<dd style="margin:0;padding:0;" id="bloc_prive_#ENV{bloc}">
+	[(#EVAL{_DIR_PLUGIN_TISPIPSKELET}|=={plugins/auto/tispip_skelet_lcs/}|oui)
+	<a href="../lcs/auth.php" title="Se connecter au LCS" style="display:block;text-align:center;"><img src="../lcs/images/barre1/mon_LCS_BP_r1_c3.gif" alt="Se connecter" style="margin:auto" /></a><br/>]
+	[(#EVAL{_DIR_PLUGIN_TISPIPSKELET}|=={plugins/auto/tispip_skelet_lcs/}|non)
+	
+	<div class="miniform">#LOGIN_PUBLIC</div>]
+	</dd>
+	]
+	
 	[(#SESSION{statut}|oui)
+	<dd style="margin-left:5px;font-size:10px;" id="bloc_prive_#ENV{bloc}">
 		Vous &ecirc;tes #GET{statut}, vous pouvez agir sur cet espace.<br/>
 		Que souhaitez-vous faire ? Choisissez dans ces options : 
 		<br />]
-	[(#SESSION{statut}|non)<a href="../lcs/auth.php" title="Se connecter au LCS" style="display:block;text-align:center;"><img src="../lcs/images/barre1/mon_LCS_BP_r1_c3.gif" alt="Se connecter" style="margin:auto" /></a><br/>]
+		
 					[<a href="ecrire/">(#SESSION{statut}|=={6forum}?{:: Visitez votre interface de r&eacute;daction})</a><br/>]
 					[<a href="ecrire/?exec=articles_edit&new=oui"><img src="[(#CHEMIN{i/layout_add.png})]" alt="" /> (#SESSION{statut}|match{1comite|0minirezo}|?{ Commencer un nouvel article})</a><br/>]
 					[<a href="ecrire/"><img src="[(#CHEMIN{i/layout_edit.png})]" alt="" /> (#SESSION{statut}|=={0minirezo}?{ Agir sur les articles propos&eacute;s})</a><br/>]
@@ -37,20 +47,38 @@
 					
 					[<a href="ecrire/?exec=auteur_infos&amp;id_auteur=[(#SESSION{id_auteur})]"><img src="[(#CHEMIN{i/user.png})]" alt="" /> (#SESSION{statut}|match{1comite|0minirezo}|?{Modifier mon profil})</a><br/>]
 	</dd>
-[(#SESSION{statut}|oui)
+[(#SESSION{statut}|oui)]
 <script type="text/javascript"><!--
-         $(document).ready(function(){
-               $('#boutton_prive_#ENV{bloc}').toggle(
-                    function(){ // you can add as much here as you'd like
-                         $('#bloc_prive_#ENV{bloc}').show('normal');
-                         $('#boutton_prive_#ENV{bloc}').attr('src','[(#CHEMIN{i/minus.gif})]');
-                    }, function() { // same here
-                         $('#bloc_prive_#ENV{bloc}').hide('normal');
-                         $('#boutton_prive_#ENV{bloc}').attr('src','[(#CHEMIN{i/plus.gif})]');
-                    });
-
-          });	
+	$(document).ready(function(){
+function equilibre(){
+	$('.colonne').height('auto'); 
+	var highestCol = Math.max($('#side').height(),$('#side2').height(),$('#content').height());
+	$('.colonne').height(highestCol); 
+}
+	$('#boutton_prive_#ENV{bloc}').toggle(
+		function(){ // you can add as much here as you'd like
+	$('.colonne').height('auto'); 
+			$('#boutton_prive_#ENV{bloc}').attr('src','[(#CHEMIN{i/minus.gif})]');
+			$('#bloc_prive_#ENV{bloc}').show('normal', function(){
+			setTimeout(function() {
+				equilibre(); 
+			}, 200);
+			});
+		}, function() { // same here
+	$('.colonne').height('auto'); 
+			$('#boutton_prive_#ENV{bloc}').attr('src','[(#CHEMIN{i/plus.gif})]');
+			$('#bloc_prive_#ENV{bloc}').hide('normal', function(){
+			setTimeout(function() {
+				equilibre(); 
+			}, 500);
+			});
+		});
+		// on redefinit la hauteur de colonnes
+		$('.colonne').height('auto');
+		var highestCol = Math.max($('#side').height(),$('#side2').height(),$('#content').height());
+		$('.colonne').height(highestCol);
+	});	
           
-		$('#bloc_prive_#ENV{bloc}').hide();
+	$('#bloc_prive_#ENV{bloc}').hide();
 // --></script>
-]</dl>
+</dl>
