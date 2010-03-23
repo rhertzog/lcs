@@ -446,7 +446,7 @@ if (!isset($_GET['mlec547trg2s5hy']))
 		echo '<tbody>';
 		
       for ($loop=0; $loop<count($users);$loop++) {
-      
+      	if ($users[$loop]["uid"]!=$_SESSION['login']) {
 			//recherche des absences et retards
 			$potache=$users[$loop]["uid"];
 			$nbabs=0;$nbrtd=0;
@@ -538,6 +538,7 @@ if (!isset($_GET['mlec547trg2s5hy']))
 			//affichage checkbox creneaux existants      
         echo '<td><table border=0 class="motif"><TD class="boxA"><input type="checkbox" name="abs_'.$valeur.'[]" value="'.$users[$loop]["uid"].'"';if ($$testabs=="A") echo'checked';echo ' ></td><TD class="boxR"><input type="checkbox" name="ret_'.$valeur.'[]" value="'.$users[$loop]["uid"].'"';if ($$testret=="R") echo'checked';echo ' ></td>
         <td><INPUT TYPE=TEXT NAME="motif_'.$valeur.'['.$uid_e.']" value="'.$$testmotif.'"SIZE=30 MAXLENGTH=30> </TD></td></table>'; 
+        }
         }
         }
       }
