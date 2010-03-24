@@ -1,6 +1,6 @@
 <?php
 
-/* $Id: bull_func.lib.php 3862 2009-12-04 16:35:10Z crob $ */
+/* $Id: bull_func.lib.php 4138 2010-03-18 08:47:45Z crob $ */
 
 include("../cahier_notes/visu_releve_notes_func.lib.php");
 
@@ -1679,7 +1679,8 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 
 
 			$pdf->SetXY($X_eleve_2,$Y_eleve_2);
-			$pdf->Cell(90,7, $tab_bull['eleve'][$i]['nom']." ".$tab_bull['eleve'][$i]['prenom'],0,2,'');
+			//$pdf->Cell(90,7, $tab_bull['eleve'][$i]['nom']." ".$tab_bull['eleve'][$i]['prenom'],0,2,'');
+			$pdf->Cell(90,7, traite_accents_utf8($tab_bull['eleve'][$i]['nom'])." ".traite_accents_utf8($tab_bull['eleve'][$i]['prenom']),0,2,'');
 			$pdf->SetFont($tab_modele_pdf["caractere_utilse"][$classe_id],'',10);
 			if($tab_modele_pdf["affiche_date_naissance"][$classe_id]==='1') {
 				if($tab_bull['eleve'][$i]['naissance']!="") {

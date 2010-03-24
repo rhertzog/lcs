@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: affiche_eleve.php 3323 2009-08-05 10:06:18Z crob $
+* $Id: affiche_eleve.php 4131 2010-03-17 12:59:16Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -3070,8 +3070,14 @@ function eleve_suivant(){
 				$largeurGrad=50;
 				$largeurBandeDroite=80;
 				$largeur_utile=$largeur_graphe-$largeurGrad-$largeurBandeDroite;
+
 				$nbMat=count($matiere);
-				$largeurMat=round($largeur_utile/$nbMat);
+
+				// Pour éviter des pb de division par zero
+				$largeurMat=$largeur_utile;
+				if($nbMat>0) {
+					$largeurMat=round($largeur_utile/$nbMat);
+				}
 
 				echo "<map name='imagemap'>\n";
 				//for($i=0;$i<count($tab_imagemap);$i++){

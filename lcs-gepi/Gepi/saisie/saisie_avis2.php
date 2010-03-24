@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: saisie_avis2.php 3341 2009-08-23 13:16:13Z crob $
+ * $Id: saisie_avis2.php 4140 2010-03-18 12:06:11Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -37,7 +37,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 include "../lib/bulletin_simple.inc.php";
 if (!checkAccess()) {
@@ -344,6 +344,8 @@ if (isset($fiche)) {
 	// On teste la présence d'au moins un coeff pour afficher la colonne des coef
 	$test_coef = mysql_num_rows(mysql_query("SELECT coef FROM j_groupes_classes WHERE (id_classe='".$id_classe."' and coef > 0)"));
 
+	//echo "\$test_coef=$test_coef<br />";
+
 	// On remonte $affiche_categories au-dessus de include "../lib/calcul_rang.inc.php"; sans quoi il se produit des erreurs.
 	$affiche_categories = sql_query1("SELECT display_mat_cat FROM classes WHERE id='".$id_classe."'");
 	if ($affiche_categories == "y") { $affiche_categories = true; } else { $affiche_categories = false;}
@@ -364,6 +366,11 @@ if (isset($fiche)) {
 		$periode_num=$periode_courante;
 	}
 
+	// Variable temporaire utilisée pour conserver le nombre de coef supérieurs à zéro parce que test_coef et réaffecté dans calcul_moy_gen.inc.php
+	$nb_coef_superieurs_a_zero=$test_coef;
+
+	//echo "\$test_coef=$test_coef<br />";
+
 	//=====================================
 	// Ajout pour faire apparaitre la moyenne générale
 	if($test_coef>0) {
@@ -380,7 +387,7 @@ if (isset($fiche)) {
 
 		unset($tab_moy_gen);
 		//unset($tab_moy_cat_classe);
-		for($loop=1;$loop<=$periode_num;$loop++) {
+		for($loop=1;$loop<=$periode_num_reserve;$loop++) {
 			$periode_num=$loop;
 			include "../lib/calcul_moy_gen.inc.php";
 			$tab_moy_gen[$loop]=$moy_generale_classe;
@@ -398,6 +405,13 @@ if (isset($fiche)) {
 	}
 	//echo "\$test_coef=$test_coef<br />";
 	//=====================================
+
+	//echo "\$test_coef=$test_coef<br />";
+
+	$test_coef=$nb_coef_superieurs_a_zero;
+
+	//echo "\$test_coef=$test_coef<br />";
+
 
 	bulletin($current_eleve_login,'',0,1,$periode_num,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$test_coef,$affiche_categories);
 	$current_eleve_avis_query = mysql_query("SELECT * FROM avis_conseil_classe WHERE (login='$current_eleve_login' AND periode='$periode_num')");
