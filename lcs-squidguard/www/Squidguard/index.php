@@ -3,9 +3,9 @@
    Projet LCS
    Gestion des balacklist squidGuard
    squidGuard/index.php
-   Equipe Tice académie de Caen
-   Dernière modification : 25 Sept 09
-   Distribué selon les termes de la licence GPL
+   Equipe Tice academie de Caen
+   Derniere modification : 25 03 2010 
+   Distribue selon les termes de la licence GPL
    ============================================= */
 
 
@@ -23,14 +23,15 @@ $list_del = $_POST['list_del'];
 $list_add = $_POST['list_add'];
 $raz_db = $_POST['raz_db'];
 $webmail = $_POST['webmail'];
+$forums = $_POST['forums'];
 $audiovideo =  $_POST['audiovideo'];
 $blog = $_POST['blog'];
-$malware = $_POST['malware'];
 $ads = $_POST['ads'];
+$malware = $_POST['malware'];
+$marketingware = $_POST['marketingware'];
 $phishing= $_POST['phishing'];
 $redirecteurs = $_POST['redirecteurs'];
-$marketingware = $_POST['marketingware'];
-$forums = $_POST['forums'];
+
 $bl_full = $_POST['bl_full'];
 $bl_lcs = $_POST['bl_lcs'];
 $modif_status = $_POST['modif_status'];
@@ -126,24 +127,24 @@ echo $html;
 
 // Modif de la configuration squidGuard.conf
 if ( $modif_status ) {
+	if ( $webmail == "webmailOn" ) $cmd = $webmail; else $cmd = "webmailOff";
+	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+ 	if ( $forums == "forumsOn" ) $cmd = $forums; else $cmd = "forumsOff";
+	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
 	if ( $audiovideo == "audiovideoOn" ) $cmd = $audiovideo; else $cmd = "audiovideoOff";
         exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-	if ( $malware == "malwareOn" ) $cmd = $malware; else $cmd = "malwareOff";
+	if ( $blog == "blogOn" ) $cmd = $blog; else $cmd = "blogOff";
         exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
         if ( $ads == "adsOn" ) $cmd = $ads; else $cmd = "adsOff";
         exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-        if ( $redirecteurs == "redirecteursOn" ) $cmd = $redirecteurs; else $cmd = "redirecteursOff";
+	if ( $malware == "malwareOn" ) $cmd = $malware; else $cmd = "malwareOff";
         exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
         if ( $marketingware == "marketingwareOn" ) $cmd = $marketingware; else $cmd = "marketingwareOff";
         exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
         if ( $phishing == "phishingOn" ) $cmd = $phishing; else $cmd = "phishingOff";
         exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-	if ( $blog == "blogOn" ) $cmd = $blog; else $cmd = "blogOff";
+        if ( $redirecteurs == "redirecteursOn" ) $cmd = $redirecteurs; else $cmd = "redirecteursOff";
         exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-	if ( $webmail == "webmailOn" ) $cmd = $webmail; else $cmd = "webmailOff";
-	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
- 	if ( $forums == "forumsOn" ) $cmd = $forums; else $cmd = "forumsOff";
-	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");       
 	if ( $bl == "bl_full" ) $cmd = $bl; else $cmd = "bl_lcs";
 	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
  	if ( $raz_db == "1" ) exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh raz_db");

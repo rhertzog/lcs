@@ -1,3 +1,9 @@
+lcs-squidguard (2.4.7~1) Lcs; urgency=low
+
+  * Fix problem options checked
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 25 Mar 2010 17:00:14 +0100
+
 lcs-squidguard (2.4.6) Lcs; urgency=low
 
   * fix initial install
