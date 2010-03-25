@@ -42,7 +42,7 @@ if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
     #
     # Positionnement de url_accueil 
     #
-    mysql -e " UPDATE lcs_db.applis SET value='/monlcs/' WHERE name='url_accueil';" > /dev/null 2>&1
+    #mysql -e " UPDATE lcs_db.applis SET value='/monlcs/' WHERE name='url_accueil';" > /dev/null 2>&1
     #
     # Droit monlcs_is_admin
     #
