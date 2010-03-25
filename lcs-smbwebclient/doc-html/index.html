@@ -10,12 +10,16 @@
 <h1>Documentation Module LCS Smbwebclient</h1>
 <h2>Versions :</h2>
 <ul>
-    <li>Paquet module : 2.4.1</li>
+    <li>Paquet module : 2.4</li>
     <li>Smbweclient : 2.9</li>
     <li>Site officiel de smbwebclient : <a href="http://smbwebclient.sourceforge.net/">http://smbwebclient.sourceforge.net/</a></li>
 </ul>
 <h2>Dernières modifications :</h2>
-<li>
+    <li>Version 2.4.6.1
+    <ul>
+        <li>Ajout dans la documenation, d'une section concernant la <a href="#restrict">restriction d'accès</a>.</li>
+    </ul>
+    </li>
     <li>Version 2.4.1
     <ul>
         <li>Prise en compte du droit <i class="emphasis">smbweb_is_open</i> et interdiction d'accès si le mot de passe est toujours celui par défaut.Merci à Stéphane Boireau pour cette contribution.</li>
@@ -55,6 +59,14 @@
 </pre>
 <!--p>On vérifiera que dans le menu <tt class="computeroutput">Administration > Parametres serveur</tt> que le parametre <tt class="computeroutput">se3Ip</tt> est correctement positionné car à partir de cette version, ce parametre n'est plus optionel.</p-->
 <p>Pour arriver directement sur le pdc, on pourra positionner dans <tt class="computeroutput">Administration > Parametres serveur</tt> le parametre <tt class="computeroutput">se3domain</tt> comme ceci : <tt class="computeroutput">DOMAINE/NON_NET_BIOS</tt>.</p>
+<a name="restrict"></a><h3>Restriction d'accès au service <i class="emphasis">smbwebclient</i></h3>
+<p>Pour accéder au service smbwebclient,</p>
+<ul>
+    <li>L'utilisateur doit avoir changé son mot de passe par défaut;</li>
+    <li>Il doit appartenir à un groupe possédant le droit <tt class="computeroutput">smbweb_is_open</tt> ou posséder lui même ce droit.</li>
+</ul>
+<p>Si le droit <tt class="computeroutput">smbweb_is_open</tt> n'existe pas dans la branche Rights, celui-ci est créé à l'installation initiale ou à la mise à jour du paquet.</p>
+<p>Lors de la création de ce droit, celui-ci est alimenté avec <tt class="computeroutput">admin</tt>, et les groupes <tt class="computeroutput">Administratifs, Profs et Eleves</tt>... dans le but de conserver l'usage existant dans la limite de la restriction du changement de mot de passe par défaut.</p>
 <a name="rep"></a><h3>Restriction d'affichage de répertoires</h3>
 <p>Le paramètre <tt class="computeroutput">shareview</tt> accessible depuis le menu <tt class="computeroutput">Administration > Parametres serveur</tt> permet de n'autoriser la visualisation que de certains répertoires du serveur de fichiers.</p>
 <p>Par défaut, ce paramètre est positionné avec <tt class="computeroutput">Docs/Classes/Progs</tt>.</p>
@@ -62,8 +74,7 @@
 <tt class="computeroutput">Docs</tt> 
 <tt class="computeroutput">Classes</tt> 
 <tt class="computeroutput">Progs</tt> 
-l'autorisation de l'accès au répertoire <tt class="computeroutput">homes</tt> de l'utilisateur est implicite
-, le séparateur est <b>/</b>.
+l'autorisation de l'accès au répertoire <tt class="computeroutput">homes</tt> de l'utilisateur est implicite, le séparateur est <b>/</b>.
 </p>
 </body>
 </html>
