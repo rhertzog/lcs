@@ -74,15 +74,16 @@ sed -i s/#LCSDOMAIN#/$DOMAIN/g $IN_CONFIG_PATH/localnet.db
 sed -i s/#LCSFULLDOMAIN#/$LCSFULLDOMAIN/g $IN_CONFIG_PATH/localnet.db
 sed -i s/#LCSNET#/$LCSNET/g $IN_CONFIG_PATH/localnet.db
 sed -i s/#LCSHOSTNAME#/$HOSTNAME/g $IN_CONFIG_PATH/localnet.db
-sed -i s/machine$LCSMACHINE/$HOSTNAME/g $IN_CONFIG_PATH/localnet.db
+sed -i s/"machine$LCSMACHINE\tIN"/"$HOSTNAME\tIN"/g $IN_CONFIG_PATH/localnet.db
 mv $IN_CONFIG_PATH/localnet.db /etc/bind/localnet.db
 #
 # Traitement de localnet.rev
 #
 cp $IN_CONFIG_PATH/localnet.rev.in $IN_CONFIG_PATH/localnet.rev
 sed -i s/#SERIAL#/$SERIALREV/g $IN_CONFIG_PATH/localnet.rev
+sed -i s/#LCSFULLDOMAIN#/$LCSFULLDOMAIN/g $IN_CONFIG_PATH/localnet.rev
 sed -i s/#LCSDOMAIN#/$DOMAIN/g $IN_CONFIG_PATH/localnet.rev
-sed -i s/machine$LCSMACHINE/$HOSTNAME/g $IN_CONFIG_PATH/localnet.rev
+sed -i s/machine$LCSMACHINE.$DOMAIN/$LCSFULLDOMAIN/g $IN_CONFIG_PATH/localnet.rev
 mv $IN_CONFIG_PATH/localnet.rev /etc/bind/localnet.rev
 #
 # Traitement de resolv.conf

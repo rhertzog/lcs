@@ -7,7 +7,7 @@ $TTL 604800
  2419200 ; Expire
  604800 ) ; Negative Cache TTL
 ;
-@ IN NS lcetch.#LCSDOMAIN#.
+@ IN NS #LCSFULLDOMAIN#.
 1 IN PTR machine1.#LCSDOMAIN#.
 2 IN PTR machine2.#LCSDOMAIN#.
 3 IN PTR machine3.#LCSDOMAIN#.
