@@ -1,7 +1,8 @@
-lcs-openvpn (2.4.7~1) Lcs; urgency=low
+lcs-openvpn (2.4.7) Lcs; urgency=low
 
   * update masquerade option for running after reboot
-
+  * Fix status after logrotate
+  
  -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue,  2 Feb 2010 00:52:58 +0100
 
 lcs-openvpn (2.4.6) Lcs; urgency=low

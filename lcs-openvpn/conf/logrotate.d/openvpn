@@ -2,6 +2,9 @@
         weekly
         missingok
         rotate 52
-        compress
+        postrotate
+        		invoke-rc.d --quiet openvpn reload > /dev/null
+       	endscript
+        compress   			
         notifempty
 }
