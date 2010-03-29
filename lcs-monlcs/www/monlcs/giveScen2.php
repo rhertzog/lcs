@@ -1,6 +1,6 @@
 <?
+session_start();
 include "includes/secure_no_header.inc.php";
-
 $content = "<table id=cmd>";
 $content .="<tr>"
 ."<td colspan=4 class=grise>Action</td>"
@@ -10,6 +10,10 @@ $content .="<tr>"
 ."</tr>";
 
 extract($_POST);
+
+if (!empty($matiere))
+	$_SESSION['SCEN_MAT'] = $matiere;
+
 $ids = array();
 $sql = "SELECT * from `monlcs_db`.`ml_scenarios` WHERE matiere='$matiere' ;";
 $curseur=mysql_query($sql) or die("ERREUR $sql");

@@ -1,4 +1,5 @@
- <?php
+<?php
+//session_start();
  require_once('basedir.inc.php');
  require_once("$BASEDIR/lcs/includes/headerauth.inc.php");
  require_once("$BASEDIR/Annu/includes/ldap.inc.php");

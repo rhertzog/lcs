@@ -1110,6 +1110,8 @@
 				if ((id == 'lcs') || (mode == 'other')) {
 					$('floatingWindowTab2').style.display='none';
 				}
+				if (id == 'scenario_choix')
+					ScenByMat();
 				$('floatingWindowTab0').style.display='block';
 				var liste = liste_filtree('helpP');
 				enablePopup(liste);	

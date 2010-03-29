@@ -1,6 +1,5 @@
 <?
 	session_start();
-
 	include "includes/secure_no_header.inc.php";
 	if($_POST) {
 		extract($_POST);

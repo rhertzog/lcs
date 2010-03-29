@@ -46,7 +46,8 @@
 
         }
 
-	function add_window(id,type,content,titre,x,y,w,h,vignette) {
+	function add_window(id,type,content,titre,x,y,w,h,vignette,min) {
+		//alert(min);
 		var dhtml_w;
 		//alert(content);
 		//alert(vignette);
@@ -77,6 +78,8 @@
 			
 		}
               pretty_cmd(dhtml_w);
+	      if (min == 'Y')
+		  mini(dhtml_w);	
    
 		
 	}
@@ -98,6 +101,10 @@
 					var z = parseInt($(id+'_z').innerHTML);
 					var w = parseInt($(id+'_w').innerHTML);
 					var h = parseInt($(id+'_h').innerHTML);
+					var min = 'N';
+					if ($(id+'_min'))
+						min = $(id+'_min').innerHTML;
+					//alert(min);
 					var vignette;
 					if ($(id+'_vignette')) 
 						vignette = ($(id+'_vignette').innerHTML);
@@ -110,9 +117,9 @@
 					// var Expression = new RegExp("swf","g");
 				       //if ( Expression.test(url) )
 					//	url = './giveCleanFlash?url='+url;
-					var brique ={id: id,type: type,content: url,titre: titre,x: x,y: y,z: z,w: w,h: h,vignette: vignette}
+					var brique ={id: id,type: type,content: url,titre: titre,x: x,y: y,z: z,w: w,h: h,vignette: vignette,min: min}
 					liste_ress[i] = brique;
-					add_window(id,type,url,titre,x,y,w,h,vignette);
+					add_window(id,type,url,titre,x,y,w,h,vignette,min);
 					
 				}
 
@@ -122,13 +129,16 @@
 					var z = parseInt($(id+'_z').innerHTML);
 					var w = parseInt($(id+'_w').innerHTML);
 					var h = parseInt($(id+'_h').innerHTML);
+					var min = 'N';
+					if ($(id+'_min'))
+						min = $(id+'_min').innerHTML;
 					//var msg = HTMLDecode($(id+'_note_msg').innerHTML);
 					var msg = $(id+'_note_msg').innerHTML;
 					//alert(msg);
 					var titre = $(id+'_note_title').innerHTML;
-					var brique ={id: id,type: type,content: msg,titre: titre,x: x,y: y,z: z,w: w,h: h}
+					var brique ={id: id,type: type,content: msg,titre: titre,x: x,y: y,z: z,w: w,h: h,min: min}
 					liste_ress[i] = brique;
-					add_window(id,type,msg,titre,x,y,w,h,'');
+					add_window(id,type,msg,titre,x,y,w,h,'',min);
 					
 
 				}
@@ -149,7 +159,8 @@
 
 
         function voirAcadScen(jeton) {
-		Element.hide('div_acad_import');
+		//TODO se mettre dans le menu import
+ 		Element.hide('div_acad_import');
 		var params='?jeton='+jeton;
                 new Ajax.Updater('div_acad_import','viewAcadScen.php',{ method: 'post', parameters: params, onComplete: function(requester) {
 			//alert(requester.responseText);
@@ -205,7 +216,7 @@
 								params += "&w=" +liste_ress[i].w;
 								params += "&h=" + liste_ress[i].h;
 								params += "&type=" + liste_ress[i].type;
-								params += "&min=" + 'N';
+								params += "&min=" + liste_ress[i].min;
 								params += '&matiere='+$('matiere').value;
 								params += '&titre_ress='+liste_ress[i].titre;
 								if ('note' == liste_ress[i].type)
@@ -223,9 +234,9 @@
 							}
 						}					
 					}
-					//SCRIPT INCREMENTATION NB TELECHARGEMENT PLATEFORME
-					incremente_scenario(id_scen);
-					alert('L\'import du scénario s\'est bien déroulé.');
+		//SCRIPT INCREMENTATION NB TELECHARGEMENT PLATEFORME
+		incremente_scenario(id_scen);
+		alert('L\'import du scénario s\'est bien déroulé.');
 					
 		}});
 		
@@ -268,9 +279,10 @@
 				ress_params = '?titre='+encodeURI(liste_ress[i].titre)
 					     +'&type='+encodeURI(liste_ress[i].type)
 					     +'&id='+parseInt(i);  
-					if ('note' == liste_ress[i].type)
-							ress_params += '&content='+encodeURI(liste_ress[i].content);
-					else {
+					if ('note' == liste_ress[i].type) {
+							//ress_params += '&content='+encodeURI(liste_ress[i].content);
+							ress_params += '&content='+'#NOTE#';
+					} else {
 							ress_params =  ress_params + '&content='+escape(liste_ress[i].content);
 					}		
 					    

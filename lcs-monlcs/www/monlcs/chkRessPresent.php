@@ -1,4 +1,4 @@
-     <?
+<?php
         include "includes/secure_no_header.inc.php";
 
         if ($_POST || $_GET) {

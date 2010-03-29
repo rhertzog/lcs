@@ -534,7 +534,7 @@ exit();
 
 
 function patchUrl($url,$base) {
-	
+	$url = str_replace('&','&amp;',$url);
 	$base = substr($base,0,-1);
 	$array_test = explode('/',$url);
 	
@@ -546,10 +546,6 @@ function patchUrl($url,$base) {
 		$array_test[0] = $base;
 		return(implode('/',$array_test));
 		}
-
-	
-
-	
 }
 
 

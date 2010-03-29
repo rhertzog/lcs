@@ -103,10 +103,7 @@
 							$output.="<w>$infos->w</w>\n";
 
 							$output.="<min>$infos->min</min>\n";
-							if ($infos->min == 'Y')
-								$output.="<h>1</h>\n";
-							else
-								$output.="<h>$infos->h</h>\n";
+							$output.="<h>$infos->h</h>\n";
 
 						
 							$output.="</ressource>\n";

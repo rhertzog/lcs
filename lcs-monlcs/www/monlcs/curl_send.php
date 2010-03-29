@@ -30,10 +30,10 @@
 	curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 	curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,0);
 	curl_setopt($ch, CURLOPT_CRLF, true);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-	$r['code'] = curl_getinfo($ch,CURLINFO_HTTP_CODE);
-        $r['cr'] = curl_exec($ch);
-        $r['ce'] = curl_errno($ch);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+	//$r['code'] = curl_getinfo($ch,CURLINFO_HTTP_CODE);
+        //$r['cr'] = curl_exec($ch);
+        //$r['ce'] = curl_errno($ch);
 	$retourDistant = utf8_decode(curl_exec($ch));
 	//die(print_r($r));
 	curl_close($ch);

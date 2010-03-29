@@ -1,4 +1,4 @@
-	<? include "includes/secure_no_header.inc.php" ?>
+<?php include "includes/secure_no_header.inc.php" ?>
 	<BODY>
 	<div id="scen-titre">Sauvegarde du scenario import&#233;</div><br />
 	<div id="scen-toto"></div>

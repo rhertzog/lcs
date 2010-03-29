@@ -1,4 +1,5 @@
 <?
+session_start();
 include "includes/secure_no_header.inc.php";
 echo "&nbsp;<B>Matiere: </B>&nbsp;<select id=\"scen_matiere\" name=\"scen_matiere\" onchange=javascript:ScenByMat();>";
 echo "<option value='".'wawa'. "' class='group'>-</option>";
@@ -15,8 +16,12 @@ while ($r = mysql_fetch_object($c)) {
 }
 
 foreach($matieres as $mat) {
-$eq = $mat;
-echo "<option value='".$eq. "' class='group'>$eq</option>";
+	$eq = $mat;
+	if (isset($_SESSION['SCEN_MAT']) && ($_SESSION['SCEN_MAT'] == $eq))
+		$plus = "selected";
+	else
+		$plus ="";
+	echo "<option value='".$eq. "' class='group' $plus>$eq</option>";
 }
 
 

@@ -17,7 +17,7 @@ if ($id == 'actu') {
 if ($id == 'scenario_choix') {
 	if (is_eleve($uid)) { 
         	if (trim($activate_acad_monlcs) == '1') {                                                                
-                	$content2 .="<div onclick=javascript:liste_fiches(); class=menuitems title=Fiches&nbsp;du&nbsp;depot&nbsp;acad&eacute;mique>Fiches&nbsp;associ&eacute;es</div>";
+                	$content2 .="<div onclick=javascript:liste_fiches(); class=menuitems title=Ressources&nbsp;du&nbsp;depot&nbsp;acad&eacute;mique>Ressources&nbsp;associ&eacute;es</div>";
 			die(stringForJavascript($content2));
         	} else 
 			die('Aucune action possible');
@@ -66,7 +66,7 @@ if (is_scenarii($id)) {
 # Ajout pour Publication ACAD
 	if (trim($activate_acad_monlcs) == '1') {
 		$content2 .="<div onclick=javascript:scen_acad_pub(); class=menuitems title=Publication&nbsp;acad&eacute;mique>Publication&nbsp;acad&eacute;mique</div>";
-		$content2 .="<div onclick=javascript:liste_fiches(); class=menuitems title=Fiches&nbsp;du&nbsp;depot&nbsp;acad&eacute;mique>Fiches&nbsp;associ&eacute;es</div>";
+		$content2 .="<div onclick=javascript:liste_fiches(); class=menuitems title=Ressources&nbsp;du&nbsp;depot&nbsp;acad&eacute;mique>Ressources&nbsp;associ&eacute;es</div>";
 	}
 #########################################################################################################################################################################
 	}

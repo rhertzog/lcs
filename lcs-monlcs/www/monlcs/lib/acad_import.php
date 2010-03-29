@@ -3,6 +3,8 @@
    include("../includes/config_acad.inc.php");
 ?>
 			var acad_container;
+			var start = 0;
+			var delta = 4;
 
 			function incremente_scenario(id_scen) {
 				//alert(id_scen);
@@ -19,15 +21,24 @@
 					}});
 				
 				}});
-	
+			return false;	
 			}
 
 			function addTabAsUrl(link) {
 				window.open(link);
 			}
 			
+			function goPrec() {
+				//alert('pas cable');
+				if (start - delta >= 0) {
+					start = start - delta;
+					acad_send();
+				}	
+			}
+	
 			function goSuiv() {
-				alert('pas cable');
+				start = start + delta;
+				acad_send();
 			}
 
 
@@ -62,6 +73,14 @@
 								addTabAsUrl(this.getAttribute('tag'));
 							}
 						}
+						//acad_scenario_link_file
+						var liste = document.getElementsByClassName('acad_scenario_link_file');
+                                                for (var i=0;i < liste.length-1; i++) {
+                                                        liste[i].onclick = function() {
+								voirAcadScen(this.getAttribute('tag'));
+                                                        }
+                                                }
+
 						return true;
  	                               }});
                                 }});
@@ -112,10 +131,10 @@
 		
 			Element.show('spinner');
 			var url = 'SearchScens.php';
-              		var params= '';
-
+              		var params= 'start='+start;
+				
 			if ($('chkSearchByLevel').checked){
-				params+= 'type_etab='+$('type_etab').value;
+				params+= '&type_etab='+$('type_etab').value;
 				params+= '&section='+$('section').value;
 				params+= '&niveau='+$('niveau').value;
 			}
@@ -145,9 +164,9 @@
 				Element.hide('spinner');
 			
 				var liste = document.getElementsByClassName('jeton_link');
-				var size = parseInt(630+liste.length*150);
+				var size = parseInt(650+liste.length*170);
 				
-				$('ajaxWindCmd778').setSize(800,size);
+				$('ajaxWindCmd778').setSize(900,size);
 
 					for (var i = 0; i < liste.length; i++) {
 						liste[i].onclick = function() {
