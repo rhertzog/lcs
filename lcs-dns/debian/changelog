@@ -1,8 +1,8 @@
-lcs-dns (2.4.6~1) Lcs; urgency=low
+lcs-dns (2.4.6) Lcs; urgency=low
 
-  * Fix bug when building localnet.db and rev
+  * Fix bug when building localnet.db and rev 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 26 Mar 2010 11:18:50 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Apr 2010 11:24:10 +0200
 
 lcs-dns (2.4.2) Lcs; urgency=low
 
