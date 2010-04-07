@@ -1,3 +1,9 @@
+lcs-web (2.4.6.4) Lcs; urgency=low
+
+  * Cleaning lcs-web-fixrights
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 07 Apr 2010 13:49:36 +0200
+
 lcs-web (2.4.6.3) Lcs; urgency=low
 
   * Remove cron task ldap save, this task was move in lcs-security package
