@@ -44,6 +44,3 @@ chmod 750 /var/log/lcs
 mkdir -p  /var/lib/lcs/import_comptes
 chown www-data:root /var/lib/lcs/import_comptes
 chmod 755 /var/lib/lcs/import_comptes
-
-chown root:root /etc/cron.d/lcsldapsav
-chmod 644 /etc/cron.d/lcsldapsav
