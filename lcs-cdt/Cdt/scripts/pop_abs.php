@@ -133,8 +133,10 @@ if ($nb>0)
 				{
 				if ($jour==$tsmp)	
 				{
-				$plan[$j][$h] = $row[$h];
-				$why[$j][$h]= $row[$h+13];
+				if ($row[$h]!="") {
+				 $plan[$j][$h] = $row[$h];
+				 $why[$j][$h]= $row[$h+13];
+					}
 				} 
 				
 				}
