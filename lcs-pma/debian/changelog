@@ -1,3 +1,9 @@
+lcs-pma (2.4.6.1) Lcs; urgency=low
+
+  * update to phpMyadmin 3.3.1
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 09 Apr 2010 11:01:02 +0200
+
 lcs-pma (2.4.6) Lcs; urgency=low
 
   * Build stable release 2.4.6

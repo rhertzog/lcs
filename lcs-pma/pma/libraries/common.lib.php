@@ -12,7 +12,7 @@
 /**
  * Misc functions used all over the scripts.
  *
- * @version $Id: common.lib.php 12805 2009-08-16 12:59:58Z lem9 $
+ * @version $Id$
  * @package phpMyAdmin
  */
 
@@ -49,10 +49,10 @@ function PMA_pow($base, $exp, $use_function = false)
     if (! $use_function) {
         $use_function = $pow_function;
     }
+
     if ($exp < 0 && 'pow' != $use_function) {
         return false;
     }
-
     switch ($use_function) {
         case 'bcpow' :
             // bcscale() needed for testing PMA_pow() with base values < 1
@@ -446,6 +446,24 @@ function PMA_showMySQLDocu($chapter, $link, $big_icon = false, $anchor = '')
     }
 } // end of the 'PMA_showMySQLDocu()' function
 
+
+/**
+ * Displays a link to the phpMyAdmin documentation
+ *
+ * @param string  anchor in documentation
+ *
+ * @return  string  the html link
+ *
+ * @access  public
+ */
+function PMA_showDocu($anchor) {
+    if ($GLOBALS['cfg']['ReplaceHelpImg']) {
+        return '<a href="Documentation.html#' . $anchor . '" target="documentation"><img class="icon" src="' . $GLOBALS['pmaThemeImage'] . 'b_help.png" width="11" height="11" alt="' . $GLOBALS['strDocu'] . '" title="' . $GLOBALS['strDocu'] . '" /></a>';
+    } else {
+        return '[<a href="Documentation.html#' . $anchor . '" target="documentation">' . $GLOBALS['strDocu'] . '</a>]';
+    }
+} // end of the 'PMA_showDocu()' function
+
 /**
  * returns HTML for a footnote marker and add the messsage to the footnotes
  *
@@ -548,6 +566,8 @@ function PMA_mysqlDie($error_message = '', $the_query = '',
      */
     require_once './libraries/header.inc.php';
 
+    $error_msg_output = '';
+
     if (!$error_message) {
         $error_message = PMA_DBI_getError();
     }
@@ -570,8 +590,8 @@ function PMA_mysqlDie($error_message = '', $the_query = '',
         }
     }
     // ---
-    echo "\n" . '<!-- PMA-SQL-ERROR -->' . "\n";
-    echo '    <div class="error"><h1>' . $GLOBALS['strError'] . '</h1>' . "\n";
+    $error_msg_output .= "\n" . '<!-- PMA-SQL-ERROR -->' . "\n";
+    $error_msg_output .= '    <div class="error"><h1>' . $GLOBALS['strError'] . '</h1>' . "\n";
     // if the config password is wrong, or the MySQL server does not
     // respond, do not show the query that would reveal the
     // username/password
@@ -580,14 +600,14 @@ function PMA_mysqlDie($error_message = '', $the_query = '',
         // Robbat2 - 12 January 2003, 9:46PM
         // Revised, Robbat2 - 13 January 2003, 2:59PM
         if (function_exists('PMA_SQP_isError') && PMA_SQP_isError()) {
-            echo PMA_SQP_getErrorString() . "\n";
-            echo '<br />' . "\n";
+            $error_msg_output .= PMA_SQP_getErrorString() . "\n";
+            $error_msg_output .= '<br />' . "\n";
         }
         // ---
         // modified to show me the help on sql errors (Michael Keck)
-        echo '    <p><strong>' . $GLOBALS['strSQLQuery'] . ':</strong>' . "\n";
+        $error_msg_output .= '    <p><strong>' . $GLOBALS['strSQLQuery'] . ':</strong>' . "\n";
         if (strstr(strtolower($formatted_sql), 'select')) { // please show me help to the error on select
-            echo PMA_showMySQLDocu('SQL-Syntax', 'SELECT');
+            $error_msg_output .= PMA_showMySQLDocu('SQL-Syntax', 'SELECT');
         }
         if ($is_modify_link) {
             $_url_params = array(
@@ -605,11 +625,11 @@ function PMA_mysqlDie($error_message = '', $the_query = '',
                 $doedit_goto = '<a href="server_sql.php?' . PMA_generate_common_url($_url_params) . '">';
             }
 
-            echo $doedit_goto
+            $error_msg_output .= $doedit_goto
                . PMA_getIcon('b_edit.png', $GLOBALS['strEdit'])
                . '</a>';
         } // end if
-        echo '    </p>' . "\n"
+        $error_msg_output .= '    </p>' . "\n"
             .'    <p>' . "\n"
             .'        ' . $formatted_sql . "\n"
             .'    </p>' . "\n";
@@ -623,7 +643,7 @@ function PMA_mysqlDie($error_message = '', $the_query = '',
     }
     // modified to show me the help on error-returns (Michael Keck)
     // (now error-messages-server)
-    echo '<p>' . "\n"
+    $error_msg_output .= '<p>' . "\n"
             . '    <strong>' . $GLOBALS['strMySQLSaid'] . '</strong>'
             . PMA_showMySQLDocu('Error-messages-server', 'Error-messages-server')
             . "\n"
@@ -639,10 +659,12 @@ function PMA_mysqlDie($error_message = '', $the_query = '',
     // Replace linebreaks
     $error_message = nl2br($error_message);
 
-    echo '<code>' . "\n"
+    $error_msg_output .= '<code>' . "\n"
         . $error_message . "\n"
         . '</code><br />' . "\n";
-    echo '</div>';
+    $error_msg_output .= '</div>';
+
+    $_SESSION['Import_message']['message'] = $error_msg_output;
 
     if ($exit) {
         if (! empty($back_url)) {
@@ -651,14 +673,22 @@ function PMA_mysqlDie($error_message = '', $the_query = '',
             } else {
                 $back_url .= '?no_history=true';
             }
-            echo '<fieldset class="tblFooters">';
-            echo '[ <a href="' . $back_url . '">' . $GLOBALS['strBack'] . '</a> ]';
-            echo '</fieldset>' . "\n\n";
+	    
+	     $_SESSION['Import_message']['go_back_url'] = $back_url;
+	    
+            $error_msg_output .= '<fieldset class="tblFooters">';
+            $error_msg_output .= '[ <a href="' . $back_url . '">' . $GLOBALS['strBack'] . '</a> ]';
+            $error_msg_output .= '</fieldset>' . "\n\n";
         }
+    
+        echo $error_msg_output;
         /**
          * display footer and exit
          */
+	
         require_once './libraries/footer.inc.php';
+    } else {
+        echo $error_msg_output;
     }
 } // end of the 'PMA_mysqlDie()' function
 
@@ -808,8 +838,7 @@ function PMA_getTableList($db, $tables = null, $limit_offset = 0, $limit_count =
             $tbl_is_view = PMA_Table::isView($db, $table['Name']);
 
             if ($tbl_is_view || 'information_schema' == $db) {
-                $table['Rows'] = PMA_Table::countRecords($db, $table['Name'],
-                        $return = true);
+                $table['Rows'] = PMA_Table::countRecords($db, $table['Name']);
             }
         }
 
@@ -899,16 +928,20 @@ function PMA_getTableList($db, $tables = null, $limit_offset = 0, $limit_count =
  */
 function PMA_backquote($a_name, $do_it = true)
 {
-    if (! $do_it) {
+    if (is_array($a_name)) {
+        foreach ($a_name as &$data) {
+            $data = PMA_backquote($data, $do_it);
+        }
         return $a_name;
     }
 
-    if (is_array($a_name)) {
-         $result = array();
-         foreach ($a_name as $key => $val) {
-             $result[$key] = PMA_backquote($val);
-         }
-         return $result;
+    if (! $do_it) {
+        global $PMA_SQPdata_forbidden_word;
+        global $PMA_SQPdata_forbidden_word_cnt;
+
+        if(! PMA_STR_binarySearchInArr(strtoupper($a_name), $PMA_SQPdata_forbidden_word, $PMA_SQPdata_forbidden_word_cnt)) {
+            return $a_name;
+        }
     }
 
     // '0' is also empty for php :-(
@@ -948,6 +981,7 @@ function PMA_whichCrlf()
 /**
  * Reloads navigation if needed.
  *
+ * @param   $jsonly prints out pure JavaScript
  * @uses    $GLOBALS['reload']
  * @uses    $GLOBALS['db']
  * @uses    PMA_generate_common_url()
@@ -955,7 +989,7 @@ function PMA_whichCrlf()
  *
  * @access  public
  */
-function PMA_reloadNavigation()
+function PMA_reloadNavigation($jsonly=false)
 {
     global $cfg;
 
@@ -965,11 +999,12 @@ function PMA_reloadNavigation()
         // in this case, get rid of the table limit offset, otherwise
         // we have a problem when dropping a table on the last page
         // and the offset becomes greater than the total number of tables
-        unset($_SESSION['userconf']['table_limit_offset']);
+        unset($_SESSION['tmp_user_values']['table_limit_offset']);
         echo "\n";
         $reload_url = './navigation.php?' . PMA_generate_common_url($GLOBALS['db'], '', '&');
-        ?>
-<script type="text/javascript">
+	if (!$jsonly)
+	  echo '<script type="text/javascript">' . PHP_EOL;
+	?>
 //<![CDATA[
 if (typeof(window.parent) != 'undefined'
     && typeof(window.parent.frame_navigation) != 'undefined'
@@ -977,8 +1012,10 @@ if (typeof(window.parent) != 'undefined'
     window.parent.goTo('<?php echo $reload_url; ?>');
 }
 //]]>
-</script>
-        <?php
+<?php
+if (!$jsonly)
+  echo '</script>' . PHP_EOL;
+        
         unset($GLOBALS['reload']);
     }
 }
@@ -1297,7 +1334,7 @@ function PMA_profilingCheckbox($sql_query)
         echo PMA_generate_common_hidden_inputs($GLOBALS['db'], $GLOBALS['table']);
         echo '<input type="hidden" name="sql_query" value="' . htmlspecialchars($sql_query) . '" />' . "\n";
         echo '<input type="hidden" name="profiling_form" value="1" />' . "\n";
-        PMA_generate_html_checkbox('profiling', $GLOBALS['strProfiling'], isset($_SESSION['profiling']), true);
+        PMA_display_html_checkbox('profiling', $GLOBALS['strProfiling'], isset($_SESSION['profiling']), true);
         echo '<noscript><input type="submit" value="' . $GLOBALS['strGo'] . '" /></noscript>' . "\n";
         echo '</form>' . "\n";
     }
@@ -1526,7 +1563,7 @@ function PMA_localisedDate($timestamp = -1, $format = '')
  * @return  string  html code for one tab, a link if valid otherwise a span
  * @access  public
  */
-function PMA_getTab($tab, $url_params = array())
+function PMA_generate_html_tab($tab, $url_params = array())
 {
     // default values
     $defaults = array(
@@ -1609,18 +1646,18 @@ function PMA_getTab($tab, $url_params = array())
 
     $out .= '</li>';
     return $out;
-} // end of the 'PMA_getTab()' function
+} // end of the 'PMA_generate_html_tab()' function
 
 /**
  * returns html-code for a tab navigation
  *
- * @uses    PMA_getTab()
+ * @uses    PMA_generate_html_tab()
  * @uses    htmlentities()
  * @param   array   $tabs   one element per tab
  * @param   string  $url_params
  * @return  string  html-code for tab-navigation
  */
-function PMA_getTabs($tabs, $url_params)
+function PMA_generate_html_tabs($tabs, $url_params)
 {
     $tag_id = 'topmenu';
     $tab_navigation =
@@ -1628,7 +1665,7 @@ function PMA_getTabs($tabs, $url_params)
         .'<ul id="' . htmlentities($tag_id) . '">' . "\n";
 
     foreach ($tabs as $tab) {
-        $tab_navigation .= PMA_getTab($tab, $url_params) . "\n";
+        $tab_navigation .= PMA_generate_html_tab($tab, $url_params) . "\n";
     }
 
     $tab_navigation .=
@@ -1677,8 +1714,7 @@ function PMA_linkOrButton($url, $message, $tag_params = array(),
         $tag_params_strings[] = $par_name . '="' . $par_value . '"';
     }
 
-    // previously the limit was set to 2047, it seems 1000 is better
-    if (strlen($url) <= 1000) {
+    if (strlen($url) <= $GLOBALS['cfg']['LinkLengthLimit']) {
         // no whitespace within an <a> else Safari will make it part of the link
         $ret = "\n" . '<a href="' . $url . '" '
             . implode(' ', $tag_params_strings) . '>'
@@ -1737,14 +1773,14 @@ function PMA_linkOrButton($url, $message, $tag_params = array(),
                     . implode(' ', $tag_params_strings)
                     . ' value="' . htmlspecialchars($message) . '" />';
             } else {
+                $displayed_message = htmlspecialchars(
+                        preg_replace('/^.*\salt="([^"]*)".*$/si', '\1',
+                            $message));
                 $ret .= '<input type="image"' . $submit_name . ' '
                     . implode(' ', $tag_params_strings)
                     . ' src="' . preg_replace(
                         '/^.*\ssrc="([^"]*)".*$/si', '\1', $message) . '"'
-                    . ' value="' . htmlspecialchars(
-                        preg_replace('/^.*\salt="([^"]*)".*$/si', '\1',
-                            $message))
-                    . '" />';
+                    . ' value="' . $displayed_message . '" title="' . $displayed_message . '" />'; 
             }
         } else {
             $message = trim(strip_tags($message));
@@ -1920,7 +1956,7 @@ function PMA_checkParameters($params, $die = true, $request = true)
  *
  * @access  public
  * @author  Michal Cihar (michal@cihar.com) and others...
- * @return  string      calculated condition
+ * @return  string     the calculated condition and whether condition is unique 
  */
 function PMA_getUniqueCondition($handle, $fields_cnt, $fields_meta, $row, $force_unique=false)
 {
@@ -2018,15 +2054,18 @@ function PMA_getUniqueCondition($handle, $fields_cnt, $fields_meta, $row, $force
     // Correction University of Virginia 19991216:
     // prefer primary or unique keys for condition,
     // but use conjunction of all values if no primary key
+    $clause_is_unique = true;
     if ($primary_key) {
         $preferred_condition = $primary_key;
     } elseif ($unique_key) {
         $preferred_condition = $unique_key;
     } elseif (! $force_unique) {
         $preferred_condition = $nonprimary_condition;
+        $clause_is_unique = false;
     }
 
-    return trim(preg_replace('|\s?AND$|', '', $preferred_condition));
+    $where_clause = trim(preg_replace('|\s?AND$|', '', $preferred_condition));
+    return(array($where_clause, $clause_is_unique));
 } // end function
 
 /**
@@ -2343,7 +2382,7 @@ function PMA_externalBug($functionality, $component, $minimum_version, $bugref)
  * @param   boolean $checked is it initially checked?
  * @param   boolean $onclick should it submit the form on click?
  */
-function PMA_generate_html_checkbox($html_field_name, $label, $checked, $onclick) {
+function PMA_display_html_checkbox($html_field_name, $label, $checked, $onclick) {
 
     echo '<input type="checkbox" name="' . $html_field_name . '" id="' . $html_field_name . '"' . ($checked ? ' checked="checked"' : '') . ($onclick ? ' onclick="this.form.submit();"' : '') . ' /><label for="' . $html_field_name . '">' . $label . '</label>';
 }
@@ -2359,7 +2398,7 @@ function PMA_generate_html_checkbox($html_field_name, $label, $checked, $onclick
  * @param   boolean $escape_label whether to use htmlspecialchars() on label
  * @param   string  $class enclose each choice with a div of this class
  */
-function PMA_generate_html_radio($html_field_name, $choices, $checked_choice = '', $line_break = true, $escape_label = true, $class='') {
+function PMA_display_html_radio($html_field_name, $choices, $checked_choice = '', $line_break = true, $escape_label = true, $class='') {
     foreach ($choices as $choice_value => $choice_label) {
         if (! empty($class)) {
             echo '<div class="' . $class . '">';
@@ -2382,26 +2421,28 @@ function PMA_generate_html_radio($html_field_name, $choices, $checked_choice = '
 }
 
 /**
- * Generates and echoes an HTML dropdown
+ * Generates and returns an HTML dropdown
  *
  * @uses    htmlspecialchars()
  * @param   string  $select_name
  * @param   array   $choices the choices values
  * @param   string  $active_choice the choice to select by default
+ * @param   string  $id the id of the select element; can be different in case
+ *                  the dropdown is present more than once on the page
  * @todo    support titles
  */
-function PMA_generate_html_dropdown($select_name, $choices, $active_choice)
+function PMA_generate_html_dropdown($select_name, $choices, $active_choice, $id)
 {
-    $result = '<select name="' . htmlspecialchars($select_name) . '" id="' . htmlspecialchars($select_name) . '">"' . "\n";
-    foreach ($choices as $one_choice) {
-        $result .= '<option value="' . htmlspecialchars($one_choice) . '"';
-        if ($one_choice == $active_choice) {
+    $result = '<select name="' . htmlspecialchars($select_name) . '" id="' . htmlspecialchars($id) . '">';
+    foreach ($choices as $one_choice_value => $one_choice_label) {
+        $result .= '<option value="' . htmlspecialchars($one_choice_value) . '"';
+        if ($one_choice_value == $active_choice) {
             $result .= ' selected="selected"';
         }
-        $result .= '>' . htmlspecialchars($one_choice) . '</option>' . "\n";
+        $result .= '>' . htmlspecialchars($one_choice_label) . '</option>';
     }
-    $result .= '</select>' . "\n";
-    echo $result;
+    $result .= '</select>';
+    return $result;
 }
 
 /**
@@ -2710,5 +2751,47 @@ function PMA_duplicateFirstNewline($string){
  */
 function PMA_getTitleForTarget($target) {
     return $GLOBALS[$GLOBALS['cfg']['DefaultTabTranslationMapping'][$target]];
+}
+
+/** 
+  * The function creates javascript and html code, which run given mootools/JS code when DOM is ready
+  *
+  * @param String $code - Mootools/JS code, which will be run
+  * @param boolena $print - If true, then the code is printed, otherwise is returned
+  *
+  * @return String - the code
+  */
+function PMA_js_mootools_domready($code, $print=true)
+{
+    // these generated newlines are needed
+  $out  = '';
+  $out .= '<script type="text/javascript">';
+  $out .= "\n" . '// <![CDATA[' . "\n";
+  $out .= 'window.addEvent(\'domready\',function() {';
+  $out .= $code;
+  $out .= '});';
+  $out .= "\n" . '// ]]>' . "\n";
+  $out .= '</script>';
+
+  if ($print)
+    echo $out;
+
+  return $out;
+}
+
+function PMA_js($code, $print=true)
+{
+    // these generated newlines are needed
+  $out  = '';
+  $out .= '<script type="text/javascript">'."\n";
+  $out .= "\n" . '// <![CDATA[' . "\n";
+  $out .= $code;
+  $out .= "\n" . '// ]]>' . "\n";
+  $out .= '</script>'."\n";
+
+  if ($print)
+    echo $out;
+
+  return $out;
 }
 ?>

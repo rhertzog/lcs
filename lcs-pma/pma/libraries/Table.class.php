@@ -2,7 +2,7 @@
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  *
- * @version $Id: Table.class.php 13053 2009-10-17 12:58:05Z lem9 $
+ * @version $Id$
  * @package phpMyAdmin
  */
 
@@ -199,7 +199,7 @@ class PMA_Table
 
         if ($this->get('TABLE_ROWS') === null) {
             $this->set('TABLE_ROWS', PMA_Table::countRecords($this->getDbName(),
-                $this->getName(), true, true));
+                $this->getName(), true));
         }
 
         $create_options = explode(' ', $this->get('TABLE_ROWS'));
@@ -241,7 +241,7 @@ class PMA_Table
     static public function sGetToolTip($db, $table)
     {
         return PMA_Table::sGetStatusInfo($db, $table, 'Comment')
-            . ' (' . PMA_Table::countRecords($db, $table, true) . ')';
+            . ' (' . PMA_Table::countRecords($db, $table) . ')';
     }
 
     /**
@@ -274,7 +274,7 @@ class PMA_Table
         }
 
         if (! isset(PMA_Table::$cache[$db][$table][$info])) {
-            trigger_error('unkown table status: ' . $info, E_USER_WARNING);
+            trigger_error('unknown table status: ' . $info, E_USER_WARNING);
             return false;
         }
 
@@ -403,7 +403,6 @@ class PMA_Table
      *
      * @param   string   the current database name
      * @param   string   the current table name
-     * @param   boolean  whether to retain or to displays the result
      * @param   boolean  whether to force an exact count
      *
      * @return  mixed    the number of records if "retain" param is true,
@@ -411,8 +410,7 @@ class PMA_Table
      *
      * @access  public
      */
-    static public function countRecords($db, $table, $ret = false,
-        $force_exact = false, $is_view = null)
+    static public function countRecords($db, $table, $force_exact = false, $is_view = null)
     {
         if (isset(PMA_Table::$cache[$db][$table]['ExactRows'])) {
             $row_count = PMA_Table::$cache[$db][$table]['ExactRows'];
@@ -425,7 +423,8 @@ class PMA_Table
 
             if (! $force_exact) {
                 if (! isset(PMA_Table::$cache[$db][$table]['Rows']) && ! $is_view) {
-                    PMA_Table::$cache[$db][$table] = PMA_DBI_fetch_single_row('SHOW TABLE STATUS FROM ' . PMA_backquote($db) . ' LIKE \'' . PMA_sqlAddslashes($table, true) . '\'');
+                    $tmp_tables = PMA_DBI_get_tables_full($db, $table);
+                    PMA_Table::$cache[$db][$table] = $tmp_tables[$table];
                 }
                 $row_count = PMA_Table::$cache[$db][$table]['Rows'];
             }
@@ -447,8 +446,8 @@ class PMA_Table
                     } else {
                         // Counting all rows of a VIEW could be too long, so use
                         // a LIMIT clause.
-                        // Use try_query because it can fail (a VIEW is based on
-                        // a table that no longer exists)
+                        // Use try_query because it can fail (when a VIEW is 
+                        // based on a table that no longer exists)
                         $result = PMA_DBI_try_query(
                             'SELECT 1 FROM ' . PMA_backquote($db) . '.'
                                 . PMA_backquote($table) . ' LIMIT '
@@ -464,22 +463,7 @@ class PMA_Table
             }
         }
 
-        if ($ret) {
-            return $row_count;
-        }
-
-        /**
-         * @deprecated at the moment nowhere is $return = false used
-         */
-        // Note: as of PMA 2.8.0, we no longer seem to be using
-        // PMA_Table::countRecords() in display mode.
-        echo PMA_formatNumber($row_count, 0);
-        if ($is_view) {
-            echo '&nbsp;'
-                . sprintf($GLOBALS['strViewHasAtLeast'],
-                    $GLOBALS['cfg']['MaxExactCount'],
-                    '[a@./Documentation.html#cfg_MaxExactCount@_blank]', '[/a]');
-        }
+        return $row_count;
     } // end of the 'PMA_Table::countRecords()' function
 
     /**
@@ -547,7 +531,7 @@ class PMA_Table
 
             // must use PMA_DBI_QUERY_STORE here, since we execute another
             // query inside the loop
-            $table_copy_rs    = PMA_query_as_cu($table_copy_query, true,
+            $table_copy_rs    = PMA_query_as_controluser($table_copy_query, true,
                 PMA_DBI_QUERY_STORE);
 
             while ($table_copy_row = @PMA_DBI_fetch_assoc($table_copy_rs)) {
@@ -567,7 +551,7 @@ class PMA_Table
                     (\'' . implode('\', \'', $value_parts) . '\',
                      \'' . implode('\', \'', $new_value_parts) . '\')';
 
-                PMA_query_as_cu($new_table_query);
+                PMA_query_as_controluser($new_table_query);
                 $last_id = PMA_DBI_insert_id();
             } // end while
 
@@ -787,7 +771,7 @@ class PMA_Table
                               . '        db_name    = \'' . PMA_sqlAddslashes($target_db) . '\''
                               . ' WHERE db_name  = \'' . PMA_sqlAddslashes($source_db) . '\''
                               . ' AND table_name = \'' . PMA_sqlAddslashes($source_table) . '\'';
-                PMA_query_as_cu($remove_query);
+                PMA_query_as_controluser($remove_query);
                 unset($remove_query);
             }
 
@@ -800,7 +784,7 @@ class PMA_Table
                                 . '         table_name = \'' . PMA_sqlAddslashes($target_table) . '\''
                                 . ' WHERE db_name  = \'' . PMA_sqlAddslashes($source_db) . '\''
                                 . ' AND table_name = \'' . PMA_sqlAddslashes($source_table) . '\'';
-                PMA_query_as_cu($table_query);
+                PMA_query_as_controluser($table_query);
                 unset($table_query);
             }
 
@@ -810,7 +794,7 @@ class PMA_Table
                                 . '         foreign_db = \'' . PMA_sqlAddslashes($target_db) . '\''
                                 . ' WHERE foreign_db  = \'' . PMA_sqlAddslashes($source_db) . '\''
                                 . ' AND foreign_table = \'' . PMA_sqlAddslashes($source_table) . '\'';
-                PMA_query_as_cu($table_query);
+                PMA_query_as_controluser($table_query);
                 unset($table_query);
 
                 $table_query = 'UPDATE ' . PMA_backquote($GLOBALS['cfgRelation']['db']) . '.' . PMA_backquote($GLOBALS['cfgRelation']['relation'])
@@ -818,7 +802,7 @@ class PMA_Table
                                 . '         master_db = \'' . PMA_sqlAddslashes($target_db) . '\''
                                 . ' WHERE master_db  = \'' . PMA_sqlAddslashes($source_db) . '\''
                                 . ' AND master_table = \'' . PMA_sqlAddslashes($source_table) . '\'';
-                PMA_query_as_cu($table_query);
+                PMA_query_as_controluser($table_query);
                 unset($table_query);
             }
 
@@ -835,21 +819,21 @@ class PMA_Table
                                 . '         db_name = \'' . PMA_sqlAddslashes($target_db) . '\''
                                 . ' WHERE db_name  = \'' . PMA_sqlAddslashes($source_db) . '\''
                                 . ' AND table_name = \'' . PMA_sqlAddslashes($source_table) . '\'';
-                PMA_query_as_cu($table_query);
+                PMA_query_as_controluser($table_query);
                 unset($table_query);
                 /*
                 $pdf_query = 'SELECT pdf_page_number '
                            . ' FROM ' . PMA_backquote($GLOBALS['cfgRelation']['db']) . '.' . PMA_backquote($GLOBALS['cfgRelation']['table_coords'])
                            . ' WHERE db_name  = \'' . PMA_sqlAddslashes($target_db) . '\''
                            . ' AND table_name = \'' . PMA_sqlAddslashes($target_table) . '\'';
-                $pdf_rs = PMA_query_as_cu($pdf_query);
+                $pdf_rs = PMA_query_as_controluser($pdf_query);
 
                 while ($pdf_copy_row = PMA_DBI_fetch_assoc($pdf_rs)) {
                     $table_query = 'UPDATE ' . PMA_backquote($GLOBALS['cfgRelation']['db']) . '.' . PMA_backquote($GLOBALS['cfgRelation']['pdf_pages'])
                                     . ' SET     db_name = \'' . PMA_sqlAddslashes($target_db) . '\''
                                     . ' WHERE db_name  = \'' . PMA_sqlAddslashes($source_db) . '\''
                                     . ' AND page_nr = \'' . PMA_sqlAddslashes($pdf_copy_row['pdf_page_number']) . '\'';
-                    $tb_rs    = PMA_query_as_cu($table_query);
+                    $tb_rs    = PMA_query_as_controluser($table_query);
                     unset($table_query);
                     unset($tb_rs);
                 }
@@ -862,7 +846,7 @@ class PMA_Table
                                 . '         db_name = \'' . PMA_sqlAddslashes($target_db) . '\''
                                 . ' WHERE db_name  = \'' . PMA_sqlAddslashes($source_db) . '\''
                                 . ' AND table_name = \'' . PMA_sqlAddslashes($source_table) . '\'';
-                PMA_query_as_cu($table_query);
+                PMA_query_as_controluser($table_query);
                 unset($table_query);
             }
 
@@ -880,7 +864,7 @@ class PMA_Table
                                             WHERE
                                                 db_name = \'' . PMA_sqlAddslashes($source_db) . '\' AND
                                                 table_name = \'' . PMA_sqlAddslashes($source_table) . '\'';
-                    $comments_copy_rs    = PMA_query_as_cu($comments_copy_query);
+                    $comments_copy_rs    = PMA_query_as_controluser($comments_copy_query);
 
                     // Write every comment as new copied entry. [MIME]
                     while ($comments_copy_row = PMA_DBI_fetch_assoc($comments_copy_rs)) {
@@ -895,7 +879,7 @@ class PMA_Table
                                             . '\'' . PMA_sqlAddslashes($comments_copy_row['transformation']) . '\','
                                             . '\'' . PMA_sqlAddslashes($comments_copy_row['transformation_options']) . '\'' : '')
                                     . ')';
-                        PMA_query_as_cu($new_comment_query);
+                        PMA_query_as_controluser($new_comment_query);
                     } // end while
                     PMA_DBI_free_result($comments_copy_rs);
                     unset($comments_copy_rs);
@@ -1040,7 +1024,7 @@ class PMA_Table
                        `table_name` = \'' . PMA_sqlAddslashes($new_name) . '\'
                  WHERE `db_name`    = \'' . PMA_sqlAddslashes($old_db) . '\'
                    AND `table_name` = \'' . PMA_sqlAddslashes($old_name) . '\'';
-            PMA_query_as_cu($remove_query);
+            PMA_query_as_controluser($remove_query);
             unset($remove_query);
         }
 
@@ -1052,7 +1036,7 @@ class PMA_Table
                        `table_name` = \'' . PMA_sqlAddslashes($new_name) . '\'
                  WHERE `db_name`    = \'' . PMA_sqlAddslashes($old_db) . '\'
                    AND `table_name` = \'' . PMA_sqlAddslashes($old_name) . '\'';
-            PMA_query_as_cu($table_query);
+            PMA_query_as_controluser($table_query);
             unset($table_query);
         }
 
@@ -1064,7 +1048,7 @@ class PMA_Table
                        `foreign_table` = \'' . PMA_sqlAddslashes($new_name) . '\'
                  WHERE `foreign_db`    = \'' . PMA_sqlAddslashes($old_db) . '\'
                    AND `foreign_table` = \'' . PMA_sqlAddslashes($old_name) . '\'';
-            PMA_query_as_cu($table_query);
+            PMA_query_as_controluser($table_query);
 
             $table_query = '
                 UPDATE ' . PMA_backquote($GLOBALS['cfgRelation']['db']) . '.'
@@ -1073,7 +1057,7 @@ class PMA_Table
                        `master_table` = \'' . PMA_sqlAddslashes($new_name) . '\'
                  WHERE `master_db`    = \'' . PMA_sqlAddslashes($old_db) . '\'
                    AND `master_table` = \'' . PMA_sqlAddslashes($old_name) . '\'';
-            PMA_query_as_cu($table_query);
+            PMA_query_as_controluser($table_query);
             unset($table_query);
         }
 
@@ -1085,7 +1069,7 @@ class PMA_Table
                        `table_name` = \'' . PMA_sqlAddslashes($new_name) . '\'
                  WHERE `db_name`    = \'' . PMA_sqlAddslashes($old_db) . '\'
                    AND `table_name` = \'' . PMA_sqlAddslashes($old_name) . '\'';
-            PMA_query_as_cu($table_query);
+            PMA_query_as_controluser($table_query);
             unset($table_query);
         }
 
@@ -1097,7 +1081,7 @@ class PMA_Table
                        `table_name` = \'' . PMA_sqlAddslashes($new_name) . '\'
                  WHERE `db_name`    = \'' . PMA_sqlAddslashes($old_db) . '\'
                    AND `table_name` = \'' . PMA_sqlAddslashes($old_name) . '\'';
-            PMA_query_as_cu($table_query);
+            PMA_query_as_controluser($table_query);
             unset($table_query);
         }
 
