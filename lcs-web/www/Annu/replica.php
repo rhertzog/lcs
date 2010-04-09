@@ -243,7 +243,6 @@ if (($ip_svr == $ldap_server) || ($ldap_server == "localhost") || ($ldap_server 
 		$ldap_deport = "yes";
 	}	
 }	
-
 ?>
 
 <H3><?php echo gettext("Mise en place de la r&#233;plication de l'annuaire"); ?></H3>
@@ -276,11 +275,12 @@ if (($ip_svr == $ldap_server) || ($ldap_server == "localhost") || ($ldap_server 
 		  <?php } ?>
 		  <option <?php if ($replica_status == "2") {echo "selected"; } ?> value="2"><?php echo gettext("Serveur LDAP secondaire"); ?></option>
 -->
+	      <option <?php if ($replica_status == "0") {echo "selected"; } ?> value="0"><?php echo gettext("Serveur non r&#233;pliqu&#233;"); ?></option>
 		 <?php
 		// Cas ou l'annuaire est deporte
 		 if ($ldap_deport=="no") {
 		?>
-	          <option <?php if ($replica_status == "0") {echo "selected"; } ?> value="0"><?php echo gettext("Serveur non r&#233;pliqu&#233;"); ?></option>
+
 		  <option <?php if ($replica_status == "3") {echo "selected"; } ?> value="3"><?php echo gettext("Serveur LDAP principal (m&#233;thode syncrepl)"); ?></option>
 		  <?php } ?>
 		  <option <?php if ($replica_status == "4") {echo "selected"; } ?> value="4"><?php echo gettext("Serveur LDAP secondaire (m&#233;thode syncrepl)"); ?></option>
