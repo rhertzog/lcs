@@ -1,5 +1,5 @@
 <?php
-/* lcs/barre.php derniere mise a jour : 13/03/2010 */
+/* lcs/barre.php derniere mise a jour : 08/04/2010 */
 
 // HelpDesk Ajout variable session userHD pour memoriser choix user helpdesk autre qu'admin
 // Necesité de reinitialiser cette variable.  
@@ -10,10 +10,13 @@ require "includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
 require "../Annu/includes/ihm.inc.php";
 
-$result=@mysql_db_query("$DBAUTH","SELECT * from applis WHERE type='M' OR type='S'", $authlink);
+$result=@mysql_db_query("$DBAUTH","SELECT * from applis ", $authlink);
 if ($result)
     while ($r=mysql_fetch_array($result))
-                $$r["name"]=$r["type"];
+        if ($r["type"]!='')  
+            $$r["name"]=$r["type"];
+        else
+            $$r["name"]=$r["value"];
 else
     die ("param&#232;tres absents de la base de donn&#233;es");
 mysql_free_result($result);

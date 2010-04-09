@@ -1,3 +1,9 @@
+lcs-web (2.4.6.5~1) UNRELEASED; urgency=low
+
+  * Modify barre.php : Correction broken link urllogo
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 08 Apr 2010 11:49:39 +0200
+
 lcs-web (2.4.6.4) Lcs; urgency=low
 
   * Cleaning lcs-web-fixrights
