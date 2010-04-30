@@ -11,14 +11,21 @@ case "$1" in
                 #
                 . /usr/share/slis/slis-common.sh
                 handle_initial_config lcs-web-config 60
-            elif [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.6; then
-                #
-                # Update menu.d/40stats.inc
-                #
-                mv /var/www/lcs/includes/menu.d/40stats.inc /var/www/lcs/includes/menu.d/40stats.in
-                grep -v redirection /var/www/lcs/includes/menu.d/40stats.in  > /var/www/lcs/includes/menu.d/40stats.inc
-                UPDATE40STATS="      \"Log redirection mails\",\"/Admin/mail_rediriges.php\",\"lcs_is_admin\","
-                sed -i "7 a\\$UPDATE40STATS" /var/www/lcs/includes/menu.d/40stats.inc
+            else
+                # Update for 2.4.6 version
+                if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.6; then
+                    #
+                    # Update menu.d/40stats.inc
+                    #
+                    mv /var/www/lcs/includes/menu.d/40stats.inc /var/www/lcs/includes/menu.d/40stats.in
+                    grep -v redirection /var/www/lcs/includes/menu.d/40stats.in  > /var/www/lcs/includes/menu.d/40stats.inc
+                    UPDATE40STATS="      \"Log redirection mails\",\"/Admin/mail_rediriges.php\",\"lcs_is_admin\","
+                    sed -i "7 a\\$UPDATE40STATS" /var/www/lcs/includes/menu.d/40stats.inc
+                fi
+                if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.7; then
+                    # restart apache2
+                    invoke-rc.d apache2 restart
+                fi
             fi
             # 	   
             # Restore .htpasswd if exist
@@ -46,6 +53,25 @@ case "$1" in
             # Update sudoers
             # 
             /usr/sbin/lcs-make-sudoers
+            #
+            # Add right Mail_can_redir if not exist in LDAP base
+            #
+            if ! ldapsearch -x cn=Mail_can_redir|grep -q "^cn"; then
+                ldap_server=$(echo "SELECT value FROM params WHERE name='ldap_server';" | mysql -uroot -N lcs_db)
+                ldap_base_dn=$(echo "SELECT value FROM params WHERE name='ldap_base_dn';" | mysql -uroot -N lcs_db)
+                adminRdn=$(echo "SELECT value FROM params WHERE name='adminRdn';" | mysql -uroot -N lcs_db)
+                adminPw=$(echo "SELECT value FROM params WHERE name='adminPw';" | mysql -uroot -N lcs_db)
+                tmp=/root/tmp/smbweb_is_open_$(date +%Y%m%d%H%M%S)
+                mkdir -p $tmp
+                echo "dn: cn=Mail_can_redir,ou=rights,$ldap_base_dn
+objectClass: groupOfNames
+cn: Mail_can_redir
+member: uid=admin,ou=People,$ldap_base_dn
+member: cn=Administratifs,ou=Groups,$ldap_base_dn
+member: cn=Profs,ou=Groups,$ldap_base_dn
+" > $tmp/Mail_can_redir.ldif
+                ldapadd -x -h $ldap_server -D $adminRdn,$ldap_base_dn -w $adminPw -f $tmp/Mail_can_redir.ldif &>/dev/null
+            fi
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
