@@ -34,10 +34,18 @@ case "$1" in
             if  mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1 ; then
 		# Update LCS Version param
                 mysql -e "UPDATE lcs_db.params SET value='$VERSIONLCS' WHERE name='VER'"
-		# Update lcs_db with table redirmail
+                # Update for 2.4.6 version
 		if dpkg --compare-versions $2 lt 2.4.6 ; then
-			mysql -f < /var/lib/lcs/preinstall/lcs_db-table-redirmail.sql
+                    # Create table redirmail for swekey strong auth
+                    mysql -f < /var/lib/lcs/preinstall/lcs_db-table-redirmail.sql
 		fi
+                # Update for 2.4.7 version
+		if dpkg --compare-versions $2 lt 2.4.7 ; then
+                    # Modify statusages for new process statistic
+                    mysql -e "ALTER TABLE lcs_db.statusages ADD login VARCHAR( 30 ) NOT NULL;"
+                    # Create table swekey in lcs_db
+                    mysql -f < /var/lib/lcs/preinstall/lcs_db-table-swekey.sql
+                fi
             fi 
 	fi
 	#

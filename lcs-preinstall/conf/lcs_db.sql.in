@@ -1,13 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 2.11.1
--- http://www.phpmyadmin.net
---
--- Serveur: localhost
--- Généré le : Vend. 23 Mai 2008 à 09:30
--- Version du serveur: 4.0.24
--- Version de PHP: 4.3.10-22
-
-
 --
 -- Base de données: `lcs_db`
 --
@@ -144,10 +134,6 @@ CREATE TABLE IF NOT EXISTS `personne` (
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM AUTO_INCREMENT=1 ;
 
---
--- Contenu de la table `personne`
---
-
 
 -- --------------------------------------------------------
 
@@ -166,10 +152,6 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   KEY `id` (`id`,`sess`)
 ) TYPE=MyISAM AUTO_INCREMENT=1 ;
 
---
--- Contenu de la table `sessions`
---
-
 
 -- --------------------------------------------------------
 
@@ -181,13 +163,9 @@ CREATE TABLE IF NOT EXISTS `statusages` (
   `grp` varchar(15) NOT NULL default '',
   `appli` varchar(20) NOT NULL default '',
   `timestamp` varchar(14) NOT NULL default '',
-  `source` char(3) NOT NULL default ''
-) TYPE=MyISAM;
-
---
--- Contenu de la table `statusages`
---
-
+  `source` char(3) NOT NULL default '',
+  `login` varchar(30) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -207,3 +185,14 @@ CREATE TABLE IF NOT EXISTS `redirmail` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1  ;
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `swekey`
+--
+
+CREATE TABLE IF NOT EXISTS `swekey` (
+`login` varchar(32) NOT NULL,
+`id_swekey` varchar(32) NOT NULL,
+KEY `id_swekey` (`id_swekey`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
