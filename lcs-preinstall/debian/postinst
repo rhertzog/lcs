@@ -42,7 +42,9 @@ case "$1" in
                 # Update for 2.4.7 version
 		if dpkg --compare-versions $2 lt 2.4.7 ; then
                     # Modify statusages for new process statistic
-                    mysql -e "ALTER TABLE lcs_db.statusages ADD login VARCHAR( 30 ) NOT NULL;" > /dev/null 2>&1
+                    if  ! mysqldump lcs_db statusages | grep -q login; then
+                        mysql -e "ALTER TABLE lcs_db.statusages ADD login VARCHAR( 30 ) NOT NULL;"
+                    fi
                     # Create table swekey in lcs_db
                     mysql -f < /var/lib/lcs/preinstall/lcs_db-table-swekey.sql
                 fi
