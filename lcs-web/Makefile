@@ -55,8 +55,8 @@ install:
 	cp -a www/* $(DESTDIR)/var/www/
 
 # install lcs swekey conf
-        install -d $(DESTDIR)/etc/apache2/lcs-main
-        cp -a swekey/* $(DESTDIR)/etc/apache2/lcs-main/
+	install -d $(DESTDIR)/etc/apache2/lcs-main
+	cp -a swekey/* $(DESTDIR)/etc/apache2/lcs-main/
 
 clean:
 
