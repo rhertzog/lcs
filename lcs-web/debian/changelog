@@ -1,8 +1,19 @@
+lcs-web (2.4.7~1) Lcs; urgency=low
+
+  * Fix bug  maj modules Auto/Manu (scripts modules_installes.php and boutons_style.css)
+  * Fix bug in script select_briques.php 
+  * MisterPhi : 
+    * Modify process process statistics
+    * Add redirect mail 
+    * Add link mail to groups
+    * Add strong authentification system based on swekey 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 30 Apr 2010 14:06:25 +0200
+
 lcs-web (2.4.6.5) Lcs; urgency=low
 
   * Modify barre.php : Correction broken link urllogo
   * Modify Annu/replica.php Add select replica slave when LCS use LDAP SE3 
-  * 
 
  -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 29 Apr 2010 08:58:32 +0200
 

@@ -8,18 +8,18 @@ if [ ! -d $PATH2STATS ]; then
 	mkdir $PATH2STATS
 fi
 # File statusages
-echo "grp;appli;timestamp;source" > /tmp/statusages.csv
+echo "grp;appli;timestamp;source;login" > /tmp/statusages.csv
 mysql -se "select * from lcs_db.statusages" >> /tmp/statusages.csv
 cat /tmp/statusages.csv | sed -e "s/\t/;/g" > $PATH2STATS/statusages_$NAME.csv
 rm /tmp/statusages.csv
 mysql -se "TRUNCATE lcs_db.statusages"
 # File statlcs
-nbrpeople=`ldapsearch -xLLL '(&(uid=*)(objectclass=person))' uid | grep People | wc -l`
+nbrpeople=`ldapsearch -xLLL '(|(cn=Administratifs)(cn=Profs)(cn=Classe*))' memberUid | grep memberUid | wc -l`
 nbrprofs=`ldapsearch -xLLL '(cn=profs)' memberUid | grep memberUid | wc -l`
-nbreleves=`ldapsearch -xLLL '(cn=eleves)' memberUid | grep memberUid | wc -l`
+nbreleves=`ldapsearch -xLLL '(cn=Classe*)' memberUid | grep memberUid | wc -l`
 nbradministratifs=`ldapsearch -xLLL '(cn=administratifs)' memberUid | grep memberUid | wc -l`
 nbrgrpclasses=`ldapsearch -xLLL '(cn=Classe*)' cn | grep cn: | wc -l`
-ldapsearch -xLLL '(&(uid=*)(objectclass=person))' uid | grep uid: |sed -e "s/^uid: //" |  while read RES
+ldapsearch -xLLL '(|(cn=Administratifs)(cn=Profs)(cn=Classe*))' memberUid | grep memberUid | sed -e "s/^memberUid: //"| while read RES
 do
   if [ -d /home/$RES ]; then
         let TOTAL=TOTAL+1

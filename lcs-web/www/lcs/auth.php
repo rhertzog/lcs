@@ -1,8 +1,11 @@
 <?php
-/* lcs/auth.php version du : 20/11/2009 */
+/* lcs/auth.php version du : 20/03/2010 */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
+if ( is_dir ("/usr/share/lcs/swekey")) {
+include_once '/usr/share/lcs/swekey/my_login_verify.php';
+}
 
 // register globals
 if (isset($_POST['login'])) $login=$_POST['login']; else $login="" ;
@@ -21,14 +24,20 @@ $error=$_GET['error'];
                 $timestamp = $tmp[2];
                 $timewait = $tmp[3];
 	        $timetotal= $timewait+$timestamp+$MaxLifeTime;
-                // Verification de la validite de la source IP  et du du TimeStamp
-                if ( $ip_src != remote_ip() && time() <  $timetotal ) {
+               //verification swekey
+	        	if (file_exists ("/usr/share/lcs/swekey/my_login_verify.php"))
+                        $test_swekey= SwekeyLoginVerify($login);
+                else $test_swekey=true;
+                // Verification de la validite de la source IP et du du TimeStamp
+                if ( $ip_src != remote_ip() && time() < $timetotal ) {
                         $error = 1;
-                } elseif   ( time() >  $timetotal && $ip_src == remote_ip() ) {
+                } elseif ( time() > $timetotal && $ip_src == remote_ip() ) {
                         $error = 2;
-                }  elseif ( $ip_src != remote_ip()   &&   time() >  $timetotal ) {
+                }  elseif ( $ip_src != remote_ip() && time() > $timetotal ) {
                         $error = 3;
-                } elseif ( !open_session( strtolower($login), $pass, $string_auth) ) {
+                } elseif ($test_swekey == false) {
+                        $error = 5;
+				} elseif ( !open_session( strtolower($login), $pass, $string_auth) ) {
                        $error = 4;
                 }
                 // Interpretation erreurs
@@ -49,6 +58,17 @@ $error=$_GET['error'];
                                 fputs($fp,date("M j H:i:s ")." Login succes for $login from ".remote_ip()."\n");
                                 fclose($fp);
                         }
+                        //enregistrement dans la table statusages
+                        #
+                        # Detection de l'origine de la requete
+                        #
+                        list ($ip_client_prefix) = explode (".", remote_ip()); 
+                        list ($ip_serv_prefix) = explode (".",getenv("SERVER_ADDR"));
+                        if ( $ip_client_prefix == $ip_serv_prefix) $source="lan"; else $source="wan";
+                        #
+                        $date=date("YmdHis");
+                        $result=mysql_db_query("$DBAUTH","INSERT INTO statusages VALUES ('Nogroup', 'auth_ok', '$date', '$source','$login')", $authlink);
+                        
                         if ( file_exists ("/usr/share/lcs/spip/spip_session_lcs.php") ) {
                             // Ouverture d'une session spip
                             header("Location:../spip/spip_session_lcs.php?action=login");
@@ -69,7 +89,7 @@ $error=$_GET['error'];
                         <table border='0'>
                                 <tr>
                                         <td>Identifiant :&nbsp;</td>
-                                        <td><input type="text" name="login" size="20" maxlength="30"/><br /></td>
+                                        <td><input type="text" name="login" size="20" maxlength="30"/><br /></td><td id="swekey" ></td>
                                 </tr>
                                 <tr>
                                         <td>Mot de passe :&nbsp;</td>
@@ -103,6 +123,9 @@ switch ($error) {
                 break;
         case "4" :
                 echo "<div class='alert_msg'>Erreur d'authentification !</div> ";
+                break;
+        case "5" :
+                echo "<div class='alert_msg'>Ce compte n&#233;cessite une swekey  !</div> ";
                 break;
         default :
 }

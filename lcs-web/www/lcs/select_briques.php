@@ -1,5 +1,5 @@
 <?
- /* lcs/select_briques.php derniere mise a jour : 24/09/2009
+ /* lcs/select_briques.php derniere mise a jour : 24/03/2010
 conformite UTF8 et register_long_arrays = Off
  */
 require "./includes/headerauth.inc.php";
@@ -10,7 +10,6 @@ list ($idpers,$login)= isauth();
 if ($idpers == "0") header("Location:$urlauth");
 
 //conformite register_long_arrays =off
-if (isset($_POST['squirrelmail'])) $squirrelmail=$_POST['squirrelmail']; else $squirrelmail="" ;
 if (isset($_POST['submit'])) $submit=$_POST['submit'];else $submit="";
 if (isset($_POST['url_accueil'])) $url_accueil=$_POST['url_accueil'];else $url_accueil="";
 if (isset($_POST['url_logo'])) $url_logo=$_POST['url_logo'];else $url_logo ="";
@@ -46,19 +45,16 @@ if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
         	echo $html;
 	} else {	
         	// Mise a jour des parametres dans la table applis
-        	$query="SELECT * from applis where name = 'squirrelmail' or name = 'url_logo' or name ='url_accueil'";
+        	$query="SELECT * from applis where  name = 'url_logo' or name ='url_accueil'";
         	$result=mysql_query($query);
         	if ($result) {
                     while ($r=mysql_fetch_array($result)) {
-                        if ( $r["name"] == "squirrelmail" ) 
-                          if  ($$r["name"] == "on") $$r["name"] ="1"; else $$r["name"] ="0";
-                        #echo "DEBUG >> ".$r["name"]." ".$$r["name"]." ".$r["value"]."<br>";
-	                if ($r["value"]!=$$r["name"] && $r["type"]!="P") {
-                 	    // Mise a jour de la base de donnees
-                   	    $query1="UPDATE applis SET value=\"".$$r["name"]."\" WHERE name=\"".$r["name"]."\"";
-                   	    $result1=mysql_query($query1);
-                   	    $modif=true;
-                	}                        
+		                if ($r["value"]!=$$r["name"] && $r["type"]!="P") {
+	                 	    // Mise a jour de la base de donnees
+	                   	    $query1="UPDATE applis SET value=\"".$$r["name"]."\" WHERE name=\"".$r["name"]."\"";
+	                   	    $result1=mysql_query($query1);
+	                   	    $modif=true;
+	                	}                        
                     }
                 }
         	echo $html;

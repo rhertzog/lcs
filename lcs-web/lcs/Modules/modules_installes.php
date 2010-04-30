@@ -49,9 +49,7 @@ $job= fopen($act_file,"w");
 //recherche des paquets mis en hold
 $pack_hold=array();
 $cmd='dpkg --get-selections | grep hold | cut  -f1 | cut -d"-" -f2';
-exec($cmd,$lignes_retournees,$ret_val);
-for($i = 0; $i < count($lignes_retournees); $i++)
-$pack_hold[$i]=ucfirst( $lignes_retournees[$i]) ;
+exec($cmd,$pack_hold,$ret_val);
 
 $query="SELECT * from applis where type='M' OR type='N' OR type='S'";
 $result=mysql_query($query);
@@ -71,9 +69,9 @@ if ($result)
           echo "<TD><A HREF=\"../../doc/" . $r->name . "/html/index.html\" TITLE=\"Aide\"><IMG SRC=\"../Plugins/Images/plugins_help.png\" ALT=\"Aide\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\" /></A></TD>\n";
           $nom_paquet= "lcs-".strtolower($r->name);
           if ($r->type =='N' && (!in_array ($r->name, $pack_hold)))
-          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=desact" class="positive" title="D&#233;sactiver la mise &#224; jour automatique">Auto&nbsp;</a></TD>';
+          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=desact" class="positive" title="D&#233;sactiver la mise &#224; jour automatique">A&nbsp;</a></TD>';
           elseif  ($r->type =='N' && (in_array ($r->name, $pack_hold)))
-          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=act" class="negative"title="Activer la mise &#224; jour automatique">Manu</a></TD>';
+          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=act" class="negative"title="Activer la mise &#224; jour automatique">M</a></TD>';
           else
           echo "<TD>&nbsp;</TD>\n";
 		  if ($v != false)

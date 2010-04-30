@@ -91,7 +91,7 @@ $date=date("YmdHis");
 #
 # Enregistrement dans la table statusages
 #
-$result=mysql_db_query("$DBAUTH","INSERT INTO statusages VALUES ('$group', '$use', '$date', '$source')", $authlink);
+$result=mysql_db_query("$DBAUTH","INSERT INTO statusages VALUES ('$group', '$use', '$date', '$source','$login')", $authlink);
 #
 # Redirection
 #

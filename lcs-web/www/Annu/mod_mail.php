@@ -26,7 +26,7 @@
          
   list ($idpers,$login)= isauth();
   if (($idpers == "0") ) header("Location:$urlauth");
-  if ( is_eleve($login) || $test_squir=="0") header("Location:index.php");
+  if ( (ldap_get_right("Mail_can_redir",$login)=="N") || $test_squir=="0") header("Location:index.php");
   $cmd="hostname -d";
   exec($cmd,$hn,$retour);
   $hostn= $hn[0];

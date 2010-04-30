@@ -4,7 +4,7 @@
    Consultation de l'annuaire LDAP
    Annu/people.php
    Equipe Tice academie de Caen
-   Derniere mise a jour : 08/06/2008
+   Derniere mise a jour : 20/03/2010
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -30,6 +30,11 @@
           else $test_squir="0";
    //fin test squirrelmail
    
+   //test listes de diffusion
+    exec ("/bin/grep \"#<listediffusionldap>\" /etc/postfix/mailing_list.cf", $AllOutPut, $ReturnValueShareName);
+    $listediff = 0;
+    if ( count($AllOutPut) >= 1) $listediff = 1;
+  //
   header_html();
   aff_trailer ("3");
   #$TimeStamp_0=microtime();
@@ -56,8 +61,10 @@
         echo "<STRONG>".$groups[$loop]["cn"]."</STRONG>";
       else
         echo $groups[$loop]["cn"];
-      echo "</A>,<font size=\"-2\"> ".$groups[$loop]["description"];
-      $login1=split ("[\,\]",ldap_dn2ufn($groups[$loop]["owner"]),2);
+      echo "</A>,<font size=\"-2\"> ".$groups[$loop]["description"]."&nbsp;";
+      if (! is_eleve($login) && $listediff && $test_squir=="1")
+           echo " <a href=\"mailto:".$groups[$loop]["cn"]."@".$domain."\" >  <img src=\"images/mail.png\" alt=\"Envoyer un mail\"  title=\"Envoyer un mail &#224; ce groupe\" border=0 ></a><br>\n";
+         $login1=split ("[\,\]",ldap_dn2ufn($groups[$loop]["owner"]),2);
       if ( $uid == $login1[0] ) echo "<strong><font color=\"#ff8f00\">&nbsp;(professeur principal)</font></strong>";
       echo "</font></LI>\n";
       // Teste si n&#233;cessit&#233; d'affichage menu Ouverture/Fermeture Bdd et espace web perso des Eleves
@@ -71,8 +78,9 @@
     echo "<br>Pages perso : <a href=\"../~".$user["uid"]."/\"><tt>".$baseurl."~".$user["uid"]."</tt></a><br>\n";
   }
    echo "Adresse m&#232;l : <a href=\"mailto:".$user["email"]."\"><tt>".$user["email"]."</a></tt><br>\n";
-   if (!is_eleve($login) && $user["uid"]==$login && $test_squir=="1") echo "<br><a href=\"mod_mail.php\">Rediriger mes mails vers une boite personnelle</a>";
-  // Affichage Menu people_admin
+   if ((ldap_get_right("Mail_can_redir",$login)=="Y") && $user["uid"]==$login && $test_squir=="1")
+    echo "<br><a href=\"mod_mail.php\">Rediriger mes mails vers une boite personnelle</a>";
+    // Affichage Menu people_admin
   if (is_admin("Annu_is_admin",$login) == "Y" ) {
   ?>
   <br>
@@ -147,6 +155,21 @@
   echo "<li><a href=\"mod_user_entry.php?uid=".$user["uid"]."\">Modifier le compte de mon &#233;l&#232;ve ...</a><br>\n";
   echo "</ul>\n";
   }
+   
+   // swekey
+if (( is_dir ("/usr/share/lcs/swekey")) && ($login == $user["uid"])) {
+	echo '<div id="del_swekey"></div>';
+	if ($_SERVER['PHP_SELF']=="/Annu/people.php"){
+		echo '<SCRIPT language = "javascript" type = "text/javascript" src = "../../swekey/swekey_integrate.js"></SCRIPT>';
+		echo '<SCRIPT language = "javascript" type = "text/javascript" src = "../../swekey/swekey.js"></SCRIPT>'; 
+		echo '<SCRIPT language = "javascript" type = "text/javascript" src = "../../swekey/my_swekey.js"></SCRIPT>';
+		echo '<SCRIPT language = "javascript" type = "text/javascript">
+		var idk = Swekey_ListKeyIds().substring(0, 32);
+		who_user(idk,"'.$login.'");
+		 </SCRIPT>';
+	}
+
+}
 
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>

@@ -16,9 +16,27 @@
   $priority_group=$_POST['priority_group'];
   $group=$_POST['group'];
 
-  list ($idpers)= isauth();
+  list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
 
+//test si squirrelmail est installe pour mailto vers les groupes
+  $query="SELECT value from applis where name='squirrelmail'";
+  $result=mysql_query($query);
+  if ($result) 
+	{
+          if ( mysql_num_rows($result) !=0 ) {
+          $r=mysql_fetch_object($result);
+          $test_squir=$r->value;
+          }
+          else $test_squir="0";
+          }
+          else $test_squir="0";
+   //fin test squirrelmail
+//test listes de diffusion
+	exec ("/bin/grep \"#<listediffusionldap>\" /etc/postfix/mailing_list.cf", $AllOutPut, $ReturnValueShareName);
+    $listediff = 0;
+    if ( count($AllOutPut) >= 1) $listediff = 1;
+//
   header_html();
   aff_trailer ("3");
 
@@ -67,7 +85,10 @@
         else
         */
         echo $groups[$loop]["cn"];
-        echo "</A>&nbsp;&nbsp;&nbsp;<font size=\"-2\">".$groups[$loop]["description"]."</font></LI>\n";
+        echo "</A>&nbsp;&nbsp;&nbsp;<font size=\"-2\">".$groups[$loop]["description"]."</font>";
+         if (! is_eleve($login) && $listediff && $test_squir=="1") 
+         echo "<a href=\"mailto:".$groups[$loop]["cn"]."@".$domain."\" >  <img src=\"images/mail.png\" alt=\"Envoyer un mail\"  
+         title=\"Envoyer un mail &#224; ce groupe\" border=0 ></a><br>\n</LI>\n";
     }
 
     echo "</UL>\n";
