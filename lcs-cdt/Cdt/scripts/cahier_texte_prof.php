@@ -1,5 +1,5 @@
 <?php
-
+//echo 'toto'.$_SERVER["HTTP_REFERER"];exit;
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -68,8 +68,9 @@ if (mysql_num_rows($result)==0)
 	exit;
 	}
 include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");	
-require_once("/usr/share/lcs/Plugins/Cdt/Includes/class.inputfilter_clean.php");
-include_once ('/usr/share/lcs/Plugins/Cdt/Includes/markdown.php'); //convertisseur txt-->HTML
+if (get_magic_quotes_gpc()) require_once("/usr/share/lcs/Plugins/Cdt/Includes/class.inputfilter_clean.php");
+else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
+//include_once ('/usr/share/lcs/Plugins/Cdt/Includes/markdown.php'); //convertisseur txt-->HTML
 ?>
 
 <!-- Fin de la page de première utilisation -->
@@ -137,9 +138,10 @@ require_once ('../Includes/config.inc.php');
    -      Traitement du formulaire  -
    ================================*/
    
-  //Suppression d'un commentaire apr&egrave;es confirmation
-if (isset($_GET['com'])&& isset($_GET['rubrique'])) 
+  //Suppression d'un commentaire apres confirmation
+if (isset($_GET['com'])&& isset($_GET['rubrique']) && $_GET['TA']==$_SESSION['RT'] ) 
 	{
+	
 	//l'article existe il ?
 	$rq = "SELECT login  FROM cahiertxt	WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}')";
 	//$rq = "SELECT login FROM cahiertxt WHERE id_rubrique = 'toto' AND  (login='{$_SESSION['login']}')";
@@ -155,19 +157,33 @@ if (isset($_GET['com'])&& isset($_GET['rubrique']))
 	}
 //fin de suppression d'un commentaire
 
-if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
+if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']==$_SESSION['RT'])
 { 
+//require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	// Traiter les données
 
-	// Vérifier $Cours  et la débarrasser de tout antislash et tags possibles
+	// Vérifier $Cours  
 	if (strlen($_POST['Cours']) > 0)
 		{ 
-		//$Cours  = addSlashes(strip_tags(stripslashes($_POST['Cours'])));
-		$Cours  =htmlentities($_POST['Cours']);
-		$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-		$Cours = $oMyFilter->process($Cours);
-	
-
+		
+		if (get_magic_quotes_gpc())
+		    {
+			$Cours  =htmlentities($_POST['Cours']);
+			$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+			$Cours = $oMyFilter->process($Cours);
+			}
+		else
+			{
+			// htlmpurifier
+			$Cours = addSlashes($_POST['Cours']);
+			$config = HTMLPurifier_Config::createDefault();
+	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
+	    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+	   		$purifier = new HTMLPurifier($config);
+	   		//$Cours = addSlashes($Cours);
+	   		$Cours = $purifier->purify($Cours);
+	   		
+			}
 		
 		}
 	else
@@ -179,9 +195,17 @@ if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
 	if (strlen($_POST['Afaire']) > 0)
 		{ 
 		//$Afaire= addSlashes(strip_tags(stripslashes($_POST['Afaire'])));
-		$Afaire  = $_POST['Afaire'];
-		$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-		$Afaire = $oMyFilter->process($Afaire);
+		if (get_magic_quotes_gpc())
+		    {
+			$Afaire  = $_POST['Afaire'];
+			$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+			$Afaire = $oMyFilter->process($Afaire);
+			}
+		else
+			{
+			$Afaire  =addSlashes($_POST['Afaire']);
+			$Afaire = $purifier->purify($Afaire);
+			}	
 		}
 	else
 		{ // Si aucun commentaire n'a été saisi
@@ -273,7 +297,7 @@ if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
 					$result = mysql_query($rq); 
 					if (!$result)  // Si l'enregistrement est incorrect
 						{                           
-						echo "<p>Votre commentaire n'a pas pu ętre enregistré ŕ cause d'une erreur systčme".
+						echo "<p>Votre commentaire n'a pas pu ętre enregistré a cause d'une erreur systčme".
 						"<p></p>" . mysql_error() . "<p></p>";
 						mysql_close();     // refermer la connexion avec la base de données
 						exit();
@@ -353,8 +377,10 @@ if (isset($_POST["suppr"]))
 	{
 	echo "<script type='text/javascript'>";
 	echo "if (confirm('Confirmer la suppression de ce commentaire')){";
-	echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'" + "?com=" +'." '"; echo $_POST["number"] ;echo "'"
-	.' + "&rubrique=" +'." '";echo $_POST['rubriq']."'".' ;}</script>';
+	echo ' location.href = "';echo $_SERVER['PHP_SELF'];
+	echo'" + "?com=" +'." '"; echo $_POST["number"] ;
+	echo "'".' + "&rubrique=" +'." '";echo $_POST['rubriq']."'";
+	echo ' + "&TA=" +'." '". $_SESSION['RT']."'".' ;}</script>';
 	}
 	
 
@@ -411,7 +437,7 @@ if (isset($cible))
 		{$classe_active=$enrg[0];//classe
 		$mati_active=$enrg[1];//mati&egrave;ere
 		}
-	
+	 
 	}	
 /*================================
    -      Affichage du formulaire  -
@@ -457,7 +483,7 @@ if (isset($tsmp3))
  				<input id="datejavav" size="10" name="datejav" value="<?echo $dtajav?>" readonly="readonly" style="cursor: text" title="Par défaut, le commentaire sera visible a partir de la date du cours">
  			</div>
 			<TEXTAREA id="coursfield"  NAME="Cours"  class="mceAdvanced" COLS=1 ROWS=1 WRAP=virtual style="background-color:#F0F0FA"><?echo $cours;?> </TEXTAREA>
-			<input type="hidden" name="numart" value= "<? echo $article ; ?>"<br />
+			<input type="hidden" name="numart" value= "<? echo $article ; ?>"><br />
 		</div><!--fin du div boite 1-->
   
 		<div id="boite2">
@@ -468,7 +494,7 @@ if (isset($tsmp3))
 		</div><!--fin du div boite 2-->
 		
 	</div><!--fin de la boite 3-->
-	
+	<INPUT name="TA" type="hidden"  value="<? echo $_SESSION['RT']; ?>">
 	<div id="boite4">
 		<?  if (isset($_POST['modif'])&& isset($_POST['number'])) {
 			echo ('<INPUT name="rubrique" type="hidden" id="rubrique" value="'.$cible.'">
@@ -487,6 +513,8 @@ if (isset($tsmp3))
 				<li><input type="button" title="Annuler" value="" onClick="history.back()" class="submit-del"></li>
 				<li><input type="submit" name="planning" value="" title="Planifier un devoir en '.$classe_active.'" class="submit-plan"></li>
 				<li><a class="a-imprime"title="Imprimer" href="imprim.php?rubrique='.$cible.'  " target="_blank"></a></li>
+				<li><input type="button" value="" onclick="modeleLoad('. $cible.')" class="load-model" title="Appliquer le mod&#232;le"></li>
+				<li><input type="button" value="" onclick="modeleSave('. $cible.')" class="save-model" title="Enregistrer comme mod&#232;le"></li>
 				<li><a href="#" title="Enregistrements multiples" onClick="diffuse_popup('.$cible.'); return false" class="a-saveplus"></a></li>
 				<li><br/><br/></li>
 				<li><input type="submit" title="Enregistrer" name="enregistrer" value="" class="submit-save"></li>
@@ -539,7 +567,7 @@ if (isset($tsmp3))
 	
 				}
 				//s'il n'esiste pas d'archive
-				if ($x==0) { echo '<B><FONT COLOR="#CC0000" >Aucune </FONT></B>';}
+				if ($x==0) { echo '<B><FONT COLOR="#CC0000" > Aucune </FONT></B>';}
 			?>
 	</div><!--fin du div deroulant_2-->
 	
@@ -598,9 +626,10 @@ echo '<div id="boite5">';
 echo '<TABLE id="tb-cdt" CELLPADDING=1 CELLSPACING=2>';
 while ($ligne = mysql_fetch_array($result, MYSQL_NUM)) 
 	  { 
-	  $textcours=stripslashes(markdown($ligne[1]));
-	  //$textcours=$ligne[1];
-	  $textafaire=stripslashes(markdown($ligne[2]));
+	  //$textcours=stripslashes(markdown($ligne[1]));
+	  $textcours=$ligne[1];
+	  //$textafaire=stripslashes(markdown($ligne[2]));
+	  $textafaire=$ligne[2];
 	  //$day="1,0,0,12,1,2007";echo $day;
 	  $jour=LeJour(strToTime($ligne[5]));
 	  //debut

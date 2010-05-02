@@ -27,7 +27,7 @@ float:left;height:200px;margin:60px;opacity:0.9;padding:10px;width:520px;}
 #boite1 {float:left;margin:20px 0 0 0;z-index:1;}
 #boite2 {float: left;margin:0;z-index:1;}
 #boite3 {float: left;margin: 30px 5px 0 15px;width:562px;z-index:1;}
-#boite4 {float:left;width: 60px;margin: 60px 0px;}
+#boite4 {float:left;width: 60px;margin: 25px 0px;}
 #boite4 li {float:left;list-style: none;}
 #boite1 input, #boite2 input {margin:0 3px}
 #visa-cdt {position:fixed; top:150px; right:20px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;-moz-border-radius:0.5em;-webkit-border-radius: 0.5em;border:2px outset #1b2c68;background:#fff url('../images/tampon.png') no-repeat center 5px;}
@@ -35,7 +35,7 @@ float:left;height:200px;margin:60px;opacity:0.9;padding:10px;width:520px;}
 
 /************************************ Blocs pour les boutons du menu de saisie ******************************************************/
 
-.submit-perso, .a-saveplus, .a-imprime, .submit-save, .submit-modif, .submit-del, .submit-plan {float:left;border:none;color:#000000;width:56px;height:50px;margin-top: 3px;cursor: pointer;}
+.submit-perso, .a-saveplus, .a-imprime, .submit-save, .submit-modif, .submit-del, .submit-plan,.load-model,.save-model {float:left;border:none;color:#000000;width:56px;height:50px;margin-top: 3px;cursor: pointer;}
 .submit-perso {background: transparent url('../images/perso-cdt2.png') no-repeat top left;}
 .a-saveplus {background: transparent url('../images/sauve-plus-cdt2.png') no-repeat top left;}
 .a-imprime {background: transparent url('../images/imprimer-cdt2.png') no-repeat top left;}
@@ -43,6 +43,9 @@ float:left;height:200px;margin:60px;opacity:0.9;padding:10px;width:520px;}
 .submit-modif {background: transparent url('../images/sauve-cdt2.png') no-repeat top left;}
 .submit-del {background: transparent url('../images/annuler-cdt2.png') no-repeat top left;}
 .submit-plan {background: transparent url('../images/planifier-cdt2.png') no-repeat top left;}
+.load-model {background: transparent url('../images/btn-cdt-charge-modele2.png') no-repeat top left;}
+.save-model {background: transparent url('../images/btn-cdt-sauve-modele2.png') no-repeat top left;}
+
 	
 #bouton {margin: 0;width: 60px;}
 #boutons ul {padding:0;margin: 0;width: 55px;}

@@ -46,7 +46,7 @@ Traitement du formulaire
 *************************/	
 
 //Enregistrement des données
-if (isset($_POST['enregistrer']))
+if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
 	{ 
 	// Traiter les données
 	// Vérifier $Sujet  et la débarrasser de tout antislash et tags possibles
@@ -282,7 +282,7 @@ if (isset($_POST['enregistrer']))
 
 	
 //Suppression d'un devoir après confirmation
-if (isset($_GET['delrub'])&& isset($_GET['numd'])) 
+if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==$_SESSION['RT']) 
 	{
 	$action=$_GET['delrub'];
 	$cible=$_GET['numd'];
@@ -439,7 +439,8 @@ for ($loup=0; $loup < count($uids); $loup++)
 	
 //eom	
 //Affichage conditionnel d'un message d'erreur
-if ((isset($_POST['enregistrer'])) && ($durée=="")) echo '<H6 class="erreur">'.$message. ' : Durée erronée</H6>';
+if ((isset($_POST['enregistrer'])) && ($durée=="")&& $_POST['TA']==$_SESSION['RT'])
+ echo '<H6 class="erreur">'.$message. ' : Durée erronée</H6>';
 
 //Affichage du formulaire de saisie du sujet du devoir et de la durée
 if (isset($_GET['ladate']) &&(isset($_GET['inser'])))
@@ -453,6 +454,7 @@ if (isset($_GET['ladate']) &&(isset($_GET['inser'])))
 	<INPUT name="login" type="hidden" id="login" value="'. $login.'">
 	<INPUT name="data" type="hidden" id="data" value="'.$_GET["ladate"].'">
 	<INPUT name="numrubri" type="hidden" id="numrubri" value="'.$numrub.'">
+	<INPUT name="TA" type="hidden"  value="'. $_SESSION['RT'].'">
 	<p>Intitulé du devoir :<INPUT class="text" TYPE=TEXT NAME="sujet" SIZE=28 MAXLENGTH=28>Durée :<INPUT class="text" TYPE=TEXT NAME="durée" SIZE=1 MAXLENGTH=1>heure(s)&nbsp;';
 	if ($ct1cours) 
 		{
@@ -836,7 +838,7 @@ if (isset($_GET["suppr"]))
 	echo "if (confirm('Confirmer la suppression de ce devoir (Vous ne pouvez supprimer que vos devoirs !!)')){";
 	echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'" + "?numd=" +'." '"; echo $_GET["numdev"] ;echo "'"
 	.' + "&delrub=" +'."1245".' + "&ladate=" +'."'";echo $date[0];echo "'".'+ "&jc="+'."'".$Lundi."'".'
-	+ "&klasse="+'."'".$clas."'".'+ "&numrubr="+'."'".$numrub."'".'+ "&matière="+'."'".$mati."'".' ;}</script>';
+	+ "&klasse="+'."'".$clas."'".'+ "&numrubr="+'."'".$numrub."'".'+ "&matière="+'."'".$mati."'".' + "&TA=" +'." '". $_SESSION['RT']."'".' ;}</script>';
 	}
   echo '</div>'; 	//fin du contenu
 echo '</div>'; 	//fin du container

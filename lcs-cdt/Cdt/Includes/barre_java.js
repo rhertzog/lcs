@@ -113,4 +113,71 @@ function go(cib){
 			}
 
 
+function modeleLoad (cib) {
+	var xhr = getXhr();
+					
+				var datamod = "cibl=" + cib;
+				// On défini ce qu'on va faire quand on aura la réponse
+				 function resultat(){
+					// On ne fait quelque chose que si on a tout reçu et que le serveur est ok
+					if(xhr.readyState == 4) {
+						if(xhr.status == 200){
+						if(xhr.responseText =='NOK')	
+						alert('erreur');
+						else {
+						var docXML= xhr.responseXML;
+						var items = docXML.getElementsByTagName("donnee")
+						tinyMCE.get('coursfield').setContent(items.item(0).firstChild.data);
+						tinyMCE.get('afairefield').setContent(items.item(1).firstChild.data);
+							}
+						}
+						else
+						{
+							alert('Probleme Ajax');
+						}
+				   	}	
+				}
+				xhr.onreadystatechange = resultat;
+				xhr.open("POST","load_modele.php",true);
+				xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");				
+				xhr.send(datamod);
+			}
+
+function modeleSave(cib) {
+	var xhr = getXhr();
+				var modelecours = "";
+				var modeleafaire = "";
+				modelecours = escape(tinyMCE.get('coursfield').getContent());
+				modeleafaire= escape(tinyMCE.get('afairefield').getContent());
+				// Do you ajax call here, window.setTimeout fakes ajax call
+	
+				var datamod = "coursmod=" + modelecours + "&afmod=" + modeleafaire + "&cibl=" + cib;
+				// On défini ce qu'on va faire quand on aura la réponse
+				 function resultat(){
+					// On ne fait quelque chose que si on a tout reçu et que le serveur est ok
+					if(xhr.readyState == 4) {
+						if(xhr.status == 200){
+						if(xhr.responseText !='OK')	
+						alert(xhr.responseText);
+						else {
+							//document.getElementById("voyant").innerHTML = '<img alt="aide"   border="0"src="../images/voyant.png"   />';
+							//setTimeout(function() {document.getElementById('voyant').innerHTML = '';},1000);
+							tinyMCE.get('coursfield').setProgressState(true);
+							setTimeout(function() {tinyMCE.get('coursfield').setProgressState(false);},800);
+							//tinyMCE.get('coursfield')setContent('HTML content that got passed from server.');
+							tinyMCE.get('afairefield').setProgressState(true);
+							setTimeout(function() {tinyMCE.get('afairefield').setProgressState(false);},800);
+							}
+						}
+						else
+						{
+							alert('Probleme Ajax');
+						}
+				   	}	
+				}
+				xhr.onreadystatechange = resultat;
+				xhr.open("POST","save_modele.php",true);
+				xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");				
+				xhr.send(datamod);
+			}
 		

@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.0 du 25/10/2009
+   VERSION 2.0 du 29/04/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script bilan absences pour cpe-
@@ -96,7 +96,7 @@ if (isset($_GET['dkr']))
 	 		foreach ( $tab_cla as $cle => $valcla)
 					{
 					echo "<li>".$valcla."";
-					echo "<ul><li>Absents:";
+					echo "<ul><li>Absents : ";
 					//recherche des absents de la classe
 					$rq = "SELECT uideleve FROM absences WHERE date='$datsql' AND ".$valcren."='A' AND classe='$valcla' ORDER BY id_abs ASC";
 					// lancer la requête
@@ -107,9 +107,9 @@ if (isset($_GET['dkr']))
 					while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 						{
 						list($user, $groups)=people_get_variables($enrg[0], false);
-						echo $user["fullname"].";";
+						echo $user["fullname"]."; ";
 						}
-					echo "<li>Retards :";
+					echo "<li>Retards : ";
 					//recherche des retardataires//
 					$rq = "SELECT uideleve FROM absences WHERE date='$datsql' AND ".$valcren."='R' AND classe='$valcla' ORDER BY id_abs ASC";
 					// lancer la requête
@@ -120,15 +120,15 @@ if (isset($_GET['dkr']))
 					while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 						{
 						list($user, $groups)=people_get_variables($enrg[0], false);
-						echo $user["fullname"].";";
+						echo $user["fullname"]."; ";
 						}
 					echo "</ul>";
 					}//fin each class
 				echo "</ul>";
 				}
 			}//fin each creneau
-	if ($aucun=="true") echo "Pas d'absent, pas de retardataire pour le(s) cr&eacute;neau(x) s&eacute;lectionn&eacute;(s) !<BR>";
-	
+	if ($aucun=="true") echo "Pas de donn&eacute;es pour le(s) cr&eacute;neau(x) s&eacute;lectionn&eacute;(s) !<BR>";
+	echo '<div > <h5> N\'apparaissent que les classes pour lesquelles l\'appel a &eacute;t&eacute; fait !</h5></div>'; 
 
 	echo "<SCRIPT LANGUAGE=\"JavaScript\">
 		document.write('<div id=\"abs-bt\"><A HREF=\"javascript:window.print()\" id=\"bt-imp\"></A>');

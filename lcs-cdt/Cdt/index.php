@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 0.3 du 19/12/06
+   VERSION 2.1 du 14/04/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de redirection -
@@ -20,8 +20,8 @@ include ("./Includes/functions2.inc.php");
 include ('./Includes/data.inc.php'); 
 
 //version de PHP >= 4.3.2 ?
-	ereg("^([0-9]).([0-9]).([0-9]{1,2})",phpversion(),$chif );
-	If (($chif[1]>4) ||($chif[1]=4 && $chif[2]>3) ||($chif[1]=4 && $chif[2]=3 && $chif[3]>=2))
+	
+	if (version_compare(phpversion(),"4.3.2", ">="))
 	$_SESSION['version']=">=432";
 	else $_SESSION['version']="<432";
 	
@@ -74,6 +74,7 @@ include ('./Includes/data.inc.php');
 			}
 		else 
 			{
+			$_SESSION['RT']=rand();
 			header("location: ./scripts/cahier_texte_prof.php");exit;
 			}
 	}
