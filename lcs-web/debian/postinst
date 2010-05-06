@@ -54,9 +54,9 @@ case "$1" in
             # 
             /usr/sbin/lcs-make-sudoers
             #
-            # Add right Mail_can_redir if ldap is upd and if this right not exist in LDAP base
+            # Add right Mail_can_redir if ldap is up and if this right not exist in LDAP base
             #
-            if ldapsearch -x uid=admin 2>/dev/null | grep -q "^dn: " ; then
+            if  ps aux | grep -q openldap ; the ; then
                 if ! ldapsearch -x cn=Mail_can_redir 2>/dev/null | grep -q "^cn"; then
                     ldap_server=$(echo "SELECT value FROM params WHERE name='ldap_server';" | mysql -uroot -N lcs_db)
                     ldap_base_dn=$(echo "SELECT value FROM params WHERE name='ldap_base_dn';" | mysql -uroot -N lcs_db)
