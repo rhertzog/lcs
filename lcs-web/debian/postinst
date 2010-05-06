@@ -54,23 +54,25 @@ case "$1" in
             # 
             /usr/sbin/lcs-make-sudoers
             #
-            # Add right Mail_can_redir if not exist in LDAP base
+            # Add right Mail_can_redir if ldap is upd and if this right not exist in LDAP base
             #
-            if ! ldapsearch -x cn=Mail_can_redir|grep -q "^cn"; then
-                ldap_server=$(echo "SELECT value FROM params WHERE name='ldap_server';" | mysql -uroot -N lcs_db)
-                ldap_base_dn=$(echo "SELECT value FROM params WHERE name='ldap_base_dn';" | mysql -uroot -N lcs_db)
-                adminRdn=$(echo "SELECT value FROM params WHERE name='adminRdn';" | mysql -uroot -N lcs_db)
-                adminPw=$(echo "SELECT value FROM params WHERE name='adminPw';" | mysql -uroot -N lcs_db)
-                tmp=/root/tmp/smbweb_is_open_$(date +%Y%m%d%H%M%S)
-                mkdir -p $tmp
-                echo "dn: cn=Mail_can_redir,ou=rights,$ldap_base_dn
+            if ldapsearch -x uid=admin 2>/dev/null | grep -q "^dn: " ; then
+                if ! ldapsearch -x cn=Mail_can_redir 2>/dev/null | grep -q "^cn"; then
+                    ldap_server=$(echo "SELECT value FROM params WHERE name='ldap_server';" | mysql -uroot -N lcs_db)
+                    ldap_base_dn=$(echo "SELECT value FROM params WHERE name='ldap_base_dn';" | mysql -uroot -N lcs_db)
+                    adminRdn=$(echo "SELECT value FROM params WHERE name='adminRdn';" | mysql -uroot -N lcs_db)
+                    adminPw=$(echo "SELECT value FROM params WHERE name='adminPw';" | mysql -uroot -N lcs_db)
+                    tmp=/root/tmp/smbweb_is_open_$(date +%Y%m%d%H%M%S)
+                    mkdir -p $tmp
+                    echo "dn: cn=Mail_can_redir,ou=rights,$ldap_base_dn
 objectClass: groupOfNames
 cn: Mail_can_redir
 member: uid=admin,ou=People,$ldap_base_dn
 member: cn=Administratifs,ou=Groups,$ldap_base_dn
 member: cn=Profs,ou=Groups,$ldap_base_dn
 " > $tmp/Mail_can_redir.ldif
-                ldapadd -x -h $ldap_server -D $adminRdn,$ldap_base_dn -w $adminPw -f $tmp/Mail_can_redir.ldif &>/dev/null
+                    ldapadd -x -h $ldap_server -D $adminRdn,$ldap_base_dn -w $adminPw -f $tmp/Mail_can_redir.ldif &>/dev/null
+                fi
             fi
     	;;
 
