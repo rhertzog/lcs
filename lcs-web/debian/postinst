@@ -56,7 +56,7 @@ case "$1" in
             #
             # Add right Mail_can_redir if ldap is up and if this right not exist in LDAP base
             #
-            if  ps aux | grep -q openldap ; the ; then
+            if  ps aux | grep -q openldap ; then
                 if ! ldapsearch -x cn=Mail_can_redir 2>/dev/null | grep -q "^cn"; then
                     ldap_server=$(echo "SELECT value FROM params WHERE name='ldap_server';" | mysql -uroot -N lcs_db)
                     ldap_base_dn=$(echo "SELECT value FROM params WHERE name='ldap_base_dn';" | mysql -uroot -N lcs_db)
