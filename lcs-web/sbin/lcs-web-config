@@ -69,7 +69,17 @@ member: uid=admin,ou=$LDAP_PEOPLE_RDN,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_re
             ldapadd -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/stats_can_read.ldif
             rm -f /var/lib/lcs/stats_can_read.ldif
         fi
-
+        # Add right Mail_can_redir if ldap is up and if this right not exist in LDAP base
+        if ! ldapsearch -b "ou=$LDAP_RIGHTS_RDN,$LDAP_BASE_DN" -x "cn=Mail_can_redir" 2>/dev/null | grep -q "^cn"; then
+            echo "dn: cn=Mail_can_redir,ou=rights,$LDAP_BASE_DN
+objectClass: groupOfNames
+cn: Mail_can_redir
+member: uid=admin,ou=People,$LDAP_BASE_DN
+member: cn=Administratifs,ou=Groups,$LDAP_BASE_DN
+member: cn=Profs,ou=Groups,$LDAP_BASE_DN" > /var/lib/lcs/Mail_can_redir.ldif
+            ldapadd -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/Mail_can_redir.ldif &>/dev/null
+            rm -f /var/lib/lcs/Mail_can_redir.ldif
+        fi
         # Create webmaster.etab account
         if ! getent passwd webmaster.etab >/dev/null; then
             echo "Creation compte webmaster.etab"

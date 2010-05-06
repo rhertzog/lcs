@@ -23,6 +23,27 @@ case "$1" in
                     sed -i "7 a\\$UPDATE40STATS" /var/www/lcs/includes/menu.d/40stats.inc
                 fi
                 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.7; then
+                    #
+                    # Add right Mail_can_redir if ldap is up and if this right not exist in LDAP base
+                    #
+                    if  ps aux | grep -q openldap ; then
+                        if ! ldapsearch -x cn=Mail_can_redir 2>/dev/null | grep -q "^cn"; then
+                            ldap_server=$(echo "SELECT value FROM params WHERE name='ldap_server';" | mysql -uroot -N lcs_db)
+                            ldap_base_dn=$(echo "SELECT value FROM params WHERE name='ldap_base_dn';" | mysql -uroot -N lcs_db)
+                            adminRdn=$(echo "SELECT value FROM params WHERE name='adminRdn';" | mysql -uroot -N lcs_db)
+                            adminPw=$(echo "SELECT value FROM params WHERE name='adminPw';" | mysql -uroot -N lcs_db)
+                            tmp=/root/tmp/smbweb_is_open_$(date +%Y%m%d%H%M%S)
+                            mkdir -p $tmp
+                            echo "dn: cn=Mail_can_redir,ou=rights,$ldap_base_dn
+objectClass: groupOfNames
+cn: Mail_can_redir
+member: uid=admin,ou=People,$ldap_base_dn
+member: cn=Administratifs,ou=Groups,$ldap_base_dn
+member: cn=Profs,ou=Groups,$ldap_base_dn
+" > $tmp/Mail_can_redir.ldif
+                            ldapadd -x -h $ldap_server -D $adminRdn,$ldap_base_dn -w $adminPw -f $tmp/Mail_can_redir.ldif &>/dev/null
+                        fi
+                    fi 
                     # restart apache2
                     invoke-rc.d apache2 restart
                 fi
@@ -53,27 +74,6 @@ case "$1" in
             # Update sudoers
             # 
             /usr/sbin/lcs-make-sudoers
-            #
-            # Add right Mail_can_redir if ldap is up and if this right not exist in LDAP base
-            #
-            if  ps aux | grep -q openldap ; then
-                if ! ldapsearch -x cn=Mail_can_redir 2>/dev/null | grep -q "^cn"; then
-                    ldap_server=$(echo "SELECT value FROM params WHERE name='ldap_server';" | mysql -uroot -N lcs_db)
-                    ldap_base_dn=$(echo "SELECT value FROM params WHERE name='ldap_base_dn';" | mysql -uroot -N lcs_db)
-                    adminRdn=$(echo "SELECT value FROM params WHERE name='adminRdn';" | mysql -uroot -N lcs_db)
-                    adminPw=$(echo "SELECT value FROM params WHERE name='adminPw';" | mysql -uroot -N lcs_db)
-                    tmp=/root/tmp/smbweb_is_open_$(date +%Y%m%d%H%M%S)
-                    mkdir -p $tmp
-                    echo "dn: cn=Mail_can_redir,ou=rights,$ldap_base_dn
-objectClass: groupOfNames
-cn: Mail_can_redir
-member: uid=admin,ou=People,$ldap_base_dn
-member: cn=Administratifs,ou=Groups,$ldap_base_dn
-member: cn=Profs,ou=Groups,$ldap_base_dn
-" > $tmp/Mail_can_redir.ldif
-                    ldapadd -x -h $ldap_server -D $adminRdn,$ldap_base_dn -w $adminPw -f $tmp/Mail_can_redir.ldif &>/dev/null
-                fi
-            fi
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
