@@ -3,7 +3,7 @@
 /*
  *
  *
- * @version $Id: visu_ele_func.lib.php 3655 2009-10-21 13:56:34Z crob $
+ * @version $Id: visu_ele_func.lib.php 4405 2010-05-10 06:29:45Z crob $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -49,6 +49,7 @@ function jour_en_fr($en){
 	else {return "";}
 }
 
+/*
 function get_commune($code_commune_insee,$mode){
 	$retour="";
 
@@ -65,6 +66,7 @@ function get_commune($code_commune_insee,$mode){
 	}
 	return $retour;
 }
+*/
 
 function info_eleve($ele_login) {
 	global $ele_lieu_naissance;
@@ -176,6 +178,8 @@ function info_eleve($ele_login) {
 			$tab_ele['rn_sign_resp']=$lig_clas->rn_sign_resp;
 			$tab_ele['rn_formule']=$lig_clas->rn_formule;
 
+			$tab_ele['rn_sign_nblig']=$lig_clas->rn_sign_nblig;
+			if($tab_ele['rn_sign_nblig']==0) {$tab_ele['rn_sign_nblig']=3;}
 
 			// Liste des périodes dans la classe
 			$sql="SELECT p.* FROM periodes p, j_eleves_classes jec WHERE jec.login='$ele_login' AND p.num_periode=jec.periode AND jec.id_classe='".$lig_clas->id."' ORDER BY p.num_periode;";
@@ -1224,8 +1228,10 @@ function releve_html($tab_rel,$id_classe,$num_periode,$index_per) {
 
 					// Coefficient (si on affiche tous les coef...
 					// ou si on ne les affiche que s'il y a plusieurs coef différents)
+					//if(($tab_rel['rn_toutcoefdev']=="y")||
+					//	(($tab_rel['rn_coefdev_si_diff']=="y")&&($tab_rel['groupes'][$j]['differents_coef']=="y"))) {
 					if(($tab_rel['rn_toutcoefdev']=="y")||
-						(($tab_rel['rn_coefdev_si_diff']=="y")&&($tab_rel['groupes'][$j]['differents_coef']=="y"))) {
+						(($tab_rel['rn_coefdev_si_diff']=="y")&&($tab_rel['periodes'][$index_per]['groupes'][$j]['differents_coef']=="y"))) {
 						echo " (<i><small>".$chaine_coef.$eleve_coef."</small></i>)";
 					}
 

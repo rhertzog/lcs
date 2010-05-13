@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: generer_csv.php 3323 2009-08-05 10:06:18Z crob $
+* $Id: generer_csv.php 4395 2010-05-07 19:32:40Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -118,7 +118,7 @@ else {
 
 		$tab_mat[$lig1->type_brevet]=array();
 
-		//for($j=101;$j<=122;$j++) {
+		//for($j=101;$j<=$indice_max_matieres;$j++) {
 		//	$tab_mat[$lig1->type_brevet][$j]=$id_matiere[$j];
 		//}
 

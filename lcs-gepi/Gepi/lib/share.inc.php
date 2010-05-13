@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: share.inc.php 4085 2010-02-11 07:45:14Z crob $
+ * $Id: share.inc.php 4405 2010-05-10 06:29:45Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
@@ -3504,6 +3504,8 @@ function nf($nombre) {
 		$valeur=$nombre;
 	}
 	else {
+		// Pour le number_format(), il faut que le séparateur partie_entière/partie_decimale soit le . et non la virgule.
+		$nombre=strtr($nombre,",",".");
 		$valeur=number_format(round($nombre/$precision)*$precision, $nb_chiffre_apres_virgule, ',', '');
 		//$valeur=strtr($valeur,".",",");
 	}
@@ -3978,4 +3980,42 @@ calcul_moy_med();
 </script>
 ";
 }
+
+
+function get_commune($code_commune_insee,$mode){
+	$retour="";
+
+	if(strstr($code_commune_insee,'@')) {
+		// On a affaire à une commune étrangère
+		$tmp_tab=split('@',$code_commune_insee);
+		$sql="SELECT * FROM pays WHERE code_pays='$tmp_tab[0]';";
+		//echo "$sql<br />";
+		$res_pays=mysql_query($sql);
+		if(mysql_num_rows($res_pays)==0) {
+			$retour=stripslashes($tmp_tab[1])." ($tmp_tab[0])";
+		}
+		else {
+			$lig_pays=mysql_fetch_object($res_pays);
+			$retour=stripslashes($tmp_tab[1])." (".$lig_pays->nom_pays.")";
+		}
+	}
+	else {
+		$sql="SELECT * FROM communes WHERE code_commune_insee='$code_commune_insee';";
+		$res=mysql_query($sql);
+		if(mysql_num_rows($res)>0) {
+			$lig=mysql_fetch_object($res);
+			if($mode==0) {
+				$retour=$lig->commune;
+			}
+			elseif($mode==1) {
+				$retour=$lig->commune." (<i>".$lig->departement."</i>)";
+			}
+			elseif($mode==2) {
+				$retour=$lig->commune." (".$lig->departement.")";
+			}
+		}
+	}
+	return $retour;
+}
+
 ?>

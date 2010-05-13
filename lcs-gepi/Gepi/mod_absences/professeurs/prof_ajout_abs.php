@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * $Id: prof_ajout_abs.php 4041 2010-01-23 14:46:08Z crob $
+ * $Id: prof_ajout_abs.php 4382 2010-04-30 08:57:23Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -39,7 +39,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../../logout.php?auto=1");
@@ -408,7 +408,7 @@ if ($etape == 2 AND $classe != "toutes" AND $classe != "" AND $action_sql == "aj
 
 			}
 		}
-		
+
 		//Ajout Eric traitement des repas
 		if (isset($active_repas_eleve[$a])) {
 			if ($active_repas_eleve[$a] == 1){
@@ -509,6 +509,7 @@ $javascript_specifique = "mod_absences/lib/js_profs_abs";
 $titre_page = "Saisie des absences";
 require_once("../../lib/header.inc");
 //**************** FIN EN-TETE *****************
+//debug_var();
 ?>
 
 <?php
@@ -806,7 +807,7 @@ if( ( $classe == 'toutes'  or ( $classe == '' and $eleve_initial == '' ) and $et
 <?php
 // Deuxième étape
 if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initial != '' ) AND $msg_erreur === '') {
-
+	//echo "\$classe=$classe (c'est en fait un id_groupe)<br />";
     // Ajout d'un test sur la période active
 	if($classe!='') {
 	    $sql = "SELECT DISTINCT num_periode FROM periodes p, j_groupes_classes jgc WHERE jgc.id_classe=p.id_classe AND jgc.id_groupe='$classe' AND p.verouiller='N' ORDER BY num_periode";
@@ -821,18 +822,45 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
     $nbre_per = count($periode);
     $_periode = isset($periode[0]) ? $periode[0] : '1';
 
+	//echo "\$_periode=$_periode<br />";
     // ======================== Correctif : On récupère la période actuelle si elle a été paramétrée dans l'emploi du temps
 
-    $req_periode_courante = mysql_query("SELECT numero_periode FROM edt_calendrier WHERE
+	$sql="SELECT DISTINCT id_classe FROM j_groupes_classes WHERE id_groupe='$classe';";
+	$res_classes_du_groupe=mysql_query($sql);
+	$tab_classes_grp=array();
+	while($lig_tmp=mysql_fetch_object($res_classes_du_groupe)) {
+		$tab_classes_grp[]=$lig_tmp->id_classe;
+	}
+
+    //$sql="SELECT numero_periode FROM edt_calendrier WHERE
+    $sql="SELECT numero_periode, classe_concerne_calendrier FROM edt_calendrier WHERE
                                         debut_calendrier_ts < ".date("U")." AND
-                                        fin_calendrier_ts > ".date("U")."
-                            ");
-    if ($rep_periode_courante = mysql_fetch_array($req_periode_courante)) {
+                                        fin_calendrier_ts > ".date("U");
+    $req_periode_courante = mysql_query($sql);
+
+    //if ($rep_periode_courante = mysql_fetch_array($req_periode_courante)) {
+	//$periode_edt_trouvee="n";
+    while($rep_periode_courante = mysql_fetch_array($req_periode_courante)) {
         if ($rep_periode_courante["numero_periode"] != 0) {
-            $_periode = $rep_periode_courante["numero_periode"];
+
+			$temoin_classe_concernee="n";
+			$tab_classe_concerne_calendrier=explode(";",$rep_periode_courante["classe_concerne_calendrier"]);
+			for($loop=0;$loop<count($tab_classes_grp);$loop++) {
+				if(in_array($tab_classes_grp[$loop],$tab_classe_concerne_calendrier)) {
+					$temoin_classe_concernee="y";
+					//$periode_edt_trouvee="y";
+					break;
+				}
+			}
+	
+			if($temoin_classe_concernee=="y") {
+				$_periode = $rep_periode_courante["numero_periode"];
+				//$periode_edt_trouvee="y";
+				break;
+			}
         }
     }
-    //echo $_periode."<br/>";
+	//echo "\$_periode=$_periode<br />";
     // ======================== fin de correctif
 
 	// on vérifie que l'enseignement envoyé n'est pas une AID
@@ -1160,7 +1188,7 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 ?>
 <?php
 			
-		echo"\n</td>\n";
+		echo "\n</td>\n";
 		} // if (getSettingValue("renseigner_retard") == "y")
 		//echo"\n</td>\n";
 //======================== fin de la saisie des retards ==================================================

@@ -1,7 +1,7 @@
 <?php
 
 /*
-* $Id: saisie_absences.php 3323 2009-08-05 10:06:18Z crob $
+* $Id: saisie_absences.php 4228 2010-04-02 11:22:58Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -42,7 +42,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
@@ -50,6 +50,25 @@ if (!checkAccess()) {
 }
 
 include "../lib/periodes.inc.php";
+
+// Vérifications
+if((!isset($id_classe))||(!isset($id_classe))) {
+	$msg="Il faut choisir une classe et une période.";
+	header("Location:index.php?msg=$msg");
+}
+
+$acces="n";
+if($ver_periode[$periode_num]=="N") {
+	$acces="y";
+}
+elseif(($ver_periode[$periode_num]=="P")&&($_SESSION['statut']=='secours')) {
+	$acces="y";
+}
+
+if($acces=="n") {
+	$msg="La période $periode_num est close pour cette classe.";
+	header("Location:index.php?id_classe=$id_classe&msg=$msg");
+}
 
 if (isset($_POST['is_posted']) and $_POST['is_posted'] == "yes") {
 	if ($_SESSION['statut'] == "cpe") {
@@ -237,5 +256,39 @@ while($i < $nombre_lignes) {
 <center><div id="fixe"><input type="submit" value="Enregistrer" /></div></center>
 </form>
 
+<?php
+
+echo "<p>Il est impératif que vous ne laissiez pas de 'champ absence', 'absence_non_justifiee', 'retard' vide.<br />
+Un champ retard vide n'est pas compris comme zéro retard, mais comme une absence de remplissage du champ.<br />
+Si vous n'avez rempli que les champs non nuls, vous pouvez compléter d'un coup ci-dessous&nbsp;:<br />\n";
+echo "<a href='javascript:complete_a_zero_champs_vides()'>Compléter les champs vides par des zéros</a>";
+echo "</p>\n";
+
+echo "<script type='text/javascript'>
+function complete_a_zero_champs_vides() {
+	for(i=10;i<$num_id;i++) {
+		if(document.getElementById('n'+i)) {
+			if(document.getElementById('n'+i).value=='') {
+				document.getElementById('n'+i).value=0;
+			}
+		}
+
+		if(document.getElementById('n1'+i)) {
+			if(document.getElementById('n1'+i).value=='') {
+				document.getElementById('n1'+i).value=0;
+			}
+		}
+
+		if(document.getElementById('n2'+i)) {
+			if(document.getElementById('n2'+i).value=='') {
+				document.getElementById('n2'+i).value=0;
+			}
+		}
+	}
+
+	changement();
+}
+</script>\n";
+?>
 <p><br /></p>
 <?php require "../lib/footer.inc.php";?>

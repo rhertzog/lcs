@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: import_class_csv.php 3323 2009-08-05 10:06:18Z crob $
+ * $Id: import_class_csv.php 4375 2010-04-29 12:20:08Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -122,7 +122,8 @@ if ($current_group) {
 		if(mysql_num_rows($res_note)){
 			$lig_note=mysql_fetch_object($res_note);
 			if($lig_note->statut==''){
-				$note=my_ereg_replace(".",",",$lig_note->note);
+				//$note=my_ereg_replace(".",",",$lig_note->note);
+				$note=my_ereg_replace("\.",",",$lig_note->note);
 			}
 			else{
 				$note=$lig_note->statut;

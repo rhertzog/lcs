@@ -81,7 +81,9 @@ if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
    require_once("./lib/mb_ou_pas.php");
    // Global configuration file
    require_once("./lib/global.inc");
-   // Traitement des donnée
+   // Traitement des données
+   require_once("./lib/filtrage_html.inc.php");
+   require_once("./lib/class.inputfilter_clean.php");
    require_once("./lib/traitement_data.inc.php");
    // Libraries
    include "./lib/share.inc.php";
@@ -109,7 +111,9 @@ if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
    require_once("../../lib/mb_ou_pas.php");
    // Global configuration file
    require_once("../../lib/global.inc");
-   // Traitement des donnée
+   // Traitement des données
+   require_once("../../lib/filtrage_html.inc.php");
+   require_once("../../lib/class.inputfilter_clean.php");
    require_once("../../lib/traitement_data.inc.php");
    // Libraries
    include "../../lib/share.inc.php";
@@ -137,7 +141,9 @@ if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
    require_once("../../../lib/mb_ou_pas.php");
    // Global configuration file
    require_once("../../../lib/global.inc");
-   // Traitement des donnée
+   // Traitement des données
+   require_once("../../../lib/filtrage_html.inc.php");
+   require_once("../../../lib/class.inputfilter_clean.php");
    require_once("../../../lib/traitement_data.inc.php");
    // Libraries
    include "../../../lib/share.inc.php";
@@ -167,6 +173,8 @@ if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
     // Global configuration file
     require_once("../lib/global.inc");
     // Traitement des données
+    require_once("../lib/filtrage_html.inc.php");
+    require_once("../lib/class.inputfilter_clean.php");
     require_once("../lib/traitement_data.inc.php");
     // Libraries
     include "../lib/share.inc.php";
@@ -192,7 +200,9 @@ if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
    require_once("../lib/mb_ou_pas.php");
    // Global configuration file
    require_once("../lib/global.inc");
-   // Traitement des donnée
+   // Traitement des données
+   require_once("../lib/filtrage_html.inc.php");
+   require_once("../lib/class.inputfilter_clean.php");
    require_once("../lib/traitement_data.inc.php");
    // Libraries
    include "../lib/share.inc.php";

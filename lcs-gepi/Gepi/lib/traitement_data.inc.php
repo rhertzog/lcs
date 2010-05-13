@@ -1,5 +1,5 @@
 <?php
-// $version : $Id: traitement_data.inc.php 3323 2009-08-05 10:06:18Z crob $
+// $version : $Id: traitement_data.inc.php 4344 2010-04-17 11:36:06Z crob $
 // on force la valeur de magic_quotes_runtime à off de façon à ce que les valeurs récupérées dans la base
 // puissent être affichées directement, sans caractère "\"
 @set_magic_quotes_runtime(0);
@@ -114,6 +114,46 @@ if ((!(in_array(substr($url['path'], strlen($gepiPath)),$liste_scripts_non_trait
 // On nettoie aussi $_SERVER et $_COOKIE de manière systématique
 array_walk($_SERVER, 'anti_inject');
 array_walk($_COOKIE, 'anti_inject');
+
+//===========================================================
+// $aAllowedTags et $aAllowedAttr sont définis dans global.inc
+if($filtrage_html=='inputfilter') {
+	$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+
+	foreach($_GET as $key => $value) {
+		if(!is_array($value)) {
+			$_GET[$key]=$oMyFilter->process($value);
+		}
+		else {
+			foreach($_GET[$key] as $key2 => $value2) {
+				$_GET[$key][$key2]=$oMyFilter->process($value2);
+			}
+		}
+	}
+
+	foreach($_POST as $key => $value) {
+		if(!is_array($value)) {
+			$_POST[$key]=$oMyFilter->process($value);
+		}
+		else {
+			foreach($_POST[$key] as $key2 => $value2) {
+				$_POST[$key][$key2]=$oMyFilter->process($value2);
+			}
+		}
+	}
+
+	if(isset($NON_PROTECT)) {
+		foreach($NON_PROTECT as $key => $value) {
+			if(!is_array($value)) {$NON_PROTECT[$key]=$oMyFilter->process($value);}
+			else {
+				foreach($NON_PROTECT[$key] as $key2 => $value2) {
+					$NON_PROTECT[$key][$key2]=$oMyFilter->process($value2);;
+				}
+			}
+		}
+	}
+}
+//===========================================================
 
 //On rétablit les "&" dans $_SERVER['REQUEST_URI']
 $_SERVER['REQUEST_URI'] = str_replace("&amp;","&",$_SERVER['REQUEST_URI']);

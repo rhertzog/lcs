@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: maj_import2.php 3947 2009-12-20 15:43:23Z crob $
+ * $Id: maj_import2.php 4405 2010-05-10 06:29:45Z crob $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -149,7 +149,7 @@ function maj_ini_prenom($prenom){
 }
 
 
-
+/*
 function get_commune($code_commune_insee,$mode){
 	$retour="";
 
@@ -166,7 +166,7 @@ function get_commune($code_commune_insee,$mode){
 	}
 	return $retour;
 }
-
+*/
 
 // Etape...
 $step=isset($_POST['step']) ? $_POST['step'] : (isset($_GET['step']) ? $_GET['step'] : NULL);

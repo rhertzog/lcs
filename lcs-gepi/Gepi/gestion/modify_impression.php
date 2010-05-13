@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: modify_impression.php 2396 2008-09-15 14:58:40Z tbelliard $
+ * $Id: modify_impression.php 4274 2010-04-11 08:23:01Z crob $
  *
  * Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -31,13 +31,15 @@ die();
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
 die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
 die();
 }
 include("../fckeditor/fckeditor.php") ;
+
+if(!isset($msg)){$msg="";}
 
 if (isset($_POST['ok'])) {
 	$error = false;

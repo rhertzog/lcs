@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 2396 2008-09-15 14:58:40Z tbelliard $
+ * $Id: index.php 4220 2010-04-02 07:49:47Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -118,11 +118,13 @@ while ($i < $nombre_lignes){
     }
 	$current_cp = mysql_result($call_data, $i, "cp");
     $current_ville = mysql_result($call_data, $i, "ville");
-    echo "<tr class='lig$alt'><td><a href='modify_etab.php?id=$current_id'>$current_id</a></td>\n";
+    echo "<tr class='lig$alt white_hover'><td><a href='modify_etab.php?id=$current_id'>$current_id</a></td>\n";
     echo "<td>$current_nom</td>\n";
     echo "<td>$current_niveau_nom</td>\n";
     echo "<td>$current_type</td>\n";
-    echo "<td>$current_cp</td>\n";
+    echo "<td>";
+	if($current_cp!='999') {echo sprintf("%05d",$current_cp);} else {echo $current_cp;}
+	echo "</td>\n";
     echo "<td>$current_ville</td>\n";
     echo "<td><a href='../lib/confirm_query.php?liste_cible=$current_id&amp;action=del_etab'>Supprimer</a></td></tr>\n";
 	$i++;

@@ -1,10 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- *
- * $Id: import_absences_gepi.php 3413 2009-09-12 08:05:14Z crob $
- *
- * Last modification  : 30/06/2007
+ * $Id: import_absences_gepi.php 4258 2010-04-09 16:34:09Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -36,7 +33,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -49,7 +46,8 @@ $cal_1 = new Calendrier("form_absences", "du");
 $cal_2 = new Calendrier("form_absences", "au");
 
 // variable définie
-    $date_ce_jour = date('d/m/Y'); $erreur = '';
+    $date_ce_jour = date('d/m/Y'); 
+	$erreur = '';
 
 // variable
  if (empty($_GET['action_sql']) and empty($_POST['action_sql'])) { $action_sql = ''; }
@@ -60,14 +58,51 @@ $cal_2 = new Calendrier("form_absences", "au");
    else { if (isset($_GET['id_classe'])) { $id_classe = $_GET['id_classe']; } if (isset($_POST['id_classe'])) { $id_classe = $_POST['id_classe']; } }
  if (empty($_GET['periode_num']) and empty($_POST['periode_num'])) { $periode_num = ''; }
    else { if (isset($_GET['periode_num'])) { $periode_num = $_GET['periode_num']; } if (isset($_POST['periode_num'])) { $periode_num = $_POST['periode_num']; } }
- if (empty($_GET['du']) and empty($_POST['du'])) { $du = $date_ce_jour; }
-   else { if (isset($_GET['du'])) { $du = $_GET['du']; } if (isset($_POST['du'])) { $du = $_POST['du']; } }
 
 // gestion des dates
-	if (empty($_GET['au']) and empty($_POST['au'])) {$au = 'JJ/MM/AAAA';}
-	 else { if (isset($_GET['au'])) {$au=$_GET['au'];} if (isset($_POST['au'])) {$au=$_POST['au'];} }
+	if (empty($_GET['du']) and empty($_POST['du'])) { 
+		if(isset($_SESSION['import_absences_du'])) {
+			$du = $_SESSION['import_absences_du'];
+		}
+		else {
+			//$du = $date_ce_jour;
+			// On met le début de l'année... ça ne conviendra que pour la première période, mais bon...
+			$annee = strftime("%Y");
+			$mois = strftime("%m");
+			$jour = strftime("%d");
+			if($mois>7) {$du="01/09/$annee";} else {$du="01/09/".($annee-1);}
+		}
+	}
+	else { 
+		if (isset($_GET['du'])) { 
+			$du = $_GET['du']; 
+		} 
+		if (isset($_POST['du'])) { 
+			$du = $_POST['du']; 
+		} 
+		$_SESSION['import_absences_du']=$du;
+	}
 
-// fonction de sécuritée
+	if (empty($_GET['au']) and empty($_POST['au'])) {
+		if(isset($_SESSION['import_absences_au'])) {
+			$au = $_SESSION['import_absences_au'];
+		}
+		else {
+			//$au = 'JJ/MM/AAAA';
+			$au = $date_ce_jour;
+		}
+	}
+	else { 
+		if (isset($_GET['au'])) {
+			$au=$_GET['au'];
+		} 
+		if (isset($_POST['au'])) {
+			$au=$_POST['au'];
+		} 
+		$_SESSION['import_absences_au']=$au;
+	}
+
+// fonction de sécurité
 // uid de pour ne pas refaire renvoyer plusieurs fois le même formulaire
 // autoriser la validation de formulaire $uid_post===$_SESSION['uid_prime']
  if(empty($_SESSION['uid_prime'])) { $_SESSION['uid_prime']=''; }
@@ -79,14 +114,31 @@ $cal_2 = new Calendrier("form_absences", "au");
 	    $uid_post = my_eregi_replace('%20',' ',$uid_post);
 	if($uid_post===$_SESSION['uid_prime']) { $valide_form = 'yes'; } else { $valide_form = 'no'; }
 	$_SESSION['uid_prime'] = $uid;
-// fin de la fonction de sécuritée
+// fin de la fonction de sécurité
 
 include "../lib/periodes.inc.php";
 include "../mod_absences/lib/functions.php";
+
+//===========================================================
+$acces="n";
+if($ver_periode[$periode_num]=="N") {
+	$acces="y";
+}
+elseif(($ver_periode[$periode_num]=="P")&&($_SESSION['statut']=='secours')) {
+	$acces="y";
+}
+
+if($acces=="n") {
+	$msg="La période $periode_num est close pour cette classe.";
+	header("Location:index.php?id_classe=$id_classe&msg=$msg");
+}
+//===========================================================
+
 //**************** EN-TETE *****************
 $titre_page = "Outil d'importation des absences du module d'absence de GEPI";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
+//debug_var();
 ?>
 
 <script type="text/javascript" language="javascript">
@@ -127,7 +179,7 @@ if ( $etape === '0' ) {
             <div style="color: #E8F1F4; text-align: left; font: normal 12pt verdana, sans-serif; font-weight: bold; background-image: url(../mod_absences/images/haut_tab.png); border: 0px solid #F8F8F8;">Importation des absences</div>
             <div style="text-align: center; color: #330033; font: normal 10pt Arial;">
 		Pour la classe de <?php echo "$classe"; ?><br /><br />
-		Définissez la date de début et de fin pour la période du <?php echo $nom_periode[$periode_num]; ?><br />
+		Définissez les dates de début et de fin pour la période du <?php echo $nom_periode[$periode_num]; ?><br />
                 du <input name="du" type="text" size="11" maxlength="11" value="<?php echo $du; ?>" /><a href="#calend" onClick="<?php  echo $cal_1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170); ?>"><img src="../lib/calendrier/petit_calendrier.gif" border="0" alt="" /></a>
 		au <input name="au" id="au" type="text" size="11" maxlength="11" value="<?php echo $au; ?>" onClick="getDate(au,'form_absences')" /><a href="#calend" onClick="<?php  echo $cal_2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170); ?>"><img src="../lib/calendrier/petit_calendrier.gif" border="0" alt="" /></a>
                 <input type="hidden" name="id_classe" value="<?php echo $id_classe; ?>" />
@@ -136,14 +188,14 @@ if ( $etape === '0' ) {
                 <input type="submit" name="Submit32" value="Importer" /><br />
             </div>
             <div style="text-align: center; color: #FF0000; font: normal 10pt Arial;">
-		Attention, vous allez importer les absences<br />gérer par le module absence de GEPI
+		Attention, vous allez importer les absences<br />gérées par le module absence de GEPI
 	    </div>
       </fieldset>
     </form>
 </div>
 <?php
 
-	} else { echo 'Vous n\'avez sélectionné aucune période. Il vous est donc impossible d\'importer les donners'; }
+	} else { echo 'Vous n\'avez sélectionné aucune période. Il vous est donc impossible d\'importer les données'; }
 
 }
 
