@@ -5,7 +5,7 @@
    Annu/includes/ldap.inc.php
    « jLCF » jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   Derniere version : 18 Juin 2009
+   Derniere version : 21/05/2010
    ============================================= */
 
 // Fonctions de comparaison utilisees dans la fonction usort
@@ -470,12 +470,13 @@ function search_people_groups ($uids,$filter,$order) {
             $ret[$init] = array (
               "uid"       => $uids[$loop]["uid"],
               "fullname"  => utf8_decode($info[0]["cn"][0]),
-	      "name"	  	  => utf8_decode($info[0]["sn"][0]),
+	      "name"	  => utf8_decode($info[0]["sn"][0]),
               "sexe"      => $tmp[2],
               "owner"     => $uids[$loop]["owner"],
               "group"     => $uids[$loop]["group"],
               "cat"       => $uids[$loop]["cat"],
-              "prof"      => $uids[$loop]["prof"]
+              "prof"      => $uids[$loop]["prof"],
+	      "gecos"     => $gecos
             );
             $init++;
           }

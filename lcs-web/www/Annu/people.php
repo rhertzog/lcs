@@ -4,7 +4,7 @@
    Consultation de l'annuaire LDAP
    Annu/people.php
    Equipe Tice academie de Caen
-   Derniere mise a jour : 20/03/2010
+   Derniere mise a jour : 07/05/2010
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -85,8 +85,9 @@
   ?>
   <br>
   <ul style="color: red;">
-    <li><a href="mod_user_entry.php?uid=<? echo $user["uid"] ?>">Modifier</a><br>
-    <li><a href="del_user.php?uid=<? echo $user["uid"] ?>" onclick= "return getconfirm();">Supprimer</a><br>
+    <li><a href="mod_user_entry.php?uid=<? echo $user["uid"] ?>">Modifier le compte</a><br>
+    <li><a href="del_user.php?uid=<? echo $user["uid"] ?>" onclick= "return getconfirm();">Supprimer le compte</a><br>
+    <li><a href="pass_user_init.php?uid=<? echo $user["uid"] ?>" onclick= "return getconfirminitpass();">R&#233initialiser le mot de passe</a><br>
     <li><a href="add_user_group.php?uid=<? echo $user["uid"] ?>">Ajouter &agrave; des groupes</a><br>
 	<li><a href="del_group_user.php?uid=<? echo $user["uid"] ?>">Supprimer des groupes d'appartenance</a><br>
   <?

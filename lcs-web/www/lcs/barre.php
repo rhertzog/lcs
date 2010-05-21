@@ -1,8 +1,7 @@
 <?php
-/* lcs/barre.php derniere mise a jour : 08/04/2010 */
+/* lcs/barre.php derniere mise a jour : 21/05/2010 */
 
 // HelpDesk Ajout variable session userHD pour memoriser choix user helpdesk autre qu'admin
-// Necesité de reinitialiser cette variable.  
 session_start();
 $_SESSION['userHD'] = null;
 
@@ -44,13 +43,11 @@ body	{
 #blocleft{
 	float: left;
 	width: 100%;
-	/*border: dashed 1px green;*/
 }
 .logo{
 	float: left;
 	margin-left:10px;
 	width: 120px;
-	/*border: dashed 1px red;*/
 }
 .bouton{
 	float: left;
@@ -58,7 +55,6 @@ body	{
 	text-align: center;
 	width: 70px;
 	height: 90px;
-	/* border: dashed 1px red; */
 }
 
 .deconnect{
@@ -67,7 +63,6 @@ body	{
 	text-align: center;
 	width: 70px;
 	height: 90px;
-	/* border: dashed 1px green; */
 }
 
 .connexion{
@@ -181,7 +176,7 @@ if ( $idpers==0 ) {
    		echo "<div class=\"bouton\"><a href=\"statandgo.php?use=squirrelmail\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\" onMouseOver=\"MM_nbGroup('over','BP_r1_c5','images/$path/BP_r1_c5_f2.gif','images/$path/BP_r1_c5_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c5','images/$path/BP_r1_c5_f3.gif',1);\" ><img name=\"BP_r1_c5\" title=\"Webmail\" alt=\"Webmail\"  src=\"images/$path/BP_r1_c5.gif\" border=\"0\"></a></div>\n";
 	if ( isset($spip) ) // CMS
    		echo "<div class=\"bouton\"><a href=\"statandgo.php?use=spip\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c6','images/$path/BP_r1_c6_f2.gif','images/$path/BP_r1_c6_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c6','images/$path/BP_r1_c6_f3.gif',1);\" ><img name=\"BP_r1_c6\" title=\"Forum\" alt=\"Forum\" src=\"images/$path/BP_r1_c6.gif\" border=\"0\"></a></div>\n";	
-        if ( is_admin("Lcs_is_admin",$login) == "Y" ) // acces au menu d'administration	
+        if ( (is_admin('Lcs_is_admin', $login) == "Y")  || (is_admin('System_is_admin', $login) == "Y") )  // acces au menu d'administration
    	    echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Admin\" target=\"principale\"onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c7','images/$path/BP_r1_c7_f2.gif','images/$path/BP_r1_c7_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c7','images/$path/BP_r1_c7_f3.gif',1);\" ><img name=\"BP_r1_c7\" title=\"Administration\" alt=\"Administration\" src=\"images/$path/BP_r1_c7.gif\" border=\"0\"></a></div>\n";
 	// Aide
    	echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Aide\" target=\"principale\"  onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c8','images/$path/BP_r1_c8_f2.gif','images/$path/BP_r1_c8_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c8','images/$path/BP_r1_c8_f3.gif',1);\" ><img name=\"BP_r1_c8\" title=\"Aide\" alt=\"Aide\" src=\"images/$path/BP_r1_c8.gif\" border=\"0\"></a></div>\n";

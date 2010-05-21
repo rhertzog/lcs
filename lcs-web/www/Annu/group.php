@@ -2,11 +2,11 @@
 /* =============================================
    Projet LCS-SE3
    Consultation de l'annuaire LDAP
-   Annu/Search.php
+   Annu/group.php
    « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
    « wawa »  olivier.lecluse@crdp.ac-caen.fr
    Equipe Tice academie de Caen
-   Derniere modification : 29/05/2009
+   Derniere modification : 21/05/2010
    Distribue selon les termes de la licence GPL
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
@@ -88,12 +88,6 @@
           }
         }
         echo "<td><A href=\"people.php?uid=".$people2[$loop]["uid"]."\">".$people2[$loop]["fullname"]."</A>";
-        /*
-        if ( $people2[$loop]["owner"] ) {
-          echo "<strong><font size=\"-2\" color=\"#ff8f00\">&nbsp;&nbsp;(professeur principal)</font></strong>";
-          $owner = $people2[$loop]["uid"];
-        }
-        */
         echo "</td></tr>\n";
       }
       echo "</table><BR>\n";
@@ -125,14 +119,7 @@
         echo "<li><a href=\"del_user_group.php?cn=$filter\">Enlever des membres</a></li>\n";
       echo "<li><a href=\"del_group.php?cn=$filter\" onclick= \"return getconfirm();\">Supprimer ce groupe</a></li>\n";
       echo "<li><a href=\"mod_group_descrip.php?cn=$filter\">Modifier la description de ce groupe</a></li>\n";
-      /*
-      if ( ereg("Equipe_",$filter) ) {
-        if ( $owner )
-          echo "<li><a href=\"mod_owner_group.php?cn=$filter&owner=$owner\">R&#233;affecter le professeur principal</a></li>\n";
-        else
-          echo "<li><a href=\"mod_owner_group.php?cn=$filter\">Affecter un professeur principal</a></li>\n";
-      }
-      */
+      echo "<li><a href=\"grouplist.php?filter=$filter\" target='_new'>".gettext("Afficher un listing du groupe")."</a></li>\n";
     }
     if (ldap_get_right("lcs_is_admin",$login) == "Y")
         // Affichage du menu "Deleguer un droit &#224; un groupe"
