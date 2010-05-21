@@ -1,4 +1,4 @@
-lcs-web (2.4.7~2) Lcs; urgency=low
+lcs-web (2.4.7~3) UNRELEASED; urgency=low
 
   * Fix bug  maj modules Auto/Manu (scripts modules_installes.php and boutons_style.css)
   * Fix bug in script select_briques.php 
@@ -7,8 +7,10 @@ lcs-web (2.4.7~2) Lcs; urgency=low
     * Add redirect mail 
     * Add link mail to groups
     * Add strong authentification system based on swekey  
+  * Add password user init and group listing in appli Annu
+  * Modify rights acces for administration page in barre.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 06 May 2010 10:40:31 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 21 May 2010 10:56:26 +0200
 
 lcs-web (2.4.6.5) Lcs; urgency=low
 
