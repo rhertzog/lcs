@@ -227,7 +227,7 @@ if (isset($_POST['Archiver']))
 	
 //Vérification d'une archive existante
 	$exist=0;
-	$TablesExist= mysql_list_tables(DB_NAME);
+	$TablesExist= mysql_query("show tables");
 	while ($table=mysql_fetch_row($TablesExist))
 	if (ereg("$name_arch$",$table[0])) $exist=1;
 	if ($exist==0)
@@ -444,7 +444,7 @@ En début d\'année, &nbsp <input type="submit" name="Vider" value="Vider les tabl
 
 Archives existantes : 
 		';
-$TablesExist= mysql_list_tables(DB_NAME);
+$TablesExist= mysql_query("show tables");
 	while ($table=mysql_fetch_row($TablesExist))
 	if (ereg("^onglets[[:alnum:]]",$table[0]))
 	{

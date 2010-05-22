@@ -13,7 +13,7 @@ body.imprim {color: #000000;font-size: 12pt;font-weight: bold;}
 
 /*********************************************** Blocs de la page **************************************************************/
 
-#entete{-moz-background-clip:border;-moz-background-inline-policy:continuous;-moz-background-origin:padding;background:#F8F8FF url(../images/fond-ong-prof-cdt.png) repeat-x scroll center bottom;float:left;position:fixed;top:0;width:100%;opacity:0.9}
+#entete{-moz-background-clip:border;-moz-background-inline-policy:continuous;-moz-background-origin:padding;background:#F8F8FF url(../images/fond-ong-prof-cdt.png) repeat-x scroll center bottom;float:left;position:fixed;top:1;width:100%;opacity:0.9}
 #container {margin: 70px auto 0;padding: 0;width: 990px;background: #f8f8ff;text-align: left;font-size:14px;font-family: Arial Helvetica sans-serif verdana;}
 #container-cdt-elv {float:left;margin: 10px 0 0 1%;padding: 0;width: 990px;background: #f8f8ff;text-align: left;font-size:14px;}
 #secondaire {float:left;margin: 20px 0 0 0;padding: 0;width: 100%;text-align: left;}
@@ -227,3 +227,6 @@ table#impr tbody td.afR {background:#fff;padding:5px 20px;text-decoration:underl
 .cok {font-family: cursive;font-size: 12pt;color: #003300;text-align: left;}
 #bt-rss{background:url('../images/lcs-cdt.png') no-repeat;margin: 0 5px;padding:2px 50px 0px 50px;border:none;width:60px;height:20px;}
 #bt-google{background:url('http://gmodules.com/ig/images/plus_google.gif') no-repeat;margin: 0 5px;padding:2px 12px 3px 60px;border:none;width:62px;height:20px;}
+/***********************************************************Archives *********************************************************************/
+.bt-copier {background:url('../images/bt-cdt-copiercoller.png') no-repeat;border:none;font-size:14px;height:20px;width:120px;cursor:pointer;}
+.bt2-fermer {background:url('../images/bt-cdt-fermer.png') no-repeat;margin:0 0 0 10px;padding:0;border:none;font-size:13px;width:120px;height:20px;cursor:pointer;}

@@ -2,10 +2,10 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.0 du 21/05/2010
+   VERSION 2.0 du 20/05/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
-   - script archives du cahier de textes -
+   - script archives perso du cahier de textes -
 			_-=-_
    ============================================= */
 session_name("Cdt_Lcs");
@@ -23,14 +23,14 @@ if (isset($_GET['arch']))
 	$arch=$_GET['arch'];
 	}
 	else $arch="";
-
+	
 if (isset($_POST['Fermer'])) 
 echo "<SCRIPT language='Javascript'>
 					<!--
 					window.close()
 					// -->
-					</script>";
-	
+					</script>";	
+					
 //si clic sur le bouton Copier-Coller
 if (isset($_POST['copie']))
 	{
@@ -52,7 +52,7 @@ if (isset($_POST['copie']))
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-<title>Archives Cdt num&eacute;rique</title>
+<title>Archives perso Cdt num&eacute;rique</title>
 <meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
 	<link href="../style/style.css" rel=StyleSheet type="text/css">
 	<link  href="../style/deroulant.css" rel=StyleSheet type="text/css">
@@ -63,32 +63,49 @@ if (isset($_POST['copie']))
 </head>
 
 <body >
+
 <?
 echo "<FORM ACTION='";
 echo htmlentities($_SERVER["PHP_SELF"]);
 echo "' METHOD='POST'>";
 echo '<DIV id="bt-fixe" ><input class="bt2-fermer" type="submit" name="Fermer" value="" ></DIV></form>';
+
 // Connexion à la base de données	
-include "../Includes/config.inc.php";
+include_once "/var/www/lcs/includes/headerauth.inc.php";
+ 				list ($idpers,$log) = isauth();
+  				if ($idpers)  $_LCSkey = urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
+ 				DEFINE ('DBP_USER', $_SESSION['login']);
+				DEFINE ('DBP_PASSWORD', $_LCSkey);
+				DEFINE ('DBP_HOST', 'localhost');
+				DEFINE ('DBP_NAME', $_SESSION['login'].'_db');
+
+				// Ouvrir la connexion et selectionner la base de donnees
+				$dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD) 
+      			OR die ('Connexion a MySQL impossible : '.mysql_error().'<br>');
+				mysql_select_db (DBP_NAME)
+       			OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br>');
+
 echo '<div id="entete">';
 echo '<div id="navcontainer">';
 echo ("<ul id='arch-navlist'>");
 /*================================
    -      Affichage des archives  -
    ================================*/
-	//recherche du  nom des archives
+	
+ 	//recherche du  nom des archives
 	$TablesExist= mysql_query("show tables");
 	$x=0;
 	while ($table=mysql_fetch_row($TablesExist))
-	if (ereg("^onglets[[:alnum:]]",$table[0]))
+	if (ereg("^onglets",$table[0]))
 	{
 	$archive=split('s',$table[0]);
+	if ($archive[1]!="") $archnum=$archive[1]; else $archnum="An dernier";
 	$x++;
 	//archive courante
-	if ($arch==$archive[1]) echo "<li id='arch'> <a href='cahier_texte_arch.php?arch=$archive[1]' id='courant'>$archive[1]</a>";
+	if ($arch==$archive[1]) echo "<li id='arch'> <a href='cahier_texte_arch_perso.php?arch=$archive[1]' id='courant'>$archnum</a>";
 	else
 	//autres archives
-	echo "<li id='arch'><a href='cahier_texte_arch.php?arch=$archive[1]'>$archive[1]</a></li> ";
+	echo "<li id='arch'><a href='cahier_texte_arch_perso.php?arch=$archive[1]'>$archnum</a></li> ";
 	}
 	//s'il n'esiste pas d'archive
 	if ($x==0) 
@@ -97,11 +114,9 @@ echo ("<ul id='arch-navlist'>");
 		exit;
 		}
 		echo "</ul>";
-	    if ($arch=="") exit;
-
-
+	
 $rq = "SELECT classe,matiere,id_prof FROM onglets$arch
- WHERE login='{$_SESSION['login']}' ORDER BY classe ASC ";
+ WHERE 1 ORDER BY classe ASC ";
 // lancer la requête
 $result = @mysql_query ($rq) or die (mysql_error());
  
@@ -128,8 +143,6 @@ else
 	$cible="";
 	}
 
-// Connexion à la base de données
-include "../Includes/config.inc.php";
 
 /*
    ================================
@@ -139,7 +152,7 @@ include "../Includes/config.inc.php";
 
 // Créer la requête (Récupérer les rubriques de l'utilisateur) 
 $rq = "SELECT classe,matiere,id_prof FROM onglets$arch
- WHERE login='{$_SESSION['login']}' ORDER BY id_prof ASC ";
+ WHERE 1 ORDER BY id_prof ASC ";
 
  // lancer la requête
 $result = @mysql_query ($rq) or die (mysql_error());
@@ -154,19 +167,16 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 	$loop++;
 	}
 	
-	
 //on calcule la largeur des onglets
 if($cible==""){$cible=($numero[0]);}
 $nmax=$nb;
- 
-//creation de la barre de menu 
 
 echo ("<ul id='navlist'>");
 for($x=0;$x < $nmax;$x++)
 	{
 		if ($cible == ($numero[$x]))
 			{//cellule active	
-			echo ("<li id='select'><a href='cahier_texte_prof_arch.php?rubrique=$numero[$x]&arch=$arch'
+			echo ("<li id='select'><a href='cahier_texte_arch_perso.php?rubrique=$numero[$x]&arch=$arch'
 			'onmouseover=\"window.status='';return true\" id='courant'>$mat[$x]<br>$clas[$x] "."</a></li>");	
 			$contenu_postit=stripslashes($com[$x]);
 			}
@@ -178,27 +188,25 @@ for($x=0;$x < $nmax;$x++)
 			echo ("<li><a href='#'>$clas[$x]"."</a></li>");
 			else
 			{
-			echo ("<li><a href='cahier_texte_arch.php?rubrique=$numero[$x]&arch=$arch'
+			echo ("<li><a href='cahier_texte_arch_perso.php?rubrique=$numero[$x]&arch=$arch'
 			'onmouseover=\"window.status='';return true\">$mat[$x]<br>$clas[$x]"."</a></li>");
 			}
 			}
 	}
 echo '</ul>';
-//echo '<div id="switch-barreLcs" class="swup"></div>';
 echo '</div>';
 echo '</div>';
 echo '<div id="container">';	
 
-
 /*======================================
-   - Affichage du contenu du cahier de textes  -
+   - Affichage du contenu   -
    =======================================*/
    
 include_once ('../Includes/markdown.php'); //convertisseur txt-->HTML
 
 //créer la requête
 $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique FROM cahiertxt$arch
- WHERE (id_auteur=$cible) AND (login='{$_SESSION['login']}') ORDER BY date desc ,id_rubrique desc";
+ WHERE (id_auteur=$cible)  ORDER BY date desc ,id_rubrique desc";
  
 // lancer la requête
 $result = @mysql_query ($rq) or die (mysql_error());
@@ -213,7 +221,7 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
   $textafaire=markdown($ligne[2]);
   
  
-if ($ligne[1]!="") {
+	if ($ligne[1]!="") {
 	  echo '<tbody><tr><th colspan=2></th></tr></tbody>';
 	  echo '<tbody>';
 	  echo '<tr>';
@@ -275,7 +283,7 @@ if ($ligne[1]!="") {
   echo "</table>";
   echo "</div>";
   echo "</div>";
-  include ('../Includes/pied.inc'); 
+  include ('../Includes/pied.inc');
 ?>
 </body>
 </html>

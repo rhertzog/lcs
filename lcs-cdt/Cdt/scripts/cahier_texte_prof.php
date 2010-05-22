@@ -1,9 +1,8 @@
 <?php
-//echo 'toto'.$_SERVER["HTTP_REFERER"];exit;
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.0 du 25/10/2009
+   VERSION 2.0 du 12/05/2010
       par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script du cahier de textes PROF -
@@ -49,7 +48,7 @@ if (mysql_num_rows($result)==0)
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-<title>Cahier de textes num&eacute;erique</title>
+<title>Cahier de textes num&eacute;rique</title>
 <meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
 	<link href="../style/style.css" rel=StyleSheet type="text/css">
 </head>
@@ -77,7 +76,7 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-<title>Cahier de textes num&eacute;erique</title>
+<title>Cahier de textes num&eacute;rique</title>
 <meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
 	<link href="../style/style.css" rel=StyleSheet type="text/css">
 	<link  href="../style/deroulant.css" rel=StyleSheet type="text/css">
@@ -175,14 +174,14 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 		else
 			{
 			// htlmpurifier
-			$Cours = addSlashes($_POST['Cours']);
+			$Cours = $_POST['Cours'];
 			$config = HTMLPurifier_Config::createDefault();
 	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
 	    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
 	   		$purifier = new HTMLPurifier($config);
 	   		//$Cours = addSlashes($Cours);
 	   		$Cours = $purifier->purify($Cours);
-	   		
+	   		//echo $Cours;exit;
 			}
 		
 		}
@@ -197,13 +196,13 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 		//$Afaire= addSlashes(strip_tags(stripslashes($_POST['Afaire'])));
 		if (get_magic_quotes_gpc())
 		    {
-			$Afaire  = $_POST['Afaire'];
+			$Afaire  = htmlentities($_POST['Afaire']);
 			$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
 			$Afaire = $oMyFilter->process($Afaire);
 			}
 		else
 			{
-			$Afaire  =addSlashes($_POST['Afaire']);
+			$Afaire = $_POST['Afaire'];
 			$Afaire = $purifier->purify($Afaire);
 			}	
 		}
@@ -351,7 +350,7 @@ for($x=0;$x < $nmax;$x++)
 			{//cellule active	
 			echo ("<li id='select'><a href='cahier_texte_prof.php?rubrique=$numero[$x]'
 			'onmouseover=\"window.status='';return true\" id='courant'>$mat[$x]<br>$clas[$x] "."</a></li>");	
-			$contenu_postit=$com[$x];
+			$contenu_postit=stripslashes($com[$x]);
 			}
 		else 
 			{
@@ -554,7 +553,7 @@ if (isset($tsmp3))
     <div class="deroulant" id="deroulant_2">
     	<div class="t3">Archives</div>
       		<?	/* Affichage des archives */ 
-				echo (' <dd><B><FONT COLOR="#0000FF" style="align:center">Archives disponibles :<br></font></B> ');
+				echo (' <B><FONT COLOR="#0000FF" style="align:left"> Etablissement :<br></font></B> ');
  				//recherche du  nom des archives
 				$TablesExist= mysql_list_tables(DB_NAME);
 				$x=0;
@@ -563,13 +562,45 @@ if (isset($tsmp3))
 					$archive=split('s',$table[0]);
 					$x++;
 					$archnum=$archive[1];
-					echo '<a href="#" onClick="arch_popup(\''.$archive[1].'\'); return false" >- '.$archive[1].' </a> <br>  ';
+					echo '<a href="#" onClick="arch_popup(\''.$archive[1].'\'); return false" >- '.$archive[1].' </a> <br /> ';
 	
 				}
 				//s'il n'esiste pas d'archive
 				if ($x==0) { echo '<B><FONT COLOR="#CC0000" > Aucune </FONT></B>';}
+				echo '<hr />';
+				mysql_close();
+				//archives perso
+				echo (' <B><FONT COLOR="#0000FF" style="align:left"> Personnelles :<br></font></B> ');
+ 				//recherche du  nom des archives
+ 				include_once "/var/www/lcs/includes/headerauth.inc.php";
+ 				list ($idpers,$log) = isauth();
+  				if ($idpers)  $_LCSkey = urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
+ 				DEFINE ('DBP_USER', $_SESSION['login']);
+				DEFINE ('DBP_PASSWORD', $_LCSkey);
+				DEFINE ('DBP_HOST', 'localhost');
+				DEFINE ('DBP_NAME', $_SESSION['login'].'_db');
+
+				// Ouvrir la connexion et selectionner la base de donnees
+				$dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD) 
+      			OR die ('Connexion a MySQL impossible : '.mysql_error().'<br>');
+				mysql_select_db (DBP_NAME)
+       			OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br>');
+				$TablesExist= mysql_query("show tables");
+				$x=0;
+				while ($table=mysql_fetch_row($TablesExist))
+				if (ereg("^onglets",$table[0])) {
+					$archive=split('s',$table[0]);
+					$x++;
+					if ($archive[1]!="") $archnum=$archive[1]; else $archnum="An dernier";
+					echo '<a href="#" onClick="arch_perso_popup(\''.$archive[1].'\'); return false" >- '.$archnum.' </a> <br>  ';
+	
+				}
+				//s'il n'esiste pas d'archive
+				if ($x==0) { echo '<B><FONT COLOR="#CC0000" > Aucune </FONT></B>';}
+				mysql_close();
+				
 			?>
-	</div><!--fin du div deroulant_2-->
+			</div><!--fin du div deroulant_2-->
 	
     <div class="deroulant" id="deroulant_3">
     	<div class="t3">Liens</div>
@@ -580,6 +611,10 @@ if (isset($tsmp3))
 			<p><?echo '<a href="absences.php';
 			echo '?mlec547trg2s5hy='.$classe_active;
 			echo '" target="_blank"  ';?> > - CARNET D'ABSENCES - </a></p>
+			<p><?echo '<a href="export_perso.php';
+			echo '" target="_blank"  ';?> > - EXPORT DE SES DONNEES - </a></p>
+			<p><?echo '<a href="import_perso.php';
+			echo '" target="_blank"  ';?> > - IMPORT DE DONNEES - </a></p>
         </div><!--fin du div deroulant_3-->
      
      <div class="deroulant" id="deroulant_4">
@@ -615,7 +650,11 @@ if ($_SESSION['version']=">=432") setlocale(LC_TIME,"french");
 	else setlocale("LC_TIME","french");
 $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off,DATE_FORMAT(datevisibi,'%d/%m/%Y') FROM cahiertxt
  WHERE (id_auteur=$cible) AND (login='{$_SESSION['login']}') ORDER BY date desc ,id_rubrique desc";
- 
+// Ouvrir la connexion et selectionner la base de donnees
+$dbc = @mysql_connect (DB_HOST, DB_USER, DB_PASSWORD) 
+       OR die ('Connexion a MySQL impossible : '.mysql_error().'<br>');
+mysql_select_db (DB_NAME)
+       OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br>');
 // lancer la requete
 $result = @mysql_query ($rq) or die (mysql_error());
 
@@ -627,9 +666,9 @@ echo '<TABLE id="tb-cdt" CELLPADDING=1 CELLSPACING=2>';
 while ($ligne = mysql_fetch_array($result, MYSQL_NUM)) 
 	  { 
 	  //$textcours=stripslashes(markdown($ligne[1]));
-	  $textcours=$ligne[1];
+	  $textcours=stripslashes($ligne[1]);
 	  //$textafaire=stripslashes(markdown($ligne[2]));
-	  $textafaire=$ligne[2];
+	  $textafaire=stripslashes($ligne[2]);
 	  //$day="1,0,0,12,1,2007";echo $day;
 	  $jour=LeJour(strToTime($ligne[5]));
 	  //debut

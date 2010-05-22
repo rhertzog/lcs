@@ -33,7 +33,13 @@ function arch_popup(numarc) {
                                 window.focus();
                                 arch_popupWin = window.open("./cahier_texte_arch.php?arch="+numarc+ "","","");
                                 arch_popupWin.focus();
-                        }	
+                        }
+function arch_perso_popup(numarc) {
+                                window.focus();
+                                arch_popupWin = window.open("./cahier_texte_arch_perso.php?arch="+numarc+ "","","");
+                                arch_popupWin.focus();
+                        }
+                        	
 function form_popup() {
                                 window.focus();
                                 form_popupWin = window.open("./inserform.php","","width=550,height=500,directories=no,resizable=no,location=no,scrollbars=yes,toolbar=no,menubar=no,status=no");

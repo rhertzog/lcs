@@ -492,22 +492,19 @@ if ($exist=="true")
 		echo '</p></div>';
 
 //affichachage des boutons fermer et enregistrer	
-if (!isset($_GET['mlec547trg2s5hy'])) 
-	{	
-echo '<DIV id="bt-fixe" ><input class="bt-enregistre" type="submit" name="Valider" value="" ><BR><BR>
-<input class="bt-fermer" type="submit" name="Fermer" value="" >
-</DIV>';
-	}
-	
 //pas de tableau avant la sélection des creneaux
-if (!isset($_GET['mlec547trg2s5hy'])) 
-	{	echo "<h5 class='perso'> Si tous les &eacute;l&egrave;ves sont pr&eacute;sents, cliquez sur Enregistrer pour indiquer que l'appel a &eacute;t&eacute; effectu&eacute;.</h5>";
+if (!isset($_GET['mlec547trg2s5hy'])  && count($_POST['cren'])>0) 
+	{	
+	echo '<DIV id="bt-fixe" ><input class="bt-enregistre" type="submit" name="Valider" value="" ><BR><BR>
+	<input class="bt-fermer" type="submit" name="Fermer" value="" >
+	</DIV>';
+	 	echo "<h5 class='perso'> Si tous les &eacute;l&egrave;ves sont pr&eacute;sents, cliquez sur Enregistrer pour indiquer que l'appel a &eacute;t&eacute; effectu&eacute;.</h5>";
 		echo '<TABLE id="abs" border="0">';
 		echo '<thead>';
 		echo '<tr>';
 		echo '<td colspan="2" class="elv">El&egrave;ve</td><td><table class="motif" border="0"><tr><td colspan="2">Cumul au</td></tr><tr><td colspan="2">'.$dtajac_dif.'</td></tr><tr><td class="AR">A</td><td class="AR">R</td></tr></table>';
 		 
-		 if (count($cren_n)>0)
+		if (count($cren_n)>0)
 		 {
 		 echo '<TD  valign="bottom">';
 		 echo '<table border=0  class="motif"><tr><td colspan="3" class="h-motif">';

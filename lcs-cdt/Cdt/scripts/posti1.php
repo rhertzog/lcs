@@ -27,13 +27,33 @@ header("Cache-Control: no-cache , private");
 header("Pragma: no-cache");
 if(isset($_REQUEST['blabla']) && isset($_REQUEST['cibl']))
 {
-require_once("../Includes/class.inputfilter_clean.php");
+if (get_magic_quotes_gpc()) require_once("/usr/share/lcs/Plugins/Cdt/Includes/class.inputfilter_clean.php");
+else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 // Connexion a la base de donnees
 	require_once ('../Includes/config.inc.php');
 	//Creer la requete pour la mise a  jour des donnÃ©es	
-		$Contenu  =htmlentities($_REQUEST['blabla']);
-		$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-		$cont = $oMyFilter->process($Contenu);
+				
+		if (get_magic_quotes_gpc())
+		    {
+			$Contenu  =htmlentities($_REQUEST['blabla']);
+			$Cib  =htmlentities($_REQUEST['cibl']);
+			$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+			$cont = $oMyFilter->process($Contenu);
+			$cible = $oMyFilter->process($Cib);
+			}
+		else
+			{
+			// htlmpurifier
+			$Contenu = addSlashes($_REQUEST['blabla']);
+			$Cib = addSlashes($_REQUEST['cibl']);
+			$config = HTMLPurifier_Config::createDefault();
+	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
+	    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+	   		$purifier = new HTMLPurifier($config);
+	   		$cont = $purifier->purify($Contenu);
+	   		$cible= $purifier->purify($Cib);
+			}
+				
 		$cible= $_REQUEST['cibl'];
 		$rq = "UPDATE  onglets SET postit='$cont' WHERE id_prof='$cible'";
 		
