@@ -4,7 +4,7 @@
    functions.inc.php
    jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   Derniere mise a jour 08/01/2010
+   Derniere mise a jour 28/05/2010
    ============================================= */
 
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
@@ -402,4 +402,43 @@ function ldap_get_right($type,$login)
     }
     return $ret;
 }
+
+function acces_btn_admin ($idpers_recu, $login_recu) 
+// Test si l'utilisateur authentifie possede les droits pour acceder au bouton d'administration
+{
+	require_once "menu.inc.php";
+	
+	if ( $idpers_recu == "0" ) { // pas d'identifiant : pas d'acces
+        return ("N");
+    }
+    // A partir d'ici on a un identifiant
+    if ( ldap_get_right("lcs_is_admin",$login_recu) == "Y" ) { // l'utilisateur a les droits lcs_is_admin : il a toujours access
+        return ("Y");
+    }
+
+    // Test des droits des menus et sous-menus pour les utilisateurs sans les droits lcs_is_admin
+    // L'utilisateur a acces des qu'il a un de ces droits
+
+    // boucle sur les menus
+    for ($menunbr=1; $menunbr<count($liens); $menunbr++) {
+        // Test sur le menu
+        $rightname=$liens[$menunbr][1];
+        if ( ($rightname=="") or (ldap_get_right($rightname,$login_recu)=="Y") ) {
+	    // pas de droits necessaires ou alors l'utilisateur a la permission
+	    return ("Y");
+        }
+        //boucle sur les sous-menus
+	for ($i=2; $i<count($liens[$menunbr]); $i+=3) {
+	    // Test sur le sous-menu
+	    $rightname_smenu=$liens[$menunbr][$i+2];
+	    if ( ($rightname_smenu=="") or (ldap_get_right($rightname_smenu,$login_recu)=="Y") ) {
+                // pas de droits necessaires ou alors l'utilisateur a la permission
+                return ("Y");
+            }
+	} // boucle sur les sous-menus
+    } // boucle sur les menus
+    // on a parcouru tous les menus et sous-menus et l'utilisateur n'a pas les droits
+    return ("N");
+} // Fin fonction acces_btn_admin
+
 ?>
