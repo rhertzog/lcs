@@ -1,5 +1,5 @@
 <?php
-/* $Id: index.php 4395 2010-05-07 19:32:40Z crob $ */
+/* $Id: index.php 4509 2010-05-29 18:01:34Z regis $ */
 /*
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -85,6 +85,7 @@ description='Imprime fiches brevet OpenOffice',
 statut='';";
 $insert=mysql_query($sql);
 }
+
 //==============================================
 
 $sql="SELECT 1=1 FROM droits WHERE id='/mod_notanet/fb_rouen_pdf.php';";
@@ -275,6 +276,22 @@ PRIMARY KEY ( login )
 );";
 $create_table=mysql_query($sql);
 
+$sql="CREATE TABLE IF NOT EXISTS notanet_lvr (
+id int(11) NOT NULL auto_increment,
+intitule VARCHAR( 255 ) NOT NULL ,
+PRIMARY KEY ( id )
+);";
+$create_table=mysql_query($sql);
+
+$sql="CREATE TABLE IF NOT EXISTS notanet_lvr_ele (
+id int(11) NOT NULL auto_increment,
+login VARCHAR( 255 ) NOT NULL ,
+id_lvr INT( 11 ) NOT NULL ,
+note ENUM ('', 'VA','NV') NOT NULL DEFAULT '',
+PRIMARY KEY ( id )
+);";
+$create_table=mysql_query($sql);
+
 if($_SESSION['statut']=="administrateur") {
 	$truncate_tables=isset($_GET['truncate_tables']) ? $_GET['truncate_tables'] : NULL;
 	if($truncate_tables=='y') {
@@ -328,7 +345,7 @@ if($_SESSION['statut']=="administrateur") {
 		<li><a href='fb_lille_pdf.php'>Lille (<i>version PDF</i>)</a></li>\n";
 	$gepi_version=getSettingValue('version');
 	if(($gepi_version!='1.5.1')&&($gepi_version!='1.5.0')) {
-		echo "		<li>Modèle Nantes au format <a href='OOo/imprime_ooo.php'>OpenOffice</a> </li>\n";
+		echo "		<li><a href='OOo/imprime_ooo.php'>Modèle au format OpenOffice</a> <a href='https://www.sylogix.org/projects/gepi/wiki/GepiDoc_fbOooCalc'><img src='../images/icons/ico_question.png' alt='aide construction gabarit' title='Aide pour utiliser les gabarits .ods pour éditer les fiches brevets' /></a></li>\n";
 	}
 	echo "	</ul>
 </li>\n";

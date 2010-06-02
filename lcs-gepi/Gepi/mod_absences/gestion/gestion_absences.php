@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: gestion_absences.php 3413 2009-09-12 08:05:14Z crob $
+* $Id: gestion_absences.php 4480 2010-05-24 10:48:14Z crob $
 *
  * Copyright 2001, 2002 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -46,6 +46,7 @@ $titre_page = "Gestion des absences";
 require_once("../../lib/header.inc");
 //************** FIN EN-TETE ***************
 
+//echo "<p style='color:red'>".date("d/m/Y",getSettingValue('begin_bookings'))."-".date("d/m/Y",getSettingValue('end_bookings'))."</p>";
 
 ?>
 
@@ -560,9 +561,11 @@ $retardnj='';
 					// largeur du graphique au maximum
 					$l_graphique = '370'; //536
 // temporaire
+//$du = '01/09/2008';
+//$au = '30/06/2009';
+$du = date("d/m/Y",getSettingValue('begin_bookings'));
+$au = date("d/m/Y",getSettingValue('end_bookings'));
 
-$du = '01/09/2008';
-$au = '30/06/2009';
 $du_explose = explode('/',$du);
 	$au_explose = explode('/',$au);
 		$jour_du = '1';
