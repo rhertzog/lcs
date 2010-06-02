@@ -1,3 +1,10 @@
+lcs-gepi (2.4.4) LCS; urgency=low
+
+  * add "fiches brevet"
+  * update to revision 4523
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 02 Jun 2010 12:50:03 +0200
+
 lcs-gepi (2.4.3) LCS; urgency=low
 
   * update to revision 4434 
