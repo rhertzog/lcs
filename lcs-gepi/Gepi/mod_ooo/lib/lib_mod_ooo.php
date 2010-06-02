@@ -15,6 +15,12 @@ function renvoi_nom_image ($extension) {
 	case "odf":
 	    return "stock_new-spreadsheet-36.png";
 	    break;
+	case "ods":
+	    return "stock_new-spreadsheet-36.png";
+	    break;
+	default:
+	    return "stock_new-text-36.png";
+	    break;
 	}
 }
 

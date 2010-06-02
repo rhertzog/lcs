@@ -58,7 +58,26 @@ include_once('./lib/chemin.inc.php'); // le chemin des dossiers contenant les  m
     $fich[]="rapport_incident.odt";
     $utilisation[]="Formulaire de rapport d'incident";
 
-	
+
+    //Fiches brevet
+    $fich[]="fb_CLG_lv2.ods";
+    $utilisation[]="Fiche brevet série collège LV2";
+    $fich[]="fb_CLG_dp6.ods";
+    $utilisation[]="Fiche brevet série collège ODP 6 heures";
+    $fich[]="fb_PRO.ods";
+    $utilisation[]="Fiche brevet série professionnelle sans ODP";
+    $fich[]="fb_PRO_dp6.ods";
+    $utilisation[]="Fiche brevet série professionnelle ODP 6 heures";
+    $fich[]="fb_PRO_agri.ods";
+    $utilisation[]="Fiche brevet série professionnelle option agricole";
+    $fich[]="fb_TECHNO.ods";
+    $utilisation[]="Fiche brevet série technologique sans ODP";
+    $fich[]="fb_TECHNO_dp6.ods";
+    $utilisation[]="Fiche brevet série technologique ODP 6 heures";
+    $fich[]="fb_TECHNO_agri.ods";
+    $utilisation[]="Fiche brevet série technologique option agricole";
+
+
     $nbfich=sizeof($fich);
 // Fin liste des fichiers
 
