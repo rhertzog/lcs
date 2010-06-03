@@ -1,4 +1,4 @@
-lcs-web (2.4.7~3) UNRELEASED; urgency=low
+lcs-web (2.4.7~4) Lcs; urgency=low
 
   * Fix bug  maj modules Auto/Manu (scripts modules_installes.php and boutons_style.css)
   * Fix bug in script select_briques.php 
@@ -9,9 +9,9 @@ lcs-web (2.4.7~3) UNRELEASED; urgency=low
     * Add strong authentification system based on swekey  
   * Add password user init and group listing in appli Annu
   * Add a function acces_btn_admin in function_inc.php
-  * Modify rights acces for administration page in barre.php
+  * Modify rights acces for administration page in barre.php 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 28 May 2010 22:22:09 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 03 Jun 2010 09:04:02 +0200
 
 lcs-web (2.4.6.5) Lcs; urgency=low
 
