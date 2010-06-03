@@ -1,11 +1,11 @@
 <?php
-/* lcs/auth.php version du : 20/03/2010 */
+/* lcs/auth.php version du : 03/06/2010 */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
-if ( is_dir ("/usr/share/lcs/swekey")) {
-include_once '/usr/share/lcs/swekey/my_login_verify.php';
-}
+if ( is_dir ("/usr/share/lcs/swekey")) 
+    include_once '/usr/share/lcs/swekey/my_login_verify.php';
+
 
 // register globals
 if (isset($_POST['login'])) $login=$_POST['login']; else $login="" ;
@@ -84,7 +84,7 @@ $error=$_GET['error'];
         header_crypto_html("...::: Authentification LCS :::...");
 ?>
                 <h3>Authentification</h3>
-                <p>Afin de pouvoir rentrer dans votre espace perso LCS, vous devez fournir un identifiant et un mot de passe. En cas d'oubli, contactez <a href='mailto:<? echo $MelAdminLCS ?>?subject=Mot de passe Intranet'>l'administrateur du syst&eacute;me</a>.</p>
+                <p>Afin de pouvoir rentrer dans votre espace perso LCS, vous devez fournir un identifiant et un mot de passe. En cas d'oubli, contactez <a href='mailto:<? echo "admin@$domain" ?>?subject=Mot de passe Intranet'>l'administrateur du syst&egrave;me</a>.</p>
                 <form name = "auth" action="auth.php" method="post" onsubmit = "encrypt(document.auth)" >
                         <table border='0'>
                                 <tr>
