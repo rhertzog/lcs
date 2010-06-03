@@ -40,10 +40,10 @@ if (isset($_GET['rubrique']))
 	$nb = mysql_num_rows($result); 
 	//on récupère les données
 	$enrg = mysql_fetch_array($result, MYSQL_NUM); 
-	if (ereg("^(Classe)",$enrg[0]))
+	if (mb_ereg("^(Classe)",$enrg[0]))
 	{
 	//recherche du niveau de la classe pour le format long
-	$classe_courte=split('_',$enrg[0]);
+	$classe_courte=explode('_',$enrg[0]);
 	//on isole le nom court de la classe
 	$niveau=$classe_courte[count($classe_courte)-1];
 	$FirstCar="";

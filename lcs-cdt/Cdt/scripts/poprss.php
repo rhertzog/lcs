@@ -15,7 +15,7 @@ else
 {
 // Connexion à la base de données
 require_once ('../Includes/config.inc.php');
-$idret=split(':',$_GET['id']);
+$idret=explode(':',$_GET['id']);
 if ($idret[1]!= substr(md5(crypt($idret[0],$Grain)),2)) 
 exit;
 }

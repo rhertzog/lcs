@@ -29,7 +29,7 @@ if (isset($_POST['Valider']))
 		$list= "";
 		}
 			$loop=0;
-			$données_extraites = split( ",",$list);
+			$données_extraites = explode( ",",$list);
 					for($n=0; $n<count($données_extraites); $n++)
 					{				
 					$data[$loop]=$données_extraites[$n];
@@ -77,7 +77,7 @@ if (! ($NameFile) )
 	while (!feof($NameFile))
 		{
 		$UneLigne= fgets($NameFile,255);
-		$extr=split("\"",$UneLigne);
+		$extr=explode("\"",$UneLigne);
 		
 		if  (count($extr)==3 ) // ce n'est pas la 1ere ou la denière ligne
 		{

@@ -306,7 +306,7 @@ function people_get_datenaissance ($uid)
         if ( $info["count"]) {
           // Traitement du champ gecos pour extraction de date de naissance
           $gecos = $info[0]["gecos"][0];
-          $tmp = explode ("[\,\]",$info[0]["gecos"][0],4);
+          $tmp = explode(",",$info[0]["gecos"][0],3);
           $ddn = $tmp[1];
              }
         @ldap_free_result ( $result );

@@ -125,7 +125,7 @@ else
 	{
 	//recherche des onglets "Cours" de la classe
 	
-	if (!ereg("^Classe",$ch)) {
+	if (!mb_ereg("^Classe",$ch)) {
 	$grp_cl=search_groups("cn=Classe_*".$ch);
 	$grp_cl=$grp_cl[0]["cn"];
 	}

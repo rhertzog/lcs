@@ -92,8 +92,8 @@ if (isset($_POST['Valider']) )
 		if ( isset($equation) && $equation!='' ) 
 		{	
 		$retour =mathfilter($message,$size,$pathtoimg);
-		$lien=split('"',$retour);
-		$name=split('/',$lien[1]);
+		$lien=explode('"',$retour);
+		$name=explode('/',$lien[1]);
 		$TextAlt=$lien[5];//texte alternatif
 		$nomFichier=$name[count($name)-1];//nom du fichier
 		$cmd=" mv ../phpmathpublisher/img/".$name[count($name)-1]." /home/".$_SESSION['login']."/public_html/".$sousrep."/";

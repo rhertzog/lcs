@@ -149,7 +149,7 @@ if (!isset($_POST['datejavac_dif']))
 else
 	{
 	
-	$Morceauc=split('/',$_POST['datejavac_dif']);
+	$Morceauc=explode('/',$_POST['datejavac_dif']);
 	$jour_c=$Morceauc[0];
 	$mois_c=$Morceauc[1];
 	$an_c=$Morceauc[2];
@@ -172,7 +172,7 @@ if (!isset($_POST['datejavaf_dif']))
 	}
 else
 	{
-	$Morceauf=split('/',$_POST['datejavaf_dif']);
+	$Morceauf=explode('/',$_POST['datejavaf_dif']);
 	$jour_f=$Morceauf[0];
 	$mois_f=$Morceauf[1];
 	$an_f=$Morceauf[2];

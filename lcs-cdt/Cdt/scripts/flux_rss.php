@@ -32,7 +32,7 @@ $tsmp=time();
 if (!isset($_GET['div'])) exit;
 else
 {
-$divret=split(':',$_GET['div']);
+$divret=explode(':',$_GET['div']);
 if ($divret[1]!= substr(md5(crypt($divret[0],$Grain)),2))
 exit;
 }
@@ -96,7 +96,7 @@ else
 	{
 	//recherche des onglets "Cours" de la classe
 	
-	if (!ereg("^Classe",$ch)) {
+	if (!mb_ereg("^Classe",$ch)) {
 	$grp_cl=search_groups("cn=Classe_*".$ch);
 	$grp_cl=$grp_cl[0]["cn"];
 	}

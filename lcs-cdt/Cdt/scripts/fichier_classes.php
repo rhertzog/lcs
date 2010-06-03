@@ -81,7 +81,7 @@ if (isset($_POST['change_grain']))
 			for ($loop=0; $loop < count($groups); $loop++)
 		        {
 				//raccourci des noms pour le format court
-				$short=split("_",$groups[$loop]["cn"]);
+				$short=explode("_",$groups[$loop]["cn"]);
 				if ($_POST['size']=="court")
 				$data[$loop]=$short[count($short)-1];//dernier "match"
 				else $data[$loop]=$groups[$loop]["cn"];	//format long
@@ -180,7 +180,7 @@ if (isset($_POST['test']))
 			$occ=0;
 			for ($loop=0; $loop < count($groups); $loop++)
 				{
-				if ((ereg("(_$classe[$n])$",$groups[$loop]["cn"])) || ($classe[$n]==$groups[$loop]["cn"]))
+				if ((mb_ereg("(_$classe[$n])$",$groups[$loop]["cn"])) || ($classe[$n]==$groups[$loop]["cn"]))
 				$occ++;
 				}
 			//si le nb d'occurence est <> de 1, -->problème	
@@ -229,7 +229,7 @@ if (isset($_POST['Archiver']))
 	$exist=0;
 	$TablesExist= mysql_query("show tables");
 	while ($table=mysql_fetch_row($TablesExist))
-	if (ereg("$name_arch$",$table[0])) $exist=1;
+	if (mb_ereg("$name_arch$",$table[0])) $exist=1;
 	if ($exist==0)
 		{
 		// Créer la requête.
@@ -446,9 +446,9 @@ Archives existantes :
 		';
 $TablesExist= mysql_query("show tables");
 	while ($table=mysql_fetch_row($TablesExist))
-	if (ereg("^onglets[[:alnum:]]",$table[0]))
+	if (mb_ereg("^onglets[[:alnum:]]",$table[0]))
 	{
-	$archive=split('s',$table[0]);
+	$archive=explode('s',$table[0]);
 	echo ($archive[1]). ' &nbsp ';
 	}
 	

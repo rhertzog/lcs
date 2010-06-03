@@ -131,7 +131,7 @@ global 	$dtajadebut, $dtajafin;
 
 if (isset($_GET['df'])) 
 	{
-$Morceauc=split('/',$_GET['df']);
+$Morceauc=explode('/',$_GET['df']);
 	$jour_c=$Morceauc[0];
 	$mois_c=$Morceauc[1];
 	$an_c=$Morceauc[2];
@@ -143,7 +143,7 @@ $Morceauc=split('/',$_GET['df']);
 
 	if (isset($_GET['dd'])) 
 	{
-	$Morceauf=split('/',$_GET['dd']);
+	$Morceauf=explode('/',$_GET['dd']);
 	$jour_f=$Morceauf[0];
 	$mois_f=$Morceauf[1];
 	$an_f=$Morceauf[2];

@@ -45,11 +45,11 @@ include ('./Includes/data.inc.php');
 				{
 				for ($loop=0;$loop<count($groups);$loop++)
 					{
-					if (ereg("^Classe",$groups[$loop]["cn"]))
+					if (mb_ereg("^Classe",$groups[$loop]["cn"]))
 					//recherche d'une occurence dans le fichier des classes
 					for($n=0; $n<count($classe); $n++)
 						{
-						if ((ereg("(_$classe[$n])$",$groups[$loop]["cn"])) || ($classe[$n]==$groups[$loop]["cn"]))
+						if ((mb_ereg("(_$classe[$n])$",$groups[$loop]["cn"])) || ($classe[$n]==$groups[$loop]["cn"]))
 						{
 						$_SESSION['saclasse'][1]=$classe[$n];
 						break;

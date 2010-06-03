@@ -46,7 +46,7 @@ function dumpMySQL()
     {
         // si l'utilisateur a demandé la structure ou la totale
         //if ( $table[0] == "cahiertxt" || $table[0] == "onglets" )
-        if ( ereg("^cahiertxt",$table[0]) || ereg("^onglets",$table[0]))
+        if ( mb_ereg("^cahiertxt",$table[0]) || mb_ereg("^onglets",$table[0]))
         {
             $creations .= "-- -----------------------------\n";
             $creations .= "-- creation de la table ".$table[0]."\n";

@@ -35,9 +35,9 @@ return $texte;
 }  
 
 function date_incoherente($date1,$date2){
-$splidat1=split('/',$date1);
+$splidat1=explode('/',$date1);
 $newdate1=$splidat1[2].$splidat1[1].$splidat1[0];
-$splidat2=split('/',$date2);
+$splidat2=explode('/',$date2);
 $newdate2=$splidat2[2].$splidat2[1].$splidat2[0];
 if ($newdate1>$newdate2) return true; else return false;
 }
@@ -48,7 +48,7 @@ $tsmp2=time() -604800;//j-7
 if (!isset($_POST['datecren'])) {$datcreno=date('d/m/Y',$tsmp);} else 
 	{
  	$datcreno=$_POST['datecren'];
- 	$Morceauc=split('/',$_POST['datecren']);
+ 	$Morceauc=explode('/',$_POST['datecren']);
 	$dtcrensql= $Morceauc[2]."/".$Morceauc[1]."/".$Morceauc[0];
  	}
 if (!isset($_POST['datecl_fin'])) {$datfincla=date('d/m/Y',$tsmp);} else
@@ -134,15 +134,15 @@ if (isset($_POST['OKclasse']))
 if (isset($_POST['OKeleve']))
 	{
 		$nom_propre = SansAccent($_POST['nom']);
-		 $nom_propre = ereg_replace("^[[:blank:]]","",$nom_propre);
-		 $nom_propre = ereg_replace("[[:blank:]]$","",$nom_propre);
-		 $nom_propre = ereg_replace("'|[[:blank:]]","_",$nom_propre);
+		 $nom_propre = mb_ereg_replace("^[[:blank:]]","",$nom_propre);
+		 $nom_propre = mb_ereg_replace("[[:blank:]]$","",$nom_propre);
+		 $nom_propre = mb_ereg_replace("'|[[:blank:]]","_",$nom_propre);
 		 $nom_propre = StrToLower($nom_propre);
 		 $nom_propre = strip_tags(stripslashes($nom_propre));
 		 $prenom_propre = SansAccent($_POST['prenom']);
-		 $prenom_propre = ereg_replace("^[[:blank:]]","",$prenom_propre);
-		 $prenom_propre= ereg_replace("[[:blank:]]$","",$prenom_propre);
-		 $prenom_propre = ereg_replace("'|[[:blank:]]","_",$prenom_propre);
+		 $prenom_propre = mb_ereg_replace("^[[:blank:]]","",$prenom_propre);
+		 $prenom_propre= mb_ereg_replace("[[:blank:]]$","",$prenom_propre);
+		 $prenom_propre = mb_ereg_replace("'|[[:blank:]]","_",$prenom_propre);
 		 $prenom_propre = StrToLower($prenom_propre);
 		 $prenom_propre = strip_tags(stripslashes($prenom_propre));
 		  
@@ -156,7 +156,7 @@ if (isset($_POST['OKeleve']))
 			for ($loup=0; $loup < count($groups); $loup++)
 			        {
 			        $cla = $_POST['division'];
-						if (ereg("($cla)$",$groups[$loup]["cn"]))
+						if (mb_ereg("($cla)$",$groups[$loup]["cn"]))
 							{
 							$full_classe =$groups[$loup]["cn"];
 							break;

@@ -34,12 +34,12 @@ echo "<SCRIPT language='Javascript'>
 //si clic sur le bouton Copier-Coller
 if (isset($_POST['copie']))
 	{
-	if (get_magic_quotes_gpc()) $textc1=ereg_replace("\n","\\n",stripslashes($_POST['textecours']));
-	else $textc1=ereg_replace("\n","\\n",$_POST['textecours']);
-	$textc=ereg_replace("\r","\\r",$textc1);
-	if (get_magic_quotes_gpc()) $textaf1=ereg_replace("\n","\\n",stripslashes($_POST['texteafaire']));
-	else $textaf1=ereg_replace("\n","\\n",$_POST['texteafaire']);
-	$textaf=ereg_replace("\r","\\r",$textaf1);
+	if (get_magic_quotes_gpc()) $textc1=mb_ereg_replace("\n","\\n",stripslashes($_POST['textecours']));
+	else $textc1=mb_ereg_replace("\n","\\n",$_POST['textecours']);
+	$textc=mb_ereg_replace("\r","\\r",$textc1);
+	if (get_magic_quotes_gpc()) $textaf1=mb_ereg_replace("\n","\\n",stripslashes($_POST['texteafaire']));
+	else $textaf1=mb_ereg_replace("\n","\\n",$_POST['texteafaire']);
+	$textaf=mb_ereg_replace("\r","\\r",$textaf1);
 		echo '<SCRIPT language="Javascript">
 		opener.tinyMCE.execInstanceCommand("coursfield","mceInsertContent",false,"'.$textc.'");
 		opener.tinyMCE.execInstanceCommand("afairefield","mceInsertContent",false,"'.$textaf.'");
@@ -80,9 +80,9 @@ echo ("<ul id='arch-navlist'>");
 	$TablesExist= mysql_query("show tables");
 	$x=0;
 	while ($table=mysql_fetch_row($TablesExist))
-	if (ereg("^onglets[[:alnum:]]",$table[0]))
+	if (mb_ereg("^onglets[[:alnum:]]",$table[0]))
 	{
-	$archive=split('s',$table[0]);
+	$archive=explode('s',$table[0]);
 	$x++;
 	//archive courante
 	if ($arch==$archive[1]) echo "<li id='arch'> <a href='cahier_texte_arch.php?arch=$archive[1]' id='courant'>$archive[1]</a>";

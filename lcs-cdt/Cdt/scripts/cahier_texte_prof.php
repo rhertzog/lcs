@@ -315,19 +315,19 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 					//$date_cdif=$_SESSION['dif_c'][$loop];
 					//$date_afdif=$_SESSION['dif_af'][$loop];
 					//Traitement de dates
-					$Morceauc_dif=split('/',$_SESSION['dif_c'][$loop]);
+					$Morceauc_dif=explode('/',$_SESSION['dif_c'][$loop]);
 					$jour_c_dif=$Morceauc_dif[0];
 					$mois_c_dif=$Morceauc_dif[1];
 					$an_c_dif=$Morceauc_dif[2];
 					$date_c_dif = $an_c_dif.$mois_c_dif.$jour_c_dif;
-					$Morceauf_dif=split('/',$_SESSION['dif_af'][$loop]);
+					$Morceauf_dif=explode('/',$_SESSION['dif_af'][$loop]);
 					$jour_f_dif=$Morceauf_dif[0];
 					$mois_f_dif=$Morceauf_dif[1];
 					$an_f_dif=$Morceauf_dif[2];
 					$date_af_dif = $an_f_dif.$mois_f_dif.$jour_f_dif; 
 					if 	($_SESSION['dif_vi'][$loop]!="idem Cours")
 					{
-					$Morceauv_dif=split('/',$_SESSION['dif_vi'][$loop]);
+					$Morceauv_dif=explode('/',$_SESSION['dif_vi'][$loop]);
 					$jour_v_dif=$Morceauv_dif[0];
 					$mois_v_dif=$Morceauv_dif[1];
 					$an_v_dif=$Morceauv_dif[2];
@@ -604,8 +604,8 @@ if (isset($tsmp3))
 				$TablesExist= mysql_query("show tables");
 				$x=0;
 				while ($table=mysql_fetch_row($TablesExist))
-				if (ereg("^onglets[[:alnum:]]",$table[0])) {
-					$archive=split('s',$table[0]);
+				if (mb_ereg("^onglets[[:alnum:]]",$table[0])) {
+					$archive=explode('s',$table[0]);
 					$x++;
 					$archnum=$archive[1];
 					echo '<a href="#" onClick="arch_popup(\''.$archive[1].'\'); return false" >- '.$archive[1].' </a> <br /> ';
@@ -634,8 +634,8 @@ if (isset($tsmp3))
 				$TablesExist= mysql_query("show tables");
 				$x=0;
 				while ($table=mysql_fetch_row($TablesExist))
-				if (ereg("^onglets",$table[0])) {
-					$archive=split('s',$table[0]);
+				if (mb_ereg("^onglets",$table[0])) {
+					$archive=explode('s',$table[0]);
 					$x++;
 					if ($archive[1]!="") $archnum=$archive[1]; else $archnum="An dernier";
 					echo '<a href="#" onClick="arch_perso_popup(\''.$archive[1].'\'); return false" >- '.$archnum.' </a> <br>  ';
@@ -652,7 +652,7 @@ if (isset($tsmp3))
     	<div class="t3">Liens</div>
        		<p>Ces liens s'ouvrent dans une nouvelle fen&ecirc;tre</p>
 			<p><?php echo '<a href="cahier_text_eleve.php';
-			if (!ereg("^Cours",$classe_active)) echo '?mlec547trg2s5hy='.$classe_active;
+			if (!mb_ereg("^Cours",$classe_active)) echo '?mlec547trg2s5hy='.$classe_active;
 			echo '" target="_blank" width="900" height="800">'; ?> - CAHIER DE TEXTE ELEVES	</a></p>
 			<p><?echo '<a href="absences.php';
 			echo '?mlec547trg2s5hy='.$classe_active;

@@ -98,7 +98,7 @@ if (!isset($_POST['datejavac_dif']))
 	else
 //date a la valeur selectionnee	
 	{
-	$Morceauc=split('/',$_POST['datejavac_dif']);
+	$Morceauc=explode('/',$_POST['datejavac_dif']);
 	$jour_c=$Morceauc[0];
 	$mois_c=$Morceauc[1];
 	$an_c=$Morceauc[2];

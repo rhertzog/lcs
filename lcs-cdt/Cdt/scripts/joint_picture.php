@@ -93,7 +93,7 @@ if (isset($_POST['Valider']))
 			if ($_FILES["FileSelection1"]["size"]>0)
 				{
 				$nomFichier = SansAccent($_FILES["FileSelection1"]["name"]) ;
-				$nomFichier=ereg_replace("'|[[:blank:]]","_",$nomFichier);
+				$nomFichier=mb_ereg_replace("'|[[:blank:]]","_",$nomFichier);
 				$nomTemporaire = $_FILES["FileSelection1"]["tmp_name"] ;
 				//chargement du fichier
 				copy($nomTemporaire,"/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier));							

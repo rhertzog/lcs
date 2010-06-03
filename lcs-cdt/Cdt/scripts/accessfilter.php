@@ -170,10 +170,10 @@ if (isset($_POST['Valider']))
 		  $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
 		  $nom_propre[$indecs] = $oMyFilter->process($nom_propre[$indecs]);
 		  $nom_propre[$indecs] = SansAccent($nom_propre[$indecs]);
-		  $nom_propre[$indecs] = ereg_replace("^[[:blank:]]","",$nom_propre[$indecs]);
-		  $nom_propre[$indecs] = ereg_replace("[[:blank:]]$","",$nom_propre[$indecs]);
-		  $nom_propre1[$indecs] = ereg_replace("'|[[:blank:]]","_",$nom_propre[$indecs]);
-		  $nom_propre2[$indecs] = ereg_replace("'","_",$nom_propre[$indecs]);
+		  $nom_propre[$indecs] = mb_ereg_replace("^[[:blank:]]","",$nom_propre[$indecs]);
+		  $nom_propre[$indecs] = mb_ereg_replace("[[:blank:]]$","",$nom_propre[$indecs]);
+		  $nom_propre1[$indecs] = mb_ereg_replace("'|[[:blank:]]","_",$nom_propre[$indecs]);
+		  $nom_propre2[$indecs] = mb_ereg_replace("'","_",$nom_propre[$indecs]);
 		  $nom_propre1[$indecs] = StrToLower($nom_propre1[$indecs]);
 		  $nom_propre2[$indecs] = StrToLower($nom_propre2[$indecs]);
 		  $nom_propre1[$indecs] = strip_tags(stripslashes($nom_propre1[$indecs]));
@@ -182,9 +182,9 @@ if (isset($_POST['Valider']))
 		  $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
 		  $prenom_propre[$indecs] = $oMyFilter->process($prenom_propre[$indecs]);
 		  $prenom_propre[$indecs] = SansAccent($prenom_propre[$indecs]);
-		  $prenom_propre[$indecs] = ereg_replace("^[[:blank:]]","",$prenom_propre[$indecs]);
-		  $prenom_propre[$indecs] = ereg_replace("[[:blank:]]$","",$prenom_propre[$indecs]);
-		  $prenom_propre[$indecs] = ereg_replace("'|[[:blank:]]","_",$prenom_propre[$indecs]);
+		  $prenom_propre[$indecs] = mb_ereg_replace("^[[:blank:]]","",$prenom_propre[$indecs]);
+		  $prenom_propre[$indecs] = mb_ereg_replace("[[:blank:]]$","",$prenom_propre[$indecs]);
+		  $prenom_propre[$indecs] = mb_ereg_replace("'|[[:blank:]]","_",$prenom_propre[$indecs]);
 		  $prenom_propre[$indecs] = StrToLower($prenom_propre[$indecs]);
 		  $prenom_propre[$indecs] = strip_tags(stripslashes($prenom_propre[$indecs]));
 		  
@@ -198,7 +198,7 @@ if (isset($_POST['Valider']))
 			for ($loup=0; $loup < count($groups); $loup++)
 			        {
 			        $cla = $_POST['division'.$indecs];
-						if (ereg("($cla)$",$groups[$loup]["cn"]))
+						if (mb_ereg("($cla)$",$groups[$loup]["cn"]))
 							{
 							$full_classe =$groups[$loup]["cn"];
 							break;
@@ -214,7 +214,8 @@ if (isset($_POST['Valider']))
 		  $le_cn[$indecs] = $prenom_propre[$indecs]." ".$nom_propre1[$indecs];
 		  $filtre ="(cn=$le_cn[$indecs])";
 		  $gus= search_people ($filtre);
-		  //echo count($gus).$nom_propre2[$indecs];exit;
+		  //echo count($gus).$nom_propre2[$indecs].$gus[0]["uid"];
+		  //echo people_get_datenaissance($gus[0]["uid"]);exit;
 		//si pas d'occurence recherche avec nom2
 		if (count($gus)==0){
 		$le_cn[$indecs] = $prenom_propre[$indecs]." ".$nom_propre2[$indecs];

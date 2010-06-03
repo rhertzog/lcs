@@ -39,7 +39,7 @@ $maintenant = date('D, d M Y H:i:s') . ' GMT';
 header('Content-Type: application/octet-stream');
 header('Expires: ' . $maintenant);
 
-if (ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
+if (mb_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
     header('Content-Disposition: inline; filename="' . $filesql . '"');
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');

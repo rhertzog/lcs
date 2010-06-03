@@ -37,13 +37,13 @@ require_once ('../Includes/config.inc.php');
 //$tab_cla=array("2DE","1ES","TES");
 if (isset($_GET['kr'])) 
 	{
-$tab_kren=split('-',$_GET['kr']);
+$tab_kren=explode('-',$_GET['kr']);
 	}
 
 
 if (isset($_GET['dkr'])) 
 	{
-$Morceauc=split('/',$_GET['dkr']);
+$Morceauc=explode('/',$_GET['dkr']);
 	$datsql= $Morceauc[2]."/".$Morceauc[1]."/".$Morceauc[0];
 	
 	}

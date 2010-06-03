@@ -141,14 +141,10 @@ if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
 				{	
 				// destinataire
 				//recherche du groupe classe dans l'annuaire
-				//$classe_dest="";
-				//$classe_courte=split('_',$_POST['classe']);
 				$classe_dest=$_POST['classe'];
-				//include "$BASEDIR/lcs/includes/headerauth.inc.php";
-				//include "$BASEDIR/Annu/includes/ldap.inc.php";
 				$grp_cl=search_groups("cn=".$_POST['classe']);
 				if (count($grp_cl[0]==0)) $grp_cl=search_groups("cn=Classe_*".$classe_dest); 
-				//echo "clc=".$grp_cl[0]["cn"];
+				
 				//on ferme la connexion lcs_db et on se reconnecte sur la bdd Cdt
 				mysql_close();
 				include("../Includes/config.inc.php");
@@ -162,7 +158,7 @@ if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
 				$dat_new=strToTime($_POST['data']);	
 				//Le destinataire 
 
-				if  (!ereg("^Cours",$_POST['classe'])) 
+				if  (!mb_ereg("^Cours",$_POST['classe'])) 
 				$mailTo = $grp_cl[0]["cn"];
 				else $mailTo = $_POST['classe'];
 				//Le sujet
@@ -197,7 +193,7 @@ if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
  			{
  			for ($a=0; $a < count ($_SESSION['sel_cl'])  ; $a++)
 				{
-				$gr=split('#',$_SESSION['sel_cl'][$a]);
+				$gr=explode('#',$_SESSION['sel_cl'][$a]);
 				$groupe=$gr[0];
 				$idr=$gr[1];
  				$rq = "INSERT INTO devoir (date, creneau,login, matiere, sujet, classe, durée ) 
@@ -217,7 +213,7 @@ if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
 					}
 					else 
 			{
-			if (!ereg("^Cours",$_POST['classe'])) 
+			if (!mb_ereg("^Cours",$_POST['classe'])) 
 			{
 			//enregistrement dans le travail à faire pour les autres classes
 				$Dev= "Préparer le Devoir surveillé : ".$_POST['sujet'] ;
@@ -237,12 +233,12 @@ if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
 				}
 //modif			
 			//envoi d'un mail si les liste de difusion sont activées
-			if (($_SESSION['liste']==1) && (!ereg("^Cours",$_POST['classe']))) 
+			if (($_SESSION['liste']==1) && (!mb_ereg("^Cours",$_POST['classe']))) 
 				{	
 				// destinataire
 				//recherche du groupe classe dans l'annuaire
 				$classe_dest="";
-				$classe_courte=split('_',$groupe);
+				$classe_courte=explode('_',$groupe);
 				$classe_dest=$classe_courte[count($classe_courte)-1];
 				$grp_cl=search_groups("cn=".$groupe);
 				if (count($grp_cl[0]==0)) $grp_cl=search_groups("cn=Classe_*".$classe_dest); 
@@ -304,7 +300,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==$_SESSION['R
 	//effacement de l'enregistrement
 	if (($nb==1) &&($action==1245))
 		{
-		if (!ereg("^Cours",$cla_supp))	
+		if (!mb_ereg("^Cours",$cla_supp))	
 		$rq = "DELETE  FROM devoir WHERE id_ds='$cible' and login='$login' LIMIT 1";
 		else
 		$rq = "DELETE  FROM devoir WHERE  login='$login' and date='$dat_supp' and matiere='$mat_supp' and creneau='$cren_supp' and 
@@ -316,7 +312,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==$_SESSION['R
 			{	
 			//recherche du groupe classe dans l'annuaire
 			$classe_dest="";
-			$classe_courte=split('_',$_GET['klasse']);
+			$classe_courte=explode('_',$_GET['klasse']);
 			$classe_dest=$classe_courte[count($classe_courte)-1];
 			//include "$BASEDIR/lcs/includes/headerauth.inc.php";
 			//include "$BASEDIR/Annu/includes/ldap.inc.php";
@@ -398,7 +394,7 @@ if (isset($_GET['ladate']))
 <?
 //Modif groupes
 //si la classe est un groupe
-if (ereg("^Cours",$clas)) 
+if (mb_ereg("^Cours",$clas)) 
 	{
 		
 	$ct1cours=true;
@@ -416,7 +412,7 @@ for ($loup=0; $loup < count($uids); $loup++)
 			{
 			for($n=0; $n<count($classe); $n++)
 				{ 
-				if ((ereg("(_$classe[$n])$",$groups)) || ($classe[$n]==$groups))
+				if ((mb_ereg("(_$classe[$n])$",$groups)) || ($classe[$n]==$groups))
 					{
 					if (!in_array($classe[$n], $liste_classe)) 
 						{	
