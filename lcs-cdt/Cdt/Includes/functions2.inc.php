@@ -153,7 +153,7 @@ $groups=search_groups('cn=classe*');
 
  for($n=0; $n<count($classe); $n++)
 						{
-						if (ereg("($classe[$n])$",$classe_en_clair))
+						if (mb_ereg("($classe[$n])$",$classe_en_clair))
 							{
 							$classe_decriptee=$classe[$n];
 							break;
@@ -171,7 +171,7 @@ function decripte_uid($uid_cripte,$saclasse) {
 			for ($loup=0; $loup < count($groups); $loup++)
 			        {
 			        
-						if (ereg("($saclasse)$",$groups[$loup]["cn"]))
+						if (mb_ereg("($saclasse)$",$groups[$loup]["cn"]))
 							{
 							$full_classe =$groups[$loup]["cn"];
 							break;
@@ -306,7 +306,7 @@ function people_get_datenaissance ($uid)
         if ( $info["count"]) {
           // Traitement du champ gecos pour extraction de date de naissance
           $gecos = $info[0]["gecos"][0];
-          $tmp = split ("[\,\]",$info[0]["gecos"][0],4);
+          $tmp = explode ("[\,\]",$info[0]["gecos"][0],4);
           $ddn = $tmp[1];
              }
         @ldap_free_result ( $result );

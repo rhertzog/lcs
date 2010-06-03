@@ -31,7 +31,7 @@ if (isset($_POST['planning']))
 //redirection vers la config du cahier &agrave; la premi&egrave;ere utilisation
 			
 // Connexion a la base de donnees
-require_once ('../Includes/config.inc.php');
+include ('../Includes/config.inc.php');
 
 // Creer la requ&egrave;ete.
 $rq = "SELECT classe,matiere,id_prof FROM onglets
@@ -67,7 +67,7 @@ if (mysql_num_rows($result)==0)
 	exit;
 	}
 include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");	
-if (get_magic_quotes_gpc()) require_once("/usr/share/lcs/Plugins/Cdt/Includes/class.inputfilter_clean.php");
+if (get_magic_quotes_gpc()) require_once("../Includes/class.inputfilter_clean.php");
 else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 //include_once ('/usr/share/lcs/Plugins/Cdt/Includes/markdown.php'); //convertisseur txt-->HTML
 ?>
@@ -128,10 +128,58 @@ elseif (isset($_POST['rubriq']))
 	{
 	$cible=$_POST['rubriq'];
 	}
+//rubrique edt si agenda présent
+elseif (is_dir("../../Agendas"))
+	{
+	//connexion 
+	require_once ("../Includes/connect_agendas.php");
+	$aujourdhui=date('Ymd');
+	$date=gmdate('His');
+	//entrees edt ?
+	$rq="SELECT cal_time,cal_duration,cal_name,cal_description FROM webcal_entry WHERE cal_date = '".$aujourdhui
+	."' AND cal_id IN 
+	(SELECT cal_id FROM webcal_entry_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_id IN 
+	(SELECT cat_id FROM webcal_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_name='EDT')) ";
+	
+	// lancer la requete
+		$result = @mysql_query ($rq) or die (mysql_error());
+		//on recupere les donnees
+		$tab=array();
+		$loop=0;
+	while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+		{
+		//calcul heure de fin
+		$s=substr($enrg[0],-2,2);
+		$m=substr($enrg[0],-4,2);
+		$h=substr($enrg[0],0,-4);
+		$heure=mktime($h,$m,$s);
+		$heurefin=mktime($h,$m+$enrg[1],$s);
+		if ($date > date('His',$heure) && $date < date('His',$heurefin))
+			{
+			$mati= explode(":",$enrg[3]);
+			$mati[1]=preg_replace ( "/[\r\n]+/", "", $mati[1] );
+			if ( $enrg[2]!="" && $mati[1]!="")
+				{
+				$match= $enrg[2].":".$mati[1];
+				break;
+				}
+		}
+	}
+	mysql_close();
+	// Connexion a la base de donnees Cdt
+	include ('../Includes/config.inc.php');
+	$rq = "SELECT id_prof FROM onglets
+	 WHERE login='{$_SESSION['login']}' AND edt='".$match."'";
+	$result = @mysql_query ($rq) or die (mysql_error());
+	if (mysql_num_rows($result) >0) {
+	while ($idr = mysql_fetch_array($result, MYSQL_NUM)) 
+		{
+		$cible=$idr[0];
+		}
+	}
+	else $cible="";
+	}
 else $cible="";
-
-// Connexiona la base de donnees
-require_once ('../Includes/config.inc.php');
 
 /*================================
    -      Traitement du formulaire  -
@@ -179,10 +227,8 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
 	    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
 	   		$purifier = new HTMLPurifier($config);
-	   		//$Cours = addSlashes($Cours);
 	   		$Cours = $purifier->purify($Cours);
-	   		//echo $Cours;exit;
-			}
+	   		}
 		
 		}
 	else
@@ -212,12 +258,12 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 		}
 
 	//Traitement de dates
-	$Morceauc=split('/',$_POST['datejavac']);
+	$Morceauc=explode('/',$_POST['datejavac']);
 	$jour_c=$Morceauc[0];
 	$mois_c=$Morceauc[1];
 	$an_c=$Morceauc[2];
 	$date_c = $an_c.$mois_c.$jour_c;
-	$Morceauf=split('/',$_POST['datejaf']);
+	$Morceauf=explode('/',$_POST['datejaf']);
 	$jour_f=$Morceauf[0];
 	$mois_f=$Morceauf[1];
 	$an_f=$Morceauf[2];
@@ -225,7 +271,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 
 	if 	($_POST['datejav']!="idem Cours")
 	{
-	$Morceauv=split('/',$_POST['datejav']);
+	$Morceauv=explode('/',$_POST['datejav']);
 	$jour_v=$Morceauv[0];
 	$mois_v=$Morceauv[1];
 	$an_v=$Morceauv[2];
@@ -555,7 +601,7 @@ if (isset($tsmp3))
       		<?	/* Affichage des archives */ 
 				echo (' <B><FONT COLOR="#0000FF" style="align:left"> Etablissement :<br></font></B> ');
  				//recherche du  nom des archives
-				$TablesExist= mysql_list_tables(DB_NAME);
+				$TablesExist= mysql_query("show tables");
 				$x=0;
 				while ($table=mysql_fetch_row($TablesExist))
 				if (ereg("^onglets[[:alnum:]]",$table[0])) {
