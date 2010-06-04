@@ -1,3 +1,9 @@
+lcs-security (2.4.6.3) Lcs; urgency=low
+
+  * tempory disable apache bruteforce by default
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sat, 05 Jun 2010 01:05:19 +0200
+
 lcs-security (2.4.6.2) Lcs; urgency=low
 
   * Move and modify cron.d task lcs-save-ldap

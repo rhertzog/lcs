@@ -16,7 +16,7 @@ maxretry = 20
 
 [apache-bruteforce]
 
-enabled = true
+enabled = false
 port    = http,https
 filter  = apache-bruteforce
 logpath = /var/log/apache*/*error.log
