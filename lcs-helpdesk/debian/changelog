@@ -1,3 +1,9 @@
+lcs-helpdesk (2.4.7) Lcs; urgency=low
+
+  * remove tilte to release
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sat, 05 Jun 2010 01:14:16 +0200
+
 lcs-helpdesk (2.4.7~2) Lcs; urgency=low
 
   * fix on escaping parameters on ticket submitting
