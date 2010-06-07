@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.0 du 20/05/2010
+   VERSION 2.1 du 4/6/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script archives perso du cahier de textes -
@@ -43,7 +43,7 @@ if (isset($_POST['copie']))
 		echo '<SCRIPT language="Javascript">
 		opener.tinyMCE.execInstanceCommand("coursfield","mceInsertContent",false,"'.$textc.'");
 		opener.tinyMCE.execInstanceCommand("afairefield","mceInsertContent",false,"'.$textaf.'");
-		window.close();
+		window.close()
 	</script>';
 	exit;
 	}

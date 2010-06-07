@@ -3,8 +3,10 @@ lcs-cdt (2.4.1~1) LCS; urgency=low
   * new filter XSS
   * add load/save template
   * correct bug absences and add  "all présent" 
+  * add import/export data
+  * add link with webcalendar
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 02 May 2010 13:26:38 +0200
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Mon, 07 Jun 2010 21:38:19 +0200
 
 lcs-cdt (2.4.0~1) LCS; urgency=low
 

@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.0 du 25/10/2009
+   VERSION 2.1 du 4/6/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script du cahier de textes ELEVE -
@@ -67,6 +67,7 @@ if(isset($_GET['nvlkzei5qd1egz65']))
 $tsmp=0;
 if(isset($_GET['div'])) 
 $ch=$_GET['div'];
+
 ?>
 <!-- Cahier_texte/_eleve.php version 1.3 par Ph LECLERC - Lgt "Arcisse de Caumont" 14400 BAYEUX - philippe.leclerc1@ac-caen.fr-->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -75,19 +76,53 @@ $ch=$_GET['div'];
 <title>Cahier de textes numérique</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <LINK  href="../style/style.css" rel=StyleSheet type="text/css">
+<link  href="../style/deroulant.css" rel=StyleSheet type="text/css">
 <LINK  href="../style/navlist-eleve.css" rel=StyleSheet type="text/css">
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
+<script language="javascript" type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+	<script language="javascript" type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
 </head>
 
 <body>
-<div id="container-cdt-elv">
 <?
-$tsmp=time();
-
 // Connexion à la base de données
 require_once ('../Includes/config.inc.php');
+// si eleve on recupere le postit
+if ($_SESSION['cequi']=="eleve" ) 
+	{
+	$rq = "SELECT texte FROM postit_eleve WHERE login='{$_SESSION['login']}'  ";
+	// lancer la requete
+	$result = @mysql_query ($rq) or die (mysql_error()); 
+	if (mysql_num_rows($result)>0) 
+		{
+		$enrg = mysql_fetch_array($result, MYSQL_NUM);
+		$contenu_aide_memoire=$enrg[0];
+		}
+	else
+	$contenu_aide_memoire="";
+			
+echo '
+<div id="postit-eleve"> 
+<div id="deroul-contenu_ele">
+    <div class="deroulant" id="deroulant_1">
+    	<div class="t3_ele">Aide m&eacute;moire</div>
+        <form id="aide-memoire-contenu_ele" name="aidememory2">
+        	<textarea id="aide-memoire2" name="postitele"  class="MYmceAdvanced2" style="width:95%" rows="12"  >';
+        	if ($contenu_aide_memoire !="") echo $contenu_aide_memoire;
+			else echo "Penser &agrave; ...";
+			echo '</textarea><br />
+			<input name="button"  type="button" onClick="go2(\''. $_SESSION['login'].'\');" value="Enregistrer" title="Enregistrer " />			
+		</form>
+	</div><!--fin du div deroulant_1-->
+</div><!--fin du div deroul-contenu-->
+</div><!--fin du div deroulants-->
+</div>
+<div id="container-cdt-elv">';
+}
+
+$tsmp=time();
 
 //récupération du paramètre classe pour mémorisation
 if (isset($_GET['mlec547trg2s5hy'])) 
@@ -165,7 +200,7 @@ if ($nb>0)
 		$loop++;
 		}
 	if($cible==""){$cible=($num_ero[0]);}	
-		}
+	}
 
 //affichage du formulaire
 ?>
@@ -385,11 +420,7 @@ else
 			{
 				echo ("<li id='active'><a href='cahier_text_eleve.php?nvlkzei5qd1egz65=cv5e8daérfz8ge69&é&rubrique=
 			$numero[$x]&mlec547trg2s5hy=$ch&tsmp=$tsmp' id='courant'>&nbsp;$mat[$x]&nbsp;<br>&nbsp;$pref[$x]  $prof[$x]&nbsp;"."</a></li>");
-			
-			/*echo("<tr><td   bgcolor='#4169E1' color='#ffffff'><font face=\"arial\"color=\"#FFFFFF\"size=2><b><div align='center' color='#FFFFFF'>
-			&nbsp $mat[$x] &nbsp<br> &nbsp $pref[$x]   $prof[$x]&nbsp".
-			"</a></div></B></font></td></tr>");
-			//if (($restr[$x]) &&  $_SESSION['saclasse']!=$ch && $_SESSION['cequi']!="prof" && $_SESSION['cequi']!="administratif") $noAff=true;*/	
+				
 			if ($visa[$x]) {
 			$vis="ok";
 			$datv=$datvisa[$x];
@@ -400,9 +431,7 @@ else
 			{
 			echo ("<li><a href='cahier_text_eleve.php?nvlkzei5qd1egz65=cv5e8daérfz8ge69&é&rubrique=
 			$numero[$x]&mlec547trg2s5hy=$ch&tsmp=$tsmp'>&nbsp;$mat[$x]&nbsp;<br>&nbsp;$pref[$x]  $prof[$x]&nbsp;"."</a></li>");
-			/*echo("<tr><td ><div align='center'><a href='cahier_text_eleve.php?nvlkzei5qd1egz65=cv5e8daérfz8ge69&é&rubrique=
-			$numero[$x]&mlec547trg2s5hy=$ch&tsmp=$tsmp'>&nbsp $mat[$x] &nbsp <br> &nbsp $pref[$x]  $prof[$x] &nbsp "."</a></div></td></tr>");
-			*/
+			
 			}
 		
 		

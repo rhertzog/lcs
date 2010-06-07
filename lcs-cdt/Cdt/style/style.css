@@ -89,6 +89,8 @@ table#tb-cdt th input.bt-modifier {background:url('../images/bt-cdt-modifier.png
 table#tb-cdt th input.bt-supprimer {background:url('../images/bt-cdt-supprimer.png') no-repeat;border:none;font-size:14px;height:20px;width:120px;cursor:pointer}
 .btn{border: #000000 1px outset;text-align:center;padding: 3px 0;background:#1b2c68;color:#fff;width: 120px;}
 .tb-cdt-date {text-align: left;font-size: 16px;padding: 3px;background-color: #d4d4d4;color:#1b2c68;}
+#postit-eleve {position:fixed; top:40px; right:5px;font-size:14px;opacity:0.9;width: 201px;height:320px;background: url('../images/fond-postit.png') no-repeat center 5px;}
+
 
 /******************************************************** Configuration du cdt **********************************************************/
 

@@ -118,7 +118,39 @@ function go(cib){
 				xhr.send(data);
 			}
 
-
+function go2(cib){
+				var xhr = getXhr();
+				var contenu = "aa";
+				contenu = escape(tinyMCE.get('aide-memoire2').getContent());
+				// Do you ajax call here, window.setTimeout fakes ajax call
+	
+				var data = "blibli="+ contenu+ "&cibl=" + cib;
+				// On défini ce qu'on va faire quand on aura la réponse
+				 function resultat(){
+					// On ne fait quelque chose que si on a tout reçu et que le serveur est ok
+					if(xhr.readyState == 4) {
+						if(xhr.status == 200){
+						if(xhr.responseText !='OK')	
+						alert(xhr.responseText);
+						else {
+							//document.getElementById("voyant").innerHTML = '<img alt="aide"   border="0"src="../images/voyant.png"   />';
+							//setTimeout(function() {document.getElementById('voyant').innerHTML = '';},1000);
+							tinyMCE.get('aide-memoire2').setProgressState(true);
+							setTimeout(function() {tinyMCE.get('aide-memoire2').setProgressState(false);},800);
+							}
+						}
+						else
+						{
+							alert('Probleme Ajax');
+						}
+				   	}	
+				}
+				xhr.onreadystatechange = resultat;
+				xhr.open("POST","posti2.php",true);
+				xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");				
+				xhr.send(data);
+			}
+			
 function modeleLoad (cib) {
 	var xhr = getXhr();
 					

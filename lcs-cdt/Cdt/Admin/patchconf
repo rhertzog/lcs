@@ -56,26 +56,7 @@ for dir in Maj/ldap.*; do
    fi
 done
 #
-#patch du mysql.10 pour lcs1.4 
-#
-if [  -e /etc/php4 ] ; then
-echo "patch de mysql.10"
-sed -i "s/CURRENT_TIMESTAMP/'CURRENT_TIMESTAMP'/g" Maj/mysql.10
-fi
-#
 # FIN
 #
 echo "Fin des patches..."
-#
-#nettoyage
-#
-echo "suppression de fichiers obsoletes"
-cd ../
-find -name .DS* > liste.txt
-find -name ._* >> liste.txt
-while read gus
-do
-rm  $gus
-done < liste.txt
-rm -f liste.txt
-cd Admin	
+

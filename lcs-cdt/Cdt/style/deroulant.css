@@ -116,3 +116,43 @@
 	height:20px;
 	width:120px;
 }
+.t3_ele { 
+	margin:0 0 0 3px;
+	padding:2px;
+	text-align:center;
+	color: #1b2c68;
+	font-size:14px;
+	display: block;
+	background:url(../images/fd-tit-ele.png) no-repeat;
+}
+#deroul-contenu_ele{
+	float:left;
+	margin:25px 2px 0 24px;
+	width:170px;
+	height:250px;
+	overflow:hidden;
+}
+
+#aide-memoire_ele{
+	background:#e5e5e5;
+	float:left;
+	text-align:left;
+	width:260px;
+	margin:5px 0px;
+}
+#aide-memoire-contenu_ele{
+	float:left;
+	margin:0;
+	width:170px;
+	height:240px;
+	text-align:center;
+	padding:4px 0 0 1px;
+	overflow: auto;
+}
+#aide-memoire-contenu_ele img{
+	float:right;
+	margin:0;
+	width:15%;
+	padding:0;
+}
+

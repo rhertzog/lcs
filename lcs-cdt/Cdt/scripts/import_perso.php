@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.0 du 21/05/2010
+   VERSION 2.1 du 4/6/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'import de données perso dans sa base-

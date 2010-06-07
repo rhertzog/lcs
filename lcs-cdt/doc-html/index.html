@@ -7,125 +7,112 @@
   <style type="text/css" media="all">@import "../../c/c.css";</style>
 
 
-</HEAD>
-<BODY LANG="fr-FR" BGCOLOR="#f8f8ff" DIR="LTR">
-<H1>Plugin LCS Cahier de textes</H1>
-<H3>Fonctionnalit&eacute;s g&eacute;n&eacute;rales du plugin LCS
-<I>&laquo;Cahier de textes&raquo;</I> :</H3>
-<P>Int&eacute;gr&eacute; au serveur de communication LCS, le plugin
-<I>&laquo;Cahier de textes&raquo;</I> permet
-</P>
-<UL>
-<LI>aux enseignants de :
-
-<UL>
-<LI>consigner le travail effectu&eacute;
-pendant une s&eacute;ance avec la possiblit&eacute; d'ins&eacute;rer
-des images, des liens vers des documents num&eacute;riques, des
-diaporamas, des pages web,...
-
-<LI>consigner le travail &agrave;
-effectuer pour une s&eacute;ance ult&eacute;rieure
-
-<LI>programmer leurs devoirs surveill&eacute;s sur un planning
-commun &agrave; l'&eacute;quipe p&eacute;dagogique
-
-<LI>consigner les absences/retards, et d'&eacute;tablir un bilan
-
-</UL><P></P>
-<LI>&agrave; toute personne ayant un compte sur le LCS
-(Administratifs, profs ) de :
-
-<UL>
-<LI>consulter le cahier de textes de toutes les classes
-
-<LI>consulter le planning des devoirs surveill&eacute;s.
-
-</UL>
-<UL>
-<LI>&agrave; toute personne ayant le droit""Cdt_can_sign" d'apposer un "visa dat&eacute;" de la direction sur le cahier de texte
-
-<LI>&agrave; toute personne ayant le droit""Cdt_is_cpe" d'&eacute;tablir un bilan par cr&eacute;neau horaire, par classe ou par &eacute;l&egrave;ve
-</UL>
-</UL>
-
-<H4>Remarques:</H4>
-<P><FONT COLOR="#cc3333">Pour que le plugin <I>&laquo;Cahier de
-textes&raquo;</I> soit utilisable, l'administrateur doit y acc&eacute;der
-pr&eacute;alablement pour cr&eacute;er la liste des classes.</FONT></P>
-<P><FONT COLOR="#cc3333">L'administrateur peut intervenir sur la base
-de donn&eacute;es avec PhpMyAdmin</P>
-<P>L'acc&egrave;s parents se fait par http://url_lcs/Plugins/Cdt/
-</P></FONT>
-
-<H3>Derni&egrave;re version stable :</H3>
-<P>Version1.02 du 24/01/2009</P>
-<H4><U><B>Fonctionnalit&eacute;s sp&eacute;cfiques :</B></U></H4>
-<OL>
-<LI><B>Pour l'admin</B>
-<OL type=a>
-<LI>Importation des classes depuis l'annuaire LDAP
-<LI>Edition de la liste des classes (pour modifier l'ordre par
-exemple)
-<LI>Modification de la cl&eacute; de cryptage
-<LI>Activation/d&eacute;sactivation de la visualisation du carnet d'absences
-<LI>Cr&eacute;ations d'archives annuelles
-<LI>Param&eacute;trages des cr&eacute;neaux horaires
-</OL><P></P>
-<LI><B>Pour les profs</B>
-<OL type=a>
-<LI>Personnalisation du cahier de textes ( intitul&eacute; des
-rubriques)
-<LI>Navigation par onglets
-<LI>Editeur avanc&eacute;
-<LI>Insertion  de pi&egrave;ces
-jointes, images,liens html et expressions math&egrave;matiques. Les fichiers associ&eacute;s sont
-t&eacute;l&eacute;charg&eacute;s dans le home du prof
-<LI>Saisie simultan&eacute;e dans le cahier de textes de
-plusieurs classes  (Enregistrements multiples)
-<LI>Acc&egrave;s direct au cahier de textes &eacute;l&egrave;ves
-de la classe &quot;active&quot;
-<LI>Copier-coller automatique depuis les archives vers le cahier
-de textes courant
-<LI>Envoi d'un mail aux &eacute;l&egrave;ves lorsqu'un devoir
-est programm&eacute; ou supprim&eacute; sur le planning
-<LI>Imprimer tout ou une partie du cahier de textes par date
-croissante ou d&eacute;croissante
-<LI>Gestion des absences
-</OL><P></P>
-<LI><B>Pour les &eacute;l&egrave;ves</B>
-<OL  type=a>
-<LI>Acc&eacute;s direct (et uniquement) au cahier de textes de
-leur classe
-<LI>Navigation par onglets
-<LI>Consultation du planning des devoirs
-<LI>Reception d'un mail lorsqu'un devoir est programm&eacute; ou
-supprim&eacute;
-<LI>Visualisation d'un clic du travail &agrave; faire
-<LI>Visualisation d'un clic des absences
-</OL><P></P>
-<LI><B>Pour les parents</B>
-<OL  type=a>
-<LI>Acc&eacute;s par lien crypt&eacute; au cahier de textes et carnet d'absences de leurs enfants uniquement
-<LI>Consultation du planning des devoirs
-<LI>Visualisation d'un clic du travail &agrave; faire
-<LI>Visualisation d'un clic des absences
-</OL>
-</OL>
-<H4>Nouveaut&eacute;s de cette version :</H4>
-<UL>
-<LI><P STYLE="margin-bottom: 0cm">Correction du bug des enregistrements multiples</P>
-<LI><P STYLE="margin-bottom: 0cm">Correction du bug des espaces dans les noms des fichiers</P>
-<LI><P STYLE="margin-bottom: 0cm">Correction du bug des sauts de lignes ins&eacute;r&eacute;s automatiquement quand on modifiait un commentaire
-<LI><P STYLE="margin-bottom: 0cm">Ajout de  "style" et "border" dans les attributs autoris&eacute;s pour les images;</P>
-<LI><P STYLE="margin-bottom: 0cm">Alignement automatique des expressions math&eacute;mathiques</P>
-<LI><P STYLE="margin-bottom: 0cm">Passage &agrave; 14px pour la taille de police par d&eacute;faut</P>
-
-
-</UL>
-
-<H3>Equipe de d&eacute;veloppement :</H3>
-<BLOCKQUOTE><B>Lyc&eacute;e &quot;Arcisse de Caumont&quot; BAYEUX
-</B><BR>Philippe LECLERC : &lt;misterphi&gt; philippe.leclerc1@ac-caen.fr</BLOCKQUOTE>
-</BODY>
-</HTML>
+</HEAD> <BODY LANG="fr-FR" BGCOLOR="#f8f8ff" DIR="LTR"> <H1>Plugin LCS Cahier de textes</H1> <H3>Fonctionnalit&eacute;s g&eacute;n&eacute;rales du 
+module LCS <I>&laquo;Cahier de textes&raquo;</I> :</H3> <P>Int&eacute;gr&eacute; au serveur de communication LCS, le module <I>&laquo;Cahier de 
+textes&raquo;</I> permet </P> <UL>
+	<LI>aux enseignants de :
+	
+	<UL>
+		<LI>consigner le travail effectu&eacute;
+		pendant une s&eacute;ance avec la possiblit&eacute; d'ins&eacute;rer
+		des images, des liens vers des documents num&eacute;riques, des
+		diaporamas, des pages web,...
+		
+		<LI>consigner le travail &agrave;
+		effectuer pour une s&eacute;ance ult&eacute;rieure
+		
+		<LI>programmer leurs devoirs surveill&eacute;s sur un planning
+		commun &agrave; l'&eacute;quipe p&eacute;dagogique
+		
+		<LI>consigner les absences/retards, et d'&eacute;tablir un bilan
+		
+	</UL><P></P>
+	<LI>&agrave; toute personne ayant un compte sur le LCS
+	(Administratifs, profs, ) de :
+	
+	<UL>
+		<LI>consulter le cahier de textes de toutes les classes
+		
+		<LI>consulter le planning des devoirs surveill&eacute;s.
+		
+	</UL>
+	<UL>
+	<LI>&agrave; toute personne ayant le droit""Cdt_can_sign" d'apposer un "visa dat&eacute;" de la direction sur le cahier de texte
+	
+	<LI>&agrave; toute personne ayant le droit""Cdt_is_cpe" d'&eacute;tablir un bilan par cr&eacute;neau horaire, par classe ou par 
+&eacute;l&egrave;ve
+	</UL> </UL> <H4>Remarques:</H4> <P><FONT COLOR="#cc3333">Pour que le module <I>&laquo;Cahier de textes&raquo;</I> soit utilisable, 
+l'administrateur doit y acc&eacute;der pr&eacute;alablement pour cr&eacute;er la liste des classes.</FONT></P> <P><FONT 
+COLOR="#cc3333">L'administrateur peut intervenir sur la base de donn&eacute;es avec PhpMyAdmin</P> <P>L'acc&egrave;s parents se fait par 
+http://url_lcs/Plugins/Cdt/ </P></FONT> <H3>Derni&egrave;re version expérimentale :</H3> <P>Version 2.1 du 4/06/2010 </P> 
+<H4><U><B>Fonctionnalit&eacute;s sp&eacute;cfiques :</B></U></H4> <OL>
+	<LI><B>Pour l'admin</B>
+	<OL type=a>
+		<LI>Importation des classes depuis l'annuaire LDAP (classes et groupes Cours)
+		<LI>Edition de la liste des classes (pour modifier l'ordre par exemple)
+		<LI>Modification de la cl&eacute; de cryptage
+		<LI>Activation/d&eacute;sactivation de la visualisation du carnet d'absences
+		<LI>Cr&eacute;ations d'archives annuelles
+		<LI>Sauvegarde/restauration de la base de donn&eacute;e
+		<LI>Param&eacute;trages des cr&eacute;neaux horaires
+	</OL><P></P>
+	<LI><B>Pour les profs</B>
+	<OL type=a>
+		<LI>Personnalisation du cahier de textes ( intitul&eacute; des
+		rubriques par Classes ou groupes Cours du LDAP)
+		<LI>Navigation par onglets
+		<LI>Editeur avanc&eacute;
+		<LI>Insertion de pi&egrave;ces
+		jointes, images,liens html et expressions math&eacute;matiques. Les fichiers associ&eacute;s sont
+		t&eacute;l&eacute;charg&eacute;s dans le home du prof
+		<LI>Saisie simultan&eacute;e dans le cahier de textes de
+		plusieurs classes (Enregistrements multiples)
+		<LI>Saisie en mode Brouillon. (Date de visibilit&eacute; r&eacute;glable)
+		<LI>Acc&egrave;s direct au cahier de textes &eacute;l&egrave;ves
+		de la classe &quot;active&quot;
+		<LI>Copier-coller automatique depuis les archives vers le cahier
+		de textes courant
+		<LI>Envoi d'un mail aux &eacute;l&egrave;ves lorsqu'un devoir
+		est programm&eacute; ou supprim&eacute; sur le planning
+		<LI>Imprimer tout ou une partie du cahier de textes par date
+		croissante ou d&eacute;croissante
+		<LI>Gestion des absences
+		<LI>Aide m&eacute;moire personnel (post-it) par rubrique
+		<LI>Export/import de ses donn&eacute;es vers un autre cahier de textes
+		<LI>Mod&egrave;le de pr&eacute;sentation
+		<LI>Liaison avec l'emploi du temps de l'agenda
+		</OL><P></P>
+	<LI><B>Pour les &eacute;l&egrave;ves</B>
+	<OL type=a>
+		<LI>Acc&eacute;s direct (et uniquement) au cahier de textes de
+		leur classe
+		<LI>Navigation par onglets
+		<LI>Consultation du planning des devoirs
+		<LI>Reception d'un mail lorsqu'un devoir est programm&eacute; ou
+		supprim&eacute;
+		<LI>Visualisation d'un clic du travail &agrave; faire
+		<LI>Abonnement fil RSS et/ou gadget Google
+		<LI>Visualisation d'un clic des absences
+		<LI>Aide m&eacute;moire
+	</OL><P></P>
+	<LI><B>Pour les parents</B>
+	<OL type=a>
+		<LI>Acc&eacute;s par lien crypt&eacute; au cahier de textes et carnet d'absences de leurs enfants uniquement
+		<LI>Consultation du planning des devoirs
+		<LI>Visualisation d'un clic du travail &agrave; faire
+		<LI>Abonnement fil RSS et/ou gadget Google
+		<LI>Visualisation d'un clic des absences
+	</OL><P></P>
+	<LI><B>Pour la direction</B>
+	<OL type=a>
+		<LI>Signature num&eacute;rique et figeage des articles vis&eacute;s
+		</OL> </OL> <H4>Nouveaut&eacute;s de cette version :</H4> <UL>
+	
+	<LI><P STYLE="margin-bottom: 0cm">Import/export de ses donn&eacute;es</P>
+	<LI><P STYLE="margin-bottom: 0cm">Cr&eacute;ation de mod&egrave;le de pr&eacute;sentation</P>
+	<LI><P STYLE="margin-bottom: 0cm">Liason avec EDT agenda</P>
+	<LI><P STYLE="margin-bottom: 0cm">Changement des fonctions php et mysql deprecated</P>
+	<LI><P STYLE="margin-bottom: 0cm">Am&eacute;lioration anti-injection XSS</P>
+ </UL> <H3>Equipe de d&eacute;veloppement :</H3> 
+<BLOCKQUOTE><BR>Philippe LECLERC : &lt;misterphi&gt; philippe.leclerc1@ac-caen.fr 
+<BR>Yannick CHISTEL yannick.chistel@crdp.ac-caen.fr </BLOCKQUOTE> </BODY> </HTML>

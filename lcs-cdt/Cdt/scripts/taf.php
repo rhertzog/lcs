@@ -2,12 +2,11 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.0 du 25/10/2009
+   VERSION 2.1 du 4/6/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script du Travail A Faire ELEVE -
-   modifié le 12/01/2007
-			_-=-_
+   			_-=-_
    ============================================= */
 session_name("Cdt_Lcs");
 @session_start();

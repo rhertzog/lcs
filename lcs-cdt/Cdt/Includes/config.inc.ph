@@ -2,14 +2,14 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.0 du 10/10/2009
+   VERSION 2.1 du 4/06/2010
 	par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de connexion a la base de donnees -
 			_-=-_
    ============================================= */
 $NAME_PLUG = "Cahier de textes";
-$VER_PLUG = "2.0";
+$VER_PLUG = "2.1";
 $FLAG_ABSENCE=1;
 $Grain="#PASS2#";
 

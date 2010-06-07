@@ -79,3 +79,20 @@ tinyMCE.init({
 		language : "fr"
 	
 });
+
+tinyMCE.init({
+    
+    mode : "textareas",
+	theme : "advanced",
+	editor_selector : 'MYmceAdvanced2',
+	theme_advanced_disable : "hr,visualaid,removeformat,separator, cleanup,help ",
+	theme_advanced_buttons1 : "forecolor,backcolor,bold,italic,underline,bullist",
+	theme_advanced_buttons2 : "",
+	theme_advanced_buttons3 : "",
+	theme_advanced_toolbar_location : "bottom",
+	theme_advanced_toolbar_align : "center",
+	extended_valid_elements : "hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
+		language : "fr"
+	
+});
+

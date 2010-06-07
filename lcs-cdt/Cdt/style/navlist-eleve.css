@@ -10,7 +10,7 @@
 
 #cfg-navlist-elv{float:left;text-align:left;padding: 0 1px;font: normal 0.8em Verdana, sans-serif;}
 #cfg-navlist-elv li{list-style: none;float:left;margin-left:5px;width:195px;}
-#cfg-navlist-elv a{display: block;margin:1px 0;text-decoration:none;background:url('../images/menu-elv-off-cdt.png') no-repeat;color:#ffffff;padding:0.25em 0.5em 0.4em 1.5em;}
+#cfg-navlist-elv a{display: block;margin:1px 0;font-size:10px;text-decoration:none;background:url('../images/menu-elv-off-cdt.png') no-repeat;color:#ffffff;padding:0.25em 0.5em 0.4em 1.5em;}
 #cfg-navlist-elv a#courant{border-color:none;background:url('../images/menu-elv-on-cdt.png') no-repeat;color:#fdb218;font-weight:bold;}
 #cfg-navlist-elv a#courant:hover {color: #fdb218;font-weight:bold;background:url('../images/menu-elv-on-cdt.png') no-repeat;padding:0.25em 0.5em 0.4em 1.5em;}
 #cfg-navlist-elv a:hover {background: url('../images/menu-elv-on-cdt.png') no-repeat;padding: 0.25em 0.5em 0.4em 1.5em;}

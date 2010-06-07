@@ -1,13 +1,19 @@
 -- phpMyAdmin SQL Dump
--- version 3.1.4
+-- version 3.3.1
 -- http://www.phpmyadmin.net
 --
 -- Serveur: localhost
--- Généré le : Ven 16 Octobre 2009 à 17:12
+-- Généré le : Ven 04 Juin 2010 à 15:08
 -- Version du serveur: 5.0.32
--- Version de PHP: 5.2.0-8+etch15
+-- Version de PHP: 5.2.0-8+etch16
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
 
 --
 -- Base de données: `cdt_plug`
@@ -16,12 +22,10 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- --------------------------------------------------------
 CREATE DATABASE `cdt_plug` ;
 USE `cdt_plug`;
-
 --
 -- Structure de la table `absences`
 --
 
-DROP TABLE IF EXISTS `absences`;
 CREATE TABLE IF NOT EXISTS `absences` (
   `id_abs` int(11) NOT NULL auto_increment,
   `date` date NOT NULL,
@@ -55,18 +59,12 @@ CREATE TABLE IF NOT EXISTS `absences` (
   PRIMARY KEY  (`id_abs`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
---
--- Contenu de la table `absences`
---
-
-
 -- --------------------------------------------------------
 
 --
 -- Structure de la table `cahiertxt`
 --
 
-DROP TABLE IF EXISTS `cahiertxt`;
 CREATE TABLE IF NOT EXISTS `cahiertxt` (
   `id_rubrique` mediumint(8) unsigned NOT NULL auto_increment,
   `id_auteur` smallint(6) NOT NULL default '0',
@@ -80,18 +78,12 @@ CREATE TABLE IF NOT EXISTS `cahiertxt` (
   PRIMARY KEY  (`id_rubrique`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
---
--- Contenu de la table `cahiertxt`
---
-
-
 -- --------------------------------------------------------
 
 --
--- Structure  de la table `devoir`
+-- Structure de la table `devoir`
 --
 
-DROP TABLE IF EXISTS `devoir`;
 CREATE TABLE IF NOT EXISTS `devoir` (
   `id_ds` int(11) NOT NULL auto_increment,
   `date` date NOT NULL default '0000-00-00',
@@ -100,14 +92,9 @@ CREATE TABLE IF NOT EXISTS `devoir` (
   `matiere` varchar(30) NOT NULL default '',
   `sujet` varchar(30) NOT NULL default '',
   `classe` varchar(20) NOT NULL default '',
-  `durée` smallint(6) NOT NULL default '0',
+  `durÃ©e` smallint(6) NOT NULL default '0',
   PRIMARY KEY  (`id_ds`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
---
--- Contenu de la table `devoir`
---
-
 
 -- --------------------------------------------------------
 
@@ -115,7 +102,6 @@ CREATE TABLE IF NOT EXISTS `devoir` (
 -- Structure de la table `onglets`
 --
 
-DROP TABLE IF EXISTS `onglets`;
 CREATE TABLE IF NOT EXISTS `onglets` (
   `id_prof` mediumint(8) unsigned NOT NULL auto_increment,
   `login` varchar(30) NOT NULL default '',
@@ -127,12 +113,24 @@ CREATE TABLE IF NOT EXISTS `onglets` (
   `postit` blob,
   `visa` tinyint(1) NOT NULL default '0',
   `datevisa` date default '0000-00-00',
+  `mod_cours` blob NOT NULL,
+  `mod_afaire` blob NOT NULL,
+  `edt` varchar(50) default NULL,
   PRIMARY KEY  (`id_prof`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
+-- --------------------------------------------------------
+
 --
--- Contenu de la table `onglets`
+-- Structure de la table `postit_eleve`
 --
+
+CREATE TABLE IF NOT EXISTS `postit_eleve` (
+  `id` mediumint(9) NOT NULL auto_increment,
+  `login` varchar(30) default NULL,
+  `texte` blob,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 GRANT SELECT,UPDATE,DELETE,INSERT,CREATE,DROP ON cdt_plug.* TO cdt_user@localhost IDENTIFIED BY '#PASS#';
 GRANT SELECT,UPDATE,DELETE,INSERT,CREATE,DROP ON cdt_plug.* TO admin@localhost ;
