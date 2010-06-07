@@ -20,7 +20,8 @@ set -e
 
 case "$1" in
     configure)
-
+                    # force-reload apache2
+                    invoke-rc.d apache2 force-reload
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

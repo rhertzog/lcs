@@ -21,7 +21,8 @@ set -e
 
 case "$1" in
     purge|remove)
-
+        # force-reload apache2
+        invoke-rc.d apache2 force-reload
     ;;
 
     upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
