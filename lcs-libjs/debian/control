@@ -8,6 +8,6 @@ Homepage: http://lcs.crdp.ac-caen.fr
 
 Package: lcs-libjs
 Architecture: any
-Depends: Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Install javascript libraries jquery jquery-ui tinimce
  this package provide javascript librairies for LCS
