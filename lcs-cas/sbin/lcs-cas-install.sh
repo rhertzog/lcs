@@ -21,6 +21,7 @@ IN_CONFIG_PATH=$USERHOME
 RUBYCAS_CERT_TT="openssl.cas.in" # template opensll cert for cas
 # Fix gem version to install
 ACTIVERECORDVERSION=2.3.4
+MARKABYVERSION=0.5
 PICNICVERSION=0.7.1
 RUBYNETLDAPVERSION=0.0.4
 MYSQLVERSION=2.7
@@ -73,6 +74,7 @@ apt-get -y install ruby1.8-dev build-essential libmysqlclient15-dev
 # Install gems 
 #
 gem install activerecord --version $ACTIVERECORDVERSION --no-ri --no-rdoc
+gem install markaby --version $MARKABYVERSION --no-ri --no-rdoc
 gem install picnic --version $PICNICVERSION --no-ri --no-rdoc
 gem install ruby-net-ldap --version $RUBYNETLDAPVERSION --no-ri --no-rdoc
 gem install mysql --version $MYSQLVERSION --no-ri --no-rdoc
@@ -157,7 +159,7 @@ update-rc.d rubycas-lcs defaults
 #
 # Remove and purge critical packages 
 #
-apt-get -y remove --purge binutils build-essential cpp cpp-4.1 dpkg-dev g++ g++-4.1 gcc gcc-4.1 libc6-dev libstdc++6-4.1-dev
+apt-get -y remove --purge binutils build-essential cpp cpp-4.3 dpkg-dev g++ g++-4.3 gcc gcc-4.3 libc6-dev libstdc++6-4.3-dev
 #
 # Validate CAS service
 #

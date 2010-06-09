@@ -1,3 +1,9 @@
+lcs-cas (2.4.7~1) Lcs; urgency=low
+
+  * Fix Markaby version and critical packages versions 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 09 Jun 2010 12:11:39 +0200
+
 lcs-cas (2.4.6) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
