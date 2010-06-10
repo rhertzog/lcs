@@ -31,9 +31,8 @@ upgrade)
         #
         # Clean old menu.d structure
         # 
-        if [ ! -e /var/www/lcs/includes/menu.d/10config/10menulabel.inc ]; then
-            rm -Rf /var/www/lcs/includes/menu.d
-        fi
+        rm -Rf /var/www/lcs/includes/menu.d
+
 ;;
 *)
 echo "preinst called with unknown argument \`$1'" >&2
