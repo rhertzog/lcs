@@ -100,7 +100,7 @@ function getmenuarray()
     global $liens;
 
     // Chargement du tableau menu.d
-    $path2menud="/var/www/lcs/includes/menu.d";
+    $path2menud="/var/www/lcs/includes/mnu.d";
     $folders =  array();
     $folders[0]=""; // 1ere element vide pour rester compatible avec les boucles de menuprint
     $namesfolders = scandir($path2menud);
