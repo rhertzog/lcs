@@ -11,6 +11,5 @@ usr/share/lcs
 var/lib/lcs
 var/lib/lcs/import_comptes
 var/lib/lcs/web
-var/lib/lcs/web/menud.d
 var/lib/lcs/web/varwwwlcs
 var/log/lcs
