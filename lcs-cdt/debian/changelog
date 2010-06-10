@@ -1,3 +1,9 @@
+lcs-cdt (2.4.1~3) LCS; urgency=low
+
+  * save_modele.php compatible magic_quotes=off 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 10 Jun 2010 20:40:32 +0200
+
 lcs-cdt (2.4.1~2) LCS; urgency=low
 
   * prepare to use lcs-libjs

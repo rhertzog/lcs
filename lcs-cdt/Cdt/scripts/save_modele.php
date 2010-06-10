@@ -44,8 +44,8 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 		else
 			{
 			// htlmpurifier
-			$Contenucours  = addSlashes($_REQUEST['coursmod']);
-			$Contenuaf  = addSlashes($_REQUEST['afmod']);
+			$Contenucours  = $_REQUEST['coursmod'];
+			$Contenuaf  =$_REQUEST['afmod'];
 			$Cib = addSlashes($_REQUEST['cibl']);
 			$config = HTMLPurifier_Config::createDefault();
 	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
@@ -53,7 +53,9 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	   		$purifier = new HTMLPurifier($config);
 	   		//$Cours = addSlashes($Cours);
 	   		$cont1 = $purifier->purify($Contenucours);
+	   		$cont1 = mysql_real_escape_string($cont1);
 	   		$cont2 = $purifier->purify($Contenuaf);
+	   		$cont2 = mysql_real_escape_string($cont2);
 	   		$cible= $purifier->purify($Cib);
 	   		}	
 //		
