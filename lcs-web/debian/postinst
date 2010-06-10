@@ -13,15 +13,15 @@ case "$1" in
                 handle_initial_config lcs-web-config 60
             else
                 # Update for 2.4.6 version
-                if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.6; then
+                #if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.6; then
                     #
                     # Update menu.d/40stats.inc
                     #
-                    mv /var/www/lcs/includes/menu.d/40stats.inc /var/www/lcs/includes/menu.d/40stats.in
-                    grep -v redirection /var/www/lcs/includes/menu.d/40stats.in  > /var/www/lcs/includes/menu.d/40stats.inc
-                    UPDATE40STATS="      \"Log redirection mails\",\"/Admin/mail_rediriges.php\",\"lcs_is_admin\","
-                    sed -i "7 a\\$UPDATE40STATS" /var/www/lcs/includes/menu.d/40stats.inc
-                fi
+                #    mv /var/www/lcs/includes/menu.d/40stats.inc /var/www/lcs/includes/menu.d/40stats.in
+                #    grep -v redirection /var/www/lcs/includes/menu.d/40stats.in  > /var/www/lcs/includes/menu.d/40stats.inc
+                #    UPDATE40STATS="      \"Log redirection mails\",\"/Admin/mail_rediriges.php\",\"lcs_is_admin\","
+                #   sed -i "7 a\\$UPDATE40STATS" /var/www/lcs/includes/menu.d/40stats.inc
+                #fi
                 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.7; then
                     #
                     # Add right Mail_can_redir if ldap is up and if this right not exist in LDAP base

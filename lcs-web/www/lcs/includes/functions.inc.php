@@ -403,12 +403,133 @@ function ldap_get_right($type,$login)
     return $ret;
 }
 
+function getmenuarray()
+{
+    global $liens;
+
+    // Chargement du tableau menu.d
+    $path2menud="/var/www/lcs/includes/mnu.d";
+    $folders =  array();
+    $folders[0]=""; // 1ere element vide pour rester compatible avec les boucles de menuprint
+    $namesfolders = scandir($path2menud);
+    for ($t=0; $t < count($namesfolders); $t++ ) {
+        if ( ! ereg ( "^\.", $namesfolders[$t] ) ) {
+            $countfiles=scandir($path2menud."/".$namesfolders[$t]);
+            if ( count($countfiles) > 3 ) // On retiend le nom du repertoire si il y a des fichiers sous menu dedans
+                $folders[] = $namesfolders[$t];
+        }    
+    }
+
+    $liens[0]="";
+    for ($i=1; $i<count($folders); $i++) {
+        $filesdd = array();
+        $dh2  = opendir($path2menud."/".$folders[$i]);
+        while (false !== ($namesfiles = readdir($dh2))) 
+            if ( ! ereg ( "^\.", $namesfiles ) )
+                $filesdd[] = $namesfiles;  
+        sort($filesdd);
+
+        $loop=0;
+        for ($j=0; $j< count($filesdd); $j++) {
+            $fd = fopen($path2menud."/".$folders[$i]."/".$filesdd[$j], "r");
+            while ( !feof($fd) ) {
+                $tmp=fgets($fd, 125);
+                if ( strlen($tmp) > 0 ) {
+                    $element = explode(",",$tmp);
+                    for ($k=0; $k < count($element); $k++) {
+                        $liens[$i][$loop] = $element[$k];
+                        $loop++;
+                    }				
+                }
+            }
+        }
+    }
+} // Fin function getmenuarray()
+
+function menuprint($login)
+{
+    global $liens,$menu;
+
+    for ($idmenu=0; $idmenu<count($liens); $idmenu++)
+    {
+        echo "<div id=\"menu$idmenu\" style=\"position:absolute; left:10px; top:12px; width:205px; z-index:" . $idmenu ." ";
+        if ($idmenu!=$menu) {
+            echo "; visibility: hidden";
+        }
+        echo "\">\n";
+
+        echo "
+        <table width=\"205\" border=\"0\" cellspacing=\"3\" cellpadding=\"6\">\n";
+		$ldapright["lcs_is_admin"]=ldap_get_right("lcs_is_admin",$login);
+
+        for ($menunbr=1; $menunbr<count($liens); $menunbr++)
+        {
+		// Test des droits pour affichage
+			$afftest=$ldapright["lcs_is_admin"]=="Y";
+			$rightname=$liens[$menunbr][1];
+			if (($rightname=="") or ($afftest)) $afftest=1==1;
+			else {
+				if ($ldapright[$rightname]=="") $ldapright[$rightname]=ldap_get_right($rightname,$login);
+				$afftest=($ldapright[$rightname]=="Y");
+			}
+			if ($afftest)
+                        if (($idmenu==$menunbr)&&($idmenu!=0)) {
+	            echo "
+                <tr>
+                    <td class=\"menuheader_up\">
+                        <p>
+			  <a class=\"menuheader_up\" href=\"javascript:;\" 
+			     onClick=\"P7_autoLayers('menu0');return false;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$liens[$menunbr][0]."
+			  </a>
+			</p>
+                    </td>		    
+                    </tr>
+                    <tr>
+                    <td class=\"menucell\">";
+                for ($i=2; $i<count($liens[$menunbr]); $i=$i+3) {
+			// Test des droits pour affichage
+					$afftest=$ldapright["lcs_is_admin"]=="Y";
+					$rightname=$liens[$menunbr][$i+2];
+					if (($rightname=="") or ($afftest)) $afftest=1==1;
+					else {
+						if ($ldapright[$rightname]=="") $ldapright[$rightname]=ldap_get_right($rightname,$login);
+						$afftest=($ldapright[$rightname]=="Y");
+					}
+					if ($afftest)
+                    echo "
+                        <img src=\"../lcs/images/menu/typebullet.gif\" width=\"30\" height=\"11\">
+                            <a href=\"" . $liens[$menunbr][$i+1] . "\" TARGET='main'>" . $liens[$menunbr][$i]  . "</a><br>\n";
+                } // for i : boucle d'affichage des entrees de sous-menu
+                echo "
+                    </td></tr>\n";
+            } else
+            {
+                echo "
+                <tr>
+                    <td class=\"menuheader_down\">
+                    <p>
+		      <a class=\"menuheader_down\" href=\"javascript:;\" 
+			onClick=\"P7_autoLayers('menu" . $menunbr .  "');return false;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$liens[$menunbr][0]."
+		      </a>
+		    </p>
+                    </td></tr>\n";
+            }
+        } //for menunbr : boucle d'affichage des entrees de menu principales
+
+        echo "
+        </table>
+</div>\n";
+    } // for idmenu : boucle d'affichage des differents calques
+} // function menuprint
+
 function acces_btn_admin ($idpers_recu, $login_recu) 
 // Test si l'utilisateur authentifie possede les droits pour acceder au bouton d'administration
 {
-	require_once "menu.inc.php";
+    global $liens;
+
+    getmenuarray();
 	
-	if ( $idpers_recu == "0" ) { // pas d'identifiant : pas d'acces
+    if ( $idpers_recu == "0" ) { // pas d'identifiant : pas d'acces
         return ("N");
     }
     // A partir d'ici on a un identifiant
