@@ -43,7 +43,7 @@ if (isset($_POST['copie']))
 		echo '<SCRIPT language="Javascript">
 		opener.tinyMCE.execInstanceCommand("coursfield","mceInsertContent",false,"'.$textc.'");
 		opener.tinyMCE.execInstanceCommand("afairefield","mceInsertContent",false,"'.$textaf.'");
-		window.close()
+		window.close();
 	</script>';
 	exit;
 	}

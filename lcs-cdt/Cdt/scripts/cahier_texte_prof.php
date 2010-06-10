@@ -2,7 +2,8 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.1 du 4/6/2010 
+   modif : 9/6/2010
       par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script du cahier de textes PROF -
@@ -87,14 +88,15 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-	<script language="javascript" type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
-	<script language="javascript" type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
+	
 	<script language="Javascript" type="text/javascript" src="../Includes/barre_java.js"></script>
 	<script language="Javascript" type="text/javascript" src="../Includes/alertsession.js"></script>
 	<script language="Javascript" type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
 	<script language="Javascript" type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
 	<script language="Javascript" type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
 	<script language="Javascript" type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
+	<script language="javascript" type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+	<script language="javascript" type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
 	<script type="text/javascript" language="JavaScript">
 	var duree=<?echo ini_get( 'session.gc_maxlifetime' );?>;
 	setTimeout("avertissement()",1);
@@ -228,6 +230,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 	    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
 	   		$purifier = new HTMLPurifier($config);
 	   		$Cours = $purifier->purify($Cours);
+	   		$Cours=mysql_real_escape_string($Cours);
 	   		}
 		
 		}
@@ -250,6 +253,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 			{
 			$Afaire = $_POST['Afaire'];
 			$Afaire = $purifier->purify($Afaire);
+			$Afaire = mysql_real_escape_string($Afaire);
 			}	
 		}
 	else

@@ -40,7 +40,8 @@ if (!isset($_SESSION['liste']))
 	exec ("/bin/grep \"#<listediffusionldap>\" /etc/postfix/mailing_list.cf", $AllOutPut2, $ReturnValueShareName);
 	     if (( count($AllOutPut1) >= 1) || ( count($AllOutPut2) >= 1)) $_SESSION['liste']=1; else $_SESSION['liste']=0;
 	}
-
+if (get_magic_quotes_gpc()) require_once("../Includes/class.inputfilter_clean.php");
+else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 /************************	
 Traitement du formulaire
 *************************/	
@@ -52,11 +53,32 @@ if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
 	// Vérifier $Sujet  et la débarrasser de tout antislash et tags possibles
 	if (strlen($_POST['sujet']) > 0)
 		{ 
-		$sujet  = addSlashes(strip_tags(stripslashes($_POST['sujet'])));
+		{ 
+		
+		if (get_magic_quotes_gpc())
+		    {
+			$Sujet  =htmlentities($_POST['sujet']);
+			$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+			$Sujet = $oMyFilter->process($Sujet);
+			}
+		else
+			{
+			// htlmpurifier
+			$Sujet = addslashes($_POST['sujet']);
+			$config = HTMLPurifier_Config::createDefault();
+	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
+	    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+	   		$purifier = new HTMLPurifier($config);
+	   		$Sujet = $purifier->purify($Sujet);
+	   		$Sujet=mysql_real_escape_string($Sujet);
+	   		}
+		
+		}
+		//$sujet  = addSlashes(strip_tags(stripslashes($_POST['sujet'])));
 		}
 	else
 		{ // Si aucun sujet n'a été saisi
-		$sujet = "";
+		$Sujet = "";
 		}
 	
 	// Vérifier $durée et la débarrasser de tout antislash et tags possibles
@@ -116,10 +138,10 @@ if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
 		}
 	//echo "duree=".$durée ;exit;
 	// Créer la requête d'écriture pour l'enregistrement des données
-	if ((isset($_POST['enregistrer'])) && ($durée!="") && ($sujet!=""))
+	if ((isset($_POST['enregistrer'])) && ($durée!="") && ($Sujet!=""))
 		{
 		$rq = "INSERT INTO devoir (date, creneau,login, matiere, sujet, classe, durée ) 
-		VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '{$_POST['matière']}', '{$_POST['sujet']}',
+		VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '{$_POST['matière']}', '$Sujet',
 		'{$_POST['classe']}', '$durée')";
 							
 		// lancer la requête
@@ -172,7 +194,7 @@ if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
 				if ($classe_dest!="") mail($mailTo, $mailSubject, $mailBody, $mailHeaders);
 				}
 				//enregistrement dans le travail à faire
-				$Dev= "Préparer le Devoir surveillé : ".$_POST['sujet'] ;
+				$Dev= "Préparer le Devoir surveillé : ".$Sujet;
 				$date_c=date("Ymd");
 				$rq = "INSERT INTO cahiertxt (id_auteur,login,date,afaire,datafaire ) 
 	       		VALUES ( '{$_POST['numrubri']}','{$_SESSION['login']}', '$date_c',  '$Dev', '{$_POST['data']}')";
@@ -198,7 +220,7 @@ if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
 				$idr=$gr[1];
  				$rq = "INSERT INTO devoir (date, creneau,login, matiere, sujet, classe, durée ) 
  				VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '{$_POST['matière']}', 
- 				'{$_POST['sujet']}', '$groupe', '$durée')";
+ 				'$Sujet', '$groupe', '$durée')";
 							
 				// lancer la requête
 				$result = mysql_query($rq);
@@ -216,7 +238,7 @@ if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
 			if (!mb_ereg("^Cours",$_POST['classe'])) 
 			{
 			//enregistrement dans le travail à faire pour les autres classes
-				$Dev= "Préparer le Devoir surveillé : ".$_POST['sujet'] ;
+				$Dev= "Préparer le Devoir surveillé : ".$Sujet ;
 				$date_c=date("Ymd");
 				$rq = "INSERT INTO cahiertxt (id_auteur,login,date,afaire,datafaire ) 
 	       		VALUES ( '$idr','{$_SESSION['login']}', '$date_c',  '$Dev', '{$_POST['data']}')";
@@ -539,7 +561,7 @@ if ($nb>0)
 					$num[$j][$h][$col] = $row[0];//numéro
 					$plan[$j][$h] [$col]= "R";//on pose une marque (Réservé) pour le créneau
 					$mat[$j][$h][$col] = $row[5];//matière
-					$suj[$j][$h][$col] = $row[6];//sujet
+					$suj[$j][$h][$col] = stripslashes($row[6]);//sujet
 					$log[$j][$h][$col] = $row[7];//login de l'auteur
 					$dur[$j][$h][$col] = $row[8];//durée
 					//on marque les autres créneaux utilisés par le devoir

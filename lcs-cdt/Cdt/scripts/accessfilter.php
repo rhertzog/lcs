@@ -72,7 +72,8 @@ $ann=date('Y',$dateinfo['0']+($offset*86400));
 
 
 include ('../Includes/data.inc.php');
-require_once("../Includes/class.inputfilter_clean.php");
+if (get_magic_quotes_gpc()) require_once("../Includes/class.inputfilter_clean.php");
+else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 
 $tsmp=time();
 ?>
@@ -169,6 +170,20 @@ if (isset($_POST['Valider']))
 		  $nom_propre[$indecs]  =$_POST['nom'.$indecs];
 		  $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
 		  $nom_propre[$indecs] = $oMyFilter->process($nom_propre[$indecs]);
+		  if (get_magic_quotes_gpc())
+				    {
+					$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+		  			$nom_propre[$indecs] = $oMyFilter->process($nom_propre[$indecs]);
+					}
+				else
+					{
+					// htlmpurifier
+					$config = HTMLPurifier_Config::createDefault();
+			    	$config->set('Core.Encoding', 'ISO-8859-15'); 
+			    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+			   		$purifier = new HTMLPurifier($config);
+			   		$nom_propre[$indecs] = $purifier->purify($nom_propre[$indecs]);
+			   		}
 		  $nom_propre[$indecs] = SansAccent($nom_propre[$indecs]);
 		  $nom_propre[$indecs] = mb_ereg_replace("^[[:blank:]]","",$nom_propre[$indecs]);
 		  $nom_propre[$indecs] = mb_ereg_replace("[[:blank:]]$","",$nom_propre[$indecs]);
@@ -179,16 +194,26 @@ if (isset($_POST['Valider']))
 		  $nom_propre1[$indecs] = strip_tags(stripslashes($nom_propre1[$indecs]));
 		  $nom_propre2[$indecs] = strip_tags(stripslashes($nom_propre2[$indecs]));
 		  $prenom_propre[$indecs]  =$_POST['prenom'.$indecs];
-		  $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-		  $prenom_propre[$indecs] = $oMyFilter->process($prenom_propre[$indecs]);
+		  if (get_magic_quotes_gpc())
+				    {
+					$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+		  			$prenom_propre[$indecs] = $oMyFilter->process($prenom_propre[$indecs]);
+					}
+				else
+					{
+					// htlmpurifier
+					$config = HTMLPurifier_Config::createDefault();
+			    	$config->set('Core.Encoding', 'ISO-8859-15'); 
+			    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+			   		$purifier = new HTMLPurifier($config);
+			   		$prenom_propre[$indecs] = $purifier->purify($prenom_propre[$indecs]);
+			   		}
 		  $prenom_propre[$indecs] = SansAccent($prenom_propre[$indecs]);
 		  $prenom_propre[$indecs] = mb_ereg_replace("^[[:blank:]]","",$prenom_propre[$indecs]);
 		  $prenom_propre[$indecs] = mb_ereg_replace("[[:blank:]]$","",$prenom_propre[$indecs]);
 		  $prenom_propre[$indecs] = mb_ereg_replace("'|[[:blank:]]","_",$prenom_propre[$indecs]);
 		  $prenom_propre[$indecs] = StrToLower($prenom_propre[$indecs]);
-		  $prenom_propre[$indecs] = strip_tags(stripslashes($prenom_propre[$indecs]));
-		  
-		  
+		  $prenom_propre[$indecs] = strip_tags(stripslashes($prenom_propre[$indecs]));	  
 		  //vérifier la présence des eleves dans les classes 
 		  //1.recherche de la classe dans le ldap
 		  $groups=search_groups('cn=classe*');

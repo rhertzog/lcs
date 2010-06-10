@@ -1,3 +1,13 @@
+/* =============================================
+   Projet LCS : Linux Communication Server
+   Plugin "cahier de textes"
+   VERSION 2.1 du 4/6/2010 
+   modif : 9/6/2010
+      par philippe LECLERC
+   philippe.leclerc1@ac-caen.fr
+   - configuration tinymce -
+			_-=-_
+   ============================================= */
 // Creates a new plugin class and a custom listbox
 tinymce.create('tinymce.plugins.ExamplePlugin', {
     createControl: function(n, cm) {
@@ -32,8 +42,6 @@ tinymce.PluginManager.add('example', tinymce.plugins.ExamplePlugin);
 
 // Initialize TinyMCE with the new plugin and listbox
 
-
-
 tinyMCE.init({
     //  plugins : '-example',- tells TinyMCE to skip the loading of the plugin
     mode : "textareas",
@@ -41,7 +49,7 @@ tinyMCE.init({
 	width: "560",
 	height: "120",
 	editor_selector : 'mceAdvanced',
-	skin : "o2k7",
+	skin : "cdt",
 	skin_variant : "silver",
 	theme_advanced_disable : "hr,visualaid,removeformat,separator, cleanup,help ",
 	plugins : "example,safari,pagebreak,style,layer,table,save,advhr,advimage,advlink,iespell,media,emotions,searchreplace,print,contextmenu,paste,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
@@ -51,6 +59,7 @@ tinyMCE.init({
 	theme_advanced_toolbar_location : "top",
 	theme_advanced_toolbar_align : "center",
 	extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name|style],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
+	theme_advanced_default_font_size : "4",
 	template_external_list_url : "example_template_list.js",
 	language : "fr",
 	file_browser_callback : "myFileBrowser",
@@ -58,7 +67,6 @@ tinyMCE.init({
         // Add a custom button
         ed.addButton('mybutton', {
             title : 'Ins&#233;rer',
-            image : 'jscripts/tiny_mce/plugins/example/img/example.gif',
             onclick : function() {image_popup();}          
         });       
     }
@@ -68,6 +76,8 @@ tinyMCE.init({
     
     mode : "textareas",
 	theme : "advanced",
+	skin : "cdt",
+	skin_variant : "silver",
 	editor_selector : 'MYmceAdvanced',
 	theme_advanced_disable : "hr,visualaid,removeformat,separator, cleanup,help ",
 	theme_advanced_buttons1 : "forecolor,backcolor,bold,italic,underline,bullist,numlist",
@@ -84,6 +94,8 @@ tinyMCE.init({
     
     mode : "textareas",
 	theme : "advanced",
+	skin : "cdt",
+	skin_variant : "silver",
 	editor_selector : 'MYmceAdvanced2',
 	theme_advanced_disable : "hr,visualaid,removeformat,separator, cleanup,help ",
 	theme_advanced_buttons1 : "forecolor,backcolor,bold,italic,underline,bullist",

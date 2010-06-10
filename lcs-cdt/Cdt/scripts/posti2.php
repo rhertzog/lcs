@@ -44,7 +44,7 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 		else
 			{
 			// htlmpurifier
-			$Contenu = addSlashes($_REQUEST['blibli']);
+			$Contenu = $_REQUEST['blibli'];
 			$Cib = addSlashes($_REQUEST['cibl']);
 			$config = HTMLPurifier_Config::createDefault();
 	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
@@ -52,6 +52,7 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	   		$purifier = new HTMLPurifier($config);
 	   		$cont = $purifier->purify($Contenu);
 	   		$cible= $purifier->purify($Cib);
+	   		$cont = mysql_real_escape_string($cont);
 			}
 				
 		$cible= $_REQUEST['cibl'];

@@ -129,7 +129,7 @@ if ($nb>0)
 					$num[$j][$h][$col] = $row[0];//numéro
 					$plan[$j][$h] [$col]= "R";//on pose une marque (Réservé) pour le créneau
 					$mat[$j][$h][$col] = $row[5];//matière
-					$suj[$j][$h][$col] = $row[6];//sujet
+					$suj[$j][$h][$col] = stripslashes($row[6]);//sujet
 					$log[$j][$h][$col] = $row[7];//login de l'auteur
 					$dur[$j][$h][$col] = $row[8];//durée
 					//on marque les autres créneaux utilisés par le devoir
@@ -349,7 +349,7 @@ if ($nb>0)
 									}//o
 								elseif ($plan[$j][$h][1]=="R")  
 									{//p
-									echo ' <TD  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.$mat[$j][$h][1].'<BR><BR><img alt="aide"   src="../images/help-info.png"  title ="'.$suj[$j][$h][1].'" />'."</TD>\n";
+									echo ' <TD  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.$mat[$j][$h][1].'<BR><BR><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][1].'" />'."</TD>\n";
 									}//p
 								} //n
 							}//m

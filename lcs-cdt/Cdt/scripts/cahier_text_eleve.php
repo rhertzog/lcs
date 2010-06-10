@@ -81,7 +81,9 @@ $ch=$_GET['div'];
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-<script language="javascript" type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+	<script language="Javascript" type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js">
+	<script language="Javascript" type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
+	<script language="javascript" type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
 	<script language="javascript" type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
 </head>
 

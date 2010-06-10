@@ -1,3 +1,13 @@
+lcs-cdt (2.4.1~2) LCS; urgency=low
+
+  * prepare to use lcs-libjs
+  * compatibility magic_quotes=off 
+  * fix bug calendar
+  * update tinymce
+  * add -m option for tar in import_perso.php
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 10 Jun 2010 16:12:47 +0200
+
 lcs-cdt (2.4.1~1) LCS; urgency=low
 
   * new filter XSS

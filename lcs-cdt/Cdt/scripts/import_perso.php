@@ -87,7 +87,7 @@ if (isset($_POST['Valider']))
 					if ($retour[0] == $test[1])
 						{
 						//deplier l'archive
-						$cmd="cd /home/".$_SESSION['login']."/public_html/ && tar -xzvf my_cdt.tgz";
+						$cmd="cd /home/".$_SESSION['login']."/public_html/ && tar -mxzvf my_cdt.tgz";
 						exec($cmd,$li,$ret);
 						//importer les tables
 						if ($ret == 0)

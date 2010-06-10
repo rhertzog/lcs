@@ -30,8 +30,8 @@ echo "<SCRIPT language='Javascript'>
 					</script>";
 							
 include "../Includes/functions2.inc.php";
-require_once("../Includes/class.inputfilter_clean.php");
-
+if (get_magic_quotes_gpc()) require_once("../Includes/class.inputfilter_clean.php");
+else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 $tsmp=time();
 $tsmp2=time() + 604800;//j+7
 
@@ -156,14 +156,43 @@ if (isset($_POST['Valider']))
 	 	if (in_array($uidpot, $tab_absx)) 
 	 		{
 			$typ="A";
-			$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-			$mot_x = $oMyFilter->process($_POST['motif_x'][$uidpot]);
+			if (get_magic_quotes_gpc())
+			    {
+				$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+				$mot_x = $oMyFilter->process($_POST['motif_x'][$uidpot]);
+				}
+			else
+				{
+				// htlmpurifier
+				$mot_x = $_POST['motif_x'][$uidpot];
+				$config = HTMLPurifier_Config::createDefault();
+		    	$config->set('Core.Encoding', 'ISO-8859-15'); 
+		    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+		   		$purifier = new HTMLPurifier($config);
+		   		$mot_x = $purifier->purify($mot_x);
+		   		$mot_x=mysql_real_escape_string($mot_x);
+		   		}
 			}
 		elseif (in_array($uidpot, $tab_retx)) 
 	 		{
 			$typ ="R";
-			$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-			$mot_x = $oMyFilter->process($_POST['motif_x'][$uidpot]);
+			if (get_magic_quotes_gpc())
+			    {
+				$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+				$mot_x = $oMyFilter->process($_POST['motif_x'][$uidpot]);
+				}
+			else
+				{
+				// htlmpurifier
+				$mot_x = $_POST['motif_x'][$uidpot];
+				$config = HTMLPurifier_Config::createDefault();
+		    	$config->set('Core.Encoding', 'ISO-8859-15'); 
+		    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+		   		$purifier = new HTMLPurifier($config);
+		   		$mot_x = $purifier->purify($mot_x);
+		   		$mot_x=mysql_real_escape_string($mot_x);
+		   		}
+			
 			}
 		else 	
 			{
@@ -216,14 +245,44 @@ if (isset($_POST['Valider']))
 		if (in_array($uidpot, $$taba)) 
 	 			{
 				$type="A";
+				
+				if (get_magic_quotes_gpc())
+			    {
 				$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
 				$motiph = $oMyFilter->process($_POST['motif_'.$valeur.''][$uidpot]);
 				}
+			else
+				{
+				// htlmpurifier
+				$motiph = $_POST['motif_'.$valeur.''][$uidpot];
+				$config = HTMLPurifier_Config::createDefault();
+		    	$config->set('Core.Encoding', 'ISO-8859-15'); 
+		    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+		   		$purifier = new HTMLPurifier($config);
+		   		$motiph = $purifier->purify($motiph);
+		   		$motiph=mysql_real_escape_string($motiph);
+		   		}
+				
+				}
 		elseif (in_array($uidpot, $$tabr)) 
-	 			{
-				$type="R";
-				$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-				$motiph = $oMyFilter->process($_POST['motif_'.$valeur.''][$uidpot]);
+	 		{
+			$type="R";
+				if (get_magic_quotes_gpc())
+				    {
+					$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+					$motiph = $oMyFilter->process($_POST['motif_'.$valeur.''][$uidpot]);
+					}
+				else
+					{
+					// htlmpurifier
+					$motiph = $_POST['motif_'.$valeur.''][$uidpot];
+					$config = HTMLPurifier_Config::createDefault();
+			    	$config->set('Core.Encoding', 'ISO-8859-15'); 
+			    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+			   		$purifier = new HTMLPurifier($config);
+			   		$motiph = $purifier->purify($motiph);
+			   		$motiph=mysql_real_escape_string($motiph);
+			   		}
 				}
 		else 	
 				{
