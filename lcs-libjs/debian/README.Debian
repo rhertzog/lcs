@@ -1,6 +1,10 @@
-lcs-libjs for Debian
----------------------
+lcs-libjs for LCS debian packages
+---------------------------------
 
-This package provide javascript libraries for Lcs
+This package provide javascript libraries for Lcs :
+jquery 1.4.2 min http://jquery.com/
+jquery-ui 1.8.2 custom min http://jqueryui.com/
+tiny-mce 3.2.1 http://tinymce.moxiecode.com/
+ext 3.2.1 http://www.extjs.com/
 
-Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>, Sun, 6 June 2010 14:33:00 +0200
+Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 10 Jun 2010 10:51:08 +0200
