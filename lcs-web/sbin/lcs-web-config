@@ -105,10 +105,6 @@ member: cn=Profs,ou=Groups,$LDAP_BASE_DN" > /var/lib/lcs/Mail_can_redir.ldif
 Alias /Plugins/ /usr/share/lcs/Plugins/
 Alias /Modules/ /usr/share/lcs/Modules/
 EOF
-        # Installation menu.d if not present
-        if [ ! -d /var/www/lcs/includes/menu.d ]; then
-            cp -r /var/lib/lcs/web/menu.d /var/www/lcs/includes
-        fi
 
         # Configuration webalizer
         echo "Configuration webalizer"

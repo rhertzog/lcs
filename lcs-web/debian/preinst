@@ -28,6 +28,12 @@ upgrade)
         elif [ -e /usr/share/lcs/privatekey/privateKey.py ]; then
             mv /usr/share/lcs/privatekey/privateKey.py /var/lib/lcs/tmp/privateKey.py
         fi
+        #
+        # Clean old menu.d structure
+        # 
+        if [ ! -e /var/www/lcs/includes/menu.d/10config/10menulabel.inc ]; then
+            rm -Rf /var/www/lcs/includes/menu.d
+        fi
 ;;
 *)
 echo "preinst called with unknown argument \`$1'" >&2

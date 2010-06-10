@@ -1,5 +1,5 @@
 <?php
-/* lcs/barre.php derniere mise a jour : 28/05/2010 */
+/* lcs/barre.php derniere mise a jour : 10/06/2010 */
 
 // HelpDesk Ajout variable session userHD pour memoriser choix user helpdesk autre qu'admin
 session_start();
@@ -30,7 +30,7 @@ list ($idpers, $login)= isauth();
 <head>
   <title>...::: Barre LCS 2.0 :::...</title>
   <meta HTTP-EQUIV="Content-Type" CONTENT="tetx/html; charset=ISO-8859-1">
-  <script type="text/javascript" src="/lib/js/prototype.js"></script>
+  <script type="text/javascript" src="../libjs/jquery/jquery.js"></script>
 <style type="text/css">
 body	{
 	margin-right: 6%;
@@ -132,18 +132,20 @@ function MM_preloadImages() { //v3.0
 
 <body bgcolor="#f8f8ff" onLoad="MM_preloadImages('images/<? echo $path ?>/BP_r1_c3_f2.gif','images/<? echo $path ?>/BP_r1_c3_f3.gif','images/<? echo $path ?>/BP_r1_c4_f2.gif','images/<? echo $path ?>/BP_r1_c4_f3.gif','images/<? echo $path ?>/BP_r1_c5_f2.gif','images/<? echo $path ?>/BP_r1_c5_f3.gif','images/<? echo $path ?>/BP_r1_c6_f2.gif','images/<? echo $path ?>/BP_r1_c6_f3.gif','images/<? echo $path ?>/BP_r1_c7_f2.gif','images/<? echo $path ?>/BP_r1_c7_f3.gif','images/<? echo $path ?>/BP_r1_c8_f2.gif','images/<? echo $path ?>/BP_r1_c8_f3.gif','images/<? echo $path ?>/BP_r1_c10_f2.gif','images/<? echo $path ?>/BP_r1_c10_f3.gif');">
 
-
 <?php
+
 // Cas service
    if ( $login && ($lcs_cas == 1) && !isset($_COOKIE['tgt'])) {
-
 	echo "<script type='text/javascript'>
         // <![CDATA[
-        new Ajax.Request('/lcs/includes/log2cas_ajax.php',{ method: 'post', onSuccess: function(requester){
-           if (requester.responseText)
-		alert(requester.responseText);
-	}});
-
+		$.ajax({
+                    type: 'POST',
+                    url : 'includes/log2cas_ajax.php',
+                    async: true,
+                    error: function() {
+                        alert('Echec authentification CAS');
+                    }
+         });
         //]]>
         </script>\n";
   }

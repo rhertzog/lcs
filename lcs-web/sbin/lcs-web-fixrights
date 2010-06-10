@@ -5,17 +5,29 @@
 chown root:root /etc/LcSeConfig.ph.in
 chown root:root /etc/profile
 chown root:root /etc/lcs/sudo.d/01-lcs-web
+
 chown root:root /var/www
-chown -R www-data:www-data /var/www/*
+chown -Rf www-data:www-data /var/www/Admin
+chown -Rf www-data:www-data /var/www/Annu
+chown -Rf www-data:www-data /var/www/c
+chown -Rf www-data:www-data /var/www/Err
+chown -Rf www-data:www-data /var/www/images
+chown -Rf www-data:www-data /var/www/lcs
+chown -Rf www-data:www-data /var/www/lib
+chown -Rf www-data:www-data /var/www/setup
+chown -Rf www-data:www-data /var/www/Usingstats
+chown -f www-data:www-data /var/www/index.html
+chown -f www-data:www-data /var/www/style.css
+
 chown root:root /usr/lib/cgi-bin
 chmod 755 /usr/lib/cgi-bin
 chown root:www-data /usr/lib/cgi-bin/gep2.cgi
 chmod 750 /usr/lib/cgi-bin/gep2.cgi
 
 chown root:root /usr/share/lcs
-chown -R www-data:www-data /usr/share/lcs/Plugins
-chown -R www-data:www-data /usr/share/lcs/Modules
-chown -R www-data:www-data /usr/share/lcs/privatekey
+chown -Rf www-data:www-data /usr/share/lcs/Plugins
+chown -Rf www-data:www-data /usr/share/lcs/Modules
+chown -Rf www-data:www-data /usr/share/lcs/privatekey
 chmod 600 /usr/share/lcs/privatekey/privateKey.py
 chmod 644 /usr/share/lcs/privatekey/decode.py
 

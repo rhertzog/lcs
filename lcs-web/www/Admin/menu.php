@@ -1,20 +1,18 @@
 <?php
-
 include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
-include ("../lcs/includes/menu.inc.php");
 
 list ($idpers, $login)= isauth();
-
 if ($idpers == "0") header("Location:$urlauth");
+
 ?>
-<HTML>
-<HEAD>
-<title>Interface d'administration LCS</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="style/menu.css">
-<script language="JavaScript">
+
+<head>
+    <title>Interface d'administration LCS</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" href="style/menu.css">
+    <script language="JavaScript">
 <!--
 function MM_reloadPage(init)
 {
@@ -96,6 +94,50 @@ document.images[imagename].src=eval(objectsrc+".src")
 </head>
 <?php
 
+
+function getmenuarray()
+{
+    global $liens;
+
+    // Chargement du tableau menu.d
+    $path2menud="/var/www/lcs/includes/menu.d";
+    $folders =  array();
+    $folders[0]=""; // 1ere element vide pour rester compatible avec les boucles de menuprint
+    $namesfolders = scandir($path2menud);
+    for ($t=0; $t < count($namesfolders); $t++ ) {
+        if ( ! ereg ( "^\.", $namesfolders[$t] ) ) {
+            $countfiles=scandir($path2menud."/".$namesfolders[$t]);
+            if ( count($countfiles) > 3 ) // On retiend le nom du repertoire si il y a des fichiers sous menu dedans
+                $folders[] = $namesfolders[$t];
+        }    
+    }
+
+    $liens[0]="";
+    for ($i=1; $i<count($folders); $i++) {
+        $filesdd = array();
+        $dh2  = opendir($path2menud."/".$folders[$i]);
+        while (false !== ($namesfiles = readdir($dh2))) 
+            if ( ! ereg ( "^\.", $namesfiles ) )
+                $filesdd[] = $namesfiles;  
+        sort($filesdd);
+
+        $loop=0;
+        for ($j=0; $j< count($filesdd); $j++) {
+            $fd = fopen($path2menud."/".$folders[$i]."/".$filesdd[$j], "r");
+            while ( !feof($fd) ) {
+                $tmp=fgets($fd, 125);
+                if ( strlen($tmp) > 0 ) {
+                    $element = explode(",",$tmp);
+                    for ($k=0; $k < count($element); $k++) {
+                        $liens[$i][$loop] = $element[$k];
+                        $loop++;
+                    }				
+                }
+            }
+        }
+    }
+} // Fin function getmenuarray()
+
 function menuprint($login)
 {
     global $liens,$menu;
@@ -123,7 +165,7 @@ function menuprint($login)
 				$afftest=($ldapright[$rightname]=="Y");
 			}
 			if ($afftest)
-            if (($idmenu==$menunbr)&&($idmenu!=0)) {
+                        if (($idmenu==$menunbr)&&($idmenu!=0)) {
 	            echo "
                 <tr>
                     <td class=\"menuheader_up\">
@@ -136,7 +178,7 @@ function menuprint($login)
                     </tr>
                     <tr>
                     <td class=\"menucell\">";
-                for ($i=2; $i<count($liens[$menunbr]); $i+=3) {
+                for ($i=2; $i<count($liens[$menunbr]); $i=$i+3) {
 			// Test des droits pour affichage
 					$afftest=$ldapright["lcs_is_admin"]=="Y";
 					$rightname=$liens[$menunbr][$i+2];
@@ -149,7 +191,7 @@ function menuprint($login)
                     echo "
                         <img src=\"../lcs/images/menu/typebullet.gif\" width=\"30\" height=\"11\">
                             <a href=\"" . $liens[$menunbr][$i+1] . "\" TARGET='main'>" . $liens[$menunbr][$i]  . "</a><br>\n";
-                } // for i : bouche d'affichage des entrées de sous-menu
+                } // for i : boucle d'affichage des entrees de sous-menu
                 echo "
                     </td></tr>\n";
             } else
@@ -164,19 +206,21 @@ function menuprint($login)
 		    </p>
                     </td></tr>\n";
             }
-        } //for menunbr : boucle d'affichage des entrées de menu principales
+        } //for menunbr : boucle d'affichage des entrees de menu principales
 
         echo "
         </table>
 </div>\n";
-    } // for idmenu : boucle d'affichage des différents calques
+    } // for idmenu : boucle d'affichage des differents calques
 } // function menuprint
 
 
 if (! isset($menu)) $menu=0;
 echo "<body BGCOLOR=\"ghostwhite\" onLoad=\"P7_autoLayers('menu" . $menu ."')\">";
+getmenuarray();
 menuprint($login);
+
 ?>
 
-</BODY>
-</HTML>
+</body>
+</html>
