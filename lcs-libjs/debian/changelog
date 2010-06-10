@@ -1,6 +1,10 @@
 lcs-libjs (2.4.7~2) Lcs; urgency=low
 
+  [ Jean-Luc Chrétien ]
   * Initial release
   * Provide javascript libraries : jquery, jquery-ui, tiny-mce and ext 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 10 Jun 2010 10:51:08 +0200
+  [ Philippe Leclerc ]
+  * add skin cdt 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 10 Jun 2010 21:02:41 +0200
