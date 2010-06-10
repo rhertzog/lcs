@@ -1,0 +1,1 @@
+Plugins disponibles,../Plugins/plugins_dispo.php,lcs_is_admin

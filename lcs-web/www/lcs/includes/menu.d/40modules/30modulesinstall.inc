@@ -1,0 +1,1 @@
+Modules install&#233;s,../Modules/modules_installes.php,lcs_is_admin

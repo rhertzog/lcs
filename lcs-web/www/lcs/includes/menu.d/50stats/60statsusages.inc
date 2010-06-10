@@ -1,0 +1,1 @@
+Statistiques d'usage,../Usingstats/statusage.php,system_is_admin

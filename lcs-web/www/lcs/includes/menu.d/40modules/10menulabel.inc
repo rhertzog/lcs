@@ -1,0 +1,1 @@
+Gestion&nbsp;des&nbsp;modules,lcs_is_admin

@@ -1,0 +1,1 @@
+Cl&#233;s d'authentification,../lcs/setup_keys.php,lcs_is_admin

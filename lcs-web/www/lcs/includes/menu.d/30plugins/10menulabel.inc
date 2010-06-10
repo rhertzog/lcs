@@ -1,0 +1,1 @@
+Gestion&nbsp;des&nbsp;plugins,lcs_is_admin

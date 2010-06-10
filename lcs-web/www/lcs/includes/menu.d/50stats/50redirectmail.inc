@@ -1,0 +1,1 @@
+Log redirection mails,/Admin/mail_rediriges.php,lcs_is_admin
