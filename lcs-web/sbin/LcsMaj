@@ -1,17 +1,21 @@
 #!/bin/bash
-# /usr/sbin/LcsMaj version du 24-09-2010
+# /usr/sbin/LcsMaj version du 12-06-2010
 PATH="/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/share/lcs/sbin:/usr/share/lcs/scripts"
-DEBIAN_PRIORITY="critical"
-DEBIAN_FRONTEND="noninteractive"
-export  DEBIAN_FRONTEND
-export  DEBIAN_PRIORITY
 #
 # Mise a jour des paquets logiciels du serveur si mysql repond
 #
 if  mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1 ; then
+    DEBIAN_PRIORITY="critical"
+    DEBIAN_FRONTEND="noninteractive"
+    export  DEBIAN_FRONTEND
+    export  DEBIAN_PRIORITY
     apt-get update
     apt-get -y install mysql-server
-    apt-get -y --force-yes upgrade
+    apt-get -y --force-yes dist-upgrade
+    DEBIAN_PRIORITY="high"
+    DEBIAN_FRONTEND="dialog"
+    export  DEBIAN_PRIORITY
+    export  DEBIAN_FRONTEND
 else
     echo "Service Mysql inaccessible, report de la mise a jour systeme."
     exit 1
@@ -43,7 +47,7 @@ WGETOPTIONS="-nv -o wget.log -T 5 -t 2"
 #
 URLMAJTGZ=`echo "SELECT value FROM params WHERE name='urlmajtgz'" | $MYSQLCNX`
 if [ -z "$URLMAJTGZ" ]; then
-  echo "Impossible d'accéder aux paramètres URLMAJTGZ LCS"
+  echo "Impossible d'acceder aux parametres URLMAJTGZ LCS"
   exit 1
 fi
 
@@ -54,28 +58,28 @@ fi
 ## source LCS 1.4 pour le passage a woody
 if [ $URLMAJTGZ = "ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ-W2S" ]; then
   clear
-  echo "************ Mise a jour" INTERROMPUE ***************"
+  echo "************ Mise a jour INTERROMPUE ***************"
   echo "serveur de mise a jour URLMAJTGZ incompatible avec cette vesion de LCS"
   echo "valeur par defaut : ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ-ETCH"
-  echo "************ Mise a jour" INTERROMPUE ***************"
+  echo "************ Mise a jour INTERROMPUE ***************"
   exit 1   
 fi
 ## source LCS 1.4
 if [ $URLMAJTGZ = "ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ" ]; then
   clear
-  echo "************ Mise a jour" INTERROMPUE ***************"
+  echo "************ Mise a jour INTERROMPUE ***************"
   echo "serveur de mise a jour URLMAJTGZ incompatible avec cette vesion de LCS"
   echo "valeur par defaut : ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ-ETCH"
-  echo "************ Mise a jour" INTERROMPUE ***************"
+  echo "************ Mise a jour INTERROMPUE ***************"
   exit 1
 fi
 ## source LCS 1.4 XP
 if [ $URLMAJTGZ = "ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ-XP" ]; then
   clear
-  echo "************ Mise a jour" INTERROMPUE ***************"
+  echo "************ Mise a jour INTERROMPUE ***************"
   echo "serveur de mise a jour URLMAJTGZ incompatible avec cette vesion de LCS"
   echo "valeur par defaut : ftp://debian.crdp.ac-caen.fr/debian/LcsMaj/LcsMajTGZ-ETCH"
-  echo "************ Mise a jour" INTERROMPUE ***************"
+  echo "************ Mise a jour INTERROMPUE ***************"
   exit 1
 fi            
 
@@ -86,7 +90,7 @@ fi
 #
 URLMAJMD5=`echo "SELECT value FROM params WHERE name='urlmajmd5'" | $MYSQLCNX`
 if [ -z "$URLMAJMD5" ]; then
-  echo "Impossible d'accéder aux paramètres URLMAJMD5 LCS"
+  echo "Impossible d'acceder aux paramètres URLMAJMD5 LCS"
   exit 1
 fi
 #
@@ -94,7 +98,7 @@ fi
 #
 MAJNBR=`echo "SELECT value FROM params WHERE name='majnbr'" | $MYSQLCNX`
 if [ -z "$MAJNBR" ]; then
-  echo "Impossible d'accéder aux paramètres MAJNBR LCS"
+  echo "Impossible d'acceder aux paramètres MAJNBR LCS"
   exit 1
 fi
 cd /root/LcsMaj
@@ -147,7 +151,7 @@ while [ -e maj$NEXT_MINOR_MAJ.md5  ] || [ -e maj$NEXT_MAJOR_MAJ.md5 ]; do
       #
       # Application du script de maj
       #
-      echo "Application de la mise a jour N° $MAJNBR"
+      echo "Application de la mise a jour N $MAJNBR"
       ./maj$MAJNBR.sh
       #
       # Update de l'indice de maj du LCS
@@ -156,12 +160,12 @@ while [ -e maj$NEXT_MINOR_MAJ.md5  ] || [ -e maj$NEXT_MAJOR_MAJ.md5 ]; do
       rm *.tgz maj*.sh wget.log
     else
       # Si validite du telechargement non conforme -> exit
-      echo "L'archive de mise a jour N° $MAJNBR n'est pas conforme, operation annulee !" 
+      echo "L'archive de mise a jour N $MAJNBR n'est pas conforme, operation annulee !" 
       rm maj*.tgz wget.log
       exit 1
     fi
   else
-    echo "Le telechargement de l'archive de mise a jour N° $MAJNBR a echouee, opération annulee !"
+    echo "Le telechargement de l'archive de mise a jour N $MAJNBR a echouee, opération annulee !"
     exit 1
   fi
   
@@ -170,10 +174,7 @@ while [ -e maj$NEXT_MINOR_MAJ.md5  ] || [ -e maj$NEXT_MAJOR_MAJ.md5 ]; do
 done
 
 echo "Toutes les revisions ou mises a jour disponibles ont ete appliquees."
-DEBIAN_PRIORITY="high"
-DEBIAN_FRONTEND="dialog"
-export  DEBIAN_PRIORITY
-export  DEBIAN_FRONTEND 
+ 
 
 
 
