@@ -23,7 +23,7 @@ sub traitement {
   # Initialisation des variables
   # ----------------------------
   # Uid de départ
-  $uidNumber = getFirstFreeUid(1000);
+  $uidNumber = getFirstFreeUid(1001);
   # Gid de départ
   $gidNumber = getFirstFreeGid(2000);
 

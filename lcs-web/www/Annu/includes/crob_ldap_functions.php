@@ -1002,7 +1002,7 @@ function get_first_free_uidNumber(){
 
 	// On demarre les uid a 1001, mais admin est en 5000:
 	// unattend est en 1000 chez moi... mais cela peut changer avec des etablissements dont l'annuaire SE3 date d'avant l'ajout d'unattend
-	$first_uidNumber=1000;
+	$first_uidNumber=1001;
 	$last_uidNumber=4999;
 	//$last_uidNumber=1200;
 
@@ -1407,7 +1407,8 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	$attribut["gecos"]="$prenom $nom,$naissance,$sexe,N";
 
 	$attribut["sambaSID"]="$domainsid-$rid";
-        $attribut["sambaPrimaryGroupSID"]="$domainsid-$pgrid";
+	//$attribut["sambaPrimaryGroupSID"]="$domainsid-$pgrid";
+        $attribut["sambaPrimaryGroupSID"]="$domainsid-513";
 
 	$attribut["sambaPwdMustChange"]="2147483647";
 	$attribut["sambaAcctFlags"]="[U          ]";
