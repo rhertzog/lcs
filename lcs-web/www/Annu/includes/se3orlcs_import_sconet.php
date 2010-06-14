@@ -34,6 +34,7 @@ if ( file_exists("/var/www/se3") ) {
     $pathlcsorse3 = "";
     $path_crob_ldap_functions = "";
     $racine_www= "/var/www/se3";
+    $chemin_www_includes= "/var/www/se3/includes";
     $dossier_tmp_import_comptes= "/var/lib/se3/import_comptes";
     $chemin_csv="/setup/csv";
     $php="/usr/bin/php";
@@ -42,7 +43,7 @@ if ( file_exists("/var/www/se3") ) {
     // Style du rapport
     $background ="/elements/images/fond_SE3.png";
     $stylecss="/elements/style_sheets/sambaedu.css";
-    $helpinfo="../elements/images/help-info.gif";
+    $helpinfo="../elements/images/system-help.png";
 
     include "entete.inc.php";
     include "ldap.inc.php";
@@ -62,6 +63,7 @@ if ( file_exists("/var/www/se3") ) {
     $pathlcsorse3 = "../lcs/includes/";
     $path_crob_ldap_functions = "includes/";
     $racine_www= "/var/www";
+    $chemin_www_includes= "/var/www/lcs/includes";
     $dossier_tmp_import_comptes= "/var/lib/lcs/import_comptes";
     $chemin_csv="/setup/csv";
     $php="/usr/bin/php";
