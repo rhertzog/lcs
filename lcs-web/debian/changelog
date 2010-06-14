@@ -14,8 +14,9 @@ lcs-web (2.4.7~4) Lcs; urgency=low
   * Modify lcs-web-fixrights
   * Change the package structure for the implementation of menu.d modularization
   * Change upgrade to dist-upgrade in LcsMaj 
+  * Modify primary group id to 513 and first uid number to 1001 in LcSe.pm, gep2.cgi and crob_ldap_functions.php 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 12 Jun 2010 02:02:36 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 14 Jun 2010 16:54:45 +0200
 
 lcs-web (2.4.6.5) Lcs; urgency=low
 
