@@ -1,5 +1,5 @@
 <?php 
-/* lcs/applis.php derniere mise a jour : 08/06/2009 */
+/* lcs/applis.php derniere mise a jour : 16/06/2010 */
 
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -16,9 +16,12 @@ if ($result)
 else
     die ("param&#232;tres absents de la base de donn&#233;es");
 mysql_free_result($result);
-// verification de l'authentification
+
+// Verification de l'authentification
 list ($idpers, $login)= isauth();
-if ($idpers == "0")    header("Location:$urlauth");
+if ($idpers == "0")    
+    header("Location:$urlauth");
+elseif ( pwdMustChange($login) ) header("Location:../Annu/must_change_default_pwd.php");
 
 $html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
     \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";

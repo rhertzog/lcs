@@ -4,7 +4,7 @@
    Administration serveur LCS «Editions des parametres»
    AdminLCS/edit_params.php
    Equipe Tice academie de Caen
-   derniere mise a jour : 04/06/2009
+   derniere mise a jour : 15/06/2010
    Distribue selon les termes de la licence GPL
    ============================================= */
 if ($_SERVER['SCRIPT_NAME'] != "/setup/index.php") {
@@ -74,6 +74,8 @@ if ((!isset($submit)) and (!isset($queri))) {
         	mktable("Certificats SSL",aff_param_form(5));
 	if ( $cat==0 || $cat==10 )
         	mktable("Param&#232;tres cach&#233;s",aff_param_form(10));
+	if ( $cat==0 || $cat==11 )
+        	mktable("Param&#232;tres VPN",aff_param_form(11));
 
 	print "<BR><DIV ALIGN=\"center\"><INPUT TYPE=\"submit\" VALUE=\"".gettext("Valider")."\"></DIV>";
 	print "<INPUT TYPE=\"hidden\" VALUE=\"$cat\" NAME=\"submit\">";
@@ -131,7 +133,7 @@ if (isset($submit)) {
 				}
 
 				// olecam 15 dec 2006: signaler les modifs sur se3Ip et se3netbios afin de mettre
-                                // a; jour /etc/samba/lmhosts
+                                // a jour /etc/samba/lmhosts
 				if ($r["cat"]==1) {
                                         if ($r["name"]=="se3Ip") {
                                                 $se3Ip_old = $r["value"];

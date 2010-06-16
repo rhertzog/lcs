@@ -4,15 +4,18 @@
    accueil.php
    jLCF : jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   derniere mise a jour : 08/06/2009
+   derniere mise a jour : 16/06/2010
    ============================================= */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
 include ("./includes/jlcipher.inc.php");
 
+
 list ($idpers, $login)= isauth();
-if ($idpers == "0")    header("Location:$urlauth");
+if ($idpers == "0")    
+    header("Location:$urlauth");
+elseif ( pwdMustChange($login) ) header("Location:../Annu/must_change_default_pwd.php");
 // Recherche du nom a partir du login
 list($user, $groups)=people_get_variables ($login, false);
 // Recherche si l'utilisateur connecte possede le droit lcs_is_admin

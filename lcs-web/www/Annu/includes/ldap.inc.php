@@ -5,7 +5,7 @@
    Annu/includes/ldap.inc.php
    « jLCF » jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   Derniere version : 21/05/2010
+   Derniere version : 16/06/2010
    ============================================= */
 
 // Fonctions de comparaison utilisees dans la fonction usort
@@ -683,6 +683,41 @@ function user_valid_passwd ( $login, $password ) {
   }
   if ($DEBUG) echo "$error<BR>\n";
   return $ret;
+}
+
+// Verification quand pwdPolicy =1 si l'utilisateur doit changer son mot de passe par defaut
+// retourne true dans le cas d'un changement de mot de passe necessaire, false dans l'autre cas.
+function pwdMustChange ($login) {
+
+    global $ldap_server, $ldap_port, $dn, $pwdPolicy;
+
+    if ( $pwdPolicy == "1" ) {
+        // Recuperation de la date de naissance
+        $filter="(uid=$login)";
+        $ldap_search_people_attr = array("gecos");
+
+        $ds = @ldap_connect ( $ldap_server, $ldap_port );
+        if ( $ds ) {
+            $r = @ldap_bind ( $ds ); // Bind anonyme
+            if ($r) {
+                // Recherche dans la branche people
+                $result = @ldap_search ( $ds, $dn["people"], $filter, $ldap_search_people_attr );
+                if ($result) {
+                    $info = @ldap_get_entries ( $ds, $result );
+                    if ( $info["count"]) {
+                        for ($loop=0; $loop<$info["count"];$loop++) {
+                            $gecos = $info[0]["gecos"][0];
+                            $tmp = explode (",",$info[0]["gecos"][0]);
+                            $date_naiss=$tmp[1];
+                        }
+                    }		
+                    @ldap_free_result ( $result );
+                } else $error = "Erreur de lecture dans l'annuaire LDAP";
+            } else $error = "Echec du bind anonyme";
+    	   @ldap_close ( $ds );
+  	 } else $error = "Erreur de connection au serveur LDAP";
+        if (user_valid_passwd($login,$date_naiss)) return true; else return false;
+    } else return false;
 }
 
 // Recherche si l'utilisateur connecte a le droit de creer un salon sur le Chat
