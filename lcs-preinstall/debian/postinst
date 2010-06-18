@@ -49,7 +49,7 @@ case "$1" in
                     mysql -f < /var/lib/lcs/preinstall/lcs_db-table-swekey.sql
                     # Add param pwdPolicy in lcs_db.params
                     if  ! mysqldump lcs_db params | grep -q pwdPolicy; then
-                        mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES (NULL, 'pwdPolicy', '1', '0', 'Le mot de passe par dÃ©faut doit Ãªtre changÃ©', '1');"
+                        mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES (NULL, 'pwdPolicy', '1', '0', 'Le mot de passe par défaut doit être changé', '1');"
                     fi
                 fi
             fi 
