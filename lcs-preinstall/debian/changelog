@@ -1,9 +1,10 @@
-lcs-preinstall (2.4.7~2) Lcs; urgency=low
+lcs-preinstall (2.4.7~3) Lcs; urgency=low
 
   * Update table statusages whith login field
   * Add table swekey for swekey strong authentification 
+  * Add params pwdPolicy in lcs_db.params
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 06 May 2010 10:40:55 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Jun 2010 10:20:06 +0200
 
 lcs-preinstall (2.4.6) Lcs; urgency=low
 
