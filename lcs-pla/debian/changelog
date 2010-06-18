@@ -1,3 +1,9 @@
+lcs-pla (2.4.7~1) Lcs; urgency=low
+
+  * Modify mnu.d structure
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Jun 2010 13:47:45 +0200
+
 lcs-pla (2.4.6) Lcs; urgency=low
 
   * Bild stable release 2.4.6
@@ -13,26 +19,15 @@ lcs-pla (2.4.2~1) Lcs; urgency=low
 lcs-pla (2.4.1) Lcs; urgency=low
 
   * remove tidle for release
-
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 28 May 2009 22:50:18 +0200
-
-lcs-pla (2.4.1~1) Lcs; urgency=low
-
   * automatic change number version in postinst
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 28 May 2009 22:48:14 +0200
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 28 May 2009 22:50:18 +0200
 
 lcs-pla (2.4) Lcs; urgency=low
 
   * Build a stable release 2.4 
 
  -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 15:24:52 +0200
-
-lcs-pla (2.1-3) LCS; urgency=low
-
-  * update changelog 
-
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 28 Apr 2009 14:21:14 +0200
 
 lcs-pla (2.1-2) LCS; urgency=low
 
@@ -49,13 +44,8 @@ lcs-pla (2.1-1) LCS; urgency=low
 lcs-pla (2.1) LCS; urgency=low
 
   * remove tilde to release
-
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 28 Apr 2009 10:21:34 +0200
-
-lcs-pla (2.1~3) UNRELEASED; urgency=low
-
   * Initial release (svn_builpackage compatibilty)
   * add Makefile
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed,  4 Mar 2009 12:44:54 +0100
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 28 Apr 2009 10:21:34 +0200
 

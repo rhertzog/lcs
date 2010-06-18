@@ -42,13 +42,6 @@ case "$1" in
           /etc/init.d/apache2 reload > /dev/null 2>&1
         fi
         #
-        # Remplacement de 20annu.inc
-        #
-        echo "Désactivation du lien dans le menu d'administration"
-    cp -a /var/www/lcs/includes/menu.d/20annu.inc /var/www/lcs/includes/menu.d/20annu.in
-	cat /var/www/lcs/includes/menu.d/20annu.in | sed 's/^	"Explorateur LDAP/\#	"Explorateur LDAP'/ > /var/www/lcs/includes/menu.d/20annu.inc
-	rm /var/www/lcs/includes/menu.d/20annu.in
-        #
         # Desinscription du module de la table lcs_db.applis
         #
         mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';";
