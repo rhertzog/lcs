@@ -1,3 +1,9 @@
+lcs-apache2ssl (2.4.7.1) Lcs; urgency=low
+
+  * Modify package for new mnu.d structure
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Jun 2010 17:58:58 +0200
+
 lcs-apache2ssl (2.4.7) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]

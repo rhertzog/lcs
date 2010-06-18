@@ -1,0 +1,1 @@
+Certificat Apache SSL,/Admin/apachecert.php,lcs_is_admin

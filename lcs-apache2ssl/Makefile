@@ -25,6 +25,10 @@ install:
 	install -d $(DESTDIR)/var/www
 	cp -a www/* $(DESTDIR)/var/www/
 
+# install lcs apache2ssl mnu.d
+	install -d $(DESTDIR)/var/www/lcs/includes/mnu.d/60services
+	cp -a mnud/* $(DESTDIR)/var/www/lcs/includes/mnu.d/60services/
+
 clean:
 
 
