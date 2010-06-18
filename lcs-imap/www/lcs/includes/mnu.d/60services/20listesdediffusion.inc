@@ -1,0 +1,1 @@
+Listes de diffusion,/Admin/listesdiff.php,lcs_is_admin

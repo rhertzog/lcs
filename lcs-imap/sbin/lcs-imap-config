@@ -16,18 +16,6 @@ configure() {
     LDAP_ADMIN_PW=$(get_lcsdb_params adminPw)
     # imap_reconfigure.sh 
     /usr/share/lcs/scripts/imap_reconfigure.sh $LDAP_SERVER $LDAP_BASE_DN $LDAP_ADMIN_RDN $LDAP_ADMIN_PW
-    #
-    # Add link mailing list in 50services
-    #
-    if [ -e /var/www/lcs/includes/menu.d/50services.inc ]; then
-        mv /var/www/lcs/includes/menu.d/50services.inc /tmp/50services.inc
-        if [ `grep '\"/Admin/listesdiff.php\",\"lcs_is_admin\",' /tmp/50services.inc | wc -l` = "1" ]; then
-            sed /tmp/50services.inc -e "s/.*listesdiff.php.*/\t\t\"Listes de diffusion\",\"\/Admin\/listesdiff.php\",\"lcs_is_admin\",/" > /var/www/lcs/includes/menu.d/50services.inc
-        else
-            sed /tmp/50services.inc -e "s/.*listesdiff.php.*/\t\t\"Listes de diffusion\",\"\/Admin\/listesdiff.php\",\"lcs_is_admin\"/" > /var/www/lcs/includes/menu.d/50services.inc
-        fi
-        rm -f /tmp/50services.inc
-    fi
 }
 
 case "$1" in

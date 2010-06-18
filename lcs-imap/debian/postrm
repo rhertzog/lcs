@@ -3,16 +3,7 @@
 set -e
 case "$1" in
 	purge|remove)
-            #
-            # Suppression du service liste de diffusion dans le menu 
-            #
-            mv /var/www/lcs/includes/menu.d/50services.inc /tmp/50services.inc
-            if [ `grep '\"/Admin/listesdiff.php\",\"lcs_is_admin\",' /tmp/50services.inc | wc -l` = "1" ]; then
-                sed /tmp/50services.inc -e "s/.*listesdiff.php.*/#\t\t\"Listes de diffusion\",\"\/Admin\/listesdiff.php\",\"lcs_is_admin\",/" > /var/www/lcs/includes/menu.d/50services.inc
-            else
-                sed /tmp/50services.inc -e "s/.*listesdiff.php.*/#\t\t\"Listes de diffusion\",\"\/Admin\/listesdiff.php\",\"lcs_is_admin\"/" > /var/www/lcs/includes/menu.d/50services.inc
-            fi
-            rm /tmp/50services.inc            
+
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
