@@ -5,11 +5,9 @@ set -e
 case "$1" in
 	purge|remove)
             #
-            # Comment menu statistiques squid in menu 40stats.inc
+            # Remove menu statistiques squid in menu 50stats
             #
-            if [ -e /var/www/lcs/includes/menu.d/40stats.inc ]; then
-                sed -i "s/.*Mandataire.*/#\t\"Mandataire cache\",\"..\/squid-reports\/\",\"lcs_is_admin\",/" /var/www/lcs/includes/menu.d/40stats.inc
-            fi
+            rm -f /var/www/lcs/includes/menu.d/50stats/40sarg.inc
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)

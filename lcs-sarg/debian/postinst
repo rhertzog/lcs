@@ -18,11 +18,9 @@ case "$1" in
 			rm /etc/squid/sarg-maint.sh
 		fi
                 #
-                # Validate menu statistiques squid in menu 40stats.inc
+                # Add menu statistiques squid in mnu.d/50stats
                 #
-                if [ -e /var/www/lcs/includes/menu.d/40stats.inc ]; then
-                    sed -i "s/.*Mandataire.*/\t\"Mandataire cache\",\"..\/squid-reports\/\",\"lcs_is_admin\",/" /var/www/lcs/includes/menu.d/40stats.inc
-                fi
+                echo "Mandataire cache,../squid-reports/,lcs_is_admin" >  /var/www/lcs/includes/menu.d/50stats/40sarg.inc
     	;;
 	abort-upgrade|abort-remove|abort-deconfigure)
 		#
