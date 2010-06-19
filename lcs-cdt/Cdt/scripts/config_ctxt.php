@@ -135,6 +135,7 @@ if (isset($_POST['cours_edt']))
 // §1.ENREGISTRER OU MODIFIER UNE RUBRIQUE
 if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
 	{ 
+	$rq="";
 	// Vérifier $matiere  et la débarrasser de tout antislash et tags possibles
 	if (strlen($_POST['matiere']) > 0)
 		{ 		$matiere  = addSlashes(strip_tags(stripslashes($_POST['matiere'])));}
@@ -161,22 +162,27 @@ if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
 			}
 //Créer la requête pour la mise à jour des données	
 	if (isset($_POST['modifier'])&& $div!="--")
-			{$cible= ($_POST['numrub']);
+			{
+			$cible= ($_POST['numrub']);
 			$rq = "UPDATE  onglets SET classe='$div', matiere='$matiere', prefix='$prefixe', edt='$val_edt'  
 				WHERE id_prof='$cible'";
 			}
 		
 // lancer la requête
+	if ($rq!="") 
+		{
 		$result = mysql_query($rq); 
 		if (!$result)  // Si l'enregistrement est incorrect
 			{                           
 			 echo "<p>Votre rubrique n'a pas pu être enregistrée à cause d'une erreur système".
 				  "<p></p>" . mysql_error() . "<p></p>";
-// refermer la connexion avec la base de données
+	// refermer la connexion avec la base de données
 			mysql_close();
-//sortir			
+	//sortir			
 			exit();
-			}
+			 }
+		}
+
 	}
 
 //fin enregistrement ou modification d'une rubrique
