@@ -1,3 +1,9 @@
+lcs-squirrelmail (2.4.7.1) Lcs; urgency=low
+
+  * Modify redirect.php for pwdPolicy
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 19 Jun 2010 14:23:01 +0200
+
 lcs-squirrelmail (2.4.7) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]

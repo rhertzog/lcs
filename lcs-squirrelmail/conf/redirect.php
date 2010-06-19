@@ -1,8 +1,11 @@
 <?php
-## Modify for LCS on 17/06/09 squirrelmail 1.4.15
+## Modify for LCS on 19/06/10 squirrelmail 1.4.15
 include "/var/www/lcs/includes/headerauth.inc.php";
+include ("/var/www/Annu/includes/ldap.inc.php");
 list ($idpers,$login_username) = isauth();
-if ($idpers) {
+if ($idpers == "0") header("Location:../..");
+elseif ( pwdMustChange($login_username) ) header("Location:../../Annu/must_change_default_pwd.php");
+elseif ($idpers != "0") {
   $secretkey = urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
   $just_logged_in = "1";
   $js_autodetect_results = "on";
