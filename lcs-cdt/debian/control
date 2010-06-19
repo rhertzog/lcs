@@ -7,6 +7,6 @@ Standards-Version: 3.7.3
 
 Package: lcs-cdt
 Architecture: any
-Depends: lcs-web,lcs-libjs
-Description: Install Cahier de textes on LCS server
- Cahier de textes
+Depends: lcs-web
+Description: Install homework notebook on LCS server
+ This package sets up homework notebook
