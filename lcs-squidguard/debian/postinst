@@ -31,7 +31,6 @@ case "$1" in
 	cp -a /var/lib/lcs/squidguard/lcs_bl /var/lib/squidguard/db/blacklists/lcs
         chown -R proxy:www-data /var/lib/squidguard/db
         chown -R www-data:www-data /var/www/Squidguard
-        chown -R www-data:www-data /var/www/lcs/includes/menu.d/90internet.inc
         #
         # Actions liees a une installation initiale
         #
