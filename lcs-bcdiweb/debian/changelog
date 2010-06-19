@@ -1,9 +1,13 @@
-lcs-bcdiweb (2.4.5~4) Lcs; urgency=low
+lcs-bcdiweb (2.4.5~5) Lcs; urgency=low
 
+  [ Simon Cavey ]
   * fix url
   * fixing some bugs
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 11 Dec 2009 13:53:26 +0000
+  [ Jean-Luc Chrétien ]
+  * Modify package for new mnu.d structure
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 19 Jun 2010 15:59:23 +0200
 
 lcs-bcdiweb (2.0-1~1) Lcs; urgency=low
 
