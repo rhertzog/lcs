@@ -1,3 +1,9 @@
+lcs-openvpn (2.4.7.1~1) Lcs; urgency=low
+
+  * Modify package for new mnu.d structure
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 19 Jun 2010 16:10:30 +0200
+
 lcs-openvpn (2.4.7) Lcs; urgency=low
 
   * update masquerade option for running after reboot
