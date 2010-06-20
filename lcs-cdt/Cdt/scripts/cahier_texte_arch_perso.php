@@ -74,10 +74,11 @@ echo '<DIV id="bt-fixe" ><input class="bt2-fermer" type="submit" name="Fermer" v
 include_once "/var/www/lcs/includes/headerauth.inc.php";
  				list ($idpers,$log) = isauth();
   				if ($idpers)  $_LCSkey = urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
+ 				$nom_bdd=mb_ereg_replace("\.","",$_SESSION['login']);
  				DEFINE ('DBP_USER', $_SESSION['login']);
 				DEFINE ('DBP_PASSWORD', $_LCSkey);
 				DEFINE ('DBP_HOST', 'localhost');
-				DEFINE ('DBP_NAME', $_SESSION['login'].'_db');
+				DEFINE ('DBP_NAME', $nom_bdd.'_db');
 
 				// Ouvrir la connexion et selectionner la base de donnees
 				$dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD) 

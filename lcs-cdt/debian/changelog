@@ -1,3 +1,9 @@
+lcs-cdt (2.4.3) LCS; urgency=low
+
+  * fix bug personnal DB_name in cahier_texte_arch_perso.php 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 20 Jun 2010 22:40:16 +0200
+
 lcs-cdt (2.4.2) LCS; urgency=low
 
   * fix bug personnal DB_name when login has point
