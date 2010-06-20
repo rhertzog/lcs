@@ -97,7 +97,7 @@ if (isset($_POST['Valider']))
 							exec($cmd,$li,$ret);
 							if ($ret != 0) 
 							$mess1= "<h3 class='ko'>1. les liens vers les pi&#232;ces jointes  n\'ont pas pu &#234;tre mise &#224; jour avec le nouveau login"."<BR></h3>";
-							$cmd=" cd /home/".$_SESSION['login']."/public_html/ && mysql -u".$_SESSION['login']." -p".$_LCSkey." ".$_SESSION['login']."_db < dump.sql";
+							$cmd=" cd /home/".$_SESSION['login']."/public_html/ && mysql -u".$_SESSION['login']." -p".$_LCSkey." ".mb_ereg_replace("\.","",$_SESSION['login'])."_db < dump.sql";
 							exec($cmd,$li,$ret);
 							if ($ret == 0) $mess1="<h3 class='ok'>Les donn&#233;es ont &#233;t&#233; import&#233;es.<BR></h3>";
 							else $mess1 = "<h3 class='ko'>Une erreur s'est produite lors de l'import des donn&#233;es.<BR></h3>";

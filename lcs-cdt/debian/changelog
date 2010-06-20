@@ -1,3 +1,9 @@
+lcs-cdt (2.4.2) LCS; urgency=low
+
+  * fix bug personnal DB_name when login has point
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 19 Jun 2010 22:40:14 +0200
+
 lcs-cdt (2.4.1) LCS; urgency=low
 
   * remove tilde
