@@ -632,10 +632,12 @@ if (isset($tsmp3))
 				DEFINE ('DBP_NAME', $nom_bdd.'_db');
 
 				// Ouvrir la connexion et selectionner la base de donnees
-				$dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD) 
-      			OR die ('Connexion a MySQL impossible : '.mysql_error().'<br>');
-				mysql_select_db (DBP_NAME)
-       			OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br>');
+				$dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD); 
+				//OR die ('Connexion a MySQL impossible : '.mysql_error().'<br>');
+				if ($dbcp) {
+				$db_selected = mysql_select_db (DBP_NAME);
+       			//OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br>');
+				if ($db_selected) {
 				$TablesExist= mysql_query("show tables");
 				$x=0;
 				while ($table=mysql_fetch_row($TablesExist))
@@ -648,6 +650,10 @@ if (isset($tsmp3))
 				}
 				//s'il n'esiste pas d'archive
 				if ($x==0) { echo '<B><FONT COLOR="#CC0000" > Aucune </FONT></B>';}
+				}
+				else { echo 'Erreur : '.mysql_error();}
+				}
+				else { echo 'Erreur : '.mysql_error();}
 				mysql_close();
 				
 			?>

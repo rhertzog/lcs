@@ -1,3 +1,9 @@
+lcs-cdt (2.4.4) LCS; urgency=low
+
+  * fix bug when personnal database no exist
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 22 Jun 2010 22:04:59 +0200
+
 lcs-cdt (2.4.3) LCS; urgency=low
 
   * fix bug personnal DB_name in cahier_texte_arch_perso.php 
