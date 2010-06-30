@@ -1,11 +1,11 @@
 #!/bin/bash
 # Make main.cf / ldap-aliases.cf 
 # GrosQuicK  Mon, 3 Dec 2007
-# Modify by jLCF <(°_-)/> on 23 Janv. 2009
+# Modify by jLCF on 30 Jun. 2010
 #
 IN_CONFIG_PATH="/etc/lcs/postfix"
 
-if [ "$7" = "" ];
+if [ "$6" = "" ];
 then
         echo "Usage: postfix_reconfigure.sh <FQDN> <DOMAIN> <LOCAL_DOMAIN> <NETWORK> <LDAP_SERVER> <BASEDN> <RELAYHOST> <XEN_NETWORK>"
         exit 0
