@@ -1,3 +1,13 @@
+lcs-security (2.4.7~1) Lcs; urgency=low
+
+  [Simon Cavey]
+  * Add security signature and token for apache2
+
+  [Jean-Luc Chretien]
+  * install 755 lcs-save-ldap.sh
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 30 Jun 2010 11:03:46 +0200
+
 lcs-security (2.4.6.3) Lcs; urgency=low
 
   * tempory disable apache bruteforce by default

@@ -12,7 +12,7 @@ install:
 	install -d $(DESTDIR)/usr/share/lcs/scripts
         # copy and chmod
 	cp -a conf/* $(DESTDIR)/etc/
-	cp -a scripts/* $(DESTDIR)/usr/share/lcs/scripts
+	install -m 755 scripts/* $(DESTDIR)/usr/share/lcs/scripts 
 	chmod 644  $(DESTDIR)/etc/cron.d/lcs-save-ldap
 	chmod 755  $(DESTDIR)/etc/cron.weekly/lcs-save-sql
 	# install sbin
