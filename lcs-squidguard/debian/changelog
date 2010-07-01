@@ -1,8 +1,8 @@
-lcs-squidguard (2.4.7.1~1) karmic; urgency=low
+lcs-squidguard (2.4.7.1) Lcs; urgency=low
 
   * Modify package for new mnu.d structure
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 19 Jun 2010 14:15:42 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 14:16:53 +0200
 
 lcs-squidguard (2.4.7) Lcs; urgency=low
 
