@@ -1,0 +1,1 @@
+Mise a jour Base,/bcdi/admin/majbaz.php,lcs_is_admin
