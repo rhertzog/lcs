@@ -1,1 +1,1 @@
-Filtrage Â«Liste BlancheÂ»,../Squidguard/gestwhitlst.php,lcs_is_admin
+Filtrage «Liste Blanche»,../Squidguard/gestwhitlst.php,lcs_is_admin
