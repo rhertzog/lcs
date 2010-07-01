@@ -20,7 +20,7 @@ case "$1" in
                 #
                 # Add menu statistiques squid in mnu.d/50stats
                 #
-                echo "Mandataire cache,../squid-reports/,lcs_is_admin" >  /var/www/lcs/includes/menu.d/50stats/40sarg.inc
+                echo "Mandataire cache,../squid-reports/,lcs_is_admin" >  /var/www/lcs/includes/mnu.d/50stats/40sarg.inc
     	;;
 	abort-upgrade|abort-remove|abort-deconfigure)
 		#

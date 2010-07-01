@@ -1,8 +1,8 @@
-lcs-sarg (2.4.7~1) Lcs; urgency=low
+lcs-sarg (2.4.7) Lcs; urgency=low
 
   *  Modify package for new mnu.d struture
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 19 Jun 2010 13:46:25 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 10:29:12 +0200
 
 lcs-sarg (2.4.6) Lcs; urgency=low
 
