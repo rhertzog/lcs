@@ -1,4 +1,4 @@
-lcs-libjs (2.4.7~2) Lcs; urgency=low
+lcs-libjs (2.4.7) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Initial release
@@ -7,4 +7,5 @@ lcs-libjs (2.4.7~2) Lcs; urgency=low
   [ Philippe Leclerc ]
   * add skin cdt 
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 10 Jun 2010 21:02:41 +0200
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 09:22:49 +0200
