@@ -1,0 +1,1 @@
+Configuration,/openvpn/config.php,lcs_is_admin
