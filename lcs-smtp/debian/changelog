@@ -1,8 +1,8 @@
-lcs-smtp (2.4.7~1) Lcs; urgency=low
+lcs-smtp (2.4.7) Lcs; urgency=low
 
   * Modify postfix_reconfigure.sh test ig BASEDN is not empty
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 30 Jun 2010 15:11:32 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 14:36:40 +0200
 
 lcs-smtp (2.4) Lcs; urgency=low
 
