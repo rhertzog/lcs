@@ -1,5 +1,5 @@
 <?php
-/* Annu/mod_pwd.php derniere modification : 20/11/2009 */
+/* Annu/mod_pwd.php derniere modification : 01/07/2010 */
 
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -34,11 +34,13 @@
   if ( (!$mod_pwd) ||
         (($mod_pwd)&&(!verifPwd($new_password))) ||
         (($mod_pwd)&&($new_password != $verif_password)) ||
-        (($mod_pwd)&&(!user_valid_passwd ( $login, $old_password )))
+        (($mod_pwd)&&(!user_valid_passwd ( $login, $old_password ))) ||
+        (($mod_pwd)&&($new_password==$old_password))
      ) {
         header_crypto_html("Modification mot de passe");
         aff_trailer ("5");         
     ?>
+    <div class="cadrepwd">
       <h3>Changement de mot de passe</h3>
       <form name = "auth" action="mod_pwd.php" method="post" onSubmit = "encrypt(document.auth)">
         <table border="0">
@@ -74,20 +76,22 @@
     <?
     // Affichage logo crypto
     crypto_nav();
+    echo "</div>\n"; // Fermeture div cadrepwd
     // Affichage des erreurs
     if( $mod_pwd )  {
       // Affichage des messages d'alerte
-      // Verification de l'ancien mot de passe
       if (!user_valid_passwd ( $login, $old_password ) ) {
+        // Verification de l'ancien mot de passe
         echo gettext("<div class='error_msg'>Votre mot de passe actuel est erron&#233; !</div><br />\n");
-       }
-      // Verification du nouveau mot de passe
-       elseif ( !verifPwd($new_password)  ) {
-         echo gettext("<div class='error_msg'>Vous devez proposer un mot de passe d'une longueur comprise entre 4 et 8 caract&#232;res, compos&eacute; de lettre(s) et de chiffre(s) avec &#233;ventuellement les caract&#232;res sp&#233;ciaux suivants : $char_spec</div><br />\n");
-      }
-      // Verification de la coherence des deux mots de passe
-       elseif ( $new_password != $verif_password ) {
+      } elseif ( !verifPwd($new_password)  ) {
+        // Verification du nouveau mot de passe
+        echo gettext("<div class='error_msg'>Vous devez proposer un mot de passe d'une longueur comprise entre 4 et 8 caract&#232;res, compos&eacute; de lettre(s) et de chiffre(s) avec &#233;ventuellement les caract&#232;res sp&#233;ciaux suivants : $char_spec</div><br />\n");
+      } elseif ( $new_password != $verif_password ) {
+        // Verification de la coherence des deux mots de passe
         echo gettext("<div class='error_msg'>La v&#233;rification de votre nouveau mot de passe a &#233;chou&#233; !</div><br />\n");
+      } elseif ( $new_password == $old_password ) {
+        // Verification si le nouveau pasword est different de l'ancien
+        echo gettext("<div class='error_msg'>Le nouveau mot de passe doit &ecirc;tre diff&eacute;rent de l'ancien !</div><br />\n");
       }
     }
   } else {    

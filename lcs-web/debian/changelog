@@ -1,4 +1,4 @@
-lcs-web (2.4.7~5) Lcs; urgency=low
+lcs-web (2.4.7) Lcs; urgency=low
 
   * Fix bug  maj modules Auto/Manu (scripts modules_installes.php and boutons_style.css)
   * Fix bug in script select_briques.php 
@@ -20,9 +20,9 @@ lcs-web (2.4.7~5) Lcs; urgency=low
      * Add function pwdMustChange in ldap.inc.php
      * Add must_change_default_pwd.php in Annu 
      * Insert param pwdPolicy in lcs_db.params
-  * Add link to configuration open VPN in setup page 
+  * Add link to configuration open VPN in setup page  
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Jun 2010 10:16:01 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 13:49:54 +0200
 
 lcs-web (2.4.6.5) Lcs; urgency=low
 

@@ -1,5 +1,5 @@
 <?php
-/* Annu/must_change_default_pwd.php derniere modification : 14/06/2010 */
+/* Annu/must_change_default_pwd.php derniere modification : 01/07/2010 */
 
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -39,10 +39,10 @@
      ) {
         header_crypto_html("Modification mot de passe");
     ?>
-    <div style="margin-top: 50px; margin-right: 50px">
+    <div class="cadrepwd">
         <h3>Changement de votre mot de passe par d&eacute;faut</h3>
         
-        <p style="height:50px;padding-top: 20px;padding-left: 50px; margin-bottom: 10px; background-image: url(images/warning.png); background-repeat: no-repeat;">
+        <p class="warn">
             Pour assurer la confidentialit&eacute; de vos donn&eacute;es, vous devez modifier votre mot de passe par d&eacute;faut.
         </p>
       <form name = "auth" action="must_change_default_pwd.php" method="post" onSubmit = "encrypt(document.auth)">
