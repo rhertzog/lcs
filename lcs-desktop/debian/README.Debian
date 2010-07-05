@@ -1,0 +1,18 @@
+LCS Desktop for  Debian
+-----------------------
+
+-- Jean-Luc Chretien    <jean-luc.chretien@tice.ac-caen.fr>  V 0.1 03 Jul 2010
+-- Dominique Lepaisant <Dominique.Lepaisant@ac-caen.fr>
+
+USAGE
+
+  Installation et configuration pour Lcs Desktop
+  
+CONFIGURATION
+
+La configuration du paquet est prise en charge par le script postinst du paquet
+
+
+  
+
+
