@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -70,20 +70,27 @@ function formulaires_inscription_verifier_dist($mode, $focus, $id=0) {
 function formulaires_inscription_traiter_dist($mode, $focus, $id=0) {
 
 	$nom = _request('nom_inscription');
-	$mail = _request('mail_inscription');
+	$mail_complet = _request('mail_inscription');
 	
 	if (function_exists('test_inscription'))
 		$f = 'test_inscription';
 	else 	$f = 'test_inscription_dist';
-	$desc = $f($mode, $mail, $nom, $id);
+	$desc = $f($mode, $mail_complet, $nom, $id);
 
-	if (is_array($desc)) {
-		$mail = $desc['email'];
+	if (!is_array($desc)) {
+		$desc = _T($desc);
+	} else {
 		include_spip('base/abstract_sql');
-		$row = sql_fetsel("statut, id_auteur, login, email", "spip_auteurs", "email=" . sql_quote($mail));
-		// s'il n'existe pas deja, creer les identifiants  
-		$desc = $row ? $row : inscription_nouveau($desc);
-	} else $desc = _T($desc);
+		$res = sql_select("statut, id_auteur, login, email", "spip_auteurs", "email=" . sql_quote($desc['email']));
+		if (!$res) 
+			$desc = _T('titre_probleme_technique');
+		else {
+			$row = sql_fetch($res);
+			// s'il n'existe pas deja, creer les identifiants  
+			$desc = $row ? $row : inscription_nouveau($desc);
+		}
+	}
+
 	if (is_array($desc)) {
 	// generer le mot de passe (ou le refaire si compte inutilise)
 		$desc['pass'] = creer_pass_pour_auteur($desc['id_auteur']);
@@ -93,7 +100,7 @@ function formulaires_inscription_traiter_dist($mode, $focus, $id=0) {
 			$f = 'envoyer_inscription';
 		else 	$f = 'envoyer_inscription_dist';
 		list($sujet,$msg,$from,$head) = $f($desc, $nom, $mode, $id);
-		if (!$envoyer_mail($mail, $sujet, $msg, $from, $head))
+		if (!$envoyer_mail($mail_complet, $sujet, $msg, $from, $head))
 			$desc = _T('form_forum_probleme_mail');
 	}
 

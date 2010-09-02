@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -50,10 +50,7 @@ function generer_nom_fichier_cache($contexte, $page) {
 	// Sous-repertoires 0...9a..f ; ne pas prendre la base _DIR_CACHE
 	$rep = _DIR_CACHE;
 
-	if(!@file_exists($rep)) {
-		$rep = preg_replace(','._DIR_TMP.',', '', $rep);
-		$rep = sous_repertoire(_DIR_TMP, $rep, false,true);
-	}
+	$rep = sous_repertoire($rep, '', false,true);
 	$subdir = sous_repertoire($rep, substr($md_cache, 0, 1), true,true);
 	return $subdir.$cache;
 }
@@ -76,8 +73,10 @@ function gzip_page($page) {
 // (passage par reference pour alleger)
 // http://doc.spip.org/@gunzip_page
 function gunzip_page(&$page) {
-	if ($page['gz'])
+	if ($page['gz']) {
 		$page['texte'] = gzuncompress($page['texte']);
+		$page['gz'] = false; // ne pas gzuncompress deux fois une meme page
+	}
 }
 
 /**
@@ -105,7 +104,9 @@ function cache_valide(&$page, $date) {
 	if (!isset($page['entetes']['X-Spip-Statique']) OR $page['entetes']['X-Spip-Statique'] !== 'oui') {
 
 		// Cache invalide par la meta 'derniere_modif'
-		if ($GLOBALS['derniere_modif_invalide']
+		// sauf pour les bots, qui utilisent toujours le cache
+		if (!_IS_BOT
+		AND $GLOBALS['derniere_modif_invalide']
 		AND $date < $GLOBALS['meta']['derniere_modif'])
 			return 1;
 
@@ -147,6 +148,11 @@ function creer_cache(&$page, &$chemin_cache) {
 		supprimer_fichier(_DIR_CACHE . $chemin_cache);
 		$chemin_cache .= '-'.$page['invalideurs']['session'];
 	}
+
+	// ajouter la date de production dans le cache lui meme
+	// (qui contient deja sa duree de validite)
+	$page['lastmodified'] = time();
+
 
 	// l'enregistrer, compresse ou non...
 	$ok = ecrire_fichier(_DIR_CACHE . $chemin_cache,
@@ -218,12 +224,9 @@ function public_cacher_dist($contexte, &$use_cache, &$chemin_cache, &$page, &$la
 	// quatre versions possibles : gzip ou non, session ou non
 	$chemin_cache = generer_nom_fichier_cache($contexte, $page);
 
-	if (@file_exists(_DIR_CACHE . ($f = $g = $chemin_cache))
-	OR (@file_exists(_DIR_CACHE . ($f = $chemin_cache.'-'.spip_session())))
-	) {
-		$lastmodified = @filemtime(_DIR_CACHE . $f);
-	} else
-		$lastmodified = 0;
+	$lastmodified = 0;
+	if (!lire_fichier(_DIR_CACHE . ($f = $g = $chemin_cache), $page))
+		lire_fichier(_DIR_CACHE . ($f = $chemin_cache.'-'.spip_session()), $page);
 
 	// HEAD : cas sans jamais de calcul pour raisons de performance
 	if ($_SERVER['REQUEST_METHOD'] == 'HEAD') {
@@ -248,7 +251,8 @@ function public_cacher_dist($contexte, &$use_cache, &$chemin_cache, &$page, &$la
 		|| isset($_COOKIE['spip_admin'])
 		|| @file_exists(_ACCESS_FILE_NAME))
 	) {
-		supprimer_fichier(_DIR_CACHE . $f);
+		$page = array(); // ignorer le cache deja lu
+		supprimer_fichier(_DIR_CACHE . $f); // pas necessaire ?
 		if (in_array($GLOBALS['var_mode'], array('calcul', 'recalcul')))
 			array_map('supprimer_fichier', preg_files(_DIR_CACHE . $g));
 	}
@@ -259,11 +263,10 @@ function public_cacher_dist($contexte, &$use_cache, &$chemin_cache, &$page, &$la
 		$GLOBALS['delais'] = _DUREE_CACHE_DEFAUT;
 	}
 
-	// Lire le fichier cache et determiner sa validite
-	if ($lastmodified
-	AND lire_fichier(_DIR_CACHE . $f, $page)) {
-		$page = @unserialize($page);
-		$use_cache = cache_valide($page, $lastmodified);
+	// decoder le cache et determiner sa validite
+	if ($page AND
+		$page = @unserialize($page)) {
+		$use_cache = cache_valide($page, $page['lastmodified']);
 		if (!$use_cache) {
 			// $page est un cache utilisable
 			gunzip_page($page);
@@ -276,8 +279,10 @@ function public_cacher_dist($contexte, &$use_cache, &$chemin_cache, &$page, &$la
 
 	// Si pas valide mais pas de connexion a la base, le garder quand meme
 	if (!spip_connect()) {
-		if ($lastmodified)
+		if (isset($page['texte'])) {
+			gunzip_page($page);
 			$use_cache = 0;
+		}
 		else {
 			spip_log("Erreur base de donnees, impossible utiliser $chemin_cache");
 			include_spip('inc/minipres');

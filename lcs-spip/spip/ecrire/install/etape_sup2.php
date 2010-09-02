@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -28,19 +28,15 @@ function install_bases_sup($adresse_db, $login_db, $pass_db,  $server_db, $sup_d
 	if (!sql_selectdb($sup_db, $server_db))
 		return "<!-- base inaccessible -->";
 
+	$tables = sql_alltable('%', $server_db);
 
-	$q = sql_showbase('%', $server_db);
-
-	$tables = '';
-	while($r = sql_fetch($q)) {
-		$tables .= "<li>" . array_shift($r) . "</li>\n";
-	}
-	
 	if (!$tables)
 	  $res = _T('install_pas_table');
 	else {
 	  $res = _T('install_tables_base')
-	    . "<ol style='text-align: left'>" . $tables . "</ol>\n";
+	    . "<ol style='text-align: left'>\n<li>"
+	    . join("</li>\n<li>", $tables)
+	    . "</li>\n</ol>\n";
 	}
 
 	if (preg_match(',(.*):(.*),', $adresse_db, $r))
@@ -48,9 +44,15 @@ function install_bases_sup($adresse_db, $login_db, $pass_db,  $server_db, $sup_d
 	else
 		$port = '';
 
+	$adresse_db = addcslashes($adresse_db,"'\\");
+	$port = addcslashes($port,"'\\");
+	$login_db = addcslashes($login_db,"'\\");
+	$pass_db = addcslashes($pass_db,"'\\");
+	$sup_db = addcslashes($sup_db,"'\\");
+	$server_db = addcslashes($server_db,"'\\");
 	$conn = "spip_connect_db("
-	. "'$adresse_db','$port','$login_db','"
-	. addcslashes($pass_db, "'\\") . "','$sup_db'"
+	. "'$adresse_db','$port','$login_db',"
+	. "'$pass_db','$sup_db'"
 	. ",'$server_db', '');\n";
 
 	install_fichier_connexion(_DIR_CONNECT . $sup_db . '.php', $conn);
@@ -99,7 +101,7 @@ function install_etape_sup2_dist()
 
 		else {
 			$res =  "<p class='resultat'><b>"
-			  . _T('base_reconnue', 
+			  . _T('install_base_ok', 
 			       array('base' => $choix_db))
 			  . "</b></p>"
 			  . $res;

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -11,6 +11,9 @@
 \***************************************************************************/
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
+
+include_spip('inc/charsets');
+include_spip('inc/texte');
 
 //
 // Infos de mails sur l'hebergeur (tout ca est assez sale)
@@ -66,7 +69,7 @@ if ($GLOBALS['hebergeur'] == 'lycos') {
 
 // http://doc.spip.org/@nettoyer_titre_email
 function nettoyer_titre_email($titre) {
-	return str_replace("\n", ' ', supprimer_tags(extraire_multi($titre)));
+	return str_replace("\n", ' ', textebrut(corriger_typo($titre)));
 }
 
 // http://doc.spip.org/@nettoyer_caracteres_mail
@@ -92,8 +95,6 @@ function nettoyer_caracteres_mail($t) {
 // http://doc.spip.org/@inc_envoyer_mail_dist
 function inc_envoyer_mail_dist($email, $sujet, $texte, $from = "", $headers = "") {
 	global $hebergeur, $queue_mails;
-	include_spip('inc/charsets');
-	include_spip('inc/filtres');
 
 	if (!email_valide($email)) return false;
 	if ($email == _T('info_mail_fournisseur')) return false; // tres fort

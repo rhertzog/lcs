@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -189,20 +189,18 @@ function infos_naviguer($id_rubrique, $statut, $row, $n_forums)
 	$navigation =
 	  ($boite ?debut_boite_info(true). $boite . fin_boite_info(true):"");
 
-	$q = sql_select("A.nom, A.id_auteur", "spip_auteurs AS A LEFT JOIN spip_auteurs_rubriques AS R ON A.id_auteur=R.id_auteur", "A.statut = '0minirezo' AND R.id_rubrique=$id_rubrique");
-	$res = "";
-	while ($row = sql_fetch($q)) {
-		$id = $row['id_auteur'];
-		$res .=
-			http_img_pack('admin-12.gif','','') .
-			    " <a href='" . generer_url_ecrire('auteur_infos', "id_auteur=$id") .
-				"'>" .
-				extraire_multi($row['nom']) .
-				'</a><br />';
-	}
+	$res = sql_allfetsel("A.nom, A.id_auteur", "spip_auteurs AS A LEFT JOIN spip_auteurs_rubriques AS R ON A.id_auteur=R.id_auteur", "A.statut = '0minirezo' AND R.id_rubrique=$id_rubrique");
 
-	if ($res)
-		$navigation .= debut_cadre_relief("fiche-perso-24.gif", true, '', _T('info_administrateurs')). $res . fin_cadre_relief(true);
+	if (!$res) return $navigation;
+
+	$img = http_img_pack('admin-12.gif','','');
+	foreach ($res as $k => $row) {
+		$h = generer_url_ecrire('auteur_infos', "id_auteur=" .$row['id_auteur']);
+		$res[$k] = "$img <a href='$h'>" . $row['nom'] . '</a>';
+	}
+	$res = corriger_typo(join('<br />', $res));
+
+	$navigation .= debut_cadre_relief("fiche-perso-24.gif", true, '', _T('info_administrateurs')). $res . fin_cadre_relief(true);
 
 	return $navigation;
 }
@@ -440,6 +438,11 @@ function tester_rubrique_vide($id_rubrique) {
 
 	if (sql_countsel('spip_documents_liens', "id_objet=".intval($id_rubrique)." AND objet='rubrique'"))
 		return false;
+
+	$compte = pipeline('objet_compte_enfants',array('args'=>array('objet'=>'rubrique','id_objet'=>$id_rubrique),'data'=>array()));
+	foreach($compte as $objet => $n)
+		if ($n)
+			return false;
 
 	return true;
 }

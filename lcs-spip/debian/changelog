@@ -1,3 +1,9 @@
+lcs-spip (2.4.7~1) Lcs; urgency=low
+
+  * Update spip 2.0.12
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 02 Sep 2010 11:12:01 +0200
+
 lcs-spip (2.4.6) Lcs; urgency=low
 
   [ Jean Luc Chretien & Dominique Lepaisant ]

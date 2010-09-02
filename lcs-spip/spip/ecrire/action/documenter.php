@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -39,10 +39,9 @@ function supprimer_lien_document($id_document, $objet, $id_objet) {
 	sql_updateq("spip_documents", array('id_vignette' => 0), "id_vignette=".$id_document);
 
 	// On supprime ensuite s'il est orphelin
-	if (!sql_countsel('spip_documents_liens', 'id_document='.$id_document)){
-		$supprimer_document = charger_fonction('supprimer_document','action');
-		return $supprimer_document($id_document);
-	}
+	// (autorisation verifiee dans l'action)
+	$supprimer_document = charger_fonction('supprimer_document','action');
+	return $supprimer_document($id_document);
 }
 
 // http://doc.spip.org/@action_documenter_post

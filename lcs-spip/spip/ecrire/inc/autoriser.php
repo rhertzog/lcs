@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -275,6 +275,20 @@ function autoriser_document_modifier_dist($faire, $type, $id, $qui, $opt){
 	return $m[$id];
 }
 
+
+// On ne peut supprimer un document que s'il n'est lie a aucun objet
+// c'est autorise pour tout auteur ayant acces a ecrire
+// http://doc.spip.org/@autoriser_document_modifier_dist
+function autoriser_document_supprimer_dist($faire, $type, $id, $qui, $opt){
+	if (!intval($id)
+		OR !$qui['id_auteur']
+		OR !autoriser('ecrire','','',$qui))
+		return false;
+	if (sql_countsel('spip_documents_liens', 'id_document='.intval($id)))
+		return false;
+
+	return true;
+}
 
 // Autoriser a modifier la breve $id
 // = admins & redac si la breve n'est pas publiee

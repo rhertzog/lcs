@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -29,6 +29,7 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 		$texte = $lien['titre'];
 		if (!$class AND isset($lien['class'])) $class = $lien['class'];
 		$lang = isset($lien['lang']) ?$lien['lang'] : '';
+		$mime = isset($lien['mime']) ? " type='".$lien['mime']."'" : "";
 		$lien = $lien['url'];
 	}
 	if (substr($lien,0,1) == '#')  # ancres pures (internes a la page)
@@ -46,8 +47,14 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	$lang = ($hlang ? " hreflang='$hlang'" : '');
 
 	if ($title) $title = ' title="'.texte_backend($title).'"';
+
+	// rel=external pour les liens externes
+	if (preg_match(',^https?://,S', $lien)
+	AND false === strpos("$lien/", url_de_base()))
+		$rel = trim("$rel external");
 	if ($rel) $rel = " rel='$rel'";
-	$lien = "<a href='$lien' class='$class'$lang$title$rel>$texte</a>";
+
+	$lien = "<a href='$lien' class='$class'$lang$title$rel$mime>$texte</a>";
 
 	# ceci s'execute heureusement avant les tableaux et leur "|".
 	# Attention, le texte initial est deja echappe mais pas forcement
@@ -56,7 +63,7 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	return typo($lien, true, $connect);
 }
 
-// Regexp des raccouris, aussi utilisee pour la fusion de sauvegarde Spip
+// Regexp des raccourcis, aussi utilisee pour la fusion de sauvegarde Spip
 // Laisser passer des paires de crochets pour la balise multi
 // mais refuser plus d'imbrications ou de mauvaises imbrications
 // sinon les crochets ne peuvent plus servir qu'a ce type de raccourci
@@ -250,6 +257,19 @@ function traiter_lien_explicite ($ref, $texte='', $pour='url', $connect='')
 
 	$lien = entites_html(trim($ref));
 
+	// Liens explicites
+	if (!$texte) {
+		$texte = str_replace('"', '', $lien);
+		// evite l'affichage de trops longues urls.
+		// personnalisation possible dans mes_options
+		$long_url = defined('_MAX_LONG_URL') ? _MAX_LONG_URL : 40;
+		$coupe_url = defined('_MAX_COUPE_URL') ? _MAX_COUPE_URL : 35;
+		if (strlen($texte)>$long_url) {
+			$texte = substr($texte,0,$coupe_url).'...';
+		}
+		$texte = "<html>".quote_amp($texte)."</html>";
+	}
+
 	// petites corrections d'URL
 	if (preg_match('/^www\.[^@]+$/S',$lien))
 		$lien = "http://".$lien;
@@ -259,13 +279,6 @@ function traiter_lien_explicite ($ref, $texte='', $pour='url', $connect='')
 	}
 	
 	if ($pour == 'url') return $lien;
-
-	// Liens explicites
-	if (!$texte) {
-		$texte = str_replace('"', '', $lien);
-		if (strlen($texte)>40) $texte = substr($texte,0,35).'...';
-		$texte = "<html>".quote_amp($texte)."</html>";
-	}
 
 	if ($pour == 'titre') return $texte;
 
@@ -298,6 +311,15 @@ function traiter_lien_implicite ($ref, $texte='', $pour='url', $connect='')
 	if (!@$r['titre']) $r['titre'] =  _T($type) . " $id";
 	if ($pour=='titre') return $r['titre'];
 	$r['url'] = $url;
+
+	// dans le cas d'un lien vers un doc, ajouter le type='mime/type'
+	if ($type == 'document'
+	AND $mime = sql_getfetsel('mime_type', 'spip_types_documents',
+			"extension IN (SELECT extension FROM spip_documents where id_document =".sql_quote($id).")",
+			'','','','',$connect)
+	)
+		$r['mime'] = $mime;
+
 	return $r;
 }
 
@@ -394,7 +416,7 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='') {
 				$texte .= preg_replace(',[|][^|=]*,s',' ',$params);
 			# version normale
 			else {
-				$modele = inclure_modele($type, $id, $params, $lien);
+			  $modele = inclure_modele($type, $id, $params, $lien, $connect);
 				// en cas d'echec, 
 				// si l'objet demande a une url, 
 				// creer un petit encadre vers elle
@@ -454,7 +476,7 @@ function traiter_raccourci_ancre($letexte)
 // cf. http://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Conventions_sur_les_titres
 
 define('_RACCOURCI_GLOSSAIRE', "/\[\?+\s*([^][<>]+)\]/S");
-define('_RACCOURCI_GLOSES', '/^([^|#{]*\w[^|#{]*)([^#]*)(#([^|{}]*))?(.*)$/');
+define('_RACCOURCI_GLOSES', '/^([^|#{]*\w[^|#{]*)([^#]*)(#([^|{}]*))?(.*)$/S');
 
 // http://doc.spip.org/@traiter_raccourci_glossaire
 function traiter_raccourci_glossaire($texte)

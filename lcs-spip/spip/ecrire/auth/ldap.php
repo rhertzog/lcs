@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -83,8 +83,8 @@ function auth_ldap_search($login, $pass, $checkpass=true){
 			// (on veut un attribut unique)
 
 		if (is_array($info) AND $info['count'] == 1) {
-			if (!$checkpass) return $login;
 			$dn = $info[0]['dn'];
+			if (!$checkpass) return $dn;
 			if (@ldap_bind($ldap_link, $dn, $pass)) return $dn;
 		}
 	}
@@ -104,19 +104,27 @@ function auth_ldap_retrouver($dn, $desc=array())
 {
 	// Lire les infos sur l'utilisateur a partir de son DN depuis LDAP
 
-	$ldap = spip_connect_ldap();
+	if (!$ldap = spip_connect_ldap()) {
+		spip_log("ldap injoignable");
+		return array();
+	}
 	$ldap_link = $ldap['link'];
 	if (!$desc) {
 		$desc = $ldap['attributes'] ? $ldap['attributes'] : $GLOBALS['ldap_attributes'] ;
 		unset($desc['login']);
 	}
-	$result = @ldap_read($ldap_link, $dn, "objectClass=*", array_values($desc));
+	$result = ldap_read($ldap_link, $dn, "objectClass=*", array_values($desc));
 
-	if (!$result) return array();
-
+	if (!$result) {
+		spip_log("dn $dn inconnu pour " . join(',', $desc));
+		return array();
+	}
 	// Recuperer les donnees du premier (unique?) compte de l'auteur
-	$val = @ldap_get_entries($ldap_link, $result);
-	if (!is_array($val) OR !is_array($val[0])) return array();
+	$val = ldap_get_entries($ldap_link, $result);
+	if (!is_array($val) OR !is_array($val[0])) {
+		spip_log("dn $dn connu mais vide: $val");
+		return array();
+	}
 	$val = $val[0];
 
 	// Convertir depuis UTF-8 (jeu de caracteres par defaut)

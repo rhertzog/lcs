@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -21,7 +21,7 @@ function formulaires_editer_article_charger_dist($id_article='new', $id_rubrique
 	// il faut enlever l'id_rubrique car la saisie se fait sur id_parent
 	// et id_rubrique peut etre passe dans l'url comme rubrique parent initiale
 	// et sera perdue si elle est supposee saisie
-	unset($valeurs['id_rubrique']);
+	if (is_array($valeurs)) unset($valeurs['id_rubrique']);
 	return $valeurs;
 }
 

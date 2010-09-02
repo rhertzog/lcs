@@ -9,7 +9,7 @@ function inc_referenceurs_dist ($id_article, $select, $table, $where, $groupby, 
 
 	$nbvisites = $lescriteres = array();
 
-	$result = sql_select("referer_md5, referer, $select AS vis", $table, $where, $groupby, "vis DESC", $limit,'',$serveur);
+	$result = sql_select("referer_md5, referer, $select AS vis", $table, $where, $groupby, "maj DESC", $limit,'',$serveur);
 	while ($row = sql_fetch($result,$serveur)) {
 		$referer = interdire_scripts($row['referer']);
 		$buff = stats_show_keywords($referer, $referer);
@@ -23,7 +23,8 @@ function inc_referenceurs_dist ($id_article, $select, $table, $where, $groupby, 
 			$lesurls[$numero] = $buff["host"];
 			if (!isset($nbvisites[$numero]))
 				$nbvisites[$numero] = $visites;
-			$nbvisites[$numero] += $visites;
+			else
+				$nbvisites[$numero] += $visites;
 			if (!isset($lesreferers[$numero]))
 				$lesreferers[$numero] = array();
 			if (!isset($lesliensracine[$numero]))

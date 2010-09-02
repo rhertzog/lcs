@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -164,9 +164,15 @@ function statistiques_tous($log, $id_article, $table, $where, $order, $serveur, 
 {
 	$r = array_keys($log);
 	$date_fin = max($r);
+	$today = strtotime(date('Y-m-d 01:00:01'));
+	if ($today-$date_fin>$interval){
+		$log[$today] = 0;
+		$r = array_keys($log);
+		$date_fin = max($r);
+	}
 	$date_debut = min($r);
 	$date_premier = sql_getfetsel("UNIX_TIMESTAMP($order) AS d", $table, $where, '', $order, 1,'',$serveur);
-	$last = (time()-$date_fin>$interval) ? 0 : $log[$date_fin];
+	$last = $log[$date_fin];
 	$max = max($log);
 	$maxgraph = maxgraph($max);
 	$rapport = 200 / $maxgraph;

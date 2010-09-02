@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -23,9 +23,9 @@ if ($f = find_in_path('mes_fonctions.php')) {
 	@include_once ($f); 
 }
 
-if (@is_readable(_DIR_TMP."charger_plugins_fonctions.php")){
+if (@is_readable(_CACHE_PLUGINS_FCT)){
 	// chargement optimise precompile
-	include_once(_DIR_TMP."charger_plugins_fonctions.php");
+	include_once(_CACHE_PLUGINS_FCT);
 }
 
 global $IMPORT_tables_noerase;
@@ -345,10 +345,10 @@ function import_tables($request, $archive) {
 
 		if (!$initialisation_copie) {
 			// vide et liste les tables
-			$tables = import_init_tables($request);
+			import_init_tables($request);
 			ecrire_meta("restauration_status_copie", "ok",'non');
-		} else
-			$tables = import_table_choix($request);
+		}
+		$tables = import_table_choix($request);
 #		var_dump($tables);die();
 
 		if (in_array('spip_auteurs',$tables)){

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -217,13 +217,17 @@ function definir_barre_boutons() {
 					  $infos['args']?$infos['args']:null
 					  );
 				if (!$parent) {
-					$boutons_admin = array_slice($boutons_admin,0,-3,true)
-					+array($id=> new Bouton(
+					$b = array();
+					foreach($boutons_admin as $k=>$v){
+						if ($k=='espacement')
+							$b = $b + array($id=> new Bouton(
 					  find_in_path($infos['icone']),  // icone
 					  $infos['titre'],	// titre
 					  $infos['url']?generer_url_ecrire($infos['url'],$infos['args']?$infos['args']:''):null
-					  ))
-					+ array_slice($boutons_admin,-3,3,true);
+					  ));
+						$b = $b + array($k=>$v);
+					}
+					$boutons_admin = $b;
 				}
 			}
 		}

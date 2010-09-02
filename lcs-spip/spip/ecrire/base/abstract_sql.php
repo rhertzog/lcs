@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -113,6 +113,12 @@ function sql_fetch($res, $serveur='', $option=true) {
 	$f = sql_serveur('fetch', $serveur,  $option==='continue' OR $option===false);
 	if (!is_string($f) OR !$f) return false;
 	return $f($res, NULL, $serveur, $option!==false);
+}
+
+function sql_seek($res, $row_number, $serveur='', $option=true) {
+	$f = sql_serveur('seek', $serveur,  $option==='continue' OR $option===false);
+	if (!is_string($f) OR !$f) return false;
+	return $f($res, $row_number, $serveur, $option!==false);
 }
 
 // http://doc.spip.org/@sql_listdbs
@@ -252,7 +258,7 @@ function sql_alltable($spip=NULL, $serveur='', $option=true)
 {
 	$q = sql_showbase($spip, $serveur, $option);
 	$r = array();
-	if ($q) while ($t = sql_fetch($q)) { $r[] = array_shift($t);}
+	if ($q) while ($t = sql_fetch($q, $serveur)) { $r[] = array_shift($t);}
 	return $r;
 }
 

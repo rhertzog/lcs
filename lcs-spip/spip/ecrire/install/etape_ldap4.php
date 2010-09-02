@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -50,12 +50,20 @@ function install_etape_ldap4_dist()
 				       . _FILE_LDAP
 				       . substr($conn, $p+1));
 		}
-		$conn = "\$GLOBALS['ldap_base'] = \"$base_ldap\";\n"
-		. "\$GLOBALS['ldap_link'] = @ldap_connect(\"$adresse_ldap\",\"$port_ldap\");\n"
-		. "@ldap_set_option(\$GLOBALS['ldap_link'],LDAP_OPT_PROTOCOL_VERSION,\"$protocole_ldap\");\n"
-		. (($tls_ldap != 'oui') ? '' :
-		   "@ldap_start_tls(\$GLOBALS['ldap_link']);\n")
-		. "@ldap_bind(\$GLOBALS['ldap_link'],\"$login_ldap\",\"$pass_ldap\");\n";
+		$adresse_ldap = addcslashes($adresse_ldap,"'\\");
+		$login_ldap = addcslashes($login_ldap,"'\\");
+		$pass_ldap = addcslashes($pass_ldap,"'\\");
+		$port_ldap = addcslashes($port_ldap,"'\\");
+		$tls_ldap = addcslashes($tls_ldap,"'\\");
+		$protocole_ldap = addcslashes($protocole_ldap,"'\\");
+		$base_ldap = addcslashes($base_ldap,"'\\");
+
+		$conn = "\$GLOBALS['ldap_base'] = '$base_ldap';\n"
+			. "\$GLOBALS['ldap_link'] = @ldap_connect('$adresse_ldap','$port_ldap');\n"
+			. "@ldap_set_option(\$GLOBALS['ldap_link'],LDAP_OPT_PROTOCOL_VERSION,'$protocole_ldap');\n"
+			. (($tls_ldap != 'oui') ? '' :
+				 "@ldap_start_tls(\$GLOBALS['ldap_link']);\n")
+			. "@ldap_bind(\$GLOBALS['ldap_link'],'$login_ldap','$pass_ldap');\n";
 
 		install_fichier_connexion(_DIR_CONNECT . _FILE_LDAP, $conn);
 		$statuts = liste_statuts_ldap();

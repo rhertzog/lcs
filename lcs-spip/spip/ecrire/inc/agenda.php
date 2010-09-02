@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -706,7 +706,7 @@ function http_calendrier_ics($annee, $mois, $jour,$echelle, $partie_cal,  $large
 			$lieu = isset($evenement['LOCATION']) ?
 				$evenement['LOCATION'] : '';
 			$u = $GLOBALS['meta']['pcre_u'];
-			$sum = preg_replace('/\s+/'.$u,'&nbsp;', typo($evenement['SUMMARY']));
+			$sum = typo($evenement['SUMMARY']);
 			if (!$sum) { $sum = $desc; $desc = '';}
 			if (!$sum) { $sum = $lieu; $lieu = '';}
 			if (!$sum) { $sum = $perso; $perso = '';}
@@ -871,7 +871,7 @@ function http_calendrier_avec_heure($evenement, $amj)
 	$desc = propre($evenement['DESCRIPTION']);
 	$sum = $evenement['SUMMARY'];
 	$u = $GLOBALS['meta']['pcre_u'];
-	$sum = preg_replace('/\s+/'.$u,'&nbsp;', typo($sum));
+	$sum = typo($sum);
 	if (!$sum) $sum = $desc;
 	if ($lieu = $evenement['LOCATION'])
 	  $sum .= '<br />' . $lieu;

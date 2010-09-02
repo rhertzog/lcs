@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -291,7 +291,9 @@ function collecter_balise_dynamique($l, &$p, $nom) {
 // http://doc.spip.org/@balise_distante_interdite
 function balise_distante_interdite($p) {
 	$nom = $p->id_boucle;
-	if ($nom AND $p->boucles[$nom]->sql_serveur) {
+	if ($nom 
+	  AND $p->boucles[$nom]->sql_serveur
+		AND !in_array($p->boucles[$nom]->sql_serveur,$GLOBALS['exception_des_connect'])) {
 		spip_log( $nom .':' . $p->nom_champ .' '._T('zbug_distant_interdit'));
 		return false;
 	}
@@ -450,7 +452,7 @@ function compose_filtres(&$p, $code) {
 					$code = "((($code) XOR ($arg)) ?' ' :'')";
 					break;
 				case ($fonc == 'sinon'):
-					$code = "(strlen(\$a = $code) ? \$a : $arg)";
+					$code = "(((\$a=$code) OR (is_string(\$a) AND strlen(\$a))) ? \$a : $arg)";
 					break;
 				case ($fonc == 'not') OR ($fonc == 'non'):
 					$code = "(($code) ?'' :' ')";

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -134,7 +134,10 @@ function calcul_exposer ($id, $prim, $reference, $parent, $type, $connect='') {
 	// qu'une fois (par squelette) et on conserve le resultat
 	// en static.
 	if (!isset($exposer[$m=md5(serialize($reference))][$prim])) {
-		$principal = $reference[$type];
+		$principal = isset($reference[$type])?$reference[$type]:
+			// cas de la pagination indecte @xx qui positionne la page avec l'id xx
+			// et donne la reference dynamique @type=xx dans le contexte
+			(isset($reference["@$type"])?$reference["@$type"]:'');
 		// le parent fournit en argument est le parent de $id, pas celui de $principal
 		// il n'est donc pas utile
 		$parent = 0;
@@ -142,9 +145,11 @@ function calcul_exposer ($id, $prim, $reference, $parent, $type, $connect='') {
 			$enfants = array('id_rubrique'=>array('id_article'),'id_groupe'=>array('id_mot'));
 			if (isset($enfants[$type]))
 				foreach($enfants[$type] as $t)
-					if (isset($reference[$t])) {
+					if (isset($reference[$t])
+						// cas de la reference donnee dynamiquement par la pagination
+						OR isset($reference["@$t"])) {
 						$type = $t;
-						$principal = $reference[$type];
+						$principal = isset($reference[$type])?$reference[$type]:$reference["@$type"];
 						continue;
 					}
 		}
@@ -309,15 +314,17 @@ function img_logo_document($fichier, $extension, $id_vignette, $mode, $x, $y, $c
 // Si le 2e parametre n'est pas une chaine, c'est qu'on n'a pas pu
 // determiner la table a la compil, on le fait maintenant.
 // Il faudrait encore completer: on ne connait pas la langue
-// pour une boucle forum sans id_article ou id_rubrique donn� par le contexte
-// et c'est signale par un message d'erreur abscons: "table inconnue forum".
-// 
+// pour une boucle forum sans id_article ou id_rubrique issu du contexte,
+// ce qui provoque un Log abscons ("table inconnue forum")
+// voire une erreur SQL dans le cas de id_syndic, qu'on neutralise 
+// in extremis mais ce n'est pas satisfaisant
 // http://doc.spip.org/@lang_parametres_forum
 function lang_parametres_forum($qs, $lang) {
 	if (is_array($lang) AND preg_match(',id_(\w+)=([0-9]+),', $qs, $r)) {
 		$id = 'id_' . $r[1];
-		if ($t = $lang[$id])
+		if ($t = $lang[$id] AND $id != 'id_syndic')
 			$lang = sql_getfetsel('lang', $t, "$id=" . $r[2]);
+		else $lang = '';
 	}
   // Si ce n'est pas la meme que celle du site, l'ajouter aux parametres
 
@@ -326,4 +333,34 @@ function lang_parametres_forum($qs, $lang) {
 
 	return $qs;
 }
+
+/**
+ * Trouver la page d'une liste qui contient l'id_primaire
+ * indiquee par la pagination par indirection debut_xxx=@xxxx
+ *
+ * @param string $primary
+ * @param string $valeur
+ * @param int $pas
+ * @param resource $res
+ * @param string $serveur
+ * @return int
+ */
+function quete_debut_pagination($primary,$valeur,$pas,$res,$serveur=''){
+	// on ne devrait pas arriver ici si la cle primaire est inexistante
+	// ou composee, mais verifions
+	if (!$primary OR preg_match('/[,\s]/',$primary))
+		return 0;
+
+	$pos = 0;
+	while ($row = sql_fetch($res,$serveur) AND $row[$primary]!=$valeur){
+		$pos++;
+	}
+	// si on a pas trouve
+	if ($row[$primary]!=$valeur)
+		return 0;
+
+	// sinon, calculer le bon numero de page
+	return $pas?(floor($pos/$pas)*$pas):0; // en mode debug, il semble qu'on passe ici avec un mauvais pas
+}
+
 ?>

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -151,8 +151,12 @@ function calculer_inclure($p, $descr, &$boucles, $id_boucle) {
 		$contexte = "array_merge('.var_export(\$Pile[0],1).',$contexte)";
 	}
 
-	$code = "\tinclude " .
-		($fichier ? "\\'$path\\'" : ('_DIR_RESTREINT . "public.php"')).
+	$code =
+		($fichier ?
+			"\tinclude \\'$path\\'"
+			:
+			("\techo recuperer_fond(\$contexte_inclus[\'fond\'], \$contexte_inclus, array(), _request(\'connect\'))")
+		).
 		";";
 
 	// Gerer ajax
@@ -262,29 +266,28 @@ function calculer_boucle_nonrec($id_boucle, &$boucles) {
 
 	// La boucle doit-elle selectionner la langue ?
 	// -. par defaut, les boucles suivantes le font
-	// "peut-etre", c'est-a-dire si forcer_lang == false.
-	// - . a moins d'une demande explicite
+	//    (sauf si forcer_lang==true ou si le titre contient <multi>).
+	// - . a moins d'une demande explicite via {!lang_select}
 	if (!$constant && $boucle->lang_select != 'non' &&
 	    (($boucle->lang_select == 'oui')  ||
-		    (
-			$type_boucle == 'articles'
-			OR $type_boucle == 'rubriques'
-			OR $type_boucle == 'hierarchie'
-			OR $type_boucle == 'breves'
+		    in_array($type_boucle, array(
+		    	'articles', 'rubriques', 'hierarchie', 'breves'
 			)))
-	  {
+	) {
 		// Memoriser la langue avant la boucle et la restituer apres
-	        // afin que le corps de boucle affecte la globale directement
+		// afin que le corps de boucle affecte la globale directement
 		$init = "\n	lang_select(\$GLOBALS['spip_lang']);";
 		$fin = "\n	lang_select();";
 
 		$corps .= 
-		  (($boucle->lang_select != 'oui') ? 
-			"\t\tif (!(isset(\$GLOBALS['forcer_lang']) AND \$GLOBALS['forcer_lang']))\n\t " : '')
-		  . "\t\tif (\$x = "
-		  . index_pile($id_boucle, 'lang', $boucles)
-		  . ') $GLOBALS["spip_lang"] = $x;';
-	  }
+			"\n\t\tlang_select_public("
+			. index_pile($id_boucle, 'lang', $boucles)
+			. ", '".$boucle->lang_select."'"
+			. (in_array($type_boucle, array(
+				'articles', 'rubriques', 'hierarchie', 'breves'
+				)) ? ', '.index_pile($id_boucle, 'titre', $boucles) : '')
+			. ');';
+	}
 	else {
 		$init = '';
 		$fin = '';
@@ -361,7 +364,9 @@ function calculer_boucle_nonrec($id_boucle, &$boucles) {
 	
 	return  $count .
 		(!$flag_cpt  ? "" :
-			"\n\t\$Numrows['$id_boucle']['compteur_boucle'] = 0;")
+			"\n\t\$Numrows['$id_boucle']['compteur_boucle'] = 0;"
+		 .(($boucle->mode_partie)?"\n\tif (isset(\$debut_boucle) AND \$debut_boucle>0 AND \$debut_boucle<\$Numrows['$id_boucle']['grand_total'] AND sql_seek(\$result,\$debut_boucle,"._q($boucle->sql_serveur).",'continue'))\n\t\t\$Numrows['$id_boucle']['compteur_boucle']=\$debut_boucle;":"")
+			)
 		. '
 	$t0 = "";' .
 		$corps .
@@ -517,7 +522,9 @@ function calculer_parties($boucles, $id_boucle, $count) {
 	// {pagination}
 	elseif ($op1 == 'p') {
 		$retour .= "\n	"
-			. '$debut_boucle = ' . $partie . ';';
+			. '$debut_boucle = ' . $partie . ';'
+			. "\n\t".'if ($tout=($debut_boucle == -1)) $debut_boucle = 0;';
+		$total_parties = "(\$tout ? \$nombre_boucle : $total_parties)";
 	}
 
 	// {x,1}

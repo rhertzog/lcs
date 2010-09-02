@@ -1,5 +1,17 @@
 <?php
 
+/***************************************************************************\
+ *  SPIP, Systeme de publication pour l'internet                           *
+ *                                                                         *
+ *  Copyright (c) 2001-2010                                                *
+ *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
+ *                                                                         *
+ *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
+ *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
+\***************************************************************************/
+
+if (!defined("_ECRIRE_INC_VERSION")) return;
+
 include_spip('inc/actions');
 include_spip('inc/editer');
 
@@ -15,6 +27,8 @@ function formulaires_editer_auteur_charger_dist($id_auteur='new', $retour='', $l
 	// forcer la prise en compte du post, sans verifier si c'est bien le meme formulaire,
 	// c'est trop hasardeux selon le contenud de $row
 	$valeurs['_forcer_request'] = true;
+	if (empty($valeurs['source']))
+		$valeurs['source'] = spip_connect_ldap() ? 'ldap' : 'spip';
 	return $valeurs;
 }
 
@@ -44,7 +58,7 @@ function formulaires_editer_auteur_verifier_dist($id_auteur='new', $retour='', $
 		AND $p !== sql_getfetsel("login", "spip_auteurs", "id_auteur=" . sql_quote($id_auteur))) {
 			$erreurs['login'] = _T('info_login_trop_court');
 			$erreurs['message_erreur'] .= _T('info_login_trop_court');
-		} elseif (sql_countsel('spip_auteurs', "login=" . sql_quote($p) . " AND id_auteur!=" . sql_quote($id_auteur) . " AND statut!='5poubelle'")) {
+		} elseif (sql_countsel('spip_auteurs', "login=" . sql_quote($p) . " AND id_auteur!=" . intval($id_auteur) . " AND statut!='5poubelle'")) {
 			$erreurs['new_login'] .= _T('info_login_existant');
 			$erreurs['message_erreur'] .= _T('info_login_existant');
 		}

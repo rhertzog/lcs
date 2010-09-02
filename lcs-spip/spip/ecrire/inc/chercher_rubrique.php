@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -130,8 +130,7 @@ function selecteur_rubrique_html($id_rubrique, $type, $restreint, $idem=0) {
 	while ($r = sql_fetch($q)) {
 		if (autoriser('voir','rubrique',$r['id_rubrique'])){
 			// titre largeur maxi a 50
-			$titre = couper(supprimer_tags(typo(extraire_multi($r['titre']
-			)))." ", 50);
+			$titre = couper(supprimer_tags(typo($r['titre']))." ", 50);
 			if ($GLOBALS['meta']['multi_rubriques'] == 'oui'
 			AND ($r['langue_choisie'] == "oui" OR $r['id_parent'] == 0))
 				$titre .= ' ['.traduire_nom_langue($r['lang']).']';

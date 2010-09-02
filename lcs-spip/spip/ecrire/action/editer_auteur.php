@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -77,7 +77,7 @@ function action_legender_auteur_post($statut, $nom, $email, $bio, $nom_site_aute
 	// si id_auteur est hors table, c'est une creation sinon une modif
 	//
 	if ($id_auteur) {
-		$auteur = sql_fetsel("nom, login, bio, email, nom_site, url_site, pgp, extra, id_auteur, source, imessage", "spip_auteurs", "id_auteur=$id_auteur");
+		$auteur = sql_fetsel("nom, login, bio, email, nom_site, url_site, pgp, id_auteur, source, imessage", "spip_auteurs", "id_auteur=$id_auteur");
 		$source = $auteur['source'];
 	}
 	if (!$auteur) {
@@ -95,7 +95,7 @@ function action_legender_auteur_post($statut, $nom, $email, $bio, $nom_site_aute
 			if (strlen($new_login) < _LOGIN_TROP_COURT)
 				$echec[]= 'info_login_trop_court';
 			else {
-				$n = sql_countsel('spip_auteurs', "login=" . sql_quote($new_login) . " AND id_auteur!=".sql_quote($id_auteur)." AND statut!='5poubelle'");
+				$n = sql_countsel('spip_auteurs', "login=" . sql_quote($new_login) . " AND id_auteur!=".intval($id_auteur)." AND statut!='5poubelle'");
 				if ($n)
 					$echec[]= 'info_login_existant';
 				else if ($new_login != $auteur['login']) {

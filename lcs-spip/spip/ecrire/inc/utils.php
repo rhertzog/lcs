@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -101,7 +101,7 @@ function pipeline($action, $val=null) {
 
 	// chargement initial des fonctions mises en cache, ou generation du cache
 	if (!$charger) {
-		if (!($ok = @is_readable($charger = _DIR_TMP."charger_pipelines.php"))) {
+		if (!($ok = @is_readable($charger = _CACHE_PIPELINES))) {
 			include_spip('inc/plugin');
 			// generer les fichiers php precompiles
 			// de chargement des plugins et des pipelines
@@ -451,7 +451,7 @@ function joli_repertoire($rep) {
 // spip_timer : on l'appelle deux fois et on a la difference, affichable
 //
 // http://doc.spip.org/@spip_timer
-function spip_timer($t='rien') {
+function spip_timer($t='rien', $raw = false) {
 	static $time;
 	$a=time(); $b=microtime();
 	// microtime peut contenir les microsecondes et le temps
@@ -461,6 +461,7 @@ function spip_timer($t='rien') {
 	if (isset($time[$t])) {
 		$p = $a + $b - $time[$t];
 		unset($time[$t]);
+		if ($raw) return $p;
 		if ($p>0.01)	return sprintf("%.3fs", $p);
 		else					return sprintf("%.1fms", $p*1000);
 	} else
@@ -508,15 +509,17 @@ function action_cron() {
 
 // http://doc.spip.org/@cron
 function cron ($gourmand=false, $taches= array()) {
-
-	// Si base inaccessible, laisser tomber.
-	if (!spip_connect()) return false;
+	if (!defined(_CRON_DELAI_GOURMAND))
+		define('_CRON_DELAI_GOURMAND',60);
+	if (!defined(_CRON_DELAI))
+		define('_CRON_DELAI',is_int($gourmand) ? $gourmand : 2);
 
 	// Si on est gourmand, ou si le fichier gourmand n'existe pas
 	// ou est trop vieux (> 60 sec), on va voir si un cron est necessaire.
 	// Au passage si on est gourmand on le dit aux autres
-	if (spip_touch(_DIR_TMP.'cron.lock-gourmand', 60, $gourmand)
-	OR ($gourmand!==false)) {
+	if (!_CRON_DELAI_GOURMAND
+	 OR spip_touch(_DIR_TMP.'cron.lock-gourmand', _CRON_DELAI_GOURMAND, $gourmand)
+	 OR ($gourmand!==false)) {
 
 	// Le fichier cron.lock indique la date de la derniere tache
 	// Il permet d'imposer qu'il n'y ait qu'une tache a la fois
@@ -524,8 +527,11 @@ function cron ($gourmand=false, $taches= array()) {
 	// ca soulage le serveur et ca evite
 	// les conflits sur la base entre taches.
 
-	if (spip_touch(_DIR_TMP.'cron.lock',
-			(is_int($gourmand) ? $gourmand : 2))) {
+	if (!_CRON_DELAI
+	  OR spip_touch(_DIR_TMP.'cron.lock',_CRON_DELAI)) {
+			// Si base inaccessible, laisser tomber.
+			if (!spip_connect()) return false;
+
 			$genie = charger_fonction('genie', 'inc', true);
 			if ($genie) {
 				$genie($taches);
@@ -606,24 +612,25 @@ function _chemin($dir_path=NULL){
 		if (strlen($GLOBALS['dossier_squelettes']))
 			foreach (array_reverse(explode(':', $GLOBALS['dossier_squelettes'])) as $d)
 				array_unshift($path_full, ($d[0] == '/' ? '' : _DIR_RACINE) . $d . '/');
-
+		$GLOBALS['path_sig'] = md5(serialize($path_full));
 	}
 	if ($dir_path===NULL) return $path_full;
 
 	if (strlen($dir_path)){
-		if ($dir_path{0}!='/')
-			$dir_path = $dir_path;
-		if (substr($dir_path,-1) != '/')
-			$dir_path .= "/";
-		if (!in_array($dir_path,$path_base)){
-			$tete = "";
-			if (reset($path_base)==_DIR_RACINE.'squelettes/')
-				$tete = array_shift($path_base);
-
-			array_unshift($path_base,$dir_path);
-			if (strlen($tete))
-				array_unshift($path_base,$tete);
+		$tete = "";
+		if (reset($path_base)==_DIR_RACINE.'squelettes/')
+			$tete = array_shift($path_base);
+		$dirs = array_reverse(explode(':',$dir_path));
+		foreach($dirs as $dir_path){
+				#if ($dir_path{0}!='/')
+				#	$dir_path = $dir_path;
+				if (substr($dir_path,-1) != '/')
+					$dir_path .= "/";
+				if (!in_array($dir_path,$path_base))
+					array_unshift($path_base,$dir_path);
 		}
+		if (strlen($tete))
+			array_unshift($path_base,$tete);
 	}
 	$path_full = $path_base;
 	// Et le(s) dossier(s) des squelettes nommes
@@ -631,6 +638,7 @@ function _chemin($dir_path=NULL){
 		foreach (array_reverse(explode(':', $GLOBALS['dossier_squelettes'])) as $d)
 			array_unshift($path_full, ($d[0] == '/' ? '' : _DIR_RACINE) . $d . '/');
 
+	$GLOBALS['path_sig'] = md5(serialize($path_full));
 	return $path_full;
 }
 
@@ -639,14 +647,6 @@ function creer_chemin() {
 	$path_a = _chemin();
 	static $c = '';
 
-	// provisoire, a remplacer par un spip_unlink sur les fichiers compiles lors d'un prochain upgrade
-	if (isset($GLOBALS['plugins'])){
-		$c = '';
-		foreach($GLOBALS['plugins'] as $dir) {
-			$path_base = _chemin(_DIR_PLUGINS.$dir);
-		}
-		unset($GLOBALS['plugins']);
-	}
 	// on calcule le chemin si le dossier skel a change
 	if ($c != $GLOBALS['dossier_squelettes']) {
 		// assurer le non plantage lors de la montee de version :
@@ -678,15 +678,33 @@ function chemin($file, $dirname='', $include=false){
 // chercher un fichier $file dans le SPIP_PATH
 // si on donne un sous-repertoire en 2e arg optionnel, il FAUT le / final
 // si 3e arg vrai, on inclut si ce n'est fait.
+define('_ROOT_CWD', getcwd().'/');
+$GLOBALS['path_sig'] = '';
+$GLOBALS['path_files'] = null;
 
 // http://doc.spip.org/@find_in_path
 function find_in_path ($file, $dirname='', $include=false) {
-	static $files=array(), $dirs=array();
+	static $dirs=array();
+	static $inc = array(); # cf http://trac.rezo.net/trac/spip/changeset/14743
+	static $c = '';
 
-	if (isset($files[$dirname][$file])) {
-		if ($include) include_once $files[$dirname][$file];
-		return  $files[$dirname][$file];
+	// on calcule le chemin si le dossier skel a change
+	if ($c != $GLOBALS['dossier_squelettes']){
+		// assurer le non plantage lors de la montee de version :
+		$c = $GLOBALS['dossier_squelettes'];
+		creer_chemin(); // forcer un recalcul du chemin et la mise a jour de path_sig
 	}
+
+	if (isset($GLOBALS['path_files'][$GLOBALS['path_sig']][$dirname][$file])) {
+		if (!$GLOBALS['path_files'][$GLOBALS['path_sig']][$dirname][$file])
+			return false;
+		if ($include AND !isset($inc[$dirname][$file])) {
+			include_once _ROOT_CWD . $GLOBALS['path_files'][$GLOBALS['path_sig']][$dirname][$file];
+			$inc[$dirname][$file] = $inc[''][$dirname . $file] = true;
+		}
+		return $GLOBALS['path_files'][$GLOBALS['path_sig']][$dirname][$file];
+	}
+
 	$a = strrpos($file,'/');
 	if ($a !== false) {
 		$dirname .= substr($file, 0, ++$a);
@@ -695,16 +713,57 @@ function find_in_path ($file, $dirname='', $include=false) {
 
 	foreach(creer_chemin() as $dir) {
 		if (!isset($dirs[$a = $dir . $dirname]))
-			$dirs[$a] = (is_dir($a) || !$a) ;
+			$dirs[$a] = (is_dir(_ROOT_CWD . $a) || !$a) ;
 		if ($dirs[$a]) {
-			if (is_readable($a .= $file)) {
-				if ($include) include_once $a;
-				return $files[$dirname][$file] = $files[''][$dirname . $file] = $a;
+			if (file_exists(_ROOT_CWD . ($a .= $file))) {
+				if ($include AND !isset($inc[$dirname][$file])) {
+					include_once _ROOT_CWD . $a;
+					$inc[$dirname][$file] = $inc[''][$dirname . $file] = true;
+				}
+				if (!defined('_SAUVER_CHEMIN'))
+					define('_SAUVER_CHEMIN',true);
+				return $GLOBALS['path_files'][$GLOBALS['path_sig']][$dirname][$file] = $GLOBALS['path_files'][$GLOBALS['path_sig']][''][$dirname . $file] = $a;
 			}
 		}
 	}
+	if (!defined('_SAUVER_CHEMIN'))
+		define('_SAUVER_CHEMIN',true);
+	return $GLOBALS['path_files'][$GLOBALS['path_sig']][$dirname][$file] = $GLOBALS['path_files'][$GLOBALS['path_sig']][''][$dirname . $file] = false;
 }
 
+function load_path_cache(){
+	// charger le path des plugins
+	if (@is_readable(_CACHE_PLUGINS_PATH)){
+		include_once(_CACHE_PLUGINS_PATH);
+	}
+	$GLOBALS['path_files'] = array();
+	// si le visiteur est admin,
+	// on ne recharge pas le cache pour forcer sa mise a jour
+	// le cache de chemin n'est utilise que dans le public
+	if (_DIR_RESTREINT 
+		//AND (!isset($GLOBALS['visiteur_session']['statut']) OR $GLOBALS['visiteur_session']['statut']!='0minirezo')
+		AND !isset($_COOKIE[$GLOBALS['cookie_prefix'].'_admin'])
+		){
+		// on essaye de lire directement sans verrou pour aller plus vite
+		if ($contenu = spip_file_get_contents(_CACHE_CHEMIN)){
+			// mais si semble corrompu on relit avec un verrou
+			if (!$GLOBALS['path_files']=unserialize($contenu)){
+				lire_fichier(_CACHE_CHEMIN,$contenu);
+				if (!$GLOBALS['path_files']=unserialize($contenu))
+					$GLOBALS['path_files'] = array();
+			}
+		}
+	}
+	// pas de sauvegarde du chemin si on est pas dans le public
+	if (!_DIR_RESTREINT)
+		define('_SAUVER_CHEMIN',false);
+}
+
+function save_path_cache(){
+	if (defined('_SAUVER_CHEMIN')
+		AND _SAUVER_CHEMIN)
+		ecrire_fichier(_CACHE_CHEMIN,serialize($GLOBALS['path_files']));
+}
 
 // http://doc.spip.org/@find_all_in_path
 function find_all_in_path($dir,$pattern, $recurs=false){
@@ -754,6 +813,7 @@ function generer_url_entite($id='', $entite='', $args='', $ancre='', $public=NUL
 	if ($public === NULL) $public = !test_espace_prive();
 
 	if (!$public) {
+		if (!$entite) return '';
 		include_spip('inc/urls');
 		$f = 'generer_url_ecrire_' . $entite;
 	        $res = !function_exists($f) ? '' : $f($id, $args, $ancre, ' ');
@@ -795,7 +855,7 @@ function generer_url_entite($id='', $entite='', $args='', $ancre='', $public=NUL
 		return $url;
 	}
 	// On a ete gentil mais la ....
-	spip_log("generer_url_entite: entite $entite ($f) inconnue $type");
+	spip_log("generer_url_entite: entite $entite ($f) inconnue $type $public");
 	return '';
 }
 
@@ -1045,9 +1105,14 @@ function spip_initialisation($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 function spip_initialisation_core($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 	static $too_late = 0;
 	if ($too_late++) return;
+	
+	// Declaration des repertoires
 
-	// Le charset par defaut lors de l'installation
-	define('_DEFAULT_CHARSET', 'utf-8');
+	// le nom du repertoire plugins/ activables/desactivables
+	define('_DIR_PLUGINS', _DIR_RACINE . "plugins/");
+
+	// le nom du repertoire des extensions/ permanentes du core, toujours actives
+	define('_DIR_EXTENSIONS', _DIR_RACINE . "extensions/");
 
 	define('_DIR_IMG', $pa);
 	define('_DIR_LOGOS', $pa);
@@ -1062,25 +1127,31 @@ function spip_initialisation_core($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 	define('_DIR_AIDE',  _DIR_CACHE . "aide/");
 	define('_DIR_TMP', $ti);
 
-	# attention .php obligatoire pour ecrire_fichier_securise
-	define('_FILE_META', $ti . 'meta_cache.php');
-
 	define('_DIR_VAR', $ta);
 
 	define('_DIR_ETC', $pi);
 	define('_DIR_CONNECT', $pi);
 	define('_DIR_CHMOD', $pi);
 
-	define('_DIR_LOG', _DIR_TMP);
-	define('_FILE_LOG', 'spip');
-	define('_FILE_LOG_SUFFIX', '.log');
-
-	define('_MAX_LOG', 100);
-
 	if (!isset($GLOBALS['test_dirs']))
 	  // Pas $pi car il est bon de le mettre hors ecriture apres intstall
 	  // il sera rajoute automatiquement si besoin a l'etape 2 de l'install
 		$GLOBALS['test_dirs'] =  array($pa, $ti, $ta);
+
+	// Declaration des fichiers
+
+	define('_CACHE_PLUGINS_PATH', _DIR_CACHE . "charger_plugins_chemins.php");
+	define('_CACHE_PLUGINS_OPT', _DIR_CACHE . "charger_plugins_options.php");
+	define('_CACHE_PLUGINS_FCT', _DIR_CACHE . "charger_plugins_fonctions.php");
+	define('_CACHE_PLUGINS_VERIF', _DIR_CACHE . "verifier_plugins.txt");
+	define('_CACHE_PIPELINES',  _DIR_CACHE."charger_pipelines.php");
+	define('_CACHE_CHEMIN',  _DIR_CACHE."chemin.txt");
+
+	# attention .php obligatoire pour ecrire_fichier_securise
+	define('_FILE_META', $ti . 'meta_cache.php');
+	define('_DIR_LOG', _DIR_TMP);
+	define('_FILE_LOG', 'spip');
+	define('_FILE_LOG_SUFFIX', '.log');
 
 	// Le fichier de connexion a la base de donnees
 	// tient compte des anciennes versions (inc_connect...)
@@ -1110,8 +1181,12 @@ function spip_initialisation_core($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 	// Se mefier des fichiers mal remplis!
 	if (!defined('_SPIP_CHMOD')) define('_SPIP_CHMOD', 0777);
 
-	// le nom du repertoire plugins/
-	define('_DIR_PLUGINS', _DIR_RACINE . "plugins/");
+	// Le charset par defaut lors de l'installation
+	define('_DEFAULT_CHARSET', 'utf-8');
+	define('_ROOT_PLUGINS', _ROOT_RACINE . "plugins/");
+
+	// La taille des Log
+	define('_MAX_LOG', 100);
 
 	// Sommes-nous dans l'empire du Mal ?
 	// (ou sous le signe du Pingouin, ascendant GNU ?)
@@ -1132,6 +1207,9 @@ function spip_initialisation_core($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 	// systematique du noyau ou une baisse de perfs => a etudier)
 	include_once _DIR_RESTREINT . 'inc/flock.php';
 
+	// charger tout de suite le path et son cache
+	load_path_cache();
+
 	// *********** traiter les variables ************
 
 	//
@@ -1145,7 +1223,6 @@ function spip_initialisation_core($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 	spip_desinfecte($_POST);
 	spip_desinfecte($_COOKIE);
 	spip_desinfecte($_REQUEST);
-	spip_desinfecte($GLOBALS);
 
 	// Par ailleurs on ne veut pas de magic_quotes au cours de l'execution
 	@set_magic_quotes_runtime(0);
@@ -1155,6 +1232,9 @@ function spip_initialisation_core($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 	// il faut faire quelques verifications de base
 	if ($x = test_valeur_serveur(@ini_get('register_globals'))
 	OR  _FEED_GLOBALS) {
+		// ne pas desinfecter les globales en profondeur car elle contient aussi les
+		// precedentes, qui seraient desinfectees 2 fois.
+		spip_desinfecte($GLOBALS);
 		include_spip('inc/php3');
 		spip_register_globals($x);
 	}
@@ -1260,6 +1340,7 @@ function spip_initialisation_suite() {
 	define('_SPIP_SCRIPT', 'spip.php');
 	// argument page, personalisable en cas de conflit avec un autre script
 	define('_SPIP_PAGE', 'page');
+	define('_SPIP_FLUX', 'feed');
 
 	// le script de l'espace prive
 	// Mettre a "index.php" si DirectoryIndex ne le fait pas ou pb connexes:
@@ -1614,8 +1695,10 @@ function recuperer_fond($fond, $contexte=array(), $options = array(), $connect='
 
 	foreach(is_array($fond) ? $fond : array($fond) as $f){
 		$page = evaluer_fond($f, $contexte, $connect);
-		if (isset($options['ajax'])AND $options['ajax'])
+		if (isset($options['ajax'])AND $options['ajax']){
+			include_spip('inc/filtres');
 			$page['texte'] = encoder_contexte_ajax(array_merge($contexte,array('fond'=>$f)),'',$page['texte']);
+		}
 
 		if ($GLOBALS['var_inclure'])
 			$page['texte'] = "<fieldset class='blocs'><legend>".$page['sourcefile']."</legend>".$page['texte']."</fieldset>";

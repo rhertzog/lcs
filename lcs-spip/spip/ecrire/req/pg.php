@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -80,6 +80,7 @@ $GLOBALS['spip_pg_functions_1'] = array(
 		'error' => 'spip_pg_error',
 		'explain' => 'spip_pg_explain',
 		'fetch' => 'spip_pg_fetch',
+		'seek' => 'spip_pg_seek',
 		'free' => 'spip_pg_free',
 		'hex' => 'spip_pg_hex',
 		'in' => 'spip_pg_in',
@@ -437,6 +438,12 @@ function spip_pg_select($select, $from, $where='',
 
 	$select = spip_pg_frommysql($select);
 
+	// si pas de tri explicitement demande, le GROUP BY ne 
+	// contient que la clef primaire. 
+	// lui ajouter alors le champ de tri par defaut 
+	if (preg_match("/FIELD\(([a-z]+\.[a-z]+),/i", $orderby[0], $groupbyplus)) { 
+		$groupby[] = $groupbyplus[1]; 
+	} 
 	$orderby = spip_pg_orderby($orderby, $select);
 
 	if ($having) {
@@ -655,18 +662,12 @@ function calculer_pg_expression($expression, $v, $join = 'AND'){
 	
 	$exp = "\n$expression ";
 	
-	if (!is_array($v)) 
-		$v = array($v);
+	if (!is_array($v)) $v = array($v);
 	
-	if (strtoupper($expression) === 'WHERE')
-		$v = array_map('spip_pg_frommysql', $v);
-	
-	if (!empty($v)) {
-		if (strtoupper($join) === 'AND')
+	if (strtoupper($join) === 'AND')
 			return $exp . join("\n\t$join ", array_map('calculer_pg_where', $v));
 		else
 			return $exp . join($join, $v);
-	}
 }
 
 // http://doc.spip.org/@spip_pg_select_as
@@ -706,6 +707,11 @@ function spip_pg_fetch($res, $t='', $serveur='',$requeter=true) {
 	if ($res) $res = pg_fetch_array($res, NULL, PGSQL_ASSOC);
 	return $res;
 }
+
+function spip_pg_seek($r, $row_number, $serveur='',$requeter=true) {
+	if ($r) return pg_result_seek($r,$row_number);
+}
+
 
 // http://doc.spip.org/@spip_pg_countsel
 function spip_pg_countsel($from = array(), $where = array(), $groupby=array(),

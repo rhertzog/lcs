@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -151,7 +151,7 @@ function lettres_d_auteurs($query, $debut, $max_par_page, $tri)
 		}
 
 		if ($tri == 'nom') {
-			$premiere_lettre = strtoupper(spip_substr(extraire_multi($auteur['nom']),0,1));
+			$premiere_lettre = strtoupper(spip_substr(corriger_typo($auteur['nom']),0,1));
 			if ($premiere_lettre != $lettre_prec) { 
 				$lettre[$premiere_lettre] = $nombre_auteurs;
 			}

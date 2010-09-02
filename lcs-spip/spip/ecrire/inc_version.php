@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -23,6 +23,8 @@ define('_EXTENSION_PHP', '.php3');
 #define('_EXTENSION_PHP', '');
 #mettre a true pour compatibilite PHP3 
 define('_FEED_GLOBALS', false);
+
+define('_ROOT_RACINE', dirname(dirname(__FILE__)).'/');
 
 # le nom du repertoire ecrire/
 define('_DIR_RESTREINT_ABS', 'ecrire/');
@@ -62,6 +64,17 @@ define('_NOM_TEMPORAIRES_ACCESSIBLES', "local/");
 define('_NOM_PERMANENTS_INACCESSIBLES', "config/");
 # le nom du repertoire des fichiers Permanents Accessibles par http://
 define('_NOM_PERMANENTS_ACCESSIBLES', "IMG/");
+
+/*
+ * detecteur de robot d'indexation
+ * utilise en divers endroits, centralise ici
+ */
+if (!defined('_IS_BOT'))
+	define('_IS_BOT',
+		isset($_SERVER['HTTP_USER_AGENT'])
+		AND preg_match(',bot|slurp|crawler|spider|webvac|yandex,i',
+			$_SERVER['HTTP_USER_AGENT'])
+	);
 
 
 // Le nom du fichier de personnalisation
@@ -262,7 +275,7 @@ $spip_pipeline = array(
 	'declarer_tables_auxiliaires'=>'',
 	'declarer_tables_objets_surnoms' => '',
 	'definir_session' => '',
-	'delete_all' => '',
+	'delete_tables' => '',
 	'delete_statistiques' => '',
 	'exec_init' => '',
 	'formulaire_charger' => '',
@@ -277,13 +290,14 @@ $spip_pipeline = array(
 #	'verifie_js_necessaire' => '',
 	'mots_indexation' => '',
 	'nettoyer_raccourcis_typo' => '',
+	'objet_compte_enfants' => '',
 	'pre_boucle' => '',
 	'post_boucle' => '',
-	'pre_propre' => '|extraire_multi|traiter_poesie|traiter_retours_chariots',
+	'pre_propre' => '|traiter_poesie|traiter_retours_chariots',
 	'pre_liens' => '|traiter_raccourci_liens|traiter_raccourci_glossaire
 		|traiter_raccourci_ancre',
 	'post_propre' => '',
-	'pre_typo' => '|extraire_multi',
+	'pre_typo' => '',
 	'post_typo' => '|quote_amp',
 	'pre_edition' => '|premiere_revision',
 	'post_edition' => '|nouvelle_revision',
@@ -305,6 +319,7 @@ $spip_pipeline = array(
 	'recuperer_fond' => '',
 	'styliser' => '',
 	'trig_calculer_prochain_postdate' => '',
+	'trig_calculer_langues_rubriques' => '',
 	'trig_propager_les_secteurs' => '',
 );
 
@@ -365,7 +380,7 @@ $liste_des_authentifications = array(
 // numero de branche, utilise par les plugins 
 // pour specifier les versions de SPIP necessaire
 // il faut s'en tenir a un nombre de decimales fixe ex : 2.0.0, 2.0.0-dev, 2.0.0-beta, 2.0.0-beta2 
-$spip_version_branche = "2.0.10";
+$spip_version_branche = "2.0.12";
 // version des signatures de fonctions PHP
 // (= numero SVN de leur derniere modif cassant la compatibilite et/ou necessitant un recalcul des squelettes)
 $spip_version_code = 12691;
@@ -422,19 +437,20 @@ error_reporting(SPIP_ERREUR_REPORT);
 // qui ne sera pas execute car _ECRIRE_INC_VERSION est defini
 // donc il faut avoir tout fini ici avant de charger les plugins
 
-if (@is_readable(_DIR_TMP."charger_plugins_options.php")){
+if (@is_readable(_CACHE_PLUGINS_OPT) AND @is_readable(_CACHE_PLUGINS_PATH)){
 	// chargement optimise precompile
-	include_once(_DIR_TMP."charger_plugins_options.php");
+	include_once(_CACHE_PLUGINS_OPT);
 } else {
 	@spip_initialisation_suite();
 	include_spip('inc/plugin');
 	// generer les fichiers php precompiles
 	// de chargement des plugins et des pipelines
 	if (verif_plugin()) {
-		if (@is_readable(_DIR_TMP."charger_plugins_options.php"))
-			include_once(_DIR_TMP."charger_plugins_options.php");
-		else
-			spip_log("generation de charger_plugins_options.php impossible; pipeline desactives");
+		if (@is_readable(_CACHE_PLUGINS_PATH))
+			include_once(_CACHE_PLUGINS_PATH); // securite : a priori n'a pu etre fait plus tot
+		if (@is_readable(_CACHE_PLUGINS_OPT))
+			include_once(_CACHE_PLUGINS_OPT);
+		else spip_log("pipelines desactives: impossible de produire " . _CACHE_PLUGINS_OPT); 
 	}
 }
 // Initialisations non critiques surchargeables par les plugins

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -409,11 +409,10 @@ function balise_INTRODUCTION_dist($p) {
 	$type = $p->type_requete;
 
 	$_texte = champ_sql('texte', $p);
-	$_descriptif = "''";
+	$_descriptif = ($type == 'articles' OR $type == 'rubriques') ? champ_sql('descriptif', $p) : "''";
 
 	if ($type == 'articles') {
 		$_chapo = champ_sql('chapo', $p);
-		$_descriptif =  champ_sql('descriptif', $p);
 		$_texte = "(strlen($_descriptif) OR chapo_redirigetil($_chapo))
 		? ''
 		: $_chapo . \"\\n\\n\" . $_texte";
@@ -956,7 +955,7 @@ function balise_FILTRE_dist($p) {
 		$args = array();
 		foreach ($p->param as $i => $ignore)
 			$args[] = interprete_argument_balise($i+1,$p);
-		$p->code = '\'<'
+		$p->code = "'<' . '"
 			.'?php header("X-Spip-Filtre: \'.'
 				.join('.\'|\'.', $args)
 			. " . '\"); ?'.'>'";

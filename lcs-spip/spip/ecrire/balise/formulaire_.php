@@ -2,7 +2,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -61,8 +61,8 @@ function balise_FORMULAIRE__dyn($form)
 	// pour ne pas confondre 2 #FORMULAIRES_XX identiques sur une meme page
 	$je_suis_poste = false;
 	if ($post_form = _request('formulaire_action')
-	AND $post_args = _request('formulaire_action_args')) {
-		$post_args = decoder_contexte_ajax($post_args,$post_form);
+	AND ($post_args = _request('formulaire_action_args'))
+	AND is_array($post_args = decoder_contexte_ajax($post_args,$post_form))) {
 		// enlever le faux attribut de langue masque
 		array_shift($post_args);
 		if ($args === $post_args){
@@ -94,15 +94,14 @@ function balise_FORMULAIRE__dyn($form)
 	$valeurs = pipeline(
 		'formulaire_charger',
 		array(
-			'args'=>array('form'=>$form,'args'=>$args),
+			'args'=>array('form'=>$form,'args'=>$args,'je_suis_poste'=>$je_suis_poste),
 			'data'=>$valeurs)
 	);
 	
-	// si $valeurs===false, alors le formulaire n'est pas applicable
-	// on n'affiche rien. C'est plus fort qu'editable qui est geree
-	// par le squelette du forumaire lui meme
-	if ($valeurs===false) return '';
-	
+	// si $valeurs n'est pas un tableau, le formulaire n'est pas applicable
+	// C'est plus fort qu'editable qui est gere par le squelette 
+	// Idealement $valeur doit etre alors un message explicatif.
+	if (!is_array($valeurs)) return is_string($valeurs) ? $valeurs : '';
 	
 	// reperer les valeurs particulieres editable, message_ok et message_erreur
 	if (isset($valeurs['editable'])){
@@ -119,7 +118,11 @@ function balise_FORMULAIRE__dyn($form)
 	// charger peut passer une action si le formulaire ne tourne pas sur self()
 	// ou une action vide si elle ne sert pas
 	$action = isset($valeurs['action'])?$valeurs['action']:self();
-	
+	// bug IEx : si action finit par / 
+	// IE croit que le <form ... action=../ > est autoferme
+	if (substr($action,-1)=='/')
+		$action .= (_SPIP_SCRIPT?_SPIP_SCRIPT:"index.php");
+
 	// recuperer la saisie en cours si erreurs
 	// seulement si c'est ce formulaire qui est poste
 	// ou si on le demande explicitement par le parametre _forcer_request = true

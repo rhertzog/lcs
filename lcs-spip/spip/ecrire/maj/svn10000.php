@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -194,6 +194,11 @@ array('sql_alter',"TABLE spip_groupes_mots DROP syndic"),
 function maj_13135 () {
 	include_spip('inc/rubriques');
 	calculer_prochain_postdate();
+
+	// supprimer les eventuels vieux cache plugin qui n'utilisaient pas _chemin
+	@spip_unlink(_CACHE_PLUGINS_OPT);
+	@spip_unlink(_CACHE_PLUGINS_FCT);
+	@spip_unlink(_CACHE_PLUGINS_VERIF);
 }
 
 $GLOBALS['maj'][13135] = array(array('maj_13135'));

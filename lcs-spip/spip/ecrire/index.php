@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -112,7 +112,7 @@ elseif ($exec!='upgrade'
 AND !$var_auth
 AND !_DIR_RESTREINT
 AND autoriser('configurer')
-AND lire_fichier(_DIR_TMP.'verifier_plugins.txt',$l)
+AND lire_fichier(_CACHE_PLUGINS_VERIF,$l)
 AND $l = @unserialize($l)) {
 	foreach ($l as $fichier) {
 		if (!@is_readable($fichier)) {

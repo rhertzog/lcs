@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -12,7 +12,7 @@
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 // http://doc.spip.org/@inc_meme_rubrique_dist
-function inc_meme_rubrique_dist($id_rubrique, $id, $type, $order='date', $limit=NULL, $ajax=false)
+function inc_meme_rubrique_dist($id_rubrique, $id, $type, $order='', $limit=NULL, $ajax=false)
 {
 	global $spip_lang_right, $spip_lang_left;
 	include_spip('inc/presentation');
@@ -24,24 +24,26 @@ function inc_meme_rubrique_dist($id_rubrique, $id, $type, $order='date', $limit=
 		$type = 'article';
 		$table = 'spip_articles';
 	}
-	$prim = 'id_' . $type;
-	if (!$limit) $limit = 10;
+	$prim = id_table_objet($type);
+	if (!$limit)
+		$limit = defined("_MAX_ART_AFFICHES") ? _MAX_ART_AFFICHES : 10;
 
-	$titre = ($type!='syndic'?'titre':'nom_site');
-	$exec = array('article'=>'articles','breve'=>'breves_voir','syndic'=>'sites');
+	$titre = isset($GLOBALS['table_titre'][table_objet($type)])?$GLOBALS['table_titre'][table_objet($type)]:'titre';
 
 	$where = (($GLOBALS['visiteur_session']['statut'] == '0minirezo')
 		  ? ''
 		  :  "(statut = 'publie' OR statut = 'prop') AND ") 
 	. "id_rubrique=$id_rubrique AND ($prim != $id)";
 
-	$select = "$prim AS id, $titre AS titre, statut";
+	$select = "$prim AS id, statut, $titre";
 
 	$n = sql_countsel($table, $where);
 
 	if (!$n) return '';
 
-	$voss = sql_select($select, $table, $where, '', "$order DESC", $limit);
+	if (!defined('_TRI_ARTICLES_RUBRIQUE')) define('_TRI_ARTICLES_RUBRIQUE', 'date DESC'); // surcharge possible dans mes_options.php
+	$order = ($order == '') ? _TRI_ARTICLES_RUBRIQUE : "$order DESC";
+	$voss = sql_select($select, $table, $where, '', "$order", $limit);
 
 	$limit = $n - $limit;
 	$retour = '';
@@ -49,6 +51,7 @@ function inc_meme_rubrique_dist($id_rubrique, $id, $type, $order='date', $limit=
 	$idom = 'rubrique_' . $type;
 
 	while($row = sql_fetch($voss)) {
+
 		$id = $row['id'];
 		$num = afficher_numero_edit($id, $prim, $type);
 		$statut = $row['statut'];
@@ -59,7 +62,7 @@ function inc_meme_rubrique_dist($id_rubrique, $id, $type, $order='date', $limit=
 		
 		$statut = $puce_statut($id, $statut, $id_rubrique, $type_statut);
 		$href = "<a class='verdana1' href='"
-		. generer_url_ecrire($exec[$type],"$prim=$id")
+		. generer_url_entite($id,$type)
 		. "'>"
 		. sinon(typo($row['titre']), _T('info_sans_titre'))
 		. "</a>";

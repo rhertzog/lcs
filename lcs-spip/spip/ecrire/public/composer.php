@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -83,16 +83,22 @@ function public_composer_dist($squelette, $mime_type, $gram, $source, $connect='
 // Le squelette compile est-il trop vieux ?
 // http://doc.spip.org/@squelette_obsolete
 function squelette_obsolete($skel, $squelette) {
+	static $date_change = null;
+	// ne verifier la date de mes_fonctions et mes_options qu'une seule fois
+	// par hit
+	if (is_null($date_change)){
+		if (@file_exists($fonc = 'mes_fonctions.php')
+			OR @file_exists($fonc = 'mes_fonctions.php3'))
+			$date_change = @filemtime($fonc); # compatibilite
+		if (defined('_FILE_OPTIONS'))
+			$date_change = max($date_change,@filemtime(_FILE_OPTIONS));
+	}
 	return (
 		(isset($GLOBALS['var_mode']) AND in_array($GLOBALS['var_mode'], array('recalcul','preview','debug')))
 		OR !@file_exists($skel)
 		OR ((@file_exists($squelette)?@filemtime($squelette):0)
 			> ($date = @filemtime($skel)))
-		OR (
-			(@file_exists($fonc = 'mes_fonctions.php')
-			OR @file_exists($fonc = 'mes_fonctions.php3'))
-			AND @filemtime($fonc) > $date) # compatibilite
-		OR (defined('_FILE_OPTIONS') AND @filemtime(_FILE_OPTIONS) > $date)
+		OR ($date_change > $date)
 	);
 }
 
@@ -261,9 +267,6 @@ function filtre_introduction_dist($descriptif, $texte, $longueur, $connect) {
 	if (strlen($descriptif))
 		return propre($descriptif,$connect);
 
-	// Prendre un extrait dans la bonne langue
-	$texte = extraire_multi($texte);
-
 	// De preference ce qui est marque <intro>...</intro>
 	$intro = '';
 	$texte = preg_replace(",(</?)intro>,i", "\\1intro>", $texte); // minuscules
@@ -312,10 +315,11 @@ function filtre_introduction_dist($descriptif, $texte, $longueur, $connect) {
 // elles sont traitees comme des inclusions
 // http://doc.spip.org/@synthetiser_balise_dynamique
 function synthetiser_balise_dynamique($nom, $args, $file, $lang, $ligne) {
+	// prefixer le include_once par "./" pour eviter la recherche dans le path par php
 	return
 		('<'.'?php 
 $lang_select = lang_select("'.$lang.'");
-include_once(_DIR_RACINE . "'
+include_once("./" . _DIR_RACINE . "'
 		. $file
 		. '");
 inclure_balise_dynamique(balise_'
@@ -416,6 +420,30 @@ function calculer_notes() {
 		$GLOBALS["marqueur_notes"] ++;
 	}
 	return $r;
+}
+
+// Selectionner la langue de l'objet dans la boucle, sauf dans les
+// cas ou il ne le faut pas :-)
+function lang_select_public($lang, $lang_select, $titre=null) {
+	// Cas 1. forcer_lang = true et pas de critere {lang_select}
+	if (isset($GLOBALS['forcer_lang']) AND $GLOBALS['forcer_lang']
+	AND $lang_select !== 'oui')
+		return;
+
+	// Cas 2. l'objet n'a pas de langue definie (ou definie a '')
+	if (!strlen($lang))
+		return;
+
+	// Cas 3. l'objet est multilingue !
+	if ($lang_select !== 'oui'
+	AND strlen($titre) > 10
+	AND strpos($titre, '<multi>') !== false
+	AND strpos(echappe_html($titre), '<multi>') !== false)
+		return;
+
+	// Tous les cas ayant ete elimines, faire le job
+	$GLOBALS['spip_lang'] = $lang;
+	return;
 }
 
 

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -167,9 +167,7 @@ function exec_statistiques_visites_args($id_article, $duree, $interval, $type, $
 		$n =  count($res);
 		$plus = generer_url_ecrire('statistiques_visites', $args);
 		if ($plus) {
-			$plus = ($limit == $n)
-			? "<div style='text-align:right;'><b><a href='$plus'>+++</a></b></div>"
-			: '';
+			$plus = "<div style='text-align:right;'><b><a href='$plus'>+++</a></b></div>";
 		}
 		$titre = _T("onglet_origine_visites")
 		. " ($n " 

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -124,20 +124,11 @@ if (isset($GLOBALS['_INC_PUBLIC'])) {
 	}
 
 	if ($var_preview AND $html) {
-		include_spip('inc/minipres'); // pour http_img_pack
-		$x = '<div class="spip_large" style="
-		display: block;
-		color: #eeeeee;
-		background-color: #111111;
-		padding-right: 5px;
-		padding-top: 2px;
-		padding-bottom: 5px;
-		top: 0px;
-		left: 0px;
-		position: absolute;
-		">' 
-		. http_img_pack('naviguer-site.png', _T('previsualisation'), '')
-		. '&nbsp;' . majuscules(_T('previsualisation')) . '</div>';
+		include_spip('inc/filtres'); // pour http_img_pack
+		$x = _T('previsualisation');
+		$x = http_img_pack('naviguer-site.png', $x) . '&nbsp;' . majuscules($x); 
+		$x = "<div class='spip-previsu'>$x</div>";
+
 		if (!$pos = strpos($page['texte'], '</body>'))
 			$pos = strlen($page['texte']);
 		$page['texte'] = substr_replace($page['texte'], $x, $pos, 0);
@@ -239,10 +230,17 @@ if (isset($GLOBALS['_INC_PUBLIC'])) {
 	// Effectuer une tache de fond ?
 	// si #SPIP_CRON est present, on ne le tente que pour les navigateurs
 	// en mode texte (par exemple), et seulement sur les pages web
-	if ($html
-	AND !strstr($page['texte'], '<!-- SPIP-CRON -->')
-	AND !preg_match(',msie|mozilla|opera|konqueror,i', $_SERVER['HTTP_USER_AGENT']))
+	if (defined('_DIRECT_CRON_FORCE')
+		OR (
+	  !defined('_DIRECT_CRON_INHIBE')
+	  AND $html
+	  AND !strstr($page['texte'], '<!-- SPIP-CRON -->')
+	  AND !preg_match(',msie|mozilla|opera|konqueror,i', $_SERVER['HTTP_USER_AGENT']))
+	  )
 		cron();
+
+	// sauver le cache chemin si necessaire
+	save_path_cache();
 }
 
 ?>

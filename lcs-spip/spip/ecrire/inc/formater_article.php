@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -68,7 +68,7 @@ function inc_formater_article_dist($row, $own='')
 	   ("<span style='float: $spip_lang_right; margin-top: -2px; margin-bottom: -2px;'>" . $logo . "</span>"))
 	. (acces_restreint_rubrique($id_rubrique) ? $img_admin : '')
 	  . typo(supprime_img($titre,''))
-	. (!($afficher_langue AND $lang != $GLOBALS['meta']['langue_site']) ? '' :
+	. (!($afficher_langue AND $lang != $GLOBALS['meta']['langue_site'] AND strlen($lang)) ? '' :
 	   (" <span class='spip_xx-small' style='color: #666666' dir='$lang_dir'>(".traduire_nom_langue($lang).")</span>"))
 	  . (!$row['petition'] ? '' :
 	     ("</a> <a href='" . generer_url_ecrire('controle_petition', "id_article=$id_article") . "' class='spip_xx-small' style='color: red'>"._T('lien_petitions')))

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -31,10 +31,17 @@ function install_fichier_connexion($nom, $texte)
 // http://doc.spip.org/@install_connexion
 function install_connexion($adr, $port, $login, $pass, $base, $type, $pref, $ldap='')
 {
+	$adr = addcslashes($adr,"'\\");
+	$port = addcslashes($port,"'\\");
+	$login = addcslashes($login,"'\\");
+	$pass = addcslashes($pass,"'\\");
+	$base = addcslashes($base,"'\\");
+	$type = addcslashes($type,"'\\");
+	$pref = addcslashes($pref,"'\\");
+	$ldap = addcslashes($ldap,"'\\");
 	return "\$GLOBALS['spip_connect_version'] = 0.7;\n"
 	. "spip_connect_db("
-	. "'$adr','$port','$login','"
-	. addcslashes($pass, "'\\") . "','$base'"
+	. "'$adr','$port','$login','$pass','$base'"
 	. ",'$type', '$pref','$ldap');\n";
 
 }
@@ -201,7 +208,7 @@ function info_progression_etape($en_cours,$phase,$dir, $erreur = false){
 		$debut++;
 	}
 	$aff_etapes .= "</ul>";
-	$aff_etapes .= "<br class='nettoyeur' /\n";
+	$aff_etapes .= "<br class='nettoyeur' />\n";
 	return $aff_etapes;
 }
 

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -266,7 +266,8 @@ function formulaire_mots_cles($id_objet, $les_mots, $table, $table_id, $url_base
 		? " AND " . sql_in('id_mot', $les_mots, 'NOT')
 		: '';
 
-	foreach(sql_allfetsel('*', 'spip_groupes_mots') as $row) {
+	define('_TRI_GROUPES_MOTS', 'titre');  
+	foreach(sql_allfetsel('*,' . sql_multi ("titre", $spip_lang), 'spip_groupes_mots', '', '', _TRI_GROUPES_MOTS) as $row) {
 		$id_groupe = $row['id_groupe'];
 		if (autoriser('editermots', $objet, $id_objet, null,
 		array('id_groupe'=>$id_groupe,'groupe_champs'=>$row))

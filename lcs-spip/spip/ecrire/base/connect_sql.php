@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -27,6 +27,7 @@ if (!defined("_ECRIRE_INC_VERSION")) return;
 function spip_connect($serveur='', $version='') {
 	global $connexions, $spip_sql_version;
 
+	if (!is_string($serveur)) $serveur = '';
 	$index = $serveur ? $serveur : 0;
 	if (!$version) $version = $spip_sql_version;
 	if (isset($connexions[$index][$version])) return $connexions[$index];
@@ -221,6 +222,7 @@ function _q ($a) {
 // http://doc.spip.org/@table_objet
 function table_objet($type) {
 	static $surnoms = null;
+	if (!$type) return;
 	if (!$surnoms){
 		// passer dans un pipeline qui permet aux plugins de declarer leurs exceptions
 		$surnoms = pipeline('declarer_tables_objets_surnoms',

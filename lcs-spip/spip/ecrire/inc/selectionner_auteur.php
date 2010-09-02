@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -48,7 +48,7 @@ function selectionner_auteur_boucle($where, $idom)
 	foreach ($all as $row) {
 
 		$id = $row["id_auteur"];
-		$nom = typo(extraire_multi($row["nom"]));
+		$nom = typo($row["nom"]);
 
 		// attention, les <a></a> doivent etre au premier niveau
 		// et se suivrent pour que changerhighligth fonctionne

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -128,7 +128,7 @@ function debut_admin($script, $action='', $corps='') {
 			. "</legend>\n<label for='fichier'>"
 			. _T('info_creer_repertoire')
 			. "</label>\n"
-			. "<input class='formo' size='40' id='fichier' name='fichier' value='"
+			. "<input type='text' class='formo' size='40' id='fichier' name='fichier' value='"
 			. $signal
 			. "' /><br />"
 			. _T('info_creer_repertoire_2', array('repertoire' => joli_repertoire($dir)))

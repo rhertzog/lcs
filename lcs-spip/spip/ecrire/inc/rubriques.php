@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -103,6 +103,11 @@ function depublier_branche_rubrique_if($id_rubrique)
 	
 		if (sql_countsel("spip_documents_liens",  "id_objet=$id_pred AND objet='rubrique'"))
 			return $id_pred != $id_rubrique;;
+
+		$compte = pipeline('objet_compte_enfants',array('args'=>array('objet'=>'rubrique','id_objet'=>$id_pred,'statut'=>'publie'),'data'=>array()));
+		foreach($compte as $objet => $n)
+			if ($n)
+				return $id_pred != $id_rubrique;
 
 		sql_updateq("spip_rubriques", array("statut" => '0'), "id_rubrique=$id_pred");
 #		spip_log("depublier_rubrique $id_pred");
@@ -268,6 +273,9 @@ function calculer_langues_rubriques() {
 		$langues = calculer_langues_utilisees();
 		ecrire_meta('langues_utilisees', $langues);
 	}
+	
+	// avertir les plugins qui peuvent faire leur mises a jour egalement
+	pipeline('trig_calculer_langues_rubriques','');
 }
 
 // Cette fonction calcule la liste des langues reellement utilisees dans le

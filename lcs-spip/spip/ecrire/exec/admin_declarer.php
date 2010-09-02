@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -73,7 +73,7 @@ function autres_bases()
 	} else {
 	  
 	// Lire le fichier de connexion pour valeurs par defaut probables
-		list($adresse_db, $login_db, $pass_db, , $server_db)
+		list($adresse_db, $login_db, $pass_db, $sel, $server_db)
 		  = analyse_fichier_connection(_FILE_CONNECT);
 
 	// Passer la base courante en Hidden pour ne pas la proposer

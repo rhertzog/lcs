@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -617,6 +617,21 @@ function spip_sqlite_fetch($r, $t='', $serveur='',$requeter=true) {
 }
 
 
+function spip_sqlite_seek($r, $row_number, $serveur='',$requeter=true) {
+	if ($r){
+		$link = _sqlite_link($serveur);
+		if (_sqlite_is_version(3, $link)){
+			// encore un truc de bien fichu : PDO ne PEUT PAS faire de seek ou de rewind...
+			// je me demande si pour sqlite 3 il ne faudrait pas mieux utiliser
+			// les nouvelles fonctions sqlite3_xx (mais encore moins presentes...)
+			return false;
+		}
+		else {
+			return sqlite_seek($r, $row_number);
+		}
+	}
+}
+
 // http://doc.spip.org/@spip_sqlite_free
 function spip_sqlite_free(&$r, $serveur='',$requeter=true) {
 	unset($r);
@@ -888,12 +903,7 @@ function spip_sqlite_showbase($match, $serveur='',$requeter=true){
 
 // http://doc.spip.org/@spip_sqlite_showtable
 function spip_sqlite_showtable($nom_table, $serveur='',$requeter=true){
-	// remplacer le prefixe de table
-	$connexion = $GLOBALS['connexions'][$serveur ? $serveur : 0];
-	$prefixe = $connexion['prefixe'];
 
-	if ($prefixe) $nom_table = preg_replace('/^spip/', $prefixe, $nom_table);
-		
 	$query = 
 			'SELECT sql, type FROM'
    			. ' (SELECT * FROM sqlite_master UNION ALL'
@@ -945,7 +955,7 @@ function spip_sqlite_showtable($nom_table, $serveur='',$requeter=true){
 				. " AND type='index' AND name NOT LIKE 'sqlite_%'"
 				. 'ORDER BY substr(type,2,1), name';
 			$a = spip_sqlite_query($query, $serveur, $requeter);
-			while ($r = spip_sqlite_fetch($a)) {
+			while ($r = spip_sqlite_fetch($a, null, $serveur)) {
 				$key = str_replace($nom_table.'_','',$r['name']); // enlever le nom de la table ajoute a l'index
 				$colonnes = preg_replace(',.*\((.*)\).*,','$1',$r['sql']);
 				$keys['KEY '.$key] = $colonnes;
@@ -1364,6 +1374,7 @@ function _sqlite_ref_fonctions(){
 		'error' => 'spip_sqlite_error',
 		'explain' => 'spip_sqlite_explain',
 		'fetch' => 'spip_sqlite_fetch',
+		'seek' => 'spip_sqlite_seek',
 		'free' => 'spip_sqlite_free',
 		'hex' => 'spip_sqlite_hex',
 		'in' => 'spip_sqlite_in', 

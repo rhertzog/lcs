@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2009                                                *
+ *  Copyright (c) 2001-2010                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -26,7 +26,13 @@ function action_purger_dist()
 
 	case 'cache': 
 		supprime_invalideurs();
-		spip_unlink(_CACHE_RUBRIQUES);
+		@spip_unlink(_CACHE_RUBRIQUES);
+		@spip_unlink(_CACHE_PIPELINES);
+		@spip_unlink(_CACHE_PLUGINS_PATH);
+		@spip_unlink(_CACHE_PLUGINS_OPT);
+		@spip_unlink(_CACHE_PLUGINS_FCT);
+		@spip_unlink(_CACHE_PLUGINS_VERIF);
+		@spip_unlink(_CACHE_CHEMIN);
 		purger_repertoire(_DIR_CACHE);
 		purger_repertoire(_DIR_AIDE);
 		purger_repertoire(_DIR_VAR.'cache-css');
