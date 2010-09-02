@@ -226,7 +226,11 @@ foreach ($tables as $keyname => $each_table) {
             }
             //$display_rows                   =  ' - ';
             break;
+	    // Mysql 5.0.x (and lower) uses MRG_MyISAM and MySQL 5.1.x (and higher) uses MRG_MYISAM
+        // Both are aliases for MERGE
+        case 'MRG_MyISAM' :
         case 'MRG_MYISAM' :
+        case 'MERGE' :
         case 'BerkeleyDB' :
             // Merge or BerkleyDB table: Only row count is accurate.
             if ($is_show_stats) {
@@ -255,7 +259,7 @@ foreach ($tables as $keyname => $each_table) {
             }
     } // end switch
 
-    if ('MRG_MYISAM' != $each_table['ENGINE']) {
+    if (! PMA_Table::isMerge($db, $each_table['TABLE_NAME'])) {
         $sum_entries += $each_table['TABLE_ROWS'];
     }
 
@@ -345,26 +349,26 @@ foreach ($tables as $keyname => $each_table) {
     
     $ignored = false;
     $do = false;
-    
+
     if ($server_slave_status) {
         ////////////////////////////////////////////////////////////////
 
         if ((strlen(array_search($truename, $server_slave_Do_Table)) > 0) 
-            || (strlen(array_search($db, $server_slave_Do_DB))>0) 
-            || (count($server_slave_Do_DB)==1 && count($server_slave_Ignore_DB)==1)
+            || (strlen(array_search($db, $server_slave_Do_DB)) > 0) 
+            || (count($server_slave_Do_DB) == 1 && count($server_slave_Ignore_DB) == 1)
         ) {
             $do = true;
         }
         foreach ($server_slave_Wild_Do_Table as $table) {
-            if (($db == PMA_replication_strout($table)) && (ereg("^".substr(PMA_replication_strout($table, true), 0, strlen(PMA_replication_strout($table, true))-1), $truename)))
+            if (($db == PMA_replication_strout($table)) && (preg_match("@^" . substr(PMA_replication_strout($table, true), 0, strlen(PMA_replication_strout($table, true)) - 1) . "@", $truename)))
                 $do = true;
         }
         ////////////////////////////////////////////////////////////////////
-        if ((strlen(array_search($truename, $server_slave_Ignore_Table))>0)  || (strlen(array_search($db, $server_slave_Ignore_DB))>0)) {
+        if ((strlen(array_search($truename, $server_slave_Ignore_Table)) > 0)  || (strlen(array_search($db, $server_slave_Ignore_DB)) > 0)) {
             $ignored = true;
         }
         foreach ($server_slave_Wild_Ignore_Table as $table) {
-            if (($db == PMA_replication_strout($table)) && (ereg("^".substr(PMA_replication_strout($table, true), 0, strlen(PMA_replication_strout($table, true))-1), $truename)))
+            if (($db == PMA_replication_strout($table)) && (preg_match("@^" . substr(PMA_replication_strout($table, true), 0, strlen(PMA_replication_strout($table, true)) - 1) . "@", $truename)))
                 $ignored = true;
         }
     }/* elseif ($server_master_status) {

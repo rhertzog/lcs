@@ -33,7 +33,6 @@ body {
      background-repeat:  repeat-y;
      background:   #FAF9FF url(../../lcs/fdecran/gestionbdd.jpg) top center repeat-y;
   }
-  
 h1 {
     font-size:          140%;
     font-weight:        bold;
