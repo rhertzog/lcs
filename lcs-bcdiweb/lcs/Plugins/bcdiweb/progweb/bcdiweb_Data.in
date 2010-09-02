@@ -1,8 +1,8 @@
 [REPERTOIRES]
 DONNEES=/home/BcdiPlug/Data
-TRAVAIL=/usr/share/lcs/bcdiweb/progweb/travdata
-MODELES=/usr/share/lcs/bcdiweb/progweb/modeles
-CACHE=/usr/share/lcs/bcdiweb/progweb/travdemo/cache
+TRAVAIL=/usr/share/lcs/Plugins/bcdiweb/progweb/travdata
+MODELES=/usr/share/lcs/Plugins/bcdiweb/progweb/modeles
+CACHE=/usr/share/lcs/Plugins/bcdiweb/progweb/travdemo/cache
 
 [LICENCE]
 ORGANISME=###ORGA###

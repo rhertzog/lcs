@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
 
 Package: lcs-anti-spam
-Architecture: any
+Architecture: all 
 Depends: ${shlibs:Depends}, ${misc:Depends}, spamassassin, procmail, lcs-smtp, spamc
 Description: add anti-spam fonctionnality on LCS config
  add anti-spam for LCS, with spamassassin and procmail 

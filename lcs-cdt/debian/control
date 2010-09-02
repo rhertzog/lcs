@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 7)
 Standards-Version: 3.7.3
 
 Package: lcs-cdt
-Architecture: any
+Architecture: all
 Depends: lcs-web
 Description: Install homework notebook on LCS server
  This package sets up homework notebook

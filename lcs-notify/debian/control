@@ -7,7 +7,7 @@ Standards-Version: 3.7.3
 Homepage: http://lcs.crdp.ac-caen.fr
 
 Package: lcs-notify
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, apt-listchanges
 Description: apt-listchanges LCS customization
  this package configure apt-listchanges to notify

@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
 
 Package: lcs-imap-ssl
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, courier-imap-ssl
 Description: imap-ssl Auto configuration for lcs 
  configure imap-ssl on debian lcs 2

@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
 
 Package: lcs-openvpn
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, openvpn, smarty, zip, ipcalc, lcs-web, lcs-dns, lcs-preinstall(>> 2.4.4)
 Description: Provide a implementation of Openvn whith WebGUI
  Provide a implementation of Openvn whith WebGUI

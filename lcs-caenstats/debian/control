@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
 
 Package: lcs-caenstats
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-preinstall, lcs-web
 Description: add user superviseur to centralise lcs stats  
  Adding superviseur user with supervison ssh key to allow

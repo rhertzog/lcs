@@ -6,7 +6,7 @@ Maintainer: Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
 Standards-Version: 3.7.2
 
 Package: lcs-sarg
-Architecture: any
+Architecture: all
 Replaces: sqmgrlog
 Depends: ${shlibs:Depends}
 Suggests: squid, httpd | apache, squidguard, libapache-mod-php4

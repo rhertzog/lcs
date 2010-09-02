@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
 
 Package: lcs-assr
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, rsync
 Description: ASSR for LCS
  attestations scolaires de securite routiere

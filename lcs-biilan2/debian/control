@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
 
 Package: lcs-biilan2
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-web
 Description: Install Gestion du B2I v2 on LCS server
  Gestion du B2I v2

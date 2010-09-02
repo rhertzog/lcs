@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
 
 Package: lcs-security
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, fail2ban (>= 0.8)
 Description: Add somes configurations and security services on LCS
  Add lcs-auth on fail2ban service
