@@ -33,24 +33,51 @@ fi
 echo -e "$COLTITRE"
 echo "Migration LCS de Debian Etch vers Lenny"
 echo -e "$COLCMD\c"
+#######
+echo "1. Detection de la branche LCS : Lcs, LcsTesting, LcsXP"
 
-echo "1. Changement du source list"
-sed -i.etch s/etch/lenny/g /etc/apt/sources.list
-sed -i.bak s/"-caen.fr\/lenny"/"-caen.fr\/etch"/g /etc/apt/sources.list
-sed -i s/"etch Lcs main"/"etch LcsXP main"/g  /etc/apt/sources.list
+if grep LcsXP /etc/apt/sources.list; then
+        LCSTREE="LcsXP"
+elif grep LcsTesting /etc/apt/sources.list; then
+        LCSTREE="LcsTesting"
+else
+        LCSTREE="Lcs"
+fi
+echo "Votre LCS est sur la branche :  $LCSTREE"
+#######
+echo "2. Changement du source list"
 
-echo "2. Upgrade de la distribution : Fournir les reponses par defaut."
+cp /etc/apt/sources.list /etc/apt/sources.list.etch
+
+echo "deb http://ftp.fr.debian.org/debian lenny main
+deb-src http://ftp.fr.debian.org/debian lenny main
+
+deb http://lcs.crdp.ac-caen.fr/lenny $LCSTREE main
+
+deb http://security.debian.org/ lenny/updates main
+deb-src http://security.debian.org/ lenny/updates main
+
+deb http://volatile.debian.org/debian-volatile lenny/volatile main
+deb-src http://volatile.debian.org/debian-volatile lenny/volatile main" > /etc/apt/sources.list
+#######
+echo "3. Test si on enleve pas des paquest LCS !"
+if apt-get dist-upgrade -s | grep Remv | grep lcs; then
+        echo "Migration ETCH -> LENNY interrompue par tentative de desinstallation des paquets LCS"
+        exit 1
+fi
+#######
+echo "4. Upgrade de la distribution : Fournir les reponses par defaut."
 apt-get update
 apt-get dist-upgrade -y
-
-echo "3. Mise a jour des droits sur le repertoires MAILDIR"
+#######
+echo "5. Mise a jour des droits sur le repertoires MAILDIR"
 for MAILDIR in `find /home -name Maildir`
 do
         echo "$MAILDIR"
         chgrp -R lcs-users $MAILDIR
 done
-
-echo "4. Mise en place de lcs-sysinfo en remplacement de lcs-phpsysinfo"
+#######
+echo "6. Mise en place de lcs-sysinfo en remplacement de lcs-phpsysinfo"
 apt-get install -y --force-yes lcs-sysinfo
 
 echo -e "$COLTITRE"

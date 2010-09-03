@@ -1,3 +1,10 @@
+lcs-web (2.4.7.1~1) UNRELEASED; urgency=low
+
+  * Modify lcs-etch2lenny script
+  * Add a set of pics in Annu/images
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 03 Sep 2010 15:50:06 +0200
+
 lcs-web (2.4.7) Lcs; urgency=low
 
   * Fix bug  maj modules Auto/Manu (scripts modules_installes.php and boutons_style.css)
