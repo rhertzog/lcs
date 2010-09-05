@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: edit_class.php 3477 2009-09-29 05:49:12Z crob $
+* $Id: edit_class.php 4028 2010-01-19 07:35:13Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -33,7 +33,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -41,9 +41,30 @@ if (!checkAccess()) {
 }
 
 $id_classe = isset($_GET['id_classe']) ? $_GET['id_classe'] : (isset($_POST['id_classe']) ? $_POST["id_classe"] : NULL);
-if (!is_numeric($id_classe)) $id_classe = 0;
+if (!is_numeric($id_classe)) {$id_classe = 0;}
 $classe = get_classe($id_classe);
 
+if(isset($_GET['forcer_recalcul_rang'])) {
+	$sql="SELECT num_periode FROM periodes WHERE id_classe='$id_classe' ORDER BY num_periode DESC LIMIT 1;";
+	$res_per=mysql_query($sql);
+	if(mysql_num_rows($res_per)>0) {
+		$lig_per=mysql_fetch_object($res_per);
+		$recalcul_rang="";
+		for($i=0;$i<$lig_per->num_periode;$i++) {$recalcul_rang.="y";}
+		$sql="UPDATE groupes SET recalcul_rang='$recalcul_rang' WHERE id in (SELECT id_groupe FROM j_groupes_classes WHERE id_classe='$id_classe');";
+		//echo "$sql<br />";
+		$res=mysql_query($sql);
+		if(!$res) {
+			$msg="Erreur lors de la programmation du recalcul des rangs pour cette classe.";
+		}
+		else {
+			$msg="Recalcul des rangs programmé pour cette classe.";
+		}
+	}
+	else {
+		$msg="Aucune période n'est définie pour cette classe.<br />Recalcul des rangs impossible pour cette classe.";
+	}
+}
 
 // =================================
 // AJOUT: boireaus
@@ -104,10 +125,13 @@ if (isset($_POST['is_posted'])) {
     }
 
     foreach ($_POST as $key => $value) {
-        $pattern = "/^note\_sup\_10\_/";
+        //$pattern = "/^note\_sup\_10\_/";
+        $pattern = "/^mode\_moy\_/";
         if (preg_match($pattern, $key)) {
             $group_id = preg_replace($pattern, "", $key);
-            $options[$group_id]["mode_moy"] = "sup10";
+            //$options[$group_id]["mode_moy"] = "sup10";
+            $options[$group_id]["mode_moy"] = $value;
+			//echo "mode_moy pour $group_id : $value<br />";
         }
     }
 
@@ -154,7 +178,8 @@ if (isset($_POST['is_posted'])) {
 
 if (isset($_GET['action'])) {
     $msg = null;
-    if ($_GET['action'] == "delete_group") {
+    //if ($_GET['action'] == "delete_group") {
+    if(($_GET['action'] == "delete_group")&&(isset($_GET['confirm_delete_group']))&&($_GET['confirm_delete_group'] == "y")) {
         if (!is_numeric($_GET['id_groupe'])) $_GET['id_groupe'] = 0;
         $verify = test_before_group_deletion($_GET['id_groupe']);
         if ($verify) {
@@ -191,6 +216,116 @@ $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter
 $titre_page = "Gestion des enseignements";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE **********************************
+
+
+if((isset($_GET['action']))&&($_GET['action']=="delete_group")&&(!isset($_GET['confirm_delete_group']))) {
+	// On va détailler ce qui serait supprimé en cas de confirmation
+	$tmp_group=get_group($_GET['id_groupe']);
+	echo "<div style='border: 2px solid red;'>\n";
+	echo "<p><b>ATTENTION&nbsp;:</b> Vous souhaitez supprimer l'enseignement suivant&nbsp;: ".$tmp_group['name']." (<i>".$tmp_group['description']."</i>) en ".$tmp_group['classlist_string']."<br />\n";
+	echo "Voici quelques éléments sur l'enseignement&nbsp;:</p>\n";
+	$suppression_possible='y';
+
+	$lien_bull_simp="";
+	$sql="SELECT num_periode FROM periodes WHERE id_classe='$id_classe' ORDER BY num_periode DESC LIMIT 1;";
+	//echo "$sql<br />";
+	$res_per=mysql_query($sql);
+	if(mysql_num_rows($res_per)>0) {
+		$lig_per=mysql_fetch_object($res_per);
+
+		$lien_bull_simp="<a href='../prepa_conseil/edit_limite.php?choix_edit=1&amp;id_classe=$id_classe&amp;periode1=1&amp;periode2=$lig_per->num_periode' target='_blank'><img src='../images/icons/bulletin_simp.png' width='17' height='17' alt='Bulletin simple dans une nouvelle page' title='Bulletin simple dans une nouvelle page' /></a>";
+	}
+
+	echo "<p style='margin-left:5em;'>";
+	$sql="SELECT 1=1 FROM matieres_notes WHERE id_groupe='".$_GET['id_groupe']."';";
+	$test_mn=mysql_query($sql);
+	$nb_mn=mysql_num_rows($test_mn);
+	if($nb_mn==0) {
+		echo "Aucune note sur les bulletins.<br />\n";
+	}
+	else {
+		echo "<span style='color:red;'>$nb_mn note(s) sur les bulletins</span> (<i>toutes périodes confondues</i>)&nbsp;: $lien_bull_simp<br />\n";
+		$suppression_possible='n';
+	}
+
+	$sql="SELECT 1=1 FROM matieres_appreciations WHERE id_groupe='".$_GET['id_groupe']."';";
+	$test_ma=mysql_query($sql);
+	$nb_ma=mysql_num_rows($test_ma);
+	if($nb_ma==0) {
+		echo "Aucune appréciation sur les bulletins.<br />\n";
+	}
+	else {
+		echo "<span style='color:red;'>$nb_ma appréciation(s) sur les bulletins</span> (<i>toutes périodes confondues</i>)&nbsp;: $lien_bull_simp<br />\n";
+		$suppression_possible='n';
+	}
+
+	$temoin_non_vide='n';
+	// CDT
+	$sql="SELECT 1=1 FROM ct_entry WHERE id_groupe='".$_GET['id_groupe']."';";
+	$test_notice_cdt=mysql_query($sql);
+	$nb_notice_cdt=mysql_num_rows($test_notice_cdt);
+	if($nb_notice_cdt==0) {
+		echo "Aucune notice dans le cahier de textes.<br />\n";
+	}
+	else {
+		echo "$nb_notice_cdt notice(s) dans le cahier de textes.<br />\n";
+		$temoin_non_vide='y';
+	}
+
+	$sql="SELECT 1=1 FROM ct_devoirs_entry WHERE id_groupe='".$_GET['id_groupe']."';";
+	$test_devoir_cdt=mysql_query($sql);
+	$nb_devoir_cdt=mysql_num_rows($test_devoir_cdt);
+	if($nb_devoir_cdt==0) {
+		echo "Aucun devoir dans le cahier de textes.<br />\n";
+	}
+	else {
+		echo "$nb_devoir_cdt devoir(s) dans le cahier de textes.<br />\n";
+		$temoin_non_vide='y';
+	}
+
+	// NOTES
+	// Récupérer les cahier de notes
+	$sql="SELECT DISTINCT id_cahier_notes, periode FROM cn_cahier_notes WHERE id_groupe='".$_GET['id_groupe']."' ORDER BY periode;";
+	$res_ccn=mysql_query($sql);
+	if(mysql_num_rows($res_ccn)==0) {
+		echo "Aucun cahier de notes n'est initialisé pour cet enseignement.<br />\n";
+	}
+	else {
+		while($lig_id_cn=mysql_fetch_object($res_ccn)) {
+			$sql="SELECT 1=1 FROM cn_devoirs WHERE id_racine='$lig_id_cn->id_cahier_notes';";
+			$res_dev=mysql_query($sql);
+			$nb_dev=mysql_num_rows($res_dev);
+			if($nb_dev==0) {
+				echo "Période $lig_id_cn->periode&nbsp;: Aucun devoir.<br />\n";
+			}
+			else {
+				echo "Période $lig_id_cn->periode&nbsp;: $nb_dev devoir(s) dans le carnet de notes.<br />\n";
+				$temoin_non_vide='y';
+			}
+		}
+	}
+	echo "</p>\n";
+
+	if($suppression_possible=='y') {
+		if($temoin_non_vide=='y') {
+			echo "<p>Si vous souhaitez effectuer ";
+			echo "malgré tout ";
+			echo "la suppression de l'enseignement&nbsp;: ";
+			echo "<a href='edit_class.php?id_groupe=".$_GET['id_groupe']."&amp;action=delete_group&amp;confirm_delete_group=y&amp;id_classe=$id_classe' onclick=\"return confirmlink(this, 'ATTENTION !!! L\'enseignement n\'est pas totalement vide, même si les bulletins ne contiennent pas de référence à cet enseignement.\\nEtes-vous *VRAIMENT SÛR* de vouloir continuer ?', 'Confirmation de la suppression')\">Supprimer</a>";
+			echo "</p>\n";
+		}
+		else {
+			echo "<p>Si vous souhaitez confirmer la suppression de l'enseignement&nbsp;: ";
+			echo "<a href='edit_class.php?id_groupe=".$_GET['id_groupe']."&amp;action=delete_group&amp;confirm_delete_group=y&amp;id_classe=$id_classe'>Supprimer</a>";
+			echo "</p>\n";
+		}
+	}
+	else {
+		echo "<p style='color:red;'>Des données existantes bloquent la suppression du groupe.<br />Aucune note ni appréciation du bulletin ne doit avoir été saisie pour les élèves de ce groupe pour permettre la suppression du groupe.</p>";
+	}
+	echo "</div>\n";
+}
+
 
 $display_mat_cat="n";
 $sql="SELECT display_mat_cat FROM classes WHERE id='$id_classe';";
@@ -293,6 +428,7 @@ echo "</a>";
 echo "</p>\n";
 echo "</form>\n";
 
+
 echo "<h3>Gestion des enseignements pour la classe :" . $classe["classe"]."</h3>\n";
 
 echo "</td>";
@@ -384,8 +520,35 @@ if(count($groups)==0){
 <input type='radio' name='ordre' id='ordre_alpha' value='ordre_alpha' /><label for='ordre_alpha' style='cursor: pointer;'> suivant l'ordre alphabétique des matières.</label>
 </fieldset>
 </td>
+
 <td><input type='submit' value='Enregistrer' /></td>
+
 <td width='40%'>
+<?php
+
+
+$call_nom_class = mysql_query("SELECT * FROM classes WHERE id = '$id_classe'");
+$display_rang = mysql_result($call_nom_class, 0, 'display_rang');
+if($display_rang=='y') {
+	$titre="Recalcul des rangs";
+	$texte="<p>Un utilisateur a rencontré un jour le problème suivant&nbsp;:<br />Le rang était calculé pour les enseignements, mais pas pour le rang général de l'élève.<br />Ce lien permet de forcer le recalcul des rangs pour les enseignements comme pour le rang général.<br />Le recalcul sera effectué lors du prochain affichage de bulletin ou de moyennes.</p>";
+	$tabdiv_infobulle[]=creer_div_infobulle('recalcul_rang',$titre,"",$texte,"",25,0,'y','y','n','n');
+	
+	echo "<fieldset style='padding-top: 8px; padding-bottom: 8px;  margin-left: auto; margin-right: auto;'>\n";
+	echo "<p>Pour cette classe, <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe&amp;forcer_recalcul_rang=y' onclick=\"return confirm_abandon (this, change, '$themessage')\">forcer le recalcul des rangs</a> ";
+	
+	echo "<a href='#' onclick=\"afficher_div('recalcul_rang','y',-100,20);return false;\"";
+	echo ">";
+	echo "<img src='../images/icons/ico_ampoule.png' width='15' height='25' alt='Forcer le recalcul des rangs' title='Forcer le recalcul des rangs' />\n";
+	echo "</a>";
+	
+	echo ".</p>\n";
+	echo "</fieldset>\n";
+}
+?>
+
+<br />
+
 <fieldset style="padding-top: 8px; padding-bottom: 8px;  margin-left: auto; margin-right: auto;">
 <!--a href='javascript:coeff();'>Mettre tous les coefficients à</a-->
 <input type='button' value='Mettre tous les coefficients à' onClick='coeff(); changement();' />
@@ -425,7 +588,8 @@ for($i=0;$i<10;$i++){
         echo "<br/>";
         echo "<fieldset style=\"padding-top: 8px; padding-bottom: 8px;  margin-left: auto; margin-right: auto;\">";
         echo "<table border = '0' width='100%' summary='Suppression'><tr><td width='25%'>";
-        echo "<a href='edit_class.php?id_groupe=". $group["id"] . "&amp;action=delete_group&amp;id_classe=$id_classe' onclick=\"return confirmlink(this, 'ATTENTION !!! LISEZ CET AVERTISSEMENT : La suppression d\'un enseignement est irréversible. Une telle suppression ne devrait pas avoir lieu en cours d\'année. Si c\'est le cas, cela peut entraîner la présence de données orphelines dans la base. Si des données officielles (notes et appréciations du bulletin) sont présentes, la suppression sera bloquée. Dans le cas contraire, toutes les données liées au groupe seront supprimées, incluant les notes saisies par les professeurs dans le carnet de notes ainsi que les données présentes dans le cahier de texte. Etes-vous *VRAIMENT SÛR* de vouloir continuer ?', 'Confirmation de la suppression')\"><img src='../images/icons/delete.png' alt='Supprimer' style='width:13px; heigth: 13px;' /></a>";
+        //echo "<a href='edit_class.php?id_groupe=". $group["id"] . "&amp;action=delete_group&amp;id_classe=$id_classe' onclick=\"return confirmlink(this, 'ATTENTION !!! LISEZ CET AVERTISSEMENT : La suppression d\'un enseignement est irréversible. Une telle suppression ne devrait pas avoir lieu en cours d\'année. Si c\'est le cas, cela peut entraîner la présence de données orphelines dans la base. Si des données officielles (notes et appréciations du bulletin) sont présentes, la suppression sera bloquée. Dans le cas contraire, toutes les données liées au groupe seront supprimées, incluant les notes saisies par les professeurs dans le carnet de notes ainsi que les données présentes dans le cahier de texte. Etes-vous *VRAIMENT SÛR* de vouloir continuer ?', 'Confirmation de la suppression')\"><img src='../images/icons/delete.png' alt='Supprimer' style='width:13px; heigth: 13px;' /></a>";
+        echo "<a href='edit_class.php?id_groupe=". $group["id"] . "&amp;action=delete_group&amp;id_classe=$id_classe'><img src='../images/icons/delete.png' alt='Supprimer' style='width:13px; heigth: 13px;' /></a>";
         echo " -- <span class=\"norme\">";
         echo "<b>";
         if ($total == "1") {
@@ -561,11 +725,40 @@ for($i=0;$i<10;$i++){
 
         // Coefficient
         //echo "<td>Coefficient : <input type=\"text\" onchange=\"changement()\" id='coef_".$cpt_grp."' name='". "coef_" . $current_group["id"] . "' value='" . $current_group["classes"]["classes"][$id_classe]["coef"] . "' size=\"5\" /></td></tr>";
-        echo "<td>Coefficient : <input type=\"text\" onchange=\"changement()\" id='coef_".$cpt_grp."' name='". "coef_" . $current_group["id"] . "' value='" . $current_group["classes"]["classes"][$id_classe]["coef"] . "' size=\"5\" />";
+        echo "<td align='center'>Coefficient : <input type=\"text\" onchange=\"changement()\" id='coef_".$cpt_grp."' name='". "coef_" . $current_group["id"] . "' value='" . $current_group["classes"]["classes"][$id_classe]["coef"] . "' size=\"5\" />";
         echo "<br />\n";
-        echo "<input type='checkbox' name='note_sup_10_".$current_group["id"]."' id='note_sup_10_".$current_group["id"]."' value='y' ";
+
+		/*
+        echo "<input type='checkbox' name='note_sup_10_".$current_group["id"]."' id='note_sup_10_".$current_group["id"]."' value='y' onchange=\"changement()\" ";
         if($current_group["classes"]["classes"][$id_classe]["mode_moy"]=="sup10") {echo "checked ";}
         echo "/><label for='note_sup_10_".$current_group["id"]."'> Note&gt;10</label>\n";
+		*/
+
+		echo "<table class='boireaus' summary='Mode de prise en compte dans la moyenne'>\n";
+		echo "<tr>\n";
+		echo "<th class='small'><label for='note_standard_".$current_group["id"]."' title='La note compte normalement dans la moyenne.'>La note<br />compte</label></th>\n";
+		echo "<th class='small'><label for='note_bonus_".$current_group["id"]."' title='Les points au-dessus de 10 coefficientés sont ajoutés sans augmenter le total des coefficients.'>Bonus</label></th>\n";
+		echo "<th class='small'><label for='note_sup_10_".$current_group["id"]."' title='La note ne compte que si elle est supérieure ou égale à 10'>Sup10</label></th>\n";
+		echo "</tr>\n";
+		echo "<tr>\n";
+		echo "<td>\n";
+        echo "<input type='radio' name='mode_moy_".$current_group["id"]."' id='note_standard_".$current_group["id"]."' value='-' onchange=\"changement()\" ";
+        if($current_group["classes"]["classes"][$id_classe]["mode_moy"]=="-") {echo "checked ";}
+        echo "/>\n";
+		echo "</td>\n";
+		echo "<td>\n";
+        echo "<input type='radio' name='mode_moy_".$current_group["id"]."' id='note_bonus_".$current_group["id"]."' value='bonus' onchange=\"changement()\" ";
+        if($current_group["classes"]["classes"][$id_classe]["mode_moy"]=="bonus") {echo "checked ";}
+        echo "/>\n";
+		echo "</td>\n";
+		echo "<td>\n";
+        echo "<input type='radio' name='mode_moy_".$current_group["id"]."' id='note_sup_10_".$current_group["id"]."' value='sup10' onchange=\"changement()\" ";
+        if($current_group["classes"]["classes"][$id_classe]["mode_moy"]=="sup10") {echo "checked ";}
+        echo "/>\n";
+		echo "</td>\n";
+		echo "</tr>\n";
+		echo "</table>\n";
+
         echo "</td>\n";
         echo "</tr>\n";
 
@@ -690,6 +883,16 @@ Les coefficients réglés ici ne s'appliquent donc qu'à la classe
     echo $classe_tmp["classe"];
 ?>
 , même dans le cas des enseignements concernant des regroupements de plusieurs classes.</li>
+<li>
+	Les modes de prise en compte de la moyenne d'un enseignement dans la moyenne générale sont les suivants&nbsp;:
+	<ul>
+		<li>La note compte&nbsp;: La note compte normalement dans la moyenne.</li>
+		<li>Bonus&nbsp;: Les points au-dessus de 10 sont coefficientés et ajoutés au total des points, mais le total des coefficients n'est pas augmenté.</li>
+		<li>Sup10&nbsp;: La note n'est comptée que si elle est supérieure à 10.<br />
+		Remarque&nbsp;: Cela n'améliore pas nécessairement la moyenne générale de l'élève puisque s'il avait 13 de moyenne générale sans cette note, il perd des points s'il a 12 à un enseignement compté sup10.<br />
+		Et l'élève qui a 9 à cet enseignement ne perd pas de point... injuste, non?</li>
+	</ul>
+</li>
 </ul>
 <?php
 

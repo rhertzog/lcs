@@ -1,14 +1,9 @@
 
-@version $Id: changelog.txt 3492 2009-10-02 16:05:42Z tbelliard $
+@version $Id: changelog.txt 2166 2008-07-25 13:41:58Z eabgrall $
 
 |==================|
 |= CHANGELOG GEPI =|
 |==================|
-
-NOTE : le changelog n'est plus tenu à jour...
-Pour consulter l'historique des modifications, vous pouvez visualiser directement
-les logs de commit SVN, ou bien naviguer sur la page http://www.sylogix.org/projects/activity/gepi
-qui devient la référence principale en terme de suivi de l'activité sur Gepi.
 
 Gepi-1.5.1-rc2 (XX/XX/2008)
 ===========================

@@ -1,4 +1,25 @@
 <?php
+/*
+ * $Id$
+ *
+ * Copyright 2009 Josselin Jacquard
+ *
+ * This file is part of GEPI.
+ *
+ * GEPI is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GEPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GEPI; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 header('Content-Type: text/html; charset=ISO-8859-1');
 // On désamorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
 if (isset($_GET['traite_anti_inject']) OR isset($_POST['traite_anti_inject'])) $traite_anti_inject = "yes";
@@ -29,7 +50,11 @@ if (getSettingValue("active_cahiers_texte")!='y') {
 	die("Le module n'est pas activé.");
 }
 
-$utilisateur = $_SESSION['utilisateurProfessionnel'];
+//commente, uniquement utile pour la completion
+//$group = new Groupe();
+//$ctTravailAFaires = new PropelObjectCollection();
+
+$utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
 if ($utilisateur == null) {
 	header("Location: ../logout.php?auto=1");
 	die();
@@ -74,8 +99,8 @@ foreach ($groups as $group) {
 	echo "<tr>";
 	//afichage du dernier compte rendu
 	echo "<td style=\"width:50%;\" valign=\"top\">";
-	if (isset($ctCompteRendus[0]) && $ctCompteRendus[0] != null) {
-		$compte_rendu = $ctCompteRendus[0];
+	if ($ctCompteRendus && !$ctCompteRendus->isEmpty()) {
+		$compte_rendu = $ctCompteRendus->getFirst();
 		affiche_compte_rendu_vignette($compte_rendu, $couleur_bord_tableau_notice, $color_fond_notices);
 	}
 	echo "</td>";
@@ -87,8 +112,8 @@ foreach ($groups as $group) {
 	$criteria->setLimit(1);
 	$ctTravailAFaires = $group->getCahierTexteTravailAFaires($criteria);
 	echo "<td style=\"width:50%;\" valign=\"top\">";
-	if (!empty($ctTravailAFaires)) {
-		$devoir = $ctTravailAFaires[0];
+	if ($ctTravailAFaires && !$ctTravailAFaires->isEmpty()) {
+		$devoir = $ctTravailAFaires->getFirst();
 		//on affiche le devoir car il y en a un
 		affiche_devoir_vignette($devoir, $couleur_bord_tableau_notice, $color_fond_notices);
 	}
@@ -98,8 +123,8 @@ foreach ($groups as $group) {
 	echo "<tr>";
 	//récupération et affichage du deuxieme compte rendu
 	echo "<td style=\"width:50%;\" valign=\"top\">";
-	if (isset($ctCompteRendus[1]) && $ctCompteRendus[0] != null) {
-		$compte_rendu = $ctCompteRendus[1];
+	if ($ctCompteRendus && $ctCompteRendus->count() > 1) {
+		$compte_rendu = $ctCompteRendus->getNext();
 		affiche_compte_rendu_vignette($compte_rendu, $couleur_bord_tableau_notice, $color_fond_notices);
 	}
 	echo "</td>";

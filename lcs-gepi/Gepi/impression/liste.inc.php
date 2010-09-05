@@ -1,6 +1,6 @@
 <?php
 /*
-$Id: liste.inc.php 3789 2009-11-24 17:24:11Z crob $
+$Id: liste.inc.php 5184 2010-09-04 07:10:24Z crob $
 */
 
 // Traitement des données pour une classe référencée par id_classe et id_periode
@@ -177,6 +177,11 @@ global $prefix_base ;
 	echo "</pre>";
 	*/
 
-    return $donnees_eleves;
+	if(isset($donnees_eleves)) {
+	    return $donnees_eleves;
+	}
+	else {
+	    return array();
+	}
 }
 ?>

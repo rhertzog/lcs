@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: eleve_options.php 3572 2009-10-09 16:16:25Z crob $
+* $Id: eleve_options.php 4081 2010-02-10 14:50:48Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -35,7 +35,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
@@ -112,6 +112,12 @@ if($_SESSION['statut']=="administrateur"){
 			}
 			$j++;
 		}
+
+		// On vide les signalements par un prof lors de l'enregistrement
+		$sql="DELETE FROM j_signalement WHERE nature='erreur_affect' AND login='".$login_eleve."';";
+		//echo "$sql<br />";
+		$del=mysql_query($sql);
+
 		//$affiche_message = 'yes';
 		if($msg=='') {$msg= "Les modifications ont été enregistrées !";}
 	}
@@ -312,12 +318,25 @@ if($_SESSION['statut']=="administrateur"){
 $call_group = mysql_query("SELECT DISTINCT g.id, g.name,g.description FROM groupes g, j_groupes_classes jgc WHERE (g.id = jgc.id_groupe and jgc.id_classe = '" . $id_classe ."') ORDER BY jgc.priorite, g.name");
 $nombre_ligne = mysql_num_rows($call_group);
 
+$tab_sig=array();
+$sql="SELECT * FROM j_signalement WHERE nature='erreur_affect' AND login='$login_eleve';";
+//echo "$sql<br />";
+$res_sig=mysql_query($sql);
+if(mysql_num_rows($res_sig)>0) {
+	while($lig_sig=mysql_fetch_object($res_sig)) {
+		$tab_sig[$lig_sig->periode][$lig_sig->id_groupe]=my_ereg_replace("_"," ",$lig_sig->valeur)." selon ".affiche_utilisateur($lig_sig->declarant,$id_classe);
+		//echo my_ereg_replace("_"," ",$lig_sig->valeur)." selon ".affiche_utilisateur($lig_sig->declarant,$id_classe)."<br />";
+		//echo "\$tab_sig[$lig_sig->periode][$lig_sig->id_groupe]=".$tab_sig[$lig_sig->periode][$lig_sig->id_groupe]."<br />";
+	}
+}
+
 //=========================
 // MODIF: boireaus
 //echo "<table border = '1' cellpadding='5' cellspacing='0'>\n<tr><td><b>Matière</b></td>";
 //echo "<table border = '1' cellpadding='5' cellspacing='0'>\n";
-echo "<table border = '1' cellpadding='5' cellspacing='0' class='boireaus'>\n";
-echo "<tr align='center'><td><b>Matière</b></td>\n";
+echo "<table border='1' cellpadding='5' cellspacing='0' class='boireaus'>\n";
+echo "<tr align='center'>\n";
+echo "<th><b>Matière</b></th>\n";
 //=========================
 $j = 1;
 $chaine_coche="";
@@ -325,8 +344,8 @@ $chaine_decoche="";
 while ($j < $nb_periode) {
 	//=========================
 	// MODIF: boireaus
-	//echo "<td><b>".$nom_periode[$j]."</b></td>";
-	echo "<td><b>".$nom_periode[$j]."</b>";
+	//echo "<th><b>".$nom_periode[$j]."</b></th>";
+	echo "<th><b>".$nom_periode[$j]."</b>";
 	if($_SESSION['statut']=="administrateur"){
 		echo "<br />\n";
 		//echo "<input type='button' name='coche_col_$j' id='id_coche_col_$j' value='Coche' onClick='coche($j,\"col\")' />/\n";
@@ -336,7 +355,7 @@ while ($j < $nb_periode) {
 		echo "<a href='javascript:modif_case($j,\"col\",true)'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>/\n";
 		echo "<a href='javascript:modif_case($j,\"col\",false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
 	}
-	echo "</td>\n";
+	echo "</th>\n";
 
 	$chaine_coche.="modif_case($j,\"col\",true);";
 	$chaine_decoche.="modif_case($j,\"col\",false);";
@@ -344,13 +363,13 @@ while ($j < $nb_periode) {
 	//=========================
 	$j++;
 }
-//echo "<td>&nbsp;</td>\n";
+//echo "<th>&nbsp;</th>\n";
 
 if($_SESSION['statut']=="administrateur"){
-	echo "<td>\n";
+	echo "<th>\n";
 	echo "<a href='javascript:$chaine_coche'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>/\n";
 	echo "<a href='javascript:$chaine_decoche'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
-	echo "</td>\n";
+	echo "</th>\n";
 }
 
 echo "</tr>\n";
@@ -364,7 +383,7 @@ while ($i < $nombre_ligne) {
 	//$description_groupe = mysql_result($call_group, $i, "description");
 	$description_groupe = htmlentities(mysql_result($call_group, $i, "description"));
 	$alt=$alt*(-1);
-	echo "<tr class='lig$alt'>\n";
+	echo "<tr class='lig$alt white_hover'>\n";
 	echo "<td>";
 
 	$sql="SELECT u.nom,u.prenom FROM j_groupes_professeurs jgp, utilisateurs u WHERE
@@ -380,6 +399,16 @@ while ($i < $nombre_ligne) {
 		}
 		$texte_alternatif=substr($texte_alternatif,2);
 	}
+
+	$sql="SELECT DISTINCT c.classe FROM classes c, j_groupes_classes jgc WHERE jgc.id_groupe='$id_groupe' AND c.id=jgc.id_classe ORDER BY c.classe;";
+	$res_clas_grp=mysql_query($sql);
+	$liste_classes_du_groupe="";
+	while($lig_classe=mysql_fetch_object($res_clas_grp)) {
+		$liste_classes_du_groupe.=", ".$lig_classe->classe;
+	}
+	if($liste_classes_du_groupe!='') {$liste_classes_du_groupe=substr($liste_classes_du_groupe,2);}
+
+	$texte_alternatif.=" (".$liste_classes_du_groupe.")";
 
 	echo "<a href='../groupes/edit_group.php?id_groupe=$id_groupe&amp;id_classe=$id_classe&amp;mode=groupe' title='$texte_alternatif'>";
 	echo $nom_groupe;
@@ -405,32 +434,42 @@ while ($i < $nombre_ligne) {
 				$sql="SELECT DISTINCT id_classe FROM j_groupes_classes WHERE id_groupe='$id_groupe'";
 				$res_grp=mysql_query($sql);
 				$temoin="";
+				//$liste_classes_du_groupe="";
 				while($lig_clas=mysql_fetch_object($res_grp)){
+					/*
+					$sql="SELECT classe FROM classes WHERE id='$lig_clas->id_classe'";
+					$res_tmp=mysql_query($sql);
+					$lig_tmp=mysql_fetch_object($res_tmp);
+					$liste_classes_du_groupe.=", ";
+					$liste_classes_du_groupe.=$lig_tmp->classe;
+					*/
 					$sql="SELECT 1=1 FROM j_eleves_classes WHERE id_classe='$lig_clas->id_classe' AND login='$login_eleve' AND periode='$j'";
 					$res_test_ele=mysql_query($sql);
 					if(mysql_num_rows($res_test_ele)==1){
+						
 						$sql="SELECT classe FROM classes WHERE id='$lig_clas->id_classe'";
 						$res_tmp=mysql_query($sql);
 						$lig_tmp=mysql_fetch_object($res_tmp);
+						
 						$clas_tmp=$lig_tmp->classe;
 
 						$temoin=$clas_tmp;
 					}
 				}
+				//if($liste_classes_du_groupe!='') {$liste_classes_du_groupe=substr($liste_classes_du_groupe,2);}
 
-				if($temoin!=""){
-					echo "<td><center>".$temoin;
-					if($_SESSION['statut']=="administrateur"){
+				echo "<td style='text-align:center'>";
+				if($temoin!="") {
+					echo $temoin;
+					if($_SESSION['statut']=="administrateur") {
 						echo "<input type='hidden' name=".$id_groupe."_".$j." value='checked' />";
 					}
-					else{
+					else {
 						echo "<img src='../images/enabled.png' width='15' height='15' alt='Inscrit' />";
 					}
-					echo "</center></td>\n";
 				}
-				else{
-					echo "<td><center>";
-					if($_SESSION['statut']=="administrateur"){
+				else {
+					if($_SESSION['statut']=="administrateur") {
 						$msg_erreur="Cette case est validée et ne devrait pas l être. Validez le formulaire pour corriger.";
 						echo "<a href='#' alt='$msg_erreur' title='$msg_erreur'><font color='red'>ERREUR</font></a>";
 					}
@@ -438,12 +477,33 @@ while ($i < $nombre_ligne) {
 						$msg_erreur="Cette case est validée et ne devrait pas l être. Contactez l administrateur pour corriger.";
 						echo "<a href='#' alt='$msg_erreur' title='$msg_erreur'><font color='red'>ERREUR</font></a>";
 					}
-					echo "</center></td>\n";
 					$nb_erreurs++;
 				}
+
+
+				// Test sur la présence de notes dans cn ou de notes/app sur bulletin
+				if (!test_before_eleve_removal($login_eleve, $id_groupe, $j)) {
+					echo "<img id='img_bull_non_vide_".$j."_".$i."' src='../images/icons/bulletin_16.png' width='16' height='16' title='Bulletin non vide' alt='Bulletin non vide' />";
+				}
+	
+				$sql="SELECT DISTINCT id_devoir FROM cn_notes_devoirs cnd, cn_devoirs cd, cn_cahier_notes ccn WHERE (cnd.login = '".$login_eleve."' AND cnd.statut='' AND cnd.id_devoir=cd.id AND cd.id_racine=ccn.id_cahier_notes AND ccn.id_groupe = '".$id_groupe."' AND ccn.periode = '".$j."')";
+				$test_cn=mysql_query($sql);
+				$nb_notes_cn=mysql_num_rows($test_cn);
+				if($nb_notes_cn>0) {
+					echo "<img id='img_cn_non_vide_".$j."_".$i."' src='../images/icons/cn_16.png' width='16' height='16' title='Carnet de notes non vide: $nb_notes_cn notes' alt='Carnet de notes non vide: $nb_notes_cn notes' />";
+					//echo "$sql<br />";
+				}
+
+				//echo "A".$tab_sig[$j][$id_groupe]."<br />";
+				if((isset($tab_sig[$j]))&&(isset($tab_sig[$j][$id_groupe]))) {
+					$info_erreur=$tab_sig[$j][$id_groupe];
+					echo "<img id='img_erreur_affect_".$j."_".$i."' src='../images/icons/flag2.gif' width='17' height='18' title='".$info_erreur."' alt='".$info_erreur."' />";
+				}
+
+				echo "</td>\n";
 			}
 		}
-		else{
+		else {
 
 			/*
 			// Un autre test à faire:
@@ -451,12 +511,54 @@ while ($i < $nombre_ligne) {
 			$sql="SELECT 1=1 FROM j_eleves_classes WHERE id_classe='$id_classe' AND periode='$j' AND login='$login_eleve'";
 			*/
 
+			echo "<td style='text-align:center'>\n";
+			if($_SESSION['statut']=="administrateur"){
+				echo "<input type=checkbox id=case".$i."_".$j." name=".$id_groupe."_".$j." onchange='changement();' \n";
+				if (mysql_num_rows($test)>0) {
+					echo "checked ";
+				}
+				echo "/>\n";
+			}
+			else {
+				if (mysql_num_rows($test)==0) {
+					echo "&nbsp;\n";
+				}
+				else {
+					echo "<img src='../images/enabled.png' width='15' height='15' alt='Inscrit' />\n";
+				}
+			}
+
+			// Test sur la présence de notes dans cn ou de notes/app sur bulletin
+			if (!test_before_eleve_removal($login_eleve, $id_groupe, $j)) {
+				echo "<img id='img_bull_non_vide_".$j."_".$i."' src='../images/icons/bulletin_16.png' width='16' height='16' title='Bulletin non vide' alt='Bulletin non vide' />";
+			}
+
+			$sql="SELECT DISTINCT id_devoir FROM cn_notes_devoirs cnd, cn_devoirs cd, cn_cahier_notes ccn WHERE (cnd.login = '".$login_eleve."' AND cnd.statut='' AND cnd.id_devoir=cd.id AND cd.id_racine=ccn.id_cahier_notes AND ccn.id_groupe = '".$id_groupe."' AND ccn.periode = '".$j."')";
+			$test_cn=mysql_query($sql);
+			$nb_notes_cn=mysql_num_rows($test_cn);
+			if($nb_notes_cn>0) {
+				echo "<img id='img_cn_non_vide_".$j."_".$i."' src='../images/icons/cn_16.png' width='16' height='16' title='Carnet de notes non vide: $nb_notes_cn notes' alt='Carnet de notes non vide: $nb_notes_cn notes' />";
+				//echo "$sql<br />";
+			}
+
+			if((isset($tab_sig[$j]))&&(isset($tab_sig[$j][$id_groupe]))) {
+				$info_erreur=$tab_sig[$j][$id_groupe];
+				echo "<img id='img_erreur_affect_".$j."_".$i."' src='../images/icons/flag2.gif' width='17' height='18' title='".$info_erreur."' alt='".$info_erreur."' />";
+			}
+
+			echo "</td>\n";
+
+			/*
 			//=========================
 			// MODIF: boireaus
 			if (mysql_num_rows($test) == "0") {
 				//echo "<td><center><input type=checkbox name=".$id_groupe."_".$j." /></center></td>\n";
 				if($_SESSION['statut']=="administrateur"){
-					echo "<td><center><input type=checkbox id=case".$i."_".$j." name=".$id_groupe."_".$j." onchange='changement();' /></center></td>\n";
+					echo "<td>\n";
+					echo "<center>\n";
+					echo "<input type=checkbox id=case".$i."_".$j." name=".$id_groupe."_".$j." onchange='changement();' />\n";
+					echo "</center>\n";
+					echo "</td>\n";
 				}
 				else {
 					echo "<td>&nbsp;</td>\n";
@@ -464,12 +566,13 @@ while ($i < $nombre_ligne) {
 			} else {
 				if($_SESSION['statut']=="administrateur"){
 					//echo "<td><center><input type=checkbox name=".$id_groupe."_".$j." CHECKED /></center></td>\n";
-					echo "<td><center><input type=checkbox id=case".$i."_".$j." name=".$id_groupe."_".$j." onchange='changement();' CHECKED /></center></td>\n";
+					echo "<td><center><input type=checkbox id=case".$i."_".$j." name=".$id_groupe."_".$j." onchange='changement();' checked /></center></td>\n";
 				}
 				else {
 					echo "<td><center><img src='../images/enabled.png' width='15' height='15' alt='Inscrit' /></center></td>\n";
 				}
 			}
+			*/
 			//=========================
 		}
 		$j++;

@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: add_modif_dev.php 3621 2009-10-17 12:29:43Z crob $
+ * @version: $Id: add_modif_dev.php 3622 2009-10-17 12:29:49Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

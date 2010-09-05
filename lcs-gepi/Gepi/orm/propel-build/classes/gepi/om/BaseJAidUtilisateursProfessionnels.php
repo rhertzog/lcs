@@ -1,14 +1,20 @@
 <?php
 
+
 /**
  * Base class that represents a row from the 'j_aid_utilisateurs' table.
  *
  * Table de liaison entre les AID et les utilisateurs professionnels
  *
- * @package    gepi.om
+ * @package    propel.generator.gepi.om
  */
-abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements Persistent {
+abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements Persistent
+{
 
+	/**
+	 * Peer class name
+	 */
+  const PEER = 'JAidUtilisateursProfessionnelsPeer';
 
 	/**
 	 * The Peer class.
@@ -31,13 +37,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	protected $id_utilisateur;
 
 	/**
-	 * The value for the indice_aid field.
-	 * Note: this column has a database default value of: 0
-	 * @var        int
-	 */
-	protected $indice_aid;
-
-	/**
 	 * @var        AidDetails
 	 */
 	protected $aAidDetails;
@@ -46,11 +45,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	 * @var        UtilisateurProfessionnel
 	 */
 	protected $aUtilisateurProfessionnel;
-
-	/**
-	 * @var        AidConfiguration
-	 */
-	protected $aAidConfiguration;
 
 	/**
 	 * Flag to prevent endless save loop, if this object is referenced
@@ -65,27 +59,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	 * @var        boolean
 	 */
 	protected $alreadyInValidation = false;
-
-	/**
-	 * Initializes internal state of BaseJAidUtilisateursProfessionnels object.
-	 * @see        applyDefaults()
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-		$this->applyDefaultValues();
-	}
-
-	/**
-	 * Applies default values to this object.
-	 * This method should be called from the object's constructor (or
-	 * equivalent initialization method).
-	 * @see        __construct()
-	 */
-	public function applyDefaultValues()
-	{
-		$this->indice_aid = 0;
-	}
 
 	/**
 	 * Get the [id_aid] column value.
@@ -105,16 +78,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	public function getIdUtilisateur()
 	{
 		return $this->id_utilisateur;
-	}
-
-	/**
-	 * Get the [indice_aid] column value.
-	 * cle etrangere vers la categorie d'AID
-	 * @return     int
-	 */
-	public function getIndiceAid()
-	{
-		return $this->indice_aid;
 	}
 
 	/**
@@ -166,30 +129,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	} // setIdUtilisateur()
 
 	/**
-	 * Set the value of [indice_aid] column.
-	 * cle etrangere vers la categorie d'AID
-	 * @param      int $v new value
-	 * @return     JAidUtilisateursProfessionnels The current object (for fluent API support)
-	 */
-	public function setIndiceAid($v)
-	{
-		if ($v !== null) {
-			$v = (int) $v;
-		}
-
-		if ($this->indice_aid !== $v || $v === 0) {
-			$this->indice_aid = $v;
-			$this->modifiedColumns[] = JAidUtilisateursProfessionnelsPeer::INDICE_AID;
-		}
-
-		if ($this->aAidConfiguration !== null && $this->aAidConfiguration->getIndiceAid() !== $v) {
-			$this->aAidConfiguration = null;
-		}
-
-		return $this;
-	} // setIndiceAid()
-
-	/**
 	 * Indicates whether the columns in this object are only set to default values.
 	 *
 	 * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -199,15 +138,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	 */
 	public function hasOnlyDefaultValues()
 	{
-			// First, ensure that we don't have any columns that have been modified which aren't default columns.
-			if (array_diff($this->modifiedColumns, array(JAidUtilisateursProfessionnelsPeer::INDICE_AID))) {
-				return false;
-			}
-
-			if ($this->indice_aid !== 0) {
-				return false;
-			}
-
 		// otherwise, everything was equal, so return TRUE
 		return true;
 	} // hasOnlyDefaultValues()
@@ -232,7 +162,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 
 			$this->id_aid = ($row[$startcol + 0] !== null) ? (string) $row[$startcol + 0] : null;
 			$this->id_utilisateur = ($row[$startcol + 1] !== null) ? (string) $row[$startcol + 1] : null;
-			$this->indice_aid = ($row[$startcol + 2] !== null) ? (int) $row[$startcol + 2] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -241,8 +170,7 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 				$this->ensureConsistency();
 			}
 
-			// FIXME - using NUM_COLUMNS may be clearer.
-			return $startcol + 3; // 3 = JAidUtilisateursProfessionnelsPeer::NUM_COLUMNS - JAidUtilisateursProfessionnelsPeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + 2; // 2 = JAidUtilisateursProfessionnelsPeer::NUM_COLUMNS - JAidUtilisateursProfessionnelsPeer::NUM_LAZY_LOAD_COLUMNS).
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating JAidUtilisateursProfessionnels object", $e);
@@ -270,9 +198,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 		}
 		if ($this->aUtilisateurProfessionnel !== null && $this->id_utilisateur !== $this->aUtilisateurProfessionnel->getLogin()) {
 			$this->aUtilisateurProfessionnel = null;
-		}
-		if ($this->aAidConfiguration !== null && $this->indice_aid !== $this->aAidConfiguration->getIndiceAid()) {
-			$this->aAidConfiguration = null;
 		}
 	} // ensureConsistency
 
@@ -315,7 +240,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 
 			$this->aAidDetails = null;
 			$this->aUtilisateurProfessionnel = null;
-			$this->aAidConfiguration = null;
 		} // if (deep)
 	}
 
@@ -340,9 +264,17 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 		
 		$con->beginTransaction();
 		try {
-			JAidUtilisateursProfessionnelsPeer::doDelete($this, $con);
-			$this->setDeleted(true);
-			$con->commit();
+			$ret = $this->preDelete($con);
+			if ($ret) {
+				JAidUtilisateursProfessionnelsQuery::create()
+					->filterByPrimaryKey($this->getPrimaryKey())
+					->delete($con);
+				$this->postDelete($con);
+				$con->commit();
+				$this->setDeleted(true);
+			} else {
+				$con->commit();
+			}
 		} catch (PropelException $e) {
 			$con->rollBack();
 			throw $e;
@@ -373,10 +305,27 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 		}
 		
 		$con->beginTransaction();
+		$isInsert = $this->isNew();
 		try {
-			$affectedRows = $this->doSave($con);
+			$ret = $this->preSave($con);
+			if ($isInsert) {
+				$ret = $ret && $this->preInsert($con);
+			} else {
+				$ret = $ret && $this->preUpdate($con);
+			}
+			if ($ret) {
+				$affectedRows = $this->doSave($con);
+				if ($isInsert) {
+					$this->postInsert($con);
+				} else {
+					$this->postUpdate($con);
+				}
+				$this->postSave($con);
+				JAidUtilisateursProfessionnelsPeer::addInstanceToPool($this);
+			} else {
+				$affectedRows = 0;
+			}
 			$con->commit();
-			JAidUtilisateursProfessionnelsPeer::addInstanceToPool($this);
 			return $affectedRows;
 		} catch (PropelException $e) {
 			$con->rollBack();
@@ -420,22 +369,13 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 				$this->setUtilisateurProfessionnel($this->aUtilisateurProfessionnel);
 			}
 
-			if ($this->aAidConfiguration !== null) {
-				if ($this->aAidConfiguration->isModified() || $this->aAidConfiguration->isNew()) {
-					$affectedRows += $this->aAidConfiguration->save($con);
-				}
-				$this->setAidConfiguration($this->aAidConfiguration);
-			}
-
 
 			// If this object has been modified, then save it to the database.
 			if ($this->isModified()) {
 				if ($this->isNew()) {
-					$pk = JAidUtilisateursProfessionnelsPeer::doInsert($this, $con);
-					$affectedRows += 1; // we are assuming that there is only 1 row per doInsert() which
-										 // should always be true here (even though technically
-										 // BasePeer::doInsert() can insert multiple rows).
-
+					$criteria = $this->buildCriteria();
+					$pk = BasePeer::doInsert($criteria, $con);
+					$affectedRows += 1;
 					$this->setNew(false);
 				} else {
 					$affectedRows += JAidUtilisateursProfessionnelsPeer::doUpdate($this, $con);
@@ -527,12 +467,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 				}
 			}
 
-			if ($this->aAidConfiguration !== null) {
-				if (!$this->aAidConfiguration->validate($columns)) {
-					$failureMap = array_merge($failureMap, $this->aAidConfiguration->getValidationFailures());
-				}
-			}
-
 
 			if (($retval = JAidUtilisateursProfessionnelsPeer::doValidate($this, $columns)) !== true) {
 				$failureMap = array_merge($failureMap, $retval);
@@ -578,9 +512,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 			case 1:
 				return $this->getIdUtilisateur();
 				break;
-			case 2:
-				return $this->getIndiceAid();
-				break;
 			default:
 				return null;
 				break;
@@ -593,19 +524,29 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	 * You can specify the key type of the array by passing one of the class
 	 * type constants.
 	 *
-	 * @param      string $keyType (optional) One of the class type constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME
-	 *                        BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. Defaults to BasePeer::TYPE_PHPNAME.
-	 * @param      boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns.  Defaults to TRUE.
-	 * @return     an associative array containing the field names (as keys) and field values
+	 * @param     string  $keyType (optional) One of the class type constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME,
+	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. 
+	 *                    Defaults to BasePeer::TYPE_PHPNAME.
+	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
+	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
+	 *
+	 * @return    array an associative array containing the field names (as keys) and field values
 	 */
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $includeForeignObjects = false)
 	{
 		$keys = JAidUtilisateursProfessionnelsPeer::getFieldNames($keyType);
 		$result = array(
 			$keys[0] => $this->getIdAid(),
 			$keys[1] => $this->getIdUtilisateur(),
-			$keys[2] => $this->getIndiceAid(),
 		);
+		if ($includeForeignObjects) {
+			if (null !== $this->aAidDetails) {
+				$result['AidDetails'] = $this->aAidDetails->toArray($keyType, $includeLazyLoadColumns, true);
+			}
+			if (null !== $this->aUtilisateurProfessionnel) {
+				$result['UtilisateurProfessionnel'] = $this->aUtilisateurProfessionnel->toArray($keyType, $includeLazyLoadColumns, true);
+			}
+		}
 		return $result;
 	}
 
@@ -642,9 +583,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 			case 1:
 				$this->setIdUtilisateur($value);
 				break;
-			case 2:
-				$this->setIndiceAid($value);
-				break;
 		} // switch()
 	}
 
@@ -671,7 +609,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 
 		if (array_key_exists($keys[0], $arr)) $this->setIdAid($arr[$keys[0]]);
 		if (array_key_exists($keys[1], $arr)) $this->setIdUtilisateur($arr[$keys[1]]);
-		if (array_key_exists($keys[2], $arr)) $this->setIndiceAid($arr[$keys[2]]);
 	}
 
 	/**
@@ -685,7 +622,6 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 
 		if ($this->isColumnModified(JAidUtilisateursProfessionnelsPeer::ID_AID)) $criteria->add(JAidUtilisateursProfessionnelsPeer::ID_AID, $this->id_aid);
 		if ($this->isColumnModified(JAidUtilisateursProfessionnelsPeer::ID_UTILISATEUR)) $criteria->add(JAidUtilisateursProfessionnelsPeer::ID_UTILISATEUR, $this->id_utilisateur);
-		if ($this->isColumnModified(JAidUtilisateursProfessionnelsPeer::INDICE_AID)) $criteria->add(JAidUtilisateursProfessionnelsPeer::INDICE_AID, $this->indice_aid);
 
 		return $criteria;
 	}
@@ -701,9 +637,8 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	public function buildPkeyCriteria()
 	{
 		$criteria = new Criteria(JAidUtilisateursProfessionnelsPeer::DATABASE_NAME);
-
 		$criteria->add(JAidUtilisateursProfessionnelsPeer::ID_AID, $this->id_aid);
-		$criteria->add(JAidUtilisateursProfessionnelsPeer::INDICE_AID, $this->indice_aid);
+		$criteria->add(JAidUtilisateursProfessionnelsPeer::ID_UTILISATEUR, $this->id_utilisateur);
 
 		return $criteria;
 	}
@@ -716,11 +651,9 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	public function getPrimaryKey()
 	{
 		$pks = array();
-
 		$pks[0] = $this->getIdAid();
-
-		$pks[1] = $this->getIndiceAid();
-
+		$pks[1] = $this->getIdUtilisateur();
+		
 		return $pks;
 	}
 
@@ -732,11 +665,17 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	 */
 	public function setPrimaryKey($keys)
 	{
-
 		$this->setIdAid($keys[0]);
+		$this->setIdUtilisateur($keys[1]);
+	}
 
-		$this->setIndiceAid($keys[1]);
-
+	/**
+	 * Returns true if the primary key for this object is null.
+	 * @return     boolean
+	 */
+	public function isPrimaryKeyNull()
+	{
+		return (null === $this->getIdAid()) && (null === $this->getIdUtilisateur());
 	}
 
 	/**
@@ -751,16 +690,10 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	 */
 	public function copyInto($copyObj, $deepCopy = false)
 	{
-
 		$copyObj->setIdAid($this->id_aid);
-
 		$copyObj->setIdUtilisateur($this->id_utilisateur);
 
-		$copyObj->setIndiceAid($this->indice_aid);
-
-
 		$copyObj->setNew(true);
-
 	}
 
 	/**
@@ -838,7 +771,7 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	public function getAidDetails(PropelPDO $con = null)
 	{
 		if ($this->aAidDetails === null && (($this->id_aid !== "" && $this->id_aid !== null))) {
-			$this->aAidDetails = AidDetailsPeer::retrieveByPK($this->id_aid, $con);
+			$this->aAidDetails = AidDetailsQuery::create()->findPk($this->id_aid, $con);
 			/* The following can be used additionally to
 			   guarantee the related object contains a reference
 			   to this object.  This level of coupling may, however, be
@@ -887,7 +820,7 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	public function getUtilisateurProfessionnel(PropelPDO $con = null)
 	{
 		if ($this->aUtilisateurProfessionnel === null && (($this->id_utilisateur !== "" && $this->id_utilisateur !== null))) {
-			$this->aUtilisateurProfessionnel = UtilisateurProfessionnelPeer::retrieveByPK($this->id_utilisateur, $con);
+			$this->aUtilisateurProfessionnel = UtilisateurProfessionnelQuery::create()->findPk($this->id_utilisateur, $con);
 			/* The following can be used additionally to
 			   guarantee the related object contains a reference
 			   to this object.  This level of coupling may, however, be
@@ -900,52 +833,18 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 	}
 
 	/**
-	 * Declares an association between this object and a AidConfiguration object.
-	 *
-	 * @param      AidConfiguration $v
-	 * @return     JAidUtilisateursProfessionnels The current object (for fluent API support)
-	 * @throws     PropelException
+	 * Clears the current object and sets all attributes to their default values
 	 */
-	public function setAidConfiguration(AidConfiguration $v = null)
+	public function clear()
 	{
-		if ($v === null) {
-			$this->setIndiceAid(0);
-		} else {
-			$this->setIndiceAid($v->getIndiceAid());
-		}
-
-		$this->aAidConfiguration = $v;
-
-		// Add binding for other direction of this n:n relationship.
-		// If this object has already been added to the AidConfiguration object, it will not be re-added.
-		if ($v !== null) {
-			$v->addJAidUtilisateursProfessionnels($this);
-		}
-
-		return $this;
-	}
-
-
-	/**
-	 * Get the associated AidConfiguration object
-	 *
-	 * @param      PropelPDO Optional Connection object.
-	 * @return     AidConfiguration The associated AidConfiguration object.
-	 * @throws     PropelException
-	 */
-	public function getAidConfiguration(PropelPDO $con = null)
-	{
-		if ($this->aAidConfiguration === null && ($this->indice_aid !== null)) {
-			$this->aAidConfiguration = AidConfigurationPeer::retrieveByPK($this->indice_aid, $con);
-			/* The following can be used additionally to
-			   guarantee the related object contains a reference
-			   to this object.  This level of coupling may, however, be
-			   undesirable since it could result in an only partially populated collection
-			   in the referenced object.
-			   $this->aAidConfiguration->addJAidUtilisateursProfessionnelss($this);
-			 */
-		}
-		return $this->aAidConfiguration;
+		$this->id_aid = null;
+		$this->id_utilisateur = null;
+		$this->alreadyInSave = false;
+		$this->alreadyInValidation = false;
+		$this->clearAllReferences();
+		$this->resetModified();
+		$this->setNew(true);
+		$this->setDeleted(false);
 	}
 
 	/**
@@ -962,9 +861,27 @@ abstract class BaseJAidUtilisateursProfessionnels extends BaseObject  implements
 		if ($deep) {
 		} // if ($deep)
 
-			$this->aAidDetails = null;
-			$this->aUtilisateurProfessionnel = null;
-			$this->aAidConfiguration = null;
+		$this->aAidDetails = null;
+		$this->aUtilisateurProfessionnel = null;
+	}
+
+	/**
+	 * Catches calls to virtual methods
+	 */
+	public function __call($name, $params)
+	{
+		if (preg_match('/get(\w+)/', $name, $matches)) {
+			$virtualColumn = $matches[1];
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
+			// no lcfirst in php<5.3...
+			$virtualColumn[0] = strtolower($virtualColumn[0]);
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
+		}
+		return parent::__call($name, $params);
 	}
 
 } // BaseJAidUtilisateursProfessionnels

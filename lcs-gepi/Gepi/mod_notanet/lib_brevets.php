@@ -1,7 +1,7 @@
 <?php
 
 /*
-$Id: lib_brevets.php 4431 2010-05-12 18:00:44Z crob $
+$Id: lib_brevets.php 4586 2010-06-15 15:49:28Z crob $
  */
 
 $tab_type_brevet=array();
@@ -1873,16 +1873,19 @@ function tab_extract_moy($tab_ele,$id_clas) {
 						// Pour les brevets dans lesquels certaines notes sont sur 40 ou 60 au lieu de 20:
 						$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($moy_NOTANET[$j]*$tabmatieres[$j][-2])."|";
 						//$TOT=$TOT+$moy_NOTANET[$j];
-						$TOT=$TOT+round($moy_NOTANET[$j]*2)/2;
+						//$TOT=$TOT+round($moy_NOTANET[$j]*2)/2;
+						$TOT=$TOT+round($moy_NOTANET[$j]*$tabmatieres[$j][-2]*2)/2;
 					}
 					else{
 						if($tabmatieres[$j][-1]=="PTSUP"){
 							$ptsup=$moy_NOTANET[$j]-10;
 							if($ptsup>0){
 								//$ligne_NOTANET=$ligne_NOTANET."|$ptsup|";
-								$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($ptsup)."|";
+								//$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($ptsup)."|";
+								$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($ptsup*$tabmatieres[$j][-2])."|";
 								//$TOT=$TOT+$ptsup;
-								$TOT=$TOT+round($ptsup*2)/2;
+								//$TOT=$TOT+round($ptsup*2)/2;
+								$TOT=$TOT+round($ptsup*$tabmatieres[$j][-2]*2)/2;
 							}
 							else{
 								$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet(0)."|";

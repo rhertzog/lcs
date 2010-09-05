@@ -1,7 +1,7 @@
 <?php
 
 /*
-* $Id: saisie_absences.php 4228 2010-04-02 11:22:58Z crob $
+* $Id: saisie_absences.php 4660 2010-06-28 21:48:41Z regis $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -142,13 +142,13 @@ if (isset($_POST['is_posted']) and $_POST['is_posted'] == "yes") {
 			$ap=my_ereg_replace('(\\\r\\\n)+',"\r\n",$ap);
 			//=========================
 
-			if (!(ereg ("^[0-9]{1,}$", $nb_absences))) {
+			if (!(my_ereg ("^[0-9]{1,}$", $nb_absences))) {
 					$nb_absences = '';
 				}
-				if (!(ereg ("^[0-9]{1,}$", $nb_nj))) {
+				if (!(my_ereg ("^[0-9]{1,}$", $nb_nj))) {
 					$nb_nj = '';
 				}
-				if (!(ereg ("^[0-9]{1,}$", $nb_retard))) {
+				if (!(my_ereg ("^[0-9]{1,}$", $nb_retard))) {
 					$nb_retard = '';
 				}
 

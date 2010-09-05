@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: modify_nom_class.php 3601 2009-10-14 19:25:56Z crob $
+ * $Id: modify_nom_class.php 4083 2010-02-10 14:51:57Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -337,11 +337,10 @@ if(isset($id_classe)) {
 
 echo "</p>\n";
 echo "</form>\n";
-?>
 
-<p><b>Remarque&nbsp;: </b>Connectez vous avec un compte ayant le statut "scolarité" pour éditer les bulletins et avoir accès à d'autres paramètres d'affichage.</p>
-
-<?php
+if(getSettingValue('GepiAdminImprBulSettings')!='yes') {
+	echo "<p><b>Remarque&nbsp;: </b>Connectez vous avec un compte ayant le statut \"scolarité\" pour éditer les bulletins et avoir accès à d'autres paramètres d'affichage.</p>\n";
+}
 
 if (isset($id_classe)) {
 

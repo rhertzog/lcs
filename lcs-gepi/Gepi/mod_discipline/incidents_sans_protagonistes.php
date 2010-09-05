@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: incidents_sans_protagonistes.php 2554 2008-10-12 14:49:29Z crob $
+ * $Id: incidents_sans_protagonistes.php 4047 2010-01-28 18:21:19Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -126,6 +126,16 @@ if((isset($_POST['suppr_incident']))&&($_SESSION['statut']!='professeur')) {
 						$temoin_erreur="y";
 					}
 				}
+
+				if($temoin_erreur=="n") {
+					$sql="DELETE FROM s_sanctions s WHERE s.id_incident='$suppr_incident[$i]';";
+					$res=mysql_query($sql);
+					if(!$res) {
+						$msg.="ERREUR lors de la suppression de la sanction associée à l'incident ".$suppr_incident[$i].".<br />\n";
+						$temoin_erreur="y";
+					}
+				}
+
 			}
 
 			if($temoin_erreur=="n") {
@@ -310,7 +320,8 @@ if(!isset($id_incident)) {
 	while($lig_nature=mysql_fetch_object($res_natures)) {
 		echo "<option value='$lig_nature->nature'";
 		if($nature_incident==$lig_nature->nature) {echo " selected='selected'";}
-		echo ">".$lig_nature->nature."</option>\n";
+		//echo ">".$lig_nature->nature."</option>\n";
+		echo ">".substr($lig_nature->nature,0,40)."</option>\n";
 	}
 	echo "</select>\n";
 	echo "</th>\n";

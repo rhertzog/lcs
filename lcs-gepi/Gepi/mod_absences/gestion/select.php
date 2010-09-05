@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: select.php 4379 2010-04-30 07:23:37Z crob $
+ * $Id: select.php 4380 2010-04-30 07:23:44Z crob $
  *
  * Copyright 2001, 2002 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *

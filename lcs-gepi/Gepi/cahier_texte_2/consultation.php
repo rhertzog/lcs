@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: consultation.php 3531 2009-10-05 17:34:22Z jjacquard $
+ * $Id: consultation.php 3530 2009-10-05 12:02:44Z jjacquard $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
  *

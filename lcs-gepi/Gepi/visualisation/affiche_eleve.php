@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: affiche_eleve.php 4235 2010-04-03 17:04:26Z crob $
+* $Id: affiche_eleve.php 4878 2010-07-24 13:54:01Z regis $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -39,7 +39,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 
 // Ajouter une gestion des droits par la suite
@@ -1107,7 +1107,7 @@ if (!isset($id_classe) and $_SESSION['statut'] != "responsable" AND $_SESSION['s
 			echo "<p><b>Moyennes et périodes</b></p>\n";
 			echo "<blockquote>\n";
 
-			//if($affiche_mgen=='oui') {$checked=" checked='yes'";} else {$checked="";}
+			if($affiche_mgen=='oui') {$checked=" checked='yes'";} else {$checked="";}
 			echo "<table border='0' summary='Paramètres'>\n";
 			//echo "<tr valign='top'><td><label for='affiche_mgen' style='cursor: pointer;'>Afficher la moyenne générale:</label></td><td><input type='checkbox' name='affiche_mgen' id='affiche_mgen' value='oui'$checked /></td></tr>\n";
 			echo "<tr valign='top'><td>Afficher la moyenne générale:</td><td>";
@@ -1343,7 +1343,7 @@ if (!isset($id_classe) and $_SESSION['statut'] != "responsable" AND $_SESSION['s
 				//echo "$dimimg[0] et $dimimg[1]";
 
 				$largimg=$largeur_imposee_photo;
-				$hautimg=round($dimimg[1]*$largeur_imposee_photo/$dimimg[0]);
+				$hautimg=round($dimimg[1]*$largeur_imposee_s$dimimg[0]);
 
 				//echo "<img src='../photos/$eleve1.jpg' width='$largimg' height='$hautimg'>\n";
 				echo "<img src='../photos/eleves/$elenoet1.jpg' width='$largimg' height='$hautimg' alt='Photo de $eleve1' />\n";
@@ -1362,15 +1362,18 @@ if (!isset($id_classe) and $_SESSION['statut'] != "responsable" AND $_SESSION['s
 			}
 			*/
 			$photo=nom_photo($elenoet1);
-			if("$photo"!=""){
-				if(file_exists("../photos/eleves/$photo")){
-					$dimimg=getimagesize("../photos/eleves/$photo");
+			//if("$photo"!=""){
+			  if ($photo){
+				//if(file_exists("../photos/eleves/$photo")){
+					//$dimimg=getimagesize("../photos/eleves/$photo");
+					$dimimg=getimagesize($photo);
 
 					$largimg=$largeur_imposee_photo;
 					$hautimg=round($dimimg[1]*$largeur_imposee_photo/$dimimg[0]);
 
-					echo "<img src='../photos/eleves/$photo' width='$largimg' height='$hautimg' alt='Photo de $eleve1' />\n";
-				}
+					//echo "<img src='../photos/eleves/$photo' width='$largimg' height='$hautimg' alt='Photo de $eleve1' />\n";
+					echo "<img src='".$photo."' width='$largimg' height='$hautimg' alt='Photo de $eleve1' />\n";
+				//}
 			}
 
 		}
@@ -2007,7 +2010,6 @@ function eleve_suivant(){
 	echo "<td>\n";
 	//====================================================================
 
-
 	// Récupération des infos personnelles sur l'élève (nom, prénom, sexe, date de naissance et redoublant)
 	// Et calcul de l'age (si le serveur est à l'heure;o).
 	/*
@@ -2370,10 +2372,12 @@ function eleve_suivant(){
 						//echo "<area href=\"#\" onClick='return false;' onMouseover=\"afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20);\" onMouseout=\"cacher_div('div_app_".$tab_imagemap[$i]."');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\">\n";
 
 						if($click_plutot_que_survol_aff_app=="y") {
-							echo "<area href=\"#\" onClick=\"delais_afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20,1,$largeurMat,$hauteur_rect_delais_afficher_div);return false;\" onMouseout=\"cacher_div('div_app_".$tab_imagemap[$i]."');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\" alt=\"\">\n";
+							//echo "<area href=\"#\" onClick=\"delais_afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20,1,$largeurMat,$hauteur_rect_delais_afficher_div);return false;\" onMouseout=\"cacher_div('div_app_".$tab_imagemap[$i]."');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\" alt=\"\">\n";
+							echo "<area href=\"#\" onClick=\"afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20);return false;\" onMouseout=\"cacher_div('div_app_".$tab_imagemap[$i]."');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\" alt=\"\">\n";
 						}
 						else {
-							echo "<area href=\"#\" onClick='return false;' onMouseover=\"delais_afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20,$duree_delais_afficher_div,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_app_".$tab_imagemap[$i]."');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\" alt=\"\">\n";
+							//echo "<area href=\"#\" onClick='return false;' onMouseover=\"delais_afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20,$duree_delais_afficher_div,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_app_".$tab_imagemap[$i]."');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\" alt=\"\">\n";
+							echo "<area href=\"#\" onClick=\"afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20);return false;\" onMouseover=\"delais_afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20,$duree_delais_afficher_div,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_app_".$tab_imagemap[$i]."');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\" alt=\"\">\n";
 						}
 					}
 				}
@@ -2596,10 +2600,12 @@ function eleve_suivant(){
 						//echo "<area href=\"#\" onClick='return false;' onMouseover=\"afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20);\" onMouseout=\"cacher_div('div_app_".$tab_imagemap[$i]."');\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\">\n";
 
 						if($click_plutot_que_survol_aff_app=="y") {
-							echo "<area href=\"#\" onClick=\"delais_afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20,1,50,50);return false;\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\" alt=\"\">\n";
+							//echo "<area href=\"#\" onClick=\"delais_afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20,1,50,50);return false;\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\" alt=\"\">\n";
+							echo "<area href=\"#\" onClick=\"afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20);return false;\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\" alt=\"\">\n";
 						}
 						else {
-							echo "<area href=\"#\" onClick='return false;' onMouseover=\"delais_afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20,$duree_delais_afficher_div,50,50);\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\" alt=\"\">\n";
+							//echo "<area href=\"#\" onClick='return false;' onMouseover=\"delais_afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20,$duree_delais_afficher_div,50,50);\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\" alt=\"\">\n";
+							echo "<area href=\"#\" onClick=\"afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20);return false;\" onMouseover=\"delais_afficher_div('div_app_".$tab_imagemap[$i]."','y',-10,20,$duree_delais_afficher_div,50,50);\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\" alt=\"\">\n";
 						}
 					}
 
@@ -2863,6 +2869,7 @@ function eleve_suivant(){
 			else{
 				$sql="SELECT DISTINCT jgc.id_groupe, m.* FROM matieres m,j_groupes_classes jgc,j_groupes_matieres jgm WHERE (m.matiere=jgm.id_matiere AND jgm.id_groupe=jgc.id_groupe AND jgc.id_classe='$id_classe') ORDER BY jgc.priorite,m.matiere";
 			}
+			//echo "$sql<br />";
 
 			$call_classe_infos = mysql_query($sql);
 			$nombre_lignes = mysql_num_rows($call_classe_infos);
@@ -2879,6 +2886,7 @@ function eleve_suivant(){
 			while($ligne=mysql_fetch_object($call_classe_infos)){
 
 				$sql="SELECT * FROM j_eleves_groupes jeg WHERE (jeg.login='$eleve1' AND jeg.id_groupe='$ligne->id_groupe');";
+				//echo "$sql<br />";
 				affiche_debug("$sql<br />");
 				$eleve_option_query=mysql_query($sql);
 				//if(mysql_num_rows($eleve_option_query)==0){
@@ -2893,6 +2901,8 @@ function eleve_suivant(){
 					else{
 						$liste_matieres=$liste_matieres."|$matiere[$cpt]";
 					}
+					// DEBUG
+					// echo "$liste_matieres<br />";
 
 					$cpt++;
 				}
@@ -2967,13 +2977,15 @@ function eleve_suivant(){
 
 					// Boucle sur les groupes:
 					for($j=0;$j<count($id_groupe);$j++) {
-						if($serie[$cpt]!="") {$serie[$cpt].="|";}
+						if($serie[$cpt]!="") {$serie[$cpt].="|";} // Cette ligne impose que si un élève n'a pas la première matière de la liste sur une période, on mette quand même quelque chose (tiret,... mais pas vide sans quoi on a un décalage dans le nombre de champs entre $liste_matieres et $serie[$cpt])
 
 						// Recherche de l'indice du groupe retourné en $current_group par calcul_moy_gen.inc.php
 						$indice_groupe=-1;
 						for($loop=0;$loop<count($current_group);$loop++) {
 							if($current_group[$loop]['id']==$id_groupe[$j]) {
 								$indice_groupe=$loop;
+								// DEBUG
+								//echo "\$current_group[$loop]['name']=".$current_group[$loop]['name']."<br />";
 								break;
 							}
 						}
@@ -3014,8 +3026,10 @@ function eleve_suivant(){
 							}
 							else{
 								// L'élève n'a pas cette matière sur la période...
-								// Pas sûr qu'on puisse arriver là
-								echo "<!-- $eleve1 n'a pas la matière ".$current_group[$indice_groupe]["matiere"]["matiere"]." -->\n";
+								// Pas sûr qu'on puisse arriver là: si, cf ci-dessous
+								echo "<!-- $eleve1 n'a pas la matière ".$current_group[$indice_groupe]["matiere"]["matiere"]." sur la période ".$num_periode[$cpt]." -->\n";
+								// mais en mode 'toutes les périodes', il faut afficher un champ (cas de l'Histoire des arts au T3 seulement)
+								$serie[$cpt].="-";
 							}
 						}
 					}
@@ -3031,10 +3045,12 @@ function eleve_suivant(){
 					$titre_bulle=htmlentities($matiere_nom[$i]);
 
 					$texte_bulle="<table class='boireaus' style='margin:2px;' width='99%' summary='Imagemap'>\n";
+					$alt=1;
 					for($j=1;$j<=count($num_periode);$j++){
 						//if($tab_imagemap[$j][$i]!=""){
 						if((isset($tab_imagemap[$j][$i]))&&($tab_imagemap[$j][$i]!="")) {
-							$texte_bulle.="<tr><td style='font-weight:bold;'>$j</td><td style='text-align:center;'>".$tab_imagemap[$j][$i]."</td></tr>\n";
+							$alt=$alt*(-1);
+							$texte_bulle.="<tr class='lig$alt'><td style='font-weight:bold;'>$j</td><td style='text-align:center;'>".$tab_imagemap[$j][$i]."</td></tr>\n";
 						}
 					}
 					$texte_bulle.="</table>\n";
@@ -3562,6 +3578,79 @@ function eleve_suivant(){
 			if($sexe1=="F"){echo "e";}
 			echo " le $naissance1[2]/$naissance1[1]/$naissance1[0] (<i>soit $age1 $precision1</i>).</p>";
 
+
+
+			$acces_bull_simp="n";
+			if(($_SESSION['statut']=="responsable")&&(getSettingValue('GepiAccesBulletinSimpleParent')=='yes')) {
+				$acces_bull_simp="y";
+			}
+			elseif(($_SESSION['statut']=="eleve")&&(getSettingValue('GepiAccesBulletinSimpleEleve')=='yes')) {
+				$acces_bull_simp="y";
+			}
+			elseif($_SESSION['statut']=="professeur") {
+
+				if(getSettingValue('GepiAccesBulletinSimplePP')=='yes') {
+					$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE login='$eleve1' AND professeur='".$_SESSION['login']."';";
+					$test_acces_bull_simp=mysql_query($sql);
+					if(mysql_num_rows($test_acces_bull_simp)>0) {
+						$acces_bull_simp="y";
+					}
+				}
+
+				if(getSettingValue('GepiAccesBulletinSimpleProfToutesClasses')=='yes') {
+					$acces_bull_simp="y";
+				}
+				elseif(getSettingValue('GepiAccesBulletinSimpleProfTousEleves')=='yes') {
+					$sql="SELECT 1=1 FROM j_eleves_classes jec, j_groupes_classes jgc, j_groupes_professeurs jgp WHERE jec.login='$eleve1' AND jec.id_classe=jgc.id_classe AND jgp.id_groupe=jgc.id_groupe AND jgp.login='".$_SESSION['login']."';";
+					$test_acces_bull_simp=mysql_query($sql);
+					if(mysql_num_rows($test_acces_bull_simp)>0) {
+						$acces_bull_simp="y";
+					}
+				}
+				elseif(getSettingValue('GepiAccesBulletinSimpleProf')=='yes') {
+					$sql="SELECT 1=1 FROM j_eleves_groupes jeg, j_groupes_professeurs jgp WHERE jeg.login='$eleve1' AND jgp.id_groupe=jeg.id_groupe AND jgp.login='".$_SESSION['login']."';";
+					$test_acces_bull_simp=mysql_query($sql);
+					if(mysql_num_rows($test_acces_bull_simp)>0) {
+						$acces_bull_simp="y";
+					}
+				}
+			}
+			elseif($_SESSION['statut']=="scolarite") {
+				$acces_bull_simp="y";
+			}
+			elseif($_SESSION['statut']=="cpe") {
+				$acces_bull_simp="y";
+			}
+			elseif($_SESSION['statut']=="administrateur") {
+				$acces_bull_simp="y";
+			}
+
+
+			if($acces_bull_simp=="y") {
+				if($choix_periode=='toutes_periodes') {
+					//echo "<p align='center'><a href=\"../prepa_conseil/edit_limite.php?choix_edit=2&login_eleve=".$eleve1."&id_classe=$id_classe&periode1=1&periode2=$nb_periode\" target=\"_blank\">Voir le bulletin simplifié</a></p>";
+
+					echo "<p align='center'>";
+					echo "<a href=\"../prepa_conseil/edit_limite.php?choix_edit=2&login_eleve=".$eleve1."&id_classe=$id_classe&periode1=1&periode2=$nb_periode\" onclick=\"afficher_div('div_bull_simp','y',-100,-200); affiche_bull_simp('$eleve1','$id_classe','1','$nb_periode');return false;\" target=\"_blank\">";
+					echo "Voir le bulletin simplifié";
+					//echo "<img src='../images/icons/bulletin_simp.png' width='17' height='17' alt='Bulletin simple toutes périodes en infobulle' title='Bulletin simple toutes périodes en infobulle' />";
+					echo "</a>";
+					echo "</p>\n";
+
+				}
+				else {
+					//echo "<p align='center'><a href=\"../prepa_conseil/edit_limite.php?choix_edit=2&login_eleve=".$eleve1."&id_classe=$id_classe&periode1=$num_periode_choisie&periode2=$num_periode_choisie\" target=\"_blank\">Voir le bulletin simplifié</a></p>";
+
+					echo "<p align='center'>";
+					echo "<a href=\"../prepa_conseil/edit_limite.php?choix_edit=2&login_eleve=".$eleve1."&id_classe=$id_classe&periode1=$num_periode_choisie&periode2=$num_periode_choisie\" onclick=\"afficher_div('div_bull_simp','y',-100,-200); affiche_bull_simp('$eleve1','$id_classe','$num_periode_choisie','$num_periode_choisie');return false;\" target=\"_blank\">";
+					echo "Voir le bulletin simplifié";
+					//echo "<img src='../images/icons/bulletin_simp.png' width='17' height='17' alt='Bulletin simple toutes périodes en infobulle' title='Bulletin simple toutes périodes en infobulle' />";
+					echo "</a>";
+					echo "</p>\n";
+
+				}
+			}
+
 			// A FAIRE:
 			// Faire apparaitre les absences...
 		}
@@ -3745,6 +3834,33 @@ function complete_textarea_avis(num){
 }
 
 
+//===========================================================
+echo "<div id='div_bull_simp' style='position: absolute; top: 220px; right: 20px; width: 700px; text-align:center; color: black; padding: 0px; border:1px solid black; display:none;'>\n";
+
+	echo "<div class='infobulle_entete' style='color: #ffffff; cursor: move; width: 700px; font-weight: bold; padding: 0px;' onmousedown=\"dragStart(event, 'div_bull_simp')\">\n";
+		echo "<div style='color: #ffffff; cursor: move; font-weight: bold; float:right; width: 16px; margin-right: 1px;'>\n";
+		echo "<a href='#' onClick=\"cacher_div('div_bull_simp');return false;\">\n";
+		echo "<img src='../images/icons/close16.png' width='16' height='16' alt='Fermer' />\n";
+		echo "</a>\n";
+		echo "</div>\n";
+
+		echo "<div id='titre_entete_bull_simp'></div>\n";
+	echo "</div>\n";
+	
+	echo "<div id='corps_bull_simp' class='infobulle_corps' style='color: #ffffff; cursor: move; font-weight: bold; padding: 0px; height: 15em; width: 700px; overflow: auto;'>";
+	echo "</div>\n";
+
+echo "</div>\n";
+
+echo "<script type='text/javascript'>
+	// <![CDATA[
+	function affiche_bull_simp(login_eleve,id_classe,num_per1,num_per2) {
+		document.getElementById('titre_entete_bull_simp').innerHTML='Bulletin simplifié de '+login_eleve+' période '+num_per1+' à '+num_per2;
+		new Ajax.Updater($('corps_bull_simp'),'../saisie/ajax_edit_limite.php?choix_edit=2&login_eleve='+login_eleve+'&id_classe='+id_classe+'&periode1='+num_per1+'&periode2='+num_per2,{method: 'get'});
+	}
+	//]]>
+</script>\n";
+//===========================================================
 
 require("../lib/footer.inc.php");
 ?>

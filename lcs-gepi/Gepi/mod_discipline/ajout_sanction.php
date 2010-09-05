@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: ajout_sanction.php 2554 2008-10-12 14:49:29Z crob $
+ * $Id: ajout_sanction.php 4057 2010-01-30 22:51:23Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -21,7 +21,7 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+header('Content-Type: text/html; charset=ISO-8859-1');
 $variables_non_protegees = 'yes';
 
 // Initialisations files

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: edt_chercher.php 2033 2008-06-30 21:20:37Z jjocal $
+ * @version $Id: edt_chercher.php 4152 2010-03-21 23:32:16Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -26,7 +26,7 @@
 
 // Sécurité supplémentaire par rapport aux paramètres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
-	Die('Vous devez demander à votre administrateur l\'autorisation de voir cette page.');
+	Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
 
 // Sécurité, on vérifie le paramétrage de cette fonctionnalité
@@ -56,6 +56,32 @@ $ch_jour_semaine = isset($_GET["ch_jour_semaine"]) ? $_GET["ch_jour_semaine"] : 
 if ($salle_libre == "ok") {
 	$auto_aff_1 = 1;
 }
+
+// On insère l'entête de Gepi
+require_once("../lib/header.inc");
+
+$ua = getenv("HTTP_USER_AGENT");
+if (strstr($ua, "MSIE 6.0")) {
+	echo "<div class=\"cadreInformation\">Votre navigateur (Internet Explorer 6) est obsolète et se comporte mal vis à vis de l'affichage des emplois du temps. Faites absolument une mise à jour vers les versions 7 ou 8 ou changez de navigateur (FireFox, Chrome, Opera, Safari)</div>";
+}
+
+
+// On ajoute le menu EdT
+require_once("./menu.inc.php");
+
+
+?>
+
+
+<br />
+<!-- la page du corps de l'EdT -->
+
+	<div id="lecorps">
+
+<?php
+    require_once("./menu.inc.new.php");
+
+
 
 if ($cherch_salle == "ok") {
 	if ($ch_heure != "rien") {
@@ -96,7 +122,7 @@ echo '
 
 	// choix de l'horaire
 
-	$req_heure = mysql_query("SELECT id_definie_periode, nom_definie_periode, heuredebut_definie_periode, heurefin_definie_periode FROM absences_creneaux ORDER BY heuredebut_definie_periode");
+	$req_heure = mysql_query("SELECT id_definie_periode, nom_definie_periode, heuredebut_definie_periode, heurefin_definie_periode FROM edt_creneaux ORDER BY heuredebut_definie_periode");
 	$rep_heure = mysql_fetch_array($req_heure);
 
 echo '
@@ -167,12 +193,15 @@ echo "<select name=\"semaine\">\n";
 echo "<option value='rien'>Semaine</option>\n";
 	$tab_select_semaine = array();
 
+    $tab_select_semaine = RecupereLundisVendredis();
+
 	for($d=0;$d<52;$d++) {
 		$tab_select_semaine[$d]["id_semaine"] = mysql_result($req_semaine, $d, "id_edt_semaine");
 		$tab_select_semaine[$d]["num_semaine"] = mysql_result($req_semaine, $d, "num_edt_semaine");
 		$tab_select_semaine[$d]["type_semaine"] = mysql_result($req_semaine, $d, "type_edt_semaine");
 
-		echo "<option value='".$tab_select_semaine[$d]["id_semaine"]."'>Semaine n° ".$tab_select_semaine[$d]["num_semaine"]." (".$tab_select_semaine[$d]["type_semaine"].") </option>\n";
+
+		echo "<option value='".$tab_select_semaine[$d]["id_semaine"]."'>Semaine n° ".$tab_select_semaine[$d]["num_semaine"]." (".$tab_select_semaine[$d]["type_semaine"].") : ".$tab_select_semaine[$d]["lundis"]." - ".$tab_select_semaine[$d]["vendredis"]." </option>\n";
 
 	}
 echo "</select>\n<br />\n<em><font size=\"2\"> * champs obligatoires  </font></em>\n";
@@ -183,7 +212,7 @@ echo "</form>\n</fieldset>\n";
 
 if ($auto_aff_2 === 1) {
 		// On reprend les infos sur les horaires demandés
-		$requete_creneaux = mysql_query("SELECT nom_definie_periode, heuredebut_definie_periode, heurefin_definie_periode FROM absences_creneaux WHERE id_definie_periode = '".$ch_heure."'");
+		$requete_creneaux = mysql_query("SELECT nom_definie_periode, heuredebut_definie_periode, heurefin_definie_periode FROM edt_creneaux WHERE id_definie_periode = '".$ch_heure."'");
 		$reponse_tab_creneaux = mysql_fetch_array($requete_creneaux);
 	echo"<fieldset>\n<legend>Résultats</legend>\n";
 	echo "Les salles libres le <font color=\"green\">".$ch_jour_semaine."</font> de <font color=\"green\">".$reponse_tab_creneaux["heuredebut_definie_periode"]." à ".$reponse_tab_creneaux["heurefin_definie_periode"]." ( ".$reponse_tab_creneaux["nom_definie_periode"]." )</font> sont :\n";
@@ -200,5 +229,7 @@ if ($auto_aff_2 === 1) {
 		}
 	echo "</fieldset>\n";
 }
-
+    echo '</div>';
+// inclusion du footer
+require("../lib/footer.inc.php");
 ?>

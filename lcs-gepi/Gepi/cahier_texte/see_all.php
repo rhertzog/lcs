@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: see_all.php 4010 2010-01-13 14:27:55Z crob $
+ * @version: $Id: see_all.php 4088 2010-02-17 13:20:25Z jjacquard $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
  *
@@ -117,7 +117,7 @@ $matiere_nom = $current_group["matiere"]["nom_complet"];
 (!isset($_GET['imprime']) or (($_GET['imprime'] != 'y') and ($_GET['imprime']!= 'n')))?$current_imprime='n':$current_imprime=$_GET['imprime'];
 if ($current_imprime == 'n') {
 	$imprime='y';
-	$text_imprime="Version sans bandeaux";
+	$text_imprime="Version imprimmable";
 	$largeur = "30%";
 } else {
 	$imprime='n';

@@ -4,7 +4,7 @@
  * Cette page permet de rentrer une modification
  * temporaire dans l'emploi du temps pour une semaine donn&eacute;e
  *
- * @version $Id: modif_edt_tempo.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * @version $Id: modif_edt_tempo.php 4152 2010-03-21 23:32:16Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -58,8 +58,7 @@ if (param_edt($_SESSION["statut"]) != "yes") {
 }
 // CSS et js particulier à l'EdT
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
-$style_specifique = "edt_organisation/style_edt";
-
+$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
 // On insère l'entête de Gepi
 require_once("../lib/header.inc");
 
@@ -121,7 +120,7 @@ echo '
 
 	// choix de l'horaire
 
-	$req_heure = mysql_query("SELECT * FROM absences_creneaux ORDER BY heuredebut_definie_periode");
+	$req_heure = mysql_query("SELECT * FROM edt_creneaux ORDER BY heuredebut_definie_periode");
 	$rep_heure = mysql_fetch_array($req_heure);
 
 echo '

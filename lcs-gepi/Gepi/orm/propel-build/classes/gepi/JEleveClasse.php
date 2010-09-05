@@ -1,6 +1,5 @@
 <?php
 
-require 'gepi/om/BaseJEleveClasse.php';
 
 
 /**
@@ -12,19 +11,20 @@ require 'gepi/om/BaseJEleveClasse.php';
  * application requirements.  This class will only be generated as
  * long as it does not already exist in the output directory.
  *
- * @package    gepi
+ * @package    propel.generator.gepi
  */
 class JEleveClasse extends BaseJEleveClasse {
 
-	/**
-	 * Initializes internal state of JEleveClasse object.
-	 * @see        parent::__construct()
+      	/**
+	 *
+	 * Retourne la periode de note associée
+	 *
+	 *
+	 * @return PeriodeNote $periode_note
 	 */
-	public function __construct()
-	{
-		// Make sure that parent constructor is always invoked, since that
-		// is where any default values for this object are set.
-		parent::__construct();
+	public function getPeriodeNote() {
+	    return PeriodeNoteQuery::create()->filterByIdClasse($this->getIdClasse())->filterByNumPeriode($this->getPeriode())->findOne();
 	}
 
+	
 } // JEleveClasse

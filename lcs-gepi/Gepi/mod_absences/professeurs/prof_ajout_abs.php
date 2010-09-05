@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * $Id: prof_ajout_abs.php 4382 2010-04-30 08:57:23Z crob $
+ * $Id: prof_ajout_abs.php 4878 2010-07-24 13:54:01Z regis $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -39,7 +39,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../../logout.php?auto=1");
     die();
-}
+};
 
 if (!checkAccess()) {
     header("Location: ../../logout.php?auto=1");
@@ -345,13 +345,13 @@ if ($etape == 2 AND $classe != "toutes" AND $classe != "" AND $action_sql == "aj
 		// en tenantcompte toujours du réglage sur les créneaux
 		if (getSettingValue("creneau_different") != 'n') {
 			if (date("w") == getSettingValue("creneau_different")) {
-				$req_creneau = mysql_query("SELECT id_definie_periode FROM absences_creneaux_bis WHERE heuredebut_definie_periode = '".$d_heure_absence_eleve."'");
+				$req_creneau = mysql_query("SELECT id_definie_periode FROM edt_creneaux_bis WHERE heuredebut_definie_periode = '".$d_heure_absence_eleve."'");
 			}
 			else {
-			$req_creneau = mysql_query("SELECT id_definie_periode FROM absences_creneaux WHERE heuredebut_definie_periode = '".$d_heure_absence_eleve."'");
+			$req_creneau = mysql_query("SELECT id_definie_periode FROM edt_creneaux WHERE heuredebut_definie_periode = '".$d_heure_absence_eleve."'");
 			}
 		}else {
-			$req_creneau = mysql_query("SELECT id_definie_periode FROM absences_creneaux WHERE heuredebut_definie_periode = '".$d_heure_absence_eleve."'");
+			$req_creneau = mysql_query("SELECT id_definie_periode FROM edt_creneaux WHERE heuredebut_definie_periode = '".$d_heure_absence_eleve."'");
 		}
 	$rep_creneau = mysql_fetch_array($req_creneau);
 
@@ -398,8 +398,8 @@ if ($etape == 2 AND $classe != "toutes" AND $classe != "" AND $action_sql == "aj
 					$echo .= '<p class="enregistre_bon">Le retard de '.$noms["prenom"].' '.$noms["nom"].' est bien enregistré !</p>';
 				}else {
 					// On modifie l'absence pour un retard
-					// l'absence en question est mysql_result($cherche_ret, "id");
-					$id_abs = mysql_result($cherche_ret, "id");
+					// l'absence en question est mysql_result($cherche_ret, 0,"id");
+					$id_abs = mysql_result($cherche_ret, 0,"id");
 					$update = mysql_query("UPDATE absences_rb SET retard_absence = 'R'
 															WHERE id = '".$id_abs."'");
 					$echo .='<p class="enregistre_modifie">L\'absence de '.$noms["prenom"].' '.$noms["nom"].' a été modifiée en retard ! </p>';
@@ -408,7 +408,7 @@ if ($etape == 2 AND $classe != "toutes" AND $classe != "" AND $action_sql == "aj
 
 			}
 		}
-
+		
 		//Ajout Eric traitement des repas
 		if (isset($active_repas_eleve[$a])) {
 			if ($active_repas_eleve[$a] == 1){
@@ -509,7 +509,6 @@ $javascript_specifique = "mod_absences/lib/js_profs_abs";
 $titre_page = "Saisie des absences";
 require_once("../../lib/header.inc");
 //**************** FIN EN-TETE *****************
-//debug_var();
 ?>
 
 <?php
@@ -629,12 +628,12 @@ if( ( $classe == 'toutes'  or ( $classe == '' and $eleve_initial == '' ) and $et
 // on vérifie que certains jours n'ont pas les mêmes créneaux
 	if (getSettingValue("creneau_different") != 'n') {
 		if (date("w") == getSettingValue("creneau_different")) {
-			$requete_pe = ('SELECT * FROM absences_creneaux_bis WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
+			$requete_pe = ('SELECT * FROM edt_creneaux_bis WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
 		} else {
-			$requete_pe = ('SELECT * FROM absences_creneaux WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
+			$requete_pe = ('SELECT * FROM edt_creneaux WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
 		}
 	}else {
-		$requete_pe = ('SELECT * FROM absences_creneaux WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
+		$requete_pe = ('SELECT * FROM edt_creneaux WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
 	}
 	// et on récupère les créneaux
 	$resultat_pe = mysql_query($requete_pe) or die('Erreur SQL !'.$requete_pe.'<br />'.mysql_error());
@@ -672,12 +671,12 @@ if( ( $classe == 'toutes'  or ( $classe == '' and $eleve_initial == '' ) and $et
 	// on vérifie que certains jours n'ont pas les mêmes créneaux
 	if (getSettingValue("creneau_different") != 'n') {
 		if (date("w") == getSettingValue("creneau_different")) {
-			$requete_pe = ('SELECT * FROM absences_creneaux_bis WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
+			$requete_pe = ('SELECT * FROM edt_creneaux_bis WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
 		} else {
-			$requete_pe = ('SELECT * FROM absences_creneaux WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
+			$requete_pe = ('SELECT * FROM edt_creneaux WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
 		}
 	}else {
-		$requete_pe = ('SELECT * FROM absences_creneaux WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
+		$requete_pe = ('SELECT * FROM edt_creneaux WHERE type_creneaux != "pause" ORDER BY heuredebut_definie_periode ASC');
 	}
 
 	$resultat_pe = mysql_query($requete_pe) or die('Erreur SQL !'.$requete_pe.'<br />'.mysql_error());
@@ -807,7 +806,7 @@ if( ( $classe == 'toutes'  or ( $classe == '' and $eleve_initial == '' ) and $et
 <?php
 // Deuxième étape
 if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initial != '' ) AND $msg_erreur === '') {
-	//echo "\$classe=$classe (c'est en fait un id_groupe)<br />";
+
     // Ajout d'un test sur la période active
 	if($classe!='') {
 	    $sql = "SELECT DISTINCT num_periode FROM periodes p, j_groupes_classes jgc WHERE jgc.id_classe=p.id_classe AND jgc.id_groupe='$classe' AND p.verouiller='N' ORDER BY num_periode";
@@ -822,7 +821,6 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
     $nbre_per = count($periode);
     $_periode = isset($periode[0]) ? $periode[0] : '1';
 
-	//echo "\$_periode=$_periode<br />";
     // ======================== Correctif : On récupère la période actuelle si elle a été paramétrée dans l'emploi du temps
 
 	$sql="SELECT DISTINCT id_classe FROM j_groupes_classes WHERE id_groupe='$classe';";
@@ -832,15 +830,13 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 		$tab_classes_grp[]=$lig_tmp->id_classe;
 	}
 
+    //$req_periode_courante = mysql_query("SELECT numero_periode FROM edt_calendrier WHERE
     //$sql="SELECT numero_periode FROM edt_calendrier WHERE
     $sql="SELECT numero_periode, classe_concerne_calendrier FROM edt_calendrier WHERE
                                         debut_calendrier_ts < ".date("U")." AND
                                         fin_calendrier_ts > ".date("U");
     $req_periode_courante = mysql_query($sql);
-
-    //if ($rep_periode_courante = mysql_fetch_array($req_periode_courante)) {
-	//$periode_edt_trouvee="n";
-    while($rep_periode_courante = mysql_fetch_array($req_periode_courante)) {
+    if ($rep_periode_courante = mysql_fetch_array($req_periode_courante)) {
         if ($rep_periode_courante["numero_periode"] != 0) {
 
 			$temoin_classe_concernee="n";
@@ -854,13 +850,13 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 			}
 	
 			if($temoin_classe_concernee=="y") {
-				$_periode = $rep_periode_courante["numero_periode"];
+	            $_periode = $rep_periode_courante["numero_periode"];
 				//$periode_edt_trouvee="y";
 				break;
 			}
         }
     }
-	//echo "\$_periode=$_periode<br />";
+    //echo "\$_periode=".$_periode."<br/>";
     // ======================== fin de correctif
 
 	// on vérifie que l'enseignement envoyé n'est pas une AID
@@ -870,11 +866,56 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 		$aid_nom = mysql_fetch_array(mysql_query("SELECT nom FROM aid WHERE id = '".$test[1]."'"));
 		$current_groupe["description"] = $aid_nom["nom"];
 		$current_groupe["classlist_string"] = "AID";
-		$nbre_eleves = mysql_num_rows(mysql_query("SELECT DISTINCT login FROM j_aid_eleves WHERE id_aid = '".$test[1]."'"));
+		//$nbre_eleves = mysql_num_rows(mysql_query("SELECT DISTINCT login FROM j_aid_eleves WHERE id_aid = '".$test[1]."'"));
+		$req_logins_eleves = mysql_query("SELECT DISTINCT login FROM j_aid_eleves WHERE id_aid = '".$test[1]."'");
 	}else{
 		$current_groupe = get_group($classe);
-		$nbre_eleves = mysql_num_rows(mysql_query("SELECT DISTINCT login FROM j_eleves_groupes WHERE id_groupe = '".$classe."' AND periode = '" . $_periode . "'"));
+		//$nbre_eleves = mysql_num_rows(mysql_query("SELECT DISTINCT login FROM j_eleves_groupes WHERE id_groupe = '".$classe."' AND periode = '" . $_periode . "'"));
+		$req_logins_eleves = mysql_query("SELECT DISTINCT login FROM j_eleves_groupes WHERE id_groupe = '".$classe."' AND periode = '" . $_periode . "'");
 	}
+
+    // ================= Calculer le nbre d'élèves 
+    $nbre_eleves = 0;
+    while ($rep_logins_eleves = mysql_fetch_array($req_logins_eleves)) {
+        $req_periode_courante = mysql_query("SELECT numero_periode FROM edt_calendrier WHERE
+                                            debut_calendrier_ts < ".date("U")." AND
+                                            fin_calendrier_ts > ".date("U")."
+                                ");
+        if ($rep_periode_courante = mysql_fetch_array($req_periode_courante)) {
+            if ($rep_periode_courante["numero_periode"] != 0) {
+                $test = explode("|", $classe);
+                if ( $test[0] != "AID") {
+                    $req_eleve_dispo = mysql_query("SELECT login FROM j_eleves_groupes WHERE
+                                                    login = '".$rep_logins_eleves["login"]."' AND
+                                                    id_groupe = '".$classe."' AND
+                                                    periode = '".$rep_periode_courante["numero_periode"]."' 
+                                                    
+                                        ");
+                    if (mysql_num_rows($req_eleve_dispo) != 0) {
+                        $nbre_eleves++;
+                    }
+                }
+                else {
+                    $req_eleve_dispo = mysql_query("SELECT login FROM j_aid_eleves WHERE 
+	                                                    id_aid = '".$test[1]."' AND
+	                                                    indice_aid IN (SELECT indice_aid FROM aid_config WHERE
+			                                            display_begin <= '".$rep_periode_courante["numero_periode"]."' AND
+			                                            display_end >= '".$rep_periode_courante["numero_periode"]."' ) 
+                                                    ");
+                    if (mysql_num_rows($req_eleve_dispo) != 0) {
+                        $nbre_eleves++;
+                    }
+                }
+            } else {
+                $nbre_eleves++;
+            } 
+        } else {
+            $nbre_eleves++;
+        }
+        
+    }
+
+//echo "\$nbre_eleves=$nbre_eleves<br />";
 
 ?>
 	<div class="centre_tout_moyen">
@@ -902,12 +943,11 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 			<p class="choix_fin">
 				<input value="Enregistrer" name="Valider" type="submit"  onclick="this.form.submit();this.disabled=true;this.value='En cours'" />
 			</p>
-			<?php if (getSettingValue("active_cahiers_texte")=='y') { ?>
 			<p class="choix_fin">
 				<input type="hidden" name="passer_cahier_texte" id="passer_cahier_texte" value="false" />
 				<input value="Enregistrer et passer au cahier de texte" name="Valider" type="submit"  onclick="document.getElementById('passer_cahier_texte').value = true; this.form.submit(); this.disabled=true; this.value='En cours'" />
 			</p>
-			<?php } ?>
+
 <!-- Afichage du tableau de la liste des élèves -->
 <!-- Legende du tableau-->
 	<?php echo '<p>'.$nbre_eleves.' élèves.</p>'; ?>
@@ -944,12 +984,12 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 	// on compte les créneaux pour savoir combien de cellules il faut créer
 	if (getSettingValue("creneau_different") != 'n') {
 		if (date("w") == getSettingValue("creneau_different")) {
-			$sql = "SELECT nom_definie_periode FROM absences_creneaux_bis WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
+			$sql = "SELECT nom_definie_periode FROM edt_creneaux_bis WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
 		}else{
-			$sql = "SELECT nom_definie_periode FROM absences_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
+			$sql = "SELECT nom_definie_periode FROM edt_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
 		}
 	}else{
-		$sql = "SELECT nom_definie_periode FROM absences_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
+		$sql = "SELECT nom_definie_periode FROM edt_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
 	}
 	$req_noms = mysql_query($sql) OR DIE ('Pas de créneaux disponibles.');
 	$nbre_noms = mysql_num_rows($req_noms) OR die ('Impossible de compter les créneaux.');
@@ -978,12 +1018,12 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 	// On insère les noms des différents créneaux
 	if (getSettingValue("creneau_different") != 'n') {
 		if (date("w") == getSettingValue("creneau_different")) {
-			$sql = "SELECT nom_definie_periode FROM absences_creneaux_bis WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
+			$sql = "SELECT nom_definie_periode FROM edt_creneaux_bis WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
 		}else{
-			$sql = "SELECT nom_definie_periode FROM absences_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
+			$sql = "SELECT nom_definie_periode FROM edt_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
 		}
 	}else{
-		$sql = "SELECT nom_definie_periode FROM absences_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
+		$sql = "SELECT nom_definie_periode FROM edt_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode";
 	}
 	$req_noms = mysql_query($sql) OR DIE ('Pas de créneaux disponibles.');
 	$nbre_noms = mysql_num_rows($req_noms) OR DIE ('Impossible de compter les créneaux.');
@@ -1018,7 +1058,58 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 	$cpt_eleve = '0';
 	$ic = '1';
 	$ligne= '0';
+    $test = explode("|", $classe);
+    $req_periode_courante = mysql_query("SELECT numero_periode FROM edt_calendrier WHERE
+                                        debut_calendrier_ts < ".date("U")." AND
+                                        fin_calendrier_ts > ".date("U")."
+                            ");
+    if ($rep_periode_courante = mysql_fetch_array($req_periode_courante)) {
+        $periode_courante = $rep_periode_courante["numero_periode"];
+    }
+    else {
+        $periode_courante = 0;
+    }
+
 	while ($data_liste_eleve = mysql_fetch_array($execution_liste_eleve)) {
+
+        // =============== Filtrage supplémentaire pour masquer les élèves "désaffectés" de la période courante
+        // =============== si cette période a été définie dans les périodes des edt.
+        $eleve_dispo = true;
+        if ($periode_courante != 0) {
+            if ( $test[0] != "AID") {
+                // =============== Si l'élève actuel a été supprimé de la période courante
+                // =============== on bloque son affichage
+                $req_eleve_dispo = mysql_query("SELECT login FROM j_eleves_groupes WHERE
+                                                login = '".$data_liste_eleve["login"]."' AND
+                                                id_groupe = '".$classe."' AND
+                                                periode = '".$periode_courante."' 
+                                                
+                                    ");
+                if (mysql_num_rows($req_eleve_dispo) != 0) {
+                    $eleve_dispo = true;
+                } else {
+                    $eleve_dispo = false;
+                }
+            }
+            else {
+                // =============== Si l'AID n'est pas définie sur la période courante, on bloque l'affichage
+                // =============== des élèves
+                $req_eleve_dispo = mysql_query("SELECT login FROM j_aid_eleves WHERE 
+	                                                id_aid = '".$test[1]."' AND
+	                                                indice_aid IN (SELECT indice_aid FROM aid_config WHERE
+			                                        display_begin <= '".$periode_courante."' AND
+			                                        display_end >= '".$periode_courante."' ) 
+                                                ");
+                if (mysql_num_rows($req_eleve_dispo) != 0) {
+                    $eleve_dispo = true;
+                } else {
+                    $eleve_dispo = false;
+                }
+            }
+        }
+
+        // ==================== fin du filtrage
+        if ($eleve_dispo) {
 		$ligne= $ligne+1;
 		if ($ic === '1') {
 			$ic='2';
@@ -1188,7 +1279,7 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 ?>
 <?php
 			
-		echo "\n</td>\n";
+		echo"\n</td>\n";
 		} // if (getSettingValue("renseigner_retard") == "y")
 		//echo"\n</td>\n";
 //======================== fin de la saisie des retards ==================================================
@@ -1198,9 +1289,9 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 // ===================== On insère le suivi sur les différents créneaux ==================================
 // On construit le tableau html des créneaux avec les couleurs
 		if (date("w") == getSettingValue("creneau_different")) {
-			$req_creneaux = mysql_query("SELECT id_definie_periode FROM absences_creneaux_bis WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
+			$req_creneaux = mysql_query("SELECT id_definie_periode FROM edt_creneaux_bis WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
 		} else {
-			$req_creneaux = mysql_query("SELECT id_definie_periode FROM absences_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
+			$req_creneaux = mysql_query("SELECT id_definie_periode FROM edt_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
 		}
 		$nbre_creneaux = mysql_num_rows($req_creneaux);
 
@@ -1216,8 +1307,9 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
            // Avec ou sans photo
 		if ((getSettingValue("active_module_trombinoscopes")=='y') and ($photo=="avec_photo")) {
       $nom_photo = nom_photo($data_liste_eleve['elenoet'],"eleves",2);
-			$photos = "../../photos/eleves/".$nom_photo;
-			if (($nom_photo == "") or (!(file_exists($photos)))) {
+			//$photos = "../../photos/eleves/".$nom_photo;
+			//if (($nom_photo == "") or (!(file_exists($photos)))) {
+			if (($nom_photo == NULL) or (!(file_exists($photos)))) {
 				$photos = "../../mod_trombinoscopes/images/trombivide.jpg";
 			}
 			$valeur = redimensionne_image_petit($photos);
@@ -1232,6 +1324,7 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 <?php
 		$type_saisie="A";
 		$cpt_eleve = $cpt_eleve + 1;
+    } //if ($eleve_dispo)
 	} //while ($data_liste_eleve = mysql_fetch_array($execution_liste_eleve)
 // Régis j'en suis là
 ?>
@@ -1259,11 +1352,9 @@ if ( $etape === '2' AND $classe != 'toutes' AND ( $classe != '' OR $eleve_initia
 		<div style="text-align: center; margin: 20px;">
 			<input value="Enregistrer" name="Valider" type="submit"  onclick="this.form.submit();this.disabled=true;this.value='En cours'" />
 		</div>
-		<?php if (getSettingValue("active_cahiers_texte")=='y') { ?>
 		<div style="text-align: center; margin: 20px;">
 				<input value="Enregistrer et passer au cahier de texte" name="Valider" type="submit"  onclick="document.getElementById('passer_cahier_texte').value = true; this.form.submit(); this.disabled=true; this.value='En cours'" />
 		</div>
-		<?php } ?>
 	</form>
 	<p class="info_importante">Quand vous saisissez vos absences (avec ou sans absent),
 	Gepi enregistre la date et l'heure ainsi que votre identifiant.</p>

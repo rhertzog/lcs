@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: edit_2.inc 3840 2009-11-30 16:11:44Z crob $
+ * @version: $Id: edit_2.inc 3839 2009-11-30 16:11:35Z crob $
  */
 
         // On initialise le tableau des notes et appréciations :

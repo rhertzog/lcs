@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_responsable.php 3323 2009-08-05 10:06:18Z crob $
+ * $Id: edit_responsable.php 3722 2009-11-13 17:05:44Z crob $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Eric Lebrun
  *
@@ -194,11 +194,11 @@ if (!$error) {
 		} elseif ($mode == "classe") {
 			if ($_POST['classe'] == "all") {
 				$msg .= "Vous allez réinitialiser les mots de passe de tous les utilisateurs ayant le statut 'responsable'.<br />Si vous êtes vraiment sûr de vouloir effectuer cette opération, cliquez sur le lien ci-dessous :";
-				$msg .= "<br /><a href=\"reset_passwords.php?user_status=responsable&amp;mode=html\" target='_blank'>Réinitialiser les mots de passe (Impression HTML)</a>";
+				$msg .= "<br /><a href=\"reset_passwords.php?user_status=responsable&amp;mode=html\" target='_blank'>Réinitialiser les mots de passe (Impression HTML)</a> - ou (<a href=\"reset_passwords.php?user_status=responsable&amp;mode=html&amp;affiche_adresse_resp=y\" target='_blank'>Impression HTML avec adresse</a>)";
 				$msg .= "<br /><a href=\"reset_passwords.php?user_status=responsable&amp;mode=csv\" target='_blank'>Réinitialiser les mots de passe (Export CSV)</a>";
 			} else if (is_numeric($_POST['classe'])) {
 				$msg .= "Vous allez réinitialiser les mots de passe de tous les utilisateurs ayant le statut 'responsable' pour cette classe.<br />Si vous êtes vraiment sûr de vouloir effectuer cette opération, cliquez sur le lien ci-dessous :";
-				$msg .= "<br /><a href=\"reset_passwords.php?user_status=responsable&amp;user_classe=".$_POST['classe']."&amp;mode=html\" target='_blank'>Réinitialiser les mots de passe (Impression HTML)</a>";
+				$msg .= "<br /><a href=\"reset_passwords.php?user_status=responsable&amp;user_classe=".$_POST['classe']."&amp;mode=html\" target='_blank'>Réinitialiser les mots de passe (Impression HTML)</a> - ou (<a href=\"reset_passwords.php?user_status=responsable&amp;user_classe=".$_POST['classe']."&amp;mode=html&amp;affiche_adresse_resp=y\" target='_blank'>Impression HTML avec adresse</a>)";
 				$msg .= "<br /><a href=\"reset_passwords.php?user_status=responsable&amp;user_classe=".$_POST['classe']."&amp;mode=csv\" target='_blank'>Réinitialiser les mots de passe (Export CSV)</a>";
 			}
 		}
@@ -294,6 +294,7 @@ aff_time();
 		require("../lib/footer.inc.php");
 		die;
 	}
+	echo " | <a href='impression_bienvenue.php?mode=responsable'>Fiches bienvenue</a>";
 	echo "</p>\n";
 
 	aff_time();

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: accueil_sauve.php 3870 2009-12-05 13:43:03Z crob $
+ * $Id: accueil_sauve.php 4881 2010-07-24 19:57:56Z regis $
  *
  * Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -75,6 +75,9 @@ $dirname = getSettingValue("backup_directory");
 // Téléchargement d'un fichier vers backup
 if (isset($action) and ($action == 'upload'))  {
     $sav_file = isset($_FILES["sav_file"]) ? $_FILES["sav_file"] : NULL;
+
+//echo "\$sav_file['tmp_name']=".$sav_file['tmp_name']."<br />";
+
     if (!isset($sav_file['tmp_name']) or ($sav_file['tmp_name'] =='')) {
         $msg = "Erreur de téléchargement.";
     } else if (!file_exists($sav_file['tmp_name'])) {
@@ -109,7 +112,8 @@ if (isset($action) and ($action == 'sup'))  {
 if (isset($action) and ($action == 'protect'))  {
     include_once("../lib/class.htaccess.php");
     // Instance of the htaccess class
-    $ht = & new htaccess(TRUE);
+    // $ht = & new htaccess(TRUE);
+    $ht = new htaccess(TRUE);
     $user = array();
     // Get the logins from the password file
     $user = $ht->get_htpasswd();
@@ -349,7 +353,8 @@ function restoreMySqlDump($duree) {
 	global $dirname;
 	global $debug_restaure;
 
-	$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%' AND value!='log' AND value!='setting' AND value!='utilisateurs' ORDER BY name LIMIT 1;";
+	//$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%' AND value!='log' AND value!='setting' AND value!='utilisateurs' ORDER BY name LIMIT 1;";
+	$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%' AND value!='log' AND value!='setting' AND value!='utilisateurs' AND value!='a_tmp_setting' ORDER BY name LIMIT 1;";
 	if($debug_restaure=='y') {echo "<span style='color:red; font-size: x-small;'>$sql</span><br />\n";}
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)>0) {
@@ -372,8 +377,10 @@ function restoreMySqlDump($duree) {
 		$sql="SELECT 1=1 FROM a_tmp_setting WHERE name LIKE 'table_%';";
 		$res=mysql_query($sql);
 		$nb_tables_passees=$nb_tables-mysql_num_rows($res);
+		// Ca ne correspond plus à un nombre de tables, mais à un nombre de fichiers
 
-		echo "<p style='text-align:center;'>Table $nb_tables_passees/$nb_tables</p>\n";
+		//echo "<p style='text-align:center;'>Table $nb_tables_passees/$nb_tables</p>\n";
+		echo "<p style='text-align:center;'>Fichier $nb_tables_passees/$nb_tables</p>\n";
 
 		echo "<p>Traitement de la table <span style='color:green;'>$nom_table</span><br />";
 
@@ -498,126 +505,128 @@ function restoreMySqlDump($duree) {
 			$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%' AND value='".$tab_tables[$i]."';";
 			$res=mysql_query($sql);
 			if(mysql_num_rows($res)>0) {
-				$lig=mysql_fetch_object($res);
-
-				$num_table=my_ereg_replace('^table_','',$lig->name);
-				$nom_table=$lig->value;
-
-				$dumpFile="../backup/".$dirname."/base_extraite_table_".$num_table.".sql";
-				if(!file_exists($dumpFile)) {
-					echo "$dumpFile non trouvé<br />\n";
-					return FALSE;
-				}
-
-				echo "<p>Traitement de la table <span style='color:green;'>$nom_table</span><br />";
-
-				//$fileHandle = fopen($dumpFile, "r");
-				$fileHandle = gzopen($dumpFile, "rb");
-
-				$cpt_insert=0;
-
-				$formattedQuery = "";
-				$old_offset = $offset;
-				while(!gzeof($fileHandle)) {
-					current_time();
-					if ($duree>0 and $TPSCOUR>=$duree) {  //on atteint la fin du temps imparti
-						if ($old_offset == $offset) {
-							echo "<p align=\"center\"><b><font color=\"#FF0000\">La procédure de restauration ne peut pas continuer.
-							<br />Un problème est survenu lors du traitement d'une requête près de :.
-							<br />".$debut_req."</font></b></p><hr />\n";
-							return FALSE;
-						}
-						$old_offset = $offset;
-						return TRUE;
+				// On peut avoir plusieurs enregistrements pour une même table s'il y a plus de 1000 enregistrements dans la table
+				// Ou alors, il ne faut pas scinder ces tables
+				while($lig=mysql_fetch_object($res)) {
+					$num_table=my_ereg_replace('^table_','',$lig->name);
+					$nom_table=$lig->value;
+	
+					$dumpFile="../backup/".$dirname."/base_extraite_table_".$num_table.".sql";
+					if(!file_exists($dumpFile)) {
+						echo "$dumpFile non trouvé<br />\n";
+						return FALSE;
 					}
-
-					//echo $TPSCOUR."<br />";
-					$buffer=gzgets($fileHandle);
-					if (substr($buffer,strlen($buffer),1)==0) {
-						$buffer=substr($buffer,0,strlen($buffer)-1);
-					}
-					//echo $buffer."<br />";
-
-					if(substr($buffer, 0, 1) != "#" AND substr($buffer, 0, 1) != "/") {
-						if (!isset($debut_req))  $debut_req = $buffer;
-						$formattedQuery .= $buffer;
-						//echo $formattedQuery."<hr />";
-						if ($formattedQuery) {
-							// Iconv désactivé pour l'instant... Il semble qu'il y ait une fuite mémoire...
-							//if (function_exists("iconv")) {
-							//	$sql = charset_to_iso($formattedQuery, "iconv");
-							//} elseif (function_exists("mbstring_convert_encoding")) {
-							if (function_exists("mb_convert_encoding")) {
-								$sql = charset_to_iso($formattedQuery, "mbstring");
-							} else {
-								$sql = $formattedQuery;
+	
+					echo "<p>Traitement de la table <span style='color:green;'>$nom_table</span><br />";
+	
+					//$fileHandle = fopen($dumpFile, "r");
+					$fileHandle = gzopen($dumpFile, "rb");
+	
+					$cpt_insert=0;
+	
+					$formattedQuery = "";
+					$old_offset = $offset;
+					while(!gzeof($fileHandle)) {
+						current_time();
+						if ($duree>0 and $TPSCOUR>=$duree) {  //on atteint la fin du temps imparti
+							if ($old_offset == $offset) {
+								echo "<p align=\"center\"><b><font color=\"#FF0000\">La procédure de restauration ne peut pas continuer.
+								<br />Un problème est survenu lors du traitement d'une requête près de :.
+								<br />".$debut_req."</font></b></p><hr />\n";
+								return FALSE;
 							}
-							if (mysql_query($sql)) {//réussie sinon continue à concaténer
-								if(my_ereg("^DROP TABLE ",$sql)) {
-									echo "Suppression de la table <span style='color:green;'>$nom_table</span> si elle existe.<br />";
+							$old_offset = $offset;
+							return TRUE;
+						}
+	
+						//echo $TPSCOUR."<br />";
+						$buffer=gzgets($fileHandle);
+						if (substr($buffer,strlen($buffer),1)==0) {
+							$buffer=substr($buffer,0,strlen($buffer)-1);
+						}
+						//echo $buffer."<br />";
+	
+						if(substr($buffer, 0, 1) != "#" AND substr($buffer, 0, 1) != "/") {
+							if (!isset($debut_req))  $debut_req = $buffer;
+							$formattedQuery .= $buffer;
+							//echo $formattedQuery."<hr />";
+							if ($formattedQuery) {
+								// Iconv désactivé pour l'instant... Il semble qu'il y ait une fuite mémoire...
+								//if (function_exists("iconv")) {
+								//	$sql = charset_to_iso($formattedQuery, "iconv");
+								//} elseif (function_exists("mbstring_convert_encoding")) {
+								if (function_exists("mb_convert_encoding")) {
+									$sql = charset_to_iso($formattedQuery, "mbstring");
+								} else {
+									$sql = $formattedQuery;
 								}
-								elseif(my_ereg("^CREATE TABLE ",$sql)) {
-									echo "Création de la table <span style='color:green;'>$nom_table</span> d'après la sauvegarde.<br />";
-								}
-								else {
-									if($cpt_insert==0) {
-										//echo "<div style='width:100%'>";
-										echo "Restauration des enregistrements de la table <span style='color:green;'>$nom_table</span> d'après la sauvegarde: ";
+								if (mysql_query($sql)) {//réussie sinon continue à concaténer
+									if(my_ereg("^DROP TABLE ",$sql)) {
+										echo "Suppression de la table <span style='color:green;'>$nom_table</span> si elle existe.<br />";
+									}
+									elseif(my_ereg("^CREATE TABLE ",$sql)) {
+										echo "Création de la table <span style='color:green;'>$nom_table</span> d'après la sauvegarde.<br />";
 									}
 									else {
-										echo "<span style='font-size: xx-small;'>. </span>";
+										if($cpt_insert==0) {
+											//echo "<div style='width:100%'>";
+											echo "Restauration des enregistrements de la table <span style='color:green;'>$nom_table</span> d'après la sauvegarde: ";
+										}
+										else {
+											echo "<span style='font-size: xx-small;'>. </span>";
+										}
+										$cpt_insert++;
 									}
-									$cpt_insert++;
+									flush();
+	
+									debug_pb($sql);
+	
+									$offset=gztell($fileHandle);
+									//echo $offset;
+									$formattedQuery = "";
+									unset($debut_req);
+									$cpt++;
+									//echo $cpt;
 								}
-								flush();
-
-								debug_pb($sql);
-
-								$offset=gztell($fileHandle);
-								//echo $offset;
-								$formattedQuery = "";
-								unset($debut_req);
-								$cpt++;
-								//echo $cpt;
 							}
 						}
 					}
-				}
-
-				if($cpt_insert>0) {
-					echo "<br />";
-					echo "$cpt_insert enregistrement(s) restauré(s).";
-					//echo "</div>\n";
-				}
-
-				if (mysql_error())
-					echo "<hr />\nERREUR à partir de [$formattedQuery]<br />".mysql_error()."<hr />\n";
-
-				gzclose($fileHandle);
-
-				$sql="DELETE FROM a_tmp_setting WHERE name='table_".$num_table."';";
-				if($debug_restaure=='y') {
-					if($nettoyage=mysql_query($sql)) {
-						echo "Succès de la suppression dans a_tmp_setting.<br />\n";
+	
+					if($cpt_insert>0) {
+						echo "<br />";
+						echo "$cpt_insert enregistrement(s) restauré(s).";
+						//echo "</div>\n";
+					}
+	
+					if (mysql_error())
+						echo "<hr />\nERREUR à partir de [$formattedQuery]<br />".mysql_error()."<hr />\n";
+	
+					gzclose($fileHandle);
+	
+					$sql="DELETE FROM a_tmp_setting WHERE name='table_".$num_table."';";
+					if($debug_restaure=='y') {
+						if($nettoyage=mysql_query($sql)) {
+							echo "Succès de la suppression dans a_tmp_setting.<br />\n";
+						}
+						else {
+							echo "<p style='color:red;'>Erreur lors de la suppression dans 'a_tmp_setting'.</p>\n";
+						}
+	
+						if(unlink($dumpFile)) {
+							echo "Succès de la suppression de $dumpFile.<br />";
+						}
+						else {
+							echo "<p style='color:red;'>Erreur lors de la suppression de $dumpFile.</p>\n";
+						}
 					}
 					else {
-						echo "<p style='color:red;'>Erreur lors de la suppression dans 'a_tmp_setting'.</p>\n";
-					}
-
-					if(unlink($dumpFile)) {
-						echo "Succès de la suppression de $dumpFile.<br />";
-					}
-					else {
-						echo "<p style='color:red;'>Erreur lors de la suppression de $dumpFile.</p>\n";
-					}
-				}
-				else {
-					if(!$nettoyage=mysql_query($sql)) {
-						echo "<p style='color:red;'>Erreur lors de la suppression dans 'a_tmp_setting'.</p>\n";
-					}
-
-					if(!unlink($dumpFile)) {
-						echo "<p style='color:red;'>Erreur lors de la suppression de $dumpFile.</p>\n";
+						if(!$nettoyage=mysql_query($sql)) {
+							echo "<p style='color:red;'>Erreur lors de la suppression dans 'a_tmp_setting'.</p>\n";
+						}
+	
+						if(!unlink($dumpFile)) {
+							echo "<p style='color:red;'>Erreur lors de la suppression de $dumpFile.</p>\n";
+						}
 					}
 				}
 			}
@@ -692,6 +701,8 @@ function extractMySqlDump($dumpFile,$duree) {
 				$sql="INSERT INTO a_tmp_setting SET name='table_".sprintf("%03d",$num_table)."', value='$nom_table';";
 				$res=mysql_query($sql);
 
+				$cpt_lignes_fichier=0;
+
 				$num_table++;
 			}
 			if(isset($fich)) {
@@ -706,7 +717,18 @@ function extractMySqlDump($dumpFile,$duree) {
 					}
 				}
 				else {
+					if($cpt_lignes_fichier>1000) {
+						if(isset($fich)) {fclose($fich);}
+						$fich=fopen("../backup/".$dirname."/base_extraite_table_".sprintf("%03d",$num_table).".sql","w+");
+						// Le nom de table n'a pas changé:	
+						$sql="INSERT INTO a_tmp_setting SET name='table_".sprintf("%03d",$num_table)."', value='$nom_table';";
+						$res=mysql_query($sql);
+
+						$cpt_lignes_fichier=0;
+						$num_table++; // Du coup, la variable ne correspond plus au nombre de tables, mais au nombre de morceaux.
+					}
 					fwrite($fich,$buffer);
+					$cpt_lignes_fichier++;
 				}
 			}
 			else {
@@ -723,6 +745,9 @@ function extractMySqlDump($dumpFile,$duree) {
 	$res=mysql_query($sql);
 
     //$offset=-1;
+
+	//die();
+
     return TRUE;
 }
 
@@ -1141,7 +1166,9 @@ value VARCHAR(255) NOT NULL);";
 		}
 		else {
 
-			$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%';";
+			//$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%';";
+			// Pour nettoyer aussi une trace d'une sauvegarde consécutive à une restauration ratée... pas sûr que ce soit prudent...
+			$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%' AND value!='a_tmp_setting';";
 			$res=mysql_query($sql);
 			if(mysql_num_rows($res)==0) {
 
@@ -1161,6 +1188,8 @@ value VARCHAR(255) NOT NULL);";
 					echo "</div>\n";
 
 				echo "</div>\n";
+
+				// Il peut rester un fichier base_extraite_table_XXX.sql correspondant à a_tmp_setting si on a restauré une sauvegarde faite après une restauration ratée/incomplète... inquiètant.
 
 				$sql="DROP TABLE a_tmp_setting;";
 				$res=mysql_query($sql);
@@ -1405,10 +1434,13 @@ if (isset($action) and ($action == 'zip'))  {
 			$dossier_dans_archive = 'documents'; //le nom du dossier dans l'archive créée
 			break;
 		case "photos":
-			$chemin_stockage = $path."/_photos".$suffixe_zip.".zip";
-			$dossier_a_traiter = '../photos/'; //le dossier à traiter
-			$dossier_dans_archive = 'photos'; //le nom du dossier dans l'archive créer
-			break;
+		  $chemin_stockage = $path."/_photos".$suffixe_zip.".zip";
+		  $dossier_a_traiter = '../photos/'; //le dossier à traiter
+		  if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+			$dossier_a_traiter .=getSettingValue("gepiSchoolRne")."/";
+		  }
+		  $dossier_dans_archive = 'photos'; //le nom du dossier dans l'archive créer
+		  break;
 		default:
 			$chemin_stockage = '';
 		}
@@ -1642,11 +1674,22 @@ echo "<h3 id=\"zip\">Créer une archive (Zip) de dossiers de Gepi</h3>\n";
 echo "Une fois créée, pour télécharger l'archive, rendez-vous à la section \"Fichiers de restauration\" de cette page. <br />";
 echo "<p style=\"color: red;\">ATTENTION : veillez à supprimer le fichier créé une fois l'archive téléchargée.</p>";
 echo "<form enctype=\"multipart/form-data\" action=\"accueil_sauve.php\" method=\"post\" name=\"formulaire3\">\n";
-echo "<br />Dossier à sauvegarder :<br /><input type=\"radio\" name=\"dossier\" value=\"photos\" checked/> Dossier Photos (_photos_le_DATE_a_HEURE.zip)<br/><input type=\"radio\" name=\"dossier\" value=\"cdt\" /> Dossier documents du cahier de textes (_cdt_le_DATE_a_HEURE.zip)<br />\n";
+echo "<br />Dossier à sauvegarder :<br />";
+if ($multisite != 'y'){
+    // En attendant d'avoir trouvé une solution élégante, on interdit la sauvegarde des photos en multisite (trop lourde pour les serveurs)
+    echo "<input type=\"radio\" name=\"dossier\" id=\"dossier_photos\" value=\"photos\" checked/><label for='dossier_photos'> Dossier Photos (_photos_le_DATE_a_HEURE.zip)</label><br />\n";
+}
+echo "<input type=\"radio\" name=\"dossier\" id=\"dossier_cdt\" value=\"cdt\" /><label for='dossier_cdt'> Dossier documents du cahier de textes (_cdt_le_DATE_a_HEURE.zip)</label><br />\n";
 echo "<br />\n";
 echo "<input type=\"hidden\" name=\"action\" value=\"zip\" />\n
 	  <input type=\"submit\" value=\"Créer l'archive\" name=\"bouton3\" />\n
 	  </form>\n";
+
+echo "<br /><hr />";
+
+echo "<h3 id=\"rw\">Contrôle des dossiers devant être accessibles en écriture</h3>\n";
+
+test_ecriture_dossier();
 echo "<br />";
 
 require("../lib/footer.inc.php");

@@ -22,16 +22,16 @@ CREATE TABLE utilisateurs
 	statut VARCHAR(20)  NOT NULL COMMENT 'Statut de l\'utilisateur',
 	etat VARCHAR(20)  NOT NULL COMMENT 'Etat de l\'utilisateur (actif/inactif)',
 	change_mdp CHAR(1) default 'n' NOT NULL COMMENT 'L\'utilisateur doit-il changer son mot de passe (y/n) (a la premiere connexion par exemple)',
-	date_verrouillage TIME default '2006-01-01 00:00:00' NOT NULL COMMENT 'Date de verrouillage de l\'utilisateur',
+	date_verrouillage DATE default '2006-01-01 00:00:00' NOT NULL COMMENT 'Date de verrouillage de l\'utilisateur',
 	password_ticket VARCHAR(255)  NOT NULL COMMENT 'password_ticket de l\'utilisateur',
-	ticket_expiration TIME  NOT NULL COMMENT 'ticket_expiration de l\'utilisateur',
+	ticket_expiration DATE  NOT NULL COMMENT 'ticket_expiration de l\'utilisateur',
 	niveau_alerte SMALLINT default 0 NOT NULL COMMENT 'niveau_alerte de l\'utilisateur',
 	observation_securite TINYINT default 0 NOT NULL COMMENT 'observation_securite de l\'utilisateur',
 	temp_dir VARCHAR(255)  NOT NULL COMMENT 'Repertoire temporaire de l\'utilisateur',
 	numind VARCHAR(255)  NOT NULL COMMENT 'numind de l\'utilisateur',
 	auth_mode VARCHAR(255) default 'gepi' NOT NULL COMMENT 'auth_mode de l\'utilisateur (gepi/cas/ldap)',
 	PRIMARY KEY (login)
-)Type=MyISAM COMMENT='Utilisateur de gepi';
+) ENGINE=MyISAM COMMENT='Utilisateur de gepi';
 
 #-----------------------------------------------------------------------------
 #-- groupes
@@ -47,7 +47,7 @@ CREATE TABLE groupes
 	description TEXT  NOT NULL COMMENT 'Description du groupe',
 	recalcul_rang VARCHAR(10) COMMENT 'recalcul_rang',
 	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Groupe d\'eleves permettant d\'y affecter une matiere et un professeurs';
+) ENGINE=MyISAM COMMENT='Groupe d\'eleves permettant d\'y affecter une matiere et un professeurs';
 
 #-----------------------------------------------------------------------------
 #-- j_groupes_professeurs
@@ -70,7 +70,30 @@ CREATE TABLE j_groupes_professeurs
 		FOREIGN KEY (login)
 		REFERENCES utilisateurs (login)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Table permettant le jointure entre groupe d\'eleves et professeurs. Est rarement utilise directement dans le code.';
+) ENGINE=MyISAM COMMENT='Table permettant le jointure entre groupe d\'eleves et professeurs. Est rarement utilise directement dans le code.';
+
+#-----------------------------------------------------------------------------
+#-- j_groupes_matieres
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS j_groupes_matieres;
+
+
+CREATE TABLE j_groupes_matieres
+(
+	id_groupe INTEGER  NOT NULL COMMENT 'Cle primaire du groupe',
+	id_matiere VARCHAR(255)  NOT NULL COMMENT 'Cle primaire de la matiere',
+	PRIMARY KEY (id_groupe,id_matiere),
+	CONSTRAINT j_groupes_matieres_FK_1
+		FOREIGN KEY (id_groupe)
+		REFERENCES groupes (id)
+		ON DELETE CASCADE,
+	INDEX j_groupes_matieres_FI_2 (id_matiere),
+	CONSTRAINT j_groupes_matieres_FK_2
+		FOREIGN KEY (id_matiere)
+		REFERENCES matieres (matiere)
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Table permettant le jointure entre un enseignement et une matière.';
 
 #-----------------------------------------------------------------------------
 #-- classes
@@ -82,8 +105,8 @@ DROP TABLE IF EXISTS classes;
 CREATE TABLE classes
 (
 	id INTEGER  NOT NULL AUTO_INCREMENT COMMENT 'Cle primaire de la classe',
-	classe VARCHAR(100)  NOT NULL COMMENT 'nom de la classe',
-	nom_complet VARCHAR(100)  NOT NULL COMMENT 'nom complet de la classe',
+	classe VARCHAR(100)  NOT NULL COMMENT 'nom de la classe. Le nom court est différent pour chaque classe.',
+	nom_complet VARCHAR(100)  NOT NULL COMMENT 'nom complet de la classe. Le nom long n\'est pas toujours différent pour chaque classe. Le nom long peu servir à catégoriser le niveau.',
 	suivi_par VARCHAR(50)  NOT NULL,
 	formule VARCHAR(100)  NOT NULL,
 	format_nom VARCHAR(5)  NOT NULL,
@@ -109,7 +132,53 @@ CREATE TABLE classes
 	ects_domaines_etude VARCHAR(255),
 	ects_fonction_signataire_attestation VARCHAR(255),
 	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Classe regroupant des eleves';
+) ENGINE=MyISAM COMMENT='Classe regroupant des eleves';
+
+#-----------------------------------------------------------------------------
+#-- periodes
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS periodes;
+
+
+CREATE TABLE periodes
+(
+	nom_periode VARCHAR(10) COMMENT 'Nom de la periode de note',
+	num_periode INTEGER(10)  NOT NULL COMMENT 'identifiant numerique de la periode (1, 2 ou3)',
+	verouiller VARCHAR(1) default 'O' NOT NULL COMMENT 'Verrouillage de la periode : O pour verouillee, N pour non verrouillee, P pour partiel (pied de bulletin)',
+	id_classe INTEGER(11)  NOT NULL COMMENT 'identifiant numerique de la classe.',
+	date_verrouillage DATETIME COMMENT 'date de verrouillage de la periode',
+	date_fin DATETIME COMMENT 'date de verrouillage de la periode',
+	PRIMARY KEY (num_periode,id_classe),
+	INDEX periodes_FI_1 (id_classe),
+	CONSTRAINT periodes_FK_1
+		FOREIGN KEY (id_classe)
+		REFERENCES classes (id)
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Table regroupant les periodes de notes pour les classes';
+
+#-----------------------------------------------------------------------------
+#-- j_scol_classes
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS j_scol_classes;
+
+
+CREATE TABLE j_scol_classes
+(
+	login VARCHAR(50)  NOT NULL COMMENT 'Cle primaire de l\'utilisateur',
+	id_classe INTEGER(11)  NOT NULL COMMENT 'Cle primaire de la classe',
+	PRIMARY KEY (login,id_classe),
+	CONSTRAINT j_scol_classes_FK_1
+		FOREIGN KEY (login)
+		REFERENCES utilisateurs (login)
+		ON DELETE CASCADE,
+	INDEX j_scol_classes_FI_2 (id_classe),
+	CONSTRAINT j_scol_classes_FK_2
+		FOREIGN KEY (id_classe)
+		REFERENCES classes (id)
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Table permettant le jointure entre un utilisateur scolarite et une classe.';
 
 #-----------------------------------------------------------------------------
 #-- j_groupes_classes
@@ -141,7 +210,7 @@ CREATE TABLE j_groupes_classes
 	CONSTRAINT j_groupes_classes_FK_3
 		FOREIGN KEY (categorie_id)
 		REFERENCES matieres_categories (id)
-)Type=MyISAM COMMENT='Table permettant la jointure entre groupe d\'eleves et une classe. Cette jointure permet de definir un enseignement, c\'est à dire un groupe d\'eleves dans une meme classe. Est rarement utilise directement dans le code. Cette jointure permet de definir un coefficient et une valeur ects pour un groupe sur une classe';
+) ENGINE=MyISAM COMMENT='Table permettant la jointure entre groupe d\'enseignement et une classe. Cette jointure permet de definir un enseignement, c\'est à dire un groupe d\'eleves dans une meme classe. Est rarement utilise directement dans le code. Cette jointure permet de definir un coefficient et une valeur ects pour un groupe sur une classe';
 
 #-----------------------------------------------------------------------------
 #-- ct_entry
@@ -177,7 +246,7 @@ CREATE TABLE ct_entry
 		FOREIGN KEY (id_sequence)
 		REFERENCES ct_sequences (id)
 		ON DELETE SET NULL
-)Type=MyISAM COMMENT='Compte rendu du cahier de texte';
+) ENGINE=MyISAM COMMENT='Compte rendu du cahier de texte';
 
 #-----------------------------------------------------------------------------
 #-- ct_documents
@@ -199,7 +268,7 @@ CREATE TABLE ct_documents
 		FOREIGN KEY (id_ct)
 		REFERENCES ct_entry (id_ct)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Document (fichier joint) appartenant a un compte rendu du cahier de texte';
+) ENGINE=MyISAM COMMENT='Document (fichier joint) appartenant a un compte rendu du cahier de texte';
 
 #-----------------------------------------------------------------------------
 #-- ct_devoirs_entry
@@ -233,7 +302,7 @@ CREATE TABLE ct_devoirs_entry
 		FOREIGN KEY (id_sequence)
 		REFERENCES ct_sequences (id)
 		ON DELETE SET NULL
-)Type=MyISAM COMMENT='Travail Ã  faire (devoir) cahier de texte';
+) ENGINE=MyISAM COMMENT='Travail Ã  faire (devoir) cahier de texte';
 
 #-----------------------------------------------------------------------------
 #-- ct_devoirs_documents
@@ -255,7 +324,7 @@ CREATE TABLE ct_devoirs_documents
 		FOREIGN KEY (id_ct_devoir)
 		REFERENCES ct_devoirs_entry (id_ct)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Document (fichier joint) appartenant a un travail Ã  faire du cahier de texte';
+) ENGINE=MyISAM COMMENT='Document (fichier joint) appartenant a un travail Ã  faire du cahier de texte';
 
 #-----------------------------------------------------------------------------
 #-- ct_private_entry
@@ -289,7 +358,7 @@ CREATE TABLE ct_private_entry
 		FOREIGN KEY (id_sequence)
 		REFERENCES ct_sequences (id)
 		ON DELETE SET NULL
-)Type=MyISAM COMMENT='Notice privee du cahier de texte';
+) ENGINE=MyISAM COMMENT='Notice privee du cahier de texte';
 
 #-----------------------------------------------------------------------------
 #-- ct_sequences
@@ -304,7 +373,7 @@ CREATE TABLE ct_sequences
 	titre VARCHAR(255)  NOT NULL COMMENT 'Titre de la sequence',
 	description LONGTEXT  NOT NULL COMMENT 'Description de la sequence',
 	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Sequence de plusieurs compte-rendus';
+) ENGINE=MyISAM COMMENT='Sequence de plusieurs compte-rendus';
 
 #-----------------------------------------------------------------------------
 #-- eleves
@@ -329,14 +398,9 @@ CREATE TABLE eleves
 	id_eleve INTEGER(11)  NOT NULL AUTO_INCREMENT COMMENT 'cle primaire autoincremente',
 	PRIMARY KEY (id_eleve),
 	INDEX I_referenced_j_eleves_classes_FK_1_1 (login),
-	INDEX I_referenced_j_eleves_cpe_FK_1_2 (login),
-	INDEX I_referenced_j_eleves_groupes_FK_1_3 (login),
-	INDEX I_referenced_j_eleves_professeurs_FK_1_4 (login),
-	INDEX I_referenced_j_eleves_regime_FK_1_5 (login),
-	INDEX I_referenced_responsables2_FK_1_6 (ele_id),
-	INDEX I_referenced_j_aid_eleves_FK_2_7 (login),
-	INDEX I_referenced_archivage_ects_FK_1_8 (no_gep)
-)Type=MyISAM COMMENT='Liste des eleves de l\'etablissement';
+	INDEX I_referenced_responsables2_FK_1_2 (ele_id),
+	INDEX I_referenced_archivage_ects_FK_1_3 (no_gep)
+) ENGINE=MyISAM COMMENT='Liste des eleves de l\'etablissement';
 
 #-----------------------------------------------------------------------------
 #-- j_eleves_classes
@@ -349,7 +413,7 @@ CREATE TABLE j_eleves_classes
 (
 	login VARCHAR(50)  NOT NULL COMMENT 'cle etrangere, Login de l\'eleve',
 	id_classe INTEGER(11) default 0 NOT NULL COMMENT 'cle etrangere, id de la classe',
-	periode INTEGER(11) default 0 NOT NULL COMMENT 'Periode ou l\'eleve est inscrit dans cette classe',
+	periode INTEGER(11) default 0 NOT NULL COMMENT 'Numéro de la periode ou l\'eleve est inscrit dans cette classe',
 	rang SMALLINT(6) default 0 NOT NULL,
 	PRIMARY KEY (login,id_classe,periode),
 	CONSTRAINT j_eleves_classes_FK_1
@@ -361,7 +425,7 @@ CREATE TABLE j_eleves_classes
 		FOREIGN KEY (id_classe)
 		REFERENCES classes (id)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Table de jointure entre les eleves et leur classe en fonction de la periode';
+) ENGINE=MyISAM COMMENT='Table de jointure entre les eleves et leur classe en fonction de la periode';
 
 #-----------------------------------------------------------------------------
 #-- j_eleves_cpe
@@ -384,7 +448,7 @@ CREATE TABLE j_eleves_cpe
 		FOREIGN KEY (cpe_login)
 		REFERENCES utilisateurs (login)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Table de jointure entre les CPE et les eleves';
+) ENGINE=MyISAM COMMENT='Table de jointure entre les CPE et les eleves';
 
 #-----------------------------------------------------------------------------
 #-- j_eleves_groupes
@@ -408,7 +472,7 @@ CREATE TABLE j_eleves_groupes
 		FOREIGN KEY (id_groupe)
 		REFERENCES groupes (id)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Table de jointure entre les eleves et leurs enseignements (groupes)';
+) ENGINE=MyISAM COMMENT='Table de jointure entre les eleves et leurs enseignements (groupes)';
 
 #-----------------------------------------------------------------------------
 #-- j_eleves_professeurs
@@ -437,7 +501,7 @@ CREATE TABLE j_eleves_professeurs
 		FOREIGN KEY (id_classe)
 		REFERENCES classes (id)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Table de jointure entre les professeurs principaux et les eleves';
+) ENGINE=MyISAM COMMENT='Table de jointure entre les professeurs principaux et les eleves';
 
 #-----------------------------------------------------------------------------
 #-- j_eleves_regime
@@ -456,7 +520,7 @@ CREATE TABLE j_eleves_regime
 		FOREIGN KEY (login)
 		REFERENCES eleves (login)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Mention du redoublement eventuel de l\'eleve ainsi que son regime de presence (externe, demi-pensionnaire, ...)';
+) ENGINE=MyISAM COMMENT='Mention du redoublement eventuel de l\'eleve ainsi que son regime de presence (externe, demi-pensionnaire, ...)';
 
 #-----------------------------------------------------------------------------
 #-- responsables2
@@ -481,7 +545,7 @@ CREATE TABLE responsables2
 		FOREIGN KEY (pers_id)
 		REFERENCES resp_pers (pers_id)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Table de jointure entre les eleves et leurs responsables legaux avec mention du niveau de ces responsables';
+) ENGINE=MyISAM COMMENT='Table de jointure entre les eleves et leurs responsables legaux avec mention du niveau de ces responsables';
 
 #-----------------------------------------------------------------------------
 #-- resp_pers
@@ -508,7 +572,7 @@ CREATE TABLE resp_pers
 		FOREIGN KEY (adr_id)
 		REFERENCES resp_adr (adr_id)
 		ON DELETE SET NULL
-)Type=MyISAM COMMENT='Liste des responsables legaux des eleves';
+) ENGINE=MyISAM COMMENT='Liste des responsables legaux des eleves';
 
 #-----------------------------------------------------------------------------
 #-- resp_adr
@@ -528,7 +592,7 @@ CREATE TABLE resp_adr
 	pays VARCHAR(50)  NOT NULL COMMENT 'Pays (quand il est autre que France)',
 	commune VARCHAR(50)  NOT NULL COMMENT 'Commune de residence',
 	PRIMARY KEY (adr_id)
-)Type=MyISAM COMMENT='Table de jointure entre les responsables legaux et leur adresse';
+) ENGINE=MyISAM COMMENT='Table de jointure entre les responsables legaux et leur adresse';
 
 #-----------------------------------------------------------------------------
 #-- j_eleves_etablissements
@@ -551,7 +615,7 @@ CREATE TABLE j_eleves_etablissements
 		FOREIGN KEY (id_etablissement)
 		REFERENCES etablissements (id)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Table de jointure pour connaitre l\'etablissement precedent de l\'eleve';
+) ENGINE=MyISAM COMMENT='Table de jointure pour connaitre l\'etablissement precedent de l\'eleve';
 
 #-----------------------------------------------------------------------------
 #-- etablissements
@@ -569,7 +633,7 @@ CREATE TABLE etablissements
 	cp INTEGER(10)  NOT NULL COMMENT 'code postal de l\'etablissement',
 	ville VARCHAR(50) default '' NOT NULL COMMENT 'Ville de l\'etablissement',
 	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Liste des etablissements precedents des eleves';
+) ENGINE=MyISAM COMMENT='Liste des etablissements precedents des eleves';
 
 #-----------------------------------------------------------------------------
 #-- aid
@@ -610,7 +674,7 @@ CREATE TABLE aid
 		FOREIGN KEY (indice_aid)
 		REFERENCES aid_config (indice_aid)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Liste des AID (Activites Inter-Disciplinaires)';
+) ENGINE=MyISAM COMMENT='Liste des AID (Activites Inter-Disciplinaires)';
 
 #-----------------------------------------------------------------------------
 #-- aid_config
@@ -637,7 +701,7 @@ CREATE TABLE aid_config
 	outils_complementaires CHAR(1) default 'n' NOT NULL,
 	feuille_presence CHAR(1) default 'n' NOT NULL,
 	PRIMARY KEY (indice_aid)
-)Type=MyISAM COMMENT='Liste des categories d\'AID (Activites inter-Disciplinaires)';
+) ENGINE=MyISAM COMMENT='Liste des categories d\'AID (Activites inter-Disciplinaires)';
 
 #-----------------------------------------------------------------------------
 #-- j_aid_utilisateurs
@@ -650,8 +714,7 @@ CREATE TABLE j_aid_utilisateurs
 (
 	id_aid VARCHAR(100)  NOT NULL COMMENT 'cle etrangere vers l\'AID',
 	id_utilisateur VARCHAR(100)  NOT NULL COMMENT 'Login de l\'utilisateur professionnel',
-	indice_aid INTEGER(11) default 0 NOT NULL COMMENT 'cle etrangere vers la categorie d\'AID',
-	PRIMARY KEY (id_aid,indice_aid),
+	PRIMARY KEY (id_aid,id_utilisateur),
 	CONSTRAINT j_aid_utilisateurs_FK_1
 		FOREIGN KEY (id_aid)
 		REFERENCES aid (id)
@@ -660,13 +723,8 @@ CREATE TABLE j_aid_utilisateurs
 	CONSTRAINT j_aid_utilisateurs_FK_2
 		FOREIGN KEY (id_utilisateur)
 		REFERENCES utilisateurs (login)
-		ON DELETE CASCADE,
-	INDEX j_aid_utilisateurs_FI_3 (indice_aid),
-	CONSTRAINT j_aid_utilisateurs_FK_3
-		FOREIGN KEY (indice_aid)
-		REFERENCES aid_config (indice_aid)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Table de liaison entre les AID et les utilisateurs professionnels';
+) ENGINE=MyISAM COMMENT='Table de liaison entre les AID et les utilisateurs professionnels';
 
 #-----------------------------------------------------------------------------
 #-- j_aid_eleves
@@ -679,56 +737,17 @@ CREATE TABLE j_aid_eleves
 (
 	id_aid VARCHAR(100)  NOT NULL COMMENT 'Clé etrangere vers l\'AID',
 	login VARCHAR(60)  NOT NULL COMMENT 'Login de l\'eleve qui est membre de cette AID',
-	indice_aid INTEGER(11) default 0 NOT NULL COMMENT 'cle etrangere vers la categorie d\'AID',
-	PRIMARY KEY (login,indice_aid),
-	INDEX j_aid_eleves_FI_1 (id_aid),
+	PRIMARY KEY (id_aid,login),
 	CONSTRAINT j_aid_eleves_FK_1
 		FOREIGN KEY (id_aid)
 		REFERENCES aid (id)
 		ON DELETE CASCADE,
+	INDEX j_aid_eleves_FI_2 (login),
 	CONSTRAINT j_aid_eleves_FK_2
 		FOREIGN KEY (login)
 		REFERENCES eleves (login)
-		ON DELETE CASCADE,
-	INDEX j_aid_eleves_FI_3 (indice_aid),
-	CONSTRAINT j_aid_eleves_FK_3
-		FOREIGN KEY (indice_aid)
-		REFERENCES aid_config (indice_aid)
 		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Table de liaison entre les AID et les eleves qui en sont membres';
-
-#-----------------------------------------------------------------------------
-#-- a_creneaux
-#-----------------------------------------------------------------------------
-
-DROP TABLE IF EXISTS a_creneaux;
-
-
-CREATE TABLE a_creneaux
-(
-	id INTEGER(11)  NOT NULL AUTO_INCREMENT COMMENT 'cle primaire auto-incremente',
-	nom_creneau VARCHAR(50)  NOT NULL COMMENT 'Nom du creneau',
-	debut_creneau INTEGER(12)  NOT NULL COMMENT 'Nombre de secondes qui séparent l\'horaire de debut avec 00:00:00 du jour',
-	fin_creneau INTEGER(12)  NOT NULL COMMENT 'Nombre de secondes qui séparent l\'horaire de fin avec 00:00:00 du jour',
-	jour_creneau INTEGER(2) default 9 NOT NULL COMMENT 'Par defaut, aucun jour en particulier mais on peut imposer que des creneaux soient specifiques a un jour en particulier',
-	type_creneau VARCHAR(15)  NOT NULL COMMENT '3 types : cours, pause, repas',
-	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Les creneaux sont la base du temps des eleves et des cours';
-
-#-----------------------------------------------------------------------------
-#-- a_actions
-#-----------------------------------------------------------------------------
-
-DROP TABLE IF EXISTS a_actions;
-
-
-CREATE TABLE a_actions
-(
-	id INTEGER(11)  NOT NULL AUTO_INCREMENT COMMENT 'cle primaire auto-incrementee',
-	nom VARCHAR(250)  NOT NULL COMMENT 'Nom de l\'action',
-	ordre INTEGER(3)  NOT NULL COMMENT 'Ordre d\'affichage de l\'action dans la liste déroulante',
-	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Liste des actions possibles sur une absence';
+) ENGINE=MyISAM COMMENT='Table de liaison entre les AID et les eleves qui en sont membres';
 
 #-----------------------------------------------------------------------------
 #-- a_motifs
@@ -741,9 +760,10 @@ CREATE TABLE a_motifs
 (
 	id INTEGER(11)  NOT NULL AUTO_INCREMENT COMMENT 'cle primaire auto-incrementee',
 	nom VARCHAR(250)  NOT NULL COMMENT 'Nom du motif',
-	ordre INTEGER(3)  NOT NULL COMMENT 'Ordre d\'affichage du motif dans la liste déroulante',
+	commentaire TEXT COMMENT 'commentaire saisi par l\'utilisateur',
+	sortable_rank INTEGER,
 	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Liste des motifs possibles pour une absence';
+) ENGINE=MyISAM COMMENT='Liste des motifs possibles pour une absence';
 
 #-----------------------------------------------------------------------------
 #-- a_justifications
@@ -756,9 +776,10 @@ CREATE TABLE a_justifications
 (
 	id INTEGER(11)  NOT NULL AUTO_INCREMENT COMMENT 'cle primaire auto-incrementee',
 	nom VARCHAR(250)  NOT NULL COMMENT 'Nom de la justification',
-	ordre INTEGER(3)  NOT NULL COMMENT 'Ordre d\'affichage de la justification dans la liste déroulante',
+	commentaire TEXT COMMENT 'commentaire saisi par l\'utilisateur',
+	sortable_rank INTEGER,
 	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Liste des justifications possibles pour une absence';
+) ENGINE=MyISAM COMMENT='Liste des justifications possibles pour une absence';
 
 #-----------------------------------------------------------------------------
 #-- a_types
@@ -771,9 +792,35 @@ CREATE TABLE a_types
 (
 	id INTEGER(11)  NOT NULL AUTO_INCREMENT COMMENT 'Cle primaire auto-incrementee',
 	nom VARCHAR(250)  NOT NULL COMMENT 'Nom du type d\'absence',
-	ordre INTEGER(3)  NOT NULL COMMENT 'Ordre d\'affichage du type dans la liste déroulante',
+	justification_exigible TINYINT COMMENT 'Ce type d\'absence doit entrainer une justification de la part de la famille',
+	sous_responsabilite_etablissement VARCHAR(255) default 'NON_PRECISE' COMMENT 'L\'eleve est sous la responsabilite de l\'etablissement. Typiquement : absence infirmerie, mettre la propriété à vrai car l\'eleve est encore sous la responsabilité de l\'etablissement. Possibilite : \'vrai\'/\'faux\'/\'non_precise\'',
+	manquement_obligation_presence VARCHAR(50) default 'NON_PRECISE' COMMENT 'L\'eleve manque à ses obligations de presence (L\'absence apparait sur le bulletin). Possibilite : \'vrai\'/\'faux\'/\'non_precise\'',
+	retard_bulletin VARCHAR(50) default 'NON_PRECISE' COMMENT 'La saisie est comptabilisée dans le bulletin en tant que retard. Possibilite : \'vrai\'/\'faux\'/\'non_precise\'',
+	type_saisie VARCHAR(50) default 'NON_PRECISE' COMMENT 'Enumeration des possibilités de l\'interface de saisie de l\'absence pour ce type : DEBUT_ABS, FIN_ABS, DEBUT_ET_FIN_ABS, NON_PRECISE, COMMENTAIRE_EXIGE, DISCIPLINE',
+	commentaire TEXT COMMENT 'commentaire saisi par l\'utilisateur',
+	sortable_rank INTEGER,
 	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Liste des types d\'absences possibles dans l\'etablissement';
+) ENGINE=MyISAM COMMENT='Liste des types d\'absences possibles dans l\'etablissement';
+
+#-----------------------------------------------------------------------------
+#-- a_types_statut
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS a_types_statut;
+
+
+CREATE TABLE a_types_statut
+(
+	id INTEGER(11)  NOT NULL AUTO_INCREMENT COMMENT 'Cle primaire auto-incrementee',
+	id_a_type INTEGER(11)  NOT NULL COMMENT 'Cle etrangere de la table a_type',
+	statut VARCHAR(20)  NOT NULL COMMENT 'Statut de l\'utilisateur',
+	PRIMARY KEY (id),
+	INDEX a_types_statut_FI_1 (id_a_type),
+	CONSTRAINT a_types_statut_FK_1
+		FOREIGN KEY (id_a_type)
+		REFERENCES a_types (id)
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Liste des statuts autorises à saisir des types d\'absences';
 
 #-----------------------------------------------------------------------------
 #-- a_saisies
@@ -786,23 +833,59 @@ CREATE TABLE a_saisies
 (
 	id INTEGER(11)  NOT NULL AUTO_INCREMENT,
 	utilisateur_id VARCHAR(100) COMMENT 'Login de l\'utilisateur professionnel qui a saisi l\'absence',
-	eleve_id INTEGER(4)  NOT NULL COMMENT 'id_eleve de l\'eleve objet de la saisie, egal à \'appel\' si aucun eleve n\'est saisi',
-	created_on INTEGER(13) default 0 NOT NULL COMMENT 'Date de la saisie de l\'absence en timestamp UNIX',
-	updated_on INTEGER(13) default 0 NOT NULL COMMENT 'Date de la modification de la saisie en timestamp UNIX',
-	debut_abs INTEGER(12) default 0 NOT NULL COMMENT 'Debut de l\'absence en timestamp UNIX',
-	fin_abs INTEGER(12) default 0 NOT NULL COMMENT 'Fin de l\'absence en timestamp UNIX',
+	eleve_id INTEGER(11) COMMENT 'id_eleve de l\'eleve objet de la saisie, egal à null si aucun eleve n\'est saisi',
+	commentaire TEXT COMMENT 'commentaire de l\'utilisateur',
+	debut_abs DATETIME COMMENT 'Debut de l\'absence en timestamp UNIX',
+	fin_abs DATETIME COMMENT 'Fin de l\'absence en timestamp UNIX',
+	id_edt_creneau INTEGER(12) COMMENT 'identifiant du creneaux de l\'emploi du temps',
+	id_edt_emplacement_cours INTEGER(12) COMMENT 'identifiant du cours de l\'emploi du temps',
+	id_groupe INTEGER COMMENT 'identifiant du groupe pour lequel la saisie a ete effectuee',
+	id_classe INTEGER COMMENT 'identifiant de la classe pour lequel la saisie a ete effectuee',
+	id_aid INTEGER COMMENT 'identifiant de l\'aid pour lequel la saisie a ete effectuee',
+	id_s_incidents INTEGER COMMENT 'identifiant de la saisie d\'incident discipline',
+	modifie_par_utilisateur_id VARCHAR(100) COMMENT 'Login de l\'utilisateur professionnel qui a modifie en dernier le traitement',
+	created_at DATETIME,
+	updated_at DATETIME,
 	PRIMARY KEY (id),
 	INDEX a_saisies_FI_1 (utilisateur_id),
 	CONSTRAINT a_saisies_FK_1
 		FOREIGN KEY (utilisateur_id)
-		REFERENCES utilisateurs (login)
-		ON DELETE SET NULL,
+		REFERENCES utilisateurs (login),
 	INDEX a_saisies_FI_2 (eleve_id),
 	CONSTRAINT a_saisies_FK_2
 		FOREIGN KEY (eleve_id)
 		REFERENCES eleves (id_eleve)
-		ON DELETE CASCADE
-)Type=MyISAM COMMENT='Chaque saisie d\'absence doit faire l\'objet d\'une ligne dans la table a_saisies';
+		ON DELETE CASCADE,
+	INDEX a_saisies_FI_3 (id_edt_creneau),
+	CONSTRAINT a_saisies_FK_3
+		FOREIGN KEY (id_edt_creneau)
+		REFERENCES edt_creneaux (id_definie_periode)
+		ON DELETE SET NULL,
+	INDEX a_saisies_FI_4 (id_edt_emplacement_cours),
+	CONSTRAINT a_saisies_FK_4
+		FOREIGN KEY (id_edt_emplacement_cours)
+		REFERENCES edt_cours (id_cours)
+		ON DELETE SET NULL,
+	INDEX a_saisies_FI_5 (id_groupe),
+	CONSTRAINT a_saisies_FK_5
+		FOREIGN KEY (id_groupe)
+		REFERENCES groupes (id)
+		ON DELETE SET NULL,
+	INDEX a_saisies_FI_6 (id_classe),
+	CONSTRAINT a_saisies_FK_6
+		FOREIGN KEY (id_classe)
+		REFERENCES classes (id)
+		ON DELETE SET NULL,
+	INDEX a_saisies_FI_7 (id_aid),
+	CONSTRAINT a_saisies_FK_7
+		FOREIGN KEY (id_aid)
+		REFERENCES aid (id)
+		ON DELETE SET NULL,
+	INDEX a_saisies_FI_8 (modifie_par_utilisateur_id),
+	CONSTRAINT a_saisies_FK_8
+		FOREIGN KEY (modifie_par_utilisateur_id)
+		REFERENCES utilisateurs (login)
+) ENGINE=MyISAM COMMENT='Chaque saisie d\'absence doit faire l\'objet d\'une ligne dans la table a_saisies. Une saisie peut etre : une plage horaire longue durée (plusieurs jours), défini avec les champs debut_abs et fin_abs. Un creneau horaire, le jour etant precisé dans debut_abs. Un cours de l\'emploi du temps, le jours du cours etant precisé dans debut_abs.';
 
 #-----------------------------------------------------------------------------
 #-- a_traitements
@@ -815,19 +898,18 @@ CREATE TABLE a_traitements
 (
 	id INTEGER(11)  NOT NULL AUTO_INCREMENT COMMENT 'cle primaire auto-incremente',
 	utilisateur_id VARCHAR(100) COMMENT 'Login de l\'utilisateur professionnel qui a fait le traitement',
-	created_on INTEGER(13)  NOT NULL COMMENT 'Date du traitement de ou des absences en timestamp UNIX',
-	updated_on INTEGER(13)  NOT NULL COMMENT 'Date de la modification du traitement de ou des absences en timestamp UNIX',
 	a_type_id INTEGER(4) COMMENT 'cle etrangere du type d\'absence',
 	a_motif_id INTEGER(4) COMMENT 'cle etrangere du motif d\'absence',
 	a_justification_id INTEGER(4) COMMENT 'cle etrangere de la justification de l\'absence',
-	texte_justification VARCHAR(250)  NOT NULL COMMENT 'Texte additionnel à ce traitement',
-	a_action_id INTEGER(4) COMMENT 'cle etrangere de l\'action sur ce traitement',
+	commentaire TEXT COMMENT 'commentaire saisi par l\'utilisateur',
+	modifie_par_utilisateur_id VARCHAR(100) COMMENT 'Login de l\'utilisateur professionnel qui a modifie en dernier le traitement',
+	created_at DATETIME,
+	updated_at DATETIME,
 	PRIMARY KEY (id),
 	INDEX a_traitements_FI_1 (utilisateur_id),
 	CONSTRAINT a_traitements_FK_1
 		FOREIGN KEY (utilisateur_id)
-		REFERENCES utilisateurs (login)
-		ON DELETE SET NULL,
+		REFERENCES utilisateurs (login),
 	INDEX a_traitements_FI_2 (a_type_id),
 	CONSTRAINT a_traitements_FK_2
 		FOREIGN KEY (a_type_id)
@@ -843,12 +925,11 @@ CREATE TABLE a_traitements
 		FOREIGN KEY (a_justification_id)
 		REFERENCES a_justifications (id)
 		ON DELETE SET NULL,
-	INDEX a_traitements_FI_5 (a_action_id),
+	INDEX a_traitements_FI_5 (modifie_par_utilisateur_id),
 	CONSTRAINT a_traitements_FK_5
-		FOREIGN KEY (a_action_id)
-		REFERENCES a_actions (id)
-		ON DELETE SET NULL
-)Type=MyISAM COMMENT='Un traitement peut gerer plusieurs saisies et consiste à definir les motifs/justifications... de ces absences saisies';
+		FOREIGN KEY (modifie_par_utilisateur_id)
+		REFERENCES utilisateurs (login)
+) ENGINE=MyISAM COMMENT='Un traitement peut gerer plusieurs saisies et consiste à definir les motifs/justifications... de ces absences saisies';
 
 #-----------------------------------------------------------------------------
 #-- j_traitements_saisies
@@ -865,81 +946,76 @@ CREATE TABLE j_traitements_saisies
 	CONSTRAINT j_traitements_saisies_FK_1
 		FOREIGN KEY (a_saisie_id)
 		REFERENCES a_saisies (id)
-		ON DELETE SET NULL,
+		ON DELETE CASCADE,
 	INDEX j_traitements_saisies_FI_2 (a_traitement_id),
 	CONSTRAINT j_traitements_saisies_FK_2
 		FOREIGN KEY (a_traitement_id)
 		REFERENCES a_traitements (id)
-		ON DELETE SET NULL
-)Type=MyISAM COMMENT='Table de jointure entre la saisie et le traitement des absences';
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Table de jointure entre la saisie et le traitement des absences';
 
 #-----------------------------------------------------------------------------
-#-- a_envois
+#-- a_notifications
 #-----------------------------------------------------------------------------
 
-DROP TABLE IF EXISTS a_envois;
+DROP TABLE IF EXISTS a_notifications;
 
 
-CREATE TABLE a_envois
+CREATE TABLE a_notifications
 (
 	id INTEGER(11)  NOT NULL AUTO_INCREMENT,
-	utilisateur_id VARCHAR(100) COMMENT 'Login de l\'utilisateur professionnel qui a lance l\'envoi',
-	id_type_envoi INTEGER(4)  NOT NULL COMMENT 'id du type de l\'envoi',
-	statut_envoi VARCHAR(20) default '0' NOT NULL COMMENT 'Statut de cet envoi (envoye, en cours,...)',
-	date_envoi INTEGER(12) default 0 NOT NULL COMMENT 'Date en timestamp UNIX de l\'envoi',
-	created_on INTEGER(13) default 0 NOT NULL COMMENT 'Date de la saisie de l\'envoi en timestamp UNIX',
-	updated_on INTEGER(13) default 0 NOT NULL COMMENT 'Date de la modification de l\'envoi en timestamp UNIX',
+	utilisateur_id VARCHAR(100) COMMENT 'Login de l\'utilisateur professionnel qui envoi la notification',
+	a_traitement_id INTEGER(12)  NOT NULL COMMENT 'cle etrangere du traitement qu\'on notifie',
+	type_notification INTEGER(5) COMMENT 'type de notification (0 : email, 1 : courrier, 2 : sms)',
+	email VARCHAR(100) COMMENT 'email de destination (pour le type email)',
+	telephone VARCHAR(100) COMMENT 'numero du telephone de destination (pour le type sms)',
+	adr_id VARCHAR(10) COMMENT 'cle etrangere vers l\'adresse de destination (pour le type courrier)',
+	commentaire TEXT COMMENT 'commentaire saisi par l\'utilisateur',
+	statut_envoi INTEGER(5) default 0 COMMENT 'Statut de cet envoi (0 : etat initial, 1 : en cours, 2 : echec, 3 : succes, 4 : succes avec accuse de reception)',
+	date_envoi DATETIME COMMENT 'Date envoi',
+	erreur_message_envoi TEXT COMMENT 'Message d\'erreur retourné par le service d\'envoi',
+	created_at DATETIME,
+	updated_at DATETIME,
 	PRIMARY KEY (id),
-	INDEX a_envois_FI_1 (utilisateur_id),
-	CONSTRAINT a_envois_FK_1
+	INDEX a_notifications_FI_1 (utilisateur_id),
+	CONSTRAINT a_notifications_FK_1
 		FOREIGN KEY (utilisateur_id)
 		REFERENCES utilisateurs (login)
 		ON DELETE SET NULL,
-	INDEX a_envois_FI_2 (id_type_envoi),
-	CONSTRAINT a_envois_FK_2
-		FOREIGN KEY (id_type_envoi)
-		REFERENCES a_type_envois (id)
-		ON DELETE SET NULL
-)Type=MyISAM COMMENT='Chaque envoi est repertorie ici';
-
-#-----------------------------------------------------------------------------
-#-- a_type_envois
-#-----------------------------------------------------------------------------
-
-DROP TABLE IF EXISTS a_type_envois;
-
-
-CREATE TABLE a_type_envois
-(
-	id INTEGER(11)  NOT NULL AUTO_INCREMENT,
-	nom VARCHAR(100)  NOT NULL COMMENT 'nom du type de l\'envoi',
-	ordre_affichage INTEGER(4)  NOT NULL COMMENT 'ordre d\'affichage du type de l\'envoi',
-	contenu LONGTEXT  NOT NULL COMMENT 'Contenu modele de l\'envoi',
-	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Chaque envoi dispose d\'un type qui est stocke ici';
-
-#-----------------------------------------------------------------------------
-#-- j_traitements_envois
-#-----------------------------------------------------------------------------
-
-DROP TABLE IF EXISTS j_traitements_envois;
-
-
-CREATE TABLE j_traitements_envois
-(
-	a_envoi_id INTEGER(12)  NOT NULL COMMENT 'cle etrangere de l\'envoi',
-	a_traitement_id INTEGER(12)  NOT NULL COMMENT 'cle etrangere du traitement de ces absences',
-	PRIMARY KEY (a_envoi_id,a_traitement_id),
-	CONSTRAINT j_traitements_envois_FK_1
-		FOREIGN KEY (a_envoi_id)
-		REFERENCES a_envois (id)
-		ON DELETE SET NULL,
-	INDEX j_traitements_envois_FI_2 (a_traitement_id),
-	CONSTRAINT j_traitements_envois_FK_2
+	INDEX a_notifications_FI_2 (a_traitement_id),
+	CONSTRAINT a_notifications_FK_2
 		FOREIGN KEY (a_traitement_id)
 		REFERENCES a_traitements (id)
+		ON DELETE CASCADE,
+	INDEX a_notifications_FI_3 (adr_id),
+	CONSTRAINT a_notifications_FK_3
+		FOREIGN KEY (adr_id)
+		REFERENCES resp_adr (adr_id)
 		ON DELETE SET NULL
-)Type=MyISAM COMMENT='Table de jointure entre le traitement des absences et leur envoi';
+) ENGINE=MyISAM COMMENT='Notification (a la famille) des absences';
+
+#-----------------------------------------------------------------------------
+#-- j_notifications_resp_pers
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS j_notifications_resp_pers;
+
+
+CREATE TABLE j_notifications_resp_pers
+(
+	a_notification_id INTEGER(12)  NOT NULL COMMENT 'cle etrangere de la notification',
+	pers_id VARCHAR(10)  NOT NULL COMMENT 'cle etrangere des personnes',
+	PRIMARY KEY (a_notification_id,pers_id),
+	CONSTRAINT j_notifications_resp_pers_FK_1
+		FOREIGN KEY (a_notification_id)
+		REFERENCES a_notifications (id)
+		ON DELETE CASCADE,
+	INDEX j_notifications_resp_pers_FI_2 (pers_id),
+	CONSTRAINT j_notifications_resp_pers_FK_2
+		FOREIGN KEY (pers_id)
+		REFERENCES resp_pers (pers_id)
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Table de jointure entre la notification et les personnes dont on va mettre le nom dans le message.';
 
 #-----------------------------------------------------------------------------
 #-- ects_credits
@@ -954,18 +1030,21 @@ CREATE TABLE ects_credits
 	id_eleve INTEGER(11)  NOT NULL COMMENT 'Identifiant de l\'eleve',
 	num_periode INTEGER(11)  NOT NULL COMMENT 'Identifiant de la periode',
 	id_groupe INTEGER(11)  NOT NULL COMMENT 'Identifiant du groupe',
-	valeur DECIMAL  NOT NULL COMMENT 'Nombre de crédits obtenus par l\'eleve',
-	mention VARCHAR(255)  NOT NULL COMMENT 'Mention obtenue',
+	valeur DECIMAL COMMENT 'Nombre de credits obtenus par l\'eleve',
+	mention VARCHAR(255) COMMENT 'Mention obtenue',
+	mention_prof VARCHAR(255) COMMENT 'Mention presaisie par le prof',
 	PRIMARY KEY (id,id_eleve,num_periode,id_groupe),
 	INDEX ects_credits_FI_1 (id_eleve),
 	CONSTRAINT ects_credits_FK_1
 		FOREIGN KEY (id_eleve)
-		REFERENCES eleves (id_eleve),
+		REFERENCES eleves (id_eleve)
+		ON DELETE CASCADE,
 	INDEX ects_credits_FI_2 (id_groupe),
 	CONSTRAINT ects_credits_FK_2
 		FOREIGN KEY (id_groupe)
 		REFERENCES groupes (id)
-)Type=MyISAM COMMENT='Objet qui précise le nombre d\'ECTS obtenus par l\'eleve pour un enseignement et une periode donnée';
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Objet qui précise le nombre d\'ECTS obtenus par l\'eleve pour un enseignement et une periode donnée';
 
 #-----------------------------------------------------------------------------
 #-- ects_global_credits
@@ -984,7 +1063,8 @@ CREATE TABLE ects_global_credits
 	CONSTRAINT ects_global_credits_FK_1
 		FOREIGN KEY (id_eleve)
 		REFERENCES eleves (id_eleve)
-)Type=MyISAM COMMENT='Objet qui précise la mention globale obtenue pour un eleve';
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Objet qui précise la mention globale obtenue pour un eleve';
 
 #-----------------------------------------------------------------------------
 #-- archivage_ects
@@ -1011,7 +1091,30 @@ CREATE TABLE archivage_ects
 	CONSTRAINT archivage_ects_FK_1
 		FOREIGN KEY (ine)
 		REFERENCES eleves (no_gep)
-)Type=MyISAM COMMENT='Enregistrement d\'archive pour les credits ECTS, dont le rapport n\'est edite qu\'au depart de l\'eleve';
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Enregistrement d\'archive pour les credits ECTS, dont le rapport n\'est edite qu\'au depart de l\'eleve';
+
+#-----------------------------------------------------------------------------
+#-- matieres
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS matieres;
+
+
+CREATE TABLE matieres
+(
+	matiere VARCHAR(255)  NOT NULL,
+	nom_complet VARCHAR(200)  NOT NULL COMMENT 'Nom complet',
+	priority INTEGER(6) default 0 NOT NULL COMMENT 'Priorite d\'affichage',
+	matiere_aid VARCHAR(1) default 'n' COMMENT 'Matiere AID',
+	matiere_atelier VARCHAR(1) default 'n' COMMENT 'Matiere Atelier',
+	categorie_id INTEGER(11) default 1 NOT NULL COMMENT 'Association avec Categories de matieres',
+	PRIMARY KEY (matiere),
+	INDEX matieres_FI_1 (categorie_id),
+	CONSTRAINT matieres_FK_1
+		FOREIGN KEY (categorie_id)
+		REFERENCES matieres_categories (id)
+) ENGINE=MyISAM COMMENT='Matières';
 
 #-----------------------------------------------------------------------------
 #-- matieres_categories
@@ -1027,7 +1130,7 @@ CREATE TABLE matieres_categories
 	nom_complet VARCHAR(255)  NOT NULL COMMENT 'Nom complet',
 	priority INTEGER(6)  NOT NULL COMMENT 'Priorite d\'affichage',
 	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Categories de matiere, utilisees pour regrouper des enseignements';
+) ENGINE=MyISAM COMMENT='Categories de matiere, utilisees pour regrouper des enseignements';
 
 #-----------------------------------------------------------------------------
 #-- j_matieres_categories_classes
@@ -1045,12 +1148,36 @@ CREATE TABLE j_matieres_categories_classes
 	PRIMARY KEY (categorie_id,classe_id),
 	CONSTRAINT j_matieres_categories_classes_FK_1
 		FOREIGN KEY (categorie_id)
-		REFERENCES matieres_categories (id),
+		REFERENCES matieres_categories (id)
+		ON DELETE CASCADE,
 	INDEX j_matieres_categories_classes_FI_2 (classe_id),
 	CONSTRAINT j_matieres_categories_classes_FK_2
 		FOREIGN KEY (classe_id)
 		REFERENCES classes (id)
-)Type=MyISAM COMMENT='Liaison entre categories de matiere et classes';
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Liaison entre categories de matiere et classes';
+
+#-----------------------------------------------------------------------------
+#-- j_professeurs_matieres
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS j_professeurs_matieres;
+
+
+CREATE TABLE j_professeurs_matieres
+(
+	id_matiere VARCHAR(50)  NOT NULL,
+	id_professeur VARCHAR(50)  NOT NULL,
+	ordre_matieres INTEGER(11) default 0 NOT NULL COMMENT 'Priorite d\'affichage',
+	PRIMARY KEY (id_matiere,id_professeur),
+	CONSTRAINT j_professeurs_matieres_FK_1
+		FOREIGN KEY (id_matiere)
+		REFERENCES matieres (matiere),
+	INDEX j_professeurs_matieres_FI_2 (id_professeur),
+	CONSTRAINT j_professeurs_matieres_FK_2
+		FOREIGN KEY (id_professeur)
+		REFERENCES utilisateurs (login)
+) ENGINE=MyISAM COMMENT='Liaison entre les profs et les matières';
 
 #-----------------------------------------------------------------------------
 #-- plugins
@@ -1067,7 +1194,7 @@ CREATE TABLE plugins
 	description LONGTEXT  NOT NULL COMMENT 'Description du plugin',
 	ouvert CHAR(1)  NOT NULL COMMENT 'Statut du plugin, si il est operationnel y/n',
 	PRIMARY KEY (id)
-)Type=MyISAM COMMENT='Liste des plugins installes sur ce Gepi';
+) ENGINE=MyISAM COMMENT='Liste des plugins installes sur ce Gepi';
 
 #-----------------------------------------------------------------------------
 #-- plugins_autorisations
@@ -1088,7 +1215,8 @@ CREATE TABLE plugins_autorisations
 	CONSTRAINT plugins_autorisations_FK_1
 		FOREIGN KEY (plugin_id)
 		REFERENCES plugins (id)
-)Type=MyISAM COMMENT='Liste des autorisations pour chaque statut';
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Liste des autorisations pour chaque statut';
 
 #-----------------------------------------------------------------------------
 #-- plugins_menus
@@ -1110,7 +1238,8 @@ CREATE TABLE plugins_menus
 	CONSTRAINT plugins_menus_FK_1
 		FOREIGN KEY (plugin_id)
 		REFERENCES plugins (id)
-)Type=MyISAM COMMENT='Items pour construire le menu de ce plug-in';
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Items pour construire le menu de ce plug-in';
 
 #-----------------------------------------------------------------------------
 #-- preferences
@@ -1129,8 +1258,155 @@ CREATE TABLE preferences
 	CONSTRAINT preferences_FK_1
 		FOREIGN KEY (login)
 		REFERENCES utilisateurs (login)
+		ON DELETE CASCADE
+) ENGINE=MyISAM COMMENT='Preference (cle - valeur) associes à un utilisateur professionnel';
+
+#-----------------------------------------------------------------------------
+#-- edt_creneaux
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS edt_creneaux;
+
+
+CREATE TABLE edt_creneaux
+(
+	id_definie_periode INTEGER(11)  NOT NULL AUTO_INCREMENT COMMENT 'cle primaire auto-incremente',
+	nom_definie_periode VARCHAR(50)  NOT NULL COMMENT 'Nom du creneau - typiquement, M1, M2, R (pour repas), P (pour récréation), S1, S2 etc',
+	heuredebut_definie_periode TIME  NOT NULL COMMENT 'Heure de debut du creneau',
+	heurefin_definie_periode TIME  NOT NULL COMMENT 'Heure de fin du creneau',
+	suivi_definie_periode INTEGER(2) default 9 COMMENT 'champ inutilise',
+	type_creneaux VARCHAR(15) default 'cours' COMMENT 'types possibles : cours, pause, repas, vie_scolaire',
+	jour_creneau VARCHAR(20) COMMENT 'Par defaut, aucun jour en particulier mais on peut imposer que des creneaux soient specifiques a un jour en particulier : \'lundi\', \'mardi\', \'mercredi\'...',
+	PRIMARY KEY (id_definie_periode)
+) ENGINE=MyISAM COMMENT='Table contenant les creneaux de chaque journee (M1, M2...S1, S2...)';
+
+#-----------------------------------------------------------------------------
+#-- horaires_etablissement
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS horaires_etablissement;
+
+
+CREATE TABLE horaires_etablissement
+(
+	id_horaire_etablissement INTEGER(11)  NOT NULL AUTO_INCREMENT COMMENT 'cle primaire auto-incremente',
+	date_horaire_etablissement DATE COMMENT 'NULL (c\'etait un 0 a l\'origine...voir si pb) = horaires valables toute l\'annee pour le jour specifie - date precise = horaires valables uniquement pour cette date',
+	jour_horaire_etablissement VARCHAR(15)  NOT NULL COMMENT 'defini le jour de la semaine - typiquement, lundi, mardi, etc...',
+	ouverture_horaire_etablissement TIME  NOT NULL COMMENT 'Heure d\'ouverture de l\'etablissement',
+	fermeture_horaire_etablissement TIME  NOT NULL COMMENT 'Heure de fermeture de l\'etablissement',
+	pause_horaire_etablissement TIME COMMENT 'champ non utilise',
+	ouvert_horaire_etablissement TINYINT  NOT NULL COMMENT '1 = etablissement ouvert - 0 = etablissement ferme',
+	PRIMARY KEY (id_horaire_etablissement)
+) ENGINE=MyISAM COMMENT='Table contenant les heures d\'ouverture et de fermeture de l\'etablissement par journee';
+
+#-----------------------------------------------------------------------------
+#-- edt_semaines
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS edt_semaines;
+
+
+CREATE TABLE edt_semaines
+(
+	id_edt_semaine INTEGER(10)  NOT NULL COMMENT 'cle primaire',
+	num_edt_semaine INTEGER(10)  NOT NULL COMMENT 'numero de la semaine dans l\'annee civile',
+	type_edt_semaine VARCHAR(10) COMMENT 'typiquement, champ egal a \'A\' ou \'B\' pour l\'alternance des semaines',
+	num_semaines_etab INTEGER(10) COMMENT 'numero de la semaine propre a l\'etablissement',
+	PRIMARY KEY (id_edt_semaine)
+) ENGINE=MyISAM COMMENT='Liste des semaines de l\'annee scolaire courante - 53 enregistrements obligatoires (pas 52!), pour lesquel on assigne un type (A ou B par exemple)';
+
+#-----------------------------------------------------------------------------
+#-- edt_calendrier
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS edt_calendrier;
+
+
+CREATE TABLE edt_calendrier
+(
+	id_calendrier INTEGER(11)  NOT NULL COMMENT 'cle primaire',
+	classe_concerne_calendrier TEXT  NOT NULL COMMENT 'id des classes (separes par des ;) concernees par cette periode',
+	nom_calendrier VARCHAR(100)  NOT NULL COMMENT 'nom de la periode definie',
+	debut_calendrier_ts VARCHAR(255)  NOT NULL COMMENT 'timestamp du debut de la periode',
+	fin_calendrier_ts VARCHAR(255)  NOT NULL COMMENT 'timestamp de la fin de la periode',
+	jourdebut_calendrier DATE(11)  NOT NULL COMMENT 'date du debut de la periode',
+	heuredebut_calendrier TIME(11)  NOT NULL COMMENT 'heure du debut de la periode',
+	jourfin_calendrier DATE(11)  NOT NULL COMMENT 'date de la fin de la periode',
+	heurefin_calendrier TIME(11)  NOT NULL COMMENT 'heure de la fin de la periode',
+	numero_periode TINYINT(4)  NOT NULL COMMENT 'id de la periode de notes associee',
+	etabferme_calendrier TINYINT(4)  NOT NULL COMMENT 'egal a 1 si etablissement ouvert sur cette periode - 0 sinon',
+	etabvacances_calendrier TINYINT(4)  NOT NULL COMMENT 'egal a 1 si la periode est definie sur les vacances - 0 sinon',
+	PRIMARY KEY (id_calendrier)
+) ENGINE=MyISAM COMMENT='Liste des periodes datees de l\'annee courante(pour definir par exemple les trimestres)';
+
+#-----------------------------------------------------------------------------
+#-- edt_cours
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS edt_cours;
+
+
+CREATE TABLE edt_cours
+(
+	id_cours INTEGER(3)  NOT NULL COMMENT 'cle primaire',
+	id_groupe CHAR(10) COMMENT 'id du groupe d\'enseignement concerne - \'\' sinon',
+	id_aid CHAR(10) COMMENT 'id de l\'aid concerne - \'\' sinon',
+	id_salle CHAR(10) COMMENT 'id de la salle concernee',
+	jour_semaine VARCHAR(10)  NOT NULL COMMENT 'jour de la semaine ou a lieu le cours : lundi, mardi etc...',
+	id_definie_periode VARCHAR(3)  NOT NULL COMMENT 'id du creneau de la journee ou a lieu le cours - voir table edt_creneaux ',
+	duree VARCHAR(10) default '2' NOT NULL COMMENT 'duree du cours definie en demi-creneaux.1h de cours correspond a une duree=2. Les creneaux de pause ne sont pas comptabilisé',
+	heuredeb_dec VARCHAR(3) default '0' NOT NULL COMMENT '0 si le cours commence au debut du creneau - 0.5 s\'il commence au milieu',
+	id_semaine VARCHAR(3) default '' COMMENT 'type de semaine - typiquement, \'A\' ou \'B\' si on a une alternance semaine A, semaine B.',
+	id_calendrier VARCHAR(3) COMMENT 'NULL = le cours a lieu toute l\'annee - sinon, id de la periode (EdtCalendrierPeriode) durant laquelle a lieu le cours',
+	modif_edt VARCHAR(3) COMMENT 'champ inutilise',
+	login_prof VARCHAR(50) COMMENT 'login du prof qui dispense le cours',
+	PRIMARY KEY (id_cours),
+	INDEX edt_cours_FI_1 (id_groupe),
+	CONSTRAINT edt_cours_FK_1
+		FOREIGN KEY (id_groupe)
+		REFERENCES groupes (id)
+		ON DELETE CASCADE,
+	INDEX edt_cours_FI_2 (id_aid),
+	CONSTRAINT edt_cours_FK_2
+		FOREIGN KEY (id_aid)
+		REFERENCES aid (id)
+		ON DELETE CASCADE,
+	INDEX edt_cours_FI_3 (id_salle),
+	CONSTRAINT edt_cours_FK_3
+		FOREIGN KEY (id_salle)
+		REFERENCES salle_cours (id_salle)
+		ON DELETE SET NULL,
+	INDEX edt_cours_FI_4 (id_definie_periode),
+	CONSTRAINT edt_cours_FK_4
+		FOREIGN KEY (id_definie_periode)
+		REFERENCES edt_creneaux (id_definie_periode)
+		ON DELETE CASCADE,
+	INDEX edt_cours_FI_5 (id_calendrier),
+	CONSTRAINT edt_cours_FK_5
+		FOREIGN KEY (id_calendrier)
+		REFERENCES edt_calendrier (id_calendrier)
+		ON DELETE SET NULL,
+	INDEX edt_cours_FI_6 (login_prof),
+	CONSTRAINT edt_cours_FK_6
+		FOREIGN KEY (login_prof)
+		REFERENCES utilisateurs (login)
 		ON DELETE SET NULL
-)Type=MyISAM COMMENT='Preference (cle - valeur) associes à un utilisateur professionnel';
+) ENGINE=MyISAM COMMENT='Liste de tous les creneaux de tous les emplois du temps';
+
+#-----------------------------------------------------------------------------
+#-- salle_cours
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS salle_cours;
+
+
+CREATE TABLE salle_cours
+(
+	id_salle INTEGER(3)  NOT NULL COMMENT 'cle primaire',
+	numero_salle VARCHAR(10)  NOT NULL COMMENT 'numero de la salle defini par l\'utilisateur',
+	nom_salle VARCHAR(50) COMMENT 'nom de la salle defini par l\'utilisateur',
+	PRIMARY KEY (id_salle)
+) ENGINE=MyISAM COMMENT='Liste des salles de classe';
 
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;

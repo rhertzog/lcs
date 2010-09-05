@@ -1,6 +1,6 @@
 <?php
 /*
-$Id: mb_ou_pas.php 3342 2009-08-23 13:19:24Z crob $
+$Id: mb_ou_pas.php 4507 2010-05-27 18:55:15Z delineau $
 */
 
 //========================================
@@ -55,7 +55,7 @@ else {
 }
 
 $phpversion=phpversion();
-$tab_tmp=split(".",$phpversion);
+$tab_tmp=explode(".",$phpversion);
 if(($tab_tmp[0]>=5)&&($tab_tmp[1]>=3)) {
 	$val_tmp='y';
 }

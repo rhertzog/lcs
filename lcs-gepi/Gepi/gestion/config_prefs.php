@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id : $
+ * $Id: config_prefs.php 3906 2009-12-12 11:06:15Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -260,6 +260,71 @@ if(isset($enregistrer)){
 					}
 				}
 			}
+		}
+
+		if ($_SESSION['statut']=='professeur') {
+			$aff_quartiles_cn=isset($_POST['aff_quartiles_cn']) ? $_POST['aff_quartiles_cn'] : "n";
+
+			$sql="SELECT * FROM preferences WHERE login='".$_SESSION['login']."' AND name='aff_quartiles_cn';";
+			$test=mysql_query($sql);
+			if(mysql_num_rows($test)==0) {
+				$sql="INSERT INTO preferences SET login='".$_SESSION['login']."', name='aff_quartiles_cn', value='$aff_quartiles_cn';";
+				//echo $sql."<br />\n";
+				if(!mysql_query($sql)){
+					$msg.="Erreur lors de l'enregistrement de aff_quartiles_cn<br />\n";
+					//$msg.="Erreur lors de l'enregistrement de l'affichage par défaut ou non des moyenne, médiane, quartiles,... sur les carnets de notes.<br />\n";
+				}
+			}
+			else {
+				$sql="UPDATE preferences SET value='$aff_quartiles_cn' WHERE login='".$_SESSION['login']."' AND name='aff_quartiles_cn';";
+				//echo $sql."<br />\n";
+				if(!mysql_query($sql)){
+					$msg.="Erreur lors de l'enregistrement de aff_quartiles_cn pour ".$_SESSION['login']."<br />\n";
+				}
+			}
+
+
+			$aff_photo_cn=isset($_POST['aff_photo_cn']) ? $_POST['aff_photo_cn'] : "n";
+
+			$sql="SELECT * FROM preferences WHERE login='".$_SESSION['login']."' AND name='aff_photo_cn';";
+			$test=mysql_query($sql);
+			if(mysql_num_rows($test)==0) {
+				$sql="INSERT INTO preferences SET login='".$_SESSION['login']."', name='aff_photo_cn', value='$aff_photo_cn';";
+				//echo $sql."<br />\n";
+				if(!mysql_query($sql)){
+					$msg.="Erreur lors de l'enregistrement de aff_photo_cn<br />\n";
+					//$msg.="Erreur lors de l'enregistrement de l'affichage par défaut ou non des moyenne, médiane, photo,... sur les carnets de notes.<br />\n";
+				}
+			}
+			else {
+				$sql="UPDATE preferences SET value='$aff_photo_cn' WHERE login='".$_SESSION['login']."' AND name='aff_photo_cn';";
+				//echo $sql."<br />\n";
+				if(!mysql_query($sql)){
+					$msg.="Erreur lors de l'enregistrement de aff_photo_cn pour ".$_SESSION['login']."<br />\n";
+				}
+			}
+
+
+			$aff_photo_saisie_app=isset($_POST['aff_photo_saisie_app']) ? $_POST['aff_photo_saisie_app'] : "n";
+
+			$sql="SELECT * FROM preferences WHERE login='".$_SESSION['login']."' AND name='aff_photo_saisie_app';";
+			$test=mysql_query($sql);
+			if(mysql_num_rows($test)==0) {
+				$sql="INSERT INTO preferences SET login='".$_SESSION['login']."', name='aff_photo_saisie_app', value='$aff_photo_saisie_app'";
+				//echo $sql."<br />\n";
+				if(!mysql_query($sql)){
+					$msg.="Erreur lors de l'enregistrement de aff_photo_saisie_app<br />\n";
+					//$msg.="Erreur lors de l'enregistrement de l'affichage par défaut ou non des moyenne, médiane, quartiles,... sur les carnets de notes.<br />\n";
+				}
+			}
+			else {
+				$sql="UPDATE preferences SET value='$aff_photo_saisie_app' WHERE login='".$_SESSION['login']."' AND name='aff_photo_saisie_app';";
+				//echo $sql."<br />\n";
+				if(!mysql_query($sql)){
+					$msg.="Erreur lors de l'enregistrement de $tab[$j] pour ".$_SESSION['login']."<br />\n";
+				}
+			}
+
 		}
 	}
 
@@ -559,6 +624,42 @@ else{
 
 
 
+	if($_SESSION['statut']=='professeur') {
+		echo "<p><br /></p>\n";
+		echo "<p><b>Paramètres du carnet de notes&nbsp;:</b></p>\n";
+
+		$sql="SELECT * FROM preferences WHERE login='".$_SESSION['login']."' AND name='aff_quartiles_cn'";
+		$test=mysql_query($sql);
+		if(mysql_num_rows($test)==0) {
+			$aff_quartiles_cn="n";
+		}
+		else {
+			$lig_test=mysql_fetch_object($test);
+			$aff_quartiles_cn=$lig_test->value;
+		}
+		echo "<p>\n";
+		echo "<input type='checkbox' name='aff_quartiles_cn' id='aff_quartiles_cn' value='y' ";
+		if($aff_quartiles_cn=='y') {echo 'checked';}
+		echo "/><label for='aff_quartiles_cn'> Afficher par défaut, les moyenne, médiane, quartiles, min, max sur les carnets de notes.</label>\n";
+		echo "</p>\n";
+
+		$sql="SELECT * FROM preferences WHERE login='".$_SESSION['login']."' AND name='aff_photo_cn'";
+		$test=mysql_query($sql);
+		if(mysql_num_rows($test)==0) {
+			$aff_photo_cn="n";
+		}
+		else {
+			$lig_test=mysql_fetch_object($test);
+			$aff_photo_cn=$lig_test->value;
+		}
+		echo "<p>\n";
+		echo "<input type='checkbox' name='aff_photo_cn' id='aff_photo_cn' value='y' ";
+		if($aff_photo_cn=='y') {echo 'checked';}
+		echo "/><label for='aff_photo_cn'> Afficher par défaut la photo des élèves sur les carnets de notes.</label>\n";
+		echo "</p>\n";
+	}
+
+
 
 	if(($page=="add_modif_dev")||($_SESSION['statut']=='professeur')){
 		echo "<p>Paramétrage de la page de <b>création d'évaluation</b> pour les ".$gepiSettings['denomination_professeurs']."</p>\n";
@@ -652,10 +753,6 @@ else{
 	}
 
 
-
-
-
-
 	if(($page=="add_modif_conteneur")||($_SESSION['statut']=='professeur')){
 		echo "<p>Paramétrage de la page de <b>création de ".ucfirst(strtolower(getSettingValue("gepi_denom_boite")))."</b> pour les ".$gepiSettings['denomination_professeurs']."</p>\n";
 
@@ -737,6 +834,28 @@ else{
 
 
 
+
+
+	if($_SESSION['statut']=='professeur') {
+		echo "<p><br /></p>\n";
+		echo "<p><b>Paramètres de saisie des appréciations&nbsp;:</b></p>\n";
+
+		$sql="SELECT * FROM preferences WHERE login='".$_SESSION['login']."' AND name='aff_photo_saisie_app'";
+		$test=mysql_query($sql);
+		if(mysql_num_rows($test)==0) {
+			$aff_photo_saisie_app="n";
+		}
+		else {
+			$lig_test=mysql_fetch_object($test);
+			$aff_photo_saisie_app=$lig_test->value;
+		}
+
+		echo "<p>\n";
+		echo "<input type='checkbox' name='aff_photo_saisie_app' id='aff_photo_saisie_app' value='y' ";
+		if($aff_photo_saisie_app=='y') {echo 'checked';}
+		echo "/><label for='aff_photo_saisie_app'> Afficher par défaut les phtos des élèves lors de la saisie des appréciations sur les bulletins.</label>\n";
+		echo "</p>\n";
+	}
 
 
 

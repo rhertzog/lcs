@@ -1,6 +1,6 @@
 <?php
 /*
-$Id: mysql.inc 3513 2009-10-04 12:19:10Z crob $
+$Id: mysql.inc 3515 2009-10-04 12:19:24Z crob $
 */
 
 // mysql.inc - Simple PHP database support for MySQL.

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: import_note_app.php 3323 2009-08-05 10:06:18Z crob $
+ * $Id: import_note_app.php 4661 2010-06-28 22:34:03Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -229,7 +229,7 @@ if (isset($is_posted )) {
                             break;
                         case 1:
                             // Note
-                            if (ereg ("^[0-9\.\,]{1,}$", $data[$c])) {
+                            if (my_ereg ("^[0-9\.\,]{1,}$", $data[$c])) {
                                 $data[$c] = str_replace(",", ".", "$data[$c]");
                                 $test_num = settype($data[$c],"double");
                                 if ($test_num) {

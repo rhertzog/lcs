@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: acces_appreciations.php 3813 2009-11-26 18:04:32Z crob $
+ * $Id: acces_appreciations.php 3814 2009-11-26 18:04:38Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

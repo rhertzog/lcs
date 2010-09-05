@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: modify_impression.php 4274 2010-04-11 08:23:01Z crob $
+ * $Id: modify_impression.php 4273 2010-04-11 08:22:15Z crob $
  *
  * Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

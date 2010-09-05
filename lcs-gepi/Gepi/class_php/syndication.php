@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version $Id$
+ * @version $Id: syndication.php 4869 2010-07-22 13:32:34Z jjocal $
  *
  * @copyright 2008
  *

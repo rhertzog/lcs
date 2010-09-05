@@ -1,12 +1,12 @@
 <?php
 /*
- * @version: $Id: edit.php 2206 2008-07-26 15:53:01Z crob $
+ * @version: $Id: edit.php 4878 2010-07-24 13:54:01Z regis $
  */
 
 @set_time_limit(0);
 $starttime = microtime();
 /*
-*  $Id: edit.php 2206 2008-07-26 15:53:01Z crob $
+*  $Id: edit.php 4878 2010-07-24 13:54:01Z regis $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Sandrine Dangreville
 *
@@ -1448,8 +1448,9 @@ echo "'>\n";
 			//$photo="../photos/eleves/".$current_eleve_idphoto.".jpg";
 			$photo=nom_photo($current_eleve_idphoto);
 			//echo "$photo";
-			if("$photo"!=""){
-				$photo="../photos/eleves/".$photo;
+			//if("$photo"!=""){
+			if($photo){
+				//$photo="../photos/eleves/".$photo;
 				if(file_exists($photo)){
 					$dimphoto=redimensionne_image($photo);
 					echo '<img src="'.$photo.'" style="width: '.$dimphoto[0].'px; height: '.$dimphoto[1].'px; border: 0px; border-right: 3px solid #FFFFFF; float: left;" alt="" />'."\n";
@@ -1611,8 +1612,9 @@ echo "'>\n";
 			//$photo="../photos/eleves/".$current_eleve_idphoto.".jpg";
 			$photo=nom_photo($current_eleve_idphoto);
 			//echo "$photo";
-			if("$photo"!=""){
-				$photo="../photos/eleves/".$photo;
+			//if("$photo"!=""){
+			if($photo){
+				//$photo="../photos/eleves/".$photo;
 				if(file_exists($photo)){
 					echo '<img src="'.$photo.'" style="width: 60px; height: 80px; border: 0px; border-right: 3px solid #FFFFFF; float: left;" alt="" />'."\n";
 				}

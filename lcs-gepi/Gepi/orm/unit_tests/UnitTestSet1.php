@@ -28,13 +28,14 @@ $niveau_arbo = "2";
 // Initialisations files
 include("../../lib/initialisationsPropel.inc.php");
 require_once("../../lib/initialisations.inc.php");
+Propel::init('../propel-build/conf/gepi-conf_debug.php');
 include('UnitTestUtilisateurProfessionnel.php');
 include('UnitTestEleve.php');
 include('UnitTestGroupe.php');
 include('UnitTestClasse.php');
 include('UnitTestResponsableEleve.php');
-include("../propel/logger/STACKLogger.php");
-$logger = new STACKLogger();
+//include("../propel/logger/STACKLogger.php");
+$logger = new StackLogger();
 Propel::setLogger($logger);
 
 
@@ -42,7 +43,7 @@ Propel::setLogger($logger);
 $_SESSION['cacher_header'] = "y";
 //**************** EN-TETE *****************
 
-require_once("../../lib/header.inc");
+//require_once("../../lib/header.inc");
 //**************** FIN EN-TETE *************
 purgeDonneesTest($logger);
 
@@ -56,7 +57,7 @@ echo ($logger->getDisplay());
 if ($newUtilisateurProfessionnel == null) {
 	echo('test creation utilisateur professionnel a <font color="red">echoue</font> <br><br/>.');
 } else {
-	echo('test creation utilisateur professionnel a reussi <br><br/>');
+	echo('test creation utilisateur professionnel a reussi avec comme retour l\'id : ' . $newUtilisateurProfessionnel->getLogin() . '<br/><br/>');
 }
 
 //Creation d'un eleve
@@ -67,7 +68,7 @@ echo ($logger->getDisplay());
 if ($newEleve == null) {
 	echo('test creation eleve a <font color="red">echoue</font> <br><br/>');
 } else {
-	echo('test creation eleve a reussi <br><br/>');
+	echo('test creation eleve a reussi avec comme retour l\'id : ' . $eleve->getIdEleve() . '<br/><br/>');
 }
 
 //Creation d'un groupe
@@ -80,7 +81,7 @@ echo ($logger->getDisplay());
 if ($newGroupe == null) {
 	echo('test creation groupe a <font color="red">echoue</font> <br><br/>');
 } else {
-	echo('test creation groupe a reussi <br><br/>');
+	echo('test creation groupe a reussi avec comme retour l\'id : ' . $groupe->getId() . '<br/><br/>');
 }
 
 //Creation d'une classe
@@ -93,14 +94,39 @@ echo ($logger->getDisplay());
 if ($newClasse == null) {
 	echo('test creation classe a <font color="red">echoue</font> <br><br/>');
 } else {
-	echo('test creation classe a reussi <br><br/>');
+	echo('test creation classe a reussi avec comme retour l\'id : ' . $classe->getId() . '<br/><br/>');
+}
+
+//ajout d'une periode ouverte et d'un periode fermée à une classe
+$periode_fermee = new PeriodeNote();
+$periode_fermee->setNumPeriode(1);
+$periode_fermee->setVerouiller('O');
+$periode_fermee->setNomPeriode('1 Unit test');
+$newClasse->addPeriodeNote($periode_fermee);
+$periode_fermee->save();
+echo ($logger->getDisplay());
+$periode_ouverte = new PeriodeNote();
+$periode_ouverte->setNumPeriode(2);
+$periode_ouverte->setVerouiller('N');
+$periode_ouverte->setNomPeriode('2 Unit test');
+$newClasse->addPeriodeNote($periode_ouverte);
+$periode_ouverte->save();
+echo ($logger->getDisplay());
+
+$periode_ouverte = $newClasse->getPeriodeNoteOuverte();
+echo ($logger->getDisplay());
+if ($periode_ouverte == null || $periode_ouverte->getNumPeriode() != 2) {
+	echo('test ajout periode a <font color="red">echoue</font> <br><br/>');
+} else {
+	echo('test ajout periode a reussi<br/><br/>');
 }
 
 
 //ajout de eleve au professeur en tant que cpe
 //$utilisateurProfessionnel = new UtilisateurProfessionnel();
-$utilisateurProfessionnel->addEleveCpe($eleve);
-$newEleve1 = $utilisateurProfessionnel->getEleveCpes();
+$utilisateurProfessionnel->setStatut('cpe');
+$utilisateurProfessionnel->addEleve($eleve);
+$newEleve1 = $utilisateurProfessionnel->getEleves();
 $newEleve11 = $newEleve1[0];
 if ($newEleve1 == null || $newEleve11->getIdEleve() != $eleve->getIdEleve()) {
 	echo ($logger->getDisplay());
@@ -110,39 +136,55 @@ if ($newEleve1 == null || $newEleve11->getIdEleve() != $eleve->getIdEleve()) {
 	echo('test ajout de eleve au professeur en tant que cpe a reussi <br><br/>');
 }
 
-//ajout de eleve au groupe periode 1
+//ajout de eleve au groupe periode 1 et 2
 $groupe->addEleve($eleve, 1);
 $newEleve2 = $groupe->getEleves(1);
 $newEleve3 = $newEleve2[0];
 echo ($logger->getDisplay());
 if ($newEleve3 == null) {
-	echo('test ajout de eleve au groupe a <font color="red">echoue</font> <br><br/>');
+	echo('test 1 ajout de eleve au groupe a <font color="red">echoue</font> au premier test<br><br/>');
 } else {
+	echo('test 1 ajout de eleve au groupe a reussi <br><br/>');
 	$newGroupe2 = $newEleve3->getGroupes(1);
+	echo ($logger->getDisplay());
 	if ($newGroupe2[0] != null && $newGroupe2[0]->getId() == $groupe->getId()) {
 		echo ($logger->getDisplay());
-		echo('test ajout de eleve au groupe a reussi <br><br/>');
+		echo('test 2 ajout de eleve au groupe a reussi <br><br/>');
 	} else {
 		echo ($logger->getDisplay());
-		echo('test ajout de eleve au groupe a echoue <br><br/>');
+		echo('test 2 ajout de eleve au groupe a <font color="red">echoue</font> <br><br/>');
 	}
 }
 
 //ajout de eleve a la classe groupe periode 2
-$classe->addEleve($eleve, 1);
-$newEleve2 = $classe->getEleves(1);
+$classe->addEleve($eleve, 2);
+$newEleve2 = $classe->getEleves(2);
 $newEleve3 = $newEleve2[0];
 echo ($logger->getDisplay());
 if ($newEleve3 == null) {
-	echo('test ajout de eleve a la classe a <font color="red">echoue</font> <br><br/>');
+	echo('test 1 ajout de eleve a la classe a <font color="red">echoue</font> <br><br/>');
 } else {
-	$newClasse2 = $newEleve3->getClasses(1);
+	echo('test 1 ajout de eleve a la classe a reussi <br><br/>');
+	$newClasse2 = $newEleve3->getClasses(2);
 	if ($newClasse2[0] != null && $newClasse2[0]->getId() == $classe->getId()) {
 		echo ($logger->getDisplay());
-		echo('test ajout de eleve a la classe a reussi <br><br/>');
+		echo('test 2 ajout de eleve a la classe a reussi <br><br/>');
 	} else {
 		echo ($logger->getDisplay());
-		echo('test ajout de eleve a la classe a <font color="red">echoue</font> <br><br/>');
+		echo('test 2 ajout de eleve a la classe a <font color="red">echoue</font> <br><br/>');
+	}
+}
+
+$periodeNoteOuverte = $newEleve3->getPeriodeNoteOuverte();
+if ($periodeNoteOuverte == null) {
+	echo('test recuperation de periode actuelle a partir d\'un eleve a <font color="red">echoue</font> <br><br/>');
+} else {
+	if ($periodeNoteOuverte->getNumPeriode() == 2) {
+		echo ($logger->getDisplay());
+		echo('test recuperation de periode actuelle a partir d\'un eleve a reussi <br><br/>');
+	} else {
+		echo ($logger->getDisplay());
+		echo('test recuperation de periode actuelle a partir d\'un eleve a <font color="red">echoue</font> <br><br/>');
 	}
 }
 
@@ -152,7 +194,7 @@ $respInformation = UnitTestResponsableEleve::getResponsableInformation();
 $respPers = UnitTestResponsableEleve::getResponsableEleve();
 //$respPers = new ResponsableEleve();
 $respAdr = UnitTestResponsableEleve::getResponsableEleveAdresse();
-echo ("</br> Eleve Id : ".$eleve->getIdEleve());
+
 $respInformation->setEleve($eleve);
 $respInformation->setResponsableEleve($respPers);
 $respPers->setResponsableEleveAdresse($respAdr);
@@ -179,12 +221,6 @@ if ($respInfos[0] == null) {
 	}
 }
 
-//echo ($logger->getDisplay());
-//if ($newClasse == null) {
-//	echo('test creation classe a <font color="red">echoue</font> <br><br/>');
-//} else {
-//	echo('test creation classe a reussi <br><br/>');
-//}
 echo ($logger->getDisplay());
 
 purgeDonneesTest($logger);

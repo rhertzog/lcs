@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_aid.php 3948 2009-12-20 15:59:44Z crob $
+* $Id: saisie_aid.php 4661 2010-06-28 22:34:03Z regis $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -173,7 +173,7 @@ if (isset($_POST['is_posted'])) {
 								else if (($note == 'abs')) {
 									$note = '0';
 									$elev_statut = 'abs';
-								} else if (ereg ("^[0-9\.\,]{1,}$", $note)) {
+								} else if (my_ereg ("^[0-9\.\,]{1,}$", $note)) {
 									$note = str_replace(",", ".", "$note");
 									if (($note < 0) or ($note > $note_max)) {
 										$note = '';

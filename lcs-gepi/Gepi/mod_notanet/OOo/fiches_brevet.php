@@ -1,5 +1,5 @@
 <?php
-/* $Id: fiches_brevet.php 4515 2010-05-30 10:35:43Z regis $ */
+/* $Id: fiches_brevet.php 4514 2010-05-30 10:34:29Z regis $ */
 /*
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

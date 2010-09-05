@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: maj_import2.php 4405 2010-05-10 06:29:45Z crob $
+ * $Id: maj_import2.php 4578 2010-06-09 16:20:45Z crob $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -153,15 +153,33 @@ function maj_ini_prenom($prenom){
 function get_commune($code_commune_insee,$mode){
 	$retour="";
 
-	$sql="SELECT * FROM communes WHERE code_commune_insee='$code_commune_insee';";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)>0) {
-		$lig=mysql_fetch_object($res);
-		if($mode==0) {
-			$retour=$lig->commune;
+	if(strstr($code_commune_insee,'@')) {
+		// On a affaire à une commune étrangère
+		$tmp_tab=split('@',$code_commune_insee);
+		$sql="SELECT * FROM pays WHERE code_pays='$tmp_tab[0]';";
+		$res_pays=mysql_query($sql);
+		if(mysql_num_rows($res_pays)==0) {
+			$retour=$tmp_tab[1]." ($tmp_tab[0])";
 		}
 		else {
-			$retour=$lig->commune." (<i>".$lig->departement."</i>)";
+			$lig_pays=mysql_fetch_object($res_pays);
+			$retour=$tmp_tab[1]." (".$lig_pays->nom_long.")";
+		}
+	}
+	else {
+		$sql="SELECT * FROM communes WHERE code_commune_insee='$code_commune_insee';";
+		$res=mysql_query($sql);
+		if(mysql_num_rows($res)>0) {
+			$lig=mysql_fetch_object($res);
+			if($mode==0) {
+				$retour=$lig->commune;
+			}
+			elseif($mode==1) {
+				$retour=$lig->commune." (<i>".$lig->departement."</i>)";
+			}
+			elseif($mode==2) {
+				$retour=$lig->commune." (".$lig->departement.")";
+			}
 		}
 	}
 	return $retour;
@@ -345,7 +363,12 @@ function test_stop_suite_bis(num,cpt_saut_lignes){
 }
 
 echo "<p class='bold'>";
-echo "<a href=\"index.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
+if(isset($_SESSION['retour_apres_maj_sconet'])) {
+	echo "<a href=\"".$_SESSION['retour_apres_maj_sconet']."\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
+}
+else {
+	echo "<a href=\"index.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
+}
 //echo "</p>\n";
 
 
@@ -740,7 +763,7 @@ else{
 
 
 					$fp=fopen("../temp/".$tempdir."/section_structures.xml","r");
-					if($fp){
+					if($fp) {
 
 						echo "<p>\n";
 						echo "Analyse de la section STRUCTURES pour ne conserver que les identifiants d'élèves affectés dans une classe...<br />\n";
@@ -870,8 +893,8 @@ else{
 						require("../lib/footer.inc.php");
 						die();
 					}
-					else{
-						echo "<p>ERREUR: Il n'a pas été possible d'ouvrir le fichier en lecture...</p>\n";
+					else {
+						echo "<p><span style='color:red;'>ERREUR&nbsp;:</span> Il n'a pas été possible d'ouvrir le fichier en lecture...<br />Avez-vous bien utilisé un export d'une année scolaire avec des classes renseignées?<br />Si vous avez exporté le XML de l'année scolaire prochaine, la section STRUCTURES risque de ne pas être encore renseignée.</p>\n";
 
 						require("../lib/footer.inc.php");
 						die();
@@ -979,7 +1002,9 @@ else{
 				"DATE_ENTREE",
 				"CODE_MOTIF_SORTIE",
 				"CODE_SEXE",
-				"CODE_COMMUNE_INSEE_NAISS"
+				"CODE_COMMUNE_INSEE_NAISS",
+				"CODE_PAYS",
+				"VILLE_NAISS"
 				);
 
 
@@ -1219,7 +1244,18 @@ else{
 							if(isset($eleves[$i]["scolarite_an_dernier"]["code_rne"])){$sql.="etocod_ep='".$eleves[$i]["scolarite_an_dernier"]["code_rne"]."', ";}
 							if(isset($eleves[$i]["code_regime"])){$sql.="elereg='".$eleves[$i]["code_regime"]."', ";}
 
-							if(isset($eleves[$i]["code_commune_insee_naiss"])){$sql.="lieu_naissance='".$eleves[$i]["code_commune_insee_naiss"]."', ";}
+							//affiche_debug("eleve_id=".$eleves[$i]["eleve_id"]."<br />");
+							//affiche_debug("code_pays=".$eleves[$i]["code_pays"]."<br />");
+							//affiche_debug("ville_naiss=".$eleves[$i]["ville_naiss"]."<br />");
+							//affiche_debug("code_commune_insee_naiss=".$eleves[$i]["code_commune_insee_naiss"]."<br />");
+
+							if((isset($eleves[$i]["code_pays"]))&&($eleves[$i]["code_pays"]!='')&&
+								(isset($eleves[$i]["ville_naiss"]))&&($eleves[$i]["ville_naiss"]!='')) {
+									$sql.="lieu_naissance='".$eleves[$i]["code_pays"]."@".addslashes($eleves[$i]["ville_naiss"])."', ";
+							}
+							elseif(isset($eleves[$i]["code_commune_insee_naiss"])) {
+								$sql.="lieu_naissance='".$eleves[$i]["code_commune_insee_naiss"]."', ";
+							}
 
 							$sql=substr($sql,0,strlen($sql)-2);
 							$sql.=" WHERE ele_id='".$eleves[$i]['eleve_id']."';";
@@ -1703,7 +1739,7 @@ else{
 
 				echo "<input type='hidden' name='step' value='2c' />\n";
 				echo "<p><input type='submit' value='Valider' /></p>\n";
-	
+
 				echo "<script type='text/javascript'>
 	function modifcase(mode){
 		for(i=0;i<$cpt;i++){
@@ -2622,6 +2658,16 @@ else{
 
 						if($ele_lieu_naissance=="y") {
 							$affiche[11]=traitement_magic_quotes(corriger_caracteres(dbase_filter(trim($lig->LIEU_NAISSANCE))));
+
+							/*
+							if($affiche[0]=='KILIC') {
+								echo "<tr><td colspan='13' style='text-align:left;'>DEBUG: ";
+								echo "\$lig->LIEU_NAISSANCE=$lig->LIEU_NAISSANCE<br />";
+								echo "corriger_caracteres(dbase_filter(trim(\$lig->LIEU_NAISSANCE)))=".corriger_caracteres(dbase_filter(trim($lig->LIEU_NAISSANCE)))."<br />";
+								echo "\$affiche[11]=$affiche[11]<br />";
+								echo "</td></tr>\n";
+							}
+							*/
 						}
 
 						//if(trim($ligne)!=""){
@@ -2666,7 +2712,8 @@ else{
 									(stripslashes($lig_ele->prenom)!=stripslashes($affiche[1]))||
 									($lig_ele->sexe!=$affiche[2])||
 									($lig_ele->naissance!=$new_date)||
-									($lig_ele->lieu_naissance!=$affiche[11])||
+									//($lig_ele->lieu_naissance!=$affiche[11])||
+									($lig_ele->lieu_naissance!=stripslashes($affiche[11]))||
 									($lig_ele->no_gep!=$affiche[7])){
 										$temoin_modif='y';
 										$cpt_modif++;
@@ -2920,7 +2967,8 @@ else{
 
 								if($ele_lieu_naissance=="y") {
 									echo "<td";
-									if(($lig_ele->naissance!=$new_date)||($lig_ele->lieu_naissance!=$affiche[11])) {
+									//if(($lig_ele->naissance!=$new_date)||($lig_ele->lieu_naissance!=$affiche[11])) {
+									if(($lig_ele->naissance!=$new_date)||($lig_ele->lieu_naissance!=stripslashes($affiche[11]))) {
 										//echo " background-color:lightgreen;'>";
 										echo " class='modif'>";
 										if(($lig_ele->naissance!='')||($lig_ele->lieu_naissance!='')) {
@@ -2938,9 +2986,12 @@ else{
 										echo ">";
 									}
 									echo "$new_date";
+
+//echo "_".$ele_lieu_naissance;
+
 									if($affiche[11]!="") {echo " à ".get_commune($affiche[11],1);}
 									echo "<input type='hidden' name='modif_".$cpt."_naissance' value='$new_date' />\n";
-									echo "<input type='hidden' name='modif_".$cpt."_lieu_naissance' value='".$affiche[11]."' />\n";
+									echo "<input type='hidden' name='modif_".$cpt."_lieu_naissance' value=\"".stripslashes($affiche[11])."\" />\n";
 									echo "</td>\n";
 								}
 								else {
@@ -3134,7 +3185,7 @@ else{
 								echo "$new_date";
 								if($ele_lieu_naissance=="y") {
 									echo " à ".get_commune($affiche[11],1);
-									echo "<input type='hidden' name='new_".$cpt."_lieu_naissance' value='".$affiche[11]."' />\n";
+									echo "<input type='hidden' name='new_".$cpt."_lieu_naissance' value=\"".stripslashes($affiche[11])."\" />\n";
 								}
 								echo "<input type='hidden' name='new_".$cpt."_naissance' value='$new_date' />\n";
 								echo "</td>\n";
@@ -3349,7 +3400,7 @@ else{
 											no_gep='".$lig->ELENONAT."'";
 
 					if($ele_lieu_naissance=="y") {
-						$sql.=", lieu_naissance='".$lig->LIEU_NAISSANCE."'";
+						$sql.=", lieu_naissance='".addslashes($lig->LIEU_NAISSANCE)."'";
 					}
 
 					// Je ne pense pas qu'on puisse corriger un ELENOET manquant...
@@ -4446,12 +4497,23 @@ else{
 					echo "</th>\n";
 					echo "</tr>\n";
 
+					$tab_champs_grp=array('matieres','profs','classes');
+
 					$nb_erreurs=0;
 					$i=0;
 					$alt=-1;
 					while ($i < $nombre_ligne) {
 						$id_groupe = mysql_result($call_group, $i, "id");
 						$nom_groupe = mysql_result($call_group, $i, "name");
+
+						$tmp_group=get_group($id_groupe,$tab_champs_grp);
+						$chaine_profs="";
+						//for($loop=0;$loop<count($tmp_group[])) {}
+						foreach($tmp_group["profs"]["users"] as $login_prof) {
+							$chaine_profs.=", ";
+							$chaine_profs.=$login_prof['civilite']."&nbsp;".$login_prof['nom']." ".substr($login_prof['prenom'],0,1);
+						}
+						if($chaine_profs!='') {$chaine_profs=substr($chaine_profs,2);}
 
 						$alt=$alt*(-1);
 						/*
@@ -4464,8 +4526,13 @@ else{
 						}
 						echo ";'>\n";
 						*/
-						echo "<tr class='lig$alt'>\n";
+						echo "<tr class='lig$alt white_hover'>\n";
 						echo "<td>".$nom_groupe;
+						echo " <span style='font-size: x-small'>(".$tmp_group['classlist_string'].")</span>";
+						echo "<br />";
+						//echo "<span style='font-size: x-small'>".$tmp_group['description']."</span>";
+						//echo "<br />";
+						echo "<span style='font-size: x-small'>".$chaine_profs."</span>";
 						echo "</td>\n";
 						$j = 1;
 						while ($j < $nb_periode) {
@@ -8461,12 +8528,14 @@ else{
 				echo "<p align='center'><input type=submit value='Contrôler les suppressions de responsabilités' /></p>\n";
 
 				//echo "<p align='center'><input type=submit value='Terminer' /></p>\n";
+				/*
 				echo "<p>Retour à:</p>\n";
 				echo "<ul>\n";
 				echo "<li><a href='../accueil.php'>l'accueil</a></li>\n";
 				echo "<li><a href='index.php'>l'index Responsables</a></li>\n";
 				echo "<li><a href='../eleves/index.php'>l'index Elèves</a></li>\n";
 				echo "</ul>\n";
+				*/
 			}
 
 			echo "</form>\n";

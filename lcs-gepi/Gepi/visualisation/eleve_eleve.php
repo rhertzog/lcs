@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: eleve_eleve.php 2147 2008-07-23 09:01:04Z tbelliard $
+* $Id: eleve_eleve.php 4878 2010-07-24 13:54:01Z regis $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -333,8 +333,8 @@ if ((!isset($id_classe)) or (!isset($id_classe2))) {
 					echo "$note_eleve2";
 					if (($note_eleve1 == "-") or ($note_eleve2 == "-")) {$difference = '-';} else {$difference = $note_eleve1-$note_eleve2;}
 					echo "</p></td><td><p>$difference</p></td></tr>\n";
-					(ereg ("^[0-9\.\,]{1,}$", $note_eleve1)) ? array_push($datay1,"$note_eleve1") : array_push($datay1,"0");
-					(ereg ("^[0-9\.\,]{1,}$", $note_eleve2)) ? array_push($datay2,"$note_eleve2") : array_push($datay2,"0");
+					(my_ereg ("^[0-9\.\,]{1,}$", $note_eleve1)) ? array_push($datay1,"$note_eleve1") : array_push($datay1,"0");
+					(my_ereg ("^[0-9\.\,]{1,}$", $note_eleve2)) ? array_push($datay2,"$note_eleve2") : array_push($datay2,"0");
 					//array_push($etiquette,$current_group["matiere"]["nom_complet"]);
 					array_push($etiquette,rawurlencode($current_group["matiere"]["nom_complet"]));
 					$compteur++;
@@ -373,8 +373,10 @@ if ((!isset($id_classe)) or (!isset($id_classe2))) {
 		//$texte.="<tr>\n";
 		if($v_elenoet1!=""){
 			$photo=nom_photo($v_elenoet1);
-			if("$photo"!=""){
-				$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$v_eleve_nom_prenom1\" />";
+			//if("$photo"!=""){
+			if($photo){
+				//$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$v_eleve_nom_prenom1\" />";
+				$texte.="<img src='".$photo."' width='150' alt=\"$v_eleve_nom_prenom1\" />";
 				$texte.="<br />\n";
 			}
 		}
@@ -412,8 +414,10 @@ if ((!isset($id_classe)) or (!isset($id_classe2))) {
 		//$texte.="<tr>\n";
 		if($v_elenoet2!=""){
 			$photo=nom_photo($v_elenoet2);
-			if("$photo"!=""){
-				$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$v_eleve_nom_prenom2\" />";
+			//if("$photo"!=""){
+			if($photo){
+				//$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$v_eleve_nom_prenom2\" />";
+				$texte.="<img src='".$photo."' width='150' alt=\"$v_eleve_nom_prenom2\" />";
 				$texte.="<br />\n";
 			}
 		}

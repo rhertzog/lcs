@@ -31,8 +31,8 @@ require_once("../../lib/initialisations.inc.php");
 include('UnitTestUtilisateurProfessionnel.php');
 include('UnitTestEleve.php');
 include('UnitTestAbsenceSaisie.php');
-include("../propel/logger/STACKLogger.php");
-$logger = new STACKLogger();
+Propel::init('../propel-build/conf/gepi-conf_debug.php');
+$logger = new StackLogger();
 Propel::setLogger($logger);
 
 
@@ -40,7 +40,7 @@ Propel::setLogger($logger);
 $_SESSION['cacher_header'] = "y";
 //**************** EN-TETE *****************
 
-require_once("../../lib/header.inc");
+//require_once("../../lib/header.inc");
 //**************** FIN EN-TETE *************
 purgeDonneesTest($logger);
 
@@ -70,36 +70,64 @@ if ($newEleve == null) {
 
 //creation d'une saisie d'absence
 $absenceSaisie = UnitTestAbsenceSaise::getAbsenceSaisie();
-$newEleve->addAbsenceSaisie($absenceSaisie);
-$newUtilisateurProfessionnel->addAbsenceSaisie($absenceSaisie);
+//$newEleve->addAbsenceEleveSaisie($absenceSaisie);
+$newUtilisateurProfessionnel->addAbsenceEleveSaisie($absenceSaisie);
 $absenceSaisie->save();
 echo ($logger->getDisplay());
 echo('saisie absence cree<br/><br/>');
+//$absenceSaisie = new AbsenceEleveSaisie();
+$eleve_saisie = $absenceSaisie->getEleve();
+if ($eleve_saisie == null) {
+	echo('test creation de saisie sans eleve a reussie <br><br/>');
+} else {
+	echo('test creation de saisie sans eleve a <font color="red">echoue</font> <br><br/>');
+}
+$absenceSaisie->setEleve($newEleve);
+$absenceSaisie->save();
 
 //creation d'un traitement d'absence
 $absenceTraitement = UnitTestAbsenceSaise::getAbsenceTraitement();
-$absenceSaisie->addAbsenceTraitement($absenceTraitement);
-$newUtilisateurProfessionnel->addAbsenceTraitement($absenceTraitement);
+$absenceSaisie->addAbsenceEleveTraitement($absenceTraitement);
+$newUtilisateurProfessionnel->addAbsenceEleveTraitement($absenceTraitement);
 $absenceTraitement->save();
 echo ($logger->getDisplay());
 echo('traitement absence cree<br/><br/>');
 
-$absenceSaisies = $newUtilisateurProfessionnel->getAbsenceSaisies();
+$absenceSaisies = $newUtilisateurProfessionnel->getAbsenceEleveSaisies();
 $absenceSaisie = $absenceSaisies[0];
 if ($absenceSaisie == null) {
 	echo ($logger->getDisplay());
-	echo('test recuperation absence saisie eleve a <font color="red">echoue</font> <br><br/>');
+	echo('test recuperation absence saisie eleve a partir d\'un professeur a <font color="red">echoue</font> <br><br/>');
 } else {
-	$absenceTraitements = $absenceSaisie->getAbsenceTraitements();
+	$absenceTraitements = $absenceSaisie->getAbsenceEleveTraitements();
 	$absenceTraitement = $absenceTraitements[0];
 	if ($absenceTraitement == null) {
 		echo ($logger->getDisplay());
-		echo('test recuperation absence traitement a <font color="red">echoue</font> <br><br/>');
+		echo('test recuperation absence traitement a partir d\'un professeur a <font color="red">echoue</font> <br><br/>');
 	} else {
 		echo ($logger->getDisplay());
-		echo('test recuperation absence saisie et absence traitement a reussi <br><br/>');
+		echo('test recuperation absence saisie et absence traitement a partir d\'un professeur a reussi <br><br/>');
 	}
 }
+
+$absenceSaisies = $newEleve->getAbsenceEleveSaisies();
+$absenceSaisie = $absenceSaisies[0];
+if ($absenceSaisie == null) {
+	echo ($logger->getDisplay());
+	echo('test 1 recuperation absence saisie eleve a partir d\'un eleve a <font color="red">echoue</font> <br><br/>');
+} else {
+	echo('test 1 recuperation absence saisie eleve a partir d\'un eleve a reussi <br><br/>');
+	$absenceTraitements = $absenceSaisie->getAbsenceEleveTraitements();
+	$absenceTraitement = $absenceTraitements[0];
+	if ($absenceTraitement == null) {
+		echo ($logger->getDisplay());
+		echo('test 2 recuperation absence traitement a partir d\'un eleve a <font color="red">echoue</font> <br><br/>');
+	} else {
+		echo ($logger->getDisplay());
+		echo('test 2 recuperation absence saisie et absence traitement a partir d\'un eleve a reussi <br><br/>');
+	}
+}
+
 
 purgeDonneesTest($logger);
 Propel::setLogger(null);
@@ -110,6 +138,9 @@ function purgeDonneesTest($logger) {
 	echo "<br/>Purge de l'utilisateur : <br/>";
 	$utilisateurProfessionnel = UtilisateurProfessionnelPeer::retrieveByPK(UnitTestUtilisateurProfessionnel::getUtilisateurProfessionnel()->getLogin());
 	if ($utilisateurProfessionnel != null)	{
+		foreach ($utilisateurProfessionnel->getAbsenceEleveTraitements() as $traitement) {
+		    $traitement->delete();
+		}
 		$utilisateurProfessionnel->delete();
 	}
 	echo ($logger->getDisplay());

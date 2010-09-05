@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version $Id: bilan_absences_quotidien.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * @version $Id: bilan_absences_quotidien.php 4152 2010-03-21 23:32:16Z adminpaulbert $
  *
  * Fichier destiné à visionner le bilan de la journée des absences heure par heure et cours par cours
  * en ordonnant le classement des élèves par classe et par ordre alphabétique.
@@ -59,10 +59,10 @@ $nb_creneaux = count($creneaux);
 			$choix_date = explode("/", $date_choisie);
 			$date_choisie_ts = mktime(0,0,0, $choix_date[1], $choix_date[0], $choix_date[2]);
 		if (date("w", $date_choisie_ts) == getSettingValue("creneau_different")) {
-			$req_sql = mysql_query("SELECT heuredebut_definie_periode, heurefin_definie_periode FROM absences_creneaux_bis WHERE id_definie_periode = '".$creneau_id."'");
+			$req_sql = mysql_query("SELECT heuredebut_definie_periode, heurefin_definie_periode FROM edt_creneaux_bis WHERE id_definie_periode = '".$creneau_id."'");
 		}
 		else {
-			$req_sql = mysql_query("SELECT heuredebut_definie_periode, heurefin_definie_periode FROM absences_creneaux WHERE id_definie_periode = '".$creneau_id."'");
+			$req_sql = mysql_query("SELECT heuredebut_definie_periode, heurefin_definie_periode FROM edt_creneaux WHERE id_definie_periode = '".$creneau_id."'");
 		}
 		$rep_sql = mysql_fetch_array($req_sql);
 		$heuredeb = explode(":", $rep_sql["heuredebut_definie_periode"]);
@@ -218,12 +218,12 @@ for($i = 0; $i < $nbre; $i++) {
 			// On traite alors pour chaque créneau
 			if (getSettingValue("creneau_different") != 'n') {
 				if (date("w") == getSettingValue("creneau_different")) {
-					$req_creneaux = mysql_query("SELECT id_definie_periode FROM absences_creneaux_bis WHERE type_creneaux != 'pause'");
+					$req_creneaux = mysql_query("SELECT id_definie_periode FROM edt_creneaux_bis WHERE type_creneaux != 'pause'");
 				}else {
-					$req_creneaux = mysql_query("SELECT id_definie_periode FROM absences_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
+					$req_creneaux = mysql_query("SELECT id_definie_periode FROM edt_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
 				}
 			}else {
-				$req_creneaux = mysql_query("SELECT id_definie_periode FROM absences_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
+				$req_creneaux = mysql_query("SELECT id_definie_periode FROM edt_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
 			}
 			$nbre_creneaux = mysql_num_rows($req_creneaux);
 			for($a=0; $a<$nbre_creneaux; $a++){

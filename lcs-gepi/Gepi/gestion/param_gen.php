@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: param_gen.php 3468 2009-09-27 18:08:15Z crob $
+* $Id: param_gen.php 4661 2010-06-28 22:34:03Z regis $
 *
 * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -104,7 +104,7 @@ if (isset($_POST['valid_logo'])) {
 }
 // Max session length
 if (isset($_POST['sessionMaxLength'])) {
-	if (!(ereg ("^[0-9]{1,}$", $_POST['sessionMaxLength'])) || $_POST['sessionMaxLength'] < 1) {
+	if (!(my_ereg ("^[0-9]{1,}$", $_POST['sessionMaxLength'])) || $_POST['sessionMaxLength'] < 1) {
 		$_POST['sessionMaxLength'] = 30;
 	}
 	if (!saveSetting("sessionMaxLength", $_POST['sessionMaxLength'])) {
@@ -299,6 +299,18 @@ if (isset($_POST['is_posted'])) {
 			$msg .= "Erreur lors de l'enregistrement du paramètre mode_utf8_visu_notes_pdf !";
 		}
 	}
+
+	if (isset($_POST['type_bulletin_par_defaut'])) {
+		if(($_POST['type_bulletin_par_defaut']=='html')||($_POST['type_bulletin_par_defaut']=='pdf')) {
+			if (!saveSetting("type_bulletin_par_defaut", $_POST['type_bulletin_par_defaut'])) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre type_bulletin_par_defaut !";
+			}
+		}
+		else {
+			$msg .= "Valeur erronée pour l'enregistrement du paramètre type_bulletin_par_defaut !";
+		}
+	}
+
 	/*
 	if (isset($_POST['mode_utf8_releves_pdf'])) {
 		if (!saveSetting("mode_utf8_releves_pdf", $_POST['mode_utf8_releves_pdf'])) {
@@ -333,6 +345,18 @@ if (isset($_POST['is_posted'])) {
 			$msg .= "Erreur lors de l'enregistrement du paramètre ele_lieu_naissance !";
 		}
 	}
+
+	if (isset($_POST['avis_conseil_classe_a_la_mano'])) {
+		if (!saveSetting("avis_conseil_classe_a_la_mano", $_POST['avis_conseil_classe_a_la_mano'])) {
+			$msg .= "Erreur lors de l'enregistrement du paramètre avis_conseil_classe_a_la_mano !";
+		}
+	}
+	else{
+		if (!saveSetting("avis_conseil_classe_a_la_mano", 'n')) {
+			$msg .= "Erreur lors de l'enregistrement du paramètre avis_conseil_classe_a_la_mano !";
+		}
+	}
+
 
 	//===============================================================
 }
@@ -448,7 +472,7 @@ if (isset($_POST['gepi_pmv'])) {
 
 if (isset($_POST['delais_apres_cloture'])) {
 	$delais_apres_cloture=$_POST['delais_apres_cloture'];
-	if (!(ereg ("^[0-9]{1,}$", $delais_apres_cloture)) || $delais_apres_cloture < 0) {
+	if (!(my_ereg ("^[0-9]{1,}$", $delais_apres_cloture)) || $delais_apres_cloture < 0) {
 		//$delais_apres_cloture=0;
 		$msg .= "Erreur lors de l'enregistrement de delais_apres_cloture !";
 	}
@@ -784,6 +808,25 @@ echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
 		onchange='changement()' />
 		</td>
 	</tr>
+
+	<tr>
+		<td style="font-variant: small-caps;" valign='top'>
+		Type de bulletins par défaut&nbsp;:
+		</td>
+		<td>
+		<input type="radio" id='type_bulletin_par_defaut_pdf' name="type_bulletin_par_defaut" value="pdf"
+		<?php
+			if(getSettingValue("type_bulletin_par_defaut")=='pdf') {echo " checked";}
+		?>
+		onchange='changement()' /><label for='type_bulletin_par_defaut_pdf'>&nbsp;PDF</label><br />
+		<input type="radio" id='type_bulletin_par_defaut_html' name="type_bulletin_par_defaut" value="html"
+		<?php
+			if(getSettingValue("type_bulletin_par_defaut")!='pdf') {echo " checked";}
+		?>
+		onchange='changement()' /><label for='type_bulletin_par_defaut_html'>&nbsp;HTML</label>
+		</td>
+	</tr>
+
 <?php
 /*
 	// Apparemment, ce n'est pas utile...
@@ -934,6 +977,32 @@ responsables&nbsp;:<br />
 			echo "<input type='radio' name='acces_app_ele_resp' id='acces_app_ele_resp_periode_close' value='periode_close' onchange='changement()' ";
 			if($acces_app_ele_resp=='periode_close') {echo "checked ";}
 			echo "/><label for='acces_app_ele_resp_periode_close'> <input type='text' name='delais_apres_cloture' value='$delais_apres_cloture' size='1' onchange='changement()' /> jours après la clôture de la période</label>\n";
+			?>
+		</td>
+	</tr>
+
+
+
+	<tr>
+		<td style="font-variant: small-caps; vertical-align:top;">
+		<a name='avis_conseil_classe_a_la_mano'></a>
+		Les avis du conseil sont remplis&nbsp;:
+		</td>
+		<td valign='top'>
+
+			<?php
+			$avis_conseil_classe_a_la_mano=getSettingValue("avis_conseil_classe_a_la_mano");
+			if($avis_conseil_classe_a_la_mano=="") {$avis_conseil_classe_a_la_mano="n";}
+
+			echo "<input type='radio' name='avis_conseil_classe_a_la_mano' id='avis_conseil_classe_saisis' value='n'";
+			if($avis_conseil_classe_a_la_mano=='n') {echo " checked";}
+			echo " onchange='changement()' />\n";
+			echo "<label for='avis_conseil_classe_saisis' style='cursor: pointer'> avant l'impression des bulletins</label>\n";
+			echo "<br />\n";
+			echo "<input type='radio' name='avis_conseil_classe_a_la_mano' id='avis_conseil_classe_a_la_mano' value='y'";
+			if($avis_conseil_classe_a_la_mano=='y') {echo " checked";}
+			echo " onchange='changement()' />";
+			echo "<label for='avis_conseil_classe_a_la_mano' style='cursor: pointer'> à la main sur les bulletins imprimés</label>\n";
 			?>
 		</td>
 	</tr>

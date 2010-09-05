@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: visu_fiches.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * $Id: visu_fiches.php 4590 2010-06-18 07:27:33Z delineau $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -51,14 +51,14 @@ $titre_page = "Visualisation des fiches ".$nom_projet;
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 
-echo "<p class=bold>";
+echo "<p class='bold'>";
 echo "<a href=\"index_fiches.php?indice_aid=".$indice_aid."\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 echo "</p>\n";
-echo "<center><H3>Liste des projets ".$nom_projet."</H3></center>";
+echo "<h3 style=\"text-align:center\">Liste des projets ".$nom_projet."</h3>";
 
 $_login = $_SESSION["login"];
 $message_avertissement = "";
-$non_defini = "<font color='red'>Non défini</font>";
+$non_defini = "<span style=\"color:red\">Non défini</span>";
 
 include "./fiches.inc.php";
 ?>

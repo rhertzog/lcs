@@ -1,6 +1,6 @@
 <?php
 /**
- * @version : $Id: traiterRequetes.class.php 3248 2009-06-24 20:06:15Z jjocal $
+ * @version : $Id: traiterRequetes.class.php 4465 2010-05-18 14:36:49Z delineau $
  *
  * Copyright 2001, 2009 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -65,14 +65,17 @@ class traiterRequetes {
   public function  __construct(simpleXMLElement $requetes) {
 
     $this->_requetes = $requetes;
-
-    foreach ($this->_requetes as $requete) {
-
+    if (count($this->_requetes->requete)==0)
+            $this->_reponse = true;
+    foreach ($this->_requetes->requete as $requete) {
       // On est face à une liste de requêtes
-      if ($this->verifRequete($requete->requete) === true){
-        $this->insertRequete($requete->requete);
+      if (trim($requete)=='') {
+        $this->_reponse = true;
+      }else
+      if ($this->verifRequete($requete) === true){
+        $this->insertRequete($requete);
       }else{
-        $this->retourneErreur(1, $requete->requete);
+        $this->retourneErreur(1, $requete);
       }
     }
 

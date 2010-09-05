@@ -1,5 +1,5 @@
-GEPI-1.5.2 -- Procédure de mise à jour
-======================================
+GEPI-trunk -- Procédure de mise à jour
+==========================================
 
 *************
 Mise en garde
@@ -9,6 +9,7 @@ La procédure de mise à jour vers cette version de Gepi est utilisable à partir d
 Si vous travaillez actuellement sur une version plus ancienne que GEPI-1.5.0, cette procédure de mise à jour ne fonctionnera pas.
 
 Ne prenez pas de risque, n'utilisez *que* des versions estampillées *stable* pour une utilisation en production.
+
 
 ****************************************************
 Installation - Etape 0 : téléchargement de l'archive
@@ -34,11 +35,20 @@ Puis, dans le répertoire hôte de Gepi :
 - "mettre de côté" le fichier "connect.inc.php" situé dans le répertoire "secure"
 - vider tout le répertoire hôte, sauf les éléments cités ci-dessus (soit les répertoires "documents", "backup", "photos", le logo dans le répertoire "images", et "connect.inc.php" dans "secure")
 - copier dans le répertoire hôte l'intégralité de l'archive de la nouvelle version de Gepi. L'outil ftp va sans doute demander l'autorisation d'écraser quelques fichiers dans les répertoires conservés : accepter cet écrasement. Le logo (si l'admin lui a donné un nom différent de "logo.gif" ou "logo.png") et "connect.inc.php" ne devraient pas être écrasés : ils n'existent pas dans l'archive, de même que les documents attachés par les profs au cahier de texte ("documents"), vos sauvegardes précédentes ("backup") et les photos de vos élèves ("photos").
-- ne pas oublier de restaurer les droits d'écriture-exécution aux répertoires "documents", "images", "photos" et "backup"
+- ne pas oublier de restaurer les droits d'écriture-exécution aux répertoires "documents", "images", "photos", "backup", "temp", "mod_ooo/mes_modele", "mod_ooo/tmp", "mod_notanet/OOo/tmp", "lib/standalone/HTMLPurifier/DefinitionCache/Serializer".
 
+*********************************************************************
+Installation - Etape 2 : Renommer le fichier connect.inc si nécessaire
+**********************************************************************
+
+* UNIQUEMENT SI VOUS METTEZ A JOUR UNE VERSION ANTERIEURE A LA 1.3.4 *
+
+Depuis la version GEPI-1.3.4, le fichier "connect.inc" situé dans le répertoire /secure, s'appelle désormais "connect.inc.php".
+Vous devez donc renommer votre ancien fichier "connect.inc" actuellement présent dans le répertoire /secure en "connect.inc.php".
+Attention, si vous avez déjà un fichier "connect.inc.php", ne cherchez pas à renommer le "connect.inc" ! Cela constituerait une faille de sécurité.
 
 *****************************************************
-Installation - Etape 2 : mise à jour de la base MySql
+Installation - Etape 3 : mise à jour de la base MySql
 *****************************************************
 
 Une fois que les fichiers php sont en place sur le serveur web/php (étape 1),

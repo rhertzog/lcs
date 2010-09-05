@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: mon_compte.php 3544 2009-10-06 19:21:07Z crob $
+* $Id: mon_compte.php 4878 2010-07-24 13:54:01Z regis $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -176,7 +176,18 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 		$ancien_nom = mysql_result($calldata_photo, $i_photo, "nom");
 		$ancien_prenom = mysql_result($calldata_photo, $i_photo, "prenom");
 
-		$repertoire = '../photos/personnels/';
+		// En multisite, on ajoute le répertoire RNE
+		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+			  // On récupère le RNE de l'établissement
+		  $repertoire="../photos/".getSettingValue("gepiSchoolRne")."/personnels/";
+		}else{
+		  $repertoire="../photos/personnels/";
+		}
+
+		//$repertoire = '../photos/personnels/';
+
+
+
 		$ancien_code_photo = md5(strtolower($user_login));
 		$nouveau_code_photo = $ancien_code_photo;
 
@@ -199,14 +210,14 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 				//if(isset($_POST['suppr_filephoto']) and $valide_form === 'oui' ) {
 				if(isset($_POST['suppr_filephoto'])) {
 					if($_POST['suppr_filephoto']=='y') {
-						if(@unlink("../photos/personnels/$ancien_code_photo.jpg")) {
+						if(@unlink($repertoire.$ancien_code_photo.".jpg")) {
 							if($msg!="") {$msg.="<br />";}
-							$msg.="La photo ../photos/personnels/$ancien_code_photo.jpg a été supprimée. ";
+							$msg.="La photo ".$repertoire.$ancien_code_photo.".jpg a été supprimée. ";
 							$no_modif="no";
 						}
 						else {
 							if($msg!="") {$msg.="<br />";}
-							$msg.="Echec de la suppression de la photo ../photos/personnels/$ancien_code_photo.jpg ";
+							$msg.="Echec de la suppression de la photo ".$repertoire.$ancien_code_photo.".jpg ";
 						}
 					}
 				}
@@ -234,7 +245,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 						} else {
 							// Tester la taille max de la photo?
 							if(is_uploaded_file($filephoto_tmp)) {
-								$dest_file = "../photos/personnels/$nouveau_code_photo.jpg";
+								$dest_file = $repertoire.$nouveau_code_photo.".jpg";
 								//$source_file=stripslashes("$filephoto_tmp");
 								$source_file=$filephoto_tmp;
 								$res_copy=copy("$source_file" , "$dest_file");
@@ -246,7 +257,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 
 									if (getSettingValue("active_module_trombinoscopes_rd")=='y') {
 										// si le redimensionnement des photos est activé on redimenssionne
-										$source = imagecreatefromjpeg("../photos/personnels/$nouveau_code_photo.jpg"); // La photo est la source
+										$source = imagecreatefromjpeg($repertoire.$nouveau_code_photo.".jpg"); // La photo est la source
 										if (getSettingValue("active_module_trombinoscopes_rt")=='') { $destination = imagecreatetruecolor(getSettingValue("l_resize_trombinoscopes"), getSettingValue("h_resize_trombinoscopes")); } // On crée la miniature vide
 										if (getSettingValue("active_module_trombinoscopes_rt")!='') { $destination = imagecreatetruecolor(getSettingValue("h_resize_trombinoscopes"), getSettingValue("l_resize_trombinoscopes")); } // On crée la miniature vide
 		
@@ -260,7 +271,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 										imagecopyresampled($destination, $source, 0, 0, 0, 0, $largeur_destination, $hauteur_destination, $largeur_source, $hauteur_source);
 										if (getSettingValue("active_module_trombinoscopes_rt")!='') { $degrees = getSettingValue("active_module_trombinoscopes_rt"); /* $destination = imagerotate($destination,$degrees); */$destination = ImageRotateRightAngle($destination,$degrees); }
 										// On enregistre la miniature sous le nom "mini_couchersoleil.jpg"
-										imagejpeg($destination, "../photos/personnels/$nouveau_code_photo.jpg",100);
+										imagejpeg($destination, $repertoire.$nouveau_code_photo.".jpg",100);
 									}
 
 								}
@@ -298,14 +309,14 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 								$photo=nom_photo($reg_no_gep);
 
 								if("$photo"!="") {
-									if(@unlink("../photos/eleves/$photo")) {
+									if(@unlink($repertoire.$photo)) {
 										if($msg!="") {$msg.="<br />";}
-										$msg.="La photo ../photos/eleves/$photo a été supprimée. ";
+										$msg.="La photo ".$repertoire.$photo." a été supprimée. ";
 										$no_modif="no";
 									}
 									else {
 										if($msg!="") {$msg.="<br />";}
-										$msg.="Echec de la suppression de la photo ../photos/eleves/$photo ";
+										$msg.="Echec de la suppression de la photo ".$repertoire.$photo." ";
 									}
 								}
 								else {
@@ -339,7 +350,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 									// Tester la taille max de la photo?
 
 									if(is_uploaded_file($filephoto_tmp)) {
-										$dest_file="../photos/eleves/$reg_no_gep.jpg";
+										$dest_file=$repertoire.$reg_no_gep.".jpg";
 										//$source_file=stripslashes("$filephoto_tmp");
 										$source_file=$filephoto_tmp;
 										$res_copy=copy("$source_file" , "$dest_file");
@@ -351,7 +362,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 
 											if (getSettingValue("active_module_trombinoscopes_rd")=='y') {
 												// si le redimensionnement des photos est activé on redimenssionne
-												$source = imagecreatefromjpeg("../photos/eleves/$reg_no_gep.jpg"); // La photo est la source
+												$source = imagecreatefromjpeg($repertoire.$reg_no_gep.".jpg"); // La photo est la source
 												if (getSettingValue("active_module_trombinoscopes_rt")=='') { $destination = imagecreatetruecolor(getSettingValue("l_resize_trombinoscopes"), getSettingValue("h_resize_trombinoscopes")); } // On crée la miniature vide
 												if (getSettingValue("active_module_trombinoscopes_rt")!='') { $destination = imagecreatetruecolor(getSettingValue("h_resize_trombinoscopes"), getSettingValue("l_resize_trombinoscopes")); } // On crée la miniature vide
 			
@@ -365,7 +376,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 												imagecopyresampled($destination, $source, 0, 0, 0, 0, $largeur_destination, $hauteur_destination, $largeur_source, $hauteur_source);
 												if (getSettingValue("active_module_trombinoscopes_rt")!='') { $degrees = getSettingValue("active_module_trombinoscopes_rt"); /* $destination = imagerotate($destination,$degrees); */$destination = ImageRotateRightAngle($destination,$degrees); }
 												// On enregistre la miniature sous le nom "mini_couchersoleil.jpg"
-												imagejpeg($destination, "../photos/eleves/$reg_no_gep.jpg",100);
+												imagejpeg($destination, $repertoire.$reg_no_gep.".jpg",100);
 											}
 
 										}
@@ -584,8 +595,9 @@ if(($_SESSION['statut']=='administrateur')||
 
 				//echo "<td align='center'>\n";
 				$temoin_photo="non";
-				if("$photo"!="") {
-					$photo="../photos/eleves/".$photo;
+				//if("$photo"!="") {
+				if($photo) {
+					//$photo="../photos/eleves/".$photo;
 					if(file_exists($photo)) {
 						$temoin_photo="oui";
 						//echo "<td>\n";
@@ -662,7 +674,7 @@ if(($_SESSION['statut']=='administrateur')||
 
 				$code_photo = md5(strtolower($user_login));
 
-				$photo="../photos/personnels/".$code_photo.".jpg";
+				$photo=$repertoire.$code_photo.".jpg";
 				$temoin_photo="non";
 				if(file_exists($photo)) {
 					$temoin_photo="oui";
@@ -802,14 +814,23 @@ if ($editable_user) {
 	else
 		echo "Il doit comporter au moins une lettre et au moins un chiffre.";
 
-
-	echo "<br />Il est fortement conseillé de ne pas choisir un mot de passe trop simple</b>.
-	<br /><b>Votre mot de passe est strictement personnel, vous ne devez pas le diffuser, il garantit la sécurité de votre travail.</b></p>\n";
+	echo "<br /><span style='color: red;'>Il est fortement conseillé de ne pas choisir un mot de passe trop simple</b>.</span>";
+	echo "<br /><b>Votre mot de passe est strictement personnel, vous ne devez pas le diffuser,<span style='color: red;'> il garantit la sécurité de votre travail.</b></span></p>\n";
+	echo "<script type=\"text/javascript\" src=\"../lib/pwd_strength.js\"></script>";	
 
 	echo "<table summary='Mot de passe'><tr>\n";
 	echo "<td>Ancien mot de passe : </td><td><input type=password name=no_anti_inject_password_a size=20 /></td>\n";
 	echo "</tr><tr>\n";
-	echo "<td>Nouveau mot de passe (".getSettingValue("longmin_pwd") ." caractères minimum) :</td><td> <input type=password name=no_anti_inject_password1 size=20 /></td>\n";
+	echo "<td>Nouveau mot de passe (".getSettingValue("longmin_pwd") ." caractères minimum) :</td>";
+	echo "<td> <input id=\"mypassword\" type=password name=no_anti_inject_password1 size=20 onkeyup=\"runPassword(this.value, 'mypassword');\" />";
+	echo "<td>";
+	echo "Complexité de votre mot de passe : ";	
+	echo "		<div style=\"width: 150px;\"> ";
+	echo "			<div id=\"mypassword_text\" style=\"font-size: 11px;\"></div>";
+	echo "			<div id=\"mypassword_bar\" style=\"font-size: 1px; height: 3px; width: 0px; border: 1px solid white;\"></div> ";
+	echo "		</div>";
+	echo "</td>\n";
+	echo "</td>\n";
 	echo "</tr><tr>\n";
 	echo "<td>Nouveau mot de passe (à confirmer) : </td><td><input type=password name=reg_password2 size=20 /></td>\n";
 	echo "</tr></table>\n";

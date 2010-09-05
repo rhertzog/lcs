@@ -1,14 +1,14 @@
 <?php
 /*
- * $Id: index.php 2356 2008-09-05 14:02:27Z jjocal $
+ * $Id$
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
+ * Copyright 2009 Josselin Jacquard
  *
  * This file is part of GEPI.
  *
  * GEPI is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * GEPI is distributed in the hope that it will be useful,
@@ -50,15 +50,18 @@ if (getSettingValue("active_cahiers_texte")!='y') {
 }
 
 //recherche de l'utilisateur avec propel
-$utilisateur = UtilisateurProfessionnelPeer::retrieveByPK( $_SESSION['login']);
-$_SESSION['utilisateurProfessionnel'] = $utilisateur;
+$utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
+if ($utilisateur == null) {
+	header("Location: ../logout.php?auto=1");
+	die();
+}
 
 // On met le header en petit par défaut
 $_SESSION['cacher_header'] = "y";
 //**************** EN-TETE *****************
 $titre_page = "Cahier de textes";
 
-$style_specifique = "cahier_texte_2/calendar/calendarstyle";
+$style_specifique = "lib/DHTMLcalendar/calendarstyle";
 $javascript_specifique = "cahier_texte_2/init_cahier_texte_2";
 $utilisation_win = 'oui';
 $utilisation_jsdivdrag = "non";
@@ -108,12 +111,12 @@ echo "<button style='width: 200px;' onclick=\"javascript:
 				\">Voir les dernières notices</button>\n";
 echo "<br />";
 echo "<button style='width: 200px;' onclick=\"javascript:
-						getWinDernieresNotices().setLocation(105, 40);
+						getWinDernieresNotices().setLocation(155, 40);
 						getWinDernieresNotices().hide();
 						getWinCalendar().setLocation(0, GetWidth() - 245);
-						getWinEditionNotice().setLocation(110, 334);
+						getWinEditionNotice().setLocation(160, 334);
 						getWinEditionNotice().setSize(GetWidth()-360, GetHeight() - 160);
-						getWinListeNotices().setLocation(110, 0);
+						getWinListeNotices().setLocation(160, 0);
 						getWinListeNotices().setSize(330, GetHeight() - 160)
 						return false;
 				\">Repositionner les fenetres</button>\n";
@@ -130,7 +133,7 @@ echo "</td>";
 // Récupération de toutes les infos sur le groupe
 echo "<td valign='center'>";
 $groups = $utilisateur->getGroupes();
-if (empty($groups)) {
+if ($groups->isEmpty()) {
     echo "<br /><br />";
     echo "<b>Aucun cahier de textes n'est disponible.</b>";
     echo "<br /><br />";

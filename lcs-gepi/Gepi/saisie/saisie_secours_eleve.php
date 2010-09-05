@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_secours_eleve.php 3782 2009-11-24 13:36:29Z crob $
+* $Id: saisie_secours_eleve.php 4810 2010-07-18 13:16:20Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -98,7 +98,7 @@ if((isset($_POST['is_posted']))&&
 				$note = '0';
 				$elev_statut = '-';
 			}
-			else if (ereg ("^[0-9\.\,]{1,}$", $note)) {
+			else if (my_ereg ("^[0-9\.\,]{1,}$", $note)) {
 				$note = str_replace(",", ".", "$note");
 				if (($note < 0) or ($note > 20)) {
 					$note = '';
@@ -171,8 +171,6 @@ require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 
 echo "<div class='norme'>\n";
-echo "<p class='bold'>\n";
-echo "<a href='index.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">Accueil saisie</a>";
 
 ?>
 <script type="text/javascript" language="javascript">
@@ -181,10 +179,14 @@ echo "<a href='index.php' onclick=\"return confirm_abandon (this, change, '$them
 <?php
 
 if(!isset($id_classe)) {
+	echo "<p class='bold'>\n";
+	echo "<a href='index.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">Accueil saisie</a>";
 	echo "</p>\n";
 	echo "</div>\n";
 
-	$calldata = mysql_query("SELECT DISTINCT c.* FROM classes c WHERE 1");
+	$sql="SELECT DISTINCT c.* FROM classes c WHERE 1 ORDER BY classe;";
+	//echo "$sql<br />";
+	$calldata = mysql_query($sql);
 	$nombreligne = mysql_num_rows($calldata);
 	echo "<p>Total : $nombreligne classe";
 	if ($nombreligne>1) {
@@ -217,6 +219,9 @@ if(!isset($id_classe)) {
 	die();
 }
 elseif(!isset($periode_num)) {
+	echo "<p class='bold'>\n";
+	echo "<a href='index.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">Accueil saisie</a>";
+
 	// Choisir une autre classe
 	echo " | <a href='".$_SERVER['PHP_SELF']."'>Choix classe</a>";
 	echo "</p>\n";
@@ -240,6 +245,9 @@ elseif(!isset($periode_num)) {
 	die();
 }
 elseif(!isset($ele_login)) {
+	echo "<p class='bold'>\n";
+	echo "<a href='index.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">Accueil saisie</a>";
+
 	// Choisir une autre classe
 	echo " | <a href='".$_SERVER['PHP_SELF']."'>Choix classe</a>";
 
@@ -289,6 +297,11 @@ elseif(!isset($ele_login)) {
 
 }
 else {
+	echo "<form action='".$_SERVER['PHP_SELF']."' name='form0' method='post'>\n";
+
+	echo "<p class='bold'>\n";
+	echo "<a href='index.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">Accueil saisie</a>";
+
 	// Choisir une autre classe
 	echo " | <a href='".$_SERVER['PHP_SELF']."' onclick=\"return confirm_abandon (this, change, '$themessage')\">Choix classe</a>";
 
@@ -296,10 +309,101 @@ else {
 	echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">Choix période</a>";
 
 	// Choisir un autre élève de la même classe
-	echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe&amp;periode_num=$periode_num' onclick=\"return confirm_abandon (this, change, '$themessage')\">Choix élève</a>";
+	//echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe&amp;periode_num=$periode_num' onclick=\"return confirm_abandon (this, change, '$themessage')\">Choix élève</a>";
+
+	$sql="SELECT DISTINCT jec.login,e.nom,e.prenom FROM j_eleves_classes jec, eleves e
+							WHERE jec.login=e.login AND
+								jec.id_classe='$id_classe'
+							ORDER BY e.nom,e.prenom";
+	//echo "$sql<br />";
+	//echo "\$ele_login=$ele_login<br />";
+	$res_ele_tmp=mysql_query($sql);
+	$chaine_options_login_eleves="";
+	$cpt_eleve=0;
+	$num_eleve=-1;
+	if(mysql_num_rows($res_ele_tmp)>0){
+		$login_eleve_prec=0;
+		$login_eleve_suiv=0;
+		$temoin_tmp=0;
+		while($lig_ele_tmp=mysql_fetch_object($res_ele_tmp)){
+			if($lig_ele_tmp->login==$ele_login){
+				$chaine_options_login_eleves.="<option value='$lig_ele_tmp->login' selected='true'>$lig_ele_tmp->nom $lig_ele_tmp->prenom</option>\n";
+	
+				$num_eleve=$cpt_eleve;
+	
+				$temoin_tmp=1;
+				if($lig_ele_tmp=mysql_fetch_object($res_ele_tmp)){
+					$login_eleve_suiv=$lig_ele_tmp->login;
+					$chaine_options_login_eleves.="<option value='$lig_ele_tmp->login'>$lig_ele_tmp->nom $lig_ele_tmp->prenom</option>\n";
+				}
+				else{
+					$login_eleve_suiv=0;
+				}
+			}
+			else{
+				$chaine_options_login_eleves.="<option value='$lig_ele_tmp->login'>$lig_ele_tmp->nom $lig_ele_tmp->prenom</option>\n";
+			}
+	
+			if($temoin_tmp==0){
+				$login_eleve_prec=$lig_ele_tmp->login;
+			}
+			$cpt_eleve++;
+		}
+	}
+	// =================================
+
+	if("$login_eleve_prec"!="0"){
+		echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe&amp;periode_num=$periode_num&amp;ele_login=$login_eleve_prec'";
+		echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+		echo ">Elève précédent</a>";
+	}
+
+
+	echo "<script type='text/javascript'>
+	// Initialisation
+	change='no';
+
+	function confirm_changement_eleve(thechange, themessage)
+	{
+		if (!(thechange)) thechange='no';
+		if (thechange != 'yes') {
+			document.form0.submit();
+		}
+		else{
+			var is_confirmed = confirm(themessage);
+			if(is_confirmed){
+				document.form0.submit();
+			}
+			else{
+				document.getElementById('ele_login').selectedIndex=$num_eleve;
+			}
+		}
+	}
+</script>\n";
+
+
+	echo "<input type='hidden' name='id_classe' value='$id_classe' />\n";
+	echo "<input type='hidden' name='periode_num' value='$periode_num' />\n";
+
+	//echo " | <select name='ele_login' onchange='document.form1.submit()'>\n";
+	echo " | <select name='ele_login' id='ele_login'";
+	echo " onchange=\"confirm_changement_eleve(change, '$themessage');\"";
+	echo ">\n";
+	echo $chaine_options_login_eleves;
+	echo "</select>\n";
+
+	if("$login_eleve_suiv"!="0"){
+		echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe&amp;periode_num=$periode_num&amp;ele_login=$login_eleve_suiv'";
+		echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+		echo ">Elève suivant</a>";
+	}
 
 	echo "</p>\n";
+	echo "</form>\n";
 	echo "</div>\n";
+
+
+
 
 	$sql="SELECT nom,prenom FROM eleves WHERE login='$ele_login';";
 	$res_ele=mysql_query($sql);

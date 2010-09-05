@@ -1,7 +1,7 @@
 <?php
 /*
 *
-*$Id: bilan.php 4382 2010-04-30 08:57:23Z crob $
+*$Id: bilan.php 4384 2010-04-30 10:36:44Z crob $
 *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *

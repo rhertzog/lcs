@@ -1,3 +1,9 @@
+lcs-gepi (2.4.5) LCS; urgency=low
+
+  * update to gepi 1.5.3
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 04 Sep 2010 22:54:06 +0200
+
 lcs-gepi (2.4.4) LCS; urgency=low
 
   * add "fiches brevet"

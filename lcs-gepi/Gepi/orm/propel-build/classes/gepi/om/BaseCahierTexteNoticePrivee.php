@@ -1,14 +1,20 @@
 <?php
 
+
 /**
  * Base class that represents a row from the 'ct_private_entry' table.
  *
  * Notice privee du cahier de texte
  *
- * @package    gepi.om
+ * @package    propel.generator.gepi.om
  */
-abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persistent {
+abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persistent
+{
 
+	/**
+	 * Peer class name
+	 */
+  const PEER = 'CahierTexteNoticePriveePeer';
 
 	/**
 	 * The Peer class.
@@ -93,16 +99,6 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 	protected $alreadyInValidation = false;
 
 	/**
-	 * Initializes internal state of BaseCahierTexteNoticePrivee object.
-	 * @see        applyDefaults()
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-		$this->applyDefaultValues();
-	}
-
-	/**
 	 * Applies default values to this object.
 	 * This method should be called from the object's constructor (or
 	 * equivalent initialization method).
@@ -113,6 +109,16 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 		$this->heure_entry = '00:00:00';
 		$this->date_ct = 0;
 		$this->id_sequence = 0;
+	}
+
+	/**
+	 * Initializes internal state of BaseCahierTexteNoticePrivee object.
+	 * @see        applyDefaults()
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+		$this->applyDefaultValues();
 	}
 
 	/**
@@ -290,7 +296,7 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 			$v = (int) $v;
 		}
 
-		if ($this->date_ct !== $v || $v === 0) {
+		if ($this->date_ct !== $v || $this->isNew()) {
 			$this->date_ct = $v;
 			$this->modifiedColumns[] = CahierTexteNoticePriveePeer::DATE_CT;
 		}
@@ -378,7 +384,7 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 			$v = (int) $v;
 		}
 
-		if ($this->id_sequence !== $v || $v === 0) {
+		if ($this->id_sequence !== $v || $this->isNew()) {
 			$this->id_sequence = $v;
 			$this->modifiedColumns[] = CahierTexteNoticePriveePeer::ID_SEQUENCE;
 		}
@@ -400,11 +406,6 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 	 */
 	public function hasOnlyDefaultValues()
 	{
-			// First, ensure that we don't have any columns that have been modified which aren't default columns.
-			if (array_diff($this->modifiedColumns, array(CahierTexteNoticePriveePeer::HEURE_ENTRY,CahierTexteNoticePriveePeer::DATE_CT,CahierTexteNoticePriveePeer::ID_SEQUENCE))) {
-				return false;
-			}
-
 			if ($this->heure_entry !== '00:00:00') {
 				return false;
 			}
@@ -454,7 +455,6 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 				$this->ensureConsistency();
 			}
 
-			// FIXME - using NUM_COLUMNS may be clearer.
 			return $startcol + 7; // 7 = CahierTexteNoticePriveePeer::NUM_COLUMNS - CahierTexteNoticePriveePeer::NUM_LAZY_LOAD_COLUMNS).
 
 		} catch (Exception $e) {
@@ -553,9 +553,17 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 		
 		$con->beginTransaction();
 		try {
-			CahierTexteNoticePriveePeer::doDelete($this, $con);
-			$this->setDeleted(true);
-			$con->commit();
+			$ret = $this->preDelete($con);
+			if ($ret) {
+				CahierTexteNoticePriveeQuery::create()
+					->filterByPrimaryKey($this->getPrimaryKey())
+					->delete($con);
+				$this->postDelete($con);
+				$con->commit();
+				$this->setDeleted(true);
+			} else {
+				$con->commit();
+			}
 		} catch (PropelException $e) {
 			$con->rollBack();
 			throw $e;
@@ -586,10 +594,27 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 		}
 		
 		$con->beginTransaction();
+		$isInsert = $this->isNew();
 		try {
-			$affectedRows = $this->doSave($con);
+			$ret = $this->preSave($con);
+			if ($isInsert) {
+				$ret = $ret && $this->preInsert($con);
+			} else {
+				$ret = $ret && $this->preUpdate($con);
+			}
+			if ($ret) {
+				$affectedRows = $this->doSave($con);
+				if ($isInsert) {
+					$this->postInsert($con);
+				} else {
+					$this->postUpdate($con);
+				}
+				$this->postSave($con);
+				CahierTexteNoticePriveePeer::addInstanceToPool($this);
+			} else {
+				$affectedRows = 0;
+			}
 			$con->commit();
-			CahierTexteNoticePriveePeer::addInstanceToPool($this);
 			return $affectedRows;
 		} catch (PropelException $e) {
 			$con->rollBack();
@@ -647,13 +672,14 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 			// If this object has been modified, then save it to the database.
 			if ($this->isModified()) {
 				if ($this->isNew()) {
-					$pk = CahierTexteNoticePriveePeer::doInsert($this, $con);
-					$affectedRows += 1; // we are assuming that there is only 1 row per doInsert() which
-										 // should always be true here (even though technically
-										 // BasePeer::doInsert() can insert multiple rows).
+					$criteria = $this->buildCriteria();
+					if ($criteria->keyContainsValue(CahierTexteNoticePriveePeer::ID_CT) ) {
+						throw new PropelException('Cannot insert a value for auto-increment primary key ('.CahierTexteNoticePriveePeer::ID_CT.')');
+					}
 
+					$pk = BasePeer::doInsert($criteria, $con);
+					$affectedRows += 1;
 					$this->setIdCt($pk);  //[IMV] update autoincrement primary key
-
 					$this->setNew(false);
 				} else {
 					$affectedRows += CahierTexteNoticePriveePeer::doUpdate($this, $con);
@@ -823,12 +849,15 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 	 * You can specify the key type of the array by passing one of the class
 	 * type constants.
 	 *
-	 * @param      string $keyType (optional) One of the class type constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME
-	 *                        BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. Defaults to BasePeer::TYPE_PHPNAME.
-	 * @param      boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns.  Defaults to TRUE.
-	 * @return     an associative array containing the field names (as keys) and field values
+	 * @param     string  $keyType (optional) One of the class type constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME,
+	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. 
+	 *                    Defaults to BasePeer::TYPE_PHPNAME.
+	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
+	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
+	 *
+	 * @return    array an associative array containing the field names (as keys) and field values
 	 */
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $includeForeignObjects = false)
 	{
 		$keys = CahierTexteNoticePriveePeer::getFieldNames($keyType);
 		$result = array(
@@ -840,6 +869,17 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 			$keys[5] => $this->getIdLogin(),
 			$keys[6] => $this->getIdSequence(),
 		);
+		if ($includeForeignObjects) {
+			if (null !== $this->aGroupe) {
+				$result['Groupe'] = $this->aGroupe->toArray($keyType, $includeLazyLoadColumns, true);
+			}
+			if (null !== $this->aUtilisateurProfessionnel) {
+				$result['UtilisateurProfessionnel'] = $this->aUtilisateurProfessionnel->toArray($keyType, $includeLazyLoadColumns, true);
+			}
+			if (null !== $this->aCahierTexteSequence) {
+				$result['CahierTexteSequence'] = $this->aCahierTexteSequence->toArray($keyType, $includeLazyLoadColumns, true);
+			}
+		}
 		return $result;
 	}
 
@@ -955,7 +995,6 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 	public function buildPkeyCriteria()
 	{
 		$criteria = new Criteria(CahierTexteNoticePriveePeer::DATABASE_NAME);
-
 		$criteria->add(CahierTexteNoticePriveePeer::ID_CT, $this->id_ct);
 
 		return $criteria;
@@ -982,6 +1021,15 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 	}
 
 	/**
+	 * Returns true if the primary key for this object is null.
+	 * @return     boolean
+	 */
+	public function isPrimaryKeyNull()
+	{
+		return null === $this->getIdCt();
+	}
+
+	/**
 	 * Sets contents of passed object to values from current object.
 	 *
 	 * If desired, this method can also make copies of all associated (fkey referrers)
@@ -993,24 +1041,15 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 	 */
 	public function copyInto($copyObj, $deepCopy = false)
 	{
-
 		$copyObj->setHeureEntry($this->heure_entry);
-
 		$copyObj->setDateCt($this->date_ct);
-
 		$copyObj->setContenu($this->contenu);
-
 		$copyObj->setIdGroupe($this->id_groupe);
-
 		$copyObj->setIdLogin($this->id_login);
-
 		$copyObj->setIdSequence($this->id_sequence);
 
-
 		$copyObj->setNew(true);
-
 		$copyObj->setIdCt(NULL); // this is a auto-increment column, so set to default value
-
 	}
 
 	/**
@@ -1088,7 +1127,7 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 	public function getGroupe(PropelPDO $con = null)
 	{
 		if ($this->aGroupe === null && ($this->id_groupe !== null)) {
-			$this->aGroupe = GroupePeer::retrieveByPK($this->id_groupe, $con);
+			$this->aGroupe = GroupeQuery::create()->findPk($this->id_groupe, $con);
 			/* The following can be used additionally to
 			   guarantee the related object contains a reference
 			   to this object.  This level of coupling may, however, be
@@ -1137,7 +1176,7 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 	public function getUtilisateurProfessionnel(PropelPDO $con = null)
 	{
 		if ($this->aUtilisateurProfessionnel === null && (($this->id_login !== "" && $this->id_login !== null))) {
-			$this->aUtilisateurProfessionnel = UtilisateurProfessionnelPeer::retrieveByPK($this->id_login, $con);
+			$this->aUtilisateurProfessionnel = UtilisateurProfessionnelQuery::create()->findPk($this->id_login, $con);
 			/* The following can be used additionally to
 			   guarantee the related object contains a reference
 			   to this object.  This level of coupling may, however, be
@@ -1186,7 +1225,7 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 	public function getCahierTexteSequence(PropelPDO $con = null)
 	{
 		if ($this->aCahierTexteSequence === null && ($this->id_sequence !== null)) {
-			$this->aCahierTexteSequence = CahierTexteSequencePeer::retrieveByPK($this->id_sequence, $con);
+			$this->aCahierTexteSequence = CahierTexteSequenceQuery::create()->findPk($this->id_sequence, $con);
 			/* The following can be used additionally to
 			   guarantee the related object contains a reference
 			   to this object.  This level of coupling may, however, be
@@ -1196,6 +1235,27 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 			 */
 		}
 		return $this->aCahierTexteSequence;
+	}
+
+	/**
+	 * Clears the current object and sets all attributes to their default values
+	 */
+	public function clear()
+	{
+		$this->id_ct = null;
+		$this->heure_entry = null;
+		$this->date_ct = null;
+		$this->contenu = null;
+		$this->id_groupe = null;
+		$this->id_login = null;
+		$this->id_sequence = null;
+		$this->alreadyInSave = false;
+		$this->alreadyInValidation = false;
+		$this->clearAllReferences();
+		$this->applyDefaultValues();
+		$this->resetModified();
+		$this->setNew(true);
+		$this->setDeleted(false);
 	}
 
 	/**
@@ -1212,9 +1272,28 @@ abstract class BaseCahierTexteNoticePrivee extends BaseObject  implements Persis
 		if ($deep) {
 		} // if ($deep)
 
-			$this->aGroupe = null;
-			$this->aUtilisateurProfessionnel = null;
-			$this->aCahierTexteSequence = null;
+		$this->aGroupe = null;
+		$this->aUtilisateurProfessionnel = null;
+		$this->aCahierTexteSequence = null;
+	}
+
+	/**
+	 * Catches calls to virtual methods
+	 */
+	public function __call($name, $params)
+	{
+		if (preg_match('/get(\w+)/', $name, $matches)) {
+			$virtualColumn = $matches[1];
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
+			// no lcfirst in php<5.3...
+			$virtualColumn[0] = strtolower($virtualColumn[0]);
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
+		}
+		return parent::__call($name, $params);
 	}
 
 } // BaseCahierTexteNoticePrivee

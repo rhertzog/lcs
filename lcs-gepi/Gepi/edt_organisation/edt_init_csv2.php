@@ -3,7 +3,7 @@
 /**
  * Fichier qui permet de faire l'import de l'EdT depuis un logiciel propriétaire
  *
- * @version $Id: edt_init_csv2.php 3323 2009-08-05 10:06:18Z crob $
+ * @version $Id: edt_init_csv2.php 3886 2009-12-08 21:48:12Z regis $
 
 Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
 
@@ -47,11 +47,11 @@ if (!checkAccess()) {
 }
 // Sécurité supplémentaire par rapport aux paramètres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
-    Die('Vous devez demander à votre administrateur l\'autorisation de voir cette page.');
+    Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
 // CSS et js particulier à l'EdT
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
-$style_specifique = "edt_organisation/style_edt";
+$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
 // ==============PROTOTYPE===============
 $utilisation_prototype = "ok";
 // ============fin PROTOTYPE=============

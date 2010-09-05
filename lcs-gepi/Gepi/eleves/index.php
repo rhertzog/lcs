@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: index.php 3646 2009-10-20 13:28:24Z jjocal $
+* $Id: index.php 4878 2010-07-24 13:54:01Z regis $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -21,7 +21,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-function log_debug($texte){
+function log_debug($texte) {
 	$fich=fopen("/tmp/debug.txt","a+");
 	fwrite($fich,$texte."\n");
 	fclose($fich);
@@ -45,7 +45,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 //log_debug('Après $session_gepi->security_check()');
 
@@ -55,9 +55,27 @@ if (!checkAccess()) {
 }
 $_SESSION['chemin_retour'] = $_SERVER['REQUEST_URI'];
 
+if(isset($_SESSION['retour_apres_maj_sconet'])) {
+	unset($_SESSION['retour_apres_maj_sconet']);
+}
+
 //log_debug('Après checkAccess()');
 
 //log_debug(debug_var());
+//debug_var();
+
+
+ //répertoire des photos
+
+// En multisite, on ajoute le répertoire RNE
+if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+	  // On récupère le RNE de l'établissement
+  $rep_photos='../photos/'.getSettingValue("gepiSchoolRne").'/eleves/';
+}else{
+  $rep_photos='../photos/eleves/';
+}
+
+
 
 $gepi_prof_suivi=getSettingValue('gepi_prof_suivi');
 if($_SESSION['statut']=="professeur") {
@@ -67,7 +85,7 @@ if($_SESSION['statut']=="professeur") {
 		require ("../lib/footer.inc.php");
 		die();
 	}
-	else{
+	else {
 		// Le professeur est-il professeur principal dans une classe au moins.
 		$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE professeur='".$_SESSION['login']."';";
 		$test=mysql_query($sql);
@@ -236,11 +254,11 @@ function deplacer_fichier_upload($source, $dest) {
 
 function test_ecriture_backup() {
 	$ok = 'no';
-	if ($f = @fopen("../photos/eleves/test", "w")) {
+	if ($f = @fopen($rep_photos."test", "w")) {
 		@fputs($f, '<'.'?php $ok = "yes"; ?'.'>');
 		@fclose($f);
-		include("../photos/eleves/test");
-		$del = @unlink("../photos/eleves/test");
+		include($rep_photos."test");
+		$del = @unlink($rep_photos."test");
 	}
 	return $ok;
 }
@@ -259,15 +277,15 @@ if (isset($action) and ($action == 'depot_photo') and $total_photo != 0)  {
 			} else if ((!preg_match('/jpg$/i',$sav_photo['name'][$cpt_photo])) and $sav_photo['type'][$cpt_photo] == "image/jpeg"){
 					$msg = "Erreur : seuls les fichiers ayant l'extension .jpg sont autorisés.";
 			} else {
-					$dest = "../photos/eleves/";
+					$dest = $rep_photos;
 				$n = 0;
-				if (!deplacer_fichier_upload($sav_photo['tmp_name'][$cpt_photo], "../photos/eleves/".$quiestce[$cpt_photo].".jpg")) {
+				if (!deplacer_fichier_upload($sav_photo['tmp_name'][$cpt_photo], $rep_photos.$quiestce[$cpt_photo].".jpg")) {
 					$msg = "Problème de transfert : le fichier n'a pas pu être transféré sur le répertoire photos/eleves/";
 				} else {
 						$msg = "Téléchargement réussi.";
 				if (getSettingValue("active_module_trombinoscopes_rd")=='y') {
 					// si le redimensionnement des photos est activé on redimenssionne
-					$source = imagecreatefromjpeg("../photos/eleves/".$quiestce[$cpt_photo].".jpg"); // La photo est la source
+					$source = imagecreatefromjpeg($rep_photos.$quiestce[$cpt_photo].".jpg"); // La photo est la source
 					if (getSettingValue("active_module_trombinoscopes_rt")=='') { $destination = imagecreatetruecolor(getSettingValue("l_resize_trombinoscopes"), getSettingValue("h_resize_trombinoscopes")); } // On crée la miniature vide
 					if (getSettingValue("active_module_trombinoscopes_rt")!='') { $destination = imagecreatetruecolor(getSettingValue("h_resize_trombinoscopes"), getSettingValue("l_resize_trombinoscopes")); } // On crée la miniature vide
 
@@ -284,7 +302,7 @@ if (isset($action) and ($action == 'depot_photo') and $total_photo != 0)  {
 					imagecopyresampled($destination, $source, 0, 0, 0, 0, $largeur_destination, $hauteur_destination, $largeur_source, $hauteur_source);
 					if (getSettingValue("active_module_trombinoscopes_rt")!='') { $degrees = getSettingValue("active_module_trombinoscopes_rt"); /* $destination = imagerotate($destination,$degrees); */$destination = ImageRotateRightAngle($destination,$degrees); }
 					// On enregistre la miniature sous le nom "mini_couchersoleil.jpg"
-					imagejpeg($destination, "../photos/eleves/".$quiestce[$cpt_photo].".jpg",100);
+					imagejpeg($destination, $rep_photos.$quiestce[$cpt_photo].".jpg",100);
 					}
 				}
 			}
@@ -333,6 +351,11 @@ require_once("../lib/header.inc");
 
 	function verif3(){
 		document.getElementById('quelles_classes_recherche').checked=true;
+		verif2();
+	}
+
+	function verif4(){
+		document.getElementById('quelles_classes_rech_prenom').checked=true;
 		verif2();
 	}
 </script>
@@ -748,7 +771,35 @@ if (!isset($quelles_classes)) {
 		}
 		// =====================================================
 
+		$sql="SELECT 1=1 FROM eleves e
+			LEFT JOIN j_eleves_etablissements jee ON jee.id_eleve=e.elenoet
+			where jee.id_eleve is NULL;";
+		$test_no_etab=mysql_query($sql);
+		if(mysql_num_rows($test_no_etab)==0){
+			echo "<tr>\n";
+			echo "<td>\n";
+			echo "&nbsp;\n";
+			echo "</td>\n";
+			echo "<td>\n";
 
+			//echo "<span style='display:none;'><input type='radio' name='quelles_classes' value='no_etab' onclick='verif2()' /></span>\n";
+
+			echo "<span class='norme'>Tous les élèves ont leur établissement d'origine renseigné.</span><br />\n";
+			echo "</td>\n";
+			echo "</tr>\n";
+		}
+		else{
+			echo "<tr>\n";
+			echo "<td>\n";
+			echo "<input type='radio' name='quelles_classes' id='quelles_classes_no_etab' value='no_etab' onclick='verif2()' />\n";
+			echo "</td>\n";
+			echo "<td>\n";
+			echo "<label for='quelles_classes_no_etab' style='cursor: pointer;'>\n";
+			echo "<span class='norme'>Les élèves dont l'établissement d'origine n'est pas renseigné (<i>".mysql_num_rows($test_no_etab)."</i>).</span><br />\n";
+			echo "</label>\n";
+			echo "</td>\n";
+			echo "</tr>\n";
+		}
 
 		// A FAIRE:
 		// Liste des élèves dont le nom commence par/contient...
@@ -761,6 +812,19 @@ if (!isset($quelles_classes)) {
 		echo "<label for='' style='cursor: pointer;'>\n";
 		echo "<span class='norme'>Elève dont le nom commence par: \n";
 		echo "<input type='text' name='motif_rech' value='' onclick='verif3()' size='5' />\n";
+		echo "</span><br />\n";
+		echo "</label>\n";
+		echo "</td>\n";
+		echo "</tr>\n";
+
+		echo "<tr>\n";
+		echo "<td>\n";
+		echo "<input type='radio' name='quelles_classes' id='quelles_classes_rech_prenom' value='rech_prenom' onclick='verif2()' />\n";
+		echo "</td>\n";
+		echo "<td>\n";
+		echo "<label for='' style='cursor: pointer;'>\n";
+		echo "<span class='norme'>Elève dont le prénom commence par: \n";
+		echo "<input type='text' name='motif_rech_p' value='' onclick='verif4()' size='5' />\n";
 		echo "</span><br />\n";
 		echo "</label>\n";
 		echo "</td>\n";
@@ -795,22 +859,25 @@ if (!isset($quelles_classes)) {
 				echo "<td align='left'>\n";
 
 				while ($i < $nb) {
-				$id_classe = mysql_result($classes_list, $i, 'id');
-				$temp = "case_".$id_classe;
-				$classe = mysql_result($classes_list, $i, 'classe');
-
-				if(($i>0)&&(round($i/$nb_class_par_colonne)==$i/$nb_class_par_colonne)){
-					echo "</td>\n";
-					//echo "<td style='padding: 0 10px 0 10px'>\n";
-					echo "<td align='left'>\n";
-				}
-
-				//echo "<span class = \"norme\"><input type='checkbox' name='$temp' value='yes' onclick=\"verif1()\" />";
-				//echo "Classe : $classe </span><br />\n";
-				echo "<label for='$temp' style='cursor: pointer;'>";
-				echo "<input type='checkbox' name='$temp' id='$temp' value='yes' onclick=\"verif1()\" />";
-				echo "Classe : $classe</label><br />\n";
-				$i++;
+					$id_classe = mysql_result($classes_list, $i, 'id');
+					$temp = "case_".$id_classe;
+					$classe = mysql_result($classes_list, $i, 'classe');
+	
+					if(($i>0)&&(round($i/$nb_class_par_colonne)==$i/$nb_class_par_colonne)){
+						echo "</td>\n";
+						//echo "<td style='padding: 0 10px 0 10px'>\n";
+						echo "<td align='left'>\n";
+					}
+	
+					//echo "<span class = \"norme\"><input type='checkbox' name='$temp' value='yes' onclick=\"verif1()\" />";
+					//echo "Classe : $classe </span><br />\n";
+					//echo "<label for='$temp' style='cursor: pointer;'>";
+					//echo "<input type='checkbox' name='$temp' id='$temp' value='yes' onclick=\"verif1()\" />";
+					echo "<label id='label_tab_id_classe_$i' for='tab_id_classe_$i' style='cursor: pointer;'>";
+					echo "<input type='checkbox' name='$temp' id='tab_id_classe_$i' value='yes' onclick=\"verif1()\" onchange='change_style_classe($i)' />";
+					echo "Classe : $classe</label><br />\n";
+	
+					$i++;
 				}
 				echo "</td>\n";
 				echo "</tr>\n";
@@ -821,6 +888,20 @@ if (!isset($quelles_classes)) {
 		}
 
 		echo "</table>\n";
+
+		echo "<script type='text/javascript'>
+	function change_style_classe(num) {
+		if(document.getElementById('tab_id_classe_'+num)) {
+			if(document.getElementById('tab_id_classe_'+num).checked) {
+				document.getElementById('label_tab_id_classe_'+num).style.fontWeight='bold';
+			}
+			else {
+				document.getElementById('label_tab_id_classe_'+num).style.fontWeight='normal';
+			}
+		}
+	}
+</script>\n";
+
 
 		echo "<input type='hidden' name='is_posted' value='2' />\n";
 
@@ -1161,6 +1242,30 @@ if(isset($quelles_classes)) {
 
 			}
 
+		} else if ($quelles_classes == 'rech_prenom') {
+			$motif_rech=$motif_rech_p;
+
+			/*
+			$calldata = mysql_query("SELECT e.* FROM eleves e WHERE nom like '".$motif_rech."%'
+			ORDER BY $order_type
+			");
+			*/
+			if(my_ereg('classe',$order_type)){
+				$sql="SELECT DISTINCT e.* FROM eleves e, classes c, j_eleves_classes jec
+					WHERE prenom like '".$motif_rech."%' AND
+							jec.login=e.login AND
+							c.id=jec.id_classe
+					ORDER BY $order_type";
+			}
+			else{
+				$sql="SELECT e.* FROM eleves e WHERE prenom like '".$motif_rech."%'
+												ORDER BY $order_type";
+			}
+			//echo "$sql<br />\n";
+			$calldata = mysql_query($sql);
+
+			echo "<p align='center'>Liste des élèves dont le prenom commence par <b>$motif_rech</b></p>\n";
+
 		} else if ($quelles_classes == 'recherche') {
 			/*
 			$calldata = mysql_query("SELECT e.* FROM eleves e WHERE nom like '".$motif_rech."%'
@@ -1183,6 +1288,21 @@ if(isset($quelles_classes)) {
 
 			echo "<p align='center'>Liste des élèves dont le nom commence par <b>$motif_rech</b></p>\n";
 		}
+		elseif ($quelles_classes == 'no_etab') {
+			if(my_ereg('classe',$order_type)){
+				$sql="SELECT distinct e.*,c.classe FROM j_eleves_classes jec, classes c, eleves e LEFT JOIN j_eleves_etablissements jee ON jee.id_eleve=e.elenoet where jee.id_eleve is NULL and jec.login=e.login and c.id=jec.id_classe ORDER BY $order_type;";
+				//echo "$sql<br />\n";
+				$calldata=mysql_query($sql);
+			}
+			else{
+				$sql="SELECT e.* FROM eleves e
+					LEFT JOIN j_eleves_etablissements jee ON jee.id_eleve=e.elenoet
+					where jee.id_eleve is NULL ORDER BY $order_type;";
+				//echo "$sql<br />\n";
+				$calldata=mysql_query($sql);
+			}
+		}
+
 	}
 
 	echo "<table border='1' cellpadding='2' class='boireaus'  summary='Tableau des élèves de la classe'>\n";
@@ -1305,11 +1425,11 @@ if(isset($quelles_classes)) {
 
 			$photo=nom_photo($elenoet);
 			$temoin_photo="";
-			if("$photo"!=""){
+			if($photo){
 				$titre="$eleve_nom $eleve_prenom";
 
 				$texte="<div align='center'>\n";
-				$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$eleve_nom $eleve_prenom\" />";
+				$texte.="<img src='".$photo."' width='150' alt=\"$eleve_nom $eleve_prenom\" />";
 				$texte.="<br />\n";
 				$texte.="</div>\n";
 
@@ -1319,7 +1439,7 @@ if(isset($quelles_classes)) {
 
 				//echo "<a href='../photos/eleves/$photo' target='_blank' onmouseover=\"afficher_div('photo_$eleve_login','y',-20,20);\">";
 
-				echo "<a href='../photos/eleves/$photo' target='_blank' onmouseover=\"delais_afficher_div('photo_$eleve_login','y',-20,20,500,40,30);\">";
+				echo "<a href='".$photo."' target='_blank' onmouseover=\"delais_afficher_div('photo_$eleve_login','y',-20,20,500,40,30);\">";
 
 				echo "<img src='../mod_trombinoscopes/images/";
 				if($eleve_sexe=="F") {

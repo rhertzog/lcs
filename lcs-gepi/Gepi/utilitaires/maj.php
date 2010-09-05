@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: maj.php 3785 2009-11-24 14:43:37Z tbelliard $
+ * $Id: maj.php 4208 2010-03-30 17:23:44Z jjacquard $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -29,6 +29,7 @@ $pb_maj = '';
 // Initialisations files
 require_once ("../lib/initialisations.inc.php");
 require_once ("./update_functions.php");
+
 
 // Resume session
 $resultat_session = $session_gepi->security_check();
@@ -196,7 +197,13 @@ if (isset ($_POST['maj'])) {
             require 'updates/151_to_152.inc.php';
 	}
 
+	if (($force_maj == 'yes') or (quelle_maj("1.5.3"))) {
+            require 'updates/152_to_153.inc.php';
+	}
 
+//	if (($force_maj == 'yes') or (quelle_maj("mod_abs2"))) {
+//            require 'updates/mod_abs2.inc.php';
+//	}
 
 	// Mise à jour du numéro de version
 	saveSetting("version", $gepiVersion);

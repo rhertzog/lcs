@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_app.php 3323 2009-08-05 10:06:18Z crob $
+* $Id: saisie_app.php 4878 2010-07-24 13:54:01Z regis $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
 *
@@ -252,11 +252,13 @@ else {
 			// Photo...
 			$photo=nom_photo($eleve_elenoet);
 			//$temoin_photo="";
-			if("$photo"!=""){
+			//if("$photo"!=""){
+			if($photo){
 				$titre="$eleve_nom $eleve_prenom";
 
 				$texte="<div align='center'>\n";
-				$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$eleve_nom $eleve_prenom\" />";
+				//$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$eleve_nom $eleve_prenom\" />";
+				$texte.="<img src='".$photo."' width='150' alt=\"$eleve_nom $eleve_prenom\" />";
 				$texte.="<br />\n";
 				$texte.="</div>\n";
 

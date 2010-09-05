@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: voir_edt_classe.php 2055 2008-07-07 19:35:41Z eabgrall $
+ * @version $Id: voir_edt_classe.php 4059 2010-01-31 20:03:48Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -26,6 +26,7 @@
 
 echo '
 	<form action="index_edt.php" id="liste_classe_id" method="post">
+	<p>
 	';
 
 	$tab_select = renvoie_liste("classe");
@@ -46,7 +47,7 @@ if($indice_classe_select != -1){
 		$precedent = $indice_classe_select-1;
 		echo "
 		<span class=\"edt_suivant\">
-			<a href='index_edt.php?visioedt=classe1&amp;login_edt=".$tab_select[$precedent]["id"]."&amp;type_edt_2=classe'>Classe précédente</a>
+			<a href='index_edt.php?visioedt=classe1&amp;login_edt=".$tab_select[$precedent]["id"]."&amp;type_edt_2=classe'>".PREVIOUS_CLASS."</a>
 		</span>
 			";
 	}
@@ -55,7 +56,7 @@ if($indice_classe_select != -1){
 echo '
 	
 		<select name="login_edt" onchange=\'document.getElementById("liste_classe_id").submit();\'>
-			<option value="rien">Choix de la classe</option>
+			<option value="rien">'.CHOOSE_CLASS.'</option>
 	';
 
 for($i=0;$i<count($tab_select);$i++) {
@@ -80,19 +81,20 @@ echo '
 			<input type="hidden" name="visioedt" value="classe1" />
 	';
 
-if($indice_classe_select != -1){
+if($indice_classe_select != count($tab_select)){
 	$suivant = $indice_classe_select+1;
 	if($suivant<count($tab_select)){
 		//$suivant=$indice_prof_select+1;
 		echo "
 		<span class=\"edt_suivant\">
-			<a href='index_edt.php?visioedt=classe1&amp;login_edt=".$tab_select[$suivant]["id"]."&amp;type_edt_2=classe'>Classe suivante</a>
+			<a href='index_edt.php?visioedt=classe1&amp;login_edt=".$tab_select[$suivant]["id"]."&amp;type_edt_2=classe'>".NEXT_CLASS."</a>
 		</span>
 			";
 	}
 }
 
 echo '
+	</p>
 	</form>
 	';
 

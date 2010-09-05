@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: eleves_classes.php 2147 2008-07-23 09:01:04Z tbelliard $
+* $Id: eleves_classes.php 4152 2010-03-21 23:32:16Z adminpaulbert $
 *
 * Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -44,7 +44,7 @@ if (!checkAccess()) {
 
 $liste_tables_del = array(
 //absences
-//absences_creneaux
+//edt_creneaux
 //absences_eleves
 //absences_gep
 //absences_motifs

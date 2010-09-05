@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 4076 2010-02-06 18:07:11Z crob $
+ * $Id: index.php 4266 2010-04-09 20:19:37Z adminpaulbert $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
  *
@@ -319,7 +319,7 @@ if (isset($_POST['notes']) and $valide_form=='yes') {
 // Traitement du téléchargement de fichier
 //
 // Ajout d'un document
-if ((!empty($doc_file['tmp_name'][0]) and $valide_form=='yes') or
+if (isset($doc_file['tmp_name']) AND (!empty($doc_file['tmp_name'][0]) and $valide_form=='yes') or
 // Changement de nom d'un document
 (isset($doc_name_modif) and isset($id_document) and ($id_document !=-1) and $valide_form=='yes'))
 include "traite_doc.php";

@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: accueil_simpl_prof.php 3466 2009-09-27 18:03:39Z crob $
+* $Id: accueil_simpl_prof.php 3880 2009-12-06 16:57:54Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -160,7 +160,7 @@ echo "<center>\n";
 
 //Affichage des messages
 $today=mktime(0,0,0,date("m"),date("d"),date("Y"));
-$appel_messages = mysql_query("SELECT id, texte, date_debut, date_fin, auteur, destinataires FROM messages
+$appel_messages = mysql_query("SELECT id, texte, date_debut, date_fin, date_decompte, auteur, destinataires FROM messages
 	WHERE (
 	texte != '' and
 	date_debut <= '".$today."' and
@@ -182,6 +182,34 @@ while ($ind < $nb_messages) {
 //        $nom_auteur = sql_query1("SELECT nom from utilisateurs where login = '".$auteur1."'");
 //        $prenom_auteur = sql_query1("SELECT prenom from utilisateurs where login = '".$auteur1."'");
 //        $texte_messages .= "<span class='small'>Message de </span>: ".$prenom_auteur." ".$nom_auteur;
+		if(strstr($content, '_DECOMPTE_')) {
+			$nb_sec=mysql_result($appel_messages, $ind, 'date_decompte')-mktime();
+			if($nb_sec>0) {
+				$decompte_remplace="";
+			}
+			elseif($nb_sec==0) {
+				$decompte_remplace=" <span style='color:red'>Vous êtes à l'instant T</span> ";
+			}
+			else {
+				$nb_sec=$nb_sec*(-1);
+				$decompte_remplace=" <span style='color:red'>date dépassée de</span> ";
+			}
+
+			$decompte_j=floor($nb_sec/(24*3600));
+			$decompte_h=floor(($nb_sec-$decompte_j*24*3600)/3600);
+			$decompte_m=floor(($nb_sec-$decompte_j*24*3600-$decompte_h*3600)/60);
+
+			if($decompte_j==1) {$decompte_remplace.=$decompte_j." jour ";}
+			elseif($decompte_j>1) {$decompte_remplace.=$decompte_j." jours ";}
+
+			if($decompte_h==1) {$decompte_remplace.=$decompte_h." heure ";}
+			elseif($decompte_h>1) {$decompte_remplace.=$decompte_h." heures ";}
+
+			if($decompte_m==1) {$decompte_remplace.=$decompte_m." minute";}
+			elseif($decompte_m>1) {$decompte_remplace.=$decompte_m." minutes";}
+
+			$content=my_ereg_replace("_DECOMPTE_",$decompte_remplace,$content);
+		}
 		$texte_messages .= $content;
 	}
 	$ind++;
@@ -778,8 +806,8 @@ for($i=0;$i<count($groups);$i++){
 		echo "</a>";
 
 		if($pref_accueil_infobulles=="y"){
-			//echo "<div id='info_ct_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_ct_$i');\">Cet outil vous permet de constituer un cahier de texte pour le groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>).</div>\n";
-			echo "<div id='info_ct_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_ct_$i');\">Cahier de texte de ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>).</div>\n";
+			//echo "<div id='info_ct_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_ct_$i');\">Cet outil vous permet de constituer un cahier de textes pour le groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>).</div>\n";
+			echo "<div id='info_ct_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_ct_$i');\">Cahier de textes de ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>).</div>\n";
 
 			$tab_liste_infobulles[]='info_ct_'.$i;
 		}

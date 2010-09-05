@@ -53,9 +53,10 @@ echo "<p class='bold'><a href='../accueil.php'><img src='../images/icons/back.pn
 
 echo "</p>\n";
 
-echo "<p>Ce module est destiné à gérer les modèles Open Office de Gépi.</p>\n";
+echo "<p>Ce module est destiné à gérer les modèles Open Office de Gepi.</p>\n";
 
 $phrase_commentaire="";
+$_SESSION['retour']=$_SERVER['PHP_SELF'] ;
 
 
 //Début de la table configuration

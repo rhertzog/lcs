@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_avis.php 3323 2009-08-05 10:06:18Z crob $
+* $Id: saisie_avis.php 4878 2010-07-24 13:54:01Z regis $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
 *
@@ -156,7 +156,9 @@ if(!isset($id_classe)) {
 	echo "</p>\n";
 
 
-	$sql="SELECT DISTINCT c.id,c.classe FROM classes c, periodes p, notanet n,notanet_ele_type net WHERE p.id_classe = c.id AND c.id=n.id_classe ORDER BY classe;";
+	//$sql="SELECT DISTINCT c.id,c.classe FROM classes c, periodes p, notanet n,notanet_ele_type net WHERE p.id_classe = c.id AND c.id=n.id_classe ORDER BY classe;";
+	$sql="SELECT DISTINCT c.id,c.classe FROM classes c, j_eleves_classes jec,notanet_ele_type net WHERE c.id=jec.id_classe AND net.login=jec.login ORDER BY classe;";
+	//echo "$sql<br />";
 	$call_classes=mysql_query($sql);
 
 	$nb_classes=mysql_num_rows($call_classes);
@@ -233,6 +235,7 @@ else {
 		echo "<input type='hidden' name='id_classe[$i]' value='".$id_classe[$i]."' />\n";
 
 		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE (jec.id_classe='".$id_classe[$i]."' AND jec.login=e.login) ORDER BY e.nom,e.prenom,e.naissance;";
+		//echo "$sql<br />";
 		$res_ele=mysql_query($sql);
 		if(mysql_num_rows($res_ele)==0) {
 			echo "Aucun élève dans cette classe.</p>\n";
@@ -288,11 +291,13 @@ else {
 				// Photo...
 				$photo=nom_photo($eleve_elenoet);
 				//$temoin_photo="";
-				if("$photo"!=""){
+				//if("$photo"!=""){
+				if($photo){
 					$titre=$lig_ele->nom." ".$lig_ele->prenom;
 	
 					$texte="<div align='center'>\n";
-					$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$lig_ele->nom $lig_ele->prenom\" />";
+					//$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$lig_ele->nom $lig_ele->prenom\" />";
+					$texte.="<img src='".$photo."' width='150' alt=\"$lig_ele->nom $lig_ele->prenom\" />";
 					$texte.="<br />\n";
 					$texte.="</div>\n";
 	

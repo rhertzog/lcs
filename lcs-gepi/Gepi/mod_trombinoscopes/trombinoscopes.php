@@ -1,6 +1,6 @@
 <?php
 /*
-*$Id: trombinoscopes.php 3366 2009-09-02 05:44:45Z crob $
+*$Id: trombinoscopes.php 4878 2010-07-24 13:54:01Z regis $
 *
 * Copyright 2001, 2002 Thomas Belliard, Laurent Delineau, Edouard Hue,Eric Lebrun, Christian Chapel
 *
@@ -1091,9 +1091,11 @@ if ( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $discipl
 				}
 
 				$nom_photo = nom_photo($id_photo_trombinoscope[$i],$repertoire);
-				$photo = "../photos/".$repertoire."/".$nom_photo;
+				//$photo = "../photos/".$repertoire."/".$nom_photo;
+				$photo = $nom_photo;
 
-				if (($nom_photo != "") and (file_exists($photo))) {
+				//if (($nom_photo != "") and (file_exists($photo))) {
+				if (($nom_photo) and (file_exists($photo))) {
 					$valeur=redimensionne_image($photo);
 				} else {
 					$valeur[0]=getSettingValue("l_max_aff_trombinoscopes");
@@ -1101,7 +1103,8 @@ if ( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $discipl
 				}
 
 				echo "<img src='";
-				if (($nom_photo != "") and (file_exists($photo))) {
+				//if (($nom_photo != "") and (file_exists($photo))) {
+				if (($nom_photo) and (file_exists($photo))) {
 					echo $photo;
 				}
 				else {

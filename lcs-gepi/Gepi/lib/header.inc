@@ -1,10 +1,10 @@
 <?php
 /*
- * $Id: header.inc 3754 2009-11-21 10:18:09Z crob $
+ * $Id: header.inc 4502 2010-05-27 09:29:51Z delineau $
  *
  * Basé sur  header.inc 2968 2009-03-03 20:11:00Z jjocal $
  * modifié avec getSettingValue("contact_admin_mailto")=='y'
- 
+
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Patrick Duthilleul
  *
  * This file is part of GEPI.
@@ -140,19 +140,16 @@ echo '
 echo '	<!-- Début des fichiers en javascript -->'."\n";
 echo '<script type="text/javascript" src="'.$gepiPath.'/lib/functions.js"></script>'."\n";
 
-// Ajout du framework prototype 1.5.1.1 conditionné à la variable $utilisation_prototype="ok"
-$prototype = "ok"; //isset($utilisation_prototype) ? $utilisation_prototype : NULL;
-	if ($prototype == "ok") {
-		// On affiche alors le lien qui charge Prototype
-    	echo '<script type="text/javascript" src="'.$gepiPath.'/lib/prototype.js"></script>'."\n";
-	}
+// Ajout du framework prototype 1.6.0.3
+echo '<script type="text/javascript" src="'.$gepiPath.'/lib/prototype.js"></script>'."\n";
+
 // Ajout de la librairie Scriptaculous.js conditionné à la variable $utilisation_scriptaculous="ok"
 $scriptaculous = isset($utilisation_scriptaculous) ? $utilisation_scriptaculous : NULL;
 $script_effet = isset($scriptaculous_effet) ? $scriptaculous_effet : NULL;
-	 if ($scriptaculous == "ok") {
-	 	// On affiche le lien qui charge scriptaculous
-	 	echo '<script type="text/javascript" src="'.$gepiPath.'/lib/scriptaculous.js?load='.$script_effet.'"></script>'."\n";
-	 }
+if ($scriptaculous == "ok") {
+  // On affiche le lien qui charge scriptaculous
+  echo '<script type="text/javascript" src="'.$gepiPath.'/lib/scriptaculous.js?load='.$script_effet.'"></script>'."\n";
+}
 // Utilisation de windows.js
 $windows = isset($utilisation_win) ? $utilisation_win : NULL;
 if ($windows == 'oui') {
@@ -164,13 +161,30 @@ if ($windows == 'oui') {
 	<link href="'.$gepiPath.'/edt_effets/themes/alphacube.css" rel="stylesheet" type="text/css"/>
 	 ';
  }
+// Utilisation de tablekit
+$tablekit = isset($utilisation_tablekit) ? $utilisation_tablekit : NULL;
+if ($tablekit == "ok") {
+  // On affiche le lien qui charge tablekit
+  echo '<script type="text/javascript" src="'.$gepiPath.'/lib/tablekit.js"></script>'."\n";
+}
 // js spécifique
 if(isset($javascript_specifique)) {
 	// Il faudrait filtrer le contenu de la variable...
 	// On ajoute le ".js" automatiquement et on exclus les "." qui pourrait permettre des ".." pour remonter dans l'arborescence
-	if(strlen(my_ereg_replace("[A-Za-z0-9_/]","",$javascript_specifique))==0) {
-		// Javascript spécifique à une page:
-		echo "<script type='text/javascript' src='$gepiPath/$javascript_specifique.js'></script>\n";
+
+	if(is_array($javascript_specifique)) {
+		foreach($javascript_specifique as $current_javascript_specifique) {
+			if(strlen(my_ereg_replace("[A-Za-z0-9_/\-]","",$current_javascript_specifique))==0) {
+				// Javascript spécifique à une page:
+				echo "<script type='text/javascript' src='$gepiPath/$current_javascript_specifique.js'></script>\n";
+			}
+		}
+	}
+	else {
+		if(strlen(my_ereg_replace("[A-Za-z0-9_/\-]","",$javascript_specifique))==0) {
+			// Javascript spécifique à une page:
+			echo "<script type='text/javascript' src='$gepiPath/$javascript_specifique.js'></script>\n";
+		}
 	}
 }
 // On affiche tout le temps brainjar sauf quand on dit à Gepi de ne pas le faire
@@ -191,13 +205,14 @@ if (isset($utilisation_jsdivdrag) AND $utilisation_jsdivdrag == "non") {
 	$unite_div_infobulle="em";
 	// Pour l'overflow dans les DIV d'aide, il vaut mieux laisser 'em'.
 
+	// Variable passée à 'ok' en fin de page via le /lib/footer.inc.php
+	echo "<script type='text/javascript'>
+		var temporisation_chargement='n';
+	</script>\n";
+
 	echo "<script type='text/javascript' src='$gepiPath/lib/brainjar_drag.js'></script>\n";
 	echo "<script type='text/javascript' src='$gepiPath/lib/position.js'></script>\n";
 
-	// Variable passée à 'ok' en fin de page via le /lib/footer.inc.php
-	echo "<script type='text/javascript'>
-		temporisation_chargement='n';
-	</script>\n";
 
 } // if(isset($utilisation_jsdivdrag...
 
@@ -220,9 +235,20 @@ if(isset($style_specifique)) {
 	// Il faudrait filtrer le contenu de la variable...
 	// ne doit contenir que certains types de caractères et se terminer par .css
 	// Non... on ajoute le ".css" automatiquement et on exclus les "." qui pourrait permettre des ".." pour remonter dans l'arborescence
-	if(strlen(my_ereg_replace("[A-Za-z0-9_/]","",$style_specifique))==0) {
-		// Styles spécifiques à une page:
-		echo "<link rel='stylesheet' type='text/css' href='$gepiPath/$style_specifique.css' />\n";
+
+	if(is_array($style_specifique)) {
+		foreach($style_specifique as $current_style_specifique) {
+			if(strlen(my_ereg_replace("[A-Za-z0-9_/]","",$current_style_specifique))==0) {
+				// Styles spécifiques à une page:
+				echo "<link rel='stylesheet' type='text/css' href='$gepiPath/$current_style_specifique.css' />\n";
+			}
+		}
+	}
+	else {
+		if(strlen(my_ereg_replace("[A-Za-z0-9_/]","",$style_specifique))==0) {
+			// Styles spécifiques à une page:
+			echo "<link rel='stylesheet' type='text/css' href='$gepiPath/$style_specifique.css' />\n";
+		}
 	}
 }
 
@@ -241,7 +267,7 @@ if(isset($style_specifique)) {
 if(isset($accessibilite)) {
 	if($accessibilite=="y") {
 		echo "\n<link rel='stylesheet' type='text/css' href='$gepiPath/accessibilite.css' media='screen' />\n";
-		// Feuilles de styles Paramètres de configuration du cahier de texte à partir de /lib/global.inc
+		// Feuilles de styles Paramètres de configuration du cahier de textes à partir de /lib/global.inc
 		// echo "\n<link rel='stylesheet' type='text/css' href='$gepiPath/maj_global.css' media='screen' />\n";
       // Feuilles de styles imprimante
 		echo "\n<link rel='stylesheet' type='text/css' href='$gepiPath/accessibilite_print.css' media='print' />\n";
@@ -272,7 +298,7 @@ if(isset($style_screen_ajout)) {
 	if($style_screen_ajout=='y') {
 		// La variable $style_screen_ajout se paramètre dans le /lib/global.inc
 		// C'est une sécurité... il suffit de passer la variable à 'n' pour désactiver ce fichier CSS et éventuellement rétablir un accès après avoir imposé une couleur noire sur noire
-			// Il faudra définir un nom de la forme style_screen_ajout_RNE.css pour le multisite
+		// Il faudra définir un nom de la forme style_screen_ajout_RNE.css pour le multisite
 		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 			if (@file_exists($gepiPath.'/style_screen_ajout_'.getSettingValue("gepiSchoolRne").'.css')) {
 					echo "\n<link rel='stylesheet' type='text/css' href='$gepiPath/style_screen_ajout_".getSettingValue("gepiSchoolRne").".css' />\n";
@@ -408,10 +434,25 @@ if (isset($titre_page)) {
 				}
 				//=====================
 
+				//=====================================
+				if(getSettingValue('afficher_temoin_filtrage_html')=='y') {
+					if($filtrage_html=='htmlpurifier') {
+						echo " <img src='$gepiPath/images/bulle_verte.png' width='9' height='9' alt='Filtrage HTML avec HTMLPurifier' title='Filtrage HTML avec HTMLPurifier' />\n";
+					}
+					elseif($filtrage_html=='inputfilter') {
+						echo " <img src='$gepiPath/images/bulle_bleue.png' width='9' height='9' alt='Filtrage HTML avec InputFilter' title='Filtrage HTML avec InputFilter' />\n";
+					}
+					else {
+						echo " <img src='$gepiPath/images/bulle_rouge.png' width='9' height='9' alt='Pas de filtrage HTML' title='Pas de filtrage HTML' />\n";
+					}
+				}
+				//=====================================
+
+
 				//=== Titre de la page ===
 				echo "<h1>".$titre_page."</h1>\n";
 				echo "<!-- Dernière connexion -->\n";
-				
+
 				//=== Nom Prénom utilisateur ===
 				echo "<p id='bd_nom'>\n";
 					// echo "<span id='bd_nom'>";
@@ -432,19 +473,19 @@ if (isset($titre_page)) {
 					}
 					// echo "</span>\n";
 				echo "</p>\n";
-				
+
 				//=== Dernière connexion ===
 				if (isset($affiche_connexion)) {
 					echo "<p id='dern_connect'>".last_connection();
 					echo "&nbsp;"; // Pour éviter un <p></p> lors de la première connexion
 					echo "</p>\n";
 				}
-				
+
 				//=== statut utilisateur ===
 				echo "<p id='bd_parent'>\n";
 					if ($_SESSION['statut'] == "administrateur") {
 						echo "<span class='red'>Administrateur</span>\n";
-					} 
+					}
 					elseif ($_SESSION['statut'] == "professeur") {
 						$nom_complet_matiere = sql_query1("select nom_complet from matieres
 						where matiere = '".$_SESSION['matiere']."'");
@@ -454,17 +495,17 @@ if (isset($titre_page)) {
 						} else {
 							echo "Invité";
 						}
-					} 
+					}
 					elseif ($_SESSION['statut'] == "scolarite") {
 						echo "Scolarité";
-					} 
+					}
 					elseif ($_SESSION['statut'] == "cpe") {
 						echo "CPE";
-					} 
+					}
 					elseif ($_SESSION['statut'] == "eleve") {
 						$tab_tmp_info_classes=get_noms_classes_from_ele_login($_SESSION['login']);
 						echo "Élève de ".$tab_tmp_info_classes[count($tab_tmp_info_classes)-1];
-					} 
+					}
 					elseif ($_SESSION['statut'] == "responsable") {
 						$tab_tmp_ele=get_enfants_from_resp_login($_SESSION['login']);
 						$chaine_enfants="";
@@ -489,14 +530,14 @@ if (isset($titre_page)) {
 						echo $_SESSION["statut_special"];
 					}
 				echo "</p>\n";
-					
+
 				//On vérifie si le module de mise à jour est activé
 				if (getSettingValue("active_module_msj")==='y' and $_SESSION['statut'] == 'administrateur') {
 					echo "<a href='javascript:ouvre_popup()'>";
 						echo "<img style='border: 0px; width: 15px; height: 15px;' src='$gepiPath/images/info.png' alt='info' title='info' align='top' />";
 					echo "</a>\n<br />\n";
 				}
-				
+
 				//christian
 				// menus de droite
 				// menu accueil
@@ -562,7 +603,8 @@ if (isset($titre_page)) {
 								echo ",%0d%0aCordialement.'>Contacter l'administrateur</a>";
 							}
 							else {
-								echo("<a href=\"javascript:centrerpopup('$gepiPath/gestion/contacter_admin.php',600,480,'scrollbars=yes,statusbar=no,resizable=yes')\">Contacter l'administrateur</a>");
+								//echo("<a href=\"javascript:centrerpopup('$gepiPath/gestion/contacter_admin.php',600,480,'scrollbars=yes,statusbar=no,resizable=yes')\">Contacter l'administrateur</a>");
+								echo("<a href=\"$gepiPath/gestion/contacter_admin.php\" onclick=\"centrerpopup('$gepiPath/gestion/contacter_admin.php',600,480,'scrollbars=yes,statusbar=no,resizable=yes');return false;\" >Contacter l'administrateur</a>");
 							}
 						}
 					echo "</li>\n";
@@ -573,9 +615,9 @@ if (isset($titre_page)) {
 						echo "<a href='javascript:centrerpopup(\"$gepiPath/gestion/info_vie_privee.php\",600,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>Vie privée</a>";
 					echo "</li>\n";
 				echo "</ol>\n";
-				
+
 				// echo "<div class='spacer_bas'> </div>\n"; // bloque les menus dans le bandeau
-	
+
 		 //=== Affichage de la version de Gepi ===
 				if ($_SESSION['statut'] == "administrateur") {
 					  $version_gepi = '';

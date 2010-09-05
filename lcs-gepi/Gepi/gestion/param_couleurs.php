@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: param_couleurs.php 3442 2009-09-21 13:39:18Z crob $
+ * $Id: param_couleurs.php 5027 2010-08-05 20:21:12Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -298,7 +298,7 @@ fieldset#login_box div#header {
 	background-image: url(\"./images/background/degrade1_small.png\");
 }
 
-#table_header {
+#table_header {
 	background-image: url(\"./images/background/degrade1.png\");
 }
 
@@ -403,6 +403,74 @@ fieldset#login_box div#header {
 .infobulle_corps {
 	background-color: #$couleur_infobulle_fond_corps;
 }
+
+/*=====================================================*/
+/* Utilisation des couleurs d'info bulles pour les onglets de gestion/droits_acces.php*/
+
+.onglet {
+	background-color: #$couleur_infobulle_fond_corps;
+}
+
+.contenu_onglet {
+	background-color: #$couleur_infobulle_fond_corps;
+}
+
+.contenu_onglet2 {
+	background-color: #$couleur_infobulle_fond_corps;
+}
+
+/*=====================================================*/
+/* Utilisation des couleurs d'info bulles pour les onglets d'absences*/
+
+/* Intérieur des onglets de mod_abs2*/
+div.css-panes {
+	background-color: #$couleur_infobulle_fond_corps;
+	border-top:1px solid black;
+}
+
+/* Etiquette de l'onglet sélectionné */
+ul.css-tabs a.current {
+	background-color: #$couleur_infobulle_fond_corps;
+	border-bottom:2px solid #$couleur_infobulle_fond_corps;
+}
+
+/* Etiquettes non sélectionnées*/
+ul.css-tabs a {
+	background-color:#$couleur_infobulle_fond_corps;
+}
+
+ul.css-tabs a:hover {
+	/*background-color: #$couleur_infobulle_fond_corps;*/
+	background-color: white;
+}
+
+/* Fond de l'ensemble Etiquettes+Onglets */
+ul.css-tabs {
+	background-color:#".$_POST['style_body_backgroundcolor'].";
+}
+/*=====================================================*/
+span.conteneur_infobulle_css:hover span.infobulle_css {
+   background: #$couleur_infobulle_fond_corps;
+   border: 1px solid #$couleur_infobulle_fond_entete;
+   border-top: 4px solid #$couleur_infobulle_fond_entete;
+}
+span.conteneur_infobulle_css:hover div.infobulle_css {
+   background: #$couleur_infobulle_fond_corps;
+   border: 1px solid #$couleur_infobulle_fond_entete;
+   border-top: 4px solid #$couleur_infobulle_fond_entete;
+}
+div.conteneur_infobulle_css:hover div.infobulle_css {
+   background: #$couleur_infobulle_fond_corps;
+   border: 1px solid #$couleur_infobulle_fond_entete;
+   border-top: 4px solid #$couleur_infobulle_fond_entete;
+}
+/*=====================================================*/
+/* Style des DIV d'aide,... accessibles par F2,... */
+div.info_abs {
+	background-color: #".$_POST['style_body_backgroundcolor'].";
+	border: 1px solid #$couleur_infobulle_fond_entete;
+}
+/*=====================================================*/
 ");
 				fclose($fich);
 			}

@@ -1,5 +1,5 @@
 <?php
-/* $Id: genere_ods.php 3323 2009-08-05 10:06:18Z crob $ */
+/* $Id: genere_ods.php 4629 2010-06-24 10:48:19Z crob $ */
 /*
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -33,7 +33,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 //======================================================================================
 
@@ -278,10 +278,12 @@ if (!checkAccess()) {
 			$zip->save("../temp/".$user_temp_directory."/$fichier_liste.zip");
 	
 			//rename("ods/$fichier_liste.zip","ods/$fichier_liste.ods");
-			rename("../temp/".$user_temp_directory."/$fichier_liste.zip","../temp/".$user_temp_directory."/$fichier_liste.ods");
+			//rename("../temp/".$user_temp_directory."/$fichier_liste.zip","../temp/".$user_temp_directory."/$fichier_liste.ods");
+			rename("../temp/".$user_temp_directory."/$fichier_liste.zip","../temp/".$user_temp_directory."/".$fichier_liste."_detail.ods");
 	
 			//echo "<a href='ods/".$fichier_liste.".ods'>$fichier_liste.ods</a>\n";
-			echo "<p>Fichier&nbsp;: <a href='../temp/".$user_temp_directory."/".$fichier_liste.".ods' onclick=\"setTimeout('self.close()',3000);return true;\">$fichier_liste.ods</a></p>\n";
+			//echo "<p>Fichier&nbsp;: <a href='../temp/".$user_temp_directory."/".$fichier_liste.".ods' onclick=\"setTimeout('self.close()',3000);return true;\">$fichier_liste.ods</a></p>\n";
+			echo "<p>Fichier&nbsp;: <a href='../temp/".$user_temp_directory."/".$fichier_liste."_detail.ods' onclick=\"setTimeout('self.close()',3000);return true;\">".$fichier_liste."_detail.ods</a></p>\n";
 		}
 		else{
 			echo "<p>Erreur lors de l'ouverture du fichier CSV.</p>\n";

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: maj_import.php 3444 2009-09-22 11:37:19Z crob $
+ * $Id: maj_import.php 4023 2010-01-16 17:10:24Z crob $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -35,12 +35,14 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
     die();
 }
+
+if(strstr($_SERVER['HTTP_REFERER'],"eleves/index.php")) {$_SESSION['retour_apres_maj_sconet']="../eleves/index.php";}
 
 //**************** EN-TETE *****************
 $titre_page = "Mise à jour eleves/responsables";

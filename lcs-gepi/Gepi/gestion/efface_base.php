@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: efface_base.php 3434 2009-09-19 14:28:24Z crob $
+ * $Id: efface_base.php 4152 2010-03-21 23:32:16Z adminpaulbert $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -98,8 +98,8 @@ if (isset($_POST['is_posted']) and ($_POST['is_posted'] == 2)) {
    $liste_tables_del = array(
 "absences",
 //"absences_actions",
-//"absences_creneaux",
-"absences_creneaux_bis",
+//"edt_creneaux",
+"edt_creneaux_bis",
 "absences_eleves",
 "absences_gep",
 //"absences_motifs",

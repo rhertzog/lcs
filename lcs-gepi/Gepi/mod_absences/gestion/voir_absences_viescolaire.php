@@ -2,7 +2,7 @@
 
 /**
  *
- * @version $Id: voir_absences_viescolaire.php 4016 2010-01-14 20:25:49Z jjocal $
+ * @version $Id: voir_absences_viescolaire.php 4230 2010-04-02 15:38:48Z adminpaulbert $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -29,7 +29,6 @@ require_once("../../lib/initialisations.inc.php");
 //mes fonctions
 include("../lib/functions.php");
 include("../../edt_organisation/fonctions_calendrier.php");
-
 // Resume session
 $resultat_session = $session_gepi->security_check();
 if ($resultat_session == 'c') {
@@ -65,28 +64,45 @@ $heure_mysql = date("H:i:s");
 	}else{
 		require_once("../../class_php/edt_cours.class.php");
 	}
+// =============================================================
+//
+//      Ancienne fonction (désactivée car remplacée par AJAX)
+//
+// =============================================================
 
 function afficherCoursClasse($d, $c){
 	// On teste php pour voir si c'est en php5 ou pas
-	global $version;
-
-	if ($version != 5) {
-		return '';
-	}
-
-	$rep = '';
-	$cours = new edtAfficher();
-	$cours->sem = 0;
-	$cours->hauteur_creneau = 70;
-	$cours->type_edt = 'classe';
-	$jour = $cours->aujourdhui();
-		$rep .= $cours->entete_creneaux('noms');
-		$rep .= $cours->afficher_cours_jour($jour, $d);
-	return $rep;
+	//global $version;
+	//if ($version != 5) {
+	//	return '';
+	//}
+	//$rep = '';
+	//$cours = new edtAfficher();
+	//$cours->sem = 0;
+	//$cours->hauteur_creneau = 70;
+	//$cours->type_edt = 'classe';
+	//$jour = $cours->aujourdhui();
+	//$rep .= $cours->entete_creneaux('noms');
+	//$rep .= $cours->afficher_cours_jour($jour, $d);
+	return '<p>construction</p>';
 }
 
 
-$style_specifique = "edt_organisation/style_edt";
+function IdClasse($nom_classe) {
+    $result = 0;
+    $sql = "SELECT id FROM classes WHERE classe = '".$nom_classe."' ";
+    $req = mysql_query($sql);
+    if ($req) {
+        if ($rep = mysql_fetch_array($req)) {
+            $result = $rep['id'];
+        }
+    }
+    return $result;
+}
+
+
+$style_specifique[0] = "edt_organisation/style_edt";
+$style_specifique[1] = "templates/DefaultEDT/css/small_edt";
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
 //**************** EN-TETE *****************
 $titre_page = "Les absents du jour.";
@@ -124,7 +140,7 @@ require_once("../../lib/header.inc");
 
 			if ($test === 1) {
 				// GEPI n'a trouvé qu'une seule réponse, on peut donc l'effacer
-				$lettre_a_effacer = mysql_result($query_lettre, "id_lettre_suivi");
+				$lettre_a_effacer = mysql_result($query_lettre, 0,"id_lettre_suivi");
 				$delete = mysql_query("DELETE FROM lettres_suivis WHERE id_lettre_suivi = '" . $lettre_a_effacer . "'");
 			}elseif($test > 1){
 				$message_erreur_lettre_a_effacer = 'Il y a des lettres qui correspondent à ce retard mais aucune n\'a été détruite.';
@@ -135,9 +151,9 @@ require_once("../../lib/header.inc");
 
 // Choix de la bonne table
 if (date("w") == getSettingValue("creneau_different")){
-	$table_ab = 'absences_creneaux_bis';
+	$table_ab = 'edt_creneaux_bis';
 }else{
-	$table_ab = 'absences_creneaux';
+	$table_ab = 'edt_creneaux';
 }
 
 
@@ -243,6 +259,9 @@ for($i = 0; $i < $nbre_rep; $i++) {
 
 		$req_classe = mysql_fetch_array(mysql_query("SELECT id_classe FROM j_eleves_classes WHERE login = '".$rep_absences[$i]["eleve_id"]."' AND periode = '".$_periode."'"));
 		$rep_classe = mysql_fetch_array(mysql_query("SELECT classe FROM classes WHERE id = '".$req_classe[0]."'"));
+        if ($rep_classe === false) {
+            $rep_classe = array();
+        }
                 // On compte aussi le nombre de classes concernées par cet enseignement
                 $query_classe1 = (mysql_query("SELECT id_classe FROM j_groupes_classes WHERE id_groupe = '".$rep_absences[$i]["groupe_id"]."'"));
                 $req_classe1 = array();
@@ -351,10 +370,10 @@ for($i = 0; $i < $nbre_rep; $i++) {
 <?php
 		// test sur le jour pour voir les créneaux
 	if (date("w") == getSettingValue("creneau_different")) {
-		$req_creneaux = mysql_query("SELECT id_definie_periode, nom_definie_periode, heuredebut_definie_periode, heurefin_definie_periode FROM absences_creneaux_bis WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
+		$req_creneaux = mysql_query("SELECT id_definie_periode, nom_definie_periode, heuredebut_definie_periode, heurefin_definie_periode FROM edt_creneaux_bis WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
 	}
 	else {
-		$req_creneaux = mysql_query("SELECT id_definie_periode, nom_definie_periode, heuredebut_definie_periode, heurefin_definie_periode FROM absences_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
+		$req_creneaux = mysql_query("SELECT id_definie_periode, nom_definie_periode, heuredebut_definie_periode, heurefin_definie_periode FROM edt_creneaux WHERE type_creneaux != 'pause' ORDER BY heuredebut_definie_periode");
 	}
 	$nbre_creneaux = mysql_num_rows($req_creneaux);
 	$aff_creneaux_sans_select = NULL;
@@ -418,10 +437,11 @@ for($a = 0; $a < $nbre_classe; $a++){
 	$calc = $nbre_classe / 2;
 	$modulo = $nbre_classe % 2;
 	$num_id = 'id'.remplace_accents($aff_classe[$a], 'all');
+    $id_classe = IdClasse($aff_classe[$a]);
 	echo '
 	<tr>
 		<td>
-			<h4 style="color: red;"><a href="#" onclick="changerDisplayDiv(\''.$num_id.'\'); return false;">'.$aff_classe[$a].'</a></h4>
+			<h4 style="color: red;"><a href="#" onclick="AfficheEdtClasseDuJour(\''.$id_classe.'\',\''.$num_id.'\', '.$niveau_arbo.'); return false;">'.$aff_classe[$a].'</a></h4>
 			<div id="'.$num_id.'" style="display: none; position: absolute; background-color: white; -moz-border-radius: 10px; padding: 10px;">
 			'.afficherCoursClasse($aff_classe[$a], $choix_creneau).'</div>
 		</td>
@@ -435,10 +455,11 @@ for($a = 0; $a < $nbre_classe; $a++){
 	}else{
 		$a++; // on passe à la colonne suivante
 		$num_id = 'id'.remplace_accents($aff_classe[$a], 'all');
+        $id_classe = IdClasse($aff_classe[$a]);
 		echo '
 			<td>
-				<h4 style="color: red;"><a href="#" onclick="changerDisplayDiv(\''.$num_id.'\'); return false;">'.$aff_classe[$a].'</a></h4>
-				<div id="'.$num_id.'" style="display: none; position: absolute; background-color: white;">
+				<h4 style="color: red;"><a href="#" onclick="AfficheEdtClasseDuJour(\''.$id_classe.'\',\''.$num_id.'\','.$niveau_arbo.'); return false;">'.$aff_classe[$a].'</a></h4>
+				<div id="'.$num_id.'" style="display: none; position: absolute; background-color: white; -moz-border-radius: 10px; padding: 10px;">
 				'.afficherCoursClasse($aff_classe[$a], $choix_creneau).'</div>
 			</td>
 			<td style="width: 250px;">'.$td_classe1[$a].$td_classe[$a].'</td>

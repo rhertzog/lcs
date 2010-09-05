@@ -13,27 +13,23 @@ $is_lcs_plugin="no";
 // Pour les scripts situés à la racine de GEPI
 if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
 	if (file_exists("./secure/config_lcs.inc.php")) {
-		include "./secure/config_lcs.inc.php";
 		$is_lcs_plugin="yes";
 	}
 }
 // Pour les scripts situés dans un sous-répertoire à l'intérieur d'une sous-répertoire de GEPI
 else if (isset($niveau_arbo) and ($niveau_arbo == "2")) {
 	if (file_exists("../../secure/config_lcs.inc.php")) {
-		include "../../secure/config_lcs.inc.php";
 		$is_lcs_plugin="yes";
 	}
 }
 // Pour les scripts situés dans un sous-sous-répertoire à l'intérieur d'une sous-répertoire de GEPI
 else if (isset($niveau_arbo) and ($niveau_arbo == "3")) {
 	if (file_exists("../../../secure/config_lcs.inc.php")) {
-		include "../../../secure/config_lcs.inc.php";
 		$is_lcs_plugin="yes";
 	}
 }
 else {
 	if (file_exists("../secure/config_lcs.inc.php")) {
-		include "../secure/config_lcs.inc.php";
 		$is_lcs_plugin="yes";
 	}
 }
@@ -51,7 +47,7 @@ if($is_lcs_plugin=='yes') {
 		$db_c = mysql_pconnect($dbHost, $dbUser, $dbPass);
 	else
 		$db_c = mysql_connect($dbHost, $dbUser, $dbPass);
-	
+
 	if (!$db_c || !mysql_select_db ($dbDb))
 	{
 		echo "\n<p>Erreur grave: Echec de la connexion à la base de données";
@@ -83,7 +79,13 @@ if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
    require_once("./lib/global.inc");
    // Traitement des données
    require_once("./lib/filtrage_html.inc.php");
-   require_once("./lib/class.inputfilter_clean.php");
+	if($filtrage_html=="htmlpurifier") {
+		require_once("./lib/HTMLPurifier.standalone.php");
+	}
+	elseif($filtrage_html=="inputfilter") {
+		require_once("./lib/class.inputfilter_clean.php");
+	}
+
    require_once("./lib/traitement_data.inc.php");
    // Libraries
    include "./lib/share.inc.php";
@@ -113,7 +115,12 @@ if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
    require_once("../../lib/global.inc");
    // Traitement des données
    require_once("../../lib/filtrage_html.inc.php");
-   require_once("../../lib/class.inputfilter_clean.php");
+	if($filtrage_html=="htmlpurifier") {
+		require_once("../../lib/HTMLPurifier.standalone.php");
+	}
+	elseif($filtrage_html=="inputfilter") {
+		require_once("../../lib/class.inputfilter_clean.php");
+	}
    require_once("../../lib/traitement_data.inc.php");
    // Libraries
    include "../../lib/share.inc.php";
@@ -143,7 +150,12 @@ if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
    require_once("../../../lib/global.inc");
    // Traitement des données
    require_once("../../../lib/filtrage_html.inc.php");
-   require_once("../../../lib/class.inputfilter_clean.php");
+	if($filtrage_html=="htmlpurifier") {
+		require_once("../../../lib/HTMLPurifier.standalone.php");
+	}
+	elseif($filtrage_html=="inputfilter") {
+		require_once("../../../lib/class.inputfilter_clean.php");
+	}
    require_once("../../../lib/traitement_data.inc.php");
    // Libraries
    include "../../../lib/share.inc.php";
@@ -173,8 +185,13 @@ if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
     // Global configuration file
     require_once("../lib/global.inc");
     // Traitement des données
-    require_once("../lib/filtrage_html.inc.php");
-    require_once("../lib/class.inputfilter_clean.php");
+   require_once("../lib/filtrage_html.inc.php");
+	if($filtrage_html=="htmlpurifier") {
+		require_once("../lib/HTMLPurifier.standalone.php");
+	}
+	elseif($filtrage_html=="inputfilter") {
+		require_once("../lib/class.inputfilter_clean.php");
+	}
     require_once("../lib/traitement_data.inc.php");
     // Libraries
     include "../lib/share.inc.php";
@@ -202,7 +219,12 @@ if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
    require_once("../lib/global.inc");
    // Traitement des données
    require_once("../lib/filtrage_html.inc.php");
-   require_once("../lib/class.inputfilter_clean.php");
+	if($filtrage_html=="htmlpurifier") {
+		require_once("../lib/HTMLPurifier.standalone.php");
+	}
+	elseif($filtrage_html=="inputfilter") {
+		require_once("../lib/class.inputfilter_clean.php");
+	}
    require_once("../lib/traitement_data.inc.php");
    // Libraries
    include "../lib/share.inc.php";
@@ -233,5 +255,13 @@ if (!isset($mode_debug)) {
 
 // Initialisaton de la session Gepi :
 $session_gepi = new Session();
+
+if (!class_exists('Propel')
+	|| !strstr(get_include_path(), '/orm/propel-build/classes')) {
+    //on retire les objets propel de la session car propel n'a pas ete initialise,
+    //donc les objets ne seront pas correctement deserialiser
+    unset($_SESSION['objets_propel']);
+}
+
 
 ?>

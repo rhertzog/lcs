@@ -25,12 +25,14 @@
 	# Propel::setLogger() if you want Propel to log debug or error messages.
 	-->
 
-	<log>
-                <type>display</type>
-		<ident>propel-gepi</ident>
-		<name>propel.log</name>
-		<level>6</level>
-	</log>
+	  <!--log>
+	    <type>file</type>
+	    <name>propel.log</name>
+	    <ident>propel</ident>
+	    <level>7</level>
+	    <conf></conf>
+	  </log-->
+	  
 	<!--
 	#
 	#  P R O P E L  P R O P E R T I E S
@@ -46,7 +48,8 @@
 				<adapter>mysql</adapter>
 				<!-- Connection parameters. See PDO documentation for DSN format and available option constants. -->
 				<connection>
-					<classname>DebugPDO</classname>
+					<classname>PropelPDO</classname>
+					<!--classname>DebugPDO</classname-->
 					<dsn>mysql:dbname=$GLOBALS["dbDb"];host=$GLOBALS["dbHost"]</dsn>
 					<!--
 					For MySQL and Oracle you must specify username + password separate from DSN:-->
@@ -63,6 +66,13 @@
 								as prepared statements support is buggy in mysql driver
 						-->
 						<option id="ATTR_EMULATE_PREPARES">true</option>
+
+						<!--
+							utiliser le code ci-dessous si vous avez l'erreur :
+							SQLSTATE[HY000]: General error: 2014 Cannot execute queries while other unbuffered queries are active
+						-->
+						<!--option id="PROPEL_ATTR_CACHE_PREPARES">true</option-->
+						<!--option id="MYSQL_ATTR_USE_BUFFERED_QUERY">true</option-->
 					</attributes>
 					
 					<settings>
@@ -77,7 +87,23 @@
 					</settings>
 				</connection>
 			</datasource>
-			
 		</datasources>
+
+	<!--debugpdo>
+	  <logging>
+	    <details>
+	      <method>
+		<enabled>true</enabled>
+	      </method>
+	      <time>
+		<enabled>true</enabled>
+	      </time>
+	      <mem>
+		<enabled>true</enabled>
+	      </mem>
+	    </details>
+	  </logging>
+	</debugpdo-->
+	
 	</propel>
 </config>

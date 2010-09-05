@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: saisie_incident.php 3323 2009-08-05 10:06:18Z crob $
+ * $Id: saisie_incident.php 5115 2010-08-26 16:41:01Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -48,7 +48,7 @@ require('sanctions_func_lib.php');
 function choix_heure($champ_heure,$div_choix_heure) {
 	global $tabdiv_infobulle;
 
-	$sql="SELECT * FROM absences_creneaux ORDER BY heuredebut_definie_periode;";
+	$sql="SELECT * FROM edt_creneaux ORDER BY heuredebut_definie_periode;";
 	$res_abs_cren=mysql_query($sql);
 	if(mysql_num_rows($res_abs_cren)>0) {
 		echo " <a href='#' onclick=\"afficher_div('$div_choix_heure','y',10,-40); return false;\">Choix</a>";
@@ -189,6 +189,8 @@ function recherche_utilisateur($rech_nom,$page) {
 
 
 $id_incident=isset($_POST['id_incident']) ? $_POST['id_incident'] : (isset($_GET['id_incident']) ? $_GET['id_incident'] : NULL);
+
+$return_url=isset($_POST['return_url']) ? $_POST['return_url'] : (isset($_GET['return_url']) ? $_GET['return_url'] : NULL);
 
 $rech_nom=isset($_POST['rech_nom']) ? $_POST['rech_nom'] : (isset($_GET['rech_nom']) ? $_GET['rech_nom'] : "");
 
@@ -380,12 +382,23 @@ if($etat_incident!='clos') {
 				$id_lieu="";
 			}
 
+			// ALTER TABLE s_incidents ADD message_id VARCHAR(50) NOT NULL;
+			//$message_id=strftime("%Y%m%d%H%M%S",time()).".".substr(md5(microtime()),0,6);
+			// Pour ne pas spammer tant que la nature n'est pas saisie
+			if($nature!='') {
+				$message_id=$id_incident.".".strftime("%Y%m%d%H%M%S",time()).".".substr(md5(microtime()),0,6);
+			}
+			else {
+				$message_id="";
+			}
+
 			$sql="INSERT INTO s_incidents SET declarant='".$_SESSION['login']."',
 												date='$annee-$mois-$jour',
 												heure='$display_heure',
 												nature='".traitement_magic_quotes(corriger_caracteres($nature))."',
 												description='".$description."',
-												id_lieu='$id_lieu';";
+												id_lieu='$id_lieu',
+												message_id='$message_id';";
 			//echo "$sql<br />\n";
 			$res=mysql_query($sql);
 			if(!$res) {
@@ -395,8 +408,12 @@ if($etat_incident!='clos') {
 				$id_incident=mysql_insert_id();
 				$msg.="Enregistrement de l'incident n°".$id_incident." effectué.<br />\n";
 			}
+
+			$texte_mail="Saisie par ".civ_nom_prenom($_SESSION['login'])." d'un incident (n°$id_incident) survenu le $jour/$mois/$annee à $display_heure:\n";
+			$texte_mail.="Nature: $nature\nDescription: $description\n";
 		}
 		else {
+
 			$temoin_modif="n";
 			$sql="UPDATE s_incidents SET ";
 			if(isset($display_date)) {
@@ -434,6 +451,20 @@ if($etat_incident!='clos') {
 
 			if(isset($nature)) {
 				$sql.="nature='".traitement_magic_quotes(corriger_caracteres($nature))."' ,";
+				//on vérifie si une catégorie est définie pour cette nature
+				$sql2="SELECT id_categorie FROM s_incidents WHERE nature='".traitement_magic_quotes(corriger_caracteres($nature))."' GROUP BY id_categorie";
+				$res2=mysql_query($sql2);
+				//if($res2) {
+				if(mysql_num_rows($res2)>0) {
+					while ($lign_cat=mysql_fetch_object($res2)){
+						$tab_res[]=$lign_cat->id_categorie;
+					}
+					//il ne devrait pas y avoir plus d'un enregistrement; dans le cas contraire on envoi un message
+					if (count($tab_res)>1) {$msg.="Il y a plusieurs catégories affectées à cette nature. La première est retenue pour cet incident. Vous devriez mettre à jour vos catégories d'incidents.<br />";}
+					//on affecte la categorie a l'incident ou on met à null dans le cas contraire;
+					if ($tab_res['0']==null) {$sql.="id_categorie=NULL ,";}
+					else {$sql.="id_categorie='".$tab_res['0']."' ,";}
+				} 
 				$temoin_modif="y";
 			}
 
@@ -452,6 +483,23 @@ if($etat_incident!='clos') {
 				$temoin_modif="y";
 			}
 
+
+			/*
+			// Recuperation du message_id pour les fils de discussion dans les mails
+			$sql_mi="SELECT message_id FROM s_incidents WHERE id_incident='$id_incident';";
+			$res_mi=mysql_query($sql_mi);
+			$lig_mi=mysql_fetch_object($res_mi);
+			if($lig_mi->message_id=="") {
+				$message_id=$id_incident.".".strftime("%Y%m%d%H%M%S",time()).".".substr(md5(microtime()),0,6);
+				$temoin_modif="y";
+				$sql.=" message_id='$message_id', ";
+			}
+			else {
+				$references_mail=$lig_mi->message_id;
+			}
+			*/
+
+
 			// Pour faire sauter le ", " en fin de $sql:
 			$sql=substr($sql,0,strlen($sql)-2);
 
@@ -466,6 +514,14 @@ if($etat_incident!='clos') {
 				else {
 					$msg.="Mise à jour de l'incident n°".$id_incident." effectuée.<br />\n";
 				}
+			}
+
+			$texte_mail="Mise à jour par ".civ_nom_prenom($_SESSION['login'])." d'un incident (n°$id_incident)";
+			if(isset($display_heure)) {
+				$texte_mail.=" survenu le $jour/$mois/$annee à/en $display_heure:\n";
+			}
+			if(isset($nature)) {
+				$texte_mail.="\nNature: $nature\nDescription: $description\n";
 			}
 		}
 
@@ -606,6 +662,93 @@ if($etat_incident!='clos') {
 					$msg.="Clôture de l'incident n°$id_incident.<br />\n";
 				}
 			}
+
+			$envoi_mail_actif=getSettingValue('envoi_mail_actif');
+			if(($envoi_mail_actif!='n')&&($envoi_mail_actif!='y')) {
+				$envoi_mail_actif='y'; // Passer à 'n' pour faire des tests hors ligne... la phase d'envoi de mail peut sinon ensabler.
+			}
+
+			if($envoi_mail_actif=='y') {
+
+				$temoin_envoyer_mail="y";
+				//echo "nature=$nature<br />";
+				if((!isset($nature))||($nature=='')) {
+					$sql="SELECT * FROM s_incidents WHERE id_incident='$id_incident' AND (nature!='' OR description!='');";
+					//echo "$sql<br />";
+					$res_test=mysql_query($sql);
+					if(mysql_num_rows($res_test)==0) {
+						$temoin_envoyer_mail="n";
+					}
+				}
+
+				if($temoin_envoyer_mail=="y") {
+
+					// Recuperation du message_id pour les fils de discussion dans les mails
+					$sql_mi="SELECT message_id FROM s_incidents WHERE id_incident='$id_incident';";
+					$res_mi=mysql_query($sql_mi);
+					$lig_mi=mysql_fetch_object($res_mi);
+					if($lig_mi->message_id=="") {
+						$message_id=$id_incident.".".strftime("%Y%m%d%H%M%S",time()).".".substr(md5(microtime()),0,6);
+						$sql="UPDATE s_incidents SET message_id='$message_id' WHERE id_incident='$id_incident';";
+						$update=mysql_query($sql);
+					}
+					else {
+						$references_mail=$lig_mi->message_id;
+					}
+
+					$tab_alerte_classe=array();
+	
+					$sql="SELECT * FROM s_protagonistes WHERE id_incident='$id_incident' ORDER BY login;";
+					$res_prot=mysql_query($sql);
+					if(mysql_num_rows($res_prot)>0) {
+						$texte_mail.="\n";
+						$texte_mail.="Protagonistes de l'incident: \n";
+						while($lig_prot=mysql_fetch_object($res_prot)) {
+							$texte_mail.=get_nom_prenom_eleve($lig_prot->login)." ($lig_prot->qualite)\n";
+		
+							$sql="SELECT * FROM s_mesures sm, s_traitement_incident sti WHERE sti.id_incident='$id_incident' AND sti.login_ele='".$lig_prot->login."' AND sti.id_mesure=sm.id ORDER BY type, mesure;";
+							//echo "$sql<br />";
+							$res_mes=mysql_query($sql);
+							if(mysql_num_rows($res_mes)>0) {
+								while($lig_mes=mysql_fetch_object($res_mes)) {
+									$texte_mail.="   $lig_mes->mesure ($lig_mes->type)\n";
+								}
+								$texte_mail.="\n";
+							}
+	
+							// On va avoir des personnes alertees inutilement pour les élèves qui ont changé de classe.
+							// NON
+							$sql="SELECT DISTINCT id_classe FROM j_eleves_classes WHERE login='$lig_prot->login' ORDER BY periode DESC LIMIT 1;";
+							$res_clas_prot=mysql_query($sql);
+							if(mysql_num_rows($res_clas_prot)>0) {
+								$lig_clas_prot=mysql_fetch_object($res_clas_prot);
+								if(!in_array($lig_clas_prot->id_classe,$tab_alerte_classe)) {
+									$tab_alerte_classe[]=$lig_clas_prot->id_classe;
+								}
+							}
+						}
+					}
+	
+					if(count($tab_alerte_classe)>0) {
+						$destinataires=get_destinataires_mail_alerte_discipline($tab_alerte_classe);
+	
+						$texte_mail=$texte_mail."\n\n"."Message: $msg";
+						$gepiPrefixeSujetMail=getSettingValue("gepiPrefixeSujetMail") ? getSettingValue("gepiPrefixeSujetMail") : "";
+						if($gepiPrefixeSujetMail!='') {$gepiPrefixeSujetMail.=" ";}
+	
+						$header_mail="";
+						if(isset($message_id)) {$header_mail.="Message-id: $message_id\r\n";}
+						if(isset($references_mail)) {$header_mail.="References: $references_mail\r\n";}
+	
+						// On envoie le mail
+						//$envoi = mail(getSettingValue("gepiAdminAdress"),
+						$envoi = mail($destinataires,
+							$gepiPrefixeSujetMail."GEPI : Incident num $id_incident",
+							$texte_mail,
+							"From: Mail automatique Gepi\r\n".$header_mail."X-Mailer: PHP/" . phpversion());
+					}
+				}
+			}
 		}
 	}
 }
@@ -622,7 +765,12 @@ echo "<div id='div_svg_avertie' style='margin:auto; color:red; text-align:center
 
 $page="saisie_incident.php";
 
-echo "<p class='bold'><a href='index.php' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>\n";
+if (!isset($return_url) || $return_url == null) {
+    $return_url = 'index.php';
+}
+if ($return_url != 'no_return') {
+    echo "<p class='bold'><a href='".$return_url."' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>\n";
+}
 
 if(($_SESSION['statut']=='administrateur')||
 ($_SESSION['statut']=='cpe')||
@@ -707,7 +855,7 @@ if($etat_incident!='clos') {
 	echo "<ul style='margin:0px;'>\n";
 	if($step!=0) {
 		echo "<li>\n";
-		echo "<a href='".$_SERVER['PHP_SELF']."?step=0";
+		echo "<a href='saisie_incident.php?step=0";
 		if(isset($id_incident)) {echo "&amp;id_incident=$id_incident";}
 		echo "'";
 		echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
@@ -716,7 +864,7 @@ if($etat_incident!='clos') {
 	}
 	if($step!=1) {
 		echo "<li>\n";
-		echo "<a href='".$_SERVER['PHP_SELF']."?step=1";
+		echo "<a href='saisie_incident.php?step=1";
 		if(isset($id_incident)) {echo "&amp;id_incident=$id_incident";}
 		echo "'";
 		echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
@@ -725,7 +873,7 @@ if($etat_incident!='clos') {
 	}
 	if($step!=2) {
 		echo "<li>\n";
-		echo "<a href='".$_SERVER['PHP_SELF']."?step=2";
+		echo "<a href='saisie_incident.php?step=2";
 		if(isset($id_incident)) {echo "&amp;id_incident=$id_incident";}
 		echo "'";
 		echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
@@ -764,7 +912,7 @@ if(isset($id_incident)) {
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)>0) {
 		if($etat_incident!='clos') {
-			echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='form_suppr'>\n";
+			echo "<form enctype='multipart/form-data' action='saisie_incident.php' method='post' name='form_suppr'>\n";
 			echo "<input type='hidden' name='step' value='$step' />\n";
 		}
 
@@ -981,7 +1129,7 @@ if(isset($id_incident)) {
 			$test=mysql_query($sql);
 			if(mysql_num_rows($test)==0) {
 				echo "<p style='color:red;'>N'oubliez pas de ";
-				echo "<a href='".$_SERVER['PHP_SELF']."?step=2";
+				echo "<a href='saisie_incident.php?step=2";
 				if(isset($id_incident)) {echo "&amp;id_incident=$id_incident";}
 				echo "'";
 				echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
@@ -1036,7 +1184,7 @@ if($step==0) {
 
 	echo "<blockquote>\n";
 
-	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire1'>
+	echo "<form enctype='multipart/form-data' action='saisie_incident.php' method='post' name='formulaire1'>
 	<p>
 	Afficher les élèves dont le <b>nom</b> contient: <input type='text' name='rech_nom' value='' />
 	<input type='hidden' name='page' value='$page' />
@@ -1049,10 +1197,10 @@ if($step==0) {
 	if(isset($id_incident)) {echo "<input type='hidden' name='id_incident' value='$id_incident' />\n";}
 	echo "</form>\n";
 
-	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire2'>\n";
+	echo "<form enctype='multipart/form-data' action='saisie_incident.php' method='post' name='formulaire2'>\n";
 
 	if(isset($_POST['recherche_eleve'])) {
-		//echo " | <a href='".$_SERVER['PHP_SELF']."'>Choisir un autre élève</a>\n";
+		//echo " | <a href='saisie_incident.php'>Choisir un autre élève</a>\n";
 		//echo "</p>\n";
 		//echo "</div>\n";
 
@@ -1187,7 +1335,7 @@ elseif($step==1) {
 
 	echo "<blockquote>\n";
 
-	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire1'>
+	echo "<form enctype='multipart/form-data' action='saisie_incident.php' method='post' name='formulaire1'>
 	<p>
 	Afficher les utilisateurs dont le <b>nom</b> contient: <input type='text' name='rech_nom' value='' />
 	<input type='hidden' name='page' value='$page' />
@@ -1201,7 +1349,7 @@ elseif($step==1) {
 	echo "</form>\n";
 
 	if(isset($_POST['recherche_utilisateur'])) {
-        echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire2'>\n";
+        echo "<form enctype='multipart/form-data' action='saisie_incident.php' method='post' name='formulaire2'>\n";
         echo "<input type='hidden' name='page' value='$page' />\n";
         echo "<input type='hidden' name='step' value='$step' />\n";
 
@@ -1223,7 +1371,7 @@ elseif($step==1) {
 			die();
 		}
 
-		echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
+		echo "<form enctype='multipart/form-data' action='saisie_incident.php' method='post' name='formulaire'>\n";
 		echo "<input type='hidden' name='step' value='$step' />\n";
 		echo "<input type='hidden' name='is_posted' value='y' />\n";
 		if(isset($id_incident)) {echo "<input type='hidden' name='id_incident' value='$id_incident' />\n";}
@@ -1291,7 +1439,7 @@ elseif($step==1) {
 	echo "<p class='bold'>Choisir une catégorie de personnels&nbsp;:</p>\n";
 	echo "<blockquote>\n";
 	while($lig=mysql_fetch_object($res)) {
-		echo "<p><a href='".$_SERVER['PHP_SELF']."?step=1&amp;categ_u=".$lig->statut;
+		echo "<p><a href='saisie_incident.php?step=1&amp;categ_u=".$lig->statut;
 		if(isset($id_incident)) {echo "&amp;id_incident=$id_incident";}
 		echo "'";
 		echo " onclick='return confirm_abandon (this, change, \"$themessage\")'";
@@ -1318,8 +1466,8 @@ elseif($step==2) {
 	echo "&nbsp;:</p>\n";
 
 	if($etat_incident!='clos') {
-		//echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire' onsubmit='verif_details_incident();'>\n";
-		echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
+		//echo "<form enctype='multipart/form-data' action='saisie_incident.php' method='post' name='formulaire' onsubmit='verif_details_incident();'>\n";
+		echo "<form enctype='multipart/form-data' action='saisie_incident.php' method='post' name='formulaire'>\n";
 	}
 
 	// Si aucune date n'est encore saisie, proposer la date du jour
@@ -1331,7 +1479,7 @@ elseif($step==2) {
 	$display_heure=strftime("%H").":".strftime("%M");
 
 	//$timestamp_heure=time();
-	$sql="SELECT nom_definie_periode FROM absences_creneaux WHERE CURTIME()>=heuredebut_definie_periode AND CURTIME()<heurefin_definie_periode;";
+	$sql="SELECT nom_definie_periode FROM edt_creneaux WHERE CURTIME()>=heuredebut_definie_periode AND CURTIME()<heurefin_definie_periode;";
 	$res_time=mysql_query($sql);
 	if(mysql_num_rows($res_time)>0) {
 		$lig_time=mysql_fetch_object($res_time);
@@ -1349,8 +1497,7 @@ elseif($step==2) {
 		$sql="SELECT * FROM s_incidents WHERE id_incident='$id_incident';";
 		$res_inc=mysql_query($sql);
 		if(mysql_num_rows($res_inc)>0) {
-			$lig_inc=mysql_fetch_object($res_inc);
-
+			$lig_inc=mysql_fetch_object($res_inc);                        
 			$display_date=formate_date($lig_inc->date);
 			//$display_heure=$lig_inc->heure;
 			if($lig_inc->heure!="") {
@@ -1501,7 +1648,9 @@ elseif($step==2) {
 	//$nature="";
 
 	if($etat_incident!='clos') {
-		echo "<input type='text' name='nature' id='nature' size='30' value=\"".$nature."\" />\n";
+		echo "<input type='text' name='nature' id='nature' size='30' value=\"".$nature."\" ";
+		echo "onkeyup='check_incident()' ";
+		echo "/>\n";
 
 		$sql="SELECT DISTINCT nature FROM s_incidents WHERE nature!='' ORDER BY nature;";
 		$res_nat=mysql_query($sql);
@@ -1521,11 +1670,82 @@ elseif($step==2) {
 
 			$tabdiv_infobulle[]=creer_div_infobulle('div_choix_nature',"Nature de l'incident","",$texte,"",14,0,'y','y','n','n');
 
-
 			echo " <a href='#' onclick=\"return false;\" onmouseover=\"delais_afficher_div('div_explication_choix_nature','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onmouseout=\"cacher_div('div_explication_choix_nature')\"><img src='../images/icons/ico_question_petit.png' width='15' height='15' alt='Choix nature' /></a>";
 
 			$texte="Cliquez pour choisir une nature existante.<br />Ou si aucune nature n'est déjà définie, saisissez la nature d'incident de votre choix.";
 			$tabdiv_infobulle[]=creer_div_infobulle('div_explication_choix_nature',"Choix nature de l'incident","",$texte,"",18,0,'y','y','n','n');
+
+			//====================================================
+
+			/*
+			$titre="Nature de l'incident";
+			$texte="Blabla";
+			$tabdiv_infobulle[]=creer_div_infobulle('div_choix_nature2',"Nature de l'incident","",$texte,"",30,10,'y','y','y','n');
+			*/
+
+			$id_infobulle_nature2='div_choix_nature2';
+			$largeur_infobulle_nature2=35;
+			$hauteur_infobulle_nature2=10;
+		
+			// Conteneur:
+			echo "<div id='$id_infobulle_nature2' class='infobulle_corps' style='color: #000000; border: 1px solid #000000; padding: 0px; position: absolute; width: ".$largeur_infobulle_nature2."em; height: ".$hauteur_infobulle_nature2."em; left: 1600px;'>\n";
+		
+				// Ligne d'entête/titre
+				echo "<div class='infobulle_entete' style='color: #ffffff; cursor: move; font-weight: bold; padding: 0px; width: ".$largeur_infobulle_nature2."em;' onmousedown=\"dragStart(event, '$id_infobulle_nature2')\">\n";
+
+					echo "<div style='color: #ffffff; cursor: move; font-weight: bold; float:right; width: 16px; margin-right: 1px;'>
+<a href='#' onClick=\"cacher_div('$id_infobulle_nature2');return false;\">
+<img src='../images/icons/close16.png' width='16' height='16' alt='Fermer' />
+</a>
+</div>\n";
+					echo "<span style='padding-left: 1px; margin-bottom: 3px;'>Natures d'incidents semblables</span>\n";
+				echo "</div>\n";
+		
+				// Partie texte:
+				$hauteur_hors_titre=$hauteur_infobulle_nature2-1.5;
+				echo "<div id='".$id_infobulle_nature2."_texte' style='width: ".$largeur_infobulle_nature2."em; height: ".$hauteur_hors_titre."em; overflow: auto; padding-left: 1px;'>\n";
+				//$div.=$texte;
+				echo "</div>\n";
+			echo "</div>\n";
+			//=========================================
+
+			/*
+			echo " Bis: <a href='#' onclick=\"return false;\" onmouseover=\"delais_afficher_div('div_choix_nature2','y',10,40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onmouseout=\"cacher_div('div_choix_nature2')\"><img src='../images/icons/ico_question_petit.png' width='15' height='15' alt='Choix nature' /></a>";
+			*/
+
+echo "<script type='text/javascript'>
+	function check_incident(event) {
+
+		saisie=document.getElementById('nature').value;
+
+		//var reg=new RegExp(\"[ ,;.-']+\", \"g\");
+		var reg=new RegExp(\"[ ,;]+\", \"g\");
+		var tab1=saisie.split(reg);
+		var j=0;
+		var tab2=new Array();
+		for (var i=0; i<tab1.length; i++) {
+			chaine_tmp=tab1[i];
+			//alert('chaine_tmp='+chaine_tmp+' et chaine_tmp.length='+chaine_tmp.length);
+			if(chaine_tmp.length>=4) {
+				tab2[j]=tab1[i];
+				j++;
+			}
+		}
+
+		if(tab2.length>0) {
+			chaine_rech='';
+			for (var i=0; i<tab2.length; i++) {
+				chaine_rech=chaine_rech+'_'+tab2[i];
+			}
+
+			//new Ajax.Updater($('div_choix_nature2'),'check_nature_incident.php?chaine_rech='+chaine_rech,{method: 'get'});
+			new Ajax.Updater($('div_choix_nature2_texte'),'check_nature_incident.php?chaine_rech='+chaine_rech,{method: 'get'});
+			afficher_div('div_choix_nature2','y',10,40); ;
+		}
+	}
+
+</script>\n";
+			//====================================================
 
 		}
 	}

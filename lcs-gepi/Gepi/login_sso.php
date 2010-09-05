@@ -1,5 +1,5 @@
 <?php
-/* $Id: login_sso.php 2481 2008-09-28 16:42:56Z tbelliard $
+/* $Id: login_sso.php 4295 2010-04-12 06:24:30Z tbelliard $
 *
 * Copyright 2001, 2008 Thomas Belliard
 *
@@ -35,6 +35,7 @@ if (isset($_POST) && array_key_exists('logoutRequest', $_POST)) {
 }
 // Initialisations files
 require_once("./lib/initialisations.inc.php");
+include("./lib/initialisationsPropel.inc.php");
 
 
 if ($session_gepi->auth_sso && isset($logout_request)) {

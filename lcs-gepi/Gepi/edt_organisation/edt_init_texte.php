@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version $Id: edt_init_texte.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * @version $Id: edt_init_texte.php 4070 2010-02-05 19:43:06Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Julien Jocal
  *
@@ -52,11 +52,11 @@ if (!checkAccess()) {
 }
 // Sécurité supplémentaire par rapport aux paramètres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
-	Die('Vous devez demander à votre administrateur l\'autorisation de voir cette page.');
+	Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
 // CSS et js particulier à l'EdT
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
-$style_specifique = "edt_organisation/style_edt";
+$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
 //==============PROTOTYPE===============
 $utilisation_prototype = "ok";
 //============fin PROTOTYPE=============
@@ -74,6 +74,7 @@ $truncate_cours = isset($_POST["truncate_edt"]) ? $_POST["truncate_edt"] : NULL;
 $etape = NULL;
 $aff_etape = NULL;
 
+echo 	'<div id="lecorps">';
 // On teste d'abord pour savoir à quelle étape on est
 $query = mysql_query("SELECT nom_export FROM edt_init WHERE ident_export = 'fichierTexte'");
 // On affiche le numéro de l'étape
@@ -121,7 +122,7 @@ if ($action == "upload_file") {
 				$etape = 1;
 			}else{
 				// On récupère d'abord le numéro de l'étape actuel
-				$etape = mysql_result($query, "nom_export");
+				$etape = mysql_result($query, 0,"nom_export");
 				// On incrémentera de 1 si cette nouvelle étape est validée
 			}
 
@@ -331,6 +332,7 @@ la derni&egrave;re sera la plus longue. Par contre, les 8 premi&egrave;re &eacut
 			<p><input type="submit" value="Valider" /></p>
 		</form>
 
+<?php echo '</div>' ?>
 <?php
 require_once("../lib/footer.inc.php");
 ?>

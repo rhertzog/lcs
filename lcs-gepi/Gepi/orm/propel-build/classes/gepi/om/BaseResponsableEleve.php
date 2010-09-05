@@ -1,14 +1,20 @@
 <?php
 
+
 /**
  * Base class that represents a row from the 'resp_pers' table.
  *
  * Liste des responsables legaux des eleves
  *
- * @package    gepi.om
+ * @package    propel.generator.gepi.om
  */
-abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
+abstract class BaseResponsableEleve extends BaseObject  implements Persistent
+{
 
+	/**
+	 * Peer class name
+	 */
+  const PEER = 'ResponsableElevePeer';
 
 	/**
 	 * The Peer class.
@@ -89,9 +95,14 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	protected $collResponsableInformations;
 
 	/**
-	 * @var        Criteria The criteria used to select the current contents of collResponsableInformations.
+	 * @var        array JNotificationResponsableEleve[] Collection to store aggregation of JNotificationResponsableEleve objects.
 	 */
-	private $lastResponsableInformationCriteria = null;
+	protected $collJNotificationResponsableEleves;
+
+	/**
+	 * @var        array AbsenceEleveNotification[] Collection to store aggregation of AbsenceEleveNotification objects.
+	 */
+	protected $collAbsenceEleveNotifications;
 
 	/**
 	 * Flag to prevent endless save loop, if this object is referenced
@@ -106,26 +117,6 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	 * @var        boolean
 	 */
 	protected $alreadyInValidation = false;
-
-	/**
-	 * Initializes internal state of BaseResponsableEleve object.
-	 * @see        applyDefaults()
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-		$this->applyDefaultValues();
-	}
-
-	/**
-	 * Applies default values to this object.
-	 * This method should be called from the object's constructor (or
-	 * equivalent initialization method).
-	 * @see        __construct()
-	 */
-	public function applyDefaultValues()
-	{
-	}
 
 	/**
 	 * Get the [pers_id] column value.
@@ -441,11 +432,6 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	 */
 	public function hasOnlyDefaultValues()
 	{
-			// First, ensure that we don't have any columns that have been modified which aren't default columns.
-			if (array_diff($this->modifiedColumns, array())) {
-				return false;
-			}
-
 		// otherwise, everything was equal, so return TRUE
 		return true;
 	} // hasOnlyDefaultValues()
@@ -486,7 +472,6 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 				$this->ensureConsistency();
 			}
 
-			// FIXME - using NUM_COLUMNS may be clearer.
 			return $startcol + 10; // 10 = ResponsableElevePeer::NUM_COLUMNS - ResponsableElevePeer::NUM_LAZY_LOAD_COLUMNS).
 
 		} catch (Exception $e) {
@@ -554,7 +539,8 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 
 			$this->aResponsableEleveAdresse = null;
 			$this->collResponsableInformations = null;
-			$this->lastResponsableInformationCriteria = null;
+
+			$this->collJNotificationResponsableEleves = null;
 
 		} // if (deep)
 	}
@@ -580,9 +566,17 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 		
 		$con->beginTransaction();
 		try {
-			ResponsableElevePeer::doDelete($this, $con);
-			$this->setDeleted(true);
-			$con->commit();
+			$ret = $this->preDelete($con);
+			if ($ret) {
+				ResponsableEleveQuery::create()
+					->filterByPrimaryKey($this->getPrimaryKey())
+					->delete($con);
+				$this->postDelete($con);
+				$con->commit();
+				$this->setDeleted(true);
+			} else {
+				$con->commit();
+			}
 		} catch (PropelException $e) {
 			$con->rollBack();
 			throw $e;
@@ -613,10 +607,27 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 		}
 		
 		$con->beginTransaction();
+		$isInsert = $this->isNew();
 		try {
-			$affectedRows = $this->doSave($con);
+			$ret = $this->preSave($con);
+			if ($isInsert) {
+				$ret = $ret && $this->preInsert($con);
+			} else {
+				$ret = $ret && $this->preUpdate($con);
+			}
+			if ($ret) {
+				$affectedRows = $this->doSave($con);
+				if ($isInsert) {
+					$this->postInsert($con);
+				} else {
+					$this->postUpdate($con);
+				}
+				$this->postSave($con);
+				ResponsableElevePeer::addInstanceToPool($this);
+			} else {
+				$affectedRows = 0;
+			}
 			$con->commit();
-			ResponsableElevePeer::addInstanceToPool($this);
 			return $affectedRows;
 		} catch (PropelException $e) {
 			$con->rollBack();
@@ -657,11 +668,9 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 			// If this object has been modified, then save it to the database.
 			if ($this->isModified()) {
 				if ($this->isNew()) {
-					$pk = ResponsableElevePeer::doInsert($this, $con);
-					$affectedRows += 1; // we are assuming that there is only 1 row per doInsert() which
-										 // should always be true here (even though technically
-										 // BasePeer::doInsert() can insert multiple rows).
-
+					$criteria = $this->buildCriteria();
+					$pk = BasePeer::doInsert($criteria, $con);
+					$affectedRows += 1;
 					$this->setNew(false);
 				} else {
 					$affectedRows += ResponsableElevePeer::doUpdate($this, $con);
@@ -672,6 +681,14 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 
 			if ($this->collResponsableInformations !== null) {
 				foreach ($this->collResponsableInformations as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
+			if ($this->collJNotificationResponsableEleves !== null) {
+				foreach ($this->collJNotificationResponsableEleves as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
@@ -769,6 +786,14 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 					}
 				}
 
+				if ($this->collJNotificationResponsableEleves !== null) {
+					foreach ($this->collJNotificationResponsableEleves as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
 
 			$this->alreadyInValidation = false;
 		}
@@ -844,12 +869,15 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	 * You can specify the key type of the array by passing one of the class
 	 * type constants.
 	 *
-	 * @param      string $keyType (optional) One of the class type constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME
-	 *                        BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. Defaults to BasePeer::TYPE_PHPNAME.
-	 * @param      boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns.  Defaults to TRUE.
-	 * @return     an associative array containing the field names (as keys) and field values
+	 * @param     string  $keyType (optional) One of the class type constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME,
+	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. 
+	 *                    Defaults to BasePeer::TYPE_PHPNAME.
+	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
+	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
+	 *
+	 * @return    array an associative array containing the field names (as keys) and field values
 	 */
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $includeForeignObjects = false)
 	{
 		$keys = ResponsableElevePeer::getFieldNames($keyType);
 		$result = array(
@@ -864,6 +892,11 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 			$keys[8] => $this->getMel(),
 			$keys[9] => $this->getAdrId(),
 		);
+		if ($includeForeignObjects) {
+			if (null !== $this->aResponsableEleveAdresse) {
+				$result['ResponsableEleveAdresse'] = $this->aResponsableEleveAdresse->toArray($keyType, $includeLazyLoadColumns, true);
+			}
+		}
 		return $result;
 	}
 
@@ -994,7 +1027,6 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	public function buildPkeyCriteria()
 	{
 		$criteria = new Criteria(ResponsableElevePeer::DATABASE_NAME);
-
 		$criteria->add(ResponsableElevePeer::PERS_ID, $this->pers_id);
 
 		return $criteria;
@@ -1021,6 +1053,15 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	}
 
 	/**
+	 * Returns true if the primary key for this object is null.
+	 * @return     boolean
+	 */
+	public function isPrimaryKeyNull()
+	{
+		return null === $this->getPersId();
+	}
+
+	/**
 	 * Sets contents of passed object to values from current object.
 	 *
 	 * If desired, this method can also make copies of all associated (fkey referrers)
@@ -1032,27 +1073,16 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	 */
 	public function copyInto($copyObj, $deepCopy = false)
 	{
-
 		$copyObj->setPersId($this->pers_id);
-
 		$copyObj->setLogin($this->login);
-
 		$copyObj->setNom($this->nom);
-
 		$copyObj->setPrenom($this->prenom);
-
 		$copyObj->setCivilite($this->civilite);
-
 		$copyObj->setTelPers($this->tel_pers);
-
 		$copyObj->setTelPort($this->tel_port);
-
 		$copyObj->setTelProf($this->tel_prof);
-
 		$copyObj->setMel($this->mel);
-
 		$copyObj->setAdrId($this->adr_id);
-
 
 		if ($deepCopy) {
 			// important: temporarily setNew(false) because this affects the behavior of
@@ -1065,11 +1095,16 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 				}
 			}
 
+			foreach ($this->getJNotificationResponsableEleves() as $relObj) {
+				if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+					$copyObj->addJNotificationResponsableEleve($relObj->copy($deepCopy));
+				}
+			}
+
 		} // if ($deepCopy)
 
 
 		$copyObj->setNew(true);
-
 	}
 
 	/**
@@ -1147,7 +1182,7 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	public function getResponsableEleveAdresse(PropelPDO $con = null)
 	{
 		if ($this->aResponsableEleveAdresse === null && (($this->adr_id !== "" && $this->adr_id !== null))) {
-			$this->aResponsableEleveAdresse = ResponsableEleveAdressePeer::retrieveByPK($this->adr_id, $con);
+			$this->aResponsableEleveAdresse = ResponsableEleveAdresseQuery::create()->findPk($this->adr_id, $con);
 			/* The following can be used additionally to
 			   guarantee the related object contains a reference
 			   to this object.  This level of coupling may, however, be
@@ -1160,7 +1195,7 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	}
 
 	/**
-	 * Clears out the collResponsableInformations collection (array).
+	 * Clears out the collResponsableInformations collection
 	 *
 	 * This does not modify the database; however, it will remove any associated objects, causing
 	 * them to be refetched by subsequent calls to accessor method.
@@ -1174,7 +1209,7 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	}
 
 	/**
-	 * Initializes the collResponsableInformations collection (array).
+	 * Initializes the collResponsableInformations collection.
 	 *
 	 * By default this just sets the collResponsableInformations collection to an empty array (like clearcollResponsableInformations());
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
@@ -1184,59 +1219,40 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	 */
 	public function initResponsableInformations()
 	{
-		$this->collResponsableInformations = array();
+		$this->collResponsableInformations = new PropelObjectCollection();
+		$this->collResponsableInformations->setModel('ResponsableInformation');
 	}
 
 	/**
 	 * Gets an array of ResponsableInformation objects which contain a foreign key that references this object.
 	 *
-	 * If this collection has already been initialized with an identical Criteria, it returns the collection.
-	 * Otherwise if this ResponsableEleve has previously been saved, it will retrieve
-	 * related ResponsableInformations from storage. If this ResponsableEleve is new, it will return
-	 * an empty collection or the current collection, the criteria is ignored on a new object.
+	 * If the $criteria is not null, it is used to always fetch the results from the database.
+	 * Otherwise the results are fetched from the database the first time, then cached.
+	 * Next time the same method is called without $criteria, the cached collection is returned.
+	 * If this ResponsableEleve is new, it will return
+	 * an empty collection or the current collection; the criteria is ignored on a new object.
 	 *
-	 * @param      PropelPDO $con
-	 * @param      Criteria $criteria
-	 * @return     array ResponsableInformation[]
+	 * @param      Criteria $criteria optional Criteria object to narrow the query
+	 * @param      PropelPDO $con optional connection object
+	 * @return     PropelCollection|array ResponsableInformation[] List of ResponsableInformation objects
 	 * @throws     PropelException
 	 */
 	public function getResponsableInformations($criteria = null, PropelPDO $con = null)
 	{
-		if ($criteria === null) {
-			$criteria = new Criteria(ResponsableElevePeer::DATABASE_NAME);
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		if ($this->collResponsableInformations === null) {
-			if ($this->isNew()) {
-			   $this->collResponsableInformations = array();
+		if(null === $this->collResponsableInformations || null !== $criteria) {
+			if ($this->isNew() && null === $this->collResponsableInformations) {
+				// return empty collection
+				$this->initResponsableInformations();
 			} else {
-
-				$criteria->add(ResponsableInformationPeer::PERS_ID, $this->pers_id);
-
-				ResponsableInformationPeer::addSelectColumns($criteria);
-				$this->collResponsableInformations = ResponsableInformationPeer::doSelect($criteria, $con);
-			}
-		} else {
-			// criteria has no effect for a new object
-			if (!$this->isNew()) {
-				// the following code is to determine if a new query is
-				// called for.  If the criteria is the same as the last
-				// one, just return the collection.
-
-
-				$criteria->add(ResponsableInformationPeer::PERS_ID, $this->pers_id);
-
-				ResponsableInformationPeer::addSelectColumns($criteria);
-				if (!isset($this->lastResponsableInformationCriteria) || !$this->lastResponsableInformationCriteria->equals($criteria)) {
-					$this->collResponsableInformations = ResponsableInformationPeer::doSelect($criteria, $con);
+				$collResponsableInformations = ResponsableInformationQuery::create(null, $criteria)
+					->filterByResponsableEleve($this)
+					->find($con);
+				if (null !== $criteria) {
+					return $collResponsableInformations;
 				}
+				$this->collResponsableInformations = $collResponsableInformations;
 			}
 		}
-		$this->lastResponsableInformationCriteria = $criteria;
 		return $this->collResponsableInformations;
 	}
 
@@ -1251,48 +1267,21 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	 */
 	public function countResponsableInformations(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
 	{
-		if ($criteria === null) {
-			$criteria = new Criteria(ResponsableElevePeer::DATABASE_NAME);
-		} else {
-			$criteria = clone $criteria;
-		}
-
-		if ($distinct) {
-			$criteria->setDistinct();
-		}
-
-		$count = null;
-
-		if ($this->collResponsableInformations === null) {
-			if ($this->isNew()) {
-				$count = 0;
+		if(null === $this->collResponsableInformations || null !== $criteria) {
+			if ($this->isNew() && null === $this->collResponsableInformations) {
+				return 0;
 			} else {
-
-				$criteria->add(ResponsableInformationPeer::PERS_ID, $this->pers_id);
-
-				$count = ResponsableInformationPeer::doCount($criteria, $con);
-			}
-		} else {
-			// criteria has no effect for a new object
-			if (!$this->isNew()) {
-				// the following code is to determine if a new query is
-				// called for.  If the criteria is the same as the last
-				// one, just return count of the collection.
-
-
-				$criteria->add(ResponsableInformationPeer::PERS_ID, $this->pers_id);
-
-				if (!isset($this->lastResponsableInformationCriteria) || !$this->lastResponsableInformationCriteria->equals($criteria)) {
-					$count = ResponsableInformationPeer::doCount($criteria, $con);
-				} else {
-					$count = count($this->collResponsableInformations);
+				$query = ResponsableInformationQuery::create(null, $criteria);
+				if($distinct) {
+					$query->distinct();
 				}
-			} else {
-				$count = count($this->collResponsableInformations);
+				return $query
+					->filterByResponsableEleve($this)
+					->count($con);
 			}
+		} else {
+			return count($this->collResponsableInformations);
 		}
-		$this->lastResponsableInformationCriteria = $criteria;
-		return $count;
 	}
 
 	/**
@@ -1308,8 +1297,8 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 		if ($this->collResponsableInformations === null) {
 			$this->initResponsableInformations();
 		}
-		if (!in_array($l, $this->collResponsableInformations, true)) { // only add it if the **same** object is not already associated
-			array_push($this->collResponsableInformations, $l);
+		if (!$this->collResponsableInformations->contains($l)) { // only add it if the **same** object is not already associated
+			$this->collResponsableInformations[]= $l;
 			$l->setResponsableEleve($this);
 		}
 	}
@@ -1325,40 +1314,288 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 	 * This method is protected by default in order to keep the public
 	 * api reasonable.  You can provide public methods for those you
 	 * actually need in ResponsableEleve.
+	 *
+	 * @param      Criteria $criteria optional Criteria object to narrow the query
+	 * @param      PropelPDO $con optional connection object
+	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+	 * @return     PropelCollection|array ResponsableInformation[] List of ResponsableInformation objects
 	 */
 	public function getResponsableInformationsJoinEleve($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
-		if ($criteria === null) {
-			$criteria = new Criteria(ResponsableElevePeer::DATABASE_NAME);
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
+		$query = ResponsableInformationQuery::create(null, $criteria);
+		$query->joinWith('Eleve', $join_behavior);
 
-		if ($this->collResponsableInformations === null) {
-			if ($this->isNew()) {
-				$this->collResponsableInformations = array();
+		return $this->getResponsableInformations($query, $con);
+	}
+
+	/**
+	 * Clears out the collJNotificationResponsableEleves collection
+	 *
+	 * This does not modify the database; however, it will remove any associated objects, causing
+	 * them to be refetched by subsequent calls to accessor method.
+	 *
+	 * @return     void
+	 * @see        addJNotificationResponsableEleves()
+	 */
+	public function clearJNotificationResponsableEleves()
+	{
+		$this->collJNotificationResponsableEleves = null; // important to set this to NULL since that means it is uninitialized
+	}
+
+	/**
+	 * Initializes the collJNotificationResponsableEleves collection.
+	 *
+	 * By default this just sets the collJNotificationResponsableEleves collection to an empty array (like clearcollJNotificationResponsableEleves());
+	 * however, you may wish to override this method in your stub class to provide setting appropriate
+	 * to your application -- for example, setting the initial array to the values stored in database.
+	 *
+	 * @return     void
+	 */
+	public function initJNotificationResponsableEleves()
+	{
+		$this->collJNotificationResponsableEleves = new PropelObjectCollection();
+		$this->collJNotificationResponsableEleves->setModel('JNotificationResponsableEleve');
+	}
+
+	/**
+	 * Gets an array of JNotificationResponsableEleve objects which contain a foreign key that references this object.
+	 *
+	 * If the $criteria is not null, it is used to always fetch the results from the database.
+	 * Otherwise the results are fetched from the database the first time, then cached.
+	 * Next time the same method is called without $criteria, the cached collection is returned.
+	 * If this ResponsableEleve is new, it will return
+	 * an empty collection or the current collection; the criteria is ignored on a new object.
+	 *
+	 * @param      Criteria $criteria optional Criteria object to narrow the query
+	 * @param      PropelPDO $con optional connection object
+	 * @return     PropelCollection|array JNotificationResponsableEleve[] List of JNotificationResponsableEleve objects
+	 * @throws     PropelException
+	 */
+	public function getJNotificationResponsableEleves($criteria = null, PropelPDO $con = null)
+	{
+		if(null === $this->collJNotificationResponsableEleves || null !== $criteria) {
+			if ($this->isNew() && null === $this->collJNotificationResponsableEleves) {
+				// return empty collection
+				$this->initJNotificationResponsableEleves();
 			} else {
+				$collJNotificationResponsableEleves = JNotificationResponsableEleveQuery::create(null, $criteria)
+					->filterByResponsableEleve($this)
+					->find($con);
+				if (null !== $criteria) {
+					return $collJNotificationResponsableEleves;
+				}
+				$this->collJNotificationResponsableEleves = $collJNotificationResponsableEleves;
+			}
+		}
+		return $this->collJNotificationResponsableEleves;
+	}
 
-				$criteria->add(ResponsableInformationPeer::PERS_ID, $this->pers_id);
-
-				$this->collResponsableInformations = ResponsableInformationPeer::doSelectJoinEleve($criteria, $con, $join_behavior);
+	/**
+	 * Returns the number of related JNotificationResponsableEleve objects.
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct
+	 * @param      PropelPDO $con
+	 * @return     int Count of related JNotificationResponsableEleve objects.
+	 * @throws     PropelException
+	 */
+	public function countJNotificationResponsableEleves(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+	{
+		if(null === $this->collJNotificationResponsableEleves || null !== $criteria) {
+			if ($this->isNew() && null === $this->collJNotificationResponsableEleves) {
+				return 0;
+			} else {
+				$query = JNotificationResponsableEleveQuery::create(null, $criteria);
+				if($distinct) {
+					$query->distinct();
+				}
+				return $query
+					->filterByResponsableEleve($this)
+					->count($con);
 			}
 		} else {
-			// the following code is to determine if a new query is
-			// called for.  If the criteria is the same as the last
-			// one, just return the collection.
+			return count($this->collJNotificationResponsableEleves);
+		}
+	}
 
-			$criteria->add(ResponsableInformationPeer::PERS_ID, $this->pers_id);
+	/**
+	 * Method called to associate a JNotificationResponsableEleve object to this object
+	 * through the JNotificationResponsableEleve foreign key attribute.
+	 *
+	 * @param      JNotificationResponsableEleve $l JNotificationResponsableEleve
+	 * @return     void
+	 * @throws     PropelException
+	 */
+	public function addJNotificationResponsableEleve(JNotificationResponsableEleve $l)
+	{
+		if ($this->collJNotificationResponsableEleves === null) {
+			$this->initJNotificationResponsableEleves();
+		}
+		if (!$this->collJNotificationResponsableEleves->contains($l)) { // only add it if the **same** object is not already associated
+			$this->collJNotificationResponsableEleves[]= $l;
+			$l->setResponsableEleve($this);
+		}
+	}
 
-			if (!isset($this->lastResponsableInformationCriteria) || !$this->lastResponsableInformationCriteria->equals($criteria)) {
-				$this->collResponsableInformations = ResponsableInformationPeer::doSelectJoinEleve($criteria, $con, $join_behavior);
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this ResponsableEleve is new, it will return
+	 * an empty collection; or if this ResponsableEleve has previously
+	 * been saved, it will retrieve related JNotificationResponsableEleves from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in ResponsableEleve.
+	 *
+	 * @param      Criteria $criteria optional Criteria object to narrow the query
+	 * @param      PropelPDO $con optional connection object
+	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+	 * @return     PropelCollection|array JNotificationResponsableEleve[] List of JNotificationResponsableEleve objects
+	 */
+	public function getJNotificationResponsableElevesJoinAbsenceEleveNotification($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		$query = JNotificationResponsableEleveQuery::create(null, $criteria);
+		$query->joinWith('AbsenceEleveNotification', $join_behavior);
+
+		return $this->getJNotificationResponsableEleves($query, $con);
+	}
+
+	/**
+	 * Clears out the collAbsenceEleveNotifications collection
+	 *
+	 * This does not modify the database; however, it will remove any associated objects, causing
+	 * them to be refetched by subsequent calls to accessor method.
+	 *
+	 * @return     void
+	 * @see        addAbsenceEleveNotifications()
+	 */
+	public function clearAbsenceEleveNotifications()
+	{
+		$this->collAbsenceEleveNotifications = null; // important to set this to NULL since that means it is uninitialized
+	}
+
+	/**
+	 * Initializes the collAbsenceEleveNotifications collection.
+	 *
+	 * By default this just sets the collAbsenceEleveNotifications collection to an empty collection (like clearAbsenceEleveNotifications());
+	 * however, you may wish to override this method in your stub class to provide setting appropriate
+	 * to your application -- for example, setting the initial array to the values stored in database.
+	 *
+	 * @return     void
+	 */
+	public function initAbsenceEleveNotifications()
+	{
+		$this->collAbsenceEleveNotifications = new PropelObjectCollection();
+		$this->collAbsenceEleveNotifications->setModel('AbsenceEleveNotification');
+	}
+
+	/**
+	 * Gets a collection of AbsenceEleveNotification objects related by a many-to-many relationship
+	 * to the current object by way of the j_notifications_resp_pers cross-reference table.
+	 *
+	 * If the $criteria is not null, it is used to always fetch the results from the database.
+	 * Otherwise the results are fetched from the database the first time, then cached.
+	 * Next time the same method is called without $criteria, the cached collection is returned.
+	 * If this ResponsableEleve is new, it will return
+	 * an empty collection or the current collection; the criteria is ignored on a new object.
+	 *
+	 * @param      Criteria $criteria Optional query object to filter the query
+	 * @param      PropelPDO $con Optional connection object
+	 *
+	 * @return     PropelCollection|array AbsenceEleveNotification[] List of AbsenceEleveNotification objects
+	 */
+	public function getAbsenceEleveNotifications($criteria = null, PropelPDO $con = null)
+	{
+		if(null === $this->collAbsenceEleveNotifications || null !== $criteria) {
+			if ($this->isNew() && null === $this->collAbsenceEleveNotifications) {
+				// return empty collection
+				$this->initAbsenceEleveNotifications();
+			} else {
+				$collAbsenceEleveNotifications = AbsenceEleveNotificationQuery::create(null, $criteria)
+					->filterByResponsableEleve($this)
+					->find($con);
+				if (null !== $criteria) {
+					return $collAbsenceEleveNotifications;
+				}
+				$this->collAbsenceEleveNotifications = $collAbsenceEleveNotifications;
 			}
 		}
-		$this->lastResponsableInformationCriteria = $criteria;
+		return $this->collAbsenceEleveNotifications;
+	}
 
-		return $this->collResponsableInformations;
+	/**
+	 * Gets the number of AbsenceEleveNotification objects related by a many-to-many relationship
+	 * to the current object by way of the j_notifications_resp_pers cross-reference table.
+	 *
+	 * @param      Criteria $criteria Optional query object to filter the query
+	 * @param      boolean $distinct Set to true to force count distinct
+	 * @param      PropelPDO $con Optional connection object
+	 *
+	 * @return     int the number of related AbsenceEleveNotification objects
+	 */
+	public function countAbsenceEleveNotifications($criteria = null, $distinct = false, PropelPDO $con = null)
+	{
+		if(null === $this->collAbsenceEleveNotifications || null !== $criteria) {
+			if ($this->isNew() && null === $this->collAbsenceEleveNotifications) {
+				return 0;
+			} else {
+				$query = AbsenceEleveNotificationQuery::create(null, $criteria);
+				if($distinct) {
+					$query->distinct();
+				}
+				return $query
+					->filterByResponsableEleve($this)
+					->count($con);
+			}
+		} else {
+			return count($this->collAbsenceEleveNotifications);
+		}
+	}
+
+	/**
+	 * Associate a AbsenceEleveNotification object to this object
+	 * through the j_notifications_resp_pers cross reference table.
+	 *
+	 * @param      AbsenceEleveNotification $absenceEleveNotification The JNotificationResponsableEleve object to relate
+	 * @return     void
+	 */
+	public function addAbsenceEleveNotification($absenceEleveNotification)
+	{
+		if ($this->collAbsenceEleveNotifications === null) {
+			$this->initAbsenceEleveNotifications();
+		}
+		if (!$this->collAbsenceEleveNotifications->contains($absenceEleveNotification)) { // only add it if the **same** object is not already associated
+			$jNotificationResponsableEleve = new JNotificationResponsableEleve();
+			$jNotificationResponsableEleve->setAbsenceEleveNotification($absenceEleveNotification);
+			$this->addJNotificationResponsableEleve($jNotificationResponsableEleve);
+			
+			$this->collAbsenceEleveNotifications[]= $absenceEleveNotification;
+		}
+	}
+
+	/**
+	 * Clears the current object and sets all attributes to their default values
+	 */
+	public function clear()
+	{
+		$this->pers_id = null;
+		$this->login = null;
+		$this->nom = null;
+		$this->prenom = null;
+		$this->civilite = null;
+		$this->tel_pers = null;
+		$this->tel_port = null;
+		$this->tel_prof = null;
+		$this->mel = null;
+		$this->adr_id = null;
+		$this->alreadyInSave = false;
+		$this->alreadyInValidation = false;
+		$this->clearAllReferences();
+		$this->resetModified();
+		$this->setNew(true);
+		$this->setDeleted(false);
 	}
 
 	/**
@@ -1378,10 +1615,35 @@ abstract class BaseResponsableEleve extends BaseObject  implements Persistent {
 					$o->clearAllReferences($deep);
 				}
 			}
+			if ($this->collJNotificationResponsableEleves) {
+				foreach ((array) $this->collJNotificationResponsableEleves as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
 		} // if ($deep)
 
 		$this->collResponsableInformations = null;
-			$this->aResponsableEleveAdresse = null;
+		$this->collJNotificationResponsableEleves = null;
+		$this->aResponsableEleveAdresse = null;
+	}
+
+	/**
+	 * Catches calls to virtual methods
+	 */
+	public function __call($name, $params)
+	{
+		if (preg_match('/get(\w+)/', $name, $matches)) {
+			$virtualColumn = $matches[1];
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
+			// no lcfirst in php<5.3...
+			$virtualColumn[0] = strtolower($virtualColumn[0]);
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
+		}
+		return parent::__call($name, $params);
 	}
 
 } // BaseResponsableEleve

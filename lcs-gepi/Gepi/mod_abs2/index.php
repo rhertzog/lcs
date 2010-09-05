@@ -1,10 +1,12 @@
 <?php
 /**
  *
+ * @version $Id: index.php 5018 2010-08-04 21:23:31Z jjacquard $
  *
- * @version $Id: index.php 2968 2009-03-03 20:11:00Z jjocal $
+ * Copyright 2010 Josselin Jacquard
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Eric Lebrun, Stephane Boireau, Julien Jocal
+ * This file and the mod_abs2 module is distributed under GPL version 3, or
+ * (at your option) any later version.
  *
  * This file is part of GEPI.
  *
@@ -23,12 +25,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-$utiliser_pdo = 'on';
-//error_reporting(0);
 // Initialisation des feuilles de style après modification pour améliorer l'accessibilité
 $accessibilite="y";
 
 // Initialisations files
+include("../lib/initialisationsPropel.inc.php");
 require_once("../lib/initialisations.inc.php");
 // Resume session
 $resultat_session = $session_gepi->security_check();
@@ -38,32 +39,61 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
-//debug_var();
-// ============== traitement des variables ==================
-
-
-// ============== Code métier ===============================
-include("lib/erreurs.php");
-
-try{
-
-  // ICI, on peut appliquer tout le code nécessaire mais sans utiliser de SQL
-  // On préfèrera mettre tout le SQL dans les classes adéquates même s'il faut en créer de nouvelles
-
-}catch(exception $e){
-  affExceptions($e);
 }
-//**************** EN-TETE *****************
+
+if (!checkAccess()) {
+    header("Location: ../logout.php?auto=1");
+    die();
+}
+
+//recherche de l'utilisateur avec propel
+$utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
+if ($utilisateur == null) {
+	header("Location: ../logout.php?auto=1");
+	die();
+}
+
+//On vérifie si le module est activé
+if (getSettingValue("active_module_absence")!='2') {
+    die("Le module n'est pas activé.");
+}
+
+if ($utilisateur->getStatut()=="professeur" &&  getSettingValue("active_module_absence_professeur")!='y') {
+    die("Le module n'est pas activé.");
+}
+
+//on va redirigé vers le bonee onglet
+if (isset($_SESSION['abs2_onglet']) && $_SESSION['abs2_onglet'] != 'index.php') {
+    header("Location: ./".$_SESSION['abs2_onglet']);
+    die();
+}
+
+if ($utilisateur->getStatut()=="cpe" || $utilisateur->getStatut()=="scolarite") {
+    header("Location: ./tableau_des_appels.php");
+    die();
+} else if ($utilisateur->getStatut()=="professeur") {
+    header("Location: ./saisir_groupe.php");
+    die();
+} else if ($utilisateur->getStatut()=="autre") {
+    header("Location: ./saisir_eleve.php");
+    die();
+}
+
+//==============================================
+$style_specifique[] = "mod_abs2/lib/abs_style";
 $titre_page = "Les absences";
+$utilisation_jsdivdrag = "non";
+$_SESSION['cacher_header'] = "y";
 require_once("../lib/header.inc");
-require("lib/abs_menu.php");
 //**************** FIN EN-TETE *****************
 
+include('menu_abs2.inc.php');
 
+echo "<div class='css-panes' id='containDiv'>\n";
+    echo "<div style='display:block'>\n";
+    //echo "<p>Petit texte de présentation du module...</p>\n";
+    echo "</div>\n";
+echo "</div>\n";
+
+require_once("../lib/footer.inc.php");
 ?>
-
-
-
-
-<?php require_once("../lib/footer.inc.php"); ?>

@@ -3,7 +3,7 @@
 /*
  *
  *
- * @version $Id: visu_ele_func.lib.php 4405 2010-05-10 06:29:45Z crob $
+ * @version $Id: visu_ele_func.lib.php 4878 2010-07-24 13:54:01Z regis $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -48,7 +48,6 @@ function jour_en_fr($en){
 	}
 	else {return "";}
 }
-
 /*
 function get_commune($code_commune_insee,$mode){
 	$retour="";
@@ -67,7 +66,6 @@ function get_commune($code_commune_insee,$mode){
 	return $retour;
 }
 */
-
 function info_eleve($ele_login) {
 	global $ele_lieu_naissance;
 	global $active_cahiers_texte;
@@ -180,6 +178,8 @@ function info_eleve($ele_login) {
 
 			$tab_ele['rn_sign_nblig']=$lig_clas->rn_sign_nblig;
 			if($tab_ele['rn_sign_nblig']==0) {$tab_ele['rn_sign_nblig']=3;}
+
+			//echo "\$tab_ele['rn_sign_resp']=$lig_clas->rn_sign_resp<br/>";
 
 			// Liste des périodes dans la classe
 			$sql="SELECT p.* FROM periodes p, j_eleves_classes jec WHERE jec.login='$ele_login' AND p.num_periode=jec.periode AND jec.id_classe='".$lig_clas->id."' ORDER BY p.num_periode;";
@@ -705,7 +705,7 @@ function info_eleve($ele_login) {
 		while($rep = mysql_fetch_object($query)){
 
 			$jour = date("d/m", $rep->debut_ts);
-			$creneau = mysql_fetch_array(mysql_query("SELECT nom_definie_periode FROM absences_creneaux WHERE id_definie_periode = '".$rep->creneau_id."' LIMIT 1"));
+			$creneau = mysql_fetch_array(mysql_query("SELECT nom_definie_periode FROM edt_creneaux WHERE id_definie_periode = '".$rep->creneau_id."' LIMIT 1"));
 
 			$tab_ele['abs_quotidien'][$s]['retard_absence'] = $rep->retard_absence;
 			$tab_ele['abs_quotidien'][$s]['jour_semaine'] = $rep->jour_semaine . ' ' . $jour;
@@ -939,6 +939,12 @@ function releve_html($tab_rel,$id_classe,$num_periode,$index_per) {
 	echo "<hr />";
 	*/
 
+	/*
+	echo "<pre>";
+	print_r($tab_rel);
+	echo "</pre>";
+	*/
+
 	echo "<table width='$releve_largeurtableau' border='0' cellspacing='".$releve_cellspacing."' cellpadding='".$releve_cellpadding."' summary='Relevé de notes'>\n";
 
 	echo "<tr>\n";
@@ -946,8 +952,9 @@ function releve_html($tab_rel,$id_classe,$num_periode,$index_per) {
 	if ($activer_photo_releve=='y' and $active_module_trombinoscopes=='y') {
 		$photo=nom_photo($tab_rel['elenoet']);
 		//echo "$photo";
-		if("$photo"!=""){
-			$photo="../photos/eleves/".$photo;
+		//if("$photo"!=""){
+		if($photo){
+			//$photo="../photos/eleves/".$photo;
 			if(file_exists($photo)){
 				$dimphoto=redimensionne_image_releve($photo);
 

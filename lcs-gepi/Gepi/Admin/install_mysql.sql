@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
--- version 3.2.3
+-- version 3.3.6
 -- http://www.phpmyadmin.net
 --
 -- Serveur: localhost
--- Généré le : Jeu 03 Décembre 2009 à 12:18
+-- Généré le : Dim 05 Septembre 2010 à 13:23
 -- Version du serveur: 5.0.32
 -- Version de PHP: 5.2.0-8+etch16
 
@@ -64,63 +64,6 @@ INSERT INTO `absences_actions` (`id_absence_action`, `init_absence_action`, `def
 (3, 'LP', 'Lettre aux parents'),
 (4, 'CE', 'Demande de convocation de l&#039;&eacute;l&egrave;ve en vie scolaire'),
 (5, 'A', 'Aucune');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `absences_creneaux`
---
-
-CREATE TABLE IF NOT EXISTS `absences_creneaux` (
-  `id_definie_periode` int(11) NOT NULL auto_increment,
-  `nom_definie_periode` varchar(10) NOT NULL default '',
-  `heuredebut_definie_periode` time NOT NULL default '00:00:00',
-  `heurefin_definie_periode` time NOT NULL default '00:00:00',
-  `suivi_definie_periode` tinyint(4) NOT NULL,
-  `type_creneaux` varchar(15) NOT NULL,
-  PRIMARY KEY  (`id_definie_periode`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
-
---
--- Contenu de la table `absences_creneaux`
---
-
-INSERT INTO `absences_creneaux` (`id_definie_periode`, `nom_definie_periode`, `heuredebut_definie_periode`, `heurefin_definie_periode`, `suivi_definie_periode`, `type_creneaux`) VALUES
-(1, 'M1', '08:00:00', '08:55:00', 1, 'cours'),
-(2, 'M2', '08:55:00', '09:50:00', 1, 'cours'),
-(3, 'M3', '10:05:00', '11:00:00', 1, 'cours'),
-(4, 'M4', '11:00:00', '11:55:00', 1, 'cours'),
-(5, 'M5', '11:55:00', '12:30:00', 1, 'cours'),
-(6, 'S1', '13:30:00', '14:25:00', 1, 'cours'),
-(7, 'S2', '14:25:00', '15:20:00', 1, 'cours'),
-(8, 'S3', '15:35:00', '16:30:00', 1, 'cours'),
-(9, 'S4', '16:30:00', '17:30:00', 1, 'cours'),
-(10, 'S5', '17:30:00', '18:25:00', 1, 'cours'),
-(11, 'P1', '09:50:00', '10:05:00', 1, 'pause'),
-(12, 'P2', '15:20:00', '15:35:00', 1, 'pause'),
-(13, 'R', '12:00:00', '13:00:00', 1, 'repas'),
-(14, 'R1', '13:00:00', '13:30:00', 1, 'pause');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `absences_creneaux_bis`
---
-
-CREATE TABLE IF NOT EXISTS `absences_creneaux_bis` (
-  `id_definie_periode` int(11) NOT NULL auto_increment,
-  `nom_definie_periode` varchar(10) NOT NULL default '',
-  `heuredebut_definie_periode` time NOT NULL default '00:00:00',
-  `heurefin_definie_periode` time NOT NULL default '00:00:00',
-  `suivi_definie_periode` tinyint(4) NOT NULL,
-  `type_creneaux` varchar(15) NOT NULL,
-  PRIMARY KEY  (`id_definie_periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
---
--- Contenu de la table `absences_creneaux_bis`
---
-
 
 -- --------------------------------------------------------
 
@@ -229,7 +172,8 @@ CREATE TABLE IF NOT EXISTS `absences_rb` (
   `fin_ts` int(11) NOT NULL,
   `date_saisie` int(20) NOT NULL,
   `login_saisie` varchar(30) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `eleve_debut_fin_retard` (`eleve_id`,`debut_ts`,`fin_ts`,`retard_absence`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
@@ -340,6 +284,7 @@ CREATE TABLE IF NOT EXISTS `aid_config` (
   `bull_simplifie` char(1) NOT NULL default 'y',
   `outils_complementaires` enum('y','n') NOT NULL default 'n',
   `feuille_presence` enum('y','n') NOT NULL default 'n',
+  `autoriser_inscript_multiples` char(1) NOT NULL default 'n',
   PRIMARY KEY  (`indice_aid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -681,6 +626,245 @@ CREATE TABLE IF NOT EXISTS `avis_conseil_classe` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `a_justifications`
+--
+
+CREATE TABLE IF NOT EXISTS `a_justifications` (
+  `id` int(11) NOT NULL auto_increment COMMENT 'cle primaire auto-incrementee',
+  `nom` varchar(250) NOT NULL COMMENT 'Nom de la justification',
+  `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
+  `sortable_rank` int(11) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Liste des justifications possibles pour une absence' AUTO_INCREMENT=4 ;
+
+--
+-- Contenu de la table `a_justifications`
+--
+
+INSERT INTO `a_justifications` (`id`, `nom`, `commentaire`, `sortable_rank`) VALUES
+(1, 'Certificat médical', 'Une justification établie par une autorité médicale', 1),
+(2, 'Courrier familial', 'Justification par courrier de la famille', 2),
+(3, 'Justificatif d''une administration publique', 'Justification émise par une administration publique', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `a_motifs`
+--
+
+CREATE TABLE IF NOT EXISTS `a_motifs` (
+  `id` int(11) NOT NULL auto_increment COMMENT 'cle primaire auto-incrementee',
+  `nom` varchar(250) NOT NULL COMMENT 'Nom du motif',
+  `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
+  `sortable_rank` int(11) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Liste des motifs possibles pour une absence' AUTO_INCREMENT=4 ;
+
+--
+-- Contenu de la table `a_motifs`
+--
+
+INSERT INTO `a_motifs` (`id`, `nom`, `commentaire`, `sortable_rank`) VALUES
+(1, 'Médical', 'L''élève est absent pour raison médicale', 1),
+(2, 'Familial', 'L''élève est absent pour raison familiale', 2),
+(3, 'Sportive', 'L''élève est absent pour cause de compétition sportive', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `a_notifications`
+--
+
+CREATE TABLE IF NOT EXISTS `a_notifications` (
+  `id` int(11) NOT NULL auto_increment,
+  `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui envoi la notification',
+  `a_traitement_id` int(12) NOT NULL COMMENT 'cle etrangere du traitement qu''on notifie',
+  `type_notification` int(5) default NULL COMMENT 'type de notification (0 : email, 1 : courrier, 2 : sms)',
+  `email` varchar(100) default NULL COMMENT 'email de destination (pour le type email)',
+  `telephone` varchar(100) default NULL COMMENT 'numero du telephone de destination (pour le type sms)',
+  `adr_id` varchar(10) default NULL COMMENT 'cle etrangere vers l''adresse de destination (pour le type courrier)',
+  `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
+  `statut_envoi` int(5) default '0' COMMENT 'Statut de cet envoi (0 : etat initial, 1 : en cours, 2 : echec, 3 : succes, 4 : succes avec accuse de reception)',
+  `date_envoi` datetime default NULL COMMENT 'Date envoi',
+  `erreur_message_envoi` text COMMENT 'Message d''erreur retourné par le service d''envoi',
+  `created_at` datetime default NULL,
+  `updated_at` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `a_notifications_FI_1` (`utilisateur_id`),
+  KEY `a_notifications_FI_2` (`a_traitement_id`),
+  KEY `a_notifications_FI_3` (`adr_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Notification (a la famille) des absences' AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `a_notifications`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `a_saisies`
+--
+
+CREATE TABLE IF NOT EXISTS `a_saisies` (
+  `id` int(11) NOT NULL auto_increment,
+  `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a saisi l''absence',
+  `eleve_id` int(11) default NULL COMMENT 'id_eleve de l''eleve objet de la saisie, egal à null si aucun eleve n''est saisi',
+  `commentaire` text COMMENT 'commentaire de l''utilisateur',
+  `debut_abs` datetime default NULL COMMENT 'Debut de l''absence en timestamp UNIX',
+  `fin_abs` datetime default NULL COMMENT 'Fin de l''absence en timestamp UNIX',
+  `id_edt_creneau` int(12) default NULL COMMENT 'identifiant du creneaux de l''emploi du temps',
+  `id_edt_emplacement_cours` int(12) default NULL COMMENT 'identifiant du cours de l''emploi du temps',
+  `id_groupe` int(11) default NULL COMMENT 'identifiant du groupe pour lequel la saisie a ete effectuee',
+  `id_classe` int(11) default NULL COMMENT 'identifiant de la classe pour lequel la saisie a ete effectuee',
+  `id_aid` int(11) default NULL COMMENT 'identifiant de l''aid pour lequel la saisie a ete effectuee',
+  `id_s_incidents` int(11) default NULL COMMENT 'identifiant de la saisie d''incident discipline',
+  `modifie_par_utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a modifie en dernier le traitement',
+  `created_at` datetime default NULL,
+  `updated_at` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `a_saisies_FI_1` (`utilisateur_id`),
+  KEY `a_saisies_FI_2` (`eleve_id`),
+  KEY `a_saisies_FI_3` (`id_edt_creneau`),
+  KEY `a_saisies_FI_4` (`id_edt_emplacement_cours`),
+  KEY `a_saisies_FI_5` (`id_groupe`),
+  KEY `a_saisies_FI_6` (`id_classe`),
+  KEY `a_saisies_FI_7` (`id_aid`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Chaque saisie d''absence doit faire l''objet d''une ligne dans ' AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `a_saisies`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `a_traitements`
+--
+
+CREATE TABLE IF NOT EXISTS `a_traitements` (
+  `id` int(11) NOT NULL auto_increment COMMENT 'cle primaire auto-incremente',
+  `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a fait le traitement',
+  `a_type_id` int(4) default NULL COMMENT 'cle etrangere du type d''absence',
+  `a_motif_id` int(4) default NULL COMMENT 'cle etrangere du motif d''absence',
+  `a_justification_id` int(4) default NULL COMMENT 'cle etrangere de la justification de l''absence',
+  `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
+  `modifie_par_utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a modifie en dernier le traitement',
+  `created_at` datetime default NULL,
+  `updated_at` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `a_traitements_FI_1` (`utilisateur_id`),
+  KEY `a_traitements_FI_2` (`a_type_id`),
+  KEY `a_traitements_FI_3` (`a_motif_id`),
+  KEY `a_traitements_FI_4` (`a_justification_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Un traitement peut gerer plusieurs saisies et consiste à def' AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `a_traitements`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `a_types`
+--
+
+CREATE TABLE IF NOT EXISTS `a_types` (
+  `id` int(11) NOT NULL auto_increment COMMENT 'Cle primaire auto-incrementee',
+  `nom` varchar(250) NOT NULL COMMENT 'Nom du type d''absence',
+  `justification_exigible` tinyint(4) default NULL COMMENT 'Ce type d''absence doit entrainer une justification de la part de la famille',
+  `sous_responsabilite_etablissement` varchar(255) default 'NON_PRECISE' COMMENT 'L''eleve est sous la responsabilite de l''etablissement. Typiquement : absence infirmerie, mettre la propriété à vrai car l''eleve est encore sous la responsabilité de l''etablissement. Possibilite : ''vrai''/''faux''/''non_precise''',
+  `manquement_obligation_presence` varchar(50) default 'NON_PRECISE' COMMENT 'L''eleve manque à ses obligations de presence (L''absence apparait sur le bulletin). Possibilite : ''vrai''/''faux''/''non_precise''',
+  `retard_bulletin` varchar(50) default 'NON_PRECISE' COMMENT 'La saisie est comptabilisée dans le bulletin en tant que retard. Possibilite : ''vrai''/''faux''/''non_precise''',
+  `type_saisie` varchar(50) default 'NON_PRECISE' COMMENT 'Enumeration des possibilités de l''interface de saisie de l''absence pour ce type : DEBUT_ABS, FIN_ABS, DEBUT_ET_FIN_ABS, NON_PRECISE, COMMENTAIRE_EXIGE, DISCIPLINE',
+  `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
+  `sortable_rank` int(11) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Liste des types d''absences possibles dans l''etablissement' AUTO_INCREMENT=14 ;
+
+--
+-- Contenu de la table `a_types`
+--
+
+INSERT INTO `a_types` (`id`, `nom`, `justification_exigible`, `sous_responsabilite_etablissement`, `manquement_obligation_presence`, `retard_bulletin`, `type_saisie`, `commentaire`, `sortable_rank`) VALUES
+(1, 'Absence scolaire', 1, 'FAUX', 'VRAI', 'NON_PRECISE', 'NON_PRECISE', 'L''élève n''est pas présent pour suivre sa scolarité.', 1),
+(2, 'Retard intercours', 0, 'VRAI', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est en retard lors de l''intercours', 2),
+(3, 'Retard extérieur', 0, 'FAUX', 'VRAI', 'VRAI', 'NON_PRECISE', 'L''élève est en retard lors de son arrivée dans l''etablissement', 3),
+(4, 'Erreur de saisie', 0, 'NON_PRECISE', 'NON_PRECISE', 'NON_PRECISE', 'NON_PRECISE', 'Il y a probablement une erreur de saisie sur cet enregistrement.', 4),
+(5, 'Infirmerie', 0, 'VRAI', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est à l''infirmerie.', 5),
+(6, 'Sortie scolaire', 0, '1', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est en sortie scolaire.', 6),
+(7, 'Exclusion de l''établissement', 0, 'FAUX', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est exclus de l''établissement.', 7),
+(8, 'Exclusion/inclusion', 0, 'VRAI', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est exclus mais présent au sein de l''établissement.', 8),
+(9, 'Exclusion de cours', 0, 'VRAI', 'FAUX', 'NON_PRECISE', 'DISCIPLINE', 'L''élève est exclus de cours.', 9),
+(10, 'Dispense (eleve présent)', 1, 'VRAI', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est dispensé mais présent physiquement lors de la seance.', 10),
+(11, 'Dispense (élève non présent)', 1, 'FAUX', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est dispensé et non présent physiquement lors de la seance.', 11),
+(12, 'Stage', 0, 'FAUX', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est en stage a l''extérieur de l''établissement.', 12),
+(13, 'Présent', 0, 'VRAI', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est présent.', 13);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `a_types_statut`
+--
+
+CREATE TABLE IF NOT EXISTS `a_types_statut` (
+  `id` int(11) NOT NULL auto_increment COMMENT 'Cle primaire auto-incrementee',
+  `id_a_type` int(11) NOT NULL COMMENT 'Cle etrangere de la table a_type',
+  `statut` varchar(20) NOT NULL COMMENT 'Statut de l''utilisateur',
+  PRIMARY KEY  (`id`),
+  KEY `a_types_statut_FI_1` (`id_a_type`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Liste des statuts autorises à saisir des types d''absences' AUTO_INCREMENT=40 ;
+
+--
+-- Contenu de la table `a_types_statut`
+--
+
+INSERT INTO `a_types_statut` (`id`, `id_a_type`, `statut`) VALUES
+(1, 1, 'professeur'),
+(2, 1, 'cpe'),
+(3, 1, 'scolarite'),
+(4, 1, 'autre'),
+(5, 2, 'professeur'),
+(6, 2, 'cpe'),
+(7, 2, 'scolarite'),
+(8, 2, 'autre'),
+(9, 3, 'cpe'),
+(10, 3, 'scolarite'),
+(11, 3, 'autre'),
+(12, 4, 'professeur'),
+(13, 4, 'cpe'),
+(14, 4, 'scolarite'),
+(15, 4, 'autre'),
+(16, 5, 'professeur'),
+(17, 5, 'cpe'),
+(18, 5, 'scolarite'),
+(19, 5, 'autre'),
+(20, 6, 'professeur'),
+(21, 6, 'cpe'),
+(22, 6, 'scolarite'),
+(23, 7, 'cpe'),
+(24, 7, 'scolarite'),
+(25, 8, 'cpe'),
+(26, 8, 'scolarite'),
+(27, 9, 'professeur'),
+(28, 9, 'cpe'),
+(29, 9, 'scolarite'),
+(30, 10, 'cpe'),
+(31, 10, 'scolarite'),
+(32, 11, 'cpe'),
+(33, 11, 'scolarite'),
+(34, 12, 'cpe'),
+(35, 12, 'scolarite'),
+(36, 13, 'professeur'),
+(37, 13, 'cpe'),
+(38, 13, 'scolarite'),
+(39, 13, 'autre');
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `classes`
 --
 
@@ -712,7 +896,9 @@ CREATE TABLE IF NOT EXISTS `classes` (
   `ects_code_parcours` varchar(255) NOT NULL default '',
   `ects_domaines_etude` varchar(255) NOT NULL default '',
   `ects_fonction_signataire_attestation` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `apb_niveau` varchar(15) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  KEY `classe` (`classe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
@@ -730,7 +916,8 @@ CREATE TABLE IF NOT EXISTS `cn_cahier_notes` (
   `id_cahier_notes` int(11) NOT NULL auto_increment,
   `id_groupe` int(11) NOT NULL,
   `periode` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id_cahier_notes`,`id_groupe`,`periode`)
+  PRIMARY KEY  (`id_cahier_notes`,`id_groupe`,`periode`),
+  KEY `groupe_periode` (`id_groupe`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
@@ -757,7 +944,9 @@ CREATE TABLE IF NOT EXISTS `cn_conteneurs` (
   `display_parents` char(1) NOT NULL default '0',
   `display_bulletin` char(1) NOT NULL default '1',
   `parent` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `parent_racine` (`parent`,`id_racine`),
+  KEY `racine_bulletin` (`id_racine`,`display_bulletin`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
@@ -786,7 +975,8 @@ CREATE TABLE IF NOT EXISTS `cn_devoirs` (
   `display_parents` char(1) NOT NULL default '',
   `display_parents_app` char(1) NOT NULL default '0',
   `date_ele_resp` datetime NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `conteneur_date` (`id_conteneur`,`date`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
@@ -826,7 +1016,8 @@ CREATE TABLE IF NOT EXISTS `cn_notes_devoirs` (
   `note` float(10,1) NOT NULL default '0.0',
   `comment` text NOT NULL,
   `statut` varchar(4) NOT NULL default '',
-  PRIMARY KEY  (`login`,`id_devoir`)
+  PRIMARY KEY  (`login`,`id_devoir`),
+  KEY `devoir_statut` (`id_devoir`,`statut`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -900,10 +1091,12 @@ CREATE TABLE IF NOT EXISTS `ct_devoirs_entry` (
   `id_groupe` int(11) NOT NULL,
   `date_ct` int(11) NOT NULL default '0',
   `id_login` varchar(32) NOT NULL default '',
+  `id_sequence` int(11) NOT NULL default '0',
   `contenu` text NOT NULL,
   `vise` char(1) NOT NULL default 'n',
   PRIMARY KEY  (`id_ct`),
-  KEY `id_groupe` (`id_groupe`)
+  KEY `id_groupe` (`id_groupe`),
+  KEY `groupe_date` (`id_groupe`,`date_ct`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
@@ -943,15 +1136,41 @@ CREATE TABLE IF NOT EXISTS `ct_entry` (
   `id_groupe` int(11) NOT NULL,
   `date_ct` int(11) NOT NULL default '0',
   `id_login` varchar(32) NOT NULL default '',
+  `id_sequence` int(11) NOT NULL default '0',
   `contenu` text NOT NULL,
   `vise` char(1) NOT NULL default 'n',
   `visa` char(1) NOT NULL default 'n',
   PRIMARY KEY  (`id_ct`),
-  KEY `id_groupe` (`id_groupe`)
+  KEY `id_groupe` (`id_groupe`),
+  KEY `id_date_heure` (`id_groupe`,`date_ct`,`heure_entry`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ct_entry`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ct_private_entry`
+--
+
+CREATE TABLE IF NOT EXISTS `ct_private_entry` (
+  `id_ct` int(11) NOT NULL auto_increment COMMENT 'Cle primaire de la cotice privee',
+  `heure_entry` time NOT NULL default '00:00:00' COMMENT 'heure de l''entree',
+  `date_ct` int(11) NOT NULL default '0' COMMENT 'date du compte rendu',
+  `contenu` text NOT NULL COMMENT 'contenu redactionnel du compte rendu',
+  `id_groupe` int(11) NOT NULL COMMENT 'Cle etrangere du groupe auquel appartient le compte rendu',
+  `id_login` varchar(32) default NULL COMMENT 'Cle etrangere de l''utilisateur auquel appartient le compte rendu',
+  `id_sequence` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id_ct`),
+  KEY `ct_private_entry_FI_1` (`id_groupe`),
+  KEY `ct_private_entry_FI_2` (`id_login`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Notice privee du cahier de texte' AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `ct_private_entry`
 --
 
 
@@ -1108,6 +1327,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/etablissements/help.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration et gestion des établissements', ''),
 ('/etablissements/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration et gestion des établissements', ''),
 ('/etablissements/modify_etab.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration et gestion des établissements', ''),
+('/gestion/gestion_base_test.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'gestion données de test', ''),
 ('/groupes/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Edition des groupes', ''),
 ('/groupes/add_group.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Ajout de groupes', ''),
 ('/groupes/edit_group.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Edition de groupes', ''),
@@ -1171,7 +1391,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/saisie/help.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'F', '', ''),
 ('/saisie/import_class_csv.php', 'F', 'V', 'F', 'V', 'F', 'F', 'V', 'F', '', ''),
 ('/saisie/import_note_app.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'F', '', ''),
-('/saisie/index.php', 'F', 'V', 'F', 'F', 'F', 'V', 'F', 'F', '', ''),
+('/saisie/index.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'F', '', ''),
 ('/saisie/saisie_aid.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'F', 'Saisie des notes et appréciations AID', ''),
 ('/saisie/saisie_appreciations.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'F', 'Saisie des appréciations du bulletins', ''),
 ('/saisie/ajax_appreciations.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'F', 'Sauvegarde des appréciations du bulletins', ''),
@@ -1219,7 +1439,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_absences/lib/tableau_pdf.php', 'F', 'V', 'V', 'V', 'F', 'F', 'F', 'F', '', ''),
 ('/mod_absences/admin/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
 ('/mod_absences/admin/admin_motifs_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
-('/mod_absences/admin/admin_periodes_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
+('/edt_organisation/admin_periodes_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
 ('/mod_absences/lib/liste_absences.php', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'F', '', ''),
 ('/mod_absences/lib/graphiques.php', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'F', '', ''),
 ('/mod_absences/professeurs/prof_ajout_abs.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Ajout des absences en classe', ''),
@@ -1300,8 +1520,8 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_absences/gestion/statistiques.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Statistique du module vie scolaire', '1'),
 ('/mod_absences/lib/graph_camembert.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'graphique camembert', ''),
 ('/mod_absences/lib/graph_ligne.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'graphique camembert', ''),
-('/mod_absences/admin/admin_horaire_ouverture.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Définition des horaires d''ouverture de l''établissement', ''),
-('/mod_absences/admin/admin_config_semaines.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des types de semaines', ''),
+('/edt_organisation/admin_horaire_ouverture.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Définition des horaires d''ouverture de l''établissement', ''),
+('/edt_organisation/admin_config_semaines.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des types de semaines', ''),
 ('/mod_absences/gestion/fiche_pdf.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Fiche récapitulatif des absences', ''),
 ('/mod_absences/lib/graph_double_ligne.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'graphique absence et retard sur le même graphique', ''),
 ('/bulletin/param_bull_pdf.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'page de gestion des parametres du bulletin pdf', ''),
@@ -1391,7 +1611,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_inscription/help.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Configuration du module inscription', ''),
 ('/aid/index_fiches.php', 'V', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'Outils complémentaires de gestion des AIDs', ''),
 ('/aid/visu_fiches.php', 'V', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'Outils complémentaires de gestion des AIDs', ''),
-('/aid/modif_fiches.php', 'V', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'Outils complémentaires de gestion des AIDs', ''),
+('/aid/modif_fiches.php', 'V', 'V', 'V', 'F', 'V', 'V', 'F', 'F', 'Outils complémentaires de gestion des AIDs', ''),
 ('/aid/config_aid_fiches_projet.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des outils complémentaires de gestion des AIDs', ''),
 ('/aid/config_aid_matieres.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des outils complémentaires de gestion des AIDs', ''),
 ('/aid/config_aid_productions.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des outils complémentaires de gestion des AIDs', ''),
@@ -1408,7 +1628,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_notanet/choix_generation_csv.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Notanet: Génération de CSV', ''),
 ('/mod_notanet/verrouillage_saisie_app.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Notanet: (Dé)Verrouillage des saisies', ''),
 ('/bulletin/bull_index.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Edition des bulletins', '1'),
-('/cahier_notes/visu_releve_notes_bis.php', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'Relevé de notes', '1'),
+('/cahier_notes/visu_releve_notes_bis.php', 'F', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'Relevé de notes', '1'),
 ('/cahier_notes/param_releve_html.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Paramètres du relevé de notes', '1'),
 ('/utilisateurs/creer_statut.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Créer des statuts personnalisés', ''),
 ('/utilisateurs/creer_statut_admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Autoriser la création des statuts personnalisés', ''),
@@ -1484,8 +1704,108 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/eleves/import_communes.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Import des communes de naissance', ''),
 ('/mod_notanet/fb_lille_pdf.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Fiches brevet PDF pour Lille', ''),
 ('/mod_notanet/fb_creteil_pdf.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Fiches brevet PDF pour Creteil', ''),
-('/mod_plugins/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Ajouter/enlever des plugins', ''),
-('/saisie/export_cmnt_type_prof.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Export appréciations-types pour les profs', '');
+('/mod_plugins/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Ajouter/enlever des plugins', '');
+INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, `eleve`, `responsable`, `secours`, `autre`, `description`, `statut`) VALUES
+('/saisie/export_cmnt_type_prof.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Export appréciations-types pour les profs', ''),
+('/mod_discipline/disc_stat.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Statistiques', ''),
+('/mod_epreuve_blanche/admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Epreuves blanches: Activation/désactivation du module', ''),
+('/mod_examen_blanc/admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Examens blancs: Activation/désactivation du module', ''),
+('/mod_epreuve_blanche/index.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Epreuve blanche: Accueil', ''),
+('/mod_epreuve_blanche/transfert_cn.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Epreuve blanche: Transfert vers carnet de notes', ''),
+('/mod_epreuve_blanche/saisie_notes.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Epreuve blanche: Saisie des notes', ''),
+('/mod_epreuve_blanche/genere_emargement.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Epreuve blanche: Génération émargement', ''),
+('/mod_epreuve_blanche/definir_salles.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Epreuve blanche: Définir les salles', ''),
+('/mod_epreuve_blanche/attribuer_copies.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Epreuve blanche: Attribuer les copies aux professeurs', ''),
+('/mod_epreuve_blanche/bilan.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Epreuve blanche: Bilan', ''),
+('/mod_epreuve_blanche/genere_etiquettes.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Epreuve blanche: Génération étiquettes', ''),
+('/mod_examen_blanc/saisie_notes.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Examen blanc: Saisie devoir hors enseignement', ''),
+('/mod_examen_blanc/index.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Examen blanc: Accueil', ''),
+('/mod_examen_blanc/releve.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Examen blanc: Relevé', ''),
+('/mod_examen_blanc/bull_exb.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Examen blanc: Bulletins', ''),
+('/saisie/saisie_synthese_app_classe.php', 'F', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Synthèse des appréciations sur le groupe classe.', ''),
+('/gestion/saisie_message_connexion.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Saisie de messages de connexion.', ''),
+('/groupes/repartition_ele_grp.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Répartir des élèves dans des groupes', ''),
+('/prepa_conseil/edit_limite_bis.php', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Edition des bulletins simplifiés (documents de travail)', ''),
+('/prepa_conseil/index2bis.php', 'F', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Visualisation des notes par classes', ''),
+('/prepa_conseil/index3bis.php', 'F', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Edition des bulletins simplifiés (documents de travail)', ''),
+('/prepa_conseil/visu_toutes_notes_bis.php', 'F', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Visualisation des notes par classes', ''),
+('/utilitaires/import_pays.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Import des pays', ''),
+('/mod_apb/admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Gestion du module Admissions PostBac', ''),
+('/mod_apb/index.php', 'F', 'F', 'F', 'V', 'F', 'F', 'F', 'V', 'Export XML pour le système Admissions Post-Bac', ''),
+('/mod_apb/export_xml.php', 'F', 'F', 'F', 'V', 'F', 'F', 'F', 'V', 'Export XML pour le système Admissions Post-Bac', ''),
+('/mod_gest_aid/admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Gestionnaires AID', ''),
+('/saisie/ajax_edit_limite.php', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Edition des bulletins simplifiés (documents de travail)', ''),
+('/mod_discipline/check_nature_incident.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Recherche de natures d incident', ''),
+('/groupes/signalement_eleves.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Groupes: signalement des erreurs d affectation élève', ''),
+('/bulletin/envoi_mail.php', 'F', 'F', 'F', 'V', 'F', 'F', 'V', 'F', 'Envoi de mail via ajax', ''),
+('/mod_discipline/destinataires_alertes.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Parametrage des destinataires de mail d alerte', ''),
+('/init_scribe_ng/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - index', ''),
+('/init_scribe_ng/etape1.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - etape 1', ''),
+('/init_scribe_ng/etape2.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - etape 2', ''),
+('/init_scribe_ng/etape3.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - etape 3', ''),
+('/init_scribe_ng/etape4.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - etape 4', ''),
+('/init_scribe_ng/etape5.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - etape 5', ''),
+('/init_scribe_ng/etape6.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - etape 6', ''),
+('/init_scribe_ng/etape7.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - etape 7', ''),
+('/mod_ects/ects_admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Module ECTS : Admin', ''),
+('/mod_ects/index_saisie.php', 'F', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Module ECTS : Accueil saisie', ''),
+('/mod_ects/saisie_ects.php', 'F', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Module ECTS : Saisie', ''),
+('/mod_ects/edition.php', 'F', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Module ECTS : Edition des documents', ''),
+('/mod_ooo/documents_ects.php', 'F', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Module ECTS : Génération des documents', ''),
+('/mod_ects/recapitulatif.php', 'F', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Module ECTS : Recapitulatif globaux', ''),
+('/mod_discipline/stats2/index.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Module discipline: Statistiques', ''),
+('/mod_discipline/definir_categories.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Discipline: Définir les catégories', ''),
+('/mod_abs2/admin/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
+('/mod_abs2/admin/admin_motifs_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
+('/mod_abs2/admin/admin_types_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
+('/mod_abs2/admin/admin_justifications_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
+('/mod_abs2/admin/admin_actions_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
+('/mod_abs2/index.php', 'F', 'V', 'V', 'V', 'F', 'F', 'V', 'V', 'Administration du module absences', ''),
+('/mod_abs2/saisir_groupe.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'V', 'Affichage du formulaire de saisie de absences', ''),
+('/mod_abs2/absences_du_jour.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Affichage des absences du jour', ''),
+('/mod_abs2/enregistrement_saisie_groupe.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'V', 'Enregistrement des saisies d un groupe', ''),
+('/mod_abs2/liste_saisies.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'V', 'Liste des saisies', ''),
+('/mod_abs2/liste_traitements.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Liste des traitements', ''),
+('/mod_abs2/liste_notifications.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Liste des notifications', ''),
+('/mod_abs2/liste_saisies_selection_traitement.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Liste des saisits pour faire les traitement', ''),
+('/mod_abs2/visu_saisie.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'V', 'Visualisation d une saisies', ''),
+('/mod_abs2/visu_traitement.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'V', 'Visualisation d une saisie', ''),
+('/mod_abs2/visu_notification.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Visualisation d une notification', ''),
+('/mod_abs2/enregistrement_modif_saisie.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'V', 'Modification d une saisies', ''),
+('/mod_abs2/enregistrement_modif_traitement.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Modification d un traitement', ''),
+('/mod_abs2/enregistrement_modif_notification.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Modification d une notification', ''),
+('/mod_abs2/generer_notification.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'generer une notification', ''),
+('/mod_abs2/saisir_eleve.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'V', 'Saisir l absence d un eleve', ''),
+('/mod_abs2/enregistrement_saisie_eleve.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'V', 'Enregistrer absence d un eleve', ''),
+('/mod_abs2/creation_traitement.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Crer un traitement', ''),
+('/mod_discipline/saisie_incident_abs2.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'V', 'Saisir un incident relatif a une absence', ''),
+('/mod_abs2/tableau_des_appels.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Visualisation du tableaux des saisies', ''),
+('/mod_abs2/bilan_du_jour.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Visualisation du bilan du jour', ''),
+('/mod_abs2/extraction_saisies.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Extraction des saisies', ''),
+('/mod_abs2/extraction_demi-journees.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Extraction des saisies', ''),
+('/mod_abs2/ajax_edt_eleve.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Affichage edt', ''),
+('/bulletin/autorisation_exceptionnelle_saisie_app.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Autorisation exceptionnelle de saisie d appréciation', ''),
+('/init_csv/export_tables.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation CSV: Export tables', ''),
+('/cahier_texte_2/index.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_edition_compte_rendu.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_edition_notice_privee.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_duplication_notice.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_affichage_duplication_notice.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_deplacement_notice.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_affichage_deplacement_notice.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_suppression_notice.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_enregistrement_compte_rendu.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_enregistrement_notice_privee.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_edition_devoir.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_enregistrement_devoir.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_affichages_liste_notices.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/ajax_affichage_dernieres_notices.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/traite_doc.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/exportcsv.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
+('/cahier_texte_2/consultation.php', 'F', 'F', 'F', 'F', 'V', 'V', 'F', 'F', 'Consultation des cahiers de textes', ''),
+('/cahier_texte_2/see_all.php', 'F', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Consultation des cahiers de texte', ''),
+('/cahier_texte_2/creer_sequence.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - s&eacute;quences', '1'),
+('/cahier_texte_2/creer_seq_ajax_step1.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - s&eacute;quences', '1');
 
 -- --------------------------------------------------------
 
@@ -1592,6 +1912,105 @@ CREATE TABLE IF NOT EXISTS `droits_utilisateurs` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `eb_copies`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_copies` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `login_ele` varchar(255) NOT NULL,
+  `n_anonymat` varchar(255) NOT NULL,
+  `id_salle` int(11) NOT NULL default '-1',
+  `login_prof` varchar(255) NOT NULL,
+  `note` float(10,1) NOT NULL default '0.0',
+  `statut` varchar(255) NOT NULL default '',
+  `id_epreuve` int(11) unsigned NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `eb_copies`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `eb_epreuves`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_epreuves` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `intitule` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `type_anonymat` varchar(255) NOT NULL,
+  `date` date NOT NULL default '0000-00-00',
+  `etat` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `eb_epreuves`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `eb_groupes`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_groupes` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `id_epreuve` int(11) unsigned NOT NULL,
+  `id_groupe` int(11) unsigned NOT NULL,
+  `transfert` varchar(1) NOT NULL default 'n',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `eb_groupes`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `eb_profs`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_profs` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `id_epreuve` int(11) unsigned NOT NULL,
+  `login_prof` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `eb_profs`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `eb_salles`
+--
+
+CREATE TABLE IF NOT EXISTS `eb_salles` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `salle` varchar(255) NOT NULL,
+  `id_epreuve` int(11) unsigned NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `eb_salles`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `ects_credits`
 --
 
@@ -1600,8 +2019,9 @@ CREATE TABLE IF NOT EXISTS `ects_credits` (
   `id_eleve` int(11) NOT NULL COMMENT 'Identifiant de l''eleve',
   `num_periode` int(11) NOT NULL COMMENT 'Identifiant de la periode',
   `id_groupe` int(11) NOT NULL COMMENT 'Identifiant du groupe',
-  `valeur` decimal(3,1) NOT NULL COMMENT 'Nombre de credits obtenus par l''eleve',
-  `mention` varchar(255) NOT NULL COMMENT 'Mention obtenue',
+  `valeur` decimal(3,1) default NULL COMMENT 'Nombre de credits obtenus par l''eleve',
+  `mention` varchar(255) default NULL COMMENT 'Mention obtenue',
+  `mention_prof` varchar(255) default NULL COMMENT 'Mention presaisie par le prof',
   PRIMARY KEY  (`id`,`id_eleve`,`num_periode`,`id_groupe`),
   KEY `ects_credits_FI_1` (`id_eleve`),
   KEY `ects_credits_FI_2` (`id_groupe`)
@@ -1693,6 +2113,7 @@ CREATE TABLE IF NOT EXISTS `edt_classes` (
 CREATE TABLE IF NOT EXISTS `edt_cours` (
   `id_cours` int(3) NOT NULL auto_increment,
   `id_groupe` varchar(10) NOT NULL,
+  `id_aid` varchar(10) NOT NULL,
   `id_salle` varchar(3) NOT NULL,
   `jour_semaine` varchar(10) NOT NULL,
   `id_definie_periode` varchar(3) NOT NULL,
@@ -1707,6 +2128,65 @@ CREATE TABLE IF NOT EXISTS `edt_cours` (
 
 --
 -- Contenu de la table `edt_cours`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `edt_creneaux`
+--
+
+CREATE TABLE IF NOT EXISTS `edt_creneaux` (
+  `id_definie_periode` int(11) NOT NULL auto_increment,
+  `nom_definie_periode` varchar(10) NOT NULL default '',
+  `heuredebut_definie_periode` time NOT NULL default '00:00:00',
+  `heurefin_definie_periode` time NOT NULL default '00:00:00',
+  `suivi_definie_periode` tinyint(4) NOT NULL,
+  `type_creneaux` varchar(15) NOT NULL,
+  `jour_creneau` varchar(20) default NULL,
+  PRIMARY KEY  (`id_definie_periode`),
+  KEY `heures_debut_fin` (`heuredebut_definie_periode`,`heurefin_definie_periode`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
+
+--
+-- Contenu de la table `edt_creneaux`
+--
+
+INSERT INTO `edt_creneaux` (`id_definie_periode`, `nom_definie_periode`, `heuredebut_definie_periode`, `heurefin_definie_periode`, `suivi_definie_periode`, `type_creneaux`, `jour_creneau`) VALUES
+(1, 'M1', '08:00:00', '08:55:00', 1, 'cours', ''),
+(2, 'M2', '08:55:00', '09:50:00', 1, 'cours', ''),
+(3, 'M3', '10:05:00', '11:00:00', 1, 'cours', ''),
+(4, 'M4', '11:00:00', '11:55:00', 1, 'cours', ''),
+(5, 'M5', '11:55:00', '12:30:00', 1, 'cours', ''),
+(6, 'S1', '13:30:00', '14:25:00', 1, 'cours', ''),
+(7, 'S2', '14:25:00', '15:20:00', 1, 'cours', ''),
+(8, 'S3', '15:35:00', '16:30:00', 1, 'cours', ''),
+(9, 'S4', '16:30:00', '17:30:00', 1, 'cours', ''),
+(10, 'S5', '17:30:00', '18:25:00', 1, 'cours', ''),
+(11, 'P1', '09:50:00', '10:05:00', 1, 'pause', ''),
+(12, 'P2', '15:20:00', '15:35:00', 1, 'pause', ''),
+(13, 'R', '12:00:00', '13:00:00', 1, 'repas', ''),
+(14, 'R1', '13:00:00', '13:30:00', 1, 'pause', '');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `edt_creneaux_bis`
+--
+
+CREATE TABLE IF NOT EXISTS `edt_creneaux_bis` (
+  `id_definie_periode` int(11) NOT NULL auto_increment,
+  `nom_definie_periode` varchar(10) NOT NULL default '',
+  `heuredebut_definie_periode` time NOT NULL default '00:00:00',
+  `heurefin_definie_periode` time NOT NULL default '00:00:00',
+  `suivi_definie_periode` tinyint(4) NOT NULL,
+  `type_creneaux` varchar(15) NOT NULL,
+  PRIMARY KEY  (`id_definie_periode`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `edt_creneaux_bis`
 --
 
 
@@ -1760,7 +2240,7 @@ CREATE TABLE IF NOT EXISTS `edt_semaines` (
   `type_edt_semaine` varchar(10) NOT NULL default '',
   `num_semaines_etab` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_edt_semaine`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=53 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=54 ;
 
 --
 -- Contenu de la table `edt_semaines`
@@ -1818,7 +2298,8 @@ INSERT INTO `edt_semaines` (`id_edt_semaine`, `num_edt_semaine`, `type_edt_semai
 (49, 49, 'A', 0),
 (50, 50, 'A', 0),
 (51, 51, 'A', 0),
-(52, 52, 'A', 0);
+(52, 52, 'A', 0),
+(53, 53, 'A', 0);
 
 -- --------------------------------------------------------
 
@@ -1950,6 +2431,107 @@ INSERT INTO `etiquettes_formats` (`id_etiquette_format`, `nom_etiquette_format`,
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `ex_classes`
+--
+
+CREATE TABLE IF NOT EXISTS `ex_classes` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `id_exam` int(11) unsigned NOT NULL,
+  `id_classe` int(11) unsigned NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `ex_classes`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ex_examens`
+--
+
+CREATE TABLE IF NOT EXISTS `ex_examens` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `intitule` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `date` date NOT NULL default '0000-00-00',
+  `etat` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `ex_examens`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ex_groupes`
+--
+
+CREATE TABLE IF NOT EXISTS `ex_groupes` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `id_exam` int(11) unsigned NOT NULL,
+  `matiere` varchar(50) NOT NULL,
+  `id_groupe` int(11) unsigned NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `id_dev` int(11) NOT NULL default '0',
+  `valeur` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `ex_groupes`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ex_matieres`
+--
+
+CREATE TABLE IF NOT EXISTS `ex_matieres` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `id_exam` int(11) unsigned NOT NULL,
+  `matiere` varchar(255) NOT NULL,
+  `coef` decimal(3,1) NOT NULL default '1.0',
+  `bonus` char(1) NOT NULL default 'n',
+  `ordre` int(11) unsigned NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `ex_matieres`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ex_notes`
+--
+
+CREATE TABLE IF NOT EXISTS `ex_notes` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `id_ex_grp` int(11) unsigned NOT NULL,
+  `login` varchar(255) NOT NULL default '',
+  `note` float(10,1) NOT NULL default '0.0',
+  `statut` varchar(4) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `ex_notes`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `gc_affichages`
 --
 
@@ -2024,7 +2606,7 @@ CREATE TABLE IF NOT EXISTS `gc_ele_arriv_red` (
   `login` varchar(255) NOT NULL,
   `statut` enum('Arriv','Red') NOT NULL,
   `projet` varchar(255) NOT NULL,
-  PRIMARY KEY  (`login`)
+  PRIMARY KEY  (`login`,`projet`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -2102,7 +2684,8 @@ CREATE TABLE IF NOT EXISTS `groupes` (
   `name` varchar(60) NOT NULL default '',
   `description` text NOT NULL,
   `recalcul_rang` varchar(10) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `id_name` (`id`,`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
@@ -2273,7 +2856,8 @@ CREATE TABLE IF NOT EXISTS `j_eleves_classes` (
   `periode` int(11) NOT NULL default '0',
   `rang` smallint(6) NOT NULL default '0',
   PRIMARY KEY  (`login`,`id_classe`,`periode`),
-  KEY `id_classe` (`id_classe`)
+  KEY `id_classe` (`id_classe`),
+  KEY `login_periode` (`login`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -2325,7 +2909,8 @@ CREATE TABLE IF NOT EXISTS `j_eleves_groupes` (
   `login` varchar(50) NOT NULL default '',
   `id_groupe` int(11) NOT NULL default '0',
   `periode` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id_groupe`,`login`,`periode`)
+  PRIMARY KEY  (`id_groupe`,`login`,`periode`),
+  KEY `login` (`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -2343,7 +2928,9 @@ CREATE TABLE IF NOT EXISTS `j_eleves_professeurs` (
   `login` varchar(50) NOT NULL default '',
   `professeur` varchar(50) NOT NULL default '',
   `id_classe` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`login`,`professeur`,`id_classe`)
+  PRIMARY KEY  (`login`,`professeur`,`id_classe`),
+  KEY `classe_professeur` (`id_classe`,`professeur`),
+  KEY `professeur_classe` (`professeur`,`id_classe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -2382,9 +2969,12 @@ CREATE TABLE IF NOT EXISTS `j_groupes_classes` (
   `coef` decimal(3,1) NOT NULL,
   `categorie_id` int(11) NOT NULL default '1',
   `saisie_ects` tinyint(1) NOT NULL default '0',
-  `valeur_ects` decimal(3,1) NOT NULL,
+  `valeur_ects` int(11) default NULL,
   `mode_moy` enum('-','sup10','bonus') NOT NULL default '-',
-  PRIMARY KEY  (`id_groupe`,`id_classe`)
+  `apb_langue_vivante` varchar(3) NOT NULL default '',
+  PRIMARY KEY  (`id_groupe`,`id_classe`),
+  KEY `id_classe_coef` (`id_classe`,`coef`),
+  KEY `saisie_ects_id_groupe` (`saisie_ects`,`id_groupe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -2419,7 +3009,8 @@ CREATE TABLE IF NOT EXISTS `j_groupes_professeurs` (
   `id_groupe` int(11) NOT NULL default '0',
   `login` varchar(50) NOT NULL default '',
   `ordre_prof` smallint(6) NOT NULL default '0',
-  PRIMARY KEY  (`id_groupe`,`login`)
+  PRIMARY KEY  (`id_groupe`,`login`),
+  KEY `login` (`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -2443,6 +3034,24 @@ CREATE TABLE IF NOT EXISTS `j_matieres_categories_classes` (
 
 --
 -- Contenu de la table `j_matieres_categories_classes`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `j_notifications_resp_pers`
+--
+
+CREATE TABLE IF NOT EXISTS `j_notifications_resp_pers` (
+  `a_notification_id` int(12) NOT NULL COMMENT 'cle etrangere de la notification',
+  `pers_id` varchar(10) NOT NULL COMMENT 'cle etrangere des personnes',
+  PRIMARY KEY  (`a_notification_id`,`pers_id`),
+  KEY `j_notifications_resp_pers_FI_2` (`pers_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Table de jointure entre la notification et les personnes don';
+
+--
+-- Contenu de la table `j_notifications_resp_pers`
 --
 
 
@@ -2477,6 +3086,46 @@ CREATE TABLE IF NOT EXISTS `j_scol_classes` (
 
 --
 -- Contenu de la table `j_scol_classes`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `j_signalement`
+--
+
+CREATE TABLE IF NOT EXISTS `j_signalement` (
+  `id_groupe` int(11) NOT NULL default '0',
+  `login` varchar(50) NOT NULL default '',
+  `periode` int(11) NOT NULL default '0',
+  `nature` varchar(50) NOT NULL default '',
+  `valeur` varchar(50) NOT NULL default '',
+  `declarant` varchar(50) NOT NULL default '',
+  PRIMARY KEY  (`id_groupe`,`login`,`periode`,`nature`),
+  KEY `login` (`login`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `j_signalement`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `j_traitements_saisies`
+--
+
+CREATE TABLE IF NOT EXISTS `j_traitements_saisies` (
+  `a_saisie_id` int(12) NOT NULL COMMENT 'cle etrangere de l''absence saisie',
+  `a_traitement_id` int(12) NOT NULL COMMENT 'cle etrangere du traitement de ces absences',
+  PRIMARY KEY  (`a_saisie_id`,`a_traitement_id`),
+  KEY `j_traitements_saisies_FI_2` (`a_traitement_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Table de jointure entre la saisie et le traitement des absen';
+
+--
+-- Contenu de la table `j_traitements_saisies`
 --
 
 
@@ -2805,13 +3454,16 @@ INSERT INTO `lettres_types` (`id_lettre_type`, `titre_lettre_type`, `categorie_l
 CREATE TABLE IF NOT EXISTS `log` (
   `LOGIN` varchar(50) NOT NULL default '',
   `START` datetime NOT NULL default '0000-00-00 00:00:00',
-  `SESSION_ID` varchar(64) NOT NULL default '',
+  `SESSION_ID` varchar(255) NOT NULL default '',
   `REMOTE_ADDR` varchar(16) NOT NULL default '',
-  `USER_AGENT` varchar(64) NOT NULL default '',
+  `USER_AGENT` varchar(255) NOT NULL default '',
   `REFERER` varchar(64) NOT NULL default '',
   `AUTOCLOSE` enum('0','1','2','3','4') NOT NULL default '0',
   `END` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`SESSION_ID`,`START`)
+  PRIMARY KEY  (`SESSION_ID`,`START`),
+  KEY `start_time` (`START`),
+  KEY `end_time` (`END`),
+  KEY `login_session_start` (`LOGIN`,`SESSION_ID`,`START`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -2907,11 +3559,50 @@ CREATE TABLE IF NOT EXISTS `matieres_appreciations_tempo` (
   `id_groupe` int(11) NOT NULL default '0',
   `periode` int(11) NOT NULL default '0',
   `appreciation` text NOT NULL,
-  PRIMARY KEY  (`login`,`id_groupe`,`periode`)
+  PRIMARY KEY  (`login`,`id_groupe`,`periode`),
+  KEY `groupe_periode` (`id_groupe`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Contenu de la table `matieres_appreciations_tempo`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `matieres_app_corrections`
+--
+
+CREATE TABLE IF NOT EXISTS `matieres_app_corrections` (
+  `login` varchar(255) NOT NULL default '',
+  `id_groupe` int(11) NOT NULL default '0',
+  `periode` int(11) NOT NULL default '0',
+  `appreciation` text NOT NULL,
+  PRIMARY KEY  (`login`,`id_groupe`,`periode`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `matieres_app_corrections`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `matieres_app_delais`
+--
+
+CREATE TABLE IF NOT EXISTS `matieres_app_delais` (
+  `periode` int(11) NOT NULL default '0',
+  `id_groupe` int(11) NOT NULL default '0',
+  `date_limite` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`periode`,`id_groupe`),
+  KEY `id_groupe` (`id_groupe`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `matieres_app_delais`
 --
 
 
@@ -2949,7 +3640,8 @@ CREATE TABLE IF NOT EXISTS `matieres_notes` (
   `note` float(10,1) default NULL,
   `statut` varchar(10) NOT NULL default '',
   `rang` smallint(6) NOT NULL default '0',
-  PRIMARY KEY  (`login`,`id_groupe`,`periode`)
+  PRIMARY KEY  (`login`,`id_groupe`,`periode`),
+  KEY `groupe_periode_statut` (`id_groupe`,`periode`,`statut`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -2970,11 +3662,30 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `date_fin` int(11) NOT NULL default '0',
   `auteur` varchar(50) NOT NULL default '',
   `destinataires` varchar(10) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `date_decompte` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `date_debut_fin` (`date_debut`,`date_fin`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `messages`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `message_login`
+--
+
+CREATE TABLE IF NOT EXISTS `message_login` (
+  `id` int(11) NOT NULL auto_increment,
+  `texte` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `message_login`
 --
 
 
@@ -3167,7 +3878,7 @@ INSERT INTO `model_bulletin` (`id_model_bulletin`, `nom_model_bulletin`, `active
 CREATE TABLE IF NOT EXISTS `notanet` (
   `login` varchar(50) NOT NULL default '',
   `ine` text NOT NULL,
-  `id_mat` tinyint(4) NOT NULL,
+  `id_mat` int(4) NOT NULL,
   `notanet_mat` varchar(255) NOT NULL,
   `matiere` varchar(50) NOT NULL,
   `note` varchar(4) NOT NULL default '',
@@ -3188,7 +3899,7 @@ CREATE TABLE IF NOT EXISTS `notanet` (
 
 CREATE TABLE IF NOT EXISTS `notanet_app` (
   `login` varchar(50) NOT NULL,
-  `id_mat` tinyint(4) NOT NULL,
+  `id_mat` int(4) NOT NULL,
   `matiere` varchar(50) NOT NULL,
   `appreciation` text NOT NULL,
   `id` int(11) NOT NULL auto_increment,
@@ -3227,7 +3938,7 @@ CREATE TABLE IF NOT EXISTS `notanet_avis` (
 CREATE TABLE IF NOT EXISTS `notanet_corresp` (
   `id` int(11) NOT NULL auto_increment,
   `type_brevet` tinyint(4) NOT NULL,
-  `id_mat` tinyint(4) NOT NULL,
+  `id_mat` int(4) NOT NULL,
   `notanet_mat` varchar(255) NOT NULL default '',
   `matiere` varchar(50) NOT NULL default '',
   `statut` enum('imposee','optionnelle','non dispensee dans l etablissement') NOT NULL default 'imposee',
@@ -3282,13 +3993,30 @@ CREATE TABLE IF NOT EXISTS `notanet_socles` (
 --
 
 CREATE TABLE IF NOT EXISTS `notanet_verrou` (
-  `id_classe` tinyint(4) NOT NULL,
+  `id_classe` smallint(6) NOT NULL,
   `type_brevet` tinyint(4) NOT NULL,
   `verrouillage` char(1) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Contenu de la table `notanet_verrou`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `pays`
+--
+
+CREATE TABLE IF NOT EXISTS `pays` (
+  `code_pays` varchar(50) NOT NULL,
+  `nom_pays` varchar(255) NOT NULL,
+  PRIMARY KEY  (`code_pays`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `pays`
 --
 
 
@@ -3304,7 +4032,9 @@ CREATE TABLE IF NOT EXISTS `periodes` (
   `verouiller` char(1) NOT NULL default '',
   `id_classe` int(11) NOT NULL default '0',
   `date_verrouillage` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`num_periode`,`id_classe`)
+  `date_fin` timestamp NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`num_periode`,`id_classe`),
+  KEY `id_classe` (`id_classe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -3383,7 +4113,8 @@ CREATE TABLE IF NOT EXISTS `plugins_menus` (
 CREATE TABLE IF NOT EXISTS `preferences` (
   `login` varchar(50) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `value` text NOT NULL
+  `value` text NOT NULL,
+  KEY `login_name` (`login`,`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -3546,13 +4277,13 @@ CREATE TABLE IF NOT EXISTS `setting` (
 --
 
 INSERT INTO `setting` (`NAME`, `VALUE`) VALUES
-('version', '1.5.2'),
+('version', '1.5.3'),
 ('versionRc', ''),
 ('versionBeta', ''),
 ('sessionMaxLength', '30'),
 ('Impression', '<center><p class = "grand">Gestion des Elèves Par Internet</p></center>\r\n<br />\r\n<p class = "grand">Qu''est-ce que GEPI ?</p>\r\n\r\n<p>Afin d''étudier les modalités d''informatisation des bulletins scolaires : notes et appréciations via Internet, une expérimentation (baptisée Gestion des Elèves Par Internet)a été mise en place. Cette expérimentation concerne les classes suivantes : \r\n<br />* ....\r\n<br />* ....\r\n<br />\r\n<br />\r\nCeci vous concerne car vous êtes professeur enseignant dans l''une ou l''autre de ces classes.\r\n<br />\r\n<br />\r\nA partir de la réception de ce document, vous pourrez remplir les bulletins informatisés :\r\n<span class = "norme">\r\n<UL><li>soit au lycée à partir de n''importe quel poste connecté à Internet,\r\n<li>soit chez vous si vous disposez d''une connexion Internet.\r\n</ul>\r\n</span>\r\n<p class = "grand">Comment accéder au module de saisie (notes etappréciations) :</p>\r\n<span class = "norme">\r\n<UL>\r\n    <LI>Se connecter à Internet\r\n    <LI>Lancer un navigateur (FireFox de préférence, Opera, Internet Explorer, ...)\r\n    <LI>Se connecter au site : https://adresse_du_site/gepi\r\n    <LI>Après quelques instants une page apparaît vous invitant à entrer un nom d''identifiant et un mot de passe (cesinformations figurent en haut de cette page).\r\n    <br />ATTENTION : votre mot de passe est strictement confidentiel.\r\n    <br />\r\n    <br />Une fois ces informations fournies, cliquez sur le bouton "Ok".\r\n    <LI> Après quelques instants une page d''accueil apparaît.<br />\r\nLa première fois, Gepi vous demande de changer votre mot de passe.\r\nChoisissez-en un facile à retenir, mais non trivial (évitez toute date\r\nde naissance, nom d''animal familier, prénom, etc.), et contenant\r\nlettre(s), chiffre(s), et caractère(s) non alphanumérique(s).<br />\r\nLes fois suivantes, vous arriverez directement au menu général de\r\nl''application. Pour bien prendre connaissance des possibilités de\r\nl''application, n''hésitez pas à essayer tous les liens disponibles !\r\n</ul></span>\r\n<p class = "grand">Remarque :</p>\r\n<p>GEPI est prévu pour que chaque professeur ne puisse modifier les notes ou les appréciations que dans les rubriques qui le concernent et uniquement pour ses élèves.\r\n<br />\r\nJe reste à votre disposition pour tout renseignement complémentaire.\r\n    <br />\r\n    Le proviseur adjoint\r\n</p>'),
 ('gepiYear', '2009/2010'),
-('gepiSchoolName', 'Nom du lycée/collège'),
+('gepiSchoolName', 'Nom du Lycée'),
 ('gepiSchoolAdress1', 'Adresse'),
 ('gepiSchoolAdress2', 'Boîte postale'),
 ('gepiSchoolZipCode', 'Code postal'),
@@ -3571,7 +4302,6 @@ INSERT INTO `setting` (`NAME`, `VALUE`) VALUES
 ('col_note_largeur', '30'),
 ('active_cahiers_texte', 'y'),
 ('active_carnets_notes', 'y'),
-('active_observatoire', 'n'),
 ('logo_etab', 'logo.gif'),
 ('longmin_pwd', '5'),
 ('duree_conservation_logs', '365'),
@@ -3698,7 +4428,7 @@ INSERT INTO `setting` (`NAME`, `VALUE`) VALUES
 ('longmax_login', '10'),
 ('autorise_edt_tous', 'y'),
 ('autorise_edt_admin', 'y'),
-('autorise_edt_eleve', 'n'),
+('autorise_edt_eleve', 'no'),
 ('utiliserMenuBarre', 'no'),
 ('active_absences_parents', 'no'),
 ('creneau_different', 'n'),
@@ -3735,14 +4465,20 @@ INSERT INTO `setting` (`NAME`, `VALUE`) VALUES
 ('edt_remplir_prof', 'n'),
 ('active_mod_genese_classes', 'y'),
 ('active_mod_ects', 'n'),
+('GepiAccesSaisieEctsProf', 'no'),
 ('GepiAccesSaisieEctsPP', 'no'),
 ('GepiAccesSaisieEctsScolarite', 'yes'),
+('GepiAccesRecapitulatifEctsScolarite', 'yes'),
+('GepiAccesRecapitulatifEctsProf', 'yes'),
 ('GepiAccesEditionDocsEctsPP', 'no'),
 ('GepiAccesEditionDocsEctsScolarite', 'yes'),
 ('gepiSchoolStatut', 'public'),
 ('gepiSchoolAcademie', ''),
 ('note_autre_que_sur_referentiel', 'F'),
-('referentiel_note', '20');
+('referentiel_note', '20'),
+('active_mod_apb', 'n'),
+('active_mod_gest_aid', 'n'),
+('unzipped_max_filesize', '10');
 
 -- --------------------------------------------------------
 
@@ -3766,6 +4502,44 @@ CREATE TABLE IF NOT EXISTS `suivi_eleve_cpe` (
 
 --
 -- Contenu de la table `suivi_eleve_cpe`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `synthese_app_classe`
+--
+
+CREATE TABLE IF NOT EXISTS `synthese_app_classe` (
+  `id_classe` int(11) NOT NULL default '0',
+  `periode` int(11) NOT NULL default '0',
+  `synthese` text NOT NULL,
+  PRIMARY KEY  (`id_classe`,`periode`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `synthese_app_classe`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `s_alerte_mail`
+--
+
+CREATE TABLE IF NOT EXISTS `s_alerte_mail` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `id_classe` smallint(6) unsigned NOT NULL,
+  `destinataire` varchar(50) NOT NULL default '',
+  `adresse` varchar(250) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `id_classe` (`id_classe`,`destinataire`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `s_alerte_mail`
 --
 
 
@@ -3844,8 +4618,10 @@ CREATE TABLE IF NOT EXISTS `s_incidents` (
   `heure` varchar(20) NOT NULL,
   `id_lieu` int(11) NOT NULL,
   `nature` varchar(255) NOT NULL,
+  `id_categorie` int(11) default NULL,
   `description` text NOT NULL,
   `etat` varchar(20) NOT NULL,
+  `message_id` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`id_incident`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
@@ -4179,6 +4955,7 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
 INSERT INTO `utilisateurs` (`login`, `nom`, `prenom`, `civilite`, `password`, `email`, `show_email`, `statut`, `etat`, `change_mdp`, `date_verrouillage`, `password_ticket`, `ticket_expiration`, `niveau_alerte`, `observation_securite`, `temp_dir`, `numind`, `auth_mode`) VALUES
 ('admin', '', '', 'M.', '', '', 'no', 'administrateur', 'actif', 'n', '2006-01-01 00:00:00', '', '0000-00-00 00:00:00', 0, 0, '', '', 'sso');
 
+
 -- --------------------------------------------------------
 
 --
@@ -4243,3 +5020,4 @@ CREATE TABLE IF NOT EXISTS `vs_alerts_types` (
 --
 
 GRANT SELECT , INSERT , UPDATE , DELETE , CREATE , DROP , INDEX , ALTER , CREATE TEMPORARY TABLES ON gepi_plug.* TO gepi_user@localhost IDENTIFIED BY '#PASS#';
+

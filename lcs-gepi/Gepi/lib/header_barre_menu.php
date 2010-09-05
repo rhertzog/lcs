@@ -3,7 +3,7 @@
 /**
  * Fichier qui permet de construire la barre de menu
  *
- * @version $Id: header_barre_menu.php 2621 2008-11-10 13:09:57Z jjocal $
+ * @version $Id: header_barre_menu.php 4803 2010-07-17 17:45:31Z regis $
  * @copyright 2008
  */
 // ====== SECURITE =======
@@ -20,12 +20,11 @@ if (!$_SESSION["login"]) {
 		$cours_actu = retourneCours($_SESSION["login"]);
 		// Qui correspond à cet id_groupe :
 		if ($cours_actu != "non") {
-			$queryG = mysql_query("SELECT id_groupe FROM edt_cours WHERE id_cours = '".$cours_actu."'");
+			$queryG = mysql_query("SELECT id_groupe, id_aid FROM edt_cours WHERE id_cours = '".$cours_actu."'");
 			$groupe_actu = mysql_fetch_array($queryG);
 			// Il faudrait vérifier si ce n'est pas une AID
-			$test = explode("|", $groupe_actu["id_groupe"]);
-			if ($test[0] == "AID") {
-				$groupe_abs = '?groupe='.$groupe_actu["id_groupe"].'&amp;menuBar=ok';
+			if ($groupe_actu["id_aid"] != NULL) {
+				$groupe_abs = '?groupe=AID|'.$groupe_actu["id_aid"].'&amp;menuBar=ok';
 				$groupe_text = '';
 			}else{
 				$groupe_text = '?id_groupe='.$groupe_actu["id_groupe"].'&amp;year='.date("Y").'&amp;month='.date("n").'&amp;day='.date("d").'&amp;edit_devoir=';
@@ -37,7 +36,11 @@ if (!$_SESSION["login"]) {
 /* On fixe l'ensemble des modules qui sont ouverts pour faire la liste des <li> */
 	// module absence
 	if (getSettingValue("active_module_absence_professeur")=='y') {
+	    if (getSettingValue("active_module_absence")=='2') {
+		$barre_absence = '<li><a href="'.$gepiPath.'/mod_abs2/index.php'.$groupe_abs.'">Absences</a></li>';
+	    } else {
 		$barre_absence = '<li><a href="'.$gepiPath.'/mod_absences/professeurs/prof_ajout_abs.php'.$groupe_abs.'">Absences</a></li>';
+	    }
 	}else{$barre_absence = '';}
 
 	// Module Cahier de textes
@@ -56,14 +59,9 @@ if (!$_SESSION["login"]) {
 		$barre_edt = '<li><a href="'.$gepiPath.'/edt_organisation/index_edt.php?visioedt=prof1&amp;login_edt='.$_SESSION["login"].'&amp;type_edt_2=prof">Emploi du tps</a></li>';
 	}else{$barre_edt = '';}
 
-	// Module emploi du temps
-	if (getSettingValue("autorise_edt_tous") == "y") {
-		$barre_edt = '<li><a href="'.$gepiPath.'/edt_organisation/index_edt.php?visioedt=prof1&amp;login_edt='.$_SESSION["login"].'&amp;type_edt_2=prof">Emploi du tps</a></li>';
-	}else{$barre_edt = '';}
-
 	// Module discipline
 	if (getSettingValue("active_mod_discipline")=='y') {
-	    $barre_discipline = "<li><a href=".$gepiPath."/mod_discipline/index.php>Discipline</a></li>";
+	    $barre_discipline = "<li><a href='".$gepiPath."/mod_discipline/index.php'>Discipline</a></li>";
 	} else {$barre_discipline = '';}
 
 	// Module notanet

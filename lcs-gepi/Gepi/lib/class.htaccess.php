@@ -37,7 +37,7 @@
  *
  * @link http://www.open-publisher.net/
  * @author Armand Turpel <contact@open-publisher.net>
- * @version $Revision: 1354 $
+ * @version $Revision: 4651 $
  * @since 2003-05-09
  */
 class htaccess
@@ -185,8 +185,9 @@ class htaccess
      * Load vars from an existing htaccess file.
      *
      * @return array Accosiative array with the file data. False if it fails
-     */               
-    function & get_htpasswd()
+     */
+    //function & get_htpasswd()
+    function get_htpasswd()
     {  
         if($f = @fopen($this->ht_dir.'/'.$this->htpasswd_file, "r"))
         {

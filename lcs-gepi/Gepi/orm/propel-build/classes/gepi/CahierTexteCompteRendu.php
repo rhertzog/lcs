@@ -1,6 +1,5 @@
 <?php
 
-require 'gepi/om/BaseCahierTexteCompteRendu.php';
 
 
 /**
@@ -12,10 +11,11 @@ require 'gepi/om/BaseCahierTexteCompteRendu.php';
  * application requirements.  This class will only be generated as
  * long as it does not already exist in the output directory.
  *
- * @package    gepi
+ * @package    propel.generator.gepi
  */
 class CahierTexteCompteRendu extends BaseCahierTexteCompteRendu {
 
+	//optimisation de vitesse dans les cas ou les criteres sont null pour recuprer les fichiers joint
 	/**
 	 * @var        array CahierTexteCompteRenduFichierJoint[] Collection to store aggregation of CahierTexteCompteRenduFichierJoint objects.
 	 */
@@ -74,15 +74,4 @@ class CahierTexteCompteRendu extends BaseCahierTexteCompteRendu {
 		$this->collCahierTexteCompteRenduFichierJoints = null; // important to set this to NULL since that means it is uninitialized
 	}
 	
-	/**
-	 * Initializes internal state of CahierTexteCompteRendu object.
-	 * @see        parent::__construct()
-	 */
-	public function __construct()
-	{
-		// Make sure that parent constructor is always invoked, since that
-		// is where any default values for this object are set.
-		parent::__construct();
-	}
-
 } // CahierTexteCompteRendu

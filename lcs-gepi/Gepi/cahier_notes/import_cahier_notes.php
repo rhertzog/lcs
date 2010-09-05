@@ -1,7 +1,7 @@
 <?php
 //@set_time_limit(0);
 /*
- * @version: $Id: import_cahier_notes.php 3323 2009-08-05 10:06:18Z crob $
+ * @version: $Id: import_cahier_notes.php 3984 2010-01-02 12:17:14Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -31,12 +31,12 @@ extract($_POST, EXTR_OVERWRITE);
 // Resume session
 $resultat_session = $session_gepi->security_check();
 if ($resultat_session == 'c') {
-header("Location: ../utilisateurs/mon_compte.php?change_mdp=yes");
-die();
+	header("Location: ../utilisateurs/mon_compte.php?change_mdp=yes");
+	die();
 } else if ($resultat_session == '0') {
-header("Location: ../logout.php?auto=1");
-die();
-};
+	header("Location: ../logout.php?auto=1");
+	die();
+}
 
 
 // INSERT INTO `droits` VALUES ('/cahier_notes/import_cahier_notes.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'Import CSV du cahier de notes', '');
@@ -129,8 +129,9 @@ function recherche_enfant($id_parent_tmp){
 $titre_page = "Import de devoirs dans le cahier de notes";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
+//debug_var();
 ?>
-<p class=bold><a href="index.php?id_racine=<?php echo $id_racine;?>"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a></p>
+<p class='bold'><a href="index.php?id_racine=<?php echo $id_racine;?>"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a></p>
 <?php
 
 $titre=htmlentities($current_group['description'])." (".$nom_periode.")";
@@ -154,10 +155,37 @@ if (!isset($is_posted)) {
 
 	echo "<p><input type=submit value='Valider' /></p>\n";
 	echo "</form>\n";
+
+	echo "<p><br /</p>\n";
+
+	echo "<p><i>NOTE&nbsp;</i>: Le format du CSV est un peu complexe.<br />
+La première ligne sert à repérer les champs.<br />
+Le premier champ des lignes élèves doit contenir la chaine GEPI_LOGIN_ELEVE.</p>
+
+<pre>
+GEPI_INFOS;GEPI_LOGIN_ELEVE;NOM;PRENOM;CLASSE;MOYENNE;GEPI_COL_1ER_DEVOIR
+GEPI_DEV_NOM_COURT;;;;;Nom court du devoir:;Devoir1;Devoir2;Oral1
+GEPI_DEV_COEF;;;;;Coefficient:;3,0;3,0;1,0
+GEPI_DEV_NOTE_SUR;;;;;Notation sur:;20;20;20
+GEPI_DEV_DATE;;;;;Date:;15/09/2009;12/10/2009;15/11/2009
+GEPI_LOGIN_ELEVE;ABBA_B;ABBA;Bart;3 A2;;15,5;15,0;12,0
+GEPI_LOGIN_ELEVE;GOLADE_L;GOLADE;Larry;3 A2;;11,0;14,0;13,0
+GEPI_LOGIN_ELEVE;ZETOFRE_M_L;ZETOFREY;Melanie;3 A2;;10,5;14,5;19,0
+...
+</pre>
+
+<p>Il est plus simple de créer une évaluation et d'Exporter ensuite le carnet de notes (<i>même vide</i>) pour disposer d'un CSV correctement formaté.</p>\n";
+
 }
 else{
 	if(!isset($_POST['valide_insertion_devoirs'])) {
 		$csv_file = isset($_FILES["csv_file"]) ? $_FILES["csv_file"] : NULL;
+
+		/*
+		foreach($csv_file as $key => $value) {
+			echo "\$csv_file[$key]=$value<br />";
+		}
+		*/
 
 		if (trim($csv_file['name'])=='') {
 			echo "<p>Aucun fichier n'a été sélectionné !<br />\n";
@@ -446,7 +474,8 @@ else{
 				echo "</tr>\n";
 
 				echo "<tr>\n";
-				echo "<th>&nbsp;</th>\n";
+				//echo "<th>&nbsp;</th>\n";
+				echo "<th>Cocher le(s) devoir(s) à importer</th>\n";
 				for($i=0;$i<count($nomc_dev);$i++){
 					if($nomc_dev[$i]!=""){
 						echo "<th><input type='checkbox' name='valide_import_dev[$i]' value='y' /></th>\n";
@@ -462,7 +491,9 @@ else{
 					if(isset($tab_dev[$i]['login'])){
 						echo "<td>";
 						echo "<input type='hidden' name='login_ele[$i]' value=\"".$tab_dev[$i]['login']."\" />\n";
-						echo $tab_dev[$i]['login'];
+						//echo $tab_dev[$i]['login'];
+						echo get_nom_prenom_eleve($tab_dev[$i]['login']);
+
 						echo "</td>\n";
 						//for($j=0;$j<count($id_dev);$j++){
 						for($j=0;$j<$nb_dev;$j++){
@@ -654,7 +685,8 @@ else{
 		for($i=0;$i<count($login_ele);$i++){
 			if($i>0){echo ", ";}
 			if(isset($login_ele[$i])) {
-				echo $login_ele[$i];
+				//echo $login_ele[$i];
+				echo get_nom_prenom_eleve($login_ele[$i]);
 				//for($j=0;$j<count($id_dev);$j++){
 				for($j=0;$j<count($nomc_dev);$j++){
 					if(isset($valide_import_dev[$j])){

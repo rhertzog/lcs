@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: install.php 2160 2008-07-24 08:12:54Z delineau $
+* $Id: install.php 5062 2010-08-16 19:49:23Z jjacquard $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -130,7 +130,8 @@ if ($etape == 4) {
 		//=============================================
 			$reg = mysql_query($query);
 			if (!$reg) {
-				echo "<p><font color=red>ERROR</font> : '$query'";
+				echo "<p><font color=red>ERROR</font> : '$query' : ";
+				echo "<p>Erreur retournée : ".mysql_error()."</p>\n";
 				$result_ok = 'no';
 			}
 		}
@@ -150,7 +151,7 @@ if ($etape == 4) {
 				$reg = mysql_query($query);
 				if (!$reg) {
 					echo "<p><font color=red>ERROR</font> : '$query'</p>\n";
-					//echo "<p>Erreur retournée : ".mysql_error()."</p>\n";
+					echo "<p>Erreur retournée : ".mysql_error()."</p>\n";
 					$result_ok = 'no';
 				}
 			}
@@ -314,6 +315,7 @@ else if ($etape == 2) {
 	else {
 		echo "<B>La connexion au serveur MySQL a échoué.</B>\n";
 		echo "<p>Revenez à la page précédente, et vérifiez les informations que vous avez fournies.</p>\n";
+		echo mysql_error();
 	}
 
 	end_html();

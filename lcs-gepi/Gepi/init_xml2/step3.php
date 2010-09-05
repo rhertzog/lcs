@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: step3.php 2299 2008-08-23 11:34:03Z crob $
+ * $Id: step3.php 4070 2010-02-05 19:43:06Z adminpaulbert $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -302,7 +302,7 @@ else {
 				$nbre = mysql_num_rows($query_p);
 				if ($nbre >= 1) {
 					// On considère que l'information est bonne puisqu'elle a été construite avec la même source sconet
-					$login_eleve = mysql_result($query_p, "login_u");
+					$login_eleve = mysql_result($query_p, 0,"login_u");
 				}else{
 					// Il faudra trouver une solution dans ce cas là (même s'il ne doit pas être très fréquent
 					$login_eleve = "erreur_".$i;

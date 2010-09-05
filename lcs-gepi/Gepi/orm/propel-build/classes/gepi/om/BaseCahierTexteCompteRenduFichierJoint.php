@@ -1,14 +1,20 @@
 <?php
 
+
 /**
  * Base class that represents a row from the 'ct_documents' table.
  *
  * Document (fichier joint) appartenant a un compte rendu du cahier de texte
  *
- * @package    gepi.om
+ * @package    propel.generator.gepi.om
  */
-abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implements Persistent {
+abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implements Persistent
+{
 
+	/**
+	 * Peer class name
+	 */
+  const PEER = 'CahierTexteCompteRenduFichierJointPeer';
 
 	/**
 	 * The Peer class.
@@ -70,16 +76,6 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 	protected $alreadyInValidation = false;
 
 	/**
-	 * Initializes internal state of BaseCahierTexteCompteRenduFichierJoint object.
-	 * @see        applyDefaults()
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-		$this->applyDefaultValues();
-	}
-
-	/**
 	 * Applies default values to this object.
 	 * This method should be called from the object's constructor (or
 	 * equivalent initialization method).
@@ -89,6 +85,16 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 	{
 		$this->id_ct = 0;
 		$this->taille = 0;
+	}
+
+	/**
+	 * Initializes internal state of BaseCahierTexteCompteRenduFichierJoint object.
+	 * @see        applyDefaults()
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+		$this->applyDefaultValues();
 	}
 
 	/**
@@ -173,7 +179,7 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 			$v = (int) $v;
 		}
 
-		if ($this->id_ct !== $v || $v === 0) {
+		if ($this->id_ct !== $v || $this->isNew()) {
 			$this->id_ct = $v;
 			$this->modifiedColumns[] = CahierTexteCompteRenduFichierJointPeer::ID_CT;
 		}
@@ -217,7 +223,7 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 			$v = (int) $v;
 		}
 
-		if ($this->taille !== $v || $v === 0) {
+		if ($this->taille !== $v || $this->isNew()) {
 			$this->taille = $v;
 			$this->modifiedColumns[] = CahierTexteCompteRenduFichierJointPeer::TAILLE;
 		}
@@ -255,11 +261,6 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 	 */
 	public function hasOnlyDefaultValues()
 	{
-			// First, ensure that we don't have any columns that have been modified which aren't default columns.
-			if (array_diff($this->modifiedColumns, array(CahierTexteCompteRenduFichierJointPeer::ID_CT,CahierTexteCompteRenduFichierJointPeer::TAILLE))) {
-				return false;
-			}
-
 			if ($this->id_ct !== 0) {
 				return false;
 			}
@@ -303,7 +304,6 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 				$this->ensureConsistency();
 			}
 
-			// FIXME - using NUM_COLUMNS may be clearer.
 			return $startcol + 5; // 5 = CahierTexteCompteRenduFichierJointPeer::NUM_COLUMNS - CahierTexteCompteRenduFichierJointPeer::NUM_LAZY_LOAD_COLUMNS).
 
 		} catch (Exception $e) {
@@ -394,9 +394,17 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 		
 		$con->beginTransaction();
 		try {
-			CahierTexteCompteRenduFichierJointPeer::doDelete($this, $con);
-			$this->setDeleted(true);
-			$con->commit();
+			$ret = $this->preDelete($con);
+			if ($ret) {
+				CahierTexteCompteRenduFichierJointQuery::create()
+					->filterByPrimaryKey($this->getPrimaryKey())
+					->delete($con);
+				$this->postDelete($con);
+				$con->commit();
+				$this->setDeleted(true);
+			} else {
+				$con->commit();
+			}
 		} catch (PropelException $e) {
 			$con->rollBack();
 			throw $e;
@@ -427,10 +435,27 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 		}
 		
 		$con->beginTransaction();
+		$isInsert = $this->isNew();
 		try {
-			$affectedRows = $this->doSave($con);
+			$ret = $this->preSave($con);
+			if ($isInsert) {
+				$ret = $ret && $this->preInsert($con);
+			} else {
+				$ret = $ret && $this->preUpdate($con);
+			}
+			if ($ret) {
+				$affectedRows = $this->doSave($con);
+				if ($isInsert) {
+					$this->postInsert($con);
+				} else {
+					$this->postUpdate($con);
+				}
+				$this->postSave($con);
+				CahierTexteCompteRenduFichierJointPeer::addInstanceToPool($this);
+			} else {
+				$affectedRows = 0;
+			}
 			$con->commit();
-			CahierTexteCompteRenduFichierJointPeer::addInstanceToPool($this);
 			return $affectedRows;
 		} catch (PropelException $e) {
 			$con->rollBack();
@@ -474,13 +499,14 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 			// If this object has been modified, then save it to the database.
 			if ($this->isModified()) {
 				if ($this->isNew()) {
-					$pk = CahierTexteCompteRenduFichierJointPeer::doInsert($this, $con);
-					$affectedRows += 1; // we are assuming that there is only 1 row per doInsert() which
-										 // should always be true here (even though technically
-										 // BasePeer::doInsert() can insert multiple rows).
+					$criteria = $this->buildCriteria();
+					if ($criteria->keyContainsValue(CahierTexteCompteRenduFichierJointPeer::ID) ) {
+						throw new PropelException('Cannot insert a value for auto-increment primary key ('.CahierTexteCompteRenduFichierJointPeer::ID.')');
+					}
 
+					$pk = BasePeer::doInsert($criteria, $con);
+					$affectedRows += 1;
 					$this->setId($pk);  //[IMV] update autoincrement primary key
-
 					$this->setNew(false);
 				} else {
 					$affectedRows += CahierTexteCompteRenduFichierJointPeer::doUpdate($this, $con);
@@ -632,12 +658,15 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 	 * You can specify the key type of the array by passing one of the class
 	 * type constants.
 	 *
-	 * @param      string $keyType (optional) One of the class type constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME
-	 *                        BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. Defaults to BasePeer::TYPE_PHPNAME.
-	 * @param      boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns.  Defaults to TRUE.
-	 * @return     an associative array containing the field names (as keys) and field values
+	 * @param     string  $keyType (optional) One of the class type constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME,
+	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. 
+	 *                    Defaults to BasePeer::TYPE_PHPNAME.
+	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
+	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
+	 *
+	 * @return    array an associative array containing the field names (as keys) and field values
 	 */
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $includeForeignObjects = false)
 	{
 		$keys = CahierTexteCompteRenduFichierJointPeer::getFieldNames($keyType);
 		$result = array(
@@ -647,6 +676,11 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 			$keys[3] => $this->getTaille(),
 			$keys[4] => $this->getEmplacement(),
 		);
+		if ($includeForeignObjects) {
+			if (null !== $this->aCahierTexteCompteRendu) {
+				$result['CahierTexteCompteRendu'] = $this->aCahierTexteCompteRendu->toArray($keyType, $includeLazyLoadColumns, true);
+			}
+		}
 		return $result;
 	}
 
@@ -752,7 +786,6 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 	public function buildPkeyCriteria()
 	{
 		$criteria = new Criteria(CahierTexteCompteRenduFichierJointPeer::DATABASE_NAME);
-
 		$criteria->add(CahierTexteCompteRenduFichierJointPeer::ID, $this->id);
 
 		return $criteria;
@@ -779,6 +812,15 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 	}
 
 	/**
+	 * Returns true if the primary key for this object is null.
+	 * @return     boolean
+	 */
+	public function isPrimaryKeyNull()
+	{
+		return null === $this->getId();
+	}
+
+	/**
 	 * Sets contents of passed object to values from current object.
 	 *
 	 * If desired, this method can also make copies of all associated (fkey referrers)
@@ -790,20 +832,13 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 	 */
 	public function copyInto($copyObj, $deepCopy = false)
 	{
-
 		$copyObj->setIdCt($this->id_ct);
-
 		$copyObj->setTitre($this->titre);
-
 		$copyObj->setTaille($this->taille);
-
 		$copyObj->setEmplacement($this->emplacement);
 
-
 		$copyObj->setNew(true);
-
 		$copyObj->setId(NULL); // this is a auto-increment column, so set to default value
-
 	}
 
 	/**
@@ -881,7 +916,7 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 	public function getCahierTexteCompteRendu(PropelPDO $con = null)
 	{
 		if ($this->aCahierTexteCompteRendu === null && ($this->id_ct !== null)) {
-			$this->aCahierTexteCompteRendu = CahierTexteCompteRenduPeer::retrieveByPK($this->id_ct, $con);
+			$this->aCahierTexteCompteRendu = CahierTexteCompteRenduQuery::create()->findPk($this->id_ct, $con);
 			/* The following can be used additionally to
 			   guarantee the related object contains a reference
 			   to this object.  This level of coupling may, however, be
@@ -891,6 +926,25 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 			 */
 		}
 		return $this->aCahierTexteCompteRendu;
+	}
+
+	/**
+	 * Clears the current object and sets all attributes to their default values
+	 */
+	public function clear()
+	{
+		$this->id = null;
+		$this->id_ct = null;
+		$this->titre = null;
+		$this->taille = null;
+		$this->emplacement = null;
+		$this->alreadyInSave = false;
+		$this->alreadyInValidation = false;
+		$this->clearAllReferences();
+		$this->applyDefaultValues();
+		$this->resetModified();
+		$this->setNew(true);
+		$this->setDeleted(false);
 	}
 
 	/**
@@ -907,7 +961,26 @@ abstract class BaseCahierTexteCompteRenduFichierJoint extends BaseObject  implem
 		if ($deep) {
 		} // if ($deep)
 
-			$this->aCahierTexteCompteRendu = null;
+		$this->aCahierTexteCompteRendu = null;
+	}
+
+	/**
+	 * Catches calls to virtual methods
+	 */
+	public function __call($name, $params)
+	{
+		if (preg_match('/get(\w+)/', $name, $matches)) {
+			$virtualColumn = $matches[1];
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
+			// no lcfirst in php<5.3...
+			$virtualColumn[0] = strtolower($virtualColumn[0]);
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
+		}
+		return parent::__call($name, $params);
 	}
 
 } // BaseCahierTexteCompteRenduFichierJoint

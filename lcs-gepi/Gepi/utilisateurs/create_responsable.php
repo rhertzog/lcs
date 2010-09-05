@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: create_responsable.php 3645 2009-10-20 13:10:22Z jjocal $
+ * $Id: create_responsable.php 4070 2010-02-05 19:43:06Z adminpaulbert $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -141,7 +141,7 @@ if ($create_mode == "classe" OR $create_mode == "individual") {
 					$nbre = mysql_num_rows($query_p);
 
 					if ($nbre >= 1 AND $nbre < 2) {
-						$reg_login = mysql_result($query_p, "login_u");
+						$reg_login = mysql_result($query_p, 0,"login_u");
 					}else{
 						// Il faudrait alors proposer une alternative à ce cas et permettre de chercher à la main le bon responsable dans la source
 						//$reg_login = "erreur_".$k; // en attendant une solution viable, on génère le login du responsable
@@ -233,17 +233,15 @@ if ($create_mode == "classe" OR $create_mode == "individual") {
 				// On est ici en mode de création par classe
 				// Si on opère sur toutes les classes, on ne spécifie aucune classe
 				// =====================
-				// MODIF: boireaus 20071102
 				if ($_POST['classe'] == "all") {
 				    $msg .= "<br/><a target='_blank' href='reset_passwords.php?user_status=responsable&amp;mode=html&amp;creation_comptes_classe=y'>Imprimer la ou les fiche(s) de bienvenue (Impression HTML)</a>";
+				    $msg .= " ou <a target='_blank' href='reset_passwords.php?user_status=responsable&amp;mode=html&amp;affiche_adresse_resp=y&amp;creation_comptes_classe=y'>(Impression HTML avec adresse)</a>";
 					$msg .= "<br/><a target='_blank' href='reset_passwords.php?user_status=responsable&amp;mode=csv&amp;creation_comptes_classe=y'>Imprimer la ou les fiche(s) de bienvenue (Export CSV)</a>";
-
 					$msg.="<br/>";
-
 				} elseif (is_numeric($_POST['classe'])) {
 					$msg .= "<br/><a target='_blank' href='reset_passwords.php?user_status=responsable&amp;user_classe=".$_POST['classe']."&amp;mode=html&amp;creation_comptes_classe=y'>Imprimer la ou les fiche(s) de bienvenue (Impression HTML)</a>";
+					$msg .= " ou <a target='_blank' href='reset_passwords.php?user_status=responsable&amp;user_classe=".$_POST['classe']."&amp;mode=html&amp;affiche_adresse_resp=y&amp;creation_comptes_classe=y'>(Impression HTML avec adresse)</a>";
 					$msg .= "<br/><a target='_blank' href='reset_passwords.php?user_status=responsable&amp;user_classe=".$_POST['classe']."&amp;mode=csv&amp;creation_comptes_classe=y'>Imprimer la ou les fiche(s) de bienvenue (Export CSV)</a>";
-
 					$msg.="<br/>";
 				}
 				// =====================

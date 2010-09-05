@@ -1,3 +1,24 @@
+/*
+ * $Id$
+ *
+ * Copyright 2009 Josselin Jacquard
+ *
+ * This file is part of GEPI.
+ *
+ * GEPI is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GEPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GEPI; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
 //page initialisation
 Event.observe(window, 'load', initPage);
@@ -43,9 +64,9 @@ function include(filename)
 //include('./webtoolkit.aim.js');
 //include('./ajax_functions.js');
 
-include('./calendar/calendar.js');
-include('./calendar/lang/calendar-fr.js');
-include('./calendar/calendar-setup.js');
+include('../lib/DHTMLcalendar/calendar.js');
+include('../lib/DHTMLcalendar/lang/calendar-fr.js');
+include('../lib/DHTMLcalendar/calendar-setup.js');
 include('../ckeditor/ckeditor.js');
 include('../edt_effets/javascripts/window.js');
 
@@ -56,10 +77,10 @@ function getWinListeNotices() {
 				title: 'Liste des Notices',
 				showEffect: Element.show,
 				hideEffect: Element.hide,
-				top:110,
+				top:160,
 				left:0,
 				width:300,
-				height:GetHeight() - 160}
+				height:GetHeight() - 220}
 			);
 		$('win_liste_notices_content').setStyle({	
 			backgroundColor: '#d0d0d0',
@@ -80,10 +101,10 @@ function getWinEditionNotice() {
 				title: 'Edition de Notice',
 				showEffect: Element.show,
 				hideEffect: Element.hide,
-				top:110,
+				top:160,
 				left:304,
 				width:GetWidth()-310,
-				height:GetHeight() - 160}
+				height:GetHeight() - 220}
 			);
 		$('win_edition_notice_content').setStyle({	
 			backgroundColor: '#d0d0d0',
@@ -103,10 +124,10 @@ function getWinDernieresNotices() {
 				title: 'Dernières Notices',
 				showEffect: Element.show,
 				hideEffect: Element.hide,
-				top:105,
+				top:155,
 				left:40,
 				width:GetWidth()-100,
-				height:GetHeight() - 170}
+				height:GetHeight() - 230}
 			);
 		$('win_dernieres_notices_content').setStyle({	
 			backgroundColor: '#d0d0d0',

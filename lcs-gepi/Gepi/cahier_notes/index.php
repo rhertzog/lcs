@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 3831 2009-11-28 16:43:36Z jjacquard $
+ * $Id: index.php 4309 2010-04-13 17:41:17Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -52,7 +52,7 @@ if ($id_groupe == "no_group") {
     $_SESSION['id_groupe_session'] = "";
 }
 
-//on mets le groupe dans la session, pour naviguer entre absence, cahier de texte et autres
+//on met le groupe dans la session, pour naviguer entre absence, cahier de texte et autres
 if ($id_groupe != NULL) {
     $_SESSION['id_groupe_session'] = $id_groupe;
 } else if (isset($_SESSION['id_groupe_session']) && $_SESSION['id_groupe_session'] != "") {
@@ -61,6 +61,18 @@ if ($id_groupe != NULL) {
 }
 
 if (is_numeric($id_groupe) && $id_groupe > 0) {
+
+    $sql="SELECT 1=1 FROM j_groupes_professeurs WHERE id_groupe='$id_groupe' AND login='".$_SESSION['login']."';";
+    $test_prof_groupe=mysql_query($sql);
+    if(mysql_num_rows($test_prof_groupe)==0) {
+        $mess=rawurlencode("Vous tentez de pénétrer dans un carnet de notes qui ne vous appartient pas !");
+		unset($_SESSION['id_groupe_session']);
+		tentative_intrusion(1, "Tentative d'accès à un carnet de notes qui ne lui appartient pas (id_groupe=$id_groupe)");
+        // Sans le unset($_SESSION['id_groupe_session']) avec ces tentative_intrusion(), une modif d'id_groupe en barre d'adresse me provoquait 7 insertions... d'où un score à +7 et une déconnexion
+        header("Location: index.php?msg=$mess");
+        die();
+    }
+
     $current_group = get_group($id_groupe);
 }
 
@@ -69,6 +81,8 @@ if ((isset($_POST['id_racine'])) or (isset($_GET['id_racine']))) {
     $id_racine = isset($_POST['id_racine']) ? $_POST['id_racine'] : (isset($_GET['id_racine']) ? $_GET['id_racine'] : NULL);
     if (!(Verif_prof_cahier_notes ($_SESSION['login'],$id_racine))) {
         $mess=rawurlencode("Vous tentez de pénétrer dans un carnet de notes qui ne vous appartient pas !");
+		unset($_SESSION['id_groupe_session']);
+		tentative_intrusion(1, "Tentative d'accès à un carnet de notes qui ne lui appartient pas (id_racine=$id_racine)");
         header("Location: index.php?msg=$mess");
         die();
     }
@@ -78,6 +92,8 @@ if ((isset($_POST['id_racine'])) or (isset($_GET['id_racine']))) {
 $titre_page = "Carnet de notes";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *************
+
+//debug_var();
 
 //-----------------------------------------------------------------------------------
 if (isset($_GET['id_groupe']) and isset($_GET['periode_num'])) {
@@ -175,66 +191,88 @@ if  (isset($id_racine) and ($id_racine!='')) {
     include "../lib/periodes.inc.php";
 
     //
-    // Supression d'une évaluation
+    // Suppression d'une évaluation
     //
     if ((isset($_GET['del_dev'])) and ($_GET['js_confirmed'] ==1)) {
         $temp = $_GET['del_dev'];
 
-        $sql= mysql_query("SELECT id_conteneur FROM cn_devoirs WHERE id='$temp'");
-        $id_cont = mysql_result($sql, 0, 'id_conteneur');
-        $sql = mysql_query("DELETE FROM cn_notes_devoirs WHERE id_devoir='$temp'");
-        $sql = mysql_query("DELETE FROM cn_devoirs WHERE id='$temp'");
+	    if((isset($_GET['alea']))&&($_GET['alea']==$_SESSION['gepi_alea'])) {
 
-        // On teste si le conteneur est vide
-        $sql= mysql_query("SELECT id FROM cn_devoirs WHERE id_conteneur='$id_cont'");
-        $nb_dev = mysql_num_rows($sql);
-        $sql= mysql_query("SELECT id FROM cn_conteneurs WHERE parent='$id_cont'");
-        $nb_cont = mysql_num_rows($sql);
-        if (($nb_dev == 0) or ($nb_cont == 0)) {
-            $sql = mysql_query("DELETE FROM cn_notes_conteneurs WHERE id_conteneur='$id_cont'");
-        }
-
-        // On teste si le carnet de notes est vide
-        $sql= mysql_query("SELECT id FROM cn_devoirs WHERE id_conteneur='$id_racine'");
-        $nb_dev = mysql_num_rows($sql);
-        $sql= mysql_query("SELECT id FROM cn_conteneurs WHERE parent='$id_racine'");
-        $nb_cont = mysql_num_rows($sql);
-        if (($nb_dev == 0) and ($nb_cont == 0)) {
-            $sql = mysql_query("DELETE FROM cn_notes_conteneurs WHERE id_conteneur='$id_racine'");
-        } else {
-            $arret = 'no';
-            mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_racine,$arret);
-        }
+			$sql0="SELECT id_conteneur FROM cn_devoirs WHERE id='$temp'";
+			//echo "$sql0<br />";
+			$sql= mysql_query($sql0);
+			if(mysql_num_rows($sql)==0) {
+				echo "<p style='color:red'>Le devoir $temp n'a pas été trouvé.</p>\n";
+			}
+			else {
+				$id_cont = mysql_result($sql, 0, 'id_conteneur');
+				$sql = mysql_query("DELETE FROM cn_notes_devoirs WHERE id_devoir='$temp'");
+				$sql = mysql_query("DELETE FROM cn_devoirs WHERE id='$temp'");
+		
+				// On teste si le conteneur est vide
+				$sql= mysql_query("SELECT id FROM cn_devoirs WHERE id_conteneur='$id_cont'");
+				$nb_dev = mysql_num_rows($sql);
+				$sql= mysql_query("SELECT id FROM cn_conteneurs WHERE parent='$id_cont'");
+				$nb_cont = mysql_num_rows($sql);
+				if (($nb_dev == 0) or ($nb_cont == 0)) {
+					$sql = mysql_query("DELETE FROM cn_notes_conteneurs WHERE id_conteneur='$id_cont'");
+				}
+		
+				// On teste si le carnet de notes est vide
+				$sql= mysql_query("SELECT id FROM cn_devoirs WHERE id_conteneur='$id_racine'");
+				$nb_dev = mysql_num_rows($sql);
+				$sql= mysql_query("SELECT id FROM cn_conteneurs WHERE parent='$id_racine'");
+				$nb_cont = mysql_num_rows($sql);
+				if (($nb_dev == 0) and ($nb_cont == 0)) {
+					$sql = mysql_query("DELETE FROM cn_notes_conteneurs WHERE id_conteneur='$id_racine'");
+				} else {
+					$arret = 'no';
+					mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_racine,$arret);
+				}
+			}
+		}
+		else {
+			$texte_mail="Tentative de suppression de devoir avec un aléa qui ne coïncide pas avec celui de la session\nLa suppression tentée était \$_SERVER['REQUEST_URI']=".$_SERVER['REQUEST_URI']."\n";
+			mail_alerte("Anomalie de suppression de devoir",$texte_mail,'y');
+			echo "<p style='color:red'>$texte_mail</p>\n";
+		}
     }
     //
     // Supression d'un conteneur
     //
     if ((isset($_GET['del_cont'])) and ($_GET['js_confirmed'] ==1)) {
-        $temp = $_GET['del_cont'];
-        $sql= mysql_query("SELECT id FROM cn_devoirs WHERE id_conteneur='$temp'");
-        $nb_dev = mysql_num_rows($sql);
-        $sql= mysql_query("SELECT id FROM cn_conteneurs WHERE parent='$temp'");
-        $nb_cont = mysql_num_rows($sql);
-        if (($nb_dev != 0) or ($nb_cont != 0)) {
-            echo "<script type=\"text/javascript\" language=\"javascript\">\n";
-            echo 'alert("Impossible de supprimer une boîte qui n\'est pas vide !");\n';
-            echo "</script>\n";
-        } else {
-            $sql = mysql_query("DELETE FROM cn_conteneurs WHERE id='$temp'");
-            $sql = mysql_query("DELETE FROM cn_notes_conteneurs WHERE id_conteneur='$temp'");
-            // On teste si le carnet de notes est vide
-            $sql= mysql_query("SELECT id FROM cn_devoirs WHERE id_conteneur='$id_racine'");
-            $nb_dev = mysql_num_rows($sql);
-            $sql= mysql_query("SELECT id FROM cn_conteneurs WHERE parent='$id_racine'");
-            $nb_cont = mysql_num_rows($sql);
-            if (($nb_dev == 0) and ($nb_cont == 0)) {
-                $sql = mysql_query("DELETE FROM cn_notes_conteneurs WHERE id_conteneur='$id_racine'");
-            } else {
-                $arret = 'no';
-                mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_racine,$arret);
-            }
-
-        }
+	    if((isset($_GET['alea']))&&($_GET['alea']==$_SESSION['gepi_alea'])) {
+			$temp = $_GET['del_cont'];
+			$sql= mysql_query("SELECT id FROM cn_devoirs WHERE id_conteneur='$temp'");
+			$nb_dev = mysql_num_rows($sql);
+			$sql= mysql_query("SELECT id FROM cn_conteneurs WHERE parent='$temp'");
+			$nb_cont = mysql_num_rows($sql);
+			if (($nb_dev != 0) or ($nb_cont != 0)) {
+				echo "<script type=\"text/javascript\" language=\"javascript\">\n";
+				echo 'alert("Impossible de supprimer une boîte qui n\'est pas vide !");\n';
+				echo "</script>\n";
+			} else {
+				$sql = mysql_query("DELETE FROM cn_conteneurs WHERE id='$temp'");
+				$sql = mysql_query("DELETE FROM cn_notes_conteneurs WHERE id_conteneur='$temp'");
+				// On teste si le carnet de notes est vide
+				$sql= mysql_query("SELECT id FROM cn_devoirs WHERE id_conteneur='$id_racine'");
+				$nb_dev = mysql_num_rows($sql);
+				$sql= mysql_query("SELECT id FROM cn_conteneurs WHERE parent='$id_racine'");
+				$nb_cont = mysql_num_rows($sql);
+				if (($nb_dev == 0) and ($nb_cont == 0)) {
+					$sql = mysql_query("DELETE FROM cn_notes_conteneurs WHERE id_conteneur='$id_racine'");
+				} else {
+					$arret = 'no';
+					mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_racine,$arret);
+				}
+	
+			}
+		}
+		else {
+			$texte_mail="Tentative de suppression d'un conteneur avec un aléa qui ne coïncide pas avec celui de la session\nLa suppression tentée était \$_SERVER['REQUEST_URI']=".$_SERVER['REQUEST_URI']."\n";
+			mail_alerte("Anomalie de suppression de conteneur",$texte_mail,'y');
+			echo "<p style='color:red'>$texte_mail</p>\n";
+		}
     }
 
     //echo "<form enctype=\"multipart/form-data\" name= \"formulaire\" action=\"index.php\" method=\"POST\">\n";
@@ -337,7 +375,7 @@ if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 	}
 </script>\n";
 
-			echo "<input type='hidden' name='periode_num' value='$periode_num' />\n";
+			echo "<input type='hidden' name='periode_num' id='periode_num' value='$periode_num' />\n";
 			//echo " | <select name='id_classe' onchange=\"document.forms['form1'].submit();\">\n";
 			echo "Période $periode_num: <select name='id_groupe' id='id_groupe' onchange=\"confirm_changement_classe(change, '$themessage');\">\n";
 			echo $chaine_options_classes;
@@ -359,6 +397,62 @@ if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
     //echo "<a href='index.php?id_groupe=" . $current_group["id"] . "'>" . $current_group["description"] . " : Choisir une autre période</a>|";
     //echo "<a href='index.php?id_groupe=" . $current_group["id"] . "'> " . htmlentities($current_group["description"]) . " : Choisir une autre période</a> | \n";
     echo "<a href='index.php?id_groupe=" . $current_group["id"] . "'> Choisir une autre période</a> | \n";
+
+	// Recuperer la liste des cahiers de notes
+	$sql="SELECT * FROM cn_cahier_notes ccn where id_groupe='$id_groupe' ORDER BY periode;";
+	$res_cn=mysql_query($sql);
+	if(mysql_num_rows($res_cn)>1) {
+		// On ne propose pas de champ SELECT pour un seul canier de notes
+		echo "<script type='text/javascript'>
+var tab_per_cn=new Array();\n";
+
+
+		$chaine_options_periodes="";
+		while($lig_cn=mysql_fetch_object($res_cn)) {
+			$chaine_options_periodes.="<option value='$lig_cn->id_cahier_notes'";
+			if($lig_cn->periode==$periode_num) {$chaine_options_periodes.=" selected='true'";}
+			$chaine_options_periodes.=">$lig_cn->periode</option>\n";
+
+			//echo "var tab_per_cn[$lig_cn->id_cahier_notes]=$lig_cn->periode;\n";
+			echo "tab_per_cn[$lig_cn->id_cahier_notes]=$lig_cn->periode;\n";
+		}
+
+		$index_num_periode=$periode_num-1;
+
+		echo "
+	change='no';
+
+	function confirm_changement_periode(thechange, themessage)
+	{
+		if (!(thechange)) thechange='no';
+		if (thechange != 'yes') {
+			//alert(document.getElementById('id_racine').selectedIndex);
+			//alert(document.getElementById('id_racine').options[document.getElementById('id_racine').selectedIndex].value);
+			//alert(document.form1.elements['id_racine'].options[document.form1.elements['id_racine'].selectedIndex].value);
+			//i=document.getElementById('id_racine').options[document.getElementById('id_racine').selectedIndex].value;
+
+			document.getElementById('periode_num').value=tab_per_cn[document.getElementById('id_racine').options[document.getElementById('id_racine').selectedIndex].value];
+			document.form1.submit();
+		}
+		else{
+			var is_confirmed = confirm(themessage);
+			if(is_confirmed){
+				document.getElementById('periode_num').value=tab_per_cn[document.getElementById('id_racine').options[document.getElementById('id_racine').selectedIndex].value];
+				document.form1.submit();
+			}
+			else{
+				document.getElementById('id_racine').selectedIndex=$index_num_periode;
+			}
+		}
+	}
+</script>\n";
+	
+		//echo " | <select name='id_classe' onchange=\"document.forms['form1'].submit();\">\n";
+		echo "<span title='Accéder au cahier de notes de la période (ne sont proposées que les périodes pour lesquelles le cahier de notes a été initialisé)'>Période</span> <select name='id_racine' id='id_racine' onchange=\"confirm_changement_periode(change, '$themessage');\">\n";
+		echo $chaine_options_periodes;
+		echo "</select> | \n";
+	}
+
 
 	//==================================
 	// AJOUT: boireaus EXPORT...

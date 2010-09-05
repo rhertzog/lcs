@@ -3,7 +3,7 @@
 /*
  *
  *
- * @version $Id: visu_eleve.php 3655 2009-10-21 13:56:34Z crob $
+ * @version $Id: visu_eleve.php 4260 2010-04-09 16:35:21Z crob $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -84,6 +84,9 @@ require_once("../lib/header.inc");
 
 $page="visu_eleve.php";
 
+include('visu_eleve.inc.php');
+
+/*
 //debug_var();
 
 //echo "<div class='norme'><p class='bold'><a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>\n";
@@ -155,17 +158,6 @@ if((!isset($ele_login))&&(!isset($_POST['Recherche_sans_js']))) {
 		$res_ele=mysql_query($sql);
 		if(mysql_num_rows($res_ele)>0) {
 			echo "<p>".ucfirst($gepiSettings['denomination_eleves'])." de la classe de ".get_class_from_id($id_classe).":</p>\n";
-
-			/*
-			echo "<table class='boireaus' border='1' summary='Tableau des élèves'>\n";
-			echo "<tr>\n";
-			echo "<th>Nom</th>\n";
-			echo "<th>Prénom</th>\n";
-			echo "</tr>\n";
-			while($lig_ele=mysql_query($res_ele)) {
-				echo "";
-			}
-			*/
 
 			$tab_txt=array();
 			$tab_lien=array();
@@ -247,21 +239,6 @@ else {
 	}
 
 	if(isset($id_classe)) {
-		/*
-		if($_SESSION['statut']=='administrateur') {
-			$sql="SELECT e.nom,e.prenom,e.login FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login ORDER BY e.nom, e.prenom;";
-		}
-		elseif($_SESSION['statut']=='scolarite') {
-			$sql="SELECT 1=1 FROM j_scol_classes jsc, j_eleves_classes jec WHERE jec.id_classe=jsc.id_classe AND jsc.login='".$_SESSION['login']."' AND jec.login='".$ele_login."';";
-			$test=mysql_query($sql);
-		}
-		elseif($_SESSION['statut']=='cpe') {
-			$sql="SELECT 1=1 FROM j_eleves_cpe WHERE cpe_login='".$_SESSION['login']."' AND e_login='".$ele_login."';";
-			$test=mysql_query($sql);
-		}
-		elseif($_SESSION['statut']=='professeur') {
-		}
-		*/
 
 		$sql="SELECT DISTINCT e.nom,e.prenom,e.login FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login AND jec.id_classe='$id_classe' ORDER BY e.nom, e.prenom;";
 
@@ -785,33 +762,6 @@ Patientez pendant l'extraction des données... merci.
 		$p_releve_margin=getSettingValue("p_releve_margin") ? getSettingValue("p_releve_margin") : "";
 		$releve_textsize=getSettingValue("releve_textsize") ? getSettingValue("releve_textsize") : 10;
 		$releve_titlesize=getSettingValue("releve_titlesize") ? getSettingValue("releve_titlesize") : 16;
-/*
-		echo "<style type='text/css'>
-	.releve_grand {
-		color: #000000;
-		font-size: ".$releve_titlesize."pt;
-		font-style: normal;
-	}
-
-	.releve {
-		color: #000000;
-		font-size: ".$releve_textsize."pt;
-		font-style: normal;\n";
-		if($p_releve_margin!=""){
-			echo "      margin-top: ".$p_releve_margin."pt;\n";
-			echo "      margin-bottom: ".$p_releve_margin."pt;\n";
-		}
-		echo "}\n";
-
-		echo "td.releve_empty{
-		width:auto;
-		padding-right: 20%;
-	}
-
-	.boireaus td {
-		text-align:left;
-	}\n";
-		*/
 
 		$active_cahiers_texte=getSettingValue("active_cahiers_texte") ? getSettingValue("active_cahiers_texte") : "n";
 
@@ -1519,12 +1469,67 @@ Patientez pendant l'extraction des données... merci.
 						$coefficients_a_1="non";
 						$affiche_graph = 'n';
 
-						unset($tab_moy_gen);
+						//unset($tab_moy_gen);
 						//unset($tab_moy_cat_classe);
 						for($loop=$periode1;$loop<=$periode2;$loop++) {
 							$periode_num=$loop;
 							include "../lib/calcul_moy_gen.inc.php";
-							$tab_moy_gen[$loop]=$moy_generale_classe;
+							//$tab_moy_gen[$loop]=$moy_generale_classe;
+
+							//======================================================================
+							$tab_moy['periodes'][$periode_num]=array();
+							$tab_moy['periodes'][$periode_num]['tab_login_indice']=$tab_login_indice;         // [$login_eleve]
+							$tab_moy['periodes'][$periode_num]['moy_gen_eleve']=$moy_gen_eleve;               // [$i]
+							$tab_moy['periodes'][$periode_num]['moy_gen_eleve1']=$moy_gen_eleve1;             // [$i]
+							//$tab_moy['periodes'][$periode_num]['moy_gen_classe1']=$moy_gen_classe1;           // [$i]
+							$tab_moy['periodes'][$periode_num]['moy_generale_classe']=$moy_generale_classe;
+							$tab_moy['periodes'][$periode_num]['moy_generale_classe1']=$moy_generale_classe1;
+							$tab_moy['periodes'][$periode_num]['moy_max_classe']=$moy_max_classe;
+							$tab_moy['periodes'][$periode_num]['moy_min_classe']=$moy_min_classe;
+						
+							// Il faudrait récupérer/stocker les catégories?
+							$tab_moy['periodes'][$periode_num]['moy_cat_eleve']=$moy_cat_eleve;               // [$i][$cat]
+							$tab_moy['periodes'][$periode_num]['moy_cat_classe']=$moy_cat_classe;             // [$i][$cat]
+							$tab_moy['periodes'][$periode_num]['moy_cat_min']=$moy_cat_min;                   // [$i][$cat]
+							$tab_moy['periodes'][$periode_num]['moy_cat_max']=$moy_cat_max;                   // [$i][$cat]
+						
+							$tab_moy['periodes'][$periode_num]['quartile1_classe_gen']=$quartile1_classe_gen;
+							$tab_moy['periodes'][$periode_num]['quartile2_classe_gen']=$quartile2_classe_gen;
+							$tab_moy['periodes'][$periode_num]['quartile3_classe_gen']=$quartile3_classe_gen;
+							$tab_moy['periodes'][$periode_num]['quartile4_classe_gen']=$quartile4_classe_gen;
+							$tab_moy['periodes'][$periode_num]['quartile5_classe_gen']=$quartile5_classe_gen;
+							$tab_moy['periodes'][$periode_num]['quartile6_classe_gen']=$quartile6_classe_gen;
+							$tab_moy['periodes'][$periode_num]['place_eleve_classe']=$place_eleve_classe;
+						
+							$tab_moy['periodes'][$periode_num]['current_eleve_login']=$current_eleve_login;   // [$i]
+							//$tab_moy['periodes'][$periode_num]['current_group']=$current_group;
+							if($loop==$periode1) {
+								$tab_moy['current_group']=$current_group;                                     // [$j]
+							}
+							$tab_moy['periodes'][$periode_num]['current_eleve_note']=$current_eleve_note;     // [$j][$i]
+							$tab_moy['periodes'][$periode_num]['current_eleve_statut']=$current_eleve_statut; // [$j][$i]
+							//$tab_moy['periodes'][$periode_num]['current_group']=$current_group;
+							$tab_moy['periodes'][$periode_num]['current_coef']=$current_coef;                 // [$j]
+							$tab_moy['periodes'][$periode_num]['current_classe_matiere_moyenne']=$current_classe_matiere_moyenne; // [$j]
+						
+							$tab_moy['periodes'][$periode_num]['current_coef_eleve']=$current_coef_eleve;     // [$i][$j] ATTENTION
+							$tab_moy['periodes'][$periode_num]['moy_min_classe_grp']=$moy_min_classe_grp;     // [$j]
+							$tab_moy['periodes'][$periode_num]['moy_max_classe_grp']=$moy_max_classe_grp;     // [$j]
+							if(isset($current_eleve_rang)) {
+								// $current_eleve_rang n'est pas renseigné si $affiche_rang='n'
+								$tab_moy['periodes'][$periode_num]['current_eleve_rang']=$current_eleve_rang; // [$j][$i]
+							}
+							$tab_moy['periodes'][$periode_num]['quartile1_grp']=$quartile1_grp;               // [$j]
+							$tab_moy['periodes'][$periode_num]['quartile2_grp']=$quartile2_grp;               // [$j]
+							$tab_moy['periodes'][$periode_num]['quartile3_grp']=$quartile3_grp;               // [$j]
+							$tab_moy['periodes'][$periode_num]['quartile4_grp']=$quartile4_grp;               // [$j]
+							$tab_moy['periodes'][$periode_num]['quartile5_grp']=$quartile5_grp;               // [$j]
+							$tab_moy['periodes'][$periode_num]['quartile6_grp']=$quartile6_grp;               // [$j]
+							$tab_moy['periodes'][$periode_num]['place_eleve_grp']=$place_eleve_grp;           // [$j][$i]
+						
+							$tab_moy['periodes'][$periode_num]['current_group_effectif_avec_note']=$current_group_effectif_avec_note; // [$j]
+							//======================================================================
+
 						}
 
 						$display_moy_gen=sql_query1("SELECT display_moy_gen FROM classes WHERE id='".$id_classe."'");
@@ -1543,7 +1548,8 @@ Patientez pendant l'extraction des données... merci.
 						}
 						echo "'>\n";
 
-						bulletin($ele_login,1,1,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$nb_coef_superieurs_a_zero,$affiche_categories,'y');
+						//bulletin($ele_login,1,1,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$nb_coef_superieurs_a_zero,$affiche_categories,'y');
+						bulletin($tab_moy,$ele_login,1,1,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$nb_coef_superieurs_a_zero,$affiche_categories,'y');
 
 						echo "</div>\n";
 					}
@@ -1626,17 +1632,6 @@ Patientez pendant l'extraction des données... merci.
 				// Liste des infos à faire apparaitre sur le relevé de notes:
 				// Si des appréciations ont été saisies et que dans les paramètres du devoir il est précisé qu'elles doivent être visibles des parents, il n'y a pas de raison de ne pas les afficher
 				$tab_ele['rn_app']='y';
-				/*
-				$tab_ele['rn_app']='n';
-				$tab_ele['rn_nomdev']='y';
-				$tab_ele['rn_toutcoefdev']='y';
-				$tab_ele['rn_coefdev_si_diff']='y';
-				$tab_ele['rn_datedev']='y';
-				$tab_ele['rn_sign_chefetab']='n';
-				$tab_ele['rn_sign_pp']='n';
-				$tab_ele['rn_sign_resp']='n';
-				$tab_ele['rn_formule']='';
-				*/
 
 				for($n_per=$periode_numero_1;$n_per<=$periode_numero_2;$n_per++) {
 					$periode1=$n_per;
@@ -1988,8 +1983,6 @@ Patientez pendant l'extraction des données... merci.
 
 				$nb_annees=mysql_num_rows($res_ant);
 
-				//echo "<p>Bulletins simplifiés:</p>\n";
-				//echo "<table border='0'>\n";
 				echo "<table class='boireaus' summary='Bulletins'>\n";
 				$alt=1;
 				echo "<tr class='lig$alt'>\n";
@@ -2175,6 +2168,7 @@ Patientez pendant l'extraction des données... merci.
 		echo "<p><br /></p>\n";
 	}
 }
+*/
 ?>
 
 <?php

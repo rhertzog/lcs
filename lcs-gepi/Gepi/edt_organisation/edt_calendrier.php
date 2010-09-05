@@ -2,7 +2,7 @@
 
 /*
  *
- * @version $Id: edt_calendrier.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * @version $Id: edt_calendrier.php 5099 2010-08-23 14:25:57Z regis $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -52,11 +52,11 @@ if (!checkAccess()) {
 }
 // Sécurité supplémentaire par rapport aux paramètres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
-	Die('Vous devez demander à votre administrateur l\'autorisation de voir cette page.');
+	Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
 // CSS et js particulier à l'EdT
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
-$style_specifique = "edt_organisation/style_edt";
+$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
 $utilisation_jsdivdrag = "";
 //==============PROTOTYPE===============
 $utilisation_prototype = "ok";
@@ -74,6 +74,7 @@ require_once("./menu.inc.php"); ?>
 	<div id="lecorps">
 
 <?php
+    require_once("./menu.inc.new.php");
 	// Initialisation des variables
 $calendrier = isset($_GET["calendrier"]) ? $_GET["calendrier"] : (isset($_POST["calendrier"]) ? $_POST["calendrier"] : NULL);
 $new_periode = isset($_GET['new_periode']) ? $_GET['new_periode'] : (isset($_POST['new_periode']) ? $_POST['new_periode'] : NULL);
@@ -94,6 +95,8 @@ $etabferme = isset($_POST["etabferme"]) ? $_POST["etabferme"] : NULL;
 $vacances = isset($_POST["vacances"]) ? $_POST["vacances"] : NULL;
 $supprimer = isset($_GET["supprimer"]) ? $_GET["supprimer"] : NULL;
 $modifier = isset($_GET["modifier"]) ? $_GET["modifier"] : (isset($_POST["modifier"]) ? $_POST["modifier"] : NULL);
+$copier_edt = isset($_GET["copier_edt"]) ? $_GET["copier_edt"] : (isset($_POST["copier_edt"]) ? $_POST["copier_edt"] : NULL);
+$coller_edt = isset($_GET["coller_edt"]) ? $_GET["coller_edt"] : (isset($_POST["coller_edt"]) ? $_POST["coller_edt"] : NULL);
 $modif_ok = isset($_POST["modif_ok"]) ? $_POST["modif_ok"] : NULL;
 $message_new = NULL;
 
@@ -108,21 +111,96 @@ $date_jour = date("d/m/Y"); //jour/mois/année
 $heure_etab_deb = $req_heures["ouverture_horaire_etablissement"];
 $heure_etab_fin = $req_heures["fermeture_horaire_etablissement"];
 */
-/* On efface quand c'est demandé */
+/* ============================================ On efface quand c'est demandé ====================================== */
+
 if (isset($calendrier) AND isset($supprimer)) {
+
 	$req_supp = mysql_query("DELETE FROM edt_calendrier WHERE id_calendrier = '".$supprimer."'") or Die ('Suppression impossible !');
+    if ($supprimer != 0) {
+        $req_supp_cours = mysql_query("DELETE FROM edt_cours WHERE id_calendrier = '".$supprimer."'") or Die ('Suppression impossible !');
+    }
+
+}
+/* ============================================ On copie le contenu de l'edt ====================================== */
+
+if (isset($calendrier) AND isset($copier_edt)) {
+    $_SESSION['copier_periode_edt'] = $copier_edt;
+    $req_edt_periode = mysql_query("SELECT nom_calendrier FROM edt_calendrier WHERE id_calendrier ='".$copier_edt."'");
+    $rep_edt_periode = mysql_fetch_array($req_edt_periode);
+    $message = "Le contenu de la période \"".$rep_edt_periode['nom_calendrier']."\" est prêt à être dupliqué"; 
+}
+
+/* ============================================ On colle le contenu de l'edt dans la nouvelle période ====================================== */
+
+if (isset($calendrier) AND isset($coller_edt) AND isset($_SESSION['copier_periode_edt'])) {
+    if (PeriodExistsInDB($_SESSION['copier_periode_edt'])) {
+        if (PeriodExistsInDB($coller_edt)) {
+            if ($coller_edt != $_SESSION['copier_periode_edt']) {
+                $req_edt_periode = mysql_query("SELECT * FROM edt_cours WHERE 
+                                                            id_calendrier = '".$_SESSION['copier_periode_edt']."'
+                                                            ") or die(mysql_error());  
+                $i = 0;
+                while ($rep_edt_periode = mysql_fetch_array($req_edt_periode)) {
+                    $sql = "SELECT id_cours FROM edt_cours WHERE 
+                             id_groupe = '".$rep_edt_periode['id_groupe']."' AND
+					         id_salle = '".$rep_edt_periode['id_salle']."' AND
+					         jour_semaine = '".$rep_edt_periode['jour_semaine']."' AND
+					         id_definie_periode = '".$rep_edt_periode['id_definie_periode']."' AND
+					         duree = '".$rep_edt_periode['duree']."' AND
+					         heuredeb_dec = '".$rep_edt_periode['heuredeb_dec']."' AND
+					         id_semaine = '".$rep_edt_periode['id_semaine']."' AND
+					         id_calendrier = '".$coller_edt."' AND
+					         login_prof = '".$rep_edt_periode['login_prof']."'
+                            ";
+                    $verif_existence = mysql_query($sql) OR DIE('Erreur dans la vérification du cours : '.mysql_error());
+                    if (mysql_num_rows($verif_existence) == 0) {
+				        $nouveau_cours = mysql_query("INSERT INTO edt_cours SET 
+                             id_groupe = '".$rep_edt_periode['id_groupe']."',
+					         id_salle = '".$rep_edt_periode['id_salle']."',
+					         jour_semaine = '".$rep_edt_periode['jour_semaine']."',
+					         id_definie_periode = '".$rep_edt_periode['id_definie_periode']."',
+					         duree = '".$rep_edt_periode['duree']."',
+					         heuredeb_dec = '".$rep_edt_periode['heuredeb_dec']."',
+					         id_semaine = '".$rep_edt_periode['id_semaine']."',
+					         id_calendrier = '".$coller_edt."',
+					         login_prof = '".$rep_edt_periode['login_prof']."'")
+				        OR DIE('Erreur dans la création du cours : '.mysql_error());
+                        $i++;
+                    }
+                }
+                if ($i == 0) {
+                    $message = "la duplication a déjà été réalisée";
+                }
+                else {
+                    $message = "duplication réalisée. ".$i." cours ont été copiés avec succès";
+                }
+            }
+            else {
+                $message = "vous ne pouvez pas dupliquer une période sur elle-même"; 
+            } 
+        }
+        else {
+            $message = "la période cible n'existe pas";
+        }
+    }
+    else {
+        $message = "la période à dupliquer n'existe pas";
+    }
+}
+if (isset($message)) {
+    echo "<div class=\"cadreInformation\">".$message."</div>";
 }
 
 //+++++++++++ AIDE pour le calendrier ++++++++
 ?>
-<a href="#" onMouseOver="javascript:changerDisplayDiv('aide_calendar');" onMouseOut="javascript:changerDisplayDiv('aide_calendar');">
-	<img src="../images/info.png" alt="Plus d'infos..." Title="Plus d'infos..." />
+<a href="#" onmouseover="javascript:changerDisplayDiv('aide_calendar');" onmouseout="javascript:changerDisplayDiv('aide_calendar');">
+	<img src="../images/info.png" alt="Plus d'infos..." title="Plus d'infos..." />
 </a>
 	<div style="display: none;" id="aide_calendar">
 	<hr />
-	<p><span class="red">Attention</span>, ces p&eacute;riodes ne sont pas les m&ecirc;mes que celles d&eacute;finies pour les notes. Si vous voulez faire une
-	 lien entre les p&eacute;riodes de notes et celles du calendrier, vous devez pr&eacute;ciser lors de la cr&eacute;ation de ces derni&egrave;res
-	 &agrave; quelle p&eacute;riode de notes elles sont rattach&eacute;es en choisissant celle-ci dans le menu <i>P&eacute;riode de notes ?</i></p>
+	<p><span class="red">Attention</span>, ces périodes ne sont pas les mêmes que celles définies pour les notes. Si vous voulez faire un
+	 lien entre les périodes de notes et celles du calendrier, vous devez préciser lors de la création de ces dernières
+	 à quelle période de notes elles sont rattachées en choisissant celle-ci dans le menu <em>Période de notes ?</em></p>
 	 <hr />
 	</div>
 <?php
@@ -378,6 +456,31 @@ if (isset($new_periode) AND isset($nom_periode)) {
 $detail_jourdeb = explode("/", $jour_debut);
 $detail_jourfin = explode("/", $jour_fin);
 
+// ================== vérifier le format des dates saisies
+
+if (isset($detail_jourdeb[0]) AND isset($detail_jourdeb[1]) AND isset($detail_jourdeb[2])) {
+    if (isset($detail_jourfin[0]) AND isset($detail_jourfin[1]) AND isset($detail_jourfin[2])) {
+        if (is_numeric($detail_jourfin[0]) AND is_numeric($detail_jourfin[1]) AND is_numeric($detail_jourfin[2])) {
+            if (is_numeric($detail_jourdeb[0]) AND is_numeric($detail_jourdeb[1]) AND is_numeric($detail_jourdeb[2])) {
+                $formatdatevalid = true;
+            }
+            else {
+                $formatdatevalid = false;
+            }
+        }
+        else {
+            $formatdatevalid = false;
+        }
+    }
+    else {
+        $formatdatevalid = false;
+    }
+}
+else {
+    $formatdatevalid = false;
+}
+
+if ($formatdatevalid) {
 	$jourdebut = $detail_jourdeb[2]."-".$detail_jourdeb[1]."-".$detail_jourdeb[0];
 	$jourfin = $detail_jourfin[2]."-".$detail_jourfin[1]."-".$detail_jourfin[0];
 		// On insère les classes qui sont concernées (0 = toutes)
@@ -422,8 +525,12 @@ $detail_jourfin = explode("/", $jour_fin);
 
 	}else{
 
-		echo '<h3 class="red">Ce nom de période existe déjà</h3>';
+		echo "<div class=\"cadreInformation\">Ce nom de période existe déjà</div>";
 	}
+}
+else {
+    echo "<div class=\"cadreInformation\">L'une des dates n'a pas le format attendu.</div>";
+}
 }
 
 /* ============ On affiche alors toutes les périodes de la table ==============*/
@@ -454,6 +561,8 @@ echo '
 		<td class="bonnelargeur">à</td>
 		<td class="bonnelargeur">Etablissement</td>
 		<td>Cours<br />Vacances</td>
+		<td></td>
+		<td></td>
 		<td></td>
 		<td></td>
 	</tr>
@@ -487,7 +596,7 @@ $nbre_affcalendar = mysql_num_rows($req_affcalendar);
 				$aff_classe_concerne = "<span class=\"legende\">Toutes</span>";
 			}
 			else {
-				$contenu_infobulle = "<font style=\"color: brown;\">".(count($expl_aff) - 1)." classe(s).</font><br />";
+				$contenu_infobulle = "<span style=\"color: brown;\">".(count($expl_aff) - 1)." classe(s).</span><br />";
 				for ($t=0; $t<(count($expl_aff) - 1); $t++) {
 					$req_nomclasse = mysql_fetch_array(mysql_query("SELECT nom_complet FROM classes WHERE id = '".$expl_aff[$t]."'"));
 					$contenu_infobulle .= $req_nomclasse["nom_complet"].'<br />';
@@ -536,8 +645,11 @@ $nbre_affcalendar = mysql_num_rows($req_affcalendar);
 		<!--<td>'.$rep_affcalendar[$i]["numero_periode"].'</td>-->
 		<td>'.$ouvert_ferme.'</td>
 		<td>'.$aff_cours.'</td>
-		<td class="modif_supr"><a href="edt_calendrier.php?calendrier=ok&amp;modifier='.$rep_affcalendar[$i]["id_calendrier"].'"><img src="../images/icons/configure.png" title="Modifier" alt="Modifier" /></a></td>
-		<td class="modif_supr"><a href="edt_calendrier.php?calendrier=ok&amp;supprimer='.$rep_affcalendar[$i]["id_calendrier"].'" onclick="return confirm(\'Confirmez-vous cette suppression ?\')"><img src="../images/icons/delete.png" title="Supprimer" alt="Supprimer" /></a></td>
+		<td class="modif_supr"><a href="edt_calendrier.php?calendrier=ok&amp;modifier='.$rep_affcalendar[$i]["id_calendrier"].'"><img src="../templates/'.NameTemplateEDT().'/images/clef.png" title="Modifier" alt="Modifier" /></a></td>
+		<td class="modif_supr"><a href="edt_calendrier.php?calendrier=ok&amp;supprimer='.$rep_affcalendar[$i]["id_calendrier"].'" onclick="return confirm(\'Confirmez-vous cette suppression ?\')"><img src="../templates/'.NameTemplateEDT().'/images/delete2.png" title="Supprimer" alt="Supprimer" /></a></td>
+		<td class="modif_supr"><a href="edt_calendrier.php?calendrier=ok&amp;copier_edt='.$rep_affcalendar[$i]["id_calendrier"].'"><img src="../templates/'.NameTemplateEDT().'/images/copier.png" title="Copier" alt="Copier" /></a></td>
+		<td class="modif_supr"><a href="edt_calendrier.php?calendrier=ok&amp;coller_edt='.$rep_affcalendar[$i]["id_calendrier"].'" onclick="return confirm(\'Confirmez-vous le collage ?\')"><img src="../templates/'.NameTemplateEDT().'/images/coller.png" title="Coller" alt="Coller" /></a></td>
+
 	</tr>
 		';
 	}
@@ -674,7 +786,7 @@ if ($modulo !== 0) {
 			<select name="choix_periode">
 				<option value="rien">Non</option>';
 	// Proposition de définition des périodes déjà existantes de la table periodes
-	$req_periodes = mysql_query("SELECT nom_periode, num_periode FROM periodes WHERE id_classe = '1'");
+	$req_periodes = mysql_query("SELECT DISTINCT nom_periode, num_periode FROM periodes");
 	$nbre_periodes = mysql_num_rows($req_periodes);
 		$rep_periodes[] = array();
 		for ($i=0; $i<$nbre_periodes; $i++) {

@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: tableau.php 4385 2010-04-30 11:14:40Z crob $
+* $Id: tableau.php 4878 2010-07-24 13:54:01Z regis $
 *
  * Copyright 2001, 2002 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -574,7 +574,7 @@ if ($recherche == "afficher")
 		$requete_liste_eleve = "SELECT login, nom, prenom FROM ".$prefix_base."eleves ORDER BY nom, prenom ASC";
 	} else {
 		//$requete_liste_eleve = "SELECT ".$prefix_base."eleves.login, ".$prefix_base."eleves.nom, ".$prefix_base."eleves.prenom, ".$prefix_base."j_eleves_classes.login, ".$prefix_base."j_eleves_classes.id_classe, ".$prefix_base."j_eleves_classes.periode, ".$prefix_base."classes.id, ".$prefix_base."classes.classe, ".$prefix_base."classes.nom_complet FROM ".$prefix_base."eleves, ".$prefix_base."j_eleves_classes, ".$prefix_base."classes WHERE ".$prefix_base."eleves.login=".$prefix_base."j_eleves_classes.login AND ".$prefix_base."j_eleves_classes.id_classe=".$prefix_base."classes.id AND ".$prefix_base."classes.id='".$classe_choix."' GROUP BY ".$prefix_base."eleves.nom, ".$prefix_base."eleves.prenom ORDER BY nom, prenom ASC";
-		$requete_liste_eleve = "SELECT ".$prefix_base."eleves.login, ".$prefix_base."eleves.nom, ".$prefix_base."eleves.prenom, ".$prefix_base."j_eleves_classes.login, ".$prefix_base."j_eleves_classes.id_classe, ".$prefix_base."j_eleves_classes.periode, ".$prefix_base."classes.id, ".$prefix_base."classes.classe, ".$prefix_base."classes.nom_complet FROM ".$prefix_base."eleves, ".$prefix_base."j_eleves_classes, ".$prefix_base."classes WHERE ".$prefix_base."eleves.login=".$prefix_base."j_eleves_classes.login AND ".$prefix_base."j_eleves_classes.id_classe=".$prefix_base."classes.id AND ".$prefix_base."classes.id='".$classe_choix."' GROUP BY ".$prefix_base."eleves.login, ".$prefix_base."eleves.nom, ".$prefix_base."eleves.prenom ORDER BY nom, prenom ASC"; //20100430
+		$requete_liste_eleve = "SELECT ".$prefix_base."eleves.login, ".$prefix_base."eleves.nom, ".$prefix_base."eleves.prenom, ".$prefix_base."j_eleves_classes.login, ".$prefix_base."j_eleves_classes.id_classe, ".$prefix_base."j_eleves_classes.periode, ".$prefix_base."classes.id, ".$prefix_base."classes.classe, ".$prefix_base."classes.nom_complet FROM ".$prefix_base."eleves, ".$prefix_base."j_eleves_classes, ".$prefix_base."classes WHERE ".$prefix_base."eleves.login=".$prefix_base."j_eleves_classes.login AND ".$prefix_base."j_eleves_classes.id_classe=".$prefix_base."classes.id AND ".$prefix_base."classes.id='".$classe_choix."' GROUP BY ".$prefix_base."eleves.login, ".$prefix_base."eleves.nom, ".$prefix_base."eleves.prenom ORDER BY nom, prenom ASC"; // 20100430
 	}
 	$requete_liste_classe = "SELECT id, classe, nom_complet FROM ".$prefix_base."classes ORDER BY nom_complet DESC";
 }
@@ -724,8 +724,10 @@ if ($type == "A" or $type == "tous")
 
 				if (getSettingValue("active_module_trombinoscopes")=='y') {
 					$nom_photo = nom_photo($data_div['elenoet']);
-					$photo = "../../photos/eleves/".$nom_photo;
-					if (($nom_photo == "") or (!(file_exists($photo)))) {
+					//$photo = "../../photos/eleves/".$nom_photo;
+					$photo = $nom_photo;
+					//if (($nom_photo == "") or (!(file_exists($photo)))) {
+					if (($nom_photo == NULL) or (!(file_exists($photo)))) {
 						$photo = "../../mod_trombinoscopes/images/trombivide.jpg";
 					}
 					$valeur=redimensionne_image($photo);

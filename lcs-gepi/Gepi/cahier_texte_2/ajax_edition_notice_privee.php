@@ -1,14 +1,14 @@
 <?php
 /*
- * $Id: index.php 2356 2008-09-05 14:02:27Z jjocal $
+ * $Id$
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
+ * Copyright 2009 Josselin Jacquard
  *
  * This file is part of GEPI.
  *
  * GEPI is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * GEPI is distributed in the hope that it will be useful,
@@ -20,7 +20,6 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 
 header('Content-Type: text/html; charset=ISO-8859-1');
 // On désamorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
@@ -48,8 +47,8 @@ if (!checkAccess()) {
 if (getSettingValue("active_cahiers_texte")!='y') {
 	die("Le module n'est pas activé.");
 }
-//$utilisateur = new Utilisateur();
-$utilisateur = $_SESSION['utilisateurProfessionnel'];
+
+$utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
 if ($utilisateur == null) {
 	header("Location: ../logout.php?auto=1");
 	die();
@@ -243,6 +242,7 @@ if ($succes_modification == 'oui') $label_enregistrer='Succès';
 	<tr>
 	<td style="width: 80%"><b><?php echo $titre; ?></b>&nbsp;
 		<button type="submit" id="bouton_enregistrer_1" name="Enregistrer" style='font-variant: small-caps;'><?php echo($label_enregistrer); ?></button>
+		Ces notices ne sont visibles que de leur auteur.
 		<input type="hidden" name="date_ct" value="<?php echo $cahierTexteNoticePrivee->getDateCt(); ?>" />
 		<input type="hidden" id="id_ct" name="id_ct" value="<?php echo $cahierTexteNoticePrivee->getIdCt(); ?>" />
 		<input type="hidden" name="id_groupe" id="id_ct" value="<?php echo $groupe->getId(); ?>" /></td>

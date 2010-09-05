@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: stats_classe.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * $Id: stats_classe.php 4659 2010-06-28 21:17:32Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -272,7 +272,7 @@ if (!isset($id_classe)) {
             $moyenne_classe = mysql_result($moyenne_classe_query, 0, "moyenne");
             if ($moyenne_classe == '') {$moyenne_classe = '-';}
             echo "<td>$moyenne_classe</td>\n";
-            (ereg ("^[0-9\.\,]{1,}$", $moyenne_classe)) ? array_push($datay[$k],"$moyenne_classe") : array_push($datay[$k],"0");
+            (my_ereg ("^[0-9\.\,]{1,}$", $moyenne_classe)) ? array_push($datay[$k],"$moyenne_classe") : array_push($datay[$k],"0");
             if ($k == '1') {
                 //array_push($etiquette,$current_group["description"]);
                 array_push($etiquette,rawurlencode($current_group["description"]));

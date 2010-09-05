@@ -3,7 +3,7 @@
 /**
  * Fichier d'initialisation de l'EdT par des fichiers CSV
  *
- * @version $Id: edt_init_csv.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * @version $Id: edt_init_csv.php 4592 2010-06-18 13:39:41Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -51,11 +51,11 @@ if (!checkAccess()) {
 }
 // Sécurité supplémentaire par rapport aux paramètres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
-	Die('Vous devez demander à votre administrateur l\'autorisation de voir cette page.');
+	Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
 // CSS et js particulier à l'EdT
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
-$style_specifique = "edt_organisation/style_edt";
+$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
 //==============PROTOTYPE===============
 $utilisation_prototype = "ok";
 //============fin PROTOTYPE=============
@@ -174,7 +174,7 @@ $compter_echecs = 2; // pour afficher à la fin le message : Tous ces cours ont b
 			$verif_creneau = $verif_dec[0];
 		}
 	// On cherche l'id du créneau en question
-	$req_creneau = mysql_query("SELECT id_definie_periode FROM absences_creneaux WHERE nom_definie_periode = '".$verif_creneau."'");
+	$req_creneau = mysql_query("SELECT id_definie_periode FROM edt_creneaux WHERE nom_definie_periode = '".$verif_creneau."'");
 	$rep_creneau = mysql_fetch_array($req_creneau);
 			if ($rep_creneau == "") {
 				$probleme .= "<p>Le cr&eacute;neau n'a pas &eacute;t&eacute; trouv&eacute;.</p>\n";
@@ -333,7 +333,7 @@ if ($aff_infos != "oui") {
 		$aff_forme_classe = $forme_classe["classe"];
 		// La liste des créneaux
 				$aff_liste_creneaux = "";
-		$sql_creneaux = mysql_query("SELECT nom_definie_periode FROM absences_creneaux WHERE type_creneaux != 'pause'");
+		$sql_creneaux = mysql_query("SELECT nom_definie_periode FROM edt_creneaux WHERE type_creneaux != 'pause'");
 		$nbre_creneaux = mysql_num_rows($sql_creneaux);
 			for ($a=0; $a < $nbre_creneaux; $a++) {
 				$liste_creneaux[$a] = mysql_result($sql_creneaux, $a, "nom_definie_periode");
@@ -371,13 +371,13 @@ L'initialisation &agrave; partir de fichiers csv se d&eacute;roule en plusieurs 
 	<h4 class="refus">Premi&egrave;re &eacute;tape</h4>
 	<p>Une partie de l'initialisation est commune avec le module
 absences : <a href="../mod_absences/admin/admin_periodes_absences.php?action=visualiser">les diff&eacute;rents cr&eacute;neaux</a> de la journ&eacute;e,
-	 <a href="../mod_absences/admin/admin_config_semaines.php?action=visualiser">le type de semaine</a> (paire/impaire, A/B/C, 1/2,...) et
+	 <a href="./admin_config_semaines.php?action=visualiser">le type de semaine</a> (paire/impaire, A/B/C, 1/2,...) et
 	 <a href="../mod_absences/admin/admin_horaire_ouverture.php?action=visualiser">les horaires de l'&eacute;tablissement</a>.</p>
 
 
 <hr />
 	<h4 class="refus">Deuxi&egrave;me &eacute;tape</h4>
-	<p>Il faut renseigner le calendrier en cliquant sur le menu &agrave; gauche. Toutes les p&eacute;riodes
+	<p>Il faut renseigner le calendrier en cliquant dans le menu sur Cr&eacute;ation, Cr&eacute;er les p&eacute;riodes. Toutes les p&eacute;riodes
 	qui apparaissent dans l'emploi du temps doivent &ecirc;tre d&eacute;finies : trimestres, vacances, ... Si tous vos
 	cours durent le temps de l'ann&eacute;e scolaire, vous pouvez vous passer de cette &eacute;tape.</p>
 <hr />

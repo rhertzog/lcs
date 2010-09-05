@@ -1,7 +1,7 @@
 <?php
 /*
 *
-*$Id: ajout_abs.php 4382 2010-04-30 08:57:23Z crob $
+*$Id: ajout_abs.php 4878 2010-07-24 13:54:01Z regis $
 *
  * Copyright 2001, 2002 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -128,7 +128,7 @@ if($mode === 'classe')
 									WHERE ".$prefix_base."eleves.login=".$prefix_base."j_eleves_classes.login
 									AND ".$prefix_base."j_eleves_classes.id_classe=".$prefix_base."classes.id
 									AND id = '".$classe_choix_eleve."'
-								GROUP BY eleves.login,nom, prenom"; //20100430
+								GROUP BY eleves.login, nom, prenom"; // 20100430
 	$execution_eleve = mysql_query($requete_eleve) or die('Erreur SQL !'.$requete_eleve.'<br />'.mysql_error());
 	$cpt_eleve = 0;
 	while ($data_eleve = mysql_fetch_array($execution_eleve))
@@ -228,7 +228,7 @@ if($action_sql == "ajouter" or $action_sql == "modifier")
 			//mettre les heures par rapport à une période si période sélectionné
 			if ($dp_absence_eleve != "")
 			{
-				$requete_recherche_periode = 'SELECT * FROM '.$prefix_base.'absences_creneaux
+				$requete_recherche_periode = 'SELECT * FROM '.$prefix_base.'edt_creneaux
 														WHERE id_definie_periode="'.$dp_absence_eleve.'"';
 
                 $resultat_recherche_periode = mysql_query($requete_recherche_periode) or die('Erreur SQL !'.$requete_recherche_periode.'<br />'.mysql_error());
@@ -238,7 +238,7 @@ if($action_sql == "ajouter" or $action_sql == "modifier")
                 {
 					$a_heure_absence_eleve_ins = $data_recherche_periode['heurefin_definie_periode'];
                 } else {
-					$requete_recherche_periode = 'SELECT * FROM '.$prefix_base.'absences_creneaux
+					$requete_recherche_periode = 'SELECT * FROM '.$prefix_base.'edt_creneaux
 														WHERE id_definie_periode="'.$ap_absence_eleve.'"';
 					$resultat_recherche_periode = mysql_query($requete_recherche_periode) or die('Erreur SQL !'.$requete_recherche_periode.'<br />'.mysql_error());
 					$data_recherche_periode = mysql_fetch_array($resultat_recherche_periode);
@@ -1026,8 +1026,9 @@ if (!isset($eleve_absent[1]) and empty($eleve_absent[1]) and $mode != "classe")
 		if (getSettingValue("active_module_trombinoscopes")=='y') {
 			$nom_photo = '';
 			$nom_photo = nom_photo($id_eleve_photo,"eleves",2);
-			$photo = "../../photos/eleves/".$nom_photo;
-			if ( $nom_photo === '' or !file_exists($photo) ) {
+			//$photo = "../../photos/eleves/".$nom_photo;
+			//if ( $nom_photo === '' or !file_exists($photo) ) {
+			if ( $nom_photo === NULL or !file_exists($photo) ) {
 				$photo = "../../mod_trombinoscopes/images/trombivide.jpg";
 			}
 			$valeur=redimensionne_image($photo);
@@ -1071,7 +1072,7 @@ if (!isset($eleve_absent[1]) and empty($eleve_absent[1]) and $mode != "classe")
 						en
                      	<select name="dp_absence_eleve[<?php echo $i; ?>]">
 		<?php
-				$requete_pe = ('SELECT * FROM '.$prefix_base.'absences_creneaux ORDER BY heuredebut_definie_periode, nom_definie_periode ASC');
+				$requete_pe = ('SELECT * FROM '.$prefix_base.'edt_creneaux ORDER BY heuredebut_definie_periode, nom_definie_periode ASC');
 				$resultat_pe = mysql_query($requete_pe) or die('Erreur SQL !'.$requete_pe.'<br />'.mysql_error());
 		?>
 							<option value="">pas de s&eacute;lection</option>
@@ -1091,7 +1092,7 @@ if (!isset($eleve_absent[1]) and empty($eleve_absent[1]) and $mode != "classe")
 						en
                     	<select name="ap_absence_eleve[<?php echo $i; ?>]">
         <?php
-            	$requete_pe = ('SELECT * FROM '.$prefix_base.'absences_creneaux ORDER BY heuredebut_definie_periode, nom_definie_periode ASC');
+            	$requete_pe = ('SELECT * FROM '.$prefix_base.'edt_creneaux ORDER BY heuredebut_definie_periode, nom_definie_periode ASC');
                 $resultat_pe = mysql_query($requete_pe) or die('Erreur SQL !'.$requete_pe.'<br />'.mysql_error()); ?>
 
 							<option value="">pas de s&eacute;lection</option><?php
@@ -1306,7 +1307,7 @@ if (isset($eleve_absent[1]) and !empty($eleve_absent[1]) or $mode === 'classe') 
               <select name="dp_absence_eleve[<?php echo $i; ?>]">
                 <option value="">pas de s&eacute;lection</option>
                    <?php
-                      $requete_pe = ('SELECT * FROM '.$prefix_base.'absences_creneaux ORDER BY heuredebut_definie_periode, nom_definie_periode ASC');
+                      $requete_pe = ('SELECT * FROM '.$prefix_base.'edt_creneaux ORDER BY heuredebut_definie_periode, nom_definie_periode ASC');
                       $resultat_pe = mysql_query($requete_pe) or die('Erreur SQL !'.$requete_pe.'<br />'.mysql_error());
                     while ( $data_pe = mysql_fetch_array ($resultat_pe)) { ?>
                               <option value="<?php echo $data_pe['id_definie_periode']; ?>" <?php if(isset($dp_absence_eleve_erreur[$i]) and $dp_absence_eleve_erreur[$i] == $data_pe['id_definie_periode']) { ?>selected<?php } else { } ?>><?php echo $data_pe['nom_definie_periode']." ".heure_court($data_pe['heuredebut_definie_periode'])."-".heure_court($data_pe['heurefin_definie_periode']); ?></option><?php
@@ -1316,7 +1317,7 @@ if (isset($eleve_absent[1]) and !empty($eleve_absent[1]) or $mode === 'classe') 
               <select name="ap_absence_eleve[<?php echo $i; ?>]">
                 <option value="">pas de s&eacute;lection</option>
                     <?php
-                        $requete_pe = ('SELECT * FROM '.$prefix_base.'absences_creneaux ORDER BY heuredebut_definie_periode, nom_definie_periode ASC');
+                        $requete_pe = ('SELECT * FROM '.$prefix_base.'edt_creneaux ORDER BY heuredebut_definie_periode, nom_definie_periode ASC');
                         $resultat_pe = mysql_query($requete_pe) or die('Erreur SQL !'.$requete_pe.'<br />'.mysql_error());
                     while ( $data_pe = mysql_fetch_array ($resultat_pe)) { ?>
                                <option value="<?php echo $data_pe['id_definie_periode']; ?>" <?php if(isset($dp_absence_eleve_erreur[$i]) and $dp_absence_eleve_erreur[$i] == $data_pe['id_definie_periode']) { ?>selected<?php } else { } ?>><?php echo $data_pe['nom_definie_periode']." ".heure_court($data_pe['heuredebut_definie_periode'])."-".heure_court($data_pe['heurefin_definie_periode']); ?></option><?php

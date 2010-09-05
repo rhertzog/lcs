@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: modify_user.php 3323 2009-08-05 10:06:18Z crob $
+* $Id: modify_user.php 5032 2010-08-06 12:01:08Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -95,7 +95,7 @@ else {
 
 $uid = md5(uniqid(microtime(), 1));
 // on remplace les %20 par des espaces
-	$uid_post = my_eregi_replace('%20',' ',$uid_post);
+$uid_post = my_eregi_replace('%20',' ',$uid_post);
 if($uid_post===$_SESSION['uid_prime']) {
 	$valide_form = 'oui';
 }
@@ -428,18 +428,25 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 			$i_photo = 0;
 			$calldata_photo = mysql_query("SELECT * FROM utilisateurs WHERE (login = '".$user_login."')");
 
-			$repertoire = '../photos/personnels/';
+		// En multisite, on ajoute le répertoire RNE
+		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+			  // On récupère le RNE de l'établissement
+		  $repertoire="../photos/".getSettingValue("gepiSchoolRne")."/personnels/";
+		}else{
+		  $repertoire="../photos/personnels/";
+		}
+			//$repertoire = '../photos/personnels/';
 			$code_photo = md5(strtolower($user_login));
 
 
 
 					if(isset($_POST['suppr_filephoto']) and $valide_form === 'oui' ){
 						if($_POST['suppr_filephoto']=='y'){
-							if(unlink("../photos/personnels/$code_photo.jpg")){
-								$msg = "La photo ../photos/personnels/$code_photo.jpg a été supprimée. ";
+							if(unlink($repertoire.$code_photo.".jpg")){
+								$msg = "La photo ".$repertoire.$code_photo.".jpg a été supprimée. ";
 							}
 							else{
-								$msg = "Echec de la suppression de la photo ../photos/personnels/$code_photo.jpg ";
+								$msg = "Echec de la suppression de la photo ".$repertoire.$code_photo.".jpg ";
 							}
 						}
 					}
@@ -453,7 +460,7 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 							// Tester la taille max de la photo?
 
 							if(is_uploaded_file($filephoto_tmp)){
-								$dest_file = "../photos/personnels/$code_photo.jpg";
+								$dest_file = $repertoire.$code_photo.".jpg";
 								$source_file = stripslashes("$filephoto_tmp");
 								$res_copy=copy("$source_file" , "$dest_file");
 								if($res_copy){
@@ -474,6 +481,41 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 
 			// fin pour le module trombinoscope
 		}
+	}
+}
+elseif(isset($_POST['suppression_assoc_user_groupes'])) {
+	$user_group=isset($_POST["user_group"]) ? $_POST["user_group"] : array();
+
+	$call_classes = mysql_query("SELECT g.id group_id, g.name name, c.classe classe, c.id classe_id " .
+			"FROM j_groupes_professeurs jgp, j_groupes_classes jgc, groupes g, classes c WHERE (" .
+			"jgp.login = '$user_login' and " .
+			"g.id = jgp.id_groupe and " .
+			"jgc.id_groupe = jgp.id_groupe and " .
+			"c.id = jgc.id_classe) order by jgc.id_classe");
+	$nb_classes = mysql_num_rows($call_classes);
+	if($nb_classes>0) {
+		$k = 0;
+		$user_classe=array();
+		while ($k < $nb_classes) {
+			$user_classe['classe_nom_court'] = mysql_result($call_classes, $k, "classe");
+			$user_classe['matiere_nom_court'] = mysql_result($call_classes, $k, "name");
+			$user_classe['classe_id'] = mysql_result($call_classes, $k, "classe_id");
+			$user_classe['group_id'] = mysql_result($call_classes, $k, "group_id");
+
+			if(!in_array($user_classe['group_id'],$user_group)) {
+				$sql="DELETE FROM j_groupes_professeurs WHERE id_groupe='".$user_classe['group_id']."' AND login='$user_login';";
+				//echo "$sql<br />\n";
+				$suppr=mysql_query($sql);
+				if($suppr) {
+					$msg.="Suppression de l'association avec l'enseignement ".$user_classe['matiere_nom_court']." en ".$user_classe['classe_nom_court']."<br />\n";
+				}
+				else {
+					$msg.="ERREUR lors de la suppression de l'association avec l'enseignement ".$user_classe['matiere_nom_court']." en ".$user_classe['classe_nom_court']."<br />\n";
+				}
+			}
+			$k++;
+		}
+		unset($user_classe);
 	}
 }
 
@@ -610,6 +652,7 @@ if ($ldap_write_access) {
 ?>
 
 <form enctype="multipart/form-data" action="modify_user.php" method="post">
+<fieldset>
 
 <!--span class = "norme"-->
 <div class = "norme">
@@ -685,9 +728,17 @@ if ($ldap_write_access) {
 // trombinoscope
 
 if(getSettingValue("active_module_trombinoscopes")=='y'){
+
+	// En multisite, on ajoute le répertoire RNE
+	if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+		  // On récupère le RNE de l'établissement
+	  $repertoire="../photos/".getSettingValue("gepiSchoolRne")."/personnels/";
+	}else{
+	  $repertoire="../photos/personnels/";
+	}
 	if ((isset($user_login))and($user_login!='')&&(isset($user_nom))and($user_nom!='')&&(isset($user_prenom))and($user_prenom!='')) {
 		$code_photo = md5(strtolower($user_login));
-		$photo="../photos/personnels/".$code_photo.".jpg";
+		$photo=$repertoire.$code_photo.".jpg";
 		echo "<table style='text-align: center;' summary='Photo'>\n";
 		echo "<tr>\n";
 		echo "<td style='text-align: center;'>\n";
@@ -847,5 +898,42 @@ echo "<input type=hidden name=max_mat value=$nb_mat />\n";
 <center><input type=submit value=Enregistrer /></center>
 <!--/span-->
 </div>
+</fieldset>
 </form>
+
+<?php
+	if((isset($user_login))&&(isset($user_statut))&&($user_statut=='professeur')) {
+		$call_classes = mysql_query("SELECT g.id group_id, g.name name, c.classe classe, c.id classe_id " .
+				"FROM j_groupes_professeurs jgp, j_groupes_classes jgc, groupes g, classes c WHERE (" .
+				"jgp.login = '$user_login' and " .
+				"g.id = jgp.id_groupe and " .
+				"jgc.id_groupe = jgp.id_groupe and " .
+				"c.id = jgc.id_classe) order by jgc.id_classe");
+		$nb_classes = mysql_num_rows($call_classes);
+		if($nb_classes>0) {
+			echo "<p>&nbsp;</p>\n";
+			echo "<form enctype='multipart/form-data' action='modify_user.php' method='post'>\n";
+			echo "<fieldset>\n";
+			echo "<p>Le professeur est associé aux enseignements suivants.<br />Vous pouvez supprimer (<i>décocher</i>) l'association avec certains enseignements&nbsp;:</p>";
+			$k = 0;
+			while ($k < $nb_classes) {
+				$user_classe['classe_nom_court'] = mysql_result($call_classes, $k, "classe");
+				$user_classe['matiere_nom_court'] = mysql_result($call_classes, $k, "name");
+				$user_classe['classe_id'] = mysql_result($call_classes, $k, "classe_id");
+				$user_classe['group_id'] = mysql_result($call_classes, $k, "group_id");
+		
+				echo "<input type='checkbox' id='user_group_$k' name='user_group[]' value='".$user_classe["group_id"]."' checked /><label for='user_group_$k'> ".$user_classe['classe_nom_court']." (".$user_classe['matiere_nom_court'].")</label><br />\n";
+	
+				$k++;
+			}
+			echo "<input type='hidden' name='user_login' value='$user_login' />\n";
+			echo "<input type='hidden' name='suppression_assoc_user_groupes' value='y' />\n";
+			echo "<center><input type='submit' value=\"Supprimer l'association avec les enseignements décochés\" /></center>\n";
+			echo "</fieldset>\n";
+			echo "</form>\n";
+		}
+	}
+	echo "<p>&nbsp;</p>\n";
+?>
+
 <?php require("../lib/footer.inc.php");?>

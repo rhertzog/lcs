@@ -43,7 +43,48 @@ class InputFilter {
 		}
 		return $source;
 	}	
+	function eraseBadTags($OriginalSource) {
+		$source = $OriginalSource;
+		$source1 = $source;
+		$decalage = 0;
+		$reach_end = false;		
+		while (!$reach_end) {
+			$reach_end = TRUE;
+			$p1 = strpos($source1, '<');
+			if ($p1 !== FALSE) {
+				$source1 = substr($source1, $p1+1);
+				$p2 = strpos($source1, '<');
+				$p3 = strpos($source1, '>');
+				if ($p3 !== FALSE) {
+					if ($p2 !== FALSE) {
+						if ($p2 < $p3) {
+							$source = substr_replace($source, '', $p1+1+$p2+$decalage, $p3 - $p2 + 1);						
+							$source1 = $source;
+							$reach_end = false;
+						}
+						else {
+							$decalage = $p1 + 1 + $p2 + $decalage;
+							$source1 = substr($source, $decalage);
+							$reach_end = false;
+						}
+					}
+				}	
+			}
+		}
+		return $source;
+	}
 	function filterTags($source) {
+	
+		// ======== First layer : delete "\n"
+		$source = str_replace("\n", " ", $source);
+		
+		// ======== Second layer : delete bad tags to avoid <iframe title="<bad tag>" src="...">
+		$source = $this->eraseBadTags($source);
+		
+		// ======== Third layer : replace "<>" by "< >" because can't be handled by InputFilter
+		$source = str_replace("<>", "< >", $source);
+		
+		// ======== Fourth layer : InputFilter core
 		$preTag = NULL;
 		$postTag = $source;
 		$tagOpen_start = strpos($source, '<');
@@ -122,7 +163,7 @@ class InputFilter {
 			//$attrSubSet = explode('=', trim($attrSet[$i]));
 			$attrSubSet = explode('=', trim($attrSet[$i]), 2);
 			list($attrSubSet[0]) = explode(' ', $attrSubSet[0]);
-			if ((!eregi("^[a-z]*$",$attrSubSet[0])) || (($this->xssAuto) && ((in_array(strtolower($attrSubSet[0]), $this->attrBlacklist)) || (substr($attrSubSet[0], 0, 2) == 'on')))) 
+			if ((!my_eregi("^[a-z]*$",$attrSubSet[0])) || (($this->xssAuto) && ((in_array(strtolower($attrSubSet[0]), $this->attrBlacklist)) || (substr($attrSubSet[0], 0, 2) == 'on'))))
 				continue;
 			if ($attrSubSet[1]) {
 				$attrSubSet[1] = str_replace('&#', '', $attrSubSet[1]);

@@ -1,6 +1,5 @@
 <?php
 
-require 'gepi/om/BaseEleveRegimeDoublant.php';
 
 
 /**
@@ -12,19 +11,8 @@ require 'gepi/om/BaseEleveRegimeDoublant.php';
  * application requirements.  This class will only be generated as
  * long as it does not already exist in the output directory.
  *
- * @package    gepi
+ * @package    propel.generator.gepi
  */
 class EleveRegimeDoublant extends BaseEleveRegimeDoublant {
-
-	/**
-	 * Initializes internal state of EleveRegimeDoublant object.
-	 * @see        parent::__construct()
-	 */
-	public function __construct()
-	{
-		// Make sure that parent constructor is always invoked, since that
-		// is where any default values for this object are set.
-		parent::__construct();
-	}
 
 } // EleveRegimeDoublant

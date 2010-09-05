@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: edt_parametrer.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * @version $Id: edt_parametrer.php 4053 2010-01-29 20:41:31Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -23,8 +23,9 @@
  */
 
 // Fichier utilisé par l'administrateur pour paramétrer l'EdT de Gepi
+require_once("./choix_langue.php");
 
-$titre_page = "Emploi du temps - Paramètres";
+$titre_page = TITLE_EDT_PARAMETRER;
 $affiche_connexion = 'yes';
 $niveau_arbo = 1;
 
@@ -48,11 +49,11 @@ if (!checkAccess()) {
 }
 // Sécurité supplémentaire par rapport aux paramètres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
-	Die('Vous devez demander à votre administrateur l\'autorisation de voir cette page.');
+	Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
 // CSS et js particulier à l'EdT
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
-$style_specifique = "edt_organisation/style_edt";
+$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
 //=========Utilisation de prototype et des js de base ===========
 $utilisation_prototype = "";
 $utilisation_jsbase = "";
@@ -155,11 +156,13 @@ require_once("../lib/header.inc");
 // On ajoute le menu EdT
 require_once("./menu.inc.php");
 ?>
-
+<br/>
 <!-- la page du corps de l'EdT -->
 
 	<div id="lecorps">
 <?php
+
+    require_once("./menu.inc.new.php");
 if (isset($aff_message)) {
 	echo $aff_message;
 }
@@ -169,13 +172,13 @@ if (isset($aff_message)) {
 <tr><td>
 
 <fieldset id="matiere">
-	<legend>Les matières</legend>
+	<legend><?php echo FIELDS_PARAM ?></legend>
 		<p>
 			<input type="radio" id="edtMatiereCourt" name="edt_aff_matiere" value="court" <?php echo (aff_checked("edt_aff_matiere", "court")); ?>/>
-			<label for="edtMatiereCourt">Noms courts (du type HG,...).</label>
+			<label for="edtMatiereCourt"><?php echo FIELDS_PARAM_BUTTON1 ?></label>
 <br />
 			<input type="radio" id="edtMatiereLong" name="edt_aff_matiere" value="long" <?php echo (aff_checked("edt_aff_matiere", "long")); ?>/>
-			<label for="edtMatiereLong">Noms longs (Histoire Géographie,...).</label>
+			<label for="edtMatiereLong"><?php echo FIELDS_PARAM_BUTTON2 ?></label>
 
 		</p>
 </fieldset>
@@ -238,7 +241,7 @@ if (isset($aff_message)) {
 		</td>
 		<td>
 <fieldset id="param_edtmenu">
-	<legend>Le fonctionnement du menu</legend>
+	<legend>Le fonctionnement du menu pour ie6</legend>
 	<p>
 		<input type="radio" id="edtMenuOver" name="param_menu_edt" value="mouseover" <?php echo (aff_checked("param_menu_edt", "mouseover")); ?>/>
 		<label for="edtMenuOver">Les liens s'affichent quand la souris passe sur le titre.</label>

@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * $Id: lettre_pdf.php 4100 2010-02-26 20:17:42Z crob $
+ * $Id: lettre_pdf.php 4101 2010-02-26 20:17:45Z crob $
  *
  * Last modification  : 19/03/2007
  *

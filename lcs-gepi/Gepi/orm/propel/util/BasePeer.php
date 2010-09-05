@@ -1,22 +1,11 @@
 <?php
-/*
- *  $Id: BasePeer.php 1060 2008-06-13 12:52:23Z hans $
+
+/**
+ * This file is part of the Propel package.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information please see
- * <http://propel.phpdb.org>.
+ * @license    MIT License
  */
 
 /**
@@ -35,8 +24,8 @@
  * @author     John D. McNally <jmcnally@collab.net> (Torque)
  * @author     Brett McLaughlin <bmclaugh@algx.net> (Torque)
  * @author     Stephen Haberman <stephenh@chase3000.com> (Torque)
- * @version    $Revision: 1060 $
- * @package    propel.util
+ * @version    $Revision$
+ * @package    propel.runtime.util
  */
 class BasePeer
 {
@@ -66,6 +55,12 @@ class BasePeer
 	const TYPE_COLNAME = 'colName';
 
 	/**
+	 * column part of the column peer name
+	 * e.g. 'AUTHOR_ID'
+	 */
+	const TYPE_RAW_COLNAME = 'rawColName';
+
+	/**
 	 * column fieldname type
 	 * e.g. 'author_id'
 	 */
@@ -83,9 +78,8 @@ class BasePeer
 
 		$peerclass = 'Base' . $classname . 'Peer'; // TODO is this always true?
 		$callable = array($peerclass, 'getFieldnames');
-		$args = array($type);
 
-		return call_user_func_array($callable, $args);
+		return call_user_func($callable, $type);
 	}
 
 	static public function translateFieldname($classname, $fieldname, $fromType, $toType) {
@@ -116,53 +110,57 @@ class BasePeer
 	{
 		$db = Propel::getDB($criteria->getDbName());
 		$dbMap = Propel::getDatabaseMap($criteria->getDbName());
-
+		
+		//join are not supported with DELETE statement
+		if (count($criteria->getJoins())) {
+			throw new PropelException('Delete does not support join');
+		}
+		
 		// Set up a list of required tables (one DELETE statement will
 		// be executed per table)
-
-		$tables_keys = array();
-		foreach ($criteria as $c) {
-			foreach ($c->getAllTables() as $tableName) {
-				$tableName2 = $criteria->getTableForAlias($tableName);
-				if ($tableName2 !== null) {
-					$tables_keys[$tableName2 . ' ' . $tableName] = true;
-				} else {
-					$tables_keys[$tableName] = true;
-				}
-			}
-		} // foreach criteria->keys()
+		$tables = $criteria->getTablesColumns();
+		if (empty($tables)) {
+			throw new PropelException("Cannot delete from an empty Criteria");
+		}
 
 		$affectedRows = 0; // initialize this in case the next loop has no iterations.
-
-		$tables = array_keys($tables_keys);
-
-		foreach ($tables as $tableName) {
+		
+		foreach ($tables as $tableName => $columns) {
 
 			$whereClause = array();
-			$selectParams = array();
-			foreach ($dbMap->getTable($tableName)->getColumns() as $colMap) {
-				$key = $tableName . '.' . $colMap->getColumnName();
-				if ($criteria->containsKey($key)) {
+			$params = array();
+			$stmt = null;
+			try {
+				$sql = 'DELETE ';
+				if ($queryComment = $criteria->getComment()) {
+					$sql .= '/* ' . $queryComment . ' */ ';
+				}
+				if ($realTableName = $criteria->getTableForAlias($tableName)) {
+					if ($db->useQuoteIdentifier()) {
+						$realTableName = $db->quoteIdentifierTable($realTableName);
+					}
+					$sql .= $tableName . ' FROM ' . $realTableName . ' AS ' . $tableName;
+				} else {
+					if ($db->useQuoteIdentifier()) {
+						$tableName = $db->quoteIdentifierTable($tableName);
+					}
+					$sql .= 'FROM ' . $tableName;
+				}
+
+				foreach ($columns as $colName) {
 					$sb = "";
-					$criteria->getCriterion($key)->appendPsTo($sb, $selectParams);
+					$criteria->getCriterion($colName)->appendPsTo($sb, $params);
 					$whereClause[] = $sb;
 				}
-			}
+				$sql .= " WHERE " .  implode(" AND ", $whereClause);
 
-			if (empty($whereClause)) {
-				throw new PropelException("Cowardly refusing to delete from table $tableName with empty WHERE clause.");
-			}
-
-			// Execute the statement.
-			try {
-				$sql = "DELETE FROM " . $tableName . " WHERE " .  implode(" AND ", $whereClause);
 				$stmt = $con->prepare($sql);
-				self::populateStmtValues($stmt, $selectParams, $dbMap, $db);
+				self::populateStmtValues($stmt, $params, $dbMap, $db);
 				$stmt->execute();
 				$affectedRows = $stmt->rowCount();
 			} catch (Exception $e) {
 				Propel::log($e->getMessage(), Propel::LOG_ERR);
-				throw new PropelException("Unable to execute DELETE statement.",$e);
+				throw new PropelException(sprintf('Unable to execute DELETE statement [%s]', $sql), $e);
 			}
 
 		} // for each table
@@ -178,27 +176,32 @@ class BasePeer
 	 * public static function doDeleteAll($con = null)
 	 * {
 	 *   if ($con === null) $con = Propel::getConnection(self::DATABASE_NAME);
-	 *   BasePeer::doDeleteAll(self::TABLE_NAME, $con);
+	 *   BasePeer::doDeleteAll(self::TABLE_NAME, $con, self::DATABASE_NAME);
 	 * }
 	 * </code>
 	 *
 	 * @param      string $tableName The name of the table to empty.
 	 * @param      PropelPDO $con A PropelPDO connection object.
+	 * @param      string $databaseName the name of the database.
 	 * @return     int	The number of rows affected by the statement.  Note
 	 * 				that the return value does require that this information
-	 * 				is returned (supported) by the Creole db driver.
+	 * 				is returned (supported) by the Propel db driver.
 	 * @throws     PropelException - wrapping SQLException caught from statement execution.
 	 */
-	public static function doDeleteAll($tableName, PropelPDO $con)
+	public static function doDeleteAll($tableName, PropelPDO $con, $databaseName = null)
 	{
 		try {
+			$db = Propel::getDB($databaseName);
+			if ($db->useQuoteIdentifier()) {
+				$tableName = $db->quoteIdentifierTable($tableName);
+			}
 			$sql = "DELETE FROM " . $tableName;
 			$stmt = $con->prepare($sql);
 			$stmt->execute();
 			return $stmt->rowCount();
 		} catch (Exception $e) {
 			Propel::log($e->getMessage(), Propel::LOG_ERR);
-			throw new PropelException("Unable to perform DELETE ALL operation.", $e);
+			throw new PropelException(sprintf('Unable to execute DELETE ALL statement [%s]', $sql), $e);
 		}
 	}
 
@@ -278,6 +281,7 @@ class BasePeer
 			// add identifiers
 			if ($adapter->useQuoteIdentifier()) {
 				$columns = array_map(array($adapter, 'quoteIdentifier'), $columns);
+				$tableName = $adapter->quoteIdentifierTable($tableName); 
 			}
 
 			$sql = 'INSERT INTO ' . $tableName
@@ -296,7 +300,7 @@ class BasePeer
 
 		} catch (Exception $e) {
 			Propel::log($e->getMessage(), Propel::LOG_ERR);
-			throw new PropelException("Unable to execute INSERT statement.", $e);
+			throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), $e);
 		}
 
 		// If the primary key column is auto-incremented, get the id now.
@@ -329,7 +333,7 @@ class BasePeer
 	 * 				uses there is only one update statement executed, so this number
 	 * 				will correspond to the number of rows affected by the call to this
 	 * 				method.  Note that the return value does require that this information
-	 * 				is returned (supported) by the Creole db driver.
+	 * 				is returned (supported) by the Propel db driver.
 	 * @throws     PropelException
 	 */
 	public static function doUpdate(Criteria $selectCriteria, Criteria $updateValues, PropelPDO $con) {
@@ -339,6 +343,9 @@ class BasePeer
 
 		// Get list of required tables, containing all columns
 		$tablesColumns = $selectCriteria->getTablesColumns();
+		if (empty($tablesColumns)) {
+			$tablesColumns = array($selectCriteria->getPrimaryTableName() => array());
+		}
 
 		// we also need the columns for the update SQL
 		$updateTablesColumns = $updateValues->getTablesColumns();
@@ -348,13 +355,26 @@ class BasePeer
 		foreach ($tablesColumns as $tableName => $columns) {
 
 			$whereClause = array();
-			
 			$params = array();
-
 			$stmt = null;
 			try {
-
-				$sql = "UPDATE " . $tableName . " SET ";
+				$sql = 'UPDATE ';
+				if ($queryComment = $selectCriteria->getComment()) {
+					$sql .= '/* ' . $queryComment . ' */ ';
+				}
+				// is it a table alias?
+				if ($tableName2 = $selectCriteria->getTableForAlias($tableName)) {
+					$udpateTable = $tableName2 . ' ' . $tableName;
+					$tableName = $tableName2;
+				} else {
+					$udpateTable = $tableName;
+				}
+				if ($db->useQuoteIdentifier()) {
+					$sql .= $db->quoteIdentifierTable($udpateTable); 
+				} else { 
+					$sql .= $udpateTable;
+				}
+				$sql .= " SET ";
 				$p = 1;
 				foreach ($updateTablesColumns[$tableName] as $col) {
 					$updateColumnName = substr($col, strrpos($col, '.') + 1);
@@ -394,14 +414,16 @@ class BasePeer
 				}
 				
 				$params = self::buildParams($updateTablesColumns[$tableName], $updateValues);
-				
-				foreach ($columns as $colName) {
-					$sb = "";
-					$selectCriteria->getCriterion($colName)->appendPsTo($sb, $params);
-					$whereClause[] = $sb;
+
+				$sql = substr($sql, 0, -2);
+				if (!empty($columns)) {
+					foreach ($columns as $colName) {
+						$sb = "";
+						$selectCriteria->getCriterion($colName)->appendPsTo($sb, $params);
+						$whereClause[] = $sb;
+					}
+					$sql .= " WHERE " .  implode(" AND ", $whereClause);
 				}
-			
-				$sql = substr($sql, 0, -2) . " WHERE " .  implode(" AND ", $whereClause);
 
 				$stmt = $con->prepare($sql);
 
@@ -417,7 +439,7 @@ class BasePeer
 			} catch (Exception $e) {
 				if ($stmt) $stmt = null; // close
 				Propel::log($e->getMessage(), Propel::LOG_ERR);
-				throw new PropelException("Unable to execute UPDATE statement.", $e);
+				throw new PropelException(sprintf('Unable to execute UPDATE statement [%s]', $sql), $e);
 			}
 
 		} // foreach table in the criteria
@@ -438,14 +460,15 @@ class BasePeer
 	{
 		$dbMap = Propel::getDatabaseMap($criteria->getDbName());
 		$db = Propel::getDB($criteria->getDbName());
-
+		$stmt = null;
+		
 		if ($con === null) {
 			$con = Propel::getConnection($criteria->getDbName(), Propel::CONNECTION_READ);
 		}
 
-		$stmt = null;
-
-		if ($criteria->isUseTransaction()) $con->beginTransaction();
+		if ($criteria->isUseTransaction()) {
+			$con->beginTransaction();
+		} 
 
 		try {
 
@@ -458,13 +481,19 @@ class BasePeer
 
 			$stmt->execute();
 
-			if ($criteria->isUseTransaction()) $con->commit();
+			if ($criteria->isUseTransaction()) {
+				$con->commit();
+			}
 
 		} catch (Exception $e) {
-			if ($stmt) $stmt = null; // close
-			if ($criteria->isUseTransaction()) $con->rollBack();
+			if ($stmt) {
+				$stmt = null; // close
+			}
+			if ($criteria->isUseTransaction()) {
+				$con->rollBack();
+			}
 			Propel::log($e->getMessage(), Propel::LOG_ERR);
-			throw new PropelException($e);
+			throw new PropelException(sprintf('Unable to execute SELECT statement [%s]', $sql), $e);
 		}
 
 		return $stmt;
@@ -491,18 +520,29 @@ class BasePeer
 
 		$stmt = null;
 
-		if ($criteria->isUseTransaction()) $con->beginTransaction();
+		if ($criteria->isUseTransaction()) {
+			$con->beginTransaction();
+		}
 
-		$needsComplexCount = ($criteria->getGroupByColumns() || $criteria->getOffset()
-								|| $criteria->getLimit() || $criteria->getHaving() || in_array(Criteria::DISTINCT, $criteria->getSelectModifiers()));
+		$needsComplexCount = $criteria->getGroupByColumns() 
+			|| $criteria->getOffset()
+			|| $criteria->getLimit() 
+			|| $criteria->getHaving() 
+			|| in_array(Criteria::DISTINCT, $criteria->getSelectModifiers());
 
 		try {
 
 			$params = array();
 
 			if ($needsComplexCount) {
+				if (self::needsSelectAliases($criteria)) {
+					if ($criteria->getHaving()) {
+						throw new PropelException('Propel cannot create a COUNT query when using HAVING and  duplicate column names in the SELECT part');
+					}
+					self::turnSelectColumnsToAliases($criteria);
+				}
 				$selectSql = self::createSelectSql($criteria, $params);
-				$sql = 'SELECT COUNT(*) FROM (' . $selectSql . ') AS propelmatch4cnt';
+				$sql = 'SELECT COUNT(*) FROM (' . $selectSql . ') propelmatch4cnt';
 			} else {
 				// Replace SELECT columns with COUNT(*)
 				$criteria->clearSelectColumns()->addSelectColumn('COUNT(*)');
@@ -513,13 +553,19 @@ class BasePeer
 			self::populateStmtValues($stmt, $params, $dbMap, $db);
 			$stmt->execute();
 
-			if ($criteria->isUseTransaction()) $con->commit();
+			if ($criteria->isUseTransaction()) {
+				$con->commit();
+			}
 
 		} catch (Exception $e) {
-			if ($stmt) $stmt = null; // close
-			if ($criteria->isUseTransaction()) $con->rollBack();
+			if ($stmt !== null) {
+				$stmt = null;
+			}
+			if ($criteria->isUseTransaction()) {
+				$con->rollBack();
+			}
 			Propel::log($e->getMessage(), Propel::LOG_ERR);
-			throw new PropelException($e);
+			throw new PropelException(sprintf('Unable to execute COUNT statement [%s]', $sql), $e);
 		}
 
 		return $stmt;
@@ -545,7 +591,7 @@ class BasePeer
 	 * @see        createSelectSql()
 	 * @see        doSelect()
 	 */
-	private static function populateStmtValues(PDOStatement $stmt, array $params, DatabaseMap $dbMap, DBAdapter $db)
+	public static function populateStmtValues(PDOStatement $stmt, array $params, DatabaseMap $dbMap, DBAdapter $db)
 	{
 		$i = 1;
 		foreach ($params as $param) {
@@ -553,11 +599,11 @@ class BasePeer
 			$columnName = $param['column'];
 			$value = $param['value'];
 
-			if ($value === null) {
+			if (null === $value) {
 
 				$stmt->bindValue(':p'.$i++, null, PDO::PARAM_NULL);
 
-			} else {
+			} elseif (null !== $tableName) {
 
 				$cMap = $dbMap->getTable($tableName)->getColumn($columnName);
 				$type = $cMap->getType();
@@ -591,6 +637,8 @@ class BasePeer
 				}
 
 				$stmt->bindValue(':p'.$i++, $value, $pdoType);
+			} else {
+				$stmt->bindValue(':p'.$i++, $value);
 			}
 		} // foreach
 	}
@@ -645,25 +693,74 @@ class BasePeer
 
 			$dbMap = Propel::getDatabaseMap($criteria->getDbName());
 
-			if ($dbMap === null) {
-				throw new PropelException("\$dbMap is null");
-			}
-
-			if ($dbMap->getTable($table) === null) {
-				throw new PropelException("\$dbMap->getTable() is null");
-			}
-
-			$columns = $dbMap->getTable($table)->getColumns();
-			foreach (array_keys($columns) as $key) {
-				if ($columns[$key]->isPrimaryKey()) {
-					$pk = $columns[$key];
-					break;
-				}
+			$pks = $dbMap->getTable($table)->getPrimaryKeys();
+			if (!empty($pks)) {
+				$pk = array_shift($pks);
 			}
 		}
 		return $pk;
 	}
 
+	/**
+	 * Checks whether the Criteria needs to use column aliasing
+	 * This is implemented in a service class rather than in Criteria itself
+	 * in order to avoid doing the tests when it's not necessary (e.g. for SELECTs)
+	 */
+	public static function needsSelectAliases(Criteria $criteria)
+	{
+		$columnNames = array();
+		foreach ($criteria->getSelectColumns() as $fullyQualifiedColumnName) {
+			if ($pos = strrpos($fullyQualifiedColumnName, '.')) {
+				$columnName = substr($fullyQualifiedColumnName, $pos);
+				if (isset($columnNames[$columnName])) {
+					// more than one column with the same name, so aliasing is required
+					return true;
+				}
+				$columnNames[$columnName] = true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Ensures uniqueness of select column names by turning them all into aliases
+	 * This is necessary for queries on more than one table when the tables share a column name
+	 * @see http://propel.phpdb.org/trac/ticket/795
+	 *
+	 * @param Criteria $criteria
+	 * 
+	 * @return Criteria The input, with Select columns replaced by aliases
+	 */
+	public static function turnSelectColumnsToAliases(Criteria $criteria)
+	{
+		$selectColumns = $criteria->getSelectColumns();
+		// clearSelectColumns also clears the aliases, so get them too
+		$asColumns = $criteria->getAsColumns();
+		$criteria->clearSelectColumns();
+		$columnAliases = $asColumns;
+		// add the select columns back
+		foreach ($selectColumns as $clause) {
+			// Generate a unique alias
+			$baseAlias = preg_replace('/\W/', '_', $clause);
+			$alias = $baseAlias;
+			// If it already exists, add a unique suffix
+			$i = 0;
+			while (isset($columnAliases[$alias])) {
+				$i++;
+				$alias = $baseAlias . '_' . $i;
+			}
+			// Add it as an alias
+			$criteria->addAsColumn($alias, $clause);
+			$columnAliases[$alias] = $clause;
+		}
+		// Add the aliases back, don't modify them
+		foreach ($asColumns as $name => $clause) {
+			$criteria->addAsColumn($name, $clause);
+		}
+		
+		return $criteria;
+	}
+	
 	/**
 	 * Method to create an SQL query based on values in a Criteria.
 	 *
@@ -677,86 +774,33 @@ class BasePeer
 	 * @return     string
 	 * @throws     PropelException Trouble creating the query string.
 	 */
-	public static function createSelectSql(Criteria $criteria, &$params) {
-
+	public static function createSelectSql(Criteria $criteria, &$params)
+	{
 		$db = Propel::getDB($criteria->getDbName());
 		$dbMap = Propel::getDatabaseMap($criteria->getDbName());
 
-		// redundant definition $selectModifiers = array();
-		$selectClause = array();
 		$fromClause = array();
 		$joinClause = array();
 		$joinTables = array();
 		$whereClause = array();
 		$orderByClause = array();
-		// redundant definition $groupByClause = array();
 
 		$orderBy = $criteria->getOrderByColumns();
 		$groupBy = $criteria->getGroupByColumns();
 		$ignoreCase = $criteria->isIgnoreCase();
-		$select = $criteria->getSelectColumns();
-		$aliases = $criteria->getAsColumns();
 
-		// simple copy
-		$selectModifiers = $criteria->getSelectModifiers();
-
-		// get selected columns
-		foreach ($select as $columnName) {
-
-			// expect every column to be of "table.column" formation
-			// it could be a function:  e.g. MAX(books.price)
-
-			$tableName = null;
-
-			$selectClause[] = $columnName; // the full column name: e.g. MAX(books.price)
-
-			$parenPos = strrpos($columnName, '(');
-			$dotPos = strrpos($columnName, '.', ($parenPos !== false ? $parenPos : 0));
-
-			// [HL] I think we really only want to worry about adding stuff to
-			// the fromClause if this function has a TABLE.COLUMN in it at all.
-			// e.g. COUNT(*) should not need this treatment -- or there needs to
-			// be special treatment for '*'
-			if ($dotPos !== false) {
-
-				if ($parenPos === false) { // table.column
-					$tableName = substr($columnName, 0, $dotPos);
-				} else { // FUNC(table.column)
-					$tableName = substr($columnName, $parenPos + 1, $dotPos - ($parenPos + 1));
-					// functions may contain qualifiers so only take the last
-					// word as the table name.
-					// COUNT(DISTINCT books.price)
-					$lastSpace = strpos($tableName, ' ');
-					if ($lastSpace !== false) { // COUNT(DISTINCT books.price)
-						$tableName = substr($tableName, $lastSpace + 1);
-					}
-				}
-				$tableName2 = $criteria->getTableForAlias($tableName);
-				if ($tableName2 !== null) {
-					$fromClause[] = $tableName2 . ' ' . $tableName;
-				} else {
-					$fromClause[] = $tableName;
-				}
-
-			} // if $dotPost !== null
-		}
-
-		// set the aliases
-		foreach ($aliases as $alias => $col) {
-			$selectClause[] = $col . " AS " . $alias;
-		}
+		// get the first part of the SQL statement, the SELECT part
+		$selectSql = self::createSelectSqlPart($criteria, $fromClause);
 
 		// add the criteria to WHERE clause
 		// this will also add the table names to the FROM clause if they are not already
-		// invluded via a LEFT JOIN
+		// included via a LEFT JOIN
 		foreach ($criteria->keys() as $key) {
 
 			$criterion = $criteria->getCriterion($key);
-			$someCriteria = $criterion->getAttachedCriterion();
-			$someCriteriaLength = count($someCriteria);
 			$table = null;
-			for ($i=0; $i < $someCriteriaLength; $i++) {
-				$tableName = $someCriteria[$i]->getTable();
+			foreach ($criterion->getAttachedCriterion() as $attachedCriterion) {
+				$tableName = $attachedCriterion->getTable();
 
 				$table = $criteria->getTableForAlias($tableName);
 				if ($table !== null) {
@@ -766,44 +810,38 @@ class BasePeer
 					$table = $tableName;
 				}
 
-				$ignoreCase =
-				(($criteria->isIgnoreCase()
-				|| $someCriteria[$i]->isIgnoreCase())
-				&& (strpos($dbMap->getTable($table)->getColumn($someCriteria[$i]->getColumn())->getType(), "VARCHAR") !== false)
-				);
-
-				$someCriteria[$i]->setIgnoreCase($ignoreCase);
+				if (($criteria->isIgnoreCase() || $attachedCriterion->isIgnoreCase())
+				&& $dbMap->getTable($table)->getColumn($attachedCriterion->getColumn())->isText()) {
+					$attachedCriterion->setIgnoreCase(true);
+				}
 			}
 
 			$criterion->setDB($db);
 
-			$sb = "";
+			$sb = '';
 			$criterion->appendPsTo($sb, $params);
 			$whereClause[] = $sb;
-
 		}
 
-		// handle RIGHT (straight) joins
-		// Loop through the joins,
+		// Handle joins
 		// joins with a null join type will be added to the FROM clause and the condition added to the WHERE clause.
 		// joins of a specified type: the LEFT side will be added to the fromClause and the RIGHT to the joinClause
-		// New Code.
-		foreach ((array) $criteria->getJoins() as $join) { // we'll only loop if there's actually something here
-
+		foreach ($criteria->getJoins() as $join) { 
 			// The join might have been established using an alias name
-
 			$leftTable = $join->getLeftTableName();
-			$leftTableAlias = '';
 			if ($realTable = $criteria->getTableForAlias($leftTable)) {
-				$leftTableAlias = " $leftTable";
+				$leftTableForFrom = $realTable . ' ' . $leftTable;
 				$leftTable = $realTable;
+			} else {
+				$leftTableForFrom = $leftTable;
 			}
 
 			$rightTable = $join->getRightTableName();
-			$rightTableAlias = '';
 			if ($realTable = $criteria->getTableForAlias($rightTable)) {
-				$rightTableAlias = " $rightTable";
+				$rightTableForFrom =  $realTable . ' ' . $rightTable;
 				$rightTable = $realTable;
+			} else {
+				$rightTableForFrom = $rightTable;
 			}
 
 			// determine if casing is relevant.
@@ -814,37 +852,38 @@ class BasePeer
 			}
 
 			// build the condition
-			$left = $join->getLeftColumns();
-			$right = $join->getRightColumns();
-			$condition = "";
-			for ($i = 0; $i < count($left); $i++) {
+			$condition = '';
+			foreach ($join->getConditions() as $index => $conditionDesc) {
 				if ($ignoreCase) {
-					$condition .= $db->ignoreCase($left[$i]) . '=' . $db->ignoreCase($right[$i]);
+					$condition .= $db->ignoreCase($conditionDesc['left']) . $conditionDesc['operator'] . $db->ignoreCase($conditionDesc['right']);
 				} else {
-					$condition .= $left[$i] . '=' . $right[$i];
+					$condition .= implode($conditionDesc);
 				}
-				if ($i + 1 < count($left) ) {
-					$condition .= " AND ";
+				if ($index + 1 < $join->countConditions()) {
+					$condition .= ' AND ';
 				}
 			}
 
 			// add 'em to the queues..
 			if ($joinType = $join->getJoinType()) {
+			  // real join
 				if (!$fromClause) {
-					$fromClause[] = $leftTable . $leftTableAlias;
+					$fromClause[] = $leftTableForFrom;
 				}
-				$joinTables[] = $rightTable . $rightTableAlias;
-				$joinClause[] = $join->getJoinType() . ' ' . $rightTable . $rightTableAlias . " ON ($condition)";
+				$joinTables[] = $rightTableForFrom;
+				$joinClause[] = $join->getJoinType() . ' ' . $rightTableForFrom . " ON ($condition)";
 			} else {
-				$fromClause[] = $leftTable . $leftTableAlias;
-				$fromClause[] = $rightTable . $rightTableAlias;
+			  // implicit join, translates to a where
+				$fromClause[] = $leftTableForFrom;
+				$fromClause[] = $rightTableForFrom;
 				$whereClause[] = $condition;
 			}
 		}
 
 		// Unique from clause elements
 		$fromClause = array_unique($fromClause);
-
+		$fromClause = array_diff($fromClause, array(''));
+		
 		// tables should not exist in both the from and join clauses
 		if ($joinTables && $fromClause) {
 			foreach ($fromClause as $fi => $ftable) {
@@ -860,7 +899,7 @@ class BasePeer
 		$having = $criteria->getHaving();
 		$havingString = null;
 		if ($having !== null) {
-			$sb = "";
+			$sb = '';
 			$having->appendPsTo($sb, $params);
 			$havingString = $sb;
 		}
@@ -882,9 +921,8 @@ class BasePeer
 
 				if ($dotPos !== false) {
 					$tableName = substr($orderByColumn, 0, $dotPos);
-					$columnName = substr($orderByColumn, $dotPos+1);
-				}
-				else {
+					$columnName = substr($orderByColumn, $dotPos + 1);
+				} else {
 					$tableName = '';
 					$columnName = $orderByColumn;
 				}
@@ -894,8 +932,7 @@ class BasePeer
 				if ($spacePos !== false) {
 					$direction = substr($columnName, $spacePos);
 					$columnName = substr($columnName, 0, $spacePos);
-				}
-				else {
+				}	else {
 					$direction = '';
 				}
 
@@ -912,8 +949,9 @@ class BasePeer
 				$column = $tableName ? $dbMap->getTable($tableName)->getColumn($columnName) : null;
 
 				if ($criteria->isIgnoreCase() && $column && $column->isText()) {
-					$orderByClause[] = $db->ignoreCaseInOrderBy("$tableAlias.$columnAlias") . $direction;
-					$selectClause[] = $db->ignoreCaseInOrderBy("$tableAlias.$columnAlias");
+					$ignoreCaseColumn = $db->ignoreCaseInOrderBy("$tableAlias.$columnAlias");
+					$orderByClause[] =  $ignoreCaseColumn . $direction;
+					$selectSql .= ', ' . $ignoreCaseColumn;
 				} else {
 					$orderByClause[] = $orderByColumn;
 				}
@@ -924,7 +962,7 @@ class BasePeer
 			$fromClause[] = $criteria->getPrimaryTableName();
 		}
 
-		// from / join tables quoten if it is necessary
+		// from / join tables quoted if it is necessary
 		if ($db->useQuoteIdentifier()) {
 			$fromClause = array_map(array($db, 'quoteIdentifierTable'), $fromClause);
 			$joinClause = $joinClause ? $joinClause : array_map(array($db, 'quoteIdentifierTable'), $joinClause);
@@ -941,9 +979,7 @@ class BasePeer
 		$from .= $joinClause ? ' ' . implode(' ', $joinClause) : '';
 
 		// Build the SQL from the arrays we compiled
-		$sql =  "SELECT "
-		.($selectModifiers ? implode(" ", $selectModifiers) . " " : "")
-		.implode(", ", $selectClause)
+		$sql =  $selectSql
 		." FROM "  . $from
 		.($whereClause ? " WHERE ".implode(" AND ", $whereClause) : "")
 		.($groupByClause ? " GROUP BY ".implode(",", $groupByClause) : "")
@@ -952,11 +988,76 @@ class BasePeer
 
 		// APPLY OFFSET & LIMIT to the query.
 		if ($criteria->getLimit() || $criteria->getOffset()) {
-			$db->applyLimit($sql, $criteria->getOffset(), $criteria->getLimit());
+			$db->applyLimit($sql, $criteria->getOffset(), $criteria->getLimit(), $criteria);
 		}
 
 		return $sql;
+	}
 
+	/**
+	 * Builds the SELECT part of a SQL statement based on a Criteria
+	 * taking into account select columns and 'as' columns (i.e. columns aliases)
+	 */
+	public static function createSelectSqlPart(Criteria $criteria, &$fromClause, $aliasAll = false)
+	{
+		$selectClause = array();
+		
+		if ($aliasAll) {
+			self::turnSelectColumnsToAliases($criteria);
+			// no select columns after that, they are all aliases
+		} else {
+			foreach ($criteria->getSelectColumns() as $columnName) {
+
+				// expect every column to be of "table.column" formation
+				// it could be a function:  e.g. MAX(books.price)
+
+				$tableName = null;
+
+				$selectClause[] = $columnName; // the full column name: e.g. MAX(books.price)
+
+				$parenPos = strrpos($columnName, '(');
+				$dotPos = strrpos($columnName, '.', ($parenPos !== false ? $parenPos : 0));
+
+				if ($dotPos !== false) {
+					if ($parenPos === false) { // table.column
+						$tableName = substr($columnName, 0, $dotPos);
+					} else { // FUNC(table.column)
+						// functions may contain qualifiers so only take the last
+						// word as the table name.
+						// COUNT(DISTINCT books.price)
+						$lastSpace = strpos($tableName, ' ');
+						if ($lastSpace !== false) { // COUNT(DISTINCT books.price)
+							$tableName = substr($tableName, $lastSpace + 1);
+						} else {
+							$tableName = substr($columnName, $parenPos + 1, $dotPos - ($parenPos + 1));
+						}
+					}
+					// is it a table alias?
+					$tableName2 = $criteria->getTableForAlias($tableName);
+					if ($tableName2 !== null) {
+						$fromClause[] = $tableName2 . ' ' . $tableName;
+					} else {
+						$fromClause[] = $tableName;
+					}
+				} // if $dotPost !== false
+			}
+		}
+		
+		// set the aliases
+		foreach ($criteria->getAsColumns() as $alias => $col) {
+			$selectClause[] = $col . ' AS ' . $alias;
+		}
+
+		$selectModifiers = $criteria->getSelectModifiers();
+		$queryComment = $criteria->getComment();
+		
+		// Build the SQL from the arrays we compiled
+		$sql =  "SELECT " 
+		. ($queryComment ? '/* ' . $queryComment . ' */ ' : '')
+		. ($selectModifiers ? (implode(' ', $selectModifiers) . ' ') : '')
+		. implode(", ", $selectClause);
+
+		return $sql;
 	}
 
 	/**
@@ -966,7 +1067,8 @@ class BasePeer
 	 * @param      Criteria $values
 	 * @return     array params array('column' => ..., 'table' => ..., 'value' => ...)
 	 */
-	private static function buildParams($columns, Criteria $values) {
+	private static function buildParams($columns, Criteria $values)
+	{
 		$params = array();
 		foreach ($columns as $key) {
 			if ($values->containsKey($key)) {

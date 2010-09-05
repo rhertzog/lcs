@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: import_absences_gepi.php 4258 2010-04-09 16:34:09Z crob $
+ * $Id: import_absences_gepi.php 4257 2010-04-09 16:34:06Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *

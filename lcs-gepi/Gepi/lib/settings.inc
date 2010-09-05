@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: settings.inc 3465 2009-09-25 15:12:30Z crob $
+ * $Id: settings.inc 5179 2010-09-03 15:12:38Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -65,6 +65,23 @@ function getSettingValue($_name)
 {
     global $gepiSettings;
     if (isset($gepiSettings[$_name])) return ($gepiSettings[$_name]);
+}
+
+/**
+ * Return True if getSettingValue() is 'yes' or 'y'
+ *
+ *
+ * @_name               string                  The name of the setting you want to test
+ *
+ * @return              bool                   True if the setting you test is 'yes' or 'y', False on other case
+ */
+function getSettingAOui($_name)
+{
+	if (getSettingValue($_name)=="yes" || getSettingValue($_name)=="y"){
+		return TRUE;
+	} else {
+		return FALSE;
+	}
 }
 
 /**

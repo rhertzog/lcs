@@ -1,4 +1,7 @@
 <?php
+/*
+$Id: update_functions.php 3793 2009-11-25 13:19:02Z crob $
+*/
 // Ensemble de méthodes utilisées par le script d'initialisation
 
 function add_index($tablename, $indexname, $indexcolumns) {

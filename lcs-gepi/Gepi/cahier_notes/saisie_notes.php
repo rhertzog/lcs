@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: saisie_notes.php 4043 2010-01-25 13:41:34Z crob $
+ * @version: $Id: saisie_notes.php 4878 2010-07-24 13:54:01Z regis $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -43,7 +43,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 
 if (!checkAccess()) {
@@ -213,7 +213,8 @@ if (isset($_POST['notes'])) {
 	$tempo = '';
 	while (($i < $longueur) and ($indice < $_POST['fin_import'])) {
 		$car = substr($temp, $i, 1);
-		if (ereg ("^[0-9\.\,\a-z\A-Z\-]{1}$", $car)) {
+		//if (ereg ("^[0-9\.\,\a-z\A-Z\-]{1}$", $car)) {
+		if (my_ereg ("^[0-9\.\,\a-z\A-Z\-]{1}$", $car)) {
 			if (($fin_note=='yes') or ($i == $longueur-1)) {
 				$fin_note = 'no';
 				if (is_numeric($tempo)) {
@@ -237,6 +238,39 @@ if (isset($_POST['notes'])) {
 		$i++;
 	}
 }
+
+// Ajout delineau -> fonctionnalité de copier/coller d'appréciations
+//-------------------------------------------------------------------------------------------------------------------
+if (isset($_POST['appreciations'])) {
+	$temp = $_POST['appreciations']." 1";
+	// $temp = ereg_replace("\\\\r","`",$temp);
+	$temp = my_ereg_replace("\\\\r","`",$temp);
+	// $temp = ereg_replace("\\\\n","",$temp);
+	$temp = my_ereg_replace("\\\\n","",$temp);
+	$temp = unslashes($temp);
+ 	$longueur = strlen($temp);
+	$i = 0;
+	$fin_app = 'yes';
+	$indice = $_POST['debut_import']-2;
+	$tempo = "";
+	while (($i < $longueur) and ($indice < $_POST['fin_import'])) {
+		$car = substr($temp, $i, 1);
+		// if (!ereg ("^[`]{1}$", $car)) {
+		if (!my_ereg ("^[`]{1}$", $car)) {
+			if (($fin_app=='yes') or ($i == $longueur-1)) {
+				$fin_app = 'no';
+				$appreciations_import[$indice] = $tempo;
+				$indice++;
+				$tempo = '';
+			}
+			$tempo=$tempo.$car;
+		} else {
+  			$fin_app = 'yes';
+		}
+		$i++;
+	}
+}
+// Fin ajout delineau -> fonctionnalité de copier/coller d'appréciations
 
 
 if (isset($_POST['is_posted'])) {
@@ -305,7 +339,7 @@ if (isset($_POST['is_posted'])) {
 						$note = '0';
 						$elev_statut = '-';
 					}
-					else if (ereg ("^[0-9\.\,]{1,}$", $note)) {
+					else if (my_ereg ("^[0-9\.\,]{1,}$", $note)) {
 						$note = str_replace(",", ".", "$note");
                                                 $appel_note_sur = mysql_query("SELECT NOTE_SUR FROM cn_devoirs WHERE id = '$id_devoir'");
                                                 $note_sur_verif = mysql_result($appel_note_sur,0 ,'note_sur');
@@ -390,6 +424,9 @@ $titre_page = "Saisie des notes";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 //debug_var();
+
+unset($_SESSION['chemin_retour']);
+
 //=======================================================
 /*
 // MODIF: boireaus
@@ -432,6 +469,7 @@ echo "<script type=\"text/javascript\" language=\"javascript\">";
 if (isset($_POST['debut_import'])) {
 	$temp = $_POST['debut_import']-1;
 	if ((isset($note_import[$temp])) and ($note_import[$temp] != '')) echo "change = 'yes';"; else echo "change = 'no';";
+
 } else {
 	echo "change = 'no';";
 }
@@ -451,6 +489,7 @@ while ($j < $nb_dev) {
         $note_sur[$j] = mysql_result($appel_dev, $j, 'note_sur');
         $ramener_sur_referentiel[$j] = mysql_result($appel_dev, $j, 'ramener_sur_referentiel');
 	$facultatif[$j] = mysql_result($appel_dev, $j, 'facultatif');
+	$display_parents[$j] = mysql_result($appel_dev, $j, 'display_parents');
 	$date = mysql_result($appel_dev, $j, 'date');
 	$annee = substr($date,0,4);
 	$mois =  substr($date,5,2);
@@ -462,7 +501,7 @@ while ($j < $nb_dev) {
 //echo "<form enctype=\"multipart/form-data\" name= \"form1\" action=\"index.php\" method=\"get\">\n";
 echo "<form enctype=\"multipart/form-data\" name= \"form1\" action=\"saisie_notes.php\" method=\"get\">\n";
 echo "<p class='bold'>\n";
-echo "<a href=\"../accueil.php\"  onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil </a>|";
+echo "<a href=\"../accueil.php\" onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil </a>|";
 echo "<a href='index.php'  onclick=\"return confirm_abandon (this, change, '$themessage')\"> Mes enseignements </a>|";
 
 
@@ -543,11 +582,12 @@ if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 
 	function confirm_changement_classe(thechange, themessage)
 	{
+		//alert('thechange='+thechange+' '+document.getElementById('id_groupe').selectedIndex+' '+document.getElementById('id_groupe').options[document.getElementById('id_groupe').selectedIndex].value);
 		if (!(thechange)) thechange='no';
 		if (thechange != 'yes') {
 			document.form1.submit();
 		}
-		else{
+		else {
 			var is_confirmed = confirm(themessage);
 			if(is_confirmed){
 				document.form1.submit();
@@ -578,9 +618,50 @@ if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 	// =================================
 }
 
+// Recuperer la liste des cahiers de notes
+$sql="SELECT * FROM cn_cahier_notes ccn where id_groupe='$id_groupe' ORDER BY periode;";
+$res_cn=mysql_query($sql);
+if(mysql_num_rows($res_cn)>1) {
+	// On ne propose pas de champ SELECT pour un seul canier de notes
+	$chaine_options_periodes="";
+	while($lig_cn=mysql_fetch_object($res_cn)) {
+		$chaine_options_periodes.="<option value='$lig_cn->id_cahier_notes'";
+		if($lig_cn->periode==$periode_num) {$chaine_options_periodes.=" selected='true'";}
+		$chaine_options_periodes.=">$lig_cn->periode</option>\n";
+	}
 
+	$index_num_periode=$periode_num-1;
 
+	echo "<script type='text/javascript'>
+	// Initialisation
+	change='no';
 
+	function confirm_changement_periode(thechange, themessage)
+	{
+		if (!(thechange)) thechange='no';
+		if (thechange != 'yes') {
+			document.getElementById('form1b_id_conteneur').value=document.getElementById('id_conteneur').options[document.getElementById('id_conteneur').selectedIndex].value;
+			document.form1b.submit();
+		}
+		else{
+			var is_confirmed = confirm(themessage);
+			if(is_confirmed){
+				document.getElementById('form1b_id_conteneur').value=document.getElementById('id_conteneur').options[document.getElementById('id_conteneur').selectedIndex].value;
+				document.form1b.submit();
+			}
+			else{
+				document.getElementById('id_conteneur').selectedIndex=$index_num_periode;
+			}
+		}
+	}
+</script>\n";
+
+	//echo " | <select name='id_classe' onchange=\"document.forms['form1'].submit();\">\n";
+	echo "<span title='Accéder au cahier de notes de la période (ne sont proposées que les périodes pour lesquelles le cahier de notes a été initialisé)'>Période </span><select name='tmp_id_conteneur' id='id_conteneur' onchange=\"confirm_changement_periode(change, '$themessage');\">\n";
+	echo $chaine_options_periodes;
+	echo "</select> | \n";
+
+}
 
 echo "<a href=\"index.php?id_racine=$id_racine\" onclick=\"return confirm_abandon (this, change, '$themessage')\"> Mes évaluations </a>|";
 if ($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2) {
@@ -596,6 +677,9 @@ if ($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2) {
 //echo "<a href=\"../fpdf/imprime_pdf.php?titre=$titre_pdf&amp;id_groupe=$id_groupe&amp;periode_num=$periode_num\" target=\"_blank\" onclick=\"return VerifChargement()\">Imprimer au format PDF</a>|";
 //echo "<a href=\"../fpdf/imprime_pdf.php?titre=$titre_pdf&amp;id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;nom_pdf_en_detail=oui\" target=\"_blank\" onclick=\"return VerifChargement()\">Imprimer au format PDF</a>|";
 echo "<a href=\"../fpdf/imprime_pdf.php?titre=$titre_pdf&amp;id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;nom_pdf_en_detail=oui\" onclick=\"return VerifChargement()\"> Imprimer au format PDF </a>|";
+
+//echo "<a href=\"../groupes/signalement_eleves.php?id_groupe=$id_groupe&amp;id_conteneur=$id_conteneur\"> Signaler des erreurs d'affectation</a>";
+echo "<a href=\"../groupes/signalement_eleves.php?id_groupe=$id_groupe&amp;chemin_retour=../cahier_notes/saisie_notes.php?id_conteneur=$id_conteneur\"> Signaler des erreurs d'affectation</a>";
 echo "</p>\n";
 echo "</form>\n";
 
@@ -636,8 +720,15 @@ if ($id_devoir == 0) {
 		echo " /></td><td></td></tr>\n";
 	}
 	echo "</table></fieldset>\n";
-	echo "<input type='hidden' name='id_conteneur' value=\"".$id_conteneur."\" />\n";
+	echo "<input type='hidden' name='id_conteneur' id='form1b_id_conteneur' value=\"".$id_conteneur."\" />\n";
 	echo "<input type='hidden' name='id_devoir' value=\"".$id_devoir."\" />\n";
+	echo "</form>\n";
+}
+else {
+	// Formulaire destiné à permettre via javascript de passer à une autre période... on accède alors au mode Visualisation parce que le $id_devoir n'existe pas dans une autre période.
+	echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post name=\"form1b\">\n";
+	echo "<input type='hidden' name='id_conteneur' id='form1b_id_conteneur' value=\"".$id_conteneur."\" />\n";
+	//echo "<input type='hidden' name='id_devoir' value=\"".$id_devoir."\" />\n";
 	echo "</form>\n";
 }
 // Fin du premier formulaire
@@ -736,6 +827,8 @@ while ($i < $nb_dev) {
 	$i++;
 }
 
+// Tableau destiner à stocker l'id du champ de saisie de note (n$num_id) correspondant à l'élève $i
+$indice_ele_saisie=array();
 
 $i = 0;
 $num_id=10;
@@ -855,6 +948,8 @@ foreach ($liste_eleves as $eleve) {
 				// ========================
 				// MODIF: boireaus 20071010
 				//$mess_note[$i][$k] .= "<input id=\"n".$num_id."\" onKeyDown=\"clavier(this.id,event);\" type=\"text\" size=\"4\" name=\"".$eleve_login_note."\" value=\"";
+
+				$indice_ele_saisie[$i]=$num_id;
 				$mess_note[$i][$k] .= "<input id=\"n".$num_id."\" onKeyDown=\"clavier(this.id,event);\" type=\"text\" size=\"4\" name=\"note_eleve[$i]\" ";
 				$mess_note[$i][$k] .= "autocomplete='off' ";
 				$mess_note[$i][$k] .= "value=\"";
@@ -890,9 +985,11 @@ foreach ($liste_eleves as $eleve) {
 					$res_ele=mysql_query($sql);
 					if(mysql_num_rows($res_ele)>0) {
 						$lig_ele=mysql_fetch_object($res_ele);
-            $_photo_eleve = (isset ($multisite) AND $multisite == 'y') ? $eleve_login[$i] : $lig_ele->elenoet;
-						if(file_exists("../photos/eleves/".$lig_ele->elenoet.".jpg")) {
-							$mess_note[$i][$k].=";affiche_photo('".$lig_ele->elenoet.".jpg','".addslashes(strtoupper($eleve_nom[$i])." ".ucfirst(strtolower($eleve_prenom[$i])))."')";
+						//$_photo_eleve = (isset ($multisite) AND $multisite == 'y') ? $eleve_login[$i] : $lig_ele->elenoet;
+						//if(file_exists("../photos/eleves/".$_photo_eleve.".jpg")) {
+						if (nom_photo($lig_ele->elenoet)){
+							//$mess_note[$i][$k].=";affiche_photo('".$_photo_eleve.".jpg','".addslashes(strtoupper($eleve_nom[$i])." ".ucfirst(strtolower($eleve_prenom[$i])))."')";
+							$mess_note[$i][$k].=";affiche_photo('".nom_photo($lig_ele->elenoet)."','".addslashes(strtoupper($eleve_nom[$i])." ".ucfirst(strtolower($eleve_prenom[$i])))."')";
 						}
 						else {
 							$mess_note[$i][$k].=";document.getElementById('div_photo_eleve').innerHTML='';";
@@ -917,7 +1014,13 @@ foreach ($liste_eleves as $eleve) {
 				// Pour passer à no_anti_inject comme pour les autres saisies d'appréciations
 				if($mode_commentaire_20080422!="no_anti_inject") {
 					//$mess_comment[$i][$k] .= "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='comment_eleve[$i]' rows=1 cols=30 wrap='virtual' onchange=\"changement()\">".$eleve_comment."</textarea></td>\n";
-					$mess_comment[$i][$k] .= "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='comment_eleve[$i]' rows=1 cols=30 class='wrap' onchange=\"changement()\">".$eleve_comment."</textarea></td>\n";
+					// Ajout delineau -> fonctionnalité de copier/coller d'appréciations
+					if ((isset($appreciations_import[$current_displayed_line])) and  ($appreciations_import[$current_displayed_line] != '')) {
+				     $eleve_comment = $appreciations_import[$current_displayed_line];
+				  }
+					// Fin ajout delineau -> fonctionnalité de copier/coller d'appréciations
+
+					$mess_comment[$i][$k] .= "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='comment_eleve[$i]' rows=1 cols=60 class='wrap' onchange=\"changement()\">".$eleve_comment."</textarea></td>\n";
 				}
 				else {
 					//$mess_comment[$i][$k] .= "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='no_anti_inject_comment_eleve".$i."' rows=1 cols=30 wrap='virtual' onchange=\"changement()\">".$eleve_comment."</textarea></td>\n";
@@ -954,9 +1057,10 @@ echo "<table class='boireaus' cellspacing='2' cellpadding='1' summary=\"Tableau 
 if ($id_devoir==0) {
 	// Mode consultation
 	$nb_colspan = $nb_dev;
+	//$nb_colspan = $nb_dev+1; // +1 pour la colonne Moyenne // Il y a un pb de colspan sur la première ligne selon que la période est ouverte ou non dirait-on.
 	$i = 0;
 	while ($i < $nb_dev) {
-		if ((($nocomment[$i]!='yes') and ($_SESSION['affiche_comment'] == 'yes')) or ($id_dev[$i] == $id_devoir)) $nb_colspan++;
+		if ((($nocomment[$i]!='yes') and ($_SESSION['affiche_comment'] == 'yes')) or ($id_dev[$i] == $id_devoir)) {$nb_colspan++;}
 		$i++;
 	}
 } else {
@@ -966,12 +1070,18 @@ if ($id_devoir==0) {
 
 // Affichage première ligne
 
-echo "<tr><td class='cn'>&nbsp;</td>\n";
-if ($multiclasses) echo "<td class='cn'>&nbsp;</td>\n";
+echo "<tr><th class='cn'>&nbsp;</th>\n";
+if ($multiclasses) {echo "<th class='cn'>&nbsp;</th>\n";}
 echo "\n";
 if ($nb_dev != 0) {
 	if($nom_conteneur!=""){
-		echo "<th class='cn' colspan='$nb_colspan' valign='top'><center>$nom_conteneur</center></th>\n";
+		//echo "<th class='cn' colspan='$nb_colspan' valign='top'><center>$nom_conteneur</center></th>\n";
+		echo "<th class='cn' colspan='$nb_colspan' valign='top'>\n";
+		//echo "<center>$nom_conteneur</center>\n";
+		echo "<div style='float:right; width:16;'><a href='javascript:affichage_quartiles();'><img src='../images/icons/histogramme.png' width='16' height='16' alt='Afficher les quartiles' title='Afficher les quartiles' /></a></div>\n";
+
+		echo "$nom_conteneur\n";
+		echo "</th>\n";
 	}
 	else{
 		echo "<th class='cn' colspan='$nb_colspan' valign='top'><center>&nbsp;</center></th>\n";
@@ -1011,7 +1121,7 @@ if ($id_devoir==0) {
 			else{
 				$cellule_nom_sous_cont="&nbsp;";
 			}
-			if ($nb_dev_s_cont[$i] != 0){ echo "<th class=cn colspan='$nb_dev_s_cont[$i]' valign='top'><center>$cellule_nom_sous_cont</center></th>\n";}
+			if ($nb_dev_s_cont[$i] != 0) { echo "<th class=cn colspan='$nb_dev_s_cont[$i]' valign='top'><center>$cellule_nom_sous_cont</center></th>\n";}
 			// ===============================
 		}
 		if($nom_sous_cont[$i]!=""){
@@ -1034,7 +1144,8 @@ if ($id_devoir==0) {
 if (($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2) and ($id_devoir==0)){
 	if($nom_conteneur!=""){
 		echo "<td class=cn  valign='top'><center><b>$nom_conteneur</b><br />";
-	}else{
+	}
+	else{
 		echo "<td class=cn  valign='top'><center><b>&nbsp;</b><br />";
 	}
 	echo "<a href=\"./add_modif_conteneur.php?mode_navig=retour_saisie&amp;id_conteneur=$id_conteneur&amp;id_retour=$id_conteneur\"  onclick=\"return confirm_abandon (this, change,'$themessage')\">Configuration</a><br /><br /><font color='red'>Aff.&nbsp;bull.</font></center></td>\n";
@@ -1062,16 +1173,34 @@ $i = 0;
 while ($i < $nb_dev) {
 	// En mode saisie, on n'affiche que le devoir à saisir
 	if (($id_devoir==0) or ($id_dev[$i] == $id_devoir)) {
-		if ($coef[$i] != 0) $tmp = " bgcolor = $couleur_calcul_moy "; else $tmp = '';
+		if ($coef[$i] != 0) {$tmp = " bgcolor = $couleur_calcul_moy ";} else {$tmp = '';}
 		//$header_pdf[] = $nom_dev[$i]." (".$display_date[$i].")";
 		$header_pdf[] = traite_accents_utf8($nom_dev[$i]." (".$display_date[$i].")");
 		$w_pdf[] = $w2;
-		if ($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2)
-			echo "<td class=cn".$tmp." valign='top'><center><b><a href=\"./add_modif_dev.php?mode_navig=retour_saisie&amp;id_retour=$id_conteneur&amp;id_devoir=$id_dev[$i]\"  onclick=\"return confirm_abandon (this, change,'$themessage')\">$nom_dev[$i]</a></b><br /><font size=-2>($display_date[$i])</font></center></td>\n";
-		else
-			echo "<td class=cn".$tmp." valign='top'><center><b>".$nom_dev[$i]."</b><br /><font size=-2>($display_date[$i])</font></center></td>\n";
+		if ($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2) {
+			echo "<td class=cn".$tmp." valign='top'><center><b><a href=\"./add_modif_dev.php?mode_navig=retour_saisie&amp;id_retour=$id_conteneur&amp;id_devoir=$id_dev[$i]\"  onclick=\"return confirm_abandon (this, change,'$themessage')\">$nom_dev[$i]</a></b><br /><font size=-2>($display_date[$i])</font>\n";
+			if($display_parents[$i]!=0) {
+				echo " <img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relevé de notes' alt='Evaluation visible sur le relevé de notes' />\n";
+			}
+			else {
+				echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes' alt='Evaluation non visible sur le relevé de notes' />\n";
+			}
+			echo "</center></td>\n";
+		}
+		else {
+			echo "<td class=cn".$tmp." valign='top'><center><b>".$nom_dev[$i]."</b><br /><font size=-2>($display_date[$i])</font>\n";
+			if($display_parents[$i]!=0) {
+				echo " <img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relevé de notes' alt='Evaluation visible sur le relevé de notes' />\n";
+			}
+			else {
+				echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes' alt='Evaluation non visible sur le relevé de notes' />\n";
+			}
+			echo "</center></td>\n";
+		}
+
 		if ((($nocomment[$i]!='yes') and ($_SESSION['affiche_comment'] == 'yes')) or ($id_dev[$i] == $id_devoir)) {
-			echo "<td class=cn  valign='top'><center>Commentaire&nbsp;*</center></td>\n";
+			echo "<td class=cn  valign='top'><center>Commentaire&nbsp;*\n";
+			echo "</center></td>\n";
 			$header_pdf[] = "Commentaire";
 			//$w_pdf[] = $w2;
 			//if ($multiclasses) $w_pdf[] = $w2;
@@ -1360,6 +1489,9 @@ if(($id_devoir>0)||($nb_sous_cont==0)) {
 }
 //========================
 
+// Pour permettre d'afficher moyenne, médiane, quartiles,... en mode Visualisation du carnet de notes
+$chaine_input_moy="";
+
 //
 // Affichage des lignes "elèves"
 //
@@ -1380,12 +1512,32 @@ while($i < $nombre_lignes) {
 	echo "<tr class='lig$alt'>\n";
 	if ($eleve_classe[$i] != $prev_classe && $prev_classe != null && $order_by == "classe") {
 		//echo "<td class=cn style='border-top: 2px solid blue;'>$eleve_nom[$i] $eleve_prenom[$i]</td>";
-		echo "<td class=cn style='border-top: 2px solid blue; text-align:left;'>$eleve_nom[$i] $eleve_prenom[$i]</td>";
+		echo "<td class=cn style='border-top: 2px solid blue; text-align:left;'>\n";
+
+		//echo "<div style='float:right; width:16;'><a href='javascript:affiche_div_photo();'><img src='../images/icons/buddy.png' width='16' height='16' alt='Afficher la photo élève' title='Afficher la photo élève' /></a></div>\n";
+
+		echo "$eleve_nom[$i] $eleve_prenom[$i]\n";
+		echo "</td>";
 		if ($multiclasses) echo "<td style='border-top: 2px solid blue;'>$eleve_classe[$i]</td>";
 		echo "\n";
 	} else {
 		//echo "<td class=cn>$eleve_nom[$i] $eleve_prenom[$i]</td>";
-		echo "<td class=cn style='text-align:left;'>$eleve_nom[$i] $eleve_prenom[$i]</td>";
+		echo "<td class=cn style='text-align:left;'>\n";
+
+		if($id_devoir!=0) {
+			echo "<div style='float:right; width:16;'><a href=\"javascript:";
+			if(isset($indice_ele_saisie[$i])) {
+				echo "if(document.getElementById('n'+".$indice_ele_saisie[$i].")) {document.getElementById('n'+".$indice_ele_saisie[$i].").focus()};";
+				echo "affiche_div_photo();";
+			}
+			else {
+				echo "affiche_div_photo();";
+			}
+			echo "\"><img src='../images/icons/buddy.png' width='16' height='16' alt='Afficher la photo élève' title='Afficher la photo élève' /></a></div>\n";
+		}
+
+		echo "$eleve_nom[$i] $eleve_prenom[$i]\n";
+		echo "</td>";
 		if ($multiclasses) echo "<td>$eleve_classe[$i]</td>";
 		echo "\n";
 	}
@@ -1510,12 +1662,18 @@ while($i < $nombre_lignes) {
 		}
 		// ===================================
 		echo "<td class='cn' bgcolor='$couleur_moy_cont'><center><b>$moy</b></center></td>\n";
+		if($moy=='&nbsp;') {
+			$chaine_input_moy.="<input type='hidden' name='n$i' id='n$i' value='' />\n";
+		}
+		else {
+			$chaine_input_moy.="<input type='hidden' name='n$i' id='n$i' value='$moy' />\n";
+		}
 	}
 	echo "</tr>\n";
 
 	$i++;
 }
-
+$nombre_lignes=$i;
 
 //=========================
 // AJOUT: boireaus 20080607
@@ -1670,21 +1828,29 @@ echo "</tr></table>\n";
 
 //===================================
 if((isset($id_devoir))&&($id_devoir!=0)) {
-	echo "<div style='position: fixed; top: 220px; right: 200px; text-align:center;'>\n";
-		echo "<div id='div_tableau_stat_et_photo'>\n";
-			echo "<a href=\"#\" onclick=\"document.getElementById('div_tableau_stat_et_photo').style.display='none';return false;\">";
-			echo "<img src='../images/icons/close16.png' width='16' height='16' alt='Cacher le tableau et/ou la photo' title='Cacher le tableau et/ou la photo' />\n";
-			echo "</a>\n";
-			//javascript_tab_stat('tab_stat_',$nombre_lignes);
-			javascript_tab_stat('tab_stat_',$num_id);
-
-			echo "<br />\n<div id='div_photo_eleve'></div>\n";
+	echo "<div id='div_q_p' style='position: fixed; top: 220px; right: 200px; text-align:center;'>\n";
+		echo "<div id='div_quartiles' style='text-align:center; display:none;'>\n";
+		//javascript_tab_stat('tab_stat_',$nombre_lignes);
+		javascript_tab_stat('tab_stat_',$num_id);
 		echo "</div>\n";
+
+		echo "<br />\n";
+
+		echo "<div id='div_photo_eleve' style='text-align:center; display:none;'></div>\n";
 	echo "</div>\n";
 
 	echo "<script type='text/javascript'>
+	function affiche_div_photo() {
+		if(document.getElementById('div_photo_eleve').style.display=='none') {
+			document.getElementById('div_photo_eleve').style.display='';
+		}
+		else {
+			document.getElementById('div_photo_eleve').style.display='none';
+		}
+	}
+
 	function affiche_photo(photo,nom_prenom) {
-		document.getElementById('div_photo_eleve').innerHTML='<img src=\"../photos/eleves/'+photo+'\" width=\"150\" alt=\"Photo\" /><br />'+nom_prenom;
+ 		document.getElementById('div_photo_eleve').innerHTML='<img src=\"'+photo+'\" width=\"150\" alt=\"Photo\" /><br />'+nom_prenom;
 	}
 </script>\n";
 }
@@ -1709,6 +1875,28 @@ if ($id_devoir) echo "<input type='hidden' name='is_posted' value=\"yes\" />\n";
 <?php if ($id_devoir != 0) echo "<br /><center><div id=\"fixe\"><input type='submit' value='Enregistrer' /></div></center>\n"; ?>
 </form>
 <?php
+
+//===================================
+
+// Affichage des quartiles flottants
+
+//echo "\$id_devoir=$id_devoir<br />";
+//if((isset($id_devoir))&&($id_devoir==0)) {
+//if((!isset($id_devoir))||($id_devoir=='')) {
+if((!isset($id_devoir))||($id_devoir=='')||($id_devoir=='0')) {
+	echo "<form action='".$_SERVER['PHP_SELF']."' method='post' name='form_calcul_mediane'>\n";
+	echo $chaine_input_moy;
+	echo "</form>\n";
+
+	//echo "<div id='div_quartiles' style='position: fixed; top: 220px; right: 200px; text-align:center;'>\n";
+	echo "<div id='div_q_p' style='position: fixed; top: 220px; right: 200px; text-align:center;'>\n";
+		echo "<div id='div_quartiles' style='text-align:center; display:none;'>\n";
+		javascript_tab_stat('tab_stat_',$nombre_lignes);
+		echo "</div>\n";
+	echo "</div>\n";
+}
+//===================================
+
 if ($id_devoir) {
 	echo "<fieldset style=\"padding-top: 8px; padding-bottom: 8px;  margin-left: 8px; margin-right: 100px;\">\n";
 	echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post>\n";
@@ -1763,10 +1951,63 @@ if ($id_devoir) {
 		//-->
 		</script>\n";
 	}
+	// Ajout delineau -> fonctionnalité de copier/coller d'appréciations
+  if (isset($_POST['appreciations'])) {
+  	echo "<script type=\"text/javascript\" language=\"javascript\">
+  	<!--
+  	alert(\"Attention, les appréciations importées ne sont pas encore enregistrées dans la base GEPI. Vous devez confirmer l'importation (bouton 'Enregistrer') !\");
+  	//-->
+  	</script>\n";
+  }
+	// Fin ajout delineau -> fonctionnalité de copier/coller d'appréciations
+
 	//=======================================================
 
 }
 
+// Ajout delineau -> fonctionnalité de copier/coller d'appréciations
+if ($id_devoir) {
+	echo "<fieldset style=\"padding-top: 8px; padding-bottom: 8px;  margin-left: 8px; margin-right: 100px;\">\n";
+	echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post>\n";
+	echo "<h3 class='gepi'>Importation directe des appréciations par copier/coller à partir d'un tableur</h3>\n";
+	echo "<table summary=\"Tableau d'import\"><tr>\n";
+	echo "<td>De la ligne : ";
+		echo "<SELECT name='debut_import' size='1'>\n";
+	$k = 1;
+	while ($k < $current_displayed_line+1) {
+		echo "<option value='$k'>$k</option>\n";
+		$k++;
+	}
+	echo "</select>\n";
+
+	echo "<br /> à la ligne : \n";
+	echo "<SELECT name='fin_import' size='1'>\n";
+	$k = 1;
+	while ($k < $current_displayed_line+1) {
+		echo "<option value='$k'";
+		if ($k == $current_displayed_line) echo " SELECTED ";
+		echo ">$k</option>\n";
+		$k++;
+	}
+	echo "</select>\n";
+	echo "</td><td>\n";
+	echo "Coller ci-dessous les données à importer : <br />\n";
+	if (isset($_POST['appreciations'])) $appreciations = $_POST['appreciations']; $appreciations='';
+	echo "<textarea name='appreciations' rows='3' cols='40' class='wrap'>$appreciations</textarea>\n";
+	echo "</td></tr></table>\n";
+	echo "<input type='hidden' name='id_conteneur' value='$id_conteneur' />\n";
+	echo "<input type='hidden' name='id_devoir' value='$id_devoir' />\n";
+	echo "<input type='hidden' name='order_by' value='$order_by' />\n";
+	echo "<center><input type='submit' value='Importer'  onclick=\"return confirm_abandon (this, change, '$themessage')\" /></center>\n";
+	echo "<p><b>Remarque importante :</b> l'importation ne prend en compte que les élèves dont le nom est affiché ci-dessus !<br />Soyez donc vigilant à ne coller que les appréciations de ces élèves, dans le bon ordre.</p>\n";
+	echo "</form></fieldset>\n";
+}
+// Fin ajout delineau -> fonctionnalité de copier/coller d'appréciations
+
+// Pour qu'un professeur puisse avoir une préférence d'affichage par défaut ou non des quartiles:
+$aff_quartiles_par_defaut=getPref($_SESSION['login'],'aff_quartiles_cn',"n");
+$aff_photo_cn_par_defaut=getPref($_SESSION['login'],'aff_photo_cn',"n");
+//echo $aff_quartiles_par_defaut."<br />";
 ?>
 <br />
 * En conformité avec la CNIL, le professeur s'engage à ne faire figurer dans le carnet de notes que des notes et commentaires portés à la connaissance de l'élève (note et commentaire portés sur la copie, ...).
@@ -1784,5 +2025,21 @@ if(document.getElementById('n10')){
 	document.getElementById('n10').focus();
 }
 
+function affichage_quartiles() {
+	if(document.getElementById('div_quartiles').style.display=='none') {
+		document.getElementById('div_quartiles').style.display='';
+	}
+	else {
+		document.getElementById('div_quartiles').style.display='none';
+	}
+}
+<?php
+if($aff_quartiles_par_defaut=='y') {
+	echo "affichage_quartiles();\n";
+}
+if($aff_photo_cn_par_defaut=='y') {
+	echo "affiche_div_photo();\n";
+}
+?>
 </script>
 <?php require("../lib/footer.inc.php");?>

@@ -1,18 +1,17 @@
 <?php
 
-require 'gepi/om/BaseGroupe.php';
 
 
 /**
  * Skeleton subclass for representing a row from the 'groupes' table.
  *
- * Groupe d'eleves permettant d'y affecter des matieres et des professeurs
+ * Groupe d'eleves permettant d'y affecter une matiere et un professeurs
  *
  * You should add additional methods to this class to meet the
  * application requirements.  This class will only be generated as
  * long as it does not already exist in the output directory.
  *
- * @package    gepi
+ * @package    propel.generator.gepi
  */
 class Groupe extends BaseGroupe {
 
@@ -28,16 +27,11 @@ class Groupe extends BaseGroupe {
 	 */
 	protected $nameAvecClasses;
 
+
 	/**
-	 * Initializes internal state of Groupe object.
-	 * @see        parent::__construct()
+	 * @var        array Classe[] Collection to store aggregation of Classes objects.
 	 */
-	public function __construct()
-	{
-		// Make sure that parent constructor is always invoked, since that
-		// is where any default values for this object are set.
-		parent::__construct();
-	}
+	protected $collClasses;
 
 	/**
 	 *
@@ -45,15 +39,75 @@ class Groupe extends BaseGroupe {
 	 * Manually added for N:M relationship
 	 *
 	 * @param      PropelPDO $con (optional) The PropelPDO connection to use.
-	 * @return     array Classes[]
+	 * @return     PropelObjectCollection Classes[]
 	 *
 	 */
 	public function getClasses($con = null) {
-		$classes = array();
-		foreach($this->getJGroupesClassessJoinClasse($con) as $ref) {
-			$classes[] = $ref->getClasse();
+		if(null === $this->collClasses) {
+			if ($this->isNew() && null === $this->collClasses) {
+				// return empty collection
+				$this->initClasses();
+			} else {
+				$collClasses = new PropelObjectCollection();
+				$collClasses->setModel('Classe');
+				if ($this->collJGroupesClassess !== null) {
+				    $collJGroupesClasses = $this->collJGroupesClassess;
+				} else {
+				    $collJGroupesClasses = $this->getJGroupesClassessJoinClasse($con);
+				}
+				foreach($collJGroupesClasses as $ref) {
+				    if ($ref != null) {
+					$collClasses->append($ref->getClasse());
+				    }
+				}
+				$this->collClasses = $collClasses;
+			}
 		}
-		return $classes;
+		return $this->collClasses;
+	}
+
+	/**
+	 * Initializes the collClasses collection.
+	 *
+	 * @param      integer $periode numero de la periode ou objet periodeNote
+	 * @return     void
+	 */
+	public function initClasses()
+	{
+		$this->collClasses = new PropelObjectCollection();
+		$this->collClasses->setModel('Classe');
+	}
+
+	/**
+	 * Clears out the collClasses collection
+	 *
+	 * This does not modify the database; however, it will remove any associated objects, causing
+	 * them to be refetched by subsequent calls to accessor method.
+	 *
+	 * @return     void
+	 */
+	public function clearClasses()
+	{
+		$this->collClasses = null; // important to set this to NULL since that means it is uninitialized
+	}
+
+	/**
+	 * Reloads this object from datastore based on primary key and (optionally) resets all associated objects.
+	 *
+	 * This will only work if the object has been saved and has a valid primary key set.
+	 *
+	 * @param      boolean $deep (optional) Whether to also de-associated any related objects.
+	 * @param      PropelPDO $con (optional) The PropelPDO connection to use.
+	 * @return     void
+	 * @throws     PropelException - if this object is deleted, unsaved or doesn't have pk match in db
+	 */
+	public function reload($deep = false, PropelPDO $con = null)
+	{
+	    parent::reload($deep,$con);
+	    if ($deep) {  // also de-associate any related objects?
+		$this->collClasses = null;
+		$this->clearJGroupesClassess();	
+	    }
 	}
 
 	/**
@@ -67,7 +121,7 @@ class Groupe extends BaseGroupe {
 			$str = $this->getDescription();
 			$str .= "&nbsp;(";
 			foreach ($this->getClasses() as $classe) {
-				$str .= $classe->getClasse() . ",&nbsp;";
+				$str .= $classe->getNom() . ",&nbsp;";
 			}
 			$str = substr($str, 0, -7);
 			$str.= ")";
@@ -87,7 +141,7 @@ class Groupe extends BaseGroupe {
 			$str = $this->getName();
 			$str .= "&nbsp;-&nbsp;(";
 			foreach ($this->getClasses() as $classe) {
-				$str .= $classe->getClasse() . ",&nbsp;";
+				$str .= $classe->getNom() . ",&nbsp;";
 			}
 			$str = substr($str, 0, -7);
 			$str.= ")";
@@ -124,6 +178,7 @@ class Groupe extends BaseGroupe {
 	public function clearAllReferences($deep = false) {
 		parent::clearAllReferences($deep);
 		$this->clearJGroupesClassess();
+		$this->collClasses = null;
 	}
 
 	/**
@@ -158,17 +213,23 @@ class Groupe extends BaseGroupe {
 	 * Manually added for N:M relationship
 	 *
 	 * @periode integer numero de la periode
-	 * @return     array Eleves[]
+	 * @return     PropelObjectCollection Eleves[]
 	 *
 	 */
-	public function getEleves($periode) {
-		$eleves = array();
-		$criteria = new Criteria();
-		$criteria->add(JEleveGroupePeer::PERIODE,$periode);
-		foreach($this->getJEleveGroupesJoinEleve($criteria) as $ref) {
-			$eleves[] = $ref->getEleve();
+	public function getEleves($periode = NULL) {
+		if ($periode == NULL) {
+		    if ($this->getPeriodeNoteOuverte() != null) {
+			$periode = $this->getPeriodeNoteOuverte()->getNumPeriode();
+		    }
 		}
-		return $eleves;
+		$query = EleveQuery::create();
+		if ($periode != NULL) {
+		    $query->useJEleveGroupeQuery()->filterByGroupe($this)->filterByPeriode($periode)->endUse();
+		} else {
+		    $query->useJEleveGroupeQuery()->filterByGroupe($this)->endUse();
+		}
+		$query->orderByNom()->distinct();
+		return $query->find();
 	}
 
 	/**
@@ -177,15 +238,17 @@ class Groupe extends BaseGroupe {
 	 * Manually added for N:M relationship
 	 *
 	 * @periode integer numero de la periode
-	 * @return     array Eleves[]
+	 * @return     PropelObjectCollection UtilisateurProfessionel[]
 	 *
 	 */
 	public function getProfesseurs() {
-		$profs = array();
+		$profs = new PropelObjectCollection();
 		$criteria = new Criteria();
 		$criteria->add(JGroupesProfesseursPeer::ID_GROUPE,$this->getId());
 		foreach($this->getJGroupesProfesseurssJoinUtilisateurProfessionnel($criteria) as $ref) {
-			$profs[] = $ref->getUtilisateurProfessionnel();
+		    if ($ref != null) {
+			$profs->append($ref->getUtilisateurProfessionnel());
+		    }
 		}
 		return $profs;
 	}
@@ -204,14 +267,22 @@ class Groupe extends BaseGroupe {
 		$criteria = new Criteria();
 		$criteria->add(JGroupesClassesPeer::ID_CLASSE,$id_classe);
 		$g = $this->getJGroupesClassess($criteria);
-        return !empty($g) > 0 ? $g[0]->getValeurEcts() : '';
+		if ($g->isEmpty()) {
+		    return null;
+		} else {
+		    return $g->getFirst()->getValeurEcts();
+		}
 	}
 
     public function allowsEctsCredits($id_classe) {
-        $c = new Criteria();
-        $c->add(JGroupesClassesPeer::ID_CLASSE,$id_classe);
+		$c = new Criteria();
+		$c->add(JGroupesClassesPeer::ID_CLASSE,$id_classe);
 		$g = $this->getJGroupesClassess($c);
-        return !empty($g) > 0 ? $g[0]->getSaisieEcts() : false;
+		if ($g->isEmpty()) {
+		    return false;
+		} else {
+		    return $g->getFirst()->getSaisieEcts();
+		}
     }
 
 	public function getCategorieMatiere($id_classe) {
@@ -219,7 +290,11 @@ class Groupe extends BaseGroupe {
 		$criteria = new Criteria();
 		$criteria->add(JGroupesClassesPeer::ID_CLASSE,$id_classe);
 		$g = $this->getJGroupesClassess($criteria);
-        return !empty($g) ? $g[0]->getCategorieMatiere() : false;
+		if ($g->isEmpty()) {
+		    return false;
+		} else {
+		    return $g->getFirst()->getCategorieMatiere();
+		}
 	}
 
 	/**
@@ -240,6 +315,64 @@ class Groupe extends BaseGroupe {
 		$jEleveGroupe->setPeriode($periode);
 		$this->addJEleveGroupe($jEleveGroupe);
 		$jEleveGroupe->save();
+		$eleve->clearPeriodeNotes();
 	}
 
+	/**
+	 *
+	 * Retourne tous les emplacements de cours pour la periode précisée du calendrier.
+	 * On recupere aussi les emplacements dont la periode n'est pas definie ou vaut 0.
+	 *
+	 * @return PropelObjectCollection EdtEmplacementCours une collection d'emplacement de cours ordonnée chronologiquement
+	 */
+	public function getEdtEmplacementCourssPeriodeCalendrierActuelle($v = 'now'){
+	    $query = EdtEmplacementCoursQuery::create()->filterByGroupe($this)
+		    ->filterByIdCalendrier(0)
+		    ->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, NULL);
+
+	    if ($v instanceof EdtCalendrierPeriode) {
+		$query->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, $v->getIdCalendrier());
+	    } else {
+		$periodeCalendrier = EdtCalendrierPeriodePeer::retrieveEdtCalendrierPeriodeActuelle($v);
+		if ($periodeCalendrier != null) {
+		       $query->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, $periodeCalendrier->getIdCalendrier());
+		}
+	    }
+
+	    $edtCoursCol = $query->find();
+	    require_once("helpers/EdtEmplacementCoursHelper.php");
+	    EdtEmplacementCoursHelper::orderChronologically($edtCoursCol);
+
+	    return $edtCoursCol;
+	}
+
+	/**
+	 *
+	 * Retourne l'emplacement de cours de l'heure temps reel. retourne null si pas pas de cours actuel
+	 *
+	 * @param      mixed $v string, integer (timestamp), or DateTime value.  Empty string will
+	 *						be treated as NULL for temporal objects.
+	 * @return EdtEmplacementCours l'emplacement de cours actuel ou null si pas de cours actuellement
+	 */
+	public function getEdtEmplacementCours($v = 'now'){
+
+	    $edtCoursCol = $this->getEdtEmplacementCourssPeriodeCalendrierActuelle($v);
+
+	    require_once("helpers/EdtEmplacementCoursHelper.php");
+	    return EdtEmplacementCoursHelper::getEdtEmplacementCoursActuel($edtCoursCol, $v);
+	}
+
+ 	/**
+	 * Retourne la periode de note actuelle pour une classe donnee.
+	 *
+	 * @return     PeriodeNote $periode la periode actuellement ouverte
+	 */
+	public function getPeriodeNoteOuverte() {
+	    $classes = $this->getClasses();
+	    if ($classes->isEmpty()) {
+		return null;
+	    } else {
+		return $classes->getFirst()->getPeriodeNoteOuverte();
+	    }
+	}
 } // Groupe

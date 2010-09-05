@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: share.inc.php 4405 2010-05-10 06:29:45Z crob $
+ * $Id: share.inc.php 5101 2010-08-23 16:48:05Z regis $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
@@ -75,7 +75,7 @@ function test_unique_login($s) {
  */
 function test_unique_e_login($s, $indice) {
     //  $s
-    // 
+    //
 /*    $test1 = mysql_num_rows(mysql_query("SELECT login FROM a1_eleves WHERE (login='$s')"));
     $test2 = mysql_num_rows(mysql_query("SELECT login FROM a2_eleves WHERE (login='$s')"));
     $test3 = mysql_num_rows(mysql_query("SELECT login FROM a3_eleves WHERE (login='$s')"));
@@ -528,8 +528,8 @@ function genDateSelector($prefix, $day, $month, $year, $option)
     if($year  == 0) $year = date("Y");
 
 	// correction w3c : SELECT NAME -> select name + label + <span>
-	 echo "\n<label for=\"jour\"><span style='display:none;'>Jour</span></label>\n";
-    echo "<select id=\"jour\" name=\"${prefix}day\">\n";
+	 echo "\n<label for=\"${prefix}jour\"><span style='display:none;'>Jour</span></label>\n";
+    echo "<select id=\"${prefix}jour\" name=\"${prefix}day\">\n";
 
 	// correction w3c : OPTION -> option + =\"selected\
     for($i = 1; $i <= 31; $i++)
@@ -542,8 +542,8 @@ function genDateSelector($prefix, $day, $month, $year, $option)
     echo "</select>\n";
 
 	// correction w3c : SELECT NAME -> select name + label + <span>
-	 echo "\n<label for=\"mois\"><span style='display:none;'>Mois</span></label>\n";
-    echo "<select id=\"mois\" name=\"${prefix}month\">\n";
+	 echo "\n<label for=\"${prefix}mois\"><span style='display:none;'>Mois</span></label>\n";
+    echo "<select id=\"${prefix}mois\" name=\"${prefix}month\">\n";
 
     for($i = 1; $i <= 12; $i++)
     {
@@ -562,8 +562,8 @@ function genDateSelector($prefix, $day, $month, $year, $option)
 
     //echo "<select name=\"${prefix}year\">\n";
 	// correction w3c : SELECT NAME -> select name + label + <span>
-	 echo "\n<label for=\"annee\"><span style='display:none;'>Année</span></label>\n";
-    echo "<select id=\"annee\" name=\"${prefix}year\">\n";
+	 echo "\n<label for=\"${prefix}annee\"><span style='display:none;'>Année</span></label>\n";
+    echo "<select id=\"${prefix}annee\" name=\"${prefix}year\">\n";
 
     $min = strftime("%Y", getSettingValue("begin_bookings"));
     if ($option == "more_years") $min = date("Y") - 5;
@@ -975,6 +975,7 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 	// Cas particulier de la racine
 	//
 	//$message_cont = "Etes-vous sûr de vouloir supprimer le conteneur ci-dessous et les évaluations qu\\'il contient ?";
+	$gepi_denom_boite=getSettingValue("gepi_denom_boite");
 	if(getSettingValue("gepi_denom_boite_genre")=='m'){
 		//$lela="le";$il_ou_elle="il";
 		$message_cont = "Etes-vous sûr de vouloir supprimer le ".getSettingValue("gepi_denom_boite")." ci-dessous ?";
@@ -1022,7 +1023,8 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 					echo " - <a href='saisie_notes.php?id_conteneur=$id_cont&amp;id_devoir=$id_dev'>Saisie</a>";
 
 					//$sql="SELECT 1=1 FROM cn_notes_devoirs WHERE id_devoir='$id_dev' AND statut!='-' AND statut!='v';";
-					$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='-' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
+					//$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='-' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
+					$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
 					$res_eff_dev=mysql_query($sql);
 					$eff_dev=mysql_num_rows($res_eff_dev);
 					echo " <span title=\"Effectif des notes saisies/effectif total de l'enseignement\" style='font-size:small;";
@@ -1031,7 +1033,17 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 					if(isset($eff_groupe)) {echo "/$eff_groupe";}
 					echo ")</span>";
 
-					echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a> - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
+					//echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a> - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
+					echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a>";
+
+					$display_parents=mysql_result($appel_dev, $j, 'display_parents');
+					$coef=mysql_result($appel_dev, $j, 'coef');
+					echo " (<i><span title='Coefficient $coef'>$coef</span> ";
+					if($display_parents==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relevé de notes' alt='Evaluation visible sur le relevé de notes' />";}
+					else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes' alt='Evaluation non visible sur le relevé de notes' />\n";}
+					echo "</i>)";
+
+					echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 					echo "</li>\n";
 					$j++;
 				}
@@ -1053,7 +1065,16 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 				if ($id_cont != $id_parent) {
 					echo "<li>\n";
 					//echo "$nom_conteneur - <a href='saisie_notes.php?id_conteneur=$id_cont'>Visualisation</a> - <a href = 'add_modif_conteneur.php?id_conteneur=$id_cont&amp;mode_navig=retour_index'>Configuration</a> - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
-					echo "$nom_conteneur - <a href='saisie_notes.php?id_conteneur=$id_cont'>Visualisation</a> - <a href = 'add_modif_conteneur.php?id_conteneur=$id_cont&amp;mode_navig=retour_index'>Configuration</a>\n";
+					echo "$nom_conteneur - <a href='saisie_notes.php?id_conteneur=$id_cont'>Visualisation</a>";
+					echo " - <a href = 'add_modif_conteneur.php?id_conteneur=$id_cont&amp;mode_navig=retour_index'>Configuration</a>\n";
+
+					$display_bulletin=mysql_result($appel_conteneurs, $i, 'display_bulletin');
+					$coef=mysql_result($appel_conteneurs, $i, 'coef');
+					echo " (<i><span title='Coefficient $coef'>$coef</span> ";
+					if($display_bulletin==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='$gepi_denom_boite visible sur le bulletin' alt='$gepi_denom_boite visible sur le bulletin' />";}
+					else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='$gepi_denom_boite non visible sur le bulletin' alt='$gepi_denom_boite non visible sur le bulletin' />\n";}
+					echo "</i>)";
+
 					//$appel_dev = mysql_query("select * from cn_devoirs where id_conteneur='$id_cont'");
 					$appel_dev = mysql_query("select * from cn_devoirs where id_conteneur='$id_cont' order by date");
 					$nb_dev  = mysql_num_rows($appel_dev);
@@ -1066,7 +1087,8 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 					//echo "<br />$sql<br />$nb_sous_cont<br />";
 
 					if(($nb_dev==0)&&($nb_sous_cont==0)) {
-						echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
+						//echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
+						echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
 					}
 					else {
 						echo " - <a href = '#' onclick='alert(\"$message_cont_non_vide\")'><font color='gray'>Suppression</font></a>\n";
@@ -1091,7 +1113,17 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 							if(isset($eff_groupe)) {echo "/$eff_groupe";}
 							echo ")</span>";
 
-							echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a> - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
+							//echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a> - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
+							echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a>";
+
+							$display_parents=mysql_result($appel_dev, $j, 'display_parents');
+							$coef=mysql_result($appel_dev, $j, 'coef');
+							echo " (<i><span title='Coefficient $coef'>$coef</span> ";
+							if($display_parents==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relevé de notes' alt='Evaluation visible sur le relevé de notes' />";}
+							else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes' alt='Evaluation non visible sur le relevé de notes' />\n";}
+							echo "</i>)";
+
+							echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 							echo "</li>\n";
 							$j++;
 						}
@@ -1365,6 +1397,10 @@ function affiche_tableau($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bor
     // $col_centre = 1 --> toutes les autres colonnes sont centrées.
     // $col_centre = 0 --> toutes les autres colonnes sont alignées.
     // $couleur_alterne --> les couleurs de fond des lignes sont alternés
+	global $num_debut_colonnes_matieres, $num_debut_lignes_eleves, $vtn_coloriser_resultats, $vtn_borne_couleur, $vtn_couleur_texte, $vtn_couleur_cellule;
+
+	//echo "\$num_debut_colonnes_matieres=$num_debut_colonnes_matieres<br />";
+	//echo "\$coloriser_resultats=$coloriser_resultats<br />";
 
     echo "<table border=\"$bord\" cellspacing=\"0\" width=\"$larg_tab\" cellpadding=\"1\" summary=\"Tableau\">\n";
     echo "<tr>\n";
@@ -1380,21 +1416,51 @@ function affiche_tableau($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bor
     $flag = "1";
     while($i < $nombre_lignes) {
         if ($couleur_alterne) {
-            if ($flag==1) $bg_color = "bgcolor=\"#C0C0C0\""; else $bg_color = "     " ;
+            if ($flag==1) {$bg_color = "bgcolor=\"#C0C0C0\"";} else {$bg_color = "     ";}
         }
 
         echo "<tr>\n";
         $j = 1;
         while($j < $nb_col+1) {
-            if ((($j == 1) and ($col1_centre == 0)) or (($j != 1) and ($col_centre == 0))){
-                echo "<td class='small' ".$bg_color.">{$col[$j][$i]}</td>\n";
+            if ((($j == 1) and ($col1_centre == 0)) or (($j != 1) and ($col_centre == 0))) {
+
+				echo "<td class='small' ".$bg_color;
+				if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
+					if(strlen(my_ereg_replace('[0-9.,]','',$col[$j][$i]))==0) {
+						for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
+							if(my_ereg_replace(',','.',$col[$j][$i])<=my_ereg_replace(',','.',$vtn_borne_couleur[$loop])) {
+								echo " style='";
+								if($vtn_couleur_texte[$loop]!='') {echo "color:$vtn_couleur_texte[$loop]; ";}
+								if($vtn_couleur_cellule[$loop]!='') {echo "background-color:$vtn_couleur_cellule[$loop]; ";}
+								echo "'";
+								break;
+							}
+						}
+					}
+				}
+				echo ">{$col[$j][$i]}</td>\n";
+
             } else {
-                echo "<td align=\"center\" class='small' ".$bg_color.">{$col[$j][$i]}</td>\n";
+				echo "<td align=\"center\" class='small' ".$bg_color;
+				if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
+					if(strlen(my_ereg_replace('[0-9.,]','',$col[$j][$i]))==0) {
+						for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
+							if(my_ereg_replace(',','.',$col[$j][$i])<=my_ereg_replace(',','.',$vtn_borne_couleur[$loop])) {
+								echo " style='";
+								if($vtn_couleur_texte[$loop]!='') {echo "color:$vtn_couleur_texte[$loop]; ";}
+								if($vtn_couleur_cellule[$loop]!='') {echo "background-color:$vtn_couleur_cellule[$loop]; ";}
+								echo "'";
+								break;
+							}
+						}
+					}
+				}
+				echo ">{$col[$j][$i]}</td>\n";
             }
             $j++;
         }
         echo "</tr>\n";
-        if ($flag == "1") $flag = "0"; else $flag = "1";
+        if ($flag == "1") {$flag = "0";} else {$flag = "1";}
         $i++;
     }
     echo "</table>\n";
@@ -1426,29 +1492,122 @@ function dbase_filter($s){
 
 function detect_browser($HTTP_USER_AGENT) {
 	// D'après le fichier db_details_common.php de phpmyadmin
-	if (((function_exists("mb_ereg"))&&(mb_ereg('Opera(/| )([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)))||((function_exists("ereg"))&&(ereg('Opera(/| )([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)))) {
-		$BROWSER_VER = $log_version[2];
-		$BROWSER_AGENT = 'OPERA';
-	} elseif(((function_exists("mb_ereg"))&&(mb_ereg('MSIE ([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)))||((function_exists("ereg"))&&(ereg('MSIE ([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)))) {
-		$BROWSER_VER = $log_version[1];
-		$BROWSER_AGENT = 'Internet Explorer';
-	} elseif(((function_exists("mb_ereg"))&&(mb_ereg('OmniWeb/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)))||((function_exists("ereg"))&&(ereg('OmniWeb/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)))) {
-		$BROWSER_VER = $log_version[1];
-		$BROWSER_AGENT = 'OMNIWEB';
-	} elseif(((function_exists("mb_ereg"))&&(mb_ereg('(Konqueror/)(.*)(;)', $HTTP_USER_AGENT, $log_version)))||((function_exists("ereg"))&&(ereg('(Konqueror/)(.*)(;)', $HTTP_USER_AGENT, $log_version)))) {
-		$BROWSER_VER = $log_version[2];
-		$BROWSER_AGENT = 'KONQUEROR';
-	} elseif(((function_exists("mb_ereg"))&&(mb_ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version))&&(mb_ereg('Safari/([0-9]*)', $HTTP_USER_AGENT, $log_version2)))||((function_exists("ereg"))&&(ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version))&&(ereg('Safari/([0-9]*)', $HTTP_USER_AGENT, $log_version2)))) {
-		$BROWSER_VER = $log_version[1] . '.' . $log_version2[1];
-		$BROWSER_AGENT = 'SAFARI';
-	} elseif(((function_exists("mb_ereg"))&&(mb_ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)))||((function_exists("ereg"))&&(ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)))) {
-		$BROWSER_VER = $log_version[1];
-		$BROWSER_AGENT = 'MOZILLA';
-	} else {
+	/*
+	$f=fopen("/tmp/detect_browser.txt","a+");
+	fwrite($f,date("d/m/Y His").": $HTTP_USER_AGENT\n");
+	fclose($f);
+	*/
+	if(function_exists('preg_match')) {
+		if (preg_match('/Opera(\/| )([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[2];
+			$BROWSER_AGENT = 'OPERA';
+		} elseif(preg_match('/MSIE ([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[1];
+			$BROWSER_AGENT = 'Internet Explorer';
+		} elseif(preg_match('/OmniWeb\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[1];
+			$BROWSER_AGENT = 'OMNIWEB';
+		} elseif(preg_match('/(Konqueror\/)(.*)(;)/', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[2];
+			$BROWSER_AGENT = 'KONQUEROR';
+		/*
+		} elseif((preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version))&&(preg_match('/Chrome\/([0-9.]*)/', $HTTP_USER_AGENT, $log_version2))) {
+		//} elseif(preg_match('/Chrome/', $HTTP_USER_AGENT, $log_version2)) {
+			//$BROWSER_VER = $log_version[1] . '.' . $log_version2[1];
+			$BROWSER_VER = $log_version2[1];
+			$BROWSER_AGENT = 'GoogleChrome';
+		} elseif((preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version))&&(preg_match('/Safari\/([0-9]*)/', $HTTP_USER_AGENT, $log_version2))) {
+			$BROWSER_VER = $log_version[1] . '.' . $log_version2[1];
+			$BROWSER_AGENT = 'SAFARI';
+		} elseif(preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[1];
+			$BROWSER_AGENT = 'MOZILLA';
+		*/
+		} elseif(preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
+			if(preg_match('/Chrome\/([0-9.]*)/', $HTTP_USER_AGENT, $log_version2)) {
+				$BROWSER_VER = $log_version2[1];
+				$BROWSER_AGENT = 'GoogleChrome';
+			} elseif(preg_match('/Safari\/([0-9]*)/', $HTTP_USER_AGENT, $log_version2)) {
+				$BROWSER_VER = $log_version[1] . '.' . $log_version2[1];
+				$BROWSER_AGENT = 'SAFARI';
+			} elseif(preg_match('/Firefox\/([0-9.]*)/', $HTTP_USER_AGENT, $log_version2)) {
+				$BROWSER_VER = $log_version2[1];
+				$BROWSER_AGENT = 'Firefox';
+			} else {
+				$BROWSER_VER = $log_version[1];
+				$BROWSER_AGENT = 'MOZILLA';
+			}
+		} else {
+			$BROWSER_VER = '';
+			$BROWSER_AGENT = $HTTP_USER_AGENT;
+		}
+	}
+	elseif(function_exists('mb_ereg')) {
+		if (mb_ereg('Opera(/| )([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[2];
+			$BROWSER_AGENT = 'OPERA';
+		} elseif(mb_ereg('MSIE ([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[1];
+			$BROWSER_AGENT = 'Internet Explorer';
+		} elseif(mb_ereg('OmniWeb/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[1];
+			$BROWSER_AGENT = 'OMNIWEB';
+		} elseif(mb_ereg('(Konqueror/)(.*)(;)', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[2];
+			$BROWSER_AGENT = 'KONQUEROR';
+		} elseif((mb_ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version))&&(mb_ereg('GoogleChrome/([0-9.]*)', $HTTP_USER_AGENT, $log_version2))) {
+			$BROWSER_VER = $log_version2[1];
+			$BROWSER_AGENT = 'GoogleChrome';
+		} elseif((mb_ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version))&&(mb_ereg('Safari/([0-9]*)', $HTTP_USER_AGENT, $log_version2))) {
+			$BROWSER_VER = $log_version[1] . '.' . $log_version2[1];
+			$BROWSER_AGENT = 'SAFARI';
+		} elseif((mb_ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version))&&(mb_ereg('Firefox/([0-9.]*)', $HTTP_USER_AGENT, $log_version2))) {
+			$BROWSER_VER = $log_version2[1];
+			$BROWSER_AGENT = 'Firefox';
+		} elseif(mb_ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[1];
+			$BROWSER_AGENT = 'MOZILLA';
+		} else {
+			$BROWSER_VER = '';
+			$BROWSER_AGENT = $HTTP_USER_AGENT;
+		}
+	}
+	elseif(function_exists('ereg')) {
+		if (ereg('Opera(/| )([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[2];
+			$BROWSER_AGENT = 'OPERA';
+		} elseif(ereg('MSIE ([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[1];
+			$BROWSER_AGENT = 'Internet Explorer';
+		} elseif(ereg('OmniWeb/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[1];
+			$BROWSER_AGENT = 'OMNIWEB';
+		} elseif(ereg('(Konqueror/)(.*)(;)', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[2];
+			$BROWSER_AGENT = 'KONQUEROR';
+		} elseif((ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version))&&(ereg('GoogleChrome/([0-9.]*)', $HTTP_USER_AGENT, $log_version2))) {
+			$BROWSER_VER = $log_version2[1];
+			$BROWSER_AGENT = 'GoogleChrome';
+		} elseif((ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version))&&(ereg('Safari/([0-9]*)', $HTTP_USER_AGENT, $log_version2))) {
+			$BROWSER_VER = $log_version[1] . '.' . $log_version2[1];
+			$BROWSER_AGENT = 'SAFARI';
+		} elseif(ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version)) {
+			$BROWSER_VER = $log_version[1];
+			$BROWSER_AGENT = 'MOZILLA';
+		} elseif((ereg('Mozilla/([0-9].[0-9]{1,2})', $HTTP_USER_AGENT, $log_version))&&(ereg('Firefox/([0-9.]*)', $HTTP_USER_AGENT, $log_version2))) {
+			$BROWSER_VER = $log_version2[1];
+			$BROWSER_AGENT = 'Firefox';
+		} else {
+			$BROWSER_VER = '';
+			$BROWSER_AGENT = $HTTP_USER_AGENT;
+		}
+	}
+	else {
 		$BROWSER_VER = '';
 		$BROWSER_AGENT = $HTTP_USER_AGENT;
 	}
-		return  $BROWSER_AGENT." - ".$BROWSER_VER;
+	return  $BROWSER_AGENT." - ".$BROWSER_VER;
+	//return  $BROWSER_AGENT." - ".$BROWSER_VER." ($HTTP_USER_AGENT)";
 }
 
 // Retourne la version de Mysql
@@ -1678,9 +1837,47 @@ function make_classes_select_html($link, $current, $year, $month, $day)
 	// correction W3C : onChange = onchange
   $out_html .= "<option value=\"".$link."?year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;id_classe=-1\">(Choisissez une classe)";
   // Ligne suivante corrigée sur suggestion tout à fait pertinente de Stéphane, mail du 1er septembre 06
-  $sql = "select DISTINCT c.id, c.classe from classes c, j_groupes_classes jgc, ct_entry ct WHERE (c.id = jgc.id_classe and jgc.id_groupe = ct.id_groupe) order by classe";
+
+	
+  if (isset($_SESSION['statut']) && ($_SESSION['statut']=='scolarite'
+		  && getSettingValue('GepiAccesCdtScolRestreint')=="yes")){
+  $sql = "SELECT DISTINCT c.id, c.classe
+	FROM classes c, j_groupes_classes jgc, ct_entry ct, j_scol_classes jsc
+	WHERE (c.id = jgc.id_classe
+	  AND jgc.id_groupe = ct.id_groupe
+	  AND jsc.id_classe=jgc.id_classe
+	  AND jsc.login='".$_SESSION ['login']."'
+		)
+	ORDER BY classe ;";
+  
+  } else if (isset($_SESSION['statut']) && ($_SESSION['statut']=='cpe'
+		  && getSettingValue('GepiAccesCdtCpeRestreint')=="yes")){
+
+
+	$sql = "SELECT DISTINCT c.id, c.classe
+	  FROM classes c, j_groupes_classes jgc, ct_entry ct, j_eleves_cpe jec,j_eleves_classes jecl
+	  WHERE (c.id = jgc.id_classe
+	  AND jgc.id_groupe = ct.id_groupe
+	  AND jec.cpe_login = '".$_SESSION ['login']."'
+	  AND jec.e_login = jecl.login
+	  AND jecl.id_classe = jgc.id_classe)
+	  ORDER BY classe ;";
+  }else{
+
+ /* if(getSettingValue('GepiAccesCdtCpeRestreint')!="yes"
+		  || getSettingValue('GepiAccesCdtScolRestreint')!="yes"){*/
+	$sql = "SELECT DISTINCT c.id, c.classe
+	  FROM classes c, j_groupes_classes jgc, ct_entry ct
+	  WHERE (c.id = jgc.id_classe
+	  AND jgc.id_groupe = ct.id_groupe)
+	  ORDER BY classe";
+  }
+
+  //GepiAccesCdtCpeRestreint
 
   $res = sql_query($sql);
+
+  
   if ($res) for ($i = 0; ($row = sql_row($res, $i)); $i++)
   {
     $selected = ($row[0] == $current) ? "selected" : "";
@@ -1720,6 +1917,8 @@ function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day)
 	<select name=\"matiere\" onchange=\"matiere_go()\">\n";
 	*/
   // Pour le multisite, on doit récupérer le RNE de l'établissement
+  $prof="";
+  
   $rne = isset($_GET['rne']) ? $_GET['rne'] : (isset($_POST['rne']) ? $_POST['rne'] : 'aucun');
   $aff_input_rne = $aff_get_rne = NULL;
   if ($rne != 'aucun') {
@@ -1754,7 +1953,7 @@ function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day)
    $test_prof = "SELECT nom, prenom FROM j_groupes_professeurs j, utilisateurs u WHERE (j.id_groupe='".$row[0]."' and u.login=j.login) ORDER BY nom, prenom";
    $res_prof = sql_query($test_prof);
    $chaine = "";
-   for ($k=0;$prof=sql_row($res_prof,$k);$k++) {
+   for ($k=0;$prof==sql_row($res_prof,$k);$k++) {
      if ($k != 0) $chaine .= ", ";
      $chaine .= htmlspecialchars($prof[0])." ".substr(htmlspecialchars($prof[1]),0,1).".";
    }
@@ -2026,7 +2225,7 @@ function tentative_intrusion($_niveau, $_description) {
  * @param array $tab_lien tableau des liens
  * @param integer $nbcol Nombre de colonnes
  */
-function tab_liste($tab_txt,$tab_lien,$nbcol){
+function tab_liste($tab_txt,$tab_lien,$nbcol,$extra_options = null){
 
 	// Nombre d'enregistrements à afficher
 	$nombreligne=count($tab_txt);
@@ -2051,7 +2250,9 @@ function tab_liste($tab_txt,$tab_lien,$nbcol){
 		}
 
 		//echo "<br />\n";
-		echo "<a href='".$tab_lien[$i]."'>".$tab_txt[$i]."</a>";
+		echo "<a href='".$tab_lien[$i]."'";
+    if ($extra_options) echo ' '.$extra_options;
+    echo ">".$tab_txt[$i]."</a>";
 		echo "<br />\n";
 		$i++;
 	}
@@ -2193,7 +2394,7 @@ function check_user_temp_directory(){
 /**
  * Renvoie le nom du répertoire temporaire de l'utilisateur
  *
- * @return string retourne false s'il n'existe pas et le nom du répertoire s'il existe
+ * @return string retourne false s'il n'existe pas et le nom du répertoire s'il existe sans le chemin
  */
 function get_user_temp_directory(){
 	$sql="SELECT temp_dir FROM utilisateurs WHERE login='".$_SESSION['login']."'";
@@ -2202,8 +2403,14 @@ function get_user_temp_directory(){
 		$lig_temp_dir=mysql_fetch_object($res_temp_dir);
 		$dirname=$lig_temp_dir->temp_dir;
 
-		if(($dirname!="")&&(strlen(my_ereg_replace("[A-Za-z0-9_]","",$dirname))==0)) {
-			if(file_exists("../temp/$dirname")){
+		if(($dirname!="")&&(strlen(my_ereg_replace("[A-Za-z0-9_.]","",$dirname))==0)) {
+			if(file_exists("../temp/".$dirname)){
+				return $dirname;
+			}
+			else if(file_exists("../../temp/".$dirname)) {
+				return $dirname;
+			}
+			else if(file_exists("temp/".$dirname)) {
 				return $dirname;
 			}
 			else{
@@ -2355,7 +2562,7 @@ function get_login_eleve($id_eleve){
 	$sql = "SELECT login FROM eleves WHERE id_eleve = '".$id_eleve."'";
 	$query = mysql_query($sql) OR trigger_error('Impossible de récupérer le login de cet élève.', E_USER_ERROR);
 	if ($query) {
-		$retour = mysql_result($query, "login");
+		$retour = mysql_result($query, 0,"login");
 	}else{
 		$retour = 'erreur';
 	}
@@ -2599,9 +2806,12 @@ function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hau
 	global $unite_div_infobulle;
 	global $niveau_arbo;
 	global $pas_de_decalage_infobulle;
+	//global $style_special_infobulle;
+	global $class_special_infobulle;
 
 	//$style_box="color: #000000; border: 1px solid #000000; padding: 0px; position: absolute;";
 	$style_box="color: #000000; border: 1px solid #000000; padding: 0px; position: absolute; z-index:$zindex_infobulle;";
+	//if((isset($style_special_infobulle))&&($style_special_infobulle!='')) {$style_box.=$style_special_infobulle;}
 
 	$style_bar="color: #ffffff; cursor: move; font-weight: bold; padding: 0px;";
 	//$style_close="color: #ffffff; cursor: move; font-weight: bold; float:right; width: 1em;";
@@ -2613,10 +2823,14 @@ function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hau
 
 	// Conteneur:
 	if($bg_texte==''){
-		$div="<div id='$id' class='infobulle_corps' style='$style_box width: ".$largeur.$unite_div_infobulle."; ";
+		$div="<div id='$id' class='infobulle_corps";
+		if((isset($class_special_infobulle))&&($class_special_infobulle!='')) {$div.=" ".$class_special_infobulle;}
+		$div.="' style='$style_box width: ".$largeur.$unite_div_infobulle."; ";
 	}
 	else{
-		$div="<div id='$id' style='$style_box background-color: $bg_texte; width: ".$largeur.$unite_div_infobulle."; ";
+		$div="<div id='$id' ";
+		if((isset($class_special_infobulle))&&($class_special_infobulle!='')) {$div.="class='".$class_special_infobulle."' ";}
+		$div.="style='$style_box background-color: $bg_texte; width: ".$largeur.$unite_div_infobulle."; ";
 	}
 	if($hauteur!=0){
 		$div.="height: ".$hauteur.$unite_div_infobulle."; ";
@@ -2643,13 +2857,19 @@ function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hau
 
 		if($bouton_close=="y"){
 			//$div.="<div style='$style_close'><a href='#' onClick=\"cacher_div('$id');return false;\">X</a></div>\n";
-			$div.="<div style='$style_close'><a href='#' onClick=\"cacher_div('$id');return false;\">";
+			$div.="<div style='$style_close'><a href='#' onclick=\"cacher_div('$id');return false;\">";
 			if(isset($niveau_arbo)&&$niveau_arbo==0){
 				$div.="<img src='./images/icons/close16.png' width='16' height='16' alt='Fermer' />";
 			}
-			else{
+			else if(isset($niveau_arbo)&&$niveau_arbo==1) {
 				$div.="<img src='../images/icons/close16.png' width='16' height='16' alt='Fermer' />";
 			}
+			else if(isset($niveau_arbo)&&$niveau_arbo==2) {
+				$div.="<img src='../../images/icons/close16.png' width='16' height='16' alt='Fermer' />";
+			}
+      else {
+				$div.="<img src='../images/icons/close16.png' width='16' height='16' alt='Fermer' />";
+      }
 			$div.="</a></div>\n";
 		}
 		$div.="<span style='padding-left: 1px;'>\n";
@@ -2698,7 +2918,13 @@ function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hau
 	return $div;
 }
 
-function debug_var(){
+$debug_var_count=array();
+function debug_var() {
+	global $debug_var_count;
+
+	$debug_var_count['POST']=0;
+	$debug_var_count['GET']=0;
+
 	// Fonction destinée à afficher les variables transmises d'une page à l'autre: GET, POST et SESSION
 	echo "<div style='border: 1px solid black; background-color: white; color: black;'>\n";
 
@@ -2735,7 +2961,7 @@ function debug_var(){
 		}
 	}
 </script>\n";
-
+	/*
 	echo "<table summary=\"Tableau de debug\">\n";
 	foreach($_POST as $post => $val){
 		//echo "\$_POST['".$post."']=".$val."<br />\n";
@@ -2756,6 +2982,52 @@ function debug_var(){
 		echo "</td></tr>\n";
 	}
 	echo "</table>\n";
+	*/
+
+	function tab_debug_var($chaine_tab_niv1,$tableau,$pref_chaine,$cpt_debug) {
+		//global $cpt_debug;
+		global $debug_var_count;
+
+		echo " (<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)\n";
+
+		echo "<table id='container_debug_var_$cpt_debug' summary=\"Tableau de debug\">\n";
+		foreach($tableau as $post => $val) {
+			echo "<tr><td valign='top'>".$pref_chaine."['".$post."']=</td><td>".$val;
+
+			if(is_array($tableau[$post])) {
+
+				tab_debug_var($chaine_tab_niv1,$tableau[$post],$pref_chaine.'['.$post.']',$cpt_debug);
+
+				$cpt_debug++;
+			}
+			elseif(isset($debug_var_count[$chaine_tab_niv1])) {
+				$debug_var_count[$chaine_tab_niv1]++;
+			}
+
+			echo "</td></tr>\n";
+		}
+		echo "</table>\n";
+	}
+
+
+	echo "<table summary=\"Tableau de debug\">\n";
+	foreach($_POST as $post => $val) {
+		echo "<tr><td valign='top'>\$_POST['".$post."']=</td><td>".$val;
+
+		if(is_array($_POST[$post])) {
+			tab_debug_var('POST',$_POST[$post],'$_POST['.$post.']',$cpt_debug);
+
+			$cpt_debug++;
+		}
+		else {
+			$debug_var_count['POST']++;
+		}
+
+		echo "</td></tr>\n";
+	}
+	echo "</table>\n";
+
+	echo "<p>Nombre de valeurs en POST: <b>".$debug_var_count['POST']."</b></p>\n";
 	echo "</div>\n";
 	echo "</blockquote>\n";
 
@@ -2774,7 +3046,20 @@ function debug_var(){
 	echo "<table summary=\"Tableau de debug sur GET\">";
 	foreach($_GET as $get => $val){
 		//echo "\$_GET['".$get."']=".$val."<br />\n";
-		echo "<tr><td>\$_GET['".$get."']=</td><td>".$val."</td></tr>\n";
+		//echo "<tr><td>\$_GET['".$get."']=</td><td>".$val."</td></tr>\n";
+
+		echo "<tr><td valign='top'>\$_GET['".$get."']=</td><td>".$val;
+
+		if(is_array($_GET[$get])) {
+			tab_debug_var('GET',$_GET[$get],'$_GET['.$get.']',$cpt_debug);
+
+			$cpt_debug++;
+		}
+		else {
+			$debug_var_count['GET']++;
+		}
+
+		echo "</td></tr>\n";
 	}
 	echo "</table>\n";
 	echo "</div>\n";
@@ -2802,39 +3087,6 @@ function debug_var(){
 	echo "</blockquote>\n";
 
 
-	echo "<p>Variables envoyées en FILES: ";
-	if(count($_FILES)==0) {
-		echo "aucune";
-	}
-	else {
-		echo "(<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
-	}
-	echo "</p>\n";
-	echo "<blockquote>\n";
-	echo "<div id='container_debug_var_$cpt_debug'>\n";
-	$cpt_debug++;
-	echo "<table summary=\"Tableau de debug sur FILES\">";
-	foreach($_FILES as $file => $val){
-		echo "<tr><td valign='top'>\$_FILES['".$file."']=</td><td>".$val;
-
-		if(is_array($_FILES[$file])) {
-			echo " (<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
-			echo "<table id='container_debug_var_$cpt_debug' summary=\"Tableau de debug\">\n";
-			foreach($_FILES[$file] as $key => $value) {
-				echo "<tr><td>\$_FILES['$file'][$key]=</td><td>$value</td></tr>\n";
-			}
-			echo "</table>\n";
-			//echo "<script type='text/javascript'>affiche_debug_var('debug_var_$post',tab_etat_debug_var[$cpt_debug]);</script>\n";
-			$cpt_debug++;
-		}
-
-		echo "</td></tr>\n";
-	}
-	echo "</table>\n";
-	echo "</div>\n";
-	echo "</blockquote>\n";
-
-
 	echo "<p>Variables envoyées en SERVER: ";
 	if(count($_SERVER)==0) {
 		echo "aucune";
@@ -2852,6 +3104,36 @@ function debug_var(){
 		echo "<tr><td>\$_SERVER['".$variable."']=</td><td>".$valeur."</td></tr>\n";
 	}
 	echo "</table>\n";
+	echo "</div>\n";
+	echo "</blockquote>\n";
+
+
+	echo "<p>Variables envoyées en FILES: ";
+	if(count($_FILES)==0) {
+		echo "aucune";
+	}
+	else {
+		echo "(<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
+	}
+	echo "</p>\n";
+	echo "<blockquote>\n";
+	echo "<div id='container_debug_var_$cpt_debug'>\n";
+	$cpt_debug++;
+
+	echo "<table summary=\"Tableau de debug\">\n";
+	foreach($_FILES as $key => $val) {
+		echo "<tr><td valign='top'>\$_FILES['".$key."']=</td><td>".$val;
+
+		if(is_array($_FILES[$key])) {
+			tab_debug_var('FILES',$_FILES[$key],'$_FILES['.$key.']',$cpt_debug);
+
+			$cpt_debug++;
+		}
+
+		echo "</td></tr>\n";
+	}
+	echo "</table>\n";
+
 	echo "</div>\n";
 	echo "</blockquote>\n";
 
@@ -2887,41 +3169,57 @@ function param_edt($statut){
 		$verif = "";
 	}
 	// On vérifie $verif et on renvoie le return
-	if ($verif == "y") {
+	if ($verif == "y" or $verif == "yes") {
 		return "yes";
 	} else {
 		return "no";
 	}
 }
 
-/*
-Renvoie le nom de la photo de l'élève ou du prof
-Renvoie une chaine vide si :
-- le module trombinoscope n'est pas activé
-- ou bien la photo n'existe pas.
-
-$_elenoet_ou_loginc : selon les cas, soir l'elenoet de l'élève ou bien lelogin du professeur
-$repertoire : "eleves" ou "personnels"
-$arbo : niveau d'aborescence (1 ou 2).
+/**
+* Renvoie le nom de la photo de l'élève ou du prof
+ *
+* Renvoie NULL si :
+ *
+* - le module trombinoscope n'est pas activé
+ * 
+* - ou bien la photo n'existe pas.
+*
+*@var $_elenoet_ou_login : selon les cas, soir l'elenoet de l'élève ou bien lelogin du professeur
+*@var $repertoire : "eleves" ou "personnels"
+*@var $arbo : niveau d'aborescence (1 ou 2).
 */
 function nom_photo($_elenoet_ou_login,$repertoire="eleves",$arbo=1) {
 	if ($arbo==2) {$chemin = "../";} else {$chemin = "";}
 	if (($repertoire != "eleves") and ($repertoire != "personnels")) {
-		return "";
+		return NULL;
 		die();
 	}
 	if (getSettingValue("active_module_trombinoscopes")!='y') {
-		return "";
+		return NULL;
 		die();
 	}
+		$photo=NULL;
+
+
+	// En multisite, on ajoute le répertoire RNE
+	if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+		  // On récupère le RNE de l'établissement
+	  $repertoire2=getSettingValue("gepiSchoolRne")."/";
+	}else{
+	  $repertoire2="";
+	}
+
+
 	// Cas des élèves
 	if ($repertoire == "eleves") {
+	  /*
 		// En multisite, le login est préférable à l'ELENOET
 		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 			// On récupère l'INE de cet élève
 			$sql = 'SELECT login FROM eleves WHERE elenoet = "'.$_elenoet_ou_login.'"';
 			$query = mysql_query($sql);
-			$_elenoet_ou_login = mysql_result($query, 'login');
+			$_elenoet_ou_login = mysql_result($query, 0,'login');
 		}
 
 		$photo="";
@@ -2946,18 +3244,65 @@ function nom_photo($_elenoet_ou_login,$repertoire="eleves",$arbo=1) {
 				}
 			}
 		}
+	*/
+	  if($_elenoet_ou_login!='') {
+
+		// on vérifie si la photo existe
+
+		if(file_exists($chemin."../photos/".$repertoire2."eleves/".$_elenoet_ou_login.".jpg")) {
+			$photo=$chemin."../photos/".$repertoire2."eleves/".$_elenoet_ou_login.".jpg";
+		}
+		else if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y')
+		{
+		  // En multisite, on recherche aussi avec les logins
+		  if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+			// On récupère le login de l'élève
+			$sql = 'SELECT login FROM eleves WHERE elenoet = "'.$_elenoet_ou_login.'"';
+			$query = mysql_query($sql);
+			$_elenoet_ou_login = mysql_result($query, 0,'login');
+		  }
+
+		  if(file_exists($chemin."../photos/eleves/$_elenoet_ou_login.jpg")) {
+				$photo=$chemin."../photos/eleves/$_elenoet_ou_login.jpg";
+			}
+			else {
+				if(file_exists($chemin."../photos/eleves/".sprintf("%05d",$_elenoet_ou_login).".jpg")) {
+					$photo=$chemin."../photos/eleves/".sprintf("%05d",$_elenoet_ou_login).".jpg";
+				} else {
+					for($i=0;$i<5;$i++){
+						if(substr($_elenoet_ou_login,$i,1)=="0"){
+							$test_photo=substr($_elenoet_ou_login,$i+1);
+							//if(file_exists($chemin."../photos/eleves/".$test_photo.".jpg")){
+							if(($test_photo!='')&&(file_exists($chemin."../photos/eleves/".$test_photo.".jpg"))) {
+								$photo=$chemin."../photos/eleves/".$test_photo.".jpg";
+								break;
+							}
+						}
+					}
+				}
+			}
+
+		}
+		
+	  }
 	}
 	// Cas des non-élèves
 	else {
+
 		$_elenoet_ou_login = md5(strtolower($_elenoet_ou_login));
-			if(file_exists($chemin."../photos/personnels/$_elenoet_ou_login.jpg")){
-				$photo="$_elenoet_ou_login.jpg";
+			//if(file_exists($chemin."../photos/personnels/$_elenoet_ou_login.jpg")){
+			if(file_exists($chemin."../photos/".$repertoire2."personnels/$_elenoet_ou_login.jpg")){
+				//$photo="$_elenoet_ou_login.jpg";
+				$photo=$chemin."../photos/".$repertoire2."personnels/$_elenoet_ou_login.jpg";
 			} else {
-				$photo = "-";
+				$photo = NULL;
 		}
 	}
 	return $photo;
 }
+
+
+
 
 function insert_confirm_abandon(){
 	global $themessage;
@@ -3000,7 +3345,9 @@ function calc_moy_debug($texte){
 	// Passer à 1 la variable pour générer un fichier de debug...
 	$debug=0;
 	if($debug==1){
-		$fich=fopen("/tmp/calc_moy_debug.txt","a+");
+		$tmp_dir=get_user_temp_directory();
+		if((!$tmp_dir)||(!file_exists("../temp/".$tmp_dir))) {$tmp_dir="/tmp";} else {$tmp_dir="../temp/".$tmp_dir;}
+		$fich=fopen($tmp_dir."/calc_moy_debug.txt","a+");
 		fwrite($fich,$texte);
 		fclose($fich);
 	}
@@ -3021,6 +3368,26 @@ function get_class_from_id($id_classe) {
 }
 /* Outils complémentaires de gestion des AID
 fonction vérifiant les droits d'accès au module selon l'identifiant
+
+$_login :  identifiant de la personne pour laquelle on vérifie les droits
+           si le login n'est pas précisé, on est dans l'interface publique
+
+$aid_id : identifiant de l'AID
+$indice_aid : identifiant de la catégorie d'AID
+
+$champ : si non vide, on vérifie le droit sur ce champ en particulier
+         si $champ='', on vérifie le droit de modifier la fiche projet
+
+Cas particulier : $champ = 'eleves_profs'
+Cette valeur permet de gérer le fait que n'apparaissent pas sur les fiches publiques :
+    # Les elèves responsables du projet,
+    # les professeurs responsables du projet,
+    # les élèves faisant partie du projet.
+
+$mode : utilisé uniquement si $champ est non vide
+* $mode = W -> l'utilisateur a-t-il accès en écriture ?
+* Autres valeurs de W -> l'utilisateur a-t-il accès en lecture ?
+
 */
 function VerifAccesFicheProjet($_login,$aid_id,$indice_aid,$champ,$mode,$annee='') {
  //$annee='' signifie qu'il s'agit de l'année courante
@@ -3226,21 +3593,6 @@ function LibelleChampAid($champ) {
     return $nom;
 }
 
-/* Module Atelier
-fonction qui vérifie si la personne a le droit d'être ici
-*/
-function EstAutoriseAteliers($_login) {
-    if (getSettingValue("active_ateliers")!='y') {
-        return False;
-        die();
-    }
-    $test = sql_query1("SELECT count(nom_champ) FROM ateliers_config WHERE (nom_champ='ateliers_resp' and content='$_login')");
-    if ($test == "0") {
-        return false;
-    } else {
-        return true;
-    }
-}
 /* Gestion des AIDs
 fonction qui calcul le niveau de gestion des AIDs
 0 : aucun droit
@@ -3250,53 +3602,50 @@ fonction qui calcul le niveau de gestion des AIDs
 10 : Peut tout faire
 */
 function NiveauGestionAid($_login,$_indice_aid,$_id_aid="") {
-    if (getSettingValue("active_version152")!="y") {// lorsque le trunk sera officiellement en 1.5.2, on supprimera ce test
-        return 10;
-        die();
-    }
     if ($_SESSION['statut'] == "administrateur") {
         return 10;
         die();
     }
-    // l'id de l'aid n'est pas défini : on regarde si l'utilisateur est gestionnaire d'au moins une aid dans la catégorie
-    if ($_id_aid == "") {
+    if (getSettingValue("active_mod_gest_aid")=="y") {
+      // l'id de l'aid n'est pas défini : on regarde si l'utilisateur est gestionnaire d'au moins une aid dans la catégorie
+      if ($_id_aid == "") {
         $test = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."')");
         if ($test >= 1) {
             return 1;
         } else {
             return 0;
         }
-    } else {
-    // l'id de l'aid est défini : on regarde si l'utilisateur est gestionnaire de cette aid
+      } else {
+      // l'id de l'aid est défini : on regarde si l'utilisateur est gestionnaire de cette aid
         $test = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."' and id_aid = '".$_id_aid."')");
         if ($test == 1) {
             return 1;
         } else {
             return 0;
         }
-    }
+      }
+    } else
+      return 0;
 }
 
 /* Gestion des droits d'accès à confirm_query.php
 */
 function PeutEffectuerActionSuppression($_login,$_action,$_cible1,$_cible2,$_cible3) {
-    if (getSettingValue("active_version152")!="y") {// lorsque le trunk sera officiellement en 1.5.2, on supprimera ce test
-        return TRUE;
-        die();
-    }
     if ($_SESSION['statut'] == "administrateur") {
         return TRUE;
         die();
     }
-    if ($_action=="del_eleve_aid") {
-    // on regarde si l'utilisateur est gestionnaire de l'aid
+    if (getSettingValue("active_mod_gest_aid")=="y") {
+      if ($_action=="del_eleve_aid") {
+      // on regarde si l'utilisateur est gestionnaire de l'aid
         $test = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_cible3."' and id_aid = '".$_cible2."')");
         if ($test == 1) {
             return TRUE;
         } else {
             return FALSE;
         }
-    }
+      }
+    } else
     return FALSE;
 }
 
@@ -3382,6 +3731,79 @@ function mail_connexion() {
 		}
 	}
 }
+
+
+
+function mail_alerte($sujet,$texte,$informer_admin='n') {
+	global $active_hostbyaddr;
+
+	$user_login = $_SESSION['login'];
+
+	$sql="SELECT nom,prenom,email FROM utilisateurs WHERE login='$user_login';";
+	$res_user=mysql_query($sql);
+	if (mysql_num_rows($res_user)>0) {
+		$lig_user=mysql_fetch_object($res_user);
+
+		$adresse_ip = $_SERVER['REMOTE_ADDR'];
+		//$date = strftime("%Y-%m-%d %H:%M:%S");
+		$date = ucfirst(strftime("%A %d-%m-%Y à %H:%M:%S"));
+		//$url = parse_url($_SERVER['REQUEST_URI']);
+
+		if (!(isset($active_hostbyaddr)) or ($active_hostbyaddr == "all")) {
+			$result_hostbyaddr = " - ".@gethostbyaddr($adresse_ip);
+		}
+		else if($active_hostbyaddr == "no_local") {
+			if ((substr($adresse_ip,0,3) == 127) or (substr($adresse_ip,0,3) == 10.) or (substr($adresse_ip,0,7) == 192.168)) {
+				$result_hostbyaddr = "";
+			}
+			else{
+				$tabip=explode(".",$adresse_ip);
+				if(($tabip[0]==172)&&($tabip[1]>=16)&&($tabip[1]<=31)) {
+					$result_hostbyaddr = "";
+				}
+				else{
+					$result_hostbyaddr = " - ".@gethostbyaddr($adresse_ip);
+				}
+			}
+		}
+		else{
+			$result_hostbyaddr = "";
+		}
+
+
+		//$message = "** Mail connexion Gepi **\n\n";
+		$message=$texte;
+		$message .= "\n";
+		$message .= "Vous (*) vous êtes connecté à GEPI :\n\n";
+		$message .= "Identité                : ".strtoupper($lig_user->nom)." ".ucfirst(strtolower($lig_user->prenom))."\n";
+		$message .= "Login                   : ".$user_login."\n";
+		$message .= "Date                    : ".$date."\n";
+		$message .= "Origine de la connexion : ".$adresse_ip."\n";
+		if($result_hostbyaddr!="") {
+			$message .= "Adresse IP résolue en   : ".$result_hostbyaddr."\n";
+		}
+		$message .= "\n";
+		$message .= "Ce message, s'il vous parvient alors que vous ne vous êtes pas connecté à la date/heure indiquée, est susceptible d'indiquer que votre identité a pu être usurpée.\nVous devriez contrôler vos données, changer votre mot de passe et avertir l'administrateur (et/ou l'administration de l'établissement) pour qu'il puisse prendre les mesures appropriées.\n";
+		$message .= "\n";
+		$message .= "(*) Vous ou une personne tentant d'usurper votre identité.\n";
+
+		$ajout="";
+		if(($informer_admin!='n')&&(getSettingValue("gepiAdminAdress")!='')) {
+			$ajout="Bcc: ".getSettingValue("gepiAdminAdress")."\r\n";
+		}
+
+		// On envoie le mail
+		// getSettingValue("gepiAdminAdress")
+		$envoi = mail($lig_user->email,
+			"GEPI : $sujet $date",
+			$message,
+		"From: Mail automatique Gepi\r\n".$ajout."X-Mailer: PHP/" . phpversion());
+		//fdebug_mail_connexion("\$message=$message\n====================\n");
+
+	}
+}
+
+
 
 function texte_html_ou_pas($texte){
 	// Si le texte contient des < et >, on affiche tel quel
@@ -3494,17 +3916,23 @@ function traite_accents_utf8($chaine) {
 	}
 }
 
-function nf($nombre) {
+function nf($nombre,$nb_chiffre_apres_virgule=1) {
 	// Formatage des nombres
 	// Precision:
-	$precision=0.1;
-	$nb_chiffre_apres_virgule=1;
+	// Pour être sûr d'avoir un entier
+	$nb_chiffre_apres_virgule=floor($nb_chiffre_apres_virgule);
+	if($nb_chiffre_apres_virgule<1) {
+		$precision=0.1;
+		$nb_chiffre_apres_virgule=0;
+	}
+	else {
+		$precision=pow(10,-1*$nb_chiffre_apres_virgule);
+	}
 
 	if(($nombre=='')||($nombre=='-')) {
 		$valeur=$nombre;
 	}
 	else {
-		// Pour le number_format(), il faut que le séparateur partie_entière/partie_decimale soit le . et non la virgule.
 		$nombre=strtr($nombre,",",".");
 		$valeur=number_format(round($nombre/$precision)*$precision, $nb_chiffre_apres_virgule, ',', '');
 		//$valeur=strtr($valeur,".",",");
@@ -3514,6 +3942,574 @@ function nf($nombre) {
 
 
 function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align='C',$align='L',$increment=0.3,$r_interligne=0.3) {
+	global $pdf;
+
+	// $increment:     nombre dont on réduit la police à chaque essai
+	// $r_interligne:  proportion de la taille de police pour les interlignes
+	// $bordure:       LRBT
+	// $v_align:       C(enter) ou T(op)
+
+	// En cas de pb avec cell_ajustee1(), effectuer:
+	// INSERT INTO setting SET name='cell_ajustee_old_way', value='y';
+	// ou
+	// UPDATE setting SET value='y' WHERE name='cell_ajustee_old_way';
+	if(getSettingValue('cell_ajustee_old_way')=='y') {
+		// On vire les balises en utilisant l'ancienne fonction qui ne gérait pas les balises
+		$texte=preg_replace('/<(.*)>/U','',$texte);
+		cell_ajustee0($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align,$align,$increment,$r_interligne);
+	}
+	else {
+		cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align,$align,$increment,$r_interligne);
+	}
+}
+
+function my_echo_debug($texte) {
+	global $mode_my_echo_debug;
+	global $my_echo_debug;
+	global $niveau_arbo;
+
+	if($my_echo_debug==1) {
+		if($mode_my_echo_debug!='fichier') {
+			echo $texte;
+		}
+		else {
+			$tempdir=get_user_temp_directory();
+			if (isset($niveau_arbo) and ($niveau_arbo == "0")) {
+				$points=".";
+			}
+			elseif (isset($niveau_arbo) and ($niveau_arbo == "2")) {
+				$points="../..";
+			}
+			else {
+				$points="..";
+			}
+			$dossier=$points."/temp/".$tempdir;
+
+			// Pour simplifier en debug sur une machine perso sous *nix:
+			$dossier="/tmp";
+
+			$fichier=$dossier."/my_echo_debug_".date("Ymd_Hi").".txt";
+
+			$f=fopen($fichier,"a+");
+			fwrite($f,$texte);
+			fclose($f);
+		}
+	}
+}
+
+function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align='C',$align='L',$increment=0.3,$r_interligne=0.3) {
+	global $pdf;
+	// Pour que la variable puisse être récupérée dans la fonction my_echo_debug(), il faut la déclarer comme globale:
+	global $my_echo_debug, $mode_my_echo_debug;
+
+	// $increment:     nombre dont on réduit la police à chaque essai
+	// $r_interligne:  proportion de la taille de police pour les interlignes
+	// $bordure:       LRBT
+	// $v_align:       C(enter) ou T(op)
+
+	$texte=trim($texte);
+	$hauteur_texte=$hauteur_max_font;
+	//$pdf->SetFontSize($hauteur_texte);
+
+	//================================
+	// Options de debug
+	// Passer à 1 pour débugger
+	$my_echo_debug=0;
+	//$my_echo_debug=1;
+
+	// Les modes sont 'fichier' ou n'importe quoi d'autre qui provoque des echo... donc un échec de la génération de PDF... à ouvrir avec un bloc-notes, pas avec un lecteur PDF
+	// Voir la fonction my_echo_debug() pour l'emplacement du fichier généré
+	$mode_my_echo_debug='fichier';
+	//$mode_my_echo_debug='';
+	//================================
+
+	if($my_echo_debug==1) my_echo_debug("\n\n=========================================================\n");
+	if($my_echo_debug==1) my_echo_debug("Lancement de\nmy_cell_ajustee(\$texte=$texte,\n\$x=$x,\n\$y=$y,\n\$largeur_dispo=$largeur_dispo,\n\$h_cell=$h_cell,\n\$hauteur_max_font=$hauteur_max_font,\n\$hauteur_min_font=$hauteur_min_font,\n\$bordure=$bordure,\n\$v_align=$v_align,\n\$align=$align,\n\$increment=$increment,\n\$r_interligne=$r_interligne)\n\n");
+
+	if($my_echo_debug==1) my_echo_debug("\$texte=\"$texte\"\n");
+
+	// Pour réduire la taille du texte, il se peut qu'il faille supprimer les balises,...
+	$supprimer_balises="n";
+	$supprimer_retours_a_la_ligne="n";
+	$tronquer="n";
+
+	// On commence par essayer de remplir la cellule avec la taille de police proposée
+	// Et réduire la taille de police si cela ne tient pas.
+	// Si on arrive à une taille de police trop faible, on va supprimer des retours à la ligne, des balises ou même tronquer.
+
+	// Pour forcer en debug:
+	//$tronquer='y';
+
+	//while(true) {
+	while($tronquer!='y') {
+		// On (re)démarre un essai avec une taille de police
+
+		$pdf->SetFontSize($hauteur_texte);
+
+		// Nombre max de lignes avec la hauteur courante de police
+		// Il manque l'interligne de bas de cellule
+		//$nb_max_lig=max(1,floor($h_cell/((1+$r_interligne)*($hauteur_texte*26/100))));
+		//$nb_max_lig=max(1,floor($h_cell/((1+2*$r_interligne)*($hauteur_texte*26/100))));
+		$nb_max_lig=max(1,floor(($h_cell-$r_interligne*($hauteur_texte*26/100))/((1+$r_interligne)*($hauteur_texte*26/100))));
+		//$nb_max_lig=max(1,floor(($h_cell-$r_interligne*($hauteur_texte*26/100))/((1+$r_interligne)*($hauteur_texte*26/100)))-1);
+
+		if($my_echo_debug==1) my_echo_debug("\nOn lance un tour avec la taille de police:\n\$hauteur_texte=$hauteur_texte\n");
+		if($my_echo_debug==1) my_echo_debug("\$nb_max_lig=$nb_max_lig\n");
+
+		// Lignes dans la cellule
+		unset($ligne);
+		$ligne=array();
+
+		// Compteur des lignes
+		$cpt=0;
+
+		// On prévoit deux... trois espaces de marge en gras pour s'assurer que la ligne ne débordera pas
+		$pdf->SetFont('','B');
+		$un_espace_gras=$pdf->GetStringWidth(' ');
+		if($my_echo_debug==1) my_echo_debug("Un espace en gras mesure $un_espace_gras\n");
+		$marge_espaces=3*$un_espace_gras;
+		if($my_echo_debug==1) my_echo_debug("On compte trois espaces de marge, soit $marge_espaces\n");
+		$largeur_utile=$largeur_dispo-$marge_espaces;
+		if($my_echo_debug==1) my_echo_debug("D'où \$largeur_utile=$largeur_utile\n");
+
+		// CONTROLER QUE \$largeur_utile>0
+		if($largeur_utile<=0) {
+			// On se laisse une chance que cela tienne en tronquant
+			$tronquer="y";
+			break;
+		}
+
+		$style_courant='';
+		$pdf->SetFont('',$style_courant);
+
+		// (Ré-)initialisation du témoin
+		$temoin_reduire_police="n";
+
+		if($supprimer_retours_a_la_ligne=="y") {
+			//$texte=str_replace('\n'," ",$texte);
+			$texte=trim(my_ereg_replace("\n"," ",$texte));
+		}
+
+		$chaine_longueur_ligne_courante="0";
+
+		$tab=preg_split('/<(.*)>/U',$texte,-1,PREG_SPLIT_DELIM_CAPTURE);
+		foreach($tab as $i=>$valeur) {
+			//$pdf->Cell(150,7, "\$tab[$i]=$valeur",0,2,'');
+			// Avec $i pair on a le texte et les indices impairs correspondent aux balises (b et /b,...)
+
+			// On initialise la ligne courante si nécessaire pour le cas où on aurait $texte="<b>Blabla..."
+			// Il faut que la ligne soit initialisée pour pouvoir ajouter le <b> dans $i%2!=0
+			if(!isset($ligne[$cpt])) {
+			//if(!isset($test_ligne)) {
+				$ligne[$cpt]='';
+				$longueur_ligne_courante=0;
+				$chaine_longueur_ligne_courante="0";
+				//$test_ligne="";
+			}
+
+			if($i%2==0) {
+				if($my_echo_debug==1) my_echo_debug("\nParcours avec l'élément \$i=$i: \"$tab[$i]\"\n");
+
+
+				//$tab2=preg_split("/[\s]+/",$tab[$i]); // Ca compterait les espaces, tabulations, \n et \r
+				$tab2=split(" ",$tab[$i]);
+				// Si on gère aussi les virgules et tirets, il y a une difficulté supplémentaire à gérer pour re-concaténer (normalement après une virgule, on doit avoir un espace)... donc on ne gère que les espaces
+
+				if($my_echo_debug==1) my_echo_debug("_____________________________________________\n");
+				for($j=0;$j<count($tab2);$j++) {
+					if($my_echo_debug==1) my_echo_debug("Mot \$tab2[$j]=\"$tab2[$j]\"\n");
+				}
+				if($my_echo_debug==1) my_echo_debug("_____________________________________________\n");
+
+				for($j=0;$j<count($tab2);$j++) {
+					if($my_echo_debug==1) my_echo_debug("Mot \$tab2[$j]=\"$tab2[$j]\"\n");
+
+					// Si un des mots dépasse $largeur_dispo, il faut réduire la police (et si avec la police minimale, ça dépasse $largeur_dispo, il faudra couper n'importe où...)
+					if($pdf->GetStringWidth($tab2[$j])>$largeur_utile) {
+						$temoin_reduire_police="y";
+						break;
+					}
+
+					if($j>0) {
+						// Il ne faut ajouter un espace que si on a augmenté $j... (on n'est plus au premier mot de la ligne ~ voire... pb avec les découpes suivant les balises HTML)
+						$largeur_espace=$pdf->GetStringWidth(' ');
+						$longueur_ligne_courante+=$largeur_espace;
+						$chaine_longueur_ligne_courante.="+".$largeur_espace;
+
+						if($my_echo_debug==1) my_echo_debug("\$longueur_ligne_courante=$longueur_ligne_courante et \$largeur_utile=$largeur_utile\n");
+						if($my_echo_debug==1) my_echo_debug("\$chaine_longueur_ligne_courante=$chaine_longueur_ligne_courante\n");
+
+						if($longueur_ligne_courante>$largeur_utile) {
+							// En ajoutant un espace, on dépasse la largeur_dispo
+							$cpt++;
+							if($cpt+1>$nb_max_lig) {
+								// On dépasse le nombre max de lignes avec la taille de police courante
+								$temoin_reduire_police="y";
+								// On quitte la boucle sur les \n (boucle sur $tab3)
+								break;
+							}
+
+							$ligne[$cpt]='';
+							$longueur_ligne_courante=0;
+							$chaine_longueur_ligne_courante="0";
+						}
+						else {
+							$ligne[$cpt].=' ';
+							if($my_echo_debug==1) my_echo_debug("On a ajouté un espace dans la longueur qui précède.\n");
+							if($my_echo_debug==1) my_echo_debug("Longueur calculée sans gérer les balises ".$pdf->GetStringWidth($ligne[$cpt])."\n");
+						}
+					}
+
+					// Il n'y a pas d'espace dans $tab2[$j]
+					// Si on scinde avec des \n, on aura un mot par indice de $tab3
+					unset($tab3);
+					$tab3=array();
+
+					if($my_echo_debug==1) my_echo_debug("\$supprimer_retours_a_la_ligne=$supprimer_retours_a_la_ligne\n");
+					// Prendre en compte à ce niveau les \n
+					if($supprimer_retours_a_la_ligne=="n") {
+						if($my_echo_debug==1) my_echo_debug("On découpe si nécessaire les retours à la ligne\n");
+						//$tab3=split("\n",$tab2[$j]);
+						$tab3=split("\n",$tab2[$j]);
+						for($loop=0;$loop<count($tab3);$loop++) {if($my_echo_debug==1) my_echo_debug("   \$tab3[$loop]=\"$tab3[$loop]\"\n");}
+					}
+					else {
+						//$tab3[0]=str_replace("\n"," ",$tab2[$j]);
+						$tab3[0]=$tab2[$j];
+					}
+
+					// Si supprimer_retours_a_la_ligne=='y', on ne fait qu'un tour dans la boucle
+					for($k=0;$k<count($tab3);$k++) {
+						if($k>0) {
+							// On change de ligne
+
+							if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
+							if($my_echo_debug==1) my_echo_debug("\$longueur_ligne_courante=$longueur_ligne_courante\n");
+							if($my_echo_debug==1) my_echo_debug("\$chaine_longueur_ligne_courante=$chaine_longueur_ligne_courante\n");
+
+							$cpt++;
+							if($cpt+1>$nb_max_lig) {
+								// On dépasse le nombre max de lignes avec la taille de police courante
+								$temoin_reduire_police="y";
+								// On quitte la boucle sur les \n (boucle sur $tab3)
+								break;
+							}
+							$ligne[$cpt]='';
+							$longueur_ligne_courante=0;
+							$chaine_longueur_ligne_courante="0";
+							//$test_ligne="";
+						}
+						//$test_ligne.=$tab3[$k];
+						//$longueur_ligne_courante+=$pdf->GetStringWidth($tab3[$k]);
+						$test_longueur_ligne_courante=$longueur_ligne_courante+$pdf->GetStringWidth($tab3[$k]);
+						if($my_echo_debug==1) my_echo_debug("La longueur du mot \$tab3[$k]=\"$tab3[$k]\" est ".$pdf->GetStringWidth($tab3[$k])."\n");
+
+						//if($pdf->GetStringWidth($test_ligne)>$largeur_dispo) {
+						//if($longueur_ligne_courante>$largeur_dispo) {
+						if($test_longueur_ligne_courante>$largeur_utile) {
+							$cpt++;
+							if($cpt+1>$nb_max_lig) {
+								// On dépasse le nombre max de lignes avec la taille de police courante
+								$temoin_reduire_police="y";
+								// On quitte la boucle sur les \n (boucle sur $tab3)
+								break;
+							}
+							$ligne[$cpt]=$tab3[$k];
+							$longueur_mot=$pdf->GetStringWidth($tab3[$k]);
+							$longueur_ligne_courante=$longueur_mot;
+							$chaine_longueur_ligne_courante=$longueur_mot;
+						}
+						else {
+							// Ca tient encore sur la ligne courante
+							$ligne[$cpt].=$tab3[$k];
+							//$ligne[$cpt]=$test_ligne;
+							$longueur_mot=$pdf->GetStringWidth($tab3[$k]);
+							$longueur_ligne_courante+=$longueur_mot;
+							$chaine_longueur_ligne_courante.="+".$longueur_mot;
+						}
+						if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
+						if($my_echo_debug==1) my_echo_debug("\$longueur_ligne_courante=$longueur_ligne_courante\n");
+						if($my_echo_debug==1) my_echo_debug("\$chaine_longueur_ligne_courante=$chaine_longueur_ligne_courante\n");
+					}
+
+					if($temoin_reduire_police=="y") {
+						// On quitte la boucle sur les mots (boucle sur $tab2)
+						break;
+					}
+				}
+			}
+			elseif($supprimer_balises=="n") {
+				// On tient compte des balises
+				if($valeur{0}=='/') {
+					// On referme une balise
+					if(strtoupper($valeur)=='/B') {
+						$style_courant=preg_replace("/B/i","",$style_courant);
+						$pdf->SetFont('',$style_courant);
+						$ligne[$cpt].="</B>";
+					}
+					elseif(strtoupper($valeur)=='/I') {
+						$style_courant=preg_replace("/I/i","",$style_courant);
+						$pdf->SetFont('',$style_courant);
+						$ligne[$cpt].="</I>";
+					}
+					elseif(strtoupper($valeur)=='/U') {
+						$style_courant=preg_replace("/U/i","",$style_courant);
+						$pdf->SetFont('',$style_courant);
+						$ligne[$cpt].="</U>";
+					}
+				}
+				else {
+					// On ouvre une balise
+					if(strtoupper($valeur)=='B') {
+						$style_courant=$style_courant.'B';
+						$pdf->SetFont('',$style_courant);
+						$ligne[$cpt].="<B>";
+					}
+					elseif(strtoupper($valeur)=='I') {
+						$style_courant=$style_courant.'I';
+						$pdf->SetFont('',$style_courant);
+						$ligne[$cpt].="<I>";
+					}
+					elseif(strtoupper($valeur)=='U') {
+						$style_courant=$style_courant.'U';
+						$pdf->SetFont('',$style_courant);
+						$ligne[$cpt].="<U>";
+					}
+				}
+				if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
+				if($my_echo_debug==1) my_echo_debug("\$longueur_ligne_courante=$longueur_ligne_courante\n");
+				if($my_echo_debug==1) my_echo_debug("\$style_courant=$style_courant\n");
+			}
+
+			if($temoin_reduire_police=="y") {
+				$hauteur_texte-=$increment;
+				//if($hauteur_texte<=0) {
+				if(($hauteur_texte<=0)||($hauteur_texte<$hauteur_min_font)) {
+					// Problème... il va falloir:
+					// - ne pas prendre en compte les \n
+					// - ne pas prendre en compte les balises
+					// - tronquer
+
+					if($supprimer_retours_a_la_ligne=='n') {
+						// On va virer les \n en les remplaçant par des espaces
+						$supprimer_retours_a_la_ligne='y';
+						if($my_echo_debug==1) my_echo_debug("+++ On va supprimer les retours à la ligne.\n");
+					}
+					elseif($supprimer_balises=='n') {
+						// On va un cran plus loin... en virant les balises... on ne gagnera que sur les mots en gras qui sont plus larges
+						$supprimer_balises='y';
+						if($my_echo_debug==1) my_echo_debug("+++ On va supprimer les balises.\n");
+					}
+					else {
+						// Il va falloir tronquer... pas cool!
+
+						// A FAIRE
+						$tronquer="y";
+
+						if($my_echo_debug==1) my_echo_debug("+++ On va tronquer.\n");
+					}
+
+					// Réinitialiser la taille de police:
+					$hauteur_texte=$hauteur_max_font;
+				}
+				else {
+					if($my_echo_debug==1) my_echo_debug("+++++++++++++++\n");
+					if($my_echo_debug==1) my_echo_debug("\nOn réduit la taille de police:\n");
+					if($my_echo_debug==1) my_echo_debug("\$hauteur_texte=".$hauteur_texte."\n");
+				}
+
+				// On quitte la boucle sur le tableau des découpages de balises HTML (boucle sur $tab)
+				break;
+			}
+		}
+
+		if($my_echo_debug==1) my_echo_debug("\$temoin_reduire_police=$temoin_reduire_police\n");
+
+		if($temoin_reduire_police!="y") {
+			// On a fini par trouver une taille  de police convenable
+
+			if($my_echo_debug==1) my_echo_debug("\nOn a trouvé la bonne la taille de police:\n");
+
+			// On quitte la boucle pour procéder à l'affichage du contenu de $ligne plus bas
+			break;
+		}
+	}
+
+	if($tronquer=='y') {
+		// A FAIRE: On va remplir en coupant n'importe où dans les mots sans chercher à conserver des mots entiers
+		//          Faut-il faire la boucle sur la taille de police?
+		//          Ou prendre directement la taille minimale?
+
+		if($my_echo_debug==1) my_echo_debug("---------------------------------\n");
+		if($my_echo_debug==1) my_echo_debug("--- On va remplir en tronquant...\n");
+
+		$hauteur_texte=$hauteur_min_font;
+
+		$pdf->SetFontSize($hauteur_texte);
+
+		// Nombre max de lignes avec la hauteur courante de police
+		$nb_max_lig=max(1,floor(($h_cell-$r_interligne*($hauteur_texte*26/100))/((1+$r_interligne)*($hauteur_texte*26/100))));
+
+		if($my_echo_debug==1) my_echo_debug("\$hauteur_texte=$hauteur_texte\n");
+		if($my_echo_debug==1) my_echo_debug("\$nb_max_lig=$nb_max_lig\n");
+
+		// Lignes dans la cellule
+		unset($ligne);
+		$ligne=array();
+
+		// Compteur des lignes
+		$cpt=0;
+
+		$longueur_max_atteinte="n";
+
+		// On prévoit deux... trois espaces de marge en gras pour s'assurer que la ligne ne débordera pas
+		$pdf->SetFont('','B');
+		$marge_espaces=3*$pdf->GetStringWidth(' ');
+		$largeur_utile=$largeur_dispo-$marge_espaces;
+
+		// CONTROLER QUE \$largeur_utile>0
+		if($largeur_utile>0) {
+			$style_courant='';
+			$pdf->SetFont('',$style_courant);
+	
+			// On va supprimer les retours à la ligne
+			$texte=trim(my_ereg_replace("\n"," ",$texte));
+			if($my_echo_debug==1) my_echo_debug("\$texte=$texte\n");
+	
+			// On supprime les balises
+			$texte=preg_replace('/<(.*)>/U','',$texte);
+			if($my_echo_debug==1) my_echo_debug("\$texte=$texte\n");
+			for($j=0;$j<strlen($texte);$j++) {
+	
+				if(!isset($ligne[$cpt])) {
+					$ligne[$cpt]='';
+				}
+				if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
+	
+				$chaine=$ligne[$cpt].substr($texte,$j,1);
+				if($my_echo_debug==1) my_echo_debug("\$chaine=\"$chaine\"\n");
+	
+				if($pdf->GetStringWidth($chaine)>$largeur_utile) {
+	
+					if($my_echo_debug==1) my_echo_debug("Avec \$chaine, ça dépasse.\n");
+	
+					if($cpt+1>$nb_max_lig) {
+						$longueur_max_atteinte="y";
+	
+						if($my_echo_debug==1) my_echo_debug("\$cpt=$cpt et \$nb_max_lig=$nb_max_lig.\nOn ne peut plus ajouter une ligne.\n");
+	
+						break;
+					}
+	
+					$cpt++;
+					$ligne[$cpt]=substr($texte,$j,1);
+					if($my_echo_debug==1) my_echo_debug("On commence une nouvelle ligne avec le dernier caractère: \"".substr($texte,$j-1,1)."\"\n");
+					if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
+				}
+				else {
+					$ligne[$cpt].=substr($texte,$j,1);
+					if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
+				}
+			}
+	
+			if($my_echo_debug==1) my_echo_debug("On a fini le texte... ou atteint une limite\n");
+
+		}
+	}
+
+
+	// On va afficher le texte
+
+	// Hauteur de la police en mm
+	$hauteur_texte_mm=$hauteur_texte*26/100;
+	// Hauteur de la police en pt
+	$taille_police=$hauteur_texte;
+	// Hauteur totale du texte
+	$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
+	// Marge verticale en mm entre les lignes
+	$marge_verticale=$hauteur_texte_mm*$r_interligne;
+	
+	
+	if($my_echo_debug==1) my_echo_debug("\$hauteur_texte=".$hauteur_texte."\n");
+	if($my_echo_debug==1) my_echo_debug("\$hauteur_texte_mm=".$hauteur_texte_mm."\n");
+	if($my_echo_debug==1) my_echo_debug("\$hauteur_totale=".$hauteur_totale."\n");
+	if($my_echo_debug==1) my_echo_debug("\$marge_verticale=".$marge_verticale."\n");
+	
+	
+	// On trace le rectangle (vide) du cadre:
+	$pdf->SetXY($x,$y);
+	$pdf->Cell($largeur_dispo,$h_cell, '',$bordure,2,'');
+	
+	// On va écrire les lignes avec la taille de police optimale déterminée (cf. $ifmax)
+	$nb_lig=count($ligne);
+	$h=$nb_lig*$hauteur_texte_mm*(1+$r_interligne);
+	$t=$h_cell-$h;
+	if($my_echo_debug==1) my_echo_debug("\$t=".$t."\n");
+	$bord_debug='';
+	//$bord_debug='LRBT';
+	
+	// On ne gère que les v_align Top et Center... et ajout d'un mode aéré
+	if($v_align=='E') {
+		// Mode aéré
+		//$espace_v=($h_cell-2*$marge_verticale-$nb_lig*$hauteur_texte_mm)/max(1,$nb_lig-1);
+		$espace_v=($h_cell-4*$marge_verticale-$nb_lig*$hauteur_texte_mm)/max(1,$nb_lig-1);
+	}
+	elseif($v_align!='T') {
+		// Par défaut c'est Center
+		//$decalage_v_top=($h_cell-$nb_lig*$hauteur_texte_mm-($nb_lig-1)*$marge_verticale)/2;
+		$decalage_v_top=($h_cell-($nb_lig+1)*$hauteur_texte_mm-$nb_lig*$marge_verticale)/2;
+	}
+	
+	for($i=0;$i<count($ligne);$i++) {
+	
+		if($v_align=='T') {
+			$pdf->SetXY($x,$y+$i*($hauteur_texte_mm+$marge_verticale));
+	
+			// Pour pouvoir afficher le $bord_debug
+			$pdf->Cell($largeur_dispo,$hauteur_texte_mm+2*$marge_verticale, '',$bord_debug,1,$align);
+	
+			$y_courant=$y+$i*($hauteur_texte_mm+$marge_verticale)-$marge_verticale;
+			$pdf->SetXY($x,$y_courant);
+			if($my_echo_debug==1) {
+				$pdf->myWriteHTML($ligne[$i]." ".$i." ".round($y_courant));
+			}
+			else {
+				$pdf->myWriteHTML($ligne[$i]);
+			}
+		}
+		elseif($v_align=='E') {
+			$y_courant=$y+$marge_verticale+$i*($hauteur_texte_mm+$espace_v);
+			$pdf->SetXY($x,$y_courant);
+	
+			// Pour pouvoir afficher le $bord_debug
+			$pdf->Cell($largeur_dispo,$h_cell/$nb_lig, '',$bord_debug,1,$align);
+	
+			$pdf->SetXY($x,$y_courant);
+			$pdf->myWriteHTML($ligne[$i]);
+		}
+		else {
+			$y_courant=$y+$decalage_v_top+$i*($hauteur_texte_mm+$marge_verticale);
+	
+			// Pour pouvoir afficher le $bord_debug A REFAIRE
+			//$pdf->SetXY($x,$y_courant);
+			//$pdf->Cell($largeur_dispo,$h_cell/count($tab_lig[$ifmax]['lignes']), '',$bord_debug,1,$align);
+	
+			$pdf->SetXY($x,$y_courant);
+			/*
+			if(preg_match('/<(.*)>/U',$ligne[$i])) {
+				$pdf->WriteHTML($ligne[$i]);
+			}
+			else {
+				$pdf->Cell($largeur_dispo,$hauteur_texte_mm, $ligne[$i],$bord_debug,1,$align);
+			}
+			*/
+			$pdf->myWriteHTML($ligne[$i]);
+		}
+	}
+}
+
+// Ancienne fonction cell_ajustee() ne gérant pas les balises HTML B,I et U
+function cell_ajustee0($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align='C',$align='L',$increment=0.3,$r_interligne=0.3) {
 	global $pdf;
 
 	// $increment:     nombre dont on réduit la police à chaque essai
@@ -3541,7 +4537,7 @@ function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hau
 
 		unset($ligne);
 		$ligne=array();
-	
+
 		$tab=split(" ",$texte);
 		$cpt=0;
 		$i=0;
@@ -3571,7 +4567,7 @@ function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hau
 			$i++;
 			if(!isset($tab[$i])) {break;}
 		}
-	
+
 		// Recherche de la plus longue ligne:
 		$taille_texte_ligne=0;
 		$num=0;
@@ -3585,7 +4581,7 @@ function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hau
 		$hauteur_texte_mm=$hauteur_texte*26/100;
 		// Hauteur totale: Nombre de lignes multiplié par la hauteur de police avec les marges verticales
 		$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-	
+
 		// echo "On calcule la taille de la police d'après \$ligne[$num]=".$ligne[$num]."<br/>";
 		// On ajuste la taille de police avec la plus grande ligne pour que cela tienne en largeur
 		// et on contrôle aussi que cela tient en hauteur, sinon on continue à réduire la police.
@@ -3620,8 +4616,8 @@ function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hau
 			$tab_lig[$j]['marge_verticale']=$marge_verticale;
 			// Tableau des lignes
 			$tab_lig[$j]['lignes']=$ligne;
-	
-			// On choisit la hauteur de police la plus grande possible pour laquelle les lignes tiennent en hauteur 
+
+			// On choisit la hauteur de police la plus grande possible pour laquelle les lignes tiennent en hauteur
 			// (la largeur a déjà été utilisée pour découper en lignes).
 			if(($hauteur_texte>$fmax)&&($tab_lig[$j]['hauteur_totale']<=$h_cell)) {
 				$ifmax=$j;
@@ -3640,7 +4636,7 @@ function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hau
 
 			unset($ligne);
 			$ligne=array();
-		
+
 			$tab=split(" ",trim(my_ereg_replace("\n"," ",$texte)));
 			$cpt=0;
 			$i=0;
@@ -3657,7 +4653,7 @@ function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hau
 				$i++;
 				if(!isset($tab[$i])) {break;}
 			}
-		
+
 			// Recherche de la plus longue ligne:
 			$taille_texte_ligne=0;
 			$num=0;
@@ -3671,7 +4667,7 @@ function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hau
 			$hauteur_texte_mm=$hauteur_texte*26/100;
 			// Hauteur totale: Nombre de lignes multiplié par la hauteur de police avec les marges verticales
 			$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-		
+
 			// echo "On calcule la taille de la police d'après \$ligne[$num]=".$ligne[$num]."<br/>";
 			// On ajuste la taille de police avec la plus grande ligne pour que cela tienne en largeur
 			// et on contrôle aussi que cela tient en hauteur, sinon on continue à réduire la police.
@@ -3706,8 +4702,8 @@ function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hau
 				$tab_lig[$j]['marge_verticale']=$marge_verticale;
 				// Tableau des lignes
 				$tab_lig[$j]['lignes']=$ligne;
-		
-				// On choisit la hauteur de police la plus grande possible pour laquelle les lignes tiennent en hauteur 
+
+				// On choisit la hauteur de police la plus grande possible pour laquelle les lignes tiennent en hauteur
 				// (la largeur a déjà été utilisée pour découper en lignes).
 				if(($hauteur_texte>$fmax)&&($tab_lig[$j]['hauteur_totale']<=$h_cell)) {
 					$ifmax=$j;
@@ -3791,7 +4787,7 @@ function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hau
 	$pdf->SetXY($x,$y);
 	$pdf->Cell($largeur_dispo,$h_cell, '',$bordure,2,'');
 
-	// On va écrire les lignes avec la taille de police optimale déterminée (cf. $ifmax)	
+	// On va écrire les lignes avec la taille de police optimale déterminée (cf. $ifmax)
 	//$marge_h=round(($h_cell-(count($ligne)*$hauteur_texte_mm+(count($ligne)-1)*$marge_verticale))/2);
 	//$marge_h=round(($h_cell-$tab_lig[$ifmax]['hauteur_totale'])/2);
 	$nb_lig=count($tab_lig[$ifmax]['lignes']);
@@ -3800,7 +4796,7 @@ function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hau
 	$bord_debug='';
 	//$bord_debug='LRBT';
 	for($i=0;$i<count($tab_lig[$ifmax]['lignes']);$i++) {
-		
+
 		//$pdf->SetXY(10,$y+$i*($hauteur_texte_mm+$marge_verticale)+$marge_h);
 		$pdf->SetXY($x,$y+$i*($tab_lig[$ifmax]['hauteur_texte_mm']+$tab_lig[$ifmax]['marge_verticale']));
 
@@ -3887,13 +4883,13 @@ function javascript_tab_stat($pref_id,$cpt) {
 	echo "<th>3è quartile</th>\n";
 	echo "<td id='".$pref_id."q3'></td>\n";
 	echo "</tr>\n";
-	
+
 	$alt=$alt*(-1);
 	echo "<tr class='lig$alt'>\n";
 	echo "<th>Min</th>\n";
 	echo "<td id='".$pref_id."min'></td>\n";
 	echo "</tr>\n";
-	
+
 	$alt=$alt*(-1);
 	echo "<tr class='lig$alt'>\n";
 	echo "<th>Max</th>\n";
@@ -3982,6 +4978,101 @@ calcul_moy_med();
 }
 
 
+function calcule_moy_mediane_quartiles($tab) {
+	$tab2=array();
+
+	//echo "<p>";
+	$total=0;
+	for($i=0;$i<count($tab);$i++) {
+		//echo "\$tab[$i]=".$tab[$i]."<br />\n";
+		if(($tab[$i]!='')&&($tab[$i]!='-')&&($tab[$i]!='&nbsp;')&&($tab[$i]!='abs')&&($tab[$i]!='disp')) {
+			$tab2[]=my_ereg_replace(',','.',$tab[$i]);
+			$total+=my_ereg_replace(',','.',$tab[$i]);
+		}
+	}
+
+	// Initialisation
+	$tab_retour['moyenne']='-';
+	$tab_retour['mediane']='-';
+	$tab_retour['min']='-';
+	$tab_retour['max']='-';
+	$tab_retour['q1']='-';
+	$tab_retour['q3']='-';
+
+	if(count($tab2)>0) {
+		sort($tab2);
+
+		/*
+		echo "<p>";
+		for($i=0;$i<count($tab2);$i++) {
+			echo "\$tab2[$i]=".$tab2[$i]."<br />\n";
+		}
+		*/
+
+		$moyenne=round(10*$total/count($tab2))/10;
+
+		if(count($tab2)%2==0) {
+			$mediane=($tab2[count($tab2)/2-1]+$tab2[count($tab2)/2])/2;
+		}
+		else {
+			$mediane=$tab2[(count($tab2)-1)/2];
+		}
+
+		$min=min($tab2);
+		$max=max($tab2);
+
+		if(count($tab2)>=4) {
+			$q1=$tab2[ceil(count($tab2)/4)-1];
+			$q3=$tab2[ceil(3*count($tab2)/4)-1];
+		}
+
+		$tab_retour['moyenne']=$moyenne;
+		$tab_retour['mediane']=$mediane;
+		$tab_retour['min']=$min;
+		$tab_retour['max']=$max;
+		$tab_retour['q1']=$q1;
+		$tab_retour['q3']=$q3;
+	}
+
+	/*
+	echo "<p>";
+	foreach($tab_retour as $key => $value) {
+		echo "\$tab_retour['$key']=".$value."<br />\n";
+	}
+	*/
+
+	return $tab_retour;
+}
+
+
+function get_nom_prenom_eleve($login_ele,$mode='simple') {
+	$sql="SELECT nom,prenom FROM eleves WHERE login='$login_ele';";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)==0) {
+		$sql="SELECT 1=1 FROM utilisateurs WHERE login='$login_ele';";
+		$res=mysql_query($sql);
+		if(mysql_num_rows($res)>0) {
+			return civ_nom_prenom($login)." (non-élève)";
+		}
+		else {
+			return "Elève inconnu";
+		}
+	}
+	else {
+		$lig=mysql_fetch_object($res);
+
+		$ajout="";
+		if($mode=='avec_classe') {
+			$tmp_tab_clas=get_class_from_ele_login($login_ele);
+			if($tmp_tab_clas['liste']!='') {
+				$ajout=" (".$tmp_tab_clas['liste'].")";
+			}
+		}
+
+		return casse_mot($lig->nom)." ".casse_mot($lig->prenom,'majf2').$ajout;
+	}
+}
+
 function get_commune($code_commune_insee,$mode){
 	$retour="";
 
@@ -4017,5 +5108,423 @@ function get_commune($code_commune_insee,$mode){
 	}
 	return $retour;
 }
+
+
+function civ_nom_prenom($login,$mode='prenom') {
+	$retour="";
+	$sql="SELECT nom,prenom,civilite FROM utilisateurs WHERE login='$login';";
+	$res_user=mysql_query($sql);
+	if (mysql_num_rows($res_user)>0) {
+		$lig_user=mysql_fetch_object($res_user);
+		if($lig_user->civilite!="") {
+			$retour.=$lig_user->civilite." ";
+		}
+		if($mode=='prenom') {
+			$retour.=strtoupper($lig_user->nom)." ".ucfirst(strtolower($lig_user->prenom));
+		}
+		else {
+			// Initiale
+			$retour.=strtoupper($lig_user->nom)." ".strtoupper(substr($lig_user->prenom,0,1));
+		}
+	}
+	return $retour;
+}
+
+// Enleve le numéro des titres numérotés ("1. Titre" -> "Titre")
+// Exemple :  "12. Titre"  donne "Titre"
+function supprimer_numero($texte) {
+ return preg_replace(",^[[:space:]]*([0-9]+)([.)])[[:space:]]+,S","", $texte);
+}
+
+
+function test_ecriture_dossier() {
+    global $gepiPath;
+
+	//$tab_dossiers_rw=array("documents","images","secure","photos","backup","temp","mod_ooo/mes_modele","mod_ooo/tmp","mod_notanet/OOo/tmp","lib/standalone/HTMLPurifier/DefinitionCache/Serializer");
+	//$tab_dossiers_rw=array("documents","images","photos","backup","temp","mod_ooo/mes_modele","mod_ooo/tmp","mod_notanet/OOo/tmp","lib/standalone/HTMLPurifier/DefinitionCache/Serializer");
+	$tab_dossiers_rw=array("artichow/cache","backup","documents","images","images/background","lib/standalone/HTMLPurifier/DefinitionCache/Serializer","mod_ooo/mes_modeles","mod_ooo/tmp","photos","temp");
+
+	$nom_fichier_test='test_acces_rw';
+
+	echo "<table class='boireaus' summary='Tableau des dossiers qui doivent être accessibles en écriture'>\n";
+	echo "<tr>\n";
+	echo "<th>Dossier</th>\n";
+	echo "<th>Ecriture</th>\n";
+	echo "</tr>\n";
+	$alt=1;
+	for($i=0;$i<count($tab_dossiers_rw);$i++) {
+		$ok_rw="no";
+		if ($f = @fopen("../".$tab_dossiers_rw[$i]."/".$nom_fichier_test, "w")) {
+			@fputs($f, '<'.'?php $ok_rw = "yes"; ?'.'>');
+			@fclose($f);
+			include("../".$tab_dossiers_rw[$i]."/".$nom_fichier_test);
+			$del = @unlink("../".$tab_dossiers_rw[$i]."/".$nom_fichier_test);
+		}
+		$alt=$alt*(-1);
+		echo "<tr class='lig$alt white_hover'>\n";
+		echo "<td style='text-align:left;'>$gepiPath/$tab_dossiers_rw[$i]</td>\n";
+		echo "<td>";
+		if($ok_rw=='yes') {
+			echo "<img src='../images/enabled.png' height='20' width='20' alt=\"Le dossier est accessible en écriture.\" />";
+		}
+		else {
+			echo "<img src='../images/disabled.png' height='20' width='20' alt=\"Le dossier n'est pas accessible en écriture.\" />";
+		}
+		echo "</td>\n";
+		echo "</tr>\n";
+	}
+	echo "</table>\n";
+}
+
+
+function test_ecriture_style_screen_ajout() {
+	$nom_fichier='style_screen_ajout.css';
+	$f=@fopen("../".$nom_fichier, "a+");
+	if($f) {
+		$ecriture=fwrite($f, "/* Test d'ecriture dans $nom_fichier */\n");
+		fclose($f);
+		if($ecriture) {return true;} else {return false;}
+	}
+	else {
+		return false;
+	}
+}
+
+
+/**********************************************************************************************
+ *                                  Fonctions Trombinoscope
+ **********************************************************************************************/
+
+/**
+ * Crée les répertoires photos/RNE_Etablissement, photos/RNE_Etablissement/eleves et
+ * photos/RNE_Etablissement/personnels s'ils n'existent pas
+ * @return bool true si tout se passe bien ou false si la création d'un répertoire échoue
+ */
+function cree_repertoire_multisite() {
+  if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+		// On récupère le RNE de l'établissement
+	if (!$repertoire=getSettingValue("gepiSchoolRne"))
+	  return FALSE;
+	//on vérifie que le dossier photos/RNE_Etablissement n'existe pas
+	if (!is_dir("../photos/".$repertoire)){
+	  // On crée le répertoire photos/RNE_Etablissement
+	  if (!mkdir("../photos/".$repertoire, 0700))
+		return FALSE;
+	  // On enregistre un fichier index.html dans photos/RNE_Etablissement
+	  if (!copy  (  "../photos/index.html"  ,  "../photos/".$repertoire."/index.html" ))
+		return FALSE;
+	}
+	//on vérifie que le dossier photos/RNE_Etablissement/eleves n'existe pas
+	if (!is_dir("../photos/".$repertoire."/eleves")){
+	  // On crée le répertoire photos/RNE_Etablissement/eleves
+	  if (!mkdir("../photos/".$repertoire."/eleves", 0700))
+		return FALSE;
+	  // On enregistre un fichier index.html dans photos/RNE_Etablissement/eleves
+	  if (!copy  (  "../photos/index.html"  ,  "../photos/".$repertoire."/eleves/index.html" ))
+		return FALSE;
+	 }
+	//on vérifie que le dossier photos/RNE_Etablissement/personnels n'existe pas
+	if (!is_dir("../photos/".$repertoire."/personnels")){
+	  // On crée le répertoire photos/RNE_Etablissement/personnels
+	  if (!mkdir("../photos/".$repertoire."/personnels", 0700))
+		return FALSE;
+	  // On enregistre un fichier index.html dans photos/RNE_Etablissement/personnels
+	  if (!copy  (  "../photos/index.html"  ,  "../photos/".$repertoire."/personnels/index.html" ))
+		return FALSE;
+	  }
+	}
+	return TRUE;
+}
+
+/**
+ * Recherche les élèves sans photos
+ * 
+ * @return array tableau de login - nom - prénom - classe - classe court - eleonet
+ */
+function recherche_eleves_sans_photo() {
+  $eleve=NULL;
+  $requete_liste_eleve = "SELECT e.elenoet, e.login, e.nom, e.prenom, c.nom_complet, c.classe
+	FROM eleves e, j_eleves_classes jec, classes c
+	WHERE e.login = jec.login 
+	AND jec.id_classe = c.id 
+	GROUP BY e.login 
+	ORDER BY id_classe, nom, prenom ASC";
+  $res_eleve = mysql_query($requete_liste_eleve);
+  while ($row = mysql_fetch_object($res_eleve)) {
+	$nom_photo = nom_photo($row->elenoet);
+	if (!($nom_photo and file_exists($nom_photo))) {
+	  $eleve[]=$row;
+	}
+  }
+  return $eleve;
+}
+
+/**
+ *
+ * @param text $statut statut recherché
+ * @return array tableau des personnels sans photo ou NULL
+ */
+function recherche_personnel_sans_photo($statut='professeur') {
+  $personnel=NULL;
+  $requete_liste_personnel = "SELECT login,nom,prenom FROM utilisateurs u
+	WHERE u.statut='".$statut."'
+	ORDER BY nom, prenom ASC";
+  $res_personnel = mysql_query($requete_liste_personnel);
+  while ($row = mysql_fetch_object($res_personnel)) {
+	$nom_photo = nom_photo($row->login,"personnels");
+	if (!($nom_photo and file_exists($nom_photo))) {
+	  $personnel[]=$row;
+	}
+  }
+  return $personnel;
+}
+
+/**
+ * Efface le dossier photo passé en argument
+ * @param text $photos le dossier à effacer personnels ou eleves
+ * @return text L'état de la suppression
+ */
+function efface_photos($photos) {
+// on liste les fichier du dossier photos/personnels ou photos/eleves
+  if (!($photos=="eleves" || $photos=="personnels"))
+	return ("Le dossier <strong>".$photos."</strong> n'ai pas valide.");  
+  if (cree_zip_archive("photos")==TRUE){
+	$fichier_sup=array();
+	if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+		  // On récupère le RNE de l'établissement
+	  if (!$repertoire=getSettingValue("gepiSchoolRne"))
+		return ("Erreur lors de la récupération du dossier établissement.");
+	} else {
+	  $repertoire="";
+	}
+	$folder = "../photos/".$repertoire.$photos."/";
+	$dossier = opendir($folder);
+	while ($Fichier = readdir($dossier)) {
+	  if ($Fichier != "." && $Fichier != ".." && $Fichier != "index.html") {
+		$nomFichier = $folder."".$Fichier;
+		$fichier_sup[] = $nomFichier;
+	  }
+	}
+	closedir($dossier);
+	if(count($fichier_sup)==0) {
+	  return ("Le dossier <strong>".$folder."</strong> ne contient pas de photo.") ;
+	} else {
+	  foreach ($fichier_sup as $fic_efface) {
+		if(file_exists($fic_efface)) {
+		  @unlink($fic_efface);
+		  if(file_exists($fic_efface)) {
+			return ("Le fichier  <strong>".$fic_efface."</strong> n'a pas pu être effacé.");
+		  }
+		}
+	  }
+	  unset ($fic_efface);
+	  return ("Le dossier <strong>".$folder."</strong> a été vidé.") ;
+	}
+  }else{
+	return ("Erreur lors de la création de l'archive.") ;
+  }
+
+}
+
+/**********************************************************************************************
+ *                               Fin Fonctions Trombinoscope
+ **********************************************************************************************/
+
+/**********************************************************************************************
+ *                                   Fil d'Ariane
+ **********************************************************************************************/
+/**
+ * gestion du fil d'ariane en remplissant le tableau $_SESSION['ariane']
+ * @param text $lien page atteinte par le lien
+ * @param text $texte texte à afficher dans le fil d'ariane
+ * @return bool True si tout s'est bien passé, False sinon
+ */
+function suivi_ariane($lien,$texte){
+  if (!isset($_SESSION['ariane'])){
+	$_SESSION['ariane']['lien'][] =$lien;
+	$_SESSION['ariane']['texte'][] =$texte;
+	return TRUE;
+  }else{
+	$trouve=FALSE;
+	foreach ($_SESSION['ariane']['lien'] as $index=>$lienActuel){
+	  if ($trouve){
+		unset ($_SESSION['ariane']['lien'][$index]);
+		unset ($_SESSION['ariane']['texte'][$index]);
+	  }else{
+		if ($lienActuel==$lien)
+		  $trouve=TRUE;
+	  }
+	}
+	unset ($index, $lienActuel);
+	if (!$trouve){
+	  $_SESSION['ariane']['lien'][] =$lien;
+	  $_SESSION['ariane']['texte'][] =$texte;
+	}
+	  return TRUE;
+  }
+}
+
+/**
+ * Affiche le fil d'Ariane
+ * 
+ * @param <boolean> $validation si True,
+ * une validation sera demandée en cas de modification de la page
+ * @param <texte> $themessage message à afficher lors de la confirmation
+ */
+function affiche_ariane($validation= FALSE,$themessage="" ){
+  if (isset($_SESSION['ariane'])){
+	echo "<p class='ariane'>";
+	foreach ($_SESSION['ariane']['lien'] as $index=>$lienActuel){
+	  if ($index!="0"){
+		echo " >> ";
+	  }
+	  if ($validation){
+	  echo "<a class='bold' href='".$lienActuel."' onclick='return confirm_abandon (this, change, \"".$themessage."\")' >";
+	  } else {
+	  echo "<a class='bold' href='".$lienActuel."' >";
+	  }
+		echo $_SESSION['ariane']['texte'][$index] ;
+	  echo " </a>";
+	}
+	unset ($index,$lienActuel);
+	echo "</p>";
+  }
+}
+/**********************************************************************************************
+ *                               Fin Fil d'Ariane
+ **********************************************************************************************/
+/**********************************************************************************************
+ *                               Manipulation de fichiers
+ **********************************************************************************************/
+
+/**
+ * Renvoie le chemin relatif pour remonter à la racine du site
+ * @param int $niveau niveau dans l'arborescence
+ * @return text chemin relatif vers la racine
+ */
+function path_niveau($niveau=1){
+  switch ($niveau) {
+	case 0:
+	  $path = "./";
+		  break;
+	case 1:
+	  $path = "../";
+		  break;
+	case 2:
+	  $path = "../../";
+	default:
+	  $path = "../";
+  }
+  return $path;
+}
+
+/**
+ *
+ * @param text $dossier_a_archiver limité à documents ou photos
+ * @param int $niveau niveau dans l'arborescence de la page appelante, racine = 0
+ * @return bool 
+ */
+function cree_zip_archive($dossier_a_archiver,$niveau=1) {
+  $path = path_niveau();
+  $dirname = "backup/".getSettingValue("backup_directory")."/";
+  define( 'PCLZIP_TEMPORARY_DIR', $path.$dirname );
+  require_once($path.'lib/pclzip.lib.php');
+
+  if (isset($dossier_a_archiver)) {
+	$suffixe_zip="_le_".date("Y_m_d_\a_H\hi");
+	switch ($dossier_a_archiver) {
+	case "documents":
+	  $chemin_stockage = $path.$dirname."_cdt".$suffixe_zip.".zip"; //l'endroit où sera stockée l'archive
+	  $dossier_a_traiter = $path.'documents/'; //le dossier à traiter
+	  $dossier_dans_archive = 'documents'; //le nom du dossier dans l'archive créée
+	  break;
+	case "photos":
+	  $chemin_stockage = $path.$dirname."_photos".$suffixe_zip.".zip";
+	  $dossier_a_traiter = $path.'photos/'; //le dossier à traiter
+	  if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+		$dossier_a_traiter .=getSettingValue("gepiSchoolRne")."/";
+	  }
+	  $dossier_dans_archive = 'photos'; //le nom du dossier dans l'archive créer
+	  break;
+	default:
+	  $chemin_stockage = '';
+	}
+
+	if ($chemin_stockage !='') {
+	  $archive = new PclZip($chemin_stockage);
+	  $v_list = $archive->create($dossier_a_traiter,
+			  PCLZIP_OPT_REMOVE_PATH,$dossier_a_traiter,
+			  PCLZIP_OPT_ADD_PATH, $dossier_dans_archive);
+	  if ($v_list == 0) {
+		 die("Error : ".$archive->errorInfo(true));
+		return FALSE;
+	  }else {
+		return TRUE;
+	  }
+	}
+  }  
+}
+
+/**
+ * Déplace un fichier de $source vers $dest
+ * @param text $source : emplacement du fichier à déplacer
+ * @param text $dest : Nouvel emplacement du fichier
+ * @return bool
+ */
+function deplacer_upload($source, $dest) {
+    $ok = @copy($source, $dest);
+    if (!$ok) $ok = (@move_uploaded_file($source, $dest));
+    return $ok;
+}
+
+/**
+ * Télécharge un fichier dans $dirname après avoir nettoyer son nom si tout se passe bien :
+ * $sav_file['name']=my_ereg_replace("[^.a-zA-Z0-9_=-]+", "_", $sav_file['name'])
+ * @param array $sav_file tableau de type $_FILE["nom_du_fichier"]
+ * @param text $dirname
+ * @return text ok ou message d'erreur
+ */
+function telecharge_fichier($sav_file,$dirname,$type,$ext){
+  if (!isset($sav_file['tmp_name']) or ($sav_file['tmp_name'] =='')) {
+	return ("Erreur de téléchargement.");
+  } else if (!file_exists($sav_file['tmp_name'])) {
+	return ("Erreur de téléchargement 2.");
+  } else if (!preg_match('/'.$ext.'$/',$sav_file['name'])){
+	return ("Erreur : seuls les fichiers ayant l'extension .".$ext." sont autorisés.");
+  } else if ($sav_file['type']!=$type ){
+	return ("Erreur : seuls les fichiers de type '".$type."' sont autorisés.");
+  } else {
+	$nom_corrige = my_ereg_replace("[^.a-zA-Z0-9_=-]+", "_", $sav_file['name']);
+	if (!deplacer_upload($sav_file['tmp_name'], $dirname."/".$nom_corrige)) {
+	  return ("Problème de transfert : le fichier n'a pas pu être transféré sur le répertoire ".$dirname);
+	} else {
+	  $sav_file['name']=$nom_corrige;
+	  return ("ok");
+	}
+  }
+}
+
+/**
+ * Extrait une archive Zip
+ * @param text $fichier le nom du fichier à dézipper
+ * @param text $repertoire le répertoire de destination
+ * @param int $niveau niveau dans l'arborescence de la page appelante
+ * @return text ok ou message d'erreur
+ */
+function dezip_PclZip_fichier($fichier,$repertoire,$niveau=1){
+  $path = path_niveau();
+  require_once($path.'lib/pclzip.lib.php');
+  $archive = new PclZip($fichier);
+  //if ($archive->extract() == 0) {
+if ($archive->extract(PCLZIP_OPT_PATH, $repertoire) == 0) {
+	return "Une erreur a été rencontrée lors de l'extraction du fichier zip";
+  }else {
+	return "ok";
+  }
+}
+
+/**********************************************************************************************
+ *                              Fin Manipulation de fichiers
+ **********************************************************************************************/
 
 ?>

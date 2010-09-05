@@ -1,5 +1,5 @@
 <?php
-/* $Id: select_eleves_options.php 3288 2009-07-08 16:55:55Z crob $ */
+/* $Id: select_eleves_options.php 4878 2010-07-24 13:54:01Z regis $ */
 /*
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -33,7 +33,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 //======================================================================================
 
@@ -316,6 +316,10 @@ include("lib_gc.php");
 // Il faut que le tableaux $classe_fut soit initialisé.
 //=============================
 
+//=========================================
+necessaire_bull_simple();
+//=========================================
+
 echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n";
 
 // Colorisation
@@ -335,6 +339,9 @@ $eff_tot=0;
 $eff_tot_M=0;
 $eff_tot_F=0;
 
+// Nombre max de périodes pour faire les requêtes pour les redoublants dont la classe n'est pas "connue"
+$max_nb_per=0;
+
 $chaine_id_classe="";
 $cpt=0;
 // Boucle sur les classes actuelles
@@ -347,6 +354,8 @@ for($j=0;$j<count($id_classe_actuelle);$j++) {
 		$lig_per=mysql_fetch_object($res_per);
 		$nb_per_classe=$lig_per->maxper;
 	}
+	//echo "\$nb_per_classe=$nb_per_classe<br />\n";
+	if($max_nb_per<$nb_per_classe) {$max_nb_per=$nb_per_classe;}
 
 	$num_eleve1_id_classe_actuelle[$j]=$cpt;
 	$eff_tot_classe_M=0;
@@ -398,8 +407,16 @@ for($j=0;$j<count($id_classe_actuelle);$j++) {
 	echo "</tr>\n";
 	//==========================================
 
+	$num_per2=-1;
 	if(($id_classe_actuelle[$j]!='Red')&&($id_classe_actuelle[$j]!='Arriv')) {
 		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login AND jec.id_classe='$id_classe_actuelle[$j]' ORDER BY e.nom,e.prenom;";
+		
+		$sql_per="SELECT num_periode FROM periodes WHERE id_classe='$id_classe_actuelle[$j]' ORDER BY num_periode DESC LIMIT 1;";
+		$res_per=mysql_query($sql_per);
+		if(mysql_num_rows($res_per)>0) {
+			$lig_per=mysql_fetch_object($res_per);
+			$num_per2=$lig_per->num_periode;
+		}
 	}
 	else {
 		$sql="SELECT DISTINCT e.* FROM eleves e, gc_ele_arriv_red gc WHERE gc.login=e.login AND gc.statut='$id_classe_actuelle[$j]' AND gc.projet='$projet' ORDER BY e.nom,e.prenom;";
@@ -556,8 +573,9 @@ for($j=0;$j<count($id_classe_actuelle);$j++) {
 			echo "<tr id='tr_eleve_$cpt' class='white_hover'>\n";
 			echo "<td>\n";
 			echo "<a name='eleve$cpt'></a>\n";
-			if(file_exists("../photos/eleves/".$lig->elenoet.".jpg")) {
-				echo "<a href='#eleve$cpt' onclick=\"affiche_photo('".$lig->elenoet.".jpg','".addslashes(strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom)))."');afficher_div('div_photo','y',100,100);return false;\">";
+			//if(file_exists("../photos/eleves/".$lig->elenoet.".jpg")) {
+			if(nom_photo($lig->elenoet)) {
+				echo "<a href='#eleve$cpt' onclick=\"affiche_photo('".nom_photo($lig->elenoet)."','".addslashes(strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom)))."');afficher_div('div_photo','y',100,100);return false;\">";
 				echo strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom));
 				echo "</a>\n";
 			}
@@ -602,6 +620,11 @@ for($j=0;$j<count($id_classe_actuelle);$j++) {
 			$res_note=mysql_query($sql);
 			if(mysql_num_rows($res_note)>0) {
 				$lig_note=mysql_fetch_object($res_note);
+
+				if($num_per2>0) {
+					echo "<a href=\"#\" onclick=\"afficher_div('div_bull_simp','y',-100,40); affiche_bull_simp('$lig->login','".$id_classe_actuelle[$j]."','1','$num_per2');return false;\" style='text-decoration:none;'>";
+				}
+
 				if($lig_note->moy<7) {
 					echo "<span style='color:red;'>";
 				}
@@ -618,6 +641,11 @@ for($j=0;$j<count($id_classe_actuelle);$j++) {
 					echo "<span style='color:blue;'>";
 				}
 				if($lig_note->moy!="") {echo "$lig_note->moy\n";} else {echo "&nbsp;\n";}
+
+				if($num_per2>0) {
+					echo "</a>\n";
+				}
+
 				echo "</span>";
 				echo "<input type='hidden' name='moy[$cpt]' value='$lig_note->moy' />\n";
 			}
@@ -633,7 +661,9 @@ for($j=0;$j<count($id_classe_actuelle);$j++) {
 			$current_eleve_absences=0;
 			$current_eleve_nj=0;
 			$current_eleve_retards=0;
-			for($loop=1;$loop<=$nb_per_classe;$loop++) {
+			if($nb_per_classe==0) {$nb_per_classe_abs=$max_nb_per;}
+			else {$nb_per_classe_abs=$nb_per_classe;}
+			for($loop=1;$loop<=$nb_per_classe_abs;$loop++) {
 				$sql="SELECT * FROM absences WHERE (login='".$lig->login."' AND periode='$loop');";
 				$current_eleve_absences_query=mysql_query($sql);
 				if(mysql_num_rows($current_eleve_absences_query)>0) {
@@ -701,7 +731,7 @@ for($j=0;$j<count($id_classe_actuelle);$j++) {
 
 				if($coche_possible=='y') {
 					echo "<input type='radio' name='classe_fut[$cpt]' id='classe_fut_".$i."_".$cpt."' value='$classe_fut[$i]' ";
-					if($fut_classe==strtoupper($classe_fut[$i])) {echo "checked ";}
+					if(strtoupper($fut_classe)==strtoupper($classe_fut[$i])) {echo "checked ";}
 					//alert('bip');
 					echo "onchange=\"calcule_effectif('classe_fut',".count($classe_fut).");colorise_ligne('classe_fut',$cpt,$i);changement();\" ";
 					//echo "title=\"$lig->login/$classe_fut[$i]\" ";
@@ -858,27 +888,29 @@ echo "<div id='div_test_aff_classe2' class='infobulle_corps' style='position:abs
 	}
 
 	for(i=0;i<$cpt;i++) {
-		profil=document.getElementById('profil_'+i).value;
-		/*
-		if(profil=='GC') {
-			document.getElementById('div_profil_'+i).style.color='red';
-		}
-		if(profil=='C') {
-			document.getElementById('div_profil_'+i).style.color='orange';
-		}
-		if(profil=='RAS') {
-			document.getElementById('div_profil_'+i).style.color='gray';
-		}
-		if(profil=='B') {
-			document.getElementById('div_profil_'+i).style.color='green';
-		}
-		if(profil=='TB') {
-			document.getElementById('div_profil_'+i).style.color='blue';
-		}
-		*/
-		for(m=0;m<couleur_profil.length;m++) {
-			if(document.getElementById('profil_'+i).value==tab_profil[m]) {
-				document.getElementById('div_profil_'+i).style.color=couleur_profil[m];
+		if(document.getElementById('profil_'+i)) {
+			profil=document.getElementById('profil_'+i).value;
+			/*
+			if(profil=='GC') {
+				document.getElementById('div_profil_'+i).style.color='red';
+			}
+			if(profil=='C') {
+				document.getElementById('div_profil_'+i).style.color='orange';
+			}
+			if(profil=='RAS') {
+				document.getElementById('div_profil_'+i).style.color='gray';
+			}
+			if(profil=='B') {
+				document.getElementById('div_profil_'+i).style.color='green';
+			}
+			if(profil=='TB') {
+				document.getElementById('div_profil_'+i).style.color='blue';
+			}
+			*/
+			for(m=0;m<couleur_profil.length;m++) {
+				if(document.getElementById('profil_'+i).value==tab_profil[m]) {
+					document.getElementById('div_profil_'+i).style.color=couleur_profil[m];
+				}
 			}
 		}
 	}
@@ -902,7 +934,7 @@ $tabdiv_infobulle[]=creer_div_infobulle('div_photo',$titre,"",$texte,"",14,0,'y'
 echo "<script type='text/javascript'>
 function affiche_photo(photo,nom_prenom) {
 	document.getElementById('entete_div_photo_eleve').innerHTML=nom_prenom;
-	document.getElementById('corps_div_photo_eleve').innerHTML='<img src=\"../photos/eleves/'+photo+'\" width=\"150\" alt=\"Photo\" /><br />';
+	document.getElementById('corps_div_photo_eleve').innerHTML='<img src=\"'+photo+'\" width=\"150\" alt=\"Photo\" /><br />';
 }
 
 var tab_id_classe=new Array($chaine_id_classe);

@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_notes.php 3940 2009-12-16 18:26:02Z crob $
+* $Id: saisie_notes.php 4661 2010-06-28 22:34:03Z regis $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -114,7 +114,7 @@ if (isset($is_posted) and ($is_posted == 'yes')) {
 						$note = '0';
 						$elev_statut = '-';
 					}
-					else if (ereg ("^[0-9\.\,]{1,}$", $note)) {
+					else if (my_ereg ("^[0-9\.\,]{1,}$", $note)) {
 						$note = str_replace(",", ".", "$note");
 						if (($note < 0) or ($note > 20)) {
 							$note = '';

@@ -1,5 +1,5 @@
 <?php
-/* $Id: index.php 4509 2010-05-29 18:01:34Z regis $ */
+/* $Id: index.php 4510 2010-05-29 18:06:09Z regis $ */
 /*
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -344,8 +344,8 @@ if($_SESSION['statut']=="administrateur") {
 		<li><a href='fb_creteil_pdf.php'>Creteil (<i>version PDF</i>)</a></li>
 		<li><a href='fb_lille_pdf.php'>Lille (<i>version PDF</i>)</a></li>\n";
 	$gepi_version=getSettingValue('version');
-	if(($gepi_version!='1.5.1')&&($gepi_version!='1.5.0')) {
-		echo "		<li><a href='OOo/imprime_ooo.php'>Modèle au format OpenOffice</a> <a href='https://www.sylogix.org/projects/gepi/wiki/GepiDoc_fbOooCalc'><img src='../images/icons/ico_question.png' alt='aide construction gabarit' title='Aide pour utiliser les gabarits .ods pour éditer les fiches brevets' /></a></li>\n";
+	if(($gepi_version!='1.5.1')&&($gepi_version!='1.5.0')) {  
+		echo "		<li><a href='OOo/imprime_ooo.php'>Modèle au format OpenOffice</a> <a href='https://www.sylogix.org/projects/gepi/wiki/GepiDoc_fbOooCalc'><img src='../images/icons/ico_question.png' alt='aide construction gabarit' title='Aide pour utiliser les gabarits .ods pour éditer les fiches brevets' title='Aide pour utiliser les gabarits .ods pour éditer les fiches brevets' /></a></li>\n";
 	}
 	echo "	</ul>
 </li>\n";

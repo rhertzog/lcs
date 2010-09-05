@@ -3,7 +3,7 @@
 /**
  * Fichier d'initialisation de l'EdT
  * Pour effacer la table avant une nouvelle initialisation il faut faire un TRUNCATE TABLE nom_table;
- * @version $Id: edt_initialiser.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * @version $Id: edt_initialiser.php 4592 2010-06-18 13:39:41Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -51,12 +51,12 @@ if (!checkAccess()) {
 }
 // Sécurité supplémentaire par rapport aux paramètres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
-	Die('Vous devez demander à votre administrateur l\'autorisation de voir cette page.');
+	Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
 // CSS et js particulier à l'EdT
 $utilisation_win = 'oui';
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
-$style_specifique = "edt_organisation/style_edt";
+$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
 
 // On insère l'entête de Gepi
 require_once("../lib/header.inc");
@@ -70,6 +70,7 @@ require_once("./menu.inc.php"); ?>
 
 	<div id="lecorps">
 <?php
+    require_once("./menu.inc.new.php");
 	// Initialisation des variables de la page
 $initialiser = isset($_POST["initialiser"]) ? $_POST["initialiser"] : NULL;
 $choix_prof = isset($_POST["prof"]) ? $_POST["prof"] : NULL;
@@ -90,9 +91,9 @@ if ($aff_reglages == "oui") {
 	<p style=\"font-weight: bold;\">Avant de commencer la création des cours dans l'emploi du temps, il faut préparer le logiciel.</p>
 
 	<p>Une partie de l'initialisation est commune avec le module absences :
-	<br />&nbsp;-&nbsp;<a href=\"../mod_absences/admin/admin_periodes_absences.php?action=visualiser\">les diff&eacute;rents cr&eacute;neaux</a> de la journ&eacute;e.
-	<br />&nbsp;-&nbsp;<a href=\"../mod_absences/admin/admin_config_semaines.php?action=visualiser\">le type de semaine</a> (paire/impaire, A/B/C, 1/2,...).
-	<br />&nbsp;-&nbsp;<a href=\"../mod_absences/admin/admin_horaire_ouverture.php?action=visualiser\">les horaires de l'&eacute;tablissement</a>.</p>
+	<br />&nbsp;-&nbsp;<a href=\"./admin_periodes_absences.php?action=visualiser\">les diff&eacute;rents cr&eacute;neaux</a> de la journ&eacute;e.
+	<br />&nbsp;-&nbsp;<a href=\"./admin_config_semaines.php?action=visualiser\">le type de semaine</a> (paire/impaire, A/B/C, 1/2,...).
+	<br />&nbsp;-&nbsp;<a href=\"./admin_horaire_ouverture.php?action=visualiser\">les horaires de l'&eacute;tablissement</a>.</p>
 
 <hr />
 

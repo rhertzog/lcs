@@ -3,7 +3,7 @@
 /**
  *
  *
- * @version $Id: edt_init_fonctions.php 2041 2008-07-04 14:40:03Z jjocal $
+ * @version $Id: edt_init_fonctions.php 4152 2010-03-21 23:32:16Z adminpaulbert $
  *
  * Ensemble des fonctions qui renvoient la concordance pour le fichier txt
  * de l'import des EdT.
@@ -35,7 +35,7 @@ function renvoiLoginProf($numero){
 
 		$test = mysql_num_rows($query);
 		if ($test >= 1) {
-			$retour = mysql_result($query, "nom_gepi");
+			$retour = mysql_result($query, 0,"nom_gepi");
 		}else{
 			$retour = 'erreur_prof';
 		}
@@ -55,7 +55,7 @@ function renvoiIdSalle($chiffre){
 	$cherche = substr($chiffre, 0, 10);
 	$query = mysql_query("SELECT id_salle FROM salle_cours WHERE numero_salle = '".$cherche."'");
 	if ($query) {
-		//$reponse = mysql_result($query, "id_salle");
+		//$reponse = mysql_result($query, 0,"id_salle");
 		$reponse = mysql_fetch_array($query);
 		if ($reponse["id_salle"] == '') {
 			$retour = "inc";
@@ -114,9 +114,9 @@ function nomTableCreneau($jour){
 	}
 	// Ensuite, en fonction du résultat, on teste et on renvoie la bonne table des créneaux
 	if ($numero_jour == getSettingValue("jour_different")) {
-		$retour = 'absences_creneaux_bis';
+		$retour = 'edt_creneaux_bis';
 	}else{
-		$retour = 'absences_creneaux';
+		$retour = 'edt_creneaux';
 	}
 
 	return $retour;
@@ -135,7 +135,7 @@ function renvoiIdCreneau($heure_brute, $jour){
 	if ($query) {
 		$nbre = mysql_num_rows($query);
 		if ($nbre >= 1) {
-			$retour = mysql_result($query, "id_definie_periode");
+			$retour = mysql_result($query, 0,"id_definie_periode");
 		}else{
 			$retour = '0';
 		}
@@ -150,7 +150,7 @@ function renvoiIdCreneau($heure_brute, $jour){
 // durée d'un créneau dans Gepi
 function dureeCreneau(){
 	// On récupère les infos sur un créneau
-	$creneau = mysql_fetch_array(mysql_query("SELECT heuredebut_definie_periode, heurefin_definie_periode FROM absences_creneaux LIMIT 1"));
+	$creneau = mysql_fetch_array(mysql_query("SELECT heuredebut_definie_periode, heurefin_definie_periode FROM edt_creneaux LIMIT 1"));
 	$deb = $creneau["heuredebut_definie_periode"];
 	$fin = $creneau["heurefin_definie_periode"];
 	$nombre_mn_deb = (substr($deb, 0, -5) * 60) + (substr($deb, 3, -3));
@@ -330,7 +330,7 @@ function testerSalleCsv2($numero){
 	// On teste la table
 	$query = mysql_query("SELECT id_salle FROM salle_cours WHERE numero_salle = '".$numero."'")
 				OR trigger_error('Erreur dans la requête '.$query.' : '.mysql_error());
-	$rep = @mysql_result($query, "id_salle");
+	$rep = @mysql_result($query, 0,"id_salle");
 	if ($rep != '' AND $rep != NULL AND $rep != FALSE) {
 		// On renvoie "ok"
 		return "ok";
@@ -353,7 +353,7 @@ function salleifexists($numero){
 	$query = mysql_query($sql)
 				OR trigger_error('Impossible de vérifier l\'existence de cette salle : la requête '.$sql.' a échoué : '.mysql_error(), E_USER_WARNING);
 	// On force tout de même le résultat
-	$rep = @mysql_result($query, "id_salle");
+	$rep = @mysql_result($query, 0,"id_salle");
 	if ($rep != '' AND $rep != NULL AND $rep != FALSE) {
 		// On renvoie "oui"
 		return "oui";
@@ -387,7 +387,7 @@ function rechercheCreneauCsv2($creneau){
 			$heure = $test2[0];
 		}
 		$heure_reconstruite = $heure.':'.$test2[1].':'.'00';
-		$query = mysql_query("SELECT DISTINCT id_definie_periode FROM absences_creneaux
+		$query = mysql_query("SELECT DISTINCT id_definie_periode FROM edt_creneaux
 						WHERE heuredebut_definie_periode <= '".$heure_reconstruite."'
 						ORDER BY heuredebut_definie_periode ASC LIMIT 1");
 		if ($query) {
@@ -406,7 +406,7 @@ function rechercheCreneauCsv2($creneau){
 	if (isset($test1[1])) {
 		// ça veut dire que le créneau étudié est de la forme 8h00 - 9h35 : $test1[0] = 8h00 et $test1(1] = 9h00
 		// on recherche si le début est bon ou pas pour savoir si le cours commence au début du créneau ou pas
-		$heure_debut = mysql_fetch_array(mysql_query("SELECT heuredebut_definie_periode FROM absences_creneaux WHERE id_definie_periode = '".$id_creneau."'"));
+		$heure_debut = mysql_fetch_array(mysql_query("SELECT heuredebut_definie_periode FROM edt_creneaux WHERE id_definie_periode = '".$id_creneau."'"));
 		$test3 = explode(":", $heure_debut["heuredebut_definie_periode"]);
 		if (substr($test3[0], 0, -1) == "0") {
 			$heu = substr($test3[0], -1);
@@ -631,7 +631,7 @@ if ($tab[4] != '') {
 	if ($nbre >= 1) {
 
 		// alors il existe déjà, on le met à jour et on s'en va
-		//$rep_id = mysql_result($query_verif, "id");
+		//$rep_id = mysql_result($query_verif, 0,"id");
 		$rep_id = mysql_fetch_array($query_verif);
 		$maj = mysql_query("UPDATE edt_gr_nom SET subdivision_type = 'autre', subdivision = 'plusieurs' WHERE id = '".$rep_id["id"]."'");
 
@@ -648,7 +648,7 @@ if ($tab[4] != '') {
 												AND nom_long = '".$nom_long."'
 												AND subdivision_type = '".$type_sub."'
 												AND subdivision = '".$subdivision."");
-		//$recup_id = mysql_result($query_id, "id");
+		//$recup_id = mysql_result($query_id, 0,"id");
 		$recup_id = mysql_fetch_array($query_id);
 		$create_prof = mysql_query("INSERT INTO edt_gr_prof (id, id_gr_nom, id_utilisateurs)
 																				VALUES('', '".$recup_id["id"]."', '".renvoiConcordances($tab[4], 4)."')");

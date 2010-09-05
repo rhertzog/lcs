@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: occupation_lieu_heure.php 3323 2009-08-05 10:06:18Z crob $
+ * $Id: occupation_lieu_heure.php 4152 2010-03-21 23:32:16Z adminpaulbert $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -94,10 +94,10 @@ if((!isset($lieu))||(!isset($date))||(!isset($heure))||(!isset($duree))||(!isset
 	die();
 }
 
-$sql="SELECT * FROM absences_creneaux ORDER BY heuredebut_definie_periode;";
+$sql="SELECT * FROM edt_creneaux ORDER BY heuredebut_definie_periode;";
 $res_abs_cren=mysql_query($sql);
 if(mysql_num_rows($res_abs_cren)==0) {
-	echo "<p>La table absences_creneaux n'est pas renseignée!</p>\n";
+	echo "<p>La table edt_creneaux n'est pas renseignée!</p>\n";
 	require("../lib/footer.inc.php");
 	die();
 }

@@ -46,44 +46,90 @@ include_once('./lib/lib_mod_ooo.php'); //les fonctions
 $nom_fichier_modele_ooo =''; //variable à initialiser à blanc pour inclure le fichier suivant et éviter une notice. Pour les autres inclusions, cela est inutile.
 include_once('./lib/chemin.inc.php'); // le chemin des dossiers contenant les  modèles
 
-//Liste des fichiers à compléter à la main (2 données par fichier)
+//Liste des fichiers à compléter à la main (3 données par fichier)
+    // L'entête de la section pour le 1er fichier de la section sinon "" (vide)
     //Le nom du fichier en minuscule avec son extension
 	//La description du document
+	
     //Retenue
-    $fich[]="retenue.odt"; 
-    $utilisation[]="Formulaire de retenue";
-
-
+    $entete_section[]="MODULE DISCIPLINE";
+	$fich[]="retenue.odt";
+    $utilisation[]="Formulaire de retenue";	
     //rapport incident
-    $fich[]="rapport_incident.odt";
+    $entete_section[]="";
+	$fich[]="rapport_incident.odt";
     $utilisation[]="Formulaire de rapport d'incident";
+	
+
+    //modèle ABS2
+	$entete_section[]="MODULE ABSENCE";
+    $fich[]="extraction_demi-journees.ods";
+    $utilisation[]="ABS2 : Tableau des demi-journées d'absences";
+	
+	$entete_section[]="";
+    $fich[]="extraction_saisies.ods";
+    $utilisation[]="ABS2 : Tableau des saisies d'absences";
+	
+	$entete_section[]="";
+    $fich[]="modele_lettre_parents.odt";
+    $utilisation[]="ABS2 : Modèle de lettre aux parents";
+	
+	$entete_section[]="";
+    $fich[]="email.txt";
+    $utilisation[]="ABS2 : Modèle du courriel envoyé aux parents";
+	
+	$entete_section[]="";
+    $fich[]="sms.txt";
+    $utilisation[]="ABS2 : Modèle de SMS envoyé aux parents";
 
 
     //Fiches brevet
+	$entete_section[]="MODULE NOTANET";
     $fich[]="fb_CLG_lv2.ods";
     $utilisation[]="Fiche brevet série collège LV2";
+	
+	$entete_section[]="";
     $fich[]="fb_CLG_dp6.ods";
     $utilisation[]="Fiche brevet série collège ODP 6 heures";
+	
+	$entete_section[]="";
     $fich[]="fb_PRO.ods";
     $utilisation[]="Fiche brevet série professionnelle sans ODP";
+	
+	$entete_section[]="";
     $fich[]="fb_PRO_dp6.ods";
     $utilisation[]="Fiche brevet série professionnelle ODP 6 heures";
+	
+	$entete_section[]="";
     $fich[]="fb_PRO_agri.ods";
     $utilisation[]="Fiche brevet série professionnelle option agricole";
+	
+	$entete_section[]="";
     $fich[]="fb_TECHNO.ods";
     $utilisation[]="Fiche brevet série technologique sans ODP";
+	
+	$entete_section[]="";
     $fich[]="fb_TECHNO_dp6.ods";
     $utilisation[]="Fiche brevet série technologique ODP 6 heures";
+	
+	$entete_section[]="";
     $fich[]="fb_TECHNO_agri.ods";
     $utilisation[]="Fiche brevet série technologique option agricole";
 
-
+    //rapport incident
+	$entete_section[]="MODULE ECTS";
+    $fich[]="documents_ects.odt";
+    $utilisation[]="Documents ECTS (pour BTS, prépas...)";
+	
+	
     $nbfich=sizeof($fich);
 // Fin liste des fichiers
 
 $PHP_SELF=basename($_SERVER['PHP_SELF']);
 creertousrep($nom_dossier_modeles_ooo_mes_modeles.$rne);
 
+$retour=$_SESSION['retour'];
+$_SESSION['retour']=$_SERVER['PHP_SELF'] ;
 
 //**************** EN-TETE *****************
 $titre_page = "Modèle Open Office - gérer ses modèles";
@@ -92,17 +138,17 @@ require_once("../lib/header.inc");
 echo "<SCRIPT LANGUAGE=\"Javascript\" SRC=\"./lib/mod_ooo.js\"> </SCRIPT>";
 //debug_var();
 
-echo "<p class='bold'><a href='./index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
+echo "<p class='bold'><a href='".$retour."'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 echo "</p>\n";
 echo "<BR />\n";
 echo "<p>Ce module est destiné à gérer les modèles Open Office de Gepi.</p>\n";
 echo "</p>\n";
 echo "<BR />\n";
 
-if (isset($_GET['op'])) { $op=$_GET["op"]; } 
-if (isset($_GET['fic'])) { $fic=$_GET["fic"]; } 
-if (isset($_POST['btn'])) { $btn=$_POST["btn"]; } 
-if (isset($_POST['fich_cible'])) { $fich_cible=$_POST["fich_cible"]; } 
+if (isset($_GET['op'])) { $op=$_GET["op"]; }
+if (isset($_GET['fic'])) { $fic=$_GET["fic"]; }
+if (isset($_POST['btn'])) { $btn=$_POST["btn"]; }
+if (isset($_POST['fich_cible'])) { $fich_cible=$_POST["fich_cible"]; }
 
 if ((isset($op)) && ($op=="supp")) { //Supprimer un fichier perso
      // alert("EFFACER $fic");
@@ -114,7 +160,7 @@ echo "<body>";
 
 if (!isset($btn)) { //premier passage : formulaire
     echo "<p >Un modèle personnalisé, envoyé sur le serveur sera utilisé par Gepi</p><hr>\n";
-    echo "<p >Peu importe le nom actuel (gardez le format Open Office (ODT - texte, ODS - tableur), chaque fichier sera renommé correctement.<br>\n";
+    echo "<p >Peu importe le nom actuel (gardez le format Open Office : ODT - texte, ODS - tableur ou txt - texte), chaque fichier sera renommé correctement.<br>\n";
     echo "Les fichiers personnalisés peuvent être supprimés (icône poubelle), contrairement à ceux par défaut.<br />\n";
 	echo "L'ensemble des fichiers peut être consulté en cliquant sur leur icône.</p><br />\n";
 	echo "Lorsque vous créez un nouveau modèle, bien faire attention à la syntaxe des variables utilisées dans le modèle par défaut.</p><br />\n";
@@ -133,29 +179,33 @@ if (!isset($btn)) { //premier passage : formulaire
     for ($i=0;$i<$nbfich;$i++) {
 	  $alt=$alt*(-1);
       //Une ligne du tableau
-      //paire ou impaire
-      echo "<tr class='lig$alt'><form name=\"form$i\" method='post' ENCTYPE='multipart/form-data' action='$PHP_SELF' onsubmit=\"return bonfich('$i')\" >\n";
-      echo "<input type=\"hidden\" name=fich_cible value=$fich[$i] >\n";
-      	 $type_ext = renvoi_nom_image(extension_nom_fichier($fich[$i]));
+      //paire ou impaire	  
+	  if ($entete_section[$i] != "") { // Cas d'un entête
+	      echo "<tr>";
+	      echo "<td colspan=\"6\"></br></br><b>$entete_section[$i]</br></br></b></br></br></td>";
+		  echo "</tr>";
+	  }
+	  echo "<tr class='lig$alt'><form name=\"form$i\" method='post' ENCTYPE='multipart/form-data' action='$PHP_SELF' onsubmit=\"return bonfich('$i')\" >\n";
+	  echo "<input type=\"hidden\" name=fich_cible value=$fich[$i] >\n";
+		 $type_ext = renvoi_nom_image(extension_nom_fichier($fich[$i]));
 		 echo "<td align='center'><a href=\"$nom_dossier_modeles_ooo_par_defaut$fich[$i]\"><img src=\"./images/$type_ext\" border=\"0\" title=\"Consulter le modèle par défaut\"></a>\n";
-         echo "</td>\n";
-         if  (file_exists($nom_dossier_modeles_ooo_mes_modeles.$rne.$fich[$i]))   {
-		 echo "<td align='center'><a href=\"$PHP_SELF?op=supp&fic=$fich[$i]\" onclick='return confirmer()'><img src=\"./images/poubelle.gif\" border=\"0\" title=\"ATTENTION, suppression immédiate !\"></a>\n";
-         echo "&nbsp;&nbsp;<a HREF=\"$nom_dossier_modeles_ooo_mes_modeles$rne$fich[$i]\"><img src=\"./images/$type_ext\" border=\"0\" title=\"Consulter le nouveau modèle\"></a>\n";	
 		 echo "</td>\n";
-		 } else {
+	  if  (file_exists($nom_dossier_modeles_ooo_mes_modeles.$rne.$fich[$i]))   {
+		 echo "<td align='center'><a href=\"$PHP_SELF?op=supp&fic=$fich[$i]\" onclick='return confirmer()'><img src=\"./images/poubelle.gif\" border=\"0\" title=\"ATTENTION, suppression immédiate !\"></a>\n";
+		 echo "&nbsp;&nbsp;<a HREF=\"$nom_dossier_modeles_ooo_mes_modeles$rne$fich[$i]\"><img src=\"./images/$type_ext\" border=\"0\" title=\"Consulter le nouveau modèle\"></a>\n";
+		 echo "</td>\n";
+	  } else {
 		 echo "</td>\n<td>&nbsp;</td>\n";
-		 }
-		 
-      echo "<td>$fich[$i]</td><td>\n";
-      echo "$utilisation[$i]</td><td>\n";
-      echo "<INPUT TYPE=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"512000\">";
-      echo "<input type='file' name='monfichier' value='il a cliqué le bougre'>&nbsp;</td><td>\n";
-      echo "&nbsp;&nbsp;<input type='submit' name='btn' Align='middle' value='Envoyer'  >&nbsp;&nbsp;  \n";
-      echo "</td></form>\n";
-      echo "</tr>\n";
-    }
+	  }
 
+	  echo "<td>$fich[$i]</td><td>\n";
+	  echo "$utilisation[$i]</td><td>\n";
+	  echo "<INPUT TYPE=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"512000\">";
+	  echo "<input type='file' name='monfichier' value='il a cliqué le bougre'>&nbsp;</td><td>\n";
+	  echo "&nbsp;&nbsp;<input type='submit' name='btn' Align='middle' value='Envoyer'  >&nbsp;&nbsp;  \n";
+	  echo "</td></form>\n";
+	  echo "</tr>\n";
+    }
     echo "</table>\n";
 
 }

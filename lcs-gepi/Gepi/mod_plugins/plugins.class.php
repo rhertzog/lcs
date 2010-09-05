@@ -1,6 +1,6 @@
 <?php
 /**
- * @version : $Id: plugins.class.php 3259 2009-06-30 20:14:54Z jjocal $
+ * @version : $Id: plugins.class.php 4976 2010-08-01 11:43:03Z regis $
  *
  * Copyright 2001, 2009 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -20,6 +20,9 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+if (!isset ($_SESSION["login"]) || !$_SESSION["login"]){header("Location: ../../logout.php?auto=1");}
+
 if (!$_SESSION["login"]){Die();}
 /**
  * Classe qui vérifie les droits et les autorisations des pages des plugins de Gepi

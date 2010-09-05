@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: modify_limites.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * @version: $Id: modify_limites.php 4661 2010-06-28 22:34:03Z regis $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -40,13 +40,13 @@ if (!checkAccess()) {
 }
 $msg = '';
 if (isset($_POST['max_size_ko'])) {
-    if (ereg ("^[0-9]{1,}$", $_POST['max_size_ko'])) {
+    if (my_ereg ("^[0-9]{1,}$", $_POST['max_size_ko'])) {
         $max_size = $_POST['max_size_ko']*1024;
         if (!saveSetting("max_size", $max_size)) $msg = "Erreur lors de l'enregistrement de la taille maximale autorisée pour un fichier !";
     }
 }
 if (isset($_POST['total_max_size_ko'])) {
-    if (ereg ("^[0-9]{1,}$", $_POST['total_max_size_ko'])) {
+    if (my_ereg ("^[0-9]{1,}$", $_POST['total_max_size_ko'])) {
         $total_max_size = $_POST['total_max_size_ko']*1024;
         if (!saveSetting("total_max_size", $total_max_size)) $msg = "Erreur lors de l'enregistrement de la taille de l'espace disque maximal autorisé pour une rubrique !";
     }

@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: export_cahier_notes.php 4031 2010-01-20 18:28:15Z crob $
+ * @version: $Id: export_cahier_notes.php 4030 2010-01-20 18:28:06Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: verif_install.php 2211 2008-07-26 21:13:34Z tbelliard $
+ * $Id: verif_install.php 4528 2010-06-02 11:59:14Z tbelliard $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -30,11 +30,10 @@ if (file_exists("./secure/connect.inc.php")) {
             require_once("./lib/global.inc");
             // Premier test
             $liste2 = array();
-            $tableNames = mysql_list_tables($dbDb);
-            $j = '0';
-            while ($j < mysql_num_rows($tableNames)) {
-                $liste2[$j] = mysql_tablename($tableNames, $j);
-                $j++;
+            
+            $tableNames = mysql_query("SHOW TABLES FROM `$dbDb`");
+            while ($row = mysql_fetch_row($tableNames)) {
+                $liste2[] = $row[0];
             }
             
             $flag = 'no';
@@ -55,11 +54,13 @@ if (file_exists("./secure/connect.inc.php")) {
                 $maj = 'yes';
             } else {
                 //test sur le contenu des tables
-                $req = mysql_query("SELECT * FROM utilisateurs");
+                $sql="SELECT * FROM utilisateurs;";
+                $req = mysql_query($sql);
                 $test = mysql_num_rows($req);
                 if ($test == '0') {
-                    $msg = "<p>Il n'y a aucun utilisateurs crée !</p>";
-                $correct_install = 'no';
+                    //$msg = "<p>Il n'y a aucun utilisateur créé !</p>";
+                    $msg = "<p>Aucun utilisateur n'existe !</p>";
+                    $correct_install = 'no';
                 }
 
             }

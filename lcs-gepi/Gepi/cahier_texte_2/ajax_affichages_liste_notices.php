@@ -1,4 +1,25 @@
 <?php
+/*
+ * $Id$
+ *
+ * Copyright 2009 Josselin Jacquard
+ *
+ * This file is part of GEPI.
+ *
+ * GEPI is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GEPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GEPI; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 header('Content-Type: text/html; charset=ISO-8859-1');
 // On désamorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
 if (isset($_GET['traite_anti_inject']) OR isset($_POST['traite_anti_inject'])) $traite_anti_inject = "yes";
@@ -35,8 +56,14 @@ $affiche_tout = isset($_POST["affiche_tout"]) ? $_POST["affiche_tout"] :(isset($
 //date présente
 $aujourdhui = mktime(0,0,0,date("m"),date("d"),date("Y"));
 
+//utile uniquement pour la completion
+//$devoir = new CahierTexteTravailAFaire();
+//$compte_rendu = new CahierTexteCompteRendu();
+//$notice_privee = new CahierTexteNoticePrivee();
+//$liste_comptes_rendus = new PropelObjectCollection();
+
 //récupération du groupe courant
-$utilisateur = $_SESSION['utilisateurProfessionnel'];
+$utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
 if ($utilisateur == null) {
 	header("Location: ../logout.php?auto=1");
 	die();
@@ -68,13 +95,7 @@ foreach ($utilisateur->getGroupes() as $group) {
 	echo "<option id='colonne_gauche_select_group_option_".$group->getId()."' value='".$group->getId()."'";
 	if ($current_group->getId() == $group->getId()) echo " SELECTED ";
 	echo ">";
-	echo $group->getDescription() . "&nbsp;-&nbsp;(";
-	$str = null;
-	foreach ($group->getClasses() as $classe) {
-		$str .= $classe->getClasse() . ", ";
-	}
-	$str = substr($str, 0, -2);
-	echo $str . ")&nbsp;\n";
+	echo $group->getDescriptionAvecClasses();
 	echo "</option>\n";
 }
 echo "</select>&nbsp;";
@@ -83,9 +104,11 @@ echo "<div id=\"div_chaine_liste_notices\" style=\"display:inline;\"><img id=\"c
 
 echo "<p style='font-size:9pt'>";
 if(getSettingValue('cahier_texte_acces_public')!='no'){
-	echo "<a href='../public/index.php?id_groupe=" . $current_group->getId() ."' target='_blank'>Visualiser l'accès public</a>\n<br>";
+	echo "<a href='../public/see_all.php?id_groupe=" . $current_group->getId() ."' target='_blank'>Visualiser l'accès public</a>\n<br>";
 } else {
-	echo "<a href='./see_all.php'>Visualiser les cahiers de textes (accès restreint)</a>\n<br>";
+	//$classes_du_groupe = $current_group->getClasses();
+	//echo "<a href='./see_all.php?year=". date("Y") ."&month=". date("m") ."&day=". date("d") ."&id_classe=" . $classes_du_groupe[0]->getId() ."&id_groupe=" . $current_group->getId() ."'>Visualiser les cahiers de textes</a>\n<br>";
+	echo "<a href='./see_all.php?id_groupe=" . $current_group->getId() ."'>Visualiser les cahiers de textes</a>\n<br>";
 }
 echo "<a href='./exportcsv.php?id_groupe=".$current_group->getId()."'>Export au format csv</a><br/>";
 //echo "<p style=\"background-color: silver; padding: 2px; border: 1px solid black; font-weight: bold;\">" . $current_group->getDescriptionAvecClasses() . "</p><br/>\n";
@@ -115,7 +138,7 @@ foreach ($current_group->getClasses() as $classe) {
 // Affichage des travaux à  faire futurs, toutes matières confondues
 foreach ($current_group->getClasses() as $classe) {
 	if ($total[$classe->getId()] > 0) {
-		echo"La classe " . $classe->getClasse() . " a  <a href=\"javascript:centrerpopup('liste_tous_devoirs.php?classe=". $classe->getId()."&amp;debut=$aujourdhui',260,320,'scrollbars=yes,statusbar=no,resizable=yes');\">" . $total[$classe->getId()];
+		echo"La classe " . $classe->getNom() . " a  <a href=\"javascript:centrerpopup('liste_tous_devoirs.php?classe=". $classe->getId()."&amp;debut=$aujourdhui',260,320,'scrollbars=yes,statusbar=no,resizable=yes');\">" . $total[$classe->getId()];
 		echo (($total[$classe->getId()] == 1) ? " travail personnel" : "travaux personnels");
 		echo "</a> jusqu'au " . strftime("%A %d %B %Y", $date[$classe->getId()]) . ".\n<br style='font-size:2px;'/>";
 	}
@@ -132,61 +155,57 @@ $criteria->add(CahierTexteCompteRenduPeer::DATE_CT, $debutCdt, ">=");
 $criteria->addDescendingOrderByColumn(CahierTexteCompteRenduPeer::DATE_CT);
 $criteria->addAscendingOrderByColumn(CahierTexteCompteRenduPeer::HEURE_ENTRY);
 $liste_comptes_rendus = $current_group->getCahierTexteCompteRendus($criteria);
-$compteur_nb_total_notices = $compteur_nb_total_notices + count($liste_comptes_rendus);
-if ($affiche_tout != "oui") {
-	//limit à 7 devoirs
-	$liste_comptes_rendus = array_slice($liste_comptes_rendus, 0 , 7);
-}
+$compteur_nb_total_notices = $compteur_nb_total_notices + $liste_comptes_rendus->count();
 
 //récupération de $liste_devoir : devoirs pour la matière en cours
 $criteria = new Criteria(CahierTexteTravailAFairePeer::DATABASE_NAME);
 $criteria->add(CahierTexteTravailAFairePeer::DATE_CT, $debutCdt, ">=");
 $criteria->addDescendingOrderByColumn(CahierTexteTravailAFairePeer::DATE_CT);
 $liste_devoir = $current_group->getCahierTexteTravailAFaires($criteria);
-$compteur_nb_total_notices = $compteur_nb_total_notices + count($liste_devoir);
-if ($affiche_tout != "oui") {
-	//limit à 7 devoirs
-	$liste_devoir = array_slice($liste_devoir, 0 , 7);
-}
+$compteur_nb_total_notices = $compteur_nb_total_notices + $liste_devoir->count();
 
 //récupération de $liste_notice_privee :
 $criteria = new Criteria();
 $criteria->add(CahierTexteNoticePriveePeer::DATE_CT, $debutCdt, ">=");
 $criteria->addDescendingOrderByColumn(CahierTexteNoticePriveePeer::DATE_CT);
 $liste_notice_privee = $current_group->getCahierTexteNoticePrivees($criteria);
-$compteur_nb_total_notices = $compteur_nb_total_notices + count($liste_notice_privee);
-if ($affiche_tout != "oui") {
-	//limit à 7 devoirs
-	$liste_notice_privee = array_slice($liste_notice_privee, 0 , 7);
-}
+$compteur_nb_total_notices = $compteur_nb_total_notices + $liste_notice_privee->count();
 
 // Boucle d'affichage des notices dans la colonne de gauche
 $compteur_notices_affiches = 0;
 $date_ct_old = -1;
 while (true) {
-	$devoir = isset($liste_devoir[0]) ? $liste_devoir[0] : NULL;
-	$compte_rendu = isset($liste_comptes_rendus[0]) ? $liste_comptes_rendus[0] : NULL;
-	$notice_privee = isset($liste_notice_privee[0]) ? $liste_notice_privee[0] : NULL;
+	$devoir = $liste_devoir->getCurrent();
+	$compte_rendu = $liste_comptes_rendus->getCurrent();
+	$notice_privee = $liste_notice_privee->getCurrent();
+	if ($affiche_tout != "oui") {
+	    if ($liste_devoir->getPosition() > 6) { $devoir = null; }
+	    if ($liste_comptes_rendus->getPosition() > 6) { $compte_rendu = null; }
+	    if ($liste_notice_privee->getPosition() > 6) { $notice_privee = null; }
+	}
 
+	
 	//si $devoir n'est pas nul et que la date du devoir est posterieure à celle du compte rendu
 	if ($compte_rendu != null && ($devoir == null || $compte_rendu->getDateCt() >= $devoir->getDateCt() ) && ($notice_privee == null || $compte_rendu->getDateCt() >= $notice_privee->getDateCt() )) {
 
 		//si $compte_rendu n'est pas nul et que la date du $compte_rendu est posterieure à celle du devoir
-		$liste_comptes_rendus = array_slice($liste_comptes_rendus, 1);
+		
 		$compteur_notices_affiches = $compteur_notices_affiches + 1;
-		 affiche_compte_rendu_vignette($compte_rendu, $couleur_bord_tableau_notice, $color_fond_notices);
+		affiche_compte_rendu_vignette($compte_rendu, $couleur_bord_tableau_notice, $color_fond_notices);
+		$liste_comptes_rendus->getNext();
 
 	} elseif ($notice_privee != null && ($compte_rendu == null || $notice_privee->getDateCt() >= $compte_rendu->getDateCt()) && ($devoir == null || $notice_privee->getDateCt() >= $devoir->getDateCt() )) {
 
-		$liste_notice_privee = array_slice($liste_notice_privee, 1);
 		$compteur_notices_affiches = $compteur_notices_affiches + 1;
 		affiche_notice_privee_vignette($notice_privee, $couleur_bord_tableau_notice, $color_fond_notices);
+		$liste_notice_privee->getNext();
 
 	} elseif ($devoir != null && ($compte_rendu == null || $devoir->getDateCt() >= $compte_rendu->getDateCt()) && ($notice_privee == null || $devoir->getDateCt() >= $notice_privee->getDateCt() )) {
 
-		$liste_devoir = array_slice($liste_devoir, 1);
+
 		$compteur_notices_affiches = $compteur_notices_affiches + 1;
 		affiche_devoir_vignette($devoir, $couleur_bord_tableau_notice, $color_fond_notices);
+		$liste_devoir->getNext();
 
 	} else {
 		//on a tout affiché
@@ -236,7 +255,7 @@ foreach ($ctCompteRenduInfoGenerales as $ctCompteRenduInfoGenerale) {
 	echo "<table style=\"border-style:solid; border-width:0px; background-color: ".$color_fond_notices["i"] ."; padding: 2px; margin: 0px;\" width=\"100%\" cellpadding=\"2\" summary=\"Tableau d'information generale...\">";
 	echo "<tr style=\"border-style:solid; border-width:1px; background-color: ".$couleur_cellule["i"]."; padding: 0px; margin: 0px;\">\n<td>\n";
 
-	echo("<div style='display: none; color: red; margin: 0px; float: right;' id='compte_rendu_en_cours_info_".$ctCompteRenduInfoGenerale->getIdCt()."'></div>");
+	echo("<div style='display: none; color: red; margin: 0px; float: left;' id='compte_rendu_en_cours_info_".$ctCompteRenduInfoGenerale->getIdCt()."'></div>");
 	echo("<div style=\"margin: 0px; float: right;\">");
 	echo("<a href=\"#\" onclick=\"javascript:
 						getWinEditionNotice().setAjaxContent('ajax_edition_compte_rendu.php?id_ct=".$ctCompteRenduInfoGenerale->getIdCt()."&today=0&id_groupe=".$id_groupe."',

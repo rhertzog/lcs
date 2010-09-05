@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version $Id: select_aid_groupes.php 1592 2008-03-06 23:00:24Z jjocal $
+ * @version $Id: select_aid_groupes.php 4070 2010-02-05 19:43:06Z adminpaulbert $
  * @copyright 2008
  *
  * Fichier qui renvoie un select des professeurs de l'établissement
@@ -36,7 +36,7 @@ echo '
 		$indice_aid[$i] = mysql_result($query, $i, "id");
 		/*/ On récupère le nom précis de cette AID
 		$query2 = mysql_query("SELECT nom FROM aid WHERE id = '".$indice_aid[$i]."' ORDER BY nom");
-		$nom_aid = mysql_result($query2, "nom");
+		$nom_aid = mysql_result($query2, 0,"nom");
 		$query3 = mysql_query("SELECT login FROM j_aid_eleves WHERE indice_aid = '".$indice_aid[$i]."'");
 		$nbre_eleves = mysql_num_rows($query3);
 		 ('.$nom_aid.' avec '.$nbre_eleves.' élèves)*/

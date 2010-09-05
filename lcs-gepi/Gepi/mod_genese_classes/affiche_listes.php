@@ -1,5 +1,5 @@
 <?php
-/* $Id: affiche_listes.php 3323 2009-08-05 10:06:18Z crob $ */
+/* $Id: affiche_listes.php 4878 2010-07-24 13:54:01Z regis $ */
 /*
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -33,7 +33,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 //======================================================================================
 
@@ -117,6 +117,9 @@ if(!isset($afficher_listes)) {
 
 	// Ajout d'une requête pour l'affichage en cours
 	if(isset($_POST['ajouter'])) {
+	//if((isset($_POST['ajouter']))||
+	//((isset($_POST['modifier_requete']))&&($_POST['modifier_requete']=='y'))) {
+
 		$id_clas_act=isset($_POST['id_clas_act']) ? $_POST['id_clas_act'] : array();
 		$clas_fut=isset($_POST['clas_fut']) ? $_POST['clas_fut'] : array();
 		$avec_lv1=isset($_POST['avec_lv1']) ? $_POST['avec_lv1'] : array();
@@ -127,6 +130,9 @@ if(!isset($afficher_listes)) {
 		$sans_lv3=isset($_POST['sans_lv3']) ? $_POST['sans_lv3'] : array();
 		$avec_autre=isset($_POST['avec_autre']) ? $_POST['avec_autre'] : array();
 		$sans_autre=isset($_POST['sans_autre']) ? $_POST['sans_autre'] : array();
+
+		$avec_profil=isset($_POST['avec_profil']) ? $_POST['avec_profil'] : array();
+		$sans_profil=isset($_POST['sans_profil']) ? $_POST['sans_profil'] : array();
 
 		//$id_aff=isset($_POST['id_aff']) ? $_POST['id_aff'] : (isset($_GET['id_aff']) ? $_GET['id_aff'] : NULL);
 		//if((my_ereg_replace("[0-9]","",$id_aff)!="")||($id_aff=="")) {unset($id_aff);}
@@ -143,15 +149,38 @@ if(!isset($afficher_listes)) {
 			}
 		}
 
-		$sql="SELECT MAX(id_req) AS max_id_req FROM gc_affichages WHERE projet='$projet' AND id_aff='$id_aff';";
-		//echo "$sql<br />";
-		$res=mysql_query($sql);
-		if(mysql_num_rows($res)==0) {
-			$id_req=1;
+		if((isset($_POST['modifier_requete']))&&($_POST['modifier_requete']=='y')) {
+			$id_req=$_POST['id_req'];
+			$sql="SELECT 1=1 FROM gc_affichages WHERE projet='$projet' AND id_aff='$id_aff' AND id_req='$id_req';";
+			//echo "$sql<br />";
+			$res=mysql_query($sql);
+			if(mysql_num_rows($res)==0) {
+				echo "<p style='color:red'>La requête n°$id_req n'est pas associée à l'affichage n°$id_aff sur le projet $projet.</p>\n";
+
+				require("../lib/footer.inc.php");
+				die();
+			}
+
+			$sql="DELETE FROM gc_affichages WHERE projet='$projet' AND id_aff='$id_aff' AND id_req='$id_req';";
+			$menage=mysql_query($sql);
+			if(!$menage) {
+				echo "<p style='color:red'>ERREUR lors du ménage préalable de la requête n°$id_req de l'affichage n°$id_aff sur le projet $projet.</p>\n";
+
+				require("../lib/footer.inc.php");
+				die();
+			}
 		}
 		else {
-			$lig_tmp=mysql_fetch_object($res);
-			$id_req=$lig_tmp->max_id_req+1;
+			$sql="SELECT MAX(id_req) AS max_id_req FROM gc_affichages WHERE projet='$projet' AND id_aff='$id_aff';";
+			//echo "$sql<br />";
+			$res=mysql_query($sql);
+			if(mysql_num_rows($res)==0) {
+				$id_req=1;
+			}
+			else {
+				$lig_tmp=mysql_fetch_object($res);
+				$id_req=$lig_tmp->max_id_req+1;
+			}
 		}
 		//echo "id_req=$id_req<br />";
 
@@ -192,6 +221,13 @@ if(!isset($afficher_listes)) {
 				$insert=mysql_query($sql);
 			}
 		}
+		if(count($avec_profil)>0) {
+			for($i=0;$i<count($avec_profil);$i++) {
+				$sql="INSERT INTO gc_affichages SET projet='$projet', id_aff='$id_aff', id_req='$id_req', type='avec_profil', valeur='$avec_profil[$i]';";
+				$insert=mysql_query($sql);
+			}
+		}
+
 		if(count($sans_lv1)>0) {
 			for($i=0;$i<count($sans_lv1);$i++) {
 				$sql="INSERT INTO gc_affichages SET projet='$projet', id_aff='$id_aff', id_req='$id_req', type='sans_lv1', valeur='$sans_lv1[$i]';";
@@ -216,8 +252,14 @@ if(!isset($afficher_listes)) {
 				$insert=mysql_query($sql);
 			}
 		}
+		if(count($sans_profil)>0) {
+			for($i=0;$i<count($sans_profil);$i++) {
+				$sql="INSERT INTO gc_affichages SET projet='$projet', id_aff='$id_aff', id_req='$id_req', type='sans_profil', valeur='$sans_profil[$i]';";
+				$insert=mysql_query($sql);
+			}
+		}
 
-	}
+	} // FIN DE L'AJOUT D'UNE REQUETE
 
 
 	//========================================================================
@@ -290,12 +332,29 @@ if(!isset($afficher_listes)) {
 	//=========================================================
 
 	if(isset($id_aff)) {
-		echo "<p class='bold'>Liste de requêtes pour l'affichage n°$id_aff</p>";
+		echo "<p class='bold'>Liste de requêtes pour l'affichage n°$id_aff</p>\n";
 	}
 
 	//================================
 	// Formulaire d'ajout de requêtes:
 	echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n";
+
+	if((isset($_GET['editer_requete']))&&(isset($_GET['id_req'])&&($_GET['id_req']!="")&&(strlen(my_ereg_replace("[0-9]","",$_GET['id_req']))==0))) {
+		$id_req=$_GET['id_req'];
+		echo "<p class='bold'>Modification de la requête n°$id_req</p>\n";
+		echo "<input type='hidden' name='modifier_requete' value='y' />\n";
+
+		$tab_ed_req=array();
+		$sql="SELECT * FROM gc_affichages WHERE projet='$projet' AND id_aff='$id_aff' AND id_req='$id_req';";
+		//echo "$sql<br />\n";
+		$res_edit_req=mysql_query($sql);
+		if(mysql_num_rows($res_edit_req)>0) {
+			while($lig_edit_req=mysql_fetch_object($res_edit_req)) {
+				$tab_ed_req[$lig_edit_req->type][]=$lig_edit_req->valeur;
+				//echo "\$tab_ed_req[$lig_edit_req->type][]=$lig_edit_req->valeur<br />";
+			}
+		}
+	}
 
 	if(isset($id_aff)) {
 		echo "<input type='hidden' name='id_aff' value='$id_aff' />\n";
@@ -312,21 +371,36 @@ if(!isset($afficher_listes)) {
 	if($nb_lv2>0) {echo "<th>LV2</th>\n";}
 	if($nb_lv3>0) {echo "<th>LV3</th>\n";}
 	if($nb_autre>0) {echo "<th>Autre option</th>\n";}
+	echo "<th>Profil</th>\n";
 	echo "</tr>\n";
 
 	echo "<tr>\n";
 	echo "<td style='vertical-align:top; padding:2px;' class='lig-1'>\n";
 	$cpt=0;
 	while($lig=mysql_fetch_object($res_clas_act)) {
-		echo "<input type='checkbox' name='id_clas_act[]' id='id_clas_act_$cpt' value='$lig->id_classe' /><label for='id_clas_act_$cpt'>$lig->classe</label><br />\n";
+		echo "<input type='checkbox' name='id_clas_act[]' id='id_clas_act_$cpt' value='$lig->id_classe' ";
+		if((isset($tab_ed_req['id_clas_act']))&&(in_array($lig->id_classe,$tab_ed_req['id_clas_act']))) {
+			echo "checked ";
+		}
+		echo "/><label for='id_clas_act_$cpt'>$lig->classe</label><br />\n";
 		$cpt++;
 	}
-	echo "<input type='checkbox' name='id_clas_act[]' id='id_clas_act_$cpt' value='Red' /><label for='id_clas_act_$cpt'>Redoublants</label><br />\n";
+	echo "<input type='checkbox' name='id_clas_act[]' id='id_clas_act_$cpt' value='Red' ";
+	if((isset($tab_ed_req['id_clas_act']))&&(in_array('Red',$tab_ed_req['id_clas_act']))) {
+		echo "checked ";
+	}
+	echo "/><label for='id_clas_act_$cpt'>Redoublants</label><br />\n";
 	$cpt++;
-	echo "<input type='checkbox' name='id_clas_act[]' id='id_clas_act_$cpt' value='Arr' /><label for='id_clas_act_$cpt'>Arrivants</label><br />\n";
+	//echo "<input type='checkbox' name='id_clas_act[]' id='id_clas_act_$cpt' value='Arr' /><label for='id_clas_act_$cpt'>Arrivants</label><br />\n";
+	echo "<input type='checkbox' name='id_clas_act[]' id='id_clas_act_$cpt' value='Arriv' ";
+	if((isset($tab_ed_req['id_clas_act']))&&(in_array('Arriv',$tab_ed_req['id_clas_act']))) {
+		echo "checked ";
+	}
+	echo "/><label for='id_clas_act_$cpt'>Arrivants</label><br />\n";
 	$cpt++;
 	echo "</td>\n";
 
+	$classe_fut=array();
 	echo "<td style='vertical-align:top; padding:2px;' class='lig-1'>\n";
 	$cpt=0;
 	while($lig=mysql_fetch_object($res_clas_fut)) {
@@ -336,16 +410,31 @@ if(!isset($afficher_listes)) {
 		$sql="SELECT 1=1 FROM gc_eleves_options WHERE projet='$projet' AND classe_future='$lig->classe';";
 		$res_test=mysql_query($sql);
 		if(mysql_num_rows($res_test)>0) {
-			echo "<input type='checkbox' name='clas_fut[]' id='clas_fut_$cpt' value='$lig->classe' /><label for='clas_fut_$cpt'>$lig->classe</label><br />\n";
+			echo "<input type='checkbox' name='clas_fut[]' id='clas_fut_$cpt' value='$lig->classe' ";
+			if((isset($tab_ed_req['clas_fut']))&&(in_array($lig->classe,$tab_ed_req['clas_fut']))) {
+				echo "checked ";
+			}
+			echo "/><label for='clas_fut_$cpt'>$lig->classe</label><br />\n";
 		}
 		else {
 			echo "_ $lig->classe<br />\n";
 		}
 
+		$classe_fut[]=$lig->classe;
+
 		$cpt++;
 	}
-	echo "<input type='checkbox' name='clas_fut[]' id='clas_fut_$cpt' value='' /><label for='clas_fut_$cpt'>Non encore affecté</label><br />\n";
+	echo "<input type='checkbox' name='clas_fut[]' id='clas_fut_$cpt' value='' ";
+	if((isset($tab_ed_req['clas_fut']))&&(in_array("",$tab_ed_req['clas_fut']))) {
+		echo "checked ";
+	}
+	echo "/><label for='clas_fut_$cpt'>Non encore affecté</label><br />\n";
 	$cpt++;
+
+	$classe_fut[]="Red";
+	$classe_fut[]="Dep";
+	$classe_fut[]=""; // Vide pour les Non Affectés
+
 	/*
 	echo "<input type='checkbox' name='clas_fut[]' id='clas_fut_$cpt' value='Red' /><label for='clas_fut_$cpt'>Red</label><br />\n";
 	$cpt++;
@@ -365,10 +454,18 @@ if(!isset($afficher_listes)) {
 			while($lig=mysql_fetch_object($res_lv1)) {
 				echo "<tr>\n";
 				echo "<td>\n";
-				echo "<input type='checkbox' name='avec_lv1[]' value='$lig->opt' />\n";
+				echo "<input type='checkbox' name='avec_lv1[]' value='$lig->opt' ";
+				if((isset($tab_ed_req['avec_lv1']))&&(in_array($lig->opt,$tab_ed_req['avec_lv1']))) {
+					echo "checked ";
+				}
+				echo "/>\n";
 				echo "</td>\n";
 				echo "<td>\n";
-				echo "<input type='checkbox' name='sans_lv1[]' value='$lig->opt' />\n";
+				echo "<input type='checkbox' name='sans_lv1[]' value='$lig->opt' ";
+				if((isset($tab_ed_req['sans_lv1']))&&(in_array($lig->opt,$tab_ed_req['sans_lv1']))) {
+					echo "checked ";
+				}
+				echo "/>\n";
 				echo "</td>\n";
 				echo "<td>\n";
 				echo "$lig->opt\n";
@@ -390,10 +487,18 @@ if(!isset($afficher_listes)) {
 			while($lig=mysql_fetch_object($res_lv2)) {
 				echo "<tr>\n";
 				echo "<td>\n";
-				echo "<input type='checkbox' name='avec_lv2[]' value='$lig->opt' />\n";
+				echo "<input type='checkbox' name='avec_lv2[]' value='$lig->opt' ";
+				if((isset($tab_ed_req['avec_lv2']))&&(in_array($lig->opt,$tab_ed_req['avec_lv2']))) {
+					echo "checked ";
+				}
+				echo "/>\n";
 				echo "</td>\n";
 				echo "<td>\n";
-				echo "<input type='checkbox' name='sans_lv2[]' value='$lig->opt' />\n";
+				echo "<input type='checkbox' name='sans_lv2[]' value='$lig->opt' ";
+				if((isset($tab_ed_req['sans_lv2']))&&(in_array($lig->opt,$tab_ed_req['sans_lv2']))) {
+					echo "checked ";
+				}
+				echo "/>\n";
 				echo "</td>\n";
 				echo "<td>\n";
 				echo "$lig->opt\n";
@@ -415,10 +520,18 @@ if(!isset($afficher_listes)) {
 			while($lig=mysql_fetch_object($res_lv3)) {
 				echo "<tr>\n";
 				echo "<td>\n";
-				echo "<input type='checkbox' name='avec_lv3[]' value='$lig->opt' />\n";
+				echo "<input type='checkbox' name='avec_lv3[]' value='$lig->opt' ";
+				if((isset($tab_ed_req['avec_lv3']))&&(in_array($lig->opt,$tab_ed_req['avec_lv3']))) {
+					echo "checked ";
+				}
+				echo "/>\n";
 				echo "</td>\n";
 				echo "<td>\n";
-				echo "<input type='checkbox' name='sans_lv3[]' value='$lig->opt' />\n";
+				echo "<input type='checkbox' name='sans_lv3[]' value='$lig->opt' ";
+				if((isset($tab_ed_req['sans_lv3']))&&(in_array($lig->opt,$tab_ed_req['sans_lv3']))) {
+					echo "checked ";
+				}
+				echo "/>\n";
 				echo "</td>\n";
 				echo "<td>\n";
 				echo "$lig->opt\n";
@@ -440,10 +553,18 @@ if(!isset($afficher_listes)) {
 			while($lig=mysql_fetch_object($res_autre)) {
 				echo "<tr>\n";
 				echo "<td>\n";
-				echo "<input type='checkbox' name='avec_autre[]' value='$lig->opt' />\n";
+				echo "<input type='checkbox' name='avec_autre[]' value='$lig->opt' ";
+				if((isset($tab_ed_req['avec_autre']))&&(in_array($lig->opt,$tab_ed_req['avec_autre']))) {
+					echo "checked ";
+				}
+				echo "/>\n";
 				echo "</td>\n";
 				echo "<td>\n";
-				echo "<input type='checkbox' name='sans_autre[]' value='$lig->opt' />\n";
+				echo "<input type='checkbox' name='sans_autre[]' value='$lig->opt' ";
+				if((isset($tab_ed_req['sans_autre']))&&(in_array($lig->opt,$tab_ed_req['sans_autre']))) {
+					echo "checked ";
+				}
+				echo "/>\n";
 				echo "</td>\n";
 				echo "<td>\n";
 				echo "$lig->opt\n";
@@ -454,6 +575,39 @@ if(!isset($afficher_listes)) {
 		echo "</td>\n";
 	}
 
+	//=============================
+	include("lib_gc.php");
+	// On y initialise le tableau des profils
+	//=============================
+
+	echo "<td style='vertical-align:top; padding:2px;' class='lig-1'>\n";
+		echo "<table class='boireaus' border='1' summary='Profil'>\n";
+		echo "<tr>\n";
+		echo "<th>Avec</th>\n";
+		echo "<th>Sans</th>\n";
+		echo "<th>Profil</th>\n";
+		echo "</tr>\n";
+
+		for($loop=0;$loop<count($tab_profil);$loop++) {
+			echo "<tr>\n";
+			echo "<td>\n";
+			echo "<input type='checkbox' name='avec_profil[]' value='$tab_profil[$loop]' ";
+			if((isset($tab_ed_req['avec_profil']))&&(in_array($tab_profil[$loop],$tab_ed_req['avec_profil']))) {echo "checked ";}
+			echo "/>\n";
+			echo "</td>\n";
+			echo "<td>\n";
+			echo "<input type='checkbox' name='sans_profil[]' value='$tab_profil[$loop]' ";
+			if((isset($tab_ed_req['sans_profil']))&&(in_array($tab_profil[$loop],$tab_ed_req['sans_profil']))) {echo "checked ";}
+			echo "/>\n";
+			echo "</td>\n";
+			echo "<td>\n";
+			echo "$tab_profil[$loop]\n";
+			echo "</td>\n";
+			echo "</tr>\n";
+		}
+		echo "</table>\n";
+	echo "</td>\n";
+
 	// Pouvoir faire une recherche par niveau aussi?
 
 
@@ -462,7 +616,12 @@ if(!isset($afficher_listes)) {
 
 	echo "<input type='hidden' name='projet' value='$projet' />\n";
 	//echo "<input type='hidden' name='is_posted' value='y' />\n";
-	echo "<p align='center'><input type='submit' name='ajouter' value='Ajouter' /></p>\n";
+	if(isset($_GET['editer_requete'])) {
+		echo "<p align='center'><input type='submit' name='ajouter' value='Modifier la requête' /></p>\n";
+	}
+	else {
+		echo "<p align='center'><input type='submit' name='ajouter' value='Ajouter' /></p>\n";
+	}
 	//================================
 
 	//echo "<input type='checkbox' name='afficher_listes' value='y' /> Finaliser et afficher les listes\n";
@@ -484,7 +643,9 @@ if(!isset($afficher_listes)) {
 				$txt_requete.="<input type='checkbox' name='suppr[]' id='suppr_$lig->id_req' value='$lig->id_req' /> ";
 				$txt_requete.="</td>\n";
 				$txt_requete.="<td>\n";
-				$txt_requete.="<b><label for='suppr_$lig->id_req'>Requête n°$lig->id_req</label></b>";
+				//$txt_requete.="<b><label for='suppr_$lig->id_req'>Requête n°$lig->id_req</label></b>";
+				$txt_requete.="<b><label for='suppr_$lig->id_req'>Requête n°$lig->id_req</label> <a href='".$_SERVER['PHP_SELF']."?editer_requete=y&amp;id_aff=$id_aff&amp;id_req=$lig->id_req&amp;projet=$projet'><img src ='../images/edit16.png'
+width='16' height='16' alt='Editer les paramètres de la requête' /></a></b>";
 
 				//===========================================
 				$id_req=$lig->id_req;
@@ -492,6 +653,8 @@ if(!isset($afficher_listes)) {
 				$sql_ele="SELECT DISTINCT login FROM gc_eleves_options WHERE projet='$projet' AND classe_future!='Dep' AND classe_future!='Red'";
 				$sql_ele_id_classe_act="";
 				$sql_ele_classe_fut="";
+				$sql_avec_profil="";
+				$sql_sans_profil="";
 
 				$sql="SELECT * FROM gc_affichages WHERE projet='$projet' AND id_aff='$id_aff' AND id_req='$id_req' ORDER BY type;";
 				$res_tmp=mysql_query($sql);
@@ -521,6 +684,11 @@ if(!isset($afficher_listes)) {
 							$sql_ele.=" AND liste_opt LIKE '%|$lig_tmp->valeur|%'";
 							break;
 		
+						case 'avec_profil':
+							if($sql_avec_profil!='') {$sql_avec_profil.=" OR ";}
+							$sql_avec_profil.="profil='$lig_tmp->valeur'";
+							break;
+		
 						case 'sans_lv1':
 							$sql_ele.=" AND liste_opt NOT LIKE '%|$lig_tmp->valeur|%'";
 							break;
@@ -533,13 +701,20 @@ if(!isset($afficher_listes)) {
 						case 'sans_autre':
 							$sql_ele.=" AND liste_opt NOT LIKE '%|$lig_tmp->valeur|%'";
 							break;
+
+						case 'sans_profil':
+							if($sql_sans_profil!='') {$sql_sans_profil.=" AND ";}
+							$sql_sans_profil.="profil!='$lig_tmp->valeur'";
+							break;
 					}
 				}
 		
 				//$tab_ele=array();
-		
+
 				if($sql_ele_id_classe_act!='') {$sql_ele.=" AND ($sql_ele_id_classe_act)";}
 				if($sql_ele_classe_fut!='') {$sql_ele.=" AND ($sql_ele_classe_fut)";}
+				if($sql_avec_profil!='') {$sql_ele.=" AND ($sql_avec_profil)";}
+				if($sql_sans_profil!='') {$sql_ele.=" AND ($sql_sans_profil)";}
 		
 				$sql_ele.=";";
 				//echo "$sql_ele<br />\n";
@@ -872,11 +1047,52 @@ else {
 	// On y initialise les couleurs
 	// Il faut que le tableaux $classe_fut soit initialisé.
 	//=============================
+
+	necessaire_bull_simple();
+
+	//=============================
+	$titre="Sélection du profil";
+	$texte="<p style='text-align:center;'>";
+	for($loop=0;$loop<count($tab_profil);$loop++) {
+		if($loop>0) {$texte.=" - ";}
+		$texte.="<a href='#' onclick=\"set_profil('".$tab_profil[$loop]."');return false;\">$tab_profil[$loop]</a>";
+	}
+	$texte.="</p>\n";
+	$tabdiv_infobulle[]=creer_div_infobulle('div_set_profil',$titre,"",$texte,"",14,0,'y','y','n','n');
+
+
+	echo "<script type='text/javascript'>
+	var couleur_profil=new Array($chaine_couleur_profil);
+	var tab_profil=new Array($chaine_profil);
+
+	function set_profil(profil) {
+		var cpt=document.getElementById('profil_courant').value;
+		document.getElementById('profil_'+cpt).value=profil;
+
+		for(m=0;m<couleur_profil.length;m++) {
+			if(document.getElementById('profil_'+cpt).value==tab_profil[m]) {
+				document.getElementById('div_profil_'+cpt).style.color=couleur_profil[m];
+			}
+		}
+
+		document.getElementById('div_profil_'+cpt).innerHTML=profil;
+		cacher_div('div_set_profil');
+	}
+
+	function affiche_set_profil(cpt) {
+		document.getElementById('profil_courant').value=cpt;
+		afficher_div('div_set_profil','y',100,100);
+	}
+</script>\n";
+	//=============================
+
 //============================================================
 //============================================================
 //============================================================
 
 	echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n";
+
+	echo "<input type='hidden' name='profil_courant' id='profil_courant' value='-1' />\n";
 
 	// Colorisation
 	echo "<p>Colorisation&nbsp;: ";
@@ -927,6 +1143,8 @@ else {
 
 		$sql_ele_id_classe_act="";
 		$sql_ele_classe_fut="";
+		$sql_avec_profil="";
+		$sql_sans_profil="";
 		//=========================
 
 		$sql="SELECT * FROM gc_affichages WHERE projet='$projet' AND id_aff='$id_aff' AND id_req='$id_req' ORDER BY type;";
@@ -1008,6 +1226,17 @@ else {
 					$sql_ele.=" AND liste_opt LIKE '%|$lig->valeur|%'";
 					break;
 
+				case 'avec_profil':
+					$avec_profil[]=$lig->valeur;
+					if(!isset($tab_requete[1])) {$tab_requete[1]="Avec profil (<span style='color:black;'>";$tab_requete_csv[1]="Avec profil (";} else {$tab_requete[1].=", ";$tab_requete_csv[1].=", ";}
+					$tab_requete[1].=$lig->valeur;$tab_requete_csv[1].=$lig->valeur;
+
+					$lien_affect.="&amp;avec_profil[]=$lig->valeur";
+
+					if($sql_avec_profil!='') {$sql_avec_profil.=" OR ";}
+					$sql_avec_profil.="profil='$lig->valeur'";
+					break;
+
 				case 'sans_lv1':
 					$sans_lv1[]=$lig->valeur;
 					if(!isset($tab_requete[3])) {$tab_requete[3]="Sans les options (<span style='color:red;'>";$tab_requete_csv[3]="Sans les options (";} else {$tab_requete[3].=", ";$tab_requete_csv[3].=", ";}
@@ -1044,6 +1273,17 @@ else {
 
 					$sql_ele.=" AND liste_opt NOT LIKE '%|$lig->valeur|%'";
 					break;
+
+				case 'sans_profil':
+					$sans_profil[]=$lig->valeur;
+					if(!isset($tab_requete[1])) {$tab_requete[1]="Sans profil (<span style='color:black;'>";$tab_requete_csv[1]="Sans profil (";} else {$tab_requete[1].=", ";$tab_requete_csv[1].=", ";}
+					$tab_requete[1].=$lig->valeur;$tab_requete_csv[1].=$lig->valeur;
+
+					$lien_affect.="&amp;sans_profil[]=$lig->valeur";
+
+					if($sql_sans_profil!='') {$sql_sans_profil.=" AND ";}
+					$sql_sans_profil.="profil='$lig->valeur'";
+					break;
 			}
 		}
 
@@ -1074,6 +1314,8 @@ else {
 
 		if($sql_ele_id_classe_act!='') {$sql_ele.=" AND ($sql_ele_id_classe_act)";}
 		if($sql_ele_classe_fut!='') {$sql_ele.=" AND ($sql_ele_classe_fut)";}
+		if($sql_avec_profil!='') {$sql_ele.=" AND ($sql_avec_profil)";}
+		if($sql_sans_profil!='') {$sql_ele.=" AND ($sql_sans_profil)";}
 
 		$sql_ele.=";";
 		//echo "$sql_ele<br />\n";
@@ -1128,7 +1370,6 @@ else {
 		if(count($lv2)>0) {echo "<th>&nbsp;</th>\n";}
 		if(count($lv3)>0) {echo "<th>&nbsp;</th>\n";}
 		if(count($autre_opt)>0) {echo "<th>&nbsp;</th>\n";}
-
 		echo "</tr>\n";
 
 		//==========================================
@@ -1152,8 +1393,16 @@ else {
 	
 			//==========================================
 			//$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login AND jec.id_classe='$id_classe_actuelle[$j]' ORDER BY e.nom,e.prenom;";
+			$num_per2=-1;
 			if(($id_classe_actuelle[$j]!='Red')&&($id_classe_actuelle[$j]!='Arriv')) {
 				$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login AND jec.id_classe='$id_classe_actuelle[$j]' ORDER BY e.nom,e.prenom;";
+
+				$sql_per="SELECT num_periode FROM periodes WHERE id_classe='$id_classe_actuelle[$j]' ORDER BY num_periode DESC LIMIT 1;";
+				$res_per=mysql_query($sql_per);
+				if(mysql_num_rows($res_per)>0) {
+					$lig_per=mysql_fetch_object($res_per);
+					$num_per2=$lig_per->num_periode;
+				}
 			}
 			else {
 				$sql="SELECT DISTINCT e.* FROM eleves e, gc_ele_arriv_red gc WHERE gc.login=e.login AND gc.statut='$id_classe_actuelle[$j]' AND gc.projet='$projet' ORDER BY e.nom,e.prenom;";
@@ -1178,8 +1427,10 @@ else {
 						echo "<tr id='tr_eleve_$cpt' class='white_hover'>\n";
 						echo "<td>\n";
 						echo "<a name='eleve$cpt'></a>\n";
-						if(file_exists("../photos/eleves/".$lig->elenoet.".jpg")) {
-							echo "<a href='#eleve$cpt' onmouseover=\"affiche_photo('".$lig->elenoet.".jpg','".addslashes(strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom)))."');afficher_div('div_photo','y',100,100);\" onmouseout=\"cacher_div('div_photo')\" onclick=\"return false;\">";
+						//if(file_exists("../photos/eleves/".$lig->elenoet.".jpg")) {
+						if(nom_photo($lig->elenoet)) {
+							//echo "<a href='#eleve$cpt' onmouseover=\"affiche_photo('".$lig->elenoet.".jpg','".addslashes(strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom)))."');afficher_div('div_photo','y',100,100);\" onmouseout=\"cacher_div('div_photo')\" onclick=\"return false;\">";
+							echo "<a href='#eleve$cpt' onmouseover=\"affiche_photo('".nom_photo($lig->elenoet)."','".addslashes(strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom)))."');afficher_div('div_photo','y',100,100);\" onmouseout=\"cacher_div('div_photo')\" onclick=\"return false;\">";
 
 							echo strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom));
 							echo "</a>\n";
@@ -1237,7 +1488,9 @@ else {
 						// Profil...
 						echo "<td>\n";
 						for($m=0;$m<count($tab_profil);$m++) {if($profil==$tab_profil[$m]) {echo "<span style='color:".$tab_couleur_profil[$m].";'>";break;}}
-						echo $profil;
+						//echo $profil;
+						echo "<span id='div_profil_$cpt' onclick=\"affiche_set_profil($cpt);changement();return false;\">$profil</span>\n";
+
 						echo "</span>\n";
 						echo "<input type='hidden' name='profil[$cpt]' id='profil_$cpt' value='$profil' />\n";
 						echo "</td>\n";
@@ -1245,6 +1498,9 @@ else {
 						// Niveau...
 						echo "<td>\n";
 						if(($moy!="")&&(strlen(my_ereg_replace("[0-9.,]","",$moy))==0)) {
+							if($num_per2>0) {
+								echo "<a href=\"#\" onclick=\"afficher_div('div_bull_simp','y',-100,40); affiche_bull_simp('$lig->login','".$id_classe_actuelle[$j]."','1','$num_per2');return false;\" style='text-decoration:none;'>";
+							}
 							if($moy<7) {
 								echo "<span style='color:red;'>";
 							}
@@ -1261,6 +1517,9 @@ else {
 								echo "<span style='color:blue;'>";
 							}
 							echo "$moy\n";
+							if($num_per2>0) {
+								echo "</a>\n";
+							}
 							echo "</span>";
 							echo "<input type='hidden' name='moy[$cpt]' id='moy_$cpt' value='$moy' />\n";
 						}
@@ -1533,7 +1792,7 @@ else {
 	echo "<script type='text/javascript'>
 	function affiche_photo(photo,nom_prenom) {
 		document.getElementById('entete_div_photo_eleve').innerHTML=nom_prenom;
-		document.getElementById('corps_div_photo_eleve').innerHTML='<img src=\"../photos/eleves/'+photo+'\" width=\"150\" alt=\"Photo\" /><br />';
+		document.getElementById('corps_div_photo_eleve').innerHTML='<img src=\"'+photo+'\" width=\"150\" alt=\"Photo\" /><br />';
 	}
 ";
 	//=================================

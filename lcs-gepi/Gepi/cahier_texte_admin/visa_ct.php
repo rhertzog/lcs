@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: visa_ct.php 4038 2010-01-22 20:41:14Z crob $
+ * @version: $Id: visa_ct.php 4837 2010-07-19 15:23:55Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -64,6 +64,13 @@ if (isset($_POST['ok_enr_visa'])) {
     }
 }
 
+if (isset($_POST['begin_day']) and isset($_POST['begin_month']) and isset($_POST['begin_year'])) {
+    $date_signature = mktime(0,0,0,$_POST['begin_month'],$_POST['begin_day'],$_POST['begin_year']);
+    if (!saveSetting("date_signature", $date_signature)) $msg .= "Erreur lors de l'enregistrement de date de signature des cahiers de textes !";
+}
+
+//on récupère la date butoir pour la signture des CDT
+$date_signature = getSettingValue("date_signature");
 
 // visa d'un ou plusieurs cahiers de texte
 if (isset($_POST['visa_ct'])) {
@@ -81,7 +88,7 @@ if (isset($_POST['visa_ct'])) {
       $id_groupe = isset($_POST["groupe_".$iterateur]) ? $_POST["groupe_".$iterateur] : NULL;
       $id_prop = isset($_POST["prof_".$iterateur]) ? $_POST["prof_".$iterateur] : NULL;
 
-      $sql_visa_ct = "UPDATE `ct_entry` SET `vise` = 'y' WHERE (id_groupe='".$id_groupe."' and id_login = '".$id_prop."')";
+      $sql_visa_ct = "UPDATE `ct_entry` SET `vise` = 'y' WHERE ((id_groupe='".$id_groupe."' and id_login = '".$id_prop."') and (date_ct<$date_signature))";
       //echo $sql_visa_ct;
       $visa_ct = sql_query($sql_visa_ct);
 
@@ -89,12 +96,12 @@ if (isset($_POST['visa_ct'])) {
       //$aujourdhui = mktime(0,0,0,date("m"),date("d"),date("Y"));
       $aujourdhui = date("U");
 
-
-      $sql_insertion_visa = "INSERT INTO `ct_entry` VALUES (NULL, '00:00:00', '".$id_groupe."', '".$aujourdhui."', '".$id_prop."', '0', '".$texte_visa_cdt."', 'y', 'y')";
+      $id_sequence="0";
+      $sql_insertion_visa = "INSERT INTO `ct_entry` VALUES (NULL, '00:00:00', '".$id_groupe."', '".$aujourdhui."', '".$id_prop."', '".$id_sequence."', '".$texte_visa_cdt."', 'y', 'y')";
       //echo $sql_insertion_visa;
       $insertion_visa = sql_query($sql_insertion_visa);
       if ($error == 'no') {
-        $msg = "Cahiers de texte signé.";
+        $msg = "Cahier(s) de textes signé(s).";
       } else {
         $msg = "Il y a eu un problème lors de la signature du cahier de textes.";
       }
@@ -116,7 +123,7 @@ if (isset($_POST['visa_ct'])) {
          $id_professeur = isset($_POST["prof_".$itera]) ? $_POST["prof_".$itera] : NULL;
          $id_groupe = isset($_POST["groupe_".$itera]) ? $_POST["groupe_".$itera] : NULL;
   
-		 $sql_visa_ct = "UPDATE `ct_devoirs_entry` SET `vise` = 'y' WHERE (id_groupe='".$id_groupe."' and id_login = '".$id_professeur."')";
+		 $sql_visa_ct = "UPDATE `ct_devoirs_entry` SET `vise` = 'y' WHERE ((id_groupe='".$id_groupe."' and id_login = '".$id_professeur."') and (date_ct<$date_signature))";
 		 //echo $sql_visa_ct;
          $visa_ct = sql_query($sql_visa_ct);
 
@@ -135,7 +142,7 @@ require_once("../lib/header.inc");
 if (!(isset($_GET['action']))) {
   // Affichage du tableau complet
 
-  if ($_SESSION['statut'] == "autre") {
+  if ($_SESSION['statut'] == "autre"||$_SESSION['statut']== "scolarite") {
 	echo "<p class=\"bold\"><a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil</a>";
   } else {
     echo "<p class=\"bold\"><a href=\"index.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil</a>";
@@ -185,7 +192,17 @@ echo "</div>\n";
   <td><b><a href='visa_ct.php?order_by=ct.id_login,jc.id_classe,jm.id_matiere'>Propriétaire</a></b></td>
   <td><b>Nombre<br />de notices</b></td>
   <td><b>Nombre<br />de notices<br />"devoirs"</b></td>
-  <td><b>Action</b></td><td><b><input type="submit" name="visa_ct" value="Signer les cahiers" onclick="return confirmlink(this, 'La signature d\'un cahier de texte est définitive. Etes-vous sûr de vouloir continuer ?', 'Confirmation de la signature')" /></b></td>
+  <td>
+  <b>Action</b></td>
+  <td><b><input type="submit" name="visa_ct" value="Signer les cahiers" onclick="return confirmlink(this, 'La signature d\'un cahier de texte est définitive. Etes-vous sûr de vouloir continuer ?', 'Confirmation de la signature')" /></b>
+  <p><b>dont la date est inférieure au</b></p>
+  <?php
+        $bday = strftime("%d", getSettingValue("date_signature"));
+        $bmonth = strftime("%m", getSettingValue("date_signature"));
+        $byear = strftime("%Y", getSettingValue("date_signature"));
+        genDateSelector("begin_", $bday, $bmonth, $byear,"more_years") ?>
+  </td>
+  
   <td><b>Nombre de visa</b></td></tr>
 
   <?php
@@ -240,7 +257,7 @@ echo "</div>\n";
       echo "<td>".$nb_ct."</td>";
       echo "<td>".$nb_ct_devoirs."</td>";
 	// Modif pour le statut 'autre'
-	if ($_SESSION["statut"] == 'autre' OR $_SESSION["statut"] == 'administrateur') {
+	if ($_SESSION["statut"] == 'autre' OR $_SESSION["statut"] == 'administrateur' OR $_SESSION["statut"] == 'scolarite') {
 		echo '<td><a href="../cahier_texte/see_all.php?id_groupe='.$id_groupe.'&amp;id_classe='.$id_classe.'">Voir</a></td>';
 	}else{
 		echo "<td><a href='../public/index.php?id_groupe=".$id_groupe."' target='_blank'>Voir</a></td>";

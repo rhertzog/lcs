@@ -1,14 +1,20 @@
 <?php
 
+
 /**
  * Base class that represents a row from the 'ects_credits' table.
  *
  * Objet qui précise le nombre d'ECTS obtenus par l'eleve pour un enseignement et une periode donnée
  *
- * @package    gepi.om
+ * @package    propel.generator.gepi.om
  */
-abstract class BaseCreditEcts extends BaseObject  implements Persistent {
+abstract class BaseCreditEcts extends BaseObject  implements Persistent
+{
 
+	/**
+	 * Peer class name
+	 */
+  const PEER = 'CreditEctsPeer';
 
 	/**
 	 * The Peer class.
@@ -55,6 +61,12 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	protected $mention;
 
 	/**
+	 * The value for the mention_prof field.
+	 * @var        string
+	 */
+	protected $mention_prof;
+
+	/**
 	 * @var        Eleve
 	 */
 	protected $aEleve;
@@ -77,26 +89,6 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	 * @var        boolean
 	 */
 	protected $alreadyInValidation = false;
-
-	/**
-	 * Initializes internal state of BaseCreditEcts object.
-	 * @see        applyDefaults()
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-		$this->applyDefaultValues();
-	}
-
-	/**
-	 * Applies default values to this object.
-	 * This method should be called from the object's constructor (or
-	 * equivalent initialization method).
-	 * @see        __construct()
-	 */
-	public function applyDefaultValues()
-	{
-	}
 
 	/**
 	 * Get the [id] column value.
@@ -140,7 +132,7 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 
 	/**
 	 * Get the [valeur] column value.
-	 * Nombre de crédits obtenus par l'eleve
+	 * Nombre de credits obtenus par l'eleve
 	 * @return     string
 	 */
 	public function getValeur()
@@ -156,6 +148,16 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	public function getMention()
 	{
 		return $this->mention;
+	}
+
+	/**
+	 * Get the [mention_prof] column value.
+	 * Mention presaisie par le prof
+	 * @return     string
+	 */
+	public function getMentionProf()
+	{
+		return $this->mention_prof;
 	}
 
 	/**
@@ -248,7 +250,7 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 
 	/**
 	 * Set the value of [valeur] column.
-	 * Nombre de crédits obtenus par l'eleve
+	 * Nombre de credits obtenus par l'eleve
 	 * @param      string $v new value
 	 * @return     CreditEcts The current object (for fluent API support)
 	 */
@@ -287,6 +289,26 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	} // setMention()
 
 	/**
+	 * Set the value of [mention_prof] column.
+	 * Mention presaisie par le prof
+	 * @param      string $v new value
+	 * @return     CreditEcts The current object (for fluent API support)
+	 */
+	public function setMentionProf($v)
+	{
+		if ($v !== null) {
+			$v = (string) $v;
+		}
+
+		if ($this->mention_prof !== $v) {
+			$this->mention_prof = $v;
+			$this->modifiedColumns[] = CreditEctsPeer::MENTION_PROF;
+		}
+
+		return $this;
+	} // setMentionProf()
+
+	/**
 	 * Indicates whether the columns in this object are only set to default values.
 	 *
 	 * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -296,11 +318,6 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	 */
 	public function hasOnlyDefaultValues()
 	{
-			// First, ensure that we don't have any columns that have been modified which aren't default columns.
-			if (array_diff($this->modifiedColumns, array())) {
-				return false;
-			}
-
 		// otherwise, everything was equal, so return TRUE
 		return true;
 	} // hasOnlyDefaultValues()
@@ -329,6 +346,7 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 			$this->id_groupe = ($row[$startcol + 3] !== null) ? (int) $row[$startcol + 3] : null;
 			$this->valeur = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
 			$this->mention = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
+			$this->mention_prof = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -337,8 +355,7 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 				$this->ensureConsistency();
 			}
 
-			// FIXME - using NUM_COLUMNS may be clearer.
-			return $startcol + 6; // 6 = CreditEctsPeer::NUM_COLUMNS - CreditEctsPeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + 7; // 7 = CreditEctsPeer::NUM_COLUMNS - CreditEctsPeer::NUM_LAZY_LOAD_COLUMNS).
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating CreditEcts object", $e);
@@ -432,9 +449,17 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 		
 		$con->beginTransaction();
 		try {
-			CreditEctsPeer::doDelete($this, $con);
-			$this->setDeleted(true);
-			$con->commit();
+			$ret = $this->preDelete($con);
+			if ($ret) {
+				CreditEctsQuery::create()
+					->filterByPrimaryKey($this->getPrimaryKey())
+					->delete($con);
+				$this->postDelete($con);
+				$con->commit();
+				$this->setDeleted(true);
+			} else {
+				$con->commit();
+			}
 		} catch (PropelException $e) {
 			$con->rollBack();
 			throw $e;
@@ -465,10 +490,27 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 		}
 		
 		$con->beginTransaction();
+		$isInsert = $this->isNew();
 		try {
-			$affectedRows = $this->doSave($con);
+			$ret = $this->preSave($con);
+			if ($isInsert) {
+				$ret = $ret && $this->preInsert($con);
+			} else {
+				$ret = $ret && $this->preUpdate($con);
+			}
+			if ($ret) {
+				$affectedRows = $this->doSave($con);
+				if ($isInsert) {
+					$this->postInsert($con);
+				} else {
+					$this->postUpdate($con);
+				}
+				$this->postSave($con);
+				CreditEctsPeer::addInstanceToPool($this);
+			} else {
+				$affectedRows = 0;
+			}
 			$con->commit();
-			CreditEctsPeer::addInstanceToPool($this);
 			return $affectedRows;
 		} catch (PropelException $e) {
 			$con->rollBack();
@@ -519,13 +561,14 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 			// If this object has been modified, then save it to the database.
 			if ($this->isModified()) {
 				if ($this->isNew()) {
-					$pk = CreditEctsPeer::doInsert($this, $con);
-					$affectedRows += 1; // we are assuming that there is only 1 row per doInsert() which
-										 // should always be true here (even though technically
-										 // BasePeer::doInsert() can insert multiple rows).
+					$criteria = $this->buildCriteria();
+					if ($criteria->keyContainsValue(CreditEctsPeer::ID) ) {
+						throw new PropelException('Cannot insert a value for auto-increment primary key ('.CreditEctsPeer::ID.')');
+					}
 
+					$pk = BasePeer::doInsert($criteria, $con);
+					$affectedRows += 1;
 					$this->setId($pk);  //[IMV] update autoincrement primary key
-
 					$this->setNew(false);
 				} else {
 					$affectedRows += CreditEctsPeer::doUpdate($this, $con);
@@ -674,6 +717,9 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 			case 5:
 				return $this->getMention();
 				break;
+			case 6:
+				return $this->getMentionProf();
+				break;
 			default:
 				return null;
 				break;
@@ -686,12 +732,15 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	 * You can specify the key type of the array by passing one of the class
 	 * type constants.
 	 *
-	 * @param      string $keyType (optional) One of the class type constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME
-	 *                        BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. Defaults to BasePeer::TYPE_PHPNAME.
-	 * @param      boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns.  Defaults to TRUE.
-	 * @return     an associative array containing the field names (as keys) and field values
+	 * @param     string  $keyType (optional) One of the class type constants BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME,
+	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM. 
+	 *                    Defaults to BasePeer::TYPE_PHPNAME.
+	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
+	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
+	 *
+	 * @return    array an associative array containing the field names (as keys) and field values
 	 */
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $includeForeignObjects = false)
 	{
 		$keys = CreditEctsPeer::getFieldNames($keyType);
 		$result = array(
@@ -701,7 +750,16 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 			$keys[3] => $this->getIdGroupe(),
 			$keys[4] => $this->getValeur(),
 			$keys[5] => $this->getMention(),
+			$keys[6] => $this->getMentionProf(),
 		);
+		if ($includeForeignObjects) {
+			if (null !== $this->aEleve) {
+				$result['Eleve'] = $this->aEleve->toArray($keyType, $includeLazyLoadColumns, true);
+			}
+			if (null !== $this->aGroupe) {
+				$result['Groupe'] = $this->aGroupe->toArray($keyType, $includeLazyLoadColumns, true);
+			}
+		}
 		return $result;
 	}
 
@@ -750,6 +808,9 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 			case 5:
 				$this->setMention($value);
 				break;
+			case 6:
+				$this->setMentionProf($value);
+				break;
 		} // switch()
 	}
 
@@ -780,6 +841,7 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 		if (array_key_exists($keys[3], $arr)) $this->setIdGroupe($arr[$keys[3]]);
 		if (array_key_exists($keys[4], $arr)) $this->setValeur($arr[$keys[4]]);
 		if (array_key_exists($keys[5], $arr)) $this->setMention($arr[$keys[5]]);
+		if (array_key_exists($keys[6], $arr)) $this->setMentionProf($arr[$keys[6]]);
 	}
 
 	/**
@@ -797,6 +859,7 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 		if ($this->isColumnModified(CreditEctsPeer::ID_GROUPE)) $criteria->add(CreditEctsPeer::ID_GROUPE, $this->id_groupe);
 		if ($this->isColumnModified(CreditEctsPeer::VALEUR)) $criteria->add(CreditEctsPeer::VALEUR, $this->valeur);
 		if ($this->isColumnModified(CreditEctsPeer::MENTION)) $criteria->add(CreditEctsPeer::MENTION, $this->mention);
+		if ($this->isColumnModified(CreditEctsPeer::MENTION_PROF)) $criteria->add(CreditEctsPeer::MENTION_PROF, $this->mention_prof);
 
 		return $criteria;
 	}
@@ -812,7 +875,6 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	public function buildPkeyCriteria()
 	{
 		$criteria = new Criteria(CreditEctsPeer::DATABASE_NAME);
-
 		$criteria->add(CreditEctsPeer::ID, $this->id);
 		$criteria->add(CreditEctsPeer::ID_ELEVE, $this->id_eleve);
 		$criteria->add(CreditEctsPeer::NUM_PERIODE, $this->num_periode);
@@ -829,15 +891,11 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	public function getPrimaryKey()
 	{
 		$pks = array();
-
 		$pks[0] = $this->getId();
-
 		$pks[1] = $this->getIdEleve();
-
 		$pks[2] = $this->getNumPeriode();
-
 		$pks[3] = $this->getIdGroupe();
-
+		
 		return $pks;
 	}
 
@@ -849,15 +907,19 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	 */
 	public function setPrimaryKey($keys)
 	{
-
 		$this->setId($keys[0]);
-
 		$this->setIdEleve($keys[1]);
-
 		$this->setNumPeriode($keys[2]);
-
 		$this->setIdGroupe($keys[3]);
+	}
 
+	/**
+	 * Returns true if the primary key for this object is null.
+	 * @return     boolean
+	 */
+	public function isPrimaryKeyNull()
+	{
+		return (null === $this->getId()) && (null === $this->getIdEleve()) && (null === $this->getNumPeriode()) && (null === $this->getIdGroupe());
 	}
 
 	/**
@@ -872,22 +934,15 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	 */
 	public function copyInto($copyObj, $deepCopy = false)
 	{
-
 		$copyObj->setIdEleve($this->id_eleve);
-
 		$copyObj->setNumPeriode($this->num_periode);
-
 		$copyObj->setIdGroupe($this->id_groupe);
-
 		$copyObj->setValeur($this->valeur);
-
 		$copyObj->setMention($this->mention);
-
+		$copyObj->setMentionProf($this->mention_prof);
 
 		$copyObj->setNew(true);
-
 		$copyObj->setId(NULL); // this is a auto-increment column, so set to default value
-
 	}
 
 	/**
@@ -965,7 +1020,7 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	public function getEleve(PropelPDO $con = null)
 	{
 		if ($this->aEleve === null && ($this->id_eleve !== null)) {
-			$this->aEleve = ElevePeer::retrieveByPK($this->id_eleve, $con);
+			$this->aEleve = EleveQuery::create()->findPk($this->id_eleve, $con);
 			/* The following can be used additionally to
 			   guarantee the related object contains a reference
 			   to this object.  This level of coupling may, however, be
@@ -1014,7 +1069,7 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 	public function getGroupe(PropelPDO $con = null)
 	{
 		if ($this->aGroupe === null && ($this->id_groupe !== null)) {
-			$this->aGroupe = GroupePeer::retrieveByPK($this->id_groupe, $con);
+			$this->aGroupe = GroupeQuery::create()->findPk($this->id_groupe, $con);
 			/* The following can be used additionally to
 			   guarantee the related object contains a reference
 			   to this object.  This level of coupling may, however, be
@@ -1024,6 +1079,26 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 			 */
 		}
 		return $this->aGroupe;
+	}
+
+	/**
+	 * Clears the current object and sets all attributes to their default values
+	 */
+	public function clear()
+	{
+		$this->id = null;
+		$this->id_eleve = null;
+		$this->num_periode = null;
+		$this->id_groupe = null;
+		$this->valeur = null;
+		$this->mention = null;
+		$this->mention_prof = null;
+		$this->alreadyInSave = false;
+		$this->alreadyInValidation = false;
+		$this->clearAllReferences();
+		$this->resetModified();
+		$this->setNew(true);
+		$this->setDeleted(false);
 	}
 
 	/**
@@ -1040,8 +1115,27 @@ abstract class BaseCreditEcts extends BaseObject  implements Persistent {
 		if ($deep) {
 		} // if ($deep)
 
-			$this->aEleve = null;
-			$this->aGroupe = null;
+		$this->aEleve = null;
+		$this->aGroupe = null;
+	}
+
+	/**
+	 * Catches calls to virtual methods
+	 */
+	public function __call($name, $params)
+	{
+		if (preg_match('/get(\w+)/', $name, $matches)) {
+			$virtualColumn = $matches[1];
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
+			// no lcfirst in php<5.3...
+			$virtualColumn[0] = strtolower($virtualColumn[0]);
+			if ($this->hasVirtualColumn($virtualColumn)) {
+				return $this->getVirtualColumn($virtualColumn);
+			}
+		}
+		return parent::__call($name, $params);
 	}
 
 } // BaseCreditEcts

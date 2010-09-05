@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: add_eleve.php 2312 2008-08-24 14:32:46Z crob $
+ * $Id: add_eleve.php 4878 2010-07-24 13:54:01Z regis $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -129,7 +129,7 @@ if (isset($_POST['is_posted']) and ($_POST['is_posted'] == "1")) {
 		$msg = '';
 		$ok = 'yes';
 		//if (ereg ("^[a-zA-Z_]{1}[a-zA-Z0-9_]{0,11}$", $reg_login)) {
-		if (ereg ("^[a-zA-Z_]{1}[a-zA-Z0-9_.]{0,11}$", $reg_login)) {
+		if (my_ereg ("^[a-zA-Z_]{1}[a-zA-Z0-9_.]{0,11}$", $reg_login)) {
 			if ($reg_no_gep != '') {
 				$test1 = mysql_query("SELECT login FROM eleves WHERE elenoet='$reg_no_gep'");
 				$count1 = mysql_num_rows($test1);
@@ -712,14 +712,15 @@ echo "<tr>\n";
 
 if(isset($reg_no_gep)){
 	$nom_photo = nom_photo($reg_no_gep);
-	if ($nom_photo!="") {
-	    $photo="../photos/eleves/".$nom_photo;
-	    if(file_exists($photo)){
+	//if ($nom_photo!="") {
+	if ($nom_photo) {
+	   // $photo="../photos/eleves/".$nom_photo;
+	   // if(file_exists($photo)){
 		      echo "<td>\n";
 		      $dimphoto=redimensionne_image($photo);
 		      echo '<img src="'.$photo.'" style="width: '.$dimphoto[0].'px; height: '.$dimphoto[1].'px; border: 0px; border-right: 3px solid #FFFFFF; float: left;" alt="" />';
 		      echo "\n</td>\n";
-	    }
+	    //}
 	}
 }
 echo "</tr>\n";

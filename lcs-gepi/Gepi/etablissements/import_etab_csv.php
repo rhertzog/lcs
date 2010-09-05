@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: import_etab_csv.php 2147 2008-07-23 09:01:04Z tbelliard $
+* $Id: import_etab_csv.php 4661 2010-06-28 22:34:03Z regis $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -156,7 +156,7 @@ if (!isset($is_posted)) {
 				$reg_cp = '';
 				$reg_ville = '';
 				$row++;
-				echo "<tr class='lig$alt'>\n";
+				echo "<tr class='lig$alt white_hover'>\n";
 				for ($c=0; $c<$num; $c++) {
 					switch ($c) {
 					case 0:
@@ -224,7 +224,7 @@ if (!isset($is_posted)) {
 						break;
 					case 4:
 						// Code postal
-						if (ereg ("^[0-9]{1,5}$", $data[$c])) {
+						if (my_ereg ("^[0-9]{1,5}$", $data[$c])) {
 							echo "<td><p>$data[$c]</p></td>\n";
 							$reg_cp=$data[$c];
 						} else {
@@ -328,7 +328,7 @@ if (!isset($is_posted)) {
 			echo "<tr bgColor=\"".$couleur[$c]."\">\n";
 		}
 		else{
-			echo "<tr class='lig$alt'>\n";
+			echo "<tr class='lig$alt white_hover'>\n";
 		}
 
 		for ($j=0; $j<count($table_etab[$c]); $j++) {

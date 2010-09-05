@@ -1,5 +1,5 @@
 /*
- * @version $Id: functions.js 3322 2009-08-03 10:49:33Z crob $
+ * @version $Id: functions.js 5094 2010-08-21 12:29:47Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -82,6 +82,73 @@ function clavier_2(n,e,vmin,vmax){
 						valeur=vmax;
 					}
 					document.getElementById(n).value=valeur;
+				}
+			}
+		}
+	}
+}
+
+function minutes2HHMM(nb_minutes) {
+	h=Math.floor(nb_minutes/60);
+	m=nb_minutes-h*60;
+	if(h<10) {h='0'+h;}
+	if(m<10) {m='0'+m;}
+	return h+':'+m;
+}
+
+function HHMM(heure,op,nb) {
+	// heure est au format HH:MM, op est '-' ou '+' et nb un entier
+
+	var exp=new RegExp("^[0-9]{1,2}:[0-9]{0,2}$","g");
+	if (exp.test(heure)) {
+		tab=heure.split(':');
+		nb_minutes=eval(tab[0])*60+eval(tab[1]);
+	
+		if(op=='-') {
+			if(nb_minutes-nb<0) {
+				nb_minutes=1440+nb_minutes;
+			}
+			nb_minutes=(nb_minutes-nb)%1440;
+			// 24*60=1440
+		}
+		else {
+			nb_minutes=(nb_minutes+nb)%1440;
+		}
+	
+		return minutes2HHMM(nb_minutes);
+	}
+	else {
+		//alert("Le format de l'heure "+heure+" est invalide");
+		return heure;
+	}
+}
+
+function clavier_heure(n,e) {
+	// Fonction destinée à incrémenter/décrémenter le champ courant au format HH:MM
+	touche= e.keyCode ;
+	//alert('touche='+touche);
+	// Flèche BAS
+	if (touche == '40') {
+		valeur=document.getElementById(n).value;
+		document.getElementById(n).value=HHMM(valeur,'-',1);
+	}
+	else{
+		// Flèche HAUT
+		if (touche == '38') {
+			valeur=document.getElementById(n).value;
+			document.getElementById(n).value=HHMM(valeur,'+',1);
+		}
+		else{
+			// Flèche PageDOWN
+			if(touche == '34'){
+				valeur=document.getElementById(n).value;
+				document.getElementById(n).value=HHMM(valeur,'-',10);
+			}
+			else{
+				// Flèche PageUP
+				if(touche == '33'){
+					valeur=document.getElementById(n).value;
+					document.getElementById(n).value=HHMM(valeur,'+',10);
 				}
 			}
 		}
@@ -560,4 +627,31 @@ function clavier_date_plus_moins(id,e){
 		alert('id '+id+' inexistant')
 	}
 	*/
+}
+
+
+function info_form(id_div){
+	forms=document.getElementsByTagName('form');
+
+	if(forms.length==0) {
+		chaine='<p>Aucun formulaire dans cette page.</p>';
+	}
+	else {
+		chaine='<p class=bold align=center>Informations sur les formulaires de cette page</p>';
+		for(i=0;i<forms.length;i++) {
+			name=forms[i].getAttribute('name');
+			action=forms[i].getAttribute('action');
+			// Pas forcément affecté...
+		
+			var champs_input=forms[i].getElementsByTagName('input');
+			var champs_textarea=forms[i].getElementsByTagName('textarea');
+	
+			chaine=chaine+'<p><span class=bold>Formulaire n°'+i+' (<i>'+name+'</i>) à destination de '+action+'</span><br />';
+			chaine=chaine+'&nbsp;&nbsp;&nbsp;Nombre de champs INPUT: '+champs_input.length+'<br />';
+			chaine=chaine+'&nbsp;&nbsp;&nbsp;Nombre de champs TEXTAREA: '+champs_textarea.length+'</p>';
+	
+			//alert('Nombre de champs INPUT: '+champs_input.length+'\nNombre de champs TEXTAREA');
+		}
+	}
+	document.getElementById(id_div).innerHTML=chaine;
 }

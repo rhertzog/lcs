@@ -3,7 +3,7 @@
 /**
  *
  *
- * @version $Id$
+ * @version $Id: serveur_infos.class.php 5127 2010-08-27 11:40:21Z regis $
  *
  * Classes php qui renvoie les informations sur le serveur
  *
@@ -31,9 +31,11 @@ class infos{
 		// inutile ici
 	}
 
+	/*
 	function infos(){
 		// utile pour le compatibilité php4
 	}
+	 */
 
 	function versionPhp(){
 		$test = phpversion();

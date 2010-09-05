@@ -4,7 +4,7 @@
  * Fichier temporaire uniquement présent dans les versions RC pour teter les configurations serveur
  * et d'autres paramètres pour comprendre certaines erreurs.
  *
- * @version $Id: test_serveur.php 3066 2009-04-14 14:29:35Z jjacquard $ 1.5.1RC1
+ * @version $Id: test_serveur.php 4655 2010-06-27 14:12:19Z crob $ 1.5.1RC1
  *
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
@@ -108,6 +108,45 @@ if ($test->versionGd()) {
 	- La taille maximum d\'un fichier envoyé à Gepi est de '.$test->tailleMaxFichier().' (<i>upload_max_filesize</i>).
 	<br />
 	- La durée maximum de session est réglée à '.ini_get("session.gc_maxlifetime").' secondes, soit un maximum de '.(ini_get("session.gc_maxlifetime")/60).' minutes (<i>session.maxlifetime</i> dans le fichier php.ini).';
+
+	$suhosin_post_max_totalname_length=ini_get('suhosin.post.max_totalname_length');
+	if($suhosin_post_max_totalname_length!='') {
+		echo "<h4>Configuration suhosin</h4>\n";
+		echo "<p>Le module suhosin est activé.<br />\nUn paramétrage trop restrictif de ce module peut perturber le fonctionnement de Gepi, particulièrement dans les pages comportant de nombreux champs de formulaire (<i>comme par exemple dans la page de saisie des appréciations par les professeurs</i>)</p>\n";
+
+		$tab_suhosin=array('suhosin.cookie.max_totalname_length', 
+		'suhosin.get.max_totalname_length', 
+		'suhosin.post.max_totalname_length', 
+		'suhosin.post.max_value_length', 
+		'suhosin.request.max_totalname_length', 
+		'suhosin.request.max_value_length', 
+		'suhosin.request.max_vars');
+
+		for($i=0;$i<count($tab_suhosin);$i++) {
+			echo "- ".$tab_suhosin[$i]." = ".ini_get($tab_suhosin[$i])."<br />\n";
+		}
+
+		echo "En cas de problème, vous pouvez, soit désactiver le module, soit augmenter les valeurs.<br />\n";
+		echo "Le fichier de configuration de suhosin est habituellement en /etc/php5/conf.d/suhosin.ini<br />\nEn cas de modification de ce fichier, pensez à relancer le service apache ensuite pour prendre en compte la modification.<br />\n";
+	}
+
+	echo "<br />\n";
+	echo "<hr />\n";
+	echo "<h4>Droits sur les dossiers : </h4>\n";
+	echo "Certains dossiers doivent être accessibles en écriture pour Gepi.<br />\n";
+	test_ecriture_dossier();
+	echo "Si les droits ne sont pas corrects, vous devrez les corriger en FTP, SFTP ou en console selon l'accès dont vous disposez sur le serveur.<br />\n";
+
+	echo "<br />\n";
+	echo "<p>Test d'écriture dans le fichier de personnalisation des couleurs (<i>voir <a href='../gestion/param_couleurs.php'>Gestion générale/Paramétrage des couleurs</a></i>)&nbsp;:<br />";
+	$test=test_ecriture_style_screen_ajout();
+	if($test) {
+		echo "Le fichier style_screen_ajout.css à la racine de l'arborescence Gepi est accessible en écriture.\n";
+	}
+	else {
+		echo "<sapn style='color:red'><b>ERREUR</b>&nbsp;: Le fichier style_screen_ajout.css à la racine de l'arborescence Gepi n'a pas pu être créé ou n'est pas accessible en écriture.</span>\n";
+	}
+	echo "</p>\n";
 
 echo '<br /><br /><br />';
 

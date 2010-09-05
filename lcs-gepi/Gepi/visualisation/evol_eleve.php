@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: evol_eleve.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * $Id: evol_eleve.php 4878 2010-07-24 13:54:01Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -337,7 +337,7 @@ if (!$id_classe) {
                 if ($note_eleve == '') {$note_eleve = '-';}
                 echo "<td><p>$note_eleve";
                 echo "</p></td>\n";
-                 (ereg ("^[0-9\.\,]{1,}$", $note_eleve)) ? array_push($datay[$k],"$note_eleve") : array_push($datay[$k],"0");
+                 (my_ereg ("^[0-9\.\,]{1,}$", $note_eleve)) ? array_push($datay[$k],"$note_eleve") : array_push($datay[$k],"0");
                 if ($k == '1') {
                     //array_push($etiquette,$current_group["description"]);
                     array_push($etiquette,rawurlencode($current_group["description"]));
@@ -436,9 +436,11 @@ if (!$id_classe) {
 		}
 		*/
 		$photo=nom_photo($v_elenoet);
-		if("$photo"!=""){
-			$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$v_eleve_nom_prenom\" />";
-			$texte.="<br />\n";
+		//if("$photo"!=""){
+		if($photo){
+		  //$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$v_eleve_nom_prenom\" />";
+		  $texte.="<img src='".$photo."' width='150' alt=\"$v_eleve_nom_prenom\" />";
+		  $texte.="<br />\n";
 		}
 	}
 	//$texte.="<td>\n";

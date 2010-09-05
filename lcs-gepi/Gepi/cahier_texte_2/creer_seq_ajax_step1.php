@@ -1,6 +1,6 @@
 <?php
 /**
- * @version : $Id: creer_seq_ajax_step1.php 3262 2009-07-02 14:40:17Z jjocal $
+ * @version : $Id: creer_seq_ajax_step1.php 4317 2010-04-16 20:55:02Z jjacquard $
  *
  * Copyright 2001, 2009 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -51,8 +51,11 @@ $_id      = isset($_POST["_id"]) ? $_POST["_id"] : NULL;
 
 // =================================================== Le code métier =======================================/
 
-$utilisateur = $_SESSION['utilisateurProfessionnel'];
-$__test = new UtilisateurProfessionnel();
+$utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
+if ($utilisateur == null) {
+	header("Location: ../logout.php?auto=1");
+	die();
+}
 
 if ($select == "nbre_sequences"){
 

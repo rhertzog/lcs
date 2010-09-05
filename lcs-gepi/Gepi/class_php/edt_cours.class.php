@@ -2,7 +2,7 @@
 
 /**
  *
- * @version $Id$
+ * @version $Id: edt_cours.class.php 4869 2010-07-22 13:32:34Z jjocal $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -78,6 +78,7 @@ class edt{
 
 		// on charge les variables de classe
 		$this->edt_gr = $rep["id_groupe"];
+		$this->edt_aid = $rep["id_aid"];
 		$this->edt_jour = $rep["jour_semaine"];
 		$this->edt_creneau = $rep["id_definie_periode"];
 		$this->edt_debut = $rep["heuredeb_dec"];
@@ -103,12 +104,12 @@ class edt{
 		$sem = date("W") + ($this->sem);
 
 		$query_s = mysql_query("SELECT type_edt_semaine FROM edt_semaines WHERE id_edt_semaine = '".$sem."' LIMIT 1");
-		$rep["type"] = mysql_result($query_s, "type_edt_semaine");
+		$rep["type"] = mysql_result($query_s, 0,"type_edt_semaine");
 
 		$query_se = mysql_query("SELECT type_edt_semaine FROM edt_semaines WHERE num_semaines_etab = '".$sem."' LIMIT 1");
 		$compter = mysql_num_rows($query_se);
 		if ($compter >= 1) {
-			$rep["etab"] = mysql_result($query_se, "type_edt_semaine");
+			$rep["etab"] = mysql_result($query_se, 0, "type_edt_semaine");
 		}
 		$rep["etab"] = '';
 
@@ -124,12 +125,12 @@ class edt{
 
 	public function creneau($cren){
 		// On cherche le créneau de début du cours
-		$sql_c = "SELECT * FROM absences_creneaux WHERE type_creneau != 'pause' AND id_definie_periode = '".$cren."' LIMIT 1";
+		$sql_c = "SELECT * FROM edt_creneaux WHERE type_creneau != 'pause' AND id_definie_periode = '".$cren."' LIMIT 1";
 		$query_c = mysql_query($sql_c);
 		$verif = mysql_num_rows($query_c);
 
 		if ($verif >= 1) {
-			$rep = mysql_result($query_c, "heuredebut_definie_periode");
+			$rep = mysql_result($query_c, 0,"heuredebut_definie_periode");
 		}
 
 		return $rep;
@@ -212,19 +213,15 @@ class edt{
 
 	public function matiere(){
 		$matiere = NULL;
-		if ($this->type_gr($this->edt_gr) == "ENS") {
+		if ($this->edt_gr != NULL) {
 			// C'est donc un 'groupe'
 			$sql = "SELECT * FROM groupes WHERE id = '".$this->edt_gr."'";
 			$query = mysql_query($sql);
 
 			$matiere = mysql_fetch_array($query);
 
-		}elseif($this->type_gr($this->edt_gr) == "AID"){
+		}elseif($this->edt_aid != NULL){
 			// C'est donc une AID
-
-		}elseif($this->type_gr($this->edt_gr) == "EDT"){
-			// c'est donc un edt_gr
-
 		}else{
 			return 'erreur_M';
 		}
@@ -234,7 +231,7 @@ class edt{
 	public function eleves(){
 		$eleves = NULL; // en attendant d'implémenter cette méthode
 		// pour connaitre la liste des élèves concernés par ce cours
-		if ($this->type_gr($this->edt_gr) == "ENS") {
+		if ($this->edt_gr != NULL) {
 			// C'est donc un 'groupe'
 			// $sql = "SELECT .....";
 			// A TERMINER ICI
@@ -242,36 +239,11 @@ class edt{
 		return $eleves;
 	}
 
-	protected function type_gr($gr){
-		/**
-		* méthode qui permet de définir le type de id_groupe
-		* soit de type ENS (un entier seul)
-		* soit de type AID (AID|...) -> voir les tables liées aux aid_...
-		* soit de type EDT (EDT|...) -> voir les tables liés aux edt_gr_...
-		*/
-		$test = explode("|", $gr);
-		if ($test[0] == 'AID') {
-			$rep = 'AID';
-			$grpe = $test[1];
-		}elseif($test[0] == 'EDT'){
-			$rep = 'EDT';
-			$grpe = $test[1];
-		}else{
-			$rep = 'ENS';
-			$grpe = $gr;
-		}
-
-		$this->type_grpe = $rep;
-		$this->id_grpe = $grpe;
-
-		return $rep;
-	}
-
 	public function couleur_cours(){
 		// On récupère la matière
-		$test_grp = $this->type_gr($this->edt_gr);
+		//$test_grp = $this->type_gr($this->edt_gr);
 		$sql = '';
-		if ($test_grp == "ENS") {
+		if ($this->edt_gr != NULL) {
 			// on peut alors récupérer la matière et la couleur rattachées à cette matière
 			$sql = "SELECT matiere FROM matieres m, j_groupes_matieres jgm
 									WHERE jgm.id_matiere = m.matiere
@@ -288,7 +260,7 @@ class edt{
 			$verif = mysql_num_rows($query2);
 
 			if ($verif == 1) {
-				$couleur = mysql_result($query2, "valeur");
+				$couleur = mysql_result($query2, 0,"valeur");
 			}else{
 				$couleur = 'silver';
 			}
@@ -324,7 +296,7 @@ class edtAfficher{
 
 	public function liste_creneaux(){
 		// Renvoie la liste des créneaux d'une journée
-		$sql = "SELECT id_definie_periode, nom_definie_periode, heuredebut_definie_periode FROM absences_creneaux
+		$sql = "SELECT id_definie_periode, nom_definie_periode, heuredebut_definie_periode FROM edt_creneaux
 							WHERE type_creneaux != 'pause'
 							AND type_creneaux != 'repas'
 							ORDER BY heuredebut_definie_periode";

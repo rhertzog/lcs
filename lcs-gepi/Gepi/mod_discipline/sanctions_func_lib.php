@@ -1,6 +1,6 @@
 <?php
 /*
-$Id: sanctions_func_lib.php 3655 2009-10-21 13:56:34Z crob $
+$Id: sanctions_func_lib.php 5058 2010-08-15 09:19:22Z eabgrall $
 */
 
 // Paramètres concernant le délais avant affichage d'une infobulle via delais_afficher_div()
@@ -83,11 +83,13 @@ function infobulle_photo($eleve_login) {
 	// Photo...
 	$photo=nom_photo($eleve_elenoet);
 	//$temoin_photo="";
-	if("$photo"!=""){
+	//if("$photo"!=""){
+	if($photo){
 		$titre="$eleve_nom $eleve_prenom";
 
 		$texte="<div align='center'>\n";
-		$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$eleve_nom $eleve_prenom\" />";
+		//$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$eleve_nom $eleve_prenom\" />";
+		$texte.="<img src='".$photo."' width='150' alt=\"$eleve_nom $eleve_prenom\" />";
 		$texte.="<br />\n";
 		$texte.="</div>\n";
 
@@ -878,6 +880,65 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 		$retour="<p>Aucun incident relevé.</p>\n";
 	}
 
+	return $retour;
+}
+
+function get_destinataires_mail_alerte_discipline($tab_id_classe) {
+	$retour="";
+
+	//DROP TABLE IF EXISTS s_alerte_mail;
+	//CREATE TABLE IF NOT EXISTS s_alerte_mail (id int(11) unsigned NOT NULL auto_increment, id_classe smallint(6) unsigned NOT NULL, destinataire varchar(50) NOT NULL default '', PRIMARY KEY (id), INDEX (id_classe,destinataire));
+
+	$tab_dest=array();
+    $temoin=false;
+	for($i=0;$i<count($tab_id_classe);$i++) {
+		$sql="SELECT * FROM s_alerte_mail WHERE id_classe='".$tab_id_classe[$i]."';";
+		$res=mysql_query($sql);
+		if(mysql_num_rows($res)>0) {
+			while($lig=mysql_fetch_object($res)) {
+				if($lig->destinataire=='cpe') {
+					$sql="SELECT DISTINCT u.nom,u.prenom,u.email FROM utilisateurs u, j_eleves_cpe jecpe, j_eleves_classes jec WHERE jec.id_classe='".$tab_id_classe[$i]."' AND jec.login=jecpe.e_login AND jecpe.cpe_login=u.login AND u.email!='';";
+				}
+				elseif($lig->destinataire=='professeurs') {
+					$sql="SELECT DISTINCT u.nom,u.prenom,u.email FROM utilisateurs u, j_eleves_classes jec, j_eleves_groupes jeg, j_groupes_professeurs jgp WHERE jec.id_classe='".$tab_id_classe[$i]."' AND jec.login=jeg.login AND jeg.id_groupe=jgp.id_groupe AND jgp.login=u.login AND u.email!='';";
+				}
+				elseif($lig->destinataire=='pp') {
+					$sql="SELECT DISTINCT u.nom,u.prenom,u.email FROM utilisateurs u, j_eleves_professeurs jep, j_eleves_classes jec WHERE jec.id_classe='".$tab_id_classe[$i]."' AND jec.login=jep.login AND jep.professeur=u.login AND u.email!='';";
+				}
+				elseif($lig->destinataire=='administrateur') {
+					$sql="SELECT DISTINCT u.nom,u.prenom,u.email FROM utilisateurs u WHERE u.statut='administrateur' AND u.email!='';";
+				}
+				elseif($lig->destinataire=='scolarite') {
+					$sql="SELECT DISTINCT u.nom,u.prenom,u.email FROM utilisateurs u, j_scol_classes jsc WHERE jsc.id_classe='".$tab_id_classe[$i]."' AND jsc.login=u.login AND u.email!='';";
+				}
+				elseif($lig->destinataire=='mail') {
+				    $temoin=true;
+					$adresse_sup = $lig->adresse;
+				}
+
+				//echo $sql;
+				if ($temoin) { //Cas d'une adresse mail autre
+					$tab_dest[] = $adresse_sup;
+				} else {
+					$res2=mysql_query($sql);
+					if(mysql_num_rows($res2)>0) {
+						while($lig2=mysql_fetch_object($res2)) {
+							if(!in_array($lig2->email,$tab_dest)) {
+								$tab_dest[]=$lig2->email;
+								//$tab_dest[]="$lig2->prenom $lig2->nom <$lig2->email>";
+							}
+						}
+					}
+				}
+				$temoin=false;
+			}
+		}
+	}
+
+	for($i=0;$i<count($tab_dest);$i++) {
+		if($i>0) {$retour.=", ";}
+		$retour.=$tab_dest[$i];
+	}
 	return $retour;
 }
 

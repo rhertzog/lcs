@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_eleve.php 3903 2009-12-11 20:47:50Z crob $
+ * $Id: edit_eleve.php 3902 2009-12-11 20:46:13Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -305,7 +305,7 @@ if(mysql_num_rows($quels_eleves)==0){
 	require("../lib/footer.inc.php");
 	die;
 }
-//echo " | <a href='impression_bienvenue.php?mode=eleve'>Fiches bienvenue</a>";
+echo " | <a href='impression_bienvenue.php?mode=eleve'>Fiches bienvenue</a>";
 echo "</p>\n";
 
 //echo "<p><b>Actions par lot</b> :";

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: chercher_edt.php 1467 2008-02-07 09:43:52Z jjocal $
+ * @version $Id: chercher_edt.php 4152 2010-03-21 23:32:16Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -69,7 +69,7 @@ echo '
 
 	// choix de l'horaire
 
-	$req_heure = mysql_query("SELECT id_definie_periode, nom_definie_periode, heuredebut_definie_periode, heurefin_definie_periode FROM absences_creneaux ORDER BY heuredebut_definie_periode");
+	$req_heure = mysql_query("SELECT id_definie_periode, nom_definie_periode, heuredebut_definie_periode, heurefin_definie_periode FROM edt_creneaux ORDER BY heuredebut_definie_periode");
 	$rep_heure = mysql_fetch_array($req_heure);
 
 echo '

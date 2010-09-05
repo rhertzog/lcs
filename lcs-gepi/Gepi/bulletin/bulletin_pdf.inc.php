@@ -32,6 +32,7 @@
 	$champ_bull_pdf[]="active_appreciation";
 	$champ_bull_pdf[]="affiche_doublement";
 	$champ_bull_pdf[]="affiche_date_naissance";
+	$champ_bull_pdf[]="affiche_lieu_naissance";
 	$champ_bull_pdf[]="affiche_dp";
 	$champ_bull_pdf[]="affiche_nom_court";
 	$champ_bull_pdf[]="affiche_effectif_classe";
@@ -149,6 +150,8 @@
 	$champ_bull_pdf[]="affiche_date_edition";
 	$champ_bull_pdf[]="affiche_ine";
 
+	$champ_bull_pdf[]="affiche_moyenne_general_coef_1";
+
 	//=========================
 	// AJOUT: boireaus 20081224
 	$champ_bull_pdf[]="affiche_nom_etab";
@@ -202,6 +205,7 @@
 	$val_defaut_champ_bull_pdf["active_appreciation"]=1;
 	$val_defaut_champ_bull_pdf["affiche_doublement"]=1;
 	$val_defaut_champ_bull_pdf["affiche_date_naissance"]=1;
+	$val_defaut_champ_bull_pdf["affiche_lieu_naissance"]=0;
 	$val_defaut_champ_bull_pdf["affiche_dp"]=1;
 	$val_defaut_champ_bull_pdf["affiche_nom_court"]=0;
 	$val_defaut_champ_bull_pdf["affiche_effectif_classe"]=0;
@@ -318,6 +322,8 @@
 	$val_defaut_champ_bull_pdf["affiche_moyenne_maxi_general"]=1;
 	$val_defaut_champ_bull_pdf["affiche_date_edition"]=1;
 	$val_defaut_champ_bull_pdf["affiche_ine"]=0;
+
+	$val_defaut_champ_bull_pdf["affiche_moyenne_general_coef_1"]=0;
 
 	//=========================
 	// AJOUT: boireaus 20081224

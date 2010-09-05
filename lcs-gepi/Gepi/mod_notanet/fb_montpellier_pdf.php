@@ -1,6 +1,6 @@
 <?php
 
-	/* $Id: fb_montpellier_pdf.php 4395 2010-05-07 19:32:40Z crob $ */
+	/* $Id: fb_montpellier_pdf.php 4378 2010-04-29 16:29:53Z crob $ */
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");

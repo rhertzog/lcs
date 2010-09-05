@@ -1,6 +1,5 @@
 <?php
 
-require 'gepi/om/BaseResponsableEleveAdresse.php';
 
 
 /**
@@ -12,19 +11,28 @@ require 'gepi/om/BaseResponsableEleveAdresse.php';
  * application requirements.  This class will only be generated as
  * long as it does not already exist in the output directory.
  *
- * @package    gepi
+ * @package    propel.generator.gepi
  */
 class ResponsableEleveAdresse extends BaseResponsableEleveAdresse {
 
-	/**
-	 * Initializes internal state of ResponsableEleveAdresse object.
-	 * @see        parent::__construct()
+ 	/**
+	 *
+	 * Renvoi la description de la liste des responsables habitant a cette adresse
+	 *
+	 *
+	 * @return     String
+	 *
 	 */
-	public function __construct()
-	{
-		// Make sure that parent constructor is always invoked, since that
-		// is where any default values for this object are set.
-		parent::__construct();
+	public function getDescriptionHabitant() {
+	    $result = '';
+	    foreach ($this->getResponsableEleves() as $responsableEleve) {
+		//$responsableEleve = new ResponsableEleve();
+		$result .= $responsableEleve->getCivilite().' '.strtoupper($responsableEleve->getNom()).' '.$responsableEleve->getPrenom();
+		if (!$this->getResponsableEleves()->isLast()) {
+		    $result .= ', ';
+		}
+	    }
+	    return $result;
 	}
 
 } // ResponsableEleveAdresse

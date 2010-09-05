@@ -1,6 +1,6 @@
 <?php
 
-	/* $Id: fb_rouen_pdf.php 4498 2010-05-25 16:17:11Z crob $ */
+	/* $Id: fb_rouen_pdf.php 4497 2010-05-25 16:16:37Z crob $ */
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");

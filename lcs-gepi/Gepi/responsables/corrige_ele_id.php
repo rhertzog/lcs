@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: corrige_ele_id.php 3851 2009-12-01 07:18:19Z crob $
+ * $Id: corrige_ele_id.php 3852 2009-12-01 07:18:29Z crob $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

@@ -15,7 +15,7 @@ class GroupeHelper {
 	 * @param      array $groupeB Le deuxieme groupe a comparer
 	 * @return     int un entier, qui sera inférieur, égal ou supérieur à zéro suivant que le premier argument est considéré comme plus petit, égal ou plus grand que le second argument.
 	 */
-	function compareGroupe($a, $b) {
+	public static function compareGroupe($a, $b) {
 		//echo($a->getDescriptionAvecClasses());
 		return strcmp($a->getNameAvecClasses(), $b->getNameAvecClasses());
 	}
@@ -28,10 +28,9 @@ class GroupeHelper {
 	 * @return     array $groupes Un tableau de groupe ordonnés
 	 * @throws     PropelException - if unable to parse/validate the date/time value.
 	 */
-	public static function orderByGroupNameWithClasses(array $groupes) {
-		$groupes2 = $groupes;
-		uasort  ($groupes2, array("GroupeHelper", "compareGroupe"));
-		return $groupes2;
+	public static function orderByGroupNameWithClasses(PropelObjectCollection $groupes) {
+		$groupes->uasort(array("GroupeHelper", "compareGroupe"));
+		return $groupes;
 	}
 }
 ?>

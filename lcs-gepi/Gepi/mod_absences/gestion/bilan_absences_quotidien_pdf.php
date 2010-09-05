@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: bilan_absences_quotidien_pdf.php 4097 2010-02-26 18:33:36Z crob $
+* $Id: bilan_absences_quotidien_pdf.php 4098 2010-02-26 18:33:42Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *

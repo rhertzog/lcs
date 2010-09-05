@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: gestion_absences.php 4480 2010-05-24 10:48:14Z crob $
+* $Id: gestion_absences.php 4878 2010-07-24 13:54:01Z regis $
 *
  * Copyright 2001, 2002 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -46,7 +46,6 @@ $titre_page = "Gestion des absences";
 require_once("../../lib/header.inc");
 //************** FIN EN-TETE ***************
 
-//echo "<p style='color:red'>".date("d/m/Y",getSettingValue('begin_bookings'))."-".date("d/m/Y",getSettingValue('end_bookings'))."</p>";
 
 ?>
 
@@ -118,9 +117,11 @@ if ( $select_fiche_eleve != '' ) {
 	if (getSettingValue("active_module_trombinoscopes")=='y') {
 		$nom_photo = '';
 		$nom_photo = nom_photo($id_eleve_photo,"eleves",2);
-		$photos = "../../photos/eleves/".$nom_photo;
+		//$photos = "../../photos/eleves/".$nom_photo;
+		$photos = $nom_photo;
 
-		if ( $nom_photo === '' or !file_exists($photos) ) {
+		//if ( $nom_photo === '' or !file_exists($photos) ) {
+		if ( $nom_photo === NULL or !file_exists($photos) ) {
 			$photos = "../../mod_trombinoscopes/images/trombivide.jpg";
 		}
 		$valeur = redimensionne_image($photos);
@@ -561,6 +562,7 @@ $retardnj='';
 					// largeur du graphique au maximum
 					$l_graphique = '370'; //536
 // temporaire
+
 //$du = '01/09/2008';
 //$au = '30/06/2009';
 $du = date("d/m/Y",getSettingValue('begin_bookings'));
@@ -665,7 +667,7 @@ $mois[$i]['mois_court'] = 'aou. 2006'; $mois[$i]['mois'] = 'juil. 2007'; $mois[$
 	} else { $tab = ''; }
 
 	$i = '0';
-	$requete_periode = 'SELECT * FROM '.$prefix_base.'absences_creneaux WHERE suivi_definie_periode = "1" ORDER BY heuredebut_definie_periode ASC';
+	$requete_periode = 'SELECT * FROM '.$prefix_base.'edt_creneaux WHERE suivi_definie_periode = "1" ORDER BY heuredebut_definie_periode ASC';
         $execution_periode = mysql_query($requete_periode) or die('Erreur SQL !'.$requete_periode.'<br />'.mysql_error());
 	while ( $donnee_periode = mysql_fetch_array( $execution_periode ) ) {
 		$Horaire[$i] = heure_texte_court($donnee_periode['heuredebut_definie_periode']).'-'.heure_texte_court($donnee_periode['heurefin_definie_periode']);
@@ -700,7 +702,7 @@ $mois[$i]['mois_court'] = 'aou. 2006'; $mois[$i]['mois'] = 'juil. 2007'; $mois[$
 	$i = '0';
 
 		// calcul du nombre de période à affiché dans la semaine
-		$maxHor = mysql_result(mysql_query("SELECT count(*) FROM ".$prefix_base."absences_creneaux
+		$maxHor = mysql_result(mysql_query("SELECT count(*) FROM ".$prefix_base."edt_creneaux
 							WHERE suivi_definie_periode = '1'"),0);
 
 		// si il est égale à 0 alors on l'initialise à 11

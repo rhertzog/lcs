@@ -488,7 +488,7 @@ PRIMARY KEY (`id_calendrier`));");
 		$req_test = mysql_query("SELECT value FROM setting WHERE name = 'autorise_edt_eleve'");
 		$res_test = mysql_num_rows($req_test);
 		if ($res_test == 0){
-			$query3 = mysql_query("INSERT INTO setting VALUES ('autorise_edt_eleve', 'n');");
+			$query3 = mysql_query("INSERT INTO setting VALUES ('autorise_edt_eleve', 'no');");
 			if ($query3) {
 				$result .= "<font color=\"green\">Ok !</font><br />";
 			} else {
@@ -1711,18 +1711,16 @@ ADD en_construction ENUM( 'y', 'n' ) NOT NULL DEFAULT 'n'
 
 		//==========================================================
 		// Modification Delineau
-		if (getSettingValue("active_version152")=="y") { // lorsque le trunk sera officiellement en 1.5.2, on supprimera ce test
-			$result .= "<br />&nbsp;->Tentative de création de la table j_aid_utilisateurs_gest.<br />";
-			$test = mysql_num_rows(mysql_query("SHOW TABLES LIKE 'j_aid_utilisateurs_gest'"));
-			if ($test == 0) {
-				$result_inter = traite_requete("CREATE TABLE j_aid_utilisateurs_gest (id_aid varchar(100) NOT NULL default '', id_utilisateur varchar(50) NOT NULL default '', indice_aid int(11) NOT NULL default '0', PRIMARY KEY  (id_aid,id_utilisateur))");
-				if ($result_inter == '')
-				$result .= "<font color=\"green\">La table j_aid_utilisateurs_gest a été créée !</font><br />";
-				else
-				$result .= $result_inter."<br />";
-			} else {
-				$result .= "<font color=\"blue\">La table j_aid_utilisateurs_gest existe déjà.</font><br />";
-			}
+		$result .= "<br />&nbsp;->Tentative de création de la table j_aid_utilisateurs_gest.<br />";
+		$test = mysql_num_rows(mysql_query("SHOW TABLES LIKE 'j_aid_utilisateurs_gest'"));
+		if ($test == 0) {
+			$result_inter = traite_requete("CREATE TABLE j_aid_utilisateurs_gest (id_aid varchar(100) NOT NULL default '', id_utilisateur varchar(50) NOT NULL default '', indice_aid int(11) NOT NULL default '0', PRIMARY KEY  (id_aid,id_utilisateur))");
+			if ($result_inter == '')
+			$result .= "<font color=\"green\">La table j_aid_utilisateurs_gest a été créée !</font><br />";
+			else
+			$result .= $result_inter."<br />";
+		} else {
+  		$result .= "<font color=\"blue\">La table j_aid_utilisateurs_gest existe déjà.</font><br />";
 		}
 
 		//==========================================================

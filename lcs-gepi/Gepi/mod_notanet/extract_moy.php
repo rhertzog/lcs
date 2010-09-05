@@ -1,5 +1,5 @@
 <?php
-/* $Id: extract_moy.php 4395 2010-05-07 19:32:40Z crob $ */
+/* $Id: extract_moy.php 4586 2010-06-15 15:49:28Z crob $ */
 /*
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -630,7 +630,8 @@ else {
 												case "POINTS":
 													if(($moy_NOTANET[$j]!="AB")&&($moy_NOTANET[$j]!="DI")&&($moy_NOTANET[$j]!="NN")){
 														$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($moy_NOTANET[$j]*$tabmatieres[$j][-2])."|";
-														$TOT=$TOT+round($moy_NOTANET[$j]*2)/2;
+														//$TOT=$TOT+round($moy_NOTANET[$j]*2)/2;
+														$TOT=$TOT+round($moy_NOTANET[$j]*$tabmatieres[$j][-2]*2)/2;
 														$note_notanet=formate_note_notanet($moy_NOTANET[$j]*$tabmatieres[$j][-2]);
 													}
 													else{
@@ -641,10 +642,13 @@ else {
 												case "PTSUP":
 													$ptsup=$moy_NOTANET[$j]-10;
 													if($ptsup>0){
-														$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($ptsup)."|";
+														//$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($ptsup)."|";
+														$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($ptsup*$tabmatieres[$j][-2])."|";
 														//$TOT=$TOT+$ptsup;
-														$TOT=$TOT+round($ptsup*2)/2;
-														$note_notanet=formate_note_notanet($ptsup);
+														//$TOT=$TOT+round($ptsup*2)/2;
+														//$note_notanet=formate_note_notanet($ptsup);
+														$TOT=$TOT+round($ptsup*$tabmatieres[$j][-2]*2)/2;
+														$note_notanet=formate_note_notanet($ptsup*$tabmatieres[$j][-2]);
 													}
 													else{
 														$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet(0)."|";

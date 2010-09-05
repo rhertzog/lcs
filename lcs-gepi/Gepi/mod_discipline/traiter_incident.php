@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: traiter_incident.php 3276 2009-07-06 16:22:06Z crob $
+ * $Id: traiter_incident.php 4047 2010-01-28 18:21:19Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -346,6 +346,15 @@ if((isset($_POST['suppr_incident']))&&(($_SESSION['statut']!='professeur')||($_S
 						$temoin_erreur="y";
 					}
 				}
+
+				if($temoin_erreur=="n") {
+					$sql="DELETE FROM s_sanctions s WHERE s.id_incident='$suppr_incident[$i]';";
+					$res=mysql_query($sql);
+					if(!$res) {
+						$msg.="ERREUR lors de la suppression de la sanction associée à l'incident ".$suppr_incident[$i].".<br />\n";
+						$temoin_erreur="y";
+					}
+				}
 			}
 
 			if($temoin_erreur=="n") {
@@ -445,19 +454,63 @@ if(!isset($id_incident)) {
 	$sql2.=")";
 
 	//if($_SESSION['statut']=='professeur') {
-	if((($_SESSION['statut']=='professeur'))&&($declarant_incident=="")) {
-		// Pour qu'un professeur principal puisse consulter les incidents mettant en cause ses élèves
-		$ajout2_sql=" UNION (SELECT DISTINCT si.* FROM s_incidents si, s_protagonistes sp, j_eleves_professeurs jep WHERE sp.id_incident=si.id_incident AND sp.login=jep.login AND jep.professeur='".$_SESSION['login']."'";
+	if($_SESSION['statut']=='professeur') {
+		if($declarant_incident=="") {
+			if(getSettingValue('visuDiscProfClasses')=='yes') {
+				$ajout2_sql=" UNION (SELECT DISTINCT si.* FROM s_incidents si, 
+																s_protagonistes sp, 
+																j_eleves_classes jec,
+																j_groupes_classes jgc,
+																j_groupes_professeurs jgp
+											WHERE sp.id_incident=si.id_incident AND 
+													sp.login=jec.login AND
+													jgp.id_groupe=jgc.id_groupe AND
+													jgc.id_classe=jec.id_classe AND
+													jgp.login='".$_SESSION['login']."'";
+		
+				$ajout2_sql.=$ajout_sql;
+		
+				$sql.=$ajout2_sql;
+				$sql2.=$ajout2_sql;
+				if($incidents_clos!="y") {$sql.=" AND si.etat!='clos'";}
+		
+				$sql.=")";
+				$sql2.=")";
+			}
+			elseif(getSettingValue('visuDiscProfGroupes')=='yes') {
+				$ajout2_sql=" UNION (SELECT DISTINCT si.* FROM s_incidents si, 
+																s_protagonistes sp, 
+																j_eleves_groupes jeg, 
+																j_groupes_professeurs jgp 
+											WHERE sp.id_incident=si.id_incident AND 
+													sp.login=jeg.login AND 
+													jgp.id_groupe=jeg.id_groupe AND
+													jgp.login='".$_SESSION['login']."'";
+		
+				$ajout2_sql.=$ajout_sql;
+		
+				$sql.=$ajout2_sql;
+				$sql2.=$ajout2_sql;
+				if($incidents_clos!="y") {$sql.=" AND si.etat!='clos'";}
+		
+				$sql.=")";
+				$sql2.=")";
+			}
 
-		$ajout2_sql.=$ajout_sql;
-
-		$sql.=$ajout2_sql;
-		$sql2.=$ajout2_sql;
-		if($incidents_clos!="y") {$sql.=" AND si.etat!='clos'";}
-
-		$sql.=")";
-		$sql2.=")";
+			// Pour qu'un professeur principal puisse consulter les incidents mettant en cause ses élèves
+			$ajout2_sql=" UNION (SELECT DISTINCT si.* FROM s_incidents si, s_protagonistes sp, j_eleves_professeurs jep WHERE sp.id_incident=si.id_incident AND sp.login=jep.login AND jep.professeur='".$_SESSION['login']."'";
+	
+			$ajout2_sql.=$ajout_sql;
+	
+			$sql.=$ajout2_sql;
+			$sql2.=$ajout2_sql;
+			if($incidents_clos!="y") {$sql.=" AND si.etat!='clos'";}
+	
+			$sql.=")";
+			$sql2.=")";
+		}
 	}
+
 
 	//$sql.=" ORDER BY si.date DESC, si.heure DESC;";
 	//$sql2.=" ORDER BY si.date DESC, si.heure DESC;";
@@ -615,7 +668,8 @@ if(!isset($id_incident)) {
 		echo "<option value='$lig_nature->nature'";
 		if($nature_incident==$lig_nature->nature) {echo " selected='selected'";}
 		if($lig_nature->nature!='') {
-			echo ">".$lig_nature->nature."</option>\n";
+			//echo ">".$lig_nature->nature."</option>\n";
+			echo ">".substr($lig_nature->nature,0,40)."</option>\n";
 		}
 		else {
 			echo ">(vide)</option>\n";

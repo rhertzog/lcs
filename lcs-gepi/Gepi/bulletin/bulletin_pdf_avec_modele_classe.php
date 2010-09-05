@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: bulletin_pdf_avec_modele_classe.php 3323 2009-08-05 10:06:18Z crob $
+* $Id: bulletin_pdf_avec_modele_classe.php 4878 2010-07-24 13:54:01Z regis $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -990,8 +990,10 @@ if(!empty($model_bulletin)) {
 
 		//$photo[$cpt_i] = "../photos/eleves/".strtolower($donner['elenoet']).".jpg";
 		$tmp_photo=nom_photo(strtolower($donner['elenoet']));
-		if("$tmp_photo"!=""){
-			$photo[$cpt_i] = "../photos/eleves/".$tmp_photo;
+		//if("$tmp_photo"!=""){
+		if($tmp_photo){
+			//$photo[$cpt_i] = "../photos/eleves/".$tmp_photo;
+			$photo[$cpt_i] = $tmp_photo;
 		}
 		else{
 			$photo[$cpt_i] = "";

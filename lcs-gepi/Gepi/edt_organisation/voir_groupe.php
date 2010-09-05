@@ -3,7 +3,7 @@
 /**
  *
  *
- * @version $Id: voir_groupe.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * @version $Id: voir_groupe.php 4053 2010-01-29 20:41:31Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -55,7 +55,7 @@ if (param_edt($_SESSION["statut"]) != "yes") {
 }
 // CSS et js particulier à l'EdT
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
-$style_specifique = "edt_organisation/style_edt";
+$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
 
 //++++++++++ l'entête de Gepi +++++
 require_once("../lib/header.inc");
@@ -70,6 +70,7 @@ require_once("./menu.inc.php");
 	<div id="lecorps">
 
 <?php
+    require_once("./menu.inc.new.php");
 	echo'
 	<h3>Voici la liste de tous les enseignements enregistrés dans la base de Gepi</h3>
 	<table class="tab_edt">

@@ -1,7 +1,7 @@
 <?php
 
 /*
-* $Id: index.php 4228 2010-04-02 11:22:58Z crob $
+* $Id: index.php 5061 2010-08-16 19:22:09Z regis $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -126,7 +126,8 @@ if (!isset($id_classe)) {
 		echo "<th>".ucfirst($nom_periode[$i])."</th>\n";
 		if(($ver_periode[$i] == "N")||
 		 (($ver_periode[$i]!="O")&&($_SESSION['statut']=='secours'))) {
-			echo "<td><a href='saisie_absences.php?id_classe=$id_classe&amp;periode_num=$i'><img src='../images/edit16.png' width='16' height='16' alt='Saisir' title='Saisir' /></a></td>\n";
+		  echo "<td><a href='saisie_absences.php?id_classe=$id_classe&amp;periode_num=$i'><img src='../images/edit16.png' width='16' height='16' alt='Saisir' title='Saisir' /></a></td>\n";
+		  //echo "<td><a href='saisir_groupe.php?id_classe=$id_classe&amp;periode_num=$i'><img src='../images/edit16.png' width='16' height='16' alt='Saisir' title='Saisir' /></a></td>\n";
 		} else {
 			echo "<td style='color:red;'><img src='../images/disabled.png' width='20' height='20' alt='".$gepiClosedPeriodLabel."' title='".$gepiClosedPeriodLabel."' /></td>\n";
 		}

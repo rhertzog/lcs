@@ -61,7 +61,7 @@ function verifChecked($id){
 		$query_ds = mysql_query($sql_ds) OR trigger_error('Erreur dans la fonction verifChecked ', E_USER_ERROR);
 		$count = mysql_num_rows($query_ds);
 		if ($count >= 1) {
-			$rep = mysql_result($query_ds, "autorisation");
+			$rep = mysql_result($query_ds, 0,"autorisation");
 		}else{
 			$rep = 'F';
 		}
@@ -103,7 +103,7 @@ if ($action == 'ajouter') {
 		$sql = "INSERT INTO droits_statut (id, nom_statut) VALUES ('', '".$insert_statut."')";
 		$enregistre = mysql_query($sql) OR trigger_error('Impossible d\'enregistrer ce nouveau statut', E_USER_WARNING);
 		$cherche_id = mysql_query("SELECT id FROM droits_statut WHERE nom_statut = '".$insert_statut."'");
-		$last_id = mysql_result($cherche_id, "id");
+		$last_id = mysql_result($cherche_id, 0,"id");
 
 		if ($enregistre) {
 
@@ -176,6 +176,7 @@ if ($action == 'modifier') {
 		$test[$a][16] = isset($_POST["anna|".$b]) ? $_POST["anna|".$b] : NULL;
 		$test[$a][17] = isset($_POST["tr|".$b]) ? $_POST["tr|".$b] : NULL;
 		$test[$a][18] = isset($_POST["dsi|".$b]) ? $_POST["dsi|".$b] : NULL;
+		$test[$a][19] = isset($_POST["abs|".$b]) ? $_POST["abs|".$b] : NULL;
 
 		// On assure les différents traitements
 		if ($test[$a][0] == 'on') {
@@ -191,29 +192,36 @@ if ($action == 'modifier') {
 			$query_d = mysql_query($sql_d) OR trigger_error('Impossible de supprimer ce statut ds : '.mysql_error(), E_USER_NOTICE);
 
 		}else{
-			// On va vérifier les droits un par un
-			// ne = notes élèves ; bs = bulletins simplifiés ; va = voir absences ; sa = saisir absences
-			// cdt = cahier de textes ; ee = emploi du temps des élèves ; te = tous les emplois du temps
+                  // On va vérifier les droits un par un
+                  // ne = notes élèves ; bs = bulletins simplifiés ; va = voir absences ; sa = saisir absences
+                  // cdt = cahier de textes ; ee = emploi du temps des élèves ; te = tous les emplois du temps
 
-			for($m = 1 ; $m < $iter ; $m++){
+                  for($m = 1 ; $m < $iter ; $m++){
 
-				$nbre2 = count($autorise[$m]);
-				// On vérifie si le droit est coché ou non
-				if ($test[$a][$m] == 'on') {
-					$vf = 'V';
-				}else{
-					$vf = 'F';
-				}
-					// On n'oublie pas de mettre à jour tous les fichiers adéquats
-					for($i = 0 ; $i < $nbre2 ; $i++){
-						$sql_maj = "UPDATE droits_speciaux SET autorisation = '".$vf."' WHERE id_statut = '".$b."' AND nom_fichier = '".$autorise[$m][$i]."'";
-						$query_maj = mysql_query($sql_maj) OR trigger_error("Mauvaise mise à jour  : ".mysql_error(), E_USER_WARNING);
+                    $nbre2 = count($autorise[$m]);
+                    // On vérifie si le droit est coché ou non
+                    if ($test[$a][$m] == 'on') {
+                      $vf = 'V';
+                    }else{
+                      $vf = 'F';
+                    }
+                    // On n'oublie pas de mettre à jour tous les fichiers adéquats
+                    for($i = 0 ; $i < $nbre2 ; $i++){
+                      //$sql_maj = "UPDATE droits_speciaux SET autorisation = '".$vf."' WHERE id_statut = '".$b."' AND nom_fichier = '".$autorise[$m][$i]."'";
+                      //$query_maj = mysql_query($sql_maj) OR trigger_error("Mauvaise mise à jour  : ".mysql_error(), E_USER_WARNING);
+                      $query_select = mysql_query("SELECT id FROM droits_speciaux WHERE id_statut = '".$b."' AND nom_fichier = '".$autorise[$m][$i]."'");
+                      $result = mysql_fetch_array($query_select);
+                      if (!empty ($result)){
+                        $query_maj = mysql_query("UPDATE droits_speciaux SET autorisation = '".$vf."' WHERE id_statut = '".$b."' AND nom_fichier = '".$autorise[$m][$i]."'");
+                      }else{
+                        $query2_maj = mysql_query("INSERT INTO `droits_speciaux` VALUES ('','".$b."','".$autorise[$m][$i]."','".$vf."')");
+                      }
 
-						if (!$query_maj) {
-							$msg3 .= '<span class="red">Erreur</span>';
-						}
-					}
-			}
+                      if (!$query_maj) {
+			$msg3 .= '<span class="red">Erreur</span>';
+                      }
+                    }
+                  } // for($m = 1 ; $m < $iter ; $m++){
 		}
 	}
 //print_r($test);

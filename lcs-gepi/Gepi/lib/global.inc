@@ -78,6 +78,43 @@ $liste_noire_ip = array();
 //$liste_noire_ip[] = "195.1.1.1";
 //$liste_noire_ip[] = "195.1.1.2";
 
+/* Ordre des menus
+******************
+Le tableau ci-dessous donne l'ordre des différents blocs du menu d'accueil.
+Vous pouvez modifier ce tableau ou ajouter des lignes pour y inclure d'autres blocs correspondant aux plugins installés
+Si le nom du plugin est "nom_du_plugin", ajoutez une ligne qui ressemble à :
+$ordre_menus['nom_du_plugin']= 22;
+
+Attention, chaque bloc doit avoir un numéro unique !
+*/
+
+$ordre_menus = array();
+$ordre_menus['bloc_administration']= 0; // Administration
+$ordre_menus['bloc_absences_vie_scol']= 1; // Gestion des retards et absences -> Vie scolaire
+$ordre_menus['bloc_absences_professeur']= 2; // Gestion des retards et absences -> professeur
+$ordre_menus['bloc_saisie']= 3; // Saisie (Cahier de texte - Carnet de notes - Bulletin - saisie des appréciations AID)
+$ordre_menus['bloc_trombinoscope']= 4; // Trombinoscope
+$ordre_menus['bloc_releve_notes']= 5; // Relevés de notes
+$ordre_menus['bloc_releve_ects'] = 6; // Outils de relevé ECTS
+$ordre_menus['bloc_emploi_du_temps'] = 7; // Emploi du temps
+$ordre_menus['bloc_responsable'] = 8; // Accès des responsables à : Cahier de textes - Relevés de notes - Equipes pédagogiques - Bulletins simplifiés - Graphiques - absences
+$ordre_menus['bloc_outil_comp_gestion_aid'] = 9; // Outils complémentaires de gestion des AID
+$ordre_menus['bloc_gestion_bulletins_scolaires'] = 10; // Bulletins scolaires
+$ordre_menus['bloc_visulation_impression'] = 11; // Visualisation et Impression
+$ordre_menus['bloc_notanet_fiches_brevet'] = 12; // Notanet - Fiche Brevet
+$ordre_menus['bloc_annees_antérieures'] = 13; // Années antérieures
+$ordre_menus['bloc_panneau_affichage'] = 14; // Panneau d'affichage
+$ordre_menus['bloc_module_inscriptions'] = 15; // Module "inscriptions"
+$ordre_menus['bloc_module_discipline'] = 16; // Module "Discipline"
+$ordre_menus['bloc_modeles_Open_Office'] = 17; // Modèles Open Office
+$ordre_menus['bloc_Genese_classes'] = 18; // Génèse des classes
+$ordre_menus['bloc_navigation'] = 19; // Navigation
+$ordre_menus['bloc_epreuve_blanche'] = 20; // Epreuve blanche
+$ordre_menus['bloc_examen_blanc'] = 21; // Examen blanc
+$ordre_menus['bloc_admissions_post_bac'] = 22; // Module Admissions Post-Bac
+$ordre_menus['bloc_Gestionnaire_aid'] = 23 ;// Module Gestionnaire d'AID
+
+
 ####################################################
 #                                                  #
 #   Paramètres de configuration du cahier de texte #
@@ -129,7 +166,7 @@ $couleur_cellule_gen = "#F6F7EF";
 ##################################################################################
 
 // Version de GEPI
-$gepiVersion = "1.5.2"; // Attention : cette ligne doit conserver une valeur respectant ce schéma : trunk/1.5.1/1.5.2, etc. avec des guillemets doubles.
+$gepiVersion = "1.5.3"; // Attention : cette ligne doit conserver une valeur respectant ce schéma : trunk/1.5.1/1.5.2, etc. avec des guillemets doubles.
 $gepiVersionMaintenance = ""; // 1, 2, 3, etc. N'est plus utilisé actuellement, remplacé plutôt par le numéro de révision SVN.
 $gepiRcVersion = "";
 $gepiBetaVersion = "";
@@ -138,16 +175,8 @@ $gepiBetaVersion = "";
 // automatique du site web de Gepi. Elle n'est vraiment utile que pour les
 // branches stables, pas pour le trunk, qui correspond de toute façon à la
 // version la plus récente.
-$gepiSvnRev="4530";
+$gepiSvnRev="5124";
 
-
-// Forcer l'utilisation du module de gestion des absences au quoditien
-//
-// Ce paramètre sert à forcer l'utilisation du module de gestion des
-// absences au quotidien, qui n'est pas encore considéré comme stable
-// mais reste présent dans l'archive
-// Note : ce module devrait être stabilisé pour la prochaine version de Gepi
-$force_abs = true; // bool "true|false"
 
 // Forcer l'utilisation du module de gestion des mise à jour de GEPI
 //
@@ -248,14 +277,21 @@ $style_screen_ajout='y';
 //=============================
 // Un dispositif de filtrage des balises HTML soumises a été mis en place.
 // Sans ce dispositif, il est possible de déposer un code sournois pour provoquer des dégats lors de la visite par l'utilisateur auquel le piège est destiné.
+// Il est très fortement recommandé de ne pas passer la variable ci-dessous à 'n'
+//$filtrage_html="y";
+//$classe_filtrage='HTMLPurifier'; // HTMLPurifier fonctionne à partir de php5.0.5 et est plus complet que InputFilter
+// Ou:
+//$classe_filtrage='InputFilter'; // InputFilter fonctionne avec php4/php5
+
 // $filtrage_html est maintenant paramétré dans gestion/security_policy.php
 // Et prend les valeurs inputfilter, htmlpurifier ou pas_de_filtrage_html
 
 // Liste des balises autorisées pour InputFilter:
 $aAllowedTags = array("a", "b", "blink", "blockquote", "br", "caption", "center", "col", "colgroup", "comment", "em", "font", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "img", "li", "marquee", "ol", "p", "pre", "s", "small", "span", "strike", "strong", "sub", "sup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "tt", "u", "ul", "color");
 // N'ajoutez pas de balises sans y réfléchir à deux fois... ou demander avis sur la liste gepi-users
-// Liste des attributs autorisés:	
+// Liste des attributs autorisés:
 $aAllowedAttr = array("abbr", "align", "alt", "axis", "background", "behavior", "bgcolor", "border", "bordercolor", "bordercolordark", "bordercolorlight", "bottompadding", "cellpadding", "cellspacing", "char", "charoff", "cite", "clear", "color", "cols", "direction", "face", "font-weight", "headers", "height", "href", "hspace", "leftpadding", "loop", "noshade", "nowrap", "point-size", "rel", "rev", "rightpadding", "rowspan", "rules", "scope", "scrollamount", "scrolldelay", "size", "span", "src", "start", "summary", "target", "title", "toppadding", "type", "valign", "value", "vspace", "width", "wrap", "style");
 //$aAllowedAttr = array("abbr", "align", "alt", "axis", "background", "behavior", "bgcolor", "border", "bordercolor", "bordercolordark", "bordercolorlight", "bottompadding", "cellpadding", "cellspacing", "char", "charoff", "cite", "clear", "color", "cols", "direction", "face", "font-weight", "headers", "height", "hspace", "leftpadding", "loop", "noshade", "nowrap", "point-size", "rel", "rev", "rightpadding", "rowspan", "rules", "scope", "scrollamount", "scrolldelay", "size", "span", "start", "summary", "target", "title", "toppadding", "type", "valign", "value", "vspace", "width", "wrap", "style");
 //=============================
+
 ?>

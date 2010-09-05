@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: edt_eleve.php 2376 2008-09-10 21:59:18Z jjocal $
+ * @version $Id: edt_eleve.php 4254 2010-04-09 09:24:59Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -30,8 +30,16 @@ $niveau_arbo = 1;
 require_once("../lib/initialisations.inc.php");
 
 // fonctions edt
+require_once('./choix_langue.php');
+require_once("./fonctions_edt.php");            // --- fonctions de base communes à tous les emplois du temps
+require_once("./fonctions_edt_eleve.php");      // --- edt eleve
+require_once("./fonctions_calendrier.php");
+require_once("./fonctions_affichage.php");
+require_once("./req_database.php");
 
-require_once("./fonctions_edt.php");
+
+$type_edt_2 = "eleve";
+$period_id=isset($_GET['period_id']) ? $_GET['period_id'] : (isset($_POST['period_id']) ? $_POST['period_id'] : NULL);
 
 
 // Resume session
@@ -52,7 +60,7 @@ if (!checkAccess()) {
 
 // Sécurité supplémentaire par rapport aux paramètres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
-	Die('Vous devez demander à votre administrateur l\'autorisation de voir cette page.');
+	Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
 
 // =============== Traitement des données ====================//
@@ -65,6 +73,7 @@ if (isset($_SESSION["login"])) {
 
 		$aff_nom_edt = renvoie_nom_long(($_SESSION["login"]), "eleve");
 		$autorise = 'oui';
+		$liens_autres_enfants = "";
 
 	}elseif($_SESSION['statut'] == "responsable"){
 
@@ -74,10 +83,10 @@ if (isset($_SESSION["login"])) {
 		// On vérifie que le login demandé est autorisé pour ce responsable
 
 		for($a = 0 ; $a < $nbre_enfants_brut ; $a++){
-
 			if ($tab_tmp_ele[$a] == $_GET["login_edt"]) {
 				$autorise = 'oui';
 				$aff_nom_edt = $tab_tmp_ele[$a + 1];
+                $login_edt = $tab_tmp_ele[$a];
 			}
 			if ($nbre_enfants_brut > 2) {
 
@@ -109,54 +118,95 @@ if (isset($_SESSION["login"])) {
 
 // CSS et js particulier à l'EdT
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
-$style_specifique = "edt_organisation/style_edt";
+$ua = getenv("HTTP_USER_AGENT");
+if (strstr($ua, "MSIE 6.0")) {
+	$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt_ie6";
+}
+else {
+	$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
+}
+    //=========================== GESTION DES PERIODES
+    
+    if (PeriodesExistent()) {
+        if ($period_id != NULL) {
+            $_SESSION['period_id'] = $period_id;
+        }
+        if (!isset($_SESSION['period_id'])) {
+            $_SESSION['period_id'] = ReturnIdPeriod(date("U"));
+        }
+        if (!PeriodExistsInDB($_SESSION['period_id'])) {
+            $_SESSION['period_id'] = ReturnFirstIdPeriod();    
+        }
+        $DisplayPeriodBar = true;
+    }
+    else {
+        $DisplayPeriodBar = false;
+        $_SESSION['period_id'] = 0;
+    }
+
+    //=========================== CONSTRUCTION DES EDT
+
+    if ($_SESSION['statut'] == "eleve")
+    {
+        $tab_data = ConstruireEDTEleve($_SESSION['login'], $_SESSION['period_id'] );
+        $entetes = ConstruireEnteteEDT();
+        $creneaux = ConstruireCreneauxEDT();
+        $DisplayEDT = true;
+        $login_edt = $_SESSION['login'];
+    }
+    else if ($_SESSION['statut'] == "responsable")
+    {
+        $tab_data = ConstruireEDTEleve($login_edt, $_SESSION['period_id'] );
+        $entetes = ConstruireEnteteEDT();
+        $creneaux = ConstruireCreneauxEDT();
+        $DisplayEDT = true;
+    }
+    else {
+        $DisplayEDT = false;
+    }
+// =============================================================================
+//
+//                                  VUE
+//		
+// =============================================================================
 
 // ============== Le header ==========
 require_once("../lib/header.inc");
 // ===================================
 ?>
 
-<br />
+<div id="edteleve">
+
 	<p class="bold">
-		<a href="../accueil.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil</a>
-<center>
-	<?php echo $aff_nom_edt . $liens_autres_enfants; ?>
-<br /><br />
+		<a href="../accueil.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil</a></p>
 
-<?php
-	premiere_ligne_tab_edt();
+    <p class="cadreInformation">
+	    <?php echo $aff_nom_edt . $liens_autres_enfants; ?>
+    </p>
 
-	$tab_creneaux = retourne_creneaux();
-	$nbre_creneaux = count($tab_creneaux);
+    <?php
 
-	$i=0;
 
-	while($i < $nbre_creneaux){
 
-		$tab_id_creneaux = retourne_id_creneaux();
+// ========================= AFFICHAGE DE LA BAR DE COMMUTATION DES PERIODES
 
-		$c=0;
+    if ($DisplayPeriodBar) {
+        AfficheBarCommutateurPeriodesEleve();
+    }
 
-		while($c<count($tab_id_creneaux)){
+    AfficheImprimante(true); 
 
-			echo'
-			<tr>
-				<th rowspan="2">
-					<br />'.$tab_creneaux[$i].'<br /><br />
-				</th>'.(construction_tab_edt($tab_id_creneaux[$c], "0")).'
-			<tr>
-				'.(construction_tab_edt($tab_id_creneaux[$c], "0.5"));
-			$i ++;
-			$c ++;
-		}
-	}
 ?>
+</div>
+    <?php
 
-	</tbody>
-</table>
 
-<br />
+// ========================= AFFICHAGE DES EMPLOIS DU TEMPS
 
-</center>
+    if ($DisplayEDT) {
+        AfficherEDT($tab_data, $entetes, $creneaux, "eleve", $login_edt, $_SESSION['period_id']);
+    }
 
-<?php require_once("../lib/footer.inc.php"); ?>
+    require_once("../lib/footer.inc.php"); 
+
+?>

@@ -1,16 +1,26 @@
 <?php
 
 /*
-	$Id: recherche_eleve.php 3323 2009-08-05 10:06:18Z crob $
+	$Id: recherche_eleve.php 4877 2010-07-23 11:29:17Z regis $
 */
+if(function_exists("mb_detect_encoding")&&function_exists("mb_convert_encoding")){
+	$string = "¬ƒ¿¡√ƒ≈« À»…ŒœÃÕ—‘÷“”’¶€‹Ÿ⁄›æ¥·‡‚‰„ÂÁÈËÍÎÓÔÏÌÒÙˆÚÛı®˚¸˘˙˝ˇ∏";
+	$encoding = mb_detect_encoding($string, "UTF-8, ISO-8859-1");
+	$string = mb_convert_encoding($string, "UTF-8", $encoding);
+}else{
+	$string = "";
+}
+//echo $string;
 
 	$rech_nom=$_POST['rech_nom'];
-	$rech_nom=my_ereg_replace("[^A-Za-z¬ƒ¿¡√ƒ≈« À»…ŒœÃÕ—‘÷“”’¶€‹Ÿ⁄›æ¥·‡‚‰„ÂÁÈËÍÎÓÔÏÌÒÙˆÚÛı®˚¸˘˙˝ˇ∏]","",$rech_nom);
+	//$rech_nom=my_ereg_replace("[^A-Za-z√Ç√Ñ√Ä√Å√É√Ñ√Ö√á√ä√ã√à√â√é√è√å√ç√ë√î√ñ√í√ì√ï≈†√õ√ú√ô√ö√ù≈∏≈Ω√°√†√¢√§√£√•√ß√©√®√™√´√Æ√Ø√¨√≠√±√¥√∂√∞√≤√≥√µ≈°√ª√º√π√∫√Ω√ø≈æ]","",$rech_nom);
+	$rech_nom=my_ereg_replace("[^A-Za-z$string]","",$rech_nom);
 	$page=$_POST['page'];
 	//if(($page!="visu_eleve.php")&&($page!="export_bull_eleve.php.php")) {
-	if(($page!="visu_eleve.php")&&($page!="export_bull_eleve.php")&&($page!="import_bull_eleve.php")) {
+	//if(($page!="visu_eleve.php")&&($page!="export_bull_eleve.php")&&($page!="import_bull_eleve.php")) {
+	if(($page!="fiche_eleve.php")&&($page!="visu_eleve.php")&&($page!="export_bull_eleve.php")&&($page!="import_bull_eleve.php")) {
 		$page="../logout.php?auto=2";
-		// Remarque: Cela n'empÍche pas de bricoler l'adresse destination des liens affichÈs...
+		// Remarque: Cela n'emp√™che pas de bricoler l'adresse destination des liens affich√©s...
 	}
 
 	$sql="SELECT * FROM eleves WHERE nom LIKE '%$rech_nom%';";
@@ -19,18 +29,18 @@
 	$nb_ele=mysql_num_rows($res_ele);
 
 	if($nb_ele==0){
-		// On ne devrait pas arriver l‡.
-		//echo "<p>Aucun nom d'ÈlËve ne contient la chaine $rech_nom.</p>\n";
+		// On ne devrait pas arriver l√†.
+		//echo "<p>Aucun nom d'√©l√®ve ne contient la chaine $rech_nom.</p>\n";
 		echo "<p>Aucun nom d'&eacute;l&egrave;ve ne contient la chaine $rech_nom.</p>\n";
 	}
 	else{
-		//echo "<p>La recherche a retournÈ <b>$nb_ele</b> rÈponse(s):</p>\n";
+		//echo "<p>La recherche a retourn√© <b>$nb_ele</b> r√©ponse(s):</p>\n";
 		echo "<p>La recherche a retourn&eacute; <b>$nb_ele</b> r&eacute;ponse";
 		if($nb_ele>1) {echo "s";}
 		echo ":</p>\n";
-		echo "<table border='1' class='boireaus' summary='Liste des ÈlËves'>\n";
+		echo "<table border='1' class='boireaus' summary='Liste des √©l√®ves'>\n";
 		echo "<tr>\n";
-		//echo "<th>ElËve</th>\n";
+		//echo "<th>El√®ve</th>\n";
 		echo "<th>El&egrave;ve</th>\n";
 		echo "<th>Classe(s)</th>\n";
 		echo "</tr>\n";

@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: classes_param.php 3601 2009-10-14 19:25:56Z crob $
+* $Id: classes_param.php 4116 2010-03-09 18:15:01Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -248,7 +248,24 @@ if (isset($_POST['is_posted'])) {
 						}
 					}
 
-
+					if((isset($_POST['forcer_recalcul_rang']))&&($_POST['forcer_recalcul_rang']=='y')) {
+						$sql="SELECT num_periode FROM periodes WHERE id_classe='$id_classe' ORDER BY num_periode DESC LIMIT 1;";
+						$res_per=mysql_query($sql);
+						if(mysql_num_rows($res_per)>0) {
+							$lig_per=mysql_fetch_object($res_per);
+							$recalcul_rang="";
+							for($i=0;$i<$lig_per->num_periode;$i++) {$recalcul_rang.="y";}
+							$sql="UPDATE groupes SET recalcul_rang='$recalcul_rang' WHERE id in (SELECT id_groupe FROM j_groupes_classes WHERE id_classe='$id_classe');";
+							//echo "$sql<br />";
+							$res=mysql_query($sql);
+							if(!$res) {
+								$msg.="<br />Erreur lors de la programmation du recalcul des rangs pour la classe ".get_nom_classe($id_classe).".";
+							}
+						}
+						else {
+							$msg.="<br />Aucune période n'est définie pour cette classe.<br />Recalcul des rangs impossible pour la classe ".get_nom_classe($id_classe).".";
+						}
+					}
 
 
 					if((isset($_POST['creer_enseignement']))&&($_POST['creer_enseignement']=='y')) {
@@ -422,17 +439,22 @@ while ($per < $max_periode) {
 		$nb_ligne = intval($nb/3)+1;
 		echo "<table width = 100% class='boireaus' border='1'>\n";
 
+		$alt=1;
 		$i ='0';
 		while ($i < $nb_ligne) {
-			echo "<tr>\n";
+			$alt=$alt*(-1);
+			echo "<tr class='lig$alt white_hover'>\n";
 			$j = 0;
 			while ($j < 3) {
 				unset($nom_case);
 				$nom_classe = '';
-				if (isset($tab_id_classe[$i+$j*$nb_ligne])) $nom_case = "case_".$tab_id_classe[$i+$j*$nb_ligne];
-				if (isset($tab_nom_classe[$i+$j*$nb_ligne])) $nom_classe = $tab_nom_classe[$i+$j*$nb_ligne];
+				if (isset($tab_id_classe[$i+$j*$nb_ligne])) {$nom_case = "case_".$tab_id_classe[$i+$j*$nb_ligne];}
+				if (isset($tab_nom_classe[$i+$j*$nb_ligne])) {$nom_classe = $tab_nom_classe[$i+$j*$nb_ligne];}
+
 				echo "<td>\n";
-				if ($nom_classe != '') {echo "<input type=\"checkbox\" name=\"".$nom_case."\" id='case_".$per."_".$i."_".$j."' checked /><label for='case_".$per."_".$i."_".$j."' style='cursor:pointer;'>&nbsp;".$nom_classe."</label>\n";}
+				if ($nom_classe != '') {
+					echo "<input type=\"checkbox\" name=\"".$nom_case."\" id='case_".$per."_".$i."_".$j."' onchange=\"change_style_classe('".$per."_".$i."_".$j."')\" checked /><label id='label_case_".$per."_".$i."_".$j."' for='case_".$per."_".$i."_".$j."' style='cursor:pointer; font-weight:bold'>&nbsp;".$nom_classe."</label>\n";
+				}
 				echo "</td>\n";
 
 				$j++;
@@ -478,6 +500,7 @@ while ($per < $max_periode) {
 			for(k=0;k<$nb_ligne;k++){
 				if(document.getElementById('case_'+per+'_'+k+'_'+rang)){
 					document.getElementById('case_'+per+'_'+k+'_'+rang).checked=statut;
+					change_style_classe(per+'_'+k+'_'+rang);
 				}
 			}
 		}
@@ -485,6 +508,7 @@ while ($per < $max_periode) {
 			for(k=0;k<3;k++){
 				if(document.getElementById('case_'+per+'_'+rang+'_'+k)){
 					document.getElementById('case_'+per+'_'+rang+'_'+k).checked=statut;
+					change_style_classe(per+'_'+rang+'_'+k);
 				}
 			}
 		}
@@ -496,10 +520,24 @@ while ($per < $max_periode) {
 			for(k=0;k<=$nb_ligne;k++){
 				if(document.getElementById('case_'+per+'_'+k+'_'+kk)){
 					document.getElementById('case_'+per+'_'+k+'_'+kk).checked=statut;
+					change_style_classe(per+'_'+k+'_'+kk);
 				}
 			}
 		}
 	}
+
+	function change_style_classe(num) {
+		//alert(num);
+		if(document.getElementById('case_'+num)) {
+			if(document.getElementById('case_'+num).checked) {
+				document.getElementById('label_case_'+num).style.fontWeight='bold';
+			}
+			else {
+				document.getElementById('label_case_'+num).style.fontWeight='normal';
+			}
+		}
+	}
+
 </script>\n";
 
 
@@ -564,11 +602,13 @@ while ($per < $max_periode) {
 		<label for='<?php echo "nb_".$per."_reg_format"; ?>_cni' style='cursor: pointer;'>Civ. Nom initiale-Prénom (M. Durand A.)</label>
 		<br />
 <br />
-<h2>Enseignements</h2>
+
+<h2><b>Enseignements</b></h2>
 <table border='0'>
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;</td>
-	<td style="font-weight: bold;">
+	<!--td style="font-weight: bold;"-->
+	<td>
 	<input type='checkbox' name='change_coef' id='change_coef' value='y' /> Passer les coefficients de tous les enseignements à&nbsp;:
 	</td>
 	<td>
@@ -587,7 +627,8 @@ while ($per < $max_periode) {
 <table border='0'>
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;</td>
-	<td style="font-weight: bold; vertical-align:top;">
+	<!--td style="font-weight: bold; vertical-align:top;"-->
+	<td style="vertical-align:top;">
 	<input type='checkbox' name='creer_enseignement' id='creer_enseignement' value='y' /> Créer un enseignement de&nbsp;:
 	</td>
 	<?php
@@ -647,6 +688,19 @@ while ($per < $max_periode) {
 </tr>
 </table>
 
+<?php
+	$titre="Recalcul des rangs";
+	$texte="<p>Un utilisateur a rencontré un jour le problème suivant&nbsp;:<br />Le rang était calculé pour les enseignements, mais pas pour le rang général de l'élève.<br />Ce lien permet de forcer le recalcul des rangs pour les enseignements comme pour le rang général.<br />Le recalcul sera effectué lors du prochain affichage de bulletin ou de moyennes.</p>";
+	$tabdiv_infobulle[]=creer_div_infobulle('recalcul_rang',$titre,"",$texte,"",25,0,'y','y','n','n');
+?>
+
+<table border='0'>
+<tr>
+	<td>&nbsp;&nbsp;&nbsp;</td>
+	<td><input type='checkbox' name='forcer_recalcul_rang' id='forcer_recalcul_rang' value='y' /><label for='forcer_recalcul_rang'>Forcer le recalcul des rangs</label> <a href='#' onclick="afficher_div('recalcul_rang','y',-100,20);return false;"><img src='../images/icons/ico_ampoule.png' width='15' height='25' alt='Forcer le recalcul des rangs' title='Forcer le recalcul des rangs' /></a>.</td>
+</tr>
+</table>
+
 <br />
 <table border='0'>
 <tr>
@@ -656,7 +710,8 @@ while ($per < $max_periode) {
 </tr>
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;</td>
-	<td style="font-weight: bold;">
+	<!--td style="font-weight: bold;"-->
+	<td>
 	Afficher les rubriques de matières sur le bulletin (HTML),<br />les relevés de notes (HTML), et les outils de visualisation&nbsp;:
 	</td>
 	<td>
@@ -669,7 +724,8 @@ while ($per < $max_periode) {
 </tr>
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;</td>
-	<td style="font-weight: bold;" valign="top">
+	<!--td style="font-weight: bold;" valign="top"-->
+	<td valign="top">
 	Paramétrage des catégories de matière pour cette classe<br />
 	(<i>la prise en compte de ce paramètrage est conditionnée<br />
 	par le fait de cocher la case<br />
@@ -707,7 +763,8 @@ while ($per < $max_periode) {
 		?>
 		</table>
 	</td>
-</tr>
+	</tr>
+
 	<tr>
 	<td colspan='3'>
 	<h2><b>Paramètres bulletin HTML&nbsp;: </b></h2>
@@ -715,10 +772,11 @@ while ($per < $max_periode) {
 	<td>
 	</td>
 	</tr>
+
 	<tr>
 	<td>&nbsp;&nbsp;&nbsp;</td>
 	<td valign="top">
-		<b>Afficher sur le bulletin le rang de chaque élève&nbsp;: </b>
+		Afficher sur le bulletin le rang de chaque élève&nbsp;: 
 	</td>
 	<td valign="bottom">
 		<input type="radio" name="<?php echo "display_rang_".$per; ?>" value="y" />Oui
@@ -729,7 +787,7 @@ while ($per < $max_periode) {
 	<tr>
 	<td>&nbsp;&nbsp;&nbsp;</td>
 	<td valign="top">
-	<b>Afficher le bloc adresse du responsable de l'élève&nbsp;: </b>
+	Afficher le bloc adresse du responsable de l'élève&nbsp;: 
 	</td>
 	<td valign="bottom">
 		<input type="radio" name="<?php echo "display_address_".$per; ?>" value="y" />Oui
@@ -740,7 +798,7 @@ while ($per < $max_periode) {
 	<tr>
 	<td>&nbsp;&nbsp;&nbsp;</td>
 	<td valign="top">
-	<b>Afficher les coefficients des matières<br />(<i>uniquement si au moins un coef différent de 0</i>)&nbsp;: </b>
+	Afficher les coefficients des matières<br />(<i>uniquement si au moins un coef différent de 0</i>)&nbsp;: 
 	</td>
 	<td valign="bottom">
 		<input type="radio" name="<?php echo "display_coef_".$per; ?>" value="y" />Oui
@@ -751,7 +809,7 @@ while ($per < $max_periode) {
 	<tr>
 	<td>&nbsp;&nbsp;&nbsp;</td>
 	<td valign="top">
-	<b>Afficher les moyennes générales sur les bulletins<br />(<i>uniquement si au moins un coef différent de 0</i>)&nbsp;: </b>
+	Afficher les moyennes générales sur les bulletins<br />(<i>uniquement si au moins un coef différent de 0</i>)&nbsp;: 
 	</td>
 	<td valign="bottom">
 		<input type="radio" name="<?php echo "display_moy_gen_".$per; ?>" value="y" />Oui
@@ -762,7 +820,7 @@ while ($per < $max_periode) {
 	<tr>
 	<td>&nbsp;&nbsp;&nbsp;</td>
 	<td valign="top">
-	<b>Afficher sur le bulletin le nombre de devoirs&nbsp;: </b>
+	Afficher sur le bulletin le nombre de devoirs&nbsp;: 
 	</td>
 	<td valign="bottom">
 		<input type="radio" name="<?php echo "display_nbdev_".$per; ?>" value="y" />Oui

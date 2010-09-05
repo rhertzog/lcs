@@ -3,10 +3,12 @@
 /**
  * Fichier voir_edt.php pour visionner les différents EdT (classes ou professeurs)
  *
- * @version $Id: voir_edt.php 1467 2008-02-07 09:43:52Z jjocal $
- *
- * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
- *
+ * @version     $Id: voir_edt.php 4207 2010-03-29 20:32:45Z adminpaulbert $
+ * @package		GEPI
+ * @subpackage	EmploisDuTemps
+ * @copyright	Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero
+ * @license		GNU/GPL, see COPYING.txt
+ * 
  * This file is part of GEPI.
  *
  * GEPI is free software; you can redistribute it and/or modify
@@ -26,88 +28,151 @@
 
 // Définir dés le début le type d'EdT qu'on veut voir (prof, classe, salle)
 
-require_once("./fonctions_edt.php");
-
 //===========================
 // AJOUT: boireaus
 $visioedt=isset($_GET['visioedt']) ? $_GET['visioedt'] : (isset($_POST['visioedt']) ? $_POST['visioedt'] : NULL);
 $login_edt=isset($_GET['login_edt']) ? $_GET['login_edt'] : (isset($_POST['login_edt']) ? $_POST['login_edt'] : NULL);
 $classe=isset($_GET['classe']) ? $_GET['classe'] : (isset($_POST['classe']) ? $_POST['classe'] : NULL);
 $salle=isset($_GET['salle']) ? $_GET['salle'] : (isset($_POST['salle']) ? $_POST['salle'] : NULL);
+$supprimer_cours = isset($_GET["supprimer_cours"]) ? $_GET["supprimer_cours"] : NULL;
+$identite = isset($_GET["identite"]) ? $_GET["identite"] : NULL;
+$message = isset($_SESSION["message"]) ? $_SESSION["message"] : "";
+$type_edt_2 = isset($_GET["type_edt_2"]) ? $_GET["type_edt_2"] : (isset($_POST["type_edt_2"]) ? $_POST["type_edt_2"] : NULL);
+$period_id=isset($_GET['period_id']) ? $_GET['period_id'] : (isset($_POST['period_id']) ? $_POST['period_id'] : NULL);
+$bascule_edt=isset($_GET['bascule_edt']) ? $_GET['bascule_edt'] : (isset($_POST['bascule_edt']) ? $_POST['bascule_edt'] : NULL);
+$week_min=isset($_GET['week_min']) ? $_GET['week_min'] : (isset($_POST['week_min']) ? $_POST['week_min'] : NULL);
+$week_selected=isset($_GET['week_selected']) ? $_GET['week_selected'] : (isset($_POST['week_selected']) ? $_POST['week_selected'] : NULL);
 //===========================
 
-if ($visioedt == 'prof1') $type_edt = $login_edt;
-elseif ($visioedt == 'classe1') $type_edt = $classe;
-elseif ($visioedt == 'salle1') $type_edt = $salle;
+// =============================================================================
+//
+//                                  TRAITEMENT DES DONNEES
+//		
+// =============================================================================
 
-echo "<span class=\"legende\">L'emploi du temps de :</span>\n";
-
-if (isset($visioedt) AND $visioedt == "prof1") {
-	require_once("./voir_edt_prof.php");
+if ($visioedt == 'prof1') {
+    $type_edt = $login_edt;
+}
+elseif ($visioedt == 'classe1') {
+    $type_edt = $classe;
+}
+elseif ($visioedt == 'salle1') {
+    $type_edt = $salle;
 }
 
-elseif (isset($visioedt) AND $visioedt == "salle1") {
-	require_once("./voir_edt_salle.php");
+if ($message != "") {
+    $_SESSION["message"] = "";
+}
+// =================== Gérer la bascule entre emplois du temps périodes et emplois du temps semaines.
+
+if ($bascule_edt != NULL) {
+    $_SESSION['bascule_edt'] = $bascule_edt;
+}
+if (!isset($_SESSION['bascule_edt'])) {
+    $_SESSION['bascule_edt'] = 'periode';
+}
+if ($_SESSION['bascule_edt'] == 'periode') {
+    if (PeriodesExistent()) {
+        if ($period_id != NULL) {
+            $_SESSION['period_id'] = $period_id;
+        }
+        if (!isset($_SESSION['period_id'])) {
+            $_SESSION['period_id'] = ReturnIdPeriod(date("U"));
+        }
+        if (!PeriodExistsInDB($_SESSION['period_id'])) {
+            $_SESSION['period_id'] = ReturnFirstIdPeriod();    
+        }
+        $DisplayPeriodBar = true;
+        $DisplayWeekBar = false;
+    }
+    else {
+        $DisplayWeekBar = false;
+        $DisplayPeriodBar = false;
+        $_SESSION['period_id'] = 0;
+    }
+}
+else {
+    $DisplayPeriodBar = false;
+    $DisplayWeekBar = true;
+    if ($week_selected != NULL) {
+        $_SESSION['week_selected'] = $week_selected;
+    }
+    if (!isset($_SESSION['week_selected'])) {
+        $_SESSION['week_selected'] = date("W");
+    }
+}
+// =================== Forcer l'affichage d'un edt si l'utilisateur est un prof 
+if (!isset($login_edt)) {
+    if ($_SESSION['statut'] == "professeur") {
+        $login_edt = $_SESSION['login'];
+        $_GET["login_edt"] = $login_edt;
+        $_GET["type_edt_2"] = "prof";
+        $type_edt_2 = "prof";
+        $visioedt = "prof1";
+    }
 }
 
-elseif (isset($visioedt) AND $visioedt == "classe1") {
-	require_once("./voir_edt_classe.php");
+// =================== Construire les emplois du temps
+
+if(isset($login_edt)){
+
+    $type_edt = isset($_GET["type_edt_2"]) ? $_GET["type_edt_2"] : (isset($_POST["type_edt_2"]) ? $_POST["type_edt_2"] : NULL);
+    if ($type_edt == "prof")
+    {
+        $tab_data = ConstruireEDTProf($login_edt, $_SESSION['period_id']);
+        $entetes = ConstruireEnteteEDT();
+        $creneaux = ConstruireCreneauxEDT();
+        $DisplayEDT = true;
+    }
+    else if ($type_edt == "classe")
+    {
+        $tab_data = ConstruireEDTClasse($login_edt, $_SESSION['period_id']);
+        $entetes = ConstruireEnteteEDT();
+        $creneaux = ConstruireCreneauxEDT();
+        $DisplayEDT = true;
+
+    }
+    else if ($type_edt == "salle")
+    {
+        $tab_data = ConstruireEDTSalle($login_edt , $_SESSION['period_id']);
+        $entetes = ConstruireEnteteEDT();
+        $creneaux = ConstruireCreneauxEDT();
+        $DisplayEDT = true;
+
+    }
+    else if ($type_edt == "eleve")
+    {
+        $tab_data = ConstruireEDTEleve($login_edt , $_SESSION['period_id']);
+        $entetes = ConstruireEnteteEDT();
+        $creneaux = ConstruireCreneauxEDT();
+        $DisplayEDT = true;
+
+    }
+    else {
+        $DisplayEDT = false;
+    }
+
+}
+else {
+    $DisplayEDT = false;
+}
+// =================== Tester la présence de IE6
+
+$ua = getenv("HTTP_USER_AGENT");
+if (strstr($ua, "MSIE 6.0")) {
+	 $IE6 = true;
+}
+else {
+    $IE6 = false;
 }
 
-if ((isset($visioedt)) AND isset($login_edt) AND $visioedt == "prof1") {
-	$aff_nom_edt = renvoie_nom_long(($login_edt), "prof");
-}
-elseif ((isset($visioedt)) AND isset($login_edt) AND $visioedt == "salle1") {
-	$aff_nom_edt = renvoie_nom_long(($login_edt), "salle");
-}
-elseif ((isset($visioedt)) AND isset($login_edt) AND $visioedt == "classe1") {
-	$aff_nom_edt = renvoie_nom_long(($login_edt), "classe");
-}
+// =============================================================================
+//
+//                                  VUE
+//		
+// =============================================================================
+require_once("../lib/header.inc");
+require_once("./voir_edt_view.php");
+require_once("../lib/footer.inc.php");
 
-if(isset($aff_nom_edt)){
-
-	echo "<br />\n";
-
-	$reglages_creneaux = GetSettingEdt("edt_aff_creneaux");
-
-	$req_type_login = $login_edt;
-	$type_edt = isset($_GET["type_edt_2"]) ? $_GET["type_edt_2"] : (isset($_POST["type_edt_2"]) ? $_POST["type_edt_2"] : NULL);
-	premiere_ligne_tab_edt();
-
-	//Cas où le nom des créneaux sont inscrits à gauche
-
-	if ($reglages_creneaux == "noms") {
-		$tab_creneaux = retourne_creneaux();
-		$i=0;
-		while($i<count($tab_creneaux)){
-			$tab_id_creneaux = retourne_id_creneaux();
-			$c=0;
-			while($c<count($tab_id_creneaux)){
-				echo("<tr><th rowspan=\"2\"><br />".$tab_creneaux[$i]."<br /><br /></th>\n".(construction_tab_edt($tab_id_creneaux[$c], "0"))."");
-				echo("<tr>".(construction_tab_edt($tab_id_creneaux[$c], "0.5"))."\n");
-				$i ++;
-				$c ++;
-			}
-		}
-	}
-
-	// Cas où les heures sont inscrites à gauche au lieu du nom des créneaux
-	elseif ($reglages_creneaux == "heures") {
-		$tab_horaire = retourne_horaire();
-
-		for($i=0; $i<count($tab_horaire); ) {
-
-		$tab_id_creneaux = retourne_id_creneaux();
-			$c=0;
-			while($c<count($tab_id_creneaux)){
-				echo("<tr><th rowspan=\"2\"><br />".$tab_horaire[$i]["heure_debut"]."<br />".$tab_horaire[$i]["heure_fin"]."<br /><br /></th>\n".(construction_tab_edt($tab_id_creneaux[$c], "0"))."");
-				echo("<tr>".(construction_tab_edt($tab_id_creneaux[$c], "0.5"))."\n");
-				$i++;
-				$c ++;
-			}
-		}
-	}
-
-	echo "</tbody></table>\n";
-}
 ?>

@@ -3,9 +3,12 @@
 /**
  * Fichier de gestion de l'emploi du temps dans Gepi version 1.5.x
  *
- * index_edt.php
- *
- * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
+ * @version     $Id: index_edt.php 4115 2010-03-04 16:46:25Z adminpaulbert $
+ * @package		GEPI
+ * @subpackage	EmploiDuTemps
+ * @copyright	Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero
+ * @license		GNU/GPL, see COPYING.txt
+ * 
  *
  * This file is part of GEPI.
  *
@@ -32,8 +35,15 @@ $niveau_arbo = 1;
 require_once("../lib/initialisations.inc.php");
 
 // fonctions edt
-require_once("./fonctions_edt.php");
-
+require_once('./choix_langue.php');
+require_once("./fonctions_edt.php");            // --- fonctions de base communes à tous les emplois du temps
+require_once("./fonctions_edt_prof.php");       // --- edt prof
+require_once("./fonctions_edt_classe.php");     // --- edt classe
+require_once("./fonctions_edt_salle.php");      // --- edt salle
+require_once("./fonctions_edt_eleve.php");      // --- edt eleve
+require_once("./fonctions_calendrier.php");
+require_once("./fonctions_affichage.php");
+require_once("./req_database.php");
 // Resume session
 $resultat_session = $session_gepi->security_check();
 if ($resultat_session == 'c') {
@@ -52,39 +62,37 @@ if (!checkAccess()) {
 
 // Sécurité supplémentaire par rapport aux paramètres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
-	Die('Vous devez demander à votre administrateur l\'autorisation de voir cette page.');
+	Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
 // CSS et js particulier à l'EdT
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
-$style_specifique = "edt_organisation/style_edt";
+$ua = getenv("HTTP_USER_AGENT");
+if (strstr($ua, "MSIE 6.0")) {
+	$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt_ie6";
+}
+else {
+	$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
+}
 
-// On insère l'entête de Gepi
-require_once("../lib/header.inc");
+//ob_start( 'ob_gzhandler' );
 
-// On ajoute le menu EdT
-require_once("./menu.inc.php");
-
+$visioedt=isset($_GET['visioedt']) ? $_GET['visioedt'] : (isset($_POST['visioedt']) ? $_POST['visioedt'] : NULL);
+$salleslibres=isset($_GET['salleslibres']) ? $_GET['salleslibres'] : (isset($_POST['salleslibres']) ? $_POST['salleslibres'] : NULL);
 
 // Pour revenir proprement, on crée le $_SESSION["retour"]
 $_SESSION["retour"] = "index_edt";
+
+    if ($salleslibres == "ok") {
+        include('edt_chercher.php');
+    }
+    else {
+        include('voir_edt.php');
+    }
+
+
 ?>
 
 
-<br />
-<!-- la page du corps de l'EdT -->
 
-	<div id="lecorps">
 
-<?php
-if (isset($page_inc_edt) AND $page_inc_edt !== "") {
-	include($page_inc_edt);
-}
-?>
 
-	</div>
-<br />
-<br />
-<?php
-// inclusion du footer
-require("../lib/footer.inc.php");
-?>

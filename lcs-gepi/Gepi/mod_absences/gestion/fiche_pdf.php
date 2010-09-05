@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: fiche_pdf.php 4097 2010-02-26 18:33:36Z crob $
+* $Id: fiche_pdf.php 4878 2010-07-24 13:54:01Z regis $
 *
  * Copyright 2001, 2002 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -259,8 +259,10 @@ if ( $etiquette_action === 'originaux' ) {
 			$classe_nomcour_eleve[$i] = $donne_persone['classe'];
 
         $nom_photo = nom_photo(strtolower($donne_persone['elenoet']),"eleves",2);
-        if ($nom_photo != ""){
-			$photo_eleve[$i] = "../../photos/eleves/".$nom_photo;
+        //if ($nom_photo != ""){
+        if ($nom_photo){
+			//$photo_eleve[$i] = "../../photos/eleves/".$nom_photo;
+			$photo_eleve[$i] = $nom_photo;
 		}else{
 			$photo_eleve[$i] = '';
 		}
@@ -281,7 +283,7 @@ if ( $etiquette_action === 'originaux' ) {
 
 // REQUETE SQL SUR LES PERIODES (HORAIRE)
 	$i = '0';
-	$requete_periode = 'SELECT * FROM '.$prefix_base.'absences_creneaux WHERE suivi_definie_periode = "1" ORDER BY heuredebut_definie_periode ASC';
+	$requete_periode = 'SELECT * FROM '.$prefix_base.'edt_creneaux WHERE suivi_definie_periode = "1" ORDER BY heuredebut_definie_periode ASC';
         $execution_periode = mysql_query($requete_periode) or die('Erreur SQL !'.$requete_periode.'<br />'.mysql_error());
 	while ( $donnee_periode = mysql_fetch_array( $execution_periode ) ) {
 		$Horaire[$i] = heure_texte_court($donnee_periode['heuredebut_definie_periode']).' - '.heure_texte_court($donnee_periode['heurefin_definie_periode']);
@@ -1079,7 +1081,7 @@ if ( isset($semaine_horaire['samedi']['ouverture']) ) { $semaine[$i]['jour'] = '
 		$tab_jour['dimanche'] = '0';
 
 		// calcul du nombre de période à affiché dans la semaine
-		$maxHor = mysql_result(mysql_query("SELECT count(*) FROM ".$prefix_base."absences_creneaux
+		$maxHor = mysql_result(mysql_query("SELECT count(*) FROM ".$prefix_base."edt_creneaux
 							WHERE suivi_definie_periode = '1'"),0);
 
 		// si il est égale à 0 alors on l'initialise à 11

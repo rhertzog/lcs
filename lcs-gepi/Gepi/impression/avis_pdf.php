@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: avis_pdf.php 3789 2009-11-24 17:24:11Z crob $
+ * $Id: avis_pdf.php 3790 2009-11-24 17:24:21Z crob $
  *
  * Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *

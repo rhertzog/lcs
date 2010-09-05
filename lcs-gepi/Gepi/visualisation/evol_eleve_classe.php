@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: evol_eleve_classe.php 2147 2008-07-23 09:01:04Z tbelliard $
+* $Id: evol_eleve_classe.php 4878 2010-07-24 13:54:01Z regis $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -341,8 +341,8 @@ if (!isset($id_classe)) {
 				if ($moyenne_classe == '') {$moyenne_classe = '-';}
 				echo "<td><p>$note_eleve";
 				echo "</p></td><td><p>$moyenne_classe</p></td>\n";
-				(ereg ("^[0-9\.\,]{1,}$", $moyenne_classe)) ? array_push($datay1[$k],"$moyenne_classe") : array_push($datay1[$k],"0");
-				(ereg ("^[0-9\.\,]{1,}$", $note_eleve)) ? array_push($datay2[$k],"$note_eleve") : array_push($datay2[$k],"0");
+				(my_ereg ("^[0-9\.\,]{1,}$", $moyenne_classe)) ? array_push($datay1[$k],"$moyenne_classe") : array_push($datay1[$k],"0");
+				(my_ereg ("^[0-9\.\,]{1,}$", $note_eleve)) ? array_push($datay2[$k],"$note_eleve") : array_push($datay2[$k],"0");
 
 				if ($k == '1') {
 					//array_push($etiquette,$current_group["description"]);
@@ -427,12 +427,14 @@ if (!isset($id_classe)) {
 	//$texte="<table border='0'>\n";
 	$texte="<div align='center'>\n";
 	//$texte.="<tr>\n";
-	if($v_elenoet!=""){
-		$photo=nom_photo($v_elenoet);
-		if("$photo"!=""){
-			$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$v_eleve_nom_prenom\" />";
-			$texte.="<br />\n";
-		}
+	//if($v_elenoet!=""){
+	if($v_elenoet){
+	  $photo=nom_photo($v_elenoet);
+	  if("$photo"!=""){
+		//$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$v_eleve_nom_prenom\" />";
+		$texte.="<img src='".$photo."' width='150' alt=\"$v_eleve_nom_prenom\" />";
+		$texte.="<br />\n";
+	  }
 	}
 	//$texte.="<td>\n";
 	$texte.="Né";
