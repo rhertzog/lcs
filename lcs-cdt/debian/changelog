@@ -1,3 +1,9 @@
+lcs-cdt (2.4.7) LCS; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 17:00:19 +0200
+
 lcs-cdt (2.4.4) LCS; urgency=low
 
   * fix bug when personnal database no exist
