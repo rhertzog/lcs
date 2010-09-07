@@ -1,3 +1,9 @@
+debian-lcs-keyring (1.2) stable; urgency=low
+
+  * now build for all Arch
+
+-- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 15:40:05 +0200
+
 debian-lcs-keyring (1.1) stable; urgency=low
 
   * Non-maintainer upload.
