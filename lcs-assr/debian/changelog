@@ -1,3 +1,9 @@
+lcs-assr (2.4.7) Lcs; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 16:20:05 +0200
+
 lcs-assr (2.4) Lcs; urgency=low
 
   * changing vhost name in module-lcs-assr to fix ip vhost
