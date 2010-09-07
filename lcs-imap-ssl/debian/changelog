@@ -1,3 +1,9 @@
+lcs-imap-ssl (2.4.7) Unreleased; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 17:28:59 +0200
+
 lcs-imap-ssl (2.4.6) Unreleased; urgency=low
 
   * automatic number version in postinst
