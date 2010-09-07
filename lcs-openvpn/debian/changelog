@@ -1,3 +1,9 @@
+lcs-openvpn (2.4.7.2) Lcs; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 15:46:48 +0200
+
 lcs-openvpn (2.4.7.1) Lcs; urgency=low
 
   * Modify package for new mnu.d structure
