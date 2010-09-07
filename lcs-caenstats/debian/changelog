@@ -1,3 +1,9 @@
+lcs-caenstats (2.4.7) Lcs; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 16:57:11 +0200
+
 lcs-caenstats (2.4.6) Lcs; urgency=low
 
   * Initial release 
