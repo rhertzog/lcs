@@ -1,3 +1,9 @@
+lcs-anti-spam (2.4.7) Lcs; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.caveys@crdp.ac-caen.fr>  Tue, 07 Sep 2010 16:04:58 +0200
+
 lcs-anti-spam (2.4.3) Lcs; urgency=low
 
   * add postrm to remove myslq entry
