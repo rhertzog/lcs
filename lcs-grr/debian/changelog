@@ -1,3 +1,10 @@
+lcs-grr (0.4.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 17:11:28 +0200
+
 lcs-grr (0.4) unstable; urgency=low
 
   * Initial Release.
