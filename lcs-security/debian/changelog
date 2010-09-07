@@ -1,3 +1,9 @@
+lcs-security (2.4.7.1) Lcs; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 17:33:03 +0200
+
 lcs-security (2.4.7) Lcs; urgency=low
 
   [Simon Cavey]
