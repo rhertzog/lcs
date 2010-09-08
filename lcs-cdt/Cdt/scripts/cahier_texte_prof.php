@@ -144,8 +144,10 @@ elseif (is_dir("../../Agendas"))
 	(SELECT cat_id FROM webcal_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_name='EDT')) ";
 	
 	// lancer la requete
-		$result = @mysql_query ($rq) or die (mysql_error());
-		//on recupere les donnees
+		$result = @mysql_query ($rq);
+	if ($result)
+	 {	
+	//on recupere les donnees
 		$tab=array();
 		$loop=0;
 	while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
@@ -166,6 +168,7 @@ elseif (is_dir("../../Agendas"))
 				break;
 				}
 		}
+	   }
 	}
 	mysql_close();
 	// Connexion a la base de donnees Cdt

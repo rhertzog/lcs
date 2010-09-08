@@ -98,8 +98,9 @@ $rq="SELECT cal_name,cal_description FROM webcal_entry WHERE cal_date >= ".$aujo
 (SELECT cat_id FROM webcal_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_name='EDT')) ";
 
 // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
-
+$result = @mysql_query ($rq);
+if ($result) 
+{
 //on recupere les donnees
 while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 	{
@@ -112,6 +113,7 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 		$loop++;
 		}
 	}
+}
 mysql_close();
 }
 

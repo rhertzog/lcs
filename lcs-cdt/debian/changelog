@@ -1,8 +1,12 @@
 lcs-cdt (2.4.7) LCS; urgency=low
 
+  [ Simon Cavey ]
   * now build for all Arch
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 17:00:19 +0200
+  [ Philippe Leclerc ]
+  * fix bug when table webcal_entry_categories no exist
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 08 Sep 2010 21:04:48 +0200
 
 lcs-cdt (2.4.4) LCS; urgency=low
 
