@@ -1,5 +1,5 @@
 <?
-require  "../lcs/includes/headerauth.inc.php";
+require  "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers, $login)= isauth();
 $query = "SELECT * from applis";
 $result=@mysql_db_query("$DBAUTH",$query, $authlink);
@@ -18,8 +18,8 @@ if ( $url_accueil == "accueil.php" && is_dir ("/var/www/monlcs") )
   
 /* lcs/barre.php derniere mise a jour : 12/06/2008 */
 //require "includes/headerauth.inc.php";
-require "../Annu/includes/ldap.inc.php";
-require "../Annu/includes/ihm.inc.php";
+require "/var/www/Annu/includes/ldap.inc.php";
+require "/var/www/Annu/includes/ihm.inc.php";
 include("core/includes/functions.inc.php");
 
 // menus
