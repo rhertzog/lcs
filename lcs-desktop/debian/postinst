@@ -11,6 +11,20 @@ if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
     # Inscription du module dans applis.lcs_db
     #
     /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Web desktop', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'M');"
+    #
+    # Create Profile user
+    #
+    cd /home
+    for rep in *; do
+        if [ -n "$(ldapsearch -xLLL uid=$rep >&1 /dev/null)" ]; then
+                mkdir -p $rep/Profile
+                chown -R $rep:lcs-users $rep/Profile
+                chmod 770 /home/$rep
+        fi
+    done
+    #
+    # Reload apache
+    #
     invoke-rc.d apache2 force-reload
 else
     echo "Mise à jour du paquet module LCS $MODULE de $2 vers $VER"
