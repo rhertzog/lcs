@@ -10,7 +10,9 @@ install:
 	cp -R desktop/* $(DESTDIR)/usr/share/lcs/desktop/
 	chmod -R 755 $(DESTDIR)/usr/share/lcs/desktop	
 
-	
+# install conf files
+	install -d $(DESTDIR)/etc
+	cp -a conf/* $(DESTDIR)/etc/
 
 # install doc
 	install -d $(DESTDIR)/usr/share/doc/lcs/desktop/html
