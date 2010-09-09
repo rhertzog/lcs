@@ -65,7 +65,7 @@
 	<li>
 		<a class="open_win ext_link" href="#icon_dock_lcs_auth" title="auth" style="cursor:pointer;color:#999;font-size:.8em;" rel="auth">
 			&nbsp;&nbsp;&nbsp;&nbsp;Se connecter&nbsp;&nbsp;
-			<img alt="Acceder au formulaire de connexion" src="images/deconnect.png" style="cursor:pointer;" />&nbsp;&nbsp;&nbsp;&nbsp;
+			<img alt="Acceder au formulaire de connexion" src="../lcs/images/deconnect.png" style="cursor:pointer;" />&nbsp;&nbsp;&nbsp;&nbsp;
 		</a>
 	</li>
 <?php
@@ -94,43 +94,43 @@
 		</li>
 		<li id="icon_dock_lcs_admin">
 			<a href="#window_lcs_admin">
-				<img src="images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
+				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
 				Administration
 			</a>
 		</li>
 		<li id="icon_dock_lcs_helpdesk">
 			<a href="#window_lcs_helpdesk">
-				<img src="images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
+				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
 				Helpdesk
 			</a>
 		</li>
 		<li id="icon_dock_lcs_prefs">
 			<a href="#window_lcs_prefs">
-				<img src="images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
+				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
 				Pr&eacute;f&eacute;rences
 			</a>
 		</li>
 		<li id="icon_dock_lcs_path">
 			<a href="#window_lcs_path">
-				<img src="images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
+				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
 				Parcours
 			</a>
 		</li>
 		<li id="icon_dock_lcs_legal">
 			<a href="#window_lcs_listes">
-				<img src="images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
+				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
 				A propos
 			</a>
 		</li>
 		<li id="icon_dock_lcs_temp">
 			<a href="#window_lcs_temp">
-				<img src="images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
+				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
 				test lien ext
 			</a>
 		</li>
 		<li id="icon_dock_lcs_webperso">
 			<a href="#window_lcs_webperso">
-				<img src="images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
+				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
 				Mon espace web
 			</a>
 		</li>
