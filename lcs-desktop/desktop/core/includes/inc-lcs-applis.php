@@ -35,30 +35,30 @@ $liste['Ids'] = array();// ajout pour l'ID des fenetres !!Voir si on peut eviter
 // Affichage des Menus users non privilégies
 
 // Appli Annuaire
-$liste['Images'][] = "images/bt-V2-3.png";
-$liste['Liens'][] = "statandgo.php?use=Annu";
+$liste['Images'][] = "../lcs/images/bt-V2-3.png";
+$liste['Liens'][] = "../lcs/statandgo.php?use=Annu";
 $liste['Titres'][] = "Annuaire des utilisateurs";
 $liste['Blocks'][] = "#icon_dock_lcs_annu";
 $liste['Ids'][] = "annu";
 // spip
 if(isset($spip)){
-	$liste['Images'][] = "images/barre1/BP_r1_c6_f3.gif";
-	$liste['Liens'][] = "statandgo.php?use=spip";
+	$liste['Images'][] = "../lcs/images/barre1/BP_r1_c6_f3.gif";
+	$liste['Liens'][] = "../lcs/statandgo.php?use=spip";
 	$liste['Titres'][] = "Forum";
 	$liste['Blocks'][] = "#icon_dock_lcs_spip";
 	$liste['Ids'][] = "spip";
 }
 // webmail
 if(isset($squirrelmail)){
-	$liste['Images'][] = "images/barre1/BP_r1_c5_f3.gif";
-	$liste['Liens'][] = "statandgo.php?use=squirrelmail";
+	$liste['Images'][] = "../lcs/images/barre1/BP_r1_c5_f3.gif";
+	$liste['Liens'][] = "../lcs/statandgo.php?use=squirrelmail";
 	$liste['Titres'][] = "Webmail";
 	$liste['Blocks'][] = "#icon_dock_lcs_squirrelmail";
 	$liste['Ids'][] = "squirrelmail";
 }
 // ftp
 if (isset($ftpclient)) {
-	$liste['Images'][] = "images/bt-V1-2.jpg";
+	$liste['Images'][] = "../lcs/images/bt-V1-2.jpg";
 	$liste['Liens'][] = "../clientftp/";
 	$liste['Titres'][] = "Client FTP";
 	$liste['Blocks'][] = "#icon_dock_lcs_ftpclient";
@@ -66,16 +66,16 @@ if (isset($ftpclient)) {
 }
 // phpmyadmin
 if (isset($pma)) {
-	$liste['Images'][] = "images/bt-V1-3.jpg";
-	$liste['Liens'][] = "statandgo.php?use=pma";
+	$liste['Images'][] = "../lcs/images/bt-V1-3.jpg";
+	$liste['Liens'][] = "../lcs/statandgo.php?use=pma";
 	$liste['Titres'][] = "Gestion base de donn&eacute;es";
 	$liste['Blocks'][] = "#icon_dock_lcs_pma";
 	$liste['Ids'][] = "pma";
 }
 // smbwebclient
 if ( $se3netbios != "" && $se3domain != "" && isset($smbwebclient) ) {
-	$liste['Images'][] = "images/bt-V1-4.jpg";
-	$liste['Liens'][] = "statandgo.php?use=smbwebclient";
+	$liste['Images'][] = "../lcs/images/bt-V1-4.jpg";
+	$liste['Liens'][] = "../lcs/statandgo.php?use=smbwebclient";
 	$liste['Titres'][] = "Client SE3";
 	$liste['Blocks'][] = "#icon_dock_lcs_smbwc";
 	$liste['Ids'][] = "smbwc";
@@ -88,7 +88,7 @@ if ($result) {
         while ($r=mysql_fetch_object($result)) {
           if (( $r->value == "1" ) and ! ( file_exists("/usr/share/lcs/Plugins/".$r->chemin."/.applihide"))) {
             $liste['Images'][] = "../Plugins/".$r->chemin."/Images/plugin_icon.png";
-            $liste['Liens'][] = "statandgo.php?use=".$r->name;
+            $liste['Liens'][] = "../lcs/statandgo.php?use=".$r->name;
             $liste['Titres'][] = $r->descr;
             $liste['Blocks'][] = "#icon_dock_lcs_".strtolower($r->name);
 			$liste['Ids'][] = strtolower($r->name);

@@ -1,5 +1,5 @@
 <?php
-require  "../../includes/headerauth.inc.php";
+require  "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers, $login)= isauth();
 	$u!=''?$_u=$u.'/':$_u='';
 	$iDir="/home/".$login."/public_html/".$_u;

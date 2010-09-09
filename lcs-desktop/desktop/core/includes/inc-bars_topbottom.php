@@ -5,12 +5,12 @@
 		if ( $idpers!=0 ) { 
 	?>
 	<li>
-		<a href="logout.php" title="Se d&eacute;connecter" style="cursor:pointer;color:#999;font-size:.8em;">
-			<img alt="En ligne" src="images/connect.png" alt="" style="cursor:pointer;" />
+		<a href="../lcs/logout.php" title="Se d&eacute;connecter" style="cursor:pointer;color:#999;font-size:.8em;">
+			<img alt="En ligne" src="../lcs/images/connect.png" alt="" style="cursor:pointer;" />
 		</a>
 	</li>
 	<li>
-	<a title="agendas" rel="statandgo.php?use=Agendas" href="#icon_dock_lcs_agendas" class="open_win ext_link" id="clock"></a>
+	<a title="agendas" rel="../lcs/statandgo.php?use=Agendas" href="#icon_dock_lcs_agendas" class="open_win ext_link" id="clock"></a>
 	</li>
 	<li class="">
 		<a class="reload" id="reload" href="" title="Recharger le bureau"></a>

@@ -37,7 +37,7 @@ include("core/includes/inc-lcs-applis.php");
 <link rel="stylesheet" href="core/css/desktop.css" />
 <link rel="stylesheet" href="core/libs/farbtastic/farbtastic.css" type="text/css" />
 <link href="core/finder/ui.finder.css" rel="stylesheet" media="screen,print" type="text/css">
-<link rel="stylesheet" href="core/finder/ui.theme.css" type="text/css" media="screen">
+<!--<link rel="stylesheet" href="core/finder/ui.theme.css" type="text/css" media="screen">-->
 <link type="text/css" rel="stylesheet" href="core/css/ui.notify.css" />
 <!--[if lt IE 8]>
 	<link href="core/finder/ui.finder.ie.css" rel="stylesheet" media="screen" type="text/css" />
@@ -375,7 +375,7 @@ if ( $url_accueil == "accueil.php" && is_dir ("/var/www/monlcs") )
 	JQD.init_desktop();
 	// .:LCS:. on lance l'affichage du form de connexion.
 	setTimeout(function(){
-			JQD.init_link_open_win('<a title="spip" rel="statandgo.php?use=spip" href="#icon_dock_lcs_spip" class="open_win ext_link ui-draggable"><img style="width: 16px; height: 16px;" alt="" src="images/barre1/BP_r1_c6_f3.gif"> Forum</a>');
+			JQD.init_link_open_win('<a title="spip" rel="../lcs/statandgo.php?use=spip" href="#icon_dock_lcs_spip" class="open_win ext_link">Forum</a>');
 			$('#window_lcs_spip').addClass('large_win');
 	},1500);
 
@@ -384,7 +384,7 @@ if ( $url_accueil == "accueil.php" && is_dir ("/var/www/monlcs") )
 <script>
 	setTimeout(function(){
 			$('#window_lcs_spip').css({'top':0,'left':0}).removeClass('large_win').addClass('window_full');
-			JQD.init_link_open_win('<a rel="auth" style="cursor: pointer; color: rgb(153, 153, 153); font-size: 0.8em;" title="auth" href="#icon_dock_lcs_auth" class="open_win ext_link ui-draggable">&nbsp;&nbsp;&nbsp;&nbsp;Se connecter&nbsp;&nbsp;<img style="cursor: pointer;" src="images/deconnect.png" alt="">&nbsp;&nbsp;&nbsp;&nbsp;</a>');
+			JQD.init_link_open_win('<a rel="auth" style="cursor: pointer; color: rgb(153, 153, 153); font-size: 0.8em;" title="auth" href="#icon_dock_lcs_auth" class="open_win ext_link">Se connecter</a>');
 			$('#window_lcs_auth').addClass('small_win small_height').animate({top : 0,left :0},1);
 	},3000);
 

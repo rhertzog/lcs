@@ -1,6 +1,6 @@
 <?php
 isset($_GET['user'])?$who=$_GET['user']:$who='DtQ';
-require  "../../lcs/includes/headerauth.inc.php";
+require  "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers, $login)= isauth();
  if($login!=$who) {echo "<div>Probl&egrave;me d'acc&egrave;s &agrave; votre dossier. Veuillez v&eacute;rifier votre connexion</div>";
  return;

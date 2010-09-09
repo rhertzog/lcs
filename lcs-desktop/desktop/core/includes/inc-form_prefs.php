@@ -80,9 +80,9 @@
 		<ul style="" class="clear_both ul2cols">
 			<li>
 				<label>Taille des icones</label>
-				<!--<img src="images/barre1/BP_r1_c7_f3.gif" id="vign_icon" style="width:24px;height:24px;" alt="" />-->					<span class="span_icon_prefs icon"><img src="images/barre1/BP_r1_c7_f3.gif" style="width:24px" /></span>
-				<span class="span_icon_prefs icon"><img src="images/barre1/BP_r1_c7_f3.gif" style="width:36px" /></span>
-				<span class="span_icon_prefs icon"><img src="images/barre1/BP_r1_c7_f3.gif" style="width:48px" /></span>
+				<!--<img src="./lcs/images/barre1/BP_r1_c7_f3.gif" id="vign_icon" style="width:24px;height:24px;" alt="" />-->					<span class="span_icon_prefs icon"><img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:24px" /></span>
+				<span class="span_icon_prefs icon"><img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:36px" /></span>
+				<span class="span_icon_prefs icon"><img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:48px" /></span>
 				<span class="bouton float_right"><a href="#" id="ch_icons_larger">Appliquer</a></span>
 				<input type="hidden" value="36" id="icons_larger" name="icons_larger" />
 			</li>
