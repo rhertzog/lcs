@@ -77,18 +77,6 @@
 				</li>
 				<li>
 					<a class='open_win ext_link' href='http://lcs.pmcurie.lyc50.ac-caen.fr/lcs/statandgo.php?use=Aide' title="legal" rel="legal"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Documentation des plugins</a>
-					<ul>
-						<li>
-							<a class='open_win ext_link' href='#icon_dock_lcs_legal' title="legal" rel="core/a_propos.php"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Annuaire </a>
-						</li>
-						<li>
-							<a class='open_win ext_link' href='#icon_dock_lcs_legal' title="legal" rel="core/a_propos.php"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Cahier de texte </a>
-						</li>
-						<li>
-							<a class='open_win ext_link' href='#icon_dock_lcs_legal' title="legal" rel="core/a_propos.php"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Lcs-Forum</a>
-						</li>
-					</ul>
-					
 				</li>
 				<li>
 					<a class='open_win ext_link' href='#icon_dock_lcs_legal' title="legal" rel="./core/a_propos.php"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> A propos de LCS-Bureau</a>

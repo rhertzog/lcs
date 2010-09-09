@@ -578,9 +578,7 @@ var JQD = (function($) {
 						//Agir sur les elements du iframe
 						//ici par exemple on supprime le pied de page
 						//$('#iframe_lcs_'+rel).contents().find('body').find('div.pdp').remove();
-//						alert('#iframe_lcs_'+rel);
 						if(y.find('iframe').length) {
-							$('#iframe_lcs_ftpclient').contents().find('div#bannerDiv').attr('style','background:url(../images/gui/bar_top.png) repeat-x left bottom;line-height:24px;height:25px;');
 									
 							$('#iframe_lcs_webperso').contents().find('a.open_win').each(function(){
 							//alert("click="+$(this).attr('href'));
@@ -590,6 +588,7 @@ var JQD = (function($) {
 								return false;
 							});
 						});
+						/*
 						$('#iframe_lcs_path').contents().find('table').each(function() {
 							$(this).css({width:'100%',border:'1px solid #aaa'});
 							// Add zebra striping, ala Mac OS X.
@@ -600,6 +599,7 @@ var JQD = (function($) {
 							// Highlight row, ala Mac OS X.
 							$(this).closest('tr').addClass('active');
 						}).parents('body').find('div.pdp').remove();
+						*/
 					}
 
 				},500);
@@ -937,8 +937,6 @@ var JQD = (function($) {
 			// create two when the pg loads
 		//	create("default", { title:'Bienvenue sur Lcs-Bureau', text:'Lcs-Bureau est une nouvelle interface graphique pour le Lcs. <br />Have fun...'});
 			JQD.create_notify("default", { title:'Bienvenue sur Lcs-Bureau', text:'D&eacute;couvrez une nouvelle interface pour LCS. <br />Bonne nav...'});
-			JQD.create_notify("withIcon", { title:'Presonnalisez Lcs-Bureau', text:'Pour modifier votre fond d&rsquo;&eacute;cran, afficher un dock d&rsquo;ic&ocirc;nes, ... allez dans Lcs-Bureau/Pr&eacute;f&eacute;rences ou suivez <a href="#icon_dock_lcs_prefs" title="prefs" rel="prefs" class="open_win ext_link"> ce lien ...</a><br /> <small>Cliquez sur la X pour me fermer</small>', icon:'core/images/icons/tip.png' },{ expires:false });
-			
 			// bindings with icons
 			JQD.create_notify("withIcon", { title:'Attention!', text:'le rapide goupil roux est plus v&eacute;loce que le e bleu paresseux. Vous aurez &eacute;t&eacute; averti. <br /><a href="#" class="ui-notify-close">Fermez-moi.</a>', icon:'core/images/icons/alert.png' },{expires:false});
 

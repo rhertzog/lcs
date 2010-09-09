@@ -144,7 +144,9 @@ a.icon.ui-draggable-dragging {
 	-moz-box-shadow: 3px 3px 1em #666; /*10px 10px 2em #666*/
 
 }
-
+.window.small_height{
+	min-height:250px;
+}
 .window.window_stack,
 .window.ui-draggable-dragging,
 #user_infos.window_stack {
@@ -1825,6 +1827,11 @@ width:16px;
 	background:#ffffdd url(../images/gui/alert_24.png) no-repeat 3px 5px;
 	color:#cc0000;
 	border:1px solid #cc0000;
+}
+.ui-notify a.open_win{
+	color:#ffffff;
+	text-decoration:underline;
+	cursor:pointer;
 }
 /* ////////////// A garder //////////// */
 /* box avec bulle */

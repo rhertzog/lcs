@@ -31,14 +31,14 @@ include("core/includes/inc-lcs-applis.php");
 <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" /><!-- Pas utf-8 du a la directive apache -->
 <title>...::: Bureau LCS :::...</title>
 <meta name="description" content="LCS environnement num&eacute;rique de travail" />
-<link rel="stylesheet" href="core/css/html.css" />
+<link href="core/css/html.css" rel="stylesheet" />
+<link href="core/finder/ui.theme.css" rel="stylesheet" type="text/css" media="screen">
 <link href="core/css/inettuts.css" rel="stylesheet" type="text/css" />
 <link href="core/css/inettuts.js.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="core/css/desktop.css" />
-<link rel="stylesheet" href="core/libs/farbtastic/farbtastic.css" type="text/css" />
+<link href="core/css/desktop.css" rel="stylesheet" />
+<link href="core/libs/farbtastic/farbtastic.css" rel="stylesheet" type="text/css" />
 <link href="core/finder/ui.finder.css" rel="stylesheet" media="screen,print" type="text/css">
-<!--<link rel="stylesheet" href="core/finder/ui.theme.css" type="text/css" media="screen">-->
-<link type="text/css" rel="stylesheet" href="core/css/ui.notify.css" />
+<link href="core/css/ui.notify.css" ype="text/css" rel="stylesheet" />
 <!--[if lt IE 8]>
 	<link href="core/finder/ui.finder.ie.css" rel="stylesheet" media="screen" type="text/css" />
 <![endif]-->
@@ -50,7 +50,7 @@ include("core/includes/inc-lcs-applis.php");
 <script src="core/finder/jquery.scrollTo-1.4.0-min.js"></script>
 <script src="core/js/jquery.notify.min.js"></script>
 <script src="core/finder/ui.finder.js"></script>
-<link rel="shortcut-icon" href="images/favicon.ico">
+<link rel="shortcut-icon" href="../lcs/images/favicon.ico">
 <!--[if gte IE 7]>
 <link rel="stylesheet" href="core/css/ie.css" />
 <![endif]-->
@@ -65,10 +65,10 @@ include("core/includes/inc-lcs-applis.php");
 <div class="abs" id="desktop">
 <?php
 if ( $idpers==0 ) { 
-	echo '<a class="abs icon" style="left:20px;top:20px;" href="#icon_dock_lcs_auth" title="Se connecter" rel="auth.php"><img src="images/barre1/BP_r1_c3_f3.gif" alt="" />Se connecter</a>';
+	echo '<a class="abs icon" style="left:20px;top:20px;" href="#icon_dock_lcs_auth" title="Se connecter" rel="auth.php"><img src="../lcs/images/barre1/BP_r1_c3_f3.gif" alt="" />Se connecter</a>';
 }else{
 //	echo USERPREFS_Wallpaper("/home/".$login."/Documents/profil/lcs_buro_".$login.".xml");
-	include("/var/www/lcs/core/action/load_user_prefs.php");
+	include("/usr/share/lcs/desktop/core/action/load_user_prefs.php");
 	$uXml="/home/".$login."/Profile/lcs_buro_".$login.".xml";
 	if(is_file($uXml)){
 		$html_icon= USERPREFS_Display_Icons($uXml,40,1,1);
@@ -121,7 +121,7 @@ if ( $idpers==0 ) {
 		<div class="abs window_inner">
 			<div class="window_top">
 				<span class="float_left">
-					<img src="images/barre1/BP_r1_c7_f3.gif" alt="" style="width:16px;" />
+					<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" alt="" style="width:16px;" />
 					LCS - Administration
 				</span>
 				<span class="float_right">
@@ -147,7 +147,7 @@ if ( $idpers==0 ) {
 		<div class="abs window_inner">
 			<div class="window_top">
 				<span class="float_left">
-					<img src="images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
+					<img src="../lcs/images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
 					Pr&eacute;f&eacute;rences
 				</span>
 				<span class="float_right">
@@ -172,7 +172,7 @@ if ( $idpers==0 ) {
 		<div class="abs window_inner">
 			<div class="window_top">
 				<span class="float_left">
-					<img src="images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
+					<img src="../lcs/images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
 					LCS - A propos
 				</span>
 				<span class="float_right">
@@ -196,7 +196,7 @@ if ( $idpers==0 ) {
 		<div class="abs window_inner">
 			<div class="window_top">
 				<span class="float_left">
-					<img src="images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
+					<img src="../lcs/images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
 					<span class="window_title">LCS - </span>
 				</span>
 				<span class="float_right">
@@ -221,7 +221,7 @@ if ( $idpers==0 ) {
 		<div class="abs window_inner">
 			<div class="window_top">
 				<span class="float_left">
-					<img src="images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
+					<img src="../lcs/images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
 					<span class="window_title">LCS - test lien ext</span>
 				</span>
 				<span class="float_right">
@@ -243,7 +243,7 @@ if ( $idpers==0 ) {
 		<div class="abs window_inner">
 			<div class="window_top">
 				<span class="float_left">
-					<img src="images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
+					<img src="../lcs/images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
 					<span class="window_title">Mon espace web</span>
 				</span>
 				<span class="float_right">
@@ -266,7 +266,7 @@ if ( $idpers==0 ) {
 		<div class="abs window_inner">
 			<div class="window_top">
 				<span class="float_left">
-					<img src="images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
+					<img src="../lcs/images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
 					LCS-Navigateur
 				</span>
 				<span class="float_right">
@@ -291,7 +291,7 @@ if ( $idpers==0 ) {
 		<div class="abs window_inner">
 			<div class="window_top">
 				<span class="float_left">
-					<img src="images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
+					<img src="../lcs/images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
 					Mollify
 				</span>
 				<span class="float_right">
@@ -321,71 +321,72 @@ if ( $idpers==0 ) {
 <!--End of window -->
 
 </div>
-
 <?php
-include('core/includes/inc-bars_topbottom.php');
-if ( $url_redirect == "accueil.php" || $url_redirect == "../squidGuard/pageinterdite.html" ) $url_accueil = $url_redirect;
-
-if ( $url_accueil == "accueil.php" && is_dir ("/var/www/monlcs") )  
-  $url_accueil = "auth.php";
-  $url_accueil = "../spip/";
-
-
-?>
-	<!--- container to hold notifications, and default templates --->
-	<div id="container" style="display:none">
-		<div id="default">
-			<h1>#{title}</h1>
-			<p>#{text}</p>
-		</div>
-		<div id="sticky">
-			<a class="ui-notify-close ui-notify-cross" href="#">x</a>
-			<h1>#{title}</h1>
-			<p>#{text}</p>
-		</div>
-		<div id="withIcon">
-			<a class="ui-notify-close ui-notify-cross" href="#">x</a>
-			<div style="float:left;margin:0 10px 0 0"><img src="#{icon}" alt="warning" /></div>
-			<h1>#{title}</h1>
-			<p>#{text}</p>
-		</div>
-	</div>
+	// bar-top, bar-bottom
+	include('core/includes/inc-bars_topbottom.php');
 	
-	<!--- second container -  bottom notifications --->
-	<div id="container-bottom" style="display:none; top:auto; left:0; bottom:0; margin:0 0 10px 10px">
-		<div>
-			<h1>#{title}</h1>
-			<p>#{text}</p>
-			<p style="margin-top:10px;text-align:center">
-				<input type="button" class="confirm" value="Create Another Notification!" />
-			</p>
-		</div>
-		
-		<div>
-			<h1>#{title}</h1>
-			<p>#{text}</p>
-		</div>
+	// Page d'accueil 
+	if ( $url_redirect == "accueil.php" || $url_redirect == "../squidGuard/pageinterdite.html" ) $url_accueil = $url_redirect;
+	// (voir pour monLcs)
+	if ( $url_accueil == "accueil.php" && is_dir ("/var/www/monlcs") )  
+  $url_accueil = "../spip/";
+?>
+<!--- container to hold notifications, and default templates --->
+<div id="container" style="display:none">
+	<div id="default">
+		<h1>#{title}</h1>
+		<p>#{text}</p>
 	</div>
+	<div id="sticky">
+		<a class="ui-notify-close ui-notify-cross" href="#">x</a>
+		<h1>#{title}</h1>
+		<p>#{text}</p>
+	</div>
+	<div id="withIcon">
+		<a class="ui-notify-close ui-notify-cross" href="#">x</a>
+		<div style="float:left;margin:0 10px 0 0"><img src="#{icon}" alt="warning" /></div>
+		<h1>#{title}</h1>
+		<p>#{text}</p>
+	</div>
+</div>
+<div style="display:none"><iframe id="temp_squirrelmail" style="display:none" src=""></iframe></div>
 
 <script>
-
 //	JQD.jqd_load_xml();
 //$(window).load(function() {});
 	JQD.init_icons();
 	JQD.init_desktop();
-	// .:LCS:. on lance l'affichage du form de connexion.
-	setTimeout(function(){
-			JQD.init_link_open_win('<a title="spip" rel="../lcs/statandgo.php?use=spip" href="#icon_dock_lcs_spip" class="open_win ext_link">Forum</a>');
-			$('#window_lcs_spip').addClass('large_win');
-	},1500);
-
 </script>
-			<?php 	if ( $idpers==0 ) { ?>
+	<?php 	if ( $url_accueil=="../spip/" ) { ?>
+	// .:LCS:. on lance l'affichage de la page &url_accueil.
 <script>
 	setTimeout(function(){
-			$('#window_lcs_spip').css({'top':0,'left':0}).removeClass('large_win').addClass('window_full');
-			JQD.init_link_open_win('<a rel="auth" style="cursor: pointer; color: rgb(153, 153, 153); font-size: 0.8em;" title="auth" href="#icon_dock_lcs_auth" class="open_win ext_link">Se connecter</a>');
-			$('#window_lcs_auth').addClass('small_win small_height').animate({top : 0,left :0},1);
+		$('#window_lcs_spip').addClass('large_win');
+		JQD.init_link_open_win('<a title="spip" rel="../lcs/statandgo.php?use=spip" href="#icon_dock_lcs_spip" class="open_win ext_link">Forum</a>');
+	},1500);
+</script>
+	<?php } if ( $idpers!=0 ) { ?>
+<script>
+	setTimeout(function(){
+		$('#temp_squirrelmail').attr('src','../lcs/statandgo.php?use=squirrelmail');
+		setTimeout(function(){
+			$('#temp_squirrelmail').attr('src','');
+		},5000);
+	},2500);
+			JQD.create_notify("withIcon", { title:'Personnalisez Lcs-Bureau', text:'Pour modifier votre fond d&rsquo;&eacute;cran, afficher un dock d&rsquo;ic&ocirc;nes, ... allez dans Lcs-Bureau/Pr&eacute;f&eacute;rences ou suivez <a href="#icon_dock_lcs_prefs" title="prefs" rel="prefs" class="open_win ext_link"> ce lien ...</a><br /> <small>Cliquez sur la X pour me fermer</small>', icon:'core/images/icons/tip.png' },{ expires:false });
+			
+</script>
+	<?php }	if ( $idpers==0 ) { ?>
+	// .:LCS:. on lance l'affichage du form de connexion.
+<script>
+	setTimeout(function(){
+		$('#window_lcs_spip').css({'top':0,'left':0}).removeClass('large_win').addClass('window_full');
+		JQD.init_link_open_win('<a rel="../lcs/auth" title="auth" href="#icon_dock_lcs_auth" class="open_win ext_link">Se connecter</a>');
+		$('#window_lcs_auth').addClass('small_win small_height').animate({top : 0,left :0},1).find('.window_main').css('background-color','transparent');
+		setTimeout(function(){
+			$('#iframe_lcs_auth').contents().find('head').append('<style>jqd.h3{color:red;}</style>');
+			$('#iframe_lcs_auth').contents().find('body').removeClass().addClass('jqd').css({'font-size':'.75em','background-color':'transparent','background-image':'none'}).find('.pdp').remove();
+		},500);
 	},3000);
 
 </script>
@@ -407,7 +408,6 @@ if ( $url_accueil == "accueil.php" && is_dir ("/var/www/monlcs") )
         //]]>
         </script>\n";
 ?>
-<iframe id="temp_squirrelmail" style="display:none" src="statandgo.php?use=squirrelmail"></iframe>
 </body>
 </html>
 
