@@ -6,11 +6,10 @@ all:
 install:
 
 # install desktop
-#	install -d $(DESTDIR)/us/share/lcs/desktop
-#	cp -R desktop/* $(DESTDIR)/usr/share/lcs/desktop/
-#	chmod -R 755 $(DESTDIR)/usr/share/lcs/desktop	
-	install -d $(DESTDIR)/var/www
-	cp -R desktop/* $(DESTDIR)/var/www/
+	install -d $(DESTDIR)/us/share/lcs/desktop
+	cp -R desktop/* $(DESTDIR)/usr/share/lcs/desktop/
+	chmod -R 755 $(DESTDIR)/usr/share/lcs/desktop	
+
 	
 
 # install doc
