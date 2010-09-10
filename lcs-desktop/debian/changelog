@@ -1,13 +1,13 @@
-lcs-desktop (0.2~4) Lcs; urgency=low
+lcs-desktop (0.2~5) Lcs; urgency=low
   [Jean-Luc Chretien]
     * Modify package structure
     * Create folder user Profile at initial intsall
     * Add folder Profile in skel user
+    * Modify inc-menus_admin.php for new menu structure
   [Dominique Lepaisant]
     * Modify many path for new structure package
-  * 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 Sep 2010 13:18:46 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 Sep 2010 18:17:29 +0200
 
 lcs-desktop (0.1) Lcs; urgency=low
 

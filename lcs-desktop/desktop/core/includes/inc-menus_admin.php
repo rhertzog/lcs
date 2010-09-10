@@ -2,10 +2,7 @@
 			<a class="menu_trigger" href="#">Administration</a>
 			<ul class="menu">
 				<?php 			
-			$liens=array(0);
-			exec("ls /var/www/lcs/includes/menu.d/*.inc",$files,$return);
-			for ($i=0; $i< count($files); $i++)
-    			include ($files[$i]);		
+				getmenuarray();
 				for ($i=0; $i< count($liens); $i++) {
 					// Affichage item menu
 					if ( (strlen($liens[$i][0]) > 0) && ( ldap_get_right($liens[$i][1],$login)=="Y" ) ) echo "<li>\n<a href='#' class='submenu'><img src='../lcs/images/barre1/BP_r1_c7_f3.gif' style='height:20px;' /> ".$liens[$i][0]."</a>\n";
