@@ -19,7 +19,7 @@ if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
         if [ -n "$(ldapsearch -xLLL uid=$rep >&1 /dev/null)" ]; then
                 mkdir -p $rep/Profile
                 chown -R $rep:lcs-users $rep/Profile
-                chmod 770 /home/$rep
+                chmod 770 /home/$rep/Profile
         fi
     done
     #
