@@ -21,6 +21,12 @@ if [ ! -d $1 ]; then
         chown $1:lcs-users /home/$1/Documents
         chmod 770 /home/$1/Documents
 
+	# Fixation droirs sur repertoire Profile si il existe
+	if [ -d $1/Profile ]; then
+		chown $1:lcs-users /home/$1/Profile
+        	chmod 770 /home/$1/Profile
+	fi
+
         chown -R $1:lcs-users /home/$1/public_html
         chmod 770 /home/$1/public_html
         chmod 664 /home/$1/public_html/index.html	

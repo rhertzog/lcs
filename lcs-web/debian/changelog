@@ -1,9 +1,10 @@
-lcs-web (2.4.7.1~1) UNRELEASED; urgency=low
+lcs-web (2.4.7.1~1) Lcs; urgency=low
 
   * Modify lcs-etch2lenny script
   * Add a set of pics in Annu/images
+  * Fix rights on skel user Profile in mkhdir.sh 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 03 Sep 2010 15:50:06 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 Sep 2010 09:04:49 +0200
 
 lcs-web (2.4.7) Lcs; urgency=low
 
