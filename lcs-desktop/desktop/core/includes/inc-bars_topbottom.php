@@ -63,7 +63,7 @@
 	}else{
 ?>
 	<li>
-		<a class="open_win ext_link" href="#icon_dock_lcs_auth" title="auth" style="cursor:pointer;color:#999;font-size:.8em;" rel="auth">
+		<a class="open_win ext_link" href="#icon_dock_lcs_auth" title="auth" style="cursor:pointer;color:#999;font-size:.8em;" rel="../lcs/auth.php">
 			&nbsp;&nbsp;&nbsp;&nbsp;Se connecter&nbsp;&nbsp;
 			<img alt="Acceder au formulaire de connexion" src="../lcs/images/deconnect.png" style="cursor:pointer;" />&nbsp;&nbsp;&nbsp;&nbsp;
 		</a>

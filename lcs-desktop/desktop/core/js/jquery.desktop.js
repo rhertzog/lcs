@@ -937,9 +937,6 @@ var JQD = (function($) {
 			// create two when the pg loads
 		//	create("default", { title:'Bienvenue sur Lcs-Bureau', text:'Lcs-Bureau est une nouvelle interface graphique pour le Lcs. <br />Have fun...'});
 			JQD.create_notify("default", { title:'Bienvenue sur Lcs-Bureau', text:'D&eacute;couvrez une nouvelle interface pour LCS. <br />Bonne nav...'});
-			// bindings with icons
-			JQD.create_notify("withIcon", { title:'Attention!', text:'le rapide goupil roux est plus v&eacute;loce que le e bleu paresseux. Vous aurez &eacute;t&eacute; averti. <br /><a href="#" class="ui-notify-close">Fermez-moi.</a>', icon:'core/images/icons/alert.png' },{expires:false});
-
 				
 			// .:LCS:.  on attend 1,5s que le xml soit charge 
 			//pour apliquer la conf sur les champs du form de conf

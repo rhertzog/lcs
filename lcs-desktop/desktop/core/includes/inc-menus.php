@@ -17,7 +17,7 @@
 	if ( $idpers==0 ) {
  	// Un utilisateur n'est pas authentifie  
 ?>				<li>
-					<a class="open_win ext_link" rel="auth" title="auth" href="#icon_dock_lcs_auth"><img src="../lcs/images/deconnect.png" style="width:20px;" /> Se connecter</a>
+					<a class="open_win ext_link" rel="../lcs/auth.php" title="auth" href="#icon_dock_lcs_auth"><img src="../lcs/images/deconnect.png" style="width:20px;" /> Se connecter</a>
 				</li>
 <?php			
 	} else {
@@ -76,7 +76,10 @@
 					<a href="<?php echo $url_logo ?>"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Documentation Lcs</a>
 				</li>
 				<li>
-					<a class='open_win ext_link' href='http://lcs.pmcurie.lyc50.ac-caen.fr/lcs/statandgo.php?use=Aide' title="legal" rel="legal"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Documentation des plugins</a>
+					<a class='open_win ext_link' href='../doc/desktop/html/' title="legal" rel="legal"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Documentation Lcs-Bureau</a>
+				</li>
+				<li>
+					<a class='open_win ext_link' href='../lcs/statandgo.php?use=Aide' title="legal" rel="legal"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Documentation des plugins</a>
 				</li>
 				<li>
 					<a class='open_win ext_link' href='#icon_dock_lcs_legal' title="legal" rel="./core/a_propos.php"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> A propos de LCS-Bureau</a>

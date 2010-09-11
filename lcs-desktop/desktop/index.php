@@ -9,12 +9,6 @@ if ($result)
 else
     die ("parametres absents de la base de donnees");
 @mysql_free_result($result);
-
-if ( $url_redirect == "accueil.php" || $url_redirect == "../squidGuard/pageinterdite.html" ) $url_accueil = $url_redirect;
-
-if ( $url_accueil == "accueil.php" && is_dir ("/var/www/monlcs") )  
-  $url_accueil = "/monlcs/index.php";
-  $url_accueil = "../monlcs/index.php";
   
 /* lcs/barre.php derniere mise a jour : 12/06/2008 */
 //require "includes/headerauth.inc.php";
@@ -39,9 +33,6 @@ include("core/includes/inc-lcs-applis.php");
 <link href="core/libs/farbtastic/farbtastic.css" rel="stylesheet" type="text/css" />
 <link href="core/finder/ui.finder.css" rel="stylesheet" media="screen,print" type="text/css">
 <link href="core/css/ui.notify.css" ype="text/css" rel="stylesheet" />
-<!--[if lt IE 8]>
-	<link href="core/finder/ui.finder.ie.css" rel="stylesheet" media="screen" type="text/css" />
-<![endif]-->
 <script src="core/js/jquery-1.4.2.min.js"></script>
 <script src="core/js/jquery.desktop.js"></script>
 <script src="core/js/jquery.notification.js"></script>
@@ -51,6 +42,9 @@ include("core/includes/inc-lcs-applis.php");
 <script src="core/js/jquery.notify.min.js"></script>
 <script src="core/finder/ui.finder.js"></script>
 <link rel="shortcut-icon" href="../lcs/images/favicon.ico">
+<!--[if lt IE 8]>
+	<link href="core/finder/ui.finder.ie.css" rel="stylesheet" media="screen" type="text/css" />
+<![endif]-->
 <!--[if gte IE 7]>
 <link rel="stylesheet" href="core/css/ie.css" />
 <![endif]-->
@@ -58,14 +52,14 @@ include("core/includes/inc-lcs-applis.php");
 <body>
 // monLCS
 <div class="abs" id="monLcs">
-<iframe src="" name="ifr_lcs_monlcs" style="width:100%;height:100%;"></iframe>
+	<iframe src="" name="ifr_lcs_monlcs" style="width:100%;height:100%;"></iframe>
 </div>
 // iNettuts
 <div class="abs" id="inettuts"></div>
 <div class="abs" id="desktop">
 <?php
 if ( $idpers==0 ) { 
-	echo '<a class="abs icon" style="left:20px;top:20px;" href="#icon_dock_lcs_auth" title="Se connecter" rel="auth.php"><img src="../lcs/images/barre1/BP_r1_c3_f3.gif" alt="" />Se connecter</a>';
+	echo '<a class="abs icon" style="left:20px;top:20px;" href="#icon_dock_lcs_auth" title="Se connecter" rel="../lcs/auth.php"><img src="../lcs/images/barre1/BP_r1_c3_f3.gif" alt="" />Se connecter</a>';
 }else{
 //	echo USERPREFS_Wallpaper("/home/".$login."/Documents/profil/lcs_buro_".$login.".xml");
 	include("/usr/share/lcs/desktop/core/action/load_user_prefs.php");
@@ -287,17 +281,12 @@ if ( $idpers==0 ) {
 		<span class="abs ui-resizable-handle ui-resizable-se"></span>
 	</div>
 
-	<div id="window_lcs_mollify" class="abs window" style="height:550px;">
+	<div id="window_lcs_change_pass" class="abs window  window_full" style="height:550px;top:0;left:0;">
 		<div class="abs window_inner">
 			<div class="window_top">
 				<span class="float_left">
 					<img src="../lcs/images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
-					Mollify
-				</span>
-				<span class="float_right">
-					<a href="#" class="window_min"></a>
-					<a href="#" class="window_resize"></a>
-					<a href="#icon_dock_lcs_mollify" class="window_close"></a>
+					Changement de mot de passe
 				</span>
 			</div>
 			<div class="abs window_content">
@@ -306,10 +295,8 @@ if ( $idpers==0 ) {
 				</div>
 			</div>
 			<div class="abs window_bottom">
-				Mollify
 			</div>
 		</div>
-		<span class="abs ui-resizable-handle ui-resizable-se"></span>
 	</div>
 
 <?php
@@ -348,6 +335,11 @@ if ( $idpers==0 ) {
 		<h1>#{title}</h1>
 		<p>#{text}</p>
 	</div>
+	<div id="withIconNoClose">
+		<div style="float:left;margin:0 10px 0 0"><img src="#{icon}" alt="warning" /></div>
+		<h1>#{title}</h1>
+		<p>#{text}</p>
+	</div>
 </div>
 <div style="display:none"><iframe id="temp_squirrelmail" style="display:none" src=""></iframe></div>
 
@@ -368,10 +360,24 @@ if ( $idpers==0 ) {
 	<?php } if ( $idpers!=0 ) { ?>
 <script>
 	setTimeout(function(){
+	//on apppelle squirrelmail
+	<?php if (pwdMustChange($login)) { ?>
+		//alert('Pass no changed');
+		JQD.init_link_open_win('<a rel="change_pass" title="auth" href="../Annu/must_change_default_pwd.php" class="open_win ext_link">Cnager de mot-de-passe</a>');	
+		// le user doit recharger la page après modif pass
+		JQD.create_notify("withIconNoClose", { title:'Attention!', text:'N&rsquo;oubliez pas d&rsquo;actualiser votre bureau apr&egrave;s avoir modifi&eacute; votre mot de passe. <br /><span style="text-decoration:underline;">Cliquez-moi pour actualiser votre bureau</span>', icon:'core/images/icons/alert.png' }, {
+			expires:false,
+			click: function(e,instance){
+				window.location='./'; 
+			}
+		});
+
+	<?php }else { ?>
 		$('#temp_squirrelmail').attr('src','../lcs/statandgo.php?use=squirrelmail');
 		setTimeout(function(){
 			$('#temp_squirrelmail').attr('src','');
-		},5000);
+		},10000);
+	<?php }?>
 	},2500);
 			JQD.create_notify("withIcon", { title:'Personnalisez Lcs-Bureau', text:'Pour modifier votre fond d&rsquo;&eacute;cran, afficher un dock d&rsquo;ic&ocirc;nes, ... allez dans Lcs-Bureau/Pr&eacute;f&eacute;rences ou suivez <a href="#icon_dock_lcs_prefs" title="prefs" rel="prefs" class="open_win ext_link"> ce lien ...</a><br /> <small>Cliquez sur la X pour me fermer</small>', icon:'core/images/icons/tip.png' },{ expires:false });
 			
@@ -382,7 +388,7 @@ if ( $idpers==0 ) {
 	setTimeout(function(){
 		$('#window_lcs_spip').css({'top':0,'left':0}).removeClass('large_win').addClass('window_full');
 		JQD.init_link_open_win('<a rel="../lcs/auth" title="auth" href="#icon_dock_lcs_auth" class="open_win ext_link">Se connecter</a>');
-		$('#window_lcs_auth').addClass('small_win small_height').animate({top : 0,left :0},1).find('.window_main').css('background-color','transparent');
+		$('#window_lcs_auth').addClass('small_win small_height').animate({top : 0,left :0,width:550,height:340},1).find('.window_main').css('background-color','transparent');
 		setTimeout(function(){
 			$('#iframe_lcs_auth').contents().find('head').append('<style>jqd.h3{color:red;}</style>');
 			$('#iframe_lcs_auth').contents().find('body').removeClass().addClass('jqd').css({'font-size':'.75em','background-color':'transparent','background-image':'none'}).find('.pdp').remove();

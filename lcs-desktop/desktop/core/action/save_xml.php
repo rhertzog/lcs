@@ -3,14 +3,14 @@
 	$user = $_POST['user'] ;
 	$file = $_POST['file'] ;
 	$data  = $_POST['data'] ;
-	$groups  = $_POST['groups'] ;
+	//$groups  = $_POST['groups'] ;
 	$ch="<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" ;
 	$data = $ch.str_replace( "\'", '"', $data);
 
 	$home = "/home/".$user;
 	if (!is_dir($home)) {echo "Erreur! le dossier $user n'existe pas"; return;}
 	$userprofil = $home."/Profile" ;
-		if (!is_dir($userprofil)) {mkdir ($userprofil, 0770); }
+		if (!is_dir($userprofil)) {mkdir ($userprofil, 0750); }
 
 		$userfile = $userprofil."/".$file.'.xml' ;
 		$fp=fopen($userfile,'w');
