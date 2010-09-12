@@ -33,9 +33,9 @@
 	}
 
 	if ( count($groups) ) {
-		$lstIntroGrps = "<h3 class=\"triangle_updown down\" style=\"padding-left:20px;\">Membre des groupes</h3>\n"
+		$lstIntroGrps = "<h3 class=\"btn_groups triangle_updown\" style=\"padding-left:20px;\">Membre des groupes</h3>\n"
 //		."<span class=\"triangle_updown float_left\" style=\"padding:5px;\"></span>\n"
-   		."<ul class=\"infos_user list_groups block_updown\">";
+   		."<ul class=\"infos_user list_groups block_updown\" style=\"display:none;\">";
     	$co=$ma=$eq=$di=$cl=0;
     		$tbl_gp = array("Administratifs","Profs","Eleves");
     	for ($loop=0; $loop < count ($groups) ; $loop++) {
@@ -87,7 +87,7 @@
     }
 
    	$lst .=  $lst_cl.$lst_co.$lst_eq.$lst_ma.$lst_di."</ul>";
-   	$lst .=  "<h3 class=\"triangle_updown down\" style=\"padding-left:20px;\">Pages perso</h3><ul class=\"infos_user list_groups block_updown\">";
+   	$lst .=  "<h3 class=\"triangle_updown\" style=\"padding-left:20px;\">Pages perso</h3><ul class=\"infos_user list_groups block_updown\" style=\"display:none;\">";
 
 	if (!is_dir ("/home/".$user["uid"]) ) {
 		$lst .= "<li>".$user["fullname"]." : Vous n'avez pas encore initialis&#233; votre espace perso.</li>\n";
@@ -100,7 +100,7 @@
     	" style=\"width:20px;vertical-align:middle;\" width=\"20\" />"
     	."<tt>&nbsp;Mon espace web</tt></a></li></ul>\n";
   	}
-	$lst .="<h3 class=\"triangle_updown down\" style=\"padding-left:20px;\">Courriel</h3><ul class=\"infos_user list_groups block_updown\"><li>"
+	$lst .="<h3 class=\"triangle_updown\" style=\"padding-left:20px;\">Courriel</h3><ul class=\"infos_user list_groups block_updown\" style=\"display:none;\"><li>"
 	//."<a href=\"../squirrelmail/src/compose.php?send_to="
 	//.$user["email"]."\" class=\"pointer\"><tt>"
 	."<input type=\"text\" id=\"user_mail\"style=\"border:none;background:#fff;width:230px;margin:2px 5px;\" value=\"".$user["email"]."\" onclick=\"$(this).select();\">"

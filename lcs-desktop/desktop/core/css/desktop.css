@@ -749,7 +749,16 @@ div.jqd_formulaires form .list_img_col{
 	width:280px;position:relative;text-align:center;
 }
 div.jqd_formulaires form .list_img{
-	display:none;position:absolute;top:20px;right:0;min-width:280px;background:#fff;border:1px solid #aaa;-moz-border-radius:10px;
+	display:none;
+	position:absolute;
+	top:20px;right:0;
+	min-width:280px;
+	background:#fff;
+	border:1px solid #aaa;
+	border-radius:  10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-box-shadow:3px 3px 1em #666;
 }
 div.jqd_formulaires form .list_img h3{
 	border-bottom:1px solid #aaa;font-size:.9em;line-height:28px;height:28px;vertical-align:middle;
@@ -829,6 +838,28 @@ div.jqd_formulaires .span_icon_prefs img{
 	-webkit-border-radius: 5px;
 	}
 
+/* infos images
+-------------------------------------------------------*/
+.img_infos_more{
+/*	border:1px solid #aaa;*/
+}
+.img_infos_more{
+/*	border:1px solid #aaa;*/
+	line-height:20px;
+	margin-top:5px;
+	font-size:.9em;
+	clear:both;
+}
+.img_infos_more span,.ui-finder .triangle_updown, .triangle_updown{
+/*	border:1px solid #aaa;*/
+	background:url(../images/gui/triangle_up_noir-16.png) no-repeat left center;
+	padding-left:20px;
+}
+.img_infos_more span.down, .triangle_updown.down{
+/*	border:1px solid #aaa;*/
+	background:url(../images/gui/triangle_down_noir-16.png) no-repeat left center;
+	padding-left:20px;
+}
 /* ui-finder
 -------------------------------------------------------*/
 div.ui-finder{
@@ -935,31 +966,6 @@ ol li.odd{
 	background:#789abc url(../images/gui/bg2-trans_05pc-button.png) repeat-x left center;}
 .ui-widget-content ol li.ui-state-default{
 	font-weight:bold;
-}
-/* infos images
--------------------------------------------------------*/
-#listImgs{
-	-moz-box-shadow:3px 3px 1em #666;
-}
-.img_infos_more{
-/*	border:1px solid #aaa;*/
-}
-.img_infos_more{
-/*	border:1px solid #aaa;*/
-	line-height:20px;
-	margin-top:5px;
-	font-size:.9em;
-	clear:both;
-}
-.img_infos_more span,.ui-finder .triangle_updown, .triangle_updown{
-/*	border:1px solid #aaa;*/
-	background:url(../images/gui/triangle_up_noir-16.png) no-repeat left center;
-	padding-left:20px;
-}
-.img_infos_more span.down, .triangle_updown.down{
-/*	border:1px solid #aaa;*/
-	background:url(../images/gui/triangle_down_noir-16.png) no-repeat left center;
-	padding-left:20px;
 }
 .ui-finder-image.content_updown{
 	display:none;
@@ -1137,7 +1143,7 @@ form.jqd_form{
 	-webkit-border-bottom-left-radius: 14px;
 }
 .bar_top_dark{
-background:url("../images/gui/bar_bottom.png") repeat-x scroll 0 0 #333333;
+background:url(../images/gui/bar_bottom.png) repeat-x scroll 0 0 #333333;
 border-bottom:1px solid #FFFFFF;
 bottom:0;
 color:#FFFFFF;
@@ -1159,29 +1165,6 @@ text-shadow:0 1px 1px #000000;
 	-moz-border-radius: 20px 20px 0 0;
 	-webkit-border-radius: 20px 20px 0 0;
 }
-.btn_bar_top{
-	color:#db2306;
-	font-size:.8em;
-	line-height:16px;
-	height:16px;
-	margin:3px 10px 0 10px;
-	padding:0 5px 0 28px;
-	min-width:24px;
-	border:1px solid #db2306;
-	border-radius:  3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	-moz-box-shadow:2px 2px 2px #db2306;
-	background:url(../images/icons/desktop_24.png) no-repeat left center;
-}
-.btn_bar_top:hover{
-	background:url(../images/icons/select_24.png) no-repeat 3px -5px;
-	border:1px solid #227732;
-	border-radius:  3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	-moz-box-shadow:2px 2px 10px #227732;
-}
 .btn_bar_top.saved{
 	border:1px solid #999;
 	border-radius:  3px;
@@ -1200,7 +1183,7 @@ text-shadow:0 1px 1px #000000;
 .bouton{
 	max-width:180px;
 }
-.bouton a, .button{
+.bouton a, .button, .btn_bar_top{
 	background: #fff url(../images/gui/bar_top.png) repeat-x left 3px;
 	color:#555555;
 	padding:3px 8px;
@@ -1209,9 +1192,17 @@ text-shadow:0 1px 1px #000000;
 	-moz-border-radius:3px;
 	font-size:.9em;
 }
-.bouton a:hover, button:hover{
+.bouton a:hover, button:hover,.btn_bar_top:hover{
 	background: #fff url(../images/gui/bar_bottom.png) repeat-x left top;
 	color:#eeeeee;
+}
+.btn_bar_top{
+	color:#db2306;
+	background: #fff url(../images/gui/bar_top_inv.png) repeat-x left top;
+	margin:2px;
+	padding:0 5px 2px;
+	line-height:16px;
+	height:16px;
 }
 .small{
 	font-size:.8em;

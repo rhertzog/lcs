@@ -33,10 +33,10 @@ include("core/includes/inc-lcs-applis.php");
 <link href="core/libs/farbtastic/farbtastic.css" rel="stylesheet" type="text/css" />
 <link href="core/finder/ui.finder.css" rel="stylesheet" media="screen,print" type="text/css">
 <link href="core/css/ui.notify.css" ype="text/css" rel="stylesheet" />
-<script src="core/js/jquery-1.4.2.min.js"></script>
+<script src="../libjs/jquery/jquery.js"></script>
 <script src="core/js/jquery.desktop.js"></script>
 <script src="core/js/jquery.notification.js"></script>
-<script src="core/js/jquery-ui-1.8.1.custom.min.js"></script>
+<script src="../libjs/jquery-ui/jquery-ui.js"></script>
 <script src="core/libs/farbtastic/farbtastic.js"></script>
 <script src="core/finder/jquery.scrollTo-1.4.0-min.js"></script>
 <script src="core/js/jquery.notify.min.js"></script>
@@ -61,7 +61,6 @@ include("core/includes/inc-lcs-applis.php");
 if ( $idpers==0 ) { 
 	echo '<a class="abs icon" style="left:20px;top:20px;" href="#icon_dock_lcs_auth" title="Se connecter" rel="../lcs/auth.php"><img src="../lcs/images/barre1/BP_r1_c3_f3.gif" alt="" />Se connecter</a>';
 }else{
-//	echo USERPREFS_Wallpaper("/home/".$login."/Documents/profil/lcs_buro_".$login.".xml");
 	include("/usr/share/lcs/desktop/core/action/load_user_prefs.php");
 	$uXml="/home/".$login."/Profile/lcs_buro_".$login.".xml";
 	if(is_file($uXml)){
@@ -344,8 +343,6 @@ if ( $idpers==0 ) {
 <div style="display:none"><iframe id="temp_squirrelmail" style="display:none" src=""></iframe></div>
 
 <script>
-//	JQD.jqd_load_xml();
-//$(window).load(function() {});
 	JQD.init_icons();
 	JQD.init_desktop();
 </script>
@@ -379,7 +376,15 @@ if ( $idpers==0 ) {
 		},10000);
 	<?php }?>
 	},2500);
-			JQD.create_notify("withIcon", { title:'Personnalisez Lcs-Bureau', text:'Pour modifier votre fond d&rsquo;&eacute;cran, afficher un dock d&rsquo;ic&ocirc;nes, ... allez dans Lcs-Bureau/Pr&eacute;f&eacute;rences ou suivez <a href="#icon_dock_lcs_prefs" title="prefs" rel="prefs" class="open_win ext_link"> ce lien ...</a><br /> <small>Cliquez sur la X pour me fermer</small>', icon:'core/images/icons/tip.png' },{ expires:false });
+	<?php if (!is_file("/home/".$login."/Profile/lcs_buro_".$login.".xml" )) { ?>
+			JQD.create_notify("withIcon", { title:'Personnalisez Lcs-Bureau', text:'Pour modifier votre fond d&rsquo;&eacute;cran, afficher un dock d&rsquo;ic&ocirc;nes, ... allez dans Lcs-Bureau/Pr&eacute;f&eacute;rences <span style="text-decoration:underline;">ou cliquez-moi...</span><br /> <small>Cliquez sur la X pour me fermer</small>', icon:'core/images/icons/tip.png' },
+			{
+			expires:false,
+			click: function(e,instance){
+				JQD.init_link_open_win('<a href="#icon_dock_lcs_prefs" title="prefs" rel="prefs" class="open_win ext_link"> ce lien ...</a>');
+				}
+			} );
+	<?php } ?>
 			
 </script>
 	<?php }	if ( $idpers==0 ) { ?>

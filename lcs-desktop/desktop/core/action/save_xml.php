@@ -8,37 +8,48 @@
 	$data = $ch.str_replace( "\'", '"', $data);
 
 	$home = "/home/".$user;
-	if (!is_dir($home)) {echo "Erreur! le dossier $user n'existe pas"; return;}
+	if (!is_dir($home)) {
+		$mess= utf8_decode("Erreur! le dossier \"$home\" n'existe pas");
+		$img="alert";
+		$title="Erreur !";
+		$infos="";
+	}
 	$userprofil = $home."/Profile" ;
-		if (!is_dir($userprofil)) {mkdir ($userprofil, 0750); }
-
-		$userfile = $userprofil."/".$file.'.xml' ;
+	$userfile = $userprofil."/".$file.'.xml' ;
+	//$command=" do $userfile; chown www-data:lcs-users $userfile;  chmod 750 $userfile; done";
+	//exec($command);
+/*	if(!is_file($userfile){
+		$mess= utf8_decode("Erreur! le dossier \"$home\" n'existe pas");
+		$img="alert";
+		$title="Erreur !";
+	}else{
+*/
 		$fp=fopen($userfile,'w');
 		fwrite($fp,$data);
 		fclose($fp);
-
+//	}
 	if(is_readable($userfile)){
-		echo "Vos pr&eacute;f&eacute;rences sont enregistr&eacute;es";
+		$mess= utf8_decode('Vos pr&eacute;f&eacute;rences ont &eacute;t&eacute; enregistr&eacute;es');
+		$img="info";
+		$title="Information";
+		//echo "Vos pr&eacute;f&eacute;rences sont enregistr&eacute;es";
 		$stat = stat($userfile);
 		if ($stat) {
-			echo '<div style="text-align:left;">';
-			echo 'Dossier : '.$userprofil."<br />";
-			echo "Fichier : ".$file.'.xml'."<br />";
-			echo "Cr&eacute;&eacute; le : ". @date('d M Y - H:i:s',$stat['ctime'])."<br />";
+			$infos= '<div style=\"text-align:left;\">';
+			$infos.= 'Dossier : '.$userprofil."<br />";
+			$infos.="Fichier : ".$file.'.xml'."<br />";
+			$infos.="Cr&eacute;&eacute; le : ". @date('d M Y - H:i:s',$stat['ctime'])."<br />";
 			$size=number_format(intval($stat['size'])/1000 , 2);
 //			echo "Poids du fichier : ". $size." Ko<br />";
-			echo "</div>";
-			return;  
+			$infos.="</div>";
 		}
 	}else{
 		echo "Erreur &agrave la cr&eacute;ation du fichier";
-		return;  
-	}
-		
-/*
-foreach($stat as $k => $val){
-	echo $k ." = ". $val."<br />";
-}			
-*/
-	
+		$mess= utf8_decode("Erreur! le dossier \"$home\" n'existe pas");
+		$img="alert";
+		$title="Erreur !";
+		$infos="";
+	}		
+$resp='{mess:"'.$mess.'",img:"'.$img.'",title:"'.$title.'",infos:"'.$infos.'"}';
+echo $resp;
 ?>

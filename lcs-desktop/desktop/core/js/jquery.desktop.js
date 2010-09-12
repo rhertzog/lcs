@@ -335,46 +335,6 @@ var JQD = (function($) {
 		},
 
 		//
-		// .:LCS:. Load xml preferences
-		//
-		jqd_load_xml: function ( suser ) { 
-//			alert( "/home/" + $("#login").val() +"/Documents/profil/lcs_buro_" + $("#login").val() +".xml");
-			$.ajax({
-				type: "GET",
-//				url: "/home/" + $("#login").val() +"/Documents/profil/lcs_buro_" + $("#login").val() +".xml", // test charger depuis home
-				url: "core/xml/" + $("#login").val() +"/lcs_buro_" + $("#login").val() +".xml", // on cherche dans le bon rep
-				cache: false, 
-				dataType: "xml", 
-				complete : function(data, status) {
-					var resp = data.responseXML;
-					// Traitement du xml
-					$(resp).find('bureau').each(function(){
-						$(resp).find('userburo').each(function(){
-							var e_name = $(this).attr('name');
-								var e_ticket = $(this).attr('ticket');			
-								$('#ticket_prefs').attr('value',e_ticket);
-			
-							$(this).find('wallpaper').each(function(){
-								e_wallppr = $(this).text() ;
-//								$('#wallpaper').attr('src', "core/images/misc/" + e_wallppr);
-//						        $("#vign_wlpper").attr('src', "core/images/misc/"+ e_wallppr);
-								$('#wallpaper').attr(e_wallppr);
-						        $("#vign_wlpper").attr(e_wallppr);
-							});
-							
-							$(this).find('iconsize').each(function(){
-								e_icon_large = $(this).text() ;
-								$('a.icon img').css('width', e_icon_large +'px').css('height', e_icon_large +'px');
-					   		    $("#vign_icon").css({ width: e_icon_large+"px", height : e_icon_large+"px" }).attr({width: e_icon_large+"px", height: e_icon_large+"px"});
-							});
-						});
-					});
-		
-				}
-			});
-		},
-		
-		//
 		// .:LCS:. Build xml to save preferences
 		//
 		jqd_build_xml: function(suser) { 
@@ -388,7 +348,6 @@ var JQD = (function($) {
 				str = str + "\t\t"+"<iconsfield>" + $("#icons_field_height").val() +"</iconsfield>" + "\r\n" ;
 				str = str + "\t\t"+"<bgcolor>" + $("#wp_bgcolor").val() +"</bgcolor>" + "\r\n" ;
 				$('#desktop').find('a.icon').each(function(){
-//					alert($(this).text() +' | '+$('#desktop').find('a.icon').length);
 					str = str + "\t\t"+"<icon>" + "\r\n" ;
 					str = str + "\t\t\t"+"<icontext>"+ $(this).text() +"</icontext>" + "\r\n" ;	
 					strlink = $(this).attr('rel');			
@@ -415,20 +374,23 @@ var JQD = (function($) {
 						user: $("#login").val(),
 						groups : groups,
 						data : b_xml}),
-				dataType: "text",
+				dataType: "json",
 				success: function(msg){
-				//$().notification(msg,0);
-				JQD.create_notify("withIcon", { title:'Info', text:msg, icon:'core/images/icons/info.png'});
-//					JQD.parcours_load_xml(msg.replace('lcs_list_',''));
-//				 $().notification('Sauvegarde r&#233;ussie : '+"<br />"+msg);
-//					alert( "Data Saved: " + msg.replace('lcs_list_','') );
-//					$('#mess_save_list').addClass('success').show('slow').html('Sauvegarde r&#233;ussie : '+msg)
-//					setTimeout(function(){$('#mess_save_list').hide(2000);},5000);
+					//JQD.create_notify("withIcon", { title:'Info', text:msg, icon:'core/images/icons/info.png'});
 				},
 				error: function(){
 				},
 				complete : function(data, status) {
-
+					var resp = eval('('+data.responseText+')');
+					 //var resp = JSON.parse( data.responseText );
+					JQD.create_notify("withIcon", 
+						{ title:resp['title'], text:resp['mess']+resp['infos'], icon:'core/images/icons/'+resp['img']+'.png'},
+						{
+						expires:false,
+						click: function(e,instance){
+							window.location='./'; 
+						}
+					});
 				}
 			});	
 		},
@@ -438,38 +400,44 @@ var JQD = (function($) {
 				type: "POST",
 				url: "core/action/delette_xml.php",
 				cache: false,
-				data: ({file: 'lcs_list_'+file,
+				data: ({file: file,
 						user: $("#login").val()
 						}),
-				dataType: "text",
-				success: function(msg){
-					alert('succes : ' + msg);
+				dataType: "json",
+				success: function(data){
+				//	alert(data);
 				},
 				error: function(msg){
-					alert('error : ' + msg);
+				//	alert('error : ' + msg);
 				},
-				complete : function(msg) {
-//					var resp = data.responseXML;
-					alert('resultat : ' + msg);
+				complete : function(data, status) {
+					var resp = eval('('+data.responseText+')');
+					 //var resp = JSON.parse( data.responseText );
+					JQD.create_notify("withIcon", 
+						{ title:resp['title'], text:resp['mess'], icon:'core/images/icons/'+resp['img']+'.png'},
+						{
+						expires:false,
+						click: function(e,instance){
+							window.location='./'; 
+						}
+					});
 				}
 			});	
 		},
 
 		//
 		//
-		//
+		// Notification
 		create_notify: function( template, vars, opts ){
 			return $container.notify("create", template, vars, opts);
 		},
 		 
 		 init_link_open_win: function(el){
-//				alert('1 : '+el);
 				var url = $(el).attr('href');
 				var text = $(el).text();
 				var title = $(el).attr('title');
 				if (text == '') text = title;
 				var title_win = text;
-//				var img = $(el).find('img').attr('src');
 				var img='images/barre1/BP_r1_c1.gif';
 				if ($(el).find('img').length > 0) img = $(el).find('img').attr('src');
 				var rel =  $(el).attr('rel');
@@ -477,136 +445,102 @@ var JQD = (function($) {
 				var p_left = 0;var p_top = 0;
 				var nb_win = $('.window:visible').length;
 				p_left = p_top = nb_win*25;
-//				alert('1 : '+el+' url='+url);
 				$(el).blur();
 				if (url.match(/^#/)) {
 				var url = $(el).attr('rel');
 				var rel = $(el).attr('title');
-//				alert('2 : '+url+' / '+rel);
-//					return false;
 				}
-//				if (url.match('://') || url.match('../') || url.match('statandgo')) {
-//				alert(el);
 		
-					// Get the link's class.
-					if($(el).hasClass('ext_link')){
-						var win_o = $('#desktop').find('#window_lcs_'+rel).length;
-//							alert(win_o);
-						if (win_o == 0){
-							$('#window_lcs_temp').clone().appendTo('#desktop')
-								.attr('id', 'window_lcs_'+rel)
-								.find('a.window_close').attr('href','#icon_dock_lcs_'+rel)
-								.parents('div.window').find('img').attr('src', img)
-								.parents('div.window').find('span.window_title, .window_bottom').text(title_win);
-							$('#icon_dock_lcs_temp').clone().appendTo('#dock')
-								.attr('id', 'icon_dock_lcs_'+rel)
-								.find('a').attr('href','#window_lcs_'+rel).text(title_win)
-								.append('<img src="'+img+'" alt="" style="height:22px;" />' );
-						}
-						var x = $('#icon_dock_lcs_'+rel);
-						var y = $('#window_lcs_'+rel);
-//						y.removeClass('window_stack');
-					}else{
-						rel="path";
-						var x = $('#icon_dock_lcs_path');
-						var y = $('#window_lcs_path');
-						$('#window_lcs_path').find('span.window_title, .window_bottom').text(title_win)
-						.parents('div.window').find('img').attr('src', img);
-						$('#icon_dock_lcs_path a').text(title_win)
+				// Get the link's class.
+				if($(el).hasClass('ext_link')){
+					var win_o = $('#desktop').find('#window_lcs_'+rel).length;
+					if (win_o == 0){
+						$('#window_lcs_temp').clone().appendTo('#desktop')
+							.attr('id', 'window_lcs_'+rel)
+							.find('a.window_close').attr('href','#icon_dock_lcs_'+rel)
+							.parents('div.window').find('img').attr('src', img)
+							.parents('div.window').find('span.window_title, .window_bottom').text(title_win);
+						$('#icon_dock_lcs_temp').clone().appendTo('#dock')
+							.attr('id', 'icon_dock_lcs_'+rel)
+							.find('a').attr('href','#window_lcs_'+rel).text(title_win)
+							.append('<img src="'+img+'" alt="" style="height:22px;" />' );
+					}
+					var x = $('#icon_dock_lcs_'+rel);
+					var y = $('#window_lcs_'+rel);
+				}else{
+					rel="path";
+					var x = $('#icon_dock_lcs_path');
+					var y = $('#window_lcs_path');
+					$('#window_lcs_path').find('span.window_title, .window_bottom').text(title_win)
+					.parents('div.window').find('img').attr('src', img);
+					$('#icon_dock_lcs_path a').text(title_win)
 						.append('<img src="'+img+'" alt="" style="height:22px;" />' );
-					}
-//					alert(x + ' - ' + y);
-					JQD.clear_active();
+				}
+				
+				JQD.clear_active();
 		
-					// Show the taskbar button.
-					if (x.is(':hidden')) {
-						x.remove().appendTo('#dock').end().show('fast');
-						// .:LCS:. prepar adptation width of dock's items
-						var x_d = ($('#desktop').width() -200);
-						var nb_items =  $('ul#dock li:visible').length;
-						if (x.position().left > x_d){
-							var w_item = (x_d/nb_items-40);
-//							alert('on depasse : '+x_d+' / ' +nb_items+' / ' +parseInt(w_item));
-							$('ul#dock li:visible').each(function(){
-//								$(this).attr('style', 'width:'+parseInt(w_item)+'px;overflow:hidden;').show('fast');
-								$(this).show('fast').addClass('bar-bottom-icon')
-								.find('a').attr({ title: $(this).text()}).each(function(){
-									$(this).find('img').attr('alt', $(this).text());
-//									$(this).text('');
-								});
-							});
-						}
-						else {
-							$(this).attr('style','').removeClass('bar-bottom-icon').find('a').attr('style','');
-						}
-							
-					}
-					if (y.is(':hidden')) {
-						var mov='ok_';
-					}
-					// Bring window to front.
-					JQD.window_flat();
-					//.: LCS :. IMPORTANT iframe or no
-					if(y.find('iframe').length) y.find('iframe').attr('src',url);
-					url.match('src/compose') ? y.removeClass('large_win'):'';
-					//.: LCS :. On affiche au premier plan
-					y.addClass('window_stack').show();
-						JQD.make_win_move();
-					// .:LCS:.  on repositionne la fenetre
-					if (mov=='ok_') {
-						y.not('.window_full').animate({'top': '+='+p_top, 'left' : '+='+p_left});
-						p_left = 0;p_top = 0;
-					}
-					setTimeout(function(){
-						$('ul#dock li:visible.bar-bottom-icon a').each(function(){
-							$(this).hover(function(e){
-								t = $(this).attr('title');
-	//							alert(t);
-						//		$(this).attr('title','');
-								var offset = $(this).closest('ul').offset();
-								var lft = parseInt($(this).parent('li').position().left);
-						//		alert($(this).parent('li').position().left);
-						//		var c = (this.t != "") ? "<br/>" + this.t : "Pas d'info";
-								$("#desktop").append("<p id='screenshot' class='abs'></p>").find('#screenshot').html(t);  
-								var wtip = $("#screenshot").width()/2;
-								$("#screenshot")
-									.css("bottom","5px")
-									.css("left",(lft  - wtip+12) + "px")
-									.fadeIn("fast");                                              
-							},function(){$("#screenshot").remove();});
-						});
-						//Agir sur les elements du iframe
-						//ici par exemple on supprime le pied de page
-						//$('#iframe_lcs_'+rel).contents().find('body').find('div.pdp').remove();
-						if(y.find('iframe').length) {
-									
-							$('#iframe_lcs_webperso').contents().find('a.open_win').each(function(){
-							//alert("click="+$(this).attr('href'));
-							$(this).click(function(){
-								//alert("click="+$(this).attr('href'));
-								JQD.init_link_open_win(this);
-								return false;
+				// Show the taskbar button.
+				if (x.is(':hidden')) {
+					x.remove().appendTo('#dock').end().show('fast');
+					// .:LCS:. prepar adptation width of dock's items
+					var x_d = ($('#desktop').width() -200);
+					var nb_items =  $('ul#dock li:visible').length;
+					if (x.position().left > x_d){
+						var w_item = (x_d/nb_items-40);
+						$('ul#dock li:visible').each(function(){
+							$(this).show('fast').addClass('bar-bottom-icon')
+							.find('a').attr({ title: $(this).text()}).each(function(){
+								$(this).find('img').attr('alt', $(this).text());
 							});
 						});
-						/*
-						$('#iframe_lcs_path').contents().find('table').each(function() {
-							$(this).css({width:'100%',border:'1px solid #aaa'});
-							// Add zebra striping, ala Mac OS X.
-							$(this).find('tr:even td').css({'background-image':'url(../lcs/core/images/gui/annuaire_odd.jpg)','background-attachment':'fixed','background-position':'80% 10%','background-repeat':'no-repeat'});
-							$(this).find('tr td').attr('align','left');
-							$(this).find('tr td:first-child').css({width:'40px'});
-						}).find('tr').live('click', function() {
-							// Highlight row, ala Mac OS X.
-							$(this).closest('tr').addClass('active');
-						}).parents('body').find('div.pdp').remove();
-						*/
 					}
-
-				},500);
+					else {
+						$(this).attr('style','').removeClass('bar-bottom-icon').find('a').attr('style','');
+					}
+				}
+				if (y.is(':hidden')) var mov='ok_';
+				// Bring window to front.
+				JQD.window_flat();
+				//.: LCS :. IMPORTANT iframe or no
+				if(y.find('iframe').length) y.find('iframe').attr('src',url);
+				url.match('src/compose') ? y.removeClass('large_win'):'';
+				//.: LCS :. On affiche au premier plan
+				y.addClass('window_stack').show();
 				JQD.make_win_move();
-
-//				}
-				return false;
+				// .:LCS:.  on repositionne la fenetre
+				if (mov=='ok_') {
+					y.not('.window_full').animate({'top': '+='+p_top, 'left' : '+='+p_left});
+					p_left = 0;p_top = 0;
+				}
+				setTimeout(function(){
+					$('ul#dock li:visible.bar-bottom-icon a').each(function(){
+						$(this).hover(function(e){
+							t = $(this).attr('title');
+							var offset = $(this).closest('ul').offset();
+							var lft = parseInt($(this).parent('li').position().left);
+							$("#desktop").append("<p id='screenshot' class='abs'></p>").find('#screenshot').html(t);  
+							var wtip = $("#screenshot").width()/2;
+							$("#screenshot")
+								.css("bottom","5px")
+								.css("left",(lft  - wtip+12) + "px")
+								.fadeIn("fast");                                              
+						},function(){$("#screenshot").remove();});
+					});
+					//Agir sur les elements du iframe
+					//ici par exemple on supprime le pied de page
+					//$('#iframe_lcs_'+rel).contents().find('body').find('div.pdp').remove();
+					// init des liens de class open_win
+					if(y.find('iframe').length) {
+						$('#iframe_lcs_webperso').contents().find('a.open_win').each(function(){
+						$(this).click(function(){
+							JQD.init_link_open_win(this);
+							return false;
+						});
+					});
+				}
+			},500);
+			JQD.make_win_move();
+			return false;
 		 },
 
 
@@ -618,7 +552,7 @@ var JQD = (function($) {
 				window.top.location = window.location;
 			}
 
-			// gestion des bureaux secondaires
+			// gestion des bureaux secondaires // A REVOIR ENTIEREMENT
 			var left_o = $('#desktop').width();
 			$('#inettuts').animate({left: left_o+'px'}).hide();
 			$('#monLcs').animate({left: -left_o+'px',right: left_o+'px'}).hide();
@@ -714,19 +648,16 @@ var JQD = (function($) {
 				});
 			});
 			
-//			$("#quicklaunch a.screenshot");
-			
 			// on init le login
 			var login = $('#jqd_login').text();
-//			alert('login');
 
 			// Start clock.
 			JQD.init_clock();
 			
 			// Cancel mousedown, right-click.
 			$(document).mousedown(function(ev) {
-				if (!$(ev.target).closest('a, input, textarea','select','select option','form').length) { //.: LCS :. on autorise aussi le focus dans les input et textarea
-					
+				//.: LCS :. on autorise aussi le focus dans les input et textarea
+				if (!$(ev.target).closest('a, input, textarea','select','select option','form').length) { 					
 					JQD.clear_active();
 					return false;
 				}
@@ -813,7 +744,12 @@ var JQD = (function($) {
 				$("#ticket_prefs").attr('value', 1);
 				JQD.save_xml('lcs_buro', JQD.jqd_build_xml());
 				$('#alert_save_prefs').show().html('Enregistrement effectu&eacute; ! ').addClass('saved');
-				setTimeout(function(){$('#alert_save_prefs').removeClass('saved').hide('slow');},5000)
+				setTimeout(function(){$('#alert_save_prefs').removeClass('saved').hide();},5000)
+			});
+			
+			// remove pref
+			$('#delete_prefs').click(function(){
+				JQD.delette_xml('lcs_buro_'+$("#login").val());
 			});
 				
 			//.:LCS:. Make windows movable.
@@ -832,10 +768,12 @@ var JQD = (function($) {
 			//
 			// pannel up/down
 			$('.triangle_updown').toggle(function(){
-				$(this).next('.block_updown').show().prev().addClass('down');
+				$(this).addClass('down').next('.block_updown').show();
 			},function(){
-				$(this).next('.block_updown').hide().prev().removeClass('down');
+				$(this).removeClass('down').next('.block_updown').hide();
 			});
+			$('.btn_groups.triangle_updown').trigger('click');
+
 
 			
 			// Add wallpaper last, to prevent blocking.
@@ -853,24 +791,6 @@ var JQD = (function($) {
 			});
 			$('#ch_pos_wlppr').click(function(){
 				JQD.place_wallpaper();
-			     /*
-				var w = $('#desktop').width();
-				var h = $('#desktop').height();
-			    var x = $('#pos_walppr').val();
-			    $('#wallpaper').removeClass().addClass('abs '+ x).removeAttr('style');
-			     if(x.match('center_h')){   l_wp = (w-$('#wallpaper').width())/2;$('#wallpaper').css({'left':l_wp+'px'}); }
-			     if(x.match('center_v')){   l_hp = (h-$('#wallpaper').width())/2;$('#wallpaper').css({'left':l_hp+'px'}); }
-			    if(x.match('fit_width')){  $('#wallpaper').css({'width':'100%','height':'','left':'0','right':'0px'}); }
-			    if(x.match('fit_height')){ $('#wallpaper').css({'height':'100%','width':'','top':'0px','bottom':'0px'}); }
-			    if(x.match('top')){        $('#wallpaper').css({'top':'0px','bottom':''}); }
-			    if(x.match('bottom')){     $('#wallpaper').css({'bottom':'0px','top':''}); }
-			    if(x.match('left')){       $('#wallpaper').css({'left':'0px','right':''}); }
-			    if(x.match('right')){      $('#wallpaper').css({'right':'0px','left':''}); }
-			   
-			    if(x.match('center_h')){   l_hp = (h-$('#wallpaper').height())/2;$('#wallpaper').css({'bottom':'', 'top':l_hp+'px'}); }
-			    if(x.match('fullscreen')){ $('#wallpaper').css({'left':'','right':'','top':'','bottom':'','width':'','height':''}).addClass('wallpaper').css(''); }
-			    */
-			    $().notification('Fond d&rsquo;&eacute;cran modifi&eacute;.', 0);
 			});
 			$('#ch_bgcolor').click(function(){
 				$('body').css('background-color', $('#wp_bgcolor').val());
@@ -901,8 +821,7 @@ var JQD = (function($) {
 		      })
 		      .blur(function() {
 		      	 	$('#ctn_picker').hide();
-		      	 })
-		      ;
+		      });
 		    $('#close_picker').click(function(){$('#ctn_picker').hide();$('.colorwell').blur();});
 		      
 			// .:LCS:.  Change icons larger
@@ -932,10 +851,10 @@ var JQD = (function($) {
 			 	JQD.init_icons();
 			});
 			
+			// Notification
+			// init notify container
 			$container = $("#container").notify();
-			
-			// create two when the pg loads
-		//	create("default", { title:'Bienvenue sur Lcs-Bureau', text:'Lcs-Bureau est une nouvelle interface graphique pour le Lcs. <br />Have fun...'});
+			// create notify welcome
 			JQD.create_notify("default", { title:'Bienvenue sur Lcs-Bureau', text:'D&eacute;couvrez une nouvelle interface pour LCS. <br />Bonne nav...'});
 				
 			// .:LCS:.  on attend 1,5s que le xml soit charge 
@@ -947,7 +866,6 @@ var JQD = (function($) {
 				 });
 				 $('.span_icon_prefs').each(function(){
 				 	$(this).find('img').css('width').replace('px','')==$('#tmp_iconsize').val()?$(this).addClass('selected'):'';
-	//			 	 alert($(this).find('img').css('width').replace('px','')+' = '+$('#tmp_iconsize').val());
 				 });
 				 JQD.init_icons();
 			 },500);
@@ -970,7 +888,7 @@ var JQD = (function($) {
 			        $(this).removeClass("hover").find('h3').text('');
 					deleteIcon(ui.draggable);
 					JQD.init_icons();
-		            $('#alert_save_prefs').show('slow').text('Enregister');
+		            $('#alert_save_prefs').show().text('Enregister votre bureau');
 				}
 			});
 			
@@ -978,10 +896,9 @@ var JQD = (function($) {
 		        accept: '.open_win',
 		        drop: function(event, ui) { 
 	                // LCS Cas particulier d'un lien provenant du panneau infos user
-		        	fromwhere=$(ui.draggable).closest('ul#user_infos').length; //on verifie que le lien provient de infos user
-		        	newrel=$(ui.draggable).attr('href'); //on recupere la valeeur du lien
-		        	alert(fromwhere +' | '+newrel);
-		        	
+	                //on verifie que le lien provient de infos user
+		        	fromwhere=$(ui.draggable).closest('ul#user_infos').length; 
+		        	newrel=$(ui.draggable).attr('href'); //on recupere la valeeur du lien		        	
 	        		img_w=$(this).find('a.abs.icon img').last().width();
 	                $(this).find('a.abs.icon').last().after($(ui.draggable).clone());
 					JQD.clear_active();
@@ -995,7 +912,7 @@ var JQD = (function($) {
 						cancel: 'a.ui-icon',// clicking an icon won't initiate dragging
 						revert: false, // when not dropped, the item will revert back to its initial position
 						containment: $('#desktop, .trash'), // stick to demo-frame if present
-//						helper: 'clone',
+						//helper: 'clone',
 						cursor: 'move'
 					}).mousedown(function() {
 						// Highlight the icon.
@@ -1003,7 +920,7 @@ var JQD = (function($) {
 						$(this).not('.launch').addClass('active');
 					}).find('img').not('.quicklaunch').width(img_w).height(img_w).css({'width': img_w, 'height': img_w});
 		            JQD.init_icons();
-		            $('#alert_save_prefs').show('slow').text('Enregistrer');
+		            $('#alert_save_prefs').show().text('Enregistrer votre bureau');
 		           // $().notification("L'ic&ocirc;ne "+$(ui.draggable).text()+"<br />"+ "a &eacute;t&eacute; ajout&eacute;e", 0);
 		           	JQD.create_notify("withIcon", { title:'Info', text:"L'ic&ocirc;ne "+$(ui.draggable).text() + " a &eacute;t&eacute; ajout&eacute;e sur le bureau", icon:'core/images/icons/info.png'});
 

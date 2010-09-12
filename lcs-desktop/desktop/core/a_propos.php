@@ -22,7 +22,7 @@ li{
 		$query = "SELECT * from applis where name = \"desktop\"";
 		$result=@mysql_db_query("$DBAUTH",$query, $authlink);
 		$r_=@mysql_fetch_array($result);
-		echo "Version : 1.0 (<span style=\"font-style:italic;font-size:.85em;\">version paquet :".$r_[5]."</span>)<br />";
+		echo "Version : 1.0 (<span style=\"font-style:italic;font-size:.85em;\">version paquet :".$r_['version']."</span>)<br />";
 		?>
 		LCS-Bureau est distribu&eacute; sous licence libre <abbr title="Licence Publique Générale GNU">GNU GPL</abbr>.<br />Lcs-Bureau &eacute;tant distribu&eacute; gratuitement sous licence libre, ces auteurs n&rsquo;offrent aucune garantie d&rsquo;aucune sorte quant &agrave; l&rsquo;utilisation que vous en ferez et ne peuvent &ecirc;tre tenus pour responsables des dommages que celle-ci pourrait induire.</li>
 		<h5>Test&eacute; sous :</h5>
