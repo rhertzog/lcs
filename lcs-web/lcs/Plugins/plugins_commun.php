@@ -166,7 +166,7 @@
 		function parsage_du_fichier_xml()
 			{
 			  global $chemin_vers_fichier_xml_des_plugins_dispos;
-			  $commande = "cd /tmp; wget -q --cache=off $chemin_vers_fichier_xml_des_plugins_dispos;";
+			  $commande = "cd /tmp; rm -f applilcs.xml; wget -q --cache=off $chemin_vers_fichier_xml_des_plugins_dispos;";
 			  $fichiertmp = "/tmp/applilcs.xml";
 			  system($commande);
 			  //creation du parser xml

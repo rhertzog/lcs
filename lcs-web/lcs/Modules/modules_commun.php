@@ -138,7 +138,7 @@
 		function parsage_du_fichier_xml()
 			{
 			  global $chemin_vers_fichier_xml_des_Modules_dispos;
-			  $commande = "cd /tmp; wget -q --cache=off $chemin_vers_fichier_xml_des_Modules_dispos;";
+			  $commande = "cd /tmp; rm -f moduleslcs.xml; wget -q --cache=off $chemin_vers_fichier_xml_des_Modules_dispos;";
 			  $fichiertmp = "/tmp/moduleslcs.xml";
 			  system($commande);
 			  //creation du parser xml
