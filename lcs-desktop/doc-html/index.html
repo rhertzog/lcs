@@ -19,6 +19,32 @@
   	font-size:1.1em;
   	font-style:italic;
   }
+  table thead td{
+  	color:#123456;
+  	text-align:center;
+  	font-weight:bold;
+  }
+  table tr:odd{
+  	background-color:#eeeeee;
+  }
+  table td{
+  	border:1px solid #aaa;
+  	width:25%;
+  	padding:5px;
+  	font-size:.9em;
+  }
+  table tbody td{
+  	text-align:left;
+  }
+  .green{
+  	color:#38761d;
+  }
+  .red{
+  	color:#ff0000;
+  }
+  .orange{
+  	color:#ff9900
+  }
   </style>
 </head>
 <body>
@@ -74,21 +100,29 @@
 
 <a href="#" name="id.yug8c6-paezwv"></a>
 <h2>Pr&eacute;sentation</h2>
-<p>Lcs-Bureau est une interface graphique du LCS. Il peut &ecirc;tre compar&eacute; au bureau du syst&egrave;me d&rsquo;exploitation de votre ordinateur, window, Ubuntu, MacOs, etc.... Comme lui, Lcs-Bureau vous permet d&rsquo;acc&eacute;der facilement aux applications install&eacute;es, de personnaliser votre bureau, d&rsquo;acc&eacute;der &agrave; vos espaces personnels, etc.</p>
-<p>Lcs-Bureau est support&eacute; par les navigateurs Firefox 3.x, Internet &nbsp;Explorer (IE8), Safari v-5.x, Google Chrome v-6.x. Voir la <a href="#id.pzbv6d-qeccmn">liste des navigateurs supports</a>.</p>
-<p>Le bureau lcs est compos&eacute; de trois blocs ou parties :
-<ul>
-	<li>une partie &ldquo;<strong>commandes</strong>&rdquo; ou menus, bans une barre horizontale situ&eacute;e en haut de page (<span style="font-style:italic;">barre de menus</span>)</li>
-	<li>une partie &ldquo;<strong>zone de travail</strong>&rdquo; au centre. Elle occupe la plus grande partie du bureau. <span style="font-style:italic;">(bureau)</span></li>
-	<li>une partie &ldquo;<strong>&eacute;tat</strong>&rdquo; situ&eacute;e dans la barre horizontale du bas de page. (<span style="font-style:italic;">barre d&rsquo;&eacute;tat</span>)</li>
-</ul>
-Nous d&eacute;signerons ces trois parties respectivement <strong><a href="#id.dp15vz-3tz6l9">barre de menus</a></strong>, <strong><a href="#id.oi0xcz-ls54nv">bureau</a></strong> et <strong><a href="#id.4kbnng-hlav5n">barre d&rsquo;&eacute;tat</a></strong>.</p>
-<p style="margin-right:2.25pt;text-align:center;"><img height="473.0" src="images/image16.png" width="754.0"></p>
+<p>
+	Lcs-Bureau est une interface graphique du LCS. Il peut &ecirc;tre compar&eacute; au bureau du syst&egrave;me d&rsquo;exploitation de votre ordinateur, window, Ubuntu, MacOs, etc.... Comme lui, Lcs-Bureau vous permet d&rsquo;acc&eacute;der facilement aux applications install&eacute;es, de personnaliser votre bureau, d&rsquo;acc&eacute;der &agrave; vos espaces personnels, etc.
+</p>
+<p>
+	Lcs-Bureau est support&eacute; par les navigateurs Firefox 3.x, Internet &nbsp;Explorer (IE8), Safari v-5.x, Google Chrome v-6.x. Voir la <a href="#id.pzbv6d-qeccmn">liste des navigateurs supports</a>.
+</p>
+<p>
+	Le bureau lcs est compos&eacute; de trois blocs ou parties :
+	<ul>
+		<li>une partie &ldquo;<strong>commandes</strong>&rdquo; ou menus, bans une barre horizontale situ&eacute;e en haut de page (<span style="font-style:italic;">barre de menus</span>)</li>
+		<li>une partie &ldquo;<strong>zone de travail</strong>&rdquo; au centre. Elle occupe la plus grande partie du bureau. <span style="font-style:italic;">(bureau)</span></li>
+		<li>une partie &ldquo;<strong>&eacute;tat</strong>&rdquo; situ&eacute;e dans la barre horizontale du bas de page. (<span style="font-style:italic;">barre d&rsquo;&eacute;tat</span>)</li>
+	</ul>
+	Nous d&eacute;signerons ces trois parties respectivement <strong><a href="#id.dp15vz-3tz6l9">barre de menus</a></strong>, <strong><a href="#id.oi0xcz-ls54nv">bureau</a></strong> et <strong><a href="#id.4kbnng-hlav5n">barre d&rsquo;&eacute;tat</a></strong>.
+</p>
+<p style="margin-right:2.25pt;text-align:center;">
+	<img height="473.0" src="images/image16.png" width="754.0">
+</p>
 <p style="text-align:right"><small><a href="#id.er2kki-ru3rm">[ Retour au sommaire ]</a></small></p>
 
 <a href="#" name="id.dp15vz-3tz6l9"></a>
 <h3>Barre de menus</h3>
-Situ&eacute;e en haut du bureau, elle se divise en deux parties, <a href="#id.g7z8n5-xwn9mz">gauche</a> et <a href="#id.uijk3n-ke8mz5">droite</a>
+<p>Situ&eacute;e en haut du bureau, elle se divise en deux parties, <a href="#id.g7z8n5-xwn9mz">gauche</a> et <a href="#id.uijk3n-ke8mz5">droite</a></p>
 <p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr"><img height="26.0" src="images/image11.png" width="754.0"></p>
 <p style="text-align:right"><small><a href="#id.zbs7zm-vks368">[ Retour au sommaire ]</a></small></p>
 
@@ -110,8 +144,12 @@ Situ&eacute;e en haut du bureau, elle se divise en deux parties, <a href="#id.g7
 <p style="text-align:right"><small><a href="#id.9bm8y-6zim95">[ Retour au sommaire ]</a></small></p>
 
 <a href="#" name="id.g7z8n5-xwn9mz"></a><h3>Partie gauche</h3>
-<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr"><img height="145.0" src="images/image20.png" width="605.0"></p>
-<p>La partie gauche contient le menu d&eacute;roulant pr&eacute;sentant quatre sous-menus. Le menu s&rsquo;active sur un clic et fonctionne ensuite au survol de la souris (<span style="font-style:italic;">menus MacOs</span>).</p>
+<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr">
+	<img height="145.0" src="images/image20.png" width="605.0">
+</p>
+<p>
+	La partie gauche contient le menu d&eacute;roulant pr&eacute;sentant quatre sous-menus. Le menu s&rsquo;active sur un clic et fonctionne ensuite au survol de la souris (<span style="font-style:italic;">menus MacOs</span>).
+</p>
 <p style="text-align:right"><small><a href="#id.ag02j6-6xmtox">[ Retour au sommaire ]</a></small></p>
 
 <a href="#" name="id.17nod5-dm80lh"></a>
@@ -256,56 +294,116 @@ Situ&eacute;e en haut du bureau, elle se divise en deux parties, <a href="#id.g7
 <p>Situ&eacute; en bas du bureau au dessus de la barre d&rsquo;&eacute;tat, le dock d&rsquo;ic&ocirc;nes est un clone des ic&ocirc;nes du bureau et n&rsquo;offre, en l&rsquo;&eacute;tat, que peu de possibilit&eacute;s de personnalisation. Si on choisi de l&rsquo;afficher, toutes les ic&ocirc;nes du bureau seront alors affich&eacute;es dans le dock. Au survol de la souris, l&rsquo;ic&ocirc;ne s&rsquo;agrandit et le nom de l&rsquo;application est affich&eacute;. Le dock reste visible au dessus des fen&ecirc;tres ouvertes.</p>
 <p style="text-align:right"><small><a href="#id.kx7hcp-e84ew7">[ Retour au sommaire ]</a></small></p>
 
-<hr style="page-break-before:always;display:none;">
 <a href="#" name="id.hy8apr-poy6a7"></a>
 <a name="h.wfs7od-7k9fp"></a>
 <h2>Documentation technique </h2>
 <a href="#" name="id.pzbv6d-qeccmn"></a><a name="h.gkebie-aa2pfe"></a><h3>Liste de navigateurs supports</h3>
 <table cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+	<thead>
+		<tr>
+			<td>&nbsp;</td>
+			<td>WindowXP</td>
+			<td>MacOs</td>
+			<td>Ubuntu</td>
+		</tr>
+	</thead>
 	<tbody>
-		<tr><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial;font-weight:bold">WindowXP</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial;font-weight:bold">MacOs</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial;font-weight:bold">Ubuntu</span></p>
-</td></tr><tr style="height:0pt"><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial;font-weight:bold">Firefox</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">v-3.6.8 </span><span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">+++</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">v-3.6.8 </span><span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">+++</span></p>
-<p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td></tr><tr style="height:0pt"><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial;font-weight:bold">Safari</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">v- 5.0.1 </span><span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">++</span><span style="color:#ff9900;font-size:11pt;font-family:Arial;font-weight:bold">+ </span><span style="color:#000000;font-size:8pt;font-family:Arial">(6533.17.8)</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td></tr><tr style="height:0pt"><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial;font-weight:bold">Google Chrome</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">v-6.0.472.53 </span><span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">++</span><span style="color:#ff9900;font-size:11pt;font-family:Arial;font-weight:bold">+</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">v-6.0.472.53 </span><span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">++</span><span style="color:#ff9900;font-size:11pt;font-family:Arial;font-weight:bold">+</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td></tr><tr style="height:0pt"><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial;font-weight:bold">Internet Explorer</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">IE6 et &lt;</span><span style="color:#ff0000;font-size:11pt;font-family:Arial"> </span><span style="color:#ff0000;font-size:11pt;font-family:Arial;font-weight:bold">+++ </span><span style="color:#000000;font-size:8pt;font-family:Arial">(non support&eacute;)</span></p>
-<p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">IE7 </span><span style="color:#ff9900;font-size:11pt;font-family:Arial;font-weight:bold">+++</span></p>
-<p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">IE8 </span><span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">+</span><span style="color:#ff9900;font-size:11pt;font-family:Arial;font-weight:bold">++</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#ff0000;font-size:11pt;font-family:Arial;font-weight:bold">XXXXXX</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#ff0000;font-size:11pt;font-family:Arial;font-weight:bold">XXXXXX</span></p>
-</td></tr><tr style="height:0pt"><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial;font-weight:bold">Op&eacute;ra</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td></tr><tr style="height:0pt"><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial;font-weight:bold">Konqueror</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td><td style="vertical-align:top;width:138.8267716535433pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:5.0pt 5.0pt 5.0pt 5.0pt"><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-</td></tr></tbody></table><p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">&nbsp;</span></p>
-<p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:11pt;font-family:Arial">Legende : </span></p>
-<p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">+++</span><span style="color:#000000;font-size:11pt;font-family:Arial"> </span><span style="color:#000000;font-size:8pt;font-family:Arial">Pas de d&eacute;fauts d&rsquo;affichage connus&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">++</span><span style="color:#ff9900;font-size:11pt;font-family:Arial;font-weight:bold">+</span><span style="color:#000000;font-size:11pt;font-family:Arial"> </span><span style="color:#000000;font-size:8pt;font-family:Arial">Pas de d&eacute;fauts d&rsquo;affichage connus&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">+++</span><span style="color:#000000;font-size:11pt;font-family:Arial"> </span><span style="color:#000000;font-size:8pt;font-family:Arial">Pas de d&eacute;fauts d&rsquo;affichage connus&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
-<p style="margin-right:2.25pt;line-height:1.0;text-indent:0.0pt;direction:ltr"><span style="color:#000000;font-size:8pt;font-family:Arial">&nbsp;</span></p>
+		<tr>
+			<td>
+				<strong>Firefox</strong>
+			</td>
+			<td>
+				v-3.6.8<span class="green">+++</span>
+			</td>
+			<td>
+				v-3.6.8<span class="green">+++</span>
+			</td>
+			<td>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Safari</strong>
+			</td>
+			<td></td>
+			<td>
+				v- 5.0.1<span class="green">++</span><span class="orange">+ </span><small>(6533.17.8)</small>
+			</td>
+			<td>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Google Chrome</strong>
+			</td>
+			<td>
+				v-6.0.472.53<span class="green">++</span><span class="orange">+</span>
+			</td>
+			<td>
+				v-6.0.472.53 <span class="green">++</span><span class="orange">+</span><br /><small>Les selects ne prennent pas le focus dans le formulaire Pr&eacute;f&eacute;rences.</small>
+			</td>
+			<td>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Internet Explorer</strong>
+			</td>
+			<td>
+				IE6 et &lt;<span class="red">+++ </span><small>(non support&eacute;)</small>
+				<br />IE7 <span class="orange">+++</span>
+				<br />IE8<span class="green">+</span><span class="orange">++</span>
+			</td>
+			<td>
+				<span class="red">xxxxxx</span>
+			</td>
+			<td>
+				<span class="red">xxxxxx</span>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Op&eacute;ra</strong>
+			</td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Konqueror</strong>
+			</td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+
+<p><span>Legende : </span></p>
+<table cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+	<tbody>
+		<tr>
+			<td>
+			<span class="green">+++</span><span> </span>Pas de d&eacute;fauts d&rsquo;affichage connus
+			</td>
+			<td>
+				<span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">++</span><span style="color:#ff9900;font-size:11pt;font-family:Arial;font-weight:bold">+</span><span> </span><span style="color:#000000;font-size:8pt;font-family:Arial"></span>
+			</td>
+			<td>
+				<span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">+++</span><span> </span><span style="color:#000000;font-size:8pt;font-family:Arial"></span>
+			</td>
+		</tr>
+	</tbody>
+</table>
 <p style="text-align:right"><small><a href="#id.npovbu-8c8a4t">[ Retour au sommaire ]</a></small></p>
 
 <a href="#" name="id.psg4ec-t9rosc"></a><a name="h.ytkefc-2kl1rf"></a>
 <h3>Interaction Plugins &rarr; Lcs-Bureau</h3>
 <p>Pour ouvrir une application LCS dans une fen&ecirc;tre du bureau depuis une autre application LCS (plugins), le lien ( balise &lt;a/&gt; ) doit &ecirc;tre de la forme :
 <pre>
-&lt;a href=&quot;[url_page]&quot; class=&quot;open_win ext_link&quot; rel=&quot;[id_appli]&quot; title=&quot;[titrem&ecirc;me vide]&quot;&gt;</span></p>
-</pre>
+&lt;a href=&quot;[url_page]&quot; class=&quot;open_win ext_link&quot; rel=&quot;[id_appli]&quot; title=&quot;[titrem&ecirc;me vide]&quot;&gt;
+</pre></p>
 <p>Les attributs indispensables &eacute;tant l&rsquo;atribut <strong>class</strong> associ&eacute; aux valeurs <strong>open_win</strong> et <strong>ext_link</strong> et l&rsquo;attribut <strong>rel</strong> dont la valeur doit &ecirc;tre l<strong>&rsquo;identifiant de l&rsquo;appplication</strong> en minuscules (<span style="font-style:italic;">maint pour l&rsquo;appli maintenance, spip pour le forum, cdt pour le cahier de texte, etc...</span>).</p>
 <p style="text-align:right"><small><a href="#id.apr0z-ky0fwn">[ Retour au sommaire ]</a></small></p>
 

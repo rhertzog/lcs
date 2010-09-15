@@ -205,7 +205,7 @@ var JQD = (function($) {
 		},
 		
 		//
-		// .:LCS:.  init window. transform in function to call easyer
+		// .:LCS:.  init window move. transform in function to call easyer
 		//
 		make_win_move: function(){
 			// Make windows movable.
@@ -432,6 +432,9 @@ var JQD = (function($) {
 			return $container.notify("create", template, vars, opts);
 		},
 		 
+		//
+		// .:LCS:.  init window. transform in function to call easyer
+		//
 		 init_link_open_win: function(el){
 				var url = $(el).attr('href');
 				var text = $(el).text();
@@ -527,15 +530,26 @@ var JQD = (function($) {
 						},function(){$("#screenshot").remove();});
 					});
 					//Agir sur les elements du iframe
-					//ici par exemple on supprime le pied de page
-					//$('#iframe_lcs_'+rel).contents().find('body').find('div.pdp').remove();
 					// init des liens de class open_win
 					if(y.find('iframe').length) {
-						$('#iframe_lcs_webperso').contents().find('a.open_win').each(function(){
-						$(this).click(function(){
-							JQD.init_link_open_win(this);
-							return false;
+						$('iframe').load(function()  {
+							el = $(this).contents();
+							// Listage et modif des mailto:
+							el.find('a').each(function(){
+								$cible=$(this).attr('href');
+								if($(this).attr('href').match('mailto:')){
+									$(this).attr('href',$cible.replace('mailto:','../squirrelmail/src/compose.php?send_to='))
+									.attr('rel','squirrelmail')
+									.addClass('open_win ext_link');
+								}
+							});
+							el.find('a.open_win').each(function(){
+							$(this).click(function(){
+								JQD.init_link_open_win(this);
+								return false;//on inhibe le lien
+							});
 						});
+
 					});
 				}
 			},500);
