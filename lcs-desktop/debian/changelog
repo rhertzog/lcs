@@ -1,4 +1,4 @@
-lcs-desktop (0.2~6) UNRELEASED; urgency=low
+lcs-desktop (0.2~6) Lcs; urgency=low
   [Jean-Luc Chretien]
     * Modify package structure
     * Create folder user Profile at initial intsall
@@ -6,9 +6,10 @@ lcs-desktop (0.2~6) UNRELEASED; urgency=low
     * Modify inc-menus_admin.php for new menu structure
   [Dominique Lepaisant]
     * Modify many path for new structure package
-  * 
+    * Multiples bufs fixes following the introduction of the new strcuture 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 16 Sep 2010 10:14:28 +0200
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 16 Sep 2010 18:21:49 +0200
 
 lcs-desktop (0.1) Lcs; urgency=low
 
