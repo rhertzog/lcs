@@ -17,9 +17,11 @@ if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
     cd /home
     for rep in *; do
         if [ -n "$(ldapsearch -xLLL uid=$rep >&1 /dev/null)" ]; then
-                mkdir -p $rep/Profile
-                chown -R $rep:lcs-users $rep/Profile
-                chmod 770 /home/$rep/Profile
+		if [ ! -d $rep/Profile ]; then
+                	mkdir -p $rep/Profile
+                	chown -R www-data:lcs-users $rep/Profile
+                	chmod 750 /home/$rep/Profile
+		fi
         fi
     done
     #

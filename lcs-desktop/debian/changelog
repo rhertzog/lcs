@@ -1,4 +1,4 @@
-lcs-desktop (0.2~5) Lcs; urgency=low
+lcs-desktop (0.2~6) Lcs; urgency=low
   [Jean-Luc Chretien]
     * Modify package structure
     * Create folder user Profile at initial intsall
@@ -7,7 +7,7 @@ lcs-desktop (0.2~5) Lcs; urgency=low
   [Dominique Lepaisant]
     * Modify many path for new structure package
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 Sep 2010 18:17:29 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 16 Sep 2010 10:11:02 +0200
 
 lcs-desktop (0.1) Lcs; urgency=low
 
