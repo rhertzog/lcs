@@ -4,6 +4,7 @@ lcs-web (2.4.7.1~1) Lcs; urgency=low
   * Modify lcs-etch2lenny script
   * Add a set of pics in Annu/images
   * Fix rights on skel user Profile in mkhdir.sh 
+  * Add test if lcs-desktop is activate in lcs/index.php
 
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
@@ -11,7 +12,7 @@ lcs-web (2.4.7.1~1) Lcs; urgency=low
     content. This is required because when a broken XML file is downloaded,
     it's not removed...
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 Sep 2010 09:04:49 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 16 Sep 2010 10:23:55 +0200
 
 lcs-web (2.4.7) Lcs; urgency=low
 

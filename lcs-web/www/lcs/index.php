@@ -7,12 +7,14 @@ if ($result)
     while ($r=@mysql_fetch_array($result))
                 $$r["name"]=$r["value"];
 else
-    die ("paramètres absents de la base de données");
+    die ("parametres absents de la base de donnees");
 @mysql_free_result($result);
+
+if ( $desktop == 1 ) header("Location:../desktop");
 
 if ( $url_redirect == "accueil.php" || $url_redirect == "../squidGuard/pageinterdite.html" ) $url_accueil = $url_redirect;
 
-if ( $url_accueil == "accueil.php" && is_dir ("/var/www/monlcs") )  
+if ( $url_accueil == "accueil.php" && $monlcs== 1 )  
   $url_accueil = "/monlcs/index.php";
 
 ?>
