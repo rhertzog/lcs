@@ -852,12 +852,12 @@ div.jqd_formulaires .span_icon_prefs img{
 }
 .img_infos_more span,.ui-finder .triangle_updown, .triangle_updown{
 /*	border:1px solid #aaa;*/
-	background:url(../images/gui/triangle_up_noir-16.png) no-repeat left center;
+	background:url(../images/gui/triangle_up_noir-blanc-16.png) no-repeat left center;
 	padding-left:20px;
 }
 .img_infos_more span.down, .triangle_updown.down{
 /*	border:1px solid #aaa;*/
-	background:url(../images/gui/triangle_down_noir-16.png) no-repeat left center;
+	background:url(../images/gui/triangle_down_noir-blanc-16.png) no-repeat left center;
 	padding-left:20px;
 }
 /* ui-finder
@@ -1101,6 +1101,13 @@ form.jqd_form{
 //	overflow:hidden;
 	background-color:#ddd;;
 }
+#user_infos ul.infos_user li.group_title{
+	float:none;
+	line-height:20px;
+	height:20px;
+	margin:0;
+	padding:0;
+}
 #user_infos ul.infos_user li a{
 	display:inline;
 	color:orange;
@@ -1112,7 +1119,7 @@ form.jqd_form{
 	border:1px solid transparent;
 	line-height:11px;
 }
-#user_infos ul.infos_user li:hover{
+#user_infos ul.infos_user li.user_link:hover{
 	float:none;
 	background:#222;
 	border:1px solid #eee;
@@ -1120,7 +1127,7 @@ form.jqd_form{
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
-#user_infos ul.infos_user li:hover a img,#user_infos ul.infos_user li:hover a strong{
+#user_infos ul.infos_user  li.user_link:hover a img,#user_infos ul.infos_user li:hover a strong{
 	cursor:pointer;
 }
 #user_infos ul.infos_user li.item{

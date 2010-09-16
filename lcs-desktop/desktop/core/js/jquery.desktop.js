@@ -194,7 +194,13 @@ var JQD = (function($) {
 				t += h_i;
 			});
 		},
-		
+		// fonction supprimer icone
+		deleteIcon: function ($item) {
+			$item.addClass('icon_trash')
+			.removeClass('abs')
+			.fadeOut().remove();
+		},
+
 		place_wallpaper: function(){
 			var w = $('#desktop').width();
 			var h = $('#desktop').height();
@@ -386,7 +392,7 @@ var JQD = (function($) {
 					JQD.create_notify("withIcon", 
 						{ title:resp['title'], text:resp['mess']+resp['infos'], icon:'core/images/icons/'+resp['img']+'.png'},
 						{
-						expires:false,
+						//expires:false,
 						click: function(e,instance){
 							window.location='./'; 
 						}
@@ -505,7 +511,29 @@ var JQD = (function($) {
 				// Bring window to front.
 				JQD.window_flat();
 				//.: LCS :. IMPORTANT iframe or no
-				if(y.find('iframe').length) y.find('iframe').attr('src',url);
+				if(y.find('iframe').length) {
+					//Agir sur les elements du iframe
+					// init des liens de class open_win
+						y.find('iframe').attr('src',url).load(function()  {
+							el = $(this).contents();
+							// Listage et modif des mailto:
+							el.find('a').each(function(){
+								$cible=$(this).attr('href');
+								if($(this).attr('href').match('mailto:')){
+									$(this).attr('href',$cible.replace('mailto:','../squirrelmail/src/compose.php?send_to='))
+									.attr('rel','squirrelmail')
+									.addClass('open_win ext_link');
+								}
+							});
+							el.find('a.open_win').each(function(){
+								$(this).click(function(){
+									JQD.init_link_open_win(this);
+									return false;//on inhibe le lien
+								});
+							});
+
+						});
+					}
 				url.match('src/compose') ? y.removeClass('large_win'):'';
 				//.: LCS :. On affiche au premier plan
 				y.addClass('window_stack').show();
@@ -529,29 +557,6 @@ var JQD = (function($) {
 								.fadeIn("fast");                                              
 						},function(){$("#screenshot").remove();});
 					});
-					//Agir sur les elements du iframe
-					// init des liens de class open_win
-					if(y.find('iframe').length) {
-						$('iframe').load(function()  {
-							el = $(this).contents();
-							// Listage et modif des mailto:
-							el.find('a').each(function(){
-								$cible=$(this).attr('href');
-								if($(this).attr('href').match('mailto:')){
-									$(this).attr('href',$cible.replace('mailto:','../squirrelmail/src/compose.php?send_to='))
-									.attr('rel','squirrelmail')
-									.addClass('open_win ext_link');
-								}
-							});
-							el.find('a.open_win').each(function(){
-							$(this).click(function(){
-								JQD.init_link_open_win(this);
-								return false;//on inhibe le lien
-							});
-						});
-
-					});
-				}
 			},500);
 			JQD.make_win_move();
 			return false;
@@ -900,7 +905,7 @@ var JQD = (function($) {
 			    },
 				drop: function(ev, ui) {
 			        $(this).removeClass("hover").find('h3').text('');
-					deleteIcon(ui.draggable);
+					JQD.deleteIcon(ui.draggable);
 					JQD.init_icons();
 		            $('#alert_save_prefs').show().text('Enregister votre bureau');
 				}
@@ -946,26 +951,6 @@ var JQD = (function($) {
 		        helper: 'clone'
 		    });
 
-			// fonction supprimer icone
-			function deleteIcon($item) {
-				$item.addClass('icon_trash')
-				.removeClass('abs')
-				.fadeOut().remove();
-			}
-
-			// fonction restaurer icone
-			function restorIcon($item) {
-				$item.removeClass('icon_refresh').addClass('abs').fadeOut(function() {
-					$item.find('a.ui-icon-refresh').remove();
-					$item.css('width','80px')
-						.animate({ fontSize: '11px',opacity: 1 })
-						.find('img')
-						.animate({width:$("#icons_larger").val()+'px',height:$("#icons_larger").val()+'px'})
-						.end().appendTo('#desktop').fadeIn();
-				});
-				setTimeout(function(){ JQD.init_icons(); },500);
-			}
-			
 			 // .: LCS :. infos user panel
 			$('#user_info_bar_btn').click(function(){
 				JQD.window_flat();

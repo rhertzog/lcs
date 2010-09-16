@@ -117,7 +117,7 @@
 			</a>
 		</li>
 		<li id="icon_dock_lcs_legal">
-			<a href="#window_lcs_listes">
+			<a href="#window_lcs_legal">
 				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
 				A propos
 			</a>
