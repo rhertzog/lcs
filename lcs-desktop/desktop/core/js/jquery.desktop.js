@@ -445,6 +445,7 @@ var JQD = (function($) {
 				var url = $(el).attr('href');
 				var text = $(el).text();
 				var title = $(el).attr('title');
+				var rev = $(el).attr('rev');
 				if (text == '') text = title;
 				var title_win = text;
 				var img='images/barre1/BP_r1_c1.gif';
@@ -457,7 +458,7 @@ var JQD = (function($) {
 				$(el).blur();
 				if (url.match(/^#/)) {
 				var url = $(el).attr('rel');
-				var rel = $(el).attr('title');
+				var rel = $(el).attr('rev');
 				}
 		
 				// Get the link's class.
@@ -518,11 +519,12 @@ var JQD = (function($) {
 							el = $(this).contents();
 							// Listage et modif des mailto:
 							el.find('a').each(function(){
-								$cible=$(this).attr('href');
+								$cible=$(this).attr('href').replace('?','&');
 								if($(this).attr('href').match('mailto:')){
-									$(this).attr('href',$cible.replace('mailto:','../squirrelmail/src/compose.php?send_to='))
-									.attr('rel','squirrelmail')
-									.addClass('open_win ext_link');
+									$(this).attr({
+										'href':$cible.replace('mailto:','../squirrelmail/src/compose.php?send_to='),
+										'rel':'squirrelmail'
+									}).addClass('open_win ext_link');
 								}
 							});
 							el.find('a.open_win').each(function(){
@@ -583,7 +585,7 @@ var JQD = (function($) {
 				if($(this).not('.space')){
 					$('#inettuts, #monLcs').show();
 					var ind=$(this).parent().index();
-					if((ind==1) && ($('#inettuts').position().left!=0)){
+					/*if((ind==1) && ($('#inettuts').position().left!=0)){
 						if($('#wallpaper_b').length == 0){
 							$('#wallpaper').clone().prependTo('body').attr('id', 'wallpaper_b').css('left', left_o+'px').animate({left:0},1500);
 						}
@@ -596,7 +598,7 @@ var JQD = (function($) {
 								iNettuts.init();
 							});
 						});
-					} else if((ind==2)  && ($('#monLcs').position().left!=0)) {
+					} else */if((ind==2)  && ($('#monLcs').position().left!=0)) {
 						$('#iLcsMenu').hide();
 						if($('#wallpaper_b').length == 0){
 							$('#wallpaper').clone().prependTo('body').attr('id', 'wallpaper_b').css('left', 0);
@@ -759,11 +761,9 @@ var JQD = (function($) {
 			});
 
 			// ***LCS*** Save params of prefs
-			$('#valid_prefs, #alert_save_prefs').click(function(){
+			$('#valid_prefs').click(function(){
 				$("#ticket_prefs").attr('value', 1);
 				JQD.save_xml('lcs_buro', JQD.jqd_build_xml());
-				$('#alert_save_prefs').show().html('Enregistrement effectu&eacute; ! ').addClass('saved');
-				setTimeout(function(){$('#alert_save_prefs').removeClass('saved').hide();},5000)
 			});
 			
 			// remove pref
@@ -907,7 +907,15 @@ var JQD = (function($) {
 			        $(this).removeClass("hover").find('h3').text('');
 					JQD.deleteIcon(ui.draggable);
 					JQD.init_icons();
-		            $('#alert_save_prefs').show().text('Enregister votre bureau');
+					JQD.create_notify("withIcon", 
+						{ title:'Enregistrer vos pr&eacute;f&eacute;rences', text:"Cliquez moi pour enregistrer vos pr&eacute;f&eacute;rences...", icon:'core/images/icons/alert.png'},
+						{
+						expires:false,
+						click: function(e,instance){
+							JQD.save_xml('lcs_buro', JQD.jqd_build_xml());
+							instance.close();
+						}
+					});
 				}
 			});
 			
@@ -939,9 +947,14 @@ var JQD = (function($) {
 						$(this).not('.launch').addClass('active');
 					}).find('img').not('.quicklaunch').width(img_w).height(img_w).css({'width': img_w, 'height': img_w});
 		            JQD.init_icons();
-		            $('#alert_save_prefs').show().text('Enregistrer votre bureau');
-		           // $().notification("L'ic&ocirc;ne "+$(ui.draggable).text()+"<br />"+ "a &eacute;t&eacute; ajout&eacute;e", 0);
-		           	JQD.create_notify("withIcon", { title:'Info', text:"L'ic&ocirc;ne "+$(ui.draggable).text() + " a &eacute;t&eacute; ajout&eacute;e sur le bureau", icon:'core/images/icons/info.png'});
+		           	JQD.create_notify("withIcon", { title:'Enregistrer vos pr&eacute;f&eacute;rences', text:"L'ic&ocirc;ne "+$(ui.draggable).text() + " a &eacute;t&eacute; ajout&eacute;e sur le bureau.<br />Cliquez moi pour enregistrer vos pr&eacute;f&eacute;rences...", icon:'core/images/icons/info.png'},
+						{
+						expires:false,
+						click: function(e,instance){
+							JQD.save_xml('lcs_buro', JQD.jqd_build_xml());
+							instance.close();
+						}
+					});
 
 		        }
 		    });

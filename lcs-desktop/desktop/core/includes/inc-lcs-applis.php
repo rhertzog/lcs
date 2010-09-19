@@ -150,7 +150,7 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 	// Display menus bar top
 	$sbmn ="<a class=\"ext_link ".$c_sb."\"";
 	$c_rel=="" ? $sbmn.=" href=\"".$liste['Blocks'][$x]."\" rel=\"".$liste['Liens'][$x]."\"" : $sbmn.=" href=\"#\" rel=\"\"" ;
-	$sbmn.=" title=\"".$liste['Ids'][$x]."\">"
+	$sbmn.=" rev=\"".$liste['Ids'][$x]."\">"
 	."<img src=\"".$liste['Images'][$x]."\" alt=\"\" style=\"width:16px;height:16px;\" /> "
 	.$liste['Titres'][$x]
 	."</a>\n";
@@ -164,7 +164,7 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 			$sbmn .= "<a class=\"open_win ext_link\""
 			." href=\"".$liste['Blocks'][$x]."\""
 			." rel=\"".$a_rel."\""
-			." title=\"".$liste['Ids'][$x]."\">"
+			." rev=\"".$liste['Ids'][$x]."\">"
 			."<img src=\"".$liste['Images'][$x]."\" alt=\"\" style=\"width:16px;height:16px;\" /> "
 			.$c_title[$i]."</a>\n";
 			$i++;
@@ -223,7 +223,7 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 	    ." style=\"left:".$left."px;top:".$top."px;\""
 	    ." href=\"".$liste['Blocks'][$x]."\""
 	    ." rel=\"".$liste['Liens'][$x]."\""
-	    ." title=\"".$liste['Ids'][$x]."\">"
+	    ." rev=\"".$liste['Ids'][$x]."\">"
 	    ."<img src=\"".$liste['Images'][$x]."\"  style=\"width:32px;\" />"
 	    .$liste['Titres'][$x]
     ."</a>";

@@ -5,7 +5,7 @@
 		if ( $idpers!=0 ) { 
 	?>
 	<li>
-		<a href="../lcs/logout.php" title="Se d&eacute;connecter" style="cursor:pointer;color:#999;font-size:.8em;">
+		<a href="../lcs/logout.php" title="Se d&eacute;connecter" style="cursor:pointer;color:#999;font-size:.8em;" rel="auth">
 			<img alt="En ligne" src="../lcs/images/connect.png" alt="" style="cursor:pointer;" />
 		</a>
 	</li>
@@ -26,14 +26,17 @@
 			<span class="close float_right"></span>
 			<?php 
 			//
-   	echo $text_infos;
+		   	echo $text_infos;
+		   	$url_s="../squirrelmail/src/compose.php?send_to=admin@".$_SERVER['HTTP_HOST']."&subject=LCS-BUREAU : demande d'assistance";
+		   	$url_m="../Plugins/Maintenance/demande_support.php";
+		   	$MaintInfo ==1  ? $url_maint=array($url_m,'maintinfo') : $url_maint=array($url_s,'squirrelmail');
 			?>			
 			</li>
 		</ul>
 	</li>
 	<li>
 <!--		<a class="open_win float_right msg ext_link icon_16" id="aForumRss" href="../spip/?page=backend" rel="forumrss" title="Last News"></a>-->
-	<a title="Demande d'assistance informatique" rel="maintinfo" href="../Plugins/Maintenance/demande_support.php" class="open_win float_right msg ext_link icon_16" style="background-position:-176px -112px;"></a>
+	<a title="Demande d'assistance informatique" rel="<?php echo  $url_maint[1]?>" href="<?php echo $url_maint[0];?>" class="open_win float_right msg ext_link icon_16" style="background-position:-176px -112px;"></a>
 	</li>
 <!--	<li>
 		<a class="open_win float_right msg ext_link icon_16" id="aForumRss" href="../spip/?page=backend" rel="forumrss" title="Last News"></a>
@@ -63,16 +66,15 @@
 	}else{
 ?>
 	<li>
-		<a class="open_win ext_link" href="#icon_dock_lcs_auth" title="auth" style="cursor:pointer;color:#999;font-size:.8em;" rel="../lcs/auth.php">
+		<a class="open_win ext_link" href="#icon_dock_lcs_auth" rev="auth" style="cursor:pointer;color:#999;font-size:.8em;" rel="../lcs/auth.php">
 			&nbsp;&nbsp;&nbsp;&nbsp;Se connecter&nbsp;&nbsp;
-			<img alt="Acceder au formulaire de connexion" src="../lcs/images/deconnect.png" style="cursor:pointer;" />&nbsp;&nbsp;&nbsp;&nbsp;
+			<img alt="Acceder au formulaire de connexion" src="../lcs/images/deconnect.png" style="cursor:pointer;vertical-align:middle;" />&nbsp;&nbsp;&nbsp;&nbsp;
 		</a>
 	</li>
 <?php
 	}
 ?>
 </ul>
-	<span class='float_right btn_bar_top' id='alert_save_prefs' title='Enregistrer votre bureau' style='display:none;'></span>
 
 
 <?php

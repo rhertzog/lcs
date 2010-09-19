@@ -35,7 +35,6 @@ include("core/includes/inc-lcs-applis.php");
 <link href="core/css/ui.notify.css" ype="text/css" rel="stylesheet" />
 <script src="../libjs/jquery/jquery.js"></script>
 <script src="core/js/jquery.desktop.js"></script>
-<script src="core/js/jquery.notification.js"></script>
 <script src="../libjs/jquery-ui/jquery-ui.js"></script>
 <script src="core/libs/farbtastic/farbtastic.js"></script>
 <script src="core/finder/jquery.scrollTo-1.4.0-min.js"></script>
@@ -88,8 +87,8 @@ if ( $idpers==0 ) {
 		<div class="abs window_inner">
 			<div class="window_top">
 				<span class="float_left">
-					<img src="core/images/icons/icon_16_lcs.png" alt="" />
-					LCS - Formulaire de connexion
+					<img src="../lcs/images/deconnect.png" alt=""  style="width:16px;"/>
+					Lcs-Bureau : Formulaire de connexion
 				</span>
 				<span class="float_right">
 					<a href="#" class="window_min"></a>
@@ -104,7 +103,7 @@ if ( $idpers==0 ) {
 				</div>
 			</div>
 			<div class="abs window_bottom">
-				LCS -  Formulaire de connexion
+				Lcs-Bureau : Formulaire de connexion
 			</div>
 		</div>
 		<span class="abs ui-resizable-handle ui-resizable-se"></span>
@@ -255,31 +254,6 @@ if ( $idpers==0 ) {
 		<span class="abs ui-resizable-handle ui-resizable-se"></span>
 	</div>
 
-	<div id="window_lcs_sfbrowser" class="abs window" style="height:550px;">
-		<div class="abs window_inner">
-			<div class="window_top">
-				<span class="float_left">
-					<img src="../lcs/images/barre1/BP_r1_c7_f3.gif"  alt="" style="width:16px;" />
-					LCS-Navigateur
-				</span>
-				<span class="float_right">
-					<a href="#" class="window_min"></a>
-					<a href="#" class="window_resize"></a>
-					<a href="#icon_dock_lcs_sfbrowser" class="window_close"></a>
-				</span>
-			</div>
-			<div class="abs window_content">
-				<div class="window_main" style="width:100%;height:100%;margin:0;">
-				<iframe src="" style="width:100%;height:98%;"></iframe>
-				</div>
-			</div>
-			<div class="abs window_bottom">
-				LCS-Navigateur
-			</div>
-		</div>
-		<span class="abs ui-resizable-handle ui-resizable-se"></span>
-	</div>
-
 	<div id="window_lcs_change_pass" class="abs window  window_full" style="height:550px;top:0;left:0;">
 		<div class="abs window_inner">
 			<div class="window_top">
@@ -361,7 +335,7 @@ if ( $idpers==0 ) {
 	<?php if (pwdMustChange($login)) { ?>
 		//alert('Pass no changed');
 		JQD.init_link_open_win('<a rel="change_pass" title="auth" href="../Annu/must_change_default_pwd.php" class="open_win ext_link">Cnager de mot-de-passe</a>');	
-		// le user doit recharger la page après modif pass
+		// le user doit recharger la page apres modif pass
 		JQD.create_notify("withIconNoClose", { title:'Attention!', text:'N&rsquo;oubliez pas d&rsquo;actualiser votre bureau apr&egrave;s avoir modifi&eacute; votre mot de passe. <br /><span style="text-decoration:underline;">Cliquez-moi pour actualiser votre bureau</span>', icon:'core/images/icons/alert.png' }, {
 			expires:false,
 			click: function(e,instance){
@@ -381,7 +355,7 @@ if ( $idpers==0 ) {
 			{
 			expires:false,
 			click: function(e,instance){
-				JQD.init_link_open_win('<a href="#icon_dock_lcs_prefs" title="prefs" rel="prefs" class="open_win ext_link"> ce lien ...</a>');
+				JQD.init_link_open_win('<a href="#icon_dock_lcs_prefs" rev="prefs" rel="prefs" class="open_win ext_link"> ce lien ...</a>');
 				}
 			} );
 	<?php } ?>
@@ -392,7 +366,7 @@ if ( $idpers==0 ) {
 <script>
 	setTimeout(function(){
 		$('#window_lcs_spip').css({'top':0,'left':0}).removeClass('large_win').addClass('window_full');
-		JQD.init_link_open_win('<a rel="../lcs/auth" title="auth" href="#icon_dock_lcs_auth" class="open_win ext_link">Se connecter</a>');
+		JQD.init_link_open_win('<a rel="../lcs/auth" rev="auth" href="#icon_dock_lcs_auth" class="open_win ext_link">Se connecter</a>');
 		$('#window_lcs_auth').addClass('small_win small_height').animate({top : 0,left :0,width:550,height:340},1).find('.window_main').css('background-color','transparent');
 		setTimeout(function(){
 			$('#iframe_lcs_auth').contents().find('head').append('<style>jqd.h3{color:red;}</style>');

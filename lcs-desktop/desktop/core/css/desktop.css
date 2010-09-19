@@ -735,8 +735,13 @@ div.jqd_formulaires fieldset{
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 }
-div.jqd_formulaires form legend{
-	border:1px solid #666;-moz-border-radius:10px;background:#fff url(../images/gui/bar_top.png) repeat-x left 3px;margin-left:20px;padding:0 10px;
+div.jqd_formulaires form legend, #a_propos h3{
+	border:1px solid #666;
+	-moz-border-radius:10px;
+	-webkit-border-radius: 10px;
+	background:#fff url(../images/gui/bar_top.png) repeat-x left 3px;
+	margin-left:20px;
+	padding:0 10px;
 }
 div.jqd_formulaires form label{
 	display:block;
@@ -867,6 +872,7 @@ div.ui-finder{
 }
 div.ui-finder, div.ui-finder-header{
 	-moz-border-radius:5px 5px 0 0;
+	-webkit-border-radius:5px 5px 0 0;
 	background-color:#fff;
 	border:1px solid #ccc;
 }
@@ -891,6 +897,7 @@ div.ui-finder-header span.select_this{
 	background:#efefef url(../images/icons/arrow_left-up_16-16.png) no-repeat right center;
 	border:1px solid #aaa;
 	-moz-border-radius:0 0 5px 5px;
+	-webkit-border-radius:0 0 5px 5px;
 	opacity:.3;
 }
 div.ui-finder-header span.select_this:hover{
@@ -1197,6 +1204,7 @@ text-shadow:0 1px 1px #000000;
 	margin:5px auto;
 	border:1px solid #aaa;
 	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
 	font-size:.9em;
 }
 .bouton a:hover, button:hover,.btn_bar_top:hover{
@@ -1253,6 +1261,7 @@ ul.tabs li{
 .hover{
     -moz-box-shadow:0 0 0.5em #666;
     -moz-border-radius:15px;
+    -webkit-border-radius:15px;
     opacity:0.7;
     filter : alpha(opacity=70);
     -moz-opacity : 0.7;
