@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: prof_disc_classes.php 4152 2010-03-21 23:32:16Z adminpaulbert $
+* $Id: prof_disc_classes.php 5349 2010-09-20 15:32:54Z crob $
 *
 * Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -61,6 +61,9 @@ $liste_tables_del = array(
 "ct_devoirs_entry",
 "ct_documents",
 "ct_entry",
+"ct_devoirs_documents",
+"ct_private_entry",
+"ct_sequences",
 //"ct_types_documents",
 //droits
 //eleves

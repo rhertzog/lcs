@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: visu_notification.php 5144 2010-08-30 19:51:41Z jjacquard $
+ * @version $Id: visu_notification.php 5254 2010-09-12 14:47:27Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -319,7 +319,7 @@ if ($notification->getTypeNotification() == AbsenceEleveNotification::$TYPE_EMAI
 		    echo " selected='selected' ";
 		    $selected = true;
 		}
-		echo ">".$responsable->getMel()."</option>\n";
+		echo ">".$responsable->getMel().' ('.$responsable->getCivilite().' '.$responsable->getNom().'; resp '.$responsable_information->getRespLegal().")</option>\n";
 	    }
 	}
 	if (!$selected) {
@@ -361,7 +361,7 @@ if ($notification->getTypeNotification() == AbsenceEleveNotification::$TYPE_SMS 
 	echo '<p>';
 	echo '<input type="hidden" name="id_notification" value="'.$notification->getPrimaryKey().'"/>';
 	echo '<input type="hidden" name="modif" value="tel"/>';
-	echo ("<select name=\"tel\" onchange='submit()'>");
+	echo ("<select style='width:200px;' name=\"tel\" onchange='submit()'>");
 	$selected = false;
 	foreach ($notification->getAbsenceEleveTraitement()->getResponsablesInformationsSaisies() as $responsable_information) {
 	    $responsable = $responsable_information->getResponsableEleve();
@@ -371,7 +371,7 @@ if ($notification->getTypeNotification() == AbsenceEleveNotification::$TYPE_SMS 
 		    echo " selected='selected' ";
 		    $selected = true;
 		}
-		echo ">".$responsable->getTelPort().' ('.$responsable->getCivilite().' '.$responsable->getNom().")</option>\n";
+		echo ">".$responsable->getTelPort().' ('.$responsable->getCivilite().' '.$responsable->getNom().'; resp '.$responsable_information->getRespLegal()."; tel port)</option>\n";
 	    }
 
 	    if ($responsable->getTelPers() != null || $responsable->getTelPers() != '') {
@@ -380,7 +380,7 @@ if ($notification->getTypeNotification() == AbsenceEleveNotification::$TYPE_SMS 
 		    echo " selected='selected' ";
 		    $selected = true;
 		}
-		echo ">".$responsable->getTelPers()."</option>\n";
+		echo ">".$responsable->getTelPers().' ('.$responsable->getCivilite().' '.$responsable->getNom().'; resp '.$responsable_information->getRespLegal()."; tel pers)</option>\n";
 	    }
 
 	    if ($responsable->getTelProf() != null || $responsable->getTelProf() != '') {
@@ -389,7 +389,7 @@ if ($notification->getTypeNotification() == AbsenceEleveNotification::$TYPE_SMS 
 		    echo " selected='selected' ";
 		    $selected = true;
 		}
-		echo ">".$responsable->getTelProf()."</option>\n";
+		echo ">".$responsable->getTelProf().' ('.$responsable->getCivilite().' '.$responsable->getNom().'; resp '.$responsable_information->getRespLegal()."; tel prof)</option>\n";
 	    }
 	}
 	if (!$selected) {

@@ -1,6 +1,6 @@
 <?php
 /*
- $Id: footer.inc.php 4372 2010-04-26 17:48:43Z crob $
+ $Id: footer.inc.php 5291 2010-09-14 18:59:26Z jjacquard $
 */
 // SI on ne souhaite pas utiliser les js de base, on enlève tout ce qui suit :
 if (isset($utilisation_jsbase) AND $utilisation_jsbase == "non") {
@@ -157,4 +157,10 @@ if (isset($utilisation_jsbase) AND $utilisation_jsbase == "non") {
 ?>
 
 </body>
+<?php
+//ajout pour dojo
+if (isset($javascript_footer_texte_specifique)) {
+    echo $javascript_footer_texte_specifique;
+}
+?>
 </html>

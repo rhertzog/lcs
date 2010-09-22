@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: check_nature_incident.php 4074 2010-02-06 17:36:43Z crob $
+ * $Id: check_nature_incident.php 5271 2010-09-13 17:58:45Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -79,7 +79,7 @@ if(isset($chaine_rech)) {
 	}
 }
 else {
-	echo "Aucune élément pour la recherche d'incident.";
+	echo "Aucun élément pour la recherche d'incident.";
 }
 
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: liste_saisies_selection_traitement.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: liste_saisies_selection_traitement.php 5324 2010-09-15 16:32:36Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -62,7 +62,7 @@ if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") 
     die("acces interdit");
 }
 
-if (isset($_POST["creation_traitement"]) || isset($_POST["ajout_saisie_traitement"])) {
+if (isset($_POST["creation_traitement"]) || isset($_POST["ajout_traitement"])) {
     include('creation_traitement.php');
 }
 
@@ -149,20 +149,20 @@ if (isFiltreRechercheParam('filter_aid')) {
     $query->condition('cond2', 'AbsenceEleveSaisie.IdAid = ?', getFiltreRechercheParam('filter_aid'));
     $query->where(array('cond1', 'cond2'), 'or');
 }
-if (isFiltreRechercheParam('filter_date_debut_absence_debut_plage')) {
-    $date_debut_absence_debut_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_debut_absence_debut_plage')));
-    $query->filterByDebutAbs($date_debut_absence_debut_plage, Criteria::GREATER_EQUAL);
+if (isFiltreRechercheParam('filter_date_debut_saisie_debut_plage')) {
+    $date_debut_saisie_debut_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_debut_saisie_debut_plage')));
+    $query->filterByDebutAbs($date_debut_saisie_debut_plage, Criteria::GREATER_EQUAL);
 }
-if (isFiltreRechercheParam('filter_date_debut_absence_fin_plage')) {
-    $date_debut_absence_fin_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_debut_absence_fin_plage')));
-    $query->filterByDebutAbs($date_debut_absence_fin_plage, Criteria::LESS_EQUAL);
+if (isFiltreRechercheParam('filter_date_debut_saisie_fin_plage')) {
+    $date_debut_saisie_fin_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_debut_saisie_fin_plage')));
+    $query->filterByDebutAbs($date_debut_saisie_fin_plage, Criteria::LESS_EQUAL);
 }
-if (isFiltreRechercheParam('filter_date_fin_absence_debut_plage')) {
-    $date_fin_absence_debut_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_fin_absence_debut_plage')));
+if (isFiltreRechercheParam('filter_date_fin_saisie_debut_plage')) {
+    $date_fin_absence_debut_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_fin_saisie_debut_plage')));
     $query->filterByFinAbs($date_fin_absence_debut_plage, Criteria::GREATER_EQUAL);
 }
-if (isFiltreRechercheParam('filter_date_fin_absence_fin_plage')) {
-    $date_fin_absence_fin_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_fin_absence_fin_plage')));
+if (isFiltreRechercheParam('filter_date_fin_saisie_fin_plage')) {
+    $date_fin_absence_fin_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_fin_saisie_fin_plage')));
     $query->filterByFinAbs($date_fin_absence_fin_plage, Criteria::LESS_EQUAL);
 }
 if (isFiltreRechercheParam('filter_creneau')) {
@@ -171,13 +171,13 @@ if (isFiltreRechercheParam('filter_creneau')) {
 if (isFiltreRechercheParam('filter_cours')) {
     $query->filterByIdEdtEmplacementCours(getFiltreRechercheParam('filter_cours'));
 }
-if (isFiltreRechercheParam('filter_date_creation_absence_debut_plage')) {
-    $date_creation_absence_debut_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_creation_absence_debut_plage')));
-    $query->filterByCreatedAt($date_creation_absence_debut_plage, Criteria::GREATER_EQUAL);
+if (isFiltreRechercheParam('filter_date_creation_saisie_debut_plage')) {
+    $date_creation_saisie_debut_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_creation_saisie_debut_plage')));
+    $query->filterByCreatedAt($date_creation_saisie_debut_plage, Criteria::GREATER_EQUAL);
 }
-if (isFiltreRechercheParam('filter_date_creation_absence_fin_plage')) {
-    $date_creation_absence_fin_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_creation_absence_fin_plage')));
-    $query->filterByCreatedAt($date_creation_absence_fin_plage, Criteria::LESS_EQUAL);
+if (isFiltreRechercheParam('filter_date_creation_saisie_fin_plage')) {
+    $date_creation_saisie_fin_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_creation_saisie_fin_plage')));
+    $query->filterByCreatedAt($date_creation_saisie_fin_plage, Criteria::LESS_EQUAL);
 }
 if (isFiltreRechercheParam('filter_date_modification')) {
     $query->where('AbsenceEleveSaisie.CreatedAt != AbsenceEleveSaisie.UpdatedAt');
@@ -225,9 +225,9 @@ if ($order == "asc_id") {
 } else if ($order == "des_utilisateur") {
     $query->useUtilisateurProfessionnelQuery()->orderBy('Nom', Criteria::DESC)->endUse();
 } else if ($order == "asc_eleve") {
-    $query->useEleveQuery()->orderBy('Nom', Criteria::ASC)->endUse();
+    $query->useEleveQuery()->orderBy('Nom', Criteria::ASC)->orderBy('Prenom', Criteria::ASC)->endUse();
 } else if ($order == "des_eleve") {
-    $query->useEleveQuery()->orderBy('Prenom', Criteria::DESC)->endUse();
+    $query->useEleveQuery()->orderBy('Nom', Criteria::DESC)->orderBy('Prenom', Criteria::DESC)->endUse();
 } else if ($order == "asc_classe") {
     $query->useClasseQuery()->orderBy('NomComplet', Criteria::ASC)->endUse();
 } else if ($order == "des_classe") {
@@ -303,12 +303,12 @@ echo '<button type="submit">Rechercher</button>';
 echo '<button type="submit" name="reinit_filtre" value="y">Réinitialiser les filtres</button> ';
 echo '</p><p>';
 //echo '<br/>';
-echo '<button type="submit" name="creation_traitement" value="creation_traitement">Créer un traitement</button>';
+echo '<button type="submit" name="creation_traitement" value="yes">Créer un traitement</button>';
 
 $id_traitement = isset($_POST["id_traitement"]) ? $_POST["id_traitement"] :(isset($_GET["id_traitement"]) ? $_GET["id_traitement"] :(isset($_SESSION["id_traitement"]) ? $_SESSION["id_traitement"] : NULL));
 if ($id_traitement != null && AbsenceEleveTraitementQuery::create()->findPk($id_traitement) != null) {
     $traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
-    echo '<button type="submit" name="ajout_saisie_traitement" value="ajout_saisie_traitement">Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().')</button>';
+    echo '<button type="submit" name="ajout_traitement" value="yes">Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().')</button>';
     echo '<input type="hidden" name="id_traitement" value="'.$id_traitement.'"/>';
 }
 if (isset($message_erreur_traitement)) {
@@ -404,7 +404,7 @@ echo '</span>';
 echo '<br />';
 echo ("<select name=\"filter_classe\" onchange='submit()'>");
 echo "<option value=''></option>\n";
-foreach (ClasseQuery::create()->find() as $classe) {
+foreach (ClasseQuery::create()->orderByNom()->orderByNomComplet()->find() as $classe) {
 	echo "<option value='".$classe->getId()."'";
 	if (getFiltreRechercheParam('filter_classe') === (string) $classe->getId()) echo " SELECTED ";
 	echo ">";
@@ -509,18 +509,18 @@ echo '</span>';
 echo '<br />';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Entre : <input size="13" id="filter_date_debut_absence_debut_plage" name="filter_date_debut_absence_debut_plage" value="';
-if (isFiltreRechercheParam('filter_date_debut_absence_debut_plage')) {echo getFiltreRechercheParam('filter_date_debut_absence_debut_plage');}
+echo 'Entre : <input size="13" id="filter_date_debut_saisie_debut_plage" name="filter_date_debut_saisie_debut_plage" value="';
+if (isFiltreRechercheParam('filter_date_debut_saisie_debut_plage')) {echo getFiltreRechercheParam('filter_date_debut_saisie_debut_plage');}
 echo '" />&nbsp;';
-echo '<img id="trigger_filter_date_debut_absence_debut_plage" src="../images/icons/calendrier.gif" alt=""/>';
+echo '<img id="trigger_filter_date_debut_saisie_debut_plage" src="../images/icons/calendrier.gif" alt=""/>';
 //echo '</nobr>';
 echo '</span>';
 echo '
 <script type="text/javascript">
     Calendar.setup({
-	inputField     :    "filter_date_debut_absence_debut_plage",     // id of the input field
+	inputField     :    "filter_date_debut_saisie_debut_plage",     // id of the input field
 	ifFormat       :    "%d/%m/%Y %H:%M",      // format of the input field
-	button         :    "trigger_filter_date_debut_absence_debut_plage",  // trigger for the calendar (button ID)
+	button         :    "trigger_filter_date_debut_saisie_debut_plage",  // trigger for the calendar (button ID)
 	align          :    "Tl",           // alignment (defaults to "Bl")
 	singleClick    :    true,
 	showsTime	:   true
@@ -529,18 +529,18 @@ echo '
 echo '<br />';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Et : <input size="13" id="filter_date_debut_absence_fin_plage" name="filter_date_debut_absence_fin_plage" value="';
-if (isFiltreRechercheParam('filter_date_debut_absence_fin_plage')) {echo getFiltreRechercheParam('filter_date_debut_absence_fin_plage');}
+echo 'Et : <input size="13" id="filter_date_debut_saisie_fin_plage" name="filter_date_debut_saisie_fin_plage" value="';
+if (isFiltreRechercheParam('filter_date_debut_saisie_fin_plage')) {echo getFiltreRechercheParam('filter_date_debut_saisie_fin_plage');}
 echo '" />&nbsp;';
-echo '<img id="trigger_filter_date_debut_absence_fin_plage" src="../images/icons/calendrier.gif" alt="" />';
+echo '<img id="trigger_filter_date_debut_saisie_fin_plage" src="../images/icons/calendrier.gif" alt="" />';
 //echo '</nobr>';
 echo '</span>';
 echo '
 <script type="text/javascript">
     Calendar.setup({
-	inputField     :    "filter_date_debut_absence_fin_plage",     // id of the input field
+	inputField     :    "filter_date_debut_saisie_fin_plage",     // id of the input field
 	ifFormat       :    "%d/%m/%Y %H:%M",      // format of the input field
-	button         :    "trigger_filter_date_debut_absence_fin_plage",  // trigger for the calendar (button ID)
+	button         :    "trigger_filter_date_debut_saisie_fin_plage",  // trigger for the calendar (button ID)
 	align          :    "Tl",           // alignment (defaults to "Bl")
 	singleClick    :    true,
 	showsTime	:   true
@@ -564,18 +564,18 @@ echo '</span>';
 echo '<br />';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Entre : <input size="13" id="filter_date_fin_absence_debut_plage" name="filter_date_fin_absence_debut_plage" value="';
-if (isFiltreRechercheParam('filter_date_fin_absence_debut_plage')) {echo getFiltreRechercheParam('$filter_date_fin_absence_debut_plage');}
+echo 'Entre : <input size="13" id="filter_date_fin_saisie_debut_plage" name="filter_date_fin_saisie_debut_plage" value="';
+if (isFiltreRechercheParam('filter_date_fin_saisie_debut_plage')) {echo getFiltreRechercheParam('filter_date_fin_saisie_debut_plage');}
 echo '" />&nbsp;';
-echo '<img id="trigger_filter_date_fin_absence_debut_plage" src="../images/icons/calendrier.gif" alt="" />';
+echo '<img id="trigger_filter_date_fin_saisie_debut_plage" src="../images/icons/calendrier.gif" alt="" />';
 //echo '</nobr>';
 echo '</span>';
 echo '
 <script type="text/javascript">
     Calendar.setup({
-	inputField     :    "filter_date_fin_absence_debut_plage",     // id of the input field
+	inputField     :    "filter_date_fin_saisie_debut_plage",     // id of the input field
 	ifFormat       :    "%d/%m/%Y %H:%M",      // format of the input field
-	button         :    "trigger_filter_date_fin_absence_debut_plage",  // trigger for the calendar (button ID)
+	button         :    "trigger_filter_date_fin_saisie_debut_plage",  // trigger for the calendar (button ID)
 	align          :    "Tl",           // alignment (defaults to "Bl")
 	singleClick    :    true,
 	showsTime	:   true
@@ -584,18 +584,18 @@ echo '
 echo '<br />';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Et : <input size="13" id="filter_date_fin_absence_fin_plage" name="filter_date_debut_absence_fin_plage" value="';
-if (isFiltreRechercheParam('filter_date_fin_absence_fin_plage')) {echo getFiltreRechercheParam('$filter_date_fin_absence_fin_plage');}
+echo 'Et : <input size="13" id="filter_date_fin_saisie_fin_plage" name="filter_date_fin_saisie_fin_plage" value="';
+if (isFiltreRechercheParam('filter_date_fin_saisie_fin_plage')) {echo getFiltreRechercheParam('filter_date_fin_saisie_fin_plage');}
 echo '" />&nbsp;';
-echo '<img id="trigger_filter_date_fin_absence_fin_plage" src="../images/icons/calendrier.gif" alt="" />';
+echo '<img id="trigger_filter_date_fin_saisie_fin_plage" src="../images/icons/calendrier.gif" alt="" />';
 //echo '</nobr>';
 echo '</span>';
 echo '
 <script type="text/javascript">
     Calendar.setup({
-	inputField     :    "filter_date_fin_absence_fin_plage",     // id of the input field
+	inputField     :    "filter_date_fin_saisie_fin_plage",     // id of the input field
 	ifFormat       :    "%d/%m/%Y %H:%M",      // format of the input field
-	button         :    "trigger_filter_date_fin_absence_fin_plage",  // trigger for the calendar (button ID)
+	button         :    "trigger_filter_date_fin_saisie_fin_plage",  // trigger for the calendar (button ID)
 	align          :    "Tl",           // alignment (defaults to "Bl")
 	singleClick    :    true,
 	showsTime	:   true
@@ -731,18 +731,18 @@ echo '</span>';
 echo '<br />';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Entre : <input size="13" id="filter_date_creation_absence_debut_plage" name="filter_date_creation_absence_debut_plage" value="';
-if (isFiltreRechercheParam('filter_date_creation_absence_debut_plage')) {echo getFiltreRechercheParam('filter_date_creation_absence_debut_plage');}
+echo 'Entre : <input size="13" id="filter_date_creation_saisie_debut_plage" name="filter_date_creation_saisie_debut_plage" value="';
+if (isFiltreRechercheParam('filter_date_creation_saisie_debut_plage')) {echo getFiltreRechercheParam('filter_date_creation_saisie_debut_plage');}
 echo '" />&nbsp;';
-echo '<img id="trigger_filter_date_creation_absence_debut_plage" src="../images/icons/calendrier.gif" alt="" />';
+echo '<img id="trigger_filter_date_creation_saisie_debut_plage" src="../images/icons/calendrier.gif" alt="" />';
 //echo '</nobr>';
 echo '</span>';
 echo '
 <script type="text/javascript">
     Calendar.setup({
-	inputField     :    "filter_date_creation_absence_debut_plage",     // id of the input field
+	inputField     :    "filter_date_creation_saisie_debut_plage",     // id of the input field
 	ifFormat       :    "%d/%m/%Y %H:%M",      // format of the input field
-	button         :    "trigger_filter_date_creation_absence_debut_plage",  // trigger for the calendar (button ID)
+	button         :    "trigger_filter_date_creation_saisie_debut_plage",  // trigger for the calendar (button ID)
 	align          :    "Tl",           // alignment (defaults to "Bl")
 	singleClick    :    true,
 	showsTime	:   true
@@ -751,18 +751,18 @@ echo '
 echo '<br />';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Et : <input size="13" id="filter_date_creation_absence_fin_plage" name="filter_date_creation_absence_fin_plage" value="';
-if (isFiltreRechercheParam('filter_date_creation_absence_fin_plage')) {echo getFiltreRechercheParam('filter_date_creation_absence_fin_plage');}
+echo 'Et : <input size="13" id="filter_date_creation_saisie_fin_plage" name="filter_date_creation_saisie_fin_plage" value="';
+if (isFiltreRechercheParam('filter_date_creation_saisie_fin_plage')) {echo getFiltreRechercheParam('filter_date_creation_saisie_fin_plage');}
 echo '" />&nbsp;';
-echo '<img id="trigger_filter_date_creation_absence_fin_plage" src="../images/icons/calendrier.gif" alt="" />';
+echo '<img id="trigger_filter_date_creation_saisie_fin_plage" src="../images/icons/calendrier.gif" alt="" />';
 //echo '</nobr>';
 echo '</span>';
 echo '
 <script type="text/javascript">
     Calendar.setup({
-	inputField     :    "filter_date_creation_absence_fin_plage",     // id of the input field
+	inputField     :    "filter_date_creation_saisie_fin_plage",     // id of the input field
 	ifFormat       :    "%d/%m/%Y %H:%M",      // format of the input field
-	button         :    "trigger_filter_date_creation_absence_fin_plage",  // trigger for the calendar (button ID)
+	button         :    "trigger_filter_date_creation_saisie_fin_plage",  // trigger for the calendar (button ID)
 	align          :    "Tl",           // alignment (defaults to "Bl")
 	singleClick    :    true,
 	showsTime	:   true
@@ -858,7 +858,7 @@ foreach ($results as $saisie) {
 	echo "<table style='border-spacing:0px; border-style : none; margin : 0px; padding : 0px; font-size:100%; width:100%;'>";
 	echo "<tr style='border-spacing:0px; border-style : none; margin : 0px; padding : 0px; font-size:100%;'>";
 	echo "<td style='border-spacing:0px; border-style : none; margin : 0px; padding : 0px; font-size:100%;'>";
-	echo "<a href='liste_saisies_selection_traitement.php?filter_eleve=".$saisie->getEleve()->getNom()."' style='display: block; height: 100%;'> ";
+	echo "<a href='liste_saisies_selection_traitement.php?filter_eleve=".$saisie->getEleve()->getNom()."&order=asc_eleve' style='display: block; height: 100%;'> ";
 	echo ($saisie->getEleve()->getCivilite().' '.$saisie->getEleve()->getNom().' '.$saisie->getEleve()->getPrenom());
 	echo "</a>";
 	if ($utilisateur->getAccesFicheEleve($saisie->getEleve())) {
@@ -872,7 +872,7 @@ foreach ($results as $saisie) {
 //	echo "<a href='liste_saisies_selection_traitement.php?filter_eleve=".$saisie->getEleve()->getNom()."' style='display: block; height: 100%;'> ";
  	if ((getSettingValue("active_module_trombinoscopes")=='y') && $saisie->getEleve() != null) {
 
-	echo "<a href='liste_saisies_selection_traitement.php?filter_eleve=".$saisie->getEleve()->getNom()."' style='display: block; height: 100%;'> ";
+	echo "<a href='liste_saisies_selection_traitement.php?filter_eleve=".$saisie->getEleve()->getNom()."&order=asc_eleve' style='display: block; height: 100%;'> ";
 	$nom_photo = $saisie->getEleve()->getNomPhoto(1);
 	    //$photos = "../photos/eleves/".$nom_photo;
 	    $photos = $nom_photo;
@@ -1073,12 +1073,12 @@ echo '<a href="" onclick="SetAllCheckBoxes(\'liste_saisies\', \'select_saisie[]\
 echo '</p><p>';
 //echo '<br/>';
 
-echo '<button type="submit" name="creation_traitement" value="creation_traitement">Créer un traitement</button>';
+echo '<button type="submit" name="creation_traitement" value="yes">Créer un traitement</button>';
 
 $id_traitement = isset($_POST["id_traitement"]) ? $_POST["id_traitement"] :(isset($_GET["id_traitement"]) ? $_GET["id_traitement"] :(isset($_SESSION["id_traitement"]) ? $_SESSION["id_traitement"] : NULL));
 if ($id_traitement != null && AbsenceEleveTraitementQuery::create()->findPk($id_traitement) != null) {
     $traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
-    echo '<button type="submit" name="ajout_saisie_traitement" value="ajout_saisie_traitement">Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().')</button>';
+    echo '<button type="submit" name="ajout_traitement" value="yes">Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().')</button>';
     echo '<input type="hidden" name="id_traitement" value="'.$id_traitement.'"/>';
 }
 if (isset($message_erreur_traitement)) {

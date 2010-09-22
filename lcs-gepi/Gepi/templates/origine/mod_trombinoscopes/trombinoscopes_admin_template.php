@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /**
- * $Id: trombinoscopes_admin_template.php 4943 2010-07-28 22:32:28Z regis $
+ * $Id: trombinoscopes_admin_template.php 5195 2010-09-05 08:25:30Z crob $
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
@@ -484,7 +484,7 @@ if (!isset($aid_trouve)) {
 		</label>
 		<p>
 		  <em>
-			Si coché, les photos déjà présentent seront remplacées par les nouvelles.
+			Si coché, les photos déjà présentes seront remplacées par les nouvelles.
 			Sinon, les anciennes photos seront conservées
 		  </em>
 		</p>

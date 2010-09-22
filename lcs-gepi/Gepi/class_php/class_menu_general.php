@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: class_menu_general.php 5170 2010-09-02 19:27:41Z regis $
+ * $Id: class_menu_general.php 5236 2010-09-11 19:02:08Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -64,14 +64,34 @@ class itemGeneral {
  *
  */
 	function acces($id,$statut) 
-	{
-	  $tab_id = explode("?",$id);
-	  $query_droits = @mysql_query("SELECT * FROM droits WHERE id='$tab_id[0]'");
-	  $droit = @mysql_result($query_droits, 0, $statut);
-	  if ($droit == "V") {
-		  return "1";
+	{ 
+		if ($_SESSION['statut']!='autre') {
+			$tab_id = explode("?",$id);
+			$query_droits = @mysql_query("SELECT * FROM droits WHERE id='$tab_id[0]'");
+			$droit = @mysql_result($query_droits, 0, $statut);
+			if ($droit == "V") {
+				return "1";
+			} else {
+				return "0";
+			}
 	  } else {
-		  return "0";
+	  
+			$sql="SELECT ds.autorisation FROM `droits_speciaux` ds,  `droits_utilisateurs` du
+						WHERE (ds.nom_fichier='".$id."'
+							AND ds.id_statut=du.id_statut
+							AND du.login_user='".$_SESSION['login']."');" ;
+			$result=mysql_query($sql);
+			if (!$result) {
+				return FALSE;
+			} else {
+				$row = mysql_fetch_row($result) ;
+				if ($row[0]=='V' || $row[0]=='v'){
+				return TRUE;
+				} else {
+				return FALSE;
+				}
+			}
+	
 	  }
 	}
 
@@ -91,7 +111,7 @@ class itemGeneral {
 	{
 		if($key_setting!='')
 		{
-			$sql="SELECT 1=1 FROM setting WHERE name LIKE '$key_setting' AND (value='y' OR value='yes');";
+			$sql="SELECT 1=1 FROM setting WHERE name LIKE '$key_setting' AND (value='y' OR value='yes' OR value='2');";
 			$test=mysql_query($sql);
 			if(mysql_num_rows($test)>0)
 			{

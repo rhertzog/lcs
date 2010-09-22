@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: tableau_des_appels.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: tableau_des_appels.php 5276 2010-09-13 18:12:57Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -152,7 +152,7 @@ if ($choix_creneau_obj != null) {
 <table class="tab_edt" summary="Liste des absents r&eacute;partie par classe">
 <?php
 // On affiche la liste des classes
-$classe_col = ClasseQuery::create()->orderByNom()->distinct()->find();
+$classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->distinct()->find();
 $dt_debut_creneau = clone $dt_date_absence_eleve;
 $dt_debut_creneau->setTime($choix_creneau_obj->getHeuredebutDefiniePeriode('H'), $choix_creneau_obj->getHeuredebutDefiniePeriode('i'));
 $dt_fin_creneau = clone $dt_date_absence_eleve;
@@ -307,10 +307,14 @@ foreach($classe_col as $classe){
 			->find();
 	if (!$abs_col->isEmpty()) {
 	    $aid_deja_sorties = Array();
-	    foreach ($abs_col as $abs) {
-		    if ($abs->getIdAid()!==null && !in_array($abs->getIdAid(), $aid_deja_sorties)) {
-			echo 'Appel fait pour l\'aid '.$abs->getAidDetails()->getNom();
-			$aid_deja_sorties[] = $abs->getAidDetails()->getId();
+	    foreach ($abs_col as $absenceSaisie) {
+		    if ($absenceSaisie->getIdAid()!==null && !in_array($absenceSaisie->getIdAid(), $aid_deja_sorties)) {
+			echo  $absenceSaisie->getCreatedAt('H:i').' ';
+			echo  $absenceSaisie->getAidDetails()->getNom().' ';
+			echo  $absenceSaisie->getUtilisateurProfessionnel()->getCivilite().' '
+			    .$absenceSaisie->getUtilisateurProfessionnel()->getNom().' '
+			    .strtoupper(substr($absenceSaisie->getUtilisateurProfessionnel()->getPrenom(), 0 ,1)).'. ';
+			$aid_deja_sorties[] = $absenceSaisie->getAidDetails()->getId();
 			echo '<br/>';
 		    }
 		    if ($absenceSaisie->getEleve() != null) {

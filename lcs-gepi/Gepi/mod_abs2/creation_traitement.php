@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: creation_traitement.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: creation_traitement.php 5291 2010-09-14 18:59:26Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -69,7 +69,7 @@ if (isset($_POST["nb_checkbox"])) {
 } else if (isset($_POST["item_per_page"])) {
     $nb = $_POST["item_per_page"];
 }
-if ( isset($_POST["creation_traitement"])) {
+if ( isset($_POST["creation_traitement"]) && $_POST["creation_traitement"] == 'yes') {
     $traitement = new AbsenceEleveTraitement();
     $traitement->setUtilisateurProfessionnel($utilisateur);
     for($i=0; $i<$nb; $i++) {
@@ -83,7 +83,7 @@ if ( isset($_POST["creation_traitement"])) {
 	$traitement->save();
 	header("Location: ./visu_traitement.php?id_traitement=".$traitement->getId());
     }
-} else if ( isset($_POST["ajout_saisie_traitement"])) {
+} else if ( isset($_POST["ajout_traitement"]) && $_POST["ajout_traitement"] == 'yes') {
     $id_traitement = isset($_POST["id_traitement"]) ? $_POST["id_traitement"] :(isset($_GET["id_traitement"]) ? $_GET["id_traitement"] :(isset($_SESSION["id_traitement"]) ? $_SESSION["id_traitement"] : NULL));
     $traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
     if ($traitement == null) {

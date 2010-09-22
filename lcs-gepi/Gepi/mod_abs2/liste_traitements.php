@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: liste_traitements.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: liste_traitements.php 5277 2010-09-13 18:24:59Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -332,12 +332,6 @@ echo '<th>';
 echo '<span style="white-space: nowrap;"> ';
 //echo '<nobr>';
 echo 'Saisies';
-echo '<input type="image" src="../images/up.png" title="monter" style="vertical-align: middle;width:15px; height:15px; ';
-if ($order == "asc_eleve") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_eleve"/>';
-echo '<input type="image" src="../images/down.png" title="descendre" style="vertical-align: middle;width:15px; height:15px; ';
-if ($order == "des_eleve") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_eleve"/>';
 echo '</span>';
 //echo '</nobr>';
 echo '</th>';
@@ -358,7 +352,7 @@ echo '</span>';
 echo '<br />';
 echo ("<select name=\"filter_classe\" onchange='submit()'>");
 echo "<option value=''></option>\n";
-foreach (ClasseQuery::create()->distinct()->find() as $classe) {
+foreach (ClasseQuery::create()->orderByNom()->orderByNomComplet()->distinct()->find() as $classe) {
 	echo "<option value='".$classe->getId()."'";
 	if (getFiltreRechercheParam('filter_classe') === (string) $classe->getId()) echo " selected='selected' ";
 	echo ">";
@@ -611,10 +605,10 @@ foreach ($results as $traitement) {
 	echo "<table style='border-spacing:0px; border-style : none; margin : 0px; padding : 0px; font-size:100%; width:100%'>";
 	echo "<tr style='border-spacing:0px; border-style : none; margin : 0px; padding : 0px; font-size:100%;'>";
 	echo "<td style='border-spacing:0px; border-style : none; margin : 0px; padding : 0px; font-size:100%;'>";
-	echo "<a href='liste_traitements.php?filter_eleve=".$saisie->getEleve()->getNom()."' style='display: block; height: 100%;'> ";
+	echo "<a href='liste_traitements.php?filter_eleve=".$eleve->getNom()."&order=asc_eleve' style='display: block; height: 100%;'> ";
 	echo ($eleve->getCivilite().' '.$eleve->getNom().' '.$eleve->getPrenom());
 	echo "</a>";
-	if ($utilisateur->getAccesFicheEleve($saisie->getEleve())) {
+	if ($utilisateur->getAccesFicheEleve($eleve)) {
 	    //echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."' target='_blank'>";
 	    echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."' >";
 	    echo ' (voir fiche)';
@@ -622,7 +616,7 @@ foreach ($results as $traitement) {
 	}
 	echo "</td>";
 	echo "<td style='border-spacing:0px; border-style : none; margin : 0px; padding : 0px; font-size:100%;'>";
-	echo "<a href='liste_traitements.php?filter_eleve=".$saisie->getEleve()->getNom()."' style='display: block; height: 100%;'> ";
+	echo "<a href='liste_traitements.php?filter_eleve=".$eleve->getNom()."&order=asc_eleve' style='display: block; height: 100%;'> ";
  	if ((getSettingValue("active_module_trombinoscopes")=='y')) {
 	    $nom_photo = $eleve->getNomPhoto(1);
 	    //$photos = "../photos/eleves/".$nom_photo;

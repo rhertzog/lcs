@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: enregistrement_modif_saisie.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: enregistrement_modif_saisie.php 5384 2010-09-20 19:31:45Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -70,6 +70,8 @@ $commentaire = isset($_POST["commentaire"]) ? $_POST["commentaire"] :(isset($_GE
 
 $message_enregistrement = '';
 $saisie = AbsenceEleveSaisieQuery::create()->findPk($id_saisie);
+//on charge les traitements
+$saisie->getAbsenceEleveTraitements();
 if ($saisie == null) {
     $message_enregistrement .= 'Modification impossible : saisie non trouvée.';
     include("visu_saisie.php");
@@ -216,6 +218,7 @@ function modif_type ($saisie, $utilisateur) {
 		$traitement->setAbsenceEleveType($type);
 		$traitement->setUtilisateurProfessionnel($utilisateur);
 		$traitement->save();
+		$saisie->addAbsenceEleveTraitement($traitement);
 	    } else {
 		$message_enregistrement .= "Type d'absence non autorisé pour ce statut : ".$_POST['type_absence_eleve'][$i]."<br/>";
 	    }

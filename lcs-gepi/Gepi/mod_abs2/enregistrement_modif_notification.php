@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: enregistrement_modif_notification.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: enregistrement_modif_notification.php 5383 2010-09-20 19:31:39Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -142,7 +142,13 @@ if ( $modif == 'type') {
 } elseif ($modif == 'adresse') {
     $notification->setAdrId($_POST["adr_id"]);
 } elseif ($modif == 'duplication') {
-    $clone = $notification->copy(true); //deep copy
+    $clone = $notification->copy(); //no deep copy
+    $clone->save();
+    $id = $clone->getId();
+    //this is done to avoid a bug in deepcopy
+    $notification->copyInto($clone, true);// deep copy
+    $clone->setId($id);
+    $clone->setNew(false);
     $clone->setStatutEnvoi(AbsenceEleveNotification::$STATUT_INITIAL);
     $clone->setDateEnvoi(null);
     $clone->setErreurMessageEnvoi(null);

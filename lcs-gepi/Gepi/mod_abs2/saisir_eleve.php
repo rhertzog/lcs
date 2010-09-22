@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: saisir_eleve.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: saisir_eleve.php 5387 2010-09-20 19:32:06Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -183,7 +183,7 @@ if (!$groupe_col->isEmpty()) {
 
 //on affiche une boite de selection avec les classes
 if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
-    $classe_col = ClasseQuery::create()->find();
+    $classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->find();
 } else {
     $classe_col = $utilisateur->getClasses();
 }
@@ -203,7 +203,7 @@ if (!$classe_col->isEmpty()) {
 	}
 	echo "</select>&nbsp;";
 
-	echo '<button type="submit">Afficher les eleves</button>';
+	echo '<button type="submit">Afficher les élèves</button>';
 	echo '</p>';
 	echo "</form>";
 	echo "</td>";
@@ -233,7 +233,7 @@ if (!$aid_col->isEmpty()) {
 	}
 	echo "</select>&nbsp;";
 
-	echo '<button type="submit">Afficher les eleves</button>';
+	echo '<button type="submit">Afficher les élèves</button>';
 echo '</p>';
 	echo "</form>";
 	echo "</td>";
@@ -273,7 +273,7 @@ if ($type_selection == 'id_eleve') {
 if (!$eleve_col->isEmpty()) {
 ?>
     <div class="centre_tout_moyen" style="width : 940px;">
-		<form method="post" action="enregistrement_saisie_eleve.php" id="liste_absence_eleve">
+		<form autocomplete = "off" method="post" action="enregistrement_saisie_eleve.php" id="liste_absence_eleve">
 <p>
 		    <input type="hidden" name="total_eleves" value="<?php echo($eleve_col->count()); ?>"/>
 </p>

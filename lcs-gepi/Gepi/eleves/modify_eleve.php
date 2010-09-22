@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: modify_eleve.php 4878 2010-07-24 13:54:01Z regis $
+ * $Id: modify_eleve.php 5191 2010-09-04 20:15:35Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -660,7 +660,7 @@ if(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite")){
 									// Tester la taille max de la photo?
 
 									if(is_uploaded_file($filephoto_tmp)){
-										$dest_file=$rep_photos.$reg_no_gep.jpg;
+										$dest_file=$rep_photos.$reg_no_gep.".jpg";
 										$source_file=stripslashes("$filephoto_tmp");
 										$res_copy=copy("$source_file" , "$dest_file");
 										if($res_copy){

@@ -2,7 +2,7 @@
 
 @set_time_limit(0);
 /*
-* $Id: disciplines_csv.php 3323 2009-08-05 10:06:18Z crob $
+* $Id: disciplines_csv.php 5349 2010-09-20 15:32:54Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -35,7 +35,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 $liste_tables_del = array(
 //"absences",
@@ -83,6 +83,12 @@ $liste_tables_del = array(
 "cn_devoirs",
 "cn_notes_conteneurs",
 "cn_notes_devoirs",
+"ct_devoirs_entry",
+"ct_documents",
+"ct_entry",
+"ct_devoirs_documents",
+"ct_private_entry",
+"ct_sequences",
 //"setting"
 );
 

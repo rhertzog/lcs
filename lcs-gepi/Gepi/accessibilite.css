@@ -1,7 +1,7 @@
 /*
 accessibilite.css
 Mise en page pour validation et accessibilité
-@version $Id: accessibilite.css 3916 2009-12-12 21:00:05Z regis $
+@version $Id: accessibilite.css 5318 2010-09-15 15:16:20Z jjacquard $
 */
 
 
@@ -802,7 +802,7 @@ table.menu td {
 }
 .tb_absences {
 	text-align: left;
-	width: 700px;
+	//width: 700px;
 }
 .td_abs_eleves {
 	width: 400px;

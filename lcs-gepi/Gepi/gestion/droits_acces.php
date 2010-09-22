@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: droits_acces.php 5003 2010-08-03 21:43:14Z regis $
+* $Id: droits_acces.php 5198 2010-09-05 10:44:24Z regis $
 *
 * Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -1363,7 +1363,7 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 
 // ====== Visa des cahiers de texte =====
 $titreItem='GepiAccesCdtVisa';
-$texteItem="Peux viser les cahiers de textes ";
+$texteItem="Peut viser les cahiers de textes ";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
@@ -1448,7 +1448,7 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
 $titreItem='GepiAccesTouteFicheEleveScolarite';
-$texteItem="a le droit d'accéder a toutes les fiches élève";
+$texteItem="a le droit d'accéder à toutes les fiches élève";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
@@ -1587,12 +1587,12 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
 $titreItem='GepiAccesTouteFicheEleveCpe';
-$texteItem="a le droit d'accéder a toutes les fiches élève";
+$texteItem="a le droit d'accéder à toutes les fiches élève";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
 $titreItem='GepiAccesAbsTouteClasseCpe';
-$texteItem="a le droit d'accéder a toutes les classe pour saisir les absences";
+$texteItem="a le droit d'accéder à toutes les classes pour saisir les absences";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 

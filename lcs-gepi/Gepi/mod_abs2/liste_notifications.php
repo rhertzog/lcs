@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: liste_notifications.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: liste_notifications.php 5234 2010-09-11 18:14:15Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -125,12 +125,13 @@ if (isFiltreRechercheParam('filter_statut_notification')) {
     $query->filterByStatutEnvoi(getFiltreRechercheParam('filter_statut_notification'));
 }
 if (isFiltreRechercheParam('filter_date_creation_notification_debut_plage')) {
-    $date_creation_notification_debut_plage = new DateTime(str_replace("/",".",$filter_date_creation_notification_debut_plage));
-    $query->filterByCreatedAt(getFiltreRechercheParam('date_creation_notification_debut_plage'), Criteria::GREATER_EQUAL);
+    echo 'auiauiaui';
+    $date_creation_notification_debut_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_creation_notification_debut_plage')));
+    $query->filterByCreatedAt($date_creation_notification_debut_plage, Criteria::GREATER_EQUAL);
 }
 if (isFiltreRechercheParam('filter_date_creation_notification_fin_plage')) {
-    $date_creation_notification_fin_plage = new DateTime(str_replace("/",".",$filter_date_creation_notification_fin_plage));
-    $query->filterByCreatedAt(getFiltreRechercheParam('date_creation_notification_fin_plage'), Criteria::LESS_EQUAL);
+    $date_creation_notification_fin_plage = new DateTime(str_replace("/",".",getFiltreRechercheParam('filter_date_creation_notification_fin_plage')));
+    $query->filterByCreatedAt($date_creation_notification_fin_plage, Criteria::LESS_EQUAL);
 }
 if (isFiltreRechercheParam('filter_date_modification')) {
     $query->where('AbsenceEleveNotification.CreatedAt != AbsenceEleveNotification.UpdatedAt');

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: header.inc 4502 2010-05-27 09:29:51Z delineau $
+ * $Id: header.inc 5379 2010-09-20 19:31:09Z jjacquard $
  *
  * Basé sur  header.inc 2968 2009-03-03 20:11:00Z jjocal $
  * modifié avec getSettingValue("contact_admin_mailto")=='y'
@@ -150,6 +150,13 @@ if ($scriptaculous == "ok") {
   // On affiche le lien qui charge scriptaculous
   echo '<script type="text/javascript" src="'.$gepiPath.'/lib/scriptaculous.js?load='.$script_effet.'"></script>'."\n";
 }
+
+// Utilisation de dojo
+if (isset($dojo)) {
+    echo '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/dojo/1.5/dojo/dojo.xd.js" djConfig="parseOnLoad: true"></script>'."\n";
+    echo '<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.5/dijit/themes/claro/claro.css" />';
+}
+
 // Utilisation de windows.js
 $windows = isset($utilisation_win) ? $utilisation_win : NULL;
 if ($windows == 'oui') {
@@ -215,9 +222,6 @@ if (isset($utilisation_jsdivdrag) AND $utilisation_jsdivdrag == "non") {
 
 
 } // if(isset($utilisation_jsdivdrag...
-
-
-
 
 echo "\n".'	<!-- fin des fichiers en javascript -->'."\n\n";
 // ======================= fin de l'affichage des javascripts ========================
@@ -339,7 +343,7 @@ if (isset($use_observeur) AND $use_observeur == 'ok') {
 <!-- ************************* -->
 <!-- Début du corps de la page -->
 <!-- ************************* -->
-<body onload="show_message_deconnexion();<?php echo $charger_observeur; ?>">
+<body onload="show_message_deconnexion();<?php echo $charger_observeur; ?>" <?php if (isset($dojo)) {echo 'class=" claro " style="font:11pt Verdana,sans-serif;"';}?> >
 
 <?php
 if (getSettingValue("impose_petit_entete_prof") == 'y' AND $_SESSION['statut'] == 'professeur') {

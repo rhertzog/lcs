@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: class_page_accueil.php 5170 2010-09-02 19:27:41Z regis $
+ * $Id: class_page_accueil.php 5236 2010-09-11 19:02:08Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -114,9 +114,11 @@ class class_page_accueil {
 	$this->chargeAutreNom('bloc_administration');
 
 /***** Outils de gestion des absences vie scolaire *****/
-	$this->verif_exist_ordre_menu('bloc_absences_vie_scol');
+	//$this->verif_exist_ordre_menu('bloc_absences_vie_scol');
+	$this->verif_exist_ordre_menu('bloc_absences_professeur');
 	if ($this->absences_vie_scol())
-	$this->chargeAutreNom('bloc_absences_vie_scol');
+	$this->chargeAutreNom('bloc_absences_professeur');
+	//$this->chargeAutreNom('bloc_absences_vie_scol');
 
 /***** Outils de gestion des absences par les professeurs *****/
 	$this->verif_exist_ordre_menu('bloc_absences_professeur');
@@ -162,11 +164,11 @@ class class_page_accueil {
 	$this->chargeAutreNom('bloc_releve_ects');
 
 /***** Emploi du temps *****/
-	if (getSettingAOui('autorise_edt_tous')){
+	//if (getSettingAOui('autorise_edt_tous')){
 	  $this->verif_exist_ordre_menu('bloc_emploi_du_temps');
 	  if ($this->emploiDuTemps())
 	  $this->chargeAutreNom('bloc_emploi_du_temps');
-	}
+	//}
 
 /***** Outils destinés essentiellement aux parents et aux élèves *****/
 
@@ -356,23 +358,30 @@ class class_page_accueil {
   }
 
   protected function absences_vie_scol() {
-	if (getSettingValue("active_module_absence")=='y') {
+  
+			$this->b=0;
+		if (getSettingValue("active_module_absence")=='y') {
 
-	  $this->b=0;
+			$this->creeNouveauItem('/mod_absences/gestion/gestion_absences.php',
+					"Gestion Absences, dispenses, retards et infirmeries",
+					"Cet outil vous permet de gérer les absences, dispenses, retards et autres bobos à l'infirmerie des ".$this->gepiSettings['denomination_eleves'].".");
+					
+			$this->creeNouveauItem('/mod_absences/gestion/voir_absences_viescolaire.php',
+					"Visualiser les absences",
+					"Vous pouvez visualiser créneau par créneau la saisie des absences.");
 
-	  $this->creeNouveauItem('/mod_absences/gestion/gestion_absences.php',
-			  "Gestion Absences, dispenses, retards et infirmeries",
-			  "Cet outil vous permet de gérer les absences, dispenses, retards et autres bobos à l'infirmerie des ".$this->gepiSettings['denomination_eleves'].".");
-	  $this->creeNouveauItem('/mod_absences/gestion/voir_absences_viescolaire.php',
-			  "Visualiser les absences",
-			  "Vous pouvez visualiser créneau par créneau la saisie des absences.");
 
-	  if ($this->b>0){
-		$this->creeNouveauTitre('accueil',"Gestion des retards et absences",'images/icons/absences.png');
-		return true;
+	  } else if (getSettingValue("active_module_absence")=='2' && ($this->statutUtilisateur=="scolarite" || $this->statutUtilisateur=="cpe")) {
+		$this->creeNouveauItem("/mod_abs2/index.php",
+				"Gestion des Absences",
+				"Cet outil vous permet de gérer les absences des élèves");
 	  }
-
-	}
+	  
+			if ($this->b>0){
+			$this->creeNouveauTitre('accueil',"Gestion des retards et absences",'images/icons/absences.png');
+			return true;
+			}
+		
   }
 
   protected function absences_profs(){
@@ -386,7 +395,7 @@ class class_page_accueil {
 		$this->creeNouveauItem("/mod_absences/professeurs/prof_ajout_abs.php",
 				"Gestion des Absences",
 				"Cet outil vous permet de gérer les absences des élèves");
-	  } else if (getSettingValue("active_module_absence")=='2' ) {
+	  } else if (getSettingValue("active_module_absence")=='2' && !($this->statutUtilisateur=="scolarite" || $this->statutUtilisateur=="cpe") ) {
 		$this->creeNouveauItem("/mod_abs2/index.php",
 				"Gestion des Absences",
 				"Cet outil vous permet de gérer les absences des élèves");
@@ -726,7 +735,7 @@ class class_page_accueil {
 
   private function emploiDuTemps(){
 	$this->b=0;
-
+  if (getSettingAOui('autorise_edt_tous') || (getSettingAOui('autorise_edt_admin') && $this->statutUtilisateur == 'administrateur')){
     $this->creeNouveauItem("/edt_organisation/index_edt.php",
 			"Emploi du temps",
 			"Cet outil permet la consultation/gestion de l'emploi du temps.");
@@ -754,6 +763,7 @@ class class_page_accueil {
 	if ($this->b>0){
 	  $this->creeNouveauTitre('accueil',"Emploi du temps",'images/icons/document.png');
 	  return true;
+	}
 	}
  }
 

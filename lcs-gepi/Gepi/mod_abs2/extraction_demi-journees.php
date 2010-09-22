@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: extraction_demi-journees.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: extraction_demi-journees.php 5266 2010-09-13 17:52:07Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -136,7 +136,7 @@ if ($affichage != 'ods') {// on affiche pas de html
     <?php
     //on affiche une boite de selection avec les classe
     if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
-	$classe_col = ClasseQuery::create()->find();
+	$classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->find();
     } else {
 	$classe_col = $utilisateur->getClasses();
     }

@@ -1,7 +1,7 @@
 <?php
 	@set_time_limit(0);
 
-	// $Id: matieres.php 3450 2009-09-23 05:30:04Z crob $
+	// $Id: matieres.php 5349 2010-09-20 15:32:54Z crob $
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");
@@ -78,6 +78,7 @@
 "j_groupes_matieres",
 "j_groupes_professeurs",
 "j_groupes_classes",
+"eleves_groupes_settings",
 //"j_eleves_professeurs",
 //"j_eleves_regime",
 //"j_professeurs_matieres",
@@ -104,6 +105,12 @@
 "cn_devoirs",
 "cn_notes_conteneurs",
 "cn_notes_devoirs",
+"ct_devoirs_entry",
+"ct_documents",
+"ct_entry",
+"ct_devoirs_documents",
+"ct_private_entry",
+"ct_sequences",
 //"setting"
 );
 
@@ -179,17 +186,25 @@
 			if(!isset($verif_tables_non_vides)) {
 				$j=0;
 				$flag=0;
+				$chaine_tables="";
 				while (($j < count($liste_tables_del)) and ($flag==0)) {
 					if (mysql_result(mysql_query("SELECT count(*) FROM $liste_tables_del[$j]"),0)!=0) {
 						$flag=1;
 					}
 					$j++;
 				}
+				for($loop=0;$loop<count($liste_tables_del);$loop++) {
+					if($chaine_tables!="") {$chaine_tables.=", ";}
+					$chaine_tables.="'".$liste_tables_del[$loop]."'";
+				}
+
 				if ($flag != 0){
 					echo "<p><b>ATTENTION ...</b><br />\n";
 					echo "Des données concernant les matières sont actuellement présentes dans la base GEPI<br /></p>\n";
 					echo "<p>Si vous poursuivez la procédure les données telles que notes, appréciations, ... seront effacées.</p>\n";
 					echo "<p>Seules la table contenant les matières et la table mettant en relation les matières et les professeurs seront conservées.</p>\n";
+
+					echo "<p>Les tables vidées seront&nbsp;: $chaine_tables</p>\n";
 
 					echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
 					echo "<input type=hidden name='verif_tables_non_vides' value='y' />\n";

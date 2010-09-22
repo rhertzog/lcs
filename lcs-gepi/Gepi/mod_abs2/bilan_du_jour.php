@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: bilan_du_jour.php 5140 2010-08-30 14:55:25Z regis $
+ * @version $Id: bilan_du_jour.php 5266 2010-09-13 17:52:07Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -120,7 +120,7 @@ $dt_fin = clone $dt_date_absence_eleve;
 $dt_fin->setTime(23,59,59);
 
 if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
-    $classe_col = ClasseQuery::create()->find();
+    $classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->find();
 } else {
     $classe_col = $utilisateur->getClasses();
 }

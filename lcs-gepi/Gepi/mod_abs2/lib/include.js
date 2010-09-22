@@ -1,6 +1,6 @@
 /**
  *
- * @version $Id: include.js 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: include.js 5243 2010-09-12 10:24:19Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -70,4 +70,11 @@ function SetAllTextFields(FormName, FieldName, IdMatchString, StringValue)
 			}
 		}
 	}
+}
+
+function pop_it(the_form) {
+   my_form = eval(the_form)
+   window.open("./index.php", "popup");
+   my_form.target = "popup";
+   my_form.submit();
 }

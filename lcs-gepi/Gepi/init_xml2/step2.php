@@ -1,9 +1,9 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: step2.php 3687 2009-10-27 11:24:35Z crob $
+ * $Id: step2.php 5340 2010-09-19 13:05:17Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -35,7 +35,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 
 if (!checkAccess()) {
@@ -173,6 +173,7 @@ $liste_tables_del = array(
 if (!isset($step2)) {
     $j=0;
     $flag=0;
+	$chaine_tables="";
     while (($j < count($liste_tables_del)) and ($flag==0)) {
 		$test = mysql_num_rows(mysql_query("SHOW TABLES LIKE '$liste_tables_del[$j]'"));
 		if($test==1){
@@ -182,9 +183,18 @@ if (!isset($step2)) {
 		}
         $j++;
     }
+
+	for($loop=0;$loop<count($liste_tables_del);$loop++) {
+		if($chaine_tables!="") {$chaine_tables.=", ";}
+		$chaine_tables.="'".$liste_tables_del[$loop]."'";
+	}
+
     if ($flag != 0){
         echo "<p><b>ATTENTION ...</b><br />\n";
         echo "Des données concernant la constitution des classes et l'affectation des élèves dans les classes sont présentes dans la base GEPI ! Si vous poursuivez la procédure, ces données seront définitivement effacées !</p>\n";
+
+		echo "<p>Les tables vidées seront&nbsp;: $chaine_tables</p>\n";
+
         echo "<form enctype='multipart/form-data' action='step2.php' method='post'>\n";
         echo "<input type=hidden name='step2' value='y' />\n";
         echo "<input type='submit' value='Poursuivre la procédure' />\n";

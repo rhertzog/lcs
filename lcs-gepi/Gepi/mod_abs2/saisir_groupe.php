@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: saisir_groupe.php 5145 2010-08-30 19:51:45Z jjacquard $
+ * @version $Id: saisir_groupe.php 5316 2010-09-15 14:56:13Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -95,6 +95,10 @@ if ($id_semaine == null || $id_semaine == -1 || !is_numeric($id_semaine) || $id_
     $id_semaine = date('W');
 }
 $current_semaine = EdtSemaineQuery::create()->findPk($id_semaine);
+
+if ($utilisateur->getStatut() == 'professeur' && getSettingValue("abs2_saisie_prof_decale")!='y' && getSettingValue("abs2_saisie_prof_decale_journee")!='y') {
+    $id_creneau == null;
+}
 
 if ($utilisateur->getStatut() == 'professeur' && (getSettingValue("abs2_saisie_prof_decale")!='y')) {
     $dt_date_absence_eleve = new DateTime('now');
@@ -229,7 +233,7 @@ if (getSettingValue("abs2_saisie_prof_hors_cours")!='y'
 }
 
 if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
-    $classe_col = ClasseQuery::create()->find();
+    $classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->find();
 } else {
     $classe_col = $utilisateur->getClasses();
 }
@@ -771,7 +775,7 @@ function redimensionne_image_petit($photo)
 	    $current_creneau = EdtCreneauPeer::retrieveEdtCreneauActuel();
 	    if ($current_creneau != null) {
 		echo $current_creneau->getDescription().' ';
-		echo '<input type="hidden" name="id_creneau" value="'.$id_creneau.'"/>';
+		echo '<input type="hidden" name="id_creneau" value="'.$current_creneau->getIdDefiniePeriode().'"/>';
 	    } else {
 		echo "Aucun creneau actuellement.&nbsp;";
 	    }

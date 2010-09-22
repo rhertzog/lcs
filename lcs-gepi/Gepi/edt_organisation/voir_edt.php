@@ -3,7 +3,7 @@
 /**
  * Fichier voir_edt.php pour visionner les différents EdT (classes ou professeurs)
  *
- * @version     $Id: voir_edt.php 4207 2010-03-29 20:32:45Z adminpaulbert $
+ * @version     $Id: voir_edt.php 5209 2010-09-06 18:56:14Z adminpaulbert $
  * @package		GEPI
  * @subpackage	EmploisDuTemps
  * @copyright	Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero
@@ -103,7 +103,7 @@ else {
 }
 // =================== Forcer l'affichage d'un edt si l'utilisateur est un prof 
 if (!isset($login_edt)) {
-    if ($_SESSION['statut'] == "professeur") {
+    if (($_SESSION['statut'] == "professeur") AND ($visioedt == "prof1")) {
         $login_edt = $_SESSION['login'];
         $_GET["login_edt"] = $login_edt;
         $_GET["type_edt_2"] = "prof";

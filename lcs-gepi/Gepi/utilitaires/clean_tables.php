@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: clean_tables.php 5074 2010-08-17 16:56:34Z crob $
+ * $Id: clean_tables.php 5352 2010-09-20 15:42:27Z crob $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  * This file is part of GEPI.
@@ -1647,6 +1647,28 @@ col2 varchar(100) NOT NULL default ''
 	echo "</p>\n";
 
 	echo "<p>Terminé.</p>\n";
+} elseif (isset($_POST['action']) AND $_POST['action'] == 'clean_cdt') {
+	echo "<p class=bold><a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil</a> ";
+	echo "| <a href='clean_tables.php'>Retour page Vérification / Nettoyage des tables</a>\n";
+	echo "</p>\n";
+
+	echo "<p><b>Nettoyage des tables du module Cahier de textes&nbsp;:</b> \n";
+	$tab_table=array("ct_devoirs_entry",
+					"ct_documents",
+					"ct_entry",
+					"ct_devoirs_documents",
+					"ct_private_entry",
+					"ct_sequences");
+	for($i=0;$i<count($tab_table);$i++) {
+		if($i>0) {echo ", ";}
+		echo $tab_table[$i];
+		$sql="TRUNCATE TABLE $tab_table[$i];";
+		//echo "$sql<br />\n";
+		$suppr=mysql_query($sql);
+	}
+	echo "</p>\n";
+
+	echo "<p>Terminé.</p>\n";
 } elseif(isset($_POST['action']) AND $_POST['action'] == 'verif_interclassements') {
 	echo "<p class=bold><a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil</a> ";
 	echo "| <a href='clean_tables.php'>Retour page Vérification / Nettoyage des tables</a>\n";
@@ -1733,6 +1755,45 @@ col2 varchar(100) NOT NULL default ''
 		}
 	}
 
+	echo "<p>Terminé.</p>\n";
+} elseif (isset($_POST['action']) AND $_POST['action'] == 'corrige_ordre_matieres_professeurs') {
+	echo "<p class=bold><a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil</a> ";
+	echo "| <a href='clean_tables.php'>Retour page Vérification / Nettoyage des tables</a>\n";
+	echo "</p>\n";
+
+	echo "<p><b>Correction de l'ordre de matières des professeurs&nbsp;:</b> \n";
+	echo "</p>\n";
+
+	$sql="SELECT * FROM j_professeurs_matieres ORDER BY id_professeur, ordre_matieres, id_matiere;";
+	//echo "$sql<br />\n";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)==0) {
+		echo "<p>Aucune association professeur/matière n'est enregistrée dans la table 'j_professeurs_matieres'.</p>\n";
+	}
+	else {
+		$nb_corrections=0;
+		$nb_erreurs=0;
+		$prof_precedent="";
+		while($lig=mysql_fetch_object($res)) {
+			if($lig->id_professeur!=$prof_precedent) {
+				$prof_precedent=$lig->id_professeur;
+				$tab_matiere=array();
+				$tab_ordre_matieres=array();
+				$cpt=1;
+			}
+
+			if(in_array($lig->ordre_matieres,$tab_ordre_matieres)) {
+				echo "Rang $lig->ordre_matieres de matière en doublon pour $lig->id_professeur (<i>$lig->id_matiere</i>)<br />\n";
+				$nb_corrections++;
+			}
+			$tab_ordre_matieres[]=$lig->ordre_matieres;
+			$sql="UPDATE j_professeurs_matieres SET ordre_matieres='$cpt' WHERE id_professeur='$lig->id_professeur' AND id_matiere='$lig->id_matiere';";
+			$update=mysql_query($sql);
+			if(!$update) {$nb_erreurs++;}
+			$cpt++;
+		}
+	}
+	echo "<p>$nb_corrections correction(s) effectuée(s) avec $nb_erreurs erreur(s).</p>";
 	echo "<p>Terminé.</p>\n";
 }
 else {
@@ -1837,11 +1898,31 @@ else {
 
     echo "<hr />\n";
 
+    echo "<p>Au changement d'année, il faut archiver le Cahier de Textes, puis le vider.</p>\n";
+    echo "<form action=\"clean_tables.php\" method=\"post\">\n";
+    echo "<center>\n";
+	echo "<input type=submit value=\"Vider les tables du module Cahier de Textes\" />\n";
+	echo "</center>\n";
+    echo "<input type='hidden' name='action' value='clean_cdt' />\n";
+	echo "<p><i>NOTE&nbsp;:</i> Prenez soin de faire une <a href='../gestion/accueil_sauve.php'>sauvegarde de la base</a> et un <a href='../mod_annees_anterieures/index.php'>archivage des données antérieures</a> avant le changement d'année.</p>\n";
+    echo "</form>\n";
+
+    echo "<hr />\n";
+
     echo "<p>Contrôle de l'interclassement (<i>COLLATION</i>) des champs des tables.<br />Des interclassements différents sur des champs de deux tables intervenant dans une jointure peut provoquer des erreurs.<br />Un tel problème peut survenir avec des bases transférées d'une machine à une autre,...</p>\n";
     echo "<form action=\"clean_tables.php\" method=\"post\">\n";
     echo "<center>\n";
 	echo "<input type=submit value=\"Contrôler les interclassements\" />\n";
     echo "<input type='hidden' name='action' value='verif_interclassements' />\n";
+    echo "</form>\n";
+
+    echo "<hr />\n";
+
+    echo "<p>Contrôle des ordres de matières pour les professeurs.<br />Si les ordres de matières ne sont pas correctement renseignés dans la table j_professeurs_matieres (<i>ordre_matieres tous à zéro par exemple</i>), il n'est pas possible de choisir la matière principale d'un professeur.</p>\n";
+    echo "<form action=\"clean_tables.php\" method=\"post\">\n";
+    echo "<center>\n";
+	echo "<input type=submit value=\"Corriger les ordres de matières des professeurs\" />\n";
+    echo "<input type='hidden' name='action' value='corrige_ordre_matieres_professeurs' />\n";
     echo "</form>\n";
 
 }
