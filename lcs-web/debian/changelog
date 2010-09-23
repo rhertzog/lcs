@@ -4,16 +4,16 @@ lcs-web (2.4.7.1~1) Lcs; urgency=low
   * Modify lcs-etch2lenny script
   * Add a set of pics in Annu/images
   * Fix rights on skel user Profile in mkhdir.sh 
-  * Add test if lcs-desktop is activate in lcs/index.php
+  * Add test if lcs-deskto is activate and browser is not ie5 or ie6 in lcs/index.php
   * Update and synchronize with SE3 scripts : Import Sconet
-
+ 
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
     might download into {applilcs,moduleslcs}.xml.1 and we don't see the new
     content. This is required because when a broken XML file is downloaded,
     it's not removed...
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 23 Sep 2010 11:29:23 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 23 Sep 2010 13:14:24 +0200
 
 lcs-web (2.4.7) Lcs; urgency=low
 
