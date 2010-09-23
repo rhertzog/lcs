@@ -1,4 +1,4 @@
-lcs-web (2.4.7.1~1) Lcs; urgency=low
+lcs-web (2.4.7.1~2) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -13,7 +13,7 @@ lcs-web (2.4.7.1~1) Lcs; urgency=low
     content. This is required because when a broken XML file is downloaded,
     it's not removed...
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 23 Sep 2010 13:14:24 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 23 Sep 2010 13:23:37 +0200
 
 lcs-web (2.4.7) Lcs; urgency=low
 

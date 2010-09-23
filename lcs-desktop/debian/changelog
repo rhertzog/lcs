@@ -1,4 +1,4 @@
-lcs-desktop (0.2~6) Lcs; urgency=low
+lcs-desktop (0.2~7) Lcs; urgency=low
   [Jean-Luc Chretien]
     * Modify package structure
     * Create folder user Profile at initial intsall
@@ -7,9 +7,13 @@ lcs-desktop (0.2~6) Lcs; urgency=low
   [Dominique Lepaisant]
     * Modify many path for new structure package
     * Multiples bufs fixes following the introduction of the new strcuture 
-
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 16 Sep 2010 18:21:49 +0200
+    * Do not display menus Applications and services if the visitor is not identified 
+      + Support Request: redirect the request to the mail-admin if the maintenace application is not approved 
+      + Corrections display notifications 
+      + Remove jquery.notification.js 
+      + cosmetics
+ 
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 23 Sep 2010 13:24:53 +0200
 
 lcs-desktop (0.1) Lcs; urgency=low
 
