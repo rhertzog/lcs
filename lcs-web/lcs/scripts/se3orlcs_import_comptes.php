@@ -5,7 +5,6 @@
 
 	// ===========================================================
 	// AJOUTS: 20070914 boireaus
-	//if($argc < 11 || in_array($argv[1], array('--help', '-help', '-h', '-?'))){
 	if($argc < 15 || in_array($argv[1], array('--help', '-help', '-h', '-?'))){
 	// ===========================================================
 		$chaine="USAGE: Vous devez passer en paramètres (dans l'ordre):\n";
@@ -29,6 +28,7 @@
 		// ===========================================================
 		$chaine.="       . 'y' ou 'n' selon que vous souhaitez corriger ou non les attributs\n";
 		$chaine.="                    gecos, cn, sn et givenName si des différences sont trouvées.\n";
+		$chaine.="       . 'y' ou 'n' selon qu'il faut utiliser ou non un fichier F_UID.txt\n";
 		// ===========================================================
 
 
@@ -98,6 +98,8 @@
 	// ===========================================================
 	$corriger_gecos_si_diff=$argv[14];
 	// ===========================================================
+	$temoin_f_uid=$argv[15];
+	// ===========================================================
 
 	// Chemins:
 	if($servertype=="LCS"){
@@ -138,4 +140,5 @@
 	$attribut_pseudo="initials";
 	$controler_pseudo="y";
 	$corriger_givenname_si_diff="y";
+
 ?>

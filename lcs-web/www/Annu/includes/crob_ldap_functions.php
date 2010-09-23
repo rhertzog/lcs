@@ -4,7 +4,7 @@
    /**
    * Fonctions pour l'import sconet
 
-   * @Version $Id: crob_ldap_functions.php 3047 2008-06-18 07:42:50Z crob $
+   * @Version $Id: crob_ldap_functions.php 5767 2010-09-10 18:04:45Z crob $
 
    * @Projet LCS / SambaEdu
 
@@ -24,6 +24,10 @@
 
 
 
+//================================================
+// Correspondances de caractères accentués/désaccentués
+$liste_caracteres_accentues   ="ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸";
+$liste_caracteres_desaccentues="AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz";
 //================================================
 
 /**
@@ -137,7 +141,7 @@ function lireSSMTP() {
 
 /**
 
-* Affiche le texte ou le contenu d'un fichier
+* Affiche le texte ou l ecrit dans un fichier
 * @Parametres texte
 * @Return
 
@@ -176,8 +180,10 @@ function my_echo($texte){
 */
 
 function remplace_accents($chaine){
+	global $liste_caracteres_accentues, $liste_caracteres_desaccentues;
 	//$retour=strtr(ereg_replace("¼","OE",ereg_replace("½","oe",$chaine)),"ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü","AAAEEEEIIOOUUUCcaaaeeeeiioouuu");
-	$retour=strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$chaine"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz");
+	//$retour=strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$chaine"))))," 'ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸","__AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz");
+	$retour=strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$chaine"))))," '$liste_caracteres_accentues","__$liste_caracteres_desaccentues");
 	return $retour;
 }
 
@@ -453,7 +459,7 @@ function modify_entry ($entree, $branche, $attributs){
 			@ldap_free_result($result);
 		}
 		else{
-			$error=gettext("Echec du bind anonyme");
+			$error=gettext("Echec du bind en admin");
 		}
 		@ldap_close($ds);
 	}
@@ -520,7 +526,7 @@ function modify_attribut ($entree, $branche, $attributs, $mode){
 			@ldap_free_result($result);
 		}
 		else{
-			$error=gettext("Echec du bind anonyme");
+			$error=gettext("Echec du bind en admin");
 		}
 		@ldap_close($ds);
 	}
@@ -633,6 +639,7 @@ function fich_debug($texte){
 function creer_uid($nom,$prenom){
 	global $uidPolicy;
 	global $ldap_server, $ldap_port, $dn;
+	global $liste_caracteres_accentues, $liste_caracteres_desaccentues;
 	global $error;
 	$error="";
 
@@ -660,8 +667,10 @@ function creer_uid($nom,$prenom){
 	//nom=$(echo "$nom" | tr " àâäéèêëîïôöùûü" "-aaaeeeeiioouuu" | sed -e "s/'//g")
 	//$nom=strtolower(strtr("$nom"," 'àâäéèêëîïôöùûüçÇÂÄÊËÎÏÔÖÙÛÜ","__aaaeeeeiioouuucCAAEEIIOOUUU"));
 	//$prenom=strtolower(strtr("$prenom"," 'àâäéèêëîïôöùûüçÇÂÄÊËÎÏÔÖÙÛÜ","__aaaeeeeiioouuucCAAEEIIOOUUU"));
-	$nom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz"));
-	$prenom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz"));
+	//$nom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom"))))," 'ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸","__AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz"));
+	//$prenom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," 'ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸","__AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz"));
+	$nom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom"))))," '$liste_caracteres_accentues","__$liste_caracteres_desaccentues"));
+	$prenom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," '$liste_caracteres_accentues","__$liste_caracteres_desaccentues"));
 
 	fich_debug("Apr&#232;s filtrage...\n");
 	fich_debug("\$nom=$nom\n");
@@ -733,7 +742,12 @@ function creer_uid($nom,$prenom){
 		// Ou renseigner un uid_initial ou uid_souche
 		$uid_souche=$uid;
 
-
+		//$tab_logins_non_permis=array('prof', 'progs', 'docs', 'classes', 'homes', 'admhomes', 'admse3');
+		$tab_logins_non_permis=array('prof', 'progs', 'docs', 'classes', 'homes', 'admhomes', 'netlogon');
+		if(in_array($uid_souche,$tab_logins_non_permis)) {
+			$cpt=1;
+			$uid_souche=substr($uid,0,strlen($uid)-strlen($cpt)).$cpt;
+		}
 
 		$ok_uid="non";
 
@@ -765,11 +779,9 @@ function creer_uid($nom,$prenom){
 										//$uid=substr($uid,0,strlen($uid)-strlen($cpt)).$cpt;
 										//$uid=$prefuid.$cpt;
 										$uid=substr($uid_souche,0,strlen($uid_souche)-strlen($cpt)).$cpt;
-										if(($uidPolicy==0) 
-										   || (($uidPolicy==1 || $uidPolicy==2) && strlen($uid)<19) 
-										   || (($uidPolicy==4 || $uidPolicy==5) && strlen($uid)<8)){
-											$uid=$uid_souche.$cpt;
-										} 
+
+										if($uid=="admse3") {$uid="admse4";}
+
 										fich_debug("Doublons... \$uid=$uid\n");
 										$cpt++;
 									}
@@ -784,6 +796,28 @@ function creer_uid($nom,$prenom){
 					}
 					@ldap_free_result($result);
 				}
+
+				// Vérification que l'uid n'était pas en Trash
+				$result=ldap_search($ds,$dn["trash"],"uid=$uid*",$attr);
+				if ($result) {
+					$info=@ldap_get_entries($ds,$result);
+					if($info){
+						$ok_uid="oui";
+						for($i=0;$i<$info["count"];$i++){
+							//echo "<p>";
+							// En principe, il n'y a qu'un uid par entree...
+							for($loop=0;$loop<$info[$i]["uid"]["count"]; $loop++) {
+								//echo "\$info[$i][\"uid\"][$loop]=".$info[$i]["uid"][$loop]."<br />\n";
+								if($info[$i]["uid"][$loop]==$uid){
+									$ok_uid="non";
+									$error="L'uid <b style='color:red;'>$uid</b> existe dans la branche Trash.";
+								}
+							}
+							//echo "</p>\n";
+						}
+					}
+				}
+
 			}
 			else{
 				$error=gettext("Echec du bind anonyme");
@@ -828,7 +862,7 @@ function creer_uid($nom,$prenom){
 
 */
 
-
+/*
 function verif_employeeNumber($employeeNumber){
 	global $ldap_server, $ldap_port, $dn;
 	global $error;
@@ -840,6 +874,29 @@ function verif_employeeNumber($employeeNumber){
 	$attribut=array("uid");
 	$tab=get_tab_attribut("people","employeenumber=$employeeNumber",$attribut);
 
+	if(count($tab)>0){return $tab;}else{return false;}
+}
+*/
+function verif_employeeNumber($employeeNumber) {
+	global $ldap_server, $ldap_port, $dn;
+	global $error;
+	$error="";
+	// Tester si l'employeeNumber est dans l'annuaire ou non...
+
+	//$attribut=array("uid","employeenumber");
+	//$attribut=array("employeenumber");
+	$attribut=array("uid");
+	$tab=get_tab_attribut("people","employeenumber=$employeeNumber",$attribut);
+
+	$attribut=array("uid");
+	$tab2=get_tab_attribut("people","employeenumber=".sprintf("%05d",$employeeNumber),$attribut);
+
+	$attribut=array("uid");
+	$tab3=get_tab_attribut("trash","employeenumber=".$employeeNumber,$attribut);
+
+	$attribut=array("uid");
+	$tab4=get_tab_attribut("trash","employeenumber=".sprintf("%05d",$employeeNumber),$attribut);
+
 	/*
 	echo "count($tab)=".count($tab)."<br />\n";
 	for($i=0;$i<count($tab);$i++){
@@ -847,7 +904,11 @@ function verif_employeeNumber($employeeNumber){
 	}
 	*/
 
-	if(count($tab)>0){return $tab;}else{return false;}
+	if(count($tab)>0){$tab[-1]="people";return $tab;}
+	elseif(count($tab2)>0){$tab2[-1]="people";return $tab2;}
+	elseif(count($tab3)>0){$tab3[-1]="trash";return $tab3;}
+	elseif(count($tab4)>0){$tab4[-1]="trash";return $tab4;}
+	else{return false;}
 }
 
 
@@ -869,14 +930,23 @@ function verif_nom_prenom_sans_employeeNumber($nom,$prenom){
 	// Tester si un uid existe ou non dans l'annuaire pour $nom et $prenom sans employeeNumber...
 	// ... ce qui correspondrait a un compte cree a la main.
 
+	$trouve=0;
+
+	// On fait une recherche avec éventuellement les accents dans les nom/prénom... et on en fait si nécessaire une deuxième sans les accents
 	$attribut=array("uid");
 	$tab1=array();
 	//$tab1=get_tab_attribut("people","cn='$prenom $nom'",$attribut);
- 	$tab1=get_tab_attribut("people","cn=$prenom $nom",$attribut);
+	$tab1=get_tab_attribut("people","cn=$prenom $nom",$attribut);
+	/*
+	if(strtolower($nom)=='andro') {
+		$fich=fopen("/tmp/verif_nom_prenom_sans_employeeNumber_debug.txt","a+");
+		fwrite($fich,"Recherche cn=$prenom $nom on recupere count($tab1)=".count($tab1)."<br />\n");
+		fclose($fich);
+	}
+	*/
 
 	//echo "<p>error=$error</p>";
 
-	$trouve=0;
 	if(count($tab1)>0){
 		//echo "<p>count(\$tab1)>0</p>";
 		for($i=0;$i<count($tab1);$i++){
@@ -900,7 +970,50 @@ function verif_nom_prenom_sans_employeeNumber($nom,$prenom){
 		}
 	}
 	else{
-		return false;
+		// On fait en sorte de ne pas avoir d'accents dans la branche People de l'annuaire
+		$nom=remplace_accents(traite_espaces($nom));
+		$prenom=remplace_accents(traite_espaces($prenom));
+	
+		$attribut=array("uid");
+		$tab1=array();
+		//$tab1=get_tab_attribut("people","cn='$prenom $nom'",$attribut);
+		$tab1=get_tab_attribut("people","cn=$prenom $nom",$attribut);
+
+		/*
+		if(strtolower($nom)=='andro') {
+			$fich=fopen("/tmp/verif_nom_prenom_sans_employeeNumber_debug.txt","a+");
+			fwrite($fich,"Recherche cn=$prenom $nom on recupere count($tab1)=".count($tab1)."<br />\n");
+			fclose($fich);
+		}
+		*/
+
+		//echo "<p>error=$error</p>";
+	
+		if(count($tab1)>0){
+			//echo "<p>count(\$tab1)>0</p>";
+			for($i=0;$i<count($tab1);$i++){
+				$attribut=array("employeenumber");
+				$tab2=get_tab_attribut("people","uid=$tab1[$i]",$attribut);
+				if(count($tab2)==0){
+					//echo "<p>count(\$tab2)==0</p>";
+					$trouve++;
+					$uid=$tab1[$i];
+					//echo "<p>uid=$uid</p>";
+				}
+			}
+	
+			// On ne cherche a traiter que le cas d'une seule correspondance.
+			// S'il y en a plus, on ne pourra pas identifier...
+			if($trouve==1){
+				return $uid;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			return false;
+		}
 	}
 }
 
@@ -1002,6 +1115,7 @@ function get_first_free_uidNumber(){
 
 	// On demarre les uid a 1001, mais admin est en 5000:
 	// unattend est en 1000 chez moi... mais cela peut changer avec des etablissements dont l'annuaire SE3 date d'avant l'ajout d'unattend
+	// on peut aussi avoir un compte de client linux qui n'est pas dans l'annuaire mais a besoin de l'uidNumber 1000... risque de conflit si c'est occupé
 	$first_uidNumber=1001;
 	$last_uidNumber=4999;
 	//$last_uidNumber=1200;
@@ -1266,6 +1380,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	$attribut["sambaSID"]="$domainsid-$rid";
         $attribut["sambaPrimaryGroupSID"]="$domainsid-$pgrid";
 
+	$attribut["sambaPwdLastSet"]="1";
 	$attribut["sambaPwdMustChange"]="2147483647";
 	$attribut["sambaAcctFlags"]="[U          ]";
 	$attribut["sambaLMPassword"]="$sambaLMPassword";
@@ -1325,6 +1440,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	// Recuperer le gidNumber par defaut -> lcs-users (1000) ou slis (600)
 	global $defaultgid,$domain,$defaultshell,$domainsid,$uidPolicy;
 	global $attribut_pseudo;
+	global $liste_caracteres_accentues, $liste_caracteres_desaccentues;
 
 	fich_debug("================\n");
 	fich_debug("add_user:\n");
@@ -1341,8 +1457,10 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	// crob_init(); Ne sert a rien !!!!
 	//$nom=ereg_replace("[^a-z_-]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz")));
 	//$prenom=ereg_replace("[^a-z_-]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz")));
-	$nom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom")))),"'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","_AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz")));
-	$prenom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom")))),"'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","_AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz")));
+	//$nom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom")))),"'ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸","_AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz")));
+	//$prenom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom")))),"'ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸","_AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz")));
+	$nom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom")))),"'$liste_caracteres_accentues","_$liste_caracteres_desaccentues")));
+	$prenom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom")))),"'$liste_caracteres_accentues","_$liste_caracteres_desaccentues")));
 
 	$nom=ucfirst(strtolower($nom));
 	$prenom=ucfirst(strtolower($prenom));
@@ -1356,6 +1474,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	if(!get_first_free_uidNumber()){return false;exit();}
 	$uidNumber=get_first_free_uidNumber();
 	$rid=2*$uidNumber+1000;
+	// On n'utilise plus ce $pgrid: on passe à 513
 	$pgrid=2*$defaultgid+1001;
 
 	fich_debug("\$uidNumber=$uidNumber\n");
@@ -1364,11 +1483,14 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	// Faut-il interdire les espaces dans le password? les apostrophes?
 	// Comment le script ntlmpass.pl prend-il le parametre sans les apostrophes?
 
-	$ntlmpass=explode(" ",exec("$pathscripts/ntlmpass.pl '$password'"));
+	//$ntlmpass=explode(" ",exec("$pathscripts/ntlmpass.pl '$password'"));
+    echo "Preparation du mot de passe pour $nom $prenom\n";
+    $ntlmpass=explode(" ",exec("export LC_ALL=\"fr_FR.UTF-8\";$pathscripts/ntlmpass.pl '$password'"));
 
 	$sambaLMPassword=$ntlmpass[0];
 	$sambaNTPassword=$ntlmpass[1];
-	$userPassword=exec("$pathscripts/unixPassword.pl '$password'");
+    //$userPassword=exec("$pathscripts/unixPassword.pl '$password'");
+    $userPassword=exec("export LC_ALL=\"fr_FR.UTF-8\";$pathscripts/unixPassword.pl '$password'");
 
 	$attribut=array();
 	$attribut["uid"]="$uid";
@@ -1408,9 +1530,10 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 
 	$attribut["sambaSID"]="$domainsid-$rid";
 	//$attribut["sambaPrimaryGroupSID"]="$domainsid-$pgrid";
-        $attribut["sambaPrimaryGroupSID"]="$domainsid-513";
+	$attribut["sambaPrimaryGroupSID"]="$domainsid-513";
 
 	$attribut["sambaPwdMustChange"]="2147483647";
+	$attribut["sambaPwdLastSet"]="1";
 	$attribut["sambaAcctFlags"]="[U          ]";
 	$attribut["sambaLMPassword"]="$sambaLMPassword";
 	$attribut["sambaNTPassword"]="$sambaNTPassword";
@@ -1471,6 +1594,8 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 function verif_et_corrige_gecos($uid,$nom,$prenom,$naissance,$sexe){
 	// Verification/correction du GECOS
 
+    global $simulation;
+
 	// Correction du nom/prenom fournis
 	$nom=remplace_accents(traite_espaces($nom));
 	$prenom=remplace_accents(traite_espaces($prenom));
@@ -1493,14 +1618,19 @@ function verif_et_corrige_gecos($uid,$nom,$prenom,$naissance,$sexe){
 			$attributs["givenName"]=strtolower($prenom).strtoupper(substr($nom,0,1));
 			$attributs["sn"]="$nom";
 			my_echo("Correction de l'attribut 'gecos': ");
-			if(modify_attribut ("uid=$uid", "people", $attributs, "replace")){
-				my_echo("<font color='green'>SUCCES</font>");
-			}
-			else{
-				my_echo("<font color='red'>ECHEC</font>");
-				$nb_echecs++;
-			}
-			my_echo("<br />\n");
+			if($simulation!='y') {
+                if(modify_attribut ("uid=$uid", "people", $attributs, "replace")){
+				    my_echo("<font color='green'>SUCCES</font>");
+                }
+                else{
+                    my_echo("<font color='red'>ECHEC</font>");
+                    $nb_echecs++;
+                }
+            }
+            else {
+                my_echo("<font color='blue'>SIMULATION</font>");
+            }
+            my_echo("<br />\n");
 		}
 	}
 }
@@ -1516,6 +1646,8 @@ function verif_et_corrige_gecos($uid,$nom,$prenom,$naissance,$sexe){
 
 function verif_et_corrige_givenname($uid,$prenom) {
 	// Verification/correction du givenName
+
+    global $simulation;
 
 	// Correction du nom/prenom fournis
 	$prenom=remplace_accents(traite_espaces($prenom));
@@ -1539,13 +1671,18 @@ function verif_et_corrige_givenname($uid,$prenom) {
 			//$attributs["givenName"]=strtolower($prenom);
 			$attributs["givenName"]=$prenom;
 			my_echo("Correction de l'attribut 'givenName': ");
-			if(modify_attribut ("uid=$uid", "people", $attributs, "replace")) {
-				my_echo("<font color='green'>SUCCES</font>");
-			}
-			else{
-				my_echo("<font color='red'>ECHEC</font>");
-				$nb_echecs++;
-			}
+			if($simulation!='y') {
+                if(modify_attribut ("uid=$uid", "people", $attributs, "replace")) {
+                    my_echo("<font color='green'>SUCCES</font>");
+                }
+                else{
+                    my_echo("<font color='red'>ECHEC</font>");
+                    $nb_echecs++;
+                }
+            }
+            else {
+                my_echo("<font color='blue'>SIMULATION</font>");
+            }
 			my_echo("<br />\n");
 		}
 	}
@@ -1564,6 +1701,7 @@ function verif_et_corrige_pseudo($uid,$nom,$prenom) {
 	// Verification/correction de l'attribut choisi pour le pseudo
 	global $attribut_pseudo;
 	global $annuelle;
+    global $simulation;
 
 	// En minuscules pour la recherche:
 	$attribut_pseudo_min=strtolower($attribut_pseudo);
@@ -1592,14 +1730,19 @@ function verif_et_corrige_pseudo($uid,$nom,$prenom) {
 				$attributs=array();
 				$attributs["$attribut_pseudo"]=$tmp_pseudo;
 				my_echo("Correction de l'attribut '$attribut_pseudo': ");
-				if(modify_attribut ("uid=$uid", "people", $attributs, "replace")) {
-					my_echo("<font color='green'>SUCCES</font>");
-				}
-				else{
-					my_echo("<font color='red'>ECHEC</font>");
-					$nb_echecs++;
-				}
-				my_echo("<br />\n");
+                if($simulation!='y') {
+                    if(modify_attribut ("uid=$uid", "people", $attributs, "replace")) {
+                        my_echo("<font color='green'>SUCCES</font>");
+                    }
+                    else{
+                        my_echo("<font color='red'>ECHEC</font>");
+                        $nb_echecs++;
+                    }
+                }
+                else {
+                    my_echo("<font color='blue'>SIMULATION</font>");
+                }
+                my_echo("<br />\n");
 			}
 		}
 	}
@@ -1610,15 +1753,219 @@ function verif_et_corrige_pseudo($uid,$nom,$prenom) {
 		//$attributs["$tmp_pseudo"]=strtolower($prenom).strtoupper(substr($nom,0,1));
 		$attributs["$attribut_pseudo"]=$tmp_pseudo;
 		my_echo("Renseignement de l'attribut '$attribut_pseudo': ");
-		if(modify_attribut("uid=$uid", "people", $attributs, "add")) {
-			my_echo("<font color='green'>SUCCES</font>");
-		}
-		else{
-			my_echo("<font color='red'>ECHEC</font>");
-			$nb_echecs++;
-		}
+        if($simulation!='y') {
+            if(modify_attribut("uid=$uid", "people", $attributs, "add")) {
+                my_echo("<font color='green'>SUCCES</font>");
+            }
+            else{
+                my_echo("<font color='red'>ECHEC</font>");
+                $nb_echecs++;
+            }
+        }
+        else {
+            my_echo("<font color='blue'>SIMULATION</font>");
+        }
 		my_echo("<br />\n");
 	}
+}
+
+function get_uid_from_f_uid_file($employeeNumber) {
+	global $dossier_tmp_import_comptes;
+
+	if(!file_exists("$dossier_tmp_import_comptes/f_uid.txt")) {
+		return false;
+	}
+	else {
+		$ftmp=fopen("$dossier_tmp_import_comptes/f_uid.txt","r");
+		while(!feof($ftmp)) {
+			$ligne=trim(fgets($ftmp,4096));
+
+			if($tab=explode(";",$ligne)) {
+				if("$tab[0]"=="$employeeNumber") {
+					// On controle le login
+					if(strlen(ereg_replace("[A-Za-z0-9._\-]","",$tab[1]))==0) {
+						return $tab[1];
+					}
+					else {
+						return false;
+					}
+					break;
+				}
+			}
+		}
+	}
+}
+
+
+/**
+* Recherche les compte dans la branche Trash
+* @Parametres $filter filtre ldap de recherche
+* @return
+*/
+
+// Fonction extraite de /annu/ldap_cleaner.php
+
+function search_people_trash ($filter) {
+	//global $ldap_server, $ldap_port, $dn, $adminDn, $adminPw;
+	global $ldap_server, $ldap_port, $dn;
+	global $error;
+	$error="";
+	global $sambadomain;
+
+	$adminLdap=get_infos_admin_ldap();
+	$adminDn=$adminLdap["adminDn"];
+	$adminPw=$adminLdap["adminPw"];
+
+	//LDAP attributes
+
+	$ldap_search_people_attr = array(
+		"sambaacctFlags",
+		"sambapwdMustChange",
+		"sambantPassword",
+		"sambalmPassword",
+		"sambaSID",
+		"sambaPrimaryGroupSID",
+		"userPassword",
+		"gecos",
+		"employeenumber",
+		"homedirectory",
+		"gidNumber",
+		"uidNumber",
+		"loginShell",
+		"objectClass",
+		"mail",
+		"sn",
+		"givenName",
+		"cn",
+		"uid"
+	);
+
+	$ds = @ldap_connect ( $ldap_server, $ldap_port );
+	if ( $ds ) {
+		$r = @ldap_bind ( $ds,$adminDn, $adminPw );
+		if ($r) {
+		// Recherche dans la branche trash
+		$result = @ldap_search ( $ds, $dn["trash"], $filter, $ldap_search_people_attr );
+		if ($result) {
+			$info = @ldap_get_entries ( $ds, $result );
+			if ( $info["count"]) {
+			for ($loop=0; $loop<$info["count"];$loop++) {
+				if ( isset($info[$loop]["employeenumber"][0]) ) {
+						$ret[$loop] = array (
+						"sambaacctflags"      => $info[$loop]["sambaacctflags"][0],
+						"sambapwdmustchange"  => $info[$loop]["sambapwdmustchange"][0],
+						"sambantpassword"     => $info[$loop]["sambantpassword"][0],
+						"sambalmpassword"     => $info[$loop]["sambalmpassword"][0],
+						"sambasid"            => $info[$loop]["sambasid"][0],
+						"sambaprimarygroupsid"   => $info[$loop]["sambaprimarygroupsid"][0],
+						"userpassword"        => $info[$loop]["userpassword"][0],
+						"gecos"               => $info[$loop]["gecos"][0],
+						"employeenumber"      => $info[$loop]["employeenumber"][0],
+						"homedirectory"       => $info[$loop]["homedirectory"][0],
+						"gidnumber"           => $info[$loop]["gidnumber"][0],
+						"uidnumber"           => $info[$loop]["uidnumber"][0],
+						"loginshell"          => $info[$loop]["loginshell"][0],
+						"mail"                => $info[$loop]["mail"][0],
+						"sn"                  => $info[$loop]["sn"][0],
+						"givenname"           => $info[$loop]["givenname"][0],
+						"cn"                  => $info[$loop]["cn"][0],
+						"uid"                 => $info[$loop]["uid"][0],
+						);
+				} else {
+						$ret[$loop] = array (
+						"sambaacctflags"      => $info[$loop]["sambaacctflags"][0],
+						"sambapwdmustchange"  => $info[$loop]["sambapwdmustchange"][0],
+						"sambantpassword"     => $info[$loop]["sambantpassword"][0],
+						"sambalmpassword"     => $info[$loop]["sambalmpassword"][0],
+						"sambasid"            => $info[$loop]["sambasid"][0],
+						"sambaprimarygroupsid"   => $info[$loop]["sambaprimarygroupsid"][0],
+						"userpassword"        => $info[$loop]["userpassword"][0],
+						"gecos"               => $info[$loop]["gecos"][0],
+						"homedirectory"       => $info[$loop]["homedirectory"][0],
+						"gidnumber"           => $info[$loop]["gidnumber"][0],
+						"uidnumber"           => $info[$loop]["uidnumber"][0],
+						"loginshell"          => $info[$loop]["loginshell"][0],
+						"mail"                => $info[$loop]["mail"][0],
+						"sn"                  => $info[$loop]["sn"][0],
+						"givenname"           => $info[$loop]["givenname"][0],
+						"cn"                  => $info[$loop]["cn"][0],
+						"uid"                 => $info[$loop]["uid"][0],
+						);
+				}
+			}
+			}
+			@ldap_free_result ( $result );
+		} else $error = "Erreur de lecture dans l'annuaire LDAP";
+		} else $error = "Echec du bind en admin";
+		@ldap_close ( $ds );
+	} else $error = "Erreur de connection au serveur LDAP";
+	// Tri du tableau par ordre alphabetique
+	if (count($ret)) usort($ret, "cmp_name");
+	return $ret;
+} // Fin function search_people_trash
+
+
+// Les temps sont durs, il faut faire les poubelles pour en recuperer des choses...
+function recup_from_trash($uid) {
+	global $ldap_server, $ldap_port, $dn, $ldap_base_dn;
+
+	$recup=false;
+
+	$adminLdap=get_infos_admin_ldap();
+	$adminDn=$adminLdap["adminDn"];
+	$adminPw=$adminLdap["adminPw"];
+
+	$user = search_people_trash ("uid=$uid");
+	// Positionnement des constantes "objectclass"
+	$user[0]["sambaacctflags"]="[U         ]";
+	$user[0]["objectclass"][0]="top";
+	$user[0]["objectclass"][1]="posixAccount";
+	$user[0]["objectclass"][2]="shadowAccount";
+	$user[0]["objectclass"][3]="person";
+	$user[0]["objectclass"][4]="inetOrgPerson";
+	$user[0]["objectclass"][5]="sambaAccount";
+	$user[0]["objectclass"][5]="sambaSamAccount";
+
+	$f=fopen("/tmp/recup_from_trash.txt","a+");
+	foreach($user[0] as $key => $value) {
+		fwrite($f,"\$user[0]['$key']=$value\n");
+	}
+	fwrite($f,"=======================\n");
+	fclose($f);
+
+	$ds = @ldap_connect ( $ldap_server, $ldap_port );
+	if ( $ds ) {
+		$f=fopen("/tmp/recup_from_trash.txt","a+");
+		fwrite($f,"\$ds OK\n");
+		fwrite($f,"=======================\n");
+		fclose($f);
+
+		$r = @ldap_bind ( $ds, $adminDn, $adminPw ); // Bind en admin
+		if ($r) {
+			$f=fopen("/tmp/recup_from_trash.txt","a+");
+			fwrite($f,"\$r OK\n");
+			fwrite($f,"=======================\n");
+			fclose($f);
+
+			// Ajout dans la branche people
+			if ( @ldap_add ($ds, "uid=".$user[0]["uid"].",".$dn["people"],$user[0] ) ) {
+				$f=fopen("/tmp/recup_from_trash.txt","a+");
+				fwrite($f,"\ldap_add OK\n");
+				fwrite($f,"=======================\n");
+				fclose($f);
+
+				// Suppression de la branche Trash
+				@ldap_delete ($ds, "uid=".$user[0]["uid"].",".$dn["trash"] );
+				$recup=true;
+			}
+			else {
+				$recup=false;
+			}
+		}
+	}
+	ldap_close($ds);
+
+	return $recup;
 }
 
 ?>

@@ -72,7 +72,7 @@ if ( file_exists("/var/www/se3") ) {
     // Style du rapport
     $background ="Images/espperso.jpg";
     $stylecss="style/style.css";
-    $helpinfo="../images/help-info.gif";
+    $helpinfo="../images/system-help.png";
 
     include "../lcs/includes/headerauth.inc.php";
     include "includes/ldap.inc.php";

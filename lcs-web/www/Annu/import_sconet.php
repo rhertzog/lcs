@@ -2,17 +2,17 @@
 
 
    /**
-   
+
    * Page d'import des comptes depuis les fichiers CSV/XML de Sconet
-   * @Version $Id: import_sconet.php 2932 2008-05-04 08:12:26Z plouf $ 
-   
-   * @Projet LCS / SambaEdu 
-   
+   * @Version $Id: import_sconet.php 4597 2009-10-20 23:32:34Z keyser $
+
+   * @Projet LCS / SambaEdu
+
    * @auteurs Stephane Boireau (Animateur de Secteur pour les TICE sur Bernay/Pont-Audemer (27))
    * @auteurs jLCF jean-luc.chretien@tice.ac-caen.fr Portage LCSorSE3
-   
+
    * @Licence Distribue selon les termes de la licence GPL
-   
+
    * @note
    * @sudo /usr/share/se3/script/import_comptes.php
    * @sudo /usr/share/se3/script/run_import_comptes.sh
@@ -26,7 +26,7 @@
 
 
 
-        include "se3orlcs_import_sconet.php";
+	include "se3orlcs_import_sconet.php";
 
 	if (is_admin("Annu_is_admin",$login)=="Y") {
                 require ( $pathlcsorse3."config.inc.php");
@@ -149,7 +149,7 @@
 					echo ":<br />\n<a href='$urlse3/Admin/result.".$ligtmp->value.".html' target='_blank'>$urlse3/Admin/result.".$ligtmp->value.".html</a>";
 				}
 
-				echo "<br />";
+    echo "<br />\n";
 				echo "Si vous &#234;tes certain que ce n'est pas le cas, vous pouvez faire sauter le verrou.<br />Sinon, il vaut mieux patienter quelques minutes.</p>\n";
 
 				echo "<p><a href='".$_SERVER['PHP_SELF']."?deverrouiller=y'>Faire sauter le verrou</a>.</p>\n";
@@ -184,13 +184,13 @@
 				echo "<tr>\n";
 				echo "<td width='45%'><input type='radio' id='type_csv' name='type_fichier_eleves' value='csv' onchange=\"document.getElementById('id_csv').style.display='';document.getElementById('id_xml').style.display='none';\" /> Export CSV de Sconet";
 				echo "&nbsp;&nbsp;";
-				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Le cheminement pour r&#233;aliser cette extraction depuis Sconet est:</b><br />Application Sconet/Acc&#232;s Base Eleves.<br>Choisir l\'ann&#233;e \(<i>en cours ou en pr&#233;paration selon que la bascule est ou non effectu&#233;e</i>\) Exploitation-Extraction et choisir personnalis&#233;e.<br>Les champs requis sont:<ul><li>Nom</li><li>Pr&#233;nom 1</li><li>Date de naissance</li><li>N° Interne</li><li>Sexe</li><li>Division</li>')")."\"><img name=\"action_image1\"  src=\"$helpinfo\"></u>\n";
+				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Le cheminement pour r&#233;aliser cette extraction depuis Sconet est:</b><br />Application Sconet/Acc&#232;s Base Eleves.<br />Choisir l\'ann&#233;e \(<i>en cours ou en pr&#233;paration selon que la bascule est ou non effectu&#233;e</i>\) Exploitation-Extraction et choisir personnalis&#233;e.<br />Les champs requis sont:<ul><li>Nom</li><li>Pr&#233;nom 1</li><li>Date de naissance</li><li>N° Interne</li><li>Sexe</li><li>Division</li>')")."\"><img name=\"action_image1\"  src=\"$helpinfo\"></u>\n";
 
 				echo "</td>\n";
 				echo "<td width='10%' align='center'>ou</td>\n";
 				echo "<td width='45%'><input type='radio' id='type_xml' name='type_fichier_eleves' value='xml' checked onchange=\"document.getElementById('id_csv').style.display='none';document.getElementById('id_xml').style.display='';\" /> Export XML de Sconet";
 				echo "&nbsp;&nbsp;";
-				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Le cheminement pour r&#233;aliser cette extraction depuis Sconet est:</b><br>Application Sconet/Acc&#232;s Base Eleves/Extractions/Exports standard/Exports XML g&#233;n&#233;riques/<b>El&#232;ves sans adresses</b><br><br><b>Attention:</b> Ces exports XML ne sont actuellement possibles qu\'avant 9H le matin et apr&#232;s 17H le soir.</p><p>Ce fichier permet une meilleure g&#233;n&#233;ration des groupes Cours pour les groupes correspondant &#224; des options.')")."\"><img name=\"action_image2\"  src=\"$helpinfo\"></u>\n";
+				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Le cheminement pour r&#233;aliser cette extraction depuis Sconet est:</b><br />Application Sconet/Acc&#232;s Base Eleves/Extractions/Exports standard/Exports XML g&#233;n&#233;riques/<b>El&#232;ves sans adresses</b><br /><br /><b>Attention:</b> Ces exports XML ne sont actuellement possibles qu\'avant 9H le matin et apr&#232;s 17H le soir.</p><p>Ce fichier permet une meilleure g&#233;n&#233;ration des groupes Cours pour les groupes correspondant &#224; des options.')")."\"><img name=\"action_image2\"  src=\"$helpinfo\"></u>\n";
 				echo "</td>\n";
 				echo "</tr>\n";
 
@@ -248,16 +248,26 @@
 				echo "<span style='background-color: lightblue; border: 1px solid black;'>XML:</span> ";
 				echo "<input type=\"file\" size=\"80\" name=\"sts_xml_file\" id=\"sts_xml_file\" />\n";
 				echo "&nbsp;&nbsp;";
-			        echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Le cheminement pour effectuer cet export depuis Sconet est:</b><br>STS-web/Mise &#224; jour/Exports/Emplois du temps')")."\"><img name=\"action_image1\"  src=\"$helpinfo\"></u>\n";
+			        echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Le cheminement pour effectuer cet export depuis Sconet est:</b><br />STS-web/Mise &#224; jour/Exports/Emplois du temps')")."\"><img name=\"action_image1\"  src=\"$helpinfo\"></u>\n";
 
 				echo "</p>\n";
-				echo "<br>";
+				echo "<br />\n";
+
+				echo "<h4>Fichier optionnel de logins</h4>\n";
+
+				echo "<p>Vous pouvez fournir, si vous le souhaitez, un fichier de correspondances 'employeeNumber;login' pour imposer des logins aux nouveaux utilisateurs <i>(f_uid.txt)</i>:<br />\n";
+				echo "<span id='id_csv' style='background-color: lightgreen; border: 1px solid black;'>CSV:</span> ";
+				echo "<input type=\"file\" size=\"80\" name=\"f_uid_file\" id=\"f_uid_file\" />\n";
+				echo "&nbsp;&nbsp;";
+			        echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Le fichier doit &#234;tre format&#233; ainsi:</b><br />P1234;zebest<br />P2345;zeone<br />3456;toto<br />Avec le pr&#233;fixe P sur les employeeNumber des Profs et pas de pr&#233;fixe pour les Eleves.')")."\"><img name=\"action_image1\"  src=\"$helpinfo\"></u>\n";
+				echo "</p>\n";
+				echo "<br />\n";
 
 				echo "<h3>Configuration de l'import</h3>";
 
 				echo "<h4>Pr&#233;fixe &#233;ventuel : <input type='text' name='prefix' size='5' maxlength='5' value='' />\n";
 				echo "&nbsp;&nbsp;";
-                               echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Ex : LEP</b><br>Ce pr&#233;fixe est utilis&#233; dans les noms de groupes \(ex.: Classe_<b>LEP</b>_3D, Equipe_<b>LEP</b>_3D, Cours_<b>LEP</b>_AGL1_3D, Matiere_<b>LEP</b>_MATHS\)<br>Cela est utile dans les &#233;tablissements mixtes, avec un lyc&#233;e et un LP par exemple.')")."\"><img name=\"action_image3\"  src=\"$helpinfo\"></u>\n";
+                               echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Ex : LEP</b><br />Ce pr&#233;fixe est utilis&#233; dans les noms de groupes \(ex.: Classe_<b>LEP</b>_3D, Equipe_<b>LEP</b>_3D, Cours_<b>LEP</b>_AGL1_3D, Matiere_<b>LEP</b>_MATHS\)<br />Cela est utile dans les &#233;tablissements mixtes, avec un lyc&#233;e et un LP par exemple.')")."\"><img name=\"action_image3\"  src=\"$helpinfo\"></u>\n";
 				echo "</h4>";
 				echo "<h4><label for='annuelle' style='cursor: pointer;'>Importation de d&#233;but d'ann&#233;e ? </label><input name='annuelle' id='annuelle' type='checkbox' value='y' />\n";
 				echo "&nbsp;&nbsp;";
@@ -296,9 +306,9 @@
 				echo "</li>\n";
 
 				echo "<li>\n";
-				echo "<label for='creer_cours' style='cursor: pointer;'>Ne pas cr&#233;er les groupes Cours ? </label><input name='creer_cours' id='creer_cours' type='checkbox' value='n' />\n";
+				echo "<label for='creer_cours' style='cursor: pointer;'>Ne pas cr&#233;er les groupes Cours ? </label><input name='creer_cours' id='creer_cours' type='checkbox' value='n' checked />\n";
 				echo "&nbsp;&nbsp;";
-				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('En d&#233;but d\'ann&#233;e, le fichier XML STS_emp peut contenir des informations erron&#233;es (<i>ne prenant pas encore en compte les nouvelles associations professeurs/mati&#232;res/classes</i>).<br />La remont&#233;e de l\'emploi du temps vers STS r&#232;glera ce probl&#233;me.<br />En attendant, il vaut mieux ne pas cr&#233;er des Cours erron&#233;s.')")."\"><img name=\"action_image5\"  src=\"$helpinfo\"></u>\n";
+				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('La plupart du temps, les groupes Cours sont inutiles. Il vaut mieux ne pas les cr&#233;er pour ne pas alourdir l\'annuaire.')")."\"><img name=\"action_image5\"  src=\"$helpinfo\"></u>\n";
 				echo "</li>\n";
 
 				echo "<li>\n";
@@ -326,7 +336,7 @@
 				echo "</form>\n";
 
 	// Fonction javascript
-	
+
 	/**
 	* Verifie et valide un from
 	* @language Javascript
@@ -381,7 +391,7 @@
 					echo ":<br />\n<a href='$urlse3/Admin/result.".$ligtmp->value.".html' target='_blank'>$urlse3/Admin/result.".$ligtmp->value.".html</a>";
 				}
 
-				echo "<br />";
+				echo "<br />\n";
 				echo "Si vous &#234;tes certain que ce n'est pas le cas, vous pouvez faire sauter le verrou.<br />Sinon, il vaut mieux patienter quelques minutes.</p>\n";
 
 				echo "<p><a href='".$_SERVER['PHP_SELF']."?deverrouiller=y'>Faire sauter le verrou</a>.</p>\n";
@@ -466,6 +476,34 @@
 			$eleves_file=$HTTP_POST_FILES['eleves_file']['name'];
 			$size_eleves_file=$HTTP_POST_FILES['eleves_file']['size'];
 
+            /*
+            //===============================================
+            echo "\$tmp_eleves_file=$tmp_eleves_file<br />";
+            echo "\$eleves_file=$eleves_file<br />";
+            echo "\$size_eleves_file=$size_eleves_file<br />";
+            //===============================================
+            */
+
+            if(($eleves_file!='')&&($tmp_eleves_file=='')) {
+                echo "<p>L'upload du fichier <span style='color:red;'>$eleves_file</span> a semble-t-il &eacute;chou&eacute;.</p>";
+
+                $upload_max_filesize=ini_get('upload_max_filesize');
+                $post_max_size=ini_get('post_max_size');
+
+                echo "<p>Il se peut que le fichier fourni ait &eacute;t&eacute; trop volumineux.<br />PHP est actuellement param&eacute;tr&eacute; avec:<br />\n";
+                echo "</p>\n";
+                echo "<blockquote>\n";
+                echo "<span style='color:blue;'>upload_max_filesize</span>=<span style='color:green;'>".$upload_max_filesize."</span><br />\n";
+                echo "<span style='color:blue;'>post_max_size</span>=<span style='color:green;'>".$post_max_size."</span><br />\n";
+                echo "</blockquote>\n";
+                echo "<p>\n";
+                echo "Si ces valeurs sont insuffisantes pour vos fichiers XML, il est possible de modifier les valeurs limites dans <span style='color:green;'>/etc/php5/apache2/php.ini</span>\n";
+                echo "</p>\n";
+
+                die();
+            }
+
+
 			$dest_file="$dossier_tmp_import_comptes/fichier_eleves";
 			// SUR CA, IL VAUDRAIT SANS DOUTE MIEUX FORCER LE NOM DESTINATION POUR EVITER DES SALES BLAGUES
 			if(file_exists($dest_file)){
@@ -475,12 +513,99 @@
 			if(is_uploaded_file($tmp_eleves_file)){
 				$source_file=stripslashes("$tmp_eleves_file");
 				$res_copy=copy("$source_file" , "$dest_file");
+
+				// Si jamais un XML non dézippé a été fourni
+				$extension_fichier_emis=strtolower(strrchr($eleves_file,"."));
+				if (($extension_fichier_emis==".zip")||($HTTP_POST_FILES['eleves_file']['type']=="application/zip")) {
+
+					//if(!file_exists($racine_www."/includes/pclzip.lib.php")) {
+					if(!file_exists($chemin_www_includes."/pclzip.lib.php")) {
+						echo "<p style='color:red;'>Erreur : Un fichier ZIP a été fourni, mais la bibliothèque de dézippage est absente.</p>\n";
+						require("../includes/pdp.inc.php");
+						die();
+					}
+					else {
+						//$unzipped_max_filesize=getSettingValue('unzipped_max_filesize')*1024*1024;
+
+						// On considère un XML élève de 20Mo maxi
+						$unzipped_max_filesize=20*1024*1024;
+
+						// $unzipped_max_filesize = 0    pas de limite de taille pour les fichiers extraits
+						// $unzipped_max_filesize < 0    extraction zip désactivée
+						if($unzipped_max_filesize>=0) {
+							//require_once('../lib/pclzip.lib.php');
+							require_once('pclzip.lib.php');
+							$archive = new PclZip($dest_file);
+
+							if (($list_file_zip = $archive->listContent()) == 0) {
+								echo "<p style='color:red;'>Erreur : ".$archive->errorInfo(true)."</p>\n";
+								require("../includes/pdp.inc.php");
+								die();
+							}
+
+							if(sizeof($list_file_zip)!=1) {
+								echo "<p style='color:red;'>Erreur : L'archive contient plus d'un fichier.</p>\n";
+								require("../includes/pdp.inc.php");
+								die();
+							}
+
+							/*
+							echo "<p>\$list_file_zip[0]['filename']=".$list_file_zip[0]['filename']."<br />\n";
+							echo "\$list_file_zip[0]['size']=".$list_file_zip[0]['size']."<br />\n";
+							echo "\$list_file_zip[0]['compressed_size']=".$list_file_zip[0]['compressed_size']."</p>\n";
+							*/
+							//echo "<p>\$unzipped_max_filesize=".$unzipped_max_filesize."</p>\n";
+
+							if(($list_file_zip[0]['size']>$unzipped_max_filesize)&&($unzipped_max_filesize>0)) {
+								echo "<p style='color:red;'>Erreur : La taille du fichier extrait (<i>".$list_file_zip[0]['size']." octets</i>) dépasse la limite paramétrée (<i>$unzipped_max_filesize octets</i>).</p>\n";
+								require("../includes/pdp.inc.php");
+								die();
+							}
+
+							$res_extract=$archive->extract(PCLZIP_OPT_PATH, "$dossier_tmp_import_comptes/");
+							if ($res_extract != 0) {
+								echo "<p>Le fichier uploadé a été dézippé.</p>\n";
+								$fichier_extrait=$res_extract[0]['filename'];
+								$res_copy=rename("$fichier_extrait" , "$dest_file");
+							}
+							else {
+								echo "<p style='color:red'>Echec de l'extraction de l'archive ZIP.</p>\n";
+								require("../includes/pdp.inc.php");
+								die();
+							}
+						}
+					}
+
+				}
+
 			}
 
+            //====================================================
 
 			$tmp_sts_file=$HTTP_POST_FILES['sts_xml_file']['tmp_name'];
 			$sts_file=$HTTP_POST_FILES['sts_xml_file']['name'];
 			$size_sts_file=$HTTP_POST_FILES['sts_xml_file']['size'];
+
+
+            if(($sts_file!='')&&($tmp_sts_file=='')) {
+                echo "<p>L'upload du fichier <span style='color:red;'>$eleves_file</span> a semble-t-il &eacute;chou&eacute;.</p>";
+
+                $upload_max_filesize=ini_get('upload_max_filesize');
+                $post_max_size=ini_get('post_max_size');
+
+                echo "<p>Il se peut que le fichier fourni ait &eacute;t&eacute; trop volumineux.<br />PHP est actuellement param&eacute;tr&eacute; avec:\n";
+                echo "</p>\n";
+                echo "<blockquote>\n";
+                echo "<span style='color:blue;'>upload_max_filesize</span>=<span style='color:green;'>".$upload_max_filesize."</span><br />\n";
+                echo "<span style='color:blue;'>post_max_size</span>=<span style='color:green;'>".$post_max_size."</span><br />\n";
+                echo "</blockquote>\n";
+                echo "<p>\n";
+                echo "Si ces valeurs sont insuffisantes pour vos fichiers XML, il est possible de modifier les valeurs limites dans <span style='color:green;'>/etc/php5/apache2/php.ini</span>\n";
+                echo "</p>\n";
+
+                die();
+            }
+
 
 			$dest_file="$dossier_tmp_import_comptes/fichier_sts";
 			// SUR CA, IL VAUDRAIT SANS DOUTE MIEUX FORCER LE NOM DESTINATION POUR EVITER DES SALES BLAGUES
@@ -493,9 +618,25 @@
 				$res_copy=copy("$source_file" , "$dest_file");
 			}
 
+			//==========================================
 
+			// Fichier optionnel f_uid_file
+			$tmp_f_uid_file=$HTTP_POST_FILES['f_uid_file']['tmp_name'];
+			$f_uid_file=$HTTP_POST_FILES['f_uid_file']['name'];
+			$size_f_uid_file=$HTTP_POST_FILES['f_uid_file']['size'];
 
+			$dest_file="$dossier_tmp_import_comptes/f_uid.txt";
+			if(file_exists($dest_file)){
+				unlink($dest_file);
+			}
 
+			$temoin_f_uid="n";
+			if(is_uploaded_file($tmp_f_uid_file)){
+				$source_file=stripslashes("$tmp_f_uid_file");
+				$res_copy=copy("$source_file" , "$dest_file");
+
+				$temoin_f_uid="y";
+			}
 
 
 			//$timestamp=ereg_replace(" ","_",microtime());
@@ -637,7 +778,9 @@ decompte(cpt);
 
 			//fwrite($fich,"#!/bin/bash\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres'\n");
 
-			fwrite($fich,"#!/bin/bash\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff'\n");
+			//fwrite($fich,"#!/bin/bash\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff'\n");
+
+			fwrite($fich,"#!/bin/bash\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff' '$temoin_f_uid'\n");
 
 			//echo "<p>#!/bin/bash<br />\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff'</p>\n";
 			// ===========================================================
@@ -679,7 +822,7 @@ decompte(cpt);
 			echo("<ul>\n");
 			//echo("<li>Pour le moment la variable \$prefix='$prefix' n'est pas geree... A FAIRE</li>\n");
 			echo("<li><p>Les changements de classe, suppressions de membres de groupes, en dehors de l'import annuel, ne sont pas g&#233;r&#233;s.<br />Dans le cas de changement de classe d'un &#233;l&#232;ve, il risque d'apparaitre membre de plusieurs classes...<br />Il faut faire le m&#233;nage &#224; la main.<br />On pourrait par contre ajouter un test pour lister les comptes membres de plusieurs classes<br />... contr&#244;ler aussi qu'aucun compte n'est &#224; la fois dans plusieurs parmi les groupes Profs, Eleves, Administratifs.</p></li>\n");
-			echo("<li><p>Le mode simulation ne simule que la cr&#233;ation/r&#233;cup&#233;ration d'utilisateurs.<br />Cela permet d&#233;j&#224; de rep&#233;rer si les cr&#233;ations annonc&#233;es sont conformes &#224; ce que l'on attendait.<br />Les uid g&#233;n&#233;r&#233;s/simul&#233;s peuvent par contre &#234;tre erron&#233;s si jamais deux nouveaux utilisateurs correspondent &#224; das uid en doublon, il se peut qu'ils obtiennent en simulation le m&#234;me uid.<br /><i>Exemple:</i> Deux nouveaux arrivants Alex T&#233;rieur et Alain T&#233;rieur donneront tous deux l'uid 'terieura' en simulation alors qu'en mode cr&#233;ation, le premier obtiendrait l'uid 'terieura' et le deuxi&#232;me 'terieur2'.<br />Et si l'annuaire contenait d&#233;j un compte 'terieura' (<i>pour Anabelle Terieur</i>), les deux nouveaux comptes paraitraient recevoir en mode simultation l'uid 'terieur2' alors qu'en mode cr&#233;ation, le premier obtiendrait l'uid 'terieur2' et le deuxi&#232;me 'terieur3'.</p><p><i>Remarque:</i> Le mode simulation permet tout de m&#234;me la g&#233;n&#233;ration de fichiers f_ele.txt, f_div.txt, f_men.txt et f_wind.txt</p></li>\n");
+			echo("<li><p>Le mode simulation ne simule que la cr&#233;ation/r&#233;cup&#233;ration d'utilisateurs.<br />Cela permet d&#233;j&#224; de rep&#233;rer si les cr&#233;ations annonc&#233;es sont conformes &#224; ce que l'on attendait.<br />Les uid g&#233;n&#233;r&#233;s/simul&#233;s peuvent par contre &#234;tre erron&#233;s si jamais deux nouveaux utilisateurs correspondent &#224; des uid en doublon, il se peut qu'ils obtiennent en simulation le m&#234;me uid.<br /><i>Exemple:</i> Deux nouveaux arrivants Alex T&#233;rieur et Alain T&#233;rieur donneront tous deux l'uid 'terieura' en simulation alors qu'en mode cr&#233;ation, le premier obtiendrait l'uid 'terieura' et le deuxi&#232;me 'terieur2'.<br />Et si l'annuaire contenait d&#233;j&#224; un compte 'terieura' (<i>pour Anabelle Terieur</i>), les deux nouveaux comptes paraitraient recevoir en mode simultation l'uid 'terieur2' alors qu'en mode cr&#233;ation, le premier obtiendrait l'uid 'terieur2' et le deuxi&#232;me 'terieur3'.</p><p><i>Remarque:</i> Le mode simulation permet tout de m&#234;me la g&#233;n&#233;ration de fichiers f_ele.txt, f_div.txt, f_men.txt et f_wind.txt</p></li>\n");
 
 			echo("</ul>\n");
 
