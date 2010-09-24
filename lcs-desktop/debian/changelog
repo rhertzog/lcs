@@ -5,9 +5,10 @@ lcs-desktop (0.2~7) Lcs; urgency=low
    + redirect the request to the mail-admin if the maintenace application is not approved
    + Corrections display notifications
    + Remove jquery.notification.js
+   + Fix bug links in dock
    + cosmetics   
 
- --  <dlepaisant@ac-caen.fr>  Sat, 18 Sep 2010 07:32:11 +0200
+ --  <dlepaisant@ac-caen.fr>  Sat, 18 Sep 2010 13:24:11 +0200
 
 lcs-desktop (0.2~6) Lcs; urgency=low
   [Jean-Luc Chretien]

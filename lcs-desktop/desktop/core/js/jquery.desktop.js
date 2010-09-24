@@ -648,7 +648,7 @@ var JQD = (function($) {
 				var offset = $(this).closest('ul').offset();
 				var nel = parseInt($(this).parent('li').index());
 //				var c = (this.t != "") ? "<br/>" + this.t : "Pas d'info";
-				$("#desktop").append("<p id='screenshot' class='abs'>"+ this.rev +"</p>");  
+				$("#desktop").append("<p id='screenshot' class='abs'>"+ this.title +"</p>");  
 				var wtip = $("#screenshot").width()/2;
 				$("#screenshot")
 					.css("bottom","54px")

@@ -80,7 +80,9 @@ function USERPREFS_Display_Icons($url, $size = 40, $site = 0, $withdate = 0)
 		$title = $icon["title"];
 		$img = $icon["img"];
 		$page .= '<a class="abs icon ext_link" style="left:'.$left.'px;top:'.$top.'px;" href="'.$win.'" rel="'.htmlentities($link).'" title="'.$title.'"><img src="'.$img.'" />'.utf8_decode($text).'</a>';
-		$display_ql == 1 ? $iconsDock .=' <li><a class="launch open_win ext_link screenshot" href="'.$win.'" rel="'.htmlentities($link).'"  rev="'.utf8_decode($text).'" title="'.$title.'"><img src="'.$img.'" alt="'.$title.'" class="quicklaunch"/></a></li>' : '';
+		$display_ql == 1 ? $iconsDock .=' <li><a class="launch open_win ext_link screenshot" href="'.$win.'" rel="'.htmlentities($link).'"  
+rev="'.preg_replace('/#icon_dock_lcs_/','',$win).'" title="'.uth8_decode($text).'"><img src="'.$img.'" alt="'.$title.'" 
+class="quicklaunch"/></a></li>' : '';
 
 	}
 	$display_ql == 1 ? $iconsDock .='</ul>' : '';
