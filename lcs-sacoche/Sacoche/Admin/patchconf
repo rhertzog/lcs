@@ -1,0 +1,31 @@
+#!/bin/bash
+if [ ! -e ../__private/mysql/serveur_sacoche_structure.php ]; then
+    pass=`pwgen -1`
+    pass2=`pwgen -1`
+    pass3=`pwgen -1`
+    PASSADMIN=`php -r 'echo md5("grain_de_sel".$argv[1]);' $pass2`
+    PASSWEB=`php -r 'echo md5("grain_de_sel".$argv[1]);' $pass3`	
+    dom=`hostname -d`
+    url=`hostname -f`
+    echo "Patch du fichier de la base MySQL..."
+    cp -a install_mysql.sql install_mysql.sq
+    sed -i "s/#PASS#/$pass/g" install_mysql.sql 
+    sed -i "s/#passadmin#/$PASSADMIN/g" install_mysql.sql
+    sed -i "s/@hostname@/$url/g" install_mysql.sql
+    echo "Patch du fichier serveur_sacoche_structure.php..."
+    cp -a ../__private/mysql/serveur_sacoche_structure.ph ../__private/mysql/serveur_sacoche_structure.php
+    sed -i "s/#PASS#/$pass/g"  ../__private/mysql/serveur_sacoche_structure.php
+    echo "Patch du fichier constantes.php ..."
+    cp -a ../__private/config/constantes.ph ../__private/config/constantes.php
+    sed -i "s/#passweb#/$PASSWEB/g"  ../__private/config/constantes.php
+    sed -i "s/#DOM#/$dom/g"  ../__private/config/constantes.php
+    chown www-data:www-data install_mysql.sql ../__private/mysql/serveur_sacoche_structure.php ../__private/config/constantes.php
+    echo "Envoi des mots de passe par mail ..."
+    echo -e "admin : $pass2\n ->http://$url/Plugins/Sacoche/index.php?admin \n\nwebmestre\
+ : $pass3\n -> http://$url/Plugins/Sacoche/index.php?webmestre \
+    \n\n Changez ces mots de passe et supprimez ce mail" | mail -s "Mots de passe Sacoche" admin@$dom
+
+fi
+# FIN
+#
+echo "Fin des patches..."

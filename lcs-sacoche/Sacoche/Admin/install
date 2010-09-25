@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+#### Variable a positionner en fonction du plugin
+NAMEPLUGIN="Sacoche"
+####
+#
+PATH2PLUGIN="/usr/share/lcs/Plugins/$NAMEPLUGIN"
+echo "Script d'installation du module SACoche"
+#
+# Nettoyage
+#
+rm $PATH2PLUGIN/Admin/install_mysql.sql
+mv $PATH2PLUGIN/Admin/install_mysql.sq $PATH2PLUGIN/Admin/install_mysql.sql
