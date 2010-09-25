@@ -384,7 +384,7 @@ if ( $idpers==0 ) {
         // <![CDATA[
 		$.ajax({
                     type: 'POST',
-                    url : 'includes/log2cas_ajax.php',
+                    url : '../lcs/includes/log2cas_ajax.php',
                     async: true,
                     error: function() {
                         alert('Echec authentification CAS');

@@ -1,3 +1,9 @@
+lcs-desktop (0.2~8) UNRELEASED; urgency=low
+  [Jean-Luc Chretien]
+    * Fix path for CAS service in index.php
+    * Modify postrm to uninstall module by  web interface 
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 25 Sep 2010 12:08:40 +0200
+
 lcs-desktop (0.2~7) Lcs; urgency=low
 
   * fix bug date 

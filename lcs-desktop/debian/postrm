@@ -9,7 +9,7 @@ case "$1" in
         # Desinscription du module de la table lcs_db.applis
         #
         mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';";
-        invoke-rc.d apache2 force-reload
+        /etc/init.d/apache2 reload > /dev/null 2>&1
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
