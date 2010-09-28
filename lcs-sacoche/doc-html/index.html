@@ -15,6 +15,31 @@
 l'application <a href="http://sacoche.sesamath.net/" target="_blank" title="">SACoche</a>.</P>
 
 
+<p>L'installation du module lcs-sacoche installe par d&#233;pendance le module lcs-cas. 
+A la fin de l'installation :
+	-l'application SACoche est enti&#232;rement install&#233;e (aucune autre proc&#233;dure d'installation n'est n&#233;cessaire)
+	-l'application SACoche est pr&#233;configur&#233;e pour utiliser l'authenfication CAS.
+
+Les comptes utilisateurs "admin" et "webmestre"  cr&#233;&#233;s lors de l'installation ne peuvent pas b&#233;n&#233;ficier de l'authentification CAS.Leurs mots de 
+passe g&#233;n&#233;r&#233;s al&#233;atoirement  lors de l'installation sont envoy&#233;s par mail &#224; l'admin LCS.</p>
+ 
+Se connecter en webmestre :
+	- dans administration du site, renseigner les champs d'identifcation de l'&#233;tablissement
+	- dans Informations, changer &#233;ventuellement le mot de passe du webmestre
+
+Se connecter en administrateur :
+	- cr&#233;er les comptes utilsateurs Sacoche ( le format du login n'a aucune importance) avec les fichiers Sconet
+	- dans Administration g&#233;n&#233;rale :
+		-> Importer/Imposer des identifiants
+		-> Importer/Imposer des identifiants LCS
+		-> Dupliquer l'idntifiant LCS
+		
+		Un compte-rendu des &#233;checs est affich&#233; en fin de proc&#233;dure. L'association uilisateurSacoche<->utilisateur LCS &#233;choue si un 
+utilisateur Sacoche n'est pas pr&#233;sent dans l'annuaire du LCS, 
+		ou s'il a un num&#233;ro sconet diff&#233;rent de l'employeeNumber du LDAP ( attention dans l'employeeNumber, le num&#233;ro sconet est 
+pr&#233;c&#233;d&#233; d'un 0 si c'est un &#233;l&#232;ve et d'un P si c'est un prof )
+
+
 <H3>Derni&#232;re version exp&#233;rimentale :</H3>
 <P>Version module : 0.1 bas&#233; sur la version de SACoche du 20/09/2010.</P>
 
