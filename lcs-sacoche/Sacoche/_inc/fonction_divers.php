@@ -192,7 +192,7 @@ function compacter($chemin,$version,$methode)
 				$fichier_compacte = $fichier_contenu;
 			}
 			$fichier_compacte = utf8_encode($fichier_compacte);	// On réencode donc en UTF-8...
-			@umask(0002); // Met le chmod à 666 - 002 = 664 pour les fichiers prochains fichiers créés (et à 777 - 002 = 775 pour les dossiers).
+			@umask(0000); // Met le chmod à 666 - 000 = 666 pour les fichiers prochains fichiers créés (et à 777 - 000 = 777 pour les dossiers).
 			$test_ecriture = @file_put_contents($chemin_fichier_compacte,$fichier_compacte);
 			// Il se peut que le droit en écriture ne soit pas autorisé et que la procédure d'install ne l'ai pas encore vérifié.
 			return $test_ecriture ? $chemin_fichier_compacte : $chemin_fichier_original ;
@@ -583,10 +583,13 @@ function connecter_user($BASE,$profil,$login,$password,$mode_connection)
 			case 'matieres':                 $_SESSION['MATIERES']                   =       $DB_ROW['parametre_valeur']; break;
 			case 'niveaux':                  $_SESSION['NIVEAUX']                    =       $DB_ROW['parametre_valeur']; break;
 			case 'paliers':                  $_SESSION['PALIERS']                    =       $DB_ROW['parametre_valeur']; break;
-			case 'profil_validation_entree': $_SESSION['PROFIL_VALIDATION_ENTREE']   =       $DB_ROW['parametre_valeur']; break;
-			case 'profil_validation_pilier': $_SESSION['PROFIL_VALIDATION_PILIER']   =       $DB_ROW['parametre_valeur']; break;
-			case 'eleve_options':            $_SESSION['ELEVE_OPTIONS']              =       $DB_ROW['parametre_valeur']; break;
-			case 'eleve_demandes':           $_SESSION['ELEVE_DEMANDES']             = (int) $DB_ROW['parametre_valeur']; break;
+			case 'droit_validation_entree':  $_SESSION['DROIT_VALIDATION_ENTREE']    =       $DB_ROW['parametre_valeur']; break;
+			case 'droit_validation_pilier':  $_SESSION['DROIT_VALIDATION_PILIER']    =       $DB_ROW['parametre_valeur']; break;
+			case 'droit_modifier_mdp':       $_SESSION['DROIT_MODIFIER_MDP']         =       $DB_ROW['parametre_valeur']; break;
+			case 'droit_voir_referentiels':  $_SESSION['DROIT_VOIR_REFERENTIELS']    =       $DB_ROW['parametre_valeur']; break;
+			case 'droit_eleve_bilans':       $_SESSION['DROIT_ELEVE_BILANS']         =       $DB_ROW['parametre_valeur']; break;
+			case 'droit_eleve_socle':        $_SESSION['DROIT_ELEVE_SOCLE']          =       $DB_ROW['parametre_valeur']; break;
+			case 'droit_eleve_demandes':     $_SESSION['DROIT_ELEVE_DEMANDES']       = (int) $DB_ROW['parametre_valeur']; break;
 			case 'duree_inactivite':         $_SESSION['DUREE_INACTIVITE']           = (int) $DB_ROW['parametre_valeur']; break;
 			case 'calcul_valeur_RR':         $_SESSION['CALCUL_VALEUR']['RR']        = (int) $DB_ROW['parametre_valeur']; break;
 			case 'calcul_valeur_R':          $_SESSION['CALCUL_VALEUR']['R']         = (int) $DB_ROW['parametre_valeur']; break;
@@ -602,7 +605,11 @@ function connecter_user($BASE,$profil,$login,$password,$mode_connection)
 			case 'css_background-color_NA':  $_SESSION['CSS_BACKGROUND-COLOR']['NA'] =       $DB_ROW['parametre_valeur']; break;
 			case 'css_background-color_VA':  $_SESSION['CSS_BACKGROUND-COLOR']['VA'] =       $DB_ROW['parametre_valeur']; break;
 			case 'css_background-color_A':   $_SESSION['CSS_BACKGROUND-COLOR']['A']  =       $DB_ROW['parametre_valeur']; break;
-			case 'css_note_style':           $_SESSION['CSS_NOTE_STYLE']             =       $DB_ROW['parametre_valeur']; break;
+			case 'note_image_style':         $_SESSION['NOTE_IMAGE_STYLE']           =       $DB_ROW['parametre_valeur']; break;
+			case 'note_texte_RR':            $_SESSION['NOTE_TEXTE']['RR']           =       $DB_ROW['parametre_valeur']; break;
+			case 'note_texte_R':             $_SESSION['NOTE_TEXTE']['R']            =       $DB_ROW['parametre_valeur']; break;
+			case 'note_texte_V':             $_SESSION['NOTE_TEXTE']['V']            =       $DB_ROW['parametre_valeur']; break;
+			case 'note_texte_VV':            $_SESSION['NOTE_TEXTE']['VV']           =       $DB_ROW['parametre_valeur']; break;
 		}
 	}
 	actualiser_style_session();
@@ -623,10 +630,10 @@ function connecter_user($BASE,$profil,$login,$password,$mode_connection)
 function actualiser_style_session()
 {
 	$_SESSION['CSS']  = '';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody td input.RR {background:#FFF url("./_img/note/'.$_SESSION['CSS_NOTE_STYLE'].'/RR.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody td input.R  {background:#FFF url("./_img/note/'.$_SESSION['CSS_NOTE_STYLE'].'/R.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody td input.V  {background:#FFF url("./_img/note/'.$_SESSION['CSS_NOTE_STYLE'].'/V.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody td input.VV {background:#FFF url("./_img/note/'.$_SESSION['CSS_NOTE_STYLE'].'/VV.gif") no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody td input.RR {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/RR.gif") no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody td input.R  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/R.gif")  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody td input.V  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/V.gif")  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody td input.VV {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/VV.gif") no-repeat center center;}';
 	$_SESSION['CSS'] .= 'table th.r , table td.r , div.r ,span.r ,label.r {background-color:'.$_SESSION['CSS_BACKGROUND-COLOR']['NA'].'}';
 	$_SESSION['CSS'] .= 'table th.o , table td.o , div.o ,span.o ,label.o {background-color:'.$_SESSION['CSS_BACKGROUND-COLOR']['VA'].'}';
 	$_SESSION['CSS'] .= 'table th.v , table td.v , div.v ,span.v ,label.v {background-color:'.$_SESSION['CSS_BACKGROUND-COLOR']['A'].'}';
@@ -982,24 +989,23 @@ function url_get_contents($url,$tab_post=false)
 {
 	// Ne pas utiliser file_get_contents() car certains serveurs n'accepent pas d'utiliser une URL comme nom de fichier (gestionnaire fopen non activé).
 	// On utilise donc la bibliothèque cURL en remplacement
-	// Option CURLOPT_FOLLOWLOCATION sous conditions car certaines installations renvoient "CURLOPT_FOLLOWLOCATION cannot be activated when in safe_mode or an open_basedir is set" (http://www.php.net/manual/fr/features.safe-mode.functions.php#92192)
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_DNS_CACHE_TIMEOUT, 3600);        // Le temps en seconde que CURL doit conserver les entrées DNS en mémoire. Cette option est définie à 120 secondes (2 minutes) par défaut.
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);           // TRUE retourne directement le transfert sous forme de chaîne de la valeur retournée par curl_exec() au lieu de l'afficher directement.
-	curl_setopt($ch, CURLOPT_FAILONERROR, TRUE);              // TRUE pour que PHP traite silencieusement les codes HTTP supérieurs ou égaux à 400. Le comportement par défaut est de retourner la page normalement, en ignorant ce code.
-	curl_setopt($ch, CURLOPT_HEADER, FALSE);                  // FALSE pour ne pas inclure l'en-tête dans la valeur de retour.
-	curl_setopt($ch, CURLOPT_TIMEOUT, 5);                     // Le temps maximum d'exécution de la fonction cURL (en s).
-	curl_setopt($ch, CURLOPT_URL, $url);                      // L'URL à récupérer. Vous pouvez aussi choisir cette valeur lors de l'appel à curl_init().
-	if(!ini_get('safe_mode'))
+	curl_setopt($ch, CURLOPT_DNS_CACHE_TIMEOUT, 3600);          // Le temps en seconde que CURL doit conserver les entrées DNS en mémoire. Cette option est définie à 120 secondes (2 minutes) par défaut.
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);             // TRUE retourne directement le transfert sous forme de chaîne de la valeur retournée par curl_exec() au lieu de l'afficher directement.
+	curl_setopt($ch, CURLOPT_FAILONERROR, TRUE);                // TRUE pour que PHP traite silencieusement les codes HTTP supérieurs ou égaux à 400. Le comportement par défaut est de retourner la page normalement, en ignorant ce code.
+	curl_setopt($ch, CURLOPT_HEADER, FALSE);                    // FALSE pour ne pas inclure l'en-tête dans la valeur de retour.
+	curl_setopt($ch, CURLOPT_TIMEOUT, 5);                       // Le temps maximum d'exécution de la fonction cURL (en s).
+	curl_setopt($ch, CURLOPT_URL, $url);                        // L'URL à récupérer. Vous pouvez aussi choisir cette valeur lors de l'appel à curl_init().
+	if( (!ini_get('safe_mode')) && (!ini_get('open_basedir')) ) // Option CURLOPT_FOLLOWLOCATION sous conditions car certaines installations renvoient "CURLOPT_FOLLOWLOCATION cannot be activated when in safe_mode or an open_basedir is set" (http://www.php.net/manual/fr/features.safe-mode.functions.php#92192)
 	{
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);           // TRUE pour suivre toutes les en-têtes "Location: " que le serveur envoie dans les en-têtes HTTP (notez que cette fonction est récursive et que PHP suivra toutes les en-têtes "Location: " qu'il trouvera à moins que CURLOPT_MAXREDIRS ne soit définie).
 		curl_setopt($ch, CURLOPT_MAXREDIRS, 3);                   // Le nombre maximal de redirections HTTP à suivre. Utilisez cette option avec l'option CURLOPT_FOLLOWLOCATION.
 	}
 	if(is_array($tab_post))
 	{
-		curl_setopt($ch, CURLOPT_POST, TRUE);                   // TRUE pour que PHP fasse un HTTP POST. Un POST est un encodage normal application/x-www-from-urlencoded, utilisé couramment par les formulaires HTML. 
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $tab_post);        // Toutes les données à passer lors d'une opération de HTTP POST. Peut être passé sous la forme d'une chaîne encodée URL, comme 'para1=val1&para2=val2&...' ou sous la forme d'un tableau dont le nom du champ est la clé, et les données du champ la valeur. Si le paramètre value est un tableau, l'en-tête Content-Type sera définie à multipart/form-data. 
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); // Eviter certaines erreurs curl 417 ; voir explication http://fr.php.net/manual/fr/function.curl-setopt.php#82418 ou http://www.gnegg.ch/2007/02/the-return-of-except-100-continue/
+		curl_setopt($ch, CURLOPT_POST, TRUE);                     // TRUE pour que PHP fasse un HTTP POST. Un POST est un encodage normal application/x-www-from-urlencoded, utilisé couramment par les formulaires HTML. 
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $tab_post);          // Toutes les données à passer lors d'une opération de HTTP POST. Peut être passé sous la forme d'une chaîne encodée URL, comme 'para1=val1&para2=val2&...' ou sous la forme d'un tableau dont le nom du champ est la clé, et les données du champ la valeur. Si le paramètre value est un tableau, l'en-tête Content-Type sera définie à multipart/form-data. 
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));   // Eviter certaines erreurs curl 417 ; voir explication http://fr.php.net/manual/fr/function.curl-setopt.php#82418 ou http://www.gnegg.ch/2007/02/the-return-of-except-100-continue/
 	}
 	$requete_reponse = curl_exec($ch);
 	if($requete_reponse === false)
@@ -1291,7 +1297,7 @@ function Creer_Dossier($dossier)
 		return true;
 	}
 	// Le dossier a-t-il bien été créé ?
-	@umask(0002); // Met le chmod à 666 - 002 = 664 pour les fichiers prochains fichiers créés (et à 777 - 002 = 775 pour les dossiers).
+	@umask(0000); // Met le chmod à 666 - 000 = 666 pour les fichiers prochains fichiers créés (et à 777 - 000 = 777 pour les dossiers).
 	$test = @mkdir($dossier);
 	if(!$test)
 	{
@@ -1371,7 +1377,7 @@ function Supprimer_Dossier($dossier)
 
 function Ecrire_Fichier($fichier_chemin,$fichier_contenu,$file_append=0)
 {
-	@umask(0002); // Met le chmod à 666 - 002 = 664 pour les fichiers prochains fichiers créés (et à 777 - 002 = 775 pour les dossiers).
+	@umask(0000); // Met le chmod à 666 - 000 = 666 pour les fichiers prochains fichiers créés (et à 777 - 000 = 777 pour les dossiers).
 	$test_ecriture = @file_put_contents($fichier_chemin,$fichier_contenu,$file_append);
 	if($test_ecriture===false)
 	{

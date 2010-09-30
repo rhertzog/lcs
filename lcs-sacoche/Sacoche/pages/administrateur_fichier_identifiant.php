@@ -27,7 +27,7 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Importer / Imposer des identifiants";
-$VERSION_JS_FILE += 4;
+$VERSION_JS_FILE += 5;
 ?>
 
 <?php
@@ -54,9 +54,9 @@ $select_professeurs_directeurs = afficher_select(DB_STRUCTURE_OPT_professeurs_di
 			<option value="init_loginmdp_eleves">Initialiser les identifiants SACoche des élèves.</option>
 			<option value="init_loginmdp_professeurs_directeurs">Initialiser les identifiants SACoche des professeurs &amp; directeurs.</option>
 			<option value="import_loginmdp">Importer / Imposer des identifiants SACoche.</option>
+			<option value="import_id_lcs">Importer / Imposer les identifiants LCS.</option>
 			<option value="import_id_ent_<?php echo $_SESSION['CONNEXION_MODE'] ?>">Importer / Imposer les identifiants de l'ENT.</option>
 			<option value="import_id_gepi">Importer / Imposer les identifiants de Gepi.</option>
-			<?php if (is_dir("lcs/")) echo '<option value="import_id_lcs">Importer / Imposer les identifiants LCS.</option>'; ?>
 		</select><br />
 	</fieldset>
 
@@ -93,6 +93,16 @@ $select_professeurs_directeurs = afficher_select(DB_STRUCTURE_OPT_professeurs_di
 		<p><label class="tab" for="import_loginmdp">Envoyer le fichier :</label><button id="import_loginmdp" type="button"><img alt="" src="./_img/bouton/fichier_import.png" /> Parcourir...</button></p>
 	</fieldset>
 
+	<fieldset id="fieldset_import_id_lcs" class="hide">
+		<hr />
+		<p class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_mode_identification__LCS">DOC : Intégration de SACoche dans un LCS</a></p>
+		<?php
+		$dossier_lcs = './lcs';
+		echo (is_dir($dossier_lcs)) ? '<button name="dupliquer" id="COPY_id_lcs_TO_id_ent" type="button"><img alt="" src="./_img/bouton/mdp_groupe.png" /> Dupliquer l\'identifiant LCS</button> comme identifiant de l\'ENT pour tous les utilisateurs.'
+		                            : '<div class="danger">Le dossier &laquo;&nbsp;<b>'.$dossier_lcs.'</b>&nbsp;&raquo; devant figurer dans le paquet lcs-sacoche n\'a pas été détecté !</div>' ;
+		?>
+	</fieldset>
+
 	<fieldset id="fieldset_import_id_ent_normal" class="hide">
 		<hr />
 		<div class="astuce">Vous devez commencer par sélectionner votre ENT depuis la page "<a href="./index.php?page=administrateur_etabl_connexion">Mode d'identification</a>".</div>
@@ -126,15 +136,7 @@ $select_professeurs_directeurs = afficher_select(DB_STRUCTURE_OPT_professeurs_di
 			<li><button name="dupliquer" id="COPY_login_TO_id_gepi" type="button"><img alt="" src="./_img/bouton/mdp_groupe.png" /> Dupliquer le login de SACoche enregistré</button> comme identifiant de Gepi pour tous les utilisateurs.</li>
 		</ul>
 	</fieldset>
-	
-	<fieldset id="fieldset_import_id_lcs" class="hide">
-		<hr />
-		<h4>En dupliquant un autre champ</h4>
-		<ul class="puce">
-			<li><button name="dupliquer" id="COPY_id_ent_TO_id_lcs" type="button"><img alt="" src="./_img/bouton/mdp_groupe.png" /> Dupliquer l'identifiant LCS </button> comme identifiant  pour tous les utilisateurs.</li>
-		</ul>
-	</fieldset>
-	
+
 </form>
 
 <hr />

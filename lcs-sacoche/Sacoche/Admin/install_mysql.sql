@@ -598,7 +598,7 @@ CREATE TABLE `sacoche_user` (
 
 LOCK TABLES `sacoche_user` WRITE;
 /*!40000 ALTER TABLE `sacoche_user` DISABLE KEYS */;
-INSERT INTO `sacoche_user` VALUES (1,0,'','administrateur','A modifier','A modifier','admin','#passadmin#',1,'2010-09-23 01:46:12','2010-09-23 03:51:14',0,'','');
+INSERT INTO `sacoche_user` VALUES (1,0,'','administrateur','Sacoche','Admin','admin','#passadmin#',1,'2010-09-23 01:46:12','2010-09-23 03:51:14',0,'','');
 /*!40000 ALTER TABLE `sacoche_user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
