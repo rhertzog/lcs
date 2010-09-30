@@ -1,10 +1,11 @@
-lcs-desktop (0.2~8) UNRELEASED; urgency=low
+lcs-desktop (0.2~8) Lcs; urgency=low
   [Jean-Luc Chretien]
     * Fix path for CAS service in index.php
     * Modify postrm to uninstall module by  web interface   
     * Fix bug in Makefile
+    * Add mail notify (Yannick Chistel contrib)  
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 29 Sep 2010 17:31:20 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 30 Sep 2010 11:25:23 +0200
 
 lcs-desktop (0.2~7) Lcs; urgency=low
 

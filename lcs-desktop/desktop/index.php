@@ -343,10 +343,18 @@ if ( $idpers==0 ) {
 			}
 		});
 
-	<?php }else { ?>
+	<?php }elseif ( $squirrelmail == 1 ) { ?>
 		$('#temp_squirrelmail').attr('src','../lcs/statandgo.php?use=squirrelmail');
 		setTimeout(function(){
-			$('#temp_squirrelmail').attr('src','');
+                        $.get("../squirrelmail/plugins/notify/notify-desktop.php",
+                        function(data){
+                            if (data != '')
+                            
+                             JQD.create_notify("withIcon", { title:'Messagerie', text: data + '<p><span style="text-decoration:underline;">Consulter sa messagerie</span>', icon:'core/images/icons/mailicon.png' },{ expires:false,
+                             click: function(e,instance){
+				JQD.init_link_open_win('<a title="Webmail" rel="../lcs/statandgo.php?use=squirrelmail" href="#icon_dock_lcs_squirrelmail" class="open_win ext_link">Messagerie</a>');
+				}});
+                         });
 		},10000);
 	<?php }?>
 	},2500);
@@ -361,7 +369,7 @@ if ( $idpers==0 ) {
 	<?php } ?>
 			
 </script>
-	<?php }	if ( $idpers==0 ) { ?>
+	<?php }	else { ?>
 	// .:LCS:. on lance l'affichage du form de connexion.
 <script>
 	setTimeout(function(){
