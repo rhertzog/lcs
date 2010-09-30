@@ -20,8 +20,8 @@ install:
 	install -m 755 sbin/* $(DESTDIR)/usr/sbin/
 
 	# install squirrelmail plugin notify
-	install -d $(DESTDIR)/usr/share/squirrelmail/plugins
-	install -m 755 notify/* $(DESTDIR)/usr/share/squirrelmail/plugins/
+	install -d $(DESTDIR)/usr/share/squirrelmail/plugins/notify
+	cp -a notify/* $(DESTDIR)/usr/share/squirrelmail/plugins/notify/
 
 clean:
 
