@@ -1,17 +1,18 @@
 <?
 require  "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers, $login)= isauth();
+
+if (!@mysql_select_db($DBAUTH, $authlink)) 
+    die ("S&#233;lection de base de donn&#233;es impossible.");
 $query = "SELECT * from applis";
-$result=@mysql_db_query("$DBAUTH",$query, $authlink);
+$result = @mysql_query($query, $authlink);
 if ($result)
     while ($r=@mysql_fetch_array($result))
                 $$r["name"]=$r["value"];
 else
-    die ("parametres absents de la base de donnees");
+    die ("Param&#232;tres absents de la base de donn&#233;es.");
 @mysql_free_result($result);
-  
-/* lcs/barre.php derniere mise a jour : 12/06/2008 */
-//require "includes/headerauth.inc.php";
+
 require "/var/www/Annu/includes/ldap.inc.php";
 require "/var/www/Annu/includes/ihm.inc.php";
 include("core/includes/functions.inc.php");

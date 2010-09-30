@@ -1,3 +1,9 @@
+lcs-desktop (0.2~10) UNRELEASED; urgency=low
+  [Jean-Luc Chretien]
+    * Replace deprecated function mysql_db_query in index.php and core/a_propos.php 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 30 Sep 2010 15:26:49 +0200
+
 lcs-desktop (0.2~9) Lcs; urgency=low
   [Jean-Luc Chretien]
     * Fix path for CAS service in index.php
