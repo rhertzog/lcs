@@ -1,3 +1,10 @@
+lcs-spip (2.4.7.1~1) Lcs; urgency=low
+
+  * Fix bug in right column position
+  * 
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Tue, 21 Sep 2010 05:48:38 +0200
+
 lcs-spip (2.4.7) Lcs; urgency=low
 
   * Update spip 2.0.12
