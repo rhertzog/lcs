@@ -23,6 +23,10 @@ function USERPREFS_Display_Tags($item, $type)
 		$tnl = $tnl->item(0);
 		$title = $tnl->firstChild->textContent;		
 
+		$tnl = $item->getElementsByTagName("iconrev");
+		$tnl = $tnl->item(0);
+		$rev = $tnl->firstChild->textContent;		
+
 		$tnl = $item->getElementsByTagName("iconimg");
 		$tnl = $tnl->item(0);
 		$img = $tnl->firstChild->textContent;
@@ -31,6 +35,7 @@ function USERPREFS_Display_Tags($item, $type)
 		$y["link"] = $link;
 		$y["win"] = $win;		
 		$y["title"] = $title;		
+		$y["rev"] = $rev;
 		$y["img"] = $img;
 		$y["type"] = $type;
 		
@@ -78,10 +83,10 @@ function USERPREFS_Display_Icons($url, $size = 40, $site = 0, $withdate = 0)
 		$link = $icon["link"];
 		$win = $icon["win"];
 		$title = $icon["title"];
+		$rev = $icon["rev"];
 		$img = $icon["img"];
-		$page .= '<a class="abs icon ext_link" style="left:'.$left.'px;top:'.$top.'px;" href="'.$win.'" rel="'.htmlentities($link).'" title="'.$title.'"><img src="'.$img.'" />'.utf8_decode($text).'</a>';
-		$display_ql == 1 ? $iconsDock .=' <li><a class="launch open_win ext_link screenshot" href="'.$win.'" rel="'.htmlentities($link).'"  
-rev="'.preg_replace('/#icon_dock_lcs_/','',$win).'" title="'.utf8_decode($text).'"><img src="'.$img.'" alt="'.$title.'" 
+		$page .= '<a class="abs icon ext_link" style="left:'.$left.'px;top:'.$top.'px;" href="'.$win.'" rel="'.htmlentities($link).'" title="'.$title.'" rev="'.$rev.'"><img src="'.$img.'" />'.utf8_decode($text).'</a>';
+		$display_ql == 1 ? $iconsDock .=' <li><a class="launch open_win ext_link screenshot" href="'.$win.'" rel="'.htmlentities($link).'"  rev="'.preg_replace('/#icon_dock_lcs_/','',$win).'" title="'.utf8_decode($text).'"><img src="'.$img.'" alt="'.$title.'" 
 class="quicklaunch"/></a></li>' : '';
 
 	}

@@ -1,8 +1,11 @@
-lcs-desktop (0.2~10) UNRELEASED; urgency=low
+lcs-desktop (0.2~10) Lcs; urgency=low
   [Jean-Luc Chretien]
     * Replace deprecated function mysql_db_query in index.php and core/a_propos.php 
+    * Closing squirrelmail notification on click
+    * Fix bug in window resize
+    * remove image prohibited
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 30 Sep 2010 15:26:49 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 13:41:30 +0200
 
 lcs-desktop (0.2~9) Lcs; urgency=low
   [Jean-Luc Chretien]

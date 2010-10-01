@@ -15,19 +15,6 @@ var JQD = (function($) {
 			var year = date_obj.getFullYear();
 			var suffix = 'AM';
 
-			// Array for weekday.
-// .:LCS:. in french please
-			/*
-			var weekday = [
-				'Sunday',
-				'Monday',
-				'Tuesday',
-				'Wednesday',
-				'Thursday',
-				'Friday',
-				'Saturday'
-			];
-			*/
 			// Table des jours de la semaine - weekday.
 			var weekday = [
 				'Dimanche',
@@ -38,24 +25,6 @@ var JQD = (function($) {
 				'Vendredi',
 				'Samedi'
 			];
-			// Array for month.
-// .:LCS:. in french please
- /*
-			var month = [
-				'January',
-				'February',
-				'March',
-				'April',
-				'May',
-				'June',
-				'July',
-				'August',
-				'September',
-				'October',
-				'November',
-				'December'
-			];
-*/
 			// Table des mois - month.
 			var month = [
 				'Janvier',
@@ -97,8 +66,6 @@ var JQD = (function($) {
 
 			// Build two HTML strings.
 			var clock_time = weekday + ' ' + hour + ':' + minute + ' ' + suffix;
-			// .:LCS:. in french please
-			//var clock_date = month + ' ' + day + ', ' + year;
 			var clock_date = day + ' ' + month + ' ' + year;
 
 			// Shove in the HTML.
@@ -239,7 +206,7 @@ var JQD = (function($) {
 				$($(this).closest('div.window_top').find('a.window_close').attr('href')).hide('fast');
 
 				// Close the window itself.
-				$(this).closest('div.window').hide();
+				$(this).closest('div.window').hide().find('iframe').attr('src',' ');
 
 				// Stop propagation to window's top bar.
 				return false;
@@ -263,7 +230,7 @@ var JQD = (function($) {
 
 			// Close the window.
 			$('a.window_close').click(function() {
-				$(this).closest('div.window').hide();
+				$(this).closest('div.window').hide().find('iframe').attr('src',' ');
 				$($(this).attr('href')).removeClass('bar-bottom-icon').hide('fast');
 			});
 
@@ -293,15 +260,15 @@ var JQD = (function($) {
 			//JQD.place_wallpaper();
 			}
 			
-			if( $('#tmp_bgcolor').length==1 ) { $('body').css('background-color', $('#tmp_bgcolor').val()); $('#wp_bgcolor').attr('value',$('#tmp_bgcolor').val()); }
+			if( $('#tmp_bgcolor').length==1 ) { 
+				$('body').css('background-color', $('#tmp_bgcolor').val()); $('#wp_bgcolor').attr('value',$('#tmp_bgcolor').val()); 
+			}
 			// taille des icones
 			w = $('#tmp_iconsize').val();
 			$("a.icon img, #vign_icon").css({ width: w +"px", height : w +"px" })
 			.attr({width: w +"px", height: w +"px"});
 			// affichage du dock
 			$('#tmp_quicklaunch').val()=='1' ? $('#aff_quicklaunch').attr('checked', 'checked') : $('#aff_quicklaunch').attr('checked', ' ') ;
-			// on notifie 
-//			$().notification('Bienvenue...', 1);
 			$('#icons_field_height').attr('value',$('#tmp_iconsfield').val());
 			!$('#tmp_wallpaper').length? JQD.load_prefs_img('core/images/misc/RayOfLight_lcs.jpg'):'';
 			JQD.init_icons();
@@ -360,6 +327,7 @@ var JQD = (function($) {
 					str = str + "\t\t\t"+"<iconurl>"+strlink.replace('&', '&amp;')+"</iconurl>" + "\r\n" ;				
 					str = str + "\t\t\t"+"<iconwin>"+$(this).attr('href')+"</iconwin>" + "\r\n" ;				
 					str = str + "\t\t\t"+"<icontitle>"+$(this).attr('title')+"</icontitle>" + "\r\n" ;				
+					str = str + "\t\t\t"+"<iconrev>"+$(this).attr('rev')+"</iconrev>" + "\r\n" ;				
 					str = str + "\t\t\t"+"<iconimg>"+$(this).find('img').attr('src')+"</iconimg>" + "\r\n" ;				
 					str = str + "\t\t"+"</icon>" + "\r\n" ;
 				});
