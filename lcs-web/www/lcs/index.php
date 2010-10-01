@@ -2,7 +2,7 @@
 $url_redirect=$_GET['url_redirect'];
 require  "../lcs/includes/headerauth.inc.php";
 $query = "SELECT * from applis";
-$result=@mysql_db_query("$DBAUTH",$query, $authlink);
+$result=@mysql_query($query, $authlink);
 if ($result)
     while ($r=@mysql_fetch_array($result))
                 $$r["name"]=$r["value"];

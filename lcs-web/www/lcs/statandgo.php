@@ -1,5 +1,5 @@
 <?php
-/* lcs/statandgo.php version du :  26/05/2009 */
+/* lcs/statandgo.php version du :  01/10/2010 */
 require ("./includes/headerauth.inc.php");
 require ("../Annu/includes/ldap.inc.php");
 
@@ -91,7 +91,9 @@ $date=date("YmdHis");
 #
 # Enregistrement dans la table statusages
 #
-$result=mysql_db_query("$DBAUTH","INSERT INTO statusages VALUES ('$group', '$use', '$date', '$source','$login')", $authlink);
+//$result=mysql_db_query("$DBAUTH","INSERT INTO statusages VALUES ('$group', '$use', '$date', '$source','$login')", $authlink);
+$query="INSERT INTO statusages VALUES ('$group', '$use', '$date', '$source','$login')";
+$result=@mysql_query($query, $authlink);
 #
 # Redirection
 #

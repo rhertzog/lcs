@@ -21,9 +21,13 @@ if ($login)  {
         //on casse le cookie 
         setcookie('lt',"$lt",0,"/","",0);
 
+	if (!@mysql_select_db("casserver", $authlink)) 
+    		die ("S&#233;lection de base de donn&#233;es impossible.");
         $query="SELECT * FROM `casserver`.`casserver_lt` where consumed = NULL and client_hostname='$clientIP' ORDER By id DESC;";
-        $result=@mysql_db_query("casserver",$query, $authlink) or die("ERREUR $query");
-        if (mysql_num_rows($result) > 0 )
+
+        //$result=@mysql_db_query("casserver",$query, $authlink) or die("ERREUR $query");
+	$result=@mysql_query($query, $authlink);
+        if (@mysql_num_rows($result) > 0 )
             $lt = (mysql_result($result,0,"ticket"));
         else {
             // Generate Login Ticket
@@ -34,7 +38,7 @@ if ($login)  {
             $date = date("Y-m-d H:i:s");
             $clientIP = gethostbyaddr($_SERVER['REMOTE_ADDR']);
             $query2 = "DELETE FROM `casserver`.`casserver_lt` where ticket='$lt';";
-            $r2 = mysql_query($query2) or die("Erreur suppression LT");
+            $r2 = @mysql_query($query2) or die("Erreur suppression LT");
             $query = "INSERT INTO `casserver`.`casserver_lt` ("
                  ."`id` ,"
                  ."`ticket` ,"
@@ -45,7 +49,7 @@ if ($login)  {
                  ."VALUES ("
                  ."NULL , '$lt', '$date', NULL , '$clientIP'"
                  .");";
-            $r = mysql_query($query) or die("Erreur LT sql");
+            $r = @mysql_query($query) or die("Erreur LT sql");
 
             define('POSTURL', 'https://'.$hostname.'.'.$domain.':8443/login');
             define('POSTVARS', "username=$login&password=$password&lt=$lt&service=".$_POST['service']);

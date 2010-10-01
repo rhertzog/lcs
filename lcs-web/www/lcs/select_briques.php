@@ -1,7 +1,6 @@
 <?
- /* lcs/select_briques.php derniere mise a jour : 24/03/2010
-conformite UTF8 et register_long_arrays = Off
- */
+/* lcs/select_briques.php derniere mise a jour : 30/09/2010 */
+
 require "./includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
 require "../Annu/includes/ihm.inc.php";
@@ -24,8 +23,10 @@ $html .= "<div align='center'><h2>Configuration des liens LCS</h2></div>\n";
 
 if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
 	// Lecture des parametres dans la table briques
+	if (!@mysql_select_db($DBAUTH, $authlink)) 
+    		die ("S&#233;lection de base de donn&#233;es impossible.");
 	$query="SELECT * from applis";
-	$result=@mysql_db_query("$DBAUTH",$query, $authlink);
+	$result=@mysql_query($query, $authlink);
 	if (!$submit) {
         	if ($result)
                 	while ($r=mysql_fetch_array($result))

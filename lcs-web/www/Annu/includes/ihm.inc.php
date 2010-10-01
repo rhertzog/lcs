@@ -1,14 +1,5 @@
 <?php
-/* =============================================
-   Projet LCS-SE3
-   Consultation de l'annuaire LDAP
-   Annu/includes/ihm.inc.php
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « wawa »  olivier.lecluse@crdp.ac-caen.fr
-   Equipe Tice academie de Caen
-   Derniere mise a jour08/11/2008
-   Distribué selon les termes de la licence GPL
-   ============================================= */
+/* Annu/includes/ihm.inc.php derniere modification : 01/10/2010*/
 
 # Model caracteres speciaux pour les mots de passe
 $char_spec = "&_#@£%§:!?*$";
@@ -147,26 +138,6 @@ function header_html()
           </HEAD>
           <BODY>\n";
 }
-
-/*
-function is_admin ($idpers)
-{
-  global $DBAUTH, $authlink;
-  // Recherche si l'utilisateur connecté est admin
-  if ($idpers) {
-    // Recherche le login dans la base personne
-    $result=mysql_db_query("$DBAUTH","SELECT login FROM personne WHERE id=$idpers", $authlink);
-    if ($result && mysql_num_rows($result)) {
-      $login=mysql_result($result,0,0);
-      mysql_free_result($result);
-    } else {
-      $login="";
-    }
-  }
-  $people_attr=people_get_variables ($login, false);
-  return ($people_attr[0]["admin"]);
-}
-*/
 
 function is_admin ($droit,$login)
 {

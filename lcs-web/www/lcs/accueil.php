@@ -4,7 +4,7 @@
    accueil.php
    jLCF : jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   derniere mise a jour : 16/06/2010
+   derniere mise a jour : 30/09/2010
    ============================================= */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -22,13 +22,17 @@ list($user, $groups)=people_get_variables ($login, false);
 $is_admin = is_admin("Lcs_is_admin",$login);
 
 // Recherche si monlcs est present
-$result=@mysql_db_query("$DBAUTH","SELECT value from applis where name='monlcs'", $authlink);
+if (!@mysql_select_db($DBAUTH, $authlink)) 
+    die ("S&#233;lection de base de donn&#233;es impossible.");
+$query="SELECT value from applis where name='monlcs'";
+$result = @mysql_query($query, $authlink);
 if ($result)
     while ($r=@mysql_fetch_array($result)) 
                $monlcs=$r["value"];
 else
-    die ("param&#232;tres absents de la base de donn&#233;es");
+    die ("Param&#232;tres absents de la base de donn&#233;es.");
 @mysql_free_result($result);
+
 
 $html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
     \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";

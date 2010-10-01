@@ -7,6 +7,7 @@ lcs-web (2.4.7.1~2) Lcs; urgency=low
   * Add test if lcs-deskto is activate and browser is not ie5 or ie6 in lcs/index.php
   * Update and synchronize with SE3 scripts : Import Sconet
   * Add chg_gidNumber.sh in /usr/share/lcs/scripts
+  * Replace deprecated PHP 5.3 functions mysql_db_query and split
  
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
@@ -14,7 +15,7 @@ lcs-web (2.4.7.1~2) Lcs; urgency=low
     content. This is required because when a broken XML file is downloaded,
     it's not removed...
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 29 Sep 2010 17:43:02 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 01 Oct 2010 17:05:41 +0200
 
 lcs-web (2.4.7) Lcs; urgency=low
 

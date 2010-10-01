@@ -1,11 +1,5 @@
 <?php
-/* =============================================
-   Projet LCS : Linux Communication Server
-   functions.inc.php
-   jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice academie de Caen
-   Derniere mise a jour 28/05/2010
-   ============================================= */
+/* functions.inc.php Derniere mise a jour 01/10/2010  */
 
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
@@ -68,10 +62,14 @@ include ("/var/www/lcs/includes/xoft.php");
 
         if ($idpers):
             /* Renvoie le nombre de connexions */
-            $result=mysql_db_query("$DBAUTH","SELECT stat FROM personne WHERE id=$idpers", $authlink);
-            if ($result && mysql_num_rows($result)):
-                $stat=mysql_result($result,0,0);
-                mysql_free_result($result);
+            //$result=mysql_db_query("$DBAUTH","SELECT stat FROM personne WHERE id=$idpers", $authlink);
+	    if (!@mysql_select_db($DBAUTH, $authlink)) 
+    		die ("S&#233;lection de base de donn&#233;es impossible.");
+	    $query="SELECT stat FROM personne WHERE id=$idpers";
+	    $result=@mysql_query($query,$authlink);
+            if ($result && @mysql_num_rows($result)):
+                $stat=@mysql_result($result,0,0);
+                @mysql_free_result($result);
             else:
                 $stat="0";
             endif;
@@ -85,10 +83,14 @@ include ("/var/www/lcs/includes/xoft.php");
 
         if ($idpers):
             /* Renvoie le timestamp du dernier login */
-            $result=mysql_db_query("$DBAUTH","SELECT DATE_FORMAT(last_log,'%d/%m/%Y &agrave; %T' ) FROM personne WHERE id=$idpers", $authlink);
-            if ($result && mysql_num_rows($result)):
-                $der_log=mysql_result($result,0,0);
-                mysql_free_result($result);
+            //$result=mysql_db_query("$DBAUTH","SELECT DATE_FORMAT(last_log,'%d/%m/%Y &agrave; %T' ) FROM personne WHERE id=$idpers", $authlink);
+	    if (!@mysql_select_db($DBAUTH, $authlink)) 
+    		die ("S&#233;lection de base de donn&#233;es impossible.");
+	    $query="SELECT DATE_FORMAT(last_log,'%d/%m/%Y &agrave; %T' ) FROM personne WHERE id=$idpers";
+            $result=@mysql_query($query,$authlink);
+            if ($result && @mysql_num_rows($result)):
+                $der_log=@mysql_result($result,0,0);
+                @mysql_free_result($result);
             else:
                 $der_log="";
             endif;
@@ -101,7 +103,11 @@ include ("/var/www/lcs/includes/xoft.php");
        global $authlink, $DBAUTH;
         if ($idpers):
             $date=date("YmdHis");
-            $result=mysql_db_query("$DBAUTH","UPDATE personne SET act_log=$date WHERE id=$idpers", $authlink);
+            //$result=mysql_db_query("$DBAUTH","UPDATE personne SET act_log=$date WHERE id=$idpers", $authlink);
+	    if (!@mysql_select_db($DBAUTH, $authlink)) 
+    		die ("S&#233;lection de base de donn&#233;es impossible.");
+	    $query="UPDATE personne SET act_log=$date WHERE id=$idpers";
+            $result=@mysql_query($query,$authlink);
         endif;
      }
 
@@ -129,18 +135,23 @@ include ("/var/www/lcs/includes/xoft.php");
         $idpers=0;$login="";
         if (! empty($_COOKIE["LCSAuth"])) {
             $sess=$_COOKIE["LCSAuth"];
-            $result=@mysql_db_query("$DBAUTH","SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'", $authlink);
-            if ($result && mysql_num_rows($result) ) {
+            //$result=@mysql_db_query("$DBAUTH","SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'", $authlink);
+	    if (!@mysql_select_db($DBAUTH, $authlink)) 
+    		die ("S&#233;lection de base de donn&#233;es impossible.");
+	    $query="SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'";
+            $result=@mysql_query($query,$authlink);
+            if ($result && @mysql_num_rows($result) ) {
 		// Split ip variable too take first ip only
 		// (BDD field is too short on multiple proxy case)
-                list($ip_session,$null) = split(",",mysql_result($result,0,0),2);
-                list($first_remote_ip,$null) = split(",",remote_ip(),2);
+                list($ip_session,$null) = preg_split("/,/",mysql_result($result,0,0),2);
+                list($first_remote_ip,$null) = preg_split("/,/",remote_ip(),2);
                 if ( $ip_session == $first_remote_ip ) {
                         $idpers =  mysql_result($result,0,1);
                         // Recherche du login a partir de l'idpers
                         $query="SELECT login FROM personne WHERE id=$idpers";
-                        $result=@mysql_db_query("$DBAUTH",$query, $authlink);
-                        if ($result && mysql_num_rows($result)) $login=@mysql_result($result,0,0);
+                        //$result=@mysql_db_query("$DBAUTH",$query, $authlink);
+			$result=@mysql_query($query,$authlink);
+                        if ($result && @mysql_num_rows($result)) $login=str_replace(" ", "", @mysql_result($result,0,0));
                 }
                 @mysql_free_result($result);
             }
@@ -150,7 +161,7 @@ include ("/var/www/lcs/includes/xoft.php");
 
     function mksessid()
     {
-        /* Fabrique un N� de session aleatoire */
+        /* Fabrique un Num de session aleatoire */
         global $Pool, $SessLen,$authlink, $DBAUTH;
 
         $count=10;
@@ -160,8 +171,11 @@ include ("/var/www/lcs/includes/xoft.php");
             $count--;
             for ($i = 0; $i < $SessLen ; $i++)
                 $sid .= substr($Pool, (mt_rand()%(strlen($Pool))),1);
+	    if (!@mysql_select_db($DBAUTH, $authlink)) 
+    		die ("S&#233;lection de base de donn&#233;es impossible.");
             $query="SELECT id FROM sessions WHERE sess='$sid'";
-	    $result=@mysql_db_query("$DBAUTH",$query, $authlink);
+	    //$result=@mysql_db_query("$DBAUTH",$query, $authlink);
+            $result=@mysql_query($query,$authlink);
             $res=mysql_num_rows($result);
         }
         while ($res>0 && $count);
@@ -216,18 +230,24 @@ include ("/var/www/lcs/includes/xoft.php");
         // Verifie le couple login/password sur l'annuaire ldap
         $auth_ldap = user_valid_passwd ( $login , $passwd );
         if ($auth_ldap) :
+	        if (!@mysql_select_db($DBAUTH, $authlink)) 
+    			die ("S&#233;lection de base de donn&#233;es impossible.");
                 // Ouvre une session et la stocke dans la table sessions de lcs_db
                 $query="SELECT id, stat FROM personne WHERE login='$login'";
-                $result=mysql_db_query("$DBAUTH",$query, $authlink);
+                //$result=mysql_db_query("$DBAUTH",$query, $authlink);
+                $result=@mysql_query($query,$authlink);
                 if ($result && mysql_num_rows($result)):
                         $idpers=mysql_result($result,0,0);
                         $stat=mysql_result($result,0,1)+1;
                         mysql_free_result($result);
                 else :
                        // le login n'est pas encore dans la base... creation de l'entree
-                        $result=mysql_db_query("$DBAUTH","INSERT INTO personne  VALUES ('', '', '', '$login', '')", $authlink);
+                        //$result=mysql_db_query("$DBAUTH","INSERT INTO personne  VALUES ('', '', '', '$login', '')", $authlink);
+			$query="INSERT INTO personne  VALUES ('', '', '', '$login', '')";
+			$result=@mysql_query($query,$authlink);
                         $query="SELECT id, stat FROM personne WHERE login='$login'";
-                        $result=mysql_db_query("$DBAUTH",$query, $authlink);
+                        //$result=mysql_db_query("$DBAUTH",$query, $authlink);
+			$result=@mysql_query($query,$authlink);
                         if ($result && mysql_num_rows($result)):
                                 $idpers=mysql_result($result,0,0);
                                 $stat=mysql_result($result,0,1)+1;
@@ -242,8 +262,12 @@ include ("/var/www/lcs/includes/xoft.php");
                 // lecture IP du client
                 $ip = remote_ip();
                 // Stocke la session et met a jour la table personne avec les stats
-                $result=mysql_db_query("$DBAUTH","INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip')", $authlink);
-                $result=mysql_db_query("$DBAUTH","UPDATE personne SET stat=$stat WHERE id=$idpers");
+                //$result=mysql_db_query("$DBAUTH","INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip')", $authlink);
+                //$result=mysql_db_query("$DBAUTH","UPDATE personne SET stat=$stat WHERE id=$idpers");
+		$query="INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip'";
+                $result=@mysql_query($query,$authlink);
+                $query="UPDATE personne SET stat=$stat WHERE id=$idpers";
+                $result=@mysql_query($query,$authlink);
                 set_act_login($idpers);
                 // Creation Espace Perso Utilisateur 
                 if ( !@is_dir("/home/".$login) ||  (@is_dir("/home/".$login) && 
@@ -275,6 +299,8 @@ include ("/var/www/lcs/includes/xoft.php");
     {
 		/* Ferme la session de idpers */
 		global $authlink, $DBAUTH,$Nom_Appli, $VER;
+	        if (!@mysql_select_db($DBAUTH, $authlink)) 
+    			die ("S&#233;lection de base de donn&#233;es impossible.");
 		// Destruction des cookies LCS
                 setcookie("LCSAuth","", 0,"/","",0);
                 setcookie("LCSuser","", 0,"/","",0);
@@ -312,18 +338,23 @@ include ("/var/www/lcs/includes/xoft.php");
 		}
 		// Nettoyage de la session 
         if ($idpers) :
-            mysql_db_query("$DBAUTH","DELETE FROM sessions WHERE idpers=$idpers", $authlink);
+            //mysql_db_query("$DBAUTH","DELETE FROM sessions WHERE idpers=$idpers", $authlink);
+	    $query="DELETE FROM sessions WHERE idpers=$idpers";
+	    $result=@mysql_query($query,$authlink);
         endif;
         /* update last_log */
         // lecture de act_log
-        $result=mysql_db_query("$DBAUTH","SELECT act_log FROM personne WHERE id=$idpers", $authlink);
+        //$result=mysql_db_query("$DBAUTH","SELECT act_log FROM personne WHERE id=$idpers", $authlink);
+	$query="SELECT act_log FROM personne WHERE id=$idpers";
+	$result=@mysql_query($query,$authlink);
         if ($result && mysql_num_rows($result)):
-          $act_log=mysql_result($result,0,0);
-          mysql_free_result($result);
+          $act_log=@mysql_result($result,0,0);
+          @mysql_free_result($result);
         endif;
         // transfert dans last_log
-        $result=mysql_db_query("$DBAUTH","UPDATE personne SET last_log=$act_log WHERE id=$idpers", $authlink);
-	
+        //$result=mysql_db_query("$DBAUTH","UPDATE personne SET last_log=$act_log WHERE id=$idpers", $authlink);
+	$query="UPDATE personne SET last_log=$act_log WHERE id=$idpers";
+	$result=@mysql_query($query,$authlink);
     }
 
 function ldap_get_right_search ($type,$search_filter,$ldap)

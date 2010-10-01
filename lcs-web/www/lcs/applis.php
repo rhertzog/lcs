@@ -1,5 +1,5 @@
 <?php 
-/* lcs/applis.php derniere mise a jour : 16/06/2010 */
+/* lcs/applis.php derniere mise a jour : 30/09/2010 */
 
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -9,13 +9,16 @@ include ("./includes/jlcipher.inc.php");
 define('NB_COLONNES',3);
 
 // Lecture de la table applis
-$result=@mysql_db_query("$DBAUTH","SELECT * from applis", $authlink);
+if (!@mysql_select_db($DBAUTH, $authlink)) 
+    die ("S&#233;lection de base de donn&#233;es impossible.");
+$query="SELECT * from applis";
+$result=@mysql_query($query, $authlink);
 if ($result)
-    while ($r=mysql_fetch_array($result))
+    while ($r=@mysql_fetch_array($result))
                 $$r["name"]=$r["value"];
 else
     die ("param&#232;tres absents de la base de donn&#233;es");
-mysql_free_result($result);
+@mysql_free_result($result);
 
 // Verification de l'authentification
 list ($idpers, $login)= isauth();

@@ -67,8 +67,11 @@ $error=$_GET['error'];
                         if ( $ip_client_prefix == $ip_serv_prefix) $source="lan"; else $source="wan";
                         #
                         $date=date("YmdHis");
-                        $result=mysql_db_query("$DBAUTH","INSERT INTO statusages VALUES ('Nogroup', 'auth_ok', '$date', '$source','$login')", $authlink);
-                        
+			if (!@mysql_select_db($DBAUTH, $authlink)) 
+    				die ("S&#233;lection de base de donn&#233;es impossible.");
+			$query="INSERT INTO statusages VALUES ('Nogroup', 'auth_ok', '$date', '$source','$login')";
+        		$result=@mysql_query($query);
+
                         if ( file_exists ("/usr/share/lcs/spip/spip_session_lcs.php") ) {
                             // Ouverture d'une session spip
                             header("Location:../spip/spip_session_lcs.php?action=login");
