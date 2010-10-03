@@ -1,3 +1,9 @@
+lcs-cdt (2.4.7.1) LCS; urgency=low
+
+  * fix bug in record "acces parent" in statusages 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 03 Oct 2010 13:12:16 +0200
+
 lcs-cdt (2.4.7) LCS; urgency=low
 
   [ Simon Cavey ]

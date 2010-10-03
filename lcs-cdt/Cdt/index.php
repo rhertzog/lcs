@@ -94,7 +94,8 @@ include ('./Includes/data.inc.php');
  					$date=date("YmdHis");
  					# Enregistrement dans la table statusages
 					#
-					$result=mysql_db_query("$DBAUTH","INSERT INTO statusages VALUES ('Parent', 'Cdt', '$date', 'wan')", $authlink);
+					$Kl=$_SESSION['saclasse'][$x];
+					$result=mysql_db_query("$DBAUTH","INSERT INTO statusages VALUES ('Parent', 'Cdt', '$date', 'wan', '$Kl')", $authlink);
 					#
  					}
  				}
