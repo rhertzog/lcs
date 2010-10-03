@@ -336,8 +336,7 @@ ext_link">Forum</a>');
 	//on apppelle squirrelmail
 	<?php if (pwdMustChange($login)) { ?>
 		//alert('Pass no changed');
-		JQD.init_link_open_win('<a rel="change_pass" rev="change_pass" title="auth" href="../Annu/must_change_default_pwd.php" 
-class="open_win ext_link">Cnager de mot-de-passe</a>');	
+		JQD.init_link_open_win('<a rel="change_pass" rev="change_pass" title="auth" href="../Annu/must_change_default_pwd.php" class="open_win ext_link">Cnager de mot-de-passe</a>');	
 		// le user doit recharger la page apres modif pass
 		JQD.create_notify("withIconNoClose", { title:'Attention!', text:'N&rsquo;oubliez pas d&rsquo;actualiser votre bureau apr&egrave;s avoir modifi&eacute; votre mot de passe. <br /><span style="text-decoration:underline;">Cliquez-moi pour actualiser votre bureau</span>', icon:'core/images/icons/alert.png' }, {
 			expires:false,
@@ -352,11 +351,9 @@ class="open_win ext_link">Cnager de mot-de-passe</a>');
                         $.get("../squirrelmail/plugins/notify/notify-desktop.php",
                         function(data){
                             if (data != '')
-                            
                              JQD.create_notify("withIcon", { title:'Messagerie', text: data + '<p><span style="text-decoration:underline;">Consulter sa messagerie</span>', icon:'core/images/icons/mailicon.png' },{ expires:false,
                              click: function(e,instance){
-				JQD.init_link_open_win('<a title="Webmail" rel="../lcs/statandgo.php?use=squirrelmail" 
-rev="squirrelmail" href="#icon_dock_lcs_squirrelmail" class="open_win ext_link">Messagerie</a>');
+				JQD.init_link_open_win('<a title="Webmail" rel="../lcs/statandgo.php?use=squirrelmail" rev="squirrelmail" href="#icon_dock_lcs_squirrelmail" class="open_win ext_link">Messagerie</a>');
 				instance.close();
 				}});
                          });
