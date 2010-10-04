@@ -1,5 +1,5 @@
 <? 
-session_name("'SACoche-session'");
+session_name("SACoche-session");
 @session_start();
 // On détruit toutes les variables de session 
 $_SESSION = array();
