@@ -65,6 +65,31 @@ if apt-get dist-upgrade -s | grep Remv | grep lcs; then
         echo "Migration ETCH -> LENNY interrompue par tentative de desinstallation des paquets LCS"
         exit 1
 fi
+### On demande a garder les fichiers de config.
+cat > /etc/apt/apt.conf.d/lcs-upgrade-lenny <<EOF
+Dpkg::Options {
+"--force-confdef";
+"--force-confold";
+}
+EOF
+
+
+### On repond aux questions avant qu'elles n'arrivent.
+cat > /tmp/preseed-lenny <<EOF
+# Faut-il gA(C)rer le fichier de configuration de libnss-ldap automatiquementA ?
+libnss-ldap     libnss-ldap/override    boolean false
+# Faut-il gA(C)rer la configuration automatiquementA ?
+libpam-ldap     libpam-ldap/override    boolean false
+# Services A  redA(C)marrer lors de la mise A  niveau de la bibliothAque PAMA :
+libpam0g        libpam0g/restart-services       string  squid cron courier-authdaemon atd
+# Choices: Belgian, French
+console-data    console-data/keymap/azerty/layout       select
+bind9  bind9/start-as-user     string  bind
+libc6  glibc/restart-services  string  slapd rsync postfix openbsd-inetd cron courier-authdaemon atd
+libssl0.9.8    libssl0.9.8/restart-services    string  ssh
+EOF
+
+debconf-set-selections < /tmp/preseed-lenny   
 #######
 echo "4. Upgrade de la distribution : Fournir les reponses par defaut."
 apt-get update
@@ -80,6 +105,7 @@ done
 echo "6. Mise en place de lcs-sysinfo en remplacement de lcs-phpsysinfo"
 apt-get install -y --force-yes lcs-sysinfo
 
+rm /etc/apt/apt.conf.d/lcs-upgrade-lenny
 echo -e "$COLTITRE"
 echo "FIN !"
 echo -e "$COLCMD\c"
