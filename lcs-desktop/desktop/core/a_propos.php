@@ -76,7 +76,7 @@ font-size:.8em;font-family:tahoma;
 		<h1>Lcs-Bureau</h1>
 		<h3>Version : 1.0 - XP</h3> 
 		<?php echo " ".$ver; ?>
-		<h3>License</h3>
+		<h3>Licence</h3>
 		<p>LCS-Bureau est distribu&eacute; sous licence libre <abbr title="Licence Publique G&eacute;n&eacute;rale GNU">GNU GPL</abbr></p>
 		<h3>Auteurs :</h3>
 		<p>Lcs-Bureau est bas&eacute; sur <a href="http://sonspring.com/journal/jquery-desktop" rev="web" class="open_win ext_link" title="jquery-Desktop">JQuery Desktop</a> by Nathan Smith et d&eacute;velopp&eacute; et maintenu par l' &Eacute;quipe TICE du CRDP de Basse-Normandie. (<small>Auteur : <a href="mailto:dlepaisant@ac-caen.fr?subject=[Lcs-Bureau]" title="dlepaisant AT ac-caen.fr"> Dominique Lepaisant</a></small>)

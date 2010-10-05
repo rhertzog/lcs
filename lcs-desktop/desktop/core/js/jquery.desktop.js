@@ -487,6 +487,7 @@ var JQD = (function($) {
 							el = $(this).contents();
 							// Listage et modif des mailto:
 							el.find('a').each(function(){
+								$(this).removeAttr('target');
 								$cible=$(this).attr('href').replace('?','&');
 								if($(this).attr('href').match('mailto:')){
 									$(this).attr({
