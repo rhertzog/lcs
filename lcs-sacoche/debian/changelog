@@ -1,3 +1,9 @@
+lcs-sacoche (0.4) LCS; urgency=low
+
+  * update to version 2010-10-05  
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 05 Oct 2010 02:13:20 +0200
+
 lcs-sacoche (0.3) LCS; urgency=low
 
   * fix bug in close_session 
