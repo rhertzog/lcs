@@ -1,0 +1,13 @@
+Source: lcs-bcdiweb
+Section: misc
+Priority: optional
+Maintainer: Philippe Leclerc <philippe.leclerc1@ac-caen.fr>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.7.3
+Homepage: <insert the upstream URL, if relevant>
+
+Package: lcs-bcdiweb
+Architecture: 
+Depends: lcs-web
+Description: Install BCDI Web  on LCS server
+ BCDI Web for Lcs

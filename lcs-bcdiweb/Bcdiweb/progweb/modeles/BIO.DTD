@@ -1,0 +1,36 @@
+<!--=================== Text Elements ====================================-->
+<!ENTITY % fontstyle "i | b ">
+<!ENTITY % phrase "sub | sup ">
+<!ENTITY % special "br">
+<!ENTITY % inline "%fontstyle; | %phrase; | %special;">
+<!ENTITY % Inline "(#PCDATA | %inline; )*">
+
+<!--================== Block Level Elements ==============================-->
+<!ENTITY % lists "ul | ol ">
+<!ENTITY % block "p | %lists; ">
+<!ENTITY % Flow "(#PCDATA | %block; | %inline; )*">
+
+<!--================== Quatrieme Elements ================================-->
+<!ELEMENT quatrieme (presentation*,biographie*,infoediteur?)>
+<!ELEMENT presentation (%block; )*>
+<!ATTLIST presentation langue CDATA #REQUIRED>
+<!ELEMENT biographie (%block; )*>
+<!ATTLIST biographie langue CDATA #REQUIRED>
+<!ELEMENT infoediteur (%block; )*>
+
+<!--=================== Paragraphs =======================================-->
+<!ELEMENT p %Inline;> <!-- paragraph -->
+
+<!--=================== Lists ============================================-->
+<!ELEMENT ul (li)+> <!-- unordered list ooo -->
+<!ELEMENT ol (li)+> <!-- ordered list 123 -->
+<!ELEMENT li %Flow;> <!-- list item -->
+
+<!--===================== Inline Elements ================================-->
+<!ELEMENT sub %Inline;> <!-- subscript -->
+<!ELEMENT sup %Inline;> <!-- superscript -->
+<!ELEMENT i %Inline;> <!-- italic -->
+<!ELEMENT b %Inline;> <!-- bold -->
+
+<!--===================== Forced line break ================================-->
+<!ELEMENT br EMPTY>

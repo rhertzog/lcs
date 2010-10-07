@@ -1,0 +1,79 @@
+<!-- FicheSpecial.htm -->
+<div class="zoneafftxt">
+  <div class="fiche100pr100">
+	<script type="text/javascript">
+	  var typeNotice="<#Champ /Java Notices Type Notice>";
+	  var typeDocument="<#Champ /Java Documents Type Doc.>";
+	  var supportNotice="<#Champ /Java Notices Support N.>";
+
+	  var noticeGenerale=(typeNotice=="Notice générale");
+	  var docRessourceEnLigne=(typeDocument=="Ressource en ligne");
+	  var docRessourceElectronique=(typeDocument=="Ressource électronique");
+
+// DebFichLyc
+	  if (noticeGenerale)
+	  {
+		ch_aff=supportNotice;
+		ch_aff+=" (<#Champ /Java Documents Date de parution>) ";
+		ch_aff+="<#Champ /Java Notices Natures>  <i>(<#Champ /Java Documents Type Doc.>)</i><br/><br/>";
+		chDocument="<#Champ /Java /Couleur Documents Document>";
+		nbNotices=<#Champ Documents Nombre Notices>;
+		if (nbNotices>1)
+		chDocument='<a href="<#URLDLL>?EQ:Document=<#Champ /Java Documents Document>" title="Voir les '+nbNotices+' correspondantes">'+chDocument+'</a>';
+		ch_aff+="<div class='titre'>"+chDocument+"</div>";
+	  }
+	  else
+	  {
+		ch_aff=typeNotice+" de "+supportNotice;
+		ch_aff+=" dans <i><#Champ /Java /Couleur Notices Document></i>";
+		ch_aff+=" (<#Champ /Java Documents Date de parution>) ";
+		ch_aff+=", <#Champ /Java Notices Collation>  <i>(<#Champ /Java Documents Type Doc.>)</i><br/>";
+		ch_aff+="<div class='titre'><#Champ /Java /Couleur Notices Titre></div>";
+	  }
+	  ch_aff+="<br/><br/>";
+	  rajouterStrong("<#Intitule Notices Résumé> ","<#Champ /Java /Couleur Notices Résumé>");
+	  rajouterStrong("<#Intitule Notices Descripteurs> ","<#Champ /Java /Actif /Couleur Notices Descripteurs>");
+	  rajouterStrong("<#Intitule Notices Mots clés> ","<#Champ /Java /Couleur Notices Mots clés>");
+	  rajouterStrong("<#Intitule Notices Genres> ","<#Champ /Java Notices Genres>");
+	  ch_aff+="<hr/>";
+	  rajouterStrong("<#Intitule Notices Auteurs> ","<#Champ /Java /Actif Notices Auteurs>");
+	  rajouterStrong("<#Intitule Documents Editeurs> ","<#Champ /Java Documents Editeurs>");
+	  vel="<#Champ /Java /Actif Documents N° Collection>";
+	  if (vel!="") vel=", "+vel;
+	  rajouterStrong("<#Intitule Documents Collection> ","<#Champ /Java /Actif Documents Collection>"+vel);
+	  rajouterStrong("<#Intitule Documents Date de parution> ","<#Champ /Java Documents Date de parution>");
+	  ch_aff+="<br/>";
+
+// Affichage Optionnel bouton fiche complète
+	  ch_aff+='<div id="txtaffiche-<#VALEUR RANG_FICHE>"  class="cachediv">';
+
+	  if (!noticeGenerale) rajouterStrong("<#Intitule Notices Natures> ","<#Champ /Java Notices Natures>");
+	  rajouterStrong("<#Intitule Notices Publics> ","<#Champ /Java Notices Publics>");
+	  rajouterStrong("<#Intitule Notices Niveaux> ","<#Champ /Java Notices Niveaux>");
+	  rajouterStrong("Disciplines : ","<#Champ /Java Notices Disciplines N.>");
+	  if (noticeGenerale) rajouterStrong("<#Intitule Notices Collation> ","<#Champ /Java Notices Collation>");
+	  rajouterStrong("<#Intitule Notices Notes> ","<#Champ /Java Notices Notes>");
+	  rajouterStrong("<#Intitule Documents ISBN> ","<#Champ /Java Documents ISBN>");
+	  rajouterStrong("<#Intitule Documents ISSN> ","<#Champ /Java Documents ISSN>");
+	  rajouterStrong("<#Intitule Documents N° Normalisé> ","<#Champ /Java Documents N° Normalisé>");
+ ch_aff+="<br/>";
+ <#SI Champ Documents Ressource »!>
+	  if (noticeGenerale)
+        ch_aff+="Ressource liée : <#Champ /Java /Ressource Documents Ressource><br>";
+<#FINSI Champ Documents Ressource »!>
+<#SI Champ Notices Ressource 1 »!>
+	 ch_aff+="Ressource liée : <#Champ /Java /Ressource Notices Ressource 1><br>";
+<#FINSI Champ Notices Ressource 1 »!>
+<#SI Champ Notices Ressource 2 »!>
+	ch_aff+="Ressource liée : <#Champ /Java /Ressource Notices Ressource 2><br>";
+<#FINSI Champ Notices Ressource 2 »!>
+	  ch_aff+="<br/>";
+
+
+	  ch_aff+='<br/><br/></div>'; // pour le DIV cachediv
+	  document.write(ch_aff);
+	</script>
+  </div>
+</div class="zoneafftxt">
+
+

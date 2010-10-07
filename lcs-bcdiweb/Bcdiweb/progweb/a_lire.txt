@@ -1,0 +1,5 @@
+Toutes les informations d'installation de BcdiWeb
+ sur serveur Linux se trouvent dans le fichier d'aide
+installé dans le répertoire doc.
+Pour paramétrer une nouvelle base, lancez le script
+param_bcdiweb.pl et suivez les instuctions à l'écran.

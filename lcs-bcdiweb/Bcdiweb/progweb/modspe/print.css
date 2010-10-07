@@ -1,0 +1,139 @@
+
+
+div, div a {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	text-decoration: none;
+	visibility: visible;
+}
+
+.zonemenu, .menuseparat, .menuseparatsuite, .menuseparatsuite1, .ajout, .ajout2, .visionno, .txt100pr100 pre, .classementformat, .alignpuce, .boutviderpanier, input, .modif, font h6, .pagination, .pointille, .imprime, #noespace {
+	position:absolute;
+	top:0px;
+	left:-5px;
+	visibility: hidden;
+	overflow: hidden;
+	height: 0px;
+	width: 0px;
+}
+
+
+.zoneclaire  {
+	padding-top:1%;
+	width: 100%;
+	display: block;
+	z-index:auto;
+	border-top: 1px solid #CCCCCC;
+	border-right: none;
+	border-bottom: none;
+	border-left: none;
+	padding-bottom:1%;	
+	page-break-inside: avoid;
+}
+
+.txt {	
+	float: left;
+}
+
+.txt100pr100 {	
+	width: 100%;		
+}
+
+
+
+font {
+	color:#000000;
+}
+
+.titre{	
+	font-weight: bold;	
+	font-size: 14px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+
+}
+
+
+
+
+
+
+
+.ficheicone {
+	
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	text-decoration: none;
+	width: 15%;
+	display: block;	
+	
+}
+
+
+
+.fiche {
+display: block;	
+}
+.zoneafftxt {	
+	width: 100%;
+	display: block;	
+}
+
+
+.fiche100pr100, .zoneexemplaire {
+	padding-top:2px;
+	width: 100%;	
+}
+
+
+
+
+.zoneexemplairetitre  {
+	
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #000000;
+}
+
+
+
+.zoneexemplairetxt div {
+	width: 100%;
+	float: left;
+	font-size:11px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.intitule100 {
+	float: left;
+	width: 105px;
+	font-weight: bold;
+	display: inline;
+}
+
+.titre {background-color:#F7F7F7;}
+
+.resume, .titre{
+	display: block;	
+	text-decoration: none;
+}
+
+.fiche100pr100 div {
+	display: block;
+}
+.txtbasederecherche {
+	
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;
+	padding-bottom:20px;
+}
+.txtdaterecherche {	
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;	
+	color: #000000;
+}
