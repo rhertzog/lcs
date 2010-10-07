@@ -151,10 +151,10 @@
 
   // Test de l'appartenance &#224; la classe
   if ((tstclass($login,$user["uid"])==1) and (ldap_get_right("sovajon_is_admin",$login)=="Y") and ($login != $user["uid"])) {
-  echo "<br>\n";
-  echo "<ul style=\"color: red;\">\n";
-  echo "<li><a href=\"mod_user_entry.php?uid=".$user["uid"]."\">Modifier le compte de mon &#233;l&#232;ve ...</a><br>\n";
-  echo "</ul>\n";
+  	echo "<br>\n";
+  	echo "<ul style=\"color: red;\">\n";
+  	echo "<li><a href=\"mod_user_entry.php?uid=".$user["uid"]."\">Modifier le compte de mon &#233;l&#232;ve ...</a><br>\n";
+  	echo "</ul>\n";
   }
    
    // swekey
