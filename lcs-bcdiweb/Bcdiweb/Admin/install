@@ -14,7 +14,7 @@ mkdir -p /home/BcdiPlug/Data
 chown -R www-data /home/BcdiPlug 
 
 # Configuration Apache
-cp -a /usr/share/lcs/Plugins/Bcdiweb/progweb/confhttp/bcdiweb.conf > /etc/apache2/lcs-main/78_bcdi.conf
+cp -a /usr/share/lcs/Plugins/Bcdiweb/progweb/confhttp/bcdiweb.conf  /etc/apache2/lcs-main/78_bcdi.conf
 
 
 # Configuration de l copie automatique de la base

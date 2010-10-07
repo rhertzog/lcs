@@ -8,19 +8,19 @@ install:
 
 # install doc
 	install -d $(DESTDIR)/usr/share/doc/lcs/bcdiweb/html
-	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcsbcdiweb//html/
+	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/bcdiweb/html/
 
 # install 
 	install -d $(DESTDIR)/usr/share/lcs/Plugins/Bcdiweb
-	cp -a Bcdiweb/* $(DESTDIR)/usr/share/lcs/Plugins/
+	cp -a Bcdiweb/* $(DESTDIR)/usr/share/lcs/Plugins/Bcdiweb/
 
 # install  conf
-	install -d $(DESTDIR)/var/lib/lcs/
+	install -d $(DESTDIR)/var/lib/lcs/Bcdiweb
 	cp -a conf/* $(DESTDIR)/var/lib/lcs/Bcdiweb/	
 
 # install lcs bcdiweb  mnu.d
-        install -d $(DESTDIR)/var/www/lcs/includes/mnu.d/95bcdi
-        cp -a mnud/* $(DESTDIR)/var/www/lcs/includes/mnu.d/95bcdi/
+	install -d $(DESTDIR)/var/www/lcs/includes/mnu.d/95bcdi
+	cp -a mnud/* $(DESTDIR)/var/www/lcs/includes/mnu.d/95bcdi/
 
 clean:
 

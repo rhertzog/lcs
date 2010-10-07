@@ -7,7 +7,7 @@ Standards-Version: 3.7.3
 Homepage: <insert the upstream URL, if relevant>
 
 Package: lcs-bcdiweb
-Architecture: 
+Architecture:all 
 Depends: lcs-web
 Description: Install BCDI Web  on LCS server
  BCDI Web for Lcs
