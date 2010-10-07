@@ -1,1 +1,0 @@
-Serveur Bcdi,/bcdi/admin/installsrv.php,lcs_is_admin

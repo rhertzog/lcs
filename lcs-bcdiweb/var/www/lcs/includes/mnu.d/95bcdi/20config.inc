@@ -1,1 +1,0 @@
-Configuration,/bcdi/admin/config.php,lcs_is_admin
