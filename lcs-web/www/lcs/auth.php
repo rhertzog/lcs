@@ -1,8 +1,14 @@
 <?php
-/* lcs/auth.php version du : 03/06/2010 */
+/* lcs/auth.php version du :07 /10/2010 */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
+
+// On autorise pas la réauthentification si deja authentifie
+list ($idpers, $login)= isauth();
+if ($idpers != "0")
+    header("Location:accueil.php");
+
 if ( is_dir ("/usr/share/lcs/swekey")) 
     include_once '/usr/share/lcs/swekey/my_login_verify.php';
 
