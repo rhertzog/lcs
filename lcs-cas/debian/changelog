@@ -1,8 +1,9 @@
-lcs-cas (2.4.7.1~4) Lcs; urgency=low
+lcs-cas (2.4.7.1) Lcs; urgency=low
 
   * Transition to LDAP Authenticators
+  * Update html doc 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 08 Oct 2010 12:04:04 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 08 Oct 2010 13:26:49 +0200
 
 lcs-cas (2.4.7) Lcs; urgency=low
 
