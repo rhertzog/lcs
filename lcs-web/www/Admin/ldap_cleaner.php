@@ -1,11 +1,5 @@
 <?php
- /* =============================================
-   Projet LcSE3 : Gestion des comptes orphelins
-   Admin/ldap_cleaner.php
-   Equipe Tice academie de Caen
-   derniere mise a jour : 07/11/2008
-   Distribue selon les termes de la licence GPL
-   ============================================= */
+ /* Admin/ldap_cleaner.php derniere mise a jour : 08/10/2010 */
 
 include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -31,7 +25,7 @@ function search_sambadomain () {
   ldap_close($ds);
 }
 
-function search_people_trash ($filter) {
+function search_people_trash_lcs ($filter) {
   global $ldap_server, $ldap_port, $dn, $adminDn, $adminPw;
   global $error;
   $error="";
@@ -320,7 +314,7 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 				// Affichage du sablier
 				echo "<div align='center'><img src=\"Images/wait.gif\" title=\"Patientez...\" align=\"middle\" border=\"0\">&nbsp;Examiner le contenu de la poubelle. Veuillez patienter...</div>";
 			else {			
-				$users = search_people_trash ("cn=*");
+				$users = search_people_trash_lcs ("cn=*");
 				echo "<p><img src=\"Images/";
 				if (count($users) == 0 ) echo "Poubelle_vide.png";
 				else echo "Poubelle_pleine.png";
@@ -356,12 +350,12 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 				echo "<div align='center'><img src=\"Images/wait.gif\" title=\"Patientez...\" align=\"middle\" border=\"0\" ALT=\"Patientez\">&nbsp;Vidage de la corbeille en cours. Veuillez patienter...</div>";
 			elseif ($phase == 2 ) {
 				#echo "Le nettoyage de la corbeille s'est deroule avec succ&#232;s.<br>";
-				$users = search_people_trash ("cn=*");
+				$users = search_people_trash_lcs ("cn=*");
       				for ($loop=0; $loop<count($users);$loop++) {
 			        	$entry="uid=".$users[$loop]["uid"].",".$dn["trash"];
 					exec ("$scriptsbinpath/entryDel.pl $entry" ,$AllOutPut,$ReturnValue);
       				}				
-				$users = search_people_trash ("cn=*");
+				$users = search_people_trash_lcs ("cn=*");
 				if (count($users) == 0 ) echo "Le nettoyage de la corbeille s'est d&#233;roul&#233; avec succ&#232;s.<br>";
 				else echo "<div class=error_msg>Echec du nettoyage de la corbeille !</div>";				
 			}
@@ -392,7 +386,7 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 				if ($filter_type == "commence" ) $filtre=$filtre."*";
 				if ($filter_type == "finit" ) $filtre="*".$filtre; 
 				// Recherche des utilisateurs repondant au critere
-				$users = search_people_trash ("cn=$filtre");
+				$users = search_people_trash_lcs ("cn=$filtre");
 				echo "<div align='center'><img src=\"Images/";
 				if (count($users) == 0 ) echo "Poubelle_vide.png";
 				else echo "Poubelle_pleine.png";
@@ -470,7 +464,7 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 						// Categorie $trash_member[1]
 						if ( $trash_member[0] != "" ) {
 							// Lecture des params de l'utilisateur selectionne dans la trash
-							$user = search_people_trash ("uid=$trash_member[0]");
+							$user = search_people_trash_lcs ("uid=$trash_member[0]");
 							// Positionnement des constantes "objectclass"
 							if ( $sambadomain!="0" ) $user[0]["sambaacctflags"]="[U          ]";
                                                         else $user[0]["acctflags"]="[U          ]";

@@ -9,14 +9,15 @@ lcs-web (2.4.7.1~2) Lcs; urgency=low
   * Add chg_gidNumber.sh in /usr/share/lcs/scripts
   * Replace deprecated PHP 5.3 functions mysql_db_query and split
   * Don't allow reauthentication if already authenticate in auth.php
- 
+  * Rename function search_people_trash to search_people_trash_lcs 
+
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
     might download into {applilcs,moduleslcs}.xml.1 and we don't see the new
     content. This is required because when a broken XML file is downloaded,
     it's not removed...
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Oct 2010 10:33:30 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 08 Oct 2010 14:35:04 +0200
 
 lcs-web (2.4.7) Lcs; urgency=low
 
