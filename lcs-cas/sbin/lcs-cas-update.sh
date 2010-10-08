@@ -2,13 +2,14 @@
 # lcs-cas-update.sh 
 # update rubycas-lcs base on rubycas-server <http://code.google.com/p/rubycas-server/>
 #
+
 cd /var/lib/lcs/cas/
 if [ -e rubycas-lcs-latest.gem  ]; then
   rm rubycas-lcs-latest.gem
 fi
 wget http://lcs.crdp.ac-caen.fr/gems/rubycas-lcs-latest.gem
 if [ -e rubycas-lcs-latest.gem  ]; then
-    gem install rubycas-lcs-latest.gem
+    gem install rubycas-lcs-latest.gem --no-ri --no-rdoc
     VER=`gem list | grep rubycas-lcs | cut -d '(' -f 2 | cut -d ',' -f 1 | cut -d ')' -f 1`
     mv rubycas-lcs-latest.gem rubycas-lcs-$VER.gem
 else
@@ -18,7 +19,7 @@ fi
 #
 # Pass to Authenticators::LDAP
 #
-cp $USERHOME/config.yml.in $CONF/config.yml
+cp /var/lib/lcs/cas/config.yml.in $CONF/config.yml
 #
 # LCSMGR PASS
 # 
