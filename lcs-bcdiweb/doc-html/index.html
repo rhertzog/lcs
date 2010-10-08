@@ -9,13 +9,42 @@
 
 </HEAD>
 <BODY>
-<H1 class="title"><BR><BR><BR>Dummy Plugin ou le Plugin LCS model</H1>
-<H3>Un <I>«Dummy Plugin»</I>, pourquoi faire ?</H3>
-<P>Pour faciliter le développement des plugins, une maquette de plugin
-respectant  les spécifications structurelles du concept de <I>«Plugin LCS»</I> et
-proposant un model de script d'installation, désinstallation, mise à jour est mis à
-disposition des développeurs  de <B>plugins</B> pour un savoir plus, consultez la <A
-href='http://wawadeb.crdp.ac-caen.fr/lcsdoc/p1442.htm'>documentation LCS
-(chapitre VII.) en suivant ce lien...</A></P>
+<H1 class="title"><BR>Module Lcs_Bcdiweb</H1>
+
+<P>Le module BcdiWeb permet d'installer facilement BcdiWeb version 2.04 sur le serveur Lcs. 
+Une fois le module installé et le code d'activation de bcdiweb rentré, le mécanisme s'appuie sur une recopie de la base bcdi via le logiciel libre Rsync.
+La mise a jour se fait en automatique à une heure donnée, ou bien en manuel.
+La mise en place de cette recopie constitue de fait une sauvegarde automatique supplémentaire de la base BCDI.
+</p><p>
+Sa mise en place se fait en 3 étapes:
+<ul>
+<li> Installation du module et paramétrage de BcdiWeb
+<li> Installation du serveur Rsync sur le serveur BCDI pour la réplication de la base
+<li> Réplication de la base 
+</ul>
+</p>
+<H3>Installation du module</h3>
+<p>
+Une fois le module BcdiWeb installé, un nouveau menu "BCDI WEB" apparait dans le menu d'administration de Lcs.
+La première étape consiste à cliquer dans Configuration pour saisir le code d'activation du BCDI WEB et l'adresse IP du serveur BCDI pour la synchronisation des données.
+</p>
+
+<H3>Installation du serveur RSYNC</H3>
+<p>
+Allez sur le serveur hébergeant la base BCDI. Celui-ci doit être sous Windows 2000/XP. Depuis ce poste, allez dans le menu administration de Lcs / BCDI WEB / Serveur Bcdi. 
+Suivez alors les instructions afin d'installer et configurer le service Rsync sur le poste.
+
+</p>
+
+<H3>Réplication de la base</H3>
+<p>
+Une fois le service Rsync installé et configuré sur le poste hébergeant la base BCDI, allez dans le menu Administration Lcs / BCDI WEB / Mise a jour Base. 
+Vous pouvez alors lancer une recopie immédiate de la base sur Lcs afin de tester tout de suite le fonctionnemment de bcdi web. 
+Vous pouvez ensuite sélectionner une heure pour la recopie automatique de la base bcdi. 
+Si la base BCDI est sur une machine allumée en permanence, une recopie la nuit conviendra parfaitement. 
+Dans le cas contraire, il conviandra de choisir une heure où la machine est allumée et pas trop sollicitée.</P>
+
+<H3>Equipe de d&eacute;veloppement :</H3> 
+<BLOCKQUOTE>Philippe LECLERC : &lt;misterphi&gt; philippe.leclerc1@ac-caen.fr </BLOCKQUOTE> 
 </BODY>
 </HTML>
