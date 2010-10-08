@@ -2,8 +2,27 @@
 # lcs-cas-update.sh 
 # update rubycas-lcs base on rubycas-server <http://code.google.com/p/rubycas-server/>
 #
+# Get LCS params in lcs_db
+function get_lcsdb_params() {
+    PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
+    echo "$PARAMS"
+}
+#
+# rubycas-lcs configuration and path
+#
+CONF="/etc/rubycas-lcs"
+USERHOME="/var/lib/lcs/cas"
+#
+# get LCSMGR PASS
+#
+LCSMGRPASS=`cat /var/www/lcs/includes/config.inc.php | grep "PASSAUTH=" | cut -d '"' -f 2`
+#
+# get LCS params
+#
+LDAP_SERVER=$(get_lcsdb_params ldap_server)
+LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
 
-cd /var/lib/lcs/cas/
+cd $USERHOME
 if [ -e rubycas-lcs-latest.gem  ]; then
   rm rubycas-lcs-latest.gem
 fi
@@ -19,7 +38,7 @@ fi
 #
 # Pass to Authenticators::LDAP
 #
-cp /var/lib/lcs/cas/config.yml.in $CONF/config.yml
+cp $USERHOME/config.yml.in $CONF/config.yml
 #
 # LCSMGR PASS
 # 
