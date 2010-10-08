@@ -1,3 +1,10 @@
+lcs-desktop (0.2~11) UNRELEASED; urgency=low
+  [Jean-Luc Chretien]
+  * Fix typo in test target in inc_menus_admin.php
+
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 08 Oct 2010 14:39:33 +0200
+
 lcs-desktop (0.2~10) Lcs; urgency=low
   [Jean-Luc Chretien]
     * Replace deprecated function mysql_db_query in index.php and core/a_propos.php
