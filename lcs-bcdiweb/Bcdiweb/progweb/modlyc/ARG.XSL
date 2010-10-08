@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:bvd="http://www.bvdep.com" version="1.0" exclude-result-prefixes="bvd msxsl">
-
-<xsl:output
-	method="xml"
-	omit-xml-declaration="yes"
-	indent="no"
-/>
+  <xsl:output method="html" version="4.0" encoding="ISO-8859-1" omit-xml-declaration="yes" standalone="yes" indent="yes" media-type="text/html" />
+  
 
 <!-- overriding template for those items that have to style associated with them -->
 <xsl:template match="*">

@@ -1,3 +1,4 @@
+<!-- 17/11/2008 Restrictions.htm -->
 <#VAR RESTRICTION=SANS>
 <#SI RECHERCHE#TITRE><#SI RECHERCHE#AUTEUR><#VAR RESTRICTION=AVEC><#FINSI RECHERCHE#AUTEUR><#FINSI RECHERCHE#TITRE>
 <#SI RESTRICTION=AVEC>
@@ -23,7 +24,7 @@
   <span  style="margin-left:20px"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Type de documents :</b></span>
 
   <div class="zone5" style="margin-left:20px">
-  <#BOUCLE CHAMP="Support N." TEXTE="<div><input name='SUPPORT1' type='checkbox' value='?VALEUR?' checked ><img src='<#CONST REP_MODELES>PUCE?VALEUR MAJ?.gif' width=20 height=20>?VALEUR?&nbsp;</div>">
+  <#BOUCLE CHAMP="Support" TEXTE="<div><input name='SUPPORT1' type='checkbox' value='?VALEUR?' checked ><img src='<#CONST REP_MODELES>PUCE?VALEUR MAJ?.gif' width=20 height=20>?VALEUR?&nbsp;</div>">
 <br/>&nbsp;
   </div>
 <div>&nbsp;</div>

@@ -75,6 +75,7 @@ function effacer()
       value="";
       if (prem) {nom=name; prem=false;}
     }
+	if (type=="select-one") options[0].selected = true;
 	if (type=="checkbox") checked=(name=="TYPEDENATURE") // on conserve FICTION et DOCUMENTAIRE
 	if (name=="LANGAGE") checked=(value=="DICO")
   }

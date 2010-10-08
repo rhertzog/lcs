@@ -238,7 +238,12 @@ no=0; EnteteListe();
   </td>
   <td>&nbsp;</td>
     <td valign="top">
-    <INPUT  type="Checkbox" name="AUTOPOSTAGE" value="SPECIFIQUE">&nbsp;Elargir la recherche
+	<td valign="top">
+<!--	<INPUT  type="Checkbox" name="AUTOPOSTAGE" value="SPECIFIQUE"/>&nbsp;Elargir la recherche
+	<span style="font-size:12px"><i><b>(chercher des thèmes proches)</b></i></span>
+  C'est fait en résultat de recherche
+-->
+    &nbsp;</td>
     <br /><span style="font-size:12px"><i><b>(chercher des thèmes proches)</b></i></span>
   </td>
 <#FINSI RECHERCHE=THESAURUS>
@@ -262,38 +267,29 @@ function escapeApostrophe(ch)
 	escapeApostrophe+=c
   }
 }
-var delai_de_frappe=700 // millisecondes
-function SansParametre(url,param)  // on enlève un champ de la liste des paramètres d'une URL
-{
-  p=url.indexOf("?"+param+"=");
-  if (p<0)
-	p=url.indexOf("&"+param+"=");
-  if (p>=0)
-  {
-	ch=url.substring(0,p)
-	reste=url.substr(p+1)
-	p=reste.indexOf("&");
-	if (p>0)
-	  ch+="&"+reste.substr(p+1)
-	url=ch
-  }
-  return(url)
-}
+var delai_de_frappe=3000 // millisecondes
+
 function RajouterParametre(url,nom,valeur)  // on rajoute un champ de la liste des paramètres d'une URL
 {
-  url=SansParametre(url,nom)
-  if (valeur=="") valeur=" ";
-  if (valeur!="not exist")
-  {
+  rajout=nom+"="+escape(valeur);
+  nom=nom.toUpperCase();
+  urlUp=url.toUpperCase()+"&";
+  p=urlUp.indexOf("?"+nom+"=");
+  if (p<0) p=urlUp.indexOf("&"+nom+"=");
+  if (p<0) {
 	p=url.indexOf("?");
-	if (p<0)
-	  url+="?"
-	else
-	  url+="&"
-	url+=nom+"="+escape(valeur)
+	if (p<0) url+="?"; else url+="&";
+	url+=rajout;
+  }
+  else
+  {
+	p+=1
+	q=urlUp.indexOf("&",p);
+	url=url.substr(0,p)+rajout+url.substr(q)
   }
   return(url)
 }
+
 function valeurs_checkees(NomChp)
 {
   res=""
@@ -364,6 +360,7 @@ function init_liste()  // renvoie le formulaire avec la liste correspondant au d
 	ch=RajouterParametre(ch,"FOCUS",chpAlister)
 	ch=RajouterParametre(ch,"FICHIER",valeurChamp("FICHIER"))
 	ch=RajouterParametre(ch,"NP",valeurChamp("NP"))
+    ch=RajouterParametre(ch,"AUTOPOSTAGE",valeurs_checkees("AUTOPOSTAGE"))
 	window.location.href=ch;
   }
 }

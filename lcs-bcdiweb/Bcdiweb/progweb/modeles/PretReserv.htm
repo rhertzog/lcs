@@ -1,3 +1,4 @@
+<!-- 17/11/2008 PretReserv.htm -->
 <!-- Fichier PretsReserv.htm -->
 <html>
 <head>
@@ -8,7 +9,7 @@
 <!--
 function init_liste_titres(valeur) // renvoie le formulaire avec la liste correspondant au début de saisie
 {
-  var nom="DOCUMENTS_DOCUMENT="; // ce qui sera dans le query de l'URL
+  var nom="NOTICES_NOTICE="; // ce qui sera dans le query de l'URL
   var ch=window.location.href;
   var p=ch.indexOf(nom);
 //  if ( touche!=null && touche!=0 && touche!=8 && touche!=9 && touche!=13 && touche!=27 )
@@ -26,7 +27,7 @@ function init_liste_titres(valeur) // renvoie le formulaire avec la liste corres
   if (ch.indexOf("CONNECTION")<0)
     ch+="&CONNECTION=<#CONNECTION>"
   if (ch.indexOf("FAIRE")<0)
-    ch+="&FAIRE=CHOISIR_DOCUMENT"
+	ch+="&FAIRE=CHOISIR_NOTICE"
   if (ch.indexOf("TARGET")<0)
     ch+="&TARGET='_self'"
   if (valeur>"")
@@ -64,12 +65,12 @@ function maj_saisie_titre() // recopie la valeur de la liste déroulante dans la 
   if (ch.indexOf(suite)==0)
     init_liste_titres(ch.substr(suite.length,255))
   else
-    document.forms[0].DOCUMENTS_DOCUMENT.value=decode(ch)
+    document.forms[0].NOTICES_NOTICE.value=decode(ch)
 }
 -->
 </script>
 </head>
-<body onload="document.FORMULAIRE_RESERVATIONS.DOCUMENTS_DOCUMENT.focus()">
+<body onload="document.FORMULAIRE_RESERVATIONS.NOTICES_NOTICE.focus()">
 <b><BR><font size="5">Compte lecteur : <#UTILISATEUR></font></b><BR>
 Nombre de prêts au total  : <#NB_PRETS> <br>
 Nombre de prêts en retard : <#NB_PRETS_EN_RETARD><br>
@@ -87,7 +88,7 @@ Liste des r&eacute;servations : <br>
 <table>
 <TR><TD><i>Tapez les premières lettres du titre recherché, capturez-le dans la liste, puis cliquez sur le bouton 'Voir la disponibilité'</i></TD></TR>
 <TR><TD>
-    <input type="text" name="DOCUMENTS_DOCUMENT" value="<#DOCUMENTS_DOCUMENT>" largeur="100"" onKeyUp="init_liste_titres(document.forms[0].DOCUMENTS_DOCUMENT.value)"
+	<input type="text" name="NOTICES_NOTICE" value="<#NOTICES_NOTICE>" largeur="100"" onKeyUp="init_liste_titres(document.forms[0].NOTICES_NOTICE.value)"
            ONFOCUS="if (this.createTextRange) {
            var range = this.createTextRange();
            range.collapse(false);
@@ -98,7 +99,7 @@ Liste des r&eacute;servations : <br>
 </tr>
 <tr>
             <td align="center">
-                <select name="LISTE_TITRES" value="Liste Titres" onChange="maj_saisie_titre()" size="7" class="select600"><#LISTE DOCUMENTS DOCUMENT>
+				<select name="LISTE_TITRES" value="Liste Titres" onChange="maj_saisie_titre()" size="7" class="select600"><#LISTE NOTICES NOTICE>
                 </select>
            </td>
            </tr>

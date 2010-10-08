@@ -1,3 +1,4 @@
+<!-- AccueilCompte.htm - 08/12/2008 -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <!-- 23/01/07 -->
@@ -8,15 +9,12 @@
 <meta http-equiv="Pragma" content="no-cache">
 <link rel="stylesheet" href="<#CONST REP_MODELES>print.css" type="text/css" media="print">
 <link href="<#CONST REP_MODELES>bcdi.css" rel="stylesheet" type="text/css" media="screen">
-
-
-
 <script type="text/javascript">
 <!--
 var fichierEnCours="ACCUEILCOMPTE.HTM"
 function supprimer(num) {
   if (confirm("Confirmation de la suppression ?"))
-   window.location.href="?FAIRE=SUPPRIMER_RESERVATION&FICHIER=ACCUEILCOMPTE&NR=<#VALEUR NUMERO_RECHERCHE>&NP=<#VALEUR NUMERO_PANIER>&B=<#VALEUR NUMERO_PAGE>&NUMERO_DOCUMENT=<#VALEUR NUMERO_DOCUMENT>&FICHIERORIGINE=<#FICHIER>&NUMERO_RESERVATION="+num+"&IDENTIFIANT=<#VALEUR NUMERO_UTILISATEUR>"
+   window.location.href="?FAIRE=SUPPRIMER_RESERVATION&FICHIER=ACCUEILCOMPTE&NR=<#VALEUR NUMERO_RECHERCHE>&NP=<#VALEUR NUMERO_PANIER>&B=<#VALEUR NUMERO_PAGE>&NUMERO_NOTICE=<#VALEUR NUMERO_NOTICE>&FICHIERORIGINE=<#FICHIER>&NUMERO_RESERVATION="+num+"&IDENTIFIANT=<#VALEUR NUMERO_UTILISATEUR>"
 }
 
   function DivStatus( nom, numero )
@@ -100,10 +98,7 @@ function init() {
 </script>
 </head>
 
-
-
 <body onLoad="javascript:init()">
-
 <div class="zonemenu">
   <div class="fxcal">
     <div class="menucalibre">&nbsp;</div>
@@ -114,37 +109,28 @@ function init() {
 	</div>
 	<div class="menuOFF">
 	  <div class="menuOFFgauche"></div>
-	  <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=ACCUEILCOMPTE.HTM&MODELE=AVANCEE-THEME.HTM">Recherche avancée</a></div>
+	  <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=ACCUEILCOMPTE.HTM&MODELE=AVANCEE-THEME.HTM">Recherche avanc&eacute;e</a></div>
+	  <div class="menuOFFdroite"></div>
+	</div>
+	<div class="menuOFF">
+	  <div class="menuOFFgauche"></div>
+      <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=ACCUEILCOMPTE.HTM&MODELE=VISITTH.HTM">Recherche th&eacute;saurus</a></div>
       <div class="menuOFFdroite"></div>
     </div>
-    <div class="menuOFF">
-      <div class="menuOFFgauche"></div>
-      <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=ACCUEILCOMPTE.HTM&MODELE=VISITTH.HTM">Recherche thésaurus</a></div>
-      <div class="menuOFFdroite"></div>
-    </div>
 
-  <script type="text/javascript">
-  <!--
-  if (<#VALEUR NOMBRE_PANIER>>0){
-  var plur="";
-  if (<#VALEUR NOMBRE_PANIER>>1){ plur="s";}
-  document.write("<div class='menuOFFp'><div class='menuOFFgauchep'><\/div><div><a href='<#URLDLL>?np=<#NUMERO_PANIER>&fichier=Panier.htm&FICHIERORIGINE=Panier.htm' class='menupaniertxt' ");
-  document.write("><span class='menupaniertxt2'>Mon panier<\/span> (<#VALEUR NOMBRE_PANIER> fiche");
-  document.write(plur);
-  document.write(")<\/a><\/div><div class='menuOFFdroitep'><\/div><\/div>");
-  }
-  else{
-  document.write('<div class=\"menuOFF\"><div class=\"menuOFFgauche\"><\/div><div class=\"menuOFFtxt\">');
-  document.write('<span class="pasdepanier">Mon panier<\/span>');
-  document.write('<\/div><div class=\"menuOFFdroite\"><\/div><\/div>');
-  }
-   -->
-  </script>
-
-
+   <#VAR SWITCH=OFF>
+<#SI ENLISTE=OUI><#SI RESULTAT=PANIER><#VAR SWITCH=ON><#FINSI RESULTAT=PANIER><#FINSI ENLISTE=OUI>
+	<div class="menu<#VAR SWITCH>">
+	  <div class="menu<#VAR SWITCH>gauche"></div><div class="menu<#VAR SWITCH>txt">
+  <#SI VALEUR NOMBRE_PANIER#0>
+	  <a href="<#URLDLL>?np=-<#NUMERO_PANIER>&nr=0&b=1">Mon panier (<#VALEUR NOMBRE_PANIER> fiche<#SI VALEUR NOMBRE_PANIER#1>s<#FINSI VALEUR NOMBRE_PANIER#1>)</a>
+<#SINON VALEUR NOMBRE_PANIER#0>
+        <span class="pasdepanier">Mon panier</span>
+<#FINSI VALEUR NOMBRE_PANIER#0>
+	  </div><div class="menu<#VAR SWITCH>droite"></div>
+	</div>
 
     <div class='txt'>&nbsp;&nbsp;</div>
-
 
     <div class="menuON"><div class="menuONgauche"></div><div class="menuONtxtcompte"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=AccueilCompte.htm">Mon compte</a></div><div class="menuONdroite"></div>
     </div>
@@ -168,15 +154,15 @@ function init() {
     }
   }
   if(<#VALEUR NUMERO_UTILISATEUR>>0 && "<#LOGICIEL>"=="BCDIWEB"){
-    document.write('<div class="menuOFF">')
-    document.write('<div class="menuOFFgauche">&nbsp;</div>')
+	document.write('<div class="menuOFF">')
+	document.write('<div class="menuOFFgauche">&nbsp;</div>')
 // on ferme
-    document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:tryClose();" title="(déconnecter <#UTILISATEUR>)">Déconnexion</div>')
+//	document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:tryClose();" title="(déconnecter <#UTILISATEUR>)">Déconnexion</div>')
 // ou on réinitialise
-/*
-    ch="'?DECONNECTER=OUI&NP=<#NUMERO_PANIER>'";
-    document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:window.location.href='+ch+'" title="(déconnecter <#UTILISATEUR>)">Déconnexion</div>')
-*/
+//
+	ch="'?DECONNECTER=OUI'";
+	document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:window.location.href='+ch+'" title="(déconnecter <#UTILISATEUR>)">Déconnexion</div>')
+//
     document.write('<div class="menuOFFdroite">&nbsp;</div>')
     document.write('</div>')
   }
@@ -237,27 +223,27 @@ function init() {
 
       <div class="fiche100pr100">&nbsp;</div>
 
-      <div id="a1" class="cachediv">
-                  <table class="blockblanccompte" width=100%><tr>
-                    <td class="titre">Liste des prêts en cours : </td>
-                    <td align="right"><a href="javascript:DivStatus( 'a', '1' )" class="close">&nbsp;</a>&nbsp;&nbsp;</td>
-                  </tr></table>
-                  <table class="comptetxtblock" border="1" rules="rows">
-                    <#LISTE_PRETS_EN_COURS FICHEPRETENCOURS>
-                  </table>
-      </div>
+	  <div id="b1" class="cachediv">
+				  <table class="blockblanccompte" width=100%><tr>
+					<td class="titre">Liste des prêts en retard : </td>
+					<td align="right"><a href="javascript:DivStatus( 'b', '1' )" class="close">&nbsp;</a>&nbsp;&nbsp;</td>
+				  </tr></table>
+				  <table class="comptetxtblock" border="1" rules="rows">
+					<#LISTE_PRETS_EN_RETARD FICHEPRETENRETARD>
+				  </table>
+	  </div>
 
-      <div id="b1" class="cachediv">
-                  <table class="blockblanccompte" width=100%><tr>
-                    <td class="titre">Liste des prêts en retard : </td>
-                    <td align="right"><a href="javascript:DivStatus( 'b', '1' )" class="close">&nbsp;</a>&nbsp;&nbsp;</td>
-                  </tr></table>
-                  <table class="comptetxtblock" border="1" rules="rows">
-                    <#LISTE_PRETS_EN_RETARD FICHEPRETENRETARD>
-                  </table>
-      </div>
+	  <div id="a1" class="cachediv">
+				  <table class="blockblanccompte" width=100%><tr>
+					<td class="titre">Liste des prêts en cours : </td>
+					<td align="right"><a href="javascript:DivStatus( 'a', '1' )" class="close">&nbsp;</a>&nbsp;&nbsp;</td>
+				  </tr></table>
+				  <table class="comptetxtblock" border="1" rules="rows">
+					<#LISTE_PRETS_EN_COURS FICHEPRETENCOURS>
+				  </table>
+	  </div>
 
-      <div id="c1" class="cachediv">
+	  <div id="c1" class="cachediv">
                   <table class="blockblanccompte" width=100%><tr>
                     <td class="titre">Liste des réservations : </td>
                     <td align="right"><a href="javascript:DivStatus( 'c', '1' )" class="close">&nbsp;</a>&nbsp;&nbsp;</td>

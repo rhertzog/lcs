@@ -75,6 +75,7 @@ function effacer()
       value="";
       if (prem) {nom=name; prem=false;}
     }
+	if (type=="select-one") if (options[0].value=="Tous") options[0].selected = true;
 	if (type=="checkbox") checked=(name=="TYPEDENATURE") // on conserve FICTION et DOCUMENTAIRE
 	if (name=="LANGAGE") checked=(value=="DICO")
   }
@@ -87,7 +88,14 @@ function effacer()
 function InitChecked()
 {
   chComment=ParDefaut("<#COMMENT>","TOUS").substr(0,4)
-  chLangage=ParDefaut("<#LANGAGE>","DICO")
+  <#SI RECHERCHE=THESAURUS>chLangage="THESAURUS"<#SINON RECHERCHE=THESAURUS>
+  chLangage=ParDefaut("<#LANGAGE>","INDEFINI")
+  if (chLangage=="INDEFINI") {
+    Radios=document.getElementsByName("LANGAGEVISIBLE")
+    if (Radios.length==0) chLangage="DICO"; else
+     for(var j=0; j<Radios.length; j++) if (Radios[j].checked) chLangage=Radios[j].value;
+  }
+  <#FINSI RECHERCHE=THESAURUS>
   chClassement=ParDefaut("<#CLASSEMENT>","<#SI RECHERCHE=THEME>PERTINENCE<#SINON RECHERCHE=THEME><#SI RECHERCHE=THESAURUS>PERTINENCE<#SINON RECHERCHE=THESAURUS>TITRE<#FINSI RECHERCHE=THESAURUS><#FINSI RECHERCHE=THEME>").substr(0,4)
   chTypeNature=ParDefaut("<#TYPEDENATURE>","Fiction|Documentaire")
   chTypeNature=tube(chTypeNature);
@@ -106,11 +114,9 @@ function InitChecked()
 	else
 	if (nomI=="LANGAGE") {
       document.forms[0].elements[i].value=chLangage
-	  Radios=document.getElementsByName("LANGAGEVISIBLE")
-	  if (Radios.length>0)
-       for(var j=0; j<Radios.length; j++)
-        Radios[j].checked=(Radios[j].value==chLangage)
     }
+	else
+	if (nomI=="LANGAGEVISIBLE") with (document.forms[0].elements[i]) checked=value==chLangage;
 	else
 	if (nomI=="COMMENT")
 	{document.forms[0].elements[i].checked=(document.forms[0].elements[i].value.substr(0,4)==chComment)}
