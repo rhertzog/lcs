@@ -1,0 +1,6 @@
+#!/bin/bash
+echo "Mise à jour droits acces base de donnees maintenance";
+/usr/bin/mysql -e "UPDATE mysql.db SET Lock_tables_priv='Y', Create_priv='Y', Alter_priv='Y', Drop_priv='Y' WHERE Db='maint_plug'"
+/usr/bin/mysqladmin flush-privileges
+
+/usr/bin/mysql -e "UPDATE maint_plug.params SET  value='0.2.1' WHERE name='VER_PLUG'"

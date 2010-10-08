@@ -1,0 +1,139 @@
+[ CDCF Appli Maintenance ]
+
+L'appli doit pouvoir être intégrée aux svr LCS ou SE3 :
+	- Exploitation de la base de comptes de l'annuaire LDAP LcSe3
+	- Reprise de la charte graphique du LcSe3
+
+Population concernée par l'appli :
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Tous les utilisateurs des réseaux pédagogiques et administratif
+2 Catégories :
+	Cat_1 : Les utilisateurs non privilégiés
+	Cat_2 : Les responsables de la maintenance (appartenance à un groupe rights info_reseau par exemple)
+
+Fonctions d'usage :
+=-=-=-=-=-=-=-=-=-
+Pour les utilisateurs Cat_1 :
+---------------------------------
+Poster une demande d'intervention
+Recevoir une copie de cette demande
+Etre informer de la prise en compte de leur demande
+Pouvoir suivre (consultation)  l'avancement de l'intervention
+Etre avisé de la cloture de l'intervention
+Pouvoir consulter l'historique de leurs demandes
+Pouvoir effacer une demande
+Pouvoir reformuler la demande, apporter un commentaire supplémentaire ou procéder à une relance
+
+Pour les utilisateurs Cat_2 :
+---------------------------------
+Etre avisé par mel d'une nouvelle demande d'intervention
+Pouvoir rédiger un CR ou des CR d'interventions
+Totaliser le temps passé
+Pouvoir indiquer le cas échéant le cout en pièces de rechange
+Pouvoir cloturer l'intervention
+Consulter l'historique de ses interventions et/ou des interventions des autres membres de l'équipe de maintenance
+Pouvoir consulter des statistiques :
+	* Nbr interventions par secteur, salle, poste, Os ...
+	* Temps passé par les mainteneurs, temps d'atttente pour résoudre un pb ...
+	* coût en pièces de rechange
+	...
+
+Les informations en entrée de l'appli :
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Date et heure de la demande
+Type de la demande (support, intervention...)
+Secteur (Enseignement Industriel, Enseignement Général, Enseignement Tertiaire, Administration ...)
+Localisation (Batiment, Etage, N° de salle)
+Si pb sur un poste client (N° du poste, Marque, Systeme d'exploitation)
+Type du problème
+Descriptif de la demande
+Nom du demandeur (*)
+mel du demandeur (*)
+(*) ces infos sont issues de l'autentification sur le svr  LcSe3.
+
+Proposition de  structuration de la base de données :
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Base : maint_db
+Tables :
+maint_conf (Def des params de l'appli)
+maint_task ( 1 - stockage des demandes d'intervention)
+maint_thread ( 2,3,4... - stockage du feed de l'évenement et de sa cloture)
+
+
++-----------------------------------------------------------------------+
+| 1 - Description : le Xpt est planT :(
++-----------------------------------------------------------------------+
+	|_
+	   +---------------------------------------------------------------+
+	   |  2 - Acq : Nous nous en occupons...
+	   +---------------------------------------------------------------+
+	   	|_
+		   +---------------------------------------------------------+
+		   | 3 - Relance : Alors ca vient ! P'T1 C long :(
+		   +---------------------------------------------------------+
+	|_
+	   +----------------------------------------------------------------+
+	   | 4 - Cloture : Le pb est fixé, nous avosn ré1stallé un
+	   | Linusq en lieu et place du Xpt :-)))
+	   +----------------------------------------------------------------+
+
+Aide en ligne :
+=-=-=-=-=-=-=
+L'aide en ligne sera rédigée au format DocBook (voir XXe pour la rédaction) et moulinée aux formats HTML et pdf.
+
+Structuration de la table maint_task :
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+00 - Rid : Numéro unique d'identification de la demande
+01 - Acq : Statut de la demande
+	(0) : En attente,
+	(1) : Prise en charge,
+	(2) : Cloture de l'intervention.
+02 - Host : Hote source de la demande
+03 - Owner : Emetteur de la demande
+04 - OwnerMail : Mel de l'emetteur
+05 - Author : Responsable(s) du traitement du pb
+06 - Sector : secteur
+07 - Building : Batiment
+08 - Room : N° de la salle
+09 - Numcomp : N° du poste
+10 - Mark : Marque du PC
+11 - Os : système d'exploitation
+12 - Cat : catégorie de la demande
+13 - Content : Description de la demande
+14 - OpenTimeStamp : date heure de la demande
+15 - CloseTimeStamp : date et heure de la cloture de la demande
+16 - TakeTimeStamp : date heure de la prise en charge de la demande
+17 - BoosTimeStamp : date et heure de la relance
+18 - Nombre de relance
+
+Structuration de la table maint_thread :
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+01 - Rid : Numéro unique d'identification
+02 - TopRid : Rid d'attachement d'origine
+03 - Author : Emetteur
+04 - Content : Description, contenu du message
+05 - TimeStamp : date heure du CR  d'intervention
+06 - TimeLife : Durée de l'intervention
+07 - Cost : Cout des éventuels pièces de rechange
+
+Gestion des droits sur l'appli :
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Tous les utilisateurs ont acces à l'appli dés lors qu'ils sont authentifiés
+sur LCS ou Se3.
+Les utilisateurs membre d'un groupe LDAP (ex : Maintenance_Info) sont identifiés comme
+utilisateurs de catégorie 2 les autres sont identifiés comme utilisateur de catégorie 1.
+
+Bibliotheque de fonctions func_maint.inc.php :
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+function is_memberOf ($uid, $group)
+function Aff_mnu($mode)
+function Aff_feed_wait ($mode, $filter)
+function Aff_feed_take ($mode, $filter)
+function read_task ($Rid)
+function mail_to ($to, $Cc, $Subject, $Body, $From)
+function del_task ($Rid, $by)
+function take_task ($Rid, $Author, $AuthorMail)
+function table_alert ($message)
+
+

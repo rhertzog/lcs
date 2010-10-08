@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"[
+<!ENTITY INTRO SYSTEM "intro.xml">
+<!ENTITY MODUSER SYSTEM "user.xml">
+<!ENTITY MODTEAM SYSTEM "team.xml">
+<!ENTITY MODSYSTEMISADMIN SYSTEM "admin.xml">
+]>
+
+<article lang="fr">
+  <title>Aide Plugin LCS Support Info.</title>
+  &INTRO;
+  &MODUSER;
+  &MODTEAM;
+  &MODSYSTEMISADMIN;
+</article>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<sect1>
+  <title>Mode équipe</title>
+
+  <para>Le mode <emphasis>équipe</emphasis> est réservé aux membres de
+  l'équipe d'administration du système d'information de l'établissement, il
+  vous permet si vous faites parti de cette équipe de prendre en charge une
+  <emphasis role="bold">demande de support</emphasis> et d'informer
+  l'utilisateur qui a posté cette demande de l'évolution du traitement du
+  problème.</para>
+
+  <figure>
+    <title>Menu équipe</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/mnu_equipe.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+
+  <sect2>
+    <title>En attente</title>
+
+    <para>Vous avez accès à la liste des demandes de support exprimée et non
+    encore prise en charge.</para>
+  </sect2>
+
+  <sect2>
+    <title>Votre Encours</title>
+
+    <para>C'est la liste des demandes que vous avez pris en charge.</para>
+  </sect2>
+
+  <sect2>
+    <title>Encours gen.</title>
+
+    <para>C'est la liste des demandes qui sont prises en charge par l'ensemble
+    des membres de l'équipe.</para>
+  </sect2>
+
+  <sect2>
+    <title>Votre Historique</title>
+
+    <para>C'est la liste des demandes que vous avez clôturées.</para>
+  </sect2>
+
+  <sect2>
+    <title>Historique gen.</title>
+
+    <para>C'est la liste des demandes qui ont été clôturées par l'ensemble des
+    membres de l'équipe.</para>
+  </sect2>
+
+  <sect2>
+    <title>Intervention non sollicité</title>
+
+    <para>Ce menu vous permet de poster une demande d'intervention concernant
+    un problème que vous avez constaté, vous pourrez en suite le prendre en
+    charge ou laisser cette prise en charge à un autre membre de l'équipe
+    d'administration.</para>
+  </sect2>
+
+  <sect2>
+    <title>Configuration</title>
+
+    <para>Ce menu est disponible que si vous êtes membre du droit
+    <filename>system_is_admin</filename> du serveur
+    <emphasis>LCS</emphasis>.</para>
+  </sect2>
+</sect1>

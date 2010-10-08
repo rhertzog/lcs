@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+#### Variable a positionner en fonction du plugin
+NAMEPLUGIN="Maintenance"
+####
+#
+PATH2PLUGIN="/usr/share/lcs/Plugins/$NAMEPLUGIN"
+echo "Script d'installation du module Maintenance Informatique";
+#
+# Ajout de l'adresse mel d'admin dans la table params
+#
+echo "Ajout mail admin dans base de donnees de l'application";
+DOMAIN=`hostname -d`
+/usr/bin/mysql -e "INSERT INTO maint_plug.params VALUES (1, 'MAILMAINT', 'admin@$DOMAIN', 'Mail maintenance', 1);"
+# Modification privileges
+echo "Modification privileges acces a maint_plug Db"
+/usr/bin/mysql -e "UPDATE mysql.db SET Lock_tables_priv='Y', Create_priv='Y', Alter_priv='Y', Drop_priv='Y' WHERE Db='maint_plug'"
+/usr/bin/mysqladmin flush-privileges
+#
+# Nettoyage
+#
+rm -f $PATH2PLUGIN/Admin/install_mysql.sql
+mv $PATH2PLUGIN/Admin/install_mysql.sq $PATH2PLUGIN/Admin/install_mysql.sql
