@@ -5,7 +5,7 @@ set -e
 MODULE="cas"
 DESCRIPTION="SSO CAS (Central Authentification Service)"
 PATHMOD="/var/lib/lcs/$MODULE"
-INDICEMAJNBR="0"
+INDICEMAJNBR="2"
 VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
 
 case "$1" in

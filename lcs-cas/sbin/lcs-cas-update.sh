@@ -16,6 +16,22 @@ else
   exit 1
 fi
 #
+# Pass to Authenticators::LDAP
+#
+cp $HOME/config.yml.in $CONF/config.yml
+#
+# LCSMGR PASS
+# 
+sed -i s/#LCSPASS#/$LCSMGRPASS/g $CONF/config.yml
+#
+#LDAP_SERVER
+#
+sed -i s/#LDAP_SERVER#/$LDAP_SERVER/g $CONF/config.yml
+#
+#LDAP_BASE_DN#
+#
+sed -i s/#LDAP_BASE_DN#/$LDAP_BASE_DN/g $CONF/config.yml
+#
 # Restart cas service
 #
 invoke-rc.d rubycas-lcs restart

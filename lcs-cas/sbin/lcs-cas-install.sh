@@ -98,7 +98,8 @@ if [ `getent passwd $USERRUN | wc -l` = "0" ]; then
     adduser  $USERRUN --disabled-password --gecos 'CAS Server Account,,,' --shell /bin/bash --no-create-home --home $USERHOME
 fi
 mkdir -p $CONF
-cp /usr/lib/ruby/gems/1.8/gems/rubycas-lcs-$VER/config.example.yml  $CONF/config.yml
+#cp /usr/lib/ruby/gems/1.8/gems/rubycas-lcs-$VER/config.example.yml  $CONF/config.yml
+cp $HOME/config.yml.in $CONF/config.yml
 #
 # LCSMGR PASS
 # 
