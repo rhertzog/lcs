@@ -99,7 +99,7 @@ if [ `getent passwd $USERRUN | wc -l` = "0" ]; then
 fi
 mkdir -p $CONF
 #cp /usr/lib/ruby/gems/1.8/gems/rubycas-lcs-$VER/config.example.yml  $CONF/config.yml
-cp $HOME/config.yml.in $CONF/config.yml
+cp $USERHOME/config.yml.in $CONF/config.yml
 #
 # LCSMGR PASS
 # 

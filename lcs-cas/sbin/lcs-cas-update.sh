@@ -18,7 +18,7 @@ fi
 #
 # Pass to Authenticators::LDAP
 #
-cp $HOME/config.yml.in $CONF/config.yml
+cp $USERHOME/config.yml.in $CONF/config.yml
 #
 # LCSMGR PASS
 # 
