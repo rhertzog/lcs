@@ -25,7 +25,7 @@ class AbsenceEleveSaisieQuery extends BaseAbsenceEleveSaisieQuery {
 	 */
         public function filterByPlageTemps($dt_debut = null, $dt_fin = null)
         {
-	    if ($dt_debut != null && $dt_fin != null && $dt_debut == $dt_fin) {
+	    if ($dt_debut != null && $dt_fin != null && $dt_debut->format('U') == $dt_fin->format('U')) {
 		//on a pas une plage de temps mais deux fois le meme moment
 		//on va renvoyer aussi les saisies qui debutent a ce momement
 		$this->filterByFinAbs($dt_debut, Criteria::GREATER_THAN);
@@ -45,20 +45,26 @@ class AbsenceEleveSaisieQuery extends BaseAbsenceEleveSaisieQuery {
 
 	/**
 	 * Filtre la requete sur les saisies qui montre un manquement à l'obligation de presence de la part de l'eleve
+	 * Ce filtre peut provoquer des bug sur les requetes complexes. Il est alors possible d'utiliser le code suivant :
+	 * $saisie_col = AbsenceEleveSaisieQuery::create()->filtreXXX()->filterByManquementObligationPresence()->setFormatter(ModelCriteria::FORMAT_ARRAY)->find();
+	 * $eleve_col = $query
+	 *	    ->useAbsenceEleveSaisieQuery()
+	 *	    ->filterById($saisie_col->toKeyValue('Id', 'Id'))
 	 *
 	 * @param     boolean $value
 	 *
 	 * @return    AbsenceEleveSaisieQuery The current query, for fluid interface
 	 */
-        public function filterManquementObligationPresence($value = true)
+        public function filterByManquementObligationPresence($value = true)
         {
-	    $this->setComment('filterManquementObligationPresence');
-	    $this->groupById()
-		->useJTraitementSaisieEleveQuery('', Criteria::LEFT_JOIN)
-		->useAbsenceEleveTraitementQuery('', Criteria::LEFT_JOIN)
-		->useAbsenceEleveTypeQuery('', Criteria::LEFT_JOIN)
-		->endUse()->endUse()->endUse()
-		->withColumn('group_concat(manquement_obligation_presence)', 'types_concat');
+	    $this->setComment('filterByManquementObligationPresence');
+
+	    $this
+		->join('AbsenceEleveSaisie.JTraitementSaisieEleve', Criteria::LEFT_JOIN)
+		->join('JTraitementSaisieEleve.AbsenceEleveTraitement', Criteria::LEFT_JOIN)
+		->join('AbsenceEleveTraitement.AbsenceEleveType', Criteria::LEFT_JOIN)
+		->withColumn('group_concat(manquement_obligation_presence)', 'types_concat')
+		->groupById();
 	    if ($value === true) {
 		if (getSettingValue("abs2_saisie_par_defaut_sans_manquement")!='y' && getSettingValue("abs2_saisie_multi_type_sans_manquement")!='y') {
 		    $criteria = new Criteria();

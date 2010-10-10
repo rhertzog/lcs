@@ -37,7 +37,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -64,6 +64,7 @@ if ($_POST['step'] == "6") {
     if (!is_table_vide("j_groupes_professeurs")) { vider_table_seule("j_groupes_professeurs"); }
     if (!is_table_vide("j_eleves_groupes")) { vider_table_seule("j_eleves_groupes"); }
     if (!is_table_vide("j_groupes_matieres")) { vider_table_seule("j_groupes_matieres"); }
+    if (!is_table_vide("j_signalement")) { vider_table_seule("j_signalement"); }
 
     // On se connecte au LDAP
     $ldap->connect();
@@ -91,7 +92,7 @@ if ($_POST['step'] == "6") {
     // On boucle sur chaque équipe, ce qui revient à boucler sur les classes
     foreach($classes as $classe_courante) {
         # On a une classe, on poursuit
-        if (array_key_exists($classe_courante->getClasse(), $donnees_equipes)) {
+        if (array_key_exists($classe_courante->getNom(), $donnees_equipes)) {
           
           # On initialisation la liste des élèves de la classe
           
@@ -107,7 +108,7 @@ if ($_POST['step'] == "6") {
           
           
           # On passe tous les profs de l'équipe
-          foreach($donnees_equipes[$classe_courante->getClasse()] as $login_prof) {
+          foreach($donnees_equipes[$classe_courante->getNom()] as $login_prof) {
             
             $prof = UtilisateurProfessionnelPeer::retrieveByPK($login_prof);
             if ($prof) {

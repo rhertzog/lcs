@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: affectations.php 3736 2009-11-19 12:41:06Z crob $
+ * $Id: affectations.php 5610 2010-10-08 19:51:26Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -50,7 +50,8 @@ $liste_tables_del = array(
 "j_groupes_classes",
 "j_groupes_matieres",
 "j_groupes_professeurs",
-"eleves_groupes_settings"
+"eleves_groupes_settings",
+"j_signalement"
 );
 
 
@@ -65,7 +66,7 @@ die();
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
 die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");

@@ -3,7 +3,7 @@
 /**
  * Ensemble des fonctions qui permettent de créer un nouveau cours en vérifiant les précédents
  *
- * @version $Id: fonctions_cours.php 4592 2010-06-18 13:39:41Z adminpaulbert $
+ * @version $Id: fonctions_cours.php 5438 2010-09-26 19:13:10Z adminpaulbert $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -333,12 +333,25 @@ function RecupCoursElevesCommuns($creneau_courant, $jour, $groupe, $id_aid, $gro
     }
     // --------- Rechercher les groupes d'enseignement qui ont des élèves en commun avec le groupe visé
 
+	$sql_request = "DELETE FROM j_eleves_groupes_delestage";
+	$req = mysql_query($sql_request);
+
+	$sql_request = "SELECT login, id_groupe, periode FROM j_eleves_groupes WHERE id_groupe = '".$groupe."'";
+	$req = mysql_query($sql_request);
+	
+	while ($rep = mysql_fetch_array($req)) {
+		$sql_request = "INSERT INTO j_eleves_groupes_delestage SET
+			login = '".$rep['login']."', 
+			id_groupe = '".$rep['id_groupe']."',
+			periode = '".$rep['periode']."'";
+		$req_insertion = mysql_query($sql_request);
+	}
+	
+	
     if ($type_semaine == "0") {
         if ($groupe_type == "ENS") {
             $req_creneau = mysql_query("SELECT duree , login_prof , id_groupe FROM edt_cours WHERE 
-                                    id_groupe IN (SELECT id_groupe FROM j_eleves_groupes WHERE 
-                                                                login IN (SELECT login FROM j_eleves_groupes WHERE
-                                                                        id_groupe = '".$groupe."')) AND
+                                    id_groupe IN (SELECT id_groupe FROM j_eleves_groupes_delestage) AND
                                     jour_semaine = '".$jour."' AND
                                     id_definie_periode = '".$tab_id_creneaux[$creneau_courant]."' AND
                                     heuredeb_dec = '".$current_heure."' AND
@@ -359,12 +372,10 @@ function RecupCoursElevesCommuns($creneau_courant, $jour, $groupe, $id_aid, $gro
                                     ") or die(mysql_error());
         }
     }
-    else {      //AID
+    else {      
         if ($groupe_type == "ENS") {
             $req_creneau = mysql_query("SELECT duree , login_prof , id_groupe FROM edt_cours WHERE 
-                                    id_groupe IN (SELECT id_groupe FROM j_eleves_groupes WHERE 
-                                                                login IN (SELECT login FROM j_eleves_groupes WHERE
-                                                                        id_groupe = '".$groupe."')) AND
+                                    id_groupe IN (SELECT id_groupe FROM j_eleves_groupes_delestage) AND
                                     jour_semaine = '".$jour."' AND
                                     id_definie_periode = '".$tab_id_creneaux[$creneau_courant]."' AND
                                     heuredeb_dec = '".$current_heure."' AND

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: definir_mesures.php 3323 2009-08-05 10:06:18Z crob $
+ * $Id: definir_mesures.php 5401 2010-09-23 10:01:32Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -41,6 +41,13 @@ if ($resultat_session == 'c') {
 // maj : $tab_req[] = "INSERT INTO droits VALUES ( '/mod_discipline/saisie_mesures.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Discipline: Saisie des mesures', '');;";
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
+	die();
+}
+
+if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
+	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+	header("Location: ../accueil.php?msg=$mess");
 	die();
 }
 
@@ -140,7 +147,7 @@ if(isset($mesure)) {
 
 $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
-$titre_page = "Sanctions: Définition des mesures";
+$titre_page = "Discipline: Définition des mesures";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 

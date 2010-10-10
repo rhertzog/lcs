@@ -3,7 +3,7 @@
 /**
  * Fichier de gestion de l'emploi du temps dans Gepi version 1.5.x
  *
- * @version     $Id: index_edt.php 4115 2010-03-04 16:46:25Z adminpaulbert $
+ * @version     $Id: index_edt.php 5438 2010-09-26 19:13:10Z adminpaulbert $
  * @package		GEPI
  * @subpackage	EmploiDuTemps
  * @copyright	Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero
@@ -81,6 +81,8 @@ $salleslibres=isset($_GET['salleslibres']) ? $_GET['salleslibres'] : (isset($_PO
 
 // Pour revenir proprement, on crée le $_SESSION["retour"]
 $_SESSION["retour"] = "index_edt";
+
+VerifierTablesDelestage();
 
     if ($salleslibres == "ok") {
         include('edt_chercher.php');

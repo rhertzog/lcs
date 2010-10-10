@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: saisir_groupe.php 5316 2010-09-15 14:56:13Z jjacquard $
+ * @version $Id: saisir_groupe.php 5456 2010-09-27 19:19:22Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -97,7 +97,8 @@ if ($id_semaine == null || $id_semaine == -1 || !is_numeric($id_semaine) || $id_
 $current_semaine = EdtSemaineQuery::create()->findPk($id_semaine);
 
 if ($utilisateur->getStatut() == 'professeur' && getSettingValue("abs2_saisie_prof_decale")!='y' && getSettingValue("abs2_saisie_prof_decale_journee")!='y') {
-    $id_creneau == null;
+    $id_creneau = null;
+    $id_cours = null;
 }
 
 if ($utilisateur->getStatut() == 'professeur' && (getSettingValue("abs2_saisie_prof_decale")!='y')) {

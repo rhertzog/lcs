@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: signalement_eleves.php 4576 2010-06-09 15:38:51Z crob $
+ * $Id: signalement_eleves.php 5465 2010-09-28 16:12:12Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -192,7 +192,7 @@ if (isset($_POST['is_posted'])) {
 		}
 		if($envoi_mail_actif=='y') {
 			// On utilise un témoin
-			if(($nom_eleve!="")&&(getSettingValue("gepiAdminAdress")!='')) {
+			if((isset($nom_eleve))&&($nom_eleve!="")&&(getSettingValue("gepiAdminAdress")!='')) {
 				$gepiPrefixeSujetMail=getSettingValue("gepiPrefixeSujetMail") ? getSettingValue("gepiPrefixeSujetMail") : "";
 				if($gepiPrefixeSujetMail!='') {$gepiPrefixeSujetMail.=" ";}
 	
@@ -208,7 +208,7 @@ if (isset($_POST['is_posted'])) {
 		}
 
 		// On utilise un témoin
-		if(($nom_eleve!="")&&($msg=="")) {
+		if((isset($nom_eleve))&&($nom_eleve!="")&&($msg=="")) {
 			$msg="Enregistrement effectué.";
 		}
 	}

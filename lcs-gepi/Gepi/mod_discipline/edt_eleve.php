@@ -1,9 +1,9 @@
 <?php
 
 /*
- * $Id: edt_eleve.php 2554 2008-10-12 14:49:29Z crob $
+ * $Id: edt_eleve.php 5401 2010-09-23 10:01:32Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -41,6 +41,13 @@ if (!checkAccess()) {
 	die();
 }
 
+if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
+	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+	header("Location: ../accueil.php?msg=$mess");
+	die();
+}
+
 require('sanctions_func_lib.php');
 include("../class_php/edt_cours.class.php");
 
@@ -59,7 +66,7 @@ $style_specifique = "edt_organisation/style_edt";
 $utilisation_prototype="ok";
 $mode_header_reduit="y";
 //**************** EN-TETE *****************
-$titre_page = "Sanctions: EDT élève";
+$titre_page = "Discipline: EDT élève";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 

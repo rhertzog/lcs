@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 4878 2010-07-24 13:54:01Z regis $
+ * $Id: index.php 5530 2010-10-03 09:17:55Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -33,7 +33,7 @@ die();
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
 die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -441,12 +441,21 @@ while ($i < $nombreligne){
     if ($col[$i][4]=='') {$col[$i][4] = "&nbsp;";}
 
     // Affichage des classes
+    /*
     $call_classes = mysql_query("SELECT g.id group_id, g.name name, c.classe classe, c.id classe_id " .
             "FROM j_groupes_professeurs jgp, j_groupes_classes jgc, groupes g, classes c WHERE (" .
             "jgp.login = '$user_login' and " .
             "g.id = jgp.id_groupe and " .
             "jgc.id_groupe = jgp.id_groupe and " .
             "c.id = jgc.id_classe) order by jgc.id_classe");
+    */
+    $sql="SELECT g.id group_id, g.name name, c.classe classe, c.id classe_id " .
+            "FROM j_groupes_professeurs jgp, j_groupes_classes jgc, groupes g, classes c WHERE (" .
+            "jgp.login = '$user_login' and " .
+            "g.id = jgp.id_groupe and " .
+            "jgc.id_groupe = jgp.id_groupe and " .
+            "c.id = jgc.id_classe) order by c.classe;";
+    $call_classes = mysql_query($sql);
     $nb_classes = mysql_num_rows($call_classes);
     $k = 0;
     $col[$i][5] = '';

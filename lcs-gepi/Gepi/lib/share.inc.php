@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: share.inc.php 5101 2010-08-23 16:48:05Z regis $
+ * $Id: share.inc.php 5424 2010-09-25 19:44:35Z adminpaulbert $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
@@ -1953,7 +1953,7 @@ function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day)
    $test_prof = "SELECT nom, prenom FROM j_groupes_professeurs j, utilisateurs u WHERE (j.id_groupe='".$row[0]."' and u.login=j.login) ORDER BY nom, prenom";
    $res_prof = sql_query($test_prof);
    $chaine = "";
-   for ($k=0;$prof==sql_row($res_prof,$k);$k++) {
+   for ($k=0;$prof=sql_row($res_prof,$k);$k++) {
      if ($k != 0) $chaine .= ", ";
      $chaine .= htmlspecialchars($prof[0])." ".substr(htmlspecialchars($prof[1]),0,1).".";
    }
@@ -2404,13 +2404,13 @@ function get_user_temp_directory(){
 		$dirname=$lig_temp_dir->temp_dir;
 
 		if(($dirname!="")&&(strlen(my_ereg_replace("[A-Za-z0-9_.]","",$dirname))==0)) {
-			if(file_exists("../temp/".$dirname)){
+			if(file_exists("temp/".$dirname)){
+				return $dirname;
+			}
+			else if(file_exists("../temp/".$dirname)) {
 				return $dirname;
 			}
 			else if(file_exists("../../temp/".$dirname)) {
-				return $dirname;
-			}
-			else if(file_exists("temp/".$dirname)) {
 				return $dirname;
 			}
 			else{
@@ -5049,13 +5049,14 @@ function get_nom_prenom_eleve($login_ele,$mode='simple') {
 	$sql="SELECT nom,prenom FROM eleves WHERE login='$login_ele';";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
+		// Si ce n'est pas un élève, c'est peut-être un utilisateur prof, cpe, responsable,...
 		$sql="SELECT 1=1 FROM utilisateurs WHERE login='$login_ele';";
 		$res=mysql_query($sql);
 		if(mysql_num_rows($res)>0) {
-			return civ_nom_prenom($login)." (non-élève)";
+			return civ_nom_prenom($login_ele)." (non-élève)";
 		}
 		else {
-			return "Elève inconnu";
+			return "Elève inconnu ($login_ele)";
 		}
 	}
 	else {

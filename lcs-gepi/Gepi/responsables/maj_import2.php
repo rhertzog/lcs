@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: maj_import2.php 4578 2010-06-09 16:20:45Z crob $
+ * $Id: maj_import2.php 5486 2010-09-29 16:41:07Z crob $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -229,6 +229,16 @@ $gepiSchoolRne=getSettingValue("gepiSchoolRne") ? getSettingValue("gepiSchoolRne
 $mysql_collate=getSettingValue("mysql_collate") ? getSettingValue("mysql_collate") : "";
 $chaine_mysql_collate="";
 if($mysql_collate!="") {$chaine_mysql_collate="COLLATE $mysql_collate";}
+
+// 29/09/2010
+$chaine_collate="";
+$sql="show full columns from eleves WHERE Field='nom';";
+$res_col_eleves=mysql_query($sql);
+if(mysql_num_rows($res_col_eleves)>0) {
+	$lig_col_eleves=mysql_fetch_object($res_col_eleves);
+	if($lig_col_eleves->Collation!='utf8_unicode_ci') {$chaine_collate="COLLATE latin1_bin ";}
+}
+// A REVOIR: Avec cette recherche, on pourrait créer temp_gep_import2 avec la bonne collation.
 
 //**************** EN-TETE *****************
 $titre_page = "Mise à jour eleves/responsables";
@@ -1997,7 +2007,7 @@ else{
 							echo "Si par exemple, le champ 'eleves.ele_id' a pour collation 'latin1_general_ci', il faudrait exécuter une requête du type <span style='color:green;'>INSERT INTO setting SET name='mysql_collate', value='latin1_general_ci';</span> ou si la valeur existe déjà <span style='color:green;'>UPDATE setting SET value='latin1_general_ci' WHERE name='mysql_collate';</span><br />\n";
 						}
 						echo "</p>\n";
-	
+
 						require("../lib/footer.inc.php");
 						die();
 					}
@@ -2164,13 +2174,14 @@ else{
 									AND e.ele_id='$tab_ele_id[$i]';";
 				}
 				*/
+
 				if($ele_lieu_naissance=="y") {
 					$sql="SELECT e.ele_id FROM eleves e, temp_gep_import2 t, tempo2 t2
 							WHERE e.ele_id=t.ELE_ID AND
 									e.ele_id=t2.col1 AND
 									(
-										e.nom COLLATE latin1_bin != t.ELENOM OR
-										e.prenom COLLATE latin1_bin != t.ELEPRE OR
+										e.nom $chaine_collate!= t.ELENOM OR
+										e.prenom $chaine_collate!= t.ELEPRE OR
 										e.sexe!=t.ELESEXE OR
 										e.naissance!=t2.col2 OR
 										e.lieu_naissance!=t.LIEU_NAISSANCE OR
@@ -2183,8 +2194,8 @@ else{
 							WHERE e.ele_id=t.ELE_ID AND
 									e.ele_id=t2.col1 AND
 									(
-										e.nom COLLATE latin1_bin != t.ELENOM OR
-										e.prenom COLLATE latin1_bin != t.ELEPRE OR
+										e.nom $chaine_collate!= t.ELENOM OR
+										e.prenom $chaine_collate!= t.ELEPRE OR
 										e.sexe!=t.ELESEXE OR
 										e.naissance!=t2.col2 OR
 										e.no_gep!=t.ELENONAT
@@ -2195,6 +2206,7 @@ else{
 				//if($tab_ele_id[$i]=='305034') {echo "$sql<br />";}
 				//$reserve_sql=$sql;
 				info_debug($sql);
+				//echo "$sql<br />";
 				$test=mysql_query($sql);
 
 				$temoin_chgt_ancien_etab="n";

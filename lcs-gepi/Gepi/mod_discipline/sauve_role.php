@@ -1,9 +1,9 @@
 <?php
 
 /*
- * $Id: sauve_role.php 2554 2008-10-12 14:49:29Z crob $
+ * $Id: sauve_role.php 5401 2010-09-23 10:01:32Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -39,6 +39,13 @@ if ($resultat_session == 'c') {
 // maj : $tab_req[] = "INSERT INTO droits VALUES ( '/mod_discipline/sauve_role.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Svg rôles incident', '');;";
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
+	die();
+}
+
+if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
+	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+	header("Location: ../accueil.php?msg=$mess");
 	die();
 }
 

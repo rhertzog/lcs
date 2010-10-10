@@ -2,7 +2,7 @@
 
 /*
 *
-* $Id: visu_releve_notes_func.lib.php 4878 2010-07-24 13:54:01Z regis $
+* $Id: visu_releve_notes_func.lib.php 5492 2010-09-29 18:02:33Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -1131,6 +1131,22 @@ width:".$releve_addressblock_logo_etab_prop."%;\n";
 
 		//include ($fichier_bulletin);
 
+		if((!isset($tab_rel['eleve'][$i]['groupe']))||(count($tab_rel['eleve'][$i]['groupe'])==0)) {
+			echo "<div class='noprint' style='background-color: white; color: red; border: 1px solid black;padding: 1em;'>Aucun enseignement n'est associé à l'élève";
+
+			if ($choix_periode=='intervalle') {
+				echo ",<br />ou l'élève n'a aucune note sur l'intervalle de dates choisi (<i>en demandant l'affichage des relevés pour la période entière, les matières sont affichées, même si aucune note n'a été saisie</i>).</p>";
+			}
+			echo ".<br />\n";
+
+			if ($tab_rel['affiche_categories']) {
+				echo "<br />Si vous pensez que c'est anormal, c'est peut-être dû à un mauvais paramétrage des catégories de matières.<br />";
+				//echo "Il est possible de contrôler les catégories de matières en administrateur dans Gestion générale/Nettoyage des tables pour corriger ce problème.\n";
+				echo "Il est possible de corriger le problème en administrateur en refaisant le paramétrage des catégories de matières dans 'Gestion des bases/Gestion des classes/&lt;Une_classe&gt; Paramètres' ou dans 'Gestion des bases/Gestion des classes/Paramétrage par lots'.\n";
+			}
+			echo "</div>\n";
+		}
+
 		// On initialise le tableau :
 
 		$larg_tab = $releve_largeurtableau;
@@ -1149,220 +1165,221 @@ width:".$releve_addressblock_logo_etab_prop."%;\n";
 		// Boucle groupes
 		$j = 0;
 		$prev_cat_id = null;
-		while ($j < count($tab_rel['eleve'][$i]['groupe'])) {
-
-			if (($choix_periode!='intervalle')||
-			(($choix_periode=='intervalle')&&(isset($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])))) {
-			//count($tab_rel['eleve'][$i]['groupe'][$j]['devoir']>0)))) {
-				if ($tab_rel['affiche_categories']) {
-					// On regarde si on change de catégorie de matière
-					if ($tab_rel['eleve'][$i]['groupe'][$j]['id_cat'] != $prev_cat_id) {
-						$prev_cat_id = $tab_rel['eleve'][$i]['groupe'][$j]['id_cat'];
+		if((isset($tab_rel['eleve'][$i]['groupe']))&&(count($tab_rel['eleve'][$i]['groupe'])>0)) {
+			while ($j < count($tab_rel['eleve'][$i]['groupe'])) {
 	
-						echo "<tr>\n";
-						echo "<td colspan='2'>\n\n";
-						//echo "<p style='padding: 0; margin:0; font-size: 10px;'>".$tab_rel['categorie'][$prev_cat_id]."</p>\n";
-						echo "<p style='padding: 0; margin:0; font-size: ".$releve_categ_font_size."px;";
-						if($releve_categ_bgcolor!="") {echo "background-color:$releve_categ_bgcolor;";}
-						echo "'>".$tab_rel['categorie'][$prev_cat_id]."</p>\n";
-	
-	
-						echo "</td>\n";
-						echo "</tr>\n";
-					}
-				}
-	
-				echo "<tr>\n";
-				echo "<td class='releve'>\n";
-				echo "<b>".htmlentities($tab_rel['eleve'][$i]['groupe'][$j]['matiere_nom_complet'])."</b>";
-				//echo $tab_rel['eleve'][$i]['groupe'][$j]['id_groupe'];
-
-				$k = 0;
-				While ($k < count($tab_rel['eleve'][$i]['groupe'][$j]['prof_login'])) {
-					echo "<br /><i>".affiche_utilisateur(htmlentities($tab_rel['eleve'][$i]['groupe'][$j]['prof_login'][$k]),$id_classe)."</i>";
-					$k++;
-				}
-				echo "</td>\n";
-	
-				echo "<td class='releve'>\n";
-	
-				// Boucle sur la liste des devoirs
-				if(!isset($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])) {
-					echo "&nbsp;";
-				}
-				else {
-
-					//if((isset($tab_rel['eleve'][$i]['groupe'][$j]['affiche_boites']))&&($tab_rel['eleve'][$i]['groupe'][$j]['affiche_boites']=='y')) {
-					//if((isset($tab_rel['eleve'][$i]['groupe'][$j]['id_cn']['existence_sous_conteneurs']))&&($tab_rel['eleve'][$i]['groupe'][$j]['id_cn']['existence_sous_conteneurs']=='y')) {
-					if((isset($tab_rel['eleve'][$i]['groupe'][$j]['existence_sous_conteneurs']))&&($tab_rel['eleve'][$i]['groupe'][$j]['existence_sous_conteneurs']=='y')) {
-
-						//echo "AZERTY";
-
-						$temoin_conteneur=0;
-						foreach($tab_rel['eleve'][$i]['groupe'][$j]['id_cn'] as $tmp_id_cn => $tab_id_cn) {
-
-							//echo "<b>cn $tmp_id_cn</b> ";
-
-							unset($tmp_tab);
-							$tmp_tab[]=$tmp_id_cn;
-							//echo "<u><b>Racine ($tmp_id_cn)&nbsp;:</b></u> \n";
-							$retour_liste_notes_html=liste_notes_html($tab_rel,$i,$j,$tmp_tab);
-							if($retour_liste_notes_html!='') {
-								//echo "<u><b>Racine ($tmp_id_cn)&nbsp;:</b></u> \n";
-								echo $retour_liste_notes_html;
-								$temoin_conteneur++;
-							}
-
-							// Faire la boucle while($m<count($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])) {} 
-							// avec un test sur $tab_ele['groupe'][$j]['devoir'][$m]['id_conteneur']==$tmp_id_cn (soit la racine du cn à ce niveau)
-
-
-							for($k=0;$k<count($tab_id_cn['conteneurs']);$k++) {
-								unset($tmp_tab);
-								//if(isset($tab_id_cn['conteneurs'][$k]['id_racine'])) {
-									$tmp_tab[]=$tab_id_cn['conteneurs'][$k]['id_racine'];
-									if(isset($tab_id_cn['conteneurs'][$k]['conteneurs_enfants'])) {
-										for($kk=0;$kk<count($tab_id_cn['conteneurs'][$k]['conteneurs_enfants']);$kk++) {
-											$tmp_tab[]=$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk];
-											//echo "\$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk]=".$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk]."<br />";
-										}
-									}
-									//echo "<br />\n";
-									//echo "<u><b>".$tab_id_cn['conteneurs'][$k]['nom_complet']."&nbsp;:</b></u> \n";
-									$retour_liste_notes_html=liste_notes_html($tab_rel,$i,$j,$tmp_tab);
-									if($retour_liste_notes_html!='') {
-										if($temoin_conteneur>0) {echo "<br />\n";}
-										echo "<u><b>".casse_mot($tab_id_cn['conteneurs'][$k]['nom_complet'],'maj');
-										if($tab_id_cn['conteneurs'][$k]['display_parents']=='1') {echo " (<i>".$tab_id_cn['conteneurs'][$k]['moy']."</i>)";}
-										echo "&nbsp;:</b></u> \n";
-										echo $retour_liste_notes_html;
-										$temoin_conteneur++;
-									}
-
-									// Faire la boucle while($m<count($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])) {} 
-									// avec un test sur $tab_ele['groupe'][$j]['devoir'][$m]['id_conteneur'] égal à $tab_id_cn['conteneurs'][$k]['id_racine'] ou dans $tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][]
-								//}
-							}
-
-
-
-
+				if (($choix_periode!='intervalle')||
+				(($choix_periode=='intervalle')&&(isset($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])))) {
+				//count($tab_rel['eleve'][$i]['groupe'][$j]['devoir']>0)))) {
+					if ($tab_rel['affiche_categories']) {
+						// On regarde si on change de catégorie de matière
+						if ($tab_rel['eleve'][$i]['groupe'][$j]['id_cat'] != $prev_cat_id) {
+							$prev_cat_id = $tab_rel['eleve'][$i]['groupe'][$j]['id_cat'];
+		
+							echo "<tr>\n";
+							echo "<td colspan='2'>\n\n";
+							//echo "<p style='padding: 0; margin:0; font-size: 10px;'>".$tab_rel['categorie'][$prev_cat_id]."</p>\n";
+							echo "<p style='padding: 0; margin:0; font-size: ".$releve_categ_font_size."px;";
+							if($releve_categ_bgcolor!="") {echo "background-color:$releve_categ_bgcolor;";}
+							echo "'>".$tab_rel['categorie'][$prev_cat_id]."</p>\n";
+		
+		
+							echo "</td>\n";
+							echo "</tr>\n";
 						}
+					}
+		
+					echo "<tr>\n";
+					echo "<td class='releve'>\n";
+					echo "<b>".htmlentities($tab_rel['eleve'][$i]['groupe'][$j]['matiere_nom_complet'])."</b>";
+					//echo $tab_rel['eleve'][$i]['groupe'][$j]['id_groupe'];
+	
+					$k = 0;
+					While ($k < count($tab_rel['eleve'][$i]['groupe'][$j]['prof_login'])) {
+						echo "<br /><i>".affiche_utilisateur(htmlentities($tab_rel['eleve'][$i]['groupe'][$j]['prof_login'][$k]),$id_classe)."</i>";
+						$k++;
+					}
+					echo "</td>\n";
+		
+					echo "<td class='releve'>\n";
+		
+					// Boucle sur la liste des devoirs
+					if(!isset($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])) {
+						echo "&nbsp;";
 					}
 					else {
-						$m=0;
-						$tiret = "no";
-						while($m<count($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])) {
-							// Note de l'élève sur le devoir:
-							$eleve_note=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['note'];
-							// Statut de l'élève sur le devoir:
-							$eleve_statut=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['statut'];
-							// Appréciation de l'élève sur le devoir:
-							$eleve_app=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['app'];
-							// Le professeur a-t-il autorisé l'accès à l'appréciation lors de la saisie du devoir
-							$eleve_display_app=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['display_app'];
-							// Nom court du devoir:
-							$eleve_nom_court=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['nom_court'];
-							// Date du devoir:
-							$eleve_date=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['date'];
-							// Coef du devoir:
-							$eleve_coef=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['coef'];
-		
-							//==========================================
-							// On teste s'il y aura une "Note" à afficher
-							if (($eleve_statut != '') and ($eleve_statut != 'v')) {
-								$affiche_note = $eleve_statut;
-							}
-							elseif ($eleve_statut == 'v') {
-								$affiche_note = "";
-							}
-							elseif ($eleve_note != '') {
-								$affiche_note = $eleve_note;
-							}
-							else {
-								$affiche_note = "";
-							}
-							//==========================================
-		
-							// Nom du devoir ou pas
-							if(($tab_rel['rn_app']=="y") and ($eleve_display_app=="1")) {
-								if ($affiche_note=="") {
-									if ($tab_rel['rn_nomdev']!="y") {
-										$affiche_note = $eleve_nom_court;
-									}
-									else {
-										$affiche_note = "&nbsp;";
-									}
+	
+						//if((isset($tab_rel['eleve'][$i]['groupe'][$j]['affiche_boites']))&&($tab_rel['eleve'][$i]['groupe'][$j]['affiche_boites']=='y')) {
+						//if((isset($tab_rel['eleve'][$i]['groupe'][$j]['id_cn']['existence_sous_conteneurs']))&&($tab_rel['eleve'][$i]['groupe'][$j]['id_cn']['existence_sous_conteneurs']=='y')) {
+						if((isset($tab_rel['eleve'][$i]['groupe'][$j]['existence_sous_conteneurs']))&&($tab_rel['eleve'][$i]['groupe'][$j]['existence_sous_conteneurs']=='y')) {
+	
+							//echo "AZERTY";
+	
+							$temoin_conteneur=0;
+							foreach($tab_rel['eleve'][$i]['groupe'][$j]['id_cn'] as $tmp_id_cn => $tab_id_cn) {
+	
+								//echo "<b>cn $tmp_id_cn</b> ";
+	
+								unset($tmp_tab);
+								$tmp_tab[]=$tmp_id_cn;
+								//echo "<u><b>Racine ($tmp_id_cn)&nbsp;:</b></u> \n";
+								$retour_liste_notes_html=liste_notes_html($tab_rel,$i,$j,$tmp_tab);
+								if($retour_liste_notes_html!='') {
+									//echo "<u><b>Racine ($tmp_id_cn)&nbsp;:</b></u> \n";
+									echo $retour_liste_notes_html;
+									$temoin_conteneur++;
 								}
+	
+								// Faire la boucle while($m<count($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])) {} 
+								// avec un test sur $tab_ele['groupe'][$j]['devoir'][$m]['id_conteneur']==$tmp_id_cn (soit la racine du cn à ce niveau)
+	
+	
+								for($k=0;$k<count($tab_id_cn['conteneurs']);$k++) {
+									unset($tmp_tab);
+									//if(isset($tab_id_cn['conteneurs'][$k]['id_racine'])) {
+										$tmp_tab[]=$tab_id_cn['conteneurs'][$k]['id_racine'];
+										if(isset($tab_id_cn['conteneurs'][$k]['conteneurs_enfants'])) {
+											for($kk=0;$kk<count($tab_id_cn['conteneurs'][$k]['conteneurs_enfants']);$kk++) {
+												$tmp_tab[]=$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk];
+												//echo "\$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk]=".$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk]."<br />";
+											}
+										}
+										//echo "<br />\n";
+										//echo "<u><b>".$tab_id_cn['conteneurs'][$k]['nom_complet']."&nbsp;:</b></u> \n";
+										$retour_liste_notes_html=liste_notes_html($tab_rel,$i,$j,$tmp_tab);
+										if($retour_liste_notes_html!='') {
+											if($temoin_conteneur>0) {echo "<br />\n";}
+											echo "<u><b>".casse_mot($tab_id_cn['conteneurs'][$k]['nom_complet'],'maj');
+											if($tab_id_cn['conteneurs'][$k]['display_parents']=='1') {echo " (<i>".$tab_id_cn['conteneurs'][$k]['moy']."</i>)";}
+											echo "&nbsp;:</b></u> \n";
+											echo $retour_liste_notes_html;
+											$temoin_conteneur++;
+										}
+	
+										// Faire la boucle while($m<count($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])) {} 
+										// avec un test sur $tab_ele['groupe'][$j]['devoir'][$m]['id_conteneur'] égal à $tab_id_cn['conteneurs'][$k]['id_racine'] ou dans $tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][]
+									//}
+								}
+	
+	
+	
+	
 							}
-		
-							// Si une "Note" doit être affichée
-							if ($affiche_note != '') {
-								if ($tiret == "yes") {
-									if ((($tab_rel['rn_app']=="y") or ($tab_rel['rn_nomdev']=="y"))&&($retour_a_la_ligne=='y')) {
-										echo "<br />";
-									}
-									else {
-										echo " - ";
-									}
+						}
+						else {
+							$m=0;
+							$tiret = "no";
+							while($m<count($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])) {
+								// Note de l'élève sur le devoir:
+								$eleve_note=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['note'];
+								// Statut de l'élève sur le devoir:
+								$eleve_statut=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['statut'];
+								// Appréciation de l'élève sur le devoir:
+								$eleve_app=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['app'];
+								// Le professeur a-t-il autorisé l'accès à l'appréciation lors de la saisie du devoir
+								$eleve_display_app=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['display_app'];
+								// Nom court du devoir:
+								$eleve_nom_court=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['nom_court'];
+								// Date du devoir:
+								$eleve_date=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['date'];
+								// Coef du devoir:
+								$eleve_coef=$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['coef'];
+			
+								//==========================================
+								// On teste s'il y aura une "Note" à afficher
+								if (($eleve_statut != '') and ($eleve_statut != 'v')) {
+									$affiche_note = $eleve_statut;
 								}
-								if($tab_rel['rn_nomdev']=="y"){
-									echo "$eleve_nom_court: <b>".$affiche_note."</b>";
+								elseif ($eleve_statut == 'v') {
+									$affiche_note = "";
 								}
-								else{
-									echo "<b>".$affiche_note."</b>";
+								elseif ($eleve_note != '') {
+									$affiche_note = $eleve_note;
 								}
-		
-								// Coefficient (si on affiche tous les coef...
-								// ou si on ne les affiche que s'il y a plusieurs coef différents)
-								if(($tab_rel['rn_toutcoefdev']=="y")||
-									(($tab_rel['rn_coefdev_si_diff']=="y")&&($tab_rel['eleve'][$i]['groupe'][$j]['differents_coef']=="y"))) {
-									echo " (<i><small>".$chaine_coef.$eleve_coef."</small></i>)";
+								else {
+									$affiche_note = "";
 								}
-		
-								// Si on a demandé à afficher les appréciations
-								// et si le prof a coché l'autorisation d'accès à l'appréciations
+								//==========================================
+			
+								// Nom du devoir ou pas
 								if(($tab_rel['rn_app']=="y") and ($eleve_display_app=="1")) {
-									echo " - Appréciation : ";
-									if ($eleve_app!="") {
-										echo $eleve_app;
+									if ($affiche_note=="") {
+										if ($tab_rel['rn_nomdev']!="y") {
+											$affiche_note = $eleve_nom_court;
+										}
+										else {
+											$affiche_note = "&nbsp;";
+										}
 									}
-									else {
-										echo "-";
+								}
+			
+								// Si une "Note" doit être affichée
+								if ($affiche_note != '') {
+									if ($tiret == "yes") {
+										if ((($tab_rel['rn_app']=="y") or ($tab_rel['rn_nomdev']=="y"))&&($retour_a_la_ligne=='y')) {
+											echo "<br />";
+										}
+										else {
+											echo " - ";
+										}
 									}
+									if($tab_rel['rn_nomdev']=="y"){
+										echo "$eleve_nom_court: <b>".$affiche_note."</b>";
+									}
+									else{
+										echo "<b>".$affiche_note."</b>";
+									}
+			
+									// Coefficient (si on affiche tous les coef...
+									// ou si on ne les affiche que s'il y a plusieurs coef différents)
+									if(($tab_rel['rn_toutcoefdev']=="y")||
+										(($tab_rel['rn_coefdev_si_diff']=="y")&&($tab_rel['eleve'][$i]['groupe'][$j]['differents_coef']=="y"))) {
+										echo " (<i><small>".$chaine_coef.$eleve_coef."</small></i>)";
+									}
+			
+									// Si on a demandé à afficher les appréciations
+									// et si le prof a coché l'autorisation d'accès à l'appréciations
+									if(($tab_rel['rn_app']=="y") and ($eleve_display_app=="1")) {
+										echo " - Appréciation : ";
+										if ($eleve_app!="") {
+											echo $eleve_app;
+										}
+										else {
+											echo "-";
+										}
+									}
+			
+									if($tab_rel['rn_datedev']=="y"){
+										// Format: 2006-09-28 00:00:00
+										$tmpdate=explode(" ",$eleve_date);
+										$tmpdate=explode("-",$tmpdate[0]);
+										echo " (<i><small>$tmpdate[2]/$tmpdate[1]/$tmpdate[0]</small></i>)";
+									}
+	
+									// 20100626
+									if($tab_rel['rn_moy_min_max_classe']=='y') {
+										echo " (<i><small>".$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['min']."|".$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['moy_classe']."|".$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['max']."</small></i>)";
+									}
+									elseif($tab_rel['rn_moy_classe']=='y') {
+										echo " (classe:".$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['moy_classe'].")";
+									}
+	
+	
+									//====================================================================
+									// Après un tour avec affichage dans la boucle:
+									$tiret = "yes";
 								}
-		
-								if($tab_rel['rn_datedev']=="y"){
-									// Format: 2006-09-28 00:00:00
-									$tmpdate=explode(" ",$eleve_date);
-									$tmpdate=explode("-",$tmpdate[0]);
-									echo " (<i><small>$tmpdate[2]/$tmpdate[1]/$tmpdate[0]</small></i>)";
-								}
-
-								// 20100626
-								if($tab_rel['rn_moy_min_max_classe']=='y') {
-									echo " (<i><small>".$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['min']."|".$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['moy_classe']."|".$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['max']."</small></i>)";
-								}
-								elseif($tab_rel['rn_moy_classe']=='y') {
-									echo " (classe:".$tab_rel['eleve'][$i]['groupe'][$j]['devoir'][$m]['moy_classe'].")";
-								}
-
-
-								//====================================================================
-								// Après un tour avec affichage dans la boucle:
-								$tiret = "yes";
+			
+								$m++;
 							}
-		
-							$m++;
 						}
 					}
+					echo "</td>\n";
+					echo "</tr>\n";
 				}
-				echo "</td>\n";
-				echo "</tr>\n";
+				$j++;
 			}
-			$j++;
 		}
-
 		echo "</table>\n";
         //=============================================
 
@@ -2243,131 +2260,168 @@ function releve_pdf($tab_rel,$i) {
 				}
 			}
 			*/
-			$nb_matiere=count($tab_rel['eleve'][$i]['groupe']);
-			// Il faut dans le cas intervalle de dates ne pas afficher les matières dans lesquelles il n'y a pas de notes parce que l'on risque de récupérer des matières de la période 1 alors que l'élève n'est plus dans le groupe sur la période 2.
-			if(!isset($tab_rel['nom_periode'])) {
-				for($m=0; $m<count($tab_rel['eleve'][$i]['groupe']); $m++) {
-					if (!isset($tab_rel['eleve'][$i]['groupe'][$m]['devoir'])) {
-						$nb_matiere--;
+
+			if(isset($tab_rel['eleve'][$i]['groupe'])) {
+				$nb_matiere=count($tab_rel['eleve'][$i]['groupe']);
+				// Il faut dans le cas intervalle de dates ne pas afficher les matières dans lesquelles il n'y a pas de notes parce que l'on risque de récupérer des matières de la période 1 alors que l'élève n'est plus dans le groupe sur la période 2.
+				if(!isset($tab_rel['nom_periode'])) {
+					for($m=0; $m<count($tab_rel['eleve'][$i]['groupe']); $m++) {
+						if (!isset($tab_rel['eleve'][$i]['groupe'][$m]['devoir'])) {
+							$nb_matiere--;
+						}
 					}
 				}
-			}
-	
-	
-			//s'il y des notes alors on affiche le cadre avec les notes
-			//if(isset($nb_matiere[$eleve_select]) and !empty($nb_matiere[$eleve_select])) {
-			if($nb_matiere>0) {
-				// Hauteur d'une ligne pour une matière
-				/*
-				if($active_entete_regroupement === '1') {
-					$hauteur_cadre_matiere=($hauteur_cadre_note_global-($nb_regroupement[$eleve_select]*$hauteur_dun_regroupement))/$nb_matiere[$eleve_select];
-				}
-				if($active_entete_regroupement != '1') {
-				*/
-					$hauteur_cadre_matiere=$hauteur_cadre_note_global/$nb_matiere;
-				//}
-	
-				// Tableau des matières et des notes de l'élève
-				$cpt_i='1';
-				$nom_regroupement_passer='';
-				//while($cpt_i<=$nb_matiere[$eleve_select])
-				//{
-				for($m=0; $m<count($tab_rel['eleve'][$i]['groupe']); $m++) {
-	
-					// Si c'est une matière suivie par l'élève
-					if(isset($tab_rel['eleve'][$i]['groupe'][$m])) {
-	
-						// Il faut dans le cas intervalle de dates ne pas afficher les matières dans lesquelles il n'y a pas de notes parce que l'on risque de récupérer des matières de la période 1 alors que l'élève n'est plus dans le groupe sur la période 2.
-						if ((isset($tab_rel['nom_periode']))||
-						((!isset($tab_rel['nom_periode'])&&(isset($tab_rel['eleve'][$i]['groupe'][$m]['devoir']))))) {
-	
 		
 		
+				//s'il y des notes alors on affiche le cadre avec les notes
+				//if(isset($nb_matiere[$eleve_select]) and !empty($nb_matiere[$eleve_select])) {
+				if($nb_matiere>0) {
+					// Hauteur d'une ligne pour une matière
+					/*
+					if($active_entete_regroupement === '1') {
+						$hauteur_cadre_matiere=($hauteur_cadre_note_global-($nb_regroupement[$eleve_select]*$hauteur_dun_regroupement))/$nb_matiere[$eleve_select];
+					}
+					if($active_entete_regroupement != '1') {
+					*/
+						$hauteur_cadre_matiere=$hauteur_cadre_note_global/$nb_matiere;
+					//}
 		
-							//$id_groupe_selectionne=$groupe_select[$eleve_select][$cpt_i];
-							$id_groupe_selectionne=$tab_rel['eleve'][$i]['groupe'][$m]['id_groupe'];
-							//MATIERE
-							$pdf->SetXY($X_cadre_note,$Y_cadre_note+$hauteur_utilise);
-							// On dessine le cadre
-							$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere, "", 'LRBT', 2, '');
-							// Et on revient aux coordonnées initiales pour écrire dans la cellule en plusieurs fois
-							$pdf->SetXY($X_cadre_note,$Y_cadre_note+$hauteur_utilise);
+					// Tableau des matières et des notes de l'élève
+					$cpt_i='1';
+					$nom_regroupement_passer='';
+					//while($cpt_i<=$nb_matiere[$eleve_select])
+					//{
+					for($m=0; $m<count($tab_rel['eleve'][$i]['groupe']); $m++) {
 		
-							// on affiche les nom des regroupements
-							/*
-							if($nom_regroupement[$eleve_select][$cpt_i]!=$nom_regroupement_passer and $active_entete_regroupement === '1')
-							{
-								$pdf->SetFont($caractere_utilse,'',8);
-								$pdf->Cell($largeur_cadre_matiere, $hauteur_dun_regroupement, unhtmlentities($nom_regroupement[$eleve_select][$cpt_i]), 'LTB', 2, '');
-								$hauteur_utilise=$hauteur_utilise+$hauteur_dun_regroupement;
-								$nom_regroupement_passer=$nom_regroupement[$eleve_select][$cpt_i];
+						// Si c'est une matière suivie par l'élève
+						if(isset($tab_rel['eleve'][$i]['groupe'][$m])) {
+		
+							// Il faut dans le cas intervalle de dates ne pas afficher les matières dans lesquelles il n'y a pas de notes parce que l'on risque de récupérer des matières de la période 1 alors que l'élève n'est plus dans le groupe sur la période 2.
+							if ((isset($tab_rel['nom_periode']))||
+							((!isset($tab_rel['nom_periode'])&&(isset($tab_rel['eleve'][$i]['groupe'][$m]['devoir']))))) {
+		
+			
+			
+			
+								//$id_groupe_selectionne=$groupe_select[$eleve_select][$cpt_i];
+								$id_groupe_selectionne=$tab_rel['eleve'][$i]['groupe'][$m]['id_groupe'];
+								//MATIERE
 								$pdf->SetXY($X_cadre_note,$Y_cadre_note+$hauteur_utilise);
-							}
-							*/
-							$pdf->SetFont($caractere_utilse,'B','9');
-							$nom_matiere = $tab_rel['eleve'][$i]['groupe'][$m]['matiere_nom_complet'];
-							$hauteur_caractere = 9;
-							$pdf->SetFont($caractere_utilse,'B',$hauteur_caractere);
-							$val = $pdf->GetStringWidth($nom_matiere);
-							$taille_texte = $largeur_cadre_matiere;
-							$grandeur_texte='test';
-							while($grandeur_texte!='ok') {
-								if($taille_texte<$val) {
-									$hauteur_caractere = $hauteur_caractere-0.3;
-									$pdf->SetFont($caractere_utilse,'B',$hauteur_caractere);
-									$val = $pdf->GetStringWidth($nom_matiere);
+								// On dessine le cadre
+								$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere, "", 'LRBT', 2, '');
+								// Et on revient aux coordonnées initiales pour écrire dans la cellule en plusieurs fois
+								$pdf->SetXY($X_cadre_note,$Y_cadre_note+$hauteur_utilise);
+			
+								// on affiche les nom des regroupements
+								/*
+								if($nom_regroupement[$eleve_select][$cpt_i]!=$nom_regroupement_passer and $active_entete_regroupement === '1')
+								{
+									$pdf->SetFont($caractere_utilse,'',8);
+									$pdf->Cell($largeur_cadre_matiere, $hauteur_dun_regroupement, unhtmlentities($nom_regroupement[$eleve_select][$cpt_i]), 'LTB', 2, '');
+									$hauteur_utilise=$hauteur_utilise+$hauteur_dun_regroupement;
+									$nom_regroupement_passer=$nom_regroupement[$eleve_select][$cpt_i];
+									$pdf->SetXY($X_cadre_note,$Y_cadre_note+$hauteur_utilise);
+								}
+								*/
+								$pdf->SetFont($caractere_utilse,'B','9');
+								$nom_matiere = $tab_rel['eleve'][$i]['groupe'][$m]['matiere_nom_complet'];
+								$hauteur_caractere = 9;
+								$pdf->SetFont($caractere_utilse,'B',$hauteur_caractere);
+								$val = $pdf->GetStringWidth($nom_matiere);
+								$taille_texte = $largeur_cadre_matiere;
+								$grandeur_texte='test';
+								while($grandeur_texte!='ok') {
+									if($taille_texte<$val) {
+										$hauteur_caractere = $hauteur_caractere-0.3;
+										$pdf->SetFont($caractere_utilse,'B',$hauteur_caractere);
+										$val = $pdf->GetStringWidth($nom_matiere);
+									}
+									else {
+										$grandeur_texte='ok';
+									}
+								}
+								$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/2, $nom_matiere, 'LRT', 2, '');
+								//$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/2, $nom_matiere." ".count($tab_rel['eleve'][$i]['groupe'][$m]['prof_login']), 'LRT', 2, '');
+								//$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/2, $nom_matiere." ".$tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][0], 'LRT', 2, '');
+								$nom_matiere = '';
+	
+								if(isset($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'])) {
+									$nb_prof_matiere = count($tab_rel['eleve'][$i]['groupe'][$m]['prof_login']);
 								}
 								else {
-									$grandeur_texte='ok';
-								}
-							}
-							$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/2, $nom_matiere, 'LRT', 2, '');
-							//$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/2, $nom_matiere." ".count($tab_rel['eleve'][$i]['groupe'][$m]['prof_login']), 'LRT', 2, '');
-							//$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/2, $nom_matiere." ".$tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][0], 'LRT', 2, '');
-							$nom_matiere = '';
-
-							if(isset($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'])) {
-								$nb_prof_matiere = count($tab_rel['eleve'][$i]['groupe'][$m]['prof_login']);
-							}
-							else {
-								$nb_prof_matiere = 0;
-							}
-
-							if($nb_prof_matiere>0) {
-								$espace_matiere_prof = $hauteur_cadre_matiere/2;
-								$nb_pass_count = '0';
-								$text_prof = '';
-			
-								//if ( $nb_releve_par_page === '2' ) {
-	
-								if ($nb_releve_par_page==2) {
-									$nb_pass_count_2 = 0;
-									while ( !empty($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count_2]) )
-									{
-										if ( $nb_pass_count_2 === 0 ) {
-											$text_prof = affiche_utilisateur($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count_2],$id_classe);
-										}
-										if ( $nb_pass_count_2 != 0 ) {
-											$text_prof = $text_prof.', '.affiche_utilisateur($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count_2],$id_classe);
-										}
-										$nb_pass_count_2 = $nb_pass_count_2 + 1;
-									}
-									//$nb_prof_matiere = 1;
+									$nb_prof_matiere = 0;
 								}
 	
-								if ( $nb_prof_matiere != 1 ) {
-									$espace_matiere_prof = $espace_matiere_prof/$nb_prof_matiere;
-								}
-	
-								if ($nb_releve_par_page==1) {
-									while ($nb_prof_matiere > $nb_pass_count) {
+								if($nb_prof_matiere>0) {
+									$espace_matiere_prof = $hauteur_cadre_matiere/2;
+									$nb_pass_count = '0';
+									$text_prof = '';
 				
-										// calcul de la hauteur du caractère du prof
-										//if ( $nb_releve_par_page === '1' ) {
-										if ($nb_releve_par_page==1) {
-											$text_prof = affiche_utilisateur($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count],$id_classe);
+									//if ( $nb_releve_par_page === '2' ) {
+		
+									if ($nb_releve_par_page==2) {
+										$nb_pass_count_2 = 0;
+										while ( !empty($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count_2]) )
+										{
+											if ( $nb_pass_count_2 === 0 ) {
+												$text_prof = affiche_utilisateur($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count_2],$id_classe);
+											}
+											if ( $nb_pass_count_2 != 0 ) {
+												$text_prof = $text_prof.', '.affiche_utilisateur($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count_2],$id_classe);
+											}
+											$nb_pass_count_2 = $nb_pass_count_2 + 1;
 										}
-	
+										//$nb_prof_matiere = 1;
+									}
+		
+									if ( $nb_prof_matiere != 1 ) {
+										$espace_matiere_prof = $espace_matiere_prof/$nb_prof_matiere;
+									}
+		
+									if ($nb_releve_par_page==1) {
+										while ($nb_prof_matiere > $nb_pass_count) {
+					
+											// calcul de la hauteur du caractère du prof
+											//if ( $nb_releve_par_page === '1' ) {
+											if ($nb_releve_par_page==1) {
+												$text_prof = affiche_utilisateur($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count],$id_classe);
+											}
+		
+											if ( $nb_prof_matiere <= 2 ) { $hauteur_caractere_prof = 9; }
+											elseif ( $nb_prof_matiere == 3) { $hauteur_caractere_prof = 7; }
+											elseif ( $nb_prof_matiere > 3) { $hauteur_caractere_prof = 2; }
+											$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_prof);
+											$val = $pdf->GetStringWidth($text_prof);
+											$taille_texte = ($largeur_cadre_matiere-0.6);
+											$grandeur_texte='test';
+											while($grandeur_texte!='ok') {
+												if($taille_texte<$val)
+												{
+													$hauteur_caractere_prof = $hauteur_caractere_prof-0.3;
+													$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_prof);
+													$val = $pdf->GetStringWidth($text_prof);
+												}
+												else {
+													$grandeur_texte='ok';
+												}
+											}
+											$grandeur_texte='test';
+											$pdf->SetX($X_cadre_note);
+											//$pdf->Cell($largeur_cadre_matiere, $espace_matiere_prof, 'prof '.$text_prof, 'LRB', 2, '');
+					
+											if( empty($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count+1]) or $nb_prof_matiere === 1 ) {
+												$pdf->Cell($largeur_cadre_matiere, $espace_matiere_prof, $text_prof, 'LRB', 2, '');
+											}
+											if( !empty($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count+1]) and $nb_prof_matiere != 1 ) {
+												$pdf->Cell($largeur_cadre_matiere, $espace_matiere_prof, $text_prof, 'LR', 2, '');
+											}
+					
+											$nb_pass_count = $nb_pass_count + 1;
+										}
+									}
+									else {
+										// Deux relevés par page
+		
 										if ( $nb_prof_matiere <= 2 ) { $hauteur_caractere_prof = 9; }
 										elseif ( $nb_prof_matiere == 3) { $hauteur_caractere_prof = 7; }
 										elseif ( $nb_prof_matiere > 3) { $hauteur_caractere_prof = 2; }
@@ -2389,320 +2443,290 @@ function releve_pdf($tab_rel,$i) {
 										$grandeur_texte='test';
 										$pdf->SetX($X_cadre_note);
 										//$pdf->Cell($largeur_cadre_matiere, $espace_matiere_prof, 'prof '.$text_prof, 'LRB', 2, '');
-				
+										/*
 										if( empty($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count+1]) or $nb_prof_matiere === 1 ) {
 											$pdf->Cell($largeur_cadre_matiere, $espace_matiere_prof, $text_prof, 'LRB', 2, '');
 										}
 										if( !empty($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count+1]) and $nb_prof_matiere != 1 ) {
 											$pdf->Cell($largeur_cadre_matiere, $espace_matiere_prof, $text_prof, 'LR', 2, '');
 										}
-				
-										$nb_pass_count = $nb_pass_count + 1;
-									}
-								}
-								else {
-									// Deux relevés par page
-	
-									if ( $nb_prof_matiere <= 2 ) { $hauteur_caractere_prof = 9; }
-									elseif ( $nb_prof_matiere == 3) { $hauteur_caractere_prof = 7; }
-									elseif ( $nb_prof_matiere > 3) { $hauteur_caractere_prof = 2; }
-									$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_prof);
-									$val = $pdf->GetStringWidth($text_prof);
-									$taille_texte = ($largeur_cadre_matiere-0.6);
-									$grandeur_texte='test';
-									while($grandeur_texte!='ok') {
-										if($taille_texte<$val)
-										{
-											$hauteur_caractere_prof = $hauteur_caractere_prof-0.3;
-											$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_prof);
-											$val = $pdf->GetStringWidth($text_prof);
-										}
-										else {
-											$grandeur_texte='ok';
-										}
-									}
-									$grandeur_texte='test';
-									$pdf->SetX($X_cadre_note);
-									//$pdf->Cell($largeur_cadre_matiere, $espace_matiere_prof, 'prof '.$text_prof, 'LRB', 2, '');
-									/*
-									if( empty($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count+1]) or $nb_prof_matiere === 1 ) {
-										$pdf->Cell($largeur_cadre_matiere, $espace_matiere_prof, $text_prof, 'LRB', 2, '');
-									}
-									if( !empty($tab_rel['eleve'][$i]['groupe'][$m]['prof_login'][$nb_pass_count+1]) and $nb_prof_matiere != 1 ) {
+										*/
 										$pdf->Cell($largeur_cadre_matiere, $espace_matiere_prof, $text_prof, 'LR', 2, '');
+		
 									}
-									*/
-									$pdf->Cell($largeur_cadre_matiere, $espace_matiere_prof, $text_prof, 'LR', 2, '');
-	
-								}
-								//			if(isset($prof_groupe[$id_groupe_selectionne][0]) and $prof_groupe[$id_groupe_selectionne][0] != '') { $prof_1 = $prof_groupe[$id_groupe_selectionne][0]; } else { $prof_1 = ''; }
-								//			if(isset($prof_groupe[$id_groupe_selectionne][1]) and $prof_groupe[$id_groupe_selectionne][1] != '') { $prof_2 = $prof_groupe[$id_groupe_selectionne][1]; } else { $prof_2 = ''; }
-								//			if(isset($prof_groupe[$id_groupe_selectionne][2]) and $prof_groupe[$id_groupe_selectionne][2] != '') { $prof_3 = $prof_groupe[$id_groupe_selectionne][2]; } else { $prof_3 = ''; }
-								/*			 $nom_prof = $prof_1;
-								$hauteur_caractere = 8;
-								$pdf->SetFont($caractere_utilse,'I',$hauteur_caractere);
-								$val = $pdf->GetStringWidth($nom_prof);
-								$taille_texte = $largeur_cadre_matiere;
-								$grandeur_texte='test';
-								while($grandeur_texte!='ok') {
-								if($taille_texte<$val)
-								{
-									$hauteur_caractere = $hauteur_caractere-0.3;
+									//			if(isset($prof_groupe[$id_groupe_selectionne][0]) and $prof_groupe[$id_groupe_selectionne][0] != '') { $prof_1 = $prof_groupe[$id_groupe_selectionne][0]; } else { $prof_1 = ''; }
+									//			if(isset($prof_groupe[$id_groupe_selectionne][1]) and $prof_groupe[$id_groupe_selectionne][1] != '') { $prof_2 = $prof_groupe[$id_groupe_selectionne][1]; } else { $prof_2 = ''; }
+									//			if(isset($prof_groupe[$id_groupe_selectionne][2]) and $prof_groupe[$id_groupe_selectionne][2] != '') { $prof_3 = $prof_groupe[$id_groupe_selectionne][2]; } else { $prof_3 = ''; }
+									/*			 $nom_prof = $prof_1;
+									$hauteur_caractere = 8;
 									$pdf->SetFont($caractere_utilse,'I',$hauteur_caractere);
 									$val = $pdf->GetStringWidth($nom_prof);
-								} else { $grandeur_texte='ok'; }
-									}
-			
-								$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/2, $nom_prof, 'LRB', 2, '');*/
-								//$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/3, $prof_2, 'LR', 2, '');
-								//$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/4, $prof_3, 'LRB', 2, '');
-
+									$taille_texte = $largeur_cadre_matiere;
+									$grandeur_texte='test';
+									while($grandeur_texte!='ok') {
+									if($taille_texte<$val)
+									{
+										$hauteur_caractere = $hauteur_caractere-0.3;
+										$pdf->SetFont($caractere_utilse,'I',$hauteur_caractere);
+										$val = $pdf->GetStringWidth($nom_prof);
+									} else { $grandeur_texte='ok'; }
+										}
+				
+									$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/2, $nom_prof, 'LRB', 2, '');*/
+									//$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/3, $prof_2, 'LR', 2, '');
+									//$pdf->Cell($largeur_cadre_matiere, $hauteur_cadre_matiere/4, $prof_3, 'LRB', 2, '');
+	
+								}
+	
+								$hauteur_utilise=$hauteur_utilise+$hauteur_cadre_matiere;
 							}
-
-							$hauteur_utilise=$hauteur_utilise+$hauteur_cadre_matiere;
 						}
+						$cpt_i=$cpt_i+1;
 					}
-					$cpt_i=$cpt_i+1;
 				}
-			}
-	
-			$hauteur_utilise = $hauteur_du_titre;
-	
-			$cpt_i='1';
-			$nom_regroupement_passer='';
-	
-	
-			//while($cpt_i<=$nb_matiere[$eleve_select]) {
-			for($m=0; $m<count($tab_rel['eleve'][$i]['groupe']); $m++) {
-				// Il faut dans le cas intervalle de dates ne pas afficher les matières dans lesquelles il n'y a pas de notes parce que l'on risque de récupérer des matières de la période 1 alors que l'élève n'est plus dans le groupe sur la période 2.
-				if ((isset($tab_rel['nom_periode']))||
-				((!isset($tab_rel['nom_periode'])&&(isset($tab_rel['eleve'][$i]['groupe'][$m]['devoir']))))) {
 		
-					//NOTES
-					$largeur_utilise=$largeur_cadre_matiere;
-					//=======================
-					// AJOUT: chapel 20071019
-					//if ( $affiche_bloc_observation === '1' ) {
-					if ( $affiche_bloc_observation==1) {
-						$largeur_cadre_note = $largeur_cadre_note;
-					}
-					else {
-						$largeur_cadre_note = $largeur_cadre_note_global - $largeur_utilise;
-					}
-					//=======================
-					$pdf->SetXY($X_cadre_note+$largeur_utilise,$Y_cadre_note+$hauteur_utilise);
-					// on affiche les nom des regroupement
-					/*
-					if($nom_regroupement[$eleve_select][$cpt_i]!=$nom_regroupement_passer and $active_entete_regroupement === '1')
-					{
-						$pdf->SetFont($caractere_utilse,'',8);
-						$pdf->Cell($largeur_cadre_note, $hauteur_dun_regroupement, '', 'RTB', 2, '');
-						$hauteur_utilise=$hauteur_utilise+$hauteur_dun_regroupement;
-						$nom_regroupement_passer=$nom_regroupement[$eleve_select][$cpt_i];
+				$hauteur_utilise = $hauteur_du_titre;
+		
+				$cpt_i='1';
+				$nom_regroupement_passer='';
+		
+		
+				//while($cpt_i<=$nb_matiere[$eleve_select]) {
+				for($m=0; $m<count($tab_rel['eleve'][$i]['groupe']); $m++) {
+					// Il faut dans le cas intervalle de dates ne pas afficher les matières dans lesquelles il n'y a pas de notes parce que l'on risque de récupérer des matières de la période 1 alors que l'élève n'est plus dans le groupe sur la période 2.
+					if ((isset($tab_rel['nom_periode']))||
+					((!isset($tab_rel['nom_periode'])&&(isset($tab_rel['eleve'][$i]['groupe'][$m]['devoir']))))) {
+			
+						//NOTES
+						$largeur_utilise=$largeur_cadre_matiere;
+						//=======================
+						// AJOUT: chapel 20071019
+						//if ( $affiche_bloc_observation === '1' ) {
+						if ( $affiche_bloc_observation==1) {
+							$largeur_cadre_note = $largeur_cadre_note;
+						}
+						else {
+							$largeur_cadre_note = $largeur_cadre_note_global - $largeur_utilise;
+						}
+						//=======================
 						$pdf->SetXY($X_cadre_note+$largeur_utilise,$Y_cadre_note+$hauteur_utilise);
-					}
-					*/
-
-					if((isset($tab_rel['eleve'][$i]['groupe'][$m]['existence_sous_conteneurs']))&&($tab_rel['eleve'][$i]['groupe'][$m]['existence_sous_conteneurs']=='y')) {
-						$chaine_notes="";
-
-						$temoin_conteneur=0;
-						foreach($tab_rel['eleve'][$i]['groupe'][$m]['id_cn'] as $tmp_id_cn => $tab_id_cn) {
-
-							//$chaine_notes.="<b>cn $tmp_id_cn</b> ";
-
-							unset($tmp_tab);
-							$tmp_tab[]=$tmp_id_cn;
-							//$chaine_notes.="<u><b>Racine ($tmp_id_cn)&nbsp;:</b></u> \n";
-							$retour_liste_notes_pdf=liste_notes_pdf($tab_rel,$i,$m,$tmp_tab);
-							if($retour_liste_notes_pdf!='') {
-								//$chaine_notes.="<u><b>Racine ($tmp_id_cn)&nbsp;:</b></u> \n";
-								$chaine_notes.=$retour_liste_notes_pdf;
-								$temoin_conteneur++;
-							}
-
-							// Faire la boucle while($m<count($tab_rel['eleve'][$i]['groupe'][$m]['devoir'])) {} 
-							// avec un test sur $tab_ele['groupe'][$m]['devoir'][$m]['id_conteneur']==$tmp_id_cn (soit la racine du cn à ce niveau)
-
-
-							for($k=0;$k<count($tab_id_cn['conteneurs']);$k++) {
+						// on affiche les nom des regroupement
+						/*
+						if($nom_regroupement[$eleve_select][$cpt_i]!=$nom_regroupement_passer and $active_entete_regroupement === '1')
+						{
+							$pdf->SetFont($caractere_utilse,'',8);
+							$pdf->Cell($largeur_cadre_note, $hauteur_dun_regroupement, '', 'RTB', 2, '');
+							$hauteur_utilise=$hauteur_utilise+$hauteur_dun_regroupement;
+							$nom_regroupement_passer=$nom_regroupement[$eleve_select][$cpt_i];
+							$pdf->SetXY($X_cadre_note+$largeur_utilise,$Y_cadre_note+$hauteur_utilise);
+						}
+						*/
+	
+						if((isset($tab_rel['eleve'][$i]['groupe'][$m]['existence_sous_conteneurs']))&&($tab_rel['eleve'][$i]['groupe'][$m]['existence_sous_conteneurs']=='y')) {
+							$chaine_notes="";
+	
+							$temoin_conteneur=0;
+							foreach($tab_rel['eleve'][$i]['groupe'][$m]['id_cn'] as $tmp_id_cn => $tab_id_cn) {
+	
+								//$chaine_notes.="<b>cn $tmp_id_cn</b> ";
+	
 								unset($tmp_tab);
-								//if(isset($tab_id_cn['conteneurs'][$k]['id_racine'])) {
-									$tmp_tab[]=$tab_id_cn['conteneurs'][$k]['id_racine'];
-									if(isset($tab_id_cn['conteneurs'][$k]['conteneurs_enfants'])) {
-										for($kk=0;$kk<count($tab_id_cn['conteneurs'][$k]['conteneurs_enfants']);$kk++) {
-											$tmp_tab[]=$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk];
-											//$chaine_notes.="\$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk]=".$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk]."<br />";
+								$tmp_tab[]=$tmp_id_cn;
+								//$chaine_notes.="<u><b>Racine ($tmp_id_cn)&nbsp;:</b></u> \n";
+								$retour_liste_notes_pdf=liste_notes_pdf($tab_rel,$i,$m,$tmp_tab);
+								if($retour_liste_notes_pdf!='') {
+									//$chaine_notes.="<u><b>Racine ($tmp_id_cn)&nbsp;:</b></u> \n";
+									$chaine_notes.=$retour_liste_notes_pdf;
+									$temoin_conteneur++;
+								}
+	
+								// Faire la boucle while($m<count($tab_rel['eleve'][$i]['groupe'][$m]['devoir'])) {} 
+								// avec un test sur $tab_ele['groupe'][$m]['devoir'][$m]['id_conteneur']==$tmp_id_cn (soit la racine du cn à ce niveau)
+	
+	
+								for($k=0;$k<count($tab_id_cn['conteneurs']);$k++) {
+									unset($tmp_tab);
+									//if(isset($tab_id_cn['conteneurs'][$k]['id_racine'])) {
+										$tmp_tab[]=$tab_id_cn['conteneurs'][$k]['id_racine'];
+										if(isset($tab_id_cn['conteneurs'][$k]['conteneurs_enfants'])) {
+											for($kk=0;$kk<count($tab_id_cn['conteneurs'][$k]['conteneurs_enfants']);$kk++) {
+												$tmp_tab[]=$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk];
+												//$chaine_notes.="\$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk]=".$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk]."<br />";
+											}
 										}
-									}
-									//$chaine_notes.="<br />\n";
-									//$chaine_notes.="<u><b>".$tab_id_cn['conteneurs'][$k]['nom_complet']."&nbsp;:</b></u> \n";
-									$retour_liste_notes_pdf=liste_notes_pdf($tab_rel,$i,$m,$tmp_tab);
-									if($retour_liste_notes_pdf!='') {
-										if($temoin_conteneur>0) {$chaine_notes.="\n";}
+										//$chaine_notes.="<br />\n";
 										//$chaine_notes.="<u><b>".$tab_id_cn['conteneurs'][$k]['nom_complet']."&nbsp;:</b></u> \n";
-										//$chaine_notes.="_*".$tab_id_cn['conteneurs'][$k]['nom_complet']."*_ ";
-										if($use_cell_ajustee!="n") {$chaine_notes.="<u><b>";}
-										$chaine_notes.=casse_mot($tab_id_cn['conteneurs'][$k]['nom_complet'],'maj');
-										if($use_cell_ajustee!="n") {$chaine_notes.="</b>";}
-										if($tab_id_cn['conteneurs'][$k]['display_parents']=='1') {
-											$chaine_notes.="(";
-											if($use_cell_ajustee!="n") {$chaine_notes.="<b>";}
-											$chaine_notes.=$tab_id_cn['conteneurs'][$k]['moy'];
+										$retour_liste_notes_pdf=liste_notes_pdf($tab_rel,$i,$m,$tmp_tab);
+										if($retour_liste_notes_pdf!='') {
+											if($temoin_conteneur>0) {$chaine_notes.="\n";}
+											//$chaine_notes.="<u><b>".$tab_id_cn['conteneurs'][$k]['nom_complet']."&nbsp;:</b></u> \n";
+											//$chaine_notes.="_*".$tab_id_cn['conteneurs'][$k]['nom_complet']."*_ ";
+											if($use_cell_ajustee!="n") {$chaine_notes.="<u><b>";}
+											$chaine_notes.=casse_mot($tab_id_cn['conteneurs'][$k]['nom_complet'],'maj');
 											if($use_cell_ajustee!="n") {$chaine_notes.="</b>";}
-											$chaine_notes.=")";
+											if($tab_id_cn['conteneurs'][$k]['display_parents']=='1') {
+												$chaine_notes.="(";
+												if($use_cell_ajustee!="n") {$chaine_notes.="<b>";}
+												$chaine_notes.=$tab_id_cn['conteneurs'][$k]['moy'];
+												if($use_cell_ajustee!="n") {$chaine_notes.="</b>";}
+												$chaine_notes.=")";
+											}
+											$chaine_notes.=": ";
+											if($use_cell_ajustee!="n") {$chaine_notes.="</u>";}
+											$chaine_notes.=$retour_liste_notes_pdf;
+											$temoin_conteneur++;
 										}
-										$chaine_notes.=": ";
-										if($use_cell_ajustee!="n") {$chaine_notes.="</u>";}
-										$chaine_notes.=$retour_liste_notes_pdf;
-										$temoin_conteneur++;
-									}
-
-									// Faire la boucle while($m<count($tab_rel['eleve'][$i]['groupe'][$m]['devoir'])) {} 
-									// avec un test sur $tab_ele['groupe'][$m]['devoir'][$m]['id_conteneur'] égal à $tab_id_cn['conteneurs'][$k]['id_racine'] ou dans $tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][]
-								//}
-							}
-
-
-
-
-						}
-					}
-					else {
-						$chaine_notes="";
-						if(isset($tab_rel['eleve'][$i]['groupe'][$m]['devoir'])) {
-							$kk=0;
-							for($k=0;$k<count($tab_rel['eleve'][$i]['groupe'][$m]['devoir']);$k++) {
-								// A FAIRE: TENIR COMPTE DE TOUS LES PARAMETRES POUR VOIR CE QU'IL FAUT AFFICHER
-								if($kk>0) {
-									if ((($tab_rel['rn_app']=="y") or ($tab_rel['rn_nomdev']=="y"))&&($retour_a_la_ligne=='y')) {
-										$chaine_notes.=" -\n";
-									}
-									else {
-										$chaine_notes.=" - ";
-									}
+	
+										// Faire la boucle while($m<count($tab_rel['eleve'][$i]['groupe'][$m]['devoir'])) {} 
+										// avec un test sur $tab_ele['groupe'][$m]['devoir'][$m]['id_conteneur'] égal à $tab_id_cn['conteneurs'][$k]['id_racine'] ou dans $tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][]
+									//}
 								}
-
-								if($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['statut']!='v') {
-									if($use_cell_ajustee!="n") {$chaine_notes.="<b>";}
-									if($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['statut']!='') {
-										$chaine_notes.=$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['statut'];
-									}
-									else {
-										$chaine_notes.=$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['note'];
-									}
-									if($use_cell_ajustee!="n") {$chaine_notes.="</b>";}
-		
-									if($tab_rel['rn_nomdev']=='y') {
-										$chaine_notes.=" (".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['nom_court'].")";
-									}
-			
-									if($tab_rel['rn_datedev']=='y') {
-										$chaine_notes.=" (".formate_date($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['date']).")";
-									}
-			
-									if($tab_rel['rn_coefdev_si_diff']=='y') {
-										if($tab_rel['eleve'][$i]['groupe'][$m]['differents_coef']=='y') {
-											$chaine_notes.=" (coef ".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['coef'].")";
+	
+	
+	
+	
+							}
+						}
+						else {
+							$chaine_notes="";
+							if(isset($tab_rel['eleve'][$i]['groupe'][$m]['devoir'])) {
+								$kk=0;
+								for($k=0;$k<count($tab_rel['eleve'][$i]['groupe'][$m]['devoir']);$k++) {
+									// A FAIRE: TENIR COMPTE DE TOUS LES PARAMETRES POUR VOIR CE QU'IL FAUT AFFICHER
+									if($kk>0) {
+										if ((($tab_rel['rn_app']=="y") or ($tab_rel['rn_nomdev']=="y"))&&($retour_a_la_ligne=='y')) {
+											$chaine_notes.=" -\n";
+										}
+										else {
+											$chaine_notes.=" - ";
 										}
 									}
-									else {
-										if($tab_rel['rn_toutcoefdev']=='y') {
-											$chaine_notes.=" (coef ".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['coef'].")";
+	
+									if($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['statut']!='v') {
+										if($use_cell_ajustee!="n") {$chaine_notes.="<b>";}
+										if($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['statut']!='') {
+											$chaine_notes.=$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['statut'];
 										}
+										else {
+											$chaine_notes.=$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['note'];
+										}
+										if($use_cell_ajustee!="n") {$chaine_notes.="</b>";}
+			
+										if($tab_rel['rn_nomdev']=='y') {
+											$chaine_notes.=" (".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['nom_court'].")";
+										}
+				
+										if($tab_rel['rn_datedev']=='y') {
+											$chaine_notes.=" (".formate_date($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['date']).")";
+										}
+				
+										if($tab_rel['rn_coefdev_si_diff']=='y') {
+											if($tab_rel['eleve'][$i]['groupe'][$m]['differents_coef']=='y') {
+												$chaine_notes.=" (coef ".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['coef'].")";
+											}
+										}
+										else {
+											if($tab_rel['rn_toutcoefdev']=='y') {
+												$chaine_notes.=" (coef ".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['coef'].")";
+											}
+										}
+			
+										//$chaine_notes.=" rn_app=".$tab_rel['rn_app'];
+										//$chaine_notes.=" display_app=".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['display_app'];
+			
+										if(($tab_rel['rn_app']=='y')&&($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['display_app']=='1')&&($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['app']!='')) {
+											$chaine_notes.=" ".str_replace("&#039;", "'", unhtmlentities($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['app']));
+										}
+				
+										// 20100626
+										if($tab_rel['rn_moy_min_max_classe']=='y') {
+											$chaine_notes.=" (".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['min']."|".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['moy_classe']."|".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['max'].")";
+										}
+										elseif($tab_rel['rn_moy_classe']=='y') {
+											$chaine_notes.=" (classe:".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['moy_classe'].")";
+										}
+	
+										$kk++;
 									}
-		
-									//$chaine_notes.=" rn_app=".$tab_rel['rn_app'];
-									//$chaine_notes.=" display_app=".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['display_app'];
-		
-									if(($tab_rel['rn_app']=='y')&&($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['display_app']=='1')&&($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['app']!='')) {
+									elseif(($tab_rel['rn_app']=='y')&&($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['display_app']=='1')&&($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['app']!='')) {
+			
+										if($tab_rel['rn_nomdev']=='y') {
+											$chaine_notes.=" (".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['nom_court'].")";
+										}
+				
+										if($tab_rel['rn_datedev']=='y') {
+											$chaine_notes.=" (".formate_date($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['date']).")";
+										}
+				
+										if($tab_rel['rn_coefdev_si_diff']=='y') {
+											if($tab_rel['eleve'][$i]['groupe'][$m]['differents_coef']=='y') {
+												$chaine_notes.=" (coef ".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['coef'].")";
+											}
+										}
+										else {
+											if($tab_rel['rn_toutcoefdev']=='y') {
+												$chaine_notes.=" (coef ".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['coef'].")";
+											}
+										}
+			
 										$chaine_notes.=" ".str_replace("&#039;", "'", unhtmlentities($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['app']));
-									}
-			
-									// 20100626
-									if($tab_rel['rn_moy_min_max_classe']=='y') {
-										$chaine_notes.=" (".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['min']."|".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['moy_classe']."|".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['max'].")";
-									}
-									elseif($tab_rel['rn_moy_classe']=='y') {
-										$chaine_notes.=" (classe:".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['moy_classe'].")";
-									}
-
-									$kk++;
-								}
-								elseif(($tab_rel['rn_app']=='y')&&($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['display_app']=='1')&&($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['app']!='')) {
-		
-									if($tab_rel['rn_nomdev']=='y') {
-										$chaine_notes.=" (".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['nom_court'].")";
-									}
-			
-									if($tab_rel['rn_datedev']=='y') {
-										$chaine_notes.=" (".formate_date($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['date']).")";
-									}
-			
-									if($tab_rel['rn_coefdev_si_diff']=='y') {
-										if($tab_rel['eleve'][$i]['groupe'][$m]['differents_coef']=='y') {
-											$chaine_notes.=" (coef ".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['coef'].")";
+	
+										if($tab_rel['rn_moy_min_max_classe']=='y') {
+											$chaine_notes.=" (".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['min']."|".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['moy_classe']."|".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['max'].")";
 										}
-									}
-									else {
-										if($tab_rel['rn_toutcoefdev']=='y') {
-											$chaine_notes.=" (coef ".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['coef'].")";
+										elseif($tab_rel['rn_moy_classe']=='y') {
+											$chaine_notes.=" (classe:".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['moy_classe'].")";
 										}
+	
+										$kk++;
 									}
-		
-									$chaine_notes.=" ".str_replace("&#039;", "'", unhtmlentities($tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['app']));
-
-									if($tab_rel['rn_moy_min_max_classe']=='y') {
-										$chaine_notes.=" (".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['min']."|".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['moy_classe']."|".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['max'].")";
-									}
-									elseif($tab_rel['rn_moy_classe']=='y') {
-										$chaine_notes.=" (classe:".$tab_rel['eleve'][$i]['groupe'][$m]['devoir'][$k]['moy_classe'].")";
-									}
-
-									$kk++;
 								}
 							}
 						}
-					}
-
-					// détermine la taille de la police de caractère
-					// on peut allez jusqu'a 275mm de caractère dans trois cases de notes
-					$hauteur_caractere_notes=9;
-					$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_notes);
 	
-					if($use_cell_ajustee=="n") {
-						$val = $pdf->GetStringWidth($chaine_notes);
-						$taille_texte = (($hauteur_cadre_matiere/4)*$largeur_cadre_note);
-						$grandeur_texte='test';
-						while($grandeur_texte!='ok') {
-							if($taille_texte<$val) {
-								$hauteur_caractere_notes = $hauteur_caractere_notes-0.3;
-								$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_notes);
-								$val = $pdf->GetStringWidth($chaine_notes);
+						// détermine la taille de la police de caractère
+						// on peut allez jusqu'a 275mm de caractère dans trois cases de notes
+						$hauteur_caractere_notes=9;
+						$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_notes);
+		
+						if($use_cell_ajustee=="n") {
+							$val = $pdf->GetStringWidth($chaine_notes);
+							$taille_texte = (($hauteur_cadre_matiere/4)*$largeur_cadre_note);
+							$grandeur_texte='test';
+							while($grandeur_texte!='ok') {
+								if($taille_texte<$val) {
+									$hauteur_caractere_notes = $hauteur_caractere_notes-0.3;
+									$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_notes);
+									$val = $pdf->GetStringWidth($chaine_notes);
+								}
+								else {
+									$grandeur_texte='ok';
+								}
 							}
-							else {
-								$grandeur_texte='ok';
-							}
+							$pdf->drawTextBox($chaine_notes, $largeur_cadre_note, $hauteur_cadre_matiere, 'J', 'M', 1);
 						}
-						$pdf->drawTextBox($chaine_notes, $largeur_cadre_note, $hauteur_cadre_matiere, 'J', 'M', 1);
+						else {
+							$texte=$chaine_notes;
+							$taille_max_police=$hauteur_caractere_notes;
+							$taille_min_police=ceil($taille_max_police/3);
+		
+							$largeur_dispo=$largeur_cadre_note;
+							$h_cell=$hauteur_cadre_matiere;
+		
+							cell_ajustee(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_cell,$taille_max_police,$taille_min_police,'LRBT');
+						}
+		
+						$hauteur_utilise=$hauteur_utilise+$hauteur_cadre_matiere;
 					}
-					else {
-						$texte=$chaine_notes;
-						$taille_max_police=$hauteur_caractere_notes;
-						$taille_min_police=ceil($taille_max_police/3);
-	
-						$largeur_dispo=$largeur_cadre_note;
-						$h_cell=$hauteur_cadre_matiere;
-	
-						cell_ajustee(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_cell,$taille_max_police,$taille_min_police,'LRBT');
-					}
-	
-					$hauteur_utilise=$hauteur_utilise+$hauteur_cadre_matiere;
+					//$cpt_i=$cpt_i+1;
 				}
-				//$cpt_i=$cpt_i+1;
+
 			}
-	
-	
+			else {
+				$pdf->SetXY(10,$Y_cadre_note);
+				$pdf->Cell(100,20, "Aucun enseignement n'est associé.",0,1,'C');
+			}
+
 			// BLOC OBSERVATION
 			//=======================
 			// MODIF: chapel 20071019

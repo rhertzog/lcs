@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: reset_passwords.php 5129 2010-08-27 13:05:37Z crob $
+* $Id: reset_passwords.php 5602 2010-10-08 11:08:48Z crob $
 *
 * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -657,7 +657,7 @@ while ($p < $nb_users) {
 				$ligne2=$lig_adr_resp->adr1;
 				$ligne3=$lig_adr_resp->cp." ".$lig_adr_resp->commune;
 
-				if($lig_adr_resp->civilite="") {
+				if($lig_adr_resp->civilite!="") {
 					$ligne1=$lig_adr_resp->civilite." ".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
 				}
 				else {
@@ -996,7 +996,7 @@ width:".$largeur1."%;\n";
 				$ligne2=$lig_adr_resp->adr1;
 				$ligne3=$lig_adr_resp->cp." ".$lig_adr_resp->commune;
 
-				if($lig_adr_resp->civilite="") {
+				if($lig_adr_resp->civilite!="") {
 					$ligne1=$lig_adr_resp->civilite." ".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
 				}
 				else {

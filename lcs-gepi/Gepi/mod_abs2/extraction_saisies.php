@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: extraction_saisies.php 5266 2010-09-13 17:52:07Z jjacquard $
+ * @version $Id: extraction_saisies.php 5478 2010-09-29 15:57:32Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -189,7 +189,7 @@ if ($affichage != null && $affichage != '') {
 	->filterByEleveId($eleve_col->toKeyValue('IdEleve', 'IdEleve'));
 
     if ($type_extrait == '1') {
-	$saisie_query->filterManquementObligationPresence(true);
+	$saisie_query->filterByManquementObligationPresence(true);
     }
 
     $saisie_query->useEleveQuery()->orderByNom()->orderByPrenom()->endUse();

@@ -1,5 +1,5 @@
 <?php
-/* $Id: definir_salles.php 4292 2010-04-11 17:38:13Z crob $ */
+/* $Id: definir_salles.php 5536 2010-10-03 12:18:37Z crob $ */
 /*
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -175,6 +175,7 @@ if(isset($definition_salles)) {
 				}
 			}
 
+			$tab_salle_existante=array();
 			if(isset($id_salle_existante)) {
 				for($i=0;$i<count($id_salle_existante);$i++) {
 					$sql="SELECT salle FROM eb_salles WHERE id='$id_salle_existante[$i]';";

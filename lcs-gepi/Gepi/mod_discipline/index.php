@@ -1,7 +1,7 @@
 <?php
 
 /*
-* $Id: index.php 5236 2010-09-11 19:02:08Z regis $
+* $Id: index.php 5527 2010-10-03 07:43:22Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -43,6 +43,13 @@ if ($resultat_session == 'c') {
 // maj : $tab_req[] = "INSERT INTO droits VALUES ( '/mod_discipline/index.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Index', '');;";
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
+	die();
+}
+
+if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
+	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+	header("Location: ../accueil.php?msg=$mess");
 	die();
 }
 
@@ -94,38 +101,47 @@ if ($test1 == 0) {
 	$query = mysql_query("ALTER TABLE s_incidents ADD id_lieu INT( 11 ) NOT NULL AFTER heure;");
 }
 
-$sql="CREATE TABLE IF NOT EXISTS s_qualites (
-id INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-qualite VARCHAR( 50 ) NOT NULL
-);";
-$creation=mysql_query($sql);
-if($creation) {
-	$tab_qualite=array("Responsable","Victime","Témoin","Autre");
-	for($loop=0;$loop<count($tab_qualite);$loop++) {
-		$sql="SELECT 1=1 FROM s_qualites WHERE qualite='".$tab_qualite[$loop]."';";
-		//echo "$sql<br />";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==0) {
-			$sql="INSERT INTO s_qualites SET qualite='".$tab_qualite[$loop]."';";
-			$insert=mysql_query($sql);
+$sql="SHOW TABLES LIKE 's_qualites';";
+$test_table=mysql_query($sql);
+if(mysql_num_rows($test_table)==0) {
+	$sql="CREATE TABLE IF NOT EXISTS s_qualites (
+	id INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+	qualite VARCHAR( 50 ) NOT NULL
+	);";
+	$creation=mysql_query($sql);
+	if($creation) {
+		$tab_qualite=array("Responsable","Victime","Témoin","Autre");
+		for($loop=0;$loop<count($tab_qualite);$loop++) {
+			$sql="SELECT 1=1 FROM s_qualites WHERE qualite='".$tab_qualite[$loop]."';";
+			//echo "$sql<br />";
+			$test=mysql_query($sql);
+			if(mysql_num_rows($test)==0) {
+				$sql="INSERT INTO s_qualites SET qualite='".$tab_qualite[$loop]."';";
+				$insert=mysql_query($sql);
+			}
 		}
 	}
 }
 
-$sql="CREATE TABLE IF NOT EXISTS s_types_sanctions (
-id_nature INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-nature VARCHAR( 255 ) NOT NULL
-);";
-$creation=mysql_query($sql);
-if($creation) {
-	$tab_type=array("Avertissement travail","Avertissement comportement");
-	for($loop=0;$loop<count($tab_type);$loop++) {
-		$sql="SELECT 1=1 FROM s_types_sanctions WHERE nature='".$tab_type[$loop]."';";
-		//echo "$sql<br />";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==0) {
-			$sql="INSERT INTO s_types_sanctions SET nature='".$tab_type[$loop]."';";
-			$insert=mysql_query($sql);
+
+$sql="SHOW TABLES LIKE 's_types_sanctions';";
+$test_table=mysql_query($sql);
+if(mysql_num_rows($test_table)==0) {
+	$sql="CREATE TABLE IF NOT EXISTS s_types_sanctions (
+	id_nature INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+	nature VARCHAR( 255 ) NOT NULL
+	);";
+	$creation=mysql_query($sql);
+	if($creation) {
+		$tab_type=array("Avertissement travail","Avertissement comportement");
+		for($loop=0;$loop<count($tab_type);$loop++) {
+			$sql="SELECT 1=1 FROM s_types_sanctions WHERE nature='".$tab_type[$loop]."';";
+			//echo "$sql<br />";
+			$test=mysql_query($sql);
+			if(mysql_num_rows($test)==0) {
+				$sql="INSERT INTO s_types_sanctions SET nature='".$tab_type[$loop]."';";
+				$insert=mysql_query($sql);
+			}
 		}
 	}
 }
@@ -138,35 +154,39 @@ description TEXT NOT NULL
 );";
 $creation=mysql_query($sql);
 
-$sql="CREATE TABLE IF NOT EXISTS s_mesures (
-id INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-type ENUM('prise','demandee') ,
-mesure VARCHAR( 50 ) NOT NULL ,
-commentaire TEXT NOT NULL
-);";
-$creation=mysql_query($sql);
-if($creation) {
-	// Mesures prises
-	$tab_mesure=array("Travail supplémentaire","Mot dans le carnet de liaison");
-	for($loop=0;$loop<count($tab_mesure);$loop++) {
-		$sql="SELECT 1=1 FROM s_mesures WHERE mesure='".$tab_mesure[$loop]."';";
-		//echo "$sql<br />";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==0) {
-			$sql="INSERT INTO s_mesures SET mesure='".$tab_mesure[$loop]."', type='prise';";
-			$insert=mysql_query($sql);
+$sql="SHOW TABLES LIKE 's_mesures';";
+$test_table=mysql_query($sql);
+if(mysql_num_rows($test_table)==0) {
+	$sql="CREATE TABLE IF NOT EXISTS s_mesures (
+	id INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+	type ENUM('prise','demandee') ,
+	mesure VARCHAR( 50 ) NOT NULL ,
+	commentaire TEXT NOT NULL
+	);";
+	$creation=mysql_query($sql);
+	if($creation) {
+		// Mesures prises
+		$tab_mesure=array("Travail supplémentaire","Mot dans le carnet de liaison");
+		for($loop=0;$loop<count($tab_mesure);$loop++) {
+			$sql="SELECT 1=1 FROM s_mesures WHERE mesure='".$tab_mesure[$loop]."';";
+			//echo "$sql<br />";
+			$test=mysql_query($sql);
+			if(mysql_num_rows($test)==0) {
+				$sql="INSERT INTO s_mesures SET mesure='".$tab_mesure[$loop]."', type='prise';";
+				$insert=mysql_query($sql);
+			}
 		}
-	}
-
-	// Mesures demandées
-	$tab_mesure=array("Retenue","Exclusion");
-	for($loop=0;$loop<count($tab_mesure);$loop++) {
-		$sql="SELECT 1=1 FROM s_mesures WHERE mesure='".$tab_mesure[$loop]."';";
-		//echo "$sql<br />";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==0) {
-			$sql="INSERT INTO s_mesures SET mesure='".$tab_mesure[$loop]."', type='demandee';";
-			$insert=mysql_query($sql);
+	
+		// Mesures demandées
+		$tab_mesure=array("Retenue","Exclusion");
+		for($loop=0;$loop<count($tab_mesure);$loop++) {
+			$sql="SELECT 1=1 FROM s_mesures WHERE mesure='".$tab_mesure[$loop]."';";
+			//echo "$sql<br />";
+			$test=mysql_query($sql);
+			if(mysql_num_rows($test)==0) {
+				$sql="INSERT INTO s_mesures SET mesure='".$tab_mesure[$loop]."', type='demandee';";
+				$insert=mysql_query($sql);
+			}
 		}
 	}
 }
@@ -194,20 +214,24 @@ id_mesure INT( 11 ) NOT NULL
 );";
 $creation=mysql_query($sql);
 
-$sql="CREATE TABLE IF NOT EXISTS s_lieux_incidents (
-id INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-lieu VARCHAR( 255 ) NOT NULL
-);";
-$creation=mysql_query($sql);
-if($creation) {
-	$tab_lieu=array("Classe","Couloir","Cour","Réfectoire","Autre");
-	for($loop=0;$loop<count($tab_lieu);$loop++) {
-		$sql="SELECT 1=1 FROM s_lieux_incidents WHERE lieu='".$tab_lieu[$loop]."';";
-		//echo "$sql<br />";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==0) {
-			$sql="INSERT INTO s_lieux_incidents SET lieu='".$tab_lieu[$loop]."';";
-			$insert=mysql_query($sql);
+$sql="SHOW TABLES LIKE 's_lieux_incidents';";
+$test_table=mysql_query($sql);
+if(mysql_num_rows($test_table)==0) {
+	$sql="CREATE TABLE IF NOT EXISTS s_lieux_incidents (
+	id INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+	lieu VARCHAR( 255 ) NOT NULL
+	);";
+	$creation=mysql_query($sql);
+	if($creation) {
+		$tab_lieu=array("Classe","Couloir","Cour","Réfectoire","Autre");
+		for($loop=0;$loop<count($tab_lieu);$loop++) {
+			$sql="SELECT 1=1 FROM s_lieux_incidents WHERE lieu='".$tab_lieu[$loop]."';";
+			//echo "$sql<br />";
+			$test=mysql_query($sql);
+			if(mysql_num_rows($test)==0) {
+				$sql="INSERT INTO s_lieux_incidents SET lieu='".$tab_lieu[$loop]."';";
+				$insert=mysql_query($sql);
+			}
 		}
 	}
 }

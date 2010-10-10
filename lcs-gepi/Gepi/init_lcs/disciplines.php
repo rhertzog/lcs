@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: disciplines.php 2379 2008-09-13 18:00:15Z delineau $
+ * $Id: disciplines.php 5609 2010-10-08 19:49:03Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -56,7 +56,7 @@ die();
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
 die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -102,7 +102,8 @@ $liste_tables_del = array(
 "j_groupes_classes",
 "j_groupes_matieres",
 "j_groupes_professeurs",
-"eleves_groupes_settings"
+"eleves_groupes_settings",
+"j_signalement"
 //"setting"
 );
 

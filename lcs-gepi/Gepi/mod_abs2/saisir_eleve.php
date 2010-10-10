@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: saisir_eleve.php 5387 2010-09-20 19:32:06Z jjacquard $
+ * @version $Id: saisir_eleve.php 5433 2010-09-26 14:56:21Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -284,7 +284,7 @@ if (!$eleve_col->isEmpty()) {
 <!-- Afichage du tableau de la liste des élèves -->
 <!-- Legende du tableau-->
 	<?php echo ('<p>');
-	    $type_autorises = AbsenceEleveTypeStatutAutoriseQuery::create()->filterByStatut($utilisateur->getStatut())->find();
+	    $type_autorises = AbsenceEleveTypeStatutAutoriseQuery::create()->useAbsenceEleveTypeQuery()->orderBySortableRank()->endUse()->filterByStatut($utilisateur->getStatut())->find();
 	    if ($type_autorises->count() != 0) {
 		    echo ("Type : <select name=\"type_absence\" class=\"small\">");
 		    echo "<option value='-1'></option>\n";

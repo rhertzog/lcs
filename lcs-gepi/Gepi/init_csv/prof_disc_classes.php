@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: prof_disc_classes.php 5349 2010-09-20 15:32:54Z crob $
+* $Id: prof_disc_classes.php 5609 2010-10-08 19:49:03Z crob $
 *
 * Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -35,7 +35,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
@@ -82,6 +82,7 @@ $liste_tables_del = array(
 "j_groupes_matieres",
 "j_groupes_professeurs",
 "j_professeurs_matieres",
+"j_signalement",
 //log
 //matieres
 //matieres_appreciations

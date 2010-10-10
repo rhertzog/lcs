@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: destinataires_alertes.php 5260 2010-09-12 16:21:00Z eabgrall $
+ * $Id: destinataires_alertes.php 5401 2010-09-23 10:01:32Z crob $
  *
- * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stephane Boireau
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stephane Boireau
  *
  * This file is part of GEPI.
  *
@@ -39,6 +39,13 @@ if ($resultat_session == 'c') {
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
     die();
+}
+
+if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
+	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+	header("Location: ../accueil.php?msg=$mess");
+	die();
 }
 
 if (isset($_POST['action']) and ($_POST['action'] == "reg_dest")) {

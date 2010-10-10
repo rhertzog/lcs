@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: visu_traitement.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: visu_traitement.php 5434 2010-09-26 14:56:24Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -229,7 +229,7 @@ echo 'Type : ';
 echo '</td><td>';
 //on ne modifie le type que si aucun envoi n'a ete fait
 if ($traitement->getModifiable()) {
-    $type_autorises = AbsenceEleveTypeStatutAutoriseQuery::create()->filterByStatut($utilisateur->getStatut())->find();
+    $type_autorises = AbsenceEleveTypeStatutAutoriseQuery::create()->filterByStatut($utilisateur->getStatut())->useAbsenceEleveTypeQuery()->orderBySortableRank()->endUse()->find();
     if ($type_autorises->count() != 0) {
 	echo '<form method="post" action="enregistrement_modif_traitement.php">';
 	echo '<p>';
@@ -271,7 +271,7 @@ echo '</td></tr>';
 echo '<tr><td>';
 echo 'Motif : ';
 echo '</td><td>';
-$motifs = AbsenceEleveMotifQuery::create()->find();
+$motifs = AbsenceEleveMotifQuery::create()->orderByRank()->find();
 echo '<form method="post" action="enregistrement_modif_traitement.php">';
 	echo '<p>';
 echo '<input type="hidden" name="id_traitement" value="'.$traitement->getPrimaryKey().'"/>';
@@ -297,7 +297,7 @@ echo '</td></tr>';
 echo '<tr><td>';
 echo 'Justification : ';
 echo '</td><td>';
-$justifications = AbsenceEleveJustificationQuery::create()->find();
+$justifications = AbsenceEleveJustificationQuery::create()->orderByRank()->find();
 echo '<form method="post" action="enregistrement_modif_traitement.php">';
 	echo '<p>';
 echo '<input type="hidden" name="id_traitement" value="'.$traitement->getPrimaryKey().'"/>';

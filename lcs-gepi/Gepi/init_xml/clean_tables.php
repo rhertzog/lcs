@@ -2,7 +2,7 @@
 
 @set_time_limit(0);
 /*
-* $Id: clean_tables.php 2147 2008-07-23 09:01:04Z tbelliard $
+* $Id: clean_tables.php 5609 2010-10-08 19:49:03Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -37,7 +37,7 @@ die();
 } else if ($resultat_session == '0') {
 header("Location: ../logout.php?auto=1");
 die();
-};
+}
 
 if (!checkAccess()) {
 header("Location: ../logout.php?auto=1");

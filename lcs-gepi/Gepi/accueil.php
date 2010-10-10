@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: accueil.php 4934 2010-07-28 20:57:14Z regis $
+ * $Id: accueil.php 5617 2010-10-09 13:32:26Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -412,6 +412,7 @@ Veuillez vérifier que le répertoire /temp de Gepi est accessible en écriture par
 		$afficheAccueil->probleme_dir[]="PHP potentiellement mal configuré (register_globals=on)! Pour prévenir certaines failles de sécurité, vous *devez* configurer PHP avec le paramètre register_globals à off.";
 	}
 
+
 	$sql="SELECT DISTINCT id_groupe, declarant FROM j_signalement WHERE nature='erreur_affect';";
 	$res_sign=mysql_query($sql);
 	if(mysql_num_rows($res_sign)>0) {
@@ -424,6 +425,7 @@ Veuillez vérifier que le répertoire /temp de Gepi est accessible en écriture par
 			$tbs_signalement.="<a href='groupes/edit_eleves.php?id_groupe=".$lig_sign->id_groupe."&amp;id_classe=".$current_group_sign['classes']['list'][0]."'>".$current_group_sign['name']." (<i>".$current_group_sign['description']." ".$current_group_sign['classlist_string']."</i>)</a> signalé par ".affiche_utilisateur($lig_sign->declarant,$current_group_sign['classes']['list'][0])."<br />\n";
 		}
 		$tbs_signalement.="</p>\n";
+		$afficheAccueil->signalement=$tbs_signalement;
 	}
 
 	//echo "</div>\n";
