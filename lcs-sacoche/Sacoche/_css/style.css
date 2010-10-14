@@ -231,13 +231,6 @@ table.scor_eval tbody td input.NN   {background:#FFF url('../_img/note/NN.gif') 
 table.scor_eval tbody td input.DISP {background:#FFF url('../_img/note/DISP.gif') no-repeat center center;}
 table.scor_eval tbody td input.X    {background:#FFF url('../_img/note/X.gif')    no-repeat center center;}
 table.scor_eval tbody td input.REQ  {background:#FFF url('../_img/note/REQ.gif')  no-repeat center center;}
-/* Commenté car redéfini suivant les préférences de l'établissement */
-/*
-table.scor_eval tbody td input.RR   {background:#FFF url('../_img/note/Lomer/RR.gif')   no-repeat center center;}
-table.scor_eval tbody td input.R    {background:#FFF url('../_img/note/Lomer/R.gif')    no-repeat center center;}
-table.scor_eval tbody td input.V    {background:#FFF url('../_img/note/Lomer/V.gif')    no-repeat center center;}
-table.scor_eval tbody td input.VV   {background:#FFF url('../_img/note/Lomer/VV.gif')   no-repeat center center;}
-*/
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /* Couleur de fond pour indiquer A / VA / NA                                                           */
@@ -393,7 +386,7 @@ a.puce_plus  {background:transparent url(../_img/puce_plus.gif) no-repeat left;f
 a.puce_moins {background:transparent url(../_img/puce_moins.gif) no-repeat left;font-weight:normal;padding-left:12px;}
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-/* Zone affichée pour le choix d'une compétences à la souris                                           */
+/* Zone affichée pour le choix d'une note à la souris                                                  */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 div#td_souris_container{display:none;}

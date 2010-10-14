@@ -845,6 +845,49 @@ $(document).ready
 		);
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+//	Reporter une note dans toutes les cellules sans saisie
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+
+		$('#report_note').click
+		(
+			function()
+			{
+				var note = $("input[name=f_defaut]:checked").val();
+				var findme = '.'+note+'.';
+				if( (typeof(note)=='undefined') || ('.VV.V.R.RR.ABS.NN.DISP.'.indexOf(findme)==-1) )
+				{
+					$('#msg_report').removeAttr("class").addClass("alerte").html('Aucun code coché !');
+					return false;
+				}
+				else
+				{
+					var compteur = 0;
+					$("#table_saisir tbody td input").each
+					(
+						function ()
+						{
+							if($(this).val()=='X')
+							{
+								$(this).val(note).removeAttr("class").addClass(note);
+								$(this).parent().css("background-color","#F6D");
+								compteur++;
+							}
+						}
+					);
+					if(!compteur)
+					{
+						$('#msg_report').removeAttr("class").addClass("alerte").html('Aucune cellule vide trouvée !');
+					}
+					else
+					{
+						var s = (compteur>1) ? 's' : '' ;
+						$('#msg_report').removeAttr("class").addClass("valide").html(compteur+' report'+s+' effectué'+s+'.');
+					}
+				}
+			}
+		);
+
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 //	Clic sur une image pour modifier l'ordre des items d'une évaluation
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 

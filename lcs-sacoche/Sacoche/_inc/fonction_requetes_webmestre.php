@@ -42,6 +42,37 @@ function DB_WEBMESTRE_recuperer_structure($base_id)
 }
 
 /**
+ * DB_WEBMESTRE_recuperer_structure_by_UAI (besoin particulier hors installation classique de SACoche)
+ * 
+ * @param string uai
+ * @return array
+ */
+
+function DB_WEBMESTRE_recuperer_structure_by_UAI($uai)
+{
+	$DB_SQL = 'SELECT * FROM sacoche_structure ';
+	$DB_SQL.= 'WHERE structure_uai=:uai ';
+	$DB_SQL.= 'LIMIT 1 ';
+	$DB_VAR = array(':uai'=>$uai);
+	return DB::queryRow(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
+}
+
+/**
+ * DB_WEBMESTRE_compter_structure
+ * 
+ * @param void
+ * @return string   n structures
+ */
+
+function DB_WEBMESTRE_compter_structure()
+{
+	$DB_SQL = 'SELECT COUNT(sacoche_base) AS nombre FROM sacoche_structure ';
+	$DB_ROW = DB::queryRow(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , null);
+	$s = ($DB_ROW['nombre']>1) ? 's' : '' ;
+	return $DB_ROW['nombre'].' structure'.$s;
+}
+
+/**
  * DB_WEBMESTRE_lister_zones
  * 
  * @param void
@@ -351,7 +382,7 @@ function DB_WEBMESTRE_OPT_structures_sacoche()
 	}
 	else
 	{
-		return 'Aucun autre établissement n\'est enregistré !';
+		return 'Aucun établissement n\'est enregistré !';
 	}
 }
 

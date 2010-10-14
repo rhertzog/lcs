@@ -39,8 +39,20 @@ si un utilisateur Sacoche n'est pas pr&#233;sent dans l'annuaire du LCS,
 ou s'il a un num&#233;ro sconet diff&#233;rent de l'employeeNumber du LDAP
  ( attention dans l'employeeNumber, le num&#233;ro sconet est pr&#233;c&#233;d&#233; d'un 0 si c'est un &#233;l&#232;ve et d'un P si c'est un prof )</p>
 
+<h4>Import de la base h&#233;berg&#233;e chez S&#233;samath :</h4><ul>
+	<p> Après l'import :</p>
+	<li>le mot de passe Admin est celui d' "Admin SACoche" chezS&#233;samath</li>
+	<li>Il faut r&#233;tablir l'authentification unique :
+	<ul><li> Choix/Param&#233;trages -> Mode d'identification -> Config CAS manuelle
+	<li>Domaine =lcs..........fr (surtout pas l'adresse IP)
+	<li>Port = 8443
+	<li>Chemin : "laisser vide" 
+	</ul>
+	<li> Il faut r&#233;-Importer/Imposer les identifiants LCS
+</ul>
+
 <H3>Derni&#232;re version exp&#233;rimentale :</H3>
-<P>Version module : 0.3 bas&#233; sur la version de SACoche du 29/09/2010.</P>
+<P>Version module : 0.5 bas&#233; sur la version de SACoche du 14/10/2010.</P>
 
 <H3> Responsables du suivi du Module SACoche :</H3>
 <blockquote>
