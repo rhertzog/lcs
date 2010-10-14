@@ -1,3 +1,9 @@
+lcs-sacoche (0.5.1) LCS; urgency=low
+
+  * add rights ALTER,INDEX 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 14 Oct 2010 15:07:50 +0200
+
 lcs-sacoche (0.5) LCS; urgency=low
 
   * update to version 2010-10-14
