@@ -4,7 +4,7 @@
    accueil.php
    jLCF : jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   derniere mise a jour : 30/09/2010
+   derniere mise a jour : 14/10/2010
    ============================================= */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -58,9 +58,9 @@ echo $html;
   } else {
     $accord == "";
     if ($user["sexe"] == "F") $accord="e";
-    echo "<li><tt>Derni\xe8re connexion le : " . displogin($idpers) . "</tt></li>\n";
+    echo "<li><tt>Derni&#232;re connexion le : " . displogin($idpers) . "</tt></li>\n";
     /* Affichage des stats user */
-    echo "<li><tt>Vous vous \xeates connect\xe9".$accord." " . dispstats($idpers) . " fois \xe0 votre espace perso.</tt></li>\n";
+    echo "<li><tt>Vous vous &#234;tes connect&#233;".$accord." " . dispstats($idpers) . " fois &#224; votre espace perso.</tt></li>\n";
   }
 
   echo "</ul>\n";
