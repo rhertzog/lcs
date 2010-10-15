@@ -1,0 +1,13 @@
+README, version : 2.4 08 Juin 2009
+
+Jean-Luc Chretien    <jean-luc.chretien@tice.ac-caen.fr>
+
+LCS sysinfo
+==============
+
+  Configuration phpsysinfo pour LCS
+
+    -Ajout d'un thème LCS phpsysinfo
+    -Position de la variable lang en fr
+    -Ajout d'une directive open_basedir pour phpsysinfo dans la configuration
+

@@ -1,0 +1,12 @@
+Source: lcs-helpdesk
+Section: misc
+Priority: optional
+Maintainer: Sebastien TACK <sebastien.tack@ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-helpdesk
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-web, lcse3-monitor, php5-curl
+Description: SSO access to academic HelpDesk platform
+ This package allows to manage and submit tickets from LCS to academic platform

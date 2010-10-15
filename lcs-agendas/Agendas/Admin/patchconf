@@ -1,0 +1,23 @@
+#!/bin/bash
+if [ ! -e ../includes/settings.php ]; then
+    pass=`pwgen -1`
+    HOSTNAME=`hostname -f`
+    echo "Patch du fichier de la base MySQL..."
+    cp -a install_mysql.sql install_mysql.sq
+    cat install_mysql.sq | sed -e "s/#PASS#/$pass/g" > install_mysql.sql1
+    cat install_mysql.sql1 | sed -e "s/@HOSTNAME@/$HOSTNAME/g" > install_mysql.sql
+    rm install_mysql.sql1
+    echo "Patch du fichier config..."
+    cat ../includes/settings.ph | sed -e "s/#PASS#/$pass/g" > ../includes/settings.php
+    chown www-data:www-data ../includes/settings.php install_mysql.sql
+    rm ../includes/settings.ph
+else
+# on recupere le mot de passe
+dbpass=`cat ../includes/settings.php | grep "db_password:" | cut -d : -f 2`
+cat ../includes/settings.ph | sed -e "s/#PASS#/$dbpass/g" > ../includes/settings.php
+chown www-data:www-data ../includes/settings.php
+fi
+#
+# Fin
+#
+echo "Fin des patches..."

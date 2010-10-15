@@ -1,0 +1,12 @@
+Source: lcs-desktop
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+
+Package: lcs-desktop
+Architecture: all
+Depends: lcs-web, lcs-libjs
+Description: Install web desktop on LCS server
+ This package install a web desktop on LCS server

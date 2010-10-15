@@ -1,0 +1,62 @@
+<!-- 17/11/2008 PANIER.HTM -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+
+<link href="<#CONST REP_MODELES>bcdi.css" rel="stylesheet" type="text/css">
+<meta http-equiv="Pragma" content="no-cache">
+<script type="text/javascript">
+</script>
+</head>
+<body onLoad="javascript:document.affpanier.submit()">
+<form action="<#URLDLL>" method="POST" name="affpanier">
+		<INPUT type="hidden" name="np" value="<#VALEUR NUMERO_PANIER>">
+		<INPUT type="hidden" name="nr" value="<#VALEUR NUMERO_RECHERCHE>">
+		<INPUT type="hidden" name="b" value="<#VALEUR NUMERO_PAGE>">
+		<INPUT type="hidden" name="RESULTAT" value="PANIER">	
+		<INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="<#FICHIER>">
+		<INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="PANIER.HTM">	
+		<INPUT type="HIDDEN" NAME="CLASSEMENT" value="<#CLASSEMENT>">
+
+<div class="cachediv">
+<div class="resultarial12800000">  
+	<div class="resulttitre">Exploitation du panier</div>
+	<br>Vous pouvez choisir un format de sortie et un classement 
+	<br>pour éditer les fiches que vous avez placées dans le panier   
+</div> 
+<br>
+<div align="center">
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="panierzone">
+		<input type="radio" name="format" value="listenot.htm" checked> Format standard<br>
+		<br>
+		<input type="radio" name="format" value="biblio"> Format Biblio<br>
+		<br>
+		<input type="radio" name="format" value="isbd"> Format ISBD<br>
+		<br>
+		<input type="radio" name="format" value="tout_biblio"> Format Biblio liste compl&egrave;te (bibliographie)</td>
+    <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    <td class="panierzone2">
+	<input type="radio" name="classement" value="DATE PARUTION; SUPPORT; TITRE" checked> Classement par Date de parution invers&eacute;e / Support / Titre<br>
+	<br>
+    <input type="radio" name="classement" value="DATE PARUTION; TITRE"> Classement par Date de parution invers&eacute;e / Titre<br>
+    <br>
+    <input type="radio" name="classement" value="NOTICE; TITRE"> Classement par Documents / Titre (pour les p&eacute;riodiques)<br>
+    <br>
+    <input type="radio" name="classement" value="SUPPORT; COTE; TITRE"> Classement par Support / Cote / Titre</td>
+  </tr>
+</table>
+</div>
+<br>
+<hr>   
+<INPUT type="submit" Name="Visualiser" Value="Visualiser le panier">&nbsp;&nbsp;
+<INPUT type="submit" Name="VIDERPANIER" Value="Vider le panier" class="resultvider">
+&nbsp;&nbsp;<INPUT type="button" Value="Nouvelle recherche"  onClick="MM_goToURL('parent','<#URLDLL>?np=<#NUMERO_PANIER>&fichier=Index.htm');return document.MM_returnValue">
+<hr>
+</div>
+</form>
+</body>
+</html>

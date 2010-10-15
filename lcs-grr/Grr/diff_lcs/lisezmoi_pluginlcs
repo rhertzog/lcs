@@ -1,0 +1,52 @@
+Modifications pour intégration Grr 1.9.3 en Plugin LCS
+======================================================
+
+Fichiers de configuration :
+-------------------------
+config.inc.php :
+    $authentification_obli = 1
+    $use_function_mysql_real_escape_string = 0  (pour compatibilité de GRR avec version PHP inférieure à 4.3.0.)
+
+connect.inc.php :
+    $dbDb="grr_plug";
+    $dbUser="grr_user";
+    $dbPass="#PASS#";
+
+Le fichier install_mysql.sql
+----------------------------
+En ce qui concerne la structure des tables et l'insertion des données initiales,
+Le fichier install_mysql.sql reprend le fichier "tables.my.sql" présent à la racine de l'archive GRR avec les modifications suivantes :
+
+1) Suppression de la ligne suivante qui insère un administratreur local "administrateur" ayant "azerty" comme mot de passe
+INSERT INTO grr_utilisateurs VALUES ('ADMINISTRATEUR', 'Administrateur', 'grr', 'ab4f63f9ac65152575886860dde480a1', 'admin@labas.fr', 'administrateur', 'actif', 0, 0, '', '', '','local');
+
+2) Suppression des lignes suivantes car elles seront insérées de façon plus personnalisées avec le fichier "install" (voir plus bas)
+INSERT INTO grr_setting VALUES ('webmaster_email', 'admin@mon.site.fr');
+INSERT INTO grr_setting VALUES ('technical_support_email', 'support.technique@mon.site.fr');
+INSERT INTO grr_setting VALUES ('grr_url', 'http://mon.site.fr/grr/');
+
+Attention à donner à l'utilisateur grr_user de la base grr_plug, les droits SELECT, UPDATE, DELETE, INSERT, CREATE, DROP, INDEX et ALTER :
+GRANT SELECT,UPDATE,DELETE,INSERT,CREATE,DROP,INDEX,ALTER ON grr_plug.* TO grr_user@localhost IDENTIFIED BY '#PASS#';
+FLUSH PRIVILEGES;
+
+La fichier install.txt
+----------------------
+Ce fichier insère dans la base GRR :
+1) l'admin afin de lui donner les droits d'administration de GRR :
+mysql -e "INSERT INTO grr_plug.grr_utilisateurs VALUES ('admin', 'Administrateur', 'grr', '', 'admin@$DOMAIN', 'administrateur', 'actif', 0, 0, '', '', '','ext');"
+
+3) Personnalisation de quelques paramètres :
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('webmaster_email', 'admin@$DOMAIN');"
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('technical_support_email', 'admin@$DOMAIN');"
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('grr_url', 'http://lcs.$DOMAIN/Plugins/Grr/');"
+
+3) Intégration de GRR à LCS
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('sso_statut', 'lcs');"
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('lcs_statut_prof', 'utilisateur');"
+mysql -e "INSERT INTO grr_plug.grr_setting VALUES ('lcs_statut_eleve', 'visiteur');"
+
+
+Nouveaux fichiers
+==============
+Includes/close_session_plugin.php  (même pas obligatoire car GRR gère automatiquement la fermeture de session en cas de deconnexion du serveur LCS)
+Images/plugin_icon.png

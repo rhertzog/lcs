@@ -1,0 +1,4 @@
+dn: cn=Maint_is_admin,ou=Rights,#BASEDN#
+changetype: delete
+
+

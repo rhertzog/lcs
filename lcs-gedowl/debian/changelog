@@ -1,0 +1,12 @@
+lcs-gedowl (2.4.7) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 17:03:01 +0200
+
+lcs-gedowl (2.0) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 17 Jun 2009 01:12:27 +0200

@@ -1,0 +1,15 @@
+etc/lcs
+etc/skel/Documents
+etc/skel/Maildir
+etc/skel/Maildir/cur
+etc/skel/Maildir/new
+etc/skel/Maildir/tmp
+etc/skel/public_html
+root/LcsMaj
+usr/share/doc/lcs
+usr/share/lcs
+var/lib/lcs
+var/lib/lcs/import_comptes
+var/lib/lcs/web
+var/lib/lcs/web/varwwwlcs
+var/log/lcs

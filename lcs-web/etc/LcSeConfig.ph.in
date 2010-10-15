@@ -1,0 +1,60 @@
+###
+#
+# Configuration LDAP
+#
+###
+
+$mysqlServerIp = 'localhost';
+$mysqlServerUsername = 'root';
+$mysqlServerPw       = '@@PASSWORD@@';
+$connexionDb         = 'lcs_db';
+
+# Lecture des variables depuis la base de donnÈes
+use DBI;
+
+my $lcs_db = DBI->connect("DBI:mysql:$connexionDb@$mysqlServerIp", $mysqlServerUsername, $mysqlServerPw)
+or die "Unable to connect to contacts Database: $lcs_db->errstr\n";
+$lcs_db->{RaiseError} = 1;
+my $sth = $lcs_db->prepare("SELECT name, value FROM params");
+$sth->execute or
+die "Unable to execute query: $lcs_db->errstr\n";
+my @row;
+while(@row = $sth->fetchrow_array) {
+    ${$row[0]}=$row[1];
+}
+$sth->finish;
+$lcs_db->disconnect;
+
+# Structure
+# ---------
+
+$baseDn       = $ldap_base_dn;
+$adminDn      = "$adminRdn,$baseDn";
+
+$peopleDn     = "$peopleRdn,$baseDn";
+$groupsDn     = "$groupsRdn,$baseDn";
+$elevesDn     = "$elevesRdn,$groupsDn";
+$profsDn      = "$profsRdn,$groupsDn";
+$droitsDn     = "$rightsRdn,$baseDn";
+$computersDn  = "$computersRdn,$baseDn";
+$parcDn       = "$parcsRdn,$baseDn";
+
+# Optionnelles ou induites
+# ------------------------
+#$lcsIp        = '127.0.0.1';
+
+$slapdIp      = $ldap_server;
+$slapdPort    = $ldap_port;
+
+$slapdDebug   = '0';
+$slapdTimeout = '120';
+$slapdVersion = '3';
+
+# Samba…du3
+# ---------
+
+$documentRoot        = '/var/www';
+$webDir              = 'Admin';
+$loginShell          = $defaultshell;
+$hostname            = $hostname.".".$domain;
+

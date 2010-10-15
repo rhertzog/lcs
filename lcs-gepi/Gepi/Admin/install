@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+#### Variable a positionner en fonction du plugin
+NAMEPLUGIN="Gepi"
+####
+#
+PATH2PLUGIN="/usr/share/lcs/Plugins/$NAMEPLUGIN"
+echo "Script d'installation du plugin gepi";
+#
+# Nettoyage
+#
+rm $PATH2PLUGIN/Admin/install_mysql.sql
+mv $PATH2PLUGIN/Admin/install_mysql.sq $PATH2PLUGIN/Admin/install_mysql.sql
+#
+#
+#cas d'un sarge et php4 
+#
+if [  -e /etc/php4 ] ; then
+#
+echo "# Debut section gepi plugin" >> /etc/lcs/apache.conf
+echo "<Directory /usr/share/lcs/Plugins/Gepi>" >> /etc/lcs/apache.conf
+echo "       php_value register_globals 0" >> /etc/lcs/apache.conf
+echo "</Directory>" >> /etc/lcs/apache.conf
+echo "# Fin section gepi plugin" >> /etc/lcs/apache.conf
+#
+# Redémarrage apache
+#
+at now +1 minutes < /usr/share/lcs/Plugins/Gepi/Admin/jobat
+fi
+#
+#cas d'un etch et php5 
+if [  -e /etc/php5 ] ; then
+#
+echo "<Directory /usr/share/lcs/Plugins/Gepi>" >> /etc/apache2/lcs-main/71_gepi.conf
+echo "       php_value register_globals 0" >> /etc/apache2/lcs-main/71_gepi.conf
+echo "</Directory>" >> /etc/apache2/lcs-main/71_gepi.conf
+#
+# Redémarrage apache2
+#
+echo "Apache2 sera redémarré dans une minute"
+at now +1 minutes < /usr/share/lcs/Plugins/Gepi/Admin/jobat2
+fi
+

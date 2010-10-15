@@ -1,0 +1,6 @@
+#!/bin/bash
+echo " Ceci est le script de mise a jour en version 0.3 du plugin Gedowl";
+mv /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc.tmp
+cat /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc.tmp | sed -e "s/xxx/0.3/g" > /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc
+rm /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc.tmp
+chown www-data:www-data /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc

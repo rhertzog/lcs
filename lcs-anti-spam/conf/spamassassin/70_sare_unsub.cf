@@ -1,0 +1,450 @@
+# SARE "70_sare_unsub.cf" Ruleset for SpamAssassin
+# Version:  0.90
+# Created:  07/30/2004
+# Modified: 11/05/2005
+# Changes:  v0.90 Removed poor rules, ready for public release.
+# Changes:  v0.89 New rules + full corpus check
+# Changes:  v0.87 Count lines added + Rescoring of entire file + new rules
+# Changes:  v0.86 More minor squeaks
+# Changes:  v0.85 More minor tweaks
+# Changes:  v0.84 Worked around hits in mass-check results, modified a few rules to exclude hits.
+# Changes:  v0.83 Modified rule names, small expansion on many rules.
+# Changes:  v0.82 Increased score on S/O 1.00 rules.
+# Changes:  v0.81 Added ?: to ()'s, removed un-needed escaping, expanded a few rules.
+# License:  Artistic - see http://www.rulesemporium.com/license.txt
+# Current Maintainer:  Fred Tarasevicius tech2@i-is.com
+# Previous Maintainer: Chris Santerre csanterre@rulesemporium.com
+# Current Home: http://www.rulesemporium.com/rules/70_sare_unsub.cf
+# Purpose:  Common Un-?subscribing phrases in spam
+##
+
+#rawbody SARE_UNSUBCLASS m'<A [^>]{0,100}class="?(?:white|style\d|a1|cantsee|link|top)'i
+#score   SARE_UNSUBCLASS 0.731
+##counts SARE_UNSUBCLASS          542s/6h of 198066 corpus (190923s/7143h FT) 11/04/05
+
+#rawbody SARE_UNSUBCLASSB m'<A [^>]{0,100}class="?(?:white|style[2-9]|a1|cantsee|link|top)'i
+#score   SARE_UNSUBCLASSB 0.731
+#counts SARE_UNSUBCLASSB         2s/1h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNSUBCLASSB         11s/0h of 8131 corpus (6878s/1253h ML) 11/05/05
+#counts SARE_UNSUBCLASSB         71s/15h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNSUBCLASSB         26s/377h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+uri     SARE_UNSUB_CGI m'/cgi-bin/re?\.cgi\?[a-e]='i
+score   SARE_UNSUB_CGI 1.331
+#counts SARE_UNSUB_CGI           0s/0h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNSUB_CGI           3s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNSUB_CGI           0s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+rawbody SARE_UNSUB01   m'>Don.?t (?:care|want) any.?more(?: emails\??)?</'i
+body    SARE_UNSUB06   m'If you no longer wish to hear from (?:us|this)'i
+uri     SARE_UNSUB09   m'Unsub(?:scribe)?\.(?:asp|php)\?(?!user)(?!ch)[a-z]{2,4}='i
+body    SARE_UNSUB11   m'below while connected to the internet'i
+uri   __SARE_UNSUB13A  m'\b(?:gone|o(?:pened|ut|ff)?)\.php'i
+uri   __SARE_UNSUB13B  m'\bbravenet\.com'i
+meta    SARE_UNSUB13   (__SARE_UNSUB13A && !__SARE_UNSUB13B)
+rawbody SARE_UNSUB14   m'stop rece?i?ving[a-z\s\?]{1,10}</'i
+rawbody SARE_UNSUB16   m'>no (?:more )?(?:thanks|offers).{0,9}</'i
+body    SARE_UNSUB17   m'un-?subscr.{1,9} (?:using|with|by) postal mail'i
+rawbody SARE_UNSUB18   m'leave<'i
+rawbody SARE_UNSUB18B  m'go away<'i
+rawbody SARE_UNSUB19   m'Please click here to opt.?out of future e?.?mail(?:ings?|s)?.?</'i
+body    SARE_UNSUB20   m'to no(?:t)? (?:longer )?get th(?:is|ese)'i
+rawbody SARE_UNSUB21   m'ad.?s like th(?:is(?: one)?|ese).?</'i
+body    SARE_UNSUB22   m'Not for you'i
+rawbody SARE_UNSUB23   m'>take me off.{0,18}</a>'i
+body    SARE_UNSUB24   m'from future mailing'i
+body    SARE_UNSUB25   m'by an affiliate'i
+rawbody SARE_UNSUB27   m'Off (?:this|the) list</a>'i
+body    SARE_UNSUB28   m'be contacted again'i
+rawbody SARE_UNSUB29   m'>use this[a-z0\s]{0,25}</a>'i
+body    SARE_UNSUB30   m'st[o0]p e?-?m[ai][ia1]l'i
+body    SARE_UNSUB30A  m'st[o0]p e?-?m[ai][ia1]ls'i
+body    SARE_UNSUB30B  m'st[o0]p m[ai][ia1]l'i
+body    SARE_UNSUB30C  m'st[o0]p m[ai][ia1]ls'i
+body    SARE_UNSUB31   m'(?!unsubscri)un[^\)/\s]?sub.{0,1}scri'i
+rawbody SARE_UNSUB32   m'>[a-z\s]{0,9}Stop Subscriptions?</a>'i
+body    SARE_UNSUB35   m'one-time e?-?mail(?:ing)?'i
+rawbody SARE_UNSUB36   m'>(?:(?:use|hit) this|i want off|not interested|press here)</a>'i
+body    SARE_UNSUB38   m'please (?:go|press) here'i
+rawbody SARE_UNSUB38B  m'>please go here'i
+rawbody SARE_UNSUB38C  m'>please press here'i
+rawbody SARE_UNSUB38D  m'>please click here'i
+uri     SARE_UNSUB39   m'/cgi-bin/unsub'i
+
+
+body    SARE_UN1 m'send an email to the following address:'i
+rawbody SARE_UN2 m'>Remove Me</a>'i
+body    SARE_UN3 m'To stop further emails use the link below:'i
+body    SARE_UN4 m'follow the link below:'i
+rawbody SARE_UN5 m'/unsub\.[^>]{3,30}>Click here</a>'i
+body    SARE_UN6 m'^Get me outta here'i
+rawbody SARE_UN7 m'>click here.</a>'i
+body    SARE_UN9 m'stop receiving our mailings, please click:'i
+
+rawbody SARE_UNA m'please click <a'i
+body    SARE_UNB m'do not wish to receive these communications'i
+body    SARE_UNC m'then please click below.'i
+body    SARE_UND m'visit the unsubscribe page'i
+body    SARE_UNE m'^Our site:'i
+rawbody SARE_UNF m'>not</a>'i
+rawbody SARE_UNG m'right now!</A>'i
+rawbody SARE_UNI m'>Unsubscribe</a>'i
+body    SARE_UNJ m'continuing below:'i
+body    SARE_UNK m'If you (?:would )?no longer (?:wish|like|want) to receive [a-z0]{4,25} offers'i
+body    SARE_UNL m'please cut and paste the following address'i
+body    SARE_UNM m'If you wish to be excluded from future'i
+body    SARE_UNN m'^Registration Options'i
+body    SARE_UNO m'to stop this e-mail'i
+rawbody SARE_UNP m'>Unsubscribe:<br>'i
+rawbody SARE_UNQ m'>not interested.*</A>'i
+body    SARE_UNR m'If you (?:no longer wish|prefer not) to receive (?:such|future) emails'i
+
+
+
+
+
+
+
+score   SARE_UN1 0.21
+#counts SARE_UN1                 4s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UN1                 1s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+
+score   SARE_UN2 0.763
+#counts SARE_UN2                 90s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UN2                 62s/3h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UN2                 44s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UN3 0.643
+#counts SARE_UN3                 11s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UN3                 7s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UN3                 17s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UN4 1.144
+#counts SARE_UN4                 464s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UN4                 5s/1h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UN4                 1s/0h of 8131 corpus (6878s/1253h ML) 11/05/05
+#counts SARE_UN4                 70s/9h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UN4                 114s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UN5 1.416
+#counts SARE_UN5                 155s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UN5                 9s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UN5                 2s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UN6 1.311
+#counts SARE_UN6                 143s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UN6                 10s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UN6                 9s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UN7 0.917
+#counts SARE_UN7                 1387s/1h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UN7                 12s/0h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UN7                 6s/0h of 8131 corpus (6878s/1253h ML) 11/05/05
+#counts SARE_UN7                 285s/19h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UN7                 146s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UN9 1.451
+#counts SARE_UN9                 749s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UN9                 4s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UN9                 149s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNA 1.231
+#counts SARE_UNA                 1996s/3h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNA                 11s/17h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNA                 324s/10h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNA                 197s/1h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNB 0.21
+#counts SARE_UNB                 3s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNB                 0s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNC 0.116
+#counts SARE_UNC                 3s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNC                 0s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UND 2.222
+#counts SARE_UND                 1175s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UND                 27s/0h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UND                 5s/0h of 8131 corpus (6878s/1253h ML) 11/05/05
+#counts SARE_UND                 248s/2h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UND                 118s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNE 0.835
+#counts SARE_UNE                 27s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNE                 7s/0h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNE                 39s/0h of 8131 corpus (6878s/1253h ML) 11/05/05
+#counts SARE_UNE                 43s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNE                 106s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNF 0.951
+#counts SARE_UNF                 107s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNF                 7s/0h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNF                 75s/0h of 8131 corpus (6878s/1253h ML) 11/05/05
+#counts SARE_UNF                 1s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNF                 13s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNG 0.751
+#counts SARE_UNG                 46s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNG                 2s/1h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNG                 20s/0h of 8131 corpus (6878s/1253h ML) 11/05/05
+#counts SARE_UNG                 6s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNG                 12s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNI 0.591
+#counts SARE_UNI                 2398s/66h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNI                 43s/18h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNI                 13s/4h of 8131 corpus (6878s/1253h ML) 11/05/05
+#counts SARE_UNI                 782s/69h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNI                 211s/9h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNJ 0.1
+#counts SARE_UNJ                 1s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNJ                 0s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNK 1.142
+#counts SARE_UNK                 335s/1h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNK                 2s/0h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNK                 101s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNK                 23s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNL 0.556
+#counts SARE_UNL                 18s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNL                 9s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNL                 33s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNM 2.195
+#counts SARE_UNM                 1472s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNM                 5s/0h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNM                 1002s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNM                 138s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNN 1.814
+#counts SARE_UNN                 1269s/0h of 198066 corpus (190928s/7138h FT) 11/05/05
+#counts SARE_UNN                 0s/0h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNN                 65s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNN                 123s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNO 0.111
+#counts SARE_UNO                 2s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNO                 0s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+
+score   SARE_UNP 0.211
+#counts SARE_UNP                 4s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNP                 57s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+
+score   SARE_UNQ 0.812
+#counts SARE_UNQ                 65s/0h of 198066 corpus (190928s/7138h FT) 11/05/05
+#counts SARE_UNQ                 0s/0h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNQ                 14s/0h of 8131 corpus (6878s/1253h ML) 11/05/05
+#counts SARE_UNQ                 17s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+score   SARE_UNR 0.491
+#counts SARE_UNR                 14s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNR                 5s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+#counts SARE_UNR                 2s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05
+
+
+
+
+
+
+
+score   SARE_UNSUB01 0.211
+#counts SARE_UNSUB01             0s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB01             2s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+
+score   SARE_UNSUB06 0.731
+#counts SARE_UNSUB06             75s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB06             3s/0h of 1634 corpus (1005s/629h AXB) 11/05/05
+
+score   SARE_UNSUB09 1.253
+#counts SARE_UNSUB09             524s/1h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB09             44s/0h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNSUB09             17s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB09             149s/1h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB09             181s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05 *
+#counts SARE_UNSUB09             182s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05 *
+#counts SARE_UNSUB09             68s/0h of 1634 corpus (1005s/629h AXB) 11/05/05
+
+score   SARE_UNSUB11 1.022
+#counts SARE_UNSUB11             122s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB11             84s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB11             77s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB13 1.661
+#counts SARE_UNSUB13             6994s/1h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB13             50s/2h of 11589 corpus (6443s/5146h CT) 11/04/05
+#counts SARE_UNSUB13             5s/0h of 8128 corpus (6877s/1251h ML) 11/04/05 *
+#counts SARE_UNSUB13             6s/0h of 8131 corpus (6878s/1253h ML) 11/05/05 * Increased by 1
+#counts SARE_UNSUB13             9s/1h of 1634 corpus (1005s/629h AXB) 11/05/05
+#counts SARE_UNSUB13             254s/1h of 47281 corpus (42107s/5174h MY) 11/04/05
+#counts SARE_UNSUB13             997s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05  *
+#counts SARE_UNSUB13             1003s/0h of 64414 corpus (16967s/47447h DOC) 11/05/05 *
+
+score   SARE_UNSUB14 0.331
+#counts SARE_UNSUB14             0s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB14             2s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+
+score   SARE_UNSUB16 1.291
+#counts SARE_UNSUB16             152s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB16             15s/0h of 11589 corpus (6443s/5146h CT) 11/04/05
+#counts SARE_UNSUB16             5s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB16             9s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB16             68s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB17 0.753
+#counts SARE_UNSUB17             36s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB17             23s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB17             20s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+#counts SARE_UNSUB17             1s/0h of 1634 corpus (1005s/629h AXB) 11/05/05
+
+score   SARE_UNSUB18 0.131
+#counts SARE_UNSUB18             32s/2h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB18             0s/0h of 11589 corpus (6443s/5146h CT) 11/04/05
+#counts SARE_UNSUB18             36s/8h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB18             1s/1h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB18B 0.331
+#counts SARE_UNSUB18B            0s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB18B            1s/0h of 11589 corpus (6443s/5146h CT) 11/04/05
+#counts SARE_UNSUB18B            2s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+
+score   SARE_UNSUB19 1.339
+#counts SARE_UNSUB19             19s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB19             141s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB19             3s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB20 1.543
+#counts SARE_UNSUB20             762s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB20             158s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB20             38s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB21 0.616
+#counts SARE_UNSUB21             0s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB21             1s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB21             11s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+
+score   SARE_UNSUB22 0.948
+#counts SARE_UNSUB22             261s/2h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB22             13s/0h of 11589 corpus (6443s/5146h CT) 11/04/05
+#counts SARE_UNSUB22             68s/0h of 8128 corpus (6877s/1251h ML) 11/04/05 *
+#counts SARE_UNSUB22             69s/0h of 8131 corpus (6878s/1253h ML) 11/05/05 *
+#counts SARE_UNSUB22             500s/3h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB22             12s/1h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB23 0.333
+#counts SARE_UNSUB23             12s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB23             1s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB23             6s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+
+score   SARE_UNSUB24 1.207
+#counts SARE_UNSUB24             4648s/32h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB24             98s/1h of 11589 corpus (6443s/5146h CT) 11/04/05
+#counts SARE_UNSUB24             9s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB24             1s/2h of 1634 corpus (1005s/629h AXB) 11/05/05
+#counts SARE_UNSUB24             460s/2h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB24             456s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB25 1.866
+#counts SARE_UNSUB25             1756s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB25             68s/0h of 11589 corpus (6443s/5146h CT) 11/04/05
+#counts SARE_UNSUB25             4s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB25             239s/0h of 47289 corpus (42118s/5171h MY) 11/04/05 *
+#counts SARE_UNSUB25             241s/0h of 47306 corpus (42133s/5173h MY) 11/05/05 *
+#counts SARE_UNSUB25             172s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+#counts SARE_UNSUB25             1s/0h of 1634 corpus (1005s/629h AXB) 11/05/05
+
+score   SARE_UNSUB27  0.331
+#counts SARE_UNSUB27             0s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB27             1s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+
+score   SARE_UNSUB28  0.652
+#counts SARE_UNSUB28             29s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB28             14s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB28             3s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB29  0.713
+#counts SARE_UNSUB29             183s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB29             1s/0h of 11589 corpus (6443s/5146h CT) 11/04/05
+#counts SARE_UNSUB29             169s/3h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB29             50s/4h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB30  0.351
+#counts SARE_UNSUB30             89s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB30             3s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB30             0s/1h of 1634 corpus (1005s/629h AXB) 11/05/05
+#counts SARE_UNSUB30             17s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB30             26s/10h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB30A 0.583
+#counts SARE_UNSUB30A            41s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB30A            15s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+
+score   SARE_UNSUB30B 0.041
+#counts SARE_UNSUB30B            16s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB30B            3s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB30B            0s/1h of 1634 corpus (1005s/629h AXB) 11/05/05
+#counts SARE_UNSUB30B            3s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB30B            1s/10h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB30C 0.331
+#counts SARE_UNSUB30C            2s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB30C            3s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+
+score   SARE_UNSUB31 0.464
+#counts SARE_UNSUB31             6s/0h of 198066 corpus (190928s/7138h FT) 11/05/05
+#counts SARE_UNSUB31             1s/0h of 11592 corpus (6446s/5146h CT) 11/05/05
+#counts SARE_UNSUB31             11s/0h of 47306 corpus (42133s/5173h MY) 11/05/05
+
+score   SARE_UNSUB32 0.331
+#counts SARE_UNSUB32             0s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB32             1s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB32             2s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB35 0.431
+#counts SARE_UNSUB35             21s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB35             0s/1h of 47289 corpus (42118s/5171h MY) 11/04/05
+
+score   SARE_UNSUB36 1.144
+#counts SARE_UNSUB36             116s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB36             2s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB36             106s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB36             69s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB38 0.777
+#counts SARE_UNSUB38             1511s/32h of 198066 corpus (190928s/7138h FT) 11/05/05
+#counts SARE_UNSUB38             21s/0h of 11589 corpus (6443s/5146h CT) 11/04/05
+#counts SARE_UNSUB38             5s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB38             1s/1h of 1634 corpus (1005s/629h AXB) 11/05/05
+#counts SARE_UNSUB38             687s/2h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB38             224s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB38B  1.378
+#counts SARE_UNSUB38B            708s/0h of 198066 corpus (190928s/7138h FT) 11/05/05
+#counts SARE_UNSUB38B            0s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB38B            342s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB38B            17s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB38C  0.501
+#counts SARE_UNSUB38C            0s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB38C            9s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB38C            1s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB38D  0.642
+#counts SARE_UNSUB38D            701s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB38D            0s/1h of 11589 corpus (6443s/5146h CT) 11/04/05
+#counts SARE_UNSUB38D            1s/0h of 8128 corpus (6877s/1251h ML) 11/04/05
+#counts SARE_UNSUB38D            0s/1h of 1634 corpus (1005s/629h AXB) 11/05/05
+#counts SARE_UNSUB38D            139s/2h of 47289 corpus (42118s/5171h MY) 11/04/05 *
+#counts SARE_UNSUB38D            140s/2h of 47306 corpus (42133s/5173h MY) 11/05/05 *
+#counts SARE_UNSUB38D            39s/1h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+score   SARE_UNSUB39   0.994
+#counts SARE_UNSUB39             281s/0h of 198066 corpus (190923s/7143h FT) 11/04/05
+#counts SARE_UNSUB39             7s/0h of 11589 corpus (6443s/5146h CT) 11/04/05
+#counts SARE_UNSUB39             0s/1h of 1634 corpus (1005s/629h AXB) 11/05/05
+#counts SARE_UNSUB39             74s/0h of 47289 corpus (42118s/5171h MY) 11/04/05
+#counts SARE_UNSUB39             53s/0h of 64335 corpus (16876s/47459h DOC) 11/04/05
+
+
+# EOF

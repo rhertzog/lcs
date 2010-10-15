@@ -1,0 +1,9 @@
+#!/bin/bash
+a2dissite module-lcs-assr 
+/etc/init.d/apache2 reload
+
+oldserial=`cat /etc/bind/localnet.db | grep -i serial`
+newserial=`date +"%Y%m%d"`"01; serial"
+sed -i'' 's/"$oldserial"/"$newserial"/g' /etc/bind/localnet.db
+sed -i'' '/assr            IN      CNAME   lcs/d' /etc/bind/localnet.db
+/etc/init.d/bind9 reload

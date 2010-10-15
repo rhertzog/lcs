@@ -1,0 +1,1 @@
+Serveur web Intranet,../webalizer/,system_is_admin

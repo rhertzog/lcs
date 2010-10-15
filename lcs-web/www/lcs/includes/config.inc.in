@@ -1,0 +1,70 @@
+<?
+/* =============================================
+   Projet LCS : Linux Communication Server
+   config.inc.php
+   jLCF <(-_°)/> jean-luc.chretien@tice.ac-caen.fr
+   Equipe Tice academie de Caen
+   Derniere modification 09/10/2009
+   ============================================= */
+
+# Mode DEBUG LCS 
+#---------------
+$DEBUG = false;
+$MsgD  = "DEBUG >> ";
+
+# Param&#232;tres MySQL
+#----------------------
+$HOSTAUTH="localhost";
+$USERAUTH="lcsmgr";
+$PASSAUTH="@@PASSWORD@@";
+$DBAUTH="lcs_db";
+
+# Recuperation des parametres LCS depuis la bdd
+# -----------------------------------------------------
+$authlink = mysql_connect($HOSTAUTH,$USERAUTH,$PASSAUTH);
+@mysql_select_db($DBAUTH) or die("Impossible de se connecter &#224; la base $DBAUTH.");
+$result=mysql_query("SELECT * from params where srv_id=0");
+if ($result)
+while ($r=mysql_fetch_array($result))
+$$r["name"]=$r["value"];
+else
+die ("param&#232;tres absents de la base de donn&#233;e");
+mysql_free_result($result);
+# ------------------------------------------------------
+
+$dn = array();
+  $dn["people"] = "$peopleRdn,$ldap_base_dn";
+  $dn["groups"] = "$groupsRdn,$ldap_base_dn";
+  $dn["rights"] = "$rightsRdn,$ldap_base_dn";
+  $dn["trash"]  = "$trashRdn,$ldap_base_dn";
+  $dn["parcs"] = "$parcsRdn,$ldap_base_dn";
+  $dn["computers"] = "$computersRdn,$ldap_base_dn";
+# $dn["radius"]  = "$radiusRdn,$ldap_base_dn";
+
+$adminDn = $adminRdn.",".$ldap_base_dn;
+
+# Parametres Admin LCS
+$MelAdminLCS="@@MelAdminLCS@@";
+
+# Parametres Appli
+$Nom_Appli = "LCS";
+
+# Parametres divers
+$Pool  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+$Pool .= "abcdefghijklmnopqrstuvwxyz";
+$Pool .= "1234567890";
+$SessLen = 20;
+
+$secook= 0;
+
+# Chemins
+$basedir="/var/www/";
+$basedir_perso="/home/";
+$baseurl="http://".$_SERVER['SERVER_NAME']."/";
+if ( @$_SERVER['SERVER_PORT']=="443" ) 
+    $baseurl=ereg_replace("http","https",$baseurl);
+$urlauth=$baseurl."lcs/auth.php";
+$imagespath="../images";
+$logpath="/var/log/lcs/";
+$scriptsbinpath="/usr/share/lcs/sbin";
+?>

@@ -1,0 +1,12 @@
+Source: lcs-agendas
+Section: misc
+Priority: optional
+Maintainer: Philippe Leclerc <philippe.leclerc1@ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-agendas
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-web
+Description: Install Agenda collaboratif on LCS server
+ Agenda collaboratif

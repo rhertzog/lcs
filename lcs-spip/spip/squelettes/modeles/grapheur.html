@@ -1,0 +1,8 @@
+<div style="border:1px solid [(#ENV**{colbord}|?{#ENV**{colbord},transparent})];padding:5px;height:[(#ENV**{hauteur}|?{[(#EVAL{[(#ENV**{hauteur})]+5})px],447px})]; width:[(#ENV**{largeur}|?{[(#EVAL{[(#ENV**{largeur})]+5})px],600px})]">
+<applet code="Grapheur.class" archive="[(#CHEMIN{scripts/grapheur.jar})]"
+	style="height:[(#ENV**{hauteur}|?{[(#ENV**{hauteur})px],447px})]; width:[(#ENV**{largeur}|?{[(#ENV**{largeur})px],600px})]">
+    <param name="couleur texte" value="[(#ENV**{coltext}|?{#ENV**{coltext},#003366})]" />
+    <param name="couleur fond" value="[(#ENV**{coltext}|?{#ENV**{coltext},#dddddd})]" />
+	Votre navigateur ne reconnait pas JAVA, ou bien la version install&eacute;e est trop ancienne. Essayez donc avec un navigateur ou une version de java plus récent.	
+</applet>
+</div>

@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# Script pour activer lcs-notify
+# Simon CAVEY
+# Projet LCS : 16/01/2010
+
+FULLDOMAINE=`hostname -f`
+USER=admin
+LCSADMIN=$USER@$FULLDOMAINE
+sed -e "s|@@LCSADMIN@@|"$LCSADMIN"|g" /var/lib/lcs/lcs-notify/listchanges.conf.lcs > /etc/apt/listchanges.conf

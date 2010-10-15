@@ -1,0 +1,17 @@
+LCS phpsysinfo for  Debian
+----------------------------
+-- #MAINTAINERNAME#    <#MAINTAINERMAIL#>   #VER# #DATE#
+-- Jean-Luc Chretien    <jean-luc.chretien@tice.ac-caen.fr>  V 2.1 Thu,  6 Nov 2008
+
+USAGE
+
+  Configuration phpsysinfo pour LCS
+  
+CONFIGURATION
+
+La configuration du paquet est prise en charge par le script postinst du paquet
+
+
+  
+
+

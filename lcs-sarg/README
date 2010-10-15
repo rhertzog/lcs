@@ -1,0 +1,79 @@
+Sarg is a Squid Analysis Report Generator that allow you to view "where" your users
+are going to on the Internet.
+Sarg generate reports in html, with many fields, like: users, IP Addresses, bytes, sites and times.
+
+Support to SmartFilter added - 09/02/2000
+
+Special thanks to:
+Matteo Colombo <matteo@calcol.it> 			- Italian language
+Palamarchuk Eugen <eugen@cit.od.ukrtel.net> 		- Russian language
+Csaba Kabai <ckabai@icnpharm.com>			- Hungarian language
+Evren Yurtesen <yurtesen@ispro.net.tr>          	- Turkish language
+Andreas Piek <a.piesk@gmx.net>				- German language
+Fred Pacquier <fredp@dial.oleane.com>			- French language
+Leonardo A. D'Angelo <ldangelo@san-cayetano.com>	- Spanish language
+Seth Mos <stimpy@stimpy.multiweb.nl>			- Dutch language
+Milos Prudek <prudek@nembv.cz>                          - Czech language
+Dima I. Allaverdov <allav@ur.rags.ru>                   - Russian_windows1251 language
+V Gatut Harijiso <gatut@student.unpar.ac.id>		- Indonesian language
+Ivan Minchev <vanko@uni-svishtov.bg>			- Bulgarian_windows1251 language
+Akira Kitamura <click@anet.ne.jp>			- Japanese language
+Radovan Drobnjakovic <admin.rts@rts.co.yu>		- Serbian language
+Pieter Kooistra <pkooistra@hr.nl>			- Dutch language fix
+Andrew Okhmat <andy@crgu.com>			        - Russian Koi8 language fixed
+Nikolai V. Ivanyushin <koko@infocenter.bryansk.ru>	- Russian and Bulgarian language fix
+Juris Valdovskis <juris@auce.lv>			- Latvian language
+Jordan Kanev <dancho@globcom.net>			- Bulgarian language fix
+Wszebor Boksa <Wszebor_Boksa@koncept.pl>		- Polish language
+Adi Cretu <adi@usv.ro>					- Romanian language
+Roman Vynar <rvynar@icqmail.com>			- Ukrainian_windows1251 language
+Andreu Sanchez <tanis@lleida.com>			- Catalan language
+Antonis Maglaras <vegos@magla.gr>			- Greek language
+Dusan Woletz <Dusan.WOLETZ@orange.sk>			- Slovak Language
+Jose Luis Hernandez <jhdz@simbiotica.net>		- Spanish language fix
+Theo kastermans <t.kastermans@zandvoort.nl>		- Dutch language fix
+Alex Deiter <tiamat@komi.mts.ru>			- Russian UFT-8 language added
+Josef Karliak <karliak@ajetaci.cz>			- Czech UTF8
+
+
+Translating
+   . Copy include/English to YourLanguage
+   . Translate YourLanguage
+   . Send YourLanguage to    pedro.orso@gmail.com to be implemented.
+
+
+If you use native squid log format, the elapsed time will be in reports (emulate_httpd_log off).
+
+1. run ./configure
+
+   configure options: --enable-bindir=where sarg binary will be saved
+                                default: /usr/bin
+
+                      --enable-sysconfdir - where the configuration directory is
+                                default: /usr/local/sarg
+
+                      --enable-htmldir - where the www html root dir is
+                                default: /var/www/html
+
+                      --enable-mandir - where the sarg man page will be saved
+                                default: /usr/local/man/man1
+
+
+3. make
+
+4. make install
+
+5. Go to /usr/local/sarg (or file entered with --sysconfdir on configure)
+   and change sarg.conf as you need.
+
+6. Notes about sarg:
+
+   Date/Time report:
+         Every minute that a request is logged your time is incremented by the smaller
+         of 1 minute or the total time for the requests.
+
+Usage: sarg -h
+
+Source: http://www.sarg-squid.org
+
+Any suggests and/or comments, please:    pedro.orso@gmail.com

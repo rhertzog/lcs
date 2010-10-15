@@ -1,0 +1,23 @@
+#! /bin/sh
+# postrm script for LCS sarg
+
+set -e
+case "$1" in
+	purge|remove)
+            #
+            # Remove menu statistiques squid in menu 50stats
+            #
+            rm -f /var/www/lcs/includes/menu.d/50stats/40sarg.inc
+        ;;
+
+	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+        ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+
+esac
+
+exit 0

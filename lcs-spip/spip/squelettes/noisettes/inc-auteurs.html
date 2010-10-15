@@ -1,0 +1,15 @@
+<B_auteurs>
+		[(#ANCRE_PAGINATION)]
+<h3 class="menu-titre">Auteurs</h3>
+<dl id="auteurs" class="demi_boite">
+		<BOUCLE_auteurs(AUTEURS) {par nom}{pagination 5}>
+				<dt><a href="#URL_AUTEUR">[(#LOGO_AUTEUR||image_reduire{16,16}|sinon{<img src="[(#CHEMIN{i/user.png})]" alt='' />}) ][(#NOM|prenom) ][(#NOM|nom)]</a> 
+				</dt>
+		</BOUCLE_auteurs>
+					[<dd class="pagination">
+				<span class="ligne1">#GRAND_TOTAL <:auteurs:></span>
+				<span class="pagination ligne2">(#PAGINATION)</span>
+			</dd>]<!-- pagination -->
+
+</dl>
+</B_auteurs><//B_auteurs>

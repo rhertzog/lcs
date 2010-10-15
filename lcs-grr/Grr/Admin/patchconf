@@ -1,0 +1,15 @@
+#!/bin/bash
+if [ ! -e ../include/connect.inc.php ]; then
+    pass=`pwgen -1`
+    echo "Patch du fichier de la base MySQL..."
+    cp -a install_mysql.sql install_mysql.sq
+    cat install_mysql.sq | sed -e "s/#PASS#/$pass/g" > install_mysql.sql
+    echo "Patch du fichier connect.inc.php..."
+    cat ../include/connect.inc.ph | sed -e "s/#PASS#/$pass/g" > ../include/connect.inc.php
+    chown www-data:www-data ../include/connect.inc.php install_mysql.sql
+    rm ../include/connect.inc.ph
+fi
+#
+# Fin
+#
+echo "Fin des patches..."

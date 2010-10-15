@@ -1,0 +1,57 @@
+lcs-cas (2.4.7.1) Lcs; urgency=low
+
+  * Transition to LDAP Authenticators
+  * Update html doc 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 08 Oct 2010 13:26:49 +0200
+
+lcs-cas (2.4.7) Lcs; urgency=low
+
+  * Fix Markaby version and critical packages versions  
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 08:53:31 +0200
+
+lcs-cas (2.4.6) Lcs; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Clening changelog
+  * Modify lcs-cas-install.sh for clean install
+  * Modify control dependances for Lenny install
+  * Fix problem when remove and purge package 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jan 2010 14:45:16 +0100
+
+lcs-cas (2.4) Lcs; urgency=low
+
+  * Make a stable release 2.4
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 15:43:44 +0200
+
+lcs-cas (2.2) Lcs; urgency=low
+
+  * make a testing release
+  * fix picnic required version
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 26 May 2009 14:35:40 +0200
+
+lcs-cas (2.1) Lcs; urgency=low
+  
+  [ Jean-Luc Chretien ]  
+  * Modify postinst for update package and num index
+  * Add lcs-cas-update.sh script
+  * Modify lcs-cas-install.sh 
+  * Modify section update rubygem in lcs-cas-install.sh
+  * Modify lc-cas html documentation for XHTML 1.0 Transitional validation
+  * Correct postinst description field
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 27 Apr 2009 15:24:01 +0200
+
+lcs-cas (2.0) LcsXP; urgency=low
+
+  [ Sebastien tack ]
+  * update documentation
+
+  [ Jean-Luc Chretien ]
+  * Initial release.
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 15 Jan 2009 19:52:21 +0100

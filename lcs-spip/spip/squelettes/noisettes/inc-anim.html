@@ -1,0 +1,10 @@
+[(#REM) Appel du modele emb]
+
+[(#SET{largeur_anim,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]larg_anim_accueil})]})]
+[(#SET{iddoc,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]anim_accueil})]})]
+
+<BOUCLE_ext(DOCUMENTS types_documents) {id_document=#GET{iddoc}} {tout}>[(#INCLURE
+{fond=modeles/[(#MIME_TYPE|substr{0,[(#MIME_TYPE|strpos{/})]})]}{id=#ID_DOCUMENT}{env}
+)]
+</BOUCLE_ext>
+

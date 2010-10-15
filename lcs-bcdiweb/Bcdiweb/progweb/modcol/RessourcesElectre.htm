@@ -1,0 +1,57 @@
+<!-- 17/11/2008 RessourcesElectre.htm -->
+<!-- fichier de chargement d'éléments Electre - RM 15/10/07 -->
+<html>
+
+<head>
+<title>Ressource Electre</title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<meta name="generator" content="HAPedit 2.4">
+</head>
+
+<script language="javascript" type="text/javascript">
+var maxFois=15;
+var nbFois=0;
+var url="<#RESSOURCE_ELECTRE>";
+var idTimer=""
+var target="pointInsertion";
+var chPoint=""
+var present=(!("<#PRESENT>"=="0"));
+
+function tryInsertion() {
+  nbFois++;
+  chPoint+=" .";
+  window.clearTimeout(idTimer)
+  var img = new Image;
+  img.src = url;
+  if (img.height>50) {
+    document.getElementById(target).innerHTML=''
+    document.images[0].src=img.src;
+    window.resizeTo(img.width+30,img.height+100);
+    window.focus();
+  }
+  else
+    img_onError()
+}
+
+function img_onError() {
+  if (nbFois<=maxFois) {
+    if ((present) && (nbFois==0))
+      tryInsertion()
+    else {
+      idTimer=window.setTimeout("tryInsertion()",1000);
+      if (nbFois>0) document.getElementById(target).innerHTML="<table><tr height=400><td><H2>Patientez ."+chPoint+"</H2></td></tr></table>";
+    }  
+  }
+  else
+    document.getElementById(target).innerHTML="<table><tr height=400><td><H2>Délai d'attente dépassé !</H2></td></tr></table>";
+}
+</script>
+
+<body bgcolor="#FFFFFF" onload="window.focus();img_onError();">
+<span id="pointInsertion">
+</span>
+<img src="" alt=" Patientez..." name="wait">
+<div>&nbsp;</div>
+<div align=center><input type=button value="Fermer la fenêtre" onClick="window.close();"/></div>
+</body>
+</html>

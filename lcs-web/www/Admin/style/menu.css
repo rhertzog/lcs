@@ -1,0 +1,153 @@
+body	{
+	color: #404044;
+	font-family: sans-serif;
+	text-align: justify;
+}
+
+.menuheader_up {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #333333;
+    border: 1px #333333 solid;
+    background-color: #486591;
+    clip:  rect(   )
+}
+
+.menuheader_down {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #333333;
+    border: 1px #333333 solid;
+    background-color: #486591;
+    clip:  rect(   )
+}
+.menucell {
+    font-family: "Comic Sans MS", "Trebuchet MS", Verdana, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: normal;
+    color: #333333;
+    background-color: #f8f8ff;
+    border: 1px #333333 solid;
+}
+h1 {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+	color: #F8F8FF;
+	background-color: #486591;
+    text-align: center;
+}
+h2 {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+	color: #333333;
+}
+h3 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #486591;
+    font-weight: bold;
+    letter-spacing: 4px
+}
+
+a:link  {color: #0080ff; text-decoration: none; }
+
+a:hover {
+        color: #ff8f00;
+        text-decoration: underline;
+        }
+
+a:link {color: #0080ff; text-decoration: none; }
+
+a:visited {color: #0080ff;text-decoration: none; }
+
+.menuinfocell { font-family: "Trebuchet MS", Verdana, Arial, sans-serif; font-size: 12px; font-weight: normal; color: #333333; background-color: #CC9999; border: 1px #333333 solid }
+
+.infocell a:link {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #CCCCCC
+}
+.menuheader_up a:link { 
+	color: #F8F8FF;
+	width: 20px; /* largeur de l'image réactive */
+	height: 12px; /* hauteur de l'image réactive */
+	background: url(../../lcs/images/menu/up.png) no-repeat; /* source de l'image de départ */
+	background-position: left;
+	border: 0; /* on évite les bordures autour de l'image */ 
+	
+}
+.menuheader_up a:visited { 
+	color: #F8F8FF;
+	width: 20px; /* largeur de l'image réactive */
+	height: 12px; /* hauteur de l'image réactive */
+	background: url(../../lcs/images/menu/up.png) no-repeat; /* source de l'image de départ */
+	background-position: left;
+	border: 0; /* on évite les bordures autour de l'image */
+}
+.menuheader_up a:hover { 
+	color: #F9B854; 
+	background: url(../../lcs/images/menu/up_over.png) no-repeat;
+	background-position: left; 
+	text-decoration: none;
+	
+}
+.menuheader_down a:link { 
+	color: #F8F8FF;
+	width: 20px; /* largeur de l'image réactive */
+	height: 12px; /* hauteur de l'image réactive */
+	background: url(../../lcs/images/menu/down.png) no-repeat; /* source de l'image de départ */
+	background-position: left;
+	border: 0; /* on évite les bordures autour de l'image */ 
+	
+}
+.menuheader_down a:visited { 
+	color: #F8F8FF;
+	width: 20px; /* largeur de l'image réactive */
+	height: 12px; /* hauteur de l'image réactive */
+	background: url(../../lcs/images/menu/down.png) no-repeat; /* source de l'image de départ */
+	background-position: left;
+	border: 0; /* on évite les bordures autour de l'image */
+}
+.menuheader_down a:hover { 
+	color: #F9B854; 
+	background: url(../../lcs/images/menu/down_over.png) no-repeat;
+	background-position: left; 
+	text-decoration: none;
+	
+}
+.menucell a:link { color: #333333}
+.menucell a:visited { color: #333333}
+.menucell a:hover { background-color: #333333; color: #999999}
+
+div.error_msg {
+      text-align: center;
+      color: #ff8f00;
+      font-size: medium;
+      font-weight: normal;
+      font-family: arial, helvetica,sans-serif;
+      }
+
+div.alert_msg {
+      text-align: center;
+      color: #ff8f00;
+      font-size: normal;
+      font-weight: bold;
+      font-family: arial, helvetica,sans-serif;
+}
+pre.screen {
+        font-family: monospace:
+        border-style: ridge outset;
+        border-color: navy;
+        margin-right: 1em;
+        margin-left: 2em;
+        padding-left: 1em;
+        padding-right: 1em;
+        background-color: lightgrey;
+#       color: AntiqueWhite4;
+        color: black;
+}
+	

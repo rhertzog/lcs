@@ -1,0 +1,12 @@
+Source: lcs-smbwebclient
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-smbwebclient
+Architecture: all
+Depends: apache2|apache, php5-common|php4-common, smbclient 
+Description: Install Web filebrowser on LCS server 
+ Install smbwebclient 2.9 for web acces to spaces users on SE3 server.

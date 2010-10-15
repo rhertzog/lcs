@@ -1,0 +1,3 @@
+<?
+$BASEDIR = "/var/www";
+?>

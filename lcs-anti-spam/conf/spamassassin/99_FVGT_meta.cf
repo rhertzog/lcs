@@ -1,0 +1,227 @@
+############################################
+# Good to avoid FPs with other rules.
+# The following rules were borrowed from an older version of SA.
+rawbody	__PGP_BEGIN		/^-----BEGIN PGP (?:SIGNATURE|MESSAGE)-----$/
+rawbody	__PGP_MIDDLE		/^[0-9A-Za-z+\/]{64}$/
+rawbody	__PGP_END		/^-----END PGP (?:SIGNATURE|MESSAGE)-----$/
+meta	__PGP_SIGNATURE		(__PGP_BEGIN && __PGP_MIDDLE && __PGP_END)
+#
+# Prevent hits with Double forwards, or messages with attachments not parsed out.
+rawbody	__FR_ATTACHMENT		/Content-Disposition: attachment/i
+rawbody	__FR_INLINEATTACH	/Content-Disposition: inline.{1,4}filename.{1,4}/i
+rawbody	__FR_AUDIO_FILE		/Content-Type: audio/i
+rawbody	__FR_IMAGETYPE		/Content-Type: image\/(?:jpeg|gif)/i
+#
+# Prevent hits with Yahoo groups, common occurance!
+header  __FH_YAHOOGROUPS	exists:X-Yahoo-Profile
+#
+meta	__BADMIMEPARSES		(__FR_ATTACHMENT || __FR_INLINEATTACH || __FR_IMAGETYPE || __FR_AUDIO_FILE || __PGP_SIGNATURE || __FH_YAHOOGROUPS)
+#############################################
+
+# Special META rules
+rawbody  __FB_WHITEBODY		/<body>|<body.{1,20}bgcolor=.{0,3}(?:fffff[a-fA-F0-9]|white)/i
+rawbody  __FB_WHITEFONT		/<font.{1,20}color\=.{0,3}(?:fffff.{1}|white)/i
+body     __FB_MASKEDW0RDS	/h0ur|l0w|ha1f|L0SE|ph0t0|vide0|Pi11s|0rder|d0ct0r|appr0ved|m0ney|fr0m|rea11y|l0ad|p\@tients|st0p|rem0ve|bel0w|ple\@se|we1ght|reg[i1]strat[i1]0n|extens[i1]0n/i
+body     __FB_N0N0_WORDS	/y0ung|sm00th|puss1es|l0se|d0main|b0y|pen1s|bl0w|adu1t|c0ck|v1rg[i1]n|t1ts|gir1|h0t|f?r0+m|mai1|m0vie|0ur|p0rn|c0re|p1ct|v[i1]de0|(?:ph|f)0t|(?:ph|f)ot0|t1ny|l1ttle/i
+rawbody  __FR_NO_STYLE		/<STYLE><\/STYLE>/i
+body     __FB_HIBIT_10		/\b[\x80-\xff]{9,10}\b/
+body     __FB_HIBIT_13		/\b[\x80-\xff]{11,13}\b/
+
+# HOAXES
+body   __HOAX_JDBGMGR_TEDDY	/teddy bear/i
+body   __HOAX_JDBGMGR_NOOPEN	/do not open it/i
+body   __HOAX_JDBGMGR_EXENAME	/jdbgmgr\.exe/i
+meta   JDBGMGR_HOAX		((__HOAX_JDBGMGR_TEDDY + __HOAX_JDBGMGR_NOOPEN + __HOAX_JDBGMGR_EXENAME) > 1)
+score  JDBGMGR_HOAX		5.0
+
+# Stable Rules
+
+# This rule has moved to sare_html0.cf
+# meta   FC_IMAGEONLY1		((HTML_IMAGE_ONLY_02 + MIME_HTML_ONLY + MIME_HTML_ONLY_MULTI) > 1)
+# score  FC_IMAGEONLY1		1.3
+meta   FC_OBFU01		(FVGT_s_LONGSUBJECT && HTML_90_100)
+score  FC_OBFU01		2.5
+meta   FC_SPECIAL01		(DATE_MISSING && FROM_NO_LOWER && FVGT_u_GEOCITIES)
+score  FC_SPECIAL01		2.5
+meta   FC_SPECIAL03		((TRACKER_ID + HTML_TAG_BALANCE_A + HTML_FONT_BIG + HTML_IMAGE_ONLY_04 + HTML_IMAGE_ONLY_02) > 2)
+score  FC_SPECIAL03		2.0
+meta   FC_SPECIAL04		(FORGED_YAHOO_RCVD && HTML_70_80)
+score  FC_SPECIAL04		2.1
+meta   FC_SPECIAL05		(FORGED_YAHOO_RCVD && FVGT_u_DOM_END_NUM)
+score  FC_SPECIAL05		1.1
+meta   FC_SPECIAL06		(HTML_90_100 && HTML_COMMENT_RATIO && HTML_IMAGE_ONLY_02 && MIME_HTML_ONLY)
+score  FC_SPECIAL06		2.0
+meta   FC_SPECIAL07		(HTML_IMAGE_ONLY_02 && MIME_HTML_NO_CHARSET && MIME_HTML_ONLY)
+score  FC_SPECIAL07		2.5
+meta   FM_HOTMAIL_BIZ		(FORGED_HOTMAIL_RCVD && FU_TLD_BIZ)
+score  FM_HOTMAIL_BIZ		2.5
+meta   FM_MASKEDW0RDS		(__FB_MASKEDW0RDS && !__BADMIMEPARSES)
+score  FM_MASKEDW0RDS		3.2
+meta   FM_N0N0_WORDS		(__FB_N0N0_WORDS && !__BADMIMEPARSES)
+score  FM_N0N0_WORDS		3.2
+meta   FM_NO_STYLE		(__FR_NO_STYLE && !__FH_NETSCAPE && !FH_FWD_MSG && !__ORIG_MSG_AGENT)
+score  FM_NO_STYLE		0.9
+meta   FM_HIBIT_10		(__FB_HIBIT_10 && !__BADMIMEPARSES)
+score  FM_HIBIT_10		1.2
+meta   FM_HIBIT_13		(__FB_HIBIT_13 && !__BADMIMEPARSES)
+score  FM_HIBIT_13		1.2
+meta   FM_PRESSCLICK		(CLICK_BELOW && FB_PRESSHERE)
+score  FM_PRESSCLICK		1.1
+meta   FM_WHITEONWHITE		(__FB_WHITEBODY && __FB_WHITEFONT)
+score  FM_WHITEONWHITE		0.45
+
+meta   FM_RATES_PAYING		((FB_PAYING_TOO_MUCH + FB_YOUR_RATES + FB_HEALTH_INSURANCE + FB_PERSONAL_QUOTE) > 2)
+score  FM_RATES_PAYING		1.6
+
+meta   FM_RATES_AGAIN		((FB_FROM_QUOTE + FS_CREDIT + FB_RATES_R_LOW + FB_INTEREST_RATES + FB_CONSOL_YOUR) > 2)
+score  FM_RATES_AGAIN		1.6
+
+body   __PRESCRIPTION		/prescription/i
+body   __OBFU_PRESCRIPTION	/pr[e3]scr[i1]pt[i1][o0]n/i
+meta   FM_PRESCRIPTION		(__OBFU_PRESCRIPTION && !__PRESCRIPTION)
+score  FM_PRESCRIPTION		3.0
+
+body   __PERSCRIPTION		/perscription/i
+body   __OBFU_PERSCRIPTION	/p[e3]rscr[i1]pt[i1][o0]n/i
+meta   FM_PERSCRIPTION		(__OBFU_PERSCRIPTION && !__PERSCRIPTION)
+score  FM_PERSCRIPTION		3.0
+
+header __EROTICA		Subject =~ /erotica/i
+header __OBFU_EROTICA		Subject =~ /[e3]r[o0O]t[i1]c[a\@]/i
+meta   FM_EROTICA		(__OBFU_EROTICA && !__EROTICA)
+score  FM_EROTICA		4.0
+
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Catch Image ONLY spams!
+rawbody  __FR_HTML_HAS_AHREF	eval:html_tag_exists('a')
+rawbody  __FR_HTML_HAS_IMG	eval:html_tag_exists('img')
+full     __FR_HTML_LEN_80375	/<(?:html|body).{80,375}<\/(?:body|html)>/is
+full     __FR_A_THEN_IMG	/<a.{12,155}<img/is
+meta     FM_SMALL_MSG_IMG_ONLY	(__FR_HTML_LEN_80_375 && __FR_HTML_HAS_AHREF && __FR_HTML_HAS_IMG && __FR_A_THEN_IMG)
+score    FM_SMALL_MSG_IMG_ONLY	3.1
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Catch the empty message syndrome.
+meta     FM_EMPTY_MSG		(!__FM_NO_FROM && !__FM_NO_TO && DATE_MISSING)
+score    FM_EMPTY_MSG		2.5
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Messages without To and From are bad!
+header  __FM_NO_FROM		exists:From
+header  __FM_NO_TO		exists:To
+header  __FM_NO_CC		exists:Cc
+meta    FM_NO_FROM_OR_TO	(!__FM_NO_FROM && !__FM_NO_TO)
+score   FM_NO_FROM_OR_TO	2.5
+meta    FM_NO_TO		(!__FM_NO_TO && !__FM_NO_CC)
+score   FM_NO_TO		0.5
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# We don't like As Seen On ABC, CNN and NBC!
+body   __SEEN_ON_ABC		/A[^a-z]{0,1}B[^a-z]{0,1}C[^a-z]{0,1}/i
+body   __SEEN_ON_CNN		/C[^a-z]{0,1}N[^a-z]{0,1}N[^a-z]{0,1}/i
+body   __SEEN_ON_NBC		/N[^a-z]{0,1}B[^a-z]{0,1}C[^a-z]{0,1}/i
+body   __SEEN_ON_CBS		/C[^a-z]{0,1}B[^a-z]{0,1}S[^a-z]{0,1}/i
+body   __LOSE_WEIGHT		/l.{0,1}o.{0,1}s.{0,1}e.{0,4}w.{0,1}e.{0,1}[i1].{0,1}g.{0,1}h.{0,1}t/i
+meta   FM_WEIGHT_LOSS		((__SEEN_ON_ABC + __SEEN_ON_CNN + __SEEN_ON_NBC + __SEEN_ON_CBS + __LOSE_WEIGHT) > 3)
+score  FM_WEIGHT_LOSS		4.0
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# We don't need no schooling ;)
+body   __BACHELORS		/Bachelor/i
+body   __MASTERS		/Masters/i
+body   __MBA			/MBA/i
+body   __PHD			/PhD/i
+body   __DIPLOMA		/diploma/i
+meta   FM_SCHOOLING		((__BACHELORS + __MASTERS + __MBA + __PHD) > 2)
+score  FM_SCHOOLING		1.2
+meta   FM_SCHOOL_DIPLOMA	(FM_SCHOOLING && __DIPLOMA)
+score  FM_SCHOOL_DIPLOMA	2.0
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# One & Two letter pages, folders, and images.
+uri    __ONE_LETTER_IMG		m*/[A-Z0-9]\.(?:gif|jpg|png)*i
+uri    __TWO_LETTER_IMG		m*/[A-Z0-9]{2}\.(?:gif|jpg|png)*i
+uri    __ONE_LETTER_PAGE	m*/[A-Z0-9]\.(?:htm|php|asp|pl|cgi|sht)*i
+uri    __TWO_LETTER_PAGE	m*/[A-Z0-9]{2}\.(?:htm|php|asp|pl|cgi|sht)*i
+uri    __ONE_LETTER_FLDR	m*/[A-Z0-9]/*i
+uri    __TWO_LETTER_FLDR	m*/[A-Z0-9]{2}/*i
+meta   DBL_1_CHR_PGFLD		(__ONE_LETTER_PAGE && __ONE_LETTER_FLDR)
+score  DBL_1_CHR_PGFLD		0.2
+meta   DBL_2_CHR_PGFLD		(__TWO_LETTER_PAGE && __TWO_LETTER_FLDR)
+score  DBL_2_CHR_PGFLD		0.2
+meta   DBL_12_CHR_PGIMG		((__ONE_LETTER_PAGE || __TWO_LETTER_PAGE) && (__ONE_LETTER_IMG || __TWO_LETTER_IMG))
+score  DBL_12_CHR_PGIMG		0.2
+meta   DBL_12_LETTER_PGIMG	((__ONE_LETTER_FLDR || __TWO_LETTER_FLDR) && (__ONE_LETTER_IMG || __TWO_LETTER_IMG))
+score  DBL_12_LETTER_PGIMG	0.2
+meta   DBL_12_LETTER_FLDR	(__ONE_LETTER_FLDR && __TWO_LETTER_FLDR)
+score  DBL_12_LETTER_FLDR	0.2
+meta   DBL_12_LETTER_FLDRPG	(__TWO_LETTER_FLDR && __ONE_LETTER_PAGE)
+score  DBL_12_LETTER_FLDRPG	0.2
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Special of the week, payper view, xxx movies and cable filters.
+meta   SPECIAL_OF_WEEK_01	((FB_PAY_PER_VIEW + FB_XXX_MOVIE + FB_CABLE_FILTER + FH_MPOPWEBMAIL + FR_DDDD_HOSTING) > 3)
+score  SPECIAL_OF_WEEK_01	1.5
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# lowest-rates
+# best-insurance
+body   __LOWEST_RATES		/lowest.{1,3}rate/i
+body   __BEST_INSURAN		/best.{1,3}insurance/i
+meta   FM_RATES_INSURANC	(__LOWEST_RATES && __BEST_INSURAN)
+score  FM_RATES_INSURANC	2.0
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Core obfu rules, these are generated from multiple US dictionary files.
+body  __FB_OBFU_J		/j[bcfgw]/i
+body  __FB_OBFU_OTHER		/(?:vj|vk|xj|xk|yy|zf|zj)/i
+body  __FB_OBFU_Q0		/[jkpqtvwz]q/i
+body  __FB_OBFU_Q1		/q[afhjkmnsy]/i
+body  __FB_OBFU_V		/[fgqw]v/i
+body  __FB_OBFU_X		/[cgjkqsvz]x/i
+body  __FB_OBFU_Z		/[fjkpqx]z/i
+
+# Multiple occurances will lead to more points, idea taken from Jennifer (popcorn & backhair)
+meta  __FM_MULTI_ODD2 ((__FB_OBFU_J + __FB_OBFU_OTHER + __FB_OBFU_Q0 + __FB_OBFU_Q1 + __FB_OBFU_V + __FB_OBFU_X + __FB_OBFU_Z) > 1)
+meta  __FM_MULTI_ODD3 ((__FB_OBFU_J + __FB_OBFU_OTHER + __FB_OBFU_Q0 + __FB_OBFU_Q1 + __FB_OBFU_V + __FB_OBFU_X + __FB_OBFU_Z) > 2)
+meta  __FM_MULTI_ODD4 ((__FB_OBFU_J + __FB_OBFU_OTHER + __FB_OBFU_Q0 + __FB_OBFU_Q1 + __FB_OBFU_V + __FB_OBFU_X + __FB_OBFU_Z) > 3)
+meta  __FM_MULTI_ODD5 ((__FB_OBFU_J + __FB_OBFU_OTHER + __FB_OBFU_Q0 + __FB_OBFU_Q1 + __FB_OBFU_V + __FB_OBFU_X + __FB_OBFU_Z) > 4)
+
+# Core meta rules, these combine multiple variations of above rules, with exceptions for Attachments and PGP sig's.
+# describe	FVGT_m_MULTI_ODD?	Contains multiple odd letter combinations
+meta   FM_MULTI_ODD2		(__FM_MULTI_ODD2 && !__BADMIMEPARSES)
+meta   FM_MULTI_ODD3		(__FM_MULTI_ODD3 && !__BADMIMEPARSES)
+meta   FM_MULTI_ODD4		(__FM_MULTI_ODD4 && !__BADMIMEPARSES)
+meta   FM_MULTI_ODD5		(__FM_MULTI_ODD5 && !__BADMIMEPARSES)
+score  FM_MULTI_ODD2 		1.1
+score  FM_MULTI_ODD3 		0.7
+score  FM_MULTI_ODD4 		0.7
+score  FM_MULTI_ODD5 		0.9
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# I think it was Jesse Houwing who first wrote rules for this, I could not find them and had to make my own!
+##<font color=
+##
+##"#f1e9e9">Check this out!
+rawbody   __DEAD_FONT		/^<font color=$/
+rawbody   __OPEN_COLOR		/^"?\#[a-f0-9]{6}/i
+meta      FM_EVADE_FONT		(__DEAD_FONT && __OPEN_COLOR)
+score     FM_EVADE_FONT		1.5
+
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+header   __HAS_XMAILER		exists:X-Mailer
+header   __HAS_XMAILER_VER	exists:X-Mailer-Version
+meta     HAS_XMAILER_VERSION	(!__HAS_XMAILER && __HAS_XMAILER_VER)
+describe HAS_XMAILER_VERSION	Has a X-Mailer-Version header with a X-Mailer
+score    HAS_XMAILER_VERSION	1.5
+
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+# Market Watch Spams, trying to get you to buy some weird stock no one heard of.
+# All Spams have day of week like Thursday
+header   __SUBJ_HAS_DAY		Subject =~ /(?:mon|tues|wednes|thurs|fri|satur|sun)day/i
+# All spams have a 4 letter callsign or whatever you call it, for the stock.  IE:  CRHI, GTVCF
+header   __SUBJ_HAS_4CAPS	Subject =~ /\b[A-Z]{4,5}\b/
+header   __SUBJ_PIC_PROFIT	Subject =~ /(?:pick|profit|gain|expect|scoop|the rise|special alert|explode|announce|alert|equity|trader update|Attention)/i
+
+meta     SARE_SELL_STOCK1	(__SUBJ_HAS_DAY && __SUBJ_HAS_4CAPS && __SUBJ_PIC_PROFIT)
+score    SARE_SELL_STOCK1	2.0
+
+meta     SARE_SELL_STOCK2	(!__SUBJ_HAS_DAY && __SUBJ_HAS_4CAPS && __SUBJ_PIC_PROFIT)
+score    SARE_SELL_STOCK2	2.0
+
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+# EOF

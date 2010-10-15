@@ -1,0 +1,11 @@
+README, version : 2.1~1   08/10/2009
+
+Sebastien TACK <sebastien.tack@ac-caen.fr>
+
+LCS module : helpdesk - Readme
+===========================
+Un module permettant un acces SSO a la platefrome HelpDesk Academique
+
+Attention: il faut bien configurer au prealable le paquet lcse3-monitor.
+Ce module utilise le même fichier de configuration. /etc/lcse3-monitor/etab.conf
+

@@ -1,0 +1,90 @@
+lcs-squirrelmail (2.4.7.2~1) Lcs; urgency=low
+
+  * Add notify plugin for squirrelmail
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 30 Sep 2010 10:32:55 +0200
+
+lcs-squirrelmail (2.4.7.1) Lcs; urgency=low
+
+  * Modify redirect.php for pwdPolicy
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 19 Jun 2010 14:23:01 +0200
+
+lcs-squirrelmail (2.4.7) Lcs; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Fix update module version number when update package  
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 25 Mar 2010 10:37:14 +0100
+
+lcs-squirrelmail (2.4.6) Lcs; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Fix problem with dpkg-divert when remove package
+  * Modify for Debian lenny compatibilty
+  * Add divert on redirect.php and page_header.php
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jan 2010 14:27:59 +0100
+
+lcs-squirrelmail (2.4) Lcs; urgency=low
+
+  * Make a stable release 2.4 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 14:45:51 +0200
+
+lcs-squirrelmail (2.2) Lcs; urgency=low
+
+  * Update redirect.php
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 23 May 2009 15:40:58 +0200
+
+lcs-squirrelmail (2.1) LcsXP; urgency=low
+  [ Jean-Luc Chretien ]
+  * Release package in LcsXP 2.1 version 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Sep 2008 14:58:36 +0200
+
+lcs-squirrelmail (2.1~6) lcs20; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Execute lcs-squirrelmail-config at each configure from postinst 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 26 Jun 2008 10:19:30 +0200
+
+lcs-squirrelmail (2.1~5) UNRELEASED; urgency=low
+
+  [ Raphael Hertzog ]
+  * Change apache configuration to match the new interfacedu-lcs
+  packaging.
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 Jun 2008 17:29:06 +0200
+
+lcs-squirrelmail (2.1~4) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+    * Correct typo on name in mysql request  in lcs-squirrelmail-config
+    * Add postrm for remove squirrelmail in lcs_db.params
+      
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 13 Jun 2008 14:03:43 +0200
+
+lcs-squirrelmail (2.1~3) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Move handle_initial_config lcs-squirrelmail-config 100 to 95
+    
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 13 Jun 2008 10:10:19 +0200
+
+lcs-squirrelmail (2.1~2) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Move handle_initial_config lcs-squirrelmail-config 70 to 100
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 12 Jun 2008 19:23:44 +0200
+
+lcs-squirrelmail (2.1~1) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Initial release of the new package.
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 03 Jun 2008 19:12:59 +0200
+

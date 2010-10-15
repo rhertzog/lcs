@@ -1,0 +1,273 @@
+#
+# CONFIG FILE FOR SQUIDGUARD
+# généré par le paquet se3-internet à partir d'un fichier type LCS
+#
+# ATTENTION, ce fichier devra probablement être modifié à la main pour s'adapter à votre config
+# et copié sur le proxy dans le répartoire /etc/squid
+#
+# ne pas oublier de reconstruire les bases :  su proxy  squidGuard -C all
+# 											  squid -k reconfigure
+# 
+#$id$#
+
+dbhome /var/lib/squidguard/db
+logdir /var/log/squid
+
+#
+# TIME RULES:
+# abbrev for weekdays: 
+# s = sun, m = mon, t =tue, w = wed, h = thu, f = fri, a = sat
+# autant de plages que nécessaire peuvent être définies (cours1...coursn)
+# si plus de 5, il faudra adapter la page /var/www/se3/se3-internet/connexions-individus.php
+# il faudra également ajouter les src correspondant et les acls
+# adapter les horaires ci-dessous au besoin
+
+time cours1 {
+	weekly mtwhf 08:00 - 10:00
+}
+time cours2 {
+	weekly mtwhf 08:00 - 12:00
+}
+time cours3 {
+	weekly mtwhf 08:00 - 15:30
+}
+time cours4 {
+	weekly mtwhf 08:00 - 17:30
+}
+time cours5 {
+	weekly mtwhf 17:30 - 23:00
+}
+time pause {
+    weekly mtwhf 09:50 - 10:10
+	weekly mtwhf 12:00 - 13:30
+	weekly mtwhf 15:20 - 15:40
+	weekly * 17:30 - 24:00
+	weekly * 00:00 - 08:00
+	weekly saturday 00:00 - 24:00
+	weekly sunday 00:00 - 24:00
+}
+
+
+#
+# REWRITE RULES:
+#
+
+#rew dmz {
+#	s@://admin/@://admin.foo.bar.no/@i
+#	s@://foo.bar.no/@://www.foo.bar.no/@i
+#}
+
+#
+# SOURCE ADDRESSES:
+#
+# liste permettant de conserver des postes ou sous réseau non soumis au contrôle
+#
+src surf-bypass {
+#      iplist ip_sources/surf-bypass
+#      ip 172.16.1.0/24
+#      ip 172.16.100.123
+}
+
+# ldap cache time in seconds
+ldapcachetime  60
+
+src internet {
+       # laisse passer tous les postes ayant les droits internet 
+       ldapipsearch  ldap://#ServerLdap#/ou=Computers,#basedn#?iphostnumber?sub?(&(&(objectclass=iphost)(iphostnumber=%s))(description=*:interne*:tous))
+}
+src internet-pause {
+       # laisse passer tous les postes  internet-pause durant les pauses 
+       ldapipsearch  ldap://#ServerLdap#/ou=Computers,#basedn#?iphostnumber?sub?(&(&(objectclass=iphost)(iphostnumber=%s))(description=*:internet-pause:*))
+}
+src internet-saufpauses {
+       # laisse passer tous les postes  internet-pause durant les pauses 
+       ldapipsearch  ldap://#ServerLdap#/ou=Computers,#basedn#?iphostnumber?sub?(&(&(objectclass=iphost)(iphostnumber=%s))(description=*:internet-saufpauses:*))
+}
+src internet-cours1 {
+       # laisse passer tous les postes enregistrés pour le cours1 
+       ldapipsearch  ldap://#ServerLdap#/ou=Computers,#basedn#?iphostnumber?sub?(&(&(objectclass=iphost)(iphostnumber=%s))(description=*:interne*:cours1))
+}
+src internet-cours2 {
+       # laisse passer tous les postes enregistrés pour le cours2 
+       ldapipsearch  ldap://#ServerLdap#/ou=Computers,#basedn#?iphostnumber?sub?(&(&(objectclass=iphost)(iphostnumber=%s))(description=*:interne*:cours2))
+}
+src internet-cours3 {
+       # laisse passer tous les postes enregistrés pour le cours3 
+       ldapipsearch  ldap://#ServerLdap#/ou=Computers,#basedn#?iphostnumber?sub?(&(&(objectclass=iphost)(iphostnumber=%s))(description=*:interne*:cours3))
+}
+src internet-cours4 {
+       # laisse passer tous les postes enregistrés pour le cours4 
+       ldapipsearch  ldap://#ServerLdap#/ou=Computers,#basedn#?iphostnumber?sub?(&(&(objectclass=iphost)(iphostnumber=%s))(description=*:interne*:cours4))
+}
+src internet-cours5 {
+       # laisse passer tous les postes enregistrés pour le cours5 
+       ldapipsearch  ldap://#ServerLdap#/ou=Computers,#basedn#?iphostnumber?sub?(&(&(objectclass=iphost)(iphostnumber=%s))(description=*:interne*:cours5))
+}
+src intranet {
+       # filtre  tous les postes ayant les droits intranet 
+       ldapipsearch  ldap://#ServerLdap#/ou=Computers,#basedn#?iphostnumber?sub?(&(&(objectclass=iphost)(iphostnumber=%s))(description=*:intranet*))
+}
+src aucun {
+       # filtre  tous les postes ayant les droits intranet 
+       ldapipsearch  ldap://#ServerLdap#/ou=Computers,#basedn#?iphostnumber?sub?(&(&(objectclass=iphost)(iphostnumber=%s))(description=*:aucun:*))
+}
+
+
+# utile dans le cas de l'utilisation d'un proxy ftp (frox)
+
+src proxy-ftp { 
+        ip              #IPLCS#
+}
+#
+# DESTINATION CLASSES:
+#
+
+# Liste blanche de sites accessibles meme en cas de restrictions.
+# très utile pour laisser des sites en accès libre (google, wikipedia,...)
+
+dest whitelists {
+   domainlist	whitelists/lcs/domains
+   urllist	whitelists/lcs/urls
+}
+
+# liste issu de LCS
+
+dest lcs {
+  domainlist	blacklists/lcs/domains
+  urllist       blacklists/lcs/urls
+}
+dest webmail {
+  domainlist	blacklists/webmail/domains
+}
+dest blog {
+  domainlist    blacklists/blog/domains
+  urllist       blacklists/blog/urls
+}
+dest forums {
+  domainlist	blacklists/forums/domains
+  urllist       blacklists/forums/urls
+}
+
+dest ads {
+  domainlist	blacklists/ads/domains
+  urllist	blacklists/ads/urls
+}
+dest aggressive {
+  domainlist	blacklists/aggressive/domains
+  urllist	blacklists/aggressive/urls
+}
+dest audio-video {
+  domainlist	blacklists/audio-video/domains
+  urllist	blacklists/audio-video/urls
+}
+dest drugs {
+  domainlist	blacklists/drugs/domains
+  urllist	blacklists/drugs/urls
+}
+dest gambling {
+  domainlist	blacklists/gambling/domains
+  urllist	blacklists/gambling/urls
+}
+dest hacking {
+  domainlist	blacklists/hacking/domains
+  urllist	blacklists/hacking/urls
+}
+dest mail {
+  domainlist	blacklists/mail/domains
+}
+dest malware {
+  domainlist    blacklists/malware/domains
+  urllist       blacklists/malware/urls
+}
+dest marketingware {
+  domainlist    blacklists/marketingware/domains
+  urllist       blacklists/marketingware/urls
+}
+dest phishing {
+  domainlist    blacklists/phishing/domains
+  urllist       blacklists/phishing/urls
+}
+dest porn {
+  domainlist	blacklists/porn/domains
+  urllist	blacklists/porn/urls
+}
+dest proxy {
+  domainlist	blacklists/proxy/domains
+  urllist	blacklists/proxy/urls
+}
+dest redirector {
+  domainlist    blacklists/redirector/domains
+  urllist       blacklists/redirector/urls
+}
+dest violence {
+  domainlist	blacklists/violence/domains
+  urllist	blacklists/violence/urls
+}
+dest warez {
+  domainlist	blacklists/warez/domains
+  urllist	blacklists/warez/urls
+}
+
+
+acl {
+#        surf-bypass {
+#	        pass whitelists !lcs !ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez
+#	        redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+#	}
+	proxy-ftp {
+	        pass whitelists !lcs !ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez
+	        redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	}
+	internet-pause within pause {
+	    pass whitelists !lcs !ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez !in-addr
+		redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+        } 
+	internet-saufpauses within pause {
+    	    pass whitelists none
+		redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+        } 
+	internet-cours1 within cours1 {
+	    pass whitelists !lcs !ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez !in-addr
+		redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	} else {
+	    pass whitelists none
+	    redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	}	
+	internet-cours2 within cours2 {
+	    pass whitelists !lcs !ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez !in-addr
+		redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	} else {
+	    pass whitelists none
+	    redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	} 
+	internet-cours3 within cours3 {
+	    pass whitelists !lcs !ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez !in-addr
+		redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	} else {
+	    pass whitelists none
+	    redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	} 
+	internet-cours4 within cours4 {
+	    pass whitelists !lcs !ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez !in-addr
+		redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	} else {
+	    pass whitelists none
+	    redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	} 
+        internet {
+   	    pass whitelists !lcs !ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez !in-addr
+		redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	}
+	intranet {
+	    pass whitelists none
+	    redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	}
+	aucun {
+	    pass whitelists none
+	    redirect 302:http://#IPLCS#/Squidguard/pageinterdite.html
+	}
+    default {
+		pass	  none
+		redirect http://#IPSE3#:909/se3-internet/connexions_portables.php
+    }
+}

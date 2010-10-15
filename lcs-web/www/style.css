@@ -1,0 +1,83 @@
+body	{
+	background: url(/lcs/fdecran/espperso.jpg) ghostwhite 80% 10% no-repeat fixed;
+	color: #404044;
+	margin: 2%;
+	margin-left: 8%;
+	margin-right: 6%;
+	font-family: georgia, arial, helvetica, sans-serif;
+	text-align: justify;
+	}
+
+a:link	{color: #0080ff;}
+
+a:hover	{
+	color: #ff8f00;
+	text-decoration: underline;
+	}
+
+a:link {color: #0080ff;}
+
+a:visited {color: #0080ff;}
+
+address {
+	text-align: right;
+	font-size: small;
+	}
+
+h1.navigation {
+	text-align: left;
+	font-size: medium;
+	}
+
+h1.title {
+	margin-top: 1%;
+	margin-bottom: 3%;
+	text-align: center;
+	font-size: large;
+	color: #0008ff;
+}
+
+h2 {
+	margin-left: -4%;
+	color: #0040df;
+}
+
+h3 {
+	margin-left: -2%;
+	color: #0040df;
+	}
+
+
+h4 {
+	color: #0040df;
+	}
+
+h5 {
+	margin-left: 2%;
+	color: #0040df;
+	}
+
+h6 {
+	color: #0040df;
+	margin-left: 4%;
+	}
+
+p.copyright {
+	text-align: right
+	}
+
+div.alert_msg {
+      text-align: center;
+      color: #ff8f00;
+      font-size: normal;
+      font-weight: normal
+      font-family: arial, helvetica,sans-serif;
+      }
+
+div.pdp {
+     text-align:center;
+     font-size: small;
+     height:50px;
+     padding-top: 5px;
+     border-top: solid 2px #486591;
+}

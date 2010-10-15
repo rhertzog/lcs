@@ -1,0 +1,7 @@
+[global]
+
+# Do something sensible when Samba crashes: mail the admin a backtrace
+   panic action = /usr/share/samba/panic-action %d
+   dos charset = 850
+   unix charset = ISO8859-15
+   display charset = iso8859-1

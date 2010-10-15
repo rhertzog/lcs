@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>LCS OpenVPN</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css" media="all">@import "../../c/c.css";</style>
+</head>
+
+<body>
+<h2 style="text-align:center">Documentation <span class="acronym">OpenVPN</span></h2>
+<h3>Version : Paquet lcs-openvpn 2.4.2</h3>
+<p>Configuration du service VPN <span class="acronym">OpenVPN</span> base sur <span class="acronym">OpenVPN</span> pour LCS.</p>
+<h3>Reconfiguration de courier-imap</h3>
+<p>Suite a l'installation du paquet <span class="acronym">lcs-openvpn</span>, il est possible de reconfigurer <span class="acronym">openvpn</span> grace au script <tt class="filename">/usr/share/lcs/sbin/lcs-openvpn-reconfig</tt>.</p>
+<h4>Usage :</h4>
+<pre class="programlisting">lcs-openvpn-reconfig  &lt;port> &lt;vpn-network> </br>
+ &lt;vpn-network-mask> &lt;dh>  &lt;vlan>  &lt;nb-vpn-connexions>  &lt;client-to-client-> </br>
+  &lt;cert>  &lt;masquerade> &lt;wins> &lt;dnsclient>
+</pre>
+<p>On retrouve ces meme parametre sur l'interface web</p>
+<h4>Definitions des parametres :</h4>
+<ul>
+<li>&lt;port> : Port UDP des connexions vpn</li>
+<li>&lt;vpn-network> : Adresse reseau utilisee une fois la connexion etabli, doit etre un nouveau reseau</li>
+<li>&lt;vpn-network-mask> : Masque du reseau VPN</li>
+<li>&lt;dh> : Valeur de hashage pour la generation des certificats (eviter de changer cette valeur)</li>
+<li>&lt;vlan> : prend pour valeur 0 ou 1, 1 pour activer la propagation des vlan sur le VPN</li>
+<li>&lt;nb-vpn-connexions> : nombre de clients simultane possible</li>
+<li>&lt;client-to-client> :  prend pour valeur 0 ou 1, 1 pour activer la communication entre les clients du vpn</li>
+<li>&lt;cert> : Nom du certificat serveur (eviter de changer cette valeur) </li>
+<li>&lt;masquerade> : prend pour valeur 0 ou 1, 1 pour activer l adresse IP du LCS sera utilise pour joindre l'interieur de l etablissement </li>
+<li>&lt;wins> : Adresse du serveur Wins pour les clients VPN, aucun desactive la fonctionnalite.</li>
+<li>&lt;dnsclient> : prend pour valeur 0 ou 1, 1 pour activer LCS comme DNS sur les clients VPN</li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Module LCS Sacoche</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <style type="text/css" media="all">@import "../../c/c.css";</style>
+
+
+</HEAD>
+<BODY>
+<H1 class="title">Module Lcs-Sacoche</H1>
+<P>Int&#233;gr&#233; au serveur de communication LCS, le module de <I>Suivi d'acquisition de comp&#233;tences </I> est bas&#233; sur
+l'application <a href="http://sacoche.sesamath.net/" target="_blank" title="">SACoche</a>.</P>
+
+<p>L'installation du module lcs-sacoche installe par d&#233;pendance le module lcs-cas. 
+<h4>A la fin de l'installation :</h4><ul>
+	<li>l'application SACoche est enti&#232;rement install&#233;e (aucune autre proc&#233;dure d'installation n'est n&#233;cessaire)
+	<li>l'application SACoche est pr&#233;configur&#233;e pour utiliser l'authenfication CAS.
+</ul></p>
+<p>Les comptes utilisateurs "admin" et "webmestre"  cr&#233;&#233;s lors de l'installation ne peuvent pas b&#233;n&#233;ficier de l'authentification CAS.Leurs mots 
+de passe g&#233;n&#233;r&#233;s al&#233;atoirement 
+ lors de l'installation sont envoy&#233;s par mail &#224; l'admin LCS.</p>
+ 
+<h4>Se connecter en webmestre :</h4><ul>
+	<li> dans administration du site, renseigner les champs d'identifcation de l'&#233;tablissement
+	<li> dans Informations, changer &#233;ventuellement le mot de passe du webmestre
+</ul>
+<h4>Se connecter en administrateur :</h4><ul>
+	<li> cr&#233;er les comptes utilsateurs Sacoche ( le format du login n'a aucune importance) avec les fichiers Sconet
+	<li> dans Administration g&#233;n&#233;rale :
+		<ul><li>-> Importer/Imposer des identifiants
+		<li>-> Importer/Imposer des identifiants LCS
+		<li>-> Dupliquer l'identifiant LCS
+		</ul></ul></p>
+<p>Cette proc&#233;dure met en place l'authentification unique pour les utilisateurs.</p>
+<p>Un compte-rendu des &#233;checs est affich&#233; en fin de proc&#233;dure. L'association uilisateurSacoche<->utilisateur LCS &#233;choue 
+si un utilisateur Sacoche n'est pas pr&#233;sent dans l'annuaire du LCS, 
+ou s'il a un num&#233;ro sconet diff&#233;rent de l'employeeNumber du LDAP
+ ( attention dans l'employeeNumber, le num&#233;ro sconet est pr&#233;c&#233;d&#233; d'un 0 si c'est un &#233;l&#232;ve et d'un P si c'est un prof )</p>
+
+<h4>Import de la base h&#233;berg&#233;e chez S&#233;samath :</h4><ul>
+	<p> Apr&#232;s l'import :</p>
+	<li>le mot de passe Admin est celui d' "Admin SACoche" chez S&#233;samath</li>
+	<li>Il faut r&#233;tablir l'authentification unique :
+	<ul><li> Choix/Param&#233;trages -> Mode d'identification -> Config CAS manuelle
+	<li>Domaine =lcs..........fr (surtout pas l'adresse IP)
+	<li>Port = 8443
+	<li>Chemin : "laisser vide" 
+	</ul>
+	<li> Il faut r&#233;-Importer/Imposer les identifiants LCS
+</ul>
+
+<H3>Derni&#232;re version exp&#233;rimentale :</H3>
+<P>Version module : 0.5 bas&#233; sur la version de SACoche du 14/10/2010.</P>
+
+<H3> Responsables du suivi du Module SACoche :</H3>
+<blockquote>
+<b>Equipe TICE Acad&#233;mie de Caen</b><br>
+Philippe LECLERC <i>Misterphi</i> philippe.leclerc1@ac-caen.fr <br>
+</blockquote>
+<blockquote>
+<b>Equipe de d&#233;veloppement SACoche</b><br>
+Thomas CRESPIN thomas.crespin@sesamath.net
+</blockquote>
+
+</BODY>
+</HTML>

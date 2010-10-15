@@ -1,0 +1,187 @@
+lcs-openvpn (2.4.7.2) Lcs; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 15:46:48 +0200
+
+lcs-openvpn (2.4.7.1) Lcs; urgency=low
+
+  * Modify package for new mnu.d structure
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 14:06:02 +0200
+
+lcs-openvpn (2.4.7) Lcs; urgency=low
+
+  * update masquerade option for running after reboot
+  * Fix status after logrotate
+  
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue,  2 Feb 2010 00:52:58 +0100
+
+lcs-openvpn (2.4.6) Lcs; urgency=low
+
+  * updating windows client now work in vista and 7 64 bits
+  * updating macos client now working in 64 bits
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 27 Nov 2009 16:13:08 +0100
+
+lcs-openvpn (2.4.5) Lcs; urgency=low
+
+  * remove tilde
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Oct 2009 17:17:56 +0100
+
+lcs-openvpn (2.4.5~2) Lcs; urgency=low
+
+  * add remove sudo when remove package
+  * integrating lcs-make-sudoers
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Oct 2009 13:52:09 +0100
+
+lcs-openvpn (2.4.2) Lcs; urgency=low
+
+  * fixing vlan propagation
+  * fixing interface
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 21 Oct 2009 01:50:48 +0200
+
+lcs-openvpn (2.4.2~2) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * Non-maintainer upload.
+  * fixing initial install missing params
+  * adding simple html documentation
+  * remove statics entries in lcs_db.params
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 21 Oct 2009 01:49:52 +0200
+
+lcs-openvpn (2.4.1) Lcs; urgency=low
+
+  * add missing ;
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed,  7 Oct 2009 14:49:52 +0200
+
+lcs-openvpn (2.4) Lcs; urgency=low
+
+  * update MacOSX tunnelblick to 3.0b18
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 30 Sep 2009 15:12:21 +0200
+
+lcs-openvpn (2.4~4) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * fix reconfig script
+
+  [ Simon Cavey ]
+  * add DNS and WINS options
+  * update config menu
+  * update postinst
+  * fix missing upgrade in postrm script
+  * add masquerade option
+  * change postinstall
+  * add mysql lcs-module regitration
+  * add DNS for vpn clients
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 28 Sep 2009 18:41:52 +0200
+
+lcs-openvpn (2.1-2) Lcs; urgency=low
+
+  * update changlog to 2.1-2 release
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 15 May 2009 14:48:54 +0200
+
+lcs-openvpn (2.1-1) Lcs-XP; urgency=low
+
+  [ Simon Cavey ]
+  * config style
+  * user guide improved
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 15 May 2009 14:48:32 +0200
+
+lcs-openvpn (2.1-1~5) unstable; urgency=low
+
+  * add missing S
+  * fix params 107
+  * enable configuration interface
+  * user mail complement
+  * fix accentuation in newcert.php
+  * Fix bug in initial config script
+  * fix sql params insert
+  * Add mysql client-to-client params
+  * correct mysql max-clients params
+  * pre-release reconfig script
+  * update initial config
+  * add ipcalc depends for vlan calculs
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 16 Mar 2009 16:04:58 +0100
+
+lcs-openvpn (0.9-1~3) unstable; urgency=low
+
+  * Add User mail
+  * Bug fix
+  * Fix configuration local net, remove sudo entries and interface
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun, 25 Jan 2009 23:19:59 +0100
+
+lcs-openvpn (0.8-2~3) unstable; urgency=low
+
+  * add client generation interface
+  * update remove script
+  * lcs-openvpn : BUG FIX
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 21 Jan 2009 23:07:11 +0100
+
+lcs-openvpn (0.8-1~2) unstable; urgency=low
+
+  * lcs-openvpn : no CDD config fix and vista compatibility ip route
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 15 Jan 2009 21:52:07 +0100
+
+lcs-openvpn (0.8-1~1) unstable; urgency=low
+
+  * fixe clients zip
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 14 Jan 2009 18:54:31 +0100
+
+lcs-openvpn (0.7-2~1) unstable; urgency=low
+
+  * fixe sed and gui params
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 14 Jan 2009 14:38:04 +0100
+
+lcs-openvpn (0.7-1~1) unstable; urgency=low
+
+  * fixe sed parameter in client config
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 14 Jan 2009 00:17:54 +0100
+
+lcs-openvpn (0.6-1~4) unstable; urgency=low
+
+  [ Simon Cavey ]
+  * add Zip depend to client config
+
+  [ Simon Cavey ]
+  * Add client generation in cli
+
+  [ Simon Cavey ]
+  * First test bugfix
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 14 Jan 2009 00:16:57 +0100
+
+lcs-openvpn (0.5) unstable; urgency=low
+
+  * add web gui
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun,  4 Jan 2009 14:47:29 +0100
+
+lcs-openvpn (0.1-2) unstable; urgency=low
+
+  * add some scripts
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun,  4 Jan 2009 14:46:28 +0100
+
+lcs-openvpn (0.1-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun,  4 Jan 2009 14:46:16 +0100
+

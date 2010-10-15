@@ -1,0 +1,45 @@
+lcs-squid (2.4.6.2) Lcs; urgency=low
+
+  * Build squid.conf only on first install
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Mar 2010 15:03:54 +0100
+
+lcs-squid (2.4.6.1) Lcs; urgency=low
+
+  * Modify squid-reconfigure.sh for adding squidGuard entries if necessary 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Feb 2010 16:12:19 +0100
+
+lcs-squid (2.4.6) Lcs; urgency=low
+
+  * change squid logrotate to 365 days
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 29 Jan 2010 16:27:11 +0100
+
+lcs-squid (2.4) Lcs; urgency=low
+
+  * Build a stable release 2.4 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 15:37:51 +0200
+
+lcs-squid (2.1-1) LcsXP; urgency=low
+
+  * Fix typo in cache_dir_size configuration 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 17 Nov 2008 19:59:49 +0100
+
+lcs-squid (2.1)  LcsXP; urgency=low
+
+    [Jean-Luc Chretien]
+    * Fix problem configuration cache size and chown spool squid folder
+    * Restructuring the architecture of the package (svn_builpackage compatibilty)
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 14 Nov 2008 11:31:44 +0100
+
+lcs-squid (2.1~2) lcs20; urgency=low
+    [Jean-Luc Chretien]
+    * Add an extend description in debian/control
+
+lcs-squid (2.0)
+    [Jean-Luc Chretien]
+    * Initial release

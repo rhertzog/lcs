@@ -1,0 +1,13 @@
+Source: lcs-sacoche
+Section: misc
+Priority: optional
+Maintainer: Philippe Leclerc <philippe.leclerc1@ac-caen.fr>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.7.3
+Homepage: <insert the upstream URL, if relevant>
+
+Package: lcs-sacoche
+Architecture: all
+Depends: lcs-web,lcs-cas
+Description: Install Suivi Acquisition Competences on LCS server
+ Suivi Acquisition Competences

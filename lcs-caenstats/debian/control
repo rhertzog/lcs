@@ -1,0 +1,13 @@
+Source: lcs-caenstats
+Section: misc
+Priority: extra
+Maintainer: Simon Cavey <simon.cavey@crdp.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-caenstats
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-preinstall, lcs-web
+Description: add user superviseur to centralise lcs stats  
+ Adding superviseur user with supervison ssh key to allow
+ centralisation of CSV with usage stats.

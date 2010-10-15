@@ -1,0 +1,1 @@
+Filtrage «Liste Noire»,../Squidguard/,lcs_is_admin

@@ -1,0 +1,277 @@
+html,body{margin:0;padding:0}
+body{font: 85%/1.3 sans-serif;text-align: center;padding-bottom:1.48em;line-height:1.45em}/*soit 10px=.74em (770/57)*/
+p{margin-top:0}
+h1,h2,h3{font: normal normal 200% sans-serif}
+h2{font-size:160%}
+h3{font-size:120%}
+ul,ul li{margin:0;padding:0;list-style:none}
+
+
+div#entete{width:100%;overflow:hidden;}
+div#degrade,div#backimg{position:absolute;height:80px;width:100%;}
+div#entete h1,div#menu{width:57em;margin:0 auto;text-align:left}
+div#entete h1{padding: .22em 0 1.2em 0;width:90%}
+div#entete h1 a.sans_titre{display:block;width:400px;height:100px;}
+div#entete img{float:left;margin:0;padding:0}
+div#entete .info {position:absolute;right:20px;top:10px;width:400px;text-align:right;}
+div#entete .info p{text-align:right;}
+div#entete .titre_site{position:absolute;left:0;top:0;width:auto;text-align:left;}
+div#entete .titre_site h1{width:auto}
+div#entete .logo_site{position:absolute;left:0;top:0;width:auto;text-align:left;}
+
+div#container{width:57em;margin:0 auto .74em;padding:0;text-align:left}
+
+div#hierarchie{font-size:.9em;font-weight:bold;margin-left:2em;line-height:1em}
+
+ul#nav,ul#nav li{list-style-type:none;margin:0;padding:0;z-index:10}
+ul#nav{float:right;font-size: 80%;line-height:1.2em;margin-top:116px;height:20px;}/*hauteur entete*/
+ul#nav li{float:left;margin-left:.22em;text-align: center}
+ul#nav a{float:left;width:7.05em;padding:0 0 .5em 0;margin-bottom:.16em;text-decoration:none}
+ul#nav li.activelink a,ul#nav li.activelink a:hover{margin-bottom:0;padding:0 0 .65em 0;}
+ul#nav a.deconnect{width:10em;font-weight:bold}
+
+div#content{float:right;display:inline;width:41em;margin:1.48em .37em}
+
+div#content dl.bloc {margin:0;padding:0 0 10px;}
+div#content dl.bloc dt {margin:5px 5px 2px 5px;padding:5px 2px  4px;font-weight:bold;}
+div#content dl.bloc dt em {font-size:.8em;font-weight:normal;}
+div#content dl.bloc dt em.hierarchie {float:right;}
+div#content dl.bloc dd {margin:0 5px;padding:2px 8px 4px 10px;	font-size:90%;}
+div#content dl.bloc dd.annonce{margin:0 5px 5px 5px;padding:2px 8px 4px 4px;	}
+div#content dl.bloc dt.annonce,div#content dl.bloc dt.cartouche{padding-left:10px;font-size:1.2em}
+div#content dl.bloc dt.cartouche p.soustitre,div#content dl.bloc dt.cartouche p.surtitre{padding-left:10px;font-size:.8em;margin-top:5px; margin-right:10px}
+div#content dl.bloc dd.cartouche em{font-size:.9em;margin-right:5em;}
+div#content dl.bloc div.suite{font-size:.9em;font-weight:bold;height:1em;text-align:right;margin:.3em}
+div#content dl.bloc dd.tags{font-size:.85em;font-style:italic;margin: 0 .74em}
+div.notes{margin:0 2em;padding:1em;font-size:.9em}
+
+div#troiscols{float:right;width:25.8em;display:inline}
+
+ul.intro,ul.intro li,ul.intro_2,ul.intro_2 li,ul.blocsjumo,ul.blocsjumo li,ul.intro_ifade,ul.intro_ifade li{list-style-type:none;margin:0;padding:0}
+ul.intro,ul.intro_2,ul.blocsjumo,ul.intro_ifade{width:100%;overflow:hidden;margin-bottom:1.48em;line-height:1em}
+ul.intro li,ul.intro_2 li,ul.blocsjumo li,ul.intro_ifade li{float:left;width:19.5em;margin:0 0 0 .5em;padding:0}
+ul.intro li#boite_d,ul.intro_2 li#boite_d,ul.intro_ifade li#boite_d{margin-right:0}
+ul.intro p,ul.intro_2 p,ul.blocsjumo p,ul.intro_ifade p,ul.intro h3,ul.intro dl,ul.blocsjumo h3,ul.blocsjumo dl,ul.intro_2 h3,ul.intro_2 dl,ul.intro_ifade h3,ul.intro_ifade dl{margin: .37em;padding: 0 .74em .74em .74em}
+ul.intro h3,ul.intro_2 h3,ul.blocsjumo h3,ul.intro_ifade h3{padding:0 0 0 5px;font-weight:bold;font-size:1.1em;line-height:.9em}
+ul.intro dt,ul.intro_2 dt,ul.blocsjumo dt,ul.intro_ifade dt{margin-top:.37em}
+ul.intro dd,ul.intro_2 dd,ul.blocsjumo dd,ul.intro_ifade dd{margin-bottom:.37em}
+ul.intro img,ul.intro_2 img,ul.intro_ifade img{vertical-align:middle}
+ul.intro div.slide,ul.intro_2 div.slide,ul.intro_ifade div.slide{margin:.3em 0}
+div#content h2{margin: .74em 0}
+
+div#gdboite{padding:0 5px ;margin:0;}
+div#edito{margin:0;padding:0 10px;text-align:justify;}
+div#edito h2 a{margin:0;padding:0;line-height:.5em;font-size:1.5em;text-transform:uppercase;}
+div#edito span.logo{float:right;margin:0 0 5px 10px}
+
+div#content div.date{float:left;width:5em;padding:.5em 0;text-align:center;margin:.74em .74em .74em 1.2em ;font-size: 80%;line-height:1.2em}
+div#content div.date span{display:block;font-size: 150%;font-weight:bold}
+
+div#content div.site_rss span{margin:0 1.5em}
+div#content div.site_rss span img{width:36px;height:36px;vertical-align:middle}
+div#content h3.titre-list{font-weight:bold; padding-left:1em; margin-bottom:0}
+div.comments div{margin-bottom:.74em}
+div.comments p{padding: .74em;margin:0}
+
+div#carousel{width:500px;height:320px;margin:10px 0 0 0;}
+div#carousel a{position:absolute;	width:120px;}
+div#content dd.krousl{margin-left:0;padding:0}
+
+dd#rotator{cursor: pointer;overflow: hidden;margin: 10px auto 10px;position: relative;width: 250px;height:250px;}
+dd#rotator img{border: 0;cursor: pointer;width: 250px;}
+dd.slideshow{margin:0;padding:0}
+
+div.bulle {width: auto;font-size: 1em;margin-bottom: 24px;}
+div.bulle blockquote {margin: 0px;padding: 0px;border: 1px solid #c9c2c1;background-color: #fff;}
+div.bulle blockquote p {margin: 10px;padding: 0px;}
+div.bulle cite {position: relative;margin: 0px;padding: 13px 0px 0px 15px;font-style: normal;font-size: .82em;height:37px;line-height:37px;vertical-align:bottom;background:green}
+
+ul.plan, ul.plan li{margin-left:10px}
+
+div#side,div#side2{float:left;display:inline;width: 13.5em;margin:1.48em  .74em .74em .74em;line-height:1em}
+div#side2{margin:0 0 .74em .37em}
+div#side p{margin:.37em 0 .74em;padding: 0 .74em}
+div#side div{margin: 0 0 .74em;padding: 0}
+div#side div.rubrique div.slide{margin: 0;padding: 0}
+
+div#side div.rubriques,div#side2 div.rubriques{margin:5px 5px 15px 5px;padding:0}
+div#side div.rubriques h3.menu-titre,div#side2 div.rubriques h3.menu-titre{font-size:1.1em;font-weight:bold;margin:0;padding:.2em;text-align:center}
+div#side div.rubriques ul.menu,div#side2 div.rubriques ul.menu ,ul.menunavdom {padding:5px;font-size:.85em;}
+div#side div.rubriques dl,div#side2 div.rubriques dl,div#side div.rubriques dl.menu dt,div#side2 div.rubriques dl.menu dt,div#side div.rubriques dl.menu dd ,div#side2 div.rubriques dl.menu dd {margin:0;padding:0}
+div#side div.rubriques dl.menu dt.titre ,div#side2 div.rubriques dl.menu dt.titre {text-align:center}
+div#side div.rubriques ul.menu li a,div#side2 div.rubriques ul.menu li a,div#side div.rubriques ul.menu li li a,div#side2 div.rubriques ul.menu li li a,div#side div.rubriques dt.menu,div#side2 div.rubriques dt.menu{display:block;margin:5px;padding:3px 0 1px 5px;font-weight:bold;width:auto}
+div#side div.rubriques ul.menu li a,div#side2 div.rubriques ul.menu li a{width:auto}
+div#side div.rubriques ul.menu li li a,div#side2 div.rubriques ul.menu li li a{width:auto}
+div#side div.rubriques ul.menu ul,div#side2 div.rubriques ul.menu ul{margin-left:10px;font-size:.97em}
+div#side div.rubriques ul.evenements li a,div#side2 div.rubriques ul.evenements li a{font-size:1em;}
+
+dl#breves dt img,dl#sites dt img,dl#podcasts dt img,dl#auteurs dt img,dl#messages dt img{width:16px;height:16px}
+dl#breves dt,dl#sites dt,dl#podcasts dt,dl#auteurs dt,dl#messages dt,dl#meme_rub dt,dl.menu dt{margin:0 .37em 0 .37em;font-size:.95em}
+dl#breves dd,dl#sites dd,dl#podcasts dd,dl#auteurs dd,dl#messages dd,dl#meme_rub dd,dl.menu dd{margin:0 5px;font-size:.85em}
+ul.intro li dl.demi_boite{margin-top:.74em;font-size:.85em;}
+ul.intro li dl.demi_boite dd{margin-bottom:1em;border-bottom:1px solid #ddd}
+dt.titre_boite{font-size:.8em;text-align:center;font-weight:bold;font-style:italic}
+
+div#minical{padding:0 .3em;line-height:1em;}
+div.rubrique div#minical{margin:0 0 .74em 0;}
+ul.intro div#minical,ul.intro_2 div#minical,ul.intro_ifade div#minical{margin:0 .5em .74em .5em;}
+div#minical h4{margin:0;padding:0;}
+div#minical table{width:100%;font-family:sans-serif; font-size:.7em; 
+	text-align:center;border-width:1px;border-style:solid;border-collapse:collapse;}
+div#minical table td{border-width:1px;border-style:solid;}
+div#minical table td a{padding:1px 2px;}
+div#minical ul.evenements,div#minical ul.evenements li a{display:block;list-style:none;margin:0;padding:0;font-size:.8em;}
+div#minical ul.evenements li a,div#minical dl.evenements dd a{margin:.37em;padding:0 .37em;}
+div#minical span{font-size:.8em;margin-left:0;display:block;}
+div#minical img{vertical-align:middle;}
+div.intro ul  div#minical,div.intro_2 ul div#minical,div.intro_ifade ul div#minical{margin-left:.5em;margin-right:.5em;}
+
+/* POUR TISPIP 2.4*/
+dl.blocElement dt{padding:5px;}
+dl.blocElement dd{padding:5px 10px;}
+
+#evenements div#minical table {font-size:1.5em;}
+#evenements div#minical table tbody{font-weight:bold;}
+#evenements div#minical table tr{height:60px;}
+#evenements div#minical table thead tr{height:30px;}
+#evenements div#minical caption{background:#fc3;color:#369;margin:0;padding:.5em 0;}
+#evenements div#minical table td a{padding:.7em .5em; background:#369;color:#ddd;}
+
+dd.pagination{font-size:.9em;text-align: center;margin:2em .37em .37em 3em;line-height:1em;} 	
+dd.pagination .ligne1 {float:right;font-size:.8em;font-style:italic;}
+dd.pagination .ligne2 {text-align: center;}
+
+#myAccordion dt,#acc dt{font-weight:bold;text-align:center;cursor: pointer;font-size:.9em;}
+#myAccordion dd{overflow: auto;margin: 0;display: block; height: 100px;font-size:.83em;}
+#myAccordion dd ul li,#acc dd{margin: 0 5px;}
+#acc dd a{font-weight:bold;font-size:.83em;}
+.acc_head {cursor: pointer;position: relative;padding:.3em 0;}
+.acc_body {display:none;}
+.acc_body a{display:block;}
+
+span.c_legend{position:absolute;top:40px;left:0;display:block;background:#000;color:#fff;width:100%;text-align:center;font-size:.9em;font-weight:bold;margin:0;padding:5px 10px;position:absolute;top:40px;}
+
+
+div#documents_joints {margin:5px 20px;}
+div#documents_joints h3{font-weight:bold; font-size:1.1em}
+div#documents_joints ul li {margin:5px 20px;}
+
+ul.credits li{display:inline;text-align:center;width:24%;float:left}
+ul.credits li span{font-size:.9em;font-weight:bold;line-height:.5em}
+
+/*MENU DEROULANT VERTCICAL MENU-DOM*/
+/*On remet a zero les styles spip .on */
+.menunavdom li.on,li.secteur .on {font-weight:normal;}
+.menunavdom li{padding:0 ;margin:0;}
+/*.menunavdom .secteur{border-bottom: 1px solid #666} */
+.menunavdom img{float:left;margin-left:5px;}
+.menunavdom .toggleSubMenu img.bouton{cursor:pointer}
+.menunavdom .subMenu {margin-left: 10px;padding:0}
+.menunavdom li a.on{font-weight:bold;}
+.menunavdom li img{margin:3px}
+
+/*MENU DEROULANT VERTICAL - MARCIMAT */
+#menuV ul {
+  list-style: none;
+  margin: 5px 0 0 0;
+  padding: 0px;
+  line-height:18px;
+}
+#menuV ul li {
+  padding: 0 0 2px 0;
+  min-height: 16px;
+}
+#menuV ul li li{
+  padding-left: 20px;
+}
+#menuV ul ul {
+  margin-left: -15px;
+  padding: 0 0 0 5px;
+}
+#menuV ul.rubriques li {
+/*  background: url(../i/folder.png) no-repeat; */
+}
+#menuV ul.rubriques li.on {
+  background: url(../i/folder_explore.png) no-repeat;
+}
+#menuV ul.articles li {
+  background: url(../i/page_white.png) no-repeat;
+}
+#menuV ul.articles li.on {
+  background: url(../i/page_white.png) no-repeat;
+}
+#menuV li.on>a {
+  font-weight: bold;
+}
+
+
+/*MENU DEROULANT HORIZONTAL */
+/*
+ */padding
+#mdh_nav-container{margin:0 0 0 0;padding:0;border-bottom:1px solid #aaa;background:#ccc;width:100%;height:25px}
+#mdh_nav, #mdh_nav ul {float: left;list-style: none;font-weight: bold;padding: 0;margin: 0;text-align:left;line-height:1em;}
+#mdh_nav a {text-align:center;width: 9em;height:25px;vertical-align:middle;font-size:.9em;display: block;text-decoration: none;padding: 0.25em 0;}
+#mdh_nav li {float: left;padding: 0;border:1px solid #ccc;vertical-align:middle;}
+#mdh_nav li  a.daddy {background:url(next_15.gif) center right no-repeat;}
+#mdh_nav li ul{position: absolute;left: -999em;height: auto;width: 9em;font-weight: normal;margin: 0;}
+#mdh_nav li li {padding-right:0;width:auto}
+#mdh_nav li ul a {font-size:.9em;width: 9em;height:auto}
+/*
+#mdh_nav li ul ul {margin: -1.75em 0 0 8.8em;}
+ */
+
+
+#mdh_nav li.vert {float: none;width:auto}
+#mdh_nav li.vert a{text-align:left;padding-right:5px}
+#mdh_nav li ul.vertul{margin: -1.75em 0 0 11em}
+#mdh_nav li.vert ul.vertul ul {margin: -1.75em 0 0 10em;}
+
+#mdh_nav li:hover ul ul, #mdh_nav li:hover ul ul ul, #mdh_nav li:hover ul ul ul ul,
+#mdh_nav li.sfhover ul ul, #mdh_nav li.sfhover ul ul ul, #mdh_nav li.sfhover ul ul ul ul{left: -999em;}
+#mdh_nav li:hover ul, #mdh_nav li li:hover ul, #mdh_nav li li li:hover ul,#mdh_nav li li li li:hover ul{left: auto;}
+#mdh_nav li.sfhover ul{left:auto;}
+#mdh_nav li li.sfhover ul,#mdh_nav li li li.sfhover ul,#mdh_nav li li li li.sfhover ul{left: auto;}
+
+
+
+/*tableau sans tableau*/
+div.table {display:table;border-collapse:collapse;width:100%}
+div.caption {display:block;text-align:center;font-weight:bold;width:auto}
+div.tbody {display:table-row-group;}
+div.tr {display:table-row;border-bottom:1px solid #aaa}
+div.td {display:table-cell;padding:5px;vertical-align:middle}
+div.end {width:auto;}
+
+
+.gauche{float:left}
+.gauche img{margin-right:5px}
+.droite{float:right}
+.leon{clear:both; line-height:1px; margin:0;padding:0;height:1px}
+.lien{text-align:center;font-weight:bold}
+.pas_de{text-align:center;font-weight:bold;font-size:.8em}
+div#footer,div#copy{clear:both;width:55.7em;margin:0 .65em .74em .65em;padding: 0;text-align:center;line-height:1em}
+div#footer p,div#copy p{margin: .65em 0;font-size:.8em;}
+div#copy p .dom{font-size:.8em;font-weight:normal}
+/* SURCHARGES*/
+/* Surcharge SPIP*/
+/* Surcharge spip texte*/
+p.spip{margin-top:2em}
+/* Surcharge spip-documents*/
+dl.spip_documents{margin-bottom:1em}
+/* surccharge plugin jeux*/
+div.jeux_global{font-size:1em}
+/* surccharge plugin meteo*/
+dl.meteo dd{margin-left:0}
+dl.meteo dt{font-weight:bold;margin-bottom:.5em}
+/* surccharge plugin menudep*/
+div.menu-dep ul.menu ul {width:auto;}
+/* surccharge jolie recherche*/
+div#recherche-style{text-align:center}
+/* surccharge forms et tables */
+span.texte_1{padding:1em;border:1px solid #fc3}
+/* surccharge puces spip */
+div#content dl.bloc dl.spip_documents_center dt,div#content dl.bloc dl.spip_documents_center dt.spip_doc_titre strong{text-align:center; margin-bottom:0px;padding:0;margin-left:auto;margin-right:auto;}
+dt.spip_doc_titre strong{font-size:1.1em; margin-top:0;text-align:center;;padding:0}
+ul.spip,li.spip{margin-left:1em;list-style: square inside; }
+/* surccharge thickbox*/
+#TB_window a{font-size:1.2em}

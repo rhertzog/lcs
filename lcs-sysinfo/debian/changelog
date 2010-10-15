@@ -1,0 +1,18 @@
+lcs-sysinfo (2.4.6.1) Lcs; urgency=low
+
+  * Add right lcs_is_admin for acces to phpsysinfo
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Mar 2010 17:22:27 +0100
+
+lcs-sysinfo (2.4.6) Lcs; urgency=low
+
+  * Update phpsyinfo to version 3.0.4 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Mar 2010 16:22:09 +0100
+
+lcs-sysinfo (2.4) Lcs; urgency=low
+
+  * Install phpsysinfo 3.0~rc7 
+  * Propose a stable release 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 08 Jun 2009 20:15:54 +0200

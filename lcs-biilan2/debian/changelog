@@ -1,0 +1,11 @@
+lcs-biilan2 (2.1~2) LCS; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 16:27:55 +0200
+
+lcs-biilan2 (2.1~1) LCS; urgency=low
+
+  * Initial Release.
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 19 May 2009 12:59:59 +0200

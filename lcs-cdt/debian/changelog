@@ -1,0 +1,92 @@
+lcs-cdt (2.4.7.1) LCS; urgency=low
+
+  * fix bug in record "acces parent" in statusages 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 03 Oct 2010 13:12:16 +0200
+
+lcs-cdt (2.4.7) LCS; urgency=low
+
+  [ Simon Cavey ]
+  * now build for all Arch
+
+  [ Philippe Leclerc ]
+  * fix bug when table webcal_entry_categories no exist
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 08 Sep 2010 21:04:48 +0200
+
+lcs-cdt (2.4.4) LCS; urgency=low
+
+  * fix bug when personnal database no exist
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 22 Jun 2010 22:04:59 +0200
+
+lcs-cdt (2.4.3) LCS; urgency=low
+
+  * fix bug personnal DB_name in cahier_texte_arch_perso.php 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 20 Jun 2010 22:40:16 +0200
+
+lcs-cdt (2.4.2) LCS; urgency=low
+
+  * fix bug personnal DB_name when login has point
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 19 Jun 2010 22:40:14 +0200
+
+lcs-cdt (2.4.1) LCS; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 19 Jun 2010 19:38:39 +0200
+
+lcs-cdt (2.4.1~3) LCS; urgency=low
+
+  * save_modele.php compatible magic_quotes=off 
+  * remove lcs-libjs depends
+  
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 19 Jun 2010 19:36:55 +0200
+
+lcs-cdt (2.4.1~2) LCS; urgency=low
+
+  * prepare to use lcs-libjs
+  * compatibility magic_quotes=off 
+  * fix bug calendar
+  * update tinymce
+  * add -m option for tar in import_perso.php
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 10 Jun 2010 16:12:47 +0200
+
+lcs-cdt (2.4.1~1) LCS; urgency=low
+
+  * new filter XSS
+  * add load/save template
+  * correct bug absences and add  "all présent" 
+  * add import/export data
+  * add link with webcalendar
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Mon, 07 Jun 2010 21:38:19 +0200
+
+lcs-cdt (2.4.0~1) LCS; urgency=low
+
+  * fixing path to doc and lower name in prerm 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 28 Jan 2010 02:28:41 +0100
+
+lcs-cdt (2.0~1) LCS; urgency=low
+
+  * update to cdt2.0
+  * update to cdt2.05
+  * lower name of appli in lcs_db
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 27 Jan 2010 21:49:13 +0100
+
+lcs-cdt (1.03~1) LCS; urgency=low
+
+  * add # at the first line of install file
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 27 Mar 2009 18:02:13 +0100
+
+lcs-cdt (1.02) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 27 Mar 2009 16:09:45 +0100

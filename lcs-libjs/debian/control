@@ -1,0 +1,13 @@
+Source: lcs-libjs
+Section: misc
+Priority: extra
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.3
+Homepage: http://lcs.crdp.ac-caen.fr
+
+Package: lcs-libjs
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Install javascript libraries jquery jquery-ui tinymce ext
+ this package provide javascript librairies for LCS

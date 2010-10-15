@@ -1,0 +1,73 @@
+<!-- 17/11/2008 CONFIRM.HTM -->
+<!-- saved from url=(0022)http://internet.e-mail -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="undefined">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<style type="text/css">
+<!--
+.at1 {
+	background-image: url(<#CONST REP_MODELES>bg1.jpg);
+	background-repeat: no-repeat;
+	background-position: center top;
+	width: 530px;
+	margin-left:-265px;
+	text-align:center;
+	padding-top: 15px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	}
+
+.at2 {
+	background-image: url(<#CONST REP_MODELES>bg1.jpg);
+	background-repeat: no-repeat;
+	background-position: center bottom;
+}
+body {
+	padding-left: 50%;
+	background-color:#FFFFFF;
+}
+
+-->
+</style>
+</head>
+<body>
+<div class="at1">
+  <B>Demande de réservation</B><BR>
+  <BR>
+  Emprunteur :&nbsp;<B><#UTILISATEUR></B><BR>
+  Votre demande de réservation pour le document :&nbsp; <BR>
+  <B><#CHAMP NOTICES TITRE></B><BR>
+  a été prise en compte.<BR>
+  <BR>
+  <i><B>Attention ! </B><BR>
+  Nous vous prions de bien vouloir attendre le message de confirmation<BR>
+  vous indiquant que le document est effectivement à votre disposition <BR>
+  et que vous pouvez venir le chercher.<BR>
+  <BR>
+  Pour le suivi de votre réservation, n’hésitez pas à consulter votre compte emprunteur. <BR>
+  </I><BR>
+<#SI RESULTAT=PANIER>
+  <input type='button' value='Retour' style="cursor:pointer" onclick='window.location.href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=PANIER.HTM&fichierorigine=PANIER.HTM"'>
+<#SINON RESULTAT=PANIER>
+<form action="<#URLDLL>" method='post' TARGET="_self">
+  <INPUT type="hidden" name="np" value="<#VALEUR NUMERO_PANIER>">
+  <INPUT type="hidden" name="nr" value="<#VALEUR NUMERO_RECHERCHE>">
+  <INPUT type="HIDDEN" NAME="ANCRE" VALUE="<#ANCRE>">
+  <INPUT type="HIDDEN" NAME="RESULTAT" VALUE="<#RESULTAT>">
+  <input type='submit' name='RETOUR_EN_LISTE' value='Retour'>
+</form>
+<#FINSI RESULTAT=PANIER>
+
+	<div class="at2">&nbsp;</div>
+
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=couleurs -->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+			[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+	<fieldset>
+		<legend>Couleurs et images d&rsquo;arri&egrave;re plan du pied de page</legend>
+		<ul>
+			<li class="ligne_280">
+				<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=276&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Aide : Couleurs et images d'arri&egrave;re plan du pied de page">&nbsp;</a>
+				<label for="color90">Fond du pied de page :</label>
+				<input type="text" name="color90" id="color90"  class="palette" size="7" value="[(#ENV{color90}|?{#ENV{color90},#595D66})]" />
+			</li>
+			<li class="ligne_280">
+				<label for="color91">Textes du pied de page :</label>
+				<input type="text" name="color91" id="color91"  class="palette" size="7" value="[(#ENV{color91}|?{#ENV{color91},#ffffff})]" />
+			</li>
+			<li class="ligne_280">
+				<label>Afficher une image d&rsquo;arri&egrave;re plan</label><input type="checkbox" name="affimgbg_pieddepage" value="oui" [checked="(#ENV{affimgbg_pieddepage}|?{checked})"] id="affimgbg_pieddepage" /> 
+			</li>
+					</ul>
+					<ul id="imgbg_pieddepage">
+						<li class="ligne_280">
+								<label for="bg_pdp">Charger l'&rsquo;image d&rsquo;arri&egrave;re plan :</label>
+								<input type="file" name="bg_pdp" id="bg_pdp" value="" size="15" class="fondl spip_xx-small" />
+								[<span class='erreur'>(#ENV**{erreurs}|table_valeur{bg_pdp})</span>]
+					
+						</li>
+						[<li class="ligne">
+							Image actuelle : (#ENV{bg_pdp}|?{[(#CFG_CHEMIN{tispipskelet_conf/couleurs/bg_pdp}|image_reduire{100})],Aucune image})
+						</li>]
+						<li class="ligne_280">
+								<label for="bg_pdp_repeat">R&eacute;p&eacute;tition de l&rsquo;image : </label>
+								<select name="bg_pdp_repeat" id="bg_pdp_repeat" style="width:120px" class="fondl spip_xx-small" onchange="$('.fixed_pdp').hide();$('#bg_pdp_'+this.value).show();">
+									<option value=""[(#ENV{bg_pdp_repeat}|?{selected="selected",''})]>R&eacute;p&eacute;tition horizontale et verticale</option>
+									<option value="no-repeat"[(#ENV{bg_pdp_repeat}|=={no-repeat}|?{selected="selected",''})]>Pas de r&eacute;p&eacute;tition</option>
+									<option value="repeat-x"[(#ENV{bg_pdp_repeat}|=={repeat-x}|?{selected="selected",''})]>R&eacute;p&eacute;tition horizontale</option>
+									<option value="repeat-y"[(#ENV{bg_pdp_repeat}|=={repeat-y}|?{selected="selected",''})]>R&eacute;p&eacute;tition verticale</option>
+								</select>
+			<p id="bg_pdp_no-repeat" class="fixed_pdp"[ (#ENV{img_pdp_repeat}|!={no-repeat}|?{style="display:none;"})]>
+				<label for="img_pdp_attachment">Fixer l&rsquo;image : </label>
+				<input type="checkbox" name="img_pdp_attachment" id="img_pdp_attachment" [checked="(#ENV{img_pdp_attachment}|?{checked})"] class="fondo" />
+			</p>
+						</li>
+						<li class="ligne_280">
+								<label for="bg_pdp_pos_h">Position horizontale de l&rsquo;image : </label>
+								<select name="bg_pdp_pos_h" id="bg_pdp_pos_h" style="width:120px" class="fondl spip_xx-small">
+									<option value=""[(#ENV{bg_pdp_pos_h}|?{selected="selected",''})]>  </option>
+									<option value="left"[(#ENV{bg_pdp_pos_h}|=={left}|?{selected="selected",''})]> A gauche </option>
+									<option value="center"[(#ENV{bg_pdp_pos_h}|=={center}|?{selected="selected",''})]> Au centre </option>
+									<option value="right"[(#ENV{bg_pdp_pos_h}|=={right}|?{selected="selected",''})]> A droite </option>
+								</select>
+						</li>
+						<li class="ligne_280">
+								<label for="bg_pdp_pos_v">Position verticale de l&rsquo;image : </label>
+								<select name="bg_pdp_pos_v" id="bg_pdp_pos_v" style="width:120px" class="fondl spip_xx-small">
+									<option value=""[(#ENV{bg_pdp_pos_v}|?{selected="selected",''})]>  </option>
+									<option value="top"[(#ENV{bg_pdp_pos_v}|=={top}|?{selected="selected",''})]> En haut </option>
+									<option value="center"[(#ENV{bg_pdp_pos_v}|=={center}|?{selected="selected",''})]> Au centre </option>
+									<option value="bottom"[(#ENV{bg_pdp_pos_v}|=={bottom}|?{selected="selected",''})]> En bas </option>
+								</select>
+						</li>
+					</ul>
+				</fieldset>
+			<script type="text/javascript"><!--
+				$('#affimgbg_pieddepage')
+				.bind('change', function() {
+			            $('#imgbg_pieddepage').slideToggle('slow');
+				})
+				if ($('#affimgbg_pieddepage:checked').length == 0)
+					$('#imgbg_pieddepage').hide();
+					
+				$('#affgradient_pieddepage')
+				.bind('change', function() {
+			            $('#cfggradient_pieddepage').slideToggle('slow');
+				})
+				if ($('#affgradient_pieddepage:checked').length == 0)
+					$('#cfggradient_pieddepage').hide();
+					
+				$('#affdegrade_pieddepage')
+				.bind('change', function() {
+			            $('#cfgdegrade_pieddepage').slideToggle('slow');
+				})
+				if ($('#affdegrade_pieddepage:checked').length == 0)
+					$('#cfgdegrade_pieddepage').hide();
+			// --></script>
+			
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			
+		 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" class="fondo" value="<:cfg:OK:>" />
+				<input type="reset" class="fondo" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" class="fondo" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

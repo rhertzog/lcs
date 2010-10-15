@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# Lcs-imap-ssl-config
+#
+# Simon CAVEY 16/06/2008
+# Configuration des certificats ssl-imap avec le bon domaine.
+
+domaine=`hostname -f`
+source /etc/lcs/lcs.conf
+sed -i'' -e s/"CN=localhost"/"CN=$domaine"/g \
+-e s/"C=US"/"C=$COUNTRYNAME"/g \
+-e s/"ST=NY"/"ST=$PROVINCENAME"/g \
+-e  s/"L=New York"/"L=$LOCALITYNAME"/g \
+-e s/"emailAddress=postmaster@example.com"/"emailAddress=admin@$domaine"/g /etc/courier/imapd.cnf
+rm /etc/courier/imapd.pem
+dpkg-reconfigure courier-imap-ssl
+

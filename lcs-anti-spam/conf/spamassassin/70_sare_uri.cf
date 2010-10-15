@@ -1,0 +1,841 @@
+# SARE Spammer URI Rule Set for SpamAssassin - file 0 
+# Version:  01.01.03
+# Created:  2004-09-13
+# Modified: 2005-10-05
+# Usage instructions and documentation are found in 70_sare_uri0.cf 
+#@@# Revision History:  Full Revision History stored in 70_sare_uri.log
+#@@# 01.01.03: Oct 05 2005 
+#@#@           Created files 2, 4, and x31.
+#@@#           Minor score updates based on additional mass-check
+#@@#           Moved file 0 to file 1:               SARE_URI_PRIME
+#@@#           Moved file 0 to file 2:               SARE_URI_HARRYDAV
+#@@#           Moved file 0 to file 2:               SARE_URI_OC
+#@@#           Moved file 0 to file 2:               SARE_URI_SHARE_DIG
+
+# License:  Artistic - see http://www.rulesemporium.com/license.txt
+# Current   Maintainer: Bob Menschel - uri@rulesemporium.com
+# Current   Home: http://www.rulesemporium.com/rules/70_sare_uri0.cf
+
+# Usage:  This family of files, 70_sare_uri*.cf, contain rules that test uri strings within emails
+#
+# These files are not intended to replace or supplement SURBL, nor its BigEvil 
+# predecessor. We assume that systems that are interested in blocking spam that
+# identifies itself by referencing spammer domains will implement the SURBL 
+# functionality within SpamAssassin to do so. 
+#
+# These files aim to identify URI links that cannot be tested by SURBL or similar
+# methods because it does not reference any specific domain name. 
+#
+# File 0: 70_sare_uri0.cf -- These are uri rules that hit at least 10 spam and no ham. 
+#         While SARE cannot guarantee they never will hit ham, they have not hit ham in any SARE mass-check, against tens of thousands of ham.
+#         This is a rules file we expect any/all email systems using SpamAssassin to benefit from. 
+#
+# File 1: 70_sare_uri1.cf -- These are uri rules that meet one of the follow criteria: 
+#         a) Rules that do, or in the past have hit ham during SARE mass-check tests 
+#         b) Rules that hit no ham and currently do not hit more than 10 spam in any single mass-check run. 
+#         If the rules hit ham, they hit at last 10 spam to each 1 ham. 
+#         With few exceptions these rules score significantly less than the rules in file 0. 
+#         Systems which are very sensitive to false positives and/or need to be very careful about resource use may want to exclude this ruleset, 
+#         pick and choose among its rules, or lower their scores.
+#         Systems that use this file 1 should ALSO use file 0. 
+#
+# File 2: 70_sare_uri2.cf -- URI rules that hit no spam or ham, but we're confident that if they ever hit an email, it'll be spam. 
+#         These should be low-resource, safe rules. Systems which are very tight on system resources should probably avoid this file, 
+#         but all others can use these rules without any harm, and perhaps eventually with some benefit. 
+#
+# File 3: 70_sare_uri3.cf -- These are uri rules that hit a significant amount of ham during SARE mass-check tests. 
+#         Systems which are very sensitive to false positives or to SA resource usage should NOT install this ruleset. 
+#
+# File 4: 70_sare_uri4.cf -- URI rules that hit lots of ham, so much so that systems which are sensitive to false positives should not use these.
+#         However, they hit more spam than ham, and more aggressive systems might find benefit in using these rules. 
+#
+# eng:    70_sare_uri_eng.cf -- These are uri rules which work well within the English language, but are liable to cause false
+#         positives in other languages. They include rules which test for letter combinations. Systems that
+#         receive ham in languages other than English should NOT use this file. 
+#
+# arc:    70_sare_uri_arc.cf -- These are uri rules that once were published in other files, but which have since lost all value.
+#         They either hit too much ham (without hitting enough spam to make it worth while), or they don't hit any spam. 
+#         SARE regularly runs mass-checks on these rules to see if any of them are worth reviving, but 
+#         we expect that nobody will be running these rules in any production system. 
+
+########  ######################   ##################################################
+#  Rule definitions to avoid --lint errors on archived/moved rules. 
+########  ######################   ##################################################
+
+meta      SARE_URI_PRIME           0
+meta      SARE_URI_HARRYDAV        0
+meta      SARE_URI_OC              0
+meta      SARE_URI_SHARE_DIG       0
+
+########  ######################   ##################################################
+#    Category:  Sub-rules needed by others
+########  ######################   ##################################################
+
+uri       __SARE_URI_ANY           /./
+#hist     __SARE_URI_ANY           Murty Rompalli, 2005-01-03
+body      __SARE_BODY_BLNK_5_100   eval:check_blank_line_ratio('5','100')
+#hist     __SARE_BODY_BLNK_5_100   Murty Rompalli, 2005-01-03
+meta      __SARE_META_MURTY3       (__SARE_URI_ANY && __SARE_BODY_BLNK_5_100)
+#hist     __SARE_META_MURTY3       Murty Rompalli, 2005-01-03
+
+meta      SARE_URI_H0              0
+meta      SARE_URI_PORTD4          0  # Archived,           Oct 2004
+meta      SARE_URI_DIG_LET_PIC     0  # Archived,           Oct 2004 
+meta      SARE_URI_SUCCEZZ         0  # Archived, 01.01.00, Feb 2005
+meta      SARE_URI_HOUSE           0  # Archived, 01.01.00, Feb 2005
+meta      SARE_URI_P8              0  # Archived, 01.01.00, Feb 2005
+meta      SARE_URI_MRTG            0  # Archived, 01.01.00, Feb 2005
+meta      SARE_URI_REFID2          0  # Archived, 01.01.00, Feb 2005
+meta      SARE_URI_REFID3          0  # Archived, 01.01.00, Feb 2005
+meta      SARE_URI_AFF_DIG         0  # Archived, 01.01.00, Feb 2005
+meta      SARE_URI_IPPORT3333      0  # Archived, 01.01.00, Feb 2005
+meta      SARE_URI_SQUARE          0  # Archived, 01.01.00, Feb 2005
+meta      SARE_URI_OPTOUT          0  # Moved from file 0 to file 3, 01.01.01, Mar 2005
+meta      SARE_URI_DIET            0  # Moved from file 1 to file 3, 01.01.01, Mar 2005
+meta      SARE_URI_DOM_ENDU        0  # Moved from file 1 to file 3, 01.01.01, Mar 2005
+
+########  ######################   ##################################################
+#    Category:  URI links identified by spammer words
+########  ######################   ##################################################
+
+uri       SARE_URI_DMEDZDc         m'http://[^/]*(?:\d+medz?|medz?\d+)\.'i
+describe  SARE_URI_DMEDZDc         body contains link to likely spammer
+score     SARE_URI_DMEDZDc         2.222
+#stype    SARE_URI_DMEDZDc         spamp
+#hist     SARE_URI_DMEDZDc         Created by Bob Menschel Apr 23 2004; opt leading/trailing digits expanded Feb 2005
+#counts   SARE_URI_DMEDZDc         0s/0h of 619677 corpus (318875s/300802h RM) 09/11/05
+#max      SARE_URI_DMEDZDc         708s/0h of 238365 corpus (112478s/125887h RM) 02/28/05
+#counts   SARE_URI_DMEDZDc         72s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_DMEDZDc         1s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_DMEDZDc         4s/0h of 27707 corpus (24264s/3443h MY) 02/27/05
+#counts   SARE_URI_DMEDZDc         3s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_DMEDZDc         4s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_DMEDZDc         36s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+uri       SARE_URI_HGH             m{/hgh/}i
+describe  SARE_URI_HGH             body link suggests spammer web page
+score     SARE_URI_HGH             1.111
+#stype    SARE_URI_HGH             spamp 
+#hist     SARE_URI_HGH             Fred Tarasevicius - FU_HG_PATH
+#counts   SARE_URI_HGH             8s/0h of 619677 corpus (318875s/300802h RM) 09/11/05
+#max      SARE_URI_HGH             61s/0h of 114212 corpus (81067s/33145h RM) 01/19/05
+#counts   SARE_URI_HGH             15s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_HGH             3s/0h of 26190 corpus (22790s/3400h MY) 02/15/05
+#counts   SARE_URI_HGH             0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_HGH             0s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_HGH             1s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+body      __SARE_URI_NO_THANKS     /\bn(?:o|0)+[_\W]+thank(?:\S+\s+){1,4}(?:https?\:\/\/|www\.)/i
+meta      SARE_URI_NO_THANKS       (__SARE_URI_NO_THANKS && __SARE_META_MURTY3)
+describe  SARE_URI_NO_THANKS       Unsubscribe at this link
+score     SARE_URI_NO_THANKS       1.666
+#ham      SARE_URI_NO_THANKS       verified: "Thanks but no thanks" in text, with a normal, reasonable, http link on the next line.
+#hist     SARE_URI_NO_THANKS       Murty Rompalli, 2005-01-03
+#counts   SARE_URI_NO_THANKS       21467s/3h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_NO_THANKS       1045s/0h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#counts   SARE_URI_NO_THANKS       9s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_NO_THANKS       84s/0h of 31513 corpus (27912s/3601h MY) 03/09/05
+#counts   SARE_URI_NO_THANKS       22s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_NO_THANKS       97s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_URI_NO_THANKS       22s/0h of 682 corpus (290s/392h CRF) 03/11/05
+#counts   SARE_URI_NO_THANKS       3s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by spammer names
+########  ######################   ##################################################
+
+uri       SARE_URI_GIGGLES         /\?(?:hehkruto|giggles)/
+describe  SARE_URI_GIGGLES         body contains link to known spammer 
+score     SARE_URI_GIGGLES         1.628
+#hist     SARE_URI_GIGGLES         LW_URI_GIGGLES
+#counts   SARE_URI_GIGGLES         212s/0h of 619677 corpus (318875s/300802h RM) 09/11/05
+#counts   SARE_URI_GIGGLES         0s/0h of 26190 corpus (22790s/3400h MY) 02/15/05
+#max      SARE_URI_GIGGLES         5s/0h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_GIGGLES         31s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#max      SARE_URI_GIGGLES         63s/0h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_GIGGLES         0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_GIGGLES         0s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_GIGGLES         2s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+uri       SARE_URI_IHIRE           /\biHire\w+\.com/i
+describe  SARE_URI_IHIRE           body contains link to known spammer 
+score     SARE_URI_IHIRE           3.333
+#stype    SARE_URI_IHIRE           spamgg
+#hist     SARE_URI_IHIRE           Created by Bob Menschel Jul 17 2004
+#counts   SARE_URI_IHIRE           93s/0h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_IHIRE           4s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_IHIRE           0s/0h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_IHIRE           0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_IHIRE           0s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+uri       SARE_URI_NORDTECHS       /\b\w+\drneds\./i
+describe  SARE_URI_NORDTECHS       body contains link to probable spammer 
+score     SARE_URI_NORDTECHS       3.333 
+#stype    SARE_URI_NORDTECHS       spamgg
+#hist     SARE_URI_NORDTECHS       Created by Bob Menschel Aug 18 2004
+#counts   SARE_URI_NORDTECHS       0s/0h of 238365 corpus (112478s/125887h RM) 02/28/05
+#max      SARE_URI_NORDTECHS       96s/0h of 70699 corpus (43133s/27566h RM) 10/02/04
+#counts   SARE_URI_NORDTECHS       0s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_NORDTECHS       16s/0h of 26190 corpus (22790s/3400h MY) 02/15/05
+#counts   SARE_URI_NORDTECHS       12s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_NORDTECHS       0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_NORDTECHS       2s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+uri       SARE_URI_SEABOURN        /\bseabourn\b/i
+describe  SARE_URI_SEABOURN        body contains link to known spammer
+score     SARE_URI_SEABOURN        2.500 
+#stype    SARE_URI_SEABOURN        spamgg
+#hist     SARE_URI_SEABOURN        Created by Bob Menschel Jul 24 2004
+#counts   SARE_URI_SEABOURN        33s/0h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_SEABOURN        0s/0h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_SEABOURN        0s/0h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_SEABOURN        0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_SEABOURN        0s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+uri       SARE_URI_STOX            /stox\d+\@yahoo/i
+score     SARE_URI_STOX            1.666
+#hist     SARE_URI_STOX            Bob Menschel, Feb 28 2005, from idea posted by Duncan Hill, Feb 24 2005
+#counts   SARE_URI_STOX            0s/0h of 619677 corpus (318875s/300802h RM) 09/11/05
+#max      SARE_URI_STOX            203s/0h of 238366 corpus (112473s/125893h RM) 02/28/05
+#counts   SARE_URI_STOX            0s/0h of 54806 corpus (17633s/37173h JH-3.01) 03/13/05
+#counts   SARE_URI_STOX            10s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_URI_STOX            2s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+#counts   SARE_URI_STOX            2s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by technical attributes
+########  ######################   ##################################################
+
+uri       SARE_URI_DIG_BIZ         /\b\d+\.biz/i
+describe  SARE_URI_DIG_BIZ         body contains link to probable spammer 
+score     SARE_URI_DIG_BIZ         1.467
+#hist     SARE_URI_DIG_BIZ         Created by Bob Menschel Jul 17 2004
+#counts   SARE_URI_DIG_BIZ         6s/0h of 238365 corpus (112478s/125887h RM) 02/28/05
+#max      SARE_URI_DIG_BIZ         147s/0h of 92181 corpus (67808s/24373h RM) 07/18/04
+#counts   SARE_URI_DIG_BIZ         0s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_DIG_BIZ         9s/0h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_DIG_BIZ         2s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#max      SARE_URI_DIG_BIZ         5s/0h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_DIG_BIZ         0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_DIG_BIZ         1s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_DIG_BIZ         3s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+uri       SARE_URI_HEX32           m{^http://.{5,80}/_[a-z0-9]{32}/}i
+describe  SARE_URI_HEX32           Spammer web page name pattern
+score     SARE_URI_HEX32           1.666
+#hist     SARE_URI_HEX32           Fred Tarasevicius - FU_LONG_HEX_32
+#counts   SARE_URI_HEX32           2s/0h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_HEX32           279s/0h of 114212 corpus (81067s/33145h RM) 01/19/05
+#counts   SARE_URI_HEX32           103s/0h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#counts   SARE_URI_HEX32           4s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_HEX32           7s/0h of 27707 corpus (24264s/3443h MY) 02/27/05
+#counts   SARE_URI_HEX32           0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_HEX32           17s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by use of randomizing characters
+########  ######################   ##################################################
+
+rawbody   SARE_URI_RAW_ONLY        m{^http://[^.]{2,10}\.[^.]{6,9}\.(?:info|biz)/\?[^=./&]{15,30}$}i
+describe  SARE_URI_RAW_ONLY        URL contains apparent random name
+score     SARE_URI_RAW_ONLY        1.666
+#hist     SARE_URI_RAW_ONLY        Fred Tarasevicius - FU_RAW_ONLY_URI
+#counts   SARE_URI_RAW_ONLY        92s/0h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_RAW_ONLY        828s/0h of 175589 corpus (98978s/76611h RM) 02/14/05
+#counts   SARE_URI_RAW_ONLY        218s/0h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#counts   SARE_URI_RAW_ONLY        7s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_RAW_ONLY        9s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_RAW_ONLY        4s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_RAW_ONLY        79s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by web page/file names
+########  ######################   ##################################################
+
+uri       SARE_URI_VDRUG_GIF       /\/(?:c2|a3)\.gif/
+describe  SARE_URI_VDRUG_GIF       Random Domain maker Vdrug seller
+score     SARE_URI_VDRUG_GIF       1.666
+#hist     SARE_URI_VDRUG_GIF       CS_uwm_VDRUG_RANDOM1
+#counts   SARE_URI_VDRUG_GIF       54s/0h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_VDRUG_GIF       360s/0h of 115925 corpus (94616s/21309h RM) 05/01/04
+#counts   SARE_URI_VDRUG_GIF       1s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_VDRUG_GIF       7s/0h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_VDRUG_GIF       7s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_VDRUG_GIF       0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_VDRUG_GIF       0s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+# EOF
+
+# SARE Spammer URI Rule Set for SpamAssassin - file 1
+# Version:  01.01.05
+# Created:  2004-09-13
+# Modified: 2005-10-10
+# Usage instructions and documentation are found in 70_sare_uri0.cf 
+#@@# Revision History:  Full Revision History stored in 70_sare_uri.log
+#@@# 01.01.03: Oct 05 2005 
+#@@#           Minor score updates based on additional mass-check
+#@@#           Renamed __SARE_BODY_BLANKS_5_100 to __SARE_BODY_BLNK_5_100 
+#@@#           Added to file 1:                      SARE_URI_REFI
+#@@#           Moved file 0 to file 1:               SARE_URI_PRIME
+#@@#           Moved file 1 to file 4:               SARE_URI_CAMPAIGNID
+#@@#           Moved file 1 to file 4:               SARE_URI_CASINO
+#@@#           Moved file 1 to file x31:             SARE_URI_MIXED_CASE
+#@@# 01.01.04: Oct 05 2005 
+#@@#           Corrected lint error in SARE_URI_GEOCIT_NUM
+#@@# 01.01.05: Oct 10 2005 
+#@@#           Temp disable SARE_URI_SIXCAPS due to http://bugzilla.spamassassin.org/show_bug.cgi?id=4621
+
+# License:  Artistic - see http://www.rulesemporium.com/license.txt
+# Current   Maintainer: Bob Menschel - uri@rulesemporium.com
+# Current   Home: http://www.rulesemporium.com/rules/70_sare_uri1.cf
+
+########  ######################   ##################################################
+#  Rule definitions to avoid --lint errors on archived/moved rules. 
+########  ######################   ##################################################
+
+meta      SARE_URI_CAMPAIGNID      0
+meta      SARE_URI_CASINO          0
+meta      SARE_URI_MIXED_CASE      0
+
+########  ######################   ##################################################
+#    Category:  Sub-rules needed by others
+########  ######################   ##################################################
+
+uri       __SARE_URI_ANY           /./
+#hist     __SARE_URI_ANY           Murty Rompalli, 2005-01-03
+body      __SARE_BODY_BLNK_5_100   eval:check_blank_line_ratio('5','100')
+#hist     __SARE_BODY_BLNK_5_100   Murty Rompalli, 2005-01-03
+meta      __SARE_META_MURTY3       (__SARE_URI_ANY && __SARE_BODY_BLNK_5_100)
+#hist     __SARE_META_MURTY3       Murty Rompalli, 2005-01-03
+
+########  ######################   ##################################################
+#    Category:  URI links identified by spammer words
+########  ######################   ##################################################
+
+uri       SARE_URI_4_BIZ           /4.{0,24}\.biz/i
+describe  SARE_URI_4_BIZ           Domain has a "four-you" type domain name
+score     SARE_URI_4_BIZ           0.144
+#hist     SARE_URI_4_BIZ           Fred Tarasevicius - FU_4_BIZ
+#ham      SARE_URI_4_BIZ           40iseinc.biz
+#counts   SARE_URI_4_BIZ           220s/155h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_4_BIZ           827s/1h of 114212 corpus (81067s/33145h RM) 01/19/05
+#counts   SARE_URI_4_BIZ           147s/0h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#counts   SARE_URI_4_BIZ           37s/1h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_4_BIZ           67s/1h of 26190 corpus (22790s/3400h MY) 02/15/05
+#counts   SARE_URI_4_BIZ           0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_4_BIZ           12s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_4_BIZ           60s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+#counts   SARE_URI_4_BIZ           0s/3h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+uri       SARE_URI_ANUMA           /\.[a-z]{4,}\d{4,}[a-z]{4,}\.(?:com|net|biz|info|org)/i
+describe  SARE_URI_ANUMA           Domain with ALPHAs NUMBERs APLHAs
+score     SARE_URI_ANUMA           0.632
+#ham      SARE_URI_ANUMA           studio1509fineart.com
+#hist     SARE_URI_ANUMA           Created by Chris Santerre Aug 31 2004
+#counts   SARE_URI_ANUMA           76s/8h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_ANUMA           443s/0h of 70699 corpus (43133s/27566h RM) 10/02/04
+#counts   SARE_URI_ANUMA           4s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_ANUMA           88s/0h of 19448 corpus (16862s/2586h MY) 08/31/04
+#counts   SARE_URI_ANUMA           36s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#max      SARE_URI_ANUMA           117s/0h of 38753 corpus (15271s/23482h JH-SA3.0rc1) 09/03/04
+#counts   SARE_URI_ANUMA           0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_ANUMA           8s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_ANUMA           12s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+uri       SARE_URI_BARGAIN         /bargain/i
+describe  SARE_URI_BARGAIN         URL has common spammer word
+score     SARE_URI_BARGAIN         0.634
+#hist     SARE_URI_BARGAIN         FU_BARGAIN
+#ham      SARE_URI_BARGAIN         "smart bargains" in fwd of FamilyCorner.com Magazine 
+#counts   SARE_URI_BARGAIN         583s/50h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_BARGAIN         33s/3h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#max      SARE_URI_BARGAIN         224s/3h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_BARGAIN         160s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_BARGAIN         0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_BARGAIN         2s/1h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_BARGAIN         23s/1h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+uri       SARE_URI_DEALZ           /dealz/i
+describe  SARE_URI_DEALZ           spam contains misspelled URI word
+score     SARE_URI_DEALZ           1.666 
+#hist     SARE_URI_DEALZ           Created by Bob Menschel May 16 2004
+#ham      SARE_URI_DEALZ           www.slickdealz.net, NYTimes.com Sunday, January 02, 2005
+#counts   SARE_URI_DEALZ           5063s/1h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_DEALZ           505s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_DEALZ           77s/0h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_DEALZ           26s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#max      SARE_URI_DEALZ           218s/0h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_DEALZ           0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_DEALZ           1s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_DEALZ           3s/1h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+uri       SARE_URI_GOOD            /(?!\.greatergood\.com)\.[a-z]{3,8}good\.(?:com|net|info|org|biz)/i
+describe  SARE_URI_GOOD            spammer hint found in URI
+score     SARE_URI_GOOD            0.164
+#hist     SARE_URI_GOOD            Chris Santerre and Carl R. Friend, Feb 20 2005
+#counts   SARE_URI_GOOD            108s/47h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_GOOD            14s/1h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#counts   SARE_URI_GOOD            27s/1h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_GOOD            89s/1h of 31513 corpus (27912s/3601h MY) 03/09/05
+#counts   SARE_URI_GOOD            1s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+#counts   SARE_URI_GOOD            1s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+uri       SARE_URI_OEM             /\boem\b/i
+describe  SARE_URI_OEM             body contains link to probable spammer page
+score     SARE_URI_OEM             0.533
+#hist     SARE_URI_OEM             Created by Bob Menschel Jun 6 7004
+#counts   SARE_URI_OEM             100s/14h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_OEM             85s/2h of 175589 corpus (98978s/76611h RM) 02/14/05
+#counts   SARE_URI_OEM             17s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_OEM             23s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_OEM             0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_OEM             4s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+
+uri       SARE_URI_OFF             /\boff\.(?:htm|html|php|asp|pl|cgi|jsp)\b/i
+describe  SARE_URI_OFF             Unsubscribe at this link
+score     SARE_URI_OFF             0.056
+#ham      SARE_URI_OFF             flowers.com
+#hist     SARE_URI_OFF             Fred Tarasevicius - FU_PAGE_OFF
+#counts   SARE_URI_OFF             6s/18h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_OFF             71s/0h of 114212 corpus (81067s/33145h RM) 01/19/05
+#counts   SARE_URI_OFF             3s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_OFF             9s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_OFF             0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_OFF             0s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+uri       SARE_URI_PILLS           /\bpill[sz]\b/i
+describe  SARE_URI_PILLS           text references likely spammer
+score     SARE_URI_PILLS           1.047
+#hist     SARE_URI_PILLS           Created by Bob Menschel Apr 04 2004, added z Feb 2 2005
+#hist     SARE_URI_PILLS           Bugzilla entry 3789, Sep 18 2004
+#counts   SARE_URI_PILLS           128s/1h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_PILLS           2050s/0h of 115925 corpus (94616s/21309h RM) 05/01/04
+#counts   SARE_URI_PILLS           27s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_PILLS           262s/0h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_PILLS           17s/0h of 54084 corpus (16906s/37178h JH-3.01) 03/02/05
+#max      SARE_URI_PILLS           360s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_PILLS           1s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_PILLS           4s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+
+uri       SARE_URI_PRIME           m'/prime/'
+describe  SARE_URI_PRIME           body contains link to known spammer
+score     SARE_URI_PRIME           0.950 
+#ham      SARE_URI_PRIME           confirmed (1) 
+#hist     SARE_URI_PRIME           Created by Bob Menschel Aug 09 2004
+#counts   SARE_URI_PRIME           7s/1h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_PRIME           191s/0h of 175589 corpus (98978s/76611h RM) 02/14/05
+#counts   SARE_URI_PRIME           92s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_PRIME           27s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_PRIME           191s/0h of 31513 corpus (27912s/3601h MY) 03/09/05
+#counts   SARE_URI_PRIME           0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_PRIME           15s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_PRIME           17s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+#counts   SARE_URI_PRIME           1s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+uri       SARE_URI_REFI            /refi\.(com|net|biz|net|us|ws)/i
+describe  SARE_URI_REFI            somethingrefi
+score     SARE_URI_REFI            1.666
+#ham      SARE_URI_REFI            spammer URI spammed into non-spam but inadequately moderated mailing list
+#hist     SARE_URI_REFI            Alex Broens, July 2005
+#counts   SARE_URI_REFI            1752s/3h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_REFI            16s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_URI_REFI            2s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+#counts   SARE_URI_REFI            223s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+
+uri       SARE_URI_REPLICA         /\breplica/i
+describe  SARE_URI_REPLICA         body contains link to probable spammer page
+score     SARE_URI_REPLICA         1.634
+#hist     SARE_URI_REPLICA         Fred Tarasevicius - FU_REPLICA
+#counts   SARE_URI_REPLICA         872s/5h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_REPLICA         1285s/10h of 238365 corpus (112478s/125887h RM) 02/28/05
+#counts   SARE_URI_REPLICA         162s/0h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#max      SARE_URI_REPLICA         195s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_REPLICA         111s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_REPLICA         2s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_REPLICA         18s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_REPLICA         60s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+uri       SARE_URI_RM              /\brm\.(?:htm|html|php|asp|pl|cgi|jsp)\b/i
+describe  SARE_URI_RM              Unsubscribe at this link
+score     SARE_URI_RM              1.666
+#hist     SARE_URI_RM              Fred Tarasevicius - FU_PAGE_RM
+#counts   SARE_URI_RM              6239s/10h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_RM              548s/0h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#counts   SARE_URI_RM              3s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_RM              45s/0h of 26190 corpus (22790s/3400h MY) 02/15/05
+#counts   SARE_URI_RM              2s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_RM              341s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_URI_RM              3s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+body      __SARE_URI_VISIT_US      /\bv(?:i|l|1)+s(?:i|l|1)t[_\W]+(?:us|our)(?:\S+\s+){1,4}(?:https?\:\/\/|www\.)/i
+meta      SARE_URI_VISIT_US        (__SARE_URI_VISIT_US && __SARE_META_MURTY3)
+describe  SARE_URI_VISIT_US        Visit us at this link
+score     SARE_URI_VISIT_US        1.666
+#hist     SARE_URI_VISIT_US        Murty Rompalli, 2005-01-03
+#counts   SARE_URI_VISIT_US        3591s/6h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_VISIT_US        158s/0h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#counts   SARE_URI_VISIT_US        2s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_VISIT_US        35s/0h of 26190 corpus (22790s/3400h MY) 02/15/05
+#counts   SARE_URI_VISIT_US        1s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_VISIT_US        4s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_URI_VISIT_US        2s/1h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by spammer names
+########  ######################   ##################################################
+
+uri       SARE_URI_ITEM            /item.{0,8}[^a-r,t-z]\.com/i
+describe  SARE_URI_ITEM            Contains "item" in a URI
+score     SARE_URI_ITEM            0.637
+#hist     SARE_URI_ITEM            Carl R. Friend, Feb 24 2005
+#hist     SARE_URI_ITEM            Bob Menschel, Oct 1 2005, added exclusion for single letter (not s) after item.
+#counts   SARE_URI_ITEM            767s/63h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_ITEM            6s/6h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#counts   SARE_URI_ITEM            240s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_ITEM            16s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_URI_ITEM            0s/1h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+uri       SARE_URI_MEDS            /(?!medscape.com)med[sz].{0,14}\.(?:com|biz|net|org|us|tv|info)/i
+describe  SARE_URI_MEDS            domain selling meds
+score     SARE_URI_MEDS            0.842
+#stype    SARE_URI_MEDS            max:1.0
+#hist     SARE_URI_MEDS            Created by Bob Menschel Aug 29 2004 from rules by Bob M & Fred T
+#ham      SARE_URI_MEDS            medscape.com, modsociety.org DomesticPetmeds.com
+#counts   SARE_URI_MEDS            1468s/37h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_MEDS            2657s/12h of 238365 corpus (112478s/125887h RM) 02/28/05
+#counts   SARE_URI_MEDS            159s/1h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_MEDS            498s/1h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_MEDS            590s/1h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#max      SARE_URI_MEDS            657s/1h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_MEDS            13s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_MEDS            87s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_MEDS            241s/1h of 11015 corpus (6587s/4428h CT) 03/10/05
+#counts   SARE_URI_MEDS            6s/5h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+uri       __SARE_URI_MEDS2         m'http://[^/]*med[sz]\.'i
+meta      SARE_URI_MEDS2           __SARE_URI_MEDS2 && !SARE_URI_MEDS
+describe  SARE_URI_MEDS2           body contains link to known spammer
+score     SARE_URI_MEDS2           1.666  
+#hist     SARE_URI_MEDS2           RM_usd_meds
+#hist     SARE_URI_MEDS2           Converted to meta to exclude dupes with SARE_URI_MEDS Sep 19 2004
+#counts   SARE_URI_MEDS2           0s/0h of 238365 corpus (112478s/125887h RM) 02/28/05
+#counts   SARE_URI_MEDS2           0s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_MEDS2           0s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_MEDS2           1s/0h of 26190 corpus (22790s/3400h MY) 02/15/05
+#counts   SARE_URI_MEDS2           0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_MEDS2           0s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by technical attributes
+########  ######################   ##################################################
+
+uri       SARE_URI_EQUAL2          /==\.(?:jpg|htm)/i
+describe  SARE_URI_EQUAL2          Suspicious URI
+score     SARE_URI_EQUAL2          0.684
+#hist     SARE_URI_EQUAL2          Alex Pleiner and Chris Santerre, Feb 2005
+#counts   SARE_URI_EQUAL2          88s/24h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_EQUAL2          238s/1h of 197615 corpus (96830s/100785h RM) 02/22/05
+#counts   SARE_URI_EQUAL2          17s/0h of 54084 corpus (16906s/37178h JH-3.01) 03/02/05
+#counts   SARE_URI_EQUAL2          464s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_EQUAL2          0s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+#counts   SARE_URI_EQUAL2          8s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+uri       SARE_URI_REFID1          /\?refid[D=]/i
+describe  SARE_URI_REFID1          Spammer signature in URL
+score     SARE_URI_REFID1          0.648
+#hist     SARE_URI_REFID1          LW_URI_REFID
+#counts   SARE_URI_REFID1          1344s/102h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_REFID1          68s/0h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#counts   SARE_URI_REFID1          210s/4h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_REFID1          1s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_REFID1          166s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_REFID1          207s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by use of randomizing characters
+########  ######################   ##################################################
+
+uri       SARE_URI_DIGITS4         m'\b\d{4,}\.(?:com|net|biz|info)\b'i
+describe  SARE_URI_DIGITS4         References a multi-digit domain 
+score     SARE_URI_DIGITS4         0.415
+#hist     SARE_URI_DIGITS4         Created by Bob Menschel Aug 23 2004
+#ham      SARE_URI_DIGITS4         The Learning Company <tlcinfo@info.learningco.com> (May, 2002)
+#counts   SARE_URI_DIGITS4         679s/82h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_DIGITS4         905s/28h of 238365 corpus (112478s/125887h RM) 02/28/05
+#counts   SARE_URI_DIGITS4         14s/4h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#max      SARE_URI_DIGITS4         61s/4h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_DIGITS4         9s/3h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_DIGITS4         0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_DIGITS4         2s/3h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_DIGITS4         6s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+#uri       SARE_URI_SIXCAPS         /[A-Z]{6}\.(?:BIZ|INFO|biz|info)/
+meta      SARE_URI_SIXCAPS         0
+describe  SARE_URI_SIXCAPS         URI points to a six capital .BIZ domain
+score     SARE_URI_SIXCAPS         0.687
+#hist     SARE_URI_SIXCAPS         SARE test offered by CRF 4/26/04
+#counts   SARE_URI_SIXCAPS         112s/20h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_SIXCAPS         193s/1h of 175589 corpus (98978s/76611h RM) 02/14/05
+#counts   SARE_URI_SIXCAPS         103s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_SIXCAPS         115s/1h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_SIXCAPS         0s/1h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_SIXCAPS         215s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by web page/file names
+########  ######################   ##################################################
+
+uri       SARE_URI_GEOCIT_NUM      /www\.geocities\.com\/[a-z_]{4,20}_\d{2}/i
+describe  SARE_URI_GEOCIT_NUM      geocities URI ends in underscore and two digits
+score     SARE_URI_GEOCIT_NUM      0.666
+#hist     SARE_URI_GEOCIT_NUM      From john@tradoc.fr  Fri Apr 15 07:05:25 2005 SA Users
+#counts   SARE_URI_GEOCIT_NUM      76s/7h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_GEOCIT_NUM      0s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_URI_GEOCIT_NUM      57s/1h of 7500 corpus (1767s/5733h ft) 09/18/05
+#counts   SARE_URI_GEOCIT_NUM      46s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+
+uri       __SARE_URI_LET_DIG_PIC   /\/[a-z]\d\.(?:gif|jpg)/
+meta      SARE_URI_LET_DIG_PIC     __SARE_URI_LET_DIG_PIC && !SARE_URI_VDRUG_GIF
+describe  SARE_URI_LET_DIG_PIC     Suspicious file name for graphic
+score     SARE_URI_LET_DIG_PIC     1.157
+#counts   SARE_URI_LET_DIG_PIC     4567s/34h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_LET_DIG_PIC     62s/2h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_LET_DIG_PIC     356s/2h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_LET_DIG_PIC     332s/6h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#max      SARE_URI_LET_DIG_PIC     383s/6h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_LET_DIG_PIC     6s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_LET_DIG_PIC     8s/1h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_LET_DIG_PIC     151s/2h of 11015 corpus (6587s/4428h CT) 03/10/05
+#counts   SARE_URI_LET_DIG_PIC     2s/2h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+uri       SARE_URI_NO_MORE         m{/nomore\.(?:htm|asp|php)}i
+describe  SARE_URI_NO_MORE         Contains a likely spammer unsubscribe link
+score     SARE_URI_NO_MORE         0.522
+#hist     SARE_URI_NO_MORE         Fred Tarasevicius - FU_PAGE_NO_MORE
+#ham      SARE_URI_NO_MORE         http://www.afsc.org/nomore.htm; Student Peace Action Network (SPAN)
+#counts   SARE_URI_NO_MORE         4s/9h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_NO_MORE         456s/3h of 238365 corpus (112478s/125887h RM) 02/28/05
+#counts   SARE_URI_NO_MORE         69s/0h of 54828 corpus (17650s/37178h JH-3.01) 03/13/05
+#counts   SARE_URI_NO_MORE         3s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_NO_MORE         150s/0h of 26190 corpus (22790s/3400h MY) 02/15/05
+#counts   SARE_URI_NO_MORE         0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_NO_MORE         18s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_URI_NO_MORE         70s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+# EOF
+
+# SARE Spammer URI Rule Set for SpamAssassin - file 2
+# Version:  01.01.03
+# Created:  2004-09-13
+# Modified: 2005-10-05
+# Usage instructions and documentation are found in 70_sare_uri0.cf 
+#@@# Revision History:  Full Revision History stored in 70_sare_uri.log
+#@@# 01.01.03: Oct 05 2005 
+#@#@           Created files 2, 4, and x31.
+#@@#           Minor score updates based on additional mass-check
+#@@#           Moved file 0 to file 2:               SARE_URI_HARRYDAV
+#@@#           Moved file 0 to file 2:               SARE_URI_OC
+#@@#           Moved file 0 to file 2:               SARE_URI_SHARE_DIG
+
+# License:  Artistic - see http://www.rulesemporium.com/license.txt
+# Current   Maintainer: Bob Menschel - uri@rulesemporium.com
+# Current   Home: http://www.rulesemporium.com/rules/70_sare_uri3.cf
+
+########  ######################   ##################################################
+#    Category:  Sub-rules needed by others
+########  ######################   ##################################################
+
+########  ######################   ##################################################
+#    Category:  URI links identified by spammer words
+########  ######################   ##################################################
+
+########  ######################   ##################################################
+#    Category:  URI links identified by spammer names
+########  ######################   ##################################################
+
+uri       SARE_URI_HARRYDAV        /\bharryanddavid\b/i
+describe  SARE_URI_HARRYDAV        body contains link to known spammer 
+score     SARE_URI_HARRYDAV        3.333
+#stype    SARE_URI_HARRYDAV        spamgg
+#hist     SARE_URI_HARRYDAV        Created by Bob Menschel Aug 26 2004
+#counts   SARE_URI_HARRYDAV        0s/0h of 619677 corpus (318875s/300802h RM) 09/11/05
+#max      SARE_URI_HARRYDAV        14s/0h of 70699 corpus (43133s/27566h RM) 10/02/04
+#counts   SARE_URI_HARRYDAV        0s/0h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_HARRYDAV        0s/0h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_HARRYDAV        0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_HARRYDAV        0s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by technical attributes
+########  ######################   ##################################################
+
+########  ######################   ##################################################
+#    Category:  URI links identified by use of randomizing characters
+########  ######################   ##################################################
+
+uri       SARE_URI_SHARE_DIG       /\d\.share\d\.(?:us|biz|info)/i
+describe  SARE_URI_SHARE_DIG       Domain is one of several, likely spammer
+score     SARE_URI_SHARE_DIG       0.622
+#hist     SARE_URI_SHARE_DIG       Fred Tarasevicius - FU_SHARE_DIGIT
+#counts   SARE_URI_SHARE_DIG       0s/0h of 196626 corpus (96197s/100429h RM) 02/22/05
+#max      SARE_URI_SHARE_DIG       10s/0h of 114212 corpus (81067s/33145h RM) 01/19/05
+#counts   SARE_URI_SHARE_DIG       0s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_SHARE_DIG       0s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_SHARE_DIG       2s/0h of 26190 corpus (22790s/3400h MY) 02/15/05
+#counts   SARE_URI_SHARE_DIG       0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_SHARE_DIG       0s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by web page/file names
+########  ######################   ##################################################
+
+uri       SARE_URI_OC              /\?oc=\d{4,10}/
+describe  SARE_URI_OC              Possible spammer sign in URL
+score     SARE_URI_OC              1.306
+#counts   SARE_URI_OC              0s/0h of 619677 corpus (318875s/300802h RM) 09/11/05
+#max      SARE_URI_OC              31s/0h of 66947 corpus (41732s/25215h RM) 09/06/04
+#counts   SARE_URI_OC              4s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_OC              0s/0h of 26190 corpus (22790s/3400h MY) 02/15/05
+#max      SARE_URI_OC              100s/0h of 19447 corpus (16862s/2585h MY) 09/06/04
+#counts   SARE_URI_OC              0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_OC              0s/0h of 11015 corpus (6587s/4428h CT) 03/10/05
+
+# EOF
+
+# SARE Spammer URI Rule Set for SpamAssassin - file 3
+# Version:  01.01.03
+# Created:  2004-09-13
+# Modified: 2005-10-05
+# Usage instructions and documentation are found in 70_sare_uri0.cf 
+#@@# Revision History:  Full Revision History stored in 70_sare_uri.log
+#@@# 01.01.03: Oct 05 2005 
+#@@#           Minor score updates based on additional mass-check
+#@@#           Archived from file 3:                 SARE_URI_NUMASP8
+#@@#           Archived from file 3:                 SARE_URI_PERV
+#@@#           Moved file 3 to file 4:               SARE_URI_NUM_SUBDOM
+#@@#           Renamed __SARE_BODY_BLANKS_5_100 to __SARE_BODY_BLNK_5_100
+
+# License:  Artistic - see http://www.rulesemporium.com/license.txt
+# Current   Maintainer: Bob Menschel - uri@rulesemporium.com
+# Current   Home: http://www.rulesemporium.com/rules/70_sare_uri3.cf
+
+########  ######################   ##################################################
+#  Rule definitions to avoid --lint errors on archived/moved rules. 
+########  ######################   ##################################################
+
+meta      SARE_URI_NUMASP8         0
+meta      SARE_URI_PERV            0
+meta      SARE_URI_NUM_SUBDOM      0
+
+########  ######################   ##################################################
+#    Category:  Sub-rules needed by others
+########  ######################   ##################################################
+
+uri       __SARE_URI_ANY           /./
+#hist     __SARE_URI_ANY           Murty Rompalli, 2005-01-03
+body      __SARE_BODY_BLNK_5_100   eval:check_blank_line_ratio('5','100')
+#hist     __SARE_BODY_BLNK_5_100   Murty Rompalli, 2005-01-03
+meta      __SARE_META_MURTY3       (__SARE_URI_ANY && __SARE_BODY_BLNK_5_100)
+#hist     __SARE_META_MURTY3       Murty Rompalli, 2005-01-03
+
+########  ######################   ##################################################
+#    Category:  URI links identified by spammer words
+########  ######################   ##################################################
+
+uri       SARE_URI_DIET            m'http://[^/]*diet\.'i
+describe  SARE_URI_DIET            body contains link to probable spammer
+score     SARE_URI_DIET            0.117
+#ham      SARE_URI_DIET            southbeachdiet.com
+#hist     SARE_URI_DIET            Created by Bob Menschel May 29 2004
+#counts   SARE_URI_DIET            114s/69h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_DIET            147s/0h of 66948 corpus (41731s/25217h RM) 09/05/04
+#counts   SARE_URI_DIET            22s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_URI_DIET            1s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#max      SARE_URI_DIET            14s/0h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_DIET            0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_DIET            9s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_URI_DIET            2s/0h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+uri       SARE_URI_OPTOUT          /optout\.php/i
+describe  SARE_URI_OPTOUT          Unsubscribe at this link
+score     SARE_URI_OPTOUT          0.611
+#ham      SARE_URI_OPTOUT          valid forward of a newsletter than used this unsubscribe link
+#hist     SARE_URI_OPTOUT          Fred Tarasevicius - FU_PAGE_OPT_OUT
+#counts   SARE_URI_OPTOUT          188s/13h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_OPTOUT          802s/0h of 114212 corpus (81067s/33145h RM) 01/19/05
+#counts   SARE_URI_OPTOUT          27s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_OPTOUT          16s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_OPTOUT          23s/0h of 31513 corpus (27912s/3601h MY) 03/09/05
+#counts   SARE_URI_OPTOUT          0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_OPTOUT          10s/9h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_URI_OPTOUT          0s/1h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by spammer names
+########  ######################   ##################################################
+
+uri       SARE_URI_MAILDD          /\@mail\d+\.com/i
+describe  SARE_URI_MAILDD          Email header points to possible spam source
+score     SARE_URI_MAILDD          0.306
+#hist     SARE_URI_MAILDD          Created by Bob Menschel Aug 20 2004
+#counts   SARE_URI_MAILDD          13s/3h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_MAILDD          26s/0h of 61459 corpus (36652s/24807h RM) 08/24/04
+#counts   SARE_URI_MAILDD          3s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_MAILDD          6s/0h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_MAILDD          6s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#max      SARE_URI_MAILDD          9s/0h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_MAILDD          0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by technical attributes
+########  ######################   ##################################################
+
+########  ######################   ##################################################
+#    Category:  URI links identified by use of randomizing characters
+########  ######################   ##################################################
+
+uri       SARE_URI_4ALL            /4all\.com/i
+describe  SARE_URI_4ALL            body contains link to known spammer
+score     SARE_URI_4ALL            0.728
+#hist     SARE_URI_4ALL            Created by Bob Menschel May 10 2004
+#ham      SARE_URI_4ALL            http://www.genealogy4all.com
+#counts   SARE_URI_4ALL            21s/0h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_URI_4ALL            5s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_4ALL            6s/0h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_4ALL            3s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#max      SARE_URI_4ALL            8s/0h of 44759 corpus (16528s/28231h JH-SA3.0rc1) 09/06/04
+#counts   SARE_URI_4ALL            0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_4ALL            2s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+#counts   SARE_URI_4ALL            0s/6h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+uri       SARE_URI_DOM_ENDU        m{/u$}i
+describe  SARE_URI_DOM_ENDU        Domain has suspicious spammer-like format
+score     SARE_URI_DOM_ENDU        0.213
+#hist     SARE_URI_DOM_ENDU        Fred Tarasevicius - FU_ENDS_WITH_U
+#counts   SARE_URI_DOM_ENDU        7s/4h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_DOM_ENDU        137s/1h of 114212 corpus (81067s/33145h RM) 01/19/05
+#counts   SARE_URI_DOM_ENDU        13s/1h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_DOM_ENDU        2s/0h of 57287 corpus (52272s/5015h MY) 09/22/05
+#max      SARE_URI_DOM_ENDU        7s/0h of 27707 corpus (24264s/3443h MY) 02/27/05
+#counts   SARE_URI_DOM_ENDU        0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+#counts   SARE_URI_DOM_ENDU        1s/0h of 10629 corpus (5847s/4782h CT) 09/18/05
+
+########  ######################   ##################################################
+#    Category:  URI links identified by web page/file names
+########  ######################   ##################################################
+
+uri       SARE_URI_CANCEL          /\/cancel\.(?:htm|asp|pgp|cgi)/i
+describe  SARE_URI_CANCEL          Contains a likely spammer unsubscribe link
+score     SARE_URI_CANCEL          0.027
+#hist     SARE_URI_CANCEL          Bob Menschel expanded from RE_uws_CancelHtm Aug 29 2004
+#ham      SARE_URI_CANCEL          restaurant's online reservation (and cancellation) URI
+#counts   SARE_URI_CANCEL          3s/2h of 689155 corpus (348140s/341015h RM) 09/18/05
+#max      SARE_URI_CANCEL          7s/1h of 175589 corpus (98978s/76611h RM) 02/14/05
+#counts   SARE_URI_CANCEL          0s/0h of 26190 corpus (22790s/3400h MY) 02/15/05
+#max      SARE_URI_CANCEL          4s/0h of 19448 corpus (16863s/2585h MY) 09/06/04
+#counts   SARE_URI_CANCEL          2s/0h of 54103 corpus (16925s/37178h JH-3.01) 02/15/05
+#counts   SARE_URI_CANCEL          0s/0h of 682 corpus (290s/392h CRF) 02/16/05
+
+# EOF
+
+

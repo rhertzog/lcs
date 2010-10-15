@@ -1,0 +1,1 @@
+Configuration des URL,../lcs/select_briques.php,lcs_is_admin

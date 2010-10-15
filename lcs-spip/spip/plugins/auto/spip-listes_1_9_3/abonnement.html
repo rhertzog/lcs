@@ -1,0 +1,68 @@
+#CACHE{1}
+[<!--(#REM)
+
+// abonnement.html
+
+// SPIP-Listes-V :: $Id: courrier.html,v 1.1 2007/09/05 20:50:38 cpaulus Exp $
+// $LastChangedRevision: 30777 $
+// $LastChangedBy: paladin@quesaco.org $
+// $LastChangedDate: 2009-08-10 06:04:33 +0200 (lun, 10 aoû 2009) $
+
+-->]<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG" lang="#LANG" dir="#LANG_DIR">
+<head>
+	<title>#NOM_SITE_SPIP</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=#CHARSET' />
+	<INCLURE{fond=inc-head}>
+	<meta name="robots" content="noindex, nofollow">
+	[<!--(#REM)
+	
+	Pour personnaliser cette page, recopiez le fichier
+	dans votre répertoire de squelettes et adaptez-le à vos besoins.
+	
+	Vous pouvez également recopier 'spiplistes_formulaire.css' dans
+	votre répertoire de squelettes pour l'adaptez à vos besoins.
+	
+	-->
+	][<link rel="stylesheet" type="text/css" href="(#CHEMIN{spiplistes_formulaire.css})" />
+]</head>
+<body id="spiplistes-pageabo" style='text-align:center' dir="#LANG_DIR">
+		
+	<div class='bloc'>
+		
+		<h1>#NOM_SITE_SPIP</h1>	
+
+	
+[<!--(#REM)
+
+	####################################
+	SPIP-Listes : bloc formulaire abonnement
+	####################################
+
+-->]<div id='spiplistes-formabo' class='formulaire_spip cadre'>
+[<!--(#REM)
+
+	Si (d) absent dans l'url, propose l'abonnement			
+
+-->][(#ENV{d}|?{'',' '})
+		#FORMULAIRE_ABONNEMENT
+][<!--(#REM)
+
+	Si (d) present dans l'url, propose la modification de l'abonnement			
+
+-->][(#ENV{d}|?{' ',''})
+		[(#SPIP_VERSION|>={2}|?{#FORMULAIRE_MODIF_ABONNEMENT2,#FORMULAIRE_ABONNEMENT})]
+		]
+		</div>
+[<!--(#REM)
+
+	####################################
+	SPIP-Listes : fin de bloc formulaire abonnement
+	####################################
+
+-->]
+		<p class="center"><a href='#URL_SITE_SPIP'><:pass_retour_public:></a></p>
+		<div class='spiplistes-cdt'><:spiplistes:abonnement_cdt:></div>
+	</div>
+</body>
+</html>

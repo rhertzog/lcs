@@ -1,0 +1,4 @@
+#!/bin/bash
+NAMEPLUGIN="Biilan2"
+PATH2PLUGIN="/usr/share/lcs/Plugins/$NAMEPLUGIN"
+echo "Script d'installation du plugin $NAMEPLUGIN";

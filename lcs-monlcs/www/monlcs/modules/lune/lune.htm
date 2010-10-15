@@ -1,0 +1,70 @@
+<html>
+<body bgcolor="#000000" background="stars.gif">
+<script language="javascript">
+
+
+/***********on définit nos variables principales**************/
+
+var bleu = "bleu.gif";    
+var blanc = "blanc.gif";    //noms des images
+var taille = 30;           //hauteur en pixel de la lune
+var aujourdhui = new Date();   //date courante
+
+/*************************************************************/
+
+
+
+
+/**********variables de date et lunaison**********/
+
+var pleinelune = new Date(2005,1,25,10,32,0,0);     //date de la pleine lune du 25 janvier 2005 à 10h32
+var lunaison = 29*(24*3600*1000)+12*(3600*1000)+44*(60*1000);    //durée de lunaison en milliseconde
+
+/*************************************************/
+
+
+var phasemaint = (aujourdhui.getTime()-pleinelune.getTime())%lunaison;  //pour connaitre le nombre de jours passés depuis la dernière pleine lune : on prend la date d'aujourd'hui, on soustrait la date de la pleine lune du 25 janvier et on applique le modulo de lunaison.
+//le résultat sera compris entre 0 et 27.
+
+var pourbrut = (phasemaint/lunaison);
+var pourpar2 = Math.round(200*pourbrut);
+
+if(pourbrut >= 0.5){   //si le pourcentage est inférieur à 50 % c'est à dire que le nombre de jours passés depuis la dernière pleine lune est entre 0 et 13, sa partie visible est situé à gauche de la lune(couleur blanche) et inversement si compris entre 13 et 27
+gauche = bleu;
+droite = blanc;
+}
+else{
+gauche = blanc;
+droite = bleu;
+}
+
+var temps = Math.round((lunaison-phasemaint)/(24*3600*1000));   //pour connaître le nombre de jours avant la prochaine lunaison.
+document.write("<br><br><br><br><center>");
+
+if(pourpar2 > 100){
+pourpar2 = pourpar2-100;
+}
+
+for(i = -(taille-1); i < taille; ++i){     //la boucle affiche le graphique,succession de lignes contenant deux images, une bleu et une blanche si la lune est "âgée de plus de 13 jours, une blanche et une noire inversement.
+//la variable i de la boucle parcourt les nombres compris entre -taille et +taille, le graphique aura donc une hauteur double de la valeur de taille. 
+
+var largeur = 2*parseFloat(Math.sqrt((taille*taille)-(i*i)));
+
+if(pourpar2 != 100)   //aux deux extrémités de la lune, un seul pixel doit être affiché. On teste donc ces deux cas et ne pas afficher deux images.
+document.write("<img src="+gauche+" height=1 width="+(largeur*((100-pourpar2)/100))+">");  //on affiche deux images dont les largeurs sont calculées auparavant et la hauteur est 1px.
+//tout ceci se base sur la formule pour connaitre le nombre de pixels de la partie de droite du graphique, pour un rang n compris entre -hauteur et +hauteur : y = (age de la lune / lunaison)*(taille²-n²) 
+
+
+if(pourpar2 != 0)
+document.write("<img src="+droite+" height=1 width="+(largeur*((pourpar2)/100))+">");
+
+document.write("<br>");
+}
+
+document.write("<br><font size=3 color='orange'>Prochaine pleine lune dans ",temps," jours");
+document.write("</font>");
+
+</script>
+</body>
+</html>
+

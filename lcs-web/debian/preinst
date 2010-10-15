@@ -1,0 +1,42 @@
+#! /bin/sh
+# preinst script for LCS WEB
+
+set -e
+case "$1" in
+install)
+
+;;
+abort-upgrade)
+;;
+upgrade)
+        mkdir -p /var/lib/lcs/tmp
+	#
+        # Save setup/.htpasswd 
+        #
+	if [ -e /var/www/setup/.htpasswd ]; then
+	   mv /var/www/setup/.htpasswd /var/lib/lcs/tmp/lcswebsetupacces
+	fi
+        #
+        # Save privatekey.py and public_key.js
+        #
+        if [ -e /var/www/lcs/public_key.js ]; then
+            mv /var/www/lcs/public_key.js /var/lib/lcs/tmp/public_key.js
+        fi
+        if [ -e /var/www/lcs/includes/privateKey.py ]; then
+            # For update packake version <= 2.4.5
+            mv /var/www/lcs/includes/privateKey.py /var/lib/lcs/tmp/privateKey.py
+        elif [ -e /usr/share/lcs/privatekey/privateKey.py ]; then
+            mv /usr/share/lcs/privatekey/privateKey.py /var/lib/lcs/tmp/privateKey.py
+        fi
+        #
+        # Clean old menu.d structure
+        # 
+        rm -Rf /var/www/lcs/includes/menu.d
+
+;;
+*)
+echo "preinst called with unknown argument \`$1'" >&2
+exit 1
+;;
+esac
+exit 0

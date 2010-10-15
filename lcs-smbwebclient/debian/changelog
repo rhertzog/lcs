@@ -1,0 +1,48 @@
+lcs-smbwebclient (2.4.6.2) Lcs; urgency=low
+
+  * Cleaning documentation. 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Apr 2010 11:17:32 +0200
+
+lcs-smbwebclient (2.4.6.1) Lcs; urgency=low
+
+  * Adding to the documentation section about the restriction of access
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 25 Mar 2010 11:48:06 +0100
+
+lcs-smbwebclient (2.4.6) Lcs; urgency=low
+
+  * Cleaning changelog 
+  * Make a stable release
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jan 2010 14:53:32 +0100
+
+lcs-smbwebclient (2.4.2) Lcs; urgency=low
+
+  * Build a stable release for Etch and Lenny
+  * Remove -N option in smbclient request
+  * Add include and remove function valid_passwd
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 03 Dec 2009 14:26:17 +0100
+
+lcs-smbwebclient (2.4.1) Lcs; urgency=low
+
+  * Build a stable release 2.4.1
+  * Add smbweb_is_open right and password policy acces 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 21 Oct 2009 15:14:07 +0200
+
+lcs-smbwebclient (2.4) Lcs; urgency=low
+
+  * Build a stable release 2.4 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 15:33:03 +0200
+
+lcs-smbwebclient (2.2) Lcs; urgency=low
+
+  * Make a working release
+  * Initial release for svn_builpackage compatibilty)
+  * add Makefile
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 27 Apr 2009 15:53:26 +0200
+

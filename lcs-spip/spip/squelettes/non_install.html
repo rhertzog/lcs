@@ -1,0 +1,46 @@
+#CACHE{24*3600}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>#NOM_SITE_SPIP</title>
+<INCLURE{fond=noisettes/inc-head}>
+</head>
+<body id="body">
+<div id="header">
+	<INCLURE{fond=noisettes/inc-entete}>
+	[(#INCLURE{fond=noisettes/inc-menuonglets}{sommaire=activelink})]
+</div>[(#REM)header]
+<div id="container">
+	[(#CONFIG{tispipskelet_conf/affmenuh}|?{' '})
+		<INCLURE{fond=noisettes/inc-menu-horiz}{accueil=on}>
+	]
+	<div  id="content">
+[(#REM) message d'alerte si les plugins ne st pas valodés]
+[(#CONFIG{tispip_install}|=={oui}|?{' '})	
+	<INCLURE{fond=noisettes/inc-plugins_non}> 
+]
+	</div>[(#REM)content]
+	<div id="side">
+		</div>[(#REM)side]
+
+[(#CONFIG{tispipskelet_conf/footer_large}|non)
+		<div id="footer">
+		[(#INCLURE{fond=noisettes/inc-pied})]
+		</div>[(#REM)footer]
+]
+[(#CONFIG{tispipskelet_conf/footer_large}|oui)
+		<div style="clear:both;margin-bottom:10px;"></div>[(#REM)footer]
+]
+</div>[(#REM)container]
+[(#CONFIG{tispipskelet_conf/footer_large}|oui)
+		<div id="footer_large" style="background:#aaaaaa;margin-top:-40px;margin-left:auto;margin-right:auto;text-align:center;">
+			<INCLURE{fond=noisettes/inc-pied_large}>
+		</div>[(#REM)footer]
+]
+[(#REM) appel du js les coins arrondis et les colonnes]
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftycube.js})"></script>]
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftyLayout.js})"></script>]
+
+
+</body>
+</html>

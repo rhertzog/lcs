@@ -1,0 +1,1 @@
+lcs-base est supprimé, les opérations réalisées par ce paquet sont déplacées dans : interfacedu et lcs-web

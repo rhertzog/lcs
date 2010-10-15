@@ -1,0 +1,25 @@
+<!-- 03/05/2009 INDEX.HTM -->
+<!-- Index.htm BCDI Web Collège -->
+<script language="JavaScript">
+  var ancienFichierMaitre="<#VAR FICHIER-MAITRE>"
+</script>
+<!--Remplacez ci-dessous OUI par NON si vous ne voulez pas que les critères de recherche correspondant s'affichent en "Autres choix"-->
+<#VAR AFFDISCIPLINES=OUI><!-- Afficher le choix Disciplines en recherche -->
+<#VAR AFFNIVEAUX=OUI><!-- Afficher le choix Niveaux en recherche -->
+<#VAR AFFPUBLICS=OUI><!-- Afficher le choix Publics en recherche -->
+<#VAR AFFCENTRESINTERET=OUI><!-- Afficher le choix Centres d'intérêt en recherche -->
+<#VAR AFFDISPONIBLE=OUI><!-- Afficher le choix Disponibles en recherche -->
+<#VAR AFFLANGUE=OUI><!-- Afficher le choix Langues en recherche -->
+<#VAR AFFNUMEXE=NON><!-- Afficher le numéro ou code d'exemplaire -->
+<#VAR AFFINTITULEEMPLACEMENT=NON> <!-- Afficher l'intitulé de l'emplacement -->
+<#VAR AFFRESSOURCEFICHECOMPLETE=OUI> <!-- Afficher la ressource notices 1  en fiche complete (sinon directement)  -->
+<#VAR AFFCHAMPDIVERS=OUI> <!-- Afficher le champ divers de notices -->
+<!-- couleur des écrans-->
+<#VAR COULCRIT=#e3f6aa><#VAR COULTHEME=#f7fff3>
+<#VAR ECRAN=AFFICHAGE-BETATEST-COLLEGE>
+<!-- ne pas modifier les lignes ci-dessous-->
+<#INCLUDE PUBLIC.HTM>
+<#VAR FICHIER-MAITRE=INDEX.HTM><#VAR RECHERCHE=THEME><#VAR CONFIGURATION=SIMPLE>
+<!-- f9f8f4Ecrans Avril 2008 V 1.90 Public=<#VAR PUBLIC> - Fichier Maitre=<#VAR FICHIER-MAITRE> - Recherche=<#VAR RECHERCHE> - Configuration=<#VAR CONFIGURATION> -->
+<#INCLUDE Ecran-Recherche.htm>
+

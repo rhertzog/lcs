@@ -1,0 +1,45 @@
+#!/bin/bash
+if [ ! -e ../Includes/config.inc.php ]; then
+    pass=`pwgen -1`
+    echo "Patch du fichier de la base MySQL..."
+    cp -a install_mysql.sql install_mysql.sq
+    cat install_mysql.sq | sed -e "s/#PASS#/$pass/g" > install_mysql.sql
+    echo "Patch du fichier config.inc.php..."
+    cat ../Includes/config.inc.ph | sed -e "s/#PASS#/$pass/g" > ../Includes/config.inc.php
+    chown www-data:www-data ../Includes/config.inc.php install_mysql.sql
+    rm ../Includes/config.inc.ph
+fi
+
+#
+# Recuperation du BASEDN de l'annuaire
+#
+BASEDN=`mysql -se "select value from lcs_db.params  where name='ldap_base_dn'"`
+#
+# Patch des fichiers ldif d'installation et desinstallation initiale
+#
+echo "Patch des fichiers ldif"
+mv install_ldap.ldif install_ldap.ldif.in
+cat install_ldap.ldif.in | sed -e "s/#BASEDN#/$BASEDN/g" > install_ldap.ldif
+rm install_ldap.ldif.in
+mv desinstall_ldap.ldif desinstall_ldap.ldif.in
+cat desinstall_ldap.ldif.in | sed -e "s/#BASEDN#/$BASEDN/g" > desinstall_ldap.ldif
+chown www-data:www-data *.ldif
+chmod 600 *.ldif 
+rm desinstall_ldap.ldif.in
+#
+# Patch des fichiers Maj/ldap.x
+#
+echo "patch des fichiers de maj"
+for dir in Maj/ldap.*; do
+   if [ -e $dir ]; then
+      mv $dir $dir.in
+      cat $dir.in | sed -e "s/#BASEDN#/$BASEDN/g" > $dir
+      chown www-data:www-data $dir 
+      chmod 600 $dir
+      rm $dir.in
+   fi
+done
+#
+# Fin
+#
+echo "Fin des patches..."

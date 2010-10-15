@@ -1,0 +1,58 @@
+#!/bin/bash
+
+    pass=`pwgen -1`
+	dom=`hostname -d`
+	host=`hostname -a`
+	url=`hostname -f`
+if [ ! -e ../config/owl.php ]; then	
+    echo "Patch du fichier de la base MySQL..."
+    cp -a install_mysql.sql install_mysql.sq
+    cat install_mysql.sq | sed -e "s/#PASS#/$pass/g" > install_mysql.sq1
+	cat install_mysql.sq1 | sed -e "s/hostname/$dom/g">install_mysql.sq2
+	cat install_mysql.sq2 | sed -e "s/lcs/$host/g">install_mysql.sql
+	rm install_mysql.sq1
+	rm install_mysql.sq2
+	
+    echo "Patch du fichier owl.ph..."
+    cat ../config/owl.ph | sed -e "s/#PASS#/$pass/g" > ../config/owl.ph1
+	cat ../config/owl.ph1 | sed -e "s/URLLCS/$url/g" > ../config/owl.php
+    chown www-data:www-data ../config/owl.php install_mysql.sql ../admin/backup_owl.sql
+    rm ../config/owl.ph
+	rm ../config/owl.ph1
+
+   echo "Patch du fichier lanuage.inc ..."
+   mv /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc.tmp
+   cat /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc.tmp | sed -e "s/xxx/0.3/g" > /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc
+   rm /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc.tmp
+   chown www-data:www-data /usr/share/lcs/Plugins/Gedowl/locale/French/language.inc
+
+fi
+
+cp -a ../admin/backup_owl.sql ../admin/backup_owl.sq
+	cat ../admin/backup_owl.sq | sed -e "s/hostname/$dom/g"> ../admin/backup_owl.sq1
+	cat ../admin/backup_owl.sq1 | sed -e "s/lcs/$host/g"> ../admin/backup_owl.sql
+	rm ../admin/backup_owl.sq
+	rm ../admin/backup_owl.sq1 
+	
+#
+# Recuperation du BASEDN de l'annuaire
+#
+BASEDN=`mysql -se "select value from lcs_db.params  where name='ldap_base_dn'"`
+#
+#
+# Patch des fichiers Maj/ldap.x
+#
+echo "patch des fichiers de maj"
+for dir in Maj/ldap.*; do
+   if [ -e $dir ]; then
+      mv $dir $dir.in
+      cat $dir.in | sed -e "s/#BASEDN#/$BASEDN/g" > $dir
+      chown www-data:www-data $dir 
+      chmod 600 $dir
+      rm $dir.in
+   fi
+done
+#
+# Fin
+#
+echo "Fin des patches..."

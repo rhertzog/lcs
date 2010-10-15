@@ -1,0 +1,21 @@
+client
+dev tun 
+proto udp
+remote @@FULLDOMAINE@@ @@VPNPORT@@
+resolv-retry infinite
+nobind
+tls-client
+persist-key
+persist-tun
+ca lcs/ca.crt
+cert lcs/@@USER@@.crt
+key lcs/@@USER@@.key
+ns-cert-type server
+tls-auth lcs/ta.key 1
+cipher BF-CBC
+pull
+comp-lzo
+route-method exe
+route-delay 2 
+verb 2
+mute 5

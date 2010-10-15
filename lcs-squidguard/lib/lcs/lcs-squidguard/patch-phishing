@@ -1,0 +1,13 @@
+--- squidGuard.conf.nophishing  2009-06-18 14:35:11.000000000 +0200
++++ squidGuard.conf     2009-06-18 14:36:23.000000000 +0200
+@@ -52,6 +52,10 @@
+   domainlist    blacklists/marketingware/domains
+   urllist       blacklists/marketingware/urls
+ }
++dest phishing {
++  domainlist    blacklists/phishing/domains
++  urllist       blacklists/phishing/urls
++}
+ dest porn {
+   domainlist   blacklists/porn/domains
+   urllist      blacklists/porn/urls

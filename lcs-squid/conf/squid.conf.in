@@ -1,0 +1,188 @@
+#	SQUID 2.6.STABLE5
+#	-----------------
+# LCS Squid transparent proxy configuration
+
+# NETWORK OPTIONS
+# -----------------------------------------------------------------------------
+
+#  TAG: http_port
+http_port 8080 transparent
+
+#  TAG: hierarchy_stoplist
+hierarchy_stoplist cgi-bin ?
+
+#  TAG: cache
+acl QUERY urlpath_regex cgi-bin \?
+cache deny QUERY
+
+#  TAG: broken_vary_encoding
+acl apache rep_header Server ^Apache
+broken_vary_encoding allow apache
+
+# LOGFILE PATHNAMES AND CACHE DIRECTORIES
+# -----------------------------------------------------------------------------
+
+#  TAG: cache_dir
+#Default:
+# cache_dir aufs Directory-Name Mbytes L1 L2 [options]
+
+cache_dir ufs /var/spool/squid 100 16 256
+
+#  TAG: access_log
+#  To log the request via syslog specify a filepath of "syslog"
+access_log /var/log/squid/access.log squid
+
+cache_log /dev/null
+cache_store_log /dev/null
+
+# OPTIONS FOR EXTERNAL SUPPORT PROGRAMS
+# -----------------------------------------------------------------------------
+
+#  TAG: ftp_user
+#Default:
+ftp_user Squid@#DOMAIN#
+
+#  TAG: hosts_file
+#Default:
+#
+hosts_file /etc/hosts
+
+#  TAG: refresh_pattern
+#	usage: refresh_pattern [-i] regex min percent max [options]
+#Suggested default:
+refresh_pattern ^ftp:		1440	20%	10080
+refresh_pattern ^gopher:	1440	0%	1440
+refresh_pattern .		0	20%	4320
+
+# ACCESS CONTROLS
+# -----------------------------------------------------------------------------
+
+#  TAG: acl
+#	Defining an Access List
+
+#Recommended minimum configuration:
+acl all src 0.0.0.0/0.0.0.0
+acl manager proto cache_object
+acl localhost src 127.0.0.1/255.255.255.255
+
+acl to_localhost dst 127.0.0.0/8
+
+# ACL VLANs LCS
+# ----------------------------------
+#acl VLANSC src #VLANSC#
+#acl VLANADMINISTRATIF src #VLANADMINISTRATIF#
+#acl VLANPEDA1 src #VLANPEDA1#
+#acl VLANPEDA2 src #VLANPEDA2#
+#acl VLANPEDA3 src #VLANPEDA3#
+#acl VLANPEDA4 src #VLANPEDA4#
+
+acl SSL_ports port 443		# https
+acl SSL_ports port 563		# snews
+acl SSL_ports port 873		# rsync
+acl Safe_ports port 80		# http
+acl Safe_ports port 21		# ftp
+acl Safe_ports port 443		# https
+acl Safe_ports port 70		# gopher
+acl Safe_ports port 210		# wais
+acl Safe_ports port 1025-65535	# unregistered ports
+acl Safe_ports port 280		# http-mgmt
+acl Safe_ports port 488		# gss-http
+acl Safe_ports port 591		# filemaker
+acl Safe_ports port 777		# multiling http
+acl Safe_ports port 631		# cups
+acl Safe_ports port 873		# rsync
+acl Safe_ports port 901		# SWAT
+acl purge method PURGE
+acl CONNECT method CONNECT
+
+#Recommended minimum configuration:
+#
+# Only allow cachemgr access from localhost
+http_access allow manager localhost
+http_access deny manager
+
+# Only allow purge requests from localhost
+http_access allow purge localhost
+http_access deny purge
+
+# Deny requests to unknown ports
+http_access deny !Safe_ports
+
+# Deny CONNECT to other than SSL ports
+http_access deny CONNECT !SSL_ports
+
+#
+# We strongly recommend the following be uncommented to protect innocent
+# web applications running on the proxy server who think the only
+# one who can access services on "localhost" is a local user
+http_access deny to_localhost
+
+
+# INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
+
+http_access allow localhost
+
+# LCS Rules VLANs access allow
+# ----------------------------------
+#http_access allow VLANSC
+#http_access allow VLANADMINISTRATIF
+#http_access allow VLANPEDA1
+#http_access allow VLANPEDA2
+#http_access allow VLANPEDA3
+#http_access allow VLANPEDA4
+
+http_access deny all
+
+#  TAG: http_reply_access
+#Default:
+# http_reply_access allow all
+#
+#Recommended minimum configuration:
+#
+# Insert your own rules here.
+#
+#
+# and finally allow by default
+http_reply_access allow all
+
+#  TAG: icp_access
+#	Allowing or Denying access to the ICP port based on defined
+#	access lists
+#
+#	icp_access  allow|deny [!]aclname ...
+#
+#	See http_access for details
+#
+#Default:
+# icp_access deny all
+#
+#Allow ICP queries from everyone
+icp_access allow all
+
+# HTTPD-ACCELERATOR OPTIONS
+# -----------------------------------------------------------------------------
+
+#  TAG: httpd_accel_no_pmtu_disc	on|off
+#	In many setups of transparently intercepting proxies Path-MTU
+#	discovery can not work on traffic towards the clients. This is
+#	the case when the intercepting device does not fully track
+#	connections and fails to forward ICMP must fragment messages
+#	to the cache server. 
+#	
+#	If you have such setup and experience that certain clients
+#	sporadically hang or never complete requests set this to on.
+#
+#Default:
+# httpd_accel_no_pmtu_disc off
+
+#  TAG: error_directory
+#Default:
+error_directory /usr/share/squid/errors/French
+
+
+#  TAG: coredump_dir
+#Default:
+# coredump_dir none
+#
+# Leave coredumps in the first cache dir
+coredump_dir /var/spool/squid

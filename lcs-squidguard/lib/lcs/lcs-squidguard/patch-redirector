@@ -1,0 +1,13 @@
+--- squidGuard.conf.noredirecto 2009-06-18 14:11:58.000000000 +0200
++++ squidGuard.conf     2009-06-18 14:10:54.000000000 +0200
+@@ -52,6 +52,10 @@
+   domainlist   blacklists/proxy/domains
+   urllist      blacklists/proxy/urls
+ }
++dest redirector {
++  domainlist    blacklists/redirector/domains
++  urllist       blacklists/redirector/urls
++}
+ dest violence {
+   domainlist   blacklists/violence/domains
+   urllist      blacklists/violence/urls

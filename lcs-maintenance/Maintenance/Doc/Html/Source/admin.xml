@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<sect1>
+  <title>Mode administrateur</title>
+
+  <para>Le mode administrateur pour permet de configurer l'application, cette
+  fonctionalité est disponible dans votre menu (configuration) si le droit
+  system_is_admin vous a été affecté par l'administrateur du serveur
+  <emphasis>LCS</emphasis>.</para>
+
+  <figure>
+    <title>Menu Configuration</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/mnu_config.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+
+  <sect2>
+    <title>Mail</title>
+
+    <para>Vous permet de renseigner soit :</para>
+
+    <orderedlist>
+      <listitem>
+        <para>Une adresse électronique d'un utilisateur,</para>
+      </listitem>
+
+      <listitem>
+        <para>Une liste d'adresses électroniques d'utilisateurs séparées par
+        des virgules,</para>
+      </listitem>
+
+      <listitem>
+        <para>Une adresse électronique correspondant à un groupe de l'annuaire
+        LDAP (par exemple support_info).</para>
+      </listitem>
+    </orderedlist>
+
+    <para>Les demandes de support et réponses aux demandes seront diffusées à
+    ces adresses, il convient donc de choisir les adresses des membres du
+    droit <filename>Maint_is_admin</filename> ou de choisr un groupe
+    <emphasis>LDAP</emphasis> (par exemple support_info) renseigné avec les
+    membres du droit <filename>Maint_is_admin</filename> dans ce dernier cas
+    il faudra que la configuration du serveur de courrier
+    <emphasis>Postfix</emphasis> supporte les listes de diffusion
+    <emphasis>LDAP</emphasis>.</para>
+  </sect2>
+
+  <sect2>
+    <title>Secteur</title>
+
+    <para>Vous permet d'ajouter, supprimer, moifier les secteurs de
+    l'établissment.</para>
+
+    <figure>
+      <title>Menu Secteur</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/secteur.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect2>
+
+  <sect2>
+    <title>Topologie</title>
+
+    <para>Vous permet d'importer la structure de l'établissement (batiments,
+    étages, salles).</para>
+
+    <figure>
+      <title>Import et consultation de la Topologie de l'établissement</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/topologie.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>Le format d'importation doit avoir la structure suivante :</para>
+
+    <programlisting>Nom_de_l_etablissement;Bâtiment repere_du_Batiment;Etage;Numero_salle (description) ;0
+...
+Pierre et Marie Curie;Bâtiment E;1er;E101 (salle de cours);0
+...</programlisting>
+
+    <para>Elle est conforme au fichier config.txt du logiciel d'inventaire du
+    CR de basse normandie.</para>
+  </sect2>
+
+  <sect2>
+    <title>Sauvegarde / Restauration de la base de données</title>
+
+    <para>Vous permet de sauvegarder ou de restaurer un fichier sql de la base
+    de données de l'application.</para>
+  </sect2>
+</sect1>

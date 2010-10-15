@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+#### Variable a positionner en fonction du plugin
+NAMEPLUGIN="Bcdiweb"
+####
+#
+PATH2PLUGIN="/usr/share/lcs/Plugins/$NAMEPLUGIN"
+echo "Script d'installation du module Bcdiweb";
+chown www-data $PATH2PLUGIN -R
+
+# Creation de Data dans /home pour question de place
+
+mkdir -p /home/BcdiPlug/Data
+chown -R www-data /home/BcdiPlug 
+
+# Configuration Apache
+cp -a /usr/share/lcs/Plugins/Bcdiweb/progweb/confhttp/bcdiweb.conf  /etc/apache2/lcs-main/78_bcdi.conf
+
+
+# Configuration de l copie automatique de la base
+echo "0 13 * * 0-5 www-data  /usr/share/lcs/Plugins/Bcdiweb/scripts/syncbcdi.sh"> /etc/cron.d/bcdiweb  
+chown www-data /etc/cron.d/bcdiweb
+
+# rechargement config apache
+/etc/init.d/apache2 reload > /dev/null 2>&1
+

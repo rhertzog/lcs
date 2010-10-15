@@ -1,0 +1,513 @@
+lcs-web (2.4.7.1~2) Lcs; urgency=low
+
+  [ Jean-Luc Chrétien ]
+  * Modify lcs-etch2lenny script
+  * Add a set of pics in Annu/images
+  * Fix rights on skel user Profile in mkhdir.sh 
+  * Add test if lcs-deskto is activate and browser is not ie5 or ie6 in lcs/index.php
+  * Update and synchronize with SE3 scripts : Import Sconet
+  * Add chg_gidNumber.sh in /usr/share/lcs/scripts
+  * Replace deprecated PHP 5.3 functions mysql_db_query and split
+  * Don't allow reauthentication if already authenticate in auth.php
+  * Rename function search_people_trash to search_people_trash_lcs 
+
+  [ Raphaël Hertzog ]
+  * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
+    might download into {applilcs,moduleslcs}.xml.1 and we don't see the new
+    content. This is required because when a broken XML file is downloaded,
+    it's not removed...
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 08 Oct 2010 14:35:04 +0200
+
+lcs-web (2.4.7) Lcs; urgency=low
+
+  * Fix bug  maj modules Auto/Manu (scripts modules_installes.php and boutons_style.css)
+  * Fix bug in script select_briques.php 
+  * MisterPhi : 
+    * Modify process process statistics
+    * Add redirect mail 
+    * Add link mail to groups
+    * Add strong authentification system based on swekey  
+  * Add password user init and group listing in appli Annu
+  * Add a function acces_btn_admin in function_inc.php
+  * Modify rights acces for administration page in barre.php 
+  * Add lcs-libjs dependence
+  * Modify lcs-web-fixrights
+  * Change the package structure for the implementation of menu.d modularization
+  * Change upgrade to dist-upgrade in LcsMaj 
+  * Modify primary group id to 513 and first uid number to 1001 in LcSe.pm, gep2.cgi and crob_ldap_functions.php 
+  * Add pwdPolicy param :
+     * test in accueill.php and applis.php
+     * Add function pwdMustChange in ldap.inc.php
+     * Add must_change_default_pwd.php in Annu 
+     * Insert param pwdPolicy in lcs_db.params
+  * Add link to configuration open VPN in setup page  
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 13:49:54 +0200
+
+lcs-web (2.4.6.5) Lcs; urgency=low
+
+  * Modify barre.php : Correction broken link urllogo
+  * Modify Annu/replica.php Add select replica slave when LCS use LDAP SE3 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 29 Apr 2010 08:58:32 +0200
+
+lcs-web (2.4.6.4) Lcs; urgency=low
+
+  * Cleaning lcs-web-fixrights
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 07 Apr 2010 13:49:36 +0200
+
+lcs-web (2.4.6.3) Lcs; urgency=low
+
+  * Remove cron task ldap save, this task was move in lcs-security package
+  * Fix problem of the missing link in webmail barre.php 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Mar 2010 10:01:51 +0100
+
+lcs-web (2.4.6.2) Lcs; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Add cron.daily task webalizer.lcs for limited acces to webalizer reports
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 17 Feb 2010 16:09:43 +0100
+
+lcs-web (2.4.6.1) Lcs; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Correction accents in displogin function
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jan 2010 13:58:53 +0100
+
+lcs-web (2.4.6) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * LcsMaj : add URLMAJTGZ Black-list
+
+  [ Philippe Leclerc ]
+  * add scripts for redirect email
+  * filename forward registered hard in scripts
+  * add scripts for display log in Administration menu	
+
+  [ Philippe Le Brouster ]
+  * Add the scripts to manage the ldap rights (add or delete a right to an user).
+
+  [ Jean-Luc Chretien ]
+  * Fixing safe_mode On for type php users in public_html in userdiraddtypephp.template 
+  * Move python script outside the web tree
+  * Add gloabl in functions.inc.php open_session
+  * Cleaning changelog 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jan 2010 13:12:59 +0100
+
+lcs-web (2.4.5) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * fix lcs-web-fixright
+  * remove old sudo entries
+  * integrating lcs-make-sudoers
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Oct 2009 17:17:14 +0100
+
+lcs-web (2.4.4) Lcs; urgency=low
+
+  [ Jean Luc Chretien ]
+  * Fix port detection in config.inc.ph for register_globals Off
+  * Add three helpdesk ChiconesTel
+  * Modify barre.php for helpdesk
+  * Modify postinst for update acces policy to .py*
+
+  [ Sebastien Tack ]
+  * Add Ext JS: Cross-Browser Rich Internet Application Framework in /var/www/lib/js
+
+  [ Raphaël Hertzog ]
+  * Modify lcs-web-config to setup a more strict Apache configuration so
+    that *.py? files can't be downloaded.
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 23 Oct 2009 13:32:59 +0200
+
+lcs-web (2.4.3) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * fix assist home directory for LCS2 SFTP
+
+  [ Jean Luc Chretien ]
+  * Add PATh in LcsMaj script 
+  * Correct typo in auth.php
+  * Correct path for mysqlPasswInit.pl in functions.inc.php 
+  * Correct setup/.htpasswd setting for install and update 
+  * Remove squirrelmail case select in admin menu
+  * Modify passwd synchro in Annu/includes/ldap.inc.php (contrib Sandrine)
+  * Modify gep2posixAccount function in LcSe.pm (contrib Sandrine)
+  * Modify crob_ldap_functions.php line 768 to 772 (contrib Sandrine)
+  * Add /usr/sbin/lcs-etch2lenny for upgrade LCS Etch to Lenny
+  * Modify ldap filter and test possible in lcs-web-config
+  * Modify constitutiongroupe.php for register_globals off
+  * Fixing bug remove process in gestpack.sh   
+  * Modify lcs-web-config and mkhdir.sh for Lenny support 
+  * Add a transitional script for switching register_globals On/Off
+
+  [ Raphael Hertzog ]
+  * Fix lcs-web-config to respect the LDAP_RIGHTS_RDN / LDAP_PEOPLE_RDN
+    variables.
+
+  [ Philippe Leclerc ]
+  * Modify many files in /var/www and /usr/share/lcs for register global off compatibylity
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 02 Oct 2009 14:30:31 +0200
+
+lcs-web (2.4.2) Lcs; urgency=low
+
+  * Modify LcsMaj : test if mysql service is up before update
+  * Remove asr.sh script now in lcs-assr package  
+  * Make a stable release 
+  * Redirect standard output to /dev/null in lcsldapsav cron task
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2009 17:48:54 +0200
+
+lcs-web (2.4) Lcs; urgency=low
+
+  [ Philippe Leclerc ]
+  * Modify delete_right.php, del_user_group.php, add_list_user_group.php, mod_group_descrip.php,
+  * mod_pwd.php,mod_user_entry.php,mod_shell.php,export.php, export_ldif.php 
+  * for registers globals 
+
+  [ Jean Luc Chretien ]
+  * Modify Annu/mod_shell.php
+  * Make XP release 2.4 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 13:32:02 +0200
+
+lcs-web (2.1-7) Lcs; urgency=low
+
+  [ Jean Luc Chretien ]
+  * Add CR in cron task lcsmaj and lcsntpdate 
+  * Find path for rubycas-lcs and isaac in mkTicket.rb 
+  * Little cleaning in log2cas_ajax.php
+  * Add wz_tooltip.js 5.31 in /var/www/lib/js
+  * Add statusages in cron.monthly
+  * Modify Makefile  
+  * Modify sudoers and user_del.php
+  * Modify add_user.php for register global
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 25 May 2009 16:23:52 +0200
+
+lcs-web (2.1-5) Lcs; urgency=low
+
+  * Correct typo in html documentation
+  * Remove tilde to stable release
+  * use dpkg --compare-versions in function version_moins_recente 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 30 Apr 2009 09:45:23 +0200
+
+lcs-web (2.1-4) Lcs; urgency=low
+
+  * remove tilde to release release error
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 27 Apr 2009 17:33:48 +0200
+
+lcs-web (2.1-3) Lcs; urgency=low
+
+  [ Philippe Leclerc ]
+  * delete apt-get option --force-yes in gestpack.sh
+
+  [ Simon Cavey ]
+  * remove tilde to stable release
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 27 Apr 2009 17:33:22 +0200
+
+lcs-web (2.1-3~1) Lcs; urgency=low
+
+  [ Philippe Leclerc ]
+  * taken into account applications type N in applis.php,statango.php,functions.inc.php,modules_installes.php and modules_dispos.php
+  * validate W3C Annu/ add_sous-group.php affichageleve.php search.php peoples_list.php groups_list.php
+  
+
+  [ Jean Luc Chretien ]
+  * Add LDAP_SERVER adress in userdirphp.sh
+  * Correct edit_params.sh  for service CAS LDAP reconfiguration and ldapd.conf
+  * Remove schemacheck directive and update index in mkSlapdConf.sh
+  * Comment apple.schema in mkSlapdConf.sh
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 31 Mar 2009 16:56:46 +0200
+
+lcs-web (2.1-2) LcsXP; urgency=low
+
+  * add lcsVersion.sh
+  * remove tilde to testing release
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 16 Mar 2009 10:23:38 +0100
+
+lcs-web (2.1-2~4) LcsXP; urgency=low
+
+  [ Jean-Luc Chretien ]
+  
+  * Correct create user home folder in mkhdir.sh and functions.inc.php 
+  * Correct filter in searchAndDelete.pl
+  * Modify : groupAdd.pl, groupDel.pl, userAdd.pl, mod-group-descrip.php for CyberSchool project
+
+ -- Chretien jean-Luc <jean-luc.chretien@tice.ac-caen.fr>  Thu, 05 Mar 2009 11:02:30 +0100
+
+lcs-web (2.1-2~3) LcsXP; urgency=low
+
+  [ Jean-Luc Chretien ]
+
+  * Correct LcSe.pm function isAdmin
+  * Add $_POST for login in auth.php
+  * Change DEBIAN_PRIORITY & DEBIAN_FRONTEND in /usr/sbin/LcsMaj 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Jan 2009 11:35:03 +0100
+
+lcs-web (2.1-2~2) LcsXP; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Install random private_key in lcs/include/private_key.inc.php
+  * Replace $_HTTP_COOKIE_VARS by $_COOKIE
+  * Move lcs.css in /var/www
+  * Add mailing_list.cf in edit_params.sh
+  * Upload package in LcsXP tree
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri,  9 Jan 2009 10:38:01 +0100
+
+lcs-web (2.1-2~1) UNRELEASED; urgency=low
+
+  [ Sebastien TACK]
+   * modify lcs/include/log2cas-ajax.php for clean user LDAP binding whith rubycas-lcs,
+
+  [ Jean-Luc Chretien ]
+  * Replacing image BP_r1_c1.gif because not visible with IE7
+  * Add prototype an jquery js in /var/www/lib/js
+  * Add CAS service features by MrT :
+    * lcs/include/functions.inc.php
+    * lcs/include/log2cas-ajax.php,
+    * lcs/include/mkTicket/rb
+    * lcs/barre.php
+  * Various minor error correction syntax in some css and html files
+  * Modify edit_params.sh for CAS service configuration
+  * Remove CAS cookies if exist in close_session
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Dec 2008 15:30:41 +0100
+
+lcs-web (2.1-1) LcsXP; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Add ldaplcs2se3.sh script to plug LCS on SE3 Ldap service
+  * Fix truncate DN for webmaster.etab account ldif in ldaplcs2se3.sh
+  * Add cron task lcsntpdate
+  * Fix bug synchro admin password in "action on the server"
+  * Add web interface in application Annu for php type in user space web publication
+  * Remove add, update some folders files and images  :
+    * lcs/bitmaps
+    * lcs/images/Xldap.png
+    * Add lcs/images/ bt-V2-3.png
+    * Remove : lcs-web : lcs/images/bt_2_1...bt_2_4.jpg, bt_2_4_1...bt_2_6.jpg, config.png
+    * Update lcs/images/bt-V1-2.jpg,  bt-V1-3.jpg, bt-V1-4.jpg
+  * Update some files in lcs/fdecran :
+    * Add in lcs/fdecran : admin.png, annu.png, forum.png, monlcs.png, aide.png, connexion.png, index.png, webmail.png
+    * Remove in lcs/fdecran : intrainternet.jpg, serveurweb.jpg, sondintru.jpg, supervis.jpg, trafflocal.jpg
+  * Add lcs/c/lcs.css to prepare remove style.css
+  * Modify for new theme and W3C validation  : lcs/auth.php, accueil.php, applis.php
+  * Modify edit_params.sh for configuration postfix ldap aliases
+
+  [ Philippe Leclerc ]
+  * Modify gestpack.sh to point to lcs.crdp
+  * Modify modules_desinstallation for lcs.crdp
+  * Validation W3C ldap_cleaner.php,eff_vide_groups.php,del_group_user.php,add_group.php,ihm.inc.php,
+    setup_keys.php, save_keys.php
+  * delete mod_owner_group.php
+  * Modify filter in gestpack.sh
+  * Replace rm by rm -f in modules_installation.php & modules_desinstallation.php
+
+
+
+  [ Philippe Le Brouster ]
+  * Allowed more possible APT repositories to be used by gestpack.sh.
+  * Considered using the existing sources.list instead of using
+    ftp.fr.debian.org.
+  * Removed the old lcs repository (forgetting) from the gestpack.sh checks.
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 17 Nov 2008 15:28:34 +0100
+
+lcs-web (2.1) LcsXP; urgency=low
+
+
+    [ Jean-Luc Chretien ]
+    * Add a missing dh_compress directive -X.mm in debian/rules
+    * Correct some W3C errors in html documentation
+    * Move statando.php from lcs-monlcs to lcs-web
+    * Misc changes in lcs/index.php
+    * Modify webalizer.conf.in
+    * Modify log format in auth.php for beter compatibily with fail2ban
+    * Add cron task for lcsmaj
+    * Some modifications on barre.php, statandgo.php, select_briques.php concerning url_accueil and the selection of the applications
+    * Remove old folder barre2 and barre_old
+    * Generate password for setup page
+
+  [ Raphael Hertzog ]
+  * Fix lcs-web-config to properly fail if there's no lcs.conf.
+  * Don't reinitialize the admin password as it's now a responsibility of
+    ldapedu-server.
+  * Fix various lintian warnings.
+
+ -- Raphael Hertzog <hertzog@debian.org>  Wed, 23 Jul 2008 17:35:10 +0200
+
+lcs-web (2.1~13) lcs20; urgency=low
+
+    [ Jean-Luc Chretien ] 
+    * Add dh_compress directive -X.mm in debian/rules
+    * Add 5 px width on Admin/menu.php
+    * Remove /etc/lcs/apache.conf
+    * Add a logrotate script for log acces and error lcs
+    * Modify auth.php : UTF-8 compatibility and resgister global
+    * Modify statandgo.php for detecting modules type S
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 26 Jun 2008 09:44:58 +0200
+
+lcs-web (2.1~12) lcs20; urgency=low
+
+    [ Jean-Luc Chretien ]
+    * Modify directice -X of dh_compress in debian/rules
+    * Validate sftp-lcs.html, lcsweb.html and index.html in folder doc
+
+    [Yvonick Fortin]
+    * Changing of the picture lcs-spip in order to have a lcs-spip 2.0 screenshot in the onboard documentation(i/Forum.png)
+
+    [ Philippe Leclerc ]
+    * Re-alignment UTF8 and register_long_arrays in select_briques.php
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 25 Jun 2008 13:45:37 +0200
+
+lcs-web (2.1~11) lcs20; urgency=low
+
+    [ Jean-Luc Chretien ]
+    * Modify debian/rules for decompress *.swf
+    * Modify accueil.php, applis.php, validate W3C and  move in /var/www/lcs
+    * Add a freemind documentation for lcs-web
+    * Temporary change $baseurl to http://$_SERVER[SERVER_NAME]/ while waiting for a cleaner solution
+
+    [ Philippe Leclerc ]
+    * change mail to squirrelmail in select_briques.php
+    * alignment UTF8 and register_long_arrays in select_briques.php
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 24 Jun 2008 18:14:25 +0200
+
+lcs-web (2.1~10) lcs20; urgency=low
+
+      [ Jean-Luc Chretien ]
+      * Correct link lcs-doc to doc  ihm.inc.php and modules_installes.php 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 22 Jun 2008 20:16:13 +0200
+
+lcs-web (2.1~9) lcs20; urgency=low
+
+      [ Jean-Luc Chretien ]
+      * Correct givenName and initials for webmaster.etab account
+      * Add 15_files.conf in apache2 lcs-main for deny acces to .py files
+
+      [ Philippe Leclerc ]
+      * Add LcsDev repository in gestpack.sh
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 21 Jun 2008 17:11:32 +0200
+
+lcs-web (2.1~8) lcs20; urgency=low
+
+      [ Jean-Luc Chretien ]
+      * Drop folder conf/apache2
+      * Search to drop /etc/lcs/apache.conf
+      * Correct link "aide" in statandgo.php
+      * Drop 55_lcs.conf in postrm 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 20 Jun 2008 08:54:28 +0200
+
+lcs-web (2.1~7) UNRELEASED; urgency=low
+
+      [ Jean-Luc Chretien ]
+      * New apache2 configuration in interfacedu-lcs
+      * Modifications for givenName in import sconet and import txt (LcSe.pm, crob_ldap_functions.php,import_comptes.php, se3orlcs_import_comptes.php) 
+      * Add syncprov.conf for replica LDAP mkSlapdConf.sh, edit_params.sh
+      * Correct appli Annu mod_user_entry.php, mod_entry.php, ldap.inc.php, ihm.inc.php
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Jun 2008 21:48:00 +0200
+
+lcs-web (2.1~6) UNRELEASED; urgency=low
+
+      [ Jean-Luc Chretien ]
+      * Correct test for spip in barre.php
+      * General cleanup for replica LDAP (mkSlapdConf.sh, replica.php, replica_log.php)
+
+      [ Philippe Leclerc ]
+      * Add type module S in modules_installes.php
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 13 Jun 2008 14:55:22 +0200
+
+lcs-web (2.1~5) UNRELEASED; urgency=low
+
+      [ Jean-Luc Chretien ]
+      * Correct sommes problems in folder doc
+      * Add images for doc aide_fr
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 13 Jun 2008 14:55:22 +0200
+
+lcs-web (2.1~4) UNRELEASED; urgency=low
+
+      [ Jean-Luc Chretien ]
+      * Add new skin by Yannick Chistel
+			      
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 12 Jun 2008 17:30:06 +0200
+
+lcs-web (2.1~3) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Clean folder www/lcs/images
+  * Add smarty dependency
+  * Add php includ_path
+  * Add  RewriteRule directive in userdir.conf
+  * Add lcs/public_php.conf
+  * Comment modify user shell in Annu index.php
+
+  [ Raphael Hertzog ]
+  * Make lcs-web-config idempotent. It should be able to run again without
+    failing.
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 12 Jun 2008 13:30:06 +0200
+
+lcs-web (2.1~2) UNRELEASED; urgency=low
+
+   [ Jean-Luc Chretien ]
+   * Enable mode rewrite
+   * Add temporaly a symbolic link on to apachectl for compatibilty with old lcs plugins
+   * New rights on homes users
+   * Release accounts import with sconet
+   * Fix many littles things in lcs-web-config
+   * Add parcs and computers in config.inc.in for compatibilty with se3internet 
+   * Change parcDn in /etc/LcSeConfig.php.in
+   * little change on /var/www/lcs/Admin/edit_params.php
+   * Rights on privateKey and skel
+   * Correct path for folder doc html
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 06 Jun 2008 10:20:59 +0200
+
+lcs-web (2.1~1) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Setting in conformity with Debian Installer
+
+  [ Raphael Hertzog ]
+  * Misc fixes to lcs-web-config.
+  * Switch to debhelper 5.
+  * Add missing dependency on slis-common.
+  * Fix rights of many files. General cleanup of lintian warnings.
+  * Fix makefile to actually install files.
+  * Add php5-cli dependency for PHP script
+    /usr/share/lcs/scripts/import_comptes.php.
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 03 Jun 2008 19:12:59 +0200
+
+lcs-web (2.0) unstable; urgency=low
+
+  * Web interface for LCS Linux Communication Server
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 31 May 2008 20:50:00 +0200
+
+
+

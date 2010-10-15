@@ -1,0 +1,90 @@
+#! /bin/sh
+# postinst script for LCS web
+set -e
+
+case "$1" in
+	install|configure)
+
+	    if [ "$2" = "" ]; then
+                #
+                # only if first configuration
+                #
+                . /usr/share/slis/slis-common.sh
+                handle_initial_config lcs-web-config 60
+            else
+                # Update for 2.4.6 version
+                #if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.6; then
+                    #
+                    # Update menu.d/40stats.inc
+                    #
+                #    mv /var/www/lcs/includes/menu.d/40stats.inc /var/www/lcs/includes/menu.d/40stats.in
+                #    grep -v redirection /var/www/lcs/includes/menu.d/40stats.in  > /var/www/lcs/includes/menu.d/40stats.inc
+                #    UPDATE40STATS="      \"Log redirection mails\",\"/Admin/mail_rediriges.php\",\"lcs_is_admin\","
+                #   sed -i "7 a\\$UPDATE40STATS" /var/www/lcs/includes/menu.d/40stats.inc
+                #fi
+                if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.7; then
+                    #
+                    # Add right Mail_can_redir if ldap is up and if this right not exist in LDAP base
+                    #
+                    if  ps aux | grep -q openldap ; then
+                        if ! ldapsearch -x cn=Mail_can_redir 2>/dev/null | grep -q "^cn"; then
+                            ldap_server=$(echo "SELECT value FROM params WHERE name='ldap_server';" | mysql -uroot -N lcs_db)
+                            ldap_base_dn=$(echo "SELECT value FROM params WHERE name='ldap_base_dn';" | mysql -uroot -N lcs_db)
+                            adminRdn=$(echo "SELECT value FROM params WHERE name='adminRdn';" | mysql -uroot -N lcs_db)
+                            adminPw=$(echo "SELECT value FROM params WHERE name='adminPw';" | mysql -uroot -N lcs_db)
+                            tmp=/root/tmp/smbweb_is_open_$(date +%Y%m%d%H%M%S)
+                            mkdir -p $tmp
+                            echo "dn: cn=Mail_can_redir,ou=rights,$ldap_base_dn
+objectClass: groupOfNames
+cn: Mail_can_redir
+member: uid=admin,ou=People,$ldap_base_dn
+member: cn=Administratifs,ou=Groups,$ldap_base_dn
+member: cn=Profs,ou=Groups,$ldap_base_dn
+" > $tmp/Mail_can_redir.ldif
+                            ldapadd -x -h $ldap_server -D $adminRdn,$ldap_base_dn -w $adminPw -f $tmp/Mail_can_redir.ldif &>/dev/null
+                        fi
+                    fi 
+                    # restart apache2
+                    invoke-rc.d apache2 restart
+                fi
+            fi
+            # 	   
+            # Restore .htpasswd if exist
+            #
+            if [ -e /var/lib/lcs/tmp/lcswebsetupacces ]; then
+                mv /var/lib/lcs/tmp/lcswebsetupacces /var/www/setup/.htpasswd
+            # ReGenerate .htpasswd if not exist
+            elif [ ! -e /var/www/setup/.htpasswd ]; then
+                LOCAL_ADMIN_PW=`pwgen -1 -s 8`
+                /usr/bin/htpasswd -bc /var/www/setup/.htpasswd admin $LOCAL_ADMIN_PW
+            fi
+            #
+            # Restore public and private keys
+            #
+            if [ -e /var/lib/lcs/tmp/public_key.js ]; then
+                mv /var/lib/lcs/tmp/public_key.js /var/www/lcs/public_key.js
+                mv /var/lib/lcs/tmp/privateKey.py /usr/share/lcs/privatekey/privateKey.py
+                rm -rf /var/lib/lcs/tmp
+            fi
+            #
+            # Fix rights on lcs-web tree
+            #
+            /usr/sbin/lcs-web-fixrights
+            #
+            # Update sudoers
+            # 
+            /usr/sbin/lcs-make-sudoers
+    	;;
+
+    	abort-upgrade|abort-remove|abort-deconfigure)
+    	;;
+
+    	*)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    	;;
+esac
+
+#DEBHELPER#
+
+exit 0

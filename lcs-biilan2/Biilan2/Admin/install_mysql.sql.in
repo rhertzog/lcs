@@ -1,0 +1,402 @@
+create database Biilan2_db;
+grant all on Biilan2_db.* to 'Biilan2_user'@'localhost' identified by '@PASSWD@';
+flush privileges;
+use Biilan2_db;
+--
+-- Base de données: `Biilan2_db`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `bii_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `bii_tbl` (
+  `id` int(11) NOT NULL auto_increment,
+  `login` varchar(20) NOT NULL default '',
+  `eleve` varchar(55) NOT NULL default '',
+  `fulleleve` varchar(55) NOT NULL default '',
+  `cpt` varchar(55) NOT NULL default '',
+  `date` varchar(55) NOT NULL default '',
+  `fullprof` varchar(55) NOT NULL default '',
+  `discip` varchar(55) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=602 ;
+
+--
+-- Contenu de la table `bii_tbl`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `disc_clg_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `disc_clg_tbl` (
+  `id` int(11) NOT NULL default '0',
+  `discip` varchar(55) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+
+--
+-- Contenu de la table `disc_clg_tbl`
+--
+
+INSERT INTO `disc_clg_tbl` (`id`, `discip`) VALUES
+(4, 'Anglais'),
+(3, 'Allemand'),
+(7, 'Arts Plastiques'),
+(20, 'EPS'),
+(21, 'Espagnol'),
+(22, 'Français'),
+(26, 'Histoire-Géographie'),
+(36, 'Mathématiques'),
+(39, 'Musique'),
+(44, 'Physique-Chimie'),
+(54, 'SVT'),
+(55, 'Technologie'),
+(65, 'Pratique documentaire');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `disc_eco_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `disc_eco_tbl` (
+  `id` int(11) NOT NULL default '0',
+  `discip` varchar(55) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+
+--
+-- Contenu de la table `disc_eco_tbl`
+--
+
+INSERT INTO `disc_eco_tbl` (`id`, `discip`) VALUES
+(7, 'Arts Plastiques'),
+(69, 'Vivre ensemble'),
+(68, 'Maîtrise du langage et de la langue fran'),
+(20, 'EPS'),
+(67, 'Découvrir le monde'),
+(26, 'Histoire-Géographie'),
+(30, 'Langue vivante étrangère'),
+(36, 'Mathématiques'),
+(66, 'Sciences & Technologie');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `disc_lyc_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `disc_lyc_tbl` (
+  `id` int(11) NOT NULL default '0',
+  `discip` varchar(55) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+
+--
+-- Contenu de la table `disc_lyc_tbl`
+--
+
+INSERT INTO `disc_lyc_tbl` (`id`, `discip`) VALUES
+(3, 'Allemand'),
+(4, 'Anglais'),
+(20, 'EPS'),
+(21, 'Espagnol'),
+(22, 'Français'),
+(26, 'Histoire-Géographie'),
+(36, 'Mathématiques'),
+(43, 'Philosophie'),
+(44, 'Physique-Chimie'),
+(54, 'SVT'),
+(65, 'Pratique documentaire');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `disc_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `disc_tbl` (
+  `id` smallint(2) unsigned NOT NULL default '0',
+  `discipline` varchar(40) NOT NULL default '',
+  `Ecole` char(1) default '0',
+  `College` char(1) default '0',
+  `Lycee` char(1) default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+
+--
+-- Contenu de la table `disc_tbl`
+--
+
+INSERT INTO `disc_tbl` (`id`, `discipline`, `Ecole`, `College`, `Lycee`) VALUES
+(3, 'Allemand', '0', '1', '1'),
+(4, 'Anglais', '0', '1', '1'),
+(5, 'Arabe', '0', '0', '0'),
+(6, 'Arts', '0', '0', '0'),
+(7, 'Arts Plastiques', '1', '1', '0'),
+(8, 'Basque', '0', '0', '0'),
+(70, 'Chinois', '0', '0', '0'),
+(69, 'Vivre ensemble', '1', '0', '0'),
+(13, 'Catalan', '0', '0', '0'),
+(15, 'Comptabilité', '0', '0', '0'),
+(68, 'Maîtrise du langage et de la langue fran', '1', '0', '0'),
+(18, 'Economie & Gestion', '0', '0', '0'),
+(20, 'EPS', '1', '1', '1'),
+(21, 'Espagnol', '0', '1', '1'),
+(22, 'Français', '0', '1', '1'),
+(67, 'Découvrir le monde', '1', '0', '0'),
+(25, 'Grec', '0', '0', '0'),
+(26, 'Histoire-Géographie', '1', '1', '1'),
+(27, 'Education artistique', '0', '0', '0'),
+(29, 'Italien', '0', '0', '0'),
+(30, 'Langue vivante étrangère', '1', '0', '0'),
+(31, 'Lettres', '0', '0', '0'),
+(32, 'Lettres classiques', '0', '0', '0'),
+(33, 'Lettres modernes', '0', '0', '0'),
+(36, 'Mathématiques', '1', '1', '1'),
+(39, 'Musique', '0', '1', '0'),
+(43, 'Philosophie', '0', '0', '1'),
+(44, 'Physique-Chimie', '0', '1', '1'),
+(48, 'Russe', '0', '0', '0'),
+(52, 'SES', '0', '0', '0'),
+(53, 'STI', '0', '0', '0'),
+(54, 'SVT', '0', '1', '1'),
+(55, 'Technologie', '0', '1', '0'),
+(56, 'Tertiaire', '0', '0', '0'),
+(57, 'Vente', '0', '0', '0'),
+(60, 'ISI', '0', '0', '0'),
+(61, 'MPI', '0', '0', '0'),
+(62, 'Education musicale', '0', '0', '0'),
+(63, 'Formation professionnelle', '0', '0', '0'),
+(64, 'Latin', '0', '0', '0'),
+(65, 'Pratique documentaire', '0', '1', '1'),
+(66, 'Sciences & Technologie', '1', '0', '0');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `dmd_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `dmd_tbl` (
+  `id` int(11) NOT NULL auto_increment,
+  `login` varchar(20) NOT NULL default '',
+  `fulleleve` varchar(55) NOT NULL default '',
+  `nomeleve` varchar(55) NOT NULL default '',
+  `classe` varchar(55) NOT NULL default '',
+  `cpt` varchar(55) NOT NULL default '',
+  `fullprof` varchar(55) NOT NULL default '',
+  `nomprof` varchar(55) NOT NULL default '',
+  `date` varchar(55) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=28 ;
+
+--
+-- Contenu de la table `dmd_tbl`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `domaines_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `domaines_tbl` (
+  `id` int(11) NOT NULL auto_increment,
+  `num` varchar(20) NOT NULL default '0',
+  `domaine` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=6 ;
+
+--
+-- Contenu de la table `domaines_tbl`
+--
+
+INSERT INTO `domaines_tbl` (`id`, `num`, `domaine`) VALUES
+(1, '1', 'S''approprier un environnement informatique de travail'),
+(2, '2', 'Adopter une attitude responsable'),
+(3, '3', 'Créer, produire, traiter, exploiter des données'),
+(4, '4', 'S''informer, se documenter'),
+(5, '5', 'Communiquer, échanger');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `items_clg_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `items_clg_tbl` (
+  `id` int(11) NOT NULL auto_increment,
+  `domaine` varchar(20) NOT NULL default '',
+  `num` varchar(20) NOT NULL default '',
+  `val` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=30 ;
+
+--
+-- Contenu de la table `items_clg_tbl`
+--
+
+INSERT INTO `items_clg_tbl` (`id`, `domaine`, `num`, `val`) VALUES
+(1, '1', '1', 'Je sais m''identifier sur un réseau ou un site et mettre fin à cette identification'),
+(2, '1', '2', 'Je sais accéder aux logiciels et aux documents disponibles à partir de mon espace de travail'),
+(3, '1', '3', 'Je sais organiser mes espaces de stockage'),
+(4, '1', '4', 'Je sais lire les propriétés d''un fichier'),
+(5, '1', '5', 'Je sais paramétrer l''impression'),
+(6, '1', '6', 'Je sais faire un autre choix que celui proposé par défaut'),
+(7, '2', '1', 'Je connais les droits et devoirs indiqués dans la charte d''usage des TIC et la procédure d''alerte de mon établissement'),
+(8, '2', '2', 'Je protège ma vie privée en ne donnant sur Internet des renseignements me concernant qu''avec l''accord de mon responsable légal'),
+(9, '2', '3', 'Lorsque j''utilise ou transmets des documents, je vérifie que j''en ai le droit'),
+(10, '2', '4', 'Je m''interroge sur les résultats des traitements informatiques'),
+(11, '2', '5', 'J''applique des règles de prudence contre les risques de malveillance'),
+(12, '2', '6', 'Je sécurise mes données'),
+(13, '2', '7', 'Je mets mes compétences informatiques au service d''une production collective'),
+(14, '3', '1', 'Je sais modifier la mise en forme des caractères et des paragraphes, paginer automatiquement'),
+(15, '3', '2', 'Je sais utiliser l''outil de recherche et de remplacement dans un document'),
+(16, '3', '3', 'Je sais regrouper dans un même document plusieurs éléments'),
+(17, '3', '4', 'Je sais créer, modifier une feuille de calcul, insérer une formule'),
+(18, '3', '5', 'Je sais réaliser un graphique de type donné'),
+(19, '3', '6', 'Je sais utiliser un outil de simulation ou de modélisation en étant conscient de ses limites'),
+(20, '3', '7', 'Je sais traiter un fichier image ou son à l''aide d''un logiciel dédié notamment pour modifier ses propriétés élémentaires'),
+(21, '4', '1', 'Je sais rechercher des références de documents à l''aide du logiciel documentaire présent au CDI'),
+(22, '4', '2', 'Je sais utiliser les fonctions principales d''un logiciel de navigation sur le web'),
+(23, '4', '3', 'Je sais utiliser les fonctions principales d''un outil de recherche sur le web'),
+(24, '4', '4', 'Je sais relever des éléments me permettant de connaître l''origine de l''information'),
+(25, '4', '5', 'Je sais sélectionner des résultats lors d''une recherche'),
+(26, '5', '1', 'Lorsque j''envoie ou publie des informations, je réfléchis aux lecteurs possibles, en fonction de l''outil utilisé'),
+(27, '5', '2', 'Je sais ouvrir et enregistrer un fichier joint à un message ou à une publication'),
+(28, '5', '3', 'Je sais envoyer ou publier un message avec un fichier joint'),
+(29, '5', '4', 'Je sais utiliser un carnet d''adresses ou un annuaire pour choisir un destinataire');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `items_eco_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `items_eco_tbl` (
+  `id` int(11) NOT NULL auto_increment,
+  `domaine` varchar(20) NOT NULL default '',
+  `num` varchar(20) NOT NULL default '0',
+  `val` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=23 ;
+
+--
+-- Contenu de la table `items_eco_tbl`
+--
+
+INSERT INTO `items_eco_tbl` (`id`, `domaine`, `num`, `val`) VALUES
+(1, '1', '1', 'Je sais désigner et nommer les principaux éléments composant l''équipement informatique que j''utilise et je sais à quoi ils servent'),
+(2, '1', '2', 'Je sais allumer et éteindre l''équipement informatique ; je sais lancer et quitter un logiciel'),
+(3, '1', '3', 'Je sais déplacer le pointeur, placer le curseur, sélectionner, effacer et valider'),
+(4, '1', '4', 'Je sais accéder à un dossier, ouvrir et enregistrer un fichier'),
+(5, '2', '1', 'Je connais les droits et devoirs indiqués dans la charte d''usage des TIC de mon école'),
+(6, '2', '2', 'Je respecte les autres et je me protège moi-même dans le cadre de la communication et de la publication électroniques'),
+(7, '2', '3', 'Si je souhaite récupérer un document, je vérifie que j''ai le droit de l''utiliser et à quelles conditions'),
+(8, '2', '4', 'Je trouve des indices avant d''accorder ma confiance aux informations et propositions que la machine me fournit'),
+(9, '3', '1', 'Je sais produire et modifier un texte, une image ou un son'),
+(10, '3', '2', 'Je sais saisir les caractères en minuscules, en majuscules, les différentes lettres accentuées et les signes de ponctuation'),
+(11, '3', '3', 'Je sais modifier la mise en forme des caractères et des paragraphes'),
+(12, '3', '4', 'Je sais utiliser les fonctions copier, couper, coller, insérer, glisser, déposer'),
+(13, '3', '5', 'Je sais regrouper dans un même document du texte et des images ou du son'),
+(14, '3', '6', 'Je sais imprimer un document'),
+(15, '4', '1', 'Je sais utiliser les fenêtres, ascenseurs, boutons de défilement, liens, listes déroulantes, icônes et onglets'),
+(16, '4', '2', 'Je sais repérer les informations affichées à l''écran'),
+(17, '4', '3', 'Je sais saisir une adresse internet et naviguer dans un site'),
+(18, '4', '4', 'Je sais utiliser un mot-clé ou un menu pour faire une recherche'),
+(19, '5', '1', 'Je sais envoyer et recevoir un message'),
+(20, '5', '2', 'Je sais dire de qui provient un message et à qui il est adressé'),
+(21, '5', '3', 'Je sais trouver le sujet d''un message'),
+(22, '5', '4', 'Je sais trouver la date d''envoi d''un message');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `items_lyc_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `items_lyc_tbl` (
+  `id` int(11) NOT NULL auto_increment,
+  `domaine` varchar(20) NOT NULL default '',
+  `num` varchar(20) NOT NULL default '0',
+  `val` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=27 ;
+
+--
+-- Contenu de la table `items_lyc_tbl`
+--
+
+INSERT INTO `items_lyc_tbl` (`id`, `domaine`, `num`, `val`) VALUES
+(1, '1', '1', 'Je sais choisir les services, matériels et logiciels adaptés à mes besoins'),
+(2, '1', '2', 'Je sais structurer mon environnement de travail'),
+(3, '1', '3', 'Je sais régler les principaux paramètres de fonctionnement d''un périphérique selon mes besoins'),
+(4, '1', '4', 'Je sais personnaliser un logiciel selon mes besoins'),
+(5, '1', '5', 'Je sais m''affranchir des fonctions automatiques des logiciels (saisie, mémorisation de mots de passe, correction orthographique, incrémentation...)'),
+(6, '2', '1', 'Je connais la charte d''usage des TIC de mon établissement'),
+(7, '2', '2', 'Je protège ma vie privée en réfléchissant aux informations personnelles que je communique'),
+(8, '2', '3', 'J''utilise les documents ou des logiciels dans le respect des droits d''auteur et de propriété'),
+(9, '2', '4', 'Je valide, à partir de critères définis, les résultats qu''un traitement automatique me fournit (calcul, représentation graphique, correcteur...)'),
+(10, '2', '5', 'Je suis capable de me référer en cas de besoin à la réglementation en vigueur sur les usages numériques'),
+(11, '2', '6', 'Je sais que l''on peut connaître mes opérations et accéder à mes données lors de l''utilisation d''un environnement informatique'),
+(12, '2', '7', 'Je mets mes compétences informatiques à la disposition des autres'),
+(13, '3', '1', 'Je sais créer et modifier un document numérique composite transportable et publiable'),
+(14, '3', '2', 'Je sais insérer automatiquement des informations dans un document (notes de bas de page, sommaire...)'),
+(15, '3', '3', 'Je sais utiliser des outils permettant de travailler à plusieurs sur un même document (outil de suivi de modifications...)'),
+(16, '3', '4', 'Je sais utiliser ou créer des formules pour traiter les données'),
+(17, '3', '5', 'Je sais produire une représentation graphique à partir d''un traitement de données numériques'),
+(18, '3', '6', 'Dans le cadre de mes activités scolaires, je sais repérer des exemples de modélisation ou de simulation et je sais citer au moins un paramètre qui influence le résultat'),
+(19, '3', '7', 'Je sais publier un document numérique sur un espace approprié'),
+(20, '4', '1', 'Je sais interroger les bases documentaires à ma disposition'),
+(21, '4', '2', 'Je sais utiliser les fonctions avancées des outils de recherche sur Internet'),
+(22, '4', '3', 'Je sais énoncer des critères de tri d''informations'),
+(23, '4', '4', 'Je sais constituer une bibliographie incluant des documents d''origine numérique'),
+(24, '5', '1', 'Je sais choisir le service de communication selon mes besoins'),
+(25, '5', '2', 'Je sais organiser mes espaces d''échange (messagerie, travail de groupe...)'),
+(26, '5', '3', 'Je sais adapter le contenu des informations transmises aux lecteurs potentiels : niveau de langage, forme, contenu, taille, copies');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `profs_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `profs_tbl` (
+  `id` int(11) NOT NULL auto_increment,
+  `fullprof` varchar(55) NOT NULL default '',
+  `prof` varchar(55) NOT NULL default '',
+  `discipline` varchar(55) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=63 ;
+
+--
+-- Contenu de la table `profs_tbl`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `resultat_tbl`
+--
+
+CREATE TABLE IF NOT EXISTS `resultat_tbl` (
+  `id` int(11) NOT NULL auto_increment,
+  `login` varchar(20) NOT NULL default '',
+  `result` varchar(55) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM AUTO_INCREMENT=36 ;
+
+--
+-- Contenu de la table `resultat_tbl`
+--
+

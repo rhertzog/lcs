@@ -1,0 +1,91 @@
+#SET{s5,#DOSSIER_SQUELETTE/ui}
+<BOUCLE_s5(RUBRIQUES){id_rubrique}>
+[(#CONFIG{tispipskelet_conf/s5/theme_s5_#ID_RUBRIQUE}|?{#SET{ui,#CONFIG{tispipskelet_conf/s5/theme_s5_#ID_RUBRIQUE}},#SET{ui,yatil}})]
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>[(#TITRE|textebrut) - ][(#NOM_SITE_SPIP|textebrut)]</title>
+[<meta name="description" content="(#INTRODUCTION|couper{150}|textebrut)" />]
+<INCLURE{fond=inc-head}>
+[(#REM) Lien vers le flux RSS de la rubrique ]
+<link rel="alternate" type="application/rss+xml" title="<:syndiquer_rubrique:>" href="[(#URL_PAGE{backend}|parametre_url{id_rubrique,#ID_RUBRIQUE})]" />
+
+
+<!-- configuration parameters -->
+<meta name="defaultView" content="slideshow" />
+<meta name="controlVis" content="hidden" />
+<!-- style sheet links -->
+
+<link rel="stylesheet" href="#GET{s5}/#GET{ui}/slides.css" type="text/css" media="projection" id="slideProj" />
+<link rel="stylesheet" href="#GET{s5}/default/outline.css" type="text/css" media="screen" id="outlineStyle" />
+<link rel="stylesheet" href="#GET{s5}/default/print.css" type="text/css" media="print" id="slidePrint" />
+<link rel="stylesheet" href="#GET{s5}/default/opera.css" type="text/css" media="projection" id="operaFix" />
+<!-- S5 JS -->
+<script src="#GET{s5}/default/slides.js" type="text/javascript"></script>
+<style type='text/css' media="all">
+.slide h1 {text-transform: none} // corrige les majuscules forcees de S5
+</style>
+<style type="text/css" media="all">
+.imgcon {width: 525px; margin: 0 auto; padding: 0; text-align: center;}
+#anim {width: 270px; height: 320px; position: relative; margin-top: 0.5em;}
+#anim img {position: absolute; top: 42px; left: 24px;}
+img#me01 {top: 0; left: 0;}
+img#me02 {left: 23px;}
+img#me04 {top: 44px;}
+img#me05 {top: 43px;left: 36px;}
+</style></head>
+<body>
+
+<div id='page'>
+
+	<div class="layout">
+
+		<div id="controls"[ (#CONFIG{tispipskelet_conf/s5/id_rub_s5}|=={#ID_RUBRIQUE}|?{' '}) style="visibility:hidden"]></div>
+		<div id="currentSlide"></div>
+		<div id="header"></div>
+
+		<div id="footer">
+			<h1>
+				<a href="#URL_SITE_SPIP" title="Retour &agrave; l&rsquo;accueil"> Accueil</a> &gt; <BOUCLE_p(RUBRIQUES){id_enfant}><a href="#URL_RUBRIQUE" title="Aller &agrave; #URL_RUBRIQUE">#TITRE</a> &gt; </BOUCLE_p> #TITRE
+			</h1>
+			<span>[(#NOM_SITE_SPIP)] &#8226; [(#DATE|affdate)] </span>
+			<BOUCLE_art_aut(ARTICLES){id_rubrique}>
+				<BOUCLE_auteurs_s5(AUTEURS){id_article}{doublons}{", "}>[(#NOM|prenom)][ (#NOM|nom)]</BOUCLE_auteurs_s5>
+			</BOUCLE_art_aut>
+		</div>[(#REM) footer]
+	</div>[(#REM) layout ]
+
+	<div class="presentation">
+		[(#REM) premiere slide = presentation de la rubrique]
+		<div class="slide">
+			<h1>[(#TITRE|supprimer_numero)]</h1>
+			[(#DESCRIPTIF|paragrapher)]
+			[[(#DESCRIPTIF*|?{'','<br />'})]
+			<div>(#TEXTE||image_reduire{500}|paragrapher)</div>]
+			[<div class="notes">(#NOTES)</div>]
+
+			<BOUCLE_shows(RUBRIQUES){id_parent}{par num titre,titre}>
+			<h3><a href="#URL_RUBRIQUE">#TITRE</a></h3>
+			</BOUCLE_shows>
+		</div>[(#REM) /premiere slide]
+
+		[(#REM) suivantes = les articles ]
+		<BOUCLE_slides(ARTICLES){id_rubrique}{par num titre, titre}>
+		<div class="slide">
+			<h1>#TITRE</h1>
+			[<span style="float:right; width:[(#LOGO_ARTICLE||extraire_attribut{width})]px;">(#LOGO_ARTICLE|right)</span>]
+			[(#TEXTE|image_reduire{1024}|class_incrementer|aff_object|paragrapher|sinon{&nbsp;})]
+			[<div class="handout" style="font-weight:bold;font-style:italic;font-size:.8em"><strong>Notes : </strong>(#NOTES)</div>]
+			[<div class="handout" style="font-style:italic;font-size:.8em"><strong>Commentaires : </strong>(#PS)</div>]
+		</div>
+		</BOUCLE_slides>
+
+	</div>[(#REM) / presentation]
+
+
+</div>[(#REM) / #page]
+
+</body>
+</html>
+
+</BOUCLE_s5>

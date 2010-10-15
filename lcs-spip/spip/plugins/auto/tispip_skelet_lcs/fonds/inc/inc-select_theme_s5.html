@@ -1,0 +1,24 @@
+			[(#CONFIG{tispipskelet_conf/s5/id_rub_s5}|?{#SET{s5rub,#CONFIG{tispipskelet_conf/s5/id_rub_s5}},#SET{s5rub,999999999}})]
+			<BOUCLE_racine(RUBRIQUES){id_parent=#GET{s5rub}}{par num titre}>
+					<? $theme='#ENV{theme_s5_#ID_RUBRIQUE}'; ?>
+			<li>
+			<div class="labels_cfg_tispipskelet">
+			<label for="theme_s5_#ID_RUBRIQUE">#TITRE</label>
+			<select name="theme_s5_#ID_RUBRIQUE" id="theme_s5_#ID_RUBRIQUE">
+				<?php
+					$rep = "../squelettes/s5-slideshow/ui/";
+					$dir = opendir($rep); 
+					$selected='';
+					while ($d = readdir($dir)) {
+						if(is_dir($rep.$d)&& ($d!='.')&& ($d!='..')) {
+						if($d==$theme ){ $s="selected='selected'";} else {$s='';}
+						echo '<option value="'.$d.'" '.$s.'>'.$d.'</option>';
+						}
+					}
+					closedir($dir);
+					$theme='';
+				?>
+			</select>
+			</div>
+		</li>
+		</BOUCLE_racine>

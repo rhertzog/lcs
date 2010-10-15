@@ -1,0 +1,24 @@
+# Prelimiaries
+SHELL=/bin/bash
+MAILDIR=$HOME/Maildir/
+DEFAULT=$MAILDIR
+ORGMAIL=$MAILDIR
+LOGFILE=/var/log/procmailrc.log
+VERBOSE=yes
+LOGABSTRACT=all
+DROPPRIVS=yes
+
+### Activation de spamassassin
+:0fw
+* < 256000
+        | spamc -f
+
+        :0e
+       {
+               EXITCODE=$?
+       }
+
+:0:
+* ^X-Spam-Status: Yes.*
+/dev/null
+

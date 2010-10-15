@@ -1,0 +1,66 @@
+[(#ENV{options}|=={tout}|?{
+[(#SET{color,true}) ]
+[(#SET{rafraichir,true}) ]
+[(#SET{ClicDroit,true}) ]
+[(#SET{menu,true}) ]
+[(#SET{outils,true}) ]
+[(#SET{aide,true}) ]
+[(#SET{algebre,true}) ]
+,
+[(#SET{popup,false}) ]
+[(#SET{rafraichir,false}) ]
+[(#SET{ClicDroit,false}) ]
+[(#SET{menu,false}) ]
+[(#SET{outils,false}) ]
+[(#SET{aide,false}) ]
+[(#SET{algebre,false}) ]
+})]
+[(#ENV{color}|?{[(#SET{col,#ENV{color}})],[(#CONFIG{tispipskelet_conf/couleurs/color30}|?{[(#SET{col,#CONFIG{tispipskelet_conf/couleurs/color30}})],[(#SET{col,336699})]})]})]
+<B_carmetal>
+<BOUCLE_carmetal(DOCUMENTS){id_document=#ENV{doc}}{mode=document}{extension IN zir}>
+[(#SET{url,#URL_DOCUMENT})]
+</BOUCLE_carmetal>
+</B_carmetal>
+[(#SET{url,[(#CHEMIN{scripts/defaut.zir})]})]
+<//B_carmetal>
+<object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" codebase="[(#CHEMIN{scripts})]" code="CaRMetal.jar" style="width:[(#ENV{largeur}|?{[(#ENV{largeur})px],500px})];height:[(#ENV{hauteur}|?{[(#ENV{hauteur})px],500px})]">
+<param name="codebase" value="[(#CHEMIN{scripts})]" >
+<param name="file" value="[(#GET{url})]" />
+<param name="color" value="[(#GET{col}|RGBtoHexa)]" />
+<param name="colorbackground" value="[(#ENV{bgcolor}|?{#ENV{bgcolor}|,'0,0,255'})]" />
+<param name="style" value="nonvisual" />
+<param name="tools" value=" point boundedpoint intersection line ray segment fixedsegment circle circle3 fixedcircle parallel plumb midpoint angle fixedangle move tracker objecttracker animate expression area quadric text hide locus" />
+<param name="options" value=" back delete undo showname showvalue color hidden obtuse solid grid thickness type partial plines noindicate rename function " />
+<param name="movefixname" value="true" />
+<param name="restrictedmove" value="true" />
+<param name="editdigits" value="5" />
+<param name="displaydigits" value="5" />
+<param name="angledigits" value="0" />
+<param name="minpointsize" value="3" />
+<param name="minlinesize" value="1.0" />
+<param name="minfontsize" value="13" />
+<param name="arrowsize" value="15" />
+<param name="germanpoints" value="true" />
+  <!--[if gte IE 7]> <!-->
+ <object classid="java:rene.zirkel.ZirkelApplet.class" style="width:[(#ENV{largeur}|?{[(#ENV{largeur})px],500px})];height:[(#ENV{hauteur}|?{[(#ENV{hauteur})px],500px})]">
+<param name="archive" value="[(#CHEMIN{scripts/CaRMetal.jar})]" />
+<param name="file" value="[(#GET{url})]" />
+<param name="color" value="[(#GET{col}|RGBtoHexa)]" />
+<param name="colorbackground" value="[(#ENV{bgcolor}|?{#ENV{bgcolor}|,'0,0,255'})]" />
+<param name="style" value="nonvisual" />
+<param name="tools" value=" point boundedpoint intersection line ray segment fixedsegment circle circle3 fixedcircle parallel plumb midpoint angle fixedangle move tracker objecttracker animate expression area quadric text hide locus" />
+<param name="options" value=" back delete undo showname showvalue color hidden obtuse solid grid thickness type partial plines noindicate rename function " />
+<param name="movefixname" value="true" />
+<param name="restrictedmove" value="true" />
+<param name="editdigits" value="5" />
+<param name="displaydigits" value="5" />
+<param name="angledigits" value="0" />
+<param name="minpointsize" value="3" />
+<param name="minlinesize" value="1.0" />
+<param name="minfontsize" value="13" />
+<param name="arrowsize" value="15" />
+<param name="germanpoints" value="true" />
+</object>
+  <!--<![endif]-->
+</object>
+<br /><em><:tispipskelet:by_carmetal:></em>

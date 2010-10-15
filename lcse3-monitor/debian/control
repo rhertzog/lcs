@@ -1,0 +1,13 @@
+Source: lcse3-monitor
+Section: misc
+Priority: optional
+Maintainer: William Pottier <william.pottier@allprogrammic.com
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+
+Package: lcse3-monitor
+Architecture: all
+Depends: sudo, make, hwinfo, php5-curl
+Description: deported monitoring tool for LCS and SE3 
+  lcse3  monitor collect system informations every hours 
+  to central server.

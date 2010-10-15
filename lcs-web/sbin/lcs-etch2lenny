@@ -1,0 +1,111 @@
+#!/bin/bash
+#Couleurs
+COLTITRE="\033[1;35m"          # Rose
+COLCMD="\033[1;37m"            # Blanc
+COLQUESTION="\033[1;32m"       # Vert
+
+
+
+if  ! grep -q "4.0" /etc/debian_version;  then
+        if egrep -q "^5.0" /etc/debian_version; then
+                echo "Votre serveur est deja en version Debian Lenny"
+                exit 0
+        else
+                echo "Votre serveur n'est pas en version Debian Etch."
+                echo "Operation annulee !"
+                exit 1
+        fi
+fi
+
+echo -e "$COLTITRE"
+echo "******************************"
+echo "* Migration Etch vers Lenny  *"
+echo "******************************"
+echo -e "$COLQUESTION\c"
+echo "Voulez vous continuez (O/n) ? "
+echo -e "$COLCMD\c"
+read REPLY
+if [ "$REPLY" != "O" ] &&  [ "$REPLY" != "o" ] && [ -n $REPLY ]; then
+        echo "Pas de migration !"
+        exit 1
+fi
+
+echo -e "$COLTITRE"
+echo "Migration LCS de Debian Etch vers Lenny"
+echo -e "$COLCMD\c"
+#######
+echo "1. Detection de la branche LCS : Lcs, LcsTesting, LcsXP"
+
+if grep LcsXP /etc/apt/sources.list; then
+        LCSTREE="LcsXP"
+elif grep LcsTesting /etc/apt/sources.list; then
+        LCSTREE="LcsTesting"
+else
+        LCSTREE="Lcs"
+fi
+echo "Votre LCS est sur la branche :  $LCSTREE"
+#######
+echo "2. Changement du source list"
+
+cp /etc/apt/sources.list /etc/apt/sources.list.etch
+
+echo "deb http://ftp.fr.debian.org/debian lenny main
+deb-src http://ftp.fr.debian.org/debian lenny main
+
+deb http://lcs.crdp.ac-caen.fr/lenny $LCSTREE main
+
+deb http://security.debian.org/ lenny/updates main
+deb-src http://security.debian.org/ lenny/updates main
+
+deb http://volatile.debian.org/debian-volatile lenny/volatile main
+deb-src http://volatile.debian.org/debian-volatile lenny/volatile main" > /etc/apt/sources.list
+#######
+echo "3. Test si on enleve pas des paquest LCS !"
+if apt-get dist-upgrade -s | grep Remv | grep lcs; then
+        echo "Migration ETCH -> LENNY interrompue par tentative de desinstallation des paquets LCS"
+        exit 1
+fi
+### On demande a garder les fichiers de config.
+cat > /etc/apt/apt.conf.d/lcs-upgrade-lenny <<EOF
+Dpkg::Options {
+"--force-confdef";
+"--force-confold";
+}
+EOF
+
+
+### On repond aux questions avant qu'elles n'arrivent.
+cat > /tmp/preseed-lenny <<EOF
+# Faut-il gA(C)rer le fichier de configuration de libnss-ldap automatiquementA ?
+libnss-ldap     libnss-ldap/override    boolean false
+# Faut-il gA(C)rer la configuration automatiquementA ?
+libpam-ldap     libpam-ldap/override    boolean false
+# Services A  redA(C)marrer lors de la mise A  niveau de la bibliothAque PAMA :
+libpam0g        libpam0g/restart-services       string  squid cron courier-authdaemon atd
+# Choices: Belgian, French
+console-data    console-data/keymap/azerty/layout       select
+bind9  bind9/start-as-user     string  bind
+libc6  glibc/restart-services  string  slapd rsync postfix openbsd-inetd cron courier-authdaemon atd
+libssl0.9.8    libssl0.9.8/restart-services    string  ssh
+EOF
+
+debconf-set-selections < /tmp/preseed-lenny   
+#######
+echo "4. Upgrade de la distribution : Fournir les reponses par defaut."
+apt-get update
+apt-get dist-upgrade -y
+#######
+echo "5. Mise a jour des droits sur le repertoires MAILDIR"
+for MAILDIR in `find /home -name Maildir`
+do
+        echo "$MAILDIR"
+        chgrp -R lcs-users $MAILDIR
+done
+#######
+echo "6. Mise en place de lcs-sysinfo en remplacement de lcs-phpsysinfo"
+apt-get install -y --force-yes lcs-sysinfo
+
+rm /etc/apt/apt.conf.d/lcs-upgrade-lenny
+echo -e "$COLTITRE"
+echo "FIN !"
+echo -e "$COLCMD\c"

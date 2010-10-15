@@ -1,0 +1,294 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>Installation de Bcdi Web pour Apache / Linux</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> <script type="text/javascript">
+function DivStatus( nom, numero )
+{
+var divID = nom + numero;
+if ( document.getElementById && document.getElementById( divID ) ) // Pour les navigateurs récents
+{
+Pdiv = document.getElementById( divID );
+PcH = true;
+}
+else if ( document.all && document.all[ divID ] ) // Pour les veilles versions
+{
+Pdiv = document.all[ divID ];
+PcH = true;
+}
+else if ( document.layers && document.layers[ divID ] ) // Pour les très veilles versions
+{
+Pdiv = document.layers[ divID ];
+PcH = true;
+}
+else
+{
+PcH = false;
+}
+if ( PcH )
+{
+Pdiv.className = ( Pdiv.className == 'cachediv' ) ? '' : 'cachediv';
+}
+}
+</script><style type="text/css"> <!--
+.Titre1{
+font-family: verdana, arial, helvetica, sans-serif;
+font-size: 18pt;
+font-weight: bold;
+text-align: center;
+font-variant: small-caps;
+color: #6498C1;
+}
+h1{
+font-family: verdana, arial, helvetica, sans-serif;
+font-size: 12pt;
+color:#6498C1;
+}
+h2{
+font-family: verdana, arial, helvetica, sans-serif;
+font-size: 10pt;
+color:#6498C1;
+}
+h3{
+font-family: verdana, arial, helvetica, sans-serif;
+font-size: 9pt;
+color:#000000;
+}
+.titre_simple{
+font-family: verdana, arial, helvetica, sans-serif;
+font-size: 10pt;
+color:#6498C1;
+}
+ul {
+list-style-type: square;
+font-family: verdana, arial, helvetica, sans-serif;
+font-size: 9pt;
+}
+.bg {
+background-color: #D1F3F5;
+width: 50%;
+font-family: verdana, arial, helvetica, sans-serif;
+font-size: 9pt;
+}
+.cachediv {
+visibility: hidden;
+overflow: hidden;
+height: 0px;
+margin-top: -2px;
+position: absolute;
+border: Aucune;
+}
+-->
+</style><link rel="stylesheet" type="text/css" href="http://club-bcdi.crdp-poitiers.cndp.fr/style/style.css"></head>
+<body style="background-color: rgb(255, 255, 255);"><blockquote>&nbsp;</blockquote>
+<table border="0" cellpadding="0" cellspacing="0" width="750"> <tbody> <tr> <td height="72" width="31">&nbsp;</td> <td height="65" width="105"><a class="lien-fiche-detail-noir" href="http://club-bcdi.crdp-poitiers.cndp.fr/"><img src="images/logo.gif" alt="Retour au menu principal" border="0" height="65" width="105"></a></td>
+<td class="Titre1" height="72" width="669"><a name="haut"></a>Installation
+et Mise à Jour de BcdiWeb pour Linux
+version 1.80</td> <td height="72" width="25">&nbsp;</td>
+</tr> </tbody></table><blockquote> <h1 align="left"><font face="Arial, Helvetica, sans-serif"><a name="somm"></a></font><font face="Arial, Helvetica, sans-serif">Sommaire
+:</font></h1> <blockquote> <p><a class="lien-fiche-detail-noir" href="#pre">Présentation</a><br>
+<a class="lien-fiche-detail-noir" href="#ins">Installation
+automatique</a><br>
+<a class="lien-fiche-detail-noir" href="#man">Installation
+manuelle</a><br>
+<a class="lien-fiche-detail-noir" href="#param">Paramétrer
+un nouvelle base après installation</a><br>
+<a class="lien-fiche-detail-noir" href="#con">Consultation
+de la base</a><br> <a class="lien-fiche-detail-noir" href="#quest"> </a></p> </blockquote>
+</blockquote><p><font color="#ff0033" face="Arial, Helvetica, sans-serif"><b>BcdiWeb
+est diffusé en version CGI uniquement.
+Réalisé
+sous Borland/Kylix, ce
+programme autonome peut être utilisé sur toutes
+les
+distributions Linux avec Apache ou un autre serveur web.</b></font></p>
+<h1><p><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="pre"></a></font><font face="Arial, Helvetica, sans-serif"><b>Présentation
+:</b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif">
+</font></p></h1><p><font face="Arial, Helvetica, sans-serif">BcdiWeb
+pour Linux est un CGI (Common Gateway Interface), c'est à
+dire un programme autonome utilisable par internet, permettant
+l'interrogation d'une ou plusieurs bases Bcdi depuis un client Web
+(Internet Explorer, Firefox, Mozilla, Netscape...). Tout serveur Web
+installé sur une machine Linux peut être
+utilisé, toutefois ce document ne décrit que
+l'installation sur serveur web Apache. Les fonctionnalités
+offertes sont identiques à celles proposées par
+BcdiWeb pour Windows :</font></p>
+<ul> <li><font face="Arial, Helvetica, sans-serif">interrogation
+d'une base Bcdi&nbsp; par un jeu d'écrans de recherche
+similaires aux écrans de Bcdi abonnement&nbsp;
+(recherche par
+thèmes, auteurs, titre, collection, éditeur,
+thésaurus, multicritères et expert) ;</font></li> <li><font face="Arial, Helvetica, sans-serif">consultation
+du compte de lecteur (liste de tous les prêts, des
+prêts en cours, des prêts en retard et des
+réservations) ;</font></li><li><font face="Arial, Helvetica, sans-serif">possiblité d'effectuer
+des réservations à distance ;</font></li><li><font face="Arial, Helvetica, sans-serif">possibilité
+d'afficher les couvertures, biographies, tables des matières et
+&nbsp;4e de couv. dans les résultats de recherche pour les abonnés
+à
+MemoElectre et &nbsp;MemoElectre+;<br></font></li>
+<li><font face="Arial, Helvetica, sans-serif">possibilité
+de gérer un panier de notices ;</font></li> <li><font face="Arial, Helvetica, sans-serif">fonctions
+de moteur de recherche sur une base Bcdi acceptant des
+requêtes dans un format propriétaire et renvoyant
+un flux XML Bcdi vers les clients web ;</font></li> <li><font face="Arial, Helvetica, sans-serif">interrogation
+de plusieurs bases installées sur le même serveur
+web.</font></li>
+<p>Pour découvrir les nouveautés de la version 1.80, cliquez sur
+le lien :</p><p><a href="http://doc-partage.crdp-poitiers.cndp.fr/betatest/majbcdi/bcdi2007septembre.htm">http://doc-partage.crdp-poitiers.cndp.fr/betatest/majbcdi/bcdi2007septembre.htm</a></p>
+</ul><h1><p><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="ins"></a></font><font face="Arial, Helvetica, sans-serif"><b>Installation
+automatique
+:</b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif">
+</font></p></h1><p><font face="Arial, Helvetica, sans-serif">Téléchargez
+et décompactez l'archive à l'emplacement de votre choix (tar -xzvf
+BcdiWebLinux-1.92.tar.gz). Déplacez-vous dans le répertoire créé au
+décompactage (son nom est identique à celui de l'archive) et, en tant
+que root, lancez le script d'installation : ./installbcdiweb.pl ou perl
+installbcdiweb.pl</font></p><p><font face="Arial, Helvetica, sans-serif">Le menu ci-dessous
+s'affiche :</font></p><p></p><blockquote><div class="bg"><font face="Arial, Helvetica, sans-serif">&nbsp;
+&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp;*************************************************<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Installation ou
+mise à jour du CGI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+BCDIWEB v. 1.80&nbsp; pour
+Linux&nbsp;&n92p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*************************************************<br><br><br><br><br>&nbsp;&nbsp;&nbsp;
+1. Mise à jour du cgi v. 1.72<br>&nbsp;&nbsp;&nbsp;
+2. Première installation du cgi sans paramétrage d'Apache<br>&nbsp;&nbsp;&nbsp;
+3. Première installation du cgi avec paramétrage d'Apache<br>&nbsp;&nbsp;&nbsp;
+4. Quitter<br><br><p><notes :=""><br>Ce
+programme
+ne doit pas être utilisé pour mettre à jour Bcdi 3 Web<br>Problèmes
+d'affichage ?<br>Ce programme utilise le jeu de caractères
+ISO-8859-15. Réglez votre<br>console en conséquence.<br>La
+plupart des questions posées sont accompagnées d'une valeur par<br>défaut
+(chemin d'installation par ex.) ou des valeurs possibles de<br>la
+réponse (O/n pour oui ou non par ex.). Dans ce dernier cas la<br>valeur
+par défaut est en majuscules.<br>Pour sélectionner la valeur par
+défaut proposée dans la question,<br>appuyez simplement sur
+Entrée.</notes></p><br><br>Votre choix :</font><p></p></div></blockquote><p><font face="Arial, Helvetica, sans-serif">Tapez le chiffre
+correspondant à l'action souhaitée et suivez les indications à
+l'écran.</font></p><p><font face="Arial, Helvetica, sans-serif">Avant l'installation
+vous devez connaître :</font></p><ul><font face="Arial, Helvetica, sans-serif"> <li>le nom
+d'établissement
+et la griffe de Bcdi Abonnement (choix 2 et 3) ;</li></font><font face="Arial, Helvetica, sans-serif"><li>le nom et
+l'emplacement
+du fichier de conf. d'Apache (choix 3) ;</li></font><font face="Arial, Helvetica, sans-serif"><li>le nom de
+l'utilisateur
+Web et de son groupe : notez qu'ils sont généralement déclarés dans le
+fichier de conf d'Apache (choix 3) ;</li></font><font face="Arial, Helvetica, sans-serif"><li>le chemin de
+chaque base
+à mettre en ligne (choix 2 et 3) ;</li></font></ul><p><font face="Arial, Helvetica, sans-serif">Pour chacune des bases,
+vous devrez indiquer :</font></p><ul><li><font face="Arial, Helvetica, sans-serif">le chemin de la base,
+son nom dans l'url du site et le nom sous lequel elle doit apparaître
+dans les écrans de BcdiWeb ;</font></li><font face="Arial, Helvetica, sans-serif"><li>le nom de
+l'établissement et sa griffe ;</li></font><font face="Arial, Helvetica, sans-serif"><li>si les objets
+Electre
+(biographies, tables des matières, 4e de couv., couvertures) doivent
+être affichés <font face="Arial, Helvetica, sans-serif">(se
+reporter à la <a href="http://doc-partage.crdp-poitiers.cndp.fr/betatest/majbcdi/bcdi2007septembre.htm">présentation
+des nouveautés</a>&nbsp;pour les conditions d'utilisation)</font>
+;</li></font><font face="Arial, Helvetica, sans-serif"><li>si
+les
+réservations en
+ligne sont autorisées ;</li></font><font face="Arial, Helvetica, sans-serif"><li>si la
+consultation du
+compte de chaque emprunteur par celui-ci est autorisée ;</li></font><font face="Arial, Helvetica, sans-serif"><li>s'il s'agit
+d'une base
+bibliographique (sans mention des exemplaires dans les résultats
+affichés).</li></font></ul><p><font face="Arial, Helvetica, sans-serif">La présence du
+documentaliste à cette phase du paramétrage est nécessaire (ou celui-ci
+doit avoir répondu préalablement aux questions qui relèvent de son
+choix).</font></p><p style="font-weight: bold;"><font face="Arial, Helvetica, sans-serif">Dépendances :</font></p><p><font face="Arial, Helvetica, sans-serif">Lors
+de la consultation
+des objets Electre, le cgi BcdiWeb fait appel à des bilbliothèques et
+programmes externes (libexpat, libxslt, xsltproc, libicu)
+&nbsp;:&nbsp;ces bilbliothèques font partie des paquets
+libxml2, libxslt,
+libxsltproc (le nom des paquets varie selon les
+distributions). &nbsp;Il est nécessaire que le programme xsltproc
+soit
+présent dans le PATH du système (souvent placé dans /usr/bin).<br></font></p>
+<h1><p><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="man"></a></font><font face="Arial, Helvetica, sans-serif"><b>Installation
+manuelle
+:</b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif">
+</font></p></h1><p><font face="Arial, Helvetica, sans-serif">L'installation manuelle
+de BcdiWeb est possible : elle devrait être réservée aux cas
+particuliers pour lesquels l'installation automatique ci-dessus ne
+convient pas.</font></p><p>Pour l'installation
+manuelle, voir ce lien : <a href="installation_manuelle_bcdiweblinux.htm">installation_manuelle_bcdiweblinux.htm</a></p><p><b>
+</b></p><h1><p><b><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="param"></a></font><font face="Arial, Helvetica, sans-serif"><b>Paramétrage
+d'une base après l'installation
+:</b></font></b></p></h1>
+<p><font face="Arial, Helvetica, sans-serif">Déplacez-vous
+dans le
+répertoire contenant le cgi BcdiWeb&nbsp;et, en tant
+que root, lancez le script de paramétrage d'une nouvelle
+base&nbsp;: "./parambcdiweb.pl" ou "perl parambcdiweb.pl"<br>Le
+menu ci-dessous
+s'affiche :</font><br></p><blockquote><div class="bg"><font face="Arial, Helvetica, sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*************************************************<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*&nbsp;&nbsp; Paramétrage d'une base de
+données&nbsp;&nbsp; *<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*&nbsp;&nbsp;&nbsp;&nbsp; pour BCDIWEB v. 1.80 sous
+Linux&nbsp; &nbsp; *<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*************************************************<br><br><br>&nbsp;&nbsp;&nbsp;
+1. Paramétrage d'une base<br>&nbsp;&nbsp;&nbsp; 2.
+Quitter<br><br><br>Problèmes d'affichage ?<br>Ce
+programme utilise le jeu de caractères ISO-8859-15. Réglez votre<br>console
+en conséquence.<br>La plupart des questions posées sont
+accompagnées d'une valeur par<br>défaut (chemin d'installation
+par ex.) ou des valeurs possibles de<br>la réponse (O/n pour oui
+ou non par ex.). Dans ce dernier cas la<br>valeur par défaut est
+en majuscules.<br>Pour sélectionner la valeur par défaut proposée
+dans la question,<br>appuyez simplement sur Entrée.<br><br>Votre
+choix :<br></font><p></p>
+</div></blockquote><p>Tapez le chiffre correspondant
+à l'action souhaitée et suivez les indications à l'écran.</p>
+<p><font face="Arial, Helvetica, sans-serif">Pour
+chacune des bases,
+vous devrez indiquer :</font></p><ul><li><font face="Arial, Helvetica, sans-serif">le chemin de la base,
+son nom dans l'url du site et le nom sous lequel elle doit apparaître
+dans les écrans de BcdiWeb ;</font></li><font face="Arial, Helvetica, sans-serif"><li>le nom de
+l'établissement et sa griffe ;</li></font><font face="Arial, Helvetica, sans-serif"><li>si les objets
+Electre
+(biographies, tables des matières, 4e de couv., couverture) doivent
+être affichés (se reporter à la <a href="http://doc-partage.crdp-poitiers.cndp.fr/betatest/majbcdi/bcdi2007septembre.htm">présentation
+des nouveautés</a> pour les conditions d'utilisation) ;</li></font><font face="Arial, Helvetica, sans-serif"><li>si les
+réservations en
+ligne sont autorisées ;</li></font><font face="Arial, Helvetica, sans-serif"><li>si la
+consultation du
+compte de chaque emprunteur par celui-ci est autorisée ;</li></font><font face="Arial, Helvetica, sans-serif"><li>s'il s'agit
+d'une base
+bibliographique (sans mention des exemplaires dans les résultats
+affichés).</li></font></ul><p><font face="Arial, Helvetica, sans-serif">La présence du
+documentaliste à cette phase du paramétrage est nécessaire (ou celui-ci
+doit avoir répondu préalablement aux questions qui relèvent de son
+choix).</font></p>
+<h1><p><b><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="con"></a></font><font face="Arial, Helvetica, sans-serif"><b>Consultation de
+la base
+:</b></font></b></p></h1>
+<p><font face="Arial, Helvetica, sans-serif">La
+base
+Bcdi est accessible par un simple navigateur à l'adresse : </font></p>
+<p><font face="Arial, Helvetica, sans-serif"><i>http://adresse_du_serveur/bcdi/bcdiweb.cgi/Data</i>
+(vers les écrans de recherche de la base Data)</font><br>
+ou<br>
+<font face="Arial, Helvetica, sans-serif"><i>http://adresse_du_serveur/bcdi/bcdiweb.cgi/Xxxx</i>
+(vers les écrans de recherche de la base Xxxx)</font></p>
+<p><font face="Arial, Helvetica, sans-serif">Dans
+chaque répertoire de travail, un fichier de log, appelé par exemple
+bcdiweb_Data.log, stocke les requêtes adressées à Bcdi Web. Ce fichier
+au format csv (séparateur ";") est exploitable par un simple tableur.
+L'enregistrement des requêtes est automatique mais peut être débrayé en
+modifiant le paramètre correspondant dans le fichier d'ini de la base
+concernée.</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body></html>

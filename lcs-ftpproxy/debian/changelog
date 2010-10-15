@@ -1,0 +1,22 @@
+lcs-ftpproxy (2.4) Lcs; urgency=low
+
+  * Make a stable release 2.4
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 15:10:38 +0200
+
+lcs-ftpproxy (2.2) Lcs; urgency=low
+
+  * Make a testing release
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 26 May 2009 14:41:05 +0200
+
+lcs-ftpproxy (2.1)  LcsXP; urgency=low
+
+    [Jean-Luc Chretien]
+    * Restructuring the architecture of the package (svn_builpackage compatibilty)
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 14 Nov 2008 11:31:44 +0100
+
+lcs-ftpproxy (2.0)  LcsXP; urgency=low
+    [Jean-Luc Chretien]
+    * Initial release

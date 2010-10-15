@@ -1,0 +1,83 @@
+#! /bin/sh
+# postinst script for LCS squid
+set -e
+
+PACKAGE="squid"
+VER=$(dpkg-query -f '${Version}' -W lcs-$PACKAGE)
+
+# lecture d'un parametre lcs dans lcs_db.params
+function get_lcsdb_params
+{
+PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
+echo "$PARAMS"
+}
+
+case "$1" in
+        install|configure)
+            if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
+                #
+                # Acquisition des params lcs
+                #
+                DOMAIN=$(get_lcsdb_params domain)
+                NETMASK0=$(get_lcsdb_params netmask)
+                NETWORK=$(get_lcsdb_params network)
+                VLANSC=$(get_lcsdb_params vlansc)
+                VLANADMINISTRATIF=$(get_lcsdb_params vlanadmin)
+                VLANPEDA1=$(get_lcsdb_params vlanpeda1)
+                VLANPEDA2=$(get_lcsdb_params vlanpeda2)
+                VLANPEDA3=$(get_lcsdb_params vlanpeda3)
+                VLANPEDA4=$(get_lcsdb_params vlanpeda4)
+                #
+                # Mise en place de la regle iptable si absente
+                #
+                NUM=`iptables -t nat -L --line-numbers | grep  8080 | cut -d ' ' -f 1`
+                if [ -z $NUM ]; then
+                    iptables -t nat -I PREROUTING -d ! $NETWORK/$NETMASK0 -p TCP --dport 80 -j REDIRECT --to-ports 8080
+                fi
+                #
+                # Sauvegarde dans  /var/lib/iptables/
+                #
+                if [ ! -d /var/lib/iptables ];then
+                    mkdir /var/lib/iptables
+                fi
+                #
+                # Sauvegarde des regles actives
+                #
+                /etc/init.d/iptables save active
+                ln -sf /etc/init.d/iptables /etc/rc2.d/S12iptables
+                #
+                # Activation du routage
+                #
+                echo "1" > /proc/sys/net/ipv4/ip_forward
+                #
+                # Configuration de /etc/sysctl.conf
+                #
+                # Enable packet forwarding for IPv4
+                sed -i.sav s/"#net.ipv4.conf.default.forwarding=1"/"net.ipv4.conf.default.forwarding=1"/g /etc/sysctl.conf
+                sed -i s/"#net.ipv4.ip_forward=1"/"net.ipv4.ip_forward=1"/g /etc/sysctl.conf        
+                # 
+                # Enable Spoof protection (reverse-path filter)
+                sed -i s/"#net.ipv4.conf.default.rp_filter=1"/"net.ipv4.conf.default.rp_filter=1"/g /etc/sysctl.conf
+                #
+                # Reconfiguration de squid
+                #
+                #squid_reconfigure.sh <DOMAIN> <VLANSC> <VLANADMINISTRATIF> <VLANPEDA1> <VLANPEDA2> <VLANPEDA3> <VLANPEDA4>
+                /usr/share/lcs/scripts/squid_reconfigure.sh "$DOMAIN" "$VLANSC" "$VLANADMINISTRATIF" "$VLANPEDA1" "$VLANPEDA2" "$VLANPEDA3" "$VLANPEDA4"
+    	        #
+                # modification du nombre de jours de log
+                #
+                sed -i'' 's/rotate 2/rotate 365/g'  /etc/logrotate.d/squid
+            fi
+    	;;
+
+    	abort-upgrade|abort-remove|abort-deconfigure)
+    	;;
+
+    	*)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    	;;
+esac
+
+
+exit 0

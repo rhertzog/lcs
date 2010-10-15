@@ -1,0 +1,133 @@
+#!/bin/bash
+#
+# script de reconfiguration de lcs-openvpn
+#
+
+if [ -z "$1" ];
+then
+        echo "Usage: lcs-openvpn-reconfig <port> <vpn-network> <vpn-network-mask> <dh> <vlan-01> <nb-vpn-connexion> <client-to-client-01> <cert> <masquerade> <wins> <dnsclient-O1>"
+        exit 0
+fi
+
+. /etc/lcs/lcs.conf
+VPNPORT=$1
+VPNNET=$2
+SMALLVPNNET=`echo $VPNNET | cut -f 1-3 -d .`
+VPNIP1=$SMALLVPNNET.1
+VPNIP2=$SMALLVPNNET.2
+VPNNETMASQ=$3
+DH=$4
+VLAN=$5
+VPNCONNEXIONS=$6
+CLIENTTOCLIENT=$7
+CERT=$8
+VPNMASQUERADE=$9
+VPNWINS=${10}
+VPNDNSCLIENT=${11}
+FULLDOMAINE=`hostname -f`
+
+sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
+-e "s|@@VPNPORT@@|$VPNPORT|g" \
+-e "s|@@VPNNET@@|"$VPNNET"|g" \
+-e "s|@@SMALLVPNNET@@|"$SMALLVPNNET"|g" \
+-e "s|@@VPNNETMASQ@@|"$VPNNETMASQ"|g" \
+-e "s|@@VPNIP1@@|"$VPNIP1"|g" \
+-e "s|@@VPNIP2@@|"$VPNIP2"|g" \
+-e "s|@@DH@@|"$DH"|g" \
+-e "s|@@CERT@@|"$HOSTNAME"|g" \
+-e "s|@@NETWORK@@|"$NETWORK"|g" \
+-e "s|@@NETMASK0@@|"$NETMASK0"|g" \
+-e "s|@@VPNCONNEXIONS@@|"$VPNCONNEXIONS"|g" \
+/var/lib/lcs/openvpn/openvpn.conf.in > /etc/openvpn/openvpn.conf
+
+if [ $VLAN = 1 ]; then
+	echo "### Configuration VLAN ###" >> /etc/openvpn/openvpn.conf
+	if [ -n $VLANPEDA1 ]; then
+		networkvlanpeda1=`ipcalc $VLANPEDA1 | grep ^Address | cut -f 2 -d ":" |cut -f 4 -d " "`
+		masqvlanpeda1=`ipcalc $VLANPEDA1 | grep ^Netmask | cut -f 2 -d ":" |cut -f 1 -d "="`
+		echo "push \"route $networkvlanpeda1 $masqvlanpeda1\" \#VLANPEDAGO1" >> /etc/openvpn/openvpn.conf
+	fi
+	if [ -n $VLANPEDA2 ]; then
+                networkvlanpeda2=`ipcalc $VLANPEDA2 | grep ^Address | cut -f 2 -d ":" |cut -f 4 -d " "`
+                masqvlanpeda2=`ipcalc $VLANPEDA2 | grep ^Netmask | cut -f 2 -d ":" |cut -f 1 -d "="`
+                echo "push \"route $networkvlanpeda2 $masqvlanpeda2\" \#VLANPEDAGO2" >> /etc/openvpn/openvpn.conf
+        fi
+	if [ -n $VLANPEDA3 ]; then
+                networkvlanpeda3=`ipcalc $VLANPEDA3 | grep ^Address | cut -f 2 -d ":" |cut -f 4 -d " "`
+                masqvlanpeda3=`ipcalc $VLANPEDA3 | grep ^Netmask | cut -f 2 -d ":" |cut -f 1 -d "="`
+                echo "push \"route $networkvlanpeda3 $masqvlanpeda3\" \#VLANPEDAGO3" >> /etc/openvpn/openvpn.conf
+        fi
+else
+	sed -i'' '/"#VLANPEDAGO"/d' /etc/openvpn/openvpn.conf
+fi
+
+if [ $CLIENTTOCLIENT = 1 ]; then
+	echo "client-to-client" >> /etc/openvpn/openvpn.conf
+else
+	sed -i'' '/"client-to-client"/d' /etc/openvpn/openvpn.conf
+fi
+
+if [ $VPNMASQUERADE = 1 ]; then
+    echo "iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE" > /etc/network/if-up.d/lcs-openvpn-masquerade
+    chmod +x  /etc/network/if-up.d/lcs-openvpn-masquerade
+    iptables -t nat -A POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE
+    /etc/init.d/fail2ban stop
+    iptables-save >> /var/lib/iptables/active 
+    /etc/init.d/fail2ban start
+    echo "Attention la mise en place de l'option masquerade a ete active.\
+	 Vos clients VPN sont donc vu par les autres stations par l'adresse IP du LCS" \
+	 | mail -s "Activation de l'option masquerade lcs-openvpn" admin@$DOMAIN
+else
+    if [ -e /etc/network/if-up.d/lcs-openvpn-masquerade ]; then
+	rm /etc/network/if-up.d/lcs-openvpn-masquerade
+	iptables -t nat -D POSTROUTING -s $VPNNET/$VPNNETMASQ -o eth0 -j MASQUERADE
+	/etc/init.d/fail2ban stop
+	iptables-save >> /var/lib/iptables/active 
+	/etc/init.d/fail2ban start
+    fi
+fi    
+
+if [ $VPNWINS = "aucun" ]; then
+	sed -i'' '/"dhcp-option WINS"/d' /etc/openvpn/openvpn.conf
+else
+	echo "push \"dhcp-option WINS $VPNWINS\"" >> /etc/openvpn/openvpn.conf
+fi
+
+if [ $VPNDNSCLIENT = 1 ]; then
+    sed -i'' '/"named.conf.vpn"/d' /etc/bind/named.conf
+    echo "push \"dhcp-option DNS $IPADDR0\"" >> /etc/openvpn/openvpn.conf
+else
+        sed -i'' '/"dhcp-option DNS"/d' /etc/openvpn/openvpn.conf
+fi
+
+sed -e "s|@@DOMAIN@@|"$DOMAIN"|g" \
+    -e "s|@@VPNNET@@|"$VPNNAT"|g" \
+    -e "s|@@FULLDOMAINE@@|"$FULLDOMAINE"|g " \
+    -e "s|@@SMALLVPNNET@@|"$SMALLVPNNET"|g " \
+    -e "s|@@SERIAL@@|"2"|g " \
+/var/lib/lcs/openvpn/vpnnet.db.in > /etc/bind/vpnnet.db
+
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d bind9 reload
+else
+         /etc/init.d/bind9 reload
+fi
+
+
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d openvpn restart
+else
+	/etc/init.d/openvpn restart
+fi
+
+mysql -e "UPDATE lcs_db.params SET value = '$VPNNET' WHERE params.name ='vpnnet' LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNNETMASQ' WHERE params.name ='vpnnetmasq' LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNPORT' WHERE params.name ='vpnport' LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$CERT' WHERE params.name ='vpncert' LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$DH' WHERE params.name ='vpndh' LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VLAN' WHERE params.name ='vpnvlan' LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNCONNEXIONS' WHERE params.name ='vpnconnexions' LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$CLIENTTOCLIENT' WHERE params.name ='vpnclienttoclient' LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNMASQUERADE' WHERE params.name ='vpnmasquerade' LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNWINS' WHERE params.name ='vpnwins' LIMIT 1 ;"
+mysql -e "UPDATE lcs_db.params SET value = '$VPNDNSCLIENT' WHERE params.name ='vpndnsclient' LIMIT 1 ;"

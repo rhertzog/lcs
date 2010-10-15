@@ -1,0 +1,143 @@
+#!/bin/bash
+
+##
+# Configuration inital de OpenVPN
+# Projet LCS 2
+# auteur : Simon CAVEY 
+# creation : 04/01/2009 modification 23/09/2009
+##
+
+. /etc/lcs/lcs.conf
+# création d'un subnet pour le vpn
+# vpn en 192.168.X.0
+# on prend X le 3ieme octet de l'ip lcs
+# et si non libre on test les subnet les uns après les autres
+
+THIPOCTET=`echo $IPADDR0 | cut -f 3 -d .`
+VPNNET="192.168."$THIPOCTET".0"
+VPNNETMASQ=255.255.255.0
+DH=1024
+VPNPORT=1193
+HOSTNAME=`hostname`
+FULLDOMAINE=`hostname -f`
+VLAN=0
+VPNCONNEXIONS=10
+VPNCLIENTTOCLIENT=0
+VPNMASQUERADE=0
+VPNWINS="aucun"
+VPNDNSCLIENT="0"
+
+CHECK=`route -n |grep $VPNNET |wc -l`
+
+function veriffreesub () {
+	if [ $CHECK -ne 0 ]; then
+		THIPOCTET=`expr $THIPOCTET + 1`
+		VPNNET="192.168."$THIPOCTET".0"
+		CHECK=`route -n |grep $VPNNET |wc -l`
+		veriffreesub
+	fi
+}
+
+veriffreesub
+echo plage ip pour vpn $VPNNET
+
+## ajout des entrées mysql
+
+sed -e "s|@@VPNPORT@@|$VPNPORT|g" \
+-e "s|@@VPNNET@@|"$VPNNET"|g" \
+-e "s|@@VPNNETMASQ@@|"$VPNNETMASQ"|g" \
+-e "s|@@CERTNAME@@|"$HOSTNAME"|g" \
+-e "s|@@DH@@|"$DH"|g" \
+-e "s|@@VPNVLAN@@|"$VLAN"|g" \
+-e "s|@@VPNCONNEXIONS@@|"$VPNCONNEXIONS"|g" \
+-e "s|@@VPNCLIENTTOCLIENT@@|"$VPNCLIENTTOCLIENT"|g" \
+-e "s|@@VPNMASQUERADE@@|"$VPNMASQUERADE"|g" \
+-e "s|@@VPNWINS@@|"$VPNWINS"|g" \
+-e "s|@@VPNDNSCLIENT@@|"$VPNDNSCLIENT"|g" \
+/var/lib/lcs/openvpn/params.sql.in > /var/lib/lcs/openvpn/params.sql
+
+mysql lcs_db < /var/lib/lcs/openvpn/params.sql
+rm -f /var/lib/lcs/openvpn/params.sql
+
+## creation du fichier de config openvpn.conf
+SMALLVPNNET=`echo $VPNNET | cut -f 1-3 -d .`
+VPNIP1=$SMALLVPNNET.1
+VPNIP2=$SMALLVPNNET.2
+sed -e "s|@@LOCALIP@@|"$IPADDR0"|g" \
+-e "s|@@VPNPORT@@|$VPNPORT|g" \
+-e "s|@@VPNNET@@|"$VPNNET"|g" \
+-e "s|@@SMALLVPNNET@@|"$SMALLVPNNET"|g" \
+-e "s|@@VPNNETMASQ@@|"$VPNNETMASQ"|g" \
+-e "s|@@VPNIP1@@|"$VPNIP1"|g" \
+-e "s|@@VPNIP2@@|"$VPNIP2"|g" \
+-e "s|@@DH@@|"$DH"|g" \
+-e "s|@@CERT@@|"$HOSTNAME"|g" \
+-e "s|@@NETWORK@@|"$NETWORK"|g" \
+-e "s|@@NETMASK0@@|"$NETMASK0"|g" \
+-e "s|@@VPNCONNEXIONS@@|"$VPNCONNEXIONS"|g" \
+/var/lib/lcs/openvpn/openvpn.conf.in > /etc/openvpn/openvpn.conf
+
+## creation fichier de config openssl.cnf
+sslpassword=`pwgen 8 1`
+sed -e "s|@@passwd@@|"$sslpassword"|g" /var/lib/lcs/openvpn/openssl.cnf.in > /etc/lcs/openvpn/openssl.cnf
+
+## Patch des fichier de config interface web
+sed -i'' "s/@@HOSTNAME@@/$HOSTNAME/g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /usr/share/lcs/openvpn/config.inc
+
+## On adapt le mail pour les utilisateurs
+sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /var/lib/lcs/openvpn/openvpn-mail-client.in
+
+## On lance le scipt de génération du certif
+/usr/share/lcs/sbin/lcs-openvpn-generserveur.sh
+## On genere les certifs pour admin : 
+/usr/share/lcs/sbin/lcs-openvpn-generclient.sh admin
+
+## on ajoute les entr�es sudo pour la generation des clients
+## now in /etc/lcs/sudo.d with lcs-preinstall lcs-make-sudoers
+##
+
+#
+# installation DNS
+#
+sed -e "s|@@DOMAIN@@|"$DOMAIN"|g" \
+    -e "s|@@VPNNET@@|$VPNNET|g" \
+/var/lib/lcs/openvpn/named.conf.vpn.in > /etc/bind/named.conf.vpn
+
+sed -e "s|@@DOMAIN@@|"$DOMAIN"|g" \
+    -e "s|@@VPNNET@@|"$VPNNAT"|g" \
+    -e "s|@@FULLDOMAIN@@|"$FULLDOMAINE"|g " \
+    -e "s|@@SMALLVPNNET@@|"$SMALLVPNNET"|g " \
+    -e "s|@@SERIAL@@|"1"|g " \
+/var/lib/lcs/openvpn/vpnnet.db.in > /etc/bind/vpnnet.db
+
+sed -e "s|@@DOMAIN@@|"$DOMAIN"|g" \
+    -e "s|@@SERIAL@@|"1"|g " \
+/var/lib/lcs/openvpn/vpnnet.rev.in > /etc/bind/vpnnet.rev
+
+echo 'include "/etc/bind/named.conf.vpn";' >> /etc/bind/named.conf
+
+
+## On relance les services 
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d apache2 restart
+else
+	/etc/init.d/apache2 restart
+fi
+
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d openvpn restart
+else
+	/etc/init.d/openvpn restart
+fi
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d bind9 restart
+else
+	/etc/init.d/bind9 restart
+fi
+
+
+## On corrige les droits
+chown -R www-data /var/log/openvpn
+chown -R www-data /usr/share/lcs/openvpn/templates_c/
+

@@ -1,0 +1,12 @@
+/*********************************************************** Impression du cdt ************************************************************/
+
+body {background:#fff}
+table#impr {text-align:left;padding:1px 0;width:980px;}
+table#impr caption {background:white; caption-side:top;margin:20px 20px 0;padding:5px;border:solid 2px #1b2c68;}
+table#impr caption h2 {position:absolute;margin:25px 0 0 150px;color:#1b2c68;font-size:2.5em;}
+table#impr caption h6 {float:right;margin:0 50px;font-color:red;}
+table#impr caption img {float:right;}
+table#impr tbody {padding:5px;margin:5px}
+table#impr tbody tr th {background:#eee;padding:2px;border-top:20px solid #FFF;border-bottom:solid 1px #000;font-size:1.5em;font-weight:normal;padding:5px 10px;}
+table#impr tbody tr td {background:#fff;padding:5px 40px;font-size:1.3em;}
+table#impr tbody td.afR {background:#fff;padding:5px 20px;text-decoration:underline;font-size:1.3em;color:#0d6a1e;font-weight:bold;}

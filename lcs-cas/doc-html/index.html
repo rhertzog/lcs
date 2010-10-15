@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>LCS CAS</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <style type="text/css" media="all">@import "../../c/c.css";</style>
+</head>
+<body>
+<h2 style="text-align:center">Documentation <span class="acronym">LCS CAS</span></h2>
+<h3>Version : Paquet lcs-cas 2.4.7</h3>
+<h4>Le service CAS implant&#233; sur LCS est bas&#233; sur <a href="http://code.google.com/p/rubycas-server/" title="rubycas-server">rubycas-server</a></h4>	
+<p>CAS permet la mise en place de m&#233;canismes SSO (Single Sign On - Authentification unique) c'est &#224; dire la possibilit&#233; d'acc&#232;der &#224; des sites tiers sans nouvelle authentification de l'utlisateur.</p>
+<p>L'implantation du service CAS sur LCS permet aussi d'exploiter le mode SSO/CAS de certaines applications copmme Moodle... 
+Ces applications utilisent généralement la librairie cliente php_cas fournie par l'ESUP. Une application doit donc être cassifi&#233;e pour s'int&#233;grer dans un syst&#232;me CAS.
+</p>
+
+<p>En quoi consiste un serveur CAS ? CAS signifie Central Authentication Service, disposer d'un serveur CAS permet donc de disposer d'un service d'identification centralis&#233;e des utilisateurs. Comment cela fonctionne t-il ?
+</p>
+<p><img src="http://rubycas-server.googlecode.com/files/basic_cas_single_signon_mechanism_diagram.png" alt="basic cas single signon mechanism diagram"></img></p>
+<p> Sur le LCS il a fallu tenir compte de l'existant pour int&#233;grer ce m&#233;canisme.</p>
+	<ol>
+		<li>L'utilisateur tente d'acc&#232;der &#224; une ressource prot&#233;g&#233;e par authentification.</li>
+		<li>Le fournisseur tiers interroge le serveur CAS du LCS qui a &#233;mis la requ&ecirc;te. En fait sur le LCS l'utilisateur est identifi&#233; au moment de sa connexion au LCS. Il se voit attribu&#233; un ticket TGT qu'il conserve le temps de sa connexion  </li>
+		<li>Donc c&ocirc;t&#233; LCS les &#233;tapes 2 et 3 sont r&#233;alis&#233;es &#224; la connexion. L'appel au site.tv se fait donc avec un ticket de service que le LCS transmets au site tiers. </li>
+		<li>Le site tiers (site.tv dans notre exemple) doit maintenant v&#233;rifier la validit&#233; de ce ticket en transmettant ce ticket sur le serveur CAS du LCS. Il recoit d&#232;s lors une r&#233;ponse CAS contenant le profil utilisateur.</li>
+		<li>Si l'&#233;tape pr&#233;c&#233;dente est concluante, l'utilisateur acc&#232;de sans identification &#224; mais avec le bon profil &#224; la page d'accueil du site.tv</li>	
+	</ol>
+</body>
+</html>

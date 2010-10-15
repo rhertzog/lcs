@@ -1,0 +1,96 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=entete-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+		<fieldset>
+			<legend>Logo du site</legend>
+			[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+			[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
+			<ul>
+				<li class="ligne_280">
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=306&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Logo du site">&nbsp;</a>
+					<label>Afficher le logo du site</label>
+					<input type="checkbox" name="afflogosite" value="oui" [checked="(#ENV{afflogosite}|?{checked})"] id="afflogosite" /> 
+				</li>
+			</ul>
+			<ul id="aff_img_palogo">
+				<li class="ligne_280">
+					<label>Afficher une image autre que le logo</label><input type="checkbox" name="affimgpalogo" value="oui" [checked="(#ENV{affimgpalogo}|?{checked})" ][(#ENV{afflogosite}|?{' disabled="disabled"'})] id="affimgpalogo" /> 
+				</li>
+			</ul>
+		<ul id="img_palogo" class="labels_cfg_tispipskelet">
+			<li class="ligne_240">
+					<label>Charger l'&rsquo;image :
+					<input type="file" name="imgpalogo" value="" size="30" class="fondl spip_xx-small" /></label>
+					[<span class='erreur'>(#ENV**{erreurs}|table_valeur{imgpalogo})</span>]
+			</li>
+			[<li>(#ENV{imgpalogo}|?{[(#CFG_CHEMIN{tispipskelet_conf/entete/imgpalogo}|image_reduire{100})],Aucune image})
+			</li>]
+		</ul>
+	</fieldset>
+<script type="text/javascript"><!--
+	$('#affimgpalogo')
+	.bind('change', function() {
+            $('#img_palogo').slideToggle('slow');
+	})
+	if ($('#affimgpalogo:checked').length == 0)
+		$('#img_palogo').hide();
+
+	$('#afflogosite')
+	.bind('change', function() {
+		var on = $(this).is(':checked');
+		$(this)
+		.parents('fieldset')
+		.find('#affimgpalogo')
+			.attr('disabled', on ? 'disabled' : '')
+		.end();
+	})
+	
+	$('#affimgpalogo')
+	.bind('change', function() {
+		var on = $(this).is(':checked');
+		$(this)
+		.parents('fieldset')
+		.find('#afflogosite')
+			.attr('disabled', on ? 'disabled' : '')
+		.end();
+	})
+	
+	$('#afftitresite')
+	.bind('change', function() {
+            $('#cfgtitresite').slideToggle('slow');
+	})
+	if ($('#afftitresite:checked').length == 0)
+		$('#cfgtitresite').hide();
+
+// --></script>
+
+<script type="text/javascript"><!--
+$(document).ready(
+	$(function() {
+	  $('.boxy').boxy();
+	});
+);
+// --></script>
+
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			
+			<div style="text-align:center;">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

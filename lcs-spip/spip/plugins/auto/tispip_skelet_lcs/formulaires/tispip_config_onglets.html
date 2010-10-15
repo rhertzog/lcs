@@ -1,0 +1,41 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+
+<form method="post" action="#SELF" style="margin-bottom:5px;">
+	<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend><:tispipskelet:onglets_navigation:></legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+				<ul>
+					<li class="ligne_280">
+					<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=314&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Onglets de navigation">&nbsp;</a>
+						<label for="aff_onglets"><:tispipskelet:afficher_onglets:></label>
+						<input type="checkbox" name="affonglets" value="oui" [checked="(#ENV{affonglets}|?{checked})" ]id="aff_onglets" /> 
+					</li>
+				</ul>
+				[(#CONFIG{tispipskelet_conf/affonglets}|oui)
+					<INCLURE{fond=fonds/inc/inc-conf_onglets}{ajax}{env}>
+				]
+			</fieldset>
+ 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+		
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
+			</div>
+		</div>
+</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

@@ -1,0 +1,2 @@
+Cmnd_Alias SQUIDGUARD = /usr/share/lcs/scripts/squidGuard.sh
+www-data ALL=NOPASSWD:SQUIDGUARD

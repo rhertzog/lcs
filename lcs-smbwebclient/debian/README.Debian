@@ -1,0 +1,8 @@
+LCS module smbwebclient pour Debian
+----------------------------
+-- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr> 2.2~1 Thu, 19 Mar 2009 10:29:37 +0100
+USAGE
+
+Le module LCS  smbwebclient permet l'accéd au serveur de fichiers Se3 depuis l'interface web du LCS, il est basé sur la version officielle de smbwebclient <http://smbwebclient.sourceforge.net/>
+
+

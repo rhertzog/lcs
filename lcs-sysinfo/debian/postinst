@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+	install|configure)
+
+            # only if first configuration
+	    if [ "$2" = "" ]; then
+	       . /usr/share/slis/slis-common.sh
+	       handle_initial_config lcs-sysinfo-config 70
+            fi
+    	;;
+
+    	abort-upgrade|abort-remove|abort-deconfigure)
+    	;;
+
+    	*)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    	;;
+esac
+
+exit 0

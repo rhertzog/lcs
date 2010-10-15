@@ -1,0 +1,13 @@
+Source: lcs-maintenance
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.7.3
+Homepage: <insert the upstream URL, if relevant>
+
+Package: lcs-maintenance
+Architecture: all
+Depends:  lcs-web
+Description: Install Maintenance informatique on LCS server
+ Maintenance informatique

@@ -1,0 +1,9 @@
+[(#CONFIG{multi_articles}|=={oui}|?{' '})#SET{lang,#ENV{lang}}]
+<h3 class="menu-titre">Tags</h3>
+<BOUCLE_tags(MOTS){type ?}{id_groupe==^((#ENV{id,.*}))$}{id_groupe!==^((#ENV{notid,-1}))$}{par #ENV{tri,titre}}>[
+(#ID_MOT|nuage{[(#TITRE|supprimer_tags)],[(#URL_MOT|parametre_url{lang,#GET{lang}})]})
+]<BOUCLE_pop(ARTICLES){id_mot}></BOUCLE_pop>[
+(#ID_MOT|nuage{'','',#TOTAL_BOUCLE})
+]<//B_pop></BOUCLE_tags>[<dl class="nuage">
+	(#FOREACH{NUAGE})
+</dl>]

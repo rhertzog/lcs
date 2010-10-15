@@ -1,0 +1,58 @@
+lcs-dns (2.4.6) Lcs; urgency=low
+
+  * Fix bug when building localnet.db and rev 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Apr 2010 11:24:10 +0200
+
+lcs-dns (2.4.2) Lcs; urgency=low
+
+  * Make a stable release
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 02 Oct 2009 14:32:41 +0200
+
+lcs-dns (2.4.2~1) Lcs; urgency=low
+
+  * Modify postinst to not overwrite configuration files during update package 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 02 Oct 2009 11:51:39 +0200
+
+lcs-dns (2.4.1) Lcs; urgency=low
+
+  * fix machine 50 ip in localnet.db.in
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu,  4 Jun 2009 17:56:54 +0200
+
+lcs-dns (2.4) Lcs; urgency=low
+
+  * Make a stable release 2.4
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 14:36:29 +0200
+
+lcs-dns (2.1-2) LcsXP; urgency=low
+
+  [ Simon Cavey ]
+  * add primary dns in resolv.conf
+
+  [ Simon Cavey ]
+  * comment primary DNS
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri,  9 Jan 2009 09:54:59 +0100
+
+lcs-dns (2.1-1) LcsXP; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Release lcs-dns 2.1
+
+  [ Simon Cavey ]
+  * fix postrm upgrade
+
+  [ simc ]
+  * fix resolv.conf
+
+ --  Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 26 Sep 2008 11:54:04 +0200
+
+lcs-dns (2.1~1) UNRELEASED; urgency=low
+
+  * Setting in conformity with Debian Installer
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 29 May 2008 11:44:00 +0200

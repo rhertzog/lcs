@@ -1,0 +1,109 @@
+lcs-security (2.4.7.1) Lcs; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 17:33:03 +0200
+
+lcs-security (2.4.7) Lcs; urgency=low
+
+  [Simon Cavey]
+  * Add security signature and token for apache2
+
+  [Jean-Luc Chretien]
+  * install 755 lcs-save-ldap.sh
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 14:34:49 +0200
+
+lcs-security (2.4.6.3) Lcs; urgency=low
+
+  * tempory disable apache bruteforce by default
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sat, 05 Jun 2010 01:05:19 +0200
+
+lcs-security (2.4.6.2) Lcs; urgency=low
+
+  * Move and modify cron.d task lcs-save-ldap
+  * Fix bug in lcs-save-ldap.sh 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Mar 2010 10:01:19 +0100
+
+lcs-security (2.4.6.1) Lcs; urgency=low
+
+  * fixing regex in apache-bruteforce filter
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri,  5 Feb 2010 13:43:18 +0100
+
+lcs-security (2.4.6) Lcs; urgency=low
+
+  * Modify control file description
+  * Make a stable release
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jan 2010 15:00:34 +0100
+
+lcs-security (2.4.2) Lcs; urgency=low
+
+  * add exeption for css
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue,  8 Dec 2009 10:35:10 +0100
+
+lcs-security (2.4.1) unstable; urgency=low
+
+  * apache-bruteforce Add exeption for gif, ico, png, jpg and jpeg files extention
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 01 Jul 2009 21:41:13 +0200
+
+lcs-security (2.4) Lcs; urgency=low
+
+  * Make a stable release 2. 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 14:55:40 +0200
+
+lcs-security (2.2) intrepid; urgency=low
+
+  * Make a testing release
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 26 May 2009 14:49:54 +0200
+
+lcs-security (0.1-7) stable; urgency=low
+
+  * Fix save scripts
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 20 Nov 2008 16:41:27 +0100
+
+lcs-security (0.1-6) stable; urgency=low
+
+  * Add ldap and myslq weekly backup
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 20 Nov 2008 15:05:30 +0100
+
+lcs-security (0.1-5) stable; urgency=low
+
+  * fix match level
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 20 Nov 2008 15:04:56 +0100
+
+lcs-security (0.1-4) stable; urgency=low
+
+  * fix revision
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun, 28 Sep 2008 20:25:48 +0200
+
+lcs-security (0.1-3) stable; urgency=low
+
+  * fix bad jail.local
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun, 28 Sep 2008 20:14:55 +0200
+
+lcs-security (0.1-2) stable; urgency=low
+
+  * imap protection
+  * apache-bruteforce 
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed,  9 Jul 2008 20:49:17 +0000
+
+lcs-security (0.1-1) stable; urgency=low
+
+  * Initial release 
+
+ -- simon CAVEY <simon.cavey@crdp.ac-caen.fr>  Thu,  3 Jul 2008 14:42:14 +0000
+

@@ -1,0 +1,85 @@
+
+dbhome /var/lib/squidguard/db
+logdir /var/log/squid
+
+dest lcs {
+  domainlist	blacklists/lcs/domains
+  urllist       blacklists/lcs/urls
+}
+dest webmail {
+  domainlist	blacklists/webmail/domains
+}
+dest blog {
+  domainlist    blacklists/blog/domains
+  urllist       blacklists/blog/urls
+}
+dest forums {
+  domainlist	blacklists/forums/domains
+  urllist       blacklists/forums/urls
+}
+dest ads {
+  domainlist	blacklists/ads/domains
+  urllist	blacklists/ads/urls
+}
+dest aggressive {
+  domainlist	blacklists/aggressive/domains
+  urllist	blacklists/aggressive/urls
+}
+dest audio-video {
+  domainlist	blacklists/audio-video/domains
+  urllist	blacklists/audio-video/urls
+}
+dest drugs {
+  domainlist	blacklists/drugs/domains
+  urllist	blacklists/drugs/urls
+}
+dest gambling {
+  domainlist	blacklists/gambling/domains
+  urllist	blacklists/gambling/urls
+}
+dest hacking {
+  domainlist	blacklists/hacking/domains
+  urllist	blacklists/hacking/urls
+}
+dest mail {
+  domainlist	blacklists/mail/domains
+}
+dest malware {
+  domainlist    blacklists/malware/domains
+  urllist       blacklists/malware/urls
+}
+dest marketingware {
+  domainlist    blacklists/marketingware/domains
+  urllist       blacklists/marketingware/urls
+}
+dest phishing {
+  domainlist    blacklists/phishing/domains
+  urllist       blacklists/phishing/urls
+}
+dest porn {
+  domainlist	blacklists/porn/domains
+  urllist	blacklists/porn/urls
+}
+dest proxy {
+  domainlist	blacklists/proxy/domains
+  urllist	blacklists/proxy/urls
+}
+dest redirector {
+  domainlist    blacklists/redirector/domains
+  urllist       blacklists/redirector/urls
+}
+dest violence {
+  domainlist	blacklists/violence/domains
+  urllist	blacklists/violence/urls
+}
+dest warez {
+  domainlist	blacklists/warez/domains
+  urllist	blacklists/warez/urls
+}
+
+acl {
+  default {
+    pass !lcs !ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez any
+    redirect 302:http://#REDIRECT#/Squidguard/pageinterdite.html
+  }
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Erreur de droit</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Pragma" content="no-cache">
+<link href="<#CONST REP_MODELES>bcdi.css" rel="stylesheet" type="text/css" media="screen">
+
+<noscript>Votre navigateur n'autorise pas la gestion des scripts Javascript, vous ne pouvez pas utiliser BCDI Web</noscript>
+<script language="JavaScript">
+window.name = "BCDIWEB";
+</SCRIPT>
+</head>
+
+
+
+<body>
+
+<div class="zonemenu">
+	<div class="fxcal">
+	<div class="menucalibre">&nbsp;</div>
+	<div class="menuOFF">
+		<div class="menuOFFgauche"></div>
+		<div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=index.htm">Recherche thématique</a></div>
+		<div class="menuOFFdroite"></div>
+	</div>
+	<div class="menuOFF">
+		<div class="menuOFFgauche"></div>
+		<div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-criteres.htm">Recherche par critères</a></div>
+		<div class="menuOFFdroite"></div>
+	</div>
+	<div class="menuOFF">
+		<div class="menuOFFgauche"></div>
+		<div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-thesaurus.htm">Recherche par Thésaurus</a></div>
+		<div class="menuOFFdroite"></div>
+	</div>
+
+	<script type="text/javascript">
+	<!--
+	if (<#VALEUR NOMBRE_PANIER>>0){
+	var plur="";
+	if (<#VALEUR NOMBRE_PANIER>>1){ plur="s";}
+	document.write("<div class='menuOFFp'><div class='menuOFFgauchep'><\/div><div><a href='<#URLDLL>?np=<#NUMERO_PANIER>&fichier=Panier.htm' class='menupaniertxt' ");
+	document.write("><span class='menupaniertxt2'>Voir mon panier<\/span> (<#VALEUR NOMBRE_PANIER> fiche");
+	document.write(plur);
+	document.write(")<\/a><\/div><div class='menuOFFdroitep'><\/div><\/div>");
+	}
+	else{			
+	document.write('<div class=\"menuOFF\"><div class=\"menuOFFgauche\"><\/div><div class=\"menuOFFtxt\">');
+	document.write('<span class="pasdepanier">Votre panier est vide<\/span>');
+	document.write('<\/div><div class=\"menuOFFdroite\"><\/div><\/div>');
+	}
+ 	-->
+	</script> 	
+	
+
+						  
+<div class='txt'>&nbsp;&nbsp;</div>
+	
+  
+<div class="menuON"><div class="menuONgauche"></div><div class="menuONtxtcompte"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=identification.htm">Mon compte</a></div><div class="menuONdroite"></div></div>
+</div>
+
+
+<div class="menuseparat">&nbsp;</div> 
+<div class="menuzonedatag">
+		<div class="menuzonedata">
+								<br>
+      <div class="txt100pr100">&nbsp;</div>
+	  <div class="prerecapcompte">&nbsp;</div>
+			<div class="recapcompte" align="center">
+			<div class="alerte">Erreur de droits</div><br>
+        	D&eacute;sol&eacute;, vous n'&ecirc;tes pas autoris&eacute;(e) 
+            &agrave; consulter votre compte...<br>
+        	<a href="javascript:history.back()"><strong>Retour</strong></a>
+	  </div>
+	  <div class="txt100pr100">&nbsp;</div>
+	  
+	  </div></div>
+		
+		<div class="menuzonedatafooter"><div class="menuzonedatafooterg"></div><div class="menuzonedatafooterd"></div></div>
+
+
+
+</body>
+</html>

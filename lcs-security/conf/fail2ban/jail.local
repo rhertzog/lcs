@@ -1,0 +1,47 @@
+[ssh]
+
+enabled = true
+port    = ssh,2222
+filter  = sshd
+logpath  = /var/log/auth.log
+maxretry = 6
+
+[apache]
+
+enabled = true
+port    = http,https
+filter  = apache-auth
+logpath = /var/log/apache*/*error.log
+maxretry = 20
+
+[apache-bruteforce]
+
+enabled = false
+port    = http,https
+filter  = apache-bruteforce
+logpath = /var/log/apache*/*error.log
+maxretry = 20
+
+[apache-overflows]
+
+enabled = true
+port    = http,https
+filter  = apache-overflows
+logpath = /var/log/apache*/*error.log
+maxretry = 6
+
+[lcs-auth]
+
+enabled = true
+port    = http,https
+filter  = lcs-auth
+logpath = /var/log/lcs/error.log
+maxretry = 6
+
+[courierauth]
+
+enabled  = false
+port     = imap2,imap3,imaps
+filter   = courierlogin
+logpath  = /var/log/mail.log
+maxretry = 6

@@ -1,0 +1,89 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="#LANG_DIR" lang="#LANG">
+
+<head>
+	<title>[(#NOM_SITE_SPIP|textebrut)]</title>
+	
+	[(#REM) Lien vers l'icone destinee a la barre de bookmarks ]
+	[<link rel="shortcut icon" href="(#CHEMIN{favicon.ico})" />]
+	
+	[(#REM) Icone WebClip pour iPhone/iPod Touch ]
+	[<link rel="apple-touch-icon" href="(#CHEMIN{apple-touch-icon.png})"/>]
+	
+	[(#REM) Balise permettant aux plugins d'inserer des appels javascript ou css ]
+	#INSERT_HEAD
+	
+	[(#REM) Appliquer le _blank en fonction de certaines class]
+	<script type="text/javascript">
+	/* <![CDATA[ */
+	jQuery(document).ready(function () {
+	  jQuery("a.spip_out,a.spip_url,a.spip_glossaire").attr("target", "_self");
+	});
+	/* ]]> */
+	</script>		
+
+	<meta name="viewport" content="width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+	<link rel='stylesheet' href='#URL_PAGE{ispip_css}' type='text/css' media="screen" />
+	<script type="application/x-javascript" src="#CHEMIN{iui/iui.js}"></script>
+
+</head>
+
+<body onclick="console.log('Hello', event.target);">
+
+	[(#REM) BARRE D'OUTILS ]
+	<div class="toolbar">
+		<h1 id="pageTitle">#NOM_SITE_SPIP</h1>
+		<a id="backButton" class="button" href="#"></a>
+		<a class="button" href="#searchForm"><:spip:info_rechercher:></a>
+	</div>
+
+	[(#REM) MENU PRINCIPAL ]
+	<ul id="home" title="#NOM_SITE_SPIP" selected="true">
+		[<li>(#LOGO_SITE_SPIP||image_reduire{0,50})</li>]
+		<li class="group"><:ispip:sommaire:></li>
+		<BOUCLE_menu_princ(RUBRIQUES) {racine} {par num titre}>
+			[<li><a href="#URL_PAGE{ispip-rubrique,id_rubrique=#ID_RUBRIQUE}">(#TITRE|supprimer_numero)</a></li>]
+		</BOUCLE_menu_princ>
+		<li><a href="#auteurs"><:spip:icone_auteurs:></a></li>
+		<li><a href="#mots_list"><:mots_clefs:></a></li>
+		<li class="group"><:ispip:infos:></li>
+			<form class="panel">
+				<ul>
+					<li><a href="#URL_SITE_SPIP" target = "_blank"><:ispip:versionclassique:></a></li>
+					<li><a href="http://www.spip-contrib.net/plugin-iSPIP" title="iSPIP" target = "_blank"><:ispip:ispip:></a></li>
+				</ul>
+			</form>
+	</ul>
+
+		[(#REM) MENU AUTEURS ]
+		<ul id="auteurs" title="<:spip:icone_auteurs:>">
+		<BOUCLE_auteur_site(AUTEURS) {par nom}>
+			<li><a href="#URL_PAGE{ispip-auteur,id_auteur=#ID_AUTEUR}">#NOM</a></li>
+		</BOUCLE_auteur_site>
+		</ul>
+
+		[(#REM) MENU MOTS CLES ]
+		<ul id="mots_list" title="<:mots_clefs:>">
+		<BOUCLE_mots_list(MOTS)>
+			<li><a href="#URL_PAGE{ispip-mot,id_mot=#ID_MOT}">#TITRE</a></li>
+		</BOUCLE_mots_list>
+		</ul>
+
+	[(#REM) FORMULAIRE DE RECHERCHE ]
+	<form id="searchForm" class="dialog" action="spip.php" method="get" target = "_self">
+		<fieldset>
+			<h1><:spip:info_rechercher:></h1>
+			[<input type="hidden" name="lang" value="(#ENV{lang})" />]
+			<input type="hidden" name="page" value="ispip-recherche" />
+			<!-- <a class="button leftButton" type="cancel"><:ispip:annuler:></a>
+			<a class="button blueButton" type="submit" id="recherche" name="recherche"><:spip:info_rechercher:></a> -->
+			<input type="text" class="forml" name="recherche" id="recherche"  />
+			<input type="submit" value="<:spip:info_rechercher:>" />
+			<input type="button" value="<:ispip:annuler:>" onClick='forms.searchForm.removeAttribute("selected");' />
+		</fieldset>
+	</form>
+
+
+</body>
+</html>

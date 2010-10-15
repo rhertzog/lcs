@@ -1,0 +1,49 @@
+# SARE HTML Ruleset for SpamAssassin - ruleset eng
+# Version: 01.03.08 
+# Created: 2004-03-31 
+# Modified: 2005-10-05
+# Usage instructions, documentation, and change history in 70_sare_html0.cf 
+#@@# Revision History:  Full Revision History stored in 70_sare_html.log
+#@@# 01.03.08: Oct 5 2005
+#@@#           Minor score tweaks based on recent mass-checks
+
+# License: Artistic - see http://www.rulesemporium.com/license.txt 
+# Current Maintainer: Bob Menschel - RMSA@Menschel.net
+# Current Home: http://www.rulesemporium.com/rules/70_sare_html_x30.cf 
+#
+########  ######################   ##################################################
+
+########  ######################   ##################################################
+#   TITLE Tag Tests
+########  ######################   ##################################################
+
+rawbody   SARE_HTML_TITLE_PG1      /<title>New Page 1<\/title>/i
+describe  SARE_HTML_TITLE_PG1      Message body has very strange HTML sequence
+score     SARE_HTML_TITLE_PG1      0.426
+#hist     SARE_HTML_TITLE_PG1      Fred T: FR_NEWPAGE1
+#ham      SARE_HTML_TITLE_PG1      Appropriate UCE 
+#counts   SARE_HTML_TITLE_PG1      503s/57h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_HTML_TITLE_PG1      4s/0h of 54283 corpus (17106s/37177h JH-3.01) 02/13/05
+#max      SARE_HTML_TITLE_PG1      21s/0h of 38374 corpus (14893s/23481h JH-SA3.0rc1) 08/18/04
+#counts   SARE_HTML_TITLE_PG1      57s/3h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_HTML_TITLE_PG1      3s/13h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_HTML_TITLE_PG1      33s/13h of 6944 corpus (3188s/3756h CT) 05/19/04
+#counts   SARE_HTML_TITLE_PG1      1s/0h of 4676 corpus (808s/3868h ft) 05/28/05
+
+########  ######################   ##################################################
+#   Miscellaneous tag tests
+########  ######################   ##################################################
+
+rawbody   __SARE_HTML_HAS_MARQ     eval:html_tag_exists('marquee')
+meta      SARE_HTML_MARQUEE        __SARE_HTML_HAS_MARQ && !HTML_TAG_EXIST_MARQUEE
+describe  SARE_HTML_MARQUEE        HTML email contains a MARQUEE tag
+score     SARE_HTML_MARQUEE        0.693
+#V300     SARE_HTML_MARQUEE        HTML_TAG_EXIST_MARQUEE
+#counts   SARE_HTML_MARQUEE        1115s/37h of 689155 corpus (348140s/341015h RM) 09/18/05
+#counts   SARE_HTML_MARQUEE        25s/5h of 54283 corpus (17106s/37177h JH-3.01) 02/13/05
+#counts   SARE_HTML_MARQUEE        14s/2h of 57287 corpus (52272s/5015h MY) 09/22/05
+#counts   SARE_HTML_MARQUEE        57s/2h of 10629 corpus (5847s/4782h CT) 09/18/05
+#max      SARE_HTML_MARQUEE        93s/0h of 6944 corpus (3188s/3756h CT) 05/19/04
+#counts   SARE_HTML_MARQUEE        0s/2h of 7500 corpus (1767s/5733h ft) 09/18/05
+
+# EOF

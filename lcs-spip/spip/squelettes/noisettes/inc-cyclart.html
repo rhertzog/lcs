@@ -1,0 +1,41 @@
+[(#SET{nb_cyclart,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]nb_cyclart_[(#ENV{bloc})]})]})]
+[(#SET{defil_cyclart,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]defil_cyclart_[(#ENV{bloc})]})]})]
+[(#SET{haut_cyclart,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]haut_cyclart_[(#ENV{bloc})]})]})]
+[(#SET{titre_cyclart,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]titre_cyclart_[(#ENV{bloc})]})]})]
+[(#SET{intro_long_cyclart,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]intro_long_cyclart_[(#ENV{bloc})]})]})]
+[(#SET{afflogo_cyclart,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]afflogo_cyclart_[(#ENV{bloc})]})]})]
+<B_cycle_art>
+[(#ANCRE_PAGINATION)]
+<h3 class="menu-titre">Derniers articles</h3>
+<dl id="cyclart_#ENV{bloc}" class="demi_boite cycle_breves blocElement" [(#GET{defil_cyclart}|?{[ style="height:(#GET{haut_cyclart})px;overflow:hidden;"] })]>
+	<BOUCLE_cycle_art(ARTICLES){id_rubrique ?}{id_secteur!=#CONFIG{tispipskelet_conf/s5/id_rub_s5}}{!par date}{pagination #GET{nb_cyclart, 3}}>
+		<dt>
+			<a href="#URL_ARTICLE" title="[(#TITRE|supprimer_numero)] [(#GET{defil_cyclart}|non) - [(#INTRODUCTION|supprimer_tags|couper{#GET{intro_long_cyclart,150}})] ]" [(#GET{defil_cyclart}|non) class="pretty"]>
+				[(#GET{afflogo_cyclart}|oui)
+					[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{48}|sinon{[(#LOGO_SITE_SPIP||image_reduire{48})]}|inserer_attribut{style,float:right})]
+				]
+				[(#TITRE|supprimer_numero)] 
+			</a><br />
+				[<small class="breve_info" style="float:right;"> ( (#DATE|affdate) )</small><br />]
+	[(#GET{defil_cyclart}|oui)[<span style="font-size:.9em;">(#INTRODUCTION|supprimer_tags|couper{#GET{intro_long_cyclart,150}})</span>]]
+			</dt>
+	</BOUCLE_cycle_art>
+</dl>
+[(#GET{defil_cyclart}|non)
+	[<div class="pagination" style="font-size:.7em">
+		<span class="pagination ligne2" style="display:block;text-align:center;">(#PAGINATION)</span>
+		<span class="ligne1" style="display:block;text-align:right;font-style:italic">#GRAND_TOTAL <:articles:></span>
+	</div>]<!-- pagination -->
+]
+</B_cycle_art>
+[(#GET{defil_cyclart}|oui)
+<script type="text/javascript">
+$('#cyclart_#ENV{bloc}').cycle({ 
+	fx:     'scrollUp', 
+    timeout: 7050, 
+    pause:   1 ,
+	delay:  -5674[,
+ 	height: (#GET{haut_cyclart})]
+	});
+</script>
+]

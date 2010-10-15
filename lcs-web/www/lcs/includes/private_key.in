@@ -1,0 +1,4 @@
+<?php
+// Private key to encrypt the cookie LCSuser in open_session() function
+$key_priv = "@@PRIVKEY@@";
+?>

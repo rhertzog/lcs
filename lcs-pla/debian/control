@@ -1,0 +1,12 @@
+Source: lcs-pla
+Section: misc
+Priority: optional
+Maintainer: Philippe Leclerc <philippe.leclerc1@ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-pla
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-web
+Description: Install PhpLdapAdmin on LCS server
+ This package allows to administer the LDAP on LCS server.

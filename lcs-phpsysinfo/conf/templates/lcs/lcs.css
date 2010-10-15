@@ -1,0 +1,74 @@
+A {
+  text-decoration: none;
+}
+A:link {
+  color: #486591;
+  background-color: transparent;
+}
+A:visited {
+  color: #6f6c81;
+  background-color: transparent;
+}
+A:active {
+  color: blue;
+  background-color: transparent;
+}
+body {
+  background: url(../../../lcs/fdecran/admin.png) #f8f8ff fixed no-repeat center 90px;
+  color: #000000;
+  background-color: #f8f8ff;
+  text-decoration: none;
+  font-family: Verdana,Helvetica,sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+}
+font {
+  text-decoration: none;
+  font-family: Verdana,Helvetica,sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+}
+H1 {
+  color: #486591;
+  background-color: transparent;
+  text-decoration: none;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 20px;
+}
+select {
+    color: black;
+    text-decoration: none;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: normal;
+}
+input {
+    color: black;
+    text-decoration: none;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+}
+table
+{
+  border: none;
+  margin: 0px;
+  padding: 0px;
+  color: #000000;
+}
+table.box {
+  color: #f8f8ff; 
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #486591;
+}
+tr.boxheader {
+  background-color: #486591;
+}
+td.boxheader {
+  text-align: center;
+  font-weight: bold;
+}
+tr.boxbody {	
+  background-color: transparent;
+}

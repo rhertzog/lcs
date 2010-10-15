@@ -1,0 +1,36 @@
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+--
+-- Base de données: `lcs_db`
+--
+-- Structure de la table `params`
+--
+
+CREATE TABLE IF NOT EXISTS `params` (
+  `id` smallint(5) unsigned NOT NULL auto_increment,
+  `name` varchar(20) NOT NULL default '',
+  `value` varchar(100) NOT NULL default '',
+  `srv_id` smallint(4) NOT NULL default '0',
+  `descr` varchar(50) NOT NULL default '',
+  `cat` tinyint(4) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `id_2` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=106 ;
+
+--
+-- Contenu de la table `params`
+--
+
+INSERT INTO `params` (`id`, `name`, `value`, `srv_id`, `descr`, `cat`) VALUES
+(NULL, 'vpnnet', '@@VPNNET@@', 0, 'Reseau pour les connexions vpn', 11),
+(NULL, 'vpnnetmasq', '@@VPNNETMASQ@@', 0, 'Masque de reseau pour les connexions vpn', 11),
+(NULL, 'vpnport', '@@VPNPORT@@', 0, 'Port pour openvpn', 11),
+(NULL, 'vpncert', '@@CERTNAME@@', 0, 'Nom du certificat serveur openvpn', 11),
+(NULL, 'vpndh', '@@DH@@', 0, 'Taille de hashage (RSA)', 11),
+(NULL, 'vpnvlan', '@@VPNVLAN@@', 0, 'Activer la propagation des vlans par le vpn', 11),
+(NULL, 'vpnconnexions', '@@VPNCONNEXIONS@@', 0, 'Nombre de connexions sumultannees sur le vpn', 11),
+(NULL, 'vpnclienttoclient', '@@VPNCLIENTTOCLIENT@@', 0, 'Authorise les connexions entre les clients du vpn', 11),
+(NULL, 'vpnmasquerade', '@@VPNMASQUERADE@@', 0, 'ip du LCS est utilise en NAT pour les clients de vpn', 11),
+(NULL, 'vpnwins', '@@VPNWINS@@', 'aucun', 'ip du serveur WINS generalement IP du SE3', 11),
+(NULL, 'vpndnsclient', '@@VPNDNSCLIENT@@', 0, 'Utiliser le LCS en serveur DNS sur le VPN', 11);

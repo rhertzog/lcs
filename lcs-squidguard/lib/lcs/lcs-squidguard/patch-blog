@@ -1,0 +1,13 @@
+--- squidGuard.conf-nonblog	2009-01-27 00:14:23.000000000 +0100
++++ squidGuard.conf	2009-01-27 00:15:33.000000000 +0100
+@@ -14,6 +14,10 @@
+ dest webmail {
+   domainlist	blacklists/webmail/domains
+ }
++dest blog {
++  domainlist    blacklists/blog/domains
++  urllist       blacklists/blog/urls
++}
+ dest forums {
+   domainlist	blacklists/forums/domains
+   urllist       blacklists/forums/urls

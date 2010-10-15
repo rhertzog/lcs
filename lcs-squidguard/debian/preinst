@@ -1,0 +1,28 @@
+#! /bin/sh
+# preinst script for LCS squidguard
+
+set -e
+case "$1" in
+install)
+
+;;
+abort-upgrade)
+;;
+upgrade)
+	#
+        # sauvegarde des black&white lists
+        #	
+        if [ -e /var/lib/squidguard/db ]; then
+	   echo "save black & white lists"
+	   mv /var/lib/squidguard/db /tmp/
+	fi
+;;
+*)
+echo "preinst called with unknown argument \`$1'" >&2
+exit 1
+;;
+esac
+exit 0
+
+
+

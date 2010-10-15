@@ -1,0 +1,8 @@
+<?
+
+$dbserver="localhost";
+$dbuser="Biilan2_user";
+$dbpass="@PASSWD@";
+$dbbase="Biilan2_db";
+
+?>

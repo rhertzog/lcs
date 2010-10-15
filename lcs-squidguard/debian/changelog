@@ -1,0 +1,120 @@
+lcs-squidguard (2.4.7.1) Lcs; urgency=low
+
+  * Modify package for new mnu.d structure
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 14:16:53 +0200
+
+lcs-squidguard (2.4.7) Lcs; urgency=low
+
+  * Fix problem options checked
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 26 Mar 2010 08:55:31 +0100
+
+lcs-squidguard (2.4.6) Lcs; urgency=low
+
+  * fix initial install
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 08 Dec 2009 15:59:27 +0000
+
+lcs-squidguard (2.4.5) Lcs; urgency=low
+
+  * remove tilde
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Oct 2009 17:15:50 +0100
+
+lcs-squidguard (2.4.5~2) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * add remove sudo when remove package
+  * intergrating lcs-make-sudoers
+  * prefixing getBlacklists.sh
+
+  [ Jean-Luc Chretien ]
+  * index.php : Add variables in register globals section 
+  * Correct cron.daily task getBlacklists
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sun, 25 Oct 2009 14:38:44 +0100
+
+lcs-squidguard (2.4.3) Lcs; urgency=low
+
+  * fixing last interface bug with marketingware blacklist
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Sat, 27 Jun 2009 21:01:56 +0200
+
+lcs-squidguard (2.4.2) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * fix: checkbox bug
+  * add missing picture
+  * add missing variable
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 26 Jun 2009 01:52:03 +0200
+
+lcs-squidguard (2.4.2~4) Lcs; urgency=low
+
+  * fix bug in blacklists order
+  * fixing bug in web page
+  * adding new blacklisk patch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 18 Jun 2009 18:59:54 +0200
+
+lcs-squidguard (2.4.1) Lcs; urgency=low
+
+  * fix blog test now silent
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed, 10 Jun 2009 20:46:26 +0200
+
+lcs-squidguard (2.4.1~3) Lcs; urgency=low
+
+  * fix bug with blog patch durinig initial install
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue,  9 Jun 2009 18:28:45 +0200
+
+lcs-squidguard (2.4) Lcs; urgency=low
+
+  [ Jean Luc Chretien ]
+  * Build a stable release 2.4
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue,  9 Jun 2009 18:26:38 +0200
+
+lcs-squidguard (2.2) intrepid; urgency=low
+
+  * Make a testing release
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 26 May 2009 17:21:20 +0200
+
+lcs-squidguard (2.1-2~6) unstable; urgency=low
+
+  * add lcs-squid depend
+  * remove-reinstall fix
+  * Add patch for lcs-squidguard blog blacklist upgrade
+  * bug fix
+  * lcs-squidguard : Add blog blacklists
+  * audio-video bug fix blacklist
+  * Adding option for squidguard audio-video blacklist
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed,  6 May 2009 19:26:37 +0200
+
+lcs-squidguard (2.1)  LcsXP; urgency=low
+
+    [Jean-Luc Chretien]
+    * Restructuring the architecture of the package (svn_builpackage compatibilty)
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 14 Nov 2008 17:44:17 +0100
+
+lcs-squidguard (2.1~3) lcs20; urgency=low
+    [ Jean-Luc Chretien ]
+    * Modify apache2 configuration for specific open_basedir in postinst and postrm
+
+    [ Philippe Leclerc ]
+    * Mise en place du dispositif de filtrage des acces internet via se3-internet.
+    * Ajout de la gestion whitelists.
+
+
+lcs-squidguard (2.0-1)
+    [ Jean-Luc Chretien ]
+    * Correct rights on whitelists
+
+lcs-squidguard (2.0)
+    [ Jean-Luc Chretien ]
+    *  Initial release

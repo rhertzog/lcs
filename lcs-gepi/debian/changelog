@@ -1,0 +1,74 @@
+lcs-gepi (2.4.7) LCS; urgency=low
+
+  * update to revision 5617
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 10 Oct 2010 15:39:29 +0200
+
+lcs-gepi (2.4.6) LCS; urgency=low
+
+  * update to revision 5399
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 22 Sep 2010 21:03:36 +0200
+
+lcs-gepi (2.4.5) LCS; urgency=low
+
+  * update to gepi 1.5.3
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 04 Sep 2010 22:54:06 +0200
+
+lcs-gepi (2.4.4) LCS; urgency=low
+
+  * add "fiches brevet"
+  * update to revision 4523
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 02 Jun 2010 12:50:03 +0200
+
+lcs-gepi (2.4.3) LCS; urgency=low
+
+  * update to revision 4434 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 13 May 2010 12:09:25 +0200
+
+lcs-gepi (2.4.2) LCS; urgency=low
+
+  * update to revision 4162
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 24 Mar 2010 14:02:41 +0100
+
+lcs-gepi (2.4.1) LCS; urgency=low
+
+  * update to revision 4103
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 11 Mar 2010 17:19:10 +0100
+
+lcs-gepi (2.4.0) LCS; urgency=low
+
+  * fixing path to doc and lower name in prerm 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 27 Jan 2010 23:41:49 +0100
+
+lcs-gepi (2.04) LCS; urgency=low
+
+  * change postinst to registred lower name in lcs_db
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 27 Jan 2010 22:12:13 +0100
+
+lcs-gepi (2.0~3) LCS; urgency=low
+
+  * update files to revision 4043 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 27 Jan 2010 12:14:32 +0100
+
+lcs-gepi (2.0~2) LCS; urgency=low
+
+  * update to revision 3948
+  * update to revision 3989 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 01 Jan 2010 07:57:43 +0100
+
+lcs-gepi (2.0~1) LCS; urgency=low
+
+  * Initial Release.
+  * 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu,  3 Dec 2009 15:39:06 +0100

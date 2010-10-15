@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<sect1>
+  <title>Mode utilisateur</title>
+
+  <para>Le mode <emphasis>utilisateur</emphasis> est le mode d'utilisation par
+  défaut, il vous permet de poster une <emphasis role="bold">demande de
+  support</emphasis> et de suivre l'évolution du traitement du problème que
+  vous rencontrez.</para>
+
+  <figure>
+    <title>Menu utilisateur</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/mnu_utilisateur.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+
+  <para>Ce menu est disponible lorsque vous êtes authentifié sur le serveur
+  <emphasis>LCS</emphasis>.</para>
+
+  <sect2>
+    <title>Demande de support</title>
+
+    <para>Vous êtes confronté à un problème matériel, logiciel ou d'usage du
+    système d'information, vous pouvez poster une demande de support via le
+    formulaire ci-dessous.</para>
+
+    <figure>
+      <title>Formulaire de «demande de support»</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/demande_support.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>Vous devez choisir :</para>
+
+    <orderedlist>
+      <listitem>
+        <para>Votre secteur d'intervention,</para>
+      </listitem>
+
+      <listitem>
+        <para>La localisation du problème (bâtiment, étage, numéro de
+        sale),</para>
+      </listitem>
+
+      <listitem>
+        <para>La marque et le numéro du poste,</para>
+      </listitem>
+
+      <listitem>
+        <para>Le système d'exploitation de la machine qui pose
+        problème,</para>
+      </listitem>
+
+      <listitem>
+        <para>L'origine du problème rencontré,</para>
+      </listitem>
+
+      <listitem>
+        <para>Une description du problème rencontré,</para>
+      </listitem>
+
+      <listitem>
+        <para>Et pour finir vous pouvez soumettre votre demande.</para>
+      </listitem>
+    </orderedlist>
+  </sect2>
+
+  <sect2>
+    <title>En attente</title>
+
+    <para>Une fois votre <emphasis role="bold">«demande de support»</emphasis>
+    soumise, votre demande a le statut <emphasis role="bold">«En
+    attente»</emphasis>, c'est à dire que votre demande est visible par vous
+    et par l'équipe d'administration du système d'information de votre
+    établissement à partir du menu <emphasis>En attente</emphasis> et que les
+    membres de cette équipe ainsi que vous même avez reçu une copie de cette
+    demande par courrier électronique.</para>
+
+    <figure>
+      <title>Demande En attente</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/en_attente.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>Vous avez la possibilité de <emphasis>Modifier</emphasis> ou de
+    <emphasis>Supprimer</emphasis> votre demande.</para>
+  </sect2>
+
+  <sect2>
+    <title>Votre Encours</title>
+
+    <figure>
+      <title>Votre En cours</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/votre_encours1.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>Votre demande à été prise en charge par un membre l'équipe
+    d'administration du système d'information de votre établissement.</para>
+  </sect2>
+
+  <sect2>
+    <title>Votre historique</title>
+
+    <para>Lorsque l'intervention est clôturée par un membre de l'équipe
+    d'administration, votre demande est visible à partir du menu
+    <emphasis>votre historique</emphasis>.</para>
+
+    <figure>
+      <title>Votre Historique</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/votre_historique.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect2>
+</sect1>

@@ -1,0 +1,8 @@
+# SARE "Evil Numbers(0)" Ruleset for SpamAssassin
+# Version:  02.00.01 # The evilnumber ruleset has been retired, Please remove from your update scripts.
+# Created:  2004-01-02
+# Modified: 2005-03-13
+#
+#@@# Changelog:
+#@@#		This ruleset has not been updated in three years.  Please remove from your auto-update scripts.
+##EOF

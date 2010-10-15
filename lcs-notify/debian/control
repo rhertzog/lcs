@@ -1,0 +1,14 @@
+Source: lcs-notify
+Section: misc
+Priority: extra
+Maintainer: Simon Cavey <simon.cavey@crdp.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.3
+Homepage: http://lcs.crdp.ac-caen.fr
+
+Package: lcs-notify
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, apt-listchanges
+Description: apt-listchanges LCS customization
+ this package configure apt-listchanges to notify
+ LCS administrator when LcsMaj apply updates.

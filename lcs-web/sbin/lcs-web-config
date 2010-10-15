@@ -1,0 +1,123 @@
+#!/bin/sh
+
+# /usr/sbin/lcs-web-config
+
+set -e
+
+exit_fatal() {
+	echo "Fatal: $1" >&2
+	exit 1
+}
+
+. /usr/share/slis/slis-common.sh
+
+# Load LCS config
+[ ! -e /etc/lcs/lcs.conf ] && exit_fatal "missing /etc/lcs/lcs.conf"
+. /etc/lcs/lcs.conf
+
+case "$1" in
+    possible)
+        # Is the LDAP server reachable ?
+        if pgrep -u mysql mysqld >/dev/null && ldapsearch -x -b $LDAP_BASE_DN uid=admin 2>/dev/null | grep -q "^dn: " && getent group lcs-users >/dev/null; then
+            exit 0
+        else
+            exit 1
+        fi
+    ;;
+    needed)
+	exit 0
+    ;;
+    configure)
+        # Configure LCS Web
+        #
+        # generate password for setup page
+        #
+        if [ -z "$LOCAL_ADMIN_PW" ] || [ "$LOCAL_ADMIN_PW" = "AUTO" ]; then
+          LOCAL_ADMIN_PW=`pwgen -1 -s 8`
+        fi
+        /usr/bin/htpasswd -bc /var/www/setup/.htpasswd admin $LOCAL_ADMIN_PW
+        #
+        # Add LCS profile conf in etc
+        mv /etc/profile /etc/profile.lcsav
+        cp /var/lib/lcs/web/profile /etc/profile
+        # Patch /etc/skel/public_html/index.html.in
+	if [ -e /etc/skel/public_html/index.html.in ]; then
+	    sed -e "s/##HOST##/$DOMAIN/g" /etc/skel/public_html/index.html.in \
+		>/etc/skel/public_html/index.html
+	    rm /etc/skel/public_html/index.html.in
+	fi
+        # Patch files /etc/LcSeConfig.php.in /var/www/index.html.in /var/www/lcs/includes/config.inc.in 
+        echo "Patch des fichiers de conf LCS"
+        sed -e "s|@@PASSWORD@@|"$MYSQLPW"|g" /etc/LcSeConfig.ph.in >/etc/LcSeConfig.ph
+        chmod 640 /etc/LcSeConfig.ph
+        chown root:www-data /etc/LcSeConfig.ph
+        sed -e "s|@@PASSWORD@@|"$LCSMGRPASS"|g" /var/www/lcs/includes/config.inc.in >/var/www/lcs/includes/config.inc.php
+        chown www-data:www-data /var/www/lcs/includes/config.inc.php
+        # Generate private_key file if no exist
+        if [ ! -e /var/www/lcs/includes/private_key.inc.php ]; then
+            PRIVKEY=`perl -e '@c=("A".."Z","a".."z",0..9);print join("",@c[map{rand @c}(1..32)]),"\n"'`
+            sed -e "s|@@PRIVKEY@@|$PRIVKEY|g" /var/www/lcs/includes/private_key.in >/var/www/lcs/includes/private_key.inc.php
+            chown www-data /var/www/lcs/includes/private_key.inc.php
+            chmod 640 /var/www/lcs/includes/private_key.inc.php
+        fi
+        # Add right stats_can_read
+        if ! ldapsearch -b "ou=$LDAP_RIGHTS_RDN,$LDAP_BASE_DN" -x "cn=stats_can_read" 2>/dev/null | grep -q "^dn: "; then
+            echo "dn: cn=stats_can_read,ou=$LDAP_RIGHTS_RDN,$LDAP_BASE_DN
+objectClass: groupOfNames
+cn: stats_can_read
+member: uid=admin,ou=$LDAP_PEOPLE_RDN,$LDAP_BASE_DN" > /var/lib/lcs/stats_can_read.ldif
+            ldapadd -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/stats_can_read.ldif
+            rm -f /var/lib/lcs/stats_can_read.ldif
+        fi
+        # Add right Mail_can_redir if ldap is up and if this right not exist in LDAP base
+        if ! ldapsearch -b "ou=$LDAP_RIGHTS_RDN,$LDAP_BASE_DN" -x "cn=Mail_can_redir" 2>/dev/null | grep -q "^cn"; then
+            echo "dn: cn=Mail_can_redir,ou=rights,$LDAP_BASE_DN
+objectClass: groupOfNames
+cn: Mail_can_redir
+member: uid=admin,ou=People,$LDAP_BASE_DN
+member: cn=Administratifs,ou=Groups,$LDAP_BASE_DN
+member: cn=Profs,ou=Groups,$LDAP_BASE_DN" > /var/lib/lcs/Mail_can_redir.ldif
+            ldapadd -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/Mail_can_redir.ldif &>/dev/null
+            rm -f /var/lib/lcs/Mail_can_redir.ldif
+        fi
+        # Create webmaster.etab account
+        if ! getent passwd webmaster.etab >/dev/null; then
+            echo "Creation compte webmaster.etab"
+            sed -e "s|#PEOPLE#|$LDAP_PEOPLE_RDN|g" \
+                -e "s|#BASEDN#|$LDAP_BASE_DN|g" \
+                -e "s|#MAILDOMAIN#|$LDAP_MAIL_DOMAIN|g" \
+                /var/lib/lcs/web/ldif/webmasteretab.ldif.in > /var/lib/lcs/web/ldif/webmasteretab.ldif
+            ldapadd -x -D "cn=$LDAP_ADMIN_RDN,$LDAP_BASE_DN" -w $LDAP_ADMIN_PW -f /var/lib/lcs/web/ldif/webmasteretab.ldif
+            if [ ! -d /home/webmaster.etab ];then
+                mkdir /home/webmaster.etab
+            fi
+            chown root:lcs-users /home/webmaster.etab
+            chmod 750 /home/webmaster.etab
+            cp -a /etc/skel/* /home/webmaster.etab/
+            chown -R webmaster.etab:lcs-users /home/webmaster.etab/public_html
+            chown -R webmaster.etab:lcs-users /home/webmaster.etab/Documents
+            chmod 770 /home/webmaster.etab/public_html /home/webmaster.etab/Documents
+            chown -R webmaster.etab:www-data /home/webmaster.etab/Maildir
+            chmod -R 700 /home/webmaster.etab/Maildir
+        fi
+        # add include lcs apache configuration 55_lcs.conf
+        cat >/etc/apache2/lcs-main/55_lcs.conf <<EOF
+Alias /Plugins/ /usr/share/lcs/Plugins/
+Alias /Modules/ /usr/share/lcs/Modules/
+EOF
+
+        # Configuration webalizer
+        echo "Configuration webalizer"
+        sed -e "s/#HOSTNAME#/`hostname`/g" /var/lib/lcs/web/webalizer/webalizer.conf.in >/etc/webalizer/webalizer.conf
+
+        # For compatibilty with old plugins
+        ln -sf /usr/sbin/apache2ctl /usr/sbin/apachectl
+
+        # restart apache2
+        invoke-rc.d apache2 restart
+    ;;
+    *)
+        echo "usage: $0 {configure|possible|needed}" >&2
+        exit 1
+    ;;
+esac

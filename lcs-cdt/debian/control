@@ -1,0 +1,12 @@
+Source: lcs-cdt
+Section: misc
+Priority: optional
+Maintainer: Philippe Leclerc <philippe.leclerc1@ac-caen.fr>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.7.3
+
+Package: lcs-cdt
+Architecture: all
+Depends: lcs-web
+Description: Install homework notebook on LCS server
+ This package sets up homework notebook

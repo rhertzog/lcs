@@ -1,0 +1,102 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=entete-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend>Couleurs d'arri&egrave;re plan de l'ent&ecirc;te</legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
+				<ul>
+					<li class="ligne_280">
+						<label for="couleur_entete">Couleur d&rsquo;arrière-plan :</label>
+						<input type="text" name="couleur_entete" id="couleur_entete" class="palette" size="7" value="[(#ENV{couleur_entete,#ffffff})]" />
+					</li>
+					<li class="ligne_280">
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=343&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Couleurs d'arri&egrave;re plan de l'ent&ecirc;te">&nbsp;</a>
+						<label class="titre"> Afficher d&eacute;grad&eacute; de couleurs</label>
+						<input type="checkbox" name="affgradient_entete" value="oui" [checked="(#ENV{affgradient_entete}|?{checked})"] id="affgradient_entete" />
+					</li>
+				</ul>
+				[(#CONFIG{tispipskelet_conf/entete/affgradient_entete}|oui)		
+				<ul id="cfggradient_entete">
+					<li class="ligne demi" style="padding-top:auto;padding-bottom:auto;width:280px;">
+						<label for="gradientstart_entete" style="display:inline;width:120px;float:none;">Couleur de d&eacute;pard :</label>
+						<input type="text" name="gradientstart_entete" id="gradientstart_entete" class="palette" size="7" value="[(#ENV{gradientstart_entete}|?{#ENV{gradientstart_entete},#ffffff})]" />
+						</li>
+					<li class="ligne demi" style="padding-top:auto;padding-bottom:auto;width:215px">
+						<label for="gradientend_entete" style="display:inline;width:120px;float:none;">Couleur d&rsquo;arriv&eacute;e :</label>
+						<input type="text" name="gradientend_entete" id="gradientend_entete"  class="palette" size="7"  value="[(#ENV{gradientend_entete}|?{#ENV{gradientend_entete},#000000})]" />
+						</li>
+						<li class="ligne_280">
+							<label for="dirgradient_entete">Orientation du d&eacute;grad&eacute;</label>
+							<select name="dirgradient_entete" id="dirgradient_entete" class="fondl spip_xx-small">
+								<option value="vertical" [(#ENV{dirgradient_entete}|=={vertical}|?{selected="selected",''})]>Horizontal</option>
+								<option value="horizontal" [(#ENV{dirgradient_entete}|=={horizontal}|?{selected="selected",''})]>Vertical</option>
+							</select>
+						</li>
+						<li class="ligne_280">
+							<label for="posgradient_entete">Position du d&eacute;grad&eacute; </label>
+									<select name="posgradient_entete" id="posgradient_entete" class="fondl spip_xx-small">
+										<option value="left">&Agrave; gauche</option>
+										<option value="right">&Agrave; droite</option>
+										<option value="top">En haut</option>
+										<option value="bottom">En bas</option>
+									</select>
+								<span style="font-style=underscore"></span><br />
+						</li>
+						<li class="ligne_280">
+							<label>Longueur du d&eacute;grad&eacute;(en pixels)</label>
+							<input type="text" name="gradientlenght_entete" size="4" value="[(#ENV{gradientlenght_entete}|?{#ENV{gradientlenght_entete},''})]" class="fondl spip_xx-small" />
+						</li>
+					</ul>
+					]
+			<script type="text/javascript"><!--
+				$('#affgradient_entete')
+				.bind('change', function() {
+			            $('#cfggradient_entete').slideToggle('slow');
+				})
+				if ($('#affgradient_entete:checked').length == 0)
+					$('#cfggradient_entete').hide();
+
+				$('#posH')
+					.bind('change', function() {
+					var on = $(this).is(':checked');
+					$('.noPosH').attr('disabled', on ? 'disabled' : '');
+					$('.noPosV').removeAttr('disabled');
+				})
+				$('#posV')
+					.bind('change', function() {
+					var on = $(this).is(':checked');
+					$('.noPosV').attr('disabled', on ? 'disabled' : '');
+					$('.noPosH').removeAttr('disabled');
+				})	
+				$(function() {
+					var onV = $('#posV').is(':checked');
+					$('.noPosV').attr('disabled', onV ? 'disabled' : '');
+					var onH = $('#posH').is(':checked');
+					$('.noPosH').attr('disabled', onH ? 'disabled' : '');
+				});
+
+			// --></script>
+				</fieldset>			
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			<div style="text-align:center;">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

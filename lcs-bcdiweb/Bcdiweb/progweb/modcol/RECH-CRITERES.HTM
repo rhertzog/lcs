@@ -1,0 +1,514 @@
+<!-- 08/12/2008 RECH-THESAURUS.HTM -->
+
+<!-- Ecrans RM 17/01/07
+  actualisation des listes sauf pour blanc et flèches
+-->
+<#VAR RECHERCHE=AUTRES>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Recherche par crit&egrave;res</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Pragma" content="no-cache">
+<link href="<#CONST REP_MODELES>bcdi.css" rel="stylesheet" type="text/css" media="screen">
+
+<noscript>Votre navigateur n'autorise pas la gestion des scripts Javascript, vous ne pouvez pas utiliser BCDI Web</noscript>
+<script type="text/javascript">
+var fichierEnCours="RECH-CRITERES.HTM"
+var delai_de_frappe=3000 // millisecondes
+var aBalFic_Chp=new Array("<#NOTICES_TITRE>","<#AUTEURS_AUTEUR>","<#EDITEURS_EDITEUR>","<#COLLECTIONS_COLLECTION>","<#NOTICES_ISBN>")
+var aFic_Chp=new Array('NOTICES_TITRE','AUTEURS_AUTEUR','EDITEURS_EDITEUR','COLLECTIONS_COLLECTION','NOTICES_ISBN')
+var aChp=new Array('Titre','Auteur','Editeur','Collection','Isbn')
+var aChpPluriel=new Array('titres','auteurs','éditeurs','collections','Isbn')
+var no=0
+var en_compare=false
+var Derouler=false // A priori, on ne déroule pas les restrictions.
+var DernierCode=0 // pour fKeyUp
+var en_timer=false
+var chpAlister=""
+var idTimer=""
+
+function escapeApostrophe(ch)
+{
+  eA=''
+  for (var i=0; i<ch.length; i++) {
+	c=ch.charAt(i)
+	if (c=="'") eA+="\\"
+	eA+=c
+  }
+  return eA
+}
+function fKeyUp(event,nom)
+{
+  chpAlister=nom
+  if (en_timer) window.clearTimeout(idTimer)
+  idTimer=window.setTimeout("init_liste()",delai_de_frappe)
+  en_timer=true
+  if (!event)
+  if (window.event) event=window.event
+  if (event)
+  {
+     if (typeof(event.keyCode)=="number")
+      DernierCode=event.keyCode;
+     else if (typeof(event.which)=="number")
+      DernierCode=event.which;
+     else if (typeof(event.charCode)=="number")
+	  DernierCode=event.charCode;
+  }
+}
+
+function DivStatus( nom, numero )
+// Montre / Cache un div
+{
+  var divID = nom + numero;
+  PcH = true;
+  if ( document.getElementById && document.getElementById( divID ) ) // Pour les navigateurs récents
+    Pdiv = document.getElementById( divID );
+  else if ( document.all && document.all[ divID ] ) // Pour les veilles versions
+    Pdiv = document.all[ divID ];
+  else if ( document.layers && document.layers[ divID ] ) // Pour les très veilles versions
+    Pdiv = document.layers[ divID ];
+  else
+    PcH = false;
+  if ( PcH )
+    Pdiv.className = ( Pdiv.className == 'cachediv' ) ? '' : 'cachediv';
+}
+
+function BasculerRestrictions() { DivStatus( 'txt', '3' ); DivStatus( 'txt', '6' ); }
+
+/* Fonction coche/décoche checkbox */
+function selectall(cas,choix)
+{
+/* test si on a plusieurs lignes    */
+  if(choix.length>0)
+  {  for (var i=0; i<choix.length;i++)
+		choix[i].checked=cas.checked
+   }
+    else
+      choix.checked=cas.checked
+}
+function DonnerFocus(nom)
+{
+document.forms[0].elements[nom].focus();
+}
+function RajouterParametre(url,nom,valeur)  // on rajoute un champ de la liste des paramètres d'une URL
+{
+  rajout=nom+"="+escape(valeur);
+  nom=nom.toUpperCase();
+  urlUp=url.toUpperCase()+"&";
+  p=urlUp.indexOf("?"+nom+"=");
+  if (p<0) p=urlUp.indexOf("&"+nom+"=");
+  if (p<0) {
+	p=url.indexOf("?");
+	if (p<0) url+="?"; else url+="&";
+	url+=rajout;
+  }
+  else
+  {
+	p+=1
+	q=urlUp.indexOf("&",p);
+	url=url.substr(0,p)+rajout+url.substr(q)
+  }
+  return(url)
+}
+
+function valeurs_checkees(NomChp)
+{
+  res=""
+  ListeElements=document.getElementsByName(NomChp)
+  if (ListeElements.length>0)
+  {
+    for(var j=0; j<ListeElements.length; j++)
+    {
+      if (ListeElements[j].checked)
+      {
+        if (res>" ")
+          res+="|"
+        res+=ListeElements[j].value
+	  }
+    }
+  }
+  return(res)
+}
+function init_liste()  // renvoie le formulaire avec la liste correspondant au début de saisie
+{
+  if ((DernierCode>=0) && ((DernierCode<32) || (DernierCode>=40)))
+  {
+  if (en_timer) window.clearTimeout(idTimer)
+  en_timer=false
+  vc=valeurs_checkees("COMPARE_"+chpAlister)
+  if ((en_compare && (vc=="CONTIENT")) || (!en_compare && (vc!="CONTIENT")))
+  {
+    if (en_compare)
+    {
+      if (vc=="CONTIENT")
+        vc="COMMENCE"
+      else
+        vc="CONTIENT"
+    }
+	ch=window.location.href; 
+	for(var n=0; n<aFic_Chp.length; n++)
+	{
+	  chpn=aChp[n].toUpperCase()
+	  ch=RajouterParametre(ch,chpn,document.forms[0].elements[chpn].value)
+	  ch=RajouterParametre(ch,aFic_Chp[n],document.forms[0].elements[chpn].value)
+	  if (chpAlister==chpn)
+	  {
+		ch=RajouterParametre(ch,"COMPARE_"+chpn,vc)
+	  }
+	  else
+		ch=RajouterParametre(ch,"COMPARE_"+chpn,valeurs_checkees("COMPARE_"+chpn))
+	}
+//    ch=RajouterParametre(ch,"CLASSEMENT",valeurs_checkees("CLASSEMENT"))
+	ch=RajouterParametre(ch,"QUOI",document.forms[0].QUOI.value)
+	ch=RajouterParametre(ch,"COMMENT",valeurs_checkees("COMMENT"))
+	ch=RajouterParametre(ch,"TYPEDENATURE",valeurs_checkees("TYPEDENATURE"))
+	ch=RajouterParametre(ch,"SUPPORT1",valeurs_checkees("SUPPORT1"))
+	ch=RajouterParametre(ch,"DATEEGAL",document.forms[0].DATEEGAL.value)
+	ch=RajouterParametre(ch,"DATEINF",document.forms[0].DATEINF.value)
+	ch=RajouterParametre(ch,"DATESUP",document.forms[0].DATESUP.value)
+	ch=RajouterParametre(ch,"NATURES",valeurs_checkees("NATURES"))
+	ch=RajouterParametre(ch,"GENRES",valeurs_checkees("GENRES"))
+	ch=RajouterParametre(ch,"PUBLICS",valeurs_checkees("PUBLICS"))
+	ch=RajouterParametre(ch,"NIVEAUX",valeurs_checkees("NIVEAUX"))
+	ch=RajouterParametre(ch,"DISCIPLINES",valeurs_checkees("DISCIPLINES"))
+	ch=RajouterParametre(ch,"DISPO",valeurs_checkees("DISPONIBILITE"))
+	ch=RajouterParametre(ch,"FOCUS",chpAlister)
+	ch=RajouterParametre(ch,"FICHIER",document.forms[0].FICHIER.value)
+	ch=RajouterParametre(ch,"NP",document.forms[0].NP.value)
+	window.location.href=ch;
+  }
+}
+}
+
+function decode(ch)
+{
+  st="";
+  p=0;
+  while (p<ch.length)
+  {
+    c=ch.charAt(p++);
+    if ((c=="%") && (ch.charAt(p)=="2") && ((ch.charAt(p+1)=="2") || (ch.charAt(p+1)=="7")))
+    {
+      p++;
+      if (ch.charAt(p)=="2")
+        c='"'
+	  else
+		c="'"
+	  p++;
+	}
+	st+=c;
+  }
+  return(st)
+}
+function maj_saisie(Fic_Chp,objet,pour) // recopie la valeur de la liste déroulante dans la zone de saisie
+{
+  var suite="+++";
+  DonnerFocus(pour.name)
+  ch=objet.value;
+  if (ch.indexOf(suite)==0)
+  {
+	ch=ch.substr(suite.length,255)
+	pour.value=decode(ch)
+	chpAlister=pour.name
+	init_liste()
+  }
+  else
+   pour.value=decode(ch)
+}
+var ApresRadio=false
+function MontreListe(objet)
+{
+  NomObj=objet.name
+  ParRadio=(NomObj.indexOf("COMPARE_")>=0)
+  if (ParRadio)
+  {
+    NomObj=NomObj.substr(8,30)
+  }
+  else
+  {
+    LesDiv=document.getElementsByTagName("div")
+    for(var i=0; i<LesDiv.length; i++)
+    {
+      chId=LesDiv[i].id
+      if (chId.indexOf("LISTE_POUR")>=0)
+      {
+        montrer=true
+        if ((chId.indexOf(NomObj)>=0) && (objet.value=="CONTIENT"))
+          montrer=false
+        else
+        {
+          NomChp="COMPARE_"+chId.substr(11,30)
+          Radios=document.getElementsByName(NomChp)
+          if (Radios.length>0)
+          {
+            for(var j=0; j<Radios.length; j++)
+            {
+            if (((Radios[j].value=="CONTIENT") && ((Radios[j].checked) && !(ApresRadio))) || ((Radios[j].value=="COMMENCE") && ((Radios[j].checked) && ApresRadio)))
+              montrer=false
+            }
+          }
+        }
+        if ((chId.indexOf(NomObj)>=0) && montrer)
+		  LesDiv[i].style.visibility="visible"
+        else
+          LesDiv[i].style.visibility="hidden"
+      }
+	}
+  }
+  document.forms[0].elements["FOCUS"].value=NomObj
+  ApresRadio=ParRadio
+  if (ParRadio)
+    DonnerFocus(NomObj)
+}
+function maj_compare(objet)
+{
+  if (objet.value=="CONTIENT")
+    MontreListe(objet)
+  else
+  {
+    chpAlister=objet.name.substr(8,30)
+    en_compare=true
+    init_liste()
+    en_compare=false
+  }
+}
+function EnteteListe()
+{
+  ChpUp=aChp[no]
+  ChpUp=ChpUp.toUpperCase()
+  document.write('<div class="ListeF2" ID="LISTE_POUR_'+ChpUp+'">')
+  document.write('<div class="tridroitetitre">Liste des '+aChpPluriel[no]+'</div>')
+  document.write('<select name="LISTE_'+ChpUp+'" value="Liste '+aChpPluriel[no]+'" onChange="maj_saisie(')
+//  document.write("'"+escapeApostrophe(aFic_Chp[no])+"',this,document.forms[0]."+ChpUp+")")
+  document.write("'"+aFic_Chp[no]+"',this,document.forms[0]."+ChpUp+")")
+  document.write('" size="7" class="select600">')
+  no++;
+}
+
+function BasListe()
+{
+document.write('<\/select><\/div>')
+}
+
+function effacer()
+{
+  titreVide=(document.forms[0].TITRE.value=="")
+  for (i=0;i<document.forms[0].elements.length;i++)  with (document.forms[0].elements[i])
+  {
+	if (type=="text") value=""
+	if (type=="checkbox") checked=false
+	if (type=="select-one") options[0].selected = true;
+/*
+    nom=document.forms[0].elements[i].name;
+    AEffacer=false;
+    for (j=0;j<5;j++)
+      if ((nom==aChp[j].toUpperCase()) || (nom=="QUOI")) AEffacer=true;
+    if (AEffacer) document.forms[0].elements[i].value="";
+*/
+  }
+  if (!titreVide) {
+    chpAlister="TITRE"
+    init_liste()
+  }
+}
+
+function InitFocus()
+{
+  ch="<#FOCUS>"
+  if (ch<"!")
+    ch="TITRE"
+  try
+  {
+    DonnerFocus(ch)
+  }
+  catch (ex)
+  {
+    DonnerFocus("TITRE")
+  }
+
+}
+
+function tube(ch)
+{
+  while (ch.substring(0,1)==" ")
+   ch=ch.substring(1,ch.length)
+  return "|"+ch+"|"
+}
+function ParDefaut(ch,defaut)
+{
+  while (ch.substring(0,1)==" ")
+   ch=ch.substring(1,ch.length)
+  if (ch=="")
+   ch=defaut
+  return ch
+}
+
+function ChangerOptions(nom,valeur)
+{
+  selectBox = document.getElementById(nom);
+  if (selectBox.options.length>0) {
+	if (valeur=='') valeur=selectBox.options[0].text;
+	for (var i=0; i<selectBox.options.length; i++)
+	if (selectBox.options[i].text==valeur) {
+	  selectBox.options[i].selected = true;
+	  if (i>0) Derouler=true;
+	}
+  }
+}
+
+function InitChecked()
+{
+  chCommenceTitre=ParDefaut("<#COMPARE_TITRE>","COMMENCE")
+  chCommenceAuteur=ParDefaut("<#COMPARE_AUTEUR>","COMMENCE")
+  chClassement=ParDefaut("<#CLASSEMENT>","TITRE")
+  if (chClassement=="PERTINENCE") chClassement="TITRE"
+  chNature=tube("<#TYPEDENATURE>")
+  chSupport=tube("<#SUPPORT1>")
+  for (i=0;i<document.forms[0].elements.length;i++)
+  {
+    document.forms[0].elements[i].value=document.forms[0].elements[i].value.replace(/(^\s*)|(\s*$)/g, ""); 
+    if (document.forms[0].elements[i].name=="COMPARE_TITRE")
+    document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chCommenceTitre)
+    if (document.forms[0].elements[i].name=="COMPARE_AUTEUR")
+    document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chCommenceAuteur)
+    else if (document.forms[0].elements[i].name=="CLASSEMENT")
+    document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chClassement)
+    else
+    if (document.forms[0].elements[i].name=="TYPEDENATURE")
+    {
+	  ch="|"+document.forms[0].elements[i].value+"|"
+      document.forms[0].elements[i].checked=(chNature.indexOf(ch)>=0)
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+    else
+    if (document.forms[0].elements[i].name=="SUPPORT1")
+    {
+      ch="|"+document.forms[0].elements[i].value+"|"
+      document.forms[0].elements[i].checked=(chSupport.indexOf(ch)>=0)
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+    else
+    if ((document.forms[0].elements[i].name.substring(0,4)=="DATE") && !(document.forms[0].elements[i].value=="")) Derouler=true
+    else
+    if (document.forms[0].elements[i].name.substring(0,5)=="DISPO")
+    {
+      document.forms[0].elements[i].checked=!("<#DISPONIBLES>"=="")
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+  }
+  ChangerOptions('GENRES',"<#GENRES>")
+  ChangerOptions('NATURES',"<#NATURES>")
+  ChangerOptions('NIVEAUX',"<#NIVEAUX>")
+  ChangerOptions('DISCIPLINES',"<#DISCIPLINES>")
+  ChangerOptions('PUBLICS',"<#PUBLICS>")
+  ancienFichierMaitre="<#VAR FICHIER-MAITRE>";
+<#VAR FICHIER-MAITRE=RECH-CRITERES.HTM>
+  if (ancienFichierMaitre!="<#VAR FICHIER-MAITRE>") {effacer(); Derouler=false;}
+  if (Derouler) BasculerRestrictions()
+}
+</SCRIPT>
+
+</head>
+
+<body onLoad="InitChecked(); InitFocus()">
+
+<form name="AVANCEE" action="<#URLDLL>" name="recherche" method="post">
+<INPUT TYPE="HIDDEN" NAME="NP" VALUE="<#VALEUR NUMERO_PANIER>"/>
+<INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="<#FICHIER>"/>
+<INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="RECH-CRITERES.HTM"/>
+<INPUT TYPE="HIDDEN" NAME="RESTRICTIONS" VALUE="OUI"/>
+<INPUT TYPE="HIDDEN" NAME="LANGAGE" VALUE="DICO"/>
+<INPUT TYPE="HIDDEN" NAME="FORMAT" VALUE="LISTENOT"/>
+<INPUT TYPE="HIDDEN" NAME="FOCUS" VALUE="TITRE"/>
+<INPUT TYPE="HIDDEN" NAME="FORMULAIRE_RECHERCHE" VALUE="RECH-CRITERES"/>
+  <SCRIPT type="text/javascript">no=0; EnteteListe()</SCRIPT>
+  <#LISTE NOTICES TITRE LARGEUR=60>
+  <SCRIPT type="text/javascript">BasListe();EnteteListe();</SCRIPT>
+  <#LISTE AUTEURS AUTEUR LARGEUR=60>
+  <SCRIPT type="text/javascript">BasListe();EnteteListe();</SCRIPT>
+  <#LISTE EDITEURS EDITEUR LARGEUR=60>
+  <SCRIPT type="text/javascript">BasListe();EnteteListe();</SCRIPT>
+  <#LISTE COLLECTIONS COLLECTION LARGEUR=60>
+  <SCRIPT type="text/javascript">BasListe();EnteteListe();</SCRIPT>
+  <#LISTE NOTICES ISBN LARGEUR=60>
+  <SCRIPT type="text/javascript">BasListe()</SCRIPT>
+
+<div class="zonemenu">
+  <div class="fxcal">
+  <div class="menucalibre">&nbsp;</div>
+  <div class="menuOFF">
+    <div class="menuOFFgauche"></div>
+	<div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-CRITERES.HTM&MODELE=index.htm">Recherche th&eacute;matique</a></div>
+	<div class="menuOFFdroite"></div>
+  </div>
+  <div class="menuON">
+	<div class="menuONgauche"></div>
+	<div class="menuONtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-CRITERES.HTM&MODELE=rech-criteres.htm">Recherche par crit&egrave;res</a></div>
+	<div class="menuONdroite"></div>
+  </div>
+  <div class="menuOFF">
+	<div class="menuOFFgauche"></div>
+	<div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=RECH-CRITERES.HTM&MODELE=VisitTh.htm">Recherche par th&eacute;saurus</a></div>
+	<div class="menuOFFdroite"></div>
+  </div>
+
+<#INCLUDE INCLUDE-PANIER-COMPTE.HTM>
+
+</div>
+
+<div class="menuseparat">&nbsp;</div>
+<div class="menuzonedatag">
+	<div class="menuzonedata"><br>
+	  <br>
+<SCRIPT type="text/javascript">
+for(var n=0; n<aFic_Chp.length; n++)
+{
+  Fic_Chp=aFic_Chp[n]
+  NomChp=aChp[n]
+  NomChpUp=NomChp.toUpperCase()
+
+  document.write('<div class="txt0"><b>'+NomChp+' :<\/b>&nbsp;<\/div>')
+  document.write('<div class="zoneinputrech">')
+  document.write('<input type="text" name="'+NomChpUp+'" value="'+aBalFic_Chp[n]+'" onkeyup="fKeyUp(event,this.name);"')
+  document.write(' ONFOCUS="MontreListe(this); if (this.createTextRange) {var range = this.createTextRange();')
+  document.write('range.collapse(false);range.select();}" class="input200"/>')
+  if (n<2)
+  {
+	document.write('<input name="COMPARE_'+NomChpUp+'" type="radio" value="COMMENCE" ONFOCUS="maj_compare(this)"/> Commence')
+	document.write('<input name="COMPARE_'+NomChpUp+'" type="radio" value="CONTIENT" ONFOCUS="maj_compare(this)"/> Contient')
+  }
+  document.write('<\/div><br><br>')
+}
+</SCRIPT>
+
+				<br>
+				<div class="txt"><b>Je cherche :</b>&nbsp;</div>
+				<div class="zoneinputrech">
+				  <input name="QUOI" type="text" value="<#QUOI>" class="input"/>
+                </div>
+                <div class="zoneinputrech">
+                   <p><br>
+				   <input name="COMMENT" type="radio" value="TOUS"  checked />
+				   Tous les mots
+				   <input name="COMMENT" type="radio" value="UN"/>
+				   Un des mots
+				   <input name="COMMENT" type="radio" value="EXACT"/>
+				   L&rsquo;expression exacte </p>
+				   <p>
+				</div>
+
+
+				<div class="txt4"><div class="txt2"><a href="javascript:BasculerRestrictions()">Restrictions de recherche</a></div>
+				<div align="center"><input name="Rechercher" type="submit" value="Rechercher" class="bouton1"/>
+				<input name="Effacer" type="button" value="Effacer" class="bouton2" onclick="effacer()"/></div></div>
+                </div>
+    </div>
+
+  <#INCLUDE INCLUDE-RESTRICTIONS.HTM>
+
+</div>
+</form>
+</body>
+</html>

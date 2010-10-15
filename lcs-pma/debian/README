@@ -1,0 +1,18 @@
+README, version : 2.1-2~1   30/04/2009
+
+Philippe Leclerc <philippe.leclerc1@ac-caen.fr>
+
+LCS module : pma - Readme
+===========================
+Un ensemble de scripts PHP pour administrer MySQL via un navigateur web
+ 
+
+-----------
+pma est basé sur phpmyadmin <http://www.phpmyadmin.net/> version : 3.1.4
+
+Les fichiers originaux de la version officielle sont disponibles dans le répertoire :
+/var/lib/lcs/pma/Orig
+
+Les fichiers modifiés sont disponibles dans le répertoire :
+/var/lib/lcs/pma/Mod
+

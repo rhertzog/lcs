@@ -1,0 +1,513 @@
+<!-- Ecrans RM 15/01/07
+  actualisation des listes avec flêche droite
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Recherche par critères</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Pragma" content="no-cache">
+<link href="<#CONST REP_MODELES>bcdi.css" rel="stylesheet" type="text/css" media="screen">
+
+<noscript>Votre navigateur n'autorise pas la gestion des scripts Javascript, vous ne pouvez pas utiliser BCDI Web</noscript>
+<script type="text/javascript">
+var aBalFic_Chp=new Array("<#NOTICES_TITRE>","<#AUTEURS_AUTEUR>","<#EDITEURS_EDITEUR>","<#COLLECTIONS_COLLECTION>","<#DOCUMENTS_ISBN>")
+var aFic_Chp=new Array('NOTICES_TITRE','AUTEURS_AUTEUR','EDITEURS_EDITEUR','COLLECTIONS_COLLECTION','DOCUMENTS_ISBN')
+var aChp=new Array('Titre','Auteur','Editeur','Collection','Isbn')
+var aChpPluriel=new Array('titres','auteurs','éditeurs','collections','Isbn')
+var no=0
+var en_compare=false
+var Derouler=false // A priori, on ne déroule pas les restrictions.
+var DernierCode=0 // pour fKeyUp
+
+function fKeyUp(event)
+{
+  if (!event)
+  if (window.event) event=window.event
+  if (event)
+  {
+     if (typeof(event.keyCode)=="number")
+      DernierCode=event.keyCode;
+     else if (typeof(event.which)=="number")
+      DernierCode=event.which;
+     else if (typeof(event.charCode)=="number")
+      DernierCode=event.charCode;
+  }
+}
+
+function DivStatus( nom, numero )
+// Montre / Cache un div
+{
+  var divID = nom + numero;
+  PcH = true;
+  if ( document.getElementById && document.getElementById( divID ) ) // Pour les navigateurs récents
+    Pdiv = document.getElementById( divID );
+  else if ( document.all && document.all[ divID ] ) // Pour les veilles versions
+    Pdiv = document.all[ divID ];
+  else if ( document.layers && document.layers[ divID ] ) // Pour les très veilles versions
+    Pdiv = document.layers[ divID ];
+  else
+    PcH = false;
+  if ( PcH )
+    Pdiv.className = ( Pdiv.className == 'cachediv' ) ? '' : 'cachediv';
+}
+
+function BasculerRestrictions() { DivStatus( 'txt', '3' ); DivStatus( 'txt', '6' ); }
+
+/* Fonction coche/décoche checkbox */
+function selectall(cas,choix)
+{
+/* test si on a plusieurs lignes    */
+  if(choix.length>0)
+  {  for (var i=0; i<choix.length;i++)
+        choix[i].checked=cas.checked
+   }
+    else
+      choix.checked=cas.checked
+}
+function DonnerFocus(nom)
+{
+document.forms[0].elements[nom].focus();
+}
+function SansParametre(url,param)  // on enlève un champ de la liste des paramètres d'une URL
+{
+  p=url.indexOf("?"+param+"=");
+  if (p<0)
+    p=url.indexOf("&"+param+"=");
+  if (p>=0)
+  {
+    ch=url.substring(0,p)
+    reste=url.substr(p+1,10000)
+    p=reste.indexOf("&");
+    if (p>0)
+      ch+="&"+reste.substr(p+1,10000)
+    url=ch
+  }
+  return(url)
+}
+function RajouterParametre(url,nom,valeur)  // on rajoute un champ de la liste des paramètres d'une URL
+{
+  url=SansParametre(url,nom)
+  if (valeur=="") valeur=" "
+  {
+    p=url.indexOf("?");
+    if (p<0)
+      url+="?"
+    else
+      url+="&"
+    url+=nom+"="+escape(valeur)
+  }
+  return(url)
+}
+function valeurs_checkees(NomChp)
+{
+  res=""
+  ListeElements=document.getElementsByName(NomChp)
+  if (ListeElements.length>0)
+  {
+    for(var j=0; j<ListeElements.length; j++)
+    {
+      if (ListeElements[j].checked)
+      {
+        if (res>" ")
+          res+="|"
+        res+=ListeElements[j].value
+      }
+    }
+  }
+  return(res)
+}
+function init_liste(chp)  // renvoie le formulaire avec la liste correspondant au début de saisie
+{
+if (DernierCode==39) // flêche droite
+  {
+  vc=valeurs_checkees("COMPARE_"+chp)
+  if ((en_compare && (vc=="CONTIENT")) || (!en_compare && (vc!="CONTIENT")))
+  {
+    if (en_compare)
+    {
+      if (vc=="CONTIENT")
+        vc="COMMENCE"
+      else
+        vc="CONTIENT"
+    }
+    ch=window.location.href;
+    for(var n=0; n<aFic_Chp.length; n++)
+    {
+      chpn=aChp[n].toUpperCase()
+      ch=RajouterParametre(ch,chpn,document.forms[0].elements[chpn].value)
+      ch=RajouterParametre(ch,aFic_Chp[n],document.forms[0].elements[chpn].value)
+      if (chp==chpn)
+      {
+        ch=RajouterParametre(ch,"COMPARE_"+chpn,vc)
+      }
+      else
+        ch=RajouterParametre(ch,"COMPARE_"+chpn,valeurs_checkees("COMPARE_"+chpn))
+      ch=RajouterParametre(ch,"CLASSEMENT",valeurs_checkees("CLASSEMENT"))
+      ch=RajouterParametre(ch,"SUPPORT1",valeurs_checkees("SUPPORT1"))
+      ch=RajouterParametre(ch,"TYPEDENATURE",valeurs_checkees("TYPEDENATURE"))
+      ch=RajouterParametre(ch,"DISPO",valeurs_checkees("DISPONIBILITE"))
+      ch=RajouterParametre(ch,"FOCUS",chp)
+      ch=RajouterParametre(ch,"FICHIER",document.forms[0].FICHIER.value)
+      ch=RajouterParametre(ch,"NP",document.forms[0].NP.value)
+      window.location.href=ch;
+    }
+  }
+}
+}
+
+function decode(ch)
+{
+  st="";
+  p=0;
+  while (p<ch.length)
+  {
+    c=ch.charAt(p++);
+    if ((c=="%") && (ch.charAt(p)=="2") && ((ch.charAt(p+1)=="2") || (ch.charAt(p+1)=="7")))
+    {
+      p++;
+      if (ch.charAt(p)=="2")
+        c='"'
+      else
+        c="'"
+      p++;
+    }
+    st+=c;
+  }
+  return(st)
+}
+function maj_saisie(Fic_Chp,objet,pour) // recopie la valeur de la liste déroulante dans la zone de saisie
+{
+  var suite="+++";
+  DonnerFocus(pour.name)
+  ch=objet.value;
+  if (ch.indexOf(suite)==0)
+  {
+    ch=ch.substr(suite.length,255)
+    pour.value=decode(ch)
+    init_liste(pour.name)
+  }
+  else
+    pour.value=decode(ch)
+}
+var ApresRadio=false
+function MontreListe(objet)
+{
+  NomObj=objet.name
+  ParRadio=(NomObj.indexOf("COMPARE_")>=0)
+  if (ParRadio)
+  {
+    NomObj=NomObj.substr(8,30)
+  }
+  else
+  {
+    LesDiv=document.getElementsByTagName("div")
+    for(var i=0; i<LesDiv.length; i++)
+    {
+      chId=LesDiv[i].id
+      if (chId.indexOf("LISTE_POUR")>=0)
+      {
+        montrer=true
+        if ((chId.indexOf(NomObj)>=0) && (objet.value=="CONTIENT"))
+          montrer=false
+        else
+        {
+          NomChp="COMPARE_"+chId.substr(11,30)
+          Radios=document.getElementsByName(NomChp)
+          if (Radios.length>0)
+          {
+            for(var j=0; j<Radios.length; j++)
+            {
+            if (((Radios[j].value=="CONTIENT") && ((Radios[j].checked) && !(ApresRadio))) || ((Radios[j].value=="COMMENCE") && ((Radios[j].checked) && ApresRadio)))
+              montrer=false
+            }
+          }
+        }
+        if ((chId.indexOf(NomObj)>=0) && montrer)
+          LesDiv[i].style.visibility="visible"
+        else
+          LesDiv[i].style.visibility="hidden"
+      }
+    }
+  }
+  document.forms[0].elements["FOCUS"].value=NomObj
+  ApresRadio=ParRadio
+  if (ParRadio)
+    DonnerFocus(NomObj)
+}
+function maj_compare(objet)
+{
+  if (objet.value=="CONTIENT")
+    MontreListe(objet)
+  else
+  {
+    chp=objet.name.substr(8,30)
+    en_compare=true
+    init_liste(chp)
+    en_compare=false
+  }
+}
+function EnteteListe()
+{
+  ChpUp=aChp[no]
+  ChpUp=ChpUp.toUpperCase()
+  document.write('<div class="ListeF2" ID="LISTE_POUR_'+ChpUp+'">')
+  document.write('<div class="tridroitetitre">Liste des '+aChpPluriel[no]+'</div>')
+  document.write('<select name="LISTE_'+ChpUp+'" value="Liste '+aChpPluriel[no]+'" onChange="maj_saisie(')
+  document.write("'"+aFic_Chp[no]+"',this,document.forms[0]."+ChpUp+")")
+  document.write('" size="7" class="select600">')
+  no++;
+}
+
+function BasListe()
+{
+document.write('<\/select><\/div>')
+}
+
+function effacer()
+{
+  for (i=0;i<document.forms[0].elements.length;i++)
+  {
+    nom=document.forms[0].elements[i].name;
+    AEffacer=false;
+    for (j=0;j<5;j++)
+      if (nom==aChp[j].toUpperCase()) AEffacer=true;
+    if (AEffacer) document.forms[0].elements[i].value="";
+  }
+  init_liste("TITRE")
+}
+
+function InitFocus()
+{
+  ch="<#FOCUS>"
+  if (ch<"!")
+    ch="TITRE"
+  DonnerFocus(ch)
+}
+
+function tube(ch)
+{
+  while (ch.substring(0,1)==" ")
+   ch=ch.substring(1,ch.length)
+  return "|"+ch+"|"
+}
+function ParDefaut(ch,defaut)
+{
+  while (ch.substring(0,1)==" ")
+   ch=ch.substring(1,ch.length)
+  if (ch=="")
+   ch=defaut
+  return ch
+}
+function InitChecked()
+{
+  chCommenceTitre=ParDefaut("<#COMPARE_TITRE>","COMMENCE")
+  chCommenceAuteur=ParDefaut("<#COMPARE_AUTEUR>","COMMENCE")
+  chClassement=ParDefaut("<#CLASSEMENT>","TITRE")
+  if (chClassement=="PERTINENCE") chClassement="TITRE"
+  chNature=tube("<#TYPEDENATURE>")
+  chSupport=tube("<#SUPPORT1>")
+  for (i=0;i<document.forms[0].elements.length;i++)
+  {
+    document.forms[0].elements[i].value=document.forms[0].elements[i].value.replace(/(^\s*)|(\s*$)/g, ""); 
+    if (document.forms[0].elements[i].name=="COMPARE_TITRE")
+    document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chCommenceTitre)
+    if (document.forms[0].elements[i].name=="COMPARE_AUTEUR")
+    document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chCommenceAuteur)
+    else if (document.forms[0].elements[i].name=="CLASSEMENT")
+    document.forms[0].elements[i].checked=(document.forms[0].elements[i].value==chClassement)
+    else
+    if (document.forms[0].elements[i].name=="TYPEDENATURE")
+    {
+      ch="|"+document.forms[0].elements[i].value+"|"
+      document.forms[0].elements[i].checked=(chNature.indexOf(ch)>=0)
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+    else
+    if (document.forms[0].elements[i].name=="SUPPORT1")
+    {
+      ch="|"+document.forms[0].elements[i].value+"|"
+      document.forms[0].elements[i].checked=(chSupport.indexOf(ch)>=0)
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+    else
+    if ((document.forms[0].elements[i].name.substring(0,4)=="DATE") && !(document.forms[0].elements[i].value=="")) Derouler=true
+    else
+    if (document.forms[0].elements[i].name.substring(0,5)=="DISPO")
+    {
+      document.forms[0].elements[i].checked=!("<#DISPONIBLES>"=="")
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+  }
+  if (Derouler) BasculerRestrictions()
+}
+</SCRIPT>
+
+</head>
+
+
+
+<body onLoad="InitChecked(); InitFocus()">
+
+<form name="AVANCEE" action="<#URLDLL>" name="recherche" method="post">
+
+  
+  <SCRIPT type="text/javascript">no=0; EnteteListe()</SCRIPT>
+  <#LISTE NOTICES TITRE LARGEUR=30>
+  <SCRIPT type="text/javascript">BasListe();EnteteListe();</SCRIPT>
+  <#LISTE AUTEURS AUTEUR LARGEUR=30>
+  <SCRIPT type="text/javascript">BasListe();EnteteListe();</SCRIPT>
+  <#LISTE EDITEURS EDITEUR LARGEUR=30>
+  <SCRIPT type="text/javascript">BasListe();EnteteListe();</SCRIPT>
+  <#LISTE COLLECTIONS COLLECTION LARGEUR=30>
+  <SCRIPT type="text/javascript">BasListe();EnteteListe();</SCRIPT>
+  <#LISTE DOCUMENTS ISBN LARGEUR=30>
+  <SCRIPT type="text/javascript">BasListe()</SCRIPT>
+
+<div class="zonemenu">
+  <div class="fxcal">
+  <div class="menucalibre">&nbsp;</div>
+  <div class="menuOFF">
+    <div class="menuOFFgauche"></div>
+    <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=index.htm">Recherche thématique</a></div>
+    <div class="menuOFFdroite"></div>
+  </div>
+  <div class="menuON">
+    <div class="menuONgauche"></div>
+    <div class="menuONtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-criteres.htm">Recherche par critères</a></div>
+    <div class="menuONdroite"></div>
+  </div>
+  <div class="menuOFF">
+    <div class="menuOFFgauche"></div>
+    <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-thesaurus.htm">Recherche par Thésaurus</a></div>
+    <div class="menuOFFdroite"></div>
+  </div>
+
+  <script type="text/javascript">
+  <!--
+  if (<#VALEUR NOMBRE_PANIER>>0){
+  var plur="";
+  if (<#VALEUR NOMBRE_PANIER>>1){ plur="s";}
+  document.write("<div class='menuOFFp'><div class='menuOFFgauchep'><\/div><div><a href='<#URLDLL>?np=<#NUMERO_PANIER>&fichier=Panier.htm&FICHIERORIGINE=Panier.htm' class='menupaniertxt' ");
+  document.write("><span class='menupaniertxt2'>Voir mon panier<\/span> (<#VALEUR NOMBRE_PANIER> fiche");
+  document.write(plur);
+  document.write(")<\/a><\/div><div class='menuOFFdroitep'><\/div><\/div>");
+  }
+  else{      
+  document.write('<div class=\"menuOFF\"><div class=\"menuOFFgauche\"><\/div><div class=\"menuOFFtxt\">');
+  document.write('<span class="pasdepanier">Votre panier est vide<\/span>');
+  document.write('<\/div><div class=\"menuOFFdroite\"><\/div><\/div>');
+  }
+  if("<#CONST AFFCOMPTE>"=="NON" || "<#LOGICIEL>"=="BCDI"){document.write('<div class="cachediv">');}
+  -->
+  </script>
+
+  <div class="menuOFF">
+    <div class="menuOFFgauche">&nbsp;</div>
+    <div class="menuOFFtxtcompte"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=identification.htm">Mon compte</a></div>
+    <div class="menuOFFdroite">&nbsp;</div>
+  </div>
+  <script type="text/javascript">
+  <!--
+  if("<#CONST AFFCOMPTE>"=="NON" || "<#LOGICIEL>"=="BCDI"){document.write('</div>');}
+  -->
+  </script>
+</div>
+
+
+
+<div class="menuseparat">&nbsp;</div>
+<div class="menuzonedatag">
+    <div class="menuzonedata"><br>
+                <div class="tridroite">
+                  <div class="tridroitetitre">Classement des résultats par : </div>
+                      <input name="CLASSEMENT" type="radio" value="TITRE"> Titre
+                  <br><input name="CLASSEMENT" type="radio" value="AUTEUR, TITRE"> Auteur
+                  <br><input name="CLASSEMENT" type="radio" value="SUPPORT, TITRE"> Support
+                  <br><input name="CLASSEMENT" type="radio" value="DATE PARUTION, TITRE"> Date
+                </div>
+                
+                <br>
+                
+
+
+<SCRIPT type="text/javascript">
+<!--
+for(var n=0; n<aFic_Chp.length; n++)
+{
+  Fic_Chp=aFic_Chp[n]
+  NomChp=aChp[n]
+  NomChpUp=NomChp.toUpperCase()
+
+  document.write('<div class="txt0"><b>'+NomChp+' :<\/b>&nbsp;<\/div>')
+  document.write('<div class="zoneinputrech">')
+  document.write('<input type="text" name="'+NomChpUp+'" value="'+aBalFic_Chp[n]+'" onkeyup="fKeyUp(event); init_liste(this.name)"')
+  document.write(' Title="Taper un début puis Flêche droite pour actualiser la liste."')
+  document.write(' ONFOCUS="MontreListe(this); if (this.createTextRange) {var range = this.createTextRange();')
+  document.write('range.collapse(false);range.select();}" class="input200">')
+  if (n<2)
+  {
+    document.write('<input name="COMPARE_'+NomChpUp+'" type="radio" value="COMMENCE" ONFOCUS="maj_compare(this)"> Commence')
+    document.write('<input name="COMPARE_'+NomChpUp+'" type="radio" value="CONTIENT" ONFOCUS="maj_compare(this)"> Contient')
+  }
+  document.write('<\/div><br><br>')
+}
+-->
+</SCRIPT>
+                <div class="txt4"><div class="txt2"><a href="javascript:BasculerRestrictions()">Restrictions de recherche</a></div>
+                <div align="center"><input name="Rechercher" type="submit" value="Rechercher" class="bouton1">
+                <input name="Effacer" type="button" value="Effacer" class="bouton2" onclick="effacer()"></div></div>
+                </div>
+    </div>
+
+  <div id="txt6">
+    <div class="menuzonedatafooter">
+      <div class="menuzonedatafooterg"></div>
+      <div class="menuzonedatafooterd"></div>
+    </div>
+  </div>
+
+    <div id="txt3" class='cachediv'>
+    <div class="menuzonedatagoption">
+    <div class="menuzonedataoption">
+    <div class="txt4"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Restreindre :</b><br>
+      <#BOUCLE CHAMP="TYPES NATURE" TEXTE="<div class='support'><input name='TYPEDENATURE' type='checkbox' value='?VALEUR?'>?VALEUR?</div>">
+    </div>
+    <div class="txt4"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Restreindre aux supports suivants :</b><br>
+     <#BOUCLE CHAMP="Support N." TEXTE="<div class='support'><input name='SUPPORT1' type='checkbox' value='?VALEUR?'><img src='<#CONST REP_MODELES>PUCE?VALEUR MAJ?.gif' width=26 height=26>?VALEUR?</div>">
+    </div>
+    <div class="txt4">
+      <div class="txt5"><div class="zonedate1"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Date de parution =</b>&nbsp;</div><div class="zonedate2"><input name="DATEEGAL" type="text" class="input100" value="<#DATEEGAL>"> <span class="gris">(jj/mm/aaaa)</span></div></div>
+      <div class="txt5">
+        <div class="zonedate1"><b>Avant </b>&nbsp;</div><div class="zonedate2"><input name="DATEINF" type="text" class="input100" value="<#DATEINF>"> <span class="gris">(jj/mm/aaaa)</span></div>
+      </div>
+      <div class="txt5">
+        <div class="zonedate1"><b>Après </b>&nbsp;</div><div class="zonedate2"><input name="DATESUP" type="text" class="input100" value="<#DATESUP>"> <span class="gris">(jj/mm/aaaa)</span></div>
+      </div>
+    </div>
+                  
+    <script type="text/javascript">
+      if("<#CONST AFFDISPONIBILITE>"=="NON"){document.write('<div class="cachediv">');}
+    </script>
+    <div class="txt4"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Documents disponibles</b>
+    <input name="DISPONIBLES" value="DISPONIBLE" type="checkbox"></div>
+    <script type="text/javascript">
+      if("<#CONST AFFDISPONIBILITE>"=="NON"){document.write('</div>');}
+    </script>
+
+  </div></div>
+  <div class="menuzonedatafooter"><div class="menuzonedatafooterg"></div><div class="menuzonedatafooterd"></div></div>
+  </div></div>
+
+<INPUT TYPE="HIDDEN" NAME="NP" VALUE="<#VALEUR NUMERO_PANIER>">
+<INPUT TYPE="HIDDEN" NAME="hidden1" VALUE="ch">
+<INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="RECH-CRITERES.HTM">
+<INPUT TYPE="HIDDEN" NAME="FICHIER" VALUE="RECH-CRITERES.HTM">
+<INPUT TYPE="HIDDEN" NAME="LANGAGE" VALUE="DICO">
+<INPUT TYPE="HIDDEN" NAME="FORMAT" VALUE="LISTENOT">
+<INPUT TYPE="HIDDEN" NAME="FOCUS" VALUE="TITRE">
+
+</form>
+</body>
+</html>

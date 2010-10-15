@@ -1,0 +1,4 @@
+USE gepi_plug;
+REVOKE ALL PRIVILEGES ON gepi_plug.* FROM gepi_user@localhost;
+GRANT SELECT ,INSERT , UPDATE , DELETE ,CREATE , ALTER , CREATE TEMPORARY TABLES ON gepi_plug.* TO gepi_user@localhost;
+

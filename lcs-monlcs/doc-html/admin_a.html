@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+
+
+
+ 
+  
+  
+  
+  
+  
+  
+  
+  
+  <title>LCS monlcs</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+
+
+
+ 
+  
+  
+  
+  
+  <style type="text/css" media="all">@import "../../c/c.css";</style>
+</head>
+
+
+<body>
+
+
+
+
+<h2 style="text-align: right;"><small><a href="index.html">retour</a></small><br />
+
+</h2>
+
+<h2 style="text-align: center;">Documentation <span class="acronym">LCS monlcs</span></h2>
+
+<span style="font-weight: bold;">&nbsp; &nbsp;&nbsp; </span><span style="font-weight: bold;">PREREQUIS: <br />
+<br />
+<a href="index.html">Lisez d'abord l'introduction</a><br />
+<a href="eleve_a.html">Lisez ensuite les possibilit&eacute;s offertes &agrave; l'&eacute;l&egrave;ve </a><br />
+</span><span style="font-weight: bold;"></span><a style="font-weight: bold;" href="prof_a.html">Lisez ensuite les possibilit&eacute;s offertes au professeur </a><br />
+<span style="font-weight: bold;"><br />
+</span><span style="font-weight: bold;"></span><span style="font-weight: bold;"></span>Un
+maximum d'information se trouve dans les liens pr&eacute;-cit&eacute;s.
+Nous tentons ici d'isoler les informations qui int&eacute;resseront le
+gestionnaire MonLCS (droit monlcs_is_admin) &nbsp;au premier chef.<br />
+<br />
+
+
+<span style="font-weight: bold;">
+
+&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">&nbsp;3&deg;&nbsp;</span><span style="font-weight: bold;">Le
+profil gestionnaire monlcs_is_admin.<br />
+
+
+<br />
+
+
+&nbsp;&nbsp;&nbsp; </span>&nbsp;&nbsp;&nbsp;<span style="font-weight: bold;"> a) Quel est son r&ocirc;le ?</span><br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; D&eacute;finir les &eacute;crans par d&eacute;faut.<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Adapter le MonLCS de son &eacute;tablissement.<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Conseiller, animer, assister accompagner.<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; Veillez au respect de bonnes pratiques de MonLCS.
+MonLCS est un espace d'&eacute;change. Si les utilisateurs jouissent
+d'une grande libert&eacute; il faut quand m&ecirc;me veiller &agrave;
+la coh&eacute;rence du portail.<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Les points &agrave; surveiller sont:<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - la bonne
+utilisation des onglets par d&eacute;faut.<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - la bonne
+compr&eacute;hension de la philosophie g&eacute;n&eacute;rale
+d'utilisation de MonLCS.<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - une
+surveillance discr&egrave;te des contenus.<br />
+<br />
+
+
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<span style="font-weight: bold;"> b) La gestion des onglets
+&eacute;tablissement. (cr&eacute;ation - adaptation - suppression)<br />
+<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; </span>Par
+le truchement des onglets etablissements, une certaine souplesse est
+donn&eacute;e aux &eacute;tablissements de cr&eacute;er des onglets
+pour le CDI &nbsp;par exemple ou pour proposer un espace de jeux.<br />
+&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; Dans ce cas l'onglet sera visible &nbsp;par tous les
+utilisateurs de MonLCS.<br />
+<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Ajouter un menu &eacute;tablissement:<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <img style="width: 332px; height: 334px;" alt="" src="admin_etab_1.gif" /><br />
+<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Un onglet &eacute;tablissement se
+cr&eacute;e de la m&ecirc;me mani&egrave;re qu'un onglet personnel sauf
+que monlcs_is_admin est propri&egrave;taire de cet onglet. Toute
+modification de la structure de cet onglet doit donc &ecirc;tre
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+r&eacute;alis&eacute; par monlcs_is_admin. Si monlcs_is_admin ne coche
+pas imposer &agrave; tous il cr&eacute;e alors un onglet personnel pour
+son propre compte.<br />
+<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; MonLCS est install&eacute; par
+d&eacute;faut avec deux onglets &eacute;tablissement: CDI et Divers
+(pour les jeux). Les &eacute;tablissements allergiques aux jeux peuvent
+donc choisir de suprimmer cet onglet.<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Les CDI &eacute;tant divers et
+vari&eacute;s chaque &eacute;tablissement pourra ainsi personnaliser
+cet onglet.<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Pour la gestion des sous-menus se reporter au lien profil professeur. <br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br />
+<span style="font-weight: bold;"></span>
+
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;<span style="font-weight: bold;"> c) La gestion des ressources par d&eacute;faut.</span> &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; <br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; Tr&egrave;s facile: D&eacute;poser les ressources
+sur le bureau<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;Puis clic droit - Proposer par d&eacute;faut.<br />
+<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;<span style="font-weight: bold;">&nbsp;&nbsp;
+&nbsp;Rappel : un utilisateur doit vider son bureau et l'enregistrer
+pour r&eacute;cup&eacute;rer les ressources par d&eacute;faut.</span><br />
+
+
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br />
+
+
+<span style="font-weight: bold;">
+
+</span><br />
+
+
+
+
+&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <br />
+
+
+
+
+</body>
+</html>

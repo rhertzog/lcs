@@ -1,0 +1,1 @@
+Generation de clients,/openvpn/newclient.php,lcs_is_admin

@@ -1,0 +1,24 @@
+#!/bin/bash
+# Jean-Luc Chretien Projet LCS <jean-luc.chretien@tice.ac-caen.fr>
+# Date : 15/06/2009
+# $1 : On /Off
+
+if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ]; then
+        echo "Transitional script for switching register_globals On/Off"
+        exit
+fi
+
+if [ "$1" != "On" ] && [ "$1" != "Off" ]; then
+        echo "Only On or Off"
+        exit
+fi
+
+REGISTER=`cat /etc/apache2/lcs-main/90_php.conf | grep 'php_flag register_globals' | cut -d " " -f 3`
+
+if [ $REGISTER != "$1" ]; then
+        echo "switch  register_globals from $REGISTER to $1"
+        sed -i.bak s/$REGISTER/$1/g /etc/apache2/lcs-main/90_php.conf
+        apache2ctl restart
+else
+        echo "register_globals is already $1"
+fi

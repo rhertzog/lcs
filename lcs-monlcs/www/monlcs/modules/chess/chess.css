@@ -1,0 +1,334 @@
+body {
+ font-family:verdana;
+}
+
+#chatcontainer {
+	display:block;
+	position:absolute;
+	left:330px;
+	top:296px;
+}
+#chatwindow {
+	font-family:serif;
+	font-size:13px;
+	width:470px;
+}
+
+#loadfs {
+	background:white;
+	cursor:pointer;
+	border:1px dashed gray;
+}
+#loadfs:hover {
+	background:green;
+}
+
+#settinglist a {
+	color:green;
+	text-decoration:none;
+}
+#settinglist a:hover { text-decoration:underline; }
+
+
+
+td.ml { padding-right:12px; }
+
+#figures_board1 {
+	position:absolute;
+	top:20px;
+	left:20px;	
+	width:560px;
+	border:2px solid gray;
+
+	text-align:center;
+	vertical-align:center;
+}
+#name_col {padding-bottom:8px; }
+
+#board1 {
+	position:absolute;
+	top:20px;
+	left:20px;	
+	width:560px;
+	text-align:center;
+	vertical-align:center;
+}
+
+
+td.fieldf {
+	cursor:pointer;
+	border:0px solid gray;
+	height:62.5px;
+	width:62.5px;
+}
+
+td.field0 {
+	cursor:pointer;
+	background:#ffffff;
+	border:1px solid gray;
+	height:62.5px;
+	width:62.5px;
+}
+
+#field_info {
+	position:absolute;
+	left:670px;
+	top:75px;
+	color:#aaaaaa;
+}
+#info {
+	position:absolute;
+	text-align:right;
+	left:670px;
+	top:105px;
+}
+
+#info_turn {
+	position:absolute;
+	color:#aaaaaa;
+	left:720px;
+	top:75px;
+}
+
+#status {
+	position:absolute;
+	color:#aaaaaa;
+	left:70px;
+	top:650px;
+}
+
+#link {
+	color:green;
+	text-decoration:none;
+	cursor:pointer;
+}
+#link:hover {
+	text-decoration:underline;
+}
+
+#loggy {
+	display:none;   
+	position:absolute;
+	left:300px;
+	top:600px;
+	font-size:10px;
+}
+
+div.loggy_hid { display:none; }
+div.loggy_vis { display:block; }
+
+#button1:hover { background:#fafade; }
+span.button1:hover { background:#fafade; }
+
+#colorpicker {
+	display:none; 
+}
+
+#replaylist {
+	display:none;
+	background:white; 
+	border:2px solid gray; 
+	padding:8px; 
+	position:absolute; 
+	top:218px;
+	left:236px;
+	font-size:11px;
+}
+
+#replayo {
+	display:none;
+	background:white; 
+	border:2px solid gray; 
+	padding:8px; 
+	position:absolute; 
+	top:200px;
+	left:50px;
+	width:180px;  
+}
+#replayq {
+	display:none;
+	background:white; 
+	border:2px solid gray; 
+	padding:8px; 
+	position:absolute; 
+	top:592px;
+	left:330px;
+}
+
+#about {
+	background:white; 
+	border:2px solid gray; 
+	padding:8px; 
+	padding-right:20px;
+	display:none;
+	position:absolute; 
+	top:150px;
+	left:120px; 
+	font-size:12px;
+}
+
+#options {
+	background:white; 
+	border:2px solid gray; 
+	padding:8px; 
+	display:none;
+	position:absolute; 
+	top:200px;
+	left:-3px; 
+	width:300px; 
+/*	height:196px;*/
+}
+
+#checkmsg {
+	cursor:pointer;
+	display:none;
+	position:absolute;
+	font-size:12px;
+	top:620px;
+	left:200px;
+	background:#fafade;
+	border:1px solid black;
+	padding:6px;
+}
+
+#showchat {
+	position:absolute;
+	font-size:12px;
+	top:592px;
+	left:60px;
+}
+
+#toggleoptions {
+	position:absolute;
+	cursor:pointer;
+	font-size:12px;
+	top:606px;
+	left:60px;
+}
+#makesnap {
+	position:absolute;
+	cursor:pointer;
+	color:gray;
+	font-size:12px;
+	top:620px;
+	left:60px;
+}
+#loadcustom {
+	position:absolute;
+	cursor:pointer;
+	font-size:12px;
+	top:634px;
+	left:60px;
+	color:gray;
+}
+#reconnect {
+	position:absolute;
+	cursor:pointer;
+	color:gray;
+	font-size:12px;
+	top:648px;
+	left:60px;
+}
+#reconnect:hover { text-decoration:underline; }
+
+#snapcontent {
+	display:none;
+	cursor:pointer;
+	border:1px solid gray;
+	position:absolute;
+	font-size:12px;
+	top:665px;
+	left:60px;
+}
+
+#movelist {
+	font-size:12px;
+}
+
+
+#index_field {
+	position:absolute;
+	top:40px;
+	left:100px;
+}
+
+
+#movestring {
+	padding:0px;
+	padding-left:6px;
+	padding-right:6px;
+	border:1px solid #dddddd;
+	border-top:0px;
+}
+#movestring:hover {
+	background:#eeeeee;
+}
+
+#movelisttxt {
+	font-family:sans;
+	font-size:14px;
+}
+
+#droppedoutinfo {
+	display:none;
+	position:absolute;
+	left:70;
+	top:70;
+	border:2px solid gray;
+	background:white;
+	width:550px;
+	padding:10px;
+}
+
+#findgames {
+	display:none;
+	position:absolute;
+	left:70;
+	top:40;
+	border:2px solid gray;
+	background:white;
+	padding:10px;
+}
+#foundgames {
+	border:1px solid green;
+	padding:2px;
+	margin-top:6px;
+}
+
+td.fa {	
+background: url(images/b1.gif)  no-repeat center center; 
+}
+td.fb {	
+background: url(images/b2.gif)  no-repeat center center; 
+}
+td.fc {	
+background: url(images/b3.gif)  no-repeat center center; 
+}
+td.fd {
+	background: url(images/b4.gif)  no-repeat center center; 
+}
+td.fe {
+	background: url(images/b5.gif)  no-repeat center center; 
+}
+td.ff {
+	background: url(images/b6.gif)  no-repeat center center;
+ }
+
+td.f1 {
+	background: url(images/w1.gif)  no-repeat center center;
+ }
+td.f2 {
+	background: url(images/w2.gif)  no-repeat center center;
+ }
+td.f3 {
+	background: url(images/w3.gif)  no-repeat center center;
+ }
+td.f4 {
+	background: url(images/w4.gif)  no-repeat center center;
+ }
+td.f5 {
+	background: url(images/w5.gif)  no-repeat center center;
+ }
+td.f6 {
+	background: url(images/w6.gif)  no-repeat center center;
+ }

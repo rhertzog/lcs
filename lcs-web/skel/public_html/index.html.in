@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+  <head>
+    <title></title>
+    <link href="/style.css" type="text/css" rel="StyleSheet">
+  </head>
+  
+  <body>
+    <h1>Page personnelle LCS</h1>
+    
+    <hr>
+
+    <p><strong>Espace inutilisé</strong></p>
+    <p>L'accés à cet espace <em>Web</em> en écriture par l'utilisateur est peut-être actuellement désactivé.</p>
+    <p>Pour de plus amples renseignements : <a href="mailto:admin@##HOST##">&lt; admin@##HOST## &gt;</a></p>
+
+    <hr>
+
+    <div style="font-size: xx-small; text-align: right">
+      <address><a href="mailto:LcsDevTeam@tice.ac-caen.fr">&lt; LcsDevTeam@tice.ac-caen.fr &gt;</a></address>
+      Mis à jour : Vendredi 11 Décembre 2007 18:15:00 GMT+0200
+    </div>
+
+  </body>
+</html>

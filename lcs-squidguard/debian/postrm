@@ -1,0 +1,43 @@
+#! /bin/sh
+# postrm script for LCS squidguard
+
+set -e
+case "$1" in
+	purge|remove)
+        #
+        # Suppression des directives squidGuard
+        #
+        grep -v ^redirect /etc/squid/squid.conf > /tmp/squid.conf
+        mv /tmp/squid.conf /etc/squid/squid.conf
+        /etc/init.d/squid reload
+        #
+        # Remise en place open_basedir
+        #
+        rm -f /etc/apache2/lcs-main/25_squidguard.conf
+        invoke-rc.d apache2 reload
+	#		
+	# Suppression du parametre se3-internet
+	#
+	/usr/bin/mysql  -se "DELETE FROM lcs_db.params WHERE name='se3-internet';"  
+	
+	#
+	#Suppression du repertoire squidguard qui résiste à la désinstallation
+	#
+	if [ -e /var/lib/squidguard ]; then
+	 rm -rf /var/lib/squidguard
+	fi
+	### mise a jour sudoers     
+	/usr/sbin/lcs-make-sudoers
+        ;;
+
+	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+        ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+
+esac
+
+exit 0

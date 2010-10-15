@@ -1,0 +1,13 @@
+lcs-notify (2.4.7) Lcs; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 17:35:31 +0200
+
+lcs-notify (2.4.6~2) Lcs; urgency=low
+
+  * change which value  to both
+  * Initial release 
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 28 Jan 2010 10:52:16 +0100
+

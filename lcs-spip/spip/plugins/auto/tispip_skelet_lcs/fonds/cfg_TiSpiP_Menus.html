@@ -1,0 +1,59 @@
+<!-- interpreter=non -->
+<!-- descriptif=<multi>[fr]Configuration g&eacute;n&eacute;rale de l&rsquo;affichage public </multi> -->
+<!-- titre=Personnalisation de l'affichage public-->
+<!-- onglet=TiSpiP_Pages -->
+
+<!-- liens*=TiSpiP_Pages -->
+<!-- liens*=TiSpiP_Entete -->
+<!-- liens*=TiSpiP_Menus -->
+<!-- liens*=TiSpiP_Couleurs -->
+<!-- liens*=TiSpiP_Accueil -->
+<!-- liens*=TiSpiP_Rubrique -->
+<!-- liens*=TiSpiP_Article -->
+<!-- liens*=TiSpiP_Mentions -->
+<!-- liens*=TiSpiP_Credits -->
+<!-- liens*=TiSpiP_Diaporama-S5 -->
+
+
+<!-- icone=img_pack/tispip-skelet_24.png -->
+
+#CACHE{0}
+
+[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+   #FORMULAIRE_TISPIP_CONFIG_MENUS_V
+</div>]
+
+[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+   #FORMULAIRE_TISPIP_CONFIG_COULEURS_MENUS
+</div>]
+
+[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+   #FORMULAIRE_TISPIP_CONFIG_BORDURES_MENUS
+</div>]
+
+[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+   #FORMULAIRE_TISPIP_CONFIG_MENUS_H
+</div>]
+
+[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+   #FORMULAIRE_TISPIP_CONFIG_ONGLETS
+</div>]
+
+[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+   #FORMULAIRE_TISPIP_CONFIG_COULEURS_ONGLETS
+</div>]
+
+[(#PLUGIN{rosace}|oui)
+[<div class="ajax" style="margin:10px">(#AUTORISER{configurer})
+   #FORMULAIRE_TISPIP_CONFIG_MENUS_AUTRES
+</div>]
+]
+<script type='text/javascript'>
+$(function() {
+  $('.boxy').boxy();
+});
+</script>
+
+[(#REM)
+#CFG_ARBO{tispipskelet_conf}
+]

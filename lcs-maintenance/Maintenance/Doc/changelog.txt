@@ -1,0 +1,15 @@
+Appli Maintenance Informatique
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+[30/12/2004]
+Menu configuration
+Import topologie de l'etablissement a partir d'un fichier texte
+
+[22/11/2004]
+Plugnification de l'application 
+Fonction de Tri des demandes par criteres : 
+Date, Emetteur, Prise en charge par
+
+V 0.1 (Beta) [08/12/2003]
+includes/func_maint.inc.php
+Ajout d'une fonction nl2br($Content) pour l'affichage des demandes et CR d'intervention.

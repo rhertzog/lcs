@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Format des fichiers texte pour importation</title>
+    <link href="../../../../Admin/style/style.css" type="text/css" rel="StyleSheet">
+  </head>
+
+  <body>
+    <h1>Format des fichiers texte pour importation</h1>
+    <hr>
+
+    <h2><tt>F_ELE</tt> : Élèves</h2>
+    <h3>Entrée type : <tt style="color: black">01561|BIGEON|Céline|19820702|F|STS2</tt></h3>
+    <h3>Descriptif des différents champs :</h3>
+    <ul>
+      <li>Numéro unique de l'élève dans l'établissement (optionnel<a href="#footnote"><sup>*</sup></a>)</li>
+      <li>Nom</li>
+      <li>Prénom</li>
+      <li>Date de naissance (format <tt>aaaammjj</tt>)</li>
+      <li>Sexe (<tt>F</tt> : fille <tt>|</tt> <tt>M</tt> : garçon)</li>
+      <li>Classe</li>
+    </ul>
+
+    <h2><tt>F_DIV</tt> : Classes</h2>
+    <h3>Entrée type : <tt style="color: black">1STT1|1ERE STT1|10918</tt></h3>
+    <h3>Descriptif des différents champs :</h3>
+    <ul>
+      <li>Classe</li>
+      <li>Intitulé de la classe</li>
+      <li>Numéro unique du professeur principal (optionnel<a href="#footnote"><sup>*</sup></a>)</li> 
+    </ul>
+
+    <h2><tt>F_MEN</tt> : Cours</h2>
+    <h3>Entrée type : <tt style="color: black">AGL1|1ES1|21914</tt></h3>
+    <h3>Descriptif des différents champs :</h3>
+    <ul>
+      <li>code matière</li>
+      <li>code groupe ou classe</li>
+      <li>Numéro unique du professeur donnant le cours (optionnel<a href="#footnote"><sup>*</sup></a>)</li>
+    </ul>
+
+    <h2><tt>F_WIND</tt> : Enseignants</h2>
+    <h3>Entrée type : <tt style="color: black">14333|MANNHAI|DAVID|19710919|1</tt></h3>
+    <h3>Descriptif des différents champs :</h3>
+    <ul>
+      <li>numéro unique du professeur dans l'établissement (optionnel<a href="#footnote"><sup>*</sup></a>)</li>
+      <li>Nom</li>
+      <li>Prénom</li>
+      <li>Date de naissance (format <tt>aaaammjj</tt>)</li>
+      <li>Sexe (<tt>1</tt> : homme <tt>|</tt> <tt>2</tt> : femme)</li>
+    </ul>
+
+    <a name="footnote"><p><span style="font-size: large; font-weight: bold">Note * :</span> Si vous ne pouvez pas -- ou choisissez de ne pas -- fournir de numéro unique aux élèves et/ou enseignants, le suivi des comptes d'une année à l'autre sera plus délicat, la vérification des doublons s'effectuant alors sur le prénom et le nom, informations modifiables par les utilisateurs.</p>
+    <p>D'autre part, en ce qui concerne le numéro unique affecté aux professeurs, celui-ci sert également à renseigner le rôle de professeur principal dans les groupes « équipes pédagogiques » et de professeur enseignant dans les groupes « Cours ».  En l'absence de numéro unique, ces informations devront être insérées manuellement dans l'annuaire.</p>
+
+    <h2>Importation</h2>
+    <h3>Préfixe</h3>
+    <p>Si votre établissement est composé de plusieurs entités, comme un lycée professionnel et un lycée technique par exemple, vous diposez de plusieurs bases de données.</p>
+    <p>il faut donc spécifier un suffixe pour chacune de ces bases afin de différencier les importations nécessairement séparées..</p>
+    <p>Si vous ne disposez que d'une seule base de données, laissez ce champ vide.</p>
+    <h3>Importation annuelle</h3>
+    <p>L'importation annuelle nécessite une préparation en profondeur de l'annuaire pour l'intégration des nouveaux élèves et la régénération des nouveaux groupes de 'Classe', 'Equipe', 'Cours' et 'Matiere'.</p>
+    <p>Le fait de cocher la case ci-dessous permettra la mise en place automatique de cette préparation.</p>
+    <form method="post" action="/cgi-bin/gep2.cgi" enctype="multipart/form-data">
+      <table width="80%">
+	  <tr><td><h4>Suffixe éventuel : <input type="text" name="prefix" size="5" maxlength="5"> (<em>ex</em> : <tt>LEP</tt>)</h4></td>
+	    <td><h4>Importation annuelle ? <input type="checkbox" name="annuelle"></h4></td>
+      </table>
+      <h3>Fichiers :</h3>
+      <table><tbody>
+	  <tr><th align="left">Fichier « Élèves » (<em>ele</em>)</th>
+	    <td><input type="file" name="f_ele" ></td></tr>
+	  <tr><th align="left">Fichier « Classes » (<em>div</em>)</th>
+	    <td><input type="file" name="f_div"></td></tr>
+	  <tr><th align="left">Fichier « Modules d'enseignement » (<em>men</em>)</th>
+	    <td><input type="file" name="f_men"></td></tr>
+	  <tr><th align="left">Fichier « Professeurs » (<em>wind</em>)</th>
+	    <td><input type="file" name="f_wind"></td></tr>
+	</tbody></table>
+      <table align="center" width="100%"><tbody>
+	  <tr><td colspan="2">&nbsp;</td></tr>
+	  <tr><td colspan="2" align="right"><input type="submit" value="Transférer les fichiers et importer !"></td></tr>
+	</tbody></table>
+    </form>
+
+    <hr>
+    <div style="text-align: right; font-size: x-small">
+      <address><a href="mailto:LcsDevTeam@tice.ac-caen.fr">&lt; LcsDevTeam@tice.ac-caen.fr &gt;</a></address>
+      <!-- Created: Wed Jan 16 10:19:49 CET 2002 -->
+      <!-- hhmts start -->
+Dernière modification : Lundi 5 Mai 2008
+    <!-- hhmts end -->
+    </div>
+  </body>
+</html>

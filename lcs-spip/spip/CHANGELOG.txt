@@ -1,0 +1,456 @@
+2.0.11 -> 2.0.12
+r15874 version 2.0.12 suite a correctifs
+r15861 correction de la generer_url_entite
+r15849 securite du js informer_auteur (credit: Dotsafe)
+r15845 Report de [15843] dans la branche 2.0 car le bug datait de cette branche
+r15836 report de [15835] et revert de [15833] qui masquait le probleme sans le resoudre
+r15833 Changement identique � [15832], car bug �galement pr�sent
+r15831 Rev�rifier les droits lors de la destruction d'un mot cl�  ...
+r15826 Mauvais contr�le des droits  sur le logo d'un mot-cl�
+r15813 M�me chose que [15797] pour les stats de referers + corrections  ...
+r15811 Cette fois-ci tout le monde semble �tre d'accord sur le champ  ...
+r15797 Am�liorer le comptage des liens entrants dans les stats (merci  ...
+r15795 Mettre � jour les comptes de visite correctement dans la  ...
+r15793 Page priv�e des signatures, compl�ment � [15789]: un bout de navigation  ...
+r15791 Emp�che certaines visites de compter double (merci Daniel D�chelotte)
+r15789 Pourquoi la page priv�e des p�titions n'avait pas ses styles sp�cifiques  ...
+r15766 [15355]  �tait une bien mauvaise id�e. sql_updateq ne retourne  ...
+r15747 la balise INTRODUCTION prend en compte le DESCRIPTIF aussi pour  ...
+r15741 La r�f�rence � la classe {{{spip-large}}} dans le bouton  ...
+r15735 Si le premier argument de {{{spip_connect}}} n'est pas une  ...
+r15719 Include manquant.
+r15699 Un bout de [15007] non report�.
+
+2.0.10 -> 2.0.11
+r14702 precaution pour eviter de faire une double decompression de page stockee en cache
+r14704 corriger le bug des stats entre minuit et une heure du mat, pour les couche tard
+r14706 bug sur ajaxload : appeller le callback du load avec le this correct
+r14707 indiquer dans le mail de notification quand un forum a ete tague SPAM
+r14708 Ajout d'un un point d'entree qui permet l'utilisation du plugin cache_cool
+r14709 en php4, il faut préfixer uniqid().  corrige une erreur 302 dans le privé.
+r14712 permettre de configurer le tri des groupes de mots avec la constante _TRI_GROUPES_MOTS
+r14713 la balise #AUTEUR ne passait pas dans typo, et pourtant elle pouvait contenir un bloc {{{<multi>}}} (cas sur forum.spip.org)
+r14715 Révision de la procédure de connexion de serveur à serveur pour contourner l'atteinte au libre usage d'Internet dans certains pays.
+r14716 deux petites ameliorations dans les liens sur documents et faussement externes
+r14717 Forcer les nombres dans les requêtes pour PostGres. Résoud #1837.
+r14718, r14719, r14720 <multi>[en]Hello</multi> permet d'introduire un mot dans une langue differente du texte
+r14721  nettoyer les titres des email
+r14723,r14724 Réinsérer les attributs des balises {{{code}}} (Stéphane D. + Fil).
+r14726 ne pas perdre les attributs de <p>
+r14730 Les fichiers de caches sur les pipelines et les plugins doivent faire partie de la purge du cache, sinon c'est le dialogue de sourds assuré sur l'existence de bug. S'il reste d'autre fichiers de ce genre non pris en compte par la purge, il faudrait les rajouter.
+r14731 le champ extra est obsolete et plantogene
+r14732 [14720] ayant remplacé les appels à extraire_multi par corriger_typo, c'est inc/texte et non plus inc/filtre qu'il faut inclure ici.
+r14733 Correction du traitement des blocs multi de [14718] qui ne tenait pas compte du cas {{{forcer_lang=true}}} où la langue du contexte a priorité sur la langue de l'objet
+r14734,r14735 Declarer les fichiers concernant les plugins dans spip_initialisation_core, dans spip_initialisation_suite c'est trop tard (Kent1). Et tant qu'à faire, les mettre dans le sous-répertoire cache, puisque ce sont des fichiers de caches.
+r14736,r14737 L'ordre des groupes de mots dans editer_mots, c'est par titre, et non par id_groupe comme ca l'est de maniere erronee dans la 2.10.
+r14738 revision du mecanisme de selection de la langue, afin de permettre d'avoir des rubriques multilingues
+r14739 constantes manquantes a l'appel des protection typo
+r14741 Correction PG, fixe #1840
+r14743 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14744 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14745 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14746 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14747 Eviter un warning inutilement alarmant après restauration
+r14748 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14749 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14750 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14751 HTTP: envoyer un code 403 quand la signature ajax est incorrecte
+r14752 reparer le formulaire d'ajout de site
+r14754 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14755 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14756 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14757 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14758 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14759 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14760 un include manquant
+r14761 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14762 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14763 il etait indique dans le code de creer_chemin que ces lignes devaient disparaitres au profit d'un upgrade On insere ca dans une maj qui s'y prete, sachant que cela ne concerne que les maj depuis des vieux SPIP. Inutile sur les SPIP recents.
+r14764 Accelerer SPIP par une meilleure gestion des acces disques aux fichiers
+r14767 un bot patch pour reperer les bot des le debut du hit et lever un flag _IS_BOT qui peut servir a qui veut
+r14768 _IS_BOT est applique a la derniere_modif_invalide : les robots peuvent manger du cache meme s'il n'est pas tout a fait a jour
+r14771 report tardif mais neanmoins toujours justifie de [8912] : Compatiblite IE6 des branches 2.0 et 2.1 ...
+r14772 Reparer la reparation de la reparation de la reparation... [14645] (cedric)
+r14773 strlen émet un Warning en PHP 5.3 si son argument n'est pas une chaîne [14755].
+r14776 Nouvelle semantique de {{{$derniere_modif_invalide}}}
+r14778 smurf et schtroumpf, pour amuser le gamin
+r14780 reports: detection des bots http://zone.spip.org/trac/spip-zone/changeset/33517 ; langue schtroumpf pour le gamin
+r14781 permettre d'inhiber ou de forcer l'appel du cron en fin de hit
+r14782 report de sql_seek introduit par [13921] sur la branche dev
+r14783 pagination indirecte : &debut_pagi=@231 place la pagination sur la page qui contient l'id_article 231
+r14784 Permettre d'afficher tous les elements d'une boucle paginee avec debut_xxx=-1
+r14785 cache 0 sur le sitemap, en lien notamment avec la nouvelle gestion des _IS_BOT + suite de l'optimisation de [14429]
+r14786 eviter un warning lorsque la debut de la boucle est superieur au nombre de resultats effectifs (nhoizey)
+r14787 vider le cache des description de table derriere chaque install de plugin, cela evite les prises de tete sur un nouveau champ non reconnu
+r14788 "afficher tout" oubliait le dernier resultat (bugfix de [14784])
+r14789 compacteur js : prefixer le js compresse par un ; suivi d'un saut de ligne, par precaution
+r14791, r14793 un pipeline post_edition en fin d'action tourner
+r14798 espace stupide qui empechait de reconnaitre les bots (report de http://zone.spip.org/trac/spip-zone/changeset/33871 )
+r14800, r14802 introduction de l'url ping http://site/123 qui redirige vers la vraie adresse de l'article 123; utile pour faire des urls (un peu) plus courtes dans les notifs
+r14803 La fonction auth_ldap_search, appelée en mode sans vérif du mot de passe, retournait le login au lieu de retourner le DN comme dans l'autre cas. Pas d'utilisation dans le noyau, mais gênant pour les extensions.
+r14804 Correction sur les modèles distants
+r14805 Eviter que {1,n} plante mysql_seek s'il y a exactement 1 résultat !
+r14810, r14812, r14813, r14815 autorisation manquante a l'edition d'objet
+r14821 trois options de syndication importees de rezo.net
+r14823 autoriser la balise {{{#LOGO_SYNDIC_ARTICLE}}}
+r14829 ne pas mourir lorsqu'un squelette n'existe pas et que $page n'est pas initialise (en mieux)
+r14832 pas de warning si on demande un debut_truc=@123 sur une boucle vide (provoque par le sql_seek($res,0))
+r14833 utiliser des noms de variable plus comprehensibles
+r14834, r14836 Permet la recherche sur des cas de jointures non standards ou complexes (ex rechercher sur les grands parents), en se reposant sur la fonction de recherche native.
+r14835 Tempus fugit
+r14838, r14839 Lors d'une nouvelle traduction, ne pas oublier d'insérer l'original pour commencer (Realet. bug introduit par [14810] plus regardant sur les accès).
+r14840 un test de type sur le filtre implode
+r14841 corriger un bug sur un resultat de la pagination indirecte nul (premiere page ou non trouve)
+r14842, r14843, r14844 optimisation de code
+r14846 balise_logo_xxxx plus generique (retour sur [14823])
+r14848 textebrut sur le #NOM_SITE_SPIP
+r14850 #LOGO_SITE_SPIP pete par [14846] (b_b)
+r14855 Correction pour éviter le scénario suivant: on redemande une inscription en donnant son mail, et la connexion SQL échoue lors du test d'existence d'un compte avec ce mail mais repart ensuite; du coup un 2e compte est créé avec ce mail.
+r14858 Un ajaxCallback qui passe jQuery 1.2.6 et jQuery 1.4
+r14860 report de [14859] qui permet d'ecrire <style> dans un texte sans pour autant se le faire paragrapher induement
+r14865 var_mode=calcul ne provoque plus le re-compactage d'un js deja compacte : ce qui permet de gagner 1s
+r14872 Ne pas mettre {{{<?}}} dans le code compilé.
+r14902 report du correctif [14901] sur la static de sous_repertoire()
+r14934 Eviter une erreur SQL quand une boucle SQL porte sur un id_syndic.
+r14957 Compatibilite PHP 5.3 : on passe [http://www.phpconcept.net/pclzip/index.php#nouveautes pclzip] en version 2.8.2
+r14989 report de [14987]
+r14990 oups
+r15045 #1845 : tous les auteurs ayant acces a ecrire ont le droit de supprimer un document !
+r15053 typo sur l'agenda
+r15055 Compat PHP 4
+r15064 $_REQUEST en contexte des exec en squelette
+r15066 validite html avec le surlignage js
+r15068 ne pas essayer d'interpreter les <![CDATA[...]]> lorsqu'on lit le xml
+r15107 noms des langues pour le francais simplifie, langue des signes, etc (Aurelien)
+r15125 pas d'entete <?xml > sur un contenu vide, cela fait couiner IE7
+r15131 quand pas de description explicite de lien, on donne le lien tel quel
+r15133 ne pas confondre la liste des tables non effacables avec celle des tables non importables
+r15144 Ce pipeline s'appelle en réalité «delete_tables» !
+r15147 reparer l'URL du ping http://site/123 (ferme #1860)
+r15160 permettre pour les requêtes sql un copier/coller facile.
+r15163 report de [15075] : clôt le ticket #1823 en permettant le saut de ligne dans les cellules des tableaux spip.
+r15170 éviter un ../tmp//.htaccess le $rep passé en argument a parfois un / terminal (mais pas toujours).
+r15180 Eviter un Warning lorsque le serveur LDAP est injoignable.
+r15191 #1843 : on ajoute le champ de tri par defaut au GROUP BY quand il ne contient que la clef primaire et qu'aucun tri n'est demandé explicitement (cas du critère IN utilisé sans critère de tri)
+r15192 on aligne le comportement des filtres |reset et |end sur celui de leur fonction php homonyme.
+r15193 Ne pas oublier les utilisateurs opera pour les mises a jour
+r15201 Forcer la conversion numérique quand le champ SQL est notoirement numérique, sinon PG râle (MySQL devrait en faire autant d'ailleurs). Le bug n'existe pas dans les 2.1 et 2.2.
+r15220 La gaffe : ne pas oublier de transmettre le serveur ! (corrige l'installation et les mises à jour sous sqlite3)
+r15223 Depuis [12317], le prefixe des tables était pris en compte dans la fonction d'abstraction sql_showtable, mais Sqlite ne l'avait pas remarqué !
+r15227 indiquer sur post_edition la source de l'appel du pipeline
+r15236 faute de frappe dans la css
+r15238, r15239 Le squelette de création/modification d'un auteur prenait mal en compte la source du login
+r15242 securite sur $type
+r15246 Lorsque qq utlise le formulaire d'inscription, c'est plus élégant de lui écrire à l'intégralité de l'adresse qu'il a fournie plutôt qu'à l'adresse brute extraite par {{{email_valide}}}, c'est-à-dire à "Machin Truc <mt@x.net>" plutôt qu'à "mt@x.net".
+r15254 Eviter des warnings avec PHP 5.3
+r15257 |sinon peut s'appliquer sur un tableau
+r15316 Prendre en compte "lier_trad" pour le mettre dans le contexte du formulaire d'édition sur les rubriques
+r15334 mise a jour de multilang.js
+r15338 Division par 0, filtre CSV défaillant sur cas tordu et inclusion de recuperer_page manquant
+r15355 éviter le warning mysql "Duplicate entry for key 'PRIMARY'..." ou postgresql "duplicate key value violates unique constraint...".
+r15358 Chevrons s'en vont (Pierre).
+r15359 Introduction de _MAX_ART_AFFICHES (pour Paolo de la part de Denis).
+r15377 _CACHE_CONTEXTES_AJAX pour passer en url uniquement un md5 et passer a travers suhosin
+r15393 autoriser les formulaires dynamiques dans les boucles POUR et CONDITION
+r15402 bug ajax ie sur les url action /
+r15428 passer je_suis_poste dans le pipeline formulaire_charger
+r15450 corriger le bug sur les images furtives sur cette branche aussi
+r15455, r15482 appel du cron sans provoquer une connexion SQL a chaque hit
+r15465 #URL_FORUM doit renvoyer vers le site public, comme les autres balises #URL_xx
+r15485 Pb 43 (eh oui il en restait un après [14370]) avec [9649] (la disparition du FEED_GLOBALS il y a 3 ans): quand on teste le proxy, ne pas s'autoriser à recourir à {{{fopen}}} en cas d'échec.
+r15487 #1904 recuperer les [] des variables tableau dans l'url dans form_hidden
+r15491 ne pas perdre la suite de l'url dans form_hidden("./?rubrique12&truc=1")
+r15511 ne pas considérer comme marque d'article virtuel un simple = qui se promène.
+r15542, r15544 windows et file_get_contents
+r15555 les fonction rechercher_joints_xxx charges support des recherches sur table jointe peuvent renvoyer un array() au lieu d'une ressource sql, ce qui permet de gerer les cas tordus avec plusieurs jointures possibles differentes, en plusieures requetes avec un array_merge
+r15563 Securite
+r15578 ne pas ecraser la globale de personalisation des logos
+r15579 un pipeline trig_calculer_langues_rubriques qui manquait sur la fonction calculer_langues_rubriques()
+r15580 Separer le chargement du path du reste du chargement des plugins
+r15581 report de la gestion des numero de versions depuis la 2.1, avec l'introduction de spip_version_compare
+r15582 report du pipeline objet_compte_enfants
+r15585 corriger le choix d'un mot unique dans un groupe (si config) dans les forums
+r15587 Un argument indéfini et qui en plus ne sert pas.
+r15589 possibilité de définir l'ordre de tri des articles dans la boite "Dans la même rubrique"
+r15606 permettre de piloter le cron finement
+r15636 La base courante n'est pas une base externe dans l'installation de bases externes
+r15642, r15643, r15647 corrections de bugs sur la declaration de bases externes
+r15658 pipeline manquant sur la fonction depublier_branche_rubrique_if pour la gestion d'objet editoriaux
+r15661 permettre les guillemets dans les mots de passe
+r15665 on intègre width et height dans le tag img des puces.
+r15667 Pour appliquer le validateur XML en boucle sur un répertoire de plugin, il faut faire {{{basename}}} dessus avant d'appeler {{{charger_fonction}}}. Mais avant SPIP savait que le script {{{export_all}}} ne devait pas être soumis à la validation, il y a qqch de changé qq part.
+r15670 gestion des caches gzip lorsqu'on roule sans conneexion a la base de donnees
+r15685 detection des arguments entiers dans le validateur xml
+r15687 genericite de afficher_objet et meme_rubrique pour les nouveaux objets editoriaux
+
+2.0.9 -> 2.0.10 
+Revision: 14695 report de [14694]
+Revision: 14690 remplacement de la fonction ereg (obsolète à partir de php 5.3.0).
+Revision: 14680 correction inserer_attribut : support des tags fermés sans espace avant />
+Revision: 14678 Correction: les constantes {{{_INSTALL_USER_LDAP}}} et  {{{_INSTALL_PASS_LDAP}}} n'étaient jamais pris en compte à l'installation, et les messages signalant que l'étape courante a été franchie avec succès n'apparaissaient pas. Plus un Log oublié et un meilleur contrôle d'erreur.
+Revision: 14677 eviter les cookie enregistrant des forums vides, report de http://zone.spip.org/trac/spip-zone/changeset/32429
+Revision: 14676 [14673] avait introduit l'impossibilite de postdater avant publication, on retablit
+Revision: 14673 utiliser les api pour que les plugins puissent faire leur travail
+Revision: 14671 Heureusement que les utilisateurs de PHP complètent sa doc: la connexion LDAP cryptée sur un autre port que le 389 ne doit pas utiliser la fonction {{{ldap_start_tls}}}, mais utiliser l'écriture {{{ldaps://}}}{{serveur}}} comme premier argument de {{{ldap_connect}}}.
+Revision: 14670 Les bases externes ne pouvaient plus être déclarées car le paramètre {{{install}}} dans l'URL ne veut plus forcément dire qu'on est en train d'installer SPIP depuis le début depuis que ces déclarations de bases externes ne sont plus faites à l'installation initiale. Il faudrait terminer plus proprement la migration de ces scripts (Christian).
+Revision: 14669 eviter de faire des sql_delete a tout va sur un calcul de page (pour une meta qui ne sert a rien qui plus est) 
+Revision: 14668 report de [14666]
+Revision: 14663 report partiel mais suffisant de [14659]
+Revision: 14660 les messages d'erreur avant les input
+Revision: 14647 et les notes n'etaient pas echappees
+Revision: 14646 boucle infernale sur forum.spip.org, ou un article peut avoir qqs dizaines de milliers de forums ;-)
+Revision: 14645 La suppression de vignette de document ne marchait pas dans ce cas là : action pas comprise car avait un /$id_document en trop qui ne sert pas dans l'action
+Revision: 14640 Ce spip_log n'a plus de raison d'être il me semble
+Revision: 14635 reparer  <BOUCLE_art(ARTICLES){!id_mot IN (5,7)}>
+Revision: 14628 utiliser redbot.org comme interface de test des entetes : merci @karlpro
+Revision: 14626 permettre a un SSO de revenir sur le login avec un message d'erreur dans var_erreur
+Revision: 14622 La possibilité de surcharge des attributs à demander à LDAP, introduite par [14608], n'a pas de raison de se limiter à ce qui concerne la champ {{{login}}}, il faut pouvoir indiquer tous les champs à lui demander. Tant qu'à faire, on écrit un code prêt à recevoir cette indication via la déclaration faite à l'installation, mais pour l'instant ça ne sert pas encore, c'est toujours la globale qui est utilisée. Je reporte en stable pour que la globale introduite précédemment pour aider à résoudre [http://comments.gmane.org/gmane.comp.web.spip.user/149473 ce problème sur la liste spip-user] n'y perdure pas plus.
+Revision: 14614 Ok ([14605] et [14610]), pour chercher un mot dans plusieurs groupes, mais autant utiliser l'interface SPIP-SQL à fond, du moment qu'on sécurise en amont, sécurisation qui révèle une drôle de chose: si le mot est créé, c'est forcément dans le premier groupe donné. C'est bien l'intention ?
+Revision: 14612 gestion de la redirection lorsqu'on arrive sur le formulaire de login deja loge (ie retour d'une identification SSO) deleguer a traiter() le soin de calculer la redirection et appliquer eventuellement
+Revision: 14608 Plutôt que de dupliquer une fonction ([14601]), généraliser une fonction existante pour éviter que les éventuelles surcharges ne voient plus rien passer. Je profite de cette occasion d'intervention sur l'authentification LDAP pour passer en globale le tableau des noms des attributs potentiellement porteurs du login afin de répondre à [http://comments.gmane.org/gmane.comp.web.spip.user/149473 ce message de la liste spip-user], et reporte en stable pour qu'ils puissent résoudre leur problème. Mais revoir le formulaire de déclaration du LDAP pour y indiquer les correspondances entre champs du LDAP et champs de la table auteurs sera à faire tôt ou tard.
+Revision: 14605 accepter plusieurs groupes possibles de recherche de mots-cles (avec les remerciements du selecteur generique)
+Revision: 14599 La clause GROUP BY pléthorique de cette requête avait été introduite manuellement par [9841] au début du portage PG, alors que depuis c'est fait automatiquement dans le fichier reg/pg.php. Retour au GROUP BY simple, beaucoup plus performant en MYSQL, et qui évite à Oracle de râler car on ne peut y faire de GROUP BY sur un BLOB. / J'en profite pour resyncrhoniser les 2 branches 2.0 et 2.1 sur ce fichier, différenciées superficiellement par [14576].
+Revision: 14592 le bidule d'ajax de config_fonctions provoquait une erreur 'config_fonctions n'existe pas'
+Revision: 14589 réparer la conversion des urls en urls absolues dans les fichiers css compactés.
+Revision: 14572 Correction: retour du login automatique en fin d'installation, flingué par l'introduction du répertoire {{{auth/}}} par [13435].
+Revision: 14567 Autre rel='nofollow' en complément de [14270] sur les calendriers.
+Revision: 14566 Première revision: [14487] avait remplacé une erreur SQL par une autre
+Revision: 14561 report de [14560]
+Revision: 14558 support des formatx open xml de cro$oft : renommer docx en doc n'etait pas satisfaisant car les vieilles version de word se plantaient dessus, et par ailleurs il manquait toutes les declinaisons et les mime type
+Revision: 14551 mise au carre des mots : il en manquait
+Revision: 14550 mise au carre des controles sur les mots-cles -- report (adapte pour la branche 2.0) de [14549]
+Revision: 14521 Erreurs SQL en multi-serveurs, suite: [14492] corrigeait dans la branche dev pendant que [14484] et [14489] corrigeaient dans la branche stable. Avec ça, la stable est bien corrigée pour MySQL et PG, mais dans la dev il y a de toutes façons le chantier en cours de l'abstraction des erreurs SQL, c'est encore incomplet.
+Revision: 14519 report de [14504]
+Revision: 14517 permettre la modification du choix d'apparaître dans la liste des connectés au seul concerné.
+Revision: 14508 ne pas divulguer le login et pass a la base de donnees aux non webmestre qui n'y ont a priori pas acces
+Revision: 14499 suite de [14495] concernant postgre
+Revision: 14498 eviter une erreur fatale pour cause de double inclusion de url/propres via qs ou propres2
+Revision: 14497 ajout d'un define pour indiquer à partir de quel nombre de mots-clefs on abandonne la sélection dans une liste au profit d'une recherche.
+Revision: 14495 complement a sql_delete : renvoyer le nombre de lignes affectees ou false en cas d'erreur.
+Revision: 14491 report de [14452] sur l'unzip des pages distantes, qu'on a vu planter aussi sur spip.net
+Revision: 14490 Correction de charger_fonction: ne pas ajouter de tiret si le dossier est vide, comme cela avait été fait pour la version de dev inopinément en [13645] (Rasta).
+Revision: 14489 Correction de la correction de [14484]: la globale décrivant la connexion n'est pas encore entièrement définie à l'étape 3 de l'installation.
+Revision: 14488 envoyer la date (de publication) avec le statut dans le pipeline notification lorsque l'on institue
+Revision: 14487 petite erreur sql dans le pipeline premiere_revision ; report de http://zone.spip.org/trac/spip-zone/changeset/31517
+Revision: 14484 bug dans l'API sql_* : le mysql_error() est en effet lie a la derniere connexion ouverte, il faut donc passer systematiquement la variable serveur si on veut pouvoir parler a deux connexions en meme temps (sinon, seule la derniere connexion ouverte parle) ; cf. http://php.net/mysql_error j'imagine qu'il va falloir etendre aux autres portages
+Revision: 14483 Profiter de la table PHP des titres aussi dans les URL arbos (Rastapapoulos).
+Revision: 14482 [14481] sans le commentaire !
+Revision: 14481 En attendant mieux ? on remet le find_in_path() sur connect/$serveur.php qui permet le hack des boucles POUR et consœurs.
+Revision: 14479 Correction: lorsqu'une surcharge de l'installation comporte un appel à un serveur externe, SPIP redonnait le serveur principal.
+Revision: 14476 Correction de la pagination modifiée par [13993]#file0 car il fallait comprendre que l'index indéfini était volontaire, charge étant donnée au filtre de pagination de gérer cet indéfini. On évite de ballader cet indéfini en confiant cette gestion au code compilé, mais ça ne fait que cacher un peu mieux l'entorse signalée: pourquoi les modèles ne fournissent pas les paramètres d'URL si c'est cela qu'on veut ? Par ailleurs, amélioration de #ANCRE_PAGINATION, qui doit tenir compte d'une éventuelle surcharge de la balise #PAGINATION.
+Revision: 14471 choix des statuts pour le menu 'afficher les visiteurs' (#1802, paladin) ; a noter en branche dev le code n'a plus grand chose a voir
+Revision: 14470 suppression des repertoires .plat, report de [14041] et resoud #1819
+Revision: 14462 c'était bien une fausse bonne idée. retour à l'état antérieur.
+Revision: 14459 corrige l'affichage systématique (même si l'on n'est pas loggué) des parties conditionnelles de la balise [aff_cond (#URL_LOGOUT) aff_cond] (mais ça me semble plus une rustine qu'une réparation véritable...)
+Revision: 14451 suppression de flag_gz, remplace par une detection 'just in time' de la fonction , cf http://forum.spip.org/fr_216909.html pour la motivation
+Revision: 14445 Correction du filtre {{{form_hidden}}} qui injectait le contexte d'URL trop systématiquement (report de [14444]).
+Revision: 14442 Report de [14113] et de [13716] mais surtout de [13570] qui rend le #MENU_LANG propre pour le xhtml strict
+Revision: 14433 une erreur dans ce test qui n'ajoutait jamais les [] lorsque l'élément à passer était un array...
+Revision: 14413 Correction de l'appel à la version PostGres de listdbs.
+Revision: 14409 Correction de la conversion en un entier de l'argument de sql_quote dans le critère de comparaison: ce bug provoquait une tentative incompréhensible de se connecter à i, serveur nommé ''int'' (Aurélien).
+Revision: 14400 prevoir le cas ou minipres() est appele avant spip_initialisation_suite()
+Revision: 14399 Cas rare ou $liste=array() affichait Array (Thomas Sutton)
+Revision: 14394 [14393] en mieux.
+Revision: 14393 Lors de la publication d'un article sur une branche de rubriques mettre à jour toutes les dates de la branche.
+Revision: 14392 report de [14096] a la demande generale de rastapopoulos
+Revision: 14368 [14367] mais sans bug
+Revision: 14367 charger mes_fonctions avant d'appliquer la table des traitements sur la previsu (patfr, report de http://zone.spip.org/trac/spip-zone/changeset/30736 )
+
+2.0.8 -> 2.0.9 : changelog passé à la trappe 
+
+2.0.7 -> 2.0.8 (11 mai 2009)
+Revision: 13974 generer_action_auteur necessite au moins 2 arguments (eric)
+Revision: 13972 améliorations du débusqueur (report de [13917], [13941] et[13944] ) 
+Revision: 13971 ne pas confondre le parent de l'id que l'on demande a #EXPOSE avec le parent du principal qui lui est extrait du contexte de reference. Le premier est passe en parametre mais ne sert en fait a rien, le second doit du coup etre trouve par une requete sql. La confusion entrainait des trous dans la liste des objets a exposer si au premier calcul le parent n'etait pas le meme (tetue)
+Revision: 13970  mise à jour de jquery.form.js pour éviter un bug sur IE8 et les formulaires ajax. ([13955], [13966] et [13967])
+Revision: 13963 l'ecriture du tag en sortie des filtres images echouait si l'url initiale contenait des &. Un patch qui ne restera pas dans les annales mais fonctionne dans le cas des documents proteges
+Revision: 13962 copie_locale renvoie toujours un chemin relatif a la racine, pas au repertoire courant (cas des documents proteges)
+Revision: 13961 les filtres image appliques sur les images protegees par spip.php?action=acceder_document provoquent un appel a taille_image qui commet l'erreur de tronquer la chaine de get avant de faire copie_locale, et d'essayer vainement de copier spip.php en local. Si par malheur, la page d'accueil servie par spip.php dans ce cas contient une ou plusieurs images protegees retraitees, la boucle et bouclee, et le serveur par terre. Probablement donc, une cause serieuse de saturation serveur pour les utilisateurs du plugin acces_restreint
+Revision: 13959 Validité XHTML Un petit complément à [13957] pour parfaire la validité (Eric) 
+Revision: 13954 Import des sauvegardes partielles: si le document est déjà distant, ne pas ajouter le _DIR_IMG local, ça ne rime à rien. Par ailleurs, pas d'état d'âme avec les vieilles tables: on ne peut insérer que des sauvegardes partielles de même constitution que la base d'accueil.
+Revision: 13952 report de [13950] date en nepalais
+Revision: 13951 correction du passage de langue dans les formulaires CVT : un formulaire dans un article différent de la langue du site (<formulaire|toto>) n'avait pas les bonnes traductions des fonctions _T() dans les fonctions verifier() et traiter(). (cerdic)
+Revision: 13946 Correction de [13939]: se protéger du bloc de compatibilité des url_propres que le nouveau form_hidden interprète de travers: autant ne pas passer par generer_url_entite si on a déjà le paramètre page, typiquement dans le cas du formulaire de recherche std (Eric).
+Revision: 13943 Correction de l'erreur de syntaxe PHP du code compilé lorsque le critère {{{par}}} contient un appel de fonction SQL. Un peu à l'arrach', mais ça permet déjà de retrouver la compatibilité avec ce que savait faire la 1.9 (Mathieu). Test {{{<ul><BOUCLE_t(RUBRIQUES){tout} {par SUBSTRING_INDEX(titre,".",-1)}> <li>#TITRE</li></BOUCLE_t></ul>}}}
+Revision: 13942 Prendre en compte un nom et un mot de passe dans une URL de page distante à récupérer (Stéphane)
+Revision: 13940 Dans le squelette des pétitions, il faut afficher le moteur de recherche s'il vient d'y avoir une recherche, le nombre de signatures est faussement réduit dans ce cas. Et en profiter pour faire du XHTML strict.
+Revision: 13939 Compatibilité du filtre {{{form_hidden}}} avec les URL symboliques: il faut qu'il demande à generer_url_entite de lui fabriquer le contexte comme pour l'assemblage de la page.  La modif de urls/page.php n'était finalement pas indispensable, mais éviter de resynthètiser les 3 RegExp à chaque appel ne fait pas de mal.
+Revision: 13938 le pipeline "styliser" n'était pas déclaré dans la stable !
+Revision: 13936 permettre que le titre d'un document ait une extension differente de celle du fichier d'origine pour que le telechargement se fasse sous un nom&type different de celui sous lequel le fichier est heberge sur le serveur (ex envoyer en .php un fichier stocke en .txt pour raison de securite).
+Revision: 13931 etre un peu plus strict dans la verification du titre du document avant de s'en servir comme nom de fichier : - il faut qu'il ait la bonne extension - il faut qu'il ressemble a un nom de fichier (en particulier compose de caracteres licites) ( [13933] aussi) 
+Revision: 13930 retablir un content-type indument supprime par [13924]
+Revision: 13928 double echappement provoquait la mort definitive des sites suspendus : ils devenaient {{{'su}}} au lieu de {{{sus}}}
+Revision: 13927 Ce n'est pas parce que certains systèmes d'exploitation que je ne nommerai pas pataugent avec certains noms de fichiers qu'il faut considérer [11243] comme une {{fausse bonne idée}} comme le dit [13760]. Je filtre le cas du titre de document n'ayant pas d'extension qui ne doit en effet pas être utilisé comme nom de fichier du {{{Content-Disposition}}} (et encore, {{{Makefile}}} est notoirement recevable), mais autrement je restaure le comportement d'avant qui est une fausse {{fausse bonne idée}}}, autrement dit une vraie bonné idée. Par contrecoup, report du renforcement de sécurité su secret du site [13866] dans la branche 2.0.
+Revision: 13924 seuls les types de document qui ne peuvent etre inclus doivent etre envoyes en "Content-Disposition : attachment". Les clip flash et autre types embed n'etais pas visualisable lorsque la protection des documents etait activee
+Revision: 13912 #1744 memoriser le bouton sumblit clique ou le x/y du bouton image clique quand on post un formulaire en ajax pour pouvoir les poster si jamais on resubmit en post classique suite a une demande du serveur refuser_traiter_formulaire_ajax()
+Revision: 13911 enlever la securite dans le message_ok au retour des formulaires, car sinon il n'est pas possible de faire la redirection apres un post ajax dans l'espace prive
+Revision: 13909 permettre au filtre |match de retourner la valeur 0 (zero) si elle est explicitement recherchee
+Revision: 13908 #1732 : bug a la verification lors de la creation d'un auteur ( plus [13910]) 
+Revision: 13905 #1687 : ne pas perturber le filtre unique avec #INTRODUCTION
+Revision: 13901 corriger la recuperation d'arguments passes en url et le faux appel de syndic.html
+Revision: 13898 Oups. Faux départ de AS U ! (mea culpa) 
+Revision: 13897 Les URLs ne se recalculaient pas dans un cas précis : changement de la casse sur une table insensible à la casse. Pour éviter cela, on réécrit aussi, en plus de la date de mise à jour de l'url son titre. Si la casse change, il sera ainsi pris en compte. Correction aussi d'un bug U.type inexistant sur les url arborescentes...
+Revision: 13893 [12134] avait casse la relance des signatures en recalculant un hash au lieu de renvoyer l'existant
+Revision: 13892 amelioration de la strategie de purge : - si le cache est trop gros on redemande la main - mais si il n'y a plus assez de vieux fichiers a purger, on la rend Ainsi, meme avec un reglage trop bas du quota, le cache se stabilisera autour du volume necessaire pour stocker une heure de traffic 
+Revision: 13889 ne pas laisser le cache deborder lorsque les robots (ou les internautes) sont tres actifs - inc/invalideur renvoie le ratio taille cache/quota - le genie redemande la main lorsque le ratio est trop grand, sans attendre le prochain coup - les operations de vidange sont logees dans invalideur.log avec les details permettant de suivre les operations 
+
+2.0.6 -> 2.0.7 (13 avril 2009)
+
+Revision: 13887 Le datage des urls reecrites echouait pour cause de requette eronnee. Le suspens continue : y aura-t-il une version stable 2.0.x avec des urls reecrites non bugguees ?
+Revision: 13882 patch de vincent ramos pour #1703 + report des trucs modernes de inc/rechercher dans la branche 2.0
+Revision: 13881 pas de . en dehors de celui separant l'extension, sinon il est possible d'injecter du php dans un toto.php.txt, qu'apache peut vouloir traiter comme un .php normal (attaque dite 'de vlad' )
+Revision: 13880 session_set() lorsqu'on renseigne son email (suite de [13878])
+Revision: 13879 report [13878] afficher l'email de l'auteur connecte si on le connait (session)
+Revision: 13877 report et nettoyage de ecrire_fichier_securise()
+Revision: 13876 report de ecrire_fichier_securise [13867] pour mieux masquer le contenu de tmp/meta_cache.txt(.php) en cas d'ouverture inopinee de tmp/ aux regards curieux
+Revision: 13873 retour de la pagination dans le controle des petitions (bug introduit en [13320])
+Revision: 13872 Report de [13868] corrigeant l'aléa ancien.
+Revision: 13870 revert de [13846] qui casse le fonctionnement de la pagination AJAX
+Revision: 13865 il faut securiser les appels à propre et typo hors squelette (typiquement code php de l'espace privé), mais dans les squelettes, la sécurisation est intégrée, et il ne faut pas en rajouter. On utilise donc la presence du parametre connect pour distinguer les appels des squelettes qui le comportent tous, des appels historiques hors squelettes qui ne le mentionnent jamais. Corrolairement, en cas d'appel hors squelette avec un parametre connect, il convient d'appeler en plus interdire_script
+Revision: 13862 Nouvelle méthode pour l'authentification LDAP, qui devrait résoudre le bug dans certaines config d'Active Directory. Géraud Tardif remarque qu'il est idiot de risquer des bugs avec des champs absents pour trouver le login, puisqu'on l'a déjà. Il vaut donc mieux se rabattre sur lui, mais on modifie les signatures des fonctions auxilaires pour qu'il soit facile de surcharger {{{auth_ldap}}} de sorte qu'on réclame des champs supplémentaires et qu'on en tienne compte.
+Revision: 13859 Ignorer les lignes vides dans les CSV lorsque transformés en table HTML à la volée (Cyril).
+Revision: 13858 Ne pas utiliser intval quand on fabrique une requête SQL, celui-ci ayant des grands entiers en standard, contrairement à PHP (Camille). Vu son logo on aurait dû se méfier: un PHP, ça tronque énormément.
+Revision: 13857 Les distributions RedHat, Fedora et CentOS ont maintenant une installation d'Apache par défaut qui font que le AllowOverride est à None par défaut, avec comme conséquence que les {{{deny from all}}} installés par SPIP ne sont plus effectifs sur ces distributions non modifiées. En conséquence, report immédiat dans la branche stable de [13608], qui n'écrit plus dans tmp la valeur des aleas, qui sont des informations trop sensibles. A signaler à propos des aléas que l'alea_ancien n'est pas pris en compte pour les actions dont l'URL comporte ecrire/, il faut renoncer à ces URLs. Enfin, il faudrait insister dans la doc sur le fait que tmp/ et config/ doivent être interdits à la lecture publique, idéalement en les mettant à l'extérieur du DocumentRoot.
+Revision: 13856 Bug de puce 'meme-rubrique" des sites references
+Revision: 13853 un flag manquant pour preciser que l'on est dans l'espace prive
+Revision: 13852 pas d'exe´cution en public non plus !
+Revision: 13850 il est temps de suivre la prévision des oracles proteger l'espace privé, donc...
+Revision: 13848 eviter le die intempestif "spip_urls AS U insertion sans description" lors de la creation de nouvelles urls ... (bug introduit au detour de http://zone.spip.org/trac/spip/changeset/13838#file22)
+Revision: 13846 indentation + meilleure verification sr onAjaxLoad(), pour compat crayons++
+Revision: 13845 enieme correction des urls ... je vais peut-etre finir par y arriver
+Revision: 13844 report oublie de [13765] qui reparait les urls arbo avec types renommes
+Revision: 13843 permettre a la previsu de savoir ou elle se trouve (cf. http://www.spip-blog.net/forum-spip-org-comme-base-de.html )
+Revision: 13841 log plus explicite
+Revision: 13839 erreur sql sur date
+Revision: 13838 NOW() disparait au profit de la date php (a verifier svp)
+Revision: 13836 la date d'un article c'est celle du php, pas celle du SQL
+
+
+2.0.5 -> 2.0.6 (16 mars 2009)
+
+Revision: 13834 report http://trac.rezo.net/trac/spip/changeset/13833 ajout d'un index sur spip_documents_liens
+Revision: 13830 passer l'id_auteur et l'id_article au squelette du forumlaire ecrire_auteur l'id etait calculé mais pas passé, on l'ajoute donc aussi
+Revision: 13828 report de http://trac.rezo.net/trac/spip/changeset/13827 redirections anciennes urls
+Revision: 13826 report discret de exec=fond introduit dans http://trac.rezo.net/trac/spip/changeset/13800 afin de pouvoir utiliser un meme plugin en version stable et dev etant un ajout de fonctionnalité, cela ne devrait pas poser de problème...
+Revision: 13824 report de http://trac.rezo.net/trac/spip/changeset/13822 et http://trac.rezo.net/trac/spip/changeset/13823 -- correction erreur 404 sur les urls de type spip.php  
+Revision: 13820 donner une PRIMARY KEY quand il n'y a rien (VIEW MySQL)
+Revision: 13818 toujours proteger les file_exists()
+Revision: 13812 ajout discret du pipeline styliser pour le futur 2.0.6, afin que les plugins comme SPIP Clear puissent s'appuyer dessus sans surcharger le fichier.
+Revision: 13809 coquille css (pi_r)
+Revision: 13808 Report de http://trac.rezo.net/trac/spip/changeset/13807 -- ne pas empecher le changement de mode image/document sur les images de rubriques... 
+Revision: 13801 manque de quotes (denisb)
+Revision: 13798 un lien du type {{{ [->http://www.favicon.cc/?action=icon&file_id=29805] }}} doit se transformer proprement avec un {{{ &amp; }}}
+Revision: 13797 Report de http://trac.rezo.net/trac/spip/changeset/10796 : #CHAPO doit enlever les redirections, mais pas  #CHAPO* qui doit les laisser.
+Revision: 13795 report de http://trac.rezo.net/trac/spip/changeset/13794 : charger les autorisations au moment du traitement de #FORMULAIRE_EDITER_AUTEUR appellé depuis le public
+Revision: 13793 Le début des vertèbres n'est pas la vertèbre nommée début [http://archives.rezo.net/spip-dev.mbox/200902.mbox/raw/%3C49A3FF0F.8070102@yahoo.fr%3E/ YannX].
+Revision: 13792 Ne pas tenter de réparer l'irréparable quand il faut prendre de la distance.
+Revision: 13791 Fallait savoir que {{{$x[$y]}}} convertit la chaîne {{{$y}}} en nombre quand elle est interprétable ainsi. PHP, le langage dont vous nous ne découvrirez jamais tous les pièges. Super argument publicitaire.
+
+2.0.4 -> 2.0.5
+
+- report de [13778] : l'installation sur les serveurs mysql avec un sql_mode par defaut etait cassee repare les installations sous easyphp 3.0 par defaut (13788)
+- closedir(d); avant de l'effacer (13787)
+- report de [13785] reparer la 404 des urls propres, et le mode urls propres_qs (13786)
+- report de htaccess (robots.txt, favicon.ico, sitemap.xml), correction des urls selon rfc 1738. references : [13769] et de [13779] a [13783] (13784)
+- noindex au lieu de none pour site.html (cf. [13773]) ( 13776 )
+
+
+2.0.3 -> 2.0.4
+
+- Remettre jQuery 1.2.6 pour ne pas créer de problème de comptabilité. Ceux qui le souhaitent pourront mettre jQuery 1.3.2 dans leur répertoire squelettes dans un fichier : « javascript/jquery.js » (13774)
+- Enlever tous les arobases des sélecteurs jQuery pour autoriser jQuery 1.3.x(13772)
+- report de [13755] et [13763] introduit les valuers date_default et date_redac_default dans le contexte quand SPIP ajoute la date d'office / accepter un tableau pour le filtre alterner (13770)
+- report de [13621]Ajout de jQuery 1.3 ... Attention aux extensions qui utilisent encore [@param=value] dans les sélecteurs jQuery à passer en [param=value] . (13768)
+- Ajout de image_joindre (13766) 
+- #1691 : une balise <a> etant absurde, il s'agit forcement du nom de la note (13761)
+- #1711 : annuler [11243] qui etait une fausse bonne idee ; en l'absence d'extension dans le titre, les navigateurs sont perdus (13760)
+- #1695 produire un aplat quand la production d'image echoue pour la css privee (13759)
+- #1704 : reduire la taille de la vignette, y compris dans la colonne documents (13758)
+- la fonctionnalite cachee dans la dist {article sans texte+un document joint} -> affichage du document inline provoquait le masquage de tous les documents joints lorsque le texte etait vide et plusieurs document joint. il faudrait au moins documenter le code pour eviter de reintroduire le bug (13757)
+- jQuery 1.3.2 http://docs.jquery.com/Release:jQuery_1.3.2 (13756)
+- Complément sur les urls arbo  (13753)
+- les balises CVT #FORMULAIRE_TRUC implementees par la balise generique #FORMULAIRE_ n'utilisent que le squelette formulaires/truc.html Inutile et trompeur de chercher a la racine le squelettre truc.html, donc (13751)
+- Bien tester tous les formulaires avant de les declarer inexistants * [13744] [13745] [13746] etaient incomplets on les fussionne (13749)
+- Complement a [13745] et [13746] * le findpath manquait de precision (13746)
+- report de [13744] #FORMULAIRE_INEXISTANT (13745)
+- report de [13741] gestion plus fine des urls (13742)
+- Amelioration traitement de l'arabe, notamment quand tiret a l'interieur d'un mot. (13739)
+- On place le contenu du js du login dans un cdata pour être valide ... On encapsule également la fonction jquery en passant... (13734)
+- report de [13732] bg d'affiche des sites syndiques dans l'espace prive (13733)
+- report de [13728] urls page (13729)
+- report de [13725] et [13726] (debug) (13727)
+- complement a [13720] :  les fonctions url_xx($id,$entite) renvoient toujours une url valide donc commencant par ../ si on est dans ecrire/ (c'etait le cas auparavant pour les documents mais pas pour les autres entites) Corrolairement #URL_ARTICLE pointe toujours sur l'article, que le squelette soit evalue dans l'espace public ou prive, et [(#URL_ARTICLE|url_absolue)] est toujours correcte.  Ceci est vrai pour toutes les entites (13722)
+- gerer les notes dans le suivi des forums  (13721)
+- report de [13719] nouvelle API d'URLs (13720)
+- ne pas surligner dans la page de recherche elle-meme (report de [13717]) (13718)
+- integration des #NOTES dans les forums (13710)
+- lorsque generer_url_entite doit generer une url publique depuis l'espace prive, il semble logique de prefixer de _DIR_RACINE pour que l'url soit valide repare le calcul des nouveautes et de [(#URL_ARTICLE|url_absolue)] evalue depuis le prive (13708)
+- eviter les @include qui masquent les erreurs (13707)
+- un <img > pas xhtml  (13706)
+- report de [13689] #URL_ARTICLE et consort designent toujours l'url publique de l'objet depuis la racine, meme utilisee dans l'espace prive il faut donc les prefixer de #EVAL{_DIR_RACINE} dans le cas ou l'on affiche cette url dans l'espace prive pour que le lien soit correct (13705)
+- report de [13696] ne pas coller les paragraphes en previsu des forums  (13701)
+- éviter d'avoir plusieurs id="nobot" sur la même page. Un div englobant le contenu du formulaire des signatures pour éviter des erreurs de validation (13699)
+- Le double clic du sélecteur d'auteur en Ajax ne fonctionnait pas. (13694)
+- puce_statut surchargeable (permet en particulier le plugin mots techniques) (13693)
+- fixer la taille des images pour que ca ne clignote pas (13692)
+- Complément de 13677 sur la mise à jour de la base lors d'un upgrade (13691)
+- prise en compte de Accept-Language pour tout le monde (pas seulement les personnes authentifiées) (13690)
+- Correction d'un bug sur la sauvegarde et la fusion (13661)
+- Meilleure gestion en cas de plantage de l'installation (13659)
+- Eviter un warning concernant les URL personnalisées (13654)
+- correctif version allemande (klaus) (13636)
+- la syntaxe recuperer_fond($fond,$contexte,array('ajax'=>true)) ne fonctionnait que si le fond etait defini dans le contexte (13615)
+- Il y a des versions de PHP où les imagegif etc sont absentes, on contrôle (13606)
+- Il est totalement inutile de compliquer les choses avec des {doublons}... {!id_groupe} enlève déjà le groupe en cours. (13604)
+- Gérer l'explicitation du nom des tables dans le critère Fusion (13603)
+- Respecter les 0 dans les urls propres (13602)
+- Les restaurations de DUMP anciens avec une version 10000 utilisée ne commençaient pas les mises à jour à la version qu'il faut (13598)
+
+
+2.0.2 -> 2.0.3
+
+- pouvoir tenir compte du hreflang lors de la construction de l'URL par calculer_url via inc_lien_dist (13595)
+- les entitee &gt; et &lt; etaint changee en < > apres une surligne (13593)
+- Accepter les - dans le nom des bases SQL (13591)
+- Bug sur changement d'auteur si le nom de l'auteur était trop court  (13590)
+- Coquille dans les vieilles defs (manque un g pour generer !) (Charly Caulet) (13586)
+- Retour des recherches de mots associés aux documents (non utilisée dans le core)   (13584)
+- Bug si erreur de frappe #URL_ MOT (espace avant MOT) (13582)
+- Pour un raccourci "[->25]" la fonction nettoyer_raccourcis_typo renvoie "Array"... (Pat). (13573)
+- Le numéro du jour manquait sur le libellé du survol conduisant au calendrier du jour. Quant au libellé du mois, il n'emmenait pas sur le calendrier du mois. (13569)
+- Une fonctionnalité de la 1.9.2 perdue: si id_rubrique est fournie à la création d'une traduction, il faut créer dans cette rubrique, pas ailleurs.  (13560)
+- ne pas ecraser le hash de la boucle avec le critere {recherche} cela empeche tout plugin de l'utiliser (13555)
+- proteger la fonction recuperer_fond quand on ecrit recuperer_fond($fond,$_GET) dans les plugins meme si il semble que la variable soit protegee en amont dans tous les cas (13551)
+- Le cryptage du mot de passe avant envoi n'était plus assuré que si le cookie dession était toujours actif.  (13544)
+- Fatal error a la suppression d'un document avec vignette.  (13539)
+- Lorsqu'on pose ou retire les .htaccess des sous-répertoires de IMG, il ne faut pas oublier celui nommé "distant" qui ne figure pas dans la table des types de documents. (13538)
+- Deux balises A pour LOGO_DOCUMENT, c'est une de trop (Eric). (13536)
+
+
+2.0.1 -> 2.0.2
+
+- deux bugs au login (13529)
+- refuser les urls avec le pseudo protocole data (13521) 
+- bonne année (13520) 
+- Unifier la mise en page dans les 3 onglets de gestion des langues (13519)
+- encore quelques retouches sur l'agenda de l'espace publique (13517) 
+- le champ type de la balise A d'un logo de document était toujours vide (13512)
+- la boucle DOCUMENTS ne donnait pas les documents attachés aux messages de forums (13511)
+- accepter les notes nommees <*> <+> <.> et autres caracteres significatifs (13510)
+- un peeling pour évacuer le point noir. (13508)
+- amélioration du calcul de popularité (13506)
+- lien incorrect dans le message à un visiteur venant de s'inscrire (13504)
+- support du png8 comme format de image_format (l'extension sera bien 'png') (13501)
+- authentification via LDAP/AD, lire le Samaccountname (13500)
+- proteger l'$id fournit a calcul_branche_in (13498)
+
+
+2.0.0 -> 2.0.1 rapport de police (13469 ->13495) 
+
+- réparation d'un bug sur les urls standard et autres anciennes implémentations (13489) 
+- problème de création du répertoire cache à l'install (13487) 
+- correction mineure sur le calcul des visites  (13485) 
+- Compilateur : défaut sur la prise en compte sur le champ statut dans le cas d'une requête sur une table principale (13484) 
+- correction pour IE6/7 sur les formulaires de l'espace privé (13481)
+- il était impossible de déplacer SPIP dans un sous répertoire (13478 )
+

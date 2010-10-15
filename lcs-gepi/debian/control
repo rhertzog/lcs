@@ -1,0 +1,12 @@
+Source: lcs-gepi
+Section: misc
+Priority: optional
+Maintainer: Philippe Leclerc <philippe.leclerc1@ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-gepi
+Architecture: all
+Depends: lcs-web
+Description: Install Gestion de suivi des resultats scolaires on LCS server
+ Gestion de suivi des resultats scolaires

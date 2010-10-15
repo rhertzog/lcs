@@ -1,0 +1,143 @@
+#navcontainer{margin:0 40px 0 0;padding:0;opacity:0.9;top:0;}	
+#navlist{float:left;text-align:left;margin:0 0 8px;font-family: Verdana sans-serif;width:100%;}
+
+#navlist li{
+	border:solid 1px green;
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	-moz-border-radius-topleft:8px;
+	-moz-border-radius-topright:8px;
+	-webkit-border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	border-bottom:none;
+	background:#4D4D4D url(../images/onglet-of-cdt.png) no-repeat scroll 0 0;
+	color:#000000;
+	float:left;
+	font-size:12px;
+	height:30px;
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	margin:0 1px 0 0;
+	padding:5px 10px;
+	text-align:center;}
+#navlist li#select{
+	background:#0D6A1E url(../images/onglet-on-cdt.png) no-repeat scroll 0 0;
+	float:left;
+	border:solid 1px #9207C2;
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	-moz-border-radius-topleft:8px;
+	-moz-border-radius-topright:8px;
+	-webkit-border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	border-bottom:none;
+	font-size:12px;
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	margin:0 1px;}
+
+#navlist a{font-size:12px;display:block;text-decoration:none;text-align:left;color: #FFFFFF;}
+#navlist a#courant{border-color:none;text-align:center;font-weight:bold;color:#FDB218;}
+#navlist a#courant:hover{color:#FDB218;}
+#navlist a:hover{color:#FDB218;/*background:#1B2C68 url(../images/onglet-over-cdt.png) no-repeat scroll 0 0*/}
+#navlist a#courant:active{color:#FDB218;}
+#navlist a:active{color: #FDB218;}
+
+#switch-barreLcs{bottom:15px;cursor:pointer;height:20px;left:8px;padding:0;position:absolute;width:24px;}
+.swup{background:url('../images/up.png') no-repeat;}
+.swdown{background:url('../images/down.png') no-repeat;}
+
+#cfg-navlist{float:left;text-align:left;font: normal Verdana,sans-serif;width:800px;margin-left:10px}
+#cfg-navlist li{
+	border:solid 1px green;
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	-moz-border-radius-topleft:8px;
+	-moz-border-radius-topright:8px;
+	-webkit-border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	border-bottom:none;
+	background:#4D4D4D url(../images/onglet-of-cdt.png) no-repeat scroll 0 0;
+	color:#000000;
+	float:left;
+	font-size:12px;
+	height:30px;
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	margin:0 1px 0 0;
+	padding:5px 10px;
+	text-align:center;}
+#cfg-navlist li#select{
+	background:#0D6A1E url(../images/onglet-on-cdt.png) no-repeat scroll 0 0;
+	float:left;
+	border:solid 1px #9207C2;
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	-moz-border-radius-topleft:8px;
+	-moz-border-radius-topright:8px;
+	-webkit-border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	border-bottom:none;
+	font-size:12px;
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	margin:0 1px;}
+#cfg-navlist a{font-size:12px;display:block;text-decoration:none;text-align:left;color: #ffffff;}
+#cfg-navlist a#courant{border-color:none;text-align:center;font-weight:bold;color:#1b2c68;}
+#cfg-navlist a#courant:hover{color:#fdb218;}
+#cfg-navlist a:hover{color:#fdb218;}
+#cfg-navlist a#courant:active{color:#1b2c68;}
+#cfg-navlist a:active{color: #1b2c68;}
+#arch-navlist{float:left;text-align:left;margin:0 0 -10 10px;font-family: Verdana sans-serif;width:100%;}
+#arch-navlist li{
+	border:solid 1px green;
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	-moz-border-radius-topleft:8px;
+	-moz-border-radius-topright:8px;
+	-webkit-border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	border-bottom:none;
+	background:#4D4D4D url(../images/onglet-of-cdt.png) no-repeat scroll 0 0;
+	color:#000000;
+	float:left;
+	font-size:12px;
+	height:30px;
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	margin:0 1px 0 0;
+	padding:5px 10px;
+	text-align:center;}
+#arch-navlist li#arch{
+	background:#0D6A1E url(../images/ongl_arch.png) no-repeat scroll 0 0;
+	float:left;
+	border:solid 1px #9207C2;
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	-moz-border-radius-topleft:8px;
+	-moz-border-radius-topright:8px;
+	-webkit-border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	border-bottom:none;
+	font-size:12px;
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	margin:0 0px;}
+#arch-navlist a{font-size:12px;display:block;text-decoration:none;text-align:left;color: #ffffff;}
+#arch-navlist a#courant{border-color:none;text-align:center;font-weight:bold;color:#FDB218;}
+#arch-navlist a#courant:hover{color:#fdb218;}
+#arch-navlist a:hover{color:#fdb218;}
+#arch-navlist a#courant:active{color:#FDB218;}
+#arch-navlist a:active{color: #1b2c68;}

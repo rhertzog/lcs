@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Mode administrateur</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+HREF="t1.htm"><LINK
+REL="PREVIOUS"
+TITLE="Mode équipe"
+HREF="x74.htm"><link
+rel="StyleSheet"
+type="text/css"
+href="Style/style.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="tetx/html; charset=ISO-8859-1"></HEAD
+><BODY
+CLASS="sect1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><H1
+></H1
+><P
+><A
+HREF="x74.htm"
+ACCESSKEY="P"
+>Précédent</A
+></P
+><HR></DIV
+><DIV
+CLASS="sect1"
+><H1
+CLASS="sect1"
+><A
+NAME="AEN107"
+>4. Mode administrateur</A
+></H1
+><P
+>Le mode administrateur pour permet de configuarer l'application, cette
+  fonctionalité est disponible dans votre menu (configuration) si vous le
+  droit system_is_admin vous a été affecté par l'administrateur du serveur
+  <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>LCS</I
+></SPAN
+>.</P
+><DIV
+CLASS="figure"
+><A
+NAME="AEN111"
+></A
+><P
+><B
+>Figure 7. Menu Configuration</B
+></P
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="Images/mnu_config.png"></P
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN116"
+>4.1. Mail</A
+></H2
+><P
+>Vous permet de renseigner soit :</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Une adresse électronique d'un utilisateur,</P
+></LI
+><LI
+><P
+>Une liste d'adresses électroniques d'utilisateurs séparées par
+        des virgules,</P
+></LI
+><LI
+><P
+>Une adresse électronique correspondant à un groupe de l'annuaire
+        LDAP (par exemple support_info).</P
+></LI
+></OL
+><P
+>Les demandes de support et réponses aux demandes seront diffusées à
+    ces adresses, il convient donc de choisir les adresses des membres du
+    droit <TT
+CLASS="filename"
+>Maint_is_admin</TT
+> ou de choisr un groupe
+    <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>LDAP</I
+></SPAN
+> (par exemple support_info) renseigné avec les
+    membres du droit <TT
+CLASS="filename"
+>Maint_is_admin</TT
+> dans ce dernier cas
+    il faudra que la configuration du serveur de courrier
+    <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Postfix</I
+></SPAN
+> support les listes de diffusion
+    <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>LDAP</I
+></SPAN
+>.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN132"
+>4.2. Secteur</A
+></H2
+><P
+>Vous permet d'ajouter, supprimer, moifier les secteurs de
+    l'établissment.</P
+><DIV
+CLASS="figure"
+><A
+NAME="AEN135"
+></A
+><P
+><B
+>Figure 8. Menu Secteur</B
+></P
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="Images/secteur.png"></P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN140"
+>4.3. Topologie</A
+></H2
+><P
+>Vous permet d'importer la structure de l'établissement (batiments,
+    étages, salles).</P
+><DIV
+CLASS="figure"
+><A
+NAME="AEN143"
+></A
+><P
+><B
+>Figure 9. Import et consultation de la Topologie de l'établissement</B
+></P
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="Images/topologie.png"></P
+></DIV
+></DIV
+><P
+>Le format d'importation doit avoir la structure suivante :</P
+><PRE
+CLASS="programlisting"
+>Nom_de_l_etablissement;Bâtiment repere_du_Batiment;Etage;Numero_salle (description) ;0
+...
+Pierre et Marie Curie;Bâtiment E;1er;E101 (salle de cours);0
+...</PRE
+><P
+>Elle est conforme au fichier config.txt du logiciel d'inventaire du
+    CR de basse normandie.</P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="AEN151"
+>4.4. Sauvegarde / Restauration de la base de données</A
+></H2
+><P
+>Vous permet de sauvegarder ou de restaurer un fichier sql de la base
+    de données de l'application.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR><A
+HREF="t1.htm"
+ACCESSKEY="H"
+>Sommaire</A
+><BR><A
+HREF="x74.htm"
+ACCESSKEY="P"
+>Précédent</A
+>: Mode équipe<BR></DIV
+></BODY
+></HTML
+>

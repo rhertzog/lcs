@@ -1,0 +1,266 @@
+<!-- 17/11/2008 INDEX.HTM -->
+<!-- Index.htm Bcdi Web Lycée -->
+<!--Remplacez ci-dessous OUI par NON si vous ne voulez pas que les critères de recherche correspondant s'affichent en "Restrictions de recherche"-->
+<#VAR AFFDISCIPLINES=OUI><!-- Afficher le choix Disciplines en recherche -->
+<#VAR AFFNIVEAUX=OUI><!-- Afficher le choix Niveaux en recherche -->
+<#VAR AFFPUBLICS=OUI><!-- Afficher le choix Publics en recherche -->
+<#VAR AFFCENTRESINTERET=OUI><!-- Afficher le choix Centres d'intérêt en recherche -->
+<#VAR AFFDISPONIBLE=NON><!-- Afficher le choix Disponibles en recherche -->
+<#VAR AFFLANGUE=OUI><!-- Afficher le choix Langues en recherche -->
+<#VAR AFFDISPONIBLE=NON><!-- Afficher le choix Disponibilité en recherche -->
+<#VAR AFFNATURES=OUI><!-- Afficher le choix Natures en recherche -->
+<#VAR AFFGENRES=OUI><!-- Afficher le choix Genres en recherche -->
+<#VAR AFFDICO=OUI><!-- Afficher le choix avec/sans Dico en recherche -->
+<#VAR CHOIX_MOTS=OUI><!-- Afficher le choix Un des mots/tous les mots en recherche -->
+<#VAR AFFNUMEXE=OUI><!-- Afficher le numéro ou code d'exemplaire -->
+<#VAR AFFINTITULEEMPLACEMENT=NON> <!-- Afficher l'intitulé de l'emplacement -->
+<#VAR AFFRESSOURCEFICHECOMPLETE=OUI> <!-- Afficher la ressource notices 1  en fiche complete (sinon directement)  -->
+<#VAR AFFCHAMPDIVERS=NON> <!-- Afficher le champ divers de notices -->
+<!-- ne pas modifier les 2 lignes ci-dessous -->
+<#INCLUDE PUBLIC.HTM>
+<#VAR RECHERCHE=THEME>
+<!-- fin -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Recherche rapide</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache, must-revalidate, proxy-revalidate">
+<meta http-equiv="expires" content="0">
+<link href="<#CONST REP_MODELES>bcdi.css" rel="stylesheet" type="text/css">
+
+<script language="JavaScript">
+<!--
+var Derouler=false // A priori, on ne déroule pas les restrictions.
+var fichierEnCours="INDEX.HTM"
+  function DivStatus( nom, numero )
+	{
+	  var divID = nom + numero;
+	  PcH = true;
+	  if ( document.getElementById && document.getElementById( divID ) ) // Pour les navigateurs récents
+		  Pdiv = document.getElementById( divID );
+	  else if ( document.all && document.all[ divID ] ) // Pour les veilles versions
+		  Pdiv = document.all[ divID ];
+	  else if ( document.layers && document.layers[ divID ] ) // Pour les très veilles versions
+		  Pdiv = document.layers[ divID ];
+	  else
+		  PcH = false;
+	if ( PcH )
+		  Pdiv.className = ( Pdiv.className == 'cachediv' ) ? '' : 'cachediv';
+	}
+
+function effacer()
+{
+  document.forms[0].reset()
+  for (i=0;i<document.forms[0].elements.length;i++)  with (document.forms[0].elements[i])
+  {
+	if (type=="text") value=""
+	if (type=="checkbox") checked=false
+	if (type=="select-one") options[0].selected = true;
+	if (name=="LANGAGE") checked=(value=="DICO")
+  }
+}
+
+function elargir(dico)
+{
+  if (!dico) document.forms[0].AUTOPOSTAGE.checked=false;
+  document.forms[0].AUTOPOSTAGE.disabled=!dico;
+}
+
+function tube(ch)
+{
+  while (ch.substring(0,1)==" ")
+   ch=ch.substring(1,ch.length)
+  return "|"+ch+"|"
+}
+function ParDefaut(ch,defaut)
+{
+  while (ch.substring(0,1)==" ")
+   ch=ch.substring(1,ch.length)
+  if (ch=="")
+   ch=defaut
+  return ch
+}
+
+function BasculerRestrictions() { DivStatus( 'txt', '3' ); DivStatus( 'txt', '6' ); }
+
+function ChangerOptions(nom,valeur)
+{
+  selectBox = document.getElementById(nom);
+  if (selectBox.options.length>0) {
+	if (valeur=='') valeur=selectBox.options[0].text;
+	for (var i=0; i<selectBox.options.length; i++)
+	if (selectBox.options[i].text==valeur) {
+	  selectBox.options[i].selected = true;
+	  if (i>0) Derouler=true;
+	}
+  }
+}
+
+function InitChecked()
+{
+  chComment=ParDefaut("<#COMMENT>","TOUS").substr(0,4)
+  chLangage=ParDefaut("<#LANGAGE>","DICO").substr(0,4)
+  chClassement=ParDefaut("<#CLASSEMENT>","PERTINENCE").substr(0,4)
+  chTypeNature=tube("<#TYPEDENATURE>")
+  chSupport=tube("<#SUPPORT1>")
+  chAutopostage="<#AUTOPOSTAGE>"
+
+  for (i=0;i<document.forms[0].elements.length;i++)
+  {
+    if (document.forms[0].elements[i].name=="AUTOPOSTAGE")
+    document.forms[0].elements[i].checked=((chAutopostage>"!") && (chAutopostage!="on"))
+    else
+    if (document.forms[0].elements[i].name=="LANGAGE")
+    {document.forms[0].elements[i].checked=(document.forms[0].elements[i].value.substr(0,4)==chLangage)}
+	else
+    if (document.forms[0].elements[i].name=="COMMENT")
+	{document.forms[0].elements[i].checked=(document.forms[0].elements[i].value.substr(0,4)==chComment)}
+    else
+    if (document.forms[0].elements[i].name=="CLASSEMENT")
+    {document.forms[0].elements[i].checked=(document.forms[0].elements[i].value.substr(0,4)==chClassement)}
+    else
+    if (document.forms[0].elements[i].name=="TYPEDENATURE")
+    {
+      ch="|"+document.forms[0].elements[i].value+"|"
+      document.forms[0].elements[i].checked=(chTypeNature.indexOf(ch)>=0)
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+    else
+    if (document.forms[0].elements[i].name=="SUPPORT1")
+    {
+      ch="|"+document.forms[0].elements[i].value+"|"
+      document.forms[0].elements[i].checked=(chSupport.indexOf(ch)>=0)
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+    else
+	if ((document.forms[0].elements[i].name.substr(0,4)=="DATE") && !(document.forms[0].elements[i].value=="")) Derouler=true
+    else
+    if (document.forms[0].elements[i].name.substr(0,5)=="DISPO")
+    {
+      document.forms[0].elements[i].checked=!("<#DISPONIBLES>"=="")
+      if (document.forms[0].elements[i].checked) Derouler=true
+    }
+  }
+  ChangerOptions('GENRES',"<#GENRES>")
+  ChangerOptions('NATURES',"<#NATURES>")
+  ChangerOptions('NIVEAUX',"<#NIVEAUX>")
+  ChangerOptions('DISCIPLINES',"<#DISCIPLINES>")
+  ChangerOptions('PUBLICS',"<#PUBLICS>")
+  ancienFichierMaitre="<#VAR FICHIER-MAITRE>";
+<#VAR FICHIER-MAITRE=INDEX.HTM>
+  if (ancienFichierMaitre!="<#VAR FICHIER-MAITRE>") {effacer(); Derouler=false;}
+  if (Derouler) BasculerRestrictions();
+}
+-->
+</script>
+
+</head><body onLoad="javascript:InitChecked()">
+<noscript>Votre navigateur n'autorise pas la gestion des scripts Javascript, vous ne pouvez pas utiliser BCDI Web</noscript>
+
+<form action="<#URLDLL>" name="recherche" method="post">
+<INPUT TYPE=HIDDEN NAME=NP VALUE=<#VALEUR NUMERO_PANIER>>
+<INPUT TYPE=HIDDEN NAME=FICHIERORIGINE VALUE=INDEX.HTM>
+<INPUT TYPE=HIDDEN NAME=FICHIER VALUE=INDEX.HTM>
+<INPUT TYPE=HIDDEN NAME=RESTRICTIONS VALUE=OUI>
+<INPUT TYPE=HIDDEN NAME=FORMAT VALUE=LISTENOT>
+<div class="zonemenu">
+  <div class="fxcal">
+	<div class="menucalibre">&nbsp;</div>
+	<div class="menuON">
+	  <div class="menuONgauche"></div>
+	  <div class="menuONtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=INDEX.HTM&MODELE=index.htm">Recherche th&eacute;matique</a></div>
+	  <div class="menuONdroite"></div>
+	</div>
+	<div class="menuOFF">
+	  <div class="menuOFFgauche"></div>
+	  <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=INDEX.HTM&MODELE=rech-criteres.htm">Recherche par crit&egrave;res</a></div>
+	  <div class="menuOFFdroite"></div>
+	</div>
+	<div class="menuOFF">
+	  <div class="menuOFFgauche"></div>
+	  <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=INDEX.HTM&MODELE=VisitTh.htm">Recherche par th&eacute;saurus</a></div>
+	  <div class="menuOFFdroite"></div>
+	</div>
+
+<#INCLUDE INCLUDE-PANIER-COMPTE.HTM>
+
+  </div>
+
+  <div class="menuseparatsuite">
+	<div class="txt100pr100">&nbsp;</div>
+	<div class="menucalibre">&nbsp;</div>
+  <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=index.htm" class="menuseparatlienON" title="recherche rapide">Recherche rapide</a>
+  <a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-avancee.htm" class="menuseparatlienOFF" title="Recherche avancée">Recherche avanc&eacute;e</a>
+  <font size="+1"><B>&nbsp;&nbsp;&nbsp;&nbsp;<#CONST NOM_BASE></B></font>
+    <div class="txt100pr100">&nbsp;</div>
+  </div>
+
+
+  <div class="menuzonedatag">
+
+    <div class="menuzonedata">
+                <br>
+<INPUT TYPE="HIDDEN" NAME="CLASSEMENT" VALUE="PERTINENCE" > <!-- 19/09/07 -->
+<INPUT TYPE="HIDDEN" NAME="FORMULAIRE_RECHERCHE" VALUE="INDEX" >
+	  <!-- div class="tridroite">
+        <div class="tridroitetitre">Classement des résultats par : </div>
+                      <input name="CLASSEMENT" type="radio" value="PERTINENCE" checked> Pertinence
+                    <br><input name="CLASSEMENT" type="radio" value="TITRE"> Titre
+                  <br><input name="CLASSEMENT" type="radio" value="AUTEUR, TITRE"> Auteur
+                  <br><input name="CLASSEMENT" type="radio" value="SUPPORT, TITRE"> Support
+                  <br><input name="CLASSEMENT" type="radio" value="DATE PARUTION, TITRE"> Date
+      </div -->
+                 <br><div class="txt"><b>Je cherche :</b>&nbsp;</div><div class="zoneinputrech">
+     <input name="QUOI" type="text" value="<#QUOI>" class="input">
+      </div>
+	  <div class="zoneinputrech">
+
+<#SI CHOIX_MOTS=OUI>
+			<input name="COMMENT" type="radio" value="TOUS"  checked>
+			Tous les mots
+			<input name="COMMENT" type="radio" value="UN" >
+			Un des mots
+			<input name="COMMENT" type="radio" value="EXACT" >
+			L&rsquo;expression exacte 
+<#SINON CHOIX_MOTS=OUI>
+			<input name="COMMENT" type="checkbox" value="EXACT" >L&rsquo;expression exacte
+			<input name="COMMENT" value="TOUS" type="hidden">
+<#FINSI CHOIX_MOTS=OUI>
+	<#SI AFFDICO=OUI>
+           <p>
+			 <INPUT  name ="LANGAGE"type="radio" value="TEXTESEUL">Sans Dico&nbsp;&nbsp;&nbsp;&nbsp;
+			 <INPUT  name ="LANGAGE" type="radio" value="DICO"> Avec Dico &nbsp;
+			 <font size=-1><i>(mots équivalents)</i></font>
+<!--
+			 <INPUT  name ="LANGAGE"type="radio" value="TEXTESEUL" onclick="elargir(false)">Sans Dico&nbsp;&nbsp;&nbsp;&nbsp;
+			 <INPUT  name ="LANGAGE" type="radio" value="DICO" onclick="elargir(true)"> Avec Dico &nbsp;
+			 <font size=-1><i>(mots équivalents)</i></font>
+			 <INPUT  type="Checkbox" name="AUTOPOSTAGE" value="SPECIFIQUE">&nbsp;Elargir&nbsp;
+-->
+			 <INPUT  type="hidden" name="AUTOPOSTAGE" value="">
+<input name="DISPONIBLES" value="" type="hidden">
+			 <font size=-1><i>&nbsp;</i></font>
+           </p>
+		   <#SINON AFFDICO=OUI>
+		   <INPUT TYPE=HIDDEN NAME=LANGAGE VALUE=TEXTESEUL>
+		   <#FINSI AFFDICO=OUI>
+          
+      <p>&nbsp;</p>
+      </div>
+      <div class="txt4"><div class="txt2"><a href="javascript:BasculerRestrictions()">Restrictions de recherche</a></div>
+        <div align="center"><input name="Rechercher" type="submit" value="Rechercher" class="bouton1">
+                <input name="Effacer" type="button" value="Effacer" class="bouton2" onclick="effacer()">
+        </div></div>
+
+    </div></div>
+  <#INCLUDE INCLUDE-RESTRICTIONS.HTM>
+
+</div>
+</form>
+</body>
+</html>
+
+
