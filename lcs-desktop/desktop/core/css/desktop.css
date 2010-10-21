@@ -313,7 +313,10 @@ a.icon.ui-draggable-dragging {
 	right: 1px;
 	bottom: 23px;
 }
-
+.window_content iframe{
+	width:100%;
+	height:98%;
+}
 .window_aside {
 	float: left;
 	font-size: 11px;

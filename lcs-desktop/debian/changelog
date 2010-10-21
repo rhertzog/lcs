@@ -1,9 +1,14 @@
-lcs-desktop (0.2~11) UNRELEASED; urgency=low
+lcs-desktop (0.2~11) Lcs; urgency=low
   [Jean-Luc Chretien]
-  * Fix typo in test target in inc_menus_admin.php
+   * Fix typo in test target in inc_menus_admin.php
+  [Dominique Lepaisant]
+   * Fix bug on authentification links
+   * Display a notification when a new article is posted on the forum
+   * Run the script js of desktop when the whole page is loaded
+   * Add wallpaper images (by wawa)
+   * Update doc-html and add jquery.scroll for anchor
 
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 08 Oct 2010 14:39:33 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 20:32:01 +0200
 
 lcs-desktop (0.2~10) Lcs; urgency=low
   [Jean-Luc Chretien]

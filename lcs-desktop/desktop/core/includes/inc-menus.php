@@ -17,7 +17,7 @@
 	if ( $idpers==0 ) {
  	// Un utilisateur n'est pas authentifie  
 ?>				<li>
-					<a class="open_win ext_link" rel="../lcs/auth.php" title="auth" href="#icon_dock_lcs_auth"><img src="../lcs/images/deconnect.png" style="width:20px;" /> Se connecter</a>
+					<a class="open_win ext_link" rel="../lcs/auth.php" rev="auth"  href="#icon_dock_lcs_auth"><img src="../lcs/images/deconnect.png" style="width:20px;" /> Se connecter</a>
 				</li>
 <?php			
 	} else {
@@ -30,6 +30,11 @@
 				<li>
 					<a class="open_win ext_link" rel="prefs" rev="prefs" href="#icon_dock_lcs_prefs"><img src="../lcs/images/bt-V1-4.jpg" style="height:20px;" /> Pr&eacute;f&eacute;rences...</a>
 				</li>
+<!--
+				<li>
+					<a class="open_win ext_link" rev="temp" rel="temp" title="Upload Images" href="jquery_upload_crop/upload_crop.php"><img src="../lcs/images/barre1/BP_r1_c8.gif" style="width:20px;" /> testadom</a>
+				</li>
+-->
 				<li>
 					<a class="open_win ext_link" href="../lcs/logout.php"><img src="../lcs/images/connect.png" style="width:20px;" /> Se d&eacute;connecter</a>
 				</li>
@@ -39,8 +44,9 @@
 			</ul>
 		</li>
 	<?php			
+	 	// Un utilisateur est authentifie  et a modifie son mot de passe
+	 	// on affiche les menus applis
 		if ( $idpers!=0 && !pwdMustChange($login)) {
-	 	// Un utilisateur  authentifie  
 		?>
 		<li>
 		<a class="menu_trigger" href="#">Services</a>

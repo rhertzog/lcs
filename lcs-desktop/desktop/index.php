@@ -39,6 +39,7 @@ include("core/includes/inc-lcs-applis.php");
 <script src="../libjs/jquery-ui/jquery-ui.js"></script>
 <script src="core/libs/farbtastic/farbtastic.js"></script>
 <script src="core/finder/jquery.scrollTo-1.4.0-min.js"></script>
+<script src="core/js/jquery.localscroll-1.2.7-min.js"></script>
 <script src="core/js/jquery.notify.min.js"></script>
 <script src="core/finder/ui.finder.js"></script>
 <link rel="shortcut-icon" href="../lcs/images/favicon.ico">
@@ -100,7 +101,7 @@ if ( $idpers==0 ) {
 			<div class="abs window_content">
 				<div class="window_main" style="width:100%;height:100%;margin:0;">
 					<a class="appli_link" href="auth.php" title="auth"></a>
-					<iframe src="" name="iframe_lcs_auth" style="width:100%;height:98%;height:98%;" id="iframe_lcs_auth"></iframe>
+					<iframe src="" name="iframe_lcs_auth" style="width:100%;height:98%;" height="98%" id="iframe_lcs_auth"></iframe>
 				</div>
 			</div>
 			<div class="abs window_bottom">
@@ -175,7 +176,7 @@ if ( $idpers==0 ) {
 				</span>
 			</div>
 			<div class="abs window_content">
-			<iframe src="" style="width:100%;height:98%;" id="iframe_lcs_legal"></iframe>
+			<iframe src="" id="iframe_lcs_legal"></iframe>
 			</div>
 			<div class="abs window_bottom">
 				LCS - A propos
@@ -282,6 +283,31 @@ if ( $idpers==0 ) {
 <!--End of window -->
 
 </div>
+<div id="container" style="display:none" class="active">
+	<div id="default">
+		<h1>#{title}</h1>
+		<p>#{text}</p>
+	</div>
+	<div id="sticky" class="active">
+		<a class="ui-notify-close ui-notify-cross" href="#">x</a>
+		<h1>#{title}</h1>
+		<p>#{text}</p>
+	</div>
+	<div id="withIcon" class="active">
+		<a class="ui-notify-close ui-notify-cross" href="#">x</a>
+		<div style="float:left;margin:0 10px 0 0"><img src="#{icon}" alt="warning" /></div>
+		<h1>#{title}</h1>
+		<p>#{text}</p>
+	</div>
+	<div id="withIconNoClose" class="active">
+		<div style="float:left;margin:0 10px 0 0"><img src="#{icon}" alt="warning" /></div>
+		<h1>#{title}</h1>
+		<p>#{text}</p>
+	</div>
+</div>
+<input type="hidden" id="s_idart" value="0" />
+<div style="display:none"><iframe id="temp_squirrelmail" style="display:none" src=""></iframe></div>
+<div style="display:none" id="temp_forum_notify"></div>
 <?php
 	// bar-top, bar-bottom
 	include('core/includes/inc-bars_topbottom.php');
@@ -293,100 +319,100 @@ if ( $idpers==0 ) {
   $url_accueil = "../spip/";
 ?>
 <!--- container to hold notifications, and default templates --->
-<div id="container" style="display:none">
-	<div id="default">
-		<h1>#{title}</h1>
-		<p>#{text}</p>
-	</div>
-	<div id="sticky">
-		<a class="ui-notify-close ui-notify-cross" href="#">x</a>
-		<h1>#{title}</h1>
-		<p>#{text}</p>
-	</div>
-	<div id="withIcon">
-		<a class="ui-notify-close ui-notify-cross" href="#">x</a>
-		<div style="float:left;margin:0 10px 0 0"><img src="#{icon}" alt="warning" /></div>
-		<h1>#{title}</h1>
-		<p>#{text}</p>
-	</div>
-	<div id="withIconNoClose">
-		<div style="float:left;margin:0 10px 0 0"><img src="#{icon}" alt="warning" /></div>
-		<h1>#{title}</h1>
-		<p>#{text}</p>
-	</div>
-</div>
-<div style="display:none"><iframe id="temp_squirrelmail" style="display:none" src=""></iframe></div>
-
 <script>
-	JQD.init_icons();
-	JQD.init_desktop();
-</script>
-	<?php 	if ( $url_accueil=="../spip/" ) { ?>
-	// .:LCS:. on lance l'affichage de la page &url_accueil.
-<script>
+$(document).ready(function(){
+	<?php 
+	// .:LCS:. Cas de la page d'accueil ?????
+	if ( $url_accueil=="/spip/" ) { } 
+	?>
+	
+	<?php 
+	// .:LCS:. si user est connecte
+	if ( $idpers!=0 ) { ?>
 	setTimeout(function(){
-		$('#window_lcs_spip').addClass('large_win');
-		JQD.init_link_open_win('<a title="spip" rev="spip" rel="../lcs/statandgo.php?use=spip" href="#icon_dock_lcs_spip" class="open_win 
-ext_link">Forum</a>');
-	},1500);
-</script>
-	<?php } if ( $idpers!=0 ) { ?>
-<script>
-	setTimeout(function(){
-	//on apppelle squirrelmail
+	// User must change pass
 	<?php if (pwdMustChange($login)) { ?>
 		//alert('Pass no changed');
 		JQD.init_link_open_win('<a rel="change_pass" rev="change_pass" title="auth" href="../Annu/must_change_default_pwd.php" class="open_win ext_link">Cnager de mot-de-passe</a>');	
-		// le user doit recharger la page apres modif pass
-		JQD.create_notify("withIconNoClose", { title:'Attention!', text:'N&rsquo;oubliez pas d&rsquo;actualiser votre bureau apr&egrave;s avoir modifi&eacute; votre mot de passe. <br /><span style="text-decoration:underline;">Cliquez-moi pour actualiser votre bureau</span>', icon:'core/images/icons/alert.png' }, {
+		// le user doit recharger la page apres modif pass, on lui notifie
+		JQD.create_notify("withIconNoClose", { title:'Attention!', text:'N&rsquo;oubliez pas d&rsquo;actualiser votre bureau apr&egrave;s avoir modifi&eacute; votre mot de passe. <br /><span style="text-decoration:underline;">Cliquez-moi pour actualiser votre bureau</span>', icon:'core/ima	// .:LCS:. Notification d'un message du forum
+ges/icons/alert.png' }, {
 			expires:false,
 			click: function(e,instance){
 				window.location='./'; 
 			}
 		});
 
-	<?php }elseif ( $squirrelmail == 1 ) { ?>
-		$('#temp_squirrelmail').attr('src','../lcs/statandgo.php?use=squirrelmail');
+	<?php }
+	else{
+		if ( $spip == 1 ) { ?>
 		setTimeout(function(){
-                        $.get("../squirrelmail/plugins/notify/notify-desktop.php",
-                        function(data){
-                            if (data != '')
-                             JQD.create_notify("withIcon", { title:'Messagerie', text: data + '<p><span style="text-decoration:underline;">Consulter sa messagerie</span>', icon:'core/images/icons/mailicon.png' },{ expires:false,
-                             click: function(e,instance){
-				JQD.init_link_open_win('<a title="Webmail" rel="../lcs/statandgo.php?use=squirrelmail" rev="squirrelmail" href="#icon_dock_lcs_squirrelmail" class="open_win ext_link">Messagerie</a>');
-				instance.close();
-				}});
-                         });
-		},10000);
-	<?php }?>
-	},2500);
-	<?php if (!is_file("/home/".$login."/Profile/lcs_buro_".$login.".xml" )) { ?>
-			JQD.create_notify("withIcon", { title:'Personnalisez Lcs-Bureau', text:'Pour modifier votre fond d&rsquo;&eacute;cran, afficher un dock d&rsquo;ic&ocirc;nes, ... allez dans Lcs-Bureau/Pr&eacute;f&eacute;rences <span style="text-decoration:underline;">ou cliquez-moi...</span><br /> <small>Cliquez sur la X pour me fermer</small>', icon:'core/images/icons/tip.png' },
-			{
-			expires:false,
-			click: function(e,instance){
-				JQD.init_link_open_win('<a href="#icon_dock_lcs_prefs" rev="prefs" rel="prefs" class="open_win ext_link"> ce lien ...</a>');
-				instance.close();
-				}
-			} );
-	<?php } ?>
-			
-</script>
-	<?php }	else { ?>
+			//.:LCS:. Init forum notification
+			var idart=0;
+			JQD.notify_forum();
+		},1500);
+		<?php } 
+		if ( $squirrelmail == 1 ) { ?>
+			$('#temp_squirrelmail').attr('src','../lcs/statandgo.php?use=squirrelmail');
+			setTimeout(function(){
+	                        $.get("../squirrelmail/plugins/notify/notify-desktop.php",
+	                        function(data){
+	                            if (data != '')
+	                             JQD.create_notify("withIcon", { title:'Messagerie', text: data + '<p><span style="text-decoration:underline;">Consulter sa messagerie</span>', icon:'core/images/icons/mailicon.png' },{ expires:false,
+	                             click: function(e,instance){
+					JQD.init_link_open_win('<a title="Webmail" rel="../lcs/statandgo.php?use=squirrelmail" rev="squirrelmail" href="#icon_dock_lcs_squirrelmail" class="open_win ext_link">Messagerie</a>');
+					instance.close();
+					}});
+	                         });
+			},10000);
+		<?php }?>
+		},2500);
+		<?php if (!is_file("/home/".$login."/Profile/lcs_buro_".$login.".xml" )) { ?>
+				JQD.create_notify("withIcon", { title:'Personnalisez Lcs-Bureau', text:'Pour modifier votre fond d&rsquo;&eacute;cran, afficher un dock d&rsquo;ic&ocirc;nes, ... allez dans Lcs-Bureau/Pr&eacute;f&eacute;rences <span style="text-decoration:underline;">ou cliquez-moi...</span><br /> <small>Cliquez sur la X pour me fermer</small>', icon:'core/images/icons/tip.png' },
+				{
+				expires:false,
+				click: function(e,instance){
+					JQD.init_link_open_win('<a href="#icon_dock_lcs_prefs" rev="prefs" rel="prefs" class="open_win ext_link"> ce lien ...</a>');
+					instance.close();
+					}
+				} );
+		<?php } 
+		}
+	} else { ?>
+	// .:LCS:. si user n'est pas connecte
 	// .:LCS:. on lance l'affichage du form de connexion.
-<script>
-	setTimeout(function(){
-		$('#window_lcs_spip').css({'top':0,'left':0}).removeClass('large_win').addClass('window_full');
-		JQD.init_link_open_win('<a rel="../lcs/auth" rev="auth" href="#icon_dock_lcs_auth" class="open_win ext_link">Se connecter</a>');
-		$('#window_lcs_auth').addClass('small_win small_height').animate({top : 0,left :0,width:550,height:340},1).find('.window_main').css('background-color','transparent');
 		setTimeout(function(){
-			$('#iframe_lcs_auth').contents().find('head').append('<style>jqd.h3{color:red;}</style>');
-			$('#iframe_lcs_auth').contents().find('body').removeClass().addClass('jqd').css({'font-size':'.75em','background-color':'transparent','background-image':'none'}).find('.pdp').remove();
-		},500);
-	},3000);
-
+			<?php if ( $url_accueil=="/spip/" ) { ?>
+			$('#bar_bottom').hide();$('#desktop').css({bottom:0});
+			//$('#window_lcs_spip').addClass('large_win');
+			$('#window_lcs_temp').addClass('window_full').css({'top':0,'left':0})
+				.find('div.window_top').hide()
+				.next('div.window_content').css({top:0,bottom:0})
+				.next('div.window_bottom').hide();
+				$('#iframe_lcs_temp').load(function()  {
+					$(this).contents().find('a.open_win').each(function(){
+						$(this).click(function(){
+							JQD.init_link_open_win(this);
+							return false;
+						});
+					});
+				});
+			JQD.init_link_open_win('<a title="temp" rev="temp" rel="../lcs/statandgo.php?use=spip" href="#icon_dock_lcs_temp" class="open_win ext_link">Forum</a>');
+			<?php } else { ?>
+			JQD.init_link_open_win('<a rel="../lcs/auth" rev="auth" href="#icon_dock_lcs_auth" class="open_win ext_link">Se connecter</a>');
+			$('#window_lcs_auth').addClass('small_win small_height').animate({top : 0,left :0,width:550,height:340},1).find('.window_main').css('background-color','transparent');
+			setTimeout(function(){
+				$('#iframe_lcs_auth').contents().find('head').append('<style>jqd.h3{color:red;}</style>');
+				$('#iframe_lcs_auth').contents().find('body').removeClass().addClass('jqd').css({'font-size':'.75em','background-color':'transparent','background-image':'none'}).find('.pdp').remove();
+			},500);
+			<?php } ?>
+		},3000);
+	
+	<?php } ?>
+	JQD.init_icons();
+	JQD.init_desktop();
+});
 </script>
-<?php } ?>
 
 <?php
 // Cas service authentification

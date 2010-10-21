@@ -113,6 +113,12 @@ var JQD = (function($) {
 					'width': win.attr('data-w'),
 					'height': win.attr('data-h')
 				});
+				//show bottom-bar
+				win.find('div.window_bottom').show();
+				$('div.window_content').height()
+				win.find('div.window_content, iframe').css('height', '');
+				//var winheight=win.find('.window_content').height();
+				//win.find('iframe').css('height',(  100% -4));
 			}
 			else {
 				win.attr({
@@ -132,13 +138,17 @@ var JQD = (function($) {
 					'width': '100%',
 					'height': '100%'
 				});
+				//hide bottom-bar
+				win.find('div.window_bottom').hide();
+				var winheight=win.find('.window_content').height()+20;
+				win.find('div.window_content').css('height', winheight)
+				.find('iframe').css('height', winheight-4);
 			}
 
 			// Bring window to front.
 			JQD.window_flat();
 			win.addClass('window_stack');
 		},
-		
 		
 		//
 		// .:LCS:.  Initialize the icons
@@ -403,13 +413,47 @@ var JQD = (function($) {
 		//
 		// Notification
 		create_notify: function( template, vars, opts ){
-			return $container.notify("create", template, vars, opts);
+						// init notify container
+			var notifContainer = $("#container").notify();
+
+			return notifContainer.notify("create", template, vars, opts);
 		},
-		 
+		
+		//
+		//.:LCS:. Notification Forum_spip
+		//
+		notify_forum: function(){
+			$.ajax({
+				type:'GET',
+				url:'../spip/?page=lcs-notify',
+				datatype:"text",
+				complete: function(data,status) {
+					var newidart= $(data.responseText).find('span.spip_id_article').text();
+					var oldidart=$('#s_idart').val();
+					if(newidart!=oldidart){
+						JQD.create_notify("withIcon", 
+							{ title:'<span style="color:#509fda;">Information Forum</span>', text:data.responseText, icon:'core/images/icons/info.png'},
+							{
+							expires:true,
+							click: function(e,instance){
+								JQD.init_link_open_win('<a href="../spip/" title="Forum Lcs" rev="spip" rel="spip" class="open_win ext_link">Forum Lcs</a>');
+							}
+						});
+						$('#s_idart').attr('value',newidart);
+					}
+				}
+			});
+			setTimeout(function(){
+					JQD.notify_forum();
+				//var idart=newidart;
+			},30000);	
+//				$('#temp_forum_notify').load('../spip/?page=lcs-notify #container_notify');
+		},
+		
 		//
 		// .:LCS:.  init window. transform in function to call easyer
 		//
-		 init_link_open_win: function(el){
+		init_link_open_win: function(el){
 				var url = $(el).attr('href');
 				var text = $(el).text();
 				var title = $(el).attr('title');
@@ -487,19 +531,34 @@ var JQD = (function($) {
 							el = $(this).contents();
 							// Listage et modif des mailto:
 							el.find('a').each(function(){
+								//alert($(this)[0].href);
 								$(this).removeAttr('target');
-								$cible=$(this).attr('href').replace('?','&');
-								if($(this).attr('href').match('mailto:')){
+								$(this)[0].href.length > 0 ? cible=$(this)[0].href.replace('?','&') : '';
+								if($(this)[0].href.match('mailto:')){
 									$(this).attr({
-										'href':$cible.replace('mailto:','../squirrelmail/src/compose.php?send_to='),
+										'href':cible.replace('mailto:','../squirrelmail/src/compose.php?send_to='),
 										'rel':'squirrelmail'
 									}).addClass('open_win ext_link');
-								}
+								} 
+								if($(this)[0].href.match('/^#/')){
+									$(this).click(function(){
+										alert('toto');
+										//alert(el.find('head').length);
+										//return false;//on inhibe le lien
+									});
+								} 
 							});
 							el.find('a.open_win').each(function(){
 								$(this).click(function(){
 									JQD.init_link_open_win(this);
 									return false;//on inhibe le lien
+								});
+							});
+							el.find('a:not(:visible)').each(function(){
+								//alert($(this).attr('href'));
+								$(this).click(function(){
+									//JQD.init_link_open_win(this);
+									//return false;//on inhibe le lien
 								});
 							});
 
@@ -840,8 +899,6 @@ var JQD = (function($) {
 			});
 			
 			// Notification
-			// init notify container
-			$container = $("#container").notify();
 			// create notify welcome
 			JQD.create_notify("default", { title:'Bienvenue sur Lcs-Bureau', text:'D&eacute;couvrez une nouvelle interface pour LCS. <br />Bonne nav...'});
 				
@@ -929,7 +986,7 @@ var JQD = (function($) {
 		    });
 		    
 		    $(".open_win").draggable({
-		    	delay: 500, // pas de dragg sur un click
+		    	delay: 1000, // pas de dragg sur un click
 		        helper: 'clone'
 		    });
 
@@ -948,7 +1005,10 @@ var JQD = (function($) {
 				$(this).closest('.toClose').hide();
 			});
 			
-
+			//.:LCS:. Init forum notification
+			var idart=0;
+			
+			//.:LCS:. preferences user
 			 JQD.user_load_prefs();
 //			 JQD.init_link_open_win();
 		}

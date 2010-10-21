@@ -1,4 +1,4 @@
-.ui-notify { width:350px; position:fixed; top:60px; right:10px;text-align:left;z-index:15; }
+.ui-notify { width:350px; position:fixed; top:60px; right:10px;text-align:left;z-index:9; }
 .ui-notify-message { padding:10px; margin-bottom:15px; -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px }
 .ui-notify-message h1 { font-size:14px; margin:0; padding:0 }
 .ui-notify-message p { margin:3px 0; padding:0; line-height:18px }
@@ -11,3 +11,5 @@
 .ui-notify-cross { margin-top:-4px; float:right; cursor:pointer; text-decoration:none; font-size:12px; font-weight:bold; text-shadow:0 1px 1px #fff; padding:2px }
 .ui-notify-cross:hover { color:#ffffab }
 .ui-notify-cross:active { position:relative; top:1px }
+.ui-notify.active {z-index:10; }
+#notify_container span, #notify_container span a{color:#ccc; font-style:italic;font-size:.9em;}
