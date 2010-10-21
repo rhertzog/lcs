@@ -7,8 +7,10 @@ lcs-desktop (0.2~11) Lcs; urgency=low
    * Run the script js of desktop when the whole page is loaded
    * Add wallpaper images (by wawa)
    * Update doc-html and add jquery.scroll for anchor
+   * Add doc images
+   * Fix bug on link in finder
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 20:32:01 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 21:09:48 +0200
 
 lcs-desktop (0.2~10) Lcs; urgency=low
   [Jean-Luc Chretien]
