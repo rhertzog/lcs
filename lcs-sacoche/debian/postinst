@@ -9,7 +9,7 @@ MODULE="Sacoche"
 module=`echo $MODULE | tr [:upper:] [:lower:]`
 VER=$(dpkg-query -f '${Version}' -W lcs-$module)
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
-INDICEMAJNBR="0"
+INDICEMAJNBR="1"
 DESCRIPT="Suivi Acquisition Competences"
 CONF="/var/lib/lcs/$MODULE"
 
@@ -151,12 +151,12 @@ else
 	#---------------------------------
 	# Mise a jour du Numero de version
 	#---------------------------------
-	
+	let MAJNBR-=1
 	
         #
         # Inscription du module dans applis.lcs_db
         #
-        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER', name='$module', type='N' WHERE name='$MODULE'OR name='$module' ;" 
+        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$MAJNBR', version='$VER', name='$module', type='N' WHERE name='$MODULE'OR name='$module' ;" 
         #
         # Fin de la mise a jour
         #
