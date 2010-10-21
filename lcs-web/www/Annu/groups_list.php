@@ -52,8 +52,8 @@
       $filter = "(|(cn=Classe_*$group)(cn=Cours_*$group)(cn=Equipe_*$group)(cn=Matiere_*$group)(cn=*$group))";	
     }
   }
-  $filter=ereg_replace("\*\*\*","*",$filter);
-  $filter=ereg_replace("\*\*","*",$filter);
+  $filter=mb_ereg_replace("\*\*\*","*",$filter);
+  $filter=mb_ereg_replace("\*\*","*",$filter);
   #$TimeStamp_0=microtime();
   $groups=search_groups($filter);
   #$TimeStamp_1=microtime();

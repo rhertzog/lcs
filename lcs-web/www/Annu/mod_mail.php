@@ -65,7 +65,7 @@ if ((isset($_POST['Valider']))&& (isset($_POST['adr_mail'])) )
 					{
 					$message.= '<P><B>La boite a &#233;t&#233; redirig&#233;e.</B> <br> - Un mail de confirmation  a &#233;t&#233; envoy&#233; <br>';
 					}
-					$cmd = "INSERT INTO redirmail (faitpar,pour,vers,copie,date,remote_ip) VALUES ('$login','$log2','$contenu', '{$_POST['choix']}','$datte', '{$_SERVER['REMOTE_ADDR']}');";
+					$cmd = "INSERT INTO redirmb_send_mail (faitpar,pour,vers,copie,date,remote_ip) VALUES ('$login','$log2','$contenu', '{$_POST['choix']}','$datte', '{$_SERVER['REMOTE_ADDR']}');";
 			
 					if(!mysql_query($cmd))  $message.="Erreur insertion base de donn&#233;es  ";
 				  
@@ -83,8 +83,8 @@ if ((isset($_POST['Valider']))&& (isset($_POST['adr_mail'])) )
 							//l'expéditeur
 							$mailHeaders = "From: LCS";
 							//envoi mail
-							 //mail($mailTo, $mailSubject, $mailBody, $mailHeaders);
-							 mail($mailTo2, $mailSubject, $mailBody, $mailHeaders);
+							 //mb_send_mail($mailTo, $mailSubject, $mailBody, $mailHeaders);
+							 mb_send_mail($mailTo2, $mailSubject, $mailBody, $mailHeaders);
 					
 				}
 				else $message='<div class="error_msg">La redirection a &#233;chou&#233 ! </div>';
@@ -123,7 +123,7 @@ function writediv(texte)
      document.getElementById('bouton').innerHTML = texte;
      }
 
-function test_email (my_email) {
+function test_emb_send_mail (my_email) {
         var new_string = new String(my_email);
         if ((!new_string.match('^[-_\.0-9a-zA-Z]{1,}@[-_\.0-9a-zA-Z]{1,}[\.][0-9a-zA-Z]{2,}$')) && (my_email!="")) {
                 return writediv(' <div class="error_msg"> Entrez une adresse valide</div>');
@@ -144,7 +144,7 @@ function test_email (my_email) {
           <tr>
             <td> - Adresse de redirection 
             <? if ($adresse!="") echo " actuelle ";?>:
-             <input type="text" name="adr_mail" value="<?echo $adresse;?>" size="40" onKeyUp="test_email(this.value)" ></td>
+             <input type="text" name="adr_mail" value="<?echo $adresse;?>" size="40" onKeyUp="test_emb_send_mail(this.value)" ></td>
           </tr>
           <tr>
           <td> - Faut il conserver dans la boite du Lcs, une copie des mails redirig&#233;s ?</B></td>

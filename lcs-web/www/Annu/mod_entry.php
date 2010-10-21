@@ -85,7 +85,7 @@
       if ( $ds ) {
         $r = @ldap_bind ( $ds, $adminDn, $adminPw ); // Bind en admin
         if ($r) {
-          $pseudo = ucfirst(strtolower(unac_string_with_underscore($pseudo)));
+          $pseudo = ucfirst(mb_strtolower(unac_string_with_underscore($pseudo)));
           $entry["initials"]=utf8_encode($pseudo);
           if ( $telephone && verifTel($telephone) )
             $entry["telephonenumber"]=$telephone ; 

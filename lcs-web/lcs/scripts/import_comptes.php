@@ -388,7 +388,7 @@
 			while(!feof($fp)) {
 				//$ligne[]=fgets($fp,4096);
 				// Suppression des guillemets s'il jamais il y en a dans le CSV
-				$ligne[]=ereg_replace('"','',fgets($fp,4096));
+				$ligne[]=mb_ereg_replace('"','',fgets($fp,4096));
 			}
 			fclose($fp);
 
@@ -400,7 +400,7 @@
 
 
 			// Contrôle du contenu du fichier:
-			if(stristr($ligne[0],"<?xml ")) {
+			if(mb_stristr($ligne[0],"<?xml ")) {
 				my_echo("<p style='color:red;'>ERREUR: Le fichier élèves fourni a l'air d'être de type XML et non CSV.</p>\n");
 				my_echo("<script type='text/javascript'>
 	compte_a_rebours='n';
@@ -511,12 +511,12 @@
 					// Si la division/classe n'est pas vide
 					if(isset($tabtmp[$index[5]])) {
 						if($tabtmp[$index[5]]!="") {
-							if(strlen($tabtmp[$index[3]])==11) {
-								$numero=substr($tabtmp[$index[3]],0,strlen($tabtmp[$index[3]])-6);
+							if(mb_strlen($tabtmp[$index[3]])==11) {
+								$numero=mb_substr($tabtmp[$index[3]],0,mb_strlen($tabtmp[$index[3]])-6);
 							}
 							else{
 								$temoin_format_num_interne="non_standard";
-								if(strlen($tabtmp[$index[3]])==4) {
+								if(mb_strlen($tabtmp[$index[3]])==4) {
 									$numero="0".$tabtmp[$index[3]];
 								}
 								else{
@@ -536,11 +536,11 @@
 								$eleve[$numero]["numero"]=$numero;
 
 
-								//$eleve[$numero]["nom"]=ereg_replace("[^[:space:][:alpha:]]", "", $tabtmp[$index[0]]);
-								//$eleve[$numero]["nom"]=ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸_ -]", "", $tabtmp[$index[0]]);
-								//$eleve[$numero]["prenom"]=ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸_ -]", "", $tabtmp[$index[1]]);
-								$eleve[$numero]["nom"]=ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues."_ -]", "", $tabtmp[$index[0]]);
-								$eleve[$numero]["prenom"]=ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues."_ -]", "", $tabtmp[$index[1]]);
+								//$eleve[$numero]["nom"]=mb_ereg_replace("[^[:space:][:alpha:]]", "", $tabtmp[$index[0]]);
+								//$eleve[$numero]["nom"]=mb_ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸_ -]", "", $tabtmp[$index[0]]);
+								//$eleve[$numero]["prenom"]=mb_ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸_ -]", "", $tabtmp[$index[1]]);
+								$eleve[$numero]["nom"]=mb_ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues."_ -]", "", $tabtmp[$index[0]]);
+								$eleve[$numero]["prenom"]=mb_ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues."_ -]", "", $tabtmp[$index[1]]);
 
 								// =============================================
 								// On ne retient que le premier prénom: 20071101
@@ -548,15 +548,15 @@
 								$eleve[$numero]["prenom"]=$tab_tmp_prenom[0];
 								// =============================================
 
-								//$nom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz"));
-								//$prenom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz"));
+								//$nom=mb_strtolower(strtr(mb_ereg_replace("Æ","AE",mb_ereg_replace("æ","ae",mb_ereg_replace("¼","OE",mb_ereg_replace("½","oe","$nom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz"));
+								//$prenom=mb_strtolower(strtr(mb_ereg_replace("Æ","AE",mb_ereg_replace("æ","ae",mb_ereg_replace("¼","OE",mb_ereg_replace("½","oe","$prenom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz"));
 
 								unset($tmpdate);
 								$tmpdate=explode("/",$tabtmp[$index[2]]);
 								$eleve[$numero]["date"]=$tmpdate[2].$tmpdate[1].$tmpdate[0];
 								$eleve[$numero]["sexe"]=$tabtmp[$index[4]];
-								//$eleve[$numero]["division"]=ereg_replace("[^[:space:][A-Z][a-z][0-9]]", "",$tabtmp[$index[5]]);
-								$eleve[$numero]["division"]=ereg_replace("[^a-zA-Z0-9_ -]", "",remplace_accents($tabtmp[$index[5]]));
+								//$eleve[$numero]["division"]=mb_ereg_replace("[^[:space:][A-Z][a-z][0-9]]", "",$tabtmp[$index[5]]);
+								$eleve[$numero]["division"]=mb_ereg_replace("[^a-zA-Z0-9_ -]", "",remplace_accents($tabtmp[$index[5]]));
 							}
 						}
 					}
@@ -636,7 +636,7 @@
 
 			function extr_valeur($lig) {
 				unset($tabtmp);
-				$tabtmp=explode(">",ereg_replace("<",">",$lig));
+				$tabtmp=explode(">",mb_ereg_replace("<",">",$lig));
 				return trim($tabtmp[2]);
 			}
 
@@ -663,7 +663,7 @@
 
 
 			// Contrôle du contenu du fichier:
-			if(!stristr($ligne[0],"<?xml ")) {
+			if(!mb_stristr($ligne[0],"<?xml ")) {
 				my_echo("<p style='color:red;'>ERREUR: Le fichier élèves fourni n'a pas l'air d'être de type XML.<br />La première ligne devrait débuter par '&lt;?xml '.</p>\n");
 				my_echo("<script type='text/javascript'>
 	compte_a_rebours='n';
@@ -687,7 +687,7 @@
 			}
 
 
-			if(!stristr($ligne[1],"<BEE_ELEVES ")) {
+			if(!mb_stristr($ligne[1],"<BEE_ELEVES ")) {
 				my_echo("<p style='color:red;'>ERREUR: Le fichier XML fourni n'a pas l'air d'être un fichier XML Elèves.<br />La deuxième ligne devrait contenir '&lt;BEE_ELEVES '.</p>\n");
 				my_echo("<script type='text/javascript'>
 	compte_a_rebours='n';
@@ -783,47 +783,47 @@
 			while($cpt<count($ligne)) {
 				//my_echo(htmlentities($ligne[$cpt])."<br />\n");
 
-				if(strstr($ligne[$cpt],"<ELEVES>")) {
+				if(mb_strstr($ligne[$cpt],"<ELEVES>")) {
 					my_echo("Début de la section ELEVES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 					$temoin_eleves++;
 				}
-				if(strstr($ligne[$cpt],"</ELEVES>")) {
+				if(mb_strstr($ligne[$cpt],"</ELEVES>")) {
 					my_echo("Fin de la section ELEVES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 					$temoin_eleves++;
 					break;
 				}
 				if($temoin_eleves==1) {
-					if(strstr($ligne[$cpt],"<ELEVE ")) {
+					if(mb_strstr($ligne[$cpt],"<ELEVE ")) {
 						$i++;
 						$eleves[$i]=array();
 
 						//my_echo("<p><b>".htmlentities($ligne[$cpt])."</b><br />\n");
 						unset($tabtmp);
-						$tabtmp=explode('"',strstr($ligne[$cpt]," ELEVE_ID="));
+						$tabtmp=explode('"',mb_strstr($ligne[$cpt]," ELEVE_ID="));
 						$eleves[$i]["eleve_id"]=trim($tabtmp[1]);
 						//my_echo("\$eleves[$i][\"eleve_id\"]=".$eleves[$i]["eleve_id"]."<br />\n");
 
 						unset($tabtmp);
-						$tabtmp=explode('"',strstr($ligne[$cpt]," ELENOET="));
+						$tabtmp=explode('"',mb_strstr($ligne[$cpt]," ELENOET="));
 						$eleves[$i]["elenoet"]=trim($tabtmp[1]);
 						//my_echo("\$eleves[$i][\"elenoet\"]=".$eleves[$i]["elenoet"]."<br />\n");
 						$temoin_ele=1;
 					}
-					if(strstr($ligne[$cpt],"</ELEVE>")) {
+					if(mb_strstr($ligne[$cpt],"</ELEVE>")) {
 						$temoin_ele=0;
 					}
 					if($temoin_ele==1) {
-						if(strstr($ligne[$cpt],"<SCOLARITE_AN_DERNIER>")) {
+						if(mb_strstr($ligne[$cpt],"<SCOLARITE_AN_DERNIER>")) {
 							$temoin_scol=1;
 						}
-						if(strstr($ligne[$cpt],"</SCOLARITE_AN_DERNIER>")) {
+						if(mb_strstr($ligne[$cpt],"</SCOLARITE_AN_DERNIER>")) {
 							$temoin_scol=0;
 						}
 
 						if($temoin_scol==0) {
 							for($loop=0;$loop<count($tab_champs_eleve);$loop++) {
-								if(strstr($ligne[$cpt],"<".$tab_champs_eleve[$loop].">")) {
-									$tmpmin=strtolower($tab_champs_eleve[$loop]);
+								if(mb_strstr($ligne[$cpt],"<".$tab_champs_eleve[$loop].">")) {
+									$tmpmin=mb_strtolower($tab_champs_eleve[$loop]);
 									$eleves[$i]["$tmpmin"]=extr_valeur($ligne[$cpt]);
 									my_echo("\$eleves[$i][\"$tmpmin\"]=".$eleves[$i]["$tmpmin"]."<br />\n");
 									break;
@@ -834,8 +834,8 @@
 					//	else{
 					//		$eleves[$i]["scolarite_an_dernier"]=array();
 					//		for($loop=0;$loop<count($tab_champs_scol_an_dernier);$loop++) {
-					//			if(strstr($ligne[$cpt],"<".$tab_champs_scol_an_dernier[$loop].">")) {
-					//				$tmpmin=strtolower($tab_champs_scol_an_dernier[$loop]);
+					//			if(mb_strstr($ligne[$cpt],"<".$tab_champs_scol_an_dernier[$loop].">")) {
+					//				$tmpmin=mb_strtolower($tab_champs_scol_an_dernier[$loop]);
 					//				$eleves[$i]["scolarite_an_dernier"]["$tmpmin"]=extr_valeur($ligne[$cpt]);
 					//				//my_echo("\$eleves[$i]["scolarite_an_dernier"][\"$tmpmin\"]=".$eleves[$i]["scolarite_an_dernier"]["$tmpmin"]."<br />\n");
 					//				break;
@@ -843,10 +843,10 @@
 					//		}
 					//	}
 
-					//	if(strstr($ligne[$cpt],"<ID_NATIONAL>")) {
+					//	if(mb_strstr($ligne[$cpt],"<ID_NATIONAL>")) {
 					//		$eleves[$i]["id_national"]=extr_valeur($ligne[$cpt]);
 					//	}
-					//	if(strstr($ligne[$cpt],"<ELENOET>")) {
+					//	if(mb_strstr($ligne[$cpt],"<ELENOET>")) {
 					//		$eleves[$i]["elenoet"]=extr_valeur($ligne[$cpt]);
 					//	}
 					}
@@ -857,21 +857,21 @@
 
 			// PARTIE <OPTIONS>
 			while($cpt<count($ligne)) {
-				if(strstr($ligne[$cpt],"<OPTIONS>")) {
+				if(mb_strstr($ligne[$cpt],"<OPTIONS>")) {
 					my_echo("Début de la section OPTIONS à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 					$temoin_options++;
 				}
-				if(strstr($ligne[$cpt],"</OPTIONS>")) {
+				if(mb_strstr($ligne[$cpt],"</OPTIONS>")) {
 					my_echo("Fin de la section OPTIONS à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 					$temoin_options++;
 					break;
 				}
 				if($temoin_options==1) {
-					if(strstr($ligne[$cpt],"<OPTION ")) {
+					if(mb_strstr($ligne[$cpt],"<OPTION ")) {
 
 						//my_echo("<p><b>".htmlentities($ligne[$cpt])."</b><br />\n");
 						unset($tabtmp);
-						$tabtmp=explode('"',strstr($ligne[$cpt]," ELEVE_ID="));
+						$tabtmp=explode('"',mb_strstr($ligne[$cpt]," ELEVE_ID="));
 						$tmp_eleve_id=trim($tabtmp[1]);
 
 						// Recherche du $i de $eleves[$i] correspondant:
@@ -884,7 +884,7 @@
 						}
 						if($temoin_ident!="oui") {
 							unset($tabtmp);
-							$tabtmp=explode('"',strstr($ligne[$cpt]," ELENOET="));
+							$tabtmp=explode('"',mb_strstr($ligne[$cpt]," ELENOET="));
 							$tmp_elenoet=trim($tabtmp[1]);
 
 							for($i=0;$i<count($eleves);$i++) {
@@ -900,16 +900,16 @@
 							$temoin_opt=1;
 						}
 					}
-					if(strstr($ligne[$cpt],"</OPTION>")) {
+					if(mb_strstr($ligne[$cpt],"</OPTION>")) {
 						$temoin_opt=0;
 					}
 					if($temoin_opt==1) {
 					//if(($temoin_opt==1)&&($temoin_ident=="oui")) {
-						if(strstr($ligne[$cpt],"<OPTIONS_ELEVE>")) {
+						if(mb_strstr($ligne[$cpt],"<OPTIONS_ELEVE>")) {
 							$eleves[$i]["options"][$j]=array();
 							$temoin_opt_ele=1;
 						}
-						if(strstr($ligne[$cpt],"</OPTIONS_ELEVE>")) {
+						if(mb_strstr($ligne[$cpt],"</OPTIONS_ELEVE>")) {
 							$j++;
 							$temoin_opt_ele=0;
 						}
@@ -917,8 +917,8 @@
 						$tab_champs_opt=array("NUM_OPTION","CODE_MODALITE_ELECT","CODE_MATIERE");
 						if($temoin_opt_ele==1) {
 							for($loop=0;$loop<count($tab_champs_opt);$loop++) {
-								if(strstr($ligne[$cpt],"<".$tab_champs_opt[$loop].">")) {
-									$tmpmin=strtolower($tab_champs_opt[$loop]);
+								if(mb_strstr($ligne[$cpt],"<".$tab_champs_opt[$loop].">")) {
+									$tmpmin=mb_strtolower($tab_champs_opt[$loop]);
 									$eleves[$i]["options"][$j]["$tmpmin"]=extr_valeur($ligne[$cpt]);
 									//my_echo("\$eleves[$i][\"$tmpmin\"]=".$eleves[$i]["$tmpmin"]."<br />\n");
 									break;
@@ -936,21 +936,21 @@
 			$temoin_struct_ele=-1;
 			$temoin_struct=-1;
 			while($cpt<count($ligne)) {
-				if(strstr($ligne[$cpt],"<STRUCTURES>")) {
+				if(mb_strstr($ligne[$cpt],"<STRUCTURES>")) {
 					my_echo("Début de la section STRUCTURES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 					$temoin_structures++;
 				}
-				if(strstr($ligne[$cpt],"</STRUCTURES>")) {
+				if(mb_strstr($ligne[$cpt],"</STRUCTURES>")) {
 					my_echo("Fin de la section STRUCTURES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 					$temoin_structures++;
 					break;
 				}
 				if($temoin_structures==1) {
-					if(strstr($ligne[$cpt],"<STRUCTURES_ELEVE ")) {
+					if(mb_strstr($ligne[$cpt],"<STRUCTURES_ELEVE ")) {
 
 						//my_echo("<p><b>".htmlentities($ligne[$cpt])."</b><br />\n");
 						unset($tabtmp);
-						$tabtmp=explode('"',strstr($ligne[$cpt]," ELEVE_ID="));
+						$tabtmp=explode('"',mb_strstr($ligne[$cpt]," ELEVE_ID="));
 						$tmp_eleve_id=trim($tabtmp[1]);
 
 						// Recherche du $i de $eleves[$i] correspondant:
@@ -963,7 +963,7 @@
 						}
 						if($temoin_ident!="oui") {
 							unset($tabtmp);
-							$tabtmp=explode('"',strstr($ligne[$cpt]," ELENOET="));
+							$tabtmp=explode('"',mb_strstr($ligne[$cpt]," ELENOET="));
 							$tmp_elenoet=trim($tabtmp[1]);
 
 							for($i=0;$i<count($eleves);$i++) {
@@ -979,15 +979,15 @@
 							$temoin_struct_ele=1;
 						}
 					}
-					if(strstr($ligne[$cpt],"</STRUCTURES_ELEVE>")) {
+					if(mb_strstr($ligne[$cpt],"</STRUCTURES_ELEVE>")) {
 						$temoin_struct_ele=0;
 					}
 					if($temoin_struct_ele==1) {
-						if(strstr($ligne[$cpt],"<STRUCTURE>")) {
+						if(mb_strstr($ligne[$cpt],"<STRUCTURE>")) {
 							$eleves[$i]["structures"][$j]=array();
 							$temoin_struct=1;
 						}
-						if(strstr($ligne[$cpt],"</STRUCTURE>")) {
+						if(mb_strstr($ligne[$cpt],"</STRUCTURE>")) {
 							$j++;
 							$temoin_struct=0;
 						}
@@ -996,8 +996,8 @@
 						$tab_champs_struct=array("CODE_STRUCTURE","TYPE_STRUCTURE");
 						if($temoin_struct==1) {
 							for($loop=0;$loop<count($tab_champs_struct);$loop++) {
-								if(strstr($ligne[$cpt],"<".$tab_champs_struct[$loop].">")) {
-									$tmpmin=strtolower($tab_champs_struct[$loop]);
+								if(mb_strstr($ligne[$cpt],"<".$tab_champs_struct[$loop].">")) {
+									$tmpmin=mb_strtolower($tab_champs_struct[$loop]);
 									$eleves[$i]["structures"][$j]["$tmpmin"]=extr_valeur($ligne[$cpt]);
 									//my_echo("\$eleves[$i]["structures"][$j][\"$tmpmin\"]=".$eleves[$i]["structures"][$j]["$tmpmin"]."<br />\n");
 									break;
@@ -1162,7 +1162,7 @@
 					if($temoin_new_div=="oui") {
 						//$k++;
 						$tab_division[$k]=array();
-						//$tab_division[$k]["nom"]=ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($eleve[$numero]["division"])));
+						//$tab_division[$k]["nom"]=mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($eleve[$numero]["division"])));
 						$tab_division[$k]["nom"]=$eleve[$numero]["division"];
 						$tab_division[$k]["option"]=array();
 						//my_echo("<br />Nouvelle classe: \$tab_division[$k][\"nom\"]=".$tab_division[$k]["nom"]."<br />");
@@ -1288,7 +1288,7 @@
 
 
 		// Contrôle du contenu du fichier:
-		if(!stristr($ligne[0],"<?xml ")) {
+		if(!mb_stristr($ligne[0],"<?xml ")) {
 			my_echo("<p style='color:red;'>ERREUR: Le fichier STS/Emploi-du-temps fourni n'a pas l'air d'être de type XML.<br />La première ligne devrait débuter par '&lt;?xml '.</p>\n");
 			my_echo("<script type='text/javascript'>
 	compte_a_rebours='n';
@@ -1311,7 +1311,7 @@
 			exit();
 		}
 
-		if(!stristr($ligne[1],"<STS_EDT>")) {
+		if(!mb_stristr($ligne[1],"<STS_EDT>")) {
 			my_echo("<p style='color:red;'>ERREUR: Le fichier XML professeurs fourni n'a pas l'air d'être un fichier STS/Emploi-du-temps.<br />La deuxième ligne devrait contenir '&lt;STS_EDT&gt;'.</p>\n");
 			my_echo("<script type='text/javascript'>
 	compte_a_rebours='n';
@@ -1379,135 +1379,135 @@
 		$temoin_annee=0;
 		while($cpt<count($ligne)) {
 			//my_echo(htmlentities($ligne[$cpt])."<br />\n");
-			if(strstr($ligne[$cpt],"<PARAMETRES>")) {
+			if(mb_strstr($ligne[$cpt],"<PARAMETRES>")) {
 				my_echo("Début de la section PARAMETRES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_param++;
 			}
-			if(strstr($ligne[$cpt],"</PARAMETRES>")) {
+			if(mb_strstr($ligne[$cpt],"</PARAMETRES>")) {
 				my_echo("Fin de la section PARAMETRES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_param++;
 			}
 			if($temoin_param==1) {
-				if(strstr($ligne[$cpt],"<UAJ ")) {
+				if(mb_strstr($ligne[$cpt],"<UAJ ")) {
 					unset($tabtmp);
-					$tabtmp=explode('"',strstr($ligne[$cpt]," CODE="));
+					$tabtmp=explode('"',mb_strstr($ligne[$cpt]," CODE="));
 					$etablissement["code"]=trim($tabtmp[1]);
 					$temoin_uaj=1;
 					//my_echo("\$temoin_uaj=$temoin_uaj à la ligne $cpt et \$tabtmp[1]=$tabtmp[1]<br />\n");
 				}
-				if(strstr($ligne[$cpt],"</UAJ>")) {
+				if(mb_strstr($ligne[$cpt],"</UAJ>")) {
 					$temoin_uaj=0;
 				}
 				if(isset($temoin_uaj)) {
 					if($temoin_uaj==1) {
-						if(strstr($ligne[$cpt],"<ACADEMIE>")) {
+						if(mb_strstr($ligne[$cpt],"<ACADEMIE>")) {
 							$temoin_academie=1;
 							$etablissement["academie"]=array();
 						}
-						if(strstr($ligne[$cpt],"</ACADEMIE>")) {
+						if(mb_strstr($ligne[$cpt],"</ACADEMIE>")) {
 							$temoin_academie=0;
 						}
 						if($temoin_academie==1) {
-							if(strstr($ligne[$cpt],"<CODE>")) {
+							if(mb_strstr($ligne[$cpt],"<CODE>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["academie"]["code"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<LIBELLE>")) {
+							if(mb_strstr($ligne[$cpt],"<LIBELLE>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["academie"]["libelle"]=trim($tabtmp[2]);
 							}
 						}
 						else{
-							if(strstr($ligne[$cpt],"<SIGLE>")) {
+							if(mb_strstr($ligne[$cpt],"<SIGLE>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["sigle"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<DENOM_PRINC>")) {
+							if(mb_strstr($ligne[$cpt],"<DENOM_PRINC>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["denom_princ"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<DENOM_COMPL>")) {
+							if(mb_strstr($ligne[$cpt],"<DENOM_COMPL>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["denom_compl"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<CODE_NATURE>")) {
+							if(mb_strstr($ligne[$cpt],"<CODE_NATURE>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["code_nature"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<CODE_CATEGORIE>")) {
+							if(mb_strstr($ligne[$cpt],"<CODE_CATEGORIE>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["code_categorie"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<ADRESSE>")) {
+							if(mb_strstr($ligne[$cpt],"<ADRESSE>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["adresse"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<COMMUNE>")) {
+							if(mb_strstr($ligne[$cpt],"<COMMUNE>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["commune"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<CODE_POSTAL>")) {
+							if(mb_strstr($ligne[$cpt],"<CODE_POSTAL>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["code_postal"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<BOITE_POSTALE>")) {
+							if(mb_strstr($ligne[$cpt],"<BOITE_POSTALE>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["boite_postale"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<CEDEX>")) {
+							if(mb_strstr($ligne[$cpt],"<CEDEX>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["cedex"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<TELEPHONE>")) {
+							if(mb_strstr($ligne[$cpt],"<TELEPHONE>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["telephone"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<STATUT>")) {
+							if(mb_strstr($ligne[$cpt],"<STATUT>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["statut"]=trim($tabtmp[2]);
 							}
-							if(strstr($ligne[$cpt],"<ETABLISSEMENT_SENSIBLE>")) {
+							if(mb_strstr($ligne[$cpt],"<ETABLISSEMENT_SENSIBLE>")) {
 								unset($tabtmp);
-								$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+								$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 								$etablissement["etablissement_sensible"]=trim($tabtmp[2]);
 							}
 						}
 					}
 				}
 
-				if(strstr($ligne[$cpt],"<ANNEE_SCOLAIRE ")) {
+				if(mb_strstr($ligne[$cpt],"<ANNEE_SCOLAIRE ")) {
 					unset($tabtmp);
-					$tabtmp=explode('"',strstr($ligne[$cpt]," ANNEE"));
+					$tabtmp=explode('"',mb_strstr($ligne[$cpt]," ANNEE"));
 					$etablissement["annee"]=array();
 					$etablissement["annee"]["annee"]=trim($tabtmp[1]);
 					$temoin_annee=1;
 				}
-				if(strstr($ligne[$cpt],"</ANNEE_SCOLAIRE>")) {
+				if(mb_strstr($ligne[$cpt],"</ANNEE_SCOLAIRE>")) {
 					$temoin_annee=0;
 				}
 				if($temoin_annee==1) {
-					if(strstr($ligne[$cpt],"<DATE_DEBUT>")) {
+					if(mb_strstr($ligne[$cpt],"<DATE_DEBUT>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						$etablissement["annee"]["date_debut"]=trim($tabtmp[2]);
 					}
-					if(strstr($ligne[$cpt],"<DATE_FIN>")) {
+					if(mb_strstr($ligne[$cpt],"<DATE_FIN>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						$etablissement["annee"]["date_fin"]=trim($tabtmp[2]);
 					}
 				}
@@ -1608,50 +1608,50 @@
 		$temoin_mat=0;
 		while($cpt<count($ligne)) {
 			//my_echo(htmlentities($ligne[$cpt])."<br />\n");
-			if(strstr($ligne[$cpt],"<MATIERES>")) {
+			if(mb_strstr($ligne[$cpt],"<MATIERES>")) {
 				my_echo("Début de la section MATIERES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_matieres++;
 			}
-			if(strstr($ligne[$cpt],"</MATIERES>")) {
+			if(mb_strstr($ligne[$cpt],"</MATIERES>")) {
 				my_echo("Fin de la section MATIERES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_matieres++;
 			}
 			if($temoin_matieres==1) {
 				// On analyse maintenant matière par matière:
-				if(strstr($ligne[$cpt],"<MATIERE ")) {
+				if(mb_strstr($ligne[$cpt],"<MATIERE ")) {
 					$matiere[$i]=array();
 					unset($tabtmp);
-					//$tabtmp=explode("=",ereg_replace(">","",ereg_replace("<","",$ligne[$cpt])));
-					$tabtmp=explode('"',strstr($ligne[$cpt]," CODE="));
+					//$tabtmp=explode("=",mb_ereg_replace(">","",mb_ereg_replace("<","",$ligne[$cpt])));
+					$tabtmp=explode('"',mb_strstr($ligne[$cpt]," CODE="));
 					$matiere[$i]["code"]=trim($tabtmp[1]);
 					$temoin_mat=1;
 				}
-				if(strstr($ligne[$cpt],"</MATIERE>")) {
+				if(mb_strstr($ligne[$cpt],"</MATIERE>")) {
 					$temoin_mat=0;
 					$i++;
 				}
 				if($temoin_mat==1) {
-					if(strstr($ligne[$cpt],"<CODE_GESTION>")) {
+					if(mb_strstr($ligne[$cpt],"<CODE_GESTION>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						//$matiere[$i]["code_gestion"]=$tabtmp[2];
-						$matiere[$i]["code_gestion"]=trim(ereg_replace("[^a-zA-Z0-9&_. -]","",html_entity_decode($tabtmp[2])));
+						$matiere[$i]["code_gestion"]=trim(mb_ereg_replace("[^a-zA-Z0-9&_. -]","",html_entity_decode($tabtmp[2])));
 					}
-					if(strstr($ligne[$cpt],"<LIBELLE_COURT>")) {
+					if(mb_strstr($ligne[$cpt],"<LIBELLE_COURT>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						//$matiere[$i]["libelle_court"]=$tabtmp[2];
-						//$matiere[$i]["libelle_court"]=trim(ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸0-9&_. -]","",html_entity_decode($tabtmp[2])));
-						$matiere[$i]["libelle_court"]=trim(ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues."0-9&_. -]","",html_entity_decode($tabtmp[2])));
+						//$matiere[$i]["libelle_court"]=trim(mb_ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸0-9&_. -]","",html_entity_decode($tabtmp[2])));
+						$matiere[$i]["libelle_court"]=trim(mb_ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues."0-9&_. -]","",html_entity_decode($tabtmp[2])));
 					}
-					if(strstr($ligne[$cpt],"<LIBELLE_LONG>")) {
+					if(mb_strstr($ligne[$cpt],"<LIBELLE_LONG>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						$matiere[$i]["libelle_long"]=trim($tabtmp[2]);
 					}
-					if(strstr($ligne[$cpt],"<LIBELLE_EDITION>")) {
+					if(mb_strstr($ligne[$cpt],"<LIBELLE_EDITION>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						$matiere[$i]["libelle_edition"]=trim($tabtmp[2]);
 					}
 				}
@@ -1739,36 +1739,36 @@
 		$i=0;
 		while($cpt<count($ligne)) {
 			//my_echo(htmlentities($ligne[$cpt])."<br />\n");
-			if(strstr($ligne[$cpt],"<CIVILITES>")) {
+			if(mb_strstr($ligne[$cpt],"<CIVILITES>")) {
 				my_echo("Début de la section CIVILITES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_civilites++;
 			}
-			if(strstr($ligne[$cpt],"</CIVILITES>")) {
+			if(mb_strstr($ligne[$cpt],"</CIVILITES>")) {
 				my_echo("Fin de la section CIVILITES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_civilites++;
 			}
 			if($temoin_civilites==1) {
-				if(strstr($ligne[$cpt],"<CIVILITE ")) {
+				if(mb_strstr($ligne[$cpt],"<CIVILITE ")) {
 					$civilites[$i]=array();
 					unset($tabtmp);
-					$tabtmp=explode('"',strstr($ligne[$cpt]," CODE="));
+					$tabtmp=explode('"',mb_strstr($ligne[$cpt]," CODE="));
 					$civilites[$i]["code"]=trim($tabtmp[1]);
 					$temoin_civ=1;
 				}
-				if(strstr($ligne[$cpt],"</CIVILITE>")) {
+				if(mb_strstr($ligne[$cpt],"</CIVILITE>")) {
 					$temoin_civ=0;
 					$i++;
 				}
 				if(isset($temoin_civ)) {
 					if($temoin_civ==1) {
-						if(strstr($ligne[$cpt],"<LIBELLE_COURT>")) {
+						if(mb_strstr($ligne[$cpt],"<LIBELLE_COURT>")) {
 							unset($tabtmp);
-							$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+							$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 							$civilites[$i]["libelle_court"]=trim($tabtmp[2]);
 						}
-						if(strstr($ligne[$cpt],"<LIBELLE_LONG>")) {
+						if(mb_strstr($ligne[$cpt],"<LIBELLE_LONG>")) {
 							unset($tabtmp);
-							$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+							$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 							$civilites[$i]["libelle_long"]=trim($tabtmp[2]);
 						}
 					}
@@ -1833,18 +1833,18 @@
 		$temoin_prof=0;
 		while($cpt<count($ligne)) {
 			//my_echo(htmlentities($ligne[$cpt])."<br />\n");
-			if(strstr($ligne[$cpt],"<INDIVIDUS>")) {
+			if(mb_strstr($ligne[$cpt],"<INDIVIDUS>")) {
 				my_echo("Début de la section INDIVIDUS à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_professeurs++;
 			}
-			if(strstr($ligne[$cpt],"</INDIVIDUS>")) {
+			if(mb_strstr($ligne[$cpt],"</INDIVIDUS>")) {
 				my_echo("Fin de la section INDIVIDUS à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_professeurs++;
 			}
 			if($temoin_professeurs==1) {
 				// On analyse maintenant matière par matière:
 				/*
-				if(strstr($ligne[$cpt],"<INDIVIDU ID=")) {
+				if(mb_strstr($ligne[$cpt],"<INDIVIDU ID=")) {
 					$prof[$i]=array();
 					unset($tabtmp);
 					$tabtmp=explode('"',$ligne[$cpt]);
@@ -1853,110 +1853,110 @@
 					$temoin_prof=1;
 				}
 				*/
-				if(strstr($ligne[$cpt],"<INDIVIDU ")) {
+				if(mb_strstr($ligne[$cpt],"<INDIVIDU ")) {
 					$prof[$i]=array();
 					unset($tabtmp);
-					$tabtmp=explode('"',strstr($ligne[$cpt]," ID="));
+					$tabtmp=explode('"',mb_strstr($ligne[$cpt]," ID="));
 					$prof[$i]["id"]=trim($tabtmp[1]);
-					$tabtmp=explode('"',strstr($ligne[$cpt]," TYPE="));
+					$tabtmp=explode('"',mb_strstr($ligne[$cpt]," TYPE="));
 					$prof[$i]["type"]=trim($tabtmp[1]);
 					$temoin_prof=1;
 				}
-				if(strstr($ligne[$cpt],"</INDIVIDU>")) {
+				if(mb_strstr($ligne[$cpt],"</INDIVIDU>")) {
 					$temoin_prof=0;
 					$i++;
 				}
 				if($temoin_prof==1) {
-					if(strstr($ligne[$cpt],"<SEXE>")) {
+					if(mb_strstr($ligne[$cpt],"<SEXE>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						//$prof[$i]["sexe"]=$tabtmp[2];
-						$prof[$i]["sexe"]=trim(ereg_replace("[^1-2]","",$tabtmp[2]));
+						$prof[$i]["sexe"]=trim(mb_ereg_replace("[^1-2]","",$tabtmp[2]));
 					}
-					if(strstr($ligne[$cpt],"<CIVILITE>")) {
+					if(mb_strstr($ligne[$cpt],"<CIVILITE>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						//$prof[$i]["civilite"]=$tabtmp[2];
-						$prof[$i]["civilite"]=trim(ereg_replace("[^1-3]","",$tabtmp[2]));
+						$prof[$i]["civilite"]=trim(mb_ereg_replace("[^1-3]","",$tabtmp[2]));
 					}
-					if(strstr($ligne[$cpt],"<NOM_USAGE>")) {
+					if(mb_strstr($ligne[$cpt],"<NOM_USAGE>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						//$prof[$i]["nom_usage"]=$tabtmp[2];
-						//$prof[$i]["nom_usage"]=trim(ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸ -]","",$tabtmp[2]));
-						$prof[$i]["nom_usage"]=trim(ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues." -]","",$tabtmp[2]));
+						//$prof[$i]["nom_usage"]=trim(mb_ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸ -]","",$tabtmp[2]));
+						$prof[$i]["nom_usage"]=trim(mb_ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues." -]","",$tabtmp[2]));
 					}
-					if(strstr($ligne[$cpt],"<NOM_PATRONYMIQUE>")) {
+					if(mb_strstr($ligne[$cpt],"<NOM_PATRONYMIQUE>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						//$prof[$i]["nom_patronymique"]=$tabtmp[2];
-						//$prof[$i]["nom_patronymique"]=trim(ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸ -]","",$tabtmp[2]));
-						$prof[$i]["nom_patronymique"]=trim(ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues." -]","",$tabtmp[2]));
+						//$prof[$i]["nom_patronymique"]=trim(mb_ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸ -]","",$tabtmp[2]));
+						$prof[$i]["nom_patronymique"]=trim(mb_ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues." -]","",$tabtmp[2]));
 					}
-					if(strstr($ligne[$cpt],"<PRENOM>")) {
+					if(mb_strstr($ligne[$cpt],"<PRENOM>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						//$prof[$i]["prenom"]=$tabtmp[2];
-						//$prof[$i]["prenom"]=trim(ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸_. -]","",$tabtmp[2]));
-						$prof[$i]["prenom"]=trim(ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues."_. -]","",$tabtmp[2]));
+						//$prof[$i]["prenom"]=trim(mb_ereg_replace("[^A-Za-zÆæ¼½ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸_. -]","",$tabtmp[2]));
+						$prof[$i]["prenom"]=trim(mb_ereg_replace("[^A-Za-zÆæ¼½".$liste_caracteres_accentues."_. -]","",$tabtmp[2]));
 					}
-					if(strstr($ligne[$cpt],"<DATE_NAISSANCE>")) {
+					if(mb_strstr($ligne[$cpt],"<DATE_NAISSANCE>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						//$prof[$i]["date_naissance"]=$tabtmp[2];
-						$prof[$i]["date_naissance"]=trim(ereg_replace("[^0-9-]","",$tabtmp[2]));
+						$prof[$i]["date_naissance"]=trim(mb_ereg_replace("[^0-9-]","",$tabtmp[2]));
 					}
-					if(strstr($ligne[$cpt],"<GRADE>")) {
+					if(mb_strstr($ligne[$cpt],"<GRADE>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						$prof[$i]["grade"]=trim($tabtmp[2]);
 					}
-					if(strstr($ligne[$cpt],"<FONCTION>")) {
+					if(mb_strstr($ligne[$cpt],"<FONCTION>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						$prof[$i]["fonction"]=trim($tabtmp[2]);
 					}
 
 
 
-					if(strstr($ligne[$cpt],"<PROFS_PRINC>")) {
+					if(mb_strstr($ligne[$cpt],"<PROFS_PRINC>")) {
 						$temoin_profs_princ=1;
 						//$prof[$i]["prof_princs"]=array();
 						$j=0;
 					}
-					if(strstr($ligne[$cpt],"</PROFS_PRINC>")) {
+					if(mb_strstr($ligne[$cpt],"</PROFS_PRINC>")) {
 						$temoin_profs_princ=0;
 					}
 
 					if(isset($temoin_profs_princ)) {
 						if($temoin_profs_princ==1) {
 
-							if(strstr($ligne[$cpt],"<PROF_PRINC>")) {
+							if(mb_strstr($ligne[$cpt],"<PROF_PRINC>")) {
 								$temoin_prof_princ=1;
 								$prof[$i]["prof_princ"]=array();
 							}
-							if(strstr($ligne[$cpt],"</PROF_PRINC>")) {
+							if(mb_strstr($ligne[$cpt],"</PROF_PRINC>")) {
 								$temoin_prof_princ=0;
 								$j++;
 							}
 
 							if(isset($temoin_prof_princ)) {
 								if($temoin_prof_princ==1) {
-									if(strstr($ligne[$cpt],"<CODE_STRUCTURE>")) {
+									if(mb_strstr($ligne[$cpt],"<CODE_STRUCTURE>")) {
 										unset($tabtmp);
-										$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+										$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 										$prof[$i]["prof_princ"][$j]["code_structure"]=trim($tabtmp[2]);
 										$temoin_au_moins_un_prof_princ="oui";
 									}
 
-									if(strstr($ligne[$cpt],"<DATE_DEBUT>")) {
+									if(mb_strstr($ligne[$cpt],"<DATE_DEBUT>")) {
 										unset($tabtmp);
-										$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+										$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 										$prof[$i]["prof_princ"][$j]["date_debut"]=trim($tabtmp[2]);
 									}
-									if(strstr($ligne[$cpt],"<DATE_FIN>")) {
+									if(mb_strstr($ligne[$cpt],"<DATE_FIN>")) {
 										unset($tabtmp);
-										$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+										$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 										$prof[$i]["prof_princ"][$j]["date_fin"]=trim($tabtmp[2]);
 									}
 								}
@@ -1966,12 +1966,12 @@
 
 
 
-					if(strstr($ligne[$cpt],"<DISCIPLINES>")) {
+					if(mb_strstr($ligne[$cpt],"<DISCIPLINES>")) {
 						$temoin_disciplines=1;
 						$prof[$i]["disciplines"]=array();
 						$j=0;
 					}
-					if(strstr($ligne[$cpt],"</DISCIPLINES>")) {
+					if(mb_strstr($ligne[$cpt],"</DISCIPLINES>")) {
 						$temoin_disciplines=0;
 					}
 
@@ -1980,17 +1980,17 @@
 					if(isset($temoin_disciplines)) {
 						if($temoin_disciplines==1) {
 							/*
-							if(strstr($ligne[$cpt],"<DISCIPLINE CODE=")) {
+							if(mb_strstr($ligne[$cpt],"<DISCIPLINE CODE=")) {
 								$temoin_disc=1;
 								unset($tabtmp);
 								$tabtmp=explode('"',$ligne[$cpt]);
 								$prof[$i]["disciplines"][$j]["code"]=$tabtmp[1];
 							}
 							*/
-							if(strstr($ligne[$cpt],"<DISCIPLINE ")) {
+							if(mb_strstr($ligne[$cpt],"<DISCIPLINE ")) {
 								$temoin_disc=1;
 								unset($tabtmp);
-								$tabtmp=explode('"',strstr($ligne[$cpt]," CODE="));
+								$tabtmp=explode('"',mb_strstr($ligne[$cpt]," CODE="));
 								$prof[$i]["disciplines"][$j]["code"]=trim($tabtmp[1]);
 
 								// DEBUG:
@@ -1998,7 +1998,7 @@
 
 								//my_echo($prof[$i]["disciplines"][$j]["code"]."\n");
 							}
-							if(strstr($ligne[$cpt],"</DISCIPLINE>")) {
+							if(mb_strstr($ligne[$cpt],"</DISCIPLINE>")) {
 								$temoin_disc=0;
 								$j++;
 							}
@@ -2007,17 +2007,17 @@
 								//if($temoin_prof_princ==1) {
 							if(isset($temoin_disc)) {
 								if($temoin_disc==1) {
-									if(strstr($ligne[$cpt],"<LIBELLE_COURT>")) {
+									if(mb_strstr($ligne[$cpt],"<LIBELLE_COURT>")) {
 										unset($tabtmp);
-										$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+										$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 										$prof[$i]["disciplines"][$j]["libelle_court"]=trim($tabtmp[2]);
 
 										// DEBUG:
 										//my_echo(" ".$prof[$i]["disciplines"][$j]["libelle_court"]."<br />\n");
 									}
-									if(strstr($ligne[$cpt],"<NB_HEURES>")) {
+									if(mb_strstr($ligne[$cpt],"<NB_HEURES>")) {
 										unset($tabtmp);
-										$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+										$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 										$prof[$i]["disciplines"][$j]["nb_heures"]=trim($tabtmp[2]);
 									}
 								}
@@ -2032,111 +2032,111 @@
 
 			// On va récupérer les divisions et associations profs/matières...
 			if(!isset($temoin_structure)) {$temoin_structure=0;}
-			if(strstr($ligne[$cpt],"<STRUCTURE>")) {
+			if(mb_strstr($ligne[$cpt],"<STRUCTURE>")) {
 				my_echo("Début de la section STRUCTURE à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_structure++;
 			}
-			if(strstr($ligne[$cpt],"</STRUCTURE>")) {
+			if(mb_strstr($ligne[$cpt],"</STRUCTURE>")) {
 				my_echo("Fin de la section STRUCTURE à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_structure++;
 			}
 			if(isset($temoin_structure)) {
 				if($temoin_structure==1) {
 					if(!isset($temoin_divisions)) {$temoin_divisions=0;}
-					if(strstr($ligne[$cpt],"<DIVISIONS>")) {
+					if(mb_strstr($ligne[$cpt],"<DIVISIONS>")) {
 						my_echo("Début de la section DIVISIONS à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 						$temoin_divisions++;
 						$divisions=array();
 						$i=0;
 					}
-					if(strstr($ligne[$cpt],"</DIVISIONS>")) {
+					if(mb_strstr($ligne[$cpt],"</DIVISIONS>")) {
 						my_echo("Fin de la section DIVISIONS à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 						$temoin_divisions++;
 					}
 					if(isset($temoin_divisions)) {
 						if($temoin_divisions==1) {
 							/*
-							if(strstr($ligne[$cpt],"<DIVISION CODE=")) {
+							if(mb_strstr($ligne[$cpt],"<DIVISION CODE=")) {
 								$temoin_div=1;
 								unset($tabtmp);
 								$tabtmp=explode('"',$ligne[$cpt]);
 								$divisions[$i]["code"]=$tabtmp[1];
 							}
 							*/
-							if(strstr($ligne[$cpt],"<DIVISION ")) {
+							if(mb_strstr($ligne[$cpt],"<DIVISION ")) {
 								$temoin_div=1;
 								unset($tabtmp);
-								$tabtmp=explode('"',strstr($ligne[$cpt]," CODE="));
+								$tabtmp=explode('"',mb_strstr($ligne[$cpt]," CODE="));
 								$divisions[$i]["code"]=trim($tabtmp[1]);
 							}
-							if(strstr($ligne[$cpt],"</DIVISION>")) {
+							if(mb_strstr($ligne[$cpt],"</DIVISION>")) {
 								$temoin_div=0;
 								$i++;
 							}
 
 							if(isset($temoin_div)) {
 								if($temoin_div==1) {
-									if(strstr($ligne[$cpt],"<SERVICES>")) {
+									if(mb_strstr($ligne[$cpt],"<SERVICES>")) {
 										$temoin_services=1;
 										$j=0;
 									}
-									if(strstr($ligne[$cpt],"</SERVICES>")) {
+									if(mb_strstr($ligne[$cpt],"</SERVICES>")) {
 										$temoin_services=0;
 									}
 
 									if(isset($temoin_services)) {
 										if($temoin_services==1) {
 											/*
-											if(strstr($ligne[$cpt],"<SERVICE CODE_MATIERE=")) {
+											if(mb_strstr($ligne[$cpt],"<SERVICE CODE_MATIERE=")) {
 												$temoin_disc=1;
 												unset($tabtmp);
 												$tabtmp=explode('"',$ligne[$cpt]);
 												$divisions[$i]["services"][$j]["code_matiere"]=$tabtmp[1];
 											}
 											*/
-											if(strstr($ligne[$cpt],"<SERVICE ")) {
+											if(mb_strstr($ligne[$cpt],"<SERVICE ")) {
 												$temoin_disc=1;
 												unset($tabtmp);
-												$tabtmp=explode('"',strstr($ligne[$cpt]," CODE_MATIERE="));
+												$tabtmp=explode('"',mb_strstr($ligne[$cpt]," CODE_MATIERE="));
 												$divisions[$i]["services"][$j]["code_matiere"]=trim($tabtmp[1]);
 
 												// DEBUG:
 												//my_echo("<p><span style='color:red;'>(Ligne $cpt)</span> ".get_nom_matiere($divisions[$i]["services"][$j]["code_matiere"]).": \n");
 											}
-											if(strstr($ligne[$cpt],"</SERVICE>")) {
+											if(mb_strstr($ligne[$cpt],"</SERVICE>")) {
 												$temoin_disc=0;
 												$j++;
 											}
 
 											if($temoin_disc==1) {
-												if(strstr($ligne[$cpt],"<ENSEIGNANTS>")) {
+												if(mb_strstr($ligne[$cpt],"<ENSEIGNANTS>")) {
 													$temoin_enseignants=1;
 													$divisions[$i]["services"][$j]["enseignants"]=array();
 													$k=0;
 												}
-												if(strstr($ligne[$cpt],"</ENSEIGNANTS>")) {
+												if(mb_strstr($ligne[$cpt],"</ENSEIGNANTS>")) {
 													$temoin_enseignants=0;
 												}
 												if(isset($temoin_enseignants)) {
 													if($temoin_enseignants==1) {
 														/*
-														if(strstr($ligne[$cpt],"<ENSEIGNANT ID=")) {
+														if(mb_strstr($ligne[$cpt],"<ENSEIGNANT ID=")) {
 															//$temoin_ens=1;
 															unset($tabtmp);
 															$tabtmp=explode('"',$ligne[$cpt]);
 															$divisions[$i]["services"][$j]["enseignants"][$k]["id"]=$tabtmp[1];
 														}
 														*/
-														if(strstr($ligne[$cpt],"<ENSEIGNANT ")) {
+														if(mb_strstr($ligne[$cpt],"<ENSEIGNANT ")) {
 															//$temoin_ens=1;
 															unset($tabtmp);
-															$tabtmp=explode('"',strstr($ligne[$cpt]," ID="));
+															$tabtmp=explode('"',mb_strstr($ligne[$cpt]," ID="));
 															$divisions[$i]["services"][$j]["enseignants"][$k]["id"]=trim($tabtmp[1]);
 
 															// DEBUG:
 															//my_echo(" ".get_nom_prof($divisions[$i]["services"][$j]["enseignants"][$k]["id"])."\n");
 														}
-														if(strstr($ligne[$cpt],"</ENSEIGNANT>")) {
+														if(mb_strstr($ligne[$cpt],"</ENSEIGNANT>")) {
 															//$temoin_ens=0;
 															$k++;
 														}
@@ -2155,20 +2155,20 @@
 
 
 					if(!isset($temoin_groupes)) {$temoin_groupes=0;}
-					if(strstr($ligne[$cpt],"<GROUPES>")) {
+					if(mb_strstr($ligne[$cpt],"<GROUPES>")) {
 						my_echo("Début de la section GROUPES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 						$temoin_groupes++;
 						$groupes=array();
 						$i=0;
 					}
-					if(strstr($ligne[$cpt],"</GROUPES>")) {
+					if(mb_strstr($ligne[$cpt],"</GROUPES>")) {
 						my_echo("Fin de la section GROUPES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 						$temoin_groupes++;
 					}
 					if(isset($temoin_groupes)) {
 						if($temoin_groupes==1) {
 							/*
-							if(strstr($ligne[$cpt],"<GROUPE CODE=")) {
+							if(mb_strstr($ligne[$cpt],"<GROUPE CODE=")) {
 								$temoin_grp=1;
 								unset($tabtmp);
 								$tabtmp=explode('"',$ligne[$cpt]);
@@ -2178,11 +2178,11 @@
 								$m=0;
 							}
 							*/
-							if(strstr($ligne[$cpt],"<GROUPE ")) {
+							if(mb_strstr($ligne[$cpt],"<GROUPE ")) {
 								$temoin_grp=1;
 								$temoin_services=0;
 								unset($tabtmp);
-								$tabtmp=explode('"',strstr($ligne[$cpt]," CODE="));
+								$tabtmp=explode('"',mb_strstr($ligne[$cpt]," CODE="));
 								$groupes[$i]=array();
 								$groupes[$i]["code"]=trim($tabtmp[1]);
 								$j=0;
@@ -2192,17 +2192,17 @@
 								// DEBUG
 								//my_echo("<p><span style='color:red;'>(Ligne $cpt)</span> ".$groupes[$i]["code"].": \n");
 							}
-							if(strstr($ligne[$cpt],"</GROUPE>")) {
+							if(mb_strstr($ligne[$cpt],"</GROUPE>")) {
 								$temoin_grp=0;
 								$i++;
 							}
 
 							if(isset($temoin_grp)) {
 								if($temoin_grp==1) {
-									if((strstr($ligne[$cpt],"<LIBELLE_LONG>"))||(strstr($ligne[$cpt],"<LIBELLE_LONG/>"))) {
-										if(strstr($ligne[$cpt],"<LIBELLE_LONG>")) {
+									if((mb_strstr($ligne[$cpt],"<LIBELLE_LONG>"))||(mb_strstr($ligne[$cpt],"<LIBELLE_LONG/>"))) {
+										if(mb_strstr($ligne[$cpt],"<LIBELLE_LONG>")) {
 											unset($tabtmp);
-											$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+											$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 											$groupes[$i]["libelle_long"]=trim($tabtmp[2]);
 										}
 										else{
@@ -2213,26 +2213,26 @@
 										//my_echo("libelle_long='".$groupes[$i]["libelle_long"]."' \n");
 									}
 
-									if(strstr($ligne[$cpt],"<DIVISIONS_APPARTENANCE>")) {
+									if(mb_strstr($ligne[$cpt],"<DIVISIONS_APPARTENANCE>")) {
 										$temoin_div_appart=1;
 									}
-									if(strstr($ligne[$cpt],"</DIVISIONS_APPARTENANCE>")) {
+									if(mb_strstr($ligne[$cpt],"</DIVISIONS_APPARTENANCE>")) {
 										$temoin_div_appart=0;
 									}
 
 									if(isset($temoin_div_appart)) {
 										if($temoin_div_appart==1) {
 											/*
-											if(strstr($ligne[$cpt],"<DIVISION_APPARTENANCE CODE=")) {
+											if(mb_strstr($ligne[$cpt],"<DIVISION_APPARTENANCE CODE=")) {
 												unset($tabtmp);
 												$tabtmp=explode('"',$ligne[$cpt]);
 												$groupes[$i]["divisions"][$j]["code"]=$tabtmp[1];
 												$j++;
 											}
 											*/
-											if(strstr($ligne[$cpt],"<DIVISION_APPARTENANCE ")) {
+											if(mb_strstr($ligne[$cpt],"<DIVISION_APPARTENANCE ")) {
 												unset($tabtmp);
-												$tabtmp=explode('"',strstr($ligne[$cpt]," CODE="));
+												$tabtmp=explode('"',mb_strstr($ligne[$cpt]," CODE="));
 												$groupes[$i]["divisions"][$j]["code"]=trim($tabtmp[1]);
 												$j++;
 											}
@@ -2240,31 +2240,31 @@
 									}
 
 
-									if(strstr($ligne[$cpt],"<SERVICES>")) {
+									if(mb_strstr($ligne[$cpt],"<SERVICES>")) {
 										$temoin_services=1;
 										if(!isset($groupes[$i]["service"])) {$groupes[$i]["service"]=array();}
 									}
-									if(strstr($ligne[$cpt],"</SERVICES>")) {
+									if(mb_strstr($ligne[$cpt],"</SERVICES>")) {
 										$temoin_services=0;
 									}
 
 									//<SERVICE CODE_MATIERE="020100" CODE_MOD_COURS="CG">
 									/*
-									if(strstr($ligne[$cpt],"<SERVICE CODE_MATIERE=")) {
+									if(mb_strstr($ligne[$cpt],"<SERVICE CODE_MATIERE=")) {
 										unset($tabtmp);
 										$tabtmp=explode('"',$ligne[$cpt]);
 										$groupes[$i]["code_matiere"]=$tabtmp[1];
 									}
 									*/
 									if($temoin_services==1) {
-										if(strstr($ligne[$cpt],"<SERVICE ")) {
+										if(mb_strstr($ligne[$cpt],"<SERVICE ")) {
 											$groupes[$i]["service"][$n]=array();
 											unset($tabtmp);
-											$tabtmp=explode('"',strstr($ligne[$cpt]," CODE_MATIERE="));
+											$tabtmp=explode('"',mb_strstr($ligne[$cpt]," CODE_MATIERE="));
 											$groupes[$i]["service"][$n]["code_matiere"]=trim($tabtmp[1]);
 										}
 
-										if(strstr($ligne[$cpt],"</SERVICE>")) {
+										if(mb_strstr($ligne[$cpt],"</SERVICE>")) {
 											$n++;
 											// En changeant de service, on réinitialise le compteur d'enseignants pour le service
 											$m=0;
@@ -2278,9 +2278,9 @@
 
 										//<ENSEIGNANT ID="11508" TYPE="epp">
 
-										//if(strstr($ligne[$cpt],"<ENSEIGNANT TYPE=")) {
+										//if(mb_strstr($ligne[$cpt],"<ENSEIGNANT TYPE=")) {
 										/*
-										if(strstr($ligne[$cpt],"<ENSEIGNANT ID=")) {
+										if(mb_strstr($ligne[$cpt],"<ENSEIGNANT ID=")) {
 											unset($tabtmp);
 											$tabtmp=explode('"',$ligne[$cpt]);
 											//$groupes[$i]["enseignant"][$m]["id"]=$tabtmp[3];
@@ -2288,9 +2288,9 @@
 											$m++;
 										}
 										*/
-										if(strstr($ligne[$cpt],"<ENSEIGNANT ")) {
+										if(mb_strstr($ligne[$cpt],"<ENSEIGNANT ")) {
 											unset($tabtmp);
-											$tabtmp=explode('"',strstr($ligne[$cpt]," ID="));
+											$tabtmp=explode('"',mb_strstr($ligne[$cpt]," ID="));
 											//$groupes[$i]["enseignant"][$m]["id"]=$tabtmp[3];
 											//$groupes[$i]["enseignant"][$m]["id"]=trim($tabtmp[1]);
 											$groupes[$i]["service"][$n]["enseignant"][$m]["id"]=trim($tabtmp[1]);
@@ -2328,33 +2328,33 @@
 		$temoin_mat=0;
 		while($cpt<count($ligne)) {
 			//my_echo(htmlentities($ligne[$cpt])."<br />\n");
-			if(strstr($ligne[$cpt],"<PROGRAMMES>")) {
+			if(mb_strstr($ligne[$cpt],"<PROGRAMMES>")) {
 				my_echo("Début de la section PROGRAMMES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_programmes++;
 			}
-			if(strstr($ligne[$cpt],"</PROGRAMMES>")) {
+			if(mb_strstr($ligne[$cpt],"</PROGRAMMES>")) {
 				my_echo("Fin de la section PROGRAMMES à la ligne <span style='color: blue;'>$cpt</span><br />\n");
 				$temoin_programmes++;
 			}
 			if($temoin_programmes==1) {
 				// On analyse maintenant matière par matière:
-				if(strstr($ligne[$cpt],"<PROGRAMME>")) {
+				if(mb_strstr($ligne[$cpt],"<PROGRAMME>")) {
 					$programme[$i]=array();
 					$temoin_prog=1;
 				}
-				if(strstr($ligne[$cpt],"</PROGRAMME>")) {
+				if(mb_strstr($ligne[$cpt],"</PROGRAMME>")) {
 					$temoin_prog=0;
 					$i++;
 				}
 				if($temoin_prog==1) {
-					if(strstr($ligne[$cpt],"<CODE_MEF>")) {
+					if(mb_strstr($ligne[$cpt],"<CODE_MEF>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						$programme[$i]["code_mef"]=$tabtmp[2];
 					}
-					if(strstr($ligne[$cpt],"<CODE_MATIERE>")) {
+					if(mb_strstr($ligne[$cpt],"<CODE_MATIERE>")) {
 						unset($tabtmp);
-						$tabtmp=explode(">",ereg_replace("<",">",$ligne[$cpt]));
+						$tabtmp=explode(">",mb_ereg_replace("<",">",$ligne[$cpt]));
 						$programme[$i]["code_matiere"]=$tabtmp[2];
 					}
 				}
@@ -2805,7 +2805,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 					// ================================
 					// Vérification/correction du givenName
 					if($corriger_givenname_si_diff=='y') {
-						$prenom=strtolower(remplace_accents(traite_espaces($prof[$cpt]["prenom"])));
+						$prenom=mb_strtolower(remplace_accents(traite_espaces($prof[$cpt]["prenom"])));
 						//my_echo("Test de la correction du givenName: verif_et_corrige_givenname($uid,$prenom)<br />\n");
 						verif_et_corrige_givenname($uid,$prenom);
 					}
@@ -2816,7 +2816,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 					//if($annuelle=="y") {
 						if($controler_pseudo=='y') {
 							$nom=remplace_accents(traite_espaces($prof[$cpt]["nom_usage"]));
-							$prenom=strtolower(remplace_accents(traite_espaces($prof[$cpt]["prenom"])));
+							$prenom=mb_strtolower(remplace_accents(traite_espaces($prof[$cpt]["prenom"])));
 							verif_et_corrige_pseudo($uid,$nom,$prenom);
 						}
 					//}
@@ -3205,7 +3205,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 
 		// La classe existe-t-elle?
 		$div=$eleve[$numero]["division"];
-		$div=ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($div)));
+		$div=mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($div)));
 		$attribut=array("cn");
 		//$cn_classe=get_tab_attribut("groups", "cn=Classe_$div", $attribut);
 		$cn_classe=get_tab_attribut("groups", "cn=Classe_".$prefix."$div", $attribut);
@@ -3275,7 +3275,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 				// ================================
 				// Vérification/correction du givenName
 				if($corriger_givenname_si_diff=='y') {
-					$prenom=strtolower(remplace_accents(traite_espaces($eleve[$numero]["prenom"])));
+					$prenom=mb_strtolower(remplace_accents(traite_espaces($eleve[$numero]["prenom"])));
 					//my_echo("Test de la correction du givenName: verif_et_corrige_givenname($uid,$prenom)<br />\n");
 					verif_et_corrige_givenname($uid,$prenom);
 				}
@@ -3286,7 +3286,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 				//if($annuelle=="y") {
 					if($controler_pseudo=='y') {
 						$nom=remplace_accents(traite_espaces($eleve[$numero]["nom"]));
-						$prenom=strtolower(remplace_accents(traite_espaces($eleve[$numero]["prenom"])));
+						$prenom=mb_strtolower(remplace_accents(traite_espaces($eleve[$numero]["prenom"])));
 						verif_et_corrige_pseudo($uid,$nom,$prenom);
 					}
 				//}
@@ -3728,7 +3728,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 			$message.="\n";
 			$message.="Vous pouvez consulter le rapport détaillé à l'adresse $echo_http_file\n";
 			$entete="From: ".$tabssmtp["root"];
-			mail("$adressedestination", "$sujet", "$message", "$entete") or my_echo("<p style='color:red;'><b>ERREUR</b> lors de l'envoi du rapport par mail.</p>\n");
+			mb_send_mail("$adressedestination", "$sujet", "$message", "$entete") or my_echo("<p style='color:red;'><b>ERREUR</b> lors de l'envoi du rapport par mail.</p>\n");
 		  } else {
 			my_echo("<p style='color:red;'><b>MAIL:</b> La configuration mail ne permet pas d'expédier le rapport.<br />Consultez/renseignez le menu Informations système/Actions sur le serveur/Configurer l'expédition des mails.</p>\n");
 		  }
@@ -3743,7 +3743,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 			$message.="\n";
 			$message.="Vous pouvez consulter le rapport détaillé à l'adresse $echo_http_file\n";
 			$entete="From: root@$domain";
-			mail("$adressedestination", "$sujet", "$message", "$entete") or my_echo("<p style='color:red;'><b>ERREUR</b> lors de l'envoi du rapport par mail.</p>\n");
+			mb_send_mail("$adressedestination", "$sujet", "$message", "$entete") or my_echo("<p style='color:red;'><b>ERREUR</b> lors de l'envoi du rapport par mail.</p>\n");
 		}
 
 
@@ -4006,7 +4006,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 			// Recherche de l'indice de la classe dans $divisions
 			//my_echo("<font color='yellow'>$div</font> ");
 			for($m=0;$m<count($divisions);$m++) {
-				$tmp_classe=ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($divisions[$m]["code"])));
+				$tmp_classe=mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($divisions[$m]["code"])));
 				//my_echo("<font color='lime'>$tmp_classe</font> ");
 				if($tmp_classe==$div) {
 					$ind=$m;
@@ -4025,7 +4025,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 					if(isset($prof[$m]["prof_princ"])) {
 						for($n=0;$n<count($prof[$m]["prof_princ"]);$n++) {
 							$tmp_div=$prof[$m]["prof_princ"][$n]["code_structure"];
-							$tmp_div=ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($tmp_div)));
+							$tmp_div=mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($tmp_div)));
 							if($tmp_div==$div) {
 								$employeeNumber="P".$prof[$m]["id"];
 								$attribut=array("uid");
@@ -4127,7 +4127,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 			for($n=0;$n<count($groupes);$n++) {
 				for($j=0;$j<count($groupes[$n]["divisions"]);$j++) {
 					$grp_div=$groupes[$n]["divisions"][$j]["code"];
-					$grp_div=ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($grp_div)));
+					$grp_div=mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($grp_div)));
 					if($grp_div==$div) {
 						/*
 						if(isset($groupes[$n]["enseignant"])) {
@@ -4259,7 +4259,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 			$id_mat=$matiere[$i]["code"];
 			//$code_gestion=$matiere[$i]["code_gestion"];
 			// En principe les caractères spéciaux ont-été filtrés:
-			//$matiere[$i]["code_gestion"]=trim(ereg_replace("[^a-zA-Z0-9&_. -]","",html_entity_decode($tabtmp[2])));
+			//$matiere[$i]["code_gestion"]=trim(mb_ereg_replace("[^a-zA-Z0-9&_. -]","",html_entity_decode($tabtmp[2])));
 			$mat=$matiere[$i]["code_gestion"];
 			$description=remplace_accents($matiere[$i]["libelle_long"]);
 			// Faudrait-il enlever d'autres caractères?
@@ -4555,14 +4555,14 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 
 		for($i=0;$i<count($divisions);$i++) {
 			$div=$divisions[$i]["code"];
-			$div=ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($div)));
+			$div=mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($div)));
 
 			// Dans le cas de l'import XML, on récupère la liste des options suivies par les élèves
 			$ind_div="";
 			if($type_fichier_eleves=="xml") {
 				// Identifier $k tel que $tab_division[$k]["nom"]==$div
 				for($k=0;$k<count($tab_division);$k++) {
-					if(ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($tab_division[$k]["nom"])))==$div) {
+					if(mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($tab_division[$k]["nom"])))==$div) {
 						$ind_div=$k;
 						break;
 					}
@@ -4804,7 +4804,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 							$grp=$grp."_".$p;
 						}
 					}
-					$grp=ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($grp)));
+					$grp=mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($grp)));
 					*/
 					$temoin_grp="";
 					$grp_mat="";
@@ -4831,7 +4831,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 							$grp=$grp."_".$p;
 						}
 					}
-					$grp=ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($grp)));
+					$grp=mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($grp)));
 
 					//my_echo("\$grp_mat=".$grp_mat."<br />");
 
@@ -4859,7 +4859,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 					$chaine_div="";
 					for($j=0;$j<count($groupes[$i]["divisions"]);$j++) {
 						$div=$groupes[$i]["divisions"][$j]["code"];
-						$div=ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($div)));
+						$div=mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($div)));
 
 						//my_echo("\$div=".$div."<br />");
 
@@ -4871,7 +4871,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 							// Identifier $k tel que $tab_division[$k]["nom"]==$div
 							for($k=0;$k<count($tab_division);$k++) {
 								//my_echo("\$tab_division[$k][\"nom\"]=".$tab_division[$k]["nom"]."<br />");
-								if(ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($tab_division[$k]["nom"])))==$div) {
+								if(mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($tab_division[$k]["nom"])))==$div) {
 									$ind_div=$k;
 									break;
 								}
@@ -5062,7 +5062,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 			else{
 				// Pas de section "<SERVICE " dans ce groupe
 				$grp=$groupes[$i]["code"];
-				$grp=ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($grp)));
+				$grp=mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($grp)));
 				$temoin_grp="";
 				$grp_mat="";
 
@@ -5110,7 +5110,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 				$chaine_div="";
 				for($j=0;$j<count($groupes[$i]["divisions"]);$j++) {
 					$div=$groupes[$i]["divisions"][$j]["code"];
-					$div=ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($div)));
+					$div=mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($div)));
 
 					//my_echo("\$div=".$div."<br />");
 
@@ -5122,7 +5122,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 						// Identifier $k tel que $tab_division[$k]["nom"]==$div
 						for($k=0;$k<count($tab_division);$k++) {
 							//my_echo("\$tab_division[$k][\"nom\"]=".$tab_division[$k]["nom"]."<br />");
-							if(ereg_replace("'","_",ereg_replace(" ","_",remplace_accents($tab_division[$k]["nom"])))==$div) {
+							if(mb_ereg_replace("'","_",mb_ereg_replace(" ","_",remplace_accents($tab_division[$k]["nom"])))==$div) {
 								$ind_div=$k;
 								break;
 							}
@@ -5420,7 +5420,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 		$message.="Vous pouvez consulter le rapport détaillé à l'adresse $echo_http_file\n";
 		$entete="From: ".$tabssmtp["root"];
 		my_echo("<p>Avant mail.</p>");
-		mail("$adressedestination", "$sujet", "$message", "$entete") or my_echo("<p style='color:red;'><b>ERREUR</b> lors de l'envoi du rapport par mail.</p>\n");
+		mb_send_mail("$adressedestination", "$sujet", "$message", "$entete") or my_echo("<p style='color:red;'><b>ERREUR</b> lors de l'envoi du rapport par mail.</p>\n");
 		my_echo("<p>Après mail.</p>");
 	}
 	else{
@@ -5502,7 +5502,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 		$message.="\n";
 		$message.="Vous pouvez consulter le rapport détaillé à l'adresse $echo_http_file\n";
 		$entete="From: ".$tabssmtp["root"];
-		mail("$adressedestination", "$sujet", "$message", "$entete") or my_echo("<p style='color:red;'><b>ERREUR</b> lors de l'envoi du rapport par mail.</p>\n");
+		mb_send_mail("$adressedestination", "$sujet", "$message", "$entete") or my_echo("<p style='color:red;'><b>ERREUR</b> lors de l'envoi du rapport par mail.</p>\n");
 	    } else  my_echo("<p style='color:red;'><b>MAIL:</b> La configuration mail ne permet pas d'expédier le rapport.<br />Consultez/renseignez le menu Informations système/Actions sur le serveur/Configurer l'expédition des mails.</p>\n");
         } elseif ( $servertype=="LCS") {
 		$adressedestination="admin@$domain";
@@ -5514,7 +5514,7 @@ rm -f /tmp/erreur_svg_prealable_ldap_${date}.txt
 		$message.="\n";
 		$message.="Vous pouvez consulter le rapport détaillé à l'adresse $echo_http_file\n";
 		$entete="From: root@$domain";
-		mail("$adressedestination", "$sujet", "$message", "$entete") or my_echo("<p style='color:red;'><b>ERREUR</b> lors de l'envoi du rapport par mail.</p>\n");
+		mb_send_mail("$adressedestination", "$sujet", "$message", "$entete") or my_echo("<p style='color:red;'><b>ERREUR</b> lors de l'envoi du rapport par mail.</p>\n");
         }
 	my_echo("</body>\n</html>\n");
 

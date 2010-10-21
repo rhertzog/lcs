@@ -93,7 +93,7 @@
         for ( $loop=0; $loop < count ($groups) ; $loop++ ) {
           if ( ($groups[$loop]["cn"] != "Profs") && ($groups[$loop]["cn"] != "Eleves") && ($groups[$loop]["cn"] != "Administratifs") ) {
             $html.= "  <LI><A href=\"group.php?filter=".$groups[$loop]["cn"]."\">".$groups[$loop]["cn"]."</A>,<font size=\"-2\"> ".$groups[$loop]["description"];
-            $login=split ("[\,\]",ldap_dn2ufn($groups[$loop]["owner"]),2);
+            $login=preg_split ("/,/",ldap_dn2ufn($groups[$loop]["owner"]),2);
             if ( $login[0] == $uid ) $html .= "<strong><font color=\"#ff8f00\">&nbsp;(professeur principal)</font></strong>";
             $html .= "</font></LI>\n";
             // constitution d'un filtre pour exclure les groupes d'appartenance
@@ -111,27 +111,27 @@
          $i = 0; $j =0; $k =0; $l = 0 ; $m = 0;
          for ($loop=0; $loop < count ($list_groups) ; $loop++) {
             // Cours
-            if ( ereg ("Cours_", $list_groups[$loop]["cn"]) ) {
+            if ( mb_ereg ("Cours_", $list_groups[$loop]["cn"]) ) {
                $cours[$i]["cn"] = $list_groups[$loop]["cn"];
                $cours[$i]["description"] = $list_groups[$loop]["description"];
                $i++;
               // Classe
-            } elseif ( ereg ("Classe_", $list_groups[$loop]["cn"]) ) {
+            } elseif ( mb_ereg ("Classe_", $list_groups[$loop]["cn"]) ) {
                $classe[$j]["cn"] = $list_groups[$loop]["cn"];
                $classe[$j]["description"] = $list_groups[$loop]["description"];
                $j++;
                // Equipe
-            } elseif ( ereg ("Equipe_", $list_groups[$loop]["cn"]) ) {
+            } elseif ( mb_ereg ("Equipe_", $list_groups[$loop]["cn"]) ) {
                $equipe[$k]["cn"] = $list_groups[$loop]["cn"];
                $equipe[$k]["description"] = $list_groups[$loop]["description"];
                $k++;
                // Matiere
-            } elseif ( ereg ("Matiere_", $list_groups[$loop]["cn"]) ) {
+            } elseif ( mb_ereg ("Matiere_", $list_groups[$loop]["cn"]) ) {
                $matiere[$l]["cn"] = $list_groups[$loop]["cn"];
                $matiere[$l]["description"] = $list_groups[$loop]["description"];
                $l++;
                // Autres
-	     } elseif ( !ereg( "^(Administratifs)|(Eleves)|(lcs-users)|(machines)|(overfil)|(Profs)$",$list_groups[$loop]["cn"] ) ) {		   
+	     } elseif ( !mb_ereg( "^(Administratifs)|(Eleves)|(lcs-users)|(machines)|(overfil)|(Profs)$",$list_groups[$loop]["cn"] ) ) {		   
                $autres[$m]["cn"] = $list_groups[$loop]["cn"];
                $autres[$m]["description"] = $list_groups[$loop]["description"];
                $m++;

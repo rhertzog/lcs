@@ -76,7 +76,7 @@
         {
             while (($file = readdir($dh)) !== false) 
             {
-                if (filetype($rootdir.'/'.$file) == "file" && ereg('^swekey_[A-Za-z0-9]{32}\.ids$', $file) !== FALSE)
+                if (filetype($rootdir.'/'.$file) == "file" && mb_ereg('^swekey_[A-Za-z0-9]{32}\.ids$', $file) !== FALSE)
                 {
                     $modif = filemtime($rootdir.'/'.$file);
                     if (time() - $modif > 300)  // a file is not valid more than 5 minutes
@@ -195,7 +195,7 @@ if (isset($swekey_ids) && (! isset($_SESSION['swekey_authframe']['auth_started']
 	<script type="text/javascript">
 	var tokens = "";
 	var ids = Swekey_ListKeyIds();
-	var connected_keys = ids.split(",");
+	var connected_keys = ids.preg_split("/,/");
  	for (i in connected_keys) 
 	    if (connected_keys[i] != null && connected_keys[i].length == 32)
 		    tokens += connected_keys[i] + Swekey_GetSmartOtp(connected_keys[i], "<?php echo $_SESSION['swekey_authframe']['rt'];?>");
@@ -213,11 +213,11 @@ if (isset($swekey_tokens) && (isset($_SESSION['swekey_authframe']['rt']) || empt
 //	error_log("authframe verifying tokens\n", 3, "/qwe.log");
 	$_SESSION['swekey_authframe']['valid_ids'] = array();
 
-	while (strlen($swekey_tokens) >= 32 + 64)
+	while (mb_strlen($swekey_tokens) >= 32 + 64)
 	{
-		$id = substr($swekey_tokens, 0, 32);		
-		$otp = substr($swekey_tokens, 32, 64);
-		$swekey_tokens = substr($swekey_tokens, 32 + 64);		
+		$id = mb_substr($swekey_tokens, 0, 32);		
+		$otp = mb_substr($swekey_tokens, 32, 64);
+		$swekey_tokens = mb_substr($swekey_tokens, 32 + 64);		
 
 		Swekey_SetCheckServer($_SESSION['swekey_authframe']['check_server']); 
         if (Swekey_CheckSmartOtp($id, $_SESSION['swekey_authframe']['rt'], $otp))

@@ -73,7 +73,7 @@ if (! isset($gSwekeyTokenCacheEnabled))
  */
 function Swekey_PluginInnerHTML()
 {
-    if(strpos($_SERVER['HTTP_USER_AGENT'], "MSIE"))
+    if(mb_strpos($_SERVER['HTTP_USER_AGENT'], "MSIE"))
     {
         return '<object id="swekey_activex" style="display:none" CLASSID="CLSID:8E02E3F9-57AA-4EE1-AA68-A42DD7B0FADE"></object>'."\n";
     }
@@ -215,7 +215,7 @@ function Swekey_HttpGet($url, &$response_code)
 	if (function_exists('curl_init'))
 	{
 		$sess = curl_init($url);
-		if (substr($url, 0, 8) == "https://")
+		if (mb_substr($url, 0, 8) == "https://")
 		{
 			global $gSwekeyCA;
 			$caFileOk = false;
@@ -286,17 +286,17 @@ function Swekey_HttpGet($url, &$response_code)
             $r = new HttpRequest($url);
             $options = array('timeout' => '3');
             
-            if (substr($url,0, 6) == "https:")
+            if (mb_substr($url,0, 6) == "https:")
             {
                 $sslOptions = array(); 
                 $sslOptions['verifypeer'] = true;
                 $sslOptions['verifyhost'] = true;
 
                 $capath = __FILE__;
-                $name = strrchr($capath, '/');
+                $name = mb_strrchr($capath, '/');
                 if (empty($name)) // windows
-                    $name = strrchr($capath, '\\');                    
-                $capath = substr($capath, 0, strlen($capath) - strlen($name) + 1).'musbe-ca.crt'; 
+                    $name = mb_strrchr($capath, '\\');                    
+                $capath = mb_substr($capath, 0, mb_strlen($capath) - mb_strlen($name) + 1).'musbe-ca.crt'; 
                 
                 if (! empty($gSwekeyCA))
                     $sslOptions['cainfo'] = $gSwekeyCA;
@@ -329,7 +329,7 @@ function Swekey_HttpGet($url, &$response_code)
     
    	global $http_response_header;
 	$res = @file_get_contents($url);
-	$response_code = substr($http_response_header[0], 9, 3); //HTTP/1.0
+	$response_code = mb_substr($http_response_header[0], 9, 3); //HTTP/1.0
 	if ($response_code == 200)
 	{
 	   $gSwekeyLastResult = $res;
@@ -386,7 +386,7 @@ function Swekey_GetFastHalfRndToken()
 	   	  $res = $_SESSION['-swekey-rnd-token'];
     
     // If not we try to get it from a temp file (PHP >= 5.2.1 only)
-   if (strlen($res) != 32 && $gSwekeyTokenCacheEnabled)
+   if (mb_strlen($res) != 32 && $gSwekeyTokenCacheEnabled)
    {
    		$tempdir = '';
 		if (function_exists('sys_get_temp_dir'))
@@ -402,7 +402,7 @@ function Swekey_GetFastHalfRndToken()
                 if (time() - $modif < 30)
 	            {
 	                $res = @file_get_contents($cachefile); 
-	                if (strlen($res) != 32)
+	                if (mb_strlen($res) != 32)
 	                    $res = "";
                		else
                		{
@@ -414,9 +414,9 @@ function Swekey_GetFastHalfRndToken()
   }
       
    // If we don't have a valid RT here we have to get it from the server
-   if (strlen($res) != 32)
+   if (mb_strlen($res) != 32)
    {
-        $res = substr(Swekey_GetHalfRndToken(), 0, 32);
+        $res = mb_substr(Swekey_GetHalfRndToken(), 0, 32);
         $_SESSION['-swekey-rnd-token'] = $res;
         $_SESSION['-swekey-rnd-token-date'] = time();
         if (! empty($cachefile))
@@ -446,13 +446,13 @@ function Swekey_GetFastHalfRndToken()
 function Swekey_GetFastRndToken()
 {
     $res = Swekey_GetFastHalfRndToken();
-    if (strlen($res) == 64)
+    if (mb_strlen($res) == 64)
     {
     	// Avoid a E_NOTICE when strict is enabled
     	if (function_exists('date_default_timezone_set'))
     		date_default_timezone_set('Greenwich');
     	
-        return substr($res, 0, 32).strtoupper(md5("Musbe Authentication Key".mt_rand().date(DATE_ATOM))); 
+        return mb_substr($res, 0, 32).mb_strtoupper(md5("Musbe Authentication Key".mt_rand().date(DATE_ATOM))); 
     }
     
     return "";

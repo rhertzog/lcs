@@ -74,8 +74,8 @@
     }
   }
   // Remplacement de *** ou ** par *
-  $filter_people = ereg_replace("\*\*\*","*",$filter_people);
-  $filter_people = ereg_replace("\*\*","*",$filter_people);
+  $filter_people = mb_ereg_replace("\*\*\*","*",$filter_people);
+  $filter_people = mb_ereg_replace("\*\*","*",$filter_people);
   if ($filter_people && !$classe) {
     // recherche dans la branche People
     #$TimeStamp_0=microtime();
@@ -117,8 +117,8 @@
          $filter_classe="(cn=Classe_*$classe)";
        }
        // Remplacement de *** ou ** par *
-       $filter_classe = ereg_replace("\*\*\*","*",$filter_classe);
-       $filter_classe = ereg_replace("\*\*","*",$filter_classe);
+       $filter_classe = mb_ereg_replace("\*\*\*","*",$filter_classe);
+       $filter_classe = mb_ereg_replace("\*\*","*",$filter_classe);
        $TimeStamp_0=microtime();
        $uids = search_uids ($filter_classe, "full");
        $people = search_people_groups ($uids,$filter_people,"group");

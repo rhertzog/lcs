@@ -41,7 +41,7 @@
 			$sujet="ERREUR: import_comptes.php ";
 			$message=$chaine;
 			$entete="From: root@$domain";
-			mail("$adressedestination", "$sujet", "$message", "$entete");
+			mb_send_mail("$adressedestination", "$sujet", "$message", "$entete");
 		}
 		else{
 			// Récupérer les adresses,... dans le /etc/ssmtp/ssmtp.conf
@@ -55,7 +55,7 @@
 				$sujet="ERREUR: import_comptes.php ";
 				$message=$chaine;
 				$entete="From: ".$tabssmtp["root"];
-				mail("$adressedestination", "$sujet", "$message", "$entete");
+				mb_send_mail("$adressedestination", "$sujet", "$message", "$entete");
 			}
 		}
 		exit();

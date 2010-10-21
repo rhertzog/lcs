@@ -43,7 +43,7 @@ $error=$_GET['error'];
                         $error = 3;
                 } elseif ($test_swekey == false) {
                         $error = 5;
-				} elseif ( !open_session( strtolower($login), $pass, $string_auth) ) {
+				} elseif ( !open_session( mb_strtolower($login), $pass, $string_auth) ) {
                        $error = 4;
                 }
                 // Interpretation erreurs

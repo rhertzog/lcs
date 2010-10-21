@@ -440,7 +440,7 @@
 				$res0=mysql_query($sql);
 			}
 
-			$timestamp=ereg_replace(" ","_",microtime());
+			$timestamp=mb_ereg_replace(" ","_",microtime());
 
 			$sql="SELECT value FROM params WHERE name='dernier_import'";
 			$res1=mysql_query($sql);
@@ -515,7 +515,7 @@
 				$res_copy=copy("$source_file" , "$dest_file");
 
 				// Si jamais un XML non dézippé a été fourni
-				$extension_fichier_emis=strtolower(strrchr($eleves_file,"."));
+				$extension_fichier_emis=mb_strtolower(mb_strrchr($eleves_file,"."));
 				if (($extension_fichier_emis==".zip")||($HTTP_POST_FILES['eleves_file']['type']=="application/zip")) {
 
 					//if(!file_exists($racine_www."/includes/pclzip.lib.php")) {
@@ -639,7 +639,7 @@
 			}
 
 
-			//$timestamp=ereg_replace(" ","_",microtime());
+			//$timestamp=mb_ereg_replace(" ","_",microtime());
 			$echo_file="$racine_www/Admin/result.$timestamp.html";
 			$dest_mode="file";
 			$fich=fopen("$echo_file","w+");
@@ -751,10 +751,10 @@ decompte(cpt);
 
 			// Prefixe LP/LEGT,...
 			$prefix=isset($_POST['prefix']) ? $_POST['prefix'] : "";
-			#$prefix=strtoupper(ereg_replace("[^A-Za-z0-9_]", "", strtr(remplace_accents($prefix)," ","_")));
-                        $prefix=strtoupper(ereg_replace("[^A-Za-z0-9]", "", remplace_accents($prefix)));
-			if(strlen(ereg_replace("_","",$prefix))==0) $prefix="";
-			if (strlen($prefix)>0) $prefix=$prefix."_";
+			#$prefix=mb_strtoupper(mb_ereg_replace("[^A-Za-z0-9_]", "", strtr(remplace_accents($prefix)," ","_")));
+                        $prefix=mb_strtoupper(mb_ereg_replace("[^A-Za-z0-9]", "", remplace_accents($prefix)));
+			if(mb_strlen(mb_ereg_replace("_","",$prefix))==0) $prefix="";
+			if (mb_strlen($prefix)>0) $prefix=$prefix."_";
 
 /*
 			echo "\$resultat=exec(\"/usr/bin/sudo $php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp'\",$retour);";

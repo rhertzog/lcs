@@ -23,7 +23,7 @@ function SwekeyLoginVerify($user_name)
 	$swekey_id = UserSwekeyId($user_name);
 	if(! empty($swekey_id))
 	{
-		if (ereg('^[A-F0-9]{32}$',$swekey_id)) 
+		if (mb_ereg('^[A-F0-9]{32}$',$swekey_id)) 
 	    {
 	    	require_once 'my_swekey_config.php';
 	    	global $gSwekeyStatusServer;

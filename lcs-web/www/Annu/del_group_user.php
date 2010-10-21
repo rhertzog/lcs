@@ -39,7 +39,7 @@
 				if ($groups[$loop]["type"]=="posixGroup")
 				echo "<font color=\"#1E90FF\"><STRONG>".$groups[$loop]["cn"]."</STRONG> </font>";
 				echo "<font size=\"-2\"> ".$groups[$loop]["description"];
-				$login1=split ("[\,\]",ldap_dn2ufn($groups[$loop]["owner"]),2);
+				$login1=preg_split ("/,/",ldap_dn2ufn($groups[$loop]["owner"]),2);
 				if ( $uid == $login1[0] ) echo "<strong><font color=\"#ff8f00\">&nbsp;(professeur principal)</font></strong>";
 				echo "</font><BR>\n";
 				}

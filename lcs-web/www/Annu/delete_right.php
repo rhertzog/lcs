@@ -58,7 +58,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
             $mpcount=count($mp_all);
             for ($loop=0; $loop < count($mp_all); $loop++) {
                 $mach=$mp_all[$loop];
-                if (ereg($filtrecomp,$mach)) $mp[$lmloop++]=$mach;
+                if (mb_ereg($filtrecomp,$mach)) $mp[$lmloop++]=$mach;
             }
         }
         if ( count($mp)>15) $size=15; else $size=count($mp);
@@ -69,7 +69,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
             echo $form;
             for ($loop=0; $loop < count($mp); $loop++) {
                 $value=extract_login($mp[$loop]);
-                if (ereg($groupsRdn,$mp[$loop])) {
+                if (mb_ereg($groupsRdn,$mp[$loop])) {
 			$type = "groupe";
 			$value="$value ($type)";
 		} else {

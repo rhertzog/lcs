@@ -14,8 +14,8 @@ function AttachSwekeyToLoggedUser($swekey_id)
             $sess=$_COOKIE["LCSAuth"];
             $result=@mysql_query("SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'");
             if ($result && mysql_num_rows($result) ) {
-                list($ip_session,$null) = split(",",mysql_result($result,0,0),2);
-                list($first_remote_ip,$null) = split(",",remote_ip(),2);
+                list($ip_session,$null) = preg_split("/,/",mysql_result($result,0,0),2);
+                list($first_remote_ip,$null) = preg_split("/,/",remote_ip(),2);
                 if ( $ip_session == $first_remote_ip ) {
                         $idprs =  mysql_result($result,0,1);
                         // Recherche du login a partir de l'idpers
@@ -84,13 +84,13 @@ function DetachSwekeyToLoggedUser($user)
 
 //execution de requetes ajax
 
-if ($_GET['swekey_action'] == 'resolve' && strlen($_GET['swekey_id']) == 32)
+if ($_GET['swekey_action'] == 'resolve' && mb_strlen($_GET['swekey_id']) == 32)
 {
 	echo NameOfUserAttachedToSwekey($_GET['swekey_id']);
     exit;
 }
 
-if ($_GET['swekey_action'] == 'attach' && strlen($_GET['swekey_id']) == 32)
+if ($_GET['swekey_action'] == 'attach' && mb_strlen($_GET['swekey_id']) == 32)
 {	 
 	if (AttachSwekeyToLoggedUser($_GET['swekey_id']))
 	    echo "OK";
@@ -99,7 +99,7 @@ if ($_GET['swekey_action'] == 'attach' && strlen($_GET['swekey_id']) == 32)
     exit;
 }
 
-if ($_GET['swekey_action'] == 'detach' && strlen($_GET['swekey_user'])!= "")
+if ($_GET['swekey_action'] == 'detach' && mb_strlen($_GET['swekey_user'])!= "")
 {	 
 
 	if (DetachSwekeyToLoggedUser($_GET['swekey_user']))
@@ -109,7 +109,7 @@ if ($_GET['swekey_action'] == 'detach' && strlen($_GET['swekey_user'])!= "")
 		exit;
 }
 
-if ($_GET['swekey_action'] == 'resolve2' && strlen($_GET['user']) != "")
+if ($_GET['swekey_action'] == 'resolve2' && mb_strlen($_GET['user']) != "")
 {
 	echo IdSwekeyToNameOfUserAttached($_GET['user']);
     exit;

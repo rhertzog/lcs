@@ -171,20 +171,20 @@ function xoft_encode($plain_data,$key){
    $all_bin_chars="";
    $cipher_data="";
 
-   for($i=0;$i<strlen($plain_data);$i++){
-	$p=substr($plain_data,$i,1);   // p = plaintext
-	$k=substr($key,$key_length,1); // k = key
+   for($i=0;$i<mb_strlen($plain_data);$i++){
+	$p=mb_substr($plain_data,$i,1);   // p = plaintext
+	$k=mb_substr($key,$key_length,1); // k = key
 	$key_length++;
 
-	if($key_length>=strlen($key)){
+	if($key_length>=mb_strlen($key)){
 		$key_length=0;
 	}
 
 	$dec_chars=ord($p)^ord($k);
-	$dec_chars=$dec_chars + strlen($key);
+	$dec_chars=$dec_chars + mb_strlen($key);
 	$bin_chars=decbin($dec_chars);
 
-	while(strlen($bin_chars)<8){
+	while(mb_strlen($bin_chars)<8){
 		$bin_chars="0".$bin_chars;
 	}
 
@@ -194,8 +194,8 @@ function xoft_encode($plain_data,$key){
 
    $m=0;
 
-   for($j=0;$j<strlen($all_bin_chars);$j=$j+4){
-	$four_bit=substr($all_bin_chars,$j,4);     // split 8 bit to 4 bit
+   for($j=0;$j<mb_strlen($all_bin_chars);$j=$j+4){
+	$four_bit=mb_substr($all_bin_chars,$j,4);     // split 8 bit to 4 bit
 	$four_bit_dec=bindec($four_bit);
 
 	$decimal_value=$four_bit_dec * 4 + $m;     //multiply by 4 plus m where m=0,1,2, or 3
@@ -220,15 +220,15 @@ function xoft_decode($cipher_data,$key){
    $m=0;
    $all_bin_chars="";
 
-   for($i=0;$i<strlen($cipher_data);$i++){
-	$c=substr($cipher_data,$i,1);             // c = ciphertext
+   for($i=0;$i<mb_strlen($cipher_data);$i++){
+	$c=mb_substr($cipher_data,$i,1);             // c = ciphertext
 	$decimal_value=base64todec($c);           //convert to decimal value
 
 	$decimal_value=($decimal_value - $m) / 4; //substract by m where m=0,1,2,or 3 then divide by 4
 
 	$four_bit=decbin($decimal_value);
 
-	while(strlen($four_bit)<4){
+	while(mb_strlen($four_bit)<4){
 		$four_bit="0".$four_bit;
 	}
 
@@ -243,16 +243,16 @@ function xoft_decode($cipher_data,$key){
    $key_length=0;
    $plain_data="";
 	
-   for($j=0;$j<strlen($all_bin_chars);$j=$j+8){
-	$c=substr($all_bin_chars,$j,8);
-	$k=substr($key,$key_length,1);
+   for($j=0;$j<mb_strlen($all_bin_chars);$j=$j+8){
+	$c=mb_substr($all_bin_chars,$j,8);
+	$k=mb_substr($key,$key_length,1);
 	
 	$dec_chars=bindec($c);
-	$dec_chars=$dec_chars - strlen($key);
+	$dec_chars=$dec_chars - mb_strlen($key);
 	$c=chr($dec_chars);
 	$key_length++;
 	
-	if($key_length>=strlen($key)){
+	if($key_length>=mb_strlen($key)){
 		$key_length=0;
 	}
 	

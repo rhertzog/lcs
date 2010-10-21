@@ -32,8 +32,8 @@ function cmp_cn ($a, $b) {
 
 // Retourne un login a partir d'un dn
 function extract_login ($dn) {
-  $login = split ("[\,\]",$dn,4);
-  $login = split ("[\=\]",$login[0],2);
+  $login = preg_split ("/,/",$dn,4);
+  $login = preg_split ("/=/",$login[0],2);
   return $login[1];
 }
 
@@ -43,7 +43,7 @@ function getprenom($fullname,$name) {
     $j=0;
     $prenom="";
     for ($i=0; $i<count($expl); $i++) {
-        if (strtolower($expl[$i])!=strtolower($namexpl[$j]))  {
+        if (mb_strtolower($expl[$i])!=mb_strtolower($namexpl[$j]))  {
              if ("$prenom" == "") $prenom=$expl[$i];
 	     else $prenom.=" ".$expl[$i];
         } else $j++;
@@ -54,10 +54,10 @@ function getprenom($fullname,$name) {
 // ---------------------------------------------------------
 // Debug
 function duree ($t0,$t1) {
-  $result0 = split ("[\ \!\?]", $t0, 2);
+  $result0 = preg_split ("[\ \!\?]", $t0, 2);
   $t0ms = $result0[0];
   $t0s  = $result0[1];
-  $result1 = split ("[\ \!\?]", $t1, 2);
+  $result1 = preg_split ("[\ \!\?]", $t1, 2);
   $t1ms = $result1[0];
   $t1s  = $result1[1];
   $tini= ( $t0s +  $t0ms );
@@ -104,7 +104,7 @@ function people_get_variables ($uid, $mode)
         if ( $info["count"]) {
           // Traitement du champ gecos pour extraction de date de naissance, sexe
           $gecos = $info[0]["gecos"][0];
-          $tmp = split ("[\,\]",$info[0]["gecos"][0],4);
+          $tmp = preg_split ("/,/",$info[0]["gecos"][0],4);
           $ret_people = array (
               "uid"			=> $info[0]["uid"][0],
               "nom"			=> stripslashes( utf8_decode($info[0]["sn"][0]) ),
@@ -266,7 +266,7 @@ function search_uids ($filter, $mode) {
   if ( $ds ) {
     $r = @ldap_bind ( $ds ); // Bind anonyme
     if ($r) {
-      if ((!ereg("Matiere",$filter,$matche) && !ereg("Equipe",$filter,$matche))||ereg("Classe",$filter,$matche)) {
+      if ((!mb_ereg("Matiere",$filter,$matche) && !mb_ereg("Equipe",$filter,$matche))||mb_ereg("Classe",$filter,$matche)) {
       // Debug
       //echo "filtre 1 memberuid : $filter<BR>";
 
@@ -279,7 +279,7 @@ function search_uids ($filter, $mode) {
           //  dans le tableau $ret
           $init=0;
           for ($loop=0; $loop < $info["count"]; $loop++) {
-            $group=split ("[\_\]",$info[$loop]["cn"][0],2);
+            $group=preg_split ("/_/",$info[$loop]["cn"][0],2);
             for ( $i = 0; $i < $info[$loop]["memberuid"]["count"]; $i++ ) {
               // Ajout de wawa : test si le gus est prof
               $filtre1 = "(memberUid=".$info[$loop]["memberuid"][$i].")";
@@ -298,10 +298,10 @@ function search_uids ($filter, $mode) {
         ldap_free_result ( $result );
       }
       }
-      if (ereg("Classe",$filter,$matche)||ereg("Matiere",$filter,$matche)||ereg("Equipe",$filter,$matche)) {
+      if (mb_ereg("Classe",$filter,$matche)||mb_ereg("Matiere",$filter,$matche)||mb_ereg("Equipe",$filter,$matche)) {
         // Modifie par Wawa: filter2 supprime
          if ($mode=="full") {
-           $filter2 = ereg_replace("Classe_","Equipe_",$filter);
+           $filter2 = mb_ereg_replace("Classe_","Equipe_",$filter);
          } else {  $filter2=$filter; }
         // Debug
         // echo "filtre 2 member : $filter2<BR>";
@@ -312,7 +312,7 @@ function search_uids ($filter, $mode) {
             $init=count($ret);
             $owner = extract_login ($info[0]["owner"][0]);
             for ($loop=0; $loop < $info["count"]; $loop++) {
-              $group=split ("[\_\]",$info[$loop]["cn"][0],2);
+              $group=preg_split ("/_/",$info[$loop]["cn"][0],2);
               for ( $i = 0; $i < $info[$loop]["member"]["count"]; $i++ ) {
 	     		  // Cas ou un champ member est non vide
               		if ( extract_login ($info[$loop]["member"][$i])!="") {
@@ -367,7 +367,7 @@ function search_uids ($filter, $mode) {
           //  dans le tableau $ret
           $init=0;
           for ($loop=0; $loop < $info["count"]; $loop++) {
-            $group=split ("[\_\]",$info[$loop]["cn"][0],2);
+            $group=preg_split ("/_/",$info[$loop]["cn"][0],2);
             for ( $i = 0; $i < $info[$loop]["memberuid"]["count"]; $i++ ) {
               // Ajout de wawa : test si le gus est prof
               $filtre1 = "(memberUid=".$info[$loop]["memberuid"][$i].")";
@@ -466,7 +466,7 @@ function search_people_groups ($uids,$filter,$order) {
             // echo "debug".$info["count"]." ".$init."<BR>";
             // traitement du gecos pour identification du sexe
             $gecos = $info[0]["gecos"][0];
-            $tmp = split ("[\,\]",$gecos,4);
+            $tmp = preg_split ("/,/",$gecos,4);
             $ret[$init] = array (
               "uid"       => $uids[$loop]["uid"],
               "fullname"  => utf8_decode($info[0]["cn"][0]),
@@ -623,7 +623,7 @@ function tstclass($prof,$eleve)
   if (count($grcomm)>0) {
         $i=0;
         while (($i< count($grcomm)) and ($tstclass==0)) {
-                if (ereg("Cours",$grcomm[$i]["cn"],$matche))
+                if (mb_ereg("Cours",$grcomm[$i]["cn"],$matche))
                         $tstclass=1;
                 $i++;
         }

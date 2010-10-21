@@ -15,12 +15,12 @@ if ($idpers == "0") header("Location:$urlauth");
 $allow = "abcdef0123456789";
 srand((double)microtime()*1000000); 
 for($j=0; $j<2; $j++) {
-        $RandomSeed .=  $allow[rand()%strlen($allow)];
+        $RandomSeed .=  $allow[rand()%mb_strlen($allow)];
 }
 for  ($i=0; $i<1023; $i++) {
         $tmp=""; 
         for($j=0; $j<2; $j++) { 
-                $tmp .= $allow[rand()%strlen($allow)];
+                $tmp .= $allow[rand()%mb_strlen($allow)];
         }
         $RandomSeed.=" ".$tmp." ";
 }  
@@ -40,7 +40,7 @@ function seed(s) {
  var n=0,nn=0;
  while(n < s.length) {
   while(n<s.length && s.charCodeAt(n)<=32) n++;
-  if(n < s.length) rSeed[nn]=parseInt("0x"+s.substr(n,2));
+  if(n < s.length) rSeed[nn]=parseInt("0x"+s.mb_substr(n,2));
   n+=3; nn++;
  }
 

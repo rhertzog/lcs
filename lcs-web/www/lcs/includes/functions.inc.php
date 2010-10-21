@@ -14,9 +14,9 @@ include ("/var/www/lcs/includes/xoft.php");
        $r = (integer) time();
        $r .= 'r';
        for ($x=0;$x<8;$x++) {
-           $r .= strtoupper(dechex($r % mt_rand(1,$MAX)));
+           $r .= mb_strtoupper(dechex($r % mt_rand(1,$MAX)));
        }
-       return substr($r,0,$length);
+       return mb_substr($r,0,$length);
     }
  
 
@@ -170,7 +170,7 @@ include ("/var/www/lcs/includes/xoft.php");
             $sid="";
             $count--;
             for ($i = 0; $i < $SessLen ; $i++)
-                $sid .= substr($Pool, (mt_rand()%(strlen($Pool))),1);
+                $sid .= mb_substr($Pool, (mt_rand()%(mb_strlen($Pool))),1);
 	    if (!@mysql_select_db($DBAUTH, $authlink)) 
     		die ("S&#233;lection de base de donn&#233;es impossible.");
             $query="SELECT id FROM sessions WHERE sess='$sid'";
@@ -444,7 +444,7 @@ function getmenuarray()
     $folders[0]=""; // 1ere element vide pour rester compatible avec les boucles de menuprint
     $namesfolders = scandir($path2menud);
     for ($t=0; $t < count($namesfolders); $t++ ) {
-        if ( ! ereg ( "^\.", $namesfolders[$t] ) ) {
+        if ( ! mb_ereg ( "^\.", $namesfolders[$t] ) ) {
             $countfiles=scandir($path2menud."/".$namesfolders[$t]);
             if ( count($countfiles) > 3 ) // On retiend le nom du repertoire si il y a des fichiers sous menu dedans
                 $folders[] = $namesfolders[$t];
@@ -456,7 +456,7 @@ function getmenuarray()
         $filesdd = array();
         $dh2  = opendir($path2menud."/".$folders[$i]);
         while (false !== ($namesfiles = readdir($dh2))) 
-            if ( ! ereg ( "^\.", $namesfiles ) )
+            if ( ! mb_ereg ( "^\.", $namesfiles ) )
                 $filesdd[] = $namesfiles;  
         sort($filesdd);
 
@@ -465,7 +465,7 @@ function getmenuarray()
             $fd = fopen($path2menud."/".$folders[$i]."/".$filesdd[$j], "r");
             while ( !feof($fd) ) {
                 $tmp=fgets($fd, 125);
-                if ( strlen($tmp) > 0 ) {
+                if ( mb_strlen($tmp) > 0 ) {
                     $element = explode(",",$tmp);
                     for ($k=0; $k < count($element); $k++) {
                         $liens[$i][$loop] = $element[$k];

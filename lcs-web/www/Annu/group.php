@@ -70,9 +70,9 @@
   // Modifi&#233; par Wawa
   // Affichage de l'equipe pedagogique associe &#224; la classe
 
-  if (ereg("Classe",$filter,$matche))
+  if (mb_ereg("Classe",$filter,$matche))
   {
-    $filter2 = ereg_replace("Classe_","Equipe_",$filter);
+    $filter2 = mb_ereg_replace("Classe_","Equipe_",$filter);
     $uids2 = search_uids ("(cn=".$filter2.")", "half");
     $people2 = search_people_groups ($uids2,"(sn=*)","cat");
     if (count($people2)) {
@@ -95,9 +95,9 @@
   }
   // Affichage du rebond sur la classe associee &#224; une equipe pdagogique
 
-  if (ereg("Equipe",$filter,$matche))
+  if (mb_ereg("Equipe",$filter,$matche))
   {
-    $filter2 = ereg_replace("Equipe_","Classe_",$filter);
+    $filter2 = mb_ereg_replace("Equipe_","Classe_",$filter);
     $uids2 = search_uids ("(cn=".$filter2.")","half");
     $people2 = search_people_groups ($uids2,"(sn=*)","cat");
     if (count($people2)) {
@@ -113,7 +113,7 @@
     if ( $filter!="Eleves" && $filter!="Profs" && $filter!="Administratifs" ) {
       echo "<br>\n<ul style=\"color: red;\">\n";
       // Affichage du menu "Ajouter des membres" si le groupe est de type Equipe_ ou Classe_
-      if (  ereg ("Equipe_", $filter) || ereg("Classe_", $filter) )
+      if (  mb_ereg ("Equipe_", $filter) || mb_ereg("Classe_", $filter) )
         echo "<li><a href=\"add_list_users_group.php?cn=$filter\">Ajouter des membres</a></li>\n";
       if (count($people) )
         echo "<li><a href=\"del_user_group.php?cn=$filter\">Enlever des membres</a></li>\n";

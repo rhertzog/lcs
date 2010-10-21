@@ -158,11 +158,11 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
       echo $html;
       // Positionnement des entrees a modifier
       // Nettoyage des accents
-      $prenom = ucfirst(strtolower(unac_string_with_space($prenom)));
-      $nom = ucfirst(strtolower(unac_string_with_space($nom)));
-      $description = ucfirst(strtolower(unac_string_with_space($description)));
+      $prenom = ucfirst(mb_strtolower(unac_string_with_space($prenom)));
+      $nom = ucfirst(mb_strtolower(unac_string_with_space($nom)));
+      $description = ucfirst(mb_strtolower(unac_string_with_space($description)));
       // Nettoyage accents et remplacement espace par underscore
-      $pseudo = ucfirst(strtolower(unac_string_with_underscore($pseudo)));
+      $pseudo = ucfirst(mb_strtolower(unac_string_with_underscore($pseudo)));
 
       $entry["sn"] = stripslashes ( utf8_encode($nom) );
       $entry["cn"] = stripslashes ( utf8_encode($prenom)." ".utf8_encode($nom) );
@@ -170,7 +170,7 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
 
       if($user[0]["gecos"]!="") {
          $tab_gecos=explode(",",$user[0]["gecos"]);
-         $entry["gecos"]=ucfirst(strtolower(unac_string_with_underscore($prenom)))." ".ucfirst(strtolower(unac_string_with_underscore($nom))).",".$tab_gecos[1].",".$tab_gecos[2].",".$tab_gecos[3];
+         $entry["gecos"]=ucfirst(mb_strtolower(unac_string_with_underscore($prenom)))." ".ucfirst(mb_strtolower(unac_string_with_underscore($nom))).",".$tab_gecos[1].",".$tab_gecos[2].",".$tab_gecos[3];
       }
 
       if ( $shell ) {
