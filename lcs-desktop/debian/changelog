@@ -10,8 +10,9 @@ lcs-desktop (0.2~11) Lcs; urgency=low
    * Add doc images
    * Fix bug on link in finder
    * Fix bug on load_user.pref.pfp (rev3592)
+   * Init localscroll on doc
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 21:45:23 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 21:50:50 +0200
 
 lcs-desktop (0.2~10) Lcs; urgency=low
   [Jean-Luc Chretien]
