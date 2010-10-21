@@ -3,8 +3,9 @@ lcs-spip (2.4.7.1) Lcs; urgency=low
   * Fix bug in right column position
   * Remove dependency on "boucles_sans_tables" 
   * Change logo
+  * add lcs-notify.html 
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 15:01:23 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 15:20:09 +0200
 
 lcs-spip (2.4.7) Lcs; urgency=low
 
