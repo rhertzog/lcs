@@ -69,11 +69,16 @@ var JQD = (function($) {
 			var clock_date = day + ' ' + month + ' ' + year;
 
 			// Shove in the HTML.
-			$('#clock').html(clock_time).attr('title', clock_date).dblclick(function() {
+			$('#clock').html(clock_time).dblclick(function() {
 				$(this).attr('title', 'agendas');
 				JQD.init_link_open_win(this);
-				setTimeout($(this).attr('title', clock_date), 1000);
+				setTimeout($(this).removeAttr('title'), 1000);
 				return false;
+			}).hover(function() {
+				setTimeout($('#date').html(clock_date).show(500), 500);
+			},
+			function() {
+				$('#date').html(clock_date).hide(500);
 			});
 
 			// Update every 60 seconds.
@@ -278,7 +283,8 @@ var JQD = (function($) {
 			$("a.icon img, #vign_icon").css({ width: w +"px", height : w +"px" })
 			.attr({width: w +"px", height: w +"px"});
 			// affichage du dock
-			$('#tmp_quicklaunch').val()=='1' ? $('#aff_quicklaunch').attr('checked', 'checked') : $('#aff_quicklaunch').attr('checked', ' ') ;
+			//$('#tmp_quicklaunch').val()=='1' ? $('#aff_quicklaunch').attr('checked', 'checked') : $('#aff_quicklaunch').attr('checked', ' ') ;
+			$('#tmp_quicklaunch').val()=='1' ? $('#aff_quicklaunch').attr('checked', 'checked') : $('#aff_quicklaunch').removeAttr('checked') ;
 			$('#icons_field_height').attr('value',$('#tmp_iconsfield').val());
 			!$('#tmp_wallpaper').length? JQD.load_prefs_img('core/images/misc/RayOfLight_lcs.jpg'):'';
 			JQD.init_icons();
@@ -446,7 +452,7 @@ var JQD = (function($) {
 			setTimeout(function(){
 					JQD.notify_forum();
 				//var idart=newidart;
-			},30000);	
+			},50000);	
 //				$('#temp_forum_notify').load('../spip/?page=lcs-notify #container_notify');
 		},
 		

@@ -11,6 +11,7 @@
 	</li>
 	<li>
 	<a rev="agendas" rel="../lcs/statandgo.php?use=Agendas" href="#icon_dock_lcs_agendas" class="ext_link" id="clock"></a>
+	<div id="date" style="display:none;"></div>
 	</li>
 	<li class="">
 		<a class="reload" id="reload" href="" title="Recharger le bureau"></a>

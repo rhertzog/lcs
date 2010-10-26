@@ -1,7 +1,7 @@
 <?php
 list($user, $groups)=people_get_variables($login, true);
 $i=0;
-
+$list_applis="listapplis {";
 // Les blocs fenetres, menu icone, et onglets
 $html='';// le bloc qui va recevoir les fenetres de chaque appli activee
 $html_menu='';// bloc menu deroulant
@@ -147,9 +147,14 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 			$c_rel="";
 	}
 	!is_array($c_rel) ? $c_sb.=" open_win " :'';
+	$liste['Ids'][$x] == "annu" ? $c_sb.=" open_win ":'';
 	// Display menus bar top
 	$sbmn ="<a class=\"ext_link ".$c_sb."\"";
-	$c_rel=="" ? $sbmn.=" href=\"".$liste['Blocks'][$x]."\" rel=\"".$liste['Liens'][$x]."\"" : $sbmn.=" href=\"#\" rel=\"\"" ;
+	if (($c_rel=="") || ($liste['Ids'][$x] == "annu")) { 
+		$sbmn.=" href=\"".$liste['Blocks'][$x]."\" rel=\"".$liste['Liens'][$x]."\""; 
+	}else{ 
+		$sbmn.=" href=\"#\" rel=\"\"" ;
+	}
 	$sbmn.=" rev=\"".$liste['Ids'][$x]."\">"
 	."<img src=\"".$liste['Images'][$x]."\" alt=\"\" style=\"width:16px;height:16px;\" /> "
 	.$liste['Titres'][$x]
@@ -228,10 +233,14 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 	    .$liste['Titres'][$x]
     ."</a>";
     
+    // creation dune liste des applis
+    $i_meta=$x.": '".$liste['Ids'][$x]."'";
+    $x==0 ? $list_applis.=$i_meta : $list_applis.=", ".$i_meta ;
     // creation des colonnes Peut mieux faire
     $top=$top+80;
     if($x==5) { $left=$left+120;$top=20;}
     if($x==11) { $left=$left+120;$top=20;}
     if($x==16) { $left=$left+120;$top=20;}
 }
+$list_applis.="}";
 ?>

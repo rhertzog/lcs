@@ -1,3 +1,11 @@
+lcs-desktop (0.2~12) Lcs; urgency=low
+  [Dominique Lepaisant]
+  * Fix bug in index.php
+  * Modify display of home page
+  * Create link on item Annuaire in the menu
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 17:18:15 +0200
+
 lcs-desktop (0.2~11) Lcs; urgency=low
   [Jean-Luc Chretien]
    * Fix typo in test target in inc_menus_admin.php

@@ -80,7 +80,8 @@
 		<ul style="" class="clear_both ul2cols">
 			<li>
 				<label>Taille des icones</label>
-				<!--<img src="./lcs/images/barre1/BP_r1_c7_f3.gif" id="vign_icon" style="width:24px;height:24px;" alt="" />-->					<span class="span_icon_prefs icon"><img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:24px" /></span>
+				<!--<img src="./lcs/images/barre1/BP_r1_c7_f3.gif" id="vign_icon" style="width:24px;height:24px;" alt="" />-->
+				<span class="span_icon_prefs icon"><img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:24px" /></span>
 				<span class="span_icon_prefs icon"><img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:36px" /></span>
 				<span class="span_icon_prefs icon"><img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:48px" /></span>
 				<span class="bouton float_right"><a href="#" id="ch_icons_larger">Appliquer</a></span>
@@ -94,7 +95,7 @@
 			</li>
 			<li>
 				<label for="aff_quicklaunch"><span class="red">Nouveau </span> Afficher un Dock (fa&ccedil;on MacOs) </label>
-				<input type="checkbox" id="aff_quicklaunch" checked="" name="aff_quicklaunch" />
+				<input type="checkbox" id="aff_quicklaunch" name="aff_quicklaunch" />
 				<span class="mess_info float_right">N&eacute;cessite le rechargement de la page apr&egrave;s enregistrement</span>
 				<br class="clear_both" />
 			</li>

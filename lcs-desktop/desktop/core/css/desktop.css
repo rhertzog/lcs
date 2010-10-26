@@ -456,7 +456,7 @@ th.shrink {
 	text-shadow: none;
 }
 
-#bar_top ul.menu, #bar_top ul.menu li ul {
+#bar_top ul.menu, #bar_top ul.menu li ul, #date {
 /*	background: #eee; */
 		background: transparent url(../images/gui/trans_white_95pc.png);
 	border: 1px solid #333;
@@ -475,6 +475,12 @@ th.shrink {
 	min-width: 200px;
 	z-index: 30;
 }
+#date {
+	padding:5px 10px;
+	min-width:120px;
+	width:150px;
+}
+
 #bar_top ul.menu li {
 	float: none;
 	position:relative;
