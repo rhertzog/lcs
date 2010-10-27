@@ -1,3 +1,9 @@
+lcs-libjs (2.4.7.1~1) Lcs; urgency=low
+
+  * add file fr.js in tinymce/plugins/example/langs
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 27 Oct 2010 17:19:21 +0200
+
 lcs-libjs (2.4.7) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
