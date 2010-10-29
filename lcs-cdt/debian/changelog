@@ -1,3 +1,9 @@
+lcs-cdt (2.4.7.2.1) LCS; urgency=low
+
+  * fix bug domain name  in cahier_direction.php
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 29 Oct 2010 13:00:40 +0200
+
 lcs-cdt (2.4.7.2) LCS; urgency=low
 
   * update to version 2.2

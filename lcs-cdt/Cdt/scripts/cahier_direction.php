@@ -22,6 +22,9 @@ include "$BASEDIR/Annu/includes/ihm.inc.php";
 include "../Includes/config.inc.php";
 //si la page est appelee par un utilisateur non "direction"
 if (ldap_get_right("Cdt_can_sign",$_SESSION['login'])=="N") exit;
+$cmd="hostname -f"; 
+exec($cmd,$hn,$retour);
+$hostn= $hn[0];
 
 //redirection
 if (isset($_POST['Laclasse']))
@@ -148,7 +151,7 @@ $chaine=$aliasprof.$nextWeek;
 $logcrypt=crypt($chaine,$grain);
 $key= substr($logcrypt,-20,20);
 echo '<br /><br /><legend id="legende">';
-echo "<a href= 'https://lcsphil.demo.ac-caen.fr/Plugins/Cdt/index.php";
+echo "<a href= 'https://".$hostn."/Plugins/Cdt/index.php";
 echo "?prof=".$aliasprof.'&limit='.$nextWeek.'&key='.$key;
 echo "'> Lien d'acc&egrave;s au cahier de texte de $prof[1]</a>
 </legend>";
