@@ -2,22 +2,22 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de configuration du cahier de textes -
 			_-=-_
    =================================================== */
- session_name("Cdt_Lcs");
+session_name("Cdt_Lcs");
 @session_start(); 
 //error_reporting(0);
-//si la page est appelée par un utilisateur non identifié
+//si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
 
-//si la page est appelée par un utilisateur non admin
+//si la page est appelee par un utilisateur non admin
 elseif ($_SESSION['login']!="admin") exit;
 
-//fichiers nécessaires à l'exploitation de l'API
+//fichiers necessaires a l'exploitation de l'API
 include "../Includes/basedir.inc.php";
 include "$BASEDIR/lcs/includes/headerauth.inc.php";
 include "$BASEDIR/Annu/includes/ldap.inc.php";
@@ -31,12 +31,16 @@ if (isset($_POST['Sauver']))
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<TITLE></TITLE>
 	<meta name="generator" content="Bluefish 1.0.7">
 	<META NAME="CREATED" CONTENT="20051226;22304481">
 	<META NAME="CHANGED" CONTENT="20051226;22565970">
 	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+	<!--[if IE]>
+<link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
+<![endif]-->
+
 	</HEAD>
 <BODY LANG="fr-FR" DIR="LTR">
 <H1 class='title'>Configuration du cahier de textes</H1>
@@ -50,7 +54,7 @@ if (isset($_POST['Sauver']))
 		$com= 'mv /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp && cat /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp | sed -e "s/ABSENCE='.$FLAG_ABSENCE.'/ABSENCE='.$_POST['absence'].'/g" > /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php && rm /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp';
 		exec($com,$rien,$retour);
 		}
-//le fichier de conf doit être ré-inclus après une modif éventuelle	
+//le fichier de conf doit etre re-inclus apres une modif eventuelle	
 	include "../Includes/config.inc.php";
 
 //changement du grain de sel 
@@ -87,10 +91,10 @@ if (isset($_POST['change_grain']))
 				else $data[$loop]=$groups[$loop]["cn"];	//format long
 		        }
 			}
-		else  $mess1= "<h3 class='nook'> Erreur dans l'importation <BR></h3>";
+		else  $mess1= "<h3 class='nook'> Erreur dans l'importation <br /></h3>";
 	}
 		
-if (isset($_POST['Créer']))
+if (isset($_POST['Creer']))
 		{		
 //traitement du fichier texte		
 		if (!empty($_FILES["FileSelection3"]["name"]))
@@ -105,16 +109,16 @@ if (isset($_POST['Créer']))
 				//renommage du fichier
 				rename("../Includes/".$nomFichier,"../Includes/flist.txt");
 				//Ouverture du fichier		
-				if($fichier_ok = fopen("../Includes/flist.txt", "r"))
+				if($fichier_ok == fopen("../Includes/flist.txt", "r"))
 					{
 					$loop=0;
-					//extraction des données
+					//extraction des donnees
 					while(!feof($fichier_ok))
 						{
-							$données_extraites = fgetcsv($fichier_ok, 2048);
-							for($n=0; $n<count($données_extraites); $n++)
+							$donnees_extraites = fgetcsv($fichier_ok, 2048);
+							for($n=0; $n<count($donnees_extraites); $n++)
 							{				
-							$data[$loop]=$données_extraites[$n];
+							$data[$loop]=$donnees_extraites[$n];
 							$loop++;
 							}
 											}
@@ -125,19 +129,19 @@ if (isset($_POST['Créer']))
 				unlink ("../Includes/flist.txt");
 				
 				//message
-				if (count($data)>0) $mess1= "<h3 class='cok'>1. Le traitement du fichier texte s'est terminé avec succès."."<BR></h3>";
-				else $mess1= "<h3 class='nook'> Erreur dans le traitement du fichier texte (Fichier erroné)"."<BR></h3>";
+				if (count($data)>0) $mess1= "<h3 class='cok'>1. Le traitement du fichier texte s'est termin&#233; avec succ&#233;s."."<br /></h3>";
+				else $mess1= "<h3 class='nook'> Erreur dans le traitement du fichier texte (Fichier erron&#233;)"."<br /></h3>";
 				}
-				else $mess1= "<h3 class='nook'> Erreur dans l'importation du fichier texte "."<BR></h3>";
+				else $mess1= "<h3 class='nook'> Erreur dans l'importation du fichier texte "."<br /></h3>";
 				}
 		}
 	
-//création du fichier
-if (isset($_POST['Créer']) || isset($_POST['Importer']))
+//creation du fichier
+if (isset($_POST['Creer']) || isset($_POST['Importer']))
 		{
 			$nom_fichier="../Includes/data.inc.php";
 			$fichier=fopen($nom_fichier,"w");
-			fputs($fichier, "<? \n");
+			fputs($fichier, "<?php \n");
 			for ($index=0;$index<count($data);$index++)
 			{fputs($fichier,"\$classe[$index]=\"$data[$index]\";\n");}
 			fputs($fichier, " ?>\n");
@@ -149,7 +153,7 @@ if (isset($_POST['Enregistrer']))
 	{
 		$nom_fichier="../Includes/creneau.inc.php";
 		$fichier=fopen($nom_fichier,"w");
-		fputs($fichier, "<? \n");
+		fputs($fichier, "<?php \n");
 		for ($index=0;$index<10;$index++)
 		{
 			fputs($fichier,"\$deb[$index]=".mkTime($_POST["hd".$index],$_POST["md".$index],0).
@@ -161,7 +165,7 @@ if (isset($_POST['Enregistrer']))
 	}
 	
 /******************
-* test de la cohérence *
+* test de la coherence *
 *******************/
 	
 if (isset($_POST['test']))
@@ -183,7 +187,7 @@ if (isset($_POST['test']))
 				if ((mb_ereg("(_$classe[$n])$",$groups[$loop]["cn"])) || ($classe[$n]==$groups[$loop]["cn"]))
 				$occ++;
 				}
-			//si le nb d'occurence est <> de 1, -->problème	
+			//si le nb d'occurence est <> de 1, -->problï¿½me	
 			if ($occ!=1) 
 				{
 				$error[$index]=$classe[$n];
@@ -194,14 +198,14 @@ if (isset($_POST['test']))
 			{
 			echo "<script type='text/javascript'>
 			<!--
-			alert('La liste des classes est cohérente avec l\'annuaire');
+			alert('La liste des classes est coherente avec l\'annuaire');
 			// -->
 			</script>";
 			}
 			else
 				{
 				echo "<script type='text/javascript'>";
-				echo "alert('Incohérence pour : ";
+				echo "alert('Incoherence pour : ";
 				for($n=0; $n<count($error); $n++)
 					{
 					echo $error[$n].' ';
@@ -215,32 +219,32 @@ if (isset($_POST['test']))
 //si clic sur le bouton Archiver
 if (isset($_POST['Archiver']))
 	{	
-	// Vérifier $name_arch et la débarrasser de tout antislash et tags possibles
+	// Verifier $name_arch et la debarrasser de tout antislash et tags possibles
 	if (strlen($_POST['name_arch']) > 0)
 		{ 
 		$name_arch= addSlashes(strip_tags(stripslashes($_POST['name_arch'])));
 		}
 	else
-		{ // Si aucun commentaire n'a été saisi
+		{ // Si aucun commentaire n'a ete saisi
 		$name_arch= date("Y",mktime()-31536000)."_".date("Y");
 		}
 	
-//Vérification d'une archive existante
+//Verification d'une archive existante
 	$exist=0;
 	$TablesExist= mysql_query("show tables");
 	while ($table=mysql_fetch_row($TablesExist))
 	if (mb_ereg("$name_arch$",$table[0])) $exist=1;
 	if ($exist==0)
 		{
-		// Créer la requête.
+		// Creer la requete.
 		$rq1 = "create table onglets$name_arch as select * from onglets";
 		$rq2= "create table cahiertxt$name_arch as select * from cahiertxt";
  
-		// lancer la requête
+		// lancer la requete
 		$result1 = @mysql_query ($rq1) or die (mysql_error());
 		$result2 = @mysql_query ($rq2) or die (mysql_error());
 				
-		if (!($result1&&$result2)) $mess2="<h3 class='nook'>  l'achive n'a pu être créée";
+		if (!($result1&&$result2)) $mess2="<h3 class='nook'>  l'achive n'a pu &#234;tre cr&#233;&#233;e";
 		}
 	else
 		{
@@ -255,20 +259,20 @@ if (isset($_GET['delarch']))
 	{
 	if ($_GET['delarch']=='yes')
 		{
-	// Créer la requête.
+	// Creer la requete.
 		$name_arch = $_GET['nom_arch'];
 		$rq1 = "DROP TABLE IF EXISTS onglets$name_arch ";
 		$rq2 = "DROP TABLE IF EXISTS cahiertxt$name_arch";
 		$rq3 = "create table onglets$name_arch as select * from onglets";
 		$rq4 = "create table cahiertxt$name_arch as select * from cahiertxt";
  
-		// lancer la requête
+		// lancer la requï¿½te
 		$result1 = @mysql_query ($rq1) or die (mysql_error());
 		$result2 = @mysql_query ($rq2) or die (mysql_error());
 		$result3 = @mysql_query ($rq3) or die (mysql_error());
 		$result4= @mysql_query ($rq4) or die (mysql_error());
 		
-		if (!($result1&&$result2&&$result3&&$result4)) $mess2="<h3 class='nook'>  l'achive n'a pu être créée";
+		if (!($result1&&$result2&&$result3&&$result4)) $mess2="<h3 class='nook'>  l'achive n'a pu &#234;tre cr&#233;&#233;e";
 		}
 	}
 //initilisation des tables
@@ -285,19 +289,21 @@ if (isset($_GET['vidtab']))
 	{
 	if ($_GET['vidtab']=='yes')
 		{
-		// Créer la requête.
+		// Creer la requete.
 		$rq1 = "TRUNCATE TABLE onglets";
 		$rq2 = "TRUNCATE TABLE cahiertxt";
  		$rq3 = "TRUNCATE TABLE devoir";
  		$rq4 = "TRUNCATE TABLE absences";
+ 		$rq5 = "TRUNCATE TABLE postit_eleve";
  		
-		// lancer la requête
+		// lancer la requete
 		$result1 = @mysql_query ($rq1) or die (mysql_error());
 		$result2 = @mysql_query ($rq2) or die (mysql_error());
 		$result3 = @mysql_query ($rq3) or die (mysql_error());
 		$result4 = @mysql_query ($rq4) or die (mysql_error());
-		if ($result1 && $result2 && $result3 && $result4) $mess2="<h3 class='cok'> les tables onglets et cahiertxt ont été vidées";
-		else $mess2="<h3 class='nook'> Une erreur s'est produite lors de l'effacement des données";
+		$result5 = @mysql_query ($rq5) or die (mysql_error());
+		if ($result1 && $result2 && $result3 && $result4 && $result5) $mess2="<h3 class='cok'> les tables  ont &#233;t&#233; vid&#233;es";
+		else $mess2="<h3 class='nook'> Une erreur s'est produite lors de l'effacement des donn&#233;es";
 		
 		
 		}
@@ -314,22 +320,24 @@ function get_key()
 						
 //traitement du fichier texte		
 		if (!empty($_FILES["FileSelection4"]["name"]))
-			{
+			{//echo $_FILES["FileSelection4"]["size"]."-".$_FILES["FileSelection4"]["type"];exit;
 		//
-			if (($_FILES["FileSelection4"]["size"]>0) && ($_FILES["FileSelection4"]["type"]=="text/x-sql"))
+			if (($_FILES["FileSelection4"]["size"]>0) && ($_FILES["FileSelection4"]["type"]=="text/x-csv"))
 				{
+				
 				//$nomFichier = $_FILES["FileSelection3"]["name"] ;
 				//$nomTemporaire = $_FILES["FileSelection3"]["tmp_name"] ;
 				$res = get_key();
 				$cmd2="mysql -uroot -p".$res." ". DB_NAME ." < ".$_FILES['FileSelection4']['tmp_name'];
+				
 				exec($cmd2,$rien,$retour);
-				if ($retour == 0)  $mess2= "<h3 class='cok'>  La restauration de la base de données a réussi"; 
-				else $mess2 ="<h3 class='nook'>  La restauration de la base de données a échoué !"."<BR></h3>";
+				if ($retour == 0)  $mess2= "<h3 class='cok'>  La restauration de la base de donn&#233;es a r&#233;ussi"; 
+				else $mess2 ="<h3 class='nook'>  La restauration de la base de donn&#233;es a &#233;chou&#233; !"."<br /></h3>";
 				//$mess2= $cmd;
 				}
-				else $mess2= "<h3 class='nook'> Erreur dans l'importation du fichier de sauvegarde "."<BR></h3>";
+				else $mess2= "<h3 class='nook'> Erreur dans l'importation du fichier de sauvegarde "."<br /></h3>";
 			}
-			else $mess2= "<h3 class='nook'> Vous devez sélectionner un fichier de sauvegarde "."<BR></h3>";
+			else $mess2= "<h3 class='nook'> Vous devez s&#233;lectionner un fichier de sauvegarde "."<br /></h3>";
 		}
 
 ?><form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#liste'; ?>" method="post" enctype="multipart/form-data">
@@ -341,7 +349,7 @@ function get_key()
 include ("../Includes/data.inc.php");
 			$jo="";
 			echo "<select name='CLASSE' style='background-color:#E6E6FA'></h4>";
-			foreach ($classe as $clé => $valeur)
+			foreach ($classe as $clef => $valeur)
 			  { 
 			  echo "<option valeur=\"$valeur\"";
 			  if ($valeur==$jo) {echo 'selected';}
@@ -351,39 +359,39 @@ include ("../Includes/data.inc.php");
 ?>
  
 </legend>
-<DIV ALIGN=LEFT>
+<div ALIGN=LEFT>
 <?
 /**********************
  affichage du formulaire *
 ************************/
 
-			echo '<H4 class="perso">La liste des classes sous forme de menu d&eacute;roulant est &eacute;labor&eacute;e à partir d\'un fichier Php.<br> 
-			Ce fichier peut être g&eacute;n&eacute;r&eacute; soit : </H4>
+			echo '<H4 class="perso">La liste des classes sous forme de menu d&eacute;roulant est &eacute;labor&eacute;e &#224; partir d\'un fichier Php.<br /> 
+			Ce fichier peut &#234;tre g&eacute;n&eacute;r&eacute; soit : </H4>
 			<ul>
 			<li> &agrave; partir de l\'annuaire du LCS
 					<P>
-						<input type="radio" name="size" value="long"> Format long (Classe_LT_2DE1) <br>
+						<input type="radio" name="size" value="long"> Format long (Classe_LT_2DE1) <br />
 						<input type="radio" name="size" value="court" checked> Format court (2DE1) Attention, pour utiliser ce format, le nom de la classe ne doit pas comporter de tiret bas _ ( exemple : 3_A ) </P>
 						<P> &nbsp;&nbsp;<input type="submit" name="Importer" value="Importer" > 
 					</P></LI>	
 					
 					<li> &agrave; partir d\'un fichier texte contenant la liste des classes s&eacute;par&eacute;es par une virgule.(ex
-					: 2nde1,1ereS,TermS,... TS1) <BR>	
-					(Attention : pas de virgule ni de caractère CR à la fin de la dernière ligne)
-						<br>
+					: 2nde1,1ereS,TermS,... TS1) <br />	
+					(Attention : pas de virgule ni de caract&#232;re CR &#224; la fin de la derni&#232;re ligne)
+						<br />
 						Indiquez le chemin du fichier texte : 
-						<BR><INPUT TYPE=FILE NAME="FileSelection3" SIZE=30>
+						<br /><INPUT TYPE=FILE NAME="FileSelection3" SIZE=30>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<input type="submit" name="Créer" value="Créer le fichier Php" >
-						<br><br>
+						<input type="submit" name="Creer" value="Cr&#233;er le fichier Php" >
+						<br /><br />
 					<a HREF="./edit.php" onClick="auth_popup(); return false" title="Modifier">EDITER  
 					</A>&nbsp le fichier csv actuel pour le modifier
 					</li>
 					</UL>
-					<H4 class="perso"><input type="submit" name="test" value="Tester la cohérence" >  du fichier classe avec l\'annuaire pour un bon fonctionnement.
+					<H4 class="perso"><input type="submit" name="test" value="Tester la coh&#233;rence" >  du fichier classe avec l\'annuaire pour un bon fonctionnement.
 					</H4>';
 	
-//affichage du résultat
+//affichage du resultat
 		if ($mess1!="") echo $mess1;
 ?>
 </div>
@@ -393,13 +401,13 @@ include ("../Includes/data.inc.php");
 <a name="key"></a>
 <fieldset id="field7">
 <legend id="legende"> Cryptage</legend>
-<DIV ALIGN=LEFT>
+<div ALIGN=LEFT>
 <?
-echo '<H4 class="perso"> L\'acc&eacute;s au cahier de texte par les parents se fait par un lien avec le nom des classes crypt&eacute;es. Le crytage doit être 
+echo '<H4 class="perso"> L\'acc&eacute;s au cahier de texte par les parents se fait par un lien avec le nom des classes crypt&eacute;es. Le crytage doit &#234;tre 
 renouvel&eacute; en d&eacute;but de chaque ann&eacute;e pour que les liens de l\'ann&eacute;e pr&eacute;c&eacute;dente ne soient plus valides.
 		<P>
-			<input type="submit" name="change_grain" value="Changer" > la clé de cryptage ';
-			if ( $cle=="ok") echo  "<h3 class='cok'> La clé a &eacute;t&eacute; chang&eacute;e ";
+			<input type="submit" name="change_grain" value="Changer" > la cl&#233; de cryptage ';
+			if ( $cle=="ok") echo  "<h3 class='cok'> La cl&#233; a &eacute;t&eacute; chang&eacute;e ";
 			elseif ( $cle=="ko") echo " <h3 class='nook'> Echec du changement de cl&eacute";
 			echo '</P></H4>';			
 ?>
@@ -410,15 +418,15 @@ renouvel&eacute; en d&eacute;but de chaque ann&eacute;e pour que les liens de l\
 <a name="abs"></a>
 <fieldset id="field7">
 <legend id="legende"> Visualisation des absences </legend>
-<DIV ALIGN=LEFT>
+<div ALIGN=LEFT>
 <?
-echo '<H4 class="perso"><br> Le carnet d\'absences pour les &eacute;l&egrave;ves et les parents doit &ecirc;tre activ&eacute uniquement si les informations affich&eacute;es sont significatives.
+echo '<H4 class="perso"><br /> Le carnet d\'absences pour les &eacute;l&egrave;ves et les parents doit &ecirc;tre activ&eacute uniquement si les informations affich&eacute;es sont significatives.
  Cela implique que tous les professeurs saisissent les absences via le carnet d\'absences du Cdt. 
 		<P>
-		Actuellement, la visualisation des absences est';if ($FLAG_ABSENCE==0) echo ' : Désactivée'; else echo ' : Activée ';		
+		Actuellement, la visualisation des absences est';if ($FLAG_ABSENCE==0) echo ' : D&#233;sactiv&#233;e'; else echo ' : Activ&#233;e ';		
 		echo '</P><P><input type="radio" name="absence" value="0" ';
 			if ($FLAG_ABSENCE==1) echo 'checked';
-			echo '> Désactiver la visualisation des absences<br>
+			echo '> D&#233;sactiver la visualisation des absences<br />
 			<input type="radio" name="absence" value="1"';
 			if ($FLAG_ABSENCE==0) echo 'checked';
 			echo '> Activer la visualisation des absences 
@@ -432,15 +440,15 @@ echo '<H4 class="perso"><br> Le carnet d\'absences pour les &eacute;l&egrave;ves
 <a name="bdd"></a>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#bdd'; ?>" method="post" enctype="multipart/form-data">
 <fieldset id="field7">
-<legend id="legende"> Gestion de la base de données</legend>
-<DIV ALIGN=LEFT>
+<legend id="legende"> Gestion de la base de donn&#233;es</legend>
+<div ALIGN=LEFT>
 <?
 echo '
 <ol><H4 class="perso">
-<li><u><b>Archivage</b></u><P>En fin d\'année scolaire, vous pouvez archiver le cahier de textes, ce qui permettra aux profs de consulter leur cahier des années antérieures.<br> Indiquez ci dessous le nom que vous voulez donner à l\'archive. Ce nom servant à renommer les tables de données, ne mettez pas de caractères -  :  / \\ etc ... Il est conseillé de simplement remplacer les chiffres dans le nom proposé.<br><BR>
+<li><u><b>Archivage</b></u><P>En fin d\'ann&#233;e scolaire, vous pouvez archiver le cahier de textes, ce qui permettra aux profs de consulter leur cahier des ann&#233;es ant&#233;rieures.<br /> Indiquez ci dessous le nom que vous voulez donner &#224; l\'archive. Ce nom servant &#224; renommer les tables de donn&#233;es, ne mettez pas de caract&#232;res -  :  / \\ etc ... Il est conseill&#233; de simplement remplacer les chiffres dans le nom propos&#233;.<br /><br />
 
-<input type="submit" name="Archiver" value="Créer une archive nommée" >&nbsp&nbsp&nbsp&nbsp<INPUT TYPE=TEXT NAME="name_arch" Value="'.date("Y",mktime()-31536000)."_".date("Y").'"SIZE=9>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-En début d\'année, &nbsp <input type="submit" name="Vider" value="Vider les tables" >&nbsp  de données du cahier de texte.<br><br>
+<input type="submit" name="Archiver" value="Cr&#233;er une archive nomm&#233;e" >&nbsp&nbsp&nbsp&nbsp<INPUT TYPE=TEXT NAME="name_arch" Value="'.date("Y",mktime()-31536000)."_".date("Y").'"SIZE=9>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+En d&#233;but d\'ann&#233;e, &nbsp <input type="submit" name="Vider" value="Vider les tables" >&nbsp  de donn&#233;es du cahier de texte.<br /><br />
 
 Archives existantes : 
 		';
@@ -454,14 +462,14 @@ $TablesExist= mysql_query("show tables");
 	
 	
 	echo '</P></li>';
-echo '<li><u><b> Sauvegarde</b></u><P>Le bouton ci dessous permet de générer un fichier de sauvegarde complète de la base de données (structure + données)<BR><BR>
+echo '<li><u><b> Sauvegarde</b></u><P>Le bouton ci dessous permet de g&#233;n&#233;rer un fichier de sauvegarde compl&#233;te de la base de donn&#233;es (structure + donn&#233;es)<br /><br />
 
-<input type="submit" name="Sauver" value="Sauvegarder la base de données" >	</P></li>
-<li><u><b> Restauration</b></u><P>Le bouton ci dessous permet d\'importer les données à partir d\'un fichier de sauvegarde. Attention, la structure et  les données présentes dans la base, seront SUPPRIMEES et REMPLACEES par celles du fichier sélectionné <BR>
-Sélectionner le fichier de sauvegarde : 
-						<BR><INPUT TYPE=FILE NAME="FileSelection4" SIZE=30>
+<input type="submit" name="Sauver" value="Sauvegarder la base de donn&#233;es" >	</P></li>
+<li><u><b> Restauration</b></u><P>Le bouton ci dessous permet d\'importer les donn&#233;es &#224; partir d\'un fichier de sauvegarde. Attention, la structure et  les donn&#233;es pr&#233;sentes dans la base, seront SUPPRIMEES et REMPLACEES par celles du fichier s&#233;lectionn&#233; <br />
+S&#233;lectionner le fichier de sauvegarde : 
+						<br /><INPUT TYPE=FILE NAME="FileSelection4" SIZE=30>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="submit" name="Restaurer" value="Restaurer la base de données" >					
+<input type="submit" name="Restaurer" value="Restaurer la base de donn&#233;es" >					
 						</P></li>
 </ol></H4>';
 	
@@ -475,25 +483,25 @@ Sélectionner le fichier de sauvegarde :
 <a name="creneau"></a>
 <fieldset id="field7">
 <legend id="legende"> Param&egrave;trage des cr&eacute;neaux horaires </legend>
-<DIV ALIGN=LEFT>
+<div ALIGN=LEFT>
 <?
-//Affichage du formulaire de paramétrage des créneaux horaires
+//Affichage du formulaire de parametrage des creneaux horaires
 
 		include "../Includes/creneau.inc.php";
-		//pour les dix créneaux
+		//pour les dix creneaux
 		for ($index=0;$index<10;$index++)
 		{
-		//créneaux du matin
+		//creneaux du matin
 		if ($index<5)
 		{
-		echo "<H4 class='perso'>M ".($index+1)." commence à  " ;
+		echo "<H4 class='perso'>M ".($index+1)." commence &#224;  " ;
 		}
-		//créneaux de l'après-midi
+		//creneaux de l'apres-midi
 		if ($index>4)
 		{
-		echo "<H4 class='perso'>S ".($index-4)." commence à  " ;
+		echo "<H4 class='perso'>S ".($index-4)." commence &#224;  " ;
 		}
-		//affichage d'un menu déroulant heure début 8h 17h
+		//affichage d'un menu dï¿½roulant heure dï¿½but 8h 17h
 		echo "<select name='hd".$index."'\n >";
 		$heure = 8;
 		while ($heure <= 17)
@@ -504,7 +512,7 @@ Sélectionner le fichier de sauvegarde :
 		}
 		echo "</select>\n h ";
 		
-		//affichage d'un menu déroulant minutes début0 55 min
+		//affichage d'un menu deroulant minutes debut0 55 min
 		echo "<select name='md".$index."' \n >";
 		$min = 00;
 		while ($min <= 55)
@@ -513,8 +521,8 @@ Sélectionner le fichier de sauvegarde :
 	    echo ">$min</option>\n";
 		$min+=5;
 		}
-		echo "</select>\n min "."&nbsp;et se termine à &nbsp;";
-		//affichage d'un menu déroulant heure fin 8h 18h
+		echo "</select>\n min "."&nbsp;et se termine &#224; &nbsp;";
+		//affichage d'un menu dï¿½roulant heure fin 8h 18h
 		echo "<select name='hf".$index."' \n >";
 		$heure = 8;
 		while ($heure <= 18)
@@ -525,7 +533,7 @@ Sélectionner le fichier de sauvegarde :
 		}
 		echo "</select>\n h ";
 		
-		//affichage d'un menu déroulant minutes fin 0 55 min
+		//affichage d'un menu deroulant minutes fin 0 55 min
 		echo "<select name='mf".$index."' \n >";
 		$min = 0;
 		while ($min <= 55)
@@ -541,17 +549,17 @@ Sélectionner le fichier de sauvegarde :
 		//affichage du bouton
 		echo '<div align="center"><input type="submit" name="Enregistrer" value="Enregistrer" ></div></H4></P>';
 	
-//affichage du résultat de paramètrage
+//affichage du resultat de parametrage
 		
 	for ($h=0; $h<9; $h++) 
 		{
-		if ($deb[$h]>=$deb[$h+1] || $deb[$h]>=$fin[$h]) $mess3="  Il y a une incohérence dans les horaires ! ";
+		if ($deb[$h]>=$deb[$h+1] || $deb[$h]>=$fin[$h]) $mess3="  Il y a une incoh&#233;rence dans les horaires ! ";
 		}
 		if (isset ($mess3)) echo "<h3 class='nook'>".$mess3;
 ?>
 </div>
 </fieldset>	
-</FORM>
+</form>
 </BODY>
 </HTML>
 

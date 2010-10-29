@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de carnet absence-
@@ -498,7 +498,7 @@ if ($exist=="true")
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<TITLE>module <(+_-)/></TITLE>
 	<meta name="generator" content="Bluefish 1.0.7">
 	<META NAME="CREATED" CONTENT="20051226;22304481">
@@ -554,7 +554,7 @@ if ($exist=="true")
 //pas de tableau avant la sélection des creneaux
 if (!isset($_GET['mlec547trg2s5hy'])  && count($_POST['cren'])>0) 
 	{	
-	echo '<DIV id="bt-fixe" ><input class="bt-enregistre" type="submit" name="Valider" value="" ><BR><BR>
+	echo '<DIV id="bt-fixe" ><input class="bt-enregistre" type="submit" name="Valider" value="" ><br /><br />
 	<input class="bt-fermer" type="submit" name="Fermer" value="" >
 	</DIV>';
 	 	echo "<h5 class='perso'> Si tous les &eacute;l&egrave;ves sont pr&eacute;sents, cliquez sur Enregistrer pour indiquer que l'appel a &eacute;t&eacute; effectu&eacute;.</h5>";

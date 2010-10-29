@@ -1,0 +1,3 @@
+#!/bin/bash
+echo " Ceci est le script de mise a jour de 2.1 a 2.2 du plugin Cdt";
+sed -i "s/2.1/2.2/g" /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php

@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de traitement des pièces jointes-
@@ -33,7 +33,7 @@ return $texte;
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<TITLE></TITLE>
 	<meta name="generator" content="Bluefish 1.0.7">
 	<META NAME="CREATED" CONTENT="20051226;22304481">
@@ -74,7 +74,7 @@ if (isset($_POST['Valider']))
 	if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep)) 
 		{
 		if (!is_dir("/home/".$_SESSION['login']."/public_html/".$sousrep))
-			{$mess1= "<h3 class='ko'>1. le nom indiqu&#233; ne correspond pas à un répertoire"."<BR></h3>";
+			{$mess1= "<h3 class='ko'>1. le nom indiqu&#233; ne correspond pas à un répertoire"."<br /></h3>";
 			$pb=1;
 			}
 		else $pb=0;
@@ -113,9 +113,9 @@ if (isset($_POST['Valider']))
 					</script>';
 					$Doc ="";
 					}
-			else $mess1= "<h3 class='ko'>1. Erreur dans le transfert du fichier"."<BR></h3>";
+			else $mess1= "<h3 class='ko'>1. Erreur dans le transfert du fichier"."<br /></h3>";
 				}
-			else $mess1= "<h3 class='ko'>2. Erreur dans l'importation du fichier "."<BR></h3>";
+			else $mess1= "<h3 class='ko'>2. Erreur dans l'importation du fichier "."<br /></h3>";
 			}
 	}
 
@@ -131,9 +131,9 @@ if (!isset($_POST['Valider']))
 	echo '<ol>';
 	echo '<li>S&#233;lectionner le document &#224; joindre (';
 	echo ini_get( 'upload_max_filesize');
-	echo '  maxi) : <BR><input type=file name="FileSelection1" SIZE=40></li>';
-	echo '<li>Indiquer le nom du lien  : <BR><input type=text class="text" name=nom_lien SIZE=30></li>';
-	echo '<li>Indiquer le sous-r&#233;pertoire de votre "public_html" dans lequel sera enregistr&#233;e l\'image : <font size=3>  s\'il n\'existe pas, il sera cr&#233;&#233; </font><br><input class="text" type=text name=sousrep Value=Docs_Cdt SIZE=30></li>';
+	echo '  maxi) : <br /><input type=file name="FileSelection1" SIZE=40></li>';
+	echo '<li>Indiquer le nom du lien  : <br /><input type=text class="text" name=nom_lien SIZE=30></li>';
+	echo '<li>Indiquer le sous-r&#233;pertoire de votre "public_html" dans lequel sera enregistr&#233;e l\'image : <font size=3>  s\'il n\'existe pas, il sera cr&#233;&#233; </font><br /><input class="text" type=text name=sousrep Value=Docs_Cdt SIZE=30></li>';
 	echo '<li>Le bouton <b> Valider </b> transf&#232;re le fichier s&#233;lectionn&#233; sur le serveur et ins&#232;re automatiquement le lien.</li>';
 	echo '</ol>';
 	echo '<input type="submit" name="Valider" value="Valider" class="bt">';

@@ -133,8 +133,6 @@ function go2(cib){
 						if(xhr.responseText !='OK')	
 						alert(xhr.responseText);
 						else {
-							//document.getElementById("voyant").innerHTML = '<img alt="aide"   border="0"src="../images/voyant.png"   />';
-							//setTimeout(function() {document.getElementById('voyant').innerHTML = '';},1000);
 							tinyMCE.get('aide-memoire2').setProgressState(true);
 							setTimeout(function() {tinyMCE.get('aide-memoire2').setProgressState(false);},800);
 							}
@@ -218,4 +216,8 @@ function modeleSave(cib) {
 				xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");				
 				xhr.send(datamod);
 			}
-		
+
+
+			
+			
+			

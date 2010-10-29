@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'édition d'équation -
@@ -35,7 +35,7 @@ exec("rm -f /usr/share/lcs/Plugins/Cdt/phpmathpublisher/img/*.png");
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<TITLE></TITLE>
 	<meta name="generator" content="Bluefish 1.0.7">
 	<META NAME="CREATED" CONTENT="20051226;22304481">
@@ -69,7 +69,7 @@ if (isset($_POST['Valider']) )
 	if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep)) 
 		{
 		if (!is_dir("/home/".$_SESSION['login']."/public_html/".$sousrep))
-			{$mess1= "<h3 class='ko'>1. le nom indiqué ne correspond pas à un répertoire"."<BR></h3>";
+			{$mess1= "<h3 class='ko'>1. le nom indiqué ne correspond pas à un répertoire"."<br /></h3>";
 			$pb=1;
 			}
 		else $pb=0;
@@ -150,7 +150,7 @@ if (!isset($_POST['Valider']))
 	echo '</div>';
 	}
 	
-	echo '<li>Indiquer le sous-répertoire de votre "public_html" dans lequel sera enregistrée l\'image : <font size=3>  s\'il n\'existe pas, il sera créé </font><br><input class="text" type=text name=sousrep Value=Images_Cdt SIZE=30></li>';
+	echo '<li>Indiquer le sous-répertoire de votre "public_html" dans lequel sera enregistrée l\'image : <font size=3>  s\'il n\'existe pas, il sera créé </font><br /><input class="text" type=text name=sousrep Value=Images_Cdt SIZE=30></li>';
 	echo '<li></b>Le bouton <b> Valider </b> transfert l\'image sur le serveur et insère automatiquement le lien</li>';
 	echo '</ol>';
 	echo '<input type="submit" name="Valider" value="Valider" class="bt">';

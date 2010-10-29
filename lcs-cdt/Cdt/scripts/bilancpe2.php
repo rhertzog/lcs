@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script bilan absences pour cpe-
@@ -52,7 +52,7 @@ $Morceauc=explode('/',$_GET['dkr']);
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<TITLE></TITLE>
 	<meta name="generator" content="Bluefish 1.0.7">
 	<META NAME="CREATED" CONTENT="20051226;22304481">
@@ -67,7 +67,7 @@ $Morceauc=explode('/',$_GET['dkr']);
 <H1 class='title'></H1>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
 <fieldset id="field7">
-<legend id="legende">Bilan des Absences & Retards  du <? echo $_GET['dkr'];?></legend>
+<legend id="legende">Bilan des Absences & Retards  du <?php echo $_GET['dkr'];?></legend>
 
 <?
 
@@ -127,7 +127,7 @@ if (isset($_GET['dkr']))
 				echo "</ul>";
 				}
 			}//fin each creneau
-	if ($aucun=="true") echo "Pas de donn&eacute;es pour le(s) cr&eacute;neau(x) s&eacute;lectionn&eacute;(s) !<BR>";
+	if ($aucun=="true") echo "Pas de donn&eacute;es pour le(s) cr&eacute;neau(x) s&eacute;lectionn&eacute;(s) !<br />";
 	echo '<div > <h5> N\'apparaissent que les classes pour lesquelles l\'appel a &eacute;t&eacute; fait !</h5></div>'; 
 
 	echo "<SCRIPT LANGUAGE=\"JavaScript\">

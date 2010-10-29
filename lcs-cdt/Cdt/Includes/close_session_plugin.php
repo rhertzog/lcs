@@ -1,4 +1,4 @@
-<? 
+<?php 
 session_name("Cdt_Lcs");
 @session_start();
 // On détruit toutes les variables de session 

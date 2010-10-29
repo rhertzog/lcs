@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script bilan absences pour cpe-
@@ -76,7 +76,7 @@ global 	$dtajadebut, $dtajafin;
  				else echo "<h2>Aucune absence - ";
  			if ($nbrtd>0)
  				{
- 				if ($nbrtd>1) echo $nbrtd." retards  <BR>"; else echo $nbrtd." retard  </h2>";
+ 				if ($nbrtd>1) echo $nbrtd." retards  <br />"; else echo $nbrtd." retard  </h2>";
  				}
 				else echo "Aucun retard </h2>";
 	
@@ -98,14 +98,14 @@ global 	$dtajadebut, $dtajafin;
 	  			else $typmat .="";
 	  			}
 	 
-	  echo "&nbsp;&nbsp;- Le ".LeJour(strToTime($ligne[21]))." ".$ligne[0]." " . $typmat ."<BR>";
+	  echo "&nbsp;&nbsp;- Le ".LeJour(strToTime($ligne[21]))." ".$ligne[0]." " . $typmat ."<br />";
 	  }
 		  }//fin function
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<TITLE>module <(+_-)/> n°2</TITLE>
 	<meta name="generator" content="Bluefish 1.0.7">
 	<META NAME="CREATED" CONTENT="20051226;22304481">
@@ -156,7 +156,7 @@ $Morceauc=explode('/',$_GET['df']);
 ?></font>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" >
 <fieldset id="field7">
-<legend id="legende">Bilan des Absences & Retards  de <? echo $nom;?><? echo $mesdatedebut . $mesdatefin ?></legend>
+<legend id="legende">Bilan des Absences & Retards  de <?php echo $nom;?><?php echo $mesdatedebut . $mesdatefin ?></legend>
 
 <?
 
@@ -169,7 +169,7 @@ if (isset($_GET['dd']))
 		
 		echo "<B>".$users[$loop]["fullname"] ."</b>  : ";
 		affiche_abs($users[$loop]["uid"]);
-		echo"<br>";
+		echo"<br />";
 		}
 		}
 	else

@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de personnalisation du cahier de textes -
@@ -53,7 +53,7 @@ session_name("Cdt_Lcs");
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<TITLE>Personnalisation du cahier textes</TITLE>
 	<meta name="generator" content="Bluefish 1.0.7">
 	<META NAME="CREATED" CONTENT="20041027;9273332">
@@ -270,7 +270,7 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 <form id="cfg-form" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>?bn16drgv2r=s61lyc6uby54trh" method="post">
 <H1 class='title'><U>Personnalisation du cahier de textes de</U> &nbsp<FONT COLOR="#990000"><?echo $_SESSION['nomcomplet'];?></FONT></h1>
 <ol>
-<li>Cr&eacute;ation des rubriques (onglets) <BR>
+<li>Cr&eacute;ation des rubriques (onglets) <br />
 		<ul>
 <?php
 		if (count($tab)>0) 
@@ -306,18 +306,18 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
   		if (count($tab)>0)  echo '<li>Modifiez s\'il y a lieu le nom de la matière : ';
 		else echo '<li>Indiquez la mati&egrave;re enseign&eacute;e : ';
 ?>		
-		<INPUT TYPE=TEXT id="lamat" NAME="matiere" VALUE="<? echo $val_matiere ?>" SIZE=20 MAXLENGTH=20></li>
+		<INPUT TYPE=TEXT id="lamat" NAME="matiere" VALUE="<?php echo $val_matiere ?>" SIZE=20 MAXLENGTH=20></li>
 		</ul>
 	<li>Sur	les onglets du <B>cahier de textes de vos &eacute;l&egrave;ves</B> apparaitront la mati&egrave;re enseign&eacute;e et votre nom
 		pr&eacute;c&eacute;d&eacute; d&rsquo;un &quot;&nbsp;pr&eacute;fixe&nbsp;&quot;
 		<ul>
-			<li>Indiquez le <B>pr&eacute;fixe </B> que vous souhaitez voir appara&icirc;tre (M, Mme, pr&eacute;nom abr&eacute;g&eacute;, ....) : <INPUT TYPE=TEXT NAME="prefixe" Value="<? echo $val_prefix ?>"SIZE=10></li>
+			<li>Indiquez le <B>pr&eacute;fixe </B> que vous souhaitez voir appara&icirc;tre (M, Mme, pr&eacute;nom abr&eacute;g&eacute;, ....) : <INPUT TYPE=TEXT NAME="prefixe" Value="<?php echo $val_prefix ?>"SIZE=10></li>
 		</ul>
 </ol>
 		
 <div id="cfg-btn">	
-		<input type="hidden" name="numrub" value= "<? echo $cible ; ?>" />
-		<? if (isset($_GET['modrub'])&& isset($_GET['num'])) 
+		<input type="hidden" name="numrub" value= "<?php echo $cible ; ?>" />
+		<?php if (isset($_GET['modrub'])&& isset($_GET['num'])) 
 		{echo ('<INPUT class="modif" TYPE=SUBMIT NAME="modifier" VALUE="">');}
 		else {echo ('<INPUT class="enreg" TYPE=SUBMIT NAME="enregistrer" VALUE="">');}
 		if ($nb>0) {echo('<INPUT class="retour" TYPE=SUBMIT NAME="retour" VALUE="">');}
@@ -336,11 +336,11 @@ echo ("<ul id='cfg-navlist'>");
 for($x=0;$x < $nb;$x++){
 	if ($x==0) 
 	{
-		echo ("<li><a href='config_ctxt.php?modrub=erg45er5ze&num=$numero[$x]'title='Modifier cet onglet'>$mat[$x]<br>$clas[$x]"."</a></li>");
+		echo ("<li><a href='config_ctxt.php?modrub=erg45er5ze&num=$numero[$x]'title='Modifier cet onglet'>$mat[$x]<br />$clas[$x]"."</a></li>");
 	}
 	else 
 	{
-		echo("<li><a href='config_ctxt.php?modrub=erg45er5ze&num=$numero[$x]' title='Modifier cet onglet' >$mat[$x]<br>$clas[$x]</a></li>");
+		echo("<li><a href='config_ctxt.php?modrub=erg45er5ze&num=$numero[$x]' title='Modifier cet onglet' >$mat[$x]<br />$clas[$x]</a></li>");
 	}
 }
 	echo("</ul>");
@@ -356,11 +356,11 @@ echo ("<ul id='cfg-navlist-elv'>");
 		{
 		if ($x==0) 
 			{
-			echo("<li><a href='config_ctxt.php?suppr=yes&numong=$numero[$x]' title='Supprimer cet onglet'>".$mat[$x]." (".$clas[$x].")<br>".$pref[$x]."&nbsp;".$prof[$x]."</a></li>");
+			echo("<li><a href='config_ctxt.php?suppr=yes&numong=$numero[$x]' title='Supprimer cet onglet'>".$mat[$x]." (".$clas[$x].")<br />".$pref[$x]."&nbsp;".$prof[$x]."</a></li>");
 			}
 			else 
 			{
-			echo("<li><a href='config_ctxt.php?suppr=yes&numong=$numero[$x]' title='Supprimer cet onglet'>".$mat[$x]." (".$clas[$x].")<br>".$pref[$x]."&nbsp;".$prof[$x]."</a></li>");
+			echo("<li><a href='config_ctxt.php?suppr=yes&numong=$numero[$x]' title='Supprimer cet onglet'>".$mat[$x]." (".$clas[$x].")<br />".$pref[$x]."&nbsp;".$prof[$x]."</a></li>");
 			}
 		}
 	echo("</ul>");	

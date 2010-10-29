@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de sauvegarde de la bdd-
@@ -11,10 +11,10 @@
 session_name("Cdt_Lcs");
 @session_start(); 
 //error_reporting(0);
-//si la page est appelée par un utilisateur non identifié
+//si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
 
-//si la page est appelée par un utilisateur non admin
+//si la page est appelee par un utilisateur non admin
 elseif ($_SESSION['login']!="admin") exit;
     
 include "../Includes/basedir.inc.php";
@@ -22,7 +22,7 @@ include "$BASEDIR/lcs/includes/headerauth.inc.php";
 include "$BASEDIR/Annu/includes/ldap.inc.php";
 include "$BASEDIR/Annu/includes/ihm.inc.php";
 			
-// Connexion a la base de données
+// Connexion a la base de donnees
 require_once ('../Includes/config.inc.php');
 
 function get_key() 
@@ -40,7 +40,7 @@ header('Content-Type: application/octet-stream');
 header('Expires: ' . $maintenant);
 
 if (mb_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
-    header('Content-Disposition: inline; filename="' . $filesql . '"');
+    header('Content-Disposition: attachment; filename="' . $filesql . '"');
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 } else {
