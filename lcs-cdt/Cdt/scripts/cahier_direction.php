@@ -151,7 +151,7 @@ $chaine=$aliasprof.$nextWeek;
 $logcrypt=crypt($chaine,$grain);
 $key= substr($logcrypt,-20,20);
 echo '<br /><br /><legend id="legende">';
-echo "<a href= 'https://".$hostn."/Plugins/Cdt/index.php";
+echo "<a href= 'http://".$hostn."/Plugins/Cdt/index.php";
 echo "?prof=".$aliasprof.'&limit='.$nextWeek.'&key='.$key;
 echo "'> Lien d'acc&egrave;s au cahier de texte de $prof[1]</a>
 </legend>";
