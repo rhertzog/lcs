@@ -1,7 +1,13 @@
+lcs-sacoche (0.5.3) LCS; urgency=low
+
+  * update to version 2010_10_30
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 30 Oct 2010 18:29:52 +0200
+
 lcs-sacoche (0.5.2) LCS; urgency=low
 
   * update to version 2010-10-19
-  * change name of lcs directory by 
+  * change name of lcs directory by webservice 
 
  -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 21 Oct 2010 22:26:29 +0200
 
