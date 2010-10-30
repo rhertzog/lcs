@@ -1,3 +1,11 @@
+lcs-cdt (2.4.7.2.3) LCS; urgency=low
+
+  * change install_ldap.ldif no patched
+  * delete legend with IE in cahier_direction.php
+  * add specific style for IE in accessfilter.php
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 30 Oct 2010 17:24:57 +0200
+
 lcs-cdt (2.4.7.2.2) LCS; urgency=low
 
   * change https to http in cahier_direction.php

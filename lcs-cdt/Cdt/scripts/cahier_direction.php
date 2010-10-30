@@ -150,11 +150,15 @@ $nextWeek = time() + (7 * 24 * 60 * 60);
 $chaine=$aliasprof.$nextWeek;
 $logcrypt=crypt($chaine,$grain);
 $key= substr($logcrypt,-20,20);
-echo '<br /><br /><legend id="legende">';
+echo '<br /><br />';
+if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  
+echo '<legend id=legende>';
 echo "<a href= 'http://".$hostn."/Plugins/Cdt/index.php";
 echo "?prof=".$aliasprof.'&limit='.$nextWeek.'&key='.$key;
 echo "'> Lien d'acc&egrave;s au cahier de texte de $prof[1]</a>
-</legend>";
+";
+if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  
+echo '</legend>';
 echo '
 <ol><H4 class="perso">
 <li> Ce lien est valide 7 jours &#224; dater de sa cr&#233;ation.

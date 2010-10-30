@@ -86,6 +86,10 @@ $tsmp=time();
 	<META NAME="CREATED" CONTENT="20051226;22304481">
 	<META NAME="CHANGED" CONTENT="20051226;22565970">
 	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+	<!--[if IE]>
+<link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
+<![endif]-->
 	</HEAD>
 <BODY LANG="fr-FR" DIR="LTR">
 <H1 class='title'>Acc&egrave;s au cahier de texte en ligne</H1>
