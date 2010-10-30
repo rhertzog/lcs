@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de traitement des hyper-liens -
@@ -25,7 +25,7 @@ elseif ($_SESSION['cequi']!="prof") exit;
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<TITLE></TITLE>
 	<meta name="generator" content="Bluefish 1.0.7">
 	<META NAME="CREATED" CONTENT="20051226;22304481">
@@ -83,8 +83,8 @@ if (isset($_POST['Valider']))
 if (!isset($_POST['Valider']))
 	{
 	echo '<ol>';
-	echo '<li>Indiquer l\'URL du lien  : <BR><input class="text" type=text name=lien SIZE=50 value="http://"></li>';
-	echo '<li>Indiquer le nom du lien  : <BR><input class="text" type=text name=nom_lien SIZE=30></li>';
+	echo '<li>Indiquer l\'URL du lien  : <br /><input class="text" type=text name=lien SIZE=50 value="http://"></li>';
+	echo '<li>Indiquer le nom du lien  : <br /><input class="text" type=text name=nom_lien SIZE=30></li>';
 	echo '</ol>';
 	echo '<input type="submit" name="Valider" value="Valider" class="bt">';
 	}

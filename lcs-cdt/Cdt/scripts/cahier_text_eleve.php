@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script du cahier de textes ELEVE -
@@ -18,6 +18,14 @@ include ("/var/www/lcs/includes/headerauth.inc.php");
 include ("/var/www/Annu/includes/ihm.inc.php");  
 include "../Includes/functions2.inc.php";
 
+//destruction des variables de sessions
+unset ($_SESSION['prof']);
+unset ($_SESSION['mat']);
+unset ($_SESSION['numero']);
+unset ($_SESSION['pref']);
+unset ($_SESSION['visa']);
+unset ($_SESSION['datvisa']);
+//echo $delta."-".count($_SESSION['prof'])."-".$ch;exit;
 //si clic sur Planning des  devoirs  
 if (isset($_POST['plan']))
 	{$clas=$_POST['numrub'];
@@ -74,15 +82,16 @@ $ch=$_GET['div'];
 <html>
 <head>
 <title>Cahier de textes numérique</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <LINK  href="../style/style.css" rel=StyleSheet type="text/css">
 <link  href="../style/deroulant.css" rel=StyleSheet type="text/css">
 <LINK  href="../style/navlist-eleve.css" rel=StyleSheet type="text/css">
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js">
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
+	<script language="Javascript" type="text/javascript" src="../Includes/cdt_eleve.js"></script>
+	<script language="Javascript" type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
+	<script language="Javascript" type="text/javascript" src="../Includes/JQ/cdt-ele-script.js"></script>
 	<script language="javascript" type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
 	<script language="javascript" type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
 </head>
@@ -111,7 +120,7 @@ echo '
     <div class="deroulant" id="deroulant_1">
     	<div class="t3_ele">Aide m&eacute;moire</div>
         <form id="aide-memoire-contenu_ele" name="aidememory2">
-        	<textarea id="aide-memoire2" name="postitele"  class="MYmceAdvanced2" style="width:95%" rows="12"  >';
+        	<textarea id="aide-memoire2" name="postitele"  class="MYmceAdvanced2" style="width:95%" rows="11"  >';
         	if ($contenu_aide_memoire !="") echo $contenu_aide_memoire;
 			else echo "Penser &agrave; ...";
 			echo '</textarea><br />
@@ -120,12 +129,14 @@ echo '
 	</div><!--fin du div deroulant_1-->
 </div><!--fin du div deroul-contenu-->
 </div><!--fin du div deroulants-->
-</div>
+</div><!--fin du div postit-eleve-->
+<div id="switch-postit" class="postup"></div>
+
 <div id="container-cdt-elv">';
+
 }
 
 $tsmp=time();
-
 //récupération du paramètre classe pour mémorisation
 if (isset($_GET['mlec547trg2s5hy'])) 
 	{$ch=$_GET['mlec547trg2s5hy'];} 
@@ -238,18 +249,18 @@ if (!isset($_SESSION['saclasse']))
   ?>
 
 depuis le :	<?calendrier_auto(-60,'jour_c','mois_c','an_c',$tsmp);?>
-<input type="hidden" name="numrub" value= "<? echo $ch ; ?>">
-<input type="hidden" name="rub_activ" value= "<? echo $cible; ?>">
+<input type="hidden" name="numrub" value= "<?php echo $ch ; ?>">
+<input type="hidden" name="rub_activ" value= "<?php echo $cible; ?>">
 <input type="submit" name="valider" value="" class="bt-valid"> 
 <INPUT TYPE="button" VALUE="" class="bt-annul" onClick="history.back()">
 <div id="services">
 <INPUT TYPE="SUBMIT" NAME="plan" VALUE="" class="bt-plan-dev">
 <?
 //Affichage du bouton pour apposer le visa  
-if (ldap_get_right("Cdt_can_sign",$_SESSION['login'])=="Y")
-	{
-	echo '<INPUT TYPE="SUBMIT" NAME="viser" VALUE="" class="bt-visa">';
-	}
+//if (ldap_get_right("Cdt_can_sign",$_SESSION['login'])=="Y")
+//	{
+//	echo '<INPUT TYPE="SUBMIT" NAME="viser" VALUE="" class="bt-visa">';
+//	}
 
 //Affichage du lien des absences 
 if (ldap_get_right("Cdt_is_cpe",$_SESSION['login'])=="Y")
@@ -288,19 +299,21 @@ $hostn= $hn[0];
 $clcryt=substr(md5(crypt($ch,$Grain)),2);
 //$clcryt=substr($clcryt,2,12);
 ?>
-<A href="#" id="bt-taf" title="Travail A Faire des 15 prochains jours" onClick="taf_popup('<?echo $ch;?>'); return false" >&nbsp; </A>
+<input type="button" value="" class="bt-taf" title="Travail A Faire des 15 prochains jours" onClick="taf_popup('<?echo $ch;?>')" >
 <A href="http://fusion.google.com/add?source=atgs&feedurl=<?echo 'http://'.$hostn.'/Plugins/Cdt/scripts/flux_rss.php?div='.$ch.':'.$clcryt;?>" id="bt-google">&nbsp; </A>
 <A href="flux_rss.php?div=<?echo $ch.':'.$clcryt;?>" id="bt-rss">&nbsp; </A>
+<?php if ($_SESSION['cequi']=="eleve") echo '<A href="http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/aide_eleve.php" target="_blank" ><img src="../images/planifier-cdt-aide.png" border="0" alt="Aide" title="Aide"></A>';?>
 </div>
 </fieldset>
 </FORM>
 
 
 <?
+$prof=$mat=$numero=$pref=$restr=$visa=$datvisa=array();
+
 // Créer la requête (Récupérer les rubriques de la classe) 
 $rq = "SELECT prof,matiere,id_prof,prefix,visa,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets
  WHERE classe='$ch' ORDER BY 'id_prof' asc ";
-
  // lancer la requête
 $result = @mysql_query ($rq) or die (mysql_error());
 $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ? 
@@ -406,70 +419,86 @@ else
 					}
 				}
 			}
+			
+			
 		}
 	}
-	
+$_SESSION['prof']=$prof;
+$_SESSION['mat']=$mat;
+$_SESSION['numero']=$numero;
+$_SESSION['pref']=$pref;
+$_SESSION['visa']=$visa;
+$_SESSION['datvisa']=$datvisa;
+$delta=($loop -7) *40 > 0 ? (($loop -7) *40) :0;
+echo '<script language="javascript" type="text/javascript" >
+var offset = '.$delta.'
+</script>';	
+
 	//modif
 	echo '<div id="onglev">';
+	if ($delta >0) 
+	{
+	echo '<div id="switch-ongletsup" ></div>';
+	echo '<div id="switch-ongletsdown"></div>';
+	}
+	echo '<div id="onglev_refresh">';
 	// Affichage de la colonne de gauche
 	if($cible==""){$cible=($numero[0]);}	
 	//création de la barre de menu , couleur de fond # pour cellule active
-	echo '<ul id="navlist-elv">';	
+	echo '<ul id="navlist-elv">';
+	
 	for($x=0;$x < $loop;$x++)
 		{
 		if ($cible == ($numero[$x])) 
 		
 			{
-				echo ("<li id='active'><a href='cahier_text_eleve.php?nvlkzei5qd1egz65=cv5e8daérfz8ge69&é&rubrique=
-			$numero[$x]&mlec547trg2s5hy=$ch&tsmp=$tsmp' id='courant'>&nbsp;$mat[$x]&nbsp;<br>&nbsp;$pref[$x]  $prof[$x]&nbsp;"."</a></li>");
-				
-			if ($visa[$x]) {
-			$vis="ok";
-			$datv=$datvisa[$x];
-			}
-			
+			echo '<li id="active"><a href="#" title="" onclick="refresh_cdt('. $numero[$x].','.$tsmp.')" id="courant">&nbsp;'.$mat[$x].'&nbsp;<br />&nbsp;'.$pref[$x].'  '.$prof[$x].'&nbsp;</a></li>';
+			if ($visa[$x])
+				{
+				$vis=$visa[$x];
+				$datv=$datvisa[$x];
+				}
 			}
 			else 
 			{
-			echo ("<li><a href='cahier_text_eleve.php?nvlkzei5qd1egz65=cv5e8daérfz8ge69&é&rubrique=
-			$numero[$x]&mlec547trg2s5hy=$ch&tsmp=$tsmp'>&nbsp;$mat[$x]&nbsp;<br>&nbsp;$pref[$x]  $prof[$x]&nbsp;"."</a></li>");
-			
+			echo '<li><a href="#" title="" onclick="refresh_cdt('. $numero[$x].','.$tsmp.')" >&nbsp;'.$mat[$x].'&nbsp;<br />&nbsp;'.$pref[$x].'  '.$prof[$x].'&nbsp;</a>';
 			}
-		
-		
 		}
 
 	echo '</ul>';
+	if ($vis) echo '<div id="visa-cdt'.$vis.'e">'.$datv.'</div>';
+	echo '</div>';
 	echo '</div>';
 	}	
 	else
 		{ 
 // Il y a eu un os !
-	 		echo "<p><FONT face='Arial'size='3' COLOR='#FF0000'>Aucun enregistrement dans le cahier de textes de  $ch !</p><p></p></font>";
+	 	echo "<p><FONT face='Arial'size='3' COLOR='#FF0000'>Aucun enregistrement dans le cahier de textes de  $ch !</p><p></p></font>";
 		}
 
 //affichage du contenu du cahier de textes
 
-		include_once ('../Includes/markdown.php');//convertisseur text-->HTML
+	include_once ('../Includes/markdown.php');//convertisseur text-->HTML
 
-		//créer la requête
-		if ($cible!="") 
-		{//élaboration de la date limite à partir de la date selectionnée
-		$dat=date('Ymd',$tsmp-5184000);//2592000=nbre de secondes dans 30 jours
-		$dat_now=date('YmdHis');
-		if ($_SESSION['version']=">=432") setlocale(LC_TIME,"french");
-		else setlocale("LC_TIME","french");
-		$rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off FROM cahiertxt 			WHERE id_auteur=$cible AND date>=$dat AND datevisibi<=$dat_now ORDER BY date desc";
-		 
-		// lancer la requête
-		$result = @mysql_query ($rq) or die (mysql_error());
+	//créer la requête
+	if ($cible!="") 
+	{//élaboration de la date limite à partir de la date selectionnée
+	$dat=date('Ymd',$tsmp-5184000);//2592000=nbre de secondes dans 30 jours
+	$dat_now=date('YmdHis');
+	if ($_SESSION['version']=">=432") setlocale(LC_TIME,"french");
+	else setlocale("LC_TIME","french");
+	$rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off FROM cahiertxt 
+	WHERE id_auteur=$cible AND date>=$dat AND datevisibi<=$dat_now ORDER BY date desc";
+	 
+	// lancer la requête
+	$result = @mysql_query ($rq) or die (mysql_error());
 
-		// Combien y a-t-il d'enregistrements ?
-		$nb2 = mysql_num_rows($result);
-		
-		echo '<div id="boite5elv">';
-		echo '<TABLE id="tb-cdt" CELLPADDING=1 CELLSPACING=2>';
-		while ($ligne = mysql_fetch_array($result, MYSQL_NUM)) { 
+	// Combien y a-t-il d'enregistrements ?
+	$nb2 = mysql_num_rows($result);
+	echo '<div id="boite5elv">';
+	echo '<TABLE id="tb-cdt" CELLPADDING=1 CELLSPACING=2>';
+	while ($ligne = mysql_fetch_array($result, MYSQL_NUM)) 
+		{ 
 	  $textcours=stripslashes(markdown($ligne[1]));
 	  //$textcours=$ligne[1];
 	  $textafaire=stripslashes(markdown($ligne[2]));
@@ -482,7 +511,9 @@ else
 	  echo '<tr>';
 	  //affichage de la seance
 	  echo '<td class="seance">S&eacute;ance du <br/>'.$jour.'&nbsp;'.$ligne[0].'</td>';
-	  if($ligne[6]=="1") echo '<td class="contenu2">';else echo '<td class="contenu">';
+	  if($ligne[6]==1) echo '<td class="contenu2">';
+	  elseif($ligne[6]==2) echo '<td class="contenu3">';
+	  else echo '<td class="contenu">';
 	  echo $textcours.'</td></tr>';
 	  //affichage, s'il existe, du travail a effectuer
 	  if ($ligne[2]!="") 
@@ -501,21 +532,24 @@ else
 	  //affichage, s'il existe, du travail a effectuer
 	  if ($ligne[2]!="") 
 	  echo '<br/>Pour le :&nbsp;'.$ligne[3].'</td>';
-	  if($ligne[6]=="1") echo '<td class="contenu2">';else echo '<td class="contenu">';
+	  if($ligne[6]==1) echo '<td class="contenu2">';
+	  elseif($ligne[6]==2) echo '<td class="contenu3">';
+	  else echo '<td class="contenu">';
 	  echo $textafaire.'</td></tr>';
 	  //fin
 	  echo '<tbody><tr><th colspan=2>(°-°)</th></tr></tbody>';
 	  }
 } //fin du while
 echo '</table>';
+if (stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  
+{ include ('../Includes/pied.inc');}
 echo "</div>"; //fin du div boite5elv
-
-		}
-		if ($vis == "ok") echo '<div id="visa-cdt">'.$datv.'</div>';
-echo '</div>'; //fin du div container	
-
-include ('../Includes/pied.inc');
+}
+		//if ($vis) echo '<div id="visa-cdt'.$vis.'e">'.$datv.'</div>';
+echo '</div>';//fin du div container
+//echo '</div>';
+if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  
+{include ('../Includes/pied.inc');}
 ?>
-</div>
 </body>
 </html>

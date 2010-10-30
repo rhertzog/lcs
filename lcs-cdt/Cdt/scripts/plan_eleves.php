@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de consultation du planning des devoirs -
@@ -46,7 +46,7 @@ if (isset($_POST['class'])){$clas= $_POST['class'];}
 <HTML>
 <HEAD>
 <TITLE>Planning</TITLE>
-<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
 <LINK href="../style/style.css" rel="stylesheet" type="text/css">
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
@@ -165,15 +165,15 @@ if ($nb>0)
 // Affichage des jours et dates de la semaine en haut du tableau"j-M-Y", 
 	for ($i=0; $i<=5; $i++) {
 		$TS = $Lundi+$i*86400;
-		echo '<Td width="15%" colspan="2"> <font face="Arial" size="2" color="#FFFFFF" >'.LeJour($TS)."<BR>".datefr($TS)."</Td>\n";
+		echo '<Td width="15%" colspan="2"> <font face="Arial" size="2" color="#FFFFFF" >'.LeJour($TS)."<br />".datefr($TS)."</Td>\n";
 	}
 ?>
 		</thead>
 		<tbody>
 		<tr>
 <?php
-	$horaire = array("M1<br>","M2<br>","M3<br>","M4<br>","M5<br>",
-	"S1<br>","S2<br>","S3<br>","S4<br>","S5<br>");
+	$horaire = array("M1<br />","M2<br />","M3<br />","M4<br />","M5<br />",
+	"S1<br />","S2<br />","S3<br />","S4<br />","S5<br />");
 	for ($h=0; $h<=9; $h++) 
 		{//a
 		//Affichage de la désignation des créneaux horaires
@@ -342,14 +342,14 @@ if ($nb>0)
 							if (($Lundi + $j * 86400 + $dif[$h]) > mktime())  //MODIF
 								{//n
 								echo '<TD  rowspan="'.$dur[$j][$h][0].'" class="reserve">'.$mat[$j][$h][0].
-								'<BR><BR><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][0].' " />'."</TD>\n";
+								'<br /><br /><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][0].' " />'."</TD>\n";
 								if (!isset($plan[$j][$h][1])) 
 									{//o
 									echo '<TD   class="libre">---</TD>'."\n";  
 									}//o
 								elseif ($plan[$j][$h][1]=="R")  
 									{//p
-									echo ' <TD  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.$mat[$j][$h][1].'<BR><BR><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][1].'" />'."</TD>\n";
+									echo ' <TD  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.$mat[$j][$h][1].'<br /><br /><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][1].'" />'."</TD>\n";
 									}//p
 								} //n
 							}//m
@@ -366,7 +366,7 @@ if ($nb>0)
 								elseif ($plan[$j][$h][1]=="R")   
 									{//t
 									echo ' <TD  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.$mat[$j][$h][1].
-									'<BR><BR><img alt="aide"   src="../images/help-info.png"  title ="'.$suj[$j][$h][1].'" />'."</TD>\n";
+									'<br /><br /><img alt="aide"   src="../images/help-info.png"  title ="'.$suj[$j][$h][1].'" />'."</TD>\n";
 									}//t
 									}//r
 								} //q

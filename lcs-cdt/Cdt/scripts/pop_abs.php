@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de consultation des absences hebdomadaires -
@@ -54,7 +54,7 @@ if (isset($_POST['gamin'])) $potache = $_POST['gamin'];
 <HTML>
 <HEAD>
 <TITLE></TITLE>
-<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
 <LINK href="../style/style.css" rel="stylesheet" type="text/css">
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>

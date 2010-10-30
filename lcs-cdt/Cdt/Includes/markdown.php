@@ -273,7 +273,7 @@ class Markdown_Parser {
 		# match consecutive blank lines with /\n+/ instead of something
 		# contorted like /[ ]*\n+/ .
 		$text = preg_replace('/^[ ]+$/m', '', $text);
-		$text = preg_replace('|%%|','<br>', $text);
+		$text = preg_replace('|%%|','<br />', $text);
 		# Run document gamut methods.
 		foreach ($this->document_gamut as $method => $priority) {
 			$text = $this->$method($text);
@@ -449,7 +449,7 @@ class Markdown_Parser {
 					[ ]*
 					(?=\n{2,}|\Z)		# followed by a blank line or end of document
 			
-			| # PHP and ASP-style processor instructions (<? and <%)
+			| # PHP and ASP-style processor instructions (<?php and <%)
 			
 					[ ]{0,'.$less_than_tab.'}
 					(?s:

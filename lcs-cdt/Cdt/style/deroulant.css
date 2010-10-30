@@ -95,11 +95,11 @@
 }
 #aide-memoire-contenu{
 	float:left;
-	margin:0;
+	margin:5px 0 2px 2px;
 	width:195px;
-	height:300px;
+	height:320px;
 	text-align:center;
-	padding:4px 0;
+	padding:1px 0 ;
 	overflow: auto;
 }
 #aide-memoire-contenu img{
@@ -115,10 +115,11 @@
 	border:none;
 	height:20px;
 	width:120px;
+	margin: 7px;
 }
 .t3_ele { 
 	margin:0 0 0 3px;
-	padding:2px;
+	padding:3px;
 	text-align:center;
 	color: #1b2c68;
 	font-size:14px;
@@ -129,7 +130,7 @@
 	float:left;
 	margin:25px 2px 0 24px;
 	width:170px;
-	height:250px;
+	height:260px;
 	overflow:hidden;
 }
 
@@ -144,7 +145,7 @@
 	float:left;
 	margin:0;
 	width:170px;
-	height:240px;
+	height:260px;
 	text-align:center;
 	padding:4px 0 0 1px;
 	overflow: auto;

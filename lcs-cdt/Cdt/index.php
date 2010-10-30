@@ -1,8 +1,8 @@
-<?
+<?php
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 14/04/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de redirection -
@@ -25,11 +25,11 @@ include ('./Includes/data.inc.php');
 	$_SESSION['version']=">=432";
 	else $_SESSION['version']="<432";
 	
-// récupération des données de l'utilisateur
+// recuperation des donnees de l'utilisateur
 
 	$login = auth_lcs(); 
 	
-// Si $login, on récupère les datas de l'utilisateur
+// Si $login, on recupere les datas de l'utilisateur
 	if ($login) 
 	{
 		list($user, $groups)=people_get_variables($login, true);
@@ -62,40 +62,48 @@ include ('./Includes/data.inc.php');
 		elseif (is_administratif($login)) { $_SESSION['cequi']="administratif";}
 	
 			
-	//redirection d'accés 
+	//redirection d'acces 
 
 		if ($_SESSION['login']=="admin") 
 			{ 
 			header("location: ./scripts/fichier_classes.php");exit;
 			}
-		elseif ($_SESSION['cequi']!="prof")
+		elseif ( $_SESSION['cequi']=="administratif" && (ldap_get_right("Cdt_can_sign",$_SESSION['login'])=="Y"))
+			{
+			header("location: ./scripts/cahier_direction.php");exit;
+			}	
+		elseif (($_SESSION['cequi']=="eleve" && $_SESSION['saclasse'][1]!="") || $_SESSION['cequi']=="administratif"	)
 			{ 
 			header("location: ./scripts/cahier_text_eleve.php");exit;
 			}
-		else 
+		elseif  ($_SESSION['cequi']=="prof")
 			{
 			$_SESSION['RT']=rand();
 			header("location: ./scripts/cahier_texte_prof.php");exit;
 			}
+		else echo 'Acc&#232;s non autoris&#233; ! '; exit;
 	}
 	//si pas de login
 	
 	elseif (isset($_GET['cl1']))	
-		{$toto=array();
+		{
+		$toto=array();
 		for ($x = 1; $x <= 5; $x++)
 			{
  			if (isset($_GET['cl'.$x]))
- 				{$toto=decripte_uid($_GET['ef'.$x],decripte_classe($_GET['cl'.$x]));
+ 				{
+ 				$toto=decripte_uid($_GET['ef'.$x],decripte_classe($_GET['cl'.$x]));
  				if ((decripte_classe($_GET['cl'.$x]) !="") && ($toto[0] !="")) 
  					{		
  					$_SESSION['saclasse'][$x]=decripte_classe($_GET['cl'.$x]);
  					$_SESSION['parentde'][$x]=decripte_uid($_GET['ef'.$x],$_SESSION['saclasse'][$x]);
  					//enregistrement stats
  					$date=date("YmdHis");
+ 					$Kl=$_SESSION['saclasse'][$x];
  					# Enregistrement dans la table statusages
 					#
-					$Kl=$_SESSION['saclasse'][$x];
 					$result=mysql_db_query("$DBAUTH","INSERT INTO statusages VALUES ('Parent', 'Cdt', '$date', 'wan', '$Kl')", $authlink);
+					
 					#
  					}
  				}
@@ -112,6 +120,30 @@ include ('./Includes/data.inc.php');
 			}
 		}
 	
+	elseif (isset($_GET['prof']))
+		{
+		//validation du lien
+		unset ($_SESSION['aliasprof']);
+		unset ($_SESSION['proffull']);
+		
+		if (validkey($_GET['prof'],$_GET['limit'],$_GET['key']) =="OK" && $_GET['limit'] > time()) 
+			{
+			$_SESSION['aliasprof']=$_GET['prof'];
+			list($us_er, $groups)=people_get_variables($_GET['prof'], false);
+			$_SESSION['proffull']=$us_er["fullname"];
+			header("location: ./scripts/cahier_texte_prof_ro.php");exit;
+			}
+		elseif (validkey($_GET['prof'],$_GET['limit'],$_GET['key']) !="OK")
+			{
+			$err="pas";
+			header("location: ./scripts/error.php?error=".$err."");exit;
+			}
+		elseif ($_GET['limit'] < time())
+			{
+			$err="plus";
+			header("location: ./scripts/error.php?error=".$err."");exit;
+			}
+		}
 	else 
 		{		
  		header ("location: ./scripts/accessfilter.php");exit;

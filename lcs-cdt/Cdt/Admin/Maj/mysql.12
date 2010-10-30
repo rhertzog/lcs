@@ -1,0 +1,6 @@
+Use cdt_plug;
+ALTER TABLE `onglets` CHANGE `visa` `visa` TINYINT( 2 ) NOT NULL DEFAULT '0' ;
+ALTER TABLE `cahiertxt` CHANGE `on_off` `on_off` TINYINT( 2 ) NOT NULL DEFAULT '0' ;
+ALTER TABLE `onglets` CHANGE `classe` `classe` VARCHAR( 30 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT '' ;
+ALTER TABLE `devoir` CHANGE `classe` `classe` VARCHAR( 30 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT '' ;
+ALTER TABLE `absences` DROP `matin` , DROP `motifmatin` , DROP `apmidi` ,DROP `motifapm` ;

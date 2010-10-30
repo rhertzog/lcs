@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script archives du cahier de textes -
@@ -53,7 +53,7 @@ if (isset($_POST['copie']))
 <html>
 <head>
 <title>Archives Cdt num&eacute;rique</title>
-<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<link href="../style/style.css" rel=StyleSheet type="text/css">
 	<link  href="../style/deroulant.css" rel=StyleSheet type="text/css">
 	<link  href="../style/navlist-prof.css" rel=StyleSheet type="text/css">
@@ -108,7 +108,7 @@ $result = @mysql_query ($rq) or die (mysql_error());
 // si pas de rubrique
 if (mysql_num_rows($result)==0) 
 	{
-	echo("<br> L'archive ".$arch."de votre cahier de textes ne comporte  aucune rubrique. ");exit;
+	echo("<br /> L'archive ".$arch."de votre cahier de textes ne comporte  aucune rubrique. ");exit;
 	mysql_close();	
 	exit;
 	}
@@ -167,7 +167,7 @@ for($x=0;$x < $nmax;$x++)
 		if ($cible == ($numero[$x]))
 			{//cellule active	
 			echo ("<li id='select'><a href='cahier_texte_prof_arch.php?rubrique=$numero[$x]&arch=$arch'
-			'onmouseover=\"window.status='';return true\" id='courant'>$mat[$x]<br>$clas[$x] "."</a></li>");	
+			'onmouseover=\"window.status='';return true\" id='courant'>$mat[$x]<br />$clas[$x] "."</a></li>");	
 			$contenu_postit=stripslashes($com[$x]);
 			}
 		else 
@@ -179,7 +179,7 @@ for($x=0;$x < $nmax;$x++)
 			else
 			{
 			echo ("<li><a href='cahier_texte_arch.php?rubrique=$numero[$x]&arch=$arch'
-			'onmouseover=\"window.status='';return true\">$mat[$x]<br>$clas[$x]"."</a></li>");
+			'onmouseover=\"window.status='';return true\">$mat[$x]<br />$clas[$x]"."</a></li>");
 			}
 			}
 	}

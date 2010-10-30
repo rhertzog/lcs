@@ -1,3 +1,31 @@
+lcs-cdt (2.4.7.2.3) LCS; urgency=low
+
+  * change install_ldap.ldif no patched
+  * delete legend with IE in cahier_direction.php
+  * add specific style for IE in accessfilter.php
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 30 Oct 2010 17:24:57 +0200
+
+lcs-cdt (2.4.7.2.2) LCS; urgency=low
+
+  * change https to http in cahier_direction.php
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 29 Oct 2010 13:17:38 +0200
+
+lcs-cdt (2.4.7.2.1) LCS; urgency=low
+
+  * fix bug domain name  in cahier_direction.php
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 29 Oct 2010 13:00:40 +0200
+
+lcs-cdt (2.4.7.2) LCS; urgency=low
+
+  * update to version 2.2
+  * UTF8
+  * add an interface for directors
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 29 Oct 2010 08:43:55 +0200
+
 lcs-cdt (2.4.7.1) LCS; urgency=low
 
   * fix bug in record "acces parent" in statusages 

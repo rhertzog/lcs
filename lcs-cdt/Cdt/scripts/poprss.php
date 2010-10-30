@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script du popuprss -
@@ -24,7 +24,7 @@ exit;
 <html>
 <head>
 <title>Travail à faire</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <LINK href="../style/style.css" rel="stylesheet" type="text/css">
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
@@ -79,7 +79,7 @@ exit;
 				 
 			echo '<tbody>';
 			echo '<tr><th colspan=2>Pour le '.$dattaf.'</th></TR>';
-			echo '<TR><TD class="afaire">'.$mattaf.'<br>'.$preftaf.' '.$proftaf.'</TD><TD class="contenu">'.$textafaire.'</TD></TR>';
+			echo '<TR><TD class="afaire">'.$mattaf.'<br />'.$preftaf.' '.$proftaf.'</TD><TD class="contenu">'.$textafaire.'</TD></TR>';
 				
 	echo "</td></tr></table>";
 	}

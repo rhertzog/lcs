@@ -9,7 +9,7 @@
 			_-=-_
    ============================================= */
 $NAME_PLUG = "Cahier de textes";
-$VER_PLUG = "2.1";
+$VER_PLUG = "2.2";
 $FLAG_ABSENCE=1;
 $Grain="#PASS2#";
 

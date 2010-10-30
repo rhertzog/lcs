@@ -35,7 +35,7 @@ $(document).ready(function() {
 
       });
 	});
-
+	
 $.datepicker.setDefaults({
 	closeText: 'Fermer',
 		prevText: '&#x3c;Préc',

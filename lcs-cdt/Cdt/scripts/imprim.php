@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'impression -
@@ -24,7 +24,7 @@ require_once ('../Includes/config.inc.php');
 <html>
 <head>
 <title>Cahier de textes numerique</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <LINK rel="stylesheet" type="text/css" href="../style/style.css"  media="screen">
 <link rel="stylesheet" href="../style/style_imp.css" type="text/css" media="print" />
 	<!--[if IE]>
@@ -201,10 +201,10 @@ echo '</caption>';
 <fieldset id="field7">
 <legend id="legende">Classe  de <B> <?echo $classe_active .'</B> en <B>'. $mati_active ?></B></legend>
 <p>Imprimer le contenu du cahier de textes de la classe  de <B> <?echo $classe_active .'</B> en <B>'. $mati_active ?></B>
- depuis le : <?calendrier_auto(-365,'jour_c','mois_c','an_c',$tsmp);?><input type="hidden" name="numrub" value= "<? echo $ch ; ?>"></p>
+ depuis le : <?calendrier_auto(-365,'jour_c','mois_c','an_c',$tsmp);?><input type="hidden" name="numrub" value= "<?php echo $ch ; ?>"></p>
 <div id="chrono">
-<INPUT TYPE=RADIO NAME="Option1" VALUE="asc" <? IF (($sens=="asc")||($sens=="")) echo "CHECKED" ; ?>>par date croissante &nbsp;&nbsp;&nbsp;&nbsp
-<INPUT TYPE=RADIO NAME="Option1" VALUE="desc"<? IF ($sens=="desc") echo "CHECKED" ; ?>>par	date d&eacute;croissante 
+<INPUT TYPE=RADIO NAME="Option1" VALUE="asc" <?php IF (($sens=="asc")||($sens=="")) echo "CHECKED" ; ?>>par date croissante &nbsp;&nbsp;&nbsp;&nbsp
+<INPUT TYPE=RADIO NAME="Option1" VALUE="desc"<?php IF ($sens=="desc") echo "CHECKED" ; ?>>par	date d&eacute;croissante 
 </div>
 <UL>
 	<LI>En cliquant sur OK, le contenu du cahier de texte appara&icirc;t dans un nouvel onglet. </li>

@@ -36,7 +36,7 @@ if ( file_exists ( $fileLoc ) ) {
 
   // Ouvrir la connexion et selectionner la base de donnees
 $db_ag = @mysql_connect ($db_host, $db_login, $db_password,$db_database) 
-       OR die ('Connexion a MySQL impossible : '.mysql_error().'<br>');
+       OR die ('Connexion a MySQL impossible : '.mysql_error().'<br />');
 mysql_select_db ($db_database)
-       OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br>');
+       OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br />');
 ?>

@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'import de données perso dans sa base-
@@ -46,7 +46,7 @@ return $texte;
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<TITLE></TITLE>
 	<meta name="generator" content="Bluefish 1.0.7">
 	<META NAME="CREATED" CONTENT="20051226;22304481">
@@ -96,23 +96,23 @@ if (isset($_POST['Valider']))
 							$cmd=" cd /home/".$_SESSION['login']."/public_html/ && sed -i 's/~".$exlogin."/~".$_SESSION['login']."/g' dump.sql";
 							exec($cmd,$li,$ret);
 							if ($ret != 0) 
-							$mess1= "<h3 class='ko'>1. les liens vers les pi&#232;ces jointes  n\'ont pas pu &#234;tre mise &#224; jour avec le nouveau login"."<BR></h3>";
+							$mess1= "<h3 class='ko'>1. les liens vers les pi&#232;ces jointes  n\'ont pas pu &#234;tre mise &#224; jour avec le nouveau login"."<br /></h3>";
 							$cmd=" cd /home/".$_SESSION['login']."/public_html/ && mysql -u".$_SESSION['login']." -p".$_LCSkey." ".mb_ereg_replace("\.","",$_SESSION['login'])."_db < dump.sql";
 							exec($cmd,$li,$ret);
-							if ($ret == 0) $mess1="<h3 class='ok'>Les donn&#233;es ont &#233;t&#233; import&#233;es.<BR></h3>";
-							else $mess1 = "<h3 class='ko'>Une erreur s'est produite lors de l'import des donn&#233;es.<BR></h3>";
+							if ($ret == 0) $mess1="<h3 class='ok'>Les donn&#233;es ont &#233;t&#233; import&#233;es.<br /></h3>";
+							else $mess1 = "<h3 class='ko'>Une erreur s'est produite lors de l'import des donn&#233;es.<br /></h3>";
 							}							
-						else $mess1= "<h3 class='ko'> le fichier n'a pas pu &#234;tre d&#233;compress&#233; <BR></h3>";
+						else $mess1= "<h3 class='ko'> le fichier n'a pas pu &#234;tre d&#233;compress&#233; <br /></h3>";
 						}
-					else  $mess1= "<h3 class='ko'> le fichier n'est pas conforme <BR></h3>";
+					else  $mess1= "<h3 class='ko'> le fichier n'est pas conforme <br /></h3>";
 					$cmd=" cd /home/".$_SESSION['login']."/public_html/ && rm -rf dump.sql my_cdt.tgz ctrl.txt";
 					exec($cmd);			
 					}
-				else $mess1= "<h3 class='ko'>1. Erreur dans le transfert du fichier <BR></h3>";
+				else $mess1= "<h3 class='ko'>1. Erreur dans le transfert du fichier <br /></h3>";
 				}
-			else $mess1= "<h3 class='ko'>2. Erreur dans l'importation du fichier  <BR></h3>";
+			else $mess1= "<h3 class='ko'>2. Erreur dans l'importation du fichier  <br /></h3>";
 			}
-			else $mess1= "<h3 class='ko'>2. Pas de fichier s&#233;lectionn&#233;  <BR></h3>";
+			else $mess1= "<h3 class='ko'>2. Pas de fichier s&#233;lectionn&#233;  <br /></h3>";
 		}
 	}
 
@@ -131,7 +131,7 @@ if (!isset($_POST['Valider']))
 	echo '<ol>';
 	echo '<li>S&#233;lectionner le fichier .cdt contenant les donn&#233;es (';
 	echo ini_get( 'upload_max_filesize');
-	echo '  maxi) : <BR><input type=file name="FileSelection1" SIZE=40></li>';
+	echo '  maxi) : <br /><input type=file name="FileSelection1" SIZE=40></li>';
 	echo '</ol>';
 	echo '<input type="submit" title="Valider" name="Valider" value="" class="bt-valid" >
 		<input class="bt-fermer" type="submit" name="Fermer" value="" >';

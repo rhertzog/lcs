@@ -321,4 +321,8 @@ function people_get_datenaissance ($uid)
 }
 /*********************/
 
+function validkey($qui,$quand,$thekey) {
+include "config.inc.php";
+return (substr((crypt($qui.$quand,'$1$'.$Grain.'$')),-20,20) == $thekey ? "OK" : "KO");
+}
 ?>

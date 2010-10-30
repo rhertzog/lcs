@@ -32,10 +32,6 @@ CREATE TABLE IF NOT EXISTS `absences` (
   `uidprof` varchar(30) NOT NULL,
   `uideleve` varchar(30) NOT NULL,
   `classe` varchar(30) NOT NULL,
-  `matin` varchar(1) NOT NULL,
-  `motifmatin` varchar(30) default NULL,
-  `apmidi` varchar(1) NOT NULL,
-  `motifapm` varchar(30) default NULL,
   `M1` varchar(1) NOT NULL,
   `motifM1` varchar(30) default NULL,
   `M2` varchar(1) NOT NULL,
@@ -73,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `cahiertxt` (
   `contenu` blob NOT NULL,
   `afaire` blob,
   `datafaire` date NOT NULL default '0000-00-00',
-  `on_off` tinyint(1) NOT NULL default '0',
+  `on_off` tinyint(2) NOT NULL default '0',
   `datevisibi` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id_rubrique`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
@@ -91,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `devoir` (
   `login` varchar(30) NOT NULL default '',
   `matiere` varchar(30) NOT NULL default '',
   `sujet` varchar(30) NOT NULL default '',
-  `classe` varchar(20) NOT NULL default '',
+  `classe` varchar(30) NOT NULL default '',
   `durée` smallint(6) NOT NULL default '0',
   PRIMARY KEY  (`id_ds`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
@@ -106,12 +102,12 @@ CREATE TABLE IF NOT EXISTS `onglets` (
   `id_prof` mediumint(8) unsigned NOT NULL auto_increment,
   `login` varchar(30) NOT NULL default '',
   `prof` varchar(30) NOT NULL default '',
-  `classe` varchar(20) NOT NULL default '',
+  `classe` varchar(30) NOT NULL default '',
   `matiere` varchar(30) NOT NULL default '',
   `prefix` varchar(10) default NULL,
   `restreint` tinyint(1) NOT NULL default '0',
   `postit` blob,
-  `visa` tinyint(1) NOT NULL default '0',
+  `visa` tinyint(2) NOT NULL default '0',
   `datevisa` date default '0000-00-00',
   `mod_cours` blob NOT NULL,
   `mod_afaire` blob NOT NULL,

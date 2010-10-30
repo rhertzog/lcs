@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de diffusion -
@@ -87,7 +87,7 @@ while ($row = mysql_fetch_object($result))
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<TITLE>devoirs multiples</TITLE>
 	<meta name="generator" content="Bluefish 1.0.7">
 	<META NAME="CREATED" CONTENT="20051226;22304481">
@@ -137,14 +137,14 @@ if (!isset($_POST['Valider']))
 	{
 	//si pas de classe de même niveau dans la matière
 	if (mysql_num_rows($result)==0) 
-		echo '<H4> Apparemment, vous n\'avez pas d\'autre classe  en <B>'.$mat.'</B> !<BR> V&eacute;rifiez que la mati&egrave;re n\'est
-		pas orthographi&eacute;e diff&eacute;remment pour les autres classes .<BR><BR><DIV align="center" ><input type="submit" name="Valider"
+		echo '<H4> Apparemment, vous n\'avez pas d\'autre classe  en <B>'.$mat.'</B> !<br /> V&eacute;rifiez que la mati&egrave;re n\'est
+		pas orthographi&eacute;e diff&eacute;remment pour les autres classes .<br /><br /><DIV align="center" ><input type="submit" name="Valider"
 		value="OK " ></DIV>';
 	//sinon, affichage des classes de même niveau 	
 	else
 		{
 		echo '<ul> <Li>Si vous avez un cours compos&eacute; d\'&eacute;l&egrave;ves issus de plusieurs classes,
-		 vous pouvez planifier en une fois, ce devoir pour tous vos d\'&eacute;l&egrave;ves.</li><BR>
+		 vous pouvez planifier en une fois, ce devoir pour tous vos d\'&eacute;l&egrave;ves.</li><br />
 		<LI>Lorsque vous enregistrerez votre devoir de <B>'.$mat.'</B> en <B>'.$clas_act.'</B> , il sera aussi planifi&eacute;  pour  les		classes que vous aurez s&eacute;lectionn&eacute;es ci-dessous </li></ul>';
 		echo '<div id="sel-classe"><TABLE id="diff-dev"><TR>';
 		for ($loop=1; $loop < count ($data1)+1  ; $loop++)
@@ -156,7 +156,7 @@ if (!isset($_POST['Valider']))
 			}
 		echo '</TR></TABLE></div>';
 		echo '<DIV align="center" ><input type="submit" name="Valider" value="Valider la s&eacute;lection" class="bt"></DIV>'; 
-		echo '<BR><Div class="notabene"> N\'oubliez pas apr&egrave;s avoir Valider la s&eacute;lection, de cliquer sur <B>Enregistrer </B>dans la page "Planning" </div>';
+		echo '<br /><Div class="notabene"> N\'oubliez pas apr&egrave;s avoir Valider la s&eacute;lection, de cliquer sur <B>Enregistrer </B>dans la page "Planning" </div>';
 		}
 	}
 ?>

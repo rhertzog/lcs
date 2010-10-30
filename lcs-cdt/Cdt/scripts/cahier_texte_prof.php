@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010 
+   VERSION 2.2 du 25/10/2010 
    modif : 9/6/2010
       par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
@@ -50,7 +50,7 @@ if (mysql_num_rows($result)==0)
 <html>
 <head>
 <title>Cahier de textes num&eacute;rique</title>
-<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<link href="../style/style.css" rel=StyleSheet type="text/css">
 </head>
 
@@ -73,12 +73,12 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 //include_once ('/usr/share/lcs/Plugins/Cdt/Includes/markdown.php'); //convertisseur txt-->HTML
 ?>
 
-<!-- Fin de la page de première utilisation -->
+<!-- Fin de la page de premiere utilisation -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
 <title>Cahier de textes num&eacute;rique</title>
-<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<link href="../style/style.css" rel=StyleSheet type="text/css">
 	<link  href="../style/deroulant.css" rel=StyleSheet type="text/css">
 	<link  href="../style/navlist-prof.css" rel=StyleSheet type="text/css">
@@ -105,14 +105,8 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 </head>
 
 <body onload="tinyMCE.execCommand('mceFocus',false,'coursfield')">
-<!--
-<div style="position:absolute; top:0px; left:100px; z-index:3;">
-<table class="ds_box" cellpadding="0" cellspacing="0" id="ds_conclass" style="display: none;">
-<tr><td id="ds_calclass">
-</td></tr>
-</table>
-</div>
--->
+
+
 <?
 $tsmp=time();
 $tsmp2=time() + 604800;
@@ -130,7 +124,7 @@ elseif (isset($_POST['rubriq']))
 	{
 	$cible=$_POST['rubriq'];
 	}
-//rubrique edt si agenda présent
+//rubrique edt si agenda present
 elseif (is_dir("../../Agendas"))
 	{
 	//connexion 
@@ -165,9 +159,22 @@ elseif (is_dir("../../Agendas"))
 			if ( $enrg[2]!="" && $mati[1]!="")
 				{
 				$match= $enrg[2].":".$mati[1];
+				//recherche du cours suivant
+				$rq="SELECT cal_date,cal_id FROM webcal_entry WHERE cal_date > '".$aujourdhui
+				."'  AND cal_name='".$enrg[2]."' AND cal_description LIKE '%".$mati[1]."%' AND cal_id IN 
+				(SELECT cal_id FROM webcal_entry_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_id IN 
+				(SELECT cat_id FROM webcal_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_name='EDT')) 
+				ORDER BY cal_date ASC limit 1";
+				//echo $rq;exit;	
+				$result = @mysql_query ($rq);
+				if ($result)
+					{	
+					$row = mysql_fetch_object($result);
+					$tsmp2=mkTime(0,0,1,substr($row->cal_date,2,2),substr($row->cal_date,-2,2),substr($row->cal_date,0,4));
+				    }			
 				break;
 				}
-		}
+			}
 	   }
 	}
 	mysql_close();
@@ -212,9 +219,9 @@ if (isset($_GET['com'])&& isset($_GET['rubrique']) && $_GET['TA']==$_SESSION['RT
 if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']==$_SESSION['RT'])
 { 
 //require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
-	// Traiter les données
+	// Traiter les donnees
 
-	// Vérifier $Cours  
+	// Verifier $Cours  
 	if (strlen($_POST['Cours']) > 0)
 		{ 
 		
@@ -238,11 +245,11 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 		
 		}
 	else
-		{ // Si aucun commentaire n'a été saisi
+		{ // Si aucun commentaire n'a ete saisi
 		$Cours = "";
 		}
 
-	// Vérifier $Afaire et la débarrasser de tout antislash et tags possibles
+	// Verifier $Afaire et la debarrasser de tout antislash et tags possibles
 	if (strlen($_POST['Afaire']) > 0)
 		{ 
 		//$Afaire= addSlashes(strip_tags(stripslashes($_POST['Afaire'])));
@@ -260,7 +267,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 			}	
 		}
 	else
-		{ // Si aucun commentaire n'a été saisi
+		{ // Si aucun commentaire n'a ete saisi
 		 $Afaire= "";
 		}
 
@@ -287,7 +294,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 	else 
 	$date_v=$date_c;
 
-	// Créer la requęte d'écriture pour l'enregistrement des données
+	// Creer la requęte d'ecriture pour l'enregistrement des donnees
 	if (isset($_POST['enregistrer']) && ((strlen($Cours) > 1) || (strlen($Afaire) > 1)))
 			{
 	
@@ -295,7 +302,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 	        VALUES ( '$cible','{$_SESSION['login']}', '$date_c', '$Cours', '$Afaire', '$date_af', '$date_v')";
 			}
 			
-	//Créer la requęte pour la mise ŕ jour des données	
+	//Creer la requęte pour la mise ŕ jour des donnees	
 	if (isset($_POST['modifier']))
 			{
 			$artic= ($_POST['numart']);
@@ -306,9 +313,9 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 	    $result = mysql_query($rq); 
 	    if (!$result)  // Si l'enregistrement est incorrect
 		    {                           
-		     echo "<p>Votre commentaire n'a pas pu ętre enregistré a cause d'une erreur systčme".
+		     echo "<p>Votre commentaire n'a pas pu ętre enregistr&#233; a cause d'une erreur systeme".
 			 "<p></p>" . mysql_error() . "<p></p>";
-			 mysql_close();     // refermer la connexion avec la base de données
+			 mysql_close();     // refermer la connexion avec la base de donnees
 			 exit();
 			}
 	 
@@ -349,9 +356,9 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 					$result = mysql_query($rq); 
 					if (!$result)  // Si l'enregistrement est incorrect
 						{                           
-						echo "<p>Votre commentaire n'a pas pu ętre enregistré a cause d'une erreur systčme".
+						echo "<p>Votre commentaire n'a pas pu ętre enregistr&#233; &#224; cause d'une erreur syst&#232;me".
 						"<p></p>" . mysql_error() . "<p></p>";
-						mysql_close();     // refermer la connexion avec la base de données
+						mysql_close();     // refermer la connexion avec la base de donnees
 						exit();
 						}
 					}
@@ -371,7 +378,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 */
 
 // Creer la requete (Recuperer les rubriques de l'utilisateur) 
-$rq = "SELECT classe,matiere,id_prof,postit FROM onglets
+$rq = "SELECT classe,matiere,id_prof,postit,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets
  WHERE login='{$_SESSION['login']}' ORDER BY id_prof ASC ";
 
  // lancer la requ&egrave;ete
@@ -385,6 +392,8 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 	$mat[$loop]=$enrg[1];
 	$numero[$loop]=$enrg[2];
 	$com[$loop]=$enrg[3];
+	$visa[$loop]=$enrg[4];// 
+	$datvisa[$loop]=$enrg[5];
 	$loop++;
 	}
 	
@@ -396,14 +405,21 @@ $nmax=$nb;
 echo '<div id="entete">';
 
 echo '<div id="navcontainer">';
+echo '<div id="switch-barreLcs" class="swup"></div>';
 echo ("<ul id='navlist'>");
 for($x=0;$x < $nmax;$x++)
 	{
 		if ($cible == ($numero[$x]))
 			{//cellule active	
 			echo ("<li id='select'><a href='cahier_texte_prof.php?rubrique=$numero[$x]'
-			'onmouseover=\"window.status='';return true\" id='courant'>$mat[$x]<br>$clas[$x] "."</a></li>");	
+			'onmouseover=\"window.status='';return true\" id='courant'>$mat[$x]<br />$clas[$x] "."</a></li>");	
 			$contenu_postit=stripslashes($com[$x]);
+			if ($visa[$x])
+				{
+				$vis=$visa[$x];
+				$datv=$datvisa[$x];
+				}
+			
 			}
 		else 
 			{
@@ -414,12 +430,11 @@ for($x=0;$x < $nmax;$x++)
 			else
 			{
 			echo ("<li><a href='cahier_texte_prof.php?rubrique=$numero[$x]'
-			'onmouseover=\"window.status='';return true\">$mat[$x]<br>$clas[$x]"."</a></li>");
+			'onmouseover=\"window.status='';return true\">$mat[$x]<br />$clas[$x]"."</a></li>");
 			}
 			}
 	}
 echo '</ul>';
-echo '<div id="switch-barreLcs" class="swup"></div>';
 echo '</div>';
 echo '</div>';
 
@@ -450,7 +465,7 @@ if (isset($_POST['modif'])&& isset($_POST['number']))
  // lancer la requęte
 	$result = @mysql_query ($rq) or die (mysql_error());
 	$nb = mysql_num_rows($result);
-	//s'il existe, on récupčre les datas pour les afficher dans les champs
+	//s'il existe, on recupčre les datas pour les afficher dans les champs
 	if (($nb==1) &&($action=='erg45er5ze'))
 		{while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 		{
@@ -469,7 +484,7 @@ if (isset($_POST['modif'])&& isset($_POST['number']))
 		$tsmp=mkTime(0,0,1,$val_mois,$val_jour,$val_annee);
 		//calcul du timestamp correspondant a la date "a faire" de l'article
 		$tsmp2=mkTime(0,0,1,$val_moisaf,$val_jouraf,$val_anneeaf);// - 604800 604800 pour compenser offset 7 jours
-		//calcul du timestamp correspondant a la date de vsisbilité
+		//calcul du timestamp correspondant a la date de vsisbilite
 		$tsmp3=mkTime(0,0,1,$val_moisv,$val_jourv,$val_anneev);
 		
 		}
@@ -515,12 +530,15 @@ if (isset($tsmp3))
 	}
 	else
 	$dtajav="idem Cours";
-   
+	
+//affichage visa	
+ if ($vis) echo '<div id="visa-cdt'.$vis.'">'.$datv.'</div>';
+
 ?>
 <!--bloc qui contient la saisie et le contenu du cahier de texte-->
 <div id="container">
 
-<!--bloc en haut de page qui contient la saisie et le menu deroulant à droite-->
+<!--bloc en haut de page qui contient la saisie et le menu deroulant a droite-->
 <div id="secondaire">
 
 <!--bloc de gauche pour la saisie-->
@@ -532,10 +550,10 @@ if (isset($tsmp3))
 			<div id="crsdu">Cours  du :
  				<input id="datejavac" size="10" name="datejavac" value="<?echo $dtajac?>" readonly="readonly" style="cursor: text">
  				Visible le :
- 				<input id="datejavav" size="10" name="datejav" value="<?echo $dtajav?>" readonly="readonly" style="cursor: text" title="Par défaut, le commentaire sera visible a partir de la date du cours">
+ 				<input id="datejavav" size="10" name="datejav" value="<?echo $dtajav?>" readonly="readonly" style="cursor: text" title="Par d&#233;faut, le commentaire sera visible a partir de la date du cours">
  			</div>
 			<TEXTAREA id="coursfield"  NAME="Cours"  class="mceAdvanced" COLS=1 ROWS=1 WRAP=virtual style="background-color:#F0F0FA"><?echo $cours;?> </TEXTAREA>
-			<input type="hidden" name="numart" value= "<? echo $article ; ?>"><br />
+			<input type="hidden" name="numart" value= "<?php echo $article ; ?>"><br />
 		</div><!--fin du div boite 1-->
   
 		<div id="boite2">
@@ -546,9 +564,9 @@ if (isset($tsmp3))
 		</div><!--fin du div boite 2-->
 		
 	</div><!--fin de la boite 3-->
-	<INPUT name="TA" type="hidden"  value="<? echo $_SESSION['RT']; ?>">
+	<INPUT name="TA" type="hidden"  value="<?php echo $_SESSION['RT']; ?>">
 	<div id="boite4">
-		<?  if (isset($_POST['modif'])&& isset($_POST['number'])) {
+		<?php  if (isset($_POST['modif'])&& isset($_POST['number'])) {
 			echo ('<INPUT name="rubrique" type="hidden" id="rubrique" value="'.$cible.'">
 				<div id="bouton">
 				<input type="submit" title="Enregistrer les modifications" name="modifier" value="" class="submit-modif">
@@ -596,17 +614,17 @@ if (isset($tsmp3))
     <div class="deroulant" id="deroulant_1">
     	<div class="t3">Aide m&eacute;moire</div>
         <form id="aide-memoire-contenu" name="aidememory">
-        	<textarea id="aide-memoire" name="monpostit"  class="MYmceAdvanced" style="width:100%" rows="15" cols="22">
+        	<textarea id="aide-memoire" name="monpostit"  class="MYmceAdvanced" style="width:100%" rows="17" cols="22">
         	<?if ($contenu_postit !="") echo $contenu_postit;
-			else echo "Penser &agrave; ...";?></textarea><br />
-			<input name="button"  type="button" onClick="go(<? echo $cible; ?>);" value="Enregistrer le post-it" title="Enregistrer le post-it" />			
+			else echo "Penser &agrave; ...";?></textarea>
+			<input name="button"  id="bt-erg" type="button" onClick="go(<?php echo $cible; ?>);" value="" title="Enregistrer le post-it" />			
 		</form>
 	</div><!--fin du div deroulant_1-->
 
     <div class="deroulant" id="deroulant_2">
     	<div class="t3">Archives</div>
       		<?	/* Affichage des archives */ 
-				echo (' <B><FONT COLOR="#0000FF" style="align:left"> Etablissement :<br></font></B> ');
+				echo (' <hr /><p class="archive">Vos anciens cahiers de textes :</p> ');
  				//recherche du  nom des archives
 				$TablesExist= mysql_query("show tables");
 				$x=0;
@@ -619,11 +637,13 @@ if (isset($tsmp3))
 	
 				}
 				//s'il n'esiste pas d'archive
-				if ($x==0) { echo '<B><FONT COLOR="#CC0000" > Aucune </FONT></B>';}
+				if ($x==0) echo '<p class="archive_nok"> Aucun </p>';
+				else echo '<hr /><p class="archive">Anciens cahiers de textes &#233;l&#232;ves</p>
+				<a href="cahier_text_eleve_arch.php" target="_blank" width="900" height="800"> -  Ils sont ici </a>';
 				echo '<hr />';
 				mysql_close();
 				//archives perso
-				echo (' <B><FONT COLOR="#0000FF" style="align:left"> Personnelles :<br></font></B> ');
+				echo (' <p class="archive"> Cahiers de textes import&#233;s :</p> ');
  				//recherche du  nom des archives
  				include_once "/var/www/lcs/includes/headerauth.inc.php";
  				list ($idpers,$log) = isauth();
@@ -636,10 +656,10 @@ if (isset($tsmp3))
 
 				// Ouvrir la connexion et selectionner la base de donnees
 				$dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD); 
-				//OR die ('Connexion a MySQL impossible : '.mysql_error().'<br>');
+				//OR die ('Connexion a MySQL impossible : '.mysql_error().'<br />');
 				if ($dbcp) {
 				$db_selected = mysql_select_db (DBP_NAME);
-       			//OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br>');
+       			//OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br />');
 				if ($db_selected) {
 				$TablesExist= mysql_query("show tables");
 				$x=0;
@@ -648,15 +668,16 @@ if (isset($tsmp3))
 					$archive=explode('s',$table[0]);
 					$x++;
 					if ($archive[1]!="") $archnum=$archive[1]; else $archnum="An dernier";
-					echo '<a href="#" onClick="arch_perso_popup(\''.$archive[1].'\'); return false" >- '.$archnum.' </a> <br>  ';
+					echo '<a href="#" onClick="arch_perso_popup(\''.$archive[1].'\'); return false" >- '.$archnum.' </a> <br />  ';
 	
 				}
 				//s'il n'esiste pas d'archive
-				if ($x==0) { echo '<B><FONT COLOR="#CC0000" > Aucune </FONT></B>';}
+				if ($x==0) echo '<p class="archive_nok"> Aucun </p>';
 				}
 				else { echo 'Erreur : '.mysql_error();}
 				}
 				else { echo 'Erreur : '.mysql_error();}
+				echo '<hr />';
 				mysql_close();
 				
 			?>
@@ -712,9 +733,9 @@ $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,
  WHERE (id_auteur=$cible) AND (login='{$_SESSION['login']}') ORDER BY date desc ,id_rubrique desc";
 // Ouvrir la connexion et selectionner la base de donnees
 $dbc = @mysql_connect (DB_HOST, DB_USER, DB_PASSWORD) 
-       OR die ('Connexion a MySQL impossible : '.mysql_error().'<br>');
+       OR die ('Connexion a MySQL impossible : '.mysql_error().'<br />');
 mysql_select_db (DB_NAME)
-       OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br>');
+       OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br />');
 // lancer la requete
 $result = @mysql_query ($rq) or die (mysql_error());
 
@@ -738,7 +759,9 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  echo '<tr>';
 	  //affichage de la seance
 	  echo '<td class="seance">S&eacute;ance du <br/>'.$jour.'&nbsp;'.$ligne[0].'<br />Visible le '.$ligne[7].' </td>';
-	  if($ligne[1]!="" && $ligne[6]=="1") echo '<td class="contenu2">';else echo '<td class="contenu">';
+	  if($ligne[1]!="" && $ligne[6]==1) echo '<td class="contenu2">';
+	  elseif($ligne[1]!="" && $ligne[6]==2) echo '<td class="contenu3">';
+	  else echo '<td class="contenu">';
 	  echo $textcours.'</td></tr>';
 	  //affichage, s'il existe, du travail a effectuer
 	  if ($ligne[2]!="") {
@@ -772,7 +795,9 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  //affichage, s'il existe, du travail a effectuer
 	  if ($ligne[2]!="") {
 	  echo '<br/>Pour le :&nbsp;'.$ligne[3].'</td>';
-	  if($ligne[6]=="1") echo '<td class="contenu2">';else echo '<td class="contenu">';
+	  if($ligne[6]==1) echo '<td class="contenu2">';
+	  elseif($ligne[6]==2) echo '<td class="contenu3">';
+	  else echo '<td class="contenu">';
 	   echo $textafaire.'</td></tr>';
 	  }
 	  //fin
@@ -798,6 +823,7 @@ echo '</table>';
 echo "</div>";  //fin du div de la boite 5 : contenu du cahier de texte
 echo '</div>'; //fin du div container
 echo '<div id="musique"></div>';
+ 
 include ('../Includes/pied.inc');
 ?>
 </body>

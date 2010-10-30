@@ -1,4 +1,4 @@
-#onglev{float:left;width:200px;padding:0px;margin-top:20px;margin-left:10px;background:url('../images/fond-rub-elv-cdt.png') no-repeat;}
+#onglev{float:left;position:relative;width:200px;padding:0px;margin-top:20px;margin-left:10px;background:url('../images/fond-rub-elv-cdt.png') no-repeat;}
 #navlist-elv{float:left;background:#f8f8ff url(../images/fond-rub-elv-cdt.png) no-repeat scroll center bottom;text-align:left;font-size:12px;width:200px;padding:0px 0 80px;margin: 30px 10px 0 0;font: normal 0.8em Verdana, sans-serif;}
 #navlist-elv li{list-style: none;float:left;margin: 0;width: 100%;font-size:12px;background:transparent url(../images/fond-rub-elv-cdt.png) no-repeat scroll 50% 50%;}
 #navlist-elv a{display: block;margin:1px 0;text-decoration:none;background:url('../images/menu-elv-off-cdt.png') no-repeat;color:#ffffff;padding:0.25em 0.5em 0.4em 1.5em;font-size:12px;}
@@ -7,7 +7,6 @@
 #navlist-elv a:hover {background: url('../images/menu-elv-on-cdt.png') no-repeat;padding: 0.25em 0.5em 0.4em 1.5em;}
 #navlist-elv a#courant:active{background:none;font-weight:bold;color: #fdb218;background: url('../images/menu-elv-on-cdt.png') no-repeat;padding: 0.25em 0.5em 0.4em 1.5em;}
 #navlist-elv a:active{background:none;font-weight:bold;color: #fdb218;background: url('../images/menu-elv-on-cdt.png') no-repeat;padding: 0.25em 0.5em 0.4em 1.5em;}
-
 #cfg-navlist-elv{float:left;text-align:left;padding: 0 1px;font: normal 0.8em Verdana, sans-serif;}
 #cfg-navlist-elv li{list-style: none;float:left;margin-left:5px;width:195px;}
 #cfg-navlist-elv a{display: block;margin:1px 0;font-size:10px;text-decoration:none;background:url('../images/menu-elv-off-cdt.png') no-repeat;color:#ffffff;padding:0.25em 0.5em 0.4em 1.5em;}
@@ -16,5 +15,10 @@
 #cfg-navlist-elv a:hover {background: url('../images/menu-elv-on-cdt.png') no-repeat;padding: 0.25em 0.5em 0.4em 1.5em;}
 #cfg-navlist-elv a#courant:active{background:none;font-weight:bold;color: #fdb218;background: url('../images/menu-elv-on-cdt.png') no-repeat;padding: 0.25em 0.5em 0.4em 1.5em;}
 #cfg-navlist-elv a:active{background:none;font-weight:bold;color: #fdb218;background: url('../images/menu-elv-on-cdt.png') no-repeat;padding: 0.25em 0.5em 0.4em 1.5em;}
-#bt-taf{background:url('../images/bt-cdt-taf.png') no-repeat;color:white;margin: 0 5px;padding:5px 62px;border:none;height:20px;width:120px;}
+.bt-taf{background:url('../images/bt-cdt-taf.png') no-repeat;color:white;margin: 0 5px;padding:5px 62px;border:none;height:20px;width:120px;}
 #bt-abs{background:url('../images/bt-cdt-abs.png') no-repeat;color:white;margin: 0 5px;padding:5px 62px;border:none;height:20px;width:120px;}
+#switch-postit{position:fixed; top:46px; right:182px;cursor:pointer;height:20px;padding:0;width:24px;}
+.postup{background:url('../images/up.png') no-repeat;}
+.postdown{background:url('../images/down.png') no-repeat;}
+#switch-ongletsup{position:absolute; top:7px; left:85px;cursor:pointer;height:20px;padding:0;width:24px;background:url('../images/up.png') no-repeat;}
+#switch-ongletsdown{position:absolute; bottom:55px; left:85px;cursor:pointer;height:20px;padding:0;width:24px;background:url('../images/down.png') no-repeat;}

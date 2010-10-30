@@ -1,25 +1,32 @@
 /******************************************** Exception Internet Explorer ***************************************************/
 
 body {margin: 0;padding: 0;overflow: auto;text-align:left;background: #f8f8ff;font-size:1em;color: #000000;font-family: Arial Helvetica sans-serif verdana;width:100%}
-
-#field7, #fields8, #field9 {text-align:center;margin:10px;padding:20px;background: #f8f8ff;}
-#switch-barreLcs{position:absolute;top:10px;right:50px;width:24px;height:20px;padding:0;cursor:pointer;}
-
-#container {;margin: 10px 0 0 1%;}
-
+#field7 , #field9{position: relative;}
+#legende{position: absolute;top: -.8em;	left: .2em;}
+#boite5elv {position:absolute;top:150px; left:240px;padding:10px;background:#f8f8ff;margin:15px;width:720px;}
+#switch-barreLcs{position:absolute;top:20px;left:0px;width:24px;height:20px;padding:0;cursor:pointer;}
+#entete{background:#F8F8FF url(../images/fond-ong-prof-cdt.png) repeat-x scroll center bottom;position:absolute;top:1px;left:0px;width:100%;opacity:0.9}
+#navlist{position:relative; top:1px; left:25px;text-align:left;margin:0 0 8px;font-family: Verdana sans-serif;width:100%;}
+#container {margin: 100px 0 0 1%;position: relative; top:50px;left: 100px;}
+#container2 {margin: 100px 0 0 1%;position: relative; top:80px;left: 100px;}
 #navlist li{width: 7.8em; height:3.2em;margin:0;padding:0;}
-#navlist a {width: 8.4em;height:3.2em;padding:0.6em;font-size:0.9em;}
+#navlist a {width: 12em;height:3.2em;padding:0.6em;font-size:0.9em;text-align:center;}
 #navlist li#select{width: 12.5em;height:3.2em;padding:0;margin:0;}
 #navlist a#courant {width:14em;padding:0.6em 0;margin:0;height:3.2em;}
 #navlist a#courant:hover{width: 14em;padding:0.6em;margin:0}
-#navlist a:hover{width: 8.4em;height:3.2em;padding:0.6em;}
-
+#navlist a:hover{width: 12em;height:3.2em;padding:0.6em;text-align:center;}
 #cfg-navlist-elv{margin:5px 0;}
 #cfg-navlist-elv li{width:190px;}
 #cfg-btn{margin:10px 5px;}
-
-#visa-cdt {position:absolute; width:80px;height:70px;top:150px; right:20px;color:red;text-align:center;padding:4.8em 0.8em 0;border:2px outset #1b2c68;background:#fff url('../images/tampon.png') no-repeat center 5px;}
-
+#visa-cdt1 {position:absolute; top:70px; left:0px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;border:2px outset #1b2c68;background:#fff url('../images/tampon.png') no-repeat center 5px;}
+#visa-cdt2 {position:absolute; top:70px; left:0px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;border:2px outset #1b2c68;background:#fff url('../images/tampon_e.png') no-repeat center 5px;}
+#visa-cdt1e {position:relative; top:10px; left:0px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;border:2px outset #1b2c68;background:#fff url('../images/tampon.png') no-repeat center 5px;z-index:-1;}
+#visa-cdt2e {position:relative; top:10px; left:0px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;border:2px outset #1b2c68;background:#fff url('../images/tampon_e.png') no-repeat center 5px;z-index:-1;}
 #bt-fixe {position:absolute; width:150px;height:70px;top:160px; right:35px;padding:0.6em;background:#eee;border:2px outset #1b2c68;}
-
 #form-ajt-dev {color:#1b2c68;margin:0 40px;border:solid 2px #0d6a1e;padding:15px; width:810px;}
+#switch-postit{position:absolute; top:46px; right:192px;cursor:pointer;height:20px;padding:0;width:24px;}
+#postit-eleve {position:absolute; top:40px; right:15px;font-size:14px;opacity:0.9;width: 201px;height:320px;background: url('../images/fond-postit.png') no-repeat center 5px;}
+#pied {position:absolute; left:22px;}
+#bt-taf{background:url('../images/bt-cdt-taf.png') no-repeat;color:white;margin: 5px;padding:15px 62px;border:none;height:20px;width:120px;}
+#switch-onglets{position:absolute; top:220px; left:220px;cursor:pointer;height:20px;padding:0;width:24px;}
+#container-cdt-elv {position:relative;margin: 10px 0 0 1%;}

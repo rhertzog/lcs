@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'export de son Cdt-
@@ -29,7 +29,7 @@ elseif ($_SESSION['cequi']!="prof") exit;
 include "../Includes/basedir.inc.php";
 include "$BASEDIR/lcs/includes/headerauth.inc.php";
 
-// Connexion a la base de données
+// Connexion a la base de donnees
 require_once ('../Includes/config.inc.php');
 
 function dumpMySQL()
@@ -44,7 +44,7 @@ function dumpMySQL()
     $listeTables = mysql_query("show tables", $connexion);
     while($table = mysql_fetch_array($listeTables))
     {
-        // si l'utilisateur a demandé la structure ou la totale
+        // si l'utilisateur a demande la structure ou la totale
         //if ( $table[0] == "cahiertxt" || $table[0] == "onglets" )
         if ( mb_ereg("^cahiertxt",$table[0]) || mb_ereg("^onglets",$table[0]))
         {
@@ -57,7 +57,7 @@ function dumpMySQL()
             {
               $creations .= $creationTable[1].";\n\n";
             }
-        //données
+        //donnees
             $donnees = mysql_query("SELECT * FROM ".$table[0]."  WHERE login='".$_SESSION['login']."'");
             $insertions .= "-- -----------------------------\n";
             $insertions .= "-- insertions dans la table ".$table[0]."\n";
@@ -121,7 +121,8 @@ $chemin = $rep_tmp.'/my_cdt.tgz';
      header('Content-Type: application/force-download');
      header('Content-Transfer-Encoding: binary');
      header('Content-Length: '. filesize($chemin));
-     header('Pragma: no-cache');
+     if (mb_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) header('Pragma: public');
+     else header('Pragma: no-cache');
      header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
      header('Expires: 0');
      readfile($chemin);
@@ -144,7 +145,7 @@ echo '
 <html>
 <head>
 <title>Cahier de textes num&eacute;rique</title>
-<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<link href="../style/style.css" rel=StyleSheet type="text/css">
 </head>
 

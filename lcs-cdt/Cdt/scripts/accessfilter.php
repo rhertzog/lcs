@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010
+   VERSION 2.2 du 25/10/2010
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script acces parents  -
@@ -80,12 +80,16 @@ $tsmp=time();
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=iso-8859-1" >
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
 	<TITLE></TITLE>
 	<meta name="generator" content="Bluefish 1.0.7">
 	<META NAME="CREATED" CONTENT="20051226;22304481">
 	<META NAME="CHANGED" CONTENT="20051226;22565970">
 	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+	<!--[if IE]>
+<link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
+<![endif]-->
 	</HEAD>
 <BODY LANG="fr-FR" DIR="LTR">
 <H1 class='title'>Acc&egrave;s au cahier de texte en ligne</H1>
@@ -104,7 +108,7 @@ $tsmp=time();
 <p>Apr&egrave;s l\'avoir compl&eacute;t&eacute;, ce formulaire vous fournira un lien d\'acc&egrave;s direct valable toute l\'ann&eacute;e scolaire.</p>
 <p>Vous devrez <strong>enregistrer ce lien </strong> dans votre marque-pages ou vos favoris, pour ne pas avoir &agrave; refaire cette proc&eacute;dure.</p>
 <p>&nbsp;</p>';
-$text2 = '<p>A combien de cahiers de texte de classes, voulez vous acc&eacute;der ?<br>
+$text2 = '<p>A combien de cahiers de texte de classes, voulez vous acc&eacute;der ?<br />
 <i>(Vous devrez fournir le nom,&nbsp;pr&eacute;nom et date de naissance d\'un enfant scolaris&eacute; dans chacune de ces classes.)</i></p>
 ';
 if (!isset($_POST['Valider']))
@@ -153,7 +157,7 @@ if (isset($_POST['Valider']))
   				echo ">$valeur</option>\n";
   				}
   				echo "</select>\n";
-			 	echo '<br>';
+			 	echo '<br />';
 				}
 
 		}
@@ -299,7 +303,7 @@ if (isset($_POST['Valider']))
 					
  					if ($erreur[$a]=="true") echo $prenom_propre[$a]."  ";
 					}	
-					echo "<br><br>Veuillez v&eacute;rifier les donn&eacute;es saisies dans le formulaire  : <a href='javascript:history.back()'>Retour au formulaire</a>"; 	  		
+					echo "<br /><br />Veuillez v&eacute;rifier les donn&eacute;es saisies dans le formulaire  : <a href='javascript:history.back()'>Retour au formulaire</a>"; 	  		
 		  		}
 				else
 				{
