@@ -69,16 +69,16 @@ var JQD = (function($) {
 			var clock_date = day + ' ' + month + ' ' + year;
 
 			// Shove in the HTML.
+			$('#date span.date').html(clock_date);
 			$('#clock').html(clock_time).dblclick(function() {
 				$(this).attr('title', 'agendas');
 				JQD.init_link_open_win(this);
 				setTimeout($(this).removeAttr('title'), 1000);
 				return false;
-			}).hover(function() {
-				setTimeout($('#date').html(clock_date).show(500), 500);
-			},
-			function() {
-				$('#date').html(clock_date).hide(500);
+			}).mouseenter(function() {
+				setTimeout($('#date').show(500), 500);
+			}).next('#date').mouseleave(function() {
+				$(this).hide(500);
 			});
 
 			// Update every 60 seconds.
@@ -268,12 +268,6 @@ var JQD = (function($) {
 		// .:LCS:. Load xml preferences
 		//
 		user_load_prefs: function () {
-			// src image wallpaper
-			$('#tmp_wallpaper').length ==1 ? $('#wallpaper').attr('src',$('#tmp_wallpaper').val().replace('thumbs/','')) : '';
-			if( $('#tmp_poswp').length ==1 ) { $('#wallpaper').removeClass().addClass($('#tmp_poswp').val()) ;
-			$('#pos_walppr').attr('value',$('#tmp_poswp').val());
-			//JQD.place_wallpaper();
-			}
 			
 			if( $('#tmp_bgcolor').length==1 ) { 
 				$('body').css('background-color', $('#tmp_bgcolor').val()); $('#wp_bgcolor').attr('value',$('#tmp_bgcolor').val()); 
@@ -288,6 +282,14 @@ var JQD = (function($) {
 			$('#icons_field_height').attr('value',$('#tmp_iconsfield').val());
 			!$('#tmp_wallpaper').length? JQD.load_prefs_img('core/images/misc/RayOfLight_lcs.jpg'):'';
 			JQD.init_icons();
+			// Add wallpaper last, to prevent blocking.
+			$('#tmp_wallpaper').val() ? x=$('#tmp_wallpaper').val()  : x="core/images/misc/RayOfLight_lcs.jpg";
+			//alert($('#tmp_wallpaper').val());
+			$('body').prepend('<img id="wallpaper" class="abs wallpaper" src="'+ x.replace('thumbs/','') +'" />');
+			// .:LCS:. 
+			$("#vign_wlpper").attr('src', $('#wallpaper').attr('src'));
+			
+			
 		},
 		//
 		//
@@ -431,16 +433,22 @@ var JQD = (function($) {
 		notify_forum: function(){
 			$.ajax({
 				type:'GET',
-				url:'../spip/?page=lcs-notify',
+				url:'core/action/load_spip_notify.php',
 				datatype:"text",
 				complete: function(data,status) {
-					var newidart= $(data.responseText).find('span.spip_id_article').text();
+					var newidart= $(data.responseText).find('h3').text();
 					var oldidart=$('#s_idart').val();
 					if(newidart!=oldidart){
 						JQD.create_notify("withIcon", 
 							{ title:'<span style="color:#509fda;">Information Forum</span>', text:data.responseText, icon:'core/images/icons/info.png'},
 							{
 							expires:true,
+							open: function(e,instance){
+								//alert($('#notify_container').length);
+								$('#notify_container').find('a').each(function(){
+									$(this).remove();
+								});
+							},
 							click: function(e,instance){
 								JQD.init_link_open_win('<a href="../spip/" title="Forum Lcs" rev="spip" rel="spip" class="open_win ext_link">Forum Lcs</a>');
 							}
@@ -597,23 +605,18 @@ var JQD = (function($) {
 			JQD.make_win_move();
 			return false;
 		 },
-
-
-		//###############
-		// Initialize the desktop.
-		//###############
-		init_desktop: function() {
-			if (window.location !== window.top.location) {
-				window.top.location = window.location;
-			}
-
+		 //
+		 //
+		 //
+		 desktop_space: function(){
 			// gestion des bureaux secondaires // A REVOIR ENTIEREMENT
 			var left_o = $('#desktop').width();
 			$('#inettuts').animate({left: left_o+'px'}).hide();
 			$('#monLcs').animate({left: -left_o+'px',right: left_o+'px'}).hide();
 
 			$('#otBuro_2').click(function(){
-			$('#otBuro_1 ul').show('fast');
+				if ( $(this).hasClass('monlcs_dtq') ) return false;
+				$('#otBuro_1 ul').show('fast');
 			});
 			$('#otBuro_1 li a').click(function(){
 				if($(this).not('.space')){
@@ -641,7 +644,8 @@ var JQD = (function($) {
 						$('#inettuts').animate({left: (2*left_o)+'px', right: (-2*left_o)+'px'},1500, function(){$('#inettuts').hide();});
 						$('#monLcs').show().animate({left: 0, right: 0},1500, function(){
 							$('#monLcs iframe').attr('src', '../monlcs/');
-							$('a.menu_trigger').hide('slow');
+							$('a.menu_trigger, ul.bar_top_right li').hide('slow');
+							$('ul.bar_top_right >li:eq(0), ul.bar_top_right >li:eq(2), ul.bar_top_right >li:eq(7)').show('slow');
 						});
 						var spaceOn='3';
 					} else if((ind==0) && ($('#desktop').position().left!=0)) {
@@ -650,6 +654,7 @@ var JQD = (function($) {
 						$('a.menu_trigger').show('slow');
 						$('#inettuts').animate({left: left_o+'px', right: -left_o+'px'},1500, function(){$('#wallpaper_b').remove();$('#inettuts').hide();});
 						$('#monLcs').animate({left: -left_o+'px',right: left_o+'px'},1500, function(){$('#monLcs iframe').attr('src', '');});
+						$('ul.bar_top_right >li').show('slow');
 					}
 					$('#otBuro_2').text($(this).text().substring(0,1));
 					$('#otBuro_1 li a').each(function(){
@@ -661,9 +666,12 @@ var JQD = (function($) {
 				}
 			});
 			
-			// 
-			//.:LCS:. Quicklaunch (Dock MacOs)
-			//
+		 },
+		 
+		 //
+		 //.:LCS:. Quicklaunch (Dock MacOs)
+		 //
+		 init_docks: function() {
 			var x_d = ($('#desktop').width() - $('#quicklaunch').width())/2;
 			$('#quicklaunch').css("left", x_d+"px").each(function() {
 				$.each($(this).find('li a'), function() {
@@ -702,9 +710,27 @@ var JQD = (function($) {
 					}
 				});
 			});
+		 },
+
+
+		//###############
+		// Initialize the desktop.
+		//###############
+		init_desktop: function() {
+			if (window.location !== window.top.location) {
+				window.top.location = window.location;
+			}
 			
 			// on init le login
 			var login = $('#jqd_login').text();
+
+			// src on place la vignette du wallpaper
+			$('#tmp_wallpaper').length ==1 ? $('#wallpaper').attr('src',$('#tmp_wallpaper').val()) : '';
+			if( $('#tmp_poswp').length ==1 ) { 
+				$('#wallpaper').removeClass().addClass($('#tmp_poswp').val()) ;
+				$('#pos_walppr').attr('value',$('#tmp_poswp').val());
+				//JQD.place_wallpaper();
+			}
 
 			// Start clock.
 			JQD.init_clock();
@@ -828,14 +854,6 @@ var JQD = (function($) {
 			$('.btn_groups.triangle_updown').trigger('click');
 
 
-			
-			// Add wallpaper last, to prevent blocking.
-			$('#tmp_wallpaper').val() ? x=$('#tmp_wallpaper').val()  : x="core/images/misc/RayOfLight_lcs.jpg";
-			//alert($('#tmp_wallpaper').val());
-			$('body').prepend('<img id="wallpaper" class="abs wallpaper" src="'+ x +'" />');
-			// .:LCS:. 
-			$("#vign_wlpper").attr('src', $('#wallpaper').attr('src'));
-			
 			
 			// .:LCS:.  Change wallpaper
 			$('#ch_wlppr').click(function(){
@@ -1017,6 +1035,12 @@ var JQD = (function($) {
 			//.:LCS:. preferences user
 			 JQD.user_load_prefs();
 //			 JQD.init_link_open_win();
+			// appel spaces bureaux seconadaires
+			JQD.desktop_space();
+			
+			// Appel des icons dock (type macOs)
+			JQD.init_docks();
+
 		}
 	};
 // Pass in jQuery.

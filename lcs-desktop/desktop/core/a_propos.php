@@ -96,11 +96,5 @@ font-size:.8em;font-family:tahoma;
 <div id="remerciements" style="height:48px;font-size:.5em;border-top:1px solid #aaa;padding:10px;display:none;">
 				 Nous remercions : nos chiens, les mouettes rieuses, Robert et Simone, la machine &agrave; caf&eacute;, les after-kermesses, les trois p'tits cochons, les Digitals Natives, la mob &agrave; Lulu, la machine &agrave; caf&eacute;, la dame du self qui dit toujours <i>"Bon app&eacute;tit et bon week-end, monsieur</i>", Qbi4, m&egrave;re Denis, la bm &agrave; Rom, les bons anti-virage, la machine &agrave; caf&eacute;, le tracteur &agrave; David qu'a perdu son marteau, Darkwador, les sauvageons, Bob l'Eponge, la machine &agrave; caf&eacute;, euhhh, non, pas Bob l'Eponge, les marais de Carentan...
 </div>
-<script src="js/jquery-1.4.2.min.js"></script>
-<script>
-/*$(document).ready(function(){
-$('a').not('open_win').attr('target', '_blank');
-});*/
-</script>
 </body>
 </html>

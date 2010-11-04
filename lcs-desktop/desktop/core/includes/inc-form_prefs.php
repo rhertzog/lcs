@@ -131,6 +131,11 @@
 				JQD.load_prefs_img($(this).attr('src'));
 				$('#ch_wlppr').show();
 			});
+		}).show().find('.close').click(function(){
+			$(this).closest('div').hide();
+		});
+			return false;
+	});
 			$('#btn_openFinder').click(function(){
 				$.ajax({
 					type: "GET",
@@ -148,11 +153,6 @@
 				});	
 			//	$('#dirWallpaper').load('core/finder/finder.inc.php').show();
 			});
-		}).show().find('.close').click(function(){
-			$(this).closest('div').hide();
-		});
-			return false;
-	});
 	JQD.load_prefs_img($('#tmp_wallpaper').val());
 	// on met des couleurs odd-even sur les select option
 	$('select').find('optgroup option:nth-child(even)').css('background','#eaeaff');

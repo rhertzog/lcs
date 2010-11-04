@@ -19,7 +19,7 @@ list ($idpers, $login)= isauth();
 			$i++;
 			}
 			else if(in_array($path_info['extension'], $iExts)) {
-				$resItems.="<li class=\"ui-finder-file ".$cl."\"><a href=\"core/action/get_metas_exif_img.php?file=/home/".$login."/public_html/".$_u.$item."&p=finder.png\" rev=\"".$_u."\" title=\"".$iDir.$item."\"><img src=\"core/images/app/".$path_info['extension'].".png\"/>".$item."</a></li>";
+				$resItems.="<li class=\"ui-finder-file ".$cl."\"><a href=\"core/action/get_metas_exif_img.php?file=/home/".$login."/public_html/".$_u.$item."&p=finder.png\" rev=\"".$_u."\" title=\"".$iDir.$item."\"><img src=\"core/images/app/".$path_info['extension'] ? $path_info['extension'] : "defaut".".png\"/>".$item."</a></li>";
 			$i++;
 			}
 		}

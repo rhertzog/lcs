@@ -11,7 +11,7 @@
 	</li>
 	<li>
 	<a rev="agendas" rel="../lcs/statandgo.php?use=Agendas" href="#icon_dock_lcs_agendas" class="ext_link" id="clock"></a>
-	<div id="date" style="display:none;"></div>
+	<div id="date" style="display:none;"><span class="date"></span></div>
 	</li>
 	<li class="">
 		<a class="reload" id="reload" href="" title="Recharger le bureau"></a>
@@ -48,14 +48,14 @@
 	<li>
 		<a class="open_win float_right ext_link search icon_16" id="found" href="../Annu/search.php" title="Trouver un utilisateur, une classe, un groupe..." rel="annu"></a>
 	</li>
-	<li>
+	<li class="spaces">
 	<!--	<span class="float_right" id="mylinks_bar_btn">Listes&nbsp;&nbsp;|</span> -->
 		<span class="float_right" id="otBuro_1" style="position:relative;display:block;">
 			<span class="float_left checked"></span>
-			<span id="otBuro_2">1</span>
+			<span <?php if(!is_dir("/var/www/monlcs/")) echo " class=\"monlcs_dtq\""; ?> id="otBuro_2" >1</span>
 			<ul style="position:absolute;" class="menu">
 				<li><a href="#desktop" class="space">1&nbsp;&nbsp;Lcs Bureau</a></li>
-				<li class="nospace"><a href="#inettuts">2&nbsp;&nbsp;<strong><i>i</i></strong>Lcs</a></li>
+				<li class="nospace" style="display:none"><a href="#inettuts">2&nbsp;&nbsp;<strong><i>i</i></strong>Lcs</a></li>
 				<li class="nospace"><a href="#monLcs">3&nbsp;&nbsp;MonLcs</a></li>
 			</ul>
 		</span>

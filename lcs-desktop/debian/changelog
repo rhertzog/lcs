@@ -1,3 +1,13 @@
+lcs-desktop (0.2~13) Lcs; urgency=low
+  [Dominique Lepaisant]
+  * Fix bug in call of the notification of the forum
+  * Changing the defaut icon in the info wallpaper
+  * modify display of spaces menu
+  * Cleaning jquery.desktop.js
+  * remove call of jquery in a_propos.php
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 24 Sep 2010 01:06:53 +0200
+
 lcs-desktop (0.2~12) Lcs; urgency=low
   [Dominique Lepaisant]
   * Fix bug in index.php
