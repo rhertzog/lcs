@@ -153,7 +153,7 @@ $groups=search_groups('cn=classe*');
 
  for($n=0; $n<count($classe); $n++)
 						{
-						if (mb_ereg("($classe[$n])$",$classe_en_clair))
+						if (mb_ereg("(_$classe[$n])$",$classe_en_clair) || $classe[$n]==$classe_en_clair)
 							{
 							$classe_decriptee=$classe[$n];
 							break;
@@ -171,7 +171,7 @@ function decripte_uid($uid_cripte,$saclasse) {
 			for ($loup=0; $loup < count($groups); $loup++)
 			        {
 			        
-						if (mb_ereg("($saclasse)$",$groups[$loup]["cn"]))
+						if ((mb_ereg("(_$saclasse)$",$groups[$loup]["cn"])) || ($saclasse == $groups[$loup]["cn"]))
 							{
 							$full_classe =$groups[$loup]["cn"];
 							break;

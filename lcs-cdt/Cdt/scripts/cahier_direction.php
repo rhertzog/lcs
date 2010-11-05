@@ -50,7 +50,16 @@ if (isset($_POST['Exporter']))
 if (isset($_POST['Abs']))
 	{	
 	header ("location: ./cpe.php");
+	}
+	
+if (isset($_POST['datelim']))
+	{
+	$dtajaf=$_POST['datelim'];
 	}	
+else 
+	{$nextWeek = time() + (7 * 24 * 60 * 60);
+	$dtajaf= date ('d/m/Y',$nextWeek);
+	}
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -59,9 +68,16 @@ if (isset($_POST['Abs']))
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<TITLE></TITLE>
 	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+	<link  href="../style/ui.all.css" rel=StyleSheet type="text/css">
+	<link  href="../style/ui.datepicker.css" rel=StyleSheet type="text/css">
+	<link  href="../style/ui.theme.css" rel=StyleSheet type="text/css">
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
+	<script language="Javascript" type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
+	<script language="Javascript" type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
+	<script language="Javascript" type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script>
+	<script language="Javascript" type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
 	</HEAD>
 <BODY LANG="fr-FR" DIR="LTR">
 <H1 class='title'>Cahier de textes : Personnel de direction</H1>
@@ -129,7 +145,7 @@ if ($FLAG_ABSENCE==1)
 <?php
 echo "<p>G&#233;n&#233;ration d'un lien d'acc&#232;s crypt&#233; au cahier de textes d'un professeur</p>";
 echo '<ul>';
-echo "<li>S&#233;lectionner le professeur : ";
+echo "<div id='afRle'><li>S&#233;lectionner le professeur : ";
 echo "<select name='PROF2' style='background-color:#E6E6FA'>";
 for ($loop=0; $loop <count($people); $loop++) 
  	{
@@ -139,34 +155,57 @@ for ($loop=0; $loop <count($people); $loop++)
  	if ($uname.'#'.$nom ==$_POST['PROF2']) {echo 'selected';}
 	echo ">$nom</option>\n";
 	}
-echo '</select></ul><input type="submit" name="Lien" value="" class="bt-valid" >';
+echo '</select>
+<li>Date limite de validit&#233; :
+<input id="datejaf" size="10" name="datelim" value="'. $dtajaf.'" readonly="readonly" style="cursor: text" >
+<li><input type="checkbox" name="mel" value="yes"';
+if ($_POST['mel']=="yes" || (!isset($_POST['Lien']))) echo 'checked';
+echo '>Informer par mail le professeur concern&#233; 
+</div></ul>
+<input type="submit" name="Lien" value="" class="bt-valid" >';
 //generation du lien
 if (isset($_POST['Lien']))
 	{
-$prof=preg_split('/#/',$_POST['PROF2']);
-$aliasprof=$prof[0];
-$grain='$1$'.$Grain.'$';
-$nextWeek = time() + (7 * 24 * 60 * 60);
-$chaine=$aliasprof.$nextWeek;
-$logcrypt=crypt($chaine,$grain);
-$key= substr($logcrypt,-20,20);
-echo '<br /><br />';
-if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  
-echo '<legend id=legende>';
-echo "<a href= 'http://".$hostn."/Plugins/Cdt/index.php";
-echo "?prof=".$aliasprof.'&limit='.$nextWeek.'&key='.$key;
-echo "'> Lien d'acc&egrave;s au cahier de texte de $prof[1]</a>
-";
-if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  
-echo '</legend>';
-echo '
-<ol><H4 class="perso">
-<li> Ce lien est valide 7 jours &#224; dater de sa cr&#233;ation.
-<li> Copiez ce lien avec  un clic droit, et copiez le dans un mail destin&#233; au demandeur.
-<li> N\'essayez pas ce lien, il n\'est pas valide lorsque vous &#234;tes connect&#233; au LCS.
-</ol></H4>';
-}
+	$Morceaux=explode('/',$_POST['datelim']);
+	$datelimite=mktime (23,59,1,$Morceaux[1],$Morceaux[0],$Morceaux[2]);	
+	$prof=preg_split('/#/',$_POST['PROF2']);
+	$aliasprof=$prof[0];
+	$grain='$1$'.$Grain.'$';
+	$chaine=$aliasprof.$datelimite;
+	$logcrypt=crypt($chaine,$grain);
+	$key= substr($logcrypt,-20,20);
+	echo '<br /><br />';
+	if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  
+	echo '<legend id=legende>';
+	echo "<a href= 'http://".$hostn."/Plugins/Cdt/index.php";
+	echo "?prof=".$aliasprof.'&limit='.$datelimite.'&key='.$key;
+	echo "'> Lien d'acc&egrave;s au cahier de texte de $prof[1]</a>	";
+	if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  
+	echo '</legend>';
+	echo '
+	<ol><H4 class="perso">
+	<li> Copiez ce lien avec  un clic droit, et copiez le dans un mail destin&#233; au demandeur.
+	<li> N\'essayez pas ce lien, il n\'est pas valide lorsque vous &#234;tes connect&#233; au LCS.';
+	//envoi du mail
+	if ($_POST['mel']=="yes")
+		{
+		//Le destinataire 
+		$mailTo = $aliasprof;
+		//Le sujet
+		$mailSubject = "Lien d'acc\350s ";
+		//Le message
+		$mailBody1 = " CECI EST UN MESSAGE AUTOMATIQUE, MERCI DE NE PAS REPONDRE.\n \n ";
+		$mailBody2 = " Un lien d'acc\350s \340 votre cahier de textes a \351t\351 g\351n\351r\351 par  "
+		. $_SESSION['nomcomplet'].".\n\nCe lien est valide jusqu'au ". $_POST['datelim'];
+		//l'expediteur
+		$mailHeaders = "From: Cahier\ de\ textes\n";
+		//envoi du mail
+		 mail($mailTo, $mailSubject, $mailBody1.$mailBody2, $mailHeaders);
+		 echo '<li> Le message suivant a &#233;t&#233; envoy&#233; &#224 '.$prof[1].' :<p class="absmod">'.$mailBody2.'</p>';
+		}
+	}
 ?>
+</ol></H4>
 </fieldset>
 </form>
 
