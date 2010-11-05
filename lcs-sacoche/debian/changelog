@@ -1,3 +1,9 @@
+lcs-sacoche (0.5.5) LCS; urgency=low
+
+  * update to 2010-11-04 version
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 04 Nov 2010 18:40:40 +0100
+
 lcs-sacoche (0.5.4) LCS; urgency=low
 
   * fix bug in fonction_requetes_structure.php
