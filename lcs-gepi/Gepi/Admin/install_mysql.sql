@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Serveur: localhost
--- Généré le : Dim 05 Septembre 2010 à 13:23
+-- Généré le : Ven 05 Novembre 2010 à 02:20
 -- Version du serveur: 5.0.32
 -- Version de PHP: 5.2.0-8+etch16
 
@@ -1083,6 +1083,26 @@ CREATE TABLE IF NOT EXISTS `communes` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `ct_devoirs_documents`
+--
+
+CREATE TABLE IF NOT EXISTS `ct_devoirs_documents` (
+  `id` int(11) NOT NULL auto_increment,
+  `id_ct_devoir` int(11) NOT NULL default '0',
+  `titre` varchar(255) NOT NULL default '',
+  `taille` int(11) NOT NULL default '0',
+  `emplacement` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `ct_devoirs_documents`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `ct_devoirs_entry`
 --
 
@@ -1281,7 +1301,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/accueil_admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', '', ''),
 ('/accueil_modules.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', '', ''),
 ('/accueil.php', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'F', '', ''),
-('/aid/add_aid.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', ''),
+('/aid/add_aid.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Configuration des AID', ''),
 ('/aid/config_aid.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', ''),
 ('/aid/export_csv_aid.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', ''),
 ('/aid/help.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', ''),
@@ -1735,7 +1755,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_apb/export_xml.php', 'F', 'F', 'F', 'V', 'F', 'F', 'F', 'V', 'Export XML pour le système Admissions Post-Bac', ''),
 ('/mod_gest_aid/admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Gestionnaires AID', ''),
 ('/saisie/ajax_edit_limite.php', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Edition des bulletins simplifiés (documents de travail)', ''),
-('/mod_discipline/check_nature_incident.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Recherche de natures d incident', ''),
+('/mod_discipline/check_nature_incident.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'V', 'Discipline: Recherche de natures d incident', ''),
 ('/groupes/signalement_eleves.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Groupes: signalement des erreurs d affectation élève', ''),
 ('/bulletin/envoi_mail.php', 'F', 'F', 'F', 'V', 'F', 'F', 'V', 'F', 'Envoi de mail via ajax', ''),
 ('/mod_discipline/destinataires_alertes.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Parametrage des destinataires de mail d alerte', ''),
@@ -1784,6 +1804,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_abs2/extraction_saisies.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Extraction des saisies', ''),
 ('/mod_abs2/extraction_demi-journees.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Extraction des saisies', ''),
 ('/mod_abs2/ajax_edt_eleve.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Affichage edt', ''),
+('/mod_abs2/generer_notifications_par_lot.php', 'F', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Génération groupée des courriers', ''),
 ('/bulletin/autorisation_exceptionnelle_saisie_app.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Autorisation exceptionnelle de saisie d appréciation', ''),
 ('/init_csv/export_tables.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation CSV: Export tables', ''),
 ('/cahier_texte_2/index.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
@@ -1804,8 +1825,10 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/cahier_texte_2/exportcsv.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1'),
 ('/cahier_texte_2/consultation.php', 'F', 'F', 'F', 'F', 'V', 'V', 'F', 'F', 'Consultation des cahiers de textes', ''),
 ('/cahier_texte_2/see_all.php', 'F', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Consultation des cahiers de texte', ''),
-('/cahier_texte_2/creer_sequence.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - s&eacute;quences', '1'),
-('/cahier_texte_2/creer_seq_ajax_step1.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - s&eacute;quences', '1');
+('/cahier_texte_2/creer_sequence.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - sequences', '1'),
+('/cahier_texte_2/creer_seq_ajax_step1.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - sequences', '1'),
+('/mod_trombinoscopes/trombino_pdf.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Trombinoscopes PDF', ''),
+('/mod_trombinoscopes/trombino_decoupe.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Génération d une grille PDF pour les trombinoscopes,...', '');
 
 -- --------------------------------------------------------
 
@@ -2753,6 +2776,22 @@ CREATE TABLE IF NOT EXISTS `inscription_j_login_items` (
 
 --
 -- Contenu de la table `inscription_j_login_items`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `j_aidcateg_super_gestionnaires`
+--
+
+CREATE TABLE IF NOT EXISTS `j_aidcateg_super_gestionnaires` (
+  `indice_aid` int(11) NOT NULL,
+  `id_utilisateur` varchar(50) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `j_aidcateg_super_gestionnaires`
 --
 
 
@@ -4151,14 +4190,14 @@ INSERT INTO `ref_wiki` (`id`, `ref`, `url`) VALUES
 
 CREATE TABLE IF NOT EXISTS `responsables` (
   `ereno` varchar(10) NOT NULL default '',
-  `nom1` varchar(20) NOT NULL default '',
-  `prenom1` varchar(20) NOT NULL default '',
+  `nom1` varchar(50) NOT NULL default '',
+  `prenom1` varchar(50) NOT NULL default '',
   `adr1` varchar(100) NOT NULL default '',
   `adr1_comp` varchar(100) NOT NULL default '',
   `commune1` varchar(50) NOT NULL default '',
   `cp1` varchar(6) NOT NULL default '',
-  `nom2` varchar(20) NOT NULL default '',
-  `prenom2` varchar(20) NOT NULL default '',
+  `nom2` varchar(50) NOT NULL default '',
+  `prenom2` varchar(50) NOT NULL default '',
   `adr2` varchar(100) NOT NULL default '',
   `adr2_comp` varchar(100) NOT NULL default '',
   `commune2` varchar(50) NOT NULL default '',
@@ -4224,8 +4263,8 @@ CREATE TABLE IF NOT EXISTS `resp_adr` (
 CREATE TABLE IF NOT EXISTS `resp_pers` (
   `pers_id` varchar(10) NOT NULL,
   `login` varchar(50) NOT NULL,
-  `nom` varchar(30) NOT NULL,
-  `prenom` varchar(30) NOT NULL,
+  `nom` varchar(50) NOT NULL,
+  `prenom` varchar(50) NOT NULL,
   `civilite` varchar(5) NOT NULL,
   `tel_pers` varchar(255) NOT NULL,
   `tel_port` varchar(255) NOT NULL,
@@ -4277,12 +4316,12 @@ CREATE TABLE IF NOT EXISTS `setting` (
 --
 
 INSERT INTO `setting` (`NAME`, `VALUE`) VALUES
-('version', '1.5.3'),
+('version', '1.5.3.1'),
 ('versionRc', ''),
 ('versionBeta', ''),
 ('sessionMaxLength', '30'),
 ('Impression', '<center><p class = "grand">Gestion des Elèves Par Internet</p></center>\r\n<br />\r\n<p class = "grand">Qu''est-ce que GEPI ?</p>\r\n\r\n<p>Afin d''étudier les modalités d''informatisation des bulletins scolaires : notes et appréciations via Internet, une expérimentation (baptisée Gestion des Elèves Par Internet)a été mise en place. Cette expérimentation concerne les classes suivantes : \r\n<br />* ....\r\n<br />* ....\r\n<br />\r\n<br />\r\nCeci vous concerne car vous êtes professeur enseignant dans l''une ou l''autre de ces classes.\r\n<br />\r\n<br />\r\nA partir de la réception de ce document, vous pourrez remplir les bulletins informatisés :\r\n<span class = "norme">\r\n<UL><li>soit au lycée à partir de n''importe quel poste connecté à Internet,\r\n<li>soit chez vous si vous disposez d''une connexion Internet.\r\n</ul>\r\n</span>\r\n<p class = "grand">Comment accéder au module de saisie (notes etappréciations) :</p>\r\n<span class = "norme">\r\n<UL>\r\n    <LI>Se connecter à Internet\r\n    <LI>Lancer un navigateur (FireFox de préférence, Opera, Internet Explorer, ...)\r\n    <LI>Se connecter au site : https://adresse_du_site/gepi\r\n    <LI>Après quelques instants une page apparaît vous invitant à entrer un nom d''identifiant et un mot de passe (cesinformations figurent en haut de cette page).\r\n    <br />ATTENTION : votre mot de passe est strictement confidentiel.\r\n    <br />\r\n    <br />Une fois ces informations fournies, cliquez sur le bouton "Ok".\r\n    <LI> Après quelques instants une page d''accueil apparaît.<br />\r\nLa première fois, Gepi vous demande de changer votre mot de passe.\r\nChoisissez-en un facile à retenir, mais non trivial (évitez toute date\r\nde naissance, nom d''animal familier, prénom, etc.), et contenant\r\nlettre(s), chiffre(s), et caractère(s) non alphanumérique(s).<br />\r\nLes fois suivantes, vous arriverez directement au menu général de\r\nl''application. Pour bien prendre connaissance des possibilités de\r\nl''application, n''hésitez pas à essayer tous les liens disponibles !\r\n</ul></span>\r\n<p class = "grand">Remarque :</p>\r\n<p>GEPI est prévu pour que chaque professeur ne puisse modifier les notes ou les appréciations que dans les rubriques qui le concernent et uniquement pour ses élèves.\r\n<br />\r\nJe reste à votre disposition pour tout renseignement complémentaire.\r\n    <br />\r\n    Le proviseur adjoint\r\n</p>'),
-('gepiYear', '2009/2010'),
+('gepiYear', '2010/2011'),
 ('gepiSchoolName', 'Nom du Lycée'),
 ('gepiSchoolAdress1', 'Adresse'),
 ('gepiSchoolAdress2', 'Boîte postale'),
@@ -4478,7 +4517,8 @@ INSERT INTO `setting` (`NAME`, `VALUE`) VALUES
 ('referentiel_note', '20'),
 ('active_mod_apb', 'n'),
 ('active_mod_gest_aid', 'n'),
-('unzipped_max_filesize', '10');
+('unzipped_max_filesize', '10'),
+('autorise_commentaires_mod_disc', 'no');
 
 -- --------------------------------------------------------
 
@@ -4621,7 +4661,7 @@ CREATE TABLE IF NOT EXISTS `s_incidents` (
   `id_categorie` int(11) default NULL,
   `description` text NOT NULL,
   `etat` varchar(20) NOT NULL,
-  `message_id` varchar(50) NOT NULL default '',
+  `message_id` varchar(50) NOT NULL,
   PRIMARY KEY  (`id_incident`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
@@ -4955,7 +4995,6 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
 INSERT INTO `utilisateurs` (`login`, `nom`, `prenom`, `civilite`, `password`, `email`, `show_email`, `statut`, `etat`, `change_mdp`, `date_verrouillage`, `password_ticket`, `ticket_expiration`, `niveau_alerte`, `observation_securite`, `temp_dir`, `numind`, `auth_mode`) VALUES
 ('admin', '', '', 'M.', '', '', 'no', 'administrateur', 'actif', 'n', '2006-01-01 00:00:00', '', '0000-00-00 00:00:00', 0, 0, '', '', 'sso');
 
-
 -- --------------------------------------------------------
 
 --
@@ -5020,4 +5059,3 @@ CREATE TABLE IF NOT EXISTS `vs_alerts_types` (
 --
 
 GRANT SELECT , INSERT , UPDATE , DELETE , CREATE , DROP , INDEX , ALTER , CREATE TEMPORARY TABLES ON gepi_plug.* TO gepi_user@localhost IDENTIFIED BY '#PASS#';
-

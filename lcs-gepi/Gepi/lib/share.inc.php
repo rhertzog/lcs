@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: share.inc.php 5424 2010-09-25 19:44:35Z adminpaulbert $
+ * $Id: share.inc.php 5736 2010-10-24 13:20:10Z tbelliard $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
@@ -60,7 +60,12 @@ function test_unique_login($s) {
         if ($test2 != "0") {
             return 'no';
         } else {
-            return 'yes';
+			$test3 = mysql_num_rows(mysql_query("SELECT login FROM resp_pers WHERE (login='$s' OR login='".strtoupper($s)."')"));
+			if ($test3 != "0") {
+				return 'no';
+			} else {
+	            return 'yes';
+	        }
         }
     }
 }
@@ -1642,19 +1647,35 @@ function affiche_date_naissance($date) {
 function test_maj() {
     global $gepiVersion, $gepiRcVersion, $gepiBetaVersion;
     $version_old = getSettingValue("version");
+    $version_new = $gepiVersion;
     $versionRc_old = getSettingValue("versionRc");
     $versionBeta_old = getSettingValue("versionBeta");
+    
+    # On vérifie que les numéros de version sont bien sur le même
+    # nombre de numéros. Si ce n'est pas le cas, alors on complète
+    # avec des zéros pour être sûrs que la comparaison est fiable.
+    if (mb_strlen($version_old) != mb_strlen($version_new)) {
+      while (mb_strlen($version_old) < mb_strlen($version_new)) {
+        $version_old = $version_old.'.0';        
+      }
+      while (mb_strlen($version_new) < mb_strlen($version_old)) {
+        $version_new = $version_new.'.0';
+      }
+    }
+    
+    $version_new = str_replace('.','',$version_new);
+    $version_old = str_replace('.','',$version_old);
 
    if ($version_old =='') {
        return true;
        die();
    }
-   if ($gepiVersion > $version_old) {
+   if (intval($version_new) > intval($version_old)) {
         // On a une nouvelle version stable
        return true;
        die();
    }
-   if (($gepiVersion == $version_old) and ($versionRc_old!='')) {
+   if (($version_new == $version_old) and ($versionRc_old!='')) {
         // On avait une RC
        if (($gepiRcVersion > $versionRc_old) or ($gepiRcVersion=='')) {
             // Soit on a une nouvelle RC, soit on est passé de RC à stable
@@ -1662,7 +1683,7 @@ function test_maj() {
            die();
        }
    }
-   if (($gepiVersion == $version_old) and ($versionBeta_old!='')) {
+   if (($version_new == $version_old) and ($versionBeta_old!='')) {
         // On avait une Beta
        if (($gepiBetaVersion > $versionBeta_old) or ($gepiBetaVersion=='')) {
             // Soit on a une nouvelle Beta, soit on est passé à une RC ou une stable
@@ -1838,7 +1859,7 @@ function make_classes_select_html($link, $current, $year, $month, $day)
   $out_html .= "<option value=\"".$link."?year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;id_classe=-1\">(Choisissez une classe)";
   // Ligne suivante corrigée sur suggestion tout à fait pertinente de Stéphane, mail du 1er septembre 06
 
-	
+
   if (isset($_SESSION['statut']) && ($_SESSION['statut']=='scolarite'
 		  && getSettingValue('GepiAccesCdtScolRestreint')=="yes")){
   $sql = "SELECT DISTINCT c.id, c.classe
@@ -1849,7 +1870,7 @@ function make_classes_select_html($link, $current, $year, $month, $day)
 	  AND jsc.login='".$_SESSION ['login']."'
 		)
 	ORDER BY classe ;";
-  
+
   } else if (isset($_SESSION['statut']) && ($_SESSION['statut']=='cpe'
 		  && getSettingValue('GepiAccesCdtCpeRestreint')=="yes")){
 
@@ -1877,7 +1898,7 @@ function make_classes_select_html($link, $current, $year, $month, $day)
 
   $res = sql_query($sql);
 
-  
+
   if ($res) for ($i = 0; ($row = sql_row($res, $i)); $i++)
   {
     $selected = ($row[0] == $current) ? "selected" : "";
@@ -1902,7 +1923,7 @@ function make_classes_select_html($link, $current, $year, $month, $day)
   return $out_html;
 }
 
-function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day)
+function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day, $special='')
 {
 	// $id_ref peut être soit l'ID d'une classe, auquel cas on affiche tous les groupes
 	// pour la classe, soit le login d'un élève, auquel cas on affiche tous les groupes
@@ -1916,89 +1937,113 @@ function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day)
 	$out_html = "<form name=\"matiere\"  method=\"post\" action=\"".$_SERVER['PHP_SELF']."\"><strong><em>Matière :</em></strong><br />
 	<select name=\"matiere\" onchange=\"matiere_go()\">\n";
 	*/
-  // Pour le multisite, on doit récupérer le RNE de l'établissement
-  $prof="";
-  
-  $rne = isset($_GET['rne']) ? $_GET['rne'] : (isset($_POST['rne']) ? $_POST['rne'] : 'aucun');
-  $aff_input_rne = $aff_get_rne = NULL;
-  if ($rne != 'aucun') {
-	$aff_input_rne = '<input type="hidden" name="rne" value="' . $rne . '" />' . "\n";
-	$aff_get_rne = '&amp;rne=' . $rne;
-  }
-	$out_html = "<form id=\"matiere\"  method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n" . $aff_input_rne . "\n
-  <h2 class='h2_label'> \n<label for=\"enseignement\"><strong><em>Matière :<br /></em></strong></label>\n</h2>\n<p>\n<select id=\"enseignement\" name=\"matiere\" onchange=\"matiere_go()\">\n ";
+	// Pour le multisite, on doit récupérer le RNE de l'établissement
+	$prof="";
+	
+	$rne = isset($_GET['rne']) ? $_GET['rne'] : (isset($_POST['rne']) ? $_POST['rne'] : 'aucun');
+	$aff_input_rne = $aff_get_rne = NULL;
+	if ($rne != 'aucun') {
+		$aff_input_rne = '<input type="hidden" name="rne" value="' . $rne . '" />' . "\n";
+		$aff_get_rne = '&amp;rne=' . $rne;
+	}
+		$out_html = "<form id=\"matiere\"  method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n" . $aff_input_rne . "\n
+	<h2 class='h2_label'> \n<label for=\"enseignement\"><strong><em>Matière :<br /></em></strong></label>\n</h2>\n<p>\n<select id=\"enseignement\" name=\"matiere\" onchange=\"matiere_go()\">\n ";
+	
+		// correction W3C : ajout de la balise de fin </option> à la fin de $out_html
+	if (is_numeric($id_ref)) {
+		//$out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;id_classe=$id_ref\">(Choisissez un enseignement)</option>";
+		$out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;id_classe=$id_ref\">(Choisissez un enseignement)</option>\n";
+	
+		if($special!='') {
+			$selected="";
+			if($special=='Toutes_matieres') {$selected=" selected='true'";}
+			if (is_numeric($id_ref)) {
+				$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;id_classe=$id_ref&amp;id_groupe=Toutes_matieres" . $aff_get_rne;
+			} else {
+				$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;login_eleve=$id_ref&amp;id_groupe=Toutes_matieres" . $aff_get_rne;
+			}
+			$out_html .= "<option $selected value=\"$link2\"$selected>Toutes les matières</option>\n";
+		}
+	
+		$sql = "select DISTINCT g.id, g.name, g.description from j_groupes_classes jgc, groupes g, ct_entry ct where (" .
+				"jgc.id_classe='".$id_ref."' and " .
+				"g.id = jgc.id_groupe and " .
+				"jgc.id_groupe = ct.id_groupe" .
+				") order by g.name";
+	} else {
+		// correction W3C : ajout de la balise de fin </option> à la fin de $out_html
+		//$out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;login_eleve=$id_ref\">(Choisissez un enseignement)</option>";
+		$out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;login_eleve=$id_ref\">(Choisissez un enseignement)</option>\n";
 
-	// correction W3C : ajout de la balise de fin </option> à la fin de $out_html
-  if (is_numeric($id_ref)) {
-  	  //$out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;id_classe=$id_ref\">(Choisissez un enseignement)</option>";
-  	  $out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;id_classe=$id_ref\">(Choisissez un enseignement)</option>\n";
-	  $sql = "select DISTINCT g.id, g.name, g.description from j_groupes_classes jgc, groupes g, ct_entry ct where (" .
-	        "jgc.id_classe='".$id_ref."' and " .
-	        "g.id = jgc.id_groupe and " .
-	        "jgc.id_groupe = ct.id_groupe" .
-	        ") order by g.name";
-  } else {
-	// correction W3C : ajout de la balise de fin </option> à la fin de $out_html
-  	  //$out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;login_eleve=$id_ref\">(Choisissez un enseignement)</option>";
-  	  $out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;login_eleve=$id_ref\">(Choisissez un enseignement)</option>\n";
-	  $sql = "select DISTINCT g.id, g.name, g.description from j_eleves_groupes jec, groupes g, ct_entry ct where (" .
-	        "jec.login='".$id_ref."' and " .
-	        "g.id = jec.id_groupe and " .
-	        "jec.id_groupe = ct.id_groupe" .
-	        ") order by g.name";
-  }
-  $res = sql_query($sql);
-  if ($res) for ($i = 0; ($row = sql_row($res, $i)); $i++)
-  {
-   $test_prof = "SELECT nom, prenom FROM j_groupes_professeurs j, utilisateurs u WHERE (j.id_groupe='".$row[0]."' and u.login=j.login) ORDER BY nom, prenom";
-   $res_prof = sql_query($test_prof);
-   $chaine = "";
-   for ($k=0;$prof=sql_row($res_prof,$k);$k++) {
-     if ($k != 0) $chaine .= ", ";
-     $chaine .= htmlspecialchars($prof[0])." ".substr(htmlspecialchars($prof[1]),0,1).".";
-   }
-   //$chaine .= ")";
+		if($special!='') {
+			$selected="";
+			if($special=='Toutes_matieres') {$selected=" selected='true'";}
+			if (is_numeric($id_ref)) {
+				$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;id_classe=$id_ref&amp;id_groupe=Toutes_matieres" . $aff_get_rne;
+			} else {
+				$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;login_eleve=$id_ref&amp;id_groupe=Toutes_matieres" . $aff_get_rne;
+			}
+			$out_html .= "<option $selected value=\"$link2\"$selected>Toutes les matières</option>\n";
+		}
 
-
-   //$selected = ($row[0] == $current) ? "selected" : "";
-   $selected = ($row[0] == $current) ? "selected=\"selected\"" : "";
-   if (is_numeric($id_ref)) {
-   		$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;id_classe=$id_ref&amp;id_groupe=$row[0]" . $aff_get_rne;
-   } else {
-   		$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;login_eleve=$id_ref&amp;id_groupe=$row[0]" . $aff_get_rne;
-   }
-	// correction W3C : ajout de la balise de fin </option> à la fin de $out_html
-   //$out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[2] . " - ")." ".$chaine."</option>";
-   $out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[2] . " - ")." ".$chaine."</option>";
-   }
-  $out_html .= "\n</select>\n</p>\n
-
-  <script type=\"text/javascript\">
-  <!--
-  function matiere_go()
-  {
-    box = document.forms[\"matiere\"].matiere;
-    destination = box.options[box.selectedIndex].value;
-    if (destination) location.href = destination;
-  }
-  // -->
-  </script>
-
-  <noscript><p>\n";
-     if (is_numeric($id_ref)) {
-     $out_html .= "<input type=\"hidden\" name=\"id_classe\" value=\"$id_ref\" />\n";
-   } else {
-     $out_html .= "<input type=\"hidden\" name=\"login_eleve\" value=\"$id_ref\" />\n";
-   }
-     $out_html .= "<input type=\"hidden\" name=\"year\" value=\"$year\" />
-     <input type=\"hidden\" name=\"month\" value=\"$month\" />
-     <input type=\"hidden\" name=\"day\" value=\"$day\" />
-     <input type=\"submit\" value=\"OK\" />
-	</p>
-  </noscript>
-  </form>\n";
+		$sql = "select DISTINCT g.id, g.name, g.description from j_eleves_groupes jec, groupes g, ct_entry ct where (" .
+				"jec.login='".$id_ref."' and " .
+				"g.id = jec.id_groupe and " .
+				"jec.id_groupe = ct.id_groupe" .
+				") order by g.name";
+	}
+	$res = sql_query($sql);
+	if ($res) for ($i = 0; ($row = sql_row($res, $i)); $i++)
+	{
+		$test_prof = "SELECT nom, prenom FROM j_groupes_professeurs j, utilisateurs u WHERE (j.id_groupe='".$row[0]."' and u.login=j.login) ORDER BY nom, prenom";
+		$res_prof = sql_query($test_prof);
+		$chaine = "";
+		for ($k=0;$prof=sql_row($res_prof,$k);$k++) {
+			if ($k != 0) $chaine .= ", ";
+			$chaine .= htmlspecialchars($prof[0])." ".substr(htmlspecialchars($prof[1]),0,1).".";
+		}
+		//$chaine .= ")";
+		
+		
+		//$selected = ($row[0] == $current) ? "selected" : "";
+		$selected = ($row[0] == $current) ? "selected=\"selected\"" : "";
+		if (is_numeric($id_ref)) {
+			$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;id_classe=$id_ref&amp;id_groupe=$row[0]" . $aff_get_rne;
+		} else {
+			$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;login_eleve=$id_ref&amp;id_groupe=$row[0]" . $aff_get_rne;
+		}
+		// correction W3C : ajout de la balise de fin </option> à la fin de $out_html
+		//$out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[2] . " - ")." ".$chaine."</option>";
+		$out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[2] . " - ")." ".$chaine."</option>";
+	}
+	$out_html .= "\n</select>\n</p>\n
+	
+	<script type=\"text/javascript\">
+	<!--
+	function matiere_go()
+	{
+		box = document.forms[\"matiere\"].matiere;
+		destination = box.options[box.selectedIndex].value;
+		if (destination) location.href = destination;
+	}
+	// -->
+	</script>
+	
+	<noscript><p>\n";
+		if (is_numeric($id_ref)) {
+			$out_html .= "<input type=\"hidden\" name=\"id_classe\" value=\"$id_ref\" />\n";
+		} else {
+			$out_html .= "<input type=\"hidden\" name=\"login_eleve\" value=\"$id_ref\" />\n";
+		}
+		$out_html .= "<input type=\"hidden\" name=\"year\" value=\"$year\" />
+		<input type=\"hidden\" name=\"month\" value=\"$month\" />
+		<input type=\"hidden\" name=\"day\" value=\"$day\" />
+		<input type=\"submit\" value=\"OK\" />
+		</p>
+	</noscript>
+	</form>\n";
 	// correction W3C : ajout de \" pour encadrer submit ci-dessus et de <p>...</p> pour encadrer <input...>
-  return $out_html;
+	return $out_html;
 }
 
 function make_eleve_select_html($link, $login_resp, $current, $year, $month, $day)
@@ -3182,7 +3227,7 @@ function param_edt($statut){
 * Renvoie NULL si :
  *
 * - le module trombinoscope n'est pas activé
- * 
+ *
 * - ou bien la photo n'existe pas.
 *
 *@var $_elenoet_ou_login : selon les cas, soir l'elenoet de l'élève ou bien lelogin du professeur
@@ -3283,7 +3328,7 @@ function nom_photo($_elenoet_ou_login,$repertoire="eleves",$arbo=1) {
 			}
 
 		}
-		
+
 	  }
 	}
 	// Cas des non-élèves
@@ -3427,6 +3472,15 @@ function VerifAccesFicheProjet($_login,$aid_id,$indice_aid,$champ,$mode,$annee='
         return TRUE;
         die();
     }
+
+
+    // S'agit-il d'un super gestionnaire ?
+    $test_super_gestionnaire = sql_query1("select count(id_utilisateur) from j_aidcateg_super_gestionnaires where indice_aid='".$indice_aid."' and id_utilisateur='".$_login."'");
+    if  ($test_super_gestionnaire != "0") {
+        return TRUE;
+        die();
+    }
+
 
     // S'agit-il d'un utilisateurs ayant des droits sur l'ensemble des AID de la catégorie
     $test_droits_special = sql_query1("select count(id_utilisateur) from j_aidcateg_utilisateurs where indice_aid='".$indice_aid."' and id_utilisateur='".$_login."'");
@@ -3609,20 +3663,24 @@ function NiveauGestionAid($_login,$_indice_aid,$_id_aid="") {
     if (getSettingValue("active_mod_gest_aid")=="y") {
       // l'id de l'aid n'est pas défini : on regarde si l'utilisateur est gestionnaire d'au moins une aid dans la catégorie
       if ($_id_aid == "") {
-        $test = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."')");
-        if ($test >= 1) {
+        $test1 = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."')");
+        $test2 = sql_query1("SELECT count(id_utilisateur) FROM j_aidcateg_super_gestionnaires WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."')");
+        if ($test2 >= 1) {
+            return 5;
+        } else if ($test1 >= 1) {
             return 1;
-        } else {
-            return 0;
-        }
+        } else
+          return 0;
       } else {
       // l'id de l'aid est défini : on regarde si l'utilisateur est gestionnaire de cette aid
-        $test = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."' and id_aid = '".$_id_aid."')");
-        if ($test == 1) {
+        $test1 = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."' and id_aid = '".$_id_aid."')");
+        $test2 = sql_query1("SELECT count(id_utilisateur) FROM j_aidcateg_super_gestionnaires WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."')");
+        if ($test2 >= 1) {
+            return 5;
+        } else if ($test1 >= 1) {
             return 1;
-        } else {
-            return 0;
-        }
+        } else
+          return 0;
       }
     } else
       return 0;
@@ -3636,10 +3694,12 @@ function PeutEffectuerActionSuppression($_login,$_action,$_cible1,$_cible2,$_cib
         die();
     }
     if (getSettingValue("active_mod_gest_aid")=="y") {
-      if ($_action=="del_eleve_aid") {
+      if (($_action=="del_eleve_aid") or ($_action=="del_prof_aid") or ($_action=="del_aid")) {
       // on regarde si l'utilisateur est gestionnaire de l'aid
-        $test = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_cible3."' and id_aid = '".$_cible2."')");
-        if ($test == 1) {
+        $test1 = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_cible3."' and id_aid = '".$_cible2."')");
+        $test2 = sql_query1("SELECT count(id_utilisateur) FROM j_aidcateg_super_gestionnaires WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_cible3."')");
+        $test = max($test1,$test2);
+        if ($test >= 1) {
             return TRUE;
         } else {
             return FALSE;
@@ -4371,36 +4431,36 @@ function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 		if($largeur_utile>0) {
 			$style_courant='';
 			$pdf->SetFont('',$style_courant);
-	
+
 			// On va supprimer les retours à la ligne
 			$texte=trim(my_ereg_replace("\n"," ",$texte));
 			if($my_echo_debug==1) my_echo_debug("\$texte=$texte\n");
-	
+
 			// On supprime les balises
 			$texte=preg_replace('/<(.*)>/U','',$texte);
 			if($my_echo_debug==1) my_echo_debug("\$texte=$texte\n");
 			for($j=0;$j<strlen($texte);$j++) {
-	
+
 				if(!isset($ligne[$cpt])) {
 					$ligne[$cpt]='';
 				}
 				if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
-	
+
 				$chaine=$ligne[$cpt].substr($texte,$j,1);
 				if($my_echo_debug==1) my_echo_debug("\$chaine=\"$chaine\"\n");
-	
+
 				if($pdf->GetStringWidth($chaine)>$largeur_utile) {
-	
+
 					if($my_echo_debug==1) my_echo_debug("Avec \$chaine, ça dépasse.\n");
-	
+
 					if($cpt+1>$nb_max_lig) {
 						$longueur_max_atteinte="y";
-	
+
 						if($my_echo_debug==1) my_echo_debug("\$cpt=$cpt et \$nb_max_lig=$nb_max_lig.\nOn ne peut plus ajouter une ligne.\n");
-	
+
 						break;
 					}
-	
+
 					$cpt++;
 					$ligne[$cpt]=substr($texte,$j,1);
 					if($my_echo_debug==1) my_echo_debug("On commence une nouvelle ligne avec le dernier caractère: \"".substr($texte,$j-1,1)."\"\n");
@@ -4411,7 +4471,7 @@ function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 					if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
 				}
 			}
-	
+
 			if($my_echo_debug==1) my_echo_debug("On a fini le texte... ou atteint une limite\n");
 
 		}
@@ -4428,18 +4488,18 @@ function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 	$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
 	// Marge verticale en mm entre les lignes
 	$marge_verticale=$hauteur_texte_mm*$r_interligne;
-	
-	
+
+
 	if($my_echo_debug==1) my_echo_debug("\$hauteur_texte=".$hauteur_texte."\n");
 	if($my_echo_debug==1) my_echo_debug("\$hauteur_texte_mm=".$hauteur_texte_mm."\n");
 	if($my_echo_debug==1) my_echo_debug("\$hauteur_totale=".$hauteur_totale."\n");
 	if($my_echo_debug==1) my_echo_debug("\$marge_verticale=".$marge_verticale."\n");
-	
-	
+
+
 	// On trace le rectangle (vide) du cadre:
 	$pdf->SetXY($x,$y);
 	$pdf->Cell($largeur_dispo,$h_cell, '',$bordure,2,'');
-	
+
 	// On va écrire les lignes avec la taille de police optimale déterminée (cf. $ifmax)
 	$nb_lig=count($ligne);
 	$h=$nb_lig*$hauteur_texte_mm*(1+$r_interligne);
@@ -4447,7 +4507,7 @@ function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 	if($my_echo_debug==1) my_echo_debug("\$t=".$t."\n");
 	$bord_debug='';
 	//$bord_debug='LRBT';
-	
+
 	// On ne gère que les v_align Top et Center... et ajout d'un mode aéré
 	if($v_align=='E') {
 		// Mode aéré
@@ -4459,15 +4519,15 @@ function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 		//$decalage_v_top=($h_cell-$nb_lig*$hauteur_texte_mm-($nb_lig-1)*$marge_verticale)/2;
 		$decalage_v_top=($h_cell-($nb_lig+1)*$hauteur_texte_mm-$nb_lig*$marge_verticale)/2;
 	}
-	
+
 	for($i=0;$i<count($ligne);$i++) {
-	
+
 		if($v_align=='T') {
 			$pdf->SetXY($x,$y+$i*($hauteur_texte_mm+$marge_verticale));
-	
+
 			// Pour pouvoir afficher le $bord_debug
 			$pdf->Cell($largeur_dispo,$hauteur_texte_mm+2*$marge_verticale, '',$bord_debug,1,$align);
-	
+
 			$y_courant=$y+$i*($hauteur_texte_mm+$marge_verticale)-$marge_verticale;
 			$pdf->SetXY($x,$y_courant);
 			if($my_echo_debug==1) {
@@ -4480,20 +4540,20 @@ function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 		elseif($v_align=='E') {
 			$y_courant=$y+$marge_verticale+$i*($hauteur_texte_mm+$espace_v);
 			$pdf->SetXY($x,$y_courant);
-	
+
 			// Pour pouvoir afficher le $bord_debug
 			$pdf->Cell($largeur_dispo,$h_cell/$nb_lig, '',$bord_debug,1,$align);
-	
+
 			$pdf->SetXY($x,$y_courant);
 			$pdf->myWriteHTML($ligne[$i]);
 		}
 		else {
 			$y_courant=$y+$decalage_v_top+$i*($hauteur_texte_mm+$marge_verticale);
-	
+
 			// Pour pouvoir afficher le $bord_debug A REFAIRE
 			//$pdf->SetXY($x,$y_courant);
 			//$pdf->Cell($largeur_dispo,$h_cell/count($tab_lig[$ifmax]['lignes']), '',$bord_debug,1,$align);
-	
+
 			$pdf->SetXY($x,$y_courant);
 			/*
 			if(preg_match('/<(.*)>/U',$ligne[$i])) {
@@ -5191,6 +5251,187 @@ function test_ecriture_style_screen_ajout() {
 	}
 }
 
+function journal_connexions($login,$duree,$page='mon_compte',$pers_id=NULL) {
+	switch( $duree ) {
+	case 7:
+		$display_duree="une semaine";
+		break;
+	case 15:
+		$display_duree="quinze jours";
+		break;
+	case 30:
+		$display_duree="un mois";
+		break;
+	case 60:
+		$display_duree="deux mois";
+		break;
+	case 183:
+		$display_duree="six mois";
+		break;
+	case 365:
+		$display_duree="un an";
+		break;
+	case 'all':
+		$display_duree="le début";
+		break;
+	}
+
+	if($page=='mon_compte') {
+		echo "<h2>Journal de vos connexions depuis <b>".$display_duree."</b>**</h2>\n";
+	}
+	else {
+		echo "<h2>Journal des connexions de ".civ_nom_prenom($login)." depuis <b>".$display_duree."</b>**</h2>\n";
+	}
+	$requete = '';
+	if ($duree != 'all') {$requete = "and START > now() - interval " . $duree . " day";}
+
+	$sql = "select START, SESSION_ID, REMOTE_ADDR, USER_AGENT, AUTOCLOSE, END from log where LOGIN = '".$login."' ".$requete." order by START desc";
+	//echo "$sql<br />";
+	$day_now   = date("d");
+	$month_now = date("m");
+	$year_now  = date("Y");
+	$hour_now  = date("H");
+	$minute_now = date("i");
+	$seconde_now = date("s");
+	$now = mktime($hour_now, $minute_now, $seconde_now, $month_now, $day_now, $year_now);
+
+	echo "<ul>
+<li>Les lignes en rouge signalent une tentative de connexion avec un mot de passe erroné.</li>
+<li>Les lignes en orange signalent une session close pour laquelle vous ne vous êtes pas déconnecté correctement.</li>
+<li>Les lignes en noir signalent une session close normalement.</li>
+<li>Les lignes en vert indiquent les sessions en cours (cela peut correspondre à une connexion actuellement close mais pour laquelle vous ne vous êtes pas déconnecté correctement).</li>
+</ul>
+<table class='col' style='width: 90%; margin-left: auto; margin-right: auto; margin-bottom: 32px;' cellpadding='5' cellspacing='0' summary='Connexions'>
+	<tr>
+		<th class='col'>Début session</th>
+		<th class='col'>Fin session</th>
+		<th class='col'>Adresse IP et nom de la machine cliente</th>
+		<th class='col'>Navigateur</th>
+	</tr>
+";
+
+	$res = sql_query($sql);
+	if ($res) {
+		for ($i = 0; ($row = sql_row($res, $i)); $i++)
+		{
+			$annee_b = substr($row[0],0,4);
+			$mois_b =  substr($row[0],5,2);
+			$jour_b =  substr($row[0],8,2);
+			$heures_b = substr($row[0],11,2);
+			$minutes_b = substr($row[0],14,2);
+			$secondes_b = substr($row[0],17,2);
+			$date_debut = $jour_b."/".$mois_b."/".$annee_b." à ".$heures_b." h ".$minutes_b;
+
+			$annee_f = substr($row[5],0,4);
+			$mois_f =  substr($row[5],5,2);
+			$jour_f =  substr($row[5],8,2);
+			$heures_f = substr($row[5],11,2);
+			$minutes_f = substr($row[5],14,2);
+			$secondes_f = substr($row[5],17,2);
+			$date_fin = $jour_f."/".$mois_f."/".$annee_f." à ".$heures_f." h ".$minutes_f;
+			$end_time = mktime($heures_f, $minutes_f, $secondes_f, $mois_f, $jour_f, $annee_f);
+
+			$temp1 = '';
+			$temp2 = '';
+			if ($end_time > $now) {
+				$temp1 = "<font color='green'>";
+				$temp2 = "</font>";
+			} else if (($row[4] == 1) or ($row[4] == 2) or ($row[4] == 3)) {
+				//$temp1 = "<font color=orange>\n";
+				$temp1 = "<font color='#FFA500'>";
+				$temp2 = "</font>";
+			} else if ($row[4] == 4) {
+				$temp1 = "<b><font color='red'>";
+				$temp2 = "</font></b>";
+
+			}
+
+			echo "<tr>\n";
+			echo "<td class=\"col\">".$temp1.$date_debut.$temp2."</td>\n";
+			if ($row[4] == 2) {
+				echo "<td class=\"col\">".$temp1."Tentative de connexion<br />avec mot de passe erroné.".$temp2."</td>\n";
+			}
+			else {
+				echo "<td class=\"col\">".$temp1.$date_fin.$temp2."</td>\n";
+			}
+			if (!(isset($active_hostbyaddr)) or ($active_hostbyaddr == "all")) {
+				$result_hostbyaddr = " - ".@gethostbyaddr($row[2]);
+			}
+			else if ($active_hostbyaddr == "no_local") {
+				if ((substr($row[2],0,3) == 127) or
+					(substr($row[2],0,3) == 10.) or
+					(substr($row[2],0,7) == 192.168)) {
+					$result_hostbyaddr = "";
+				}
+				else {
+					$tabip=explode(".",$row[2]);
+					if(($tabip[0]==172)&&($tabip[1]>=16)&&($tabip[1]<=31)) {
+						$result_hostbyaddr = "";
+					}
+					else {
+						$result_hostbyaddr = " - ".@gethostbyaddr($row[2]);
+					}
+				}
+			}
+			else {
+				$result_hostbyaddr = "";
+			}
+
+			echo "<td class=\"col\"><span class='small'>".$temp1.$row[2].$result_hostbyaddr.$temp2. "</span></td>\n";
+			echo "<td class=\"col\">".$temp1. detect_browser($row[3]) .$temp2. "</td>\n";
+			echo "</tr>\n";
+			flush();
+		}
+	}
+
+
+	echo "</table>\n";
+
+	echo "<form action=\"".$_SERVER['PHP_SELF']."#connexion\" name=\"form_affiche_log\" method=\"post\">\n";
+
+	if($page=='modify_user') {
+		echo "<input type='hidden' name='user_login' value='$login' />\n";
+		echo "<input type='hidden' name='journal_connexions' value='y' />\n";
+	}
+	elseif($page=='modify_eleve') {
+		echo "<input type='hidden' name='eleve_login' value='$login' />\n";
+		echo "<input type='hidden' name='journal_connexions' value='y' />\n";
+	}
+	elseif($page=='modify_resp') {
+		echo "<input type='hidden' name='pers_id' value='$pers_id' />\n";
+		echo "<input type='hidden' name='journal_connexions' value='y' />\n";
+	}
+
+	echo "Afficher le journal des connexions depuis : <select name=\"duree\" size=\"1\">\n";
+	echo "<option ";
+	if ($duree == 7) echo "selected";
+	echo " value=7>Une semaine</option>\n";
+	echo "<option ";
+	if ($duree == 15) echo "selected";
+	echo " value=15 >Quinze jours</option>\n";
+	echo "<option ";
+	if ($duree == 30) echo "selected";
+	echo " value=30>Un mois</option>\n";
+	echo "<option ";
+	if ($duree == 60) echo "selected";
+	echo " value=60>Deux mois</option>\n";
+	echo "<option ";
+	if ($duree == 183) echo "selected";
+	echo " value=183>Six mois</option>\n";
+	echo "<option ";
+	if ($duree == 365) echo "selected";
+	echo " value=365>Un an</option>\n";
+	echo "<option ";
+	if ($duree == 'all') echo "selected";
+	echo " value='all'>Le début</option>\n";
+	echo "</select>\n";
+	echo "<input type=\"submit\" name=\"Valider\" value=\"Valider\" />\n";
+
+	echo "</form>\n";
+
+	echo "<p class='small'>** Les renseignements ci-dessus peuvent vous permettre de vérifier qu'une connexion pirate n'a pas été effectuée sur votre compte.
+	Dans le cas d'une connexion inexpliquée, vous devez immédiatement en avertir l'<a href=\"mailto:" . getSettingValue("gepiAdminAdress") . "\">administrateur</a>.</p>\n";
+}
 
 /**********************************************************************************************
  *                                  Fonctions Trombinoscope
@@ -5239,16 +5480,16 @@ function cree_repertoire_multisite() {
 
 /**
  * Recherche les élèves sans photos
- * 
+ *
  * @return array tableau de login - nom - prénom - classe - classe court - eleonet
  */
 function recherche_eleves_sans_photo() {
   $eleve=NULL;
   $requete_liste_eleve = "SELECT e.elenoet, e.login, e.nom, e.prenom, c.nom_complet, c.classe
 	FROM eleves e, j_eleves_classes jec, classes c
-	WHERE e.login = jec.login 
-	AND jec.id_classe = c.id 
-	GROUP BY e.login 
+	WHERE e.login = jec.login
+	AND jec.id_classe = c.id
+	GROUP BY e.login
 	ORDER BY id_classe, nom, prenom ASC";
   $res_eleve = mysql_query($requete_liste_eleve);
   while ($row = mysql_fetch_object($res_eleve)) {
@@ -5288,7 +5529,7 @@ function recherche_personnel_sans_photo($statut='professeur') {
 function efface_photos($photos) {
 // on liste les fichier du dossier photos/personnels ou photos/eleves
   if (!($photos=="eleves" || $photos=="personnels"))
-	return ("Le dossier <strong>".$photos."</strong> n'ai pas valide.");  
+	return ("Le dossier <strong>".$photos."</strong> n'ai pas valide.");
   if (cree_zip_archive("photos")==TRUE){
 	$fichier_sup=array();
 	if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
@@ -5367,7 +5608,7 @@ function suivi_ariane($lien,$texte){
 
 /**
  * Affiche le fil d'Ariane
- * 
+ *
  * @param <boolean> $validation si True,
  * une validation sera demandée en cas de modification de la page
  * @param <texte> $themessage message à afficher lors de la confirmation
@@ -5423,7 +5664,7 @@ function path_niveau($niveau=1){
  *
  * @param text $dossier_a_archiver limité à documents ou photos
  * @param int $niveau niveau dans l'arborescence de la page appelante, racine = 0
- * @return bool 
+ * @return bool
  */
 function cree_zip_archive($dossier_a_archiver,$niveau=1) {
   $path = path_niveau();
@@ -5463,7 +5704,7 @@ function cree_zip_archive($dossier_a_archiver,$niveau=1) {
 		return TRUE;
 	  }
 	}
-  }  
+  }
 }
 
 /**

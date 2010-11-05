@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: saisir_eleve.php 5433 2010-09-26 14:56:21Z jjacquard $
+ * @version $Id: saisir_eleve.php 5594 2010-10-07 18:38:36Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -339,8 +339,12 @@ foreach($eleve_col as $eleve) {
 ?>
 		  <a href="./saisir_eleve.php?type_selection=id_eleve&amp;id_eleve=<?php echo $eleve->getPrimaryKey() ;?>">
 <?php
-		  echo '<span class="td_abs_eleves">'.strtoupper($eleve->getNom()).' '.ucfirst($eleve->getPrenom()).' ('.$eleve->getCivilite().')</span>';
-			echo '</a>';
+		  echo '<span class="td_abs_eleves">'.strtoupper($eleve->getNom()).' '.ucfirst($eleve->getPrenom()).' ('.$eleve->getCivilite().')';
+			if(!isset($current_classe)){
+                            echo ' '.$eleve->getClasse()->getNom().'';
+                        }
+                        echo'</span>';
+                        echo '</a>';
 			if (isset($message_erreur_eleve[$eleve->getIdEleve()]) && $message_erreur_eleve[$eleve->getIdEleve()] != '') {
 			    echo "<br/>Erreur : ".$message_erreur_eleve[$eleve->getIdEleve()];
 			}

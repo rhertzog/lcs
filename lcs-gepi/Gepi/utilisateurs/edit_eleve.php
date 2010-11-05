@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_eleve.php 3902 2009-12-11 20:46:13Z crob $
+ * $Id: edit_eleve.php 5412 2010-09-23 14:16:48Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -439,7 +439,7 @@ while ($current_eleve = mysql_fetch_object($quels_eleves)) {
 	$alt=$alt*(-1);
 	echo "<tr class='lig$alt'>\n";
 		echo "<td>\n";
-			echo "<a href='../eleves/modify_eleve.php?eleve_login=".$current_eleve->login."'>".$current_eleve->login."</a>";
+			echo "<a href='../eleves/modify_eleve.php?eleve_login=".$current_eleve->login."&amp;journal_connexions=y'>".$current_eleve->login."</a>";
 		echo "</td>\n";
 		echo "<td>\n";
 			echo $current_eleve->nom . " " . $current_eleve->prenom;

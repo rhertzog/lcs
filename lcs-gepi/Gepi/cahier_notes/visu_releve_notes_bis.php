@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: visu_releve_notes_bis.php 3753 2009-11-20 18:03:11Z crob $
+* $Id: visu_releve_notes_bis.php 5689 2010-10-15 19:23:18Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -1667,6 +1667,12 @@ else {
 	include("extraction_donnees_releves_notes.php");
 	//========================================
 
+	// DEBUG:
+	/*
+	echo "\$tab_releve[$id_classe][$periode_num]['eleve'][0]['groupe'][0]['id_cn'][2367]['conteneurs'][0]['moy']=".$tab_releve[$id_classe][$periode_num]['eleve'][0]['groupe'][0]['id_cn'][2367]['conteneurs'][0]['moy']."<br />\n";
+	echo "\$tab_releve[$id_classe][$periode_num]['eleve'][0]['groupe'][0]['devoir'][1]['note']=".$tab_releve[$id_classe][$periode_num]['eleve'][0]['groupe'][0]['devoir'][1]['note']."<br />\n";
+	echo "\$tab_releve[$id_classe][$periode_num]['eleve'][0]['groupe'][0]['devoir'][1]['statut']=".$tab_releve[$id_classe][$periode_num]['eleve'][0]['groupe'][0]['devoir'][1]['statut']."<br />\n";
+	*/
 
 	//========================================================================
 	// A CE STADE LE TABLEAU $tab_releve EST RENSEIGNé

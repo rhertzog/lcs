@@ -1,6 +1,6 @@
 <?php
 
-/* $Id: bull_func.lib.php 5415 2010-09-24 17:02:46Z crob $ */
+/* $Id: bull_func.lib.php 5416 2010-09-24 17:02:53Z crob $ */
 
 include("../cahier_notes/visu_releve_notes_func.lib.php");
 

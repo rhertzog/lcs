@@ -1,5 +1,5 @@
 /*
- * @version $Id: functions.js 5094 2010-08-21 12:29:47Z crob $
+ * @version $Id: functions.js 5238 2010-09-11 19:12:13Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -77,6 +77,57 @@ function clavier_2(n,e,vmin,vmax){
 						//valeur=valeur+10;
 						//valeur+=10;
 						valeur=eval(valeur)+10;
+					}
+					else{
+						valeur=vmax;
+					}
+					document.getElementById(n).value=valeur;
+				}
+			}
+		}
+	}
+}
+
+
+function clavier_3(n,e,vmin,vmax,increment){
+	// Fonction destinée à incrémenter/décrémenter le champ courant entre 1 et 0 (pour des pourcentages)
+	// Modifié pour aller de vmin à vmax
+	touche= e.keyCode ;
+	//alert('touche='+touche);
+	if (touche == '40') {
+		valeur=document.getElementById(n).value;
+		if(valeur>vmin){
+			//valeur=eval(eval(valeur)-eval(increment));
+			valeur=Math.round(((Math.round(valeur*100)/100)-(Math.round(increment*100)/100))*100)/100;
+			document.getElementById(n).value=valeur;
+		}
+	}
+	else{
+		if (touche == '38') {
+			valeur=document.getElementById(n).value;
+			if(valeur<vmax){
+				valeur=Math.round(((Math.round(valeur*100)/100)+(Math.round(increment*100)/100))*100)/100;
+				document.getElementById(n).value=valeur;
+			}
+		}
+		else{
+			if(touche == '34'){
+				valeur=document.getElementById(n).value;
+				if(valeur>vmin+10*increment){
+						valeur=Math.round(((Math.round(valeur*100)/100)-10*(Math.round(increment*100)/100))*100)/100;
+				}
+				else{
+					valeur=vmin;
+				}
+				document.getElementById(n).value=valeur;
+			}
+			else{
+				if(touche == '33'){
+					valeur=document.getElementById(n).value;
+					if(valeur<vmax-10*increment){
+						//valeur=valeur+10;
+						//valeur+=10;
+						valeur=Math.round(((Math.round(valeur*100)/100)+10*(Math.round(increment*100)/100))*100)/100;
 					}
 					else{
 						valeur=vmax;

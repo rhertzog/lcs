@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: efface_base.php 4152 2010-03-21 23:32:16Z adminpaulbert $
+ * $Id: efface_base.php 5354 2010-09-20 17:32:08Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -49,7 +49,7 @@ if (isset($_POST['confirm']) and ($_POST['confirm']=='Non')) {
 $titre_page = "Outil de gestion | Effacement des données élèves";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
-?><p class=bold><a href='index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>
+?><p class=bold><a href='index.php#efface_base'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>
 <H2>Effacement de la base</H2>
 <?php
 if (isset($_POST['is_posted']) and ($_POST['is_posted'] == 1)) {
@@ -153,6 +153,7 @@ if (isset($_POST['is_posted']) and ($_POST['is_posted'] == 2)) {
 "j_aid_utilisateurs",
 "j_aid_utilisateurs_gest",
 "j_aidcateg_utilisateurs",
+"j_aidcateg_super_gestionnaires",
 "j_eleves_classes",
 "j_eleves_cpe",
 "j_eleves_etablissements",

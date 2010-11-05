@@ -33,7 +33,7 @@ include('UnitTestEleve.php');
 include('UnitTestAbsenceSaisie.php');
 Propel::init('../propel-build/conf/gepi-conf_debug.php');
 $logger = new StackLogger();
-Propel::setLogger($logger);
+//Propel::setLogger($logger);
 
 
 // On met le header en petit par défaut
@@ -126,6 +126,20 @@ if ($absenceSaisie == null) {
 		echo ($logger->getDisplay());
 		echo('test 2 recuperation absence saisie et absence traitement a partir d\'un eleve a reussi <br><br/>');
 	}
+}
+
+$absenceSaisie2 = UnitTestAbsenceSaise::getAbsenceSaisie();
+$absenceSaisie2->setDebutAbs(new DateTime('2010-01-01 13:00'));
+$absenceSaisie2->setFinAbs(new DateTime('2010-01-01 13:01'));
+$absenceSaisie2->setEleve($newEleve);
+$absenceSaisie2->save();//normalement cette saisie va ètre comptée en retard et non en manquementObligationPresence
+
+$absenceSaisies = $newEleve->getAbsenceEleveSaisiesManquementObligationPresence();
+if ($absenceSaisies->count() != 1) {
+	echo ($logger->getDisplay());
+	echo('test 1 recuperation absence saisie eleve manquement obligation a partir d\'un eleve a <font color="red">echoue</font> <br><br/>');
+} else {
+	echo('test 1 recuperation absence saisie eleve manquement obligation a partir d\'un eleve a reussi<br><br/>');
 }
 
 

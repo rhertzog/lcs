@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: discipline_admin.php 5401 2010-09-23 10:01:32Z crob $
+ * @version: $Id: discipline_admin.php 5423 2010-09-25 16:40:46Z eabgrall $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -62,6 +62,8 @@ if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
 if ((isset($_POST['is_posted']))&&(isset($_POST['activer']))) {
     if (!saveSetting("active_mod_discipline", $_POST['activer']))
 			$msg = "Erreur lors de l'enregistrement du paramètre activation/désactivation !";
+    if (!saveSetting("autorise_commentaires_mod_disc", $_POST['autorise_commentaires_mod_disc']))
+			$msg = "Erreur lors de l'enregistrement du paramètre activation/désactivation \"autorise_commentaires_mod_disc\" !";
 }
 
 if (isset($_POST['is_posted']) and ($msg=='')) {

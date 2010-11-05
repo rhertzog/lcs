@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: accueil_template.php 5100 2010-08-23 15:36:45Z regis $
+ * $Id: accueil_template.php 5766 2010-10-26 13:25:24Z regis $
 */
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
@@ -136,6 +136,7 @@
 <!-- messages de sécurité -->
 <?php
 	if (count($afficheAccueil->probleme_dir)) {
+	
 	  foreach ($afficheAccueil->probleme_dir as $value) {
 ?>
 		<p  class="rouge center">
@@ -147,6 +148,9 @@
 	  unset($value);
 	}
 ?>
+	
+<!-- erreurs d'affectation d'élèves -->
+
 
 	</div>
 	<a name="contenu" class="invisible">Début de la page</a>
@@ -211,6 +215,7 @@
 	<?php
 	if (count($afficheAccueil->titre_Menu)) {
 	  foreach ($afficheAccueil->titre_Menu as $newEntreeMenu) {
+      if ($newEntreeMenu->texte!='bloc_invisible') {
 ?>
 		<h2 class="<?php echo $newEntreeMenu->classe ?>">
 			<img src="<?php echo $newEntreeMenu->icone['chemin'] ?>" alt="<?php echo $newEntreeMenu->icone['alt'] ?>" /> - <?php echo $newEntreeMenu->texte ?>
@@ -221,9 +226,9 @@
 		if ($newEntreeMenu->texte=="Votre flux RSS") {
 ?>
 		  <div class='div_tableau'>
-<?php				  
+<?php
 		  if ($afficheAccueil->canal_rss["mode"]==1) {
-?>	
+?>
 			<h3 class="colonne ie_gauche flux_rss" title="A utiliser avec un lecteur de flux rss" onclick="changementDisplay('divuri', 'divexpli')" >
 			  Votre uri pour les cahiers de textes
 			</h3>
@@ -232,15 +237,15 @@
 				<?php echo $afficheAccueil->canal_rss['expli']; ?>
 			  </span>
 			  <span id="divuri" style="display: none;">
-				<a href="" onclick="window.open(this.href, '_blank'); return false;"  <?php echo $afficheAccueil->canal_rss['lien']; ?> >
+				<a href="<?php echo $afficheAccueil->canal_rss['lien']; ?>" onclick="window.open(this.href, '_blank'); return false;" >
 				  <?php echo $afficheAccueil->canal_rss['texte']; ?>
 				</a>
 			  </span>
 			</p>
 
-<?php 		
+<?php
 		  }else if ($afficheAccueil->canal_rss["mode"]==2){
-?>	
+?>
 			<h3 class="colonne ie_gauche">
 			  Votre uri pour les cahiers de textes
 			</h3>
@@ -249,7 +254,7 @@
 			</p>
 <?php
 		  }
-?>	
+?>
 		  </div>
 <?php
 		}else{
@@ -292,6 +297,7 @@
 				</div>
 <?php
 			  }
+			}
 			}
 			unset($newentree);
 		  }
@@ -349,7 +355,7 @@
 				";
 		}
 	}
- * 
+ *
  */
 ?>
 <!-- fin RSS	-->
@@ -393,7 +399,7 @@
 ?>
 						<tr  class='<?php echo $newentree['style']; ?>'>
 							<td>
-								<a href='mailto:$newentree[courriel]'>
+                               <a href='mailto:<?php echo $newentree[courriel]; ?>'>
 									<?php echo $newentree['texte']; ?>
 								</a>
 							</td>

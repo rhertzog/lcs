@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: index_template.php 4900 2010-07-26 13:40:03Z regis $
+* $Id: index_template.php 5616 2010-10-09 09:53:36Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -296,6 +296,35 @@
 		  des cahiers de textes
 		</label>
 	  </fieldset>
+
+
+	  <h2>Cahiers de texte en commun</h2>
+	  <fieldset class="no_bordure">
+		<legend class="invisible">Cahiers de texte en commun</legend>
+			<p>Dans le CDT2, par défaut, un professeur ne peut pas modifier une notice/devoir réalisé par un collègue, même si il s'agit d'une enseignement partagé (<i>plusieurs professeurs devant un même groupe d'élèves</i>).<br />
+			Pour modifier ce paramétrage&nbsp;:</p>
+		  <input type='radio'
+				 name='cdt_autoriser_modif_binome'
+				 id='cdt_autoriser_modif_binome_y'
+				 value='yes'
+			 onchange='changement();'
+			   <?php if (getSettingValue("cdt_autoriser_modif_binome") == "yes") {echo " checked='checked'";}?> />
+		<label for='cdt_autoriser_modif_binome_y' style='cursor: pointer;'>
+		  Autoriser les collègues travaillant en binome sur une enseignement à modifier les notices/devoirs créés par leur collègue.
+		</label>
+	  <br />
+		  <input type='radio'
+				 name='cdt_autoriser_modif_binome'
+				 id='cdt_autoriser_modif_binome_n'
+				 value='no'
+			 onchange='changement();'
+			   <?php if ((getSettingValue("cdt_autoriser_modif_binome") == "no")||(getSettingValue("cdt_autoriser_modif_binome") == "")) {echo " checked='checked'";}?> />
+		<label for='cdt_autoriser_modif_binome_n' style='cursor: pointer;'>
+		  Interdire la modification de notice/devoir créés par leur collègue.
+		</label>
+	  </fieldset>
+
+
 	  <p class="center">
 		<input type="submit" value="Enregistrer" />
 	  </p>

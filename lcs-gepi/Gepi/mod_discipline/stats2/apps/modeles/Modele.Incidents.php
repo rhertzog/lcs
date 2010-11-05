@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: Modele.Incidents.php 5095 2010-08-22 14:18:13Z eabgrall $
+ * $Id: Modele.Incidents.php 5709 2010-10-21 16:44:24Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -75,8 +75,8 @@ Class Modele_Incidents extends Modele {
     return $this->get_sanctions_incident($liste_incidents);
   }
 
-  public function get_incidents($du,$au,$filtre_cat=Null,$filtre_mes=Null,$filtre_san=Null,$filtre_role=Null) {
-    return $this->get_infos_incidents($du,$au,$filtre_cat,$filtre_mes,$filtre_san,$filtre_role);
+  public function get_incidents($choix,$titre,$du,$au,$critere,$filtre_cat=Null,$filtre_mes=Null,$filtre_san=Null,$filtre_role=Null) {
+     return $this->get_infos_incidents($choix,$titre,$du,$au,$critere,$filtre_cat,$filtre_mes,$filtre_san,$filtre_role);
 
   }
   public function get_nombre_total_incidents($liste_incidents=Null) {

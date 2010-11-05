@@ -4,7 +4,7 @@
  * Fichier temporaire uniquement présent dans les versions RC pour teter les configurations serveur
  * et d'autres paramètres pour comprendre certaines erreurs.
  *
- * @version $Id: test_serveur.php 4655 2010-06-27 14:12:19Z crob $ 1.5.1RC1
+ * @version $Id: test_serveur.php 5354 2010-09-20 17:32:08Z crob $ 1.5.1RC1
  *
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
@@ -71,7 +71,7 @@ $style_specifique = "edt_organisation/style_edt";
 require_once("../lib/header.inc");
 /*++++++++++++++++++++++ fin entête ++++++++++++++++++++++++++++++++++++*/
 echo '
-<p class="bold"><a href="../gestion/index.php">
+<p class="bold"><a href="../gestion/index.php#test_serveur">
 	<img src="../images/icons/back.png" alt="Retour" class="back_link" /> Retour</a>
 </p>
 ';
@@ -106,7 +106,12 @@ if ($test->versionGd()) {
 	- Le temps maximum alloué à php pour traiter un script est de '.$test->maxExecution().' secondes'.$warning_maxExec.' (<i>max_execution_time</i>).
 	<br />
 	- La taille maximum d\'un fichier envoyé à Gepi est de '.$test->tailleMaxFichier().' (<i>upload_max_filesize</i>).
-	<br />
+	<br />';
+	$max_file_uploads=ini_get('max_file_uploads');
+	echo '
+	- Il peut être uploadé au maximum '.$max_file_uploads.' fichier(s) à la fois (<i>max_file_uploads</i>).
+	<br />';
+	echo '
 	- La durée maximum de session est réglée à '.ini_get("session.gc_maxlifetime").' secondes, soit un maximum de '.(ini_get("session.gc_maxlifetime")/60).' minutes (<i>session.maxlifetime</i> dans le fichier php.ini).';
 
 	$suhosin_post_max_totalname_length=ini_get('suhosin.post.max_totalname_length');

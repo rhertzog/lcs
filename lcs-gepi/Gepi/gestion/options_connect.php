@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: options_connect.php 4852 2010-07-21 10:34:58Z crob $
+ * $Id: options_connect.php 5743 2010-10-24 16:23:13Z regis $
  *
- * Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -40,7 +40,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -145,8 +145,13 @@ if (isset($_POST['auth_options_posted']) && $_POST['auth_options_posted'] == "1"
 	    }
 		saveSetting("statut_utilisateur_defaut", $_POST['statut_utilisateur_defaut']);
 	}
+	
+	if (isset($_POST['login_sso_url'])) {
+		saveSetting("login_sso_url", $_POST['login_sso_url']);
+	}
 
 }
+
 
 
 // Load settings
@@ -202,7 +207,7 @@ $mode_navig = isset($_POST["mode_navig"]) ? $_POST["mode_navig"] : (isset($_GET[
 if ($mode_navig == 'accueil') {
     $retour = "../accueil.php";
 } else {
-    $retour = "index.php";
+    $retour = "index.php#options_connect";
 }
 
 echo "<p class=bold><a href=\"".$retour."\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>\n";
@@ -352,9 +357,16 @@ echo "<input type='text' size='60' name='sso_url_portail' value='".$gepiSettings
 echo "</p>\n";
 
 echo "<p><input type='checkbox' name='sso_hide_logout' value='yes' id='label_sso_hide_logout'";
-if ($gepiSettings['sso_hide_logout'] == 'yes') echo " checked ";
+if ($gepiSettings['sso_hide_logout'] == 'yes') echo " checked='checked' ";
 echo " /> <label for='label_sso_hide_logout' style='cursor: pointer;'>Sessions SSO uniquement : masquer le lien de déconnexion (soyez sûr que l'utilisateur dispose alors d'un moyen alternatif de se déconnecter).";
 echo "</label>\n";
+echo "</p>\n";
+
+echo "<br/>\n";
+echo "<p>\n";
+echo "<label for='login_sso_url' style='cursor: pointer;'>Fichier d'identification SSO alternatif (à utiliser à la place de login_sso.php) : </label>\n";
+echo "<input type='text' size='60' name='login_sso_url' value='".getSettingValue('login_sso_url')."' id='login_sso_url' />\n";
+
 echo "</p>\n";
 
 echo "<br/>\n";

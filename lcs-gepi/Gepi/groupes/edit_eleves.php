@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_eleves.php 4112 2010-03-01 16:49:47Z crob $
+ * $Id: edit_eleves.php 5797 2010-11-04 16:32:35Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -144,6 +144,7 @@ if (isset($_POST['is_posted'])) {
 			}
 		}
 		*/
+		$reg_eleves[$period["num_periode"]]=array();
 
 		for($i=0;$i<count($login_eleve);$i++){
 			if(isset($_POST['eleve_'.$period["num_periode"].'_'.$i])) {

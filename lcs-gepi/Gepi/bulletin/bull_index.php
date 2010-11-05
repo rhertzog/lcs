@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: bull_index.php 4991 2010-08-02 22:02:08Z jjacquard $
+* $Id: bull_index.php 5786 2010-11-02 13:49:19Z jjacquard $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -2545,7 +2545,7 @@ else {
 					//==========================================
 					// ABSENCES
 					//On vérifie si le module est activé
-					if (getSettingValue("active_module_absence")!='2') {
+					if (getSettingValue("active_module_absence")!='2' || getSettingValue("abs2_import_manuel_bulletin")=='y') {
 					    $sql="SELECT * FROM absences WHERE (login='".$current_eleve_login[$i]."' AND periode='$periode_num');";
 					    $current_eleve_absences_query = mysql_query($sql);
 					    $current_eleve_absences = @mysql_result($current_eleve_absences_query, 0, "nb_absences");

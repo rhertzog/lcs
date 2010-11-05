@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: logout.php 5104 2010-08-24 15:14:39Z regis $
+ * $Id: logout.php 5620 2010-10-09 16:30:54Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -97,15 +97,15 @@ if (isset($_COOKIE["RNE"])) {
 
 include('./templates/origine/logout_template.php');
 
-
-// On efface le dossier temporaire
-if ($temp_perso){
-  foreach (glob($temp_perso."/*") as $filename) {
-	if (is_file($filename) && (!strstr($filename, 'index.html'))){
-	  @unlink ($filename);
+if(getSettingValue('temporary_dir_no_cleaning')!='yes') {
+	// On efface le dossier temporaire
+	if ($temp_perso) {
+		foreach (glob($temp_perso."/*") as $filename) {
+			if (is_file($filename) && (!strstr($filename, 'index.html'))){
+				@unlink ($filename);
+			}
+		}
+	unset ($filename);
 	}
-  }
-  unset ($filename);
 }
-
 ?>

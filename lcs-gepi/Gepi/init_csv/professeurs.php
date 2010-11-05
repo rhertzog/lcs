@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: professeurs.php 3358 2009-08-30 14:06:05Z crob $
+* $Id: professeurs.php 5310 2010-09-15 06:51:52Z delineau $
 *
 * Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -57,6 +57,7 @@ $liste_tables_del = array(
 "j_aid_utilisateurs",
 "j_groupes_professeurs",
 "j_aid_utilisateurs_gest",
+"j_aidcateg_super_gestionnaires",
 //"j_eleves_classes",
 //"j_eleves_etablissements",
 "j_eleves_professeurs",

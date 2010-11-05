@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: visu_saisie.php 5433 2010-09-26 14:56:21Z jjacquard $
+ * @version $Id: visu_saisie.php 5789 2010-11-03 15:34:34Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -107,7 +107,7 @@ if ($saisie != null) {
 //Une saisie est modifiable ssi : elle appartient à l'utilisateur de la session,
 //si elle date de moins de 24 heure (sauf pour le statut prof)
 //elle date de moins d'une heure et l'option a ete coché partie admin pour le statut prof
-$modifiable = $saisie->getUtilisateurId() == $utilisateur->getPrimaryKey() && ($saisie->getCreatedAt('U') > (time() - 24*3600));
+$modifiable = $saisie->getUtilisateurId() == $utilisateur->getPrimaryKey() && ($saisie->getCreatedAt('U') > (time() - 72*3600));
 if ($modifiable && $utilisateur->getStatut() == 'professeur') {
     if (getSettingValue("abs2_modification_saisie_une_heure")=='y') {
 	$modifiable =  ($saisie->getCreatedAt('U') > (time() - 3600));
@@ -299,6 +299,7 @@ foreach ($saisie->getAbsenceEleveTraitements() as $traitement) {
 			echo "</option>\n";
 		}
 		echo "</select>";
+		echo '<button type="submit" name="modifier_type" value="vrai">Mod. le type</button>';
 	}
     }else {
 	if ($utilisateur->getStatut() != 'professeur') {
@@ -313,7 +314,7 @@ foreach ($saisie->getAbsenceEleveTraitements() as $traitement) {
     echo "<br/><br/>";
 }
 //on autorise un ajout rapide seulement si il n'y a aucun traitement rapidement modifiable
-if ($total_traitements_modifiable == 0) {
+if ($total_traitements_modifiable == 0 && $utilisateur->getStatut() == 'professeur') {
     echo ("<select name=\"ajout_type_absence\">");
     echo "<option value='-1'></option>\n";
     foreach ($type_autorises as $type) {
@@ -325,8 +326,6 @@ if ($total_traitements_modifiable == 0) {
     }
     echo "</select>";
     echo '<button type="submit" name="modifier_type" value="vrai">Ajouter</button>';
-} else {
-    echo '<button type="submit" name="modifier_type" value="vrai">Mod. le type</button>';
 }
 
 echo '<input type="hidden" name="total_traitements" value="'.$total_traitements_modifiable.'"/>';

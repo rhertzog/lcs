@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: admin_ct.php 5180 2010-09-03 15:40:13Z crob $
+ * @version: $Id: admin_ct.php 5181 2010-09-03 15:40:19Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

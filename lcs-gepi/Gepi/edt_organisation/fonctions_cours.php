@@ -3,7 +3,7 @@
 /**
  * Ensemble des fonctions qui permettent de créer un nouveau cours en vérifiant les précédents
  *
- * @version $Id: fonctions_cours.php 5438 2010-09-26 19:13:10Z adminpaulbert $
+ * @version $Id: fonctions_cours.php 5437 2010-09-26 19:08:38Z adminpaulbert $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *

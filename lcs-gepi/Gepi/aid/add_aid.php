@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: add_aid.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * @version: $Id: add_aid.php 5310 2010-09-15 06:51:52Z delineau $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -41,6 +41,12 @@ die();
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
 die();
+}
+
+// Vérification du niveau de gestion des AIDs
+if (NiveauGestionAid($_SESSION["login"],$indice_aid) < 5) {
+    header("Location: ../logout.php?auto=1");
+    die();
 }
 
 if(!isset($mess)) {$mess="";}

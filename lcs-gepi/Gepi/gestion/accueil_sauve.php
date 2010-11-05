@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: accueil_sauve.php 5335 2010-09-17 19:09:42Z crob $
+ * $Id: accueil_sauve.php 5354 2010-09-20 17:32:08Z crob $
  *
  * Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -1472,7 +1472,7 @@ if (isset($action) and ($action == 'zip'))  {
 <?php
 
 if(!isset($quitter_la_page)){
-	echo "<p class='bold'><a href='index.php'";
+	echo "<p class='bold'><a href='index.php#accueil_sauve'";
 	echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
 	echo "><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 	//echo "</p>\n";

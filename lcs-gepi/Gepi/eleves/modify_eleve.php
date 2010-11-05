@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: modify_eleve.php 5191 2010-09-04 20:15:35Z crob $
+ * $Id: modify_eleve.php 5643 2010-10-12 15:33:25Z crob $
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -1550,6 +1550,20 @@ echo "<form enctype='multipart/form-data' name='form_rech' action='modify_eleve.
 
 //echo "\$eleve_login=$eleve_login<br />";
 
+if(isset($eleve_login)) {
+	//$sql="SELECT 1=1 FROM utilisateurs WHERE login='$eleve_login' AND statut='eleve';";
+	$sql="SELECT 1=1 FROM utilisateurs WHERE login='$eleve_login';";
+	$test_compte=mysql_query($sql);
+	if(mysql_num_rows($test_compte)>0) {$compte_eleve_existe="y";} else {$compte_eleve_existe="n";}
+
+	if(($compte_eleve_existe=="y")&&(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite"))) {
+		$journal_connexions=isset($_POST['journal_connexions']) ? $_POST['journal_connexions'] : (isset($_GET['journal_connexions']) ? $_GET['journal_connexions'] : 'n');
+		$duree=isset($_POST['duree']) ? $_POST['duree'] : NULL;
+	
+		echo "<div style='float:right; width:; height:;'><a href='".$_SERVER['PHP_SELF']."?eleve_login=$eleve_login&amp;journal_connexions=y#connexion' title='Journal des connexions'><img src='../images/icons/document.png' width='16' height='16' alt='Journal des connexions' /></a></div>\n";
+	}
+}
+
 //echo "<table border='1'>\n";
 echo "<table summary='Informations élève'>\n";
 echo "<tr>\n";
@@ -1613,11 +1627,20 @@ if(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite")){
 	</tr>
 	<tr>
 		<th style='text-align:left;'>Email : </th>
-		<td><input type=text name='reg_email' size=20 ";
+		<td><input type=text name='reg_email' size=18 ";
 	if (isset($eleve_email)) {
 		echo "value=\"".$eleve_email."\"";
 	}
-	echo " onchange='changement();' /></td>
+	echo " onchange='changement();' />";
+	if($eleve_email!='') {
+		$tmp_date=getdate();
+		echo " <a href='mailto:".$eleve_email."?subject=GEPI&amp;body=";
+		if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
+		echo ",%0d%0aCordialement.'>";
+		echo "<img src='../images/imabulle/courrier.jpg' width='20' height='15' alt='Envoyer un courriel' border='0' />";
+		echo "</a>";
+	}
+	echo "</td>
 	</tr>
 	<tr>
     <th style='text-align:left;'>Identifiant National : </th>\n";
@@ -1633,7 +1656,7 @@ if(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite")){
     echo " onchange='changement();' /></td>\n";
 	echo "</tr>\n";
 }
-else{
+else {
 	echo "</tr>
 	<tr>
 		<th style='text-align:left;'>Nom * : </th>
@@ -2144,6 +2167,7 @@ if(isset($eleve_login)){
 					echo "<td>\n";
 					$lig_adr=mysql_fetch_object($res_adr);
 
+					if(!isset($adr_id_1er_resp)) {$adr_id_1er_resp='';}
 					if(($lig_adr->adr_id!="")&&($lig_adr->adr_id!=$adr_id_1er_resp)){
 						$adr_id_2eme_resp=$lig_adr->adr_id;
 						if("$lig_adr->adr1"!=""){$chaine_adr2.="$lig_adr->adr1, ";}
@@ -2336,6 +2360,38 @@ if((isset($eleve_login))&&(isset($reg_no_gep))&&($reg_no_gep!="")) {
 	}
 	echo "<p><br /></p>\n";
 }
+
+if((isset($eleve_login))&&($compte_eleve_existe=="y")&&($journal_connexions=='n')&&(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite"))) {
+	//$sql="SELECT 1=1 FROM utilisateurs WHERE login='$eleve_login' AND statut='eleve';";
+	//$sql="SELECT 1=1 FROM utilisateurs WHERE login='$eleve_login';";
+	//$test_compte=mysql_query($sql);
+	//if(mysql_num_rows($test_compte)>0) {$compte_eleve_existe="y";} else {$compte_eleve_existe="n";}
+
+	//if(($compte_eleve_existe=="y")&&(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite"))) {
+		$journal_connexions=isset($_POST['journal_connexions']) ? $_POST['journal_connexions'] : (isset($_GET['journal_connexions']) ? $_GET['journal_connexions'] : 'n');
+		$duree=isset($_POST['duree']) ? $_POST['duree'] : NULL;
+
+		echo "<hr />\n";
+	
+		echo "<p><a href='".$_SERVER['PHP_SELF']."?eleve_login=$eleve_login&amp;journal_connexions=y#connexion' title='Journal des connexions'>Journal des connexions</a></p>\n";
+	//}
+}
+
+
+if((isset($eleve_login))&&($compte_eleve_existe=="y")&&($journal_connexions=='y')&&(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite"))) {
+	echo "<hr />\n";
+	// Journal des connexions
+	echo "<a name=\"connexion\"></a>\n";
+	if (isset($_POST['duree'])) {
+		$duree = $_POST['duree'];
+	} else {
+		$duree = '7';
+	}
+	
+	journal_connexions($eleve_login,$duree,'modify_eleve');
+	echo "<p><br /></p>\n";
+}
+
 
 require("../lib/footer.inc.php");
 ?>

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: access_rights.inc.php 5389 2010-09-21 12:26:27Z crob $
+ * $Id: access_rights.inc.php 5370 2010-09-20 19:23:03Z jjacquard $
  *
  * Ce fichier est toujours appelé lors d'une mise à jour.
  * Il réinitialise totalement la table 'droits' avec les informations détaillées
@@ -76,7 +76,7 @@ $tab_req[] = "INSERT INTO droits VALUES ('/accueil_admin.php', 'V', 'F', 'F', 'F
 $tab_req[] = "INSERT INTO droits VALUES ('/accueil_modules.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', '', '');";
 $tab_req[] = "INSERT INTO droits VALUES ('/accueil.php', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'F', ' ', '');";
 $tab_req[] = "INSERT INTO droits VALUES ('/accueil_professeur.php', 'V', 'V', 'F', 'F', 'F', 'F', 'V', 'F', ' ', '');";
-$tab_req[] = "INSERT INTO droits VALUES ('/aid/add_aid.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', '');";
+$tab_req[] = "INSERT INTO droits VALUES ('/aid/add_aid.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Configuration des AID', '');";
 $tab_req[] = "INSERT INTO droits VALUES ('/aid/config_aid.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', '');";
 $tab_req[] = "INSERT INTO droits VALUES ('/aid/export_csv_aid.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', '');";
 $tab_req[] = "INSERT INTO droits VALUES ('/aid/help.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', '');";
@@ -450,7 +450,7 @@ $tab_req[] = "INSERT INTO droits VALUES ('/mod_absences/admin/interface_abs.php'
 $tab_req[] = "INSERT INTO droits VALUES ('/absences/import_absences_gepi.php', 'F', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Page d''importation des absences de gepi mod_absences', '1');";
 $tab_req[] = "INSERT INTO droits VALUES ('/saisie/ajax_appreciations.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'F', 'Sauvegarde des appréciations du bulletins', '');";
 
-$tab_req[] = "INSERT INTO droits VALUES ('/lib/change_mode_header.php', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'Page AJAX pour changer la variable cacher_header', '1');";
+$tab_req[] = "INSERT INTO droits VALUES ('/lib/change_mode_header.php', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'Page AJAX pour changer la variable cacher_header', '1');";
 
 $tab_req[] = "INSERT INTO droits VALUES ('/saisie/recopie_moyennes.php', 'F', 'F', 'F', 'F', 'F', 'F', 'V', 'F', 'Recopie des moyennes', '');";
 
@@ -671,6 +671,8 @@ $tab_req[] = "INSERT INTO droits VALUES ('/mod_abs2/extraction_saisies.php', 'V'
 $tab_req[] = "INSERT INTO droits VALUES ('/mod_abs2/extraction_demi-journees.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Extraction des saisies', '');";
 $tab_req[] = "INSERT INTO droits VALUES ('/mod_abs2/ajax_edt_eleve.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Affichage edt', '');";
 
+$tab_req[] = "INSERT INTO droits VALUES ('/mod_abs2/generer_notifications_par_lot.php','F', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Génération groupée des courriers', '');";
+$tab_req[] = "INSERT INTO droits VALUES ('/mod_abs2/bilan_parent.php', 'F', 'F', 'F', 'F', 'F', 'V', 'F', 'F', 'Affichage parents des absences de leurs enfants', '');";
 $tab_req[] = "INSERT INTO droits VALUES ('/saisie/validation_corrections.php', 'F', 'F', 'F', 'F', 'F', 'F', 'V', 'F', 'Validation des corrections proposées par des professeurs après la cloture d une période', '');";
 
 $tab_req[] = "INSERT INTO droits VALUES ('/gestion/param_ordre_item.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Modifier l ordre des items dans les menus', '');";
@@ -681,6 +683,10 @@ $tab_req[] = "INSERT INTO droits SET id='/mod_discipline/stats2/index.php',admin
 $tab_req[] = "INSERT INTO droits VALUES ( '/bulletin/autorisation_exceptionnelle_saisie_app.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Autorisation exceptionnelle de saisie d appréciation', '');";
 
 $tab_req[] = "INSERT INTO droits SET id='/init_csv/export_tables.php',administrateur='V',professeur='F',cpe='F',scolarite='F',eleve='F',responsable='F',secours='F',autre='F',description='Initialisation CSV: Export tables',statut='';";
+
+$tab_req[] = "INSERT INTO droits SET id='/mod_trombinoscopes/trombino_pdf.php', administrateur='V', professeur='V', cpe='V', scolarite='V', eleve='F', responsable='F', secours='F', autre='F', description='Trombinoscopes PDF', statut='';";
+$tab_req[] = "INSERT INTO droits SET id='/mod_trombinoscopes/trombino_decoupe.php', administrateur='V', professeur='F', cpe='F', scolarite='V', eleve='F', responsable='F', secours='F', autre='F', description='Génération d une grille PDF pour les trombinoscopes,...', statut='';";
+
 
 $test1 = mysql_num_rows(mysql_query("SHOW COLUMNS FROM droits LIKE 'responsable'"));
 if ($test1 == 1) {

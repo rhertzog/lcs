@@ -1,5 +1,5 @@
 <?php
-// $version : $Id: traitement_data.inc.php 5468 2010-09-28 16:39:31Z crob $
+// $version : $Id: traitement_data.inc.php 5469 2010-09-28 16:39:45Z crob $
 // on force la valeur de magic_quotes_runtime à off de façon à ce que les valeurs récupérées dans la base
 // puissent être affichées directement, sans caractère "\"
 @set_magic_quotes_runtime(0);

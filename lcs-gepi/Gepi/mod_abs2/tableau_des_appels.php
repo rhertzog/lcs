@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: tableau_des_appels.php 5276 2010-09-13 18:12:57Z jjacquard $
+ * @version $Id: tableau_des_appels.php 5696 2010-10-18 18:55:59Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -275,9 +275,11 @@ foreach($classe_col as $classe){
 	foreach ($abs_col as $absenceSaisie) {
 	    if ($absenceSaisie->getManquementObligationPresence()) {
 		echo "<a style='color: red;' href='visu_saisie.php?id_saisie=".$absenceSaisie->getPrimaryKey()."'>";
-	    } else {
+	    } elseif (!$absenceSaisie->getManquementObligationPresenceSpecifie_NON_PRECISE()) {
 		echo "<a href='visu_saisie.php?id_saisie=".$absenceSaisie->getPrimaryKey()."'>";
-	    }
+	    } else {
+                continue;//on affiche pas les saisies du type erreur de saisie
+            }
 	    echo ($absenceSaisie->getEleve()->getCivilite().' '.$absenceSaisie->getEleve()->getNom().' '.$absenceSaisie->getEleve()->getPrenom());
 	    echo "</a>";
 	    if ($utilisateur->getAccesFicheEleve($absenceSaisie->getEleve())) {

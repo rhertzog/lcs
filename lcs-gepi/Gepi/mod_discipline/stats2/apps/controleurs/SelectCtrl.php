@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: SelectCtrl.php 5137 2010-08-28 22:09:47Z dblanqui $
+ * $Id: SelectCtrl.php 5136 2010-08-28 21:56:49Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *

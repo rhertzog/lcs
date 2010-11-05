@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: class_menu_general.php 5236 2010-09-11 19:02:08Z regis $
+ * $Id: class_menu_general.php 5237 2010-09-11 19:02:56Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

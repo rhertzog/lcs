@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: droits_acces.php 5198 2010-09-05 10:44:24Z regis $
+* $Id: droits_acces.php 5197 2010-09-05 10:42:38Z regis $
 *
 * Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -1935,6 +1935,11 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 			</tr>
 		 */
 $statutItem='responsable';
+$titreItem='active_absences_parents';
+$texteItem="a accès aux absences des ".$gepiSettings['denomination_eleves']." dont il est responsable";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 $titreItem='GepiAccesReleveParent';
 $texteItem="a accès aux relevés de notes des ".$gepiSettings['denomination_eleves']." dont il est responsable";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))

@@ -1,6 +1,6 @@
 /**
  *
- * @version $Id: include.js 5243 2010-09-12 10:24:19Z jjacquard $
+ * @version $Id: include.js 5245 2010-09-12 10:25:49Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *

@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * $Id: admin_config_semaines.php 5132 2010-08-27 17:42:30Z regis $
+ * $Id: admin_config_semaines.php 5131 2010-08-27 17:41:54Z regis $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *

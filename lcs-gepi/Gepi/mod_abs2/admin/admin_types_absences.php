@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * $Id: admin_types_absences.php 5435 2010-09-26 14:56:27Z jjacquard $
+ * $Id: admin_types_absences.php 5663 2010-10-13 15:22:43Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -244,7 +244,7 @@ echo "</p>";
         <td>Justification exigible</td>
 	<td>L'élève est sous la responsabilité de l'établissement</td>
 	<td>Manquement obligations (apparaît sur le bulletin)</td>
-	<td>Comptabilisée comme retard sur le bulletin (apparaît sur le bulletin)</td>
+	<td>Retard</td>
         <td>Type de saisie</td>
 	<td>Statut(s) autorisé(s) à la saisie</td>
         <td style="width: 25px;"></td>

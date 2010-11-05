@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: ordre_item_template.php 4896 2010-07-25 20:22:14Z regis $
+* $Id: ordre_item_template.php 5287 2010-09-14 14:50:32Z delineau $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -88,10 +88,11 @@
 	<div id='container'>
 
 	<a name="contenu" class="invisible">Début de la page</a>
-	
+
 	<form method="post" action="#">
 	<p class="center">
 	  Ce module permet de modifier l'ordre des menus de la page accueil ainsi que les intitulés.
+  	  <br /><span class="small">Remarque : si le nouveau nom du bloc est "bloc_invisible", ce dernier n'apparaitra pas dans le menu (ceci ne fonctionne pas pour les plugins).</span>
 	</p>
 	<p>
 	  <input type="submit" value="Enregistrer" name="btn_enregistrer" />
@@ -140,11 +141,11 @@
 		foreach ($menuAfficheAdministrateur->titre_Menu as $newEntreeMenu) {
 ?>
 	  <h3 class="<?php echo $newEntreeMenu->classe ?>">
-		<input type="hidden" value="menu" 
+		<input type="hidden" value="menu"
 			   id="type_<?php echo $menuAfficheAdministrateur->statutUtilisateur ?>_<?php echo $newEntreeMenu->indexMenu ?>"
 			   name="type_<?php echo $menuAfficheAdministrateur->statutUtilisateur ?>_<?php echo $newEntreeMenu->indexMenu ?>" />
 
-		<input type="hidden" value="<?php echo $newEntreeMenu->bloc ?>" 
+		<input type="hidden" value="<?php echo $newEntreeMenu->bloc ?>"
 			   id="bloc_<?php echo $menuAfficheAdministrateur->statutUtilisateur ?>_<?php echo $newEntreeMenu->indexMenu ?>"
 			   name="bloc_<?php echo $menuAfficheAdministrateur->statutUtilisateur ?>_<?php echo $newEntreeMenu->indexMenu ?>" />
 
@@ -165,7 +166,7 @@
 		<?php echo $newEntreeMenu->texte ?>
 		<br />
 		<label for="nouveauNom_<?php echo $menuAfficheAdministrateur->statutUtilisateur ?>_<?php echo $newEntreeMenu->indexMenu ?>">nouveau nom : </label>
-		<input type="text" value="<?php echo $newEntreeMenu->nouveauNom ?>" 
+		<input type="text" value="<?php echo $newEntreeMenu->nouveauNom ?>"
 			   id="nouveauNom_<?php echo $menuAfficheAdministrateur->statutUtilisateur ?>_<?php echo $newEntreeMenu->indexMenu ?>"
 			   name="nouveauNom_<?php echo $menuAfficheAdministrateur->statutUtilisateur ?>_<?php echo $newEntreeMenu->indexMenu ?>"
 			   onchange='changement();' />

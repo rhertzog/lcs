@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: menu_abs2.inc.php 5072 2010-08-17 16:02:30Z jjacquard $
+ * @version $Id: menu_abs2.inc.php 5370 2010-09-20 19:23:03Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -82,6 +82,11 @@ if(($_SESSION['statut']=='cpe')||
     if($onglet_abs=='visu_notification.php' || $onglet_abs=='enregistrement_modif_notification.php' || $onglet_abs=='generer_notification.php') {echo "class='current' style='background-color:#c7e3ec; border-bottom:2px solid #c7e3ec;' ";}
     else {echo "style='background-color:#ecf6f8;' ";}
     echo "title='Notification'>Notification</a></li>\n";
+
+    echo "<li><a href='generer_notifications_par_lot.php' ";
+    if($onglet_abs=='generer_notifications_par_lot.php') {echo "class='current' style='background-color:#c7e3ec; border-bottom:2px solid #c7e3ec;' ";}
+    else {echo "style='background-color:#ecf6f8;' ";}
+    echo "title='Envoi par lot'>Envoi par lot</a></li>\n";
 
     if($onglet_abs=='saisir_eleve.php' || $onglet_abs=='enregistrement_saisie_eleve.php' || $onglet_abs=='saisir_groupe.php' || $onglet_abs=='enregistrement_saisie_groupe.php') {
 	echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Saisie_cpe">wiki</a></div>';

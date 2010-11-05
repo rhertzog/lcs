@@ -331,14 +331,14 @@ class UtilisateurProfessionnel extends BaseUtilisateurProfessionnel {
 		    $j_groupes_classesJoin = new ModelJoin();
 		    $j_groupes_classesJoin->setJoinType(Criteria::LEFT_JOIN);
 		    $j_groupes_classesRelation = $groupeTableMap->getRelation('JGroupesClasses');
-		    $j_groupes_classesJoin->setRelationMap($j_groupes_classesRelation, null, '');
+		    $j_groupes_classesJoin->setRelationMap($j_groupes_classesRelation);
 		    $width["JGroupesClasses"] = $j_groupes_classesJoin;
 
 		    $classeJoin = new ModelJoin();
 		    $classeJoin->setJoinType(Criteria::LEFT_JOIN);
 		    $jGroupesClassesTableMap = Propel::getDatabaseMap(GroupePeer::DATABASE_NAME)->getTableByPhpName('JGroupesClasses');
 		    $relationClasse = $jGroupesClassesTableMap->getRelation('Classe');
-		    $classeJoin->setRelationMap($relationClasse, null, '');
+		    $classeJoin->setRelationMap($relationClasse);
 		    $classeJoin->setPreviousJoin($j_groupes_classesJoin);
 		    $width["Classe"] = $classeJoin;
 

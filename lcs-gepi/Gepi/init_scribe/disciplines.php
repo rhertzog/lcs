@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: disciplines.php 5609 2010-10-08 19:49:03Z crob $
+ * $Id: disciplines.php 5608 2010-10-08 19:48:51Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

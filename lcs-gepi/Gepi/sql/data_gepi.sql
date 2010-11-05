@@ -1,11 +1,11 @@
--- $Id: data_gepi.sql 5390 2010-09-21 12:26:36Z crob $
+-- $Id: data_gepi.sql 5736 2010-10-24 13:20:10Z tbelliard $
 INSERT INTO utilisateurs SET login = 'ADMIN', nom = 'GEPI', prenom = 'Administrateur', civilite = 'M.', password = 'ab4f63f9ac65152575886860dde480a1', statut = 'administrateur', etat = 'actif', change_mdp = 'y', auth_mode = 'gepi';
-INSERT INTO setting VALUES ('version', '1.5.3');
+INSERT INTO setting VALUES ('version', '1.5.3.1');
 INSERT INTO setting VALUES ('versionRc', '');
 INSERT INTO setting VALUES ('versionBeta', '');
 INSERT INTO setting VALUES ('sessionMaxLength', '30');
 INSERT INTO setting VALUES ('Impression','<center><p class = \"grand\">Gestion des Elèves Par Internet</p></center>\r\n<br />\r\n<p class = \"grand\">Qu\'est-ce que GEPI ?</p>\r\n\r\n<p>Afin d\'étudier les modalités d\'informatisation des bulletins scolaires : notes et appréciations via Internet, une expérimentation (baptisée Gestion des Elèves Par Internet)a été mise en place. Cette expérimentation concerne les classes suivantes : \r\n<br />* ....\r\n<br />* ....\r\n<br />\r\n<br />\r\nCeci vous concerne car vous êtes professeur enseignant dans l\'une ou l\'autre de ces classes.\r\n<br />\r\n<br />\r\nA partir de la réception de ce document, vous pourrez remplir les bulletins informatisés :\r\n<span class = \"norme\">\r\n<UL><li>soit au lycée à partir de n\'importe quel poste connecté à Internet,\r\n<li>soit chez vous si vous disposez d\'une connexion Internet.\r\n</ul>\r\n</span>\r\n<p class = \"grand\">Comment accéder au module de saisie (notes etappréciations) :</p>\r\n<span class = \"norme\">\r\n<UL>\r\n    <LI>Se connecter à Internet\r\n    <LI>Lancer un navigateur (FireFox de préférence, Opera, Internet Explorer, ...)\r\n    <LI>Se connecter au site : https://adresse_du_site/gepi\r\n    <LI>Après quelques instants une page apparaît vous invitant à entrer un nom d\'identifiant et un mot de passe (cesinformations figurent en haut de cette page).\r\n    <br />ATTENTION : votre mot de passe est strictement confidentiel.\r\n    <br />\r\n    <br />Une fois ces informations fournies, cliquez sur le bouton \"Ok\".\r\n    <LI> Après quelques instants une page d\'accueil apparaît.<br />\r\nLa première fois, Gepi vous demande de changer votre mot de passe.\r\nChoisissez-en un facile à retenir, mais non trivial (évitez toute date\r\nde naissance, nom d\'animal familier, prénom, etc.), et contenant\r\nlettre(s), chiffre(s), et caractère(s) non alphanumérique(s).<br />\r\nLes fois suivantes, vous arriverez directement au menu général de\r\nl\'application. Pour bien prendre connaissance des possibilités de\r\nl\'application, n\'hésitez pas à essayer tous les liens disponibles !\r\n</ul></span>\r\n<p class = \"grand\">Remarque :</p>\r\n<p>GEPI est prévu pour que chaque professeur ne puisse modifier les notes ou les appréciations que dans les rubriques qui le concernent et uniquement pour ses élèves.\r\n<br />\r\nJe reste à votre disposition pour tout renseignement complémentaire.\r\n    <br />\r\n    Le proviseur adjoint\r\n</p>');
-INSERT INTO setting VALUES ('gepiYear', '2009/2010');
+INSERT INTO setting VALUES ('gepiYear', '2010/2011');
 INSERT INTO setting VALUES ('gepiSchoolName', 'Nom du Lycée');
 INSERT INTO setting VALUES ('gepiSchoolAdress1', 'Adresse');
 INSERT INTO setting VALUES ('gepiSchoolAdress2', 'Boîte postale');
@@ -92,7 +92,7 @@ INSERT INTO droits VALUES ('/absences/saisie_absences.php', 'F', 'F', 'V', 'F', 
 INSERT INTO droits VALUES ('/accueil_admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', '', '');
 INSERT INTO droits VALUES ('/accueil_modules.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', '', '');
 INSERT INTO droits VALUES ('/accueil.php', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'F', '', '');
-INSERT INTO droits VALUES ('/aid/add_aid.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', '');
+INSERT INTO droits VALUES ('/aid/add_aid.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Configuration des AID', '');
 INSERT INTO droits VALUES ('/aid/config_aid.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', '');
 INSERT INTO droits VALUES ('/aid/export_csv_aid.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', '');
 INSERT INTO droits VALUES ('/aid/help.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration des AID', '');
@@ -599,7 +599,7 @@ INSERT INTO droits VALUES ('/mod_absences/gestion/bilan_repas_quotidien.php', 'F
 INSERT INTO droits VALUES ('/mod_absences/absences.php', 'F', 'F', 'F', 'F', 'F', 'V', 'F', 'F', 'Consulter les absences de son enfant', '');
 INSERT INTO droits VALUES ('/mod_absences/admin/interface_abs.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Paramétrer les interfaces des professeurs', '');
 INSERT INTO droits VALUES ('/absences/import_absences_gepi.php', 'F', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Page d''importation des absences de gepi mod_absences', '1');
-INSERT INTO droits VALUES ('/lib/change_mode_header.php', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'Page AJAX pour changer la variable cacher_header', '1');
+INSERT INTO droits VALUES ('/lib/change_mode_header.php', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'Page AJAX pour changer la variable cacher_header', '1');
 INSERT INTO droits VALUES ('/saisie/recopie_moyennes.php', 'F', 'F', 'F', 'F', 'F', 'F', 'V', 'F', 'Recopie des moyennes', '');
 INSERT INTO droits VALUES ('/groupes/fusion_group.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Fusionner des groupes', '');
 INSERT INTO droits VALUES ('/gestion/security_panel_archives.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'page archive du panneau de sécurité', '');
@@ -896,6 +896,7 @@ INSERT INTO droits VALUES ('/mod_abs2/bilan_du_jour.php', 'V', 'F', 'V', 'V', 'F
 INSERT INTO droits VALUES ('/mod_abs2/extraction_saisies.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Extraction des saisies', '');
 INSERT INTO droits VALUES ('/mod_abs2/extraction_demi-journees.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Extraction des saisies', '');
 INSERT INTO droits VALUES ('/mod_abs2/ajax_edt_eleve.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Affichage edt', '');
+INSERT INTO droits VALUES ('/mod_abs2/generer_notifications_par_lot.php','F', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Génération groupée des courriers', '');
 INSERT INTO `a_justifications` (`id`, `nom`, `commentaire`, `sortable_rank`) VALUES (1, 'Certificat médical', 'Une justification établie par une autorité médicale', 1),(2, 'Courrier familial', 'Justification par courrier de la famille', 2),(3, 'Justificatif d''une administration publique', 'Justification émise par une administration publique', 3);
 INSERT INTO `a_motifs` (`id`, `nom`, `commentaire`, `sortable_rank`) VALUES (1, 'Médical', 'L''élève est absent pour raison médicale', 1),(2, 'Familial', 'L''élève est absent pour raison familiale', 2),(3, 'Sportive', 'L''élève est absent pour cause de compétition sportive', 3);
 INSERT INTO `a_types` (`id`, `nom`, `justification_exigible`, `sous_responsabilite_etablissement`, `manquement_obligation_presence`, `retard_bulletin`, `type_saisie`, `commentaire`, `sortable_rank`) VALUES(1, 'Absence scolaire', 1, 'FAUX', 'VRAI', 'NON_PRECISE', 'NON_PRECISE', 'L''élève n''est pas présent pour suivre sa scolarité.', 1),(2, 'Retard intercours', 0, 'VRAI', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est en retard lors de l''intercours', 2),(3, 'Retard extérieur', 0, 'FAUX', 'VRAI', 'VRAI', 'NON_PRECISE', 'L''élève est en retard lors de son arrivée dans l''etablissement', 3),(4, 'Erreur de saisie', 0, 'NON_PRECISE', 'NON_PRECISE', 'NON_PRECISE', 'NON_PRECISE', 'Il y a probablement une erreur de saisie sur cet enregistrement.', 4),(5, 'Infirmerie', 0, 'VRAI', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est à l''infirmerie.', 5),(6, 'Sortie scolaire', 0, '1', 'FAUX', 'NON_PRECISE', 'NON_PRECISE', 'L''élève est en sortie scolaire.', 6);
@@ -922,6 +923,9 @@ INSERT INTO droits VALUES ('/cahier_texte_2/traite_doc.php', 'F', 'V', 'F', 'F',
 INSERT INTO droits VALUES ('/cahier_texte_2/exportcsv.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de textes', '1');
 INSERT INTO droits VALUES ('/cahier_texte_2/consultation.php', 'F', 'F', 'F', 'F', 'V', 'V', 'F', 'F', 'Consultation des cahiers de textes', '');
 INSERT INTO droits VALUES ('/cahier_texte_2/see_all.php', 'F', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Consultation des cahiers de texte', '');
-INSERT INTO droits VALUES ('/cahier_texte_2/creer_sequence.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - s&eacute;quences', '1');
-INSERT INTO droits VALUES ('/cahier_texte_2/creer_seq_ajax_step1.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - s&eacute;quences', '1');
+INSERT INTO droits VALUES ('/cahier_texte_2/creer_sequence.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - sequences', '1');
+INSERT INTO droits VALUES ('/cahier_texte_2/creer_seq_ajax_step1.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - sequences', '1');
 INSERT INTO setting VALUES ('unzipped_max_filesize', '10');
+INSERT INTO droits SET id='/mod_trombinoscopes/trombino_pdf.php', administrateur='V', professeur='V', cpe='V', scolarite='V', eleve='F', responsable='F', secours='F', autre='F', description='Trombinoscopes PDF', statut='';
+INSERT INTO droits SET id='/mod_trombinoscopes/trombino_decoupe.php', administrateur='V', professeur='F', cpe='F', scolarite='V', eleve='F', responsable='F', secours='F', autre='F', description='Génération d une grille PDF pour les trombinoscopes,...', statut='';
+INSERT INTO setting SET name='autorise_commentaires_mod_disc', value='no';

@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: gestion_temp_dir.php 4854 2010-07-21 13:56:50Z crob $
+ * $Id: gestion_temp_dir.php 5354 2010-09-20 17:32:08Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -167,7 +167,7 @@ $titre_page = "Outil de gestion | Gestion des dossiers temporaires";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 
-echo "<p class='bold'><a href='index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link' /> Retour</a> | \n";
+echo "<p class='bold'><a href='index.php#gestion_temp_dir'><img src='../images/icons/back.png' alt='Retour' class='back_link' /> Retour</a> | \n";
 if(isset($reinitialiser)){
 	echo "<a href='".$_SERVER['PHP_SELF']."'>Suppression</a>";
 	echo "</p>\n";

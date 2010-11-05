@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: add_eleve.php 5333 2010-09-17 11:19:29Z crob $
+ * $Id: add_eleve.php 5332 2010-09-17 11:19:22Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

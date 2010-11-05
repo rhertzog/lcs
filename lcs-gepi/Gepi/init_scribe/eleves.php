@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: eleves.php 3212 2009-06-12 09:47:53Z crob $
+ * $Id: eleves.php 5310 2010-09-15 06:51:52Z delineau $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -58,7 +58,6 @@ $liste_tables_del = array(
 "j_aid_eleves",
 "j_aid_utilisateurs",
 "j_aid_eleves_resp",
-"j_aid_utilisateurs_gest",
 "j_eleves_classes",
 //==========================
 // On ne vide plus la table chaque année

@@ -216,14 +216,14 @@ class Groupe extends BaseGroupe {
 	 * @return     PropelObjectCollection Eleves[]
 	 *
 	 */
-	public function getEleves($periode = NULL) {
-		if ($periode == NULL) {
+	public function getEleves($periode = null) {
+		if ($periode === null) {
 		    if ($this->getPeriodeNoteOuverte() != null) {
 			$periode = $this->getPeriodeNoteOuverte()->getNumPeriode();
 		    }
 		}
 		$query = EleveQuery::create();
-		if ($periode != NULL) {
+		if ($periode !== null) {
 		    $query->useJEleveGroupeQuery()->filterByGroupe($this)->filterByPeriode($periode)->endUse();
 		} else {
 		    $query->useJEleveGroupeQuery()->filterByGroupe($this)->endUse();
@@ -306,13 +306,19 @@ class Groupe extends BaseGroupe {
 	 * @param      PropelPDO $con (optional) The PropelPDO connection to use.
 	 * @return     array Eleves[]
 	 */
-	public function addEleve(Eleve $eleve, $periode) {
+	public function addEleve(Eleve $eleve, $num_periode_notes = null) {
 		if ($eleve->getIdEleve() == null) {
 			throw new PropelException("Eleve id ne doit pas etre null");
 		}
+		if ($num_periode_notes == null) {
+		    $periode = $this->getPeriodeNoteOuverte();
+		    if ($periode != null) {
+			$num_periode_notes = $periode->getNumPeriode();
+		    }
+		}
 		$jEleveGroupe = new JEleveGroupe();
 		$jEleveGroupe->setEleve($eleve);
-		$jEleveGroupe->setPeriode($periode);
+		$jEleveGroupe->setPeriode($num_periode_notes);
 		$this->addJEleveGroupe($jEleveGroupe);
 		$jEleveGroupe->save();
 		$eleve->clearPeriodeNotes();

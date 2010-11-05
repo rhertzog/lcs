@@ -3,7 +3,7 @@
 /**
  * Fichier voir_edt.php pour visionner les différents EdT (classes ou professeurs)
  *
- * @version     $Id: voir_edt.php 5591 2010-10-07 15:59:47Z adminpaulbert $
+ * @version     $Id: voir_edt.php 5704 2010-10-21 14:03:21Z adminpaulbert $
  * @package		GEPI
  * @subpackage	EmploisDuTemps
  * @copyright	Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero
@@ -122,7 +122,7 @@ if(isset($login_edt)){
         $tab_data = ConstruireEDTProf($login_edt, $_SESSION['period_id']);
         $entetes = ConstruireEnteteEDT();
         $creneaux = ConstruireCreneauxEDT();
-		FixColumnPositions($tab_data, $entetes);		
+		FixColumnPositions($tab_data, $entetes);		// en cours de devel
         $DisplayEDT = true;
     }
     else if ($type_edt == "classe")
@@ -138,7 +138,7 @@ if(isset($login_edt)){
         $tab_data = ConstruireEDTSalle($login_edt , $_SESSION['period_id']);
         $entetes = ConstruireEnteteEDT();
         $creneaux = ConstruireCreneauxEDT();
-		FixColumnPositions($tab_data, $entetes);		
+		//FixColumnPositions($tab_data, $entetes);		// en cours de devel
         $DisplayEDT = true;
 
     }

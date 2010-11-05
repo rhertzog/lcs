@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: saisir_groupe.php 5456 2010-09-27 19:19:22Z jjacquard $
+ * @version $Id: saisir_groupe.php 5634 2010-10-12 07:22:06Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -233,36 +233,6 @@ if (getSettingValue("abs2_saisie_prof_hors_cours")!='y'
     }
 }
 
-if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
-    $classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->find();
-} else {
-    $classe_col = $utilisateur->getClasses();
-}
-
-if (!$classe_col->isEmpty()) {
-    echo "<td style='border : 1px solid; padding : 10 px;'>";
-	echo "<form action=\"./saisir_groupe.php\" method=\"post\" style=\"width: 100%;\">\n";
-	echo "<p>";
-    echo '<input type="hidden" name="type_selection" value="id_classe"/>';
-    echo ("Classe : <select name=\"id_classe\" class=\"small\">");
-    echo "<option value='-1'>choisissez une classe</option>\n";
-    foreach ($classe_col as $classe) {
-	    echo "<option value='".$classe->getId()."'";
-	    if ($id_classe == $classe->getId()) echo " selected='selected' ";
-	    echo ">";
-	    echo $classe->getNom();
-	    echo "</option>\n";
-    }
-    echo "</select>&nbsp;";
-    format_selectbox_heure($utilisateur, $id_creneau, $dt_date_absence_eleve);
-    echo '<button type="submit">Afficher les élèves</button>';
-    echo "</p>";
-    echo "</form>";
-    echo "</td>";
-} else {
-    echo '<td>Aucune classe avec élève affecté n\'a été trouvée</td>';
-}
-
 
 if (getSettingValue("abs2_saisie_prof_hors_cours")!='y'
 	&& $utilisateur->getStatut() == "professeur") {
@@ -380,6 +350,36 @@ if (getSettingValue("abs2_saisie_prof_decale_journee")!='y'
 	echo "</td>";
     }
 }
+
+
+if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
+    $classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->find();
+} else {
+    $classe_col = $utilisateur->getClasses();
+}
+if (!$classe_col->isEmpty()) {
+    echo "<td style='border : 1px solid; padding : 10 px;'>";
+	echo "<form action=\"./saisir_groupe.php\" method=\"post\" style=\"width: 100%;\">\n";
+	echo "<p>";
+    echo '<input type="hidden" name="type_selection" value="id_classe"/>';
+    echo ("Classe : <select name=\"id_classe\" class=\"small\">");
+    echo "<option value='-1'>choisissez une classe</option>\n";
+    foreach ($classe_col as $classe) {
+	    echo "<option value='".$classe->getId()."'";
+	    if ($id_classe == $classe->getId()) echo " selected='selected' ";
+	    echo ">";
+	    echo $classe->getNom();
+	    echo "</option>\n";
+    }
+    echo "</select>&nbsp;";
+    format_selectbox_heure($utilisateur, $id_creneau, $dt_date_absence_eleve);
+    echo '<button type="submit">Afficher les élèves</button>';
+    echo "</p>";
+    echo "</form>";
+    echo "</td>";
+}
+
+
 echo "</tr></table>";
 
 if (isset($message_enregistrement)) {
@@ -568,7 +568,16 @@ foreach($eleve_col as $eleve) {
 					<input type="hidden" name="id_eleve_absent[<?php echo $eleve_col->getPosition(); ?>]" value="<?php echo $eleve->getIdEleve(); ?>" />
 <?php
 
-			echo '<span class="td_abs_eleves">'.strtoupper($eleve->getNom()).' '.ucfirst($eleve->getPrenom()).' ('.$eleve->getCivilite().')</span> ';
+			echo '<span class="td_abs_eleves">'.strtoupper($eleve->getNom()).' '.ucfirst($eleve->getPrenom()).' ('.$eleve->getCivilite().')';
+			if (	(isset($current_groupe) && $current_groupe != null && $current_groupe->getClasses()->count() == 1)
+				|| (isset($current_classe) && $current_classe != null)) {
+			    //si le groupe a une seule classe ou si c'est une classe qui est sélectionner pas la peine d'afficher la classe.
+			} else {
+                            if ($eleve->getClasse() != null) {
+                                echo ' '.$eleve->getClasse()->getNom().' ';
+                            }
+                        }
+                        echo'</span>';
 			if ($utilisateur->getAccesFicheEleve($eleve)) {
 			    //echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."' target='_blank'>";
 			    echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."' >";

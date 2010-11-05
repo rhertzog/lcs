@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version $Id: fonctions_calendrier.php 4190 2010-03-28 12:30:43Z adminpaulbert $
+ * @version $Id: fonctions_calendrier.php 5704 2010-10-21 14:03:21Z adminpaulbert $
  *
  * Fichier de fonctions destinées au calendrier
  *
@@ -80,6 +80,35 @@ function AfficheDatesDebutFinSemaine() {
 
 // ========================================================================
 //
+//
+// =========================================================================
+function RecupereTimestampJour ($jour) {
+
+    //setlocale (LC_TIME, 'fr_FR','fra');
+    if ((1<=$_SESSION['week_selected']) AND ($_SESSION['week_selected'] <= 28)) {
+    //if ((1<=date("n")) AND (date("n") <=8)) {
+	    $annee = date("Y")+1;
+    }
+    else {
+	    $annee = date("Y");
+    }
+    $ts = mktime(0,0,0,1,4,$annee); // définition ISO de la semaine 01 : semaine du 4 janvier.
+    while (date("D", $ts) != "Mon") {
+	    $ts-=86400;
+    }
+    $semaine = 1;
+    
+    while ($semaine != $_SESSION['week_selected']) {
+	    $ts+=86400*7;
+	    $semaine++;
+    }
+	$timestamp = $ts+86400*($jour+0);
+    return $timestamp;
+}
+
+
+// ========================================================================
+//
 //      Récupère les dates des lundis et vendredis de toutes les semaines de l'année scolaire courante
 //      Usage : 
 //      $tab = RecupereLundisVendredis();
@@ -127,6 +156,70 @@ function RecupereLundisVendredis () {
     return $tab_select_semaine;
 }
 
+// ========================================================================
+//
+//      Récupère les dates des lundis et vendredis de toutes les semaines de l'année scolaire courante
+//      Usage : 
+//      $tab = RecupereJoursSemaine();
+//      echo $tab[0]["lundis"];         // renvoie la date du lundi de la semaine 01     
+//      echo $tab[5]["vendredis"];      // renvoie la date du vendredi de la semaine 06 
+//
+// =========================================================================
+function RecupereJoursSemaine () {
+
+    $tab_select_semaine = array();
+    setlocale (LC_TIME, 'fr_FR','fra');
+    
+    if ((1<=date("n")) AND (date("n") <=8)) {
+	    $annee = date("Y");
+    }
+    else {
+	    $annee = date("Y")+1;
+    }
+    $ts = mktime(0,0,0,1,4,$annee); // définition ISO de la semaine 01 : semaine du 4 janvier.
+    while (date("D", $ts) != "Mon") {
+	    $ts-=86400;
+    }
+    $semaine = 1;
+    $ts_ref = $ts;
+    $tab_select_semaine[$semaine-1]["lundi"] = strftime("%d", $ts);
+    $tab_select_semaine[$semaine-1]["mardi"] = strftime("%d", $ts+86400*1);
+    $tab_select_semaine[$semaine-1]["mercredi"] = strftime("%d", $ts+86400*2);
+	$tab_select_semaine[$semaine-1]["jeudi"] = strftime("%d", $ts+86400*3);
+    $tab_select_semaine[$semaine-1]["vendredi"] = strftime("%d", $ts+86400*4);
+    $tab_select_semaine[$semaine-1]["samedi"] = strftime("%d", $ts+86400*5);
+    
+    while ($semaine <=30) {
+	    $ts+=86400*7;
+	    $semaine++;
+    $tab_select_semaine[$semaine-1]["lundi"] = strftime("%d", $ts);
+    $tab_select_semaine[$semaine-1]["mardi"] = strftime("%d", $ts+86400*1);
+    $tab_select_semaine[$semaine-1]["mercredi"] = strftime("%d", $ts+86400*2);
+	$tab_select_semaine[$semaine-1]["jeudi"] = strftime("%d", $ts+86400*3);
+    $tab_select_semaine[$semaine-1]["vendredi"] = strftime("%d", $ts+86400*4);
+    $tab_select_semaine[$semaine-1]["samedi"] = strftime("%d", $ts+86400*5);
+    }
+    $semaine = NumLastWeek();
+    $ts = $ts_ref;
+    $ts-=86400*7;
+    $tab_select_semaine[$semaine-1]["lundi"] = strftime("%d", $ts);
+    $tab_select_semaine[$semaine-1]["mardi"] = strftime("%d", $ts+86400*1);
+    $tab_select_semaine[$semaine-1]["mercredi"] = strftime("%d", $ts+86400*2);
+	$tab_select_semaine[$semaine-1]["jeudi"] = strftime("%d", $ts+86400*3);
+    $tab_select_semaine[$semaine-1]["vendredi"] = strftime("%d", $ts+86400*4);
+    $tab_select_semaine[$semaine-1]["samedi"] = strftime("%d", $ts+86400*5);
+    while ($semaine >=33) {
+	    $ts-=86400*7;
+	    $semaine--;
+    $tab_select_semaine[$semaine-1]["lundi"] = strftime("%d", $ts);
+    $tab_select_semaine[$semaine-1]["mardi"] = strftime("%d", $ts+86400*1);
+    $tab_select_semaine[$semaine-1]["mercredi"] = strftime("%d", $ts+86400*2);
+	$tab_select_semaine[$semaine-1]["jeudi"] = strftime("%d", $ts+86400*3);
+    $tab_select_semaine[$semaine-1]["vendredi"] = strftime("%d", $ts+86400*4);
+    $tab_select_semaine[$semaine-1]["samedi"] = strftime("%d", $ts+86400*5);
+    }
+    return $tab_select_semaine;
+}
 
 // ===================================================
 //
@@ -182,7 +275,7 @@ function ReturnIdPeriod($date_ts) {
 	$endprocess = false;
     $retour = 0;
 	while (($rep_periode = mysql_fetch_array($req_periode)) AND (!$endprocess)) {
-		if (($rep_periode['debut_calendrier_ts'] <= $date_ts) AND ($rep_periode['fin_calendrier_ts'] >= $date_ts)) { 
+		if (($rep_periode['debut_calendrier_ts'] < $date_ts) AND ($rep_periode['fin_calendrier_ts'] > $date_ts)) { 
 			$retour = $rep_periode['id_calendrier'];
 			$endprocess = true;
 		}
