@@ -85,6 +85,7 @@ $travail ='';
 $nom_resp ='';
 $fct_resp ='';
 $date_retenue ='';
+$lieu = '';
 $duree ='';
 $h_deb ='';
 $num_incident = '';
@@ -120,7 +121,27 @@ if (($mode=='module_discipline')||($mode=='module_retenue')) {
 		} else {
 		    $classe = '';
 		}
-		
+
+		$sql="SELECT * FROM resp_pers rp, resp_adr ra, responsables2 r, eleves e WHERE rp.pers_id=r.pers_id AND rp.adr_id=ra.adr_id AND r.ele_id=e.ele_id AND e.login='$ele_login' AND (r.resp_legal='1' OR r.resp_legal='2') ORDER BY r.resp_legal;";
+		$res_resp=mysql_query($sql);
+		if(mysql_num_rows($res_resp)==0) {
+			$ad_nom_resp="";
+			$adr1_resp="";
+			$adr2_resp="";
+			$adr3_resp="";
+			$cp_resp="";
+			$commune_resp="";
+		}
+		else {
+			$lig_resp=mysql_fetch_object($res_resp);
+			$ad_nom_resp=$lig_resp->civilite." ".$lig_resp->nom." ".$lig_resp->prenom;
+			$adr1_resp=$lig_resp->adr1;
+			$adr2_resp=$lig_resp->adr2;
+			$adr3_resp=$lig_resp->adr3;
+			$cp_resp=$lig_resp->cp;
+			$commune_resp=$lig_resp->commune;
+		}
+
 		//le déclarant On récupère le nom et le prénom (et la qualité)
 		$sql="SELECT nom,prenom,civilite,statut FROM utilisateurs WHERE login='$lig_incident->declarant';";
 		//echo "$sql<br />\n";
@@ -175,6 +196,7 @@ if (($mode=='module_discipline')||($mode=='module_retenue')) {
 			}
 			
 			$travail = $lig_sanction->travail;
+			$lieu = $lig_sanction->lieu;
 			
 			//recherche de l'heure de début. C'est le crénaux qui est enregistré.
 			$sql_heure = "SELECT * FROM `edt_creneaux` WHERE `nom_definie_periode`='$lig_sanction->heure_debut'";

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 4309 2010-04-13 17:41:17Z crob $
+ * $Id: index.php 5654 2010-10-13 05:41:45Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -24,6 +24,14 @@
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
 
+/*
+$fich=fopen("/tmp/test_img.txt","a+");
+fwrite($fich,"HTTP_REFERER=".$_SERVER['HTTP_REFERER']."\n");
+fwrite($fich,"\$_SERVER['REQUEST_URI']=".$_SERVER['REQUEST_URI']."\n");
+fwrite($fich,date("Y m d - H i s")."\n");
+//fwrite($fich,"==================================\n");
+fclose($fich);
+*/
 // Resume session
 $resultat_session = $session_gepi->security_check();
 if ($resultat_session == 'c') {
@@ -32,7 +40,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -88,10 +96,22 @@ if ((isset($_POST['id_racine'])) or (isset($_GET['id_racine']))) {
     }
 }
 
+/*
+$fich=fopen("/tmp/test_img.txt","a+");
+fwrite($fich,"Juste avant Header\n");
+fclose($fich);
+*/
 //**************** EN-TETE *****************
 $titre_page = "Carnet de notes";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *************
+
+/*
+$fich=fopen("/tmp/test_img.txt","a+");
+fwrite($fich,"Juste après Header\n");
+//fwrite($fich,"==================================\n");
+fclose($fich);
+*/
 
 //debug_var();
 
@@ -179,7 +199,11 @@ if ((isset($_GET['creer_structure'])) and ($current_group["classe"]["ver_periode
 		echo " n'a été cré$accord_f dans le carnet de notes de la période précédente.</font></b></center></p><hr />";
 	}
 }
-
+/*
+$fich=fopen("/tmp/test_img.txt","a+");
+fwrite($fich,"Avant isset(\$id_racine)\n");
+fclose($fich);
+*/
 if  (isset($id_racine) and ($id_racine!='')) {
     $appel_conteneurs = mysql_query("SELECT * FROM cn_conteneurs WHERE id ='$id_racine'");
     $nom_court = mysql_result($appel_conteneurs, 0, 'nom_court');
@@ -190,12 +214,26 @@ if  (isset($id_racine) and ($id_racine!='')) {
     $periode_num = mysql_result($appel_cahier_notes, 0, 'periode');
     include "../lib/periodes.inc.php";
 
+	/*
+	$fich=fopen("/tmp/test_img.txt","a+");
+	fwrite($fich,"Juste avant test suppr\n");
+	//fwrite($fich,"\$_GET['del_dev']=".$_GET['del_dev']."\n");
+	//fwrite($fich,"\$_GET['js_confirmed']=".$_GET['js_confirmed']."\n");
+	fwrite($fich,"++++++++++++++++++++++++++\n");
+	fclose($fich);
+	*/
+
     //
     // Suppression d'une évaluation
     //
     if ((isset($_GET['del_dev'])) and ($_GET['js_confirmed'] ==1)) {
         $temp = $_GET['del_dev'];
-
+		/*
+		$fich=fopen("/tmp/test_img.txt","a+");
+		fwrite($fich,"\$_GET['del_dev']=".$_GET['del_dev']."\n");
+		fwrite($fich,"==================================\n");
+		fclose($fich);
+		*/
 	    if((isset($_GET['alea']))&&($_GET['alea']==$_SESSION['gepi_alea'])) {
 
 			$sql0="SELECT id_conteneur FROM cn_devoirs WHERE id='$temp'";
@@ -480,10 +518,15 @@ var tab_per_cn=new Array();\n";
         if ($periode_num!='1')  {
             $themessage = 'En cliquant sur OK, vous allez créer la même structure de boîtes que celle de la période précédente. Si des boîtes existent déjà, elles ne seront pas supprimées.';
             //echo "<a href='index.php?id_groupe=$id_groupe&periode_num=$periode_num&creer_structure=yes'  onclick=\"return confirm_abandon (this, 'yes', '$themessage')\">Créer la même structure que la période précédent</a>|";
-            echo "<a href='index.php?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;creer_structure=yes'  onclick=\"return confirm_abandon (this, 'yes', '$themessage')\"> Créer la même structure que la période précédente</a>\n";
+            echo "<a href='index.php?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;creer_structure=yes'  onclick=\"return confirm_abandon (this, 'yes', '$themessage')\"> Créer la même structure que la période précédente</a> | \n";
 			//echo "&nbsp;| \n";
         }
     }
+
+	// Le retour n'est pas parfait... il faudrait aussi periode_num dans chemin_retour
+	// ou alors stocker ici l'info en session pour la période...
+	echo "<a href=\"../groupes/signalement_eleves.php?id_groupe=$id_groupe&amp;chemin_retour=../cahier_notes/index.php?id_groupe=$id_groupe\"> Signaler des erreurs d'affectation</a>";
+
     //echo "</b>\n";
     echo "</p>\n";
 	echo "</form>\n";

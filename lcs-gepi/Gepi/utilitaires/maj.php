@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: maj.php 4208 2010-03-30 17:23:44Z jjacquard $
+ * $Id: maj.php 5705 2010-10-21 14:54:48Z jjacquard $
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -201,9 +201,9 @@ if (isset ($_POST['maj'])) {
             require 'updates/152_to_153.inc.php';
 	}
 
-//	if (($force_maj == 'yes') or (quelle_maj("mod_abs2"))) {
-//            require 'updates/mod_abs2.inc.php';
-//	}
+	if (($force_maj == 'yes') or (quelle_maj("1.5.3.1"))) {
+            require 'updates/153_to_1531.inc.php';
+	}
 
 	// Mise à jour du numéro de version
 	saveSetting("version", $gepiVersion);
@@ -282,7 +282,7 @@ if ($pb_maj_bd != 'yes') {
 	} else {
 		echo "<h3>Mise à jour de la base de données</h3>";
 		echo "<p><b>Votre base de données est à jour. Vous n'avez pas de mise à jour à effectuer.</b></p>";
-		echo "<center><p class='grand'><b><a href='../gestion/index.php'>Retour</a></b></p></center>";
+		echo "<center><p class='grand'><b><a href='../gestion/index.php#maj'>Retour</a></b></p></center>";
 		echo "<form action=\"maj.php\" method=\"post\">";
 		//echo "<p><b>Néanmoins, vous pouvez forcer la mise à jour. Cette procédure, bien que sans risque, n'est utile que dans certains cas précis.</b></font><br />";
 		echo "<p><b>Néanmoins, vous pouvez forcer la mise à jour. Cette procédure, bien que sans risque, n'est utile que dans certains cas précis.</b><br />";

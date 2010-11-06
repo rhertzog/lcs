@@ -1,5 +1,5 @@
 <?php
-/* $Id: definir_salles.php 5536 2010-10-03 12:18:37Z crob $ */
+/* $Id: definir_salles.php 5535 2010-10-03 12:18:20Z crob $ */
 /*
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

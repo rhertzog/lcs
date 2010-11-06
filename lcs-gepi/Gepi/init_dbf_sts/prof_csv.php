@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: prof_csv.php 3323 2009-08-05 10:06:18Z crob $
+* $Id: prof_csv.php 5310 2010-09-15 06:51:52Z delineau $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -55,6 +55,8 @@ $liste_tables_del = array(
 //"j_aid_eleves",
 "j_aid_utilisateurs",
 "j_aid_utilisateurs_gest",
+"j_aidcateg_super_gestionnaires",
+"j_aidcateg_utilisateurs",
 "j_groupes_professeurs",
 //"j_eleves_classes",
 //"j_eleves_etablissements",

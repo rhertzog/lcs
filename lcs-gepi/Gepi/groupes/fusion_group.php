@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: fusion_group.php 3752 2009-11-20 17:45:40Z crob $
+* $Id: fusion_group.php 5221 2010-09-10 11:56:04Z delineau $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -611,14 +611,30 @@ else {
 					if($cpt>0){
 						echo "<br />\n";
 					}
+          $cpt2=0;
+  				$liste_profs='';
+          $sql_profs="SELECT u.nom nom, u.prenom prenom from j_groupes_professeurs j, utilisateurs u
+								WHERE j.id_groupe='".$lig_tmp->id."'
+                and j.login=u.login
+                ";
+  				$res_profs=mysql_query($sql_profs);
+  				while($lig_profs=mysql_fetch_object($res_profs)){
+  					if($cpt2>0){
+  						$liste_profs .= ", \n";
+  					}
+  					$liste_profs .= $lig_profs->nom." ".$lig_profs->prenom;
+  					$cpt2++;
+  				}
 					if($lig_tmp->id==$id_groupe){
 						echo "<input type='hidden' name='tab_grp[]' value='$lig_tmp->id' />";
 						echo "<img src='../images/enabled.png' width='20' height='20' alt='Groupe original' title='Groupe original' />";
 						echo $lig_tmp->description." (<i>".$lig_tmp->name."</i>)";
+						echo " (<i>".$liste_profs."</i>)";
 					}
 					else{
 						echo "<label for='tab_grp_".$i."_".$cpt."' style='cursor: pointer;'><input type='checkbox' id='tab_grp_".$i."_".$cpt."' name='tab_grp[]' value='$lig_tmp->id' />";
 						echo $lig_tmp->description." (<i>".$lig_tmp->name."</i>)";
+						echo " (<i>".$liste_profs."</i>)";
 						echo "</label>\n";
 					}
 					$cpt++;

@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: index.php 5207 2010-09-06 11:27:36Z crob $
+* $Id: index.php 5348 2010-09-20 14:23:16Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -1316,6 +1316,7 @@ if(isset($quelles_classes)) {
 
 	}
 
+
 	echo "<table border='1' cellpadding='2' class='boireaus'  summary='Tableau des élèves de la classe'>\n";
 	echo "<tr>\n";
 	echo "<td><p>Identifiant</p></td>\n";
@@ -1428,15 +1429,19 @@ if(isset($quelles_classes)) {
 				($_SESSION['statut']!="professeur"))) {
 
 			//echo "<td style='white-space: nowrap;'><input name='photo[$i]' type='file' />\n";
-			echo "<td style='white-space: nowrap; text-align:left;'><input name='photo[$i]' type='file' />\n";
+			echo "<td style='white-space: nowrap; text-align:center;'>\n";
 
-      // Dans le cas du multisite, on préfère le login pour afficher les photos
-      $nom_photo_test = (isset ($multisite) AND $multisite == 'y') ? $eleve_login : $elenoet;
+			//echo "<input name='photo[$i]' type='file' />\n";
+
+			// Dans le cas du multisite, on préfère le login pour afficher les photos
+			$nom_photo_test = (isset ($multisite) AND $multisite == 'y') ? $eleve_login : $elenoet;
 			echo "<input type='hidden' name='quiestce[$i]' value=\"$nom_photo_test\" />\n";
 
 			$photo=nom_photo($elenoet);
 			$temoin_photo="";
 			if($photo){
+				echo "<div style='width: 32px; height: 32px; float:right;'>";
+
 				$titre="$eleve_nom $eleve_prenom";
 
 				$texte="<div align='center'>\n";
@@ -1461,6 +1466,22 @@ if(isset($quelles_classes)) {
 				}
 				echo "' width='32' height='32'  align='middle' border='0' alt='photo présente' title='photo présente' />";
 				echo "</a>";
+
+				echo "</div>";
+			}
+
+
+			if($nom_photo_test=="") {
+				// Dans le cas multisite, le login élève est forcément renseigné
+				echo "<span style='color:red'>Elenoet non renseigné</span>";
+			}
+			else {
+				//echo "<span id='span_file_$i'></span>";
+				echo "<span id='span_file_$i'>";
+				//echo "<a href='javascript:add_file_upload($i)'><img src='../images/ico_edit16plus.png' width='16' height='16' alt='Choisir un fichier à uploader' /></a>";
+				// Pour que si JavaScript est désactivé, on ait quand même le champ FILE
+				echo "<input name='photo[$i]' type='file' />\n";
+				echo "</span>";
 			}
 
 			echo "</td>\n";
@@ -1474,7 +1495,23 @@ if(isset($quelles_classes)) {
 	if($nombreligne>1) {echo "s";}
 	echo "</p>\n";
 
-	echo "<input type='text' name='quelles_classes' value='$quelles_classes' />\n";
+	echo "<script type='text/javascript'>
+	// Ajout d'un champ FILE... pour éviter la limite de max_file_uploads (on n'a que le nombre de champs FILE correspondant à ce que l'on souhaite effectivement uploader
+	function add_file_upload(i) {
+		if(document.getElementById('span_file_'+i)) {
+			document.getElementById('span_file_'+i).innerHTML='<input type=\'file\' name=\'photo['+i+']\' />';
+		}
+	}
+
+	// On remplace les champs FILE par des liens d'ajout de champ FILE... au cas où JavaScript serait désactivé.
+	for(i=0;i<$i;i++) {
+		if(document.getElementById('span_file_'+i)) {
+			document.getElementById('span_file_'+i).innerHTML='<a href=\'javascript:add_file_upload('+i+')\'><img src=\'../images/ico_edit16plus.png\' width=\'16\' height=\'16\' alt=\'Choisir un fichier à uploader\' /></a>';
+		}
+	}
+</script>\n";
+
+	echo "<input type='hidden' name='quelles_classes' value='$quelles_classes' />\n";
 	// Dans le cas scolarite, la liste des classes est dans la table tempo
 	if(isset($motif_rech)){
 		echo "<input type='hidden' name='motif_rech' value='$motif_rech' />\n";
@@ -1491,7 +1528,13 @@ if(isset($quelles_classes)) {
 	<input type="hidden" name="action" value="depot_photo" />
 	<input type="hidden" name="total_photo" value="<?php echo $nombreligne; ?>" />
 	</form>
+
 	<?php
+
+	$max_file_uploads=ini_get('max_file_uploads');
+	if(($max_file_uploads!="")&&(strlen(my_ereg_replace("[^0-9]","",$max_file_uploads))==strlen($max_file_uploads))&&($max_file_uploads>0)) {
+		echo "<p><i>Note</i>&nbsp;: L'upload des photos est limité à $max_file_uploads fichier(s) simultanément.</p>\n";
+	}
 }
 require("../lib/footer.inc.php");
 ?>

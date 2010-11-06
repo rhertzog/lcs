@@ -49,7 +49,7 @@ if (!isset($action) or ($action != "restaure")) {
     } else if ($resultat_session == '0') {
         header("Location: ../logout.php?auto=1");
         die();
-    };
+    }
 }
 
 if (!isset($action) or ($action != "restaure")) {
@@ -425,17 +425,6 @@ require_once("../lib/header.inc");
 
 //debug_var();
 
-// Test d'écriture dans /backup
-$test_write = test_ecriture_backup();
-if ($test_write == 'no') {
-    echo "<h3 class='gepi'>Problème de droits d'accès :</h3>\n";
-    echo "<p>Le répertoire \"/backup\" n'est pas accessible en écriture.</p>\n";
-    echo "<p>Vous ne pouvez donc pas accéder aux fonctions de sauvegarde/restauration de GEPI.
-    Contactez l'administrateur technique afin de régler ce problème.</p>\n";
-    require("../lib/footer.inc.php");
-    die();
-}
-
 if (!function_exists("gzwrite")) {
     echo "<h3 class='gepi'>Problème de configuration :</h3>\n";
     echo "<p>Les fonctions de compression 'zlib' ne sont pas activées. Vous devez configurer PHP pour qu'il utilise 'zlib'.</p>\n";
@@ -676,7 +665,7 @@ if (isset($action) and ($action == 'dump'))  {
 <?php
 
 if(!isset($quitter_la_page)){
-	echo "<p class='bold'><a href='index.php'";
+	echo "<p class='bold'><a href='index.php#gestion_base_test'";
 	echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
 	echo "><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 }

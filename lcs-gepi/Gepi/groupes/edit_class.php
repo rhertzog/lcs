@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: edit_class.php 4028 2010-01-19 07:35:13Z crob $
+* $Id: edit_class.php 5800 2010-11-04 18:21:25Z crob $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -424,6 +424,8 @@ echo ">";
 echo "Navigation";
 echo "</a>";
 //=========================
+
+echo " | <a href='menage_eleves_groupes.php?id_classe=$id_classe'>Désinscriptions par lots</a>";
 
 echo "</p>\n";
 echo "</form>\n";

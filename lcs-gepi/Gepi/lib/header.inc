@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: header.inc 5379 2010-09-20 19:31:09Z jjacquard $
+ * $Id: header.inc 5359 2010-09-20 19:19:07Z jjacquard $
  *
  * Basé sur  header.inc 2968 2009-03-03 20:11:00Z jjocal $
  * modifié avec getSettingValue("contact_admin_mailto")=='y'

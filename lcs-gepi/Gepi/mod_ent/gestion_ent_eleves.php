@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: gestion_ent_eleves.php 5228 2010-09-11 14:07:10Z jjocal $
+ * $Id: gestion_ent_eleves.php 2410 2008-09-16 15:42:15Z jjocal $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Eric Lebrun, Stéphane boireau, Julien Jocal
  *
@@ -98,7 +98,7 @@ if ($action == "modifier") {
         	// On ne fait rien
         }else{
         	// On vérifie quand même si il n'y a pas un nom qui correspond à celui-ci dans ldap_bx
-        	$sql_r = "SELECT login_u, nom_u, prenom_u FROM ldap_bx WHERE nom_u = '".strtoupper(trim($reg_nom))."' AND prenom_u = '".ucfirst(trim($reg_prenom))."' AND statut_u = 'student'";
+        	$sql_r = "SELECT login_u, nom_u, prenom_u FROM ldap_bx WHERE nom_u = '".$reg_nom."' AND prenom_u = '".$reg_prenom."' AND statut_u = 'student'";
         	$query_r = mysql_query($sql_r);
         	$nbre_v = mysql_num_rows($query_r);
         	$result_r = mysql_fetch_array($query_r);
@@ -107,7 +107,7 @@ if ($action == "modifier") {
         		$aff_rep_nomprenom_r = '--> ?? (' . $result_r["nom_u"] . '&nbsp;' . $result_r["prenom_u"] . ')';
         	}else{
         		// On teste avec seulement le nom
-        		$sql_r2 = "SELECT login_u, nom_u, prenom_u FROM ldap_bx WHERE nom_u = '".strtoupper(trim($reg_nom))."' AND statut_u = 'student'";
+        		$sql_r2 = "SELECT login_u, nom_u, prenom_u FROM ldap_bx WHERE nom_u = '".trim($reg_nom)."' AND statut_u = 'student'";
         		$query_r2 = mysql_query($sql_r2);
         		$nbre_v2 = mysql_num_rows($query_r2);
         		$result_r2 = mysql_fetch_array($query_r2);

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: signalement_eleves.php 5465 2010-09-28 16:12:12Z crob $
+ * $Id: signalement_eleves.php 5464 2010-09-28 16:12:04Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

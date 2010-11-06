@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: settings.inc 5179 2010-09-03 15:12:38Z crob $
+ * $Id: settings.inc 5146 2010-08-30 20:41:24Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -51,7 +51,7 @@ function loadSettings()
 /**
  * Get the value of a setting by its name
  *
- * Use this function within other functions so you don'y have to declare
+ * Use this function within other functions so you don't have to declare
  * $gepiSettings global
  *
  * Returns the value if the name exists

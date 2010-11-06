@@ -30,7 +30,7 @@ include("../../lib/initialisationsPropel.inc.php");
 require_once("../../lib/initialisations.inc.php");
 Propel::init('../propel-build/conf/gepi-conf_debug.php');
 $logger = new StackLogger();
-Propel::setLogger($logger);
+//Propel::setLogger($logger);
 
 include('UnitTestUtilisateurProfessionnel.php');
 include('UnitTestEleve.php');
@@ -223,8 +223,6 @@ if ($newEleve == null) {
 }
 
 //Creation d'une classe
-$classe = new Classe();
-$classe->getClasse();
 $classe = UnitTestClasse::getClasse();
 $classe->save();
 $newClasse = ClassePeer::retrieveByPK($classe->getId());
@@ -346,7 +344,7 @@ function purgeDonneesTest($logger) {
 	//purge de la classe
 	echo "<br/>Purge de la classe :<br/>";
 	$criteria = new Criteria();
-	$criteria->add(ClassePeer::CLASSE, UnitTestClasse::getClasse()->getClasse());
+	$criteria->add(ClassePeer::CLASSE, UnitTestClasse::getClasse()->getNom());
 	$classe = ClassePeer::doSelectOne($criteria);
 	if ($classe != null) {
 		$classe->delete();

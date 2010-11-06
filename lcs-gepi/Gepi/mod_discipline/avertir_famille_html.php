@@ -1,6 +1,6 @@
 <?php
 /*
-*  $Id: avertir_famille_html.php 5532 2010-10-03 09:20:00Z crob $
+*  $Id: avertir_famille_html.php 5531 2010-10-03 09:19:49Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Sandrine Dangreville
 *

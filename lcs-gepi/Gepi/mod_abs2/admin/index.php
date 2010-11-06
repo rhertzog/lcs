@@ -1,7 +1,7 @@
 <?php
 /*
  *
- *$Id: index.php 5114 2010-08-26 15:29:50Z crob $
+ *$Id: index.php 5786 2010-11-02 13:49:19Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -104,7 +104,27 @@ if (isset($_POST['abs2_heure_demi_journee'])) {
 if (isset($_POST['is_posted'])) {
 	if ($_POST['is_posted']=='1') {
 
-		if (isset($_POST['abs2_saisie_prof_decale_journee'])) {
+		if (isset($_POST['abs2_alleger_abs_du_jour'])) {
+			if (!saveSetting("abs2_alleger_abs_du_jour", $_POST['abs2_alleger_abs_du_jour'])) {
+				$msg = "Erreur lors de l'enregistrement du paramètre abs2_alleger_abs_du_jour";
+			}
+		} else {
+			if (!saveSetting("abs2_alleger_abs_du_jour", 'n')) {
+				$msg = "Erreur lors de l'enregistrement du paramètre abs2_alleger_abs_du_jour";
+			}
+		}
+
+		if (isset($_POST['abs2_import_manuel_bulletin'])) {
+			if (!saveSetting("abs2_import_manuel_bulletin", $_POST['abs2_import_manuel_bulletin'])) {
+				$msg = "Erreur lors de l'enregistrement du paramètre abs2_import_manuel_bulletin";
+			}
+		} else {
+			if (!saveSetting("abs2_import_manuel_bulletin", 'n')) {
+				$msg = "Erreur lors de l'enregistrement du paramètre abs2_import_manuel_bulletin";
+			}
+		}
+
+                if (isset($_POST['abs2_saisie_prof_decale_journee'])) {
 			if (!saveSetting("abs2_saisie_prof_decale_journee", $_POST['abs2_saisie_prof_decale_journee'])) {
 				$msg = "Erreur lors de l'enregistrement du paramètre activation/désactivation de la saisie décalée sur la journée pour les professeurs !";
 			}
@@ -193,6 +213,16 @@ if (isset($_POST['is_posted'])) {
 				$msg = "Erreur lors de l'enregistrement du paramètre abs2_saisie_multi_type_sous_responsabilite_etab !";
 			}
 		}
+
+		if (isset($_POST['abs2_saisie_multi_type_non_justifiee'])) {
+			if (!saveSetting("abs2_saisie_multi_type_non_justifiee", $_POST['abs2_saisie_multi_type_non_justifiee'])) {
+				$msg = "Erreur lors de l'enregistrement du paramètre abs2_saisie_multi_type_non_justifiee !";
+			}
+		} else {
+			if (!saveSetting("abs2_saisie_multi_type_non_justifiee", 'n')) {
+				$msg = "Erreur lors de l'enregistrement du paramètre abs2_saisie_multi_type_non_justifiee !";
+			}
+		}
 //		if (isset($_POST['abs2_modification_saisie_sans_limite'])) {
 //			if (!saveSetting("abs2_modification_saisie_sans_limite", $_POST['abs2_modification_saisie_sans_limite'])) {
 //				$msg = "Erreur lors de l'enregistrement du paramètre activation/désactivation de la modification sasie par les professeurs dans l'heure suivant la saisie !";
@@ -271,6 +301,16 @@ suppression des données. Lorsque le module est désactivé, les CPE n'ont pas accè
 	<input type="hidden" name="is_posted" value="1" />
 </p>
 <p>
+	<input type="checkbox" name="abs2_import_manuel_bulletin" value="y"
+	<?php if (getSettingValue("abs2_import_manuel_bulletin")=='y') echo " checked='checked'"; ?> />
+	<label for="abs2_import_manuel_bulletin">&nbsp;Utiliser un import (manuel, gep ou sconet) pour les bulletins et fiches élève.</label>
+</p>
+<p>
+	<input type="checkbox" name="abs2_alleger_abs_du_jour" value="y"
+	<?php if (getSettingValue("abs2_alleger_abs_du_jour")=='y') echo " checked='checked'"; ?> />
+	<label for="abs2_alleger_abs_du_jour">&nbsp;Alleger les calculs de la page absence du jour : désactive la recherche des saisies contradictoires et des présences.</label>
+</p>
+<p>
 E-mail gestion absence établissement :
 <input type="text" name="gepiAbsenceEmail" size="20" value="<?php echo(getSettingValue("gepiAbsenceEmail")); ?>"/>
 </p>
@@ -342,8 +382,13 @@ Normalement, ce module ne devrait être activé que si le module ci-dessus est lui
 <p>
 	<input type="checkbox" id="abs2_saisie_multi_type_sans_manquement" name="abs2_saisie_multi_type_sans_manquement" value="y"
 	<?php if (getSettingValue("abs2_saisie_multi_type_sans_manquement")=='y') echo " checked='checked'"; ?> />
-	<label for="abs2_saisie_multi_type_sans_manquement">&nbsp;Dans le cas d'une saisie avec plusieurs types contradictoires, considérer que l'élève ne manque pas à ses obligations.
+	<label for="abs2_saisie_multi_type_sans_manquement">&nbsp;Dans le cas de plusieurs saisies simultanées avec des types contradictoires, considérer que l'élève ne manque pas à ses obligations.
 	   (Donc ces saisies ne seront pas comptées dans les bulletins)</label>
+</p>
+<p>
+	<input type="checkbox" id="abs2_saisie_multi_type_non_justifiee" name="abs2_saisie_multi_type_non_justifiee" value="y"
+	<?php if (getSettingValue("abs2_saisie_multi_type_non_justifiee")=='y') echo " checked='checked'"; ?> />
+	<label for="abs2_saisie_multi_type_non_justifiee">&nbsp;Dans le cas de plusieurs saisies simultanées avec des types contradictoires, considérer que la saisie n'est pas justifiée.</label>
 </p>
 <p>
 	<input type="checkbox" id="abs2_saisie_par_defaut_sous_responsabilite_etab" name="abs2_saisie_par_defaut_sous_responsabilite_etab" value="y"
@@ -353,7 +398,7 @@ Normalement, ce module ne devrait être activé que si le module ci-dessus est lui
 <p>
 	<input type="checkbox" id="abs2_saisie_multi_type_sous_responsabilite_etab" name="abs2_saisie_multi_type_sous_responsabilite_etab" value="y"
 	<?php if (getSettingValue("abs2_saisie_multi_type_sous_responsabilite_etab")=='y') echo " checked='checked'"; ?> />
-	<label for="abs2_saisie_multi_type_sous_responsabilite_etab">&nbsp;Dans le cas d'une saisie avec plusieurs types contradictoires, considérer que l'élève est par défaut sous la responsabilité de l'établissement.</label>
+	<label for="abs2_saisie_multi_type_sous_responsabilite_etab">&nbsp;Dans le cas de plusieurs saisies simultanées avec des types contradictoires, considérer que l'élève est par défaut sous la responsabilité de l'établissement.</label>
 </p>
 <p>
 	<?php if (getSettingValue("abs2_retard_critere_duree") == null || getSettingValue("abs2_retard_critere_duree") == '') saveSetting("abs2_retard_critere_duree", 30); ?>

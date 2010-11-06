@@ -16,6 +16,11 @@
 class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 
 	/**
+	 * @string to store description
+	 */
+	protected $description;
+
+	/**
 	 *
 	 * Renvoi une description intelligible du traitement
 	 *
@@ -23,47 +28,51 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 	 *
 	 */
 	public function getDescription() {
-	    $desc = 'créé le ';
-	    $desc .= strftime("%a %d/%m/%Y", $this->getUpdatedAt('U'));
-	    $eleve_col = new PropelCollection();
-	    foreach ($this->getAbsenceEleveSaisies() as $abs_saisie) {
-		if ($abs_saisie->getEleve() != null) {
-		    $eleve_col->add($abs_saisie->getEleve());
+	    if (!isset($description) || $description === null) {
+		$desc = 'n° '.$this->getId();
+		$desc .= ' créé le ';
+		$desc .= strftime("%a %d/%m/%Y", $this->getUpdatedAt('U'));
+		$eleve_col = new PropelCollection();
+		foreach ($this->getAbsenceEleveSaisies() as $abs_saisie) {
+		    if ($abs_saisie->getEleve() != null) {
+			$eleve_col->add($abs_saisie->getEleve());
+		    }
 		}
-	    }
-	    foreach ($eleve_col as $eleve) {
-		if ($eleve_col->isFirst()) {
-		    $desc .= '; ';
+		foreach ($eleve_col as $eleve) {
+		    if ($eleve_col->isFirst()) {
+			$desc .= '; ';
+		    }
+		    $desc .= $eleve->getNom().' '.$eleve->getPrenom();
+		    if (!$eleve_col->isLast()) {
+			$desc .= ', ';
+		    }
 		}
-		$desc .= $eleve->getNom().' '.$eleve->getPrenom();
-		if (!$eleve_col->isLast()) {
-		    $desc .= ', ';
+		if ($this->getAbsenceEleveType() != null) {
+		    $desc .= "; type : ".$this->getAbsenceEleveType()->getNom();
 		}
-	    }
-	    if ($this->getAbsenceEleveType() != null) {
-		$desc .= "; type : ".$this->getAbsenceEleveType()->getNom();
-	    }
-	    if ($this->getAbsenceEleveMotif() != null) {
-		$desc .= "; motif : ".$this->getAbsenceEleveMotif()->getNom();
-	    }
-	    if ($this->getAbsenceEleveJustification() != null) {
-		$desc .= "; justification : ".$this->getAbsenceEleveJustification()->getNom();
-	    }
-	    $notif = false;
-	    foreach ($this->getAbsenceEleveNotifications() as $notification) {
-		if ($notification->getStatutEnvoi() == AbsenceEleveNotification::$STATUT_SUCCES
-			|| $notification->getStatutEnvoi() == AbsenceEleveNotification::$STATUT_SUCCES_AR) {
-		    $notif = true;
-		    break;
+		if ($this->getAbsenceEleveMotif() != null) {
+		    $desc .= "; motif : ".$this->getAbsenceEleveMotif()->getNom();
 		}
+		if ($this->getAbsenceEleveJustification() != null) {
+		    $desc .= "; justification : ".$this->getAbsenceEleveJustification()->getNom();
+		}
+		$notif = false;
+		foreach ($this->getAbsenceEleveNotifications() as $notification) {
+		    if ($notification->getStatutEnvoi() == AbsenceEleveNotification::$STATUT_SUCCES
+			    || $notification->getStatutEnvoi() == AbsenceEleveNotification::$STATUT_SUCCES_AR) {
+			$notif = true;
+			break;
+		    }
+		}
+		if ($notif) {
+		    $desc .= "; Notifié";
+		}
+		if ($this->getCommentaire() != null && $this->getCommentaire() != '') {
+		    $desc .= "; Commentaire : ".$this->getCommentaire();
+		}
+		$description = $desc;
 	    }
-	    if ($notif) {
-		$desc .= "; Notifié";
-	    }
-	    if ($this->getCommentaire() != null && $this->getCommentaire() != '') {
-		$desc .= "; Commentaire : ".$this->getCommentaire();
-	    }
-	    return $desc;
+	    return $description;
 	}
 
 	public function isTypeHydrated() {
@@ -144,8 +153,7 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 		return (getSettingValue("abs2_saisie_par_defaut_sans_manquement")!='y');
 	    } else {
 		return (
-			$this->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_NON_PRECISE
-			|| $this->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_VRAI);
+			$this->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_VRAI);
 	    }
 	}
 
@@ -155,7 +163,7 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 	 * une saisie qui n'est pas sous la responsabilite de l'etablissement sere comptee dans le bulletin
 	 * une saisie qui est sous la responsabilite de l'etablissement ne sera pas comptee dans le bulletin
 	 * si on a un type de responsabilite specifié a non_precisé (comme le type 'erreur de saisie'),
-	 * on renvoi une resp etab (sinon l'utilisateur aurait specifier un type $MANQU_OBLIG_PRESE_VRAI)
+	 * on renvoi une resp etab a vrai (sinon l'utilisateur aurait specifier un type $MANQU_OBLIG_PRESE_VRAI)
 	 * @return     boolean
 	 *
 	 */
@@ -169,7 +177,7 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 	    }
 	}
 
-	
+
 	/**
 	 * Ajout manuel : renseignement automatique de l'utilisateur qui a créé ou modifié la saisie
 	 * Persists this object to the database.

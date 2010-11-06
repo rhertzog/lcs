@@ -1,7 +1,7 @@
 <?php
 	@set_time_limit(0);
 
-	// $Id: matieres.php 5609 2010-10-08 19:49:03Z crob $
+	// $Id: matieres.php 5608 2010-10-08 19:48:51Z crob $
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");

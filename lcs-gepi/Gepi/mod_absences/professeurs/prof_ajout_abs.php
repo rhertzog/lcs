@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * $Id: prof_ajout_abs.php 5355 2010-09-20 19:13:48Z crob $
+ * $Id: prof_ajout_abs.php 5356 2010-09-20 19:13:55Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *

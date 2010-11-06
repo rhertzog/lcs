@@ -1149,22 +1149,25 @@ PRIMARY KEY  (`id_definie_periode`));";
 		$result_inter .= traite_requete("INSERT INTO setting VALUES ('active_inscription', 'n');");
 		else
 		$result .= "<font color=\"blue\">Le paramètre active_inscription existe déjà.</font><br />";
-		$req = sql_query1("SELECT VALUE FROM setting WHERE NAME = 'active_inscription_utilisateurs'");
+		
+    $req = sql_query1("SELECT VALUE FROM setting WHERE NAME = 'active_inscription_utilisateurs'");
 		if ($req == -1)
-		$result_inter .= traite_requete("INSERT INTO setting VALUES ('active_inscription_utilisateurs', 'n');");
+      $result_inter .= traite_requete("INSERT INTO setting VALUES ('active_inscription_utilisateurs', 'n');");
 		else
-		$result .= "<font color=\"blue\">Le paramètre active_inscription_utilisateurs existe déjà.</font><br />";
+      $result .= "<font color=\"blue\">Le paramètre active_inscription_utilisateurs existe déjà.</font><br />";
 
-		$req = sql_query1("SELECT VALUE FROM setting WHERE NAME = 'mod_inscription_explication'");
-		if ($req == -1)
-		$result_inter .= traite_requete("INSERT INTO setting (NAME, VALUE) VALUES('mod_inscription_explication', '<p> <strong>Pr&eacute;sentation des dispositifs du Lyc&eacute;e dans les coll&egrave;ges qui organisent des rencontres avec les parents.</strong> <br />\r\n<br />\r\nChacun d&rsquo;entre vous conna&icirc;t la situation dans laquelle sont plac&eacute;s les &eacute;tablissements : </p>\r\n<ul>\r\n    <li>baisse d&eacute;mographique</li>\r\n    <li>r&eacute;gulation des moyens</li>\r\n    <li>- ... </li>\r\n</ul>\r\nCette ann&eacute;e encore nous devons &ecirc;tre pr&eacute;sents dans les r&eacute;unions organis&eacute;es au sein des coll&egrave;ges afin de pr&eacute;senter nos sp&eacute;cificit&eacute;s, notre valeur ajout&eacute;e, les &eacute;volution du projet, le label international, ... <br />\r\nsur cette feuille, vous avez la possibilit&eacute; de vous inscrire afin d''intervenir dans un ou plusieurs coll&egrave;ges selon vos convenances.');");
+		$req = mysql_num_rows(mysql_query("SELECT VALUE FROM setting WHERE NAME = 'mod_inscription_explication'"));
+		if ($req == 0) {
+      $result_inter .= traite_requete("INSERT INTO setting (NAME, VALUE) VALUES('mod_inscription_explication', '<p> <strong>Pr&eacute;sentation des dispositifs du Lyc&eacute;e dans les coll&egrave;ges qui organisent des rencontres avec les parents.</strong> <br />\r\n<br />\r\nChacun d&rsquo;entre vous conna&icirc;t la situation dans laquelle sont plac&eacute;s les &eacute;tablissements : </p>\r\n<ul>\r\n    <li>baisse d&eacute;mographique</li>\r\n    <li>r&eacute;gulation des moyens</li>\r\n    <li>- ... </li>\r\n</ul>\r\nCette ann&eacute;e encore nous devons &ecirc;tre pr&eacute;sents dans les r&eacute;unions organis&eacute;es au sein des coll&egrave;ges afin de pr&eacute;senter nos sp&eacute;cificit&eacute;s, notre valeur ajout&eacute;e, les &eacute;volution du projet, le label international, ... <br />\r\nsur cette feuille, vous avez la possibilit&eacute; de vous inscrire afin d''intervenir dans un ou plusieurs coll&egrave;ges selon vos convenances.');");
+		} else {
+      $result .= "<font color=\"blue\">Le paramètre mod_inscription_explication existe déjà.</font><br />";
+    }
+    		
+    $req = mysql_num_rows(mysql_query("SELECT VALUE FROM setting WHERE NAME = 'mod_inscription_titre'"));
+		if ($req == 0)
+      $result_inter .= traite_requete("INSERT INTO setting (NAME, VALUE) VALUES('mod_inscription_titre', 'Intervention dans les collèges');");
 		else
-		$result .= "<font color=\"blue\">Le paramètre mod_inscription_explication existe déjà.</font><br />";
-		$req = sql_query1("SELECT VALUE FROM setting WHERE NAME = 'mod_inscription_titre'");
-		if ($req == -1)
-		$result_inter .= traite_requete("INSERT INTO setting (NAME, VALUE) VALUES('mod_inscription_titre', 'Intervention dans les collèges');");
-		else
-		$result .= "<font color=\"blue\">Le paramètre mod_inscription_titre existe déjà.</font><br />";
+      $result .= "<font color=\"blue\">Le paramètre mod_inscription_titre existe déjà.</font><br />";
 
 		if ($result_inter == '') {
 			$result .= "<font color=\"green\">Ok !</font><br />";

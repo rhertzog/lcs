@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: disc_stat.php 5401 2010-09-23 10:01:32Z crob $
+ * $Id: disc_stat.php 5400 2010-09-23 10:01:22Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

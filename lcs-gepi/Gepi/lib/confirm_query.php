@@ -1,6 +1,6 @@
 <?php
 /*
- * Last modification  : 24/05/2006
+ * $Id: confirm_query.php 5639 2010-10-12 14:40:47Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -32,7 +32,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -377,6 +377,15 @@ if (($k < $nb_cible1) and ($tab_cible1[$k] != '')){
     $test_nb[] = "SELECT * FROM j_eleves_regime WHERE login ='$cible1'";
     $req[] = "DELETE FROM j_eleves_regime WHERE login ='$cible1'";
 
+	$test_existence=mysql_query("SHOW TABLES LIKE 'j_signalement';");
+	if(mysql_num_rows($test_existence)>0){
+		$mess[] = "Table des signalements d'erreurs d'affectation";
+		$test_nb[] = "SELECT * FROM j_signalement WHERE login='$cible1'";
+		$req[] = "DELETE FROM j_signalement WHERE login='$cible1'";
+
+		$nombre_req++;
+	}
+
 	$nombre_req++;
 
     break;
@@ -416,32 +425,32 @@ if (($k < $nb_cible1) and ($tab_cible1[$k] != '')){
     break;
     case "del_aid":
     $mess[0] = "Table des Aid : ";
-    $test_nb[0] = "SELECT * FROM aid WHERE (id='$cible1' and indice_aid='$cible2')";
-    $req[0] = "DELETE FROM aid WHERE (id='$cible1' and indice_aid='$cible2')";
+    $test_nb[0] = "SELECT * FROM aid WHERE (id='$cible1' and indice_aid='$cible3')";
+    $req[0] = "DELETE FROM aid WHERE (id='$cible1' and indice_aid='$cible3')";
 
     $mess[1] = "Table de jointure elèves/Aid :";
-    $test_nb[1] = "SELECT * FROM j_aid_eleves WHERE (id_aid='$cible1' and indice_aid='$cible2')";
-    $req[1] = "DELETE FROM j_aid_eleves WHERE (id_aid='$cible1' and indice_aid='$cible2')";
+    $test_nb[1] = "SELECT * FROM j_aid_eleves WHERE (id_aid='$cible1' and indice_aid='$cible3')";
+    $req[1] = "DELETE FROM j_aid_eleves WHERE (id_aid='$cible1' and indice_aid='$cible3')";
 
     $mess[2] = "Table de jointure Aid/professeur :";
-    $test_nb[2] = "SELECT * FROM j_aid_utilisateurs WHERE (id_aid='$cible1' and indice_aid='$cible2')";
-    $req[2] = "DELETE FROM j_aid_utilisateurs WHERE (id_aid='$cible1' and indice_aid='$cible2')";
+    $test_nb[2] = "SELECT * FROM j_aid_utilisateurs WHERE (id_aid='$cible1' and indice_aid='$cible3')";
+    $req[2] = "DELETE FROM j_aid_utilisateurs WHERE (id_aid='$cible1' and indice_aid='$cible3')";
 
     $mess[3] = "Table des appréciations des AID : ";
-    $test_nb[3] = "SELECT * FROM aid_appreciations WHERE (id_aid='$cible1' and indice_aid='$cible2')";
-    $req[3] = "DELETE FROM aid_appreciations WHERE (id_aid='$cible1' and indice_aid='$cible2')";
+    $test_nb[3] = "SELECT * FROM aid_appreciations WHERE (id_aid='$cible1' and indice_aid='$cible3')";
+    $req[3] = "DELETE FROM aid_appreciations WHERE (id_aid='$cible1' and indice_aid='$cible3')";
 
     $mess[4] = "Table de jointure aid/utilisateurs pouvant modifier les fiches projets";
-    $test_nb[4] = "SELECT * FROM j_aidcateg_utilisateurs WHERE indice_aid='$cible2'";
-    $req[4] = "DELETE FROM j_aidcateg_utilisateurs WHERE indice_aid='$cible2'";
+    $test_nb[4] = "SELECT * FROM j_aidcateg_utilisateurs WHERE indice_aid='$cible3'";
+    $req[4] = "DELETE FROM j_aidcateg_utilisateurs WHERE indice_aid='$cible3'";
 
     $mess[5] = "Table de jointure aid/eleves responsable";
-    $test_nb[5] = "SELECT * FROM j_aid_eleves_resp WHERE id_aid = '$cible1' and indice_aid='$cible2'";
-    $req[5] = "DELETE FROM j_aid_eleves_resp WHERE id_aid = '$cible1' and indice_aid='$cible2'";
+    $test_nb[5] = "SELECT * FROM j_aid_eleves_resp WHERE id_aid = '$cible1' and indice_aid='$cible3'";
+    $req[5] = "DELETE FROM j_aid_eleves_resp WHERE id_aid = '$cible1' and indice_aid='$cible3'";
 
     $mess[6] = "Table de jointure Aid/gestionnaire :";
-    $test_nb[6] = "SELECT * FROM j_aid_utilisateurs_gest WHERE (id_aid='$cible1' and indice_aid='$cible2')";
-    $req[6] = "DELETE FROM j_aid_utilisateurs_gest WHERE (id_aid='$cible1' and indice_aid='$cible2')";
+    $test_nb[6] = "SELECT * FROM j_aid_utilisateurs_gest WHERE (id_aid='$cible1' and indice_aid='$cible3')";
+    $req[6] = "DELETE FROM j_aid_utilisateurs_gest WHERE (id_aid='$cible1' and indice_aid='$cible3')";
 
     $nombre_req = 7;
 

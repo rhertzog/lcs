@@ -3,7 +3,7 @@
 /**
  * Fonctions pour l'EdT
  *
- * @version     $Id: fonctions_edt.php 5580 2010-10-06 15:19:10Z adminpaulbert $
+ * @version     $Id: fonctions_edt.php 5579 2010-10-06 15:18:08Z adminpaulbert $
  * @package		GEPI
  * @subpackage	EmploisDuTemps
  * @copyright	Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero

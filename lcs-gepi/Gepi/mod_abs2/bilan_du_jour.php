@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: bilan_du_jour.php 5266 2010-09-13 17:52:07Z jjacquard $
+ * @version $Id: bilan_du_jour.php 5267 2010-09-13 17:52:45Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -190,6 +190,7 @@ foreach($classe_col as $classe) {
 				    } else {
 					  echo '<td style="background-color:green;"></td>';
 					}
+			break;
 				}
 				/*
 				if (!$red) {

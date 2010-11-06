@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: clean_tables.php 5613 2010-10-08 20:04:33Z crob $
+ * $Id: clean_tables.php 5708 2010-10-21 14:55:01Z jjacquard $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  * This file is part of GEPI.
@@ -303,6 +303,13 @@ if (getSettingValue("active_mod_gest_aid")=="y") {
     $tab["j_aid_utilisateurs_gest"][4] = "id";  // nom du champ de la première table lié à la table de liaison
     $tab["j_aid_utilisateurs_gest"][5] = "login";  // nom du champ de la deuxième table lié à la table de liaison
 
+    $tab["j_aidcateg_super_gestionnaires"][0] = "aid_config"; //1ère table
+    $tab["j_aidcateg_super_gestionnaires"][1] = "utilisateurs"; // 2ème table
+    $tab["j_aidcateg_super_gestionnaires"][2] = "indice_aid"; // nom du champ de la table de liaison lié à la première table
+    $tab["j_aidcateg_super_gestionnaires"][3] = "id_utilisateur";  // nom du champ de la table de liaison lié à la deuxième table
+    $tab["j_aidcateg_super_gestionnaires"][4] = "indice_aid";  // nom du champ de la première table lié à la table de liaison
+    $tab["j_aidcateg_super_gestionnaires"][5] = "login";  // nom du champ de la deuxième table lié à la table de liaison
+
 }
     $tab["j_aidcateg_utilisateurs"][0] = "aid_config"; //1ère table
     $tab["j_aidcateg_utilisateurs"][1] = "utilisateurs"; // 2ème table
@@ -326,12 +333,12 @@ if (getSettingValue("active_mod_gest_aid")=="y") {
     $tab["j_eleves_regime"][4] = "login";  // nom du champ de la première table lié à la table de liaison
     $tab["j_eleves_regime"][5] = "login";  // nom du champ de la deuxième table lié à la table de liaison
 
-    $tab[" j_professeurs_matieres"][0] = "utilisateurs"; //1ère table
-    $tab[" j_professeurs_matieres"][1] = "matieres"; // 2ème table
-    $tab[" j_professeurs_matieres"][2] = "id_professeur"; // nom du champ de la table de liaison lié à la première table
-    $tab[" j_professeurs_matieres"][3] = "id_matiere";  // nom du champ de la table de liaison lié à la deuxième table
-    $tab[" j_professeurs_matieres"][4] = "login";  // nom du champ de la première table lié à la table de liaison
-    $tab[" j_professeurs_matieres"][5] = "matiere";  // nom du champ de la deuxième table lié à la table de liaison
+    $tab["j_professeurs_matieres"][0] = "utilisateurs"; //1ère table
+    $tab["j_professeurs_matieres"][1] = "matieres"; // 2ème table
+    $tab["j_professeurs_matieres"][2] = "id_professeur"; // nom du champ de la table de liaison lié à la première table
+    $tab["j_professeurs_matieres"][3] = "id_matiere";  // nom du champ de la table de liaison lié à la deuxième table
+    $tab["j_professeurs_matieres"][4] = "login";  // nom du champ de la première table lié à la table de liaison
+    $tab["j_professeurs_matieres"][5] = "matiere";  // nom du champ de la deuxième table lié à la table de liaison
 
 
     foreach ($tab as $key => $val) {
@@ -396,6 +403,19 @@ if (getSettingValue("active_mod_gest_aid")=="y") {
             echo "<font color=\"green\">Aucune ligne n'a été supprimée.</font><br />\n";
 
       }
+
+        if($key=='j_professeurs_matieres') {
+            // Le test plus haut ne fonctionne pas completement: s'il y a eu des collisions de logins (?) d'une année sur l'autre, et des tables non nettoyées, on peut se retrouver avec un login attribué à un parent alors que c'était le login d'un prof l'année précédente... et si j_professeurs_matieres n'a pas été nettoyée, on se retrouve avec un parent d'élève proposé comme professeur lors de l'ajout d'enseignement
+            //$sql="select * from j_professeurs_matieres j, resp_pers rp where rp.login=j.id_professeur AND j.id_professeur not in (select login from utilisateurs where statut='professeur');";
+            $sql="SELECT * FROM j_professeurs_matieres j WHERE j.id_professeur NOT IN (SELECT login FROM utilisateurs WHERE statut='professeur');";
+            $test=mysql_query($sql);
+            if(mysql_num_rows($test)>0) {
+				$sql="DELETE FROM j_professeurs_matieres WHERE id_professeur NOT IN (SELECT login FROM utilisateurs WHERE statut='professeur');";
+				$del=mysql_query($sql);
+                if($del) {echo "<font color=\"red\">Suppression de ".mysql_num_rows($test)." enregistrements supplémentaires.</font><br />";}
+            }
+        }
+
         echo "<b>La table $key est OK.</b><br />\n";
     }
     echo "<form action=\"clean_tables.php\" method=\"post\">\n";
@@ -1659,26 +1679,44 @@ col2 varchar(100) NOT NULL default ''
 		}
 		*/
 
-		echo "absences_rb";
+		echo "absences_rb (abs1)";
 		$sql="DELETE FROM absences_rb WHERE date_saisie < ".mktime("0","0","0",$mois,$jour,$annee).";";
 		//echo "$sql<br />\n";
 		$suppr=mysql_query($sql);
 		echo ", ";
 
-		echo "absences_eleves";
+		echo "absences_eleves (abs1)";
 		$sql="DELETE FROM absences_eleves WHERE a_date_absence_eleve < date('$annee-$mois-$jour');";
 		//echo "$sql<br />\n";
 		$suppr=mysql_query($sql);
 		echo ", ";
 
-		echo "absences_repas";
+		echo "absences_repas (abs1)";
 		$sql="DELETE FROM absences_repas WHERE a_date_absence_eleve < date('$annee-$mois-$jour');";
 		//echo "$sql<br />\n";
 		$suppr=mysql_query($sql);
 		echo ", ";
 
-		echo "lettres_suivis";
+		echo "lettres_suivis (abs1)";
 		$sql="DELETE FROM lettres_suivis WHERE emis_date_lettre_suivi < date('$annee-$mois-$jour');";
+		//echo "$sql<br />\n";
+		$suppr=mysql_query($sql);
+		echo ", ";
+
+		echo "a_saisies (abs2)";
+		$sql="DELETE FROM a_saisies WHERE debut_abs < date('$annee-$mois-$jour');";
+		//echo "$sql<br />\n";
+		$suppr=mysql_query($sql);
+		echo ", ";
+
+		echo "a_traitements (abs2)";
+		$sql="DELETE FROM a_traitements WHERE created_at < date('$annee-$mois-$jour');";
+		//echo "$sql<br />\n";
+		$suppr=mysql_query($sql);
+		echo ", ";
+
+		echo "a_notifications (abs2)";
+		$sql="DELETE FROM a_notifications WHERE created_at < date('$annee-$mois-$jour');";
 		//echo "$sql<br />\n";
 		$suppr=mysql_query($sql);
 

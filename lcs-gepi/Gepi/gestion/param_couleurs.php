@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: param_couleurs.php 5027 2010-08-05 20:21:12Z crob $
+ * $Id: param_couleurs.php 5354 2010-09-20 17:32:08Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -670,7 +670,7 @@ include("../lib/couleurs_ccm.php");
 //echo "<div class='norme'><p class='bold'><a href='param_gen.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>\n";
 echo "<div class='norme'>\n";
 	echo "<p class='bold'>\n";
-		echo "<a href='index.php'>\n";
+		echo "<a href='index.php#param_couleurs'>\n";
 			echo "<img src='../images/icons/back.png' alt='' class='back_link'/>\n";
 			echo " Retour\n";
 		echo "</a>\n";

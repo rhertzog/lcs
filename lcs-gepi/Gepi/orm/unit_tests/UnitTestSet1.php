@@ -36,7 +36,7 @@ include('UnitTestClasse.php');
 include('UnitTestResponsableEleve.php');
 //include("../propel/logger/STACKLogger.php");
 $logger = new StackLogger();
-Propel::setLogger($logger);
+//Propel::setLogger($logger);
 
 
 // On met le header en petit par défaut
@@ -85,8 +85,6 @@ if ($newGroupe == null) {
 }
 
 //Creation d'une classe
-$classe = new Classe();
-$classe->getClasse();
 $classe = UnitTestClasse::getClasse();
 $classe->save();
 $newClasse = ClassePeer::retrieveByPK($classe->getId());
@@ -249,7 +247,7 @@ function purgeDonneesTest($logger) {
 	//purge de la classe
 	echo "<br/>Purge de la classe :<br/>";
 	$criteria = new Criteria();
-	$criteria->add(ClassePeer::CLASSE, UnitTestClasse::getClasse()->getClasse());
+	$criteria->add(ClassePeer::CLASSE, UnitTestClasse::getClasse()->getNom());
 	$classe = ClassePeer::doSelectOne($criteria);
 	if ($classe != null) {
 		$classe->delete();

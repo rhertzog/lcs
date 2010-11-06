@@ -14,6 +14,35 @@
 class EleveQuery extends BaseEleveQuery {
 
     /**
+     * Ajoute une jointure avec les classes pour minimiser le nombre de requetes.
+     *
+     * @return    EleveQuery
+     */
+    public function joinWithClasses()
+    {
+	    $this
+		->joinWith('Eleve.JEleveClasse', Criteria::LEFT_JOIN)
+		->joinWith('JEleveClasse.Classe', Criteria::LEFT_JOIN);
+	    return $this;
+    }
+
+    /**
+     * Ajoute une jointure avec les periode pour minimiser le nombre de requetes.
+     *
+     * @return    EleveQuery
+     */
+    public function joinWithPeriodeNotes()
+    {
+	    $this
+		->joinWith('Eleve.JEleveClasse', Criteria::LEFT_JOIN)
+		->joinWith('JEleveClasse.Classe', Criteria::LEFT_JOIN)
+		->joinWith('Classe.PeriodeNote', Criteria::LEFT_JOIN)
+		->where('j_eleves_classes.periode = periodes.num_periode');
+	    return $this;
+    }
+
+
+    /**
      * Filtre la requete sur le nom ou le prenom en recherchant une sous chaine
      *
      * @param     string $string sous chaine a rechercher
@@ -45,6 +74,7 @@ class EleveQuery extends BaseEleveQuery {
                 ($utilisateurProfessionnel->getStatut() != "cpe"
                 && $utilisateurProfessionnel->getStatut() != "professeur"
                 && $utilisateurProfessionnel->getStatut() != "scolarite"
+                && $utilisateurProfessionnel->getStatut() != "responsable"
                 && $utilisateurProfessionnel->getStatut() != "autre")) {
             //on filtre tout
             return $this->where('1 <> 1');
@@ -62,14 +92,17 @@ class EleveQuery extends BaseEleveQuery {
                     ->add(JScolClassesPeer::LOGIN, $utilisateurProfessionnel->getLogin())
                     ->endUse()->distinct();
             return $this;
+        } else if ($utilisateurProfessionnel->getStatut() == "responsable") {
+            $this->useResponsableInformationQuery()->useResponsableEleveQuery()->filterByLogin($utilisateurProfessionnel->getLogin())->endUse()->endUse();
+            return $this;
         }
     }
 
     /**
-     * Filtre la requete pour les eleves en fonction de leur statut
+     * Filtre la requete pour les eleves en fonction de leur regime
      *
      *
-     * @param     string $statut statut de l'eleve
+     * @param     string $regime regime de l'eleve
      *
      * @return    EleveQuery The current query, for fluid interface
      */
@@ -78,6 +111,31 @@ class EleveQuery extends BaseEleveQuery {
                 ->filterByRegime($regime)
                 ->endUse();
     }
+
+    /**
+     * Retourne la liste des eleves de la requete, en hydratant si necessaire les periodes
+     * Issue a SELECT query based on the current ModelCriteria
+     *
+     *
+     *
+     * @param     PropelPDO $con an optional connection object
+     *
+     * @return     PropelObjectCollection|array|mixed the list of results, formatted by the current formatter
+     */
+    public function find($con = null)
+    {
+	$result = parent::find($con);
+	if (array_key_exists('PeriodeNote', $this->getWith())) {
+	    //on va hydrater les periodes de note des eleves
+	    foreach ($result as $eleve) {
+		$eleve->hydratePeriodeNotes();
+	    }
+	}
+
+	return $result;
+    }
+
+
 
 }
 

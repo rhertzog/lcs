@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: index.php 3455 2009-09-23 14:29:35Z crob $
+ * $Id: index.php 5717 2010-10-22 08:39:53Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -45,7 +45,7 @@ $titre_page = "Outil d'initialisation de l'année";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 ?>
-<p class='bold'><a href="../gestion/index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>
+<p class='bold'><a href="../gestion/index.php#init_xml2"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>
 <?php if (getSettingValue('use_ent') == 'y') {
 	echo '<p>Avant de commencer, vous devez récupérer les logins de vos utilisateurs dans l\'ENT : <a href="../mod_ent/index.php">RECUPERER</a></p>';
 }
@@ -53,6 +53,14 @@ require_once("../lib/header.inc");
 
 <p>Vous allez effectuer l'initialisation de l'année scolaire qui vient de débuter.<br />
 <?php
+
+	if((getSettingValue('use_sso')=="lcs")||(getSettingValue('use_sso')=="ldap_scribe")) {
+		echo "<p style='color:red;'><b>ATTENTION&nbsp;:</b> Vous utilisez un serveur LCS ou SCRIBE.<br />
+		Il existe un mode d'initialisation de l'année propre à <a href='../init_lcs/index.php'>LCS</a> d'une part et à SCRIBE d'autre part (<i><a href='../init_scribe/index.php'>Scribe</a> et <a href='../init_scribe_ng/index.php'>Scribe_ng</a></i>).<br />
+		Si vous initialisez l'année avec le mode XML, vous ne pourrez pas utiliser les comptes de votre serveur LCS/SCRIBE par la suite pour accéder à GEPI.<br />Réfléchissez-y à deux fois avant de poursuivre.</p>\n";
+		echo "<br />\n";
+	}
+
 	$sql="SELECT 1=1 FROM matieres_notes LIMIT 1;";
 	$test=mysql_query($sql);
 	if(mysql_num_rows($test)>0) {

@@ -1,7 +1,7 @@
 <?php
 	@set_time_limit(0);
 
-	// $Id: responsables.php 5340 2010-09-19 13:05:17Z crob $
+	// $Id: responsables.php 5343 2010-09-19 17:45:42Z crob $
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");

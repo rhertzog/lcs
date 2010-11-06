@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: class_accueil_ordre_menu.php 4883 2010-07-24 22:45:59Z regis $
+ * $Id: class_accueil_ordre_menu.php 5786 2010-11-02 13:49:19Z jjacquard $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
- 
+
 
 /**
  * Description of class_accueil_ordre_menu
@@ -31,10 +31,10 @@
  */
 class class_accueil_ordre_menu extends class_page_accueil {
 
- 
-  
+
+
 /**
- * 
+ *
  *
  * Charge les menus Accueil en fonction du statut passé en argument
  *
@@ -67,7 +67,7 @@ class class_accueil_ordre_menu extends class_page_accueil {
 	$this->chargeOrdreMenu($ordre_menus);
 
 	// On teste si on l'utilisateur est un prof avec des matières. Si oui, on affiche les lignes relatives au cahier de textes et au carnet de notes
-	
+
 	$this->test_prof_matiere = 1;
 
 // On teste si le l'utilisateur est prof de suivi. Si oui on affiche la ligne relative remplissage de l'avis du conseil de classe
@@ -255,15 +255,15 @@ class class_accueil_ordre_menu extends class_page_accueil {
 
   }
 
- 
 
-  
 
-  
 
-  
 
- 
+
+
+
+
+
 
   private function saisie(){
 
@@ -273,6 +273,12 @@ class class_accueil_ordre_menu extends class_page_accueil {
 	$sql="SELECT 1=1 FROM matieres_app_corrections;";
 	$test_mac=mysql_query($sql);
 	if(mysql_num_rows($test_mac)>0) {$afficher_correction_validation="y";}
+
+        if (getSettingValue("active_module_absence")!='2' || getSettingValue("abs2_import_manuel_bulletin")=='y') {
+  $this->creeNouveauItem("/absences/index.php",
+			  "Bulletins : saisie des absences",
+			  "Cet outil vous permet de saisir les absences sur les bulletins." );
+        }
 
 	if ((($this->test_prof_matiere != "0") or ($this->statutUtilisateur!='professeur'))
 			and (getSettingValue("active_cahiers_texte")=='y'))
@@ -398,7 +404,7 @@ class class_accueil_ordre_menu extends class_page_accueil {
 	}
   }
 
-  
+
 
   private function trombinoscope(){
 	//On vérifie si le module est activé
@@ -473,9 +479,9 @@ class class_accueil_ordre_menu extends class_page_accueil {
 	  }
   }
 
- 
 
- 
+
+
 
   private function emploiDuTemps(){
 	$this->b=0;
@@ -502,12 +508,12 @@ class class_accueil_ordre_menu extends class_page_accueil {
 		($this->statutUtilisateur == "responsable" AND getSettingValue("GepiAccesCahierTexteParent") == 'yes')
 		OR ($this->statutUtilisateur == "eleve" AND getSettingValue("GepiAccesCahierTexteEleve") == 'yes')
 	));
-	
+
 		  $this->creeNouveauItem("/cahier_texte/consultation.php",
 				  "Cahier de textes",
 				  "Permet de consulter les compte-rendus de séance et les devoirs à faire pour les enseignements que vous suivez.");
-		
-	
+
+
 	if ($this->b>0){
 	  $this->creeNouveauTitre('accueil',"Cahier de texte",'images/icons/document.png');
 	  return true;
@@ -540,16 +546,16 @@ class class_accueil_ordre_menu extends class_page_accueil {
 	$condition = (
 			($this->statutUtilisateur == "responsable"
 			  AND getSettingValue("GepiAccesEquipePedaParent") == 'yes')
-			OR ($this->statutUtilisateur['statut'] == "eleve"
+			OR ($this->statutUtilisateur == "eleve"
 			  AND getSettingValue("GepiAccesEquipePedaEleve") == 'yes')
 			);
 
 	if ($condition) {
-	  
+
 		  $this->creeNouveauItem("/groupes/visu_profs_eleve.php",
 				  "Équipe pédagogique",
 				  "Permet de consulter l'équipe pédagogique qui vous concerne.");
-		
+
 	}
 	if ($this->b>0){
 	  $this->creeNouveauTitre('accueil',"Équipe pédagogique",'images/icons/trombinoscope.png');
@@ -568,11 +574,11 @@ class class_accueil_ordre_menu extends class_page_accueil {
 			);
 
 	if ($condition) {
-	  
+
 		  $this->creeNouveauItem("/prepa_conseil/index3.php",
 				  "Bulletins simplifiés",
 				  "Permet de consulter vos bulletins sous forme simplifiée.");
-		
+
 	}
 
 	if ($this->b>0){
@@ -590,11 +596,11 @@ class class_accueil_ordre_menu extends class_page_accueil {
 			);
 
 	if ($condition) {
-	  
+
 		  $this->creeNouveauItem("/visualisation/affiche_eleve.php",
 				  "Visualisation graphique",
 				  "Permet de consulter vos résultats sous forme graphique, comparés à la classe.");
-		
+
     }
 
 	if ($this->b>0){
@@ -605,7 +611,7 @@ class class_accueil_ordre_menu extends class_page_accueil {
 
 
 
- 
+
 
   private function AfficheAid($indice_aid){
     if ($this->statutUtilisateur == "eleve") {
@@ -619,7 +625,7 @@ class class_accueil_ordre_menu extends class_page_accueil {
         return true;
   }
 
-  
+
 
   private function impression(){
 	$this->b=0;
@@ -667,7 +673,7 @@ class class_accueil_ordre_menu extends class_page_accueil {
 			"Impression PDF de listes",
 			"Ceci vous permet d'imprimer en PDF des listes avec les ".$this->gepiSettings['denomination_eleves'].", à l'unité ou en série. L'apparence des listes est paramétrable.");
 
-	if(($this->statutUtilisateur=='scolarite')||(($this->statutUtilisateur=='professeur') 
+	if(($this->statutUtilisateur=='scolarite')||(($this->statutUtilisateur=='professeur')
 			AND ($this->test_prof_suivi != "0"))){
 	  $this->creeNouveauItem("/saisie/impression_avis.php",
 			  "Impression PDF des avis du conseil de classe",
@@ -924,13 +930,13 @@ class class_accueil_ordre_menu extends class_page_accueil {
 	}
   }
 
-  
 
- 
 
-  
 
- 
+
+
+
+
 
   private function plugins(){
 	$this->b=0;
@@ -955,7 +961,7 @@ class class_accueil_ordre_menu extends class_page_accueil {
 		// On commence par regarder si une fonction du type calcul_autorisation_nom_du_plugin existe
 		$nom_fonction_autorisation = "calcul_autorisation_".$nomPlugin;
 
-		
+
 		  $result_autorisation=true;
 
 		if (($menuItem->user_statut == $this->statutUtilisateur) and ($result_autorisation)) {
@@ -976,7 +982,7 @@ class class_accueil_ordre_menu extends class_page_accueil {
 
   }
 
-  
+
 
   private function fluxRSS(){
 	$this->b=0;
@@ -1005,10 +1011,10 @@ class class_accueil_ordre_menu extends class_page_accueil {
 
 
 
-  
 
-  
- 
+
+
+
 
   private function gestionEleveAID(){
 	$this->b=0;
@@ -1040,14 +1046,23 @@ class class_accueil_ordre_menu extends class_page_accueil {
 
 	  while ($i < $nb_aid) {
 		$indice_aid = @mysql_result($call_data, $i, "indice_aid");
-		$call_prof = mysql_query("SELECT *
+		$call_prof1 = mysql_query("SELECT *
 					FROM j_aid_utilisateurs_gest
 					WHERE indice_aid = '".$indice_aid."'");
-		$nb_result = mysql_num_rows($call_prof);
+		$nb_result1 = mysql_num_rows($call_prof1);
+		$call_prof2 = mysql_query("SELECT *
+					FROM j_aidcateg_super_gestionnaires
+					WHERE indice_aid = '".$indice_aid."'");
+		$nb_result2 = mysql_num_rows($call_prof2);
 
-		if (($nb_result != 0) or ($this->statutUtilisateur == 'secours')) {
+		if (($nb_result1 != 0) or ($nb_result2 != 0)) {
 		  $nom_aid = @mysql_result($call_data, $i, "nom");
-		  $this->creeNouveauItem("/aid/index2.php?indice_aid=".$indice_aid,
+  		if ($nb_result2 != 0)
+      		$this->creeNouveauItem("/aid/index2.php?indice_aid=".$indice_aid,
+				  $nom_aid,
+				  "Cet outil vous permet de gérer les groupes (création, suppression, modification).");
+			else
+      		$this->creeNouveauItem("/aid/index2.php?indice_aid=".$indice_aid,
 				  $nom_aid,
 				  "Cet outil vous permet de gérer l'appartenance des élèves aux différents groupes.");
 		}
@@ -1065,12 +1080,12 @@ class class_accueil_ordre_menu extends class_page_accueil {
 
 
 
-  
 
 
-  
 
-  
+
+
+
 
   private function chargeAutreNom($bloc){
 

@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: mon_compte.php 4878 2010-07-24 13:54:01Z regis $
+* $Id: mon_compte.php 5811 2010-11-05 10:33:55Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -99,10 +99,20 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 					}
 				}
 			} else {
+
+				function unhtmlentities($chaineHtml)
+				{
+					$tmp = get_html_translation_table(HTML_ENTITIES);
+					$tmp = array_flip ($tmp);
+					$chaineTmp = strtr ($chaineHtml, $tmp);
+					return $chaineTmp;
+				}
+
 				// On fait la mise à jour sur la base de données
 				$reg_password_a_c = md5($NON_PROTECT['password_a']);
 				$old_password = mysql_result(mysql_query("SELECT password FROM utilisateurs WHERE (login = '".$session_gepi->login."')"), 0);
-				if ($old_password == $reg_password_a_c) {
+				//if ($old_password == $reg_password_a_c) {
+				if (($old_password == $reg_password_a_c)||($old_password == md5(htmlentities($NON_PROTECT['password_a'])))||($old_password == md5(unhtmlentities($NON_PROTECT['password_a'])))) {
 					if  ($no_anti_inject_password_a == $no_anti_inject_password1) {
 						$msg = "ERREUR : Vous devez choisir un nouveau mot de passe différent de l'ancien.";
 					} else if (!(verif_mot_de_passe($NON_PROTECT['password1'],$flag))) {
@@ -260,13 +270,13 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 										$source = imagecreatefromjpeg($repertoire.$nouveau_code_photo.".jpg"); // La photo est la source
 										if (getSettingValue("active_module_trombinoscopes_rt")=='') { $destination = imagecreatetruecolor(getSettingValue("l_resize_trombinoscopes"), getSettingValue("h_resize_trombinoscopes")); } // On crée la miniature vide
 										if (getSettingValue("active_module_trombinoscopes_rt")!='') { $destination = imagecreatetruecolor(getSettingValue("h_resize_trombinoscopes"), getSettingValue("l_resize_trombinoscopes")); } // On crée la miniature vide
-		
+
 										// Les fonctions imagesx et imagesy renvoient la largeur et la hauteur d'une image
 										$largeur_source = imagesx($source);
 										$hauteur_source = imagesy($source);
 										$largeur_destination = imagesx($destination);
 										$hauteur_destination = imagesy($destination);
-		
+
 										// On crée la miniature
 										imagecopyresampled($destination, $source, 0, 0, 0, 0, $largeur_destination, $hauteur_destination, $largeur_source, $hauteur_source);
 										if (getSettingValue("active_module_trombinoscopes_rt")!='') { $degrees = getSettingValue("active_module_trombinoscopes_rt"); /* $destination = imagerotate($destination,$degrees); */$destination = ImageRotateRightAngle($destination,$degrees); }
@@ -292,6 +302,14 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 	}
 	//elseif($_SESSION['statut']=='eleve') {
 	elseif(($_SESSION['statut']=='eleve')&&(getSettingValue("active_module_trombinoscopes")=='y')&&(getSettingValue("GepiAccesModifMaPhotoEleve")=='yes')) {
+		// En multisite, on ajoute le répertoire RNE
+		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+			  // On récupère le RNE de l'établissement
+		  $repertoire="../photos/".getSettingValue("gepiSchoolRne")."/eleves/";
+		}else{
+		  $repertoire="../photos/eleves/";
+		}
+
 		$sql="SELECT elenoet FROM eleves WHERE login='".$_SESSION['login']."';";
 		$res_elenoet=mysql_query($sql);
 		if(mysql_num_rows($res_elenoet)>0) {
@@ -342,7 +360,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 									$filephoto_name=$_FILES['filephoto']['name'];
 									$filephoto_size=$_FILES['filephoto']['size'];
 									$filephoto_type=$_FILES['filephoto']['type'];
-									if ((!preg_match('/jpg$/',$filephoto_name)) || ($filephoto_type != "image/jpeg" && $filephoto_type != "image/pjpeg") ) {
+									if ((!preg_match('/jpg$/',strtolower($filephoto_name))) || ($filephoto_type != "image/jpeg" && $filephoto_type != "image/pjpeg") ) {
 										//$msg = "Erreur : seuls les fichiers ayant l'extension .jpg sont autorisés.";
 										if($msg!="") {$msg.="<br />";}
 										$msg .= "Erreur : seuls les fichiers ayant l'extension .jpg sont autorisés.\n";
@@ -365,13 +383,13 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 												$source = imagecreatefromjpeg($repertoire.$reg_no_gep.".jpg"); // La photo est la source
 												if (getSettingValue("active_module_trombinoscopes_rt")=='') { $destination = imagecreatetruecolor(getSettingValue("l_resize_trombinoscopes"), getSettingValue("h_resize_trombinoscopes")); } // On crée la miniature vide
 												if (getSettingValue("active_module_trombinoscopes_rt")!='') { $destination = imagecreatetruecolor(getSettingValue("h_resize_trombinoscopes"), getSettingValue("l_resize_trombinoscopes")); } // On crée la miniature vide
-			
+
 												// Les fonctions imagesx et imagesy renvoient la largeur et la hauteur d'une image
 												$largeur_source = imagesx($source);
 												$hauteur_source = imagesy($source);
 												$largeur_destination = imagesx($destination);
 												$hauteur_destination = imagesy($destination);
-			
+
 												// On crée la miniature
 												imagecopyresampled($destination, $source, 0, 0, 0, 0, $largeur_destination, $hauteur_destination, $largeur_source, $hauteur_source);
 												if (getSettingValue("active_module_trombinoscopes_rt")!='') { $degrees = getSettingValue("active_module_trombinoscopes_rt"); /* $destination = imagerotate($destination,$degrees); */$destination = ImageRotateRightAngle($destination,$degrees); }
@@ -672,6 +690,15 @@ if(($_SESSION['statut']=='administrateur')||
 			echo "<tr>\n";
 			echo "<td style='text-align: center;'>\n";
 
+				// En multisite, on ajoute le répertoire RNE
+				if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
+					// On récupère le RNE de l'établissement
+					$repertoire="../photos/".getSettingValue("gepiSchoolRne")."/personnels/";
+				}
+				else{
+					$repertoire="../photos/personnels/";
+				}
+
 				$code_photo = md5(strtolower($user_login));
 
 				$photo=$repertoire.$code_photo.".jpg";
@@ -816,7 +843,7 @@ if ($editable_user) {
 
 	echo "<br /><span style='color: red;'>Il est fortement conseillé de ne pas choisir un mot de passe trop simple</b>.</span>";
 	echo "<br /><b>Votre mot de passe est strictement personnel, vous ne devez pas le diffuser,<span style='color: red;'> il garantit la sécurité de votre travail.</b></span></p>\n";
-	echo "<script type=\"text/javascript\" src=\"../lib/pwd_strength.js\"></script>";	
+	echo "<script type=\"text/javascript\" src=\"../lib/pwd_strength.js\"></script>";
 
 	echo "<table summary='Mot de passe'><tr>\n";
 	echo "<td>Ancien mot de passe : </td><td><input type=password name=no_anti_inject_password_a size=20 /></td>\n";
@@ -824,7 +851,7 @@ if ($editable_user) {
 	echo "<td>Nouveau mot de passe (".getSettingValue("longmin_pwd") ." caractères minimum) :</td>";
 	echo "<td> <input id=\"mypassword\" type=password name=no_anti_inject_password1 size=20 onkeyup=\"runPassword(this.value, 'mypassword');\" />";
 	echo "<td>";
-	echo "Complexité de votre mot de passe : ";	
+	echo "Complexité de votre mot de passe : ";
 	echo "		<div style=\"width: 150px;\"> ";
 	echo "			<div id=\"mypassword_text\" style=\"font-size: 11px;\"></div>";
 	echo "			<div id=\"mypassword_bar\" style=\"font-size: 1px; height: 3px; width: 0px; border: 1px solid white;\"></div> ";
@@ -842,6 +869,7 @@ if ($affiche_bouton_submit=='yes')
 	echo "<input type=\"hidden\" name=\"valid\" value=\"yes\" />\n";
 echo "</form>\n";
 echo "  <hr />\n";
+
 // Journal des connexions
 echo "<a name=\"connexion\"></a>\n";
 if (isset($_POST['duree'])) {
@@ -849,6 +877,11 @@ $duree = $_POST['duree'];
 } else {
 $duree = '7';
 }
+
+journal_connexions($_SESSION['login'],$duree);
+
+/*
+
 switch( $duree ) {
 case 7:
 $display_duree="une semaine";
@@ -875,7 +908,7 @@ break;
 
 echo "<h2>Journal de vos connexions depuis <b>".$display_duree."</b>**</h2>\n";
 $requete = '';
-if ($duree != 'all') $requete = "and START > now() - interval " . $duree . " day";
+if ($duree != 'all') {$requete = "and START > now() - interval " . $duree . " day";}
 
 $sql = "select START, SESSION_ID, REMOTE_ADDR, USER_AGENT, AUTOCLOSE, END from log where LOGIN = '".$_SESSION['login']."' ".$requete." order by START desc";
 
@@ -979,7 +1012,7 @@ if ($res) {
 
 echo "</table>\n";
 
-echo "<form action=\"mon_compte.php\" name=\"form_affiche_log\" method=\"post\">\n";
+echo "<form action=\"".$_SERVER['PHP_SELF']."\" name=\"form_affiche_log\" method=\"post\">\n";
 echo "Afficher le journal des connexions depuis : <select name=\"duree\" size=\"1\">\n";
 echo "<option ";
 if ($duree == 7) echo "selected";
@@ -1005,9 +1038,10 @@ echo " value='all'>Le début</option>\n";
 echo "</select>\n";
 echo "<input type=\"submit\" name=\"Valider\" value=\"Valider\" />\n";
 
-
 echo "</form>\n";
+
 echo "<p class='small'>** Les renseignements ci-dessus peuvent vous permettre de vérifier qu'une connexion pirate n'a pas été effectuée sur votre compte.
-Dans le cas contraire, vous devez immédiatement en avertir l'<a href=\"mailto:" . getSettingValue("gepiAdminAdress") . "\">administrateur</a>.</p>\n";
+Dans le cas d'une connexion inexpliquée, vous devez immédiatement en avertir l'<a href=\"mailto:" . getSettingValue("gepiAdminAdress") . "\">administrateur</a>.</p>\n";
+*/
 require("../lib/footer.inc.php");
 ?>

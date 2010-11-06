@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: extraction_demi-journees.php 5460 2010-09-27 20:23:17Z jjacquard $
+ * @version $Id: extraction_demi-journees.php 5459 2010-09-27 20:22:47Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -281,7 +281,7 @@ if ($affichage == 'html') {
     $TBS->Plugin(TBS_INSTALL, OPENTBS_PLUGIN); // load OpenTBS plugin
 
     // Load the template
-	$extraction_demi_journees=repertoire_modeles('extraction_demi-journees.ods');
+	$extraction_demi_journees=repertoire_modeles('absence_extraction_demi-journees.ods');
     $TBS->LoadTemplate($extraction_demi_journees);
 
     $titre = 'Extrait des demi-journées d\'absences du '.$dt_date_absence_eleve_debut->format('d/m/Y').' au '.$dt_date_absence_eleve_fin->format('d/m/Y');

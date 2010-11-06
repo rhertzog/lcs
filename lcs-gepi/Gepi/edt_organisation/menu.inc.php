@@ -3,7 +3,7 @@
 /**
  * EdT Gepi : le menu pour les includes require_once().
  *
- * @version $Id: menu.inc.php 4248 2010-04-07 16:22:18Z adminpaulbert $
+ * @version $Id: menu.inc.php 5396 2010-09-21 21:56:12Z adminpaulbert $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -33,10 +33,10 @@ $analyse = explode("/", $serveur_script);
 
 // ========================= Récupérer le bon fichier de langue
 
-require_once('./choix_langue.php');
+require_once('../edt_organisation/choix_langue.php');
 
 
-require_once('./fonctions_calendrier.php');
+require_once('../edt_organisation/fonctions_calendrier.php');
 //===========================INITIALISATION DES VARIABLES=======
 
 // Pour éviter d'avoir un décalage dans les infobulles

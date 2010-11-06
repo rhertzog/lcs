@@ -1,7 +1,7 @@
 <?php
 
 /*
- * @version $Id: visu_eleve.inc.php 5010 2010-08-04 21:22:51Z jjacquard $
+ * @version $Id: visu_eleve.inc.php 5786 2010-11-02 13:49:19Z jjacquard $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Stephane Boireau
  *
@@ -1134,6 +1134,15 @@ Patientez pendant l'extraction des données... merci.
 				echo "<tr><th style='text-align: left;'>N°INE&nbsp;:</th><td>".$tab_ele['no_gep']."</td></tr>\n";
 			}
 
+			echo "<tr><th style='text-align: left;'>Email&nbsp;:</th><td>";
+			$tmp_date=getdate();
+			echo "<a href='mailto:".$tab_ele['email']."?subject=GEPI&amp;body=";
+			if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
+			echo ",%0d%0aCordialement.'>";
+			echo $tab_ele['email'];
+			echo "</a>";
+			echo "</td></tr>\n";
+
 			//echo "<tr><th>:</th><td>".$tab_ele['']."</td></tr>\n";
 			echo "</table>\n";
 		echo "</td>\n";
@@ -1209,7 +1218,16 @@ Patientez pendant l'extraction des données... merci.
 						if($tab_ele['resp'][$i]['tel_pers']!='') {echo "<tr><th style='text-align: left;'>Tél.pers:</th><td>".$tab_ele['resp'][$i]['tel_pers']."</td></tr>\n";}
 						if($tab_ele['resp'][$i]['tel_port']!='') {echo "<tr><th style='text-align: left;'>Tél.port:</th><td>".$tab_ele['resp'][$i]['tel_port']."</td></tr>\n";}
 						if($tab_ele['resp'][$i]['tel_prof']!='') {echo "<tr><th style='text-align: left;'>Tél.prof:</th><td>".$tab_ele['resp'][$i]['tel_prof']."</td></tr>\n";}
-						if($tab_ele['resp'][$i]['mel']!='') {echo "<tr><th style='text-align: left;'>Courriel:</th><td>".$tab_ele['resp'][$i]['mel']."</td></tr>\n";}
+						if($tab_ele['resp'][$i]['mel']!='') {
+							$tmp_date=getdate();
+							echo "<tr><th style='text-align: left;'>Courriel:</th><td>";
+							echo "<a href='mailto:".$tab_ele['resp'][$i]['mel']."?subject=GEPI&amp;body=";
+							if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
+							echo ",%0d%0aCordialement.'>";
+							echo $tab_ele['resp'][$i]['mel'];
+							echo "</a>";
+							echo "</td></tr>\n";
+						}
 
 						if(!isset($tab_ele['resp'][$i]['etat'])) {
 							echo "<tr><th style='text-align: left;'>Dispose d'un compte:</th><td>Non</td></tr>\n";
@@ -1802,6 +1820,14 @@ Patientez pendant l'extraction des données... merci.
 						echo "<td colspan='2' style='text-align:left;'>\n";
 						//echo "Date ".jour_en_fr(date("D",$tab_ele['cdt'][$j]['dev'][$k]['date_ct']))." ".date("d/m/Y",$tab_ele['cdt'][$j]['dev'][$k]['date_ct'])."<br />\n";
 						echo nl2br($tab_ele['cdt'][$j]['dev'][$k]['contenu']);
+
+						$adj=affiche_docs_joints($tab_ele['cdt'][$j]['dev'][$k]['id_ct'],"t");
+						if($adj!='') {
+							echo "<div style='border: 1px dashed black'>\n";
+							echo $adj;
+							echo "</div>\n";
+						}
+
 						//echo "</div>\n";
 						echo "</td>\n";
 						echo "</tr>\n";
@@ -1833,6 +1859,13 @@ Patientez pendant l'extraction des données... merci.
 						echo "<tr style='background-color:$couleur_entry;'>\n";
 						echo "<td colspan='2' style='text-align:left;'>\n";
 						echo nl2br($tab_ele['cdt'][$j]['entry'][$k]['contenu']);
+
+						$adj=affiche_docs_joints($tab_ele['cdt'][$j]['entry'][$k]['id_ct'],"c");
+						if($adj!='') {
+							echo "<div style='border: 1px dashed black'>\n";
+							echo $adj;
+							echo "</div>\n";
+						}
 						echo "</td>\n";
 						echo "</tr>\n";
 						echo "</table>\n";
@@ -1962,7 +1995,7 @@ Patientez pendant l'extraction des données... merci.
 			if($onglet!="absences") {echo " display:none;";}
 			echo "background-color: ".$tab_couleur['absences']."; ";
 			echo "'>";
-			if(getSettingValue("active_module_absence")=='y') {
+			if(getSettingValue("active_module_absence")=='y' || getSettingValue("abs2_import_manuel_bulletin")=='y') {
 			    echo "<h2>Absences et retards de l'".$gepiSettings['denomination_eleve']." ".$tab_ele['nom']." ".$tab_ele['prenom']."</h2>\n";
 
 			    if(count($tab_ele['absences'])==0) {

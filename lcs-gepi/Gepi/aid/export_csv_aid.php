@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: export_csv_aid.php 4660 2010-06-28 21:48:41Z regis $
+ * @version: $Id: export_csv_aid.php 5310 2010-09-15 06:51:52Z delineau $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -70,7 +70,7 @@ if (!isset($is_posted)) {
     if ($nb_test == 0) {
 
         // Par sécurité, on efface d'éventuelles données résiduelles dans les tables j_aid_utilisateurs et j_aid_eleves
-
+        $del = mysql_query("DELETE FROM j_aidcateg_super_gestionnaires WHERE indice_aid='$indice_aid'");
         $del = mysql_query("DELETE FROM j_aid_utilisateurs WHERE indice_aid='$indice_aid'");
         $del = mysql_query("DELETE FROM j_aid_utilisateurs_gest WHERE indice_aid='$indice_aid'");
         $del = mysql_query("DELETE FROM j_aid_eleves WHERE indice_aid='$indice_aid'");

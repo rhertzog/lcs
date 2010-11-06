@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: saisie_notes.php 4878 2010-07-24 13:54:01Z regis $
+ * @version: $Id: saisie_notes.php 5780 2010-10-31 17:08:27Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -63,9 +63,15 @@ $affiche_message = isset($_POST["affiche_message"]) ? $_POST["affiche_message"] 
 $order_by = isset($_GET['order_by']) ? $_GET['order_by'] : (isset($_POST['order_by']) ? $_POST["order_by"] : "classe");
 
 if ($id_devoir)  {
-	$appel_devoir = mysql_query("SELECT * FROM cn_devoirs WHERE id ='$id_devoir'");
+	$sql="SELECT * FROM cn_devoirs WHERE id ='$id_devoir';";
+	//echo "$sql<br />";
+	$appel_devoir = mysql_query($sql);
 	$nom_devoir = mysql_result($appel_devoir, 0, 'nom_court');
-	$query = mysql_query("SELECT id_conteneur, id_racine FROM cn_devoirs WHERE id = '$id_devoir'");
+	$ramener_sur_referentiel_dev_choisi=mysql_result($appel_devoir, 0, 'ramener_sur_referentiel');
+	$note_sur_dev_choisi=mysql_result($appel_devoir, 0, 'note_sur');
+
+	$sql="SELECT id_conteneur, id_racine FROM cn_devoirs WHERE id = '$id_devoir';";
+	$query = mysql_query($sql);
 	$id_racine = mysql_result($query, 0, 'id_racine');
 	$id_conteneur = mysql_result($query, 0, 'id_conteneur');
 } else if ((isset($_POST['id_conteneur'])) or (isset($_GET['id_conteneur']))) {
@@ -196,7 +202,7 @@ if ($mode==1) {
 	sous_conteneurs($id_conteneur,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'');
 }
 
-
+//debug_var();
 //-------------------------------------------------------------------------------------------------------------------
 if (isset($_POST['notes'])) {
 	//=======================================================
@@ -204,21 +210,29 @@ if (isset($_POST['notes'])) {
 	// J'ai déplacé vers le bas l'alert Javascript qui lors d'un import des notes était inscrit avant même la balise <html>
 	// Cela faisait une page HTML non valide.
 	$temp = $_POST['notes']." 1";
+	//echo "<pre>";
+	//echo "\$temp=$temp<br />";
 	$temp = my_ereg_replace("\\\\r","\r",$temp);
 	$temp = my_ereg_replace("\\\\n","\n",$temp);
+	//echo "\$temp=$temp<br />";
+	//echo "</pre>";
 	$longueur = strlen($temp);
 	$i = 0;
 	$fin_note = 'yes';
 	$indice = $_POST['debut_import']-2;
 	$tempo = '';
+	if(!isset($note_sur_dev_choisi)) {$note_sur_dev_choisi=20;}
 	while (($i < $longueur) and ($indice < $_POST['fin_import'])) {
 		$car = substr($temp, $i, 1);
+		//echo "<p>\$car='$car'<br />";
 		//if (ereg ("^[0-9\.\,\a-z\A-Z\-]{1}$", $car)) {
-		if (my_ereg ("^[0-9\.\,\a-z\A-Z\-]{1}$", $car)) {
+		//if (my_ereg ("^[0-9\.\,\a-z\A-Z\-]{1}$", $car)) {
+		if (my_ereg('^[0-9.,a-zA-Z-]{1}$', $car)) {
 			if (($fin_note=='yes') or ($i == $longueur-1)) {
 				$fin_note = 'no';
 				if (is_numeric($tempo)) {
-					if ($tempo <= 20) {
+					//echo "is_numeric($tempo)<br />";
+					if ($tempo <= $note_sur_dev_choisi) {
 						$note_import[$indice] = $tempo;
 						$indice++;
 					} else {
@@ -226,15 +240,18 @@ if (isset($_POST['notes'])) {
 						$indice++;
 					}
 				} else {
+					//echo "NO is_numeric($tempo)<br />";
 					$note_import[$indice] = $tempo;
 					$indice++;
 				}
 				$tempo = '';
 			}
 			$tempo=$tempo.$car;
+			//echo "\$tempo='$tempo'<br />";
 		} else {
 			$fin_note = 'yes';
 		}
+		//echo "\$fin_note=$fin_note<br />";
 		$i++;
 	}
 }
@@ -463,13 +480,12 @@ else{
 //$titre_pdf = urlencode($titre);
 //$titre_pdf = urlencode(traite_accents_utf8($titre));
 $titre_pdf = urlencode(traite_accents_utf8(html_entity_decode($titre)));
-if ($id_devoir != 0) $titre .= " - SAISIE";  else $titre .= " - VISUALISATION";
+if ($id_devoir != 0) {$titre .= " - SAISIE";} else {$titre .= " - VISUALISATION";}
 
 echo "<script type=\"text/javascript\" language=\"javascript\">";
 if (isset($_POST['debut_import'])) {
 	$temp = $_POST['debut_import']-1;
-	if ((isset($note_import[$temp])) and ($note_import[$temp] != '')) echo "change = 'yes';"; else echo "change = 'no';";
-
+	if ((isset($note_import[$temp])) and ($note_import[$temp] != '')) {echo "change = 'yes';";} else {echo "change = 'no';";}
 } else {
 	echo "change = 'no';";
 }
@@ -486,8 +502,8 @@ while ($j < $nb_dev) {
 	$nom_dev[$j] = mysql_result($appel_dev, $j, 'nom_court');
 	$id_dev[$j] = mysql_result($appel_dev, $j, 'id');
 	$coef[$j] = mysql_result($appel_dev, $j, 'coef');
-        $note_sur[$j] = mysql_result($appel_dev, $j, 'note_sur');
-        $ramener_sur_referentiel[$j] = mysql_result($appel_dev, $j, 'ramener_sur_referentiel');
+	$note_sur[$j] = mysql_result($appel_dev, $j, 'note_sur');
+	$ramener_sur_referentiel[$j] = mysql_result($appel_dev, $j, 'ramener_sur_referentiel');
 	$facultatif[$j] = mysql_result($appel_dev, $j, 'facultatif');
 	$display_parents[$j] = mysql_result($appel_dev, $j, 'display_parents');
 	$date = mysql_result($appel_dev, $j, 'date');
@@ -699,8 +715,8 @@ if (isset($_POST['ok'])) {
 	}
 
 }
-if (!isset($_SESSION['affiche_comment'])) $_SESSION['affiche_comment'] = 'yes';
-if (!isset($_SESSION['affiche_tous'])) $_SESSION['affiche_tous'] = 'no';
+if (!isset($_SESSION['affiche_comment'])) {$_SESSION['affiche_comment'] = 'yes';}
+if (!isset($_SESSION['affiche_tous'])) {$_SESSION['affiche_tous'] = 'no';}
 $nb_dev_sous_cont = 0;
 
 // Premier formulaire pour masquer ou non les colonnes "commentaires" non vides des évaluations verrouillées
@@ -761,7 +777,7 @@ if (($nb_dev == 0) and ($nb_sous_cont==0)) {
 
 // Début du deuxième formulaire
 echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post  name=\"form2\">\n";
-if ($id_devoir != 0) echo "<center><input type='submit' value='Enregistrer' /></center>\n";
+if ($id_devoir != 0) {echo "<center><input type='submit' value='Enregistrer' /></center>\n";}
 
 // Couleurs utilisées
 $couleur_devoirs = '#AAE6AA';
@@ -957,9 +973,11 @@ foreach ($liste_eleves as $eleve) {
 			}
 
 			if ((isset($note_import[$current_displayed_line])) and  ($note_import[$current_displayed_line] != '')) {
-				$mess_note[$i][$k] =$mess_note[$i][$k].$note_import[$current_displayed_line];
+				$mess_note[$i][$k]=$mess_note[$i][$k].$note_import[$current_displayed_line];
 				$mess_note_pdf[$i][$k] = $note_import[$current_displayed_line];
-			} else {
+			}
+			else {
+				//echo "<p>\$eleve_login[$i]=$eleve_login[$i] \$i=$i et \$k=$j<br />\$eleve_statut=$eleve_statut<br />\$eleve_note=$eleve_note<br />";
 				if (($eleve_statut != '') and ($eleve_statut != 'v')) {
 					$mess_note[$i][$k] = $mess_note[$i][$k].$eleve_statut;
 					$mess_note_pdf[$i][$k] = $eleve_statut;
@@ -967,12 +985,27 @@ foreach ($liste_eleves as $eleve) {
 					$mess_note_pdf[$i][$k] = "";
 				} else {
 					$mess_note[$i][$k] = $mess_note[$i][$k].$eleve_note;
-					$mess_note_pdf[$i][$k] = number_format($eleve_note,1, ',', ' ');
 
-					//=========================
-					// AJOUT: boireaus 20080607
-					$tab_graph[$k][]=number_format($eleve_note,1, '.', ' ');
-					//=========================
+					if($eleve_note=="") {
+						// Ca ne devrait pas arriver... si: quand le devoir est créé, mais qu'aucune note n'est saisie, ni enregistrement encore effectué.
+						// Le simple fait de cliquer sur Enregistrer remplit la table cn_notes_devoirs avec eleve_note='0.0' et eleve_statut='v' et on n'a plus l'erreur
+						$mess_note_pdf[$i][$k] = $eleve_note;
+					}
+					else {
+						if((preg_match("/^[0-9]*.[0-9]*$/",$eleve_note))||
+						(preg_match("/^[0-9]*,[0-9]*$/",$eleve_note))||
+						(preg_match("/^[0-9]*$/",$eleve_note))) {
+							$mess_note_pdf[$i][$k] = number_format($eleve_note,1, ',', ' ');
+			
+							//=========================
+							// AJOUT: boireaus 20080607
+							$tab_graph[$k][]=number_format($eleve_note,1, '.', ' ');
+							//=========================
+						}
+						else {
+							echo "<p style='color:red;'>BIZARRE: \$eleve_login[$i]=$eleve_login[$i] \$i=$i et \$k=$j<br />\$eleve_statut=$eleve_statut<br />\$eleve_note=$eleve_note<br />\n";
+						}
+					}
 				}
 			}
 			if ($current_group["classe"]["ver_periode"][$eleve_id_classe[$i]][$periode_num] == "N") {
@@ -1923,7 +1956,7 @@ if ($id_devoir) {
 	echo "</select>\n";
 	echo "</td><td>\n";
 	echo "Coller ci-dessous les données à importer : <br />\n";
-	if (isset($_POST['notes'])) $notes = $_POST['notes']; $notes='';
+	if (isset($_POST['notes'])) {$notes=preg_replace("/\\\\n/","\n",preg_replace("/\\\\r/","\r",$_POST['notes']));} else {$notes='';}
 	//echo "<textarea name='notes' rows='3' cols='40' wrap='virtual'>$notes</textarea>\n";
 	echo "<textarea name='notes' rows='3' cols='40' class='wrap'>$notes</textarea>\n";
 	echo "</td></tr></table>\n";
@@ -1991,8 +2024,9 @@ if ($id_devoir) {
 	}
 	echo "</select>\n";
 	echo "</td><td>\n";
-	echo "Coller ci-dessous les données à importer : <br />\n";
-	if (isset($_POST['appreciations'])) $appreciations = $_POST['appreciations']; $appreciations='';
+	echo "Coller ci-dessous les données à importer&nbsp;: <br />\n";
+	//if (isset($_POST['appreciations'])) $appreciations = $_POST['appreciations']; $appreciations='';
+	if (isset($_POST['appreciations'])) {$appreciations = preg_replace("/\\\\n/","\n",preg_replace("/\\\\r/","\r",$_POST['appreciations']));} else {$appreciations='';}
 	echo "<textarea name='appreciations' rows='3' cols='40' class='wrap'>$appreciations</textarea>\n";
 	echo "</td></tr></table>\n";
 	echo "<input type='hidden' name='id_conteneur' value='$id_conteneur' />\n";

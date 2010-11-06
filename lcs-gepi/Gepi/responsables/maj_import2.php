@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: maj_import2.php 5486 2010-09-29 16:41:07Z crob $
+ * $Id: maj_import2.php 5487 2010-09-29 16:41:13Z crob $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

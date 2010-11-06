@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: affectations.php 5610 2010-10-08 19:51:26Z crob $
+ * $Id: affectations.php 5611 2010-10-08 19:51:32Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -66,7 +66,7 @@ die();
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
 die();
-}
+};
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -111,7 +111,7 @@ if (isset($_POST['is_posted'])) {
     //================================================
     // Modif: boireaus 20091119
     //$res = sql_query("select id, classe from classes");
-    $res = sql_query("select id, nom_complet from classes");
+    $res = sql_query("select id, classe from classes");
     //================================================
     if (!$res) die("problème : impossible de sélectionner les classes.");
     for ($i = 0; ($row = sql_row($res, $i)); $i++) {

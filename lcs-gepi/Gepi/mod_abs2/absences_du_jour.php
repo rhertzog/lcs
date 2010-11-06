@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: absences_du_jour.php 5478 2010-09-29 15:57:32Z jjacquard $
+ * @version $Id: absences_du_jour.php 5606 2010-10-08 15:48:11Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -283,50 +283,39 @@ if (isset($message_enregistrement)) {
     echo($message_enregistrement);
 }
 
-//afichage des eleves. Il nous faut au moins un groupe ou une aid
+//afichage des eleves.
 $eleve_col = new PropelCollection();
-
-if ($type_selection == 'id_eleve') {
-    $query = EleveQuery::create()->orderBy('Nom', Criteria::ASC)->orderBy('Prenom', Criteria::ASC);
-    if ($utilisateur->getStatut() != "cpe" || getSettingValue("GepiAccesAbsTouteClasseCpe")!='yes') {
-	$query->filterByUtilisateurProfessionnel($utilisateur);
-    }
-    $eleve_col->append($query->findPk($id_eleve));
-} else if ($type_selection == 'nom_eleve') {
-    $query = EleveQuery::create()->orderBy('Nom', Criteria::ASC)->orderBy('Prenom', Criteria::ASC);
-    if ($utilisateur->getStatut() != "cpe" || getSettingValue("GepiAccesAbsTouteClasseCpe")!='yes') {
-	$query->filterByUtilisateurProfessionnel($utilisateur);
-    }
-    $eleve_col = $query->filterByNomOrPrenomLike($nom_eleve)->paginate($page_number, $item_per_page);
-}else if ($type_selection == 'choix_regime' && $choix_regime!=-1) {
-    $query = EleveQuery::create();
-    if ($utilisateur->getStatut() != "cpe" || getSettingValue("GepiAccesAbsTouteClasseCpe")!='yes') {
-	$query->filterByUtilisateurProfessionnel($utilisateur);
-    }
-    $eleve_col = $query->filterByRegime($choix_regime)->paginate($page_number, $item_per_page);
-} elseif ($current_groupe != null) {
-    $eleve_col = $current_groupe->getEleves();
-} elseif ($current_aid != null) {
-    $eleve_col = $current_aid->getEleves();
-} elseif ($current_classe != null) {
-    $eleve_col = $current_classe->getEleves();
-} else {
-    //on fait une requete pour recuperer les eleves qui sont absents aujourd'hui    
-    $dt_debut = clone $dt_date_absence_eleve;
-    $dt_debut->setTime(0,0,0);
-    $dt_fin = clone $dt_date_absence_eleve;
-    $dt_fin->setTime(23,59,59);
-    //on récupere les saisies car avant puis on va filtrer avec les ids car filterByManquementObligationPresence bug un peu avec les requetes imbriquées
-    $saisie_col = AbsenceEleveSaisieQuery::create()->filterByPlageTemps($dt_debut, $dt_fin)->filterByManquementObligationPresence()->setFormatter(ModelCriteria::FORMAT_ARRAY)->find();
-    $query = EleveQuery::create();
-    if ($utilisateur->getStatut() != "cpe" || getSettingValue("GepiAccesAbsTouteClasseCpe")!='yes') {
-	$query->filterByUtilisateurProfessionnel($utilisateur);        
-    }
-    $eleve_col = $query            
-	    ->useAbsenceEleveSaisieQuery()
-	    ->filterById($saisie_col->toKeyValue('Id', 'Id'))
-	    ->endUse()->distinct()->paginate($page_number, $item_per_page);
+//on fait une requete pour recuperer les eleves qui sont absents aujourd'hui
+$dt_debut = clone $dt_date_absence_eleve;
+$dt_debut->setTime(0,0,0);
+$dt_fin = clone $dt_date_absence_eleve;
+$dt_fin->setTime(23,59,59);
+//on récupere les saisies car avant puis on va filtrer avec les ids car filterManquementObligationPresence bug un peu avec les requetes imbriquées
+$saisie_col = AbsenceEleveSaisieQuery::create()->select('Id')->filterByPlageTemps($dt_debut, $dt_fin)->filterByManquementObligationPresence()->setFormatter(ModelCriteria::FORMAT_ARRAY)->find();
+$query = EleveQuery::create()->orderBy('Nom', Criteria::ASC)->orderBy('Prenom', Criteria::ASC)
+	->useAbsenceEleveSaisieQuery()
+	->filterById($saisie_col->toKeyValue('Id', 'Id'))
+	->endUse();
+if ($utilisateur->getStatut() != "cpe" || getSettingValue("GepiAccesAbsTouteClasseCpe")!='yes') {
+    $query->filterByUtilisateurProfessionnel($utilisateur);
 }
+
+if ($type_selection == 'id_eleve') {    
+    $eleve_col->append($query->findPk($id_eleve));
+} else if ($type_selection == 'nom_eleve') {    
+    $query->filterByNomOrPrenomLike($nom_eleve);
+}else if ($type_selection == 'choix_regime' && $choix_regime!=-1) {   
+    $query->filterByRegime($choix_regime);
+} elseif ($current_groupe != null) {   
+    $query->useJEleveGroupeQuery()->filterByIdGroupe($current_groupe->getId())->enduse();    
+} elseif ($current_aid != null) {    
+    $query->useJAidElevesQuery()->filterByIdAid($current_aid->getId())->enduse();  
+} elseif ($current_classe != null) {   
+    $query->useJEleveClasseQuery()->filterByIdClasse($current_classe->getId())->enduse();    
+} else {
+    //rien à faire
+}
+$eleve_col = $query->distinct()->paginate($page_number, $item_per_page);
 
 ?>
 	<div style="text-align: center">
@@ -444,18 +433,7 @@ if ($type_selection == 'id_eleve') {
         $regime_eleve=EleveRegimeDoublantQuery::create()->findPk($eleve->getlogin())->getRegime();
 		//$eleve = new Eleve();
 			$traitement_col = new PropelCollection();//liste des traitements pour afficher des boutons 'ajouter au traitement'
-			$manque = true;
-			foreach ($eleve->getAbsenceEleveSaisiesDuJour($dt_date_absence_eleve) as $absence) {
-			    if ($absence->getManquementObligationPresence()) {
-				$manque = false;
-				break;
-			    }
-			}
-			if ($manque) {
-			    //l'eleve n'a manque aucune obligation
-			    //donc on ne l'affiche pas
-			    continue;
-			}
+
 			$saisie_affiches = array ();
 			if ($compteur % 2 == '1') {
 				$background_couleur="#E8F1F4";
@@ -495,7 +473,7 @@ if ($type_selection == 'id_eleve') {
 					$violet = false;
 					foreach ($absences_du_creneau as $absence) {
 					    $traitement_col->addCollection($absence->getAbsenceEleveTraitements());
-					    if ($absence->isSaisiesContradictoiresManquementObligation()) {
+					    if (getSettingValue("abs2_alleger_abs_du_jour")!='y' && $absence->isSaisiesContradictoiresManquementObligation()) {
 					    //if (!($absence->getSaisiesContradictoiresManquementObligation()->isEmpty())) {
 						$violet = true;
 						break;
@@ -511,7 +489,7 @@ if ($type_selection == 'id_eleve') {
 					} else {
 					    $dt_green = clone $dt_date_absence_eleve;
 					    $dt_green->setTime($edt_creneau->getHeuredebutDefiniePeriode('H'), $edt_creneau->getHeuredebutDefiniePeriode('i'), 0);
-					    if ($eleve->getPresent($dt_green)) {
+					    if (getSettingValue("abs2_alleger_abs_du_jour")!='y' && $eleve->getPresent($dt_green)) {
 						$style = 'style="background-color : green"';
 					    } else {
 						$style = '';
@@ -592,13 +570,15 @@ if ($type_selection == 'id_eleve') {
 
     echo " </tbody>";
     echo "</table>";
-    echo '<table><tr>';
-    echo '<td>Légende : </td>';
-    echo '<td style="border : 1px solid; background-color : red;">absent</td>';
-    echo '<td style="border : 1px solid; background-color : green;">présent</td>';
-    echo '<td style="border : 1px solid; background-color : purple;">Saisies conflictuelles</td>';
-    echo '<td style="border : 1px solid;">Sans couleur : pas de saisie</td>';
-    echo '</tr></table>';
+    if (getSettingValue("abs2_alleger_abs_du_jour")!='y') {
+	echo '<table><tr>';
+	echo '<td>Légende : </td>';
+	echo '<td style="border : 1px solid; background-color : red;">absent</td>';
+	echo '<td style="border : 1px solid; background-color : green;">présent</td>';
+	echo '<td style="border : 1px solid; background-color : purple;">Saisies conflictuelles</td>';
+	echo '<td style="border : 1px solid;">Sans couleur : pas de saisie</td>';
+	echo '</tr></table>';
+    }
     ?>
     <div dojoType="dijit.form.DropDownButton" style="display: inline">
 	<span>Ajouter Les saisies cochées à un traitement</span>

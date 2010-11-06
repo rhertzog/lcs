@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 4895 2010-07-25 19:22:54Z regis $
+ * $Id: index.php 5621 2010-10-09 17:12:56Z crob $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -53,7 +53,8 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
    header("Location: ../logout.php?auto=1");
    die();
-};
+}
+
 // Check access
 if (!checkAccess()) {
    header("Location: ../logout.php?auto=1");
@@ -136,6 +137,17 @@ if (isset($_POST['delai_devoirs'])) {
 if (isset($_POST['is_posted']) && ($msg=="") ){
   $msg = "Les modifications ont été enregistrées !";
   $post_reussi=TRUE;
+}
+
+if (isset($_POST['cdt_autoriser_modif_multiprof'])) {
+	if ($_POST['cdt_autoriser_modif_multiprof'] == "yes") {
+		$temp = "yes";
+	} else {
+		$temp = "no";
+	}
+	if (!saveSetting("cdt_autoriser_modif_multiprof", $temp)) {
+		$msg .= "Erreur lors de l'enregistrement de cdt_autoriser_modif_multiprof !";
+	}
 }
 
 // on demande une validation si on quitte sans enregistrer les changements

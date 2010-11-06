@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: bulletin_simple.inc.php 5028 2010-08-05 20:22:27Z crob $
+* $Id: bulletin_simple.inc.php 5786 2010-11-02 13:49:19Z jjacquard $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
@@ -979,7 +979,7 @@ if ($on_continue == 'yes') {
 	$nb=$periode1;
 	while ($nb < $periode2+1) {
 		//On vérifie si le module est activé
-		if (getSettingValue("active_module_absence")!='2') {
+		if (getSettingValue("active_module_absence")!='2' || getSettingValue("abs2_import_manuel_bulletin")=='y') {
 		    $current_eleve_absences_query = mysql_query("SELECT * FROM absences WHERE (login='$current_eleve_login' AND periode='$nb')");
 		    $eleve_abs[$nb] = @mysql_result($current_eleve_absences_query, 0, "nb_absences");
 		    $eleve_abs_nj[$nb] = @mysql_result($current_eleve_absences_query, 0, "non_justifie");

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: extraction_saisies.php 5478 2010-09-29 15:57:32Z jjacquard $
+ * @version $Id: extraction_saisies.php 5482 2010-09-29 16:02:10Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -248,7 +248,7 @@ if ($affichage == 'html') {
     $TBS->Plugin(TBS_INSTALL, OPENTBS_PLUGIN); // load OpenTBS plugin
 
     // Load the template
-	$extraction_saisies=repertoire_modeles('extraction_saisies.ods');
+	$extraction_saisies=repertoire_modeles('absence_extraction_saisies.ods');
     $TBS->LoadTemplate($extraction_saisies);
 
     $titre = 'Extrait des absences du '.$dt_date_absence_eleve_debut->format('d/m/Y').' au '.$dt_date_absence_eleve_fin->format('d/m/Y');

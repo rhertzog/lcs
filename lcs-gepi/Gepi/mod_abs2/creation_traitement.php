@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: creation_traitement.php 5291 2010-09-14 18:59:26Z jjacquard $
+ * @version $Id: creation_traitement.php 5301 2010-09-14 19:17:23Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *

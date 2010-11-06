@@ -1,4 +1,4 @@
--- $Id: structure_gepi.sql 5186 2010-09-04 08:17:35Z crob $
+-- $Id: structure_gepi.sql 5706 2010-10-21 14:54:53Z jjacquard $
 DROP TABLE IF EXISTS `absences`;
 CREATE TABLE `absences` (`login` varchar(50) NOT NULL default '', `periode` int(11) NOT NULL default '0', `nb_absences` char(2) NOT NULL default '', `non_justifie` char(2) NOT NULL default '', `nb_retards` char(2) NOT NULL default '', `appreciation` text NOT NULL, PRIMARY KEY  (`login`,`periode`));
 DROP TABLE IF EXISTS `absences_gep`;
@@ -27,6 +27,8 @@ DROP TABLE IF EXISTS `ct_devoirs_entry`;
 CREATE TABLE `ct_devoirs_entry` ( `id_ct` int(11) NOT NULL auto_increment, `id_groupe` INT(11) NOT NULL, `date_ct` int(11) NOT NULL default '0', `id_login` varchar(32) NOT NULL default '',id_sequence INT ( 11 ) NOT NULL DEFAULT '0', `contenu` text NOT NULL, `vise` CHAR( 1 ) NOT NULL DEFAULT 'n', PRIMARY KEY (`id_ct`), KEY `id_groupe` (`id_groupe`), INDEX groupe_date (`id_groupe`, `date_ct`));
 DROP TABLE IF EXISTS `ct_documents`;
 CREATE TABLE `ct_documents` ( `id` int(11) NOT NULL auto_increment, `id_ct` int(11) NOT NULL default '0', `titre` varchar(255) NOT NULL default '', `taille` int(11) NOT NULL default '0', `emplacement` varchar(255) NOT NULL default '', PRIMARY KEY  (`id`));
+DROP TABLE IF EXISTS `ct_devoirs_documents`;
+CREATE TABLE `ct_devoirs_documents` ( `id` int(11) NOT NULL auto_increment, `id_ct_devoir` int(11) NOT NULL default '0', `titre` varchar(255) NOT NULL default '', `taille` int(11) NOT NULL default '0', `emplacement` varchar(255) NOT NULL default '', PRIMARY KEY  (`id`));
 DROP TABLE IF EXISTS `ct_entry`;
 CREATE TABLE `ct_entry` ( `id_ct` int(11) NOT NULL auto_increment, `heure_entry` time NOT NULL default '00:00:00', `id_groupe` INT(11) NOT NULL, `date_ct` int(11) NOT NULL default '0', `id_login` varchar(32) NOT NULL default '', id_sequence INT ( 11 ) NOT NULL DEFAULT '0', `contenu` text NOT NULL, `vise` CHAR( 1 ) NOT NULL DEFAULT 'n', `visa` CHAR( 1 ) NOT NULL DEFAULT 'n', PRIMARY KEY (`id_ct`), KEY `id_groupe` (`id_groupe`), INDEX id_date_heure (id_groupe, date_ct, heure_entry));
 DROP TABLE IF EXISTS `ct_types_documents`;
@@ -70,7 +72,7 @@ CREATE TABLE `messages` ( `id` int(11) NOT NULL auto_increment, `texte` text NOT
 DROP TABLE IF EXISTS `periodes`;
 CREATE TABLE `periodes` ( `nom_periode` varchar(50) NOT NULL default '', `num_periode` int(11) NOT NULL default '0', `verouiller` char(1) NOT NULL default '', `id_classe` int(11) NOT NULL default '0', `date_verrouillage` TIMESTAMP NOT NULL,  date_fin TIMESTAMP, PRIMARY KEY  (`num_periode`,`id_classe`), INDEX id_classe (`id_classe`));
 DROP TABLE IF EXISTS `responsables`;
-CREATE TABLE `responsables` ( `ereno` varchar(10) NOT NULL default '', `nom1` varchar(20) NOT NULL default '', `prenom1` varchar(20) NOT NULL default '', `adr1` varchar(100) NOT NULL default '', `adr1_comp` varchar(100) NOT NULL default '', `commune1` varchar(50) NOT NULL default '', `cp1` varchar(6) NOT NULL default '', `nom2` varchar(20) NOT NULL default '', `prenom2` varchar(20) NOT NULL default '', `adr2` varchar(100) NOT NULL default '', `adr2_comp` varchar(100) NOT NULL default '', `commune2` varchar(50) NOT NULL default '', `cp2` varchar(6) NOT NULL default '', PRIMARY KEY  (`ereno`));
+CREATE TABLE `responsables` ( `ereno` varchar(10) NOT NULL default '', `nom1` varchar(50) NOT NULL default '', `prenom1` varchar(50) NOT NULL default '', `adr1` varchar(100) NOT NULL default '', `adr1_comp` varchar(100) NOT NULL default '', `commune1` varchar(50) NOT NULL default '', `cp1` varchar(6) NOT NULL default '', `nom2` varchar(50) NOT NULL default '', `prenom2` varchar(50) NOT NULL default '', `adr2` varchar(100) NOT NULL default '', `adr2_comp` varchar(100) NOT NULL default '', `commune2` varchar(50) NOT NULL default '', `cp2` varchar(6) NOT NULL default '', PRIMARY KEY  (`ereno`));
 DROP TABLE IF EXISTS `setting`;
 CREATE TABLE `setting` ( `NAME` varchar(255) NOT NULL default '', `VALUE` text NOT NULL, PRIMARY KEY  (`NAME`));
 DROP TABLE IF EXISTS `temp_gep_import`;
@@ -115,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `responsables2` (`ele_id` varchar(10) NOT NULL, `pers
 DROP TABLE IF EXISTS `resp_adr`;
 CREATE TABLE IF NOT EXISTS `resp_adr` (`adr_id` varchar(10) NOT NULL,`adr1` varchar(100) NOT NULL,`adr2` varchar(100) NOT NULL,`adr3` varchar(100) NOT NULL,`adr4` varchar(100) NOT NULL,`cp` varchar(6) NOT NULL,`pays` varchar(50) NOT NULL,`commune` varchar(50) NOT NULL,PRIMARY KEY  (`adr_id`));
 DROP TABLE IF EXISTS `resp_pers`;
-CREATE TABLE IF NOT EXISTS `resp_pers` (`pers_id` varchar(10) NOT NULL,`login` varchar(50) NOT NULL,`nom` varchar(30) NOT NULL,`prenom` varchar(30) NOT NULL,`civilite` varchar(5) NOT NULL,`tel_pers` varchar(255) NOT NULL,`tel_port` varchar(255) NOT NULL,`tel_prof` varchar(255) NOT NULL,`mel` varchar(100) NOT NULL,`adr_id` varchar(10) NOT NULL,PRIMARY KEY  (`pers_id`), INDEX login ( `login` ), INDEX adr_id ( `adr_id` ));
+CREATE TABLE IF NOT EXISTS `resp_pers` (`pers_id` varchar(10) NOT NULL,`login` varchar(50) NOT NULL,`nom` varchar(50) NOT NULL,`prenom` varchar(50) NOT NULL,`civilite` varchar(5) NOT NULL,`tel_pers` varchar(255) NOT NULL,`tel_port` varchar(255) NOT NULL,`tel_prof` varchar(255) NOT NULL,`mel` varchar(100) NOT NULL,`adr_id` varchar(10) NOT NULL,PRIMARY KEY  (`pers_id`), INDEX login ( `login` ), INDEX adr_id ( `adr_id` ));
 DROP TABLE IF EXISTS `tentatives_intrusion`;
 CREATE TABLE `tentatives_intrusion` (`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,`login` VARCHAR( 255 ) NULL ,`adresse_ip` VARCHAR( 255 ) NOT NULL ,`date` DATETIME NOT NULL ,`niveau` SMALLINT NOT NULL ,`fichier` VARCHAR( 255 ) NOT NULL ,`description` TEXT NOT NULL ,`statut` VARCHAR( 255 ) NOT NULL ,PRIMARY KEY ( `id`, `login` ));
 DROP TABLE IF EXISTS `etiquettes_formats`;
@@ -164,6 +166,8 @@ DROP TABLE IF EXISTS `inscription_j_login_items`;
 CREATE TABLE IF NOT EXISTS inscription_j_login_items (login varchar(20) NOT NULL default '', id int(11) NOT NULL default '0');
 DROP TABLE IF EXISTS `j_aidcateg_utilisateurs`;
 CREATE TABLE  IF NOT EXISTS `j_aidcateg_utilisateurs` (`indice_aid` INT NOT NULL ,`id_utilisateur` VARCHAR( 50 ) NOT NULL);
+DROP TABLE IF EXISTS `j_aidcateg_super_gestionnaires`;
+CREATE TABLE  IF NOT EXISTS `j_aidcateg_super_gestionnaires` (`indice_aid` INT NOT NULL ,`id_utilisateur` VARCHAR( 50 ) NOT NULL);
 DROP TABLE IF EXISTS `aid_familles`;
 CREATE TABLE IF NOT EXISTS `aid_familles` (`ordre_affichage` smallint(6) NOT NULL default '0',`id` smallint(6) NOT NULL default '0',`type` varchar(250) NOT NULL default '');
 DROP TABLE IF EXISTS `aid_public`;
@@ -223,7 +227,7 @@ CREATE TABLE IF NOT EXISTS `commentaires_types` (`id` INT( 11 ) NOT NULL AUTO_IN
 DROP TABLE IF EXISTS commentaires_types_profs;
 CREATE TABLE IF NOT EXISTS commentaires_types_profs (id INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,login VARCHAR( 255 ) NOT NULL ,app TEXT NOT NULL);
 DROP TABLE IF EXISTS s_incidents;
-CREATE TABLE IF NOT EXISTS s_incidents (id_incident INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,declarant VARCHAR( 50 ) NOT NULL ,date DATE NOT NULL ,heure VARCHAR( 20 ) NOT NULL ,id_lieu INT( 11 ) NOT NULL ,nature VARCHAR( 255 ) NOT NULL , id_categorie INT(11), description TEXT NOT NULL,etat VARCHAR( 20 ) NOT NULL, message_id VARCHAR(50) NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS s_incidents (id_incident INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,declarant VARCHAR( 50 ) NOT NULL ,date DATE NOT NULL ,heure VARCHAR( 20 ) NOT NULL ,id_lieu INT( 11 ) NOT NULL ,nature VARCHAR( 255 ) NOT NULL , id_categorie INT(11), description TEXT NOT NULL,etat VARCHAR( 20 ) NOT NULL, message_id VARCHAR(50) NOT NULL);
 DROP TABLE IF EXISTS s_qualites;
 CREATE TABLE IF NOT EXISTS s_qualites (id INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,qualite VARCHAR( 50 ) NOT NULL);
 DROP TABLE IF EXISTS s_types_sanctions;

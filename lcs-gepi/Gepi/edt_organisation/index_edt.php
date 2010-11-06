@@ -3,7 +3,7 @@
 /**
  * Fichier de gestion de l'emploi du temps dans Gepi version 1.5.x
  *
- * @version     $Id: index_edt.php 5438 2010-09-26 19:13:10Z adminpaulbert $
+ * @version     $Id: index_edt.php 5437 2010-09-26 19:08:38Z adminpaulbert $
  * @package		GEPI
  * @subpackage	EmploiDuTemps
  * @copyright	Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero

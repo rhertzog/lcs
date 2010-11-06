@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: liste_notifications.php 5473 2010-09-28 19:50:41Z jjacquard $
+ * @version $Id: liste_notifications.php 5442 2010-09-27 13:50:49Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -62,6 +62,11 @@ if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") 
     die("acces interdit");
 }
 
+if (isset($_POST["generer_notifications_par_lot"])) {
+    include('generer_notifications_par_lot.php');
+    die();
+}
+
 include('include_requetes_filtre_de_recherche.php');
 
 $page_number = isset($_POST["page_number"]) ? $_POST["page_number"] :(isset($_GET["page_number"]) ? $_GET["page_number"] :(isset($_SESSION["page_number"]) ? $_SESSION["page_number"] : NULL));
@@ -80,6 +85,7 @@ $javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
 $titre_page = "Les absences";
 $utilisation_jsdivdrag = "non";
 $_SESSION['cacher_header'] = "y";
+$dojo = true;
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 
@@ -161,8 +167,7 @@ if ($page_number > $nb_pages) {
     $page_number = $nb_pages;
 }
 
-echo '<form method="post" action="liste_notifications.php" id="liste_notifications">';
-echo '<p>';
+echo '<form method="post" action="liste_notifications.php" name="liste_notifications" id="liste_notifications">';
 if ($notifications_col->haveToPaginate()) {
     echo "Page ";
     echo '<input type="submit" name="page_deplacement" value="-"/>';
@@ -177,14 +182,51 @@ echo "par page|  Nombre d'enregistrements : ";
 echo $notifications_col->count();
 
 echo "&nbsp;&nbsp;&nbsp;";
-echo '<button type="submit">Rechercher</button>';
-echo '<button type="submit" name="reinit_filtre" value="y" >Réinitialiser les filtres</button> ';
-echo '</p>';
-
+?>    <div id="action_bouton" dojoType="dijit.form.DropDownButton" style="display: inline">
+	<span>Action</span>
+	<div dojoType="dijit.Menu" style="display: inline">
+	    <button type="submit" dojoType="dijit.MenuItem" onClick="document.liste_notifications.submit();">
+		Rechercher
+	    </button>
+	    <button type="submit" name="reinit_filtre" value="y" dojoType="dijit.MenuItem" onClick="
+		//Create an input type dynamically.
+		var element = document.createElement('input');
+		element.setAttribute('type', 'hidden');
+		element.setAttribute('name', 'reinit_filtre');
+		element.setAttribute('value', 'y');
+		document.liste_notifications.appendChild(element);
+		document.liste_notifications.submit();
+				">
+		Réinitialiser les filtres
+	    </button>
+	    <button type="submit" name="generer_notifications_par_lot" value="y" dojoType="dijit.MenuItem" onClick="
+		//Create an input type dynamically.
+		var element = document.createElement('input');
+		element.setAttribute('type', 'hidden');
+		element.setAttribute('name', 'generer_notifications_par_lot');
+		element.setAttribute('value', 'y');
+		document.liste_notifications.appendChild(element);
+		document.liste_notifications.action = 'generer_notifications_par_lot.php';
+		document.liste_notifications.submit();
+				">
+		Generer par lot les notifications sélectionnées
+	    </button>
+	</div>
+    </div>
+<script language="javascript">
+   //on cache les boutons pas très jolis en attendant le parsing dojo
+   dojo.byId("action_bouton").hide();
+</script>
+<?php
 echo '<table id="table_liste_absents" class="tb_absences" style="border-spacing:0; width:100%;">';
 
 echo '<thead>';
 echo '<tr>';
+
+//en tete selection
+echo '<th>';
+echo '<div id="select_shortcut_buttons_container"/>';
+echo '</th>';
 
 //en tete filtre id
 echo '<th>';
@@ -414,6 +456,10 @@ foreach ($results as $notification) {
 
     echo "<tr style='background-color :$background_couleur'>\n";
 
+    echo '<td>';
+    echo '<input name="select_notification[]" select_shortcut="true" value="'.$notification->getPrimaryKey().'" type="checkbox" notif_status="'.$notification->getStatutEnvoi().'"/>';
+    echo '</td>';
+
     //donnees id
     echo '<td>';
     echo "<a href='visu_notification.php?id_notification=".$notification->getPrimaryKey()."' style='display: block; height: 100%;'> ";
@@ -433,9 +479,11 @@ foreach ($results as $notification) {
     //donnees eleve
     echo '<td>';
     $eleve_col = new PropelObjectCollection();
-    foreach ($notification->getAbsenceEleveTraitement()->getAbsenceEleveSaisies() as $saisie) {
-	if ($saisie->getEleve() != null) {
-	    $eleve_col->add($saisie->getEleve());
+    if ($notification->getAbsenceEleveTraitement() != null) {
+	foreach ($notification->getAbsenceEleveTraitement()->getAbsenceEleveSaisies() as $saisie) {
+	    if ($saisie->getEleve() != null) {
+		$eleve_col->add($saisie->getEleve());
+	    }
 	}
     }
     foreach ($eleve_col as $eleve) {
@@ -472,27 +520,28 @@ foreach ($results as $notification) {
 
     //donnees saisies
     echo '<td>';
-    if (!$notification->getAbsenceEleveTraitement()->getAbsenceEleveSaisies()->isEmpty()) {
+    if ($notification->getAbsenceEleveTraitement() != null && !$notification->getAbsenceEleveTraitement()->getAbsenceEleveSaisies()->isEmpty()) {
 	echo "<table style='border-spacing:0px; border-style : none; margin : 0px; padding : 0px; font-size:100%; width:100%'>";
-    }
-    foreach ($notification->getAbsenceEleveTraitement()->getAbsenceEleveSaisies() as $saisie) {
-	echo "<tr style='border-spacing:0px; border-style : solid; border-size : 1px; margin : 0px; padding : 0px; font-size:100%;'>";
-	echo "<td style='border-spacing:0px; border-style : solid; border-size : 1px; çargin : 0px; padding-top : 3px; font-size:100%;'>";
-	echo "<a href='visu_saisie.php?id_saisie=".$saisie->getPrimaryKey()."' style='display: block; height: 100%;'>\n";
-	echo $saisie->getDescription();
-	echo "</a>";
-	echo "</td>";
-	echo "</tr>";
-    }
-    if (!$notification->getAbsenceEleveTraitement()->getAbsenceEleveSaisies()->isEmpty()) {
+	foreach ($notification->getAbsenceEleveTraitement()->getAbsenceEleveSaisies() as $saisie) {
+	    echo "<tr style='border-spacing:0px; border-style : solid; border-size : 1px; margin : 0px; padding : 0px; font-size:100%;'>";
+	    echo "<td style='border-spacing:0px; border-style : solid; border-size : 1px; çargin : 0px; padding-top : 3px; font-size:100%;'>";
+	    echo "<a href='visu_saisie.php?id_saisie=".$saisie->getPrimaryKey()."' style='display: block; height: 100%;'>\n";
+	    echo $saisie->getDescription();
+	    echo "</a>";
+	    echo "</td>";
+	    echo "</tr>";
+	}
 	echo "</table>";
     }
     echo '</td>';
 
-    echo '<td><div>';
-    echo "<a href='visu_traitement.php?id_traitement=".$notification->getAbsenceEleveTraitement()->getPrimaryKey()."' style='display: block; height: 100%;'> ";
-    echo $notification->getAbsenceEleveTraitement()->getDescription();
-    echo "</a></div>";
+    echo '<td>';
+    if ($notification->getAbsenceEleveTraitement() != null) {
+	echo '<div>';
+	echo "<a href='visu_traitement.php?id_traitement=".$notification->getAbsenceEleveTraitement()->getPrimaryKey()."' style='display: block; height: 100%;'> ";
+	echo $notification->getAbsenceEleveTraitement()->getDescription();
+	echo "</a></div>";
+    }
     echo '</td>';
 
     echo '<td>';
@@ -565,6 +614,60 @@ echo '</table>';
 echo '</form>';
 
 echo "</div>\n";
+
+$javascript_footer_texte_specifique = '<script type="text/javascript">
+    dojo.require("dijit.form.Button");
+    dojo.require("dijit.Menu");
+    dojo.require("dijit.form.Form");
+    dojo.require("dijit.form.CheckBox");
+    dojo.require("dijit.form.DateTextBox");
+
+    dojo.addOnLoad(function() {
+        var menu = new dijit.Menu({
+            style: "display: none;"
+        });
+
+        var menuItem0 = new dijit.MenuItem({
+            label: "Selectionner tous",
+            onClick: function() {
+		var query_string = \'input[type=checkbox][name="select_notification[]"]\';
+		dojo.query(query_string).attr(\'checked\', true);
+	    }
+        });
+        menu.addChild(menuItem0);
+	
+        var menuItem1 = new dijit.MenuItem({
+            label: "Selectionner pret à envoyer",
+            onClick: function() {
+		var query_string = \'input[type=checkbox][name="select_notification[]"]\';
+		dojo.query(query_string).attr(\'checked\', false);
+		query_string = \'input[type=checkbox][notif_status="'.AbsenceEleveNotification::$STATUT_PRET_A_ENVOYER.'"][name="select_notification[]"]\';
+		dojo.query(query_string).attr(\'checked\', true);
+	    }
+        });
+        menu.addChild(menuItem1);
+
+        var menuItem2 = new dijit.MenuItem({
+            label: "Selectionner aucun",
+            onClick: function() {
+		var query_string = \'input[type=checkbox][name="select_notification[]"]\';
+		dojo.query(query_string).attr(\'checked\', false);
+	    }
+        });
+        menu.addChild(menuItem2);
+
+        var button = new dijit.form.DropDownButton({
+            label: "",
+            name: "programmatic2",
+            dropDown: menu,
+            id: "progButton"
+        });
+        dojo.byId("select_shortcut_buttons_container").appendChild(button.domNode);
+
+	//affichage des boutons d action
+	dojo.query(\'[widgetid=action_bouton]\').style({ visibility:"visible" }).style({ display:"" });
+    });
+</script>';
 
 require_once("../lib/footer.inc.php");
 

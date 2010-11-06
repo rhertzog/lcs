@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: 152_to_153.inc.php 5312 2010-09-15 14:30:22Z crob $
+ * $Id: 152_to_153.inc.php 5544 2010-10-03 18:51:53Z jjacquard $
  *
  * Fichier de mise à jour de la version 1.5.2 à la version 1.5.3
  * Le code PHP présent ici est exécuté tel quel.
@@ -1479,5 +1479,39 @@ if ($test == -1) {
 	}
 }
 
+//==========================================================
+// Modification Delineau
+$result .= "<br /><br /><b>Ajout d'une table pour les \"super-gestionnaires\" d'AID :</b><br />";
+$result .= "<br />&nbsp;->Tentative de création de la table j_aidcateg_super_gestionnaires.<br />";
+$test = sql_query1("SHOW TABLES LIKE 'j_aidcateg_super_gestionnaires'");
+if ($test == -1) {
+	$result_inter = traite_requete("CREATE TABLE IF NOT EXISTS j_aidcateg_super_gestionnaires (indice_aid INT NOT NULL ,id_utilisateur VARCHAR( 50 ) NOT NULL);");
+	if ($result_inter == '')
+	$result .= "<font color=\"green\">La table j_aidcateg_super_gestionnaires a été créée !</font><br />";
+	else
+	$result .= $result_inter."<br />";
+} else {
+		$result .= "<font color=\"blue\">La table j_aidcateg_super_gestionnaires existe déjà.</font><br />";
+}
+
+
+// Modification Eric
+// ============= Insertion d'un champ pour le module discipline
+
+$sql = "SELECT commentaire FROM s_incidents LIMIT 1";
+$req_rank = mysql_query($sql);
+if (!$req_rank){
+    $sql_request = "ALTER TABLE `s_incidents` ADD `commentaire` TEXT NOT NULL ";
+    $req_add_rank = mysql_query($sql_request);
+    if ($req_add_rank) {
+        $result .= "<p style=\"color:green;\">Ajout du champ commentaire dans la table <strong>s_incidents</strong> : ok.</p>";
+    }
+    else {
+        $result .= "<p style=\"color:red;\">Ajout du champ commentaire à la table <strong>s_incidents</strong> : Erreur.</p>";
+    }
+}
+else {
+    $result .= "<p style=\"color:blue;\">Ajout du champ commentaire à la table <strong>s_incidents</strong> : déjà réalisé.</p>";
+}
 
 ?>

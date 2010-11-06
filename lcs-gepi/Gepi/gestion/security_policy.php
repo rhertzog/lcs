@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: security_policy.php 4494 2010-05-25 14:17:08Z crob $
+ * $Id: security_policy.php 5354 2010-09-20 17:32:08Z crob $
  *
- * Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -248,11 +248,11 @@ if(isset($_SERVER['HTTP_REFERER'])) {
 	$url_retour = parse_url($_SERVER['HTTP_REFERER']);
 
 	if($_SERVER['PHP_SELF']==$url_retour['path']) {
-		$url_retour['path']='index.php';
+		$url_retour['path']='index.php#security_policy';
 	}
 }
 else {
-	$url_retour['path']='index.php';
+	$url_retour['path']='index.php#security_policy';
 }
 /*
 foreach($url_retour as $key => $value) {

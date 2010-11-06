@@ -3,7 +3,7 @@
 /**
  *
  *
- * @version $Id: serveur_infos.class.php 5127 2010-08-27 11:40:21Z regis $
+ * @version $Id: serveur_infos.class.php 5126 2010-08-27 11:39:52Z regis $
  *
  * Classes php qui renvoie les informations sur le serveur
  *

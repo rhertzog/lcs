@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: saisie_incident.php 5565 2010-10-05 19:48:36Z crob $
+ * $Id: saisie_incident.php 5628 2010-10-10 13:04:06Z eabgrall $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -51,6 +51,9 @@ if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
 }
 
 require('sanctions_func_lib.php');
+
+// Paramètre pour autoriser ou non une zone de saisie de commentaires pour un incident
+$autorise_commentaires_mod_disc = getSettingValue("autorise_commentaires_mod_disc");
 
 function choix_heure($champ_heure,$div_choix_heure) {
 	global $tabdiv_infobulle;
@@ -386,6 +389,18 @@ if($etat_incident!='clos') {
 				else {
 					$description="";
 				}
+				
+				// Ajout Eric zone de commentaire
+				if (isset($NON_PROTECT["commentaire"])){
+					$commentaire=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["commentaire"]));
+	
+					// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
+					$commentaire=my_ereg_replace('(\\\r\\\n)+',"\r\n",$commentaire);
+	
+				} else {
+				    $commentaire="";
+				}
+				// Fin ajout Eric
 	
 				if(!isset($id_lieu)) {
 					$id_lieu="";
@@ -486,7 +501,19 @@ if($etat_incident!='clos') {
 					$sql.="description='".$description."' ,";
 					$temoin_modif="y";
 				}
+				
+				// Ajout Eric zone de commentaire
+				if (isset($NON_PROTECT["commentaire"])){
+					$commentaire=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["commentaire"]));
 	
+					// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
+					$commentaire=my_ereg_replace('(\\\r\\\n)+',"\r\n",$commentaire);
+	
+					$sql.="commentaire='".$commentaire."' ,";
+					$temoin_modif="y";
+				};
+				// Fin ajout Eric
+				
 				if(isset($id_lieu)) {
 					$sql.="id_lieu='$id_lieu' ,";
 					$temoin_modif="y";
@@ -524,8 +551,15 @@ if($etat_incident!='clos') {
 						$msg.="Mise à jour de l'incident n°".$id_incident." effectuée.<br />\n";
 					}
 				}
+				
+				$sql_declarant="SELECT declarant FROM s_incidents WHERE id_incident='$id_incident';";
+		        $res_declarant=mysql_query($sql_declarant);
+		        if(mysql_num_rows($res_declarant)>0) {
+			        $lig_decclarant=mysql_fetch_object($res_declarant);
+			        $texte_mail= "Déclaration initiale de l'incident par ".u_p_nom($lig_decclarant->declarant)."\n";
+		        }
 	
-				$texte_mail="Mise à jour par ".civ_nom_prenom($_SESSION['login'])." d'un incident (n°$id_incident)";
+				$texte_mail.="Mise à jour par ".civ_nom_prenom($_SESSION['login'])." d'un incident (n°$id_incident)";
 				if(isset($display_heure)) {
 					$texte_mail.=" survenu le $jour/$mois/$annee à/en $display_heure:\n";
 				}
@@ -716,7 +750,9 @@ if($etat_incident!='clos') {
 							$texte_mail.="\n";
 							$texte_mail.="Protagonistes de l'incident: \n";
 							while($lig_prot=mysql_fetch_object($res_prot)) {
-								$texte_mail.=get_nom_prenom_eleve($lig_prot->login)." ($lig_prot->qualite)\n";
+							    $classe_elv = get_noms_classes_from_ele_login($lig_prot->login);
+								if ($classe_elv[0] != "") {$classe_elv[0]="[".$classe_elv[0]."]";};
+								$texte_mail.=get_nom_prenom_eleve($lig_prot->login)." $classe_elv[0] ($lig_prot->qualite)\n";
 	
 								if(strtolower($lig_prot->qualite)=='responsable') {
 									$sql="SELECT DISTINCT c.classe FROM classes c,j_eleves_classes jec WHERE jec.id_classe=c.id AND jec.login='$lig_prot->login' ORDER BY jec.periode DESC limit 1;";
@@ -796,6 +832,17 @@ if($etat_incident!='clos') {
 		}
 	}
 }
+
+//$utilisation_scriptaculous="y";
+//$utilisation_jsdivdrag='non';
+//$javascript_specifique[]="lib/prototype";
+$javascript_specifique[]="lib/scriptaculous";
+$javascript_specifique[]="lib/unittest";
+$javascript_specifique[]="lib/effects";
+$javascript_specifique[]="lib/controls";
+$javascript_specifique[]="lib/builder";
+$style_specifique[]="mod_discipline/mod_discipline";
+
 
 $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
@@ -1022,7 +1069,9 @@ if(isset($id_incident)) {
 				echo "</i>)";
 				echo "</td>\n";
 
-				echo "<td>";
+				echo "<td";
+				echo " id='td_qualite_protagoniste_$cpt'";
+				echo ">";
 				if($etat_incident!='clos') {
 					echo "<input type='hidden' name='ele_login[$cpt]' value=\"$lig->login\" />\n";
 
@@ -1074,7 +1123,9 @@ if(isset($id_incident)) {
 					echo "<td>$lig->statut</td>\n";
 				}
 
-				echo "<td>";
+				echo "<td";
+				echo " id='td_qualite_protagoniste_$cpt'";
+				echo ">";
 				if($etat_incident!='clos') {
 					echo "<input type='hidden' name='u_login[$cpt]' value=\"$lig->login\" />\n";
 
@@ -1162,6 +1213,36 @@ if(isset($id_incident)) {
 			$cpt++;
 		}
 		echo "</table>\n";
+
+		if($cpt>0) {
+			echo "<script type='text/javascript'>
+	function check_protagonistes_sans_qualite() {
+		temoin_qualite_protagoniste='n';
+		for(i=0;i<$cpt;i++) {
+			if(document.getElementById('td_qualite_protagoniste_'+i)) {
+				if(document.getElementById('qualite_'+i)) {
+					//alert(document.getElementById('qualite_'+i).selectedIndex);
+					if(document.getElementById('qualite_'+i).selectedIndex==0) {
+						document.getElementById('td_qualite_protagoniste_'+i).style.backgroundColor='red';
+						temoin_qualite_protagoniste='y';
+					}
+					else {
+						document.getElementById('td_qualite_protagoniste_'+i).style.backgroundColor='';
+					}
+				}
+			}
+		}
+		if(temoin_qualite_protagoniste=='y') {
+			alert('Le rôle d\'un protagoniste n\'est pas renseigné.');
+		}
+
+		setTimeout('check_protagonistes_sans_qualite()',10000);
+	}
+
+	setTimeout('check_protagonistes_sans_qualite()',10000);
+</script>\n";
+		}
+
 		if($etat_incident!='clos') {
 			echo "<input type='hidden' name='nb_protagonistes' value='$cpt' />\n";
 			echo "<input type='hidden' name='id_incident' value='$id_incident' />\n";
@@ -1533,7 +1614,8 @@ elseif($step==2) {
 	// Initialisation de variables:
 	$nature="";
 	$description="";
-
+    $commentaire="";
+	
 	if(isset($id_incident)) {
 		if($etat_incident!='clos') {
 			echo "<input type='hidden' name='id_incident' value='$id_incident' />\n";
@@ -1549,6 +1631,7 @@ elseif($step==2) {
 			}
 			$nature=$lig_inc->nature;
 			$description=$lig_inc->description;
+			$commentaire=$lig_inc->commentaire;
 			$id_lieu=$lig_inc->id_lieu;
 		}
 	}
@@ -1694,8 +1777,18 @@ elseif($step==2) {
 
 	if($etat_incident!='clos') {
 		echo "<input type='text' name='nature' id='nature' size='30' value=\"".$nature."\" ";
-		echo "onkeyup='check_incident()' ";
+		//echo "onkeyup='check_incident()' ";
 		echo "/>\n";
+		echo "<div id='div_completion_nature' class='infobulle_corps'></div>\n";
+
+		echo "<script type='text/javascript'>
+new Ajax.Autocompleter (
+	'nature',      // ID of the source field
+	'div_completion_nature',  // ID of the DOM element to update
+	'check_nature_incident.php', // Remote script URI
+	{method: 'post', paramName: 'nature'}
+);
+</script>\n";
 
 		$sql="SELECT DISTINCT nature FROM s_incidents WHERE nature!='' ORDER BY nature;";
 		$res_nat=mysql_query($sql);
@@ -1797,7 +1890,6 @@ echo "<script type='text/javascript'>
 	else {
 		echo $nature;
 	}
-
 	echo "</td>\n";
 	echo "</tr>\n";
 	//========================
@@ -1812,7 +1904,7 @@ echo "<script type='text/javascript'>
 	$tabdiv_infobulle[]=creer_div_infobulle('div_explication_description',"Description de l'incident","",$texte,"",18,0,'y','y','n','n');
 	echo "</td>\n";
 	echo "<td style='text-align:left;'";
-	if($etat_incident!='clos') {echo " colspan='2'";}
+	if($etat_incident!='clos') {if ($autorise_commentaires_mod_disc !="yes") echo " colspan='2'";}
 	echo ">\n";
 
 	if($etat_incident!='clos') {
@@ -1824,6 +1916,17 @@ echo "<script type='text/javascript'>
 	
 
 	echo "</td>\n";
+	// Ajout Eric
+	if ($autorise_commentaires_mod_disc=="yes") {
+	    echo "<td style='text-align:center;'>";
+		echo "<b>Zone de dialogue sur l'incident</b>";
+		echo " <a href='#' onclick=\"return false;\" onmouseover=\"delais_afficher_div('div_explication_commentaires','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onmouseout=\"cacher_div('div_explication_choix_nature')\"><img src='../images/icons/ico_question_petit.png' width='15' height='15' alt='Choix nature' /></a>";
+		$texte="Cette zone de texte est disponible pour dialoguer avec la vie scolaire des modalités particulières de traitement de l'incident ou suivre les suites de celui-ci.<br /> Horaire et lieu d'une retenue demandée, demande de convocation de l'élève par le CPE, ...";
+		$tabdiv_infobulle[]=creer_div_infobulle('div_explication_commentaires',"Zone de texte : dialogue","",$texte,"",18,0,'y','y','n','n');
+	    echo "<textarea id=\"commentaire\"  name=\"no_anti_inject_commentaire\" rows='8' cols='60' onchange=\"changement()\">$commentaire</textarea>\n";
+	    echo "</td>";
+	}
+	// Fin ajout Eric
 
 	//========================
 	if(count($ele_login)>0) {

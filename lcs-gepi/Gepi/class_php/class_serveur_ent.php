@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: class_serveur_ent.php 5149 2010-08-31 06:10:53Z jjocal $
+ * $Id: class_serveur_ent.php 5150 2010-08-31 06:11:07Z jjocal $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_responsable.php 3722 2009-11-13 17:05:44Z crob $
+ * $Id: edit_responsable.php 5413 2010-09-23 15:06:49Z crob $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Eric Lebrun
  *
@@ -449,7 +449,7 @@ while ($current_parent = mysql_fetch_object($quels_parents)) {
 	$alt=$alt*(-1);
 	echo "<tr class='lig$alt' style='text-align:center;'>\n";
 		echo "<td>";
-			echo "<a href='../responsables/modify_resp.php?pers_id=".$current_parent->pers_id."'>".$current_parent->login."</a>";
+			echo "<a href='../responsables/modify_resp.php?pers_id=".$current_parent->pers_id."&amp;journal_connexions=y'>".$current_parent->login."</a>";
 		echo "</td>\n";
 		echo "<td>";
 			echo $current_parent->nom . " " . $current_parent->prenom;
