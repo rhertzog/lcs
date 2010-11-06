@@ -1,3 +1,11 @@
+lcs-cdt (2.4.7.2.4) LCS; urgency=low
+
+  * fix bug in accesfilter.php
+  * add file error.php
+  * modify link for inspectors
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 04 Nov 2010 18:53:25 +0100
+
 lcs-cdt (2.4.7.2.3) LCS; urgency=low
 
   * change install_ldap.ldif no patched

@@ -227,7 +227,7 @@ if (isset($_POST['Valider']))
 			for ($loup=0; $loup < count($groups); $loup++)
 			        {
 			        $cla = $_POST['division'.$indecs];
-						if (mb_ereg("($cla)$",$groups[$loup]["cn"]))
+						if (mb_ereg("(_$cla)$",$groups[$loup]["cn"]) || ($cla == $groups[$loup]["cn"]))
 							{
 							$full_classe =$groups[$loup]["cn"];
 							break;
