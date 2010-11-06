@@ -4,7 +4,7 @@
    Administration serveur LCS «Liste des Modules installes»
    AdminLCS/Modules_installes.php
    Equipe Tice academie de Caen
-   maj : 02/06/2009
+   maj : 06/10/2010
    Distribue selon les termes de la licence GPL
    ============================================= */
 
@@ -46,6 +46,48 @@ $job= fopen($act_file,"w");
 		$cmd="rm -f action.sh";
 		exec($cmd,$l,$r);	
 		}
+		
+//activaion/desactivation 
+if (isset($_GET['a']) && isset($_GET['pid']))
+	{
+	$a=$_GET['a'];
+	$pid=$_GET['pid'];
+	mysql_query("UPDATE applis SET value='$a' WHERE id='$pid';") or die("Erreur lors de l'activation/d&#233;sactivation du plugin...");
+	}
+//recherche de la branche du sourceslist
+$branch="";
+$commande ='cat /etc/apt/sources.list | grep deb | grep Lcs | cut -d" " -f3';
+exec($commande,$branche,$ret_val);
+if ($ret_val== 0) 
+	{
+	switch ($branche[0]) 
+		{
+		case "Lcs":
+		    $branch = 'stable';
+		    break;
+		case "LcsTesting":
+		    $branch = 'testing';
+		    break;
+		case "LcsXP":
+		    $branch = 'exp&#233;rimentale';
+		    break;
+		}
+	}
+//recherche urlmajmod
+$url=explode('/',$urlmajmod);
+switch ($url[count($url)-2]) 
+	{
+	case "modulesLcs":
+	    $urlmaj = 'stable';
+	    break;
+	case "modulesLcsTesting":
+	    $urlmaj = 'testing';
+	    break;
+	case "modulesLcsXP":
+	    $urlmaj = 'exp&#233;rimentale';
+	    break;
+	}
+	
 //recherche des paquets mis en hold
 $pack_hold=array();
 $cmd='dpkg --get-selections | grep hold | cut  -f1 | cut -d"-" -f2';
@@ -58,29 +100,38 @@ if ($result)
           if ( mysql_num_rows($result) !=0 ) {      
           // Affichage des Modules installes
           echo "<H3>Modules install&#233;s </H3>\n";
+          if ($branch!="") echo '<pre class="programlisting">L\'activation/d&#233;sactivation de la mise &#224; jour automatique est relative &#224; la branche <u>'.$branch.'</u></pre>';
+          if ($urlmaj!="") echo '<pre class="programlisting">La disponiblit&#233; d\'une mise &#224; jour est relative &#224; la branche <u>'.$urlmaj.'</u></pre>';
           echo "<FONT SIZE=2>\n";
           echo "<TABLE BORDER=1 WIDTH=100%>";
           while ($r=mysql_fetch_object($result))
-	  	{ list ($v,$plug) = maj_dispo($r->name);
-		  echo "<TR>\n";
-		  echo "<TD>" . $r->name . "</TD>\n";
-		  echo "<TD>" . $r->descr . "</TD>\n";
-		  echo "<TD>" . $r->version . "</TD>\n";
-          echo "<TD><A HREF=\"../../doc/" . $r->name . "/html/index.html\" TITLE=\"Aide\"><IMG SRC=\"../Plugins/Images/plugins_help.png\" ALT=\"Aide\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\" /></A></TD>\n";
-          $nom_paquet= "lcs-".mb_strtolower($r->name);
-          if ($r->type =='N' && (!in_array ($r->name, $pack_hold)))
-          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=desact" class="positive" title="D&#233;sactiver la mise &#224; jour automatique">A&nbsp;</a></TD>';
-          elseif  ($r->type =='N' && (in_array ($r->name, $pack_hold)))
-          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=act" class="negative"title="Activer la mise &#224; jour automatique">M</a></TD>';
-          else
-          echo "<TD>&nbsp;</TD>\n";
-		  if ($v != false)
-		  	echo "<TD><A HREF=\"modules_install.php?p=" . $plug["serveur"] . "&n=" .$r->name  . "\"><IMG SRC=\"../Plugins/Images/plugins_maj.png\" TITLE=\"Mettre &#224; jour\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
-			else
-		  	echo "<TD>&nbsp;</TD>\n";
-		  echo "<TD><A HREF=\"modules_installes.php?dpid=" . $r->id . "&nommod=".$r->name."\"><IMG SRC=\"../Plugins/Images/plugins_desinstall.png\" TITLE=\"Desinstaller\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
-		  echo "</TR>\n";
-		}
+	  		{ 
+		  	  list ($v,$plug) = maj_dispo($r->name);
+			  echo "<TR>\n";
+			  echo "<TD>" . $r->name . "</TD>\n";
+			  echo "<TD>" . $r->descr . "</TD>\n";
+			  echo "<TD>" . $r->version . "</TD>\n";
+	          echo "<TD><A HREF=\"../../doc/" . $r->name . "/html/index.html\" TITLE=\"Aide\"><IMG SRC=\"../Plugins/Images/plugins_help.png\" ALT=\"Aide\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\" /></A></TD>\n";
+	          if ($r->type =='N' && $r->value != "0")
+			  	echo "<TD><A HREF=\"modules_installes.php?pid=" . $r->id . "&a=0\"><IMG SRC=\"../Plugins/Images/plugins_desactiver.png\" TITLE=\"D&#233;sactiver\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
+			  elseif ($r->type =='N' && $r->value != "1")
+			  	echo "<TD><A HREF=\"modules_installes.php?pid=" . $r->id . "&a=1\"><IMG SRC=\"../Plugins/Images/plugins_activer.png\" TITLE=\"Activer\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
+			  else
+			  	echo "<TD>&nbsp;</TD>\n";
+	          $nom_paquet= "lcs-".mb_strtolower($r->name);
+	          if ($r->type =='N' && (!in_array ($r->name, $pack_hold)))
+	          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=desact" class="positive" title="D&#233;sactiver la mise &#224; jour automatique">A&nbsp;</a></TD>';
+	          elseif  ($r->type =='N' && (in_array ($r->name, $pack_hold)))
+	          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=act" class="negative"title="Activer la mise &#224; jour automatique">M</a></TD>';
+	          else
+	          echo "<TD>&nbsp;</TD>\n";
+			  if ($v != false)
+			  	echo "<TD><A HREF=\"modules_install.php?p=" . $plug["serveur"] . "&n=" .$r->name  . "\"><IMG SRC=\"../Plugins/Images/plugins_maj.png\" TITLE=\"Mettre &#224; jour\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
+				else
+			  	echo "<TD title='Pas de mise &#224; jour disponible'> - </TD>\n";
+			  echo "<TD><A HREF=\"modules_installes.php?dpid=" . $r->id . "&nommod=".$r->name."\"><IMG SRC=\"../Plugins/Images/plugins_desinstall.png\" TITLE=\"Desinstaller\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
+			  echo "</TR>\n";
+			}
           echo "</TABLE>";
           } else {
               echo "<H3>Pas de module install&#233;.</H3>\n";      
