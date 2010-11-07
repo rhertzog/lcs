@@ -65,7 +65,7 @@ if ((isset($_POST['Valider']))&& (isset($_POST['adr_mail'])) )
 					{
 					$message.= '<P><B>La boite a &#233;t&#233; redirig&#233;e.</B> <br> - Un mail de confirmation  a &#233;t&#233; envoy&#233; <br>';
 					}
-					$cmd = "INSERT INTO redirmb_send_mail (faitpar,pour,vers,copie,date,remote_ip) VALUES ('$login','$log2','$contenu', '{$_POST['choix']}','$datte', '{$_SERVER['REMOTE_ADDR']}');";
+					$cmd = "INSERT INTO redirmail (faitpar,pour,vers,copie,date,remote_ip) VALUES ('$login','$log2','$contenu', '{$_POST['choix']}','$datte', '{$_SERVER['REMOTE_ADDR']}');";
 			
 					if(!mysql_query($cmd))  $message.="Erreur insertion base de donn&#233;es  ";
 				  
