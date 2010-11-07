@@ -17,10 +17,11 @@ lcs-web (2.4.8~1) Lcs; urgency=low
     content. This is required because when a broken XML file is downloaded,
     it's not removed...
 
-  [ Jean-Luc Chrétien ]
-  * 
+  [ Philippe LECLERC ]
+  * add display infos in modules_installes.php
+  * add display infos with gestpack.sh when package is hold
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 21 Oct 2010 15:52:46 +0200
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 06 Nov 2010 18:29:32 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 

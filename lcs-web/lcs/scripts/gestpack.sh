@@ -1,7 +1,7 @@
 #!/bin/bash
 # ===================================================================
 # Projet LCS : Linux Communication Server
-# par Misterphi le 31/03/2009
+# par Misterphi le 06/11/2010
 # gestion des modules par interface web
 # scripts d'apt-get sudoifie
 # paramètres passés :	$1=source du paquet; 
@@ -33,14 +33,23 @@ if [ -n "$Depot" ] || [ "$2" = "remove  --purge" ] ;then
    apt-get $2 -y $3 | sed -e "s/$/<BR>/g" >>  /tmp/ecran_install_$3.html
 
    #on teste l'état du paquet, et on affiche le résultat
-   vartest=`dpkg -l $3 | grep ii | wc -l`
+   vartest=`dpkg -l $3 | grep '\(ii \|hi \)' | wc -l`
+   varhold=`dpkg -l $3 | grep 'hi' | wc -l`
    if [ $vartest -eq 0 ]; then
        if [ "$2" = "install" ];then
            echo "<FONT color='#FF0000'>Le paquet $3 n'est <B>PAS OPERATIONNEL</B></FONT>" | sed -e "s/$/<BR><BR>/g" >>  /tmp/ecran_install_$3.html
        else echo "<BR><FONT color='#FF0000'>Le paquet $3 est <B>DESINSTALLE</B> </FONT>" | sed -e "s/$/<BR><BR>/g" >>  /tmp/ecran_install_$3.html
        fi
-   else echo "<FONT color='#33FF33'> Le paquet $3 est <B>OPERATIONNEL</B> </FONT>" | sed -e "s/$/<BR><BR>/g" >>  /tmp/ecran_install_$3.html
-   fi
+   else echo "<FONT color='#33FF33'> Le paquet $3 est <B>OPERATIONNEL</B> </FONT>" | sed -e "s/$/<BR>/g" >>  /tmp/ecran_install_$3.html
+   if [ $varhold -eq 1 ]; then
+	   if [ "$2" = "install" ];then
+	   echo "<FONT color='#FF6600'>Mais la mise &#224; jour est interdite</FONT>" | sed -e "s/$/<BR>/g" >>  /tmp/ecran_install_$3.html
+   	   fi
+   	   if [ "$2" = "remove  --purge" ];then
+	   echo "<FONT color='#FF6600'>La d&#233;sinstallation est interdite</FONT>" | sed -e "s/$/<BR>/g" >>  /tmp/ecran_install_$3.html
+   	   fi
+   	 fi  
+  fi
 
    #pour le fun, on affiche une invite 	
    echo "www-data@Lcs:/$<blink><B>_</B></blink>" | sed -e "s/$/<BR>/g" >>  /tmp/ecran_install_$3.html

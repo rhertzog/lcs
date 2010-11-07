@@ -100,13 +100,22 @@ if ($result)
           if ( mysql_num_rows($result) !=0 ) {      
           // Affichage des Modules installes
           echo "<H3>Modules install&#233;s </H3>\n";
-          if ($branch!="") echo '<pre class="programlisting">L\'activation/d&#233;sactivation de la mise &#224; jour automatique est relative &#224; la branche <u>'.$branch.'</u></pre>';
-          if ($urlmaj!="") echo '<pre class="programlisting">La disponiblit&#233; d\'une mise &#224; jour est relative &#224; la branche <u>'.$urlmaj.'</u></pre>';
+          //Affichage des infos
+          if ($branch!="" || $urlmaj!="") 
+          {
+          echo '<pre class="programlisting">Avec la configuration actuelle du LCS,<ul><li>l\'autorisation de la mise &#224; jour  d\'un module est relative &#224; la branche :<ul>';
+          if ($branch!="") echo '<li><u>'.$branch.'</u> pour les mises &#224; jour automatiques (nocturnes)';
+		  if ($urlmaj!="") echo '<li><u>'.$urlmaj.'</u> pour les mises &#224; jour manuelles ';
+		  echo '</ul>';
+          if ($urlmaj!="") echo '<li>la disponiblit&#233; affich&#233;e d\'une mise &#224; jour est relative &#224; la branche <u>'.$urlmaj.'</u>';
+          echo '</ul></pre>';
+          }
           echo "<FONT SIZE=2>\n";
           echo "<TABLE BORDER=1 WIDTH=100%>";
+          echo "<TR><TD><B>Nom</B></TD><TD><B>Description</B></TD><TD><B>Version</B></TD><TD><B>Aide</B></TD><TD><B>Activation</B></TD><TD><B>Autorisation</B></TD>
+          <TD><B>Disponibilit&#233;</B></TD><TD><B>Action</B></TD></TR>";
           while ($r=mysql_fetch_object($result))
-	  		{ 
-		  	  list ($v,$plug) = maj_dispo($r->name);
+	  		{ 		  	  list ($v,$plug) = maj_dispo($r->name);
 			  echo "<TR>\n";
 			  echo "<TD>" . $r->name . "</TD>\n";
 			  echo "<TD>" . $r->descr . "</TD>\n";
@@ -120,15 +129,15 @@ if ($result)
 			  	echo "<TD>&nbsp;</TD>\n";
 	          $nom_paquet= "lcs-".mb_strtolower($r->name);
 	          if ($r->type =='N' && (!in_array ($r->name, $pack_hold)))
-	          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=desact" class="positive" title="D&#233;sactiver la mise &#224; jour automatique">A&nbsp;</a></TD>';
+	          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=desact" class="positive" title="Interdire la mise &#224; jour de ce module ">&nbsp;OUI&nbsp;</a></TD>';
 	          elseif  ($r->type =='N' && (in_array ($r->name, $pack_hold)))
-	          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=act" class="negative"title="Activer la mise &#224; jour automatique">M</a></TD>';
+	          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=act" class="negative"title="Autoriser la mise &#224; jour de ce module">&nbsp;NON&nbsp;</a></TD>';
 	          else
 	          echo "<TD>&nbsp;</TD>\n";
 			  if ($v != false)
 			  	echo "<TD><A HREF=\"modules_install.php?p=" . $plug["serveur"] . "&n=" .$r->name  . "\"><IMG SRC=\"../Plugins/Images/plugins_maj.png\" TITLE=\"Mettre &#224; jour\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
 				else
-			  	echo "<TD title='Pas de mise &#224; jour disponible'> - </TD>\n";
+			  	echo "<TD title='Pas de mise &#224; jour disponible'>&nbsp;</TD>\n";
 			  echo "<TD><A HREF=\"modules_installes.php?dpid=" . $r->id . "&nommod=".$r->name."\"><IMG SRC=\"../Plugins/Images/plugins_desinstall.png\" TITLE=\"Desinstaller\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
 			  echo "</TR>\n";
 			}
