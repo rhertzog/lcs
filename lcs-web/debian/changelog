@@ -20,8 +20,9 @@ lcs-web (2.4.8~1) Lcs; urgency=low
   [ Philippe LECLERC ]
   * add display infos in modules_installes.php
   * add display infos with gestpack.sh when package is hold
+  * add activation/desactivation modules
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 06 Nov 2010 18:29:32 +0100
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 06 Nov 2010 18:39:22 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
