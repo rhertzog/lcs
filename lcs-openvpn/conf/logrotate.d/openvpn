@@ -3,7 +3,8 @@
         missingok
         rotate 52
         postrotate
-        		invoke-rc.d --quiet openvpn reload > /dev/null
+        	invoke-rc.d --quiet openvpn reload > /dev/null
+        	chmod +r /var/log/openvpn/status.log
        	endscript
         compress   			
         notifempty
