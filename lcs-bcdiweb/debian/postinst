@@ -9,7 +9,7 @@ MODULE="Bcdiweb"
 module=`echo $MODULE | tr [:upper:] [:lower:]`
 VER=$(dpkg-query -f '${Version}' -W lcs-$module)
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
-INDICEMAJNBR="2"
+INDICEMAJNBR="3"
 DESCRIPT="BCDI Web pour Lcs"
 CONF="/var/lib/lcs/$MODULE"
 

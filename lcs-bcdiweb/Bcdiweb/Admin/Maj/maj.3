@@ -1,2 +1,7 @@
 #!/bin/sh
+# Modificatation de la sauvegarde automatique de la base
+echo "PATH=/usr/bin" > /etc/cron.d/bcdiweb
+echo '# m h dom mon dow user	command' >> /etc/cron.d/bcdiweb
+echo "0 13 * * 0-5 www-data  /usr/share/lcs/Plugins/Bcdiweb/scripts/syncbcdi.sh" >> /etc/cron.d/bcdiweb  
+chown www-data /etc/cron.d/bcdiweb
 exit 0
