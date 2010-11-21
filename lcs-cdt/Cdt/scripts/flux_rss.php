@@ -1,4 +1,4 @@
-<?
+<?php
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -233,8 +233,4 @@ else
 
 // et on termine le fichier 
 echo '</channel>' . "\n" . '</rss>' . "\n";  
-		
-
-
-	
 ?>

@@ -10,6 +10,8 @@
    =================================================== */
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) exit;
 //si la page est appel�e par un utilisateur non identifi�
 if (!isset($_SESSION['login']) )exit;
 
@@ -60,9 +62,10 @@ if (isset($_POST['Valider']))
 	</HEAD>
 <BODY LANG="fr-FR" DIR="LTR">
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <legend id="legende"> Modification de la liste des classes </legend>
 <H4> Attention : pas de virgule ni de caract&#232;re CR &#224; la fin de la derni&#232;re ligne </H4>
-<?
+<?php
 //affichage du formulaire
 if (!isset($_POST['Valider']))
 	{
@@ -89,13 +92,8 @@ if (! ($NameFile) )
 	//affichage du bouton
 		echo '<div align="left"><input type="submit" name="Valider" value="Valider" ></div>';
 	}
-	}
-
+}
 ?>
-
 </form>
 </BODY>
 </HTML>
-
-
-

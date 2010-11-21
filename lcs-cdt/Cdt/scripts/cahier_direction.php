@@ -9,7 +9,9 @@
 			_-=-_
    =================================================== */
 session_name("Cdt_Lcs");
-@session_start(); 
+@session_start();
+include "../Includes/check.php";
+if (!check()) exit; 
 //error_reporting(0);
 //si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
@@ -83,6 +85,7 @@ else
 <H1 class='title'>Cahier de textes : Personnel de direction</H1>
 
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" TARGET="_BLANK">
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <fieldset id="field7">
 <legend id="legende"> Cahier de textes d'une classe </legend>
 <?php
@@ -105,6 +108,7 @@ echo '</select></ul><input type="submit" name="Laclasse" value="" class="bt-vali
 </form>
 
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" TARGET="_BLANK">
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <fieldset id="field7">
 <legend id="legende"> Cahier de textes d'un professeur</legend>
 <?php
@@ -139,6 +143,7 @@ if ($FLAG_ABSENCE==1)
 	}
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#cryp'; ?>" method="post" ">
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <a name="cryp"></a>
 <fieldset id="field7">
 <legend id="legende"> G&#233;n&#233;ration d'un d'acc&#232;s (IA,IPR,IEN,...) </legend>
@@ -210,6 +215,7 @@ if (isset($_POST['Lien']))
 </form>
 
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']) ?>" method="post" >
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <fieldset id="field7">
 <legend id="legende">Archives</legend>
 <p>Ce formulaire vous permet de g&#233;n&#233;rer une archive du cahier de texte au format HTML devant &#234;tre conserv&#233;e pendant 5 ans. </p>

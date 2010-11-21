@@ -1,4 +1,4 @@
-<?
+<?php
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -53,7 +53,7 @@ else exit;
 <body>
 <H1 class='title'>Travail à faire pour la classe de <?echo $ch;?> </H1>
 <div id="taf">
-<?
+<?php
 
 // Connexion à la base de données
 require_once ('../Includes/config.inc.php');

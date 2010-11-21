@@ -1,4 +1,4 @@
-<?
+<?php
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -69,7 +69,7 @@ $Morceauc=explode('/',$_GET['dkr']);
 <fieldset id="field7">
 <legend id="legende">Bilan des Absences & Retards  du <?php echo $_GET['dkr'];?></legend>
 
-<?
+<?php
 
 if (isset($_GET['dkr']))
 	{
@@ -141,6 +141,4 @@ if (isset($_GET['dkr']))
 </FORM>
 </BODY>
 </HTML>
-
-
 

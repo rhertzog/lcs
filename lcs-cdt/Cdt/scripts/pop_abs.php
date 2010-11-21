@@ -62,19 +62,19 @@ if (isset($_POST['gamin'])) $potache = $_POST['gamin'];
 </HEAD>
 <BODY>
 
-<?
+<?php
 
 //Détermination du jour courant
-if (isset($_REQUEST['JourCourant'])) 
+if (isset($_POST['JourCourant'])) 
 	{
-	$JourCourant = $_REQUEST['JourCourant'];
+	$JourCourant = $_POST['JourCourant'];
 	//semaine suivante
-	if (isset($_REQUEST['suiv'])) 
+	if (isset($_POST['suiv'])) 
 		{
 		$Lundi=DebutSemaine($JourCourant + 7 * 86400);
 		} 
 		//semaine précédente
-		elseif (isset($_REQUEST['prec']))
+		elseif (isset($_POST['prec']))
 			{
 			//tableau hebdomadaire commençant au Lundi
 			
@@ -203,7 +203,7 @@ if ($nb>0)
 </tbody>
 </table>
 </div>
-<?
+<?php
 echo "<SCRIPT LANGUAGE=\"JavaScript\">
 		document.write('<div id=\"abs-bt\"><A HREF=\"javascript:window.close()\" id=\"bt-close\"></A></div>');
 	</SCRIPT>";
@@ -211,7 +211,7 @@ echo "<SCRIPT LANGUAGE=\"JavaScript\">
 </fieldset>
 </FORM>
 
-<?
+<?php
 Include ('../Includes/pied.inc'); 
 ?>
 </BODY>

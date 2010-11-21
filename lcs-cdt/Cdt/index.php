@@ -36,7 +36,7 @@ include ('./Includes/data.inc.php');
  		$_SESSION['login']=$login;
 		$_SESSION['name']=$user["nom"];
 		$_SESSION['nomcomplet']=$user["fullname"];
-		
+		$_SESSION['RT']=rand();
 		if (is_prof($login)) { $_SESSION['cequi']="prof";}
 		elseif (is_eleve($login)) 
 		{ 
@@ -73,12 +73,11 @@ include ('./Includes/data.inc.php');
 			header("location: ./scripts/cahier_direction.php");exit;
 			}	
 		elseif (($_SESSION['cequi']=="eleve" && $_SESSION['saclasse'][1]!="") || $_SESSION['cequi']=="administratif"	)
-			{ 
+			{
 			header("location: ./scripts/cahier_text_eleve.php");exit;
 			}
 		elseif  ($_SESSION['cequi']=="prof")
 			{
-			$_SESSION['RT']=rand();
 			header("location: ./scripts/cahier_texte_prof.php");exit;
 			}
 		else echo 'Acc&#232;s non autoris&#233; ! '; exit;
@@ -131,6 +130,7 @@ include ('./Includes/data.inc.php');
 			$_SESSION['aliasprof']=$_GET['prof'];
 			list($us_er, $groups)=people_get_variables($_GET['prof'], false);
 			$_SESSION['proffull']=$us_er["fullname"];
+			$_SESSION['RT']=rand();
 			header("location: ./scripts/cahier_texte_prof_ro.php");exit;
 			}
 		elseif (validkey($_GET['prof'],$_GET['limit'],$_GET['key']) !="OK")

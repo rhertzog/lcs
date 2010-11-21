@@ -14,6 +14,8 @@ header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
   
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) exit;
 //si la page est appeleee par un utilisateur non identifié
 if (!isset($_SESSION['login']) )exit;
 
@@ -26,7 +28,7 @@ header('Content-Type: text/xml');
 header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
 header("Pragma: no-cache");
-if( isset($_REQUEST['cibl'])  )
+if( isset($_POST['cibl'])  )
 	{
 	if (get_magic_quotes_gpc()) require_once("/usr/share/lcs/Plugins/Cdt/Includes/class.inputfilter_clean.php");
 	else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';

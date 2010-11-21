@@ -1,4 +1,4 @@
-<?
+<?php
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -95,7 +95,8 @@ if (isset($_POST['Classe']))
 </HEAD>
 <BODY LANG="fr-FR" DIR="LTR">
 <H1 class='title'>Consultation des absences</H1>
-<?
+
+<?php
 /**************************************************
 * positionnement du flag de restrict dans le fichier de conf *
 ***************************************************/
@@ -114,10 +115,6 @@ if ((isset($_POST['OK'])) && count($_POST['cren']))
 		echo '<SCRIPT language="javascript">
          window.open("./bilancpe2.php?kr='.$kreno.'&dkr='.$_POST['datecren'].'","","menubar=no, status=no, scrollbars=yes , width=900, height=600");
 			</SCRIPT>';
-
-	
-	
-	
 	}// fin OK
 	
 if (isset($_POST['OKclasse']))
@@ -216,16 +213,16 @@ if (isset($_POST['OKeleve']))
 <fieldset id="field7">
 <legend id="legende">Par cr&eacute;neau horaire</legend>
 
-<?
+<?php
 /**********************
  affichage du formulaire *
 ************************/
 
-			echo '<p>Lister toutes les absences/retards pour les  creneaux s&eacute;lectionn&eacute;s.</p>';
-			echo '<ul>';
-			echo '<li>Date : <input id="cpe-abs" size="10" name="datecren" value="'.$datcreno.'"readonly="readonly" style="cursor: text" /></li>';
-			echo '<li>Creneau(x) : ';
-			$horaire = array("M1","M2","M3","M4","M5","S1","S2","S3","S4","S5");
+	echo '<p>Lister toutes les absences/retards pour les  creneaux s&eacute;lectionn&eacute;s.</p>';
+	echo '<ul>';
+	echo '<li>Date : <input id="cpe-abs" size="10" name="datecren" value="'.$datcreno.'"readonly="readonly" style="cursor: text" /></li>';
+	echo '<li>Creneau(x) : ';
+	$horaire = array("M1","M2","M3","M4","M5","S1","S2","S3","S4","S5");
 	for ($h=0; $h<=9; $h++) 
 		{
 		echo ' <input type="checkbox" name="cren[]"   value="'.$horaire[$h].'"';if (in_array($horaire[$h], $tab_cren)) echo 'checked';
@@ -239,25 +236,25 @@ if (isset($_POST['OKeleve']))
 <fieldset id="fields8">
 <legend id="legend2">Par classe</legend>
 
-<?
-echo '<p>Lister les absences/retards d&acute;une classe pour une p&eacute;riode donn&eacute;e </p>';
-//affichage de la liste des classes
-include ("../Includes/data.inc.php");
-		
-			echo '<ul>';
-			echo "<li>Classe : <select name='Classe' style='background-color:#E6E6FA'></p>";
-			foreach ($classe as $clé => $valeur)
-			  { 
-			  echo "<option valeur=\"$valeur\"";
-			  if ($valeur==$ch) {echo 'selected';}
-			  echo ">$valeur</option>\n";
-			  }
-			  echo "</select></li>\n";
-			  echo '<li>p&eacute;riode du <input id="deb-abs" size="10" name="datecl_deb" value="'.$datdebcla.'"readonly="readonly" style="cursor: text"/>';
-		echo '&nbsp;&nbsp;&nbsp;au &nbsp;&nbsp;&nbsp;<input id="fin-abs" size="10" name="datecl_fin" value="'.$datfincla.'"readonly="readonly" style="cursor: text"/></li>';
-		echo '</ul>';
-		echo "<input type='submit' name='OKclasse' value='' class='bt-valid-sel' >";
-		if ($mess_dat!="") echo '<p><FONT color="#F71B00"> '.$mess_dat.'</font></p>';
+<?php
+	echo '<p>Lister les absences/retards d&acute;une classe pour une p&eacute;riode donn&eacute;e </p>';
+	//affichage de la liste des classes
+	include ("../Includes/data.inc.php");
+			
+	echo '<ul>';
+	echo "<li>Classe : <select name='Classe' style='background-color:#E6E6FA'></p>";
+	foreach ($classe as $clé => $valeur)
+		  { 
+		  echo "<option valeur=\"$valeur\"";
+		  if ($valeur==$ch) {echo 'selected';}
+		  echo ">$valeur</option>\n";
+		  }
+	echo "</select></li>\n";
+	echo '<li>p&eacute;riode du <input id="deb-abs" size="10" name="datecl_deb" value="'.$datdebcla.'"readonly="readonly" style="cursor: text"/>';
+	echo '&nbsp;&nbsp;&nbsp;au &nbsp;&nbsp;&nbsp;<input id="fin-abs" size="10" name="datecl_fin" value="'.$datfincla.'"readonly="readonly" style="cursor: text"/></li>';
+	echo '</ul>';
+	echo "<input type='submit' name='OKclasse' value='' class='bt-valid-sel' >";
+	if ($mess_dat!="") echo '<p><FONT color="#F71B00"> '.$mess_dat.'</font></p>';
 ?>
 </div>
 </fieldset>
@@ -265,29 +262,24 @@ include ("../Includes/data.inc.php");
 <legend id="legendter">Par &eacute;l&egrave;ve</legend>
 
 <?
-echo '<p>Lister les absences/retards d&acute;un &eacute;l&egrave;ve pour une p&eacute;riode donn&eacute;e </p>';
+	echo '<p>Lister les absences/retards d&acute;un &eacute;l&egrave;ve pour une p&eacute;riode donn&eacute;e </p>';
 	echo '<ul>';
 	echo '<li>Nom : <input type = "text" style="background:#E6E6FA;" name ="nom" value = "'.$nom_propre.' ">&nbsp;&nbsp;&nbsp;Pr&eacute;nom : <input type = "text" style="background:#E6E6FA;" name ="prenom" value = "'.$prenom_propre.' "></li>';
- 	echo "<li>Classe : <select name='division' style='background-color:#E6E6FA'>";
-			foreach ($classe as $clé => $valeur)
-			  { 
-			  echo "<option valeur=\"$valeur\"";
-			  if ($valeur==$ch2) {echo 'selected';}
-			  echo ">$valeur</option>\n";
-			  }
-			  echo "</select></li>\n";
+	echo "<li>Classe : <select name='division' style='background-color:#E6E6FA'>";
+		foreach ($classe as $clé => $valeur)
+		  { 
+		  echo "<option valeur=\"$valeur\"";
+		  if ($valeur==$ch2) {echo 'selected';}
+		  echo ">$valeur</option>\n";
+		  }
+	echo "</select></li>\n";
 	echo '<li>P&eacute;riode du <input id="datepot_deb" size="10" name="datepot_deb" value="'.$datdebpot.'"readonly="readonly" style="cursor: text"/>';
 	echo '&nbsp;&nbsp;&nbsp;au &nbsp;&nbsp;&nbsp;<input id="datepot_fin" size="10" name="datepot_fin" value="'.$datfinpot.'"readonly="readonly" style="cursor: text"/></li>';
 	echo '</ul>';
 	echo "<input type='submit' name='OKeleve' value='' class='bt-valid'>";
 	if ($mess_error!="") echo '<p><FONT color="#F71B00"> '.$mess_error.'</font><p>';
 ?>
-
 </fieldset>
-
 </FORM>
 </BODY>
 </HTML>
-
-
-

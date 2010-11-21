@@ -11,6 +11,8 @@
    ============================================= */
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) exit;
 //si la page est appelee par un utilisateur non identifie ou non prof
 if (!isset($_SESSION['login'])) exit;
 elseif ($_SESSION['cequi']!='prof' ) exit;
@@ -47,7 +49,7 @@ Traitement du formulaire
 *************************/	
 
 //Enregistrement des donnees
-if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
+if (isset($_POST['enregistrer']) )
 	{ 
 	// Traiter les donnees
 	// Verifier $Sujet  et la debarrasser de tout antislash et tags possibles
@@ -300,7 +302,7 @@ if (isset($_POST['enregistrer']) && $_POST['TA']==$_SESSION['RT'])
 
 	
 //Suppression d'un devoir apres confirmation
-if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==$_SESSION['RT']) 
+if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF']))) 
 	{
 	$action=$_GET['delrub'];
 	$cible=$_GET['numd'];
@@ -457,7 +459,7 @@ for ($loup=0; $loup < count($uids); $loup++)
 	
 //eom	
 //Affichage conditionnel d'un message d'erreur
-if ((isset($_POST['enregistrer'])) && ($durée=="")&& $_POST['TA']==$_SESSION['RT'])
+if ((isset($_POST['enregistrer'])) && ($durée==""))
  echo '<H6 class="erreur">'.$message. ' : Durée erron&#233;e</H6>';
 
 //Affichage du formulaire de saisie du sujet du devoir et de la duree
@@ -472,7 +474,7 @@ if (isset($_GET['ladate']) &&(isset($_GET['inser'])))
 	<INPUT name="login" type="hidden" id="login" value="'. $login.'">
 	<INPUT name="data" type="hidden" id="data" value="'.$_GET["ladate"].'">
 	<INPUT name="numrubri" type="hidden" id="numrubri" value="'.$numrub.'">
-	<INPUT name="TA" type="hidden"  value="'. $_SESSION['RT'].'">
+	<INPUT name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'">
 	<p>Intitul&#233; du devoir :<INPUT class="text" TYPE=TEXT NAME="sujet" SIZE=28 MAXLENGTH=28>Dur&#233;e :<INPUT class="text" TYPE=TEXT NAME="durée" SIZE=1 MAXLENGTH=1>heure(s)&nbsp;';
 	if ($ct1cours) 
 		{
@@ -489,26 +491,26 @@ if (isset($_GET['ladate']) &&(isset($_GET['inser'])))
 	</FORM>';
 	}
 //Determination du jour courant
-if (isset($_REQUEST['JourCourant'])) 
+if (isset($_POST['JourCourant'])) 
 	{
-	$JourCourant = $_REQUEST['JourCourant'];
+	$JourCourant = $_POST['JourCourant'];
 	
 	//mois suivant
-	if (isset($_REQUEST['msuiv'])) 
+	if (isset($_POST['msuiv'])) 
 		{
 		$Lundi=DebutSemaine($JourCourant + 28 * 86400);
 		} 
 	//semaine suivante
-	elseif (isset($_REQUEST['suiv'])) 
+	elseif (isset($_POST['suiv'])) 
 		{
 		$Lundi=DebutSemaine($JourCourant + 7 * 86400);
 		} 
 		//semaine precedente
-	elseif (isset($_REQUEST['mprec']))
+	elseif (isset($_POST['mprec']))
 		{			
 		$Lundi=DebutSemaine($JourCourant - 28 * 86400);
 		}		
-		elseif (isset($_REQUEST['prec']))
+		elseif (isset($_POST['prec']))
 		{
 			//tableau hebdomadaire commençant au Lundi
 		$Lundi=DebutSemaine($JourCourant - 7 * 86400);
@@ -579,6 +581,7 @@ if ($nb>0)
 <div id="cfg-contenu">
 <!-- affichage du calendrier hebdomadaire -->
 <FORM action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" name="planning" id="planning">
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <!-- Affichage des boutons -->	
 	<INPUT name="JourCourant" type="hidden" id="JourCourant" value="<?php echo $Lundi;?>">
 	<INPUT name="classe" type="hidden" id="classe" value="<?php echo $clas;?>">
@@ -848,16 +851,16 @@ if ($nb>0)
 	</TABLE>
 	
 <H5>Pour planifier un nouveau devoir, cliquer sur le cr&#233;neau horaire correspondant au d&#233;but du devoir</h5>
-	</FORM>
-<?
+</FORM>
+<?php
 //Affichage d'une boite de confirmation d'effacement
 if (isset($_GET["suppr"]))
 	{
 	echo "<script type='text/javascript'>";
 	echo "if (confirm('Confirmer la suppression de ce devoir (Vous ne pouvez supprimer que vos devoirs !!)')){";
-	echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'" + "?numd=" +'." '"; echo $_GET["numdev"] ;echo "'"
+	echo ' location.href = "';echo htmlentities($_SERVER['PHP_SELF']);echo'" + "?numd=" +'." '"; echo $_GET["numdev"] ;echo "'"
 	.' + "&delrub=" +'."1245".' + "&ladate=" +'."'";echo $date[0];echo "'".'+ "&jc="+'."'".$Lundi."'".'
-	+ "&klasse="+'."'".$clas."'".'+ "&numrubr="+'."'".$numrub."'".'+ "&matière="+'."'".$mati."'".' + "&TA=" +'." '". $_SESSION['RT']."'".' ;}</script>';
+	+ "&klasse="+'."'".$clas."'".'+ "&numrubr="+'."'".$numrub."'".'+ "&matière="+'."'".$mati."'".' + "&TA=" +'." '". md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF']))."'".' ;}</script>';
 	}
   echo '</div>'; 	//fin du contenu
 echo '</div>'; 	//fin du container

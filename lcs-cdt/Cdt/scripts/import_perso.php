@@ -1,4 +1,4 @@
-<?
+<?php
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -9,12 +9,14 @@
 			_-=-_
    =================================================== */
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-	header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
-	header("Cache-Control: no-cache, must-revalidate");
-	header("Pragma: no-cache");
+header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-cache, must-revalidate");
+header("Pragma: no-cache");
 
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) exit;
 //si la page est appelée par un utilisateur non identifié
 if (!isset($_SESSION['login']) )exit;
 
@@ -58,7 +60,7 @@ return $texte;
 	</HEAD>
 <BODY LANG="fr-FR" DIR="LTR">
 <H1 class='title'></H1>
-<?
+<?php
 
 //si clic sur le bouton Valider
 if (isset($_POST['Valider']))
@@ -118,10 +120,11 @@ if (isset($_POST['Valider']))
 
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data">
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <fieldset id="field7">
 <legend id="legende">Import de données</legend>
 
-<?
+<?php
 //affichage du formulaire
 if (!isset($_POST['Valider']))
 	{
@@ -142,10 +145,8 @@ if (!isset($_POST['Valider']))
 	if ($mess1!="") echo $mess1;
 	echo '<input class="bt-fermer" type="submit" name="Fermer" value="" >';
 	}
-?></fieldset>	
+?>
+</fieldset>	
 </FORM>
 </BODY>
 </HTML>
-
-
-

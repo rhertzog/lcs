@@ -1,4 +1,4 @@
-<?
+<?php
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -10,12 +10,14 @@
    =================================================== */
    
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-	header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
-	header("Cache-Control: no-cache, must-revalidate");
-	header("Pragma: no-cache");
+header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-cache, must-revalidate");
+header("Pragma: no-cache");
 
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) exit; 
 //si la page est appelée par un utilisateur non identifié
 if (!isset($_SESSION['login']) )exit;
 
@@ -50,7 +52,7 @@ exec("rm -f /usr/share/lcs/Plugins/Cdt/phpmathpublisher/img/*.png");
 </HEAD>
 <BODY LANG="fr-FR" DIR="LTR">
 <H1 class='title'>Insérer une expression mathématique</H1>
-<?
+<?php
 
 //si clic sur le bouton Valider
 if ((isset($_POST['Valider']) || (isset($_POST['Previsualiser']))))
@@ -86,7 +88,7 @@ if (isset($_POST['Valider']) )
 		
 		include("../phpmathpublisher/mathpublisher.php") ;
 		$message="<m>". $equation."</m>";
-		$size='11';
+		$size=$_POST['taille'];
 		$pathtoimg='../phpmathpublisher/img/';
 		
 		if ( isset($equation) && $equation!='' ) 
@@ -96,7 +98,7 @@ if (isset($_POST['Valider']) )
 		$name=explode('/',$lien[1]);
 		$TextAlt=$lien[5];//texte alternatif
 		$nomFichier=$name[count($name)-1];//nom du fichier
-		$cmd=" mv ../phpmathpublisher/img/".$name[count($name)-1]." /home/".$_SESSION['login']."/public_html/".$sousrep."/";
+		if ( $name[count($name)-1] != "") $cmd=" mv ../phpmathpublisher/img/".$name[count($name)-1]." /home/".$_SESSION['login']."/public_html/".$sousrep."/";
 		exec($cmd);
 		//echo $pathtoimg;/**/
 		}
@@ -122,15 +124,26 @@ if (isset($_POST['Valider']) )
 
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data">
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <fieldset id="field7">
 <legend id="legende">Edition de la formule</legend>
 
-<?
+<?php
+$choix=array("11","12","13","14","15");
 //affichage du formulaire
 if (!isset($_POST['Valider']))
 	{
 	echo '<ol>';
 	echo '<li>Saisir la formule en respectant la syntaxe décrite <a href="../phpmathpublisher/doc_fr/help_fr.html" onClick="aidemath_popup(); return false"> <b>ICI</b></a> : </br><TEXTAREA NAME="equation" COLS=50 ROWS=3 WRAP=virtual >'.$equation.'</TEXTAREA></li>';
+	echo '<li>Taille ';
+	echo "<select name='taille' style='background-color:#E6E6FA'>";
+	foreach ($choix as $clé => $valeur)
+	  { echo "<option valeur=\"$valeur\"";
+	  if ($valeur==$_POST['taille']) {echo 'selected';} 
+	  echo ">$valeur</option>\n";
+	  }
+	echo "</select></li>";
+	
 	echo '<li>Vérifier l\'image de la formule car elle n\'est plus modifiable lorsqu\'elle est validée</li>';
 	echo '<input type="submit" class="bt" name="Previsualiser" value="Prévisualiser" >';
 	if (isset($_POST['Previsualiser']))
@@ -138,7 +151,7 @@ if (!isset($_POST['Valider']))
 	echo '<div id="eqt">';
 	include("../phpmathpublisher/mathpublisher.php") ;
 	$message="<m>".$equation."</m>";
-	$size='11';
+	$size=$_POST['taille'];
 	$pathtoimg='../phpmathpublisher/img/';
 	if ( isset($equation) && $equation!='' ) 
 	{	

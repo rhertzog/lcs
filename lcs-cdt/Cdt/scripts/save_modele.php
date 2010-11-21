@@ -14,6 +14,8 @@ header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
   
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) exit;
 //si la page est appeleee par un utilisateur non identifié
 if (!isset($_SESSION['login']) )exit;
 
@@ -25,7 +27,7 @@ header("Content-Type: text/plain" );
 header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
 header("Pragma: no-cache");
-if(isset($_REQUEST['coursmod']) && isset($_REQUEST['afmod']) && isset($_REQUEST['cibl'])  )
+if(isset($_POST['coursmod']) && isset($_POST['afmod']) && isset($_POST['cibl'])  )
 {
 if (get_magic_quotes_gpc()) require_once("/usr/share/lcs/Plugins/Cdt/Includes/class.inputfilter_clean.php");
 else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
@@ -33,9 +35,9 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	require_once ('../Includes/config.inc.php');
 	if (get_magic_quotes_gpc())
 		    {
-			$Contenucours  =htmlentities($_REQUEST['coursmod']);
-			$Contenuaf  =htmlentities($_REQUEST['afmod']);
-			$Cib  =htmlentities($_REQUEST['cibl']);
+			$Contenucours  =htmlentities($_POST['coursmod']);
+			$Contenuaf  =htmlentities($_POST['afmod']);
+			$Cib  =htmlentities($_POST['cibl']);
 			$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
 			$cont1 = $oMyFilter->process($Contenucours);
 			$cont2 = $oMyFilter->process($Contenuaf);
@@ -44,9 +46,9 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 		else
 			{
 			// htlmpurifier
-			$Contenucours  = $_REQUEST['coursmod'];
-			$Contenuaf  =$_REQUEST['afmod'];
-			$Cib = addSlashes($_REQUEST['cibl']);
+			$Contenucours  = $_POST['coursmod'];
+			$Contenuaf  =$_POST['afmod'];
+			$Cib = addSlashes($_POST['cibl']);
 			$config = HTMLPurifier_Config::createDefault();
 	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
 	    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
@@ -58,9 +60,7 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	   		$cont2 = mysql_real_escape_string($cont2);
 	   		$cible= $purifier->purify($Cib);
 	   		}	
-//		
-		
-		//$cible= $_REQUEST['cibl'];
+
 		$rq = "UPDATE  onglets SET mod_cours='$cont1', mod_afaire='$cont2' WHERE id_prof='$cible'";
 		
 	// lancer la requete

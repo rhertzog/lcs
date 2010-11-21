@@ -1,4 +1,4 @@
-<?
+<?php
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -34,9 +34,7 @@ exit;
 <body>
 <H1 class='title'>Travail à faire </H1>
 <div id="poprss">
-<?
-
-
+<?php
 
 	//récupération du travail à faire 
 	

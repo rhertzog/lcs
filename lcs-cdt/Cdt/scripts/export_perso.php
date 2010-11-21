@@ -13,14 +13,16 @@ header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache"); 
 session_name("Cdt_Lcs");
-@session_start(); 
+@session_start();
+include "../Includes/check.php";
+if (!check()) exit; 
 //error_reporting(0);
 //si la page est appelee par un utilisateur non identifiee
 if (!isset($_SESSION['login']) )exit;
 
 //si la page est appelee par un utilisateur non prof
 elseif ($_SESSION['cequi']!="prof") exit;
-    if (isset($_POST['Fermer'])) 
+if (isset($_POST['Fermer'])) 
 	echo "<SCRIPT language='Javascript'>
 					<!--
 					window.close()
@@ -139,9 +141,7 @@ $chemin = $rep_tmp.'/my_cdt.tgz';
 else
 {
 
-echo '
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
 <title>Cahier de textes num&eacute;rique</title>
@@ -150,8 +150,9 @@ echo '
 </head>
 
 <body>
-<form  action="'. htmlentities($_SERVER['PHP_SELF']).'" method="post" >
-	<div id="first">
+<form  action="'. htmlentities($_SERVER['PHP_SELF']).'" method="post" >';
+echo '<INPUT name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'">';
+echo '<div id="first">
 	<div class="prg">
 		<fieldset id="field7">
 		<legend id="legende"> Export de donn&#233;es </legend>

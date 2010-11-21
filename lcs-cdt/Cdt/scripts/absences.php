@@ -1,4 +1,4 @@
-<?
+<?php
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -15,7 +15,8 @@ header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache"); 
 session_name("Cdt_Lcs");
 @session_start();
-
+include "../Includes/check.php";
+if (!check()) exit; 
 //si la page est appelée par un utilisateur non identifié
 if (!isset($_SESSION['login']) )exit;
 
@@ -522,9 +523,10 @@ if ($exist=="true")
 
 <H1 class='title'>Carnet d'absences</H1>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <fieldset id="field7">
 <legend id="legende">Saisie / visualisation des absences</legend>
-<?
+<?php
 //affichage du formulaire
 		echo '<div id="abs-contenu">';
 	//si pas de classe de même niveau dans la matière

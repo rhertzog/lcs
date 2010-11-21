@@ -53,30 +53,30 @@ if (isset($_POST['class'])){$clas= $_POST['class'];}
 <![endif]-->
 </HEAD>
 <BODY>
-<div class="plan-titre">Planning des Devoirs Surveillés de <?php echo $clas;?></div>
+<div class="plan-titre">Planning des Devoirs Surveill&#233;s de <?php echo $clas;?></div>
 <?
 
 //Détermination du jour courant
-if (isset($_REQUEST['JourCourant'])) 
+if (isset($_POST['JourCourant'])) 
 	{
-	$JourCourant = $_REQUEST['JourCourant'];
+	$JourCourant = $_POST['JourCourant'];
 	
 	//mois suivant
-	if (isset($_REQUEST['msuiv'])) 
+	if (isset($_POST['msuiv'])) 
 		{
 		$Lundi=DebutSemaine($JourCourant + 28 * 86400);
 		} 
 	//semaine suivante
-	elseif (isset($_REQUEST['suiv'])) 
+	elseif (isset($_POST['suiv'])) 
 		{
 		$Lundi=DebutSemaine($JourCourant + 7 * 86400);
 		} 
 		//semaine précédente
-	elseif (isset($_REQUEST['mprec']))
+	elseif (isset($_POST['mprec']))
 		{			
 		$Lundi=DebutSemaine($JourCourant - 28 * 86400);
 		}		
-		elseif (isset($_REQUEST['prec']))
+		elseif (isset($_POST['prec']))
 		{
 			//tableau hebdomadaire commençant au Lundi
 		$Lundi=DebutSemaine($JourCourant - 7 * 86400);

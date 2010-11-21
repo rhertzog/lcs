@@ -28,11 +28,11 @@ header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
 header("Pragma: no-cache");
 
-if(isset($_REQUEST['blabla']) && isset($_REQUEST['kan']))
+if(isset($_POST['blabla']) && isset($_POST['kan']))
 {
-$tsmp=$_REQUEST['kan'];
-$cible=$_REQUEST['blabla'];
-$ann_arch=$_REQUEST['thean_arch'];
+$tsmp=$_POST['kan'];
+$cible=$_POST['blabla'];
+$ann_arch=$_POST['thean_arch'];
 // Connexion à la base de donnees
 require_once ('../Includes/config.inc.php');
 

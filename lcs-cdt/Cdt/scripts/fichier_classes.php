@@ -1,4 +1,4 @@
-<?
+<?php
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -10,6 +10,8 @@
    =================================================== */
 session_name("Cdt_Lcs");
 @session_start(); 
+include "../Includes/check.php";
+if (!check()) exit;
 //error_reporting(0);
 //si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
@@ -44,7 +46,7 @@ if (isset($_POST['Sauver']))
 	</HEAD>
 <BODY LANG="fr-FR" DIR="LTR">
 <H1 class='title'>Configuration du cahier de textes</H1>
-<?
+<?php
 /**************************************************
 * positionnement du flag d'absence dans le fichier de conf *
 ***************************************************/
@@ -250,12 +252,14 @@ if (isset($_POST['Archiver']))
 		{
 		echo "<script type='text/javascript'>";
 		echo" if (confirm('Remplacer l\'archive existante ? ')){";	        
-		echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'"+ "?delarch=" + "yes" + "&nom_arch=" + "'.$name_arch.'#bdd" ;} else {';
-		echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'"   ;} </script> ';}
+		echo ' location.href = "';
+		echo $_SERVER['PHP_SELF'];
+		echo '"+ "?delarch=" + "yes" + "&TA=" + "'.md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'"+ "&nom_arch=" + "'.$name_arch.'#bdd" ;} else {';
+		echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'"  ;} </script> ';}
 		}
 	
 //confirmation de remplacement de l'archive	
-if (isset($_GET['delarch']))
+if (isset($_GET['delarch']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])))
 	{
 	if ($_GET['delarch']=='yes')
 		{
@@ -275,17 +279,20 @@ if (isset($_GET['delarch']))
 		if (!($result1&&$result2&&$result3&&$result4)) $mess2="<h3 class='nook'>  l'achive n'a pu &#234;tre cr&#233;&#233;e";
 		}
 	}
+	
 //initilisation des tables
 	if (isset($_POST['Vider']))
 			{
 			echo "<script type='text/javascript'>";
-			echo" if (confirm('Confirmer l\'effacement du contenu des tables cahiertxt, absences, devoir et onglets ? ')){";	        
-			echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'"+ "?vidtab=" + "yes" ;} else {';
+			echo " if (confirm('Confirmer l\'effacement du contenu des tables cahiertxt, absences, devoir et onglets ? ')){";	        
+			echo ' location.href = "';
+			echo $_SERVER['PHP_SELF'];
+			echo '"+ "?vidtab=" + "yes" + "&TA=" + "'.md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'";} else {';
 			echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'"   ;} </script> ';
 			}
 	
 //confirmation d'initialisation des tables	
-if (isset($_GET['vidtab']))
+if (isset($_GET['vidtab']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])))
 	{
 	if ($_GET['vidtab']=='yes')
 		{
@@ -341,10 +348,11 @@ function get_key()
 		}
 
 ?><form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#liste'; ?>" method="post" enctype="multipart/form-data">
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <a name="liste"></a>
 <fieldset id="field7">
 <legend id="legende"> Cr&eacute;ation du fichier &quot;Liste des classes&quot;  &nbsp  
-<?
+<?php
 //affichage de la liste des classes
 include ("../Includes/data.inc.php");
 			$jo="";
@@ -360,7 +368,7 @@ include ("../Includes/data.inc.php");
  
 </legend>
 <div ALIGN=LEFT>
-<?
+<?php
 /**********************
  affichage du formulaire *
 ************************/
@@ -398,11 +406,12 @@ include ("../Includes/data.inc.php");
 </fieldset>
 </form>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#key'; ?>" method="post">
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <a name="key"></a>
 <fieldset id="field7">
 <legend id="legende"> Cryptage</legend>
 <div ALIGN=LEFT>
-<?
+<?php
 echo '<H4 class="perso"> L\'acc&eacute;s au cahier de texte par les parents se fait par un lien avec le nom des classes crypt&eacute;es. Le crytage doit &#234;tre 
 renouvel&eacute; en d&eacute;but de chaque ann&eacute;e pour que les liens de l\'ann&eacute;e pr&eacute;c&eacute;dente ne soient plus valides.
 		<P>
@@ -415,6 +424,7 @@ renouvel&eacute; en d&eacute;but de chaque ann&eacute;e pour que les liens de l\
 </fieldset>
 </form>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#abs'; ?>" method="post">
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <a name="abs"></a>
 <fieldset id="field7">
 <legend id="legende"> Visualisation des absences </legend>
@@ -437,12 +447,14 @@ echo '<H4 class="perso"><br /> Le carnet d\'absences pour les &eacute;l&egrave;v
 </div>
 </fieldset>
 </form>
-<a name="bdd"></a>
+
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#bdd'; ?>" method="post" enctype="multipart/form-data">
-<fieldset id="field7">
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
+<a name="bdd">
+</a><fieldset id="field7">
 <legend id="legende"> Gestion de la base de donn&#233;es</legend>
 <div ALIGN=LEFT>
-<?
+<?php
 echo '
 <ol><H4 class="perso">
 <li><u><b>Archivage</b></u><P>En fin d\'ann&#233;e scolaire, vous pouvez archiver le cahier de textes, ce qui permettra aux profs de consulter leur cahier des ann&#233;es ant&#233;rieures.<br /> Indiquez ci dessous le nom que vous voulez donner &#224; l\'archive. Ce nom servant &#224; renommer les tables de donn&#233;es, ne mettez pas de caract&#232;res -  :  / \\ etc ... Il est conseill&#233; de simplement remplacer les chiffres dans le nom propos&#233;.<br /><br />
@@ -480,11 +492,12 @@ S&#233;lectionner le fichier de sauvegarde :
 </fieldset>
 </form>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#creneau'; ?>" method="post" >
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <a name="creneau"></a>
 <fieldset id="field7">
 <legend id="legende"> Param&egrave;trage des cr&eacute;neaux horaires </legend>
 <div ALIGN=LEFT>
-<?
+<?php
 //Affichage du formulaire de parametrage des creneaux horaires
 
 		include "../Includes/creneau.inc.php";

@@ -14,6 +14,8 @@ header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
   
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) {echo "Erreur";exit;}
 //si la page est appeleee par un utilisateur non identifié
 if (!isset($_SESSION['login']) )exit;
 
@@ -25,7 +27,7 @@ header("Content-Type: text/plain" );
 header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
 header("Pragma: no-cache");
-if(isset($_REQUEST['blabla']) && isset($_REQUEST['cibl']))
+if(isset($_POST['blabla']) && isset($_POST['cibl']))
 {
 if (get_magic_quotes_gpc()) require_once("/usr/share/lcs/Plugins/Cdt/Includes/class.inputfilter_clean.php");
 else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
@@ -35,8 +37,8 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 				
 		if (get_magic_quotes_gpc())
 		    {
-			$Contenu  =htmlentities($_REQUEST['blabla']);
-			$Cib  =htmlentities($_REQUEST['cibl']);
+			$Contenu  =htmlentities($_POST['blabla']);
+			$Cib  =htmlentities($_POST['cibl']);
 			$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
 			$cont = $oMyFilter->process($Contenu);
 			$cible = $oMyFilter->process($Cib);
@@ -44,8 +46,8 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 		else
 			{
 			// htlmpurifier
-			$Contenu = $_REQUEST['blabla'];
-			$Cib = addSlashes($_REQUEST['cibl']);
+			$Contenu = $_POST['blabla'];
+			$Cib = addSlashes($_POST['cibl']);
 			$config = HTMLPurifier_Config::createDefault();
 	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
 	    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
@@ -55,7 +57,7 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	   		$cont = mysql_real_escape_string($cont);
 			}
 				
-		$cible= $_REQUEST['cibl'];
+		$cible= $_POST['cibl'];
 		$rq = "UPDATE  onglets SET postit='$cont' WHERE id_prof='$cible'";
 		
 	// lancer la requete

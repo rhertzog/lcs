@@ -68,7 +68,7 @@ include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");
 </head>
 
 <body >
-<?
+<?php
 
 //on recupere le parametre de la rubrique
 if (isset($_GET['rubrique']))
@@ -186,7 +186,8 @@ if ($vis) echo '<div id="visa-cdt'.$vis.'">'.$datv.'</div>';
 <a href="mailto:<?php echo $_SESSION['aliasprof']."@".$domain; ?>" > <img src="../images/mail.png" alt="Envoyer un mail"
          title="Envoyer un mail &#224; <?php echo $_SESSION['proffull']; ?>" border=0 ></a>
 </form>
-<?
+
+<?php
 /*========================================================================
    - Affichage du contenu du cahier de textes  -
    =======================================================================*/

@@ -1,4 +1,4 @@
-<?
+<?php
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -37,6 +37,8 @@ if ($code!='s61lyc6uby54trh')
 	}
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) exit;
 	//si la page est applée par un utilisateur non identifié,
 		if (!isset($_SESSION['cequi'])) {exit;}
 		// autorisation d'accés ?  si pas prof, non autorisé
@@ -107,6 +109,7 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 	$mati= explode(":",$enrg[1]);
 	$mati[1]=preg_replace ( "/[\r\n]+/", "", $mati[1] );
 	$ong=$enrg[0].":".$mati[1];
+	$ong=mb_ereg_replace("[[:blank:]]$","",$ong);
 	if (!in_array($ong,$tab) && $enrg[0]!="" && $mati[1]!="")
 		{
 		$tab[$loop]=$ong;
@@ -193,7 +196,7 @@ if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
 //§2. SUPPRESSION D'UNE RUBRIQUE
 
 //si la suppression d'une rubrique est confirmée
-if (isset($_GET['delrub'])&& isset($_GET['num']) && $_GET['TA']==$_SESSION['RT']) 
+if (isset($_GET['delrub'])&& isset($_GET['num']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF']))) 
 	{
 	$action=$_GET['delrub'];
 	$cible=$_GET['num'];
@@ -268,6 +271,7 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 <div id="cfg-container">
 <div id="cfg-contenu">
 <form id="cfg-form" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>?bn16drgv2r=s61lyc6uby54trh" method="post">
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <H1 class='title'><U>Personnalisation du cahier de textes de</U> &nbsp<FONT COLOR="#990000"><?echo $_SESSION['nomcomplet'];?></FONT></h1>
 <ol>
 <li>Cr&eacute;ation des rubriques (onglets) <br />
@@ -372,13 +376,13 @@ if (isset($_GET["suppr"]))
 	echo "<script type='text/javascript'>";
 	echo"      if (confirm('Confirmer la suppression de cette rubrique')){";
 	echo ' location.href = "';
-	echo $_SERVER['PHP_SELF'];echo'" + "?num=" +'." '";
+	echo htmlentities($_SERVER['PHP_SELF']);echo'" + "?num=" +'." '";
 	echo $_GET["numong"] ;
 	echo "'".' + "&delrub=" +'."1245";
-	echo ' + "&TA=" +'." '". $_SESSION['RT']."'";
+	echo ' + "&TA=" +'." '". md5($_SESSION["RT"].htmlentities($_SERVER["PHP_SELF"]))."'";
 	echo " ;} else  {";
 	echo ' location.href = "';
-	echo $_SERVER['PHP_SELF'];
+	echo htmlentities($_SERVER['PHP_SELF']);
 	echo '"; } </script>';
 	}
 echo '</div>'; 	//fin du contenu

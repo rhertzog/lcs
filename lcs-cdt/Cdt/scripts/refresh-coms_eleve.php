@@ -28,10 +28,10 @@ header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
 header("Pragma: no-cache");
 
-if(isset($_REQUEST['blabla']) && isset($_REQUEST['kan']))
+if(isset($_POST['blabla']) && isset($_POST['kan']))
 {
-$tsmp=$_REQUEST['kan'];
-$cible=$_REQUEST['blabla'];
+$tsmp=$_POST['kan'];
+$cible=$_POST['blabla'];
 //echo $cible.'-'.$tsmp;exit;
 include_once("../Includes/fonctions.inc.php");
 		include_once ('../Includes/markdown.php');//convertisseur text-->HTML

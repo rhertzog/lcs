@@ -93,14 +93,11 @@ $tsmp=time();
 	</HEAD>
 <BODY LANG="fr-FR" DIR="LTR">
 <H1 class='title'>Acc&egrave;s au cahier de texte en ligne</H1>
-<?
-
-?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
 <fieldset id="field7">
 <legend id="legende">G&eacute;n&eacute;ration d'un lien d'acc&egrave;s direct</legend>
 
-<?
+<?php
 
 //affichage du formulaire
 

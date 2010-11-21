@@ -1,4 +1,4 @@
-<?
+<?php
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -127,7 +127,7 @@ global 	$dtajadebut, $dtajafin;
 <BODY LANG="fr-FR" DIR="LTR">
 <H1 class='title'></H1>
 
-<?
+<?php
 
 if (isset($_GET['df'])) 
 	{
@@ -151,14 +151,14 @@ $Morceauc=explode('/',$_GET['df']);
 	$dtajaf_dif=$jour_f."/".$mois_f."/".$an_f;
 	$mesdatedebut= " du ". $dtajaf_dif;
 	}
-	
 
-?></font>
+?>
+</font>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" >
 <fieldset id="field7">
 <legend id="legende">Bilan des Absences & Retards  de <?php echo $nom;?><?php echo $mesdatedebut . $mesdatefin ?></legend>
 
-<?
+<?php
 
 if (isset($_GET['dd']))
 	{
@@ -187,6 +187,3 @@ if (isset($_GET['dd']))
 </FORM>
 </BODY>
 </HTML>
-
-
-

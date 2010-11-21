@@ -10,6 +10,7 @@
    ============================================= */
 session_name("Cdt_Lcs");
 @session_start();
+
 if ((!isset($_SESSION['version'])) || (!isset( $_SESSION['saclasse']) && !isset($_SESSION['login'])) ) exit; 
 include ('../Includes/data.inc.php');
 include_once("../Includes/fonctions.inc.php");
@@ -124,7 +125,8 @@ echo '
         	if ($contenu_aide_memoire !="") echo $contenu_aide_memoire;
 			else echo "Penser &agrave; ...";
 			echo '</textarea><br />
-			<input name="button"  type="button" onClick="go2(\''. $_SESSION['login'].'\');" value="Enregistrer" title="Enregistrer " />			
+			<input name="button"  type="button" onClick="go2(\''. $_SESSION['login'].'\',\''.md5($_SESSION['RT'].htmlentities('/Plugins/Cdt/scripts/posti2.php')).'\');"
+			value="Enregistrer" title="Enregistrer " />			
 		</form>
 	</div><!--fin du div deroulant_1-->
 </div><!--fin du div deroul-contenu-->

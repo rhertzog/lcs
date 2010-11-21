@@ -10,6 +10,8 @@
    ============================================= */
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) exit; 
 
 //si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
@@ -197,6 +199,7 @@ echo '</caption>';
    ================================*/
 ?>
 <form id="impression" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>?rubrique=<?echo $cible;?>&arch=<?echo $arch;?>" method="post" name= "cahtxt" >
+<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 <H1 class='title'>Impression du Cahier de Textes</h1>
 <fieldset id="field7">
 <legend id="legende">Classe  de <B> <?echo $classe_active .'</B> en <B>'. $mati_active ?></B></legend>

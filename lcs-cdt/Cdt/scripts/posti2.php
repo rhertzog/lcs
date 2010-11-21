@@ -14,10 +14,12 @@ header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
   
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) {echo "Erreur";exit;}
 //si la page est appeleee par un utilisateur non identifié
 if (!isset($_SESSION['login']) )exit;
 
-//si la page est appelee par un utilisateur non prof
+//si la page est appelee par un utilisateur non eleve
 elseif ($_SESSION['cequi']!="eleve") exit;
 //indique que le type de la reponse renvoyee au client sera du Texte
 header("Content-Type: text/plain" ); 
@@ -25,7 +27,7 @@ header("Content-Type: text/plain" );
 header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
 header("Pragma: no-cache");
-if(isset($_REQUEST['blibli']) && isset($_REQUEST['cibl']))
+if(isset($_POST['blibli']) && isset($_POST['cibl']))
 {
 if (get_magic_quotes_gpc()) require_once("/usr/share/lcs/Plugins/Cdt/Includes/class.inputfilter_clean.php");
 else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';

@@ -11,7 +11,8 @@
    ============================================= */
 session_name("Cdt_Lcs");
 @session_start();
-
+include "../Includes/check.php";
+if (!check()) exit; 
 //si la page est appelee par un utilisateur non identifiee
 if (!isset($_SESSION['login']) )exit;
 
@@ -198,7 +199,7 @@ else $cible="";
    ================================*/
    
   //Suppression d'un commentaire apres confirmation
-if (isset($_GET['com'])&& isset($_GET['rubrique']) && $_GET['TA']==$_SESSION['RT'] ) 
+if (isset($_GET['com'])&& isset($_GET['rubrique']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])) ) 
 	{
 	
 	//l'article existe il ?
@@ -216,7 +217,7 @@ if (isset($_GET['com'])&& isset($_GET['rubrique']) && $_GET['TA']==$_SESSION['RT
 	}
 //fin de suppression d'un commentaire
 
-if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']==$_SESSION['RT'])
+if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])))
 { 
 //require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	// Traiter les donnees
@@ -447,7 +448,7 @@ if (isset($_POST["suppr"]))
 	echo ' location.href = "';echo $_SERVER['PHP_SELF'];
 	echo'" + "?com=" +'." '"; echo $_POST["number"] ;
 	echo "'".' + "&rubrique=" +'." '";echo $_POST['rubriq']."'";
-	echo ' + "&TA=" +'." '". $_SESSION['RT']."'".' ;}</script>';
+	echo ' + "&TA=" +'." '". md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF']))."'".' ;}</script>';
 	}
 	
 
@@ -544,7 +545,7 @@ if (isset($tsmp3))
 <!--bloc de gauche pour la saisie-->
 <div id="saisie">
 	<form id="form-saisie" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>?rubrique=<?echo $cible;?>" method="post" name="cahtxt" >
-	
+	<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
 	<div id="boite3">
 		<div id="boite1">  
 			<div id="crsdu">Cours  du :
@@ -564,7 +565,6 @@ if (isset($tsmp3))
 		</div><!--fin du div boite 2-->
 		
 	</div><!--fin de la boite 3-->
-	<INPUT name="TA" type="hidden"  value="<?php echo $_SESSION['RT']; ?>">
 	<div id="boite4">
 		<?php  if (isset($_POST['modif'])&& isset($_POST['number'])) {
 			echo ('<INPUT name="rubrique" type="hidden" id="rubrique" value="'.$cible.'">
@@ -583,8 +583,8 @@ if (isset($tsmp3))
 				<li><input type="button" title="Annuler" value="" onClick="history.back()" class="submit-del"></li>
 				<li><input type="submit" name="planning" value="" title="Planifier un devoir en '.$classe_active.'" class="submit-plan"></li>
 				<li><a class="a-imprime"title="Imprimer" href="imprim.php?rubrique='.$cible.'  " target="_blank"></a></li>
-				<li><input type="button" value="" onclick="modeleLoad('. $cible.')" class="load-model" title="Appliquer le mod&#232;le"></li>
-				<li><input type="button" value="" onclick="modeleSave('. $cible.')" class="save-model" title="Enregistrer comme mod&#232;le"></li>
+				<li><input type="button" value="" onclick="modeleLoad('. $cible.',\''.md5($_SESSION['RT'].htmlentities(htmlentities('/Plugins/Cdt/scripts/load_modele.php'))).'\')" class="load-model" title="Appliquer le mod&#232;le"></li>
+				<li><input type="button" value="" onclick="modeleSave('. $cible.',\''.md5($_SESSION['RT'].htmlentities(htmlentities('/Plugins/Cdt/scripts/save_modele.php'))).'\')" class="save-model" title="Enregistrer comme mod&#232;le"></li>
 				<li><a href="#" title="Enregistrements multiples" onClick="diffuse_popup('.$cible.'); return false" class="a-saveplus"></a></li>
 				<li><br/><br/></li>
 				<li><input type="submit" title="Enregistrer" name="enregistrer" value="" class="submit-save"></li>
@@ -617,7 +617,7 @@ if (isset($tsmp3))
         	<textarea id="aide-memoire" name="monpostit"  class="MYmceAdvanced" style="width:100%" rows="17" cols="22">
         	<?if ($contenu_postit !="") echo $contenu_postit;
 			else echo "Penser &agrave; ...";?></textarea>
-			<input name="button"  id="bt-erg" type="button" onClick="go(<?php echo $cible; ?>);" value="" title="Enregistrer le post-it" />			
+			<input name="button"  id="bt-erg" type="button" onClick="go(<?php echo $cible.",'".md5($_SESSION['RT'].htmlentities('/Plugins/Cdt/scripts/posti1.php'))."'"; ?>);" value="" title="Enregistrer le post-it" />			
 		</form>
 	</div><!--fin du div deroulant_1-->
 
@@ -781,6 +781,7 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  echo "' ><INPUT name='date' type='hidden' id='date' value='".$date."'>";
 	  if($ligne[6]=="0") echo "<INPUT TYPE='SUBMIT' NAME='modif' VALUE='' class='bt-modifier'>&nbsp;
 	  <INPUT TYPE='SUBMIT' NAME='suppr' VALUE='' class='bt-supprimer'>";
+	  echo '<INPUT name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'">';
 	  echo "</form>";
 	  echo '</th></tr>';
 	  echo '</tbody>';
@@ -813,6 +814,7 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  echo "' ><INPUT name='date' type='hidden' id='date' value='".$date."'>";
 	  if($ligne[6]=="0") echo "<INPUT TYPE='SUBMIT' NAME='modif' VALUE='' class='bt-modifier'>&nbsp;
 	  <INPUT TYPE='SUBMIT' NAME='suppr' VALUE='' class='bt-supprimer'>";
+	  echo '<INPUT name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'">';
 	  echo "</form>";
 	  echo '</th></tr>';
 	  echo '</tbody>';

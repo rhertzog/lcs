@@ -1,4 +1,4 @@
-<?
+<?php
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
@@ -63,7 +63,7 @@ if (isset($_POST['copie']))
 </head>
 
 <body >
-<?
+<?php
 echo "<FORM ACTION='";
 echo htmlentities($_SERVER["PHP_SELF"]);
 echo "' METHOD='POST'>";
