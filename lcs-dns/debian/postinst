@@ -4,14 +4,14 @@
 set -e
 
 # Exit fatal
-function exit_fatal 
+exit_fatal()
 {
 	echo "Fatal: $1" >&2
 	exit 0
 }
 
 # Read params in lcs_db.params
-function get_lcsdb_params
+get_lcsdb_params()
 {
     PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
     echo "$PARAMS"
