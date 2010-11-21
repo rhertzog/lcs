@@ -1,3 +1,9 @@
+lcs-dns (2.4.7) UNRELEASED; urgency=low
+
+  * Fix bug define function exit_fatal and get_lcsdb_params in postinst
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 21 Nov 2010 18:15:15 +0100
+
 lcs-dns (2.4.6) Lcs; urgency=low
 
   * Fix bug when building localnet.db and rev 
