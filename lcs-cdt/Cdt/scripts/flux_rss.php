@@ -212,9 +212,8 @@ if (count($mattaf)>0)
 	{
 for ($loop=0; $loop < count($dattaf) ; $loop++)
  {
-   echo 
-'<item>
-  <title>'.$mattaf[$loop].' :  '.$preftaf[$loop] .'  '. $proftaf[$loop].'</title>
+echo '<item>
+  <title>'.stripslashes(xml_character_encode($mattaf[$loop])).' :  '.$preftaf[$loop] .'  '. $proftaf[$loop].'</title>
   <description> Pour le '.$dattaf[$loop]."/&lt;br /&gt;".stripslashes(xml_character_encode($texttaf[$loop])).' </description>
   <link>http://'.$hostn.'/Plugins/Cdt/scripts/poprss.php?id='.$idtafcrypt[$loop].'</link>
 </item>'. "\n";
@@ -223,8 +222,7 @@ for ($loop=0; $loop < count($dattaf) ; $loop++)
 }
 else
 {
-	echo 
-'<item>
+echo '<item>
   <title>Rien de programmé !</title>
   <description> Mais en cherchant bien ...</description>
   <link>http://'.$hostn.'/</link>
