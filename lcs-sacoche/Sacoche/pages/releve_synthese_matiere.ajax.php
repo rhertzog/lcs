@@ -59,8 +59,6 @@ $liste_eleve   = implode(',',$tab_eleve);
 if( $matiere_id && $matiere_nom && $groupe_id && $groupe_nom && count($tab_eleve) && ( $periode_id || ($date_debut && $date_fin) ) && $retroactif && $mode_synthese && $couleur && $legende )
 {
 
-	ajouter_log_PHP( $log_objet='Demande de bilan' , $log_contenu=serialize($_POST) , $log_fichier=__FILE__ , $log_ligne=__LINE__ , $only_sesamath=true );
-
 	// Période concernée
 	if($periode_id==0)
 	{
@@ -143,15 +141,15 @@ if( $matiere_id && $matiere_nom && $groupe_id && $groupe_nom && count($tab_eleve
 	if($_SESSION['USER_PROFIL']=='eleve')
 	{
 		echo'<ul class="puce">';
-		echo'<li><label class="alerte"><a class="lien_ext" href="'.$dossier.$fichier_lien.'.pdf">Télécharger la synthèse au format PDF (imprimable).</a></label></li>';
+		echo'<li><label class="alerte"><a class="lien_ext" href="'.$dossier.$fichier_lien.'.pdf">Archiver / Imprimer (format <em>pdf</em>).</a></label></li>';
 		echo'</ul><p />';
 		echo $releve_HTML;
 	}
 	else
 	{
 		echo'<ul class="puce">';
-		echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_lien.'">Synthèse au format HTML (détails et informations complémentaires).</a></li>';
-		echo'<li><a class="lien_ext" href="'.$dossier.$fichier_lien.'.pdf">Synthèse au format PDF (mis en page, prêt pour l\'impression).</a></li>';
+		echo'<li><a class="lien_ext" href="'.$dossier.$fichier_lien.'.pdf">Archiver / Imprimer (format <em>pdf</em>).</a></li>';
+		echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_lien.'">Explorer / Détailler (format <em>html</em>).</a></li>';
 		echo'</ul><p />';
 	}
 }

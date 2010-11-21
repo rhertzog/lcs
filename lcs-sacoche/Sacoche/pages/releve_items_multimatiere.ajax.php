@@ -61,8 +61,6 @@ $liste_eleve   = implode(',',$tab_eleve);
 if( $orientation && $couleur && $legende && $marge_min && $cases_nb && $cases_largeur && ( $periode_id || ($date_debut && $date_fin) ) && $retroactif && $matiere_id && $groupe_id && $groupe_nom && count($tab_eleve) && count($tab_type) )
 {
 
-	ajouter_log_PHP( $log_objet='Demande de bilan' , $log_contenu=serialize($_POST) , $log_fichier=__FILE__ , $log_ligne=__LINE__ , $only_sesamath=true );
-
 	// Période concernée
 	if($periode_id==0)
 	{
@@ -138,15 +136,15 @@ if( $orientation && $couleur && $legende && $marge_min && $cases_nb && $cases_la
 	if($_SESSION['USER_PROFIL']=='eleve')
 	{
 		echo'<ul class="puce">';
-		echo'<li><label class="alerte"><a class="lien_ext" href="'.$dossier.$fichier_lien.'_individuel.pdf">Télécharger le le bilan d\'items au format PDF (imprimable).</a></label></li>';
+		echo'<li><label class="alerte"><a class="lien_ext" href="'.$dossier.$fichier_lien.'_individuel.pdf">Archiver / Imprimer (format <em>pdf</em>).</a></label></li>';
 		echo'</ul><p />';
 		echo $releve_HTML_individuel;
 	}
 	else
 	{
 		echo'<ul class="puce">';
-		echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_lien.'_individuel">Bilan d\'items au format HTML (tableaux triables, liens...).</a></li>';
-		echo'<li><a class="lien_ext" href="'.$dossier.$fichier_lien.'_individuel.pdf">Bilan d\'items au format PDF (imprimable).</a></li>';
+		echo'<li><a class="lien_ext" href="'.$dossier.$fichier_lien.'_individuel.pdf">Archiver / Imprimer (format <em>pdf</em>).</a></li>';
+		echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_lien.'_individuel">Explorer / Manipuler (format <em>html</em>).</a></li>';
 		echo'</ul><p />';
 	}
 }

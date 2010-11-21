@@ -59,8 +59,6 @@ $liste_eleve   = implode(',',$tab_eleve);
 if( $orientation && $couleur && $legende && $marge_min && $cases_nb && $cases_largeur && $date_debut && $date_fin && $retroactif && $matiere_id && $groupe_id && $groupe_nom && count($tab_eleve) && count($tab_type) )
 {
 
-	ajouter_log_PHP( $log_objet='Demande de bilan' , $log_contenu=serialize($_POST) , $log_fichier=__FILE__ , $log_ligne=__LINE__ , $only_sesamath=true );
-
 	// $tab_date = explode('/',$date_debut);
 	$date_mysql_debut = false;
 	// $tab_date = explode('/',$date_fin);
@@ -121,15 +119,15 @@ if( $orientation && $couleur && $legende && $marge_min && $cases_nb && $cases_la
 	if(in_array('synthese',$tab_type))
 	{
 		echo'<ul class="puce">';
-		echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_lien.'_synthese">Synthèse collective au format HTML (tableaux triables, liens...).</a></li>';
-		echo'<li><a class="lien_ext" href="'.$dossier.$fichier_lien.'_synthese.pdf">Synthèse collective au format PDF (imprimable).</a></li>';
+		echo'<li><a class="lien_ext" href="'.$dossier.$fichier_lien.'_synthese.pdf">Synthèse collective &rarr; Archiver / Imprimer (format <em>pdf</em>).</a></li>';
+		echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_lien.'_synthese">Synthèse collective &rarr; Explorer / Manipuler (format <em>html</em>).</a></li>';
 		echo'</ul><p />';
 	}
 	if(in_array('individuel',$tab_type))
 	{
 		echo'<ul class="puce">';
-		echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_lien.'_individuel">Relevé individuel au format HTML (tableaux triables, liens...).</a></li>';
-		echo'<li><a class="lien_ext" href="'.$dossier.$fichier_lien.'_individuel.pdf">Relevé individuel au format PDF (imprimable).</a></li>';
+		echo'<li><a class="lien_ext" href="'.$dossier.$fichier_lien.'_individuel.pdf">Relevé individuel &rarr; Archiver / Imprimer (format <em>pdf</em>).</a></li>';
+		echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_lien.'_individuel">Relevé individuel &rarr; Explorer / Manipuler (format <em>html</em>).</a></li>';
 		echo'</ul><p />';
 	}
 }
