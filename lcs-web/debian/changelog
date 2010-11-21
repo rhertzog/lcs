@@ -1,4 +1,4 @@
-lcs-web (2.4.8~1) Lcs; urgency=low
+lcs-web (2.4.8~2) UNRELEASED; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -7,7 +7,7 @@ lcs-web (2.4.8~1) Lcs; urgency=low
   * Add test if lcs-deskto is activate and browser is not ie5 or ie6 in lcs/index.php
   * Update and synchronize with SE3 scripts : Import Sconet
   * Add chg_gidNumber.sh in /usr/share/lcs/scripts
-  * Replace deprecated PHP 5.3 functions :
+  * Replace deprecated PHP 5.3 functions
   * Don't allow reauthentication if already authenticate in auth.php
   * Rename function search_people_trash to search_people_trash_lcs 
 
@@ -23,7 +23,7 @@ lcs-web (2.4.8~1) Lcs; urgency=low
   * add activation/desactivation modules
   * fix damage collateral of change.sh on mod_mail.php
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 06 Nov 2010 21:56:03 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 21 Nov 2010 13:39:57 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
