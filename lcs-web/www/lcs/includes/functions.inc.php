@@ -264,7 +264,7 @@ include ("/var/www/lcs/includes/xoft.php");
                 // Stocke la session et met a jour la table personne avec les stats
                 //$result=mysql_db_query("$DBAUTH","INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip')", $authlink);
                 //$result=mysql_db_query("$DBAUTH","UPDATE personne SET stat=$stat WHERE id=$idpers");
-		$query="INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip'";
+		$query="INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip')";
                 $result=@mysql_query($query,$authlink);
                 $query="UPDATE personne SET stat=$stat WHERE id=$idpers";
                 $result=@mysql_query($query,$authlink);
