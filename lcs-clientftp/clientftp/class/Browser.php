@@ -366,9 +366,32 @@ class Browser {
 	  */
 	function getEntries($path) {
 
-		$relativePath = $this->getRelativePath($path);
-		$currentLocation = realpath($this->basepath . $relativePath);
+		if($path === '.' or empty($path))
+			$relativePath = '';
+		else
+			$relativePath = "/$path";
+		
+		$currentLocation = $this->basepath . $relativePath;
 	
+
+		/*
+		 * If the current $path is a symbolic link then we have to check that it
+		 * points to somewhere in the user home directory or in /srv/zone_p/
+		*/
+		if(is_link($currentLocation)) {
+			$link_target = realpath(readlink($currentLocation));
+
+			if(strpos($link_target, $this->basepath) !== 0
+			   and strpos($link_target, '/srv/zone_p/') !== 0) {
+
+				Browser_Utilities :: log(
+					"[getEntries] currentLocation $currentLocation is a " .
+					"symlink to an insecure destination $link_target");
+
+				return false;
+			}
+		}
+
 		// get list of entries (raw data, result of php functions)
 		$list = $this->getListOfEntries( $currentLocation );
 	

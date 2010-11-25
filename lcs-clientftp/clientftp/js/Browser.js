@@ -206,7 +206,7 @@ var Browser = {
 		
 		for(var i = 0; i < this.entries.length; i++) {
 			
-			if (this.entries[i].type == 'dir') {
+			if (this.entries[i].type == 'dir' || this.entries[i].type == 'link') {
 				noOfDirs++;
 			} else {
 				noOfFiles++;
@@ -296,7 +296,7 @@ var Browser = {
 		}
 		
 		// we have the entry
-		if (entry.type == 'dir') {
+		if (entry.type == 'dir' || entry.type == 'link') {
 			var deleteLink = Builder.node('a', {href:'javascript:void(0)', onClick:'deleteDirectory(\'' + escape(entry.relativePath) + '\'); hidePopupMenu();' }, this.getLabel('js_icons_delete'));
 			var renameLink = Builder.node('a', {href:'javascript:void(0)', onClick:'showRenameFormDiv(\'' + escape(entry.relativePath) + '\'); hidePopupMenu();' }, this.getLabel('js_icons_rename'));
 			var addToTrayLink = Builder.node('a', {href:'javascript:void(0)', onClick:'Browser.addToTray(\'' + escape(entry.name) + '\'); hidePopupMenu();' }, this.getLabel('tray_icons_add'));
@@ -341,7 +341,7 @@ var Browser = {
 		var content = null;
 		
 		// name with link (in case of dir) or without a link
-		if (entry.type == 'dir') {
+		if (entry.type == 'dir' || entry.type == 'link') {
 			var content = Builder.node('a', {href:'javascript:void(0)', onClick:'Browser.load(\'' + escape(entry.relativePath) + '\')', oncontextmenu:'iconSelMenu(\'' + escape(entry.name) + '\')'}, '');
 			
 			pictDiv.appendChild(Builder.node('img',{src:this.getIconPath(entry), align:'middle', border:0}));
@@ -407,7 +407,7 @@ var Browser = {
 		// image
 		cell_1.appendChild(Builder.node('img',{src:this.getImagePath(entry), align:'middle', hspace:3, vspace:1, border:0}))
 		// name with link (in case of dir) or without a link
-		if (entry.type == 'dir') {
+		if (entry.type == 'dir' || entry.type == 'link') {
 			cell_1.appendChild(Builder.node('a',{href:'javascript:void(0)', onClick:'Browser.load(\'' + escape(entry.relativePath) + '\')'}, this.truncate(entry.name, 50))); 
 		} else { 
 			cell_1.appendChild(Builder.node('a',{href:'javascript:void(0)',  onClick:'Browser.showDetails(\'' + escape(entry.name) + '\')' }, this.truncate(entry.name, 50))); 
@@ -417,12 +417,12 @@ var Browser = {
 		var cell_2 = document.createElement('td');
 		cell_2.setAttribute('nowrap', 'true');
 		cell_2.className = 'td75';
-		if (entry.type == 'dir') { cell_2.appendChild(document.createTextNode(this.getHumanRedableSize(0))); }
+		if (entry.type == 'dir' || entry.type == 'link') { cell_2.appendChild(document.createTextNode(this.getHumanRedableSize(0))); }
 		else { cell_2.appendChild(document.createTextNode(this.getHumanRedableSize(entry.size))); }
 		
 		// cell 3
 		var cell_3 = document.createElement('td');
-		if (entry.type != 'dir') { 
+		if (entry.type != 'dir' && entry.type != 'link') { 
 			var image = Builder.node('img',{src:this.imagesDir + "/" + "download.png", align:'middle', hspace:2, vspace:1, title:this.getLabel('js_list_title_download'), border:0});
 			cell_3.appendChild(Builder.node('a',{href:'index.php?action=DownloadForm&filename=' + escape(entry.relativePath) }, ''));
 			cell_3.childNodes[0].appendChild(image);
@@ -440,7 +440,7 @@ var Browser = {
 		var cell_5 = document.createElement('td');
 		if (entry.name != "..") { 
 			var image = Builder.node('img',{src:this.imagesDir + "/" + "delete.png", align:'middle', hspace:2, vspace:1, title:this.getLabel('js_list_title_delete'), border:0});
-			if (entry.type == 'dir') { cell_5.appendChild(Builder.node('a',{href:'javascript:void(0)',  onClick:'deleteDirectory(\'' + escape(entry.relativePath) + '\')' }, '')); }
+			if (entry.type == 'dir' || entry.type == 'link') { cell_5.appendChild(Builder.node('a',{href:'javascript:void(0)',  onClick:'deleteDirectory(\'' + escape(entry.relativePath) + '\')' }, '')); }
 			else { cell_5.appendChild(Builder.node('a',{href:'javascript:void(0)',  onClick:'deleteFile(\'' + escape(entry.relativePath) + '\')' }, '')); }
 			cell_5.childNodes[0].appendChild(image);
 		}
@@ -897,7 +897,7 @@ var Browser = {
 	},
 	
 	getIconPath: function(entry) {
-		if (entry.type == 'dir') { return this.imagesDir + "/" + "b_directory.png"; }
+		if (entry.type == 'dir' || entry.type == 'link') { return this.imagesDir + "/" + "b_directory.png"; }
 		else {
 			var ext = this.getFileExtension(entry.name);
 			this.log(2, 'file: ' + entry.name + ' extension is: ' + ext);
@@ -933,7 +933,7 @@ var Browser = {
 	},
 	
 	getImagePath: function(entry) {
-		if (entry.type == 'dir') { return this.imagesDir + "/" + "directory.png"; }
+		if (entry.type == 'dir' || entry.type == 'link') { return this.imagesDir + "/" + "directory.png"; }
 		else { return this.imagesDir + "/" + "doc.png"; }
 	},
 	
