@@ -1,0 +1,12 @@
+#!/bin/sh
+echo "Mise a jour  du script de synchronisation"
+PTP="/usr/share/lcs/Plugins/Bcdiweb";
+set_ip=""
+if [ -f $PTP/scripts/syncbcdi.sh ]; then
+set_ip=`grep "rsync://" $PTP/scripts/syncbcdi.sh | cut -f 3 -d "/"` 
+if [ -n "$set_ip" ]; then
+cat $PTP/scripts/syncbcdi.sh.in | sed -e "s/###IPBCDI###/$set_ip/g" > $PTP/scripts/syncbcdi.sh
+else 
+echo "IP serveur BCDI non trouvee"
+fi
+fi
