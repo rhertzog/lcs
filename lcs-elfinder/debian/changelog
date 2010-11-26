@@ -1,5 +1,6 @@
-lcs-elfinder (2.4.8~1) Lcs; urgency=low
+lcs-elfinder (2.4.8~2) Lcs; urgency=low
 
   * Initial release. 
+  * Fix bug in postinst
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 26 Nov 2010 10:17:06 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 26 Nov 2010 16:16:25 +0100

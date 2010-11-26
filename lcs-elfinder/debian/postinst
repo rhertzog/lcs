@@ -9,7 +9,7 @@ INDICEMAJNBR="0"
 CONF="/var/lib/lcs/$MODULE"
 PATHMOD="/usr/share/lcs/$MODULE"
 LCSAPACH2PATH="/etc/apache2/lcs-main/"
-APACHE2CONF=$LCSAPACH2PATH"70_clientftp.conf"
+APACHE2CONF=$LCSAPACH2PATH"70_elfinder.conf"
 
 if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
     #
