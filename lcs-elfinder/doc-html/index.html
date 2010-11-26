@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Modules LCS elFinder</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style type="text/css" media="all">@import "../../c/c.css";</style>
+</head>
+<body>
+
+<h1>Documentation Module LCS elFinder</h1>
+<h2>Version :</h2>
+<ul>
+	<li>Paquet module : 2.4.8</li>
+	<li> elFinder 1.1 RC</li>
+	<li> Site officiel d'elFinder <a href="http://elrte.org/elfinder" title="elFinder">http://elrte.org/elfinder</a></li>
+</ul>
+
+<h3>Limitation des access :</h3>
+<p>Pour limiter l'acc&#232;s uniquement depuis l'intranet de l'&#233;tablissement au r&#233;pertoire <tt class="computeroutput">public_html</tt> ou &#224; l'un de ses sous-r&#233;pertoires, il est possible de cr&#233;er une fichier <tt class="computeroutput">.htaccess</tt>.</p>
+
+<h3>Synthaxe du fichier <tt class="computeroutput">.htaccess</tt> :</h3>
+<p>Le fichier <tt class="computeroutput">.htaccess</tt> &#224; d&#233;pos&#233; dans le r&#233;pertoire &#224; prot&#233;ger sera :</p>
+<pre class="programlisting">
+#lcs-restrictions d'acces
+order deny,allow
+deny from all
+allow from @IPLAN@
+errordocument 403 "../Err/403.html"
+</pre>
+
+
+<h4>Comment cr&#233;er le fichier <tt class="computeroutput">.htaccess</tt> &#224; avec elFinder :</h4>
+
+<ul>
+    <li>Cr&#233;er un fichier de nom <tt class="computeroutput">.htaccess.txt</tt></li>
+    <li>Editer le fichier et copier / coller le contenu ci-dessus</li>
+    <li>Renommer le fichier <tt class="computeroutput">.htaccess.txt</tt> en <tt class="computeroutput">.htaccess</tt></li>
+</ul>
+
+</body>
+</html>
