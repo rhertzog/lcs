@@ -1,3 +1,12 @@
+lcs-imap (2.4.8~1) UNRELEASED; urgency=low
+
+  * Change authldaprc to bind to LDAP to validate credentials so that
+    it still works when userPasswd doesn't contain a crypted password
+    and when the LDAP authentication is delegated to a remote Active Directory
+    server.
+
+ -- Raphaël Hertzog <hertzog@debian.org>  Mon, 13 Sep 2010 11:07:37 +0200
+
 lcs-imap (2.4.7) Lcs; urgency=low
 
   * Modify package for new mnu.d structure
