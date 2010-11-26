@@ -50,6 +50,12 @@ case "$1" in
                     # Add param pwdPolicy in lcs_db.params
                     if  ! mysqldump lcs_db params | grep -q pwdPolicy; then
                         mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES (NULL, 'pwdPolicy', '1', '0', 'Le mot de passe par défaut doit être changé', '1');"
+		    fi
+		fi
+		if dpkg --compare-versions $2 lt 2.4.8 ; then
+		    # Add ActiveDirectory parameters
+                    if  ! mysqldump lcs_db params | grep -q ad_auth_delegation; then
+                        mysql -f < /var/lib/lcs/preinstall/lcs_db-add-ad-params.sql
                     fi
                 fi
             fi 
