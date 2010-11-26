@@ -379,7 +379,7 @@ class Browser {
 		 * points to somewhere in the user home directory or in /srv/zone_p/
 		*/
 		if(is_link($currentLocation)) {
-			$link_target = realpath(readlink($currentLocation));
+			$link_target = realpath($currentLocation);
 
 			if(strpos($link_target, $this->basepath) !== 0
 			   and strpos($link_target, '/srv/zone_p/') !== 0) {
