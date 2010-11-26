@@ -1,6 +1,6 @@
 <?php
 include("../includes/functions.inc.php");
-	$p=="finder.png"?$url_=$file:$url_=$_POST['file'];
+	$p=="finder.png"?$url_=$file:$url_="../".$_POST['file'];
 	$p=="finder.png"?$user_=$user:$user_=$_POST['user'];
 	$pat = array();
 	$pat[0] = '/core/';
@@ -13,8 +13,7 @@ include("../includes/functions.inc.php");
 	$rep[2] = '../~';
 	$rep[3] = '';
 	$url=preg_replace($pat, $rep, $url_);
-	$p=="finder.png"?$urlImg=$url:$urlImg=$url_;
-
+	$p=="finder.png"?$urlImg=preg_replace("/\.\./", "", $url):$urlImg=preg_replace("/\.\.\//", "", $url_);
 	$path_img = pathinfo($url);
 	createThumbs("../images/misc/","../images/misc/thumbs/",150);
 /*
@@ -35,16 +34,16 @@ include("../includes/functions.inc.php");
 			$res.="<div style=\"".$padd."\">";
 //			$MetaTags=alt_stat(preg_replace("/core/","..",$url));
 //			$eXimg=exif_read_data(preg_replace("/core/","..",$url));
-			$MetaTags=alt_stat(preg_replace("/core/","..",preg_replace("/thumbs/","",preg_replace("/..\/~".$user_."/","/home/".$user_."/public_html",$url_))));
+			$MetaTags=alt_stat(preg_replace("/core/","..",preg_replace("/thumbs/","",preg_replace("/\.\.\/~".$user_."/","/home/".$user_."/public_html",$url_))));
 			$ext = pathinfo($url ,PATHINFO_EXTENSION);
 			$eDate = array('/Feb/','/Apr/','/May/','/Jun/','/Jul/','/Aug/');
 			$fDate = array('Fev','Avr','Mai','Juin','Juil','Aout');
 			$res.= '<ul>';
-			$res.= "<li><img src=\"core/images/app/".$ext.".png\" style=\"width:64px;\" width=\"64\"/></li>";
+			$res.= "<li><img src=\"images/app/".$ext.".png\" style=\"width:64px;\" width=\"64\"/></li>";
 			$res.= "<li><strong>Taille : </strong>".round(($MetaTags['size']['size']/1000),1)."&nbsp;Ko</li>";
-			$res.= "<li><strong>Type : </strong>".mime_content_type(preg_replace("/core/","..",preg_replace("/thumbs/","",preg_replace("/..\/~".$user_."/","/home/".$user_."/public_html",$url_))))."</li>";
-			if(mime_content_type(preg_replace("/core/","..",preg_replace("/thumbs/","",preg_replace("/..\/~".$user_."/","/home/".$user_."/public_html",$url_))))=="image/jpeg"){
-				$eXimg=exif_read_data(preg_replace("/core/","..",preg_replace("/thumbs/","",preg_replace("/..\/~".$user_."/","/home/".$user_."/public_html",$url_))));
+			$res.= "<li><strong>Type : </strong>".mime_content_type(preg_replace("/core/","..",preg_replace("/thumbs/","",preg_replace("/...\/~".$user_."/","/home/".$user_."/public_html",$url_))))."</li>";
+			if(mime_content_type(preg_replace("/core/","..",preg_replace("/thumbs/","",preg_replace("/...\/~".$user_."/","/home/".$user_."/public_html",$url_))))=="image/jpeg"){
+				$eXimg=exif_read_data(preg_replace("/core/","..",preg_replace("/thumbs/","",preg_replace("/...\/~".$user_."/","/home/".$user_."/public_html",$url_))));
 				$resCopy= "<li><strong>Copyright :</strong> ".$eXimg['COMPUTED']['Copyright']."</li>";
 				$res.= "<strong>Dim.</strong> : ".$eXimg['COMPUTED']['Width']."x".$eXimg['COMPUTED']['Height']." pixels<br />";
 			}

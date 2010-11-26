@@ -12,8 +12,11 @@ body {
 }
 
 body {
-	background: #222;
+	/*background: #222;*/
 	font: 12px/1 'Lucida Grande', Arial, 'Liberation Sans', FreeSans, sans-serif;
+	background: -moz-radial-gradient(#123456, #456789); 
+	background-image: -webkit-gradient(radial,center center,10,center center,480,from(#123456),to(#456789)); 
+	background-repeat: no-repeat;  
 }
 
 a {
@@ -71,6 +74,7 @@ div.ui-resizable-handle {
 ----------------------------------------------------------------------------------------------------*/
 
 a.icon {
+	position: absolute; /* pour chrome et safari ??? */
 	background: url(../images/gui/trans_white.png) no-repeat -999px -999px;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
@@ -169,6 +173,15 @@ a.icon.ui-draggable-dragging {
 .window_full.ui-draggable-dragging .window_content,
 .window_full.ui-draggable-dragging .window_bottom {
 	display: block;
+}
+#lcspinner {
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+	background: #ffffff url(../images/gui/spinner.gif) no-repeat center center;
+	position:absolute;
+	z-index:10;
 }
 
 .window_full {
@@ -305,7 +318,6 @@ a.icon.ui-draggable-dragging {
 }
 
 .window_content {
-/*	background-image: url(../images/gui/bg_ora_dgrd_trsp-37.gif) repeat-x; */
 	line-height: 1.5;
 	overflow: auto;
 	top: 32px;
@@ -581,7 +593,19 @@ th.shrink {
 	color: #fff;
 	text-shadow: none;
 }
-
+/* bar_top-> message response forms
+--------------------------------------*/
+#bar_top .respform{
+	border:1px solid #cccccc;
+	background:#ffffff;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	padding: 0 10px;
+	line-height:16px;
+	margin-top:3px;
+	color:#aa0000;
+}
 /* bar_bottom -> links
 --------------------------------------*/
 #bar_bottom li {
@@ -837,7 +861,8 @@ div.jqd_formulaires .span_icon_prefs:hover {
 	-moz-box-shadow:-1px -1px 3px #aaaaaa;
 }
 div.jqd_formulaires .span_icon_prefs.selected{
-	border-color:#aaa;
+	border-color:#666;
+	border-width:1px 2px 2px 1px;
 	-moz-box-shadow:1px 1px 3px #666666;
 	
 }
@@ -1240,7 +1265,7 @@ ul.tabs li{
 	margin:3px;
 	padding:5px 10px;
 }
-.trash{
+.trash,#trash{
     position:absolute;
     bottom:20px;
     right:20px;

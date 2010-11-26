@@ -190,7 +190,7 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 	// on pourrait peut-etre creer les fenetres a la volee lors de l'appel d'une appli. 
 	// pour diminuer le temps de chargement de la page d'accueil (qques liogne de html en moins)
 	// 
-    $html.= "\t<div id=\"window_lcs_".$liste['Ids'][$x]."\" class=\"abs window ".$c."\">\n"
+/*   $html.= "\t<div id=\"window_lcs_".$liste['Ids'][$x]."\" class=\"abs window ".$c."\">\n"
     ."\t\t<div class=\"abs window_inner\">\n"
     ."\t\t\t<div class=\"window_top\">\n"
     ."\t\t\t\t<span class=\"float_left\">\n"
@@ -211,18 +211,19 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
     ."\t\t</div>\n"
     ."\t\t<span class=\"abs ui-resizable-handle ui-resizable-se\"></span>\n"
     ."\t</div>\n";
-    
+*/    
     // Too long title
 	if($liste['Titres'][$x]=="Gestion Electronique de Documents") $liste['Titres'][$x]="Gestion de Documents";
 	
 	// Status-bar
 	// Modify to display only icons ?
+	/*
     $html_status_bar .= "<li id=\"icon_dock_lcs_".$liste['Ids'][$x]."\">"
     ."<a href=\"#window_lcs_".$liste['Ids'][$x]."\">"
     ."<img src=\"".$liste['Images'][$x]."\" />"
     .$liste['Titres'][$x]
     ."</a></li>\n";
-	
+	*/
 	// Desktop icons
     $html_icon_default .= "<a class=\"abs icon ext_link\""
 	    ." style=\"left:".$left."px;top:".$top."px;\""

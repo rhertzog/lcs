@@ -1,14 +1,3 @@
-<ul id="iLcsMenu" style="display:none;">
-	<li>
-		<a href="#" class="menu_trigger iLcslink"><i>i</i>Lcs</a>
-		<ul class="menu">
-			<li><a class="ext_link" href="#">Item1</a></li>
-		</ul>
-	</li>
-	<li>
-	<a href="#" id="showWidgetsContent" class="menu_trigger iLcslink" title="">Tout cacher</a>
-	</li>
-</ul>
 	<ul>
 		<li>
 			<a class="menu_trigger" href="#">LCS Bureau</a>
@@ -17,26 +6,21 @@
 	if ( $idpers==0 ) {
  	// Un utilisateur n'est pas authentifie  
 ?>				<li>
-					<a class="open_win ext_link" rel="../lcs/auth.php" rev="auth"  href="#icon_dock_lcs_auth"><img src="../lcs/images/deconnect.png" style="width:20px;" /> Se connecter</a>
+					<a class="open_win ext_link" rel="../lcs/auth.php" rev="auth"  href="#icon_dock_lcs_auth"><img src="core/images/icons/icon_22_connect.png" style="width:20px;" /> Se connecter</a>
 				</li>
 <?php			
 	} else {
  	// Un utilisateur est authentifie  
-        if ( is_admin("Lcs_is_admin",$login) == "Y" ) {// acces aux preferences
+        if ( is_admin("Lcs_is_admin",$login) == "Y" ) {// acces aux preferences genérales
 ?>
 <?php			
 		}
 ?>
 				<li>
-					<a class="open_win ext_link" rel="prefs" rev="prefs" href="#icon_dock_lcs_prefs"><img src="../lcs/images/bt-V1-4.jpg" style="height:20px;" /> Pr&eacute;f&eacute;rences...</a>
+					<a class="open_win ext_link" rel="core/user_form_prefs.php" rev="Parametres" href="#"><img src="core/images/icons/desktop_24.png" style="height:20px;" /> Pr&eacute;f&eacute;rences...</a>
 				</li>
-<!--
 				<li>
-					<a class="open_win ext_link" rev="temp" rel="temp" title="Upload Images" href="jquery_upload_crop/upload_crop.php"><img src="../lcs/images/barre1/BP_r1_c8.gif" style="width:20px;" /> testadom</a>
-				</li>
--->
-				<li>
-					<a class="open_win ext_link" href="../lcs/logout.php"><img src="../lcs/images/connect.png" style="width:20px;" /> Se d&eacute;connecter</a>
+					<a class="open_win ext_link" href="../lcs/logout.php"><img src="core/images/icons/icon_22_stop.png" style="width:20px;" /> Se d&eacute;connecter</a>
 				</li>
 <?php			
 	}
@@ -54,6 +38,9 @@
 				<?php			
 				echo $html_menu_services;
 				?>
+				<li>
+					<a class="open_win ext_link" href="#icon_dock_lcs_elfinder" rel="../elcsfinder/elcsfinder.php" rev="elfinder" title=""><img src="../elcsfinder/images/logo_elfinder_70.png" style="width:20px;" /> Gestionnaire de fichiers</a>
+				</li>
 			</ul>
 		</li>
 		<li>

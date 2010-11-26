@@ -6,7 +6,7 @@
 	?>
 	<li>
 		<a href="../lcs/logout.php" title="Se d&eacute;connecter" style="cursor:pointer;color:#999;font-size:.8em;" rel="auth">
-			<img alt="En ligne" src="../lcs/images/connect.png" alt="" style="cursor:pointer;" />
+			<img alt="En ligne" src="core/images/icons/icon_22_stop.png" alt="" style="cursor:pointer;" />
 		</a>
 	</li>
 	<li>
@@ -69,7 +69,7 @@
 	<li>
 		<a class="open_win ext_link" href="#icon_dock_lcs_auth" rev="auth" style="cursor:pointer;color:#999;font-size:.8em;" rel="../lcs/auth.php">
 			&nbsp;&nbsp;&nbsp;&nbsp;Se connecter&nbsp;&nbsp;
-			<img alt="Acceder au formulaire de connexion" src="../lcs/images/deconnect.png" style="cursor:pointer;vertical-align:middle;" />&nbsp;&nbsp;&nbsp;&nbsp;
+			<img alt="Acceder au formulaire de connexion" src="core/images/icons/icon_22_connect.png" style="cursor:pointer;vertical-align:middle;" />&nbsp;&nbsp;&nbsp;&nbsp;
 		</a>
 	</li>
 <?php

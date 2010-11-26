@@ -31,3 +31,25 @@
 #quicklaunch li{
 	float:left;
 }
+#user_infos{
+line-heigth:12px;
+}
+#user_infos ul{
+display:block;
+float:none;
+clear:both;
+}
+#user_infos ul li{
+	background:#333333;
+float:none;
+clear:both;
+display:block;
+line-height:10px;
+}
+#user_infos ul li a{
+	background:#333333;
+float:none;
+clear:both;
+display:block;
+line-height:10px;
+}
