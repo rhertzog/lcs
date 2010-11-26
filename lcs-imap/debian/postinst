@@ -3,15 +3,12 @@
 set -e
 
 case "$1" in
-	configure)
-            # only if first configuration
-	    if [ "$2" = "" ]; then
-		. /usr/share/slis/slis-common.sh
-		handle_initial_config lcs-imap-config 90
-	    elif dpkg --compare-versions $2 lt 2.5~; then
-		sed -i -e "s/^# LDAP_AUTHBIND.*/LDAP_AUTHBIND 1/" /etc/courier/authldaprc
-		invoke-rc.d courier-authdaemon restart || true
-	    fi
+	install|configure)
+           # only if first configuration
+	   if [ "$2" = "" ]; then
+	       . /usr/share/slis/slis-common.sh
+	       handle_initial_config lcs-imap-config 90
+	   fi
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
