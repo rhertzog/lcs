@@ -1,12 +1,13 @@
 lcs-desktop (0.2~14) Lcs; urgency=low
 
+  * add save_prefs.php
   * Changing the display of the current date.
   * Amendment of window management. The windows are no longer assigned to an application. Each link opens a new window if not already open.
   * Added an image loader for loading the page in a window
   * Added new wallpapers
   * Changing the configuration of prefs 
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 15:26:44 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 15:49:10 +0200
 
 lcs-desktop (0.2~13) Lcs; urgency=low
   [Dominique Lepaisant]
