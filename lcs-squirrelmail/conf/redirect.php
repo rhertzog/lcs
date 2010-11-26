@@ -6,7 +6,7 @@ list ($idpers,$login_username) = isauth();
 if ($idpers == "0") header("Location:../..");
 elseif ( pwdMustChange($login_username) ) header("Location:../../Annu/must_change_default_pwd.php");
 elseif ($idpers != "0") {
-  $secretkey = urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
+  $secretkey = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
   $just_logged_in = "1";
   $js_autodetect_results = "on";
 }
