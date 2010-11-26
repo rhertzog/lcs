@@ -4,7 +4,7 @@
        d = Dir.open("#{Gem.path[-1]}/gems/")
        d = d.sort
        d.each { |x|
-               if (/rubycas-lcs/.match(x))
+               if ( /rubycas-lcs/.match(x) || /rubycas-server/.match(x) )
                        @gem = x.to_s
                end
        }
