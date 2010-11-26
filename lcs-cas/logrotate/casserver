@@ -4,4 +4,6 @@
         rotate 52
         compress
         notifempty
+        postrotate
+           invoke-rc.d rubycas-lcs restart > /dev/null
 }

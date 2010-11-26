@@ -1,3 +1,4 @@
+### lcs-cas-install.sh
 #!/bin/bash
 # lcs-cas-install.sh 
 # Install rubycas-lcs base on rubycas-server <http://code.google.com/p/rubycas-server/>
@@ -10,9 +11,9 @@ function get_lcsdb_params() {
 #
 # rubycas-lcs configuration and path
 #
-LOGFOLDER="/var/log/casserver"
-CONF="/etc/rubycas-lcs"
-RUN="/var/run/rubycas-lcs"
+LOGFOLDER="/var/log/rubycas-server"
+CONF="/etc/rubycas-server"
+RUN="/var/run/rubycas-server"
 USERRUN="casserver"
 GROUPRUN="casserver"
 USERHOME="/var/lib/lcs/cas"
@@ -20,11 +21,32 @@ PATH_RUBYCAS_CERT=$CONF
 IN_CONFIG_PATH=$USERHOME
 RUBYCAS_CERT_TT="openssl.cas.in" # template opensll cert for cas
 # Fix gem version to install
+#activemodel (3.0.0)
+#activerecord (2.3.4)
+#activesupport (2.3.4)
+#arel (1.0.1)
+#builder (2.1.2)
+#gettext (2.1.0)
+#i18n (0.4.1)
+#locale (2.0.5)
+#markaby (0.7.1)
+#mysql (2.8.1)
+#picnic (0.8.1.20100201, 0.8.0)
+#rack (1.2.1)
+#ruby-net-ldap (0.0.4)
+#rubycas-server (0.7.999999.20100202)
+#rubygems-update (1.3.7, 1.3.1)
+#tzinfo (0.3.23)
+
+RUBYGEMSUPDATEVERSION=1.3.7
 ACTIVERECORDVERSION=2.3.4
-MARKABYVERSION=0.5
-PICNICVERSION=0.7.1
+MARKABYVERSION=0.7.1
+PICNICVERSION=0.8.1.20100201
 RUBYNETLDAPVERSION=0.0.4
-MYSQLVERSION=2.7
+MYSQLVERSION=2.8.1
+RUBYCASVERSION=0.7.999999.20100202
+
+GEMSSOURCE="http://lcsgems.crdp.ac-caen.fr"
 #
 # get LCSMGR PASS
 #
@@ -45,52 +67,31 @@ LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
 # Update system gem
 #
 VERGEM=`gem -v | sed s/"\."//g`
-if [ $VERGEM -lt "131" ];then
-	cd /var/lib/lcs/cas/
-	if [ -e rubygems-update-1.3.1.gem ]; then
-  		rm rubygems-update-1.3.1.gem 
-	fi
-	wget http://lcs.crdp.ac-caen.fr/gems/rubygems-update-1.3.1.gem 
-	if [ -e rubygems-update-1.3.1.gem   ]; then
-  		gem install rubygems-update-1.3.1.gem --no-ri --no-rdoc 
-	else
-  		echo "ERROR no rubygems-update-1.3.1 gem to install !"
-  		exit 1
-	fi
-	chmod +x /var/lib/gems/1.8/bin/update_rubygems
-	/var/lib/gems/1.8/bin/update_rubygems
-	if [ ! -e /usr/bin/gem.old ]; then
-  		if [ -e /usr/bin/gem1.8 ]; then
-    			mv /usr/bin/gem /usr/bin/gem.old
-    			ln -s /usr/bin/gem1.8 /usr/bin/gem
-  		fi
-	fi
+if [ $VERGEM -lt "137" ];then
+	gem install rubygems-update --version $RUBYGEMSUPDATEVERSION --no-ri --no-rdoc 
+    chmod +x /var/lib/gems/1.8/bin/update_rubygems
+    /var/lib/gems/1.8/bin/update_rubygems
 fi
 #
-# Install packages for gem mysql 
+# Install packages for gem mysql
 #
-apt-get -y install ruby1.8-dev build-essential libmysqlclient15-dev
-# 
-# Install gems 
+apt-get --force-yes -y install ruby1.8-dev build-essential libmysqlclient15-dev
 #
-gem install activerecord --version $ACTIVERECORDVERSION --no-ri --no-rdoc
-gem install markaby --version $MARKABYVERSION --no-ri --no-rdoc
-gem install picnic --version $PICNICVERSION --no-ri --no-rdoc
-gem install ruby-net-ldap --version $RUBYNETLDAPVERSION --no-ri --no-rdoc
-gem install mysql --version $MYSQLVERSION --no-ri --no-rdoc
-
-if [ -e rubycas-lcs-latest.gem  ]; then
-  rm rubycas-lcs-latest.gem
-fi
-wget http://lcs.crdp.ac-caen.fr/gems/rubycas-lcs-latest.gem
-if [ -e rubycas-lcs-latest.gem  ]; then
-    gem install rubycas-lcs-latest.gem --no-ri --no-rdoc
-    VER=`gem list | grep rubycas-lcs | cut -d '(' -f 2 | cut -d ',' -f 1 | cut -d ')' -f 1`
-    mv rubycas-lcs-latest.gem rubycas-lcs-$VER.gem
-else
-  echo "ERROR no rubycas-lcs-latest gem to install !"
-  exit 1
-fi
+# Install gems
+#
+# Install : activeesupport-2.3.4  activerecord-2.3.4
+### --source $GEMSSOURCE
+gem install activerecord --version $ACTIVERECORDVERSION --no-ri --no-rdoc --source $GEMSSOURCE
+# Install builder-2.1.2 markaby-0.7.1
+gem install markaby --version $MARKABYVERSION --no-ri --no-rdoc --source $GEMSSOURCE
+# Installed rack-1.2.1 picnic-0.8.1.20100201
+gem install picnic --version $PICNICVERSION --no-ri --no-rdoc --source $GEMSSOURCE
+#  Install ruby-net-ldap-0.0.4
+gem install ruby-net-ldap --version $RUBYNETLDAPVERSION --no-ri --no-rdoc --source $GEMSSOURCE
+# Install mysql-2.8.1
+gem install mysql --version $MYSQLVERSION --no-ri --no-rdoc --source $GEMSSOURCE
+# Install : locale-2.0.5 gettext-2.1.0 rubycas-server-0.7.999999.20100202 i18n-0.4.1 activemodel-3.0.0 arel-1.0.1 tzinfo-0.3.23
+gem install rubycas-server --version $RUBYCASVERSION --no-ri --no-rdoc -f --source $GEMSSOURCE
 #
 #
 #
@@ -154,7 +155,7 @@ fi
 #
 # Run Levels
 #
-cp /usr/lib/ruby/gems/1.8/gems/rubycas-lcs-$VER/resources/init.d.sh /etc/init.d/rubycas-lcs
+cp $USERHOME/rubycas-lcs /etc/init.d/rubycas-lcs
 chmod +x /etc/init.d/rubycas-lcs
 update-rc.d rubycas-lcs defaults
 #

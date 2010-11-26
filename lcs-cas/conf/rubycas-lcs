@@ -1,0 +1,66 @@
+#! /bin/sh
+#
+# Copyright (c) 2007 Urbacon Ltd.
+#
+# System startup script for the RubyCAS-Lcs
+#
+# Instructions:
+#   1. Rename this file to 'rubycas-lcs'
+#   2. Copy it to your '/etc/init.d' directory
+#   3. chmod +x /etc/init.d/rubycas-lcs
+#
+# chkconfig - 85 15
+# description: Provides single-sign-on authentication for web applications.
+#
+### BEGIN INIT INFO
+# Provides: rubycas-lcs
+# Required-Start: $syslog
+# Should-Start:
+# Required-Stop:  $syslog
+# Should-Stop:
+# Default-Start:  3 5
+# Default-Stop:   0 1 2 6
+# Description:    Start the RubyCAS-Lcs
+### END INIT INFO
+
+CASSERVER_CTL='rubycas-server-ctl'
+PIDFILE="/var/run/rubycas-server/casserver.pid"
+USERRUN="casserver"
+LOGCASSERVER="/var/log/rubycas-server/casserver.log"
+TIME=$(date +"%Y-%m-%dT%H:%M:%S")
+
+stopcasserver() {
+	if [ -e $PIDFILE ]; then
+        	PIDPROCESS=`cat $PIDFILE`
+        	kill -9 $PIDPROCESS
+        	echo "I, [$TIME #$PIDPROCESS] INFO -- : Stoping CASServer as a WEBrick daemon with process id $PIDPROCESS" >> $LOGCASSERVER
+        	rm -f $PIDFILE
+	fi
+}
+
+
+# Gracefully exit if the controller is missing.
+which $CASSERVER_CTL > /dev/null || exit 0
+
+case "$1" in
+    start)
+        su -c "$CASSERVER_CTL start  -P $PIDFILE" $USERRUN
+        ;;
+    stop)
+        #su -c "$CASSERVER_CTL stop  -P  $PIDFILE" $USERRUN
+	stopcasserver
+        ;;
+    restart)
+        #su -c "$CASSERVER_CTL stop  -P  $PIDFILE" $USERRUN
+	stopcasserver
+        su -c "$CASSERVER_CTL start  -P  $PIDFILE" $USERRUN
+        ;;
+    status)
+                su -c "$CASSERVER_CTL status -P  $PIDFILE" $USERRUN
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart}"
+        exit 1
+        ;;
+esac
+
