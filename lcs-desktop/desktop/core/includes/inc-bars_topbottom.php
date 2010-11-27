@@ -89,61 +89,14 @@
 		<img src="core/images/icons/icon_22_desktop.png" />
 	</a>
 	<ul id="dock">
-		<li id="icon_dock_lcs_auth">
-			<a href="#window_lcs_auth">
-				<img src="core/images/icons/icon_22_lcs.png" />
-				Authentification
-			</a>
+		<li>
 		</li>
-		<li id="icon_dock_lcs_admin">
-			<a href="#window_lcs_admin">
-				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
-				Administration
-			</a>
-		</li>
-		<li id="icon_dock_lcs_helpdesk">
-			<a href="#window_lcs_helpdesk">
-				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
-				Helpdesk
-			</a>
-		</li>
-		<li id="icon_dock_lcs_prefs">
-			<a href="#window_lcs_prefs">
-				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
-				Pr&eacute;f&eacute;rences
-			</a>
-		</li>
-		<li id="icon_dock_lcs_path">
-			<a href="#window_lcs_path">
-				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
-				Parcours
-			</a>
-		</li>
-		<li id="icon_dock_lcs_legal">
-			<a href="#window_lcs_legal">
-				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
-				A propos
-			</a>
-		</li>
-		<li id="icon_dock_lcs_temp">
-			<a href="#window_lcs_temp">
-				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
-				test lien ext
-			</a>
-		</li>
-		<li id="icon_dock_lcs_webperso">
-			<a href="#window_lcs_webperso">
-				<img src="../lcs/images/barre1/BP_r1_c7_f3.gif" style="width:22px;" />
-				Mon espace web
-			</a>
-		</li>
+	</ul>
 <?php
 	echo $html_status_bar;
 ?>
-	</ul>
 <!--	<a class="float_right" id="test_dialog" href="#" title="test" style="font-style:italic;text-shadow:2px 2px 2px #aaaaaa;">dialog?</a> -->
 	<a class="float_right" href="#" title="LcsDevTeam" style="font-style:italic;text-shadow:2px 2px 2px #aaaaaa;">Lcs-Team
-	<!--	<img src="core/images/misc/firehost.png" /> -->
 	</a>
 <div id="bar_bttm_icon" style="width:300px;float:right;"></div>
 </div>

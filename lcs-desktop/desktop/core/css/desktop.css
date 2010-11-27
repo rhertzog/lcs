@@ -352,6 +352,27 @@ a.icon.ui-draggable-dragging {
 .window_full .window_inner {
 	bottom: -1px;
 }
+/* window barre de nav
+----------------------------------------------------------------------------------------------------*/
+span.next, span.prev{
+	display:block;
+	width:20px;
+	height:24px;
+}
+span.next{
+	background:transparent url(../images/gui/arrow-right_16.png) no-repeat center center;
+}
+span.prev{
+	background:transparent url(../images/gui/arrow-left_16.png) no-repeat center center;
+}
+#wp_url{
+	border:1px solid #aaa;
+	-moz-border-radius:10px;
+	-webkit-border-radius: 10px;
+	padding:0 23px 0 10px;
+	width:200px;
+	
+}
 
 /* `Table >> Data #3875d7
 ----------------------------------------------------------------------------------------------------*/
@@ -604,7 +625,13 @@ th.shrink {
 	padding: 0 10px;
 	line-height:16px;
 	margin-top:3px;
-	color:#aa0000;
+	margin-right:30px;
+	color:#ffffff;
+	text-shadow: #666 0 1px 1px;
+	-moz-box-shadow:3px 3px .8em #666;
+	background: -moz-radial-gradient(#123456, #456789); 
+	background-image: -webkit-gradient(radial,center center,10,center center,480,from(#123456),to(#456789)); 
+	background-repeat: no-repeat;  
 }
 /* bar_bottom -> links
 --------------------------------------*/

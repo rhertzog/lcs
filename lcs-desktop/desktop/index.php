@@ -151,14 +151,22 @@ $(document).ready(function(){
 	var u=$('#url_accueil').val().replace('Plugins','').replace(new RegExp(/\//gi),"");
 	var url='';
 	if ($('.listapplis').metadata() ) {
-		//alert($('.listapplis').metadata());
 		$.each($('.listapplis').metadata(), function(index, value){
 			if(u.toLowerCase()==value){
-				//alert(value);
 				url="../"+$('#url_accueil').val();
 			}
 		});
 	}
+			if ( url !="") {
+			setTimeout(function(){
+				var spipAccueil = $('<iframe/>')
+					.addClass('abs wallpaper')
+					.css({'top':'23px'})
+					.attr('src',url)
+					.insertAfter('#desktop');
+				$('#bar_bottom').hide();
+			},100);
+			}
 	<?php 
 	// .:LCS:. si user est connecte
 	if ( $idpers!=0 ) { 
@@ -186,7 +194,8 @@ $(document).ready(function(){
 				//alert('Pass no changed');
 				JQD.init_link_open_win('<a rel="change_pass" '
 				+'rev="change_pass" '
-				+'title="auth" href="../Annu/must_change_default_pwd.php" '
+				+'title="Changer de mot-de-passe" '
+				+'href="../Annu/must_change_default_pwd.php" '
 				+'class="open_win ext_link">Changer de mot-de-passe</a>'
 				);	
 			},1500);
@@ -235,8 +244,23 @@ $(document).ready(function(){
 			<?php 
 			} // End  squirrelmail enable
 
-			if (!is_file("/home/".$login."/Profile/lcs_buro_".$login.".xml" )) { 
+			if (!is_file("/home/".$login."/Profile/PREFS_".$login.".xml" )) { 
 			?>
+				JQD.create_notify("withIcon", { 
+					title:'Personnalisez Lcs-Bureau', 
+					text:'Pour modifier votre fond d&rsquo;&eacute;cran, afficher un dock d&rsquo;ic&ocirc;nes, ... '
+						+'allez dans Lcs-Bureau/Pr&eacute;f&eacute;rences '
+						+'<span style="text-decoration:underline;">ou cliquez-moi...</span><br />'
+						+'<small>Cliquez sur la X pour me fermer</small>', 
+					icon:'core/images/icons/tip.png' 
+				},
+				{
+				expires:false,
+				click: function(e,instance){
+					JQD.init_link_open_win('<a href="#icon_dock_lcs_prefs" rel="core/user_form_prefs.php" rev="Parametres" class="open_win ext_link"> ce lien ...</a>');
+					instance.close();
+					}
+				} );
 			<?php 
 			} 
 		} 
@@ -245,7 +269,6 @@ $(document).ready(function(){
 	// .:LCS:. si user n'est pas connecte
 	else { 
 		?>
-
 		<?php
 		// cas de page externe en page accueil
 		if ( preg_match('/http/', $url_accueil) ) {
@@ -267,39 +290,26 @@ $(document).ready(function(){
 		?>
 			if ( url !="") {
 			setTimeout(function(){
-				$('#bar_bottom').hide();$('#desktop').css({bottom:0});
-				//$('#window_lcs_spip').addClass('large_win');
-				$('#window_lcs_temp').addClass('window_full').css({'top':0,'left':0})
-					.find('div.window_top').hide()
-					.next('div.window_content').css({top:0,bottom:0})
-					.next('div.window_bottom').hide();
-					$('#iframe_lcs_temp').load(function()  {
-						$(this).contents().find('a.open_win').each(function(){
-							$(this).click(function(){
-								JQD.init_link_open_win(this);
-								return false;
-							});
-						});
-					});
-				JQD.init_link_open_win('<a title="temp" '
-					+'rev="temp" '
-					+'rel="'+url+'" '
-					+'href="#icon_dock_lcs_temp" '
-					+'class="open_win ext_link">Forum</a>');
+				var spipAccueil = $('<iframe/>')
+					.addClass('abs wallpaper')
+					.css({'top':'23px'})
+					.attr('src',url)
+					.insertAfter('#desktop');
+				$('#bar_bottom').hide();
 			},100);
 			}
 			else{
 				setTimeout(function(){
 					// .:LCS:. on lance l'affichage du form de connexion.
-					JQD.init_link_open_win('<a rel="../lcs/auth" rev="auth" href="#icon_dock_lcs_auth" class="open_win ext_link">Se connecter</a>');
+					JQD.init_link_open_win('<a rel="../lcs/auth.php" rev="auth" href="#icon_dock_lcs_auth" class="open_win ext_link">Se connecter</a>');
 				},1000);
 			}
 		<?php 
 		} 
 	} 
 	?>
-	JQD.init_desktop();
 	JQD.init_icons();
+	JQD.init_desktop();
 });
 </script>
 

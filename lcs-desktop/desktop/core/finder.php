@@ -16,7 +16,7 @@ $(function(){
 	 */
 	$('#finder').finder({
 		title : 'Documents',
-		url:'core/includes/inc-finder.php?user=<?php echo $login; ?>',
+		url:'includes/inc-finder.php?user=<?php echo $login; ?>',
 		onRootReady: function(rootList,finderObj){
 //			debug('Root ready',arguments)
 //			$('ol li:nth-child(odd)').css('background','#eaeaff');
@@ -37,7 +37,7 @@ $(function(){
 							$(this).find('tr:odd td').css({'background-image':'url(../../lcs/fdecran/espaceweb_odd.jpg)','background-attachment':'fixed','background-position':'80% 10%','background-repeat':'no-repeat'});
 							$(this).find('tr').each(function(){
 								$(this).append("<td><a class=\"select_this_image\" href=\"#\"><img hspace=\"2\" border=\"0\" align=\"middle\" style=\"width:16px;\" vspace=\"1\" title=\"Choisir cette image\" src=\"pict/icons/nuvola/green-go-up.png\"></a></td>").find('a.select_this_image').click(function(){
-									alert($(this).closest('tr').find('td.td100perc a').text());
+//									alert($(this).closest('tr').find('td.td100perc a').text());
 //									var current =  $(this);
 //									var currentName=current.text();
 //									current = (current) ? current.attr('rev') : 'no';
@@ -205,8 +205,8 @@ $(function(){
 			return false;
 		}
 		else {
-		var currentPath=currentName.replace('../','core/').replace('/home/','../~').replace('public_html/','');
-		alert(currentPath);
+		var currentPath=currentName.replace('/home/','/~').replace('public_html/','');
+		//alert(currentPath);
 			$('#vign_wlpper').attr('src',currentPath);
 			$('#select_walppr').attr('value',currentPath);
 			$('#dirWallpaper').html(' ');

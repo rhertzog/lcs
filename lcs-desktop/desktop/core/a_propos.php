@@ -68,17 +68,15 @@ font-size:.8em;font-family:tahoma;
 		$query = "SELECT * from applis where name = \"desktop\"";
 		$result=@mysql_db_query("$DBAUTH",$query, $authlink);
 		$r_=@mysql_fetch_array($result);
-		$ver= "<p>Version paquet LCS :".$r_['version']."</p>";
+		$ver= $r_['version'];
 		?>
 </head>
 <body style="background:#fff;">
 	<div id="a_propos">
-		<h1>Lcs-Bureau</h1>
-		<h3>Version : 1.0 - XP</h3> 
-		<?php echo " ".$ver; ?>
-		<h3>Licence</h3>
-		<p>LCS-Bureau est distribu&eacute; sous licence libre <abbr title="Licence Publique G&eacute;n&eacute;rale GNU">GNU GPL</abbr></p>
-		<h3>Auteurs :</h3>
+		<img src="images/icons/logo_lcs20.png" style="width:75px;margin-right:25px;float:left;"/><h1 style="padding-left:100px;line-height:70px;">Lcs-Bureau</h1>
+		<h3>Version : <?php echo $ver; ?></h3> 
+		<h3>Licence : <abbr title="Licence Publique G&eacute;n&eacute;rale GNU">GNU GPL</abbr></h3>
+		<h3>Auteurs : </h3>
 		<p>Lcs-Bureau est bas&eacute; sur <a href="http://sonspring.com/journal/jquery-desktop" rev="web" class="open_win ext_link" title="jquery-Desktop">JQuery Desktop</a> by Nathan Smith et d&eacute;velopp&eacute; et maintenu par l' &Eacute;quipe TICE du CRDP de Basse-Normandie. (<small>Auteur : <a href="mailto:dlepaisant@ac-caen.fr?subject=[Lcs-Bureau]" title="dlepaisant AT ac-caen.fr"> Dominique Lepaisant</a></small>)
 		<ul  class="demi">
 			<li class="titre"><strong>LcsDevTeam</strong></li>

@@ -11,7 +11,7 @@
 <?php			
 	} else {
  	// Un utilisateur est authentifie  
-        if ( is_admin("Lcs_is_admin",$login) == "Y" ) {// acces aux preferences genérales
+        if ( is_admin("Lcs_is_admin",$login) == "Y" ) {// acces aux preferences generales
 ?>
 <?php			
 		}
@@ -38,9 +38,6 @@
 				<?php			
 				echo $html_menu_services;
 				?>
-				<li>
-					<a class="open_win ext_link" href="#icon_dock_lcs_elfinder" rel="../elcsfinder/elcsfinder.php" rev="elfinder" title=""><img src="../elcsfinder/images/logo_elfinder_70.png" style="width:20px;" /> Gestionnaire de fichiers</a>
-				</li>
 			</ul>
 		</li>
 		<li>

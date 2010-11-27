@@ -1,14 +1,17 @@
 lcs-desktop (0.2~14) Lcs; urgency=low
 
+  * Fix bug on the call of the finder (prefs)
   * Added forgotten files
-  * add save_prefs.php
+  * Added save_prefs.php
   * Changing the display of the current date.
   * Amendment of window management. The windows are no longer assigned to an application. Each link opens a new window if not already open.
   * Added an image loader for loading the page in a window
   * Added new wallpapers
   * Changing the configuration of prefs 
+  * Added forgotten images of groups of users
+  * Fix any (just some ones) bugs in IE8
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 16:45:26 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Tue, 21 Sep 2010 13:52:55 +0200
 
 lcs-desktop (0.2~13) Lcs; urgency=low
   [Dominique Lepaisant]

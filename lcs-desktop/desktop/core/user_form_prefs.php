@@ -150,7 +150,7 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 				</p>
 	
 <script>
-
+$(document).ready(function() {
 	// recuperation du desktop
 	var _WP = $('#desktop', window.parent.document);
 
@@ -279,7 +279,7 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 	});
 	// init au chargement
 	_WP.find('#tmp_quicklaunch').val()=='1' ? $('#aff_quicklaunch').attr('checked', 'checked') : $('#aff_quicklaunch').removeAttr('checked') ;
-
+});
 	
 function TT_load_prefs_img(t_img) {
 	$('#select_walppr').attr('value',t_img);

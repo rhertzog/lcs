@@ -4,7 +4,8 @@
 * base sur jquery.desktop de Nathan Smith
 * auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
 * Equipe Tice academie de Caen
-* Derniere mise a jour : 26/11/2010
+* version 0.2~14
+* Derniere mise a jour : 28/11/2010
 * Licence GNU-GPL -  Copyleft 2010
 *__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 
@@ -339,7 +340,7 @@ var JQD = (function($) {
 					$('#wallpaper').remove();
 					var pos_rr=$('ul.bar_top_right').offset().left+30;
 					//alert('Vos preferences sont enregistrees');
-					var respMessage= $('<div/>').addClass('float_right respform').css({'margin-right': '30px', 'color':'#123456'}).html('Vos pr&eacute;f&eacute;rences sont enregistr&eacute;es').insertAfter('#bar_top ul:first');
+					var respMessage= $('<div/>').addClass('float_right respform').html('Vos pr&eacute;f&eacute;rences sont enregistr&eacute;es').insertAfter('#bar_top ul:first');
 					setTimeout(function(){
 						$('div.respform').hide('slow').remove();
 					},5000);
@@ -361,24 +362,24 @@ var JQD = (function($) {
 			if(!imgsrc || imgsrc=="") imgsrc='core/images/icons/desktop_24.png';
 		
 			// Construction de la fenetre
-			var self    = this;
-			this.img    = $('<img />');
-			this.title  = title;
-			this.min    = $('<a href=\"#\"/>');
-			this.resize = $('<a href=\"#\"/>');
-			this.close  = $('<a href=\"#icon_dock_lcs_'+win+'\"/>')
-			this.top_l  = $('<span class=\"float_left\"/>');
-			this.top_r  = $('<span class=\"float_right\"/>');
-			this.top    = $('<div/>');
+			var self      = this;
+			this.img      = $('<img />');
+			this.title    = title;
+			this.min      = $('<a href=\"#\"/>');
+			this.resize   = $('<a href=\"#\"/>');
+			this.close    = $('<a href=\"#icon_dock_lcs_'+win+'\"/>')
+			this.top_l    = $('<span class=\"float_left\"/>');
+			this.top_r    = $('<span class=\"float_right\"/>');
+			this.top      = $('<div/>');
 		
-			this.ctnt   = $('<div/>');
-			this.main   = $('<div/>');
-			this.iframe = $('<iframe src="" name="ifr_lcs_'+win+'" src=\"" id="iframe_lcs_'+win+'"/>');
-			this.spinn  = $('<div class="lcspinner" id="lcspinner"/>');
+			this.ctnt     = $('<div/>');
+			this.main     = $('<div/>');
+			this.iframe   = $('<iframe src="" name="ifr_lcs_'+win+'" src=\"" id="iframe_lcs_'+win+'"/>');
+			this.spinn    = $('<div class="lcspinner" id="lcspinner"/>');
 		
-			this.bttm   = $('<div class=\"abs window_bottom\"/>');
+			this.bttm     = $('<div class=\"abs window_bottom\"/>');
 		
-			this.inner  = $('<div/>');
+			this.inner    = $('<div/>');
 		
 			this.icondock =  $('<li id="icon_dock_lcs_'+win+'">') //onglet de la barre des taches
 			.append(
@@ -387,20 +388,24 @@ var JQD = (function($) {
 				.prepend($('<img/>').attr('src',imgsrc).css('width', '22px'))
 				.click(function() {
 					var x = $($(this).attr('href')); // on recupere .
-					// Hide, if visible.
 					if (x.is(':visible')) {
 						x.hide();
 					}
 					else {
-						// Bring window to front.
 						JQD.window_flat();
 						x.show().addClass('window_stack');
 					}
-					// Stop the live() click.
 					this.blur();
 					return false;
 				})
 			);
+			
+			this.navigate =  $('<div/>').addClass('float_left').css({position: 'relative'})
+				.append($('<input type="text"/>').attr({id: 'wp_url', name: 'wp_url'}))
+				.append(
+					$('<img/>').attr('src', 'core/images/gui/arrow-right-blue_16.png')
+					.css({position:'absolute',top:'3px',right:'-2px',display:'none'})
+				);
 			// on inhibe les menus ouverts ?? 
 			// Utilite a controler
 			JQD.clear_active();
@@ -475,8 +480,23 @@ var JQD = (function($) {
 						$(this).addClass('bar-bottom-icon')
 						.find('a').attr({ title: $(this).text()}).each(function(){
 							$(this).find('img').attr('alt', $(this).text());
+						})
+						.hover(function(e){
+							t = $(this).attr('title');
+							var offset = $(this).closest('ul').offset();
+							var lft = parseInt($(this).parent('li').position().left);
+							$("#desktop").append("<p id='screenshot' class='abs'></p>").find('#screenshot').html(t);  
+							var wtip = $("#screenshot").width()/2;
+							$("#screenshot")
+								.css("bottom","5px")
+								.css("left",(lft  - wtip+12) + "px")
+								.fadeIn("fast");                                              
+						},
+						function(){
+							$("#screenshot").remove();
 						});
 					});
+
 				}else {
 					$(this).removeAttr('style').removeClass('bar-bottom-icon').find('a').removeAttr('style');
 				}
@@ -486,13 +506,13 @@ var JQD = (function($) {
 					el=$(this).contents();
 					$('#lcspinner').remove();
 					$(this).show();
-					//el.get(0).location.pathname == true ? el_loc = el.get(0).location.pathname : '';
 					
 					// on essaie de fixer le bug en cas de clic sur une ancre dans une page iframe
 					//el.find('body').localScroll();
 					
-					el.find('a').each(function(){// action in contents of iframe
-					if ($(this).attr('target')=='_blank') {
+					// actions sur les liens contenus
+					el.find('a').each(function(){
+					if ($(this).attr('target')=='_blank') {// ouverture des target=_blank ds une fenetre du bureau
 						$(this).addClass('open_win ext_link').removeAttr('target').attr('href',$(this)[0].href);
 						if($(this).attr('title').length==0 || $(this).attr('title')!='') $(this).attr('title',$(this).text());
 					}
@@ -719,6 +739,20 @@ var JQD = (function($) {
 				if ($('ul.menu').is(':visible')) {
 					JQD.clear_active();
 					$(this).addClass('active').next('ul.menu').show();
+				}
+			});
+			
+			// Show desktop button, ala Windows OS.
+			$('#show_desktop').click(function() {
+				// If any windows are visible, hide all.
+				if ($('div.window:visible').length) {
+					$('div.window').hide();
+				}
+				else {
+					// Otherwise, reveal hidden windows that are open.
+					$('#dock li:visible a').each(function() {
+						$($(this).attr('href')).show();
+					});
 				}
 			});
 

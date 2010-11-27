@@ -130,7 +130,9 @@
 			.preg_replace('/_/',' ',$group)."\">";
 			if ($type=="posixGroup"){
 			$imgs = explode('_', $group);
-			$ret .= "<img src=\"core/images/annu/".preg_replace('/ /','',strtolower($imgs[0])).".png\" style=\"width:20px;vertical-align:middle;\" width=\"20\"/> ";
+			$img_path="core/images/annu/".preg_replace('/ /','',strtolower($imgs[0])).".png";
+			$img_g = is_file($img_path) ? $img_path : "core/images/annu/group.png";
+			$ret .= "<img src=\"".$img_g."\" style=\"width:20px;vertical-align:middle;\" width=\"20\"/> ";
 			$ret .= " <strong>".preg_replace('/_/',' ',$group)."</strong>";
 			} else{
 			$ret .= $group;
