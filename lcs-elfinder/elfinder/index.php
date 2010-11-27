@@ -5,8 +5,9 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Gestionnaire de fichiers</title>
-	<link rel="stylesheet" href="css/elfinder.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<link rel="stylesheet" href="js/ui-themes/base/ui.all.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<!-- elfinder.css must be called after ui.all.css -->
+	<link rel="stylesheet" href="css/elfinder.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<script src="../libjs/jquery/jquery.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../libjs/jquery-ui/jquery-ui.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/elcsfinder.full.js" type="text/javascript" charset="utf-8"></script>
