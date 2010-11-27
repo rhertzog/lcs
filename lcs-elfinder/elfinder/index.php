@@ -1,3 +1,7 @@
+<?php
+require  "/var/www/lcs/includes/headerauth.inc.php";
+list ($idpers, $login)= isauth();
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
    "http://www.w3.org/TR/html4/strict.dtd">
 
@@ -38,6 +42,24 @@
 				// }
 			})
 			// window.console.log(f)			
+		<?php
+		if ($idpers==0) {
+		?>
+			var titre= $('<h3/>').text('Lcs-elFinder').prepend($('<img/>').attr('src','images/logo_elfinder_70.png'));
+		 	$('.el-finder-workzone p.el-finder-err').show('slow').css({fontSize:'1.7em'})
+		 	.append(
+		 		$('<p/>').css({'color':'#123456'})
+		 		.html("Acc&egrave;s refus&eacute; ! <br />Vous devez &ecirc;tre identifi&eacute; sur le LCS pour acc&eacute;der aux applications.<br />Vous allez &ecirc;tre redirig&eacute; dans ").append('<span/>')
+			).prepend(titre);
+			 //decompte sur 5s
+			var i = 6;
+			setInterval(function() {$('.el-finder-workzone p.el-finder-err').find('p span').text((i=i-1)+' s')
+			i==0 ? window.location.replace("<?php echo 'http://'.$_SERVER['HTTP_HOST'].'/'; ?>") :'';
+			},1000);
+		
+		<?php
+		}
+		?>
 		})
 	</script>
 </head>
