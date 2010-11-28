@@ -5,7 +5,7 @@
 		if ( $idpers!=0 ) { 
 	?>
 	<li>
-		<a href="../lcs/logout.php" title="Se d&eacute;connecter" style="cursor:pointer;color:#999;font-size:.8em;" rel="auth">
+		<a href="../lcs/logout.php" class="deconnect" title="Se d&eacute;connecter" style="cursor:pointer;color:#999;font-size:.8em;" rel="auth">
 			<img alt="En ligne" src="core/images/icons/icon_22_stop.png" alt="" style="cursor:pointer;" />
 		</a>
 	</li>

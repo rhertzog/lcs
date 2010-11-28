@@ -11,7 +11,8 @@
 						if ( ldap_get_right($liens[$i][$j+2],$login)=="Y" ) {
 							// On vire le target quand il existe (cas de pla)
 							$tmp = explode ("\"",$liens[$i][$j+1]);
-							if ( $tmp[1] == "target='_new'" ) $liens[$i][$j+1] = $tmp[0];
+							# if ( $tmp[1] == "target='_new'" ) $liens[$i][$j+1] = $tmp[0];
+							if ( preg_match("/target/",$tmp[1]) ) $liens[$i][$j+1] = $tmp[0];
 							echo "<li><a class='open_win' href='#icon_dock_lcs_admin' rel='../Admin/".preg_replace("/\/Admin\//","",$liens[$i][$j+1])."'><img src='../lcs/images/barre1/BP_r1_c7_f3.gif' style='height:20px;' /> ".$liens[$i][$j]."</a></li>\n";
 						}
 					}	

@@ -20,7 +20,7 @@
 					<a class="open_win ext_link" rel="core/user_form_prefs.php" rev="Parametres" href="#"><img src="core/images/icons/desktop_24.png" style="height:20px;" /> Pr&eacute;f&eacute;rences...</a>
 				</li>
 				<li>
-					<a class="open_win ext_link" href="../lcs/logout.php"><img src="core/images/icons/icon_22_stop.png" style="width:20px;" /> Se d&eacute;connecter</a>
+					<a class="deconnect" href="../lcs/logout.php"><img src="core/images/icons/icon_22_stop.png" style="width:20px;" /> Se d&eacute;connecter</a>
 				</li>
 <?php			
 	}

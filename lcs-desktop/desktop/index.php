@@ -67,10 +67,15 @@ if (is_dir("inettuts")) echo "<div class=\"abs\" id=\"inettuts\" style=\"display
 
 <!-- desktop-->
 <div class="abs" id="desktop">
+		<!--ChCh_Spirale-Lcs.jpg | fit_height center_h -->
+	<input type="hidden" id="tmp_wallpaper" value="core/images/misc/RayOfLight_lcs.jpg"/>
+	<input type="hidden" id="tmp_poswp" value="wallpaper"/>
+	<input type="hidden" id="tmp_iconsize" value="36"/>
+	<input type="hidden" id="tmp_iconsfield" value="50"/>
+	<input type="hidden" id="tmp_bgcolor" value="#414970"/>
+	<input type="hidden" id="tmp_quicklaunch" value="0"/>
 <?php
 if ( $idpers==0 ) { ?>
-<input type="hidden" id="tmp_wallpaper" value="core/images/misc/RayOfLight_lcs.jpg"/>
-<input type="hidden" id="tmp_poswp" value="wallpaper"/>
 <a class="abs icon" style="left:20px;top:20px;" href="#icon_dock_lcs_auth" title="Se connecter" rel="../lcs/auth.php"><img src="core/images/icons/icon_32_start.png" alt="" />Se connecter</a>
 <?php
 }else{
@@ -80,16 +85,6 @@ if ( $idpers==0 ) { ?>
 		$html_icon= USERPREFS_Display_Icons($uXml,40,1,1);
 	} else{
 		$html_icon= $html_icon_default;
-	?>
-	<input type="hidden" id="tmp_wallpaper" value="core/images/misc/RayOfLight_lcs.jpg"/>
-	<input type="hidden" id="tmp_poswp" value="wallpaper"/>
-	<input type="hidden" id="tmp_iconsize" value="36"/>
-	<input type="hidden" id="tmp_iconsfield" value="50"/>
-	<input type="hidden" id="tmp_bgcolor" value="#123456"/>
-	<input type="hidden" id="tmp_quicklaunch" value="0"/>
-
-
-	<?php
 	}
 	echo $html_icon;
 ?>
@@ -157,16 +152,6 @@ $(document).ready(function(){
 			}
 		});
 	}
-			if ( url !="") {
-			setTimeout(function(){
-				var spipAccueil = $('<iframe/>')
-					.addClass('abs wallpaper')
-					.css({'top':'23px'})
-					.attr('src',url)
-					.insertAfter('#desktop');
-				$('#bar_bottom').hide();
-			},100);
-			}
 	<?php 
 	// .:LCS:. si user est connecte
 	if ( $idpers!=0 ) { 

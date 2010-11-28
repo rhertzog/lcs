@@ -1,3 +1,12 @@
+lcs-desktop (0.2~15) Lcs; urgency=low
+
+  * Fix bug with the default display
+  * Fix bug on inc-menus_admin.php links
+  * Removing target _top in applications (force open a window in the desktop)
+  * Fix bug IE8 (offline, unauthenticated)
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Wed, 22 Sep 2010 13:04:27 +0200
+
 lcs-desktop (0.2~14) Lcs; urgency=low
 
   * Fix bug on the call of the finder (prefs)

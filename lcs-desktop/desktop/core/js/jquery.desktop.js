@@ -516,7 +516,9 @@ var JQD = (function($) {
 						$(this).addClass('open_win ext_link').removeAttr('target').attr('href',$(this)[0].href);
 						if($(this).attr('title').length==0 || $(this).attr('title')!='') $(this).attr('title',$(this).text());
 					}
-					
+					if ($(this).attr('target')=='_top') {// on inhibe les traget=_top
+						$(this).removeAttr('target');
+					}
 					if($(this)[0].href.match('mailto:')){// Listage et modif des mailto:
 						$(this)[0].href.length > 0 ? cible=$(this)[0].href.replace('?','&') : '';
 						$(this).attr({
