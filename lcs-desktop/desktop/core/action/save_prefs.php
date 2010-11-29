@@ -45,8 +45,8 @@ $node = $dom->createElement("icon");
 $s = simplexml_import_dom($dom);
 
 // ecriture du fichier
-$filexml='PREFS_'.$user.'.xml';
-file_put_contents( '/home/'.$user.'/Profile/'.$filexml, $s->asxml() );
+$filexml='PREFS_'.$login.'.xml';
+file_put_contents( '/home/'.$login.'/Profile/'.$filexml, $s->asxml() );
 
 //echo $s->asxml();
 
@@ -74,7 +74,7 @@ foreach($_POST["icons"] as $k=>$val){
 	$i++;
 }
 $json.="}}}";
-		$fp=fopen("/home/admin/Profile/PREFS_admin.json",'w');
+		$fp=fopen("/home/".$login."/Profile/PREFS_".$login.".json","w");
 		$json_fp=json_encode($json);
 #		fwrite($fp,$json);
 		fwrite($fp,$json_fp);

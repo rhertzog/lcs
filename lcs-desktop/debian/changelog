@@ -1,3 +1,9 @@
+lcs-desktop (0.2~17) Lcs; urgency=low
+
+  * Fixed bug on the registration of preferences 
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 13:21:22 +0200
+
 lcs-desktop (0.2~16) Lcs; urgency=low
 
   * Bug fix on retrieving preferences
