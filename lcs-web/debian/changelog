@@ -24,6 +24,9 @@ lcs-web (2.4.8~2) UNRELEASED; urgency=low
   * add activation/desactivation modules
   * fix damage collateral of change.sh on mod_mail.php
 
+  [ Cyril Bouthors ]
+  * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
+
  -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 26 Nov 2010 14:58:00 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low

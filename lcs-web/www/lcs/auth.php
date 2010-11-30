@@ -78,6 +78,10 @@ $error=$_GET['error'];
 			$query="INSERT INTO statusages VALUES ('Nogroup', 'auth_ok', '$date', '$source','$login')";
         		$result=@mysql_query($query);
 
+			// Run post_auth hook
+			lcs_web_run_hook('post_auth',
+					 array(mb_strtolower($login), $pass));
+
                         if ( file_exists ("/usr/share/lcs/spip/spip_session_lcs.php") ) {
                             // Ouverture d'une session spip
                             header("Location:../spip/spip_session_lcs.php?action=login");

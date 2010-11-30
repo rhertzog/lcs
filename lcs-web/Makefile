@@ -58,6 +58,9 @@ install:
 	install -d $(DESTDIR)/etc/apache2/lcs-main
 	cp -a swekey/* $(DESTDIR)/etc/apache2/lcs-main/
 
+# install lcs web hooks directory
+	install -d $(DESTDIR)/usr/share/lcs/lcs-web-hooks.d
+
 clean:
 
 

@@ -593,4 +593,90 @@ function acces_btn_admin ($idpers_recu, $login_recu)
     return ("N");
 } // Fin fonction acces_btn_admin
 
+/**
+ * Recursively load hooks from /usr/share/lcs/lcs-web-hooks.d/. The directory
+ * structure is hook_name/file.php. "hook_name" must be a supported valid
+ * hook name, only "post_auth" is currently supported. file.php must contain at
+ * least one procedural function. The function name format is
+ * hook_<hook_name>_<file>().
+ *
+ * For example, /usr/share/lcs/lcs-web-hooks.d/post_auth/update_zonep_config.php
+ * contains a function called "hook_post_auth_update_zonep_config()" that will
+ * be called during "post_auth" hook.
+ *
+ * @param hook_name string. The name of the hook. For example "post_auth".
+ *
+ * @param hook_base_dir string. The directory where the hooks are stored.
+ *
+ * @return status bool. True on success, false otherwise
+ */
+function lcs_web_load_hook($hook_name = null,
+			   $hook_base_dir = '/usr/share/lcs/lcs-web-hooks.d') {
+	global $lcs_hooks;
+
+	// Check arguments
+	if(!is_string($hook_name)
+	   or empty($hook_name)
+	   or !is_string($hook_base_dir)
+	   or empty($hook_base_dir)
+	   or !file_exists($hook_base_dir)
+	   or !is_dir($hook_base_dir)
+	   or !is_dir("$hook_base_dir/$hook_name"))
+		return false;
+
+	if (!$handle_hookdir = opendir("$hook_base_dir/$hook_name"))
+		return false;
+
+	// Read hook directory
+	while (false !== ($hook_file = readdir($handle_hookdir))) {
+		// Ignore non files entries (directories, sockets, etc.)
+		if(!is_file("$hook_base_dir/$hook_name/$hook_file"))
+			continue;
+
+		// Check hook file name syntax
+		if(!preg_match('/^(\w+)\.php$/', $hook_file, $matches))
+			continue;
+
+		// Load hooked function
+		require_once("$hook_base_dir/$hook_name/$hook_file");
+
+		// Add hooked function to the hook if it's correctly defined
+		$hook_function = "hook_" . $hook_name . "_" . $matches[1];
+
+		if(function_exists($hook_function))
+			$lcs_hooks[$hook_name][] = $hook_function;
+	}
+
+	closedir($handle_hookdir);
+	return true;
+}
+
+/**
+ * Run the hook specified by $hook_name
+ *
+ * @param hook_name string. Defines the name of the hook to call
+ *
+ * @param parameters array. An array containing the parameters to call the hook
+ * with.
+ *
+ * @return status bool. True on success, false otherwise
+ */
+function lcs_web_run_hook($hook_name = null, array $parameters = array()) {
+	global $lcs_hooks;
+
+	// Check parameters
+	if(!is_string($hook_name) or empty($hook_name)
+	   or !is_array($parameters) or empty($parameters))
+		return false;
+
+	// Load hooks if needed
+	if(!isset($lcs_hooks[$hook_name]))
+		lcs_web_load_hook($hook_name);
+
+	foreach($lcs_hooks[$hook_name] as $hook)
+		call_user_func_array($hook, $parameters);
+
+	return true;
+}
+
 ?>
