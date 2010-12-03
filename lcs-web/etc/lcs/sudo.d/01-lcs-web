@@ -15,3 +15,6 @@ www-data ALL=NOPASSWD:PAQUETS
 
 Cmnd_Alias USERDIRPHP = /usr/share/lcs/scripts/userdirphp.sh
 www-data ALL=NOPASSWD:USERDIRPHP
+
+Cmnd_Alias LDAPEDU = /usr/sbin/ldapedu-server-config-ad-auth, /usr/share/lcs/scripts/lcs2ldapedu.sh
+www-data ALL=NOPASSWD:LDAPEDU

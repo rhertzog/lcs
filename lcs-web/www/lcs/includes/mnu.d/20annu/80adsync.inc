@@ -1,0 +1,1 @@
+Synchronisation Active Directory,manage_sync_ad.php,lcs_is_admin
