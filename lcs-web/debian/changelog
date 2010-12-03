@@ -1,4 +1,4 @@
-lcs-web (2.4.8~2) UNRELEASED; urgency=low
+lcs-web (2.4.8~3) UNRELEASED; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -17,6 +17,8 @@ lcs-web (2.4.8~2) UNRELEASED; urgency=low
     might download into {applilcs,moduleslcs}.xml.1 and we don't see the new
     content. This is required because when a broken XML file is downloaded,
     it's not removed...
+  * Add new page "Synchronization Active Directory" in the administration
+    menu and associated features in the directory application.
 
   [ Philippe LECLERC ]
   * add display infos in modules_installes.php
