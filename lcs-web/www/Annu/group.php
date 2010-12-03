@@ -121,6 +121,15 @@
       echo "<li><a href=\"mod_group_descrip.php?cn=$filter\">Modifier la description de ce groupe</a></li>\n";
       echo "<li><a href=\"grouplist.php?filter=$filter\" target='_new'>".gettext("Afficher un listing du groupe")."</a></li>\n";
     }
+    if ($ad_auth_delegation == "true") {
+	if (preg_match("/^Classe_/", $filter)) {
+	    echo "<li><a href=\"delegate_auth_ad.php?groupcn=$filter&action=enable&verbose=1\">Activer l'authentification d&eacute;port&eacute;e pour les &eacute;l&egrave;ves de ce groupe</a></li>";
+	    echo "<li><a href=\"delegate_auth_ad.php?groupcn=$filter&action=disable&verbose=1\">D&eacute;sactiver l'authentification d&eacute;port&eacute;e pour les &eacute;l&egrave;ves de ce groupe</a></li>";
+	} else {
+	    echo "<li><a href=\"delegate_auth_ad.php?groupcn=$filter&action=enable&verbose=1&all=1\">Activer l'authentification d&eacute;port&eacute;e pour les membres de ce groupe</a></li>";
+	    echo "<li><a href=\"delegate_auth_ad.php?groupcn=$filter&action=disable&verbose=1&all=1\">D&eacute;sactiver l'authentification d&eacute;port&eacute;e pour les membres de ce groupe</a></li>";
+	}
+    }
     if (ldap_get_right("lcs_is_admin",$login) == "Y")
         // Affichage du menu "Deleguer un droit &#224; un groupe"
         echo "<li><a href=\"add_group_right.php?cn=$filter\">D&#233;l&#233;guer un droit &#224; ce groupe</a></li>\n";
