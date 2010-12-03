@@ -1439,7 +1439,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	// Recuperer le gidNumber par defaut -> lcs-users (1000) ou slis (600)
 	global $defaultgid,$domain,$defaultshell,$domainsid,$uidPolicy;
-	global $attribut_pseudo;
+	global $attribut_pseudo,$ad_auth_delegation;
 	global $liste_caracteres_accentues, $liste_caracteres_desaccentues;
 
 	fich_debug("================\n");
@@ -1537,7 +1537,11 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	$attribut["sambaAcctFlags"]="[U          ]";
 	$attribut["sambaLMPassword"]="$sambaLMPassword";
 	$attribut["sambaNTPassword"]="$sambaNTPassword";
-	$attribut["userPassword"]="{crypt}$userPassword";
+	if ($ad_auth_delegation == "true") {
+		$attribut["userPassword"]="{sasl}$uid";
+	} else {
+		$attribut["userPassword"]="{crypt}$userPassword";
+	}
 
 	// IL faut aussi l'employeeNumber
 	if("$employeeNumber"!=""){
