@@ -634,6 +634,81 @@ function tstclass($prof,$eleve)
 // Fonctions de modifications des entrees LDAP
 // -------------------------------------------
 
+function user_enable_ad_auth($uid, $ds = NULL) {
+    global $ldap_server, $ldap_port, $dn, $adminDn, $adminPw;
+    if (! isset($ds)) {
+	$ds = ldap_connect($ldap_server, $ldap_port);
+	if (! $ds) {
+	    return 0;
+	}
+	$r = ldap_bind($ds, $adminDn, $adminPw); // Bind en admin
+	if (! $r) {
+	    return 0;
+	}
+    }
+    $changes["userPassword"] = "{sasl}$uid";
+    return ldap_modify($ds, "uid=$uid," . $dn["people"], $changes);
+}
+
+function user_disable_ad_auth($uid, $ds = NULL) {
+    global $ldap_server, $ldap_port, $dn, $adminDn, $adminPw;
+    if (! isset($ds)) {
+	$ds = ldap_connect($ldap_server, $ldap_port);
+	if (! $ds) {
+	    return 0;
+	}
+	$r = ldap_bind($ds, $adminDn, $adminPw); // Bind en admin
+	if (! $r) {
+	    return 0;
+	}
+    }
+    $sr = ldap_read($ds, "uid=$uid," . $dn["people"], "(objectclass=*)",
+		    array("userPassword", "gecos"));
+    if (! $sr) {
+	return 0;
+    }
+    $entry = ldap_first_entry($ds, $sr);
+    $values = ldap_get_values($ds, $entry, "userPassword");
+    $current_pass = $values[0];
+    $values = ldap_get_values($ds, $entry, "gecos");
+    $gecos = $values[0];
+    $values = explode(",", $gecos);
+    $birthdate = $values[1];
+    if (strpos($current_pass, "{sasl}") === 0) {
+	$changes["userPassword"] = "{crypt}" . crypt($birthdate);
+	return ldap_modify($ds, "uid=$uid," . $dn["people"], $changes);
+    } else {
+	return 1; /* Auth through AD is already not used */
+    }
+}
+
+function user_has_ad_auth($uid, $ds = NULL) {
+    global $ldap_server, $ldap_port, $dn, $adminDn, $adminPw;
+    if (! isset($ds)) {
+	$ds = ldap_connect($ldap_server, $ldap_port);
+	if (! $ds) {
+	    return 0;
+	}
+	$r = ldap_bind($ds, $adminDn, $adminPw); // Bind en admin
+	if (! $r) {
+	    return 0;
+	}
+    }
+    $sr = ldap_read($ds, "uid=$uid," . $dn["people"], "(objectclass=*)",
+		    array("userPassword"));
+    if (! $sr) {
+	return 0;
+    }
+    $entry = ldap_first_entry($ds, $sr);
+    $values = ldap_get_values($ds, $entry, "userPassword");
+    $current_pass = $values[0];
+    if (strpos($current_pass, "{sasl}") === 0) {
+	return true;
+    } else {
+	return false;
+    }
+}
+
 // Changement mot de passe
 function userChangedPwd($uid, $userpwd, $old) {
   global $scriptsbinpath;
