@@ -91,6 +91,13 @@
     <li><a href="add_user_group.php?uid=<? echo $user["uid"] ?>">Ajouter &agrave; des groupes</a><br>
 	<li><a href="del_group_user.php?uid=<? echo $user["uid"] ?>">Supprimer des groupes d'appartenance</a><br>
   <?
+    if ($ad_auth_delegation == "true") {
+	if (user_has_ad_auth($uid)) {
+	    echo "<li>Compte authentifi&eacute; par l'annuaire Active Directory. <a href=\"delegate_auth_ad.php?uid=" . $user["uid"] . "&action=disable&verbose=1\">Basculer vers une authentification g&eacute;r&eacute;e par le LCS.</a>.<br/>";
+	} else {
+	    echo "<li>Compte authentifi&eacute; par le LCS. <a href=\"delegate_auth_ad.php?uid=" . $user["uid"] . "&action=enable&verbose=1\">Basculer vers une authentification g&eacute;r&eacute;e par l'annuaire Active Directory.</a>.<br/>";
+	}
+    }
     if (ldap_get_right("Lcs_is_admin",$login)=="Y") {
     	echo "<li><a href=\"add_user_right.php?uid=" . $user["uid"] ."\">G&#233;rer les droits</a><br>";
     	if ($user["uid"]!=$login && $test_squir=="1") echo "<li><a href=\"mod_mail.php?uid=" . $user["uid"] ."\">Rediriger les mails</a> <br>";
