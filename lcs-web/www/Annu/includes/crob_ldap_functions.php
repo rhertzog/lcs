@@ -689,6 +689,12 @@ function creer_uid($nom,$prenom){
 	#	3: pnom tronque a 8
 	#	4: nomp tronque a 8
 	#	5: nomprenom tronque a 18
+	#       20: premiere lettre du prenom + 7 premieres lettre du nom
+	#           doublon: enleve derniere lettre + nombre en commencant par 1
+	#           note: _ et - sont supprimes aussi
+	#       21: 7 premieres lettres du nom + premiere lettre du prenom
+	#           doublon: comme pour 20
+	#           note: _ et - sont supprimes aussi
 	*/
 
 	switch($uidPolicy){
@@ -718,6 +724,16 @@ function creer_uid($nom,$prenom){
 			$uid=$nom.$prenom;
 			$uid=mb_substr($uid,0,18);
 			break;
+		case 20:
+			$prenom_f = str_replace(array("_", "-"), "", $prenom);
+			$nom_f = str_replace(array("_", "-"), "", $nom);
+			$uid = mb_substr($prenom_f, 0, 1) . mb_substr($nom_f, 0, 7);
+			break;
+		case 21:
+			$prenom_f = str_replace(array("_", "-"), "", $prenom);
+			$nom_f = str_replace(array("_", "-"), "", $nom);
+			$uid = mb_substr($nom_f, 0, 7) . mb_substr($prenom_f, 0, 1);
+			break;
 		default:
 			$ERREUR="oui";
 	}
@@ -737,8 +753,6 @@ function creer_uid($nom,$prenom){
 	}
 	else{
 		// Debut de l'uid... pour les doublons...
-		$prefuid=mb_substr($uid,0,mb_strlen($uid)-1);
-		$prefuid2=mb_substr($uid,0,mb_strlen($uid)-2);
 		// Ou renseigner un uid_initial ou uid_souche
 		$uid_souche=$uid;
 
@@ -759,7 +773,11 @@ function creer_uid($nom,$prenom){
 			//$adminLdap=get_infos_admin_ldap();
 			//$r=@ldap_bind($ds,$adminLdap["adminDn"],$adminLdap["adminPw"]);// Bind admin LDAP
 			if($r){
-				$cpt=2;
+				if (($uidPolicy == 20) || ($uidPolicy == 21)) {
+					$cpt = 1;
+				} else {
+					$cpt = 2;
+				}
 				//while($ok_uid=="non"){
 				//while(($ok_uid=="non")&&($cpt<10)){
 				while(($ok_uid=="non")&&($cpt<100)){
@@ -777,8 +795,11 @@ function creer_uid($nom,$prenom){
 										$ok_uid="non";
 										//$uid=mb_substr($uid,0,mb_strlen($uid)-1).$cpt;
 										//$uid=mb_substr($uid,0,mb_strlen($uid)-mb_strlen($cpt)).$cpt;
-										//$uid=$prefuid.$cpt;
-										$uid=mb_substr($uid_souche,0,mb_strlen($uid_souche)-mb_strlen($cpt)).$cpt;
+										if (($uidPolicy == 20) || ($uidPolicy == 21)) {
+											$uid = mb_substr($uid_souche, 0, mb_strlen($uid_souche) - 1) . $cpt;
+										} else {
+											$uid = mb_substr($uid_souche, 0, mb_strlen($uid_souche) - mb_strlen($cpt)) . $cpt;
+										}
 
 										if($uid=="admse3") {$uid="admse4";}
 

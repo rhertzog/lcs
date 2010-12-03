@@ -19,6 +19,8 @@ lcs-web (2.4.8~3) UNRELEASED; urgency=low
     it's not removed...
   * Add new page "Synchronization Active Directory" in the administration
     menu and associated features in the directory application.
+  * Implement uidPolicy=20 and 21 for compatiblity with the HARP directory in
+    use in the académie of grenoble.
 
   [ Philippe LECLERC ]
   * add display infos in modules_installes.php
