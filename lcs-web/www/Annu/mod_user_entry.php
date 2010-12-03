@@ -145,7 +145,7 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
     } else {
       // Changement du mot de passe
       if ( $userpwd && verifPwd($userpwd) ) {
-        if ( userChangedPwd($uid, $userpwd) ) {
+        if ( userChangedPwd($uid, $userpwd, '') ) {
           $html = "<strong>Le mot de passe a &#233;t&#233; modifi&#233; avec succ&#232;s.</strong><br>\n";
           if ( $login == $uid )
             // Cas du changement de son propre mot de passe, on reposte le cookie LCSuser

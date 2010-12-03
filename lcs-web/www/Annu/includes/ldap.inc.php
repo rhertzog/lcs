@@ -635,9 +635,9 @@ function tstclass($prof,$eleve)
 // -------------------------------------------
 
 // Changement mot de passe
-function userChangedPwd($uid, $userpwd) {
+function userChangedPwd($uid, $userpwd, $old) {
   global $scriptsbinpath;
-  exec ("$scriptsbinpath/userChangePwd.pl '$uid' '$userpwd'",$AllOutPut,$ReturnValue);
+  exec ("$scriptsbinpath/userChangePwd.pl '$uid' '$userpwd' '$old'",$AllOutPut,$ReturnValue);
   if ($ReturnValue == "0") {
     // Resynchro du mdp admin pour le mode sans echec
     if ( $uid == "admin" ) {

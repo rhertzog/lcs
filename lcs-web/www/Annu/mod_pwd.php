@@ -59,7 +59,7 @@
             </td>
           </tr>
           <tr>
-            <td>Ressaisir nouveau mot de passe : </td>
+            <td>Resaisir nouveau mot de passe : </td>
             <td>
                     <input type= "password" value="" name="dummy2" size='8'  maxlength='10'>
                     <input type="hidden" name="string_auth2" value="">
@@ -96,7 +96,7 @@
     }
   } else {    
     // Changement du mot de passe
-    if ( userChangedPwd($login, $new_password) ) {
+    if ( userChangedPwd($login, $new_password, $old_password) ) {
       // On reposte le cookie LCSuser en cas de succes du changement du mot de passe
       setcookie("LCSuser", xoft_encode( urlencode($new_password) ,$key_priv), 0,"/","",0);
       $html = "<strong>Votre mot de passe a &#233;t&#233; modifi&#233; avec succ&#232;s.</strong><br>\n";
