@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ##### Met en place la replication LDAP avec syncrepl #####
-##### LCS/SE3 derniere modification : 14/06/2008
+##### LCS/SE3 derniere modification : 04/12/2010
 if [ "$1" = "--help" -o "$1" = "-h" ]
 then
 	echo "Met en place la replication LDAP (syncrepl) a partir des donnees de la base sql"
@@ -328,6 +328,7 @@ then
 	cp $dossier_svg/DB_CONFIG /var/lib/ldap/
 
 
+# Make syncrepl.conf
 echo "syncrepl rid=0
  provider=ldap://$ldap_server:389
  type=refreshOnly
@@ -335,10 +336,16 @@ echo "syncrepl rid=0
  searchbase=\"$ldap_base_dn\"
  scope=sub
  schemachecking=off
- bindmethod=simple
- updatedn=\"cn=admin,$ldap_base_dn\"
- binddn=\"cn=admin,$ldap_base_dn\"
- credentials=$ldap_passwd" > /etc/ldap/syncrepl.conf
+ bindmethod=simple" > /etc/ldap/syncrepl.conf
+
+# if Debian Etch 
+if ( grep -q '4.0' /etc/debian_version )
+then
+	echo "updatedn=\"cn=admin,$ldap_base_dn\"" >> /etc/ldap/syncrepl.conf
+fi
+
+echo "binddn=\"cn=admin,$ldap_base_dn\"
+ credentials=$ldap_passwd" >> /etc/ldap/syncrepl.conf
 
 # Ajout de l'include dans slapd.conf
 echo "# Replication Slave Syncrepl
@@ -371,11 +378,15 @@ then
     # Creation du fichier syncprov.conf
     if [ ! -e /etc/ldap/syncprov.conf ]
     then
-echo "moduleload syncprov
-sessionlog   123 500
-overlay syncprov
+	echo "moduleload syncprov" > /etc/ldap/syncprov.conf
+	# if Debian Etch 
+	if ( grep -q '4.0' /etc/debian_version ) 
+	then
+		echo "sessionlog   123 500" >> /etc/ldap/syncprov.conf
+	fi
+	echo "overlay syncprov
 syncprov-checkpoint 50 5
-syncprov-sessionlog 50" >  /etc/ldap/syncprov.conf
+syncprov-sessionlog 50" >> /etc/ldap/syncprov.conf
     fi
     echo "include  /etc/ldap/syncprov.conf" >> /etc/ldap/slapd.conf
 fi
