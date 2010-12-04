@@ -11,6 +11,7 @@ lcs-web (2.4.8~3) UNRELEASED; urgency=low
   * Don't allow reauthentication if already authenticate in auth.php
   * Rename function search_people_trash to search_people_trash_lcs 
   * Modify mkTicket.rb to generate CAS ticket with gem rubycas-server
+  * Fix make replica config in mkSlapdConf.sh for Etch or Lenny...
 
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
@@ -31,7 +32,7 @@ lcs-web (2.4.8~3) UNRELEASED; urgency=low
   [ Cyril Bouthors ]
   * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 26 Nov 2010 14:58:00 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 04 Dec 2010 11:59:38 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
