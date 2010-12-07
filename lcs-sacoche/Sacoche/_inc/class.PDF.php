@@ -284,27 +284,38 @@ function _endpage()
 			$this->marge_bas     = 12;
 			$this->distance_pied = 9;
 		}
-		// Couleurs de fond ; il faut convertir l'hexadécimal et RVB décimal
+		// Couleurs prédéfinies
 		$this->tab_choix_couleur = ($this->couleur=='oui') ? array('NA'=>'rouge','VA'=>'jaune','A'=>'vert') : array('NA'=>'gris_fonce','VA'=>'gris_moyen','A'=>'gris_clair') ;
-		$rr = hexdec(substr($_SESSION['CSS_BACKGROUND-COLOR']['NA'],1,2));
-		$rv = hexdec(substr($_SESSION['CSS_BACKGROUND-COLOR']['NA'],3,2));
-		$rb = hexdec(substr($_SESSION['CSS_BACKGROUND-COLOR']['NA'],5,2));
-		$jr = hexdec(substr($_SESSION['CSS_BACKGROUND-COLOR']['VA'],1,2));
-		$jv = hexdec(substr($_SESSION['CSS_BACKGROUND-COLOR']['VA'],3,2));
-		$jb = hexdec(substr($_SESSION['CSS_BACKGROUND-COLOR']['VA'],5,2));
-		$vr = hexdec(substr($_SESSION['CSS_BACKGROUND-COLOR']['A'],1,2));
-		$vv = hexdec(substr($_SESSION['CSS_BACKGROUND-COLOR']['A'],3,2));
-		$vb = hexdec(substr($_SESSION['CSS_BACKGROUND-COLOR']['A'],5,2));
-		$this->tab_couleur['rouge'] = array('r'=>$rr,'v'=>$rv,'b'=>$rb);
-		$this->tab_couleur['jaune'] = array('r'=>$jr,'v'=>$jv,'b'=>$jb);
-		$this->tab_couleur['vert']  = array('r'=>$vr,'v'=>$vv,'b'=>$vb);
 		$this->tab_couleur['blanc']      = array('r'=>255,'v'=>255,'b'=>255);
 		$this->tab_couleur['gris_clair'] = array('r'=>230,'v'=>230,'b'=>230);
 		$this->tab_couleur['gris_moyen'] = array('r'=>190,'v'=>190,'b'=>190);
 		$this->tab_couleur['gris_fonce'] = array('r'=>150,'v'=>150,'b'=>150);
-		$this->tab_couleur['v0'] = array('r'=>255,'v'=>153,'b'=>153);
-		$this->tab_couleur['v1'] = array('r'=>153,'v'=>255,'b'=>153);
-		$this->tab_couleur['v2'] = array('r'=>187,'v'=>187,'b'=>255);
+		// Couleurs des états d'acquisition ; il faut convertir l'hexadécimal en RVB décimal
+		$rr = hexdec(substr($_SESSION['BACKGROUND_NA'],1,2));
+		$rv = hexdec(substr($_SESSION['BACKGROUND_NA'],3,2));
+		$rb = hexdec(substr($_SESSION['BACKGROUND_NA'],5,2));
+		$jr = hexdec(substr($_SESSION['BACKGROUND_VA'],1,2));
+		$jv = hexdec(substr($_SESSION['BACKGROUND_VA'],3,2));
+		$jb = hexdec(substr($_SESSION['BACKGROUND_VA'],5,2));
+		$vr = hexdec(substr($_SESSION['BACKGROUND_A'] ,1,2));
+		$vv = hexdec(substr($_SESSION['BACKGROUND_A'] ,3,2));
+		$vb = hexdec(substr($_SESSION['BACKGROUND_A'] ,5,2));
+		$this->tab_couleur['rouge'] = array('r'=>$rr,'v'=>$rv,'b'=>$rb);
+		$this->tab_couleur['jaune'] = array('r'=>$jr,'v'=>$jv,'b'=>$jb);
+		$this->tab_couleur['vert']  = array('r'=>$vr,'v'=>$vv,'b'=>$vb);
+		// Couleurs des états de validation ; il faut convertir l'hexadécimal en RVB décimal
+		$rr = hexdec(substr($_SESSION['BACKGROUND_V0'],1,2));
+		$rv = hexdec(substr($_SESSION['BACKGROUND_V0'],3,2));
+		$rb = hexdec(substr($_SESSION['BACKGROUND_V0'],5,2));
+		$vr = hexdec(substr($_SESSION['BACKGROUND_V1'],1,2));
+		$vv = hexdec(substr($_SESSION['BACKGROUND_V1'],3,2));
+		$vb = hexdec(substr($_SESSION['BACKGROUND_V1'],5,2));
+		$br = hexdec(substr($_SESSION['BACKGROUND_V2'],1,2));
+		$bv = hexdec(substr($_SESSION['BACKGROUND_V2'],3,2));
+		$bb = hexdec(substr($_SESSION['BACKGROUND_V2'],5,2));
+		$this->tab_couleur['v0'] = array('r'=>$rr,'v'=>$rv,'b'=>$rb);
+		$this->tab_couleur['v1'] = array('r'=>$vr,'v'=>$vv,'b'=>$vb);
+		$this->tab_couleur['v2'] = array('r'=>$br,'v'=>$bv,'b'=>$bb);
 		// Lettres utilisées en remplacement des images Lomer pour du noir et blanc
 		$this->tab_lettre['RR'] = $_SESSION['NOTE_TEXTE']['RR'];
 		$this->tab_lettre['R']  = $_SESSION['NOTE_TEXTE']['R'];
@@ -381,7 +392,7 @@ function _endpage()
 				{
 					$img_pos_x = $memo_x + ( ($this->lomer_espace_largeur - $this->lomer_image_largeur) / 2 ) ;
 					$img_pos_y = $memo_y + ( ($this->lomer_espace_hauteur - $this->lomer_image_hauteur) / 2 ) ;
-					$this->Image('./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/h/'.$note.'.gif',$img_pos_x,$img_pos_y,$this->lomer_image_largeur,$this->lomer_image_hauteur,'GIF');
+					$this->Image('./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/'.$note.'.gif',$img_pos_x,$img_pos_y,$this->lomer_image_largeur,$this->lomer_image_hauteur,'GIF');
 				}
 				else
 				{
@@ -976,7 +987,7 @@ function afficher_pourcentage_acquis($gras,$tab_infos)
 
 	public function releve_socle_initialiser($test_affichage_Pourcentage,$test_affichage_Validation)
 	{
-		$this->cases_hauteur       = 4.5;
+		$this->cases_hauteur       = 4.5; // Dans le cas d'un bilan juste sur un pilier, il faudrait oprimiser la hauteur de ligne...
 		$this->taille_police       = 6;
 		$this->pourcentage_largeur = 27.5;
 		$this->validation_largeur  = 17.5;
@@ -986,6 +997,7 @@ function afficher_pourcentage_acquis($gras,$tab_infos)
 		$this->section_largeur     = $this->item_largeur;
 		$this->pilier_largeur      = $this->section_largeur - $retrait_validation;
 		$this->SetMargins($this->marge_gauche , $this->marge_haut , $this->marge_droit);
+		$this->SetAutoPageBreak(false);
 		// $this->AddFont('ArialNarrow');
 	}
 
@@ -996,25 +1008,41 @@ function afficher_pourcentage_acquis($gras,$tab_infos)
 		{
 			$this->choisir_couleur_trait('gris_moyen');
 			$this->SetLineWidth(0.1);
-			$this->Line($this->page_largeur-$this->marge_droit-75 , $this->marge_haut+10 , $this->page_largeur-$this->marge_droit , $this->marge_haut+10);
-			$this->SetXY($this->marge_gauche , $this->marge_haut+15);
+			$this->Line($this->page_largeur-$this->marge_droit-75 , $this->marge_haut+2*$this->cases_hauteur , $this->page_largeur-$this->marge_droit , $this->marge_haut+2*$this->cases_hauteur);
 			$this->SetDrawColor(0 , 0 , 0);
 		}
 		$this->SetFont('Arial' , 'B' , $this->taille_police*1.5);
-		$this->SetXY($this->page_largeur-$this->marge_droit-50 , $this->marge_haut);
-		$this->Cell(50 , 5 , pdf($_SESSION['DENOMINATION']) , 0 , 2 , 'R' , false , '');
-		$this->Cell(50 , 5 , pdf($this->eleve_nom.' '.$this->eleve_prenom) , 0 , 2 , 'R' , false , '');
+		$this->SetXY($this->page_largeur-$this->marge_droit-50 , max($this->marge_haut,$this->GetY()-2*$this->cases_hauteur) ); // Soit c'est une nouvelle page, soit il ne faut pas se mettre en haut de la page
+		$this->Cell(50 , $this->cases_hauteur , pdf($_SESSION['DENOMINATION']) , 0 , 2 , 'R' , false , '');
+		$this->Cell(50 , $this->cases_hauteur , pdf($this->eleve_nom.' '.$this->eleve_prenom) , 0 , 2 , 'R' , false , '');
 	}
 
-	public function releve_socle_entete($palier_nom,$eleve_id,$eleve_nom,$eleve_prenom)
+	public function releve_socle_entete($palier_nom,$break,$eleve_id,$eleve_nom,$eleve_prenom)
 	{
-		// On prend une nouvelle page PDF pour chaque élève
-		$this->AddPage($this->orientation , 'A4');
+		// On prend une nouvelle page PDF pour chaque élève en cas d'affichage d'un palier avec tous les piliers ; pour un seul pilier, on étudie la place restante... tout en forçant une nouvelle page pour le 1er élève
+		if( ($break==0) || ($this->GetY()==0) )
+		{
+			$this->AddPage($this->orientation , 'A4');
+			$this->SetXY($this->marge_gauche,$this->marge_haut);
+		}
+		else
+		{
+			$hauteur_requise = $this->cases_hauteur * ($break + 2 + 0.5 + 1); // titres + marge + interligne
+			$hauteur_restante = $this->page_hauteur - $this->GetY() - $this->marge_bas;
+			if($hauteur_requise > $hauteur_restante)
+			{
+				$this->AddPage($this->orientation , 'A4');
+				$this->SetXY($this->marge_gauche,$this->marge_haut);
+			}
+			else
+			{
+				$this->SetXY($this->marge_gauche,$this->GetY()+$this->cases_hauteur);
+			}
+		}
 		// Intitulé
 		$this->SetFont('Arial' , 'B' , $this->taille_police*1.5);
-		$this->SetXY($this->marge_gauche,$this->marge_haut);
-		$this->Cell($this->page_largeur-$this->marge_droit-75 , 5 , pdf('État de maîtrise du socle commun') , 0 , 2 , 'L' , false , '');
-		$this->Cell($this->page_largeur-$this->marge_droit-75 , 5 , pdf($palier_nom) , 0 , 2 , 'L' , false , '');
+		$this->Cell($this->page_largeur-$this->marge_droit-75 , $this->cases_hauteur , pdf('État de maîtrise du socle commun') , 0 , 2 , 'L' , false , '');
+		$this->Cell($this->page_largeur-$this->marge_droit-75 , $this->cases_hauteur , pdf($palier_nom) , 0 , 2 , 'L' , false , '');
 		// Nom / prénom
 		$this->eleve_id     = $eleve_id;
 		$this->eleve_nom    = $eleve_nom;
@@ -1024,7 +1052,7 @@ function afficher_pourcentage_acquis($gras,$tab_infos)
 
 	public function releve_socle_pilier($pilier_nom,$pilier_nb_lignes,$test_affichage_Validation,$tab_pilier_validation)
 	{
-		$this->SetXY($this->marge_gauche+$this->retrait_pourcentage , $this->GetY() + $this->cases_hauteur);
+		$this->SetXY($this->marge_gauche+$this->retrait_pourcentage , $this->GetY() + 0.5*$this->cases_hauteur);
 		$hauteur_requise = $this->cases_hauteur * $pilier_nb_lignes;
 		$hauteur_restante = $this->page_hauteur - $this->GetY() - $this->marge_bas;
 		if($hauteur_requise > $hauteur_restante)

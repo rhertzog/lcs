@@ -486,7 +486,7 @@ function maj_base($version_actuelle)
 	}
 
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//	MAJ 2010-08-06 => 2010-10-16
+	//	MAJ 2010-10-04 => 2010-10-16
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	if($version_actuelle=='2010-10-04')
@@ -705,6 +705,21 @@ function maj_base($version_actuelle)
 			DB::query(SACOCHE_STRUCTURE_BD_NAME , $requetes );
 			DB::close(SACOCHE_STRUCTURE_BD_NAME);
 		}
+		// mise à jour du champ "version_base" (obligatoire)
+		DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base" LIMIT 1' );
+	}
+
+	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//	MAJ 2010-11-16 => 2010-11-28
+	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2010-11-16')
+	{
+		$version_actuelle = '2010-11-28';
+		// ajouter une gestion de droits
+		DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ("droit_voir_algorithme" , "directeur,professeur,eleve")' );
+		// nouvel attribut user : daltonisme
+		DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_user ADD user_daltonisme TINYINT(1) UNSIGNED NOT NULL DEFAULT "0" AFTER user_statut' );
 		// mise à jour du champ "version_base" (obligatoire)
 		DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base" LIMIT 1' );
 	}

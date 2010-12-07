@@ -304,14 +304,19 @@ function fabriquer_login($prenom,$nom,$profil)
 /**
  * fabriquer_mdp
  * 
+ * Certains caractères sont évités :
+ * "e" sinon un tableur peut interpréter le mot de passe comme un nombre avec exposant
+ * "i"j"1"l" pour éviter une confusion entre eux
+ * "m"w" pour éviter la confusion avec "nn"vv"
+ * "o"0" pour éviter une confusion entre eux
+ * 
  * @param void
  * @return string
  */
 
 function fabriquer_mdp()
 {
-	// e enlevé sinon un tableur peut interpréter le mot de passe comme un nombre avec exposant ; hijklmoquvw retirés aussi pour éviter tout risque de confusion
-	return mb_substr(str_shuffle('23456789abcdfgnprstxyz'),0,6);
+	return mb_substr(str_shuffle('2345678923456789abcdfghknpqrstuvxyz'),0,8);
 }
 
 /**
@@ -330,37 +335,23 @@ function crypter_mdp($password)
 /**
  * fabriquer_fichier_hebergeur_info
  * 
- * @param string $hebergeur_installation
- * @param string $hebergeur_denomination
- * @param string $hebergeur_uai
- * @param string $hebergeur_adresse_site
- * @param string $hebergeur_logo
- * @param string $hebergeur_cnil
- * @param string $webmestre_nom
- * @param string $webmestre_prenom
- * @param string $webmestre_courriel
- * @param string $webmestre_password_md5
- * @param int    $webmestre_erreur_date
+ * @param array tableau $constante_nom => $constante_valeur des paramètres à modfifier (sinon, on prend les constantes déjà définies)
  * @return void
  */
 
-function fabriquer_fichier_hebergeur_info($hebergeur_installation,$hebergeur_denomination,$hebergeur_uai,$hebergeur_adresse_site,$hebergeur_logo,$hebergeur_cnil,$webmestre_nom,$webmestre_prenom,$webmestre_courriel,$webmestre_password_md5,$webmestre_erreur_date)
+function fabriquer_fichier_hebergeur_info($tab_constantes_modifiees)
 {
 	global $CHEMIN_CONFIG;
 	$fichier_nom     = $CHEMIN_CONFIG.'constantes.php';
+	$tab_constantes_requises = array('HEBERGEUR_INSTALLATION','HEBERGEUR_DENOMINATION','HEBERGEUR_UAI','HEBERGEUR_ADRESSE_SITE','HEBERGEUR_LOGO','HEBERGEUR_CNIL','WEBMESTRE_NOM','WEBMESTRE_PRENOM','WEBMESTRE_COURRIEL','WEBMESTRE_PASSWORD_MD5','WEBMESTRE_ERREUR_DATE','SERVEUR_PROXY_USED','SERVEUR_PROXY_NAME','SERVEUR_PROXY_PORT','SERVEUR_PROXY_TYPE','SERVEUR_PROXY_AUTH_USED','SERVEUR_PROXY_AUTH_METHOD','SERVEUR_PROXY_AUTH_USER','SERVEUR_PROXY_AUTH_PASS');
 	$fichier_contenu = '<?php'."\r\n";
 	$fichier_contenu.= '// Informations concernant l\'hébergement et son webmestre (n°UAI uniquement pour une installation de type mono-structure)'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_INSTALLATION\',\''.str_replace('\'','\\\'',$hebergeur_installation).'\');'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_DENOMINATION\',\''.str_replace('\'','\\\'',$hebergeur_denomination).'\');'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_UAI\'         ,\''.str_replace('\'','\\\'',$hebergeur_uai)         .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_ADRESSE_SITE\',\''.str_replace('\'','\\\'',$hebergeur_adresse_site).'\');'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_LOGO\'        ,\''.str_replace('\'','\\\'',$hebergeur_logo)        .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_CNIL\'        ,\''.str_replace('\'','\\\'',$hebergeur_cnil)        .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'WEBMESTRE_NOM\'         ,\''.str_replace('\'','\\\'',$webmestre_nom)         .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'WEBMESTRE_PRENOM\'      ,\''.str_replace('\'','\\\'',$webmestre_prenom)      .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'WEBMESTRE_COURRIEL\'    ,\''.str_replace('\'','\\\'',$webmestre_courriel)    .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'WEBMESTRE_PASSWORD_MD5\',\''.str_replace('\'','\\\'',$webmestre_password_md5).'\');'."\r\n";
-	$fichier_contenu.= 'define(\'WEBMESTRE_ERREUR_DATE\' ,\''.str_replace('\'','\\\'',$webmestre_erreur_date) .'\');'."\r\n";
+	foreach($tab_constantes_requises as $constante_nom)
+	{
+		$constante_valeur = (isset($tab_constantes_modifiees[$constante_nom])) ? $tab_constantes_modifiees[$constante_nom] : constant($constante_nom);
+		$espaces = str_repeat(' ',25-strlen($constante_nom));
+		$fichier_contenu.= 'define(\''.$constante_nom.'\''.$espaces.',\''.str_replace('\'','\\\'',$constante_valeur).'\');'."\r\n";
+	}
 	$fichier_contenu.= '?>'."\r\n";
 	Ecrire_Fichier($fichier_nom,$fichier_contenu);
 }
@@ -426,7 +417,7 @@ function modifier_mdp_webmestre($password_ancien,$password_nouveau)
 	}
 	// Remplacer par le nouveau mot de passe
 	$password_nouveau_crypte = crypter_mdp($password_nouveau);
-	fabriquer_fichier_hebergeur_info(HEBERGEUR_INSTALLATION,HEBERGEUR_DENOMINATION,HEBERGEUR_UAI,HEBERGEUR_ADRESSE_SITE,HEBERGEUR_LOGO,HEBERGEUR_CNIL,WEBMESTRE_NOM,WEBMESTRE_PRENOM,WEBMESTRE_COURRIEL,$password_nouveau_crypte,WEBMESTRE_ERREUR_DATE);
+	fabriquer_fichier_hebergeur_info( array('WEBMESTRE_PASSWORD_MD5'=>$password_nouveau_crypte) );
 	return 'ok';
 }
 
@@ -509,7 +500,7 @@ function connecter_webmestre($password)
 	$delai_attente_consomme = time() - WEBMESTRE_ERREUR_DATE ;
 	if($delai_attente_consomme<3)
 	{
-		fabriquer_fichier_hebergeur_info(HEBERGEUR_INSTALLATION,HEBERGEUR_DENOMINATION,HEBERGEUR_UAI,HEBERGEUR_ADRESSE_SITE,HEBERGEUR_LOGO,HEBERGEUR_CNIL,WEBMESTRE_NOM,WEBMESTRE_PRENOM,WEBMESTRE_COURRIEL,WEBMESTRE_PASSWORD_MD5,time());
+		fabriquer_fichier_hebergeur_info( array('WEBMESTRE_ERREUR_DATE'=>time()) );
 		return'Calmez-vous et patientez 10s avant toute nouvelle tentative !';
 	}
 	elseif($delai_attente_consomme<10)
@@ -521,7 +512,7 @@ function connecter_webmestre($password)
 	$password_crypte = crypter_mdp($password);
 	if($password_crypte!=WEBMESTRE_PASSWORD_MD5)
 	{
-		fabriquer_fichier_hebergeur_info(HEBERGEUR_INSTALLATION,HEBERGEUR_DENOMINATION,HEBERGEUR_UAI,HEBERGEUR_ADRESSE_SITE,HEBERGEUR_LOGO,HEBERGEUR_CNIL,WEBMESTRE_NOM,WEBMESTRE_PRENOM,WEBMESTRE_COURRIEL,WEBMESTRE_PASSWORD_MD5,time());
+		fabriquer_fichier_hebergeur_info( array('WEBMESTRE_ERREUR_DATE'=>time()) );
 		return 'Mot de passe incorrect ! Patientez 10s avant une nouvelle tentative.';
 	}
 	// Si on arrive ici c'est que l'identification s'est bien effectuée !
@@ -598,6 +589,24 @@ function connecter_user($BASE,$profil,$login,$password,$mode_connection)
 		return'Utilisez le formulaire approprié aux '.str_replace('eleve','élève',$DB_ROW['user_profil']).'s !';
 	}
 	// Si on arrive ici c'est que l'identification s'est bien effectuée !
+	enregistrer_informations_session($BASE,$DB_ROW);
+	// Mémoriser la date de la (dernière) connexion
+	DB_STRUCTURE_modifier_date('connexion',$_SESSION['USER_ID']);
+	// Enregistrement d'un cookie sur le poste client servant à retenir le dernier établissement sélectionné si identification avec succès
+	setcookie(COOKIE_STRUCTURE,$BASE,time()+60*60*24*365,'/');
+	return'ok';
+}
+
+/**
+ * enregistrer_informations_session
+ * 
+ * @param int     $BASE
+ * @param array   $DB_ROW   ligne issue de la table sacoche_user correspondant à l'utilisateur qui se connecte.
+ * @return void
+ */
+
+function enregistrer_informations_session($BASE,$DB_ROW)
+{
 	// Enregistrer en session le numéro de la base
 	$_SESSION['BASE']             = $BASE;
 	// Enregistrer en session les données associées à l'utilisateur (indices du tableau de session en majuscules).
@@ -607,6 +616,7 @@ function connecter_user($BASE,$profil,$login,$password,$mode_connection)
 	$_SESSION['USER_PRENOM']      = $DB_ROW['user_prenom'];
 	$_SESSION['USER_LOGIN']       = $DB_ROW['user_login'];
 	$_SESSION['USER_DESCR']       = '['.$DB_ROW['user_profil'].'] '.$DB_ROW['user_prenom'].' '.$DB_ROW['user_nom'];
+	$_SESSION['USER_DALTONISME']  = $DB_ROW['user_daltonisme'];
 	$_SESSION['USER_ID_ENT']      = $DB_ROW['user_id_ent'];
 	$_SESSION['USER_ID_GEPI']     = $DB_ROW['user_id_gepi'];
 	$_SESSION['ELEVE_CLASSE_ID']  = (int) $DB_ROW['eleve_classe_id'];
@@ -639,12 +649,33 @@ function connecter_user($BASE,$profil,$login,$password,$mode_connection)
 			$_SESSION[$parametre_nom] = $parametre_valeur ;
 		}
 	}
+	// Fabriquer $_SESSION['NOTE_DOSSIER'] et $_SESSION['BACKGROUND_...'] en fonction de $_SESSION['USER_DALTONISME'] à partir de $_SESSION['NOTE_IMAGE_STYLE'] et $_SESSION['CSS_BACKGROUND-COLOR']['...']
+	// remarque : $_SESSION['USER_DALTONISME'] ne peut être utilisé que pour les profils élèves/profs/directeurs, pas les admins ni le webmestre
+	adapter_session_daltonisme() ;
+	// Enregistrer en session le CSS personnalisé
 	actualiser_style_session();
-	// Mémoriser la date de la (dernière) connexion
-	DB_STRUCTURE_modifier_date('connexion',$_SESSION['USER_ID']);
-	// Enregistrement d'un cookie sur le poste client servant à retenir le dernier établissement sélectionné si identification avec succès
-	setcookie(COOKIE_STRUCTURE,$BASE,time()+60*60*24*365,'/');
-	return'ok';
+}
+
+/**
+ * completer_session_daltonisme
+ * 
+ * @param void
+ * @return void
+ */
+
+function adapter_session_daltonisme()
+{
+	// codes de notation
+	$_SESSION['NOTE_DOSSIER']  = $_SESSION['USER_DALTONISME'] ? 'Dalton'  : $_SESSION['NOTE_IMAGE_STYLE'] ;
+	// couleurs des états d'acquisition
+	$_SESSION['BACKGROUND_NA'] = $_SESSION['USER_DALTONISME'] ? '#909090' : $_SESSION['CSS_BACKGROUND-COLOR']['NA'] ;
+	$_SESSION['BACKGROUND_VA'] = $_SESSION['USER_DALTONISME'] ? '#BEBEBE' : $_SESSION['CSS_BACKGROUND-COLOR']['VA'] ;
+	$_SESSION['BACKGROUND_A']  = $_SESSION['USER_DALTONISME'] ? '#EAEAEA' : $_SESSION['CSS_BACKGROUND-COLOR']['A'] ;
+	// couleurs des états de validation
+	$_SESSION['BACKGROUND_V0'] = $_SESSION['USER_DALTONISME'] ? '#909090' : '#FF9999' ; // validation négative
+	$_SESSION['BACKGROUND_V1'] = $_SESSION['USER_DALTONISME'] ? '#EAEAEA' : '#99FF99' ; // validation positive
+	$_SESSION['BACKGROUND_V2'] = $_SESSION['USER_DALTONISME'] ? '#BEBEBE' : '#BBBBFF' ; // validation en attente
+	$_SESSION['OPACITY']       = $_SESSION['USER_DALTONISME'] ? '1'       : '0.3'  ;
 }
 
 /**
@@ -657,17 +688,36 @@ function connecter_user($BASE,$profil,$login,$password,$mode_connection)
 function actualiser_style_session()
 {
 	$_SESSION['CSS']  = '';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.RR {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/h/RR.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.RR {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/v/RR.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.R  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/h/R.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.R  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/v/R.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.V  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/h/V.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.V  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/v/V.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.VV {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/h/VV.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.VV {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/v/VV.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table th.r , table td.r , div.r ,span.r ,label.r {background-color:'.$_SESSION['CSS_BACKGROUND-COLOR']['NA'].'}';
-	$_SESSION['CSS'] .= 'table th.o , table td.o , div.o ,span.o ,label.o {background-color:'.$_SESSION['CSS_BACKGROUND-COLOR']['VA'].'}';
-	$_SESSION['CSS'] .= 'table th.v , table td.v , div.v ,span.v ,label.v {background-color:'.$_SESSION['CSS_BACKGROUND-COLOR']['A'].'}';
+	// codes de notation
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.RR {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/RR.gif") no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.RR {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/RR.gif") no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.R  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/R.gif")  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.R  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/R.gif")  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.V  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/V.gif")  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.V  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/V.gif")  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.VV {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/VV.gif") no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.VV {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/VV.gif") no-repeat center center;}';
+	// couleurs des états d'acquisition
+	$_SESSION['CSS'] .= 'table th.r , table td.r , div.r ,span.r ,label.r {background-color:'.$_SESSION['BACKGROUND_NA'].'}';
+	$_SESSION['CSS'] .= 'table th.o , table td.o , div.o ,span.o ,label.o {background-color:'.$_SESSION['BACKGROUND_VA'].'}';
+	$_SESSION['CSS'] .= 'table th.v , table td.v , div.v ,span.v ,label.v {background-color:'.$_SESSION['BACKGROUND_A'].'}';
+	// couleurs des états de validation
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.down0 {background:'.$_SESSION['BACKGROUND_V0'].' url(./_img/socle/arrow_down.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.down1 {background:'.$_SESSION['BACKGROUND_V1'].' url(./_img/socle/arrow_down.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.down2 {background:'.$_SESSION['BACKGROUND_V2'].' url(./_img/socle/arrow_down.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.left0 {background:'.$_SESSION['BACKGROUND_V0'].' url(./_img/socle/arrow_left.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.left1 {background:'.$_SESSION['BACKGROUND_V1'].' url(./_img/socle/arrow_left.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.left2 {background:'.$_SESSION['BACKGROUND_V2'].' url(./_img/socle/arrow_left.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.diag0 {background:'.$_SESSION['BACKGROUND_V0'].' url(./_img/socle/arrow_diag.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.diag1 {background:'.$_SESSION['BACKGROUND_V1'].' url(./_img/socle/arrow_diag.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.diag2 {background:'.$_SESSION['BACKGROUND_V2'].' url(./_img/socle/arrow_diag.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= 'th.v0 , td.v0 {background:'.$_SESSION['BACKGROUND_V0'].'}';
+	$_SESSION['CSS'] .= 'th.v1 , td.v1 {background:'.$_SESSION['BACKGROUND_V1'].'}';
+	$_SESSION['CSS'] .= 'th.v2 , td.v2 {background:'.$_SESSION['BACKGROUND_V2'].'}';
+	$_SESSION['CSS'] .= '#zone_information .v0 {background:'.$_SESSION['BACKGROUND_V0'].';padding:0 1em;margin-right:1ex}';
+	$_SESSION['CSS'] .= '#zone_information .v1 {background:'.$_SESSION['BACKGROUND_V1'].';padding:0 1em;margin-right:1ex}';
+	$_SESSION['CSS'] .= '#zone_information .v2 {background:'.$_SESSION['BACKGROUND_V2'].';padding:0 1em;margin-right:1ex}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody td[lang=lock] {background:'.$_SESSION['BACKGROUND_V1'].' url(./_img/socle/lock.gif) no-repeat center center;} /* surclasse une classe v0 ou v1 ou v2 car défini après */';
 }
 
 function envoyer_webmestre_courriel($adresse,$objet,$contenu)
@@ -1022,22 +1072,34 @@ function url_get_contents($url,$tab_post=false,$timeout=5)
 	// Ne pas utiliser file_get_contents() car certains serveurs n'accepent pas d'utiliser une URL comme nom de fichier (gestionnaire fopen non activé).
 	// On utilise donc la bibliothèque cURL en remplacement
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_DNS_CACHE_TIMEOUT, 3600);          // Le temps en seconde que cURL doit conserver les entrées DNS en mémoire. Cette option est définie à 120 secondes (2 minutes) par défaut.
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);             // TRUE retourne directement le transfert sous forme de chaîne de la valeur retournée par curl_exec() au lieu de l'afficher directement.
-	curl_setopt($ch, CURLOPT_FAILONERROR, TRUE);                // TRUE pour que PHP traite silencieusement les codes HTTP supérieurs ou égaux à 400. Le comportement par défaut est de retourner la page normalement, en ignorant ce code.
-	curl_setopt($ch, CURLOPT_HEADER, FALSE);                    // FALSE pour ne pas inclure l'en-tête dans la valeur de retour.
-	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);                // Le temps maximum d'exécution de la fonction cURL (en s) ; éviter de monter cette valeur pour libérer des ressources plus rapidement : 'classiquement', le serveur doit répondre en qq ms, donc si au bout de 5s il a pas répondu c'est qu'il ne répondra plus, alors pas la peine de bloquer une connexion et de la RAM pendant plus longtemps.
-	curl_setopt($ch, CURLOPT_URL, $url);                        // L'URL à récupérer. Vous pouvez aussi choisir cette valeur lors de l'appel à curl_init().
-	if( (!ini_get('safe_mode')) && (!ini_get('open_basedir')) ) // Option CURLOPT_FOLLOWLOCATION sous conditions car certaines installations renvoient "CURLOPT_FOLLOWLOCATION cannot be activated when in safe_mode or an open_basedir is set" (http://www.php.net/manual/fr/features.safe-mode.functions.php#92192)
-	{
+	curl_setopt($ch, CURLOPT_DNS_CACHE_TIMEOUT, 3600); // Le temps en seconde que cURL doit conserver les entrées DNS en mémoire. Cette option est définie à 120 secondes (2 minutes) par défaut.
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);    // TRUE retourne directement le transfert sous forme de chaîne de la valeur retournée par curl_exec() au lieu de l'afficher directement.
+	curl_setopt($ch, CURLOPT_FAILONERROR, TRUE);       // TRUE pour que PHP traite silencieusement les codes HTTP supérieurs ou égaux à 400. Le comportement par défaut est de retourner la page normalement, en ignorant ce code.
+	curl_setopt($ch, CURLOPT_HEADER, FALSE);           // FALSE pour ne pas inclure l'en-tête dans la valeur de retour.
+	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);       // Le temps maximum d'exécution de la fonction cURL (en s) ; éviter de monter cette valeur pour libérer des ressources plus rapidement : 'classiquement', le serveur doit répondre en qq ms, donc si au bout de 5s il a pas répondu c'est qu'il ne répondra plus, alors pas la peine de bloquer une connexion et de la RAM pendant plus longtemps.
+	curl_setopt($ch, CURLOPT_URL, $url);               // L'URL à récupérer. Vous pouvez aussi choisir cette valeur lors de l'appel à curl_init().
+	if( (!ini_get('safe_mode')) && (!ini_get('open_basedir')) )
+	{                                                           // Option CURLOPT_FOLLOWLOCATION sous conditions car certaines installations renvoient "CURLOPT_FOLLOWLOCATION cannot be activated when in safe_mode or an open_basedir is set" (http://www.php.net/manual/fr/features.safe-mode.functions.php#92192)
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);           // TRUE pour suivre toutes les en-têtes "Location: " que le serveur envoie dans les en-têtes HTTP (notez que cette fonction est récursive et que PHP suivra toutes les en-têtes "Location: " qu'il trouvera à moins que CURLOPT_MAXREDIRS ne soit définie).
 		curl_setopt($ch, CURLOPT_MAXREDIRS, 3);                   // Le nombre maximal de redirections HTTP à suivre. Utilisez cette option avec l'option CURLOPT_FOLLOWLOCATION.
 	}
+	if(SERVEUR_PROXY_USED)
+	{                                                                    // Serveur qui nécessite d'utiliser un tunnel à travers un proxy HTTP.
+		curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, TRUE);                   // TRUE pour effectuer un tunnel à travers un proxy HTTP.
+		curl_setopt($ch, CURLOPT_PROXY, SERVEUR_PROXY_NAME);               // Le nom du proxy HTTP au tunnel qui le demande.
+		curl_setopt($ch, CURLOPT_PROXYPORT, (int)SERVEUR_PROXY_PORT);      // Le numéro du port du proxy à utiliser pour la connexion. Ce numéro de port peut également être défini dans l'option CURLOPT_PROXY.
+		curl_setopt($ch, CURLOPT_PROXYTYPE, constant(SERVEUR_PROXY_TYPE)); // Soit CURLPROXY_HTTP (par défaut), soit CURLPROXY_SOCKS5.
+		if(SERVEUR_PROXY_AUTH_USED)
+		{                                                                                              // Serveur qui nécessite de s'authentifier pour utiliser le proxy.
+			curl_setopt($ch, CURLOPT_PROXYAUTH, constant(SERVEUR_PROXY_AUTH_METHOD));                    // La méthode d'identification HTTP à utiliser pour la connexion à un proxy. Utilisez la même méthode que celle décrite dans CURLOPT_HTTPAUTH. Pour une identification avec un proxy, seuls CURLAUTH_BASIC et CURLAUTH_NTLM sont actuellement supportés.
+			curl_setopt($ch, CURLOPT_PROXYUSERPWD, SERVEUR_PROXY_AUTH_USER.':'.SERVEUR_PROXY_AUTH_PASS); // Un nom d'utilisateur et un mot de passe formatés sous la forme "[username]:[password]" à utiliser pour la connexion avec le proxy.
+		}
+	}
 	if(is_array($tab_post))
 	{
-		curl_setopt($ch, CURLOPT_POST, TRUE);                     // TRUE pour que PHP fasse un HTTP POST. Un POST est un encodage normal application/x-www-from-urlencoded, utilisé couramment par les formulaires HTML. 
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $tab_post);          // Toutes les données à passer lors d'une opération de HTTP POST. Peut être passé sous la forme d'une chaîne encodée URL, comme 'para1=val1&para2=val2&...' ou sous la forme d'un tableau dont le nom du champ est la clé, et les données du champ la valeur. Si le paramètre value est un tableau, l'en-tête Content-Type sera définie à multipart/form-data. 
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));   // Eviter certaines erreurs curl 417 ; voir explication http://fr.php.net/manual/fr/function.curl-setopt.php#82418 ou http://www.gnegg.ch/2007/02/the-return-of-except-100-continue/
+		curl_setopt($ch, CURLOPT_POST, TRUE);                   // TRUE pour que PHP fasse un HTTP POST. Un POST est un encodage normal application/x-www-from-urlencoded, utilisé couramment par les formulaires HTML. 
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $tab_post);        // Toutes les données à passer lors d'une opération de HTTP POST. Peut être passé sous la forme d'une chaîne encodée URL, comme 'para1=val1&para2=val2&...' ou sous la forme d'un tableau dont le nom du champ est la clé, et les données du champ la valeur. Si le paramètre value est un tableau, l'en-tête Content-Type sera définie à multipart/form-data. 
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); // Eviter certaines erreurs curl 417 ; voir explication http://fr.php.net/manual/fr/function.curl-setopt.php#82418 ou http://www.gnegg.ch/2007/02/the-return-of-except-100-continue/
 	}
 	$requete_reponse = curl_exec($ch);
 	if($requete_reponse === false)
