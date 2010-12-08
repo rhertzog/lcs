@@ -1,8 +1,12 @@
-lcs-elfinder (2.4.8~4) Lcs; urgency=low
+lcs-elfinder (2.4.8~5) Lcs; urgency=low
 
+  [ Dominique Lepaisant ]
   * Redirection to the authentication page lcs if a user calls elFinder without being authenticated
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Tue, 21 Sep 2010 22:16:17 +0200
+  [ Jean-Luc Chrétien ]
+  * Fix bug in postinst
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 08 Dec 2010 15:33:27 +0100
 
 lcs-elfinder (2.4.8~3) Lcs; urgency=low
 

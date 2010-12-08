@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-VER=$(dpkg-query -f '${Version}' -W lcs-clientftp)
+VER=$(dpkg-query -f '${Version}' -W lcs-elfinder)
 MODULE="elfinder"
 VERAPPLI="1.1 RC3"
 INDICEMAJNBR="0"
