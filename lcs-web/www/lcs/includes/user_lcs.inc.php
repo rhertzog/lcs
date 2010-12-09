@@ -37,7 +37,7 @@ function auth_lcs()
                        @mysql_free_result($result);
                        if ( $ip_session == client_ip() ) {
                                # Recherche le login dans la base personne  et  interrogation de l'annuaire
-			       $query="ELECT login FROM personne WHERE id=$idpers";
+			       $query="SELECT login FROM personne WHERE id=$idpers";
                                $result=@mysql_query($query, $authlink);
                                if ($result && @mysql_num_rows($result)) {
                                        $login=@mysql_result($result,0,0);
