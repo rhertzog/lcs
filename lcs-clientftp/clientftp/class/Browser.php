@@ -784,7 +784,11 @@ class Browser {
 		if (!isset($path)) { $path = "."; }
 		
 		$tempBasepath = realpath(Browser :: getBrowserRoot(). Browser_Utilities :: getSeparator() .$path);
-		$relativePath = substr($tempBasepath,  strlen( Browser :: getBrowserRoot() ) );
+		if (strpos($tempBasePath, Browser::getBrowserRoot()) === 0) {
+			$relativePath = substr($tempBasepath,  strlen(Browser::getBrowserRoot()));
+		} else {
+			$relativePath = Browser_Utilities::getSeparator() . $path;
+		}
 		return $relativePath;
 	}
 	
