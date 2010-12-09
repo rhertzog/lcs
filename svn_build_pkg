@@ -1,9 +1,9 @@
 #!/bin/bash
 # Jean-Luc Chretien Projet LCS <jean-luc.chretien@tice.ac-caen.fr>
-# Version du : 25/11/2009
+# Version du : 09/12/2010
 # $1 : repertoire source du paquet
 # $2 : Num de version
-# $3 : Distribution : sarge ou etch
+# $3 : Distribution : lenny etch ou squeeze
 # $4 : Branche
 # $5 : Nom du mainteneur du paquet
 # $6 : Mail du mainteneur
@@ -12,13 +12,13 @@ if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3"
         echo "Script destine a fabriquer un paquet Debian LCS-*"
         echo ""
         echo "Usage : build_pkg <repertoire source du paquet> <Num de Version> <distribution> <branche de destination> <\"Nom mainteneur\"> <\"Mail mainteneur\"> <lintian>"
-        echo "La distribution est sarge ou etch"
+        echo "La distribution est etch lenny ou squeeze"
         echo "Les branches possibles sont : stable testing experimentale (ou xp)"
         echo "Le parametre lintian (optionnel) permet de valider le paquet avec l'outil Debian lintian"
         exit
 fi
 
-if [ "$3" != "etch" -a "$3" != "sarge" ]; then
+if [ "$3" != "lenny" -a "$3" != "etch" -a "$3" != "etch" ]; then
     echo "Les distributions possibles sont : sarge etch"
     exit
 fi
