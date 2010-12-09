@@ -1,9 +1,9 @@
-lcs-squirrelmail (2.4.7.2~2) UNRELEASED; urgency=low
+lcs-squirrelmail (2.4.7.2~2) Lcs; urgency=low
 
   * Add notify plugin for squirrelmail
   * Modify $HTTP_COOKIE_VARS to $_COOKIE in conf/redirect.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 26 Nov 2010 16:29:30 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 09 Dec 2010 09:32:06 +0100
 
 lcs-squirrelmail (2.4.7.1) Lcs; urgency=low
 

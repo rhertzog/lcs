@@ -1,4 +1,4 @@
-lcs-web (2.4.7.1~3) UNRELEASED; urgency=low
+lcs-web (2.4.7.1~4) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -10,6 +10,7 @@ lcs-web (2.4.7.1~3) UNRELEASED; urgency=low
   * Replace deprecated PHP 5.3 functions
   * Don't allow reauthentication if already authenticate in auth.php
   * Rename function search_people_trash to search_people_trash_lcs 
+  * Modify mkTicket.rb to generate CAS ticket with gem rubycas-server
   * Fix make replica config in mkSlapdConf.sh for Etch or Lenny...
 
   [ Raphaël Hertzog ]
@@ -18,7 +19,7 @@ lcs-web (2.4.7.1~3) UNRELEASED; urgency=low
     content. This is required because when a broken XML file is downloaded,
     it's not removed...
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 04 Dec 2010 11:56:21 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 09 Dec 2010 09:30:45 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
