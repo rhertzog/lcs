@@ -7,8 +7,8 @@
 /* $Id: sauv.php 626 2005-10-25 07:59:18Z plouf $ */
 
 require ("en-tete.php");
-$min=$_GET["$min"];
-$hour=$_GET["$hour"];
+$min=$_GET["min"];
+$hour=$_GET["hour"];
 // Verifie les droits
 if (is_admin("lcs_is_admin",$login)=="Y") {
 $PTP="/usr/share/lcs/Plugins/Bcdiweb";
