@@ -135,6 +135,7 @@ echo ' </select></ul><input type="submit" name="Leprof" value="" class="bt-valid
 if ($FLAG_ABSENCE==1) 
 	{
 	echo '<form action="'. htmlentities($_SERVER['PHP_SELF']).'" method="post"  TARGET="_BLANK" >
+	<INPUT name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'">
 	<fieldset id="field7">
 	<legend id="legende">Absences</legend>';
 	echo '<p>Visualisation des absences par cr&#233;neau, par classe ou par &#233;l&#232;ve </p>';
