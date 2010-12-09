@@ -1,0 +1,41 @@
+#! /bin/sh
+
+# postinst script for lcs-zonep
+
+set -e
+
+export PATH=$PATH:/usr/sbin
+
+masterfile=/etc/auto.master
+zonepfile=/etc/auto.zonep
+
+case "$1" in
+    configure)
+	mkdir -p /var/lib/lcs/zonep
+	chmod 700 /var/lib/lcs/zonep
+
+	# Configure autofs
+	if [ -f $masterfile ] && ! grep -Eq '^/srv/zone_p ' $masterfile
+	then
+	    test -e $zonepfile || touch $zonepfile
+	    mkdir -p /srv/zone_p
+	    echo "/srv/zone_p $zonepfile" >> $masterfile
+	    invoke-rc.d autofs restart
+	fi
+
+	# Configure sudo
+	lcs-make-sudoers
+    	;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    	;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    	;;
+esac
+
+#DEBHELPER#
+
+exit 0

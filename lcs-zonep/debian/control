@@ -1,0 +1,12 @@
+Source: lcs-zonep
+Section: misc
+Priority: optional
+Maintainer: Cyril Bouthors <cyb@debian.org>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.4
+
+Package: lcs-zonep
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-web (>= 2.4.8~2), smbfs, autofs, liblockfile1
+Description: Enable access to the SMB share called P:
+ This package enables access to the SMB share called P:

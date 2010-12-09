@@ -1,0 +1,6 @@
+lcs-zonep (2.4.8~1) UNRELEASED; urgency=low
+
+  [ Cyril Bouthors ]
+  * Initial release
+
+ -- Cyril Bouthors <cyb@debian.org>  Fri, 26 Nov 2010 17:56:36 +0100
