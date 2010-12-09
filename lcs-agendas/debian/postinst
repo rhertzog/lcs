@@ -9,7 +9,7 @@ MODULE="Agendas"
 module=`echo $MODULE | tr [:upper:] [:lower:]`
 VER=$(dpkg-query -f '${Version}' -W lcs-$module)
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
-INDICEMAJNBR="2"
+INDICEMAJNBR="4"
 DESCRIPT="Agenda collaboratif"
 CONF="/var/lib/lcs/$MODULE"
 
@@ -76,7 +76,7 @@ if [ "$2" = "" -o "$2" = "$VER" ] && [ "$TEST" != "P" ]; then
     # Inscription dans applis.lcs_db
     #-------------------------------
     
-    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', '$DESCRIPT', '$INDICEMAJNBR', '$VER', '$MODULE', 'N');"
+    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$module', '1', '$DESCRIPT', '$INDICEMAJNBR', '$VER', '$MODULE', 'N');"
 
 else
 
@@ -90,7 +90,7 @@ else
     # Lecture de l'indice de maj dans la table lcs_db.applis
     #-------------------------------------------------------
     
-    REF=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE';"`
+    REF=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE' OR name='$module';"`
     MAJNBR=$REF
     let MAJNBR+=1
     if [ ! -e $PATHPLUG/Admin/Maj/maj.$MAJNBR ]; then
@@ -155,7 +155,7 @@ else
         #
         # Inscription du module dans applis.lcs_db
         #
-        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER', type='N' WHERE name='$MODULE' ;" 
+        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER', name='$module', type='N' WHERE name='$MODULE' OR name='$module';" 
         #
         # Fin de la mise a jour
         #

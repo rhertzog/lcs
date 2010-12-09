@@ -1,8 +1,12 @@
-lcs-agendas (2.1.1) unstable; urgency=low
+lcs-agendas (2.4.8) unstable; urgency=low
 
+  [ Simon Cavey ]
   * now build for all Arch
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 16:13:55 +0200
+  [ Philippe Leclerc ]
+  * disable DISABLE_CROSSDAY_EVENTS 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 09 Dec 2010 15:57:42 +0100
 
 lcs-agendas (2.1) unstable; urgency=low
 
