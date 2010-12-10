@@ -1,5 +1,5 @@
 <?php
-/* functions.inc.php Derniere mise a jour 01/10/2010  */
+/* functions.inc.php Derniere mise a jour 10/12/2010  */
 
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
@@ -299,30 +299,32 @@ include ("/var/www/lcs/includes/xoft.php");
     {
 		/* Ferme la session de idpers */
 		global $authlink, $DBAUTH,$Nom_Appli, $VER;
-	        if (!@mysql_select_db($DBAUTH, $authlink)) 
-    			die ("S&#233;lection de base de donn&#233;es impossible.");
+		if (!@mysql_select_db($DBAUTH, $authlink)) 
+			die ("S&#233;lection de base de donn&#233;es impossible.");
 		// Destruction des cookies LCS
-                setcookie("LCSAuth","", 0,"/","",0);
-                setcookie("LCSuser","", 0,"/","",0);
-                // Destruction du cookie spip_admin
-                setcookie("spip_admin","", 0,"/spip/","",0);
-                // Destruction du cookie spip_session
-                setcookie("spip_session","", 0,"/spip/","",0);
+		setcookie("LCSAuth","", 0,"/","",0);
+		setcookie("LCSuser","", 0,"/","",0);
+		// Destruction du cookie spip_admin
+		setcookie("spip_admin","", 0,"/spip/","",0);
+		// Destruction du cookie spip_session
+		setcookie("spip_session","", 0,"/spip/","",0);
 		// Destruction du cookie admin du Forum
-                setcookie(md5($Nom_Appli.$VER."_admin"),"",0,"/","",0);
-                // Destruction du cookie smbwebclient
-                setcookie("SmbWebClientID","", 0,"/","",0);
-                // Destruction cookie tgt service CAS
-                $t=$_COOKIE['tgt'];
-                if ( isset($t) ) {
-	           $query="DELETE from casserver.casserver_tgt where ticket='$t'";
-	           $result=@mysql_query($query) or die($query);
-	           setcookie("lt","", 0,"/","",0);
-	           setcookie("tgt","", 0,"/","",0);
-                }
-		// Destruction des cookies squirrelmail
-	        setcookie("SQMSESSID","", 0,"/","",0);
+		setcookie(md5($Nom_Appli.$VER."_admin"),"",0,"/","",0);
+		// Destruction du cookie smbwebclient
+		setcookie("SmbWebClientID","", 0,"/","",0);
+		// Destruction cookie tgt service CAS
+		$t=$_COOKIE['tgt'];
+		if ( isset($t) ) {
+			$query="DELETE from casserver.casserver_tgt where ticket='$t'";
+			$result=@mysql_query($query) or die($query);
+			setcookie("lt","", 0,"/","",0);
+			setcookie("tgt","", 0,"/","",0);
+		}
+		// Destruction des cookies Squirrelmail
+		setcookie("SQMSESSID","", 0,"/","",0);
 		setcookie("key","", 0,"/squirrelmail/","",0);
+		// Destruction du cookie de session Roundcube
+		setcookie("roundcube_sessid","", 0,"/","",0);
 		// Destruction des cookies Plugins LCS
 		$query="SELECT chemin from applis where ( type='P' OR type='N' ) and value='1'";
 		$result=@mysql_query($query);
@@ -339,14 +341,14 @@ include ("/var/www/lcs/includes/xoft.php");
 		// Nettoyage de la session 
         if ($idpers) :
             //mysql_db_query("$DBAUTH","DELETE FROM sessions WHERE idpers=$idpers", $authlink);
-	    $query="DELETE FROM sessions WHERE idpers=$idpers";
-	    $result=@mysql_query($query,$authlink);
+	    	$query="DELETE FROM sessions WHERE idpers=$idpers";
+	    	$result=@mysql_query($query,$authlink);
         endif;
         /* update last_log */
         // lecture de act_log
         //$result=mysql_db_query("$DBAUTH","SELECT act_log FROM personne WHERE id=$idpers", $authlink);
-	$query="SELECT act_log FROM personne WHERE id=$idpers";
-	$result=@mysql_query($query,$authlink);
+		$query="SELECT act_log FROM personne WHERE id=$idpers";
+		$result=@mysql_query($query,$authlink);
         if ($result && mysql_num_rows($result)):
           $act_log=@mysql_result($result,0,0);
           @mysql_free_result($result);
