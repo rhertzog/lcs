@@ -51,7 +51,7 @@ else $QSTRING = $_SERVER['QUERY_STRING'];
 		
 		$nf="lcs-".$_SESSION['nommod'];
 		$fecran = cree_nom_fichier_ecran($nf);
-                $MSG = "D&#233;sinstallation";
+                $MSG = "Desinstallation";
         }                
 	              
 	if (file_exists($fecran))

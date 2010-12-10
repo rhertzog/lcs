@@ -31,11 +31,11 @@ lcs-web (2.4.8~3) UNRELEASED; urgency=low
   * add display infos with gestpack.sh when package is hold
   * add activation/desactivation modules
   * fix damage collateral of change.sh on mod_mail.php
-
+  * Modify css in Management modules 
   [ Cyril Bouthors ]
   * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 Dec 2010 10:39:15 +0100
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 10 Dec 2010 20:11:00 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
