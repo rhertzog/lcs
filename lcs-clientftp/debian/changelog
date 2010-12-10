@@ -1,8 +1,11 @@
-lcs-clientftp (2.4.7~1) UNRELEASED; urgency=low
-
+lcs-clientftp (2.4.8~1) UNRELEASED; urgency=low
+  [Cyril Bouthors]
   * Added symlink support.
 
- -- Cyril Bouthors <cyb@debian.org>  Sun, 21 Nov 2010 16:27:40 +0100
+  [Chretien Jean-Luc]
+  * Change to 2.4.8 version
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 Dec 2010 15:00:51 +0100
 
 lcs-clientftp (2.4.6) Lcs; urgency=low
 
