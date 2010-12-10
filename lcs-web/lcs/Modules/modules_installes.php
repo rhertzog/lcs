@@ -149,7 +149,7 @@ if ($result)
           echo '</div>
 			<script type="text/javascript">
 			var sorter=new table.sorter("sorter");
-			sorter.init("sorter",1);
+			sorter.init("sorter",0);
 			</script>';
           } else {
               echo "<H3>Pas de module install&#233;.</H3>\n";      
