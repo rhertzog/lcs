@@ -389,7 +389,7 @@ infoline: Powered by CRDP-TICE
 # Set the level to DEBUG if you want more detailed logging.
 
 log:
-  file: /var/log/casserver/casserver.log
+  file: /var/log/rubycas-server/casserver.log
   level: INFO
 
 
