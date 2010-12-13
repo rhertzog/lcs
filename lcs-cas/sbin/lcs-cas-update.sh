@@ -1,6 +1,6 @@
 #!/bin/bash
 # lcs-cas-update.sh 
-# remove rubycas-lcs rubycas-server <http://code.google.com/p/rubycas-server/>
+# remove rubycas-lcs and install rubycas-server <http://code.google.com/p/rubycas-server/>
 #
 CASINSTALL=`gem list | grep rubycas-lcs`
 if [ ! -z "$CASINSTALL" ]; then
@@ -51,9 +51,9 @@ if [ ! -z "$CASINSTALL" ]; then
 	gem uninstall activesupport --ignore-dependencies --quiet
 	gem uninstall activerecord --ignore-dependencies --quiet
 	#
-	# rubycas-lcs install
+	# rubycas-server install
 	#
-	#echo "rubycas-lcs installation in one minute"
+	#echo "rubycas-server installation in one minute"
 	#at now+1minutes <<END
 	#/usr/sbin/lcs-cas-install.sh
 	#END

@@ -1,7 +1,7 @@
 ### lcs-cas-install.sh
 #!/bin/bash
 # lcs-cas-install.sh 
-# Install rubycas-lcs base on rubycas-server <http://code.google.com/p/rubycas-server/>
+# Install CAS service on LCS base on rubycas-server <http://code.google.com/p/rubycas-server/>
 # 
 # Get LCS params in lcs_db
 function get_lcsdb_params() {
@@ -9,7 +9,7 @@ function get_lcsdb_params() {
     echo "$PARAMS"
 }
 #
-# rubycas-lcs configuration and path
+# rubycas-server configuration and path
 #
 LOGFOLDER="/var/log/rubycas-server"
 CONF="/etc/rubycas-server"
@@ -122,8 +122,8 @@ if [  ! -d /var/lib/mysql/casserver ]; then
 fi
 #
 # Generate certificat
-# ssl_cert: /etc/rubycas-lcs/server.crt
-# ssl_key: /etc/rubycas-lcs/server.key
+# ssl_cert: /etc/rubycas-server/server.crt
+# ssl_key: /etc/rubycas-server/server.key
 #
 cat $IN_CONFIG_PATH/$RUBYCAS_CERT_TT \
         |sed -e "s!#FQN#!$FQN!g" \

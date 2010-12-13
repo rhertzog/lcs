@@ -28,10 +28,10 @@
 
 server: webrick
 port: 8443
-ssl_cert: /etc/rubycas-lcs/server.crt
+ssl_cert: /etc/rubycas-server/server.crt
 
 # If private key is separate from cert
-ssl_key: /etc/rubycas-lcs/server.key
+ssl_key: /etc/rubycas-server/server.key
 
 # By default the login page will be available at the root path 
 # (e.g. https://example.foo/). The uri_path option lets you serve it from a 
