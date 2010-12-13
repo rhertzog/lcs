@@ -18,7 +18,7 @@ if [ ! -z "$CASINSTALL" ]; then
 	rm -rf /var/log/casserver
 	mkdir $CONF
 	mv /etc/rubycas-lcs/server* $CONF/
-	rm -rf $CONF
+	rm -rf /etc/rubycas-lcs
 	#
 	# Fix owner on folders and files rubycas
 	#
