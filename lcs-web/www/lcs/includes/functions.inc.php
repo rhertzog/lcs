@@ -616,6 +616,9 @@ function lcs_web_load_hook($hook_name = null,
 			   $hook_base_dir = '/usr/share/lcs/lcs-web-hooks.d') {
 	global $lcs_hooks;
 
+	if (!isset($lcs_hooks[$hook_name]))
+		$lcs_hooks[$hook_name] = array();
+
 	// Check arguments
 	if(!is_string($hook_name)
 	   or empty($hook_name)
