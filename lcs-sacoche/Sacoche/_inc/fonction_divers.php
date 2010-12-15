@@ -1060,6 +1060,7 @@ function exporter_arborescence_to_XML($DB_TAB)
  * Équivalent de file_get_contents pour récupérer un fichier sur un serveur distant.
  * On peut aussi l'utiliser pour récupérer le résultat d'un script PHP éxécuté sur un serveur distant.
  * On peut alors envoyer au script des paramètres en POST.
+ * On peut utiliser un proxy si des constantes sont définies : SERVEUR_PROXY_USED / SERVEUR_PROXY_NAME / CURLOPT_PROXYPORT / SERVEUR_PROXY_PORT et SERVEUR_PROXY_AUTH_USED / SERVEUR_PROXY_AUTH_METHOD / SERVEUR_PROXY_AUTH_USER / SERVEUR_PROXY_AUTH_PASS
  * 
  * @param string $url
  * @param array  $tab_post   tableau[nom]=>valeur de données à envoyer en POST (facultatif)
@@ -1079,13 +1080,12 @@ function url_get_contents($url,$tab_post=false,$timeout=5)
 	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);       // Le temps maximum d'exécution de la fonction cURL (en s) ; éviter de monter cette valeur pour libérer des ressources plus rapidement : 'classiquement', le serveur doit répondre en qq ms, donc si au bout de 5s il a pas répondu c'est qu'il ne répondra plus, alors pas la peine de bloquer une connexion et de la RAM pendant plus longtemps.
 	curl_setopt($ch, CURLOPT_URL, $url);               // L'URL à récupérer. Vous pouvez aussi choisir cette valeur lors de l'appel à curl_init().
 	if( (!ini_get('safe_mode')) && (!ini_get('open_basedir')) )
-	{                                                           // Option CURLOPT_FOLLOWLOCATION sous conditions car certaines installations renvoient "CURLOPT_FOLLOWLOCATION cannot be activated when in safe_mode or an open_basedir is set" (http://www.php.net/manual/fr/features.safe-mode.functions.php#92192)
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);           // TRUE pour suivre toutes les en-têtes "Location: " que le serveur envoie dans les en-têtes HTTP (notez que cette fonction est récursive et que PHP suivra toutes les en-têtes "Location: " qu'il trouvera à moins que CURLOPT_MAXREDIRS ne soit définie).
-		curl_setopt($ch, CURLOPT_MAXREDIRS, 3);                   // Le nombre maximal de redirections HTTP à suivre. Utilisez cette option avec l'option CURLOPT_FOLLOWLOCATION.
+	{                                                 // Option CURLOPT_FOLLOWLOCATION sous conditions car certaines installations renvoient "CURLOPT_FOLLOWLOCATION cannot be activated when in safe_mode or an open_basedir is set" (http://www.php.net/manual/fr/features.safe-mode.functions.php#92192)
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE); // TRUE pour suivre toutes les en-têtes "Location: " que le serveur envoie dans les en-têtes HTTP (notez que cette fonction est récursive et que PHP suivra toutes les en-têtes "Location: " qu'il trouvera à moins que CURLOPT_MAXREDIRS ne soit définie).
+		curl_setopt($ch, CURLOPT_MAXREDIRS, 3);         // Le nombre maximal de redirections HTTP à suivre. Utilisez cette option avec l'option CURLOPT_FOLLOWLOCATION.
 	}
-	if(SERVEUR_PROXY_USED)
+	if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
 	{                                                                    // Serveur qui nécessite d'utiliser un tunnel à travers un proxy HTTP.
-		curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, TRUE);                   // TRUE pour effectuer un tunnel à travers un proxy HTTP.
 		curl_setopt($ch, CURLOPT_PROXY, SERVEUR_PROXY_NAME);               // Le nom du proxy HTTP au tunnel qui le demande.
 		curl_setopt($ch, CURLOPT_PROXYPORT, (int)SERVEUR_PROXY_PORT);      // Le numéro du port du proxy à utiliser pour la connexion. Ce numéro de port peut également être défini dans l'option CURLOPT_PROXY.
 		curl_setopt($ch, CURLOPT_PROXYTYPE, constant(SERVEUR_PROXY_TYPE)); // Soit CURLPROXY_HTTP (par défaut), soit CURLPROXY_SOCKS5.
