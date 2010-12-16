@@ -111,6 +111,14 @@ function USERPREFS_Display_Icons($url, $size = 40, $site = 0, $withdate = 0)
 	$tnl= $channel->getElementsByTagName("iconsfield");
 	$tnl = $tnl->item(0);
 	$icons_field = $tnl->firstChild->textContent;
+
+	$tnl= $channel->getElementsByTagName("s_idart");
+	$tnl = $tnl->item(0);
+	$s_idart = $tnl->firstChild->textContent;
+	
+	$tnl= $channel->getElementsByTagName("winsize");
+	$tnl = $tnl->item(0);
+	$winsize = $tnl->firstChild->textContent;
 	
 	$temp_prefs .='<input type="hidden" id="tmp_wallpaper" value="'.$wallpaper_src.'" />'."\n";
 	$temp_prefs .='<input type="hidden" id="tmp_poswp" value="'.$pos_wallpaper.'" />'."\n";
@@ -118,6 +126,8 @@ function USERPREFS_Display_Icons($url, $size = 40, $site = 0, $withdate = 0)
 	$temp_prefs .='<input type="hidden" id="tmp_iconsize" value="'.$icons_size.'" />'."\n";
 	$temp_prefs .='<input type="hidden" id="tmp_iconsfield" value="'.$icons_field.'" />'."\n";
 	$temp_prefs .='<input type="hidden" id="tmp_quicklaunch" value="'.$display_ql.'" />'."\n";
+	$temp_prefs .='<input type="hidden" id="s_idart" value="'.$s_idart.'" />'."\n";
+	$temp_prefs .='<input type="hidden" id="tmp_winsize" value="'.$winsize.'" />'."\n";
 	
 	return $temp_prefs.$page."\n".$iconsDock."\n";
 	

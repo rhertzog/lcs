@@ -2,33 +2,36 @@
 require  "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers, $login)= isauth();
 
-if (!@mysql_select_db($DBAUTH, $authlink)) 
-    die ("S&#233;lection de base de donn&#233;es impossible.");
-$query = "SELECT * from applis";
-$result = @mysql_query($query, $authlink);
-if ($result)
-    while ($r=@mysql_fetch_array($result))
-                $$r["name"]=$r["value"];
-else
-    die ("Param&#232;tres absents de la base de donn&#233;es.");
-@mysql_free_result($result);
 
 require "/var/www/Annu/includes/ldap.inc.php";
 require "/var/www/Annu/includes/ihm.inc.php";
 include("core/includes/functions.inc.php");
-
 // menus
 include("core/includes/inc-lcs-applis.php");
+
+# recherche des parametres etablissement
+# Recuperation des parametres LCS depuis la bdd
+# -----------------------------------------------------
+$authlink = mysql_connect($HOSTAUTH,$USERAUTH,$PASSAUTH);
+@mysql_select_db($DBAUTH) or die("Impossible de se connecter &#224; la base $DBAUTH.");
+$result=mysql_query("SELECT * from params where srv_id=0");
+if ($result)
+while ($r=mysql_fetch_array($result))
+$$r["name"]=$r["value"];
+else
+die ("param&#232;tres absents de la base de donn&#233;e");
+mysql_free_result($result);
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<head>
 <meta charset="utf-8"><!-- iso-8859-1 du a la directive apache ?  -->
 <meta http-equiv="x-ua-compatible" content="ie=emulateie8" />
-<meta http-equiv="content-type" content="text/html; charset=utf-8 " />
-<title>...::: Bureau LCS :::...</title>
-<meta name="description" content="LCS environnement num&eacute;rique de travail" />
+<title>...::: Bureau LCS - <?php echo $organizationalunit." ".$organization." - ".$locality ." - ".$province ; ?> :::...</title><!-- recuperation des params etab ds lcs.conf -->
+<meta name="description" content="LCS - Environnement Num&eacute;rique de Travail du <?php echo $organizationalunit."  ".$organization." de ".$locality." - ".$province; ?>. Le num&eacute;rique au service de l'&eacute;ducation." />
+<meta name="keywords" content="Environnement Num&eacute;rique de Travail, LCS, linux, communication, serveur, e-learning" />
+<meta name="author" content="LcsDevTeam" />
 <link href="core/css/html.css" rel="stylesheet" />
 <link href="core/finder/ui.theme.css" rel="stylesheet" type="text/css" media="screen">
 <link href="core/css/inettuts.css" rel="stylesheet" type="text/css" />
@@ -69,6 +72,14 @@ if (is_dir("inettuts")) echo "<div class=\"abs\" id=\"inettuts\" style=\"display
 <div class="abs" id="desktop">
 <?php
 if ( $idpers==0 ) { ?>
+	<input type="hidden" id="tmp_wallpaper" value="core/images/misc/RayOfLight_lcs.jpg"/>
+	<input type="hidden" id="tmp_poswp" value="wallpaper"/>
+	<input type="hidden" id="tmp_iconsize" value="36"/>
+	<input type="hidden" id="tmp_iconsfield" value="50"/>
+	<input type="hidden" id="tmp_bgcolor" value="#414970"/>
+	<input type="hidden" id="tmp_quicklaunch" value="0"/>
+	<input type="hidden" id="s_idart" value="0" />
+	<input type="hidden" id="tmp_winsize" value="content" />
 <a class="abs icon" style="left:20px;top:20px;" href="#icon_dock_lcs_auth" title="Se connecter" rel="../lcs/auth.php"><img src="core/images/icons/icon_32_start.png" alt="" />Se connecter</a>
 <?php
 }else{
@@ -77,6 +88,16 @@ if ( $idpers==0 ) { ?>
 	if(is_file($uXml)){
 		$html_icon= USERPREFS_Display_Icons($uXml,40,1,1);
 	} else{
+		?>
+	<input type="hidden" id="tmp_wallpaper" value="core/images/misc/RayOfLight_lcs.jpg"/>
+	<input type="hidden" id="tmp_poswp" value="wallpaper"/>
+	<input type="hidden" id="tmp_iconsize" value="36"/>
+	<input type="hidden" id="tmp_iconsfield" value="50"/>
+	<input type="hidden" id="tmp_bgcolor" value="#414970"/>
+	<input type="hidden" id="tmp_quicklaunch" value="0"/>
+	<input type="hidden" id="s_idart" value="0" />
+	<input type="hidden" id="tmp_winsize" value="content" />
+	<?php
 		$html_icon= $html_icon_default;
 	}
 	echo $html_icon;
@@ -85,13 +106,6 @@ if ( $idpers==0 ) { ?>
 <?php
 }
 ?>
-		<!--ChCh_Spirale-Lcs.jpg | fit_height center_h -->
-	<input type="hidden" id="tmp_wallpaper" value="core/images/misc/RayOfLight_lcs.jpg"/>
-	<input type="hidden" id="tmp_poswp" value="wallpaper"/>
-	<input type="hidden" id="tmp_iconsize" value="36"/>
-	<input type="hidden" id="tmp_iconsfield" value="50"/>
-	<input type="hidden" id="tmp_bgcolor" value="#414970"/>
-	<input type="hidden" id="tmp_quicklaunch" value="0"/>
 <?php
 
 	if ( $idpers!=0 ) { 
@@ -124,7 +138,6 @@ if ( $idpers==0 ) { ?>
 	</div>
 </div>
 <input type="hidden" id="login" value="<?php echo $login; ?>"/>
-<input type="hidden" id="s_idart" value="0" />
 <input type="hidden" id="url_accueil" value="<?php echo $url_accueil; ?>" />
 <input type="hidden" id="list_applis" value="<?php echo $list_applis; ?>" class="<?php echo $list_applis; ?>"/>
 <div style="display:none"><iframe id="temp_squirrelmail" style="display:none" src=""></iframe></div>
@@ -246,6 +259,8 @@ $(document).ready(function(){
 					instance.close();
 					}
 				} );
+				// on enregistre les prefs a la premiere connexion
+				JQD.save_prefs_dev('PREFS', -1, 'lkhlm');
 			<?php 
 			} 
 		} 

@@ -206,6 +206,12 @@ var JQD = (function($) {
 		//
 		// .:LCS:. Load xml preferences
 		//
+		user_load_prefs_dev: function () {
+			$.getJSON("core/json/PREFS_TEST_admin.json", function(prefs) {
+			//	alert("data: " + prefs.bureau.userburo.data);
+			});
+		},
+		
 		user_load_prefs: function () {
 			//couleur d'arrierre-plan
 			$('body').css('background', $('#tmp_bgcolor').val()); 
@@ -225,10 +231,10 @@ var JQD = (function($) {
 		},
 
 		// Suppression fichier
-		delette_xml: function(file) { 
+		delete_xml: function(file) { 
 			$.ajax({
 				type: "POST",
-				url: "core/action/delette_xml.php",
+				url: "core/action/delete_xml.php",
 				cache: false,
 				data: ({
 					file: file,
@@ -255,7 +261,6 @@ var JQD = (function($) {
 		create_notify: function( template, vars, opts ){
 						// init notify container
 			var notifContainer = $("#container").notify();
-
 			return notifContainer.notify("create", template, vars, opts);
 		},
 		
@@ -268,9 +273,12 @@ var JQD = (function($) {
 				url:'core/action/load_spip_notify.php',
 				datatype:"text",
 				complete: function(data,status) {
-					var newidart= $(data.responseText).find('h3').text();
-					var oldidart=$('#s_idart').val();
-					if(newidart!=oldidart){
+					var n_idart= $(data.responseText).find('span.forum_date').text();
+					var oldidart= $('#s_idart').val();
+					var newidart_a= n_idart.split(' - ');
+					var newidart = parseInt( newidart_a[0].replace(/-/g, '') + newidart_a[1].replace(/:/g, ''));
+					//alert ( 'newidart: '+newidart+' \noldidart: '+oldidart); 
+					if(newidart > oldidart){
 						JQD.create_notify("withIcon", 
 							{ title:'<span style="color:#509fda;">Information Forum</span>', text:data.responseText, icon:'core/images/icons/info.png'},
 							{
@@ -286,6 +294,7 @@ var JQD = (function($) {
 							}
 						});
 						$('#s_idart').attr('value',newidart);
+						JQD.save_prefs_dev('PREFS', -1, 'lkhlm');
 					}
 				}
 			});
@@ -293,7 +302,7 @@ var JQD = (function($) {
 			setTimeout(function(){
 					JQD.notify_forum();
 				//var idart=newidart;
-			},150000);	
+			},300000);	
 		},
 		
 		//
@@ -328,22 +337,33 @@ var JQD = (function($) {
 					iconsfield    : $("#tmp_iconsfield").val(),
 					bgcolor       : $("#tmp_bgcolor").val(),
 					quicklaunch   : $("#tmp_quicklaunch").val(),
+					s_idart       : $("#s_idart").val(),
+					winsize       : $("#tmp_winsize").val(),
 					data          : b_xml
 				}),
 				dataType: "json",
 				success: function(msg){
 				},
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
-					alert("XMLHttpRequest="+XMLHttpRequest.responseText+"\ntextStatus="+textStatus+"\nerrorThrown="+errorThrown);
+					//alert("XMLHttpRequest="+XMLHttpRequest.responseText+"\ntextStatus="+textStatus+"\nerrorThrown="+errorThrown);
 				},
 				complete : function(data, status) {
+					if( status.match('error') ){
+						alert("Erreur lors de l'enregistrement"); 
+						return; 
+					}
+					var r = JSON.parse( data.responseText );
+					// Important!
 					$('#wallpaper').remove();
+					// A REVOIR ouvrir un panneau d'infos ? mais ou ?
+					//alert( r.bureau.userburo.data );
 					var pos_rr=$('ul.bar_top_right').offset().left+30;
-					//alert('Vos preferences sont enregistrees');
-					var respMessage= $('<div/>').addClass('float_right respform').html('Vos pr&eacute;f&eacute;rences sont enregistr&eacute;es').insertAfter('#bar_top ul:first');
+					var respMessage= $('<div/>').addClass('respform abs').css({top:'5px', right:'5px'}).html('Vos pr&eacute;f&eacute;rences sont enregistr&eacute;es').prependTo('#desktop').show('slow');
+					
 					setTimeout(function(){
 						$('div.respform').hide('slow').remove();
 					},5000);
+					// on recharge les prefs
 					JQD.user_load_prefs();
 						
 				}
@@ -501,17 +521,22 @@ var JQD = (function($) {
 					$(this).removeAttr('style').removeClass('bar-bottom-icon').find('a').removeAttr('style');
 				}
 
-				// traitement du iframe
-				this.iframe.attr('src', url).load(function()  {
-					el=$(this).contents();
-					$('#lcspinner').remove();
-					$(this).show();
+			// traitement du iframe
+			this.iframe.attr('src', url).load(function()  {
+				el=$(this).contents();
+				if( $('#tmp_winsize').val() == 'content' ) $(this).closest('.window').width( el.width() + 25 );
+				if( $('#tmp_winsize').val() == 'fullwin' ) JQD.window_resize( $(this) );
+				$('#lcspinner').remove();
+				$(this).show();
 					
-					// on essaie de fixer le bug en cas de clic sur une ancre dans une page iframe
-					//el.find('body').localScroll();
+				// on essaie de fixer le bug en cas de clic sur une ancre dans une page iframe
+				//el.find('body').localScroll();
 					
-					// actions sur les liens contenus
-					el.find('a').each(function(){
+				// on ne fait rien si gepi
+				if ( url.match(/gepi/g) || url.match('Gepi')) return;
+				
+				// actions sur les liens contenus
+				el.find('a').each(function(){
 					if ($(this).attr('target')=='_blank') {// ouverture des target=_blank ds une fenetre du bureau
 						$(this).addClass('open_win ext_link').removeAttr('target').attr('href',$(this)[0].href);
 						if($(this).attr('title').length==0 || $(this).attr('title')!='') $(this).attr('title',$(this).text());
@@ -821,6 +846,53 @@ var JQD = (function($) {
 
 			$(window).resize(function() {
 				JQD.place_wallpaper();
+			});
+			
+			// info LcsDevTeam
+			$('a[title=LcsDevTeam]').click( function() {
+				$('#LDT').remove();
+				$('<div id="LDT"/>')
+				.addClass('abs')
+				.css({
+					bottom: '5px',
+					right:'5px',
+					width:'250px',
+					height:'160px',
+					padding:'5px'
+				})
+				.append(
+					$('<h3/>')
+					.css({
+						'padding': '5px 10px',
+						'border': '1px solid #aaa',
+						'-moz-border-radius': '10px 10px 0 0' ,
+						'-webkit-border-radius': '10px 10px 0 0' ,
+						background:'#eaeaea'
+					})
+					.html('LcsDevTeam')
+					.append( $('<span/>').addClass('close float_right').click( function() {$('#LDT').remove()}) ) 
+				)
+				.append(
+					$('<ul/>')
+					.addClass('box_trsp_black')
+					.append( $('<li/>').html('<strong>Jean-Luc Chr&eacute;tien (<em>Chef de projet</em>)</strong>') )
+					.append( $('<li/>').html('Simon Cavey') )
+					.append( $('<li/>').html('Yannick Chistel') )
+					.append( $('<li/>').html('Philippe Leclerc') )
+					.append( $('<li/>').html('Olivier Lecluse') )
+					.append( $('<li/>').html('Dominique Lepaisant') )
+					.append( 
+						$('<li/>').html('<br/>Contact:<br/>').append(
+							$('<a/>').attr({
+								'href': 'mailto:LcsDevTeam@tice.ac-caen.fr&subject=[Lcs-Bureau]'
+							})
+							.html('<pre>LcsDevTeam@tice.ac-caen.fr</pre>') 
+						)
+					)
+					.css('display', 'block')
+				)
+				.appendTo('#desktop')
+				.slideDown('slow');
 			});
 
 

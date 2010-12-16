@@ -15,10 +15,10 @@ if(is_dir('/usr/share/lcs/spip/') && $file){
 		$i=0;
 		foreach ($channel->item as $item) {
 			if($i<1){
-				$resp.="<h3>".$item->title."</h3>";
+				$resp.="<h3>".utf8_decode($item->title)."</h3>";
 				$resp.="<p>".utf8_decode($item->description)."<br />";
 		  		foreach ($item->children('http://purl.org/dc/elements/1.1/') as $tag => $itm) {
-		  			$resp.=$tag=="date"? "<span style=\"font-size:.85em;font-style:italic;\">".preg_replace($ptrn, $repl, $itm)."</span>" : '';
+		  			$resp.=$tag=="date"? "<span class=\"forum_date\" style=\"font-size:.85em;font-style:italic;\">".preg_replace($ptrn, $repl, $itm)."</span>" : '';
 	    		}
 				$resp.="</p>";
 				$i++;

@@ -127,6 +127,7 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 				<span class="span_icon_prefs icon"><img src="images/icons/logo_lcs20.png" style="width:24px" /></span>
 				<span class="span_icon_prefs icon"><img src="images/icons/logo_lcs20.png" style="width:36px" /></span>
 				<span class="span_icon_prefs icon"><img src="images/icons/logo_lcs20.png" style="width:48px" /></span>
+				<span class="span_icon_prefs icon"><img src="images/icons/logo_lcs20.png" style="width:60px" /></span>
 		<!--		<span class="bouton float_right"><a href="#" id="ch_icons_larger">Appliquer</a></span>-->
 				<input type="hidden" value="36" id="icons_larger" name="icons_larger" />
 			</li>
@@ -141,6 +142,25 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 				<input type="checkbox" id="aff_quicklaunch" name="aff_quicklaunch" />
 				<span class="mess_info float_right">N&eacute;cessite le rechargement de la page apr&egrave;s enregistrement</span>
 				<br class="clear_both" />
+			</li>
+		</ul>
+	</fieldset>
+	<fieldset>
+	<legend>Fen&ecirc;tres</legend>
+		<ul style="" class="clear_both ul2cols">
+			<li>
+				<label for="winsize">Taille des fen&ecirc;tres &agrave; l'ouverture</label>
+				<select id="winsize">
+					<option value="content">Dimension de l'application contenue</option>
+					<option value="small">Taille r&eacute;duite</option>
+					<option value="fullwin">Plein &eacute;cran</option>
+				</select>
+				<div class="winsize_wh" style="display:none; margin:10px 0 0 0px;">
+					<label for="winsize_w" class="winsize_w" style="margin:0 5px;width:120px;clear:none;">Largeur : 
+					<input type="text" name="winsize_w" id="winsize_w" class="winsize_w" size="5" /></label>
+					<label for="winsize_h" class="winsize_h" style="margin:0 5px;width:120px;clear:none;">Hauteur :
+					<input type="text" name="winsize_h" id="winsize_h" class="winsize_h" size="5" /></label>
+				</div>
 			</li>
 		</ul>
 	</fieldset>
@@ -212,7 +232,7 @@ $(document).ready(function() {
 			
 	// remove pref
 	$('#delete_prefs').click(function(){
-		parent.JQD.delette_xml('PREFS_'+$("#login").val());
+		parent.JQD.delete_xml('PREFS_'+$('body', window.parent.document).find('#login').val());
 	});
 		
 	//colorpicker
@@ -279,8 +299,18 @@ $(document).ready(function() {
 	});
 	// init au chargement
 	_WP.find('#tmp_quicklaunch').val()=='1' ? $('#aff_quicklaunch').attr('checked', 'checked') : $('#aff_quicklaunch').removeAttr('checked') ;
+
+	//Ouverture des fenetres
+	$('#winsize')
+	.attr('value', _WP.find('#tmp_winsize').val())
+	.change(function() {
+		//$(this).next('.winsize_wh').hide();
+		_WP.find('#tmp_winsize').attr('value', $(this).val()) ;
+		//if( $(this).val()=='wh' ) $(this).next('.winsize_wh').show();
+	});
+	//if( _WP.find('#tmp_winsize').val()=='wh' ) $('div.winsize_wh').show();
 });
-	
+
 function TT_load_prefs_img(t_img) {
 	$('#select_walppr').attr('value',t_img);
 	$.ajax({

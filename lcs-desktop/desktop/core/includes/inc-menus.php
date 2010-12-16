@@ -58,13 +58,13 @@
 			<a class="menu_trigger" href="#">Aide</a>
 			<ul class="menu">
 				<li>
-					<a class='open_win ext_link' href='../lcs/statandgo.php?use=Aide' rev="legal" rel="legal"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Documentation G&eacute;n&eacute;rale</a>
+					<a class='open_win ext_link' href='#' rev="Documentation G&eacute;n&eacute;rale Lcs" rel="../lcs/statandgo.php?use=Aide"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Documentation G&eacute;n&eacute;rale</a>
 				</li>
 				<li>
-					<a class='open_win ext_link' href='../doc/desktop/html/' rev="legal" rel="legal"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Documentation Lcs-Bureau</a>
+					<a class='open_win ext_link' href='#' rev="Documentation Lcs-Bureau" rel="../doc/desktop/html/"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> Documentation Lcs-Bureau</a>
 				</li>
 				<li>
-					<a class='open_win ext_link' href='#icon_dock_lcs_legal' rev="legal" rel="./core/a_propos.php"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> A propos de LCS-Bureau</a>
+					<a class='open_win ext_link' href='#' rev=" A propos de LCS-Bureau" rel="./core/a_propos.php"><img src='../lcs/images/barre1/BP_r1_c8.gif' style='height:20px;' /> A propos de LCS-Bureau</a>
 				</li>
 			</ul>
 		</li>
