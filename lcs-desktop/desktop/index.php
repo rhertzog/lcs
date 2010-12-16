@@ -2,6 +2,18 @@
 require  "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers, $login)= isauth();
 
+// Revoir : utilisé pour les sous-menus
+if (!@mysql_select_db($DBAUTH, $authlink)) 
+    die ("S&#233;lection de base de donn&#233;es impossible.");
+$query = "SELECT * from applis";
+$result = @mysql_query($query, $authlink);
+if ($result)
+    while ($r=@mysql_fetch_array($result))
+                $$r["name"]=$r["value"];
+else
+    die ("Param&#232;tres absents de la base de donn&#233;es.");
+@mysql_free_result($result);
+// ../../
 
 require "/var/www/Annu/includes/ldap.inc.php";
 require "/var/www/Annu/includes/ihm.inc.php";
