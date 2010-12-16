@@ -84,7 +84,7 @@ if (is_dir("inettuts")) echo "<div class=\"abs\" id=\"inettuts\" style=\"display
 <div class="abs" id="desktop">
 <?php
 if ( $idpers==0 ) { ?>
-	<input type="hidden" id="tmp_wallpaper" value="core/images/misc/RayOfLight_lcs.jpg"/>
+	<input type="hidden" id="tmp_wallpaper" value="core/images/misc/LCS_Desktop.jpg"/>
 	<input type="hidden" id="tmp_poswp" value="wallpaper"/>
 	<input type="hidden" id="tmp_iconsize" value="36"/>
 	<input type="hidden" id="tmp_iconsfield" value="50"/>
@@ -101,7 +101,7 @@ if ( $idpers==0 ) { ?>
 		$html_icon= USERPREFS_Display_Icons($uXml,40,1,1);
 	} else{
 		?>
-	<input type="hidden" id="tmp_wallpaper" value="core/images/misc/RayOfLight_lcs.jpg"/>
+	<input type="hidden" id="tmp_wallpaper" value="core/images/misc/LCS_Desktop.jpg"/>
 	<input type="hidden" id="tmp_poswp" value="wallpaper"/>
 	<input type="hidden" id="tmp_iconsize" value="36"/>
 	<input type="hidden" id="tmp_iconsfield" value="50"/>
