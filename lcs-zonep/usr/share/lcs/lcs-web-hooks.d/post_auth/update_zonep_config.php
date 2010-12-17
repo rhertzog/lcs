@@ -15,6 +15,10 @@ function hook_post_auth_update_zonep_config($login = null, $password = null) {
     if(!is_string($login) or !is_string($password))
 	return false;
 
+    // Ensure we have an ActiveDirectory server to contact
+    if (empty($ad_server))
+	return false;
+
     // Connect to LDAP
     $ds = ldap_connect($ad_server);
     if(!$ds)
