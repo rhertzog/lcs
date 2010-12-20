@@ -68,8 +68,10 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 			<span class="bouton"><a href="#" id="ch_wlppr" style="display:none">Appliquer</a></span>
 			<span class="bouton"><a href="#" id="btn-openWpp" >Changer d'image...</a></span>
 			<div id="listImgs" class="list_img">
-				<h3 style="">Choisir une image ou 
-					<span class="bouton"><a href="#" id="btn_openFinder">Importer</a></span>
+				<h3 style="">Choisir une image
+					<?php if( !is_eleve($login) ) { ?>
+					<span class="button"> ou <a href="#" id="btn_openFinder">Importer</a></span>
+					<?php } ?>
 					<span class="float_left close"></span>
 				</h3>
 				<?php

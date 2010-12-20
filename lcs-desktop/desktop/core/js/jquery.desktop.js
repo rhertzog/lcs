@@ -522,18 +522,27 @@ var JQD = (function($) {
 				}
 
 			// traitement du iframe
+			var count_load=0;
 			this.iframe.attr('src', url).load(function()  {
+				// on passe le contenu dans une variable
 				el=$(this).contents();
-				if( $('#tmp_winsize').val() == 'content' ) $(this).closest('.window').width( el.width() + 25 );
-				if( $('#tmp_winsize').val() == 'fullwin' ) JQD.window_resize( $(this) );
+				// redimenssionnement en fonction du choix du user
+				// cas du choix "largeur de l'appli contenue"
+				if( $('#tmp_winsize').val() == 'content' && count_load == 0 && !url.match(/^http/) && !url.match(/gepi/g)  )
+					 $(this).closest('.window').css('min-width', '650px').width( el.width() + 25 );
+				// cas du choix "Plein ecran"
+				if( $('#tmp_winsize').val() == 'fullwin' && count_load == 0 ) JQD.window_resize( $(this) );
+				// suppression du spinner
 				$('#lcspinner').remove();
+				// et on affiche
 				$(this).show();
+				count_load=1;
 					
 				// on essaie de fixer le bug en cas de clic sur une ancre dans une page iframe
 				//el.find('body').localScroll();
 					
-				// on ne fait rien si gepi
-				if ( url.match(/gepi/g) || url.match('Gepi')) return;
+				// on ne fait rien si gepi ou si on est sur un autre serveur
+				if ( url.match(/gepi/g) || url.match(/^http/) ) return;
 				
 				// actions sur les liens contenus
 				el.find('a').each(function(){

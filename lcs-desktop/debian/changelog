@@ -1,3 +1,10 @@
+lcs-desktop (0.2~19) Lcs; urgency=low
+
+  * Fix bug with the width of windows when the iframe is loaded
+  * Removing the import button in the user prefs if the user is in group "Student " 
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Wed, 22 Sep 2010 07:23:47 +0200
+
 lcs-desktop (0.2~18) Lcs; urgency=low
 
   * Fix bug on charset in notification of forum
