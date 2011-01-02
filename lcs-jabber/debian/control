@@ -1,0 +1,14 @@
+Source: lcs-jabber
+Section: misc
+Priority: extra
+Maintainer: Simon Cavey <simon.cavey@crdp.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.3
+Homepage: http://lcs.crdp.ac-caen.fr
+
+Package: lcs-jabber
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, ejabberd
+Description: Jabber server for LCS
+ integration of a jabber server with ldap auth for LCS.
+ with web interface for chating and roaster groups. 
