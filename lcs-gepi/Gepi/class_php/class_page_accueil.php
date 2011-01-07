@@ -1,7 +1,7 @@
 
 <?php
 /*
- * $Id: class_page_accueil.php 5786 2010-11-02 13:49:19Z jjacquard $
+ * $Id: class_page_accueil.php 5973 2010-11-23 21:00:39Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -115,11 +115,11 @@ class class_page_accueil {
 	$this->chargeAutreNom('bloc_administration');
 
 /***** Outils de gestion des absences vie scolaire *****/
-	//$this->verif_exist_ordre_menu('bloc_absences_vie_scol');
-	$this->verif_exist_ordre_menu('bloc_absences_professeur');
+	$this->verif_exist_ordre_menu('bloc_absences_vie_scol');
+	//$this->verif_exist_ordre_menu('bloc_absences_professeur');
 	if ($this->absences_vie_scol())
-	$this->chargeAutreNom('bloc_absences_professeur');
-	//$this->chargeAutreNom('bloc_absences_vie_scol');
+	//$this->chargeAutreNom('bloc_absences_professeur');
+	$this->chargeAutreNom('bloc_absences_vie_scol');
 
 /***** Outils de gestion des absences par les professeurs *****/
 	$this->verif_exist_ordre_menu('bloc_absences_professeur');
@@ -1060,6 +1060,12 @@ class class_page_accueil {
 	  $this->creeNouveauItem("/bulletin/bull_index.php",
 			  "Visualisation et impression des bulletins",
 			  "Cet outil vous permet de visualiser à l'écran et d'imprimer les bulletins, classe par classe.");
+	}
+
+	if (($this->statutUtilisateur=='administrateur')||($this->statutUtilisateur=='scolarite')){
+	  $this->creeNouveauItem("/eleves/export_donnees_bulletins.php",
+			  "Extractions statistiques",
+			  "Cet outil vous permet d'extraire des données des bulletins à des fins statisitiques.");
 	}
 
 	if ($this->b>0){

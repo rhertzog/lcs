@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: classes_param.php 4116 2010-03-09 18:15:01Z crob $
+* $Id: classes_param.php 6074 2010-12-08 15:43:17Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -43,6 +43,7 @@ $periode_query = mysql_query("select max(num_periode) max from periodes");
 $max_periode = mysql_result($periode_query, 0, 'max');
 
 if (isset($_POST['is_posted'])) {
+	check_token();
 	$msg = '';
 	$reg_ok = '';
 	// Première boucle sur le nombre de periodes
@@ -377,6 +378,7 @@ echo "Aucune classe comportant des périodes n'a été définie.";
 die();
 }
 echo "<form action=\"classes_param.php\" method='post'>\n";
+echo add_token_field();
 echo "<p class=bold><a href=\"index.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a>| <input type='submit' name='enregistrer1' value='Enregistrer' /></p>";
 echo "Sur cette page, vous pouvez modifier différents paramètres par lots de classes cochées ci-dessous.";
 /*

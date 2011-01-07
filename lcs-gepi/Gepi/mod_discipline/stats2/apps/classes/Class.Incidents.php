@@ -276,24 +276,40 @@ class ClassIncidents {
     if (isset( $this->sanctions_from_db)) $this->sanctions=$this->traite_donnees_sanctions($this->sanctions_from_db);
   }
 
-  private function traite_donnees_sanctions($tableau_sanctions) {
-    foreach($tableau_sanctions as $id_incident) {
-      foreach ($id_incident as $id_sanction) {
-        foreach($id_sanction as $protagoniste) {
-          if($protagoniste->nature=='exclusion') {
-            $this->crenaux=$this->modele_incidents->get_crenaux();
-            $protagoniste->exc_duree=Gepi_Date::calcule_duree_exclusion($protagoniste->exc_date_debut,$this->crenaux[$protagoniste->exc_heure_debut]->heuredebut_definie_periode,$protagoniste->exc_date_fin,$this->crenaux[$protagoniste->exc_heure_fin]->heurefin_definie_periode);
-          }
-          if(!is_null($protagoniste->ret_date)) $protagoniste->ret_date=$this->traite_date_tableau($protagoniste->ret_date);
-          if(!is_null($protagoniste->exc_date_debut)) $protagoniste->exc_date_debut=$this->traite_date_tableau($protagoniste->exc_date_debut);
-          if(!is_null($protagoniste->exc_date_fin)) $protagoniste->exc_date_fin=$this->traite_date_tableau($protagoniste->exc_date_fin);
-          if(!is_null($protagoniste->trv_date_retour)) $protagoniste->trv_date_retour=$this->traite_date_tableau($protagoniste->trv_date_retour);
-
+      private function traite_donnees_sanctions($tableau_sanctions) {
+        foreach ($tableau_sanctions as $id_incident) {
+            foreach ($id_incident as $id_sanction) {
+                foreach ($id_sanction as $protagoniste) {
+                    if ($protagoniste->nature == 'exclusion') {
+                        $this->crenaux = $this->modele_incidents->get_crenaux();
+                        if (is_null($this->crenaux) || (!isset($this->crenaux[$protagoniste->exc_heure_debut]) && !isset($this->crenaux[$protagoniste->exc_heure_fin]))) {
+                            $date_debut_ex = "08:00:00";
+                            $date_fin_ex = "18:00:00";
+                        } else if (!isset($this->crenaux[$protagoniste->exc_heure_debut])) {
+                            $date_debut_ex = "08:00:00";
+                            $date_fin_ex = $this->crenaux[$protagoniste->exc_heure_fin]->heurefin_definie_periode;
+                        } else if (!isset($this->crenaux[$protagoniste->exc_heure_fin])) {
+                            $date_debut_ex = $this->crenaux[$protagoniste->exc_heure_debut]->heuredebut_definie_periode;
+                            $date_fin_ex = "18:00:00";
+                        } else {
+                            $date_debut_ex = $this->crenaux[$protagoniste->exc_heure_debut]->heuredebut_definie_periode;
+                            $date_fin_ex = $this->crenaux[$protagoniste->exc_heure_fin]->heurefin_definie_periode;
+                        }
+                        $protagoniste->exc_duree = Gepi_Date::calcule_duree_exclusion($protagoniste->exc_date_debut, $date_debut_ex, $protagoniste->exc_date_fin, $date_fin_ex);
+                    }
+                    if (!is_null($protagoniste->ret_date))
+                        $protagoniste->ret_date = $this->traite_date_tableau($protagoniste->ret_date);
+                    if (!is_null($protagoniste->exc_date_debut))
+                        $protagoniste->exc_date_debut = $this->traite_date_tableau($protagoniste->exc_date_debut);
+                    if (!is_null($protagoniste->exc_date_fin))
+                        $protagoniste->exc_date_fin = $this->traite_date_tableau($protagoniste->exc_date_fin);
+                    if (!is_null($protagoniste->trv_date_retour))
+                        $protagoniste->trv_date_retour = $this->traite_date_tableau($protagoniste->trv_date_retour);
+                }
+            }
         }
-      }
-    }
-    return $tableau_sanctions;
-  } //Fin du traitement des sanctions
+        return $tableau_sanctions;
+    } //Fin du traitement des sanctions
 
 // On calcule les totaux globaux
 

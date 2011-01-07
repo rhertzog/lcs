@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version $Id: fonctions_calendrier.php 5704 2010-10-21 14:03:21Z adminpaulbert $
+ * @version $Id: fonctions_calendrier.php 6267 2011-01-03 21:08:48Z adminpaulbert $
  *
  * Fichier de fonctions destinées au calendrier
  *
@@ -87,7 +87,7 @@ function RecupereTimestampJour ($jour) {
     //setlocale (LC_TIME, 'fr_FR','fra');
     if ((1<=$_SESSION['week_selected']) AND ($_SESSION['week_selected'] <= 28)) {
     //if ((1<=date("n")) AND (date("n") <=8)) {
-	    $annee = date("Y")+1;
+	    $annee = date("Y");
     }
     else {
 	    $annee = date("Y");

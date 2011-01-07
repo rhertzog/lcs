@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: bull_index.php 5786 2010-11-02 13:49:19Z jjacquard $
+* $Id: bull_index.php 5931 2010-11-21 13:11:28Z dblanqui $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -2557,9 +2557,9 @@ else {
 					    require_once("../lib/initialisationsPropel.inc.php");
 					    $eleve = EleveQuery::create()->findOneByLogin($current_eleve_login[$i]);
 					    if ($eleve != null) {
-						$current_eleve_absences = $eleve->getDemiJourneesAbsenceParPeriode($periode_num)->count();
-						$current_eleve_nj = $eleve->getDemiJourneesNonJustifieesAbsenceParPeriode($periode_num)->count();
-						$current_eleve_retards = $eleve->getRetardsParPeriode($periode_num)->count();
+						$current_eleve_absences = strval($eleve->getDemiJourneesAbsenceParPeriode($periode_num)->count());
+						$current_eleve_nj = strval($eleve->getDemiJourneesNonJustifieesAbsenceParPeriode($periode_num)->count());
+						$current_eleve_retards = strval($eleve->getRetardsParPeriode($periode_num)->count());
 						$current_eleve_absences_query = mysql_query("SELECT * FROM absences WHERE (login='$current_eleve_login' AND periode='$periode_num')");
 						$current_eleve_appreciation_absences = @mysql_result($current_eleve_absences_query, 0, "appreciation");
 					    }

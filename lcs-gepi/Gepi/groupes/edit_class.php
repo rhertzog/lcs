@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: edit_class.php 5800 2010-11-04 18:21:25Z crob $
+* $Id: edit_class.php 6173 2010-12-17 07:54:22Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -106,6 +106,8 @@ if(mysql_num_rows($res_class_tmp)>0){
 $priority_defaut = 5;
 
 if (isset($_POST['is_posted'])) {
+	check_token();
+
     $error = false;
 
     foreach ($_POST as $key => $value) {
@@ -177,6 +179,8 @@ if (isset($_POST['is_posted'])) {
 }
 
 if (isset($_GET['action'])) {
+	check_token();
+
     $msg = null;
     //if ($_GET['action'] == "delete_group") {
     if(($_GET['action'] == "delete_group")&&(isset($_GET['confirm_delete_group']))&&($_GET['confirm_delete_group'] == "y")) {
@@ -219,6 +223,8 @@ require_once("../lib/header.inc");
 
 
 if((isset($_GET['action']))&&($_GET['action']=="delete_group")&&(!isset($_GET['confirm_delete_group']))) {
+	check_token(false);
+
 	// On va détailler ce qui serait supprimé en cas de confirmation
 	$tmp_group=get_group($_GET['id_groupe']);
 	echo "<div style='border: 2px solid red;'>\n";
@@ -311,12 +317,12 @@ if((isset($_GET['action']))&&($_GET['action']=="delete_group")&&(!isset($_GET['c
 			echo "<p>Si vous souhaitez effectuer ";
 			echo "malgré tout ";
 			echo "la suppression de l'enseignement&nbsp;: ";
-			echo "<a href='edit_class.php?id_groupe=".$_GET['id_groupe']."&amp;action=delete_group&amp;confirm_delete_group=y&amp;id_classe=$id_classe' onclick=\"return confirmlink(this, 'ATTENTION !!! L\'enseignement n\'est pas totalement vide, même si les bulletins ne contiennent pas de référence à cet enseignement.\\nEtes-vous *VRAIMENT SÛR* de vouloir continuer ?', 'Confirmation de la suppression')\">Supprimer</a>";
+			echo "<a href='edit_class.php?id_groupe=".$_GET['id_groupe']."&amp;action=delete_group&amp;confirm_delete_group=y&amp;id_classe=$id_classe".add_token_in_url()."' onclick=\"return confirmlink(this, 'ATTENTION !!! L\'enseignement n\'est pas totalement vide, même si les bulletins ne contiennent pas de référence à cet enseignement.\\nEtes-vous *VRAIMENT SÛR* de vouloir continuer ?', 'Confirmation de la suppression')\">Supprimer</a>";
 			echo "</p>\n";
 		}
 		else {
 			echo "<p>Si vous souhaitez confirmer la suppression de l'enseignement&nbsp;: ";
-			echo "<a href='edit_class.php?id_groupe=".$_GET['id_groupe']."&amp;action=delete_group&amp;confirm_delete_group=y&amp;id_classe=$id_classe'>Supprimer</a>";
+			echo "<a href='edit_class.php?id_groupe=".$_GET['id_groupe']."&amp;action=delete_group&amp;confirm_delete_group=y&amp;id_classe=$id_classe".add_token_in_url()."'>Supprimer</a>";
 			echo "</p>\n";
 		}
 	}
@@ -500,7 +506,10 @@ if(count($groups)==0){
     die();
 }
 ?>
-<form enctype="multipart/form-data" action="edit_class.php" name="formulaire" method=post>
+<form enctype="multipart/form-data" action="edit_class.php" name="formulaire" method="post">
+<?php
+echo add_token_field();
+?>
 <!--form enctype="multipart/form-data" action="edit_class.php" name="formulaire" id="form_mat" method=post-->
 
 <!--p>Définir les priorités d'après <input type='button' value="l'ordre alphabétique" onClick="ordre_alpha();" /> / <input type='button' value="l'ordre par défaut des matières" onClick="ordre_defaut();" /><br /-->
@@ -591,7 +600,7 @@ for($i=0;$i<10;$i++){
         echo "<fieldset style=\"padding-top: 8px; padding-bottom: 8px;  margin-left: auto; margin-right: auto;\">";
         echo "<table border = '0' width='100%' summary='Suppression'><tr><td width='25%'>";
         //echo "<a href='edit_class.php?id_groupe=". $group["id"] . "&amp;action=delete_group&amp;id_classe=$id_classe' onclick=\"return confirmlink(this, 'ATTENTION !!! LISEZ CET AVERTISSEMENT : La suppression d\'un enseignement est irréversible. Une telle suppression ne devrait pas avoir lieu en cours d\'année. Si c\'est le cas, cela peut entraîner la présence de données orphelines dans la base. Si des données officielles (notes et appréciations du bulletin) sont présentes, la suppression sera bloquée. Dans le cas contraire, toutes les données liées au groupe seront supprimées, incluant les notes saisies par les professeurs dans le carnet de notes ainsi que les données présentes dans le cahier de texte. Etes-vous *VRAIMENT SÛR* de vouloir continuer ?', 'Confirmation de la suppression')\"><img src='../images/icons/delete.png' alt='Supprimer' style='width:13px; heigth: 13px;' /></a>";
-        echo "<a href='edit_class.php?id_groupe=". $group["id"] . "&amp;action=delete_group&amp;id_classe=$id_classe'><img src='../images/icons/delete.png' alt='Supprimer' style='width:13px; heigth: 13px;' /></a>";
+        echo "<a href='edit_class.php?id_groupe=". $group["id"] . "&amp;action=delete_group&amp;id_classe=$id_classe".add_token_in_url()."'><img src='../images/icons/delete.png' alt='Supprimer' style='width:13px; heigth: 13px;' /></a>";
         echo " -- <span class=\"norme\">";
         echo "<b>";
         if ($total == "1") {
@@ -703,15 +712,22 @@ for($i=0;$i<10;$i++){
         echo "<option value='0'";
         if ($current_group["classes"]["classes"][$id_classe]["categorie_id"] == "0") {echo " SELECTED";}
         echo ">Aucune</option>";
+		$tab_categorie_id=array();
         foreach ($mat_categories as $cat) {
+			$tab_categorie_id[]=$cat->id;
             echo "<option value='".$cat->id . "'";
             if ($current_group["classes"]["classes"][$id_classe]["categorie_id"] == $cat->id) {
                echo " SELECTED";
             }
             echo ">".html_entity_decode_all_version($cat->nom_court)."</option>";
         }
-
         echo "</select>";
+
+		if(($current_group["classes"]["classes"][$id_classe]["categorie_id"]!=0)&&(!in_array($current_group["classes"]["classes"][$id_classe]["categorie_id"],$tab_categorie_id))) {
+			$temoin_anomalie_categorie="y";
+			echo "<a href='#' onclick=\"afficher_div('association_anormale_enseignement_categorie','y',-100,20);return false;\"'><img src='../images/icons/flag2.gif' width='17' height='18' /></a>";
+		}
+
         if(($display_mat_cat=='y')&&($current_group["classes"]["classes"][$id_classe]["categorie_id"]=="0")) {
             //echo "<br />\n";
             $message_categorie_aucune="La matière n apparaitra pas sur les bulletins et relevés de notes. Voir http://www.sylogix.org/wiki/gepi/Enseignement_invisible";
@@ -802,6 +818,13 @@ for($i=0;$i<10;$i++){
 
         $cpt_grp++;
     }
+
+
+if(isset($temoin_anomalie_categorie)&&($temoin_anomalie_categorie=='y')) {
+	$titre="Anomalie d'association enseignement/catégorie";
+	$texte="<p>Cet enseignement est associé à une catégorie qui n'existe pas ou plus.<br />Veuillez contrôler les paramètres et cliquer sur <b>Enregistrer</b> pour corriger.";
+	$tabdiv_infobulle[]=creer_div_infobulle('association_anormale_enseignement_categorie',$titre,"",$texte,"",30,0,'y','y','n','n');
+}
 
 echo "<input type='hidden' name='is_posted' value='1' />";
 echo "<input type='hidden' name='id_classe' value='" . $id_classe . "' />";

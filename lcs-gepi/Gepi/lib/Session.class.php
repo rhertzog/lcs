@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: Session.class.php 5807 2010-11-05 07:55:13Z crob $
+ * $Id: Session.class.php 6054 2010-12-05 18:47:10Z crob $
  *
- * Copyright 2001, 2008 Thomas Belliard
+ * Copyright 2001, 2011 Thomas Belliard
  *
  * This file is part of GEPI.
  *
@@ -139,6 +139,11 @@ class Session {
 	      return "3";
 		  die();
 	    }
+
+		if (strtoupper($_login) != strtoupper($this->login)) {
+			//on a une connexion sous un nouveau login, on purge la session
+			$this->reset("4");
+		}
 
 		if($debug_test_mdp=="y") {
 			$f_tmp=fopen($debug_test_mdp_file,"a+");
@@ -523,11 +528,25 @@ class Session {
 		# 0 : logout normal
 		# 2 : logout renvoyé par la fonction checkAccess (problème gepiPath ou accès interdit)
 		# 3 : logout lié à un timeout
+		# 4 : logout lié à une nouvelle connexion sous un nouveau profil
 
 	    # On teste 'start' simplement pour simplement vérifier que la session n'a pas encore été fermée.
 	    if ($this->start) {
 	      $sql = "UPDATE log SET AUTOCLOSE = '" . $_auto . "', END = now() where SESSION_ID = '" . session_id() . "' and START = '" . $this->start . "'";
               $res = sql_query($sql);
+
+			if((getSettingValue('csrf_log')=='y')&&(isset($_SESSION['login']))) {
+				$csrf_log_chemin=getSettingValue('csrf_log_chemin');
+				if($csrf_log_chemin=='') {$csrf_log_chemin="/home/root/csrf";}
+				//$f=fopen("$csrf_log_chemin/csrf_".$_SESSION['login'].".log","a+");
+				$f=fopen("$csrf_log_chemin/csrf_".$_SESSION['login'].".log","a+");
+				fwrite($f,"Fin de session ".strftime("%a %d/%m/%Y %H:%M:%S")." avec\n");
+				if(isset($_SESSION['gepi_alea'])) {fwrite($f,"\$_SESSION['gepi_alea']=".$_SESSION['gepi_alea']."\n");}
+				fwrite($f,"$sql\n");
+				fwrite($f,"-----------------\n");
+				fclose($f);
+			}
+
 	   }
 
 	   // Détruit toutes les variables de session
@@ -540,6 +559,10 @@ class Session {
 
 	    // détruit la session sur le serveur
 	    session_destroy();
+
+		//on redémarre une nouvelle session
+		session_start();
+		session_regenerate_id();
 	}
 
 	private function load_session_data() {
@@ -898,9 +921,12 @@ class Session {
 
 	    }
 
+		/*
 		$length = rand(35, 45);
 		for($len=$length,$r='';strlen($r)<$len;$r.=chr(!mt_rand(0,2)? mt_rand(48,57):(!mt_rand(0,1) ? mt_rand(65,90) : mt_rand(97,122))));
 		$_SESSION["gepi_alea"] = $r;
+		*/
+		generate_token($_SESSION['login']);
 
 	    # On charge les données dans l'instance de Session.
 	    $this->load_session_data();

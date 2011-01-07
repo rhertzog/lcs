@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /**
- * $Id: notanet_admin_template.php 4950 2010-07-29 13:10:01Z regis $
+ * $Id: notanet_admin_template.php 6074 2010-12-08 15:43:17Z crob $
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
@@ -95,7 +95,9 @@
 	<h2>Activation du module Notanet/Fiches Brevet</h2>
 	
 	<form action="notanet_admin.php" id="form1" method="post">
-	  
+<?php
+echo add_token_field();
+?>
 	  <fieldset class="no_bordure">
 		<legend>Le module Notanet/Fiches Brevet concerne les collèges.</legend>
 		<br />

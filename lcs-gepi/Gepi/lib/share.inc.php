@@ -1,10 +1,186 @@
 <?php
 /*
- * $Id: share.inc.php 5736 2010-10-24 13:20:10Z tbelliard $
+ * $Id: share.inc.php 6076 2010-12-08 16:34:35Z crob $
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
 
+
+//function generate_token($login='') {
+function generate_token() {
+    if (!isset($_SESSION["gepi_alea"])) {
+		$length = rand(35, 45);
+		for($len=$length,$r='';strlen($r)<$len;$r.=chr(!mt_rand(0,2)? mt_rand(48,57):(!mt_rand(0,1) ? mt_rand(65,90) : mt_rand(97,122))));
+		// Virer le gepi_alea par la suite
+		$_SESSION["gepi_alea"] = $r;
+		//$_SESSION["token"] = $r;
+	
+		if(getSettingValue('csrf_log')=='y') {
+			$csrf_log_chemin=getSettingValue('csrf_log_chemin');
+			if($csrf_log_chemin=='') {$csrf_log_chemin="/home/root/csrf";}
+			if(isset($_SESSION['login'])) {
+				$f=fopen("$csrf_log_chemin/csrf_".$_SESSION['login'].".log","a+");
+				//$f=fopen("$csrf_log_chemin/csrf_".$login.".log","a+");
+				fwrite($f,"Initialisation de la session ".strftime("%a %d/%m/%Y %H:%M:%S")." avec\n\$_SESSION['gepi_alea']=".$_SESSION['gepi_alea']."\n");
+				fwrite($f,"session_id()=".session_id()."\n");
+				fclose($f);
+			}
+		}
+	}
+}
+
+function add_token_field($avec_id=false) {
+	// Dans une page, il ne devrait y avoir qu'un seul appel à add_token_field(true), les autres... dans les autres formulaires étant avec add_token_field()
+	// A VOIR... on pourrait utiliser une variable globale pour... si l'id csrf_alea est déjà défini ne plus l'ajouter...
+
+	if($avec_id) {
+		return "<input type='hidden' name='csrf_alea' id='csrf_alea' value='".$_SESSION['gepi_alea']."' />\n";
+	}
+	else {
+		return "<input type='hidden' name='csrf_alea' value='".$_SESSION['gepi_alea']."' />\n";
+	}
+}
+
+function add_token_in_url($html_chars = true) {
+	if($html_chars) {
+		return "&amp;csrf_alea=".$_SESSION['gepi_alea'];
+	}
+	else {
+		return "&csrf_alea=".$_SESSION['gepi_alea'];
+	}
+}
+
+function check_token($redirection=true) {
+	// Avant le Header, on appelle check_token()
+	// Après le Header, on appelle check_token(false)
+	global $niveau_arbo;
+	global $gepiPath;
+	global $gepiShowGenTime;
+
+	$csrf_alea=isset($_POST['csrf_alea']) ? $_POST['csrf_alea'] : (isset($_GET['csrf_alea']) ? $_GET['csrf_alea'] : "");
+
+	if(isset($niveau_arbo)) {
+		if($niveau_arbo=="0") {
+		}
+		elseif($niveau_arbo==1) {
+			$pref_arbo="..";
+		}
+		elseif($niveau_arbo==2) {
+			$pref_arbo="../..";
+		}
+		elseif($niveau_arbo==3) {
+			$pref_arbo="../../..";
+		}
+		elseif ($niveau_arbo == "public") {
+			$pref_arbo="..";
+			// A REVOIR... SI C'EST PUBLIC, ON N'EST PAS LOGUé
+			// NORMALEMENT, EN PUBLIC on ne devrait pas avoir de page sensible
+		}
+	}
+	else {
+		$pref_arbo="..";
+	}
+
+	if(getSettingValue('csrf_mode')=='strict') {
+		if($csrf_alea!=$_SESSION['gepi_alea']) {
+			action_alea_invalide();
+			if($redirection) {
+				header("Location: $pref_arbo/accueil.php?msg=Opération non autorisée");
+			}
+			else {
+				echo "<p style='color:red'>Opération non autorisée</p>\n";
+				require("$pref_arbo/lib/footer.inc.php");
+			}
+			die();
+		}
+	}
+	elseif(getSettingValue('csrf_mode')=='mail_seul') {
+		if($csrf_alea!=$_SESSION['gepi_alea']) {
+			action_alea_invalide();
+		}
+	}
+	else {
+		if($csrf_alea!=$_SESSION['gepi_alea']) {
+			// Sans mail
+			action_alea_invalide(false);
+		}
+	}
+}
+
+/**
+ * Action en cas d'attaque CSRF
+ *
+ */
+function action_alea_invalide($envoyer_mail=true) {
+	//debug_var();
+	/*
+	$_SERVER['REQUEST_URI']=	/steph/gepi-trunk/lib/confirm_query.php
+	$_SERVER['SCRIPT_NAME']=	/steph/gepi-trunk/lib/confirm_query.php
+	$_SERVER['PHP_SELF']=	/steph/gepi-trunk/lib/confirm_query.php
+	*/
+
+	// NE pas donner dans le mail les valeurs du token pour éviter des problèmes lors d'une éventuelle capture du mail.
+
+	$details="La personne victime de l'attaque était ".$_SESSION['login'].".\n";
+	$details.="La page cible était ".$_SERVER['PHP_SELF']." avec les variables suivantes:\n";
+	$details.="Variables en \$_POST:\n";
+	foreach($_POST as $key => $value) {
+		//if(!is_array($value)) {
+			$details.="   \$_POST[$key]=$value\n";
+		/*
+		}
+		else {
+
+		}
+		*/
+	}
+
+	$details.="Variables en \$_GET:\n";
+	foreach($_GET as $key => $value) {
+		$details.="   \$_GET[$key]=$value\n";
+	}
+
+	if($envoyer_mail) {
+		// Envoyer un mail à l'admin
+		$envoi_mail_actif=getSettingValue('envoi_mail_actif');
+		if($envoi_mail_actif!="n") {
+			$destinataire=getSettingValue('gepiAdminAdress');
+			if($destinataire!='') {
+				$sujet="Attaque CSRF";
+				$message="La variable csrf_alea ne coincide pas avec le gepi_alea en SESSION.\n";
+				$message.=$details;
+				envoi_mail($sujet, $message,$destinataire);
+			}
+		}
+	}
+
+	if(getSettingValue('csrf_log')=='y') {
+		$csrf_log_chemin=getSettingValue('csrf_log_chemin');
+		if($csrf_log_chemin=='') {$csrf_log_chemin="/home/root/csrf";}
+		$f=fopen("$csrf_log_chemin/csrf_".$_SESSION['login'].".log","a+");
+		fwrite($f,"Alerte CSRF ".strftime("%a %d/%m/%Y %H:%M:%S")." avec\n");
+		fwrite($f,"\$_SESSION['gepi_alea']=".$_SESSION['gepi_alea']."\n");
+		fwrite($f,"session_id()=".session_id()."\n");
+		fwrite($f,$details."\n");
+		fwrite($f,"================================================\n");
+		fclose($f);
+	}
+}
+
+/**
+ * Envoi de mail
+ *
+ */
+function envoi_mail($sujet, $message,$destinataire) {
+	$gepiPrefixeSujetMail=getSettingValue("gepiPrefixeSujetMail") ? getSettingValue("gepiPrefixeSujetMail") : "";
+	if($gepiPrefixeSujetMail!='') {$gepiPrefixeSujetMail.=" ";}
+
+	// On envoie le mail
+	$envoi = mail($destinataire,
+		$gepiPrefixeSujetMail."GEPI : $sujet",
+		$message,
+	"From: Mail automatique Gepi\r\n"."X-Mailer: PHP/" . phpversion());
+}
 
 /**
  * Verification de la validité d'un mot de passe
@@ -613,9 +789,9 @@ function mise_a_jour_moyennes_conteneurs($_current_group, $periode_num,$id_racin
     //à partir de $id_conteneur, mais on évite ainsi trop de calculs !
 
     foreach ($_current_group["eleves"][$periode_num]["list"] as $_eleve_login) {
-    if($_eleve_login!=""){
-            calcule_moyenne($_eleve_login, $id_racine, $id_conteneur);
-    }
+		if($_eleve_login!=""){
+			calcule_moyenne($_eleve_login, $id_racine, $id_conteneur);
+		}
     }
 
     if ($arret != 'yes') {
@@ -659,19 +835,26 @@ function sous_conteneurs($id_conteneur,&$nb_sous_cont,&$nom_sous_cont,&$coef_sou
 }
 
 function fdebug($texte){
+	//global $login, $id_racine;
+
 	// Passer la variable à "y" pour activer le remplissage du fichier de debug pour calcule_moyenne()
 	$local_debug="n";
-	if($local_debug=="y") {
-		$fich=fopen("/tmp/calcule_moyenne.txt","a+");
-		fwrite($fich,$texte);
-		fclose($fich);
-	}
+	//if(($login=='RUQUIER_S')&&($id_racine=='2916')) {
+	//if($login=='RUQUIER_S') {
+		if($local_debug=="y") {
+			$fich=fopen("/tmp/calcule_moyenne.txt","a+");
+			fwrite($fich,$texte);
+			fclose($fich);
+		}
+	//}
 }
 
 //
 // Calcul de la moyenne d'un élève
 //
 function calcule_moyenne($login, $id_racine, $id_conteneur) {
+	//global $login;
+
 	fdebug("===================================\n");
 	fdebug("$login: $id_racine - $id_conteneur\n");
 
@@ -679,7 +862,9 @@ function calcule_moyenne($login, $id_racine, $id_conteneur) {
     $somme_coef = 0;
     $exist_dev_fac = '';
     // On efface les moyennes de la table
-    $delete = mysql_query("DELETE FROM cn_notes_conteneurs WHERE (login='$login' and id_conteneur='$id_conteneur')");
+    $sql="DELETE FROM cn_notes_conteneurs WHERE (login='$login' and id_conteneur='$id_conteneur');";
+	fdebug("$sql\n");
+    $delete = mysql_query($sql);
 
     // Appel des paramètres du conteneur
     $appel_conteneur = mysql_query("SELECT * FROM cn_conteneurs WHERE id ='$id_conteneur'");
@@ -932,33 +1117,62 @@ function calcule_moyenne($login, $id_racine, $id_conteneur) {
 			}
         }
 
+		fdebug("Moyenne avant arrondi: $moyenne\n");
 
+/*
+if(($login=='RUQUIER_S')&&($id_racine=='2916')&&($id_conteneur=='2917')) {
+	echo "<div style='color:red;'><b> ($login, $id_racine, $id_conteneur)</b>
+Moyenne avant arrondi: $moyenne<br />
+   \$moyenne=$moyenne<br />
+   10*\$moyenne=".(10*$moyenne)."<br />
+   ceil(10*\$moyenne)=".ceil(10*$moyenne)."<br />
+   ceil(10*\$moyenne)/10=".(ceil(10*$moyenne)/10)."<br />
+   number_format(ceil(10*\$moyenne)/10,1,'.','')=".number_format(ceil(10*$moyenne)/10,1,'.','')."<br />
+   number_format(ceil(100*\$moyenne)/100,1,'.','')=".number_format(ceil(100*$moyenne)/100,1,'.','')."<br />
+   printf('%.40f', (10*\$moyenne))=".printf('%.40f', (10*$moyenne))."<br />
+   ceil(strval((10*\$moyenne))=".ceil(strval((10*$moyenne)))."
+<div>\n";
+}
+*/
         //
         // Calcul des arrondis
         //
         if ($arrondir == 's1') {
             // s1 : arrondir au dixième de point supérieur
-            $moyenne = number_format(ceil(10*$moyenne)/10,1,'.','');
+			fdebug("Mode s1:
+   \$moyenne=$moyenne
+   10*\$moyenne=".(10*$moyenne)."
+   ceil(10*\$moyenne)=".ceil(10*$moyenne)."
+   ceil(10*\$moyenne)/10=".(ceil(10*$moyenne)/10)."
+   number_format(ceil(10*\$moyenne)/10,1,'.','')=".number_format(ceil(10*$moyenne)/10,1,'.','')."
+   number_format(ceil(100*\$moyenne)/100,1,'.','')=".number_format(ceil(100*$moyenne)/100,1,'.','')."\n");
+            //$moyenne = number_format(ceil(10*$moyenne)/10,1,'.','');
+			$moyenne = number_format(ceil(strval(10*$moyenne))/10,1,'.','');
         } else if ($arrondir == 's5') {
             // s5 : arrondir au demi-point supérieur
-            $moyenne = number_format(ceil(2*$moyenne)/2,1,'.','');
+            $moyenne = number_format(ceil(strval(2*$moyenne))/2,1,'.','');
         } else if ($arrondir == 'se') {
             // se : arrondir au point entier supérieur
-            $moyenne = number_format(ceil($moyenne),1,'.','');
+            $moyenne = number_format(ceil(strval($moyenne)),1,'.','');
         } else if ($arrondir == 'p1') {
             // s1 : arrondir au dixième le plus proche
-            $moyenne = number_format(round(10*$moyenne)/10,1,'.','');
+            $moyenne = number_format(round(strval(10*$moyenne))/10,1,'.','');
         } else if ($arrondir == 'p5') {
             // s5 : arrondir au demi-point le plus proche
-            $moyenne = number_format(round(2*$moyenne)/2,1,'.','');
+            $moyenne = number_format(round(strval(2*$moyenne))/2,1,'.','');
         } else if ($arrondir == 'pe') {
             // se : arrondir au point entier le plus proche
-            $moyenne = number_format(round($moyenne),1,'.','');
+            $moyenne = number_format(round(strval($moyenne)),1,'.','');
         }
-        $register = mysql_query("INSERT INTO cn_notes_conteneurs SET login='$login', id_conteneur='$id_conteneur',note='$moyenne',statut='y',comment=''");
+
+        $sql="INSERT INTO cn_notes_conteneurs SET login='$login', id_conteneur='$id_conteneur',note='$moyenne',statut='y',comment='';";
+		fdebug("$sql\n");
+        $register = mysql_query($sql);
 
     } else {
-        $register = mysql_query("INSERT INTO cn_notes_conteneurs SET login='$login', id_conteneur='$id_conteneur',note='0',statut='',comment=''");
+        $sql="INSERT INTO cn_notes_conteneurs SET login='$login', id_conteneur='$id_conteneur',note='0',statut='',comment='';";
+		fdebug("$sql\n");
+        $register = mysql_query($sql);
 
     }
 
@@ -973,6 +1187,7 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 	global $eff_groupe;
 	if((isset($id_groupe))&&(!isset($eff_groupe))) {
 		$sql="SELECT 1=1 FROM j_eleves_groupes WHERE id_groupe='$id_groupe' AND periode='$periode_num';";
+		//echo "$sql<br />";
 		$res_ele_grp=mysql_query($sql);
 		$eff_groupe=mysql_num_rows($res_ele_grp);
 	}
@@ -1030,6 +1245,7 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 					//$sql="SELECT 1=1 FROM cn_notes_devoirs WHERE id_devoir='$id_dev' AND statut!='-' AND statut!='v';";
 					//$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='-' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
 					$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
+					//echo "$sql<br />";
 					$res_eff_dev=mysql_query($sql);
 					$eff_dev=mysql_num_rows($res_eff_dev);
 					echo " <span title=\"Effectif des notes saisies/effectif total de l'enseignement\" style='font-size:small;";
@@ -1037,6 +1253,10 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 					echo "'>($eff_dev";
 					if(isset($eff_groupe)) {echo "/$eff_groupe";}
 					echo ")</span>";
+
+					// Pour détecter une anomalie:
+					// $sql="SELECT * FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num' AND jec.login not in (select login from j_eleves_groupes where id_groupe='$id_groupe' and periode='$periode_num');";
+					//echo "$sql<br />"; // Décommenter et exécuter dans une console mysql ou dans phpMyAdmin
 
 					//echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a> - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 					echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a>";
@@ -1048,7 +1268,8 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 					else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes' alt='Evaluation non visible sur le relevé de notes' />\n";}
 					echo "</i>)";
 
-					echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
+					//echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
+					echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 					echo "</li>\n";
 					$j++;
 				}
@@ -1093,7 +1314,8 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 
 					if(($nb_dev==0)&&($nb_sous_cont==0)) {
 						//echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
-						echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
+						//echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
+						echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
 					}
 					else {
 						echo " - <a href = '#' onclick='alert(\"$message_cont_non_vide\")'><font color='gray'>Suppression</font></a>\n";
@@ -1128,7 +1350,8 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 							else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes' alt='Evaluation non visible sur le relevé de notes' />\n";}
 							echo "</i>)";
 
-							echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
+							//echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
+							echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 							echo "</li>\n";
 							$j++;
 						}

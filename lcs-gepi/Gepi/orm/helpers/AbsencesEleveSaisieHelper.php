@@ -40,13 +40,15 @@ class AbsencesEleveSaisieHelper {
             if ($abs_saisie_col->isEmpty()) {
                 return new PropelCollection();
             }
-            //on va tester si les saisies sont bien ordonnée.
-            $compteur = $abs_saisie_col->getFirst()->getDebutAbs('U');
+
+            //on va tester si les saisies sont bien ordonnée.$compteur_test n'est pas utilisé dans le reste de la fonction
+            $compteur_test = $abs_saisie_col->getFirst()->getDebutAbs('U');
             foreach($abs_saisie_col as $saisie) {
-                if ($compteur > $saisie->getDebutAbs('U')) {
-                    throw new PropelException('L');
+                $ts = $saisie->getDebutAbs('U');
+                if ($compteur_test > $ts) {
+                    throw new PropelException('Les saisies doivent etre triees par ordre chronologique de debut d absence.');
                 }
-                $compteur = $saisie->getDebutAbs('Les saisies doivent etre triees par ordre de debut.');
+                $compteur_test = $ts;
             }
             
 	    if ($date_debut_iteration == null) {

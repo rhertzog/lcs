@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: saisie_avis1.php 4878 2010-07-24 13:54:01Z regis $
+* $Id: saisie_avis1.php 6074 2010-12-08 15:43:17Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
 *
 * This file is part of GEPI.
 *
@@ -35,7 +35,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
@@ -47,6 +47,7 @@ $id_classe = isset($_POST["id_classe"]) ? $_POST["id_classe"] :(isset($_GET["id_
 include "../lib/periodes.inc.php";
 
 if (isset($_POST['is_posted'])) {
+	check_token();
 
 	// Synthèse
 	$i = '1';
@@ -291,6 +292,7 @@ echo "</form>\n";
 
 
 echo "<form enctype='multipart/form-data' action='saisie_avis1.php' method='post'>\n";
+echo add_token_field();
 
 if ($id_classe) {
 	$classe = sql_query1("SELECT classe FROM classes WHERE id = '$id_classe'");

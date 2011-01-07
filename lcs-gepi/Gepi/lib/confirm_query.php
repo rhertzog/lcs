@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: confirm_query.php 5639 2010-10-12 14:40:47Z crob $
+ * $Id: confirm_query.php 6074 2010-12-08 15:43:17Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -47,6 +47,8 @@ function AfficheNiveauGraviteRequete($_texte,$_niveau){
     }
 }
 
+// Controle attaques CSRF
+check_token();
 
 // Initialisation
 $liste_cible = isset($_POST["liste_cible"]) ? $_POST["liste_cible"] :(isset($_GET["liste_cible"]) ? $_GET["liste_cible"] :NULL);

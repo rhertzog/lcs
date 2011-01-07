@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: visu_toutes_notes2.php 4628 2010-06-24 06:59:42Z crob $
+ * $Id: visu_toutes_notes2.php 6074 2010-12-08 15:43:17Z crob $
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -23,6 +23,9 @@
 
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
+if (getSettingValue("active_module_absence")=='2'){
+    require_once("../lib/initialisationsPropel.inc.php");
+}
 
 // Resume session
 $resultat_session = $session_gepi->security_check();
@@ -42,6 +45,7 @@ if (!checkAccess()) {
     die();
 }
 
+check_token();
 
 //Initialisation
 $id_classe = isset($_POST['id_classe']) ? $_POST['id_classe'] :  NULL;
@@ -337,6 +341,7 @@ while($j < $nb_lignes_tableau) {
 	}
 	// Colonne absence
 	if ($aff_abs) {
+        if (getSettingValue("active_module_absence") != '2' || getSettingValue("abs2_import_manuel_bulletin") == 'y') {
 		$abs_eleve = "NR";
 		if ($referent=="une_periode")
 			$abs_eleve = sql_query1("SELECT nb_absences FROM absences WHERE
@@ -351,7 +356,30 @@ while($j < $nb_lignes_tableau) {
 		if ($abs_eleve == '-1') $abs_eleve = "NR";
 		$col[$ind][$j+$ligne_supl] = $abs_eleve;
 		$ind++;
+        }else {
+            $eleve = EleveQuery::create()->findOneByLogin($current_eleve_login[$j]);
+            if ($eleve != null) {
+                if ($referent == "une_periode") {
+                    $abs_eleve = strval($eleve->getDemiJourneesAbsenceParPeriode($num_periode)->count());
+                } else {
+                    $date_jour = new DateTime('now');
+                    $month = $date_jour->format('m');
+                    if ($month > 7) {
+                        $date_debut = new DateTime($date_jour->format('y') . '-09-01');
+                        $date_fin = new DateTime($date_jour->format('y')+1 . '-08-31');
+                    } else {
+                        $date_debut = new DateTime($date_jour->format('y')-1 . '-09-01');
+                        $date_fin = new DateTime($date_jour->format('y') . '-08-31');
 	}
+                    $abs_eleve = strval($eleve->getDemiJourneesAbsence($date_debut,$date_fin)->count());
+                }
+            } else {
+                $abs_eleve = "NR";
+            }
+            $col[$ind][$j + $ligne_supl] = $abs_eleve;
+            $ind++;
+        }
+    }
 
 	// Colonne rang
 	if (($aff_rang) and ($referent=="une_periode")) {
@@ -375,6 +403,7 @@ while($j < $nb_lignes_tableau) {
 	$j++;
 }
 
+$num_debut_colonnes_matieres=$ind;
 
 /*
 // Colonne rang
@@ -617,10 +646,10 @@ while($i < $lignes_groupes){
 				//echo "$sql";
 				$res_moy=mysql_query($sql);
 
-				if(mysql_num_rows($res_moy)>0){
+				if(mysql_num_rows($res_moy)>0) {
 					$lig_moy=mysql_fetch_object($res_moy);
-					if($lig_moy->statut=='y'){
-						if($lig_moy->note!=""){
+					if($lig_moy->statut=='y') {
+						if($lig_moy->note!="") {
 							$col[$k][$j+$ligne_supl] = number_format($lig_moy->note,1, ',', ' ');
 							$temp=$lig_moy->note;
 							if ($current_coef > 0) {
@@ -666,7 +695,7 @@ while($i < $lignes_groupes){
 						$col[$k][$j+$ligne_supl] = '-';
 					}
 				}
-				else{
+				else {
 					$col[$k][$j+$ligne_supl] = '-';
 				}
 
@@ -759,6 +788,10 @@ while($i < $lignes_groupes){
 				}
 				$p++;
 			}
+
+
+			$moy_eleve_grp_courant_annee="-";
+
 			if ($non_suivi == (pow(2,$nb_periode))) {
 				// L'élève n'a suivi la matière sur aucune période
 				$col[$k][$j+$ligne_supl] = "/";
@@ -768,6 +801,9 @@ while($i < $lignes_groupes){
 				$moy_min = min($moy_min,$moy);
 				$moy_max = max($moy_max,$moy);
 				$col[$k][$j+$ligne_supl] = number_format($moy,1, ',', ' ');
+
+				$moy_eleve_grp_courant_annee=$col[$k][$j+$ligne_supl];
+
 				if ($current_coef > 0) {
 					if($affiche_categories){
 						if (!in_array($prev_cat_id, $displayed_categories)) $displayed_categories[] = $prev_cat_id;
@@ -804,22 +840,25 @@ while($i < $lignes_groupes){
 
 			$sql="SELECT * FROM j_eleves_groupes WHERE id_groupe='".$current_group["id"]."'";
 			$test_eleve_grp=mysql_query($sql);
-			if(mysql_num_rows($test_eleve_grp)>0){
+			if(mysql_num_rows($test_eleve_grp)>0) {
 				//if($chaine_matieres[$j+$ligne_supl]==""){
 				if(!isset($chaine_matieres[$j+$ligne_supl])){
 					$chaine_matieres[$j+$ligne_supl]=$current_group["matiere"]["matiere"];
-					$chaine_moy_eleve1[$j+$ligne_supl]=$lig_moy->note;
+					//$chaine_moy_eleve1[$j+$ligne_supl]=$lig_moy->note;
+					$chaine_moy_eleve1[$j+$ligne_supl]=$moy_eleve_grp_courant_annee;
 					$chaine_moy_classe[$j+$ligne_supl]=$moy_classe_tmp;
 				}
 				else{
 					if($chaine_matieres[$j+$ligne_supl]==""){
 						$chaine_matieres[$j+$ligne_supl]=$current_group["matiere"]["matiere"];
-						$chaine_moy_eleve1[$j+$ligne_supl]=$lig_moy->note;
+						//$chaine_moy_eleve1[$j+$ligne_supl]=$lig_moy->note;
+						$chaine_moy_eleve1[$j+$ligne_supl]=$moy_eleve_grp_courant_annee;
 						$chaine_moy_classe[$j+$ligne_supl]=$moy_classe_tmp;
 					}
 					else{
 						$chaine_matieres[$j+$ligne_supl].="|".$current_group["matiere"]["matiere"];
-						$chaine_moy_eleve1[$j+$ligne_supl].="|".$lig_moy->note;
+						//$chaine_moy_eleve1[$j+$ligne_supl].="|".$lig_moy->note;
+						$chaine_moy_eleve1[$j+$ligne_supl].="|".$moy_eleve_grp_courant_annee;
 						$chaine_moy_classe[$j+$ligne_supl].="|".$moy_classe_tmp;
 					}
 				}
@@ -906,8 +945,8 @@ while($i < $lignes_groupes){
 					$tmp_col=$col[1][$loop+$ligne_supl];
 					//echo "\$current_eleve_login[$loop]=$current_eleve_login[$loop]<br />";
 					$col[1][$loop+$ligne_supl]="<a href='../visualisation/draw_graphe.php?".
-					"temp1=".$chaine_moy_eleve1[$loop+$ligne_supl].
-					"&amp;temp2=".$chaine_moy_classe[$loop+$ligne_supl].
+					"temp1=".strtr($chaine_moy_eleve1[$loop+$ligne_supl],',','.').
+					"&amp;temp2=".strtr($chaine_moy_classe[$loop+$ligne_supl],',','.').
 					"&amp;etiquette=".$chaine_matieres[$loop+$ligne_supl].
 					"&amp;titre=$graph_title".
 					"&amp;v_legend1=".$current_eleve_login[$loop].
@@ -1378,6 +1417,7 @@ require_once("../lib/header.inc");
 
 //=================================================
 if($vtn_coloriser_resultats=='y') {
+	//check_token();
 	$sql="DELETE FROM preferences WHERE login='".$_SESSION['login']."' AND name LIKE 'vtn_%';";
 	$del=mysql_query($sql);
 
@@ -1546,7 +1586,7 @@ echo "</div>\n";
 // Pour permettre de trier autrement...
 echo "\n<!-- Formulaire pour l'affichage avec tri sur la colonne cliquée -->\n";
 echo "<form enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\" name=\"formulaire_tri\">\n";
-
+echo add_token_field();
 echo "<input type='hidden' name='col_tri' id='col_tri' value='' />\n";
 echo "<input type='hidden' name='sens_tri' id='sens_tri' value='' />\n";
 

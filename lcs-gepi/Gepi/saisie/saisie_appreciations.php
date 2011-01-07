@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: saisie_appreciations.php 5089 2010-08-20 17:13:40Z crob $
+* $Id: saisie_appreciations.php 6074 2010-12-08 15:43:17Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -79,6 +79,7 @@ if ($_SESSION['statut'] != "secours") {
 $msg="";
 
 if (isset($_POST['is_posted'])) {
+	check_token();
 
 	$indice_max_log_eleve=$_POST['indice_max_log_eleve'];
 
@@ -258,6 +259,8 @@ if (isset($_POST['is_posted'])) {
 //elseif((isset($_POST['correction_login_eleve']))&&(isset($_POST['correction_periode']))&&(isset($_POST['no_anti_inject_correction_app_eleve']))) {
 //elseif((isset($_POST['correction_login_eleve']))&&(isset($_POST['correction_periode']))&&(isset($_POST['no_anti_inject_correction_app_eleve']))&&(getSettingValue('autoriser_correction_bulletin')=='y')) {
 elseif((isset($_POST['correction_login_eleve']))&&(isset($_POST['correction_periode']))&&(isset($_POST['no_anti_inject_correction_app_eleve']))) {
+	check_token();
+
 	// Dispositif pour proposer des corrections une fois la période close.
 	$correction_login_eleve=$_POST['correction_login_eleve'];
 	$correction_periode=$_POST['correction_periode'];
@@ -634,6 +637,9 @@ echo "</form>\n";
 ?>
 <form enctype="multipart/form-data" action="saisie_appreciations.php" method="post">
 <?php
+//echo add_token_field();
+//echo "<input type='hidden' name='csrf_alea' id='csrf_alea' value='".$_SESSION['gepi_alea']."' />\n";
+echo add_token_field(true);
 
 //=========================
 // AJOUT: boireaus 20090126
@@ -779,10 +785,10 @@ function focus_suivant(num){
 			Elles sont indiquées ci-dessous en rouge. Voulez-vous les restaurer ?
 		</p>
 		<p class=\"red\">
-		<a href=\"./saisie_appreciations.php?id_groupe=".$current_group["id"]."&amp;restauration=oui\">OUI</a>
+		<a href=\"./saisie_appreciations.php?id_groupe=".$current_group["id"]."&amp;restauration=oui".add_token_in_url()."\">OUI</a>
 		(elles remplaceront alors la saisie précédente)
 			-
-		<a href=\"./saisie_appreciations.php?id_groupe=".$current_group["id"]."&amp;restauration=non\">NON</a>
+		<a href=\"./saisie_appreciations.php?id_groupe=".$current_group["id"]."&amp;restauration=non".add_token_in_url()."\">NON</a>
 		(elles seront alors définitivement perdues)
 		</p>
 		";
@@ -1248,8 +1254,10 @@ foreach ($liste_eleves as $eleve_login) {
 						//$_photo_eleve = (isset ($multisite) AND $multisite == 'y') ? $eleve_login : $lig_ele->elenoet;
 						$_photo_eleve = nom_photo($lig_ele->elenoet);
 						//if(file_exists("../photos/eleves/".$_photo_eleve.".jpg")) {
-						if(file_exists($_photo_eleve.".jpg")) {
-							$mess[$k].=";affiche_photo('".$_photo_eleve.".jpg','".addslashes(strtoupper($eleve_nom)." ".ucfirst(strtolower($eleve_prenom)))."')";
+						//if(file_exists($_photo_eleve.".jpg")) {
+							//$mess[$k].=";affiche_photo('".$_photo_eleve.".jpg','".addslashes(strtoupper($eleve_nom)." ".ucfirst(strtolower($eleve_prenom)))."')";
+						if(file_exists($_photo_eleve)) {
+							$mess[$k].=";affiche_photo('".$_photo_eleve."','".addslashes(strtoupper($eleve_nom)." ".ucfirst(strtolower($eleve_prenom)))."')";
 						}
 						else {
 							$mess[$k].="document.getElementById('div_photo_eleve').innerHTML='';";
@@ -1524,6 +1532,7 @@ if(($_SESSION['statut']=='professeur')&&
 ((substr(getSettingValue('autoriser_correction_bulletin'),0,1)=='y')||($une_autorisation_exceptionnelle_de_saisie_au_moins=='y'))) {
 	$titre="Correction d'une appréciation";
 	$texte="<form enctype=\"multipart/form-data\" action=\"saisie_appreciations.php\" name='form_correction' method=\"post\">\n";
+	$texte.=add_token_field();
 	$texte.="Vous pouvez proposer une correction pour <span id='span_correction_login_eleve' class='bold'>...</span> sur la période <span id='span_correction_periode' class='bold'>...</span>&nbsp;: ";
 	$texte.="<input type='hidden' name='correction_login_eleve' id='correction_login_eleve' value='' />\n";
 	$texte.="<input type='hidden' name='correction_periode' id='correction_periode' value='' />\n";
@@ -1630,7 +1639,7 @@ if (($insert_mass_appreciation_type=="y")&&($droit_insert_mass_appreciation_type
 	echo "<script type='text/javascript'>
 	function ajoute_a_textarea_vide() {
 		champs_textarea=document.getElementsByTagName('textarea');
-		alert('champs_textarea.length='+champs_textarea.length);
+		//alert('champs_textarea.length='+champs_textarea.length);
 		for(i=0;i<champs_textarea.length;i++){
 			if(champs_textarea[i].value=='') {
 				champs_textarea[i].value=document.getElementById('ajout_a_textarea_vide').value;

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 4266 2010-04-09 20:19:37Z adminpaulbert $
+ * $Id: index.php 5865 2010-11-13 20:24:03Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
  *
@@ -27,6 +27,8 @@ if (isset($_GET['traite_anti_inject']) OR isset($_POST['traite_anti_inject'])) $
 // Dans le cas ou on poste une notice ou un devoir, pas de traitement anti_inject
 // Pour ne pas interférer avec fckeditor
 if (isset($_POST['notes'])) $traite_anti_inject = 'no';
+
+$filtrage_extensions_fichiers_table_ct_types_documents='y';
 
 // Initialisations files
 require_once("../lib/initialisations.inc.php");

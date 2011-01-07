@@ -1,9 +1,9 @@
 <?php
 /*
 *
-* $Id: visu_releve_notes_bis.php 5689 2010-10-15 19:23:18Z crob $
+* $Id: visu_releve_notes_bis.php 6201 2010-12-19 10:44:04Z crob $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
 * This file is part of GEPI.
 *
@@ -86,6 +86,8 @@ elseif ((isset($_POST['mode_bulletin']))&&($_POST['mode_bulletin']=='html')) {
 elseif ((isset($_POST['mode_bulletin']))&&($_POST['mode_bulletin']=='pdf')) {
 	$mode_utf8_pdf=getSettingValue("mode_utf8_bulletins_pdf");
 	if($mode_utf8_pdf=="") {$mode_utf8_pdf="n";}
+	// Décommenter pour un affichage de debug... en cas d'erreur disant que le fichier n'est pas un PDF valide par exemple
+	//echo "ZUT: debug\n";
 	include("../bulletin/header_bulletin_pdf.php");
 	include("../bulletin/header_releve_pdf.php");
 }
@@ -1638,6 +1640,8 @@ else {
 		$nb_releve_par_page=2;
 	}
 
+	$use_cell_ajustee=isset($_POST['use_cell_ajustee']) ? $_POST['use_cell_ajustee'] : "y";
+
 	// Prof principal
 	$gepi_prof_suivi=getSettingValue("gepi_prof_suivi");
 
@@ -1868,6 +1872,14 @@ else {
 	
 										// Génération du bulletin de l'élève
 										releve_html($tab_releve[$id_classe][$periode_num],$rg[$i],-1);
+
+										/*
+										if($i==0) {
+											echo "<pre>";
+											print_r($tab_releve[$id_classe][$periode_num]);
+											echo "</pre>";
+										}
+										*/
 
 										$chaine_info_deux_releves="";
 										if(($un_seul_bull_par_famille=="non")&&($nb_releves>1)) {$chaine_info_deux_releves=".<br /><span style='color:red'>Plusieurs relevés pour une même famille&nbsp: les adresses des deux responsables diffèrent.</span><br /><span style='color:red'>Si vous ne souhaitez pas de deuxième relevé, pensez à cocher la case 'Un seul relevé par famille'.</span>";}

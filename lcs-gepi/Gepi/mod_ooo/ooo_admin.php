@@ -1,8 +1,8 @@
 <?php
 /*
- * @version: $Id: ooo_admin.php 4961 2010-07-29 20:48:15Z regis $
+ * @version: $Id: ooo_admin.php 6074 2010-12-08 15:43:17Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -52,6 +52,7 @@ if (!checkAccess()) {
 
 //$msg = '';
 if ((isset($_POST['is_posted']))&&(isset($_POST['activer']))) {
+	check_token();
     if (!saveSetting("active_mod_ooo", $_POST['activer'])) $msg = "Erreur lors de l'enregistrement du paramètre activation/désactivation !";
 }
 

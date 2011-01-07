@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: index.php 5348 2010-09-20 14:23:16Z crob $
+* $Id: index.php 6134 2010-12-14 15:05:56Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -139,8 +139,16 @@ if (isset($is_posted) and ($is_posted == '2')) {
 	}
 }
 
-if(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite")){
+// Le statut scolarite ne devrait pas être proposé ici.
+// La page confirm_query.php n'est accessible qu'en administrateur
+if(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite")) {
 	if (isset($is_posted) and ($is_posted == '1')) {
+
+		check_token();
+
+		$delete_eleve=isset($_POST['delete_eleve']) ? $_POST['delete_eleve'] : array();
+		if(!is_array($delete_eleve)) {$delete_eleve=array();$msg="Erreur: La liste d'élèves à supprimer devrait être un tableau.<br />";}
+
 		$calldata = mysql_query("SELECT * FROM eleves");
 		$nombreligne = mysql_num_rows($calldata);
 		$i = 0;
@@ -149,9 +157,10 @@ if(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite")){
 		while ($i < $nombreligne){
 			$eleve_login = mysql_result($calldata, $i, "login");
 			$eleve_elenoet = mysql_result($calldata, $i, "elenoet");
-			$delete_login = 'delete_'.$eleve_login;
-			$del_eleve = isset($_POST[$delete_login])?$_POST[$delete_login]:NULL;
-			if ($del_eleve == 'yes') {
+			//$delete_login = 'delete_'.$eleve_login;
+			//$del_eleve = isset($_POST[$delete_login])?$_POST[$delete_login]:NULL;
+			//if ($del_eleve == 'yes') {
+			if(in_array($eleve_login,$delete_eleve)) {
 				$liste_cible = $liste_cible.$eleve_login.";";
 				$liste_cible2 = $liste_cible2.$eleve_elenoet.";";
 			}
@@ -265,6 +274,8 @@ function test_ecriture_backup() {
 }
 
 if (isset($action) and ($action == 'depot_photo') and $total_photo != 0)  {
+	check_token();
+
 	$msg="";
 	$cpt_photos_mises_en_place=0;
 	$cpt_photo = 0;
@@ -531,6 +542,8 @@ if (!isset($quelles_classes)) {
 
 		echo "<form enctype='multipart/form-data' action='index.php' method='post' name='formulaire'>\n";
 		echo "<table cellpadding='5' width='100%' border='0' summary='Choix du mode'>\n";
+
+		//echo add_token_field();
 
 		echo "<tr>\n";
 		echo "<td>\n";
@@ -937,6 +950,8 @@ if(isset($quelles_classes)) {
 
 	echo "<form enctype=\"multipart/form-data\" action=\"index.php\" method=\"post\">\n";
 	if (!isset($order_type)) { $order_type='nom,prenom';}
+
+	echo add_token_field();
 
 	/*
 	echo "<table border='1' cellpadding='2' class='boireaus'>\n";
@@ -1346,8 +1361,12 @@ if(isset($quelles_classes)) {
 //    echo "<td><p>Classe</p></td>";
 	echo "<td><p>".ucfirst(getSettingValue("gepi_prof_suivi"))."</p></td>\n";
 
-	if(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite")){
+	//if(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite")){
+	if($_SESSION['statut']=="administrateur") {
 		echo "<td><p><input type='submit' value='Supprimer' onclick=\"return confirmlink(this, 'La suppression d\'un élève est irréversible et entraîne l\'effacement complet de toutes ses données (notes, appréciations, ...). Etes-vous sûr de vouloir continuer ?', 'Confirmation de la suppression')\" /></p></td>\n";
+	}
+	elseif($_SESSION['statut']=="scolarite") {
+		echo "<td><p><span title=\"La suppression n'est possible qu'avec un compte administrateur\">Supprimer</span></p></td>\n";
 	}
 
 	if (getSettingValue("active_module_trombinoscopes")=='y') {
@@ -1407,7 +1426,7 @@ if(isset($quelles_classes)) {
 			$eleve_profsuivi_prenom = @mysql_result($call_suivi, 0, "prenom");
 		}
 		if ($eleve_profsuivi_nom == '') {$eleve_profsuivi_nom = "<font color='red'>N/A</font>";}
-		$delete_login = 'delete_'.$eleve_login;
+		//$delete_login = 'delete_'.$eleve_login;
 		$alt=$alt*(-1);
 		echo "<tr class='lig$alt'>\n";
 		echo "<td><p>" . $eleve_login . "</p></td>\n";
@@ -1419,9 +1438,14 @@ if(isset($quelles_classes)) {
 		echo "<td><p>$eleve_classe</p></td>\n";
 		echo "<td><p>$eleve_profsuivi_nom $eleve_profsuivi_prenom</p></td>\n";
 
-		if(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite")){
+		//if(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite")){
+		if($_SESSION['statut']=="administrateur") {
 			//echo "<td><p><center><INPUT TYPE=CHECKBOX NAME='$delete_login' VALUE='yes' /></center></p></td></tr>\n";
-			echo "<td><p align='center'><input type='checkbox' name='$delete_login' value='yes' /></p></td>\n";
+			//echo "<td><p align='center'><input type='checkbox' name='$delete_login' value='yes' /></p></td>\n";
+			echo "<td><p align='center'><input type='checkbox' name='delete_eleve[]' value='$eleve_login' /></p></td>\n";
+		}
+		elseif($_SESSION['statut']=="scolarite") {
+			echo "<td><p align='center'><span title=\"La suppression n'est possible qu'avec un compte administrateur\">-</span></p></td>\n";
 		}
 
 		if ((getSettingValue("active_module_trombinoscopes")=='y')&&
@@ -1531,9 +1555,27 @@ if(isset($quelles_classes)) {
 
 	<?php
 
+	echo "<br />\n";
+	$temoin_notes_bas_de_page="n";
 	$max_file_uploads=ini_get('max_file_uploads');
 	if(($max_file_uploads!="")&&(strlen(my_ereg_replace("[^0-9]","",$max_file_uploads))==strlen($max_file_uploads))&&($max_file_uploads>0)) {
-		echo "<p><i>Note</i>&nbsp;: L'upload des photos est limité à $max_file_uploads fichier(s) simultanément.</p>\n";
+		echo "<p><i>Notes</i>&nbsp;:</p>\n";
+		echo "<ul>\n";
+		echo "<li><p>L'upload des photos est limité à $max_file_uploads fichier(s) simultanément.</p></li>\n";
+		$temoin_notes_bas_de_page="y";
+	}
+
+	if($_SESSION['statut']=='administrateur') {
+		if($temoin_notes_bas_de_page=="n") {
+			echo "<p><i>Notes</i>&nbsp;:</p>\n";
+			echo "<ul>\n";
+		}
+		echo "<li><i>Note</i>&nbsp;: Il est possible d'uploader un fichier <a href='../mod_trombinoscopes/trombinoscopes_admin.php#formEnvoi'>ZIP d'un lot de photos</a> plutôt que les uploader une par une.<br />Il faut que les photos soient nommées au format ELENOET.JPG</p></li>\n";
+		$temoin_notes_bas_de_page="y";
+	}
+
+	if($temoin_notes_bas_de_page=="y") {
+		echo "</ul>\n";
 	}
 }
 require("../lib/footer.inc.php");

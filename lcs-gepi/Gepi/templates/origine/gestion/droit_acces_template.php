@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: droit_acces_template.php 4896 2010-07-25 20:22:14Z regis $
+ * $Id: droit_acces_template.php 6074 2010-12-08 15:43:17Z crob $
 */
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
@@ -70,7 +70,9 @@
 <!-- début corps -->
 
   <form action="droits_acces.php" method="post" id="form1">
-	
+	<?php
+		echo add_token_field();
+	?>
 	<p class="center">
 	  <input type="hidden" name="is_posted" value="1" />
 	  <input type="submit" name = "OK" value="Enregistrer" />

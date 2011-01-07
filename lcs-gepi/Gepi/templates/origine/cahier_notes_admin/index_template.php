@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: index_template.php 4899 2010-07-26 10:09:38Z regis $
+* $Id: index_template.php 6074 2010-12-08 15:43:17Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -92,7 +92,9 @@
   <div id='container'>
 
   <form action="index.php" id="form1" method="post">
-
+<?php
+	echo add_token_field();
+?>
 	<p class="center">
 	  <input type="hidden" name="is_posted" value="1" />
 	  <input type="submit" value="Enregistrer" />

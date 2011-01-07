@@ -1,8 +1,8 @@
 <?php
 /*
-* @version: $Id: verrouillage.php 4753 2010-07-11 20:06:16Z jjacquard $
+* @version: $Id: verrouillage.php 6254 2010-12-29 21:10:49Z crob $
 *
-* Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -46,8 +46,11 @@ $periode=isset($_GET['periode']) ? $_GET['periode'] : 0;
 // quelle action après le verrouillage ?
 $action_apres=isset($_GET['action']) ? $_GET['action'] : NULL;
 
+// Passer à 'n' pour désactiver DateTime()
+$datetime_actif="y";
 
 if (isset($_POST['deverouillage_auto_periode_suivante'])) {
+	check_token();
 	if (!saveSetting("deverouillage_auto_periode_suivante", $_POST['deverouillage_auto_periode_suivante'])) {
 		$msg .= "Erreur lors de l'enregistrement de deverouillage_auto_periode_suivante !";
 		$reg_ok = 'no';
@@ -55,6 +58,7 @@ if (isset($_POST['deverouillage_auto_periode_suivante'])) {
 }
 
 if (isset($_POST['ok'])) {
+	check_token();
 
 	$pb_reg_ver = 'no';
 	//$calldata = sql_query("SELECT DISTINCT c.id, c.classe FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe");
@@ -81,7 +85,8 @@ if (isset($_POST['ok'])) {
 						    if (!$register) {$pb_reg_ver = 'yes';}
 						}
 					}
-					if ((isset($_POST["date_fin_".$nom_classe]))&&($_POST["date_fin_".$nom_classe]!=""))  {
+
+					if(($datetime_actif=='y')&&(isset($_POST["date_fin_".$nom_classe]))&&($_POST["date_fin_".$nom_classe]!=""))  {
 						try {
 						    $date_fin = new DateTime(str_replace("/",".",$_POST["date_fin_".$nom_classe]));
 						    if ($date_fin->format('U') != $row_per[1]) {
@@ -210,7 +215,7 @@ echo "<br /><br />\n";
 if (($classe != 0) AND ($periode !=0)) {
 
 	echo "<form action=\"verrouillage.php?classe=$classe&periode=$periode&action=$action_apres\" name=\"formulaire\" method=\"post\">\n";
-
+	echo add_token_field();
 	echo "<table class='boireaus' cellpadding='3' cellspacing='0' border='1' align='center'>\n";
 	//echo "<tr class='fond_sombre'>\n<td>&nbsp;</td>\n";
 	echo "<tr>\n";
@@ -298,7 +303,8 @@ if (($classe != 0) AND ($periode !=0)) {
 } else {
 	if ($nombreligne != 0) {
 		echo "<form action=\"verrouillage.php\" name=\"formulaire\" method=\"post\">";
-	
+		echo add_token_field();
+
 		echo "<p align='center'><input type=\"submit\" name=\"ok\" value=\"Enregistrer\" /></p>\n";
 		//echo "<table cellpadding='3' cellspacing='0' border='1' align='center'>";
 		echo "<table class='boireaus' summary='Verrouillage des périodes' cellpadding='3' cellspacing='0' align='center'>\n";
@@ -413,9 +419,14 @@ if (($classe != 0) AND ($periode !=0)) {
 			}
 		}
 	</script>\n";
-	
-	} else {
-		echo "<p class='grand'>Attention : aucune classe n'a été définie dans la base GEPI !</p>\n";
+
+		echo "<br />\n";
+
+		echo "<p><i>Remarque&nbsp;:</i><br /><span style='margin-left: 3em;'>Si vous ne voyez pas toutes les classes, il se peut que certaines classes ne vous soient pas associées.</span><br /><span style='margin-left: 3em;'>Demandez alors à un compte administrateur de vous associer des classes dans <b>Gestion des bases/Gestion des classes/Paramétrage scolarité</b></span></p>\n";
+
+	}
+	else {
+		echo "<p class='grand'>Attention : aucune classe n'a été définie dans la base GEPI !<br />Ou alors aucune classe ne vous est associée (<i>demandez alors à un compte administrateur de vous associer des classes dans <b>Gestion des bases/Gestion des classes/Paramétrage scolarité</b></i>)</p>\n";
 	}
 } //else
 echo "<p><br /></p>\n";

@@ -1,8 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: creer_statut_template.php 4953 2010-07-29 14:18:50Z regis $
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * $Id: creer_statut_template.php 6074 2010-12-08 15:43:17Z crob $
+ *
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -99,6 +100,9 @@
 	</p>
 
 	<form id="auth_statuts_perso" action="creer_statut_admin.php" method="post">
+<?php
+echo add_token_field();
+?>
 	  <p>
 		<input type="hidden" name="action" value="valide" />
 		<input type="checkbox" 

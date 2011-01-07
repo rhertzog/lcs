@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: bulletin_simple.inc.php 5786 2010-11-02 13:49:19Z jjacquard $
+* $Id: bulletin_simple.inc.php 5931 2010-11-21 13:11:28Z dblanqui $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
@@ -992,14 +992,14 @@ if ($on_continue == 'yes') {
 		    $eleve = EleveQuery::create()->findOneByLogin($current_eleve_login);
 		    if ($eleve != null) {
 			$current_eleve_absences_query = mysql_query("SELECT * FROM absences WHERE (login='$current_eleve_login' AND periode='$nb')");
-			$eleve_abs[$nb] = $eleve->getDemiJourneesAbsenceParPeriode($nb)->count();
-			$eleve_abs_nj[$nb] = $eleve->getDemiJourneesNonJustifieesAbsenceParPeriode($nb)->count();
-			$eleve_retards[$nb] = $eleve->getRetardsParPeriode($nb)->count();
+			$eleve_abs[$nb] = strval($eleve->getDemiJourneesAbsenceParPeriode($nb)->count());
+			$eleve_abs_nj[$nb] = strval($eleve->getDemiJourneesNonJustifieesAbsenceParPeriode($nb)->count());
+			$eleve_retards[$nb] = strval($eleve->getRetardsParPeriode($nb)->count());
 			$current_eleve_appreciation_absences = @mysql_result($current_eleve_absences_query, 0, "appreciation");
 			$eleve_app_abs[$nb] = @mysql_result($current_eleve_absences_query, 0, "appreciation");
 		    }
 		}
-		if (($eleve_abs[$nb] != '') and ($eleve_abs_nj[$nb] != '')) {
+		if (($eleve_abs[$nb] !== '') and ($eleve_abs_nj[$nb] !== '')) {
 			$eleve_abs_j[$nb] = $eleve_abs[$nb]-$eleve_abs_nj[$nb];
 		} else {
 			$eleve_abs_j[$nb] = "?";

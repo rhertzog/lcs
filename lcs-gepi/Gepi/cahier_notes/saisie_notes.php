@@ -1,8 +1,8 @@
 <?php
 /*
- * @version: $Id: saisie_notes.php 5780 2010-10-31 17:08:27Z crob $
+ * @version: $Id: saisie_notes.php 6154 2010-12-16 17:07:23Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -205,6 +205,7 @@ if ($mode==1) {
 //debug_var();
 //-------------------------------------------------------------------------------------------------------------------
 if (isset($_POST['notes'])) {
+	check_token();
 	//=======================================================
 	// MODIF: boireaus
 	// J'ai déplacé vers le bas l'alert Javascript qui lors d'un import des notes était inscrit avant même la balise <html>
@@ -259,6 +260,8 @@ if (isset($_POST['notes'])) {
 // Ajout delineau -> fonctionnalité de copier/coller d'appréciations
 //-------------------------------------------------------------------------------------------------------------------
 if (isset($_POST['appreciations'])) {
+	check_token();
+
 	$temp = $_POST['appreciations']." 1";
 	// $temp = ereg_replace("\\\\r","`",$temp);
 	$temp = my_ereg_replace("\\\\r","`",$temp);
@@ -291,6 +294,7 @@ if (isset($_POST['appreciations'])) {
 
 
 if (isset($_POST['is_posted'])) {
+	check_token();
 
 	//=========================
 	// AJOUT: boireaus 20071010
@@ -777,7 +781,10 @@ if (($nb_dev == 0) and ($nb_sous_cont==0)) {
 
 // Début du deuxième formulaire
 echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post  name=\"form2\">\n";
-if ($id_devoir != 0) {echo "<center><input type='submit' value='Enregistrer' /></center>\n";}
+if ($id_devoir != 0) {
+	echo add_token_field();
+	echo "<center><input type='submit' value='Enregistrer' /></center>\n";
+}
 
 // Couleurs utilisées
 $couleur_devoirs = '#AAE6AA';
@@ -1309,7 +1316,8 @@ if ($id_devoir==0) {
 		if ($_SESSION['affiche_tous'] == 'yes') {
 			$m = 0;
 			while ($m < $nb_dev_s_cont[$i]) {
-				echo "<td class=cn valign='top'><center><a href=\"saisie_notes.php?id_conteneur=".$id_sous_cont[$i][$m]."&amp;id_devoir=".$id_s_dev[$i][$m]."\" onclick=\"return confirm_abandon (this, change,'$themessage')\">saisir</a></center></td>\n";
+				//echo "<td class=cn valign='top'><center><a href=\"saisie_notes.php?id_conteneur=".$id_sous_cont[$i][$m]."&amp;id_devoir=".$id_s_dev[$i][$m]."\" onclick=\"return confirm_abandon (this, change,'$themessage')\">saisir</a></center></td>\n";
+				echo "<td class=cn valign='top'><center><a href=\"saisie_notes.php?id_conteneur=".$id_sous_cont[$i]."&amp;id_devoir=".$id_s_dev[$i][$m]."\" onclick=\"return confirm_abandon (this, change,'$themessage')\">saisir</a></center></td>\n";
 				$m++;
 			}
 		}
@@ -1383,7 +1391,8 @@ if ($id_devoir==0) {
 				echo "<td class='cn' valign='top'>";
 				if(getSettingValue("note_autre_que_sur_referentiel")=="V" || $note_sur_s_dev[$i][$m]!=getSettingValue("referentiel_note")) {
 					$data_pdf[0][] = "/".$note_sur_s_dev[$i][$m]." (".number_format($coef_s_dev[$i][$m],1, ',', ' ').")";
-					if ($ramener_sur_referentiel[$i] != 'V') {
+					//if ($ramener_sur_referentiel[$i] != 'V') {
+					if ($ramener_sur_referentiel_s_dev[$i][$m] != 'V') {
 						echo "<font size=-2>Note sur ".$note_sur_s_dev[$i][$m]."<br />";
 					} else {
 						$tabdiv_infobulle[]=creer_div_infobulle("ramenersurReferentiel_s_dev_".$i."_".$m,"Ramener sur referentiel","","La note est ramenée sur ".getSettingValue("referentiel_note")." pour le calcul de la moyenne","",15,0,'y','y','n','n');
@@ -1933,6 +1942,7 @@ if((!isset($id_devoir))||($id_devoir=='')||($id_devoir=='0')) {
 if ($id_devoir) {
 	echo "<fieldset style=\"padding-top: 8px; padding-bottom: 8px;  margin-left: 8px; margin-right: 100px;\">\n";
 	echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post>\n";
+	echo add_token_field();
 	echo "<h3 class='gepi'>Importation directe des notes par copier/coller à partir d'un tableur</h3>\n";
 	echo "<table summary=\"Tableau d'import\"><tr>\n";
 	echo "<td>De la ligne : ";
@@ -2002,6 +2012,7 @@ if ($id_devoir) {
 if ($id_devoir) {
 	echo "<fieldset style=\"padding-top: 8px; padding-bottom: 8px;  margin-left: 8px; margin-right: 100px;\">\n";
 	echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post>\n";
+	echo add_token_field();
 	echo "<h3 class='gepi'>Importation directe des appréciations par copier/coller à partir d'un tableur</h3>\n";
 	echo "<table summary=\"Tableau d'import\"><tr>\n";
 	echo "<td>De la ligne : ";

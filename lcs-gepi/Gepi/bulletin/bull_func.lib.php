@@ -1,6 +1,6 @@
 <?php
 
-/* $Id: bull_func.lib.php 5416 2010-09-24 17:02:53Z crob $ */
+/* $Id: bull_func.lib.php 6092 2010-12-11 13:33:47Z crob $ */
 
 include("../cahier_notes/visu_releve_notes_func.lib.php");
 
@@ -1127,12 +1127,12 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 				// Le deuxième responsable existe et est renseigné
 				if (($tab_bull['eleve'][$i]['resp'][0]['adr_id']==$tab_bull['eleve'][$i]['resp'][1]['adr_id']) OR
 					(
-						($tab_bull['eleve'][$i]['resp'][0]['adr1']==$tab_bull['eleve'][$i]['resp'][1]['adr1'])&&
-						($tab_bull['eleve'][$i]['resp'][0]['adr2']==$tab_bull['eleve'][$i]['resp'][1]['adr2'])&&
-						($tab_bull['eleve'][$i]['resp'][0]['adr3']==$tab_bull['eleve'][$i]['resp'][1]['adr3'])&&
-						($tab_bull['eleve'][$i]['resp'][0]['adr4']==$tab_bull['eleve'][$i]['resp'][1]['adr4'])&&
+						(strtolower($tab_bull['eleve'][$i]['resp'][0]['adr1'])==strtolower($tab_bull['eleve'][$i]['resp'][1]['adr1']))&&
+						(strtolower($tab_bull['eleve'][$i]['resp'][0]['adr2'])==strtolower($tab_bull['eleve'][$i]['resp'][1]['adr2']))&&
+						(strtolower($tab_bull['eleve'][$i]['resp'][0]['adr3'])==strtolower($tab_bull['eleve'][$i]['resp'][1]['adr3']))&&
+						(strtolower($tab_bull['eleve'][$i]['resp'][0]['adr4'])==strtolower($tab_bull['eleve'][$i]['resp'][1]['adr4']))&&
 						($tab_bull['eleve'][$i]['resp'][0]['cp']==$tab_bull['eleve'][$i]['resp'][1]['cp'])&&
-						($tab_bull['eleve'][$i]['resp'][0]['commune']==$tab_bull['eleve'][$i]['resp'][1]['commune'])
+						(strtolower($tab_bull['eleve'][$i]['resp'][0]['commune'])==strtolower($tab_bull['eleve'][$i]['resp'][1]['commune']))
 					)
 				) {
 					// Les adresses sont identiques
@@ -1671,7 +1671,20 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 
 			$texte_1_responsable = '';
 			if ( $tab_modele_pdf["cadre_adresse"][$classe_id] != 0 ) {
-				$pdf->Rect($tab_modele_pdf["X_parent"][$classe_id], $tab_modele_pdf["Y_parent"][$classe_id], $longeur_cadre_adresse, $hauteur_cadre_adresse, 'D');
+				if($hauteur_cadre_adresse=='1') {
+					// Patch tout pourri... pour faire un encadrement à peu près correct, même si la hauteur du cadre adresse parent n'a pas été saisie dans le modèle
+					$h_tmp=$pdf->GetY()-$tab_modele_pdf["Y_parent"][$classe_id]-2;
+
+					$pdf->Rect($tab_modele_pdf["X_parent"][$classe_id], $tab_modele_pdf["Y_parent"][$classe_id], $longeur_cadre_adresse, $h_tmp, 'D');
+				}
+				else {
+					$pdf->Rect($tab_modele_pdf["X_parent"][$classe_id], $tab_modele_pdf["Y_parent"][$classe_id], $longeur_cadre_adresse, $hauteur_cadre_adresse, 'D');
+				}
+
+				// Remarque: L'encadrement réalisé ne tient pas compte du texte saisi.
+				//           Si on met des valeurs trop réduites, ça ne diminue pas la taille du texte de l'adresse
+				//           On ne fait ici que mettre une déco qui ne va pas nécessairement coïncider
+				//           A REVOIR...
 			}
 		}
 

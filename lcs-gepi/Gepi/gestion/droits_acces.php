@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: droits_acces.php 5197 2010-09-05 10:42:38Z regis $
+* $Id: droits_acces.php 6074 2010-12-08 15:43:17Z crob $
 *
-* Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -82,6 +82,10 @@ if (isset($_POST['OK'])) {
   $droitAffiche= new class_droit_acces_template();
 }
 //debug_var();
+
+if(isset($_POST['is_posted'])) {
+	check_token(false);
+}
 
 /*
 

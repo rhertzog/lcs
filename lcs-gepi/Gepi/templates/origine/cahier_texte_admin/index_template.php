@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: index_template.php 5616 2010-10-09 09:53:36Z crob $
+* $Id: index_template.php 6074 2010-12-08 15:43:17Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -94,6 +94,9 @@
 
 
 	<form action="index.php" id="form1" method="post">
+<?php
+echo add_token_field();
+?>
 	  <p class="center">
 		<input type="submit" value="Enregistrer" />
 	  </p>
@@ -301,25 +304,25 @@
 	  <h2>Cahiers de texte en commun</h2>
 	  <fieldset class="no_bordure">
 		<legend class="invisible">Cahiers de texte en commun</legend>
-			<p>Dans le CDT2, par défaut, un professeur ne peut pas modifier une notice/devoir réalisé par un collègue, même si il s'agit d'une enseignement partagé (<i>plusieurs professeurs devant un même groupe d'élèves</i>).<br />
+			<p>Dans le CDT2, par défaut, un professeur ne peut pas modifier une notice/devoir réalisé par un collègue, même si il s'agit d'un enseignement partagé (<i>plusieurs professeurs devant un même groupe d'élèves</i>).<br />
 			Pour modifier ce paramétrage&nbsp;:</p>
 		  <input type='radio'
-				 name='cdt_autoriser_modif_binome'
-				 id='cdt_autoriser_modif_binome_y'
+				 name='cdt_autoriser_modif_multiprof'
+				 id='cdt_autoriser_modif_multiprof_y'
 				 value='yes'
 			 onchange='changement();'
-			   <?php if (getSettingValue("cdt_autoriser_modif_binome") == "yes") {echo " checked='checked'";}?> />
-		<label for='cdt_autoriser_modif_binome_y' style='cursor: pointer;'>
+			   <?php if (getSettingValue("cdt_autoriser_modif_multiprof") == "yes") {echo " checked='checked'";}?> />
+		<label for='cdt_autoriser_modif_multiprof_y' style='cursor: pointer;'>
 		  Autoriser les collègues travaillant en binome sur une enseignement à modifier les notices/devoirs créés par leur collègue.
 		</label>
 	  <br />
 		  <input type='radio'
-				 name='cdt_autoriser_modif_binome'
-				 id='cdt_autoriser_modif_binome_n'
+				 name='cdt_autoriser_modif_multiprof'
+				 id='cdt_autoriser_modif_multiprof_n'
 				 value='no'
 			 onchange='changement();'
-			   <?php if ((getSettingValue("cdt_autoriser_modif_binome") == "no")||(getSettingValue("cdt_autoriser_modif_binome") == "")) {echo " checked='checked'";}?> />
-		<label for='cdt_autoriser_modif_binome_n' style='cursor: pointer;'>
+			   <?php if ((getSettingValue("cdt_autoriser_modif_multiprof") == "no")||(getSettingValue("cdt_autoriser_modif_multiprof") == "")) {echo " checked='checked'";}?> />
+		<label for='cdt_autoriser_modif_multiprof_n' style='cursor: pointer;'>
 		  Interdire la modification de notice/devoir créés par leur collègue.
 		</label>
 	  </fieldset>

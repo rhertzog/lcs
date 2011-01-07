@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: generer_csv.php 4661 2010-06-28 22:34:03Z regis $
+* $Id: generer_csv.php 6074 2010-12-08 15:43:17Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -41,6 +41,7 @@ if (!checkAccess()) {
 	die();
 }
 
+check_token();
 
 $nom_fic = "notanet_".date('Y.m.d_H.i.s_').my_ereg_replace(" ","_",microtime()).".csv";
 

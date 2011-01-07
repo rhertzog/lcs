@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: affiche_eleve.php 4878 2010-07-24 13:54:01Z regis $
+* $Id: affiche_eleve.php 6025 2010-11-28 20:15:08Z regis $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -101,7 +101,7 @@ if(!isset($msg)){
 }
 
 // On permet au compte scolarité d'enregistrer les paramètres d'affichage du graphe
-if($_SESSION['statut']=='scolarite'){
+if($_SESSION['statut']=='scolarite') {
 /*
 affiche_photo
 largeur_imposee_photo
@@ -116,8 +116,9 @@ temoin_image_escalier
 tronquer_nom_court
 */
 
-	if(isset($_POST['save_params'])){
-		if($_POST['save_params']=="y"){
+	if(isset($_POST['save_params'])) {
+		if($_POST['save_params']=="y") {
+			check_token();
 
 			function save_params_graphe($nom,$valeur){
 				global $msg;
@@ -175,6 +176,8 @@ if(
 		(($_SESSION['statut']=='scolarite')&&(getSettingValue('GepiRubConseilScol')=="yes"))
 	)&&(isset($_POST['enregistrer_avis']))&&($_POST['enregistrer_avis']=="y")
 ) {
+	check_token();
+
 	$eleve_saisie_avis = isset($_POST['eleve_saisie_avis']) ? $_POST['eleve_saisie_avis'] : NULL;
 	// Contrôler les caractères utilisés...
 
@@ -1087,6 +1090,7 @@ if (!isset($id_classe) and $_SESSION['statut'] != "responsable" AND $_SESSION['s
 
 			echo "<form action='".$_SERVER['PHP_SELF']."#graph' name='form_parametrage_affichage' method='post'>\n";
 			echo "<p align='center'><input type='submit' name='Valider' value='Valider' /></p>\n";
+			echo add_token_field();
 
 			echo "<input type='hidden' name='id_classe' value='$id_classe' />\n";
 			echo "<input type='hidden' name='is_posted' value='y' />\n";
@@ -1315,6 +1319,7 @@ if (!isset($id_classe) and $_SESSION['statut'] != "responsable" AND $_SESSION['s
 	echo "<td class='noprint' align='center'>\n";
 	//echo "<form action='$_PHP_SELF#graph' name='form_choix_eleves' method='post'>\n";
 	echo "<form action='".$_SERVER['PHP_SELF']."#graph' name='form_choix_eleves' method='post'>\n";
+	echo add_token_field();
 	//echo "<form action='$_PHP_SELF' name='form_choix_eleves' method='POST'>\n";
 	echo "<input type='hidden' name='id_classe' value='$id_classe' />\n";
 
@@ -1830,6 +1835,7 @@ function eleve_suivant(){
 	
 							//$texte="<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."#graph' method='post'>\n";
 							$texte="<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."#graph' method='post'>\n";
+							$texte.=add_token_field();
 							$texte.="<div style='text-align:center;'>\n";
 							$texte.="<textarea name='no_anti_inject_current_eleve_login_ap2' id='no_anti_inject_current_eleve_login_ap2' rows='5' cols='60' wrap='virtual' onchange=\"changement()\">";
 							//$texte.="\n";
@@ -1858,6 +1864,7 @@ function eleve_suivant(){
 							$texte_saisie_avis_fixe="<div style='border:1px solid black;'>\n";
 							$texte_saisie_avis_fixe.="<p class='bold' style='text-align:center;'>Saisie de l'avis du conseil</p>\n";
 							$texte_saisie_avis_fixe.="<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."#graph' method='post'>\n";
+							$texte_saisie_avis_fixe.=add_token_field();
 							$texte_saisie_avis_fixe.="<div style='text-align:center;'>\n";
 							$texte_saisie_avis_fixe.="<textarea name='no_anti_inject_current_eleve_login_ap2' id='no_anti_inject_current_eleve_login_ap2' rows='5' cols='60' wrap='virtual' onchange=\"changement()\">";
 							//$texte_saisie_avis_fixe.="\n";
@@ -1941,6 +1948,7 @@ function eleve_suivant(){
 	
 							//$texte="<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."#graph' method='post'>\n";
 							$texte="<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."#graph' method='post'>\n";
+							$texte.=add_token_field();
 							$texte.="<div style='text-align:center;'>\n";
 							$texte.="<textarea name='no_anti_inject_current_eleve_login_ap2' id='no_anti_inject_current_eleve_login_ap2' rows='5' cols='60' wrap='virtual' onchange=\"changement()\">";
 							//$texte.="\n";
@@ -1969,6 +1977,7 @@ function eleve_suivant(){
 							$texte_saisie_avis_fixe="<div style='border:1px solid black;'>\n";
 							$texte_saisie_avis_fixe.="<p class='bold' style='text-align:center;'>Saisie de l'avis du conseil: $lig_per->nom_periode</p>\n";
 							$texte_saisie_avis_fixe.="<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."#graph' method='post'>\n";
+							$texte_saisie_avis_fixe.=add_token_field();
 							$texte_saisie_avis_fixe.="<div style='text-align:center;'>\n";
 							$texte_saisie_avis_fixe.="<textarea name='no_anti_inject_current_eleve_login_ap2' id='no_anti_inject_current_eleve_login_ap2' rows='5' cols='60' wrap='virtual' onchange=\"changement()\">";
 							//$texte_saisie_avis_fixe.="\n";
@@ -2657,8 +2666,10 @@ function eleve_suivant(){
 						echo "&amp;compteur=$compteur";
 						echo "&amp;nb_series=$nb_series";
 						echo "&amp;id_classe=$id_classe";
-						echo "&amp;mgen1=$mgen[1]";
-						echo "&amp;mgen2=$mgen[2]";
+						if($affiche_mgen=='oui') {
+							echo "&amp;mgen1=$mgen[1]";
+							echo "&amp;mgen2=$mgen[2]";
+						}
 						//echo "&amp;periode=$periode";
 						echo "&amp;periode=".rawurlencode($periode);
 						echo "&amp;largeur_graphe=$largeur_graphe";
@@ -2759,8 +2770,10 @@ function eleve_suivant(){
 						echo "&amp;compteur=$compteur";
 						echo "&amp;nb_series=$nb_series";
 						echo "&amp;id_classe=$id_classe";
-						echo "&amp;mgen1=$mgen[1]";
-						echo "&amp;mgen2=$mgen[2]";
+						if($affiche_mgen=='oui') {
+							echo "&amp;mgen1=$mgen[1]";
+							echo "&amp;mgen2=$mgen[2]";
+						}
 						//echo "&amp;periode=$periode";
 						echo "&amp;periode=".rawurlencode($periode);
 						echo "&amp;largeur_graphe=$largeur_graphe";
@@ -2810,8 +2823,10 @@ function eleve_suivant(){
 					echo "&amp;compteur=$compteur";
 					echo "&amp;nb_series=$nb_series";
 					echo "&amp;id_classe=$id_classe";
-					echo "&amp;mgen1=$mgen[1]";
-					echo "&amp;mgen2=$mgen[2]";
+					if($affiche_mgen=='oui') {
+						echo "&amp;mgen1=$mgen[1]";
+						echo "&amp;mgen2=$mgen[2]";
+					}
 					//echo "&amp;periode=$periode";
 					echo "&amp;periode=".rawurlencode($periode);
 					echo "&amp;largeur_graphe=$largeur_graphe";
@@ -3750,7 +3765,7 @@ function div_cmnt_type() {
 
 				$retour_lignes_cmnt_type.="<input type='hidden' name='commentaire_type_$cpt' id='commentaire_type_$cpt' value=\" ".htmlentities(stripslashes(trim($ligne_commentaire->commentaire)))."\" />\n";
 
-				if(!eregi("firefox",$_SERVER['HTTP_USER_AGENT'])){
+				if(!my_eregi("firefox",$_SERVER['HTTP_USER_AGENT'])){
 					// Avec konqueror, pour document.getElementById('textarea_courant').value, on obtient [Object INPUT]
 					// En sortant, la commande du onClick et en la mettant dans une fonction javascript externe, ca passe.
 					//$retour_lignes_cmnt_type.="<a href='#' onClick=\"complete_textarea_courant($cpt); return false;\" style='text-decoration:none; color:black;'>";
@@ -3770,7 +3785,7 @@ function div_cmnt_type() {
 					$retour_lignes_cmnt_type.=htmlentities(stripslashes(nl2br(trim($ligne_commentaire->commentaire))));
 				}
 
-				if(!eregi("firefox",$_SERVER['HTTP_USER_AGENT'])){
+				if(!my_eregi("firefox",$_SERVER['HTTP_USER_AGENT'])){
 					$retour_lignes_cmnt_type.="</a>";
 				}
 

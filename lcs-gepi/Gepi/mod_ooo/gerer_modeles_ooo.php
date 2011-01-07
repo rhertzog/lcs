@@ -2,7 +2,7 @@
 /*
  * $Id: index.php 2554 2008-10-12 14:49:29Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -70,6 +70,10 @@ include_once('./lib/chemin.inc.php'); // le chemin des dossiers contenant les  m
     $fich[]="absence_extraction_saisies.ods";
     $utilisation[]="ABS2 : Tableau des saisies d'absences";
 	
+	$entete_section[]="";
+    $fich[]="absence_extraction_traitements.ods";
+    $utilisation[]="ABS2 : Tableau des traitements d'absences";
+
 	$entete_section[]="";
     $fich[]="absence_modele_lettre_parents.odt";
     $utilisation[]="ABS2 : Modèle de lettre aux parents";
@@ -155,8 +159,9 @@ if (isset($_POST['btn'])) { $btn=$_POST["btn"]; }
 if (isset($_POST['fich_cible'])) { $fich_cible=$_POST["fich_cible"]; }
 
 if ((isset($op)) && ($op=="supp")) { //Supprimer un fichier perso
-     // alert("EFFACER $fic");
-	  @unlink("$nom_dossier_modeles_ooo_mes_modeles$rne$fic");
+	check_token();
+	// alert("EFFACER $fic");
+	@unlink("$nom_dossier_modeles_ooo_mes_modeles$rne$fic");
 }
 
 echo "<body>";
@@ -190,6 +195,7 @@ if (!isset($btn)) { //premier passage : formulaire
 		  echo "</tr>";
 	  }
 	  echo "<tr class='lig$alt'><form name=\"form$i\" method='post' ENCTYPE='multipart/form-data' action='$PHP_SELF' onsubmit=\"return bonfich('$i')\" >\n";
+	echo add_token_field();
 	  echo "<input type=\"hidden\" name=fich_cible value=$fich[$i] >\n";
 		 $type_ext = renvoi_nom_image(extension_nom_fichier($fich[$i]));
 		 echo "<td align='center'><a href=\"$nom_dossier_modeles_ooo_par_defaut$fich[$i]\"><img src=\"./images/$type_ext\" border=\"0\" title=\"Consulter le modèle par défaut\"></a>\n";
@@ -214,6 +220,8 @@ if (!isset($btn)) { //premier passage : formulaire
 
 }
 else { // passage 2 : le nom du fichier a été choisi
+	check_token();
+
     //print_r($_FILES['monfichier']);
 	echo "<h2>fichier envoyé : ".$_FILES['monfichier']['name']." </h2>";
     $desterreur=$PHP_SELF;
@@ -269,6 +277,7 @@ else { // passage 2 : le nom du fichier a été choisi
             echo "<p align='center'>";
             unset($monfichiername);
             echo "<form name='retour' method='POST' action='$PHP_SELF'>\n";
+			echo add_token_field();
             echo "<input type='submit' name='ret' Align='middle' value='Retour'";
             echo "</form>";
 

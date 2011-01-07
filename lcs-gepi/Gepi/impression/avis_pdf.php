@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: avis_pdf.php 3790 2009-11-24 17:24:21Z crob $
+ * $Id: avis_pdf.php 6032 2010-12-01 20:02:57Z dblanqui $
  *
  * Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -28,6 +28,7 @@
 //Le problème peut être résolu en ajoutant la ligne suivante :
 Header('Pragma: public');
 
+header('Content-Type: application/pdf');
 //=============================
 // REMONTé:
 // Initialisations files

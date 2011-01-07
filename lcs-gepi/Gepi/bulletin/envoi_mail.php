@@ -1,6 +1,6 @@
 <?php
 
-/* @version $Id: envoi_mail.php 4555 2010-06-05 07:02:33Z crob $ */
+/* @version $Id: envoi_mail.php 6074 2010-12-08 15:43:17Z crob $ */
 
 // ============== Initialisation ===================
 $affiche_connexion = 'yes';
@@ -26,6 +26,7 @@ if (!checkAccess()) {
     die();
 }
 
+check_token();
 
 // Initialisation des variables
 $destinataire=isset($_GET["destinataire"]) ? $_GET["destinataire"] : NULL;

@@ -4,7 +4,7 @@
  * ajax_appreciations.php
  * Fichier qui permet la sauvegarde automatique des appréciations au fur et à mesure de leur saisie
  *
- * @version $Id: ajax_appreciations.php 4105 2010-02-27 13:48:09Z crob $
+ * @version $Id: ajax_appreciations.php 6074 2010-12-08 15:43:17Z crob $
  * @copyright 2007
  */
 
@@ -31,6 +31,8 @@ if (!checkAccess()) {
     header("Location: ../logout.php?auto=2");
     die();
 }
+
+check_token();
 
 // Initialisation des variables
 $var1 = isset($_POST["var1"]) ? $_POST["var1"] : (isset($_GET["var1"]) ? $_GET["var1"] : NULL);
