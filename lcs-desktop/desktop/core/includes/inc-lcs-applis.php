@@ -61,8 +61,8 @@ if (isset($ftpclient)) {
 	$liste['Images'][] = "../lcs/images/bt-V1-2.jpg";
 	$liste['Liens'][] = "../filexplorer/";
 	$liste['Titres'][] = "Explorater de fichiers";
-	$liste['Blocks'][] = "#icon_dock_lcs_ftpclient";
-	$liste['Ids'][] = "ftpclient";
+	$liste['Blocks'][] = "#icon_dock_lcs_filexplorer";
+	$liste['Ids'][] = "filexplorer";
 }
 // phpmyadmin
 if (isset($pma)) {
@@ -179,7 +179,7 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 	
 	// Split the menu applications into two parts: services and applications
 	// See if it is necessary and so, how to make choices ?	
-	$services=array("ftpclient", "pma", "smbwc", "annu", "maintinfo");
+	$services=array("filexplorer", "pma", "smbwc", "annu", "maintinfo");
     if(!in_array($liste['Ids'][$x], $services)){
 	    $html_menu .= "<li>\n".$sbmn."</li>\n";
     }else{
