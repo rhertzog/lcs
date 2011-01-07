@@ -1,0 +1,426 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>LCS DESKTOP</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<script src="../../../libjs/jquery/jquery.js"></script>
+<script src="../../../desktop/core/finder/jquery.scrollTo-1.4.0-min.js"></script>
+<script src="../../../desktop/core/js/jquery.localscroll-1.2.7-min.js"></script>
+  <style type="text/css" media="all">@import "../../c/c.css";</style>
+  <style>
+  h2,h3,h4{
+  	font-weight:bold;
+  }
+  h2{
+  	font-size:1.5em;
+  }
+  h3{
+  	font-size:1.3em;
+  }
+  h4{
+  	font-size:1.1em;
+  	font-style:italic;
+  }
+  table thead td{
+  	color:#123456;
+  	text-align:center;
+  	font-weight:bold;
+  }
+  table tr:odd{
+  	background-color:#eeeeee;
+  }
+  table td{
+  	border:1px solid #aaa;
+  	width:25%;
+  	padding:5px;
+  	font-size:.9em;
+  }
+  table tbody td{
+  	text-align:left;
+  }
+  .green{
+  	color:#38761d;
+  }
+  .red{
+  	color:#ff0000;
+  }
+  .orange{
+  	color:#ff9900
+  }
+  </style>
+</head>
+<body>
+<!--<h2 style="text-align:center">Documentation <span class="acronym">LCS Desktop</span></h2>-->
+<h1>Lcs-Bureau v-1.0 Documentation g&eacute;n&eacute;rale</h1>
+<span class="version">Version : Paquet lcs-desktop 1.0</span>
+
+<!--<h4>LCS Desktop</h4>-->
+<h2>Sommaire</span></h2>
+<ul>
+	<li><a href="#" name="id.er2kki-ru3rm"></a><a href="#id.yug8c6-paezwv">Pr&eacute;sentation</a>
+		<ul>
+			<li><a href="#" name="id.zbs7zm-vks368"></a><a href="#id.dp15vz-3tz6l9">Barre de menus</a></li>
+			<li><a href="#" name="id.9bm8y-6zim95"></a><a href="#id.uijk3n-ke8mz5">Partie droite</a></li>
+			<li><a href="#" name="id.ag02j6-6xmtox"></a><a href="#id.g7z8n5-xwn9mz">Partie gauche</a>
+				<ul>
+					<li><a href="#" name="id.1fwejw-va9ybf"></a><a href="#id.17nod5-dm80lh">Lcs-Bureau</a></li>
+					<li><a href="#" name="id.q8mzg6-cmda0r"></a><a href="#id.h72ahr-3pvatb">Services</a></li>
+					<li><a href="#" name="id.m8lsm3-lrz245"></a><a href="#id.qzag19-k27z64">Applications</a></li>
+					<li><a href="#" name="id.ny5pzh-pqd9q9"></a><a href="#id.w32092-ai5ppk">Aide</a></li>
+				</ul>
+			</li>
+			<li><a href="#" name="id.baen5u-vf0txn"></a><a href="#id.4kbnng-hlav5n">Barre d&rsquo;&eacute;tat</a></li>
+			<li><a href="#" name="id.a1ta44-ba8vxa"></a><a href="#id.oi0xcz-ls54nv">Bureau</a>
+				<ul>
+					<li><a href="#" name="id.fjj8t6-nzdr7w"></a><a href="#id.bkor6e-osr8gp">Ic&ocirc;nes</a></li>
+					<li><a href="#" name="id.szi7o3-xpgmzj"></a><a href="#id.xtx716-qgbttc">Gestion des fen&ecirc;tres</a></li>
+					<li><a href="#" name="id.8bjxav-zbhofx"></a><a href="#id.y6f4gr-z0yr5b">Panneau d&rsquo;informations utilisateur</a></li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	<li><a href="#" name="id.j630by-aai75t"></a><a href="#id.czol8l-vqefxm">Personnalisation</a>
+		<ul>
+			<li><a href="#" name="id.162d03-tbxzrm"></a><a href="#id.48h92d-csgdum">Fond d&rsquo;&eacute;cran (wallpaper)</a>
+				<ul>
+					<li><a href="#" name="id.el9qt4-6xxm3j"></a><a href="#h.p8kb06-7t58fi">Image</a></li>
+					<li><a href="#" name="id.2gpqda-saywws"></a><a href="#id.dc5sf5-ckersl">Position de l&rsquo;image</a></li>
+					<li><a href="#" name="id.7376r4-azpt9a"></a><a href="#id.s5pj2w-yxnv8v">Couleur d&rsquo;arri&egrave;re-plan</a></li>
+				</ul>
+			</li>
+			<li><a href="#" name="id.rp9hws-mzp7me"></a><a href="#id.tlc6tc-kne25d">Ic&ocirc;nes</a></li>
+			<li><a href="#" name="id.kx7hcp-e84ew7"></a><a href="#id.7p8vtk-o18515">Dock d&rsquo;ic&ocirc;nes</a></li>
+			<li><a href="#" name="id.somNotifs"></a><a href="#id.Notifications">Notifications</a></li>
+		</ul>
+	</li>
+	<li><a href="#" name="id.fkp206-52u0i9"></a><a href="#id.hy8apr-poy6a7">Documentation technique</a>
+		<ul>
+			<li><a href="#" name="id.npovbu-8c8a4t"></a><a href="#id.pzbv6d-qeccmn">Liste de navigateurs supports</a></li>
+			<li><a href="#" name="id.apr0z-ky0fwn"></a><a href="#id.psg4ec-t9rosc">Interaction Plugins &rarr; Lcs-Bureau</a></li>
+		</ul>
+	</li>
+</ul>
+
+<a href="#" name="id.yug8c6-paezwv"></a>
+<h2>Pr&eacute;sentation</h2>
+<p>
+	Lcs-Bureau est une interface graphique du LCS. Il peut &ecirc;tre compar&eacute; au bureau du syst&egrave;me d&rsquo;exploitation de votre ordinateur, window, Ubuntu, MacOs, etc.... Comme lui, Lcs-Bureau vous permet d&rsquo;acc&eacute;der facilement aux applications install&eacute;es, de personnaliser votre bureau, d&rsquo;acc&eacute;der &agrave; vos espaces personnels, etc.
+</p>
+<p>
+	Lcs-Bureau est support&eacute; par les navigateurs Firefox 3.x, Internet &nbsp;Explorer (IE8), Safari v-5.x, Google Chrome v-6.x. Voir la <a href="#id.pzbv6d-qeccmn">liste des navigateurs supports</a>.
+</p>
+<p>
+	Le bureau lcs est compos&eacute; de trois blocs ou parties :
+	<ul>
+		<li>une partie &ldquo;<strong>commandes</strong>&rdquo; ou menus, bans une barre horizontale situ&eacute;e en haut de page (<span style="font-style:italic;">barre de menus</span>)</li>
+		<li>une partie &ldquo;<strong>zone de travail</strong>&rdquo; au centre. Elle occupe la plus grande partie du bureau. <span style="font-style:italic;">(bureau)</span></li>
+		<li>une partie &ldquo;<strong>&eacute;tat</strong>&rdquo; situ&eacute;e dans la barre horizontale du bas de page. (<span style="font-style:italic;">barre d&rsquo;&eacute;tat</span>)</li>
+	</ul>
+	Nous d&eacute;signerons ces trois parties respectivement <strong><a href="#id.dp15vz-3tz6l9">barre de menus</a></strong>, <strong><a href="#id.oi0xcz-ls54nv">bureau</a></strong> et <strong><a href="#id.4kbnng-hlav5n">barre d&rsquo;&eacute;tat</a></strong>.
+</p>
+<p style="margin-right:2.25pt;text-align:center;">
+	<img height="473.0" src="images/image16.png" width="754.0">
+</p>
+<p style="text-align:right"><small><a href="#id.er2kki-ru3rm">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.dp15vz-3tz6l9"></a>
+<h3>Barre de menus</h3>
+<p>Situ&eacute;e en haut du bureau, elle se divise en deux parties, <a href="#id.g7z8n5-xwn9mz">gauche</a> et <a href="#id.uijk3n-ke8mz5">droite</a></p>
+<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr"><img height="26.0" src="images/image11.png" width="754.0"></p>
+<p style="text-align:right"><small><a href="#id.zbs7zm-vks368">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.uijk3n-ke8mz5"></a>
+ <h4>Partie droite</h4>
+<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr"><img height="29.0" src="images/image6.png" width="408.0"></p>
+<p>La partie droite permet d&rsquo;acc&eacute;der aux fonctions suivantes
+	<ul>
+		<li><img height="16.0" src="images/image19.png" width="35.0"> Se d&eacute;connecter</span></li>
+		<li><img height="18.0" src="images/image0.png" width="100.0"> Date et Jour : Au double-clic, &nbsp;ouvre l&rsquo;application &ldquo;Agenda&rdquo; dans une fen&ecirc;tre du bureau.</li>
+		<li><img height="16.0" src="images/image10.png" width="16.0"> Recharger le bureau : Recharge la page. </li>
+		<li><img height="17.0" src="images/image1.png" width="109.0"> Voir ma fiche : Ouvre un panneau comprenant plusieurs liens propres &agrave; l&rsquo;utilisateur connect&eacute; (<a href="#id.y6f4gr-z0yr5b">voir d&eacute;tail plus bas</a>)</li>
+		<li><img height="16.0" src="images/image17.png" width="16.0"> Demande de maintenance informatique : Ouvre le formulaire de demande d&rsquo;intervention de l&rsquo;application &ldquo;Maintenance Info&rdquo; dans une fen&ecirc;tre du bureau.</li>
+		<li><img height="17.0" src="images/image5.png" width="17.0"> Rechercher un utilisateur, un groupe... : &nbsp; Ouvre le formulaire de recherche de l&rsquo;annuaire dans une fen&ecirc;tre du bureau.</li>
+		<li><img height="16.0" src="images/image2.png" width="18.0"> Envoyer un message : Ouvre le formulaire d&rsquo;envoi de courriel de l&rsquo;application &ldquo;Webmail&rdquo; dans une fen&ecirc;tre du bureau, vous permettant d&rsquo;envoyer un message &agrave; un correspondant.</li>
+		<li><img height="20.0" src="images/image9.png" width="23.0">Espace bureaux : Exp&eacute;rimental - Permet d&rsquo;ouvrir un deuxi&egrave;me bureau. Permet &eacute;galement l&rsquo;acc&egrave;s &agrave; MonLcs si celui-ci est activ&eacute;.</li>
+	</ul>
+</p>
+<p style="text-align:right"><small><a href="#id.9bm8y-6zim95">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.g7z8n5-xwn9mz"></a><h3>Partie gauche</h3>
+<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr">
+	<img height="145.0" src="images/image20.png" width="605.0">
+</p>
+<p>
+	La partie gauche contient le menu d&eacute;roulant pr&eacute;sentant quatre sous-menus. Le menu s&rsquo;active sur un clic et fonctionne ensuite au survol de la souris (<span style="font-style:italic;">menus MacOs</span>).
+</p>
+<p style="text-align:right"><small><a href="#id.ag02j6-6xmtox">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.17nod5-dm80lh"></a>
+<a name="h.bipbxz-fh5l87"></a>
+<h4>Lcs-Bureau :</h4>
+<p>Ouvre sur les liens de d&eacute;connexion et de personnalisation du bureau (Pr&eacute;f&eacute;rences)</p>
+<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr"><img height="92.0" src="images/image14.png" width="272.0"></p>
+<p>Le lien &ldquo;Pr&eacute;f&eacute;rences&rdquo; ouvre une fen&ecirc;tre permettant de personnaliser votre bureau (Voir <a href="#id.czol8l-vqefxm">Personnalisation</a>)</p>
+<p style="text-align:right"><small><a href="#id.1fwejw-va9ybf">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.h72ahr-3pvatb"></a>
+<a name="h.yjn0t-vtun01"></a><h4>Services : </h4>
+<p>Propose les services de base du LCS soit :
+	<ul style="list-style-type:disc">
+	<li>L&rsquo;annuaire : ouvre un sous-menu pr&eacute;sentant les liens pointant vers les diff&eacute;rentes fonctions de l&rsquo;annuaire (en fonction de l&rsquo;utilisateur).</li>
+	<li>Le gestionnaire de base de donn&eacute;es </li>
+	<li>La maintenance informatique : &nbsp;Ouvre un sous-menu pr&eacute;sentant les liens pointant vers les diff&eacute;rentes fonctions de l&rsquo;application &ldquo;Maintenance&rdquo;.</li>
+	<li>Le client Ftp : Vous permet d&rsquo;acc&eacute;der &agrave; vos espaces personnels du LCS.</li>
+	</ul>
+	</p>
+<p style="text-align:right"><small><a href="#id.q8mzg6-cmda0r">[ Retour au sommaire ]</a></small></p>
+	
+<a href="#" name="id.qzag19-k27z64"></a><a name="h.ojnzai-56p6ex"></a>
+<h4>Applications : </h4>
+<p>Propose les liens permettant d&rsquo;acc&eacute;der aux applications du lcs (modules et plugins). Les liens pr&eacute;sent&eacute;s sont fonction de l&rsquo;activation ou non des modules et plugins concern&eacute;s. Pour certaines applications, un sous-menu est propos&eacute;, permettant l&rsquo;acc&egrave;s &agrave; des pages pr&eacute;cises de l&rsquo;application.</p>
+<p style="text-align:right"><small><a href="#id.m8lsm3-lrz245">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.w32092-ai5ppk"></a>
+<a name="h.5lidrp-euqfae"></a><h4>Aide : </h4>
+<p>Propose les liens vers la documentation LCS et la page d&rsquo;informations Lcs-Bureau</p>
+
+<p><span style="color:#000000;font-size:11pt;background-color:#d0e0e3;font-family:Arial;font-weight:bold">Le menu d&eacute;roulant ne peut jamais &ecirc;tre modifi&eacute;. Les liens vers les applications Lcs valid&eacute;es sont ainsi toujours disponibles.</span></p>
+<p style="text-align:right"><small><a href="#id.ny5pzh-pqd9q9">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.4kbnng-hlav5n"></a><a name="h.njit51-dmwh9j"></a>
+<h3>Barre d&rsquo;&eacute;tat</span></h3>
+<p>La barre d&rsquo;&eacute;tat re&ccedil;oit les vignettes des fen&ecirc;tres ouvertes. ( voir <a href="#id.xtx716-qgbttc">Gestion des fen&ecirc;tres</a> )</p>
+<p>A chaque l&rsquo;ouverture d&rsquo;une fen&ecirc;tre, une vignette est cr&eacute;&eacute;e dans la barre d&rsquo;&eacute;tat. Un clic sur cette vignette permute l&rsquo;&eacute;tat de cette fen&ecirc;tre (visible au premier plan ou r&eacute;duite). Vous pouvez ainsi comme dans vos bureaux pr&eacute;f&eacute;r&eacute;s, g&eacute;rer l&rsquo;affichage de vos applications LCS.</p>
+<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr"><img height="34.0" src="images/image22.png" width="755.0"></p>
+<p>A gauche de la barre d&rsquo;&eacute;tat, l&rsquo;ic&ocirc;ne &ldquo;Bureau&rdquo; permet de cacher toutes les fen&ecirc;tres ouvertes et affiche le bureau vierge (avec les ic&ocirc;nes). </p>
+<p style="text-align:right"><small><a href="#id.baen5u-vf0txn">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.oi0xcz-ls54nv"></a><a name="h.vldssx-pbyw17"></a>
+<h3>Bureau</h3>
+<p>Le bureau est la zone principale du Lcs-Bureau. Il contient les ic&ocirc;nes et le dock. C&rsquo;est dans cette zone que s&rsquo;ouvrent les fen&ecirc;tres contenantes des diff&eacute;rentes applications. Le bureau est <a href="#id.czol8l-vqefxm">personnalisable</a> &agrave; tout moment par chaque utilisateur.</p>
+<p style="text-align:right"><small><a href="#id.a1ta44-ba8vxa">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.bkor6e-osr8gp"></a><a name="h.t9efjs-p3eu9a"></a>
+<h4>Ic&ocirc;nes </h4>
+<p>Les taille et l&rsquo;affichage des ic&ocirc;ne sont personnalisable. Un clic sur une ic&ocirc;ne met celle-ci en surbrillance, un <strong>double-clic </strong>ouvre l&rsquo;application correspondante</p>
+<p style="text-align:right"><small><a href="#id.fjj8t6-nzdr7w">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.xtx716-qgbttc"></a><a name="h.yb4v6m-r09zub"></a><h4>Gestion des fen&ecirc;tres</h4>
+<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr"><img height="280.0" src="images/image7.png" width="424.0"></p>
+<p>Chaque application ouvre dans une nouvelle fen&ecirc;tre. Chaque fen&ecirc;tre est manipulable par une s&eacute;rie de boutons situ&eacute;e dans la barre d&rsquo;ent&ecirc;te :
+	<ul>
+		<li>un double-clic dans la barre d&#39;ent&ecirc;te ouvre la fen&ecirc;tre en plein &eacute;cran si elle ne l&#39;est pas sinon l&#39;affiche en format r&eacute;duit. (fa&ccedil;on window)</li>
+		<li>un double-clic dans l&#39;ic&ocirc;ne &agrave; gauche du titre dans la barre d&#39;ent&ecirc;te ferme la fen&ecirc;tre (fa&ccedil;on window)</li>
+		<li>boutons &agrave; gauche de l&#39;ent&ecirc;te &nbsp;:
+			<ul>
+				<li><img height="18.0" src="images/image12.png" width="32.0"> R&eacute;duire : r&eacute;duit la fen&ecirc;tre &agrave; l&#39;onglet dans la barre d&#39;&eacute;tat.</li>
+				<li><img height="19.0" src="images/image13.png" width="30.0"> Minimiser/maximiser : ouvre la fen&ecirc;tre en plein &eacute;cran si elle ne l&#39;est pas sinon l&#39;affiche en format r&eacute;duit.</li>
+				<li><img height="20.0" src="images/image18.png" width="32.0"> Fermer : Ferme la fen&ecirc;tre.</li>
+			</ul>
+		</li>
+		<li>une poign&eacute;e de redimensionnement est disponible en bas &agrave; droite de chaque fen&ecirc;tre. Cliquez et glissez sans l&acirc;cher le bouton de la souris pour redimensionner. L&acirc;cher le bouton &agrave; la dimension voulue.</li>
+	</ul>
+</p>
+<p style="text-align:right"><small><a href="#id.szi7o3-xpgmzj">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.y6f4gr-z0yr5b"></a><a name="h.mcvtqi-hj5gsp"></a><h3>Panneau d&rsquo;informations utilisateur </h3>
+<img style="float:right;margin:10px;" height="429.0" src="images/image21.png" width="204.0">
+
+<p>Un clic sur le bouton <img height="17.0" src="images/image4.png" width="109.0"> ouvre le panneau d&rsquo;informations utilisateur. Ce panneau comprend :
+	<ul>
+		<li>La date de derni&egrave;re connexion</span></li>
+		<li>Le groupe principal de l&rsquo;utilisateur</li>
+		<li>Pour les &eacute;l&egrave;ves, la classe et les groupes Cours</li>
+		<li>Pour les professeurs, la liste des groupes Cours, Equipes et Mati&egrave;res</li>
+		<li>La liste des autres groupes d&rsquo;appartenance (divers)</li>
+<!--		<li>La liste des groupes d&rsquo;appartenance pointant vers la page de l&rsquo;annuaire correspondante</li> -->
+		<li>Un lien vers l&rsquo;espace web perso de l&rsquo;utilisateur</li>
+		<li>Les informations courriel de l&rsquo;utilisateur : adresse courriel et redirection vers une boite personnelle</li>
+	</ul>
+</p>
+<p>Chaque nom de groupe est un lien pointant vers la page de l&rsquo;annuaire correspondante, vous permettant ainsi en deux clics d&rsquo;afficher la liste des membres d&rsquo;une groupe. Il est &eacute;galement possible d&rsquo;envoyer un courriel &agrave; ce groupe en cliquant sur l&#39;ic&ocirc;ne Courriel.</p>
+<p>Vous pouvez masquer/afficher les parties &ldquo;Membre des groupes&rdquo;, &ldquo;Pages perso&rdquo;, &ldquo;Adresse courriel&rdquo; en cliquant sur le titre voulu.</p>
+<p>Lorsque le panneau d&rsquo;informations utilisateur est ouvert mais partiellement masqu&eacute; par une fen&ecirc;tre du bureau, un clic sur le panneau le ram&egrave;ne au premier plan.</p>
+<p>Pour fermer le panneau d&rsquo;informations utilisateur, cliquer sur l&#39;ic&ocirc;ne (croix) en haut &agrave; droite du panneau.</p>
+<p style="text-align:right"><small><a href="#id.8bjxav-zbhofx">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.czol8l-vqefxm"></a><a name="h.z8zbkh-e6rixh"></a>
+<h2>Personnalisation</h2>
+<p>Sont personnalisables par l&rsquo;utilisateur:
+	<ul>
+		<li>L&rsquo;image d&rsquo;arri&egrave;re-plan du bureau (wallpaper) et sa position</li>
+		<li>Les ic&ocirc;nes du bureau (affichage et taillle)</li>
+		<li>L&rsquo;affichage d&rsquo;un dock vers les applications</li>
+	</ul>
+</p>
+<p>Pour personnaliser le bureau, cliquez sur &ldquo;Lcs-Bureau&rdquo;, &ldquo;Pr&eacute;f&eacute;rences&rdquo;.</p>
+<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr"><img height="454.0" src="images/image15.png" width="703.0"></p>
+<p style="text-align:right"><small><a href="#id.j630by-aai75t">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.48h92d-csgdum"></a><a name="h.44zdd-uzgnt5"></a>
+<h3>Fond d&rsquo;&eacute;cran (wallpaper)</h3>
+<a name="h.p8kb06-7t58fi"></a>
+<h4>Image :</h4>
+<p>Pour modifier l&rsquo;image d&rsquo;arri&egrave;re plan, cliquer sur modifier l&rsquo;image et choisir une des images propos&eacute;es en cliquant sur la vignette correspondante. Cliquer alors sur &ldquo;Appliquer&rdquo; pour afficher l&rsquo;image comme arri&egrave;re-plan. </p>
+<p>N&rsquo;oubliez pas d&rsquo;enregistrer si vous souhaitez conserver cette image et la retrouver lors de vos prochaines connexions.</p>
+<p>Vous pouvez &eacute;galement utiliser une image personnelle, celle-ci devant se situer dans votre espace web (Dossier public_html). Il est donc n&eacute;cessaire pour afficher une image perso que votre espace web soit activ&eacute; par l&rsquo;administrateur.</p>
+<p>Pour afficher une image personnelle comme arri&egrave;re-plan :
+	<ul>
+		<li>Ouvrir le panneau &ldquo;Pr&eacute;f&eacute;rences&rdquo;</li>
+		<li>Cliquer sur le bouton &ldquo;Modifier l&rsquo;image&rdquo;</li>
+		<li>Cliquer sur le bouton &ldquo;Importer&rdquo;.</li>
+		<li>Choisir une image dans son espace web (<span style="font-style:italic;">Voir l&rsquo;utilisation du ClientFTP pour importer/exporter des documents dans son espace web</span>).</li>
+	</ul>
+</p>
+<p style="text-align:right"><small><a href="#id.162d03-tbxzrm">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.dc5sf5-ckersl"></a><a name="h.hd3qgz-d5956i"></a>
+<h4>Position de l&rsquo;image: </h4>
+<p>Par d&eacute;faut, l&rsquo;image d&rsquo;arri&egrave;re plan est redimensionn&eacute;e &agrave; la taille du bureau, sans tenir compte des proportions. Vous pouvez positionner votre image sans en modifier les proportions, avec redimensionnement ou non.</p>
+<p style="text-align:right"><small><a href="#id.2gpqda-saywws">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.s5pj2w-yxnv8v"></a><a name="h.21n4qh-lqrcdl"></a>
+<h4>Couleur d&#39;arri&egrave;re-plan</h4>
+<p>Cliquez dans la zone de saisie pour afficher une palette de couleur. Choisissez ensuite votre couleur.</p>
+<p style="text-align:right"><small><a href="#id.7376r4-azpt9a">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.tlc6tc-kne25d"></a>
+<a name="h.wsdsne-vdoye8"></a>
+<h3>Ic&ocirc;nes</h3>
+<p>L&rsquo;utilisateur peut supprimer une ou plusieurs ic&ocirc;nes du bureau par glisser/d&eacute;poser de celle(s)-ci dans la corbeille (en bas &agrave; droite du bureau). Par d&eacute;faut, seules les ic&ocirc;nes pointant vers les applications LCS sont affich&eacute;es sur le bureau. Pour cr&eacute;er une nouvelle ic&ocirc;ne (ou restaurer une ic&ocirc;ne supprim&eacute;e), il suffit de glisser/d&eacute;poser un item du menu d&eacute;roulant ou du panneau d&rsquo;informations utilisateur sur le bureau.</p>
+<p>Vous pouvez choisir entre trois taille d&rsquo;ic&ocirc;ne dans la page Pr&eacute;f&eacute;rences, et aussi param&eacute;trer la hauteur du champ d&rsquo;affichage des ic&ocirc;nes (&agrave; partir du haut de l&rsquo;&eacute;cran)</p>
+<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr"><img height="247.0" src="images/image8.png" width="668.0"></p>
+<p style="text-align:right"><small><a href="#id.rp9hws-mzp7me">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.7p8vtk-o18515"></a><a name="h.lqyo30-4xs4zf"></a><h3>Dock d&rsquo;ic&ocirc;nes</h3>
+<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr"><img height="93.0" src="images/image3.png" width="570.0"></p>
+<p>Situ&eacute; en bas du bureau au dessus de la barre d&rsquo;&eacute;tat, le dock d&rsquo;ic&ocirc;nes est un clone des ic&ocirc;nes du bureau et n&rsquo;offre, en l&rsquo;&eacute;tat, que peu de possibilit&eacute;s de personnalisation. Si on choisi de l&rsquo;afficher, toutes les ic&ocirc;nes du bureau seront alors affich&eacute;es dans le dock. Au survol de la souris, l&rsquo;ic&ocirc;ne s&rsquo;agrandit et le nom de l&rsquo;application est affich&eacute;. Le dock reste visible au dessus des fen&ecirc;tres ouvertes.</p>
+<p style="text-align:right"><small><a href="#id.kx7hcp-e84ew7">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.Notifications"></a><a name="id.somNotifs"></a><h3>Notifications</h3>
+<p style="margin-right:2.25pt;line-height:1.15;text-indent:0.0pt;text-align:center;direction:ltr"><img height="95.0" src="images/image23.png" width="336.0"></p>
+<p>Lcs-Bureau propose un syst&egrave;me d'information utilisateur par notifications. Outre les notifications propres au Lcs-Bureau, vous pouvez b&eacute;n&eacute;ficier des notifications de nouveau courriel (&eacute;tat des dourriels non lus dans votre boite) et des notifications de nouveaux messages sur le forum.</p>
+<p style="text-align:right"><small><a href="#id.kx7hcp-e84ew7">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.hy8apr-poy6a7"></a>
+<a name="h.wfs7od-7k9fp"></a>
+<h2>Documentation technique </h2>
+<a href="#" name="id.pzbv6d-qeccmn"></a><a name="h.gkebie-aa2pfe"></a><h3>Liste de navigateurs supports</h3>
+<table cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+	<thead>
+		<tr>
+			<td>&nbsp;</td>
+			<td>WindowXP</td>
+			<td>MacOs</td>
+			<td>Ubuntu</td>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>
+				<strong>Firefox</strong>
+			</td>
+			<td>
+				v-3.6.8<span class="green">+++</span>
+			</td>
+			<td>
+				v-3.6.8<span class="green">+++</span>
+			</td>
+			<td>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Safari</strong>
+			</td>
+			<td></td>
+			<td>
+				v- 5.0.1<span class="green">++</span><span class="orange">+ </span><small>(6533.17.8)</small>
+			</td>
+			<td>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Google Chrome</strong>
+			</td>
+			<td>
+				v-6.0.472.53<span class="green">++</span><span class="orange">+</span>
+			</td>
+			<td>
+				v-6.0.472.53 <span class="green">++</span><span class="orange">+</span><br /><small>Les selects ne prennent pas le focus dans le formulaire Pr&eacute;f&eacute;rences.</small>
+			</td>
+			<td>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Internet Explorer</strong>
+			</td>
+			<td>
+				IE6 et &lt;<span class="red">+++ </span><small>(non support&eacute;)</small>
+				<br />IE7 <span class="orange">+++</span>
+				<br />IE8<span class="green">+</span><span class="orange">++</span>
+			</td>
+			<td>
+				<span class="red">xxxxxx</span>
+			</td>
+			<td>
+				<span class="red">xxxxxx</span>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Op&eacute;ra</strong>
+			</td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Konqueror</strong>
+			</td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+
+<p><span>Legende : </span></p>
+<table cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+	<tbody>
+		<tr>
+			<td>
+			<span class="green">+++</span><span> </span>Pas de d&eacute;fauts d&rsquo;affichage connus
+			</td>
+			<td>
+				<span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">++</span><span style="color:#ff9900;font-size:11pt;font-family:Arial;font-weight:bold">+</span><span> </span><span style="color:#000000;font-size:8pt;font-family:Arial"></span>
+			</td>
+			<td>
+				<span style="color:#38761d;font-size:11pt;font-family:Arial;font-weight:bold">+++</span><span> </span><span style="color:#000000;font-size:8pt;font-family:Arial"></span>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:right"><small><a href="#id.npovbu-8c8a4t">[ Retour au sommaire ]</a></small></p>
+
+<a href="#" name="id.psg4ec-t9rosc"></a><a name="h.ytkefc-2kl1rf"></a>
+<h3>Interaction Plugins &rarr; Lcs-Bureau</h3>
+<p>Pour ouvrir une application LCS dans une fen&ecirc;tre du bureau depuis une autre application LCS (plugins), le lien ( balise &lt;a/&gt; ) doit &ecirc;tre de la forme :
+<pre>
+&lt;a href=&quot;[url_page]&quot; class=&quot;open_win ext_link&quot; rel=&quot;[id_appli]&quot; title=&quot;[titrem&ecirc;me vide]&quot;&gt;
+</pre></p>
+<p>Les attributs indispensables &eacute;tant l&rsquo;atribut <strong>class</strong> associ&eacute; aux valeurs <strong>open_win</strong> et <strong>ext_link</strong> et l&rsquo;attribut <strong>rel</strong> dont la valeur doit &ecirc;tre l<strong>&rsquo;identifiant de l&rsquo;appplication</strong> en minuscules (<span style="font-style:italic;">maint pour l&rsquo;appli maintenance, spip pour le forum, cdt pour le cahier de texte, etc...</span>).</p>
+<p style="text-align:right"><small><a href="#id.apr0z-ky0fwn">[ Retour au sommaire ]</a></small></p>
+
+<script type="text/javascript">
+$(document).ready(function(){
+$('body').localScroll();
+});
+</script>
+
+</body>
+</html>

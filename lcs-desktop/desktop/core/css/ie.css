@@ -1,0 +1,55 @@
+.window.ui-draggable-dragging {
+	filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+	-ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=50)';
+}
+
+.window_full.ui-draggable-dragging {
+	filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+	-ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=100)';
+}
+
+#bar_bottom {
+	filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+	-ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)';
+}
+#bar_top ul{
+	width:auto;
+	position:absolute;
+}
+#bar_top ul.bar_top_right{
+	float:right;
+	width:auto;
+	position:absolute;
+	right:50px;
+}
+#bar_top ul.bar_top_right li{
+	display:inline;
+	width:auto;
+}#bar_top ul.bar_top_right li a{
+	display:inline;
+}
+#quicklaunch li{
+	float:left;
+}
+#user_infos{
+line-heigth:12px;
+}
+#user_infos ul{
+display:block;
+float:none;
+clear:both;
+}
+#user_infos ul li{
+	background:#333333;
+float:none;
+clear:both;
+display:block;
+line-height:10px;
+}
+#user_infos ul li a{
+	background:#333333;
+float:none;
+clear:both;
+display:block;
+line-height:10px;
+}
