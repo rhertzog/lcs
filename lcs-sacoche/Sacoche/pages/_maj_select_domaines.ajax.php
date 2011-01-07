@@ -25,9 +25,19 @@
  * 
  */
 
-if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Détail de maîtrise du socle";
+// Mettre à jour l'élément de formulaire "f_domaine" et le renvoyer en HTML
 
-$fin = ( ($_SESSION['USER_PROFIL']!='eleve') || (strpos($_SESSION['DROIT_ELEVE_SOCLE'],'SocleAcces')!==false) ) ? 'oui' : 'non' ;
-require('./pages/'.$PAGE.'_'.$fin.'.php');
+if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
+if($_SESSION['SESAMATH_ID']==ID_DEMO) {}
+
+$pilier       = (isset($_POST['f_pilier'])) ? clean_entier($_POST['f_pilier']) : 0;
+$option_first = (isset($_POST['f_first']))   ? clean_texte($_POST['f_first'])    : '';
+
+if( (!$pilier) || (!in_array($option_first,array('oui','val','non'))) )
+{
+	exit('Erreur avec les données transmises !');
+}
+
+echo afficher_select(DB_STRUCTURE_OPT_domaines($pilier) , $select_nom=false , $option_first , $selection=false , $optgroup='non');
+
 ?>

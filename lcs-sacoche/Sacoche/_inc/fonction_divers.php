@@ -657,7 +657,7 @@ function enregistrer_informations_session($BASE,$DB_ROW)
 }
 
 /**
- * completer_session_daltonisme
+ * adapter_session_daltonisme
  * 
  * @param void
  * @return void
@@ -675,7 +675,7 @@ function adapter_session_daltonisme()
 	$_SESSION['BACKGROUND_V0'] = $_SESSION['USER_DALTONISME'] ? '#909090' : '#FF9999' ; // validation négative
 	$_SESSION['BACKGROUND_V1'] = $_SESSION['USER_DALTONISME'] ? '#EAEAEA' : '#99FF99' ; // validation positive
 	$_SESSION['BACKGROUND_V2'] = $_SESSION['USER_DALTONISME'] ? '#BEBEBE' : '#BBBBFF' ; // validation en attente
-	$_SESSION['OPACITY']       = $_SESSION['USER_DALTONISME'] ? '1'       : '0.3'  ;
+	$_SESSION['OPACITY']       = $_SESSION['USER_DALTONISME'] ? 1         : 0.3 ;
 }
 
 /**
@@ -689,14 +689,14 @@ function actualiser_style_session()
 {
 	$_SESSION['CSS']  = '';
 	// codes de notation
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.RR {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/RR.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.RR {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/RR.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.R  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/R.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.R  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/R.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.V  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/V.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.V  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/V.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.VV {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/VV.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.VV {background:#FFF url("./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/VV.gif") no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.RR {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/RR.gif) no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.RR {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/RR.gif) no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.R  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/R.gif)  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.R  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/R.gif)  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.V  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/V.gif)  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.V  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/V.gif)  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.VV {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/VV.gif) no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.VV {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/VV.gif) no-repeat center center;}';
 	// couleurs des états d'acquisition
 	$_SESSION['CSS'] .= 'table th.r , table td.r , div.r ,span.r ,label.r {background-color:'.$_SESSION['BACKGROUND_NA'].'}';
 	$_SESSION['CSS'] .= 'table th.o , table td.o , div.o ,span.o ,label.o {background-color:'.$_SESSION['BACKGROUND_VA'].'}';
@@ -718,6 +718,7 @@ function actualiser_style_session()
 	$_SESSION['CSS'] .= '#zone_information .v1 {background:'.$_SESSION['BACKGROUND_V1'].';padding:0 1em;margin-right:1ex}';
 	$_SESSION['CSS'] .= '#zone_information .v2 {background:'.$_SESSION['BACKGROUND_V2'].';padding:0 1em;margin-right:1ex}';
 	$_SESSION['CSS'] .= '#tableau_validation tbody td[lang=lock] {background:'.$_SESSION['BACKGROUND_V1'].' url(./_img/socle/lock.gif) no-repeat center center;} /* surclasse une classe v0 ou v1 ou v2 car défini après */';
+	$_SESSION['CSS'] .= '#tableau_validation tbody td[lang=done] {background-image:url(./_img/socle/done.gif);background-repeat:no-repeat;background-position:center center;} /* pas background pour ne pas écraser background-color défini avant */';
 }
 
 function envoyer_webmestre_courriel($adresse,$objet,$contenu)
@@ -1060,7 +1061,6 @@ function exporter_arborescence_to_XML($DB_TAB)
  * Équivalent de file_get_contents pour récupérer un fichier sur un serveur distant.
  * On peut aussi l'utiliser pour récupérer le résultat d'un script PHP éxécuté sur un serveur distant.
  * On peut alors envoyer au script des paramètres en POST.
- * On peut utiliser un proxy si des constantes sont définies : SERVEUR_PROXY_USED / SERVEUR_PROXY_NAME / CURLOPT_PROXYPORT / SERVEUR_PROXY_PORT et SERVEUR_PROXY_AUTH_USED / SERVEUR_PROXY_AUTH_METHOD / SERVEUR_PROXY_AUTH_USER / SERVEUR_PROXY_AUTH_PASS
  * 
  * @param string $url
  * @param array  $tab_post   tableau[nom]=>valeur de données à envoyer en POST (facultatif)
