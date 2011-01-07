@@ -1,9 +1,14 @@
-lcs-desktop (0.2~19) Lcs; urgency=low
+lcs-desktop (2.4.8~1) UNRELEASED; urgency=low
 
+  [ Dominique Lepaisant ]
   * Fix bug with the width of windows when the iframe is loaded
   * Removing the import button in the user prefs if the user is in group "Student " 
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Wed, 22 Sep 2010 07:23:47 +0200
+  [ Jean-Luc Chrétien ]
+  * Copy trunk version in 2.4.8 Tree
+  * Modify inc-lcs-applis.php for new module name filexplorer
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 07 Jan 2011 17:06:19 +0100
 
 lcs-desktop (0.2~18) Lcs; urgency=low
 

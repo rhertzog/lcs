@@ -25,7 +25,7 @@ $liste['Ids'] = array();// ajout pour l'ID des fenetres !!Voir si on peut eviter
 	$resultM=mysql_query($queryM);
 	if ($resultM) {
         while ( $r=mysql_fetch_object($resultM) ) {
-            if ( $r->name == "clientftp" ) $ftpclient = true;
+            if ( $r->name == "filexplorer" ) $ftpclient = true;
             if ( $r->name == "pma" ) $pma = true;
             if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
         }
@@ -56,11 +56,11 @@ if(isset($squirrelmail)){
 	$liste['Blocks'][] = "#icon_dock_lcs_squirrelmail";
 	$liste['Ids'][] = "squirrelmail";
 }
-// ftp
+// filexplorer
 if (isset($ftpclient)) {
 	$liste['Images'][] = "../lcs/images/bt-V1-2.jpg";
-	$liste['Liens'][] = "../clientftp/";
-	$liste['Titres'][] = "Client FTP";
+	$liste['Liens'][] = "../filexplorer/";
+	$liste['Titres'][] = "Explorater de fichiers";
 	$liste['Blocks'][] = "#icon_dock_lcs_ftpclient";
 	$liste['Ids'][] = "ftpclient";
 }
