@@ -105,6 +105,11 @@ done
 echo "6. Mise en place de lcs-sysinfo en remplacement de lcs-phpsysinfo"
 apt-get install -y --force-yes lcs-sysinfo
 
+echo "7.Modification du referentiel des modules" 
+mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLennycs/' WHERE value = 'http://linux.crdp.ac-caen.fr/modulesLcs/';" 
+mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLennycsTesting/' WHERE value ='http://linux.crdp.ac-caen.fr/modulesLcsTesting/';"
+mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLennycsXP/' WHERE value = 'http://linux.crdp.ac-caen.fr/modulesLcsXP/';"
+
 rm /etc/apt/apt.conf.d/lcs-upgrade-lenny
 echo -e "$COLTITRE"
 echo "FIN !"
