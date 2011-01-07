@@ -3,6 +3,7 @@ set -e
 
 VER=$(dpkg-query -f '${Version}' -W lcs-elfinder)
 MODULE="elfinder"
+MODULENAME="filexplorer"
 VERAPPLI="1.1 RC3"
 INDICEMAJNBR="0"
 
@@ -15,13 +16,15 @@ if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
     #
     # Inscription du module dans applis.lcs_db
     #
-    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Explorateur de fichiers espace perso', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'M');"
+    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULENAME', '1', 'Explorateur de fichiers espace perso elFinder', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'M');"
 else
+    echo "Mise a jour du nom du module clientftp en filexplorer"
+    /usr/bin/mysql -e "UPDATE lcs_db.applis SET name='$MODULENAME' WHERE name='$MODULE';"
     echo "Mise à jour du paquet module LCS $MODULE de $2 vers $VER"
     #
     # Lecture de l'indice de maj dans la table lcs_db.applis
     #
-    MAJNBR=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE';"`
+    MAJNBR=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULENAME';"`
     let MAJNBR+=1
     if [ ! -e $CONF/Maj/maj$MAJNBR.sh ]; then
 	echo "Pas de script de mise à jour à appliquer !"
@@ -39,7 +42,7 @@ else
     #
     # Mise à jour de l'indice de Maj
     #
-    /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';"
+    /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULENAME';"
 fi
 #
 # Actions non liées a une installation initiale ou à une mise à jour.
@@ -53,9 +56,9 @@ fi
 
 
 # Configuration apache
-if [ -d $LCSAPACHE2PATH ] && [ ! -e $APACHE2CONF ] ; then
+if [ -d $LCSAPACHE2PATH ]; then
   cat >$APACHE2CONF <<EOF
-Alias /elfinder/ /usr/share/lcs/elfinder/
+Alias /filexplorer/ /usr/share/lcs/elfinder/
 <Directory /usr/share/lcs/elfinder>
 php_admin_value register_globals off
 php_admin_value open_basedir /.:/tmp:/home:/var/www/lcs/includes

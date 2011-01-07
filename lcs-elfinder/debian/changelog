@@ -1,12 +1,15 @@
-lcs-elfinder (2.4.8~5) Lcs; urgency=low
+lcs-elfinder (2.4.8~6) Lcs; urgency=low
 
   [ Dominique Lepaisant ]
   * Redirection to the authentication page lcs if a user calls elFinder without being authenticated
 
   [ Jean-Luc Chrétien ]
   * Fix bug in postinst
+  * Modify module name to filexplorer
+  * Add conflict whit lcs-clientftp
+  * Convert doc-html to utf-8
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 08 Dec 2010 15:33:27 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 07 Jan 2011 12:51:02 +0100
 
 lcs-elfinder (2.4.8~3) Lcs; urgency=low
 

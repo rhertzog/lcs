@@ -14,7 +14,8 @@ lcs-web (2.4.8~3) UNRELEASED; urgency=low
   * Fix make replica config in mkSlapdConf.sh for Etch or Lenny...
   * Fix typo in user_lcs.inc.php
   * Add change-ip.sh script in /usr/share/lcs/scripts
-  * Delete Roundcube sessio cookie in functions.inc.php
+  * Delete Roundcube session cookie in functions.inc.php
+  * Modify applis.php and accueil.php for filexplorer module
 
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
@@ -35,7 +36,7 @@ lcs-web (2.4.8~3) UNRELEASED; urgency=low
   [ Cyril Bouthors ]
   * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 10 Dec 2010 20:11:00 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 07 Jan 2011 14:50:26 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 

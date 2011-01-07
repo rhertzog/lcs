@@ -2,6 +2,7 @@
 set -e
 
 MODULE="clientftp"
+MODULENAME="filexplorer"
 APACHECONF="/etc/lcs/apache.conf"
 APACHE2CONF="/etc/apache2/lcs-main/70_clientftp.conf"
 
@@ -10,16 +11,6 @@ case "$1" in
         #
         # Suppression de l'alias 
         #
-        # cas de l'ancienne conf apache
-        if [ -e $APACHECONF ]; then
-          grep -v 'Include /etc/lcs/clientftp.conf' $APACHECONF > /tmp/apache.conf
-          mv /tmp/apache.conf $APACHECONF
-          if [ -e /etc/init.d/apache2 ]; then
-            /etc/init.d/apache2 reload > /dev/null 2>&1
-          else
-            /etc/init.d/apache reload > /dev/null 2>&1
-          fi
-        fi
         # cas de la nouvelle configuration apache
         if [ -e $APACHE2CONF ]; then
           rm -f $APACHE2CONF
@@ -28,7 +19,7 @@ case "$1" in
         #
         # Desinscription du module de la table lcs_db.applis
         #
-        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1
+        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULENAME';" > /dev/null 2>&1
         #
         # Nettoyage des repertoires
         # 
