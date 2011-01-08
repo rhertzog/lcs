@@ -1,10 +1,10 @@
-<?
+<?php
 /* =============================================
    Projet LCS
    Administration serveur LCS «Liste des Modules installes»
    AdminLCS/Modules_installes.php
    Equipe Tice academie de Caen
-   maj : 10/12/2010
+   maj : 08/01/2011
    Distribue selon les termes de la licence GPL
    ============================================= */
 
@@ -49,7 +49,7 @@ if (isset($_GET['np']))
 			exec($cmd,$l,$r);	
 	}
 		
-//activaion/desactivation 
+//activation/desactivation 
 if (isset($_GET['a']) && isset($_GET['pid']))
 	{
 	$a=$_GET['a'];
@@ -79,13 +79,13 @@ if ($ret_val== 0)
 $url=explode('/',$urlmajmod);
 switch ($url[count($url)-2]) 
 	{
-	case "modulesLcs":
+	case "modulesLennycs":
 	    $urlmaj = 'stable';
 	    break;
-	case "modulesLcsTesting":
+	case "modulesLennycsTesting":
 	    $urlmaj = 'testing';
 	    break;
-	case "modulesLcsXP":
+	case "modulesLennycsXP":
 	    $urlmaj = 'exp&#233;rimentale';
 	    break;
 	}
@@ -135,7 +135,7 @@ if ($result)
 	          if ($r->type =='N' && (!in_array ($r->name, $pack_hold)))
 	          echo '<TD class="buttons"><a href="modules_installes.php?np='.$nom_paquet.'&action=desact" class="positive" title="Interdire la mise &#224; jour de ce module ">&nbsp;OUI&nbsp;</a></TD>';
 	          elseif  ($r->type =='N' && (in_array ($r->name, $pack_hold)))
-	          echo '<TD class="buttons "><a href="modules_installes.php?np='.$nom_paquet.'&action=act" class="negative"title="Autoriser la mise &#224; jour de ce module">&nbsp;NON&nbsp;</a></TD>';
+	          echo '<TD class="buttons "><a href="modules_installes.php?np='.$nom_paquet.'&action=act" class="negative" title="Autoriser la mise &#224; jour de ce module">&nbsp;NON&nbsp;</a></TD>';
 	          else
 	          echo "<TD>&nbsp;</TD>\n";
 			  if ($v != false)
