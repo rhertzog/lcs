@@ -19,9 +19,9 @@ configure() {
     ROUNDCUBE=`echo "SELECT id from lcs_db.applis WHERE name='webmail';"| mysql -u lcsmgr -p$MYSQLPASS lcs_db -N`
     VER=$(dpkg-query -f '${Version}' -W lcs-roundcube)
     if [ -z "$ROUNDCUBE" ]; then
-	echo "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', 'webmail', '1', 'webmail squirrelmail', '0', '$VER', '/usr/share/squirrelmail', 'S');"| mysql -u lcsmgr -p$MYSQLPASS lcs_db 
+		echo "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', 'roundcube', '1', 'Webmail Roundcube', '0', '$VER', '/usr/share/lcs/roundcube', 'S');"| mysql -u lcsmgr -p$MYSQLPASS lcs_db 
     else
-        echo "UPDATE lcs_db.applis SET version='$VER' WHERE name='webmail';" | mysql -u lcsmgr -p$MYSQLPASS lcs_db 
+        echo "UPDATE lcs_db.applis SET version='$VER' WHERE name='roundcube';" | mysql -u lcsmgr -p$MYSQLPASS lcs_db 
     fi
     # Create mysql base for roundcube
 	if [  ! -d /var/lib/mysql/roundcube ]; then
