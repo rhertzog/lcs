@@ -25,7 +25,7 @@ $liste['Ids'] = array();// ajout pour l'ID des fenetres !!Voir si on peut eviter
 	$resultM=mysql_query($queryM);
 	if ($resultM) {
         while ( $r=mysql_fetch_object($resultM) ) {
-            if ( $r->name == "filexplorer" ) $ftpclient = true;
+            if ( $r->name == "filexplorer" ) $filexplorer = true;
             if ( $r->name == "pma" ) $pma = true;
             if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
         }
@@ -55,13 +55,19 @@ if(isset($squirrelmail)){
 	$liste['Titres'][] = "Webmail";
 	$liste['Blocks'][] = "#icon_dock_lcs_squirrelmail";
 	$liste['Ids'][] = "squirrelmail";
-}
+} elseif (isset($roundcube)) {
+	$liste['Images'][] = "../lcs/images/barre1/BP_r1_c5_f3.gif";
+	$liste['Liens'][] = "../lcs/statandgo.php?use=roundcube";
+	$liste['Titres'][] = "Webmail";
+	$liste['Blocks'][] = "#icon_dock_lcs_roundcube";
+	$liste['Ids'][] = "roundcube";	
+}	
 // filexplorer
-if (isset($ftpclient)) {
+if (isset($filexplorer)) {
 	$liste['Images'][] = "../lcs/images/bt-V1-2.jpg";
 	$liste['Liens'][] = "../filexplorer/";
-	$liste['Titres'][] = "Explorater de fichiers";
-	$liste['Blocks'][] = "#icon_dock_lcs_filexplorer";
+	$liste['Titres'][] = "Explorateur de fichiers";
+	$liste['Blocks'][] = "#icon_dock_filexplorer";
 	$liste['Ids'][] = "filexplorer";
 }
 // phpmyadmin
@@ -114,6 +120,13 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 			$c_path="./squirrelmail/";
 			$c_title=array("Consulter vos messages", "Envoyer un message");
 			$c_rel=array($liste['Liens'][$x], "../squirrelmail/src/compose.php?mailbox=INBOX&startMessage=1");
+	        break;
+    	case "roundcube":
+			$c="large_win";
+			$c_sb="submenu";
+			$c_path="./roundcube/";
+			$c_title=array("Consulter vos messages", "Envoyer un message");
+			$c_rel=array($liste['Liens'][$x], "../roundcube/?_task=mail&_action=compose");
 	        break;
 	    case "annu":
 			$c="large_win";

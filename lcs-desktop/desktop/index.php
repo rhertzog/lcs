@@ -152,7 +152,9 @@ if ( $idpers==0 ) { ?>
 <input type="hidden" id="login" value="<?php echo $login; ?>"/>
 <input type="hidden" id="url_accueil" value="<?php echo $url_accueil; ?>" />
 <input type="hidden" id="list_applis" value="<?php echo $list_applis; ?>" class="<?php echo $list_applis; ?>"/>
-<div style="display:none"><iframe id="temp_squirrelmail" style="display:none" src=""></iframe></div>
+
+<style="display:none"><iframe id="temp_webmail" style="display:none" src=""></iframe></div>
+
 <div style="display:none" id="temp_forum_notify"></div>
 <?php
 	// bar-top, bar-bottom
@@ -225,11 +227,11 @@ $(document).ready(function(){
 			<?php 
 			} // End  spip enable
 
-			// if squirrelmail is enable, notify new messages
 			if ( $squirrelmail == 1 ) { 
+				// if squirrelmail is enable, notify new messages
 			?>
 				setTimeout(function(){
-				$('#temp_squirrelmail').attr('src','../lcs/statandgo.php?use=squirrelmail');
+				$('#temp_webmail').attr('src','../lcs/statandgo.php?use=squirrelmail');
 				},1500);
 				setTimeout(function(){
 		        	$.get("../squirrelmail/plugins/notify/notify-desktop.php", function(data){
@@ -253,6 +255,34 @@ $(document).ready(function(){
 				},10000);
 			<?php 
 			} // End  squirrelmail enable
+			elseif ( $roundcube == 1 ) {
+				// if roundcube is enable, notify new messages
+			?>
+				setTimeout(function(){
+				$('#temp_webmail').attr('src','../lcs/statandgo.php?use=roundcube');
+				},1500);
+				setTimeout(function(){
+		        	$.get("../roundcube/plugins/lcs-notify-desktop/index.php", function(data){
+						if (data != '')
+							JQD.create_notify("withIcon", {
+								title:'Messagerie', 
+								text: data + '<p><span style="text-decoration:underline;">Consulter sa messagerie</span>', 
+								icon:'core/images/icons/mailicon.png' 
+							},
+							{ 
+								expires:false,
+								click: function(e,instance){
+									JQD.init_link_open_win('<a title="Webmail" '
+										+'rel="../lcs/statandgo.php?use=roundcube" '
+										+'rev="roundcube" href="#icon_dock_lcs_roundcube" '
+										+'class="open_win ext_link">Messagerie</a>');
+									instance.close();
+								}
+							});
+					});
+				},10000);				
+			<?php								
+			} // End roundcube enable	
 
 			if (!is_file("/home/".$login."/Profile/PREFS_".$login.".xml" )) { 
 			?>
