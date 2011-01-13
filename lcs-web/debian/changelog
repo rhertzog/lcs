@@ -16,6 +16,7 @@ lcs-web (2.4.8~3) UNRELEASED; urgency=low
   * Add change-ip.sh script in /usr/share/lcs/scripts
   * Delete Roundcube session cookie in functions.inc.php
   * Modify applis.php and accueil.php for filexplorer module
+  * Modify barre.php for roundcube webmail
 
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
@@ -36,7 +37,7 @@ lcs-web (2.4.8~3) UNRELEASED; urgency=low
   [ Cyril Bouthors ]
   * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 07 Jan 2011 14:50:26 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 13 Jan 2011 15:05:36 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
