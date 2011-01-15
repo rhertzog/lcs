@@ -1,6 +1,6 @@
 #!/bin/bash
 # Configure courrier squirrelmail sur LCS
-# jLCF <(°_-)/> on 18 Jan. 2008
+# jLCF on 15/01/2011
 #
 IN_CONFIG_PATH="/etc/lcs/squirrelmail"
 
@@ -16,6 +16,10 @@ LDAP_BASE_DN="$2"
 #
 cp /etc/lcs/squirrelmail/redirect.php /usr/share/squirrelmail/src/
 cp /etc/lcs/squirrelmail/page_header.php /usr/share/squirrelmail/functions/
+#
+# Compatibilite avec lcs-desktop
+#
+cp /etc/lcs/squirrelmail/left_main.php /usr/share/squirrelmail/src/
 #
 # Configuration squirrelmail
 #
