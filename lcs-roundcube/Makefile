@@ -19,7 +19,7 @@ install:
 
 # install etc conf 
 	install -d $(DESTDIR)/etc/apache2/lcs-main
-	cp etc/apache2/lcs-main/* $(DESTDIR)/etc/apache2/lcs-main
+	install -m 644 etc/apache2/lcs-main/* $(DESTDIR)/etc/apache2/lcs-main
 
 # install sbin
 	install -d $(DESTDIR)/usr/sbin
