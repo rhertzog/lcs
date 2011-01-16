@@ -1,6 +1,7 @@
-lcs-roundcube (2.4.8~3) Lcs; urgency=low
+lcs-roundcube (2.4.8~4) Lcs; urgency=low
 
   * Initial release.
   * Add plugin lcs-notify-desktop
+  * Move 65_roundcube.conf 60_roundcube.conf
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 13 Jan 2011 16:06:32 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 16 Jan 2011 10:24:27 +0100
