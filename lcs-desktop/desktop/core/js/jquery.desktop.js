@@ -536,6 +536,7 @@ var JQD = (function($) {
 				$('#lcspinner').remove();
 				// et on affiche
 				$(this).show();
+				//on passe le compteur à 1
 				count_load=1;
 					
 				// on essaie de fixer le bug en cas de clic sur une ancre dans une page iframe
@@ -543,6 +544,13 @@ var JQD = (function($) {
 					
 				// on ne fait rien si gepi ou si on est sur un autre serveur
 				if ( url.match(/gepi/g) || url.match(/^http/) ) return;
+				
+				// quelle appli webmail:  squirrelmail ou roundcube ?
+				var wm='squirrelmail/src/compose.php?send_to=';
+				var l_a = $(".listapplis").metadata();
+				$.each(l_a, function (i, v ) {
+					v=='roundcube' ? wm ='roundcube/?_task=mail&_action=compose&send_to='  : '';
+				});
 				
 				// actions sur les liens contenus
 				el.find('a').each(function(){
@@ -556,8 +564,9 @@ var JQD = (function($) {
 					if($(this)[0].href.match('mailto:')){// Listage et modif des mailto:
 						$(this)[0].href.length > 0 ? cible=$(this)[0].href.replace('?','&') : '';
 						$(this).attr({
-							'href':cible.replace('mailto:',document.location.href.replace('desktop/','')+'squirrelmail/src/compose.php?send_to='),
-							'rel':'squirrelmail'
+							'href':cible.replace('mailto:',document.location.href.replace('desktop/','') + wm),
+							'rel':'webmail',
+							'title':'Webmail'
 						}).addClass('open_win ext_link');
 					} 
 				});
