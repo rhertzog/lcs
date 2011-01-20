@@ -1,8 +1,9 @@
-lcs-web (2.4.7.1~6) Lcs; urgency=low
+lcs-web (2.4.7.1) Lcs; urgency=low
 
+  [ Philippe Leclerc ]
   *  add modif referential of the modules in etch2lenny
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 07 Jan 2011 13:32:48 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 20 Jan 2011 14:15:29 +0100
 
 lcs-web (2.4.7.1~5) Lcs; urgency=low
 
