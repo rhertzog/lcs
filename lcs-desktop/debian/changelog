@@ -4,13 +4,14 @@ lcs-desktop (2.4.8~1) UNRELEASED; urgency=low
   * Fix bug with the width of windows when the iframe is loaded
   * Removing the import button in the user prefs if the user is in group "Student " 
   * Modify core/js/jquery.desktop.js, core/includes/inc-bars_topbottom.php, core/includes/inc-user_infos.php for roundcube
+  * Modify core/includes/inc-finder.php for elfinder
 
   [ Jean-Luc Chrétien ]
   * Copy trunk version in 2.4.8 Tree
   * Modify inc-lcs-applis.php for new module name filexplorer
   * Modify index.php and inc-lcs-applis.php for roundcube and lcs-notify-desktop
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Tue, 21 Sep 2010 21:30:04 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Wed, 22 Sep 2010 02:42:32 +0200
 
 lcs-desktop (0.2~18) Lcs; urgency=low
 

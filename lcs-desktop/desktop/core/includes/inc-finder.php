@@ -24,7 +24,7 @@ list ($idpers, $login)= isauth();
 			}
 		}
 	}
-	if ($resItems==""){$resItems="<li><span class=\"mess_alert\">Votre dossier <strong>\"public_html/$_u\"</strong> est vide.</span><br /><span class=\"mess_info\">Vous pouvez t&eacute;l&eacute;charger une ou plusieurs images dans votre dossier  <strong>\"public_html\"</strong> en utilisant le <a title=\"ftpclient\" onclick=\"parent.JQD.init_link_open_win($(this));\" rel=\"../../clientftp/\" rev=\"ftpclient\" href=\"#icon_dock_lcs_ftpclient\" class=\"ext_link  open_win bouton button \"><strong>&nbsp;&nbsp;Client&nbsp;FTP&nbsp;&nbsp;</strong></a></span></li>";
+	if ($resItems==""){$resItems="<li><span class=\"mess_alert\">Votre dossier <strong>\"public_html/$_u\"</strong> ne contient pas d'image.</span><br /><span class=\"mess_info\">Vous pouvez t&eacute;l&eacute;charger une ou plusieurs images dans votre dossier  <strong>\"public_html\"</strong> en utilisant le <a title=\"filexplorer\" onclick=\"parent.JQD.init_link_open_win($(this));\" rel=\"../../filexplorer/\" rev=\"filexplorer\" href=\"#icon_dock_lcs_filexplorer\" class=\"ext_link  open_win bouton button \"><strong>&nbsp;&nbsp;Explorateur&nbsp;de&nbsp;fichiers&nbsp;&nbsp;</strong></a></span></li>";
 }
 	$res.=$resItems;
 	$res.="</ol>";
