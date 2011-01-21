@@ -1,4 +1,4 @@
-lcs-web (2.4.8~3) UNRELEASED; urgency=low
+lcs-web (2.4.8~3) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -17,6 +17,7 @@ lcs-web (2.4.8~3) UNRELEASED; urgency=low
   * Delete Roundcube session cookie in functions.inc.php
   * Modify applis.php and accueil.php for filexplorer module
   * Modify barre.php for roundcube webmail
+  * Add cron.weekly task lcs-clean-sessions
 
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
@@ -37,7 +38,7 @@ lcs-web (2.4.8~3) UNRELEASED; urgency=low
   [ Cyril Bouthors ]
   * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 13 Jan 2011 15:05:36 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 21 Jan 2011 10:48:04 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
