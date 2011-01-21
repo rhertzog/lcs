@@ -13,6 +13,10 @@ install:
 	install -d $(DESTDIR)/var/lib/lcs/cas
 	install -m 0660 conf/* $(DESTDIR)/var/lib/lcs/cas
 
+# install lcs cas cron.weekly
+	install -d $(DESTDIR)/etc/cron.weekly
+	install -m 755 cron.weekly/* $(DESTDIR)/etc/cron.weekly/
+
 # install lcs cas sbin
 	install -d $(DESTDIR)/usr/sbin
 	install -m 0700 -o root -g root sbin/* $(DESTDIR)/usr/sbin/
