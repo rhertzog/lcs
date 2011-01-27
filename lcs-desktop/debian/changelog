@@ -1,4 +1,4 @@
-lcs-desktop (2.4.8~1) UNRELEASED; urgency=low
+lcs-desktop (2.4.8~1) Lcs; urgency=low
 
   [ Dominique Lepaisant ]
   * Fix bug with the width of windows when the iframe is loaded
