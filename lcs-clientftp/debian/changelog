@@ -1,4 +1,4 @@
-lcs-clientftp (2.4.8~2) UNRELEASED; urgency=low
+lcs-clientftp (2.4.8~2) Lcs; urgency=low
   [Cyril Bouthors]
   * Added symlink support.
 
@@ -8,7 +8,7 @@ lcs-clientftp (2.4.8~2) UNRELEASED; urgency=low
   * Add conflict whit lcs-elfinder
   * Convert doc-html to utf-8
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 07 Jan 2011 13:44:31 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 28 Jan 2011 10:53:27 +0100
 
 lcs-clientftp (2.4.6) Lcs; urgency=low
 
