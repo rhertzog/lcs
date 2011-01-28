@@ -1,8 +1,8 @@
-lcs-dns (2.4.8~1) UNRELEASED; urgency=low
+lcs-dns (2.4.8~1) Lcs; urgency=low
 
   * Fix bug with define function exit_fatal and get_lcsdb_params
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 21 Nov 2010 18:12:27 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 28 Jan 2011 10:56:44 +0100
 
 lcs-dns (2.4.6) Lcs; urgency=low
 
