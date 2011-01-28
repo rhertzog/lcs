@@ -1,4 +1,4 @@
-lcs-web (2.4.8~3) Lcs; urgency=low
+lcs-web (2.4.8~4) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -19,6 +19,8 @@ lcs-web (2.4.8~3) Lcs; urgency=low
   * Modify barre.php for roundcube webmail
   * Add cron.weekly task lcs-clean-sessions
   * Add scripts to create all Maildir users
+  * Add depend on lcs-libjs
+  * Remove www/lib folder with js libraries
 
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
@@ -39,7 +41,7 @@ lcs-web (2.4.8~3) Lcs; urgency=low
   [ Cyril Bouthors ]
   * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 22 Jan 2011 16:08:19 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 28 Jan 2011 18:32:52 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
