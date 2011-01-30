@@ -14,7 +14,7 @@ if ( is_dir ("/usr/share/lcs/swekey"))
 
 
 // register globals
-if (isset($_POST['login'])) $login=$_POST['login']; else $login="" ;
+if (isset($_POST['login'])) $login=trim($_POST['login']); else $login="" ;
 if (isset($_POST['dummy'])) $dummy=$_POST['dummy']; else $dummy="" ;
 if (isset($_POST['string_auth'])) $string_auth=$_POST['string_auth']; else $string_auth="" ;
 if (isset($_POST['time'])) $time=$_POST['time']; else $time="" ;
