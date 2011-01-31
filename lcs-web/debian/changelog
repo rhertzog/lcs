@@ -1,8 +1,8 @@
-lcs-web (2.4.7.2~1) Lcs; urgency=low
+lcs-web (2.4.7.2) Lcs; urgency=low
 
   * delete space before/after login in auth.php
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 30 Jan 2011 10:11:54 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 31 Jan 2011 16:50:45 +0100
 
 lcs-web (2.4.7.1) Lcs; urgency=low
 
