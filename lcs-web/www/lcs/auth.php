@@ -1,5 +1,5 @@
 <?php
-/* lcs/auth.php version du :07 /10/2010 */
+/* lcs/auth.php version du :02/02/2011 */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
@@ -76,7 +76,7 @@ $error=$_GET['error'];
 			if (!@mysql_select_db($DBAUTH, $authlink)) 
     				die ("S&#233;lection de base de donn&#233;es impossible.");
 			$query="INSERT INTO statusages VALUES ('Nogroup', 'auth_ok', '$date', '$source','$login')";
-        		$result=@mysql_query($query);
+        		$result=@mysql_query($query,$authlink);
 
                         if ( file_exists ("/usr/share/lcs/spip/spip_session_lcs.php") ) {
                             // Ouverture d'une session spip
