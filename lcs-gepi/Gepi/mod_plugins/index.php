@@ -1,6 +1,6 @@
 <?php
 /**
- * @version : $Id: index.php 6074 2010-12-08 15:43:17Z crob $
+ * @version : $Id: index.php 6417 2011-01-24 12:18:57Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Julien Jocal
  *
@@ -165,7 +165,7 @@ switch ($_erreur) {
     $_msg = "<p class=\"red\">Il manque le fichier plugin.xml &agrave; ce plugin, impossible de l'installer !</p>";
     break;
   case "2":
-    $_msg = "<p class=\"red\">Le fichier plugin.xml ne respecte pas la struture demand&eacute;e ! voir <a href=\"http://projects.sylogix.org/gepi/wiki/plugin\">la page sur TRAC</a></p>";
+    $_msg = "<p class=\"red\">Le fichier plugin.xml ne respecte pas la struture demand&eacute;e ! voyez <a href=\"https://www.sylogix.org/wiki/gepi/plugin\">la documentation collaborative (wiki)</a></p>";
     break;
 
 default:
@@ -178,12 +178,13 @@ include '../lib/header.inc';
 // ================ FIN HEADER =====================//
 //print_r($liste_plugins);
 //aff_debug($testXML);
+echo "<p class='bold'><a href='../accueil_modules.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 ?>
 
 
 <h3 class="Gepi">Liste des plugins install&eacute;s</h3>
 <p>Pour plus d'informations concernant les plugins de Gepi, voyez
-  <a onclick="window.open(this.href, '_blank'); return false;" href="http://projects.sylogix.org/gepi/wiki/plugin">la page sur TRAC</a>
+  <a onclick="window.open(this.href, '_blank'); return false;" href="https://www.sylogix.org/projects/gepi/wiki/GuideAdministrateur#Syst%C3%A8me-de-plugins">la documentation collaborative (wiki)</a>
 </p>
 <?php echo $_msg; ?>
  <table class="table">

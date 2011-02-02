@@ -1,7 +1,7 @@
 
 <?php
 /*
- * $Id: class_page_accueil.php 5973 2010-11-23 21:00:39Z regis $
+ * $Id: class_page_accueil.php 6459 2011-02-02 18:43:04Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -1065,7 +1065,7 @@ class class_page_accueil {
 	if (($this->statutUtilisateur=='administrateur')||($this->statutUtilisateur=='scolarite')){
 	  $this->creeNouveauItem("/eleves/export_donnees_bulletins.php",
 			  "Extractions statistiques",
-			  "Cet outil vous permet d'extraire des données des bulletins à des fins statisitiques.");
+			  "Cet outil vous permet d'extraire des données des bulletins à des fins statistiques.");
 	}
 
 	if ($this->b>0){

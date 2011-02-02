@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: saisie_notes.php 6154 2010-12-16 17:07:23Z crob $
+ * @version: $Id: saisie_notes.php 6353 2011-01-16 17:35:48Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -366,7 +366,7 @@ if (isset($_POST['is_posted'])) {
                                                 $note_sur_verif = mysql_result($appel_note_sur,0 ,'note_sur');
 						if (($note < 0) or ($note > $note_sur_verif)) {
 							$note = '';
-							$elev_statut = '';
+							$elev_statut = 'v';
 						}
 					}
 					else {

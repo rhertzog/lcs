@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: bull_index.php 5931 2010-11-21 13:11:28Z dblanqui $
+* $Id: bull_index.php 6372 2011-01-19 09:53:19Z tbelliard $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -2775,7 +2775,7 @@ else {
 		/*****************************************
 		* début de la génération du fichier PDF  *
 		* ****************************************/
-		header('Content-type: application/pdf');
+		send_file_download_headers('application/pdf', 'bulletin.pdf');
 		//création du PDF en mode Portrait, unitée de mesure en mm, de taille A4
 		$pdf=new bul_PDF('p', 'mm', 'A4');
 		$nb_eleve_aff = 1;

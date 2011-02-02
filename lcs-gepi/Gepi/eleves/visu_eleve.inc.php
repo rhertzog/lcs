@@ -1,7 +1,7 @@
 <?php
 
 /*
- * @version $Id: visu_eleve.inc.php 6088 2010-12-10 15:03:15Z jjacquard $
+ * @version $Id: visu_eleve.inc.php 6403 2011-01-22 08:25:38Z crob $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Stephane Boireau
  *
@@ -462,7 +462,7 @@ Patientez pendant l'extraction des données... merci.
 			$acces_bulletins="n";
 			$acces_absences="n";
 
-			$acces_discipline="y";
+			$acces_discipline="n";
             $acces_fp="y";
 
 			$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE login='".$ele_login."' AND professeur='".$_SESSION['login']."';";
@@ -547,6 +547,11 @@ Patientez pendant l'extraction des données... merci.
 
 			if(($eleve_classe_prof=="y")||($eleve_groupe_prof=="y")) {
 				$acces_absences="y";
+			}
+
+			if((($eleve_classe_prof=="y")&&(substr(getSettingValue('visuDiscProfClasses'),0,1)=='y'))||
+				(($eleve_groupe_prof=="y")&&(substr(getSettingValue('visuDiscProfGroupes'),0,1)=='y'))) {
+				$acces_discipline="y";
 			}
 
 			//echo "\$acces_releves=$acces_releves<br />";
@@ -716,10 +721,7 @@ Patientez pendant l'extraction des données... merci.
 		}
 
 		$active_mod_discipline=getSettingValue("active_mod_discipline");
-		if($active_mod_discipline=='y') {
-			$acces_discipline="y";
-		}
-		else {
+		if($active_mod_discipline!='y') {
 			$acces_discipline="n";
 		}
 

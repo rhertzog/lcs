@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: liste_pdf.php 5185 2010-09-04 07:10:32Z crob $
+ * $Id: liste_pdf.php 6389 2011-01-20 07:39:15Z crob $
  *
- * Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
  * This file is part of GEPI.
  *
@@ -21,16 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Global configuration file
-
-// Quand on est en SSL, IE n'arrive pas à ouvrir le PDF.
-//Le problème peut être résolu en ajoutant la ligne suivante :
-Header('Pragma: public');
-
-header('Content-Type: application/pdf');
-
 //=============================
-// REMONTé:
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
 //=============================
@@ -43,11 +34,6 @@ define('LargeurPage','210');
 define('HauteurPage','297');
 
 //debug_var();
-
-/*
-// Initialisations files
-require_once("../lib/initialisations.inc.php");
-*/
 
 require_once("./class_pdf.php");
 require_once ("./liste.inc.php");
@@ -66,7 +52,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 //INSERT INTO droits VALUES ('/impression/liste_pdf.php', 'V', 'V', 'V', 'V', 'V', 'V', 'Impression des listes (PDF)', '');
 if (!checkAccess()) {
@@ -250,7 +236,7 @@ if ($id_liste_groupes!=NULL) {
 
 			$nom_releve=date("Ymd_Hi");
 			$nom_releve = 'Liste_'.$nom_releve.'.pdf';
-			header('Content-Type: application/pdf');
+			send_file_download_headers('application/pdf',$nom_releve);
 			$pdf->Output($nom_releve,'I');
 			die();
 		}
@@ -566,6 +552,7 @@ if ($id_liste_groupes!=NULL) {
 	// sortie PDF sur écran
 	$nom_releve=date("Ymd_Hi");
 	$nom_releve = 'Liste_'.$nom_releve.'.pdf';
-	header('Content-Type: application/pdf');
+	send_file_download_headers('application/pdf',$nom_releve);
 	$pdf->Output($nom_releve,'I');
+	//exit();
 ?>

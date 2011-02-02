@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: index.php 6134 2010-12-14 15:05:56Z crob $
+* $Id: index.php 6340 2011-01-12 17:06:02Z crob $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -69,10 +69,30 @@ if(isset($_SESSION['retour_apres_maj_sconet'])) {
 
 // En multisite, on ajoute le répertoire RNE
 if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
-	  // On récupère le RNE de l'établissement
-  $rep_photos='../photos/'.getSettingValue("gepiSchoolRne").'/eleves/';
-}else{
-  $rep_photos='../photos/eleves/';
+	// On récupère le RNE de l'établissement
+	$rep_photos='../photos/'.getSettingValue("gepiSchoolRne").'/eleves/';
+
+	//============================================
+	// Pour le multisite
+	if(!file_exists($rep_photos)) {
+		//@mkdir($rep_photos);
+		$tmp_tab=explode("/",$rep_photos);
+		$chemin="";
+		for($loop=0;$loop<count($tmp_tab);$loop++) {
+			if($loop>0) {
+				$chemin.="/";
+			}
+			$chemin.=$tmp_tab[$loop];
+			if($tmp_tab[$loop]!='..') {
+				@mkdir($chemin);
+			}
+		}
+	}
+	//============================================
+
+}
+else{
+	$rep_photos='../photos/eleves/';
 }
 
 

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: confirm_query.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: confirm_query.php 6421 2011-01-25 14:06:54Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -498,6 +498,7 @@ if (($k < $nb_cible1) and ($tab_cible1[$k] != '')){
         require_once("../lib/header.inc");
         //**************** FIN EN-TETE *****************
         ?><form action="confirm_query.php" method="post" enctype="application/x-www-form-urlencoded"><?php
+		echo add_token_field();
         echo "<p class='grand'>Confirmation de la suppression : ";
         echo "<input type='submit' name='confirm' value='Oui' /> ";
         echo "<input type='submit' name='confirm' value='Non' /></p>";
@@ -580,12 +581,14 @@ if (($k < $nb_cible1) and ($tab_cible1[$k] != '')){
             echo "<p><a href='confirm_query.php?cible1=$cible1&amp;cible2=$cible2&amp;cible3=$cible3&amp;action=$action&amp;k=$k&amp;liste_cible=$liste_cible";
             if (isset($liste_cible2)) echo "&amp;liste_cible2=$liste_cible2";
             if (isset($liste_cible3)) echo "&amp;liste_cible3=$liste_cible3";
+			echo add_token_in_url();
             echo "'>Suite</a></p>";
             die();
         } else {
             $page ="Location: confirm_query.php?cible1=$cible1&cible2=$cible2&cible3=$cible3&action=$action&k=$k&liste_cible=$liste_cible";
             if (isset($liste_cible2)) $page .= "&liste_cible2=$liste_cible2";
             if (isset($liste_cible3)) $page .= "&liste_cible3=$liste_cible3";
+			$page .= add_token_in_url(false);
             header($page);
             die();
         }

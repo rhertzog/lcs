@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: classes_const.php 6074 2010-12-08 15:43:17Z crob $
+* $Id: classes_const.php 6411 2011-01-23 16:11:13Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -245,8 +245,10 @@ if (isset($is_posted)) {
 		$k++;
 	}
 
+	//debug_var();
+
 	if (($liste_cible != '') and ($autorisation_sup != 'no')) {
-		header("Location: ../lib/confirm_query.php?liste_cible=$liste_cible&liste_cible2=$liste_cible2&liste_cible3=$liste_cible3&action=retire_eleve");
+		header("Location: ../lib/confirm_query.php?liste_cible=$liste_cible&liste_cible2=$liste_cible2&liste_cible3=$liste_cible3&action=retire_eleve".add_token_in_url(false));
 	}
 
 	if ($reg_ok == 'yes') {

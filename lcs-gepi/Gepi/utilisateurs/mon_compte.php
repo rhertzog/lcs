@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: mon_compte.php 5811 2010-11-05 10:33:55Z crob $
+* $Id: mon_compte.php 6401 2011-01-21 17:59:38Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -51,6 +51,7 @@ if (($_SESSION['statut'] == 'professeur') or ($_SESSION['statut'] == 'cpe') or (
 }
 
 if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
+	check_token();
 	$msg = '';
 	$no_modif = "yes";
 	$no_anti_inject_password_a = isset($_POST["no_anti_inject_password_a"]) ? $_POST["no_anti_inject_password_a"] : NULL;
@@ -540,6 +541,7 @@ if ($session_gepi->current_auth_mode == "gepi" || $gepiSettings['ldap_write_acce
 
 echo "<p class=bold><a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>\n";
 echo "<form enctype=\"multipart/form-data\" action=\"mon_compte.php\" method=\"post\">\n";
+echo add_token_field();
 echo "<h2>Informations personnelles *</h2>\n";
 
 if ($session_gepi->current_auth_mode != "gepi" && $gepiSettings['ldap_write_access'] == "yes") {

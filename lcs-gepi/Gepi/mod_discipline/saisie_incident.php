@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: saisie_incident.php 6268 2011-01-03 21:15:23Z crob $
+ * $Id: saisie_incident.php 6337 2011-01-12 15:41:30Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -812,9 +812,10 @@ if($etat_incident!='clos') {
 	
 						if(count($tab_alerte_classe)>0) {
 							$destinataires=get_destinataires_mail_alerte_discipline($tab_alerte_classe);
-							if($destinataires=="") {
-								$destinataires=getSettingValue("gepiAdminAdress");
-							}
+							// La liste des destinataires, admin inclus doivent être définis dans "Définition des destinataires d'alertes"
+							//if($destinataires=="") {
+							//	$destinataires=getSettingValue("gepiAdminAdress");
+							//}
 	
 							if($destinataires!="") {
 								$texte_mail=$texte_mail."\n\n"."Message: $msg";

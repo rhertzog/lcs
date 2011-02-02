@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: savebackup.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * $Id: savebackup.php 6372 2011-01-19 09:53:19Z tbelliard $
  *
  * Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -80,11 +80,6 @@ if ($n > 0) {
     clearstatcache();
 }
 
-
-//header('Content-Encoding: utf-8');
-header('Content-Type: text/x-sql');
-header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-header('Content-Disposition: attachment; filename="' . $filename . '"');
-header('Pragma: no-cache');
+send_file_download_headers('text/x-sql', $filename);
 readfile($filepath);
 ?>

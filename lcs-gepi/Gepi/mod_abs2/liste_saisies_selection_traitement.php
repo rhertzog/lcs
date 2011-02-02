@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: liste_saisies_selection_traitement.php 5758 2010-10-26 09:41:34Z jjacquard $
+ * @version $Id: liste_saisies_selection_traitement.php 6375 2011-01-19 15:27:58Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -1010,9 +1010,9 @@ foreach ($results as $saisie) {
 
     echo '<td>';
     $saisies_conflit = $saisie->getSaisiesContradictoiresManquementObligation();
-    foreach ($saisies_conflit as $saisie) {
-	echo "<a href='visu_saisie.php?id_saisie=".$saisie->getPrimaryKey()."' style=''> ";
-	echo $saisie->getId();
+    foreach ($saisies_conflit as $saisie_conflit) {
+	echo "<a href='visu_saisie.php?id_saisie=".$saisie_conflit->getPrimaryKey()."' style=''> ";
+	echo $saisie_conflit->getId();
 	echo "</a>";
 	if (!$saisies_conflit->isLast()) {
 	    echo ' - ';

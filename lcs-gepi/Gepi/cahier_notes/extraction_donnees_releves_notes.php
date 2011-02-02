@@ -1,7 +1,11 @@
 <?php
 	/*
-		$Id: extraction_donnees_releves_notes.php 6294 2011-01-06 10:44:08Z crob $
+		$Id: extraction_donnees_releves_notes.php 6315 2011-01-09 08:41:14Z crob $
 	*/
+
+	$debug_extract="n";
+	$debug_ele_login="s.samadi";
+	$debug_id_groupe=3;
 
 	//========================================
 
@@ -574,8 +578,9 @@
 							$sql="SELECT DISTINCT id_cahier_notes, periode FROM cn_cahier_notes WHERE id_groupe='$current_groupe' ORDER BY periode;";
 							//echo "$sql<br />\n";
 							//if(($tab_ele['groupe'][$j]['id_groupe']==290)&&($i==0)) {
-							//	echo "$sql<br />\n";
-							//}
+							if(($debug_extract=='y')&&($tab_ele['groupe'][$j]['id_groupe']==$debug_id_groupe)&&($current_eleve_login[$i]==$debug_ele_login)) {
+								echo "$sql<br />\n";
+							}
 							$res_grp_id_cn=mysql_query($sql);
 							while($lig_grp_id_cn=mysql_fetch_object($res_grp_id_cn)) {
 								//$tab_ele['groupe'][$j]['id_cn'][$lig_grp_id_cn->id_cahier_notes]['id_racine']=$lig_grp_id_cn->id_cahier_notes;
@@ -583,8 +588,9 @@
 								$sql="SELECT id, nom_court, nom_complet, display_parents FROM cn_conteneurs where id_racine='$lig_grp_id_cn->id_cahier_notes' AND parent=id_racine;";
 								//if($current_groupe==1136) {echo "$sql<br />\n";}
 								//if(($tab_ele['groupe'][$j]['id_groupe']==290)&&($i==0)) {
-								//	echo "$sql<br />\n";
-								//}
+								if(($debug_extract=='y')&&($tab_ele['groupe'][$j]['id_groupe']==$debug_id_groupe)&&($current_eleve_login[$i]==$debug_ele_login)) {
+									echo "$sql<br />\n";
+								}
 								$res_conteneurs_niv1=mysql_query($sql);
 								if(mysql_num_rows($res_conteneurs_niv1)>0) {
 									$cpt=0;
@@ -614,8 +620,9 @@
 										cc.id='$lig_cnt->id'
 										);";
 										//if(($tab_ele['groupe'][$j]['id_groupe']==290)&&($i==0)) {
-										//	echo "$sql<br />\n";
-										//}
+										if(($debug_extract=='y')&&($tab_ele['groupe'][$j]['id_groupe']==$debug_id_groupe)&&($current_eleve_login[$i]==$debug_ele_login)) {
+											echo "$sql<br />\n";
+										}
 										// DEBUG:
 										//if($current_groupe==760) {echo "$sql<br />\n";}
 										$res_note_conteneur=mysql_query($sql);
@@ -633,6 +640,9 @@
 										}
 										// DEBUG:
 										//if($current_groupe==760) {echo "\$tab_ele['groupe'][$j]['id_cn'][$lig_grp_id_cn->id_cahier_notes]['conteneurs'][$cpt]['moy']=".$tab_ele['groupe'][$j]['id_cn'][$lig_grp_id_cn->id_cahier_notes]['conteneurs'][$cpt]['moy']."<br />\n";}
+										if(($debug_extract=='y')&&($tab_ele['groupe'][$j]['id_groupe']==$debug_id_groupe)&&($current_eleve_login[$i]==$debug_ele_login)) {
+											echo "\$tab_ele['groupe'][$j]['id_cn'][$lig_grp_id_cn->id_cahier_notes]['conteneurs'][$cpt]['moy']=".$tab_ele['groupe'][$j]['id_cn'][$lig_grp_id_cn->id_cahier_notes]['conteneurs'][$cpt]['moy']."<br />\n";
+										}
 
 										$cpt++;
 									}
@@ -679,8 +689,9 @@
 								";
 							}
 							//if(($tab_ele['groupe'][$j]['id_groupe']==290)&&($i==0)) {
-							//	echo "$sql1<br />";
-							//}
+							if(($debug_extract=='y')&&($tab_ele['groupe'][$j]['id_groupe']==$debug_id_groupe)&&($current_eleve_login[$i]==$debug_ele_login)) {
+								echo "$sql1<br />";
+							}
 							$query_notes = mysql_query($sql1);
 							//echo "$sql1<br />";
 							//====================================================
@@ -728,6 +739,12 @@
 									$date_note = @mysql_result($query_notes,$mm,'d.date');
 									$note_sur = @mysql_result($query_notes,$mm,'d.note_sur');
 									$coef_devoir = @mysql_result($query_notes,$mm,'d.coef');
+
+									//===========================================
+									// Pour utiliser en DEBUG	
+									$current_id_devoir = @mysql_result($query_notes,$mm,'d.id');
+									$tab_ele['groupe'][$j]['devoir'][$m]['id_devoir']=$current_id_devoir;
+									//===========================================
 	
 									$tab_ele['groupe'][$j]['devoir'][$m]['display_app']=$eleve_display_app;
 									$tab_ele['groupe'][$j]['devoir'][$m]['app']=$eleve_app;
@@ -739,8 +756,9 @@
 									$tab_ele['groupe'][$j]['devoir'][$m]['coef']=$coef_devoir;
 									// On ne récupère pas le nom long du devoir?
 									//if(($tab_ele['groupe'][$j]['id_groupe']==290)&&($i==0)) {
-									//	echo "\$tab_ele['groupe'][$j]['devoir'][$m]['note']=".$tab_ele['groupe'][$j]['devoir'][$m]['note']."<br />";
-									//}
+									if(($debug_extract=='y')&&($tab_ele['groupe'][$j]['id_groupe']==$debug_id_groupe)&&($current_eleve_login[$i]==$debug_ele_login)) {
+										echo "\$tab_ele['groupe'][$j]['devoir'][$m]['note']=".$tab_ele['groupe'][$j]['devoir'][$m]['note']."<br />";
+									}
 
 									// AJOUT 20091113
 									$tab_ele['groupe'][$j]['devoir'][$m]['id_cahier_notes']=@mysql_result($query_notes,$mm,'cn.id_cahier_notes');

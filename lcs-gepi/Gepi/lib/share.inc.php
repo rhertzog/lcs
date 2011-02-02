@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: share.inc.php 6076 2010-12-08 16:34:35Z crob $
+ * $Id: share.inc.php 6372 2011-01-19 09:53:19Z tbelliard $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
@@ -3530,19 +3530,19 @@ function nom_photo($_elenoet_ou_login,$repertoire="eleves",$arbo=1) {
 			$_elenoet_ou_login = mysql_result($query, 0,'login');
 		  }
 
-		  if(file_exists($chemin."../photos/eleves/$_elenoet_ou_login.jpg")) {
-				$photo=$chemin."../photos/eleves/$_elenoet_ou_login.jpg";
+		  if(file_exists($chemin."../photos/".$repertoire2."eleves/$_elenoet_ou_login.jpg")) {
+				$photo=$chemin."../photos/".$repertoire2."eleves/$_elenoet_ou_login.jpg";
 			}
 			else {
-				if(file_exists($chemin."../photos/eleves/".sprintf("%05d",$_elenoet_ou_login).".jpg")) {
-					$photo=$chemin."../photos/eleves/".sprintf("%05d",$_elenoet_ou_login).".jpg";
+				if(file_exists($chemin."../photos/".$repertoire2."eleves/".sprintf("%05d",$_elenoet_ou_login).".jpg")) {
+					$photo=$chemin."../photos/".$repertoire2."eleves/".sprintf("%05d",$_elenoet_ou_login).".jpg";
 				} else {
 					for($i=0;$i<5;$i++){
 						if(substr($_elenoet_ou_login,$i,1)=="0"){
 							$test_photo=substr($_elenoet_ou_login,$i+1);
 							//if(file_exists($chemin."../photos/eleves/".$test_photo.".jpg")){
-							if(($test_photo!='')&&(file_exists($chemin."../photos/eleves/".$test_photo.".jpg"))) {
-								$photo=$chemin."../photos/eleves/".$test_photo.".jpg";
+							if(($test_photo!='')&&(file_exists($chemin."../photos/".$repertoire2."eleves/".$test_photo.".jpg"))) {
+								$photo=$chemin."../photos/".$repertoire2."eleves/".$test_photo.".jpg";
 								break;
 							}
 						}
@@ -5991,5 +5991,24 @@ if ($archive->extract(PCLZIP_OPT_PATH, $repertoire) == 0) {
 /**********************************************************************************************
  *                              Fin Manipulation de fichiers
  **********************************************************************************************/
+
+// Méthode pour envoyer les en-têtes HTTP nécessaires au téléchargement de fichier.
+// Le content-type est obligatoire, ainsi que le nom du fichier.
+function send_file_download_headers($content_type, $filename, $content_disposition = 'attachment') {
+
+  //header('Content-Encoding: utf-8');
+  header('Content-Type: '.$content_type);
+  header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+  header('Content-Disposition: '.$content_disposition.'; filename="' . $filename . '"');
+  
+  // Contournement d'un bug IE lors d'un téléchargement en HTTPS...
+  if (isset($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false)) {
+    header('Pragma: private');
+    header('Cache-Control: private, must-revalidate');
+  } else {
+    header('Pragma: no-cache');
+  }
+}
+
 
 ?>

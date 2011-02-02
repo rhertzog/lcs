@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: export_cahier_notes.php 4030 2010-01-20 18:28:06Z crob $
+ * @version: $Id: export_cahier_notes.php 6399 2011-01-20 12:29:56Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -218,18 +218,7 @@ if($type_export=="CSV") {
 	$nom_fic.=".csv";
 
 	$now=gmdate('D, d M Y H:i:s').' GMT';
-	header('Content-Type: text/x-csv');
-	header('Expires: ' . $now);
-	// lem9 & loic1: IE need specific headers
-	if(my_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
-		header('Content-Disposition: inline; filename="'.$nom_fic.'"');
-		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-		header('Pragma: public');
-	}
-	else {
-		header('Content-Disposition: attachment; filename="'.$nom_fic.'"');
-		header('Pragma: no-cache');
-	}
+	send_file_download_headers('text/x-csv',$nom_fic);
 
 	// Initialisation du contenu du fichier:
 	$fd='';
