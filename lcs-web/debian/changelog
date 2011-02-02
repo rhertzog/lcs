@@ -1,4 +1,4 @@
-lcs-web (2.4.8~4) Lcs; urgency=low
+lcs-web (2.4.8~5) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -21,6 +21,7 @@ lcs-web (2.4.8~4) Lcs; urgency=low
   * Add scripts to create all Maildir users
   * Add depend on lcs-libjs
   * Remove www/lib folder with js libraries
+  * Fix bug in mysql_query statusages
 
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
@@ -43,7 +44,7 @@ lcs-web (2.4.8~4) Lcs; urgency=low
   [ Cyril Bouthors ]
   * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 30 Jan 2011 10:20:59 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 02 Feb 2011 09:46:22 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
