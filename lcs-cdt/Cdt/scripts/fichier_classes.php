@@ -2,11 +2,12 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de configuration du cahier de textes -
 			_-=-_
+  "Valid XHTML 1.0 Strict"
    =================================================== */
 session_name("Cdt_Lcs");
 @session_start(); 
@@ -30,22 +31,20 @@ if (isset($_POST['Sauver']))
 			exit;}
 	
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
-	<TITLE></TITLE>
-	<meta name="generator" content="Bluefish 1.0.7">
-	<META NAME="CREATED" CONTENT="20051226;22304481">
-	<META NAME="CHANGED" CONTENT="20051226;22565970">
-	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<title>Cahier de textes num&eacute;rique</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link href="../style/style.css" rel="stylesheet" type="text/css" />
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
 
-	</HEAD>
-<BODY LANG="fr-FR" DIR="LTR">
-<H1 class='title'>Configuration du cahier de textes</H1>
+	</head>
+<body>
+<h1 class='title'>Configuration du cahier de textes</h1>
 <?php
 /**************************************************
 * positionnement du flag d'absence dans le fichier de conf *
@@ -284,7 +283,7 @@ if (isset($_GET['delarch']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_S
 	if (isset($_POST['Vider']))
 			{
 			echo "<script type='text/javascript'>";
-			echo " if (confirm('Confirmer l\'effacement du contenu des tables cahiertxt, absences, devoir et onglets ? ')){";	        
+			echo " if (confirm('Confirmer l\'effacement du contenu des tables cahiertxt, absences, devoir, onglets et sequences? ')){";
 			echo ' location.href = "';
 			echo $_SERVER['PHP_SELF'];
 			echo '"+ "?vidtab=" + "yes" + "&TA=" + "'.md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'";} else {';
@@ -302,14 +301,15 @@ if (isset($_GET['vidtab']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SE
  		$rq3 = "TRUNCATE TABLE devoir";
  		$rq4 = "TRUNCATE TABLE absences";
  		$rq5 = "TRUNCATE TABLE postit_eleve";
- 		
+ 		$rq5 = "TRUNCATE TABLE sequences";
 		// lancer la requete
 		$result1 = @mysql_query ($rq1) or die (mysql_error());
 		$result2 = @mysql_query ($rq2) or die (mysql_error());
 		$result3 = @mysql_query ($rq3) or die (mysql_error());
 		$result4 = @mysql_query ($rq4) or die (mysql_error());
 		$result5 = @mysql_query ($rq5) or die (mysql_error());
-		if ($result1 && $result2 && $result3 && $result4 && $result5) $mess2="<h3 class='cok'> les tables  ont &#233;t&#233; vid&#233;es";
+                $result6 = @mysql_query ($rq6) or die (mysql_error());
+		if ($result1 && $result2 && $result3 && $result4 && $result5 && $result6) $mess2="<h3 class='cok'> les tables  ont &#233;t&#233; vid&#233;es";
 		else $mess2="<h3 class='nook'> Une erreur s'est produite lors de l'effacement des donn&#233;es";
 		
 		
@@ -326,200 +326,194 @@ function get_key()
 			}	
 						
 //traitement du fichier texte		
-		if (!empty($_FILES["FileSelection4"]["name"]))
-			{//echo $_FILES["FileSelection4"]["size"]."-".$_FILES["FileSelection4"]["type"];exit;
-		//
-			if (($_FILES["FileSelection4"]["size"]>0) && ($_FILES["FileSelection4"]["type"]=="text/x-csv"))
-				{
-				
-				//$nomFichier = $_FILES["FileSelection3"]["name"] ;
-				//$nomTemporaire = $_FILES["FileSelection3"]["tmp_name"] ;
-				$res = get_key();
-				$cmd2="mysql -uroot -p".$res." ". DB_NAME ." < ".$_FILES['FileSelection4']['tmp_name'];
-				
-				exec($cmd2,$rien,$retour);
-				if ($retour == 0)  $mess2= "<h3 class='cok'>  La restauration de la base de donn&#233;es a r&#233;ussi"; 
-				else $mess2 ="<h3 class='nook'>  La restauration de la base de donn&#233;es a &#233;chou&#233; !"."<br /></h3>";
-				//$mess2= $cmd;
-				}
-				else $mess2= "<h3 class='nook'> Erreur dans l'importation du fichier de sauvegarde "."<br /></h3>";
-			}
-			else $mess2= "<h3 class='nook'> Vous devez s&#233;lectionner un fichier de sauvegarde "."<br /></h3>";
-		}
+if (!empty($_FILES["FileSelection4"]["name"]))
+        {//echo $_FILES["FileSelection4"]["size"]."-".$_FILES["FileSelection4"]["type"];exit;
+//
+        if (($_FILES["FileSelection4"]["size"]>0) && ($_FILES["FileSelection4"]["type"]=="text/x-csv"))
+                {
 
-?><form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#liste'; ?>" method="post" enctype="multipart/form-data">
-<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
+                //$nomFichier = $_FILES["FileSelection3"]["name"] ;
+                //$nomTemporaire = $_FILES["FileSelection3"]["tmp_name"] ;
+                $res = get_key();
+                $cmd2="mysql -uroot -p".$res." ". DB_NAME ." < ".$_FILES['FileSelection4']['tmp_name'];
+
+                exec($cmd2,$rien,$retour);
+                if ($retour == 0)  $mess2= "<h3 class='cok'>  La restauration de la base de donn&#233;es a r&#233;ussi";
+                else $mess2 ="<h3 class='nook'>  La restauration de la base de donn&#233;es a &#233;chou&#233; !"."<br /></h3>";
+                //$mess2= $cmd;
+                }
+                else $mess2= "<h3 class='nook'> Erreur dans l'importation du fichier de sauvegarde "."<br /></h3>";
+        }
+        else $mess2= "<h3 class='nook'> Vous devez s&#233;lectionner un fichier de sauvegarde "."<br /></h3>";
+}
+
+?>
+<form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#liste'; ?>" method="post" enctype="multipart/form-data">
+<div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <a name="liste"></a>
-<fieldset id="field7">
-<legend id="legende"> Cr&eacute;ation du fichier &quot;Liste des classes&quot;  &nbsp  
+<fieldset class="field7d">
+<legend class="legended"> Cr&eacute;ation du fichier &quot;Liste des classes&quot;  &nbsp;
 <?php
 //affichage de la liste des classes
 include ("../Includes/data.inc.php");
 			$jo="";
-			echo "<select name='CLASSE' style='background-color:#E6E6FA'></h4>";
+			echo "<select name='CLASSE' style='background-color:#E6E6FA'>";
 			foreach ($classe as $clef => $valeur)
 			  { 
-			  echo "<option valeur=\"$valeur\"";
-			  if ($valeur==$jo) {echo 'selected';}
+			  echo "<option value=\"$valeur\"";
 			  echo ">$valeur</option>\n";
 			  }
 			  echo "</select>\n";
 ?>
- 
-</legend>
-<div ALIGN=LEFT>
+ </legend>
 <?php
 /**********************
  affichage du formulaire *
 ************************/
-
-			echo '<H4 class="perso">La liste des classes sous forme de menu d&eacute;roulant est &eacute;labor&eacute;e &#224; partir d\'un fichier Php.<br /> 
-			Ce fichier peut &#234;tre g&eacute;n&eacute;r&eacute; soit : </H4>
-			<ul>
-			<li> &agrave; partir de l\'annuaire du LCS
-					<P>
-						<input type="radio" name="size" value="long"> Format long (Classe_LT_2DE1) <br />
-						<input type="radio" name="size" value="court" checked> Format court (2DE1) Attention, pour utiliser ce format, le nom de la classe ne doit pas comporter de tiret bas _ ( exemple : 3_A ) </P>
-						<P> &nbsp;&nbsp;<input type="submit" name="Importer" value="Importer" > 
-					</P></LI>	
-					
-					<li> &agrave; partir d\'un fichier texte contenant la liste des classes s&eacute;par&eacute;es par une virgule.(ex
-					: 2nde1,1ereS,TermS,... TS1) <br />	
-					(Attention : pas de virgule ni de caract&#232;re CR &#224; la fin de la derni&#232;re ligne)
-						<br />
-						Indiquez le chemin du fichier texte : 
-						<br /><INPUT TYPE=FILE NAME="FileSelection3" SIZE=30>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<input type="submit" name="Creer" value="Cr&#233;er le fichier Php" >
-						<br /><br />
-					<a HREF="./edit.php" onClick="auth_popup(); return false" title="Modifier">EDITER  
-					</A>&nbsp le fichier csv actuel pour le modifier
-					</li>
-					</UL>
-					<H4 class="perso"><input type="submit" name="test" value="Tester la coh&#233;rence" >  du fichier classe avec l\'annuaire pour un bon fonctionnement.
-					</H4>';
+echo '<h4 class="perso">La liste des classes sous forme de menu d&eacute;roulant est &eacute;labor&eacute;e &#224; partir d\'un fichier Php.<br /> 
+    Ce fichier peut &#234;tre g&eacute;n&eacute;r&eacute; soit : <br /></h4>
+   <ul class="perso">
+    <li> &agrave; partir de l\'annuaire du LCS
+                    <p><input type="radio" name="size" value="long" /> Format long (Classe_LT_2DE1) <br />
+                            <input type="radio" name="size" value="court" checked="checked" /> Format court (2DE1) Attention, pour utiliser ce format, le nom de la classe ne doit pas comporter de tiret bas _ ( exemple : 3_A )
+                            <br /> <br /><input type="submit" name="Importer" value="Importer" />
+                    </p>
+    </li>
+    <li> &agrave; partir d\'un fichier texte contenant la liste des classes s&eacute;par&eacute;es par une virgule.(ex
+            : 2nde1,1ereS,TermS,... TS1) <br />
+            (Attention : pas de virgule ni de caract&#232;re CR &#224; la fin de la derni&#232;re ligne)<br />
+            Indiquez le chemin du fichier texte :
+            <br /><input type="file" name="FileSelection3" size="30" />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="submit" name="Creer" value="Cr&#233;er le fichier Php" />
+            <br /><br />
+            <a href="./edit.php" onclick="auth_popup(); return false" title="Modifier">EDITER
+            </a>&nbsp; le fichier csv actuel pour le modifier
+    </li>
+    </ul>
+    <h4 class="perso"><input type="submit" name="test" value="Tester la coh&#233;rence" />  du fichier classe avec l\'annuaire pour un bon fonctionnement.
+    </h4>';
 	
 //affichage du resultat
 		if ($mess1!="") echo $mess1;
 ?>
-</div>
 </fieldset>
+ </div>
 </form>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#key'; ?>" method="post">
-<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
+    <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <a name="key"></a>
-<fieldset id="field7">
-<legend id="legende"> Cryptage</legend>
-<div ALIGN=LEFT>
+<fieldset class="field7d">
+<legend class="legended"> Cryptage</legend>
+
 <?php
-echo '<H4 class="perso"> L\'acc&eacute;s au cahier de texte par les parents se fait par un lien avec le nom des classes crypt&eacute;es. Le crytage doit &#234;tre 
-renouvel&eacute; en d&eacute;but de chaque ann&eacute;e pour que les liens de l\'ann&eacute;e pr&eacute;c&eacute;dente ne soient plus valides.
-		<P>
-			<input type="submit" name="change_grain" value="Changer" > la cl&#233; de cryptage ';
-			if ( $cle=="ok") echo  "<h3 class='cok'> La cl&#233; a &eacute;t&eacute; chang&eacute;e ";
-			elseif ( $cle=="ko") echo " <h3 class='nook'> Echec du changement de cl&eacute";
-			echo '</P></H4>';			
+echo '<h4 class="perso"> L\'acc&eacute;s au cahier de texte par les parents se fait par un lien avec le nom des classes crypt&eacute;es. Le crytage doit &#234;tre 
+renouvel&eacute; en d&eacute;but de chaque ann&eacute;e pour que les liens de l\'ann&eacute;e pr&eacute;c&eacute;dente ne soient plus valides.</h4>
+			<h4 class="perso"><input type="submit" name="change_grain" value="Changer" /> la cl&#233; de cryptage </h4>';
+			if ( $cle=="ok") echo  "<h4 class='cok'> La cl&#233; a &eacute;t&eacute; chang&eacute;e </h4>";
+			elseif ( $cle=="ko") echo " <h4 class='nook'> Echec du changement de cl&eacute</h4>";
+			echo '';
 ?>
-</div>
 </fieldset>
+ </div>
 </form>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#abs'; ?>" method="post">
-<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
+<div ><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <a name="abs"></a>
-<fieldset id="field7">
-<legend id="legende"> Visualisation des absences </legend>
-<div ALIGN=LEFT>
-<?
-echo '<H4 class="perso"><br /> Le carnet d\'absences pour les &eacute;l&egrave;ves et les parents doit &ecirc;tre activ&eacute uniquement si les informations affich&eacute;es sont significatives.
- Cela implique que tous les professeurs saisissent les absences via le carnet d\'absences du Cdt. 
-		<P>
-		Actuellement, la visualisation des absences est';if ($FLAG_ABSENCE==0) echo ' : D&#233;sactiv&#233;e'; else echo ' : Activ&#233;e ';		
-		echo '</P><P><input type="radio" name="absence" value="0" ';
-			if ($FLAG_ABSENCE==1) echo 'checked';
-			echo '> D&#233;sactiver la visualisation des absences<br />
-			<input type="radio" name="absence" value="1"';
-			if ($FLAG_ABSENCE==0) echo 'checked';
-			echo '> Activer la visualisation des absences 
-			&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-			<input type="submit" name="res_nores" value="Valider" >&nbsp;&nbsp;&nbsp;&nbsp;
-			</P></H4>';
+<fieldset class="field7d">
+<legend class="legended"> Visualisation des absences </legend>
+
+<?php
+echo '<h4 class="perso"><br /> Le carnet d\'absences pour les &eacute;l&egrave;ves et les parents doit &ecirc;tre activ&eacute; uniquement si les informations affich&eacute;es sont significatives.
+ Cela implique que tous les professeurs saisissent les absences via le carnet d\'absences du Cdt. </h4>
+		
+		<ul class="perso">
+		<li>Actuellement, la visualisation des absences est';if ($FLAG_ABSENCE==0) echo ' : <span class="nook">D&#233;sactiv&#233;e</span>'; else echo ' :  <span class="cok">Activ&#233;e </span>';
+		echo '<p><input type="radio" name="absence" value="0" ';
+		if ($FLAG_ABSENCE==1) echo ' checked="checked"';
+		echo '/> D&#233;sactiver la visualisation des absences<br />
+		<input type="radio" name="absence" value="1"';
+		if ($FLAG_ABSENCE==0) echo ' checked="checked"';
+		echo ' /> Activer la visualisation des absences	<br /><br />
+                <input type="submit" name="res_nores" value="Valider" />&nbsp;&nbsp;&nbsp;&nbsp;
+		</p>
+                </li>
+                </ul>';
 ?>
-</div>
 </fieldset>
+</div>
 </form>
 
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#bdd'; ?>" method="post" enctype="multipart/form-data">
-<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
-<a name="bdd">
-</a><fieldset id="field7">
-<legend id="legende"> Gestion de la base de donn&#233;es</legend>
-<div ALIGN=LEFT>
+<div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
+<a name="bdd"></a>
+<fieldset class="field7d">
+<legend class="legended"> Gestion de la base de donn&#233;es</legend>
+
 <?php
 echo '
-<ol><H4 class="perso">
-<li><u><b>Archivage</b></u><P>En fin d\'ann&#233;e scolaire, vous pouvez archiver le cahier de textes, ce qui permettra aux profs de consulter leur cahier des ann&#233;es ant&#233;rieures.<br /> Indiquez ci dessous le nom que vous voulez donner &#224; l\'archive. Ce nom servant &#224; renommer les tables de donn&#233;es, ne mettez pas de caract&#232;res -  :  / \\ etc ... Il est conseill&#233; de simplement remplacer les chiffres dans le nom propos&#233;.<br /><br />
+<ol class="perso">
+<li><b>Archivage</b><p>En fin d\'ann&#233;e scolaire, vous pouvez archiver le cahier de textes, ce qui permettra aux profs de consulter leur cahier des ann&#233;es ant&#233;rieures.<br /> Indiquez ci dessous le nom que vous voulez donner &#224; l\'archive. Ce nom servant &#224; renommer les tables de donn&#233;es, ne mettez pas de caract&#232;res -  :  / \\ etc ... Il est conseill&#233; de simplement remplacer les chiffres dans le nom propos&#233;.<br /><br />
 
-<input type="submit" name="Archiver" value="Cr&#233;er une archive nomm&#233;e" >&nbsp&nbsp&nbsp&nbsp<INPUT TYPE=TEXT NAME="name_arch" Value="'.date("Y",mktime()-31536000)."_".date("Y").'"SIZE=9>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-En d&#233;but d\'ann&#233;e, &nbsp <input type="submit" name="Vider" value="Vider les tables" >&nbsp  de donn&#233;es du cahier de texte.<br /><br />
+<input type="submit" name="Archiver" value="Cr&#233;er une archive nomm&#233;e" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="name_arch" value="'.date("Y",mktime()-31536000)."_".date("Y").'" size="9" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+En d&#233;but d\'ann&#233;e, &nbsp; <input type="submit" name="Vider" value="Vider les tables" />&nbsp;  de donn&#233;es du cahier de texte.<br /><br />
 
-Archives existantes : 
-		';
+Archives existantes : '
+        ;
 $TablesExist= mysql_query("show tables");
 	while ($table=mysql_fetch_row($TablesExist))
 	if (mb_ereg("^onglets[[:alnum:]]",$table[0]))
 	{
 	$archive=explode('s',$table[0]);
-	echo ($archive[1]). ' &nbsp ';
+	echo ($archive[1]). ' &nbsp; ';
 	}
 	
-	
-	echo '</P></li>';
-echo '<li><u><b> Sauvegarde</b></u><P>Le bouton ci dessous permet de g&#233;n&#233;rer un fichier de sauvegarde compl&#233;te de la base de donn&#233;es (structure + donn&#233;es)<br /><br />
-
-<input type="submit" name="Sauver" value="Sauvegarder la base de donn&#233;es" >	</P></li>
-<li><u><b> Restauration</b></u><P>Le bouton ci dessous permet d\'importer les donn&#233;es &#224; partir d\'un fichier de sauvegarde. Attention, la structure et  les donn&#233;es pr&#233;sentes dans la base, seront SUPPRIMEES et REMPLACEES par celles du fichier s&#233;lectionn&#233; <br />
+echo '</p></li>';
+echo '<li><b> Sauvegarde</b><p>Le bouton ci dessous permet de g&#233;n&#233;rer un fichier de sauvegarde compl&#233;te de la base de donn&#233;es (structure + donn&#233;es)<br /><br />
+<input type="submit" name="Sauver" value="Sauvegarder la base de donn&#233;es" />	</p></li>
+<li><b> Restauration</b><p>Le bouton ci dessous permet d\'importer les donn&#233;es &#224; partir d\'un fichier de sauvegarde. Attention, la structure et  les donn&#233;es pr&#233;sentes dans la base, seront SUPPRIMEES et REMPLACEES par celles du fichier s&#233;lectionn&#233; <br />
 S&#233;lectionner le fichier de sauvegarde : 
-						<br /><INPUT TYPE=FILE NAME="FileSelection4" SIZE=30>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="submit" name="Restaurer" value="Restaurer la base de donn&#233;es" >					
-						</P></li>
-</ol></H4>';
-	
-	if ($mess2!="") echo $mess2;
+<br /><input type="file" name="FileSelection4" size="30" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="Restaurer" value="Restaurer la base de donn&#233;es" />
+</p>
+</li>
+</ol>';
+if ($mess2!="") echo $mess2;
 	
 ?>
-</div>
 </fieldset>
+</div>
 </form>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#creneau'; ?>" method="post" >
-<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
+<div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <a name="creneau"></a>
-<fieldset id="field7">
-<legend id="legende"> Param&egrave;trage des cr&eacute;neaux horaires </legend>
-<div ALIGN=LEFT>
+<fieldset class="field7d">
+<legend class="legended"> Param&egrave;trage des cr&eacute;neaux horaires </legend>
+
 <?php
 //Affichage du formulaire de parametrage des creneaux horaires
 
 		include "../Includes/creneau.inc.php";
 		//pour les dix creneaux
+                echo '<ul class="perso">';
 		for ($index=0;$index<10;$index++)
 		{
 		//creneaux du matin
 		if ($index<5)
 		{
-		echo "<H4 class='perso'>M ".($index+1)." commence &#224;  " ;
+		echo "<li> M ".($index+1)." commence &#224;  " ;
 		}
 		//creneaux de l'apres-midi
 		if ($index>4)
 		{
-		echo "<H4 class='perso'>S ".($index-4)." commence &#224;  " ;
+		echo "<li> S ".($index-4)." commence &#224;  " ;
 		}
-		//affichage d'un menu d�roulant heure d�but 8h 17h
+		//affichage d'un menu deroulant heure debut 8h 17h
 		echo "<select name='hd".$index."'\n >";
 		$heure = 8;
 		while ($heure <= 17)
-		{ echo "<option valeur=\"$heure\"";
-		if ($heure==date('G',$deb[$index])) {echo 'selected';}
+		{ echo "<option value=\"$heure\"";
+		if ($heure==date('G',$deb[$index])) {echo ' selected="selected"';}
 		echo ">$heure</option>\n";
 		$heure++;
 		}
@@ -529,18 +523,18 @@ S&#233;lectionner le fichier de sauvegarde :
 		echo "<select name='md".$index."' \n >";
 		$min = 00;
 		while ($min <= 55)
-		{ echo "<option valeur=\"$min\"";
-		if ($min==date('i',$deb[$index])) {echo 'selected';}
+		{ echo "<option value=\"$min\"";
+		if ($min==date('i',$deb[$index])) {echo ' selected="selected"';}
 	    echo ">$min</option>\n";
 		$min+=5;
 		}
 		echo "</select>\n min "."&nbsp;et se termine &#224; &nbsp;";
-		//affichage d'un menu d�roulant heure fin 8h 18h
+		//affichage d'un menu deroulant heure fin 8h 18h
 		echo "<select name='hf".$index."' \n >";
 		$heure = 8;
 		while ($heure <= 18)
-		{ echo "<option valeur=\"$heure\"";
-		if ($heure==date('G',$fin[$index])) {echo 'selected';}
+		{ echo "<option value=\"$heure\"";
+		if ($heure==date('G',$fin[$index])) {echo ' selected="selected"';}
 		echo ">$heure</option>\n";
 		$heure++;
 		}
@@ -550,17 +544,17 @@ S&#233;lectionner le fichier de sauvegarde :
 		echo "<select name='mf".$index."' \n >";
 		$min = 0;
 		while ($min <= 55)
-		{ echo "<option valeur=\"$min\"";
-		if ($min==date('i',$fin[$index])) {echo 'selected';}
+		{ echo "<option value=\"$min\"";
+		if ($min==date('i',$fin[$index])) {echo ' selected="selected"';}
 		echo ">$min</option> \n";
 		$min+=5;
 		}
-		echo "</select> min \n </h4>";
+		echo "</select> min \n</li> ";
 		}
 		//fin de boucle 
-		
+		echo '</ul>';
 		//affichage du bouton
-		echo '<div align="center"><input type="submit" name="Enregistrer" value="Enregistrer" ></div></H4></P>';
+		echo '<div ><input type="submit" name="Enregistrer" value="Enregistrer" /></div>';
 	
 //affichage du resultat de parametrage
 		
@@ -570,11 +564,14 @@ S&#233;lectionner le fichier de sauvegarde :
 		}
 		if (isset ($mess3)) echo "<h3 class='nook'>".$mess3;
 ?>
-</div>
-</fieldset>	
+</fieldset>
+</div>	
 </form>
-</BODY>
-</HTML>
+<?php
+include ('../Includes/pied.inc');
+?>
+</body>
+</html>
 
 
 

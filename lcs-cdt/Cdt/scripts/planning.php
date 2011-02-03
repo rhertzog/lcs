@@ -2,12 +2,12 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de plannification d'un devoir par un prof -
 			_-=-_
-	
+    "Valid XHTML 1.0 Strict"
    ============================================= */
 session_name("Cdt_Lcs");
 @session_start();
@@ -174,7 +174,7 @@ if (isset($_POST['enregistrer']) )
 				include("../Includes/config.inc.php");
 				
 				//mise en forme de la date du devoir
-				if ($_SESSION['version']=">=432") 
+				if ($_SESSION['version']==">=432") 
 					setlocale(LC_TIME,"french");
 				else
 					setlocale("LC_TIME","french");
@@ -271,7 +271,7 @@ if (isset($_POST['enregistrer']) )
 				include("../Includes/config.inc.php");
 				
 				//mise en forme de la date du devoir
-				if ($_SESSION['version']=">=432") 
+				if ($_SESSION['version']==">=432") 
 					setlocale(LC_TIME,"french");
 				else
 					setlocale("LC_TIME","french");
@@ -345,7 +345,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
 			mysql_close();
 			include("../Includes/config.inc.php");	
 			//mise en forme de la date du devoir
-			if ($_SESSION['version']=">=432") setlocale(LC_TIME,"french");
+			if ($_SESSION['version']==">=432") setlocale(LC_TIME,"french");
 				else setlocale("LC_TIME","french");	
 				$dat_new=strToTime($dat_supp);	
 				//destinataire
@@ -404,16 +404,18 @@ if (isset($_GET['ladate']))
  
  }
 ?>
-<HTML>
-<HEAD>
-<TITLE>Planning</TITLE>
-<META http-equiv="Content-Type" content="text/html;charset=utf-8">
-<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<title>Cahier de textes num&eacute;rique</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link href="../style/style.css" rel="stylesheet" type="text/css" />
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-</HEAD>
-<BODY>
+</head>
+<body>
 <div class="plan-titre">Planning des Devoirs Surveill&#233;s de <?php echo $clas;?></div>
 <?
 //Modif groupes
@@ -460,25 +462,25 @@ for ($loup=0; $loup < count($uids); $loup++)
 //eom	
 //Affichage conditionnel d'un message d'erreur
 if ((isset($_POST['enregistrer'])) && ($durée==""))
- echo '<H6 class="erreur">'.$message. ' : Durée erron&#233;e</H6>';
+ echo '<h6 class="erreur">'.$message. ' : Durée erron&#233;e</h6>';
 
 //Affichage du formulaire de saisie du sujet du devoir et de la duree
 if (isset($_GET['ladate']) &&(isset($_GET['inser'])))
 	{
 	echo '<FORM id="form-ajt-dev" ACTION="'.$_SERVER["PHP_SELF"].'" METHOD="POST">
-	<SCRIPT language="Javascript" src="../Includes/barre_java.js"></SCRIPT>
-	<INPUT name="JourCourant" type="hidden" id="JourCourant" value="'. $_GET["jc"].'">
-	<INPUT name="classe" type="hidden" id="classe" value="'. $_GET['klasse'].'">
-	<INPUT name="matière" type="hidden" id="matière" value="'. $_GET['matière'].'">
-	<INPUT name="creneau" type="hidden" id="creneau" value="'. $_GET['creneau'].'">
-	<INPUT name="login" type="hidden" id="login" value="'. $login.'">
-	<INPUT name="data" type="hidden" id="data" value="'.$_GET["ladate"].'">
-	<INPUT name="numrubri" type="hidden" id="numrubri" value="'.$numrub.'">
-	<INPUT name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'">
-	<p>Intitul&#233; du devoir :<INPUT class="text" TYPE=TEXT NAME="sujet" SIZE=28 MAXLENGTH=28>Dur&#233;e :<INPUT class="text" TYPE=TEXT NAME="durée" SIZE=1 MAXLENGTH=1>heure(s)&nbsp;';
+	<script  language="Javascript" src="../Includes/barre_java.js"></script>
+	<input name="JourCourant" type="hidden" id="JourCourant" value="'. $_GET["jc"].'">
+	<input name="classe" type="hidden" id="classe" value="'. $_GET['klasse'].'">
+	<input name="matière" type="hidden" id="matière" value="'. $_GET['matière'].'">
+	<input name="creneau" type="hidden" id="creneau" value="'. $_GET['creneau'].'">
+	<input name="login" type="hidden" id="login" value="'. $login.'">
+	<input name="data" type="hidden" id="data" value="'.$_GET["ladate"].'">
+	<input name="numrubri" type="hidden" id="numrubri" value="'.$numrub.'">
+	<input name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'">
+	<p>Intitul&#233; du devoir :<input class="text" TYPE=TEXT name="sujet" SIZE=28 MAXLENGTH=28>Dur&#233;e :<input class="text" TYPE=TEXT name="durée" SIZE=1 MAXLENGTH=1>heure(s)&nbsp;';
 	if ($ct1cours) 
 		{
-		echo '</P><P> Ce devoir sera diffus&#233; en  ';
+		echo '</p><p> Ce devoir sera diffus&#233; en  ';
 		for ($j=0;$j<count($liste_classe);$j++)
 			{
 			echo $liste_classe[$j]." ";	
@@ -486,9 +488,9 @@ if (isset($_GET['ladate']) &&(isset($_GET['inser'])))
 			
 		}
 	else
-	echo '<a id="bt-select" href="diffuse_devoirs.php?rubrique='.$numrub.'" onClick="diffusedev_popup('.$numrub.'); return false" ></A>';
-	echo'	<INPUT class="bt" TYPE=SUBMIT NAME="enregistrer" VALUE=""></P>
-	</FORM>';
+	echo '<a id="bt-select" href="diffuse_devoirs.php?rubrique='.$numrub.'" onClick="diffusedev_popup('.$numrub.'); return false" ></a>';
+	echo'	<input class="bt"type="submit" name="enregistrer" value=""></p>
+	</form>';
 	}
 //Determination du jour courant
 if (isset($_POST['JourCourant'])) 
@@ -580,37 +582,37 @@ if ($nb>0)
 <div id="cfg-container">
 <div id="cfg-contenu">
 <!-- affichage du calendrier hebdomadaire -->
-<FORM action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" name="planning" id="planning">
-<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
+<form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post"  id="planning">
+    <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <!-- Affichage des boutons -->	
-	<INPUT name="JourCourant" type="hidden" id="JourCourant" value="<?php echo $Lundi;?>">
-	<INPUT name="classe" type="hidden" id="classe" value="<?php echo $clas;?>">
-	<INPUT name="matière" type="hidden" id="matière" value="<?php echo $mati;?>">
-	<INPUT name="numrubri" type="hidden" id="numrubri" value="<?php echo $numrub;?>">
-	<TABLE id="btn-plan-cdt">
-		<TR>
-			<TD width="50" align="center" ><INPUT type="submit" name="mprec" value="<<" title="Mois précédent" class="bt50"></TD>
-			<TD width="50" align="center" ><INPUT type="submit" name="prec" value="<" title="Semaine précédente" class="bt50"></TD>
-			<TD width="150" align="center" ><INPUT type="submit" name="quit" id="quit" value="" class="bt-exit"></TD>
-			<TD width="50" align="center" ><INPUT type="submit" name="suiv" value=">" title="Semaine suivante" class="bt50"></TD>
-			<TD width="50" align="center" ><INPUT type="submit" name="msuiv" value=">>" title="Mois suivant" class="bt50"></TD>
+	<input name="JourCourant" type="hidden" id="JourCourant" value="<?php echo $Lundi;?>" />
+	<input name="classe" type="hidden" id="classe" value="<?php echo $clas;?>" />
+	<input name="matière" type="hidden" id="matière" value="<?php echo $mati;?>" />
+	<input name="numrubri" type="hidden" id="numrubri" value="<?php echo $numrub;?>" />
+	<table id="btn-plan-cdt">
+		<tr>
+			<td ><input type="submit" name="mprec" value="&lt;&lt;" title="Mois précédent" class="bt50" /></td>
+			<td><input type="submit" name="prec" value="&lt;" title="Semaine précédente" class="bt50" /></td>
+			<td><input type="submit" name="quit" id="quit" value="" class="bt-exit" /></td>
+			<td><input type="submit" name="suiv" value="&gt;" title="Semaine suivante" class="bt50" /></td>
+			<td><input type="submit" name="msuiv" value="&gt;&gt;" title="Mois suivant" class="bt50" /></td>
 			
-		</TR>
-	</TABLE>
+		</tr>
+	</table>
 	
-	<TABLE id="plan-cdt" CELLPADDING=1 CELLSPACING=2>
+	<table id="plan-cdt" cellpadding="1" cellspacing="2">
 		<thead> 
-			<th><img src="../images/livre.gif">  </th>
+			<tr><th><img src="../images/livre.gif" alt="+" /> </th>
 <?php
 // Affichage des jours et dates de la semaine en haut du tableau"j-M-Y",
 	for ($i=0; $i<=5; $i++) {
 		$TS = $Lundi+$i*86400;
-		echo '<td width="14.5%" colspan="2">'.LeJour($TS)."<br />".datefr($TS)."</td>\n";
+		echo '<td colspan="2">'.LeJour($TS)."<br />".datefr($TS)."</td>\n";
 	}
 ?>
-		</thead>
+                   </tr></thead>
 		<tbody>
-		<tr>
+		
 <?php
 	$horaire = array("M1<br />","M2<br />","M3<br />","M4<br />","M5<br />",
 	"S1<br />","S2<br />","S3<br />","S4<br />","S5<br />");
@@ -618,7 +620,7 @@ if ($nb>0)
 		{//a
 		//Affichage de la désignation des creneaux horaires
 		
-		echo "<TH>".$horaire[$h].date('G:i',$deb[$h])."-".date('G:i',$fin[$h])."</TH>\n";
+		echo "<tr><th>".$horaire[$h].date('G:i',$deb[$h])."-".date('G:i',$fin[$h])."</th>\n";
 		
 		
 		//Affichage du contenu des creneaux horaires 
@@ -637,7 +639,7 @@ if ($nb>0)
 							{//e
 							
 							// on ecrit devoir en cours
-							echo '<TD  rowspan="'.$dur[$j][$h][0].'" class="encours">Devoir en cours </TD>'."\n";
+							echo '<td  rowspan="'.$dur[$j][$h][0].'" class="encours">Devoir en cours </td>'."\n";
 							//on marque les creneaux suivants pour ne pas les marques "passe" avant la fin du devoir
 							for ($x=1; $x<$dur[$j][$h][0]; $x++) {$plan[$j][$h+$x][0] = "EC"; }
 							
@@ -648,7 +650,7 @@ if ($nb>0)
 							if (($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) >= mktime()) && ($plan[$j][$h][1]=="R"))
 								{//g
 								// on ecrit devoir en cours
-								echo '<TD  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </TD>'."\n";
+								echo '<td  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </td>'."\n";
 								//on marque les creneaux suivants pour ne pas les marques "passe" avant la fin du devoir 
 								for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "EC"; }
 								}//g
@@ -658,7 +660,7 @@ if ($nb>0)
 							//cas "R" "-" ou "R" "O"	
 								if 	 ((!isset($plan[$j][$h][1])) )  
 									{//h
-									echo '<TD class="passe">Pass&#233;</TD>' ."\n";
+									echo '<td class="passe">Pass&#233;</td>' ."\n";
 									}//h
 						 
 							}	//e //fin du cas "R" pendant un devoir
@@ -670,12 +672,12 @@ if ($nb>0)
 								{//i
 								//cas "EC"-"O" "EC"-"-" "EC"-"Rp"
 								if  (($plan[$j][$h][1]=="O" || (!isset($plan[$j][$h][1]))) ||(($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) < mktime()) && ($plan[$j][$h][1]=="R")))
-								 echo '<TD   class="passe">'.$plan[$j][$h][1].'Pass&#233;</TD>' ."\n";
+								 echo '<td   class="passe">'.$plan[$j][$h][1].'Pass&#233;</td>' ."\n";
 								 //cas "EC"-"R"
 								if  (($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) >= mktime()) && ($plan[$j][$h][1]=="R"))
 								{//gg
 								// on ecrit devoir en cours
-								echo '<TD  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </TD>'."\n";
+								echo '<td  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </td>'."\n";
 								//on marque les creneaux suivants pour ne pas les marques "passe" avant la fin du devoir
 								for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "EC";}
 								}//gg
@@ -688,32 +690,32 @@ if ($nb>0)
 								//"Rp"-"-""
 								if (!isset($plan[$j][$h][1]) ) 
 								{
-								echo '<TD   rowspan="'.$dur[$j][$h][0].'" class="devoir">'.$mat[$j][$h][0].'</TD>'."\n";
+								echo '<td   rowspan="'.$dur[$j][$h][0].'" class="devoir">'.$mat[$j][$h][0].'</td>'."\n";
 								for ($x=1; $x<$dur[$j][$h][0]; $x++) {$plan[$j][$h+$x][0] = "O";}	
-								echo '<TD   class="passe">Pass&#233;</TD>' ."\n";															
+								echo '<td   class="passe">Pass&#233;</td>' ."\n";															
 								}
 								//"Rp"- "R"
 								if  (($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) >= mktime()) && ($plan[$j][$h][1]=="R"))
 								{//
 								// on ecrit devoir1 passe,devoir 2 encours 
-								echo '<TD   rowspan="'.$dur[$j][$h][0].'" class="devoir">'.$mat[$j][$h][0].'</TD>'."\n";
+								echo '<td   rowspan="'.$dur[$j][$h][0].'" class="devoir">'.$mat[$j][$h][0].'</td>'."\n";
 								for ($x=1; $x<$dur[$j][$h][0]; $x++) {$plan[$j][$h+$x][0] = "O";}
-								echo '<TD  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </TD>'."\n";
+								echo '<td  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </td>'."\n";
 								//on marque les creneaux suivants pour ne pas les marques "passe" avant la fin du devoir
 								for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "EC";}								
 								}//
 								//"Rp"-"O"
 								if  (( isset($plan[$j][$h][1]) && $plan[$j][$h][1]=="O"))
-								{echo '<TD   rowspan="'.$dur[$j][$h][0].'" class="devoir">'.$mat[$j][$h][0].'</TD>'."\n";
+								{echo '<td   rowspan="'.$dur[$j][$h][0].'" class="devoir">'.$mat[$j][$h][0].'</td>'."\n";
 								for ($x=1; $x<$dur[$j][$h][0]; $x++) {$plan[$j][$h+$x][0] = "O";}
 								}
 								if  (($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) < mktime()) && ($plan[$j][$h][1]=="R"))
 								{//gg
 								//"Rp"-"Rp"
 								// on ecrit devoir2 passe
-								echo '<TD   rowspan="'.$dur[$j][$h][0].'" class="devoir">'.$mat[$j][$h][0].'</TD>'."\n";
+								echo '<td   rowspan="'.$dur[$j][$h][0].'" class="devoir">'.$mat[$j][$h][0].'</td>'."\n";
 								for ($x=1; $x<$dur[$j][$h][0]; $x++) {$plan[$j][$h+$x][0] = "O";}
-								echo '<TD   rowspan="'.$dur[$j][$h][1].'" class="devoir">'.$mat[$j][$h][1].'</TD>'."\n";
+								echo '<td   rowspan="'.$dur[$j][$h][1].'" class="devoir">'.$mat[$j][$h][1].'</td>'."\n";
 								for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "O";}
 								}//gg
 								
@@ -725,19 +727,19 @@ if ($nb>0)
 								//O -
 								if (!isset($plan[$j][$h][1]) ) 
 								{
-								echo '<TD   class="passe">Pass&#233;</TD>' ."\n";		
+								echo '<td   class="passe">Pass&#233;</td>' ."\n";		
 								}
 								//O-R 
 								if  (($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) >= mktime()) && ($plan[$j][$h][1]=="R"))
 								{//
-								echo '<TD  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </TD>'."\n";
+								echo '<td  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </td>'."\n";
 								//on marque les creneaux suivants pour ne pas les marques "passe" avant la fin du devoir
 								for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "EC";}	
 								}
 								//O-Rp 
 								if  (($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) < mktime()) && ($plan[$j][$h][1]=="R"))
 								{
-								echo '<TD   rowspan="'.$dur[$j][$h][1].'" class="devoir">'.$mat[$j][$h][1].'</TD>'."\n";
+								echo '<td   rowspan="'.$dur[$j][$h][1].'" class="devoir">'.$mat[$j][$h][1].'</td>'."\n";
 								for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "O";}
 								}
 								}
@@ -747,13 +749,13 @@ if ($nb>0)
 						{
 						//"-"-"O" + "-"-"-"+
 						if  ( !isset($plan[$j][$h][1]) )
-						echo '<TD colspan="2"  class="passe">Pass&#233;</TD>'."\n";
+						echo '<td colspan="2"  class="passe">Pass&#233;</td>'."\n";
 						//"-"-"R"
-						else echo '<TD   class="passe">Pass&#233;</TD>' ."\n";
+						else echo '<td   class="passe">Pass&#233;</td>' ."\n";
 						if  (($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) >= mktime()) && ($plan[$j][$h][1]=="R"))
 								{//gg
 								// on ecrit devoir en cours
-								echo '<TD  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </TD>'."\n";
+								echo '<td  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </td>'."\n";
 								//on marque les creneaux suivants pour ne pas les marques "passe" avant la fin du devoir
 								for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "EC";}
 								}//gg
@@ -763,8 +765,8 @@ if ($nb>0)
 								{//gg
 								//"
 								// on ecrit devoir2 passe
-								echo '<TD   class="passe">Pass&#233;</TD>'."\n";
-								echo '<TD   rowspan="'.$dur[$j][$h][1].'" class="devoir">'.$mat[$j][$h][1].'</TD>'."\n";
+								echo '<td   class="passe">Pass&#233;</td>'."\n";
+								echo '<td   rowspan="'.$dur[$j][$h][1].'" class="devoir">'.$mat[$j][$h][1].'</td>'."\n";
 								for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "Op";}
 								}//gg
 									}
@@ -781,26 +783,26 @@ if ($nb>0)
 							{//m
 							if (($Lundi + $j * 86400 + $dif[$h]) > mktime())  //MODIF
 								{//n
-								echo '<TD  rowspan="'.$dur[$j][$h][0].'" class="reserve">'.$mat[$j][$h][0].
+								echo '<td  rowspan="'.$dur[$j][$h][0].'" class="reserve">'.substr($mat[$j][$h][0],0,10).
 								'<br /><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][0].' " />
 								<a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j].
-								'&jc='.$Lundi.'&klasse='.$clas.'&creneau='.$h.'&matière='.$mati.'&suppr=yes&numdev='
-								.$num[$j][$h][0].'&numrubr='.$numrub.'" title="Supprimer ce devoir">'.
-								'<img alt="aide"   border="0"src="../images/planifier-cdt-supp.png"   /> </a>'."</TD>\n";
+								'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati.'&amp;suppr=yes&amp;numdev='
+								.$num[$j][$h][0].'&amp;numrubr='.$numrub.'" title="Supprimer ce devoir">'.
+								'<img alt="aide"    src="../images/planifier-cdt-supp.png"   /> </a>'."</td>\n";
 								if (!isset($plan[$j][$h][1])) 
 									{//o
-									echo '<TD   class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
-									.'&inser=yes'.'&jc='.$Lundi.'&klasse='.$clas.'&creneau='.$h.'&matière='.$mati
-									.'&numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-"></a></TD>'."\n";
+									echo '<td   class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
+									.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati
+									.'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
 									}//o
 								elseif ($plan[$j][$h][1]=="R")  
 									{//p
-									echo '<TD  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.$mat[$j][$h][1].
+									echo '<td  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.substr($mat[$j][$h][1],0,10).
 									'<br /><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][1].'" /> 
 									<a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j].
-									'&jc='.$Lundi.'&klasse='.$clas.'&creneau='.$h.'&matière='.$mati.'&suppr=yes&numdev='
-									.$num[$j][$h][1].'&numrubr='.$numrub.'" title="Supprimer ce devoir">'.
-									'<img alt="aide" src="../images/planifier-cdt-supp.png"> </a>'."</TD>\n";
+									'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati.'&amp;suppr=yes&amp;numdev='
+									.$num[$j][$h][1].'&amp;numrubr='.$numrub.'" title="Supprimer ce devoir">'.
+									'<img alt="aide" src="../images/planifier-cdt-supp.png" /> </a>'."</td>\n";
 									}//p
 								} //n
 							}//m
@@ -812,18 +814,18 @@ if ($nb>0)
 								
 								if (!isset($plan[$j][$h][1])) 
 									{//s
-									echo '<TD   class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
-									.'&inser=yes'.'&jc='.$Lundi.'&klasse='.$clas.'&creneau='.$h.'&matière='.$mati
-									.'&numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-"></a></TD>'."\n";
+									echo '<td   class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
+									.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati
+									.'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
 									}//s
 								elseif ($plan[$j][$h][1]=="R")   
 									{//t
-									echo '<TD  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.$mat[$j][$h][1].
+									echo '<td  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.substr($mat[$j][$h][1],0,10).
 									'<br /><br /><img alt="aide"   src="../images/help-info.png"  title ="'.$suj[$j][$h][1].'" />&nbsp; &nbsp; &nbsp; 
 									<a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j].
-									'&jc='.$Lundi.'&klasse='.$clas.'&creneau='.$h.'&matière='.$mati.'&suppr=yes&numdev='
-									.$num[$j][$h][1].'&numrubr='.$numrub.'" title="Supprimer ce devoir">'.
-									'<img alt="aide"  border="0" src="../images/b_drop.png"> </a>'."</TD>\n";
+									'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&matière='.$mati.'&amp;suppr=yes&amp;numdev='
+									.$num[$j][$h][1].'&amp;numrubr='.$numrub.'" title="Supprimer ce devoir">'.
+									'<img alt="aide"   src="../images/b_drop.png" /> </a>'."</td>\n";
 									}//t
 									}//r
 								} //q
@@ -831,27 +833,27 @@ if ($nb>0)
 								elseif (!isset($plan[$j][$h][0])) 
 						{//l
 						if (!isset($plan[$j][$h][1]))
-						echo '<TD colspan="2"  class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
-						.'&inser=yes'.'&jc='.$Lundi.'&klasse='.$clas.'&creneau='.$h.'&matière='.$mati
-						.'&numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-"></a></TD>'."\n";
+						echo '<td colspan="2"  class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
+						.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati
+						.'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
 						else
-						echo '<TD class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
-						.'&inser=yes'.'&jc='.$Lundi.'&klasse='.$clas.'&creneau='.$h.'&matière='.$mati
-						.'&numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-"></a></TD>'."\n"; 
+						echo '<td class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
+						.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati
+						.'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
 						}//l
 							
 					//cellules de separation à la mi-journee			
-					if (($h==4)&&($j==5)) echo '<TR border=0><TD class="mi-jour" colspan="13"></TD></TR>';	
+					if (($h==4)&&($j==5)) echo '</tr><tr><td class="mi-jour" colspan="13"></td>';
 				}	//b
-			echo "</TR>\n";
+			echo "</tr>\n";
 		
 		}//a
 ?>
 		</tbody>
-	</TABLE>
+	</table>
 	
-<H5>Pour planifier un nouveau devoir, cliquer sur le cr&#233;neau horaire correspondant au d&#233;but du devoir</h5>
-</FORM>
+<h5>Pour planifier un nouveau devoir, cliquer sur le cr&#233;neau horaire correspondant au d&#233;but du devoir</h5>
+    </div></form>
 <?php
 //Affichage d'une boite de confirmation d'effacement
 if (isset($_GET["suppr"]))
@@ -862,9 +864,11 @@ if (isset($_GET["suppr"]))
 	.' + "&delrub=" +'."1245".' + "&ladate=" +'."'";echo $date[0];echo "'".'+ "&jc="+'."'".$Lundi."'".'
 	+ "&klasse="+'."'".$clas."'".'+ "&numrubr="+'."'".$numrub."'".'+ "&matière="+'."'".$mati."'".' + "&TA=" +'." '". md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF']))."'".' ;}</script>';
 	}
-  echo '</div>'; 	//fin du contenu
-echo '</div>'; 	//fin du container
+  ?>
+</div> <!-- fin du contenu -->
+</div> <!-- fin du container-->
+<?php
 include ('../Includes/pied.inc'); 
 ?>
-</BODY>
-</HTML> 
+</body>
+</html> 

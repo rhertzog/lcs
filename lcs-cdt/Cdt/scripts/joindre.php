@@ -2,11 +2,12 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de traitement des pièces jointes-
 			_-=-_
+    "Valid XHTML 1.0 Strict"
    =================================================== */
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -31,21 +32,19 @@ $texte = strtr($texte,$accent,$noaccent);
 return $texte;
 } 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
-	<TITLE></TITLE>
-	<meta name="generator" content="Bluefish 1.0.7">
-	<META NAME="CREATED" CONTENT="20051226;22304481">
-	<META NAME="CHANGED" CONTENT="20051226;22565970">
-	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<title>Documents joints</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link href="../style/style.css" rel="stylesheet" type="text/css"/>
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-	</HEAD>
-<BODY LANG="fr-FR" DIR="LTR">
-<H1 class='title'>Joindre un document</H1>
+	</head>
+<body>
+<h1 class='title'>Joindre un document</h1>
 <?php
 
 //si clic sur le bouton Valider
@@ -105,13 +104,13 @@ if (isset($_POST['Valider']))
 					$pj="/~".$_SESSION['login']."/".$sousrep."/".$nomFichier;
 					//insertion du lien
 					$Doc ="<a href= '../../..". $pj."' > ". $nom_lien." </a> ";
-					echo '<SCRIPT language="Javascript">
-					<!--
+					echo '<script type="text/javascript">
+                                         //<![CDATA[
 					opener.tinyMCE.execCommand("mceInsertContent",false,"'.$Doc.'");
 					//opener.tinyMCE.activeEditor.selection.setContent("'.$Doc.'");
-					window.close()
-					// -->
-					</script>';
+					window.close();
+					 //]]>
+                                         </script>';
 					$Doc ="";
 					}
 			else $mess1= "<h3 class='ko'>1. Erreur dans le transfert du fichier"."<br /></h3>";
@@ -122,7 +121,7 @@ if (isset($_POST['Valider']))
 
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data">
-<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
+    <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <fieldset id="field7">
 <legend id="legende">Transfert d'un fichier</legend>
 
@@ -133,12 +132,12 @@ if (!isset($_POST['Valider']))
 	echo '<ol>';
 	echo '<li>S&#233;lectionner le document &#224; joindre (';
 	echo ini_get( 'upload_max_filesize');
-	echo '  maxi) : <br /><input type=file name="FileSelection1" SIZE=40></li>';
-	echo '<li>Indiquer le nom du lien  : <br /><input type=text class="text" name=nom_lien SIZE=30></li>';
-	echo '<li>Indiquer le sous-r&#233;pertoire de votre "public_html" dans lequel sera enregistr&#233;e l\'image : <font size=3>  s\'il n\'existe pas, il sera cr&#233;&#233; </font><br /><input class="text" type=text name=sousrep Value=Docs_Cdt SIZE=30></li>';
+	echo '  maxi) : <br /><input type="file" name="FileSelection1" size="40" /></li>';
+	echo '<li>Indiquer le nom du lien  : <br /><input type="text" class="text" name="nom_lien" size="30" /></li>';
+	echo '<li>Indiquer le sous-r&#233;pertoire de votre "public_html" dans lequel sera enregistr&#233;e l\'image :   s\'il n\'existe pas, il sera cr&#233;&#233; <br /><input class="text" type="text" name="sousrep" value="Docs_Cdt" size="30" /></li>';
 	echo '<li>Le bouton <b> Valider </b> transf&#232;re le fichier s&#233;lectionn&#233; sur le serveur et ins&#232;re automatiquement le lien.</li>';
 	echo '</ol>';
-	echo '<input type="submit" name="Valider" value="Valider" class="bt">';
+	echo '<input type="submit" name="Valider" value="Valider" class="bt" />';
 	}
 //affichage du resultat
 	else 
@@ -147,7 +146,11 @@ if (!isset($_POST['Valider']))
 	if ($mess2!="") echo $mess2;
 	}
 ?>
-</fieldset>	
-</FORM>
-</BODY>
-</HTML>
+</fieldset>
+    </div>
+</form>
+<?php
+include ('../Includes/pied.inc');
+?>
+</body>
+</html>

@@ -11,7 +11,7 @@ $("#switch-postit").click(function() {
  	else if ($("#switch-postit").is(".postdown")) {
 		 $("#switch-postit").removeClass("postdown");
 		 $("#switch-postit").addClass("postup");
-		 $('#postit-eleve').animate({top: '+=280'})
+		 $('#postit-eleve').animate({top: '+=280'}) 
 	};
  });
 });
@@ -28,6 +28,8 @@ $(function(){
 	$('#onglev').animate({top: '+='+ offset});
 	 });
 });
+
+
 
 });
 

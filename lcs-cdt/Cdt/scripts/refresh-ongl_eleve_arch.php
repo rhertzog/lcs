@@ -42,11 +42,11 @@ $ann_arch=$_POST['thearch'];
 		if ($cible == ($_SESSION['numero'][$x])) 
 		
 			{
-			echo '<li id="active"><a href="#" title="" onclick="refresh_cdt_arch('. $numero[$x].','.$tsmp.',\''.$ann_arch.'\')" id="courant">&nbsp;'.$mat[$x].'&nbsp;<br />&nbsp;'.$pref[$x].'  '.$prof[$x].'&nbsp;</a></li>';
+			echo '<li id="active"><a href="#" title="" onclick="refresh_cdt_arch('. $_SESSION['numero'][$x].','.$tsmp.',\''.$ann_arch.'\')" id="courant">&nbsp;'.$_SESSION["mat"][$x].'&nbsp;<br />&nbsp;'.$_SESSION["pref"][$x].'  '.$_SESSION["prof"][$x].'&nbsp;</a></li>';
 			}
 			else 
 			{
-			echo '<li><a href="#" title="" onclick="refresh_cdt_arch('. $_SESSION['numero'][$x].','.$tsmp.',\''.$ann_arch.'\')" >&nbsp;'.$_SESSION["mat"][$x].'&nbsp;<br />&nbsp;'.$_SESSION["pref"][$x].'  '.$_SESSION["prof"][$x].'&nbsp;</a>';
+			echo '<li><a href="#" title="" onclick="refresh_cdt_arch('. $_SESSION['numero'][$x].','.$tsmp.',\''.$ann_arch.'\')" >&nbsp;'.$_SESSION["mat"][$x].'&nbsp;<br />&nbsp;'.$_SESSION["pref"][$x].'  '.$_SESSION["prof"][$x].'&nbsp;</a></li>';
 			}
 		}
 

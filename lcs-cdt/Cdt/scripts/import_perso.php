@@ -2,11 +2,12 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'import de données perso dans sa base-
 			_-=-_
+    "Valid XHTML 1.0 Strict"
    =================================================== */
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -24,11 +25,11 @@ if (!isset($_SESSION['login']) )exit;
 elseif ($_SESSION['cequi']!="prof") exit;
 
 if (isset($_POST['Fermer'])) 
-	echo "<SCRIPT language='Javascript'>
-					<!--
-					window.close()
-					// -->
-					</script>";	
+	echo '<script type="text/javascript">
+                    //<![CDATA[
+                    window.close();
+                   //]]>
+                    </script>';
 					
 include "/var/www/lcs/includes/headerauth.inc.php";
   list ($idpers,$log) = isauth();
@@ -45,21 +46,19 @@ return $texte;
 
 } 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
-	<TITLE></TITLE>
-	<meta name="generator" content="Bluefish 1.0.7">
-	<META NAME="CREATED" CONTENT="20051226;22304481">
-	<META NAME="CHANGED" CONTENT="20051226;22565970">
-	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<title>Import perso</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link href="../style/style.css" rel="stylesheet" type="text/css"/>
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-	</HEAD>
-<BODY LANG="fr-FR" DIR="LTR">
-<H1 class='title'></H1>
+	</head>
+<body>
+<h1 class='title'></h1>
 <?php
 
 //si clic sur le bouton Valider
@@ -120,7 +119,7 @@ if (isset($_POST['Valider']))
 
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data">
-<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
+    <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <fieldset id="field7">
 <legend id="legende">Import de données</legend>
 
@@ -134,19 +133,23 @@ if (!isset($_POST['Valider']))
 	echo '<ol>';
 	echo '<li>S&#233;lectionner le fichier .cdt contenant les donn&#233;es (';
 	echo ini_get( 'upload_max_filesize');
-	echo '  maxi) : <br /><input type=file name="FileSelection1" SIZE=40></li>';
+	echo '  maxi) : <br /><input type="file" name="FileSelection1" size="40" /></li>';
 	echo '</ol>';
-	echo '<input type="submit" title="Valider" name="Valider" value="" class="bt-valid" >
-		<input class="bt-fermer" type="submit" name="Fermer" value="" >';
+	echo '<input type="submit" title="Valider" name="Valider" value="" class="bt-valid" />
+		<input class="bt-fermer" type="submit" name="Fermer" value="" />';
 	}
 //affichage du resultat
 	else 
 	{
 	if ($mess1!="") echo $mess1;
-	echo '<input class="bt-fermer" type="submit" name="Fermer" value="" >';
+	echo '<input class="bt-fermer" type="submit" name="Fermer" value="" />';
 	}
 ?>
-</fieldset>	
-</FORM>
-</BODY>
-</HTML>
+</fieldset>
+        </div>
+</form>
+<?php
+include ('../Includes/pied.inc');
+?>
+</body>
+</html>

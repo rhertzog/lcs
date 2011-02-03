@@ -1,5 +1,5 @@
 /*
- * jQuery UI 1.7.2
+ * jQuery UI 1.7.3
  *
  * Copyright (c) 2009 AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT (MIT-LICENSE.txt)
@@ -14,7 +14,7 @@ var _remove = $.fn.remove,
 
 //Helper functions and ui object
 $.ui = {
-	version: "1.7.2",
+	version: "1.7.3",
 
 	// $.ui.plugin is deprecated.  Use the proxy pattern instead.
 	plugin: {
@@ -135,13 +135,17 @@ if (isFF2) {
 
 //jQuery plugins
 $.fn.extend({
-	remove: function() {
-		// Safari has a native remove event which actually removes DOM elements,
-		// so we have to use triggerHandler instead of trigger (#3037).
-		$("*", this).add(this).each(function() {
-			$(this).triggerHandler("remove");
+	remove: function(selector, keepData) {
+		return this.each(function() {
+			if ( !keepData ) {
+				if ( !selector || $.filter( selector, [ this ] ).length ) {
+					$( "*", this ).add( this ).each(function() {
+						$( this ).triggerHandler( "remove" );
+					});
+				}
+			}
+			return _remove.call( $(this), selector, keepData );
 		});
-		return _remove.apply(this, arguments );
 	},
 
 	enableSelection: function() {

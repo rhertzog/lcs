@@ -2,11 +2,12 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de carnet absence-
 			_-=-_
+   "Valid XHTML 1.0 Strict"
    =================================================== */
    
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -24,7 +25,7 @@ if (!isset($_SESSION['login']) )exit;
 elseif ($_SESSION['cequi']!="prof") exit;
 
 if (isset($_POST['Fermer'])) 
-echo "<SCRIPT language='Javascript'>
+echo "<script  language='Javascript'>
 					<!--
 					window.close()
 					// -->
@@ -167,8 +168,8 @@ if (isset($_POST['Valider']))
 				// htlmpurifier
 				$mot_x = $_POST['motif_x'][$uidpot];
 				$config = HTMLPurifier_Config::createDefault();
-		    	$config->set('Core.Encoding', 'ISO-8859-15'); 
-		    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+                                $config->set('Core.Encoding', 'ISO-8859-15');
+                                $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
 		   		$purifier = new HTMLPurifier($config);
 		   		$mot_x = $purifier->purify($mot_x);
 		   		$mot_x=mysql_real_escape_string($mot_x);
@@ -187,8 +188,8 @@ if (isset($_POST['Valider']))
 				// htlmpurifier
 				$mot_x = $_POST['motif_x'][$uidpot];
 				$config = HTMLPurifier_Config::createDefault();
-		    	$config->set('Core.Encoding', 'ISO-8859-15'); 
-		    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+                                $config->set('Core.Encoding', 'ISO-8859-15');
+                                $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
 		   		$purifier = new HTMLPurifier($config);
 		   		$mot_x = $purifier->purify($mot_x);
 		   		$mot_x=mysql_real_escape_string($mot_x);
@@ -496,100 +497,99 @@ if ($exist=="true")
 	
 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
-	<TITLE>module <(+_-)/></TITLE>
-	<meta name="generator" content="Bluefish 1.0.7">
-	<META NAME="CREATED" CONTENT="20051226;22304481">
-	<META NAME="CHANGED" CONTENT="20051226;22565970">
-	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
-	<link  href="../style/navlist-prof.css" rel=StyleSheet type="text/css">
-	<link  href="../style/ui.all.css" rel=StyleSheet type="text/css">
-	<link  href="../style/ui.datepicker.css" rel=StyleSheet type="text/css">
-	<link  href="../style/ui.theme.css" rel=StyleSheet type="text/css">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+        <meta name="author" content="Philippe LECLERC -TICE CAEN" />
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<title>module &#139;(+_-)/&#155;</title>
+	<link href="../style/style.css" rel="stylesheet" type="text/css"/>
+	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/ui.all.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/ui.datepicker.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/ui.theme.css" rel="stylesheet" type="text/css" />
 	<!--[if IE]>
-<link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
-<![endif]-->
-	<SCRIPT language="Javascript" src="../Includes/barre_java.js"></SCRIPT>
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
+        <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
+        <![endif]-->
+	<script  type="text/javascript" src="../Includes/barre_java.js"></script>
+	<script  type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
+	<script  type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
+	<script  type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
+	<script  type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
+        <script type="text/javascript" src="../Includes/cdt.js"></script>
 
-</HEAD>
-<BODY LANG="fr-FR" DIR="LTR">
-
-<H1 class='title'>Carnet d'absences</H1>
+</head>
+<body>
+<h1 class='title'>Carnet d'absences</h1>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
-<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
+    <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" /></div>
 <fieldset id="field7">
 <legend id="legende">Saisie / visualisation des absences</legend>
 <?php
 //affichage du formulaire
-		echo '<div id="abs-contenu">';
-	//si pas de classe de même niveau dans la matière
-	if (!mysql_num_rows($result)==0) 
-		{
-		echo '<p>Ce carnet vous permet de consigner les <B>A</B>bsences/<b>R</b>etards de vos &eacute;l&egrave;ves, de sortir un bilan pour une p&eacute;riode donn&eacute;e et de consulter par semaine, les absences/retards dans toutes les mati&egrave;res.</p>';
-		echo '<div id="crenos">';
-		echo '<p>Date : <input id="cpe-abs" size="10" name="datejavac_dif" value="'.$dtajac_dif.'"readonly="readonly" style="cursor: text" />'; 
-		echo " Classe :<select name='mlec547trg2s5hy'class='cdt-select'>";
-	foreach ( $data1 as $clé => $valeur)
-	  { echo "<option valeur=\"$valeur\"";
-	  if ($valeur==$ch) {echo 'selected';}
-	  echo ">$valeur</option>\n";
-	  }
-	  echo "</select></p>";
-	  echo "<p>Cr&#233;neaux horaires :";
-	$horaire = array("M1","M2","M3","M4","M5","S1","S2","S3","S4","S5");
-	for ($h=0; $h<=9; $h++) 
-		{
-		echo '<input type="checkbox" name="cren[]"   value="'.$horaire[$h].'"'; if (in_array($horaire[$h], $tab_cren)) echo 'checked';
-		echo ' >'.$horaire[$h];
-		}
-		echo "<input  class='bt-valid-sel' type='submit' name='OK' value='' />";
-		echo '</p></div>';
+echo '<div id="abs-contenu">';
+//si pas de classe de même niveau dans la matière
+if (!mysql_num_rows($result)==0) 
+        {
+        echo '<p>Ce carnet vous permet de consigner les <b>A</b>bsences/<b>R</b>etards de vos &eacute;l&egrave;ves, de sortir un bilan pour une p&eacute;riode donn&eacute;e et de consulter par semaine, les absences/retards dans toutes les mati&egrave;res.</p>';
+        echo '<div id="crenos">';
+        echo '<p>Date : <input id="cpe-abs" size="10" name="datejavac_dif" value="'.$dtajac_dif.'" readonly="readonly" style="cursor: text" />';
+        echo ' Classe :<select name="mlec547trg2s5hy" class="cdt-select">';
+        foreach ( $data1 as $clé => $valeur)
+          {
+           echo "<option value=\"$valeur\"";
+          if ($valeur==$ch) {echo ' selected="selected"';}
+          echo ">$valeur</option>\n";
+          }
+          echo "</select></p>";
+          echo "<p>Cr&#233;neaux horaires :";
+        $horaire = array("M1","M2","M3","M4","M5","S1","S2","S3","S4","S5");
+        for ($h=0; $h<=9; $h++)
+                {
+                echo '<input type="checkbox" name="cren[]"   value="'.$horaire[$h].'"'; if (in_array($horaire[$h], $tab_cren)) echo ' checked="checked"';
+                echo ' />'.$horaire[$h];
+                }
+        echo "<input  class='bt-valid-sel' type='submit' name='OK' value='' />";
+        echo '</p></div>';
 
-//affichachage des boutons fermer et enregistrer	
-//pas de tableau avant la sélection des creneaux
-if (!isset($_GET['mlec547trg2s5hy'])  && count($_POST['cren'])>0) 
+    //affichage des boutons fermer et enregistrer
+    //pas de tableau avant la sélection des creneaux
+    if (!isset($_GET['mlec547trg2s5hy'])  && count($_POST['cren'])>0)
 	{	
-	echo '<DIV id="bt-fixe" ><input class="bt-enregistre" type="submit" name="Valider" value="" ><br /><br />
-	<input class="bt-fermer" type="submit" name="Fermer" value="" >
-	</DIV>';
-	 	echo "<h5 class='perso'> Si tous les &eacute;l&egrave;ves sont pr&eacute;sents, cliquez sur Enregistrer pour indiquer que l'appel a &eacute;t&eacute; effectu&eacute;.</h5>";
-		echo '<TABLE id="abs" border="0">';
-		echo '<thead>';
-		echo '<tr>';
-		echo '<td colspan="2" class="elv">El&egrave;ve</td><td><table class="motif" border="0"><tr><td colspan="2">Cumul au</td></tr><tr><td colspan="2">'.$dtajac_dif.'</td></tr><tr><td class="AR">A</td><td class="AR">R</td></tr></table>';
+	echo '<div id="bt-fixe" ><input class="bt-enregistre" type="submit" name="Valider" value="" /><br /><br />
+	<input class="bt-fermer" type="submit" name="Fermer" value="" />
+	</div>';
+        echo '<h5 class="perso"> Si tous les &eacute;l&egrave;ves sont pr&eacute;sents, cliquez sur Enregistrer pour indiquer que l\'appel a &eacute;t&eacute; effectu&eacute;.</h5>';
+        echo '<table id="abs" border="0">';
+        echo '<thead>';
+        echo '<tr>';
+        echo '<td colspan="2" class="elv">El&egrave;ve</td><td><table class="motif" border="0"><tr><td colspan="2">Cumul au</td></tr><tr><td colspan="2">'.$dtajac_dif.'</td></tr><tr><td class="AR">A</td><td class="AR">R</td></tr></table></td>';
 		 
-		if (count($cren_n)>0)
-		 {
-		 echo '<TD  valign="bottom">';
-		 echo '<table border=0  class="motif"><tr><td colspan="3" class="h-motif">';
-		 foreach ( $cren_n as $clé => $valeur) echo $valeur ." ";
-		 echo '</td></tr><tr><td class="AR">A</td>';
-		 if (count($cren_n)==1) echo '<td class="AR">R</td>';
-		 echo '<td>Motif</td></tr></table></TD>';
-		 }
+        if (count($cren_n)>0)
+             {
+             echo '<td  class="enbas">';
+             echo '<table border="0"  class="motif"><tr><td colspan="3" class="h-motif">';
+             foreach ( $cren_n as $clé => $valeur) echo $valeur ." ";
+             echo '</td></tr><tr><td colspan="3" >&nbsp;</td></tr><tr><td class="AR">A</td>';
+             if (count($cren_n)==1) echo '<td class="AR">R</td>';
+             echo '<td>Motif</td></tr></table></td>';
+             }
 		 
-		if (count($cren_y)>0) 
-		  {
-		 foreach ( $cren_y as $clé => $valeur) 
-		 {
-		 echo '<TD valign="bottom">' ;
-		 echo '<table border=0 class="motif"><tr><td colspan="3">'.$valeur .'</td></tr>';		 
-		 echo '<tr><td class="AR">A</td><td class="AR">R</td><td>Motif</td></tr></table></TD>';
-		 }
-		 }
-		echo '</TR></thead>';
-     	echo '<tfoot><tr><td colspan="4"><A href="bilan.php?cl='.$ch.' " target="_blank" > Bilan pour la classe </A></td></tr></tfoot>'; 
-		echo '<tbody>';
+            if (count($cren_y)>0)
+                {
+                 foreach ( $cren_y as $clé => $valeur)
+                     {
+                     echo '<td >' ;
+                     echo '<table border="0" class="motif"><tr><td colspan="3">'.$valeur .'</td></tr><tr><td colspan="3" >&nbsp;</td></tr>';
+                     echo '<tr><td class="AR">A</td><td class="AR">R</td><td>Motif</td></tr></table></td>';
+                     }
+                }
+            echo '</tr></thead>';
+            echo '<tfoot><tr><td colspan="4"><a href="#" onclick="open_new_win(\'bilan.php?cl='.$ch.'\')"  > Bilan pour la classe </a></td></tr></tfoot>';
+            echo '<tbody>';
 		
-      for ($loop=0; $loop<count($users);$loop++) {
-      	if ($users[$loop]["uid"]!=$_SESSION['login']) {
+          for ($loop=0; $loop<count($users);$loop++) {
+            if ($users[$loop]["uid"]!=$_SESSION['login']) {
 			//recherche des absences et retards
 			$potache=$users[$loop]["uid"];
 			$nbabs=0;$nbrtd=0;
@@ -655,47 +655,47 @@ if (!isset($_GET['mlec547trg2s5hy'])  && count($_POST['cren'])>0)
 				}
 			$uid_e=$users[$loop]['uid'];
 				//affichage des noms
-        echo "<TR ";
+        echo "<tr ";
         if (($loop %2)==0 ) {echo 'class="lgn0"';} else {echo 'class="lgn1"';}
-        echo "><TD><A href=\"bilan.php?uid=".$users[$loop]["uid"]."&fn=".$users[$loop]["fullname"].'" target="_blank" title="Bilan des absences et retards">'.$users[$loop]["fullname"].'</A></td>';
-		echo '<TD><A href="#" title="Aperçu hebdomadaire" onClick="abs_popup(\''.$uid_e.'\',\'' .$users[$loop]["fullname"].'\'); return false" > <img src="../images/b_calendar.png"  alt="hebdo"border="0"/></A></td>'; 
-			 
-			//affichage des cumuls 
-			echo '<td><table border=0 class="motif"><td class="nbA">'. $nbabs.'h</td><td class="nbR">'.$nbrtd.'</td></table></td>';
-			//affichage nouveaux creneaux
-			 
-		 if (count($cren_n)>0)
+        echo '><td><a href="#" class="open_win" title="Bilan des absences et retards"
+            onclick="open_new_win(\'bilan.php?uid='.$users[$loop]["uid"].'&amp;fn='.$users[$loop]["fullname"].'\')">'
+        .$users[$loop]["fullname"].'</a></td>';
+	echo '<td><a href="#" title="Aperçu hebdomadaire" onclick="abs_popup(\''.$uid_e.'\',\'' .$users[$loop]["fullname"].'\'); return false" > <img src="../images/b_calendar.png"  alt="hebdo"/></a></td>';
+	 //affichage des cumuls
+        echo '<td><table border="0" class="motif"><tr><td class="nbA">'. $nbabs.'h</td><td class="nbR">'.$nbrtd.'</td></tr></table></td>';
+         //affichage nouveaux creneaux
+	if (count($cren_n)>0)
 		 {
-		 echo '<td><table border=0 class="motif"><TD class="boxA"><input type="checkbox" name="abs_x[]" value="'.$users[$loop]["uid"].'"></td>';
-       if (count($cren_n)==1) echo '<td class="boxR"><input type="checkbox" name="ret_x[]" value="'.$users[$loop]["uid"].'" ></td>';else echo '<td></td>';
-        echo'<td><INPUT TYPE=TEXT NAME="motif_x['.$uid_e.']" SIZE=25 MAXLENGTH=40> </TD></td></table>';
-		 
-		 }
-		 if (count($cren_y)>0)
+		 echo '<td><table border="0" class="motif"><tr><td class="boxA"><input type="checkbox" name="abs_x[]" value="'.$users[$loop]["uid"].'" /></td>';
+                if (count($cren_n)==1) echo '<td class="boxR"><input type="checkbox" name="ret_x[]" value="'.$users[$loop]["uid"].'" /></td>';else echo '<td></td>';
+                echo'<td><input type="text"  name="motif_x['.$uid_e.']" size="25" maxlength="40" /> </td></tr></table></td>';
+		  }
+	 if (count($cren_y)>0)
 		 {
 		 foreach ( $cren_y as $clé => $valeur) 
-		 {
-		 $testabs="abs".strtolower($valeur);
-		 $testret="r".strtolower($valeur);
-		 $testmotif="mot".strtolower($valeur);		 
-			//affichage checkbox creneaux existants      
-        echo '<td><table border=0 class="motif"><TD class="boxA"><input type="checkbox" name="abs_'.$valeur.'[]" value="'.$users[$loop]["uid"].'"';if ($$testabs=="A") echo'checked';echo ' ></td><TD class="boxR"><input type="checkbox" name="ret_'.$valeur.'[]" value="'.$users[$loop]["uid"].'"';if ($$testret=="R") echo'checked';echo ' ></td>
-        <td><INPUT TYPE=TEXT NAME="motif_'.$valeur.'['.$uid_e.']" value="'.$$testmotif.'"SIZE=30 MAXLENGTH=30> </TD></td></table>'; 
-        }
-        }
-        }
+                     {
+                     $testabs="abs".strtolower($valeur);
+                     $testret="r".strtolower($valeur);
+                     $testmotif="mot".strtolower($valeur);
+                    //affichage checkbox creneaux existants
+                    echo '<td><table border="0" class="motif"><tr><td class="boxA"><input type="checkbox" name="abs_'.$valeur.'[]" value="'.$users[$loop]["uid"].'"';if ($$testabs=="A") echo' checked="checked"';echo ' /></td><td class="boxR"><input type="checkbox" name="ret_'.$valeur.'[]" value="'.$users[$loop]["uid"].'"';if ($$testret=="R") echo ' checked="checked"';echo ' /></td>
+                    <td><input type="text"  name="motif_'.$valeur.'['.$uid_e.']" value="'.$$testmotif.'" size="30" maxlength="30" /> </td></tr></table></td>';
+                    }
+                    echo '</tr>';
+                }
+            }
       }
-        echo '</tbody>';
+     echo '</tbody>';
+     
      echo '</table>';
-     echo '</div>';
-		}
- }
+      }
+ echo '</div>';
+}
 ?>
-
 </fieldset>	
-</FORM>
-</BODY>
-</HTML>
-
-
-
+</form>
+<?php
+include ('../Includes/pied.inc');
+?>
+</body>
+</html>

@@ -1,7 +1,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.1 du 4/6/2010 
+   VERSION 2.3 du 06/01/2011
    modif : 9/6/2010
       par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
@@ -60,6 +60,24 @@ tinyMCE.init({
 	theme_advanced_toolbar_align : "center",
 	extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name|style],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
 	theme_advanced_default_font_size : "4",
+	theme_advanced_fonts : "Andale Mono=andale mono,times;"+
+		"Arial=arial,helvetica,sans-serif;"+
+		"Arial Black=arial black,avant garde;"+
+		"Book Antiqua=book antiqua,palatino;"+
+		"Comic Sans MS=comic sans ms,sans-serif;"+
+		"Courier New=courier new,courier;"+
+		"Georgia=georgia,palatino;"+
+		"Helvetica=helvetica;"+
+		"Impact=impact,chicago;"+
+		"Symbol=symbol;"+
+		"Tahoma=tahoma,arial,helvetica,sans-serif;"+
+		"Terminal=terminal,monaco;"+
+		"Times New Roman=times new roman,times;"+
+		"Trebuchet MS=trebuchet ms,geneva;"+
+		"Verdana=verdana,geneva;"+
+		"Webdings=webdings;"+
+		"Wingdings=wingdings,zapf dingbats;"+
+		"Grec=sgreek",
 	template_external_list_url : "example_template_list.js",
 	language : "fr",
 	file_browser_callback : "myFileBrowser",
@@ -108,3 +126,22 @@ tinyMCE.init({
 	
 });
 
+tinyMCE.init({
+    
+    mode : "textareas",
+	theme : "advanced",
+	width: "800",
+	height: "300",
+	skin : "cdt",
+	skin_variant : "silver",
+	editor_selector : 'SeqmceAdvanced',
+	theme_advanced_disable : "hr,visualaid,removeformat,separator, cleanup,help ",
+	theme_advanced_buttons1 : "forecolor,backcolor,bold,italic,underline,bullist,numlist|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,|,fontsizeselect",
+	theme_advanced_buttons2 : "",
+	theme_advanced_buttons3 : "",
+	theme_advanced_toolbar_location : "top",
+	theme_advanced_toolbar_align : "center",
+	extended_valid_elements : "hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
+		language : "fr"
+	
+});

@@ -104,32 +104,36 @@ $mo=date('m',$dateinfo['0']+($offset*86400));
 $ann=date('Y',$dateinfo['0']+($offset*86400)); 
 // Création des menus déroulants
  //les jours
-  echo "<select name=$var_j>\n";
-  foreach ($jours as $clé => $valeur)
-  { echo "<option valeur=\"$clé\"";
-  if ($clé==$jo) {echo 'selected';}
-  echo ">$valeur</option>\n";
-  }
+  echo '<select name="'.$var_j.'">';
+  foreach ($jours as $cle => $valeur)
+      {
+      echo "<option value=\"$valeur\"";
+      if ($valeur==$jo) {echo ' selected="selected"';}
+      echo ">$valeur</option>\n";
+      }
   echo "</select>\n";
 //les mois
-  echo "<select name=$var_m>";
-  foreach ($mois as $clé => $valeur)
-  { echo "<option valeur=\"$clé\"";
-  if ($clé==$mo) {echo 'selected';}
-  echo ">$valeur</option>\n";
-  }
+  echo  '<select name="'.$var_m.'">';
+      foreach ($mois as $cle => $valeur)
+      {
+      echo "<option value=\"$valeur\"";
+      if ($valeur==$mo) {echo ' selected="selected"';}
+      echo ">$valeur</option>\n";
+      }
   echo "</select>\n";
 //les années
-  echo "<select name=$var_a>";
-  $année = (date('Y') - 5);
-  while ($année <= (date('Y')))
-  { echo "<option valeur=\"$année\"";
-  if ($année==$ann) {echo 'selected';}
-  echo ">$année</option>\n";
-    $année++;
-  }
+  echo '<select name="'.$var_a.'">';
+  $annee =  (date('Y') - 1);
+  while ($annee <= (date('Y') ))
+      {
+      echo "<option value=\"$annee\"";
+      if ($annee==$ann) {echo ' selected="selected"';}
+      echo ">$annee</option>\n";
+        $annee++;
+      }
   echo "</select>\n";
 }
+
     
 function decripte_classe($classe_criptee){
 

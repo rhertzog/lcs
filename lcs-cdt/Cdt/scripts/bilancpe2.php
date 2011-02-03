@@ -2,11 +2,12 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script bilan absences pour cpe-
 			_-=-_
+  "Valid XHTML 1.0 Strict"
    =================================================== */
    
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -49,28 +50,24 @@ $Morceauc=explode('/',$_GET['dkr']);
 	}
 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
-	<TITLE></TITLE>
-	<meta name="generator" content="Bluefish 1.0.7">
-	<META NAME="CREATED" CONTENT="20051226;22304481">
-	<META NAME="CHANGED" CONTENT="20051226;22565970">
-	<LINK rel="stylesheet" type="text/css" href="../style/style.css"  media="screen">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+        <meta name="author" content="Philippe LECLERC -TICE CAEN" />
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <title>module &#139;(+_-)/&#155;</title>
+	<link rel="stylesheet" type="text/css" href="../style/style.css"  media="screen" />
 	<link rel="stylesheet" href="../style/style_imp.css" type="text/css" media="print" />
-		<!--[if IE]>
-<link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
-<![endif]-->
-</HEAD>
-<BODY LANG="fr-FR" DIR="LTR">
-<H1 class='title'></H1>
+	<!--[if IE]>
+        <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
+        <![endif]-->
+</head>
+<body>
+<h1 class='title'></h1>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
 <fieldset id="field7">
-<legend id="legende">Bilan des Absences & Retards  du <?php echo $_GET['dkr'];?></legend>
-
+<legend id="legende">Bilan des Absences &amp; Retards  du <?php echo $_GET['dkr'];?></legend>
 <?php
-
 if (isset($_GET['dkr']))
 	{
 	$aucun="true";
@@ -87,7 +84,7 @@ if (isset($_GET['dkr']))
 			{
 			$aucun="false";
 			echo "<h2>".$valcren."</h2>";
-			echo "<UL>";
+			echo "<ul>";
 			$loop=0;
 			while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 				{
@@ -107,8 +104,11 @@ if (isset($_GET['dkr']))
 					while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 						{
 						list($user, $groups)=people_get_variables($enrg[0], false);
-						echo $user["fullname"]."; ";
+						echo $user["fullname"];
+                                                 if (mb_ereg("^Cours",$valcla)) echo '( '.people_get_classe ($enrg[0]). ' )';
+                                                echo "; ";
 						}
+                                            echo '</li>';
 					echo "<li>Retards : ";
 					//recherche des retardataires//
 					$rq = "SELECT uideleve FROM absences WHERE date='$datsql' AND ".$valcren."='R' AND classe='$valcla' ORDER BY id_abs ASC";
@@ -122,7 +122,8 @@ if (isset($_GET['dkr']))
 						list($user, $groups)=people_get_variables($enrg[0], false);
 						echo $user["fullname"]."; ";
 						}
-					echo "</ul>";
+                                            echo '</li>';
+					echo "</ul></li>";
 					}//fin each class
 				echo "</ul>";
 				}
@@ -130,15 +131,19 @@ if (isset($_GET['dkr']))
 	if ($aucun=="true") echo "Pas de donn&eacute;es pour le(s) cr&eacute;neau(x) s&eacute;lectionn&eacute;(s) !<br />";
 	echo '<div > <h5> N\'apparaissent que les classes pour lesquelles l\'appel a &eacute;t&eacute; fait !</h5></div>'; 
 
-	echo "<SCRIPT LANGUAGE=\"JavaScript\">
-		document.write('<div id=\"abs-bt\"><A HREF=\"javascript:window.print()\" id=\"bt-imp\"></A>');
-		document.write('<A HREF=\"javascript:window.close()\" id=\"bt-close\"></A></div>');
-	</SCRIPT>";
+	echo "<script type=\"text/javascript\">
+            //<![CDATA[
+		document.write('<div id=\"abs-bt\"><a href=\"javascript:window.print()\" id=\"bt-imp\"></a>');
+		document.write('<a href=\"javascript:window.close()\" id=\"bt-close\"></a></div>');
+             //]]>
+	</script>";
 	echo '</div>';
 	}
 ?>
 </fieldset>	
-</FORM>
-</BODY>
-</HTML>
-
+</form>
+<?php
+include ('../Includes/pied.inc');
+?>
+</body>
+</html>

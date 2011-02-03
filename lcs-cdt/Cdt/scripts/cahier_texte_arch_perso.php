@@ -2,22 +2,19 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script archives perso du cahier de textes -
 			_-=-_
+    "Valid XHTML 1.0 Strict"
    ============================================= */
 session_name("Cdt_Lcs");
 @session_start();
 
 // autorisation d'accés ?
-if ($_SESSION['cequi']!="prof") 
-	{// si pas prof, non autorisé
-        print('<p align="center"> </p> <p align="center"><font face="Arial" size="5" color="#FF6600">
-		Désolé, vous ne pouvez pas accéder à cette page</font></p>');
-       	exit;
-			}
+if ($_SESSION['cequi']!="prof")	exit;
+			
 if (isset($_GET['arch']))
 	{
 	$arch=$_GET['arch'];
@@ -25,11 +22,11 @@ if (isset($_GET['arch']))
 	else $arch="";
 	
 if (isset($_POST['Fermer'])) 
-echo "<SCRIPT language='Javascript'>
-					<!--
-					window.close();
-					// -->
-					</script>";	
+    echo '<script type="text/javascript">
+                //<![CDATA[
+                window.close();
+		 //]]>
+                </script>';
 					
 //si clic sur le bouton Copier-Coller
 if (isset($_POST['copie']))
@@ -40,35 +37,41 @@ if (isset($_POST['copie']))
 	if (get_magic_quotes_gpc()) $textaf1=mb_ereg_replace("\n","\\n",stripslashes($_POST['texteafaire']));
 	else $textaf1=mb_ereg_replace("\n","\\n",$_POST['texteafaire']);
 	$textaf=mb_ereg_replace("\r","\\r",$textaf1);
-		echo '<SCRIPT language="Javascript">
+		echo '<script type="text/javascript">
+                //<![CDATA[
 		opener.tinyMCE.execInstanceCommand("coursfield","mceInsertContent",false,"'.$textc.'");
 		opener.tinyMCE.execInstanceCommand("afairefield","mceInsertContent",false,"'.$textaf.'");
 		window.close();
-	</script>';
+		 //]]>
+                </script>';
 	exit;
 	}
 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
 <head>
-<title>Archives perso Cdt num&eacute;rique</title>
-<meta http-equiv="content-type" content="text/html;charset=utf-8" >
-	<link href="../style/style.css" rel=StyleSheet type="text/css">
-	<link  href="../style/deroulant.css" rel=StyleSheet type="text/css">
-	<link  href="../style/navlist-prof.css" rel=StyleSheet type="text/css">
-	<link  href="../style/ui.all.css" rel=StyleSheet type="text/css">
-	<link  href="../style/ui.datepicker.css" rel=StyleSheet type="text/css">
-	<link  href="../style/ui.theme.css" rel=StyleSheet type="text/css">
+<title>Archives personnelles</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link href="../style/style.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/deroulant.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/ui.all.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/ui.datepicker.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/ui.theme.css" rel="stylesheet" type="text/css" />
+         <!--[if IE]>
+        <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
+        <![endif]-->
 </head>
 
 <body >
 
 <?php
-echo "<FORM ACTION='";
+echo "<form action='";
 echo htmlentities($_SERVER["PHP_SELF"]);
-echo "' METHOD='POST'>";
-echo '<DIV id="bt-fixe" ><input class="bt2-fermer" type="submit" name="Fermer" value="" ></DIV></form>';
+echo "' method='post'>";
+echo '<div id="bt-fixe" ><input class="bt2-fermer" type="submit" name="Fermer" value="" /></div></form>';
 
 // Connexion à la base de données	
 include_once "/var/www/lcs/includes/headerauth.inc.php";
@@ -103,15 +106,15 @@ echo ("<ul id='arch-navlist'>");
 	if ($archive[1]!="") $archnum=$archive[1]; else $archnum="An dernier";
 	$x++;
 	//archive courante
-	if ($arch==$archive[1]) echo "<li id='arch'> <a href='cahier_texte_arch_perso.php?arch=$archive[1]' id='courant'>$archnum</a>";
+	if ($arch==$archive[1]) echo "<li  class=\"arch\"> <a href='cahier_texte_arch_perso.php?arch=$archive[1]' id='courant2'>$archnum</a></li>";
 	else
 	//autres archives
-	echo "<li id='arch'><a href='cahier_texte_arch_perso.php?arch=$archive[1]'>$archnum</a></li> ";
+	echo "<li><a href='cahier_texte_arch_perso.php?arch=$archive[1]'>$archnum</a></li> ";
 	}
 	//s'il n'esiste pas d'archive
 	if ($x==0) 
 		{
-		echo '<B><FONT COLOR="#CC0000" >Aucune </FONT></B>';
+		echo '<p class="vide">Aucune archive</p>';
 		exit;
 		}
 		echo "</ul>";
@@ -177,8 +180,8 @@ for($x=0;$x < $nmax;$x++)
 	{
 		if ($cible == ($numero[$x]))
 			{//cellule active	
-			echo ("<li id='select'><a href='cahier_texte_arch_perso.php?rubrique=$numero[$x]&arch=$arch'
-			'onmouseover=\"window.status='';return true\" id='courant'>$mat[$x]<br />$clas[$x] "."</a></li>");	
+			echo ("<li id='select'><a href='cahier_texte_arch_perso.php?rubrique=$numero[$x]&amp;arch=$arch'
+			 id='courant'>$mat[$x]<br />$clas[$x] "."</a></li>");	
 			$contenu_postit=stripslashes($com[$x]);
 			}
 		else 
@@ -189,8 +192,8 @@ for($x=0;$x < $nmax;$x++)
 			echo ("<li><a href='#'>$clas[$x]"."</a></li>");
 			else
 			{
-			echo ("<li><a href='cahier_texte_arch_perso.php?rubrique=$numero[$x]&arch=$arch'
-			'onmouseover=\"window.status='';return true\">$mat[$x]<br />$clas[$x]"."</a></li>");
+			echo ("<li><a href='cahier_texte_arch_perso.php?rubrique=$numero[$x]&amp;arch=$arch'
+                        >$mat[$x]<br />$clas[$x]"."</a></li>");
 			}
 			}
 	}
@@ -203,7 +206,7 @@ echo '<div id="container">';
    - Affichage du contenu   -
    =======================================*/
    
-include_once ('../Includes/markdown.php'); //convertisseur txt-->HTML
+//include_once ('../Includes/markdown.php'); //convertisseur txt-->HTML
 
 //créer la requête
 $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique FROM cahiertxt$arch
@@ -215,15 +218,15 @@ $result = @mysql_query ($rq) or die (mysql_error());
 // Combien y a-t-il d'enregistrements ?
 $nb2 = mysql_num_rows($result); 
 echo '<div id="boite5">';
-echo '<TABLE id="tb-cdt" CELLPADDING=1 CELLSPACING=2>';
-while ($ligne = mysql_fetch_array($result, MYSQL_NUM)) 
-  { 
-  $textcours=markdown($ligne[1]);
-  $textafaire=markdown($ligne[2]);
-  
- 
-	if ($ligne[1]!="") {
-	  echo '<tbody><tr><th colspan=2></th></tr></tbody>';
+echo '<table id="tb-cdt" cellpadding="1" cellspacing="2">';
+while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
+  {
+  $textcours=stripslashes($ligne[1]);
+  $textafaire=stripslashes($ligne[2]);
+
+
+if ($ligne[1]!="") {
+	   echo '<tbody><tr><th colspan="2"></th></tr></tbody>';
 	  echo '<tbody>';
 	  echo '<tr>';
 	  //affichage de la seance
@@ -238,21 +241,18 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  //fin
 
 	  echo '</tbody>';
- 	  echo '<tbody><tr><th class="bas" colspan=2>';
-	  echo "<FORM ACTION='";
+ 	  echo '<tbody><tr><th class="bas" colspan="2">';
+	  echo '<form action="';
 	  echo htmlentities($_SERVER["PHP_SELF"]);
-	  echo "' METHOD='POST'><input type='hidden' name='textecours' value=\"";
-	  echo htmlentities(addslashes($textcours));
-	  echo "\" >
-		<input type='hidden' name='texteafaire' value= \"";echo htmlentities(addslashes($textafaire));
-		echo "\">
-		<INPUT TYPE='SUBMIT' NAME='copie' VALUE='' class='bt-copier' ></form>";
+	  echo '" method="post"><div><input type="hidden" name="textecours" value="'.htmlentities(addslashes($textcours)).'" />';
+	  echo '<input type="hidden" name="texteafaire" value="'.htmlentities(addslashes($textafaire)).'" />';
+	  echo '<input type="submit" name="copie" value="" class="bt-copier" /></div></form>';
 	  echo '</th></tr>';
 	  echo '</tbody>';
-	  echo '<tbody><tr><th colspan=2><hr></th></tr></tbody>';
+	  echo '<tbody><tr><th colspan="2"><hr /></th></tr></tbody>';
 	  }
 	  else {
-	  echo '<tbody><tr><th colspan=2></th></tr></tbody>';
+	  echo '<tbody><tr><th colspan="2"></th></tr></tbody>';
 	  echo '<tbody>';
 	  echo '<tr>';
 	  //affichage de la seance
@@ -261,23 +261,20 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  if ($ligne[2]!="") {
 	  echo '<br/>Pour le :&nbsp;'.$ligne[3].'</td>';
 	  echo '<td class="contenu">';
-	   echo $textafaire.'</td></tr>';
+	  echo $textafaire.'</td></tr>';
 	  }
 	  //fin
 
 	  echo '</tbody>';
-	   echo '<tbody><tr><th class="bas" colspan=2>';
-	  echo "<FORM ACTION='";
+	  echo '<tbody><tr><th class="bas" colspan="2">';
+          echo '<form action="';
 	  echo htmlentities($_SERVER["PHP_SELF"]);
-	  echo "' METHOD='POST'><input type='hidden' name='textecours' value=\"";
-	  echo htmlentities(addslashes($textcours));
-	  echo "\" >
-		<input type='hidden' name='texteafaire' value= \"";echo htmlentities(addslashes($textafaire));
-		echo "\">
-		<INPUT TYPE='SUBMIT' NAME='copie' VALUE='' class='bt-copier' ></form>";
+	  echo '" method="post"><div><input type="hidden" name="textecours" value="'.htmlentities(addslashes($textcours)).'" />';
+	  echo '<input type="hidden" name="texteafaire" value="'.htmlentities(addslashes($textafaire)).'" />';
+	  echo '<input type="submit" name="copie" value="" class="bt-copier" /></div></form>';
 	  echo '</th></tr>';
 	  echo '</tbody>';
-	  echo '<tbody><tr><th colspan=2><hr></th></tr></tbody>';
+	  echo '<tbody><tr><th colspan="2"><hr /></th></tr></tbody>';
 	  }
 }
 

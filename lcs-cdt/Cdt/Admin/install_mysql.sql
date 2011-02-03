@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.3.1
+-- version 3.3.8.1
 -- http://www.phpmyadmin.net
 --
 -- Serveur: localhost
--- Généré le : Ven 04 Juin 2010 à 15:08
--- Version du serveur: 5.0.32
--- Version de PHP: 5.2.0-8+etch16
+-- GÃ©nÃ©rÃ© le : Jeu 03 FÃ©vrier 2011 Ã  04:37
+-- Version du serveur: 5.0.51
+-- Version de PHP: 5.2.6-1+lenny9
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -16,12 +16,14 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Base de données: `cdt_plug`
+-- Base de donnÃ©es: `cdt_plug`
 --
 
--- --------------------------------------------------------
 CREATE DATABASE `cdt_plug` ;
 USE `cdt_plug`;
+
+-- --------------------------------------------------------
+
 --
 -- Structure de la table `absences`
 --
@@ -71,6 +73,7 @@ CREATE TABLE IF NOT EXISTS `cahiertxt` (
   `datafaire` date NOT NULL default '0000-00-00',
   `on_off` tinyint(2) NOT NULL default '0',
   `datevisibi` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `seq_id` mediumint(8) NOT NULL default '0',
   PRIMARY KEY  (`id_rubrique`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
@@ -128,6 +131,21 @@ CREATE TABLE IF NOT EXISTS `postit_eleve` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `sequences`
+--
+
+CREATE TABLE IF NOT EXISTS `sequences` (
+  `id_seq` mediumint(8) unsigned NOT NULL auto_increment,
+  `id_ong` mediumint(9) NOT NULL,
+  `titre` varchar(128) NOT NULL,
+  `titrecourt` varchar(20) NOT NULL,
+  `contenu` blob,
+  `ordre` smallint(6) NOT NULL,
+  PRIMARY KEY  (`id_seq`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
 GRANT SELECT,UPDATE,DELETE,INSERT,CREATE,DROP ON cdt_plug.* TO cdt_user@localhost IDENTIFIED BY '#PASS#';
 GRANT SELECT,UPDATE,DELETE,INSERT,CREATE,DROP ON cdt_plug.* TO admin@localhost ;
-

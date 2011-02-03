@@ -1,0 +1,12 @@
+Use cdt_plug;
+ CREATE TABLE IF NOT EXISTS `sequences` (
+  `id_seq` mediumint(8) unsigned NOT NULL auto_increment,
+  `id_ong` mediumint(9) NOT NULL,
+  `titre` varchar(128) NOT NULL,
+  `titrecourt` varchar(20) NOT NULL,
+  `contenu` blob,
+  `ordre` smallint(6) NOT NULL,
+  PRIMARY KEY (`id_seq`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+ALTER TABLE `cahiertxt` ADD `seq_id` MEDIUMINT( 8 ) NOT NULL DEFAULT '0';

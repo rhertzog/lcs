@@ -66,7 +66,13 @@ function abs_popup(log,fname) {
                                 window.focus();
                                 abs_popupWin = window.open("./pop_abs.php?uid="+log+"&fn="+fname+"","","width=680,height=560,resizable=no,scrollbars=no,toolbar=no,menubar=no,status=no");
                                 abs_popupWin.focus();  
-                        }	
+                        }
+function sequence_popup(rub) {
+                                window.focus();
+                                diffuse_popupWin = window.open("./sequencese.php?rubrique="+rub+"","","width=1000,height=800,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,status=no");
+                                diffuse_popupWin.focus();
+                        }
+                        	
 function getXhr(){
                 var xhr = null; 
 				if(window.XMLHttpRequest) // Firefox et autres

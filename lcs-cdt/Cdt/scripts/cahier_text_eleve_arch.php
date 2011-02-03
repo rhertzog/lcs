@@ -2,11 +2,12 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - Archives du cahier de textes ELEVE -
    			_-=-_
+    "Valid XHTML 1.0 Strict"
    ============================================= */
 session_name("Cdt_Lcs");
 @session_start();
@@ -60,22 +61,23 @@ $tsmp=mktime(1, 2, 3, 4, 5, 2000);
 $ch="--";
 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
 <head>
-<title>Cahier de textes numérique</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<LINK  href="../style/style.css" rel=StyleSheet type="text/css">
-<link  href="../style/deroulant.css" rel=StyleSheet type="text/css">
-<LINK  href="../style/navlist-eleve.css" rel=StyleSheet type="text/css">
+<title>Cahier de textes num&eacute;rique</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link href="../style/style.css" rel="stylesheet" type="text/css" />
+<link  href="../style/deroulant.css" rel="stylesheet" type="text/css" />
+<link  href="../style/navlist-eleve.css" rel="stylesheet" type="text/css" />
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-	<script language="Javascript" type="text/javascript" src="../Includes/cdt_eleve.js"></script>
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/cdt-ele-script.js"></script>
-	<script language="javascript" type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
-	<script language="javascript" type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
+	<script type="text/javascript" src="../Includes/cdt_eleve.js"></script>
+	<script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="../Includes/JQ/cdt-ele-script.js"></script>
+	<script type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+	<script type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
 </head>
 
 <body>
@@ -115,14 +117,14 @@ if ($nb>0)
 	}
 }
 //affichage du formulaire
-?>
-<form NAME="monform" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post">
-<SCRIPT language="Javascript" src="../Includes/barre_java.js"></SCRIPT>
+echo '
+<form  action="'. htmlentities($_SERVER["PHP_SELF"]).'" method="post" id="monform">
+<script  type="text/javascript" src="../Includes/barre_java.js"></script>
 <fieldset id="field7">
 <legend id="legende">Archives des Cahiers de textes &#233;l&#232;ve</legend>
-S&#233;lectionnez une ann&#233;e
-<?php
-//si on ne  connait pas la classe , on affiche un menu déroulant  
+<div>S&#233;lectionnez une ann&#233;e
+';
+//si on ne  connait pas l'a classe 'annee, on affiche un menu déroulant
 	//recherche du  nom des archives
 				$TablesExist= mysql_query("show tables");
 				$x=0;
@@ -133,12 +135,12 @@ S&#233;lectionnez une ann&#233;e
 					$x++;
 					}
 
-	echo "<select name='an_archive' onChange='javascript:document.monform.submit()' style='background-color:#E6E6FA'>";
-	echo "<option valeur='--'>--</option>\n";
+	echo "<select name='an_archive' onchange='javascript:document.getElementById(\"monform\").submit()' style='background-color:#E6E6FA'>";
+	echo "<option value='--'>--</option>\n";
 	foreach ($archnum as $clé => $valeur)
 	  { 
-	  echo "<option valeur=\"$valeur\"";
-	  if ($valeur==$an_arch) {echo 'selected';}
+	  echo "<option value=\"$valeur\"";
+	  if ($valeur==$an_arch) {echo  ' selected="selected"';}
 	  echo ">$valeur</option>\n";
 	  }
 	echo "</select>";
@@ -148,17 +150,18 @@ if (isset($_POST['an_archive']))
 	echo ' S&#233;lectionnez  une classe : ' ;
 
 	//si on ne  connait pas la classe , on affiche un menu déroulant  
-		echo "<select name='klasse' onChange='javascript:document.monform.submit()'style='background-color:#E6E6FA'>";
-		echo "<option valeur='--'>--</option>\n";
+		echo "<select name='klasse' onchange='javascript:document.getElementById(\"monform\").submit()' style='background-color:#E6E6FA'>";
+		echo "<option value='--'>--</option>\n";
 		foreach ($list_classe as $clé => $valeur)
-		  { echo "<option valeur=\"$valeur\"";
-		  if ($valeur==$ch) {echo 'selected';}
+		  { echo "<option value=\"$valeur\"";
+		  if ($valeur==$ch) {echo ' selected="selected"';}
 		  echo ">$valeur</option>\n";
 		  }
-		echo '</select></fieldset><input type="hidden" name="an_activ" value= "'.$an_arch.'"></FORM>';
+		echo '</select><input type="hidden" name="an_activ" value= "'.$an_arch.'" />';
 		
 if ($ch!="--")	
 	{
+         echo '</div></fieldset></form>';
 	// Créer la requête (Récupérer les rubriques de la classe) 
 	$rq = "SELECT prof,matiere,id_prof,prefix FROM onglets".$an_arch."
 	 WHERE classe='$ch' ORDER BY 'id_prof' asc ";
@@ -188,7 +191,7 @@ if ($ch!="--")
 	$_SESSION['visa']=$visa;
 	$_SESSION['datvisa']=$datvisa;
 	$delta=(count($_SESSION['prof']) -7) *40 > 0 ? ((count($_SESSION['prof']) -7) *40) :0;
-	echo '<script language="javascript" type="text/javascript" >
+	echo '<script type="text/javascript" >
 	var offset = '.$delta.'	</script>';	
 		
 		echo '<div id="onglev">';
@@ -210,7 +213,7 @@ if ($ch!="--")
 				}
 				else 
 				{
-				echo '<li><a href="#" title="" onclick="refresh_cdt_arch('. $numero[$x].','.$tsmp.',\''.$an_arch.'\')" >&nbsp;'.$mat[$x].'&nbsp;<br />&nbsp;'.$pref[$x].'  '.$prof[$x].'&nbsp;</a>';
+				echo '<li><a href="#" title="" onclick="refresh_cdt_arch('. $numero[$x].','.$tsmp.',\''.$an_arch.'\')" >&nbsp;'.$mat[$x].'&nbsp;<br />&nbsp;'.$pref[$x].'  '.$prof[$x].'&nbsp;</a></li>';
 				}
 			}
 	
@@ -221,17 +224,17 @@ if ($ch!="--")
 		else
 			{ 
 	// Il y a eu un os !
-		 		echo "<p><FONT face='Arial'size='3' COLOR='#FF0000'>Aucun enregistrement dans le cahier de textes de  $ch !</p><p></p></font>";
+		 		echo "<p class=\"vide\">Aucun enregistrement dans le cahier de textes de  $ch !</p><p></p>";
 			}
 	
 	//affichage du contenu du cahier de textes
 	
-			include_once ('../Includes/markdown.php');//convertisseur text-->HTML
+			//include_once ('../Includes/markdown.php');//convertisseur text-->HTML
 	
 			//créer la requête
 			if ($cible!="") 
 			{//élaboration de la date limite a partir de la date selectionnée
-			if ($_SESSION['version']=">=432") setlocale(LC_TIME,"french");
+			if ($_SESSION['version']==">=432") setlocale(LC_TIME,"french");
 			else setlocale("LC_TIME","french");
 			$rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,date FROM cahiertxt".$an_arch." 
 			WHERE id_auteur=$cible  ORDER BY date asc";
@@ -242,65 +245,77 @@ if ($ch!="--")
 			// Combien y a-t-il d'enregistrements ?
 			$nb2 = mysql_num_rows($result);
 			echo '<div id="boite5elv">';
-			echo '<TABLE id="tb-cdt" CELLPADDING=1 CELLSPACING=2>';
+			echo '<table id="tb-cdt" cellpadding="1" cellspacing="2">';
 			while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 				{ 
-				  $textcours=stripslashes(markdown($ligne[1]));
+				  $textcours=stripslashes($ligne[1]);
 				  //$textcours=$ligne[1];
-				  $textafaire=stripslashes(markdown($ligne[2]));
+				  $textafaire=stripslashes($ligne[2]);
 				  //$day="1,0,0,12,1,2007";echo $day;
 				  $jour=LeJour(strToTime($ligne[5]));
 				  //debut
-				  if ($ligne[1]!="") 
-				  	{
-					  echo '<tbody><tr><th colspan=2></th></tr></tbody>';
-					  echo '<tbody>';
-					  echo '<tr>';
-					  //affichage de la seance
-					  echo '<td class="seance">S&eacute;ance du <br/>'.$jour.'&nbsp;'.$ligne[0].'</td>';
-					  if($ligne[6]==1) echo '<td class="contenu2">';
-					  elseif($ligne[6]==2) echo '<td class="contenu3">';
-					  else echo '<td class="contenu">';
-					  echo $textcours.'</td></tr>';
-					  //affichage, s'il existe, du travail a effectuer
-					  if ($ligne[2]!="") 
-					  echo '<tr><td class="afaire">A faire pour le :<br/>'.$ligne[3].'</td><td class="contenu">'.$textafaire.'</td></tr>';
-					  //fin
+				  if ($ligne[1]!="") {
+                                  echo '<tbody><tr><th colspan="2"></th></tr></tbody>';
+                                  echo '<tbody>';
+                                  echo '<tr>';
+                                  //affichage de la seance
+                                  echo '<td class="seance">S&eacute;ance du <br/>'.$jour.'&nbsp;'.$ligne[0].'<br />Visible le '.$ligne[7].' </td>';
+                                  if($ligne[1]!="" && $ligne[6]==1) echo '<td class="contenu2">';
+                                  elseif($ligne[1]!="" && $ligne[6]==2) echo '<td class="contenu3">';
+                                  else echo '<td class="contenu">';
+                                  echo $textcours.'</td></tr>';
+                                  //affichage, s'il existe, du travail a effectuer
+                                  if ($ligne[2]!="") {
+                                  echo '<tr><td class="afaire">A faire pour le :<br />'.$ligne[3].'</td><td class="contenu">';
+                                  echo $textafaire.'</td></tr>';
+                                  }
+                                  //fin
 				
-					  echo '</tbody>';
-					  echo '<tbody><tr><th colspan=2>(°-°)</tr></tbody>';
+				  echo '</tbody>';
+                                  echo '<tbody><tr><th colspan="2"><hr /></th></tr></tbody>';
 				  	}
 				  else
 				   {
-					  echo '<tbody><tr><th colspan=2></th></tr></tbody>';
-					  echo '<tbody>';
-					  echo '<tr>';
-					  //affichage de la seance
-					  echo '<td class="afaire">Donn&eacute; le :&nbsp;'.$ligne[0];
-					  //affichage, s'il existe, du travail a effectuer
-					  if ($ligne[2]!="") 
-					  echo '<br/>Pour le :&nbsp;'.$ligne[3].'</td>';
-					  if($ligne[6]==1) echo '<td class="contenu2">';
-					  elseif($ligne[6]==2) echo '<td class="contenu3">';
-					  else echo '<td class="contenu">';
-					  echo $textafaire.'</td></tr>';
-					  //fin
-					  echo '<tbody><tr><th colspan=2>(°-°)</th></tr></tbody>';
+				  echo '<tbody><tr><th colspan="2"></th></tr></tbody>';
+                                  echo '<tbody>';
+                                  echo '<tr>';
+                                  //affichage de la seance
+                                  echo '<td class="afaire">Donn&eacute; le :&nbsp;'.$ligne[0].'<br />Visible le '.$ligne[7];
+                                  //affichage, s'il existe, du travail a effectuer
+                                  if ($ligne[2]!="") {
+                                  echo '<br/>Pour le :&nbsp;'.$ligne[3].'</td>';
+                                  if($ligne[6]==1) echo '<td class="contenu2">';
+                                  elseif($ligne[6]==2) echo '<td class="contenu3">';
+                                  else echo '<td class="contenu">';
+                                  echo $textafaire.'</td></tr>';
+                                  }
+                                  //fin
+				  echo '</tbody>';
+                                   echo '<tbody><tr><th colspan="2"><hr /></th></tr></tbody>';
 				  	}
 			} //fin du while
-		echo '</table>';
-		if (stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  
-			{ 
-			include ('../Includes/pied.inc');}
-			echo "</div>"; //fin du div boite5elv
-			}
-		echo '</div>';//fin du div container
-		if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  
-			{
-			include ('../Includes/pied.inc');
-			}
+		echo '</table></div>';
+		
 	}
+        echo '</div>
+</fieldset>
+</form>';
 }
+else {
+    echo '</div>
+    </fieldset>
+    </form>';
+    include ('../Includes/pied.inc');
+    }
+
+        }
+ else  {
+    echo '</div>
+    </fieldset>
+    </form>';
+    include ('../Includes/pied.inc');
+    }
+
 ?>
 </body>
 </html>

@@ -51,7 +51,7 @@ $cible=$_POST['rubrik'];
 			}
 			else 
 			{
-			echo '<li><a href="#" title="" onclick="refresh_cdt('. $_SESSION['numero'][$x].','.$tsmp.')" >&nbsp;'.$_SESSION["mat"][$x].'&nbsp;<br />&nbsp;'.$_SESSION["pref"][$x].'  '.$_SESSION["prof"][$x].'&nbsp;</a>';
+			echo '<li><a href="#" title="" onclick="refresh_cdt('. $_SESSION['numero'][$x].','.$tsmp.')" >&nbsp;'.$_SESSION["mat"][$x].'&nbsp;<br />&nbsp;'.$_SESSION["pref"][$x].'  '.$_SESSION["prof"][$x].'&nbsp;</a></li>';
 			}
 		}
 

@@ -2,11 +2,12 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script bilan absences pour cpe-
 			_-=-_
+  "Valid XHTML 1.0 Strict"
    =================================================== */
    
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -102,36 +103,32 @@ global 	$dtajadebut, $dtajafin;
 	  }
 		  }//fin function
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
-	<TITLE>module <(+_-)/> n°2</TITLE>
-	<meta name="generator" content="Bluefish 1.0.7">
-	<META NAME="CREATED" CONTENT="20051226;22304481">
-	<META NAME="CHANGED" CONTENT="20051226;22565970">
-	<LINK rel="stylesheet" type="text/css" href="../style/style.css"  media="screen">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+        <meta name="author" content="Philippe LECLERC -TICE CAEN" />
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<title>module &#139;(+_-)/&#155; n°2 </title>
+	<link rel="stylesheet" type="text/css" href="../style/style.css"  media="screen" />
 	<link rel="stylesheet" href="../style/style_imp.css" type="text/css" media="print" />
-	<link  href="../style/ui.all.css" rel=StyleSheet type="text/css">
-	<link  href="../style/ui.datepicker.css" rel=StyleSheet type="text/css">
-	<link  href="../style/ui.theme.css" rel=StyleSheet type="text/css">
+	<link  href="../style/ui.all.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/ui.datepicker.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/ui.theme.css" rel="stylesheet" type="text/css" />
 	<!--[if IE]>
-<link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
-<![endif]-->
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
+        <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
+        <![endif]-->
+	<script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
+	<script type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
+	<script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
 
-</HEAD>
-<BODY LANG="fr-FR" DIR="LTR">
-<H1 class='title'></H1>
-
+</head>
+<body >
+<h1 class='title'></h1>
 <?php
-
 if (isset($_GET['df'])) 
 	{
-$Morceauc=explode('/',$_GET['df']);
+        $Morceauc=explode('/',$_GET['df']);
 	$jour_c=$Morceauc[0];
 	$mois_c=$Morceauc[1];
 	$an_c=$Morceauc[2];
@@ -153,10 +150,10 @@ $Morceauc=explode('/',$_GET['df']);
 	}
 
 ?>
-</font>
+
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" >
 <fieldset id="field7">
-<legend id="legende">Bilan des Absences & Retards  de <?php echo $nom;?><?php echo $mesdatedebut . $mesdatefin ?></legend>
+<legend id="legende">Bilan des Absences &amp; Retards  de <?php echo $nom;?><?php echo $mesdatedebut . $mesdatefin ?></legend>
 
 <?php
 
@@ -167,7 +164,7 @@ if (isset($_GET['dd']))
 		{
 		for ($loop=0; $loop<count($users);$loop++) {
 		
-		echo "<B>".$users[$loop]["fullname"] ."</b>  : ";
+		echo "<b>".$users[$loop]["fullname"] ."</b>  : ";
 		affiche_abs($users[$loop]["uid"]);
 		echo"<br />";
 		}
@@ -176,14 +173,19 @@ if (isset($_GET['dd']))
 		{
 		affiche_abs($_GET['uid']);
 		}
-	echo "<SCRIPT LANGUAGE=\"JavaScript\">
-		document.write('<div id=\"abs-bt\"><A HREF=\"javascript:window.print()\" id=\"bt-imp\"></A>');
-		document.write('<A HREF=\"javascript:window.close()\" id=\"bt-close\"></A></div>');
-	</SCRIPT>";
+	echo "<script type=\"text/javascript\">
+            //<![CDATA[
+		document.write('<div id=\"abs-bt\"><a href=\"javascript:window.print()\" id=\"bt-imp\"></a>');
+		document.write('<a href=\"javascript:window.close()\" id=\"bt-close\"></a></div>');
+             //]]>
+	</script>";
 	echo '</div>';
 	}
 ?>
 </fieldset>	
-</FORM>
-</BODY>
-</HTML>
+</form>
+<?php
+include ('../Includes/pied.inc');
+?>
+</body>
+</html>

@@ -2,11 +2,12 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
       par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script bilan absences -
 			_-=-_
+  "Valid XHTML 1.0 Strict"
    =================================================== */
    
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -110,30 +111,27 @@ global 	$dtajadebut, $dtajafin;
 	  }
 		  }//fin function
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html;charset=utf-8">
-	<TITLE>module <(+_-)/> n°2</TITLE>
-	<meta name="generator" content="Bluefish 1.0.7">
-	<META NAME="CREATED" CONTENT="20051226;22304481">
-	<META NAME="CHANGED" CONTENT="20051226;22565970">
-	<LINK rel="stylesheet" type="text/css" href="../style/style.css"  media="screen">
-	<link  href="../style/ui.all.css" rel=StyleSheet type="text/css">
-	<link  href="../style/ui.datepicker.css" rel=StyleSheet type="text/css">
-	<link  href="../style/ui.theme.css" rel=StyleSheet type="text/css">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<title>Cahier de textes num&eacute;rique</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="../style/style.css"  media="screen" />
+	<link  href="../style/ui.all.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/ui.datepicker.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/ui.theme.css" rel="stylesheet" type="text/css" />
 	<link rel="stylesheet" href="../style/style_imp.css" type="text/css" media="print" />
 		<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
-	<script language="Javascript" type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
-</HEAD>
-<BODY LANG="fr-FR" DIR="LTR">
-<H1 class='title'></H1>
-
+	<script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
+	<script type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
+	<script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
+ </head>
+<body >
+<h1 class='title'></h1>
 <?php
 if (!isset($_POST['datejavac_dif'])) 
 	{	
@@ -181,32 +179,24 @@ else
 	$dtajaf_dif=$jour_f."/".$mois_f."/".$an_f;
 	$mesdatedebut= " du ". $dtajaf_dif;
 	}
-
-
-
 ?>
-</font>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
-<INPUT name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>">
+<p><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" /></p>
 <fieldset id="field7">
-<legend id="legende">Bilan des Absences & Retards  de <?php echo $nom;?><?php echo $mesdatedebut . $mesdatefin ?></legend>
-
+<legend id="legende">Bilan des Absences &amp; Retards  de <?php echo $nom;?><?php echo $mesdatedebut . $mesdatefin ?></legend>
 <?php
 //affichage du formulaire
-
-
 if (!isset($_POST['Valider'])) 
 	{
 	//choix période
-	
-		echo '<p>Pour la p&eacute;riode du <input id="deb-abs" size="10" name="datejavaf_dif" value="'.$dtajaf_dif.'" readonly="readonly" style="cursor: text">';
-		echo 'au <input id="fin-abs" size="9" name="datejavac_dif" value="'.$dtajac_dif.'"readonly="readonly" style="cursor: text"/><INPUT name="eleve" type="hidden" " value="'.$_GET['uid'].'"/><INPUT name="nomeleve" type="hidden" " value="'.$nom.'"/>';
+		echo '<p>Pour la p&eacute;riode du <input id="deb-abs" size="10" name="datejavaf_dif" value="'.$dtajaf_dif.'" readonly="readonly" style="cursor: text" />';
+		echo 'au <input id="fin-abs" size="9" name="datejavac_dif" value="'.$dtajac_dif.'" readonly="readonly" style="cursor: text"/><input name="eleve" type="hidden" value="'.$_GET['uid'].'"/><input name="nomeleve" type="hidden" value="'.$nom.'"/>';
 		if (isset($_GET['cl'])) 
 			{
-			echo ' <INPUT name="klas" type="hidden" " value="'.$_GET['cl'].'"/>';
+			echo ' <input name="klas" type="hidden" " value="'.$_GET['cl'].'"/>';
 			
 			}
-		echo '<input type="submit" name="Valider" value="Valider" class="bt"></p>';
+		echo '<input type="submit" name="Valider" value="Valider" class="bt" /></p>';
 	}
 //si clic sur le bouton Valider
 if ((isset($_POST['Valider']))||(isset($_GET['dd'])))
@@ -216,7 +206,7 @@ if ((isset($_POST['Valider']))||(isset($_GET['dd'])))
 		{
 		for ($loop=0; $loop<count($users);$loop++) {
 		
-		echo "<B>".$users[$loop]["fullname"] ."</b>  : ";
+		echo "<b>".$users[$loop]["fullname"] ."</b>  : ";
 		affiche_abs($users[$loop]["uid"]);
 		echo"<br />";
 		}
@@ -225,17 +215,22 @@ if ((isset($_POST['Valider']))||(isset($_GET['dd'])))
 		{
 		affiche_abs($_POST["eleve"]);
 		}
-	echo "<SCRIPT LANGUAGE=\"JavaScript\">
-		document.write('<div id=\"abs-bt\"><A HREF=\"javascript:window.print()\" id=\"bt-imp\"></A>');
-		document.write('<A HREF=\"javascript:window.close()\" id=\"bt-close\"></A></div>');
-	</SCRIPT>";
+	echo "<script type=\"text/javascript\">
+                //<![CDATA[
+		document.write('<div id=\"abs-bt\"><a href=\"javascript:window.print()\" id=\"bt-imp\"></a>');
+		document.write('<a href=\"javascript:window.close()\" id=\"bt-close\"></a></div>');
+                 //]]>
+	</script>";
 	echo '</div>';
 	}
 ?>
 </fieldset>	
-</FORM>
-</BODY>
-</HTML>
+</form>
+<?php
+include ('../Includes/pied.inc');
+?>
+</body>
+</html>
 
 
 

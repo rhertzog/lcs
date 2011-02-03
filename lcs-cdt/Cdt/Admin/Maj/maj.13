@@ -1,0 +1,3 @@
+#!/bin/bash
+echo " Ceci est le script de mise a jour de 2.2. a 2.3 du module Cdt";
+sed -i "s/2.2/2.3/g" /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php

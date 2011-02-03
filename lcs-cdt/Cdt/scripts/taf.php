@@ -2,11 +2,12 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script du Travail A Faire ELEVE -
    			_-=-_
+  "Valid XHTML 1.0 Strict"
    ============================================= */
 session_name("Cdt_Lcs");
 @session_start();
@@ -39,19 +40,20 @@ if ((isset($_GET['div'])) && (isset($_SESSION['saclasse']))) {
 if(isset($_GET['div'])) $ch=$_GET['div'];
 else exit;
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
 <head>
-<title>Résumé du travail à faire</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+<title>R&#233;sum&#233; du travail &#224; faire</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link href="../style/style.css" rel="stylesheet" type="text/css" />
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
 </head>
 
 <body>
-<H1 class='title'>Travail à faire pour la classe de <?echo $ch;?> </H1>
+<h1 class='title'>Travail &#224; faire pour la classe de <?echo $ch;?> </h1>
 <div id="taf">
 <?php
 
@@ -223,27 +225,30 @@ if (count($numero)>0)
 	//affichage
 	if (count($mattaf)>0)
 	{
-	echo('<TABLE id="tb-cdt">');
+	echo('<table id="tb-cdt">');
 	for ($loop=0; $loop < count($dattaf) ; $loop++)
 		{	
 		$textafaire=markdown($texttaf[$loop]);//conversion du travail a faire
 		if (!($loop>0 &&  ($dattaf[$loop] ==$dattaf[$loop-1])))
 			{		 
 			echo '<tbody>';
-			echo '<tr><th colspan=2>Pour le '.$dattaf[$loop].'</th></TR>';}
-			echo '<TR><TD class="afaire">'.$mattaf[$loop].'<br />'.$preftaf[$loop].' '.$proftaf[$loop].'</TD><TD class="contenu">'.$textafaire.'</TD></TR>';
+			echo '<tr><th colspan="2">Pour le '.$dattaf[$loop].'</th></tr>';}
+			echo '<tr><td class="afaire">'.$mattaf[$loop].'<br />'.$preftaf[$loop].' '.$proftaf[$loop].'</td><td class="contenu">'.$textafaire.'</td></tr>';
 			
 		}
-	echo "</td></tr></table>";
+	echo "</tbody></table>";
 	}
-	else echo "<font face='Arial' color='#CC0000' size=3>Aucun travail n'est programmé pour cette classe !";
+	else echo '<span class="nook">Aucun travail n\'est programmé pour cette classe !</span>';
 	}
-	else echo "<font face='Arial' color='#CC0000' size=3>La rubrique n'est pas encore créée pour cette classe !";
-	echo "<SCRIPT LANGUAGE=\"JavaScript\">
-		document.write('<div id=\"bt-abs\"><A HREF=\"javascript:window.close()\" id=\"bt-close\"></A></div>');
-	</SCRIPT>";
-
-echo '</div>'; //fin du div conteneur taf
+	else echo '<span class="nook">La rubrique n\'est pas encore créée pour cette classe !</span>';
+	echo "<script type=\"text/javascript\">
+                    //<![CDATA[
+		document.write('<div id=\"bt-abs\"><a href=\"javascript:window.close()\" id=\"bt-close\"></a></div>');
+                //]]>
+                    </script>";
+?>
+</div> <!-- fin conteneur -->
+<?php
 include ('../Includes/pied.inc');
 ?>
 </body>

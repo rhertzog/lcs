@@ -139,15 +139,5 @@ $.datepicker.setDefaults({
 	$('#datejavav18').datepicker({});	
 	$('#datejavav19').datepicker({});	
 	
-//	$("#input[@type=submit]:eq(0)").click(function () {
-//		alert("bravo");
-  //    $("#eqt").toggle("slow");
- //   });  
-
-//appel des iframes	
-//	$(".imathsframe").colorbox({width:"80%", height:"95%", iframe:true});
-//	$(".a-imprime").colorbox({width:"80%", height:"400px", iframe:true});
-//	$(".cdt-elv").colorbox({width:"90%", height:"500px", iframe:true});
-//	$(".abs-elv").colorbox({width:"75%", height:"500px", iframe:true});
 
 });
