@@ -285,7 +285,7 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 		    if (!in_array($valeur,$edt)) 
 		    {
 			    echo '<option value="'.htmlentities($valeur).'"';
-				if (htmlentities($valeur)==$val_edt) {echo ' selected="selected"';}
+				if (htmlentities($valeur)==htmlentities($val_edt) ){echo ' selected="selected"';}
 				echo '>'.htmlentities($valeur).'</option>';
 	  			}
 	  		}

@@ -180,8 +180,8 @@ for($x=0;$x < $nmax;$x++)
 	{
 		if ($cible == ($numero[$x]))
 			{//cellule active	
-			echo ("<li id='select'><a href='cahier_texte_arch_perso.php?rubrique=$numero[$x]&amp;arch=$arch'
-			 id='courant'>$mat[$x]<br />$clas[$x] "."</a></li>");	
+			echo "<li id='select'><a href='cahier_texte_arch_perso.php?rubrique=$numero[$x]&amp;arch=$arch'
+			 id='courant'>".htmlentities($mat[$x])."<br />$clas[$x] "."</a></li>";	
 			$contenu_postit=stripslashes($com[$x]);
 			}
 		else 
@@ -192,8 +192,8 @@ for($x=0;$x < $nmax;$x++)
 			echo ("<li><a href='#'>$clas[$x]"."</a></li>");
 			else
 			{
-			echo ("<li><a href='cahier_texte_arch_perso.php?rubrique=$numero[$x]&amp;arch=$arch'
-                        >$mat[$x]<br />$clas[$x]"."</a></li>");
+			echo "<li><a href='cahier_texte_arch_perso.php?rubrique=$numero[$x]&amp;arch=$arch'
+                        >".htmlentities($mat[$x])."<br />$clas[$x]"."</a></li>";
 			}
 			}
 	}

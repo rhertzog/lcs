@@ -30,12 +30,13 @@ if (mysql_num_rows($result)==0)
 	{
 	?>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
 <head>
 <title>Cahier de textes num&eacute;rique</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-	<link href="../style/style.css" rel="stylesheet" type="text/css">
+	<link href="../style/style.css" rel="stylesheet" type="text/css" />
         
 </head>
  
@@ -45,6 +46,8 @@ if (mysql_num_rows($result)==0)
 	<h2><br /><br />Le cahier de textes de <?echo $_SESSION['proffull']; ?> ne comporte actuellement aucune rubrique.</h2>
 		
 	</div></div>
+</body>
+</html>
 <?php
 	mysql_close();	
 	exit;
@@ -52,13 +55,14 @@ if (mysql_num_rows($result)==0)
 include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");	
 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
 <head>
 <title>Cahier de textes num&eacute;rique</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-	<link href="../style/style.css" rel="stylesheet" type="text/css">
-	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css">
+	<link href="../style/style.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
         <script type="text/javascript" src="../Includes/sequence.js"></script>
 	
@@ -147,8 +151,8 @@ for($x=0;$x < $nmax;$x++)
 		
 		if ($cible == ($numero[$x]))
 			{//cellule active	
-			echo ("<li id='select'><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]'
-			'onmouseover=\"window.status='';return true\" id='courant'>$mat[$x]<br />$clas[$x] "."</a></li>");	
+			echo "<li id='select'><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]'
+			 id='courant'>".htmlentities($mat[$x])."<br />$clas[$x] "."</a></li>";	
 			if ($visa[$x])
 				{
 				$vis=$visa[$x];
@@ -163,8 +167,8 @@ for($x=0;$x < $nmax;$x++)
 			echo ("<li><a href='#'>$clas[$x]"."</a></li>");
 			else
 			{
-			echo ("<li><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]'
-			'onmouseover=\"window.status='';return true\">$mat[$x]<br />$clas[$x]"."</a></li>");
+			echo "<li><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]'
+			>".htmlentities($mat[$x])."<br />$clas[$x]"."</a></li>";
 			}
 			}
 	}
@@ -178,15 +182,15 @@ if ($vis) echo '<div id="visa-cdt'.$vis.'">'.$datv.'</div>';
 <!--bloc qui contient la saisie et le contenu du cahier de texte-->
 <div id="container2">
 <fieldset id="field7">
-<legend id="legende"> Cahier de textes de <?echo $_SESSION['proffull']; ?>  &nbsp 
+<legend id="legende"> Cahier de textes de <?echo $_SESSION['proffull']; ?>  &nbsp; 
 </legend>
 
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post">
-<input TYPE="SUBMIT" name="viser" value="" class="bt-visa"><br /><br />
-<input type="hidden" name="rubriq" value= "<?php echo $cible; ?>">
+<div><input type="submit" name="viser" value="" class="bt-visa" /><br /><br />
+<input type="hidden" name="rubriq" value= "<?php echo $cible; ?>" />
 <a href="mailto:<?php echo $_SESSION['aliasprof']."@".$domain; ?>" > <img src="../images/mail.png" alt="Envoyer un mail"
-         title="Envoyer un mail &#224; <?php echo $_SESSION['proffull']; ?>" border=0 ></a>
-</form>
+         title="Envoyer un mail &#224; <?php echo $_SESSION['proffull']; ?>" class="nobord" /></a>
+</div></form>
 
 <?php
 /*========================================================================
