@@ -4,7 +4,7 @@
    /**
 
    * Page d'import des comptes depuis les fichiers CSV/XML de Sconet
-   * @Version $Id: import_sconet.php 4597 2009-10-20 23:32:34Z keyser $
+   * @Version $Id: import_sconet.php 6001 2010-11-27 20:32:49Z crob $
 
    * @Projet LCS / SambaEdu
 
@@ -324,6 +324,14 @@
 				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Il peut arriver que les comptes existants comportent des informations erron&#233;es<br />(<i>Sconet mal rempli, changement de nom d\'un professeur qui se marie,...</i>)<br />En cochant la case, vous autorisez les corrections des attributs cn, sn, givenName et gecos si des changements sont rep&#233;r&#233;s.<br />Le login/uid n\'est en revanche pas modifi&#233;.')")."\"><img name=\"action_image5\"  src=\"$helpinfo\"></u>\n";
 				echo "</li>\n";
 
+				// ===========================================================
+
+				echo "<li>\n";
+				echo "<label for='alimenter_groupe_pp' style='cursor: pointer;'>Cr&#233;er et alimenter le groupe Professeurs Principaux ? </label><input name='alimenter_groupe_pp' id='alimenter_groupe_pp' type='checkbox' value='y' />\n";
+				echo "&nbsp;&nbsp;";
+				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Le groupe des Professeurs Principaux...')")."\"><img name=\"action_image5\"  src=\"$helpinfo\"></u>\n";
+				echo "</li>\n";
+
 				echo "</ul>\n";
 				// ===========================================================
 
@@ -440,7 +448,7 @@
 				$res0=mysql_query($sql);
 			}
 
-			$timestamp=mb_ereg_replace(" ","_",microtime());
+			$timestamp=ereg_replace(" ","_",microtime());
 
 			$sql="SELECT value FROM params WHERE name='dernier_import'";
 			$res1=mysql_query($sql);
@@ -515,7 +523,7 @@
 				$res_copy=copy("$source_file" , "$dest_file");
 
 				// Si jamais un XML non dézippé a été fourni
-				$extension_fichier_emis=mb_strtolower(mb_strrchr($eleves_file,"."));
+				$extension_fichier_emis=strtolower(strrchr($eleves_file,"."));
 				if (($extension_fichier_emis==".zip")||($HTTP_POST_FILES['eleves_file']['type']=="application/zip")) {
 
 					//if(!file_exists($racine_www."/includes/pclzip.lib.php")) {
@@ -639,7 +647,7 @@
 			}
 
 
-			//$timestamp=mb_ereg_replace(" ","_",microtime());
+			//$timestamp=ereg_replace(" ","_",microtime());
 			$echo_file="$racine_www/Admin/result.$timestamp.html";
 			$dest_mode="file";
 			$fich=fopen("$echo_file","w+");
@@ -710,6 +718,7 @@ decompte(cpt);
 			$creer_matieres=isset($_POST['creer_matieres']) ? $_POST['creer_matieres'] : 'y';
 			// ===========================================================
 			$corriger_gecos_si_diff=isset($_POST['corriger_gecos_si_diff']) ? $_POST['corriger_gecos_si_diff'] : 'n';
+			$alimenter_groupe_pp=isset($_POST['alimenter_groupe_pp']) ? $_POST['alimenter_groupe_pp'] : 'n';
 
 
 			// Dossier pour les CSV
@@ -751,10 +760,10 @@ decompte(cpt);
 
 			// Prefixe LP/LEGT,...
 			$prefix=isset($_POST['prefix']) ? $_POST['prefix'] : "";
-			#$prefix=mb_strtoupper(mb_ereg_replace("[^A-Za-z0-9_]", "", strtr(remplace_accents($prefix)," ","_")));
-                        $prefix=mb_strtoupper(mb_ereg_replace("[^A-Za-z0-9]", "", remplace_accents($prefix)));
-			if(mb_strlen(mb_ereg_replace("_","",$prefix))==0) $prefix="";
-			if (mb_strlen($prefix)>0) $prefix=$prefix."_";
+			#$prefix=strtoupper(ereg_replace("[^A-Za-z0-9_]", "", strtr(remplace_accents($prefix)," ","_")));
+                        $prefix=strtoupper(ereg_replace("[^A-Za-z0-9]", "", remplace_accents($prefix)));
+			if(strlen(ereg_replace("_","",$prefix))==0) $prefix="";
+			if (strlen($prefix)>0) $prefix=$prefix."_";
 
 /*
 			echo "\$resultat=exec(\"/usr/bin/sudo $php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp'\",$retour);";
@@ -780,7 +789,7 @@ decompte(cpt);
 
 			//fwrite($fich,"#!/bin/bash\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff'\n");
 
-			fwrite($fich,"#!/bin/bash\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff' '$temoin_f_uid'\n");
+			fwrite($fich,"#!/bin/bash\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff' '$temoin_f_uid' '$alimenter_groupe_pp'\n");
 
 			//echo "<p>#!/bin/bash<br />\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff'</p>\n";
 			// ===========================================================

@@ -7,6 +7,6 @@ Standards-Version: 3.6.2
 
 Package: lcs-web
 Architecture: all
-Depends: lcs-preinstall (>> 2.4.4), lcs-libjs, libtext-unaccent-perl, libcrypt-smbhash-perl, python, webalizer, lynx, slis-common, php5-cli, php5-curl, smarty, libio-socket-ssl-perl
+Depends: lcs-preinstall (>> 2.4.4), lcs-libjs, libtext-unaccent-perl, libcrypt-smbhash-perl, python, webalizer, lynx, slis-common, php5-cli, php5-curl, php5-recode, smarty, libio-socket-ssl-perl
 Description: Install WEB services on LCS server
  This package install WEB services on LCS server project.
