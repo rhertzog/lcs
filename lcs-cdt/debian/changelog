@@ -1,3 +1,9 @@
+lcs-cdt (2.4.8~2) LCS; urgency=low
+
+  * modify indicemaj in postinst and number version in doc-html
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 03 Feb 2011 17:49:03 +0100
+
 lcs-cdt (2.4.8~1) LCS; urgency=low
 
   * update to version 2.3
