@@ -4,8 +4,6 @@ COLTITRE="\033[1;35m"          # Rose
 COLCMD="\033[1;37m"            # Blanc
 COLQUESTION="\033[1;32m"       # Vert
 
-
-
 if  ! grep -q "4.0" /etc/debian_version;  then
         if egrep -q "^5.0" /etc/debian_version; then
                 echo "Votre serveur est deja en version Debian Lenny"
@@ -52,16 +50,17 @@ cp /etc/apt/sources.list /etc/apt/sources.list.etch
 echo "deb http://ftp.fr.debian.org/debian lenny main
 deb-src http://ftp.fr.debian.org/debian lenny main
 
-deb http://lcs.crdp.ac-caen.fr/lenny $LCSTREE main
+##deb http://lcs.crdp.ac-caen.fr/lenny $LCSTREE main
 
-deb http://security.debian.org/ lenny/updates main
-deb-src http://security.debian.org/ lenny/updates main
+#deb http://security.debian.org/ lenny/updates main
+#deb-src http://security.debian.org/ lenny/updates main
 
-deb http://volatile.debian.org/debian-volatile lenny/volatile main
-deb-src http://volatile.debian.org/debian-volatile lenny/volatile main" > /etc/apt/sources.list
+#deb http://volatile.debian.org/debian-volatile lenny/volatile main
+#deb-src http://volatile.debian.org/debian-volatile lenny/volatile main" > /etc/apt/sources.list
 #######
-echo "3. Test si on enleve pas des paquest LCS !"
-if apt-get dist-upgrade -s | grep Remv | grep lcs; then
+echo "3. Test si on enleve pas des paquets LCS !"
+aptitude update
+if aptitude dist-upgrade -s -y | grep Remv | grep lcs; then
         echo "Migration ETCH -> LENNY interrompue par tentative de desinstallation des paquets LCS"
         exit 1
 fi
@@ -76,11 +75,11 @@ EOF
 
 ### On repond aux questions avant qu'elles n'arrivent.
 cat > /tmp/preseed-lenny <<EOF
-# Faut-il gA(C)rer le fichier de configuration de libnss-ldap automatiquementA ?
+# Faut-il garder le fichier de configuration de libnss-ldap automatiquement ?
 libnss-ldap     libnss-ldap/override    boolean false
-# Faut-il gA(C)rer la configuration automatiquementA ?
+# Faut-il garder la configuration automatiquement ?
 libpam-ldap     libpam-ldap/override    boolean false
-# Services A  redA(C)marrer lors de la mise A  niveau de la bibliothAque PAMA :
+# Services a redemarrer lors de la mise a  niveau de la bibliotheque PAM :
 libpam0g        libpam0g/restart-services       string  squid cron courier-authdaemon atd
 # Choices: Belgian, French
 console-data    console-data/keymap/azerty/layout       select
@@ -91,11 +90,31 @@ EOF
 
 debconf-set-selections < /tmp/preseed-lenny   
 #######
-echo "4. Upgrade de la distribution : Fournir les reponses par defaut."
-apt-get update
-apt-get dist-upgrade -y
+echo "4. Upgrade de la distribution (Fournir les reponses par defaut)."
+aptitude update
+echo "4.1 Upgrade des paquets de base : libc6, locales et mysql-server (Fournir les reponses par defaut)."
+aptitude install -y libc6 locales mysql-server
+echo "4.2 Upgrade de la distribution par dist-upgrade (Fournir les reponses par defaut)."
+aptitude dist-upgrade -y
+sed -i 's|^#||g' /etc/apt/sources.list
+aptitude update
+aptitude dist-upgrade -y
+echo "4.3 Test du service Mysql avant mise a jour LCS"
+if  ! mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1 ; then
+        echo "mysql NOK"
+        /etc/init.d/mysql start
+fi
+
+if  ! mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1 ; then
+        echo "ERREUR : Le service Mysql ne demarre pas... Mise a jour LCS interrompue !"
+        exit 1
+fi
+echo "4.4 Mise a jour LCS"
+sed -i 's|#||g' /etc/apt/sources.list
+aptitude update
+aptitude upgrade -y
 #######
-echo "5. Mise a jour des droits sur le repertoires MAILDIR"
+echo "5. Mise a jour des droits sur les repertoires MAILDIR"
 for MAILDIR in `find /home -name Maildir`
 do
         echo "$MAILDIR"
