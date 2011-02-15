@@ -1,3 +1,9 @@
+lcs-web (2.4.7.4) Lcs; urgency=low
+
+  * Fix some problems in lcs-ecth2lenny
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 15 Feb 2011 10:49:38 +0100
+
 lcs-web (2.4.7.3) Lcs; urgency=low
 
   * Fix bug in auth.php mysql_query statusages
