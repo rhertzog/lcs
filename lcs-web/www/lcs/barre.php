@@ -32,7 +32,7 @@ list ($idpers, $login)= isauth();
 <html>
 <head>
   <title>...::: Barre LCS 2.0 :::...</title>
-  <meta HTTP-EQUIV="Content-Type" CONTENT="tetx/html; charset=ISO-8859-1">
+  <meta HTTP-EQUIV="Content-Type" CONTENT="tetx/html; charset=utf-8">
   <!--script type="text/javascript" src="../libjs/jquery/jquery.js"></script-->
   <script type="text/javascript" src="../lib/js/jquery.js"></script>
 <style type="text/css">

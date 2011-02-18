@@ -7,11 +7,11 @@ $n=$_GET['n'];
 $d=$_GET['d'];
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<HTML>
-  <HEAD>
-    <META content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-    <TITLE>...::: Interface d'administration Serveur LCS :::...</TITLE>
-    <LINK  href='../Annu/style.css' rel='StyleSheet' type='text/css'>
+<html>
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <title>...::: Interface d'administration Serveur LCS :::...</title>
+    <link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>
 <?php
 
 include ("/var/www/lcs/includes/headerauth.inc.php");
@@ -20,7 +20,7 @@ include ("flag.php");
 if(empty($_SERVER['QUERY_STRING'])) $QSTRING = "";
 else $QSTRING = $_SERVER['QUERY_STRING'];
 ?>
-    <SCRIPT TYPE="text/javascript">
+    <script TYPE="text/javascript">
 	<!--
 		autorefresh = parseInt('3');
 		if (autorefresh > 0) 
@@ -31,9 +31,9 @@ else $QSTRING = $_SERVER['QUERY_STRING'];
 			  ?>
 			 }
 	 // -->
-    </SCRIPT>
-  </HEAD>
-<BODY>
+    </script>
+  </head>
+<body>
 <?php
 	if (isset($p)) { // il s'agit d'une installation
 		$nf="lcs-".$n;
@@ -64,11 +64,11 @@ if ($flip!="1") {
         echo "<DIV class=\"alert_msg\">$MSG module LCS, patientez quelques minutes ...</DIV>\n";
 }        
 ?>
-<SCRIPT TYPE="text/javascript">
+<script TYPE="text/javascript">
 	<!--
 		self.scrollTo(0,1000000);
 	//-->
-</SCRIPT>
+</script>
 <?        
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");		
 if ($flip=="1"){

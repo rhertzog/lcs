@@ -26,18 +26,18 @@ elseif ( isset($_GET['shell_mod'])) $shell_mod = $_GET['shell_mod'];
     
   // en-tete
   $html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-  $html .= "<HTML>\n";
-  $html .= "	<HEAD>\n";
-  $html .= "		<TITLE>...::: Interface d'administration Serveur LCS :::...</TITLE>\n"; 
-  $html .= "            <META HTTP-EQUIV=\"Content-Type\" CONTENT=\"tetx/html; charset=ISO-8859-1\">\n";
+  $html .= "<html>\n";
+  $html .= "	<head>\n";
+  $html .= "		<title>...::: Interface d'administration Serveur LCS :::...</title>\n"; 
+  $html .= "            <meta HTTP-EQUIV=\"Content-Type\" CONTENT=\"tetx/html; charset=utf-8\">\n";
   echo $html;
   // Redirection vers phase suivante, gestion du «sablier»
   if( $phase == 1 )
-	echo "<META HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?phase=2&shell_orig=$shell_orig&shell_mod=$shell_mod'\">\n";
+	echo "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"1;url='$PHP_SELF?phase=2&shell_orig=$shell_orig&shell_mod=$shell_mod'\">\n";
 
-  $html  = "		<LINK  href='style.css' rel='StyleSheet' type='text/css'>\n";
-  $html .= "	</HEAD>\n";
-  $html .= "	<BODY>\n";
+  $html  = "		<link  href='style.css' rel='StyleSheet' type='text/css'>\n";
+  $html .= "	</head>\n";
+  $html .= "	<body>\n";
   $html .= "<div>\n";
   echo $html;  
   aff_trailer ("1");

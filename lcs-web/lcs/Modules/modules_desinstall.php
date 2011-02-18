@@ -1,23 +1,26 @@
-<HTML>
+<html>
 <?
 include ("flag.php");
 if (isset($verrou)){
 	if ($verrou==1) {
-	echo "<HTML>
-	<HEAD>
-    <META HTTP-EQUIV='Content-Type' CONTENT='tetx/html; charset=ISO-8859-1'>
-	<TITLE>...::: Interface d\'administration Serveur LCS :::...</TITLE>
-	<LINK  href='../Annu/style.css' rel='StyleSheet' type='text/css'>
-	</HEAD>
-	<BODY>
-	<H1>Gestion des Modules LCS</H1>
+	echo "<html>
+	<head>
+    <meta HTTP-EQUIV='Content-Type' CONTENT='tetx/html; charset=utf-8'>
+	<title>...::: Interface d\'administration Serveur LCS :::...</title>
+	<link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>
+	</head>
+	<body>
+	<h1>Gestion des Modules LCS</h1>
 	<div class='alert_msg'>Un autre processus d'Installation/D&#233;sinstallation est en cours. Attendez qu'il se termine ... </div>
-	</BODY></HTML>";exit;}
+	</body>
+	</html>";
+	exit;
 	}
+}
 ?>
-<FRAMESET ROWS="0,*" BORDER="NO">
-	<FRAME SRC="modules_desinstallation.php?<?php echo $_SERVER['QUERY_STRING']; ?>">
-	<FRAME SRC="modules_refecran.php?<?php echo $_SERVER['QUERY_STRING']; ?>" NAME="ecran" ID="ecran">
-</FRAMESET>
-</HTML>
+<frameset ROWS="0,*" BORDER="NO">
+	<frame SRC="modules_desinstallation.php?<?php echo $_SERVER['QUERY_STRING']; ?>">
+	<frame SRC="modules_refecran.php?<?php echo $_SERVER['QUERY_STRING']; ?>" NAME="ecran" ID="ecran">
+</frameset>
+</html>
 	

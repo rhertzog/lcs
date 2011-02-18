@@ -21,12 +21,12 @@ list ($idpers, $login)= isauth();
 if ($idpers == "0")    header("Location:$urlauth");
 ?>
 <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-  <HTML>
-  <HEAD>
-   <META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=ISO-8859-1\">
-  <TITLE> ..::: LCS Statistiques d'usage :::..</TITLE>
-  <LINK  href='../style.css' rel='StyleSheet' type='text/css'>
-  </HEAD>
+  <html>
+  <head>
+	<meta HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">
+	<title> ..::: LCS Statistiques d'usage :::..</title>
+	<link  href='../style.css' rel='StyleSheet' type='text/css'>
+  </head>
   
 <?
 //Verification du droit de lecture des stats

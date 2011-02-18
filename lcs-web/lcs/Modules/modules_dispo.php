@@ -1,7 +1,7 @@
 <?
 /* =============================================
    Projet LCS
-   Administration serveur LCS Â«Liste des Modules disponiblesÂ»
+   Administration serveur LCS «Liste des Modules disponibles»
    AdminLCS/Modules_dispo.php
    Equipe Tice academie de Caen
    10/12/2010
@@ -14,20 +14,20 @@ $msgIntro = "<H1>Gestion des Modules LCS</H1>\n";
 list ($idpers, $login)= isauth();
 
 if (ldap_get_right("lcs_is_admin",$login)!="Y")
-  die (gettext("Vous n'avez pas les droits suffisants pour acc&#233;der &#224; cette fonction")."</BODY></HTML>");
+  die (gettext("Vous n'avez pas les droits suffisants pour acc&#233;der &#224; cette fonction")."</body></html>");
 
 include("modules_commun.php");
         echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 	echo "<HTML>\n";
-	echo "	<HEAD>\n";
-        echo "    <META HTTP-EQUIV=\"Content-Type\" CONTENT=\"tetx/html; charset=ISO-8859-1\">\n";
-	echo "	  <TITLE>...::: Interface d'administration Serveur LCS :::...</TITLE>\n";
-	echo "	  <LINK  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n";
-	echo "		<LINK  href='boutons_style.css' rel='StyleSheet' type='text/css'>\n";
-	echo "      <link rel='stylesheet' href='../Admin/style/stylesort.css' />\n";
+	echo "	<head>\n";
+        echo "		<meta HTTP-EQUIV=\"Content-Type\" CONTENT=\"tetx/html; charset=utf-8\">\n";
+	echo "		<title>...::: Interface d'administration Serveur LCS :::...</title>\n";
+	echo "		<link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n";
+	echo "		<link  href='boutons_style.css' rel='StyleSheet' type='text/css'>\n";
+	echo "		<link rel='stylesheet' href='../Admin/style/stylesort.css' />\n";
 	echo "		<script type='text/javascript' src='../Admin/js/script.js'></script>\n";
-	echo "	</HEAD>\n";
-    	echo "	<BODY>\n";
+	echo "	</head>\n";
+    	echo "	<body>\n";
 	echo $msgIntro;
 
 parsage_du_fichier_xml();

@@ -10,7 +10,7 @@ if ($idpers == "0") header("Location:$urlauth");
 
 <head>
     <title>Interface d'administration LCS</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link rel="stylesheet" href="style/menu.css">
     <script language="JavaScript">
 <!--
