@@ -98,9 +98,9 @@ function SwekeyIntegrationScript()
 				$params['session_id'] = session_id();
 
 			    // localized strings
-		        $params['str_attach_ask'] = swekey_localize("Une clé d'authentification swekey a été détectée.\\nVoulez-vous l\'associer à votre compte LCS ?");
-		        $params['str_attach_success'] = swekey_localize('La clé swekey connectée est associée à votre compte');
-		        $params['str_attach_failed'] = swekey_localize('Erreur dans l\'association de la swekey à votre compte');
+		        $params['str_attach_ask'] = swekey_localize('Une cl\351 d\'authentification swekey a \351t\351 d\351tect\351e.\\nVoulez-vous l\'associer \340 votre compte LCS ?');
+		        $params['str_attach_success'] = swekey_localize('La cl\351 swekey connect\351e est associ\351e \340 votre compte');
+		        $params['str_attach_failed'] = swekey_localize('Erreur dans l\'association de la swekey \340 votre compte');
 			}				
 		}
 	}
