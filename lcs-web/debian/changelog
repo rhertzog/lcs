@@ -24,10 +24,10 @@ lcs-web (2.4.8~6) Lcs; urgency=low
   * Fix bug in auth.php  mysql_query statusages
   * LcSe.pm : Ban following logins : prof docs progs netlogon classes homes admhomes profiles
   * Import Comptes Sconet with simpeXML (by Stephane Boireau):
-	* Add depend on php5-recode
-	* Modify Annu/import_sconet.php
-        * Modify Annu/includes/crob_ldap_functions.php and se3orlcs_import_sconet.php
-        * Modify /usr/share/lcs/scripts/run_import-comptes.sh sauvegarde_ldap_avant_import.sh se3orlcs_import_comptes.php
+     - Add depend on php5-recode
+     - Modify Annu/import_sconet.php
+     - Modify Annu/includes/crob_ldap_functions.php and se3orlcs_import_sconet.php
+     - Modify /usr/share/lcs/scripts/run_import-comptes.sh sauvegarde_ldap_avant_import.sh se3orlcs_import_comptes.php
   * Fix some problems in lcs-etch2lenny
   * Modify meta charset in many pages and scripts
 
@@ -52,7 +52,7 @@ lcs-web (2.4.8~6) Lcs; urgency=low
   [ Cyril Bouthors ]
   * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Feb 2011 11:00:42 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Feb 2011 11:59:01 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
