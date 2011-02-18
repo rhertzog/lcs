@@ -11,21 +11,21 @@
 <h2 style="text-align:center">Documentation Linux Communication Serveur</h2>
 
 <h3><a href="http://wwdeb.crdp.ac-caen.fr/LcsDoc/index.php/Accueil">Documentation officielle en ligne</a></h3>
-<h3><a href="aide_fr/index.html">Présentation du LCS</a></h3>
-<h3><a href="aide_fr/sftp_lcs.html">Accès sftp</a></h3>
+<h3><a href="aide_fr/index.html">Pr&eacute;sentation du LCS</a></h3>
+<h3><a href="aide_fr/sftp_lcs.html">Acc&egrave;s sftp</a></h3>
 <?
 
 if ( is_dir( "/usr/share/doc/lcs/spip" ) ) {
     echo "<h3><a href=\"spip/html/\">CMS spip</a></h3>";
 }
 if ( is_dir( "/usr/share/doc/lcs/smbwebclient" ) ) {
-    echo "<h3><a href=\"smbwebclient/html/\">Accès serveur SE3 <em>smbwebclient</em></a></h3>";
+    echo "<h3><a href=\"smbwebclient/html/\">Acc&egarve;s serveur SE3 <em>smbwebclient</em></a></h3>";
 }
 if ( is_dir( "/usr/share/doc/lcs/clientftp" ) ) {
-    echo "<h3><a href=\"clientftp/html/\">Accès espace personnel <em>clientftp</em></a></h3>";
+    echo "<h3><a href=\"clientftp/html/\">Acc&egrave;s espace personnel <em>clientftp</em></a></h3>";
 }
 if ( is_dir( "/usr/share/doc/lcs/monlcs" ) ) {
-    echo "<h3><a href=\"monlcs/html/\">Portail de ressources pédagogiques <em>Mon LCS</em></a></h3>";
+    echo "<h3><a href=\"monlcs/html/\">Portail de ressources p&eacute;dagogiques <em>Mon LCS</em></a></h3>";
 }
 ?>
 <hr />
