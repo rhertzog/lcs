@@ -6,4 +6,5 @@
         notifempty
         postrotate
            invoke-rc.d rubycas-lcs restart > /dev/null
+		endscript
 }
