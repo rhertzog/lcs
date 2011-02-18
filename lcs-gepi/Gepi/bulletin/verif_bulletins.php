@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: verif_bulletins.php 5088 2010-08-20 12:57:16Z crob $
+* $Id: verif_bulletins.php 6502 2011-02-14 12:01:28Z crob $
 *
 * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -1106,15 +1106,18 @@ if (!(isset($id_classe))) {
 		//echo "</div>";
 	}
 
+	echo add_token_field(true);
+
 	echo "<script type='text/javascript'>
 	// <![CDATA[
 	function envoi_mail(num) {
+		csrf_alea=document.getElementById('csrf_alea').value;
 		destinataire=document.getElementById('mail_'+num).value;
 		sujet_mail=document.getElementById('sujet_'+num).value;
 		message=document.getElementById('message_'+num).value;
 		//alert(message);
 		//new Ajax.Updater($('mail_envoye_'+num),'envoi_mail.php?destinataire='+destinataire+'&sujet_mail='+sujet_mail+'&message='+message,{method: 'get'});
-		new Ajax.Updater($('mail_envoye_'+num),'envoi_mail.php?destinataire='+destinataire+'&sujet_mail='+sujet_mail+'&message='+escape(message),{method: 'get'});
+		new Ajax.Updater($('mail_envoye_'+num),'envoi_mail.php?destinataire='+destinataire+'&sujet_mail='+sujet_mail+'&message='+escape(message)+'&csrf_alea='+csrf_alea,{method: 'get'});
 	}
 	//]]>
 </script>\n";
