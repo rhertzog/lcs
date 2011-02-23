@@ -1,3 +1,11 @@
+lcs-libjs (2.4.8~1) Lcs; urgency=low
+
+  * Update jquery to version: 1.5 min
+  * Update jquery-ui to version: 1.8.9 custom min 
+  * Add jquery-ui themes css : ui-lightness, redmond, cupertino
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 23 Feb 2011 16:17:22 +0100
+
 lcs-libjs (2.4.7.1~1) Lcs; urgency=low
 
   * add file fr.js in tinymce/plugins/example/langs
