@@ -1,3 +1,9 @@
+lcs-cdt (2.4.8) LCS; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 18 Feb 2011 23:48:07 +0100
+
 lcs-cdt (2.4.8~2) LCS; urgency=low
 
   * modify indicemaj in postinst and number version in doc-html
