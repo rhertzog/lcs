@@ -33,8 +33,7 @@ list ($idpers, $login)= isauth();
 <head>
   <title>...::: Barre LCS 2.0 :::...</title>
   <meta HTTP-EQUIV="Content-Type" CONTENT="tetx/html; charset=utf-8">
-  <!--script type="text/javascript" src="../libjs/jquery/jquery.js"></script-->
-  <script type="text/javascript" src="../lib/js/jquery.js"></script>
+  <script type="text/javascript" src="../libjs/jquery/jquery.js"></script>
 <style type="text/css">
 body	{
 	margin-right: 6%;
