@@ -85,19 +85,19 @@ var JQD = (function($, window, undefined) {
 					img : "core/images/app/lcslogo-deskapp.png",
 					typ : "aide"
 				},
-				parpeda : {
-					txt : "Parcours p&eacute;dagogiques",
-					url : "core/learning_path.php",
-					rev : "parpeda",
-					img : "core/images/app/lcslogo-lcs.png",
-					typ : "srvc"
-				},
 				addicon : {
 					txt : "Ajouter une ic&ocirc;ne",
 					url : "#",
 					rev : "addicon",
 					img : "core/images/app/lcslogo-lcs.png",
 					typ : "buro"
+				}/*,
+				parpeda : {
+					txt : "Parcours p&eacute;dagogiques",
+					url : "core/learning_path.php",
+					rev : "parpeda",
+					img : "core/images/app/lcslogo-lcs.png",
+					typ : "srvc"
 				},
 				tinymce : {
 					txt : "Editeur de texte",
@@ -112,7 +112,7 @@ var JQD = (function($, window, undefined) {
 					rev : "formallin",
 					img : "core/images/app/lcslogo-formallin.png",
 					typ : "srvc"
-				}/**/
+				}*/
 				
 			}
 		},
