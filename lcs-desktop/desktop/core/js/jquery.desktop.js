@@ -828,11 +828,11 @@ var JQD = (function($, window, undefined) {
 					parseInt(o.monlcs) == 1 ? $('<li/>').css({'float':'left'}).append(
 						$('<a/>').html('monLcs')
 					) : ''
-				).append(
+				)/*.append(
 					$('<li/>').css({'float':'left'}).append(
 						$('<a/>').html('iLcs')
 					)
-				).appendTo( $('#otBuro_2').addClass('menu_trigger').parent('li').addClass('spaces') );
+				)*/.appendTo( $('#otBuro_2').addClass('menu_trigger').parent('li').addClass('spaces') );
 				//$('li.spaces ul.menu li').each(function(i, v){
 				space.find('li').each(function(i, v){
 					$(v).find('a').prepend($('<span/>').text(i+1) );
