@@ -1,31 +1,40 @@
 <?php
+header ('Content-type: text/html; charset=utf-8');
 
 	$user = $_POST['user'] ;
-	$url = $_POST['file'] ;
-	$resp = '';
-		
+	$url = $_POST['url'] ;
+	$resp = array();
+
+# on va chercher le fichier
+### mettre un timeOut en cas de non réponse	
 $file = file($url);
+$resp['url'] =  htmlentities($url);
 $file = implode("",$file);
 if(preg_match("/<title>(.+)<\/title>/i",$file,$m))
-    $resp .= $m[1];
+    $resp['title'] = $m[1];
 else
-   $resp .= "Cette page semble ne pas poss&eacute;der de titre";
+   $resp['error']= utf8_encode("Erreur ! Cette page semble ne pas poss&eacute;der de titre");
 
-// Supposons que les balises ci-dessus sont disponibles sur example.com
+// recherche de tous les appels 'RSS Feed'
+if (preg_match_all('#<link[^>]+type="application/rss\+xml"[^>]*>#is', $file, $rawMatches)) {
+  // extraire l'url de chaque appel 
+  foreach ($rawMatches[0] as $rawMatch) {
+    if (preg_match('#href="([^"]+)"#i', $rawMatch, $rawUrl)) {
+      $resp['rss'] = $rawUrl[1];
+    }
+  } 
+}
+
 $tags = get_meta_tags($url);
 
-// Notez que les clés sont en minuscule, et
-// le . a été remplacé par _ dans la clé
-$resp .= " |,| auteur : ". htmlspecialchars($tags['author']);       // auteur
-$resp .= " |,| motcle : ". htmlspecialchars($tags['keywords']);     // mots-cle
-$resp .= " |,| description : ". htmlspecialchars($tags['description']);  // description
-/*
+#$resp['author'] = $tags['author'];       // auteur
+#$resp['keywords'] = $tags['keywords'];     // mots-cle
+#$resp['description'] = $tags['description'];  // description
+
 foreach($tags as $k => $val){
-	$resp .= $k.' => '.$val."\r\n";
+	$resp[$k] =$val;
 }
-*/
 
-
-		echo $resp;
+echo json_encode($resp);
 	
 ?>
