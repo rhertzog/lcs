@@ -1,7 +1,18 @@
 <?php
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* @user_form_prefs.php
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version 0.2~20
+* Derniere mise a jour : 13/02/2011
+* Licence GNU-GPL -  Copyleft 2010-2011
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
+
 require  "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers, $login)= isauth();
 
+require "/var/www/Annu/includes/ihm.inc.php";
 include("includes/functions.inc.php");
 ?>
 <!DOCTYPE html>
@@ -49,12 +60,28 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 </style>
 </head>
 <body style="overflow:auto;text-align:left;">
-<div class="bar_top">
+<!--<div class="bar_top">
 	<span style="padding-left:10px;">Param&eacute;tres du bureau</span>
-<!--	<span class="float_right">Param&egrave;tres par d&eacute;faut</span> -->
-</div>
+	<span class="float_right">Param&egrave;tres par d&eacute;faut</span> 
+</div>-->
 <div class="jqd_formulaires">
 	<form action="">
+					<?php if ( is_admin("Lcs_is_admin",$login) == "Y" ) { ?>
+	<fieldset>
+		<legend>Configuration par d&eacute;faut</legend>
+		<ul style="" class="clear_both ul2cols">
+			<li style="" class="">
+				<label for="default_change_conf"> S&eacute;lectionner cette configuration comme configuration par d&eacute;faut </label>
+				<input type="checkbox" id="default_change_conf" name="default_change_conf" />
+				<input type="hidden" id="default_desktop_conf" name="default_desktop_conf" value="0" />
+				<span style="color:#ff0000;">En tant qu'administrateur, vous pouvez s&eacute;lectionner cette configuration comme configuration par d&eacute;faut.</span>
+			</li>
+			<li style="padding-left:10px;text-align:center;">
+			<span class="button">Supprimer la configuration par d&eacute;faut</span>
+			</li>
+		</ul>
+	</fieldset>
+			<?php } ?>
 	<fieldset>
 		<legend>Fond d'&eacute;cran</legend>
 <!--	<div style="height:150px;border-bottom:1px solid #aaa;background:#efefef;">-->
@@ -90,6 +117,12 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 <!--		</div>-->
 		<div>
 			<ul style="" class="clear_both ul2cols">
+				<li>
+                                    <label for="wp_trsp">Opacit&eacute;</label>
+                                    <input type="text" id="wp_trsp" name="wp_trsp" value=50 style="width:3em;" disabled="disabled"/>
+                                    <span>%</span>
+                                    <div id="divOpct" class="float_left"><div class="plusTrsp">+</div><div class="moinsTrsp">-</div></div>
+				</li>
 				<li style="" class="">
 					<label for="pos_walppr">Position/Echelle</label>
 					<select id="pos_walppr">
@@ -124,7 +157,7 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 	<legend>Ic&ocirc;nes</legend>
 		<ul style="" class="clear_both ul2cols">
 			<li>
-				<label>Taille des icones</label>
+				<label>Taille des ic&ocirc;nes</label>
 				<!--<img src="./lcs/images/barre1/BP_r1_c7_f3.gif" id="vign_icon" style="width:24px;height:24px;" alt="" />-->
 				<span class="span_icon_prefs icon"><img src="images/icons/logo_lcs20.png" style="width:24px" /></span>
 				<span class="span_icon_prefs icon"><img src="images/icons/logo_lcs20.png" style="width:36px" /></span>
@@ -151,21 +184,16 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 	<legend>Fen&ecirc;tres</legend>
 		<ul style="" class="clear_both ul2cols">
 			<li>
-				<label for="winsize">Taille des fen&ecirc;tres &agrave; l'ouverture</label>
-				<select id="winsize">
-					<option value="content">Dimension de l'application contenue</option>
-					<option value="small">Taille r&eacute;duite</option>
+				<label for="winsize_w">Largeur des fen&ecirc;tres</label>
+				<select id="winsize_w">
+					<option value="content">Taille de la page contenue</option>
+					<option value="perso">Taille personnalis&eacute;e</option>
 					<option value="fullwin">Plein &eacute;cran</option>
 				</select>
-				<div class="winsize_wh" style="display:none; margin:10px 0 0 0px;">
-					<label for="winsize_w" class="winsize_w" style="margin:0 5px;width:120px;clear:none;">Largeur : 
-					<input type="text" name="winsize_w" id="winsize_w" class="winsize_w" size="5" /></label>
-					<label for="winsize_h" class="winsize_h" style="margin:0 5px;width:120px;clear:none;">Hauteur :
-					<input type="text" name="winsize_h" id="winsize_h" class="winsize_h" size="5" /></label>
-				</div>
 			</li>
 		</ul>
 	</fieldset>
+
 				<p style="text-align:center;margin-top:20px;">
 					<span class="bouton"><a href="#" id="valid_prefs">Enregistrer</a></span>
 					<span class="bouton"><a href="#" id="delete_prefs">Tout supprimer</a></span>
@@ -191,16 +219,17 @@ $(document).ready(function() {
 				$("#icons_field_height").val(ui.value);
 			},
 			stop: function(event, ui) {
-				_WP.find('#tmp_iconsfield').attr('value', ui['value']);
+				//_WP.find('#tmp_iconsfield').attr('value', ui['value']);
+				parent.JQD.options.user['iconsfield'] == ui['value'];
 			//	alert(ui['value']);
-				parent.JQD.init_icons();
+				parent.JQD.utils.sortIcons({"iconsfield": ui['value']});
 			}
 		});
 	});
 	
 	//ouverture du panneau des images wpp
 	$('#btn-openWpp').click(function(){
-		parent.JQD.clear_active();
+		parent.JQD.utils.clear_active();
 		$('#listImgs').hide('fast',function(){
 			$(this).find('img').bind('click',function(){
 				TT_load_prefs_img($(this).attr('src'));
@@ -229,18 +258,22 @@ $(document).ready(function() {
 
 	// Save params of prefs
 	$('#valid_prefs').click(function(){
-		parent.JQD.save_prefs_dev('PREFS', 'hjy', 'lkhlm');
+		parent.JQD.save_prefs_dev('PREFS', 'hjy', $('#default_desktop_conf').val());
 	});
 			
 	// remove pref
 	$('#delete_prefs').click(function(){
-		parent.JQD.delete_xml('PREFS_'+$('body', window.parent.document).find('#login').val());
+		//alert('PREFS_<?php echo $login; ?>');
+                var delusr = '<?php echo $login; ?>';
+		parent.JQD.rm('PREFS_'+delusr, delusr);
 	});
 		
 	//colorpicker
-	$('#colorSelector .lcs_colorpicker').css('backgroundColor',_WP.find('#tmp_bgcolor').val());
+	// TODO: A supprimer
+	//$('#colorSelector .lcs_colorpicker').css('backgroundColor',_WP.find('#tmp_bgcolor').val());
+	$('#colorSelector .lcs_colorpicker').css('backgroundColor',parent.JQD.options.user['bgcolor'] );
 	$('#colorSelector').ColorPicker({
-		color: _WP.find('#tmp_bgcolor').val(),
+		color: parent.JQD.options.user['bgcolor'],
 		onShow: function (colpkr) {
 			$(colpkr).css('z-index', '3').fadeIn(500);
 			return false;
@@ -252,31 +285,44 @@ $(document).ready(function() {
 		onChange: function (hsb, hex, rgb) {
 			$('#colorSelector div').css('backgroundColor', '#' + hex);
 			$('#wp_bgcolor').attr('value','#' + hex);
-			_WP.find('#tmp_bgcolor').attr('value','#' + hex)
+			//_WP.find('#tmp_bgcolor').attr('value','#' + hex)
 			_WP.parents('body').css('background', '#' + hex);
+			console.log("parent.JQD.options.user['bgcolor']",parent.JQD.options.user['bgcolor']);
+			parent.JQD.options.user['bgcolor']=hex;
+			console.log("parent.JQD.options.user['bgcolor']",parent.JQD.options.user['bgcolor']);
 		}
 	});
 
 	// wallpaper
 	$('#ch_wlppr').click(function(){
 		$('#listImgs,#ch_wlppr').hide();
-		//alert($('#select_walppr').val().replace('thumbs/',''));
 		var prfx=$('#select_walppr').val().match('~') ? '' : 'core/';
-		//alert(prfx+$('#select_walppr').val().replace('thumbs/',''));
 		$('#wallpaper', window.parent.document).removeAttr('src').attr('src',prfx+$('#select_walppr').val().replace('thumbs/',''));
-		_WP.find('#tmp_wallpaper').attr('value',prfx+$('#select_walppr').val().replace('thumbs/',''));
+		// TODO: tmp_wallpaper a supprimer. 
+		//_WP.find('#tmp_wallpaper').attr('value',prfx+$('#select_walppr').val().replace('thumbs/',''));
+		parent.JQD.options.user['wallpaper'] = prfx+$('#select_walppr').val().replace('thumbs/','');
 	});
 	//position wallpaper
 	$('#pos_walppr').change(function() {
-		_WP.find('#tmp_poswp').attr('value',$('#pos_walppr').val()) ;
 		$('#wallpaper', window.parent.document).removeAttr('style').removeClass().addClass($('#pos_walppr').val()) ;
 	});
 	//position wallpaper au chargement de la page
-	$("#pos_walppr option[value=" +_WP.find('#tmp_poswp').val() +"]").attr("selected","selected") ;
+	$("#pos_walppr option[value=" +parent.JQD.options.user.pos_wallpaper +"]").attr("selected","selected") ;
 	// couleur d'ariere-plan
+	// TODO : a quoi ca sert  ?
 	$('#ch_bgcolor').click(function(){
 		$('body').css('background-color', $('#wp_bgcolor').val());
 	});
+	// transparency
+	$('#divOpct div').click(function (e) {
+		var c = parseInt( $('#wp_trsp').val() );
+		console.info('c',c);
+		e.preventDefault();
+		if ($(this).hasClass('plusTrsp') && c < 100 ){ c = c+10;$('#wp_trsp').attr({value:c})}
+		else if ($(this).hasClass('moinsTrsp') && c > 0 ){c=c-10;$('#wp_trsp').attr({value:c})}
+		$('#wallpaper', window.parent.document).css({opacity:c/100});
+	});
+
 
 	// .:LCS:.  Change icons larger
     $('.span_icon_prefs').click(function(){
@@ -284,35 +330,46 @@ $(document).ready(function() {
 		$(this).addClass('selected');
 		$('#icons_larger').attr('value',$(this).children('img').width());
 		_WP.find('a.icon img').css({'width': $(this).children('img').width(), 'height': $(this).children('img').width()});
-		parent.JQD.init_icons();
-		_WP.find('#tmp_iconsize').attr('value',$(this).children('img').width());
+
+		parent.JQD.utils.sortIcons({"iconsfield": $('#icons_field_height').val()});
+		// TODO: supprimer tmp_iconsize
+		//_WP.find('#tmp_iconsize').attr('value',$(this).children('img').width());
+		parent.JQD.options.user['wallpaper'] = $(this).children('img').width();
 	});
 	$('.span_icon_prefs').each(function(){
-		//alert($(this).find('img').width()+' | '+_WP.find('#tmp_iconsize').val());
-		$(this).find('img').width()==_WP.find('#tmp_iconsize').val()?$(this).addClass('selected'):'';
+		$(this).find('img').width()==_WP.find('a.icon>img').width()?$(this).addClass('selected'):'';
 	});
-	$('#icons_field_height').attr('value', _WP.find('#tmp_iconsfield').val());
-		$('#slider-vertical').slider( "option", "value", _WP.find('#tmp_iconsfield').val() );
-	parent.JQD.init_icons();
+	//$('#icons_field_height').attr('value', _WP.parent('body').find('#tmp_iconsfield').val());
+	$('#icons_field_height').attr('value', parent.JQD.options.user['iconsfield']);
+	//$('#slider-vertical').slider( "option", "value", _WP.parent('body').find('#tmp_iconsfield').val() );
+	$('#slider-vertical').slider( "option", "value",parent.JQD.options.user['iconsfield'] );
+		parent.JQD.options.user['wallpaper'] = $(this).children('img').width();
+//	parent.JQD.init_icons();
 	
 	// quicklaunch
-	$('#aff_quicklaunch').change(function() {
-		$(this).is(':checked') ? _WP.find('#tmp_quicklaunch').attr('value','1'):_WP.find('#tmp_quicklaunch').attr('value','0');
+	var _a_q = $('#aff_quicklaunch');
+	var _t_q = parent.JQD.options.user['quicklaunch'];
+	_a_q.change(function() {
+		$(this).is(':checked') ? _t_q='1' : _t_q='0';
+		//$(this).is(':checked') ? parent.JQD.options.user['quicklaunch'] = '1' :parent.JQD.options.user['quicklaunch'] = '0');
+		console.info('ql: ',_t_q);
 	});
 	// init au chargement
-	_WP.find('#tmp_quicklaunch').val()=='1' ? $('#aff_quicklaunch').attr('checked', 'checked') : $('#aff_quicklaunch').removeAttr('checked') ;
-
-	//Ouverture des fenetres
-	$('#winsize')
-	.attr('value', _WP.find('#tmp_winsize').val())
-	.change(function() {
-		//$(this).next('.winsize_wh').hide();
-		_WP.find('#tmp_winsize').attr('value', $(this).val()) ;
-		//if( $(this).val()=='wh' ) $(this).next('.winsize_wh').show();
-	});
-	//if( _WP.find('#tmp_winsize').val()=='wh' ) $('div.winsize_wh').show();
+	 _t_q =='1' ? _a_q.attr('checked', 'checked') : _a_q.removeAttr('checked') ;
+	
+	// conf par defaut
+	if( $('#default_desktop_conf').length > 0 ) { //si on est admin
+		var _dc_c = $('#default_change_conf');
+		var _dd_c = $('#default_desktop_conf');
+		_dc_c.change(function() {
+			$(this).is(':checked') ? _dd_c.attr('value','1') : _dd_c.attr('value','0');
+			//alert(_dd_c.val() );
+		});
+		// init au chargement
+		_dc_c.removeAttr('checked') ;
+	}
 });
-
+	
 function TT_load_prefs_img(t_img) {
 	$('#select_walppr').attr('value',t_img);
 	$.ajax({
