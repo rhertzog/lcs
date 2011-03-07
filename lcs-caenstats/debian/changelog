@@ -1,3 +1,9 @@
+lcs-caenstats (2.4.7.1) Lcs; urgency=low
+
+  * fix .ssh owner
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 07 Mar 2011 17:09:44 +0100
+
 lcs-caenstats (2.4.7) Lcs; urgency=low
 
   * now build for all Arch
