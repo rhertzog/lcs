@@ -22,6 +22,7 @@ include("core/includes/functions.inc.php");
 <head>
 <meta charset="utf-8"><!-- iso-8859-1 du a la directive apache ?  -->
 <meta http-equiv="x-ua-compatible" content="ie=emulateie8" />
+<meta http-equiv="content-language" content="fr">
 <title>...::: Bureau LCS :::...</title><!-- recuperation des params etab ds lcs.conf -->
 <meta name="description" content="LCS - Environnement Num&eacute;rique de Travail du <?php echo $organizationalunit."  ".$organization." de ".$locality." - ".$province; ?>. Le num&eacute;rique au service de l'&eacute;ducation." />
 <meta name="keywords" content="Environnement Num&eacute;rique de Travail, Web Desktop, Bureau web, Education, FOAD, Formation &agrave; distance, communication, LCS, linux, e-learning" />

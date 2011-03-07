@@ -251,20 +251,22 @@ var JQD = (function($, window, undefined) {
 				//add window open on simple-clic on link of menu bar 
 				$('a.open_win').not(".green, #blueone")
 				.bind('click', function() {
-					$(this).hasClass('addicon') ? JQD.utils.dispIcnForm() : JQD.init_link_open_win(this);
+					// on agit suivant le cas renvoye
+					// - "ress" Creation du tableau des ressources imposees
+					$(this).hasClass('addicon') ? JQD.utils.dispIcnForm() : $(this).hasClass('ress') ? JQD.ressEdit() : JQD.init_link_open_win(this);
+					//console.info('optTable : ',optTable);
 					return false;
 				}).draggable({// drag sur les icones
 			    	delay: 1000, // pas de dragg sur un click
 			        helper: 'clone'
 			    });
-                            $.each($('a.addicon'), function(){
-                                $(this).removeClass('open_win')
-                            });
-                            // sort menu items in alphabetic order
-                            $('ul.menu').each(function(i, v){
-                                //console.info('ul.menu'+i, $(v));
-                                JQD.utils.sortLi( $(v), 'li' )
-                            })
+				$('a.addicon, a.ress').removeClass('open_win');
+				
+				// sort menu items in alphabetic order
+				$('ul.menu').each(function(i, v){
+					//console.info('ul.menu'+i, $(v));
+					JQD.utils.sortLi( $(v), 'li' )
+				})
 			},
 			//
 			//JQD.init.rrlinks() : Relative or remote links?
@@ -299,53 +301,7 @@ var JQD = (function($, window, undefined) {
 			//#JQD.init.icons()
 			//
 			icons : function (o) {
-					var menuIcon= [ 
-						{'Renommer l\'ic&ocirc;ne':{ 
-							onclick:function(menuItem,menu) {
-								 JQD.utils.editIcon($(this) )
-							}, 
-							icon:'core/images/gui/textfield_rename.png ' 
-						}  } , 
-						{'Supprimer l\'ic&ocirc;ne':{ 
-							onclick:function(menuItem,menu) {
-								 if(confirm('Supprimer '+$(this).find('span').text()+' ?')){ JQD.utils.rmIcon($(this) ) ;} 
-							}, 
-							icon:'core/images/gui/delete.gif', 
-							disabled:false 
-						}  } 
-					]; 
-				// Desktop icons.
-				$('a.icon').draggable({
-					cancel: 'a.ui-icon',// clicking an icon won't initiate dragging
-					revert: false, // when not dropped, the item will revert back to its initial position
-					containment: $('#desktop, .trash'), // stick to demo-frame if present
-					//helper: 'clone',
-					cursor: 'move'
-				}).mousedown(function() {
-					// Highlight the icon.
-					JQD.utils.clear_active();
-					$(this).attr('rev').match('perso') ? $(this).addClass( 'perso' ) : '';
-					$(this).addClass( 'active' );
-				}).dblclick(function() {
-					// Get the link's target.
-					JQD.init_link_open_win( this );
-				}).not('.group').contextMenu(menuIcon,{theme:'lcsdesk'});
-				//$('a.icon.group').contextMenu().hide();
-				/*.find('span').each(function() {
-						$(this).mousedown(function() {
-						// Highlight the icon.
-							JQD.utils.clear_active();
-							$(this).parent().addClass( 'active' );
-						});*/
-						//if(!$(this).parent().hasClass('group') ) $(this).parent().contextMenu(menuIcon,{theme:'osx'})
-						/*.contextMenu({
-						menu: 'iconMn'
-					},
-					function(action, el, pos) {
-						action == 'remove' ? JQD.utils.rmIcon(el.parent() ) : action == 'edit' ? JQD.utils.editIcon(el.parent() ) : action == 'save' ? JQD.save_prefs_dev('PREFS', o.user.name, 'buro') :  action == 'refresh' ? location.reload() : action == 'add' ? JQD.utils.dispIcnForm() : '';
-					})*/
-				//	;
-			//	})
+				JQD.utils.initIcon( $('a.icon') )
 			},
 			//
 			//#JQD.init.show_desktop( ) : Show desktop button, ala Windows OS.
@@ -694,8 +650,8 @@ var JQD = (function($, window, undefined) {
 			//
 			//#JQD.build.nenu(app)
 			//
-			menu: function( ap ) {
-				var app = ap.applis,
+			menu: function( o ) {
+				var app = o.applis,
 				mn = $('<ul/>'),
 				mntype= ({
 					buro: 'Lcs-Bureau',
@@ -708,6 +664,30 @@ var JQD = (function($, window, undefined) {
 					else mn.append( JQD.utils.tymenu( t, txt ) );
 				});
 				mn.appendTo('#bar_top');
+				// ressources pour user
+				if( typeof o.icons != 'undefined' ) {
+					JQD.utils.tymenu( 'ress', 'Ressources' ).insertAfter($('li.appl') )
+					$.each(o.icons, function(i) {
+						o.icons[i]['typ']='ress';
+						JQD.utils.ssmenu( o.icons[i] );
+						$('li.ress>ul>li:last-child').find('a').append( 
+							$('<span/>').css({width:'16px',height:'16px',margin:'4px -20px 0 5px',float:'right',backgroundColor:o.icons[i].color}) 
+						)
+					});
+				}
+				//resssources admin
+				if(o.user.statut=="admin" &&  typeof o.ress!="undefined" ){
+					var optRess = {
+						typ:'buro',
+						url:'#',
+						txt:'Liens partag&eacute;s',
+						img:'core/images/app/lcslogo-lcs.png',
+						rev:'ress', 
+						smn:o.ress
+					};
+					JQD.utils.ssmenu( optRess );
+					$('a.ress').append( $('<img src="core/images/annu/admins.png"/>').css({float:'right',margin:'5px 0 0 5px'}) )
+				}
 
 				$.each(app, function(i) {
 					if ( i != 'admin' )
@@ -716,6 +696,7 @@ var JQD = (function($, window, undefined) {
 					$.each(app[i], function(j) {
 						JQD.utils.ssmenu( app[i][j] );
 					});
+				//console.info('app[i] : ',app[i]);
 				});
 				$('li.admn>ul>li>a').removeClass('open_win');
 				//JQD.init.topmnu();
@@ -843,18 +824,11 @@ var JQD = (function($, window, undefined) {
 			//#JQD.build.icons( o )
 			//
 			icons : function( o ) {
-				var icons,
+				var icons = o.user.icons.sort(),
 				nb_icons = $('#desktop a.abs.icon').not('.launch').length,
-				t = 20, w = 20, s = 0, icfd, iwh, h_d = $('#desktop').outerHeight(true);
-				//if (o.pref == "nul"  ) {  
-					icons = o.applis;
-					icfd  = parseInt(o.user["iconsfield"])/100;
-					iwh   = o.user["iconsize"];
-				//}else{
-				//	icons = o.pref;
-				//	icfd  = parseInt(o.pref["iconsfield"])/100;
-				//	iwh   = parseInt(o.pref["iconsize"]) == true ? o.pref["iconsize"] : o.user["iconsize"];
-				//}
+				t = 20, w = 20, s = 0, h_d = $('#desktop').outerHeight(true),
+				icfd = parseInt(o.user["iconsfield"])/100, iwh = o.user["iconsize"];
+
 				if( $('#desktop > a.icon').length > 1 ) 
 					$('#desktop > a.icon').each(function(){$(this).remove();});
 						
@@ -960,12 +934,12 @@ var JQD = (function($, window, undefined) {
 				icnFrmUl = $('<ul/>').addClass('ul2cols'),
 				icnTtl = $('<input type="text"/>').attr({id:'icnttl', name: 'icnttl'}),
 				icnUrl = $('<input type="text"/>').attr({id:'icnurl', name: 'icnurl'}),
-				icnMyRess = $('<input type="checkbox"/>').attr({id:'icnnyress', name: 'icnnyress', checked: 'checked'}),
+				icnMyRess = $('<input type="checkbox"/>').attr({id:'icnMyRess', name: 'icnMyRess', value:JQD.options.user.infos.uid, 'checked': 'checked'}),
 				//icnColArr = {transparent:'transparent', OliveDrab : 'OliveDrab', orchid : 'orchid',rouge : 'red', OrangeRed : 'OrangeRed', orange : 'orange', violet : 'violet', green : 'green', yellow : 'yellow', blue : 'blue'},
 				icnColArr =["ffffff", "eeeeee", "ffff88", "ff7400", "cdeb8b", "6bba70",
 			"006e2e", "c3d9ff", "4096ee", "356aa0", "ff0096", "b02b2c", "000000"],
 				icnColor= $('<select/>').attr({id:'icncolor', name: 'icncolor',size:3}),
-				icnGrp = $('<select/>').attr({id:'icngrp', name: 'icngrp', multiple:'multiple',size:3}).append( $('<option/>').attr('value','').html('--- Choisir ---') ),
+				icnGrp = opts.user.login=="admin" ? $('<select/>').attr({id:'icngrp', name: 'icngrp', multiple:'multiple',size:3}).append( $('<option/>').attr('value','').html('--- Choisir ---') ) : '',
 				icnImg = $('<input type="text"/>').attr({id:'icnimg', name: 'icnimg'}),
 				icnFrmSbmt = $('<span/>').addClass('bouton').append(
 					$('<a/>').attr({href:'#',id:'valid_icon'}).text('Ajouter').click( function(){
@@ -984,11 +958,18 @@ var JQD = (function($, window, undefined) {
 							};
 							var icn = JQD.utils.icon( icnOpts ).css({top:$('#desktop').outerHeight(true)/2, left:$('#desktop').outerWidth(true)-200});
 							JQD.init.icons();
+							JQD.utils.initIcon( icn );
 							//icnGrp.val()!=''? JQD.save_prefs_dev('PREFS_', 'xx', 'shared') :'';
                             var gsv = JQD.utils.getSelectValue($(icnGrp));
-                            //console.info('where', gsv);
-                            if(gsv!=''){
-                                JQD.save_icon({ icon:icnOpts, where:gsv, ou:'group' });
+
+							var gpChecked=new Array(), myress;
+							$('#icnForm').find("input:checked").each(function (i) {
+								gpChecked[i] = $(this).val();
+							});                            
+                            //console.info('where', gsv[0]);
+                            //console.info('gpChecked', gpChecked.length);
+                            if(gpChecked.length>0){
+                                JQD.save_icon({ icon:icnOpts, where:gpChecked, ou:'group', myress:myress });
                                 icn.addClass('group');
                             }
                             icn.appendTo('#desktop');
@@ -1014,19 +995,20 @@ var JQD = (function($, window, undefined) {
 							.append( $('<label for="icncolor"/>').html('Couleur') )
 							.append(icnColor)
 						).append(
+						//typeof JQD.options.user.infos.group.gp != 'undefined' ? JQD.options.user.infos.group.gp.name !='Eleves' ?
+						JQD.options.user.infos.uid == 'admin' ? //JQD.options.user.infos.group.gp.name !='Eleves' ?
 							$('<li/>')
 							.append( $('<label for="icnMyRess"/>').html('Ajouter &agrave; mes ressources ') )
-							.append(icnMyRess)
+							.append(icnMyRess) :''
 						).append(
-						typeof JQD.options.user.infos.group.gp != 'undefined' ? JQD.options.user.infos.group.gp.name !='Eleves' ?
+						//typeof JQD.options.user.infos.group.gp != 'undefined' ? JQD.options.user.infos.group.gp.name !='Eleves' ?
+						JQD.options.user.infos.uid == 'admin' ? //JQD.options.user.infos.group.gp.name !='Eleves' ?
 							$('<li/>')
 							.append( $('<label for="icngrp"/>').html('Partager avec ') )
-							.append(icnGrp) : '' : ''
-						)/*.append( 
-							$('<a/>').addClass('icon')
-							.html(icnTtl.val()!=''?icnTtl.val():'Mon ic&ocirc:ne')
-							.prepend( $('<img/>').attr({src: 'core/images/app/lcslogo-lcs.png'}) ) 
-						)*/
+							.append( JQD.bFrmIptLbl({type:'checkbox', name:'icnAdm',value:'Administratifs',text:'Administratifs'}) )
+							.append( JQD.bFrmIptLbl({type:'checkbox', name:'icnPrf',value:'Profs',text:'Profs'}) )
+							.append( JQD.bFrmIptLbl({type:'checkbox', name:'icnElv',value:'Eleves',text:'Eleves'}) ) : '' //: ''
+						)//.append(icnGrp)
 					)
 				),
 				icnDialog=$('<div id="icondialog"/>').addClass('jqd_formulaires')
@@ -1034,7 +1016,9 @@ var JQD = (function($, window, undefined) {
 				.append( icnFrm )
 				.append( icnFrmSbmt )
 				.appendTo('body').hide();
-				 $.each(opts.user.infos.group, function( i, v ) {
+				//console.log('typeof icnGrp: ',typeof icnGrp);
+				//console.log('typeof JQD.options.user.infos.group.gp: ',typeof JQD.options.user.infos.group.gp);
+				if( typeof icnGrp != 'string') $.each(opts.user.infos.group, function( i, v ) {
 				 	if ( i == 'gp' ) {
 					//icnGrp.prepend( $('<option/>').attr('value', opts.user.infos.group.gp.name).html(opts.user.infos.group.gp.name) );
 					$('<option/>').attr('value', opts.user.infos.group.gp.name).html(opts.user.infos.group.gp.name).insertAfter( icnGrp.children('option:first-child') );
@@ -1104,14 +1088,77 @@ var JQD = (function($, window, undefined) {
 				return icon;
 			},
 			//
+			//
+			//
+			initIcon: function( icon ) {
+				var menuIcon= [ 
+					{'Renommer l\'ic&ocirc;ne':{ 
+						onclick:function(menuItem,menu) {
+							 JQD.utils.editIcon($(this) )
+						}, 
+						icon:'core/images/gui/textfield_rename.png ' 
+					}  } , 
+					{'Supprimer l\'ic&ocirc;ne':{ 
+						onclick:function(menuItem,menu) {
+							 if(confirm('Supprimer '+$(this).find('span').text()+' ?')){ JQD.utils.rmIcon($(this) ) ;} 
+						}, 
+						icon:'core/images/gui/delete.gif', 
+						disabled:false 
+					}  } ,
+					{'<div id="icClr"><div style="float:left;">Choisir la couleur:</div></div><br>':{
+						onclick:function(menuItem,cmenu,e) {
+							var img= $(this).find('img');
+							$t = $(e.target);
+							if ($t.is('.swatch')) {
+								//this.style.backgroundColor = $t.css('backgroundColor');
+								img.css({'backgroundColor': $t.css('backgroundColor')});
+								$t.parent().find('.swatch').removeClass('swatch-selected');
+								$t.addClass('swatch-selected');
+							}
+							return false;
+						} 
+					}
+					}
+				]; 
+
+				// Desktop icons.
+				icon.draggable({
+					cancel: 'a.ui-icon',// clicking an icon won't initiate dragging
+					revert: false, // when not dropped, the item will revert back to its initial position
+					containment: $('#desktop, .trash'), // stick to demo-frame if present
+					//helper: 'clone',
+					cursor: 'move'
+				}).mousedown(function() {
+					// Highlight the icon.
+					JQD.utils.clear_active();
+					$(this).attr('rev').match('perso') ? $(this).addClass( 'perso' ) : '';
+					$(this).addClass( 'active' );
+				}).dblclick(function() {
+					// Get the link's target.
+					JQD.init_link_open_win( this );
+				}).contextMenu(menuIcon,{theme:'lcsdesk', //.not('.group') ?
+					beforeShow: function() { 
+						var allClr=['transparent','red','orange','yellow','green','blue','violet','black'];
+						$(this.menu).find('#icClr').each(function() { 
+							if( $(this).hasClass('color') ) return ;
+							$.each(allClr, function(i){
+								$('#icClr').append( $('<div/>').addClass('swatch '+ allClr[i]).css('backgroundColor',allClr[i]) );
+							});
+							$(this).addClass('color');
+						}); 
+					}
+				});
+			},
+			//
 			//#JQD.utils.rmIcon() : fonction supprimer icone
 			//
 			rmIcon: function (item) {
-				item.addClass('icon_trash')
-				.removeClass('abs')
-				.fadeOut().remove();
 				if( item.hasClass('group') && item.attr('rev').match(JQD.options.user.login) ) {
-					var ifn = JQD.options.icons['ICON_'+JQD.options.user.login+'_'+item.text().replace(/ /g,'_')+'.json'].groups,
+					var admOrNo = typeof JQD.options.icons!='undefined' ? JQD.options.icons : JQD.options.ress,
+					itTxt=typeof item.text() !='undefined' ? item.text()!='' ? item.text() : item.attr('title'): item.attr('title') ;
+					//console.log('item : ',item);
+					//console.log('ICON_'+JQD.options.user.login+'_'+item.attr('title').replace(/ /g,'_')+'.json');
+					var ifn = admOrNo['ICON_'+JQD.options.user.login+'_'+itTxt.replace(/ /g,'_')+'.json'].groups,
 					uTxt = 'de vos ressources personnelles', gTxt = ' le partage de ce lien avec les groupes :',
 					me = $('<p/>'), lgUl = $('<ul id="lgIcn"/>');
 					var dialogCfrm=$('<div/>').attr({id:'dialogCfrm',title:'Supprimer un lien partag&eacute;'}).append(
@@ -1136,15 +1183,28 @@ var JQD = (function($, window, undefined) {
 			            resizable: false,
 			            buttons: {
 			                "Supprimer": function() {
-								var u=JQD.options.user.login, f='ICON_'+u+'_'+item.text().replace(/ /g, '_');
-								//console.log(JQD.options.user.login, item.attr('rev') );
-								JQD.rm( f, u, 'all');
+								var u=JQD.options.user.login, f='ICON_'+u+'_'+itTxt.replace(/ /g, '_'),
+								ckb=new Array(), chkbChkd= $('#lgIcn li input:checked'), gru;
+								chkbChkd.each(function (i) {
+									ckb[i] = $(this).attr('name');
+								});                            
+								//console.log('ckb : ',ckb );
+								gru = chkbChkd.length == $('#lgIcn li input').length ? 'all' : ckb;
+								//console.log('gru (GroupRessUser) : ',gru );
+								
+								JQD.rm( f, u, gru);
+								item.hasClass('intr') ? item.parents('tr').remove():'';
+			                    $(this).dialog("close");
 			                },
 			                "Annuler": function() {
 			                    $(this).dialog("close");
 			                }
 			            }
 			        });
+				} else {
+				item.addClass('icon_trash')
+				.removeClass('abs')
+				.fadeOut().remove();
 				}
 			},
 			//
@@ -1291,6 +1351,28 @@ var JQD = (function($, window, undefined) {
 					open: function(event, ui) {},
 					close: function(event, ui) {$('#icondialog').hide();}
 				});
+			},
+			//
+			//#JQD.dialog_mess(opts)
+			//
+			dialog_mess: function(opts) {
+				//console.log('opts : ',opts);
+				$( "#dialog-message" ).dialog( "destroy" );
+				var dm = $('<div id="dialog-message"/>').attr({title: opts.title}).append(
+					$('<p/>').html( opts.intro ).append(
+						$('<span/>').addClass('ui-icon ui-icon-circle-check').css({float:'left', margin:'0 7px 50px 0'})
+					)
+				).append(
+					$('<p/>').html(opts.txt)
+				).appendTo('#desktop').dialog({
+					modal: true,
+					buttons: {
+						Ok: function() {
+							$( this ).dialog( "close" );
+						}
+					}
+				});
+
 			},
             //
             // #JQD.utils.gqtSelectValue( slct )
@@ -1481,7 +1563,7 @@ var JQD = (function($, window, undefined) {
 		
 		// Suppression fichier
 		rm: function(file, usr, ou) { 
-			//console.info(file+'\n'+usr);
+			//console.info(file+'\n'+usr+'\n'+ou);
 			$.ajax({
 				type: "POST",
 				url: "core/action/delete.php",
@@ -1495,14 +1577,7 @@ var JQD = (function($, window, undefined) {
 				success : function(data, status) {
 					var resp = data;
 					//console.info(data.mess);
-					JQD.create_notify("withIcon", 
-						{title:data.title, text:resp['mess'], icon:'core/images/icons/'+resp['img']+'.png'},
-						{
-						expires:false,
-						click: function(e,instance){
-							window.location='./'; 
-						}
-					});
+					JQD.utils.dialog_mess({title:data.title, txt:resp['mess'],intro:'Pfeuuu'});
 				},
 				error: function(data,err,errThrown){
 					console.log(err, data.responseText);
@@ -1603,15 +1678,91 @@ var JQD = (function($, window, undefined) {
 			return bfUl;
 		},
 		bFrmLi : function(opts) {
+			var frmLi = $('<li/>');
+			return frmLi;
 		},
-		bFrmItm: function(opts) {
-                    var bfItm = $('<input/>').attr({type:opts.type});
+		bFrmIpt: function(opts) {
+			var bfIpt = $('<input/>').attr({type:opts.type, id:opts.name, name:opts.name, value:opts.value});
+			return bfIpt;
+		},
+		bFrmLbl: function(opts) {
+			var bfLbl = $('<label/>').attr({for:opts.name}).text(opts.text);
+			return bfLbl;
+		},
+		bFrmItm: function(opts) { // opts:{ type:"text, radio, chackbox'}
+			var bfItm = JQD.bFrmLi(opts).append( JQD.bFrmLbl(opts) ).append( JQD.bFrmIpt(opts) );
+			return bfItm;
+		},
+		bFrmIptLbl: function(opts) { // opts:{ type:"text, radio, chackbox'}
+			var bfIptLbl = $('<div/>').append( JQD.bFrmIpt(opts) ).append( JQD.bFrmLbl(opts).css({'margin-left':'0', width:'auto',display:'inline',float:'none'}) );
+			return bfIptLbl;
+		},
+		//
+		//#JQD.bDialog( opts )
+		// opts={id:'id_div_dialog', class:'class_div_dialog',title:'titre_de_la_boite_dialog', ctn:'contenu,peut_etre_1_fonction'}
+		bDialog: function(o){
+			JQD.utils.clear_active();
+			var bdialog= $('<div id="'+o.id+'"/>').addClass(o.class)
+			.attr({'title':o.title}).append( o.ctn ).dialog({
+					width: typeof o.width ? o.width:400,
+					modal: true,
+					//height:270 ,
+					open: function(event, ui) {},
+					close: function(event, ui) {$('#icondialog').hide();},
+resizable: true,
+			            buttons: {
+			            /*    "Supprimer": function() {
+								var u=JQD.options.user.login, f='ICON_'+u+'_'+item.text().replace(/ /g, '_');
+								//console.log(JQD.options.user.login, item.attr('rev') );
+								JQD.rm( f, u, 'all');
+			                },*/
+			                "Fermer": function() {
+			                    $(this).dialog("close");
+			                }
+			            }				});
+			return bdialog;	
+		},
+		//
+		//
+		//
+		bTable: function( opts ) {
+			//console.log('optb : ',opts.tb.esc);
+			var esc=opts.tb.esc,
+			btable=$('<table/>').css({width:'100%',border:'1px solid #aaa'}).addClass('data ui-widget ui-widget-content').append( JQD.bThead(opts.th, esc) ).append( JQD.bTboby(opts.tb, esc) );
+			return btable;
+		},
+		bThead: function( opth, esc ) {
+			//console.log('opth : ',opth);
+			var bhead= $('<thead/>').append( JQD.bTr( opth, esc ).css({height:'36px','font-weight':'bold',color:'#6699cc','text-align':'center'}).addClass('ui-widget-header') );
+			return bhead;
+		},
+		bTboby: function( optb, esc ) {
+			var btbody=$('<tbody/>');
+			$.each(optb, function(tr) {
+				if(tr!='esc') JQD.bTr( optb[tr], esc ).attr({id:tr}).appendTo( btbody );
+			});
+			return btbody;
+		},
+		bTr: function( optr, esc ) {
+			var btr=$('<tr/>').css({border:'1px solid #aaa', 'barder-width':'1px 0'});
+			$.each(optr, function(td,val) {
+				if(val!='' && !esc.match(td) ) JQD.bTd( optr[td],td ).appendTo( btr );
+			});
+			return btr;
+		},
+		bTd: function( optd ,td ) {
+			var tdCtn={
+				img:'<img src='+optd+' style="width:24px;height:24px;" alt="'+optd+'"/>', 
+				color:'<span style="display:block;width:24px;height:24px;background:'+optd+'" title="'+optd+'"></span>'};
+			t= typeof tdCtn[td] != 'undefined' && optd!=td ? tdCtn[td] : optd;
+			var btd=$('<td>'+t+'</td>' ).css({padding:'5px',border:'1px solid #acf','border-width':'0 1px','line-height':'24px'});
+			return btd;
 		},
 		//
 		//__/__/sauvegarde des prefs - fichier /home/[user]/Profile/PREFS_[user].xml__/__/
 		//
 		save_prefs_dev: function(koa, ki, ou) {
-			//alert( $('body').css('background-color') );
+			//console.log('JQD.options.user["quicklaunch"] : ',JQD.options.user['quicklaunch']);
 			var optionIcons = [];
 			$('#desktop a.icon').not('.group').each(function() { 
 				var el_a=$(this);
@@ -1623,7 +1774,7 @@ var JQD = (function($, window, undefined) {
 					rev 	: el_a.attr('rev'),
 					top 	: el_a.position().top,
 					left 	: el_a.position().left,
-					color : el_a.css('background-color'),
+					color : el_a.find('img').css('backgroundColor'),
 					img 	: el_a.find('img').attr('src')
 				}) 
 			});
@@ -1632,6 +1783,7 @@ var JQD = (function($, window, undefined) {
 				url: "core/action/save.php",
 				cache: false,
 				data: ({
+					// TODO: tout passer dans JQD.options.user en amont
 					file          : koa+'_'+ki,
 					user          : ki,
 					wallpaper     : $("#wallpaper").attr('src'),
@@ -1640,10 +1792,11 @@ var JQD = (function($, window, undefined) {
 					iconsize      : $("#desktop > a.icon:first img").width(),
 					iconsfield    : JQD.options.user['iconsfield'],
 					bgcolor       : $("body").css('background-color'),
+					bgopct        : JQD.options.user['bgopct'],
 					quicklaunch   : JQD.options.user['quicklaunch'],
 					s_idart       : $("#s_idart") ? $("#s_idart").val() : '0',
 					winsize       : JQD.options.user['winsize'],
-					ki            : ki,
+					ki            : ki, // Non utilise
 					ou            : ou
 				}),
 				dataType: "json",
@@ -1739,7 +1892,12 @@ var JQD = (function($, window, undefined) {
 					this.blur();
 					return false;
 				})
-			).prepend( $('<span/>').addClass('float_left close').click(function(){ $('#window_lcs_'+win).remove();$(this).parent().remove()}) );
+			).prepend( $('<span/>').addClass('float_left close').click(function(){ $('#window_lcs_'+win).remove();$(this).parent().remove()}).hide() )
+			.mouseover( function() {
+					$(this).find('span.close').show();
+				}).mouseout( function() {
+					$(this).find('span.close').hide();
+				});
 			
 			this.navigate =  $('<div/>').addClass('float_left').css({position: 'relative'})
 				.append($('<input type="text"/>').attr({id: 'wp_url', name: 'wp_url'}))
@@ -1889,7 +2047,7 @@ var JQD = (function($, window, undefined) {
 				.click( function( event )
 				{
 					event.preventDefault();
-					frames['ifr_lcs_'+win].location.reload();
+				if (typeof window.frames['ifr_lcs_'+win].location)	frames['ifr_lcs_'+win].location.reload();
 				} )
 			).append(
 			$('<button/>').addClass('button')
@@ -1900,7 +2058,7 @@ var JQD = (function($, window, undefined) {
 				.click( function( event )
 				{
 					event.preventDefault();
-					if (window.frames['ifr_lcs_'+win].innerHTML != "") {
+					if (typeof window.frames['ifr_lcs_'+win].innerHTML && window.frames['ifr_lcs_'+win].innerHTML != "") {
 			            window.frames['ifr_lcs_'+win].focus();
 			            window.frames['ifr_lcs_'+win].print();
 			        } else {
@@ -2052,67 +2210,97 @@ var JQD = (function($, window, undefined) {
                     }
                     else JQD.logform('../lcs/auth.php') ;
 		},
-			//
-			// JQD.btr : bar-top right side -
-			//
-			btr : {  
-				date: {
-					txt:"",
-					id:"clock",
-					url: "../lcs/statandgo.php?use=Agendas",
-					rev: 'agendas',
-					cls: 'date'
-				},
-				reload: {
-					txt:"Actualiser le bureau",
-					id:"reload",
-					url: "./",
-					rev: '',
-					cls: 'reload'
-				},
-				userinf: {
-					txt:"",
-					id:"btrUsrInf",
-					url: "#",
-					rev: '',
-					cls: ''
-				},
-				maint: {
-					txt:"Demande d'assistance informatique",
-					id:"maintinfo",
-					url: "../Plugins/Maintenance/demande_support.php",
-					rev: 'maintinfo',
-					cls: 'maintinfo open_win'
-				},
-				wmail: {
-					txt:"Envoyer un message",
-					id:"mess",
-					url: "../squirrelmail/src/compose.php?mailbox=INBOX&startMessage=1",
-					rev: 'webmail',
-					cls: 'wmail open_win'
-				},
-				annu: {
-					txt:"Trouver un utilisateur, une classe, un groupe...",
-					id:"found",
-					url: "../Annu/search.php",
-					rev: '',
-					cls: 'found open_win'
-				},
-				savdesk: {
-					txt:"Enregistrer votre bureau",
-					id:"save",
-					url: "#",
-					rev: '',
-					cls: 'save'
-				},
-				spaces: {
-					txt:"",
-					id:"otBuro_2",
-					url: "#",
-					rev: '',
-					cls: 'spaces'
-				}
+		//
+		// JQD.btr : bar-top right side -
+		//
+		btr : {  
+			date: {
+				txt:"",
+				id:"clock",
+				url: "../lcs/statandgo.php?use=Agendas",
+				rev: 'agendas',
+				cls: 'date'
 			},
+			reload: {
+				txt:"Actualiser le bureau",
+				id:"reload",
+				url: "./",
+				rev: '',
+				cls: 'reload'
+			},
+			userinf: {
+				txt:"",
+				id:"btrUsrInf",
+				url: "#",
+				rev: '',
+				cls: ''
+			},
+			maint: {
+				txt:"Demande d'assistance informatique",
+				id:"maintinfo",
+				url: "../Plugins/Maintenance/demande_support.php",
+				rev: 'maintinfo',
+				cls: 'maintinfo open_win'
+			},
+			wmail: {
+				txt:"Envoyer un message",
+				id:"mess",
+				url: "../squirrelmail/src/compose.php?mailbox=INBOX&startMessage=1",
+				rev: 'webmail',
+				cls: 'wmail open_win'
+			},
+			annu: {
+				txt:"Trouver un utilisateur, une classe, un groupe...",
+				id:"found",
+				url: "../Annu/search.php",
+				rev: '',
+				cls: 'found open_win'
+			},
+			savdesk: {
+				txt:"Enregistrer votre bureau",
+				id:"save",
+				url: "#",
+				rev: '',
+				cls: 'save'
+			},
+			spaces: {
+				txt:"",
+				id:"otBuro_2",
+				url: "#",
+				rev: '',
+				cls: 'spaces'
+			}
+		},
+		//
+		//#JQD.ressEdit()
+		//
+		ressEdit: function() {
+						var thR=['-','-','name','Url','Img','Couleur','Proprio','Partage avec'];
+						var ctnTab={th:thR, tb:JQD.options.ress };
+						ctnTab.tb['esc']="rev iconsize left top";
+						//console.info('ctnTab : ',ctnTab);
+						var optTable={id:'tabDialog', class:'',width:700, title:'Ressource', ctn:JQD.bTable(ctnTab)};
+						optTable.ctn.find('tbody tr').each(function(){
+							$(this).prepend( $('<td/>').css({'line-height':'30px','font-size':'28px'})
+							.append( $('<img src="core/images/gui/delete.gif"/>') ) )
+							.prepend( $('<td/>').css({'line-height':'36px'}).append( $('<input type="checkbox"/>') ) );
+							$(this).find('td:eq(1) img').each(function(){
+								var tdClose=$(this).parent('td');
+								$('<a/>').addClass('group intr').attr({
+									href: '#',
+									rev: 'admin',
+									title: tdClose.next('td').text(),
+									rel: tdClose.next('td:eq(3)').text()
+								}).append( $(this) ).click(function(){ JQD.utils.rmIcon( $(this) ) }).appendTo(tdClose)
+							});
+							$(this).find('td:last-child').each( function() {
+								var gtxt=$(this).text().replace(JQD.options.user.login+',','');
+								$(this).html( gtxt );
+							})
+						});
+						JQD.bDialog(optTable);
+			
+		},
 		//
 		//
 		//
@@ -2300,6 +2488,8 @@ var JQD = (function($, window, undefined) {
 				success: function( data, status ) {
 					JQD['options']  = $.extend( true, {}, JQD.defaults, data );
                     JQD.connect( JQD['options'] );
+					//console.info('JQD.defaults = ', JQD.defaults);
+					//console.info('data = ', data);
 					//console.info('JQD.options = ', JQD.options)
 				}
 			});

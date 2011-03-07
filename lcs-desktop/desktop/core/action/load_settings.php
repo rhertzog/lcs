@@ -110,7 +110,7 @@ if ( acces_btn_admin($idpers, $login) == "Y") { // acces au menu d'administratio
 			"txt" => $liens[$i][0],
 			"url" => "#",
 			"rev" => "admin",
-			"img" => "../lcs/images/barre1/BP_r1_c7_f3.gif",
+			"img" => "core/images/app/lcslogo-admin.png",
 			"typ" => "admn",
 			"smn"=>array()
 			);
@@ -128,7 +128,27 @@ if ( acces_btn_admin($idpers, $login) == "Y") { // acces au menu d'administratio
 	
 			}
 		  }	
-	}	
+	}
+	//
+	$dirData ="../data/";
+	if( is_dir($dirData) ) {
+		$prefs['ress']=array();
+		$dIcn = scandir($dirData);
+		foreach($dIcn as $k=>$dirGp){
+			if($dirGp !="." && $dirGp!=".." && is_dir($dirData.$dirGp)){
+				$files = scandir($dirData.$dirGp);
+				foreach($files as $t=>$icn){
+					if($icn !="." && $icn!=".." &&$icn !=$icnLast &&  is_file($dirData.$dirGp."/".$icn)){
+						$_ficn=$dirData.$dirGp."/".$icn;
+						$prefs['ress'][$icn] =  json_decode(file_get_contents($_ficn));
+						$icsLast=$icn;
+					}
+				}
+			}
+		}
+	}
+			
+		
 	$prefs['user']['statut']='admin';
 } // Fin menu admin
 
@@ -272,6 +292,7 @@ if ( $idpers!=0 && !pwdMustChange($login)) {
 		);
 	}
 	# filexplorer
+	/*
 	if (is_dir('../../../elfinder') ){
 		$applis['filexplorer']= array(
 			"txt" => "Explorateur de fichiers",
@@ -282,6 +303,7 @@ if ( $idpers!=0 && !pwdMustChange($login)) {
 			"smn" => ""
 		);
 	}
+	*/
 	# phpmyadmin
 	if (isset($pma)) {
 		$applis['pma']= array(
@@ -387,21 +409,23 @@ if ( $idpers!=0 ) {
 	
 	if ( count($groups) ) {
 		$dirIcn ="../data/";
-		$infos['test']="test";
-			$co=$ma=$eq=$di=$cl=0;
-			$tbl_gp = array("Administratifs","Profs","Eleves");
+		$co=$ma=$eq=$di=$cl=0;
+		$tbl_gp = array("Administratifs","Profs","Eleves");
 		$ptrn= array('/Classe/','/Cours/','/Equipe/','/Matière/');
 
-			for ($loop=0; $loop < count ($groups) ; $loop++) {
-				// on recherche les icones attribuees aux groupes
+		if ($prefs['user']['statut']=='admin') {
+		}
+
+		for ($loop=0; $loop < count ($groups) ; $loop++) {
+			// on recherche les icones attribuees aux groupes
 			$dIcn =$dirIcn. $groups[$loop]["cn"];
 			if( is_dir($dIcn) ) {
 				$files = scandir($dIcn);
 				foreach($files as $k=>$r){
-						$prefs['files'][$k.'_'.$loop] = $r;
+					$prefs['files'][$k.'_'.$loop] = $r;
 					$_f=$dIcn."/".$r;
 					if($r !="." && $r!=".." && is_file($_f)){
-						//$prefs['icons'][$r]['file']=  $_f;
+					//$prefs['icons'][$r]['file']=  $_f;
 						$prefs['icons'][$r]=  json_decode(file_get_contents($_f));
 					}
 				}
@@ -456,6 +480,14 @@ else if( is_file('../json/PREFS_default.json') ) {
 	foreach( $objsn as $k=>$val) {
 		$k!="icons" ? $prefs['user'][$k]=$val : '';
 	}
+}else {
+	$ca=0;
+foreach ($applis as $app=>$icon) {
+	if( $app!="admin" && $app!="auth" && $app!="apdesk") {
+	$prefs['user']['icons'][$ca]=$icon;
+	$ca++;
+	}
+}
 }
 
 #

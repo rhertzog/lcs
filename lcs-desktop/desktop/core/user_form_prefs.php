@@ -258,6 +258,8 @@ $(document).ready(function() {
 
 	// Save params of prefs
 	$('#valid_prefs').click(function(){
+		parent.JQD.options.user['quicklaunch']=$('#aff_quicklaunch').is(':checked') ? 1:0;
+		parent.JQD.options.user['bgopct']=$('#wp_trsp').val();
 		parent.JQD.save_prefs_dev('PREFS', 'hjy', $('#default_desktop_conf').val());
 	});
 			
@@ -265,7 +267,7 @@ $(document).ready(function() {
 	$('#delete_prefs').click(function(){
 		//alert('PREFS_<?php echo $login; ?>');
                 var delusr = '<?php echo $login; ?>';
-		parent.JQD.rm('PREFS_'+delusr, delusr);
+		parent.JQD.rm('PREFS_', delusr);
 	});
 		
 	//colorpicker
@@ -287,9 +289,9 @@ $(document).ready(function() {
 			$('#wp_bgcolor').attr('value','#' + hex);
 			//_WP.find('#tmp_bgcolor').attr('value','#' + hex)
 			_WP.parents('body').css('background', '#' + hex);
-			console.log("parent.JQD.options.user['bgcolor']",parent.JQD.options.user['bgcolor']);
+			//console.log("parent.JQD.options.user['bgcolor']",parent.JQD.options.user['bgcolor']);
 			parent.JQD.options.user['bgcolor']=hex;
-			console.log("parent.JQD.options.user['bgcolor']",parent.JQD.options.user['bgcolor']);
+			//console.log("parent.JQD.options.user['bgcolor']",parent.JQD.options.user['bgcolor']);
 		}
 	});
 
@@ -316,7 +318,7 @@ $(document).ready(function() {
 	// transparency
 	$('#divOpct div').click(function (e) {
 		var c = parseInt( $('#wp_trsp').val() );
-		console.info('c',c);
+		//console.info('c',c);
 		e.preventDefault();
 		if ($(this).hasClass('plusTrsp') && c < 100 ){ c = c+10;$('#wp_trsp').attr({value:c})}
 		else if ($(this).hasClass('moinsTrsp') && c > 0 ){c=c-10;$('#wp_trsp').attr({value:c})}
@@ -352,7 +354,7 @@ $(document).ready(function() {
 	_a_q.change(function() {
 		$(this).is(':checked') ? _t_q='1' : _t_q='0';
 		//$(this).is(':checked') ? parent.JQD.options.user['quicklaunch'] = '1' :parent.JQD.options.user['quicklaunch'] = '0');
-		console.info('ql: ',_t_q);
+		//console.info('ql: ',_t_q);
 	});
 	// init au chargement
 	 _t_q =='1' ? _a_q.attr('checked', 'checked') : _a_q.removeAttr('checked') ;

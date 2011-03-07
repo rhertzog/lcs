@@ -641,7 +641,6 @@ input.wp_url{
 --------------------------------------*/
 #bar_top .respform, #desktop .respform{
 	border:1px solid #cccccc;
-	background:#ffffff;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -652,9 +651,12 @@ input.wp_url{
 	color:#ffffff;
 	text-shadow: #666 0 1px 1px;
 	-moz-box-shadow:3px 3px .8em #666;
-	background: -moz-radial-gradient(#123456, #456789); 
+	background:transparent url(../images/gui/bar_bottom.png) repeat-x center center;
+/*	background:#transparent url(../images/gui/trans_white.png) center center;
 	background-image: -webkit-gradient(radial,center center,10,center center,480,from(#123456),to(#456789)); 
+	background: -moz-radial-gradient(#123456, #456789); 
 	background-repeat: no-repeat;  
+*/
 }
 /* bar_bottom -> links
 --------------------------------------*/
@@ -1742,9 +1744,29 @@ width:16px;
 	-webkit-border-radius: 3px;
 	-moz-box-shadow:1px 1px .1em #666;
 }
+/* LCS Theme contextmenu*/
+/* ========= */
 .context-menu-theme-lcsdesk .context-menu-item-hover {
 	background-image:url(../images/gui/bar_top_link.png);
 	border-color:#00c;
+}
+/* item couleur contextmenu*/
+/* ========= */
+div > div.swatch{
+}
+div.swatch, div.swatch-selected {
+	font-size:0px;
+	width:12px;
+	height:12px;
+	float:left;
+	margin:1px;
+}
+div.swatch-selected {
+	border:2px solid black;
+	width:10px;
+	height:10px;
+}
+div.swatch.transparent{
 }
 
 /* Nouvelle bar_top*/
@@ -2062,6 +2084,7 @@ padding:0;
 * surcharge ui-theme.css 
 */
 .ui-widget-header ,.ui-dialog .ui-dialog-buttonpane button{
-	background:#FFFFFF url(../images/gui/bar_top.png) repeat-x left bottom ;
+/**/	background:#FFFFFF url(../images/gui/bar_top.png) repeat-x left bottom ;
 }
 .ui-icon-closethick { background-position: -96px -128px; }
+.ui-dialog .ui-dialog-buttonpane {text-align:center;}

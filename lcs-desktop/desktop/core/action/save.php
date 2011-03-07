@@ -1,5 +1,15 @@
 <?php
-#header ('Content-type: text/html; charset=utf-8');
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* @save.php
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version 2.4.8
+* Derniere mise a jour: 06/03/2011
+* Licence GNU-GPL -  Copyleft 2010
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
+
+header ('Content-type: text/html; charset=utf-8');
 require  "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers, $login)= isauth();
 
@@ -9,9 +19,9 @@ list ($idpers, $login)= isauth();
 #__/__/__/__/__/__/__/__/__/__/
 $i=0;
 $_j= array();
-
+$lg='';
 # cas d'un partage
-if( $_POST["ou"] == "group" ) {
+if( $_POST["ou"] == "group") {
     $c= count($_POST['icons']);
     foreach($_POST['icons'] as $k=>$val){
         $_j[$k] = $val;
@@ -22,22 +32,28 @@ if( $_POST["ou"] == "group" ) {
     foreach($_POST['groups'] as $k=>$group){
         #$_t= htmlentities(trim($_j['txt']));
         $_t= htmlentities( preg_replace( "# #", "_", $_j['txt']  ) );
-        if(!is_dir("../data/".$group)){$mkdir = mkdir("../data/".$group, 0770);}
-        $fp=fopen("../data/".$group."/ICON_".$login.'_'.$_t.".json","w");
+        if($login==$group) $resDir = "/home/".$login."/Documents/Ressources" ;
+        else if( acces_btn_admin($idpers, $login) == "Y" )  $resDir =  "../data/".$group;
+        else return;
+        if(!is_dir($resDir)){mkdir($resDir, 0770);}
+        $fp=fopen($resDir."/ICON_".$login.'_'.$_t.".json","w");
         $json_fp=json_encode($_j);
         $fwrite = fwrite($fp,$json_fp);
         fclose($fp);
+        $lg.=$group;
     }
     
-    echo json_encode($_j);
+   // echo json_encode($_j);
+        echo json_encode( array('default'=> 'Enregistrement effectué ! '.$_POST['myress'].' | '.count($_POST['groups']).' | '.$lg.' | '.$login.' | '.$resDir.' | '.acces_btn_admin($idpers, $login)) );
 }
-else{
+else {
 
     $_j["wallpaper"]     = htmlentities($_POST["wallpaper"]);
     $_j["pos_wallpaper"] = $_POST["pos_wallpaper"];
     $_j["iconsize"]      = $_POST["iconsize"];
     $_j["iconsfield"]    = $_POST["iconsfield"];
     $_j["bgcolor"]       = $_POST["bgcolor"];
+    $_j["bgopct"]        = $_POST["bgopct"];
     $_j["quicklaunch"]   = $_POST["quicklaunch"];
     $_j["s_idart"]       = $_POST["s_idart"];
     $_j["winsize"]       = $_POST["winsize"];
