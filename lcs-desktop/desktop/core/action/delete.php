@@ -46,7 +46,7 @@ else if( is_array($ou) ){
 		
 #	$mess= " / ".$ou[0]." | ".$ou[1]." | ".$ou[2]." | ".$ou[3]." | ".$ou;
 }
-else if( $ou='buro' ){
+else if( $ou=='buro' ){
 	$userrep = "/home/$user/Profile/";
 	if (!is_dir($userrep)) {
 		$mess= utf8_decode("Erreur! le dossier \"/home/$user/Profile/\" n'existe pas");
@@ -66,6 +66,21 @@ else if( $ou='buro' ){
 			$title="Information";
 		}
 	}
+}
+else if($ou=='default' && $user=='admin') {
+	$userrep = "../json/";
+	$userfile = "../json/PREFS_default.json" ;
+		if(!is_file($userfile)){
+			$mess= utf8_decode('Aucune configuration n\'est enregistr&eacute;e');
+			$img="alert";
+			$title="Erreur !";
+		}else{
+			$command='rm '. $userfile;
+			exec($command);
+			$mess= utf8_decode('Le par d&eacute;faut a &eacute;t&eacute; supprim&eacute;e.');
+			$img="info";
+			$title="Information";
+		}
 }
 $resp=array(
 "mess" => $mess,

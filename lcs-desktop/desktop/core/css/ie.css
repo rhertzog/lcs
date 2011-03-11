@@ -31,6 +31,38 @@
 #quicklaunch li{
 	float:left;
 }
+div.box_trsp_black, div.list_infos_user{
+	height:auto;
+}
+#bar_top ul.bar_top_right #user_infos{
+	overflow-x:scroll;
+}
+#bar_top ul.bar_top_right #user_infos ul{
+	position:relative;
+	display:block;
+	float:none;
+}
+#bar_top ul.bar_top_right #user_infos ul li{
+float:none;
+clear:both;
+display:block;
+line-height:20px;
+height:25px;
+width:95%;
+}
+#bar_top ul.bar_top_right a.save, 
+#bar_top ul.bar_top_right a.wmail, 
+#bar_top ul.bar_top_right a.found, 
+#bar_top ul.bar_top_right a.reload, 
+#bar_top ul.bar_top_right a.spaces, 
+#bar_top ul.bar_top_right a.maintinfo {
+	padding:0 8px
+}
+#bar_top ul li.buro{
+	margin-left:30px;
+}, 
+
+/*
 #user_infos{
 line-heigth:12px;
 }
@@ -52,4 +84,4 @@ float:none;
 clear:both;
 display:block;
 line-height:10px;
-}
+}*/

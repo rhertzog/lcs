@@ -220,6 +220,10 @@ a.icon.ui-draggable-dragging {
 	float: left;
 	margin: 6px 5px 0 0;
 }
+.window_top span.float_left img {
+	width:16px;
+	height:16px;
+}
 
 .window_bottom, .ui-dialog-buttonpane {
 	background: #fff url(../images/gui/bar_top.png) repeat-x left bottom;
@@ -667,7 +671,7 @@ input.wp_url{
 }
 #bar_bottom li span.close {
 	background: transparent url(../images/gui/close_12.png) no-repeat center center;
-	margin: -3px -18px 0 0;
+	margin: 0px -15px 0 0;
 	-moz-box-shadow:none;
 	line-height:14px;
 }
@@ -1226,9 +1230,6 @@ form.jqd_form{
 	z-index:2;
 	font-size:.9em;
 }
-#user_infos .close{
-	background-color:#ddd;
-}
 #user_infos .info_connect{
 	font-size:.9em;
 	line-height: 12px;
@@ -1237,23 +1238,29 @@ form.jqd_form{
 #user_infos .info_connect:hover{
 	background:#000;
 }
+#user_infos ul.infos_user li{
+	float:none;
+	border:1px solid transparent;
+	line-height:11px;
+	display:block;
+}
 #user_infos ul.infos_user li.group_title{
 	float:none;
 	line-height:20px;
 	height:20px;
 	margin:0;
 	padding:0;
+	display:block;
+	clear:both;
 }
-#user_infos ul.infos_user li a{
-	display:inline;
+#user_infos ul.infos_user li a.group{
 	color:orange;
 	text-shadow: #333 0 1px 1px;
 	cursor:pointer;
 }
-#user_infos ul.infos_user li{
-	float:none;
-	border:1px solid transparent;
-	line-height:11px;
+#user_infos ul.infos_user li a.mail{
+	float:right;
+	cursor:pointer;
 }
 #user_infos ul.infos_user li.user_link:hover{
 	float:none;

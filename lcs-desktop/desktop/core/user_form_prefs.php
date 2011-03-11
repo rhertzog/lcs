@@ -77,7 +77,7 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 				<span style="color:#ff0000;">En tant qu'administrateur, vous pouvez s&eacute;lectionner cette configuration comme configuration par d&eacute;faut.</span>
 			</li>
 			<li style="padding-left:10px;text-align:center;">
-			<span class="button">Supprimer la configuration par d&eacute;faut</span>
+			<span class="button" id="delprefsdef">Supprimer la configuration par d&eacute;faut</span>
 			</li>
 		</ul>
 	</fieldset>
@@ -196,7 +196,7 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 
 				<p style="text-align:center;margin-top:20px;">
 					<span class="bouton"><a href="#" id="valid_prefs">Enregistrer</a></span>
-					<span class="bouton"><a href="#" id="delete_prefs">Tout supprimer</a></span>
+					<span class="bouton"><a href="#" id="delete_prefs">Supprimer les pr&eacute;f&eacute;rences</a></span>
 				</p>
 	
 <script>
@@ -267,7 +267,12 @@ $(document).ready(function() {
 	$('#delete_prefs').click(function(){
 		//alert('PREFS_<?php echo $login; ?>');
                 var delusr = '<?php echo $login; ?>';
-		parent.JQD.rm('PREFS_', delusr);
+		parent.JQD.rm('PREFS_', delusr, 'buro');
+	});
+		
+	// remove pref
+	$('#delprefsdef').click(function(){
+		parent.JQD.rm('PREFS_', '<?php echo $login; ?>', 'default');
 	});
 		
 	//colorpicker
