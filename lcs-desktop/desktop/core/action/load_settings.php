@@ -148,7 +148,15 @@ if ( acces_btn_admin($idpers, $login) == "Y") { // acces au menu d'administratio
 		}
 	}
 			
-		
+	$applis['addicon']= array(
+		"txt" => "Ajouter un lien partag&eacute;",
+		"url" => "#",
+		"rev" => "addicon",
+		"img" => "core/images/app/lcslogo-lcs.png",
+		"typ" => "buro",
+		"smn" => ""
+	);
+
 	$prefs['user']['statut']='admin';
 } // Fin menu admin
 
@@ -477,8 +485,13 @@ else if ( is_file('/home/'.$login.'/Profile/PREFS_'.$login.'.json') ) {
 else if( is_file('../json/PREFS_default.json') ) {
 	$url='../json/PREFS_default.json';
 	$objsn = json_decode(file_get_contents($url));
-	foreach( $objsn as $k=>$val) {
+	foreach( $objsn as $k=>$val) 
+	{
 		$k!="icons" ? $prefs['user'][$k]=$val : '';
+	}
+	foreach($applis as $appli)
+	{
+		array_push($prefs['user']['icons'], $appli);
 	}
 }else {
 	$ca=0;
