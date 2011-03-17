@@ -1,4 +1,4 @@
-lcs-web (2.4.8~7) Lcs; urgency=low
+lcs-web (2.4.8~8) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -31,7 +31,8 @@ lcs-web (2.4.8~7) Lcs; urgency=low
   * Fix some problems in lcs-etch2lenny
   * Modify meta charset in many pages and scripts
   * Fix bug on path to libjs in barre.php
-
+  * Import all the rights tree of SE3 in LCS in ldaplcs2se3.sh (Franck Molle)
+ 
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
     might download into {applilcs,moduleslcs}.xml.1 and we don't see the new
@@ -53,7 +54,7 @@ lcs-web (2.4.8~7) Lcs; urgency=low
   [ Cyril Bouthors ]
   * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 25 Feb 2011 13:34:28 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 17 Mar 2011 11:46:57 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
