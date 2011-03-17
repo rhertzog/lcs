@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: index.php 6340 2011-01-12 17:06:02Z crob $
+* $Id: index.php 6636 2011-03-07 18:03:20Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -188,7 +188,7 @@ if(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite")) 
 		}
 		//header("Location: ../lib/confirm_query.php?liste_cible=$liste_cible&amp;action=del_eleve");
 		if($liste_cible!=''){
-			header("Location: ../lib/confirm_query.php?liste_cible=$liste_cible&liste_cible2=$liste_cible2&action=del_eleve");
+			header("Location: ../lib/confirm_query.php?liste_cible=$liste_cible&liste_cible2=$liste_cible2&action=del_eleve".add_token_in_url(false));
 		}
 	}
 }

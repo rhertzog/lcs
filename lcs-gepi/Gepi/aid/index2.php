@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: index2.php 6074 2010-12-08 15:43:17Z crob $
+ * @version: $Id: index2.php 6636 2011-03-07 18:03:20Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -269,7 +269,7 @@ while ($i < $nombreligne){
     }
     // colonne "Supprimer"
     if (NiveauGestionAid($_SESSION["login"],$indice_aid,$aid_id) >= 5)
-        echo "<td><p class='medium'><a href='../lib/confirm_query.php?liste_cible=$aid_id&amp;liste_cible3=$indice_aid&amp;action=del_aid'>supprimer</a></p></td></tr>\n";
+        echo "<td><p class='medium'><a href='../lib/confirm_query.php?liste_cible=$aid_id&amp;liste_cible3=$indice_aid&amp;action=del_aid".add_token_in_url()."'>supprimer</a></p></td></tr>\n";
 
 $i++;
 }

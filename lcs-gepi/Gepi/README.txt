@@ -8,12 +8,6 @@ Eric LEBRUN <eric.lebrun@ac-poitiers.fr>
 
 http://gepi.mutualibre.org/
 
-ATTENTION! Ce paquetage contient une version de test de Gepi, c'est-à-dire une version
-destinée à identifier et corriger les bugs induits par les nouvelles fonctionalités.
-
-NE PAS UTILISER CETTE VERSION EN PRODUCTION ! Vous exposeriez votre base de données à des incohérences
-qui pourraient la rendre incompatible avec la version stable.
-
 GEPI (Gestion des Elèves Par Internet) est une application développée en PHP/MySQL/HTML
 dont les fonctions s'articulent autour d'un objectif : permettre la gestion et surtout le suivi des résultats scolaires
 des élèves, et tout ce qui y est attaché, par une interface Web. Cela signifie, entre autre,

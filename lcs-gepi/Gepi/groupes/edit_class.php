@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: edit_class.php 6173 2010-12-17 07:54:22Z crob $
+* $Id: edit_class.php 6638 2011-03-08 11:47:17Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -697,7 +697,7 @@ for($i=0;$i<10;$i++){
 
         $k=11;
         $j = 1;
-        while ($k < 51){
+        while ($k < 61){
             echo "<option value=$k"; if ($current_group["classes"]["classes"][$id_classe]["priorite"] == $k) {echo " SELECTED";} echo ">".$j;
             if ($priority_defaut == $k) echo " (valeur par défaut)";
             echo "</option>\n";

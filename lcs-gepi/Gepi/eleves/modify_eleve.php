@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: modify_eleve.php 5643 2010-10-12 15:33:25Z crob $
+ * $Id: modify_eleve.php 6647 2011-03-10 19:06:23Z dblanqui $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -94,6 +94,8 @@ $definir_etab = isset($_POST["definir_etab"]) ? $_POST["definir_etab"] : (isset(
 $motif_rech=isset($_POST['motif_rech']) ? $_POST['motif_rech'] : (isset($_GET['motif_rech']) ? $_GET['motif_rech'] : NULL);
 //=========================
 
+$journal_connexions=isset($_POST['journal_connexions']) ? $_POST['journal_connexions'] : (isset($_GET['journal_connexions']) ? $_GET['journal_connexions'] : 'n');
+$duree=isset($_POST['duree']) ? $_POST['duree'] : NULL;
 
 // Resume session
 $resultat_session = $session_gepi->security_check();
@@ -1557,8 +1559,8 @@ if(isset($eleve_login)) {
 	if(mysql_num_rows($test_compte)>0) {$compte_eleve_existe="y";} else {$compte_eleve_existe="n";}
 
 	if(($compte_eleve_existe=="y")&&(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite"))) {
-		$journal_connexions=isset($_POST['journal_connexions']) ? $_POST['journal_connexions'] : (isset($_GET['journal_connexions']) ? $_GET['journal_connexions'] : 'n');
-		$duree=isset($_POST['duree']) ? $_POST['duree'] : NULL;
+		//$journal_connexions=isset($_POST['journal_connexions']) ? $_POST['journal_connexions'] : (isset($_GET['journal_connexions']) ? $_GET['journal_connexions'] : 'n');
+		//$duree=isset($_POST['duree']) ? $_POST['duree'] : NULL;
 	
 		echo "<div style='float:right; width:; height:;'><a href='".$_SERVER['PHP_SELF']."?eleve_login=$eleve_login&amp;journal_connexions=y#connexion' title='Journal des connexions'><img src='../images/icons/document.png' width='16' height='16' alt='Journal des connexions' /></a></div>\n";
 	}
@@ -2368,8 +2370,8 @@ if((isset($eleve_login))&&($compte_eleve_existe=="y")&&($journal_connexions=='n'
 	//if(mysql_num_rows($test_compte)>0) {$compte_eleve_existe="y";} else {$compte_eleve_existe="n";}
 
 	//if(($compte_eleve_existe=="y")&&(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite"))) {
-		$journal_connexions=isset($_POST['journal_connexions']) ? $_POST['journal_connexions'] : (isset($_GET['journal_connexions']) ? $_GET['journal_connexions'] : 'n');
-		$duree=isset($_POST['duree']) ? $_POST['duree'] : NULL;
+		//$journal_connexions=isset($_POST['journal_connexions']) ? $_POST['journal_connexions'] : (isset($_GET['journal_connexions']) ? $_GET['journal_connexions'] : 'n');
+		//$duree=isset($_POST['duree']) ? $_POST['duree'] : NULL;
 
 		echo "<hr />\n";
 	
