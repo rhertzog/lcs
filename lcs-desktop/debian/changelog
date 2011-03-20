@@ -29,8 +29,9 @@ lcs-desktop (2.4.8~1) Lcs; urgency=low
   * Add chistelised logo for administration
   * Compatibility IE8
   * Weight reduction pictures
+  * Admin can add shared links
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 04:16:22 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 10:24:50 +0200
 
 lcs-desktop (0.2~18) Lcs; urgency=low
 

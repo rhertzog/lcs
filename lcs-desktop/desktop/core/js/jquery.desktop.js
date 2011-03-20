@@ -14,9 +14,11 @@
 //
 var JQD = (function($, window, undefined) {
 	return {
-		//
-		// JQD.mk( opts ) : construction du desktop
-		//
+		/**
+		* @function: construction et affichage du desktop
+		* @name JQD.mk
+		* @params: array >  JQD.options.user (options user)
+		*/
 		mk: function(opts) {
 			for (var i in JQD.build) {
 				JQD.build[i]( opts );
@@ -104,6 +106,13 @@ var JQD = (function($, window, undefined) {
 					url : "tinymce/examples/full_jquery.html",
 					rev : "tinymce",
 					img : "core/images/app/lcslogo-lcs.png",
+					typ : "srvc"
+				},
+				paintweb : {
+					txt : "Editeur graphique",
+					url : "paintweb/demos/",
+					rev : "formallin",
+					img : "core/images/app/lcslogo-default.png",
 					typ : "srvc"
 				},
 				formallin : {
@@ -253,7 +262,8 @@ var JQD = (function($, window, undefined) {
 				.bind('click', function() {
 					// on agit suivant le cas renvoye
 					// - "ress" Creation du tableau des ressources imposees
-					$(this).hasClass('addicon') ? JQD.utils.dispIcnForm() : $(this).hasClass('ress') ? JQD.ressEdit() : JQD.init_link_open_win(this);
+					dlgTtl= JQD.options.user.statut=='admin' ? 'Ajouter un lien partag\u00e9' : 'Ajouter une ic\u00f4ne';
+					$(this).hasClass('addicon') ? JQD.utils.dispIcnForm({title:dlgTtl}) : $(this).hasClass('ress') ? JQD.ressEdit() : JQD.init_link_open_win(this);
 					//console.info('optTable : ',optTable);
 					return false;
 				}).draggable({// drag sur les icones
@@ -429,7 +439,7 @@ var JQD = (function($, window, undefined) {
 					var menuDesk= [ 
 						{'Ajouter une ic&ocirc;ne':{ 
 							onclick:function(menuItem,menu) {
-								 JQD.utils.dispIcnForm() 
+								 JQD.utils.dispIcnForm({title:'Ajouter une ic\u00f4ne'}) 
 							}, 
 							icon:'core/images/gui/add-icon_16.png', 
 							disabled:false 
@@ -465,26 +475,27 @@ var JQD = (function($, window, undefined) {
 			        	fromwhere=$(ui.draggable).closest('ul#user_infos').length; 
 			        	newrel=$(ui.draggable).attr('href'); //on recupere la valeeur du lien		        	
 		        		img_w=$(this).find('a.abs.icon img').last().width();
-		                $(this).find('a.abs.icon').last().after($(ui.draggable).clone());
+		           //     $(this).find('a.abs.icon').last().after($(ui.draggable).clone());
+							var icnOpts={
+								txt: $(ui.draggable).text(),
+								url: $(ui.draggable).attr('rel'),
+								iconsize: img_w,
+								rev: $(ui.draggable).attr('rev'),
+								img: $(ui.draggable).find('img').attr('src'),
+                                top:'',
+                                left:'',
+                                color:'',
+                                owner:'',
+                                groups:[]
+							};
+							var icn = JQD.utils.icon( icnOpts ).css({position:'absolute',top:$('#desktop').outerHeight(true)/2, left:$('#desktop').outerWidth(true)-200});
+							//icn.appendTo('#desktop');
+							 $(this).find('a.abs.icon').last().after( icn );
+							JQD.init.icons();
+							JQD.utils.initIcon( icn );
+							JQD.save_prefs_dev('PREFS', -1, 'lkhlm');
+
 						JQD.utils.clear_active();
-		                $("#desktop .open_win").not('.launch').addClass("abs").addClass("icon");
-		                // LCS si le lien provient du panneau infos user
-			        	if(fromwhere==1) $('#desktop a.abs.icon').last().attr({'rel':newrel,'href': '#icon_dock_lcs_annu', 'title':'annu'});
-		                $("#desktop .icon").removeClass("ui-draggable open_win").dblclick(function() {
-							// Get the link's target.
-							JQD.init_link_open_win(this);
-						}).draggable({
-							cancel: 'a.ui-icon',// clicking an icon won't initiate dragging
-							revert: false, // when not dropped, the item will revert back to its initial position
-							containment: $('#desktop, .trash'), 
-							//helper: 'clone',
-							cursor: 'move'
-						}).mousedown(function() {
-							// Highlight the icon.
-							JQD.utils.clear_active();
-							$(this).not('.launch').addClass('active');
-						}).find('img').not('.quicklaunch').width(img_w).height(img_w).css({'width': img_w, 'height': img_w});
-			           JQD.init.icons();
 			        }
 			    })
 				// Theme name. Included themes are: 'default','xp','vista','osx','human','gloss'  
@@ -616,7 +627,7 @@ var JQD = (function($, window, undefined) {
 						btrUl.append( JQD.utils.btrLi( i, v ) );
 					});
 					btrUl.appendTo('#bar_top');
-					var btrDate = $('<div>').append( $('<ul/>') ),
+					var btrDate = $('<div/>').append( $('<ul/>') ),
 					usri = $('#btrUsrInf'),
 					usrGp = opts.user.infos.group ? opts.user.infos.group.gp ? opts.user.infos.group.gp.name : 'admin' : 'default',
 					usrIcon = 'core/images/annu/24/'+usrGp+'_'+opts.user.infos.sexe+'_trsp.png',
@@ -734,7 +745,7 @@ var JQD = (function($, window, undefined) {
 			//#JQD.build.icons( o )
 			//
 			icons : function( o ) {
-				var icons = o.user.icons.sort(),
+				var icons = o.user.icons,
 				nb_icons = $('#desktop a.abs.icon').not('.launch').length,
 				t = 20, w = 20, s = 0, h_d = $('#desktop').outerHeight(true),
 				icfd = parseInt(o.user["iconsfield"])/100, iwh = o.user["iconsize"];
@@ -770,6 +781,7 @@ var JQD = (function($, window, undefined) {
                         }
                     });
                     // icons grpoups
+                    /*
 					if(  typeof o.icons != 'undefined' ) {
 						var i=0,t=10,n=o.icons.length;
                     $.each(o.icons, function (icn, optIcn) {
@@ -789,14 +801,9 @@ var JQD = (function($, window, undefined) {
                     	$('#desktop').append(JQD.utils.icon(optIcn));
                     });
 					}
+					*/
                 }
 			},
-            //
-            //
-            //
-            iconGrp: function( o ) {
-
-            },
 			//
 			//
 			//
@@ -862,28 +869,49 @@ var JQD = (function($, window, undefined) {
 								url:icnUrl.val(),
 								iconsize: $('a.icon img').width(),
 								rev: 'perso_'+opts.user.login,
-								img: icnImg.val() ? icnImg.val() : 'core/images/app/lcslogo-group.png',
+								img: icnImg.val() !='' ? icnImg.val() : 'core/images/app/lcslogo-group.png',
                                 top:'',
                                 left:'',
-                                color:icnColor.val()
+                                color:icnColor.val(),
+                                owner:JQD.options.user.infos.fullname,
+                                groups:[]
 							};
-							var icn = JQD.utils.icon( icnOpts ).css({top:$('#desktop').outerHeight(true)/2, left:$('#desktop').outerWidth(true)-200});
+							var icn = JQD.utils.icon( icnOpts ).css({position:'absolute',top:$('#desktop').outerHeight(true)/2, left:$('#desktop').outerWidth(true)-200});
+							icn.appendTo('#desktop');
 							JQD.init.icons();
 							JQD.utils.initIcon( icn );
+							// on inserre sur le bureau
+							JQD.save_prefs_dev('PREFS', -1, 'lkhlm');
 							//icnGrp.val()!=''? JQD.save_prefs_dev('PREFS_', 'xx', 'shared') :'';
-                            var gsv = JQD.utils.getSelectValue($(icnGrp));
+							
+							if(JQD.options.user.statut=='admin'){
+                        	    var gsv = JQD.utils.getSelectValue($(icnGrp));
 
-							var gpChecked=new Array(), myress;
-							$('#icnForm').find("input:checked").each(function (i) {
-								gpChecked[i] = $(this).val();
-							});                            
-                            //console.info('where', gsv[0]);
-                            //console.info('gpChecked', gpChecked.length);
-                            if(gpChecked.length>0){
-                                JQD.save_icon({ icon:icnOpts, where:gpChecked, ou:'group', myress:myress });
-                                icn.addClass('group');
-                            }
-                            icn.appendTo('#desktop');
+								var gpChecked=new Array(), myress;
+								$('#icnForm').find("input:checked").each(function (i) {
+									gpChecked[i] = $(this).val();
+								});                            
+								//console.info('where', gsv[0]);
+								//console.info('gpChecked', gpChecked.length);
+								if(gpChecked.length>0){
+                               		icnOpts['groups']=gpChecked;
+									icn.addClass('group');
+								}
+								// mode modification
+								if(icnFrm.hasClass('mod') ) {
+								JQD.save_icon({ icon:icnOpts, where:gpChecked, ou:'group', myress:myress ,mode:'mod'});
+								}
+								else {
+									JQD.save_icon({ icon:icnOpts, where:gpChecked, ou:'group', myress:myress});
+									// on inserre sur le bureau
+									//icn.appendTo('#desktop');
+									// on insere dans le menu
+									$('li a.ress ul').append(JQD.utils.itemnu( icnOpts,icnOpts).find('a').prepend($('<img src="+icnOpts.img"/>')));
+									// on inserre dans le tableau d'options
+									// voir JQD.save_icon()
+								}
+							}
+							// on ferme le form dialog
 							$('#icondialog').dialog('close');
 						}
 					}) 
@@ -905,13 +933,13 @@ var JQD = (function($, window, undefined) {
 							$('<li/>')
 							.append( $('<label for="icncolor"/>').html('Couleur') )
 							.append(icnColor)
-						).append(
+						)/*.append(
 						//typeof JQD.options.user.infos.group.gp != 'undefined' ? JQD.options.user.infos.group.gp.name !='Eleves' ?
 						JQD.options.user.infos.uid == 'admin' ? //JQD.options.user.infos.group.gp.name !='Eleves' ?
 							$('<li/>')
 							.append( $('<label for="icnMyRess"/>').html('Ajouter &agrave; mes ressources ') )
 							.append(icnMyRess) :''
-						).append(
+						)*/.append(
 						//typeof JQD.options.user.infos.group.gp != 'undefined' ? JQD.options.user.infos.group.gp.name !='Eleves' ?
 						JQD.options.user.infos.uid == 'admin' ? //JQD.options.user.infos.group.gp.name !='Eleves' ?
 							$('<li/>')
@@ -1036,7 +1064,7 @@ var JQD = (function($, window, undefined) {
 				icon.draggable({
 					cancel: 'a.ui-icon',// clicking an icon won't initiate dragging
 					revert: false, // when not dropped, the item will revert back to its initial position
-					containment: $('#desktop, .trash'), // stick to demo-frame if present
+					containment: $('#desktop, .trash'), // stick to desktop and trash
 					//helper: 'clone',
 					cursor: 'move'
 				}).mousedown(function() {
@@ -1066,24 +1094,28 @@ var JQD = (function($, window, undefined) {
 			rmIcon: function (item) {
 				if( item.hasClass('group') && item.attr('rev').match(JQD.options.user.login) ) {
 					var admOrNo = typeof JQD.options.icons!='undefined' ? JQD.options.icons : JQD.options.ress,
-					itTxt=typeof item.text() !='undefined' ? item.text()!='' ? item.text() : item.attr('title'): item.attr('title') ;
-					//console.log('item : ',item);
-					//console.log('ICON_'+JQD.options.user.login+'_'+item.attr('title').replace(/ /g,'_')+'.json');
-					var ifn = admOrNo['ICON_'+JQD.options.user.login+'_'+itTxt.replace(/ /g,'_')+'.json'].groups,
+					itTxt=typeof item.text() !='undefined' ? item.text()!='' ? item.text() : item.attr('title'): item.attr('title')
+					itName=item.attr('name') ;
+					//var ifn = admOrNo['ICON_'+JQD.options.user.login+'_'+itTxt.replace(/ /g,'_')+'.json'].groups,
+					var ifn = typeof admOrNo[itName]==="undefined" ? item.groups : admOrNo[itName].groups,
 					uTxt = 'de vos ressources personnelles', gTxt = ' le partage de ce lien avec les groupes :',
 					me = $('<p/>'), lgUl = $('<ul id="lgIcn"/>');
+					console.log(ifn);
 					var dialogCfrm=$('<div/>').attr({id:'dialogCfrm',title:'Supprimer un lien partag&eacute;'}).append(
 						$('<div/>').css({'text-align':'left'}).text('Vous allez supprimer').prepend($('<span/>').addClass('ui-icon ui-icon-alert').css({float:'left', margin:'0 7px 0 0'}) ).append( 
-							$('<div/>').html('<label for="delIcnUsr"><strong>'+item.text() +'</strong>'+ uTxt+'</label>').prepend( 
-								$('<input type="checkbox"/>').attr({name:'delIcnUsr',id:'delIcnUsr', checked:'checked',disabled:'disabled'}) 
+							$('<div/>').html('<strong>'+item.text() +'</strong>')
+							/*
+							.append( $('<label for="delIcnUsr"/>').text(uTxt) ).prepend( 
+								$('<input type="checkbox"/>').attr({name:'delIcnUsr',id:'delIcnUsr', checked:'checked'}) //,disabled:'disabled'
 							)
+							*/
 						).append(
 							$('<div id="txtIcnGrp"/>').html(gTxt)
 						)
 					).appendTo('#desktop');
 				//	if( ifn.length > 0 ) {
 					$.each(ifn, function(i, v) {
-						$('<li/>').html('<label for="'+v+'">'+v+'</label>').prepend( $('<input type="checkbox"/>').attr({name:v,id:v, checked:'checked',disabled:'disabled'}) ).appendTo(lgUl )
+						$('<li/>').html('<label for="'+v+'">'+v+'</label>').prepend( $('<input type="checkbox"/>').attr({name:v,id:v, checked:'checked'}) ).appendTo(lgUl ) //,disabled:'disabled'
 					});
 					lgUl.appendTo(  $('#txtIcnGrp') );
 								
@@ -1094,7 +1126,8 @@ var JQD = (function($, window, undefined) {
 			            resizable: false,
 			            buttons: {
 			                "Supprimer": function() {
-								var u=JQD.options.user.login, f='ICON_'+u+'_'+itTxt.replace(/ /g, '_'),
+								//var u=JQD.options.user.login, f='ICON_'+u+'_'+itTxt.replace(/ /g, '_'),
+								var u=JQD.options.user.login, f=itName,
 								ckb=new Array(), chkbChkd= $('#lgIcn li input:checked'), gru;
 								chkbChkd.each(function (i) {
 									ckb[i] = $(this).attr('name');
@@ -1116,6 +1149,7 @@ var JQD = (function($, window, undefined) {
 				item.addClass('icon_trash')
 				.removeClass('abs')
 				.fadeOut().remove();
+				JQD.save_prefs_dev('PREFS', -1, 'lkhlm');
 				}
 			},
 			//
@@ -1261,9 +1295,12 @@ var JQD = (function($, window, undefined) {
 			//
 			//
 			//
-			dispIcnForm: function() {
+			dispIcnForm: function(opts) {
+				if( !typeof opts ) {
+					var opts={title:'Ajouter une icone'}
+				}
 				JQD.utils.clear_active();
-				$('#icondialog').dialog({
+				$('#icondialog').attr({'title':opts.title}).dialog({
 					width: 400,
 					modal: true,
 					//height:270 ,
@@ -1582,7 +1619,8 @@ var JQD = (function($, window, undefined) {
 		},
 		
 		// Suppression fichier
-		rm: function(file, usr, ou) { 
+		rm: function(file, usr, ou, force) { 
+			var force = typeof force ? force : 0;
 			//console.info(file+'\n'+usr+'\n'+ou);
 			$.ajax({
 				type: "POST",
@@ -1591,13 +1629,15 @@ var JQD = (function($, window, undefined) {
 				data: ({
 					file: file,
 					user: JQD.options.user.login,
-					ou: ou
+					ou: ou,
+					force: force
 				}),
 				dataType: "json",
 				success : function(data, status) {
-					var resp = data;
+					console.info('typeof data : ',typeof data);
+					if(data!== null )
 					//console.info(data.mess);
-					JQD.utils.dialog_mess({title:data.title, txt:resp['mess'],intro:'Information'});
+					JQD.utils.dialog_mess({title:data.title, txt:data.mess, intro:'Information'});
 				},
 				error: function(data,err,errThrown){
 					//console.log(err, data.responseText);
@@ -1733,24 +1773,23 @@ var JQD = (function($, window, undefined) {
 		// opts={id:'id_div_dialog', class:'class_div_dialog',title:'titre_de_la_boite_dialog', ctn:'contenu,peut_etre_1_fonction'}
 		bDialog: function(o){
 			JQD.utils.clear_active();
-			var bdialog= $('<div id="'+o.id+'"/>').addClass('')
-			.attr({'title':o.title}).append( o.ctn ).dialog({
-					width: typeof o.width ? o.width:400,
-					modal: true,
-					//height:270 ,
-					open: function(event, ui) {},
-					close: function(event, ui) {$('#icondialog').hide();},
-resizable: true,
-			            buttons: {
-			            /*    "Supprimer": function() {
-								var u=JQD.options.user.login, f='ICON_'+u+'_'+item.text().replace(/ /g, '_');
-								//console.log(JQD.options.user.login, item.attr('rev') );
-								JQD.rm( f, u, 'all');
-			                },*/
-			                "Fermer": function() {
-			                    $(this).dialog("close");
-			                }
-			            }				});
+			var bdialog= $('<div id="'+o.id+'"/>').addClass('ui-widget')
+			.attr({'title':o.title}).html( o.ctn ).dialog({
+				width: typeof o.width ? o.width:400,
+				resizable: true,
+				modal: false,
+				//height:270 ,
+				open: function(event, ui) {},
+				close: function(event, ui) {$('#icondialog').hide();},
+			    buttons: {
+			        "Ajouter un lien partag\u00e9": function() {
+						JQD.utils.dispIcnForm({title:'Ajouter un lien partag\u00e9'}) 
+					},
+			 		"Fermer": function() {
+						$(this).dialog("close");
+			 		}
+				}
+			});
 			return bdialog;	
 		},
 		//
@@ -1786,9 +1825,69 @@ resizable: true,
 				img:'<img src='+optd+' style="width:24px;height:24px;" alt="'+optd+'"/>', 
 				color:'<span style="display:block;width:24px;height:24px;background:'+optd+'" title="'+optd+'"></span>'};
 			t= typeof tdCtn[td] != 'undefined' && optd!=td ? tdCtn[td] : optd;
-			var btd=$('<td>'+t+'</td>' ).css({padding:'5px',border:'1px solid #acf','border-width':'0 1px','line-height':'24px'});
+			var btd=$('<td>'+t+'</td>' ).addClass( td ).css({padding:'5px',border:'1px solid #acf','border-width':'0 1px','line-height':'24px'});
 			return btd;
 		},
+		//
+		//
+		//
+		bTrInit: function( tr ) {
+			var bGroups= tr.find('td:last-child').text().split(',');
+			tr.find('td:eq(0) img').click(function(){
+				tr.addClass('mod');
+				JQD.utils.dispIcnForm({title:'Modifier un lien partag\u00e9'}) ;
+				$('#icnForm').addClass('mod').append( 
+					$('<input type="hidden"/>').attr({id:'trId',value:tr.attr('id') }) );
+				$('#icnttl').attr('value',tr.find('td.txt').text());
+				$('#icnurl').attr('value',tr.find('td.url').text());
+				$('#icncolor option').each(function(){
+					if(	$(this).attr('value')==tr.find('td.color span').attr('title') )  $(this).attr('selected','selected');
+					else  $(this).removeAttr('selected');
+				});
+				$.each(bGroups, function(bG) {
+					$('input[type="checkbox"][value="'+bGroups[bG]+'"]').attr('checked','checked')
+				});	
+			});
+			tr.find('td:eq(1) img').each(function(){
+				var tdClose=$(this).parent('td');
+				$('<a/>').addClass('group intr').attr({
+					href: '#',
+					name: $(this).parents('tr').attr('id'),
+					rev: 'admin',
+					title: tdClose.next('td').text(),
+					rel: tdClose.next('td:eq(3)').text(),
+					groups: bGroups
+				}).append( $(this) ).click(function(){ JQD.utils.rmIcon( $(this) ) }).appendTo(tdClose)
+			});
+			tr.find('td:last-child').each( function() {
+				var gtxt=$(this).text().replace(JQD.options.user.login+',','');
+				$(this).html( gtxt );
+			})
+		},
+		//
+		//#JQD.ressEdit()
+		//
+		ressEdit: function() {
+			var thR=['-','-','Nom du lien','Url','Img','Couleur','Propri\u00e9taire','Partage avec'];
+			var ctnTab={th:thR, tb:JQD.options.ress };
+			ctnTab.tb['esc']="rev iconsize left top";
+			var optTable={'id':'tabDialog', 'class':'','width':700, 'title':'Gestion des liens partag&eacute;s', 'ctn':JQD.bTable(ctnTab)};
+			var tBd = optTable.ctn.find('tbody');
+			optTable.ctn.find('tbody tr').each(function(i){
+				var trEdit=$(this),trId=$(this).attr('id');
+				$(this).prepend( 
+					$('<td/>').css({'line-height':'30px','font-size':'28px'})
+					.append( $('<img src="core/images/gui/delete.gif"/>') ) 
+				).prepend( 
+					$('<td/>').css({'line-height':'36px'})
+					.append(  $('<img src="core/images/gui/link_edit.png"/>') ) 
+				);
+				//
+				JQD.bTrInit( $(this) );
+			});
+			JQD.bDialog(optTable);
+			
+		},			
 		//
 		//__/__/sauvegarde des prefs - fichier /home/[user]/Profile/PREFS_[user].xml__/__/
 		//
@@ -1861,7 +1960,27 @@ resizable: true,
 				}),
 				dataType: "json",
 				success: function(msg){
-                    //console.info('mess: ',msg)
+                   // console.info('msg.filename: ',msg.filename)
+					if( typeof msg.filename && msg.filename!='') JQD['tmpfile']=msg.filename;
+                            // on inserre dans le tableau d'options
+                            //rev iconsize left top
+                            // si on est en mode modification, on recupere l'id de la ligne du tableau
+                            opts.icon['name']= typeof opts.trId ? opts.trId : JQD.tmpfile;
+                            
+                           	var bTrNew = JQD.bTr( opts.icon, 'rev iconsize left top name' ).prepend($('<td/>').css({'line-height':'24px'}).append(  $('<img src="core/images/gui/delete.gif"/>') ) ).prepend($('<td/>').append(  $('<img src="core/images/gui/link_edit.png"/>') ) );
+                            if( typeof opts.mode && typeof $('#trId') && opts.mode=='mod') {
+                            	 $('#tabDialog table tbody').find('tr.mod').animate({opacity:0},1000,function(){
+                            	 	JQD.rm($('#trId').val(), JQD.options.user.login, 'all','force');
+                            	 	$(this).hide();
+                            	 	JQD.bTrInit( bTrNew.attr({id:JQD.tmpfile}).insertAfter( $(this) ) );
+                            	 	$(this).remove();
+                            	 });
+                           }
+                           else {
+                            	 console.info('id: ',JQD.tmpfile);
+                            	bTrNew.attr({id:JQD.tmpfile}).appendTo( $('#tabDialog table tbody'));
+								JQD.bTrInit( bTrNew );
+							}
 				},
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
 					//console.error("XMLHttpRequest= ",XMLHttpRequest);
@@ -2234,7 +2353,8 @@ resizable: true,
                             $('#bar_bottom').hide();
                             $('#bar_top').append(
                                 JQD.build.btopr(opt).append(
-                                    $('<li/>').css({'laft':'-200px',width:'150px'}).html('&nbsp;&nbsp;&nbsp;Se connecter ->>>')
+                                    $('<li/>').css({'laft':'-200px',width:'150px'}).html('&nbsp;&nbsp;&nbsp;Se connecter >>>')
+                                    .click(function(){JQD.logform('../lcs/auth.php')})
                                 )
                             );
 			},100)
@@ -2301,36 +2421,6 @@ resizable: true,
 				rev: '',
 				cls: 'spaces'
 			}
-		},
-		//
-		//#JQD.ressEdit()
-		//
-		ressEdit: function() {
-						var thR=['-','-','name','Url','Img','Couleur','Proprio','Partage avec'];
-						var ctnTab={th:thR, tb:JQD.options.ress };
-						ctnTab.tb['esc']="rev iconsize left top";
-						//console.info('ctnTab : ',ctnTab);
-						var optTable={'id':'tabDialog', 'class':'','width':700, 'title':'Ressource', 'ctn':JQD.bTable(ctnTab)};
-						optTable.ctn.find('tbody tr').each(function(){
-							$(this).prepend( $('<td/>').css({'line-height':'30px','font-size':'28px'})
-							.append( $('<img src="core/images/gui/delete.gif"/>') ) )
-							.prepend( $('<td/>').css({'line-height':'36px'}).append( $('<input type="checkbox"/>') ) );
-							$(this).find('td:eq(1) img').each(function(){
-								var tdClose=$(this).parent('td');
-								$('<a/>').addClass('group intr').attr({
-									href: '#',
-									rev: 'admin',
-									title: tdClose.next('td').text(),
-									rel: tdClose.next('td:eq(3)').text()
-								}).append( $(this) ).click(function(){ JQD.utils.rmIcon( $(this) ) }).appendTo(tdClose)
-							});
-							$(this).find('td:last-child').each( function() {
-								var gtxt=$(this).text().replace(JQD.options.user.login+',','');
-								$(this).html( gtxt );
-							})
-						});
-						JQD.bDialog(optTable);
-			
 		},
 		//
 		//
@@ -2474,65 +2564,6 @@ resizable: true,
 						$('#logFrame').empty().hide();window.location = './';}
 				});
 			},1000);
-		},
-		 //
-		 //#JQD.logform() : Affichage du formulaire de login
-		 //
-		 tipInfUsr: function(){
-		 	var gpsUl= $('<ul/>');
-		 	$.each(JQD.options.user.infos.group, function( i, v ) {
-				if ( i != 'gp' ) {
-					gpsUl.append( $('<li/>').css({'float':'none'}).html( i ) );
-					$.each(JQD.options.user.infos.group[i], function( ig, vg ) {
-						gpsUl.append( $('<li/>').css({'float':'none',display:'block',height:'30px',width:'95%'}).append( 
-					 		$('<a/>').addClass('open_win group').attr({
-					 			href:'../Annu/group.php?filter=' + vg,
-					 			title: 'Voir le groupe '+ vg
-					 		}).html( vg.replace(i, '').replace(/_/g, ' ') )
-					 		.prepend( $('<img/>').attr({src:'core/images/annu/24/'+ i.toLowerCase()+'.png'}) )
-					 	).prepend(
-					 		$('<a/>').addClass('open_win mail float_right')
-					 		.append( $('<img/>').attr({src: 'core/images/annu/mail.png'}) )
-					 		.attr({
-					 			href:'../squirrelmail/src/compose.php?send_to=' + vg+'@'+JQD.options.domain,
-					 			title: 'Envoyer un message au groupe '+ vg
-					 		})
-					 	) )			 		
-				   });
-				}
-			});
-
-			var tifDialog=$('<div id="tipInfUsr"/>').css({'text-align':'left'}).attr({'title':'Informations personnelles'})
-			.append(
-				$('<h3/>').html('<a href="#">'+JQD.options.user.name+'</a>')
-			)
-			.append(
-				$('<div/>').html(JQD.options.user.infos.connect)
-			)
-			.append(
-				$('<h3/>').html('<a href="#">Membre des groupes</a>')
-			)
-			.append(
-				$('<div/>').css({'margin':'0','padding':'5px 0 5px 5px','height':'250px'}).append(gpsUl)
-			)
-			.append(
-				$('<h3/>').html('<a href="#">Espace web</a>')
-			)
-			.append(
-				$('<div/>').html('<a href="#">sghsgfhsg sghsgfhsg sghsgfhsg sghsgfhsg sghsgfhsg sghsgfhsg sghsgfhsg sghsgfhsg sghsgfhsg </a>')
-			)
-			.append(
-				$('<h3/>').html('<a href="#">fdh</a>')
-			)
-			.append(
-				$('<div/>').html('<a href="#">shstjst  qtrhq th thqztruy z§tuy z§u §tshj zsrtsrthsyu jytjustyj syj srytjsrt yt</a>')
-			)
-			.hide().accordion({
-					active: 1,
-					autoHeight: false,
-					navigation: true
-				});
-				$('#user_infos').css({'width':'250px'}).empty().show().append(tifDialog.show());
 		},
 		//
 		//#JQD._(str, args) : Permet d'appeler la chaine de lang plus simplement
