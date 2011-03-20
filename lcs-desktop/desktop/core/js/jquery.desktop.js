@@ -1634,7 +1634,9 @@ var JQD = (function($, window, undefined) {
 				}),
 				dataType: "json",
 				success : function(data, status) {
+					//console.info('typeof data : ',typeof data);
 					if(data!== null )
+					//console.info(data.mess);
 					JQD.utils.dialog_mess({title:data.title, txt:data.mess, intro:'Information'});
 				},
 				error: function(data,err,errThrown){
@@ -1958,7 +1960,6 @@ var JQD = (function($, window, undefined) {
 				}),
 				dataType: "json",
 				success: function(msg){
-<<<<<<< .mine
                    // console.info('msg.filename: ',msg.filename)
 					if( typeof msg.filename && msg.filename!='') JQD['tmpfile']=msg.filename;
                             // on inserre dans le tableau d'options
@@ -1980,29 +1981,6 @@ var JQD = (function($, window, undefined) {
                             	bTrNew.attr({id:JQD.tmpfile}).appendTo( $('#tabDialog table tbody'));
 								JQD.bTrInit( bTrNew );
 							}
-=======
-                   // console.info('msg.filename: ',msg.filename)
-					if( typeof msg.filename && msg.filename!='') JQD['tmpfile']=msg.filename;
-                            // on inserre dans le tableau d'options
-                            //rev iconsize left top
-                            // si on est en mode modification, on recupere l'id de la ligne du tableau
-                            opts.icon['name']= typeof opts.trId ? opts.trId : JQD.tmpfile;
-                            
-                           	var bTrNew = JQD.bTr( opts.icon, 'rev iconsize left top name' ).prepend($('<td/>').css({'line-height':'24px'}).append(  $('<img src="core/images/gui/delete.gif"/>') ) ).prepend($('<td/>').append(  $('<img src="core/images/gui/link_edit.png"/>') ) );
-                            if( typeof opts.mode && typeof $('#trId') && opts.mode=='mod') {
-                            	 $('#tabDialog table tbody').find('tr.mod').animate({opacity:0},1000,function(){
-                            	 	JQD.rm($('#trId').val(), JQD.options.user.login, 'all','force');
-                            	 	$(this).hide();
-                            	 	JQD.bTrInit( bTrNew.attr({id:JQD.tmpfile}).insertAfter( $(this) ) );
-                            	 	$(this).remove();
-                            	 });
-                           }
-                           else {
-                            	 console.info('id: ',JQD.tmpfile);
-                            	bTrNew.attr({id:JQD.tmpfile}).appendTo( $('#tabDialog table tbody'));
-								JQD.bTrInit( bTrNew );
-							}
->>>>>>> .r3825
 				},
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
 					//console.error("XMLHttpRequest= ",XMLHttpRequest);
