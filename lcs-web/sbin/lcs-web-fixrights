@@ -13,7 +13,6 @@ chown -Rf www-data:www-data /var/www/c
 chown -Rf www-data:www-data /var/www/Err
 chown -Rf www-data:www-data /var/www/images
 chown -Rf www-data:www-data /var/www/lcs
-chown -Rf www-data:www-data /var/www/lib
 chown -Rf www-data:www-data /var/www/setup
 chown -Rf www-data:www-data /var/www/Usingstats
 chown -f www-data:www-data /var/www/index.html
