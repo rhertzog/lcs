@@ -6,12 +6,11 @@ all:
 install:
 
 # install desktop
-#	install -d $(DESTDIR)/usr/share/lcs/desktop
-#	cp -R desktop/* $(DESTDIR)/usr/share/lcs/desktop/
-#	chmod -R 755 $(DESTDIR)/usr/share/lcs/desktop
-	
 	install -d $(DESTDIR)/usr/share/lcs/desktop
-	install -m 0755 -o www-data -g www-data desktop/* $(DESTDIR)/usr/share/lcs/desktop
+	cp -R desktop/* $(DESTDIR)/usr/share/lcs/desktop/
+	chmod -R 755 $(DESTDIR)/usr/share/lcs/desktop
+	chown -R www-data:www-data 	$(DESTDIR)/usr/share/lcs/desktop
+
 
 # install conf files
 	install -d $(DESTDIR)/etc
