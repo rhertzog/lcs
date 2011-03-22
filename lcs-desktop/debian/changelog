@@ -1,4 +1,4 @@
-lcs-desktop (2.4.8~1) Lcs; urgency=low
+lcs-desktop (2.4.8~2) Lcs; urgency=low
 
   [ Dominique Lepaisant ]
   * Fix bug with the width of windows when the iframe is loaded
@@ -10,6 +10,7 @@ lcs-desktop (2.4.8~1) Lcs; urgency=low
   * Copy trunk version in 2.4.8 Tree
   * Modify inc-lcs-applis.php for new module name filexplorer
   * Modify index.php and inc-lcs-applis.php for roundcube and lcs-notify-desktop
+  * test fix rights on desktop in Makefile 
 
   [ Dominique Lepaisant ]
   * Prepares version 2.4.8
@@ -31,7 +32,7 @@ lcs-desktop (2.4.8~1) Lcs; urgency=low
   * Weight reduction pictures
   * Admin can add shared links
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 10:24:50 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 22 Mar 2011 16:13:47 +0100
 
 lcs-desktop (0.2~18) Lcs; urgency=low
 
