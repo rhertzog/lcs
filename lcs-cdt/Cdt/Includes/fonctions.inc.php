@@ -33,7 +33,7 @@ Function datefr($tstamp="") {
 	if ($_SESSION['version']==">=432") setlocale(LC_TIME,"french");
 	else setlocale("LC_TIME","french");
 	$datfr=strFTime("%d %b %Y", $tstamp);
-	Return $datfr;
+	Return htmlentities($datfr);
 }
 
 Function datefr2($tstamp="") {
@@ -41,7 +41,7 @@ Function datefr2($tstamp="") {
 	if ($_SESSION['version']==">=432") setlocale(LC_TIME,"french");
 	else setlocale("LC_TIME","french");
 	$datfr=strFTime("%d %b ", $tstamp);
-	Return $datfr;
+	Return htmlentities($datfr);
 }
 
 Function moisanfr($tstamp="") {

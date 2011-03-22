@@ -610,7 +610,7 @@ if (isset($tsmp3))
 				<li><input class="submit-perso" type="submit" name="personnaliser" value="" title="Personnaliser son cahier de texte" /></li>
 				<li><a href="#" title="Gestion des s&#233;quences" onclick="sequence_popup('.$cible.'); return false" class="submit-seq"></a></li>
 				<li><input type="submit" name="planning" value="" title="Planifier un devoir en '.$classe_active.'" class="submit-plan" /></li>
-				<li><a class="a-imprime open_win" title="Imprimer" href="#" onclick="open_new_win(\'imprim.php?rubrique='.$cible.'\')"></a></li>
+				<li><a class="a-imprime open_wi" title="Imprimer" href="#" onclick="open_new_win(\'imprim.php?rubrique='.$cible.'\')"></a></li>
 				<li><input type="button" value="" onclick="modeleLoad('. $cible.',\''.md5($_SESSION['RT'].htmlentities(htmlentities('/Plugins/Cdt/scripts/load_modele.php'))).'\')" class="load-model" title="Appliquer le mod&#232;le" /></li>
 				<li><input type="button" value="" onclick="modeleSave('. $cible.',\''.md5($_SESSION['RT'].htmlentities(htmlentities('/Plugins/Cdt/scripts/save_modele.php'))).'\')" class="save-model" title="Enregistrer comme mod&#232;le" /></li>
 				<li><a href="#" title="Enregistrements multiples" onclick="diffuse_popup('.$cible.'); return false" class="a-saveplus"></a></li>
@@ -667,7 +667,7 @@ if (isset($tsmp3))
 				//s'il n'esiste pas d'archive
 				if ($x==0) echo '<p class="archive_nok"> Aucun </p>';
 				else echo '<hr /><p class="archive">Anciens cahiers de textes &#233;l&#232;ves</p>
-				<a href="#" class="open_win" onclick="open_new_win(\'cahier_text_eleve_arch.php\')"> -  Ils sont ici </a>';
+				<a href="#" class="open_wi" onclick="open_new_win(\'cahier_text_eleve_arch.php\')"> -  Ils sont ici </a>';
 				echo '<hr />';
 				mysql_close();
 				//archives perso
@@ -716,17 +716,17 @@ if (isset($tsmp3))
        		<p>Ces liens s'ouvrent dans une nouvelle fen&ecirc;tre</p>
 			 <?php if (!mb_ereg("^Cours",$classe_active)) 
                                 {
-                                echo '<p><a href="# " class="open_win" onclick="open_new_win(\'cahier_text_eleve.php?mlec547trg2s5hy='.$classe_active.'\')"> - CAHIER DE TEXTE ELEVES	</a></p>';
-                                echo '<p><a href="#" class="open_win"  onclick="open_new_win(\'absences.php?mlec547trg2s5hy='.$classe_active. ' \')" > - CARNET D\'ABSENCES - </a></p>';
+                                echo '<p><a href="# " class="open_wi" onclick="open_new_win(\'cahier_text_eleve.php?mlec547trg2s5hy='.$classe_active.'\')"> - CAHIER DE TEXTE ELEVES	</a></p>';
+                                echo '<p><a href="#" class="open_wi"  onclick="open_new_win(\'absences.php?mlec547trg2s5hy='.$classe_active. ' \')" > - CARNET D\'ABSENCES - </a></p>';
                                  }
                                 else
                                 {
-                                 echo '<p><a href="#" class="open_win" onclick="open_new_win(\'cahier_text_eleve.php\')" > - CAHIER DE TEXTE ELEVES	</a></p> ';
-                                 echo '<p><a href="#"class="open_win"  onclick="open_new_win(\'absences.php\')" > - CARNET D\'ABSENCES - </a></p>';
+                                 echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'cahier_text_eleve.php\')" > - CAHIER DE TEXTE ELEVES	</a></p> ';
+                                 echo '<p><a href="#"class="open_wi"  onclick="open_new_win(\'absences.php\')" > - CARNET D\'ABSENCES - </a></p>';
                                 }
 			
-                            echo '<p><a href="#" class="open_win" onclick="open_new_win(\'export_perso.php\')" > - EXPORT DE SES DONNEES - </a></p>';
-                            echo '<p><a href="#" class="open_win" onclick="open_new_win(\'import_perso.php\')" > - IMPORT DE DONNEES - </a></p>';
+                            echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'export_perso.php\')" > - EXPORT DE SES DONNEES - </a></p>';
+                            echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'import_perso.php\')" > - IMPORT DE DONNEES - </a></p>';
                         ?>
         </div><!--fin du div deroulant_3-->
      
@@ -741,7 +741,7 @@ if (isset($tsmp3))
      
       <div class="deroulant" id="deroulant_5">
      	<div class="t3">Aide</div>
-     		<p><a href="#" class="open_win"   onclick="open_new_win('http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/raccourcis.php')"> Aide pour bien utiliser le cahier de textes num&#233;rique</a></p>
+     		<p><a href="#" class="open_wi"   onclick="open_new_win('http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/raccourcis.php')"> Aide pour bien utiliser le cahier de textes num&#233;rique</a></p>
      </div><!--fin du div deroulant_5-->
 
 </div><!--fin du div deroul-contenu-->

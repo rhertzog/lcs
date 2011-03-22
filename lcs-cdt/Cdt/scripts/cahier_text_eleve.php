@@ -270,7 +270,7 @@ depuis le :	<?calendrier_auto(-60,'jour_c','mois_c','an_c',$tsmp);?>
 //Affichage du lien des absences 
 if (ldap_get_right("Cdt_is_cpe",$_SESSION['login'])=="Y")
 	{
-	echo '<a href="#" class="open_win" onclick="open_new_win(\'cpe.php\')"  id="bt-consult"></a>';
+	echo '<a href="#" class="open_wi" onclick="open_new_win(\'cpe.php\')"  id="bt-consult"></a>';
 	}
 
 if (( isset($_SESSION['parentde']))  && (!isset($_SESSION['login'])))
@@ -307,7 +307,7 @@ $clcryt=substr(md5(crypt($ch,$Grain)),2);
 <input type="button" value="" class="bt-taf" title="Travail A Faire des 15 prochains jours" onclick="taf_popup('<?echo $ch;?>')" />
 <a href="http://fusion.google.com/add?source=atgs&amp;feedurl=<?echo 'http://'.$hostn.'/Plugins/Cdt/scripts/flux_rss.php?div='.$ch.':'.$clcryt;?>" id="bt-google">&nbsp; </a>
 <a href="flux_rss.php?div=<?echo $ch.':'.$clcryt;?>" id="bt-rss">&nbsp; </a>
-<?php if ($_SESSION['cequi']=="eleve") echo '<a href="#" class="open_win" onclick="open_new_win(\'http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/aide_eleve.php\')"  ><img src="../images/planifier-cdt-aide.png" alt="Aide" title="Aide" /></a>';?>
+<?php if ($_SESSION['cequi']=="eleve") echo '<a href="#" class="open_wi" onclick="open_new_win(\'http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/aide_eleve.php\')"  ><img src="../images/planifier-cdt-aide.png" alt="Aide" title="Aide" /></a>';?>
 </div>
 </fieldset>
 </form>

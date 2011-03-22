@@ -84,18 +84,18 @@ if (isset($_POST['enregistrer']) )
 		}
 	
 	// Verifier $duree et la debarrasser de tout antislash et tags possibles
-	if ((strlen($_POST['durée'])> 0) && is_numeric($_POST['durée']))
+	if ((strlen($_POST['duree'])> 0) && is_numeric($_POST['duree']))
 		{ 
 		$message="";
-		$durée= addSlashes(strip_tags(stripslashes($_POST['durée'])));
+		$duree= addSlashes(strip_tags(stripslashes($_POST['duree'])));
 	
 		//limitation de duree
-		if ((($_POST['creneau']<=4) && ( ($_POST['creneau'] + $durée) <= 5))
+		if ((($_POST['creneau']<=4) && ( ($_POST['creneau'] + $duree) <= 5))
 			//si la fin d'un devoir de l'après-midi <= 18h
-			|| (($_POST['creneau']> 4) && ( ($_POST['creneau'] + $durée) <= 10) ))
+			|| (($_POST['creneau']> 4) && ( ($_POST['creneau'] + $duree) <= 10) ))
 			{//pour chaque creneau du devoir 
 			$lezard="false";
-			for ($loop = $_POST['creneau']; $loop <= $_POST['creneau'] + $durée -1; $loop++) 
+			for ($loop = $_POST['creneau']; $loop <= $_POST['creneau'] + $duree -1; $loop++)
 				
 				{//test s'i les 2 creneaux sont occupes pour la classe active 
  				$rq ="SELECT count(*)  FROM devoir WHERE date = '{$_POST['data']}' AND classe= '{$_POST['classe']}' AND creneau+ durée-1 >= '$loop' AND `creneau` <='$loop'"; 
@@ -128,30 +128,30 @@ if (isset($_POST['enregistrer']) )
  						}
  					} 				
 			
-				if ($lezard=="true") $durée="";
+				if ($lezard=="true") $duree="";
 
- 			} else $durée= "";
+ 			} else $duree= "";
  				
 		}
 	else
 	// Si aucune duree n'a ete saisie
 		{ 
-		$durée= "";
+		$duree= "";
 		}
 	//echo "duree=".$duree ;exit;
 	// Creer la requête d'ecriture pour l'enregistrement des donnees
-	if ((isset($_POST['enregistrer'])) && ($durée!="") && ($Sujet!=""))
+	if ((isset($_POST['enregistrer'])) && ($duree!="") && ($Sujet!=""))
 		{
 		$rq = "INSERT INTO devoir (date, creneau,login, matiere, sujet, classe, durée ) 
-		VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '{$_POST['matière']}', '$Sujet',
-		'{$_POST['classe']}', '$durée')";
+		VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '{$_POST['matiere']}', '$Sujet',
+		'{$_POST['classe']}', '$duree')";
 							
 		// lancer la requête
 		$result = mysql_query($rq);
 		// Si l'enregistrement est incorrect 
 		if (!$result)  
 			{                           
-			echo "<p>Votre devoir n'a pas pu être enregistr&#233; à cause d'une erreur syst&#232;me".
+			echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
 			"<p></p>" . mysql_error() . "<p></p>";
 		// refermer la connexion avec la base de donnees
 			mysql_close();    
@@ -189,7 +189,7 @@ if (isset($_POST['enregistrer']) )
 				$mailSubject = "Nouveau devoir";
 				//Le message
 				$mailBody = " CECI EST UN MESSAGE AUTOMATIQUE, MERCI DE NE PAS REPONDRE.  \n \n Un devoir de "
-				. $_POST['matière']." a été programmé le ".  strftime("%A %d %B %Y",$dat_new);
+				. $_POST['matiere']." a été programmé le ".  strftime("%A %d %B %Y",$dat_new);
 				//l'expediteur
 				$mailHeaders = "From: Cahier\ de\ textes\n";
 				//envoi du mail
@@ -204,7 +204,7 @@ if (isset($_POST['enregistrer']) )
 				$result = mysql_query($rq);
 				if (!$result)  
 					{                           
-					echo "<p>Votre devoir n'a pas pu être enregistr&#233; à cause d'une erreur syst&#232;me".
+					echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
 					"<p></p>" . mysql_error() . "<p></p>";
 					// refermer la connexion avec la base de donnees
 					mysql_close();    
@@ -221,15 +221,15 @@ if (isset($_POST['enregistrer']) )
 				$groupe=$gr[0];
 				$idr=$gr[1];
  				$rq = "INSERT INTO devoir (date, creneau,login, matiere, sujet, classe, durée ) 
- 				VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '{$_POST['matière']}', 
- 				'$Sujet', '$groupe', '$durée')";
+ 				VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '{$_POST['matiere']}',
+ 				'$Sujet', '$groupe', '$duree')";
 							
 				// lancer la requête
 				$result = mysql_query($rq);
 				// Si l'enregistrement est incorrect 
 				if (!$result)  
 					{                           
-					echo "<p>Votre devoir n'a pas pu être enregistr&#233; à cause d'une erreur syst&#232;me".
+					echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
 					"<p></p>" . mysql_error() . "<p></p>";
 					// refermer la connexion avec la base de donnees
 					mysql_close();    
@@ -248,7 +248,7 @@ if (isset($_POST['enregistrer']) )
 				$result = mysql_query($rq);
 				if (!$result)  
 					{                           
-					echo "<p>Votre devoir n'a pas pu être enregistr&#233; à cause d'une erreur syst&#232;me".
+					echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
 					"<p></p>" . mysql_error() . "<p></p>";
 					// refermer la connexion avec la base de donnees
 					mysql_close();    
@@ -283,7 +283,7 @@ if (isset($_POST['enregistrer']) )
 				$mailSubject = "Nouveau devoir";
 				//Le message
 				$mailBody = " CECI EST UN MESSAGE AUTOMATIQUE, MERCI DE NE PAS REPONDRE.  \n \n Un devoir de "
-				. $_POST['matière']." a été programmé le ".  strftime("%A %d %B %Y",$dat_new);
+				. $_POST['matiere']." a été programmé le ".  strftime("%A %d %B %Y",$dat_new);
 				//l'expediteur
 				$mailHeaders = "From: Cahier\ de\ textes\n";
 				//envoi du mail
@@ -328,7 +328,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
 		$rq = "DELETE  FROM devoir WHERE id_ds='$cible' and login='$login' LIMIT 1";
 		else
 		$rq = "DELETE  FROM devoir WHERE  login='$login' and date='$dat_supp' and matiere='$mat_supp' and creneau='$cren_supp' and 
-		sujet='$suj_supp' and durée= '$dur_supp'";
+		sujet='$suj_supp' and duree= '$dur_supp'";
 		
 		$result2 = @mysql_query ($rq) or die (mysql_error());
 		//envoi d'un mail
@@ -372,7 +372,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
 
 //memorisation des parametres POST classe  matiere et numero de rubrique renvoyes par le formulaire
 if (isset($_POST['classe'])){$clas= $_POST['classe'];}
-if (isset($_POST['matière'])){$mati= $_POST['matière'];}
+if (isset($_POST['matiere'])){$mati= $_POST['matiere'];}
 if (isset($_POST['numrubri'])){$numrub= $_POST['numrubri'];}
 
 //recherche de la matiere et la classe de la rubrique active du cahier de textes
@@ -398,7 +398,7 @@ if (isset($_GET['rubrique']))
 if (isset($_GET['ladate']))
  {
  $clas=$_GET['klasse'];
- $mati=$_GET['matière'];
+ $mati=$_GET['matiere'];
  $numrub=$_GET['numrubr'];
 
  
@@ -461,23 +461,25 @@ for ($loup=0; $loup < count($uids); $loup++)
 	
 //eom	
 //Affichage conditionnel d'un message d'erreur
-if ((isset($_POST['enregistrer'])) && ($durée==""))
- echo '<h6 class="erreur">'.$message. ' : Durée erron&#233;e</h6>';
+if ((isset($_POST['enregistrer'])) && ($duree==""))
+ echo '<h6 class="erreur">'.$message. ' : Dur&#233;e erron&#233;e</h6>';
 
 //Affichage du formulaire de saisie du sujet du devoir et de la duree
 if (isset($_GET['ladate']) &&(isset($_GET['inser'])))
 	{
-	echo '<FORM id="form-ajt-dev" ACTION="'.$_SERVER["PHP_SELF"].'" METHOD="POST">
-	<script  language="Javascript" src="../Includes/barre_java.js"></script>
-	<input name="JourCourant" type="hidden" id="JourCourant" value="'. $_GET["jc"].'">
-	<input name="classe" type="hidden" id="classe" value="'. $_GET['klasse'].'">
-	<input name="matière" type="hidden" id="matière" value="'. $_GET['matière'].'">
-	<input name="creneau" type="hidden" id="creneau" value="'. $_GET['creneau'].'">
-	<input name="login" type="hidden" id="login" value="'. $login.'">
-	<input name="data" type="hidden" id="data" value="'.$_GET["ladate"].'">
-	<input name="numrubri" type="hidden" id="numrubri" value="'.$numrub.'">
-	<input name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'">
-	<p>Intitul&#233; du devoir :<input class="text" TYPE=TEXT name="sujet" SIZE=28 MAXLENGTH=28>Dur&#233;e :<input class="text" TYPE=TEXT name="durée" SIZE=1 MAXLENGTH=1>heure(s)&nbsp;';
+	echo '<form id="form-ajt-dev" action="'.$_SERVER["PHP_SELF"].'" method="post">
+	<div><script type="text/javascript" src="../Includes/barre_java.js"></script>
+	<input name="JourCourant" type="hidden"  value="'. $_GET["jc"].'"/>
+	<input name="classe" type="hidden" value="'. $_GET['klasse'].'"/>
+	<input name="matiere" type="hidden"  value="'. $_GET['matiere'].'"/>
+	<input name="creneau" type="hidden"  value="'. $_GET['creneau'].'"/>
+	<input name="login" type="hidden" value="'. $login.'"/>
+	<input name="data" type="hidden" value="'.$_GET["ladate"].'"/>
+	<input name="numrubri" type="hidden" value="'.$numrub.'"/>
+	<input name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'"/>
+	<p>Intitul&#233; du devoir :
+        <input class="text" type="text" name="sujet" size="28" maxlength="28" />Dur&#233;e :
+        <input class="text" type="text" name="duree" size="1" maxlength="1"/>heure(s)&nbsp;';
 	if ($ct1cours) 
 		{
 		echo '</p><p> Ce devoir sera diffus&#233; en  ';
@@ -488,9 +490,9 @@ if (isset($_GET['ladate']) &&(isset($_GET['inser'])))
 			
 		}
 	else
-	echo '<a id="bt-select" href="diffuse_devoirs.php?rubrique='.$numrub.'" onClick="diffusedev_popup('.$numrub.'); return false" ></a>';
-	echo'	<input class="bt"type="submit" name="enregistrer" value=""></p>
-	</form>';
+	echo '<a id="bt-select" href="diffuse_devoirs.php?rubrique='.$numrub.'" onclick="diffusedev_popup('.$numrub.'); return false" ></a>';
+	echo'	<input class="bt" type="submit" name="enregistrer" value=""/></p>
+	</div></form>';
 	}
 //Determination du jour courant
 if (isset($_POST['JourCourant'])) 
@@ -587,12 +589,12 @@ if ($nb>0)
 <!-- Affichage des boutons -->	
 	<input name="JourCourant" type="hidden" id="JourCourant" value="<?php echo $Lundi;?>" />
 	<input name="classe" type="hidden" id="classe" value="<?php echo $clas;?>" />
-	<input name="matière" type="hidden" id="matière" value="<?php echo $mati;?>" />
+	<input name="matiere" type="hidden" id="matiere" value="<?php echo $mati;?>" />
 	<input name="numrubri" type="hidden" id="numrubri" value="<?php echo $numrub;?>" />
 	<table id="btn-plan-cdt">
 		<tr>
-			<td ><input type="submit" name="mprec" value="&lt;&lt;" title="Mois précédent" class="bt50" /></td>
-			<td><input type="submit" name="prec" value="&lt;" title="Semaine précédente" class="bt50" /></td>
+			<td ><input type="submit" name="mprec" value="&lt;&lt;" title="Mois pr&#233;c&#233dent" class="bt50" /></td>
+			<td><input type="submit" name="prec" value="&lt;" title="Semaine pr&#233c&#233dente" class="bt50" /></td>
 			<td><input type="submit" name="quit" id="quit" value="" class="bt-exit" /></td>
 			<td><input type="submit" name="suiv" value="&gt;" title="Semaine suivante" class="bt50" /></td>
 			<td><input type="submit" name="msuiv" value="&gt;&gt;" title="Mois suivant" class="bt50" /></td>
@@ -786,13 +788,13 @@ if ($nb>0)
 								echo '<td  rowspan="'.$dur[$j][$h][0].'" class="reserve">'.substr($mat[$j][$h][0],0,10).
 								'<br /><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][0].' " />
 								<a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j].
-								'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati.'&amp;suppr=yes&amp;numdev='
+								'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati.'&amp;suppr=yes&amp;numdev='
 								.$num[$j][$h][0].'&amp;numrubr='.$numrub.'" title="Supprimer ce devoir">'.
 								'<img alt="aide"    src="../images/planifier-cdt-supp.png"   /> </a>'."</td>\n";
 								if (!isset($plan[$j][$h][1])) 
 									{//o
 									echo '<td   class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
-									.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati
+									.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati
 									.'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
 									}//o
 								elseif ($plan[$j][$h][1]=="R")  
@@ -800,7 +802,7 @@ if ($nb>0)
 									echo '<td  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.substr($mat[$j][$h][1],0,10).
 									'<br /><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][1].'" /> 
 									<a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j].
-									'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati.'&amp;suppr=yes&amp;numdev='
+									'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati.'&amp;suppr=yes&amp;numdev='
 									.$num[$j][$h][1].'&amp;numrubr='.$numrub.'" title="Supprimer ce devoir">'.
 									'<img alt="aide" src="../images/planifier-cdt-supp.png" /> </a>'."</td>\n";
 									}//p
@@ -815,7 +817,7 @@ if ($nb>0)
 								if (!isset($plan[$j][$h][1])) 
 									{//s
 									echo '<td   class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
-									.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati
+									.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati
 									.'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
 									}//s
 								elseif ($plan[$j][$h][1]=="R")   
@@ -823,7 +825,7 @@ if ($nb>0)
 									echo '<td  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.substr($mat[$j][$h][1],0,10).
 									'<br /><br /><img alt="aide"   src="../images/help-info.png"  title ="'.$suj[$j][$h][1].'" />&nbsp; &nbsp; &nbsp; 
 									<a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j].
-									'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&matière='.$mati.'&amp;suppr=yes&amp;numdev='
+									'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&matiere='.$mati.'&amp;suppr=yes&amp;numdev='
 									.$num[$j][$h][1].'&amp;numrubr='.$numrub.'" title="Supprimer ce devoir">'.
 									'<img alt="aide"   src="../images/b_drop.png" /> </a>'."</td>\n";
 									}//t
@@ -834,11 +836,11 @@ if ($nb>0)
 						{//l
 						if (!isset($plan[$j][$h][1]))
 						echo '<td colspan="2"  class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
-						.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati
+						.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati
 						.'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
 						else
 						echo '<td class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
-						.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matière='.$mati
+						.'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati
 						.'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
 						}//l
 							
@@ -862,7 +864,7 @@ if (isset($_GET["suppr"]))
 	echo "if (confirm('Confirmer la suppression de ce devoir (Vous ne pouvez supprimer que vos devoirs !!)')){";
 	echo ' location.href = "';echo htmlentities($_SERVER['PHP_SELF']);echo'" + "?numd=" +'." '"; echo $_GET["numdev"] ;echo "'"
 	.' + "&delrub=" +'."1245".' + "&ladate=" +'."'";echo $date[0];echo "'".'+ "&jc="+'."'".$Lundi."'".'
-	+ "&klasse="+'."'".$clas."'".'+ "&numrubr="+'."'".$numrub."'".'+ "&matière="+'."'".$mati."'".' + "&TA=" +'." '". md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF']))."'".' ;}</script>';
+	+ "&klasse="+'."'".$clas."'".'+ "&numrubr="+'."'".$numrub."'".'+ "&matiere="+'."'".$mati."'".' + "&TA=" +'." '". md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF']))."'".' ;}</script>';
 	}
   ?>
 </div> <!-- fin du contenu -->

@@ -657,7 +657,7 @@ if (!mysql_num_rows($result)==0)
 				//affichage des noms
         echo "<tr ";
         if (($loop %2)==0 ) {echo 'class="lgn0"';} else {echo 'class="lgn1"';}
-        echo '><td><a href="#" class="open_win" title="Bilan des absences et retards"
+        echo '><td><a href="#" class="open_wi" title="Bilan des absences et retards"
             onclick="open_new_win(\'bilan.php?uid='.$users[$loop]["uid"].'&amp;fn='.$users[$loop]["fullname"].'\')">'
         .$users[$loop]["fullname"].'</a></td>';
 	echo '<td><a href="#" title="Aperçu hebdomadaire" onclick="abs_popup(\''.$uid_e.'\',\'' .$users[$loop]["fullname"].'\'); return false" > <img src="../images/b_calendar.png"  alt="hebdo"/></a></td>';
