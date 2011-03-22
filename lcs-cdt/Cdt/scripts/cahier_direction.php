@@ -209,7 +209,7 @@ if (isset($_POST['Lien']))
 		$mailHeaders = "From: Cahier\ de\ textes\n";
 		//envoi du mail
 		 mail($mailTo, $mailSubject, $mailBody1.$mailBody2, $mailHeaders);
-		 echo '<li> Le message suivant a &#233;t&#233; envoy&#233; &#224 '.$prof[1].' :<p class="absmod">'.$mailBody2.'</p></li>';
+		 echo '<li> Le message suivant a &#233;t&#233; envoy&#233; &#224 '.$prof[1].' :<p class="absmod">'.htmlentities($mailBody2).'</p></li>';
 		 echo '</ol>';
                  echo '</h4>';
                 }

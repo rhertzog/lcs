@@ -53,12 +53,14 @@ if (mysql_num_rows($result)==0)
         <title>Cahier de textes num&eacute;rique</title>
         <meta http-equiv="content-type" content="text/html;charset=utf-8" />
         <link href="../style/style.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="../Includes/cdt.js"></script>
         </head>
         <body>
                 <div id="first">
                 <div class="prg">
                 <h2>Votre cahier de textes ne comporte actuellement aucune rubrique.</h2>
                 <h2>Vous devez personnaliser votre cahier de texte en cr&#233;ant au moins une rubrique.</h2>
+                <a href="#" class="open_wi" onclick="open_new_win(\'http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/raccourcis.php\')"  ><img class="nobord" src="../images/planifier-cdt-aide.png" alt="Aide" title="Aide" /></a>
                 <a class="bt-perso" href="config_ctxt.php"></a>
                 </div></div>
          </body>

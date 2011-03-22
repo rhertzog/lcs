@@ -238,9 +238,9 @@ if (count($numero)>0)
 		}
 	echo "</tbody></table>";
 	}
-	else echo '<span class="nook">Aucun travail n\'est programmé pour cette classe !</span>';
+	else echo '<span class="nook">Aucun travail n\'est programm&#232; pour cette classe !</span>';
 	}
-	else echo '<span class="nook">La rubrique n\'est pas encore créée pour cette classe !</span>';
+	else echo '<span class="nook">La rubrique n\'est pas encore cr&#232;&#232;e pour cette classe !</span>';
 	echo "<script type=\"text/javascript\">
                     //<![CDATA[
 		document.write('<div id=\"bt-abs\"><a href=\"javascript:window.close()\" id=\"bt-close\"></a></div>');
