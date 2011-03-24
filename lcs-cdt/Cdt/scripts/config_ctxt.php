@@ -350,7 +350,7 @@ for($x=0;$x < $nb;$x++){
 	echo '</ul>';
 
 
-echo '<h4 class="perso"> Aspect des onglets du cahier de textes des élèves ( cliquer sur un onglet pour le <span class="evidence"><b>Supprimer</b></span>)</h4>';
+echo '<h4 class="perso"> Aspect des onglets du cahier de textes des &#233;l&#232;ves ( cliquer sur un onglet pour le <span class="evidence"><b>Supprimer</b></span>)</h4>';
 	
 //création du tableau , onglets élèves
 echo '<ul id="cfg-navlist-elv">';

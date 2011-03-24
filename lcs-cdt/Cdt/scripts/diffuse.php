@@ -145,7 +145,7 @@ if (isset($_POST['Valider']))
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
 <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <fieldset id="field7">
-<legend id="legende">Sélection des classes</legend>
+<legend id="legende">S&#233;lection des classes</legend>
 
 <?php
 //affichage du formulaire
@@ -168,7 +168,7 @@ if (!isset($_POST['Valider']))
 	//si pas de classe de meme niveau dans la matiere
 	if (mysql_num_rows($result)==0) 
 		{
-		echo '<h4> Apparemment, vous n\'avez pas d\'autre classe  en <b>'.$mat.'</b> !<br /> Vérifiez que la mati&#232;re n\'est
+		echo '<h4> Apparemment, vous n\'avez pas d\'autre classe  en <b>'.$mat.'</b> !<br /> V&#233;rifiez que la mati&#232;re n\'est
 		pas orthographi&#233;e diff&#233;remment pour les autres classes .</h4>';
 		echo '<input type="submit" name="Valider" value="OK" class="bt50" >';
 		}
