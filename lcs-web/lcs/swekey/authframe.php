@@ -195,7 +195,7 @@ if (isset($swekey_ids) && (! isset($_SESSION['swekey_authframe']['auth_started']
 	<script type="text/javascript">
 	var tokens = "";
 	var ids = Swekey_ListKeyIds();
-	var connected_keys = ids.preg_split("/,/");
+	var connected_keys = ids.split("/,/");
  	for (i in connected_keys) 
 	    if (connected_keys[i] != null && connected_keys[i].length == 32)
 		    tokens += connected_keys[i] + Swekey_GetSmartOtp(connected_keys[i], "<?php echo $_SESSION['swekey_authframe']['rt'];?>");

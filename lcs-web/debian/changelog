@@ -1,5 +1,6 @@
 lcs-web (2.4.8~10) Lcs; urgency=low
 
+  [ Jean-Luc Chrétien ]
   [Fernando Lagrange]
   * Update config.inc.php even if not initial config.
   * Fix recovery of the server name in case of failure authenfication
@@ -7,7 +8,10 @@ lcs-web (2.4.8~10) Lcs; urgency=low
   [Jean-Luc Chrétien]
   * Remove chown /var/www/lib in lcs-web-fixrights 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 24 Mar 2011 13:57:23 +0100
+  [ Philippe Leclerc ]
+  * fix bug in swekey/authframe.php
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 24 Mar 2011 23:00:07 +0100
 
 lcs-web (2.4.8~8) Lcs; urgency=low
 
@@ -61,11 +65,12 @@ lcs-web (2.4.8~8) Lcs; urgency=low
   * fix damage collateral of change.sh on mod_mail.php
   * Modify css in Management modules 
   * Delete space before/after login in auth.php	
-  
+  * change accented characters in swekey confirm
+
   [ Cyril Bouthors ]
   * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 17 Mar 2011 11:46:57 +0100
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 18 Feb 2011 15:36:53 +0100
 
 lcs-web (2.4.7) Lcs; urgency=low
 
