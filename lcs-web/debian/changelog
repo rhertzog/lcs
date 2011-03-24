@@ -1,8 +1,13 @@
-lcs-web (2.4.8~9) UNRELEASED; urgency=low
+lcs-web (2.4.8~10) UNRELEASED; urgency=low
 
+  [Fernando Lagrange]
+  * Update config.inc.php even if not initial config.
+  * Fix recovery of the server name in case of failure authenfication
+
+  [Jean-Luc Chrétien]
   * Remove chown /var/www/lib in lcs-web-fixrights 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 21 Mar 2011 17:16:36 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 24 Mar 2011 13:57:23 +0100
 
 lcs-web (2.4.8~8) Lcs; urgency=low
 

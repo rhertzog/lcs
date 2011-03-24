@@ -47,6 +47,17 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
                     # restart apache2
                     invoke-rc.d apache2 restart
                 fi
+				if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.8; then
+                	# Load LCS config
+                	[ ! -e /etc/lcs/lcs.conf ] && echo "Fatal in postinst: missing /etc/lcs/lcs.conf !" >&2 && exit 1
+                	. /etc/lcs/lcs.conf
+					#
+					# Update config.inc.php
+					#
+					mv /var/www/lcs/includes/config.inc.php /var/www/lcs/includes/config.inc.php_before_2.4.6.5+slis.4.1.9
+					sed -e "s|@@PASSWORD@@|"$LCSMGRPASS"|g" /var/www/lcs/includes/config.inc.in >/var/www/lcs/includes/config.inc.php
+					chown www-data:www-data /var/www/lcs/includes/config.inc.php
+				fi
             fi
             # 	   
             # Restore .htpasswd if exist
