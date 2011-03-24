@@ -31,8 +31,9 @@ lcs-desktop (2.4.8~2) Lcs; urgency=low
   * Compatibility IE8
   * Weight reduction pictures
   * Admin can add shared links
+  * Fix bug if accueil.php is the home page
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 22 Mar 2011 16:13:47 +0100
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 24 Sep 2010 09:08:08 +0200
 
 lcs-desktop (0.2~18) Lcs; urgency=low
 

@@ -2578,7 +2578,7 @@ var JQD = (function($, window, undefined) {
 			//console.log('Options - ', opts)
 			if(parseInt(opts.idpers) == 0 ) {
                 JQD.build.btop() ;JQD.build.bbttm();JQD.init.wpp( opts );
-                if ( opts.url_accueil !='') JQD.pgaccueil( opts );
+                if ( opts.url_accueil !='' &&  opts.url_accueil !='../lcs/auth.php' && opts.url_accueil !='../lcs/accueil.php') JQD.pgaccueil( opts );
                 else JQD.logform('../lcs/auth.php') ;
             }
 			else if(opts.pwchg == 'N' ) {
