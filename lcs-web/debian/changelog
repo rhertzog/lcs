@@ -1,4 +1,4 @@
-lcs-web (2.4.8~10) UNRELEASED; urgency=low
+lcs-web (2.4.8~10) Lcs; urgency=low
 
   [Fernando Lagrange]
   * Update config.inc.php even if not initial config.
