@@ -1,6 +1,5 @@
-lcs-web (2.4.8~10) Lcs; urgency=low
+lcs-web (2.4.8~11) Lcs; urgency=low
 
-  [ Jean-Luc Chrétien ]
   [Fernando Lagrange]
   * Update config.inc.php even if not initial config.
   * Fix recovery of the server name in case of failure authenfication
@@ -11,7 +10,7 @@ lcs-web (2.4.8~10) Lcs; urgency=low
   [ Philippe Leclerc ]
   * fix bug in swekey/authframe.php
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 24 Mar 2011 23:00:07 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 25 Mar 2011 09:10:26 +0100
 
 lcs-web (2.4.8~8) Lcs; urgency=low
 
