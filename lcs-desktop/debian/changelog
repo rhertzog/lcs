@@ -32,8 +32,9 @@ lcs-desktop (2.4.8~2) Lcs; urgency=low
   * Weight reduction pictures
   * Admin can add shared links
   * Fix bug if accueil.php is the home page
+  * Add script for sweekey by Misterphi in index.php
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 24 Sep 2010 09:08:08 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Sat, 25 Sep 2010 11:17:34 +0200
 
 lcs-desktop (0.2~18) Lcs; urgency=low
 

@@ -79,9 +79,15 @@ include("core/includes/functions.inc.php");
 $(document).ready(function(){
 	JQD.settings();
 });
-</script>
 
+</script>
 <?php
+// sweekey by Misterphi
+	if ( is_dir ("/usr/share/lcs/swekey")) {
+	include "/usr/share/lcs/swekey/my_integration.php";
+	echo SwekeyIntegrationScript();
+}
+
 // Cas service authentification
    if ( $login && ($lcs_cas == 1) && !isset($_COOKIE['tgt'])) 
 	echo "<script type='text/javascript'>
