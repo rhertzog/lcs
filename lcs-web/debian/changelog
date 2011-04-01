@@ -1,16 +1,18 @@
-lcs-web (2.4.8~11) Lcs; urgency=low
+lcs-web (2.4.8~12) Lcs; urgency=low
 
   [Fernando Lagrange]
   * Update config.inc.php even if not initial config.
   * Fix recovery of the server name in case of failure authenfication
+  * Fix authentification in auth_lcs() in user_lcs.inc.php 
 
   [Jean-Luc Chrétien]
   * Remove chown /var/www/lib in lcs-web-fixrights 
+  * Fix bug in mkSlapdConf.sh
 
   [ Philippe Leclerc ]
   * fix bug in swekey/authframe.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 25 Mar 2011 09:10:26 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 01 Apr 2011 14:28:32 +0200
 
 lcs-web (2.4.8~8) Lcs; urgency=low
 

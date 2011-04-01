@@ -341,10 +341,10 @@ echo "syncrepl rid=0
 # if Debian Etch 
 if ( grep -q '4.0' /etc/debian_version )
 then
-	echo "updatedn=\"cn=admin,$ldap_base_dn\"" >> /etc/ldap/syncrepl.conf
+	echo " updatedn=\"cn=admin,$ldap_base_dn\"" >> /etc/ldap/syncrepl.conf
 fi
 
-echo "binddn=\"cn=admin,$ldap_base_dn\"
+echo " binddn=\"cn=admin,$ldap_base_dn\"
  credentials=$ldap_passwd" >> /etc/ldap/syncrepl.conf
 
 # Ajout de l'include dans slapd.conf
@@ -352,12 +352,6 @@ echo "# Replication Slave Syncrepl
 include /etc/ldap/syncrepl.conf" >> /etc/ldap/slapd.conf 
 
 serveurs="$ldap_server $replica_ip"
-# Modife les differents fichiers de conf
-if [ -d /var/se3 ]
-then
-    perl -pi -e "s§ldapsam:.*§ldapsam:ldap://$ldap_server§" /etc/samba/smb.conf
-    perl -pi -e "s§ldap ssl.*§ldap ssl = start_tls§" /etc/samba/smb.conf
-fi
 
 fi
 
@@ -366,12 +360,6 @@ fi
 #################################################################################
 if [ "$replica_status" = "3" ]
 then
-    if [ -d /var/se3 ]
-    then
-	# Modife les differents fichiers de conf
-	perl -pi -e "s§ldapsam:.*§ldapsam:ldap://$ldap_server§" /etc/samba/smb.conf
-	perl -pi -e "s§ldap ssl.*§ldap ssl = start_tls§" /etc/samba/smb.conf
-    fi
     serveurs="$ldap_server $replica_ip"
     # touch syncrepl vide pour indiquer la methode
     touch /etc/ldap/syncrepl.conf
@@ -397,12 +385,6 @@ fi
 if [ "$replica_status" = "0" ]
 then
     serveurs="$ldap_server"
-    if [ -d /var/se3 ]
-    then
-	# Modife les differents fichiers de conf
-	perl -pi -e "s§ldapsam:.*§ldapsam:ldap://$ldap_server§" /etc/samba/smb.conf
-	perl -pi -e "s§ldap ssl.*§ldap ssl = start_tls§" /etc/samba/smb.conf
-    fi
 fi
 
 #################################################################################
@@ -412,13 +394,6 @@ if [ "$replica_status" = "2" ]
 then
     serveurs="$ldap_server $replica_ip"
     # Modife les differents fichiers de conf
-    if [ -d /var/se3 ]
-    then
-	perl -pi -e "s§ldapsam:.*§ldapsam:ldap://$ldap_server§" /etc/samba/smb.conf
-	# Pour le moment on active pas SSL. Cette option va disparaitre 
-        perl -pi -e "s§ldap ssl.*§ldap ssl = off§" /etc/samba/smb.conf
-    fi	
-    #perl -pi -e "s§ldap ssl.*§ldap ssl = start_tls§" /etc/samba/smb.conf	
     echo "updatedn \"$ldap_admin,$ldap_base_dn\" " >> /etc/ldap/slapd.conf
     echo "updateref \"ldap://$ldap_server:389\"" >> /etc/ldap/slapd.conf
 		
@@ -431,11 +406,6 @@ if [ "$replica_status" = "1" ]
 then
     serveurs="$ldap_server $replica_ip"
     # Modife les differents fichiers de conf
-    if [ -d /var/se3 ]
-    then
-	perl -pi -e "s§ldapsam:.*§ldapsam:ldap://$ldap_server§" /etc/samba/smb.conf
-	perl -pi -e "s§ldap ssl.*§ldap ssl = start_tls§" /etc/samba/smb.conf
-    fi
     echo "replica host=$replica_ip:389" >> /etc/ldap/slapd.conf
     echo "  binddn=\"$ldap_admin,$ldap_base_dn\"" >> /etc/ldap/slapd.conf
     echo "  bindmethod=simple       credentials=$ldap_passwd" >> /etc/ldap/slapd.conf
@@ -445,7 +415,6 @@ then
     then
         mkdir -p /var/spool/slurpd/replica
     fi
-		
 fi
 
 #################################################################################

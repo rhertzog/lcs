@@ -135,22 +135,20 @@ include ("/var/www/lcs/includes/xoft.php");
         $idpers=0;$login="";
         if (! empty($_COOKIE["LCSAuth"])) {
             $sess=$_COOKIE["LCSAuth"];
-            //$result=@mysql_db_query("$DBAUTH","SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'", $authlink);
-	    if (!@mysql_select_db($DBAUTH, $authlink)) 
-    		die ("S&#233;lection de base de donn&#233;es impossible.");
-	    $query="SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'";
+	    	if (!@mysql_select_db($DBAUTH, $authlink)) 
+    			die ("S&#233;lection de base de donn&#233;es impossible.");
+	    	$query="SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'";
             $result=@mysql_query($query,$authlink);
             if ($result && @mysql_num_rows($result) ) {
-		// Split ip variable too take first ip only
-		// (BDD field is too short on multiple proxy case)
+				// Split ip variable too take first ip only
+				// (BDD field is too short on multiple proxy case)
                 list($ip_session,$null) = preg_split("/,/",mysql_result($result,0,0),2);
                 list($first_remote_ip,$null) = preg_split("/,/",remote_ip(),2);
                 if ( $ip_session == $first_remote_ip ) {
                         $idpers =  mysql_result($result,0,1);
                         // Recherche du login a partir de l'idpers
                         $query="SELECT login FROM personne WHERE id=$idpers";
-                        //$result=@mysql_db_query("$DBAUTH",$query, $authlink);
-			$result=@mysql_query($query,$authlink);
+						$result=@mysql_query($query,$authlink);
                         if ($result && @mysql_num_rows($result)) $login=str_replace(" ", "", @mysql_result($result,0,0));
                 }
                 @mysql_free_result($result);
