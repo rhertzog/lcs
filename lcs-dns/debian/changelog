@@ -1,3 +1,9 @@
+lcs-dns (2.4.8~2) Lcs; urgency=low
+
+  * add allow-query and allow-recursion options
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 01 Apr 2011 14:39:35 +0200
+
 lcs-dns (2.4.8~1) Lcs; urgency=low
 
   * Fix bug with define function exit_fatal and get_lcsdb_params

@@ -13,7 +13,10 @@ options {
 	// nameservers, you probably want to use them as forwarders.  
 	// Uncomment the following block, and insert the addresses replacing 
 	// the all-0's placeholder.
-
+	
+	allow-query {10/8; 127.0.0.1/8; 172.16/16; 192.168/16;};
+	allow-recursion {10/8; 127.0.0.1/8; 172.16/16; 192.168/16;};
+              
 	forwarders {
 	 	#DNS_PRIMARY#
                 #DNS_SECONDARY#
