@@ -40,5 +40,3 @@ function auth_lcs()
 }
 
 ?>
-
-
