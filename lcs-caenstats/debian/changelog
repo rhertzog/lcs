@@ -1,6 +1,7 @@
-lcs-caenstats (2.4.7.2) Lcs; urgency=low
+lcs-caenstats (2.4.7.3) Lcs; urgency=low
 
   * lcs-caenstats : remove superviseur if a previous existe
+  * lcs-caenstats : remove superviseur group if a previous existe
 
  -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 18 Mar 2011 15:55:30 +0100
 
