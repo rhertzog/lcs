@@ -1,11 +1,6 @@
 <?php
-/* =============================================
-   Projet LCS : Linux Communication Server
-   accueil.php
-   jLCF : jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice academie de Caen
-   derniere mise a jour : 07/11/2010
-   ============================================= */
+/* lcs/accueil derniere mise a jour : 07/04/2011 */
+
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
@@ -81,7 +76,8 @@ echo $html;
   $result=@mysql_query($query);
   if ($result) {
         while ( $r=@mysql_fetch_object($result) ) {
-            if ( $r->name == "filexplorer" ) $filexplorer = true;
+            if ( $r->name == "clientftp" ) $clientftp = true;
+            if ( $r->name == "elfinder" ) $elfinder = true;
             if ( $r->name == "pma" ) $pma = true;
             if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
         }
@@ -93,10 +89,16 @@ echo $html;
   if ( is_dir("/home/".$login) && is_dir("/home/".$login."/public_html") && is_dir("/home/".$login."/Documents")) {
     if ( !isset($monlcs) ){ 
       $html = "<table width='100%' border='0' cellspacing='10'>\n";
-      if ( $filexplorer ) {
+      if ( $clientftp ) {
         $html .= "<tr>\n";
         $html .= "  <td width='80'><img src='images/bt-V1-2.jpg' alt='ftpclient' align='middle' /></td>\n";
-        $html .= "  <td><a href='statandgo.php?use=filexplorer'>Espace web &#171; LCS &#187;</a></td>\n";
+        $html .= "  <td><a href='statandgo.php?use=clientftp'>Explorateur de fichiers</a></td>\n";
+        $html .= "</tr>\n";
+      }
+      if ( $elfinder ) {
+        $html .= "<tr>\n";
+        $html .= "  <td width='80'><img src='images/bt-V1-2.jpg' alt='elfinder' align='middle' /></td>\n";
+        $html .= "  <td><a href='statandgo.php?use=elfinder'>Explorateur de fichiers</a></td>\n";
         $html .= "</tr>\n";
       }
       if ( $pma ) {

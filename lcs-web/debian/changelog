@@ -1,4 +1,4 @@
-lcs-web (2.4.8~12) Lcs; urgency=low
+lcs-web (2.4.8~13) Lcs; urgency=low
 
   [Fernando Lagrange]
   * Update config.inc.php even if not initial config.
@@ -14,7 +14,7 @@ lcs-web (2.4.8~12) Lcs; urgency=low
   * fix bug in swekey/authframe.php
   * fix accentued characters in edit_params.php and plugins_installes.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Apr 2011 14:32:21 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Apr 2011 15:04:03 +0200
 
 lcs-web (2.4.8~8) Lcs; urgency=low
 

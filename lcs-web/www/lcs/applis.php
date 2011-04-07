@@ -1,5 +1,5 @@
 <?php 
-/* lcs/applis.php derniere mise a jour : 07/01/2011 */
+/* lcs/applis.php derniere mise a jour : 07/04/2011 */
 
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -56,16 +56,22 @@ $liste['Titres'][] = "Annuaire des utilisateurs";
   $result=mysql_query($query);
   if ($result) {
         while ( $r=mysql_fetch_object($result) ) {
-            if ( $r->name == "filexplorer" ) $filexplorer = true;
+            if ( $r->name == "clientftp" ) $clientftp = true;
+            if ( $r->name == "elfinder" ) $elfinder = true;
             if ( $r->name == "pma" ) $pma = true;
             if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
         }
     }
     mysql_free_result($result);
 
-if ( $filexplorer ) {
+if ( $clientftp ) {
   $liste['Images'][] = "images/bt-V1-2.jpg";
-  $liste['Liens'][] = "statandgo.php?use=filexplorer";
+  $liste['Liens'][] = "statandgo.php?use=clientftp";
+  $liste['Titres'][] = "Explorateur de fichiers";
+}
+if ( $elfinder ) {
+  $liste['Images'][] = "images/bt-V1-2.jpg";
+  $liste['Liens'][] = "statandgo.php?use=elfinder";
   $liste['Titres'][] = "Explorateur de fichiers";
 }
 if ( $pma ) {
