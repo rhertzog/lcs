@@ -1,14 +1,13 @@
-lcs-clientftp (2.4.8~2) Lcs; urgency=low
+lcs-clientftp (2.4.8~3) Lcs; urgency=low
   [Cyril Bouthors]
   * Added symlink support.
 
   [Chretien Jean-Luc]
   * Change to 2.4.8 version
-  * Modify module name to filexplorer
   * Add conflict whit lcs-elfinder
   * Convert doc-html to utf-8
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 28 Jan 2011 10:53:27 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Apr 2011 11:31:54 +0200
 
 lcs-clientftp (2.4.6) Lcs; urgency=low
 
