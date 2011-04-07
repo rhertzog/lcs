@@ -187,7 +187,8 @@ list($user, $groups)=people_get_variables($login, true);
 	$resultM=mysql_query($queryM);
 	if ($resultM) {
 		while ( $r=mysql_fetch_object($resultM) ) {
-			if ( $r->name == "filexplorer" ) $filexplorer = true;
+            if ( $r->name == "clientftp" ) $clientftp = true;
+            if ( $r->name == "elfinder" ) $elfinder = true;
 			if ( $r->name == "pma" ) $pma = true;
 			if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
 		}
@@ -289,29 +290,25 @@ if ( $idpers!=0 && !pwdMustChange($login)) {
 	$applis['webmail'] = $app_webmail;
 	
 	# filexplorer
-	if (isset($filexplorer)) {
-		$applis['filexplorer']= array(
+	if (isset($clientftp)) {
+		$applis['clientftp']= array(
 			"txt" => "Explorateur de fichiers",
-			"url" => "../filexplorer/",
-			"rev" => "filexplorer",
+			"url" => "../clientftp/",
+			"rev" => "clientftp",
 			"img" => "core/images/app/lcslogo-filexplorer.png",
 			"typ" => "srvc",
 			"smn" => ""
 		);
-	}
-	# filexplorer
-	/*
-	if (is_dir('../../../elfinder') ){
-		$applis['filexplorer']= array(
+	} elseif (isset($elfinder)) {
+		$applis['elfinder']= array(
 			"txt" => "Explorateur de fichiers",
 			"url" => "../elfinder/",
-			"rev" => "filexplorer",
+			"rev" => "elfinder",
 			"img" => "core/images/app/lcslogo-filexplorer.png",
 			"typ" => "srvc",
 			"smn" => ""
 		);
 	}
-	*/
 	# phpmyadmin
 	if (isset($pma)) {
 		$applis['pma']= array(

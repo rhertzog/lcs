@@ -25,7 +25,8 @@ $liste['Ids'] = array();// ajout pour l'ID des fenetres !!Voir si on peut eviter
 	$resultM=mysql_query($queryM);
 	if ($resultM) {
         while ( $r=mysql_fetch_object($resultM) ) {
-            if ( $r->name == "filexplorer" ) $filexplorer = true;
+            if ( $r->name == "clientftp" ) $clientftp = true;
+            if ( $r->name == "elfinder" ) $elfinder = true;
             if ( $r->name == "pma" ) $pma = true;
             if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
         }
@@ -62,13 +63,19 @@ if(isset($squirrelmail)){
 	$liste['Blocks'][] = "#icon_dock_lcs_roundcube";
 	$liste['Ids'][] = "roundcube";	
 }	
-// filexplorer
-if (isset($filexplorer)) {
+// explorateur de fichier : clientftp ou elfinder
+if (isset($clientftp)) {
 	$liste['Images'][] = "../lcs/images/bt-V1-2.jpg";
-	$liste['Liens'][] = "../filexplorer/";
+	$liste['Liens'][] = "../clientftp/";
 	$liste['Titres'][] = "Explorateur de fichiers";
-	$liste['Blocks'][] = "#icon_dock_filexplorer";
-	$liste['Ids'][] = "filexplorer";
+	$liste['Blocks'][] = "#icon_dock_clientftp";
+	$liste['Ids'][] = "clientftp";
+} elseif (isset($elfinder)) {
+	$liste['Images'][] = "../lcs/images/bt-V1-2.jpg";
+	$liste['Liens'][] = "../elfinder/";
+	$liste['Titres'][] = "Explorateur de fichiers";
+	$liste['Blocks'][] = "#icon_dock_elfinder";
+	$liste['Ids'][] = "elfinder";
 }
 // phpmyadmin
 if (isset($pma)) {
@@ -192,7 +199,7 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 	
 	// Split the menu applications into two parts: services and applications
 	// See if it is necessary and so, how to make choices ?	
-	$services=array("filexplorer", "pma", "smbwc", "annu", "maintinfo");
+	$services=array("clientftp", "elfinder", "pma", "smbwc", "annu", "maintinfo");
     if(!in_array($liste['Ids'][$x], $services)){
 	    $html_menu .= "<li>\n".$sbmn."</li>\n";
     }else{
