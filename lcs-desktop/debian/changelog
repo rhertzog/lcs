@@ -1,4 +1,4 @@
-lcs-desktop (2.4.8~3) Lcs; urgency=low
+lcs-desktop (2.4.8~4) Lcs; urgency=low
 
   [ Dominique Lepaisant ]
   * Fix bug with the width of windows when the iframe is loaded
@@ -10,7 +10,7 @@ lcs-desktop (2.4.8~3) Lcs; urgency=low
   * Copy trunk version in 2.4.8 Tree
   * Modify inc-lcs-applis.php for new module name elfinder
   * Modify index.php and inc-lcs-applis.php for roundcube and lcs-notify-desktop
-  * test fix rights on desktop in Makefile 
+  * Fix rights on desktop folder 
 
   [ Dominique Lepaisant ]
   * Prepares version 2.4.8
@@ -34,7 +34,7 @@ lcs-desktop (2.4.8~3) Lcs; urgency=low
   * Fix bug if accueil.php is the home page
   * Add script for sweekey by Misterphi in index.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Apr 2011 15:56:14 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Apr 2011 16:14:20 +0200
 
 lcs-desktop (0.2~18) Lcs; urgency=low
 
