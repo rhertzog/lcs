@@ -34,7 +34,7 @@ if ($result)
 	{
           if ( mysql_num_rows($result) !=0 ) {      
           // Affichage des plugins installés
-          echo "<H3>Plugins installés </H3>\n";
+          echo "<H3>Plugins install&#233;s </H3>\n";
           echo "<FONT SIZE=2>\n";
           echo "<TABLE BORDER=1 WIDTH=100%>";
           while ($r=mysql_fetch_object($result))
@@ -46,7 +46,7 @@ if ($result)
                   
  		  echo "<TD><A HREF=\"" . $plug["aide"] . "\" TITLE=\"Aide\"><IMG SRC=\"Images/plugins_help.png\" ALT=\"Aide\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\" /></A></TD>\n";
 		  if ($r->value != "0")
-		  	echo "<TD><A HREF=\"plugins_activation.php?pid=" . $r->id . "&a=0\"><IMG SRC=\"Images/plugins_desactiver.png\" TITLE=\"Désactiver\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
+		  	echo "<TD><A HREF=\"plugins_activation.php?pid=" . $r->id . "&a=0\"><IMG SRC=\"Images/plugins_desactiver.png\" TITLE=\"D&#233;sactiver\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
 		  else
 		  	echo "<TD><A HREF=\"plugins_activation.php?pid=" . $r->id . "&a=1\"><IMG SRC=\"Images/plugins_activer.png\" TITLE=\"Activer\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
 		  #$v = maj_dispo($r->name);	
@@ -59,7 +59,7 @@ if ($result)
 		}
           echo "</TABLE>";
           } else {
-              echo "<H3>Pas de plugin installé.</H3>\n";      
+              echo "<H3>Pas de plugin install&#233;.</H3>\n";      
           }
         }
         

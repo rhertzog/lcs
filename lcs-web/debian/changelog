@@ -11,8 +11,9 @@ lcs-web (2.4.8~12) Lcs; urgency=low
 
   [ Philippe Leclerc ]
   * fix bug in swekey/authframe.php
+  * fix accentued characters in edit_params.php and plugins_installes.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 01 Apr 2011 14:28:32 +0200
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 02 Apr 2011 22:07:47 +0200
 
 lcs-web (2.4.8~8) Lcs; urgency=low
 
