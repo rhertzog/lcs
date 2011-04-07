@@ -8,12 +8,13 @@ lcs-web (2.4.8~12) Lcs; urgency=low
   [Jean-Luc Chrétien]
   * Remove chown /var/www/lib in lcs-web-fixrights 
   * Fix bug in mkSlapdConf.sh
+  * Fix module name for clientftp and elfinder
 
   [ Philippe Leclerc ]
   * fix bug in swekey/authframe.php
   * fix accentued characters in edit_params.php and plugins_installes.php
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 02 Apr 2011 22:07:47 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Apr 2011 14:32:21 +0200
 
 lcs-web (2.4.8~8) Lcs; urgency=low
 
