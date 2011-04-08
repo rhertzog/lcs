@@ -1,8 +1,9 @@
-lcs-squidguard (2.4.8~1) UNRELEASED; urgency=low
+lcs-squidguard (2.4.8~1) Lcs; urgency=low
 
   * Fix accentued characters in menu 
+  * Change charset to UTF-8 in doc/html 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Apr 2011 11:53:37 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 08 Apr 2011 09:57:49 +0200
 
 lcs-squidguard (2.4.7.1) Lcs; urgency=low
 
