@@ -33,8 +33,9 @@ lcs-desktop (2.4.8~4) Lcs; urgency=low
   * Admin can add shared links
   * Fix bug if accueil.php is the home page
   * Add script for sweekey by Misterphi in index.php
+  * Remove utf8_decode in core/action/load_spip_notify.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Apr 2011 16:14:20 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 05:04:16 +0200
 
 lcs-desktop (0.2~18) Lcs; urgency=low
 
