@@ -708,14 +708,13 @@ var JQD = (function($, window, undefined) {
 				}
 
 				$.each(app, function(i) {
-				//console.log(' app[i] : ',  app[i] )
 					if ( i != 'admin' )
 					JQD.utils.ssmenu( app[i] );
 					else 
 					$.each(app[i], function(j) {
+						if( typeof app[i][j].txt !=="undefined" )
 						JQD.utils.ssmenu( app[i][j] );
 					});
-				//console.info('app[i] : ',app[i]);
 				});
 				$('li.admn>ul>li>a').removeClass('open_win');
 				//JQD.init.topmnu();
@@ -843,7 +842,7 @@ var JQD = (function($, window, undefined) {
 				var trash = $('<div id="trash"/>').addClass('trash').append( $('<h3/>').addClass("trash_item")).appendTo($('#desktop'));
 			},
 			//
-			//#JQD.build.iconForm() : Formulaire d'ajout d'icône
+			//#JQD.iconForm() : Formulaire d'ajout d'icône
 			//
 			iconForm: function(opts){
 				var icnFrmCncl = $('<span/>').addClass('bouton').append('<a/>').attr({id:'delete_icon'}).text('Annuler'),
@@ -1285,9 +1284,9 @@ var JQD = (function($, window, undefined) {
 			//
 			itemnu : function( o , p) {
 				var itLi = $('<li>').append( 
-					$('<a href="#"/>').addClass('open_win '+o.rev).html( o.txt ).attr({
+					$('<a href="#"/>').addClass('open_win '+ o.rev).html( o.txt ).attr({
 						'rel': o.url,
-						'rev': p.rev
+						'rev': o.rev
 					}).prepend( $('<img/>').attr('src', p.img) ) 
 				);
 				return itLi;
@@ -2336,19 +2335,22 @@ var JQD = (function($, window, undefined) {
         		setTimeout(function(){
                             JQD.build.btopr( opt );
 
-                            var spipAccueil = $('<iframe/>')
+                            var spipAccueil = $('<iframe/>').hide()
                             .addClass('abs')
-                                .attr({src: u_a,width:'960'}).load(function(){
+                            .attr({src: u_a,width:'960'}).load(function(){
                                // console.info('largeur fenetre: ', $(this).contents().width().length>0  ? 'yex' :'no');
                                 //console.info('largeur document: ', $('#desktop').width());
-                                $(this).css({
+                                $(this).show()
+                                .css({
+                                	opacity:0,
                                     top:'23px',
                                     'min-width': '960px',
                                     width:  u_a.match(/^http/) ? '960px' : $(this).contents().width()+50,
                                     height: '100%',
                                     bottom: '0px',
                                     left : ($('#desktop').width()-$(spipAccueil).width()-50)/2
-                                }).animate({height:'-=24px'},100)
+                                })
+                                .animate({height:'-=24px'},100).animate({opacity:1},1500)
                             }).insertAfter('#desktop');
                             $('#bar_bottom').hide();
                             $('#bar_top').append(

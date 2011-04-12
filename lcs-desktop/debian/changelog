@@ -1,3 +1,12 @@
+lcs-desktop (2.4.8~5) Lcs; urgency=low
+
+  [ Dominique Lepaisant ]
+  * Fix bug when user has lcs_is_admin right
+  * Fix bug on smbwebclient in admin menu
+  * Add icon for smbwebclient
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 21:12:07 +0200
+
 lcs-desktop (2.4.8~4) Lcs; urgency=low
 
   [ Dominique Lepaisant ]

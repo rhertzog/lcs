@@ -75,7 +75,7 @@ if ( $idpers==0 ) {
 	);
 }else{
 	$applis['auth'] = array(
-		"txt" => "Se d&eacute;connecter",
+		"txt" => "Se déconnecter",
 		"url" => "../lcs/logout.php",
 		"rev" => "auth",
 		"img" => "core/images/icons/icon_22_stop.png",
@@ -324,9 +324,9 @@ if ( $idpers!=0 && !pwdMustChange($login)) {
 	if ( $se3netbios != "" && $se3domain != "" && isset($smbwebclient) ) {
 		$applis['smbwc']= array(
 			"txt" => "Client SE3",
-			"url" => $stgo."smbwc",
+			"url" => $stgo."smbwebclient",
 			"rev" => "smbwc",
-			"img" => "core/images/app/lcslogo-smbwc.png",
+			"img" => "core/images/app/lcslogo-smbwebclient.png",
 			"typ" => "srvc",
 			"smn" => ""
 		);
@@ -345,7 +345,7 @@ if ( $idpers!=0 && !pwdMustChange($login)) {
 					'txt' => $r->descr,
 					'url'  => $stgo.$r->name,
 					'rev'  => strtolower($r->name),
-					'img'  => is_file("../".$imgdktp) ? "core/".$imgdktp : $imgplgn,
+					'img'  => is_file("../".$imgdktp) ? "core/".$imgdktp : is_file($imgplgn) ? $imgplgn : "images/app/lcslogo-default.png",
 					"typ" => "appl",
 					'top'  => "",
 					'left' => ""
