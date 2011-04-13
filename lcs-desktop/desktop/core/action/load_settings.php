@@ -75,7 +75,7 @@ if ( $idpers==0 ) {
 	);
 }else{
 	$applis['auth'] = array(
-		"txt" => "Se déconnecter",
+		"txt" => "Se d&eacute;connecter",
 		"url" => "../lcs/logout.php",
 		"rev" => "auth",
 		"img" => "core/images/icons/icon_22_stop.png",
@@ -322,11 +322,11 @@ if ( $idpers!=0 && !pwdMustChange($login)) {
 	}
 	# smbwebclient
 	if ( $se3netbios != "" && $se3domain != "" && isset($smbwebclient) ) {
-		$applis['smbwebclient']= array(
+		$applis['smbwc']= array(
 			"txt" => "Client SE3",
-			"url" => $stgo."smbwebclient",
-			"rev" => "smbwebclient",
-			"img" => "core/images/app/lcslogo-defaut.png",
+			"url" => $stgo."smbwc",
+			"rev" => "smbwc",
+			"img" => "core/images/app/lcslogo-smbwc.png",
 			"typ" => "srvc",
 			"smn" => ""
 		);
@@ -350,26 +350,27 @@ if ( $idpers!=0 && !pwdMustChange($login)) {
 					'top'  => "",
 					'left' => ""
 				);
-				if(strtolower($r->name) == "maintinfo" ) 
-				$applis["maintinfo"]["smn"] = array(
-					"0" => array(
-						"txt" => "Demande de support",
-						"url" =>  "../Plugins/Maintenance/demande_support.php"
-					),
-					"1" => array(
-						"txt" => "En attente",
-						"url" =>  "../Plugins/Maintenance/index.php?mnu_choice=wait"
-	 				),
-					"2" => array(
-						"txt" => "En cours",
-						"url" => "../Plugins/Maintenance/index.php?mnu_choice=myspool"
-					),
-					"3" => array(
-						"txt" => "Historique",
-						"url" =>  "../Plugins/Maintenance/index.php?mnu_choice=wait"
-	 				)
-				);
-				$applis["maintinfo"]["typ"] = "srvc";
+				if(strtolower($r->name) == "maintinfo") {
+					$applis["maintinfo"]["smn"] = array(
+						"0" => array(
+							"txt" => "Demande de support",
+							"url" =>  "../Plugins/Maintenance/demande_support.php"
+						),
+						"1" => array(
+							"txt" => "En attente",
+							"url" =>  "../Plugins/Maintenance/index.php?mnu_choice=wait"
+		 				),
+						"2" => array(
+							"txt" => "En cours",
+							"url" => "../Plugins/Maintenance/index.php?mnu_choice=myspool"
+						),
+						"3" => array(
+							"txt" => "Historique",
+							"url" =>  "../Plugins/Maintenance/index.php?mnu_choice=wait"
+		 				)
+					);
+					$applis["maintinfo"]["typ"] = "srvc";
+				}
 			}
 		}
 	}

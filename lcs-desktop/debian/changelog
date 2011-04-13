@@ -5,8 +5,9 @@ lcs-desktop (2.4.8~5) Lcs; urgency=low
   * Fix bug on smbwebclient in admin menu
   * Add icon for smbwebclient
   * Fix bug on new icon smbwebclent
+  * Fix bug with maintinfo in core/action/load_settings.php
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 24 Sep 2010 05:18:02 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 24 Sep 2010 07:32:48 +0200
 
 lcs-desktop (2.4.8~4) Lcs; urgency=low
 
