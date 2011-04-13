@@ -1286,7 +1286,7 @@ var JQD = (function($, window, undefined) {
 				var itLi = $('<li>').append( 
 					$('<a href="#"/>').addClass('open_win '+ o.rev).html( o.txt ).attr({
 						'rel': o.url,
-						'rev': o.rev
+						'rev': p.rev
 					}).prepend( $('<img/>').attr('src', p.img) ) 
 				);
 				return itLi;
