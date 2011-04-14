@@ -307,7 +307,7 @@ var JQD = (function($, window, undefined) {
 					JQD.save_prefs_dev('PREFS', o.user.name, 'buro');
 				});
 				//init tips (poshytip)
-				$('.bar_top_right a').not('#btrUsrInf, #otBuro_2, #clock').poshytip({
+				$('.bar_top_right>li>a').not('#btrUsrInf, #otBuro_2, #clock').poshytip({
 					className: 'tip-twitter',
 					alignTo: 'target',
 					alignX: 'center',
@@ -1377,7 +1377,7 @@ var JQD = (function($, window, undefined) {
 					 	).prepend(
 					 		$('<a/>').addClass('open_win mail float_right').append( $('<img/>').attr({src: 'core/images/annu/mail.png'}) ).attr({
 					 			href:'../squirrelmail/src/compose.php?send_to=' + uiGp+'@'+oiu.domain,
-					 			title: 'Voir le groupe '+ uiGp
+					 			title: 'Envoyer un message au groupe '+ uiGp
 					 		})
 					 	) 
 					 );
@@ -1473,6 +1473,15 @@ var JQD = (function($, window, undefined) {
 						)
 					)
 				).hide();
+				//init tips (poshytip)
+				uiUl.find('a').poshytip({
+					className: 'tip-twitter',
+					alignTo: 'target',
+					alignX: 'center',
+					alignY: 'bottom',
+					offsetX: 0,
+					offsetY: 5
+				});	
 
 				return uiUl;
 			},
