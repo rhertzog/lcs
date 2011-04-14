@@ -1365,7 +1365,7 @@ var JQD = (function($, window, undefined) {
 					 			href:'../Annu/group.php?filter=' + uiGp,
 					 			title: 'Voir le groupe '+ uiGp
 					 		}).html(uiGp).prepend( $('<img/>').attr({src:'core/images/annu/16/'+uiGp.toLowerCase()+'.png'}) )
-					 	).append(
+					 	).prepend(
 					 		$('<a/>').addClass('open_win mail float_right').append( $('<img/>').attr({src: 'core/images/annu/mail.png'}) ).attr({
 					 			href:'../squirrelmail/src/compose.php?send_to=' + uiGp+'@'+oiu.domain,
 					 			title: 'Voir le groupe '+ uiGp
@@ -1375,7 +1375,7 @@ var JQD = (function($, window, undefined) {
 				}
 				 $.each(oiu.user.infos.group, function( i, v ) {
 				 	if ( i != 'gp' ) {
-				 	uiUlLg.append( $('<li/>').addClass('group_title').html( i ) );
+				 	uiUlLg.append( $('<li/>').addClass('group_title').html( i =='Equipe'? 'Equipe/Classe': i ) );
 				   $.each(oiu.user.infos.group[i], function( ig, vg ) {
 						uiUlLg.append( $('<li/>').addClass('user_link group').append( 
 					 		$('<a/>').addClass('open_win group iRdtq').attr({
@@ -1383,11 +1383,27 @@ var JQD = (function($, window, undefined) {
 					 			title: 'Voir le groupe '+ vg
 					 		}).html( vg.replace(i, '').replace(/_/g, ' ') ).prepend( $('<img/>').attr({src:'core/images/annu/16/'+ i.toLowerCase()+'.png'}) )
 					 	).prepend(
-					 		$('<a/>').addClass('open_win mail float_right').append( $('<img/>').attr({src: 'core/images/annu/mail.png'}) ).attr({
+					 		$('<a/>').addClass('open_win mail float_leftt').append( 
+						 		$('<img/>').attr({
+						 			src:  i=="Equipe"?'core/images/annu/16/equipe_mail.png':'core/images/annu/mail.png'
+						 		}) 
+					 		).attr({
 					 			href:'../squirrelmail/src/compose.php?send_to=' + vg+'@'+oiu.domain,
 					 			title: 'Envoyer un message au groupe '+ vg
 					 		})
-					 	) )			 		
+					 	)
+					 	.prepend( oiu.user.infos.group.gp.name=='Profs' && i=="Equipe" ? $('<a/>').addClass('open_win mail').css({float:'left'}).append( $('<img/>').attr({src: 'core/images/annu/16/classe.png'}) ).attr({
+					 			href:'../Annu/group.php?filter=' + vg.replace(/Equipe/,'Classe '),
+					 			title: 'Voir le groupe '+ vg.replace(/Equipe_/,'Classe ')
+					 		}) : '' ) .prepend( oiu.user.infos.group.gp.name=='Profs' && i=="Equipe" ? $('<a/>').addClass('open_win mail').append( 
+						 		$('<img/>').attr({
+						 			src:  i=="Equipe"?'core/images/annu/24/classe_mail.png':'core/images/annu/mail.png'
+						 		}) 
+					 		).attr({
+					 			href:'../squirrelmail/src/compose.php?send_to=' + vg.replace(/Equipe/,'Classe')+'@'+oiu.domain,
+					 			title: 'Envoyer un message au groupe '+ vg.replace(/Equipe_/,'Classe ')
+					 		}) : '' ) 
+					 	)			 		
 				   });
 				 	}
 				 });
@@ -2355,7 +2371,7 @@ var JQD = (function($, window, undefined) {
                             $('#bar_bottom').hide();
                             $('#bar_top').append(
                                 JQD.build.btopr(opt).append(
-                                    $('<li/>').css({'laft':'-200px',width:'150px'}).html('&nbsp;&nbsp;&nbsp;Se connecter >>>')
+                                    $('<li/>').addClass('connect').css({'left':'-200px',width:'150px'}).html('&nbsp;&nbsp;&nbsp;Se connecter >>')
                                     .click(function(){JQD.logform('../lcs/auth.php')})
                                 )
                             );

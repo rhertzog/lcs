@@ -514,6 +514,16 @@ input.wp_url{
 	min-width: 120px;
 	width: 120px;
 }
+#bar_top ul.bar_top_right img{
+	vertical-align:middle;
+	cursor:pointer;
+}
+#bar_top ul.bar_top_right li,#bar_top ul.bar_top_right li a,#bar_top ul.bar_top_right li a span{
+	cursor:pointer;
+}
+#bar_top ul.bar_top_right li.auth:hover{
+	background: #fff url(../images/gui/bar_top_inv.png) repeat-x left top;
+}
 #date {
 	padding:5px 10px;
 	min-width:120px;

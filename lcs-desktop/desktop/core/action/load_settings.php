@@ -417,10 +417,8 @@ if ( $idpers!=0 ) {
 		$dirIcn ="../data/";
 		$co=$ma=$eq=$di=$cl=0;
 		$tbl_gp = array("Administratifs","Profs","Eleves");
-		$ptrn= array('/Classe/','/Cours/','/Equipe/','/Matière/');
+		$ptrn= array('Classe','Cours','Equipe','Matiere');
 
-		if ($prefs['user']['statut']=='admin') {
-		}
 
 		for ($loop=0; $loop < count ($groups) ; $loop++) {
 			// on recherche les icones attribuees aux groupes
@@ -439,16 +437,20 @@ if ( $idpers!=0 ) {
 			
 			$gex = explode('_', $groups[$loop]["cn"]);
 			$g = preg_replace('/ /','',$gex[0]);
-				if (in_array($groups[$loop]["cn"], $tbl_gp)){ 
+		if ($prefs['user']['statut']=='admin') {
+					$infos['group']['gp']['name'] = 'admins';
+					$infos['group']['Autres'][$loop] = $groups[$loop]["cn"];
+		}
+		else	if (in_array($groups[$loop]["cn"], $tbl_gp)){ 
 					$infos['group']['gp']['name'] = preg_replace('/ /','',$gex[0]);
 			} else 
-				 //	$infos['group'][$g][$loop]['name'] = preg_replace('/ /','',$gex[1]);
+				if( in_array($g, $ptrn) ){ 
 				 	$infos['group'][$g][$loop] = preg_replace('/$g/',' ', $groups[$loop]["cn"]);
-	
-	
+				} else
+					$infos['group']['Autres'][$loop] = $groups[$loop]["cn"];
 			// Teste si n&#233;cessit&#233; d'affichage menu Ouverture/Fermeture Bdd et espace web perso des Eleves
 			if ($groups[$loop]["cn"]=="Eleves") $ToggleAff=1;
-	    	}
+	    }
 	}
 } else {
 	$infos['idpers']="no_".$idpers;
