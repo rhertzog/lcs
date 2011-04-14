@@ -1,12 +1,5 @@
 <?php
-/* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/includes/ldap.inc.php
-   « jLCF » jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice academie de Caen
-   Derniere version : 16/06/2010
-   ============================================= */
+/* Annu/includes/ldap.inc.php Derniere version : 14/04/2011 */
 
 // Fonctions de comparaison utilisees dans la fonction usort
 
@@ -106,16 +99,16 @@ function people_get_variables ($uid, $mode)
           $gecos = $info[0]["gecos"][0];
           $tmp = preg_split ("/,/",$info[0]["gecos"][0],4);
           $ret_people = array (
-              "uid"			=> $info[0]["uid"][0],
-              "nom"			=> stripslashes( utf8_decode($info[0]["sn"][0]) ),
-              "fullname"		=> stripslashes( utf8_decode($info[0]["cn"][0]) ),
-              "prenom"		        => utf8_decode($info[0]["givenname"][0]),
-              "pseudo"		        => utf8_decode($info[0]["initials"][0]),
-              "gecos"                   => utf8_decode($info[0]["gecos"][0]),
-              "email"		        => $info[0]["mail"][0],
-              "tel"			=> $info[0]["telephonenumber"][0],
-              "homedirectory" 	        => $info[0]["homedirectory"][0],
-              "description"	        => utf8_decode($info[0]["description"][0]),
+              "uid"				=> $info[0]["uid"][0],
+              "nom"				=> stripslashes( $info[0]["sn"][0] ),
+              "fullname"		=> stripslashes( $info[0]["cn"][0] ),
+              "prenom"			=> $info[0]["givenname"][0],
+              "pseudo"			=> $info[0]["initials"][0],
+              "gecos"			=> $info[0]["gecos"][0],
+              "email"			=> $info[0]["mail"][0],
+              "tel"				=> $info[0]["telephonenumber"][0],
+              "homedirectory"	=> $info[0]["homedirectory"][0],
+              "description"		=> $info[0]["description"][0],
               "shell"			=> $info[0]["loginshell"][0],
               "sexe"			=> $tmp[2]
             );
@@ -134,10 +127,9 @@ function people_get_variables ($uid, $mode)
               //if ($info[$loop]["member"][0] == "") $typegr="posixGroup"; else $typegr="groupOfNames";
               $typegr="posixGroup";
               $ret_group[$loop] = array (
-                "cn"           => $info[$loop]["cn"][0],
-                //"owner"        => $info[$loop]["owner"][0],
-                "description"  => utf8_decode($info[$loop]["description"][0]),
-                "type" => $typegr
+                "cn"			=> $info[$loop]["cn"][0],
+                "description"	=> $info[$loop]["description"][0],
+                "type" 			=> $typegr
               );
             }
             usort($ret_group, "cmp_cn");
@@ -219,9 +211,9 @@ function search_people ($filter) {
         if ( $info["count"]) {
           for ($loop=0; $loop<$info["count"];$loop++) {
             $ret[$loop] = array (
-              "uid"       => $info[$loop]["uid"][0],
-              "fullname"  => utf8_decode($info[$loop]["cn"][0]),
-	      "name"	=> utf8_decode($info[$loop]["sn"][0])
+				"uid"		=> $info[$loop]["uid"][0],
+				"fullname"  => $info[$loop]["cn"][0],
+				"name"		=> $info[$loop]["sn"][0]
             );
           }
         }
@@ -417,7 +409,7 @@ function search_groups ($filter) {
         if ( $info["count"]) {
           for ($loop=0; $loop < $info["count"]; $loop++) {
             $groups[$loop]["cn"] = $info[$loop]["cn"][0];
-            $groups[$loop]["description"] = utf8_decode($info[$loop]["description"][0]);
+            $groups[$loop]["description"] = $info[$loop]["description"][0];
             /* Recherche de posixGroup ou groupOfNames
             for ($i=0; $i < $info[$loop]["objectclass"]["count"]; $i++) {
               if  ($info[$loop]["objectclass"][$i] != "top") $type =  $info[$loop]["objectclass"][$i];
@@ -468,15 +460,15 @@ function search_people_groups ($uids,$filter,$order) {
             $gecos = $info[0]["gecos"][0];
             $tmp = preg_split ("/,/",$gecos,4);
             $ret[$init] = array (
-              "uid"       => $uids[$loop]["uid"],
-              "fullname"  => utf8_decode($info[0]["cn"][0]),
-	      "name"	  => utf8_decode($info[0]["sn"][0]),
-              "sexe"      => $tmp[2],
-              "owner"     => $uids[$loop]["owner"],
-              "group"     => $uids[$loop]["group"],
-              "cat"       => $uids[$loop]["cat"],
-              "prof"      => $uids[$loop]["prof"],
-	      "gecos"     => $gecos
+				"uid"       => $uids[$loop]["uid"],
+				"fullname"  => $info[0]["cn"][0],
+				"name"		=> $info[0]["sn"][0],
+				"sexe"      => $tmp[2],
+				"owner"     => $uids[$loop]["owner"],
+				"group"     => $uids[$loop]["group"],
+				"cat"       => $uids[$loop]["cat"],
+				"prof"      => $uids[$loop]["prof"],
+				"gecos"     => $gecos
             );
             $init++;
           }
@@ -562,7 +554,7 @@ function search_machines ($filter,$branch) {
             if ("$branch"=="computers") {
                 $computers[$loop]["ipHostNumber"] = $info[$loop]["iphostnumber"][0];
                 $computers[$loop]["l"] = $info[$loop]["l"][0];
-                $computers[$loop]["description"] = utf8_decode($info[$loop]["description"][0]);
+                $computers[$loop]["description"] = $info[$loop]["description"][0];
             }
           }
         }
