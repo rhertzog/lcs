@@ -33,12 +33,14 @@ include("core/includes/functions.inc.php");
 <link href="core/css/desktop.css" rel="stylesheet" />
 <link href="core/css/ui.notify.css" t ype="text/css" rel="stylesheet" />
 <link href="core/css/jquery.context_menu.css" rel="stylesheet" type="text/css" />
+<link href="core/css/tip-twitter/tip-twitter.css" rel="stylesheet" type="text/css" />
 <script src="../libjs/jquery/jquery.js"></script>
 <script src="core/js/jquery.desktop.js"></script>
 <script src="core/js/i18n/desktop_fr.js"></script>
 <script src="../libjs/jquery-ui/jquery-ui.js"></script>
 <script src="core/js/jquery.notify.min.js"></script>
 <script src="core/js/jquery.context_menu.js"></script>
+<script src="core/js/jquery.poshytip.min.js"></script>
 <link rel="shortcut-icon" href="../lcs/images/favicon.ico">
 <!--[if lt IE 8]>
 	<link href="core/finder/ui.finder.ie.css" rel="stylesheet" media="screen" type="text/css" />

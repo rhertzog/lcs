@@ -306,6 +306,15 @@ var JQD = (function($, window, undefined) {
 				$('.bar_top_right a.save').click(function(){
 					JQD.save_prefs_dev('PREFS', o.user.name, 'buro');
 				});
+				//init tips (poshytip)
+				$('.bar_top_right a').not('#btrUsrInf, #otBuro_2, #clock').poshytip({
+					className: 'tip-twitter',
+					alignTo: 'target',
+					alignX: 'center',
+					alignY: 'bottom',
+					offsetX: 0,
+					offsetY: 10
+				});	
 			},
 			//
 			//#JQD.init.icons()
@@ -1393,7 +1402,7 @@ var JQD = (function($, window, undefined) {
 					 		})
 					 	)
 					 	.prepend( oiu.user.infos.group.gp.name=='Profs' && i=="Equipe" ? $('<a/>').addClass('open_win mail').css({float:'left'}).append( $('<img/>').attr({src: 'core/images/annu/16/classe.png'}) ).attr({
-					 			href:'../Annu/group.php?filter=' + vg.replace(/Equipe/,'Classe '),
+					 			href:'../Annu/group.php?filter=' + vg.replace(/Equipe/,'Classe'),
 					 			title: 'Voir le groupe '+ vg.replace(/Equipe_/,'Classe ')
 					 		}) : '' ) .prepend( oiu.user.infos.group.gp.name=='Profs' && i=="Equipe" ? $('<a/>').addClass('open_win mail').append( 
 						 		$('<img/>').attr({
