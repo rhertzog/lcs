@@ -9,8 +9,9 @@ lcs-desktop (2.4.8~5) Lcs; urgency=low
   * Fix bugs in the display of infos user
   * Add icon appli bcdiweb
   * Add icon annu for 'other' groups  
+  * Modify style of bar-top right
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 24 Sep 2010 21:45:36 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 24 Sep 2010 22:32:53 +0200
 
 lcs-desktop (2.4.8~4) Lcs; urgency=low
 

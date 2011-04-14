@@ -521,7 +521,7 @@ input.wp_url{
 #bar_top ul.bar_top_right li,#bar_top ul.bar_top_right li a,#bar_top ul.bar_top_right li a span{
 	cursor:pointer;
 }
-#bar_top ul.bar_top_right li.auth:hover{
+#bar_top ul.bar_top_right li:hover{
 	background: #fff url(../images/gui/bar_top_inv.png) repeat-x left top;
 }
 #date {

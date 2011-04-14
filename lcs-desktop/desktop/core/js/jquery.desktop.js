@@ -641,7 +641,7 @@ var JQD = (function($, window, undefined) {
 				}
 				var btrAuth = $('<a/>').addClass('auth');
 				if ( $('img.auth').length==0 ) 
-				$('<li/>').append( 
+				$('<li/>').addClass('auth').append( 
 					btrAuth.attr({
 						href:opts.applis.auth.url, 
 						title:opts.applis.auth.txt
@@ -2370,11 +2370,11 @@ var JQD = (function($, window, undefined) {
                             }).insertAfter('#desktop');
                             $('#bar_bottom').hide();
                             $('#bar_top').append(
-                                JQD.build.btopr(opt).append(
-                                    $('<li/>').addClass('connect').css({'left':'-200px',width:'150px'}).html('&nbsp;&nbsp;&nbsp;Se connecter >>')
+                                JQD.build.btopr(opt)
+                            ).find('a.auth').prepend(
+                                    $('<span/>').addClass('connect').html('&nbsp;&nbsp;&nbsp;Se connecter >>')
                                     .click(function(){JQD.logform('../lcs/auth.php')})
-                                )
-                            );
+                                );
 			},100)
                     }
                     else JQD.logform('../lcs/auth.php') ;
