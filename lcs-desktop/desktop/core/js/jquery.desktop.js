@@ -1108,7 +1108,7 @@ var JQD = (function($, window, undefined) {
 					var ifn = typeof admOrNo[itName]==="undefined" ? item.groups : admOrNo[itName].groups,
 					uTxt = 'de vos ressources personnelles', gTxt = ' le partage de ce lien avec les groupes :',
 					me = $('<p/>'), lgUl = $('<ul id="lgIcn"/>');
-					console.log(ifn);
+					//console.log(ifn);
 					var dialogCfrm=$('<div/>').attr({id:'dialogCfrm',title:'Supprimer un lien partag&eacute;'}).append(
 						$('<div/>').css({'text-align':'left'}).text('Vous allez supprimer').prepend($('<span/>').addClass('ui-icon ui-icon-alert').css({float:'left', margin:'0 7px 0 0'}) ).append( 
 							$('<div/>').html('<strong>'+item.text() +'</strong>')
