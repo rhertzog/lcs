@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 include_spip('inc/forum');
@@ -174,7 +174,7 @@ function controle_forum_boucle($row, $args) {
 		$suite .= "\n<div style='text-align: left' class='serif'><b><a href='$forum_url_site'>$forum_nom_site</a></b></div>";
 
 	return 	"\n<div><br /><a id='forum$id_forum'></a></div>" .
-	  debut_cadre_thread_forum("", true, "", typo($forum_titre)) .
+	  debut_cadre_forum("", true, "", typo($forum_titre)) .
 	  "<div$style>" .
 	  date_interface($forum_date_heure) .
 	  safehtml("<span class='arial2'> / <b>$forum_auteur</b></span>") .
@@ -183,7 +183,7 @@ function controle_forum_boucle($row, $args) {
 	  afficher_forum_mots($id_forum) .
 	  join(', ', $documents) .
 	  "<div class='nettoyeur'></div></div>".
-	  fin_cadre_thread_forum(true);
+	  fin_cadre_forum(true);
 }
 
 //
@@ -289,7 +289,7 @@ function exec_controle_forum_args($id_rubrique, $type, $debut, $pas, $enplus, $r
 		echo debut_droite('', true);
 		echo pipeline('affiche_milieu',array('args'=>array('exec'=>'controle_forum', 'type'=>$type),'data'=>''));
 
-		echo $formulaire_recherche . "<br class='nettoyeur' />";
+		echo $formulaire_recherche . "<div class='nettoyeur'></div>";
 		echo $res; 
 		echo fin_gauche(), fin_page();
 	}

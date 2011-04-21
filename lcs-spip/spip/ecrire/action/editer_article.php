@@ -3,22 +3,24 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@action_editer_article_dist
-function action_editer_article_dist() {
+function action_editer_article_dist($arg=null) {
 
-	$securiser_action = charger_fonction('securiser_action', 'inc');
-	$arg = $securiser_action();
+	if (is_null($arg)){
+		$securiser_action = charger_fonction('securiser_action', 'inc');
+		$arg = $securiser_action();
+	}
 
-	// si id_article n'est pas un nombre, c'est une creation 
+	// si id_article n'est pas un nombre, c'est une creation
 	// mais on verifie qu'on a toutes les donnees qu'il faut.
 	if (!$id_article = intval($arg)) {
 		$id_parent = _request('id_parent');
@@ -28,13 +30,13 @@ function action_editer_article_dist() {
 			redirige_url_ecrire();
 		}
 		if (($id_article = insert_article($id_parent)) > 0)
-		
+
 		# cf. GROS HACK ecrire/inc/getdocument
 		# rattrapper les documents associes a cet article nouveau
 		# ils ont un id = 0-id_auteur
 
 			sql_updateq("spip_documents_liens", array("id_objet" => $id_article), array("id_objet = ".(0-$id_auteur),"objet='article'"));
-	} 
+	}
 
 	// Enregistre l'envoi dans la BD
 	if ($id_article > 0) $err = articles_set($id_article);
@@ -42,18 +44,18 @@ function action_editer_article_dist() {
 	if (_request('redirect')) {
 		$redirect = parametre_url(urldecode(_request('redirect')),
 			'id_article', $id_article, '&') . $err;
-	
+
 		include_spip('inc/headers');
 		redirige_par_entete($redirect);
 	}
-	else 
+	else
 		return array($id_article,$err);
 }
 
 // Appelle toutes les fonctions de modification d'un article
 // $err est de la forme '&trad_err=1'
 // http://doc.spip.org/@articles_set
-function articles_set($id_article) {
+function articles_set($id_article, $set=null) {
 	$err = '';
 
 	// unifier $texte en cas de texte trop long
@@ -64,10 +66,10 @@ function articles_set($id_article) {
 		'surtitre', 'titre', 'soustitre', 'descriptif',
 		'nom_site', 'url_site', 'chapo', 'texte', 'ps'
 	) as $champ)
-		$c[$champ] = _request($champ);
+		$c[$champ] = _request($champ,$set);
 
-	if (_request('changer_virtuel') == 'oui') {
-		$r = _request('virtuel');
+	if (_request('changer_virtuel',$set) == 'oui') {
+		$r = _request('virtuel',$set);
 		$c['chapo'] = (strlen($r) ? '='.$r : '');
 	}
 
@@ -79,11 +81,11 @@ function articles_set($id_article) {
 	foreach (array(
 		'date', 'statut', 'id_parent'
 	) as $champ)
-		$c[$champ] = _request($champ);
+		$c[$champ] = _request($champ,$set);
 	$err .= instituer_article($id_article, $c);
 
 	// Un lien de trad a prendre en compte
-	$err .= article_referent($id_article, array('lier_trad' => _request('lier_trad')));
+	$err .= article_referent($id_article, array('lier_trad' => _request('lier_trad',$set)));
 
 	return $err;
 }
@@ -120,19 +122,41 @@ function insert_article($id_rubrique) {
 		$lang = $lang_rub ? $lang_rub : $GLOBALS['meta']['langue_site'];
 	}
 
-	$id_article = sql_insertq("spip_articles", array(
+	$champs = array(
 		'id_rubrique' => $id_rubrique,
 		'id_secteur' =>  $id_secteur,
 		'statut' =>  'prepa',
 		'date' => date('Y-m-d H:i:s'),
-		'accepter_forum' => 
+		'accepter_forum' =>
 			substr($GLOBALS['meta']['forums_publics'],0,3),
 		'lang' => $lang,
-		'langue_choisie' =>$choisie));
+		'langue_choisie' =>$choisie);
+
+	// Envoyer aux plugins
+	$champs = pipeline('pre_insertion',
+		array(
+			'args' => array(
+				'table' => 'spip_articles',
+			),
+			'data' => $champs
+		)
+	);
+
+	$id_article = sql_insertq("spip_articles", $champs);
+
+	pipeline('post_insertion',
+		array(
+			'args' => array(
+				'table' => 'spip_articles',
+				'id_objet' => $id_article
+			),
+			'data' => $champs
+		)
+	);
 
 	// controler si le serveur n'a pas renvoye une erreur
-	if ($id_article > 0) 
-		sql_insertq('spip_auteurs_articles', array('id_auteur' => $GLOBALS['visiteur_session']['id_auteur'], 'id_article' => $id_article));;
+	if ($id_article > 0 AND $GLOBALS['visiteur_session']['id_auteur'])
+		sql_insertq('spip_auteurs_articles', array('id_auteur' => $GLOBALS['visiteur_session']['id_auteur'], 'id_article' => $id_article));
 
 	return $id_article;
 }
@@ -203,7 +227,8 @@ function instituer_article($id_article, $c, $calcul_rub=true) {
 			'args' => array(
 				'table' => 'spip_articles',
 				'id_objet' => $id_article,
-				'action'=>'instituer'
+				'action'=>'instituer',
+				'statut_ancien' => $statut_ancien,
 			),
 			'data' => $champs
 		)
@@ -233,7 +258,8 @@ function instituer_article($id_article, $c, $calcul_rub=true) {
 			'args' => array(
 				'table' => 'spip_articles',
 				'id_objet' => $id_article,
-				'action'=>'instituer'
+				'action'=>'instituer',
+				'statut_ancien' => $statut_ancien,
 			),
 			'data' => $champs
 		)
@@ -271,7 +297,7 @@ function editer_article_heritage($id_article, $id_rubrique, $statut, $champs, $c
 
 	sql_updateq('spip_articles', $champs, "id_article=$id_article");
 
-	// Changer le statut des rubriques concernees 
+	// Changer le statut des rubriques concernees
 
 	if ($cond) {
 		include_spip('inc/rubriques');

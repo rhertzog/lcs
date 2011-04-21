@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 
 //
@@ -26,7 +26,7 @@ function inc_config_dist() {
 // http://doc.spip.org/@liste_metas
 function liste_metas()
 {
-	return array(
+	return pipeline('configurer_liste_metas', array(
 		'nom_site' => _T('info_mon_site_spip'),
 		'adresse_site' => preg_replace(",/$,", "", url_de_base()),
 		'descriptif_site' => '',
@@ -103,7 +103,7 @@ function liste_metas()
 		'auto_compress_http'=>'non',
 		'auto_compress_js'=>'non',
 		'auto_compress_css'=>'non'
-	);
+	));
 }
 
 // mets les meta a des valeurs conventionnelles quand elles sont vides
@@ -112,6 +112,12 @@ function liste_metas()
 // http://doc.spip.org/@actualise_metas
 function actualise_metas($liste_meta)
 {
+	$meta_serveur =
+		array('version_installee','adresse_site','alea_ephemere_ancien','alea_ephemere','alea_ephemere_date','langue_site','langues_proposees','date_calcul_rubriques','derniere_modif','optimiser_table','drapeau_edition','creer_preview','taille_preview','creer_htpasswd','creer_htaccess','gd_formats_read','gd_formats',
+	'netpbm_formats','formats_graphiques','image_process','plugin_header','plugin');
+	// verifier le impt=non
+	sql_updateq('spip_meta',array('impt'=>'non'),sql_in('nom',$meta_serveur));
+
 	while (list($nom, $valeur) = each($liste_meta)) {
 		if (!$GLOBALS['meta'][$nom]) {
 			ecrire_meta($nom, $valeur);
@@ -143,7 +149,7 @@ function avertissement_config() {
 // http://doc.spip.org/@bouton_radio
 function bouton_radio($nom, $valeur, $titre, $actif = false, $onClick="") {
 	static $id_label = 0;
-	
+
 	if (strlen($onClick) > 0) $onClick = " onclick=\"$onClick\"";
 	$texte = "<input type='radio' name='$nom' value='$valeur' id='label_${nom}_${id_label}'$onClick";
 	if ($actif) {
@@ -171,7 +177,7 @@ function afficher_choix($nom, $valeur_actuelle, $valeurs, $sep = "<br />") {
 //
 
 // http://doc.spip.org/@appliquer_modifs_config
-function appliquer_modifs_config() {
+function appliquer_modifs_config($purger_skel=false) {
 
 	if (($i = _request('adresse_site'))!==NULL){
 		if (!strlen($i)) {$GLOBALS['profondeur_url']=_DIR_RESTREINT?0:1;$i = url_de_base();}
@@ -214,8 +220,10 @@ function appliquer_modifs_config() {
 
 	// Modification du reglage accepter_inscriptions => vider le cache
 	// (pour repercuter la modif sur le panneau de login)
-	if ($i = _request('accepter_inscriptions')
-	AND $i != $GLOBALS['meta']['accepter_inscriptions']) {
+	if (($i = _request('accepter_inscriptions')
+		AND $i != $GLOBALS['meta']['accepter_inscriptions'])
+		OR ($i = _request('accepter_visiteurs')
+		AND $i != $GLOBALS['meta']['accepter_visiteurs'])) {
 		include_spip('inc/invalideur');
 		suivre_invalideur("1"); # tout effacer
 	}
@@ -234,7 +242,7 @@ function appliquer_modifs_config() {
 			ecrire_meta('langue_site', $lang);
 		}
 		// le test a defait ca:
-		utiliser_langue_visiteur(); 
+		utiliser_langue_visiteur();
 	}
 
 	if ($purger_skel) {

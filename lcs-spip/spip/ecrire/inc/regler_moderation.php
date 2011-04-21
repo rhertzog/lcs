@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // Recuperer le reglage des forums publics de l'article x
 // http://doc.spip.org/@get_forums_publics
@@ -61,13 +61,13 @@ function inc_regler_moderation_dist($id_article, $script, $args) {
 	$res .= "\n\t<label for='change_accepter_forum'>"
 	. _T('info_fonctionnement_forum') ."</label>"
 	. "\n\t<select name='change_accepter_forum' id='change_accepter_forum'
-		class='fondl spip_xx-small'
+		class='spip_xx-small'
 		onchange=\"findObj_forcer('valider_regler_moderation_$id_article').style.visibility='visible';\"
 		>"
 	. $opt
 	."\n\t</select><br />\n";
 
-	$atts = " style='float: $spip_lang_right' id='valider_regler_moderation_$id_article' class='fondo visible_au_chargement spip_xx-small'";
+	$atts = " style='float: $spip_lang_right' id='valider_regler_moderation_$id_article' class='visible_au_chargement'";
 
 	$res = ajax_action_post('regler_moderation', $id_article, $script, $args, $res,_T('bouton_changer'), $atts);
 

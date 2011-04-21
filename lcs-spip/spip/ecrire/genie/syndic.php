@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 include_spip('inc/syndic');
 
 // http://doc.spip.org/@genie_syndic_dist
@@ -171,7 +171,7 @@ function inserer_article_syndique ($data, $now_id_syndic, $statut, $url_site, $u
 		$ajout = $id_syndic_article = sql_insertq('spip_syndic_articles',
 				array('id_syndic' => $now_id_syndic,
 				'url' => $le_lien,
-				'date' => date("Y-m-d H:i:s", $data['date']),
+				'date' => date("Y-m-d H:i:s", $data['date'] ? $data['date'] : $data['lastbuilddate']),
 				'statut'  => $statut));
 		if (!$ajout) return;
 	}
@@ -196,7 +196,7 @@ function inserer_article_syndique ($data, $now_id_syndic, $statut, $url_site, $u
 		// mode "resume"
 		$desc = strlen($data['descriptif']) ?
 			$data['descriptif'] : $data['content'];
-		$desc = couper(trim(textebrut($desc)), 300);
+		$desc = couper(trim_more(textebrut($desc)), 300);
 	} else {
 		// mode "full syndication"
 		// choisir le contenu pertinent
@@ -244,5 +244,17 @@ function inserer_article_syndique ($data, $now_id_syndic, $statut, $url_site, $u
 	);
 
 	return $ajout;
+}
+
+/**
+ * Nettoyer les contenus de flux qui utilisent des espaces insecables en debut
+ * pour faire un retrait.
+ * Peut etre sous la forme de l'entite &nbsp; ou en utf8 \xc2\xa0
+ */
+function trim_more($texte){
+	$texte = trim($texte);
+	// chr(194)chr(160)
+	$texte = preg_replace(",^(\s|(&nbsp;)|(\xc2\xa0))+,ums","",$texte);
+	return  $texte;
 }
 ?>

@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // demande/verifie le droit de creation de repertoire par le demandeur;
 // memorise dans les meta que ce script est en cours d'execution
@@ -41,7 +41,7 @@ function inc_admin_dist($script, $titre, $comment='', $anonymous=false)
 // pour eviter des executions en parallele, notamment apres Time-Out.
 // Cette meta contient le nom du script et, a un hachage pres, du demandeur.
 // Le code de ecrire/index.php devie toute demande d'execution d'un script
-// vers le script d'administration indique par cette meta si elle est là.
+// vers le script d'administration indique par cette meta si elle est lï¿½.
 // Au niveau de la fonction inc_admin, on controle la meta 'admin'.
 // Si la meta n'est pas la, 
 //	c'est le debut on la cree.
@@ -71,7 +71,12 @@ function admin_verifie_session($script, $anonymous=false) {
 			}
 		}
 	}
-	spip_log("admin $pref" . ($valeur ? " (reprise)" : ' (init)'));
+	$journal = "spip";
+	if (autoriser('configurer')) // c'est une action webmestre, soit par ftp soit par statut webmestre
+		$journal = 'webmestre';
+	// on pourrait statuer automatiquement les webmestres a l'init d'une action auth par ftp ... ?
+
+	spip_log("admin $pref" . ($valeur ? " (reprise)" : ' (init)'),$journal);
 	return '';
 }
 

@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@aff_statistique_visites_popularite
 function aff_statistique_visites_popularite($serveur, $id_article, &$classement, &$liste){
@@ -45,16 +45,15 @@ function aff_statistique_visites_popularite($serveur, $id_article, &$classement,
 	}
 
 	return !$out ? '' : (
-		"<br />\n"
-		."<div class='iconeoff' style='padding: 5px'>\n"
-		."<div class='verdana1 spip_x-small'>"
+		"<div class='cadre cadre-e'>\n"
+		."<div class='cadre_padding verdana1 spip_x-small'>"
 		.typo(_T('info_visites_plus_populaires'))
 		."<ul class='classement'>"
 		.$out
 
 		."</ul>"
-
-		."<b>"._T('info_comment_lire_tableau')."</b><br />"._T('texte_comment_lire_tableau')
+		
+		."<div class='arial11'><b>"._T('info_comment_lire_tableau')."</b><br />"._T('texte_comment_lire_tableau')."</div>"
 
 		."</div>"
 		."</div>");
@@ -101,8 +100,8 @@ function aff_statistique_visites_par_visites($serveur='', $id_article=0, $classe
 
 	if (!$res) return '';
 
-	return "<br /><div class='iconeoff' style='padding: 5px;'>"
-	  . "<div style='overflow:hidden;' class='verdana1 spip_x-small'>"
+	return "<div class='cadre cadre-e' style='padding: 5px;'>"
+	  . "<div class='cadre_padding verdana1 spip_x-small'>"
 	  . typo(_T('info_affichier_visites_articles_plus_visites'))
 	  . "<ul class='classement'>"
 	  . $res
@@ -152,7 +151,7 @@ function cadre_stat($stats, $table, $id_article)
 // http://doc.spip.org/@statistiques_collecte_date
 function statistiques_collecte_date($count, $date, $table, $where, $serveur)
 {
-	$result = sql_select("$count AS n, $date AS d", $table, $where, 'd', '', '','', $serveur);
+	$result = sql_select("$count AS n, $date AS d", $table, $where, 'd', 'd', '','', $serveur);
 	$log = array();
 
 	while ($r = sql_fetch($result,$serveur)) $log[$r['d']] = $r['n'];
@@ -299,18 +298,18 @@ function statistiques_zoom($id_article, $largeur_abs, $date_premier, $date_debut
 	$pour_article = $id_article ? "&id_article=$id_article" : '';
 
 	$zoom = '';
-
+	
 	if ($date_premier < $date_debut)
-		$zoom= http_href(generer_url_ecrire("statistiques_visites","duree=$duree_plus$pour_article"),
+		$zoom= lien_ou_expose(generer_url_ecrire("statistiques_visites","duree=$duree_plus$pour_article"),
 			 http_img_pack('loupe-moins.gif',
 				       _T('info_zoom'). '-',
-				       "style='border: 0px; vertical-align: middle;'"),
+				       "style='border: 0px; vertical-align: middle;'"), false, '',
 			 "&nbsp;");
 	if ( (($date_fin - $date_debut) / (24*3600)) > 30)
-		$zoom .= http_href(generer_url_ecrire("statistiques_visites","duree=$duree_moins$pour_article"),
+		$zoom .= lien_ou_expose(generer_url_ecrire("statistiques_visites","duree=$duree_moins$pour_article"),
 			 http_img_pack('loupe-plus.gif',
 				       _T('info_zoom'). '+',
-				       "style='border: 0px; vertical-align: middle;'"),
+				       "style='border: 0px; vertical-align: middle;'"), false, '',
 			 "&nbsp;");
 
 	return $zoom;
@@ -487,7 +486,8 @@ function statistiques_par_mois($entrees, $script){
 
 	$all = '';
 
-	while (list($key, $value) = each($entrees)) {
+	foreach($entrees as $key=>$value) {
+		$key = substr($key,0,4).'-'.substr($key,4,2);
 		$mois = affdate_mois_annee($key);
 		if ($decal == 30) $decal = 0;
 		$decal ++;
@@ -601,7 +601,7 @@ function statistiques_signatures_dist($duree, $interval, $type, $id_article, $se
 	} else $res = '';
 
 	$mois = statistiques_collecte_date( "COUNT(*)",
-		"FROM_UNIXTIME(UNIX_TIMESTAMP(date_time),'%Y-%m')",
+		"DATE_FORMAT(date_time,'%Y%m')",
 		"spip_signatures",
 		"date_time > DATE_SUB(".sql_quote(date('Y-m-d H:i:s')).",INTERVAL 2700 DAY)"
 		. (" AND id_article=$id_article"),

@@ -3,17 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;	#securite
-
-include_spip('inc/autoriser');
-include_spip('base/abstract_sql');
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@balise_FORMULAIRE_ADMIN
 function balise_FORMULAIRE_ADMIN ($p) {
@@ -23,7 +20,7 @@ function balise_FORMULAIRE_ADMIN ($p) {
 # on ne peut rien dire au moment de l'execution du squelette
 
 // http://doc.spip.org/@balise_FORMULAIRE_ADMIN_stat
-function balise_FORMULAIRE_ADMIN_stat($args, $filtres) {
+function balise_FORMULAIRE_ADMIN_stat($args, $context_compil) {
 	return $args;
 }
 
@@ -48,7 +45,7 @@ function balise_FORMULAIRE_ADMIN_dyn($float='', $debug='') {
 			return '';
 	} else {
 		if ($dejafait) {
-			$res = '';
+			if (empty($debug['sourcefile'])) return '';
 			foreach($debug['sourcefile'] as $k => $v) {
 				if (strpos($v,'administration.') !== false)
 					return $debug['resultat'][$k . 'tout'];
@@ -56,6 +53,10 @@ function balise_FORMULAIRE_ADMIN_dyn($float='', $debug='') {
 			return '';
 		}
 	}
+
+	include_spip('inc/autoriser');
+	include_spip('base/abstract_sql');
+
 
 	$dejafait = true;
 
@@ -72,6 +73,7 @@ function balise_FORMULAIRE_ADMIN_dyn($float='', $debug='') {
 	$env['calcul'] = (_request('var_mode') ? 'recalcul' : 'calcul');
 	$env['debug'] = $var_preview ? "" : admin_debug();		
 	$env['analyser'] = (!$env['debug'] AND !$GLOBALS['xhtml']) ? '' : admin_valider();
+	$env['inclure'] = ($GLOBALS['var_inclure']?'inclure':'');
 
 	if (!$use_cache)
 		$env['use_cache'] = ' *';
@@ -79,6 +81,8 @@ function balise_FORMULAIRE_ADMIN_dyn($float='', $debug='') {
 	if (isset($debug['validation'])) {
 		$env['xhtml_error'] = $debug['validation'];
 	}
+	
+	$env['_pipeline'] = 'formulaire_admin';
 
 	return array('formulaires/administration', 0, $env);
 }
@@ -98,10 +102,12 @@ function admin_objet()
 	as $id => $obj) {
 		if (is_int($id)) $id = $obj;
 		$_id_type = id_table_objet($id);
-		if ($id_type = $GLOBALS['contexte'][$_id_type]) {
+		if (isset($GLOBALS['contexte'][$_id_type]) AND $id_type = $GLOBALS['contexte'][$_id_type]) {
 			$id_type = sql_getfetsel($_id_type, table_objet_sql($id), "$_id_type=".intval($id_type));
 			if ($id_type) {
 				$env[$_id_type] = $id_type;
+				$env['objet'] = $id;
+				$env['id_objet'] = $id_type;
 				$g = 'generer_url_ecrire_'.$obj;
 				$env['voir_'.$obj] = 
 				  str_replace('&amp;', '&', $g($id_type, '','', 'prop'));
@@ -177,10 +183,12 @@ function admin_valider()
 // http://doc.spip.org/@admin_debug
 function admin_debug()
 {
-	return (($GLOBALS['forcer_debug']
-			OR $GLOBALS['bouton_admin_debug']
+	return ((
+			(isset($GLOBALS['forcer_debug']) AND $GLOBALS['forcer_debug'])
+			OR (isset($GLOBALS['bouton_admin_debug']) AND $GLOBALS['bouton_admin_debug'])
 			OR (
-				$GLOBALS['var_mode'] == 'debug'
+				isset($GLOBALS['var_mode'])
+				AND $GLOBALS['var_mode'] == 'debug'
 				AND $_COOKIE['spip_debug']
 			)
 		) AND autoriser('debug')
@@ -188,6 +196,8 @@ function admin_debug()
 	  ? parametre_url(self(),'var_mode', 'debug', '&'): '';
 }
 
+
+// Tant que les stats ne sont pas passees dans une extension, il faut les traiter ici
 // http://doc.spip.org/@admin_stats
 function admin_stats($id, $id_type, $var_preview)
 {
@@ -206,4 +216,6 @@ function admin_stats($id, $id_type, $var_preview)
 	}
 	return false;
 }
+
+
 ?>

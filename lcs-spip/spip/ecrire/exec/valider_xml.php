@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 include_spip('inc/presentation');
 
 // Script de validation XML selon une DTD
@@ -29,13 +29,15 @@ function exec_valider_xml_dist()
 	if (!autoriser('sauvegarder')) {
 		include_spip('inc/minipres');
 		echo minipres();
-	} else valider_xml_ok(_request('var_url'), _request('ext'));
+	} else valider_xml_ok(_request('var_url'), _request('ext'), intval(_request('limit')), _request('recur'));
 }
 
 // http://doc.spip.org/@valider_xml_ok
-function valider_xml_ok($url, $req_ext)
+function valider_xml_ok($url, $req_ext, $limit, $rec)
 {
 	$url = urldecode($url);
+	$rec = !$rec ? false : array();
+	if (!$limit) $limit = 200;
 	$titre = _T('analyse_xml');
 	if (!$url) {
 		$url_aff = 'http://';
@@ -43,31 +45,42 @@ function valider_xml_ok($url, $req_ext)
 		$texte = $bandeau = $err = '';
 	} else {
 		include_spip('inc/distant');
-		include_spip('public/debug');
+
 		if (is_dir($url)) {
 			$dir = (substr($url,-1,1) === '/') ? $url : "$url/";
-			$ext = (!$req_ext) ? 'php' : $req_ext;
-			$files = preg_files($dir,  $ext . '$',200,false);
-			if (!$files AND !$req_ext) {
-				$ext = 'html';
-				$files = preg_files($dir, "$ext$", 200,false);
+			$ext = !preg_match('/^[.*\w]+$/', $req_ext) ? 'php' : $req_ext;
+			$files = preg_files($dir,  "$ext$", $limit, $rec);
+			if (!$files AND $ext!=='html') {
+				$files = preg_files($dir, 'html$', $limit, $rec);
+				if ($files) $ext = 'html';
 			}
-			if ($files)
+			if ($files) {
 				$res = valider_dir($files, $ext, $url);
-			else $res = _T('texte_vide');
-			$bandeau = $dir . '*' . $ext;
+				list($err, $res) = valider_resultats($res, $ext === 'html');
+				$err = ' (' . $err . '/' . count($files) .')';
+			} else {
+				$res = _T('texte_vide');
+				$err = '';
+			}
+			$bandeau = $dir . '*' . $ext . $err;
 		} else {
-			if (preg_match('/^([^?]*)[?]([0-9a-z_]+)=(.*)$/', $url, $r)) {
-				list(,$server, $dir, $script) = $r;
+			if (preg_match('@^((?:[.]/)?[^?]*)[?]([0-9a-z_]+)=([^&]*)(.*)$@', $url, $r)) {
+			  list(,$server, $dir, $script, $args) = $r;
 				if (((!$server) OR ($server == './') 
 				    OR strpos($server, url_de_base()) === 0)
-				    AND is_dir($dir))
+				    AND is_dir($dir)) {
 				  $url = $script;
-			} else { $dir = 'exec'; $script = $url;}
+				  // Pour quand le validateur saura simuler 
+				  // une query-string...
+				  // $args = preg_split('/&(amp;)?[a-z0-9_]+=/', $args);
+				  $args = true;
+				}
+			} else { $dir = 'exec'; $script = $url; $args = true;}
+
 			$transformer_xml = charger_fonction('valider', 'xml');
 			$onfocus = "this.value='" . addslashes($url) . "';";
 			if (preg_match(',^[a-z][0-9a-z_]*$,i', $url)) {
-				$res = $transformer_xml(charger_fonction($url, $dir), true);
+				$res = $transformer_xml(charger_fonction($url, $dir), $args);
 				$url_aff = valider_pseudo_url($dir, $script);
 			} else {
 				$res = $transformer_xml(recuperer_page($url));
@@ -103,10 +116,9 @@ function valider_xml_ok($url, $req_ext)
 }
 
 // http://doc.spip.org/@valider_resultats
-function valider_resultats($res, $ext)
+function valider_resultats($res, $mode)
 {
-	$i = 0;
-	$mode = (strpos($ext,'php') ===false);
+	$i = $j = 0;
 	$table = '';
 	rsort($res);
 	foreach($res as $l) {
@@ -121,6 +133,7 @@ function valider_resultats($res, $ext)
 		$err = (!intval($nb)) ? '' : 
 		  ($erreurs[0][0] . ' ' . _T('ligne') . ' ' .
 		   $erreurs[0][1] .($nb==1? '': '  ...'));
+		if ($err) $j++;
 		$h = $mode
 		? ($appel . '&var_mode=debug&var_mode_affiche=validation')
 		: generer_url_ecrire('valider_xml', "var_url=" . urlencode($appel));
@@ -133,7 +146,7 @@ function valider_resultats($res, $ext)
 		. "<td>$script</td>"
 		. "<td><a href='$h'>$appel</a></td>";
 	}
-	return "<table class='spip'>"
+	return array($j, "<table class='spip'>"
 	  . "<tr><th>" 
 	  . _T('erreur_texte')
 	  . "</th><th>" 
@@ -145,21 +158,19 @@ function valider_resultats($res, $ext)
 	  . "</th><th>Page</th><th>args"
 	  . "</th></tr>"
 	  . $table
-	  . "</table>";
+		     . "</table>");
 }
 
 // http://doc.spip.org/@valider_script
-function valider_script($transformer_xml, $f, $dir)
+function valider_script($transformer_xml, $script, $dir, $ext)
 {
-// ne pas se controler soi-meme ni l'index du repertoire
-
-	$script = basename($f, '.php');
-	if ($script == _request('exec') OR $script=='index')
-		return array('/', 0, '', $script,''); 
-
+	$script = basename($script, '.php');
 	$dir = basename($dir);
 	$f = charger_fonction($script, $dir, true);
-	if(!$f) return false;
+// ne pas se controler soi-meme ni l'index du repertoire ni un fichier annexe
+	if ($script == _request('exec') OR $script=='index' OR !$f)
+		return array('/', 0, '', $script,''); 
+
 	list($texte, $err) = $transformer_xml($f, true);
 	$appel = '';
 	
@@ -195,33 +206,39 @@ function valider_pseudo_url($dir, $script, $args='')
 	: ("./?$dir=$script" . ($args ? "&$args" : ''));
 }
 
-// On essaye de valider tout squelette meme sans Doctype
+// On essaye de valider un texte meme sans Doctype
 // a moins qu'un Content-Type dise clairement que ce n'est pas du XML
 // http://doc.spip.org/@valider_skel
-function valider_skel($transformer_xml, $file, $dir)
+function valider_skel($transformer_xml, $file, $dir, $ext)
 {
-	if (!lire_fichier ($file, $skel)) return array('/', '/', $file,''); 
-	if (!strpos($skel, 'DOCTYPE')) {
-		preg_match(",Content[-]Type: *\w+/(\S)+,", $skel, $r);
+	if (!lire_fichier ($file, $text)) return array('/', '/', $file,''); 
+	if (!strpos($text, 'DOCTYPE')) {
+		preg_match(",Content[-]Type: *\w+/(\S)+,", $text, $r);
 		if ($r[1] === 'css' OR $r[1] === 'plain')
 			return array('/', 'DOCTYPE?', $file,'');
 	}
 
-	$composer = charger_fonction('composer', 'public');
-	list($skel_nom, $skel_code) = $composer($skel, 'html', 'html', $file);
+	if ($ext != 'html') {
+		// validation d'un non squelette
+		$page = array('texte' => $text);
+		$url = url_de_base() . _DIR_RESTREINT_ABS . $file;
+		$script = $file;
+	} else {
+		$script = basename($file,'.html');
+		// pas de validation solitaire pour les squelettes internes, a revoir.
+		if (substr_count($dir, '/') <= 1) {
+			$url = generer_url_public($script, $contexte);
+		} else 	$url = '';
+		$composer = charger_fonction('composer', 'public');
+		list($skel_nom, $skel_code) = $composer($text, 'html', 'html', $file);
 
-	spip_log("compilation de $file en " . strlen($skel_code) .  " octets de nom $skel_nom");
-	$url = '';
-	if (!$skel_nom) return array('/', '/', $file,''); 
-	$contexte = valider_contexte($skel_code, $file);
-	$page = $skel_nom(array('cache'=>''), array($contexte));
+		spip_log("compilation de $file en " . strlen($skel_code) .  " octets de nom $skel_nom");
+		if (!$skel_nom) return array('/', '/', $file,''); 
+		$contexte = valider_contexte($skel_code, $file);
+		$page = $skel_nom(array('cache'=>''), array($contexte));
+	}
 	list($texte, $err) = $transformer_xml($page['texte']);
 	$res = strlen($texte);
-	$script = basename($file,'.html');
-	// pas de validation solitaire pour les squelettes internes, a revoir.
-	if (substr_count($dir, '/') <= 1) {
-			$url = generer_url_public($script, $contexte);
-	}
 	return array(count($err), $res, $err, $script, $url);
 }
 
@@ -272,15 +289,15 @@ function valider_dir($files, $ext, $dir)
 {
 	$res = array();
 	$transformer_xml = charger_fonction('valider', 'xml');
-	$valideur = $ext=='html' ? 'valider_skel' : 'valider_script';
+	$valideur = $ext=='php' ? 'valider_script' : 'valider_skel' ;
 	foreach($files as $f) {
 		spip_timer($f);
-		$val = $valideur($transformer_xml, $f, $dir);
+		$val = $valideur($transformer_xml, $f, $dir, $ext);
 		$n = spip_timer($f); 
 		$val[]= $n;
 		spip_log("validation de $f en $n secondes");
 		$res[]= $val;
 	}
-	return valider_resultats($res, $ext);
+	return $res;
 }
 ?>

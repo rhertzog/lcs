@@ -3,12 +3,13 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // A
 'accueil_site' => 'Home page',
+'article' => 'Article', # NEW
 'articles' => 'Articoli',
 'articles_auteur' => 'Articoli di questo autore',
 'articles_populaires' => 'Articoli pi&ugrave; letti',
@@ -18,6 +19,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'aucun_site' => 'Non ci sono siti a questo indirizzo',
 'aucune_breve' => 'Non ci sono brevi a questo indirizzo',
 'aucune_rubrique' => 'Non ci sono rubriche a questo indirizzo',
+'auteur' => 'Auteur', # NEW
 'autres' => 'Altri',
 'autres_breves' => 'Altre brevi',
 'autres_groupes_mots_clefs' => 'Altri gruppi di parole chiave',
@@ -25,10 +27,12 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // B
 'bonjour' => 'Salve',
+'breve' => 'Br&egrave;ve', # NEW
 'breves' => 'Brevi',
 
 // C
 'commenter_site' => 'Commenta questo sito',
+'copie_document_impossible' => 'Impossibile copiare il documento',
 
 // D
 'date' => 'Data',
@@ -37,6 +41,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'derniers_articles' => 'Ultimi articoli',
 'derniers_commentaires' => 'Ultimi commenti',
 'derniers_messages_forum' => 'Ultimi messaggi pubblicati nei forum',
+'documents_interdits_forum' => 'Documenti vietati nel forum',
 
 // E
 'edition_mode_texte' => 'Versione solo testo di',
@@ -46,6 +51,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'espace_prive' => 'Area riservata',
 
 // F
+'formats_acceptes' => 'Formati accettati: @formats@.',
 'forum' => 'Forum',
 
 // H
@@ -54,6 +60,9 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 // J
 'jours' => 'giorni',
 
+// L
+'lien_connecter' => 'Connettersi',
+
 // M
 'meme_auteur' => 'Della stessa autrice',
 'meme_rubrique' => 'Nella stessa rubrica',
@@ -61,6 +70,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'message' => 'Messaggio',
 'messages_forum' => 'Messaggi del forum',
 'messages_recents' => 'Messaggi pi&ugrave; recenti del forum',
+'mots_clef' => 'Mot-cl&eacute;', # NEW
 'mots_clefs' => 'Parole chiave',
 'mots_clefs_meme_groupe' => 'Parole chiave nello stesso gruppo',
 

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -12,7 +12,7 @@
 
 
 //
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 
 /*
@@ -145,10 +145,15 @@ function plage_punct_unicode() {
 // http://doc.spip.org/@corriger_caracteres_windows
 function corriger_caracteres_windows($texte, $charset='AUTO', $charset_cible='unicode') {
 	static $trans;
-
+	
+	if (is_array($texte)) {
+		return array_map('corriger_caracteres_windows', $texte);
+	}
+	
 	if ($charset=='AUTO') $charset = $GLOBALS['meta']['charset'];
 	if ($charset == 'utf-8') {
 		$p = chr(194);
+		if (strpos($texte,$p)===false) return $texte;
 	} else if ($charset == 'iso-8859-1') {
 		$p = '';
 	} else
@@ -769,7 +774,7 @@ $GLOBALS['CHARSET'] = Array();
 // dans les preg_replace pour ne pas casser certaines lettres accentuees :
 // en utf-8 chr(195).chr(160) = a` alors qu'en iso-latin chr(160) = nbsp
 if (!isset($GLOBALS['meta']['pcre_u'])
-OR isset($_GET['var_mode'])) {
+  OR (isset($_GET['var_mode']) AND !isset($_GET['var_profile']))) {
 	include_spip('inc/meta');
 	ecrire_meta('pcre_u',
 		$u = ($GLOBALS['meta']['charset'] == 'utf-8'

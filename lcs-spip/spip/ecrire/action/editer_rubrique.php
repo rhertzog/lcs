@@ -3,22 +3,24 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/rubriques');
 
 // http://doc.spip.org/@action_editer_rubrique_dist
-function action_editer_rubrique_dist() {
+function action_editer_rubrique_dist($arg=null) {
 
-	$securiser_action = charger_fonction('securiser_action', 'inc');
-	$arg = $securiser_action();
+	if (is_null($arg)){
+		$securiser_action = charger_fonction('securiser_action', 'inc');
+		$arg = $securiser_action();
+	}
 
 	if (!$id_rubrique = intval($arg)) {
 		if ($arg != 'oui') {
@@ -45,10 +47,31 @@ function action_editer_rubrique_dist() {
 
 // http://doc.spip.org/@insert_rubrique
 function insert_rubrique($id_parent) {
-	$id_rubrique = sql_insertq("spip_rubriques", array(
+	$champs = array(
 		'titre' => _T('item_nouvelle_rubrique'),
-		id_parent => intval($id_parent),
-		'statut' => 'new'));
+		'id_parent' => intval($id_parent),
+		'statut' => 'new');
+
+	// Envoyer aux plugins
+	$champs = pipeline('pre_insertion',
+		array(
+			'args' => array(
+				'table' => 'spip_rubriques',
+			),
+			'data' => $champs
+		)
+	);
+
+	$id_rubrique = sql_insertq("spip_rubriques", $champs);
+	pipeline('post_insertion',
+		array(
+			'args' => array(
+				'table' => 'spip_rubriques',
+				'id_objet' => $id_rubrique
+			),
+			'data' => $champs
+		)
+	);
 	propager_les_secteurs();
 	calculer_langues_rubriques();
 	return $id_rubrique;
@@ -90,18 +113,6 @@ function revisions_rubriques($id_rubrique, $c=false) {
 	suivre_invalideur("id='id_rubrique/$id_rubrique'");
 	// et celui de menu_rubriques 
 	effacer_meta("date_calcul_rubriques");
-
-	// Notification ?
-	pipeline('post_edition',
-		array(
-			'args' => array(
-				'table' => 'spip_rubriques',
-				'id_objet' => $id_rubrique
-			),
-			'data' => $champs
-		)
-	);
-
 }
 
 // si c'est une rubrique-secteur contenant des breves, ne deplacer

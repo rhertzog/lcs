@@ -58,8 +58,7 @@ jQuery.fn.bascule = function() {
 	}
 	return jQuery(this);
 }
-jQuery.fn.insertion = function(dropped_id,origine_id){
-	dropped = jQuery('#'+dropped_id);
+jQuery.fn.insertion = function(dragged,oldParent){
 	subbranch = jQuery(this).children('ul').eq(0);
 	if (subbranch.size() == 0) {
 		jQuery(this).prepend('<img src="'+img_deplierbas+'" width="16" height="16" class="expandImage" />');
@@ -69,32 +68,33 @@ jQuery.fn.insertion = function(dropped_id,origine_id){
 		jQuery(this).children('img.expandImage').click(function (){jQuery(this).bascule();});
 		subbranch = jQuery(this).children('ul').eq(0);
 	}
-	if((dropped.is('li.art')) && (subbranch.children('li.rub').length>0)){
-		subbranch.end().children('li.rub').eq(0).before(dropped);
+	if((dragged.is('li.art')) && (subbranch.children('li.rub').length>0)){
+		subbranch.end().children('li.rub').eq(0).before(dragged);
 	}
 	else
-		subbranch.end().append(dropped);
+		subbranch.end().append(dragged);
 
 	if (subbranch.is(':hidden')){
 		subbranch.deplie();
 	}
 
-	oldParent = jQuery('#'+origine_id);
 	oldBranches = jQuery('li', oldParent);
 	if (oldBranches.size() == 0) {
 		oldParent.siblings('img.expandImage').remove();
 		oldParent.end().remove();
 	}
+	dragged.draggable( 'destroy' );
+	jQuery(this).set_droppables();
 }
 
 jQuery.fn.set_droppables = function(){
-	jQuery('span.holder',jQuery(this)).Droppable(
+	jQuery('span.holder',jQuery(this)).droppable(
 		{
-			accept			: 'treeItem',
-			hoverclass		: 'none',
-			activeclass		: 'fakeClass',
-			tollerance		: 'intersect',
-			onhover			: function(dragged)
+			accept			: '.treeItem',
+			hoverClass		: 'none',
+			activeClass		: 'fakeClass',
+			tolerance		: 'pointer',
+			over			: function(event,ui)
 			{
 				jQuery(this).parent().addClass('selected');
 				if (!this.expanded) {
@@ -105,7 +105,7 @@ jQuery.fn.set_droppables = function(){
 					}
 				}
 			},
-			onout			: function()
+			out			: function(event,ui)
 			{
 				jQuery(this).parent().removeClass('selected');
 				if (this.expanded){
@@ -117,29 +117,29 @@ jQuery.fn.set_droppables = function(){
 				}
 				this.expanded = false;
 			},
-			ondrop			: function(dropped)
+			drop			: function(event,ui)
 			{
 				jQuery(this).parent().removeClass('selected');
 				subbranch = jQuery(this).siblings('ul').eq(0);
 				if (this.expanded)
 					subbranch.unpause();
 				var target=jQuery(this).parent().attr('id');
-				var quoi=jQuery(dropped).attr('id');
-				var source=jQuery(dropped).parent().parent().attr('id'); // il faut stocker l'id du li car le ul peut avoir disparu au moment du cancel
+				var quoi=jQuery(ui.draggable).attr('id');
+				var source=jQuery(ui.draggable).parent().parent().attr('id'); // il faut stocker l'id du li car le ul peut avoir disparu au moment du cancel
 				action=quoi+":"+target+":"+source;
 				var dep = jQuery("#deplacements");
 				dep.html(dep.text()+"\n"+action);
 				jQuery("#apply").show();
 				jQuery("#cancel").show();
-				jQuery(this).parent().insertion(quoi,jQuery(dropped).parent().attr('id'));
+				jQuery(this).parent().insertion(jQuery(ui.draggable),jQuery(ui.draggable).parent());
 			}
 		}
 	);
-	jQuery('li.treeItem',jQuery(this)).Draggable(
+	jQuery('li.treeItem',jQuery(this)).draggable(
 		{
-			revert		: true,
+			revert		: true/*,
 			ghosting : true,
-			autoSize : true
+			autoSize : true*/
 		}
 	);
 }

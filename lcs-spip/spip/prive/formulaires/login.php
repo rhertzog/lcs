@@ -3,34 +3,42 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;	#securite
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('base/abstract_sql');
 
 function is_url_prive($cible){
-	$parse = parse_url($cible);
-	return strncmp(substr($parse['path'],-strlen(_DIR_RESTREINT_ABS)), _DIR_RESTREINT_ABS, strlen(_DIR_RESTREINT_ABS))==0;
+	include_spip('inc/filtres_mini');
+	$path = parse_url(tester_url_absolue($cible)?$cible:url_absolue($cible));
+	$path = (isset($path['path'])?$path['path']:'');
+	return strncmp(substr($path,-strlen(_DIR_RESTREINT_ABS)), _DIR_RESTREINT_ABS, strlen(_DIR_RESTREINT_ABS))==0;
 }
 
 function formulaires_login_charger_dist($cible="",$login="",$prive=null)
 {
 	$erreur = _request('var_erreur');
 
-	if (!$login) $login = _request('var_login');
+	if (!$login) $login = strval(_request('var_login'));
+	// si on est deja identifie
+	if (!$login AND isset($GLOBALS['visiteur_session']['login'])) {
+		$login = $GLOBALS['visiteur_session']['login'];
+	}
+	// ou si on a un cookie admin
 	if (!$login) {
 		if (isset($_COOKIE['spip_admin'])
 		AND preg_match(",^@(.*)$,", $_COOKIE['spip_admin'], $regs))
 			$login = $regs[1];
-	} 
+	}
 
-	$row = informer_login($login);
+	include_spip('inc/auth');
+	$row = auth_informer_login($login);
 
 	// Construire l'environnement du squelette
 	// Ne pas proposer de "rester connecte quelques jours"
@@ -45,7 +53,7 @@ function formulaires_login_charger_dist($cible="",$login="",$prive=null)
 		'_logo' => $row['logo'],
 		'_alea_actuel' => isset($row['alea_actuel'])?$row['alea_actuel']:'',
 		'_alea_futur' => isset($row['alea_futur'])?$row['alea_futur']:'',
-		'_hidden' => '<input type="hidden" name="session_password_md5" value="" /><input type="hidden" name="next_session_password_md5" value="" />'
+		'_pipeline' => 'affiche_formulaire_login', // faire passer le formulaire dans un pipe dedie pour les methodes auth
 		);
 
 	if ($erreur OR !$GLOBALS['visiteur_session']['id_auteur'])
@@ -54,7 +62,9 @@ function formulaires_login_charger_dist($cible="",$login="",$prive=null)
 	if (is_null($prive) ? is_url_prive($cible) : $prive) {
 		include_spip('inc/autoriser');
 		$loge = autoriser('ecrire');
-	} else 	$loge = ($GLOBALS['visiteur_session']['auth'] != '');
+	} 
+	else
+		$loge = ($GLOBALS['visiteur_session']['auth'] != '');
 
 	// Si on est connecte, appeler traiter()
 	// et lancer la redirection si besoin
@@ -65,10 +75,12 @@ function formulaires_login_charger_dist($cible="",$login="",$prive=null)
 
 		if ($res['redirect']){
 			include_spip('inc/headers');
+			# preparer un lien pour quand redirige_formulaire ne fonctionne pas
+			$valeurs['_deja_loge'] = inserer_attribut(
+				"<a>" . _T('login_par_ici') . "</a>$m",
+				'href', $res['redirect']
+			);
 			$m = redirige_formulaire($res['redirect']);
-			# quand la redirection 302 ci-dessus ne fonctionne pas
-			$valeurs['_deja_loge'] =
-			"<a href='$cible'>" . _T('login_par_ici') . "</a>$m";
 		}
 	}
 	// en cas d'echec de cookie, inc_auth a renvoye vers le script de
@@ -86,30 +98,6 @@ function formulaires_login_charger_dist($cible="",$login="",$prive=null)
 	return $valeurs;
 }
 
-// Cette fonction sert a 2 squelettes: login et informer_auteur
-// Ce dernier transmet le tableau ci-dessous a la fonction JS informer_auteur
-// Il est invoque par la fonction JS actualise_auteur via la globale JS
-// page_auteur=#URL_PAGE{informer_auteur} dans le squelette login
-// N'y aurait-il pas plus simple ?
-
-// http://doc.spip.org/@informer_login
-function informer_login($login){
-	if (!$login) return array();
-	$row = retrouver_login($login);
-	if (!$row) return array();
-	// desactiver le hash md5 si pas auteur spip ?
-	if ($row['source']!=='spip'){
-		$row['alea_actuel']= '';
-		$row['alea_futur']= '';
-	}
-	$prefs = unserialize($row['prefs']);
-	$row['cnx'] = ($prefs['cnx'] == 'perma') ? '1' : '0';
-	$row['logo'] = recuperer_fond('formulaires/inc-logo_auteur', $row);
-	unset($row['prefs']);
-	unset($row['source']);		
-	verifier_visiteur();
-	return $row;
-}
 
 // Gerer le cas ou un utilisateur ne souhaite pas de cookie
 // on propose alors un formulaire pour s'authentifier via http
@@ -133,48 +121,41 @@ function formulaires_login_verifier_dist($cible="",$login="",$prive=null){
 	
 	$session_login = _request('var_login');
 	$session_password = _request('password');
-	$session_md5pass = _request('session_password_md5');
-	$session_md5next = _request('next_session_password_md5');
 	$session_remember = _request('session_remember');
 
 	if (!$session_login) {
 		# pas de login saisi !
-		return array('message_erreur' =>
-			_T('login_identifiant_inconnu',
-				array('login' => htmlspecialchars($login))));
+		return array('var_login' => _T('info_obligatoire'));
 	}
-	$row = retrouver_login($session_login);
-	if ($row) 
-		$login = $row['login'];
-	elseif (spip_connect_ldap()) 
-		$login = $session_login;  // laisser une chance
-	else {
+
+	// appeler auth_identifier_login qui va :
+	// - renvoyer un string si echec (message d'erreur)
+	// - un array decrivant l'auteur identifie si possible
+	// - rediriger vers un SSO qui renverra in fine sur action/auth qui finira l'authentification
+	include_spip('inc/auth');
+	$auteur = auth_identifier_login($session_login, $session_password);
+	// on arrive ici si on ne s'est pas identifie avec un SSO
+	if (!is_array($auteur)) {
+		$erreurs = array();
+		if (is_string($auteur))
+			$erreurs['var_login'] = $auteur;
 		include_spip('inc/cookie');
 		spip_setcookie("spip_admin", "", time() - 3600);
-		return array('message_erreur' =>
-			_T('login_identifiant_inconnu',
-			array('login' => htmlspecialchars($session_login))));
-	}
-	$auteur = verifier_login($login, $session_password, $session_md5pass, $session_md5next);
-	if (!$auteur) {
-		if (strlen($session_password) OR strlen($session_md5pass))
-			return array('password' => _T('login_erreur_pass'));
+		if (strlen($session_password))
+			$erreurs['password'] = _T('login_erreur_pass');
 		// sinon c'est un login en deux passe old style (ou js en panne)
 		// pas de message d'erreur
-		else return array('password' => ' ');
+		else 
+			$erreurs['password'] = ' ';
+		return
+			$erreurs;
 	}
 	// on a ete authentifie, construire la session
 	// en gerant la duree demandee pour son cookie 
 	if ($session_remember !== NULL)
 		$auteur['cookie'] = $session_remember;
-	$session = charger_fonction('session', 'inc');
-	$session($auteur);
-	$p = ($auteur['prefs']) ? unserialize($auteur['prefs']) : array();
-	$p['cnx'] = ($session_remember == 'oui') ? 'perma' : '';
-	$p = array('prefs' => serialize($p));
-	sql_updateq('spip_auteurs', $p, "id_auteur=" . $auteur['id_auteur']);
-	//  bloquer ici le visiteur qui tente d'abuser de ses droits
-	verifier_visiteur();
+	auth_loger($auteur);
+
 	return (is_null($prive) ? is_url_prive($cible) : $prive)
 	?  login_autoriser() : array();
 }
@@ -206,13 +187,20 @@ function formulaires_login_traiter_dist($cible="",$login="",$prive=null){
 
 	if ($cible) {
 		$cible = parametre_url($cible, 'var_login', '', '&');
-	} 
-	
-	// transformer la cible absolue en cible relative
-	// pour pas echouer quand la meta adresse_site est foireuse
-	if (strncmp($cible,$u = url_de_base(),strlen($u))==0){
-		$cible = "./".substr($cible,strlen($u));
+
+		// transformer la cible absolue en cible relative
+		// pour pas echouer quand la meta adresse_site est foireuse
+		if (strncmp($cible,$u = url_de_base(),strlen($u))==0){
+			$cible = "./".substr($cible,strlen($u));
+		}
+
+		// si c'est une url absolue, refuser la redirection
+		// sauf si cette securite est levee volontairement par le webmestre
+		elseif (tester_url_absolue($cible) AND !defined('_AUTORISER_LOGIN_ABS_REDIRECT')) {
+			$cible = "";
+		}
 	}
+
 
 	// Si on est admin, poser le cookie de correspondance
 	if ($GLOBALS['auteur_session']['statut'] == '0minirezo') {
@@ -227,55 +215,13 @@ function formulaires_login_traiter_dist($cible="",$login="",$prive=null){
 			include_spip('inc/headers');
 			$res['redirect'] = $cible;
 		} else {
-			$res['message_ok'] .= "<a href='$cible'>" .
-			  _T('login_par_ici') .
-			  "</a>";
+			$res['message_ok'] .= inserer_attribut(
+				"<a>" . _T('login_par_ici') . "</a>",
+				'href', $cible
+			);
 		}
 	}
 	return $res;
 }
 
-
-// Reconnaitre aussi ceux qui donnent leur nom ou email au lieu du login
-
-function retrouver_login($login)
-{
-	if (!spip_connect()) {
-		include_spip('inc/minipres');
-		echo minipres(_T('info_travaux_titre'),
-			      _T('titre_probleme_technique'));
-		exit;
-	}
-	$l = sql_quote($login);
-	if ($r = sql_fetsel('id_auteur,login,alea_actuel,alea_futur,prefs,source,login', 'spip_auteurs',
-			"statut<>'5poubelle' AND (" .
-			"pass<>'' OR source<>'spip') AND (" . 
-			"login=$l)"))
-		return $r;
-	// Si pas d'auteur avec ce login
-	// regarder s'il a saisi son nom ou son mail.
-	// Ne pas fusionner avec la requete precedente
-	// car un nom peut etre homonyme d'un autre login
-	else return sql_fetsel('id_auteur,login,alea_actuel,alea_futur,prefs,source,login', 'spip_auteurs',
-			"statut<>'5poubelle' AND (" .
-			"pass<>'' OR source<>'spip') AND (" . 
-			"login<>'' AND (nom=$l OR email=$l))");
-}
-
-// Essayer les differentes sources d'authenfication dans l'ordre specifie.
-// S'en souvenir dans visiteur_session['auth']
-
-// http://doc.spip.org/@verifier_login
-function verifier_login($login, $password, $md5pass="", $md5next="")
-{
-	foreach ($GLOBALS['liste_des_authentifications'] as $methode) {
-		if ($auth = charger_fonction($methode, 'auth')
-		AND $auteur = $auth($login, $password, $md5pass, $md5next)) {
-			spip_log("connexion de $login par methode $methode");
-			$auteur['auth'] = $methode;
-			return $auteur;
-		}
-	}
-	return false;
-}
 ?>

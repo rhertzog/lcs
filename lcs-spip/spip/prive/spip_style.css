@@ -13,12 +13,12 @@ ul.spip {}
 ol.spip { list-style: decimal; }
 
 /* Citations, code et poesie */
-blockquote.spip { margin: 2em 0; padding-left: 1em; border-left: 0.30em solid; }
-blockquote.spip_poesie { margin: 2em 0; padding-left: 1em; border-left: 1px solid; font-family: Garamond, Georgia, Times, serif; }
+blockquote.spip { margin: 2em 0; margin-left: 1em; padding-left: 1em; border-left: 1px dotted #aaa; }
+blockquote.spip_poesie { margin: 2em 0; margin-left: 1em; padding-left: 1em;  border-left: 1px solid #aaa; }
 blockquote.spip_poesie div { text-indent: -3em; margin-left: 3em; }
 
 .spip_code, .spip_cadre { font-family: Courier, "Courier New", monospace; color: #036; }
-.spip_cadre { width: 99%; background-color: #F4F8F8; border: 1px inset; }
+.spip_cadre { width: 99%; background-color: #F4F8F8; border: 1px inset; font-size:inherit; }
 div.spip_code, .spip_cadre { margin-bottom: 1em;  }
 
 .spip_surligne { background: #FF6; }
@@ -32,6 +32,7 @@ table.spip tr.row_even { background: #DDD; }
 table.spip th, table.spip td { padding: 0.20em 0.40em; text-align: left; border: 1px solid; }
 table.spip th { vertical-align: bottom; font-weight: bold; }
 table.spip td { vertical-align: top; }
+table.spip td.numeric {text-align:right;}
 
 /* Logos, documents et images */
 img, .spip_logos { margin: 0; padding: 0; border: 0; }
@@ -58,6 +59,3 @@ a.spip_glossaire { color: #060; } /* liens vers encyclopedie */
 a.spip_glossaire:hover { text-decoration: underline overline; }
 .on { font-weight: bold; } /* liens exposes */
 
-/* Couleurs et design de la previsu */
-.spip-previsu { background-color: #111111; color: #eeeeee; font-size: 18px; position: absolute; padding-right: 5px; padding-top: 2px; padding-bottom: 5px;top: 0px; left: 0px;
-}

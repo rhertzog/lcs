@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 include_spip('inc/mots');
@@ -62,6 +62,9 @@ function http_afficher_rendez_vous($date_heure, $date_fin)
 // http://doc.spip.org/@http_auteurs_ressemblants
 function http_auteurs_ressemblants($cherche_auteur, $id_message)
 {
+
+  $cherche_auteur = htmlspecialchars($cherche_auteur);
+
   global $connect_id_auteur;
   $query = sql_select("id_auteur, nom", "spip_auteurs", "messagerie<>'non' AND id_auteur<>'$connect_id_auteur' AND pass<>'' AND login<>''");
   $table_auteurs = array();
@@ -121,14 +124,14 @@ function http_ajouter_participants($ze_auteurs, $id_message)
 	  "<input type='hidden' name='id_message' id='id_message' value=\"$id_message\" />";
 
 	if (is_numeric($all)) {
-		$res .=  "\n<input type='text' name='cherche_auteur' id='cherche_auteur' class='fondl' value='' size='20' />";
-		$res .=  "\n<input type='submit' value='"._T('bouton_chercher')."' class='fondo' />";
+		$res .=  "\n<input type='text' name='cherche_auteur' id='cherche_auteur' value='' size='20' />";
+		$res .=  "\n<input type='submit' value='"._T('bouton_chercher')."' />";
 	} else {
 
-		$res .=  "<select name='nouv_auteur' id='nouv_auteur' size='1' style='width: 150px' class='fondl'>"
+		$res .=  "<select name='nouv_auteur' id='nouv_auteur' size='1' style='width: 150px'>"
 		. $all
 		.  "</select>"
-		.  "<input type='submit' value='"._T('bouton_ajouter')."' class='fondo' />";
+		.  "<input type='submit' value='"._T('bouton_ajouter')."' />";
 	}
 	return redirige_action_post('editer_message', "$id_message,", 'message', "id_message=$id_message", "<div style='text-align: left'>\n$res</div>\n");
 }
@@ -150,7 +153,7 @@ function http_message_avec_participants($id_message, $statut, $forcer_dest, $che
 	// Liste des participants
 	//
 
-	$result = sql_allfetsel("auteurs.id_auteur,auteurs.nom,auteurs.bio,auteurs.email,auteurs.nom_site,auteurs.url_site,auteurs.login,auteurs.pass,auteurs.low_sec,auteurs.statut,auteurs.maj,auteurs.pgp,auteurs.htpass,auteurs.en_ligne,auteurs.imessage,auteurs.messagerie,auteurs.alea_actuel,auteurs.alea_futur,auteurs.prefs,auteurs.cookie_oubli,auteurs.source,auteurs.lang, auteurs.extra", "spip_auteurs AS auteurs, spip_auteurs_messages AS lien", "lien.id_message=$id_message AND lien.id_auteur=auteurs.id_auteur");
+	$result = sql_allfetsel("*", "spip_auteurs AS auteurs, spip_auteurs_messages AS lien", "lien.id_message=$id_message AND lien.id_auteur=auteurs.id_auteur");
 
 	$total_dest = count($result);
 

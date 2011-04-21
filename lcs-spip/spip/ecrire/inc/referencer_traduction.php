@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 
@@ -45,7 +45,7 @@ function inc_referencer_traduction_dist($id_article, $flag, $id_rubrique, $id_tr
 			$lien = "\nonchange=\"this.nextSibling.firstChild.style.visibility='visible';\"";
 			$menu =  select_langues('changer_lang', $lien, $menu, _T('info_multi_cet_article'));
 			
-			$menu = ajax_action_post('referencer_traduction', "$id_article,$id_rubrique","articles","id_article=$id_article", $menu, _T('bouton_changer'), " class='visible_au_chargement fondo'");
+			$menu = ajax_action_post('referencer_traduction', "$id_article,$id_rubrique","articles","id_article=$id_article", $menu, _T('bouton_changer'), " class='visible_au_chargement'");
 
 			$reponse .= debut_cadre_couleur('',true)
 			. "\n<div style='text-align: center;'>"
@@ -83,9 +83,9 @@ function inc_referencer_traduction_dist($id_article, $flag, $id_rubrique, $id_tr
 				'articles',
 				"id_article=$id_article",
 				("<label for='lier_trad'>" . _T('trad_lier') . "</label>" .
-				 "\n<input type='text' class='fondl' name='lier_trad' id='lier_trad' size='5' />\n"),
+				 "\n<input type='text' name='lier_trad' id='lier_trad' size='5' />\n"),
 				_T('bouton_valider'),
-				" class='fondl'")
+				"")
 		. "</td>\n"
 		. "<td style='width: 10px'> &nbsp; </td>"
 		. "<td style='width: 2px; background: url(" . chemin_image("tirets-separation.gif") . ")'>". http_img_pack('rien.gif', " ", "width='2' height='2'") . "</td>"

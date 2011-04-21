@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 /**
  * une classe definissant un bouton dans la barre du haut de l'interface
@@ -123,6 +123,23 @@ function barre_onglets_config_lang() {
 			generer_url_ecrire("lang_raccourcis"));
 	return $onglets;
 }
+
+
+function barre_onglets_plugins() {
+
+	$onglets=array();
+	$onglets['plugins_actifs']=
+		  new Bouton('plugin-24.gif', 'plugins_actifs_liste',
+			generer_url_ecrire("admin_plugin"));
+	$onglets['admin_plugin']=
+		  new Bouton('plugin-24.gif', 'plugins_liste',
+			generer_url_ecrire("admin_plugin","voir=tous"));
+	$onglets['charger_plugin']=
+		  new Bouton('spip-pack-24.png', 'plugin_titre_automatique_ajouter',
+			generer_url_ecrire("charger_plugin"));
+	return $onglets;
+}
+
 
 /**
  * definir la liste des onglets dans une page de l'interface privee

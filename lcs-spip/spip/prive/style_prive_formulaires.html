@@ -10,6 +10,7 @@
 
 	ATTENTION: il faut absolument le charset sinon Firefox croit que
 	c'est du text/html !
+	<style>
 ]
 #CACHE{3600*100,cache-client}
 #HTTP_HEADER{Content-Type: text/css; charset=iso-8859-15}
@@ -41,14 +42,21 @@
 .formulaire_spip input.text,
 .formulaire_spip input.password,
 .formulaire_spip textarea,
-.formulaire_spip select {
+.formulaire_spip select
+{
 	/*display: block;*/
-	font-size:1em;
+	font-size:1.05em;
+	font-family: verdana;
 	margin:0;
-	width: 96%;
-	border: 1px solid #GET{claire};
 	padding: 3px;
+	width: 100%;
+	*width: 96%;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
 }
+
 
 .formulaire_spip li .erreur_message {
 	display: block;
@@ -57,7 +65,11 @@
 	color: red;
 	background-color: #fed7d7;
 	padding: 3px;
-	width: 96%;
+	width: 100%;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
 }
 
 .formulaire_spip .reponse_formulaire_erreur,
@@ -80,7 +92,12 @@
 	margin: 0px;
 	display: -moz-inline-box;
 	display: inline-block;
-	width: 96%;
+	width: 100%;
+	*width: 96%;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
 	border: 1px solid #GET{claire};
 	border-bottom: 0px;
 	padding: 3px;
@@ -93,12 +110,13 @@
 
 
 .formulaire_spip textarea {
-	width: 93.6%;
-	padding: 10px;
+	padding: 10px 5px;
 	overflow: auto;
+	font-size: 1.05em;
+	line-height: 1.4em;
 }
-.formulaire_spip input.submit, 
-.formulaire_spip input.reset, 
+.formulaire_spip input.submit,
+.formulaire_spip input.reset,
 .formulaire_spip input.button {
 	width: auto;
 }
@@ -130,7 +148,7 @@
 
 	border: 1px solid #GET{foncee};
 	color: #333;
-	background-color: #f0f0f0;
+	background-color: #f8f8f8;
 }
 
 .formulaire_spip form {
@@ -140,8 +158,7 @@
 /* ul li */
 .formulaire_spip ul {
 	margin: 0;
-	padding: 0;
-	padding-bottom: 10px;
+	padding: 5px 0;
 	list-style: none;
 }
 .formulaire_spip ul li ul {
@@ -149,22 +166,15 @@
 }
 .formulaire_spip li {
 	margin: 0;
-	padding: 10px;
+	padding: 5px 10px;
 	clear:both;
 	overflow:hidden;
-}
-.formulaire_spip li:first-child {
-	padding-top: 10px;
-}
-
-.formulaire_spip>form li {
-	padding-top: 0px;	
 }
 
 /* annuler les f@@@@ div de sa majeste */
 div.edition, div.label {display:inline;}
 
-/* Formulaires alignes a gauche 
+/* Formulaires alignes a gauche
 c'est le par defaut des formulaires de Spip */
 .formulaire_spip li,
 .formulaire_spip li.gauche {padding-#GET{left}:140px;}
@@ -173,23 +183,19 @@ c'est le par defaut des formulaires de Spip */
 .formulaire_spip li.gauche label {
 	width: 114px;
 	float:#GET{left};
-	margin-#GET{left}:-130px; 
+	margin-#GET{left}:-130px;
 	text-align: #GET{left};
 	/*vertical-align: top;*/
 	/* for IE 6*/
 	position:relative;
 	display:inline;
 
-	[(#EVAL{_DIR_IMG_PACK}|concat{label-fond-gauche-,#ENV{ltr},.gif}|image_bg{[(#ENV{couleur_claire,3874b0})], center [(#GET{right})] no-repeat })]
-
-	color: #[(#GET{foncee}|couleur_foncer)];
+	color: #4444;
 	line-height: 11px;
 	font-family: verdana, arial, helvetica, sans;
 
 	padding-top: 4px;
 	padding-bottom: 6px;
-	padding-#GET{left}: 5px;
-	padding-#GET{right}: 10px;
 }
 .formulaire_spip ul>li label,
 .formulaire_spip ul>li.gauche label {
@@ -199,8 +205,7 @@ c'est le par defaut des formulaires de Spip */
 
 .formulaire_spip li.obligatoire label,
 .formulaire_spip li.obligatoire.gauche label {
-	[(#EVAL{_DIR_IMG_PACK}|concat{label-fond-gauche-,#ENV{ltr},.gif}|image_bg{[(#ENV{couleur_foncee}|couleur_foncer)], center [(#GET{right})] no-repeat })]
-	color: white;
+	color: black;
 	font-weight: bold;
 }
 
@@ -213,6 +218,7 @@ c'est le par defaut des formulaires de Spip */
 .formulaire_spip li.editer_chapo,
 .formulaire_spip li.editer_texte,
 .formulaire_spip li.editer_ps,
+.formulaire_spip li.editer_url_zip_plugin2,
 .formulaire_spip li.haut {
 padding-#GET{left}:10px;
 padding-top:10px;
@@ -224,6 +230,7 @@ padding-top:10px;
 .formulaire_spip li.editer_chapo label,
 .formulaire_spip li.editer_texte label,
 .formulaire_spip li.editer_ps label,
+.formulaire_spip li.editer_url_zip_plugin2 label,
 .formulaire_spip li.haut label {
 	display: block;
 	float: #GET{left};
@@ -231,14 +238,21 @@ padding-top:10px;
 	margin: 0px;
 	padding-top: 5px;
 	padding-bottom: 10px;
-	padding-#GET{left}: 5px;
 	padding-#GET{right}: 5px;
 	font-family: verdana, arial, helvetica, sans;
-	color: #[(#GET{foncee}|couleur_foncer)];
-	font-weight: bold;
-	font-size: 95%;
+	color: #444444;
 	line-height: 11px;
-	[(#EVAL{_DIR_IMG_PACK}|concat{label-fond-haut-,#ENV{ltr},.gif}|image_bg{[(#ENV{couleur_claire})], bottom [(#GET{left})] no-repeat })]
+}
+
+.formulaire_spip li.editer_parent.obligatoire label,
+.formulaire_spip li.editer_groupe_mot.obligatoire label,
+.formulaire_spip li.editer_descriptif.obligatoire label,
+.formulaire_spip li.editer_chapo.obligatoire label,
+.formulaire_spip li.editer_texte.obligatoire label,
+.formulaire_spip li.editer_ps.obligatoire label,
+.formulaire_spip li.editer_url_zip_plugin2.obligatoire label,
+.formulaire_spip li.haut.obligatoire label {
+	color: black;
 }
 
 .formulaire_spip li.editer_parent textarea,
@@ -259,57 +273,61 @@ padding-top:10px;
 .formulaire_spip li.haut .erreur_message {
 	clear:#GET{left};
 }
- 
+
+.formulaire_spip li .erreur_message label {
+	float:none;
+	margin:0;
+	padding:0;
+	display:inline;
+	background:none;
+	font-weight:normal;
+}
 
 
 /* Formulaires obligatoires */
 .formulaire_spip li.obligatoire input {
 	font-weight: bold;
+	font-size: 110%;
 }
 
-
-/*
-.formulaire_spip li.editer_descriptif.obligatoire label,
-.formulaire_spip li.editer_chapo.obligatoire label,
-.formulaire_spip li.editer_texte.obligatoire label,
-.formulaire_spip li.editer_ps.obligatoire label,
-.formulaire_spip li.obligatoire.haut label {
-	[(#EVAL{_DIR_IMG_PACK}|concat{label-fond-haut-,#ENV{ltr},.gif}|image_bg{[(#ENV{couleur_foncee})], bottom [(#GET{left})] no-repeat })]
-	color: white;
-}*/
 
 /* Fieldset */
 
 .formulaire_spip li.fieldset {padding:0;}
 .formulaire_spip fieldset {
-	margin: 0px;
-	padding: 10px 0px;
+	margin: 5px 0 0px;
+	padding: 0px 0 10px 0;
 	border: 0;
-	border-top: 1px solid [(#GET{foncee})];
 	width:auto;
+	border-top: 1px solid #ccc;
+}
+
+.formulaire_editer_article li.editer_liens_sites {
+	border-bottom: 1px solid #ccc;
 }
 
 .formulaire_spip h3.legend,
 .formulaire_spip legend
  {
 	display: block;
-	float: [(#GET{left})];
 	margin: 0px;
-	margin-#GET{left}: 10px;
-	padding-top: 5px;
-	padding-bottom: 10px;
-	padding-#GET{left}: 5px;
+	padding-top: 7px;
+	padding-bottom: 7px;
+	background-color: #eee;
+	padding-#GET{left}: 10px;
 	padding-#GET{right}: 5px;
 	font-family: verdana, arial, helvetica, sans;
-	color: white;
-	font-weight: bold;
+	color: black;
+	font-weight: normal;
 	font-size: 95%;
 	line-height: 11px;
-	[(#EVAL{_DIR_IMG_PACK}|concat{label-fond-haut-,#ENV{ltr},.gif}|image_bg{[(#ENV{couleur_foncee})], bottom [(#GET{left})] no-repeat })]
 }
 
-.formulaire_spip li.fieldset.editer_liens_sites {
-	border-bottom: 1px solid [(#GET{foncee})];
+.formulaire_spip fieldset li label {
+	color: #444444;
+}
+.formulaire_spip fieldset li input.text, .formulaire_spip fieldset li textarea.textarea {
+	border: 1px solid #aaaaaa;
 }
 
 
@@ -328,10 +346,14 @@ padding-top:10px;
 .formulaire_spip .boutons {
 	[background-color: #(#GET{claire}|couleur_eclaircir);]
 	[border-top: 1px solid (#GET{claire});]
-	margin:0; 
+	margin:0;
 	clear:both;
 	text-align: #GET{right};
 	padding: 7px 1em;
+}
+#navigation .formulaire_spip .boutons,#navigation .boutons_formulaire,
+#extra .formulaire_spip .boutons,#extra .boutons_formulaire {
+	padding: 5px;
 }
 
 
@@ -345,7 +367,7 @@ padding-top:10px;
 
 
 .formulaire_spip li.editer_identification fieldset{
-	[background-color: #(#GET{claire}|couleur_eclaircir);]
+	[background-color: #(#GET{claire}|couleur_eclaircir|couleur_eclaircir);]
 }
 
 .formulaire_spip li.editer_identification em.attention {
@@ -360,12 +382,12 @@ padding-top:10px;
 }
 
 
-.formulaire_spip li.editer_parent, 
+.formulaire_spip li.editer_parent,
 .formulaire_spip li.editer_groupe_mot,
 .formulaire_editer_auteur li.editer_statut {
-	margin-top: 10px;
-	margin-bottom: 10px;
-	[background-color: #(#GET{claire}|couleur_eclaircir);]
+	background-color: [#(#ENV{couleur_claire}|couleur_eclaircir)];
+	margin-top:5px;
+	padding-bottom:10px;
 }
 .formulaire_spip li.editer_parent .rubrique_actuelle {clear:#GET{left};}
 
@@ -378,6 +400,15 @@ padding-top:10px;
 	padding-#GET{left}: 10px;
 }
 
+.formulaire_editer_site div.previsu_logo_site{
+	height:1px;
+}
+
+.formulaire_editer_site div.previsu_logo_site img{
+	position: relative;
+	#GET{left}: -220px;
+	top: -60px;
+}
 
 /* Inscription du flux RSS */
 .formulaire_spip li.editer_referencement_automatise {
@@ -398,14 +429,14 @@ padding-top:10px;
 }
 
 .formulaire_spip li.editer_syndication {
-	padding-#GET{left}: 10px;	
+	padding-#GET{left}: 10px;
 }
 
 
-.formulaire_spip li.editer_parent label, 
+.formulaire_spip li.editer_parent label,
 .formulaire_spip li.editer_groupe_mot label {
-	[(#EVAL{_DIR_IMG_PACK}|concat{label-fond-haut-,#ENV{ltr},.gif}|image_bg{[(#ENV{couleur_foncee})], bottom [(#GET{left})] no-repeat })]
-	color: white;
+	color: black;
+	font-weight: bold;
 }
 
 
@@ -421,9 +452,9 @@ padding-top:10px;
 .formulaire_spip table.spip_barre tr {
 	width: 98%;
 }
-.formulaire_spip table.spip_barre a img { 
-	[(#EVAL{_DIR_IMG_PACK}|concat{fond-fondo.gif}|image_bg{[(#ENV{couleur_claire}|couleur_eclaircir)], center center })]
-	padding: 3px; border: 1px outset #GET{claire}; 
+.formulaire_spip table.spip_barre a img {
+	[(#EVAL{_DIR_IMG_PACK}|concat{fond-fondo.gif}|background_image{[(#ENV{couleur_claire}|couleur_eclaircir)], center center })]
+	padding: 3px; border: 1px outset #GET{claire};
 }
 .formulaire_spip table.spip_barre a:hover img { background: #fff; border: 1px solid #cc9; }
 .formulaire_spip table.spip_barre input.barre { width: 99%; background: transparent; border: 0; color: #f57900; }
@@ -431,10 +462,10 @@ padding-top:10px;
 
 .formulaire_spip li.editer_parent .choix label,
 .formulaire_spip .choix label{
-	float:none; 
+	float:none;
 	display:inline;
-	margin-#GET{left}: 5px; 
-	font-weight:normal; 
+	margin-#GET{left}: 5px;
+	font-weight:normal;
 	text-transform: none;
 	font-size: 1em;
 	background: none;
@@ -447,54 +478,68 @@ padding-top:10px;
 
 
 
-/* Formulaire compact */
+/*
+ * Formulaires compactes
+ */
+
 .formulaire_spip_compact{
 	font-size: 100%;
 }
-.formulaire_spip_compact ul li {
+.formulaire_spip_compact ul li,
+#navigation .formulaire_spip li,#extra .formulaire_spip li {
 	padding: 2px 5px !important;
 }
 
 .formulaire_spip_compact li label,
-.formulaire_spip_compact li.editer_descriptif label
- {
+.formulaire_spip_compact li.editer_descriptif label,
+#navigation .formulaire_spip li label,#extra .formulaire_spip li label {
 	text-transform: none;
 	color: #444444;
-	
+
 	-moz-display: inline-box;
 	display: inline-block;
 	font-weight: normal;
-	
+
 	padding: 0;
 	padding-top: 3px;
-	padding-bottom: 7px;
+	padding-bottom: 3px;
 	margin-#GET{left}:0;
 
-	background: url([(#EVAL{_DIR_IMG_PACK}|concat{label-fond-compact-,#ENV{ltr},.gif})]) bottom [(#GET{left})] no-repeat;
 }
 
-.formulaire_spip_compact select { width:auto;}
-.formulaire_spip_compact input, 
-.formulaire_spip_compact textarea {
-	padding: 3px;
+.formulaire_spip_compact select,#navigation .formulaire_spip select,#extra .formulaire_spip select { font-size: 0.95em; width:auto;padding:1px 0;}
+.formulaire_spip_compact input,#navigation .formulaire_spip input,#extra .formulaire_spip input {
+	padding: 1px 0;
+	font-size: 0.95em;
+}
+.formulaire_spip_compact textarea, #navigation .formulaire_spip textarea, #extra .formulaire_spip textarea {
+	padding: 2px;
+	font-size: 0.95em;
 }
 
 /* Bouton de validation */
+
+input[type="file"] {
+	border: none;
+	background-color: transparent;
+}
+/* Pour IE, qui grossit le bouton submit */
 input[type="submit"] {
-	[(#EVAL{_DIR_IMG_PACK}|concat{fond-fondo.gif}|image_bg{[(#ENV{couleur_foncee}|couleur_foncer)], center center })]
-	border: 1px outset [(#GET{foncee})];
-	padding: 3px;
-	font-weight: bold;
-	color: white;
+	font-size: 1em;
 }
 
-.formulaire_spip ul.spip {
+
+.formulaire_spip ul.spip,.formulaire_spip ol.spip {
 	margin:10px 0;
 	margin-#GET{left}: 10px;
 	list-style-type: disc;
 	list-style-position: outside;
 }
-.formulaire_spip ul.spip li {
+.formulaire_spip ol.spip {
+	list-style-type: decimal;
+}
+
+.formulaire_spip ul.spip li,.formulaire_spip ol.spip li {
 	margin-#GET{left}: 10px;
 	padding: 0;
 	overflow:visible;

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -11,7 +11,7 @@
 \***************************************************************************/
 
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 
 // Donne la liste des champs/tables ou l'on sait chercher/remplacer
@@ -138,17 +138,24 @@ function recherche_en_base($recherche='', $tables=NULL, $options=array(), $serve
 	include_spip('inc/charsets');
 	$recherche = translitteration($recherche);
 
-	$preg = '/'.str_replace('/', '\\/', $recherche).'/' . $options['preg_flags'];
+	$is_preg = false;
+	if (substr($recherche,0,1)=='/' AND substr($recherche,-1,1)=='/'){
+		// c'est une preg
+		$preg = $recherche.$options['preg_flags'];
+		$is_preg = true;
+	}
+	else
+		$preg = '/'.str_replace('/', '\\/', $recherche).'/' . $options['preg_flags'];
 	// Si la chaine est inactive, on va utiliser LIKE pour aller plus vite
 	// ou si l'expression reguliere est invalide
-	if (preg_quote($recherche, '/') == $recherche
+	if (!$is_preg
 	OR (@preg_match($preg,'')===FALSE) ) {
 		$methode = 'LIKE';
 		$u = $GLOBALS['meta']['pcre_u'];
-		// eviter les parentheses qui interferent avec pcre par la suite (dans le preg_match_all) s'il y a des reponses
+		// eviter les parentheses et autres caractères qui interferent avec pcre par la suite (dans le preg_match_all) s'il y a des reponses
 		$recherche = str_replace(
-			array('(',')','?','[', ']'),
-			array('\(','\)','[?]', '\[', '\]'),
+			array('(',')','?','[', ']', '+', '*', '/'),
+			array('\(','\)','[?]', '\[', '\]', '\+', '\*', '\/'),
 			$recherche);
 		$recherche_mod = $recherche;
 		
@@ -178,7 +185,7 @@ function recherche_en_base($recherche='', $tables=NULL, $options=array(), $serve
 		
 	} else {
 		$methode = 'REGEXP';
-		$q = sql_quote($recherche);
+		$q = sql_quote(substr($recherche,1,-1));
 	}
 
 	$jointures = $options['jointures']

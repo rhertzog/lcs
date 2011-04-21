@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 include_spip('inc/actions');
@@ -245,17 +245,17 @@ function ajouter_auteurs_objet($type, $id, $cond_les_auteurs,$script_edit, $arg_
 	. "</b></label></span>\n";
 
 	if (!is_numeric($all)) {
-		$sel = "$text<select name='$new' id='$new' size='1' style='width:150px;' class='fondl' onchange=\"$js\">$all</select>";
+		$sel = "$text<select name='$new' id='$new' size='1' style='width:150px;' onchange=\"$js\">$all</select>";
 		$clic = _T('bouton_ajouter');
 	} else if  ((_SPIP_AJAX < 1) OR ($all >= _SPIP_SELECT_MAX_AUTEURS)) {
-		  $sel = "$text <input type='text' name='cherche_auteur' id='$new' onclick=\"$js\" class='fondl ' value='' size='20' />";
+		  $sel = "$text <input type='text' name='cherche_auteur' id='$new' onclick=\"$js\" value='' size='20' />";
 		  $clic = _T('bouton_chercher');
 	} else {
 		$sel = selecteur_auteur_ajax($type, $id, $js, $text, $idom);
 		$clic = _T('bouton_ajouter');
 	}
 
-	return ajax_action_post('editer_auteurs', "$id,$type", $script_edit, "id_{$type}=$id", $sel, $clic, " class='fondo visible_au_chargement' id='$menu'",'', $arg_ajax);
+	return ajax_action_post('editer_auteurs', "$id,$type", $script_edit, "id_{$type}=$id", $sel, $clic, " class='visible_au_chargement' id='$menu'",'', $arg_ajax);
 }
 
 // http://doc.spip.org/@objet_auteur_select

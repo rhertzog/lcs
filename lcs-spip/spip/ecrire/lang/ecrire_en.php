@@ -3,7 +3,7 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -26,15 +26,16 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'avis_conseil_selection_mot_cle' => '<b>Important group:</b> It is very strongly advised to select a keyword in this group.',
 'avis_deplacement_rubrique' => 'Warning! This section contains @contient_breves@ news item@scb@: if you move it , please check this box to confirm.',
 'avis_destinataire_obligatoire' => 'You must select a recipient before sending this message.',
+'avis_doublon_mot_cle' => 'A word with this title already exists. Are you sure you want to create another?',
 'avis_erreur_connexion_mysql' => 'SQL connection error',
-'avis_erreur_version_archive' => '<b>Warning! The file @archive@ corresponds to
+'avis_erreur_version_archive' => '<b>Warning! The file @archive@ was created by
     a version of SPIP other than the one you have
     installed.</b> You are facing great
     difficulties: the risk of destroying your database,
     various malfunctions of your site, etc. Do not
     submit this import request.<p>For more
-    information, please see <A HREF=\'http://www.spip.net/fr_article1489.html\'>
-                                the SPIP documentation</a>.',
+    information, please see <a href="@spipnet@">
+                                the SPIP documentation</a>.</p>',
 'avis_espace_interdit' => '<b>Forbidden area</b><div>SPIP is already installed.</div>',
 'avis_lecture_noms_bases_1' => 'The installer could not read the names of the installed databases.',
 'avis_lecture_noms_bases_2' => 'Either no database is available, or the feature allowing the listing of the databases was disabled
@@ -127,6 +128,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'config_erreur_base_sup' => 'SPIP does not have access to the available databases',
 'config_info_base_sup' => 'If you need to query other databases using SPIP, whether on the same SQL server or elsewhere, use the form below to declare them. If you leave some fields empty, then the connection details to the main database will be used.',
 'config_info_base_sup_disponibles' => 'Additional databases to which queries may be sent:',
+'config_info_enregistree' => 'The new configuration has been saved',
 'config_info_logos' => 'Each element of the site can have its logo and also a "mouseover" logo',
 'config_info_logos_utiliser' => 'Use logos',
 'config_info_logos_utiliser_non' => 'Do not use logos',
@@ -152,6 +154,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 // E
 'email' => 'e-mail',
 'email_2' => 'e-mail:',
+'en_savoir_plus' => 'To know more',
 'entree_adresse_annuaire' => 'Directory\'s address',
 'entree_adresse_email' => 'Your e-mail address',
 'entree_adresse_fichier_syndication' => 'Address of file for syndication:',
@@ -187,6 +190,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'entree_texte_breve' => 'Text of news item',
 'entree_titre_obligatoire' => '<b>Title</b> [Required]<br />',
 'entree_url' => 'Your site\'s URL',
+'erreur_plugin_desinstalation_echouee' => 'The uninstallation of the plugin failed. You may, however, deactivate it.',
 'erreur_plugin_fichier_absent' => 'File missing',
 'erreur_plugin_fichier_def_absent' => 'Definition file missing',
 'erreur_plugin_nom_fonction_interdit' => 'Prohibited function name',
@@ -198,9 +202,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 // F
 'forum_info_original' => 'original',
 
+// H
+'htaccess_a_simuler' => 'Warning: your HTTP server\'s configuration ignores the @htaccess@ files. In order to guarantee a good security, you must modify the server\'s configuration concerning this matter, or you have to make sure that the constants @constantes@ (which could be defined in the file mes_options.php) have as their values directories outside @document_root@.',
+'htaccess_inoperant' => 'inoperative htaccess',
+
 // I
 'ical_info1' => 'This page presents you with several methods to keep in contact with this site\'s activity.',
-'ical_info2' => 'For more information, do not hesitate to visit <a href="http://www.spip.net/en_suivi">SPIP\'s documentation</a>.',
+'ical_info2' => 'For more information, do not hesitate to visit <a href="@spipnet@">SPIP\'s documentation</a>.',
 'ical_info_calendrier' => 'Two calendars are at your disposal. The first is a site map showing all the published articles. The second contains editorial annoucements as well as your latest private messages: it is reserved for you thanks to a personal key that you can modify at any time by renewing your password.',
 'ical_lien_rss_breves' => 'Syndication of the site\'s news items',
 'ical_methode_http' => 'Downloading',
@@ -260,6 +268,8 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_activer_forum_public' => '<i>To enable public forums, please choose their default mode of moderation:</i>',
 'info_admin_gere_rubriques' => 'This administrator manages the following sections:',
 'info_admin_gere_toutes_rubriques' => 'This administrator manages <b>all the sections</b>.',
+'info_admin_statuer_webmestre' => 'Give webmaster rights to this administrator ',
+'info_admin_webmestre' => 'This administrator is <b>webmaster</b>',
 'info_administrateur' => 'Administrator',
 'info_administrateur_1' => 'Administrator',
 'info_administrateur_2' => 'of the site (<i>use with caution</i>)',
@@ -322,7 +332,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_compresseur_gzip' => 'It is advisable to first check if the service provider systematically compresses PHP scripts. To do this you can, for example, use the following service: @testgzip@',
 'info_compresseur_texte' => 'If your server does not automatically compress HTML pages when sending them, you can attempt to force the compression in order to reduce the size of the pages transmitted.<b>Warning</b>: this can have a noticeable adverse effect on the performance of some servers, ',
 'info_compresseur_titre' => 'Optimisations and compression',
-'info_config_forums_prive' => 'In the editing area of the site several differnt kinds of forum may be activated:',
+'info_config_forums_prive' => 'You can activate various tupes of forums in the site\'s private area:',
 'info_config_forums_prive_admin' => 'A forum reserved for site administrators:',
 'info_config_forums_prive_global' => 'A global forum, open to all the authors:',
 'info_config_forums_prive_objets' => 'A forum attached to each article, news item, referenced site, etc.:',
@@ -335,7 +345,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_conflit_edition_votre_version' => 'Your version:',
 'info_connexion_base' => 'Trying to connect to database',
 'info_connexion_base_donnee' => 'Connection to your database',
-'info_connexion_ldap_ok' => 'Your LDAP connection succeeded.</b><p /> You can go to the next step.',
+'info_connexion_ldap_ok' => 'Your LDAP connection succeeded.</b><p> You can go to the next step.</p>',
 'info_connexion_mysql' => 'Your SQL connection',
 'info_connexion_ok' => 'Connection succeeded.',
 'info_contact' => 'Contact',
@@ -387,13 +397,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 		extra forum reserved for the administrators.',
 'info_forum_statistiques' => 'Visits statistics',
 'info_forums_abo_invites' => 'Your site contains forums by subscription; visitors may register for them on the public site.',
-'info_gauche_admin_effacer' => '<b>Only administrators have access to this page.</b><p /> It provides access to various technical maintenance tasks. Some of them give rise to a specific authentication process requiring an FTP access to the Web site.',
-'info_gauche_admin_tech' => '<b>Only administrators have access to this page.</b><p /> It provides access to various
-maintenance tasks. Some of them give rise to a specific authentication process
-requiring an FTP access to the Web site.',
-'info_gauche_admin_vider' => '<b>Only administrators have access to this page.</b><p /> It provides access to various
-maintenance tasks. Some of them give rise to a specific authentication process
-requiring an FTP access to the Web site.',
+'info_gauche_admin_effacer' => '<b>Only webmasters have access to this page.</b><p> It provides access to various technical maintenance tasks. Some of them require a specific authentication process through an FTP access to the Web site.</p>',
+'info_gauche_admin_tech' => '<b>Only webmasters have access to this page.</b><p> It provides access to various
+maintenance tasks. Some of them require a specific authentication process
+through an FTP access to the Web site.</p>',
+'info_gauche_admin_vider' => '<b>Only webmasters have access to this page.</b><p> It provides access to various
+maintenance tasks. Some of them require a specific authentication process
+through an FTP access to the Web site.</p>',
 'info_gauche_auteurs' => 'You will find here all the site\'s authors.
  The status of each one is indicated by the colour of there icon (administrator = green; editor = yellow).',
 'info_gauche_auteurs_exterieurs' => 'External authors, without any access to the site, are indicated by a blue icon; deleted authors by a dustbin.',
@@ -549,7 +559,7 @@ requiring an FTP access to the Web site.',
   giving them their access code to the private area. Some
   service providers disallow the sending of email from their
   servers: in that case, automated registration cannot be
-  implemented.',
+  implemented.</i></blockquote>',
 'info_question_mots_cles' => 'Do you wish to use keywords in your site?',
 'info_question_proposer_site' => 'Who can propose referenced sites?',
 'info_question_utilisation_moteur_recherche' => 'Do you wish to use the search engine integrated to SPIP?
@@ -658,6 +668,7 @@ requiring an FTP access to the Web site.',
 'info_total' => 'total:',
 'info_tous_articles_en_redaction' => 'All the articles in progress',
 'info_tous_articles_presents' => 'All the articles published in this section',
+'info_tous_articles_refuses' => 'All refused articles',
 'info_tous_les' => 'every:',
 'info_tous_redacteurs' => 'Announcements to all editors',
 'info_tout_site' => 'The entire site',
@@ -698,7 +709,7 @@ in a colour indicating their status:',
 'install_select_langue' => 'Select a language then click on the button "next" to start the installation procedure.',
 'install_select_type_db' => 'Indicate the type of database:',
 'install_select_type_mysql' => 'MySQL',
-'install_select_type_pgsql' => 'PostgreSQL',
+'install_select_type_pg' => 'PostgreSQL',
 'install_select_type_sqlite2' => 'SQLite 2',
 'install_select_type_sqlite3' => 'SQLite 3',
 'install_serveur_hebergeur' => 'Database server attributed by the service provider',
@@ -781,6 +792,9 @@ in a colour indicating their status:',
 'jour_non_connu_nc' => 'unknown',
 
 // L
+'ldap_correspondance' => 'inherit field @champ@',
+'ldap_correspondance_1' => 'Inherit LDAP fields',
+'ldap_correspondance_2' => 'For each of the following SPIP fields, enter the name of the corresponding LDAP field. Leave it blank if you don\'t wanted it filled, separate with spaces or commas to try several LDAP fields.',
 'lien_ajout_destinataire' => 'Add this recipient',
 'lien_ajouter_auteur' => 'Add this author',
 'lien_ajouter_participant' => 'Add a participant',
@@ -823,6 +837,9 @@ in a colour indicating their status:',
 'module_texte_traduction' => 'The language file &laquo;&nbsp;@module@&nbsp;&raquo; is available in:',
 'mois_non_connu' => 'unknown',
 
+// N
+'nouvelle_version_spip' => 'SPIP version @version@ is available',
+
 // O
 'onglet_contenu' => 'Contents',
 'onglet_declarer_une_autre_base' => 'Declare another database',
@@ -832,24 +849,12 @@ in a colour indicating their status:',
 'onglet_proprietes' => 'Properties',
 'onglet_repartition_actuelle' => 'now',
 'onglet_sous_rubriques' => 'Sub-sections',
-'ortho_ajouter_ce_mot' => 'Add this word to the dictionary',
-'ortho_aucune_suggestion' => 'No suggestion was found for this word.',
-'ortho_avis_privacy' => 'Spip contains a spell checker. However, before enabling it, please read the following paragraph carefully:',
-'ortho_avis_privacy2' => 'In order to check the spelling of a text, the site will send the list of words to be checked to an external "spelling server", which people of the Spip community have made available. The words are mixed up before being sent in order to maintain some level of confidentiality. If you are concerned about your data, do not activate this option (and withdraw all your information from the web at once).',
-'ortho_ce_mot_connu' => 'This word is in the site\'s dictionary.',
-'ortho_dico_absent' => 'No dictionary was found for this language',
-'ortho_mode_demploi' => 'Urecognised words have been highlighted in red. Click on these words to see suggested corrections.',
-'ortho_mots_a_corriger' => 'words to correct',
-'ortho_orthographe' => 'Spelling',
-'ortho_supprimer_ce_mot' => 'Remove this word from the dictionary',
-'ortho_trop_de_fautes' => 'Your text contains too many mistakes! In order to avoid overloading the system, no corrections have been suggested.',
-'ortho_verif_impossible' => 'The system cannot check the spelling of this text.',
-'ortho_verifier' => 'Spell check',
 
 // P
 'page_pas_proxy' => 'This page shouldn\'t go through the proxy',
 'pas_de_proxy_pour' => 'If necessary, indicate for which machines or domains this proxy should not apply (for example: @exemple@)',
 'plugin_charge_paquet' => 'Loading the archive file @name@',
+'plugin_charger' => 'Download',
 'plugin_erreur_charger' => 'error: impossible to load @zip@',
 'plugin_erreur_droit1' => 'The directory <code>@dest@</code> cannot be written to.',
 'plugin_erreur_droit2' => 'Please check the write permissions for this directory (and create the directory if necessary). Alternatively, install the files by FTP.',
@@ -860,6 +865,7 @@ in a colour indicating their status:',
 'plugin_etat_test' => 'being tested',
 'plugin_impossible_activer' => 'Impossible to activate the plugin  @plugin@',
 'plugin_info_automatique1' => 'If you wish to authorise the automatic installation of plugins, please:',
+'plugin_info_automatique1_lib' => 'If you wish to authorise the automatic installation of this library, please:',
 'plugin_info_automatique2' => 'Create a directory <code>@rep@</code>&nbsp;;',
 'plugin_info_automatique3' => 'Check that the server has the permissions to write in this directory.',
 'plugin_info_automatique_creer' => 'to create at the root of the website.',
@@ -871,6 +877,8 @@ in a colour indicating their status:',
 'plugin_info_automatique_liste_update' => 'Update the lists',
 'plugin_info_automatique_ou' => 'or...',
 'plugin_info_automatique_select' => 'Select a plugin below: SPIP will load it and will install it in the <code>@rep@</code> directory. If the plugin already exists, it will be updated.',
+'plugin_info_extension_1' => 'The extensions below are loaded and active in the @extensions@ directory.',
+'plugin_info_extension_2' => 'They cannot be uninstalled.',
 'plugin_info_telecharger' => 'load from @url@ and install to @rep@',
 'plugin_librairies_installees' => 'Installed libraries',
 'plugin_necessite_lib' => 'This plugin requires the library @lib@',
@@ -879,6 +887,7 @@ in a colour indicating their status:',
 'plugin_source' => 'source:&nbsp;',
 'plugin_titre_automatique' => 'Automatic installation',
 'plugin_titre_automatique_ajouter' => 'Add plugins',
+'plugin_titre_installation' => 'Installation of the @plugin@ plugin',
 'plugin_zip_active' => 'Continue in order to activate',
 'plugin_zip_adresse' => 'Below, give the address of a zip file of a plugin to be loaded, or else the address of a list of plugins.',
 'plugin_zip_adresse_champ' => 'Address of the plugin or of the list&nbsp;',
@@ -887,11 +896,17 @@ in a colour indicating their status:',
 'plugin_zip_installe_rep_finie' => 'The file @zip@ has been unpacked and installed in the @rep@ directory',
 'plugin_zip_installer' => 'You can install it now.',
 'plugin_zip_telecharge' => 'The file @zip@ has been loaded',
+'plugins_actif_aucun' => 'No plugin is active.',
+'plugins_actif_un' => 'One plugin active',
 'plugins_actifs' => '@count@ active plugins.',
+'plugins_actifs_liste' => 'Active plugins',
 'plugins_compte' => '@count@ plugins',
+'plugins_disponible_un' => 'One plugin available',
 'plugins_disponibles' => '@count@ available plugins.',
 'plugins_erreur' => 'Error in the plugins: @plugins@',
 'plugins_liste' => 'Plugin list',
+'plugins_liste_extensions' => 'Extensions',
+'plugins_recents' => 'Recent plugins',
 'plugins_vue_hierarchie' => 'Hierarchy',
 'plugins_vue_liste' => 'List',
 'protocole_ldap' => 'Protocol version:',
@@ -930,7 +945,7 @@ including <i>all</i> the access parameters for editors and administrators. After
 reinstall SPIP in order to recreate a new database and the first administrator\'s access.',
 'texte_admin_effacer_stats' => 'This command deletes all data linked to the statistics of visits to the site, including the relative popularity of articles.',
 'texte_admin_tech_01' => 'This option allows you to save the content of the database in a file stored in the directory @dossier@. Also, remember to retrieve the whole @img@, directory, which contains the images and the documents used in the articles and sections.',
-'texte_admin_tech_02' => 'Warning: this backup can ONLY be restored in a site installed under the same version of SPIP. You should certainly not "empty the database" and expect to re-install the backup after the upgrade... For more information refer to <a href=\'http://www.spip.net/en_article2428.html\'>SPIP documentation</a>.',
+'texte_admin_tech_02' => 'Warning: this backup can ONLY be restored by the same version of SPIP that created it. You should not "empty the database" and expect to re-install the backup after the upgrade... For more information refer to <a href="@spipnet@">SPIP documentation</a>.',
 'texte_admin_tech_03' => 'You can choose to save the file in a compressed form, to 
 	speed up its transfer to your machine or to a backup server and save some disk space.',
 'texte_admin_tech_04' => 'In order to merge with another database, you can restrict the backup to one section: ',
@@ -989,7 +1004,7 @@ reinstall SPIP in order to recreate a new database and the first administrator\'
 'texte_documents_joints' => 'You can allow the addition of documents (office files, images,
  multimedia, etc.) to articles and/or sections. These files
  could then be referenced in
- the article or displayed separately.<p />',
+ the article or displayed separately.',
 'texte_documents_joints_2' => 'This setting does not stop the insertion of images directly in the articles.',
 'texte_effacer_base' => 'Delete the SPIP database',
 'texte_effacer_donnees_indexation' => 'Delete indexing data',
@@ -997,14 +1012,14 @@ reinstall SPIP in order to recreate a new database and the first administrator\'
 'texte_en_cours_validation' => 'The following articles and news are submitted for publication.',
 'texte_en_cours_validation_forum' => 'You can give your comments by using the forums which are attached to them.',
 'texte_enrichir_mise_a_jour' => 'You can enrich the layout of your text by using &laquo;typographical shortcuts&raquo;.',
-'texte_fichier_authent' => '<b>Should SPIP create the <tt>.htpasswd</tt>
-  and <tt>.htpasswd-admin</tt> files in the directory @dossier@?</b><p />
+'texte_fichier_authent' => '<b>Should SPIP create the special files <tt>.htpasswd</tt>
+  and <tt>.htpasswd-admin</tt> in the directory @dossier@?</b><p>
   These files can be used to restrict access to authors
-  and administrators in other parts of your site
-  (for instance, external statistical programme).<p />
-  If you have no need of such files, you can leave this option
+  and administrators to other parts of your site
+  (for instance, external statistical programme).</p><p>
+  If you have no need of such files, you can keep this option
   with its default value (no files 
-  creation).',
+  creation).</p>',
 'texte_informations_personnelles_1' => 'The system will provide you now with a custom access to the site.',
 'texte_informations_personnelles_2' => '(Note: if it is a reinstallation, and your access is still working, you can',
 'texte_introductif_article' => '(Introductory Text to the article.)',
@@ -1026,7 +1041,7 @@ reinstall SPIP in order to recreate a new database and the first administrator\'
 'texte_login_precaution' => 'Warning! This is the login with which you are connected now.
 	Use this form with caution...',
 'texte_message_edit' => 'Warning: this message can be modified by all the site administrators, and it appears to all editors. Use the announcements only to stress important events in the site\'s life.',
-'texte_messagerie_agenda' => 'A messaging system allows the authors of the site to communicate directly in the editing area of the site. It is linked to a calendar.',
+'texte_messagerie_agenda' => 'A messaging system allows the authors of the site to communicate directly in the site\'s private area. It is linked to a calendar.',
 'texte_messages_publics' => 'Public Messages of the article:',
 'texte_mise_a_niveau_base_1' => 'You have just updated SPIP files.
 	Now you must upgrade the site\'s
@@ -1050,7 +1065,7 @@ reinstall SPIP in order to recreate a new database and the first administrator\'
 'texte_nouveau_message' => 'New message',
 'texte_nouveau_mot' => 'New keyword',
 'texte_nouvelle_version_spip_1' => 'You have just installed a new version of SPIP.',
-'texte_nouvelle_version_spip_2' => 'This new version requires a more thorough update than usual. If you are the webmaster of this site, please delete the file @connect@ and restart the installation in order to update your database connection parameters. <p />(NB.: if you have forgotten your connection parameters, take a look at the file @connect@ before deleting it!)',
+'texte_nouvelle_version_spip_2' => 'This new version requires a more thorough update than usual. If you are the webmaster of this site, please delete the file @connect@ and restart the installation in order to update your database connection parameters. <p>(PS.: if you have forgotten your connection parameters, take a look at the file @connect@ before deleting it!)</p>',
 'texte_operation_echec' => 'Go back to the previous page, select another database or create a new one. Verify the information provided by your host.',
 'texte_plus_trois_car' => 'more than 3 characters',
 'texte_plusieurs_articles' => 'Several authors were found for "@cherche_auteur@":',
@@ -1072,14 +1087,14 @@ to refresh only one page, you would rather do it from the public area and use th
 'texte_requetes_echouent' => '<b>When some SQL queries fail
   systematically, without apparent reason, it is possible
   that the database itself
-  is the culprit.</b><p />
-  SQL has a feature for repairing tables
-  which have been accidentally corrupted.
-  Here, you can try to execute this repair; in
+  is the culprit.</b><p>
+  The SQL server has a feature for repairing tables
+  which have been accidentally
+ corrupted. Here, you can attempt to execute this repair; in
   the event of failure, you should keep a copy of the display, which might contain
-  clues to where the problem lies.<p />
+  clues to where the problem lies.</p><p>
   If the problem persists, contact your 
-  service provider.<p />',
+  service provider.</p>',
 'texte_restaurer_base' => 'Restore the content of the database backup',
 'texte_restaurer_sauvegarde' => 'This option allows you to restore a previous
 backup of the database. To achieve this, the file containing the backup should have been
@@ -1155,10 +1170,10 @@ you can perform searches on sites and
 'titre_compacter_script_css' => 'Compression of scripts and CSS',
 'titre_compresser_flux_http' => 'Compression of HTTP data',
 'titre_config_contenu_notifications' => 'Notifications',
-'titre_config_contenu_prive' => 'In the editing area',
+'titre_config_contenu_prive' => 'In the private area',
 'titre_config_contenu_public' => 'On the public site',
 'titre_config_fonctions' => 'Site configuration',
-'titre_config_forums_prive' => 'Forums in the editing area',
+'titre_config_forums_prive' => 'Forums in the private area',
 'titre_config_groupe_mots_cles' => 'Configuration of the keyword groups',
 'titre_configuration' => 'Site configuration',
 'titre_conflit_edition' => 'Conflict while editing',

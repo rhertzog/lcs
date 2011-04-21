@@ -3,7 +3,7 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -26,14 +26,15 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'avis_conseil_selection_mot_cle' => '<b>Grupo importante:</b>&eacute; moi aconsellable seleccionar unha palabra chave neste grupo.',
 'avis_deplacement_rubrique' => 'Atenci&oacute;n! Este tema cont&eacute;n @contient_breves@ breve@scb@: se a(s) quere desprazar, conf&iacute;rmeo aqu&iacute;.',
 'avis_destinataire_obligatoire' => 'Tes que indicar o destino antes de enviar esta mensaxe.',
+'avis_doublon_mot_cle' => 'Xa existe unha palabra con ese t&iacute;tulo. Est&aacute; seguro de que quere crear o mesmo?',
 'avis_erreur_connexion_mysql' => 'Erro de conexi&oacute;n SQL',
 'avis_erreur_version_archive' => '<b>Atenci&oacute;n! O ficheiro @arquivo@ corresponde a
   outra versi&oacute;n de SPIP que non &eacute; a que ten instalada.</b>
   Pode estar ante graves problemas: hai risco de destruci&oacute;n
-  da s&uacute;a base de datos, fallos no funcionamento do web, etc.
+  da s&uacute;a base de datos, erros no funcionamento do web, etc.
   Non valide esta solicitude de importaci&oacute;n.<p>Para m&aacute;is
-  informaci&oacute;ns, consulte <A HREF=\'http://www.spip.net/fr_article1489.html\'>
-  a documentaci&oacute;n de SPIP</A>.',
+  informaci&oacute;ns, consulte <a href="@spipnet@">
+  a documentaci&oacute;n de SPIP</A>.</p>',
 'avis_espace_interdit' => '<b>Espazo prohibido</b><div>SPIP xa est&aacute; instalado.</div>',
 'avis_lecture_noms_bases_1' => 'O programa de instalaci&oacute;n non puido ler os nomes das bases de datos instaladas.',
 'avis_lecture_noms_bases_2' => 'Pode que non haxa ningunha base dispo&ntilde;&iacute;bel, ou que a funci&oacute;n que lista as bases estea desactivada por motivos de seguridade (caso moi frecuente en moitos provedores de servizos).',
@@ -123,6 +124,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'config_erreur_base_sup' => 'SPIP non ten acceso &aacute; lista de bases de datos accesibles',
 'config_info_base_sup' => 'Se ten outras bases de datos para consultas a trav&eacute;s de SPIP, co seu servidor SQL ou con outro, o formulario seguinte permitiralle declaralas. Se deixa certos campos baleiros, os identificadores de conexi&oacute;n &aacute; base de datos principal ser&aacute;n os utilizados.',
 'config_info_base_sup_disponibles' => 'Bases suplementarias xa consultables-interrogables:',
+'config_info_enregistree' => 'A nova configuraci&oacute;n foi gardada',
 'config_info_logos' => 'Cada elemento do web pode ter un logo, as&iacute; como un &laquo;&nbsp;logo de substitucion&nbsp;&raquo;',
 'config_info_logos_utiliser' => 'Utilizar os logos',
 'config_info_logos_utiliser_non' => 'Non utilizar os logos',
@@ -148,6 +150,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 // E
 'email' => 'correo electr&oacute;nico',
 'email_2' => 'correo electr&oacute;nico:',
+'en_savoir_plus' => 'M&aacute;is informaci&oacute;n',
 'entree_adresse_annuaire' => 'Enderezo da gu&iacute;a',
 'entree_adresse_email' => 'O seu enderezo de correo-e',
 'entree_adresse_fichier_syndication' => 'Enderezo do ficheiro de afiliaci&oacute;n&nbsp;:',
@@ -184,6 +187,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'entree_texte_breve' => 'Texto da breve',
 'entree_titre_obligatoire' => '<b>T&amp;iacute;tulo</b> [Obrigado]<br />',
 'entree_url' => 'O enderezo (URL) do teu web',
+'erreur_plugin_desinstalation_echouee' => 'A desinstalaci&oacute;n do m&oacute;dulo fallou. No entanto, pode desactivalo.',
 'erreur_plugin_fichier_absent' => 'Ficheiro ausente',
 'erreur_plugin_fichier_def_absent' => 'Ficheiro de definici&oacute;n ausente',
 'erreur_plugin_nom_fonction_interdit' => 'Nome de funci&oacute;n prohibido',
@@ -195,9 +199,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 // F
 'forum_info_original' => 'orixinal',
 
+// H
+'htaccess_a_simuler' => 'Aviso: a configuraci&oacute;n do seu servidor HTTP non ten conta dos ficheiros @htaccess@. Para poder asegurar unha boa seguridade, c&oacute;mpre que vostede modifique a configuraci&oacute;n neste aspecto, ou ben que as constantes @constantes@ (definibles no ficheiro mes_options.php) te&ntilde;an como valor  cartafoles f&oacute;ra de @document_root@.',
+'htaccess_inoperant' => 'o htaccess non funciona',
+
 // I
 'ical_info1' => 'Esta p&aacute;xina presenta varios m&eacute;todos para establecer contactos coas novidades deste web.',
-'ical_info2' => 'Para obter m&aacute;is detalles sobre todas estas t&eacute;cnicas, non dubide en consultar <a href="http://www.spip.net/fr_suivi">a documentaci&oacute;n de SPIP</a>.',
+'ical_info2' => 'Para obter m&aacute;is detalles sobre todas estas t&eacute;cnicas, non dubide en consultar <a href="@spipnet@">a documentaci&oacute;n de SPIP</a>.',
 'ical_info_calendrier' => 'Dous calendarios est&aacute;n &aacute; s&uacute;a disposici&oacute;n. O primeiro e un mapa do web que anuncia todos os artigos publicados. O segundo cont&eacute;n os anuncios editoriais as&iacute; como as s&uacute;as &uacute;ltimas mensaxes privadas&nbsp;: estalle reservada gracias a unha chave persoal, que pode modificar en calquera momento anovando a s&uacute;a chave.',
 'ical_lien_rss_breves' => 'Afiliaci&oacute;n das breves do web',
 'ical_methode_http' => 'Descarga',
@@ -257,6 +265,8 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
   de moderaci&amp;oacute;n predeterminado:</i>',
 'info_admin_gere_rubriques' => 'Esta persoa xestiona os seguintes temas:',
 'info_admin_gere_toutes_rubriques' => 'Esta persoa xestiona <b>todos os temas</b>.',
+'info_admin_statuer_webmestre' => 'Dar a este administrador dereitos de webm&aacute;ster',
+'info_admin_webmestre' => 'Este administrdor &eacute; <b>webm&aacute;ster</b>',
 'info_administrateur' => 'Xesti&oacute;n',
 'info_administrateur_1' => 'Xesti&oacute;n',
 'info_administrateur_2' => 'do web (<i>&uacute;sese con sentidi&ntilde;o</i>)',
@@ -332,7 +342,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_conflit_edition_votre_version' => 'A s&uacute;a versi&oacute;n&nbsp;:',
 'info_connexion_base' => 'Proba de conexi&oacute;n coa base de datos',
 'info_connexion_base_donnee' => 'Conexi&oacute;n &aacute;s s&uacute;a base de datos',
-'info_connexion_ldap_ok' => 'Conexi&oacute;n LDAP conquerida.</b><p/> Pode pasar &aacute; etapa seguinte.',
+'info_connexion_ldap_ok' => 'Conseguiu conexi&oacute;n LDAP.</b><p> Pode pasar &aacute; etapa seguinte.</p>',
 'info_connexion_mysql' => 'A s&uacute;a conexi&oacute;n SQL',
 'info_connexion_ok' => 'Conexi&oacute;n feita.',
 'info_contact' => 'Contacto',
@@ -385,9 +395,9 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
   complementar, reservado ao equipo de xesti&oacute;n.',
 'info_forum_statistiques' => 'Estat&iacute;sticas das visitas',
 'info_forums_abo_invites' => 'O seu web disp&oacute;n de foros para se aboar&nbsp;; os visitantes est&aacute;n invitados a se rexistrar neles na parte p&uacute;blica do web.',
-'info_gauche_admin_effacer' => '<b>Esta p&aacute;xina &eacute; &uacute;nicamente accessible para o equipo de xesti&oacute;n do web.</b><p/> D&aacute; acceso a diferentes funci&oacute;ns de mantemento t&eacute;cnico. Algunhas delas dan lugar a procesos de autenticaci&oacute;n espec&iacute;fica, o cal esixe ter un acceso por FTP ao web.',
-'info_gauche_admin_tech' => '<b>Esta p&aacute;xina &eacute; unicamente accessible para o equipo de xesti&oacute;n do web.</b><p/> D&aacute; acceso a diferentes funci&oacute;ns de mantemento t&eacute;cnico. Algunhas delas dan lugar a procesos de autenticaci&oacute;n espec&iacute;fica, o cal esixe ter un acceso por FTP ao web.',
-'info_gauche_admin_vider' => '<b>Esta p&aacute;xina &eacute; unicamente accesible para o equipo de xesti&oacute;n do web.</b><p/> D&aacute; acceso a diferentes funci&oacute;ns de mantemento t&eacute;cnico. Algunhas delas dan lugar a procesos de autenticaci&oacute;n espec&iacute;fica, que esixe ter un acceso por FTP ao web.',
+'info_gauche_admin_effacer' => '<b>Esta p&aacute;xina &eacute; unicamente accessible para o equipo de xesti&oacute;n do web.</b><p> D&aacute;lle acceso a diferentes funci&oacute;ns de mantemento t&eacute;cnico. Algunhas delas dan lugar a procesos de autenticaci&oacute;n espec&iacute;ficos, que esixen ter un acceso por FTP ao web.</p>',
+'info_gauche_admin_tech' => '<b>Esta p&aacute;xina &eacute; unicamente accessible para o equipo de xesti&oacute;n do web.</b><p> D&aacute;lle acceso a diferentes funci&oacute;ns de mantemento t&eacute;cnico. Algunhas delas dan lugar a procesos de autenticaci&oacute;n espec&iacute;ficos, que esixen ter un acceso por FTP ao web.</p>',
+'info_gauche_admin_vider' => '<b>Esta p&aacute;xina &eacute; unicamente accesible para o equipo de xesti&oacute;n do web.</b><p> D&aacute;lle acceso a diferentes funci&oacute;ns de mantemento t&eacute;cnico. Algunhas delas dan lugar a procesos de autenticaci&oacute;n espec&iacute;ficos, que esixeb ter un acceso por FTP ao web.</p>',
 'info_gauche_auteurs' => 'Aqu&iacute; atopar&aacute;s a todos os autores do web.
   O seu status ind&iacute;case coa cor da s&uacute;a &iacute;cona (xestor = verde; redactor = amarela).',
 'info_gauche_auteurs_exterieurs' => 'Os colaboradores exteriores, sen acceso ao web, ind&iacute;canse por unha &iacute;cona azul;
@@ -511,7 +521,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_pas_de_forum' => 'non hai foro',
 'info_passe_trop_court' => 'Chave moi curta.',
 'info_passes_identiques' => 'As d&uacute;as chaves non son id&eacute;nticas.',
-'info_pense_bete_ancien' => 'Notas vellas',
+'info_pense_bete_ancien' => 'Notas vellas', # MODIF
 'info_plus_cinq_car' => 'm&aacute;is de 5 caracteres',
 'info_plus_cinq_car_2' => '(M&aacute;is de 5 caracteres)',
 'info_plus_trois_car' => '(M&aacute;is de 3 caracteres)',
@@ -540,13 +550,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_question_activer_compresseur' => 'Quere activar a compactaci&oacute;n do fluxo  HTTP ?',
 'info_question_gerer_statistiques' => 'O seu web ten que xerar as estat&iacute;sticas das visitas?',
 'info_question_inscription_nouveaux_redacteurs' => 'Aceptar&aacute; as inscrici&oacute;ns de novos redactores
-  dende o web p&uacute;blico? De aceptalos, os visitantes poderanse rexistrar cun
+  desde o web p&uacute;blico? De aceptalos, os visitantes poderanse rexistrar cun
   formulario automatizado e acceder&aacute;n ao espazo privado para
   propor os seus propios artigos.<blockquote> <i>Trala fase de inscrici&oacute;n,
-  han recibir un correo electr&oacute;nico autom&aacute;tico
+  os usuarios recibir&aacute;n un correo electr&oacute;nico autom&aacute;tico
   cos seus c&oacute;digos de acceso ao web privado. Alg&uacute;ns
   provedores desactivan o env&iacute;o autom&aacute;tico desde os seus servidores:
-  nese caso, a inscrici&oacute;n autom&aacute;tica &eacute; imposible.',
+  nese caso, a inscrici&oacute;n autom&aacute;tica &eacute; imposible.</i></blockquote>',
 'info_question_mots_cles' => 'Quere empregar as palabras chave neste seu web?',
 'info_question_proposer_site' => 'Quen pode propor os webs referidos?',
 'info_question_utilisation_moteur_recherche' => 'Quere empregar o motor de procura integrado en SPIP?
@@ -655,6 +665,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_total' => 'total:',
 'info_tous_articles_en_redaction' => 'Todo os artigos en proceso de redacci&oacute;n',
 'info_tous_articles_presents' => 'Todos os artigos publicados neste tema',
+'info_tous_articles_refuses' => 'Todos os artigos foron rexeitados',
 'info_tous_les' => 'todos os:',
 'info_tous_redacteurs' => 'Anuncios a toda a redacci&oacute;n',
 'info_tout_site' => 'Todo o web',
@@ -695,7 +706,7 @@ cunha cor que indica o seu estado&nbsp;:',
 'install_select_langue' => 'Selecciona un idioma e preme o bot&oacute;n &laquo;seguinte&raquo; para comezar co proceso de instalaci&oacute;n.',
 'install_select_type_db' => 'Indique o tipo de base de datos&nbsp;:',
 'install_select_type_mysql' => 'MySQL',
-'install_select_type_pgsql' => 'PostgreSQL',
+'install_select_type_pg' => 'PostgreSQL',
 'install_select_type_sqlite2' => 'SQLite 2',
 'install_select_type_sqlite3' => 'SQLite 3',
 'install_serveur_hebergeur' => 'Servidor da base de datos atribu&iacute;da polo aloxador',
@@ -778,6 +789,9 @@ cunha cor que indica o seu estado&nbsp;:',
 'jour_non_connu_nc' => 'non consta',
 
 // L
+'ldap_correspondance' => 'h&eacute;ritage du champ @champ@', # NEW
+'ldap_correspondance_1' => 'H&eacute;ritage des champs LDAP', # NEW
+'ldap_correspondance_2' => 'Pour chacun des champs SPIP suivants, indiquer le nom du champ LDAP correspondant. Laisser vide pour ne pas le remplir, s&eacute;parer par des espaces ou des virgules pour essayer plusieurs champs LDAP.', # NEW
 'lien_ajout_destinataire' => 'Engadir destinatari@',
 'lien_ajouter_auteur' => 'Engadir autor/a',
 'lien_ajouter_participant' => 'Engadir participante',
@@ -820,6 +834,9 @@ cunha cor que indica o seu estado&nbsp;:',
 'module_texte_traduction' => 'O ficheiro de lingua &laquo;&nbsp;@module@&nbsp;&raquo; est&aacute; dispo&ntilde;ible en&nbsp;:',
 'mois_non_connu' => 'desco&ntilde;ecido',
 
+// N
+'nouvelle_version_spip' => 'La version @version@ de SPIP est disponible', # NEW
+
 // O
 'onglet_contenu' => 'Contido',
 'onglet_declarer_une_autre_base' => 'Declarar algunha outra base de datos',
@@ -829,24 +846,12 @@ cunha cor que indica o seu estado&nbsp;:',
 'onglet_proprietes' => 'Propiedades',
 'onglet_repartition_actuelle' => 'actualmente',
 'onglet_sous_rubriques' => 'Subsecci&oacute;ns',
-'ortho_ajouter_ce_mot' => 'Engadir a palabra ao dicionario',
-'ortho_aucune_suggestion' => 'Non hai suxesti&oacute;n relacionada con este termo',
-'ortho_avis_privacy' => 'Un comprobador ortogr&aacute;fico foi integrado en SPIP. De todas maneiras, antes de o activar, lea con atenci&oacute;n o par&aacute;grafo seguinte&nbsp;:',
-'ortho_avis_privacy2' => 'Para comprobar a ortograf&iacute;a dun texto, o web vai enviar a lista de termos para comprobar a un dos &laquo;&nbsp;servidores d\'ortograf&iacute;a&nbsp;&raquo; externos que po&ntilde;en &aacute; s&uacute;a disposici&oacute;n varios membros da comunidade SPIP. As verbas son enviadas con desorde co fin de asegurar un m&iacute;nimo de confidencialidade. Se vostede ten reservas cos seus datos, non active esta opci&oacute;n (e retire todo dato persoal do web).',
-'ortho_ce_mot_connu' => 'Este termo est&aacute; recollido no dicionario do web',
-'ortho_dico_absent' => 'Non se atopou ning&uacute;n dicionario para esta  lingua',
-'ortho_mode_demploi' => 'Os termos non reco&ntilde;ecidos est&aacute;n subli&ntilde;ados en vermello. Pode premer sobre cada verba para ver suxesti&oacute;ns de correcci&oacute;n',
-'ortho_mots_a_corriger' => 'Termos para corrixir',
-'ortho_orthographe' => 'Ort&oacute;grafo',
-'ortho_supprimer_ce_mot' => 'Sacar este termo do dicionario',
-'ortho_trop_de_fautes' => 'Atenci&oacute;n&nbsp;: o seu texto cont&eacute;n demasiadas faltas, non se suxire ningunha correcci&oacute;n co fin de non sobrecargar o sistema.',
-'ortho_verif_impossible' => 'O sistema non pode comprobar a ortograf&iacute;a deste texto.',
-'ortho_verifier' => 'Comprobar a ortograf&iacute;a',
 
 // P
 'page_pas_proxy' => 'Esta p&aacute;xina non debe pasar por un proxy',
 'pas_de_proxy_pour' => 'Segundo a s&uacute;a necesidade, indique as m&aacute;quinas ou dominios para os cales este proxy non debe ser aplicado (por exemplo&nbsp;: @exemple@)',
 'plugin_charge_paquet' => 'Carga do paquete @name@',
+'plugin_charger' => 'Descargar',
 'plugin_erreur_charger' => 'erro&nbsp;: resulta imposible cargar @zip@',
 'plugin_erreur_droit1' => 'O cartafol <code>@dest@</code> non &eacute; accesible para escritura.',
 'plugin_erreur_droit2' => 'Verifique os dereitos deste cartafol (e crealos (no caso de ser necesario), ou instalar o ficheiros por FTP.',
@@ -857,6 +862,7 @@ cunha cor que indica o seu estado&nbsp;:',
 'plugin_etat_test' => 'en test',
 'plugin_impossible_activer' => 'Resulta imposible activar o plugin @plugin@',
 'plugin_info_automatique1' => 'Se quere autorizar a instalaci&oacute;n autom&aacute;tica de m&oacute;dulos (plugins)&nbsp;:',
+'plugin_info_automatique1_lib' => 'Se desexa autorizar a instalaci&oacute;n autom&aacute;tica desta biblioteca, vexa&nbsp;:',
 'plugin_info_automatique2' => 'Crear un cartafol <code>@rep@</code>&nbsp;;',
 'plugin_info_automatique3' => 'verificar que o servidor ten permisos para escribir neste cartafol.',
 'plugin_info_automatique_creer' => 'crear na ra&iacute;z do web.',
@@ -868,6 +874,8 @@ cunha cor que indica o seu estado&nbsp;:',
 'plugin_info_automatique_liste_update' => 'Actualizar as listaxes',
 'plugin_info_automatique_ou' => 'ou...',
 'plugin_info_automatique_select' => 'Seleccione a seguir un m&oacute;dulo&nbsp;: SPIP  descargarao e instalarao no cartafol <code>@rep@</code>&nbsp;; si o m&oacute;dulo xa existe ser&aacute; actualizado.',
+'plugin_info_extension_1' => 'As extensi&oacute;ns seguintes c&aacute;rganse e act&iacute;vanse no cartafol @extensions@.',
+'plugin_info_extension_2' => 'Non son desactivables',
 'plugin_info_telecharger' => 'descargar desde @url@ e instalalo no cartafol @rep@',
 'plugin_librairies_installees' => 'Librar&iacute;as instaladas',
 'plugin_necessite_lib' => 'Este m&oacute;dulo necesita a librar&iacute;a @lib@',
@@ -876,6 +884,7 @@ cunha cor que indica o seu estado&nbsp;:',
 'plugin_source' => 'fonte:&nbsp;',
 'plugin_titre_automatique' => 'Instalaci&oacute;n autom&aacute;tica',
 'plugin_titre_automatique_ajouter' => 'Engadir m&oacute;dulos',
+'plugin_titre_installation' => 'Instalaci&oacute;n do m&oacute;dulo @plugin@',
 'plugin_zip_active' => 'Contin&uacute;e para activalo',
 'plugin_zip_adresse' => 'indique seguidamente o enderezo dun ficheiro zip de m&oacute;dulo para descargar, ou mesmo o enderezo dunha lista de m&oacute;dulos (plugins).',
 'plugin_zip_adresse_champ' => 'Enderezo do m&oacute;dulo ou da listaxe&nbsp;',
@@ -884,11 +893,17 @@ cunha cor que indica o seu estado&nbsp;:',
 'plugin_zip_installe_rep_finie' => 'O ficheiro @zip@ foi descomprimido e instalado no cartafol @rep@',
 'plugin_zip_installer' => 'Agora p&oacute;deo instalar.',
 'plugin_zip_telecharge' => 'O ficheiro @zip@ foi descargado',
+'plugins_actif_aucun' => 'Non hai ning&uacute;n m&oacute;dulo activado.',
+'plugins_actif_un' => 'Activouse un m&oacute;dulo.',
 'plugins_actifs' => '@count@ m&oacute;dulos activados.',
+'plugins_actifs_liste' => 'M&oacute;dulos activos',
 'plugins_compte' => '@count@ m&oacute;dulos',
+'plugins_disponible_un' => 'Un m&oacute;dulo dispo&ntilde;ible',
 'plugins_disponibles' => '@count@ m&oacute;dulos dispo&ntilde;ibles.',
 'plugins_erreur' => 'Erro nos m&oacute;dulos : @plugins@',
 'plugins_liste' => 'Lista de m&oacute;dulos',
+'plugins_liste_extensions' => 'Extensi&oacute;ns',
+'plugins_recents' => 'M&oacute;dulos recentes.',
 'plugins_vue_hierarchie' => 'Xerarqu&iacute;a',
 'plugins_vue_liste' => 'Listaxe',
 'protocole_ldap' => 'Versi&amp;oacute;n do protocolo :',
@@ -928,8 +943,8 @@ cunha cor que indica o seu estado&nbsp;:',
 		nova base e un novo acceso de administraci&oacute;n.',
 'texte_admin_effacer_stats' => 'Este comando borra todos os datos ligados &aacute;s estat&iacute;sticas de visita do web, e incl&uacute;e a popularidade dos artigos.',
 'texte_admin_tech_01' => 'Esta opci&oacute;n permite gardar o contido da base nun ficheiro que ser&aacute; almaceado no directorio @dossier@. Non esqueza tam&eacute;n gardar o directorio @img@ &iacute;ntegro, que &eacute; o que cont&eacute;n as imaxes e os documentos anexos empregados nos artigos e nas secci&oacute;ns.',
-'texte_admin_tech_02' => '&iexcl;Atenci&oacute;n!: esta copia de seguridade s&oacute; poder&aacute; ser restaurada  nun web que te&ntilde;a instalada a MESMA versi&oacute;n de SPIP. Daquela de ningunha maneira &eacute; conveniente &laquo;&nbsp;baleirar a base&nbsp;&raquo; coa esperanza de reinstalar a copia de seguridade logo da actualizaci&oacute;n...Consulte
-  <a href="http://www.spip.net/fr_article1489.html">a documentaci&oacute;n de SPIP</a>.',
+'texte_admin_tech_02' => 'Atenci&oacute;n!: esta copia de seguridade S&Oacute; poder&aacute; ser restaurada  nun web que te&ntilde;a instalada a MESMA versi&oacute;n de SPIP. Daquela de ningunha maneira &eacute; conveniente &laquo;&nbsp;baleirar a base&nbsp;&raquo; coa esperanza de reinstalar a copia de seguridade logo da actualizaci&oacute;n...Consulte
+  <a href="@spipnet@">a documentaci&oacute;n de SPIP</a>.',
 'texte_admin_tech_03' => 'Pode escoller gardar o ficheiro en formato comprimido, para optimizar
   a transferencia ou a copia nun servidor de copias de seguridade, e para aforrar espazo no disco.',
 'texte_admin_tech_04' => 'Nun intento de fusi&oacute;n con outra base, pode limitar a copia de seguridade &aacute; secci&oacute;n:',
@@ -999,13 +1014,13 @@ demanda m&aacute;is potencia do servidor.',
 'texte_en_cours_validation_forum' => 'Non dubide avisar a trav&eacute;s dos foros que levan engadidos.',
 'texte_enrichir_mise_a_jour' => 'P&oacute;dese mellorar a presentaci&oacute;n do texto empregando os &laquo;atallos tipogr&aacute;ficos&raquo;.',
 'texte_fichier_authent' => '<b>SPIP ten que crear os ficheiros especiais <tt>.htpasswd</tt>
-  e <tt>.htpasswd-admin</tt> no cartafol @dossier@?</b><p />
+  e <tt>.htpasswd-admin</tt> no cartafol @dossier@?</b><p>
   Estes ficheiros p&oacute;denlle servir para restrinxir o acceso, tanto aos autores
   coma aos administradores a outras partes do seu web (ao programa
-  externo de estat&iacute;sticas, por exemplo).<p />
+  externo de estat&iacute;sticas, por exemplo).</p><p>
   Se non o utiliza, pode deixar esta opci&oacute;n
  co seu valor predeterminado (non crear
-estes ficheiros).',
+estes ficheiros).</p>',
 'texte_informations_personnelles_1' => 'O sistema vaiche crear agora un acceso personalizado ao web',
 'texte_informations_personnelles_2' => '(Nota: se se trata dunha reinstalaci&oacute;n, e o teu acceso vai sen atrancos, podes',
 'texte_introductif_article' => '(Texto introdutorio do artigo.)',
@@ -1051,7 +1066,7 @@ e ser&aacute; visible para todo o equipo de redacci&oacute;n. Use os anuncios s&
 'texte_nouveau_message' => 'Nova mensaxe',
 'texte_nouveau_mot' => 'Nova palabra',
 'texte_nouvelle_version_spip_1' => 'Instalaches unha nova versi&oacute;n de SPIP.',
-'texte_nouvelle_version_spip_2' => 'Esta nova versi&oacute;n precisa unha posta ao d&iacute;a m&aacute;is completa que a habitual. De seres webmestra/e do web, elimine o ficheiro @connect@ e retome a instalaci&oacute;n para po&ntilde;er ao d&iacute;a os par&aacute;metros de conexi&oacute;n &aacute; base de datos.<p/> (NB.&nbsp;: se esqueceu os par&aacute;metros de conexi&oacute;n, b&oacute;telle un ollo ao ficheiro  @connect@ antes de borralo...)',
+'texte_nouvelle_version_spip_2' => 'Esta nova versi&oacute;n precisa unha posta ao d&iacute;a m&aacute;is completa que a habitual. De seres webm&aacute;ster do web, elimine o ficheiro @connect@ e retome a instalaci&oacute;n para po&ntilde;er ao d&iacute;a os par&aacute;metros de conexi&oacute;n &aacute; base de datos.<p> (NB.&nbsp;: se esqueceu os par&aacute;metros de conexi&oacute;n, b&oacute;telle un ollo ao ficheiro  @connect@ antes de borralo...)</p>',
 'texte_operation_echec' => 'Volve &aacute; p&aacute;xina anterior, selecciona outra base ou crea unha nova. Verifica a informaci&oacute;n que che dera o teu aloxador.',
 'texte_plus_trois_car' => 'm&aacute;is de 3 caracteres',
 'texte_plusieurs_articles' => 'Atop&aacute;ron.se varias entradas para "@cherche_auteur@":',
@@ -1071,7 +1086,8 @@ e ser&aacute; visible para todo o equipo de redacci&oacute;n. Use os anuncios s&
 'texte_referencement_automatique_verifier' => 'Comprobe os datos fornecidos por <tt>@url@</tt> antes de rexistralos.',
 'texte_requetes_echouent' => '<b>Cando algunhas petici&oacute;ns SQL fallan
  sistematicamente e sen raz&oacute;n aparente, &eacute; posible
- que a causa sexa a propia base de datos.</b><p>
+ que a causa sexa a propia base de datos.
+</b><p>
   SQL ten unha opci&oacute;n de reparaci&oacute;n das
  t&aacute;boas cando estas foron danadas por accidente.
   A&iacute; pode tentar esta reparaci&oacute;n; en caso de fallo, garde unha copia do resultado, que pode que conte&ntilde;a indicios do que non vai ben...<p>

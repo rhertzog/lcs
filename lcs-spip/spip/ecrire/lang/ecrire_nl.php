@@ -3,7 +3,7 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -26,14 +26,15 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'avis_conseil_selection_mot_cle' => '<b>Belangrijke groep:</b> het is erg aan te bevelen een trefwoord uit deze groep te kiezen.',
 'avis_deplacement_rubrique' => 'Opgelet! Deze rubiek bevat @contient_breves@ br&egrave;ve@scb@: als je haar verplaatst, gelieve dit te bevestigen door hier het vakje aan te vinken.',
 'avis_destinataire_obligatoire' => 'Je dient een bestemmeling op te geven vooraleer dit bericht te verzenden.',
+'avis_doublon_mot_cle' => 'Er bestaat al een sleutelwoord met dat titel. Wilt U echt dit sleutelwoord op te slaan ?', # MODIF
 'avis_erreur_connexion_mysql' => 'Verbinding met de SQL connectie mislukt',
 'avis_erreur_version_archive' => '<b>Opgelet! Het bestand @archive@ komt overeen met een andere
-    SPIP-versie dan deze die is ge&iuml;nstalleerd.</b>Dit kan voor
+    SPIP-versie dan deze die is ge&iuml;nstalleerd.</b> Dit kan voor
  grote moeilijkheden zorgen : risico op het wissen van de databank,
- ontregeling van de website, enz. Ga niet verder met de invoer
+ ontregeling van de website, enz. Ga niet verder met het importeren
  van het bestand. <p>Meer info kan je vinden op
- <A HREF=\'http://www.spip.net/fr_article1489.html\'>
-                                de documentatie van SPIP</a>.',
+ <a href="@spipnet@">
+                                de documentatie van SPIP</a>.</p>', # MODIF
 'avis_espace_interdit' => '<b>Toegang Verboden</b><div>SPIP is reeds ge&iuml;nstalleerd.',
 'avis_lecture_noms_bases_1' => 'Het installatieprogramma heeft de namen van de ge&iuml;nstalleerde databanken niet kunnen lezen.',
 'avis_lecture_noms_bases_2' => 'Geen enkele database is beschikbaar, ofwel is de functie die de databases zou moeten tonen, niet geactiveerd
@@ -124,6 +125,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'config_erreur_base_sup' => 'SPIP heeft geen toegang tot de lijst van de toegankelijke basis',
 'config_info_base_sup' => 'Als u andere databases hebt om door SPIP te ondervragen, met zijn server SQL of een ander, laat het formulier hieronder, u toe om ze te verklaren. Als u bepaalde lege velden laat, zullen de identificaties van aansluiten aan de hoofdbasis gebruikt worden.',
 'config_info_base_sup_disponibles' => 'De reeds navraagbare aanvullende basis:',
+'config_info_enregistree' => 'De nieuwe configuratie werd geregistreerd',
 'config_info_logos' => 'Elk element van de site kan een logo hebben, evenals een &#132;&nbsp;overzicht logo&nbsp;&#147;',
 'config_info_logos_utiliser' => 'De logo\'s gebruiken',
 'config_info_logos_utiliser_non' => 'Niet de logo\'s gebruiken',
@@ -149,6 +151,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 // E
 'email' => 'e-mail',
 'email_2' => 'e-mail:',
+'en_savoir_plus' => 'Meer weten hierover',
 'entree_adresse_annuaire' => 'Plaats van het adresboek',
 'entree_adresse_email' => 'Uw e-mail adres',
 'entree_adresse_fichier_syndication' => 'Adres van het bestand voor syndicatie&nbsp;:',
@@ -185,6 +188,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'entree_texte_breve' => 'Tekst van het bericht',
 'entree_titre_obligatoire' => '<b>Titel</b> [verplicht]<br />',
 'entree_url' => 'Je website-adres (URL)',
+'erreur_plugin_desinstalation_echouee' => 'La d&eacute;sinstallation du plugin a echou&eacute;e. Vous pouvez n&eacute;anmoins le desactiver.', # MODIF
 'erreur_plugin_fichier_absent' => 'Bestand ontbreekt',
 'erreur_plugin_fichier_def_absent' => 'Definitiebestand ontbreekt',
 'erreur_plugin_nom_fonction_interdit' => 'Functienaam verboden',
@@ -196,9 +200,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 // F
 'forum_info_original' => 'origineel',
 
+// H
+'htaccess_a_simuler' => 'Avertissement: la configuration de votre serveur HTTP ne tient pas compte des fichiers @htaccess@. Pour pouvoir assurer une bonne s&eacute;curit&eacute;, il faut que vous modifiez cette configuration sur ce point, ou bien que les constantes @constantes@ (d&eacute;finissables dans le fichier mes_options.php) aient comme valeur des r&eacute;pertoires en dehors de @document_root@.', # NEW
+'htaccess_inoperant' => 'htaccess inop&eacute;rant', # NEW
+
 // I
 'ical_info1' => 'Deze pagina toont de verschillende wijzen waarop je contact kan houden met het gebeuren van deze website.',
-'ical_info2' => 'Voor meer info over de verschillende manieren kan je <a href="http://www.spip.net/fr_suivi">de documentatie van SPIP</a> raadplegen.',
+'ical_info2' => 'Voor meer inlichtingen over al deze technieken, aarzelt niet om <a href=" @spipnet@" te raadplegen >de documentatie van SPIP</a>.',
 'ical_info_calendrier' => 'Twee kalenders zijn beschikbaar. De eerste geeft een overzicht van alle gepubliceerde artikels. De tweede bevat editoriale berichten en je meest recente priv&eacute;-berichten&nbsp;: deze tweede kalender is afgeschermd voor andere gebruikers door een persoonlijke sleutel die je op elk moment kan wijzigen door je paswoord te vernieuwen.',
 'ical_lien_rss_breves' => 'Syndication van kort van de site',
 'ical_methode_http' => 'Downloaden',
@@ -259,6 +267,8 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
  voor het modereren te kiezen :</i>',
 'info_admin_gere_rubriques' => 'Deze auteur beheert de volgende rubrieken :',
 'info_admin_gere_toutes_rubriques' => 'Deze auteur beheert<b>alle rubrieken</b>.',
+'info_admin_statuer_webmestre' => 'Donner &agrave; cet administrateur les droits de webmestre', # NEW
+'info_admin_webmestre' => 'Cet administrateur est <b>webmestre</b>', # NEW
 'info_administrateur' => 'Beheerder',
 'info_administrateur_1' => 'Beheerder',
 'info_administrateur_2' => 'van de website (<i>voorzichtig gebruiken</i>)',
@@ -334,7 +344,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_conflit_edition_votre_version' => 'Uw versie&nbsp;:',
 'info_connexion_base' => 'Proef van aansluiten aan de basis',
 'info_connexion_base_donnee' => 'Aansluiten aan uw database',
-'info_connexion_ldap_ok' => 'De LDAP-verbinding is gelukt.</b><p /> Je kan de volgende stap zetten.',
+'info_connexion_ldap_ok' => 'De LDAP-verbinding is gelukt.</b><p> Je kan de volgende stap zetten.</p>', # MODIF
 'info_connexion_mysql' => 'Uw aansluiten SQL',
 'info_connexion_ok' => 'De verbinding is geslaagd.',
 'info_contact' => 'Contact',
@@ -386,11 +396,11 @@ De publieke forums kunnen per artikel toegestaan worden
   extra forum aanmaken dat alleen bestemd is voor de beheerders.',
 'info_forum_statistiques' => 'Statistieken van de bezoeken',
 'info_forums_abo_invites' => 'Je site bevat forums met abonnement; bezoekers worden dus op de publieke site verzocht zich in te schrijven.',
-'info_gauche_admin_effacer' => '<b>Deze pagina is enkel toegankelijk voor beheerders van de site.</b><p /> Ze geeft toegang tot verschillende onderhoudstaken. Voor sommige taken is een afzonderlijke aanmelding tot de site via FTP vereist.',
-'info_gauche_admin_tech' => '<b>Deze pagina is enkel toegankelijk voor beheerders van de site.</b><p /> Ze geeft toegang tot allerlei technische onderhoudstaken.
- Voor het uitvoeren van sommige taken zijn een afzonderlijke aanmelding en toegang tot je site via FTP nodig.',
-'info_gauche_admin_vider' => '<b>Deze pagina is enkel toegankelijk voor beheerders van de site.</b><p /> Ze geeft toegang tot allerlei technische onderhoudstaken.
- Voor het uitvoeren van sommige taken zijn een afzonderlijke aanmelding en toegang tot je site via FTP vereist.',
+'info_gauche_admin_effacer' => '<b>Deze pagina is enkel toegankelijk voor beheerders van de site.</b><p> Ze geeft toegang tot verschillende onderhoudstaken. Voor sommige taken is een afzonderlijke aanmelding tot de site via FTP vereist.</p>', # MODIF
+'info_gauche_admin_tech' => '<b>Deze pagina is enkel toegankelijk voor beheerders van de site.</b><p> Ze geeft toegang tot allerlei technische onderhoudstaken.
+ Voor het uitvoeren van sommige taken zijn een afzonderlijke aanmelding en toegang tot je site via FTP nodig.</p>', # MODIF
+'info_gauche_admin_vider' => '<b>Deze pagina is enkel toegankelijk voor beheerders van de site.</b><p> Ze geeft toegang tot allerlei technische onderhoudstaken.
+ Voor het uitvoeren van sommige taken zijn een afzonderlijke aanmelding en toegang tot je site via FTP vereist.</p>', # MODIF
 'info_gauche_auteurs' => 'Je vindt hier alle auteurs van de site.
  Hun status is te herkennen aan de kleur van het icoontje (beheerder = groen; redacteur = geel).',
 'info_gauche_auteurs_exterieurs' => 'Externe auteurs, zonder toegang tot de site, zijn aangeduid met een blauw icoontje;
@@ -510,7 +520,7 @@ De publieke forums kunnen per artikel toegestaan worden
 'info_pas_de_forum' => 'geen forum',
 'info_passe_trop_court' => 'Paswoord te kort.',
 'info_passes_identiques' => 'Beide paswoorden zijn niet identiek.',
-'info_pense_bete_ancien' => 'Voorbije memos',
+'info_pense_bete_ancien' => 'Voorbije memos', # MODIF
 'info_plus_cinq_car' => 'Meer dan 5 karakters',
 'info_plus_cinq_car_2' => '(Meer dan 5 karakters)',
 'info_plus_trois_car' => '(Meer dan 3 karakters)',
@@ -547,7 +557,7 @@ De publieke forums kunnen per artikel toegestaan worden
  de toeganscode voor de site. Sommige hostingproviders
  blokkeren echter het versturen van e-mail vanaf hun
  servers : in dat geval is een automatische inschrijving
- niet mogelijk.',
+ niet mogelijk.</i></blockquote>',
 'info_question_mots_cles' => 'Wil je gebruik maken van trefwoorden op je site?',
 'info_question_proposer_site' => 'Wie kan referentiesites voorstellen?',
 'info_question_utilisation_moteur_recherche' => 'Wil je gebruik maken van de geintegreerde zoekmachine van SPIP ?
@@ -555,7 +565,7 @@ De publieke forums kunnen per artikel toegestaan worden
 'info_question_vignettes_referer' => 'Wanneer u de statistieken raadpleegt, kunt u korte overzichten van de plaatsen van oorsprong van de bezoeken zichtbaar maken',
 'info_question_vignettes_referer_non' => 'Niet de vangsten van de sites van oorsprong van de bezoeken te kennen geven',
 'info_question_vignettes_referer_oui' => 'De vangsten van de siten van oorsprong van de bezoeken te kennen geven',
-'info_question_visiteur_ajout_document_forum' => 'Als u de bezoekers wilt machtigen om documenten (beelden, klanken�) samen te voegen aan hun berichten van forum, de lijst van de uitbreidingen van documenten hieronder aangeven toegelaten voor de ex forums (: gif, jpg, png, mp3).',
+'info_question_visiteur_ajout_document_forum' => 'Als u de bezoekers wilt machtigen om documenten (beelden, klanken…) samen te voegen aan hun berichten van forum, de lijst van de uitbreidingen van documenten hieronder aangeven toegelaten voor de ex forums (: gif, jpg, png, mp3).',
 'info_question_visiteur_ajout_document_forum_format' => 'Als u alle soorten documenten toestaan wilt die als betrouwbaar door SPIP, een ster worden beschouwd, zetten. Om niets toe te staan, niets aangeven.',
 'info_qui_attribue_mot_cle' => 'De woorden uit deze groep kunnen toegekend worden door:',
 'info_racine_site' => 'Begin van de site',
@@ -656,6 +666,7 @@ De publieke forums kunnen per artikel toegestaan worden
 'info_total' => 'totaal :',
 'info_tous_articles_en_redaction' => 'Alle artikels in redactie',
 'info_tous_articles_presents' => 'Alle gepubliceerde artikels van deze rubriek',
+'info_tous_articles_refuses' => 'Tous les articles refus&eacute;s', # NEW
 'info_tous_les' => 'alle :',
 'info_tous_redacteurs' => 'Berichten voor alle redacteurs',
 'info_tout_site' => 'Volledige site',
@@ -696,7 +707,7 @@ een kleur geeft hun status aan&nbsp;:',
 'install_select_langue' => 'Kies een taal en klik vervolgens op de knop  &laquo;volgende&raquo; om de installatie te beginnen.',
 'install_select_type_db' => 'Het basissoort gegevens aangeven:',
 'install_select_type_mysql' => 'MySQL',
-'install_select_type_pgsql' => 'PostgreSQL',
+'install_select_type_pg' => 'PostgreSQL', # NEW
 'install_select_type_sqlite2' => 'SQLite 2',
 'install_select_type_sqlite3' => 'SQLite 3',
 'install_serveur_hebergeur' => 'Basisserver van gegevens die door de leverancier wordt toegekend',
@@ -779,6 +790,9 @@ een kleur geeft hun status aan&nbsp;:',
 'jour_non_connu_nc' => 'onbekend',
 
 // L
+'ldap_correspondance' => 'erfenis van het veld @champ@',
+'ldap_correspondance_1' => 'Erfenis van de velden LDAP',
+'ldap_correspondance_2' => 'Voor elk volgend SPIP veld, de naam van het overeenkomstige veld LDAP aangeven. Leegte laten om niet het te vullen, door ruimtes of komma\'s te scheiden om verschillende LDAP velden te proberen.',
 'lien_ajout_destinataire' => 'Voeg deze bestemmeling toe',
 'lien_ajouter_auteur' => 'Voeg deze auteur toe',
 'lien_ajouter_participant' => 'Voeg nieuwe deelnemer toe',
@@ -821,6 +835,9 @@ een kleur geeft hun status aan&nbsp;:',
 'module_texte_traduction' => 'Het taalbestand &laquo;&nbsp;@module@&nbsp;&raquo; is beschikbaar in het&nbsp;:',
 'mois_non_connu' => 'Onbekend',
 
+// N
+'nouvelle_version_spip' => 'La version @version@ de SPIP est disponible', # NEW
+
 // O
 'onglet_contenu' => 'Inhoud',
 'onglet_declarer_une_autre_base' => 'Een andere basis verklaren',
@@ -830,24 +847,12 @@ een kleur geeft hun status aan&nbsp;:',
 'onglet_proprietes' => 'Eigendommen',
 'onglet_repartition_actuelle' => 'nu',
 'onglet_sous_rubriques' => 'Onder-rubrieken',
-'ortho_ajouter_ce_mot' => 'Dit woord aan het woordenboek toevoegen',
-'ortho_aucune_suggestion' => 'Voor dit woord hebben we geen enkele suggestie gevonden.',
-'ortho_avis_privacy' => 'Een spellingcontrole is toegevoegd aan SPIP. Vooraleer deze functie te activeren, raden we je aan de volgende paragraaf aandachtig te lezen&nbsp;:',
-'ortho_avis_privacy2' => 'Tijdens het uitvoeren van een spellingcontrole zal de site de te controleren woordenlijst verzenden naar een van de externe &laquo;&nbsp;spellingservers&nbsp;&raquo; die door verschillende leden van de SPIP-gemeenschap ter beschikking gesteld worden. De woorden worden in willekeurige volgorde verstuurd, dit om een minimum aan geheimhouding te waarborgen. Indien uw gegevens vertrouwelijk zijn, activeer deze functie dan niet (en haal uw gegevens ook van het internet).',
-'ortho_ce_mot_connu' => 'Dit woord staat in het woordenboek van de site.',
-'ortho_dico_absent' => 'Voor deze taal werd geen woordenboek gevonden',
-'ortho_mode_demploi' => 'Niet-herkende woorden zijn rood onderlijnd. Je kan een woord aanklikken om suggesties voor verbetering weer te geven.',
-'ortho_mots_a_corriger' => 'te verbeteren woorden',
-'ortho_orthographe' => 'Spelling',
-'ortho_supprimer_ce_mot' => 'Dit woord uit het woordenboek verwijderen',
-'ortho_trop_de_fautes' => 'Opgelet&nbsp;: uw tekst bevat veel schrijffouten. Correcties worden niet voorgesteld om het systeem niet te overbelasten.',
-'ortho_verif_impossible' => 'Het systeem kan de schrijfwijze van deze tekst niet controleren.',
-'ortho_verifier' => 'Schrijfwijze controleren',
 
 // P
 'page_pas_proxy' => 'Deze bladzijde moet niet via proxy gaan',
 'pas_de_proxy_pour' => 'Desnoods geeft de machines of gebieden aan waarvoor dit proxy niet moet van toepassing zijn (bijvoorbeeld&nbsp;: @exemple@)',
 'plugin_charge_paquet' => 'Lading van het pak @name@',
+'plugin_charger' => 'T&#233;l&#233;charger', # NEW
 'plugin_erreur_charger' => 'fout&nbsp;: onmogelijk om @zip@ te laden',
 'plugin_erreur_droit1' => 'De lijst <code>@dest@</code> is niet toegankelijk in schrift.',
 'plugin_erreur_droit2' => 'Gelieve de rechten op deze lijst (en het eventueel te cre&euml;ren) controleren, of de bestanden door FTP plaatsen.',
@@ -858,6 +863,7 @@ een kleur geeft hun status aan&nbsp;:',
 'plugin_etat_test' => 'in test',
 'plugin_impossible_activer' => 'Onmogelijk om plugin @plugin@ te activeren',
 'plugin_info_automatique1' => 'Als u tot de automatische installatie van plugins wilt machtiging verlenen, zal willen&nbsp;:',
+'plugin_info_automatique1_lib' => 'Si vous souhaitez autoriser l\'installation automatique de cette librairie, veuillez&nbsp;:', # NEW
 'plugin_info_automatique2' => 'een lijst <code>@rep@</code> cre&euml;ren&nbsp;;',
 'plugin_info_automatique3' => 'controleren dat de server wordt gemachtigd om in deze lijst te schrijven.',
 'plugin_info_automatique_creer' => 'om aan de wortel van de plaats te cre&euml;ren.',
@@ -869,6 +875,8 @@ een kleur geeft hun status aan&nbsp;:',
 'plugin_info_automatique_liste_update' => 'De lijsten bijwerken',
 'plugin_info_automatique_ou' => 'om...',
 'plugin_info_automatique_select' => 'Selecteert hieronder een plugin&nbsp;: SPIP zal het downloaden en zal in de lijst <code>@rep@</code>&nbsp; het plaatsen; als dit plugin reeds bestaat, zal hij bijgewerkt worden.',
+'plugin_info_extension_1' => 'Les extensions ci-dessous sont charg&#233;es et activ&#233;es dans le r&#233;pertoire @extensions@.', # NEW
+'plugin_info_extension_2' => 'Elles ne sont pas d&#233;sactivables.', # NEW
 'plugin_info_telecharger' => 'om sinds @url@ te downloaden en om te plaatsen in @rep@',
 'plugin_librairies_installees' => 'Geplaatste boekhandels',
 'plugin_necessite_lib' => 'Dit plugin vereist de boekhandel @lib@',
@@ -877,6 +885,7 @@ een kleur geeft hun status aan&nbsp;:',
 'plugin_source' => 'oorsprong:&nbsp;',
 'plugin_titre_automatique' => 'Automatische installatie',
 'plugin_titre_automatique_ajouter' => 'Een plugins toevoegen',
+'plugin_titre_installation' => 'Installation du plugin @plugin@', # NEW
 'plugin_zip_active' => 'Gaat door om het te activeren',
 'plugin_zip_adresse' => 'geeft hieronder het adres van een bestand zip van te downloaden plugin, of nog het adres van een lijst van plugins aan.',
 'plugin_zip_adresse_champ' => 'Adres van plugin of de lijst&nbsp;',
@@ -885,11 +894,17 @@ een kleur geeft hun status aan&nbsp;:',
 'plugin_zip_installe_rep_finie' => 'Het bestand @zip@ is unzip en werd in de lijst @rep@ geplaatst',
 'plugin_zip_installer' => 'U kunt nu het plaatsen.',
 'plugin_zip_telecharge' => 'Het bestand @zip@ werd geladen',
+'plugins_actif_aucun' => 'Aucun plugin activ&#233;.', # NEW
+'plugins_actif_un' => 'Un plugin activ&#233;.', # NEW
 'plugins_actifs' => '@count@ plugins activeren.',
+'plugins_actifs_liste' => 'Plugins actifs', # NEW
 'plugins_compte' => '@count@ plugins',
+'plugins_disponible_un' => 'Un plugin disponible.', # NEW
 'plugins_disponibles' => '@count@ plugins beschikbaar.',
 'plugins_erreur' => 'De fout in plugins: @plugins@',
 'plugins_liste' => 'Lijst van plugins',
+'plugins_liste_extensions' => 'Extensions', # NEW
+'plugins_recents' => 'Plugins r&eacute;cents.', # NEW
 'plugins_vue_hierarchie' => 'Hi&euml;rarchie',
 'plugins_vue_liste' => 'Lijst',
 'protocole_ldap' => 'De versie van het protocol :',
@@ -927,7 +942,7 @@ een kleur geeft hun status aan&nbsp;:',
 inbegrepen <i>alle</i> toegangsrechten voor redacteurs en beheerders. Nadat je dit uitgevoerd hebt, dien je de herinstallatie van SPIP te starten om een volledig nieuwe database aan te maken en toegangsrechten voor een eerste beheerder.',
 'texte_admin_effacer_stats' => 'Deze bestelling wist alle gegevens in verband met de statistieken van bezoek van de plaats uit, met inbegrip van de populariteit van de artikelen.',
 'texte_admin_tech_01' => 'Deze optie laat je toe de inhoud van de databank te bewaren in een bestand dat bewaard zal worden in de map @dossier@. Vergeet ook niet de volledige map @img@ te bewaren. Zij bevat alle afbeeldingen en bijlagen bij de artikels en rubrieken.',
-'texte_admin_tech_02' => 'Opgelet: deze reservekopie kan ENKEL worden teruggezet op een site met dezelfde SPIP-versie. Maak vooral de databank niet leeg in de hoop dat je ze kan terugzetten na het upgraden van SPIP... Voor meer info, kan je de <a href="http://www.spip.net/fr_article1489.html">de documentatie van SPIP</a> er op naslaan.',
+'texte_admin_tech_02' => 'Opgelet: deze bescherming zal SLECHTS in een plaats kunnen hersteld worden die onder dezelfde versie van SPIP wordt geplaatst. Men heeft dus vooral geen &laquo;&nbsp;nodig de basis&nbsp;&raquo; te legen door de bescherming te hopen opnieuw te installeren na een update… Raadpleegt <a href= " @spipnet@ " > de documentatie van SPIP </a>.',
 'texte_admin_tech_03' => 'Je kan de reservekopie ook als een gecomprimeerd bestand opslaan, dit om de overzettijd van de server naar je computer sterk in te korten en om schijfruimte te besparen.',
 'texte_admin_tech_04' => 'Met het oog op fusie met een andere basis, kunt u de bescherming beperken tot de rubriek:',
 'texte_adresse_annuaire_1' => '(Als de map is ge&iuml;nstalleerd is op dezelfde computer als je website, is het waarschijnlijk &laquo;localhost&raquo;.)',
@@ -987,7 +1002,7 @@ inbegrepen <i>alle</i> toegangsrechten voor redacteurs en beheerders. Nadat je d
 'texte_descriptif_rapide' => 'Korte beschrijving.',
 'texte_documents_joints' => 'Je kan het toevoegen van documenten (teksten, afbeeldingen, multimedia, ...) bij artikels of rubrieken toelaten. De bijgevoegde bestanden 
 kunnen vervolgens gekoppeld worden in het 
-artikel of afzonderlijk getoond worden.<p />',
+artikel of afzonderlijk getoond worden.', # MODIF
 'texte_documents_joints_2' => 'Deze instelling verhindert de directe opname van beelden in artikels niet.',
 'texte_effacer_base' => 'Verwijder de SPIP databank',
 'texte_effacer_donnees_indexation' => 'Verwijder de ge&iuml;ndexeerde gegevens',
@@ -996,14 +1011,14 @@ artikel of afzonderlijk getoond worden.<p />',
 'texte_en_cours_validation_forum' => 'Aarzelt niet om uw advies te geven dank zij de forums die hun worden vastgemaakt.',
 'texte_enrichir_mise_a_jour' => 'De opmaak van een tekst kan gebeuren met behulp van de zogeheten &laquo;typografische snelkoppelingen&raquo;.',
 'texte_fichier_authent' => '<b>SPIP moet hij de speciale  <tt>.htpasswd</tt>
-  en <tt>.htpasswd-admin</tt> bestanden aanmaken in de map @dossier@ ?</b><p />
+  en <tt>.htpasswd-admin</tt> bestanden aanmaken in de map @dossier@ ?</b><p>
  Deze bestanden zijn nuttig om de toegang tot andere delen
  van je website (zoals een extern programma voor
  statistieken, bijvoorbeeld) te beperken voor de auteurs en
- beheerders.<p />
+ beheerders.</p><p>
 Als u geen nut ervan hebt, kunt u deze keuze
  laten  aan zijn waarde per gebrek (niet een oprichting
-  bestanden).',
+  bestanden).</p>', # MODIF
 'texte_informations_personnelles_1' => 'Nu zal het systeem een persoonlijke toegang tot de site voor u cre&euml;ren.',
 'texte_informations_personnelles_2' => '(Nota : als het herinstallatie betreft,  en je toegangscode blijkt nog steeds te werken, kan je',
 'texte_introductif_article' => '(Inleidende tekst op het artikel.)',
@@ -1043,7 +1058,7 @@ Als u geen nut ervan hebt, kunt u deze keuze
 'texte_nouveau_message' => 'Nieuw bericht',
 'texte_nouveau_mot' => 'Nieuw trefwoord',
 'texte_nouvelle_version_spip_1' => 'Je hebt een nieuwe versie van SPIP ge&iuml;nstalleerd.',
-'texte_nouvelle_version_spip_2' => 'Deze nieuwe SPIP-versie vereist een  grondiger update dan gewoonlijk. Als je webmaster bent van deze site, verwijder dan het bestand @connect@ en herneem de installatie om de verbindingsgegevens met de databank te vernieuwen.<p /> (NB.&nbsp;: als je je verbindingsgegevens niet meer kent, kan je best eerst een blik werpen op het bestand @connect@ alvorens het te verwijderen...)',
+'texte_nouvelle_version_spip_2' => 'Deze nieuwe SPIP-versie vereist een  grondiger update dan gewoonlijk. Als je webmaster bent van deze site, verwijder dan het bestand @connect@ en herneem de installatie om de verbindingsgegevens met de databank te vernieuwen.<p> (NB.&nbsp;: als je je verbindingsgegevens niet meer kent, kan je best eerst een blik werpen op het bestand @connect@ alvorens het te verwijderen...)</p>', # MODIF
 'texte_operation_echec' => 'Ga terug naar de vorige pagina, selecteer een andere gegevensbank of maak een nieuwe aan. Kijk nog eens alle gegevens na die je van je provider hebt ontvangen.',
 'texte_plus_trois_car' => 'meer dan 3 karakters',
 'texte_plusieurs_articles' => 'Meerdere auteurs gevonden voor "@cherche_auteur@":',
@@ -1064,14 +1079,14 @@ Als u geen nut ervan hebt, kunt u deze keuze
 'texte_referencement_automatique_verifier' => 'Gelieve de inlichtingen te controleren die per <tt>@url@</tt> worden verstrekt, alvorens te registreren.',
 'texte_requetes_echouent' => 'b>Wanneer SQL verbindingen systematisch en zonder
  aanwijsbare redenen mislukken is het mogelijk dat het
- probleem bij de databank ligt. </b><p />
+ probleem bij de databank ligt. </b><p>
  SQL kan zelf een hersteloperatie uitvoeren op de
  tabellen in de databank die mogelijk beschadigd kunnen
  zijn. Je kan hier zo\'n hersteloperatie proberen. Als dit
  mislukt, kopieer dan het foutbericht wat aanwijzingen
  zal bevatten over de aard van het probleem...
  Is het probleem niet opgelost, wend je dan tot je
- hostingprovider.<p />',
+ hostingprovider.</p>', # MODIF
 'texte_restaurer_base' => 'De inhoud van de reservekopie van de databank terugzetten',
 'texte_restaurer_sauvegarde' => 'Deze optie laat je toe een eerder genomen reservekopie van de databank
  terug te plaatsen. Hiertoe dien je het bestand met de reservekopie

@@ -3,7 +3,7 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -184,11 +184,17 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'date_mois_7' => 'uztaila',
 'date_mois_8' => 'abuztua',
 'date_mois_9' => 'iraila',
-'date_saison_1' => 'negu',
-'date_saison_2' => 'udaberri',
+'date_saison_1' => 'negua',
+'date_saison_2' => 'udaberria',
 'date_saison_3' => 'uda',
-'date_saison_4' => 'udazken',
+'date_saison_4' => 'udazkena',
+'date_secondes' => 'secondes', # NEW
 'date_semaines' => 'asteak',
+'date_un_mois' => 'mois', # NEW
+'date_une_heure' => 'heure', # NEW
+'date_une_minute' => 'minute', # NEW
+'date_une_seconde' => 'seconde', # NEW
+'date_une_semaine' => 'semaine', # NEW
 'dirs_commencer' => 'Atariko instalazioa hasi ',
 'dirs_preliminaire' => 'Aurretik: <b>sarbide eskubideak arautu </b>',
 'dirs_probleme_droits' => 'Sarbide eskubidearekiko arazoak',
@@ -198,9 +204,9 @@ Egiazta ezazu karpeta hauen izenen letra larri eta xeheak aurrekoarekin bat dato
 hala ez bada, karpeten izena alda ezazu, zure FTP softwarea erabiliz.
 Eragiketa hori egin eta gero, gauza izango zara',
 'dirs_repertoires_suivants' => '<b>Hurrengo direktorioak ez dituzte idazteko eskubiderik&nbsp;:<ul>@bad_dirs@.</ul></b>
-  <p />Arazoa konpontzeko FTP bezero bat erabili beharko duzu lehen aipatu diren direktorioen sarbide
+  <p>Arazoa konpontzeko FTP bezero bat erabili beharko duzu lehen aipatu diren direktorioen sarbide
  eskubideak arautzeko helburuz.
- <p />Prozedura xehetasunez azaltzen da instalazio gidan. Behin prozedura bukatu ezkero, ahal duzu ',
+ </p><p>Prozedura xehetasunez azaltzen da instalazio gidan. Behin prozedura bukatu ezkero, ahal duzu </p>',
 'double_occurrence' => 'Okurenzi bikoitza',
 
 // E
@@ -216,6 +222,18 @@ Eragiketa hori egin eta gero, gauza izango zara',
 
 // F
 'fichier_introuvable' => '@fichier@ aurkitzeko moduan ez dagoen artxiboa',
+'form_auteur_confirmation' => 'Confirmez votre adresse email', # NEW
+'form_auteur_email_modifie' => 'Votre adresse email a &eacute;t&eacute; modifi&eacute;e.', # NEW
+'form_auteur_envoi_mail_confirmation' => 'Un courrier &eacute;lectronique de confirmation vient d\'&ecirc;tre envoy&eacute; &agrave; @email@. Vous devrez visiter l\'adresse Web mentionn&eacute;e dans ce courrier pour valider votre adresse mail.', # NEW
+'form_auteur_mail_confirmation' => 'Bonjour,
+
+Vous avez demand&eacute; &agrave; changer votre adresse email.
+Pour confirmer votre nouvelle adresse, il suffit de vous connecter &agrave;
+l\'adresse ci-dessous (dans le cas contraire, votre demande
+sera ignor&eacute;e) :
+
+    @url@
+', # NEW
 'form_deja_inscrit' => 'Inskribaturik zaude jadanik.',
 'form_email_non_valide' => 'Posta elektronikoaren helbideak ez du balio.',
 'form_forum_access_refuse' => 'Ezin zara gune honetan sartu dagoeneko.',
@@ -385,19 +403,23 @@ Inskribaturik ez bazaude, aurretik inskribatu behar duzu.',
 'info_article_supprime' => 'Artikulu ezabatua',
 'info_articles' => 'Artikuluak',
 'info_articles_a_valider' => 'Egiaztatuak izan behar diren artikuluak',
+'info_articles_nb' => '@nb@ articles', # NEW
 'info_articles_proposes' => 'Proposatutako artikuluak',
+'info_articles_un' => '1 article', # NEW
 'info_auteurs_nombre' => 'Egileak :',
 'info_authentification_ftp' => 'Baimena (FTP-aren bidez).',
 'info_bloquer_lien' => 'Lotura hau blokatu',
 'info_breves_02' => 'Laburrak',
 'info_breves_2' => 'laburrak',
+'info_breves_nb' => '@nb@ br&egrave;ves', # NEW
+'info_breves_un' => '1 br&egrave;ve', # NEW
 'info_breves_valider' => 'Egiaztatzeko laburrak',
 'info_connexion_refusee' => 'Konexioa errefusatu da',
 'info_contact_developpeur' => 'Programatzaile batekin kontaktuan jarri behar duzu.',
 'info_contenance' => 'Gune honek duena :',
 'info_contribution' => 'foroko ekarpenak',
 'info_copyright' => '@spip@ software librea da, @lien_gpl@ banatua.',
-'info_copyright_doc' => 'Argibide gehiago izateko, jo helbide honetara: <a href=\'http://www.spip.net/eu\'>http://www.spip.net/eu</a>.',
+'info_copyright_doc' => 'Argibide gehiago izateko, jo helbide honetara: <a href="@spipnet@">http://www.spip.net/eu</a>.',
 'info_copyright_gpl' => 'GPL lizentziarekin',
 'info_cours_edition' => 'Bukatu gabe utzi dituzun artikuluak',
 'info_creer_repertoire' => 'Fitxategi edo karpeta bat sortu behar duzu, eta hari izen hau jarri :',
@@ -411,6 +433,8 @@ Inskribaturik ez bazaude, aurretik inskribatu behar duzu.',
 'info_document' => 'Dokumentua',
 'info_document_indisponible' => 'Dokumentu hau ez da erabilgarria',
 'info_documents' => 'Dokumentuak',
+'info_documents_nb' => '@nb@ documents', # NEW
+'info_documents_un' => '1 document', # NEW
 'info_echange_message' => 'SPIPek guneko partehartzaileen arteko mezuen trukaketa eta foro pribatuak ahalbidetzen ditu.
 Funtzionalitate hau aktiba edo desaktibatzen ahal duzu.',
 'info_ecire_message_prive' => 'Mezu pribatu bat idatzi',
@@ -455,6 +479,8 @@ Basea konpontzen saiatu, edo zure ostalaitzea kontaktatu.',
 'info_mail_fournisseur' => 'zure@hornitzailea.com',
 'info_message_2' => 'MEZUA',
 'info_message_supprime' => 'Mezua ezabatu da',
+'info_messages_nb' => '@nb@ messages', # NEW
+'info_messages_un' => '1 message', # NEW
 'info_mise_en_ligne' => 'Argitarapen data :',
 'info_modification_parametres_securite' => 'segurtasun-parametroen aldaketa.',
 'info_mois_courant' => 'Hilabete honetan:',
@@ -501,6 +527,8 @@ Azpimarratu gabeko hizkuntzetarako, elementuak gunearen hizkuntza nagusian agert
 'info_retablir_lien' => 'esteka berrezarri',
 'info_retirer_mot' => 'Hitz hau kendu',
 'info_retirer_mots' => 'Hitz guztiak kendu',
+'info_rubriques_nb' => '@nb@ rubriques', # NEW
+'info_rubriques_un' => '1 rubrique', # NEW
 'info_sans_titre_2' => 'izenbururik gabe',
 'info_selectionner_fichier' => '<i>Upload</i> direktorioko dokumentu bat hauta dezakezu',
 'info_selectionner_fichier_2' => 'Dokumentu bat hautatu&nbsp;:',
@@ -509,7 +537,9 @@ Azpimarratu gabeko hizkuntzetarako, elementuak gunearen hizkuntza nagusian agert
 'info_site_attente' => 'Balioztatua izateko zain dagoen Webgunea',
 'info_site_reference' => 'Linean erreferentziatutako gunea',
 'info_site_refuse' => 'Web Gune errefusatua',
+'info_sites_nb' => '@nb@ sites', # NEW
 'info_sites_referencer' => 'Gune bat erreferentziatu',
+'info_sites_un' => '1 site', # NEW
 'info_supprimer_vignette' => 'miniatura hau kendu',
 'info_symbole_bleu' => 'Sinbolo <b>URDIN</b>ak oroigarri pertsonal bat adierazten du, hau da zerbait gogoratzeko modu bat.',
 'info_symbole_jaune' => 'Sinbolo <b>hori</b>ak denentzako iragarpen bat adierazten du: gunearen administratzaileek bakarrik alda dezakete, eta idazle guztiek ikus dezakete.',
@@ -521,7 +551,7 @@ Azpimarratu gabeko hizkuntzetarako, elementuak gunearen hizkuntza nagusian agert
 'info_telecharger_ordinateur' => 'Zure ordenagailutik igo :',
 'info_tous_resultats_enregistres' => '[emaitza guztiak grabatuak dira]',
 'info_tout_afficher' => 'Dena erakutsi',
-'info_travaux_texte' => 'Leku hau oraindik konfiguratu gabe dago. Berantago itzuli…',
+'info_travaux_texte' => 'Leku hau oraindik konfiguratu gabe dago. Berantago itzuliâ€¦',
 'info_travaux_titre' => 'Gunea aldatzeko bidean',
 'info_trop_resultat' => 'Emaitza gehiegi "@cherche_mot@"-aren bilaketarako. Irizpideak zehaztu.',
 'info_utilisation_messagerie_interne' => 'Gunearen barruko mezularitza erabiltzen duzu.',
@@ -533,14 +563,13 @@ Azpimarratu gabeko hizkuntzetarako, elementuak gunearen hizkuntza nagusian agert
 'info_visites' => 'bisitak :',
 'info_vos_rendez_vous' => 'Zure hitzorduak',
 'info_zoom' => 'zoom',
-'infos_vos_pense_bete' => 'Zure oroigarriak',
+'infos_vos_pense_bete' => 'Zure oroigarriak', # MODIF
 'item_breve_proposee' => 'Proposaturiko berri laburra',
 
 // L
 'lien_afficher_icones_seuls' => 'Ikurrak soilik erakutsi',
 'lien_afficher_texte_icones' => 'Ikurrak eta testua erakutsi',
 'lien_afficher_texte_seul' => 'Testua soilik erakutsi',
-'lien_icones_interface' => '<a href=\'http://jimmac.musichall.cz/\'>Jakub \'Jimmac\' Steiner</a> delakoak interfazearen ikurrak egin zituen.',
 'lien_liberer' => 'Askatu',
 'lien_liberer_tous' => 'artikulu hauek askatu',
 'lien_nouvea_pense_bete' => 'Oroigarri berria',
@@ -582,6 +611,7 @@ Zure pasahitza sarean atzeman ahal izatea nahi ez baduzu, JavaScript-a aktibatu 
 'login_retour_site' => 'Eremu publikora itzuli',
 'login_retoursitepublic' => 'eremu publikora itzuli',
 'login_sans_cookiie' => 'Identifikazioa "cookie" barik',
+'login_securise' => 'Login s&eacute;curis&eacute;', # NEW
 'login_sinscrire' => 'inskribatu',
 'login_test_navigateur' => 'nabigatzaile proba/berkonexioa',
 'login_verifiez_navigateur' => '(Hala ere,zure nabigatzaileak zure pasahitza memorizatu ez duela egiaztatu...)',
@@ -614,7 +644,6 @@ Zure pasahitza sarean atzeman ahal izatea nahi ez baduzu, JavaScript-a aktibatu 
 'onglet_repartition_rubrique' => 'Atalkako banaketa ',
 'onglet_save_restaur_base' => 'Segurtasun kopia sortu eta basea berrezarri',
 'onglet_vider_cache' => 'Cachea hustu',
-'ortho_trop_de_fautes2' => 'Akats nabarienak zuzentzen hasi eta saiatu berriro.',
 
 // P
 'pass_choix_pass' => 'pasahitz berria aukeratu:',
@@ -717,31 +746,31 @@ Modu orokorrean, orrialde hauetako kudeaketa zure guneko web arduradun nagusiari
 
 // Z
 'zbug_balise_b_aval' => ': B begiztako baliza aurrerago',
-'zbug_balise_inexistante' => '@from@ errorea: #@balise@ etiketa ez da existitzen',
+'zbug_balise_inexistante' => '@from@ errorea: @balise@ etiketa ez da existitzen',
 'zbug_balise_sans_argument' => 'Argumento eskasa @balise@ etiketan',
 'zbug_boucle' => 'begizta',
 'zbug_boucle_recursive_undef' => 'zehaztu gabeko begizta errekurtsiboa',
 'zbug_calcul' => 'kalkulua',
 'zbug_champ_hors_boucle' => '@champ@ eremua begiztaren kanpoan',
-'zbug_champ_hors_motif' => '@champ@ eremua @motif@ arrazoiko begizta batenkanpoan',
+'zbug_champ_hors_motif' => '@champ@ eremua @motif@ arrazoiko begizta baten kanpoan',
 'zbug_code' => 'kodea',
 'zbug_critere_inconnu' => '@critere@ irizpide ezezaguna',
 'zbug_distant_interdit' => 'kanpoko debekatua',
-'zbug_doublon_table_sans_cle_primaire' => 'errepikak lehen mailako giltza atomiko gabeko mahai batean',
-'zbug_doublon_table_sans_index' => 'errepikak indizerik gabeko mahai batean',
-'zbug_erreur_boucle_double' => 'BOUCLE@id@: definizio bikoitza',
-'zbug_erreur_boucle_fermant' => 'BOUCLE@id@: hertsidura-baliza falta da',
+'zbug_doublon_table_sans_cle_primaire' => 'Errepikak lehen mailako giltza atomiko gabeko mahai batean',
+'zbug_doublon_table_sans_index' => 'Errepikak indizerik gabeko mahai batean',
+'zbug_erreur_boucle_double' => '@id@ begizta: definizio bikoitza',
+'zbug_erreur_boucle_fermant' => '@id@ begizta : hertsidura-baliza falta da',
 'zbug_erreur_boucle_syntaxe' => 'Begizta okerraren sintaxia',
 'zbug_erreur_compilation' => 'Konpilazio errorea',
-'zbug_erreur_execution_page' => 'orrialdearen egikaritzapen-errorea',
+'zbug_erreur_execution_page' => 'Orrialdearen exekuzio errorea',
 'zbug_erreur_filtre' => 'Errorea: &laquo; @filtre@ &raquo; iragazkia ez dago mugaturik',
-'zbug_erreur_meme_parent' => '{meme_parent} (FORUMS) edo (RUBRIQUES) begiztetan bakarrik aplikatzen da',
+'zbug_erreur_meme_parent' => '{meme_parent} irizpidea (FORUMS) edo (RUBRIQUES) begiztetan bakarrik aplikatzen da',
 'zbug_erreur_squelette' => 'Errorea(k) eskeletoan',
 'zbug_hors_compilation' => 'Konpilaziotik at',
 'zbug_info_erreur_squelette' => 'Akatsa gunean',
-'zbug_inversion_ordre_inexistant' => 'existitzen ez den ordena baten alderanzketa',
-'zbug_pagination_sans_critere' => '#PAGINATION {pagination} kriteriorik gabe edo begizta errekursibo batean enplegatua',
-'zbug_parametres_inclus_incorrects' => 'Okerreko inklusio-parametruak',
+'zbug_inversion_ordre_inexistant' => 'Existitzen ez den ordena baten alderanzketa',
+'zbug_pagination_sans_critere' => '#PAGINATION {pagination} irizpiderik gabeko edo begizta errekursibo batean enplegatutako baliza ',
+'zbug_parametres_inclus_incorrects' => 'Baliogabeko inklusio-parametruak : @param@',
 'zbug_profile' => 'kalkulu denbora&nbsp;: @time@',
 'zbug_resultat' => 'emaitza',
 'zbug_serveur_indefini' => 'SQL zerbitzari zehaztugabea',

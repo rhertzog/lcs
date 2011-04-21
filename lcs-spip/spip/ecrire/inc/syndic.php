@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // ATTENTION
 // Cette inclusion charge executer_une_syndication pour compatibilite,
@@ -62,9 +62,11 @@ function analyser_backend($rss, $url_syndic='') {
 	} else
 		$les_auteurs_du_site = '';
 
-	if (preg_match(',<([^>]*xml:)?lang(uage)?'.'>([^<>]+)<,i',
-	$header, $match))
+	if (preg_match(',<([^>]*xml[:])?lang(uage)?'.'>([^<>]+)<,i', $header, $match))
 		$langue_du_site = $match[3];
+	// atom
+	elseif (preg_match(',<feed\s[^>]*xml:lang=[\'"]([^<>\'"]+)[\'"],i', $header, $match))
+		$langue_du_site = $match[1];
 
 	// Attention en PCRE 6.7 preg_match_all casse sur un backend avec de gros <content:encoded>
 	$items = preg_split(',<(item|entry)\b.*>,Uims', $rss);
@@ -146,8 +148,7 @@ function analyser_backend($rss, $url_syndic='') {
 		// (note: ca pourrait etre defini site par site, mais ca risque d'etre
 		// plus lourd que vraiment utile)
 		if ($GLOBALS['controler_dates_rss']) {
-			if ($la_date < time() - 365 * 24 * 3600
-			OR $la_date > time() + 48 * 3600)
+			if ($la_date > time() + 48 * 3600)
 				$la_date = time();
 		}
 
@@ -361,10 +362,12 @@ function ajouter_tags($matches, $item) {
 		}
 		else if (
 			// cas atom1, a faire apres flickr
-			$scheme = extraire_attribut($match[0], 'scheme')
-			AND $term = extraire_attribut($match[0], 'term')
+			$term = extraire_attribut($match[0], 'term')
 		) {
+			if ($scheme = extraire_attribut($match[0], 'scheme'))
 				$url = suivre_lien($scheme,$term);
+			else
+				$url = $term;
 		}
 		else {
 			# type delicious.com

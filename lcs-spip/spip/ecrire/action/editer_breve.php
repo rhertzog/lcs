@@ -3,20 +3,22 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@action_editer_breve_dist
-function action_editer_breve_dist() {
+function action_editer_breve_dist($arg=null) {
 
-	$securiser_action = charger_fonction('securiser_action', 'inc');
-	$arg = $securiser_action();
+	if (is_null($arg)){
+		$securiser_action = charger_fonction('securiser_action', 'inc');
+		$arg = $securiser_action();
+	}
 
 	// Envoi depuis les boutons "publier/supprimer cette breve"
 	if (preg_match(',^(\d+)\Wstatut\W(\w+)$,', $arg, $r)) {
@@ -70,12 +72,33 @@ function insert_breve($id_rubrique) {
 	$lang = $row['lang'];
 	$id_rubrique = $row['id_secteur']; // garantir la racine
 
-	return sql_insertq("spip_breves", array(
+	$champs = array(
 		'id_rubrique' => $id_rubrique,
 		'statut' => 'prop',
 		'date_heure' => date('Y-m-d H:i:s'),
 		'lang' => $lang,
-		'langue_choisie' => 'non'));
+		'langue_choisie' => 'non');
+
+	// Envoyer aux plugins
+	$champs = pipeline('pre_insertion',
+		array(
+			'args' => array(
+				'table' => 'spip_breves',
+			),
+			'data' => $champs
+		)
+	);
+	$id_breve = sql_insertq("spip_breves", $champs);
+	pipeline('post_insertion',
+		array(
+			'args' => array(
+				'table' => 'spip_breves',
+				'id_objet' => $id_breve
+			),
+			'data' => $champs
+		)
+	);
+	return $id_breve;
 }
 
 
@@ -162,6 +185,13 @@ function revisions_breves ($id_breve, $c=false) {
 	// Au besoin, changer le statut des rubriques concernees 
 	include_spip('inc/rubriques');
 	calculer_rubriques_if($id_rubrique, $champs, $statut_ancien);
+
+	// Notifications
+	if ($notifications = charger_fonction('notifications', 'inc')) {
+		$notifications('instituerbreve', $id_breve,
+			array('statut' => $statut, 'statut_ancien' => $statut_ancien)
+		);
+	}
 
 }
 

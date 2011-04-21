@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 
@@ -47,7 +47,6 @@ function exec_config_fonctions_dist()
 	$previsualiseur = charger_fonction('previsualiseur', 'configuration');
 	$relayeur = charger_fonction('relayeur', 'configuration');
 	$type_urls = charger_fonction('type_urls', 'configuration');
-	$compresseur = charger_fonction('compresseur', 'configuration');
 
 	echo 
 
@@ -66,8 +65,6 @@ function exec_config_fonctions_dist()
 	  $relayeur(_request('retour_proxy')), // Proxy pour syndication & doc
 
 	  $type_urls(), // Choix de type_urls
-
-	  $compresseur(), // Compression http et compactages CSS ou JS
 
 	'';
 

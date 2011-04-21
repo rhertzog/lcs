@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -11,10 +11,11 @@
 \***************************************************************************/
 
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 // ajouter define('_CREER_DIR_PLAT', true); dans mes_options pour restaurer
 // le fonctionnement des faux repertoires en .plat
 define('_CREER_DIR_PLAT', false);
+if (!defined('_TEST_FILE_EXISTS')) define('_TEST_FILE_EXISTS', preg_match(',(online|free)[.]fr$,', $_ENV["HTTP_HOST"]));
 
 #define('_SPIP_LOCK_MODE',0); // ne pas utiliser de lock (deconseille)
 #define('_SPIP_LOCK_MODE',1); // utiliser le flock php
@@ -80,9 +81,9 @@ function spip_file_get_contents ($fichier) {
 function lire_fichier ($fichier, &$contenu, $options=false) {
 	$contenu = '';
 	// inutile car si le fichier n'existe pas, le lock va renvoyer false juste apres
-	// economisons donc les acces disque
-	// if (!@file_exists($fichier))
-	//	return false;
+	// economisons donc les acces disque, sauf chez free qui rale pour un rien
+	if (_TEST_FILE_EXISTS AND !@file_exists($fichier))
+		return false;
 
 	#spip_timer('lire_fichier');
 
@@ -117,22 +118,13 @@ function lire_fichier ($fichier, &$contenu, $options=false) {
 	return false;
 }
 
-
 //
 // Ecrire un fichier de maniere un peu sure
-//
+// $ecrire_quand_meme ne sert plus mais est conservee dans l'appel pour compatibilite
+// 
 // zippe les fichiers .gz
 // http://doc.spip.org/@ecrire_fichier
 function ecrire_fichier ($fichier, $contenu, $ecrire_quand_meme = false, $truncate=true) {
-
-	// Ne rien faire si on est en preview, debug, ou si une erreur
-	// grave s'est presentee (compilation du squelette, MySQL, etc)
-	if ((
-		(isset($GLOBALS['var_preview'])&&$GLOBALS['var_preview'])
-		OR (isset($GLOBALS['var_mode'])&&($GLOBALS['var_mode'] == 'debug'))
-		OR defined('spip_interdire_cache'))
-	AND !$ecrire_quand_meme)
-		return;
 
 	#spip_timer('ecrire_fichier');
 
@@ -143,14 +135,49 @@ function ecrire_fichier ($fichier, $contenu, $ecrire_quand_meme = false, $trunca
 	// de le recreer si le locker qui nous precede l'avait supprime...)
 		if (substr($fichier, -3) == '.gz')
 			$contenu = gzencode($contenu);
-		if ($truncate)
-			@ftruncate($fp,0);
-		$s = @fputs($fp, $contenu, $a = strlen($contenu));
+		// si c'est une ecriture avec troncation , on fait plutot une ecriture complete a cote suivie unlink+rename
+		// pour etre sur d'avoir une operation atomique
+		// y compris en NFS : http://www.ietf.org/rfc/rfc1094.txt
+		// sauf sous wintruc ou ca ne marche pas
+		$ok = false;
+		if ($truncate AND _OS_SERVEUR != 'windows'){
+			include_spip('inc/acces');
+			$id = creer_uniqid();
+			// on ouvre un pointeur sur un fichier temporaire en ecriture +raz
+			if ($fp2 = spip_fopen_lock("$fichier.$id", 'w',LOCK_EX)) {
+				$s = @fputs($fp2, $contenu, $a = strlen($contenu));
+				$ok = ($s == $a);
+				spip_fclose_unlock($fp2);
+				spip_fclose_unlock($fp);
+				// unlink direct et pas spip_unlink car on avait deja le verrou
+				@unlink($fichier);
+				// le rename aussitot, atomique quand on est pas sous windows
+				// au pire on arrive en second en cas de concourance, et le rename echoue
+				// --> on a la version de l'autre process qui doit etre identique
+				@rename("$fichier.$id",$fichier);
+				// precaution en cas d'echec du rename
+				if (!_TEST_FILE_EXISTS OR @file_exists("$fichier.$id"))
+					@unlink("$fichier.$id");
+				if ($ok)
+					$ok = file_exists($fichier);
+			}
+			else
+				// echec mais penser a fermer ..
+				spip_fclose_unlock($fp);
+		}
+		// sinon ou si methode precedente a echoueee
+		// on se rabat sur la methode ancienne
+		if (!$ok){
+			// ici on est en ajout ou sous windows, cas desespere
+			if ($truncate)
+				@ftruncate($fp,0);
+			$s = @fputs($fp, $contenu, $a = strlen($contenu));
 
-		$ok = ($s == $a);
+			$ok = ($s == $a);
+			spip_fclose_unlock($fp);
+		}
 
 	// liberer le verrou et fermer le fichier
-		spip_fclose_unlock($fp);
 		@chmod($fichier, _SPIP_CHMOD & 0666);
 		if ($ok) return $ok;
 	}
@@ -263,7 +290,10 @@ function sous_repertoire($base, $subdir='', $nobase = false, $tantpis=false) {
 	static $dirs = array();
 
 	$base = str_replace("//", "/", $base);
-	if (preg_match(',[/_]$,', $base)) $base = substr($base,0,-1);
+
+	# suppr le dernier caractere si c'est un / ou un _
+	$base = rtrim($base, '/_');
+
 	if (!strlen($subdir)) {
 		$n = strrpos($base, "/");
 		if ($n === false) return $nobase ? '' : ($base .'/');
@@ -271,7 +301,7 @@ function sous_repertoire($base, $subdir='', $nobase = false, $tantpis=false) {
 		$base = substr($base, 0, $n+1);
 	} else {
 		$base .= '/';
-		$subdir = str_replace("/", "", "$subdir");
+		$subdir = str_replace("/", "", $subdir);
 	}
 
 	$baseaff = $nobase ? '' : $base;

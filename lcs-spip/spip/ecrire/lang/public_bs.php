@@ -3,12 +3,13 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // A
 'accueil_site' => 'Pocetna stranica',
+'article' => 'Article', # NEW
 'articles' => 'Clanci',
 'articles_auteur' => 'Clanci ovog autora',
 'articles_populaires' => 'Najpopularniji clanci',
@@ -18,16 +19,20 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'aucun_site' => 'Ne postoje stranice na ovoj adresi',
 'aucune_breve' => 'Ne postoje novosti na ovoj adresi',
 'aucune_rubrique' => 'Ne postoje rubrike na ovoj adresi',
+'auteur' => 'Auteur', # NEW
+'autres' => 'Autres', # NEW
 'autres_breves' => 'Ostale kratke poruke',
 'autres_groupes_mots_clefs' => 'Ostale grupe kljucnih rijeci',
 'autres_sites' => 'Ostale stranice',
 
 // B
 'bonjour' => 'Dobar dan',
+'breve' => 'Br&egrave;ve', # NEW
 'breves' => 'Kratke poruke',
 
 // C
 'commenter_site' => 'Dodaj komentar',
+'copie_document_impossible' => 'Impossible de copier le document', # NEW
 
 // D
 'date' => 'Datum',
@@ -36,6 +41,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'derniers_articles' => 'Posljedni clanci',
 'derniers_commentaires' => 'Posljednji komentari',
 'derniers_messages_forum' => 'Posljednje poruke u forumu',
+'documents_interdits_forum' => 'Documents interdits dans le forum', # NEW
 
 // E
 'edition_mode_texte' => 'Obradjivanje u text modu',
@@ -45,6 +51,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'espace_prive' => 'Privatni prostor',
 
 // F
+'formats_acceptes' => 'Formats accept&#233;s : @formats@.', # NEW
 'forum' => 'Forum',
 
 // H
@@ -53,6 +60,9 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 // J
 'jours' => 'Dani',
 
+// L
+'lien_connecter' => 'Se connecter', # NEW
+
 // M
 'meme_auteur' => 'Isti autor',
 'meme_rubrique' => 'U istoj rubrici',
@@ -60,6 +70,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'message' => 'Poruka',
 'messages_forum' => 'Poruke iz foruma',
 'messages_recents' => 'Recentne poruke iz foruma',
+'mots_clef' => 'Mot-cl&eacute;', # NEW
 'mots_clefs' => 'Kljucne rijeci',
 'mots_clefs_meme_groupe' => 'Kljucne rijeci u istoj grupi',
 
@@ -95,6 +106,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'site_realise_avec_spip' => 'Stranica realizovana sa SPIP-om',
 'sites_web' => 'Web stranice',
 'sous_rubriques' => 'Podrubrike',
+'spam' => 'Spam', # NEW
 'suite' => 'nastavi',
 'sur_web' => 'Na web-u',
 'syndiquer_rubrique' => 'Sindikuj ovu rubriku',
@@ -106,7 +118,8 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // V
 'ver_imprimer' => 'Verzija za printanje',
-'voir_en_ligne' => 'Pogledati online'
+'voir_en_ligne' => 'Pogledati online',
+'voir_squelette' => 'voir le squelette de cette page', # NE
 );
 
 ?>

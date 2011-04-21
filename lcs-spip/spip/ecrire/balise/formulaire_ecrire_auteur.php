@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;	#securite
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('base/abstract_sql');
 
@@ -24,17 +24,18 @@ function balise_FORMULAIRE_ECRIRE_AUTEUR ($p) {
 }
 
 // http://doc.spip.org/@balise_FORMULAIRE_ECRIRE_AUTEUR_stat
-function balise_FORMULAIRE_ECRIRE_AUTEUR_stat($args, $filtres) {
+function balise_FORMULAIRE_ECRIRE_AUTEUR_stat($args, $context_compil) {
 	include_spip('inc/filtres');
-
-	// Pas d'id_auteur ni d'id_article ? Erreur de squelette
+	// Pas d'id_auteur ni d'id_article ? Erreur de contexte
 	$id = intval($args[1]);
-	if (!$args[0] AND !$id)
-		return erreur_squelette(
-			_T('zbug_champ_hors_motif',
-				array ('champ' => '#FORMULAIRE_ECRIRE_AUTEUR',
-					'motif' => 'AUTEURS/ARTICLES')), '');
+	if (!$args[0] AND !$id) {
+		$msg = array('zbug_champ_hors_motif',
+				array ('champ' => 'FORMULAIRE_ECRIRE_AUTEUR',
+					'motif' => 'AUTEURS/ARTICLES'));
 
+		erreur_squelette($msg, $context_compil);
+		return '';
+	}
 	// Si on est dans un contexte article, 
 	// sortir tous les mails des auteurs de l'article
 	if (!$args[0] AND $id) {

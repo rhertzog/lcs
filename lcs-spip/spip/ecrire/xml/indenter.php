@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 class IndenteurXML {
 
@@ -26,13 +26,12 @@ function finElement($phraseur, $name)
 function textElement($phraseur, $data)
 { xml_textElement($this, $data);}
 
-// http://doc.spip.org/@PiElement
-function PiElement($phraseur, $target, $data)
+function piElement($phraseur, $target, $data)
 { xml_PiElement($this, $target, $data);}
 
 // http://doc.spip.org/@defautElement
-function defautElement($phraseur, $data)
-{  xml_defautElement($this, $data);}
+function defaultElement($phraseur, $data)
+{  xml_defaultElement($this, $data);}
 
 // http://doc.spip.org/@phraserTout
 function phraserTout($phraseur, $data)

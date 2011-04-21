@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 include_spip('inc/actions');
 
 // http://doc.spip.org/@affiche_navigation_forum
@@ -178,7 +178,7 @@ function boutons_controle_forum($id_forum, $forum_stat, $forum_id_auteur=0, $ref
 
 	if ($valider_repondre) {
 	  $dblret = rawurlencode(_DIR_RESTREINT_ABS . $lien);
-	  $boutons .= icone_inline(_T('icone_valider_message') . " &amp; " .   _T('lien_repondre_message'), generer_action_auteur('instituer_forum',"$id_forum-$valider", _DIR_RACINE . generer_url_public('forum', "$ref&id_forum=$id_forum&retour=$dblret", true, true)),
+	  $boutons .= icone_inline(_T('icone_valider_message') . " &amp; " .   _T('lien_repondre_message'), generer_action_auteur('instituer_forum',"$id_forum-$valider", generer_url_public('forum', "$ref&id_forum=$id_forum&retour=$dblret", true, true)),
 			     $logo,
 			     "creer.gif", 'right', 'non');
 	}
@@ -246,12 +246,17 @@ function critere_statut_controle_forum($type, $id_rubrique=0, $recherche='') {
 	}
 
 	if ($recherche) {
-		include_spip('inc/rechercher');
-		if ($a = recherche_en_base($recherche, 'forum'))
-			$and .= " AND ".sql_in('id_forum',
-				array_keys(array_pop($a)));
-		else
-			$and .= " 0=1";
+		# recherche par IP
+		if (preg_match(',^\d+\.\d+\.(\*|\d+\.(\*|\d+))$,', $recherche)) {
+			$and .= " AND ip LIKE ".sql_quote(str_replace('*', '%', $recherche));
+		} else {
+			include_spip('inc/rechercher');
+			if ($a = recherche_en_base($recherche, 'forum'))
+				$and .= " AND ".sql_in('id_forum',
+					array_keys(array_pop($a)));
+			else
+				$and .= " AND 0=1";
+		}
 	}
 
 	return array($from, "$where$and");
@@ -336,16 +341,11 @@ function parent_forum($id_forum) {
 } 
 
 
+// obsolete, maintenu poru compat
 // http://doc.spip.org/@generer_url_forum_dist
 function generer_url_forum_dist($id_forum, $args='', $ancre='') {
-	if ($id_forum = intval($id_forum)) {
-		list($type, $id,) = racine_forum($id_forum);
-		if ($type) {
-			if (!$ancre) $ancre = "forum$id_forum";
-			return generer_url_entite($id, $type, $args, $ancre, true);
-		}
-	}
-	return '';
+	$generer_url_externe = charger_fonction("generer_url_forum",'urls');
+	return $generer_url_externe($id_forum, $args, $ancre);
 }
 
 

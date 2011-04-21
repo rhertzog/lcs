@@ -3,7 +3,7 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -11,7 +11,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 '0_URL' => 'http://listes.rezo.net/mailman/listinfo/spip-dev',
 '0_langue' => 'T&uuml;rk&ccedil;e [tr]',
 '0_liste' => 'spip-dev@rezo.net',
-'0_mainteneur' => 'ender.ustungel@sj.k12.tr',
+'0_mainteneur' => 'admin@inceden.net',
 
 // A
 'access_interface_graphique' => 'Tam grafik aray&uuml;ze geri d&ouml;n',
@@ -188,7 +188,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'date_saison_2' => 'ilkbahar',
 'date_saison_3' => 'yaz',
 'date_saison_4' => 'sonbahar',
+'date_secondes' => 'secondes', # NEW
 'date_semaines' => 'hafta',
+'date_un_mois' => 'mois', # NEW
+'date_une_heure' => 'heure', # NEW
+'date_une_minute' => 'minute', # NEW
+'date_une_seconde' => 'seconde', # NEW
+'date_une_semaine' => 'semaine', # NEW
 'dirs_commencer' => ' y&uuml;klemeye ger&ccedil;ekten ba&#351;lamak i&ccedil;in',
 'dirs_preliminaire' => '&Ouml;n bilgi : <b>Eri&#351;im haklar&#305;n&#305; ayarlay&#305;n&#305;z</b>',
 'dirs_probleme_droits' => 'Eri&#351;im haklar&#305; sorunu ',
@@ -199,7 +205,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'dirs_repertoires_suivants' => '<p><b>A&#351;a&#287;&#305;daki dizinlere yazma izni yoktur&nbsp;: </b></p><ul>@bad_dirs@.</ul> 
   <p>Bu sorunu &ccedil;&ouml;zmek i&ccedil;in FTP program&#305;n&#305;zla her bir dizine eri&#351;im haklar&#305;n&#305; d&uuml;zenleyin. Bu yordam, kurulum kitap&ccedil;&#305;&#287;&#305;nda detayl&#305; bi&ccedil;imde a&ccedil;&#305;klanm&#305;&#351;t&#305;r./p> 
   <p>Bu i&#351;lemi yapt&#305;&#287;&#305;n&#305;zda ',
-'double_occurrence' => '&Ccedil;ift tekrar ',
+'double_occurrence' => '&Ccedil;ift tekrar ', # MODIF
 
 // E
 'en_cours' => 'i&#351;lenmekte',
@@ -214,6 +220,18 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // F
 'fichier_introuvable' => '@fichier@ dosyas&#305; bulunamad&#305;',
+'form_auteur_confirmation' => 'Confirmez votre adresse email', # NEW
+'form_auteur_email_modifie' => 'Votre adresse email a &eacute;t&eacute; modifi&eacute;e.', # NEW
+'form_auteur_envoi_mail_confirmation' => 'Un courrier &eacute;lectronique de confirmation vient d\'&ecirc;tre envoy&eacute; &agrave; @email@. Vous devrez visiter l\'adresse Web mentionn&eacute;e dans ce courrier pour valider votre adresse mail.', # NEW
+'form_auteur_mail_confirmation' => 'Bonjour,
+
+Vous avez demand&eacute; &agrave; changer votre adresse email.
+Pour confirmer votre nouvelle adresse, il suffit de vous connecter &agrave;
+l\'adresse ci-dessous (dans le cas contraire, votre demande
+sera ignor&eacute;e) :
+
+    @url@
+', # NEW
 'form_deja_inscrit' => 'Zaten kay&#305;tl&#305;s&#305;n&#305;z.',
 'form_email_non_valide' => 'E-posta adresiniz ge&ccedil;ersiz.',
 'form_forum_access_refuse' => 'Art&#305;k bu siteye eri&#351;im izniniz yok.',
@@ -390,19 +408,23 @@ Kat&#305;l&#305;m&#305;n&#305;z i&ccedil;in te&#351;ekk&uuml;rler
 'info_article_supprime' => 'Silinen makale',
 'info_articles' => 'Makaleler',
 'info_articles_a_valider' => 'Onaylanacak makaleler',
+'info_articles_nb' => '@nb@ articles', # NEW
 'info_articles_proposes' => '&Ouml;nerilen makaleler',
+'info_articles_un' => '1 article', # NEW
 'info_auteurs_nombre' => 'yazar(lar)&nbsp;:',
 'info_authentification_ftp' => 'Onay (FTP ile)',
 'info_bloquer_lien' => 'bu ba&#287;lant&#305;y&#305; engelle',
 'info_breves_02' => 'K&#305;sa haberler',
 'info_breves_2' => 'k&#305;sa haberler',
+'info_breves_nb' => '@nb@ br&egrave;ves', # NEW
+'info_breves_un' => '1 br&egrave;ve', # NEW
 'info_breves_valider' => 'Onaylanacak k&#305;sa haberler',
 'info_connexion_refusee' => 'Ba&#287;lant&#305; reddedildi',
 'info_contact_developpeur' => 'L&uuml;tfen bir program geli&#351;tirici ile temasa ge&ccedil;iniz.',
 'info_contenance' => 'Site i&ccedil;eri&#287;i&nbsp;:',
 'info_contribution' => 'Forum katk&#305;lar&#305;',
 'info_copyright' => '@spip@, @lien_gpl@ GPL lisans&#305; ile da&#287;&#305;t&#305;lan serbest bir yaz&#305;l&#305;md&#305;r.',
-'info_copyright_doc' => 'Ayr&#305;nt&#305;l&#305; bilgi i&ccedil;in, bkz.  <a href=\'http://www.spip.net/fr\'>http://www.spip.net/fr</a>.',
+'info_copyright_doc' => 'Ayr&#305;nt&#305;l&#305; bilgi i&ccedil;in, bkz.  <a href="@spipnet@">http://www.spip.net/fr</a>.',
 'info_copyright_gpl' => 'GPL lisans&#305; alt&#305;nda',
 'info_cours_edition' => 'Yaz&#305;lmakta olan makaleleriniz',
 'info_creer_repertoire' => '&#350;u isimde bir dosya veya dizin olu&#351;turunuz&nbsp;:',
@@ -416,6 +438,8 @@ Kat&#305;l&#305;m&#305;n&#305;z i&ccedil;in te&#351;ekk&uuml;rler
 'info_document' => 'Belge',
 'info_document_indisponible' => 'Bu belge uygun (bo&#351;ta) de&#287;il',
 'info_documents' => 'Belge',
+'info_documents_nb' => '@nb@ documents', # NEW
+'info_documents_un' => '1 document', # NEW
 'info_echange_message' => 'SPIP site kat&#305;l&#305;mc&#305;lar&#305; aras&#305;nda ileti al&#305;&#351;veri&#351;i
                            ve &ouml;zel sohbet forumlar&#305; olu&#351;turma olana&#287;&#305; verir.
                            Bu i&#351;levi &ccedil;al&#305;&#351;t&#305;rabilir veya durdurabilirsiniz.',
@@ -462,6 +486,8 @@ Kat&#305;l&#305;m&#305;n&#305;z i&ccedil;in te&#351;ekk&uuml;rler
 'info_mail_fournisseur' => 'isminiz@hizmet_veren_firma.com',
 'info_message_2' => '&#304;LET&#304;',
 'info_message_supprime' => '&#304;LET&#304; S&#304;L&#304;ND&#304;',
+'info_messages_nb' => '@nb@ messages', # NEW
+'info_messages_un' => '1 message', # NEW
 'info_mise_en_ligne' => '&Ccedil;evrimi&ccedil;i yay&#305;n tarihi&nbsp;:',
 'info_modification_parametres_securite' => 'g&uuml;venlik parametreleri de&#287;i&#351;ikli&#287;i',
 'info_mois_courant' => 'Ay i&ccedil;inde :',
@@ -506,6 +532,8 @@ Kat&#305;l&#305;m&#305;n&#305;z i&ccedil;in te&#351;ekk&uuml;rler
 'info_retablir_lien' => 'Bu ba&#287;lant&#305;y&#305; tekrar kur',
 'info_retirer_mot' => 'Bu anahtar s&ouml;zc&uuml;&#287;&uuml; geri al',
 'info_retirer_mots' => 'T&uuml;m anahtar s&ouml;zc&uuml;kleri geri al',
+'info_rubriques_nb' => '@nb@ rubriques', # NEW
+'info_rubriques_un' => '1 rubrique', # NEW
 'info_sans_titre_2' => 'ba&#351;l&#305;ks&#305;z',
 'info_selectionner_fichier' => '@upload@ dizininden bir dosya se&ccedil;ebilirsiniz. ',
 'info_selectionner_fichier_2' => 'Bir dosya se&ccedil;&nbsp;:',
@@ -514,7 +542,9 @@ Kat&#305;l&#305;m&#305;n&#305;z i&ccedil;in te&#351;ekk&uuml;rler
 'info_site_attente' => 'Onaylanmay&#305; bekleyen Web sitesi',
 'info_site_reference' => 'At&#305;fta bulunulan &ccedil;evrimi&ccedil;i site',
 'info_site_refuse' => 'Web sitesi reddedildi',
+'info_sites_nb' => '@nb@ sites', # NEW
 'info_sites_referencer' => 'Bir siteye at&#305;fta bulun',
+'info_sites_un' => '1 site', # NEW
 'info_supprimer_vignette' => 'Bu etiketi sil',
 'info_symbole_bleu' => '<b>Mavi</b> sembol bir <b>hat&#305;rlatmay&#305;</b> g&ouml;sterir : yani, ki&#351;isel kullan&#305;m&#305;n&#305;z i&ccedil;in bir iletidir.',
 'info_symbole_jaune' => '<b>Sar&#305;</b> sembol <b>t&uuml;m edit&ouml;rlere y&ouml;nelik</b> bir duyuruyu g&ouml;sterir&nbsp;: t&uuml;m y&ouml;neticiler taraf&#305;ndan de&#287;i&#351;tirilebilir ve t&uuml;m edit&ouml;rler taraf&#305;ndan g&ouml;r&uuml;lebilir. ',
@@ -538,14 +568,13 @@ Kat&#305;l&#305;m&#305;n&#305;z i&ccedil;in te&#351;ekk&uuml;rler
 'info_visites' => 'Ziyaret :',
 'info_vos_rendez_vous' => '&#304;lerideki randevular&#305;n&#305;z',
 'info_zoom' => 'yak&#305;nla&#351;t&#305;r',
-'infos_vos_pense_bete' => 'Hat&#305;rlatmalar&#305;n&#305;z',
+'infos_vos_pense_bete' => 'Hat&#305;rlatmalar&#305;n&#305;z', # MODIF
 'item_breve_proposee' => '&Ouml;nerilen k&#305;sa haber',
 
 // L
 'lien_afficher_icones_seuls' => 'Sadece ikonlar&#305; g&ouml;r&uuml;nt&uuml;le',
 'lien_afficher_texte_icones' => 'ikonlar&#305; ve metni g&ouml;r&uuml;nt&uuml;le',
 'lien_afficher_texte_seul' => 'Sadece metni g&ouml;r&uuml;nt&uuml;le',
-'lien_icones_interface' => 'Aray&uuml;z ikonlar&#305; <a href=\'http://jimmac.musichall.cz/\'>Jakub \'Jimmac\' Steiner</a> adresinden al&#305;nm&#305;&#351;t&#305;r.',
 'lien_liberer' => 'Serbest b&#305;rak',
 'lien_liberer_tous' => 'Bu makaleleri serbest b&#305;rak',
 'lien_nouvea_pense_bete' => 'YEN&#304; HATIRLATMA',
@@ -588,6 +617,7 @@ Kat&#305;l&#305;m&#305;n&#305;z i&ccedil;in te&#351;ekk&uuml;rler
 'login_retour_site' => 'Kamusal siteye d&ouml;n',
 'login_retoursitepublic' => 'Kamusal&nbsp;siteye&nbsp;d&ouml;n',
 'login_sans_cookiie' => '&Ccedil;erezsiz tan&#305;mlanma',
+'login_securise' => 'Login s&eacute;curis&eacute;', # NEW
 'login_sinscrire' => 'Kay&#305;t ol',
 'login_test_navigateur' => 'Gezgini dene / Tekrar ba&#287;lan',
 'login_verifiez_navigateur' => '(Ancak gezginin &#351;ifrenizi belle&#287;e almad&#305;&#287;&#305;ndan emin olunuz...)',
@@ -620,7 +650,6 @@ Kat&#305;l&#305;m&#305;n&#305;z i&ccedil;in te&#351;ekk&uuml;rler
 'onglet_repartition_rubrique' => 'B&ouml;l&uuml;mlere g&ouml;re da&#287;&#305;l&#305;m',
 'onglet_save_restaur_base' => 'Veritaban&#305;n&#305; yedekle / Geri y&uuml;kle',
 'onglet_vider_cache' => '&Ouml;nbelle&#287;i bo&#351;alt',
-'ortho_trop_de_fautes2' => '&Ouml;nce bariz hatalar&#305; d&uuml;zeltiniz sonra tekrar deneyiniz. ',
 
 // P
 'pass_choix_pass' => 'L&uuml;tfen yeni &#351;ifrenizi se&ccedil;iniz :',
@@ -683,7 +712,7 @@ Kat&#305;l&#305;m&#305;n&#305;z i&ccedil;in te&#351;ekk&uuml;rler
 'texte_actualite_site_1' => 'Aray&uuml;ze al&#305;&#351;&#305;nca &laquo;',
 'texte_actualite_site_2' => 'T&uuml;m aray&uuml;z',
 'texte_actualite_site_3' => '&raquo;\'e t&#305;klayarak daha fazla se&ccedil;ene&#287;e ula&#351;abilirsiniz.',
-'texte_creation_automatique_vignette' => 'Bu sitede &ouml;ng&ouml;r&uuml;nt&uuml;leme ikonlar&#305;n&#305;n otomatik olarak yarat&#305;lmas&#305; &ccedil;al&#305;&#351;&#305;r durumdad&#305;r. E&#287;er bu formdan hareket ederek @gd_formats@, formatl&#305; resimler y&uuml;klerseniz, bunlara, en fazla @taille_preview@&nbsp;piksel boyutunda bir ikon e&#351;lik edecektir.',
+'texte_creation_automatique_vignette' => 'Bu sitede &ouml;ng&ouml;r&uuml;nt&uuml;leme ikonlar&#305;n&#305;n otomatik olarak yarat&#305;lmas&#305; i&#351;lemi etkinle&#351;tiri&#351;mi&#351;tir. E&#287;er bu formdan hareket ederek @gd_formats@, formatl&#305; resimler y&uuml;klerseniz, bunlara, en fazla @taille_preview@&nbsp;piksel boyutunda bir ikon e&#351;lik edecektir.',
 'texte_documents_associes' => 'A&#351;a&#287;&#305;daki belgeler makale ile ba&#287;lant&#305;l&#305; olup,
     do&#287;rudan makalenin i&ccedil;ine dahil edilmemi&#351;tir. Kamu sitesinin sayfa d&uuml;zenine g&ouml;re,
     sonradan belge eki olarak g&ouml;r&uuml;lebilir.',
@@ -696,12 +725,12 @@ Kat&#305;l&#305;m&#305;n&#305;z i&ccedil;in te&#351;ekk&uuml;rler
 'texte_inc_meta_1' => 'Sistem <code>@fichier@</code> dosyas&#305;n&#305;n yaz&#305;lmas&#305; s&#305;ras&#305;nda bir hata ile kar&#351;&#305;la&#351;t&#305;. L&uuml;tfen, site y&ouml;neticisi olarak ',
 'texte_inc_meta_2' => '(<code>ecrire/data/</code> dizinindeki) ',
 'texte_inc_meta_3' => '<code>@repertoire@</code> dizinindeki yazma haklar&#305;n&#305; kontrol ediniz. ',
-'texte_statut_en_cours_redaction' => 'Yaz&#305;lmakta',
-'texte_statut_poubelle' => '&Ccedil;&ouml;pe',
+'texte_statut_en_cours_redaction' => 'Yaz&#305;l&#305;yor',
+'texte_statut_poubelle' => '&Ccedil;&ouml;pe at&#305;ld&#305;',
 'texte_statut_propose_evaluation' => 'De&#287;erlendirmeye al&#305;nd&#305;',
 'texte_statut_publie' => '&Ccedil;evrimi&ccedil;i yay&#305;nland&#305;',
 'texte_statut_refuse' => 'Reddedildi',
-'titre_ajouter_mot_cle' => 'B&#304;R ANAHTAR S&Ouml;ZC&Uuml;K EKLE :',
+'titre_ajouter_mot_cle' => 'B&#304;R ANAHTAR-S&Ouml;ZC&Uuml;K EKLE :',
 'titre_breve_proposee' => '&Ouml;nerilen k&#305;sa haber',
 'titre_breve_publiee' => 'Yay&#305;nlanan k&#305;sa haber',
 'titre_breve_refusee' => 'Reddedilen k&#305;sa haber',
@@ -729,34 +758,34 @@ Kat&#305;l&#305;m&#305;n&#305;z i&ccedil;in te&#351;ekk&uuml;rler
 
 // Z
 'zbug_balise_b_aval' => '&nbsp;: B etiketinde sorun var',
-'zbug_balise_inexistante' => 'hata @from@: #@balise@ komutu mevcut de&#287;il',
+'zbug_balise_inexistante' => 'hata @from@: #@balise@ komutu mevcut de&#287;il', # MODIF
 'zbug_balise_sans_argument' => '@balise@ komutunda arg&uuml;man eksik',
 'zbug_boucle' => 'd&ouml;ng&uuml;',
-'zbug_boucle_recursive_undef' => 'tan&#305;ms&#305;z tekrarl&#305; d&ouml;ng&uuml;',
+'zbug_boucle_recursive_undef' => 'tan&#305;ms&#305;z tekrarl&#305; d&ouml;ng&uuml;', # MODIF
 'zbug_calcul' => 'hesaplama',
 'zbug_champ_hors_boucle' => '@champ@ alan&#305; d&ouml;ng&uuml; d&#305;&#351;&#305;nda',
-'zbug_champ_hors_motif' => '@champ@ alan&#305; @motif@ d&ouml;ng&uuml;s&uuml; d&#305;&#351;&#305;nda ',
+'zbug_champ_hors_motif' => '@champ@ alan&#305; @motif@ d&ouml;ng&uuml;s&uuml; d&#305;&#351;&#305;nda ', # MODIF
 'zbug_code' => 'kod',
-'zbug_critere_inconnu' => 'tan&#305;ms&#305;z kriter @critere@',
-'zbug_distant_interdit' => 'yasaklanm&#305;&#351; d&#305;&#351; veri dosyas&#305;',
-'zbug_doublon_table_sans_cle_primaire' => 'endekssiz bir tabloda tekrarlar var',
-'zbug_doublon_table_sans_index' => 'endekslenmemi&#351; bir tabloda tekrarlanan bilgiler',
-'zbug_erreur_boucle_double' => 'D&Ouml;NG&Uuml;@id@: &ccedil;ift tan&#305;ml&#305;',
-'zbug_erreur_boucle_fermant' => 'D&Ouml;NG&Uuml;@id@: kapatma etiketi eksik',
-'zbug_erreur_boucle_syntaxe' => 'D&ouml;ng&uuml; t&uuml;mcesi hatal&#305;',
+'zbug_critere_inconnu' => 'tan&#305;ms&#305;z kriter @critere@', # MODIF
+'zbug_distant_interdit' => 'yasaklanm&#305;&#351; d&#305;&#351; veri dosyas&#305;', # MODIF
+'zbug_doublon_table_sans_cle_primaire' => 'endekssiz bir tabloda tekrarlar var', # MODIF
+'zbug_doublon_table_sans_index' => 'endekslenmemi&#351; bir tabloda tekrarlanan bilgiler', # MODIF
+'zbug_erreur_boucle_double' => 'D&Ouml;NG&Uuml;@id@: &ccedil;ift tan&#305;ml&#305;', # MODIF
+'zbug_erreur_boucle_fermant' => 'D&Ouml;NG&Uuml;@id@: kapatma etiketi eksik', # MODIF
+'zbug_erreur_boucle_syntaxe' => 'D&ouml;ng&uuml; t&uuml;mcesi hatal&#305;', # MODIF
 'zbug_erreur_compilation' => 'derleme hatas&#305;',
-'zbug_erreur_execution_page' => 'sayfa i&#351;letilirken hata olu&#351;tu',
-'zbug_erreur_filtre' => 'Hata : <b>&laquo; @filtre@ &raquo;</b> filtresi tan&#305;ms&#305;z',
-'zbug_erreur_meme_parent' => '{meme_parent} sadece (FORUMS) veya  (RUBRIQUES) i&ccedil;in uygulanabilir',
+'zbug_erreur_execution_page' => 'sayfa i&#351;letilirken hata olu&#351;tu', # MODIF
+'zbug_erreur_filtre' => 'Hata : <b>&laquo; @filtre@ &raquo;</b> filtresi tan&#305;ms&#305;z', # MODIF
+'zbug_erreur_meme_parent' => '{meme_parent} sadece (FORUMS) veya  (RUBRIQUES) i&ccedil;in uygulanabilir', # MODIF
 'zbug_erreur_squelette' => '&#304;skelette hata var',
 'zbug_hors_compilation' => 'Derleme D&#305;&#351;&#305;',
 'zbug_info_erreur_squelette' => 'Sitede hata var',
-'zbug_inversion_ordre_inexistant' => 'olmayan bir s&#305;ralama ters &ccedil;evrilemez',
-'zbug_pagination_sans_critere' => 'kritersiz veya kendini &ccedil;a&#287;&#305;ran d&ouml;ng&uuml;de kullan&#305;lan #PAGINATION {pagination} ',
-'zbug_parametres_inclus_incorrects' => 'Ekleme parametreleri hatal&#305;',
+'zbug_inversion_ordre_inexistant' => 'olmayan bir s&#305;ralama ters &ccedil;evrilemez', # MODIF
+'zbug_pagination_sans_critere' => 'kritersiz veya kendini &ccedil;a&#287;&#305;ran d&ouml;ng&uuml;de kullan&#305;lan #PAGINATION {pagination} ', # MODIF
+'zbug_parametres_inclus_incorrects' => 'Ekleme parametreleri hatal&#305;', # MODIF
 'zbug_profile' => 'Hesaplama s&uuml;resi&nbsp;: @time@',
 'zbug_resultat' => 'sonu&ccedil;',
-'zbug_serveur_indefini' => 'SQL hizmet birimi tan&#305;ms&#305;z',
+'zbug_serveur_indefini' => 'SQL hizmet birimi tan&#305;ms&#305;z', # MODIF
 'zbug_statistiques' => 'S&uuml;reye g&ouml;re s&#305;n&#305;flanm&#305;&#351; SQL istekleri istatistikleri',
 'zbug_table_inconnue' => '&laquo; @table@ &raquo; SQL tablosu tan&#305;ms&#305;z',
 'zxml_connus_attributs' => 'bilinen &ouml;znitelikler',

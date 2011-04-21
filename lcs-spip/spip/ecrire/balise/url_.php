@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // Les balises URL_$type sont generiques, sauf qq cas particuliers.
 // Si ces balises sont utilisees pour la base locale,
@@ -44,7 +44,7 @@ function generer_generer_url_arg($type, $p, $_id)
 		if (function_exists($f = 'generer_generer_url_'.$s)){
 			return $f($type, $_id, $s);
 		}
-		if (!$GLOBALS['connexions'][$s]['spip_connect_version']) {
+		if (!$GLOBALS['connexions'][strtolower($s)]['spip_connect_version']) {
 			return NULL;
 		}
 		$s = _q($s);
@@ -67,8 +67,8 @@ function balise_URL__dist($p) {
 
 	$nom = $p->nom_champ;
 	if ($nom === 'URL_') {
-		erreur_squelette(_T('zbug_info_erreur_squelette'), $nom);
-		$p->code = "''";
+		$msg = array('zbug_balise_sans_argument', array('balise' => ' URL_'));
+		erreur_squelette($msg, $p);
 		$p->interdire_scripts = false;
 		return $p;
 	} elseif ($f = charger_fonction($nom, 'balise', true)) {
@@ -80,7 +80,8 @@ function balise_URL__dist($p) {
 			$code = generer_generer_url($nom, $p);
 			if ($code === NULL) return NULL;
 		}
-		$p->code = "vider_url($code)";
+		if (!$p->etoile)
+			$p->code = "vider_url($code)";
 		$p->interdire_scripts = false;
 		return $p;
 	}
@@ -106,7 +107,10 @@ function balise_URL_SITE_dist($p)
 	if (strpos($code, '@$Pile[0]') !== false) {
 		$code = generer_generer_url('site', $p);
 		if ($code === NULL) return NULL;
-	} else $code = "calculer_url($code,'','url', \$connect)";
+	} else {
+		if (!$p->etoile)
+			$code = "calculer_url($code,'','url', \$connect)";
+	}
 	$p->code = $code;
 	$p->interdire_scripts = false;
 	return $p;
@@ -133,29 +137,26 @@ function balise_URL_PAGE_dist($p) {
 
 	$p->code = interprete_argument_balise(1,$p);
 	$args = interprete_argument_balise(2,$p);
-	if ($args != "''" && $args!==NULL)
-		$p->code .= ','.$args;
 
-	// autres filtres (???)
-	array_shift($p->param);
+	$s = !$p->id_boucle ? '' :  $p->boucles[$p->id_boucle]->sql_serveur;
 
-	if ($p->id_boucle
-	AND $s = $p->boucles[$p->id_boucle]->sql_serveur) {
-
-		if (!$GLOBALS['connexions'][$s]['spip_connect_version']) {
+	if ($s) {
+		if (!$GLOBALS['connexions'][strtolower($s)]['spip_connect_version']) {
 			$p->code = "404";
 		} else {
 			// si une fonction de generation des url a ete definie pour ce connect l'utiliser
 			// elle devra aussi traiter le cas derogatoire type=page
 			if (function_exists($f = 'generer_generer_url_'.$s)){
+				if ($args) $p->code .= ", $args";
 				$p->code = $f('page', $p->code, $s);
 				return $p;
 			}
-			$p->code .=  ", 'connect=" .  addslashes($s) . "'";
+			$s = 'connect=' .  addslashes($s);
+			$args = $args ? "$args . '&$s'" : "'$s'";
 		}
 	}
-
-	$p->code = 'generer_url_public(' . $p->code .')';
+	if (!$args) $args = "''";
+	$p->code = 'generer_url_public(' . $p->code . ", $args)";
 	#$p->interdire_scripts = true;
 	return $p;
 }
@@ -166,21 +167,20 @@ function balise_URL_PAGE_dist($p) {
 // http://doc.spip.org/@balise_URL_ECRIRE_dist
 function balise_URL_ECRIRE_dist($p) {
 
-	if ($p->boucles[$p->id_boucle]->sql_serveur) {
-		$p->code = 'generer_url_public("404")';
-		return $p;
+	$code = interprete_argument_balise(1,$p);
+	if (!$code)
+		$fonc = "''";
+	else{
+		if (preg_match("/^'[^']*'$/", $code))
+			$fonc = $code;
+		else {$code = "(\$f = $code)"; $fonc = '$f';}
+		$args = interprete_argument_balise(2,$p);
+		if ($args != "''" && $args!==NULL)
+			$fonc .= ',' . $args;
 	}
-
-	$p->code = interprete_argument_balise(1,$p);
-	$args = interprete_argument_balise(2,$p);
-	if ($args != "''" && $args!==NULL)
-		$p->code .= ','.$args;
-
-	// autres filtres (???)
-	array_shift($p->param);
-
-	$p->code = 'generer_url_ecrire(' . $p->code .')';
-
+	$p->code = 'generer_url_ecrire(' . $fonc .')';
+	if ($code) 
+		$p->code = "(tester_url_ecrire($code) ?" . $p->code .'  : "")';
 	#$p->interdire_scripts = true;
 	return $p;
 }
@@ -199,9 +199,8 @@ function balise_URL_ACTION_AUTEUR_dist($p) {
 
 	$p->code = interprete_argument_balise(1,$p);
 	$args = interprete_argument_balise(2,$p);
-	if (!$args)
-		$args = "''";
-	$p->code .= ",".$args;
+	if ($args != "''" && $args!==NULL)
+		$p->code .= ",".$args;
 	$redirect = interprete_argument_balise(3,$p);
 	if ($redirect != "''" && $redirect!==NULL)
 		$p->code .= ",".$redirect;

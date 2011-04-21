@@ -3,24 +3,24 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 
 // Constante pour le nombre d'auteurs par page.
-@define('MAX_AUTEURS_PAR_PAGE', 30);
-@define('AUTEURS_MIN_REDAC', "0minirezo,1comite,5poubelle");
-@define('AUTEURS_DEFAUT', '');
+if (!defined('MAX_AUTEURS_PAR_PAGE')) define('MAX_AUTEURS_PAR_PAGE', 30);
+if (!defined('AUTEURS_MIN_REDAC')) define('AUTEURS_MIN_REDAC', "0minirezo,1comite,5poubelle");
+if (!defined('AUTEURS_DEFAUT')) define('AUTEURS_DEFAUT', '');
 // decommenter cette ligne et commenter la precedente 
 // pour que l'affichage par defaut soit les visiteurs
-#@define('AUTEURS_DEFAUT', '!');
+#if (!defined('AUTEURS_DEFAUT')) define('AUTEURS_DEFAUT', '!');
 
 // http://doc.spip.org/@exec_auteurs_dist
 function exec_auteurs_dist()
@@ -39,7 +39,9 @@ function exec_auteurs_dist()
 		$recherche = recherche_en_base($cherche, $tables,array('toutvoir'=>true));
 		if ($recherche['auteur'])
 			$recherche = sql_in('aut.id_auteur', array_keys($recherche['auteur']));
-		else {$recherche = NULL; $cherche = '';}
+		else {
+			$recherche = "aut.id_auteur=0"; // rien trouve !
+		}
 	}
 	$form = formulaire_recherche("auteurs",(($s=_request('statut'))?"<input type='hidden' name='statut' value='$s' />":""));
 	exec_auteurs_args($statut, $tri, $debut, $recherche,$form, $cherche);
@@ -55,6 +57,14 @@ function exec_auteurs_args($statut, $tri, $debut, $recherche=NULL, $trouve='', $
 
 
 		$recherche = auteurs_tranches(afficher_n_auteurs($auteurs), $debut, $lettre, $tri, $statut, MAX_AUTEURS_PAR_PAGE, $nombre_auteurs,$cherche);
+
+		if ($cherche){
+			if (count($auteurs))
+				$recherche = "<h3>". _T('info_resultat_recherche')." &laquo;$cherche&raquo;</h3>" . $recherche;
+			else
+				$recherche = "<h3>". _T('info_recherche_auteur_zero',array('cherche_auteur'=>$cherche))."</h3>" . $recherche;
+		}
+
 	}
 
 	if (_AJAX) {
@@ -70,8 +80,8 @@ function exec_auteurs_args($statut, $tri, $debut, $recherche=NULL, $trouve='', $
 				     "auteurs","redacteurs");
 
 		echo bandeau_auteurs($tri, $visiteurs);
-
-		echo  $trouve, "<br class='nettoyeur' />";
+		
+		echo  $trouve, "<div class='nettoyeur'></div>";
 
 		echo "<div id='auteurs'>", $recherche, "</div>";
 		echo pipeline('affiche_milieu',array('args'=>array('exec'=>'auteurs'),'data'=>''));

@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@creer_pass_aleatoire
 function creer_pass_aleatoire($longueur = 8, $sel = "") {
@@ -196,34 +196,49 @@ function generer_htpass($pass) {
 }
 
 //
-// Verifier la presence des .htaccess
+// Installe ou verifie un .htaccess, y compris sa prise en compte par Apache
 //
 // http://doc.spip.org/@verifier_htaccess
-function verifier_htaccess($rep) {
+function verifier_htaccess($rep, $force=false) {
 	$htaccess = rtrim($rep,"/") . "/" . _ACCESS_FILE_NAME;
-	if ((!@file_exists($htaccess)) AND 
-	    !defined('_ECRIRE_INSTALL') AND !defined('_TEST_DIRS')) {
-		spip_log("demande de creation de $htaccess");
-		if ($_SERVER['SERVER_ADMIN'] != 'www@nexenservices.com'){
-			if (!$f = @fopen($htaccess, "w")) {
-				spip_log("ECHEC DE LA CREATION DE $htaccess"); # ne pas traduire
-			} else {
-				fputs($f, "deny from all\n");
-				fclose($f);
-			}
-		} else {
-			echo "<span style='color: #FF0000'>IMPORTANT : </span>";
-			echo "Votre h&eacute;bergeur est Nexen Services.<br />";
-			echo "La protection du r&eacute;pertoire <i>$rep/</i> doit se faire
-			par l'interm&eacute;diaire de ";
-			echo "<a href=\"http://www.nexenservices.com/webmestres/htlocal.php\"
-			target=\"_blank\">l'espace webmestres</a>.";
-			echo "Veuillez cr&eacute;er manuellement la protection pour
-			ce r&eacute;pertoire (un couple login/mot de passe est
-			n&eacute;cessaire).<br />";
+	if (((@file_exists($htaccess)) OR defined('_TEST_DIRS')) AND !$force)
+		return true;
+	if ($_SERVER['SERVER_ADMIN'] == 'www@nexenservices.com')
+		return nexen($rep);
+	if ($ht = @fopen($htaccess, "w")) {
+		fputs($ht, "deny from all\n");
+		fclose($ht);
+		@chmod($htaccess, _SPIP_CHMOD & 0666);
+		$t = rtrim($rep,"/") . "/.ok";
+		if ($ht = @fopen($t, "w")) {
+			@fclose($ht);
+			include_spip('inc/distant');
+			$t = substr($t,strlen(_DIR_RACINE));
+			$t = url_de_base() . $t;
+			$ht = recuperer_lapage($t, false, 'HEAD', 0);
+			// htaccess inoperant si on a recupere des entetes HTTP
+			// (ignorer la reussite si connexion par fopen)
+			$ht = !(isset($ht[0]) AND $ht[0]);
 		}
 	}
+	spip_log("Creation de $htaccess " . ($ht ? " reussie" : " manquee"));
+	return $ht;
+}	
+
+function nexen($rep)
+{
+	echo "<span style='color: #FF0000'>IMPORTANT : </span>";
+	echo "Votre h&eacute;bergeur est Nexen Services.<br />";
+	echo "La protection du r&eacute;pertoire <i>$rep/</i> doit se faire
+			par l'interm&eacute;diaire de ";
+	echo "<a href=\"http://www.nexenservices.com/Webmestres/index.php\"
+			target=\"_blank\">l'espace webmestres</a>.";
+	echo "Veuillez cr&eacute;er manuellement la protection pour
+			ce r&eacute;pertoire (un couple login/mot de passe est
+			n&eacute;cessaire).<br />";
+	return false;
 }
+
 
 // http://doc.spip.org/@gerer_htaccess
 function gerer_htaccess() {

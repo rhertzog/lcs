@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/agenda'); // inclut inc/layer, inc/texte, inc/filtre
 include_spip('inc/boutons');
@@ -23,7 +23,7 @@ define('_INTERFACE_ONGLETS', false);
 
 // http://doc.spip.org/@echo_log
 function echo_log($f, $ret) {
-	spip_log("Page " . self() . " function $res: echo ".substr($ret,0,50)."...",'echo');
+	spip_log("Page " . self() . " function $f: echo ".substr($ret,0,50)."...",'echo');
 	echo
 	(_SIGNALER_ECHOS?"#Echo par $f#" :"")
 		. $ret;
@@ -56,7 +56,7 @@ function afficher_onglets_pages($ordre,$onglets){
 	}
 	$res = "<ul class='tabs-nav'>$res</ul>";
 	foreach((_INTERFACE_ONGLETS ? array_keys($ordre):array_keys($onglets)) as $id){
-		$res .= "<div id='$id' class='tabs-container'>" . $onglets[$id] . "<br class='nettoyeur' /></div>";
+		$res .= "<div id='$id' class='tabs-container'>" . $onglets[$id] . "<div class='nettoyeur'></div></div>";
 	}
 	$onglet_compteur++;
 	return "<div class='boite_onglets' id='boite_onglet_$onglet_compteur'>$res</div>"
@@ -86,7 +86,7 @@ function debut_cadre($style, $icone = "", $fonction = "", $titre = "", $id="", $
 	$style_cadre = " style='";
 	if ($spip_display != 1 AND $spip_display != 4 AND strlen($icone) > 1) {
 		$style_gauche = "padding-$spip_lang_left: 38px;";
-		$style_cadre .= "margin-top: 20px;'";
+		$style_cadre .= "'";
 	} else {
 		$style_cadre .= "'";
 		$style_gauche = '';
@@ -296,7 +296,7 @@ function fin_boite_info($return=false) {
 function bloc_des_raccourcis($bloc) {
 	global $spip_display;
 
-	return "\n<div>&nbsp;</div>"
+	return "\n"
 	. creer_colonne_droite('',true)
 	. debut_cadre_enfonce('',true)
 	. (($spip_display != 4)
@@ -822,7 +822,7 @@ function debut_gauche($rubrique = "accueil", $return=false) {
 // http://doc.spip.org/@fin_gauche
 function fin_gauche()
 {
-	return "</div></div><br class='nettoyeur' />";
+	return "</div></div><div class='nettoyeur'></div>";
 }
 
 //
@@ -861,7 +861,7 @@ function debut_droite($rubrique="", $return= false) {
 	$res .= creer_colonne_droite($rubrique, true)
 	. "</div>";
 
-	$res .= "\n<div id='contenu' class='serif'>";
+	$res .= "\n<div id='contenu'>";
 
 	// touche d'acces rapide au debut du contenu : z
 	// Attention avant c'etait 's' mais c'est incompatible avec
@@ -919,23 +919,6 @@ function fin_page()
 {
 	global $spip_display;
 
-	// avec &var_profile=1 on a le tableau de mesures SQL
-	if (@count($GLOBALS['tableau_des_temps'])) {
-		include_spip('public/debug');
-		$chrono = chrono_requete($GLOBALS['tableau_des_temps']);
-	} else $chrono = '';
-
-	// cf. public/assembler, fonction f_msie()
-	// test si MSIE et sinon quitte
-	if (
-		strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'msie')
-		AND preg_match('/MSIE /i', $_SERVER['HTTP_USER_AGENT'])
-		AND $msiefix = charger_fonction('msiefix', 'inc')
-	)
-		$fix_png = presentation_msiefix();
-	else
-		$fix_png = '';
-
 	return debut_grand_cadre(true)
 	. (($spip_display == 4)
 		? ("<div><a href='"
@@ -946,19 +929,44 @@ function fin_page()
 		: ("<div style='text-align: right; ' class='verdana1 spip_xx-small'>"
 			. info_copyright()
 			. "<br />"
-			. _T('info_copyright_doc')
+			. info_maj_spip()
+			. _T('info_copyright_doc',
+				array('spipnet' => $GLOBALS['home_server']
+					. '/' .    $GLOBALS['spip_lang']))
 			. '</div>'))
 
 	. fin_grand_cadre(true)
 	. "</div>\n" // cf. div centered ouverte dans conmmencer_page()
-	. $fix_png
 	. $GLOBALS['rejoue_session']
 	. '<div style="background-image: url(\''
 	. generer_url_action('cron')
 	. '\');"></div>'
 	. (defined('_TESTER_NOSCRIPT') ? _TESTER_NOSCRIPT : '')
-	. $chrono
 	. "</body></html>\n";
+}
+
+function info_maj_spip(){
+
+	$maj = $GLOBALS['meta']['info_maj_spip'];
+	if (!$maj)
+		return "";
+
+	$maj = explode('|',$maj);
+	// c'est une ancienne notif, on a fait la maj depuis !
+	if ($GLOBALS['spip_version_branche']!==array_shift($maj))
+		return "";
+
+	if (!autoriser('webmestre'))
+		return "";
+
+	$maj = implode('|',$maj);
+	if (strncmp($maj,"<a",2)==0) $maj = extraire_attribut ($maj, 'title');
+	$lien = "http://www.spip.net/".$GLOBALS['spip_lang']."_download";
+	$maj = "<a class='info_maj_spip' href='$lien'><strong>" .
+	    _T('nouvelle_version_spip',array('version'=>$maj)) .
+	    '</strong></a>.';
+
+	return "$maj<br />";
 }
 
 // http://doc.spip.org/@info_copyright
@@ -972,7 +980,7 @@ function info_copyright() {
 	//
 	if ($svn_revision = version_svn_courante(_DIR_RACINE)) {
 		$version .= ' ' . (($svn_revision < 0) ? 'SVN ':'')
-		. "[<a href='http://trac.rezo.net/trac/spip/changeset/"
+		. "[<a href='http://core.spip.org/trac/spip/changeset/"
 		. abs($svn_revision) . "' onclick=\"window.open(this.href); return false;\">"
 		. abs($svn_revision) . "</a>]";
 	}

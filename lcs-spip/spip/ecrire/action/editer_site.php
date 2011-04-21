@@ -3,20 +3,22 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@action_editer_site_dist
-function action_editer_site_dist() {
+function action_editer_site_dist($arg=null) {
 
-	$securiser_action = charger_fonction('securiser_action', 'inc');
-	$arg = $securiser_action();
+	if (is_null($arg)){
+		$securiser_action = charger_fonction('securiser_action', 'inc');
+		$arg = $securiser_action();
+	}
 	$resyndiquer = false;
 
 	include_spip('inc/filtres'); // pour vider_url()
@@ -40,18 +42,20 @@ function action_editer_site_dist() {
 		)
 			set_request('reload', 'oui');
 		revisions_sites($id_syndic);
-	
+
 	// Envoi normal depuis le formulaire de creation d'un site
-	} 
+	}
 	elseif (strlen(vider_url(_request('url_site')))
 		AND strlen(_request('nom_site'))) {
 			set_request('reload', 'oui');
 			$id_syndic = insert_syndic(_request('id_parent'));
 			revisions_sites($id_syndic);
 			if ($logo = _request('logo')
-			 AND $format_logo = _request('format_logo'))
-				@rename($logo,
+			 AND $format_logo = _request('format_logo')){
+			 	include_spip('inc/distant');
+				@rename(copie_locale($logo),
 				_DIR_IMG . 'siteon'.$id_syndic.'.'.$format_logo);
+			 }
 	}
 	// Erreur
 	else {
@@ -101,7 +105,7 @@ function action_editer_site_dist() {
 		include_spip('inc/headers');
 		redirige_par_entete($redirect);
 	}
-	else 
+	else
 		return array($id_syndic,'');
 }
 
@@ -131,11 +135,34 @@ function insert_syndic($id_rubrique) {
 
 	$id_secteur = sql_getfetsel("id_secteur", "spip_rubriques", "id_rubrique=$id_rubrique");
 
-	return sql_insertq("spip_syndic", array(
+	$champs = array(
 		'id_rubrique' => $id_rubrique,
 		'id_secteur' => $id_secteur,
 		'statut' => 'prop',
-		'date' => date('Y-m-d H:i:s')));
+		'date' => date('Y-m-d H:i:s'));
+
+	// Envoyer aux plugins
+	$champs = pipeline('pre_insertion',
+		array(
+			'args' => array(
+				'table' => 'spip_syndic',
+			),
+			'data' => $champs
+		)
+	);
+
+	$id_syndic = sql_insertq("spip_syndic", $champs);
+	pipeline('post_insertion',
+		array(
+			'args' => array(
+				'table' => 'spip_syndic',
+				'id_objet' => $id_syndic
+			),
+			'data' => $champs
+		)
+	);
+
+	return $id_syndic;
 }
 
 
@@ -145,6 +172,7 @@ function insert_syndic($id_rubrique) {
 function revisions_sites ($id_syndic, $c=false) {
 
 	include_spip('inc/rubriques');
+	include_spip('inc/autoriser');
 
 	// champs normaux
 	if ($c === false) {
@@ -222,6 +250,13 @@ function revisions_sites ($id_syndic, $c=false) {
 	if ($statut == 'publie') {
 		include_spip('inc/invalideur');
 		suivre_invalideur("id='id_syndic/$id_syndic'");
+	}
+
+	// Notifications
+	if ($notifications = charger_fonction('notifications', 'inc')) {
+		$notifications('instituersite', $id_syndic,
+			array('statut' => $statut, 'statut_ancien' => $statut_ancien, 'date'=>($champs['date']?$champs['date']:$row['date']))
+		);
 	}
 
 	include_spip('inc/rubriques');

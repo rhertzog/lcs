@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@cadre_depliable
 function cadre_depliable($icone,$titre,$deplie,$contenu,$ids='',$style_cadre='r'){
@@ -141,15 +141,5 @@ function verif_butineur() {
 }
 
 verif_butineur();
-
-$GLOBALS['browser_caret'] =  (!$GLOBALS['browser_barre'] ? '' : "
-onselect='storeCaret(this);'
-onclick='storeCaret(this);'
-onkeyup='storeCaret(this);'
-ondblclick='storeCaret(this);'");
-
-	// Hack pour forcer largeur des formo/forml sous Mozilla >= 1.7
-	// meme principe que le behavior win_width.htc pour MSIE
-$GLOBALS['browser_verifForm'] = (preg_match(",mozilla,i", $GLOBALS["browser_name"]) AND $GLOBALS["browser_rev"] >= 1.7) ?  "verifForm();" : "";
 
 ?>

@@ -3,16 +3,15 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
-include_spip('inc/actions');
 
 //
 // Changer la langue courante
@@ -41,7 +40,39 @@ function changer_langue($lang) {
 		return $GLOBALS['spip_lang'] = $lang;
 	} else
 		return false;
+}
 
+//
+// Gestion des blocs multilingues
+// Selection dans un tableau dont les index sont des noms de langues
+// de la valeur associee a la langue en cours
+// si absente, retourne le premier
+// remarque : on pourrait aussi appeler un service de traduction externe
+// ou permettre de choisir une langue "plus proche",
+// par exemple le francais pour l'espagnol, l'anglais pour l'allemand, etc.
+
+function choisir_traduction ($trads, $lang='') {
+	$k = approcher_langue($trads, $lang);
+	return $k ? $trads[$k] : array_shift($trads);
+}
+
+// retourne son 2e argument si c'est un index du premier
+// ou un index approchant sinon et si possible,
+// la langue X etant consideree comme une approche de X_Y
+function approcher_langue ($trads, $lang='') {
+
+	if (!$lang) $lang = $GLOBALS['spip_lang'];
+
+	if (isset($trads[$lang])) {
+		return $lang;
+	}
+	// cas des langues xx_yy
+	else {
+		$r = explode('_', $lang);
+		if (isset($trads[$r[0]]))
+			return $r[0];
+	}
+	return '';
 }
 
 // http://doc.spip.org/@traduire_nom_langue
@@ -54,7 +85,6 @@ function traduire_nom_langue($lang) {
 //
 // Filtres de langue
 //
-
 
 // Donne la direction d'ecriture a partir de la langue. Retourne 'gaucher' si
 // la langue est arabe, persan, kurde, pachto, ourdou (langues ecrites en
@@ -104,9 +134,10 @@ function changer_typo($lang = '') {
 // - 'var_lang_ecrire' = langue interface privee,
 // pour var_lang' = langue de l'article, espace public, voir les squelettes
 // pour 'changer_lang' (langue de l'article, espace prive), c'est en Ajax
-// 
+//
 // http://doc.spip.org/@menu_langues
 function menu_langues($nom_select) {
+	include_spip('inc/actions');
 
 	$ret = liste_options_langues($nom_select);
 
@@ -123,7 +154,7 @@ function menu_langues($nom_select) {
 	$change = ' onchange="this.parentNode.parentNode.submit()"';
 	return generer_action_auteur('converser',$base, $cible,
 		(select_langues($nom_select, $change, $ret)
-		 . "<noscript><div style='display:inline'><input type='submit' class='fondo' value='". _T('bouton_changer')."' /></div></noscript>"),
+		 . "<noscript><div style='display:inline'><input type='submit' value='". _T('bouton_changer')."' /></div></noscript>"),
 				     " method='post'");
 }
 
@@ -168,7 +199,7 @@ function liste_options_langues($nom_select, $default='', $herit='') {
 			$langues = explode(',', $GLOBALS['meta']['langues_proposees']);
 			break;
 
-# dernier choix possible : toutes les langues = langues_proposees 
+# dernier choix possible : toutes les langues = langues_proposees
 # + langues_multilingues ; mais, ne sert pas
 #			$langues = explode(',', $GLOBALS['all_langs']);
 	}
@@ -234,7 +265,10 @@ function verifier_lang_url() {
 //
 // http://doc.spip.org/@utiliser_langue_site
 function utiliser_langue_site() {
-	return changer_langue(@$GLOBALS['meta']['langue_site']);//@:install
+	if (isset($GLOBALS['meta']['langue_site'])
+	  AND $GLOBALS['spip_lang']!=$GLOBALS['meta']['langue_site'])
+		return changer_langue($GLOBALS['meta']['langue_site']);//@:install
+	return $GLOBALS['spip_lang'];
 }
 
 // http://doc.spip.org/@utiliser_langue_visiteur

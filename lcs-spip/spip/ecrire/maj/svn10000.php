@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 /*--------------------------------------------------------------------- */
 /*	Gestion des MAJ par tableau indexe par le numero SVN du chgt	*/
@@ -65,12 +65,12 @@ $GLOBALS['maj'][11388] = array(array('maj_11388'));
 
 // reparer spip_mots.type = titre du groupe
 function maj_11431 () {
-	// mysql only 
+	// mysql only
 	// spip_query("UPDATE spip_mots AS a LEFT JOIN spip_groupes_mots AS b ON (a.id_groupe = b.id_groupe) SET a.type=b.titre");
-	
+
 	// selection des mots cles dont le type est different du groupe
 	$res = sql_select(
-		array("a.id_mot AS id_mot", "b.titre AS type"), 
+		array("a.id_mot AS id_mot", "b.titre AS type"),
 		array("spip_mots AS a LEFT JOIN spip_groupes_mots AS b ON (a.id_groupe = b.id_groupe)"),
 		array("a.type != b.titre"));
 	// mise a jour de ces mots la
@@ -82,7 +82,7 @@ function maj_11431 () {
 }
 $GLOBALS['maj'][11431] = array(array('maj_11431'));
 
-// reparer spip_types_documents.id_type 
+// reparer spip_types_documents.id_type
 // qui est parfois encore present
 function maj_11778 () {
 	// si presence id_type
@@ -212,10 +212,37 @@ $GLOBALS['maj'][13833] = array(
 array('sql_alter',"TABLE spip_documents_liens ADD INDEX objet(id_objet,objet)"))
 ;
 
-// Types de fichiers m4a/m4b/m4p/m4u/m4v/dv
-$GLOBALS['maj'][14272] = array(array('upgrade_types_documents'));
+// Fin upgrade commun branche 2.0
 
+include_spip('inc/autoriser');
+$GLOBALS['maj'][13904] = array(
+array('sql_alter',"TABLE spip_auteurs ADD webmestre varchar(3)  DEFAULT 'non' NOT NULL"),
+array('sql_update','spip_auteurs',array('webmestre'=>"'oui'"),sql_in("id_auteur",defined('_ID_WEBMESTRES')?explode(':',_ID_WEBMESTRES):(autoriser('configurer')?array($GLOBALS['visiteur_session']['id_auteur']):array(0)))) // le webmestre est celui qui fait l'upgrade si rien de defini
+)
+;
+
+// sites plantes en mode "'su" au lieu de "sus"
+$GLOBALS['maj'][13929] = array(
+	array('sql_update',"spip_syndic",array('syndication'=>"'sus'"),"syndication LIKE '\\'%'")
+);
+
+// Types de fichiers m4a/m4b/m4p/m4u/m4v/dv
 // Types de fichiers Open XML (cro$oft)
 $GLOBALS['maj'][14558] = array(array('upgrade_types_documents'));
+
+// refaire les upgrade dont les numeros sont inferieurs a ceux de la branche 2.0
+// etre sur qu'ils sont bien unipotents(?)...
+$GLOBALS['maj'][14559] = $GLOBALS['maj'][13904]+$GLOBALS['maj'][13929]+$GLOBALS['maj'][14558];
+
+// Restauration correcte des types mime des fichiers Ogg
+// http://trac.rezo.net/trac/spip/ticket/1941
+// + Types de fichiers : f4a/f4b/f4p/f4v/mpc http://en.wikipedia.org/wiki/Flv#File_formats
+$GLOBALS['maj'][15676] = array(array('upgrade_types_documents'));
+
+// Type de fichiers : webm http://en.wikipedia.org/wiki/Flv#File_formats
+$GLOBALS['maj'][15827] = array(array('upgrade_types_documents'));
+
+// IP en 40 caracteres pour IP v6
+$GLOBALS['maj'][15828] = array(array('sql_alter',"TABLE spip_forum CHANGE `ip` `ip` VARCHAR(40) DEFAULT '' NOT NULL"));
 
 ?>

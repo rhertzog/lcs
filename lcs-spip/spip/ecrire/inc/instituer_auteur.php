@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/actions');
 include_spip('inc/texte');
@@ -40,6 +40,11 @@ function inc_instituer_auteur_dist($auteur, $modif = true) {
 	$label = $modif?'label':'b';
 	$res = "<$label>" . _T('info_statut_auteur')."</$label> " . $menu;
 
+	if ($modif)
+		$res .= editer_choix_webmestre($auteur);
+	else
+		$res .= afficher_webmestre($auteur);
+
 	// Prepare le bloc des rubriques pour les admins eventuellement restreints ;
 	// si l'auteur n'est pas '0minirezo', on le cache, pour pouvoir le reveler
 	// en jquery lorsque le menu de statut change
@@ -57,20 +62,53 @@ function inc_instituer_auteur_dist($auteur, $modif = true) {
 	return $res;
 }
 
+
+function afficher_webmestre($auteur){
+	if (autoriser('webmestre','',0,$auteur['id_auteur']))
+		return "<p>"._T("info_admin_webmestre")."</p>";
+	return "";
+}
+
+function editer_choix_webmestre($auteur){
+	$res = "";
+	$style = "";
+	if (!autoriser('modifier', 'auteur', $auteur['id_auteur'],
+	null, array('webmestre' => '?'))){
+		$res =  afficher_webmestre($auteur);
+	}
+	else {
+		$res = "<input type='checkbox' class='checkbox' name='webmestre' id='webmestre' value='oui'"
+			. ($auteur['webmestre']=='oui'?" checked='checked'":"")
+			. " />"
+			. "<label for='webmestre'>"
+			. _T("info_admin_statuer_webmestre")
+			. "</label>";
+
+		$res .= "<input type='hidden' name='saisie_webmestre' value='1' />";
+		// visible ou pas ?
+		if ($auteur['statut']!='0minirezo')
+			$style=" style='display:none;'";
+	}
+	return "<div class='choix' id='choix-webmestre'$style>$res</div>";
+}
+
 // http://doc.spip.org/@traduire_statut_auteur
 function traduire_statut_auteur($statut){
-	$recom = array("info_administrateurs" => _T('item_administrateur_2'),
-		       "info_redacteurs" =>  _T('intem_redacteur'),
-		       "info_visiteurs" => _T('item_visiteur'),
-		       '5poubelle' => _T('texte_statut_poubelle'), // bouh
-		       );
+	$recom = array(
+				"info_administrateurs" => 'item_administrateur_2',
+				"info_redacteurs" =>  'intem_redacteur',
+				"info_visiteurs" => 'item_visiteur',
+				"5poubelle" => 'texte_statut_poubelle', // bouh
+			);
 	if (isset($recom[$statut]))
-		return $recom[$statut];
+		return _T($recom[$statut]);
 	
 	// retrouver directement par le statut sinon
-	if ($t = array_search($statut, $GLOBALS['liste_des_statuts'])
-	  AND isset($recom[$t]))
-		return $recom[$t];
+	if ($t = array_search($statut, $GLOBALS['liste_des_statuts'])){
+	  if (isset($recom[$t]))
+			return _T($recom[$t]);
+		return _T($t);
+	}
 	
 	return '';
 }
@@ -93,12 +131,12 @@ function choix_statut_auteur($statut, $id_auteur, $ancre) {
 		       null, array('statut' => '0minirezo')))
 		unset($droits["info_administrateurs"]);
 
-	if (!avoir_visiteurs())
+	if (!avoir_visiteurs() AND $statut!==$droits['info_visiteurs'])
 		unset($droits['info_visiteurs']);
 
 	$menu = '';
 	foreach($droits as $k => $v) {
-		if ($k = traduire_statut_auteur($k))
+		if (($v != '5poubelle') && ($k = traduire_statut_auteur($v)))
 			$menu .=  mySel($v, $statut, $k);
 	}
 
@@ -120,8 +158,9 @@ function choix_statut_auteur($statut, $id_auteur, $ancre) {
 		$menu .= mySel('nouveau',$statut,_T('info_statut_auteur_a_confirmer'));
 
 	$statut_rubrique = str_replace(',', '|', _STATUT_AUTEUR_RUBRIQUE);
-	return "<select class='select fondl' name='statut' id='statut' size='1'
-		onchange=\"(this.options[this.selectedIndex].value.match(/^($statut_rubrique)\$/))?jQuery('#$ancre:hidden').slideDown():jQuery('#$ancre:visible').slideUp();\">"
+	return "<select class='select' name='statut' id='statut' size='1'
+		onchange=\"(this.options[this.selectedIndex].value.match(/^($statut_rubrique)\$/))?jQuery('#$ancre:hidden').slideDown():jQuery('#$ancre:visible').slideUp();"
+	. "(this.options[this.selectedIndex].value=='0minirezo')?jQuery('#choix-webmestre:hidden').slideDown():jQuery('#choix-webmestre:visible').slideUp();\">"
 	. $menu
 	. "\n<option" .
 		mySel("5poubelle",$statut) .

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -11,7 +11,7 @@
 \***************************************************************************/
 
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('base/serial');
 
@@ -151,14 +151,16 @@ function appliquer_quota_cache() {
 		.(intval(16*$total_cache/(1024*1024/10))/10)." Mo","invalideur");
 
 	// Nombre max de fichiers a supprimer
-	if ($quota_cache > 0) {
+	if ($quota_cache > 0
+	AND $taille > 0) {
 		$trop = $total_cache - ($quota_cache/16)*1024*1024;
 		$trop = 3 * intval($trop / $taille);
 		if ($trop > 0) {
 			$n = purger_repertoire($dir,
 				array(
 					'atime' => time() - _AGE_CACHE_ATIME,
-					'limit' => $trop
+					'limit' => $trop,
+					'subdir' => true // supprimer les vieux sous repertoire de session (avant [15851])
 				)
 			);
 			spip_log("$dir : $n/$trop caches supprimes [taille moyenne $taille]","invalideur");

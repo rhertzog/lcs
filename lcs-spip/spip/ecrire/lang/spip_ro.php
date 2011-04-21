@@ -3,7 +3,7 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -20,12 +20,12 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'admin_modifier_article' => 'Modifica&#355;i articolul',
 'admin_modifier_auteur' => 'Modifica&#355;i autorul',
 'admin_modifier_breve' => 'Modifica&#355;i &#351;tirea',
-'admin_modifier_mot' => 'Modifica&#355;i cuvântul cheie',
+'admin_modifier_mot' => 'Modifica&#355;i cuvÃ¢ntul cheie',
 'admin_modifier_rubrique' => 'Modifica&#355;i rubrica',
 'admin_recalculer' => 'Recalcula&#355;i aceast&#259; pagin&#259;',
 'afficher_trad' => 'afi&#351;a&#355;i traducerile',
 'alerte_maj_impossible' => '<b>Alert&#259;&nbsp;!</b> Aducerea la zi a bazei de date SQL c&#259;tre versiunea @version@ este imposibil&#259;, probabil din cauza unei probleme de drepturi de modificare &icirc;n baza de date. V&#259; rug&#259;m s&#259; contacta&#355;i furnizorul dumneavoastr&#259; de hosting.',
-'alerte_modif_info_concourante' => '<MODIF>ATEN&#354;IE : Aceast&#259; informa&#355;ie a fost modificat&#259;. Valoarea curent&#259; este&nbsp;:',
+'alerte_modif_info_concourante' => 'ATEN&#354;IE : Aceast&#259; informa&#355;ie a fost modificat&#259;. Valoarea curent&#259; este&nbsp;:',
 'analyse_xml' => 'Analiz&#259; XML',
 'annuler' => 'Anula&#355;i',
 'antispam_champ_vide' => 'V&#259; rug&#259;m s&#259; l&#259;sa&#355;i acest c&acirc;mp gol&nbsp;:',
@@ -54,7 +54,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'barre_euro' => 'Insera&#355;i simbolul &euro;',
 'barre_gras' => 'Transforma&#355;i &icirc;n litere {{aldine}} (&icirc;ngro&#351;ate)',
 'barre_guillemets' => '&Icirc;nconjura&#355;i cu &laquo; ghilimele &raquo;',
-'barre_guillemets_simples' => '&Icirc;nconjura&#355;i cu “ghilimele de nivel secund”',
+'barre_guillemets_simples' => '&Icirc;nconjura&#355;i cu â€œghilimele de nivel secundâ€',
 'barre_intertitre' => 'Transforma&#355;i &icirc;n {{{inter-titlu}}}',
 'barre_italic' => 'Transforma&#355;i &icirc;n litere {{italice}} (&icirc;nclinate)',
 'barre_lien' => 'Transforma&#355;i &icirc;n [leg&#259;tur&#259; hipertext->http://...]',
@@ -188,7 +188,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'date_saison_2' => 'prim&#259;vara',
 'date_saison_3' => 'vara',
 'date_saison_4' => 'toamna',
+'date_secondes' => 'secunde',
 'date_semaines' => 's&#259;pt&#259;m&acirc;ni',
+'date_un_mois' => 'luna',
+'date_une_heure' => 'ora',
+'date_une_minute' => 'minut',
+'date_une_seconde' => 'secunda',
+'date_une_semaine' => 'saptamana',
 'dirs_commencer' => ' pentru a &icirc;ncepe cu adev&#259;rat instalarea',
 'dirs_preliminaire' => 'Preliminar : <b>Regla&#355;i drepturile de acces</b>',
 'dirs_probleme_droits' => 'Problem&#259; de drepturi de acces',
@@ -201,7 +207,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
   <p>Pentru a remedia aceast&#259; problem&#259;, utiliza&#355;i clientul dumneavoastr&#259; favorit de FTP pentru a modifica drepturile de acces ale fiec&#259;rui
   dintre aceste directoare. Procedura este explicat&#259; &icirc;n detaliu &icirc;n manualul de instalare.</p>
   <p>Odat&#259; terminat&#259; aceast&#259; manipulare, pute&#355;i ',
-'double_occurrence' => 'Ocuren&#355;&#259; dubl&#259;',
+'double_occurrence' => 'Ocuren&#355;&#259; dubl&#259;', # MODIF
 
 // E
 'en_cours' => '&icirc;n curs',
@@ -216,6 +222,18 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // F
 'fichier_introuvable' => 'Fi&#351;ier @fichier@ de neg&#259;sit',
+'form_auteur_confirmation' => 'Confirmez votre adresse email', # NEW
+'form_auteur_email_modifie' => 'Votre adresse email a &eacute;t&eacute; modifi&eacute;e.', # NEW
+'form_auteur_envoi_mail_confirmation' => 'Un courrier &eacute;lectronique de confirmation vient d\'&ecirc;tre envoy&eacute; &agrave; @email@. Vous devrez visiter l\'adresse Web mentionn&eacute;e dans ce courrier pour valider votre adresse mail.', # NEW
+'form_auteur_mail_confirmation' => 'Bonjour,
+
+Vous avez demand&eacute; &agrave; changer votre adresse email.
+Pour confirmer votre nouvelle adresse, il suffit de vous connecter &agrave;
+l\'adresse ci-dessous (dans le cas contraire, votre demande
+sera ignor&eacute;e) :
+
+    @url@
+', # NEW
 'form_deja_inscrit' => 'Sunte&#355;i deja &icirc;nscris.',
 'form_email_non_valide' => 'Adresa dumneavoastr&#259; de email nu este valabil&#259;.',
 'form_forum_access_refuse' => 'Nu mai ave&#355;i dreptul de acces la acest site.',
@@ -391,19 +409,23 @@ Mul&#355;umim pentru participarea dumneavoastr&#259;
 'info_article_supprime' => 'Articol suprimat',
 'info_articles' => 'Articole',
 'info_articles_a_valider' => 'Articole pentru validare',
+'info_articles_nb' => '@nb@ articles', # NEW
 'info_articles_proposes' => 'Articole propuse',
+'info_articles_un' => '1 article', # NEW
 'info_auteurs_nombre' => 'autor(i)&nbsp;:',
 'info_authentification_ftp' => 'Autentificare (prin FTP).',
 'info_bloquer_lien' => 'bloca&#355;i aceast&#259; leg&#259;tur&#259;',
 'info_breves_02' => '&#350;tiri',
 'info_breves_2' => '&#351;tiri',
+'info_breves_nb' => '@nb@ br&egrave;ves', # NEW
+'info_breves_un' => '1 br&egrave;ve', # NEW
 'info_breves_valider' => '&#350;tiri de validat',
 'info_connexion_refusee' => 'Conexiune refuzat&#259;',
 'info_contact_developpeur' => 'V&#259; rug&#259;m s&#259; contacta&#355;i un dezvoltator.',
 'info_contenance' => 'Acest site con&#355;ine&nbsp;:',
 'info_contribution' => 'contribu&#355;ii la forum',
 'info_copyright' => '@spip@ este un program liber distribuit @lien_gpl@.',
-'info_copyright_doc' => 'Pentru mai multe informa&#355;ii, vizita&#355;i site-ul <a href=\'http://www.spip.net/ro\'>http://www.spip.net/ro</a>.',
+'info_copyright_doc' => 'Pentru mai multe informa&#355;ii, vizita&#355;i site-ul <a href="@spipnet@">http://www.spip.net/ro</a>.',
 'info_copyright_gpl' => 'sub licen&#355;&#259; GPL',
 'info_cours_edition' => 'Articolele dumneavoastr&#259; &icirc;n curs de redactare',
 'info_creer_repertoire' => 'V&#259; rug&#259;m s&#259; crea&#355;i un fi&#537;ier sau un director numit&nbsp;:',
@@ -417,6 +439,8 @@ Mul&#355;umim pentru participarea dumneavoastr&#259;
 'info_document' => 'Document',
 'info_document_indisponible' => 'Acest document nu este disponibil',
 'info_documents' => 'Documente',
+'info_documents_nb' => '@nb@ documents', # NEW
+'info_documents_un' => '1 document', # NEW
 'info_echange_message' => 'SPIP permite schimbul de mesaje &#351;i constituirea de forumuri de discu&#355;ie
  private &icirc;ntre participan&#355;ii site-ului. Pute&#355;i activa sau
  dezactiva aceast&#259; func&#355;ionalitate.',
@@ -463,6 +487,8 @@ Mul&#355;umim pentru participarea dumneavoastr&#259;
 'info_mail_fournisseur' => 'dumneavoastr&#259;@furnizor.ro',
 'info_message_2' => 'MESAJ',
 'info_message_supprime' => 'MESAJ &#350;TERS',
+'info_messages_nb' => '@nb@ messages', # NEW
+'info_messages_un' => '1 message', # NEW
 'info_mise_en_ligne' => 'Data public&#259;rii&nbsp;:',
 'info_modification_parametres_securite' => 'modific&#259;ri ale parametrilor de securitate',
 'info_mois_courant' => '&Icirc;n timpul lunii :',
@@ -507,6 +533,8 @@ Mul&#355;umim pentru participarea dumneavoastr&#259;
 'info_retablir_lien' => 'restabili&#355;i aceast&#259; legatur&#259;',
 'info_retirer_mot' => 'Retrage&#355;i acest cuv&acirc;nt',
 'info_retirer_mots' => 'Retrage&#355;i toate cuvintele',
+'info_rubriques_nb' => '@nb@ rubriques', # NEW
+'info_rubriques_un' => '1 rubrique', # NEW
 'info_sans_titre_2' => 'f&#259;r&#259; titlu',
 'info_selectionner_fichier' => 'Pute&#355;i selec&#355;iona un fi&#351;ier din directorul @upload@',
 'info_selectionner_fichier_2' => 'Selec&#355;iona&#355;i un fi&#351;ier&nbsp;:',
@@ -515,7 +543,9 @@ Mul&#355;umim pentru participarea dumneavoastr&#259;
 'info_site_attente' => 'Site Web &icirc;n a&#351;teptarea valid&#259;rii',
 'info_site_reference' => 'Site referen&#355;iat &icirc;n direct',
 'info_site_refuse' => 'Site Web refuzat',
+'info_sites_nb' => '@nb@ sites', # NEW
 'info_sites_referencer' => 'Referen&#355;iere site',
+'info_sites_un' => '1 site', # NEW
 'info_supprimer_vignette' => '&nbsp;suprima&#355;i vinieta',
 'info_symbole_bleu' => 'Simbolul <b>albastru</b> indic&#259; o <b>ciorn&#259;</b>: adic&#259; un mesaj pentru folosin&#355;a dumneavoastr&#259; personal&#259;.',
 'info_symbole_jaune' => 'Simbolul <b>galben</b> indic&#259; un <b>anun&#355; c&#259;tre to&#355;i redactorii</b>&nbsp;: modificabil de c&#259;tre to&#355;i administratorii &#351;i vizibil pentru to&#355;i redactorii.',
@@ -539,14 +569,13 @@ Mul&#355;umim pentru participarea dumneavoastr&#259;
 'info_visites' => 'vizite :',
 'info_vos_rendez_vous' => 'Urm&#259;toarele dumneavoastr&#259; &icirc;nt&acirc;lniri',
 'info_zoom' => 'm&#259;rire',
-'infos_vos_pense_bete' => 'Ciornele dumneavoastr&#259;',
+'infos_vos_pense_bete' => 'Ciornele dumneavoastr&#259;', # MODIF
 'item_breve_proposee' => '&#350;tire propus&#259;',
 
 // L
 'lien_afficher_icones_seuls' => 'Afi&#351;a&#355;i doar iconi&#355;e',
 'lien_afficher_texte_icones' => 'Afi&#351;a&#355;i iconi&#355;e &#351;i text',
 'lien_afficher_texte_seul' => 'Afi&#351;a&#355;i doar text',
-'lien_icones_interface' => 'Iconi&#355;ele interfe&#355;ei sunt create de <a href=\'http://jimmac.musichall.cz/\'>Jakub \'Jimmac\' Steiner</a>.',
 'lien_liberer' => 'elibera&#355;i',
 'lien_liberer_tous' => 'elibera&#355;i aceste articole',
 'lien_nouvea_pense_bete' => 'CIORN&#258; NOU&#258;',
@@ -589,6 +618,7 @@ Mul&#355;umim pentru participarea dumneavoastr&#259;
 'login_retour_site' => '&Icirc;napoi la site-ul public',
 'login_retoursitepublic' => '&icirc;napoi&nbsp;la&nbsp;site-ul&nbsp;public',
 'login_sans_cookiie' => 'Identificare f&#259;r&#259; cookie',
+'login_securise' => 'Login s&eacute;curis&eacute;', # NEW
 'login_sinscrire' => '&icirc;nscrie&#355;i-v&#259;',
 'login_test_navigateur' => 'test de navigator/reconectare',
 'login_verifiez_navigateur' => '(Verifica&#355;i totu&#351;i c&#259; navigatorul de web nu a memorat parola dumneavoastr&#259;...)',
@@ -621,7 +651,6 @@ Mul&#355;umim pentru participarea dumneavoastr&#259;
 'onglet_repartition_rubrique' => 'Reparti&#355;ia pe rubrici',
 'onglet_save_restaur_base' => 'Salva&#355;i/restaura&#355;i baza de date',
 'onglet_vider_cache' => 'Goli&#355;i memoria tampon',
-'ortho_trop_de_fautes2' => '&Icirc;ncepe&#355;i prin a corecta erorile cele mai evidente &#351;i re-&icirc;ncerca&#355;i dup&#259; aceea.',
 
 // P
 'pass_choix_pass' => 'V&#259; rug&#259;m s&#259; alege&#355;i noua dumneavoastr&#259; parol&#259; :',
@@ -735,34 +764,34 @@ Ve&#355;i putea dup&#259; aceea alege o nou&#259; parol&#259; &#351;i ve&#355;i 
 
 // Z
 'zbug_balise_b_aval' => '&nbsp;: element B &icirc;nainte',
-'zbug_balise_inexistante' => 'eroare @from@: baliza #@balise@ nu exist&#259;',
+'zbug_balise_inexistante' => 'eroare @from@: baliza #@balise@ nu exist&#259;', # MODIF
 'zbug_balise_sans_argument' => 'Argument lips&#259; &icirc;n baliza @balise@',
 'zbug_boucle' => 'bucl&#259;',
-'zbug_boucle_recursive_undef' => 'bucl&#259; recursiv&#259; nedefinit&#259;',
+'zbug_boucle_recursive_undef' => 'Bucl&#259; recursiv&#259; nedefinit&#259;: @nom@',
 'zbug_calcul' => 'calcul',
 'zbug_champ_hors_boucle' => 'C&acirc;mp @champ@ &icirc;n afara buclei',
-'zbug_champ_hors_motif' => 'C&acirc;mp @champ@ &icirc;n afara buclei de motiv @motif@',
+'zbug_champ_hors_motif' => 'C&acirc;mp @champ@ &icirc;n afara contextului buclei @motif@',
 'zbug_code' => 'cod',
-'zbug_critere_inconnu' => 'criteriu necunoscut @critere@',
-'zbug_distant_interdit' => 'extern interzis',
-'zbug_doublon_table_sans_cle_primaire' => 'dubluri &icirc;ntr-o tabel&#259; f&#259;r&#259; cheie primar&#259; atomic&#259;',
-'zbug_doublon_table_sans_index' => 'valori duble &icirc;ntr-o tabel&#259; f&#259;r&#259; indec&#351;i',
-'zbug_erreur_boucle_double' => 'BOUCLE@id@: defini&#355;ie dubl&#259;',
-'zbug_erreur_boucle_fermant' => 'BOUCLE@id@: tag-ul de &icirc;nchidere lipse&#351;te',
-'zbug_erreur_boucle_syntaxe' => 'Sintax&#259; de bucl&#259; incorect&#259;',
+'zbug_critere_inconnu' => 'Criteriu necunoscut @critere@',
+'zbug_distant_interdit' => 'Extern interzis',
+'zbug_doublon_table_sans_cle_primaire' => 'Dubluri &icirc;ntr-o tabel&#259; f&#259;r&#259; cheie primar&#259; atomic&#259;',
+'zbug_doublon_table_sans_index' => 'Dubluri &icirc;ntr-o tabel&#259; f&#259;r&#259; index',
+'zbug_erreur_boucle_double' => 'Bucla @id@: defini&#355;ie dubl&#259;',
+'zbug_erreur_boucle_fermant' => 'Bucla @id@: tag-ul de &icirc;nchidere lipse&#351;te',
+'zbug_erreur_boucle_syntaxe' => 'Sintax&#259; incorect&#259; pentru bucla @id@',
 'zbug_erreur_compilation' => 'Eroare de compilare',
-'zbug_erreur_execution_page' => 'eroare de execu&#355;ie a paginii',
-'zbug_erreur_filtre' => 'Eroare : filtrul <b>&laquo; @filtre@ &raquo;</b> nu este definit',
-'zbug_erreur_meme_parent' => '{meme_parent} nu se aplic&#259; dec&acirc;t buclelor (FORUMS) sau (RUBRIQUES)',
+'zbug_erreur_execution_page' => 'Eroare de execu&#355;ie',
+'zbug_erreur_filtre' => 'Filtru @filtre@ nedefinit',
+'zbug_erreur_meme_parent' => 'Criteriul {meme_parent} nu se aplic&#259; dec&acirc;t buclelor (FORUMS) sau (RUBRIQUES)',
 'zbug_erreur_squelette' => 'Eroare/Erori &icirc;n schelet',
 'zbug_hors_compilation' => 'F&#259;r&#259; compilare',
 'zbug_info_erreur_squelette' => 'Eroare pe site',
-'zbug_inversion_ordre_inexistant' => 'inversie de un ordin necunoscut',
-'zbug_pagination_sans_critere' => '#PAGINATION f&#259;r&#259; criteriu {pagination} sau folosit &icirc;ntr-o bucl&#259; recursiv&#259;',
-'zbug_parametres_inclus_incorrects' => 'Parametrii de includere incorec&#355;i',
+'zbug_inversion_ordre_inexistant' => 'Inversie de ordin necunoscut',
+'zbug_pagination_sans_critere' => 'Baliza #PAGINATION f&#259;r criteriu {pagination} sau folosit &icirc;ntr-o bucl&#259; recursiv&#259;',
+'zbug_parametres_inclus_incorrects' => 'Parametru de includere incorect: @param@', # MODIF
 'zbug_profile' => 'Timp de calcul&nbsp;: @time@',
 'zbug_resultat' => 'rezultat',
-'zbug_serveur_indefini' => 'server SQL nedefinit',
+'zbug_serveur_indefini' => 'Server SQL nedefinit',
 'zbug_statistiques' => 'Statisticile cererilor SQL clasate dup&#259; durat&#259;',
 'zbug_table_inconnue' => 'Tabela SQL &laquo; @table@ &raquo; necunoscut&#259;',
 'zxml_connus_attributs' => 'atribute cunoscute',

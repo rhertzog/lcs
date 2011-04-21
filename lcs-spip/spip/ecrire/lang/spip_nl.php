@@ -3,7 +3,7 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -54,7 +54,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'barre_euro' => '&euro; teken invoegen',
 'barre_gras' => 'In het {{vet}} zetten',
 'barre_guillemets' => 'Van &laquo; haakjes &raquo; voorzien',
-'barre_guillemets_simples' => 'Van „haakjes van het tweede niveau“ voorzien',
+'barre_guillemets_simples' => 'Van â€žhaakjes van het tweede niveauâ€œ voorzien',
 'barre_intertitre' => 'Omzetten naar {{{tussentitel}}}',
 'barre_italic' => '{cursief} zetten',
 'barre_lien' => 'Omzetten naar [hypertekst verwijzing->http://...]',
@@ -188,7 +188,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'date_saison_2' => 'lente',
 'date_saison_3' => 'zomer',
 'date_saison_4' => 'herfst',
+'date_secondes' => 'seconden',
 'date_semaines' => 'weken',
+'date_un_mois' => 'maand',
+'date_une_heure' => 'uur',
+'date_une_minute' => 'minuut',
+'date_une_seconde' => 'seconde',
+'date_une_semaine' => 'week',
 'dirs_commencer' => 'alvorens de installatie te beginnen',
 'dirs_preliminaire' => 'Vooraf: <b>Toegangsrechten regelen</b>',
 'dirs_probleme_droits' => 'Probleem met toegangsrechten',
@@ -201,7 +207,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
   <p>Om dit te wijzigen, log je in met een FTP programma en wijzig je de toegangsrechten van elk van de genoemde mappen
  De procedure is gedetailleerd uitgelegd in de installatiehandleiding.</p>
   <p>Eenmaal deze wijziging doorgevoerd, kan je ',
-'double_occurrence' => 'Dubbel gebruik',
+'double_occurrence' => 'Dubbele toeval van @balise@',
 
 // E
 'en_cours' => 'in koers',
@@ -216,6 +222,17 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // F
 'fichier_introuvable' => 'Bestand @fichier@ onvindbaar',
+'form_auteur_confirmation' => 'Gelieve uw mail address te bevestigen',
+'form_auteur_email_modifie' => 'Uw mail address is veranderd',
+'form_auteur_envoi_mail_confirmation' => 'Een email werd opgestuurd naar @email@ voor bevestiging. Gelieve de url dat in de e-mail gemeld is te bezoeken om uw email address te bevestigen.',
+'form_auteur_mail_confirmation' => 'Goeiedag,
+
+U heeft uw e-mail address willen veranderen.
+Om uw nieuwe address te bevestigen, dient U zich nu te connecteren op
+volgende address (andres zal uw aanvraag niet in acht genomen worden) :
+
+    @url@
+',
 'form_deja_inscrit' => 'Je bent reeds ingeschreven.',
 'form_email_non_valide' => 'Je e-mailadres is niet geldig.',
 'form_forum_access_refuse' => 'Je hebt geen toegang meer tot deze website.',
@@ -392,19 +409,23 @@ Bedankt voor je deelname
 'info_article_supprime' => 'Artikel geschrapt',
 'info_articles' => 'Artikels',
 'info_articles_a_valider' => 'Artikels ter goedkeuring',
+'info_articles_nb' => '@nb@ artikels',
 'info_articles_proposes' => 'Voorgestelde artikels',
+'info_articles_un' => 'een artikel',
 'info_auteurs_nombre' => 'auteur(s):',
 'info_authentification_ftp' => 'Authenticatie (via FTP).',
 'info_bloquer_lien' => 'deze koppeling tegenhouden',
 'info_breves_02' => 'nieuwsberichten',
 'info_breves_2' => 'nieuwsberichten',
+'info_breves_nb' => '@nb@ kortnieuws',
+'info_breves_un' => '1 kortnieuws',
 'info_breves_valider' => 'Berichten ter goedkeuring',
 'info_connexion_refusee' => 'Verbinding geweigerd',
 'info_contact_developpeur' => 'Gelieve een ontwikkelaar te contacteren.',
 'info_contenance' => 'Deze site bevat:',
 'info_contribution' => 'Bijdragen aan het forum',
 'info_copyright' => '@spip@ is vrije software @lien_gpl@ distributie.',
-'info_copyright_doc' => 'Voor meer informatie, kijk op de website <a href=\'http://www.spip.net/nl\'>http://www.spip.net/nl</a>.',
+'info_copyright_doc' => 'Voor meer informatie, kijk op de website <a href="@spipnet@">http://www.spip.net/nl</a>.',
 'info_copyright_gpl' => 'onder GPL licentie',
 'info_cours_edition' => 'Je artikels in redactie',
 'info_creer_repertoire' => 'Gelieve een bestand of map aan te maken met de volgende naam:',
@@ -418,6 +439,8 @@ Bedankt voor je deelname
 'info_document' => 'Document',
 'info_document_indisponible' => 'Dit document is niet beschikbaar',
 'info_documents' => 'documenten',
+'info_documents_nb' => '@nb@ documenten',
+'info_documents_un' => '1 document',
 'info_echange_message' => 'SPIP voorziet in de mogelijkheid om berichten uit te wisselen en private discussieforums op te
     starten tussen de deelnemers aan de site.Wil je deze mogelijkheid aan- of uitzetten ?',
 'info_ecire_message_prive' => 'Een priv&eacute;-bericht schrijven',
@@ -463,6 +486,8 @@ Bedankt voor je deelname
 'info_mail_fournisseur' => 'jullie@provider.be',
 'info_message_2' => 'BERICHT',
 'info_message_supprime' => 'VERWIJDERD BERICHT',
+'info_messages_nb' => '@nb@ boodschappen',
+'info_messages_un' => '1 boodschap',
 'info_mise_en_ligne' => 'Datum van online publicatie:',
 'info_modification_parametres_securite' => 'Wijzigingen aan de veiligheidsinstellingen',
 'info_mois_courant' => 'Gedurende de maand :',
@@ -508,6 +533,8 @@ Bedankt voor je deelname
 'info_retablir_lien' => 'deze link hernieuwen',
 'info_retirer_mot' => 'Trek dat woord',
 'info_retirer_mots' => 'Alle trefwoorden intrekken',
+'info_rubriques_nb' => '@nb@ rubrieken',
+'info_rubriques_un' => '1 rubriek',
 'info_sans_titre_2' => 'zonder titel',
 'info_selectionner_fichier' => 'Je kan een bestand selecteren uit de map @upload@',
 'info_selectionner_fichier_2' => 'Een bestand selecteren:',
@@ -516,7 +543,9 @@ Bedankt voor je deelname
 'info_site_attente' => 'website ter goedkeuring voorgelegd',
 'info_site_reference' => 'Online gekoppelde site',
 'info_site_refuse' => 'Website weigerd',
+'info_sites_nb' => '@nb@ websites',
 'info_sites_referencer' => 'Een site koppelen',
+'info_sites_un' => '1 website',
 'info_supprimer_vignette' => 'De mini-afbeelding verwijderen',
 'info_symbole_bleu' => 'Het <b>blauwe</b> symbool wijst op een <b>memo</b>: dat wil zeggen een bericht voor persoonlijk gebruik.',
 'info_symbole_jaune' => 'Het <b>gele</b> symbool wijst op een <b>aankondiging voor alle redacteurs</b>: te wijzigen door alle beheerders en zichtbaar voor alle redacteurs.',
@@ -540,14 +569,13 @@ Bedankt voor je deelname
 'info_visites' => 'bezoeke:',
 'info_vos_rendez_vous' => 'Je komende afsrpaken',
 'info_zoom' => 'zoom',
-'infos_vos_pense_bete' => 'Je memo\'s',
+'infos_vos_pense_bete' => 'Je memo\'s', # MODIF
 'item_breve_proposee' => 'Bericht voorgesteld',
 
 // L
 'lien_afficher_icones_seuls' => 'Toon alleen icoontjes',
 'lien_afficher_texte_icones' => 'Toon icoontjes en tekst',
 'lien_afficher_texte_seul' => 'Toon alleen tekst',
-'lien_icones_interface' => 'De icoontjes van de interface zijn van <a href=\'http://jimmac.musichall.cz/\'>Jakub \'Jimmac\' Steiner</a>.',
 'lien_liberer' => 'Uitgave',
 'lien_liberer_tous' => 'artikels vrijgeven',
 'lien_nouvea_pense_bete' => 'NIEUWE MEMO',
@@ -594,6 +622,7 @@ Bedankt voor je deelname
 'login_retour_site' => 'Terug naar de publieke site',
 'login_retoursitepublic' => 'Terug naar de publieke site',
 'login_sans_cookiie' => 'Aanmelden zonder koekie',
+'login_securise' => 'Login s&eacute;curis&eacute;', # NEW
 'login_sinscrire' => 'Registreren',
 'login_test_navigateur' => 'Testen van bladerprogramma/opnieuw verbinden',
 'login_verifiez_navigateur' => '(Kijk niettemin na dat je bladerprogramma je paswoord niet heeft onthouden...)',
@@ -626,7 +655,6 @@ Bedankt voor je deelname
 'onglet_repartition_rubrique' => 'Verdeling per rubriek',
 'onglet_save_restaur_base' => 'Backup/terugzetten van de databank',
 'onglet_vider_cache' => 'Cache leegmaken',
-'ortho_trop_de_fautes2' => 'Begin met het verbeteren van de meest zichtbare fouten en probeer vervolgens opnieuw.',
 
 // P
 'pass_choix_pass' => 'Kies je nieuwe paswoord:',
@@ -666,7 +694,7 @@ opnieuw verbinding maken met de site
 'pass_recevoir_mail' => 'Je zal een e-mail ontvangen waarin uitgelegd staat hoe je opnieuw toegang krijgt tot de site.',
 'pass_retour_public' => 'Terrug aan publiek site',
 'pass_rien_a_faire_ici' => 'Niets te zoeken hier.',
-'pass_vousinscrire' => 'Bezig met registreren bij de site',
+'pass_vousinscrire' => 'U inschrijven in de site',
 'precedent' => 'vorige',
 'previsualisation' => 'voorafkijk',
 'previsualiser' => 'Vooraf tonen',
@@ -748,34 +776,34 @@ opnieuw verbinding maken met de site
 
 // Z
 'zbug_balise_b_aval' => '&nbsp;: komende opmaakcode B',
-'zbug_balise_inexistante' => 'fout @from@: het baken #@balise@ bestaat niet',
+'zbug_balise_inexistante' => 'Baken @balise@ die slecht voor @from@ wordt verklaard',
 'zbug_balise_sans_argument' => 'Argument niet inbegrepen in het baken @balise@',
 'zbug_boucle' => 'lus',
-'zbug_boucle_recursive_undef' => 'niet gedefinieerde wederkerige lus',
+'zbug_boucle_recursive_undef' => 'Niet bepaalde recursieve gesp&nbsp;: @nom@',
 'zbug_calcul' => 'berekening',
 'zbug_champ_hors_boucle' => 'Veld @champ@ buiten de lus',
-'zbug_champ_hors_motif' => 'Veld @champ@ buiten een lus van motief @motif@',
+'zbug_champ_hors_motif' => 'Veld @champ@ buiten een context @motif@',
 'zbug_code' => 'code',
-'zbug_critere_inconnu' => 'criterium onbekend @critere@',
-'zbug_distant_interdit' => 'externe niet toegestaan',
-'zbug_doublon_table_sans_cle_primaire' => 'dubbele ingegaan op een tabel zonder automatische primaire sleutel',
-'zbug_doublon_table_sans_index' => 'doublons op een tafel zonder indexcijfers',
-'zbug_erreur_boucle_double' => 'BOUCLE@id@: dubbel gebruik',
-'zbug_erreur_boucle_fermant' => 'BOUCLE@id@: sluitingshaakje ontbreekt',
-'zbug_erreur_boucle_syntaxe' => 'Onjuiste syntaxis van de lus',
+'zbug_critere_inconnu' => 'Onbekend criterium @critere@',
+'zbug_distant_interdit' => 'Extern verboden',
+'zbug_doublon_table_sans_cle_primaire' => 'Dubbele ingegaan  op een tafel zonder primaire atoomsleutel',
+'zbug_doublon_table_sans_index' => '"Doublons" op een tafel zonder indexcijfers',
+'zbug_erreur_boucle_double' => 'Dubbele definitie van de @id@ gesp ',
+'zbug_erreur_boucle_fermant' => 'Gesp @id@ niet gesloten ',
+'zbug_erreur_boucle_syntaxe' => 'Syntaxis van de gesp @id@ incorrecte ',
 'zbug_erreur_compilation' => 'Compilatiefout',
-'zbug_erreur_execution_page' => 'uitvoeringsfout van deze pagina',
-'zbug_erreur_filtre' => 'Fout : de filter <b>&laquo; @filtre@ &raquo;</b> is niet gedefinieerd',
-'zbug_erreur_meme_parent' => '{meme_parent} is enkel van toepassing op de lussen (FORUMS) en (RUBRIQUES)',
+'zbug_erreur_execution_page' => 'Fout van uitvoering',
+'zbug_erreur_filtre' => 'Filter @filtre@ niet bepaalde ',
+'zbug_erreur_meme_parent' => 'Het criterium "de zelfde ouder" {meme_parent} van toepassing is slechts op de gespen (FORUMS) of (RUBRIQUES)',
 'zbug_erreur_squelette' => 'Fout(en) in het sjabloon',
 'zbug_hors_compilation' => 'Buiten Compilatie',
 'zbug_info_erreur_squelette' => 'Fout op de site',
-'zbug_inversion_ordre_inexistant' => 'Omkering van een ongekende orde',
-'zbug_pagination_sans_critere' => '#PAGINATION sans crit&egrave;re {pagination} ou employ&eacute; dans une boucle recursive',
-'zbug_parametres_inclus_incorrects' => 'Parameters voor insluiting niet correct',
+'zbug_inversion_ordre_inexistant' => 'Omzetting van onbestaande aard',
+'zbug_pagination_sans_critere' => 'Baken #PAGINATION zonder criterium {pagination} of werknemer in een recursieve gesp',
+'zbug_parametres_inclus_incorrects' => 'Incorrecte parameter van insluitsel&nbsp;: @param@',
 'zbug_profile' => 'Berekeningstijd&nbsp;: @time@',
 'zbug_resultat' => 'resultaat',
-'zbug_serveur_indefini' => 'SQL server niet gedefinieerd',
+'zbug_serveur_indefini' => 'Vage server SQL',
 'zbug_statistiques' => 'Statistieken van de verzoeken SQL die per duur worden ingedeeld',
 'zbug_table_inconnue' => 'SQL tabel &laquo; @table@ &raquo; onbekend',
 'zxml_connus_attributs' => 'onbekende eigenschappen',

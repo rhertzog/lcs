@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/actions'); // *action_auteur
 include_spip('inc/documents');
@@ -102,11 +102,11 @@ function boutons_rotateurs($document, $type, $id, $id_document, $script) {
 
 	  return "\n<div class='verdana1' style='float: $spip_lang_right; text-align: $spip_lang_right;'>" .
 
-		bouton_tourner_document($id, $id_document, $script, -90, $type, 'tourner-gauche.gif', _T('image_tourner_gauche')) .
+		bouton_tourner_document($id, $id_document, $script, -90, $type, 'tourner-gauche-10.gif', _T('image_tourner_gauche')) .
 
-		bouton_tourner_document($id, $id_document, $script,  90, $type, 'tourner-droite.gif', _T('image_tourner_droite')) .
+		bouton_tourner_document($id, $id_document, $script,  90, $type, 'tourner-droite-10.gif', _T('image_tourner_droite')) .
 
-		bouton_tourner_document($id, $id_document, $script, 180, $type, 'tourner-180.gif', _T('image_tourner_180')) .
+		bouton_tourner_document($id, $id_document, $script, 180, $type, 'tourner-demitour-10.gif', _T('image_tourner_180')) .
 		"</div>\n";
 	}
 }

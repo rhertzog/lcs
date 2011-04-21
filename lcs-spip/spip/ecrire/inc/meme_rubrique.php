@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 // http://doc.spip.org/@inc_meme_rubrique_dist
 function inc_meme_rubrique_dist($id_rubrique, $id, $type, $order='', $limit=NULL, $ajax=false)
 {
@@ -24,18 +24,19 @@ function inc_meme_rubrique_dist($id_rubrique, $id, $type, $order='', $limit=NULL
 		$type = 'article';
 		$table = 'spip_articles';
 	}
-	$prim = id_table_objet($type);
+	$prim = 'id_' . $type;
 	if (!$limit)
-		$limit = defined("_MAX_ART_AFFICHES") ? _MAX_ART_AFFICHES : 10;
+		$limit = defined('_MAX_ART_AFFICHES') ? _MAX_ART_AFFICHES : 10;
 
-	$titre = isset($GLOBALS['table_titre'][table_objet($type)])?$GLOBALS['table_titre'][table_objet($type)]:'titre';
+	$titre = ($type!='syndic'?'titre':'nom_site');
+	$exec = array('article'=>'articles','breve'=>'breves_voir','syndic'=>'sites');
 
 	$where = (($GLOBALS['visiteur_session']['statut'] == '0minirezo')
 		  ? ''
 		  :  "(statut = 'publie' OR statut = 'prop') AND ") 
 	. "id_rubrique=$id_rubrique AND ($prim != $id)";
 
-	$select = "$prim AS id, statut, $titre";
+	$select = "$prim AS id, $titre AS titre, statut";
 
 	$n = sql_countsel($table, $where);
 
@@ -51,7 +52,6 @@ function inc_meme_rubrique_dist($id_rubrique, $id, $type, $order='', $limit=NULL
 	$idom = 'rubrique_' . $type;
 
 	while($row = sql_fetch($voss)) {
-
 		$id = $row['id'];
 		$num = afficher_numero_edit($id, $prim, $type);
 		$statut = $row['statut'];
@@ -62,7 +62,7 @@ function inc_meme_rubrique_dist($id_rubrique, $id, $type, $order='', $limit=NULL
 		
 		$statut = $puce_statut($id, $statut, $id_rubrique, $type_statut);
 		$href = "<a class='verdana1' href='"
-		. generer_url_entite($id,$type)
+		. generer_url_ecrire($exec[$type],"$prim=$id")
 		. "'>"
 		. sinon(typo($row['titre']), _T('info_sans_titre'))
 		. "</a>";

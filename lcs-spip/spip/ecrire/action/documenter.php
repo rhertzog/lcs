@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 
 // Comme son nom ne l'indique pas cette action consiste a SUPPRIMER un document
@@ -37,6 +37,19 @@ function supprimer_lien_document($id_document, $objet, $id_objet) {
 
 	// Si c'est une vignette, l'eliminer du document auquel elle appartient
 	sql_updateq("spip_documents", array('id_vignette' => 0), "id_vignette=".$id_document);
+
+	pipeline('post_edition',
+		array(
+			'args' => array(
+				'operation' => 'delier_document',
+				'table' => 'spip_documents',
+				'id_objet' => $id_document,
+				'objet' => $objet,
+				'id' => $id_objet
+			),
+			'data' => null
+		)
+	);
 
 	// On supprime ensuite s'il est orphelin
 	// (autorisation verifiee dans l'action)

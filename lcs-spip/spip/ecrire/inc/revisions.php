@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS['agregation_versions'] = 10;
 define('_INTERVALLE_REVISIONS', 3600); // intervalle de temps separant deux revisions par un meme auteur
@@ -421,7 +421,7 @@ function ajouter_version($id_article, $champs, $titre_version = "", $id_auteur) 
         // et un titre contenant en fait le moment de l'insertion
 	
 	list($ms, $sec) = explode(' ', microtime());
-	$date = $sec . substr($ms,1);
+	$date = $sec . substr($ms,1,4); // SQL ne ramene que 4 chiffres significatifs apres la virgule pour 0.0+titre_version
 	$datediff = ($sec - mktime(0,0,0,9,1,2007)) * 1000000 + substr($ms,2, strlen($ms)-4);
 
 	$valeurs = array('id_article' => $id_article,

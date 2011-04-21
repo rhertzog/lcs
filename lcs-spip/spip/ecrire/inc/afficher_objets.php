@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS['my_sites']=array();
 
@@ -29,13 +29,10 @@ function lien_editer_objet($type,$key,$id){
 
 // http://doc.spip.org/@lien_voir_objet
 function lien_voir_objet($type,$key,$id){
-	$url = generer_url_entite($id, $type);
-	if (!$url){
-		$exec = array('breve'=>'breves_voir','rubrique'=>'naviguer','mot'=>'mots_edit', 'signature'=>'controle_petition');
-		$exec = isset($exec[$type])?$exec[$type]:$type . "s";
-		$url = generer_url_ecrire($exec,"$key=$id");
-	}
-	return $url;
+	if ($type == 'document') return generer_url_entite($id, 'document');
+	$exec = array('article'=>'articles','breve'=>'breves_voir','rubrique'=>'naviguer','mot'=>'mots_edit', 'signature'=>'controle_petition');
+	$exec = isset($exec[$type])?$exec[$type]:$type . "s";
+	return generer_url_ecrire($exec,"$key=$id");
 }
 
 // http://doc.spip.org/@afficher_numero_edit
@@ -247,7 +244,7 @@ function afficher_objet_boucle($row, $own)
 			    OR $chercher_logo = charger_fonction_logo_if())
 			  if ($logo = $chercher_logo($id_objet, $primary, 'on')) {
 				list($fid, $dir, $nom, $format) = $logo;
-				include_spip('inc/filtres_images');
+				include_spip('inc/filtres_images_mini');
 				$logo = image_reduire("<img src='$fid' alt='' />", 26, 20);
 				if ($logo)
 					$flogo = "\n<span style='float: $spip_lang_right; margin-top: -2px; margin-bottom: -2px;'>$logo</span>";
@@ -413,7 +410,7 @@ function afficher_articles_trad($titre_table, $requete, $formater, $hash, $cpt, 
 */
 	$url_t = $url_d = '';
 	$presenter_liste = charger_fonction('presenter_liste', 'inc');
-	$styles = array(array('', 11), array('arial2','', $url_t), array('arial1', 80), array('arial1', 100, $url_d), array('arial1', 50));
+	$styles = array(array('', 11), array('verdana12','', $url_t), array('arial1', 80), array('arial1', 100, $url_d), array('arial1', 50));
 	$tableau = array();
 	$url = generer_url_ecrire('memoriser', "$arg&trad=$trad");
 	$res = $presenter_liste($requete, $formater, $tableau, array(), false, $styles, $tmp_var, $texte, "article-24.gif", $url, $cpt);

@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // --------------------------
 // Gestion des taches de fond
@@ -78,12 +78,13 @@ function inc_genie_dist($taches = array()) {
 	}
 	if ($tache) {
 		spip_timer('tache');
+		spip_log('cron: debut '.$tache, 'genie');
 		touch($lock);
 		$cron = charger_fonction($tache, 'genie');
 		$retour = $cron($last);
 		// si la tache a eu un effet : log
 		if ($retour) {
-			spip_log("cron: $tache (" . spip_timer('tache') . ") $retour");
+			spip_log("cron: $tache (" . spip_timer('tache') . ") $retour", 'genie');
 			if ($retour < 0)
 				@touch($lock, 0 - $retour);
 		}
@@ -127,7 +128,10 @@ function taches_generales($taches_generales = array()) {
 		$taches_generales['syndic'] = 90;
 
 	// maintenance (ajax, verifications diverses)
-		$taches_generales['maintenance'] = 3600 * 2;
+	$taches_generales['maintenance'] = 3600 * 2;
+
+	// verifier si une mise a jour de spip est disponible (2 fois par semaine suffit largement)
+	$taches_generales['mise_a_jour'] = 3*24*3600;
 
 	return pipeline('taches_generales_cron',$taches_generales);
 }

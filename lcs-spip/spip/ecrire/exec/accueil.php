@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 
@@ -194,13 +194,11 @@ function colonne_droite_neq4($id_rubrique, $activer_breves, $activer_sites, $art
 	$gadget = pipeline('accueil_gadgets',$gadget);
 
 	if (strlen($gadget) > 0) {
-	  $gadget = "<div>&nbsp;</div>"
-	    . debut_cadre_trait_couleur('', true)
+	  $gadget = debut_cadre_trait_couleur('', true)
 	    . $gadget
 	    . fin_cadre_trait_couleur(true);
 	}
 
-	$gadget .= "<div>&nbsp;</div>";
 	return $gadget;
 }
 
@@ -281,7 +279,7 @@ function etat_base_accueil()
 		$chercher_logo = charger_fonction('chercher_logo', 'inc');
 		if ($r = $chercher_logo(0, 'id_syndic', 'on'))  {
 			list($fid, $dir, $nom, $format) = $r;
-			include_spip('inc/filtres_images');
+			include_spip('inc/filtres_images_mini');
 			$r = image_reduire("<img src='$fid' alt='' />", 170, 170);
 			if ($r)
 				$res ="<div style='text-align:center; margin-bottom: 5px;'>$r</div>";
@@ -419,7 +417,7 @@ function exec_accueil_dist()
 	if ($spip_display != 4) {
 		echo personnel_accueil(@$_COOKIE['spip_admin']);
 		echo pipeline('affiche_gauche',array('args'=>array('exec'=>'accueil','id_rubrique'=>$id_rubrique),'data'=>''));
-		echo "\n<div>&nbsp;</div>";
+
 		$nom = typo($GLOBALS['meta']["nom_site"]);
 		if (!$nom) $nom=  _T('info_mon_site_spip');
 		echo debut_cadre_relief("racine-site-24.gif", true, "", $nom),
@@ -430,7 +428,7 @@ function exec_accueil_dist()
 	echo creer_colonne_droite("", true);
 	list($evtm, $evtt, $evtr) = http_calendrier_messages(date("Y"), date("m"), date("d")," 23:59:59");
 
-	echo "<div>&nbsp;</div>", $evtt, $evtm, $evtr;
+	echo $evtt, $evtm, $evtr;
 
 	echo pipeline('affiche_droite',array('args'=>array('exec'=>'accueil','id_rubrique'=>$id_rubrique),'data'=>''));
 

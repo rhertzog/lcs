@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/lien');
 
@@ -60,24 +60,22 @@ function inc_formater_auteur_dist($id_auteur, $row=NULL) {
 	$vals[] =  !$url ? "&nbsp;"
 	  :  "<a href='$url'>".couper(sinon(typo($row['nom_site']), $row["url_site"]),30)."</a>";
 
+	$contributions = array();
 	if (autoriser('modifier', 'auteur', $id_auteur, $row)) {
 		$in = sql_in('statut', 
 			($connect_statut == "0minirezo"
 			? array('prepa', 'prop', 'publie', 'refuse')
 			: array('prop', 'publie')));
-		$cpt = sql_countsel("spip_auteurs_articles AS L LEFT JOIN spip_articles AS A ON A.id_article=L.id_article", "L.id_auteur=$id_auteur AND $in"); 
-		$t = _T('info_article_2');
-		$t1 = _T('info_1_article'); 
+		if ($cpt = sql_countsel("spip_auteurs_articles AS L LEFT JOIN spip_articles AS A ON A.id_article=L.id_article", "L.id_auteur=$id_auteur AND $in"))
+			$contributions[] = ($cpt>1?$cpt.' '._T('info_article_2'):_T('info_1_article'));
 	} else {
-		$cpt = sql_countsel("spip_forum AS F", "F.id_auteur=$id_auteur");
-		$t = _T('public:messages_forum');
-		$t1 = '1 ' . _T('public:message');
+		if ($cpt = sql_countsel("spip_forum AS F", "F.id_auteur=$id_auteur"))
+			$contributions[] = ($cpt>1?$cpt.' '._T('public:messages_forum'):('1 ' . _T('public:message')));
 	}
 
-	if ($cpt > 1) $vals[] =  $cpt.' '.$t;
-	// manque "1 message de forum"
-	elseif ($cpt == 1) $vals[] =  $t1;
-	else $vals[] =  "&nbsp;";
+	$contributions = pipeline('compter_contributions_auteur',array('args'=>array('id_auteur'=>$id_auteur,'row'=>$row),'data'=>$contributions));
+
+	$vals[] =  count($contributions)?implode('<br />',$contributions):"&nbsp;";
 
 	return $vals;
 }

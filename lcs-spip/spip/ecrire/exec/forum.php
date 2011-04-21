@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 
@@ -43,6 +43,15 @@ function forum_affiche($debut, $admin=false)
   	echo debut_gauche('', true);
 	echo pipeline('affiche_gauche',array('args'=>array('exec'=>'forum'),'data'=>''));
 	echo creer_colonne_droite('', true);
+
+
+	if ($admin)
+		echo icone_horizontale(_T('titre_cadre_forum_interne'), generer_url_ecrire("forum",""), "forum-interne-24.gif","rien.gif", false);
+
+	else if (!$admin AND $GLOBALS['meta']['forum_prive_admin'] == 'oui'
+	AND autoriser('forum_admin'))
+		echo icone_horizontale(_T('titre_cadre_forum_administrateur'), generer_url_ecrire("forum_admin",""), "forum-admin-24.gif","rien.gif", false);
+
 	echo pipeline('affiche_droite',array('args'=>array('exec'=>'forum'),'data'=>''));
 
 	echo debut_droite('', true), $titre;

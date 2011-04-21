@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // Validateur XML en deux passes, fonde sur SAX pour la premiere
 // Faudrait faire deux classes car pour la premiere passe
@@ -184,7 +184,7 @@ function debutElement($phraseur, $name, $attrs)
 	if ($this->dtc->elements)
 		$this->validerElement($phraseur, $name, $attrs);
 
-	xml_debutElement($this, $name, $attrs);
+	if ($f = $this->process['debut']) $f($this, $name, $attrs);
 	$depth = $this->depth;
 	$this->debuts[$depth] =  strlen($this->res);
 	foreach ($attrs as $k => $v) {
@@ -219,17 +219,18 @@ function finElement($phraseur, $name)
 			}
 		} else {
 			$f = $this->fratrie[substr($depth,2)];
-			if (!preg_match($regle, $f))
+			if (!preg_match($regle, $f)) {
 				coordonnees_erreur($this,
 				" <p>\n<b>$name</b> "
 				  .  _T('zxml_succession_fils_incorrecte')
 				  . '&nbsp;: <b>'
 				  . $f
 				  . '</b>');
+			}
 		}
 
 	}
-	xml_finElement($this, $name, $vide);
+	if ($f = $this->process['fin']) $f($this, $name, $vide);
 }
 
 // http://doc.spip.org/@textElement
@@ -245,12 +246,13 @@ function textElement($phraseur, $data)
 			);
 		}
 	}
-	xml_textElement($this, $data);
+	if ($f = $this->process['text']) $f($this, $data);
 }
 
-// http://doc.spip.org/@PiElement
-function PiElement($phraseur, $target, $data)
-{	xml_PiElement($this, $target, $data);}
+function piElement($phraseur, $target, $data)
+{
+	if ($f = $this->process['pi']) $f($this, $target, $data);
+}
 
 // Denonciation des entitees XML inconnues
 // Pour contourner le bug de conception de SAX qui ne signale pas si elles
@@ -260,7 +262,7 @@ function PiElement($phraseur, $target, $data)
 // le source de la page laisse legitimement supposer. 
 
 // http://doc.spip.org/@defautElement
-function defautElement($phraseur, $data)
+function defaultElement($phraseur, $data)
 {	
 	if (!preg_match('/^<!--/', $data)
 	AND (preg_match_all('/&([^;]*)?/', $data, $r, PREG_SET_ORDER)))
@@ -272,8 +274,7 @@ function defautElement($phraseur, $data)
 				  . ' '
 				  );
 		}
-
-	xml_defautElement($this, $data);
+	if ($f = $this->process['default']) $f($this, $data);
 }
 
 // http://doc.spip.org/@phraserTout
@@ -294,6 +295,7 @@ function phraserTout($phraseur, $data)
  var $contenu = array();
  var $ouvrant = array();
  var $reperes = array();
+ var $process = array();
  var $entete = '';
  var $page = '';
  var $dtc = NULL;
@@ -307,14 +309,110 @@ function phraserTout($phraseur, $data)
 
 }
 
+// http://doc.spip.org/@emboite_texte
+function emboite_texte($res, $fonc='',$self='')
+{
+	include_spip('public/debusquer');
+
+	list($texte, $errs) = $res;
+	if (!$texte)
+		return array(ancre_texte('', array('','')), false);
+	if (!$errs)
+		return array(ancre_texte($texte, array('', '')), true);
+
+	if (!isset($GLOBALS['debug_objets'])) {
+
+		$colors = array('#e0e0f0', '#f8f8ff');
+		$encore = count_occ($errs);
+		$encore2 = array();
+		$fautifs = array();
+
+		$err = '<tr><th>'
+		.  _T('numero')
+		. "</th><th>"
+		. _T('occurrence')
+		. "</th><th>"
+		. _T('ligne')
+		. "</th><th>"
+		. _T('colonne')
+		. "</th><th>"
+		. _T('erreur')
+		. "</th></tr>";
+
+		$i = 0;
+		$style = "style='text-align: right; padding-right: 5px'";
+		foreach($errs as $r) {
+			$i++;
+			list($msg, $ligne, $col) = $r;
+			#spip_log("$r = list($msg, $ligne, $col");
+			if (isset($encore2[$msg]))
+			  $ref = ++$encore2[$msg];
+			else {$encore2[$msg] = $ref = 1;}
+			$err .= "<tr  style='background-color: "
+			  . $colors[$i%2]
+			  . "'><td $style><a href='#debut_err'>"
+			  . $i
+			  . "</a></td><td $style>"
+			  . "$ref/$encore[$msg]</td>"
+			  . "<td $style><a href='#L"
+			  . $ligne
+			  . "' id='T$i'>"
+			  . $ligne
+			  . "</a></td><td $style>"
+			  . $col
+			  . "</td><td>$msg</td></tr>\n";
+			$fautifs[]= array($ligne, $col, $i, $msg);
+		}
+		$err = "<h2 style='text-align: center'>"
+		.  $i
+		. "<a href='#fin_err'>"
+		.  " "._T('erreur_texte')
+		.  "</a></h2><table id='debut_err' style='width: 100%'>"
+		. $err
+		. " </table><a id='fin_err'></a>";
+		return array(ancre_texte($texte, $fautifs), $err);
+	} else {
+		list($msg, $fermant, $ouvrant) = $errs[0];
+		$rf = reference_boucle_debug($fermant, $fonc, $self);
+		$ro = reference_boucle_debug($ouvrant, $fonc, $self);
+		$err = $msg .
+		  "<a href='#L" . $fermant . "'>$fermant</a>$rf<br />" .
+		  "<a href='#L" . $ouvrant . "'>$ouvrant</a>$ro";
+		return array(ancre_texte($texte, array(array($ouvrant), array($fermant))), $err);
+	}
+}
+
+// http://doc.spip.org/@count_occ
+function count_occ($regs)
+{
+	$encore = array();
+	foreach($regs as $r) {
+		if (isset($encore[$r[0]]))
+			$encore[$r[0]]++;
+		else $encore[$r[0]] = 1;
+	}
+	return $encore;
+}
+
 // Retourne un tableau formee de la page analysee et du tableau des erreurs,
 // ce dernier ayant comme entrees des sous-tableaux [message, ligne, colonne]
 
 // http://doc.spip.org/@xml_valider_dist
-function xml_valider_dist($page, $apply=false)
+function xml_valider_dist($page, $apply=false, $process=false)
 {
+
 	$sax = charger_fonction('sax', 'xml');
 	$f = new ValidateurXML();
+	if (!is_array($process)) 
+		$process = array(
+			'debut' => 'xml_debutElement',
+			'fin' => 'xml_finElement',
+			'text' => 'xml_textElement',
+			'pi' => 'xml_piElement',
+			'default' => 'xml_defaultElement'
+				 );
+
+	$f->process = $process;
 	$sax($page, $apply, $f);
 	$page = $f->err ? $f->page : $f->res;
 	return array($f->entete . $page, $f->err);

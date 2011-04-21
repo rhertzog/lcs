@@ -3,7 +3,7 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -54,7 +54,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'barre_euro' => 'Insert the &euro; symbol',
 'barre_gras' => 'Put in {{bold type}}',
 'barre_guillemets' => 'Place between "double quotes"',
-'barre_guillemets_simples' => 'Place between ‘single quotes’',
+'barre_guillemets_simples' => 'Place between â€˜single quotesâ€™',
 'barre_intertitre' => 'Turn into a {{{subheading}}}',
 'barre_italic' => 'Put in {italics}',
 'barre_lien' => 'Turn into a [hyperlink->http://...]',
@@ -188,7 +188,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'date_saison_2' => 'spring',
 'date_saison_3' => 'summer',
 'date_saison_4' => 'autumn',
+'date_secondes' => 'seconds',
 'date_semaines' => 'weeks',
+'date_un_mois' => 'month',
+'date_une_heure' => 'hour',
+'date_une_minute' => 'minute',
+'date_une_seconde' => 'second',
+'date_une_semaine' => 'week',
 'dirs_commencer' => ' in order to really start the installation',
 'dirs_preliminaire' => 'Preliminary: <b>Setting up access permissions</b>',
 'dirs_probleme_droits' => 'Problem in access permissions',
@@ -201,7 +207,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 <p>To change this, use your FTP client to set access permissions for each
  of these directories. The procedure is detailed in the installation guide.</p>
   <p>Once you have done this, you can ',
-'double_occurrence' => 'Two instances',
+'double_occurrence' => 'Two instances of @balise@',
 
 // E
 'en_cours' => 'processing',
@@ -216,6 +222,17 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // F
 'fichier_introuvable' => 'File not found: @fichier@',
+'form_auteur_confirmation' => 'Please confirm your email address',
+'form_auteur_email_modifie' => 'Your email address has been changed.',
+'form_auteur_envoi_mail_confirmation' => 'A confirmation email has been sent to @email@. You need to visit the URL mentioned in this message in order to validate your email address.',
+'form_auteur_mail_confirmation' => 'Hello,
+
+You have asked to change your email address.
+To confirm your new address, you need to connect to
+the address below. (Otherwise your request will be ignored.):
+
+    @url@
+',
 'form_deja_inscrit' => 'You are already registered.',
 'form_email_non_valide' => 'Your e-mail address is not valid.',
 'form_forum_access_refuse' => 'You do not have access to this site anymore.',
@@ -234,7 +251,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 the site "@nom_site_spip@" (@adresse_login@):',
 'form_indiquer_email' => 'Please enter your e-mail address.',
 'form_indiquer_nom' => 'Please enter your name.',
-'form_indiquer_nom_site' => 'Please enter your site’s name.',
+'form_indiquer_nom_site' => 'Please enter your siteâ€™s name.',
 'form_pet_adresse_site' => 'Your site\'s URL',
 'form_pet_aucune_signature' => 'No signature matches this code...',
 'form_pet_confirmation' => 'Please confirm your signature:',
@@ -391,19 +408,23 @@ Thank you for your participation!
 'info_article_supprime' => 'Article deleted',
 'info_articles' => 'Articles',
 'info_articles_a_valider' => 'Articles to be validated',
+'info_articles_nb' => '@nb@ articles',
 'info_articles_proposes' => 'Articles submitted',
+'info_articles_un' => '1 article',
 'info_auteurs_nombre' => 'author(s):',
 'info_authentification_ftp' => 'Authentication (by FTP).',
 'info_bloquer_lien' => 'block this link',
 'info_breves_02' => 'News',
 'info_breves_2' => 'news',
+'info_breves_nb' => '@nb@ news items',
+'info_breves_un' => '1 news item',
 'info_breves_valider' => 'News items to be validated',
 'info_connexion_refusee' => 'Connection denied',
 'info_contact_developpeur' => 'Please contact a developer.',
 'info_contenance' => 'This site contains:',
 'info_contribution' => 'forum contributions',
 'info_copyright' => '@spip@ is free software distributed @lien_gpl@.',
-'info_copyright_doc' => 'For further information, see <a href=\'http://www.spip.net/en\'>http://www.spip.net/en</a>.',
+'info_copyright_doc' => 'For more information, see <a href="@spipnet@">http://www.spip.net/en</a>.',
 'info_copyright_gpl' => 'under the GPL license',
 'info_cours_edition' => 'Your articles in progress',
 'info_creer_repertoire' => 'Please create a file or a directory called:',
@@ -417,6 +438,8 @@ Thank you for your participation!
 'info_document' => 'Document',
 'info_document_indisponible' => 'This document is unavailable',
 'info_documents' => 'Documents',
+'info_documents_nb' => '@nb@ documents',
+'info_documents_un' => '1 document',
 'info_echange_message' => 'SPIP allows the exchange of messages and the creation of private
 		discussion forums between participants to the site. You can enable or
 		disable this feature.',
@@ -463,6 +486,8 @@ Thank you for your participation!
 'info_mail_fournisseur' => 'you@isp.com',
 'info_message_2' => 'MESSAGE',
 'info_message_supprime' => 'MESSAGE DELETED',
+'info_messages_nb' => '@nb@ messages',
+'info_messages_un' => '1 message',
 'info_mise_en_ligne' => 'Date of online publication:',
 'info_modification_parametres_securite' => 'modifying security parameters',
 'info_mois_courant' => 'During the month:',
@@ -507,6 +532,8 @@ Thank you for your participation!
 'info_retablir_lien' => 'restore this link',
 'info_retirer_mot' => 'Remove this keyword',
 'info_retirer_mots' => 'Remove all keywords',
+'info_rubriques_nb' => '@nb@ sections',
+'info_rubriques_un' => '1 section',
 'info_sans_titre_2' => 'untitled',
 'info_selectionner_fichier' => 'You can select a file from the folder @upload@',
 'info_selectionner_fichier_2' => 'Select a file:',
@@ -515,7 +542,9 @@ Thank you for your participation!
 'info_site_attente' => 'Web site pending validation',
 'info_site_reference' => 'Referenced sites online',
 'info_site_refuse' => 'Web site rejected',
+'info_sites_nb' => '@nb@ sites',
 'info_sites_referencer' => 'Reference a site',
+'info_sites_un' => '1 site',
 'info_supprimer_vignette' => 'delete the vignette',
 'info_symbole_bleu' => 'A <b>blue</b> symbol indicates a <b>memo</b>: i.e. a message for your personal use.',
 'info_symbole_jaune' => 'A <b>yellow</b> symbol indicates an <b>announcement to all editors</b>: it can be edited by all administrators, and is visible to all editors.',
@@ -546,9 +575,8 @@ Thank you for your participation!
 'lien_afficher_icones_seuls' => 'Show icons only',
 'lien_afficher_texte_icones' => 'Show icons and text',
 'lien_afficher_texte_seul' => 'Show text only',
-'lien_icones_interface' => 'The interface icons are from <a href=\'http://jimmac.musichall.cz/\'>Jakub \'Jimmac\' Steiner</a>.',
 'lien_liberer' => 'release',
-'lien_liberer_tous' => 'free these articles',
+'lien_liberer_tous' => 'release these articles',
 'lien_nouvea_pense_bete' => 'NEW MEMO',
 'lien_nouveau_message' => 'NEW MESSAGE',
 'lien_nouvelle_annonce' => 'NEW ANNOUNCEMENT',
@@ -590,6 +618,7 @@ Thank you for your participation!
 'login_retour_site' => 'Back to the public site',
 'login_retoursitepublic' => 'back to the public site',
 'login_sans_cookiie' => 'Identification without cookie',
+'login_securise' => 'Secured login',
 'login_sinscrire' => 'register',
 'login_test_navigateur' => 'testing browser/reconnection',
 'login_verifiez_navigateur' => '(However, verify that your browser did not memorize your password...)',
@@ -622,7 +651,6 @@ Thank you for your participation!
 'onglet_repartition_rubrique' => 'Distribution by section',
 'onglet_save_restaur_base' => 'Backup/restore the database',
 'onglet_vider_cache' => 'Empty the cache',
-'ortho_trop_de_fautes2' => 'Start by correcting the most obvious mistakes, then try again.',
 
 // P
 'pass_choix_pass' => 'Please choose your new password:',
@@ -701,8 +729,8 @@ and connect again to the site.
   <b>@auth_login@</b>, but it does not exist in the database (anymore).
   Try to',
 'texte_inc_auth_2' => 'reconnect',
-'texte_inc_auth_3' => 'having quit then
-		restarted your browser if necessary.',
+'texte_inc_auth_3' => ', having quit then
+  restarted your browser if necessary.',
 'texte_inc_config' => 'Changes made to the options on these pages have a great effect on
   the functioning of the site. You are advised not to make any changes unless you are
  familiar with how SPIP works. <br /><br /><b>In
@@ -744,34 +772,34 @@ and connect again to the site.
 
 // Z
 'zbug_balise_b_aval' => ': B tag too late in loop',
-'zbug_balise_inexistante' => 'error @from@: the #@balise@ tag does not exist',
+'zbug_balise_inexistante' => 'Tag @balise@ wrongly declared for @from@',
 'zbug_balise_sans_argument' => 'Missing argument in the @balise@ tag',
 'zbug_boucle' => 'loop',
-'zbug_boucle_recursive_undef' => 'undefined recursive loop',
+'zbug_boucle_recursive_undef' => 'undefined recursive loop: @nom@',
 'zbug_calcul' => 'calculation',
 'zbug_champ_hors_boucle' => 'Field @champ@ outside loop',
-'zbug_champ_hors_motif' => 'Field @champ@ outside loop tagged @motif@',
+'zbug_champ_hors_motif' => 'Field @champ@ outside context @motif@',
 'zbug_code' => 'code',
-'zbug_critere_inconnu' => 'unknown criterion @critere@',
-'zbug_distant_interdit' => 'external data forbidden',
-'zbug_doublon_table_sans_cle_primaire' => 'doublons used on a table which does not have a simple primary key',
-'zbug_doublon_table_sans_index' => 'doubles in a table without an index',
-'zbug_erreur_boucle_double' => 'BOUCLE@id@: double definition',
-'zbug_erreur_boucle_fermant' => 'BOUCLE@id@: missing closing tag',
-'zbug_erreur_boucle_syntaxe' => 'Incorrect loop (BOUCLE) syntax ',
+'zbug_critere_inconnu' => 'Unknown criterion @critere@',
+'zbug_distant_interdit' => 'External data forbidden',
+'zbug_doublon_table_sans_cle_primaire' => 'Duplicate entries on a table which does not have a simple primary key',
+'zbug_doublon_table_sans_index' => 'Duplicate entries on a table without an index',
+'zbug_erreur_boucle_double' => 'Loop @id@: double definition',
+'zbug_erreur_boucle_fermant' => 'Loop @id@: missing closing tag',
+'zbug_erreur_boucle_syntaxe' => 'Syntax error in loop (BOUCLE)',
 'zbug_erreur_compilation' => 'Compilation error',
-'zbug_erreur_execution_page' => 'error in page calculation',
-'zbug_erreur_filtre' => 'Error - undefined filter: <b>"@filtre@"</b>',
+'zbug_erreur_execution_page' => 'Execution error',
+'zbug_erreur_filtre' => 'Undefined filter @filtre@',
 'zbug_erreur_meme_parent' => '{meme_parent} only applies to loops (FORUMS) and (RUBRIQUES)',
 'zbug_erreur_squelette' => 'Error(s) in template',
 'zbug_hors_compilation' => 'Uncompiled',
 'zbug_info_erreur_squelette' => '&#1615;Error in the site',
-'zbug_inversion_ordre_inexistant' => 'reversal of nonexistent order',
+'zbug_inversion_ordre_inexistant' => 'Reversion of non-existent order',
 'zbug_pagination_sans_critere' => '#PAGINATION tag without {pagination} criterion, or used in a recursive loop',
-'zbug_parametres_inclus_incorrects' => 'Wrong inclusion parameters',
+'zbug_parametres_inclus_incorrects' => 'Wrong inclusion parameter: @param@',
 'zbug_profile' => 'Calculation time: @time@',
 'zbug_resultat' => 'result',
-'zbug_serveur_indefini' => 'undefined SQL server',
+'zbug_serveur_indefini' => 'Undefined SQL server',
 'zbug_statistiques' => 'SQL query statistics in order of duration',
 'zbug_table_inconnue' => 'Unknown SQL table "@table@"',
 'zxml_connus_attributs' => 'known attributes',

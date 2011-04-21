@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/actions');
 include_spip('inc/editer');
@@ -30,6 +30,14 @@ function formulaires_editer_mot_charger_dist($id_mot='new', $id_groupe=0, $retou
 	return $valeurs;
 }
 
+/**
+ * Identifier le formulaire en faisant abstraction des parametres qui
+ * ne representent pas l'objet edite
+ */
+function formulaires_editer_mot_identifier_dist($id_mot='new', $id_groupe=0, $retour='', $ajouter_id_article=0, $table='', $table_id=0, $config_fonc='mots_edit_config', $row=array(), $hidden=''){
+	return serialize(array($id_mot,$ajouter_id_article,$row));
+}
+
 // Choix par defaut des options de presentation
 // http://doc.spip.org/@articles_edit_config
 function mots_edit_config($row)
@@ -38,7 +46,6 @@ function mots_edit_config($row)
 
 	$config = $GLOBALS['meta'];
 	$config['lignes'] = ($spip_ecran == "large")? 8 : 5;
-	$config['afficher_barre'] = $spip_display != 4;
 	$config['langue'] = $spip_lang;
 
 	$config['restreint'] = ($row['statut'] == 'publie');
@@ -48,6 +55,17 @@ function mots_edit_config($row)
 function formulaires_editer_mot_verifier_dist($id_mot='new', $id_groupe=0, $retour='', $ajouter_id_article=0, $table='', $table_id=0, $config_fonc='mots_edit_config', $row=array(), $hidden=''){
 
 	$erreurs = formulaires_editer_objet_verifier('mot',$id_mot,array('titre'));
+	// verifier qu'un mot du meme groupe n'existe pas avec le meme titre
+	// la comparaison accepte un numero absent ou different
+	// sinon avertir
+	if (!count($erreurs) AND !_request('confirm_titre_mot')){
+		if (sql_countsel("spip_mots", 
+						"titre REGEXP ".sql_quote("^([0-9]+[.] )?".preg_quote(supprimer_numero(_request('titre')))."$")
+						." AND id_mot<>".intval($id_mot)))
+			$erreurs['titre'] =
+						_T('avis_doublon_mot_cle')
+						." <input type='hidden' name='confirm_titre_mot' value='1' />";
+	}
 	return $erreurs;
 }
 

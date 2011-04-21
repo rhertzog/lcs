@@ -3,23 +3,26 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/filtres');
 
 // Modifier le reglage des forums publics de l'article x
 // http://doc.spip.org/@action_editer_mot_dist
-function action_editer_mot_dist()
+function action_editer_mot_dist($arg=null)
 {
-	$securiser_action = charger_fonction('securiser_action', 'inc');
-	$id_mot = intval($securiser_action());
+	if (is_null($arg)){
+		$securiser_action = charger_fonction('securiser_action', 'inc');
+		$arg = $securiser_action();
+	}
+	$id_mot = intval($arg);
 
 	$id_groupe = intval(_request('id_groupe'));
 	if (!$id_mot AND $id_groupe) {

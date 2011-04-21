@@ -3,12 +3,13 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // A
 'accueil_site' => 'Homepage vum Site',
+'article' => 'Article', # NEW
 'articles' => 'Artikelen',
 'articles_auteur' => 'Artikelen vun d&euml;sem Auteur',
 'articles_populaires' => 'D&eacute;i bel&eacute;iwsten Artikelen',
@@ -18,6 +19,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'aucun_site' => 'Et g&euml;tt keen Site op d&euml;ser Adress',
 'aucune_breve' => 'Et g&euml;tt keng Kuerzmeldung op d&euml;ser Adress',
 'aucune_rubrique' => 'Et g&euml;tt keng Rubrik op d&euml;ser Adress',
+'auteur' => 'Auteur', # NEW
 'autres' => 'Anerer',
 'autres_breves' => 'Aner Kuerzmeldungen',
 'autres_groupes_mots_clefs' => 'Aner Schl&euml;sselwierder-Gruppen',
@@ -25,10 +27,12 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // B
 'bonjour' => 'Bonjour',
+'breve' => 'Br&egrave;ve', # NEW
 'breves' => 'Kuerzmeldungen',
 
 // C
 'commenter_site' => 'D&euml;sen Site komment&eacute;ieren',
+'copie_document_impossible' => 'Onm&eacute;iglech dat Dokument ze kop&eacute;ieren',
 
 // D
 'date' => 'Datum',
@@ -37,6 +41,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'derniers_articles' => 'L&auml;scht Artikelen',
 'derniers_commentaires' => 'L&auml;scht Commentairen',
 'derniers_messages_forum' => 'L&auml;scht Messagen aus de Forum\'en',
+'documents_interdits_forum' => 'Dokumenter sinn am Forum n&euml;t erlaabt',
 
 // E
 'edition_mode_texte' => 'Editioun am Text-Modus vun',
@@ -46,6 +51,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'espace_prive' => 'Privaten Deel',
 
 // F
+'formats_acceptes' => 'Akzept&eacute;iert Formater: @formats@.',
 'forum' => 'Forum',
 
 // H
@@ -64,6 +70,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'message' => 'Message',
 'messages_forum' => 'Messagen vum Forum',
 'messages_recents' => 'L&auml;scht Messagen aus de Forum\'en',
+'mots_clef' => 'Mot-cl&eacute;', # NEW
 'mots_clefs' => 'Schl&euml;sselwierder',
 'mots_clefs_meme_groupe' => 'Schl&euml;sselwierder vum selwechten Grupp',
 

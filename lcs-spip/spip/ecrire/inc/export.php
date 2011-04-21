@@ -3,16 +3,16 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
-define('_EXPORT_TRANCHES_LIMITE', 400);
+define('_EXPORT_TRANCHES_LIMITE', 200);
 define('_EXTENSION_PARTIES', '.gz');
 
 // http://doc.spip.org/@exec_export_all_args
@@ -21,7 +21,8 @@ function inc_export_dist($meta)
 	if (!isset($GLOBALS['meta'][$meta])) {
 		include_spip('inc/minipres');
 		echo minipres();
-	} else {
+	}
+	else {
 		$start = false;
 		list($gz, $archive, $rub, $tables_for_dump, $etape_actuelle, $sous_etape) = 
 			unserialize($GLOBALS['meta'][$meta]);
@@ -49,8 +50,7 @@ function inc_export_dist($meta)
 		ramasse_parties($dir, $archive);
 		$all = count($tables_for_dump);
 		if ($etape_actuelle > $all OR !$all){
-			include_spip('inc/headers');
-			redirige_par_entete(generer_action_auteur("export_all","end,$gz,$archive,$rub",'',true, true));
+			return "end,$gz,$archive,$rub"; // c'est fini !
 		}
 
 		include_spip('inc/minipres');
@@ -84,9 +84,13 @@ function inc_export_dist($meta)
 		echo "<div style='text-align: left'>\n";
 		$etape = 1;
 		foreach($tables_for_dump as $table){
-			if ($etape_actuelle <= $etape) { // sauter les deja faits
+			if ($etape_actuelle > $etape) {
+				 // sauter les deja faits, mais rappeler qu'ils sont fait
+				echo ( "\n<br /><strong>".$etape. '. '."</strong>". $tables_sauvegardees[$table]);
+			}
+			else {
+				echo ( "\n<br /><strong>".$etape. '. '. $table."</strong> ");
 			  $r = sql_countsel($table);
-			  echo ( "\n<br /><strong>".$etape. '. '. $table."</strong> ");
 			  flush();
 			  if (!$r) $r = ( _T('texte_vide'));
 			  else {
@@ -96,7 +100,7 @@ function inc_export_dist($meta)
 			    // info pas fiable si interruption+partiel
 			    if ($rub AND $etape_actuelle > 1) $r = ">= $r";
 			  }
-			  echo $r; 
+			  echo " $r";
 			  flush();
 			  $sous_etape = 0;
 			  // on utilise l'index comme ca c'est pas grave si on ecrit plusieurs fois la meme
@@ -231,7 +235,7 @@ function export_objets($table, $cpt, $total, $filetable, $les_rubriques, $les_me
 		  include_spip('inc/headers');
 		  redirige_par_entete("./?exec=export_all&rub=$rub&x=$s");
 		  } /* */
-		echo(" $debut");
+		echo(". ");
 		flush();
 	}
 
@@ -287,7 +291,7 @@ function export_select($row, $les_rubriques, $les_meres) {
 	if (isset($row['impt']) AND $row['impt'] !='oui') return false;
 	if (!$les_rubriques) return true;
 
-	// numero de rubrique non determinant pour les forums (0 à 99%)
+	// numero de rubrique non determinant pour les forums (0 ï¿½ 99%)
 	if (isset($row['id_rubrique']) AND $row['id_rubrique']) {
 		if (in_array($row['id_rubrique'], $les_rubriques)) {
 			if (isset($row['id_article']))

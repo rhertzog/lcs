@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -11,7 +11,7 @@
 \***************************************************************************/
 
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 
 // Definition des noeuds de l'arbre de syntaxe abstraite
@@ -52,7 +52,7 @@ class Boucle {
 	var $jointures = array();
 	var $jointures_explicites = false;
 	var $doublons;
-	var $partie, $total_parties,$mode_partie;
+	var $partie, $total_parties,$mode_partie='';
 	var $externe = ''; # appel a partir d'une autre boucle (recursion)
 	// champs pour la construction de la requete SQL
 	var $select = array();
@@ -113,7 +113,9 @@ class Champ {
 	var $id_boucle;
 	var $boucles;
 	var $type_requete;
-	var $code;	// code du calcul
+	// resultat de la compilation:  toujours une expression PHP.
+	// Chaine vide comme valeur par defaut (pour balise indefinie etc)
+	var $code = ''; 
 	var $interdire_scripts = true; // false si on est sur de cette balise
 	// tableau pour la production de code dependant du contexte
 	// id_mere;  pour TOTAL_BOUCLE hors du corps
@@ -138,7 +140,9 @@ class Idiome {
 	var $id_boucle;
 	var $boucles;
 	var $type_requete;
-	var $code;
+	// resultat de la compilation:  toujours une expression PHP.
+	// Chaine vide comme valeur par defaut (n'arrive pas normalement)
+	var $code = '';
 	var $interdire_scripts = false;
 	var $descr = array();
 	var $ligne = 0;
@@ -149,6 +153,16 @@ class Polyglotte {
 	var $type = 'polyglotte';
 	var $traductions = array(); // les textes ou choisir
 	var $ligne = 0;
+}
+
+// Une structure necessaire au traitement d'erreur a l'execution
+// Le champ code est inutilise, mais harmonise le traitement d'erreurs.
+class Contexte {
+	var $descr = array();
+	var $id_boucle = '';
+	var $ligne = 0;
+	var $lang = '';
+	var $code = '';
 }
 
 global $table_criteres_infixes;
@@ -180,7 +194,6 @@ $table_des_tables['syndication']='syndic';
 $table_des_tables['syndic']='syndic';
 $table_des_tables['syndic_articles']='syndic_articles';
 $table_des_tables['hierarchie']='rubriques';
-$table_des_tables['index']='index';
 $table_des_tables['messages']='messages';
 $table_des_tables['petitions']='petitions';
 
@@ -324,6 +337,20 @@ $table_des_traitements['TITRE'][]= _TRAITEMENT_TYPO;
 $table_des_traitements['TYPE'][]= _TRAITEMENT_TYPO;
 $table_des_traitements['DESCRIPTIF_SITE_SPIP'][]= _TRAITEMENT_RACCOURCIS;
 $table_des_traitements['ENV'][]= 'entites_html(%s,true)';
+
+$table_des_traitements['TEXTE']['forums']= "safehtml("._TRAITEMENT_RACCOURCIS.")";
+$table_des_traitements['TITRE']['forums']= "safehtml("._TRAITEMENT_TYPO.")";
+$table_des_traitements['NOTES']['forums']= "safehtml("._TRAITEMENT_RACCOURCIS.")";
+$table_des_traitements['NOM_SITE']['forums']=  "safehtml("._TRAITEMENT_TYPO.")";
+$table_des_traitements['URL_SITE']['forums']= 'safehtml(vider_url(%s))';
+$table_des_traitements['AUTEUR']['forums']= 'safehtml(vider_url(%s))';
+$table_des_traitements['EMAIL_AUTEUR']['forums']= 'safehtml(vider_url(%s))';
+
+// gerer les sauts de ligne dans les textes des forums
+$table_des_traitements['TEXTE']['forums'] =
+	str_replace('%s', 'post_autobr(%s)',
+	$table_des_traitements['TEXTE']['forums']
+);
 
 
 // Articles syndiques : passage des donnees telles quelles, sans traitement typo

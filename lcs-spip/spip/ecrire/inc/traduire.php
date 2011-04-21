@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 //
 // Charger un fichier langue
@@ -59,19 +59,22 @@ function charger_langue($lang, $module = 'spip') {
 //
 // http://doc.spip.org/@surcharger_langue
 function surcharger_langue($fichier) {
+	static $surcharges = array();
 	if (!isset($GLOBALS['idx_lang'])) return;
-	$idx_lang_normal = $GLOBALS['idx_lang'];
-	$idx_lang_surcharge = $GLOBALS['idx_lang'].'_temporaire';
-	$GLOBALS['idx_lang'] = $idx_lang_surcharge;
-	include($fichier);
-	if (is_array($GLOBALS[$idx_lang_surcharge])) {
-		$GLOBALS[$idx_lang_normal] = array_merge(
-			$GLOBALS[$idx_lang_normal],
-			$GLOBALS[$idx_lang_surcharge]
+	if (!isset($surcharges[$fichier])) {
+		$idx_lang_normal = $GLOBALS['idx_lang'];
+		$GLOBALS['idx_lang'] = $GLOBALS['idx_lang'].'@temporaire';
+		include($fichier);
+		$surcharges[$fichier] = $GLOBALS[$GLOBALS['idx_lang']];
+		unset ($GLOBALS[$GLOBALS['idx_lang']]);
+		$GLOBALS['idx_lang'] = $idx_lang_normal;
+	}
+	if (is_array($surcharges[$fichier])) {
+		$GLOBALS[$GLOBALS['idx_lang']] = array_merge(
+			$GLOBALS[$GLOBALS['idx_lang']],
+			$surcharges[$fichier]
 		);
 	}
-	unset ($GLOBALS[$idx_lang_surcharge]);
-	$GLOBALS['idx_lang'] = $idx_lang_normal;
 }
 
 //
@@ -125,8 +128,16 @@ function inc_traduire_dist($ori, $lang) {
 	}
 
 	// Supprimer la mention <NEW> ou <MODIF>
-	if ($text[0] === '<')
+	if (substr($text,0,1) === '<')
 		$text = str_replace(array('<NEW>', '<MODIF>'), array(), $text);
+
+	// Si on n'est pas en utf-8, la chaine peut l'etre...
+	// le cas echeant on la convertit en entites html &#xxx;
+	if ($GLOBALS['meta']['charset'] !== 'utf-8'
+	AND preg_match(',[\x7f-\xff],S', $text)) {
+		include_spip('inc/charsets');
+		$text = charset2unicode($text,'utf-8');
+	}
 
 	$deja_vu[$lang][$ori] = $text;
 

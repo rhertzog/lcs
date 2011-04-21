@@ -21,14 +21,14 @@
 </div>
 <div class="champ contenu_nom_site[ (#NOM_SITE*|sinon{#URL_SITE*}|strlen|?{'',vide})]">
 <div class='label'><:lien_voir_en_ligne:></div>
-<div dir='#LANG_DIR' class='#EDIT{hyperlien} nom_site'><a href='#URL_SITE'>#NOM_SITE</a></div>
+<div dir='#LANG_DIR' class='#EDIT{hyperlien} nom_site'>[<a href='(#URL_SITE)'>]#NOM_SITE[(#URL_SITE|oui)</a>]</div>
 </div>
 <div class="champ contenu_texte[ (#TEXTE*|strlen|?{'',vide})]">
 <div class='label'><:info_texte:></div>
 <div dir='#LANG_DIR' class='#EDIT{texte} texte'>[(#TEXTE|image_reduire{500,0})]</div>
 </div>
 <div class="champ contenu_ps[ (#PS*|strlen|?{'',vide})]">
-<div class='label'><:info_ps:></div>
+<div class='label'><:info_post_scriptum:></div>
 <div dir='#LANG_DIR' class='#EDIT{ps} ps'>[(#PS|image_reduire{500,0})]</div>
 </div>
 [<div class="champ contenu_notes">

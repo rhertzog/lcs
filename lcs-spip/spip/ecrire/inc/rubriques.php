@@ -3,25 +3,25 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 
 // Fonction a appeler lorsque le statut d'un objet change dans une rubrique
-// ou que la rubrique est d�placee.
+// ou que la rubrique est deplacee.
 // Le 2e arg est un tableau ayant un index "statut" (indiquant le nouveau)
 // et eventuellement un index "id_rubrique" (indiquant le deplacement)
 
 // Si le statut passe a "publie", la rubrique et ses parents y passent aussi
-// et les langues utilis�es sont recalcul�es. 
-// Cons�quences sym�triques s'il est depublie'.
-// S'il est deplace' alors qu'il etait publie�, double consequence.
+// et les langues utilisees sont recalculees.
+// Consequences symetriques s'il est depublie'.
+// S'il est deplace' alors qu'il etait publiee, double consequence.
 // Tout cela devrait passer en SQL, sous forme de Cascade SQL.
 
 // http://doc.spip.org/@calculer_rubriques_if
@@ -76,54 +76,91 @@ function publier_branche_rubrique($id_rubrique)
 	return $id_pred != $id_rubrique;
 }
 
-// Fonction a appeler lorsqu'on depublie ou supprime qqch dans une rubrique
-// retourne Vrai si le statut change effectivement
+/**
+ * Fonction a appeler lorsqu'on depublie ou supprime qqch dans une rubrique
+ * retourne Vrai si le statut change effectivement
+ *
+ * http://doc.spip.org/@depublier_branche_rubrique_if
+ *
+ * @param int $id_rubrique
+ * @return bool
+ */
+function depublier_branche_rubrique_if($id_rubrique){
+	$date = date('Y-m-d H:i:s'); // figer la date
 
-// http://doc.spip.org/@depublier_branche_rubrique_if
-function depublier_branche_rubrique_if($id_rubrique)
-{
-	$postdates = ($GLOBALS['meta']["post_dates"] == "non") ?
-		" AND date <= ".sql_quote(date('Y-m-d H:i:s')) : '';
-
-#	spip_log("depublier_branche_rubrique($id_rubrique ?");
+	#	spip_log("depublier_branche_rubrique($id_rubrique ?");
 	$id_pred = $id_rubrique;
 	while ($id_pred) {
 
-		if (sql_countsel("spip_articles",  "id_rubrique=$id_pred AND statut='publie'$postdates"))
-			return $id_pred != $id_rubrique;;
-	
-		if (sql_countsel("spip_breves",  "id_rubrique=$id_pred AND statut='publie'"))
-			return $id_pred != $id_rubrique;;
-
-		if (sql_countsel("spip_syndic",  "id_rubrique=$id_pred AND statut='publie'"))
-			return $id_pred != $id_rubrique;;
-	
-		if (sql_countsel("spip_rubriques",  "id_parent=$id_pred AND statut='publie'"))
-			return $id_pred != $id_rubrique;;
-	
-		if (sql_countsel("spip_documents_liens",  "id_objet=$id_pred AND objet='rubrique'"))
-			return $id_pred != $id_rubrique;;
-
-		$compte = pipeline('objet_compte_enfants',array('args'=>array('objet'=>'rubrique','id_objet'=>$id_pred,'statut'=>'publie'),'data'=>array()));
-		foreach($compte as $objet => $n)
-			if ($n)
-				return $id_pred != $id_rubrique;
-
-		sql_updateq("spip_rubriques", array("statut" => '0'), "id_rubrique=$id_pred");
-#		spip_log("depublier_rubrique $id_pred");
-
+		if (!depublier_rubrique_if($id_pred,$date))
+			return $id_pred != $id_rubrique;
+		// passer au parent si on a depublie
 		$r = sql_fetsel("id_parent", "spip_rubriques", "id_rubrique=$id_pred");
-
 		$id_pred = $r['id_parent'];
 	}
 
-	return $id_pred != $id_rubrique;;
+	return $id_pred != $id_rubrique;
+}
+
+/**
+ * Depublier une rubrique si aucun contenu publie connu
+ * retourne true si la rubrique a ete depubliee
+ *
+ * @param int $id_rubrique
+ * @param string $date
+ * @return bool
+ */
+function depublier_rubrique_if($id_rubrique,$date=null){
+	if (is_null($date))
+		$date = date('Y-m-d H:i:s');
+	$postdates = ($GLOBALS['meta']["post_dates"] == "non") ?
+		" AND date <= ".sql_quote($date) : '';
+
+	if (!$id_rubrique=intval($id_rubrique))
+		return false;
+
+	// verifier qu'elle existe et est bien publiee
+	$r = sql_fetsel('id_rubrique,statut','spip_rubriques',"id_rubrique=$id_rubrique");
+	if (!$r OR $r['statut']!=='publie')
+		return false;
+
+	// On met le nombre de chaque type d'enfants dans un tableau
+	// Le type de l'objet est au pluriel
+	$compte = array(
+		'articles' => sql_countsel("spip_articles",  "id_rubrique=$id_rubrique AND statut='publie'$postdates"),
+		'breves' => sql_countsel("spip_breves",  "id_rubrique=$id_rubrique AND statut='publie'"),
+		'sites' => sql_countsel("spip_syndic",  "id_rubrique=$id_rubrique AND statut='publie'"),
+		'rubriques' => sql_countsel("spip_rubriques",  "id_parent=$id_rubrique AND statut='publie'"),
+		'documents' => sql_countsel("spip_documents_liens",  "id_objet=$id_rubrique AND objet='rubrique'")
+	);
+	
+	// On passe le tableau des comptes dans un pipeline pour que les plugins puissent ajouter (ou retirer) des enfants
+	$compte = pipeline('objet_compte_enfants',
+		array(
+			'args' => array(
+				'objet' => 'rubrique',
+				'id_objet' => $id_rubrique,
+				'statut' => 'publie',
+				'date' => $date
+			),
+			'data' => $compte
+		)
+	);
+	
+	// S'il y a au moins un enfant de n'importe quoi, on ne dépublie pas
+	foreach($compte as $objet => $n)
+		if ($n)
+			return false;
+
+	sql_updateq("spip_rubriques", array("statut" => '0'), "id_rubrique=$id_rubrique");
+#		spip_log("depublier_rubrique $id_pred");
+	return true;
 }
 
 //
 // Fonction appelee apres importation:
 // calculer les meta-donnes resultantes,
-// remettre de la coh�rence au cas o� la base importee en manquait
+// remettre de la coherence au cas ou la base importee en manquait
 // Cette fonction doit etre invoque sans processus concurrent potentiel.
 // http://doc.spip.org/@calculer_rubriques
 function calculer_rubriques() {

@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // Choix du type d'url
 
@@ -25,7 +25,7 @@ function configuration_type_urls_dist()
 	$dispo = array();
 	foreach (find_all_in_path('urls/', '\w+\.php$', array()) as $f) {
 		$r = basename($f, '.php');
-		if ($r == 'index') continue;
+		if ($r == 'index' OR strncmp('generer_',$r,8)==0) continue;
 		include_once $f;
 		$exemple = 'URLS_' . strtoupper($r) . '_EXEMPLE';
 		$exemple = defined($exemple) ? constant($exemple) : '?';
@@ -43,7 +43,7 @@ function configuration_type_urls_dist()
 		. "</em></p>";
 
 
-	$res = '<br />'.debut_cadre_trait_couleur("", true, "",  _T('titre_type_urls'))
+	$res = '<br />'.debut_cadre_trait_couleur("", true, "",  _T('titre_type_urls').aide("confurl"))
 	.  ajax_action_post('configurer', 'type_urls', 'config_fonctions', '', $res)
 	.  fin_cadre_trait_couleur(true);
 

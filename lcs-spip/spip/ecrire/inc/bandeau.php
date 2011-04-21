@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/boutons');
 
@@ -119,7 +119,8 @@ function definir_barre_boutons() {
 
 	$sousmenu=array();
 
-	if ($GLOBALS['meta']['forum_prive_admin'] == 'oui')
+	if ($GLOBALS['meta']['forum_prive_admin'] == 'oui'
+	AND autoriser('forum_admin'))
 		$sousmenu['forum_admin']=
 		  new Bouton('forum-admin-24.gif', 'icone_forum_administrateur');
 
@@ -146,7 +147,7 @@ function definir_barre_boutons() {
 	$sousmenu=array();
 
 	if (avoir_visiteurs(true)) {
-		include_spip('inc/auteurs');
+		include_spip('exec/auteurs');
 		$sousmenu['auteurs'] =
 			new Bouton("fiche-perso.png", 'icone_afficher_visiteurs', null, "statut=!".AUTEURS_MIN_REDAC);
 	}
@@ -176,31 +177,33 @@ function definir_barre_boutons() {
 	}
 
 	// sous menu configuration
-	$sousmenu = array();
-	if (autoriser('configurer', 'lang')) {
-		$sousmenu['config_lang'] =
-			new Bouton("langues-24.gif", "icone_gestion_langues");
-		//$sousmenu['espacement'] = null; // les espacements debloquent si on a des icones sur 2 lignes
-	}
+	if (autoriser('configurer')) {
+		$sousmenu = array();
+		if (autoriser('configurer', 'lang')) {
+			$sousmenu['config_lang'] =
+				new Bouton("langues-24.gif", "icone_gestion_langues");
+			//$sousmenu['espacement'] = null; // les espacements debloquent si on a des icones sur 2 lignes
+		}
 
-	if (autoriser('sauvegarder')) {
-		$sousmenu['admin_tech']=
-			new Bouton("base-24.gif", "icone_maintenance_site");
-	}
-	if (autoriser('configurer', 'admin_vider')) {
-		$sousmenu['admin_vider']=
-			new Bouton("cache-24.gif", "onglet_vider_cache");
-	}
+		if (autoriser('sauvegarder')) {
+			$sousmenu['admin_tech']=
+				new Bouton("base-24.gif", "icone_maintenance_site");
+		}
+		if (autoriser('configurer', 'admin_vider')) {
+			$sousmenu['admin_vider']=
+				new Bouton("cache-24.gif", "onglet_vider_cache");
+		}
 
-	// Si _DIR_PLUGINS est definie a '', pas de bouton
-	if (_DIR_PLUGINS
-	AND autoriser('configurer', 'admin_plugin')) {
-		$sousmenu['admin_plugin']=
-			new Bouton("plugin-24.gif", "icone_admin_plugin");
-	}
+		// Si _DIR_PLUGINS est definie a '', pas de bouton
+		if (_DIR_PLUGINS
+		AND autoriser('configurer', 'admin_plugin')) {
+			$sousmenu['admin_plugin']=
+				new Bouton("plugin-24.gif", "icone_admin_plugin");
+		}
 
-	if ($sousmenu)
-		$boutons_admin['configuration']->sousmenu= $sousmenu;
+		if ($sousmenu)
+			$boutons_admin['configuration']->sousmenu= $sousmenu;
+	}
 
 	} // fin si admin
 
@@ -317,7 +320,7 @@ function icone_bandeau_principal($detail, $lien, $rubrique_icone = "vide", $rubr
 
 	if ($spip_display != 1 AND $spip_display != 4) {
 		$class ='cellule48';
-		$texte = "<span class='icon_fond'><span".http_style_background($detail->icone)."></span></span>".($spip_display == 3 ? '' :  "<span>$texte</span>");
+		$texte = "<span class='icon_fond'><span".http_style_background($detail->icone)."></span></span>".($spip_display == 3 ? '' :  "<span class='icon_texte'>$texte</span>");
 	} else {
 		$class = 'cellule-texte';
 	}
