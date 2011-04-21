@@ -785,7 +785,8 @@ var JQD = (function($, window, undefined) {
                                 t += h_i;
 
                         }else{
-                            icna.css({top: parseInt(icn["top"]), left: parseInt(icn["left"])})
+                          //  icna.css({top: parseInt(icn["top"]), left: parseInt(icn["left"])})
+                            icna.css({top: parseInt(icn["top"]), left: icn["pcLeft"]+'%'})
                         }
                     });
                     // icons grpoups
@@ -1938,7 +1939,8 @@ var JQD = (function($, window, undefined) {
 					top 	: el_a.position().top,
 					left 	: el_a.position().left,
 					color : el_a.find('img').css('backgroundColor'),
-					img 	: el_a.find('img').attr('src')
+					img 	: el_a.find('img').attr('src'),
+					pcLeft 	: ( (el_a.position().left * 100)/$('#desktop').width() ).toFixed(2)
 				}) 
 			});
 			$.ajax({
