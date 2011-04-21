@@ -1,9 +1,9 @@
-lcs-spip (2.4.8~2) Lcs; urgency=low
+lcs-spip (2.4.8~3) Lcs; urgency=low
 
   * Fix rights on IMG and tmp in chown.sh
   * Update spip 2.1.10
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 21 Apr 2011 15:22:28 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 21 Apr 2011 16:33:33 +0200
 
 lcs-spip (2.4.7.1~1) Lcs; urgency=low
 
