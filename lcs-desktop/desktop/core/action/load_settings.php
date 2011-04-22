@@ -322,11 +322,11 @@ if ( $idpers!=0 && !pwdMustChange($login)) {
 	}
 	# smbwebclient
 	if ( $se3netbios != "" && $se3domain != "" && isset($smbwebclient) ) {
-		$applis['smbwc']= array(
+		$applis['smbwebclient']= array(
 			"txt" => "Client SE3",
-			"url" => $stgo."smbwc",
-			"rev" => "smbwc",
-			"img" => "core/images/app/lcslogo-smbwc.png",
+			"url" => $stgo."smbwebclient",
+			"rev" => "smbwebclient",
+			"img" => "core/images/app/lcslogo-smbwebclient.png",
 			"typ" => "srvc",
 			"smn" => ""
 		);

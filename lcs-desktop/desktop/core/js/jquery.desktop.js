@@ -785,8 +785,8 @@ var JQD = (function($, window, undefined) {
                                 t += h_i;
 
                         }else{
-                          //  icna.css({top: parseInt(icn["top"]), left: parseInt(icn["left"])})
-                            icna.css({top: parseInt(icn["top"]), left: icn["pcLeft"]+'%'})
+                        	if (typeof icn['pcLeft'] && icn['pcLeft']!='') icna.css({top: parseInt(icn["top"]), left: icn["pcLeft"]+'%'});
+                          	else icna.css({top: parseInt(icn["top"]), left: parseInt(icn["left"])});
                         }
                     });
                     // icons grpoups

@@ -1,3 +1,10 @@
+lcs-desktop (2.4.8~6) Lcs; urgency=low
+
+  * Fix bug on smbwebclient on bar-top menus
+  * Fix bug on icon place 
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 27 Sep 2010 14:09:06 +0200
+
 lcs-desktop (2.4.8~5) Lcs; urgency=low
 
   [ Dominique Lepaisant ]
