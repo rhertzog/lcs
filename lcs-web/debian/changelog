@@ -1,10 +1,4 @@
-lcs-web (2.4.8~14) UNREALESED; urgency=low
-
-  * Remove utf8-decode in ldap.inc.php
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Apr 2011 14:49:46 +0200
-
-lcs-web (2.4.8~13) Lcs; urgency=low
+lcs-web (2.4.8~15) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -41,6 +35,7 @@ lcs-web (2.4.8~13) Lcs; urgency=low
   * Remove chown /var/www/lib in lcs-web-fixrights 
   * Fix bug in mkSlapdConf.sh
   * Fix module name for clientftp and elfinder
+  * Remove utf8-decode and encode  in Annu scripts
  
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
@@ -71,7 +66,7 @@ lcs-web (2.4.8~13) Lcs; urgency=low
   * Fix recovery of the server name in case of failure authenfication
   * Fix authentification in auth_lcs() in user_lcs.inc.php 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Apr 2011 15:04:03 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Apr 2011 09:53:31 +0200
 
 lcs-web (2.4.7) Lcs; urgency=low
 

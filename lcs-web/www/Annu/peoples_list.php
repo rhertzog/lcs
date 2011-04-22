@@ -1,13 +1,6 @@
 <?php
-/* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/peoples_list.php
-   [LCS CoreTeam]
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice académie de Caen
-    maj : 24/03/2009
-   ============================================= */
+/* Annu/peoples_list.php maj : 22/04/2011 */
+
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
@@ -22,9 +15,6 @@
   list ($idpers)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
   header_html();
-  // Convertion en utf_8
-  $nom = utf8_encode($nom);
-  $prenom = utf8_encode($prenom);
   // Construction du filtre de la branche people
   if ($nom && !$prenom) {
     // Recherche sur sn

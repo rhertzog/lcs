@@ -1,5 +1,5 @@
 <?php
-/* Annu/mod_user_entry.php derniere modification : 20/11/2009 */
+/* Annu/mod_user_entry.php derniere modification : 22/04/2011 */
 
 include "../lcs/includes/headerauth.inc.php";
 include "includes/ldap.inc.php";
@@ -164,9 +164,9 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
       // Nettoyage accents et remplacement espace par underscore
       $pseudo = ucfirst(mb_strtolower(unac_string_with_underscore($pseudo)));
 
-      $entry["sn"] = stripslashes ( utf8_encode($nom) );
-      $entry["cn"] = stripslashes ( utf8_encode($prenom)." ".utf8_encode($nom) );
-      $entry["givenname"] = stripslashes ( utf8_encode($prenom) );
+      $entry["sn"] = stripslashes ($nom);
+      $entry["cn"] = stripslashes ($prenom." ".$nom);
+      $entry["givenname"] = stripslashes ($prenom);
 
       if($user[0]["gecos"]!="") {
          $tab_gecos=explode(",",$user[0]["gecos"]);
@@ -179,10 +179,10 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
 		exec ("$scriptsbinpath/toggleShell.pl $dnToModify $shell");
 	}
       if ( $pseudo && verifPseudo($pseudo) ) 
-          $entry["initials"]=utf8_encode($pseudo);
+          $entry["initials"]=$pseudo;
       if ( $telephone && verifTel($telephone) )
           $entry["telephonenumber"]=$telephone ;
-      if ( $description && verifDescription($description) ) $entry["description"]=utf8_encode(stripslashes($description));
+      if ( $description && verifDescription($description) ) $entry["description"]=stripslashes($description);
 
       // Modification des entrees
       $ds = @ldap_connect ( $ldap_server, $ldap_port );

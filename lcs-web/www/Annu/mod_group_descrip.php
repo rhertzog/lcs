@@ -1,13 +1,6 @@
 <?php
-/* =============================================
-   Projet LCS-SE3
-   Consultation de l'annuaire LDAP
-   Annu/mod_group_descrip.php
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice academie de Caen
-   Derniere modification : 26/05/2009
-   Distribue selon les termes de la licence GPL
-   ============================================= */
+/* Annu/mod_group_descrip.php Derniere modification : 22/04/2011 */
+
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
@@ -59,7 +52,7 @@ $mod_descrip=$_POST['mod_descrip'];
     } else {
       #DEBUG
       #echo "Debug : ".$group[0]["cn"]." ".$description."<BR>\n";
-      $entry["description"]=utf8_encode(stripslashes($description));
+      $entry["description"]= stripslashes($description);
       // Modification de la description
       $ds = @ldap_connect ( $ldap_server, $ldap_port );
       if ( $ds ) {

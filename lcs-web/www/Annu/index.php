@@ -1,11 +1,6 @@
 <?php
-/* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/index.php
-   Equipe Tice académie de Caen
-   Derniere mise à jour : 16/10/2008
-   ============================================= */
+/* Annu/index.php Derniere mise à jour : 22/04/2011  */
+
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
@@ -36,12 +31,12 @@
         $info = @ldap_get_entries ( $ds, $result );
         if ( $info["count"]) {
           echo "<blockquote style=\"font-size: large; font-weight: bold; text-align: center\">\n";
-          echo utf8_decode($info[0]["ou"][0])."<BR>\n";
+          echo $info[0]["ou"][0]."<br />\n";
           echo $info[0]["street"][0]."<BR>\n";
           if ( $info[0]["postofficebox"][0]) {
             echo $info[0]["postofficebox"][0]."&nbsp;-&nbsp;";
           }
-          echo $info[0]["postalcode"][0]." ".utf8_decode($info[0]["l"][0])."<BR>\n";
+          echo $info[0]["postalcode"][0]." ".$info[0]["l"][0]."<br />\n";
           echo "Tél. ".$info[0]["telephonenumber"][0]."\n";
           echo"</blockquote>\n";
         }

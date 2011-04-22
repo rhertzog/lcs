@@ -1,13 +1,6 @@
 <?php
 
-/* =============================================
-   Projet LCS-SE3
-   Consultation de l'annuaire LDAP
-   Annu/grouplist_csv.php
-   * @auteurs Equipe Tice academie de Caen
-   Derniere modifications : 15/01/2010
-   Distribue selon les termes de la licence GPL
-   ============================================= */
+/* Annu/grouplist_csv.php Derniere modifications : 22/04/2011 */
 
 
 //====================================
@@ -95,8 +88,8 @@ if ($login == "") {
 							#echo "debug ".$info["count"]." init ".$init." loop ".$loop."<BR>";
 							$ret[$loop1] = array (
 								"uid"           => $uids[$loop]["uid"],
-								"fullname"      => utf8_decode($info[0]["cn"][0]),
-								"name"          => utf8_decode($info[0]["sn"][0]),
+								"fullname"      => $info[0]["cn"][0],
+								"name"          => $info[0]["sn"][0],
 								"sexe"          => $tmp[2],
 								"owner"         => $uids[$loop]["owner"],
 								"group"         => $uids[$loop]["group"],
