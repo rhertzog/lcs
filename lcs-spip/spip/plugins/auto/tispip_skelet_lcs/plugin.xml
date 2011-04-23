@@ -12,7 +12,6 @@
 	<auteur>D. Lepaisant- (domZ) - Equipe TICE - CRDP de Basse Normandie</auteur>
 	<icon>img_pack/tispip-skelet_24.png</icon>
 	<fonctions>tispipskelet_fonctions.php</fonctions>
-	<install>action/tispipskelet_upgrade.php</install>
 	<pipeline>
 		<nom>ajouter_boutons</nom>
 		<action>ajouterBoutons</action>
@@ -41,8 +40,4 @@
     	<nom>affiche_droite</nom>
         <inclure>tispipskelet_pipe.php</inclure>
     </pipeline>
-	<necessite id="SPIP" version="[2.0.2;]" />
-	<necessite id="cfg" version="[1.10.5;]" />
-	<necessite id="spip_bonux" version="[1.8;]" />
-	<necessite id="cextras" version="[0.7;]" />
 </plugin>	
