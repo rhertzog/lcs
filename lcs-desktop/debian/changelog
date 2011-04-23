@@ -1,13 +1,11 @@
 lcs-desktop (2.4.8~6) Lcs; urgency=low
 
+  [ Dominique Lepaisant ]
   * Fix bug on smbwebclient on bar-top menus
   * Fix bug on icon place 
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 27 Sep 2010 14:09:06 +0200
-
-lcs-desktop (2.4.8~5) Lcs; urgency=low
-
   [ Dominique Lepaisant ]
+  * Prepares version 2.4.8~5
   * Fix bug when user has lcs_is_admin right
   * Fix bug on smbwebclient in admin menu
   * Add icon for smbwebclient
@@ -23,24 +21,15 @@ lcs-desktop (2.4.8~5) Lcs; urgency=low
   * Add icon admins 
   * Fix the icons position relative to the document
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Sun, 26 Sep 2010 15:51:58 +0200
-
-lcs-desktop (2.4.8~4) Lcs; urgency=low
-
   [ Dominique Lepaisant ]
+  * Prepares version 2.4.8~4
   * Fix bug with the width of windows when the iframe is loaded
   * Removing the import button in the user prefs if the user is in group "Student " 
   * Modify core/js/jquery.desktop.js, core/includes/inc-bars_topbottom.php, core/includes/inc-user_infos.php for roundcube
   * Modify core/includes/inc-finder.php for elfinder
 
-  [ Jean-Luc Chrétien ]
-  * Copy trunk version in 2.4.8 Tree
-  * Modify inc-lcs-applis.php for new module name elfinder
-  * Modify index.php and inc-lcs-applis.php for roundcube and lcs-notify-desktop
-  * Fix rights on desktop folder 
-
   [ Dominique Lepaisant ]
-  * Prepares version 2.4.8
+  * Prepares version 2.4.8~3
   * Changing the procedure for creating the desktop (overwrite the file jquery.desktop.js)
   * Changing the management of CSF parameters and user preferences (xml to json)
   * Added the admin preferences
@@ -62,7 +51,13 @@ lcs-desktop (2.4.8~4) Lcs; urgency=low
   * Add script for sweekey by Misterphi in index.php
   * Remove utf8_decode in core/action/load_spip_notify.php
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 05:04:16 +0200
+  [ Jean-Luc Chrétien ]
+  * Copy trunk version in 2.4.8 Tree
+  * Modify inc-lcs-applis.php for new module name elfinder
+  * Modify index.php and inc-lcs-applis.php for roundcube and lcs-notify-desktop
+  * Fix rights on desktop folder 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 23 Apr 2011 13:47:38 +0200
 
 lcs-desktop (0.2~18) Lcs; urgency=low
 
