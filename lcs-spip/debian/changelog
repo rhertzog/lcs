@@ -3,8 +3,9 @@ lcs-spip (2.4.8~3) Lcs; urgency=low
   * Fix rights on IMG and tmp in chown.sh
   * Update spip 2.1.10
   * Fix bug in plugin.xml for tispip_skelet_lcs and recherche_multicriteres
+  * Update plugins to 2.1.xx
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Sat, 23 Apr 2011 20:45:52 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Tue, 26 Apr 2011 23:49:24 +0200
 
 lcs-spip (2.4.7.1~1) Lcs; urgency=low
 

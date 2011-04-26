@@ -1,8 +1,11 @@
 <?php
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
 
-// exec/spiplistes_liste_edit.php
-
-// _SPIPLISTES_EXEC_LISTE_EDIT
 /******************************************************************************************/
 /* SPIP-Listes est un systeme de gestion de listes d'abonnes et d'envoi d'information     */
 /* par email pour SPIP. http://bloog.net/spip-listes                                      */
@@ -22,9 +25,6 @@
 /* Free Software Foundation,                                                              */
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
-// $LastChangedRevision: 28122 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-04-27 05:38:18 +0200 (lun, 27 avr 2009) $
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
@@ -56,7 +56,7 @@ function exec_spiplistes_liste_edit(){
 	}
 
 	$flag_editable = false;
-	$clearonfocus = "";
+	$clearonfocus = '';
 	
 	// MODE LISTE EDIT: modification ou creation
 	
@@ -65,7 +65,7 @@ function exec_spiplistes_liste_edit(){
 	// Modification de la liste transmise
 	//
 		// les admins toutes rubriques et le moderateur seuls peuvent modifier la liste
-		$flag_editable = autoriser('moderer', 'liste', $connect_id_auteur);
+		$flag_editable = autoriser('moderer', 'liste', $id_liste);
 
 		$sql_select_array = array('titre', 'lang', 'pied_page', 'texte', 'date', 'statut');
 	
@@ -171,7 +171,7 @@ function exec_spiplistes_liste_edit(){
 			? "<input type='hidden' name='id_liste' value='$id_liste' />" 
 			: "<input type='hidden' name='new' value='oui' />"
 				// une nouvelle liste est toujours privee
-				. "<input type='hidden' name='statut_nouv' value='"._SPIPLISTES_PRIVATE_LIST."' />"
+				. "<input type='hidden' name='statut_nouv' value='"._SPIPLISTES_LIST_PRIVATE."' />"
 			)
 		.	(
 			// ne sert pas pour le moment (CP-20070922)

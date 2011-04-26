@@ -1,4 +1,12 @@
 <?php
+/**
+ * @version From SPIP-Listes-V :: import_export.php,v 1.19 paladin@quesaco.org  http://www.quesaco.org/
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
+
 /******************************************************************************************/
 /* SPIP-listes est un système de gestion de listes d'information par email pour SPIP      */
 /* Copyright (C) 2004 Vincent CARON  v.caron<at>laposte.net , http://bloog.net            */
@@ -17,12 +25,8 @@
 /* Free Software Foundation,                                                              */
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, États-Unis.                   */
 /******************************************************************************************/
-// From SPIP-Listes-V :: import_export.php,v 1.19 paladin@quesaco.org  http://www.quesaco.org/
-// $LastChangedRevision: 27811 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-04-12 18:11:03 +0200 (dim, 12 avr 2009) $
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/spiplistes_api_globales');
 
@@ -37,7 +41,8 @@ function exec_spiplistes_import_export(){
 		, $connect_toutes_rubriques
 		, $connect_id_auteur
 		;
-
+	static $eol = PHP_EOL;
+	
 	// initialise les variables postées par le formulaire
 	foreach(array(
 		'btn_valider_import', 'abos_liste', 'format_abo', 'forcer_abo'	// retour import
@@ -47,7 +52,7 @@ function exec_spiplistes_import_export(){
 		$$key = _request($key);
 	}
 
-	$separateur = (($separateur == 'tab') ? "\t" : ";");
+	$separateur = (($separateur == 'tab') ? "\t" : ';');
 	
 	$flag_admin = ($connect_statut == "0minirezo") && $connect_toutes_rubriques;
 	$flag_moderateur = false;
@@ -108,29 +113,29 @@ function exec_spiplistes_import_export(){
 			$nb_inscrits = sql_count($sql_result);
 			$exporter_statut_auteur = ($exporter_statut_auteur == 'oui');
 			
-			$str_export = ""
-				. "# " . spiplistes_html_signature(_SPIPLISTES_PREFIX, false)."\n"
-				. "# "._T('spiplistes:membres_liste')."\n"
-				. "# liste id: $export_id\n"
-				. "# ".$GLOBALS['meta']['nom_site']."\n"
-				. "# ".$GLOBALS['meta']['adresse_site']."\n"
-				. "# date: ".date("Y-m-d")."\n"
-				. "# nb abos: ".$nb_inscrits."\n\n"
-				. "#\n"
-				. "# 'email'".$separateur."'login'".$separateur."'nom'"
-				. ($exporter_statut_auteur ? $separateur."'statut'" : "")
-				. "\n\n"
+			$str_export = ''
+				. '# ' . spiplistes_html_signature(_SPIPLISTES_PREFIX, false).$eol
+				. '# '._T('spiplistes:membres_liste').$eol
+				. '# liste id: $export_id\n'
+				. '# '.spiplistes_nom_site_texte().$eol
+				. '# '.$GLOBALS['meta']['adresse_site'].$eol
+				. '# date: '.date('Y-m-d').$eol
+				. '# nb abos: '.$nb_inscrits.$eol.$eol
+				. '#'.$eol
+				. '# \'email\''.$separateur.'\'login\''.$separateur.'\'nom\''
+				. ($exporter_statut_auteur ? $separateur.'\'statut\'' : '')
+				. $eol.$eol
 				;
 			
 			while($row = sql_fetch($sql_result)) {
 				$str_export .= $row['email'].$separateur.$row['login'].$separateur.$row['nom']
-					. ($exporter_statut_auteur ? $separateur.$row['statut'] : "")
+					. ($exporter_statut_auteur ? $separateur.$row['statut'] : '')
 					. "\n"
 					;
 			}
 			// envoie le fichier
-			header("Content-type: text/plain");
-			header("Content-Disposition: attachment; filename=\"export_liste_$export_id-".date("Y-m-d").".txt\"");
+			header('Content-type: text/plain');
+			header('Content-Disposition: attachment; filename="export_liste_$export_id-'.date("Y-m-d").'.txt"');
 			echo ($str_export);
 			exit;
 		}
@@ -181,23 +186,36 @@ function exec_spiplistes_import_export(){
 		
 	// import form
 	$page_result .= ""
-		. debut_cadre_trait_couleur(_DIR_PLUGIN_SPIPLISTES_IMG_PACK.'listes_in-24.png', true, "", _T('spiplistes:Importer'))
+		. debut_cadre_trait_couleur(_DIR_PLUGIN_SPIPLISTES_IMG_PACK.'listes_in-24.png', true
+									, '', _T('spiplistes:Importer'))
 		. "<p class='verdana2'>"._T('spiplistes:_aide_import')."</p>\n"
 		;
-	if($flag_import_fichier_ok) {
-		if($abos_liste && is_array($abos_liste) && count($abos_liste)) {
+	
+	if($flag_import_fichier_ok)
+	{
+		//syslog(LOG_NOTICE, 'memory_limit: ' . get_cfg_var('memory_limit'));
+		//syslog(LOG_NOTICE, 'memory_get_usage[1]: ' . memory_get_usage());
+		//syslog(LOG_NOTICE, 'memory_get_peak_usage[1]: ' . memory_get_peak_usage());
+		//syslog(LOG_NOTICE, 'filesize: ' . filesize($fichier_import['tmp_name']));
+		   
+		if($abos_liste && is_array($abos_liste) && count($abos_liste))
+		{
 			include_spip('inc/spiplistes_import');
-			$page_result .= ""
+			$page_result .= ''
 				. debut_boite_info(true)
 				. spiplistes_titre_boite_info(_T('spiplistes:Resultat_import'))
-				. spiplistes_import($fichier_import['tmp_name']
-					, $fichier_import['name'], $abos_liste, $format_abo, $separateur
+				. spiplistes_import(
+					$fichier_import['tmp_name']
+					, $fichier_import['name']
+					, $abos_liste
+					, $format_abo
+					, $separateur
 					, $flag_admin
 					, $listes_moderees
 					, $forcer_abo
 					)
 				. fin_boite_info(true)
-				. "<br />"
+				. '<br />'
 				;
 		}
 	}
@@ -269,7 +287,7 @@ function exec_spiplistes_import_export(){
 			. fin_cadre_relief(true)
 			//
 			// Sélection du format de réception
-			. debut_cadre_relief("", true, "", _T('spiplistes:Format_de_reception'))
+			. debut_cadre_relief("", true, "", _T('spiplistes:format_de_reception_'))
 			. "<ul class='liste-listes verdana2'>\n"
 			. "<li>"
 				. spiplistes_form_input_radio('format_abo', 'html', _T('spiplistes:html'), true, true, false)

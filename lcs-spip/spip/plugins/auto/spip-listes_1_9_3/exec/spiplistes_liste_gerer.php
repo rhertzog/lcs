@@ -1,7 +1,10 @@
 <?php
-
-// exec/spiplistes_liste_gerer.php
-// _SPIPLISTES_EXEC_LISTE_GERER
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
 
 /******************************************************************************************/
 /* SPIP-Listes est un systeme de gestion de listes d'abonnes et d'envoi d'information     */
@@ -22,12 +25,8 @@
 /* Free Software Foundation,                                                              */
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
-// $LastChangedRevision: 28115 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-04-27 03:24:08 +0200 (lun, 27 avr 2009) $
 
-
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if(!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/spiplistes_api_globales');
 
@@ -94,7 +93,8 @@ function exec_spiplistes_liste_gerer () {
 		$message_erreur =
 		$page_result = "";
 
-	if(!$id_liste) {
+	if(!$id_liste)
+	{
 	//////////////////////////////////////////////////////
 	// Creer une liste
 	////
@@ -109,20 +109,22 @@ function exec_spiplistes_liste_gerer () {
 			
 			$pied_page = _SPIPLISTES_PATRON_PIED_DEFAUT;
 			
-			if($id_liste = spiplistes_listes_liste_creer(_SPIPLISTES_PRIVATE_LIST, $GLOBALS['spip_lang']
+			if($id_liste = spiplistes_listes_liste_creer(_SPIPLISTES_LIST_PRIVATE, $GLOBALS['spip_lang']
 				, $titre, $texte, $pied_page)) {
 					spiplistes_log("id_liste #$id_liste added by id_auteur #$connect_id_auteur");
 			}
 		} 	
 	}
-	else if($id_liste > 0) {
+	else if($id_liste > 0)
+	{
 	//////////////////////////////////////////////////////
 	// Modifier une liste
 	////
 		// les admins toutes rubriques et le moderateur seuls peuvent modifier la liste
 		$flag_editable = autoriser('moderer', 'liste', $id_liste);
 
-		if($flag_editable) {
+		if($flag_editable)
+		{
 		
 			// Recupere les donnees de la liste courante pour optimiser l'update
 			$sql_select = "statut,titre,date,lang";
@@ -164,14 +166,23 @@ function exec_spiplistes_liste_gerer () {
 			}
 			
 			// Modifier diffusion ?
-			if($btn_modifier_diffusion) {
+			if($btn_modifier_diffusion)
+			{
+				$current_statut = ($statut)
+					? $statut
+					: $current_liste['statut']
+					;
+					
+				spiplistes_debug_log ('Modification diffusion statut: '.$current_statut);
+				
 				// Modifier le statut ?
 				if(in_array($statut, explode(";", _SPIPLISTES_LISTES_STATUTS_TOUS)) 
-					&& ($statut!=$current_liste['statut'])
+					&& ($statut != $current_liste['statut'])
 				) {
+					spiplistes_debug_log ('Modification statut: '.$statut);
 					$sql_champs['statut'] = $statut;
 					// si la liste passe en privee, retire les invites
-					if($statut == _SPIPLISTES_PRIVATE_LIST) {
+					if($statut == _SPIPLISTES_LIST_PRIVATE) {
 						$auteur_statut = '6forum';
 						spiplistes_abonnements_auteurs_supprimer($auteur_statut);
 						spiplistes_log("AUTEURS ($auteur_statut) REMOVED FROM LISTE #$id_liste ($statut) BY ID_AUTEUR #$connect_id_auteur");
@@ -190,8 +201,16 @@ function exec_spiplistes_liste_gerer () {
 
 			////////////////////////////////////
 			// Modifier message_auto ?
-			if($btn_modifier_courrier_auto) {
-			
+			// bloc "courriers automatiques"
+			if($btn_modifier_courrier_auto)
+			{
+				$current_statut = ($statut)
+					? $statut
+					: $current_liste['statut']
+					;
+					
+				spiplistes_debug_log ('Modification periodicite statut: '.$current_statut);
+				
 				$envoyer_quand = spiplistes_formate_date_form($annee, $mois, $jour, $heure, $minute);
 			
 				if(time() > strtotime($envoyer_quand)) {
@@ -200,7 +219,7 @@ function exec_spiplistes_liste_gerer () {
 					$date_depuis = $envoyer_quand;
 					$envoyer_quand = false;
 				}
-				// spiplistes_log("nb vrais abos : ".spiplistes_listes_vrais_abos_compter($id_liste), _SPIPLISTES_LOG_DEBUG);
+				// spiplistes_debug_log("nb vrais abos : ".spiplistes_listes_vrais_abos_compter($id_liste));
 				if($envoyer_maintenant && ($message_auto != 'non')) {
 					if(!spiplistes_listes_vrais_abos_compter($id_liste)) {
 						$boite_pour_confirmer_envoi_maintenant .= 
@@ -230,38 +249,62 @@ function exec_spiplistes_liste_gerer () {
 					
 					switch($auto_chrono) {
 						case 'auto_jour':
-							$sql_champs['statut'] = _SPIPLISTES_DAILY_LIST;
+							$sql_champs['statut'] =
+								($current_statut == _SPIPLISTES_LIST_PRIVATE)
+								? _SPIPLISTES_LIST_PRIV_DAILY
+								: _SPIPLISTES_LIST_PUB_DAILY
+								;
 							// force au minimum 1 jour
 							$sql_champs['periode'] = (($periode > 0) ? $periode : 1);
 							break;
 						case 'auto_hebdo':
 							if($auto_weekly == 'oui') {
 								// debut de semaine ?
-								$sql_champs['statut'] = _SPIPLISTES_WEEKLY_LIST;
+								$sql_champs['statut'] =
+									($current_statut == _SPIPLISTES_LIST_PRIVATE)
+									? _SPIPLISTES_LIST_PRIV_WEEKLY
+									: _SPIPLISTES_LIST_PUB_WEEKLY
+									;
 								// corrige la date pour le lundi de la semaine
 								$time = strtotime($envoyer_quand);
 								$time = mktime(0,0,0,date("m", $time),date("d", $time)-date("w", $time)+1,date("Y", $time));
     							$envoyer_quand = date("Y-m-d H:i:s", $time);
 	 							$sql_champs['date'] = $envoyer_quand;
 							} else {
-								$sql_champs['statut'] = _SPIPLISTES_HEBDO_LIST;
+								$sql_champs['statut'] =
+									($current_statut == _SPIPLISTES_LIST_PRIVATE)
+									? _SPIPLISTES_LIST_PRIV_HEBDO
+									: _SPIPLISTES_LIST_PUB_HEBDO
+									;
 							}
 							$sql_champs['periode'] = 0;
 							break;
 						case 'auto_mensuel':
 							if($auto_mois == 'oui') {
 								// debut du mois ?
-								$sql_champs['statut'] = _SPIPLISTES_MONTHLY_LIST;
+								$sql_champs['statut'] =
+									($current_statut == _SPIPLISTES_LIST_PRIVATE)
+									? _SPIPLISTES_LIST_PRIV_MONTHLY
+									: _SPIPLISTES_LIST_PUB_MONTHLY
+									;
 								// corrige la date, 1' du mois
 								$envoyer_quand = substr($envoyer_quand, 0, 8)."01 00:00:00";
 								$sql_champs['date'] = $envoyer_quand;
 							} else {
-								$sql_champs['statut'] = _SPIPLISTES_MENSUEL_LIST;
+								$sql_champs['statut'] =
+									($current_statut == _SPIPLISTES_LIST_PRIVATE)
+									? _SPIPLISTES_LIST_PRIV_MENSUEL
+									: _SPIPLISTES_LIST_PUB_MENSUEL
+									;
 							}
 							$sql_champs['periode'] = 0;
 							break;
 						case 'auto_an':
-							$sql_champs['statut'] = _SPIPLISTES_YEARLY_LIST;
+							$sql_champs['statut'] =
+								($current_statut == _SPIPLISTES_LIST_PRIVATE)
+								? _SPIPLISTES_LIST_PRIV_YEARLY
+								: _SPIPLISTES_LIST_PUB_YEARLY
+								;
 							$sql_champs['periode'] = 0;
 							break;
 					}
@@ -274,8 +317,9 @@ function exec_spiplistes_liste_gerer () {
 			} // end if($btn_modifier_courrier_auto)
 			
 			// Enregistre les modifs pour cette liste
-			if(count($sql_champs)) {
-				sql_updateq("spip_listes", $sql_champs, "id_liste=".sql_quote($id_liste)." LIMIT 1");
+			if(count($sql_champs))
+			{
+				sql_updateq('spip_listes', $sql_champs, 'id_liste='.sql_quote($id_liste).' LIMIT 1');
 			}
 			
 			// Forcer les abonnements
@@ -286,7 +330,8 @@ function exec_spiplistes_liste_gerer () {
 					? $forcer_format_reception
 					: false
 					;
-				include_spip("inc/spiplistes_listes_forcer_abonnement");
+				include_spip('inc/spiplistes_listes_forcer_abonnement');
+				
 				if(spiplistes_listes_forcer_abonnement ($id_liste, $forcer_abo, $forcer_format_reception) ===  false) {
 					$message_erreur .= spiplistes_boite_alerte(_T('spiplistes:Forcer_abonnement_erreur'), true);
 				}
@@ -312,8 +357,16 @@ function exec_spiplistes_liste_gerer () {
 	// les supers-admins et le moderateur seuls peuvent modifier la liste
 	$flag_editable = autoriser('moderer', 'liste', $id_liste);
 
-	$titre_message = ($titre_message=='') ? $titre._T('spiplistes:_de_').$meta['nom_site'] : $titre_message;
-
+	if (empty($titre_message))
+	{
+		$titre_message = $titre;
+		if (spiplistes_pref_lire_defaut('opt_completer_titre_nom_site', 'oui') == 'oui')
+		{
+			$titre_message .= _T('spiplistes:_de_')
+				. spiplistes_nom_site_texte($lang);
+		}
+	}
+	
 	$nb_abonnes = spiplistes_listes_nb_abonnes_compter($id_liste);
 
 	// preparation des boutons 
@@ -343,26 +396,44 @@ function exec_spiplistes_liste_gerer () {
 			
 		// la grosse boite des abonnes
 		$tri = _request('tri') ? _request('tri') : 'nom';
-		$boite_liste_abonnes = spiplistes_listes_boite_abonnements(
-			$id_liste, $statut, $tri, $debut, _SPIPLISTES_EXEC_LISTE_GERER
+		//
+		// CP-20101017: Si trop d'elligibles, ca gele.
+		// @todo: revoir la boite/liste des abonnes/elligibles
+		// En attendant ...
+		//if(spiplistes_auteurs_elligibles_compter() < 1000)
+		//{
+			$boite_liste_abonnes = spiplistes_listes_boite_abonnements(
+				$id_liste, $statut, $tri, $debut, _SPIPLISTES_EXEC_LISTE_GERER
 			);
+		//}
+		//else
+		//{
+		//	$boite_liste_abonnes = _T('spiplistes:code_en_travaux');
+		//}
+		
+		
+		// @see http://www.spip-contrib.net/SPIP-Listes#comment444314
+		
+		
+		
 		$titre_boite = _T('spiplistes:abos_cette_liste');
-		$nb = spiplistes_listes_nb_abonnes_compter($id_liste);
-		$legend = _T('spiplistes:nbre_abonnes').$nb;
-		$legend = "<small id='legend-abos1'>".spiplistes_nb_abonnes_liste_str_get($id_liste)."</small>";
-		$grosse_boite_abonnements = ""
-			. "<!-- boite abonnes/elligibles -->\n"
-			. debut_cadre_enfonce("auteur-24.gif", true, "", $titre_boite)
+		$legend = '<small id="legend-abos1">'
+			. spiplistes_nb_abonnes_liste_str_get($id_liste)
+			. '</small>'.PHP_EOL
+			;
+		$grosse_boite_abonnements = ''
+			. '<!-- boite abonnes/elligibles -->'.PHP_EOL
+			. debut_cadre_enfonce('auteur-24.gif', true, '', $titre_boite)
 			. spiplistes_bouton_block_depliable($legend
 				, false, md5('abonnes_liste'))
-			. (spiplistes_spip_est_inferieur_193() ? $legend : "")
+			. (spiplistes_spip_est_inferieur_193() ? $legend : '')
 			. spiplistes_debut_block_invisible(md5('abonnes_liste'))
 			. debut_cadre_relief('', true)
 			. $boite_liste_abonnes
 			. fin_cadre_relief(true)
 			. fin_block()
 			. fin_cadre_enfonce(true)
-			. "<!-- fin boite abonnes/elligibles -->\n"
+			. '<!-- fin boite abonnes/elligibles -->'.PHP_EOL
 			;
 
 		// la grosse boite des moderateurs
@@ -371,28 +442,30 @@ function exec_spiplistes_liste_gerer () {
 			);
 		$titre_boite = _T('spiplistes:mods_cette_liste');
 		$nb = spiplistes_mod_listes_compter($id_liste);
-		$legend = _T('spiplistes:nbre_mods').$nb;
-		$legend = "<small>".spiplistes_nb_moderateurs_liste_str_get($nb)."</small>";
-		$grosse_boite_moderateurs = ""
-			. "<!-- boite moderateurs -->\n"
-			. debut_cadre_enfonce("redacteurs-24.gif", true, "", $titre_boite)
+		$legend = '<small>'
+			. spiplistes_nb_moderateurs_liste_str_get($nb)
+			. '</small>'.PHP_EOL
+			;
+		$grosse_boite_moderateurs = ''
+			. '<!-- boite moderateurs -->'.PHP_EOL
+			. debut_cadre_enfonce('redacteurs-24.gif', true, '', $titre_boite)
 			. spiplistes_bouton_block_depliable($legend
 				, false, md5('mods_liste'))
-			. (spiplistes_spip_est_inferieur_193() ? $legend : "")
+			. (spiplistes_spip_est_inferieur_193() ? $legend : '')
 			. spiplistes_debut_block_invisible(md5('mods_liste'))
 			. debut_cadre_relief('', true)
-			. "<div id='mods-conteneur'>\n"
+			. '<div id="mods-conteneur">'.PHP_EOL
 			. $boite_liste_moderateurs
-			. "</div>\n"
+			. '</div>'.PHP_EOL
 			. fin_cadre_relief(true)
 			. fin_block()
 			. fin_cadre_enfonce(true)
-			. "<!-- fin boite moderateurs -->\n"
+			. '<!-- fin boite moderateurs -->'.PHP_EOL
 			;
 
 	}
 	else {
-		$gros_bouton_modifier = $gros_bouton_supprimer = $grosse_boite_abonnements = "";
+		$gros_bouton_modifier = $gros_bouton_supprimer = $grosse_boite_abonnements = '';
 	}
 
 ////////////////////////////////////
@@ -402,18 +475,18 @@ function exec_spiplistes_liste_gerer () {
 	$titre_page = _T('spiplistes:gestion_dune_liste');
 	// Permet entre autres d'ajouter les classes a la page : <body class='$rubrique $sous_rubrique'>
 	$rubrique = _SPIPLISTES_PREFIX;
-	$sous_rubrique = "liste_gerer";
+	$sous_rubrique = 'liste_gerer';
 
 	$commencer_page = charger_fonction('commencer_page', 'inc');
-	echo($commencer_page(_T('spiplistes:spiplistes') . " - " . $titre_page, $rubrique, $sous_rubrique));
+	echo($commencer_page(_T('spiplistes:spiplistes') . ' - ' . $titre_page, $rubrique, $sous_rubrique));
 
 	// la gestion des listes de courriers est reservee aux admins 
-	if($connect_statut != "0minirezo") {
+	if($connect_statut != '0minirezo') {
 		die (spiplistes_terminer_page_non_autorisee() . fin_page());
 	}
 
-	$page_result .= ""
-		. "<br /><br /><br />\n"
+	$page_result .= ''
+		. '<br /><br /><br />' . PHP_EOL
 		. spiplistes_gros_titre($titre_page, '', true)
 		. barre_onglets($rubrique, $sous_rubrique)
 		. debut_gauche($rubrique, true)
@@ -421,7 +494,7 @@ function exec_spiplistes_liste_gerer () {
 		. spiplistes_naviguer_paniers_listes(_T('spiplistes:aller_aux_listes_'), true)
 		. spiplistes_boite_patron($flag_editable, $id_liste, _SPIPLISTES_EXEC_LISTE_GERER, 'btn_grand_patron'
 			, _SPIPLISTES_PATRONS_DIR, _T('spiplistes:Patron_grand_')
-			, ($patron ? $patron : "")
+			, ($patron ? $patron : '')
 			, $patron)
 		. spiplistes_boite_patron($flag_editable, $id_liste, _SPIPLISTES_EXEC_LISTE_GERER, 'btn_patron_pied'
 			, _SPIPLISTES_PATRONS_PIED_DIR, _T('spiplistes:Patron_de_pied_')
@@ -442,9 +515,10 @@ function exec_spiplistes_liste_gerer () {
 
 	// message alerte et demande de confirmation si supprimer liste
 	if(($btn_supprimer_liste > 0) && ($btn_supprimer_liste == $id_liste)) {
-		$page_result .= ""
-			. spiplistes_boite_alerte (_T('spiplistes:Attention_suppression_liste')."<br />"._T('spiplistes:Confirmez_requete'), true)
-			. "<form name='form_suppr_liste' id='form_suppr_liste' method='post' action='".generer_url_ecrire(_SPIPLISTES_EXEC_LISTES_LISTE, "")."'>\n"
+		$page_result .= ''
+			. spiplistes_boite_alerte (_T('spiplistes:Attention_suppression_liste').'<br />'._T('spiplistes:Confirmez_requete'), true)
+			. '<form name="form_suppr_liste" id="form_suppr_liste" method="post"
+				action="'.generer_url_ecrire(_SPIPLISTES_EXEC_LISTES_LISTE, '').'">' . PHP_EOL
 			. "<div class='verdana2' style='text-align:right;'>\n"
 			. "<input type='hidden' name='id_liste' value='$id_liste' />\n"
    		. "<label>"._T('spiplistes:Confirmer_la_suppression_de_la_liste')."# $id_liste : \n"
@@ -479,8 +553,14 @@ function exec_spiplistes_liste_gerer () {
 	//////////////////////////////////////////////////////
 	// Modifier le statut de la liste
 	//$email_defaut = entites_html($meta['email_webmaster']);
-	$email_defaut = ($m = email_valide($GLOBALS['meta']['email_defaut'])) ? $m : $GLOBALS['meta']['email_webmaster'];
-	$email_envoi = ($m = email_valide($email_envoi)) ? $m : $email_defaut ;
+	$email_defaut = ($m = email_valide($GLOBALS['meta']['email_defaut']))
+		? $m
+		: $GLOBALS['meta']['email_webmaster']
+		;
+	$email_envoi = ($m = email_valide($email_envoi))
+		? $email_envoi
+		: $email_defaut
+		;
 
 	$page_result .= ""
 		//. debut_cadre_relief("racine-site-24.gif", true)
@@ -490,69 +570,107 @@ function exec_spiplistes_liste_gerer () {
 		// Formulaire diffusion
 		.	(
 			($flag_editable)
-			? ""
-				. spiplistes_form_debut(generer_url_ecrire(_SPIPLISTES_EXEC_LISTE_GERER,"id_liste=$id_liste"), true)
-				. "<input type='hidden' name='exec' value='listes' />\n"
-				. "<input type='hidden' name='id_liste' value='$id_liste' />\n"
-			: ""
+			? ''
+				. spiplistes_form_debut(generer_url_ecrire(_SPIPLISTES_EXEC_LISTE_GERER,'id_liste='.$id_liste), true)
+				. '<input type="hidden" name="exec" value="listes" />' . PHP_EOL
+				. '<input type="hidden" name="id_liste" value="'.$id_liste.'" />' . PHP_EOL
+			: ''
 			)
-		. "<span class='verdana2'>"
+		. '<span class="verdana2">'
 			. _T('spiplistes:cette_liste_est_'
-			 	, array('s' => spiplistes_bullet_titre_liste('puce', $statut, 'img_statut', true)))
-		. "</span>\n"
+			 	, array('s' => spiplistes_bullet_titre_liste ('puce', $statut, 'img_statut', true)))
+		. '</span>' . PHP_EOL
 		;
 
-		$mySelMulti = " value='"._SPIPLISTES_PUBLIC_LIST."'" 
-			. (
-				(in_array($statut, spiplistes_listes_statuts_periodiques()) || ($statut == _SPIPLISTES_PUBLIC_LIST))
-				? " selected='selected'" 
-				: ""
-			  )
-			;
-	$page_result .= ""
+		$sel_private = ' value="' . _SPIPLISTES_LIST_PRIVATE . '" ' 
+			. 	(
+					in_array ($statut, array(
+									_SPIPLISTES_LIST_PRIVATE
+									, _SPIPLISTES_LIST_PRIV_DAILY
+									, _SPIPLISTES_LIST_PRIV_HEBDO
+									, _SPIPLISTES_LIST_PRIV_WEEKLY
+									, _SPIPLISTES_LIST_PRIV_MENSUEL
+									, _SPIPLISTES_LIST_PRIV_MONTHLY
+									, _SPIPLISTES_LIST_PRIV_YEARLY
+									)
+						 )
+					? ' selected="selected"' 
+					: ''
+				)
+				;
+		$sel_publique = ' value="' . _SPIPLISTES_LIST_PUBLIC . '" ' 
+			. 	(
+					in_array ($statut, array(
+									_SPIPLISTES_LIST_PUBLIC
+									, _SPIPLISTES_LIST_PUB_DAILY
+									, _SPIPLISTES_LIST_PUB_HEBDO
+									, _SPIPLISTES_LIST_PUB_WEEKLY
+									, _SPIPLISTES_LIST_PUB_MENSUEL
+									, _SPIPLISTES_LIST_PUB_MONTHLY
+									, _SPIPLISTES_LIST_PUB_YEARLY
+									)
+						 )
+					? ' selected="selected"' 
+					: ''
+				)
+				;
+	$page_result .= PHP_EOL
 		.	(
 			($flag_editable)
-			? ""
-				. "<select class='verdana2 fondl' name='statut' size='1' id='change_statut'>\n"
-				. "<option" . mySel(_SPIPLISTES_PRIVATE_LIST, $statut) ." style='background-color: white'>"._T('spiplistes:statut_interne')."</option>\n"
-				. "<option" . $mySelMulti . " style='background-color: #B4E8C5'>"._T('spiplistes:statut_publique')."</option>\n"
-				. "<option" . mySel(_SPIPLISTES_TRASH_LIST, $statut) . " style='background:url("._DIR_IMG_PACK."rayures-sup.gif)'>"._T('texte_statut_poubelle')."</option>\n"
-				. "</select>\n"
-			: "<span class='verdana2' style='font-weight:bold;'>".spiplistes_items_get_item("alt", $statut)."</span>\n"
+			? ''
+				. '<select class="verdana2 fondl" name="statut" size="1" id="change_statut">' . PHP_EOL
+				. '<option' . $sel_private . ' style="background-color:#fff">'
+					. _T('spiplistes:statut_interne')
+					. '</option>' . PHP_EOL
+				. '<option' . $sel_publique . ' style="background-color:#B4E8C5">'
+					. _T('spiplistes:statut_publique')
+					. '</option>' . PHP_EOL
+				. '<option' . mySel(_SPIPLISTES_TRASH_LIST, $statut)
+					. ' style="background:url(' . _DIR_IMG_PACK.'rayures-sup.gif)">'
+					. _T('texte_statut_poubelle').'</option>' . PHP_EOL
+				. '</select>' . PHP_EOL
+			: '<span class="verdana2" style="font-weight:bold;">'
+				. spiplistes_items_get_item('alt', $statut)
+				. '</span>'. PHP_EOL
 			)
-		. "<div style='margin:10px 0px;'>\n"
+		. '<div style="margin:10px 0px;">' . PHP_EOL
 		.	(
-			($flag_editable && strpos($GLOBALS['meta']['langues_multilingue'], ","))
-			? ""
-				. "<label class='verdana2' for='changer_lang'>"._T('info_multi_herit')." : </label>\n"
-				. "<select name='changer_lang'  class='fondl' id='changer_lang'>\n"
-				. liste_options_langues('changer_lang', $lang , _T('spiplistes:langue_'),'', '')
-				. "</select>\n"
-			: ""
+			($flag_editable && strpos($GLOBALS['meta']['langues_multilingue'], ','))
+			? ''
+				. '<label class="verdana2" for="changer_lang">'
+					. _T('info_multi_herit').' : </label>' . PHP_EOL
+				. '<select name="changer_lang" class="fondl" id="changer_lang">' . PHP_EOL
+				. liste_options_langues('changer_lang', $lang , _T('spiplistes:langue_'), '', '')
+				. '</select>' . PHP_EOL
+			: ''
 				//. "<span class='verdana2'>". _T('info_multi_herit')." : "
 				//. "<span class='verdana2' style='font-weight:bold;'>".traduire_nom_langue($lang)."</span>\n"
 			)
-		. "</div>\n"
+		. '</div>' . PHP_EOL
 		.	(
 				($flag_editable)
 				? spiplistes_form_bouton_valider('btn_modifier_diffusion')
 					. spiplistes_form_fin(true)
-				: ""
+				: ''
 			)
 		. fin_cadre_relief(true)
 		;
 
 		////////////////////////////
 		// Formulaire adresse email pour le reply-to
-	$page_result .= ""
-		. debut_cadre_relief(_DIR_PLUGIN_SPIPLISTES_IMG_PACK."reply_to-24.png", true, '', _T('spiplistes:adresse_de_reponse').spiplistes_plugin_aide(_SPIPLISTES_EXEC_AIDE, "replyto"))
+	$page_result .= ''
+		. debut_cadre_relief(_DIR_PLUGIN_SPIPLISTES_IMG_PACK."reply_to-24.png"
+							, true
+							, ''
+							, _T('spiplistes:adresse_de_reponse').spiplistes_plugin_aide(_SPIPLISTES_EXEC_AIDE
+								, "replyto")
+							)
 		. spiplistes_form_debut(generer_url_ecrire(_SPIPLISTES_EXEC_LISTE_GERER,"id_liste=$id_liste"), true)
 		. "<p class='verdana2'>\n"
 		. _T('spiplistes:adresse_mail_retour').":<br />\n"
 		.	(
 			($flag_editable)
-			?	""
-				. ""._T('spiplistes:adresse')."</p>\n"
+			? _T('spiplistes:adresse')."</p>\n"
 				. "<div style='text-align:center'>\n"
 				. "<input type='text' name='email_envoi' value=\"".$email_envoi."\" size='40' class='fondl' /></div>\n"
 				. spiplistes_form_bouton_valider('btn_modifier_replyto')
@@ -600,7 +718,7 @@ function exec_spiplistes_liste_gerer () {
 			. "<p class='verdana2'>"
 			. spiplistes_items_get_item('alt', $statut)."<br />\n"
 			.	(	
-					($statut == _SPIPLISTES_MONTHLY_LIST)
+					($statut == _SPIPLISTES_LIST_PUB_MONTHLY)
 					?	"<strong>" . spiplistes_items_get_item("tab_t", $statut) . "</strong><br />"
 					:	""
 				)
@@ -679,7 +797,7 @@ function exec_spiplistes_liste_gerer () {
 			. "<li style='margin-top:0.5em'>"
 				. spiplistes_form_input_radio ('auto_chrono', 'auto_jour'
 					, ''
-					, ($statut == _SPIPLISTES_DAILY_LIST)
+					, ($statut == _SPIPLISTES_LIST_PUB_DAILY)
 					, true, false
 					)
 				. _T('spiplistes:Tous_les')
@@ -690,25 +808,25 @@ function exec_spiplistes_liste_gerer () {
 			. "<li>"
 				. spiplistes_form_input_radio ('auto_chrono', 'auto_hebdo'
 					, _T('spiplistes:Toutes_les_semaines')
-					, (($statut == _SPIPLISTES_HEBDO_LIST) || ($statut == _SPIPLISTES_WEEKLY_LIST))
+					, (($statut == _SPIPLISTES_LIST_PUB_HEBDO) || ($statut == _SPIPLISTES_LIST_PUB_WEEKLY))
 					, true, false)
 				. spiplistes_form_input_checkbox('auto_weekly', 'oui'
-					, _T('spiplistes:en_debut_de_semaine'), ($statut == _SPIPLISTES_WEEKLY_LIST), true, false)
+					, _T('spiplistes:en_debut_de_semaine'), ($statut == _SPIPLISTES_LIST_PUB_WEEKLY), true, false)
 				. "</li>\n"
 			// chrono mois
 			. "<li>"
 				. spiplistes_form_input_radio ('auto_chrono', 'auto_mensuel'
 					, _T('spiplistes:Tous_les_mois')
-					, (($statut == _SPIPLISTES_MENSUEL_LIST) || ($statut == _SPIPLISTES_MONTHLY_LIST))
+					, (($statut == _SPIPLISTES_LIST_PUB_MENSUEL) || ($statut == _SPIPLISTES_LIST_PUB_MONTHLY))
 					, true, false)
 				. spiplistes_form_input_checkbox('auto_mois', 'oui'
-					, _T('spiplistes:en_debut_de_mois'), ($statut == _SPIPLISTES_MONTHLY_LIST), true, false)
+					, _T('spiplistes:en_debut_de_mois'), ($statut == _SPIPLISTES_LIST_PUB_MONTHLY), true, false)
 				. "</li>\n"
 			// chrono annee
 			. "<li>"
 				. spiplistes_form_input_radio ('auto_chrono', 'auto_an'
 					, _T('spiplistes:Tous_les_ans')
-					, ($statut == _SPIPLISTES_YEARLY_LIST)
+					, ($statut == _SPIPLISTES_LIST_PUB_YEARLY)
 					, true, false)
 				. "</li>\n"
 			. "<li style='margin-top:0.5em'>"._T('spiplistes:A_partir_de')." : <br />\n"
@@ -791,7 +909,7 @@ function exec_spiplistes_liste_gerer () {
 			//////////////////////////
 			// propose de forcer les membres sauf invites si la liste est privee
 			.	(
-					($statut==_SPIPLISTES_PRIVATE_LIST)
+					($statut==_SPIPLISTES_LIST_PRIVATE)
 					? "<div class='verdana2'><input type='radio' name='forcer_abo' value='auteurs' id='forcer_abo_tous' />\n"
 						. "<label for='forcer_abo_tous'>"._T('spiplistes:Abonner_tous_les_inscrits_prives')."</label>"
 						. "</div>\n"
@@ -801,7 +919,7 @@ function exec_spiplistes_liste_gerer () {
 			//
 			// propose de forcer les invites si la liste est publique ou periodique
 			.	(
-					(($statut!=_SPIPLISTES_PRIVATE_LIST) && ($statut!=_SPIPLISTES_TRASH_LIST))
+					(($statut!=_SPIPLISTES_LIST_PRIVATE) && ($statut!=_SPIPLISTES_TRASH_LIST))
 					? "<div class='verdana2'><input type='radio' name='forcer_abo' value='6forum' id='forcer_abo_6forum' />\n"
 						. "<label for='forcer_abo_6forum'>"._T('spiplistes:Abonner_tous_les_invites_public')."</label></div>\n"
 						. spiplistes_boutons_forcer_format('forcer_format', _T('spiplistes:forcer_abonnements_nouveaux'))
@@ -862,17 +980,16 @@ function spiplistes_boutons_forcer_format ($id_bloc, $message = '') {
 }
 
 /*
- * mmmm.. (CP-20081115) semble bien lourd pour juste une boite d'alerte.
- * 
  * @return une chaine traduite de HTML en ISO
  * @param $string Object
  * @param $charset Object
  * @param $unspace Object[optional]
  */
-function spiplistes_texte_html_2_iso($string, $charset, $unspace = false) {
+function spiplistes_texte_html_2_iso($string, $charset, $unspace = false)
+{
 	$charset = strtoupper($charset);
 	// html_entity_decode a qq soucis avec UTF-8
-	if($charset=="UTF-8" && (phpversion()<5)) {
+	if($charset=='UTF-8' && (phpversion()<5)) {
 		$string = spiplistes_html_entity_decode_utf8($string);
 	}
 	else {
@@ -883,102 +1000,6 @@ function spiplistes_texte_html_2_iso($string, $charset, $unspace = false) {
 		$string = preg_replace("/([[:space:]])+/", " ", $string);
 	}
 	return ($string);
-}
-
-// http://fr.php.net/html_entity_decode
-	// thank to: laurynas dot butkus at gmail dot com
-function spiplistes_html_entity_decode_utf8($string)
-{
-	 static $trans_tbl;
-	
-	 // replace numeric entities
-	 $string = preg_replace('~&#x([0-9a-f]+);~ei', 'spiplistes_code2utf(hexdec("\\1"))', $string);
-	 $string = preg_replace('~&#([0-9]+);~e', 'spiplistes_code2utf(\\1)', $string);
-
-	 // replace literal entities
-	 if (!isset($trans_tbl))
-	 {
-		  $trans_tbl = array();
-		 
-		  foreach (get_html_translation_table(HTML_ENTITIES) as $val=>$key)
-				$trans_tbl[$key] = utf8_encode($val);
-	 }
-	
-	 return strtr($string, $trans_tbl);
-} // spiplistes_html_entity_decode_utf8()
-
-// Returns the utf string corresponding to the unicode value (from php.net, courtesy - romans@void.lv)
-// thank to: akniep at rayo dot info
-function spiplistes_code2utf($number)  {
-	static $windows_illegals_chars;
-	if($windows_illegals_chars === null) {
-		$windows_illegals_chars = array(
-			128 => 8364
-            , 129 => 160 // (Rayo:) #129 using no relevant sign, thus, mapped to the saved-space #160
-            , 130 => 8218
-            , 131 => 402
-            , 132 => 8222
-            , 133 => 8230
-            , 134 => 8224
-            , 135 => 8225
-            , 136 => 710
-            , 137 => 8240
-            , 138 => 352
-            , 139 => 8249
-            , 140 => 338
-            , 141 => 160 // (Rayo:) #129 using no relevant sign, thus, mapped to the saved-space #160
-            , 142 => 381
-            , 143 => 160 // (Rayo:) #129 using no relevant sign, thus, mapped to the saved-space #160
-            , 144 => 160 // (Rayo:) #129 using no relevant sign, thus, mapped to the saved-space #160
-            , 145 => 8216
-            , 146 => 8217
-            , 147 => 8220
-            , 148 => 8221
-            , 149 => 8226
-            , 150 => 8211
-            , 151 => 8212
-            , 152 => 732
-            , 153 => 8482
-            , 154 => 353
-            , 155 => 8250
-            , 156 => 339
-            , 157 => 160 // (Rayo:) #129 using no relevant sign, thus, mapped to the saved-space #160
-            , 158 => 382
-            , 159 => 376
-		);
-	}
-	
-    if ($number < 0)
-        return FALSE;
-    if ($number < 128)
-        return chr($number);
-    // Removing / Replacing Windows Illegals Characters
-    if ($number < 160) {
-    	$number = $windows_illegals_chars[$number];
-    }
-   
-    if ($number < 2048)
-        return chr(($number >> 6) + 192) . chr(($number & 63) + 128);
-    if ($number < 65536)
-        return chr(($number >> 12) + 224) . chr((($number >> 6) & 63) + 128) . chr(($number & 63) + 128);
-    if ($number < 2097152)
-        return chr(($number >> 18) + 240) . chr((($number >> 12) & 63) + 128) . chr((($number >> 6) & 63) + 128) . chr(($number & 63) + 128);
-   
-    return(false);
-} //spiplistes_code2utf()
-
-// !(PHP 4 >= 4.3.0, PHP 5)
-if(!function_exists("html_entity_decode")) {
-	function html_entity_decode ($string, $quote_style = "", $charset = "")
-	{
-		// Remplace les entites numeriques
-		$string = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $string);
-		$string = preg_replace('~&#([0-9]+);~e', 'chr("\\1")', $string);
-		// Remplace les entites 
-		$trans_tbl = get_html_translation_table (HTML_ENTITIES);
-		$trans_tbl = array_flip ($trans_tbl);
-		return strtr ($string, $trans_tbl);
-	}
 }
 
 /*

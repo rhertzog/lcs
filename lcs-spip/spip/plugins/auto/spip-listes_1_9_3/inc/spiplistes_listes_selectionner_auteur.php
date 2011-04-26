@@ -1,6 +1,11 @@
 <?php 
-
-// inc/spiplistes_listes_selectionner_auteur.php
+/**
+ * @version Original From SPIP-Listes-V :: Id: spiplistes_listes_forcer_abonnement.php paladin@quesaco.org
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:13 +0200 (Mon, 25 Apr 2011) $
 
 /******************************************************************************************/
 /* SPIP-Listes est un systeme de gestion de listes d'abonnes et d'envoi d'information     */
@@ -22,11 +27,7 @@
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
 
-// $LastChangedRevision: 27472 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-03-23 10:10:49 +0100 (lun, 23 mar 2009) $
-
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 //CP-20081116
 // utilise par 
@@ -39,8 +40,8 @@ if (!defined("_ECRIRE_INC_VERSION")) return;
 // selectionne les auteurs elligibles a un abonnement
 // - adresse email obligatoire
 
-define("_SPIPLISTES_LIGNES_PAR_PAGE", 10);
-define("_SPIPLISTES_SELECT_MIN_AUTEURS", 50); // nb auteurs dans le <select>
+define('_SPIPLISTES_LIGNES_PAR_PAGE', 10);
+define('_SPIPLISTES_SELECT_MIN_AUTEURS', 50); // nb auteurs dans le <select>
 
 /*CP-2200081116
  * pour l'ajout abonne', il y a trois ajax boites imbriquées
@@ -51,9 +52,9 @@ define("_SPIPLISTES_SELECT_MIN_AUTEURS", 50); // nb auteurs dans le <select>
  * Lorsqu'on change un format, B seul est mis à jour
  * Lorsqu'on cherche un elligible, seul C est mis à jour
  */
-define("_SPIPLISTES_ID_GROSSE_BOITE", "grosse_boite_abonnements");
-define("_SPIPLISTES_ID_PETITE_BOITE", "petite_boite_abonnements");
-define("_SPIPLISTES_ID_FROM_ELLIGIBL", "form-recherche-abo-elligibles");
+define('_SPIPLISTES_ID_GROSSE_BOITE', 'grosse_boite_abonnements');
+define('_SPIPLISTES_ID_PETITE_BOITE', 'petite_boite_abonnements');
+define('_SPIPLISTES_ID_FROM_ELLIGIBL', 'form-recherche-abo-elligibles');
 
 //CP-20080603
 // renvoie un tableau d'auteurs, du style
@@ -73,7 +74,7 @@ function spiplistes_listes_auteurs_elligibles ($id_liste, $statut_liste = '', $f
 		// recupere la liste des moderateurs
 		$ids_already = spiplistes_mod_listes_get_id_auteur($id_liste);
 		$ids_already = (isset($ids_already[$id_liste]) ? $ids_already[$id_liste] : array());
-		$sql_where[] = "statut=".sql_quote('0minirezo');
+		$sql_where[] = 'statut='.sql_quote('0minirezo');
 	}
 	else {
 		// recupere la liste des abonnes
@@ -81,7 +82,7 @@ function spiplistes_listes_auteurs_elligibles ($id_liste, $statut_liste = '', $f
 		// prepare la liste des non-abonnes elligibles
 		$sql_where = array("email <> ''"); // email obligatoire !
 		// si liste privee, ne prend que l'equipe de redacs
-		if($statut_liste == _SPIPLISTES_PRIVATE_LIST) {
+		if($statut_liste == _SPIPLISTES_LIST_PRIVATE) {
 			$sql_where[] = "(statut=".sql_quote('0minirezo')." OR statut=".sql_quote('1comite').")";
 		}
 	}
@@ -104,8 +105,8 @@ function spiplistes_listes_auteurs_elligibles ($id_liste, $statut_liste = '', $f
 	return(array($auteurs_array, $nb_auteurs));
 }
 
-/*
- * CP-20080603
+/**
+ * @versin CP-20080603
  * @return la boite en liste des abonnes a une liste
  * 	si $id_liste == 0, liste tous les abonnements
  * @param $id_liste entier
@@ -119,6 +120,7 @@ function spiplistes_listes_boite_abonnes ($id_liste, $statut_liste, $tri, $debut
 	global $spip_lang_left, $spip_lang_right;
 	
 	$id_liste = intval($id_liste);
+	$legende_tableau = '';
 
 	// construction de la req SQL
 	$sql_select = "
@@ -131,7 +133,8 @@ function spiplistes_listes_boite_abonnes ($id_liste, $statut_liste, $tri, $debut
 		fmt.`spip_listes_format` AS format,
 		UPPER(aut.nom) AS unom,
 		COUNT(lien.id_liste) as compteur";
-	$sql_from = "spip_auteurs AS aut
+	$sql_from = "
+		spip_auteurs AS aut
 		LEFT JOIN spip_auteurs_listes AS lien ON aut.id_auteur=lien.id_auteur
 		LEFT JOIN spip_listes AS liste ON (lien.id_liste = liste.id_liste)
 		LEFT JOIN spip_auteurs_elargis AS fmt ON aut.id_auteur=fmt.id_auteur";
@@ -152,6 +155,52 @@ function spiplistes_listes_boite_abonnes ($id_liste, $statut_liste, $tri, $debut
 			$sql_order = array('unom');
 	}
 
+	$nb_auteurs = sql_countsel('spip_auteurs');
+	
+	if($sql_result = sql_select(array('id_auteur', 'format'), 'spip_auteurs_listes'))
+	{
+		$abonnes = array();
+		while($row = sql_fetch($sql_result))
+		{
+			if(!isset($abonnes[$row['id_auteur']])) { 
+				$abonnes[$row['id_auteur']] = array();
+				$nb_abonnes++; 
+			}
+			$abonnes[$row['id_auteur']][$row['format']]++;
+			$abonnes[$row['format']]++;
+		}
+	}
+	
+	if(!$id_liste)
+	{
+		$legende_tableau = trim(spiplistes_str_auteurs($nb_auteurs)) 
+		. ', '
+		. _T('spiplistes:_dont_')
+		. spiplistes_str_abonnes ($nb_abonnes) 
+		;
+		if(isset($abonnes['non']) && $abonnes['non'])
+		{
+			$legende_tableau .= _T('spiplistes:_dont_n_sans_format_reception', array('n' => $abonnes['non']));
+		}
+		else if($nb_abonnes)
+		{
+			$legende_tableau .= _T('spiplistes:_avec_');
+		}
+		$legende_tableau .= 
+			($ii = intval($abonnes['html']))
+			? spiplistes_str_abonnements(intval($abonnes['html'])) . _T('spiplistes:_au_format_s', array('s' => _T('spiplistes:html')))
+			: ''
+			;
+		$legende_tableau .= 
+			($jj = intval($abonnes['texte']))
+			? ($ii?', ':''). spiplistes_str_abonnements(intval($abonnes['texte'])) . _T('spiplistes:_au_format_s', array('s' => _T('spiplistes:texte')))
+			: ''
+			;
+		$legende_tableau .= ''
+			. '.'
+			;
+	}
+	
 	$nombre_abonnes = 
 		($id_liste > 0)
 		? spiplistes_abonnements_compter($id_liste ? "id_liste=".sql_quote($id_liste) : "")
@@ -211,10 +260,15 @@ function spiplistes_listes_boite_abonnes ($id_liste, $statut_liste, $tri, $debut
 		}
 	}
 	
+	$legende_tableau =
+		($id_liste)
+		? spiplistes_nb_abonnes_liste_str_get($id_liste)
+		: $legende_tableau
+		;
 	$result = ""
 		. "<div id='"._SPIPLISTES_ID_PETITE_BOITE."'>\n"
 		. "<div class='verdana2' id='legend-abos1-propre'>"
-		. "<small>".spiplistes_nb_abonnes_liste_str_get($id_liste)."</small>"
+		. '<small>' . $legende_tableau . '</small>'
 		. "</div>\n"
 		;
 		
@@ -646,7 +700,7 @@ function spiplistes_listes_selectionner_elligibles (
 			, "LENGTH(a.email)"
 			, "(statut=".sql_quote('0minirezo')." OR statut=".sql_quote('1comite')
 				// si pas une liste privée, complète le where
-				. (($statut_liste != _SPIPLISTES_PRIVATE_LIST) ? " OR statut=".sql_quote('6forum') : "")
+				. (($statut_liste != _SPIPLISTES_LIST_PRIVATE) ? " OR statut=".sql_quote('6forum') : "")
 				. ")"
 			, "NOT EXISTS (SELECT NULL FROM spip_auteurs_listes AS l WHERE l.id_auteur = a.id_auteur AND l.id_liste = ".sql_quote($id_liste).")"
 			);
@@ -754,7 +808,7 @@ function spiplistes_elligibles_select ($elligibles, $nb_elligibles, $type_ajout 
 }
 
 //CP20080603
-// la boite complete (abonnes et elligibles) enveloppée pour ajax
+// la boite complete (abonnes et elligibles) enveloppee pour ajax
 function spiplistes_listes_boite_abonnements ($id_liste, $statut_liste, $tri, $debut, $script_retour) {
 
 	$boite_abonnements = ""
@@ -770,7 +824,7 @@ function spiplistes_listes_boite_abonnements ($id_liste, $statut_liste, $tri, $d
 // boite construction des elligibles. Appelee aussi via action/ajax
 function spiplistes_listes_boite_elligibles ($id_liste, $statut_liste, $tri, $debut) {
 	
-	$result = "";
+	$result = '';
 	
 	// proposer les elligibles si id_liste (liste_gerer)
 	if($id_liste > 0) {
@@ -871,4 +925,3 @@ function spiplistes_corrige_img_pack ($img) {
 	return($img);
 }
 
-?>

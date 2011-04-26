@@ -25,6 +25,7 @@ if(defined('_SPIP19300')) {
 // filtre 'titre_id', s'applique aux #ID_OBJET
 // Renvoie le titre trouve dans la $table_parent, la ou $champ_id = $id
 function cs_titre_id($id, $table_parent='rubriques', $champ_id='id_rubrique') {
+// spip_log("#TITRE_PARENT SELECTED FROM spip_$table_parent WHERE $champ_id=$id".(!$id?' : requete non executee':''));
 	// retour nul si pas de parent a priori
 	if(!$id) return '';
 	return cs_titre_sql($table_parent, "$champ_id=$id");
@@ -39,7 +40,7 @@ function cs_titre_champ($table) {
 function cs_titre_sql($table, $where) {
 	$titre = cs_titre_champ($table);
 	// Utiliser la bonne requete en fonction de la version de SPIP
-	if(function_exists('sql_getfetsel')) {
+	if(function_exists('sql_getfetsel') && function_exists('table_objet_sql')) {
 		// SPIP 2.0
 		if($r = sql_getfetsel($titre, table_objet_sql($table), $where))
 			return $r;
@@ -74,49 +75,50 @@ function balise_TITRE_PARENT_dist($p) {
 	$id = champ_sql($id, $p);
 	// le code php a executer
 	$p->code = "cs_titre_id(intval($id), '$table_parent', '$champ_parent')";
+	$p->interdire_scripts = false;
 	return $p;
 }
 
 // juste le groupe d'un mot-clef
 function balise_TITRE_GROUPE_dist($p) {
 	$p->code = "''";
+	$p->interdire_scripts = false;
 	return $p->type_requete=='mots'?balise_TITRE_PARENT_dist($p):$p;
 }
 
 if(defined('_SPIP19300') && defined('_PARENTS_ETENDUS')) {
 
 	// recherche de la table associee a l'objet
-	function cs_table_objet($id_objet) {
-		switch($id_objet) {
+	function cs_table_objet($objet) {
+		switch($objet) {
 			case 'trad': return 'articles';
 			case 'thread': /*case 'forum':*/ return 'forum';
 			case 'secteur': return 'rubriques';
 #			case 'import': return ''; // a quoi ca sert ?
 		}
-		return table_objet($id_objet);
+		return table_objet($objet);
 	}
-
+	
 	// balise #TITRE_QQCHOSE
-	// voire #TITRE_QQCHOSE{id}
+	// voire #TITRE_QQCHOSE{id_qqchose}
 	function balise_TITRE__dist($p) {
 		$champ = $p->nom_champ;
 		if ($f = charger_fonction($champ, 'balise', true))
 			return $f($p);
 		$code = champ_sql($champ, $p);
-		// si le champ est bien present
 		if (strpos($code, '@$Pile[0]') !== false) {
+			// le champ est absent de la base, on peut calculer la balise
 			preg_match(",^TITRE_([A-Z_]+)?$,i", $champ, $regs);
 			$objet = strtolower($regs[1]);
 			$table = cs_table_objet($objet);
-			$champ_parent = 'id_'.$objet;
+			$champ_parent = id_table_objet($table);
 			// id de l'objet a trouver pour retourner son titre
-			$id = ($v = interprete_argument_balise(1,$p))!==NULL ? $v : champ_sql($champ_parent, $p);
+			$id = ($v = interprete_argument_balise(1,$p))!==NULL ? $v : champ_sql('id_'.$objet, $p);
 			// le code php a executer, avant de le passer aux traitements
 			$p->code = cs_titre_traitements("cs_titre_id(intval($id), '$table', '$champ_parent')", $table);
-// $p->code = "\"$champ_parent - $table - $objet - $id - \".".cs_titre_traitements("cs_titre_id(intval($id), '$table', '$champ_parent')", $table);
 		} else 
-			$p->code = "''";
-// $p->code = $p->code.".' - ".addslashes($p->code)."'";
+			// puisque le champ est present dans la base, on le renvoie
+			$p->code = champ_sql($champ, $p);
 		$p->interdire_scripts = false;
 		return $p;
 	}

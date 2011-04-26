@@ -1,29 +1,33 @@
 <?php
-// inc/spiplistes_pipeline_ajouter_boutons.php
-/*
-	SPIP-Listes pipeline
-	
-	Nota: plugin.xml en cache.
+/**
+ * Nota: plugin.xml en cache.
 		si modif plugin.xml, il faut parfois réactiver le plugin (config/plugin: désactiver/activer)
-	
-*/
-// $LastChangedRevision: 21326 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2008-07-07 08:04:40 +0200 (lun, 07 jui 2008) $
+ * @version Original From SPIP-Listes-V :: Id: spiplistes_listes_forcer_abonnement.php paladin@quesaco.org
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:13 +0200 (Mon, 25 Apr 2011) $
+
+if(!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/spiplistes_api_globales');
 
 function spiplistes_ajouterBoutons($boutons_admin) {
 
 	if($GLOBALS['connect_statut'] == "0minirezo") {
+		$menu = "naviguer";
+		$icone = "courriers_listes-24.gif";
+		if (isset($boutons_admin['bando_edition'])){
+			$menu = "bando_edition";
+			$icone = "spip-listes-16.png";
+		}
 	// affiche le bouton dans "Edition"
-		$boutons_admin['naviguer']->sousmenu['spiplistes'] = new Bouton(
-			_DIR_PLUGIN_SPIPLISTES_IMG_PACK."courriers_listes-24.gif"  // icone
+		$boutons_admin[$menu]->sousmenu['spiplistes'] = new Bouton(
+			_DIR_PLUGIN_SPIPLISTES_IMG_PACK.$icone  // icone
 			, _T('spiplistes:listes_de_diffusion_')	// titre
 			, _SPIPLISTES_EXEC_COURRIERS_LISTE
 		);
 	}
 	return ($boutons_admin);
 }
-
-?>

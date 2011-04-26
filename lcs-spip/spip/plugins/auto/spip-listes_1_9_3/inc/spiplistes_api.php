@@ -1,6 +1,10 @@
 <?php
-
-// inc/spiplistes_api.php
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:13 +0200 (Mon, 25 Apr 2011) $
 
 /******************************************************************************************/
 /* SPIP-Listes est un systeme de gestion de listes d'abonnes et d'envoi d'information     */
@@ -22,11 +26,7 @@
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
 
-// $LastChangedRevision: 30779 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-08-10 09:05:57 +0200 (lun, 10 aoû 2009) $
-
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if(!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip ("inc/utils");
 include_spip ("inc/filtres");    /* email_valide() */
@@ -47,7 +47,8 @@ include_spip('inc/spiplistes_api_globales');
  * @param object $sep[optional]
  * @param object $key[optional]
  */
-function spiplistes_http_build_query($data,$prefix=null,$sep='',$key=''){
+function spiplistes_http_build_query($data,$prefix=null,$sep='',$key='')
+{
 	if(!function_exists('http_build_query')) {
 	    function http_build_query($data,$prefix=null,$sep='',$key='') {
 	        $ret = array();
@@ -126,6 +127,21 @@ function spiplistes_courriers_statut_compter ($statut='tous') {
 	return(spiplistes_sql_compter('spip_courriers', $sql_where));
 }
 
+
+/**
+ * Date/time du serveur SQL
+ * CP-20091207
+ * @return string or bool
+ */
+function spiplistes_sql_now ()
+{
+	if($result = sql_fetsel('NOW() as maintenant'))
+	{
+		$result = $result['maintenant'];
+	}
+	return($result);
+}
+
 // CP-20080510
 function spiplistes_courriers_casier_premier ($sql_select, $sql_whereq) {
 	return(sql_select(
@@ -134,9 +150,15 @@ function spiplistes_courriers_casier_premier ($sql_select, $sql_whereq) {
 	);
 }
 
-//CP-20080520
-// Les fonctions spiplistes_abonnements_*() concernent les abonnements
-// Table cible : spip_auteurs_listes
+/**
+ ******************************************************************************
+	Les fonctions spiplistes_abonnements_*() concernent les abonnements
+	
+	Table cible : spip_auteurs_listes
+	
+ ******************************************************************************
+ */
+
 
 /**
  * CP-20080324 : abonner un id_auteur a une id_liste
@@ -274,39 +296,48 @@ function spiplistes_abonnements_listes_auteur ($id_auteur, $avec_titre = false) 
 // CP-20080508 : ou de toutes les listes si $id_liste = 'toutes'
 // CP-20090111: ou tous les abonnes si id_auteur == 'tous'
 // CP-20090410: ou une serie si array
-function spiplistes_abonnements_auteur_desabonner ($id_auteur, $id_liste = false) {
+function spiplistes_abonnements_auteur_desabonner ($id_auteur, $id_liste = false)
+{
+	//spiplistes_debug_log("spiplistes_abonnements_auteur_desabonner ($id_auteur, $id_liste)");
+	
 	$result = false;
-	$msg1 = $msg2 = "";
+	$msg1 = $msg2 = '';
 	$sql_where = array();
 	if($id_auteur == 'tous') {
-		$sql_where[] = "id_auteur>0";
+		$sql_where[] = 'id_auteur>0';
 		$msg1 = $id_auteur;
 	}
 	else if(is_array($id_auteur)) {
-		$ii = implode(",", $id_auteur);
-		$sql_where[] = "id_auteur IN ($ii)";
-		$msg1 = "id_auteur #$ii";
+		$ii = implode(',', $id_auteur);
+		$sql_where[] = 'id_auteur IN ('.$ii.')';
+		$msg1 = 'id_auteur #'.$ii;
 	}
 	else if(($id_auteur = intval($id_auteur)) > 0) {
-		$sql_where[] = "id_auteur=$id_auteur";
-		$msg1 = "id_auteur #$id_auteur";
+		$sql_where[] = 'id_auteur='.sql_quote($id_auteur);
+		$msg1 = 'id_auteur #'.$id_auteur;
 	}
-	if(count($sql_where)) {
-		$sql_table = "spip_auteurs_listes";
-		if($id_liste == "toutes") {
-			$msg2 = " des listes";
-		} else if(($id_liste = intval($id_liste)) > 0) {
-			$sql_where[] = "id_liste=$id_liste";
-			$msg2 = " de la liste #$id_liste";
+	if(count($sql_where) && $id_liste)
+	{
+		$sql_table = 'spip_auteurs_listes';
+		
+		if($id_liste == 'toutes')
+		{
+			$msg2 = ' des listes';
 		}
-		if(($result = sql_delete($sql_table, $sql_where)) === false) {
-			spiplistes_sqlerror_log("abonnements_auteur_desabonner()");
+		else if(($id_liste = intval($id_liste)) > 0)
+		{
+			$sql_where[] = 'id_liste='.$id_liste;
+			$msg2 = ' de la liste #'.$id_liste;
+		}
+		if(($result = sql_delete($sql_table, $sql_where)) === false)
+		{
+			spiplistes_debug_log ('ERR sql_delete: abonnements_auteur_desabonner()');
 		}
 		else {
-			spiplistes_log_api("desabonne $msg1 $msg2");
+			spiplistes_log_api('desabonne '.$msg1.' '.$msg2);
 		}
 	}
-	return($result);
+	return ($result);
 }
 
 //CP-20080512 : supprimer des abonnements
@@ -352,9 +383,14 @@ function spiplistes_abonnements_zombies () {
 
 }
 
-//CP-20080520
-// Les fonctions spiplistes_listes_*() concernent les listes
-// Table cible : spip_listes
+/**
+ ******************************************************************************
+	Les fonctions spiplistes_abonnements_*() concernent les listes
+	
+	Table cible : spip_listes
+	
+ ******************************************************************************
+ */
 
 //CP-20080508 : dans la table des listes
 function spiplistes_listes_compter ($sql_whereq = "") {
@@ -448,29 +484,45 @@ function spiplistes_listes_liste_abo_ids ($id_liste) {
 	return($ids_abos);
 }
 
-// retourne nombre d'abonnes a une liste
-// si $preciser, renvoie tableau total et formats
-function spiplistes_listes_nb_abonnes_compter ($id_liste = 0, $preciser = false) {
+/**
+ * Compter les abonnes.
+ * @param $id_liste int. Si > 0, abonnes a cette liste,
+ * 	sinon, nombre total d'abonnements (nb lignes dans la table)
+ * @param $preciser. Si true, renvoie tableau total et formats
+ * @return int ou array
+ * */
+function spiplistes_listes_nb_abonnes_compter ($id_liste = 0, $preciser = false)
+{
 	$id_liste = intval($id_liste);
-	$sql_whereq = (($id_liste > 0) ? "id_liste=".sql_quote($id_liste) : "");
-	$total = spiplistes_sql_compter ("spip_auteurs_listes", $sql_whereq);
-	if($preciser) {
+	$sql_whereq = (
+				   ($id_liste > 0)
+				   ? 'id_liste='.sql_quote($id_liste)
+				   : ''
+				   );
+	$total = spiplistes_sql_compter('spip_auteurs_listes', $sql_whereq);
+	
+	if($preciser)
+	{
 		$selection = 
 			(spiplistes_spip_est_inferieur_193())
-			? "SELECT id_auteur FROM spip_auteurs_listes " . (!empty($sql_whereq) ? "WHERE  $sql_whereq" : "")
-			: sql_select("id_auteur", "spip_auteurs_listes", $sql_whereq,'','','','','',false)
+			? 'SELECT id_auteur FROM spip_auteurs_listes '
+				. (!empty($sql_whereq) ? 'WHERE '.$sql_whereq : '')
+			: sql_select('id_auteur', 'spip_auteurs_listes', $sql_whereq,'','','','','',false)
 			;
 		$sql_result = sql_select(
 			"`spip_listes_format` AS f, COUNT(*) AS n"
-			, "spip_auteurs_elargis"
-			, "id_auteur IN (".$selection.")"
-			, "`spip_listes_format`");
-		if( $sql_result === false) {
-			spiplistes_sqlerror_log("listes_nb_abonnes_compter");
+			, 'spip_auteurs_elargis'
+			, 'id_auteur IN ('.$selection.')'
+			, "`spip_listes_format`"
+		);
+		if($sql_result === false)
+		{
+			spiplistes_sqlerror_log('listes_nb_abonnes_compter');
 		}
 		$formats = array('html' => 0, 'texte' => 0);
 		$keys = array_keys($formats);
-		while($row = sql_fetch($sql_result)) {
+		while($row = sql_fetch($sql_result))
+		{
 			if(in_array($row['f'], $keys)) {
 				$formats[$row['f']] += $row['n'];
 			}
@@ -478,10 +530,6 @@ function spiplistes_listes_nb_abonnes_compter ($id_liste = 0, $preciser = false)
 		return(array($total, $formats['html'], $formats['texte']));
 	}
 	return($total);
-}
-
-function spiplistes_desabonner_auteur ($id_auteur) {
-	
 }
 
 //CP-20080509: renvoie email emetteur d'une liste
@@ -546,6 +594,7 @@ function spiplistes_courriers_en_queue_modifier ($array_set, $sql_whereq) {
 	);
 }
 
+
 // CP-20080510
 function spiplistes_courriers_en_queue_supprimer ($sql_whereq) {
 	if(($result = sql_delete('spip_auteurs_courriers', $sql_whereq)) === false) {
@@ -567,9 +616,26 @@ function spiplistes_courriers_en_queue_premier ($select, $where) {
 	);
 }
 
-//CP-20080512
-// Les fonctions spiplistes_format_abo_*() concernent les formats de reception des abos
-// Table cible : spip_auteurs_elargis
+
+/**
+ ******************************************************************************
+	Les fonctions spiplistes_format_abo_*() concernent les 
+	formats de reception des abos
+	
+	Table cible : spip_auteurs_elargis
+	
+	Table historique utilisee par d'autres plugins.
+	
+	Cette table contient le format par defaut de l'abonne'.
+	Le format final, reel, est dans le champ 'format' de
+	la table des abonnements (spip_auteurs_listes).
+	
+	Ce format est attache' a l'abonnement. Ainsi, un abonne'
+	peut s'inscrire au format HTML a' la liste 1
+	et au format TEXTE a la liste 2.
+	
+ ******************************************************************************
+ */
 
 
 // suspend les abonnements d'un compte
@@ -695,9 +761,14 @@ function spiplistes_formats_autorises ($idx = 'array') {
 	return($formats[$idx]);
 }
 
-//CP-20080512
-// Les fonctions spiplistes_mod_listes_*() concernent les abonnements
-// Table cible : spip_auteurs_mod_listes
+/**
+ ******************************************************************************
+	Les fonctions spiplistes_mod_listes_*() concernent les moderateurs
+	
+	Table cible : spip_auteurs_mod_listes
+	
+ ******************************************************************************
+ */
 
 // renvoie ID du moderateur de la liste
 // CP-20080608 : ou de toutes les listes si $id_liste = 'toutes'
@@ -787,16 +858,30 @@ function spiplistes_mod_listes_id_auteur ($id_auteur) {
 	return($result);
 }
 
-//function spiplistes_texte_propre($texte)
-// passe propre() sur un texte puis nettoie les trucs rajoutes par spip sur du html
-// 	Remplace spiplistes_courrier_propre() qui est a supprimer apres verif.
-function spiplistes_texte_propre($texte){
-	$temp_style = ereg("<style[^>]*>[^<]*</style>", $texte, $style_reg);
-	if (isset($style_reg[0])) 
-		$style_str = $style_reg[0]; 
-	else 
-		$style_str = "";
-	$texte = ereg_replace("<style[^>]*>[^<]*</style>", "__STYLE__", $texte);
+/**
+ * passe propre() sur un texte puis nettoie les trucs rajoutes par spip sur du html
+ * @return string
+ * Remplace spiplistes_courrier_propre() qui est a supprimer apres verif.
+ */
+function spiplistes_texte_propre ($texte) {
+	spiplistes_debug_log ('spiplistes_texte_propre()');
+	static $adresse_site;
+	if (!$adresse_site) { $adresse_site = $GLOBALS['meta']['adresse_site']; }
+	static $style_rev = '__STYLE__';
+	
+	if (preg_match ('@<style[^>]*>[^<]*</style>@'
+							  , $texte
+							  , $style_reg
+							  )
+		> 0
+	) {
+		$style_str = $style_reg[0];
+	}
+	else {
+		$style_str = '';
+	}
+	$texte = preg_replace ('@<style[^>]*>[^<]*</style>@', $style_rev, $texte);
+	
 	//passer propre si y'a pas de html (balises fermantes)
 	if( !preg_match(',</?('._BALISES_BLOCS.')[>[:space:]],iS', $texte) ) 
 	$texte = propre($texte); // pb: enleve aussi <style>...  
@@ -805,23 +890,32 @@ function spiplistes_texte_propre($texte){
 	$patterns = array();
 	$replacements = array();
 	// html
-	$patterns[] = "#<br>#i";
-	$replacements[] = "<br />";
-	$patterns[] = "#<b>([^<]*)</b>#i";
+	$patterns[] = '#<br>#i';
+	$replacements[] = '<br />';
+	$patterns[] = '#<b>([^<]*)</b>#i';
 	$replacements[] = '<strong>\\1</strong>';
-	$patterns[] = "#<i>([^<]*)</i>#i";
+	$patterns[] = '#<i>([^<]*)</i>#i';
 	$replacements[] = '<em>\\1</em>';
 	// spip class
-	$patterns[] = "# class=\"spip\"#";
-	$replacements[] = "";	
+	$patterns[] = '# class="spip"#';
+	$replacements[] = '';	
 	
 	$texte = preg_replace($patterns, $replacements, $texte);
 
-	$texte = ereg_replace("__STYLE__", $style_str, $texte);
+	// remettre en place les styles
+	$texte = str_replace ($style_rev, $style_str, $texte);
 	
 	//les liens avec double debut #URL_SITE_SPIP/#URL_ARTICLE
-	$texte = ereg_replace($GLOBALS['meta']['adresse_site']."/".$GLOBALS['meta']['adresse_site'], $GLOBALS['meta']['adresse_site'], $texte);
-	$texte = liens_absolus($texte);
+	$texte = preg_replace (
+				'@'
+				. $adresse_site
+					. '/'
+					. $adresse_site
+					. '@'
+				, $adresse_site
+				, $texte
+				);
+	$texte = spiplistes_liens_absolus ($texte);
 	
 	return ($texte);
 }
@@ -880,26 +974,33 @@ function spiplistes_assembler_patron ($path_patron, $contexte) {
 	$patron_html = spiplistes_patron_find_in_path($path_patron, $contexte['lang'], false);
 	$contexte['patron_html'] = $patron_html;
 	
-	// le resultat assemble' au format html
-	$result_html = 
-		$patron_html
-		// ? recuperer_fond($patron_html, $contexte)
-		? recuperer_page(generer_url_public('patron_switch')."&".spiplistes_http_build_query($contexte,"","&"),true)
-		: ""
+	$result_html =
+		($patron_html && find_in_path('patron_switch.html'))
+		? recuperer_fond('patron_switch', $contexte)
+		: ''
 		;
-
+	
 	// chercher si un patron version texte existe
 	$patron_texte = spiplistes_patron_find_in_path($path_patron, $contexte['lang'], true);
 	unset($contexte['patron_html']);
 	$contexte['patron_texte'] = $patron_texte;
-	$result_texte = 
-		($patron_texte && ($patron_html != $patron_texte))
-		// ? recuperer_fond($patron_texte, $contexte) . "\n"
-		? recuperer_page(generer_url_public('patron_switch')."&".spiplistes_http_build_query($contexte,"","&"),true)
-		: spiplistes_courrier_version_texte($message_html) . "\n"
-		;
-		
-	$result = array($result_html, $result_texte);
+	$result_texte = '';
+	$texte_ok = false;
+	if ($patron_texte && ($patron_texte != $patron_html)) {
+		if (find_in_path('patron_switch.html')) {
+			$result_texte= recuperer_fond('patron_switch', $contexte);
+			$texte_ok= true;
+		}
+	}
+	// si version texte manque, la calculer
+	// a partir de la version html
+	if (!$texte_ok) {
+		$result_texte= spiplistes_courrier_version_texte($result_html) . PHP_EOL ;
+	}
+	// eliminer les espaces pour un vrai calcul de poids
+	$result_html = trim($result_html);
+	$result_texte = trim($result_texte);
+	$result = array ($result_html, $result_texte);
 	
 	return($result);
 }
@@ -908,14 +1009,15 @@ function spiplistes_assembler_patron ($path_patron, $contexte) {
  * @return array (string $html, string $texte)
  */
 function spiplistes_tampon_assembler_patron () {
-	spiplistes_log_api("calculer tampon");
+	//spiplistes_log_api("calculer tampon");
 	$contexte = array();
 	$path_patron = spiplistes_pref_lire('tampon_patron');
-	spiplistes_log_api($path_patron);
+	//spiplistes_log_api($path_patron);
 	if(!empty($path_patron))
 	{
 		foreach(explode(",", _SPIPLISTES_TAMPON_CLES) as $key) {
-			$contexte[$key] = spiplistes_pref_lire($key);
+			$s = spiplistes_pref_lire($key);
+			$contexte[$key] = (!empty($s) && ($s != 'non')) ? $s : '';
 		}
 		$result = spiplistes_assembler_patron(_SPIPLISTES_PATRONS_TAMPON_DIR . $path_patron, $contexte);
 	}
@@ -931,13 +1033,13 @@ function spiplistes_pied_page_assembler_patron ($id_liste, $lang = false) {
 	
 	if(($id_liste = intval($id_liste)) > 0)
 	{
-		$result = sql_getfetsel('pied_page', 'spip_listes', "id_liste=".sql_quote($id_liste), '','',1);
+		$pied_patron = sql_getfetsel('pied_page', 'spip_listes', "id_liste=".sql_quote($id_liste), '','',1);
 		
 		$pied_patron =
-			(!$result)
+			(!$pied_patron)
 			// si patron vide (ancienne version de SPIP-Listes ?), appliquer le patron par defaut
 			? _SPIPLISTES_PATRONS_PIED_DEFAUT
-			: $result
+			: $pied_patron
 			;
 		if(strlen($pied_patron) > _SPIPLISTES_PATRON_FILENAMEMAX)
 		{
@@ -966,9 +1068,14 @@ function spiplistes_format_valide ($format) {
 	return(in_array($format, array("non", "texte", "html")) ? $format : false);
 }
 
-//CP-20080519
-// Les fonctions spiplistes_auteurs_*() concernent les auteurs
-// Table cible : spip_auteurs
+/**
+ ******************************************************************************
+	Les fonctions spiplistes_auteurs_*() concernent les auteurs
+	
+	Table cible : spip_auteurs
+	
+ ******************************************************************************
+ */
 
 // CP-20080503
 // soit update cookie du cookie transmis
@@ -992,9 +1099,57 @@ function spiplistes_date_heure_valide ($date_heure) {
 	return(false);
 }
 
-//CP-20080511
-function spiplistes_auteurs_auteur_select ($sql_select, $sql_where) {
-	return(sql_select($sql_select, 'spip_auteurs', $sql_where." LIMIT 1"));
+//CP-200080519
+// Nombre total d'auteurs (ou visiteur, ou perso) elligibles
+// Nota: un compte 'nouveau' est un compte visiteur (inscription) qui ne s'est pas encore connecté
+// Nota2: un compte créé via l'espace privé mais pas encore connecté
+// n'a pas le statut 'nouveau' mais celui de son groupe
+function spiplistes_auteurs_elligibles_compter ()
+{
+	static $nb;
+	if(!$nb)
+	{
+		$sql_where = array(
+			  'statut!='.sql_quote('5poubelle')
+			, 'statut!='.sql_quote('nouveau')
+			);
+		$nb = sql_countsel('spip_auteurs', $sql_where);
+	}
+	return($nb);
+}
+
+//CP-200080519
+//Total des auteurs qui ne sont pas abonnes a une liste
+function spiplistes_auteurs_non_abonnes_compter ()
+{
+	static $nb;
+	if($nb === null)
+	{
+		$selection =
+			(spiplistes_spip_est_inferieur_193())
+			? 'SELECT id_auteur FROM spip_auteurs_listes GROUP BY id_auteur'
+			: sql_select('id_auteur', 'spip_auteurs_listes', '','id_auteur','','','','',false)
+		;
+		$sql_where = array(
+			  'statut!='.sql_quote('5poubelle')
+			, 'statut!='.sql_quote('nouveau')
+			, 'id_auteur NOT IN ('.$selection.')'
+			);
+		$nb = sql_countsel('spip_auteurs', $sql_where);
+	}
+	return($nb);
+}
+
+/**
+ * CP-20080511 20110315
+ * Renvoie la selection pour un seul auteur
+ * @return array OR false
+ */
+function spiplistes_auteurs_auteur_select ($select, $where = array())
+{
+	//$result = sql_select($select, 'spip_auteurs', $where, '', '', 1);
+	$auteur = sql_fetsel($select, 'spip_auteurs', $where, '', '', 1);
+	return($auteur);
 }
 
 //CP-20080511
@@ -1013,9 +1168,13 @@ function spiplistes_auteurs_auteur_delete ($sql_where) {
 	return($result);
 }
 
-//CP-20080511
+/**
+ * CP-20080511
+ * @return int OR boolean
+ */
 function spiplistes_auteurs_auteur_insertq ($champs_array) {
-	return(sql_insertq('spip_auteurs', $champs_array));
+	$id_auteur = sql_insertq('spip_auteurs', $champs_array);
+	return($id_auteur);
 }
 
 //CP-20090409
@@ -1035,10 +1194,65 @@ function spiplistes_auteurs_auteur_valider ($id_auteur, $as_redact = false) {
 	return($result);
 }
 
+/**
+ * CP-20110315
+ * @return bool
+ */
+function spiplistes_auteurs_auteur_statut_modifier ($id_auteur, $statut)
+{
+	spiplistes_debug_log ('modification status for auteur #'.$id_auteur);
+	$result = sql_update(
+					'spip_auteurs'
+					, array('statut' => sql_quote($statut))
+					, 'id_auteur='.$id_auteur.' LIMIT 1'
+				);
+	return ($result);
+}
+
+/**
+ * CP-20110321
+ * Retourne une version texte pure du nom du site
+ * @return string
+ */
+function spiplistes_nom_site_texte ($lang = '') {
+	
+	static $nom_site;
+	$lang = trim ($lang);
+	if (empty($lang)) {
+		$lang = $GLOBALS['meta']['langue_site'];
+	}
+	
+	if ($nom_site === null) 
+	{
+		$nom_site = array();
+	}
+	if (!isset($nom_site[$lang]))
+	{
+		$n = strip_tags(html_entity_decode(extraire_multi($GLOBALS['meta']['nom_site'])));
+		
+		// incorrect avec utf-8. Abime les diacritiques
+		//$n = preg_replace ('@\s*@', ' ', $n);
+		
+		$nom_site[$lang] = trim($n);
+	}
+	return ($nom_site[$lang]);
+}
+
+/**
+ * CP-20110321
+ * @return string
+ */
+function spiplistes_texte_2_charset ($texte, $charset) {
+	if ($charset && ($charset != $GLOBALS['meta']['charset'])) {
+		include_spip('inc/charsets');
+		$texte = unicode2charset(charset2unicode($texte), $charset);
+	}
+	return ($texte);
+}
 
 //CP-20080511
 // CP-20090111: utiliser l'api pour pouvoir envoyer par smtp si besoin
-function spiplistes_envoyer_mail ($to, $subject, $message, $from = false, $headers = "", $format = 'texte') {
+function spiplistes_envoyer_mail ($to, $subject, $message, $from = false, $headers = '', $format = 'texte') {
 	
 	static $opt_simuler_envoi;
 
@@ -1049,17 +1263,20 @@ function spiplistes_envoyer_mail ($to, $subject, $message, $from = false, $heade
 	if(!$opt_simuler_envoi) {
 		$opt_simuler_envoi = spiplistes_pref_lire('opt_simuler_envoi');
 	}
-	if(!$from) {
+	if (!$from)
+	{
 		$from = spiplistes_email_from_default();
 	}
-	if(strpos($from, "<") === false) {
-		$fromname = extraire_multi($GLOBALS['meta']['nom_site']);
-		if ($charset!=$GLOBALS['meta']['charset']){
+	if(strpos($from, '<') === false) {
+		$fromname = spiplistes_nom_site_texte();
+		
+		if ($charset != $GLOBALS['meta']['charset']){
 			include_spip('inc/charsets');
 			$fromname = unicode2charset(charset2unicode($fromname),$charset);
 		}
 	}
-	$reply_to = "no-reply".preg_replace("|.*(@[a-z.]+)|i", "$1", email_valide($from));
+	// @TODO: voir email_reply_to ?
+	$reply_to = 'no-reply'.preg_replace("|.*(@[a-z.]+)|i", "$1", email_valide($from));
 	
 	if($opt_simuler_envoi == 'oui') {
 		spiplistes_log("!!! MAIL SIMULATION MODE !!!");
@@ -1087,12 +1304,16 @@ function spiplistes_envoyer_mail ($to, $subject, $message, $from = false, $heade
 			}
 			$message = $message['texte']->Body;
 		}
-		$email_a_envoyer['texte'] = new phpMail($to, $subject, '', html_entity_decode($message), $charset);
+		//$message = spiplistes_html_entity_decode ($message, $charset);
+		$message = spiplistes_translate_2_charset ($message, $charset, true);
+		
+		//$email_a_envoyer['texte'] = new phpMail($to, $subject, '', html_entity_decode($message), $charset);
+		$email_a_envoyer['texte'] = new phpMail($to, $subject, '', $message, $charset);
 		$email_a_envoyer['texte']->From = $from ;
 		if($fromname) $email_a_envoyer['html']->FromName = $fromname ; 
-		$email_a_envoyer['texte']->AddCustomHeader("Errors-To: ".$return_path); 
-		$email_a_envoyer['texte']->AddCustomHeader("Reply-To: ".$reply_to); 
-		$email_a_envoyer['texte']->AddCustomHeader("Return-Path: ".$return_path); 
+		$email_a_envoyer['texte']->AddCustomHeader('Errors-To: '.$return_path); 
+		$email_a_envoyer['texte']->AddCustomHeader('Reply-To: '.$reply_to); 
+		$email_a_envoyer['texte']->AddCustomHeader('Return-Path: '.$return_path); 
 		$email_a_envoyer['texte']->SMTPKeepAlive = true;
 		
 		$result = $email_a_envoyer[$format]->send();
@@ -1106,9 +1327,9 @@ function spiplistes_envoyer_mail ($to, $subject, $message, $from = false, $heade
 function spiplistes_listes_statuts_periodiques () {
 	static $s;
 	if($s === null) {
-		$s = explode(";", _SPIPLISTES_LISTES_STATUTS_PERIODIQUES);
+		$s = explode(';', _SPIPLISTES_LISTES_STATUTS_PERIODIQUES);
 	}
-	return($s);
+	return ($s);
 }
 
 /*
@@ -1162,11 +1383,61 @@ function spiplistes_listes_langue ($id_liste) {
 /*
  */
 function spiplistes_return_path ($from) {
-	$return_path = spiplistes_pref_lire('email_return_path_defaut');
-	if(!$return_path) {
-		$return_path = $from;
+	return(spiplistes_pref_lire_defaut ('email_return_path_defaut', $from));
+}
+
+/**
+ * Lire la valeur de $key dans les prefs (meta)
+ * Si erreur (manquante) appliquer $defaut
+ **/
+function spiplistes_pref_lire_defaut ($key, $default)
+{
+	$value = spiplistes_pref_lire($key);
+	if(!$value) {
+		$value = $default;
 	}
-	return($return_path);
+	return($value);
+}
+
+function spiplistes_str_auteurs ($nb)
+{
+	$result =
+		($nb > 0)
+		? _T('spiplistes:' . (($nb > 1) ? '_n_auteurs_' : '_1_auteur_'), array('n' => $nb))
+		: 'erreur param'
+		;
+	return($result);
+}
+
+function spiplistes_str_abonnes ($nb) 
+{
+	$result =
+		($nb > 0)
+		? _T('spiplistes:' . (($nb > 1) ? '_n_abonnes_' : '1_abonne'), array('n' => $nb))
+		: _T('spiplistes:aucun_abo')
+		;
+	return($result);
+}
+
+function spiplistes_str_abonnements ($nb) 
+{
+	$result =
+		($nb > 0)
+		? _T('spiplistes:' . (($nb > 1) ? '_n_abos_' : '_1_abo_'), array('n' => $nb))
+		: _T('spiplistes:aucun_abonmt')
+		;
+	return($result);
+}
+
+
+function spiplistes_str_listes ($nb) 
+{
+	$result =
+		($nb > 0)
+		? _T('spiplistes:' . (($nb > 1) ? 'n_listes' : '1_liste'), array('n' => $nb))
+		: 'erreur param'
+		;
+	return($result);
 }
 
 /******************************************************************************************/
@@ -1188,4 +1459,3 @@ function spiplistes_return_path ($from) {
 /* Free Software Foundation,                                                              */
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
-?>

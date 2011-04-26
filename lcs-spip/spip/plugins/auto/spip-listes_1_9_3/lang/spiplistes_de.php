@@ -1,7 +1,13 @@
 <?php
-
-// This is a SPIP module file  --  Ceci est un fichier module de SPIP
-
+/**
+ * Pack langue allemand
+ * 
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: paladin@quesaco.org $
+ // $LastChangedDate: 2011-04-25 19:54:15 +0200 (Lun 25 avr 2011) $
+ 
 $GLOBALS['i18n_spiplistes_de'] = array(
 
 
@@ -17,7 +23,7 @@ Der Versand der Mails kann einige Minuten in Anspruch nehmen: Die Empf&auml;nger
 'abonnement_bouton'=>'Ihr Abonnement bearbeiten',
 'abonnement_cdt' => '<a href=\'http://bloog.net/spip-listes/\'>SPIP-Listes</a>' ,
 'abonnement_change_format'=>'Sie k&ouml;nnen das Format, in dem Sie den Newsletter erhalten &auml;ndern: ',
-'abonnement_mail_text' => 'Um Ihr Abonnement zu bearbeiten, gehen Sie bitte zu dieser Adresse',
+'modif_abonnement_text' => 'Um Ihr Abonnement zu bearbeiten, gehen Sie bitte zu dieser Adresse',
 'abonnement_mail_passcookie' => '(Dieses ist eine automatische Nachricht)
 Um Ihr Abonnement der Website: @nom_site_spip@ (@adresse_site@) zu bearbeiten,
 gehen Sie bitte zu dieser Adresse:

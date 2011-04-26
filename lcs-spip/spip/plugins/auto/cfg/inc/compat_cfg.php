@@ -1,16 +1,24 @@
 <?php
 
-/*
- * Plugin CFG pour SPIP
- * (c) toggg 2007, distribue sous licence GNU/GPL
- * Documentation et contact: http://www.spip-contrib.net/
+/**
+ * Plugin générique de configuration pour SPIP
  *
+ * @license    GNU/GPL
+ * @package    plugins
+ * @subpackage cfg
+ * @category   outils
+ * @copyright  (c) toggg 2007
+ * @link       http://www.spip-contrib.net/
+ * @version    $Id: compat_cfg.php 36744 2010-03-29 02:31:19Z gilles.vincent@gmail.com $
  */
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
+/**
+ * CFG doit-il être compatible SPIP 1.9.2 ?
+ * @ignore
+ */
 define('_COMPAT_CFG_192', true);
-
 
 if (version_compare($GLOBALS['spip_version_code'], '11216', '<')
 	&& !function_exists('balise_ACTION_FORMULAIRE_dist')) {
@@ -26,18 +34,21 @@ if (version_compare($GLOBALS['spip_version_code'], '1.9300', '<')
 	AND $f = charger_fonction('compat_cfg', 'inc'))
 		$f();
 
-
-## ceci n'est pas l'original du plugin compat mais la copie pour CFG
-
-// En termes de distribution ce fichier PEUT etre recopie dans chaque plugin
-// qui desire en avoir une version autonome (voire forkee), A CONDITION DE
-// RENOMMER le fichier et ses deux fonctions ; c'est un peu lourd a maintenir
-// mais c'est le prix a payer pour l'independance des plugins entre eux :-(
-
-// la version commune a tous est developpee sur
-// svn://zone.spip.org/spip-zone/_dev_/compat/
-
-
+/**
+ * Gestion de la compatibilité avec SPIP 1.9.2
+ *
+ * <b>ceci n'est pas l'original du plugin compat mais la copie pour CFG</b>
+ *
+ * En termes de distribution ce fichier PEUT etre recopie dans chaque plugin
+ * qui desire en avoir une version autonome (voire forkee), A CONDITION DE
+ * RENOMMER le fichier et ses deux fonctions ; c'est un peu lourd a maintenir
+ * mais c'est le prix a payer pour l'independance des plugins entre eux :-(
+ *
+ * la version commune a tous est developpee sur
+ * {@link http://zone.spip.org/spip-zone/browser/_dev_/compat/ svn://zone.spip.org/spip-zone/_dev_/compat/}
+ *
+ * @param Array $quoi
+ */
 function inc_compat_cfg_dist($quoi = NULL) {
 	if (!function_exists($f = 'compat_cfg_defs')) $f .= '_dist';
 	$defs = $f();
@@ -57,9 +68,20 @@ function inc_compat_cfg_dist($quoi = NULL) {
 	}
 }
 
+/**
+ * Calcule le tableau de compatibilité des fonctions non définies sous SPIP2.0
+ * (fournit leur arbre syntaxique manipulé par le compilo)
+ * 
+ * @return Array
+ */
 function compat_cfg_defs_dist() {
 	$defs = array(
-		
+		// on fait au plus simple pour le journal
+		'journal' => 
+			'($phrase, $opt = array()) {
+				return spip_log($phrase, \'journal\');
+			}',
+					
 		'push' => 
 			'($array, $val) {
 				if($array == \'\' OR !array_push($array, $val)) return \'\';

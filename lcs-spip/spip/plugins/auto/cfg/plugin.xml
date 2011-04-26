@@ -2,14 +2,13 @@
     <nom>
     <multi>
     [fr]cfg: moteur de configuration
-    [de]cfg: Konfigurationsmotor
+    [de]CFG: Konfigurationsmodul
     </multi>
     </nom>
-    <auteur>bertrand Gugger [->http://toggg.com/], Matthieu Marcillaud
-_ &#169; 2008 - <multi>[fr]Distribu&#233; sous licence[en]License[de]Vertrieb unter Lizenz</multi> GNU/LGPL
-    </auteur>
+    <auteur>bertrand Gugger, Matthieu Marcillaud</auteur>
+    <licence>&#169; 2009 - GNU/LGPL</licence>
     <version>
-    1.12.5
+    1.16.0
     </version>
     <etat>
     stable
@@ -20,9 +19,8 @@ _ &#169; 2008 - <multi>[fr]Distribu&#233; sous licence[en]License[de]Vertrieb un
 
 Il est utilis&#233; par de nombreux plugins, mais il peut aussi avoir d'autres usages comme le param&#233;trage de squelettes.
 [en]This plugin manage some configuration graphic user interfaces for some modules.
-[de]Dieses Plugin erm&#246;glicht es, in sehr einfacher Weise die Konfigurationsschnittstellen verschiedener Module zu verwalten.
-
-Es wird von vielen Plugins verwendet, kann aber auch anderen Nutzen finden wie die Parametereinstellung von Skeletten.
+[de]Dieses Plugin stellt die Konfigurationsschnittstelle f&uuml;r zahlreiche Plugins bereit.
+Es kann auch f&uuml; die Konfiguration von Skeletten verwendet werden.
     </multi>
     </description>
     <lien>http://www.spip-contrib.net/?rubrique575</lien>
@@ -41,10 +39,21 @@ Es wird von vielen Plugins verwendet, kann aber auch anderen Nutzen finden wie d
         <inclure>cfg_pipeline.php</inclure>
     </pipeline>
     <pipeline>
+        <nom>affiche_gauche</nom>
+        <inclure>cfg_pipeline.php</inclure>
+    </pipeline>
+    <pipeline>
         <nom>header_prive</nom>
         <inclure>cfg_pipeline.php</inclure>
     </pipeline>
-
+    <pipeline>
+        <nom>insert_head</nom>
+        <inclure>cfg_pipeline.php</inclure>
+    </pipeline>
+    <pipeline>
+        <nom>insert_head_css</nom>
+        <inclure>cfg_pipeline.php</inclure>
+    </pipeline>
      <pipeline>
         <nom>formulaire_charger</nom>
         <inclure>cfg_pipeline.php</inclure>
@@ -60,6 +69,8 @@ Es wird von vielen Plugins verwendet, kann aber auch anderen Nutzen finden wie d
     <pipeline>
         <nom>editer_contenu_formulaire_cfg</nom>
         <inclure>cfg_pipeline.php</inclure>
-    </pipeline>    
+    </pipeline>
 	<necessite id="SPIP" version="[1.9.0;]" />
+	<categorie>outil</categorie>
+	<traduire gestionnaire="salvatore" module="cfg" reference="fr" />
 </plugin>

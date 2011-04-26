@@ -1,9 +1,7 @@
-#CACHE{60}
-[(#EVAL{defined('_VISITEURS_CONNECTES')}|oui)
-#SET{nb,#REM|cs_compter_visiteurs|cs_span{class='cs_nb_visiteurs'}}
-[(#REM)
-	la balise # REM assure la compatibilite avec SPIP 1.92 qui n'a pas de balise # VAL
-	La syntaxe SPIP 2.0 ready est : # VAL{'couteau:visiteurs_connectes'}
-]
-[<p class='cs_visiteurs'>(#REM|sinon{'couteau:visiteurs_connectes'}|_T{#ARRAY{nb,#GET{nb}}})</p>]
+#CACHE{#ENV*{cache,60}}
+[(#VAL{_CS_visiteurs_connectes}|defined|oui)
+#SET{nb,#VAL{cs_compter_visiteurs}|filtrer|cs_span{class='cs_nb_visiteurs'}}
+#SET{ch,couteau:visiteurs_connectes}
+[(#VAL{visiteurs_connectes}|_T|=={visiteurs connectes}|non)#SET{ch,visiteurs_connectes}]
+[[(#ENV*{p,1}|oui)<p class='cs_visiteurs'>](#GET{ch}|_T{#ARRAY{nb,#GET{nb}}})[(#ENV*{p,1}|oui)</p>]]
 ]

@@ -7,7 +7,7 @@
  */
 
 /**
- * Afficher une de facon textuelle les dates de debut et fin en fonction des cas
+ * Afficher de facon textuelle les dates de debut et fin en fonction des cas
  * - Le lundi 20 fevrier a 18h
  * - Le 20 fevrier de 18h a 20h
  * - Du 20 au 23 fevrier
@@ -31,6 +31,8 @@ function agenda_affdate_debut_fin($date_debut, $date_fin, $horaire = 'oui', $for
 	
 	$abbr = '';
 	if (strpos($forme,'abbr')!==false) $abbr = 'abbr';
+	$affdate = "affdate_jourcourt";
+	if (strpos($forme,'annee')!==false) $affdate = 'affdate';
 	
 	$dtstart = $dtend = $dtabbr = "";
 	if (strpos($forme,'hcal')!==false) {
@@ -51,7 +53,7 @@ function agenda_affdate_debut_fin($date_debut, $date_fin, $horaire = 'oui', $for
 	$s = "";
 	if ($d==$f)
 	{ // meme jour
-		$s = ucfirst(nom_jour($d,$abbr))." ".affdate_jourcourt($d);
+		$s = ucfirst(nom_jour($d,$abbr))." ".$affdate($d);
 		if ($h)
 			$s .= " $hd";
 		$s = "$dtstart$s$dtabbr";
@@ -61,20 +63,20 @@ function agenda_affdate_debut_fin($date_debut, $date_fin, $horaire = 'oui', $for
 	{ // meme annee et mois, jours differents
 		if ($h){
 			$s = $du . $dtstart . affdate_jourcourt($d) . " $hd" . $dtabbr;
-			$s .= $au . $dtend . affdate_jourcourt($f);
+			$s .= $au . $dtend . $affdate($f);
 			if ($hd!=$hf) $s .= " $hf";
 			$s .= $dtabbr;
 		}
 		else {
 			$s = $du . $dtstart . jour($d) . $dtabbr;
-			$s .= $au . $dtend . affdate_jourcourt($f) . $dtabbr;
+			$s .= $au . $dtend . $affdate($f) . $dtabbr;
 		}
 	}
 	else if ((date("Y",$date_debut))==date("Y",$date_fin))
 	{ // meme annee, mois et jours differents
 		$s = $du . $dtstart . affdate_jourcourt($d);
 		if ($h) $s .= " $hd";
-		$s .= $dtabbr . $au . $dtend . affdate_jourcourt($f);
+		$s .= $dtabbr . $au . $dtend . $affdate($f);
 		if ($h) $s .= " $hf";
 		$s .= $dtabbr;
 	}
@@ -96,19 +98,29 @@ function agenda_dateplus($date,$secondes,$format){
 	return date($format,$date);
 }
 
-/**
- * Afficher un message "une truc"/"N trucs"
- *
- * @param int $nb
- * @return string
- */
-function agenda_affiche_un_ou_plusieurs($nb,$chaine_un,$chaine_plusieurs,$var='nb'){
-	if (!$nb=intval($nb)) return "";
-	if ($nb>1) return _T($chaine_plusieurs, array($var => $nb));
-	else return _T($chaine_un);
-}
 
-function agenda_memo_full($date_deb=0, $date_fin=0 , $titre='', $descriptif='', $lieu='', $url='', $cal='')
+/**
+ * Ajoute un evenement dans un buffer, comme le filtre agenda_memo,
+ * mais en prenant une date de debut et de fin de l'evenement.
+ * 
+ * La liste est retournee et videe par un appel vide a cette fonction
+ * (voir le filtre agenda_mini)
+ *
+ * @param string $date_deb Date de debut de l'evenement '2010-10-09 13:30:00'
+ * @param string $date_fin Date de fin de l'evenement
+ * @param string $titre Titre de l'evenement
+ * @param string $descriptif Descriptif de l'evenement
+ * @param string $lieu Lieu de l'evenement
+ * @param string $url URL du lien
+ * @param string $cal ?
+ * @param string $var_date
+ * 	Inserer la date du jour parcouru dans l'URL du lien (de chaque evenement).
+ * 	Passer pour cela le nom de la variable a utiliser
+ * (typiquement, #ENV{var_date} avec le mini-calendrier).
+ * 
+ * @return
+**/
+function agenda_memo_full($date_deb=0, $date_fin=0 , $titre='', $descriptif='', $lieu='', $url='', $cal='', $var_date='')
 {
 	static $agenda = array();
 	if (!$date_deb) {
@@ -126,17 +138,45 @@ function agenda_memo_full($date_deb=0, $date_fin=0 , $titre='', $descriptif='', 
 	$ts_startday1=strtotime($startday1);
 	$ts_date_fin=strtotime($date_fin);
 	$maxdays=365;
-	while (($ts_startday1<=$ts_date_fin)&&($maxdays-->0))
+	$d1 = date('Y-m-d', strtotime($date_deb));
+	
+	while (($ts_startday1 <= $ts_date_fin) && ($maxdays-- > 0))
 	{
 		$day=date('Y-m-d H:i:s',$ts_startday1);
-		$agenda[$cal][(date_anneemoisjour($day))][] =  array(
-			'CATEGORIES' => $cal,
-			'DTSTART' => $idatedeb,
-			'DTEND' => $idatefin,
-			'DESCRIPTION' => $descriptif,
-			'SUMMARY' => $titre,
-			'LOCATION' => $lieu,
-			'URL' => $url);
+		$d2 = date('Y-m-d', $ts_startday1);
+		
+		if ($var_date) {
+			$url = parametre_url($url, $var_date, $d2);
+		}
+		
+		// element a ajouter:
+		$a2 = array (
+			     'CATEGORIES' => $cal,
+			     'DTSTART' => $idatedeb,
+			     'DTEND' => $idatefin,
+			     'DESCRIPTION' => $descriptif,
+			     'SUMMARY' => $titre,
+			     'LOCATION' => $lieu,
+			     'URL' => $url);
+		//DEBUG echo "\n<!-- ";
+		//DEBUG echo "" . sprintf("d1=%s d2=%s",$d1,$d2) . "";
+		// On extrait la bonne liste:
+		$tab = (array)$agenda[$cal][(date_anneemoisjour($day))];
+		// si la date de debut de l'element est exactement la
+		// date du jour courant ET qu'il y a deja des
+		// evenements, on met l'element a ajouter en premier
+		// dans la liste; sinon on l'ajoute a la fin comme
+		// d'habitude:
+		if( $d1 == $d2 && count($tab)>0 ) {
+		  //DEBUG echo " a2a1 ";
+		  array_unshift($tab,$a2);
+		} else {
+		  //DEBUG echo " a1a2 ";
+		  $tab[] = $a2;
+		}
+		// On remplace par la nouvelle liste:
+		$agenda[$cal][(date_anneemoisjour($day))] = $tab;
+		//DEBUG echo " -->";
 		$ts_startday1 += 26*3600; // le jour suivant : +26 h pour gerer les changements d'heure
 		$ts_startday1 = mktime(0, 0, 0, date("m",$ts_startday1), 
 		date("d",$ts_startday1), date("Y",$ts_startday1)); // et remise a zero de l'heure	

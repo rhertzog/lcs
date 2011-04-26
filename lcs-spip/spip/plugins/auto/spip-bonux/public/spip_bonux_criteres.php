@@ -41,9 +41,9 @@ function critere_CONDITION_si_dist($idb, &$boucles, $crit) {
  * @param unknown_type $boucles
  * @param unknown_type $crit
  */
-function critere_compteur($idb, &$boucles, $crit){
+function critere_compteur($idb, &$boucles, $crit, $left=false){
 	$boucle = &$boucles[$idb];
-	
+
 	$_fusion = calculer_liste($crit->param[1], array(), $boucles, $boucle->id_parent);
 	$params = $crit->param;
 	$table = reset($params);
@@ -63,6 +63,8 @@ function critere_compteur($idb, &$boucles, $crit){
 	$arrivee = array($table, $trouver_table($table, $boucle->sql_serveur));
 	$depart = array($boucle->id_table,$trouver_table($boucle->id_table, $boucle->sql_serveur));
 
+	// noter les jointures deja installees
+	$joins = array_keys($boucle->from);
 	if ($compt = calculer_jointure($boucle,$depart,$arrivee)){
 		if ($_fusion!="''"){
 			// en cas de jointure, on ne veut pas du group_by sur la cle primaire !
@@ -76,9 +78,26 @@ function critere_compteur($idb, &$boucles, $crit){
 		$boucle->select[]= "COUNT($compt.$type_id) AS compteur_$table";	
 		if ($op)
 			$boucle->having[]= array("'".$op."'", "'compteur_".$table."'",$op_val);
+		if ($left){
+			foreach($boucle->from as $k=>$val){
+				if (!in_array($k, $joins)){
+					$boucle->from_type[$k] = 'left';
+				}
+			}
+		}
 	}
 }
 
+/**
+ * {compteur_left xxx} permet de faire la meme chose que {compteur xxx}
+ * mais avec un LEFT JOIN pour ne pas ignorer ceux qui ont un compteur nul
+ * @param <type> $idb
+ * @param <type> $boucles
+ * @param <type> $crit
+ */
+function critere_compteur_left($idb, &$boucles, $crit){
+	critere_compteur($idb, $boucles, $crit, true);
+}
 
 /**  Critere {somme champ} #SOMME{champ} */
 function critere_somme($idb, &$boucles, $crit){
@@ -155,13 +174,14 @@ function calcul_critere_fonctions($func, $idb, &$boucles, $crit) {
  */
 function critere_tri_dist($idb, &$boucles, $crit) {
 	$boucle = &$boucles[$idb];
+	$id_table = $boucle->id_table;
 
 	// definition du champ par defaut
 	$_champ_defaut = !isset($crit->param[0][0]) ? "''" : calculer_liste(array($crit->param[0][0]), array(), $boucles, $boucle->id_parent);
 	$_sens_defaut = !isset($crit->param[1][0]) ? "1" : calculer_liste(array($crit->param[1][0]), array(), $boucles, $boucle->id_parent);
 	$_variable = !isset($crit->param[2][0]) ? "'$idb'" : calculer_liste(array($crit->param[2][0]), array(), $boucles, $boucle->id_parent);
 
-	$_tri = "((\$t=(isset(\$Pile[0]['tri'.$_variable]))?\$Pile[0]['tri'.$_variable]:$_champ_defaut)?preg_replace(',[^\w],','',\$t):'')";
+	$_tri = "((\$t=(isset(\$Pile[0]['tri'.$_variable]))?\$Pile[0]['tri'.$_variable]:$_champ_defaut)?tri_protege_champ(\$t):'')";
 	
 	$_sens_defaut = "(is_array(\$s=$_sens_defaut)?(isset(\$s[\$st=$_tri])?\$s[\$st]:reset(\$s)):\$s)";
 	$_sens ="((intval(\$t=(isset(\$Pile[0]['sens'.$_variable]))?\$Pile[0]['sens'.$_variable]:$_sens_defaut)==-1 OR \$t=='inverse')?-1:1)";
@@ -179,7 +199,9 @@ function critere_tri_dist($idb, &$boucles, $crit) {
 		\$senstri = (\$senstri<0)?' DESC':'';
 	};
 	";
-	$boucle->order[] = "\$tri.\$senstri";
+	$field = serialize(array_keys($boucle->show['field']));
+	$boucle->select[] = "\".tri_champ_select(\$tri).\"";
+	$boucle->order[] = "tri_champ_order(\$tri,'$id_table','$field').\$senstri";
 }
 
 /**

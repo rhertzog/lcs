@@ -1,15 +1,26 @@
 <?php
 
-/*
- * Plugin CFG pour SPIP
- * (c) toggg, marcimat 2007-2008, distribue sous licence GNU/GPL
- * Documentation et contact: http://www.spip-contrib.net/
+/**
+ * Plugin générique de configuration pour SPIP
+ *
+ * @license    GNU/GPL
+ * @package    plugins
+ * @subpackage cfg
+ * @category   outils
+ * @copyright  (c) toggg, marcimat 2007-2008
+ * @link       http://www.spip-contrib.net/
+ * @version    $Id: cfg_id.php 36735 2010-03-28 21:25:09Z gilles.vincent@gmail.com $
  */
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
-
-// apres que le parseur a trouve les champs
+/**
+ * apres que le parseur a trouve les champs
+ *
+ * @param string $nom
+ * @param Object $cfg
+ * @return string
+ */
 function cfg_pre_charger_cfg_id($nom, &$cfg){
 
 	// id a renseigner
@@ -29,7 +40,12 @@ function cfg_pre_charger_cfg_id($nom, &$cfg){
 	return true;
 }
 
-
+/**
+ *
+ * @param string $nom
+ * @param Object $cfg
+ * @return string
+ */
 function cfg_pre_traiter_cfg_id($nom, &$cfg){
 	
 	// lorsque c'est un champ de type multi que l'on modifie 

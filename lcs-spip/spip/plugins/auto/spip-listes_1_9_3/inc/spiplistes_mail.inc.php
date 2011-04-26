@@ -1,30 +1,43 @@
 <?php
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:13 +0200 (Mon, 25 Apr 2011) $s
 
-// inc/spiplistes_mail.inc.php
-
-// $LastChangedRevision: 24928 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2008-12-05 12:51:16 +0100 (ven, 05 déc 2008) $
+if(!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/spiplistes_api_globales');
 
+/**
+ * @return boolean
+ */
+function spiplistes_utiliser_facteur()
+{
+	static $utiliser;
+	if($utiliser === null)
+	{
+		$utiliser =
+			(_SPIPLISTES_UTILISER_FACTEUR == 'oui')
+			&& function_exists('liste_plugin_actifs')
+			&& ($p = liste_plugin_actifs())
+			&& isset($p['FACTEUR'])
+			&& spiplistes_log('plugin facteur');
+	}
+	return($utiliser);
+}
+
+if(!spiplistes_utiliser_facteur() && !class_exists('PHPMailer'))
+{
 	include_spip('phpmailer/class.phpmailer');
 	include_spip('phpmailer/class.smtp');
+}
 
 	class phpMail extends PHPMailer {
 
 		function phpMail($email, $objet, $message_html, $message_texte, $charset) {
 		
-			// CP-20081129
-			// c'est plutot a la meleuse de faire ce boulot
-			/*
-			$fromname = $GLOBALS['meta']['nom_site'];
-				if ($GLOBALS['meta']['spiplistes_charset_envoi']!=$GLOBALS['meta']['charset']){
-				include_spip('inc/charsets');
-				$fromname = unicode2charset(charset2unicode($fromname),$GLOBALS['meta']['spiplistes_charset_envoi']);
-				}
-			*/
-			
 			$this->FromName    =  $fromname ; 
 			$this->CharSet	= $charset ;
 	    	$this->Mailer	= 'mail';
@@ -137,4 +150,3 @@ include_spip('inc/spiplistes_api_globales');
 
 	}
 
-?>

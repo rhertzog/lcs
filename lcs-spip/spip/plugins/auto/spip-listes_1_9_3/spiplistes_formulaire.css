@@ -1,5 +1,8 @@
-/* spiplistes_formulaire.css */
 
+/* divers css pour les formulaires et pages spiplistes publiques */
+
+/* css de formulaires/formulaire_abonnement.html */
+ 
 form.formulaire-spiplistes-abo {
 /*	margin:0;
 	padding:1em !important; /* */
@@ -57,18 +60,44 @@ form.formulaire-spiplistes-abo p.message-formulaire {
 	color:red; 
 	font-size: 110%
 }
+div.formulaire_spip p.desabo_liste {
+	text-align: center;
+}
+div.formulaire_spip p.desabo_liste span.titre {
+	font-weight:700;
+	font-size:1.2em;
+}
+div.formulaire_spip p.desabo_liste span.descriptif {
+	display:block;
+	text-align:center;
+	font-weight:500;
+	font-size:1em;
+}
 form.formulaire-spiplistes-abo p.spip_bouton {
 	background-color:transparent !important;
 	text-align:right !important;
 	margin:0;
 }
+div.formulaire_spip p.errormsg {
+	text-align:center;
+}
+
+/* css de abonnement.html */
+
 #spiplistes-pageabo {text-align:center;padding:1em;}
 #spiplistes-pageabo div.bloc {text-align:left;margin:1em auto}
 #spiplistes-pageabo h1, #spiplistes-pageabo div.spiplistes-cdt, .center {text-align:center}
 
-#spiplistes-formabo .nom {display:block;font-size:1.2em;}
-#spiplistes-formabo .nom, #spiplistes-formabo .souhait {text-align:center}
-#spiplistes-formabo .souhait {display:block;font-size:90%}
+#spiplistes-formabo form
+, #spiplistes-formabo .message-formulaire {margin:0 auto; width:auto}
+#spiplistes-formabo .souhait
+, #spiplistes-formabo .message-formulaire {display:block;font-size:100%;text-align:center}
+#spiplistes-formabo .nom {display:block;font-size:1.2em;text-align:left}
+#spiplistes-formabo p.spip_bouton {font-size:100%;text-align:right}
+#spiplistes-formabo li.editer_email {margin:0 auto}
+#spiplistes-formabo li.editer_email label {float:left;margin-right:1ex}
+
+/* css de formulaires/modif_abonnement2.html */
 
 div.formulaire_modif_abonnement, div.formulaire_modif_abonnement2 {
 	border:1px solid gray;width:75%;
@@ -77,8 +106,11 @@ div.formulaire_modif_abonnement, div.formulaire_modif_abonnement2 {
 	}
 div.bloc-formats {text-align: left;}
 
+/* css partagés */
+
 ul.liste-des-listes {}
 ul.liste-des-listes li { margin-bottom:3px }
+ul.liste-des-listes span.text-list { font-style:italic }
 
 ul.liste-formats {}
 ul.liste-formats input {display:block; width:2ex; float:left }

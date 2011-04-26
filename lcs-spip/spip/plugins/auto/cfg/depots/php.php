@@ -1,37 +1,87 @@
 <?php
 
-/*
- * Plugin CFG pour SPIP
- * (c) toggg 2007, distribue sous licence GNU/GPL
- * Documentation et contact: http://www.spip-contrib.net/
+/**
+ * Plugin générique de configuration pour SPIP
  *
- * classe cfg_php: storage dans un fichier php
+ * @license    GNU/GPL
+ * @package    plugins
+ * @subpackage cfg
+ * @category   outils
+ * @copyright  (c) toggg, marcimat 2007-2008
+ * @link       http://www.spip-contrib.net/
+ * @version    $Id: php.php 43371 2011-01-07 11:00:22Z root $
  */
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
-// cfg_php retrouve et met a jour les donnees d'un fichier php
+/**
+ * Retrouve et met a jour les donnees d'un fichier php.
+ * @package    plugins
+ * @subpackage cfg
+ */
 class cfg_depot_php
 {
+	/**
+	 * Les champs manipulés
+	 * @var Array
+	 */
 	var $champs = array();
+
+	/**
+	 * Si on passe par cfg_id, ça fait..
+	 * Heu.. Quelque chose d'utile ?
+	 * @var Array
+	 */
 	var $champs_id = array();
+
+	/**
+	 * Les valeurs en dépôt
+	 * @var Array
+	 */
 	var $val = array();
+
+	/**
+	 * Les différents paramètres : Tables, Colonnes, cfg_id, et Casier
+	 * @var Array
+	 */
 	var $param = array();
+
+	/**
+	 * Pour gestion de l'affichage en succès ou échec
+	 * @var Array
+	 */
 	var $messages = array('message_ok'=>array(), 'message_erreur'=>array(), 'erreurs'=>array());
 	
+	/**
+	 * Arbre
+	 * @var Array
+	 */
 	var $_arbre = array();
 	
-	// version du depot
+	/**
+	 * version du depot
+	 * @var int
+	 */
 	var $version = 2;
 	
-	
+	/**
+	 * Dépôt dans les attributs de la classe
+	 *
+	 * @param Array $params
+	 */
 	function cfg_depot_php($params=array()) {
 		foreach ($params as $o=>$v) {
 			$this->$o = $v;
 		}
 	}
 	
-	// calcule l'emplacement du fichier
+
+	/**
+	 * calcule l'emplacement du fichier
+	 *
+	 * @staticvar Array $fichier
+	 * @return string # L'emplacement du fichier
+	 */
 	function get_fichier(){
 		static $fichier = array();
 		$cle = $this->param['nom'] . ' - ' . $this->param['fichier'];
@@ -48,45 +98,58 @@ class cfg_depot_php
 	}
 	
 	
-	// charge la base (racine) et le point de l'arbre sur lequel on se trouve (ici)
+	/**
+	 * charge la base (racine) et le point de l'arbre sur lequel on se trouve (ici)
+	 *
+	 * @param boolean $lire
+	 * @return boolean
+	 */
 	function charger($lire=false){
 		$fichier = $this->get_fichier();
 
 		// inclut une variable $cfg
-    	if (!@include $fichier) {
-    		if ($lire) return false;
-    		$this->_base = array();
-    	} elseif (!$cfg OR !is_array($cfg)) {
-    		$this->_base = array();
-    	} else {
-    		$this->_base = $cfg;	
-    	}
+		if (!@include $fichier) {
+			if ($lire) return false;
+			$this->_base = array();
+		} elseif (!$cfg OR !is_array($cfg)) {
+			$this->_base = array();
+		} else {
+			$this->_base = $cfg;
+		}
 
-    	$this->_ici = &$this->_base;
-    	$this->_ici = &$this->monte_arbre($this->_ici, $this->param['nom']);
-    	$this->_ici = &$this->monte_arbre($this->_ici, $this->param['casier']);
-    	$this->_ici = &$this->monte_arbre($this->_ici, $this->param['cfg_id']);	
-    	return true;
+		$this->_ici = &$this->_base;
+		$this->_ici = &$this->monte_arbre($this->_ici, $this->param['nom']);
+		$this->_ici = &$this->monte_arbre($this->_ici, $this->param['casier']);
+		$this->_ici = &$this->monte_arbre($this->_ici, $this->param['cfg_id']);
+		return true;
 	}
 	
-	// recuperer les valeurs.
+	/**
+	 * recuperer les valeurs.
+	 *
+	 * @return Array
+	 */
 	function lire() {
 		if (!$this->charger(true)){
 			return array(true, null); // pas de chargement = pas de valeur encore enregistrees
 		}
 		
-    	// utile ??
-    	if ($this->param['cfg_id']) {
-    		$cles = explode('/', $this->param['cfg_id']);
+		// utile ??
+		if ($this->param['cfg_id']) {
+			$cles = explode('/', $this->param['cfg_id']);
 			foreach ($this->champs_id as $i => $name) {
 				$this->_ici[$name] = $cles[$i];
-		    }
-    	}
-	    return array(true, $this->_ici);
+			}
+		}
+		return array(true, $this->_ici);
 	}
 
 
-	// ecrit chaque enregistrement pour chaque champ
+	/**
+	 * ecrit chaque enregistrement pour chaque champ.
+	 *
+	 * @return Array
+	 */
 	function ecrire() {
 		if (!$this->charger()){
 			return array(false, $this->val);	
@@ -103,9 +166,13 @@ class cfg_depot_php
 		
 		return array(true, $this->_ici);	
 	}
-	
-	
-	// supprime chaque enregistrement pour chaque champ
+
+
+	/**
+	 * supprime chaque enregistrement pour chaque champ.
+	 *
+	 * @return Array
+	 */
 	function effacer(){
 		if (!$this->charger()){
 			return array(false, $this->val);	
@@ -115,8 +182,8 @@ class cfg_depot_php
 		if (!$this->champs)
 			return array($this->ecrire_fichier(), array());
 			
-    	// effacer les champs
-    	foreach ($this->champs as $name => $def) {
+		// effacer les champs
+		foreach ($this->champs as $name => $def) {
 			if (isset($def['id'])) continue;
 			unset($this->_ici[$name]);
 		}
@@ -132,7 +199,13 @@ class cfg_depot_php
 		return array($this->ecrire_fichier($this->_base), $this->_ici);
 	}
 	
-	
+
+	/**
+	 * Ecrire un fichier
+	 *
+	 * @param Array $contenu
+	 * @return boolean
+	 */
 	function ecrire_fichier($contenu=array()){
 		$fichier = $this->get_fichier();
 
@@ -153,16 +226,21 @@ $cfg = ' . var_export($contenu, true) . ';
 		return ecrire_fichier($fichier, $contenu);
 	}
 	
-	// charger les arguments de 
-	// - lire_config(php::nom/casier/champ)
-	// - lire_config(php::adresse/fichier.php:nom/casier/champ)
+	/**
+	 * charger les arguments de
+	 * - lire_config(php::nom/casier/champ)
+	 * - lire_config(php::adresse/fichier.php:nom/casier/champ)
+	 *
+	 * @param string $args
+	 * @return boolean
+	 */
 	function charger_args($args){
 		list($fichier, $args) = explode(':',$args);
 		if (!$args) {
 			$args = $fichier;
 			$fichier = _DIR_VAR . 'cfg/' . $fichier . '.php';	
 		}
-
+		$this->param['fichier'] = $fichier;
 		$arbre = explode('/',$args);
 		$this->param['nom'] = array_shift($arbre);
 		if ($champ = array_pop($arbre))
@@ -170,9 +248,15 @@ $cfg = ' . var_export($contenu, true) . ';
 		$this->param['casier'] = implode('/',$arbre);
 		return true;	
 	}
-	
-	
-	// se positionner dans le tableau arborescent
+
+
+	/**
+	 * se positionner dans le tableau arborescent
+	 *
+	 * @param &Array $base
+	 * @param Array $chemin
+	 * @return &Array
+	 */
 	function & monte_arbre(&$base, $chemin){
 		if (!$chemin) {
 			return $base;

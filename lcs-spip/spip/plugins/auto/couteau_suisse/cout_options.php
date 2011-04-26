@@ -3,7 +3,23 @@
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
 // Pour forcer les logs du plugin, outil actif ou non :
-// define('_LOG_CS_FORCE', 'oui');
+#define('_LOG_CS_FORCE', 'oui');
+
+// Declaration des pipelines qui permettent d'interpreter la description d'un outil issue d'une chaine de langue
+// init_description_outil : pipeline d'initialisation, texte brut sorti du fichier de langue
+// les variables de l'outil ne sont pas encore interpretees
+#$GLOBALS['spip_pipeline']['init_description_outil']='';
+// pre_description_outil : 1er pipeline de pre_affichage, indispensable d'y mettre par exemple certaines constantes
+if (!isset($GLOBALS['spip_pipeline']['pre_description_outil']))
+	$GLOBALS['spip_pipeline']['pre_description_outil']='';
+// post_description_outil : 2e pipeline de pre_affichage, ici le texte est quasi definitif
+#$GLOBALS['spip_pipeline']['post_description_outil']='';
+// a l'issue du telechargement d'un fichier distant
+$GLOBALS['spip_pipeline']['fichier_distant']='';
+
+// Declaration d'un pipeline servant a inserer un bouton sous la baniere du Couteau Suisse
+if (!isset($GLOBALS['spip_pipeline']['porte_plume_cs_pre_charger']))
+	$GLOBALS['spip_pipeline']['porte_plume_cs_pre_charger']='';
 
 // liste des outils et des variables
 global $metas_vars, $metas_outils;
@@ -18,11 +34,15 @@ $metas_vars = isset($GLOBALS['meta']['tweaks_variables'])?unserialize($GLOBALS['
 // pour les serveurs qui aiment les virgules...
 $GLOBALS['spip_version_code'] = str_replace(',','.',$GLOBALS['spip_version_code']);
 // constantes de compatibilite
-if (version_compare($GLOBALS['spip_version_code'],'1.9300','>=')) {	
-	@define('_SPIP19300', 1); @define('_SPIP19200', 1);
-	if (version_compare(substr($GLOBALS['spip_version_branche'],0,5),'2.1.0','>=')) @define('_SPIP20100', 1);
-}
-elseif (version_compare($GLOBALS['spip_version_code'],'1.9200','>=')) @define('_SPIP19200', 1);
+// (pour info : SPIP 2.0 => 12691, SPIP 2.1 => 15133, SPIP 2.2 => ??)
+if (!strncmp($GLOBALS['spip_version_affichee'],'2.2',3)) 
+	{ @define('_SPIP20200', 1); @define('_SPIP20100', 1); @define('_SPIP19300', 1); @define('_SPIP19200', 1); }
+elseif ($GLOBALS['spip_version_code']>=15133) 
+	{ @define('_SPIP20100', 1); @define('_SPIP19300', 1); @define('_SPIP19200', 1); }
+elseif (version_compare($GLOBALS['spip_version_code'],'1.9300','>=')) 
+	{ @define('_SPIP19300', 1); @define('_SPIP19200', 1); }
+elseif (version_compare($GLOBALS['spip_version_code'],'1.9200','>=')) 
+	@define('_SPIP19200', 1);
 else @define('_SPIP19100', 1);
 // chemin du fichier de fonctions
 define('_COUT_FONCTIONS_PHP', find_in_path('cout_fonctions.php'));
@@ -42,21 +62,18 @@ elseif (in_array('reportall', $GLOBALS['cs_params']) && $auteur_session['statut'
 // on active tout de suite les logs, si l'outil est actif.
 if (($metas_outils['cs_comportement']['actif'] && $metas_vars['log_couteau_suisse'])
  || defined('_LOG_CS_FORCE') || in_array('log', $GLOBALS['cs_params']))	@define('_LOG_CS', 1);
-cs_log(str_repeat('-', 80), '', sprintf('COUTEAU-SUISSE. [#%04X]. ', rand()));
-cs_log('INIT : cout_options, '.$_SERVER['REQUEST_URI']);
+if(defined('_LOG_CS')) {
+	cs_log(str_repeat('-', 80), '', sprintf('COUTEAU-SUISSE. [#%04X]. ', rand()));
+	cs_log('INIT : cout_options, '.$_SERVER['REQUEST_URI']);
+}
 
 // on passe son chemin si un reset general est demande
-$zap = (_request('cmd')=='resetall')
-;/* //obsolete
-// idem si la page est un css ou un js (sauf si le cache est desactive)
- || (!($metas_outils['spip_cache']['actif'] && $metas_vars['radio_desactive_cache3'])
-		&& (isset($_GET['page']) && preg_match(',(\.(css|js)$|style_prive(_ie)?),', $_GET['page'])));
-*/
-//spip_log("cout_options sur '$_GET[page]', ".(preg_match(',(\.(css|js)$|style_prive(_ie)?),', $_GET['page'])?' = css/js, donc zap !!':''));
-//spip_log("URL='".self()."', zap=".($zap?'oui':'non'));
+$zap = _request('cmd')=='resetall';
 
 // lancer maintenant les options du Couteau Suisse
-if($zap) cs_log(' FIN : cout_options sans initialisation du plugin'); else {
+if($zap)
+	cs_log(' FIN : cout_options sans initialisation du plugin');
+else {
 	// $cs_metas_pipelines ne sert qu'a l'execution et ne comporte que :
 	//	- le code pour <head></head>
 	//	- le code pour les pipelines utilises
@@ -71,18 +88,19 @@ if($zap) cs_log(' FIN : cout_options sans initialisation du plugin'); else {
 	// recherche des fichiers a inclure : si les fichiers sont absent, on recompilera le plugin
 	// fichiers testes : tmp/couteau-suisse/mes_options.php et tmp/couteau-suisse/mes_spip_options.php
 	$cs_exists = file_exists($f_mo = _DIR_CS_TMP.'mes_options.php');
-	if(!$GLOBALS['cs_spip_options']) $cs_exists &= file_exists($f_mso = _DIR_CS_TMP.'mes_spip_options.php');
+	$f_mso = _DIR_CS_TMP.'mes_spip_options.php';
+	if(!$GLOBALS['cs_spip_options']) $cs_exists &= file_exists($f_mso);
 	if(!$cs_exists) cs_log(" -- '$f_mo' ou '$f_mso' introuvable !");
 
 	// lancer l'initialisation du plugin. on force la compilation si cs=calcul
 	include_spip('cout_lancement');
 	cs_initialisation(!$cs_exists || in_array('calcul', $GLOBALS['cs_params']));
-	cs_log("PUIS : cout_options, initialisation terminee");
+	if(defined('_LOG_CS')) cs_log("PUIS : cout_options, initialisation terminee");
 
 	// inclusion des options hautes de SPIP, si ce n'est pas deja fait par config/mes_options.php
 	if (!$GLOBALS['cs_spip_options']) {
 		if(file_exists($f_mso)) {
-			cs_log(" -- inclusion de '$f_mso'");
+			if(defined('_LOG_CS')) cs_log(" -- inclusion de '$f_mso'");
 			include_once($f_mso);
 		} else
 			cs_log(" -- fichier '$f_mso' toujours introuvable !!");
@@ -92,7 +110,7 @@ if($zap) cs_log(' FIN : cout_options sans initialisation du plugin'); else {
 	// inclusion des options pre-compilees du Couteau Suisse, si ce n'est pas deja fait...
 	if (!$GLOBALS['cs_options']) {
 		if(file_exists($f_mo)) {
-			cs_log(" -- inclusion de '$f_mo'");
+			if(defined('_LOG_CS')) cs_log(" -- inclusion de '$f_mo'");
 			include_once($f_mo);
 			// verification cardinale des metas : reinitialisation si une erreur est detectee
 			if (count($metas_outils)<>$GLOBALS['cs_verif']) {
@@ -110,7 +128,7 @@ if($zap) cs_log(' FIN : cout_options sans initialisation du plugin'); else {
 	// si une recompilation a eu lieu...
 	if ($GLOBALS['cs_utils']) {
 		// lancer la procedure d'installation pour chaque outil
-		cs_log(' -- cs_installe_outils...');
+		if(defined('_LOG_CS')) cs_log(' -- cs_installe_outils...');
 		cs_installe_outils();
 		if(in_array('calcul', $GLOBALS['cs_params'])) {
 			include_spip('inc/headers');
@@ -120,51 +138,75 @@ if($zap) cs_log(' FIN : cout_options sans initialisation du plugin'); else {
 
 	// a-t-on voulu inclure cout_fonctions.php ?
 	if ($GLOBALS['cs_fonctions_essai']) {
-		cs_log(" -- inclusion de : "._COUT_FONCTIONS_PHP);
+		if(defined('_LOG_CS')) cs_log(" -- inclusion de : "._COUT_FONCTIONS_PHP);
 		@include(_COUT_FONCTIONS_PHP);
 	}
 
-	cs_log(" FIN : cout_options, cs_spip_options = $GLOBALS[cs_spip_options], cs_options = $GLOBALS[cs_options], cs_fonctions_essai = $GLOBALS[cs_fonctions_essai]");
+	if(defined('_LOG_CS')) cs_log(" FIN : cout_options, cs_spip_options = $GLOBALS[cs_spip_options], cs_options = $GLOBALS[cs_options], cs_fonctions_essai = $GLOBALS[cs_fonctions_essai]");
 }
 
-// Droits pour le Couteau Suisse, compatibilite si la fonction autoriser() n'est pas trouvee
-// appelee sans argument cette fonction renvoie le droit de configurer le Couteau Suisse
-// (droits equivalents a 'configurer' les 'plugins')
-function cout_autoriser($faire='configurer', $type='plugins', $id=0, $qui = NULL, $opt = NULL) {
-	// autorisation sur les outils $type=$outil
-	if($faire=='outiller') {
-		if(isset($type['autoriser'])) {
-			eval('$test = '.$type['autoriser'].';');
-			return $test;
-		}
-		return true;
-	}
-	// SPIP >= 1.92
-	include_spip("inc/autoriser");
-	if(function_exists('autoriser')) return autoriser($faire, $type, $id, $qui, $opt);
-	// SPIP 1.91
-// ici $qui n'est jamais rempli
-//	if ($qui === NULL) $qui = $GLOBALS['auteur_session']; // "" si pas connecte
-//	elseif (is_int($qui)) $qui = spip_fetch_array(spip_query("SELECT * FROM spip_auteurs WHERE id_auteur=".$qui));
+// Droits pour configurer le Couteau Suisse (fonction surchargeable sans le _dist)
+// Droits par defaut equivalents a 'configurer' les 'plugins', donc tous les administrateurs non restreints
+function autoriser_cs_configurer_dist($faire, $type, $id, $qui, $opt) {
+	return autoriser('configurer', 'plugins', $id, $qui, $opt);
+}
 
-	/*if(($faire=='configurer') && ($type=='plugins'))*/ 
-		return $GLOBALS['connect_statut'] == "0minirezo" && $GLOBALS["connect_toutes_rubriques"];
-	return false;
+// Droits pour voir/manipuler un outil du Couteau Suisse
+// $opt doit representer ici l'outil concerne : $outil
+// Si $opt['autoriser'] (code PHP) n'est pas renseigne, ces droits natifs sont toujours accordes
+function autoriser_outil_configurer_dist($faire, $type, $id, $qui, $opt) {
+	if(!is_array($opt)) return autoriser('configurer', 'cs', $id, $qui, $opt);
+	// test sur la version de SPIP
+	$test = !cs_version_erreur($opt)
+		// autorisation d'un outil en particulier
+		&& autoriser('configurer', 'outil_'.$opt['id'], $id, $qui, $opt)
+		// autorisation de la categorie de l'outil
+		&& autoriser('configurer', 'categorie_'.$opt['categorie'], $id, $qui, $opt);
+	if($test && isset($opt['autoriser']))
+		eval('$test &= '.$opt['autoriser'].';');
+	return $test;
+}
+
+// Droits pour modifier une variable du Couteau Suisse
+// $opt doit contenir le nom de la variable et le tableau de l'outil appelant
+function autoriser_variable_configurer_dist($faire, $type, $id, $qui, $opt) {
+	return autoriser('configurer', 'cs', $id, $qui, $opt)
+		&& autoriser('configurer', 'outil_'.$opt['outil']['id'], $id, $qui, $opt['outil'])
+		&& autoriser('configurer', 'variable_'.$opt['nom'], $id, $qui, $opt['outil']);
+}
+
+if(!defined('_SPIP20100')) {
+	// Bug SPIP 2.0.x
+	function autoriser_cs_configurer($faire, $type, $id, $qui, $opt) {
+		return autoriser_cs_configurer_dist($faire, $type, $id, $qui, $opt); }
+	function autoriser_outil_configurer($faire, $type, $id, $qui, $opt) {
+		return autoriser_outil_configurer_dist($faire, $type, $id, $qui, $opt); }
+	function autoriser_variable_configurer($faire, $type, $id, $qui, $opt) {
+		return autoriser_variable_configurer_dist($faire, $type, $id, $qui, $opt); }
+}
+
+// TODO : revoir eventuellement tout ca avec la syntaxe de <necessite>
+function cs_version_erreur(&$outil) {
+	return (isset($outil['version-min']) && version_compare($GLOBALS['spip_version_code'], $outil['version-min'], '<'))
+		|| (isset($outil['version-max']) && version_compare($GLOBALS['spip_version_code'], $outil['version-max'], '>'));
 }
 
 // Logs de tmp/spip.log
 function cs_log($variable, $prefixe='', $stat='') {
 	static $rand;
 	if($stat) $rand = $stat;
-	if(!defined('_LOG_CS') /*|| !defined('_CS_REPORTALL')*/ || !strlen($variable)) return;
 	if (!is_string($variable)) $variable = var_export($variable, true);
+	if(!defined('_LOG_CS') /*|| !defined('_CS_REPORTALL')*/ || !strlen($variable)) return;
 	spip_log($variable = $rand.$prefixe.$variable);
-	if (defined('_CS_REPORTALL')) echo '<br/>',htmlentities($variable);
+	if (defined('_CS_REPORTALL')) echo '<br />',htmlentities($variable);
 }
 
-// message si non autorise
-function cs_minipres($exit=-1) { 
-	if($exit===-1) $exit=!cout_autoriser();
+// Message de sortie si la zone est non autorisee
+function cs_minipres($exit=-1) {
+	if($exit===-1) {
+		include_spip('inc/autoriser');
+		$exit = !autoriser('configurer', 'cs');
+	}
 	if($exit) {
 		include_spip('inc/minipres');
 		echo minipres();
@@ -183,6 +225,45 @@ function cs_date_long($numdate) {
 	if(!defined('_SPIP19300')) list($heures, $minutes) =array(heures($numdate), minutes($numdate));
 	return _T('couteau:stats_date', array('jour'=>$jour, 'mois'=>$mois, 'annee'=>substr($annee,2), 'h'=>$heures, 'm'=>$minutes, 's'=>$sec));
 }
+function cs_date_court($numdate) {
+	$date_array = recup_date($numdate);
+	if (!$date_array) return '?';
+	list($annee, $mois, $jour) = $date_array;
+	return _T('couteau:date_court', array('jour'=>$jour, 'mois'=>$mois, 'annee'=>substr($annee,2)));
+}
 
+// Fichier d'options
+function cs_spip_file_options($code) {
+	// Config generale
+	$glo = _DIR_RACINE._NOM_PERMANENTS_INACCESSIBLES._NOM_CONFIG.'.php';
+	// Attention a la mutualisation
+	if(defined('_DIR_SITE')) {
+		// Config locale uniquement
+		$nfo = $fo = _DIR_SITE._NOM_PERMANENTS_INACCESSIBLES._NOM_CONFIG.'.php';
+	} else {
+		// Fichier de config, s'il est present
+		$fo = (defined('_FILE_OPTIONS') && strlen(_FILE_OPTIONS))?_FILE_OPTIONS:false;
+		// Nom du fichier a creer en cas d'absence
+		$nfo = $glo;
+	}
+	switch($code) {
+		case 1: return $fo;
+		case 2: return $nfo;
+		case 3: return $fo?$fo:$nfo;
+		case 4: return $glo;
+	}
+}
+
+// balises de tracage, directement compatibles regexpr
+// le separateur _CS_HTMLX est supprime en fin de calcul
+@define('_CS_HTMLA', '<span class="csfoo htmla"></span>');
+@define('_CS_HTMLB', '<span class="csfoo htmlb"></span>');
+@define('_CS_HTMLX', '<span class="csfoo \w+"></span>');
+
+// nettoyage des separateurs
+function cs_nettoie(&$flux) {
+	if(strpos($flux, '"csfoo ')===false) return $flux;
+	return preg_replace(',<pp>\s*</p>,', '', preg_replace(','._CS_HTMLX.',', '', $flux));
+}
 
 ?>

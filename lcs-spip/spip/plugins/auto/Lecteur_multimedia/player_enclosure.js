@@ -20,20 +20,26 @@ isPlaying = false ;
 soundManager.consoleOnly = true;
 soundManager.debugMode = false;
 
+var seljQ = '@';
+if (jQuery.fn.jquery>="1.3.0")
+	seljQ='';
 
 jQuery(document).ready(function(){
 	//lecteur_debug();
-	lecteur_multimedia_init();});function lecteur_multimedia_init(){
+	lecteur_multimedia_init();
+});
+
+function lecteur_multimedia_init(){
 	//tableau des fichiers multimedia de la page
 	mp3Array = new Array();
 	mp3Titles = new Array();
 	flvArray = new Array();
 	flvTitles = new Array();
 	
-	var aff= jQuery("a[rel='enclosure'][href$=mp3]").size(); 
+	var aff= jQuery("a["+seljQ+"rel='enclosure']["+seljQ+"href$=mp3]").size();
 
 	// lister les mp3 de la page 
-	jQuery("a[rel='enclosure'][href$=mp3]").each(
+	jQuery("a["+seljQ+"rel='enclosure']["+seljQ+"href$=mp3]").each(
 		function(i) {	 
 			// we store mp3 links in an array
 			mp3Array.push(this.href);
@@ -65,7 +71,7 @@ jQuery(document).ready(function(){
 		}
 	);
 	
-	jQuery("a[rel='video']").each(
+	jQuery("a["+seljQ+"rel='video']").each(
 		function(i) { 
 			// we store flv links in an array
 			flvArray.push(this.href);
@@ -147,6 +153,26 @@ jQuery(document).ready(function(){
 	jQuery("#now_playing").change(function(){
 		scroller_init();
 	});
+	
+	// si option choisie, presser la barre espace arrete le lecteur
+	if (key_espace_stop) {
+		jQuery(document).keypress(function(e)
+		{
+			key = (e.charCode) ? e.charCode : e.keyCode;
+			if(
+				(key == 32) // espace
+				|| (key == 27) // esc
+			) {
+				if(isPlaying) {
+					player_togglePause();
+				}
+				if (isVideoPlaying) {
+					// toto: faire la meme chose pour la video ?
+					
+				}
+			}
+		});
+	}
 }
 
 
@@ -178,10 +204,12 @@ function player_play(i){
 		file1 = file1.substr(0,90);
 		file1 = file1.replace(/(.mp3)/g,' ');
 		file1 = file1.replace(/(_|-)/g,' ');
-		//jQuery("img[@alt='play']").attr()
+		//jQuery("img["+seljQ+"alt='play']").attr()
 		var taille = file1.length;
-		jQuery("#now_playing").css("width", taille*6) ;
-		jQuery("#scroller").css("width", taille*6) ;
+		//$large_s = taille * 7; // pas bon. Laisser le navigateur decider
+		$large_s = 'auto';
+		jQuery("#now_playing").width($large_s);
+		jQuery("#scroller").width($large_s);
 		jQuery("#now_playing").html(file1) ;
 		var taille =  jQuery("#scroller").width();
   		var min_taille = jQuery("#scroller_container").width();
@@ -351,7 +379,16 @@ function Player_init(url_player) {
 	}
 }
 
-// Nouvelle methode pour les tableaux// Retourne la premiere occurence correspondant, sinon falseArray.prototype.contains = function (ele) {	for (var i = 0; i < this.length; i++) {		if (this[i] == ele) {			return true;		}	}	return false;};
+// Nouvelle methode pour les tableaux
+// Retourne la premiere occurence correspondant, sinon false
+Array.prototype.contains = function (ele) {
+	for (var i = 0; i < this.length; i++) {
+		if (this[i] == ele) {
+			return true;
+		}
+	}
+	return false;
+};
 
 
 // lecteur video

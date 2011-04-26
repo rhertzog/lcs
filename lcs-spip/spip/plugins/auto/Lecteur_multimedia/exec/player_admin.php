@@ -42,7 +42,7 @@ function exec_player_admin()
 
 	$player_flv_lecteurs = unserialize(_PLAYER_FLV_LECTEURS);
 
-	// la grosse table commune à tous les profils
+	// la grosse table commune a tous les profils
 	$player_flv_config = player_flv_config();
 	
 	// lecture du meta
@@ -52,12 +52,12 @@ function exec_player_admin()
 	// est-ce bien un retour du formulaire ?
 	$player_retour_formulaire = _request('btn_valider_video');
 	
-	// aplatir le tableau en ne récupérant que les valeurs
+	// aplatir le tableau en ne recuperant que les valeurs
 	$player_flv_lecteurs_values = array();
 	foreach($player_flv_lecteurs as $key => $value) {
 		$player_flv_lecteurs_values[$key] = $value['value'];
 	}
-	// vérifier si le lecteur vidéo indiqué est correct
+	// verifier si le lecteur video indique est correct
 	$player_video = $player_config['player_video'] = 
 		(($ii = _request('player_video')) && (in_array($ii, $player_flv_lecteurs_values)))
 		? $ii 
@@ -66,7 +66,7 @@ function exec_player_admin()
 	$player_key = array_search($player_video, $player_flv_lecteurs_values);
 	$player_config['player_key'] = $player_key;
 	
-	// première install pour le profil ou global
+	// premiere install pour le profil ou global
 	if($player_premiere_installation = (!isset($player_config['player_video_prefs']))) {
 		spip_log("PLAYER: premiere installation profil $player_key");
 		$player_config['player_video_prefs'] = array();
@@ -89,10 +89,13 @@ function exec_player_admin()
 		if(!empty($$key)) {
 			$player_config['player_video_prefs'][$key] = $$key;
 		}
+		else if(isset($player_config['player_video_prefs'][$key])) {
+			unset($player_config['player_video_prefs'][$key]);
+		}
 	}
 	
 	if($player_retour_formulaire) {
-		spip_log("PLAYER: enregistrement config profil $player_key");
+		//spip_log("PLAYER: enregistrement config profil $player_key". serialize($player_config));
 		// enregistrer la config
 		ecrire_meta(_PLAYER_META_PREFERENCES, serialize($player_config));
 		if(version_compare($GLOBALS['spip_version_code'],'1.9300','<')) { 
@@ -163,7 +166,7 @@ function exec_player_admin()
 			case 'list':
 				$player_flv_options = "<label title='$key'>".$value['label']."<select name='$key' class='fondl'>\n";
 				foreach($value['values'] as $k1 => $v1) {
-					// si la clé n'est pas une chaine, prendre $v1 pour valeur de option
+					// si la cle n'est pas une chaine, prendre $v1 pour valeur de option
 					$ii = (is_string($v1) ? _T(_PLAYER_LANG.$v1) : $v1);
 					$player_flv_options .= "<option value='$k1'".(($$key == $k1) ? " selected='selected'" : "").">$ii</option>\n";
 				}
@@ -222,7 +225,10 @@ function player_form_fin_form () {
 /***********************************************/
 function player_petite_boite_info () {
 	include_spip('inc/plugin');
-	$info = plugin_get_infos(_DIR_PLUGIN_PLAYER);
+	if ($GLOBALS['spip_version_code']>=15133)
+		include_spip('plugins/afficher_plugin');
+	$get_infos = ($GLOBALS['spip_version_code']>=15133)?charger_fonction('get_infos','plugins'):'plugin_get_infos'; // Compatibilite SPIP 2.1
+	$info = $get_infos(_DIR_PLUGIN_PLAYER);
 	$titre = _T(_PLAYER_LANG.'player_nom');
 	$result = ""
 		. debut_cadre_relief('plugin-24.gif', true, '', $titre)

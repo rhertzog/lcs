@@ -48,7 +48,7 @@ function array_get_var($table){
 }
 
 function array_where_sql2php($where){
-	$where = preg_replace(",(^|\()([\w.]+)\s*REGEXP\s*(.+)($|\)),Uims","\\1preg_match('/'.preg_quote(\\3).'/Uims',\\2)\\4",$where); // == -> preg_match
+	$where = preg_replace(",(^|\()([\w.]+)\s*REGEXP\s*(.+)($|\)),Uims","\\1preg_match('/'.str_replace('/','\/',\\3).'/Uims',\\2)\\4",$where); // == -> preg_match
 	$where = preg_replace(",([\w.]+)\s*=,Uims","\\1==",$where); // = -> ==
 	$where = preg_replace(";^FIELD\(([^,]+),(.*)$;Uims","in_array(\\1,array(\\2)",$where); // IN -> FIELD -> in_array()
 	$where = preg_replace(";(^|\(|\(\()([\w.]+)\s*IN\s*(.+)($|\)|\)\));Uims","in_array(\\2,array\\3",$where); // IN  -> in_array()
@@ -58,19 +58,19 @@ function array_where_sql2php($where){
 function array_where_teste($cle,$valeur,$table,$where){
 	if (is_array($valeur))
 		$valeur = serialize($valeur);
-	$where = str_replace(array(
-	"$table.cle",
-	'cle',
-	"$table.valeur",
-	'valeur',
-	'NOT('
+	$where = preg_replace(array(
+	",(\W)$table\.cle(\W),i",
+	",(\W)cle(\W),i",
+	",(\W)$table\.valeur(\W),i",
+	",(\W)valeur(\W),i",
+	',NOT\(,i'
 	),
 	array(
-	"'".addslashes($cle)."'",
-	"'".addslashes($cle)."'",
-	"'".addslashes($valeur)."'",
-	"'".addslashes($valeur)."'",
-	"!("
+	"\\1'".addslashes($cle)."'\\2",
+	"\\1'".addslashes($cle)."'\\2",
+	"\\1'".addslashes($valeur)."'\\2",
+	"\\1'".addslashes($valeur)."'\\2",
+	"\\1!("
 	),$where);
 	return eval("if ($where) return true; else return false;");
 }
@@ -151,6 +151,7 @@ function array_results($hash,$store='get',$arg=null){
 	elseif($store=='free')
 		unset($array_results[$hash]);
 	else {
+		$hash = count($array_results)?max(array_keys($array_results))+1:1; // pas de 0 svp
 		// un tableau direct
 		if (is_array($store)){
 			$array_results[$hash]['res'] = $store;
@@ -161,6 +162,7 @@ function array_results($hash,$store='get',$arg=null){
 			if (count($iter)==2 OR count($iter)==3)
 				$array_results[$hash]['iter']=array('debut'=>reset($iter),'fin'=>end($iter),'pas'=>count($iter)==2?1:$iter[1],'i'=>0);
 		}
+		return $hash;
 	}
 }
 
@@ -219,9 +221,12 @@ function array_query($query){
 		else {
 			preg_match(',^(.*)( DESC)?$,Ui', $sort, $tri);
 			$sens = $tri[2] ? '<' : '>';
-			usort($res,
+			uasort($res,
 				create_function('$a, $b',
-					'return ((array)$a["'.$tri[1].'"] '.$sens.' (array) $b["'.$tri[1].'"]) ? 1 : -1;'
+					'return ((is_string($a["'.$tri[1].'"]) AND is_string($b["'.$tri[1].'"]))?
+						 (strcasecmp($a["'.$tri[1].'"],$b["'.$tri[1].'"])'.$sens.'0)
+						:((array)$a["'.$tri[1].'"] '.$sens.' (array) $b["'.$tri[1].'"]))
+						 ? 1 : -1;'
 				)
 			);
 		}
@@ -239,8 +244,7 @@ function array_query($query){
 	}
 	// ici calculer un vrai res si la variable existe
 	if (count($res)) {
-		$hash = md5(serialize($query));
-		array_results($hash,$res);
+		$hash = array_results(false,$res);
 		return $hash;
 	}
 	return -1; // pas de resultats mais pas false non plus
@@ -304,7 +308,7 @@ function spip_array_query($query, $serveur='') {
 
 function spip_array_select($select, $from, $where='',
 			   $groupby='', $orderby='', $limit='', $having='',
-			   $serveur='') {
+			   $serveur='',$requeter=true) {
 
 	$from = (!is_array($from) ? $from : spip_array_select_as($from));
 
@@ -322,19 +326,25 @@ function spip_array_select($select, $from, $where='',
 	$query['having'] = $having;
 
 	// Erreur ? C'est du debug de squelette, ou une erreur du serveur
-	if (isset($GLOBALS['var_mode']) AND $GLOBALS['var_mode'] == 'debug') {
+	if (isset($GLOBALS['var_mode'])
+	  AND $GLOBALS['var_mode'] == 'debug'
+	  AND function_exists('boucle_debug_requete')) {
 		include_spip('public/debug');
 		boucle_debug_requete($querydump);
 	}
 
-	if (!($res = spip_array_query($query, $serveur))) {
+	$res = spip_array_query($query, $serveur);
+
+	if (!$res AND function_exists('boucle_debug_requete')) {
 		include_spip('public/debug');
 		erreur_requete_boucle($querydump,
 				      spip_array_errno(),
 				      spip_array_error($query) );
 	}
 
-	return $res;
+	// renvoyer la requete inerte si demandee
+	if ($requeter === false) return $querydump;
+	return $res ? $res : $querydump;
 }
 
 // 0+x avec un champ x commencant par des chiffres est converti par array
@@ -376,16 +386,27 @@ function spip_array_listdbs($serveur='') {
 
 function spip_array_showbase($match, $serveur='')
 {
-	return false;
+	$res = array('pour'=>array('table'=>'pour'),'condition'=>array('table'=>'condition'));
+	$match = str_replace('_','.',$match);
+	$match = str_replace('%','.*',$match);
+	$match = str_replace('\.*','%',$match);
+	$match = str_replace('\.','_',$match);
+	$match = ",^$match$,i";
+	foreach(array_keys($res) as $k)
+		if (!preg_match($match,$k))
+			unset($res[$k]);
+
+	$hash = array_results(false,$res);
+	return $hash;
 }
 
 
 // pas fe SHOW en array, on renvoie une declaration type si la variable existe
 function spip_array_showtable($nom_table, $serveur='')
 {
-	if (in_array($nom_table,array('pour')))
+	if (in_array(strtolower($nom_table),array('pour')))
 		return array('field'=>array('cle'=>'text','valeur'=>'text'),'key'=>array('PRIMARY KEY'=>'cle'));
-	if (in_array($nom_table,array('condition')))
+	if (in_array(strtolower($nom_table),array('condition')))
 		return array('field'=>array('valeur'=>'text'),'key'=>array());
 	return false;
 }

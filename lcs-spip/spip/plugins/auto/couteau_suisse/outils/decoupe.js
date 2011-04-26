@@ -1,5 +1,24 @@
 var onglet_actif = 0;
 
+// fonction pour montrer un contenu
+jQuery.fn.montre_onglet = function( selector ) {
+	// click sur un titre
+	if(this.is('.onglets_titre')) {
+		var contenu = '#' + this[0].id.replace(/titre/,'contenu');
+		var bloc = this.parent().parent();
+		bloc.children('.selected').removeClass('selected').end()
+			.children('.onglets_liste').children('.selected').removeClass('selected');
+		jQuery(contenu).addClass('selected');
+		this.addClass('selected');
+	}
+	// click sur un titre
+	if(this.is('.onglets_contenu')) {
+		var titre = this[0].id.replace(/contenu/,'titre');
+		jQuery('#'+titre).montre_onglet();
+	}
+	return this;
+};
+
 // compatibilite Ajax : ajouter "this" a "jQuery" pour mieux localiser les actions 
 function onglets_init() {
   var cs_bloc = jQuery('div.onglets_bloc_initial', this);
@@ -27,13 +46,7 @@ function onglets_init() {
 		.attr('class','onglets_bloc').each(function(i) {this.id = 'ongl_'+i;});
 	// clic du titre...
 	jQuery('h2.onglets_titre', this).click(function(e) {
-		var contenu = '#' + this.id;
-		contenu = contenu.replace(/titre/,'contenu');
-		var bloc = jQuery(this).parent().parent();
-		bloc.children('.selected').removeClass('selected').end()
-			.children('.onglets_liste').children('.selected').removeClass('selected');
-		jQuery(contenu).addClass('selected');
-		jQuery(this).addClass('selected');
+		jQuery(this).montre_onglet();
 		return false;
 	});
 	// clic des <a>, au cas ou...
@@ -48,13 +61,21 @@ function onglets_init() {
 		sel=jQuery('#onglets_titre_'+onglet_get);
 		sel.click();
 	}
+	// clic vers une note dans un onglet
+	jQuery('.spip_note['+cs_sel_jQuery+'name^=nb], .spip_note['+cs_sel_jQuery+'id^=nb]').each(function(i) {
+		jQuery(this).click(function(e){
+			var href = this.href.substring(this.href.lastIndexOf("#"));
+			jQuery(href).parents('.onglets_contenu').eq(0).montre_onglet();
+			return true;
+		});
+	});
   }
 }
 
 function get_onglet(url) {
- tab=url.match(/[?&]onglet=([0-9]*)/);
+ tab=url.search.match(/[?&]onglet=([0-9]*)/) || url.hash.match(/#onglet([0-9]*)/);
  if (tab==null) return false;
  return tab[1];
 }
 
-var onglet_get = get_onglet(window.location.search);
+var onglet_get = get_onglet(window.location);

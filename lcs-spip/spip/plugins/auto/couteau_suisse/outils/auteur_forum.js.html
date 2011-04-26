@@ -15,7 +15,7 @@ function cs_auteur_forum() {
 	if(!email.length) email = jQuery('#email_auteur', this);
 	if(auteur.length || email.length)
 	// eviter les forums anonymes
-	form.not('.cs_done').addClass('cs_done').bind('submit', function(event){
+	form.cs_todo().bind('submit', function(event){
 		var alert_nom = auteur.length && !auteur.val().length;
 		var alert_email = email.length && !email.val().length;
 		var alert_deux = cs_verif_deux && alert_nom && alert_email;
@@ -35,15 +35,15 @@ function cs_auteur_forum() {
 			auteur.css('background-color','#FCC').css('border','solid #C30');
 		}
 		if(alert_deux) {
-			alert("<:couteau:nom_email_forum|html2unicode|addslashes|unicode_to_javascript:>");
+			alert("<:couteau:nom_email_forum|cs_javascript:>");
 			return false;
 		}
 		if(alert_nom) {
-			alert("<:couteau:nom_forum|html2unicode|addslashes|unicode_to_javascript:>");
+			alert("<:couteau:nom_forum|cs_javascript:>");
 			return false;
 		}
 		if(alert_email) {
-			alert("<:couteau:email_forum|html2unicode|addslashes|unicode_to_javascript:>");
+			alert("<:couteau:email_forum|cs_javascript:>");
 			return false;
 		}
 		return true;

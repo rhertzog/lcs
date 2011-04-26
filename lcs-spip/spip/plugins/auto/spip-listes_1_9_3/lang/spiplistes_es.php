@@ -1,9 +1,14 @@
 <?php
-
+/**
+ * Pack langue espagnol
+ * 
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: paladin@quesaco.org $
+ // $LastChangedDate: 2011-04-25 19:54:15 +0200 (Lun 25 avr 2011) $
+ 
 // Este es un archivo para SPIP -- This is a SPIP module file  --  Ceci est un fichier module de SPIP
-// $LastChangedRevision: 28705 $
-// $LastChangedBy: xdjuj@apsulis.com $
-// $LastChangedDate: 2009-05-19 01:13:47 +0200 (mar, 19 mai 2009) $
 
 $GLOBALS['i18n_spiplistes_es'] = array(
 
@@ -146,7 +151,7 @@ $GLOBALS['i18n_spiplistes_es'] = array(
 	los env&iacute;os pendientes. "
 , 'nombre_lot' => 'N&uacute;mero de env&iacute;os por lote'
 , 'php_mail' => 'Utilizar la funci&oacute;n mail() de PHP'
-, 'Patron_du_tampon' => "Plantilla del sello "
+, 'patron_du_tampon_' => "Plantilla del sello : "
 , 'Patron_de_pied_' => "Plantilla del pie "
 , 'personnaliser_le_courrier_label' => "Activar la personnalizaci&oacute;n de los emails"
 , 'parametrer_la_meleuse' => "Configurar el env&iacute;o"
@@ -463,9 +468,9 @@ $GLOBALS['i18n_spiplistes_es'] = array(
 , 'envoi_annule' => 'Env&iacute;o anulado'
 , 'sans_adresse' => ' Mail no enviado -> Hay que indicar una direcci&oacute;n de respuesta'
 , 'erreur_mail' => 'Error: env&iacute;o del mail imposible (comprueba si mail() de php est&aacute; disponible)'
-, 'abonnement_mail_text' => 'Si quieres modificar tus datos de inscripci&oacute;n, entra en la siguiente direcci&oacute;n: '
+, 'modif_abonnement_text' => 'Si quieres modificar tus datos de inscripci&oacute;n, entra en la siguiente direcci&oacute;n: '
 , 'msg_abonne_sans_format' => "no hay formato para la recepci&oacute;n de emails"
-, 'Cliquez_ici_pour_modifier_votre_abonnement' => "<br />Cliquea aqu&iacute; si quieres modificar tus datos de inscripci&oacute;n"
+, 'modif_abonnement_html' => "<br />Cliquea aqu&iacute; si quieres modificar tus datos de inscripci&oacute;n"
 
 // inc/spiplistes_naviguer_paniers.php
 // inc/spiplistes_pipeline_I2_cfg_form.php

@@ -1,11 +1,14 @@
 <?php
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:13 +0200 (Mon, 25 Apr 2011) $
 
 // CP-20080324
 // Script issu de :
 //   http://zone.spip.org/trac/spip-zone/browser/_plugins_/_stable_/cfg/inc/compat_cfg.php
-// $LastChangedRevision: 24182 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2008-11-11 08:10:02 +0100 (mar, 11 nov 2008) $
 
 // CP-20080508: ajout de sql_countsel()
 // CP-20080508: correction sql_insert()
@@ -251,7 +254,7 @@ function compat_spiplistes_defs_dist() {
 
 		// n'existe pas en 1.9.2
 		// on cree la requete directement
-		# Nombre de lignes dans le r�sultat
+		# Nombre de lignes dans le resultat
 		'sql_count' => 
 			'(
 				$res, $serveur=\'\', $option=true

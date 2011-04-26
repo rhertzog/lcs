@@ -3,12 +3,14 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 	// B
+	'bouton_effacer' => 'Effacer', # NEW
 	'bouton_mettre_a_jour' => 'Bijwerken',
+	'bouton_reset' => 'Reset', # NEW
 
 	// C
 	'cfg' => 'CFG',
@@ -18,7 +20,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'configuration_modules' => 'Configuratie van de modules',
 
 	// E
-	'erreur_copie_fichier' => 'Onmogelijk om het bestand @fichier@ aan zijn definitieve plaats tekopi&euml;ren',
+	'erreur_copie_fichier' => 'Onmogelijk om het bestand @fichier@ aan zijn definitieve plaats tekopiëren',
 	'erreur_enregistrement' => 'Een fout is bij de registratie van voorgekomen <b>@nom@</b>',
 	'erreur_lecture' => 'Onmogelijk om te lezen @nom@',
 	'erreur_open_w_fichier' => 'Onmogelijk om het bestand @fichier@ in schrift te openen',
@@ -32,8 +34,12 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'id_manquant' => 'Ontbrekende identificatie',
 	'installation_librairies' => 'Download van boekhandels',
 	'installation_liste_libs' => 'Lijst van de boekhandels',
-	'installer_dossier_lib' => 'U moet een dossier @dir@ aan de wortel van uw SPIP cre&euml;ren dat toestemmingen van schrift heeft.',
-	'installer_lib_192' => 'Om een boekhandel te plaatsen, d&eacute;compressez manueel zip en kopi&euml;ert zijn inhoud in het dossier @dir@.',
+	'installer_dossier_lib' => 'U moet een dossier @dir@ aan de wortel van uw SPIP creëren dat toestemmingen van schrift heeft.',
+	'installer_lib_192' => 'Om een boekhandel te plaatsen, décompressez manueel zip en kopiëert zijn inhoud in het dossier @dir@.',
+
+	// L
+	'label_activer' => 'Activeren',
+	'label_obligatoire' => 'Verplicht beslag',
 
 	// N
 	'nom_table_manquant' => 'Ontbrekende naam van de tafel SQL',
@@ -43,14 +49,16 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'ok' => 'OK',
 
 	// P
-	'pas_de_champs_dans' => 'Geen enkele velden gevonden in @nom@',
+	'pas_de_champs_dans' => 'Geen enkele velden gevonden in @nom@', # MODIF
 	'pas_de_changement' => 'Geen verandering in <b>@nom@</b>',
 
 	// R
+	'refus_configuration_administrateur' => 'Enkel de beheerders van de plaats worden gemachtigd om deze parameters te wijzigen.',
+	'refus_configuration_webmestre' => 'Enkel webmestres van de plaats worden toegestaan om deze parameters te wijzigen.',
 	'reset' => 'Uitwissen',
 
 	// S
-	'supprimer' => 'Afschaffen'
+	'supprimer' => 'Afschaffen' # MODIF
 );
 
 ?>

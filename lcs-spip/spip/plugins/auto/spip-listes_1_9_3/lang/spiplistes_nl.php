@@ -1,10 +1,12 @@
 <?php
-
-// This is a SPIP module file  --  Ceci est un fichier module de SPIP
-
-// $LastChangedRevision: 28705 $
-// $LastChangedBy: xdjuj@apsulis.com $
-// $LastChangedDate: 2009-05-19 01:13:47 +0200 (mar. 19 mai 2009) $
+/**
+ * Pack langue neerlandais
+ * 
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: paladin@quesaco.org $
+ // $LastChangedDate: 2011-04-25 19:54:15 +0200 (Lun 25 avr 2011) $
 
 $GLOBALS['i18n_spiplistes_nl'] = array(
 
@@ -152,7 +154,7 @@ $GLOBALS['i18n_spiplistes_nl'] = array(
 	reprendre les exp&eacute;ditions en cours. "
 , 'nombre_lot' => 'Nombre d\'envois par lot'
 , 'php_mail' => 'Utiliser la fonction mail() de PHP'
-, 'Patron_du_tampon' => "Patron du tampon "
+, 'patron_du_tampon_' => "Patron du tampon : "
 , 'Patron_de_pied_' => "Patron de pied "
 , 'personnaliser_le_courrier_label' => "Activer la personnalisation du courrier"
 , 'parametrer_la_meleuse' => "Param&eacute;trer la meleuse"
@@ -480,9 +482,9 @@ $GLOBALS['i18n_spiplistes_nl'] = array(
 , 'envoi_annule' => 'Verzending abroken'
 , 'sans_adresse' => ' De mail werd niet verzonden -> Gelieve een antwoordadres op te geven'
 , 'erreur_mail' => 'Error: het bericht kan  niet verstuurd worden (nagaan of de php mail () beschikbaar is)'
-, 'abonnement_mail_text' => 'Om uw abonnement te wijzigen, gelieve de volgende link aan te klikken: '
+, 'modif_abonnement_text' => 'Om uw abonnement te wijzigen, gelieve de volgende link aan te klikken: '
 , 'msg_abonne_sans_format' => "format de reception manquant"
-, 'Cliquez_ici_pour_modifier_votre_abonnement' => "<br />Cliquez ici pour modifier votre abonnement"
+, 'modif_abonnement_html' => "<br />Cliquez ici pour modifier votre abonnement"
 
 // inc/spiplistes_naviguer_paniers.php
 // inc/spiplistes_pipeline_I2_cfg_form.php
@@ -609,7 +611,7 @@ $GLOBALS['i18n_spiplistes_nl'] = array(
 , 'editeur_rcs' => "N&deg; RCS "
 , 'editeur_siret' => "N&deg; SIRET "
 , 'editeur_url' => "URL du site de l'&eacute;diteur "
-, 'editeur_logo' => "URL du logotype de l'&eacute;diteur "
+, 'editeur_logo' => 'URL (ou DATA URL sheme) du logotype de l&#8217;&#233;diteur '
 , 'Envoi_abandonne' => "Envoi abandonn&eacute;"
 , 'Liste_prive' => "Liste priv&eacute;e"
 , 'Liste_publique' => "Liste publique"

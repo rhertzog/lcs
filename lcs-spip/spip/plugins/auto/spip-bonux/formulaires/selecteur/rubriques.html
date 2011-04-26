@@ -4,7 +4,7 @@
 [(#REM) afficher la selection dans un ul class item_picked ----------------------------------------
 select=1 => le selecteur se comporte comme un select, avec un seul choix possible
 ]<ul class='item_picked[ (#ENV{select,''}|?{select})]'>
-<INCLURE{fond=formulaires/selecteur/inc-sel-rubriques}{name}{selected}{select}{img_unpick=#CHEMIN{img_pack/item-remove.png}}>
+<INCLURE{fond=formulaires/selecteur/inc-sel-rubriques}{name}{selected}{select}{img_unpick=#CHEMIN{img_pack/item-remove.png}}{afficher_langue}>
 </ul>
 
 #SET{id_rubrique,#ENV{id_rubrique}}
@@ -15,7 +15,10 @@ select=1 => le selecteur se comporte comme un select, avec un seul choix possibl
 <INCLURE{fond=formulaires/selecteur/picker-ajax}{id_rubrique=#GET{id_rubrique}}{id_article}{rubriques=1}{articles=0}{ajax}{env}>
 </div>
 [(#ENV{sortable,'non'}|=={oui}|oui)
-<script type='text/javascript' src='#CHEMIN{formulaires/selecteur/jquery-ui-1.6.custom.js}'></script>
+[(#SPIP_VERSION|>={2.1.0}|oui)
+<script type='text/javascript' src='#CHEMIN{formulaires/selecteur/jquery-ui-1.8.5.custom.js}'></script>]
+[(#SPIP_VERSION|>={2.1.0}|non)
+<script type='text/javascript' src='#CHEMIN{formulaires/selecteur/jquery-ui-1.6.custom.js}'></script>]
 <script type='text/javascript'>
 jQuery(function() {
 		jQuery("ul.item_picked").sortable();

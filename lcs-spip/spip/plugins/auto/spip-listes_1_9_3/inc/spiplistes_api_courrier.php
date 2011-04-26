@@ -1,6 +1,17 @@
 <?php
-
-// inc/spiplistes_api_courrier.php
+/**
+ * Fonctions consacrees au traitement du contenu du courrier et tampon :
+ * 	- filtres, convertisseurs texte, charset, etc.
+ *
+ * Toutes les fonctions ici ont un nom commencant pas 'spiplistes_courrier'
+ * Voir {@link spiplistes_upgrade_base()} base/spiplistes_upgrade.php pour
+ *  definitions et descriptions des tables
+ * 
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47063 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 19:00:08 +0200 (Mon, 25 Apr 2011) $
 
 /******************************************************************************************/
 /* SPIP-Listes est un systeme de gestion de listes d'abonnes et d'envoi d'information     */
@@ -22,165 +33,126 @@
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
 
-// $LastChangedRevision: 30779 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-08-10 09:05:57 +0200 (lun, 10 aoû 2009) $
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
-/*
-	Fonctions consacrees au traitement du contenu du courrier et tampon :
-	- filtres, convertisseurs texte, charset, etc.
-	
-	Toutes les fonctions ici ont un nom commencant pas 'spiplistes_courrier'
-	
-	Voir base/spiplistes_upgrade.php pour definitions et descriptions des tables
-	
-	
-*/
-
-
-/*
-	function spiplistes_courrier_propre($texte)
-	passe propre() sur un texte puis nettoye les trucs rajoutes par spip sur du html
-	ca s'utilise pour afficher un courrier dans l espace prive
-	on l'applique au courrier avant de confirmer l'envoi
-*/
-function spiplistes_courrier_propre($texte){
-	$temp_style = ereg("<style[^>]*>[^<]*</style>", $texte, $style_reg);
-	if (isset($style_reg[0])) 
-		$style_str = $style_reg[0]; 
-	else 
-		$style_str = "";
-	$texte = ereg_replace("<style[^>]*>[^<]*</style>", "__STYLE__", $texte);
-	//passer propre si y'a pas de html (balises fermantes)
-	if( !preg_match(',</?('._BALISES_BLOCS.')[>[:space:]],iS', $texte) ) 
-	$texte = propre($texte); // pb: enleve aussi <style>...  
-	$texte = spiplistes_courrier_propre_bloog($texte); //nettoyer les spip class truc en trop
-	$texte = ereg_replace("__STYLE__", $style_str, $texte);
-	//les liens avec double debut #URL_SITE_SPIP/#URL_ARTICLE
-	$texte = ereg_replace($GLOBALS['meta']['adresse_site']."/".$GLOBALS['meta']['adresse_site'], $GLOBALS['meta']['adresse_site'], $texte);
-	$texte = liens_absolus($texte);
-	
-	return $texte;
-}
-
-/*
- * complete caracteres manquants dans HTML -> ISO
- * @return la chaine transcrite
- * @param $texte le texte a transcrire
- * @param $charset le charset souhaite'. Normalement 'iso-8859-1' (voir page de config)
- * @param $is_html flag. Pour ne pas transcrire completement la version html
- * @see http://fr.wikipedia.org/wiki/ISO_8859-1
- * @see http://www.w3.org/TR/html401/sgml/entities.html
+/**
+ * passe propre() sur un texte puis nettoye les trucs rajoutes par spip sur du html
+ * ca s'utilise pour afficher un courrier dans l espace prive
+ * on l'applique au courrier avant de confirmer l'envoi
+ * @return string
+ * @deprecated
  */
-function spiplistes_translate_2_charset ($texte, $charset='AUTO', $is_html = false) {
+function spiplistes_courrier_propre ($texte) {
+	//spiplistes_debug_log ('spiplistes_courrier_propre()');
+	static $adresse_site;
+	if (!$adresse_site) { $adresse_site = $GLOBALS['meta']['adresse_site']; }
+	static $style_rev = '__STYLE__';
 	
-	$texte = charset2unicode($texte);
-	$texte = unicode2charset($texte, $charset);
-	if($charset != "utf-8") {
-		$remplacements = array(
-			"&#8217;" => "'"	// quote
-			, "&#8220;" => '"' // guillemets
-			, "&#8221;" => '"' // guillemets
-			)
-			;
-		if(!$is_html) {
-			$remplacements = array_merge(
-				$remplacements
-				, array(
-							// Latin Extended
-					  '&#338;' => "OE"  // OElig
-					, '&#339;' => "oe"  // oelig
-					, '&#352;' => "S"  // Scaron
-					, '&#353;' => "s"  // scaron
-					, '&#376;' => "Y"  // Yuml
-						// General Punctuation
-					, '&#8194;' => " " // ensp
-					, '&#8195;' => " " // emsp
-					, '&#8201;' => " " // thinsp
-					, '&#8204;' => " " // zwnj
-					, '&#8205;' => " " // zwj
-					, '&#8206;' => " " // lrm
-					, '&#8207;' => " " // rlm
-					, '&#8211;' => "-" // ndash
-					, '&#8212;' => "--" // mdash
-					, '&#8216;' => "'" // lsquo
-					, '&#8217;' => "'" // rsquo
-					, '&#8218;' => "'" // sbquo
-					, '&#8220;' => '"' // ldquo
-					, '&#8221;' => '"' // rdquo
-					, '&#8222;' => '"' // bdquo
-					, '&#8224;' => "+" // dagger
-					, '&#8225;' => "++" // Dagger
-					, '&#8240;' => "0/00" // permil
-					, '&#8249;' => "." // lsaquo
-					, '&#8250;' => "." // rsaquo
-						// sans oublier
-					, '&#8364;' => "euros"  // euro
-				)
-			);
-		}
-		$texte = strtr($texte, $remplacements);
+	if (preg_match ('@<style[^>]*>[^<]*</style>@'
+							  , $texte
+							  , $style_reg
+							  )
+		> 0
+	) {
+		
 	}
-	return($texte);
+	
+	if (isset($style_reg[0])) {
+		$style_str = $style_reg[0].'<!-- hole -->';
+	}
+	else {
+		$style_str = '';
+	}
+	$texte = preg_replace ('@<style[^>]*>[^<]*</style>@', $style_rev, $texte);
+	
+	//passer propre si y'a pas de html (balises fermantes)
+	if (!preg_match ('@</?('._BALISES_BLOCS.')[>[:space:]]@iS', $texte))
+	{
+		$texte = propre($texte); // pb: enleve aussi <style>...
+	}
+	//nettoyer les spip class truc en trop
+	$texte = spiplistes_courrier_propre_bloog ($texte); 
+	
+	// remettre en place les styles
+	$texte = str_replace ($style_rev, $style_str, $texte);
+	
+	//les liens avec double debut #URL_SITE_SPIP/#URL_ARTICLE
+	$texte = preg_replace (
+				'@'
+				. $adresse_site
+					. '/'
+					. $adresse_site
+					. '@'
+				, $adresse_site
+				, $texte
+				);
+	$texte = spiplistes_liens_absolus ($texte);
+	
+	return ($texte);
 }
 
 
-/****
- * titre : spiplistes_courrier_propre_bloog
+
+/**
  * Enleve les enluminures Spip pour la bloogletter
- Vincent CARON
-****/
-
+ * Vincent CARON
+ * @return string
+ * @todo revoir certaines regles (<p><p></p></p> mal corrigé)
+ */
 function spiplistes_courrier_propre_bloog($texte) {
+	
+	static $eol = PHP_EOL;
+	
+	spiplistes_debug_log ("spiplistes_courrier_propre_bloog()");
 
-	$texte = ereg_replace("<p class=\"spip\">(\r\n|\n|\r)?</p>",'',$texte);
-	$texte = eregi_replace("\n{3}", "\n", $texte);
+	// eliminer les paragraphes vides
+	$texte = preg_replace ('@<p class="spip">\s*</p>@i', '', $texte);
+	
+	// limiter les tabulations verticales 
+	$texte = preg_replace ('@\v{3,}@', $eol, $texte);
 	
 	
 	// div imbrique dans un p
-	$texte = eregi_replace( "<p class=\"spip\">(\r\n|\n|\r| )*<div([^>]*)>" , "<div\\2>" , $texte);
-	$texte = eregi_replace( "<\/div>(\r\n|\n|\r| )*<\/p>" , "</div>" , $texte);
+	$texte = preg_replace ('@<p class="spip">\s*<div([^>]*)>@i', '<div\\2>' , $texte);
+	$texte = preg_replace ('@</div>\s*</p>@i' , '</div>' , $texte);
 	
 	// style imbrique dans un p
-	$texte = eregi_replace( "<p class=\"spip\">(\r\n|\n|\r| )*<style([^>]*)>" , "<style>" , $texte);
-	$texte = eregi_replace( "<\/style>(\r\n|\n|\r| )*<\/p>" , "</style>" , $texte);
+	$texte = preg_replace ('@<p class="spip">\s*<style([^>]*)>@i', '<style>' , $texte);
+	$texte = preg_replace ('@</style>\s*</p>@i', '</style>', $texte);
 	
 	
 	// h3 imbrique dans un p
-	$texte = eregi_replace( "<p class=\"spip\">(\r\n|\n|\r| )*<h3 class=\"spip\">" , "<h3>" , $texte);
-	$texte = eregi_replace( "<\/h3>(\r\n|\n|\r| )*<\/p>" , "</h3>" , $texte);
+	$texte = preg_replace ('@<p class="spip">\s*<h3 class="spip">@i', '<h3>', $texte);
+	$texte = preg_replace ('@</h3>\s*</p>@i', '</h3>', $texte);
 	
 	// h2 imbrique dans un p
-	$texte = eregi_replace( "<p class=\"spip\">(\r\n|\n|\r| )*<h2>" , "<h2>" , $texte);
-	$texte = eregi_replace( "<\/h2>(\r\n|\n|\r| )*<\/p>" , "</h2>" , $texte);
+	$texte = preg_replace ('@<p class="spip">\s*<h2>@i', '<h2>' , $texte);
+	$texte = preg_replace ('@</h2>\s*</p>@i', '</h2>' , $texte);
 	
 	// h1 imbrique dans un p
-	$texte = eregi_replace( "<p class=\"spip\">(\r\n|\n|\r| )*<h1>" , "<h1>" , $texte);
-	$texte = eregi_replace( "<\/h1>(\r\n|\n|\r| )*<\/p>" , "</h1>" , $texte);
-	
+	$texte = preg_replace ('@<p class="spip">\s*<h1>@i', '<h1>' , $texte);
+	$texte = preg_replace ('@</h1>\s*</p>@i' , '</h1>' , $texte);
 	
 	// tableaux imbriques dans p
-	$texte = eregi_replace( "<p class=\"spip\">(\r\n|\n|\r| )*<(table|TABLE)" , "<table" , $texte);
-	$texte = eregi_replace( "<\/(table|TABLE)>(\r\n|\n|\r| )*<\/p>" , "</table>" , $texte);
+	$texte = preg_replace ('@<p class="spip">\s*<table@i' , '<table' , $texte);
+	$texte = preg_replace ('@</table>\s*</p>@i' , '</table>' , $texte);
 	
 	// TD imbriques dans p
-	$texte = eregi_replace( "<p class=\"spip\">(\r\n|\n|\r| )*<(\/td|\/TD)" , "</td" , $texte);
-	//$texte = eregi_replace( "<\/(td|TD)>(\r\n|\n|\r| )*<\/p>" , "</td>" , $texte);
+	$texte = preg_replace ('@<p class="spip">\s*</td@i' , '</td' , $texte);
 	
 	// p imbriques dans p
-	$texte = eregi_replace( "<p class=\"spip\">(\r\n|\n|\r| )*<(p|P)" , "<p" , $texte);
-	//$texte = eregi_replace( "<\/(td|TD)>(\r\n|\n|\r| )*<\/p>" , "</td>" , $texte);
+	$texte = preg_replace ('@<p class="spip">\s*<p@i' , '<p' , $texte);
 	
 	// DIV imbriques dans p
-	$texte = eregi_replace( "<p class=\"spip\">(\r\n|\n|\r| )*<(div|DIV)" , "<div" , $texte);
-	$texte = eregi_replace( "<\/(DIV|div)>(\r\n|\n|\r| )*<\/p>" , "</div>" , $texte);
+	$texte = preg_replace ('@<p class="spip">\s*<div@i' , '<div' , $texte);
+	$texte = preg_replace ('@</div>\s*</p>@i' , '</div>' , $texte);
 	
-	//$texte = PtoBR($texte);
-	$texte = ereg_replace ("\.php3&nbsp;\?",".php3?", $texte);
-	$texte = ereg_replace ("\.php&nbsp;\?",".php?", $texte);
+	// correction url ?
+	$texte = preg_replace ('@\.php3&nbsp;\?@', '.php3?', $texte);
+	$texte = preg_replace ('@\.php&nbsp;\?@', '.php?', $texte);
 	
-	return $texte;
-} // end spiplistes_courrier_propre_bloog()
+	return ($texte);
+} 
 
 
 
@@ -189,10 +161,17 @@ function spiplistes_courrier_propre_bloog($texte) {
  * d'apres Clever Mail (-> NHoizey), mais en mieux.
 ****/
 
+/**
+ * @param $in string, contenu html du courrier a envoyer
+ * @return string, version texte seul (ascii) du courrier
+ **/
 function spiplistes_courrier_version_texte($in) {
 
+	$eol = PHP_EOL;
+	
 	// Nettoyage des liens des notes de bas de page
-	$out = ereg_replace("<a href=\"#n(b|h)[0-9]+-[0-9]+\" name=\"n(b|h)[0-9]+-[0-9]+\" class=\"spip_note\">([0-9]+)</a>", "\\3", $in);
+	$out = preg_replace("@<a href=\"#n(b|h)[0-9]+-[0-9]+\" name=\"n(b|h)[0-9]+-[0-9]+\" class=\"spip_note\">([0-9]+)</a>@"
+						, "\\3", $in);
 	
 	// Supprimer tous les liens internes
 	$patterns = array("/\<a href=['\"]#(.*?)['\"][^>]*>(.*?)<\/a>/ims");
@@ -200,10 +179,13 @@ function spiplistes_courrier_version_texte($in) {
 	$out = preg_replace($patterns,$replacements, $out);
 	
 	// Supprime feuille style
-	$out = ereg_replace("<style[^>]*>[^<]*</style>", "", $out);
+	$out = preg_replace("/<style[^>]*>[^<]*<\/style>/", '', $out);
 	
 	// les puces
-	$out = str_replace($GLOBALS['puce'], "\n".'-', $out);
+	// @see http://www.spip.net/fr_article1825.html
+	if (isset($GLOBALS['puce'])) {
+		$out = str_replace($GLOBALS['puce'], $eol.'-', $out);
+	}
 	
 	// Remplace tous les liens	
 	$patterns = array("/\<a href=['\"](.*?)['\"][^>]*>(.*?)<\/a>/ims");
@@ -213,65 +195,67 @@ function spiplistes_courrier_version_texte($in) {
 	$_traits = str_repeat('-', 40);
 	$_points = str_repeat('.', 20);
 	
-	$out = ereg_replace("<h1[^>]*>", "_SAUT__SAUT_".$_traits."_SAUT_", $out);
-	$out = str_replace("</h1>", "_SAUT__SAUT_".$_traits."_SAUT__SAUT_", $out);
-	$out = ereg_replace("<h2[^>]*>", "_SAUT__SAUT_".$_points." ", $out);
-	$out = str_replace("</h2>", " ".$_points."_SAUT__SAUT_", $out);
-	$out = ereg_replace("<h3[^>]*>", "_SAUT__SAUT_*", $out);
-	$out = str_replace("</h3>", "*_SAUT__SAUT_", $out);
+	$out = preg_replace('/<h1[^>]*>/', '_SAUT__SAUT_'.$_traits.'_SAUT_', $out);
+	$out = str_replace('</h1>', '_SAUT__SAUT_'.$_traits.'_SAUT__SAUT_', $out);
+	$out = preg_replace('/<h2[^>]*>/', '_SAUT__SAUT_'.$_points.' ', $out);
+	$out = str_replace('</h2>', ' '.$_points.'_SAUT__SAUT_', $out);
+	$out = preg_replace('/<h3[^>]*>/', '_SAUT__SAUT_*', $out);
+	$out = str_replace('</h3>', '*_SAUT__SAUT_', $out);
 	
 	// Les notes de bas de page
-	$out = str_replace("<p class=\"spip_note\">", "\n", $out);
-	$out = ereg_replace("<sup>([0-9]+)</sup>", "[\\1]", $out);
+	$out = str_replace('<p class="spip_note">', $eol, $out);
+	$out = preg_replace('/<sup>([0-9]+)<\/sup>/', '[\\1]', $out);
 	
-	$out = str_replace("<p[^>]*>", "\n\n", $out);
+	// etrange parfum de regex dans un str_replace ?
+	// @todo: a verifier
+	//$out = str_replace('<p[^>]*>', $eol.$eol, $out);
 	
 	//$out = str_replace('<br /><img class=\'spip_puce\' src=\'puce.gif\' alt=\'-\' border=\'0\'>', "\n".'-', $out);
-	$out = ereg_replace ('<li[^>]>', "\n".'-', $out);
+	$out = preg_replace('/<li[^>]>/', $eol.'-', $out);
 	//$out = str_replace('<li>', "\n".'-', $out);
 	
 	
 	// accentuation du gras -
 	// <b>texte</b> -> *texte*
-	$out = ereg_replace ('<b[^>|r]*>','*' ,$out);
+	$out = preg_replace('/<b[^>|r]*>/','*' ,$out);
 	$out = str_replace ('</b>','*' ,$out);
 	
 	// accentuation du gras -
 	// <strong>texte</strong> -> *texte*
-	$out = ereg_replace ('<strong[^>]*>','*' ,$out);
+	$out = preg_replace('/<strong[^>]*>/','*' ,$out);
 	$out = str_replace ('</strong>','*' ,$out);
 	
 	
 	// accentuation de l'italique
 	// <i>texte</i> -> *texte*
-	$out = ereg_replace ('<i[^>|mg]*>','*' ,$out);
-	$out = str_replace ('</i>','*' ,$out);
+	$out = preg_replace('/<i[^>|mg]*>/','*' ,$out);
+	$out = str_replace ('</i>', '*', $out);
 	
 	$out = str_replace('&oelig;', 'oe', $out);
-	$out = str_replace("&nbsp;", " ", $out);
+	$out = str_replace('&nbsp;', ' ', $out);
 	$out = filtrer_entites($out);
 	
 	//attention, trop brutal pour les logs irc <@RealET>
 	$out = supprimer_tags($out);
 	
-	$out = str_replace("\x0B", "", $out); 
-	$out = ereg_replace("\t", "", $out) ;
-	$out = ereg_replace("[ ]{3,}", "", $out);
+	$out = str_replace('\x0B', '', $out); 
+	$out = str_replace("\t", '', $out) ;
+	$out = preg_replace('/[ ]{3,}/', '', $out);
 	
 	// espace en debut de ligne
-	$out = preg_replace("/(\r\n|\n|\r)[ ]+/", "\n", $out);
+	$out = preg_replace("/(\r\n|\n|\r)[ ]+/m", $eol, $out);
 	
-//marche po
-	// Bring down number of empty lines to 4 max
-	$out = preg_replace("/(\r\n|\n|\r){3,}/m", "\n\n", $out);
+	// Bring down number of empty lines to 2 max
+	// sauts de ligne >= 3 reduits a 2
+	$out = preg_replace("/(\r\n|\n|\r){3,}/m", $eol.$eol, $out);
 	
 	//retablir les saut de ligne
-	$out = preg_replace("/(_SAUT_){3,}/m", "_SAUT__SAUT__SAUT_", $out);
-	$out = preg_replace("/_SAUT_/", "\n", $out);
-	//saut de lignes en debut de texte
-	$out = preg_replace("/^(\r\n|\n|\r)+/", "\n\n", $out);
-	//saut de lignes en debut ou fin de texte
-	$out = preg_replace("/(\r\n|\n|\r)+$/", "\n\n", $out);
+	//Réduire les > 3 à 3
+	$out = preg_replace('/(_SAUT_){4,}/m', '_SAUT__SAUT__SAUT_', $out);
+	$out = str_replace('_SAUT_', $eol, $out);
+	
+	//saut de lignes en debut et fin de texte
+	$out = $eol.$eol.trim($out).$eol.$eol;
 	
 	// Faire des lignes de 75 caracteres maximum
 	$out = wordwrap($out);
@@ -284,12 +268,13 @@ function spiplistes_courrier_version_texte($in) {
  * Ajouter les abonnes d'une liste a un envoi
  * @param : $id_courrier : reference d'un envoi
  * @param $id_liste : reference d'une liste
+ * @return bool
  */
 function spiplistes_courrier_remplir_queue_envois ($id_courrier, $id_liste, $id_auteur = 0) {
 	$id_courrier = intval($id_courrier);
 	$id_liste = intval($id_liste);
 	
-spiplistes_log("API: remplir courrier: #$id_courrier, liste: #$id_liste, auteur: #$id_auteur", _SPIPLISTES_LOG_DEBUG);
+	spiplistes_debug_log("API: remplir courrier: #$id_courrier, liste: #$id_liste, auteur: #$id_auteur");
 	
 	if($id_courrier > 0) {
 	
@@ -350,9 +335,10 @@ spiplistes_log("API: remplir courrier: #$id_courrier, liste: #$id_liste, auteur:
 			return(true);
 		}
 	}
-spiplistes_log("ERR: spiplistes_courrier_remplir_queue_envois($id_courrier, $id_liste, $id_auteur) valeur nulle ?"
-		, _SPIPLISTES_LOG_DEBUG);
-	return(false);
+	else {
+		spiplistes_debug_log("ERR: spiplistes_courrier_remplir_queue_envois($id_courrier, $id_liste, $id_auteur) valeur nulle ?");
+	}
+	return (false);
 }
 
 //CP-20080509: upadte sql sur un courrier
@@ -372,7 +358,7 @@ function spiplistes_courrier_modifier ($id_courrier, $sql_set_array, $quote = tr
 			$sql_update(
 				"spip_courriers"
 				, $sql_set_array
-				, "id_courrier=".sql_quote($id_courrier)." LIMIT 1"
+				, 'id_courrier='.sql_quote($id_courrier).' LIMIT 1'
 			)
 		: false
 		;
@@ -405,6 +391,18 @@ function spiplistes_courrier_supprimer_queue_envois ($sql_where_key, $sql_where_
 			break;
 	}
 	return($result);
+}
+
+function spiplistes_courrier_attacher_documents($id_courrier, $id_temp) {
+	if(($id_courrier > 0) && ($id_temp < 0)) {
+		return(
+			sql_updateq(
+				'spip_documents_liens'
+				, array('id_objet' => sql_quote($id_courrier))
+				, 'id_objet='.sql_quote($id_temp).' AND objet='.sql_quote('courrier')
+		));
+	}
+	return(false);
 }
 
 // CP-20080329
@@ -454,8 +452,8 @@ function spiplistes_courriers_total_abonnes ($id_courrier = 0) {
  */
 function spiplistes_courriers_assembler_patron ($path_patron, $contexte, $ignorer = false) {
 
-	if($ignorer) {
-		$result = array("", "");
+	if ($ignorer) {
+		$result = array('', '');
 	}
 	else {
 		$result = spiplistes_assembler_patron($path_patron, $contexte);
@@ -471,50 +469,125 @@ function spiplistes_courriers_assembler_patron ($path_patron, $contexte, $ignore
  * Pour le moment, uniquement #DATE et 2 filtres sont autorises 
  * @return le titre calcule'
  * @param $titre string
+ *
+ * CP-20110203
+ * Reecriture
+ * Possibilites plusieurs #DATE, avec ou sans parametres
  */
 function spiplistes_calculer_balise_titre ($titre) {
 
-	// longue comme un jour sans pain 
-	$pattern = "=((?P<a>\[)?(?P<texte_avant>[^(\[]*)(?P<b>\()?\s*(?P<balise>#DATE)(?P<filtres>(\s*\|\s*\w+\s*{?\s*\'?\w+\'?\s*}?)*)\s*(?P<c>\))?(?P<texte_apres>[^(\]]*)(?P<d>\])?)=";
+	static $i_envelop = array('a', 'b', 'c', 'd');
 	
-	if (preg_match($pattern, $titre, $match)) {
-		
-		if($match['balise'] == "#DATE") {
-			
-			$date = date('Y-m-d H:i:s');
-			
-			$texte_avant = isset($match['texte_avant']) ? $match['texte_avant'] : "";
-			$texte_apres = isset($match['texte_apres']) ? $match['texte_apres'] : "";
+	$now = $date = date('Y-m-d H:i:s');
 
-			$envelop = "";
-			foreach(array('a', 'b', 'c', 'd') as $ii) {
-				$envelop .= (isset($match[$ii])) ? $match[$ii] : "";
+	// longue comme un jour sans pain
+	$pattern = '='
+		// rechercher le bracket de gauche
+		. '(?P<a>\[)'
+		// le texte entre le bracket et la parenthese
+		. '(?P<texte_avant>[^\(]*)'
+		// la parenthese
+		. '(?P<b>\()?\s*'
+		// la balise DATE
+		. '(?P<balise>#DATE)'
+		// le ou les filtres de la balise
+		. '(?P<filtres>(\s*\|\s*\w+\s*'
+			// les parametres du filtre
+			. '(?P<params>(\{[^\}]*})?)'
+		. ')*)\s*'
+		// la parenthese de droite
+		. '(?P<c>\))?'
+		// le texte entre la parenthese et le bracket
+		. '(?P<texte_apres>[^\]]*)'
+		// le bracket de droite
+		. '(?P<d>\])'
+		. '='
+		;
+		
+	$recherche = array();
+	$remplace = array();
+	
+	if($nres = intval(preg_match_all($pattern, $titre, $matches))) {
+
+		for($ii = 0; $ii < $nres; $ii++)
+		{
+					
+			$envelop = '';
+			
+			foreach($i_envelop as $aa) {
+				$envelop .= (isset($matches[$aa][$ii])) ? $matches[$aa][$ii] : '';
+				
 			}
 			
-			if($envelop == "[()]") {
-				$filtres = explode('|', $match['filtres']);
-				foreach($filtres as $filtre) {
-					$filtre = trim($filtre);
-					if(preg_match("=(\w+)\s*(\{)?\s*(\'?\w*\'?)?\s*(\})?=", $filtre, $match)) {
-						switch($match[1]) {
+			// balise avec filtres
+			if($envelop == '[()]')
+			{
+				$date = $now;
+				
+				$filtres = trim($matches['filtres'][$ii]);
+				
+				$params = trim($matches['params'][$ii]);
+				$params = strlen($params) ? trim($params, '’\'{}') : '';
+					
+				$filtres = explode('|', $filtres);
+				
+				foreach($filtres as $ce_filtre)
+				{
+					$ce_filtre = trim($ce_filtre);
+					if(strlen($ce_filtre))
+					{
+						$filtre = $ce_filtre;
+						
+						// tout les filtres demandent parametre
+						// mais si ajout d'autres plus tard...
+						//
+						$params = false;
+						if(($pos = strpos($ce_filtre, '{')) !== false)
+						{
+							$filtre = substr($ce_filtre, 0, $pos);
+							
+							$params = substr($ce_filtre, $pos);
+							$params = strlen($params) ? trim($params, '’\'{}') : '';
+						}
+						switch($filtre) {
 							case 'affdate':
-								$v = $match[3];
-								$v = preg_replace("=[^dDjlNSwzWFmMntLoYyaABgGhHiseIOPTZcrU\: \-]=", "", $v);
+								$v = $params;
+								$v = preg_replace('=[^dDjlNSwzWFmMntLoYyaABgGhHiseIOPTZcrU\: \-]=', '', $v);
 								$date = date($v);
 								break;
 							case 'plus':
-								$v = intval($match[3]);
-								$date += $v;
+								$v = intval($params);
+								$date = plus($date, $v);
+								break;
+							case 'jour':
+							case 'mois':
+							case 'annee':
+							case 'nom_mois':
+							case 'ucfirst':
+							case 'saison':
+								$date = $filtre($date);
 								break;
 						}
 					}
+							
 				}
+
+				$recherche[] = $pattern;
+				$remplace[] = $matches['texte_avant'][$ii] . $date . $matches['texte_apres'][$ii];
 			}
-			
-			$titre = preg_replace($pattern, $texte_avant.$date.$texte_apres, $titre);
+		}
+		
+		if(count($remplace))
+		{
+			// remplacer les balises avec filtres
+			$titre = preg_replace($recherche, $remplace, $titre, 1);
+		}
+		
+		// reste des balises sans filtre ?
+		if(strpos($titre, $s = '#DATE') !== false)
+		{
+			$titre = str_replace($s, $now, $titre);
 		}
 	}
 	return($titre);
 }
-
-?>

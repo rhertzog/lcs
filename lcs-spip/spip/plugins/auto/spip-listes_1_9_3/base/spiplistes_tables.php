@@ -1,19 +1,21 @@
 <?php
-// base/spiplistes_tables.php
+/**
+ * Description et creation des tables.
+ *
+ * Appele
+ * - pour l'init de la base
+ * - par les exec en charge d'interpreter un patron (ex.: spiplistes_courrier_gerer)
+ * - par l'espace public
+ *
+ * Ne pas oublier de faire l'include dans {PLUGIN}_mes_fonctions.php
+ * 
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47062 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 19:00:02 +0200 (Mon, 25 Apr 2011) $
 
-// $LastChangedRevision: 24985 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2008-12-05 17:29:49 +0100 (ven, 05 déc 2008) $
-
-/*
-	Appele 
-	- pour l'init de la base
-	- par les exec en charge d'interpreter un patron (ex.: spiplistes_courrier_gerer)
-	- par l'espace public
-	
-	Ne pas oublier de faire l'include dans {PLUGIN}_mes_fonctions.php
-	
-*/
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/spiplistes_api_globales');
 
@@ -28,7 +30,8 @@ include_spip('inc/spiplistes_api_globales');
 	;
 
 	//creer la table auteurs_elargis si besoin
-	if(!is_array($tables_principales['spip_auteurs_elargis'])) {
+	if(!isset ($tables_principales['spip_auteurs_elargis'])
+	   || !is_array ($tables_principales['spip_auteurs_elargis'])) {
 		$spip_auteurs_elargis['id'] = "bigint(21) NOT NULL";
 		$spip_auteurs_elargis['id_auteur'] = "bigint(21) NOT NULL";
 		$spip_auteurs_elargis['`spip_listes_format`'] = "VARCHAR( 8 ) DEFAULT 'non' NOT NULL";
@@ -160,4 +163,3 @@ include_spip('inc/spiplistes_api_globales');
 	$tables_jointures['spip_auteurs'][]= 'courriers';
 	$tables_jointures['spip_auteurs']['id_liste']= 'auteurs_listes';
 	
-?>

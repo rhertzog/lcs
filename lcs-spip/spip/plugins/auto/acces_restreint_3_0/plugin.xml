@@ -1,11 +1,11 @@
 <plugin>
 	<nom> <!-- Nom du plugin -->
-	<multi>[fr]Acces Restreint 3.0[es]Acceso restringido 3.0[en]Restricted Access</multi>
+	<multi>[fr]Acces Restreint[es]Acceso restringido[en]Restricted Access[de]Zugangskontrolle</multi>
 	</nom>
 	<icon>img_pack/zones-acces-48.png</icon>
 	<auteur>[cedric.morin@yterium.com->http://www.yterium.net]</auteur>
 	<licence>GPL &#169; 2007-2008</licence>
-	<version>0.3.0.3</version>
+	<version>3.1.0</version>
 	<version_base>0.3.0.2</version_base>
 	<etat>stable</etat>
 	<description>
@@ -22,6 +22,10 @@ _ Todos los bucles nativos de SPIP quedan modificados para filtrar los resultado
 _ Each area contains sections.
 _ Authors can be associated with these areas to gain access to them.
 _ All SPIP's loops are loaded with the necessary tools to filter the results according to the visitors' access priviliges.
+	[de] Verwaltung von Bereichen mit Zugangskontrolle
+_ Jeder Bereich enth&auml;lt Rubriken.
+_ Einzelnen Autoren k&ouml;nnen Zugangsrechte f�r Bereiche zugeordnet werden.
+_ ALle Standardschleifen (Abfragen) von SPIP werden �berladen, und um die �berpr&uuml;fung der Rechte des jeweiligen Sitebesuchers erg&auml;nzt.
 	</multi>
 	</description>
 	<lien>http://www.spip-contrib.net/Acces-restreint-V1</lien> <!-- URI de documentation -->
@@ -48,6 +52,10 @@ _ All SPIP's loops are loaded with the necessary tools to filter the results acc
 		<nom>pre_boucle</nom>
 		<inclure>public/acces_restreint.php</inclure>
 	</pipeline>
+	<pipeline>
+		<nom>rechercher_liste_des_champs</nom>
+		<inclure>public/acces_restreint.php</inclure>
+	</pipeline>
 
 	<pipeline>
 		<nom>accesrestreint_liste_zones_autorisees</nom>
@@ -63,11 +71,28 @@ _ All SPIP's loops are loaded with the necessary tools to filter the results acc
 		<nom>affiche_milieu</nom>
 		<inclure>acces_restreint_pipelines.php</inclure>
 	</pipeline>
-	
+	<pipeline>
+		<nom>affiche_gauche</nom>
+		<inclure>acces_restreint_pipelines.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>page_indisponible</nom>
+		<inclure>acces_restreint_pipelines.php</inclure>
+	</pipeline>
+
 	<pipeline>
 		<nom>autoriser</nom>
 		<inclure>inc/acces_restreint_autoriser.php</inclure>
 	</pipeline>
+	
+	<!-- avec plugin champs extras 2 -->
+	<pipeline>
+		<nom>objets_extensibles</nom>
+		<inclure>acces_restreint_pipelines.php</inclure>
+	</pipeline>
+	
 	<necessite id="SPIP" version='[2.0.0;]' />
 	<necessite id='spip_bonux' version='[1.0;]' />
+	<categorie>auteur</categorie>
+	<traduire gestionnaire="salvatore" module="accesrestreint" reference="fr" />
 </plugin>

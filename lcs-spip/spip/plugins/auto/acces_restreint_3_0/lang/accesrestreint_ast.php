@@ -3,12 +3,13 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 	// A
-	'ajouter_droits_auteur' => 'Axuntame a los que tienen permit&iacute;o entrar n\'esta estaya',
+	'ajouter_droits_auteur' => 'Axuntame a los que tienen permitío entrar n\'esta estaya',
+	'aucune_zone' => 'Denguna zona',
 	'auteurs' => 'autores',
 
 	// B
@@ -16,37 +17,42 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 	// C
 	'colonne_id' => 'Num',
-	'confirmer_retirer_auteur_zone' => '&iquest;Tas seguru de que qui&eacute;s retirar esti autor de la zona?',
-	'confirmer_retirer_auteurs' => '&iquest;Tas seguru de que qui&eacute;s retirar toos los autores d\'esta zona?',
-	'confirmer_supprimer_zone' => '&iquest;Tas seguru que quies desaniciar esta zona?',
+	'confirmer_ajouter_auteurs' => '¿Tas seguru de que quies amestar esti autor a la zona?',
+	'confirmer_retirer_auteur_zone' => '¿Tas seguru de que quiés retirar esti autor de la zona?',
+	'confirmer_retirer_auteurs' => '¿Tas seguru de que quiés retirar toos los autores d\'esta zona?',
+	'confirmer_supprimer_zone' => '¿Tas seguru que quies desaniciar esta zona?',
 	'creer_zone' => 'Crear una estaya nueva',
 
 	// D
-	'descriptif' => 'Descrici&oacute;n',
+	'descriptif' => 'Descrición',
 
 	// I
-	'icone_menu_config' => 'Accesu Torg&aacute;o',
+	'icone_menu_config' => 'Accesu Torgáo',
 	'icone_supprimer_zone' => 'Desaniciar esta estaya',
+	'info_acces_restreint' => 'L\'accesu a esta páxina ta llendáu. Identificate pa poder entrar',
 	'info_ajouter_auteur' => 'Amestar esti autor',
 	'info_ajouter_auteurs' => 'Amestar toos los autores',
-	'info_ajouter_zones' => 'A&ntilde;adir toes les estayes',
-	'info_aucun_acces' => 'Deng&uacute;n accesu autoriz&aacute;u',
-	'info_aucun_auteur' => 'Deng&uacute;n autor na zona',
+	'info_ajouter_zones' => 'Añadir toes les estayes',
+	'info_aucun_acces' => 'Dengún accesu autorizáu',
+	'info_aucun_auteur' => 'Dengún autor na zona',
 	'info_aucune_zone' => 'Denguna zona',
 	'info_auteurs_lies_zone' => 'Los autores con accesu a esta estaya',
-	'info_page' => 'Estae p&aacute;xina te permite xestionar les estayes con accesu torg&aacute;u nel to sitiu',
+	'info_lien_action_proteger' => 'Prot&eacute;ger l\'acc&egrave;s &agrave; cette rubrique.', # NEW
+	'info_page' => 'Estae páxina te permite xestionar les estayes con accesu torgáu nel to sitiu',
 	'info_retirer_auteurs' => 'Retirar toos los autores',
 	'info_retirer_zone' => 'Quitar de la estaya',
 	'info_retirer_zones' => 'Quitar de toes les estayes',
+	'info_rubrique_dans_zone' => 'Cette rubrique fait partie de la zone :', # NEW
+	'info_rubrique_dans_zones' => 'Cette rubrique fait partie des zones :', # NEW
 
 	// M
 	'modifier_zone' => 'Iguar la zona',
 
 	// P
-	'page_zones_acces' => 'Accesu Torg&aacute;o',
-	'par_titre' => 'Pol t&iacute;tulu',
+	'page_zones_acces' => 'Accesu Torgáo',
+	'par_titre' => 'Pol títulu',
 	'privee' => 'Privao',
-	'publique' => 'P&uacute;blicu',
+	'publique' => 'Públicu',
 
 	// R
 	'rubriques' => 'seiciones',
@@ -56,20 +62,23 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'selectionner_une_zone' => 'Seleicionar una estaya',
 
 	// T
-	'titre' => 'T&iacute;tulu',
+	'titre' => 'Títulu',
 	'titre_ajouter_zone' => 'Amestar la estaya',
+	'titre_boite_protegee_non' => 'Acc&egrave;s non prot&eacute;g&eacute;', # NEW
+	'titre_boite_protegee_oui' => 'Acc&egrave;s prot&eacute;g&eacute;', # NEW
 	'titre_cadre_modifier_zone' => 'Iguar una zona',
+	'titre_page_config' => 'Configuración de los accesos',
 	'titre_table' => 'Toes les estayes d\'accesu',
-	'titre_zones_acces' => 'Estayes d\'accesu torg&aacute;o',
+	'titre_zones_acces' => 'Estayes d\'accesu torgáo',
 	'toutes' => 'Toes',
 
 	// V
 	'voir_toutes' => 'Ver toes les estayes',
 
 	// Z
-	'zone_numero' => 'ESTAYA N&Uacute;MBERU:',
-	'zone_restreinte_espace_prive' => 'Torgar l\'accesu a esta estaya nel espaciu priv&aacute;o',
-	'zone_restreinte_publique' => 'Torgar l\'accesu a esta estaya na parte p&uacute;blica'
+	'zone_numero' => 'ESTAYA NÚMBERU:',
+	'zone_restreinte_espace_prive' => 'Torgar l\'accesu a esta estaya nel espaciu priváo',
+	'zone_restreinte_publique' => 'Torgar l\'accesu a esta estaya na parte pública'
 );
 
 ?>

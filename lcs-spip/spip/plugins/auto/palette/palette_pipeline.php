@@ -2,7 +2,7 @@
 
 function palette_insert_head($flux) {
   $cfg = unserialize($GLOBALS['meta']['palette']);
-  if ($cfg['palette_public'] =='on')
+  if ($cfg['palette_public'] == 'on')
 	  $flux .= palette_header_common('public');
 	return $flux;
 }
@@ -21,7 +21,7 @@ function palette_header_prive($flux) {
  * @return string
  */
 function palette_header_common($type) {
-	spip_log("type = $type");
+	# spip_log("type = $type");
 	$f = charger_fonction('palette_header', 'inc');
 	if (is_callable($f))
 		return $f($type);

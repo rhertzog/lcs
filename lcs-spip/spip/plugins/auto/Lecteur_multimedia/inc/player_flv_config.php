@@ -2,9 +2,9 @@
 
 	// inc/player_flv_config.php
 	
-	// $LastChangedRevision: 23343 $
-	// $LastChangedBy: kent1@arscenic.info $
-	// $LastChangedDate: 2008-10-16 01:33:06 +0200 (jeu, 16 oct 2008) $
+	// $LastChangedRevision: 31819 $
+	// $LastChangedBy: paladin@quesaco.org $
+	// $LastChangedDate: 2009-09-27 15:37:46 +0200 (dim, 27 sep 2009) $
 
 // CP-20080321 : creation de la table
 
@@ -98,7 +98,7 @@ function player_flv_config () {
 			, 'values' => player_array_set_key_from_value(0, 1, 2, 4, 8, 16, 24, 32)
 			, 'default' => '8'
 		  )
-		, 'srt' // 1 pour utiliser les sous-titres SRT (le fichier doit etre au m�me endroit que la video et avoir le meme nom que le fichier video mais avec l'extension .srt)
+		, 'srt' // 1 pour utiliser les sous-titres SRT (le fichier doit etre au meme endroit que la video et avoir le meme nom que le fichier video mais avec l'extension .srt)
 		  => array(
 		  	'type' => "boolean"
 		  	, 'class' => "normal maxi multi"

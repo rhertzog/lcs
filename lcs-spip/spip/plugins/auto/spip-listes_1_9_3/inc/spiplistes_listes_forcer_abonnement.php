@@ -1,16 +1,28 @@
 <?php
-// Original From SPIP-Listes-V :: Id: spiplistes_listes_forcer_abonnement.php paladin@quesaco.org
+/**
+ * @version Original From SPIP-Listes-V :: Id: spiplistes_listes_forcer_abonnement.php paladin@quesaco.org
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:13 +0200 (Mon, 25 Apr 2011) $
 
-// $LastChangedRevision: 25882 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-01-11 17:33:44 +0100 (dim, 11 jan 2009) $
-
-// permet de forcer l'abonnement a une liste
-// $statut = "tous" => '6forum' + '1comite' + '0minirezo'
-// si statut == 'aucun', desabonne tous
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/spiplistes_api_globales');
 
+/**
+ * Permet de forcer l'abonnement a une liste
+ * $statut = "tous" => '6forum' + '1comite' + '0minirezo'
+ * si statut == 'aucun', desabonne tous
+ * @global string $connect_id_auteur
+ * @global boolean $connect_toutes_rubriques
+ * @global int $connect_id_auteur
+ * @param int $id_liste
+ * @param string $statut
+ * @param boolean $forcer_format_reception
+ * @return boolean
+ */
 function spiplistes_listes_forcer_abonnement ($id_liste, $statut, $forcer_format_reception) {
 
 	global $connect_statut
@@ -20,9 +32,11 @@ function spiplistes_listes_forcer_abonnement ($id_liste, $statut, $forcer_format
 
 	$id_liste = intval($id_liste);
 	
-	if(!$id_liste) return(false);
+	if ($id_liste <= 0) {
+		return(false);
+	}
 	
-	$sql_where = "";
+	$sql_where = '';
 	
 	if($statut=="tous") {
 		$sql_where = " (statut=".sql_quote('6forum')." OR statut=".sql_quote('1comite')." OR statut=".sql_quote('0minirezo').")";
@@ -123,4 +137,3 @@ function spiplistes_listes_forcer_abonnement ($id_liste, $statut, $forcer_format
 	return(false);
 } // end spiplistes_listes_forcer_abonnement()
 
-?>

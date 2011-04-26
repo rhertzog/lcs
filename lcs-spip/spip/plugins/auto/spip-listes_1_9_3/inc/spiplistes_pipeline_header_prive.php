@@ -1,10 +1,10 @@
 <?php 
-
-// inc/spiplistes_pipeline_header_prive.php
-
-// $LastChangedRevision: 27915 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-04-17 10:00:31 +0200 (ven, 17 avr 2009) $
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:13 +0200 (Mon, 25 Apr 2011) $
 
 /*
 	
@@ -17,7 +17,7 @@
 	
 */
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if(!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/spiplistes_api_globales');
 
@@ -77,8 +77,8 @@ function spiplistes_header_prive ($flux) {
 				$js_alert = spiplistes_texte_html_2_iso(_T('spiplistes:Attention_action_retire_invites'), $GLOBALS['meta']['charset'], true);
 				$flux .= ""
 					. "<meta id='x-spiplistes-alert' content='" . $js_alert . "' />\n"
-					. "<meta id='x-spiplistes-pri' name='" . _SPIPLISTES_PRIVATE_LIST . "' content='" . spiplistes_items_get_item("puce", _SPIPLISTES_PRIVATE_LIST) . "' />\n"
-					. "<meta id='x-spiplistes-pub' name='" . _SPIPLISTES_PUBLIC_LIST . "' content='" . spiplistes_items_get_item("puce", _SPIPLISTES_PUBLIC_LIST) . "' />\n"
+					. "<meta id='x-spiplistes-pri' name='" . _SPIPLISTES_LIST_PRIVATE . "' content='" . spiplistes_items_get_item("puce", _SPIPLISTES_LIST_PRIVATE) . "' />\n"
+					. "<meta id='x-spiplistes-pub' name='" . _SPIPLISTES_LIST_PUBLIC . "' content='" . spiplistes_items_get_item("puce", _SPIPLISTES_LIST_PUBLIC) . "' />\n"
 					. "<meta id='x-spiplistes-tra' name='" . _SPIPLISTES_TRASH_LIST . "' content='" . spiplistes_items_get_item("puce", _SPIPLISTES_TRASH_LIST) . "' />\n"
 					. "<script type=\"text/javascript\" src=\"" . $js_dir . "spiplistes_liste_gerer.js\"></script>\n"
 					. "<style type='text/css'>

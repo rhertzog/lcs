@@ -1,4 +1,4 @@
-[(#REM)
+[<!--(#REM)
 
 	// modeles/doc_player.html
 
@@ -15,13 +15,18 @@ Afficher le TITRE, le DESCRIPTIF suivi du lecteur flash permettant de faire joue
 Sinon, utiliser le comportement normal.
 
 
-]
-<BOUCLE_doc (DOCUMENTS) {id_document}>
+-->]
+<BOUCLE_doc (DOCUMENTS) {id_document}{tout}>
 #SET{player,#ENV{player,#CONFIG{player,'neoplayer'}}}
+[(#GET{player}|=={pixplayer}|?{' ',''})#SET{my_width,#ENV{width,290}}]
+[(#GET{player}|=={neoplayer}|?{' ',''})#SET{my_width,#ENV{width,200}}]
+[(#GET{player}|=={dewplayer}|?{' ',''})#SET{my_width,#ENV{width,200}}]
+[(#GET{player}|=={eraplayer}|?{' ',''})#SET{my_width,#ENV{width,20}}]
+[<!--(#REM) 
 
+	Document MP3 ? 
 
-[(#REM) Document MP3 ? ]
-[(#TYPE_DOCUMENT|=={MP3}|?{
+-->][(#TYPE_DOCUMENT|=={MP3}|?{
 <dl class='spip_document_#ID_DOCUMENT spip_documents[ spip_documents_(#ENV{align})][ (#ENV{class})] spip_lien_ok'[ style='float:(#ENV{align}|match{left|right});']>
 [(#ID_VIGNETTE|?{
 	<dt><a href="[(#ENV{lien}|sinon{#URL_DOCUMENT})]" type="#MIME_TYPE"[ class="(#ENV{lien_class})"] title='#TYPE_DOCUMENT - [(#TAILLE|taille_en_octets|texte_backend)]'>
@@ -30,13 +35,17 @@ Sinon, utiliser le comportement normal.
 	''
 })]
 [
-<dt class='spip_doc_titre #EDIT{titre}'[ style='width:(#LOGO_DOCUMENT||largeur|min{350}|max{120})px;']><strong>(#TITRE)</strong></dt>][
-<dd class='spip_doc_descriptif #EDIT{descriptif}'[ style='width:(#LOGO_DOCUMENT||largeur|min{350}|max{120})px;']>(#DESCRIPTIF|PtoBR)[(#NOTES|PtoBR)]</dd>]
-<dd class='spip_doc_descriptif'[ style='width:(#LOGO_DOCUMENT||largeur|min{350}|max{120})px;']>
+<dt class='spip_doc_titre #EDIT{titre}'[ style='width:(#LOGO_DOCUMENT||largeur|min{350}|max{120,[(#GET{my_width})]})px;']><strong>(#TITRE)</strong></dt>][
+<dd class='spip_doc_descriptif #EDIT{descriptif}'[ style='width:(#LOGO_DOCUMENT||largeur|min{350}|max{120,[(#GET{my_width})]})px;']>(#DESCRIPTIF|PtoBR)[(#NOTES|PtoBR)]</dd>]
 [(#GET{player}|=={pixplayer}|?{' ',''})
-[(#REM) Pour voir les options de configuration : http://www.1pixelout.net/code/audio-player-wordpress-plugin/]
-<object type='application/x-shockwave-flash' data='#CHEMIN{flash/pixplayer.swf}' id='audioplayer#ID_DOCUMENT' height='[(#ENV{height,24})]' width='[(#ENV{width,290})]'>
-<param name="wmode" value="opaque" />
+[<!--(#REM) 
+
+	Pour voir les options de configuration : http://www.1pixelout.net/code/audio-player-wordpress-plugin/
+	
+-->]
+<dd class='spip_doc_descriptif'[ style='width:(#LOGO_DOCUMENT||largeur|min{350}|max{120,[(#GET{my_width})]})px;']>
+<object type='application/x-shockwave-flash' data='#CHEMIN{flash/pixplayer.swf}' id='audioplayer#ID_DOCUMENT' height='[(#ENV{height,24})]' width='[(#GET{my_width})]'>
+<param name="wmode" value="transparent" />
 <param name='movie' value='#CHEMIN{flash/pixplayer.swf}' />
 <param name='FlashVars' value='playerID=#ID_DOCUMENT&amp;bg=0x[(#ENV{bg,f8f8f8})]&amp;leftbg=0x[(#ENV{leftbg,eeeeee})]&amp;lefticon=0x[(#ENV{lefticon,666666})]&amp;rightbg=0x[(#ENV{rightbg,cccccc})]&amp;rightbghover=0x[(#ENV{rightbghover,999999})]&amp;righticon=0x[(#ENV{righticon,666666})]&amp;righticonhover=0x[(#ENV{righticonhover,FFFFFF})]&amp;text=0x[(#ENV{text,666666})]&amp;slider=0x[(#ENV{slider,666666})]&amp;track=0x[(#ENV{track,FFFFFF})]&amp;border=0x[(#ENV{border,666666})]&amp;loader=0x[(#ENV{loader,9FFFB8})]&amp;soundFile=#URL_DOCUMENT' />
 <param name='quality' value='high' />
@@ -48,47 +57,56 @@ Sinon, utiliser le comportement normal.
 	if(typeof(ap_instances) == "undefined"){
 		jQuery.getScript("[(#CHEMIN{javascript/audio-player.js})]");
 	}
-</script>
+</script></dd>
 ][(#GET{player}|=={neoplayer}|?{' ',''})
-<object id="audioplayer#ID_DOCUMENT" type="application/x-shockwave-flash" data="#CHEMIN{flash/neoplayer_maxi.swf}" height="[(#ENV{height,20})]" width="[(#ENV{width,200})]">
-<param name="wmode" value="opaque" />
+<dd class='spip_doc_descriptif'[ style='width:(#LOGO_DOCUMENT||largeur|min{350}|max{120,[(#GET{my_width})]})px;']>
+<object id="audioplayer#ID_DOCUMENT" type="application/x-shockwave-flash" data="#CHEMIN{flash/neoplayer_maxi.swf}" height="[(#ENV{height,20})]" width="[(#GET{my_width})]">
+<param name="wmode" value="transparent" />
 <param name="movie" value="#CHEMIN{flash/neoplayer_maxi.swf}" />
-<param name="FlashVars" value="mp3=#URL_DOCUMENT&amp;bgcolor1=ffffff&amp;bgcolor2=cccccc&amp;buttoncolor=999999&amp;buttonovercolor=0&amp;slidercolor1=cccccc&amp;slidercolor2=999999&amp;loadingcolor=ffff00&amp;sliderovercolor=666666&amp;textcolor=0&amp;showstop=1&amp;showinfo=0&amp;width=200&amp;height=20[&amp;autoplay=(#ENV{autostart,0})]" />
+<param name="FlashVars" value="mp3=#URL_DOCUMENT&amp;bgcolor1=ffffff&amp;bgcolor2=cccccc&amp;buttoncolor=999999&amp;buttonovercolor=0&amp;slidercolor1=cccccc&amp;slidercolor2=999999&amp;loadingcolor=ffff00&amp;sliderovercolor=666666&amp;textcolor=0&amp;showstop=1&amp;showinfo=0&amp;width=[(#GET{my_width})]&amp;height=20[&amp;autoplay=(#ENV{autostart,0})]" />
 [<span><a href='(#URL_DOCUMENT)' rel='enclosure'>#URL_DOCUMENT</a></span>]
-</object>
+</object></dd>
 ][(#GET{player}|=={dewplayer}|?{' ',''})
-<object type="application/x-shockwave-flash" data="#CHEMIN{flash/dewplayer.swf}" height="[(#ENV{height,20})]" width="[(#ENV{width,200})]">
-<param name="wmode" value="opaque" />
+<dd class='spip_doc_descriptif'[ style='width:(#LOGO_DOCUMENT||largeur|min{350}|max{120,[(#GET{my_width})]})px;']>
+<object type="application/x-shockwave-flash" data="#CHEMIN{flash/dewplayer.swf}" height="[(#ENV{height,20})]" width="[(#GET{my_width})]">
+<param name="wmode" value="transparent" />
 <param name="movie" value='#CHEMIN{flash/dewplayer.swf}' />
 <param name="FlashVars" value="son=[(#URL_DOCUMENT|url_absolue)]" />
 [<span><a href='(#URL_DOCUMENT)' rel='enclosure'>#URL_DOCUMENT</a></span>]
-</object>
+</object></dd>
 ][(#GET{player}|=={eraplayer}|?{' ',''})
-<object id="audioplayer#ID_DOCUMENT" type="application/x-shockwave-flash" data="#CHEMIN{flash/eraplayer.swf}" height="[(#ENV{height,20})]" width="[(#ENV{width,20})]">
+<dd class='spip_doc_descriptif'[ style='width:(#LOGO_DOCUMENT||largeur|min{350}|max{20,[(#GET{my_width})]})px;']>
+<object id="audioplayer#ID_DOCUMENT" type="application/x-shockwave-flash" data="#CHEMIN{flash/eraplayer.swf}" height="[(#ENV{height,20})]" width="[(#GET{my_width})]">
 	<param name="wmode" value="transparent" />
 	<param name="movie" value="#CHEMIN{flash/eraplayer.swf}" />
 	<param name="FlashVars" value="mp3=#URL_DOCUMENT" />
 	[<span><a href='(#URL_DOCUMENT)' rel='enclosure'>#URL_DOCUMENT</a></span>]
-</object>
+</object></dd>
 ]
-</dd>
 </dl>
 })]
 
 
-[(#REM) Document Flash (.flv) ? 
-	Documentation: 
+[<!--(#REM) 
+
+	Document Flash (.flv) ou (.f4v) ?
+	
+	Documentation:
 	- player_flv_js.swf -> http://flv-player.net/players/js/documentation/
 	- player_flv_multi.swf -> http://flv-player.net/players/multi/documentation/
 	- player_flv_maxi -> http://flv-player.net/players/maxi/documentation/
 	- player_flv.swf -> http://flv-player.net/players/normal/documentation/
 	- player_flv_mini.swf -> http://flv-player.net/players/mini/documentation/
-][(#TYPE_DOCUMENT|=={Flash Video}|?{' '})
+
+
+-->][(#TYPE_DOCUMENT|match{^(Flash Video|Video for Adobe Flash Player)$}|?{' '})
+#SET{largeur,#ENV{largeur,#LARGEUR|=={0}|?{400,#LARGEUR}}}
+#SET{hauteur,#ENV{hauteur,#HAUTEUR|=={0}|?{300,#HAUTEUR}}}
 <dl class='spip_document_#ID_DOCUMENT spip_documents[ spip_documents_(#ENV{align})][ (#ENV{class})] spip_lien_ok'[ style='float:(#ENV{align}|match{left|right});']>
 <dt class='spip_doc_titre'>
-<object type="application/x-shockwave-flash" data="#CHEMIN{flash/player_flv_maxi.swf}" width="[(#LARGEUR|=={0}|?{400,#LARGEUR})]" height="[(#HAUTEUR|=={0}|?{300,#HAUTEUR})]">
+<object type="application/x-shockwave-flash" data="#CHEMIN{flash/player_flv_maxi.swf}" width="#GET{largeur}" height="#GET{hauteur}">
 <param name="movie" value="#CHEMIN{flash/player_flv_maxi.swf}" />
-<param name="FlashVars" value="flv=[(#URL_DOCUMENT|url_absolue)]&amp;width=[(#LARGEUR|=={0}|?{400,#LARGEUR})]&amp;height=[(#HAUTEUR|=={0}|?{300,#HAUTEUR})]&amp;bgcolor1=ffffff&amp;bgcolor2=cccccc&amp;buttoncolor=999999&amp;buttonovercolor=0&amp;slidercolor1=cccccc&amp;slidercolor2=999999&amp;sliderovercolor=666666&amp;textcolor=0&amp;showstop=1&amp;title=[(#TITRE|urlencode)][(#LOGO_DOCUMENT||extraire_attribut{src}|match{flv.png$}|?{'',' '})&amp;startimage=[(#LOGO_DOCUMENT||extraire_attribut{src})]]&amp;ondoubleclick=fullscreen&amp;showfullscreen=1&amp;autoplay=[(#ENV{autoplay}|?{1,0})]" />
+<param name="FlashVars" value="flv=[(#URL_DOCUMENT|url_absolue)]&amp;width=#GET{largeur}&amp;height=#GET{hauteur}&amp;bgcolor1=ffffff&amp;bgcolor2=cccccc&amp;buttoncolor=999999&amp;buttonovercolor=0&amp;slidercolor1=cccccc&amp;slidercolor2=999999&amp;sliderovercolor=666666&amp;textcolor=0&amp;showstop=1&amp;title=[(#TITRE|textebrut|urlencode)][(#LOGO_DOCUMENT||extraire_attribut{src}|match{flv.png$}|?{'',' '})&amp;startimage=[(#LOGO_DOCUMENT||extraire_attribut{src})]]&amp;ondoubleclick=fullscreen&amp;showfullscreen=1&amp;autoplay=[(#ENV{autoplay}|?{1,0})]" />
 <param name="allowFullScreen" value="true" />
 <param name="wmode" value="transparent" />
 [<strong>(#TITRE)</strong>]
@@ -100,8 +118,11 @@ Sinon, utiliser le comportement normal.
 ]
 
 
-[(#REM) Sinon : document normal ]
-[(#TYPE_DOCUMENT|match{^(Flash Video|MP3)$}|?{'',' '})
+[<!--(#REM) 
+
+	Sinon : document normal 
+	
+-->][(#TYPE_DOCUMENT|match{^(Flash Video|Video for Adobe Flash Player|MP3)$}|?{'',' '})
 <dl class='spip_document_#ID_DOCUMENT spip_documents[ spip_documents_(#ENV{align})][ (#ENV{class})] spip_lien_ok'[ style='float:(#ENV{align}|match{left|right});']>
 <a href="[(#ENV{lien}|sinon{#URL_DOCUMENT})]" type="#MIME_TYPE"[ class="(#ENV{lien_class})"]><img src='[(#LOGO_DOCUMENT||extraire_attribut{src})]' width='[(#LOGO_DOCUMENT||largeur)]' height='[(#LOGO_DOCUMENT||hauteur)]' alt='#TYPE_DOCUMENT - [(#TAILLE|taille_en_octets)]' title='#TYPE_DOCUMENT - [(#TAILLE|taille_en_octets)]' /></a>
 [

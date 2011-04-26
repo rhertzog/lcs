@@ -3,9 +3,9 @@
 
 	// player_mes_options.php
 
-	// $LastChangedRevision: 19360 $
+	// $LastChangedRevision: 31820 $
 	// $LastChangedBy: paladin@quesaco.org $
-	// $LastChangedDate: 2008-03-21 15:50:47 +0100 (ven, 21 mar 2008) $
+	// $LastChangedDate: 2009-09-27 16:09:22 +0200 (dim, 27 sep 2009) $
 
 
 	define("_PLAYER_PREFIX", "player");	
@@ -15,6 +15,8 @@
 	
 	define("_PLAYER_META_PREFERENCES", "player_preferences");
 
+	define("_PLAYER_MP3_LECTEUR_DEFAULT", "eraplayer_playlist.swf"); // le plus leger
+	
 	define("_PLAYER_FLV_LECTEUR_DEFAULT", "player_flv_maxi.swf");
 	
 	define("_PLAYER_FLV_LECTEURS", 

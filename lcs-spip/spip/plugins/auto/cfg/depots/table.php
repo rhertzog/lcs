@@ -1,43 +1,105 @@
 <?php
 
-/*
- * Plugin CFG pour SPIP
- * (c) toggg 2007, distribue sous licence GNU/GPL
- * Documentation et contact: http://www.spip-contrib.net/
+/**
+ * Plugin générique de configuration pour SPIP
  *
- * classe cfg_table: storage naturel dans une table
+ * @license    GNU/GPL
+ * @package    plugins
+ * @subpackage cfg
+ * @category   outils
+ * @copyright  (c) toggg, marcimat 2007-2008
+ * @link       http://www.spip-contrib.net/
+ * @version    $Id: table.php 36744 2010-03-29 02:31:19Z gilles.vincent@gmail.com $
  */
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
-
-
-// cfg_table retrouve et met a jour les colonnes d'une table
-// ici, cfg_id est obligatoire ... 
+/**
+ * Retrouve et met a jour les colonnes d'une table.
+ * ici, cfg_id est obligatoire ...
+ * 
+ * @package    plugins
+ * @subpackage cfg
+ */
 class cfg_depot_table
 {
+	/**
+	 * Les champs manipulés
+	 * @var Array
+	 */
 	var $champs = array();
+
+	/**
+	 * Si on passe par cfg_id, ça fait..
+	 * Heu.. Quelque chose d'utile ?
+	 * @var Array
+	 */
 	var $champs_id = array();
+
+	/**
+	 * Les valeurs en dépôt
+	 * @var Array
+	 */
 	var $val = array();
+
+	/**
+	 * Les différents paramètres : Tables, Colonnes, cfg_id, et Casier
+	 * @var Array
+	 */
 	var $param = array();
+
+	/**
+	 * Pour gestion de l'affichage en succès ou échec
+	 * @var Array
+	 */
 	var $messages = array('message_ok'=>array(), 'message_erreur'=>array(), 'erreurs'=>array());
 	
+	/**
+	 * Arbre
+	 * @var Array
+	 */
 	var $_arbre = array();
+
+	/**
+	 * Le WHERE permettant de retrouver l'Arbre
+	 * @var Array
+	 */
 	var $_id = array();
+
+	/**
+	 * Base de l'arbre
+	 * @var Array
+	 */
 	var $_base = null;
+
+	/**
+	 * Où on est dans l'arbre $this->_arbre
+	 * @var &Array
+	 */
 	var $_ici = null;
 	
-	// version du depot
+	/**
+	 * version du depot
+	 * @var int
+	 */
 	var $version = 2;
 	
-	function cfg_depot_table($params=array())
-	{
+	/**
+	 * Dépôt dans les attributs de la classe
+	 *
+	 * @param Array $params
+	 */
+	function cfg_depot_table($params=array()){
 		foreach ($params as $o=>$v) {
 			$this->$o = $v;
 		}
 	}
 	
-	// charge la base (racine) et le point de l'arbre sur lequel on se trouve (ici)
+	/**
+	 * charge la base (racine) et le point de l'arbre sur lequel on se trouve (ici)
+	 *
+	 * @param boolean $creer # inutilisé
+	 */
 	function charger($creer = false){
 		
 		if (!$this->param['table']) {
@@ -88,38 +150,45 @@ class cfg_depot_table
 		$this->_existe = count($this->_base);
 			
 		$this->_ici = &$this->_base;
-    	return true;	
+		return true;
 	}
 	
-	// recuperer les valeurs.
-	function lire()
-	{
+	/**
+	 * recuperer les valeurs.
+	 *
+	 * @return Array
+	 */
+	function lire() {
 		// charger
 		if (!$this->charger()){
 			return array(false, $this->val, $this->messages);	
 		}
 
-        // utile ??
-    	if ($this->param['cfg_id']) {
-    		$cles = explode('/', $this->param['cfg_id']);
+		// utile ??
+		if ($this->param['cfg_id']) {
+			$cles = explode('/', $this->param['cfg_id']);
 			foreach ($this->champs_id as $i => $name) {
 				$this->_ici[$name] = $cles[$i];
-		    }
-    	}
+			}
+		}
 	
-    	// s'il y a des champs demandes, ne retourner que ceux-ci
-    	if (count($this->champs)){
-    		$val = array();
+		// s'il y a des champs demandes, ne retourner que ceux-ci
+		if (count($this->champs)){
+			$val = array();
 			foreach ($this->champs as $name => $def) {
 				$val[$name] = $this->_ici[$name];
 			}
 			$this->_ici = $val;
-    	}
-	    return array(true, $this->_ici);
+		}
+		return array(true, $this->_ici);
 	}
 
 
-	// ecrit une entree pour tous les champs
+	/**
+	 * ecrit chaque enregistrement pour chaque champ.
+	 *
+	 * @return Array
+	 */
 	function ecrire()
 	{
 		// charger
@@ -152,7 +221,11 @@ class cfg_depot_table
 	}
 	
 	
-	// supprime chaque enregistrement de meta pour chaque champ
+	/**
+	 * supprime chaque enregistrement pour chaque champ.
+	 *
+	 * @return Array
+	 */
 	function effacer(){
 		// charger
 		if (!$this->charger()){
@@ -164,9 +237,14 @@ class cfg_depot_table
 	}
 	
 	
-	// charger les arguments
-	// lire_config(table::table@colonne:id
-	// lire_config(table::table:id
+	/**
+	 * charger les arguments
+	 * - lire_config(table::table@colonne:id
+	 * - lire_config(table::table:id
+	 *
+	 * @param string $args
+	 * @return boolean
+	 */
 	function charger_args($args){
 
 		list($table, $id) = explode(':',$args,2);
@@ -189,7 +267,13 @@ class cfg_depot_table
 	}
 	
 	
-	// se positionner dans le tableau arborescent
+	/**
+	 * se positionner dans le tableau arborescent
+	 *
+	 * @param &Array $base
+	 * @param string $chemin
+	 * @return &Array
+	 */
 	function & monte_arbre(&$base, $chemin){
 		if (!$chemin) {
 			return $base;
@@ -213,10 +297,13 @@ class cfg_depot_table
 	}
 	
 
-	//
-	// Cherche le vrai nom d'une table
-	// ainsi que ses cles primaires
-	//
+	/**
+	 * Cherche le vrai nom d'une table
+	 * ainsi que ses cles primaires
+	 *
+	 * @param string $table
+	 * @return Array
+	 */
 	function get_table_id($table) {	
 		static $catab = array(
 			'tables_principales' => 'base/serial',
