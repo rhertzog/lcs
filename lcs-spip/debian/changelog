@@ -1,5 +1,12 @@
+lcs-spip (2.4.8~4) Lcs; urgency=low
+
+  * Remove deprecated plugins 
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Sun, 01 May 2011 16:29:39 +0200
+
 lcs-spip (2.4.8~3) Lcs; urgency=low
 
+  [ Jean Luc Chretien & Dominique Lepaisant ]
   * Fix rights on IMG and tmp in chown.sh
   * Update spip 2.1.10
   * Fix bug in plugin.xml for tispip_skelet_lcs and recherche_multicriteres
