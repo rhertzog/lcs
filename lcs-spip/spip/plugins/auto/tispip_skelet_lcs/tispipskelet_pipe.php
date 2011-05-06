@@ -26,7 +26,7 @@ function tispipskelet_ajouterBoutons($boutons_admin) {
 	if ($GLOBALS['connect_statut'] == "0minirezo" && $GLOBALS["connect_toutes_rubriques"]) {
 	  // on voit le bouton dans la barre "configuration"
 	  $boutons_admin['configuration']->sousmenu["cfg&cfg=TiSpiP_Pages"]= new Bouton(
-		"../"._DIR_PLUGIN_TISPIPSKELET."/img_pack/tispip-skelet_24.png",  // icone
+		_DIR_PLUGIN_TISPIPSKELET."img_pack/tispip-skelet_24.png",  // icone
 		_T('tispipskelet:titre_plugin_tispipskelet')	// titre
 		);
 	}

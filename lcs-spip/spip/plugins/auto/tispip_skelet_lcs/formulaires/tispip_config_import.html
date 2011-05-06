@@ -1,6 +1,6 @@
 <div id="TsP_form_import" class="formulaire_spip" >
 #SET{message_ret_import,#EVAL{$_GET['message_import']}}
-	<form action="#URL_ACTION_AUTEUR{'tispipskelet_conf_importe','id_rubrique='#ENV{id_rubrique},#URL_ECRIRE{cfg&cfg=TiSpiP_Import}}" method="POST" enctype="multipart/form-data">
+	<form action="#URL_ACTION_AUTEUR{'tispipskelet_conf_importe','id_rubrique='#ENV{id_rubrique},#SELF}" method="POST" enctype="multipart/form-data">
 				<div class="annonce">
 					[(#GET{message_ret_import})]
 				</div>

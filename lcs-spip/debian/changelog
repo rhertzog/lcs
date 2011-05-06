@@ -1,8 +1,10 @@
 lcs-spip (2.4.8~4) Lcs; urgency=low
 
   * Remove deprecated plugins 
+  * Fix bug with icons in tispip_skelet_lcs and recherche_multicriteres
+  * Fix bug in tispip_config_import.html
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Sun, 01 May 2011 16:29:39 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Tue, 03 May 2011 17:59:38 +0200
 
 lcs-spip (2.4.8~3) Lcs; urgency=low
 
