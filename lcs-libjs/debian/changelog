@@ -1,3 +1,9 @@
+lcs-libjs (2.4.8~2) Lcs; urgency=low
+
+  * Add jquery-ui css theme : classic-blue-domz. 
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Wed, 04 May 2011 08:00:09 +0200
+
 lcs-libjs (2.4.8~1) Lcs; urgency=low
 
   * Update jquery to version: 1.5 min
