@@ -25,32 +25,6 @@
    </li>
 </ul>
 </div>]
-
-	<ul>
-	<li>
-	#SET{rapports, #ARRAY}
-   #SET{rapports, #GET{rapports}|array_merge{#ARRAY{1, fifi}}}  
-   #SET{rapports, #GET{rapports}|array_merge{#ARRAY{2, lulu}}}  
-   #SET{rapports, #GET{rapports}|array_merge{#ARRAY{3, dede}}}  
- #FOREACH{ARRAY{rapports}}
- </li>
-   <li>
-   #SET{compt,15}
-   <BOUCLE_ttest(CONDITION){si #GET{compt}|>{5}}>
-      #SET{compt, #EVAL{1-#GET{compt}}}
-
-</BOUCLE_ttest>
-#GET{compt}
-vrai
-</B_ttest>      
-faux#GET{compt}
-<//B_ttest>
-</li>
-<li>
-#FOREACH{CONFIG{tispipskelet_conf/sommaire}}
-</li>
-	</ul>
-
 <script type='text/javascript'>
 $(function() {
   $('.boxy').boxy();
