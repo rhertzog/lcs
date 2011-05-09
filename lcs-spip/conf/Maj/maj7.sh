@@ -1,16 +1,10 @@
 #!/bin/bash
-# Module : spip Mise à jour en version 2.1.10
+# Module : Release spip to version 2.1.10
 #
 MODULE="spip"
 PATHMAJ="/var/lib/lcs/$MODULE"
 #
-# sauvegarde de la base lcs-spip et du repertoire spip en cas de pépin
-#
-mysqldump spip_lcs > $PATHMAJ/Sql/spip_lcs_2.0.12.sql
-mkdir -p $PATHMAJ/spipold
-tar zcf $PATHMAJ/spipold/spip_lcs_2.0.12.tgz /usr/share/lcs/spip
-#
-# Maj de la base
+# Update spip base
 #
 echo "Update spip base in one minute"
 at now+1minutes <<END
@@ -20,9 +14,12 @@ cd /usr/share/lcs/spip/
 rm maj-spip-cli.php
 END
 #
-# Nettoyage
+# Cleaning spip/tmp
 #
-rm -R /usr/share/lcs/spip/tmp/* > /dev/null 2>&1
+cd /usr/share/lcs/spip/tmp
+mv sessions /tmp/
+rm -Rf /usr/share/lcs/spip/tmp/* > /dev/null 2>&1
+mv /tmp/sessions .
 echo "deny from all" >> /usr/share/lcs/spip/tmp/.htaccess
 
 
