@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /**
- * $Id: trombinoscopes_admin_template.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: trombinoscopes_admin_template.php 6697 2011-03-25 21:54:27Z regis $
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
@@ -99,10 +99,10 @@
 	  </em>
 	</p>
 	<form action="trombinoscopes_admin.php" id="form1" method="post" title="Configuration générale">
+	  <fieldset>
 <?php
 echo add_token_field();
 ?>
-	  <fieldset>
 		<legend class="bold">Élèves :</legend>
 		<input type="radio"
 			   name="activer"
@@ -470,10 +470,10 @@ if (!isset($aid_trouve)) {
 	<hr/>
 	
 	<form method="post" action="trombinoscopes_admin.php" id="formEnvoi" enctype="multipart/form-data">
+	  <fieldset>
 <?php
 echo add_token_field();
 ?>
-	  <fieldset>
 		<legend class="bold">
 		  Restaurer les photos à partir d'un fichier Zip
 		</legend>

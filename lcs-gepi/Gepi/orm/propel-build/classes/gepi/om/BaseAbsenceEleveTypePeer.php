@@ -26,7 +26,7 @@ abstract class BaseAbsenceEleveTypePeer {
 	const TM_CLASS = 'AbsenceEleveTypeTableMap';
 	
 	/** The total number of columns. */
-	const NUM_COLUMNS = 9;
+	const NUM_COLUMNS = 10;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
@@ -55,6 +55,9 @@ abstract class BaseAbsenceEleveTypePeer {
 	/** the column name for the COMMENTAIRE field */
 	const COMMENTAIRE = 'a_types.COMMENTAIRE';
 
+	/** the column name for the ID_LIEU field */
+	const ID_LIEU = 'a_types.ID_LIEU';
+
 	/** the column name for the SORTABLE_RANK field */
 	const SORTABLE_RANK = 'a_types.SORTABLE_RANK';
 
@@ -81,12 +84,12 @@ abstract class BaseAbsenceEleveTypePeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'Nom', 'JustificationExigible', 'SousResponsabiliteEtablissement', 'ManquementObligationPresence', 'RetardBulletin', 'TypeSaisie', 'Commentaire', 'SortableRank', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'nom', 'justificationExigible', 'sousResponsabiliteEtablissement', 'manquementObligationPresence', 'retardBulletin', 'typeSaisie', 'commentaire', 'sortableRank', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::NOM, self::JUSTIFICATION_EXIGIBLE, self::SOUS_RESPONSABILITE_ETABLISSEMENT, self::MANQUEMENT_OBLIGATION_PRESENCE, self::RETARD_BULLETIN, self::TYPE_SAISIE, self::COMMENTAIRE, self::SORTABLE_RANK, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'NOM', 'JUSTIFICATION_EXIGIBLE', 'SOUS_RESPONSABILITE_ETABLISSEMENT', 'MANQUEMENT_OBLIGATION_PRESENCE', 'RETARD_BULLETIN', 'TYPE_SAISIE', 'COMMENTAIRE', 'SORTABLE_RANK', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'nom', 'justification_exigible', 'sous_responsabilite_etablissement', 'manquement_obligation_presence', 'retard_bulletin', 'type_saisie', 'commentaire', 'sortable_rank', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
+		BasePeer::TYPE_PHPNAME => array ('Id', 'Nom', 'JustificationExigible', 'SousResponsabiliteEtablissement', 'ManquementObligationPresence', 'RetardBulletin', 'TypeSaisie', 'Commentaire', 'IdLieu', 'SortableRank', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'nom', 'justificationExigible', 'sousResponsabiliteEtablissement', 'manquementObligationPresence', 'retardBulletin', 'typeSaisie', 'commentaire', 'idLieu', 'sortableRank', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::NOM, self::JUSTIFICATION_EXIGIBLE, self::SOUS_RESPONSABILITE_ETABLISSEMENT, self::MANQUEMENT_OBLIGATION_PRESENCE, self::RETARD_BULLETIN, self::TYPE_SAISIE, self::COMMENTAIRE, self::ID_LIEU, self::SORTABLE_RANK, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'NOM', 'JUSTIFICATION_EXIGIBLE', 'SOUS_RESPONSABILITE_ETABLISSEMENT', 'MANQUEMENT_OBLIGATION_PRESENCE', 'RETARD_BULLETIN', 'TYPE_SAISIE', 'COMMENTAIRE', 'ID_LIEU', 'SORTABLE_RANK', ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'nom', 'justification_exigible', 'sous_responsabilite_etablissement', 'manquement_obligation_presence', 'retard_bulletin', 'type_saisie', 'commentaire', 'id_lieu', 'sortable_rank', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
 	);
 
 	/**
@@ -96,12 +99,12 @@ abstract class BaseAbsenceEleveTypePeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Nom' => 1, 'JustificationExigible' => 2, 'SousResponsabiliteEtablissement' => 3, 'ManquementObligationPresence' => 4, 'RetardBulletin' => 5, 'TypeSaisie' => 6, 'Commentaire' => 7, 'SortableRank' => 8, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'nom' => 1, 'justificationExigible' => 2, 'sousResponsabiliteEtablissement' => 3, 'manquementObligationPresence' => 4, 'retardBulletin' => 5, 'typeSaisie' => 6, 'commentaire' => 7, 'sortableRank' => 8, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::NOM => 1, self::JUSTIFICATION_EXIGIBLE => 2, self::SOUS_RESPONSABILITE_ETABLISSEMENT => 3, self::MANQUEMENT_OBLIGATION_PRESENCE => 4, self::RETARD_BULLETIN => 5, self::TYPE_SAISIE => 6, self::COMMENTAIRE => 7, self::SORTABLE_RANK => 8, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'NOM' => 1, 'JUSTIFICATION_EXIGIBLE' => 2, 'SOUS_RESPONSABILITE_ETABLISSEMENT' => 3, 'MANQUEMENT_OBLIGATION_PRESENCE' => 4, 'RETARD_BULLETIN' => 5, 'TYPE_SAISIE' => 6, 'COMMENTAIRE' => 7, 'SORTABLE_RANK' => 8, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'nom' => 1, 'justification_exigible' => 2, 'sous_responsabilite_etablissement' => 3, 'manquement_obligation_presence' => 4, 'retard_bulletin' => 5, 'type_saisie' => 6, 'commentaire' => 7, 'sortable_rank' => 8, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Nom' => 1, 'JustificationExigible' => 2, 'SousResponsabiliteEtablissement' => 3, 'ManquementObligationPresence' => 4, 'RetardBulletin' => 5, 'TypeSaisie' => 6, 'Commentaire' => 7, 'IdLieu' => 8, 'SortableRank' => 9, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'nom' => 1, 'justificationExigible' => 2, 'sousResponsabiliteEtablissement' => 3, 'manquementObligationPresence' => 4, 'retardBulletin' => 5, 'typeSaisie' => 6, 'commentaire' => 7, 'idLieu' => 8, 'sortableRank' => 9, ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::NOM => 1, self::JUSTIFICATION_EXIGIBLE => 2, self::SOUS_RESPONSABILITE_ETABLISSEMENT => 3, self::MANQUEMENT_OBLIGATION_PRESENCE => 4, self::RETARD_BULLETIN => 5, self::TYPE_SAISIE => 6, self::COMMENTAIRE => 7, self::ID_LIEU => 8, self::SORTABLE_RANK => 9, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'NOM' => 1, 'JUSTIFICATION_EXIGIBLE' => 2, 'SOUS_RESPONSABILITE_ETABLISSEMENT' => 3, 'MANQUEMENT_OBLIGATION_PRESENCE' => 4, 'RETARD_BULLETIN' => 5, 'TYPE_SAISIE' => 6, 'COMMENTAIRE' => 7, 'ID_LIEU' => 8, 'SORTABLE_RANK' => 9, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'nom' => 1, 'justification_exigible' => 2, 'sous_responsabilite_etablissement' => 3, 'manquement_obligation_presence' => 4, 'retard_bulletin' => 5, 'type_saisie' => 6, 'commentaire' => 7, 'id_lieu' => 8, 'sortable_rank' => 9, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
 	);
 
 	/**
@@ -181,6 +184,7 @@ abstract class BaseAbsenceEleveTypePeer {
 			$criteria->addSelectColumn(AbsenceEleveTypePeer::RETARD_BULLETIN);
 			$criteria->addSelectColumn(AbsenceEleveTypePeer::TYPE_SAISIE);
 			$criteria->addSelectColumn(AbsenceEleveTypePeer::COMMENTAIRE);
+			$criteria->addSelectColumn(AbsenceEleveTypePeer::ID_LIEU);
 			$criteria->addSelectColumn(AbsenceEleveTypePeer::SORTABLE_RANK);
 		} else {
 			$criteria->addSelectColumn($alias . '.ID');
@@ -191,6 +195,7 @@ abstract class BaseAbsenceEleveTypePeer {
 			$criteria->addSelectColumn($alias . '.RETARD_BULLETIN');
 			$criteria->addSelectColumn($alias . '.TYPE_SAISIE');
 			$criteria->addSelectColumn($alias . '.COMMENTAIRE');
+			$criteria->addSelectColumn($alias . '.ID_LIEU');
 			$criteria->addSelectColumn($alias . '.SORTABLE_RANK');
 		}
 	}
@@ -482,6 +487,240 @@ abstract class BaseAbsenceEleveTypePeer {
 		}
 		return array($obj, $col);
 	}
+
+	/**
+	 * Returns the number of rows matching criteria, joining the related AbsenceEleveLieu table
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct Whether to select only distinct columns; deprecated: use Criteria->setDistinct() instead.
+	 * @param      PropelPDO $con
+	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
+	 * @return     int Number of matching rows.
+	 */
+	public static function doCountJoinAbsenceEleveLieu(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		// we're going to modify criteria, so copy it first
+		$criteria = clone $criteria;
+
+		// We need to set the primary table name, since in the case that there are no WHERE columns
+		// it will be impossible for the BasePeer::createSelectSql() method to determine which
+		// tables go into the FROM clause.
+		$criteria->setPrimaryTableName(AbsenceEleveTypePeer::TABLE_NAME);
+
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			AbsenceEleveTypePeer::addSelectColumns($criteria);
+		}
+		
+		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
+		
+		// Set the correct dbName
+		$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(AbsenceEleveTypePeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+		$criteria->addJoin(AbsenceEleveTypePeer::ID_LIEU, AbsenceEleveLieuPeer::ID, $join_behavior);
+
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; // no rows returned; we infer that means 0 matches.
+		}
+		$stmt->closeCursor();
+		return $count;
+	}
+
+
+	/**
+	 * Selects a collection of AbsenceEleveType objects pre-filled with their AbsenceEleveLieu objects.
+	 * @param      Criteria  $criteria
+	 * @param      PropelPDO $con
+	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
+	 * @return     array Array of AbsenceEleveType objects.
+	 * @throws     PropelException Any exceptions caught during processing will be
+	 *		 rethrown wrapped into a PropelException.
+	 */
+	public static function doSelectJoinAbsenceEleveLieu(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		$criteria = clone $criteria;
+
+		// Set the correct dbName if it has not been overridden
+		if ($criteria->getDbName() == Propel::getDefaultDB()) {
+			$criteria->setDbName(self::DATABASE_NAME);
+		}
+
+		AbsenceEleveTypePeer::addSelectColumns($criteria);
+		$startcol = (AbsenceEleveTypePeer::NUM_COLUMNS - AbsenceEleveTypePeer::NUM_LAZY_LOAD_COLUMNS);
+		AbsenceEleveLieuPeer::addSelectColumns($criteria);
+
+		$criteria->addJoin(AbsenceEleveTypePeer::ID_LIEU, AbsenceEleveLieuPeer::ID, $join_behavior);
+
+		$stmt = BasePeer::doSelect($criteria, $con);
+		$results = array();
+
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = AbsenceEleveTypePeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = AbsenceEleveTypePeer::getInstanceFromPool($key1))) {
+				// We no longer rehydrate the object, since this can cause data loss.
+				// See http://www.propelorm.org/ticket/509
+				// $obj1->hydrate($row, 0, true); // rehydrate
+			} else {
+
+				$cls = AbsenceEleveTypePeer::getOMClass(false);
+
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				AbsenceEleveTypePeer::addInstanceToPool($obj1, $key1);
+			} // if $obj1 already loaded
+
+			$key2 = AbsenceEleveLieuPeer::getPrimaryKeyHashFromRow($row, $startcol);
+			if ($key2 !== null) {
+				$obj2 = AbsenceEleveLieuPeer::getInstanceFromPool($key2);
+				if (!$obj2) {
+
+					$cls = AbsenceEleveLieuPeer::getOMClass(false);
+
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol);
+					AbsenceEleveLieuPeer::addInstanceToPool($obj2, $key2);
+				} // if obj2 already loaded
+
+				// Add the $obj1 (AbsenceEleveType) to $obj2 (AbsenceEleveLieu)
+				$obj2->addAbsenceEleveType($obj1);
+
+			} // if joined row was not null
+
+			$results[] = $obj1;
+		}
+		$stmt->closeCursor();
+		return $results;
+	}
+
+
+	/**
+	 * Returns the number of rows matching criteria, joining all related tables
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct Whether to select only distinct columns; deprecated: use Criteria->setDistinct() instead.
+	 * @param      PropelPDO $con
+	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
+	 * @return     int Number of matching rows.
+	 */
+	public static function doCountJoinAll(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		// we're going to modify criteria, so copy it first
+		$criteria = clone $criteria;
+
+		// We need to set the primary table name, since in the case that there are no WHERE columns
+		// it will be impossible for the BasePeer::createSelectSql() method to determine which
+		// tables go into the FROM clause.
+		$criteria->setPrimaryTableName(AbsenceEleveTypePeer::TABLE_NAME);
+
+		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
+			$criteria->setDistinct();
+		}
+
+		if (!$criteria->hasSelectClause()) {
+			AbsenceEleveTypePeer::addSelectColumns($criteria);
+		}
+		
+		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
+		
+		// Set the correct dbName
+		$criteria->setDbName(self::DATABASE_NAME);
+
+		if ($con === null) {
+			$con = Propel::getConnection(AbsenceEleveTypePeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+
+		$criteria->addJoin(AbsenceEleveTypePeer::ID_LIEU, AbsenceEleveLieuPeer::ID, $join_behavior);
+
+		$stmt = BasePeer::doCount($criteria, $con);
+
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$count = (int) $row[0];
+		} else {
+			$count = 0; // no rows returned; we infer that means 0 matches.
+		}
+		$stmt->closeCursor();
+		return $count;
+	}
+
+	/**
+	 * Selects a collection of AbsenceEleveType objects pre-filled with all related objects.
+	 *
+	 * @param      Criteria  $criteria
+	 * @param      PropelPDO $con
+	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
+	 * @return     array Array of AbsenceEleveType objects.
+	 * @throws     PropelException Any exceptions caught during processing will be
+	 *		 rethrown wrapped into a PropelException.
+	 */
+	public static function doSelectJoinAll(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	{
+		$criteria = clone $criteria;
+
+		// Set the correct dbName if it has not been overridden
+		if ($criteria->getDbName() == Propel::getDefaultDB()) {
+			$criteria->setDbName(self::DATABASE_NAME);
+		}
+
+		AbsenceEleveTypePeer::addSelectColumns($criteria);
+		$startcol2 = (AbsenceEleveTypePeer::NUM_COLUMNS - AbsenceEleveTypePeer::NUM_LAZY_LOAD_COLUMNS);
+
+		AbsenceEleveLieuPeer::addSelectColumns($criteria);
+		$startcol3 = $startcol2 + (AbsenceEleveLieuPeer::NUM_COLUMNS - AbsenceEleveLieuPeer::NUM_LAZY_LOAD_COLUMNS);
+
+		$criteria->addJoin(AbsenceEleveTypePeer::ID_LIEU, AbsenceEleveLieuPeer::ID, $join_behavior);
+
+		$stmt = BasePeer::doSelect($criteria, $con);
+		$results = array();
+
+		while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$key1 = AbsenceEleveTypePeer::getPrimaryKeyHashFromRow($row, 0);
+			if (null !== ($obj1 = AbsenceEleveTypePeer::getInstanceFromPool($key1))) {
+				// We no longer rehydrate the object, since this can cause data loss.
+				// See http://www.propelorm.org/ticket/509
+				// $obj1->hydrate($row, 0, true); // rehydrate
+			} else {
+				$cls = AbsenceEleveTypePeer::getOMClass(false);
+
+				$obj1 = new $cls();
+				$obj1->hydrate($row);
+				AbsenceEleveTypePeer::addInstanceToPool($obj1, $key1);
+			} // if obj1 already loaded
+
+			// Add objects for joined AbsenceEleveLieu rows
+
+			$key2 = AbsenceEleveLieuPeer::getPrimaryKeyHashFromRow($row, $startcol2);
+			if ($key2 !== null) {
+				$obj2 = AbsenceEleveLieuPeer::getInstanceFromPool($key2);
+				if (!$obj2) {
+
+					$cls = AbsenceEleveLieuPeer::getOMClass(false);
+
+					$obj2 = new $cls();
+					$obj2->hydrate($row, $startcol2);
+					AbsenceEleveLieuPeer::addInstanceToPool($obj2, $key2);
+				} // if obj2 loaded
+
+				// Add the $obj1 (AbsenceEleveType) to the collection in $obj2 (AbsenceEleveLieu)
+				$obj2->addAbsenceEleveType($obj1);
+			} // if joined row not null
+
+			$results[] = $obj1;
+		}
+		$stmt->closeCursor();
+		return $results;
+	}
+
 	/**
 	 * Returns the TableMap related to this peer.
 	 * This method is not needed for general use but a specific application could have a need.

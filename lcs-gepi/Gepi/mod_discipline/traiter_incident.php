@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: traiter_incident.php 6170 2010-12-17 07:08:48Z crob $
+ * $Id: traiter_incident.php 6517 2011-02-20 11:05:19Z eabgrall $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -72,6 +72,7 @@ function liste_sanctions($id_incident,$ele_login) {
 		$sql="SELECT * FROM s_sanctions s, s_retenues sr WHERE s.id_incident=$id_incident AND s.login='".$ele_login."' AND sr.id_sanction=s.id_sanction ORDER BY sr.date, sr.heure_debut;";
 		//$retour.="$sql<br />\n";
 		$res_sanction=mysql_query($sql);
+		$res_sanction_tmp=mysql_query($sql);
 		if(mysql_num_rows($res_sanction)>0) {
 			$retour.="<table class='boireaus' border='1' summary='Retenues' style='margin:2px;'>\n";
 			$retour.="<tr>\n";
@@ -81,6 +82,13 @@ function liste_sanctions($id_incident,$ele_login) {
 			$retour.="<th>Durée</th>\n";
 			$retour.="<th>Lieu</th>\n";
 			$retour.="<th>Travail</th>\n";
+			
+			$lig_sanction_tmp=mysql_fetch_object($res_sanction_tmp);
+			$nombre_de_report=nombre_reports($lig_sanction_tmp->id_sanction,0);
+			if ($nombre_de_report <> 0) {
+			   $retour.="<th>Nbre report</th>\n";
+			}
+			
 			//if($etat_incident!='clos') {
 			if(($etat_incident!='clos')&&($_SESSION['statut']!='professeur')) {
 				$retour.="<th>Suppr</th>\n";
@@ -102,6 +110,7 @@ function liste_sanctions($id_incident,$ele_login) {
 				$retour.="<td>$lig_sanction->duree</td>\n";
 				$retour.="<td>$lig_sanction->lieu</td>\n";
 				//$retour.="<td>".nl2br($lig_sanction->travail)."</td>\n";
+				
 				$retour.="<td>";
 
 				if($lig_sanction->travail=="") {
@@ -110,11 +119,18 @@ function liste_sanctions($id_incident,$ele_login) {
 				else {
 					$texte=nl2br($lig_sanction->travail);
 				}
+								
 				$tabdiv_infobulle[]=creer_div_infobulle("div_travail_sanction_$lig_sanction->id_sanction","Travail (sanction n°$lig_sanction->id_sanction)","",$texte,"",20,0,'y','y','n','n',2);
 
 				$retour.=" <a href='#' onmouseover=\"document.getElementById('div_travail_sanction_$lig_sanction->id_sanction').style.zIndex=document.getElementById('sanctions_incident_$id_incident').style.zIndex+1;delais_afficher_div('div_travail_sanction_$lig_sanction->id_sanction','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onclick=\"return false;\">Details</a>";
 				$retour.="</td>\n";
-
+				
+				if ($nombre_de_report <> 0) {
+					$retour.="<td>\n";
+					$retour.=$nombre_de_report;
+					$retour.="</td>";
+				}
+				
 				if(($etat_incident!='clos')&&($_SESSION['statut']!='professeur')) {
 					//$retour.="<td><a href='".$_SERVER['PHP_SELF']."?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
 					$retour.="<td><a href='saisie_sanction.php?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident".add_token_in_url()."' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
@@ -174,7 +190,7 @@ function liste_sanctions($id_incident,$ele_login) {
 
 				if(($etat_incident!='clos')&&($_SESSION['statut']!='professeur')) {
 					//$retour.="<td><a href='".$_SERVER['PHP_SELF']."?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
-					$retour.="<td><a href='saisie_sanction.php?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident".add_token_field()."' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
+					$retour.="<td><a href='saisie_sanction.php?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident".add_token_in_url()."' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
 				}
 				$retour.="</tr>\n";
 			}
@@ -221,7 +237,7 @@ function liste_sanctions($id_incident,$ele_login) {
 
 				if(($etat_incident!='clos')&&($_SESSION['statut']!='professeur')) {
 					//$retour.="<td><a href='".$_SERVER['PHP_SELF']."?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
-					$retour.="<td><a href='saisie_sanction.php?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident".add_token_field()."' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
+					$retour.="<td><a href='saisie_sanction.php?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident".add_token_in_url()."' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
 				}
 				$retour.="</tr>\n";
 			}
@@ -254,7 +270,7 @@ function liste_sanctions($id_incident,$ele_login) {
 
 				if(($etat_incident!='clos')&&($_SESSION['statut']!='professeur')) {
 					//$retour.="<td><a href='".$_SERVER['PHP_SELF']."?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
-					$retour.="<td><a href='saisie_sanction.php?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident".add_token_field()."' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
+					$retour.="<td><a href='saisie_sanction.php?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident".add_token_in_url()."' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
 				}
 				$retour.="</tr>\n";
 			}
@@ -273,11 +289,16 @@ $heure_incident=isset($_POST['heure_incident']) ? $_POST['heure_incident'] : (is
 $nature_incident=isset($_POST['nature_incident']) ? $_POST['nature_incident'] : (isset($_GET['nature_incident']) ? $_GET['nature_incident'] : "---");
 $protagoniste_incident=isset($_POST['protagoniste_incident']) ? $_POST['protagoniste_incident'] : (isset($_GET['protagoniste_incident']) ? $_GET['protagoniste_incident'] : "");
 
+//$declarant_incident=isset($_POST['declarant_incident']) ? $_POST['declarant_incident'] : (isset($_GET['declarant_incident']) ? $_GET['declarant_incident'] : "");
+$declarant_incident=isset($_POST['declarant_incident']) ? $_POST['declarant_incident'] : (isset($_GET['declarant_incident']) ? $_GET['declarant_incident'] : "---");
+$declarant_incident2=isset($_POST['declarant_incident2']) ? $_POST['declarant_incident2'] : (isset($_GET['declarant_incident2']) ? $_GET['declarant_incident2'] : NULL);
+if(isset($declarant_incident2)) {$declarant_incident=$declarant_incident2;}
+
 $incidents_clos=isset($_POST['incidents_clos']) ? $_POST['incidents_clos'] : (isset($_GET['incidents_clos']) ? $_GET['incidents_clos'] : "n");
 
 $id_classe_incident=isset($_POST['id_classe_incident']) ? $_POST['id_classe_incident'] : (isset($_GET['id_classe_incident']) ? $_GET['id_classe_incident'] : "");
 
-$declarant_incident=isset($_POST['declarant_incident']) ? $_POST['declarant_incident'] : (isset($_GET['declarant_incident']) ? $_GET['declarant_incident'] : "");
+//$declarant_incident=isset($_POST['declarant_incident']) ? $_POST['declarant_incident'] : (isset($_GET['declarant_incident']) ? $_GET['declarant_incident'] : "");
 
 $msg="";
 
@@ -468,7 +489,9 @@ if(!isset($id_incident)) {
 	if($nature_incident!="---") {$ajout_sql.=" AND si.nature='$nature_incident'";$chaine_criteres.="&amp;nature_incident=$nature_incident";}
 	if($protagoniste_incident!="") {$ajout_sql.=" AND sp.login='$protagoniste_incident'";$chaine_criteres.="&amp;protagoniste_incident=$protagoniste_incident";}
 
-	if($declarant_incident!="") {$ajout_sql.=" AND si.declarant='$declarant_incident'";$chaine_criteres.="&amp;declarant_incident=$declarant_incident";}
+	//echo "\$declarant_incident=$declarant_incident<br />";
+
+	if($declarant_incident!="---") {$ajout_sql.=" AND si.declarant='$declarant_incident'";$chaine_criteres.="&amp;declarant_incident=$declarant_incident";}
 
 	if($id_classe_incident!="") {
 		$chaine_criteres.="&amp;id_classe_incident=$id_classe_incident";
@@ -483,7 +506,9 @@ if(!isset($id_incident)) {
 
 	//if($_SESSION['statut']=='professeur') {
 	if($_SESSION['statut']=='professeur') {
-		if($declarant_incident=="") {
+		//if($declarant_incident=="") {
+		// On ne devrait plus avoir $declarant_incident=="", mais plutôt $declarant_incident=="---"
+		if(($declarant_incident=="")||($declarant_incident=="---")) {
 			if(getSettingValue('visuDiscProfClasses')=='yes') {
 				$ajout2_sql=" UNION (SELECT DISTINCT si.* FROM s_incidents si, 
 																s_protagonistes sp, 
@@ -545,8 +570,8 @@ if(!isset($id_incident)) {
 	$sql.=" ORDER BY date DESC, heure DESC;";
 	$sql2.=" ORDER BY date DESC, heure DESC;";
 
-
 	//echo "$sql<br />";
+	//echo "$sql2<br />";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
 		echo " | <a href='".$_SERVER['PHP_SELF']."' onclick='history.go(-1);return false;'> Retour à la page précédente</a>\n";
@@ -557,8 +582,9 @@ if(!isset($id_incident)) {
 			if(($date_incident!="")||
 			($heure_incident!="")||
 			($nature_incident!="---")||
+			(($declarant_incident!="---")&&($declarant_incident!=""))||
 			($protagoniste_incident!="")||
-			($declarant_incident!="")||
+			//($declarant_incident!="")||
 			($id_classe_incident!="")) {echo " avec les critères choisis";}
 			echo ".</p>\n";
 		}
@@ -569,8 +595,9 @@ if(!isset($id_incident)) {
 				if(($date_incident!="")||
 				($heure_incident!="")||
 				($nature_incident!="---")||
+				(($declarant_incident!="---")&&($declarant_incident!=""))||
 				($protagoniste_incident!="")||
-				($declarant_incident!="")||
+				//($declarant_incident!="")||
 				($id_classe_incident!="")) {echo " avec les critères choisis";}
 				echo ".</p>\n";
 			}
@@ -579,8 +606,9 @@ if(!isset($id_incident)) {
 				if(($date_incident!="")||
 				($heure_incident!="")||
 				($nature_incident!="---")||
+				(($declarant_incident!="---")&&($declarant_incident!=""))||
 				($protagoniste_incident!="")||
-				($declarant_incident!="")||
+				//($declarant_incident!="")||
 				($id_classe_incident!="")) {echo " avec les critères choisis";}
 				echo ".</p>\n";
 
@@ -609,9 +637,12 @@ if(!isset($id_incident)) {
 	if($incidents_clos=="y") {echo " checked='checked'";}
 	echo " /><label for='incidents_clos' style='cursor:pointer;'> Afficher les incidents clos</label><br />\n";
 
-	echo "<input type='checkbox' name='declarant_incident' id='declarant_incident' value='".$_SESSION['login']."'";
-	if($declarant_incident!="") {echo " checked='checked'";}
-	echo " /><label for='declarant_incident' style='cursor:pointer;'> Ne voir que mes déclarations d'incidents</label>\n";
+	//echo "<input type='checkbox' name='declarant_incident' id='declarant_incident' value='".$_SESSION['login']."'";
+	echo "<input type='checkbox' name='declarant_incident2' id='declarant_incident2' value='".$_SESSION['login']."'";
+	//if(($declarant_incident!="")&&($declarant_incident!="---")) {echo " checked='checked'";}
+	if($declarant_incident==$_SESSION['login']) {echo " checked='checked'";}
+	//echo " /><label for='declarant_incident' style='cursor:pointer;'> Ne voir que mes déclarations d'incidents</label>\n";
+	echo " /><label for='declarant_incident2' style='cursor:pointer;'> Ne voir que mes déclarations d'incidents</label>\n";
 	echo "</p>\n";
 
 	echo "<div style='float: right; border: 1px solid black;'>";
@@ -671,7 +702,50 @@ if(!isset($id_incident)) {
 	}
 	echo "</select>\n";
 	echo "</th>\n";
-
+	
+	if (!(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='autre'))) {
+		echo "<th>Déclarant\n";
+		echo "<br />\n";
+		echo "<select name='declarant_incident' onchange=\"document.getElementById('declarant_incident2').checked=false;document.formulaire.submit();\">\n";
+		//echo "<option value=''>---</option>\n";
+		echo "<option value='---'>---</option>\n";
+		if($_SESSION['statut']=='professeur') {
+			$sql="(SELECT DISTINCT si.declarant FROM s_incidents si, s_protagonistes sp WHERE (sp.login='".$_SESSION['login']."' OR si.declarant='".$_SESSION['login']."') AND sp.id_incident=si.id_incident)";
+			$sql.=" UNION (SELECT DISTINCT si.declarant FROM s_incidents si, s_protagonistes sp, j_eleves_professeurs jep WHERE jep.login=sp.login AND jep.professeur='".$_SESSION['login']."' AND sp.id_incident=si.id_incident)";
+			//$sql.=" ORDER BY si.nature ASC;";
+			$sql.=" ORDER BY declarant ASC;";
+		}
+		else {
+			$sql="SELECT DISTINCT si.declarant FROM s_incidents si ORDER BY si.declarant ASC;";
+		}
+		$res_declarant=mysql_query($sql);
+		while($lig_declarant=mysql_fetch_object($res_declarant)) {
+			echo "<option value='$lig_declarant->declarant'";
+			if($declarant_incident==$lig_declarant->declarant) {echo " selected='selected'";}
+			if($lig_declarant->declarant!='') {
+			    $sql_declarant="SELECT nom,prenom,civilite,statut FROM utilisateurs WHERE login='$lig_declarant->declarant';";
+				//echo "$sql<br />\n";
+			    $res1_declarant=mysql_query($sql_declarant);
+				if(mysql_num_rows($res1_declarant)>0) {
+					$lig1_declarant=mysql_fetch_object($res1_declarant);
+					$chaine=strtoupper($lig1_declarant->nom)." ".ucfirst(substr($lig1_declarant->prenom,0,1));
+					//echo $lig_declarant->civilite." ".strtoupper($lig_declarant->nom)." ".ucfirst(substr($lig_declarant->prenom,0,1)).".";	
+				}
+				else {
+					echo "ERREUR: Login $lig1_declarant->declarant inconnu";
+				}
+			
+				echo ">".substr($chaine,0,40)."</option>\n";
+			}
+			else {
+				echo ">(vide)</option>\n";
+			}
+		}
+		echo "</select>\n";
+		//echo "$sql<br />\n";
+		echo "</th>\n";
+	}
+	
 	echo "<th>Nature\n";
 	echo "<br />\n";
 	echo "<select name='nature_incident' onchange=\"document.formulaire.submit();\">\n";
@@ -717,10 +791,10 @@ if(!isset($id_incident)) {
 	//$sql="SELECT DISTINCT sp.login FROM s_protagonistes sp, eleves e ORDER BY e.nom, e.prenom ASC;";
 	//$sql="SELECT DISTINCT sp.login FROM s_protagonistes sp, eleves e WHERE sp.login=e.login ORDER BY e.nom, e.prenom ASC;";
 
-	$sql="(SELECT DISTINCT sp.login FROM s_protagonistes sp, eleves e WHERE sp.login=e.login ORDER BY nom, prenom ASC)";
+	$sql="(SELECT DISTINCT sp.login, e.login, e.nom, e.prenom FROM s_protagonistes sp, eleves e WHERE sp.login=e.login ORDER BY nom, prenom ASC)";
 	if(($_SESSION['statut']!='professeur')||($_SESSION['statut']!='autre')) {
-		$sql.=" UNION (SELECT DISTINCT sp.login FROM s_protagonistes sp, utilisateurs u WHERE sp.login=u.login ORDER BY u.statut, u.nom, u.prenom ASC)";
-		//$sql.=" ORDER BY nom, prenom ASC;";
+		$sql.=" UNION (SELECT DISTINCT sp.login, u.login, u.nom, u.prenom FROM s_protagonistes sp, utilisateurs u WHERE sp.login=u.login ORDER BY u.statut, u.nom, u.prenom ASC)";
+		$sql.=" ORDER BY nom, prenom ASC;";
 	}
 	//echo "$sql<br />";
 	$res_protagonistes=mysql_query($sql);
@@ -836,6 +910,7 @@ if(!isset($id_incident)) {
 	// Ne proposer le bouton pour supprimer qu'à certains utilisateurs?
 	//echo "<th><input type='submit' name='supprimer' value='Suppr' /></th>\n";
 	if(($_SESSION['statut']!='professeur')&&($_SESSION['statut']!='autre')) {
+	    echo "<th>Imprimer le rapport d'incident</th>\n";
 		echo "<th>Suppr</th>\n";
 	}
 	//echo "<th></th>\n";
@@ -881,6 +956,25 @@ if(!isset($id_incident)) {
 				echo "<td>".formate_date($lig->date)."</td>\n";
 			}
 			echo "<td>$lig->heure</td>\n";
+			
+			//=================================================
+			// Colonne declarant	
+            if (!(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='autre'))) {			
+				echo "<td>";
+				$sql_declarant="SELECT nom,prenom,civilite,statut FROM utilisateurs WHERE login='$lig->declarant';";
+				//echo "$sql<br />\n";
+				$res_declarant=mysql_query($sql_declarant);
+				if(mysql_num_rows($res_declarant)>0) {
+					$lig_declarant=mysql_fetch_object($res_declarant);
+					echo $lig_declarant->civilite." ".strtoupper($lig_declarant->nom)." ".ucfirst(substr($lig_declarant->prenom,0,1)).".";	
+				}
+				else {
+					echo "ERREUR: Login $lig->declarant inconnu";
+				}
+				echo "</td>\n";
+			}
+			//=================================================
+			// Colonne nature
 			echo "<td>$lig->nature</td>\n";
 			echo "<td>\n";
 			$sql="SELECT * FROM s_protagonistes WHERE id_incident='$lig->id_incident' ORDER BY statut,qualite,login;";
@@ -1186,6 +1280,15 @@ if(!isset($id_incident)) {
 			}
 			echo "</td>\n";
 
+			//Ajout Eric ===============================
+			// Colonne imprimer
+			if(($_SESSION['statut']!='professeur')&&($_SESSION['statut']!='autre')) {
+				echo "<td>\n";
+				echo "<a href='../mod_ooo/rapport_incident.php?mode=module_discipline&id_incident=$lig->id_incident".add_token_in_url()."' title='Imprimer le rapport d'\incident'><img src='../images/icons/print.png' width='16' height='16' alt='Imprimer le Rapport d\'incident'></a>\n";
+				echo "</td>\n";
+			}
+			//===============================
+			
 			//=================================================
 			// Colonne suppression
 			if(($_SESSION['statut']!='professeur')&&($_SESSION['statut']!='autre')) {

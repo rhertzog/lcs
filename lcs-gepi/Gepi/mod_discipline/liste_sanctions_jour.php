@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: liste_sanctions_jour.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: liste_sanctions_jour.php 6521 2011-02-21 17:33:14Z eabgrall $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -149,6 +149,7 @@ echo add_token_field();
 echo "<input type='hidden' name='jour_sanction' value='$jour_sanction' />\n";
 
 $cpt_sanctions=0;
+$login_declarant="";
 
 /*
 $jour =  substr($jour_sanction,0,2);
@@ -172,9 +173,12 @@ if(mysql_num_rows($res_sanction)>0) {
 	echo "<th>Lieu</th>\n";
 	echo "<th>Elève</th>\n";
 	echo "<th>Travail</th>\n";
+	echo "<th>Donné par (Déclarant)</th>\n";
+	echo "<th>Nbre de report</th>\n";
 	echo "<th>Effectuée</th>\n";
 	echo "</tr>\n";
 	$alt_b=1;
+	$num=0;
 	while($lig_sanction=mysql_fetch_object($res_sanction)) {
 		$alt_b=$alt_b*(-1);
 		if($lig_sanction->effectuee=="O") {
@@ -212,6 +216,68 @@ if(mysql_num_rows($res_sanction)>0) {
 			echo ">Details</a>";
 		}
 		echo "</td>\n";
+		
+		$login_declarant=get_login_declarant_incident($lig_sanction->id_incident);
+		
+		//pour le mail
+		$mail_declarant = retourne_email($login_declarant);
+		echo add_token_field(true);
+		echo "<input type='hidden' name='sujet_$num' id='sujet_$num' value=\"[GEPI] Discipline : Demande de travail pour une retenue\" />\n";
+		echo "<input type='hidden' name='mail_$num' id='mail_$num' value=\"".$mail_declarant."\" />\n";
+
+		$trame_message="Bonjour, \n";
+		$trame_message.="La retenue (voir l'incident N°%num_incident%) de %prenom_nom% (%classe%) est planifiée le %jour% en/à %heure% pour une durée de %duree%H \n";
+		$trame_message.="Merci d'apporter le travail prévu à la vie scolaire. \n\nLa vie scolaire";
+		
+		
+		$num_incident=$lig_sanction->id_incident;
+		$prenom_nom=p_nom($lig_sanction->login) ;
+		$tmp_tab=get_class_from_ele_login($lig_sanction->login);
+		if(isset($tmp_tab['liste_nbsp'])) {$classe= $tmp_tab['liste_nbsp'];}
+		$date=formate_date($lig_sanction->date);
+		$heure=$lig_sanction->heure_debut;
+		$duree=$lig_sanction->duree;
+		
+		$trame_message=str_replace("%num_incident%",$num_incident,$trame_message);
+		$trame_message=str_replace("%prenom_nom%",$prenom_nom,$trame_message);
+		$trame_message=str_replace("%classe%",$classe,$trame_message);
+		$trame_message=str_replace("%jour%",$date,$trame_message);
+		$trame_message=str_replace("%heure%",$heure,$trame_message);
+		$trame_message=str_replace("%duree%",$duree,$trame_message);
+		
+		//echo $trame_message;
+		echo "<input type='hidden' name='message_$num' id='message_$num' value=\"$trame_message\"/>\n";
+
+		echo "<td>\n";	
+		$ligne_nom_declarant=u_p_nom($login_declarant);
+		echo "$ligne_nom_declarant";
+		
+		//on autorise l'envoi de mail que pour les statuts Admin / CPE / Scolarite
+		if(($_SESSION['statut']=='administrateur') || ($_SESSION['statut']=='cpe') || ($_SESSION['statut']=='scolarite')) {
+			if($lig_sanction->effectuee!="O") {
+			   echo"<span id='mail_envoye_$num'><a href='#' onclick=\"envoi_mail($num);return false;\"><img src='../images/icons/icone_mail.png' width='25' height='25' alt='Envoyer un mail pour demander le travail au déclarant' title='Envoyer un mail pour demander le travail au déclarant' /></a></span>";
+			}
+		}
+        echo "</td>\n";
+		
+		// portion de code issue de verif_bulletin.php ligne 1110
+		echo "<script type='text/javascript'>  
+	// <![CDATA[
+	function envoi_mail(num) {
+		csrf_alea=document.getElementById('csrf_alea').value;
+		destinataire=document.getElementById('mail_'+num).value;
+		sujet_mail=document.getElementById('sujet_'+num).value;
+		message=document.getElementById('message_'+num).value;
+		//alert(message);
+		//new Ajax.Updater($('mail_envoye_'+num),'../bulletin/envoi_mail.php?destinataire='+destinataire+'&sujet_mail='+sujet_mail+'&message='+message,{method: 'get'});
+		new Ajax.Updater($('mail_envoye_'+num),'../bulletin/envoi_mail.php?destinataire='+destinataire+'&sujet_mail='+sujet_mail+'&message='+escape(message)+'&csrf_alea='+csrf_alea,{method: 'get'});
+	}
+	//]]>
+</script>\n";
+		
+		echo "<td>\n";
+		echo nombre_reports($lig_sanction->id_sanction,"Néant");
+        echo "</td>\n";
 
 		echo "<td>\n";
 		echo "<input type='checkbox' name='sanction_effectuee[$lig_sanction->id_sanction]' value='effectuee' ";
@@ -220,9 +286,10 @@ if(mysql_num_rows($res_sanction)>0) {
 		echo "/>\n";
 		echo "<input type='hidden' name='form_id_sanction[]' value='$lig_sanction->id_sanction' />\n";
 		echo "</td>\n";
-
+		
 		echo "</tr>\n";
 		$cpt_sanctions++;
+		$num++;
 	}
 	echo "</table>\n";
 	echo "<p align='center'><input type='submit' value=\"Valider\" /></p>\n";
@@ -245,6 +312,7 @@ if(mysql_num_rows($res_sanction)>0) {
 	echo "<th>Heure fin</th>\n";
 	echo "<th>Lieu</th>\n";
 	echo "<th>Travail</th>\n";
+    echo "<th>Effectuée</th>\n";
 	echo "</tr>\n";
 	$alt_b=1;
 	while($lig_sanction=mysql_fetch_object($res_sanction)) {
@@ -282,12 +350,20 @@ if(mysql_num_rows($res_sanction)>0) {
 			echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
 			echo ">Details</a>";
 		}
+
+        echo "<td>\n";
+		echo "<input type='checkbox' name='sanction_effectuee[$lig_sanction->id_sanction]' value='effectuee' ";
+		if($lig_sanction->effectuee=="O") {echo "checked='checked' ";}
+		echo "onchange='changement();' ";
+		echo "/>\n";
+		echo "<input type='hidden' name='form_id_sanction[]' value='$lig_sanction->id_sanction' />\n";
 		echo "</td>\n";
 
 		echo "</tr>\n";
 		$cpt_sanctions++;
 	}
 	echo "</table>\n";
+    echo "<p align='center'><input type='submit' value=\"Valider\" /></p>\n";
 	echo "</blockquote>\n";
 }
 
@@ -302,6 +378,7 @@ if(mysql_num_rows($res_sanction)>0) {
 	echo "<tr>\n";
 	echo "<th>Elève</th>\n";
 	echo "<th>Travail</th>\n";
+	echo "<th>Donné par (Déclarant)</th>\n";
 	echo "<th>Effectué</th>\n";
 	echo "</tr>\n";
 	$alt_b=1;
@@ -340,7 +417,11 @@ if(mysql_num_rows($res_sanction)>0) {
 			echo ">Details</a>";
 		}
 		echo "</td>\n";
-
+		
+		echo "<td>\n";
+		echo get_declarant_incident($lig_sanction->id_incident);
+        echo "</td>\n";
+		
 		echo "<td>\n";
 		echo "<input type='checkbox' name='sanction_effectuee[$lig_sanction->id_sanction]' value='effectuee' ";
 		if($lig_sanction->effectuee=="O") {echo "checked='checked' ";}
@@ -383,6 +464,8 @@ if(mysql_num_rows($res_sanction)>0) {
 	echo "<th>Lieu</th>\n";
 	echo "<th>Elève</th>\n";
 	echo "<th>Travail</th>\n";
+	echo "<th>Donné par (Déclarant)</th>\n";
+	echo "<th>Nbre de report</th>\n";
 	echo "<th>Effectuée</th>\n";
 	echo "</tr>\n";
 	$alt_b=1;
@@ -420,6 +503,16 @@ if(mysql_num_rows($res_sanction)>0) {
 			echo ">Details</a>";
 		}
 		echo "</td>\n";
+		
+		echo "<td>\n";
+		$login_declarant=get_login_declarant_incident($lig_sanction->id_incident);
+		echo u_p_nom($login_declarant);
+        echo "</td>\n";
+		
+		echo "<td>\n";
+		echo nombre_reports($lig_sanction->id_sanction,"Néant");
+        echo "</td>\n";
+
 
 		echo "<td>\n";
 		echo "<input type='checkbox' name='sanction_effectuee[$lig_sanction->id_sanction]' value='effectuee' ";
@@ -449,6 +542,7 @@ if(mysql_num_rows($res_sanction)>0) {
 	echo "<th>Elève</th>\n";
 	echo "<th>Date de retour</th>\n";
 	echo "<th>Travail</th>\n";
+	echo "<th>Donné par (Déclarant)</th>\n";
 	echo "<th>Effectué</th>\n";
 	echo "</tr>\n";
 	$alt_b=1;
@@ -488,6 +582,11 @@ if(mysql_num_rows($res_sanction)>0) {
 		echo "</td>\n";
 
 		echo "<td>\n";
+		$login_declarant=get_login_declarant_incident($lig_sanction->id_incident);
+		echo u_p_nom($login_declarant);
+        echo "</td>\n";
+
+		echo "<td>\n";
 		echo "<input type='checkbox' name='sanction_effectuee[$lig_sanction->id_sanction]' value='effectuee' ";
 		if($lig_sanction->effectuee=="O") {echo "checked='checked' ";}
 		echo "onchange='changement();' ";
@@ -519,9 +618,10 @@ if(isset($tabid_infobulle)){
 
 echo "<p><br /></p>\n";
 
-echo "<p><i>Remarque&nbsp;:</i></p>\n";
+echo "<p><i>Remarques&nbsp;:</i></p>\n";
 echo "<blockquote>\n";
-echo "<p>Lorsqu'une retenue, un travail doit être reprogrammé, l'information comme quoi l'élève n'a pas effectué la sanction à la date prévue n'est pas conservée.<br />A défaut, vous pouvez ajouter des détails sur l'incident ou en commentaire dans le Travail attribué pour la sanction.</p>\n";
+echo "<p><b>Lorsqu'une retenue doit être reprogrammé</b>, cliquer sur la date initiale de la retenue et renseigner la section Gestion d'un report<br />\n";
+echo "<p>Lorsqu'un travail doit être reprogrammé, l'information comme quoi l'élève ne l'a pas effectué à la date prévue n'est pas conservée.<br />A défaut, vous pouvez ajouter des détails sur l'incident ou en commentaire dans le Travail attribué</p>\n";
 echo "</blockquote>\n";
 
 echo "<p><br /></p>\n";

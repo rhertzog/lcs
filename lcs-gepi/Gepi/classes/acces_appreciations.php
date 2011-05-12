@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: acces_appreciations.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: acces_appreciations.php 6722 2011-03-28 20:20:08Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -221,7 +221,7 @@ if(isset($_POST['choix_date_valider2'])) {
 		//echo "<script type='text/javascript'>alert('Veuillez saisir une date valide.');</script>\n";
 		echo "<span style='color:red'>Date saisie invalide</span>";
 	}
-	elseif(!ereg("[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}",$choix_date2)) {
+	elseif(!my_ereg("[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}",$choix_date2)) {
 		$poursuivre="n";
 		echo "<span style='color:red'>Date saisie invalide</span>";
 	}
@@ -350,7 +350,7 @@ $texte.="<input type='hidden' name='id_div' id='choix_date_id_div' value='' />\n
 $texte.="<input type='hidden' name='statut' id='choix_date_statut' value='' />\n";
 $texte.="<input type='hidden' name='id_classe' id='choix_date_id_classe' value='' />\n";
 $texte.="<input type='hidden' name='periode' id='choix_date_periode' value='' />\n";
-$texte.="<input type='text' name='choix_date' id='choix_date' size='10' value='' />\n";
+$texte.="<input type='text' name='choix_date' id='choix_date' size='10' value='' onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 $texte.="<a href='#calend' onClick=\"".$cal->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170).";document.getElementById('choix_date').checked='true';\"><img src='../lib/calendrier/petit_calendrier.gif' alt='Calendrier' border='0' /></a>\n";
 $texte.="<br />\n";
 $texte.="<input type='button' name='choix_date_valider' value='Valider' onclick=\"g_date()\" />\n";
@@ -374,7 +374,7 @@ $texte.="<p align='center'>\n";
 //$texte.="<input type='hidden' id='csrf_alea' name='csrf_alea' value='".$_SESSION['gepi_alea']."' />\n";
 $texte.=add_token_field(true);
 $texte.="<input type='hidden' name='periode2' id='choix_date_periode2' value='' />\n";
-$texte.="<input type='text' name='choix_date2' id='choix_date2' size='10' value='' />\n";
+$texte.="<input type='text' name='choix_date2' id='choix_date2' size='10' value='' onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 $texte.="<a href='#calend' onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170).";\"><img src='../lib/calendrier/petit_calendrier.gif' alt='Calendrier' border='0' /></a>\n";
 $texte.="<br />\n";
 //$texte.="<input type='button' name='choix_date_valider2' value='Valider' onclick=\"g_date()\" />\n";

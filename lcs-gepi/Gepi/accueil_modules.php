@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: accueil_modules.php 6476 2011-02-08 19:35:08Z tbelliard $
+ * $Id: accueil_modules.php 6475 2011-02-08 19:34:10Z tbelliard $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

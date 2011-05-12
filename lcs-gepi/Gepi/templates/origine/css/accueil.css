@@ -1,5 +1,5 @@
 /* 
- * $Id: accueil.css 4892 2010-07-25 17:26:00Z regis $
+ * $Id: accueil.css 6697 2011-03-25 21:54:27Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -188,4 +188,11 @@ background-color: #F00;
 
 .small {
 	font-size:smaller;
+}
+
+.fixeMilieuDroit {
+	position: fixed;
+	top: 50%;
+	right: 2em;
+	text-align:center;
 }

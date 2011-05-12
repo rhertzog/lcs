@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: saisie_secours_eleve.php 4810 2010-07-18 13:16:20Z crob $
+* $Id: saisie_secours_eleve.php 6727 2011-03-29 15:14:30Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -30,8 +30,8 @@ require_once("../lib/initialisations.inc.php");
 // Resume session
 $resultat_session = $session_gepi->security_check();
 if ($resultat_session == 'c') {
-header("Location: ../utilisateurs/mon_compte.php?change_mdp=yes");
-die();
+	header("Location: ../utilisateurs/mon_compte.php?change_mdp=yes");
+	die();
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
@@ -62,6 +62,9 @@ if((isset($_POST['is_posted']))&&
 (isset($ele_login))&&
 (isset($id_groupe))&&
 (isset($note_grp))) {
+
+	check_token();
+
 	$msg="";
 
 	// vérifier si l'élève est bien dans la classe et si la période est ouverte en saisie
@@ -98,7 +101,7 @@ if((isset($_POST['is_posted']))&&
 				$note = '0';
 				$elev_statut = '-';
 			}
-			else if (my_ereg ("^[0-9\.\,]{1,}$", $note)) {
+			else if (preg_match ("/^[0-9\.\,]{1,}$/", $note)) {
 				$note = str_replace(",", ".", "$note");
 				if (($note < 0) or ($note > 20)) {
 					$note = '';
@@ -135,7 +138,10 @@ if((isset($_POST['is_posted']))&&
 			}
 			//echo "$k: $app<br />";
 			// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-			$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
+			//$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
+			$app=preg_replace('/(\\\r\\\n)+/',"\r\n",$app);
+			$app=preg_replace('/(\\\r)+/',"\r",$app);
+			$app=preg_replace('/(\\\n)+/',"\n",$app);
 
 			$test_app_query = mysql_query("SELECT * FROM matieres_appreciations WHERE (id_groupe='" . $id_groupe[$k]."' AND periode='$periode_num' AND login='$ele_login')");
 			$test = mysql_num_rows($test_app_query);
@@ -447,6 +453,9 @@ else {
 		$cpt=0;
 
 		echo "<form enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" name='form1' method=\"post\">\n";
+
+		echo add_token_field();
+
 		echo "<input type='hidden' name='id_classe' value='$id_classe' />\n";
 		echo "<input type='hidden' name='periode_num' value='$periode_num' />\n";
 		echo "<input type='hidden' name='ele_login' value=\"$ele_login\" />\n";

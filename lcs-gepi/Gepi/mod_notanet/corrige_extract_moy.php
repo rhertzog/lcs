@@ -296,14 +296,16 @@ else {
 						echo "</th>\n";
 						echo "</tr>\n";
 						$alt=1;
+						$cpt=0;
 						while($lig_ele=mysql_fetch_object($res_ele)) {
 							$alt=$alt*(-1);
 							echo "<tr class='lig$alt'>\n";
 
-							echo "<td>$lig_ele->nom $lig_ele->prenom</td>\n";
-							echo "<td><input type='checkbox' name='ele_login[]' value=\"$lig_ele->login\" /></td>\n";
+							echo "<td><label for='ele_login_$cpt'>$lig_ele->nom $lig_ele->prenom</label></td>\n";
+							echo "<td><input type='checkbox' id='ele_login_$cpt' name='ele_login[]' value=\"$lig_ele->login\" /></td>\n";
 
 							echo "</tr>\n";
+							$cpt++;
 						}
 						echo "</table>\n";
 					}
@@ -539,7 +541,7 @@ else {
 												}
 											}
 											if($test_valeur_speciale_autorisee!="oui"){
-												if(strlen(my_ereg_replace("[0-9.]","",$moy[$j][$k][$m]))!=0){
+												if(strlen(preg_replace("/[0-9\.]/","",$moy[$j][$k][$m]))!=0){
 													echo "<br /><span style='color:red'>ERREUR</span>: La valeur saisie n'est pas valide: ";
 													echo $id_matiere[$j][$k]."=".$moy[$j][$k][$m];
 													echo "<br />\n";
@@ -605,7 +607,7 @@ else {
 											}
 										}
 										if($test_valeur_speciale_autorisee!="oui"){
-											if(strlen(my_ereg_replace("[0-9.]","",$moy[$j][$k][$m]))!=0){
+											if(strlen(preg_replace("/[0-9\.]/","",$moy[$j][$k][$m]))!=0){
 												echo "<br /><span style='color:red'>ERREUR</span>: La valeur saisie n'est pas valide: ";
 												echo $tabmatieres[$j][0]."=".$moy[$j][$k][$m];
 												echo "<br />\n";

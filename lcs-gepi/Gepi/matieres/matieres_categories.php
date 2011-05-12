@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: matieres_categories.php 6179 2010-12-17 16:53:45Z crob $
+* $Id: matieres_categories.php 6181 2010-12-17 16:54:04Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

@@ -1,6 +1,6 @@
 <?php
 /*
-$Id: sanctions_func_lib.php 5058 2010-08-15 09:19:22Z eabgrall $
+$Id: sanctions_func_lib.php 6727 2011-03-29 15:14:30Z crob $
 */
 
 // Paramètres concernant le délais avant affichage d'une infobulle via delais_afficher_div()
@@ -301,7 +301,6 @@ function rappel_incident($id_incident) {
 			echo "</td>\n";
 			echo "</tr>\n";
 		}
-
 		echo "</table>\n";
 	}
 	else {
@@ -554,7 +553,7 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 	if($date_debut!="") {
 		// Tester la validité de la date
 		// Si elle n'est pas valide... la vider
-		if(my_ereg("/",$date_debut)) {
+		if(preg_match("#/#",$date_debut)) {
 			$tmp_tab_date=explode("/",$date_debut);
 
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[0],$tmp_tab_date[2])) {
@@ -564,7 +563,7 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 				$date_debut=$tmp_tab_date[2]."-".$tmp_tab_date[1]."-".$tmp_tab_date[0];
 			}
 		}
-		elseif(my_ereg("-",$date_debut)) {
+		elseif(preg_match("/-/",$date_debut)) {
 			$tmp_tab_date=explode("-",$date_debut);
 	
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[2],$tmp_tab_date[0])) {
@@ -581,7 +580,7 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 		// Si elle n'est pas valide... la vider
 		// Tester la validité de la date
 		// Si elle n'est pas valide... la vider
-		if(my_ereg("/",$date_fin)) {
+		if(preg_match("#/#",$date_fin)) {
 			$tmp_tab_date=explode("/",$date_fin);
 
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[0],$tmp_tab_date[2])) {
@@ -591,7 +590,7 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 				$date_fin=$tmp_tab_date[2]."-".$tmp_tab_date[1]."-".$tmp_tab_date[0];
 			}
 		}
-		elseif(my_ereg("-",$date_fin)) {
+		elseif(preg_match("/-/",$date_fin)) {
 			$tmp_tab_date=explode("-",$date_fin);
 	
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[2],$tmp_tab_date[0])) {
@@ -617,7 +616,7 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 	$tab_incident=array();
 	$tab_sanction=array();
 	$tab_mesure=array();
-
+	$zone_de_commentaire = "";
 	$sql="SELECT * FROM s_incidents si, s_protagonistes sp WHERE si.id_incident=sp.id_incident AND sp.login='$ele_login' $restriction_date ORDER BY si.date DESC;";
 	//echo "$sql<br />\n";
 	$res=mysql_query($sql);
@@ -632,6 +631,7 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 		$retour.="<th>Suivi</th>\n";
 		$retour.="</tr>\n";
 		$alt_1=1;
+		
 		while($lig=mysql_fetch_object($res)) {
 			$alt_1=$alt_1*(-1);
 			$retour.="<tr class='lig$alt_1'>\n";
@@ -646,6 +646,8 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 			$retour.="<br />\n";
 
 			$retour.="<span style='font-size:small;'>".u_p_nom($lig->declarant)."</span>";
+			
+			$zone_de_commentaire = $lig->commentaire;
 
 			$retour.="</td>\n";
 			$retour.="<td>".$lig->qualite."</td>\n";
@@ -712,12 +714,15 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 							$alt=$alt*(-1);
 							$retour.="<tr class='lig$alt'>\n";
 							$retour.="<td>$lig_suivi->mesure</td>\n";
+							
 							if($lig_suivi->type=='prise') {
 								$retour.="<td>prise par ".u_p_nom($lig_suivi->login_u)."</td>\n";
 
 								if($temoin_eleve_responsable_de_l_incident=='y') {
 									if(isset($tab_mesure[addslashes($lig_suivi->mesure)])) {
-										$tab_mesure[addslashes($lig_suivi->mesure)]++;
+										if ($lig_suivi->login_ele==$ele_login) {  //Ajout ERIC test pour ne compter que pour l'élève demandé
+										   $tab_mesure[addslashes($lig_suivi->mesure)]++;
+										}
 									}
 									else {
 										$tab_mesure[addslashes($lig_suivi->mesure)]=1;
@@ -727,12 +732,11 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 							else {
 								$retour.="<td>demandée par ".u_p_nom($lig_suivi->login_u)."</td>\n";
 							}
-							$retour.="</tr>\n";
-						}
+							$retour.="</tr>\n";	
+						}	
 						$retour.="</table>\n";
-
-					}
-
+					}		
+						
 					$sql="SELECT * FROM s_sanctions s WHERE s.id_incident='$lig->id_incident' AND s.login='$lig_prot->login' ORDER BY nature;";
 					//echo "$sql<br />\n";
 					$res_suivi=mysql_query($sql);
@@ -749,7 +753,8 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 						$retour.="<th>Description</th>\n";
 						$retour.="<th>Effectuée</th>\n";
 						$retour.="</tr>\n";
-
+				
+						
 						while($lig_suivi=mysql_fetch_object($res_suivi)) {
 							$alt=$alt*(-1);
 							$retour.="<tr class='lig$alt'>\n";
@@ -758,7 +763,9 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 
 							if($temoin_eleve_responsable_de_l_incident=='y') {
 								if(isset($tab_sanction[addslashes($lig_suivi->nature)])) {
-									$tab_sanction[addslashes($lig_suivi->nature)]++;
+									if ($lig_suivi->login==$ele_login) { //Ajout ERIC test pour ne compter que pour l'élève demandé
+									   $tab_sanction[addslashes($lig_suivi->nature)]++;
+									}
 								}
 								else {
 									$tab_sanction[addslashes($lig_suivi->nature)]=1;
@@ -804,6 +811,7 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 							$retour.="<td>$lig_suivi->effectuee</td>\n";
 							$retour.="</tr>\n";
 						}
+						
 						$retour.="</table>\n";
 
 					}
@@ -811,8 +819,15 @@ function tab_mod_discipline($ele_login,$mode,$date_debut,$date_fin) {
 					$retour.="</td>\n";
 
 					$retour.="</tr>\n";
+
 				}
 				$retour.="</table>\n";
+				
+				// Ajout Eric de la zone de commentaire
+				//affichage du commentaire
+				if ($zone_de_commentaire !="") {
+				$retour .=  "<p style='text-align:left;'><b>Commentaires sur l'incident&nbsp;:&nbsp;</b></br></br>$zone_de_commentaire</p>";	
+				}
 			}
 
 			$retour.="</td>\n";
@@ -941,5 +956,75 @@ function get_destinataires_mail_alerte_discipline($tab_id_classe) {
 	}
 	return $retour;
 }
+
+// Retourne à partir de l'id d'un incident le login du déclarant
+function get_login_declarant_incident($id_incident) {
+	$retour="";
+    $sql_declarant="SELECT DISTINCT SI.id_incident, SI.declarant FROM s_incidents SI, s_sanctions SS WHERE SI.id_incident='$id_incident' AND SI.id_incident=SS.id_incident;";
+		//echo $sql_declarant;
+		$res_declarant=mysql_query($sql_declarant);
+        if(mysql_num_rows($res_declarant)>0) {
+		$lig_declarant=mysql_fetch_object($res_declarant);
+		  $retour= $lig_declarant->declarant;	
+		} else {
+		  $retour='Incident inconnu';
+		}
+	return $retour;
+}
+
+//Fonction dressant la liste des reports pour une sanction ($id_type_sanction)
+function afficher_tableau_des_reports($id_sanction) {
+    global $id_incident;
+	$retour="";
+    $sql="SELECT * FROM s_reports WHERE id_sanction=$id_sanction ORDER BY id_report";
+		//echo $sql;
+		$res=mysql_query($sql);
+        if(mysql_num_rows($res)>0) {
+		echo "<table class='boireaus' border='1' summary='Liste des reports' style='margin:2px;'>\n";
+		echo "<tr>\n";
+		echo "<th>Report N°</th>\n";
+		echo "<th>Date</th>\n";
+		echo "<th>Information</th>\n";
+		echo "<th>motif</th>\n";
+		echo "<th>Suppr</th>\n";
+		echo "</tr>\n";
+		$alt_b=1;
+		$cpt=1;
+		while($lig=mysql_fetch_object($res)) {
+          $alt_b=$alt_b*(-1);
+		  echo "<tr class='lig$alt_b'>\n";
+		  echo "<td>".$cpt."</td>\n";
+		  $tab_date=explode("-",$lig->date);
+	      echo "<td>".$tab_date[2]."-".sprintf("%02d",$tab_date[1])."-".sprintf("%02d",$tab_date[0])."</td>\n";
+		  echo "<td>".$lig->informations."</td>\n";
+		  echo "<td>".$lig->motif_report."</td>\n";
+		  echo "<td><a href='".$_SERVER['PHP_SELF']."?mode=suppr_report&amp;id_report=$lig->id_report&amp;id_sanction=$lig->id_sanction&amp;id_incident=$id_incident&amp;".add_token_in_url()."' title='Supprimer le report n°$lig->id_report'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer le report n°$lig->id_report' /></a></td>\n";
+
+		  echo "<tr/>";
+		  $cpt++;
+		}
+		echo "</table>\n";
+		} else {
+		  $retour = "Aucun report actuellement pour cette sanction.";
+		}	
+	return $retour;
+}
+
+//Fonction donnant le nombre de reports pour une sanction ($id_type_sanction)
+function nombre_reports($id_sanction,$aucun) {
+	$sql="SELECT * FROM s_reports WHERE id_sanction=$id_sanction ORDER BY id_report";
+	//echo $sql;
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+	$cpt=0;
+		while($lig=mysql_fetch_object($res)) {	  
+		  $cpt++;
+		}
+    } else {
+    $cpt = $aucun;
+    }	
+	return $cpt;
+}
+
 
 ?>

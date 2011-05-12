@@ -1,9 +1,9 @@
 <?php
 
 /*
- * $Id: disc_stat.php 5400 2010-09-23 10:01:22Z crob $
+ * $Id: disc_stat.php 6727 2011-03-29 15:14:30Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -121,6 +121,8 @@ if(!isset($is_posted)) {
 	echo "<p class='bold'>Totaux&nbsp;:</p>\n";
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
 
+	echo add_token_field();
+
 	//=======================
 	//Configuration du calendrier
 	include("../lib/calendrier/calendrier.class.php");
@@ -130,12 +132,12 @@ if(!isset($is_posted)) {
 
 	echo "<p>Intervalle de dates&nbsp;: du ";
 	//echo "<input type='text' name='date_debut_disc' value='' />\n";
-	echo "<input type='text' name = 'date_debut_disc' size='10' value = \"".$date_debut_disc."\" />\n";
+	echo "<input type='text' name = 'date_debut_disc1' id='date_debut_disc' size='10' value = \"".$date_debut_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 	echo "<a href=\"#\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 
 	echo " au ";
 	//echo "<input type='text' name='date_fin_disc' value='' />\n";
-	echo "<input type='text' name = 'date_fin_disc' size='10' value = \"".$date_fin_disc."\" />\n";
+	echo "<input type='text' name = 'date_fin_disc1' id='date_fin_disc' size='10' value = \"".$date_fin_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 	echo "<a href=\"#\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 	echo "</p>\n";
 
@@ -248,6 +250,8 @@ if(!isset($is_posted)) {
 	echo "<p class='bold'>Top ten&nbsp;:</p>\n";
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
 
+	echo add_token_field();
+
 	//=======================
 	//Configuration du calendrier
 	//include("../lib/calendrier/calendrier.class.php");
@@ -257,12 +261,12 @@ if(!isset($is_posted)) {
 
 	echo "<p>Intervalle de dates&nbsp;: du ";
 	//echo "<input type='text' name='date_debut_disc' value='' />\n";
-	echo "<input type='text' name = 'date_debut_disc' size='10' value = \"".$date_debut_disc."\" />\n";
+	echo "<input type='text' name = 'date_debut_disc' id = 'date_debut_disc2' size='10' value = \"".$date_debut_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 	echo "<a href=\"#\" onClick=\"".$cal3->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 
 	echo " au ";
 	//echo "<input type='text' name='date_fin_disc' value='' />\n";
-	echo "<input type='text' name = 'date_fin_disc' size='10' value = \"".$date_fin_disc."\" />\n";
+	echo "<input type='text' name = 'date_fin_disc' id = 'date_fin_disc2' size='10' value = \"".$date_fin_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 	echo "<a href=\"#\" onClick=\"".$cal4->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 	echo "</p>\n";
 
@@ -291,12 +295,14 @@ elseif($mode=='totaux') {
 	echo " | <a href='".$_SERVER['PHP_SELF']."'>Statistiques</a>";
 	echo "</p>\n";
 
+	check_token(false);
+
 	echo "<p><b>Dates&nbsp;:</b> ";
 	if($date_debut_disc!="") {
 
 		// Tester la validité de la date
 		// Si elle n'est pas valide... la vider
-		if(my_ereg("/",$date_debut_disc)) {
+		if(preg_match("#/#",$date_debut_disc)) {
 			$tmp_tab_date=explode("/",$date_debut_disc);
 
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[0],$tmp_tab_date[2])) {
@@ -306,7 +312,7 @@ elseif($mode=='totaux') {
 				$date_debut_disc=$tmp_tab_date[2]."-".$tmp_tab_date[1]."-".$tmp_tab_date[0];
 			}
 		}
-		elseif(my_ereg("-",$date_debut_disc)) {
+		elseif(preg_match("/-/",$date_debut_disc)) {
 			$tmp_tab_date=explode("-",$date_debut_disc);
 	
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[2],$tmp_tab_date[0])) {
@@ -332,7 +338,7 @@ elseif($mode=='totaux') {
 		// Si elle n'est pas valide... la vider
 		// Tester la validité de la date
 		// Si elle n'est pas valide... la vider
-		if(my_ereg("/",$date_fin_disc)) {
+		if(preg_match("#/#",$date_fin_disc)) {
 			$tmp_tab_date=explode("/",$date_fin_disc);
 
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[0],$tmp_tab_date[2])) {
@@ -342,7 +348,7 @@ elseif($mode=='totaux') {
 				$date_fin_disc=$tmp_tab_date[2]."-".$tmp_tab_date[1]."-".$tmp_tab_date[0];
 			}
 		}
-		elseif(my_ereg("-",$date_fin_disc)) {
+		elseif(preg_match("/-/",$date_fin_disc)) {
 			$tmp_tab_date=explode("-",$date_fin_disc);
 	
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[2],$tmp_tab_date[0])) {
@@ -575,12 +581,14 @@ elseif($mode=='topten') {
 	echo " | <a href='".$_SERVER['PHP_SELF']."'>Statistiques</a>";
 	echo "</p>\n";
 
+	check_token(false);
+
 	echo "<p><b>Dates&nbsp;:</b> ";
 	if($date_debut_disc!="") {
 
 		// Tester la validité de la date
 		// Si elle n'est pas valide... la vider
-		if(my_ereg("/",$date_debut_disc)) {
+		if(preg_match("#/#",$date_debut_disc)) {
 			$tmp_tab_date=explode("/",$date_debut_disc);
 
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[0],$tmp_tab_date[2])) {
@@ -590,7 +598,7 @@ elseif($mode=='topten') {
 				$date_debut_disc=$tmp_tab_date[2]."-".$tmp_tab_date[1]."-".$tmp_tab_date[0];
 			}
 		}
-		elseif(my_ereg("-",$date_debut_disc)) {
+		elseif(preg_match("/-/",$date_debut_disc)) {
 			$tmp_tab_date=explode("-",$date_debut_disc);
 	
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[2],$tmp_tab_date[0])) {
@@ -616,7 +624,7 @@ elseif($mode=='topten') {
 		// Si elle n'est pas valide... la vider
 		// Tester la validité de la date
 		// Si elle n'est pas valide... la vider
-		if(my_ereg("/",$date_fin_disc)) {
+		if(preg_match("#/#",$date_fin_disc)) {
 			$tmp_tab_date=explode("/",$date_fin_disc);
 
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[0],$tmp_tab_date[2])) {
@@ -626,7 +634,7 @@ elseif($mode=='topten') {
 				$date_fin_disc=$tmp_tab_date[2]."-".$tmp_tab_date[1]."-".$tmp_tab_date[0];
 			}
 		}
-		elseif(my_ereg("-",$date_fin_disc)) {
+		elseif(preg_match("#-#",$date_fin_disc)) {
 			$tmp_tab_date=explode("-",$date_fin_disc);
 	
 			if(!checkdate($tmp_tab_date[1],$tmp_tab_date[2],$tmp_tab_date[0])) {

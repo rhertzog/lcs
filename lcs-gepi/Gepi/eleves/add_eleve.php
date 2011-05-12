@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: add_eleve.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: add_eleve.php 6556 2011-02-28 16:21:48Z eabgrall $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -228,7 +228,8 @@ if (isset($_POST['is_posted']) and ($_POST['is_posted'] == "1")) {
 						sexe='".$reg_sexe."',
 						naissance='".$reg_naissance."',
 						elenoet = '".$reg_no_gep."',
-						ele_id = '".$ele_id."'
+						ele_id = '".$ele_id."',
+						date_sortie = NULL
 						");
 
 					if($reg_resp1!=""){

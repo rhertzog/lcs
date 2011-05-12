@@ -2,7 +2,7 @@
 
 /*
 *
-* $Id: visu_releve_notes_func.lib.php 6315 2011-01-09 08:41:14Z crob $
+* $Id: visu_releve_notes_func.lib.php 6317 2011-01-09 08:41:35Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -240,7 +240,6 @@ function liste_notes_html($tab_rel,$i,$j,$tab_id_conteneur=array()) {
 			$m++;
 		}
 	}
-
 	return $retour;
 }
 
@@ -536,7 +535,6 @@ function releve_html($tab_rel,$i,$num_releve_specifie) {
 	if((isset($tab_rel['rn_retour_ligne']))&&(($tab_rel['rn_retour_ligne']=='y')||($tab_rel['rn_retour_ligne']=='n'))) {
 		$retour_a_la_ligne=$tab_rel['rn_retour_ligne'];
 	}
-
 
 	/*
 	$affiche_categories
@@ -1277,7 +1275,7 @@ width:".$releve_addressblock_logo_etab_prop."%;\n";
 								else {
 									$temoin_conteneur=0;
 								}
-	
+
 								// Faire la boucle while($m<count($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])) {} 
 								// avec un test sur $tab_ele['groupe'][$j]['devoir'][$m]['id_conteneur']==$tmp_id_cn (soit la racine du cn à ce niveau)
 	
@@ -1314,7 +1312,7 @@ width:".$releve_addressblock_logo_etab_prop."%;\n";
 										else {
 											$temoin_conteneur=0;
 										}
-	
+
 										// Faire la boucle while($m<count($tab_rel['eleve'][$i]['groupe'][$j]['devoir'])) {} 
 										// avec un test sur $tab_ele['groupe'][$j]['devoir'][$m]['id_conteneur'] égal à $tab_id_cn['conteneurs'][$k]['id_racine'] ou dans $tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][]
 									//}
@@ -1817,7 +1815,6 @@ function releve_pdf($tab_rel,$i) {
 		if((isset($tab_rel['rn_rapport_standard_min_font']))&&($tab_rel['rn_rapport_standard_min_font']!='')&&(preg_match("/^[0-9.]*$/",$tab_rel['rn_rapport_standard_min_font']))&&($tab_rel['rn_rapport_standard_min_font']>0)) {
 			$rn_rapport_standard_min_font=$tab_rel['rn_rapport_standard_min_font'];
 		}
-
 
 	$id_classe=$tab_rel['id_classe'];
 	$classe_id=$id_classe;
@@ -2368,7 +2365,17 @@ function releve_pdf($tab_rel,$i) {
 					}
 				}
 				$pdf->Cell(90,7, $texte_1_responsable,0,2,'');
-
+				
+				//Ajout Eric le 6-11-2010 Num du Resp légal sur le relevé
+				$pdf->SetXY($X_parent+82,$Y_parent-3);
+				$pdf->SetFont($caractere_utilse,'',6); //6==> hauteur de caractère
+				$num=$num_resp+1;
+				$num_legal= "(Resp ".$num.")";
+				$pdf->Cell(90,7,$num_legal,0,2,'');
+				// On remet le curseur à la bonne position pour la suite de l'adresse
+				$pdf->SetXY($X_parent,$Y_parent+7);
+				// Fin modif Eric
+				
 				$pdf->SetFont($caractere_utilse,'',10);
 				//$texte_1_responsable = $adresse1_parents[$ident_eleve_aff][$responsable_place];
 				$texte_1_responsable=$tab_adr_ligne2[$num_resp];
@@ -2743,7 +2750,7 @@ function releve_pdf($tab_rel,$i) {
 
 								//$chaine_notes.="<b>cn $tmp_id_cn</b> ";
 								//echo "<b>cn $tmp_id_cn</b> \n";
-	
+
 								unset($tmp_tab);
 								$tmp_tab[]=$tmp_id_cn;
 								//$chaine_notes.="<u><b>Racine ($tmp_id_cn)&nbsp;:</b></u> \n";
@@ -2774,7 +2781,6 @@ function releve_pdf($tab_rel,$i) {
 												//$chaine_notes.="\$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk]=".$tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][$kk]."<br />";
 											}
 										}
-
 										//$chaine_notes.="<br />\n";
 										//$chaine_notes.="<u><b>".$tab_id_cn['conteneurs'][$k]['nom_complet']."&nbsp;:</b></u> \n";
 										$retour_liste_notes_pdf=liste_notes_pdf($tab_rel,$i,$m,$tmp_tab);
@@ -2803,6 +2809,8 @@ function releve_pdf($tab_rel,$i) {
 										// avec un test sur $tab_ele['groupe'][$m]['devoir'][$m]['id_conteneur'] égal à $tab_id_cn['conteneurs'][$k]['id_racine'] ou dans $tab_id_cn['conteneurs'][$k]['conteneurs_enfants'][]
 									//}
 								}
+
+
 
 							}
 
@@ -2936,7 +2944,6 @@ function releve_pdf($tab_rel,$i) {
 									}
 								}
 							}
-
 
 						}
 						else {

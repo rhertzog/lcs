@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: saisie_avis2.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: saisie_avis2.php 6727 2011-03-29 15:14:30Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -579,6 +579,14 @@ if (isset($fiche)) {
 		//alert('1')
 		setTimeout(\"document.getElementById('no_anti_inject_current_eleve_login_ap').focus()\",500);
 	}
+
+	// onclick='verif_termes()'
+
+	function verif_termes() {
+		alert('plop');
+		return false;
+	}
+
 </script>\n";
 
 }

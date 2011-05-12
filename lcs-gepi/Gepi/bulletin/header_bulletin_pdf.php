@@ -1,6 +1,6 @@
 <?php
-
-  send_file_download_headers('application/pdf', 'bulletin.pdf');
+  // Envoi des en-têtes HTTP
+  send_file_download_headers('application/pdf','bulletin.pdf');
 
 	require('../fpdf/fpdf.php');
 	require('../fpdf/ex_fpdf.php');

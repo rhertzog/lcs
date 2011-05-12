@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: liste_traitements.php 6261 2011-01-02 20:25:38Z jjacquard $
+ * @version $Id: liste_traitements.php 6184 2010-12-17 20:02:27Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *

@@ -1,5 +1,5 @@
 <?php
-/* $Id: extract_moy.php 6074 2010-12-08 15:43:17Z crob $ */
+/* $Id: extract_moy.php 6730 2011-03-30 09:43:45Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -129,7 +129,7 @@ else {
 
 		$tab_mat[$lig1->type_brevet]=array();
 		/*
-		for($j=101;$j<=$indice_max_matieres;$j++) {
+		for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++) {
 			$tab_mat[$lig1->type_brevet][$j]=$id_matiere[$j];
 		}
 		*/
@@ -281,7 +281,7 @@ else {
 
 			$tabmatieres=tabmatieres($extract_mode);
 			$cpt_non_assoc=0;
-			for($i=101;$i<=$indice_max_matieres;$i++) {
+			for($i=$indice_premiere_matiere;$i<=$indice_max_matieres;$i++) {
 				//echo "\$tabmatieres[$i][0]=".$tabmatieres[$i][0]."<br />";
 				if(($tabmatieres[$i][0]!="")&&($tabmatieres[$i]['socle']=='n')) {
 					$temoin_assoc="n";
@@ -404,7 +404,7 @@ else {
 			$sql="DELETE FROM notanet;";
 			$nettoyage=mysql_query($sql);
 		}
-		elseif((my_ereg("[0-9]",$extract_mode))&&(strlen(my_ereg_replace("[0-9]","",$extract_mode))==0)) {
+		elseif((preg_match("/[0-9]/",$extract_mode))&&(strlen(preg_replace("/[0-9]/","",$extract_mode))==0)) {
 			$sql="SELECT login FROM notanet_ele_type WHERE type_brevet='$extract_mode';";
 			$res=mysql_query($sql);
 			if(mysql_num_rows($res)>0) {
@@ -480,7 +480,7 @@ else {
 
 						unset($tab_opt_matiere_eleve);
 						$tab_opt_matiere_eleve=array();
-						for($j=101;$j<=$indice_max_matieres;$j++){
+						for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 							//if($tabmatieres[$j][0]!=''){
 							if(($tabmatieres[$j][0]!='')&&($statut_matiere[$j]!='non dispensee dans l etablissement')){
 								// Liste des valeurs spéciales autorisées pour la matière courante:
@@ -517,7 +517,7 @@ else {
 												}
 											}
 											if($test_valeur_speciale_autorisee!="oui"){
-												if(strlen(my_ereg_replace("[0-9.]","",$moy[$j][$k][$m]))!=0){
+												if(strlen(preg_replace("/[0-9\.]/","",$moy[$j][$k][$m]))!=0){
 													echo "<br /><span style='color:red'>ERREUR</span>: La valeur saisie n'est pas valide: ";
 													echo $id_matiere[$j][$k]."=".$moy[$j][$k][$m];
 													echo "<br />\n";
@@ -583,7 +583,7 @@ else {
 											}
 										}
 										if($test_valeur_speciale_autorisee!="oui"){
-											if(strlen(my_ereg_replace("[0-9.]","",$moy[$j][$k][$m]))!=0){
+											if(strlen(preg_replace("/[0-9\.]/","",$moy[$j][$k][$m]))!=0){
 												echo "<br /><span style='color:red'>ERREUR</span>: La valeur saisie n'est pas valide: ";
 												echo $tabmatieres[$j][0]."=".$moy[$j][$k][$m];
 												echo "<br />\n";
@@ -618,12 +618,12 @@ else {
 						if($erreur!="oui"){
 							// On génère l'export pour cet élève:
 							$TOT=0;
-							for($j=101;$j<=$indice_max_matieres;$j++){
+							for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 								//if(isset($tabmatieres[$j][0])){
 								//if(isset($statut_matiere[$j])){
 								if(isset($moy_NOTANET[$j])) {
 									if(($tabmatieres[$j][0]!='')&&($statut_matiere[$j]!='non dispensee dans l etablissement')&&($moy_NOTANET[$j]!="")) {
-										$ligne_NOTANET=$INE[$m]."|$j";
+										$ligne_NOTANET=$INE[$m]."|".sprintf("%03d",$j);
 										//$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($moy_NOTANET[$j])."|";
 
 										$note_notanet="";

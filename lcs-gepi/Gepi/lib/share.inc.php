@@ -1,12 +1,10 @@
 <?php
 /*
- * $Id: share.inc.php 6372 2011-01-19 09:53:19Z tbelliard $
+ * $Id: share.inc.php 6858 2011-05-02 14:41:07Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
 
-
-//function generate_token($login='') {
 function generate_token() {
     if (!isset($_SESSION["gepi_alea"])) {
 		$length = rand(35, 45);
@@ -26,7 +24,7 @@ function generate_token() {
 				fclose($f);
 			}
 		}
-	}
+    }
 }
 
 function add_token_field($avec_id=false) {
@@ -48,6 +46,10 @@ function add_token_in_url($html_chars = true) {
 	else {
 		return "&csrf_alea=".$_SESSION['gepi_alea'];
 	}
+}
+
+function add_token_in_js_func() {
+	return $_SESSION['gepi_alea'];
 }
 
 function check_token($redirection=true) {
@@ -160,7 +162,6 @@ function action_alea_invalide($envoyer_mail=true) {
 		$f=fopen("$csrf_log_chemin/csrf_".$_SESSION['login'].".log","a+");
 		fwrite($f,"Alerte CSRF ".strftime("%a %d/%m/%Y %H:%M:%S")." avec\n");
 		fwrite($f,"\$_SESSION['gepi_alea']=".$_SESSION['gepi_alea']."\n");
-		fwrite($f,"session_id()=".session_id()."\n");
 		fwrite($f,$details."\n");
 		fwrite($f,"================================================\n");
 		fclose($f);
@@ -171,15 +172,28 @@ function action_alea_invalide($envoyer_mail=true) {
  * Envoi de mail
  *
  */
-function envoi_mail($sujet, $message,$destinataire) {
+function envoi_mail($sujet, $message, $destinataire, $ajout_headers='') {
+
 	$gepiPrefixeSujetMail=getSettingValue("gepiPrefixeSujetMail") ? getSettingValue("gepiPrefixeSujetMail") : "";
+
 	if($gepiPrefixeSujetMail!='') {$gepiPrefixeSujetMail.=" ";}
+
+	if($ajout_headers!='') {$ajout_headers="\r\n".$ajout_headers;}
+
+  $subject = $gepiPrefixeSujetMail."GEPI : $sujet";
+  $subject = "=?ISO-8859-1?B?".base64_encode($subject)."?=\r\n";
+  
+  $headers = "X-Mailer: PHP/" . phpversion()."\r\n";
+  $headers .= "MIME-Version: 1.0\r\n";
+  $headers .= "Content-type: text/plain; charset=iso-8859-1\r\n";
+  $headers .= "From: Mail automatique Gepi <ne-pas-repondre@".$_SERVER['SERVER_NAME'].">\r\n";
+  $headers .= $ajout_headers;
 
 	// On envoie le mail
 	$envoi = mail($destinataire,
-		$gepiPrefixeSujetMail."GEPI : $sujet",
+		$subject,
 		$message,
-	"From: Mail automatique Gepi\r\n"."X-Mailer: PHP/" . phpversion());
+	  $headers);
 }
 
 /**
@@ -196,7 +210,7 @@ function verif_mot_de_passe($password,$flag) {
 	global $char_spec;
 	if ($flag == 1) {
 		//if(ereg("(^[a-zA-Z]*$)|(^[0-9]*$)", $password)) {
-		if(my_ereg("(^[a-zA-Z]*$)|(^[0-9]*$)", $password)) {
+		if(preg_match("/(^[a-zA-Z]*$)|(^[0-9]*$)/", $password)) {
 			return false;
 		}
 		elseif(preg_match("/^[[:alnum:]\W]{".getSettingValue("longmin_pwd").",}$/", $password) and preg_match("/[\W]+/", $password) and preg_match("/[0-9]+/", $password)) {
@@ -208,7 +222,7 @@ function verif_mot_de_passe($password,$flag) {
 	}
 	else {
 		//if(ereg("(^[a-zA-Z]*$)|(^[0-9]*$)", $password)) {
-		if(my_ereg("(^[a-zA-Z]*$)|(^[0-9]*$)", $password)) {
+		if(preg_match("/(^[a-zA-Z]*$)|(^[0-9]*$)/", $password)) {
 			return false;
 		}
 		elseif (strlen($password) < getSettingValue("longmin_pwd")) {
@@ -314,49 +328,48 @@ function generate_unique_login($_nom, $_prenom, $_mode) {
     if ($_mode == "name") {
             $temp1 = $_nom;
             //$temp1 = strtoupper($temp1);
-            $temp1 = my_ereg_replace(" ","", $temp1);
-            $temp1 = my_ereg_replace("-","_", $temp1);
-            $temp1 = my_ereg_replace("'","", $temp1);
+            $temp1 = preg_replace("/ /","", $temp1);
+            $temp1 = preg_replace("/-/","_", $temp1);
+            $temp1 = preg_replace("/'/","", $temp1);
             //$temp1 = substr($temp1,0,8);
         } elseif ($_mode == "name8") {
             $temp1 = $_nom;
             //$temp1 = strtoupper($temp1);
-            $temp1 = my_ereg_replace(" ","", $temp1);
-            $temp1 = my_ereg_replace("-","_", $temp1);
-            $temp1 = my_ereg_replace("'","", $temp1);
+            $temp1 = preg_replace("/ /","", $temp1);
+            $temp1 = preg_replace("/-/","_", $temp1);
+            $temp1 = preg_replace("/'/","", $temp1);
             $temp1 = substr($temp1,0,8);
         } elseif ($_mode == "fname8") {
 			if($_prenom=='') {return false;}
             $temp1 = $_prenom{0} . $_nom;
             //$temp1 = strtoupper($temp1);
-            $temp1 = my_ereg_replace(" ","", $temp1);
-            $temp1 = my_ereg_replace("-","_", $temp1);
-            $temp1 = my_ereg_replace("'","", $temp1);
+            $temp1 = preg_replace("/ /","", $temp1);
+            $temp1 = preg_replace("/-/","_", $temp1);
+            $temp1 = preg_replace("/'/","", $temp1);
             $temp1 = substr($temp1,0,8);
         } elseif ($_mode == "fname19") {
 			if($_prenom=='') {return false;}
             $temp1 = $_prenom{0} . $_nom;
             //$temp1 = strtoupper($temp1);
-            $temp1 = my_ereg_replace(" ","", $temp1);
-            $temp1 = my_ereg_replace("-","_", $temp1);
-            $temp1 = my_ereg_replace("'","", $temp1);
+            $temp1 = preg_replace("/ /","", $temp1);
+            $temp1 = preg_replace("/-/","_", $temp1);
+            $temp1 = preg_replace("/'/","", $temp1);
             $temp1 = substr($temp1,0,19);
         } elseif ($_mode == "firstdotname") {
 			if($_prenom=='') {return false;}
             $temp1 = $_prenom . "." . $_nom;
             //$temp1 = strtoupper($temp1);
 
-            $temp1 = my_ereg_replace(" ","", $temp1);
-            $temp1 = my_ereg_replace("-","_", $temp1);
-            $temp1 = my_ereg_replace("'","", $temp1);
+            $temp1 = preg_replace("/ /","", $temp1);
+            $temp1 = preg_replace("/-/","_", $temp1);
+            $temp1 = preg_replace("/'/","", $temp1);
             //$temp1 = substr($temp1,0,19);
         } elseif ($_mode == "firstdotname19") {
 			if($_prenom=='') {return false;}
             $temp1 = $_prenom . "." . $_nom;
             //$temp1 = strtoupper($temp1);
-            $temp1 = my_ereg_replace(" ","", $temp1);
-            //$temp1 = my_ereg_replace("-","_", $temp1);
-            $temp1 = my_ereg_replace("'","", $temp1);
+            $temp1 = preg_replace("/ /","", $temp1);
+            $temp1 = preg_replace("/'/","", $temp1);
             $temp1 = substr($temp1,0,19);
         } elseif ($_mode == "namef8") {
 			if($_prenom=='') {return false;}
@@ -364,9 +377,9 @@ function generate_unique_login($_nom, $_prenom, $_mode) {
 			//echo "\$_prenom=$_prenom<br />";
             $temp1 =  substr($_nom,0,7) . $_prenom{0};
             //$temp1 = strtoupper($temp1);
-            $temp1 = my_ereg_replace(" ","", $temp1);
-            $temp1 = my_ereg_replace("-","_", $temp1);
-            $temp1 = my_ereg_replace("'","", $temp1);
+            $temp1 = preg_replace("/ /","", $temp1);
+            $temp1 = preg_replace("/-/","_", $temp1);
+            $temp1 = preg_replace("/'/","", $temp1);
             //$temp1 = substr($temp1,0,8);
         } else {
         	return false;
@@ -816,6 +829,10 @@ function mise_a_jour_moyennes_conteneurs($_current_group, $periode_num,$id_racin
 // Liste des sous-conteneur d'un conteneur
 //
 function sous_conteneurs($id_conteneur,&$nb_sous_cont,&$nom_sous_cont,&$coef_sous_cont,&$id_sous_cont,&$display_bulletin_sous_cont,$type) {
+	fdebug("===================================\n");
+	fdebug("LANCEMENT DE sous_conteneurs() SUR\n");
+	fdebug("id_conteneur=$id_conteneur avec type=$type\n");
+
     $query_sous_cont = mysql_query("SELECT * FROM cn_conteneurs WHERE (parent ='$id_conteneur' and id!='$id_conteneur') order by nom_court");
     $nb = mysql_num_rows($query_sous_cont);
     $i=0;
@@ -831,32 +848,25 @@ function sous_conteneurs($id_conteneur,&$nb_sous_cont,&$nom_sous_cont,&$coef_sou
         }
         $i++;
     }
-
 }
 
 function fdebug($texte){
-	//global $login, $id_racine;
-
 	// Passer la variable à "y" pour activer le remplissage du fichier de debug pour calcule_moyenne()
 	$local_debug="n";
-	//if(($login=='RUQUIER_S')&&($id_racine=='2916')) {
-	//if($login=='RUQUIER_S') {
-		if($local_debug=="y") {
-			$fich=fopen("/tmp/calcule_moyenne.txt","a+");
-			fwrite($fich,$texte);
-			fclose($fich);
-		}
-	//}
+	if($local_debug=="y") {
+		$fich=fopen("/tmp/calcule_moyenne.txt","a+");
+		fwrite($fich,$texte);
+		fclose($fich);
+	}
 }
 
 //
 // Calcul de la moyenne d'un élève
 //
 function calcule_moyenne($login, $id_racine, $id_conteneur) {
-	//global $login;
-
 	fdebug("===================================\n");
-	fdebug("$login: $id_racine - $id_conteneur\n");
+	fdebug("LANCEMENT DE calcule_moyenne SUR\n");
+	fdebug("login=$login: id_racine=$id_racine - id_conteneur=$id_conteneur\n");
 
     $total_point = 0;
     $somme_coef = 0;
@@ -872,6 +882,7 @@ function calcule_moyenne($login, $id_racine, $id_conteneur) {
     $mode =  mysql_result($appel_conteneur, 0, 'mode');
     $ponderation = mysql_result($appel_conteneur, 0, 'ponderation');
 
+	fdebug("Conteneur n°$id_conteneur\n");
 	fdebug("\$arrondir=$arrondir\n");
 	fdebug("\$mode=$mode\n");
 	fdebug("\$ponderation=$ponderation\n");
@@ -913,22 +924,30 @@ function calcule_moyenne($login, $id_racine, $id_conteneur) {
     }
 
 
+
     //
     // Prise en compte de la pondération
     // Calcul de l'indice du coefficient à pondérer
     //
     if ($ponderation != 0) {
-        $appel_dev = mysql_query("SELECT * FROM cn_devoirs WHERE id_conteneur='$id_conteneur' ORDER BY date,id");
+        $sql="SELECT * FROM cn_devoirs WHERE id_conteneur='$id_conteneur' ORDER BY date,id";
+		fdebug("$sql\n");
+        $appel_dev = mysql_query($sql);
         $nb_dev  = mysql_num_rows($appel_dev);
+		fdebug("\$nb_dev=$nb_dev\n");
         $max = 0;
         $indice_pond = 0;
         $k = 0;
         while ($k < $nb_dev) {
             $id_dev = mysql_result($appel_dev, $k, 'id');
             $coef[$k] = mysql_result($appel_dev, $k, 'coef');
-            $note_query = mysql_query("SELECT * FROM cn_notes_devoirs WHERE (login='$login' AND id_devoir='$id_dev')");
+			fdebug("\$id_dev=$id_dev : \$coef[$k]=$coef[$k]\n");
+            $sql="SELECT * FROM cn_notes_devoirs WHERE (login='$login' AND id_devoir='$id_dev')";
+			fdebug("$sql\n");
+            $note_query = mysql_query($sql);
             $statut = @mysql_result($note_query, 0, "statut");
             $note = @mysql_result($note_query, 0, "note");
+			fdebug("\$nb_dev=$nb_dev\n");
             if (($statut == '') and ($note!='')) {
                 if (($note > $max) or (($note == $max) and ($coef[$k] > $coef[$indice_pond]))) {
                     $max = $note;
@@ -957,7 +976,9 @@ function calcule_moyenne($login, $id_racine, $id_conteneur) {
 		//=========================
 		// MODIF: boireaus 20080202
         //$appel_dev = mysql_query("SELECT * FROM cn_devoirs WHERE id_conteneur='$id_cont[$j]'");
-        $appel_dev = mysql_query("SELECT * FROM cn_devoirs WHERE id_conteneur='$id_cont[$j]' ORDER BY date,id");
+        $sql="SELECT * FROM cn_devoirs WHERE id_conteneur='$id_cont[$j]' ORDER BY date,id";
+		fdebug("$sql\n");
+        $appel_dev = mysql_query($sql);
 		//=========================
         $nb_dev  = mysql_num_rows($appel_dev);
         $k = 0;
@@ -1004,8 +1025,13 @@ function calcule_moyenne($login, $id_racine, $id_conteneur) {
 
                 if ($facultatif[$k] == 'O') {
                     // le devoir n'est pas facultatif (Obligatoire) et entre systématiquement dans le calcul de la moyenne si le coef est différent de zéro
+					fdebug("\$total_point = $total_point + $coef[$k] * $note = ");
                     $total_point = $total_point + $coef[$k]*$note;
+					fdebug("$total_point\n");
+
+					fdebug("\$somme_coef = $somme_coef + $coef[$k] = ");
                     $somme_coef = $somme_coef + $coef[$k];
+					fdebug("$somme_coef\n");
                 } else if ($facultatif[$k] == 'B') {
                     //le devoir est facultatif comme un bonus : seuls les points supérieurs à 10 sont pris en compte dans le calcul de la moyenne.
                     if ($note > ($note_sur[$k]/2)) {
@@ -1051,16 +1077,32 @@ function calcule_moyenne($login, $id_racine, $id_conteneur) {
     // Prise en comptes des sous-conteneurs si mode=2
     //
     if ($mode == 2) {
+		fdebug("\$mode=$mode\n");
         $j=0;
         while ($j < $nb_sous_cont) {
-            $appel_cont = mysql_query("SELECT coef FROM cn_conteneurs WHERE id='$id_sous_cont[$j]'");
+            $sql="SELECT coef FROM cn_conteneurs WHERE id='$id_sous_cont[$j]'";
+			fdebug("$sql\n");
+            $appel_cont = mysql_query($sql);
             $coefficient = mysql_result($appel_cont, 0, 'coef');
-            $moyenne_query = mysql_query("SELECT * FROM cn_notes_conteneurs WHERE (login='$login' AND id_conteneur='$id_sous_cont[$j]')");
+			fdebug("\$coefficient=$coefficient\n");
+
+            $sql="SELECT * FROM cn_notes_conteneurs WHERE (login='$login' AND id_conteneur='$id_sous_cont[$j]')";
+			fdebug("$sql\n");
+            $moyenne_query = mysql_query($sql);
             $statut_moy = @mysql_result($moyenne_query, 0, "statut");
+			fdebug("\$statut_moy=$statut_moy\n");
+
             if ($statut_moy == 'y') {
                 $moy = @mysql_result($moyenne_query, 0, "note");
+				fdebug("\$moy=$moy\n");
+
+				fdebug("\$somme_coef = $somme_coef + $coefficient = ");
                 $somme_coef = $somme_coef + $coefficient;
+				fdebug("$somme_coef\n");
+
+				fdebug("\$total_point = $total_point + $coefficient * $moy = ");
                 $total_point = $total_point + $coefficient*$moy;
+				fdebug("$total_point\n");
             }
             $j++;
         }
@@ -1075,8 +1117,9 @@ function calcule_moyenne($login, $id_racine, $id_conteneur) {
 	// Il faudrait considérer le cas vicieux: présence de note à bonus et pas d'autre note...
     if ($somme_coef != 0) {
 	//=========================
+		fdebug("\$moyenne= = $total_point / $somme_coef = ");
         $moyenne = $total_point/$somme_coef;
-		fdebug("\$moyenne=".$moyenne."\n");
+		fdebug($moyenne."\n");
         //
         // si un des devoirs a l'option "N", on prend la meilleure moyenne :
         //
@@ -1182,6 +1225,7 @@ Moyenne avant arrondi: $moyenne<br />
 // Affichage de la liste des conteneurs
 //
 function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_periode) {
+	global $tabdiv_infobulle;
 	global $gepiClosedPeriodLabel;
 	global $id_groupe;
 	global $eff_groupe;
@@ -1255,8 +1299,28 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 					echo ")</span>";
 
 					// Pour détecter une anomalie:
-					// $sql="SELECT * FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num' AND jec.login not in (select login from j_eleves_groupes where id_groupe='$id_groupe' and periode='$periode_num');";
+					 $sql="SELECT * FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num' AND jec.login not in (select login from j_eleves_groupes where id_groupe='$id_groupe' and periode='$periode_num');";
 					//echo "$sql<br />"; // Décommenter et exécuter dans une console mysql ou dans phpMyAdmin
+					$test_anomalie=mysql_query($sql);
+					if(mysql_num_rows($test_anomalie)>0) {
+						$titre_infobulle="Note pour un fantôme";
+						$texte_infobulle="Une ou des notes existent pour un ou des élèves qui ne sont plus inscrits dans cet enseignement&nbsp;:<br />";
+						$cpt_ele_anomalie=0;
+						while($lig_anomalie=mysql_fetch_object($test_anomalie)) {
+							if($cpt_ele_anomalie>0) {$texte_infobulle.=", ";}
+							$texte_infobulle.=get_nom_prenom_eleve($lig_anomalie->login,'avec_classe')."&nbsp;(<i>";
+							if($lig_anomalie->statut=='') {$texte_infobulle.=$lig_anomalie->note;}
+							elseif($lig_anomalie->statut=='v') {$texte_infobulle.="_";}
+							else {$texte_infobulle.=$lig_anomalie->statut;}
+							$texte_infobulle.="</i>)";
+							$cpt_ele_anomalie++;
+						}
+						$texte_infobulle.="<br />";
+						$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."'>ici</a> pour supprimer les notes associées?";
+						$tabdiv_infobulle[]=creer_div_infobulle('anomalie_'.$id_dev,$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
+
+						echo " <a href=\"#\" onclick=\"afficher_div('anomalie_$id_dev','y',100,100);return false;\"><img src='../images/icons/flag.png' width='17' height='18' /></a>";
+					}
 
 					//echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a> - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 					echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a>";
@@ -1267,7 +1331,6 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 					if($display_parents==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relevé de notes' alt='Evaluation visible sur le relevé de notes' />";}
 					else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes' alt='Evaluation non visible sur le relevé de notes' />\n";}
 					echo "</i>)";
-
 					//echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 					echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 					echo "</li>\n";
@@ -1332,6 +1395,7 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 
 							//$sql="SELECT 1=1 FROM cn_notes_devoirs WHERE id_devoir='$id_dev' AND statut!='-' AND statut!='v';";
 							$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='-' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
+							//echo "$sql<br />";
 							$res_eff_dev=mysql_query($sql);
 							$eff_dev=mysql_num_rows($res_eff_dev);
 							echo " <span title=\"Effectif des notes saisies/effectif total de l'enseignement\" style='font-size:small;";
@@ -1339,6 +1403,30 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 							echo "'>($eff_dev";
 							if(isset($eff_groupe)) {echo "/$eff_groupe";}
 							echo ")</span>";
+
+							// Pour détecter une anomalie:
+							$sql="SELECT * FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num' AND jec.login not in (select login from j_eleves_groupes where id_groupe='$id_groupe' and periode='$periode_num');";
+							//echo "$sql<br />"; // Décommenter et exécuter dans une console mysql ou dans phpMyAdmin
+							$test_anomalie=mysql_query($sql);
+							if(mysql_num_rows($test_anomalie)>0) {
+								$titre_infobulle="Note pour un fantôme";
+								$texte_infobulle="Une ou des notes existent pour un ou des élèves qui ne sont plus inscrits dans cet enseignement&nbsp;:<br />";
+								$cpt_ele_anomalie=0;
+								while($lig_anomalie=mysql_fetch_object($test_anomalie)) {
+									if($cpt_ele_anomalie>0) {$texte_infobulle.=", ";}
+									$texte_infobulle.=get_nom_prenom_eleve($lig_anomalie->login,'avec_classe')."&nbsp;(<i>";
+									if($lig_anomalie->statut=='') {$texte_infobulle.=$lig_anomalie->note;}
+									elseif($lig_anomalie->statut=='v') {$texte_infobulle.="_";}
+									else {$texte_infobulle.=$lig_anomalie->statut;}
+									$texte_infobulle.="</i>)";
+									$cpt_ele_anomalie++;
+								}
+								$texte_infobulle.="<br />";
+								$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."'>ici</a> pour supprimer les notes associées?";
+								$tabdiv_infobulle[]=creer_div_infobulle('anomalie_'.$id_dev,$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
+		
+								echo " <a href=\"#\" onclick=\"afficher_div('anomalie_$id_dev','y',100,100);return false;\"><img src='../images/icons/flag.png' width='17' height='18' /></a>";
+							}
 
 							//echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a> - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 							echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a>";
@@ -1630,7 +1718,7 @@ function affiche_tableau($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bor
 	//echo "\$num_debut_colonnes_matieres=$num_debut_colonnes_matieres<br />";
 	//echo "\$coloriser_resultats=$coloriser_resultats<br />";
 
-    echo "<table border=\"$bord\" cellspacing=\"0\" width=\"$larg_tab\" cellpadding=\"1\" summary=\"Tableau\">\n";
+    echo "<table border=\"$bord\" class='boireaus' cellspacing=\"0\" width=\"$larg_tab\" cellpadding=\"1\" summary=\"Tableau\">\n";
     echo "<tr>\n";
     $j = 1;
     while($j < $nb_col+1) {
@@ -1642,21 +1730,26 @@ function affiche_tableau($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bor
     $i = "0";
     $bg_color = "";
     $flag = "1";
+    $alt=1;
     while($i < $nombre_lignes) {
-        if ($couleur_alterne) {
+        if((isset($couleur_alterne))&&($couleur_alterne=='y')) {
             if ($flag==1) {$bg_color = "bgcolor=\"#C0C0C0\"";} else {$bg_color = "     ";}
         }
 
-        echo "<tr>\n";
+	    $alt=$alt*(-1);
+        echo "<tr class='";
+		if((isset($couleur_alterne))&&($couleur_alterne=='y')) {echo "lig$alt ";}
+		echo "white_hover'>\n";
         $j = 1;
         while($j < $nb_col+1) {
             if ((($j == 1) and ($col1_centre == 0)) or (($j != 1) and ($col_centre == 0))) {
 
-				echo "<td class='small' ".$bg_color;
+				echo "<td class='small' ";
+				//echo $bg_color;
 				if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
-					if(strlen(my_ereg_replace('[0-9.,]','',$col[$j][$i]))==0) {
+					if(strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
 						for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
-							if(my_ereg_replace(',','.',$col[$j][$i])<=my_ereg_replace(',','.',$vtn_borne_couleur[$loop])) {
+							if(preg_replace('/,/','.',$col[$j][$i])<=preg_replace('/,/','.',$vtn_borne_couleur[$loop])) {
 								echo " style='";
 								if($vtn_couleur_texte[$loop]!='') {echo "color:$vtn_couleur_texte[$loop]; ";}
 								if($vtn_couleur_cellule[$loop]!='') {echo "background-color:$vtn_couleur_cellule[$loop]; ";}
@@ -1669,11 +1762,12 @@ function affiche_tableau($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bor
 				echo ">{$col[$j][$i]}</td>\n";
 
             } else {
-				echo "<td align=\"center\" class='small' ".$bg_color;
+				echo "<td align=\"center\" class='small' ";
+				//echo $bg_color;
 				if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
-					if(strlen(my_ereg_replace('[0-9.,]','',$col[$j][$i]))==0) {
+					if(strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
 						for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
-							if(my_ereg_replace(',','.',$col[$j][$i])<=my_ereg_replace(',','.',$vtn_borne_couleur[$loop])) {
+							if(preg_replace('/,/','.',$col[$j][$i])<=preg_replace('/,/','.',$vtn_borne_couleur[$loop])) {
 								echo " style='";
 								if($vtn_couleur_texte[$loop]!='') {echo "color:$vtn_couleur_texte[$loop]; ";}
 								if($vtn_couleur_cellule[$loop]!='') {echo "background-color:$vtn_couleur_cellule[$loop]; ";}
@@ -1870,35 +1964,19 @@ function affiche_date_naissance($date) {
 function test_maj() {
     global $gepiVersion, $gepiRcVersion, $gepiBetaVersion;
     $version_old = getSettingValue("version");
-    $version_new = $gepiVersion;
     $versionRc_old = getSettingValue("versionRc");
     $versionBeta_old = getSettingValue("versionBeta");
-    
-    # On vérifie que les numéros de version sont bien sur le même
-    # nombre de numéros. Si ce n'est pas le cas, alors on complète
-    # avec des zéros pour être sûrs que la comparaison est fiable.
-    if (mb_strlen($version_old) != mb_strlen($version_new)) {
-      while (mb_strlen($version_old) < mb_strlen($version_new)) {
-        $version_old = $version_old.'.0';        
-      }
-      while (mb_strlen($version_new) < mb_strlen($version_old)) {
-        $version_new = $version_new.'.0';
-      }
-    }
-    
-    $version_new = str_replace('.','',$version_new);
-    $version_old = str_replace('.','',$version_old);
 
    if ($version_old =='') {
        return true;
        die();
    }
-   if (intval($version_new) > intval($version_old)) {
+   if ($gepiVersion > $version_old) {
         // On a une nouvelle version stable
        return true;
        die();
    }
-   if (($version_new == $version_old) and ($versionRc_old!='')) {
+   if (($gepiVersion == $version_old) and ($versionRc_old!='')) {
         // On avait une RC
        if (($gepiRcVersion > $versionRc_old) or ($gepiRcVersion=='')) {
             // Soit on a une nouvelle RC, soit on est passé de RC à stable
@@ -1906,7 +1984,7 @@ function test_maj() {
            die();
        }
    }
-   if (($version_new == $version_old) and ($versionBeta_old!='')) {
+   if (($gepiVersion == $version_old) and ($versionBeta_old!='')) {
         // On avait une Beta
        if (($gepiBetaVersion > $versionBeta_old) or ($gepiBetaVersion=='')) {
             // Soit on a une nouvelle Beta, soit on est passé à une RC ou une stable
@@ -2478,11 +2556,20 @@ function tentative_intrusion($_niveau, $_description) {
 		$gepiPrefixeSujetMail=getSettingValue("gepiPrefixeSujetMail") ? getSettingValue("gepiPrefixeSujetMail") : "";
 		if($gepiPrefixeSujetMail!='') {$gepiPrefixeSujetMail.=" ";}
 
+    $subject = $gepiPrefixeSujetMail."GEPI : Alerte sécurité -- Tentative d'intrusion";
+    $subject = "=?ISO-8859-1?B?".base64_encode($subject)."?=\r\n";
+
+    
+    $headers = "X-Mailer: PHP/" . phpversion()."\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-type: text/plain; charset=iso-8859-1\r\n";
+    $headers .= "From: Mail automatique Gepi <ne-pas-repondre@".$_SERVER['SERVER_NAME'].">\r\n";
+
 		// On envoie le mail
 		$envoi = mail(getSettingValue("gepiAdminAdress"),
-		    $gepiPrefixeSujetMail."GEPI : Alerte sécurité -- Tentative d'intrusion",
+		    $subject,
 		    $message,
-		   "From: Mail automatique Gepi\r\n"."X-Mailer: PHP/" . phpversion());
+        $headers);
 	}
 }
 
@@ -2671,7 +2758,7 @@ function get_user_temp_directory(){
 		$lig_temp_dir=mysql_fetch_object($res_temp_dir);
 		$dirname=$lig_temp_dir->temp_dir;
 
-		if(($dirname!="")&&(strlen(my_ereg_replace("[A-Za-z0-9_.]","",$dirname))==0)) {
+		if(($dirname!="")&&(strlen(preg_replace("/[A-Za-z0-9_.]/","",$dirname))==0)) {
 			if(file_exists("temp/".$dirname)){
 				return $dirname;
 			}
@@ -2721,7 +2808,7 @@ function volume_dir($dir){
 
 	$handle = @opendir($dir);
 	while ($file = @readdir ($handle)){
-		if (my_eregi("^\.{1,2}$",$file))
+		if (preg_match("/^\.{1,2}$/i",$file))
 			continue;
 		//if(is_dir($dir.$file)){
 		if(is_dir("$dir/$file")){
@@ -2743,7 +2830,7 @@ function vider_dir($dir){
 	$statut=true;
 	$handle = @opendir($dir);
 	while ($file = @readdir ($handle)){
-		if (my_eregi("^\.{1,2}$",$file)){
+		if (preg_match("/^\.{1,2}$/i",$file)){
 			continue;
 		}
 		//if(is_dir($dir.$file)){
@@ -2766,6 +2853,21 @@ function vider_dir($dir){
 
 	return $statut;
 }
+
+
+/*
+ * Cette méthode prend une chaîne de caractères et s'assure qu'elle est bien
+ * retournée en ISO-8859-1.
+ */
+function ensure_iso8859_1($str) {
+	$encoding = mb_detect_encoding($str);
+	if ($encoding == 'ISO-8859-1') {
+		return $str;
+	} else {
+		return mb_convert_encoding($str, 'ISO-8859-1');
+	}
+}
+
 
 function caract_ooo($chaine){
 	if(function_exists('utf8_encode')){
@@ -2800,21 +2902,29 @@ function caract_ooo($chaine){
 	return $retour;
 }
 
-function remplace_accents($chaine,$mode){
-	//$retour=strtr(my_ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$chaine"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõ¨ûüùúýÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz");
+//================================================
+// Correspondances de caractères accentués/désaccentués
+$liste_caracteres_accentues   ="ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõø¨ûüùúýÿ¸";
+$liste_caracteres_desaccentues="AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz";
+//================================================
+
+function remplace_accents($chaine,$mode=''){
+	global $liste_caracteres_accentues, $liste_caracteres_desaccentues;
+
 	if($mode == 'all'){
 		// On remplace espaces et apostrophes par des '_' et les caractères accentués par leurs équivalents non accentués.
-		$retour=strtr(my_ereg_replace("Æ","AE",my_ereg_replace("æ","ae",my_ereg_replace("¼","OE",my_ereg_replace("½","oe","$chaine"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõ¨ûüùúýÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz");
+		$retour=strtr(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe","$chaine"))))," '$liste_caracteres_accentues","__$liste_caracteres_desaccentues");
 	}
 	elseif($mode == 'all_nospace'){
 		// On remplace apostrophes par des '_' et les caractères accentués par leurs équivalents non accentués.
-		$retour1 = strtr(my_ereg_replace("Æ","AE",my_ereg_replace("æ","ae",ereg_replace("¼","OE",my_ereg_replace("½","oe","$chaine")))),"'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõ¨ûüùúýÿ¸"," AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz");
+		//$retour1 = strtr(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe","$chaine")))),"'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõ¨ûüùúýÿ¸"," AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz");
+		$retour1=strtr(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe","$chaine")))),"'$liste_caracteres_accentues"," $liste_caracteres_desaccentues");
 		// On enlève aussi les guillemets
-		$retour = my_ereg_replace('"', '', $retour1);
+		$retour = preg_replace('/"/', '', $retour1);
 	}
-	else{
+	else {
 		// On remplace les caractères accentués par leurs équivalents non accentués.
-		$retour=strtr(my_ereg_replace("Æ","AE",my_ereg_replace("æ","ae",my_ereg_replace("¼","OE",my_ereg_replace("½","oe","$chaine")))),"ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõ¨ûüùúýÿ¸","AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz");
+		$retour=strtr(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe","$chaine")))),"$liste_caracteres_accentues","$liste_caracteres_desaccentues");
 	}
 	return $retour;
 }
@@ -2860,7 +2970,7 @@ function get_class_from_ele_login($ele_login){
 			$tab_classe['liste'].=$lig_tmp->classe;
 
 			if($a>0) {$tab_classe['liste_nbsp'].=", ";}
-			$tab_classe['liste_nbsp'].=my_ereg_replace(" ","&nbsp;",$lig_tmp->classe);
+			$tab_classe['liste_nbsp'].=preg_replace("/ /","&nbsp;",$lig_tmp->classe);
 
 			$tab_classe['id'.$a] = $lig_tmp->id_classe;
 			$a = $a++;
@@ -2882,7 +2992,7 @@ function get_noms_classes_from_ele_login($ele_login){
 	return $tab_classe;
 }
 
-function get_enfants_from_resp_login($resp_login){
+function get_enfants_from_resp_login($resp_login,$mode='simple'){
 	$sql="SELECT e.nom,e.prenom,e.login FROM eleves e,
 											responsables2 r,
 											resp_pers rp
@@ -2897,7 +3007,19 @@ function get_enfants_from_resp_login($resp_login){
 	if(mysql_num_rows($res_ele)>0){
 		while($lig_tmp=mysql_fetch_object($res_ele)){
 			$tab_ele[]=$lig_tmp->login;
-			$tab_ele[]=ucfirst(strtolower($lig_tmp->prenom))." ".strtoupper($lig_tmp->nom);
+			if($mode=='avec_classe') {
+				$tmp_chaine_classes="";
+
+				$tmp_tab_clas=get_class_from_ele_login($lig_tmp->login);
+				if(isset($tmp_tab_clas['liste'])) {
+					$tmp_chaine_classes=" (".$tmp_tab_clas['liste'].")";
+				}
+
+				$tab_ele[]=ucfirst(strtolower($lig_tmp->prenom))." ".strtoupper($lig_tmp->nom).$tmp_chaine_classes;
+			}
+			else {
+				$tab_ele[]=ucfirst(strtolower($lig_tmp->prenom))." ".strtoupper($lig_tmp->nom);
+			}
 		}
 	}
 	return $tab_ele;
@@ -2909,7 +3031,7 @@ function liens_class_from_ele_login($ele_login){
 	if(isset($tab_classe)){
 		if(count($tab_classe)>0){
 			foreach ($tab_classe as $key => $value){
-				if(strlen(my_ereg_replace("[0-9]","",$key))==0) {
+				if(strlen(preg_replace("/[0-9]/","",$key))==0) {
 					if($_SESSION['statut']=='administrateur') {
 						$chaine.=", <a href='../classes/classes_const.php?id_classe=$key'>$value</a>";
 					}
@@ -3045,6 +3167,20 @@ function getPref($login,$item,$default){
 	}
 }
 
+function savePref($login,$item,$valeur){
+	$sql="SELECT value FROM preferences WHERE login='$login' AND name='$item'";
+	$res_prefs=mysql_query($sql);
+
+	if(mysql_num_rows($res_prefs)>0){
+		$sql="UPDATE preferences SET value='$valeur' WHERE login='$login' AND name='$item';";
+	}
+	else{
+		$sql="INSERT INTO preferences SET login='$login', name='$item', value='$valeur';";
+	}
+	$res=mysql_query($sql);
+	if($res) {return true;} else {return false;}
+}
+
 function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hauteur,$drag,$bouton_close,$survol_close,$overflow,$zindex_infobulle=1){
 	/*
 		$id:			Identifiant du DIV conteneur
@@ -3148,7 +3284,11 @@ function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hau
 
 
 	// Partie texte:
-	$div.="<div";
+	//$div.="<div";
+	//==================
+	// 20110113
+	$div.="<div id='".$id."_contenu_corps'";
+	//==================
 	if($survol_close=="y"){
 		// On referme le DIV lorsque la souris quitte la zone de texte.
 		$div.=" onmouseout=\"cacher_div('$id');\"";
@@ -3192,6 +3332,8 @@ function debug_var() {
 
 	$debug_var_count['POST']=0;
 	$debug_var_count['GET']=0;
+
+	$debug_var_count['COOKIE']=0;
 
 	// Fonction destinée à afficher les variables transmises d'une page à l'autre: GET, POST et SESSION
 	echo "<div style='border: 1px solid black; background-color: white; color: black;'>\n";
@@ -3402,6 +3544,37 @@ function debug_var() {
 	}
 	echo "</table>\n";
 
+	echo "</div>\n";
+	echo "</blockquote>\n";
+
+	echo "<p>Variables COOKIES: ";
+	if(count($_COOKIE)==0) {
+		echo "aucune";
+	}
+	else {
+		echo "(<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
+	}
+	echo "</p>\n";
+	echo "<blockquote>\n";
+	echo "<div id='container_debug_var_$cpt_debug'>\n";
+	$cpt_debug++;
+	echo "<table summary=\"Tableau de debug sur COOKIE\">";
+	foreach($_COOKIE as $get => $val){
+
+		echo "<tr><td valign='top'>\$_COOKIE['".$get."']=</td><td>".$val;
+
+		if(is_array($_COOKIE[$get])) {
+			tab_debug_var('COOKIE',$_COOKIE[$get],'$_COOKIE['.$get.']',$cpt_debug);
+
+			$cpt_debug++;
+		}
+		else {
+			$debug_var_count['COOKIE']++;
+		}
+
+		echo "</td></tr>\n";
+	}
+	echo "</table>\n";
 	echo "</div>\n";
 	echo "</blockquote>\n";
 
@@ -4004,13 +4177,17 @@ function mail_connexion() {
 			$message .= "(*) Vous ou une personne tentant d'usurper votre identité.\n";
 
 			// On envoie le mail
+			/*
 			// getSettingValue("gepiAdminAdress")
 			$envoi = mail($lig_user->email,
 				"GEPI : Connexion $date",
 				$message,
 			"From: Mail automatique Gepi\r\n"."X-Mailer: PHP/" . phpversion());
 			//fdebug_mail_connexion("\$message=$message\n====================\n");
-
+			*/
+			$destinataire=$lig_user->email;
+			$sujet="GEPI : Connexion $date";
+			envoi_mail($sujet, $message, $destinataire);
 		}
 	}
 }
@@ -4076,12 +4253,18 @@ function mail_alerte($sujet,$texte,$informer_admin='n') {
 		}
 
 		// On envoie le mail
+		/*
 		// getSettingValue("gepiAdminAdress")
 		$envoi = mail($lig_user->email,
 			"GEPI : $sujet $date",
 			$message,
 		"From: Mail automatique Gepi\r\n".$ajout."X-Mailer: PHP/" . phpversion());
 		//fdebug_mail_connexion("\$message=$message\n====================\n");
+		*/
+
+		$destinataire=$lig_user->email;
+		$sujet="GEPI : $sujet $date";
+		envoi_mail($sujet, $message, $destinataire, $ajout);
 
 	}
 }
@@ -4370,7 +4553,7 @@ function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 
 		if($supprimer_retours_a_la_ligne=="y") {
 			//$texte=str_replace('\n'," ",$texte);
-			$texte=trim(my_ereg_replace("\n"," ",$texte));
+			$texte=trim(preg_replace("/\n/"," ",$texte));
 		}
 
 		$chaine_longueur_ligne_courante="0";
@@ -4395,7 +4578,7 @@ function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 
 
 				//$tab2=preg_split("/[\s]+/",$tab[$i]); // Ca compterait les espaces, tabulations, \n et \r
-				$tab2=split(" ",$tab[$i]);
+				$tab2=explode(" ",$tab[$i]);
 				// Si on gère aussi les virgules et tirets, il y a une difficulté supplémentaire à gérer pour re-concaténer (normalement après une virgule, on doit avoir un espace)... donc on ne gère que les espaces
 
 				if($my_echo_debug==1) my_echo_debug("_____________________________________________\n");
@@ -4453,7 +4636,7 @@ function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 					if($supprimer_retours_a_la_ligne=="n") {
 						if($my_echo_debug==1) my_echo_debug("On découpe si nécessaire les retours à la ligne\n");
 						//$tab3=split("\n",$tab2[$j]);
-						$tab3=split("\n",$tab2[$j]);
+						$tab3=explode("\n",$tab2[$j]);
 						for($loop=0;$loop<count($tab3);$loop++) {if($my_echo_debug==1) my_echo_debug("   \$tab3[$loop]=\"$tab3[$loop]\"\n");}
 					}
 					else {
@@ -4656,7 +4839,7 @@ function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 			$pdf->SetFont('',$style_courant);
 
 			// On va supprimer les retours à la ligne
-			$texte=trim(my_ereg_replace("\n"," ",$texte));
+			$texte=trim(preg_replace("/\n/"," ",$texte));
 			if($my_echo_debug==1) my_echo_debug("\$texte=$texte\n");
 
 			// On supprime les balises
@@ -4821,14 +5004,14 @@ function cell_ajustee0($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 		unset($ligne);
 		$ligne=array();
 
-		$tab=split(" ",$texte);
+		$tab=explode(" ",$texte);
 		$cpt=0;
 		$i=0;
 		while(true) {
 			if(isset($ligne[$cpt])) {$ligne[$cpt].=" ";} else {$ligne[$cpt]="";}
 
-			if(my_ereg("\n",$tab[$i])) {
-				$tmp_tab=split("\n",$tab[$i]);
+			if(preg_match("/\n/",$tab[$i])) {
+				$tmp_tab=explode("\n",$tab[$i]);
 
 				for($k=0;$k<count($tmp_tab)-1;$k++) {
 					if(!isset($ligne[$cpt])) {$ligne[$cpt]="";}
@@ -4920,7 +5103,7 @@ function cell_ajustee0($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 			unset($ligne);
 			$ligne=array();
 
-			$tab=split(" ",trim(my_ereg_replace("\n"," ",$texte)));
+			$tab=explode(" ",trim(preg_replace("/\n/"," ",$texte)));
 			$cpt=0;
 			$i=0;
 			while(true) {
@@ -5022,7 +5205,7 @@ function cell_ajustee0($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$ha
 			unset($ligne);
 			$ligne=array();
 
-			$tab=split(" ",trim(my_ereg_replace("\n"," ",$texte)));
+			$tab=explode(" ",trim(preg_replace("/\n/"," ",$texte)));
 			$cpt=0;
 			$i=0;
 			while(true) {
@@ -5120,11 +5303,11 @@ function casse_mot($mot,$mode='maj') {
 			$tab2=explode("-",$tab[$i]);
 			for($j=0;$j<count($tab2);$j++) {
 				if($j>0) {$chaine.="-";}
-				if(strlen($mot)>1) {
-					$chaine.=strtr(strtoupper(substr($mot,0,1)),"äâàáåãéèëêòóôõöøìíîïùúûüýñçþÿæ½ðø","ÄÂÀÁÅÃÉÈËÊÒÓÔÕÖØÌÍÎÏÙÚÛÜÝÑÇÞÝÆ¼ÐØ").strtr(strtolower(substr($mot,1)),"ÄÂÀÁÅÃÉÈËÊÒÓÔÕÖØÌÍÎÏÙÚÛÜÝÑÇÞÝÆ¼ÐØ","äâàáåãéèëêòóôõöøìíîïùúûüýñçþÿæ½ðø");
+				if(strlen($tab2[$j])>1) {
+					$chaine.=strtr(strtoupper(substr($tab2[$j],0,1)),"äâàáåãéèëêòóôõöøìíîïùúûüýñçþÿæ½ðø","ÄÂÀÁÅÃÉÈËÊÒÓÔÕÖØÌÍÎÏÙÚÛÜÝÑÇÞÝÆ¼ÐØ").strtr(strtolower(substr($tab2[$j],1)),"ÄÂÀÁÅÃÉÈËÊÒÓÔÕÖØÌÍÎÏÙÚÛÜÝÑÇÞÝÆ¼ÐØ","äâàáåãéèëêòóôõöøìíîïùúûüýñçþÿæ½ðø");
 				}
 				else {
-					$chaine.=strtr(strtoupper($mot),"äâàáåãéèëêòóôõöøìíîïùúûüýñçþÿæ½ðø","ÄÂÀÁÅÃÉÈËÊÒÓÔÕÖØÌÍÎÏÙÚÛÜÝÑÇÞÝÆ¼ÐØ");
+					$chaine.=strtr(strtoupper($tab2[$j]),"äâàáåãéèëêòóôõöøìíîïùúûüýñçþÿæ½ðø","ÄÂÀÁÅÃÉÈËÊÒÓÔÕÖØÌÍÎÏÙÚÛÜÝÑÇÞÝÆ¼ÐØ");
 				}
 			}
 		}
@@ -5269,8 +5452,8 @@ function calcule_moy_mediane_quartiles($tab) {
 	for($i=0;$i<count($tab);$i++) {
 		//echo "\$tab[$i]=".$tab[$i]."<br />\n";
 		if(($tab[$i]!='')&&($tab[$i]!='-')&&($tab[$i]!='&nbsp;')&&($tab[$i]!='abs')&&($tab[$i]!='disp')) {
-			$tab2[]=my_ereg_replace(',','.',$tab[$i]);
-			$total+=my_ereg_replace(',','.',$tab[$i]);
+			$tab2[]=preg_replace('/,/','.',$tab[$i]);
+			$total+=preg_replace('/,/','.',$tab[$i]);
 		}
 	}
 
@@ -5362,7 +5545,7 @@ function get_commune($code_commune_insee,$mode){
 
 	if(strstr($code_commune_insee,'@')) {
 		// On a affaire à une commune étrangère
-		$tmp_tab=split('@',$code_commune_insee);
+		$tmp_tab=explode('@',$code_commune_insee);
 		$sql="SELECT * FROM pays WHERE code_pays='$tmp_tab[0]';";
 		//echo "$sql<br />";
 		$res_pays=mysql_query($sql);
@@ -5421,12 +5604,18 @@ function supprimer_numero($texte) {
 }
 
 
-function test_ecriture_dossier() {
+function test_ecriture_dossier($tab_restriction=array()) {
     global $gepiPath;
 
 	//$tab_dossiers_rw=array("documents","images","secure","photos","backup","temp","mod_ooo/mes_modele","mod_ooo/tmp","mod_notanet/OOo/tmp","lib/standalone/HTMLPurifier/DefinitionCache/Serializer");
 	//$tab_dossiers_rw=array("documents","images","photos","backup","temp","mod_ooo/mes_modele","mod_ooo/tmp","mod_notanet/OOo/tmp","lib/standalone/HTMLPurifier/DefinitionCache/Serializer");
-	$tab_dossiers_rw=array("artichow/cache","backup","documents","images","images/background","lib/standalone/HTMLPurifier/DefinitionCache/Serializer","mod_ooo/mes_modeles","mod_ooo/tmp","photos","temp");
+
+	if(count($tab_restriction)>0) {
+		$tab_dossiers_rw=$tab_restriction;
+	}
+	else {
+		$tab_dossiers_rw=array("artichow/cache","backup","documents","documents/archives","images","images/background","lib/standalone/HTMLPurifier/DefinitionCache/Serializer","mod_ooo/mes_modeles","mod_ooo/tmp","photos","temp");
+	}
 
 	$nom_fichier_test='test_acces_rw';
 
@@ -5456,6 +5645,38 @@ function test_ecriture_dossier() {
 		}
 		echo "</td>\n";
 		echo "</tr>\n";
+
+		if($tab_dossiers_rw[$i]=="documents/archives") {
+			if(getSettingValue('multisite')=='y') {
+				$dossier_temp='documents/archives/'.$_COOKIE['RNE'];
+			}
+			else {
+				$dossier_temp='documents/archives/etablissement';
+			}
+
+			if(file_exists("../$dossier_temp")) {
+				$ok_rw="no";
+				if ($f = @fopen("../".$dossier_temp."/".$nom_fichier_test, "w")) {
+					@fputs($f, '<'.'?php $ok_rw = "yes"; ?'.'>');
+					@fclose($f);
+					include("../".$dossier_temp."/".$nom_fichier_test);
+					$del = @unlink("../".$dossier_temp."/".$nom_fichier_test);
+				}
+				$alt=$alt*(-1);
+				echo "<tr class='lig$alt white_hover'>\n";
+				echo "<td style='text-align:left;'>$gepiPath/$dossier_temp</td>\n";
+				echo "<td>";
+				if($ok_rw=='yes') {
+					echo "<img src='../images/enabled.png' height='20' width='20' alt=\"Le dossier est accessible en écriture.\" />";
+				}
+				else {
+					echo "<img src='../images/disabled.png' height='20' width='20' alt=\"Le dossier n'est pas accessible en écriture.\" />";
+				}
+				echo "</td>\n";
+				echo "</tr>\n";
+
+			}
+		}
 	}
 	echo "</table>\n";
 }
@@ -5959,7 +6180,7 @@ function telecharge_fichier($sav_file,$dirname,$type,$ext){
   } else if ($sav_file['type']!=$type ){
 	return ("Erreur : seuls les fichiers de type '".$type."' sont autorisés.");
   } else {
-	$nom_corrige = my_ereg_replace("[^.a-zA-Z0-9_=-]+", "_", $sav_file['name']);
+	$nom_corrige = preg_replace("/[^.a-zA-Z0-9_=-]+/", "_", $sav_file['name']);
 	if (!deplacer_upload($sav_file['tmp_name'], $dirname."/".$nom_corrige)) {
 	  return ("Problème de transfert : le fichier n'a pas pu être transféré sur le répertoire ".$dirname);
 	} else {
@@ -5992,6 +6213,190 @@ if ($archive->extract(PCLZIP_OPT_PATH, $repertoire) == 0) {
  *                              Fin Manipulation de fichiers
  **********************************************************************************************/
 
+function check_droit_acces($id,$statut) {
+    $tab_id = explode("?",$id);
+    $query_droits = @mysql_query("SELECT * FROM droits WHERE id='$tab_id[0]'");
+    $droit = @mysql_result($query_droits, 0, $statut);
+    if ($droit == "V") {
+        return "1";
+    } else {
+        return "0";
+    }
+}
+
+
+function lignes_options_select_eleve($id_classe,$login_eleve_courant,$sql_ele="") {
+	if($sql_ele!="") {
+		$sql=$sql_ele;
+	}
+	else {
+		$sql="SELECT DISTINCT jec.login,e.nom,e.prenom FROM j_eleves_classes jec, eleves e
+							WHERE jec.login=e.login AND
+								jec.id_classe='$id_classe'
+							ORDER BY e.nom,e.prenom";
+	}
+	//echo "$sql<br />";
+	//echo "\$login_eleve=$login_eleve<br />";
+	$res_ele_tmp=mysql_query($sql);
+	$chaine_options_login_eleves="";
+	$cpt_eleve=0;
+	$num_eleve=-1;
+	if(mysql_num_rows($res_ele_tmp)>0){
+		$login_eleve_prec=0;
+		$login_eleve_suiv=0;
+		$temoin_tmp=0;
+		while($lig_ele_tmp=mysql_fetch_object($res_ele_tmp)){
+			if($lig_ele_tmp->login==$login_eleve_courant){
+				$chaine_options_login_eleves.="<option value='$lig_ele_tmp->login' selected='true'>$lig_ele_tmp->nom $lig_ele_tmp->prenom</option>\n";
+	
+				$num_eleve=$cpt_eleve;
+	
+				$temoin_tmp=1;
+				if($lig_ele_tmp=mysql_fetch_object($res_ele_tmp)){
+					$login_eleve_suiv=$lig_ele_tmp->login;
+					$chaine_options_login_eleves.="<option value='$lig_ele_tmp->login'>$lig_ele_tmp->nom $lig_ele_tmp->prenom</option>\n";
+				}
+				else{
+					$login_eleve_suiv=0;
+				}
+			}
+			else{
+				$chaine_options_login_eleves.="<option value='$lig_ele_tmp->login'>$lig_ele_tmp->nom $lig_ele_tmp->prenom</option>\n";
+			}
+	
+			if($temoin_tmp==0){
+				$login_eleve_prec=$lig_ele_tmp->login;
+			}
+			$cpt_eleve++;
+		}
+	}
+
+	return $chaine_options_login_eleves;
+}
+
+function is_pp($login_prof,$id_classe,$login_eleve="") {
+	$retour=false;
+	if($login_eleve=='') {
+		$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE id_classe='$id_classe' AND professeur='$login_prof';";
+	}
+	else {
+		$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE id_classe='$id_classe' AND professeur='$login_prof' AND login='$login_eleve';";
+	}
+	$test=mysql_query($sql);
+	if(mysql_num_rows($test)>0) {$retour=true;}
+
+	return $retour;
+}
+
+/**
+ *
+ * Vérifie qu'un utilisateur à le droit de voir la page en lien
+ *
+ * @var string $id l'adresse de la page
+ * telle qu'enregistrée dans la base droits
+ * @var string $statut le statut de l'utilisateur
+ *
+ * @return entier 1 si l'utilisateur a le droit de voir la page
+ * 0 sinon
+ *
+ *
+ */
+function acces($id,$statut) 
+{ 
+	if ($_SESSION['statut']!='autre') {
+		$tab_id = explode("?",$id);
+		$query_droits = @mysql_query("SELECT * FROM droits WHERE id='$tab_id[0]'");
+		$droit = @mysql_result($query_droits, 0, $statut);
+		if ($droit == "V") {
+			return "1";
+		} else {
+			return "0";
+		}
+	} else {
+		$sql="SELECT ds.autorisation FROM `droits_speciaux` ds,  `droits_utilisateurs` du
+					WHERE (ds.nom_fichier='".$id."'
+						AND ds.id_statut=du.id_statut
+						AND du.login_user='".$_SESSION['login']."');" ;
+		$result=mysql_query($sql);
+		if (!$result) {
+			return FALSE;
+		} else {
+			$row = mysql_fetch_row($result) ;
+			if ($row[0]=='V' || $row[0]=='v'){
+				return TRUE;
+			} else {
+				return FALSE;
+			}
+		}
+	}
+}
+
+function ajout_index_sous_dossiers($dossier) {
+	global $niveau_arbo;
+
+	$nb_creation=0;
+	$nb_erreur=0;
+	$nb_fich_existant=0;
+
+	$retour="";
+
+	//$dossier="../documents";
+	$dir= opendir($dossier);
+	if(!$dir) {
+		$retour.="<p style='color:red'>Erreur lors de l'accès au dossier '$dossier'.</p>\n";
+	}
+	else {
+		$retour.="<p style='color:green'>Succès de l'accès au dossier '$dossier'.</p>\n";
+		while($entree=@readdir($dir)) {
+			//$retour.="$dossier/$entree<br />\n";
+			if(is_dir($dossier.'/'.$entree)&&($entree!='.')&&($entree!='..')) {
+				if(!file_exists($dossier."/".$entree."/index.html")) {
+					if ($f = @fopen($dossier.'/'.$entree."/index.html", "w")) {
+						if((!isset($niveau_arbo))||($niveau_arbo==1)) {
+							@fputs($f, '<script type="text/javascript">document.location.replace("../login.php")</script>');
+						}
+						elseif($niveau_arbo==0) {
+							@fputs($f, '<script type="text/javascript">document.location.replace("./login.php")</script>');
+						}
+						elseif($niveau_arbo==2) {
+							@fputs($f, '<script type="text/javascript">document.location.replace("../../login.php")</script>');
+						}
+						else {
+							@fputs($f, '<script type="text/javascript">document.location.replace("../../../login.php")</script>');
+						}
+						@fclose($f);
+						$nb_creation++;
+					}
+					else {
+						$retour.="<span style='color:red'>Erreur lors de la création de '$dir/$entree/index.html'.</span><br />\n";
+						$nb_erreur++;
+					}
+				}
+				else {
+					$nb_fich_existant++;
+				}
+			}
+		}
+
+		if($nb_erreur>0) {
+			$retour.="<p style='color:red'>$nb_erreur erreur(s) lors du traitement.</p>\n";
+		}
+		else {
+			$retour.="<p style='color:green'>Aucune erreur lors de la création des fichiers index.html</p>\n";
+		}
+	
+		if($nb_creation>0) {
+			$retour.="<p style='color:green'>Création de $nb_creation fichier(s) index.html</p>\n";
+		}
+		else {
+			$retour.="<p style='color:green'>Aucune création de fichiers index.html n'a été effectuée.</p>\n";
+		}
+		$retour.="<p style='color:blue'>Il existait avant l'opération $nb_fich_existant fichier(s) index.html</p>\n";
+	}
+
+	return $retour;
+}
+
 // Méthode pour envoyer les en-têtes HTTP nécessaires au téléchargement de fichier.
 // Le content-type est obligatoire, ainsi que le nom du fichier.
 function send_file_download_headers($content_type, $filename, $content_disposition = 'attachment') {
@@ -6011,4 +6416,374 @@ function send_file_download_headers($content_type, $filename, $content_dispositi
 }
 
 
+function affiche_infos_actions() {
+	$sql="SELECT ia.* FROM infos_actions ia, infos_actions_destinataires iad WHERE
+	ia.id=iad.id_info AND
+	((iad.nature='individu' AND iad.valeur='".$_SESSION['login']."') OR
+	(iad.nature='statut' AND iad.valeur='".$_SESSION['statut']."'));";
+	//echo "$sql<br />";
+	$res=mysql_query($sql);
+	$chaine_id="";
+	if(mysql_num_rows($res)>0) {
+		echo "<div id='div_infos_actions' style='width: 60%; border: 2px solid red; padding:3px; margin-left: 20%;'>\n";
+		echo "<div id='info_action_titre' style='font-weight: bold;' class='infobulle_entete'>\n";
+			echo "<div id='info_action_pliage' style='float:right; width: 1em'>\n";
+			echo "<a href=\"javascript:div_alterne_affichage('conteneur')\"><span id='img_pliage_conteneur'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
+			echo "</div>\n";
+			echo "Actions en attente";
+		echo "</div>\n";
+
+		echo "<div id='info_action_corps_conteneur'>\n";
+
+		$cpt_id=0;
+		while($lig=mysql_fetch_object($res)) {
+			echo "<div id='info_action_$lig->id' style='border: 1px solid black; margin:2px;'>\n";
+				echo "<div id='info_action_titre_$lig->id' style='font-weight: bold;' class='infobulle_entete'>\n";
+					echo "<div id='info_action_pliage_$lig->id' style='float:right; width: 1em'>\n";
+					echo "<a href=\"javascript:div_alterne_affichage('$lig->id')\"><span id='img_pliage_$lig->id'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
+					echo "</div>\n";
+					echo $lig->titre;
+				echo "</div>\n";
+
+				echo "<div id='info_action_corps_$lig->id' style='padding:3px;' class='infobulle_corps'>\n";
+					echo "<div style='float:right; width: 9em; text-align: right;'>\n";
+					echo "<a href=\"".$_SERVER['PHP_SELF']."?del_id_info=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->description)."', 'Etes-vous sûr de vouloir supprimer ".traitement_magic_quotes($lig->titre)."')\">Supprimer</span></a>";
+					echo "</div>\n";
+
+					echo nl2br($lig->description);
+				echo "</div>\n";
+			echo "</div>\n";
+			if($cpt_id>0) {$chaine_id.=", ";}
+			$chaine_id.="'$lig->id'";
+			$cpt_id++;
+		}
+		echo "</div>\n";
+		echo "</div>\n";
+
+		echo "<script type='text/javascript'>
+	function div_alterne_affichage(id) {
+		if(document.getElementById('info_action_corps_'+id)) {
+			if(document.getElementById('info_action_corps_'+id).style.display=='none') {
+				document.getElementById('info_action_corps_'+id).style.display='';
+				document.getElementById('img_pliage_'+id).innerHTML='<img src=\'images/icons/remove.png\' width=\'16\' height=\'16\' />'
+			}
+			else {
+				document.getElementById('info_action_corps_'+id).style.display='none';
+				document.getElementById('img_pliage_'+id).innerHTML='<img src=\'images/icons/add.png\' width=\'16\' height=\'16\' />'
+			}
+		}
+	}
+
+	chaine_id_action=new Array($chaine_id);
+	for(i=0;i<chaine_id_action.length;i++) {
+		id_a=chaine_id_action[i];
+		if(document.getElementById('info_action_corps_'+id_a)) {
+			div_alterne_affichage(id_a);
+		}
+	}
+</script>\n";
+	}
+}
+
+/**
+ *
+ * Enregistrer une action à effectuer pour qu'elle soit par la suite affichée en page d'accueil pour tels ou tels utilisateurs
+ *
+ * @var string $titre titre de l'action/info
+ * @var string $description le détail de l'action à effectuer avec autant que possible un lien vers la page et paramètres utiles pour l'action
+ * @var string $destinataire le tableau des login ou statuts des utilisateurs pour lesquels l'affichage sera réalisé
+ * @var string $mode vaut 'individu' si $destinataire désigne des logins et 'statut' si ce sont des statuts
+ *
+ * @return bolean true si l'enregistrement s'est bien effectué
+ * false sinon
+ *
+ *
+ */
+function enregistre_infos_actions($titre,$texte,$destinataire,$mode) {
+	if(is_array($destinataire)) {
+		$tab_dest=$destinataire;
+	}
+	else {
+		$tab_dest=array($destinataire);
+	}
+
+	$sql="INSERT INTO infos_actions SET titre='".addslashes($titre)."', description='".addslashes($texte)."', date=NOW();";
+	$insert=mysql_query($sql);
+	if(!$insert) {
+		return false;
+	}
+	else {
+		$return=true;
+		$id_info=mysql_insert_id();
+		for($loop=0;$loop<count($tab_dest);$loop++) {
+			$sql="INSERT INTO infos_actions_destinataires SET id_info='$id_info', nature='$mode', valeur='$tab_dest[$loop]';";
+			$insert=mysql_query($sql);
+			if(!$insert) {
+				$return=false;
+			}
+		}
+
+		return $return;
+	}
+}
+
+function del_info_action($id_info) {
+	// Dans le cas des infos destinées à un statut... c'est le premier qui supprime qui vire pour tout le monde?
+	// S'il s'agit bien de loguer des actions à effectuer... elle ne doit être effectuée qu'une fois.
+	// Ou alors il faudrait ajouter des champs pour marquer les actions comme effectuées et n'afficher par défaut que les actions non effectuées
+
+	$sql="SELECT 1=1 FROM infos_actions_destinataires WHERE id_info='$id_info' AND ((nature='statut' AND valeur='".$_SESSION['statut']."') OR (nature='individu' AND valeur='".$_SESSION['login']."'));";
+	$test=mysql_query($sql);
+	if(mysql_num_rows($test)>0) {
+		$sql="DELETE FROM infos_actions_destinataires WHERE id_info='$id_info';";
+		$del=mysql_query($sql);
+		if(!$del) {
+			return false;
+		}
+		else {
+			$sql="DELETE FROM infos_actions WHERE id='$id_info';";
+			$del=mysql_query($sql);
+			if(!$del) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+	}
+}
+
+function affiche_date_sortie($date_sortie) {
+	//affiche sous la forme JJ/MM/AAAA la date de sortie d'un élève présente dans la base comme un timestamp
+    $eleve_date_de_sortie_time=strtotime($date_sortie);
+	//récupération du jour, du mois et de l'année
+	$eleve_date_sortie_jour=date('j', $eleve_date_de_sortie_time); 
+	$eleve_date_sortie_mois=date('m', $eleve_date_de_sortie_time);
+	$eleve_date_sortie_annee=date('Y', $eleve_date_de_sortie_time); 
+	return $eleve_date_sortie_jour."/".$eleve_date_sortie_mois."/".$eleve_date_sortie_annee;
+}
+
+function traite_date_sortie_to_timestamp($date_sortie) {
+	//Traite une chaine de caractères JJ/MM/AAAA vers un timestamp AAAA-MM-JJ 00:00:00
+	$date=explode("/", $date_sortie);
+	$jour = $date[0];
+	$mois = $date[1];
+	$annee = $date[2];
+
+	return $annee."-".$mois."-".$jour." 00:00:00"; 
+}
+
+function affiche_acces_cdt() {
+	$retour="";
+
+	$tab_statuts=array('professeur', 'administrateur', 'scolarite');
+	if(in_array($_SESSION['statut'], $tab_statuts)) {
+		$sql="SELECT a.* FROM acces_cdt a ORDER BY date2;";
+		//echo "$sql<br />";
+		$res=mysql_query($sql);
+		$chaine_id="";
+		if(mysql_num_rows($res)>0) {
+			$visible="y";
+			if($_SESSION['statut']=='professeur') {
+				$visible="n";
+				$sql="SELECT ag.id_acces FROM acces_cdt_groupes ag, j_groupes_professeurs jgp WHERE jgp.id_groupe=ag.id_groupe AND jgp.login='".$_SESSION['login']."';";
+				$res2=mysql_query($sql);
+				if(mysql_num_rows($res2)>0) {
+					$visible="y";
+					$tab_id_acces=array();
+					while($lig2=mysql_fetch_object($res2)) {
+						$tab_id_acces[]=$lig2->id_acces;
+					}
+				}
+			}
+	
+			if($visible=="y") {
+				$retour.="<div id='div_infos_acces_cdt' style='width: 60%; border: 2px solid red; padding:3px; margin-left: 20%; margin-top:3px;'>\n";
+				$retour.="<div id='info_acces_cdt_titre' style='font-weight: bold;' class='infobulle_entete'>\n";
+					$retour.="<div id='info_acces_cdt_pliage' style='float:right; width: 1em'>\n";
+					$retour.="<a href=\"javascript:div_alterne_affichage_acces_cdt('conteneur')\"><span id='img_pliage_acces_cdt_conteneur'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
+					$retour.="</div>\n";
+					$retour.="Accès ouvert à des CDT";
+				$retour.="</div>\n";
+		
+				$retour.="<div id='info_acces_cdt_corps_conteneur'>\n";
+		
+				$cpt_id=0;
+				while($lig=mysql_fetch_object($res)) {
+					$visible="y";
+					if(($_SESSION['statut']=='professeur')&&(!in_array($lig->id,$tab_id_acces))) {
+						$visible="n";
+					}
+	
+					if($visible=="y") {
+						$retour.="<div id='info_acces_cdt_$lig->id' style='border: 1px solid black; margin:2px;'>\n";
+							$retour.="<div id='info_acces_cdt_titre_$lig->id' style='font-weight: bold;' class='infobulle_entete'>\n";
+								$retour.="<div id='info_acces_cdt_pliage_$lig->id' style='float:right; width: 1em'>\n";
+								$retour.="<a href=\"javascript:div_alterne_affichage_acces_cdt('$lig->id')\"><span id='img_pliage_acces_cdt_$lig->id'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
+								$retour.="</div>\n";
+								$retour.="Accès CDT jusqu'au ".formate_date($lig->date2);
+							$retour.="</div>\n";
+			
+							$retour.="<div id='info_acces_cdt_corps_$lig->id' style='padding:3px;' class='infobulle_corps'>\n";
+								if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) {
+									$retour.="<div style='float:right; width: 9em; text-align: right;'>\n";
+									$retour.="<a href=\"".$_SERVER['PHP_SELF']."?del_id_acces_cdt=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->description)."', 'Etes-vous sûr de vouloir supprimer cet accès')\">Supprimer l'accès</span></a>";
+									$retour.="</div>\n";
+								}
+	
+								$retour.="<p><b>L'accès a été ouvert pour le motif suivant&nbsp;:</b><br />";
+								$retour.=preg_replace("/\\\\r\\\\n/","<br />",$lig->description);
+								$retour.="</p>\n";
+	
+								$chaine_enseignements="<ul>";
+								$sql="SELECT id_groupe FROM acces_cdt_groupes WHERE id_acces='$lig->id';";
+								$res3=mysql_query($sql);
+								if(mysql_num_rows($res3)>0) {
+									$tab_champs=array('classes', 'professeurs');
+									while($lig3=mysql_fetch_object($res3)) {
+										$current_group=get_group($lig3->id_groupe);
+	
+										$chaine_profs="";
+										$cpt=0;
+										foreach($current_group['profs']['users'] as $login_prof => $current_prof) {
+											if($cpt>0) {$chaine_profs.=", ";}
+											$chaine_profs.=$current_prof['civilite']." ".$current_prof['nom']." ".$current_prof['prenom'];
+											$cpt++;
+										}
+	
+										$chaine_enseignements.="<li>";
+										$chaine_enseignements.=$current_group['name']." (<i>".$current_group['description']."</i>) en ".$current_group['classlist_string']." (<i>".$chaine_profs."</i>)";
+										//$chaine_enseignements.="<br />\n";
+										$chaine_enseignements.="</li>\n";
+									}
+								}
+								$chaine_enseignements.="</ul>";
+								//$retour.="</p>\n";
+	
+								$retour.="<p>Les CDT accessibles à l'adresse <a href='$lig->chemin' target='_blank'>$lig->chemin</a> sont&nbsp;:<br />".$chaine_enseignements."</p>";
+							$retour.="</div>\n";
+						$retour.="</div>\n";
+						if($cpt_id>0) {$chaine_id.=", ";}
+						$chaine_id.="'$lig->id'";
+						$cpt_id++;
+					}
+				}
+				$retour.="</div>\n";
+				$retour.="</div>\n";
+		
+				$retour.="<script type='text/javascript'>
+			function div_alterne_affichage_acces_cdt(id) {
+				if(document.getElementById('info_acces_cdt_corps_'+id)) {
+					if(document.getElementById('info_acces_cdt_corps_'+id).style.display=='none') {
+						document.getElementById('info_acces_cdt_corps_'+id).style.display='';
+						document.getElementById('img_pliage_acces_cdt_'+id).innerHTML='<img src=\'images/icons/remove.png\' width=\'16\' height=\'16\' />'
+					}
+					else {
+						document.getElementById('info_acces_cdt_corps_'+id).style.display='none';
+						document.getElementById('img_pliage_acces_cdt_'+id).innerHTML='<img src=\'images/icons/add.png\' width=\'16\' height=\'16\' />'
+					}
+				}
+			}
+		
+			chaine_id_acces_cdt=new Array($chaine_id);
+			for(i=0;i<chaine_id_acces_cdt.length;i++) {
+				id_a=chaine_id_acces_cdt[i];
+				if(document.getElementById('info_acces_cdt_corps_'+id_a)) {
+					div_alterne_affichage_acces_cdt(id_a);
+				}
+			}
+		</script>\n";
+			}
+		}
+	}
+	echo $retour;
+}
+
+function del_acces_cdt($id_acces) {
+
+	$sql="SELECT * FROM acces_cdt WHERE id='$id_acces';";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		$lig=mysql_fetch_object($res);
+
+		$chemin=preg_replace("#/index.html#","",$lig->chemin);
+		if((!preg_match("#^documents/acces_cdt_#",$chemin))||(strstr($chemin,".."))) {
+			echo "<p><span style='color:red'>Chemin $chemin invalide</span></p>";
+			return false;
+		}
+		else {
+			$suppr=deltree($chemin,true);
+			if(!$suppr) {
+				echo "<p><span style='color:red'>Erreur lors de la suppression de $chemin</span></p>";
+				return false;
+			}
+			else {
+				$sql="DELETE FROM acces_cdt_groupes WHERE id_acces='$id_acces';";
+				$del=mysql_query($sql);
+				if(!$del) {
+					echo "<p><span style='color:red'>Erreur lors de la suppression des groupes associés à l'accès n°$id_acces</span></p>";
+					return false;
+				}
+				else {
+					$sql="DELETE FROM acces_cdt WHERE id='$id_acces';";
+					$del=mysql_query($sql);
+					if(!$del) {
+						echo "<p><span style='color:red'>Erreur lors de la suppression de l'accès n°$id_acces</span></p>";
+						return false;
+					}
+					else {
+						return true;
+					}
+				}
+			}
+		}
+	}
+}
+
+//=======================================================
+// Fonction récupérée dans /mod_ooo/lib/lib_mod_ooo.php
+
+//$repaussi==true ~> efface aussi $rep
+//retourne true si tout s'est bien passé,
+//false si un fichier est resté (problème de permission ou attribut lecture sous Win
+//dans tous les cas, le maximum possible est supprimé.
+function deltree($rep,$repaussi=true) {
+	static $niv=0;
+	$niv++;
+	if (!is_dir($rep)) {return false;}
+	$handle=opendir($rep);
+	if (!$handle) {return false;}
+	while ($entree=readdir($handle)) {
+		if (is_dir($rep.'/'.$entree)) {
+			if ($entree!='.' && $entree!='..') {
+				$ok=deltree($rep.'/'.$entree);
+			}
+			else {$ok=true;}
+		}
+		else {
+			$ok=@unlink($rep.'/'.$entree);
+		}
+	}
+	closedir($handle);
+	$niv--;
+	if ($niv || $repaussi) $ok &= @rmdir($rep);
+	return $ok;
+}
+//=======================================================
+
+function check_mail($email,$mode='simple') {
+	if(!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/" , $email)) {
+		return false;
+	}
+	else {
+		if(($mode=='simple')||(!function_exists('checkdnsrr'))) {
+			return true;
+		}
+		else {
+			$tab=explode('@', $email);
+			if(checkdnsrr($tab[1], 'MX')) {return true;}
+			elseif(checkdnsrr($tab[1], 'A')) {return true;}
+		}
+	}
+}
 ?>

@@ -76,14 +76,25 @@ class EdtCalendrierPeriodePeer extends BaseEdtCalendrierPeriodePeer {
 				throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
 			}
 		}
-
+        $edt_periode_actuelle=Null;
+        $intervalle_periode=Null;
 		foreach (EdtCalendrierPeriodePeer::retrieveAllEdtCalendrierPeriodesOrderByTime() as $edtPeriode) {
-		    if ($edtPeriode->getJourdebutCalendrier('Y-m-d') <= $dt->format('Y-m-d')
+          if ($edtPeriode->getJourdebutCalendrier('Y-m-d') <= $dt->format('Y-m-d')
 			    &&	$edtPeriode->getJourfinCalendrier('Y-m-d') >= $dt->format('Y-m-d')) {
-			return $edtPeriode;
-		    }
-		}
-		return null;
+			   if (is_null($edt_periode_actuelle)){ //c'est la première periode rencontrée qui correspond
+                 $edt_periode_actuelle=$edtPeriode;
+                 $intervalle_periode=$edtPeriode->getFinCalendrierTs()-$edtPeriode->getDebutCalendrierTs();  
+               }else{
+          //si une periode plus courte correspond on prend celle là
+          if ($edtPeriode->getFinCalendrierTs()-$edtPeriode->getDebutCalendrierTs()<=$intervalle_periode) {
+            $edt_periode_actuelle = $edtPeriode;
+            $intervalle_periode=$edtPeriode->getFinCalendrierTs()-$edtPeriode->getDebutCalendrierTs();
+          }
+        }
+      }
+    }
+    return $edt_periode_actuelle;
+		//return null;
 //		return EdtCalendrierPeriodeQuery::create()
 //			->filterByJourdebutCalendrier($dt, Criteria::LESS_EQUAL)
 //			//->filterByHeuredebutCalendrier($dt, Criteria::GREATER_EQUAL)

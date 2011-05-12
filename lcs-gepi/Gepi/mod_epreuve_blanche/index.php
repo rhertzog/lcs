@@ -1,5 +1,5 @@
 <?php
-/* $Id: index.php 6074 2010-12-08 15:43:17Z crob $ */
+/* $Id: index.php 6764 2011-04-10 12:33:06Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -79,6 +79,7 @@ description TEXT NOT NULL ,
 type_anonymat VARCHAR( 255 ) NOT NULL ,
 date DATE NOT NULL default '0000-00-00',
 etat VARCHAR( 255 ) NOT NULL ,
+note_sur int(11) unsigned not null default '20',
 PRIMARY KEY ( id )
 );";
 $create_table=mysql_query($sql);
@@ -166,6 +167,7 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 	//if(isset($_POST['creer_epreuve'])) {
 	if((isset($_POST['creer_epreuve']))||(isset($_POST['modif_epreuve']))) {
 		check_token();
+		$msg="";
 
 		// Correction, modification des paramètres d'une épreuve
 
@@ -173,8 +175,13 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 		$date=isset($_POST['date']) ? $_POST['date'] : "";
 		$description=isset($_POST['description']) ? $_POST['description'] : "";
 		$type_anonymat=isset($_POST['type_anonymat']) ? $_POST['type_anonymat'] : "ele_id";
+		$note_sur=isset($_POST['note_sur']) ? $_POST['note_sur'] : 20;
+		if(!preg_match('/^[0-9]*$/',$note_sur)) {
+			$note_sur=20;
+			$msg.="Valeur de note_sur invalide<br />";
+		}
 
-		if(strlen(my_ereg_replace("[A-Za-z0-9 _.-]","",remplace_accents($intitule,'all')))!=0) {$intitule=my_ereg_replace("[^A-Za-zÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõ¨ûüùúýÿ¸0-9_.-]"," ",$intitule);}
+		if(strlen(preg_replace("/[A-Za-z0-9 _\.-]/","",remplace_accents($intitule,'all')))!=0) {$intitule=preg_replace("/[^A-Za-zÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõ¨ûüùúýÿ¸0-9_.-]/"," ",$intitule);}
 		if($intitule=="") {$intitule="Epreuve blanche";}
 
 		$tab_anonymat=array('elenoet','ele_id','no_gep','alea','chrono');
@@ -197,13 +204,13 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 
 		if(!isset($id_epreuve)) {
 			//$sql="INSERT INTO eb_epreuves SET intitule='$intitule', description='".addslashes($description)."', type_anonymat='$type_anonymat', date='', etat='';";
-			$sql="INSERT INTO eb_epreuves SET intitule='$intitule', description='$description', type_anonymat='$type_anonymat', date='$date', etat='';";
+			$sql="INSERT INTO eb_epreuves SET intitule='$intitule', description='$description', type_anonymat='$type_anonymat', date='$date', etat='', note_sur='$note_sur';";
 			if($insert=mysql_query($sql)) {
 				$id_epreuve=mysql_insert_id();
-				$msg="Epreuve n°$id_epreuve : '$intitule' créée.<br />";
+				$msg.="Epreuve n°$id_epreuve : '$intitule' créée.<br />";
 			}
 			else {
-				$msg="ERREUR lors de la création de l'épreuve '$intitule'.<br />";
+				$msg.="ERREUR lors de la création de l'épreuve '$intitule'.<br />";
 				//$msg.="<br />$sql";
 			}
 		}
@@ -217,9 +224,9 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 			$lig=mysql_fetch_object($res);
 			$old_type_anonymat=$lig->type_anonymat;
 
-			$sql="UPDATE eb_epreuves SET intitule='$intitule', description='$description', type_anonymat='$type_anonymat', date='$date' WHERE id='$id_epreuve';";
+			$sql="UPDATE eb_epreuves SET intitule='$intitule', description='$description', type_anonymat='$type_anonymat', date='$date', note_sur='$note_sur' WHERE id='$id_epreuve';";
 			if($update=mysql_query($sql)) {
-				$msg="Epreuve n°$id_epreuve : '$intitule' mise à jour.";
+				$msg.="Epreuve n°$id_epreuve : '$intitule' mise à jour.";
 
 				if($type_anonymat!=$old_type_anonymat) {
 					$tab_n_anonymat_affectes=array();
@@ -268,7 +275,7 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 				}
 			}
 			else {
-				$msg="ERREUR lors de la modification de l'épreuve '$intitule'.";
+				$msg.="ERREUR lors de la modification de l'épreuve '$intitule'.";
 				//$msg.="<br />$sql";
 			}
 		}
@@ -351,12 +358,17 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 					}
 
 					if(($type_anonymat=='alea') ||($type_anonymat=='chrono')) {
-						$sql="SELECT DISTINCT login FROM j_eleves_groupes WHERE id_groupe='$id_groupe[$i]';";
+						//$sql="SELECT DISTINCT login FROM j_eleves_groupes WHERE id_groupe='$id_groupe[$i]';";
+						$sql="SELECT DISTINCT j.login, e.date_sortie FROM j_eleves_groupes j, eleves e WHERE j.id_groupe='$id_groupe[$i]' AND j.login=e.login AND (e.date_sortie='0000-00-00 00:00:00' OR e.date_sortie IS NULL);";
+						//echo "$sql<br />\n";
 					}
 					else {
-						$sql="SELECT DISTINCT j.login,e.$type_anonymat FROM j_eleves_groupes j, eleves e WHERE j.id_groupe='$id_groupe[$i]' AND j.login=e.login;";
+						//$sql="SELECT DISTINCT j.login,e.$type_anonymat FROM j_eleves_groupes j, eleves e WHERE j.id_groupe='$id_groupe[$i]' AND j.login=e.login;";
+						$sql="SELECT DISTINCT j.login,e.$type_anonymat, e.date_sortie FROM j_eleves_groupes j, eleves e WHERE j.id_groupe='$id_groupe[$i]' AND j.login=e.login AND (e.date_sortie='0000-00-00 00:00:00' OR e.date_sortie IS NULL);";
+						//echo "$sql<br />\n";
 					}
 					// Il faudra voir comment gérer le cas d'élèves partis en cours d'année... faire choisir la période?
+					// Eric le 9-4-11 ==> utilisation de la date de sortie pour l'élève. Elève présent ==> date_sortie=0 ou null
 					$res=mysql_query($sql);
 					$cpt_ano = 1;
 					while($lig=mysql_fetch_object($res)) {
@@ -850,6 +862,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 			$jour=strftime("%d");
 			$date_defaut=$jour."/".$mois."/".$annee;
 
+			$note_sur=20;
+
 			echo "<tr>\n";
 			echo "<td>Date de l'épreuve&nbsp;:</td>\n";
 			echo "<td>\n";
@@ -864,6 +878,13 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 			echo "<td>\n";
 			//echo "<input type='text' name='description' value='' />";
 			echo "<textarea class='wrap' name=\"no_anti_inject_description\" rows='4' cols='40'></textarea>\n";
+			echo "</td>\n";
+			echo "</tr>\n";
+
+			echo "<tr>\n";
+			echo "<td>Note sur&nbsp;:</td>\n";
+			echo "<td>\n";
+			echo "<input type='text' name='note_sur' id='note_sur' value='$note_sur' size='3' onchange='changement()' />\n";
 			echo "</td>\n";
 			echo "</tr>\n";
 
@@ -934,6 +955,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 			$res_groupes=mysql_query($sql);
 
 			$sql="SELECT u.* FROM eb_profs ep, utilisateurs u WHERE ep.id_epreuve='$id_epreuve' AND ep.login_prof=u.login ORDER BY u.nom,u.prenom;";
+			//$sql="SELECT u.* FROM eb_profs ep, utilisateurs u WHERE ep.id_epreuve='$id_epreuve' AND ep.login_prof=u.login AND u.etat='actif' ORDER BY u.nom,u.prenom;";
+			//echo "$sql<br />";
 			$res_profs=mysql_query($sql);
 
 			if(mysql_num_rows($res_groupes)>0) {
@@ -981,6 +1004,17 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 					$test_affect_salle=mysql_query($sql);
 					if(mysql_num_rows($test_affect_salle)>0) {echo "<span style='color:red'>".mysql_num_rows($test_affect_salle)." élève(s) non affecté(s) dans une salle.</span>";}
 					echo "</li>\n";
+
+					echo "<li>\n";
+					echo "<a href='genere_liste_affichage.php?id_epreuve=$id_epreuve'";
+					echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+					echo ">Générer les listes d'affichage</a><br />\n";
+					// Proposer d'enregistrer des paramètres
+					// Choisir les champs supplémentaires à afficher (date et lieu de naissance, INE, classe,...)
+					// Permettre d'organiser les élèves en salles
+					// Générer CSV, PDF
+					echo "</li>\n";
+
 				}
 
 				if($etat!='clos') {
@@ -997,6 +1031,12 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 						echo "</li>\n";
 					}
 				}
+
+				echo "<li>\n";
+				echo "<a href='genere_bordereaux.php?id_epreuve=$id_epreuve'";
+				echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+				echo ">Générer les bordereaux professeurs</a><br />\n";
+				echo "</li>\n";
 
 				echo "<li>\n";
 				// A FAIRE
@@ -1018,9 +1058,17 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 				echo "</li>\n";
 
 				if($etat!='clos') {
+					$info_affectation_salle="";
+					$sql="SELECT 1=1 FROM eb_copies WHERE id_epreuve='$id_epreuve' AND id_salle!='-1';";
+					$test_affectation_salle=mysql_query($sql);
+					if(mysql_num_rows($test_affectation_salle)==0) {
+						$info_affectation_salle="<span style='color:red'>Aucun élève n'est encore affecté dans une salle.</span><br />\n";
+					}
+
+					//$sql="SELECT 1=1 FROM eb_copies WHERE id_epreuve='$id_epreuve' AND statut='v' AND id_salle!='-1';";
 					$sql="SELECT 1=1 FROM eb_copies WHERE id_epreuve='$id_epreuve' AND statut='v';";
 					$test=mysql_query($sql);
-					if(mysql_num_rows($test)==0) {
+					if(($info_affectation_salle=='')&&(mysql_num_rows($test)==0)) {
 						echo "<li>\n";
 						echo "<a href='transfert_cn.php?id_epreuve=$id_epreuve'";
 						echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
@@ -1041,6 +1089,7 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 					}
 					else {
 						echo "<li>\n";
+						echo $info_affectation_salle;
 						echo mysql_num_rows($test)." note(s) non encore saisie(s).<br />\n";
 						echo "Les choix suivants ne sont donc pas encore accessibles&nbsp;:";
 						echo "<ul>\n";
@@ -1091,6 +1140,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 			$jour=$tab[2];
 			$date_defaut=$jour."/".$mois."/".$annee;
 	
+			$note_sur=$lig->note_sur;
+
 			echo "<tr>\n";
 			echo "<td style='font-weight:bold;'>Date de l'épreuve&nbsp;:</td>\n";
 			echo "<td>\n";
@@ -1118,7 +1169,14 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 			}
 			echo "</td>\n";
 			echo "</tr>\n";
-	
+
+			echo "<tr>\n";
+			echo "<td>Note sur&nbsp;:</td>\n";
+			echo "<td>\n";
+			echo "<input type='text' name='note_sur' id='note_sur' value='$note_sur' size='3' onchange='changement()' />\n";
+			echo "</td>\n";
+			echo "</tr>\n";
+
 			echo "<tr>\n";
 			echo "<td style='font-weight:bold;'>Mode anonymat&nbsp;:</td>\n";
 			echo "<td>\n";
@@ -1592,6 +1650,7 @@ function checkbox_change(cpt) {
 
 			$tab_profs_deja_punis=array();
 			$sql="SELECT u.login FROM eb_profs ep, utilisateurs u WHERE ep.id_epreuve='$id_epreuve' AND ep.login_prof=u.login ORDER BY u.nom,u.prenom;";
+			//$sql="SELECT u.login FROM eb_profs ep, utilisateurs u WHERE ep.id_epreuve='$id_epreuve' AND ep.login_prof=u.login AND u.etat='actif' ORDER BY u.nom,u.prenom;";
 			$res_profs=mysql_query($sql);
 			if(mysql_num_rows($res_profs)>0) {
 				while($lig=mysql_fetch_object($res_profs)) {
@@ -1616,7 +1675,8 @@ function checkbox_change(cpt) {
 				}
 			}
 
-			$sql="SELECT DISTINCT u.login,u.nom,u.prenom,u.civilite FROM utilisateurs u WHERE u.statut='professeur' ORDER BY u.nom,u.prenom;";
+			//$sql="SELECT DISTINCT u.login,u.nom,u.prenom,u.civilite FROM utilisateurs u WHERE u.statut='professeur' ORDER BY u.nom,u.prenom;";
+			$sql="SELECT DISTINCT u.login,u.nom,u.prenom,u.civilite FROM utilisateurs u WHERE u.statut='professeur' AND u.etat='actif' ORDER BY u.nom,u.prenom;";
 			$res_profs=mysql_query($sql);
 			if(mysql_num_rows($res_profs)>0) {
 				echo "<p>Sélectionner des professeurs sans préoccupation de groupes&nbsp;:</p>\n";

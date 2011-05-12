@@ -1,8 +1,8 @@
 <?php
 /*
- * @version: $Id: config_aid_fiches_projet.php 2651 2008-11-19 13:26:38Z delineau $
+ * @version: $Id: config_aid_fiches_projet.php 6588 2011-03-02 17:53:54Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -34,7 +34,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 
 if (!checkAccess()) {
@@ -47,6 +47,8 @@ $is_posted = isset($_POST["is_posted"]) ? $_POST["is_posted"] : NULL;
 
 $requete = "select * from droits_aid where (id!='cpe_peut_modifier' and id!='prof_peut_modifier' and id!='eleve_peut_modifier' and id != 'fiche_publique' and id!='affiche_adresse1' and id!='en_construction' and id!='nom' and id!='numero') order by id";
 if (isset($is_posted) and ($is_posted == "1")) {
+	check_token();
+
     $res = mysql_query($requete);
     $nb_lignes = mysql_num_rows($res);
     $i = 0;
@@ -83,6 +85,8 @@ require_once("../lib/header.inc");
 <a href="config_aid_productions.php">Configuration des productions</a>|
 <input type="submit" value="Enregistrer" /><br />
 <?php
+
+echo add_token_field();
 
 echo "<p>Le tableau suivant permet de fixer les droits sur les différents champs des fiches projet.";
 echo "<br /><br />Remarques :

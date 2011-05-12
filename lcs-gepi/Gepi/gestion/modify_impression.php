@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: modify_impression.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: modify_impression.php 5928 2010-11-21 10:47:40Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -26,16 +26,16 @@ require_once("../lib/initialisations.inc.php");
 // Resume session
 $resultat_session = $session_gepi->security_check();
 if ($resultat_session == 'c') {
-	header("Location: ../utilisateurs/mon_compte.php?change_mdp=yes");
-	die();
+header("Location: ../utilisateurs/mon_compte.php?change_mdp=yes");
+die();
 } else if ($resultat_session == '0') {
-	header("Location: ../logout.php?auto=1");
-	die();
+    header("Location: ../logout.php?auto=1");
+die();
 }
 
 if (!checkAccess()) {
-	header("Location: ../logout.php?auto=1");
-	die();
+    header("Location: ../logout.php?auto=1");
+die();
 }
 include("../fckeditor/fckeditor.php") ;
 

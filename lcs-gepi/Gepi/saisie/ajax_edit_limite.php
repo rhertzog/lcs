@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: ajax_edit_limite.php 6022 2010-11-28 14:50:57Z crob $
+ * $Id: ajax_edit_limite.php 6020 2010-11-28 14:13:13Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

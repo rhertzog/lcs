@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: index.php 6677 2011-03-22 17:39:28Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -299,7 +299,7 @@ $num_resp=isset($_POST['num_resp']) ? $_POST['num_resp'] : (isset($_GET['num_res
 
 
 echo "<p class='bold'>";
-if ($_SESSION['statut'] == 'administrateur'){
+if ($_SESSION['statut'] == 'administrateur') {
 	echo "<a href=\"../accueil_admin.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 	echo " | <a href=\"modify_resp.php\">Ajouter un ".$gepiSettings['denomination_responsable']."</a>\n";
 	if(getSettingValue("import_maj_xml_sconet")==1){
@@ -314,10 +314,25 @@ if ($_SESSION['statut'] == 'administrateur'){
 	}
 
 	echo " | <a href=\"gerer_adr.php\">Gérer les adresses</a>\n";
+
+	$sql="SELECT 1=1 FROM utilisateurs WHERE statut='responsable';";
+	$test_resp=mysql_query($sql);
+	if(mysql_num_rows($test_resp)>0) {
+		echo " | <a href=\"synchro_mail.php\">Synchroniser les adresses mail responsables</a>\n";
+	}
 }
 else{
 	echo "<a href=\"../accueil.php\"> <img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 }
+
+if($_SESSION['statut']=="scolarite") {
+	$sql="SELECT 1=1 FROM utilisateurs WHERE statut='responsable';";
+	$test_resp=mysql_query($sql);
+	if(mysql_num_rows($test_resp)>0) {
+		echo " | <a href=\"synchro_mail.php\">Synchroniser les adresses mail responsables</a>\n";
+	}
+}
+
 echo "</p>\n";
 
 $_SESSION['chemin_retour'] = $_SERVER['REQUEST_URI'];

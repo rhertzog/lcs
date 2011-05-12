@@ -3,7 +3,7 @@
 /*
  *
  *
- * @version $Id: liste_eleves.php 4260 2010-04-09 16:35:21Z crob $
+ * @version $Id: liste_eleves.php 6654 2011-03-12 10:09:07Z crob $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -49,6 +49,8 @@ if (!checkAccess()) {
 
 // La page est destinée à être appelée via Ajax.
 // Il n'y a donc ni entête HTML, ni pied de page.
+
+header('Content-type: text/html; charset=iso-8859-1');
 
 //include("recherche_eleve.php");
 include("../eleves/recherche_eleve.php");

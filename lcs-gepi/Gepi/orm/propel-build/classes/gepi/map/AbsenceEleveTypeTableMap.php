@@ -45,6 +45,7 @@ class AbsenceEleveTypeTableMap extends TableMap {
 		$this->addColumn('RETARD_BULLETIN', 'RetardBulletin', 'VARCHAR', false, 50, 'NON_PRECISE');
 		$this->addColumn('TYPE_SAISIE', 'TypeSaisie', 'VARCHAR', false, 50, 'NON_PRECISE');
 		$this->addColumn('COMMENTAIRE', 'Commentaire', 'LONGVARCHAR', false, null, null);
+		$this->addForeignKey('ID_LIEU', 'IdLieu', 'INTEGER', 'a_lieux', 'ID', false, 11, null);
 		$this->addColumn('SORTABLE_RANK', 'SortableRank', 'INTEGER', false, null, null);
 		// validators
 	} // initialize()
@@ -54,6 +55,7 @@ class AbsenceEleveTypeTableMap extends TableMap {
 	 */
 	public function buildRelations()
 	{
+    $this->addRelation('AbsenceEleveLieu', 'AbsenceEleveLieu', RelationMap::MANY_TO_ONE, array('id_lieu' => 'id', ), 'SET NULL', null);
     $this->addRelation('AbsenceEleveTypeStatutAutorise', 'AbsenceEleveTypeStatutAutorise', RelationMap::ONE_TO_MANY, array('id' => 'id_a_type', ), 'CASCADE', null);
     $this->addRelation('AbsenceEleveTraitement', 'AbsenceEleveTraitement', RelationMap::ONE_TO_MANY, array('id' => 'a_type_id', ), 'SET NULL', null);
 	} // buildRelations()

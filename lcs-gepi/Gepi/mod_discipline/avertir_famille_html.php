@@ -1,6 +1,6 @@
 <?php
 /*
-*  $Id: avertir_famille_html.php 5531 2010-10-03 09:19:49Z crob $
+*  $Id: avertir_famille_html.php 6727 2011-03-29 15:14:30Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Sandrine Dangreville
 *
@@ -97,7 +97,11 @@ if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
 		$courrier=$NON_PROTECT["courrier"];
 
 		// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-		$courrier=my_ereg_replace('(\\\r\\\n)+',"\r\n",$courrier);
+		//$courrier=my_ereg_replace('(\\\r\\\n)+',"\r\n",$courrier);
+		$courrier=preg_replace('/(\\\r\\\n)+/',"\r\n",$courrier);
+		$courrier=preg_replace('/(\\\r)+/',"\r",$courrier);
+		$courrier=preg_replace('/(\\\n)+/',"\n",$courrier);
+
 	}
 	else {
 		$courrier="";

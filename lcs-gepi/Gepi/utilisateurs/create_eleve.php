@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: create_eleve.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: create_eleve.php 6617 2011-03-03 18:18:36Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -322,7 +322,7 @@ else{
 
 	$afficher_tous_les_eleves=isset($_POST['afficher_tous_les_eleves']) ? $_POST['afficher_tous_les_eleves'] : "n";
 	$critere_recherche=isset($_POST['critere_recherche']) ? $_POST['critere_recherche'] : "";
-	$critere_recherche=my_ereg_replace("[^a-zA-ZÀÄÂÉÈÊËÎÏÔÖÙÛÜ½¼Ççàäâéèêëîïôöùûü_ -]", "", $critere_recherche);
+	$critere_recherche=preg_replace("/[^a-zA-ZÀÄÂÉÈÊËÎÏÔÖÙÛÜ½¼Ççàäâéèêëîïôöùûü_ -]/", "", $critere_recherche);
 
 
 	$sql="SELECT e.* FROM eleves e LEFT JOIN utilisateurs u ON e.login=u.login WHERE (u.login IS NULL";

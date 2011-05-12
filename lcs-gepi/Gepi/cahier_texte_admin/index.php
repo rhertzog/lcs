@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: index.php 6702 2011-03-26 13:46:44Z regis $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -66,6 +66,8 @@ if (!checkAccess()) {
  ******************************************************************/
 $msg = "";
 if (isset($_POST['is_posted'])) {
+	check_token();
+	
 	if (isset($_POST['activer'])) {
 		if (!saveSetting("active_cahiers_texte", $_POST['activer'])) $msg = "Erreur lors de l'enregistrement du paramètre activation/désactivation !";
 	}

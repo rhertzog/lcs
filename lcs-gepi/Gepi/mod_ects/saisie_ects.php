@@ -2,7 +2,7 @@
 /*
  * $Id: saisie_avis2.php 2167 2008-07-25 14:20:51Z crob $
  *
- * Copyright 2001, 2009 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -38,7 +38,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 include "../lib/bulletin_simple.inc.php";
 if (!checkAccess()) {
@@ -94,7 +94,9 @@ $msg = '';
 
 // Le formulaire a été posté
 if (isset($_POST['is_posted'])) {
-  
+
+	check_token();
+
     // On s'assure que la période sur laquelle on effectue l'enregistrement est valide
     if (($periode_num < $nb_periode) and ($periode_num > 0) and ($ver_periode[$periode_num] == "N" OR $ver_periode[$periode_num] == "P"))  {
       
@@ -562,7 +564,7 @@ function updateMention(id,valeur){
         echo " | <a href='".$_SERVER['PHP_SELF']."?mode=$mode_saisie&fiche=y&amp;periode_num=$periode_num&amp;current_eleve_login=$ele_login_suiv&amp;id_classe=$id_classe";
         echo "'>".ucfirst($gepiSettings['denomination_eleve'])." suivant</a>";
     }
-    echo " - ".$Classe->getClasse();
+    echo " - ".$Classe->getNom();
     //echo "</p>\n";
 
     echo "<input type='hidden' name='id_classe' value='$id_classe' />\n";
@@ -576,6 +578,7 @@ function updateMention(id,valeur){
 	echo "<form enctype=\"multipart/form-data\" name='ects_form' id='ects_form' action=\"saisie_ects.php\" method=\"post\">\n";
     echo "<p><b>Principaux domaines d'études</b> : ".$Classe->getEctsDomainesEtude()."</p>";
 
+	echo add_token_field();
     
     echo "<div style='float:left;'>";
 	echo "<table class='boireaus' style='margin-left: 50px; border-top: 0px solid black; border-right: 0px solid black; border-left: 0px solid black;' summary=\"Elève ".$Eleve->getLogin()."\">\n";

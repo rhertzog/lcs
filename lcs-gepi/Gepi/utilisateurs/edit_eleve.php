@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_eleve.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: edit_eleve.php 6617 2011-03-03 18:18:36Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -311,6 +311,9 @@ if(mysql_num_rows($quels_eleves)==0){
 	die;
 }
 echo " | <a href='impression_bienvenue.php?mode=eleve'>Fiches bienvenue</a>";
+
+echo " | <a href='import_prof_csv.php?export_statut=eleve'>Export CSV</a>";
+
 echo "</p>\n";
 
 //echo "<p><b>Actions par lot</b> :";
@@ -383,7 +386,7 @@ echo "<blockquote>\n";
 
 $afficher_tous_les_eleves=isset($_POST['afficher_tous_les_eleves']) ? $_POST['afficher_tous_les_eleves'] : "n";
 $critere_recherche=isset($_POST['critere_recherche']) ? $_POST['critere_recherche'] : "";
-$critere_recherche=my_ereg_replace("[^a-zA-ZÀÄÂÉÈÊËÎÏÔÖÙÛÜ½¼Ççàäâéèêëîïôöùûü_ -]", "", $critere_recherche);
+$critere_recherche=preg_replace("/[^a-zA-ZÀÄÂÉÈÊËÎÏÔÖÙÛÜ½¼Ççàäâéèêëîïôöùûü_ -]/", "", $critere_recherche);
 
 //====================================
 echo "<form enctype='multipart/form-data' name='form_rech' action='".$_SERVER['PHP_SELF']."' method='post'>\n";

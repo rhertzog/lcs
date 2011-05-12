@@ -3,7 +3,7 @@
 /**
  * Fichier qui permet de construire la barre de menu
  *
- * @version $Id: header_barre_menu.php 4803 2010-07-17 17:45:31Z regis $
+ * @version $Id: header_barre_menu.php 6277 2011-01-04 13:30:52Z crob $
  * @copyright 2008
  */
 // ====== SECURITE =======
@@ -69,6 +69,22 @@ if (!$_SESSION["login"]) {
 		$barre_notanet = '<li><a href="'.$gepiPath.'/mod_notanet/index.php">Brevet</a></li>';
 	}else{ $barre_notanet = '';}
 
+	/*
+	function acces($id,$statut) {
+		$tab_id = explode("?",$id);
+		$query_droits = @mysql_query("SELECT * FROM droits WHERE id='$tab_id[0]'");
+		$droit = @mysql_result($query_droits, 0, $statut);
+		if ($droit == "V") {
+			return "1";
+		} else {
+			return "0";
+		}
+	}
+	*/
+	if (acces('/eleves/visu_eleve.php',$_SESSION['statut'])==1) {
+		$barre_consult_eleve = '<li><a href="'.$gepiPath.'/eleves/visu_eleve.php">Consult.élève</a></li>';
+	}
+	else{ $barre_consult_eleve = '';}
 
 	echo '
 	<ol id="essaiMenu">
@@ -79,6 +95,7 @@ if (!$_SESSION["login"]) {
 		'.$barre_edt.'
 		'.$barre_discipline.'
 		'.$barre_notanet.'
+		'.$barre_consult_eleve.'
 		<li><a href="'.$gepiPath.'/utilisateurs/mon_compte.php">Mon compte</a></li>
 	</ol>
 	';

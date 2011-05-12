@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: Class.Modele.php 5095 2010-08-22 14:18:13Z eabgrall $
+ * $Id: Class.Modele.php 6223 2010-12-24 13:08:18Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -25,7 +25,7 @@ class Modele {
     private $row=Null;
     private $variable=Null;
     private $liste=Null;
-    protected  function set_array($type,$res) {
+    protected  function set_array($type,$res) {        
         unset($this->variable);
         if(mysql_num_rows($res)==0) {
             $this->variable['error']='pas de résultats';

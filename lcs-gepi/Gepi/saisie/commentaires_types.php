@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: commentaires_types.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: commentaires_types.php 5958 2010-11-22 21:39:02Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

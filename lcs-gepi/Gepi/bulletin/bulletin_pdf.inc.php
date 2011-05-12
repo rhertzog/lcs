@@ -147,10 +147,15 @@
 	$champ_bull_pdf[]="ajout_cadre_blanc_photo";
 	$champ_bull_pdf[]="affiche_moyenne_mini_general";
 	$champ_bull_pdf[]="affiche_moyenne_maxi_general";
+
+	$champ_bull_pdf[]="affiche_totalpoints_sur_totalcoefs";
+
 	$champ_bull_pdf[]="affiche_date_edition";
 	$champ_bull_pdf[]="affiche_ine";
 
 	$champ_bull_pdf[]="affiche_moyenne_general_coef_1";
+	
+	$champ_bull_pdf[]="affiche_numero_responsable";
 
 	//=========================
 	// AJOUT: boireaus 20081224
@@ -320,10 +325,15 @@
 	$val_defaut_champ_bull_pdf["ajout_cadre_blanc_photo"]=0;
 	$val_defaut_champ_bull_pdf["affiche_moyenne_mini_general"]=1;
 	$val_defaut_champ_bull_pdf["affiche_moyenne_maxi_general"]=1;
+
+	$val_defaut_champ_bull_pdf["affiche_totalpoints_sur_totalcoefs"]=0;
+
 	$val_defaut_champ_bull_pdf["affiche_date_edition"]=1;
 	$val_defaut_champ_bull_pdf["affiche_ine"]=0;
 
 	$val_defaut_champ_bull_pdf["affiche_moyenne_general_coef_1"]=0;
+	
+	$val_defaut_champ_bull_pdf["affiche_numero_responsable"]=0;
 
 	//=========================
 	// AJOUT: boireaus 20081224

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: CategoriesCtrl.php 6225 2010-12-24 14:18:37Z dblanqui $
+ * $Id: CategoriesCtrl.php 6224 2010-12-24 14:07:14Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *

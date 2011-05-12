@@ -1,7 +1,7 @@
 <?php
 
 /*
- * @version $Id: visu_eleve.inc.php 6403 2011-01-22 08:25:38Z crob $
+ * @version $Id: visu_eleve.inc.php 6782 2011-04-13 17:13:14Z crob $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Stephane Boireau
  *
@@ -44,18 +44,28 @@ if((!isset($ele_login))&&(!isset($_POST['Recherche_sans_js']))) {
 	echo "<noscript>
 	<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire1'>
 		<p>
-		Afficher les ".$gepiSettings['denomination_eleves']." dont le <b>nom</b> contient: <input type='text' name='rech_nom' value='' />
+		Afficher les ".$gepiSettings['denomination_eleves']." dont le <b>nom</b> contient&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type='text' name='rech_nom' value='' />
 		<input type='hidden' name='page' value='$page' />
 		<input type='submit' name='Recherche_sans_js' value='Rechercher' />
 		</p>
 	</form>
+
+	<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire1'>
+		<p>
+		Afficher les ".$gepiSettings['denomination_eleves']." dont le <b>prénom</b> contient&nbsp;: <input type='text' name='rech_prenom' value='' />
+		<input type='hidden' name='page' value='$page' />
+		<input type='submit' name='Recherche_sans_js' value='Rechercher' />
+		</p>
+	</form>
+
 </noscript>\n";
 	//=============================================
 
 	// Portion d'AJAX:
 	echo "<script type='text/javascript'>
-	function cherche_eleves() {
-		rech_nom=document.getElementById('rech_nom').value;
+
+	function cherche_eleves(type) {
+		rech_nom_ou_prenom=document.getElementById('rech_'+type).value;
 
 		//var url = 'liste_eleves.php';
 		var url = '../eleves/liste_eleves.php';
@@ -63,9 +73,10 @@ if((!isset($ele_login))&&(!isset($_POST['Recherche_sans_js']))) {
 			url,
 			{
 				method: 'post',
-				postBody: 'rech_nom='+rech_nom+'&page=$page',
+				postBody: 'rech_'+type+'='+rech_nom_ou_prenom+'&page=$page',
 				onComplete: affiche_eleves
 			});
+
 	}
 
 	function affiche_eleves(xhr) {
@@ -76,23 +87,56 @@ if((!isset($ele_login))&&(!isset($_POST['Recherche_sans_js']))) {
 			document.getElementById('liste_eleves').innerHTML = xhr.status;
 		}
 	}
+
+	function affichage_et_action(type) {
+		if(document.getElementById('rech_'+type).value=='') {
+			document.getElementById('Recherche_'+type).style.display='none';
+		}
+		else {
+			document.getElementById('Recherche_'+type).style.display='';
+			cherche_eleves(type);
+		}
+	}
+
+	/*
+	function cherche_eleves(type) {
+		rech_nom_ou_prenom=document.getElementById('rech_'+type).value;
+
+		new Ajax.Updater($('liste_eleves'),'../eleves/liste_eleves.php?rech_'+type+'='+rech_nom_ou_prenom+'&page=$page',{method: 'get'});
+	}
+	*/
 </script>\n";
+
 
 	// DIV avec formulaire pour navigateur AVEC Javascript:
 	echo "<div id='recherche_avec_js' style='display:none;'>\n";
 
-	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' onsubmit='cherche_eleves();return false;' method='post' name='formulaire'>";
+	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' onsubmit=\"cherche_eleves('nom');return false;\" method='post' name='formulaire'>";
 	echo "<p>\n";
-	echo "Afficher les ".$gepiSettings['denomination_eleves']." dont le <b>nom</b> contient: <input type='text' name='rech_nom' id='rech_nom' value='' />\n";
+	echo "Afficher les ".$gepiSettings['denomination_eleves']." dont le <b>nom</b> contient&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type='text' name='rech_nom' id='rech_nom' value='' onchange=\"affichage_et_action('nom')\" />\n";
 	echo "<input type='hidden' name='page' value='$page' />\n";
-	echo "<input type='button' name='Recherche' value='Rechercher' onclick='cherche_eleves()' />\n";
+	echo "<input type='button' name='Recherche' id='Recherche_nom' value='Rechercher' onclick=\"cherche_eleves('nom')\" />\n";
+	echo "</p>\n";
+	echo "</form>\n";
+
+	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' onsubmit=\"cherche_eleves('prenom');return false;\" method='post' name='formulaire'>";
+	echo "<p>\n";
+	echo "Afficher les ".$gepiSettings['denomination_eleves']." dont le <b>prénom</b> contient&nbsp;: <input type='text' name='rech_prenom' id='rech_prenom' value='' onchange=\"affichage_et_action('prenom')\" />\n";
+	echo "<input type='hidden' name='page' value='$page' />\n";
+	echo "<input type='button' name='Recherche' id='Recherche_prenom' value='Rechercher' onclick=\"cherche_eleves('prenom')\" />\n";
 	echo "</p>\n";
 	echo "</form>\n";
 
 	echo "<div id='liste_eleves'></div>\n";
 
 	echo "</div>\n";
-	echo "<script type='text/javascript'>document.getElementById('recherche_avec_js').style.display='';</script>\n";
+	echo "<script type='text/javascript'>
+document.getElementById('recherche_avec_js').style.display='';
+affichage_et_action('nom');
+affichage_et_action('prenom');
+
+if(document.getElementById('rech_nom')) {document.getElementById('rech_nom').focus();}
+</script>\n";
 
 
 	if(isset($id_classe)) {
@@ -242,9 +286,16 @@ else {
 		}
 		// =================================
 
+		// Initialisation
+		if(!isset($onglet)) {
+			$onglet="eleve";
+		}
+
 		if($ele_login_prec!=""){
 			echo " | <a href='".$_SERVER['PHP_SELF']."?ele_login=$ele_login_prec&amp;id_classe=$id_classe";
-			echo "'>".ucfirst($gepiSettings['denomination_eleve'])." précédent</a>";
+			echo "'";
+			echo " onclick=\"passer_a_eleve('$ele_login_prec','$id_classe');return false;\"";
+			echo ">".ucfirst($gepiSettings['denomination_eleve'])." précédent</a>";
 		}
 		if($chaine_options_eleves!="") {
 			echo " | <select name='ele_login' onchange=\"document.forms['form1'].submit();\">\n";
@@ -253,7 +304,9 @@ else {
 		}
 		if($ele_login_suiv!=""){
 			echo " | <a href='".$_SERVER['PHP_SELF']."?ele_login=$ele_login_suiv&amp;id_classe=$id_classe";
-			echo "'>".ucfirst($gepiSettings['denomination_eleve'])." suivant</a>";
+			echo "'";
+			echo " onclick=\"passer_a_eleve('$ele_login_suiv','$id_classe');return false;\"";
+			echo ">".ucfirst($gepiSettings['denomination_eleve'])." suivant</a>";
 		}
 
 		//echo "</p>\n";
@@ -265,6 +318,10 @@ else {
 
 	echo "</p>\n";
 	echo "</div>\n";
+
+	echo "<input type='hidden' name='onglet' id='onglet_courant' value='";
+	if(isset($onglet)) {echo $onglet;}
+	echo "' />\n";
 	echo "</form>\n";
 
 	// Affichage des onglets pour l'élève choisi
@@ -278,6 +335,17 @@ Patientez pendant l'extraction des données... merci.
 
 	echo "<script type='text/javascript'>
 	document.getElementById('patience').innerHTML=\"Patientez pendant l'extraction des données... merci.\";
+
+	function passer_a_eleve(ele_login,id_classe) {
+		if(document.getElementById('onglet_courant')) {
+			onglet=document.getElementById('onglet_courant').value;
+		}
+		else {
+			onglet='eleve';
+		}
+		//alert('".$_SERVER['PHP_SELF']."?id_classe='+id_classe+'&ele_login='+ele_login+'&onglet='+onglet);
+		document.location.replace('".$_SERVER['PHP_SELF']."?id_classe='+id_classe+'&ele_login='+ele_login+'&onglet='+onglet);
+	}
 </script>\n";
 
 	flush();
@@ -497,6 +565,34 @@ Patientez pendant l'extraction des données... merci.
 			$eleve_classe_prof="n";
 			$eleve_groupe_prof="n";
 
+			//=====================================
+			$sql="SELECT 1=1 FROM j_eleves_classes jec,
+								j_groupes_classes jgc,
+								j_groupes_professeurs jgp
+							WHERE jec.login='".$ele_login."' AND
+									jec.id_classe=jgc.id_classe AND
+									jgc.id_groupe=jgp.id_groupe AND
+									jgp.login='".$_SESSION['login']."';";
+			//echo "$sql<br />";
+			$test_eleve_classe_prof=mysql_query($sql);
+
+			if(mysql_num_rows($test_eleve_classe_prof)>0) {
+				$eleve_classe_prof="y";
+			}
+			//=====================================
+			$sql="SELECT 1=1 FROM j_eleves_groupes jeg,
+								j_groupes_professeurs jgp
+							WHERE jeg.login='".$ele_login."' AND
+									jeg.id_groupe=jgp.id_groupe AND
+									jgp.login='".$_SESSION['login']."';";
+			//echo "$sql<br />";
+			$test_eleve_groupe_prof=mysql_query($sql);
+
+			if(mysql_num_rows($test_eleve_groupe_prof)>0) {
+				$eleve_groupe_prof="y";
+			}
+			//=====================================
+
 			if($acces_releves=='n') {
 				$GepiAccesReleveProfToutesClasses=getSettingValue('GepiAccesReleveProfToutesClasses');
 				if($GepiAccesReleveProfToutesClasses=='yes') {
@@ -506,6 +602,7 @@ Patientez pendant l'extraction des données... merci.
 					$GepiAccesReleveProfTousEleves=getSettingValue('GepiAccesReleveProfTousEleves');
 					//echo "\$GepiAccesReleveProfTousEleves=$GepiAccesReleveProfTousEleves<br />";
 					if($GepiAccesReleveProfTousEleves=='yes') {
+						/*
 						$sql="SELECT 1=1 FROM j_eleves_classes jec,
 											j_groupes_classes jgc,
 											j_groupes_professeurs jgp
@@ -514,12 +611,14 @@ Patientez pendant l'extraction des données... merci.
 												jgc.id_groupe=jgp.id_groupe AND
 												jgp.login='".$_SESSION['login']."';";
 						//echo "$sql<br />";
-						$test=mysql_query($sql);
+						$test_eleve_classe_prof=mysql_query($sql);
 
-						if(mysql_num_rows($test)>0) {
+						if(mysql_num_rows($test_eleve_classe_prof)>0) {
+						*/
+
+						if($eleve_classe_prof=='y') {
 							$acces_releves="y";
-
-							$eleve_classe_prof="y";
+							//$eleve_classe_prof="y";
 						}
 					}
 
@@ -527,18 +626,21 @@ Patientez pendant l'extraction des données... merci.
 						//echo "\$GepiAccesReleveProf=$GepiAccesReleveProf<br />";
 						$GepiAccesReleveProf=getSettingValue('GepiAccesReleveProf');
 						if($GepiAccesReleveProf=='yes') {
+							/*
 							$sql="SELECT 1=1 FROM j_eleves_groupes jeg,
 												j_groupes_professeurs jgp
 											WHERE jeg.login='".$ele_login."' AND
 													jeg.id_groupe=jgp.id_groupe AND
 													jgp.login='".$_SESSION['login']."';";
 							//echo "$sql<br />";
-							$test=mysql_query($sql);
+							$test_eleve_groupe_prof=mysql_query($sql);
 
-							if(mysql_num_rows($test)>0) {
+							if(mysql_num_rows($test_eleve_groupe_prof)>0) {
+							*/
+
+							if($eleve_groupe_prof=='y') {
 								$acces_releves="y";
-
-								$eleve_groupe_prof="y";
+								//$eleve_groupe_prof="y";
 							}
 						}
 					}
@@ -553,6 +655,7 @@ Patientez pendant l'extraction des données... merci.
 				(($eleve_groupe_prof=="y")&&(substr(getSettingValue('visuDiscProfGroupes'),0,1)=='y'))) {
 				$acces_discipline="y";
 			}
+
 
 			//echo "\$acces_releves=$acces_releves<br />";
 
@@ -574,6 +677,7 @@ Patientez pendant l'extraction des données... merci.
 							$acces_bulletins="y";
 						}
 						else {
+							/*
 							$sql="SELECT 1=1 FROM j_eleves_classes jec,
 												j_groupes_classes jgc,
 												j_groupes_professeurs jgp
@@ -585,6 +689,8 @@ Patientez pendant l'extraction des données... merci.
 							$test=mysql_query($sql);
 
 							if(mysql_num_rows($test)>0) {
+							*/
+							if($eleve_classe_prof=='y') {
 								$acces_bulletins="y";
 							}
 						}
@@ -597,6 +703,7 @@ Patientez pendant l'extraction des données... merci.
 								$acces_bulletins="y";
 							}
 							else {
+								/*
 								$sql="SELECT 1=1 FROM j_eleves_groupes jeg,
 													j_groupes_professeurs jgp
 												WHERE jeg.login='".$ele_login."' AND
@@ -606,6 +713,8 @@ Patientez pendant l'extraction des données... merci.
 								$test=mysql_query($sql);
 
 								if(mysql_num_rows($test)>0) {
+								*/
+								if($eleve_groupe_prof=='y') {
 									$acces_bulletins="y";
 								}
 							}
@@ -627,6 +736,7 @@ Patientez pendant l'extraction des données... merci.
 							$acces_anna="y";
 						}
 						else {
+							/*
 							$sql="SELECT 1=1 FROM j_eleves_classes jec,
 												j_groupes_classes jgc,
 												j_groupes_professeurs jgp
@@ -638,6 +748,8 @@ Patientez pendant l'extraction des données... merci.
 							$test=mysql_query($sql);
 
 							if(mysql_num_rows($test)>0) {
+							*/
+							if($eleve_classe_prof=='y') {
 								$acces_anna="y";
 							}
 						}
@@ -649,6 +761,7 @@ Patientez pendant l'extraction des données... merci.
 								$acces_anna="y";
 							}
 							else {
+								/*
 								$sql="SELECT 1=1 FROM j_eleves_groupes jeg,
 													j_groupes_professeurs jgp
 												WHERE jeg.login='".$ele_login."' AND
@@ -658,6 +771,8 @@ Patientez pendant l'extraction des données... merci.
 								$test=mysql_query($sql);
 
 								if(mysql_num_rows($test)>0) {
+								*/
+								if($eleve_groupe_prof=='y') {
 									$acces_anna="y";
 								}
 							}
@@ -898,11 +1013,12 @@ Patientez pendant l'extraction des données... merci.
 	document.getElementById('patience').style.display='none';
 </script>\n";
 
+		/*
 		// Initialisation
 		if(!isset($onglet)) {
 			$onglet="eleve";
 		}
-
+		*/
 		//====================================
 		// Onglet Informations générales sur l'élève
 		echo "<div id='t_eleve' class='t_onglet' style='";
@@ -1090,7 +1206,11 @@ Patientez pendant l'extraction des données... merci.
 		echo "background-color: ".$tab_couleur['eleve']."; ";
 		echo "'>";
 		echo "<h2>Informations sur l'".$gepiSettings['denomination_eleve']." ".$tab_ele['nom']." ".$tab_ele['prenom']."</h2>\n";
-
+		//affichage de la date de sortie de l'élève de l'établissement
+		if ($tab_ele['date_sortie']!=0) {
+		   echo "<span class=\"red\">Date de sortie de l'établissement : le ".affiche_date_sortie($tab_ele['date_sortie'])."<br/><br/></span>";;
+		}
+		
 		echo "<table border='0' summary='Infos élève'>\n";
 		echo "<tr>\n";
 		echo "<td valign='top'>\n";
@@ -1138,6 +1258,7 @@ Patientez pendant l'extraction des données... merci.
 
 			echo "<tr><th style='text-align: left;'>Email&nbsp;:</th><td>";
 			$tmp_date=getdate();
+			//echo "<a href='mailto:".$tab_ele['email']."?subject=GEPI&amp;body=";
 			echo "<a href='mailto:".$tab_ele['email']."?subject=GEPI&amp;body=";
 			if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
 			echo ",%0d%0aCordialement.'>";
@@ -1355,7 +1476,10 @@ Patientez pendant l'extraction des données... merci.
 					echo "<td>\n";
 					for($j=0;$j<count($tab_ele['groupes'][$i]['prof']);$j++) {
 						if($tab_ele['groupes'][$i]['prof'][$j]['email']!='') {
-							echo "<a href='mailto:".$tab_ele['groupes'][$i]['prof'][$j]['email']."'>";
+							//echo "<a href='mailto:".$tab_ele['groupes'][$i]['prof'][$j]['email']."'>";
+							echo "<a href='mailto:".$tab_ele['groupes'][$i]['prof'][$j]['email']."?subject=GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
+							if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
+							echo ",%0d%0aCordialement.'>";
 						}
 						if(isset($tab_ele['classe'][0]['id_classe'])) {
 							echo affiche_utilisateur($tab_ele['groupes'][$i]['prof'][$j]['prof_login'], $tab_ele['classe'][0]['id_classe']);
@@ -1392,7 +1516,11 @@ Patientez pendant l'extraction des données... merci.
 				for($loop=0;$loop<count($tab_ele['classe']);$loop++) {
 					if($loop>0) {echo ", ";}
 					if($tab_ele['classe'][$loop]['pp']['email']!="") {
-						echo "<a href='mailto:".$tab_ele['classe'][$loop]['pp']['email']."'>";
+						//echo "<a href='mailto:".$tab_ele['classe'][$loop]['pp']['email']."'>";
+						//echo "<a href='mailto:".$tab_ele['classe'][$loop]['pp']['email']."'>";
+						echo "<a href='mailto:".$tab_ele['classe'][$loop]['pp']['email']."?subject=GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
+						if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
+						echo ",%0d%0aCordialement.'>";
 					}
 					echo $tab_ele['classe'][$loop]['pp']['civ_nom_prenom'];
 					if($tab_ele['classe'][$loop]['pp']['email']!="") {
@@ -1404,7 +1532,11 @@ Patientez pendant l'extraction des données... merci.
 
 				echo "<p><b>CPE chargé(e) du suivi</b>: ";
 				if($tab_ele['cpe']['email']!="") {
-					echo "<a href='mailto:".$tab_ele['cpe']['email']."'>";
+					//echo "<a href='mailto:".$tab_ele['cpe']['email']."'>";
+					//echo "<a href='mailto:".$tab_ele['cpe']['email']."'>";
+					echo "<a href='mailto:".$tab_ele['cpe']['email']."?subject=GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
+					if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
+					echo ",%0d%0aCordialement.'>";
 				}
 				echo $tab_ele['cpe']['civ_nom_prenom'];
 				if($tab_ele['cpe']['email']!="") {
@@ -1414,9 +1546,10 @@ Patientez pendant l'extraction des données... merci.
 
 				if($tab_ele['equipe_liste_email']!="") {
 					$tmp_date=getdate();
-					echo "<p>Ecrire un email à <a href='mailto:".$tab_ele['equipe_liste_email']."?subject=GEPI&amp;body=";
+					//echo "<p>Ecrire un email à <a href='mailto:".$tab_ele['equipe_liste_email']."?subject=GEPI&amp;body=";
+					echo "<p>Ecrire un email à <a href='mailto:".$tab_ele['equipe_liste_email']."?subject=GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
 					if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
-					if(my_ereg(",",$tab_ele['equipe_liste_email'])) {echo " à tou(te)s";}
+					if(preg_match("/,/",$tab_ele['equipe_liste_email'])) {echo " à tou(te)s";}
 					echo ",%0d%0aCordialement.'>tous les enseignants et au CPE de l'élève</a>.</p>\n";
 				}
 			}
@@ -2141,12 +2274,12 @@ Patientez pendant l'extraction des données... merci.
 				echo "<form action='".$_SERVER['PHP_SELF']."' name='form_date_disc' method='post' />\n";
 				echo "<p>Extraire les incidents entre le ";
 				//echo "<input type='text' name='date_debut_disc' value='' />\n";
-				echo "<input type='text' name = 'date_debut_disc' size='10' value = \"".$date_debut_disc."\" />\n";
+				echo "<input type='text' name = 'date_debut_disc' id= 'date_debut_disc' size='10' value = \"".$date_debut_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 				echo "<a href=\"#\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 
 				echo "et le ";
 				//echo "<input type='text' name='date_fin_disc' value='' />\n";
-				echo "<input type='text' name = 'date_fin_disc' size='10' value = \"".$date_fin_disc."\" />\n";
+				echo "<input type='text' name = 'date_fin_disc' id= 'date_fin_disc' size='10' value = \"".$date_fin_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 				echo "<a href=\"#\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 
 				echo "<input type='submit' name='restreindre_intervalle_dates' value='Valider' />\n";
@@ -2182,7 +2315,7 @@ Patientez pendant l'extraction des données... merci.
 			require("../mod_annees_anterieures/fonctions_annees_anterieures.inc.php");
 
 			//echo $_SERVER['HTTP_USER_AGENT']."<br />\n";
-			if(my_eregi("gecko",$_SERVER['HTTP_USER_AGENT'])){
+			if(preg_match("/gecko/i",$_SERVER['HTTP_USER_AGENT'])){
 				//echo "gecko=true<br />";
 				$gecko=true;
 			}
@@ -2347,6 +2480,8 @@ Patientez pendant l'extraction des données... merci.
 
 			document.getElementById('t_'+id).style.borderBottomWidth='0px';
 		}
+
+		document.getElementById('onglet_courant').value=id;
 	}
 
 	function affiche_onglet_bull(id) {
@@ -2394,6 +2529,13 @@ Patientez pendant l'extraction des données... merci.
 	}
 </script>\n";
 
+		/*
+		echo "<form action='".$_SERVER['PHP_SELF']."' method='post'>\n";
+		echo "<input type='hidden' name='onglet_courant' id='onglet_courant' value='";
+		if(isset($onglet)) {echo $onglet;}
+		echo "' />\n";
+		echo "</form>\n";
+		*/
 		echo "<p><br /></p>\n";
 	}
 }

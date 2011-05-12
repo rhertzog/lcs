@@ -2,7 +2,7 @@
 /*
  * $Id : $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -492,7 +492,9 @@ require_once("../lib/header.inc");
 
 //debug_var();
 
-echo "<div class='norme'><p class=bold><a href='";
+echo "<div class='norme'>\n";
+echo "<form action='".$_SERVER['PHP_SELF']."' id='form_change_eleve' method='get'>\n";
+echo "<p class='bold'><a href='";
 if($_SESSION['statut']=="administrateur"){
 	echo "index.php";
 }
@@ -502,6 +504,7 @@ else{
 echo "'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>\n";
 
 if(!isset($id_classe)){
+	echo "</p></form>\n";
 	echo "</div>\n";
 
 	echo "<h2>Choix de la classe</h2>\n";
@@ -530,7 +533,7 @@ if(!isset($id_classe)){
 	$nb_classes_par_colonne=round($nb_classes/3);
 
 	echo "<table width='100%' summary='Choix de la classe'>\n";
-	echo "<tr valign='top' align='center'>\n";
+	echo "<tr valign='top' style='text-align: center;'>\n";
 
 	$i = 0;
 
@@ -566,6 +569,7 @@ else{
 
 	//if(!isset($logineleve)){
 	if((!isset($logineleve))&&(!isset($aff_classe))) {
+		echo "</p></form>\n";
 		echo "</div>\n";
 
 		//$sql="SELECT DISTINCT e.nom,e.prenom,e.login FROM eleves e,j_eleves_classes jec WHERE jec.id_classe='$id_classe' AND jec.login=e.login ORDER BY e.nom,e.prenom";
@@ -592,7 +596,7 @@ else{
 			$nb_par_colonne=round($nb_eleves/3);
 
 			echo "<table width='100%' summary=\"Choix de l'élève\">\n";
-			echo "<tr valign='top' align='center'>\n";
+			echo "<tr valign='top' style='text-align: center;'>\n";
 
 			$i = 0;
 
@@ -684,8 +688,9 @@ else{
 
 				$nb_annees=mysql_num_rows($res_ant);
 
-				echo "<table class='table_annee_anterieure' summary='Bulletins'>\n";
-				echo "<tr>\n";
+				$alt=1;
+				echo "<table class='boireaus table_annee_anterieure' summary='Bulletins'>\n";
+				echo "<tr class='lig$alt'>\n";
 				echo "<th rowspan='".$nb_annees."' valign='top'>Bulletins simplifiés:</th>";
 				$cpt=0;
 				while($lig_ant=mysql_fetch_object($res_ant)){
@@ -693,7 +698,8 @@ else{
 					$tab_annees[]=$lig_ant->annee;
 
 					if($cpt>0){
-						echo "<tr>\n";
+						$alt=$alt*(-1);
+						echo "<tr class='lig$alt'>\n";
 					}
 					echo "<td style='font-weight:bold;'>$lig_ant->annee : </td>\n";
 
@@ -717,15 +723,18 @@ else{
 				}
 				echo "</table>\n";
 
-				echo "<br />\n";
+				//echo "<br />\n";
+				echo "<p><br /></p>";
 
-				echo "<table class='table_annee_anterieure' summary='Avis des conseils'>\n";
-				echo "<tr>\n";
+				$alt=1;
+				echo "<table class='boireaus table_annee_anterieure' summary='Avis des conseils'>\n";
+				echo "<tr class='lig$alt'>\n";
 				echo "<th rowspan='".$nb_annees."' valign='top'>Avis des conseils de classes:</th>";
 				$cpt=0;
 				for($i=0;$i<count($tab_annees);$i++){
 					if($cpt>0){
-						echo "<tr>\n";
+						$alt=$alt*(-1);
+						echo "<tr class='lig$alt'>\n";
 					}
 					echo "<td>\n";
 
@@ -754,7 +763,9 @@ else{
 		($_SESSION['statut']=='professeur')
 	)) {
 		//if($_SESSION['statut']!='eleve'){
-			echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe'>Choisir une autre période ou ".$gepiSettings['denomination_eleve']."</a>\n";
+			echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe'>Choisir une autre période ou ".$gepiSettings['denomination_eleve']."</a></p>\n";
+			echo "</form>\n";
+			echo "</div>\n";
 		//}
 
 		$res_liste_ele=mysql_query($sql_ele);
@@ -775,6 +786,28 @@ else{
 	else{
 		if($_SESSION['statut']!='eleve'){
 			echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe'>Choisir un autre ".$gepiSettings['denomination_eleve']."</a>\n";
+
+			if(isset($sql_ele)) {
+				$lignes_options_select_eleve=lignes_options_select_eleve($id_classe,$logineleve,$sql_ele);
+			}
+			else {
+				$lignes_options_select_eleve=lignes_options_select_eleve($id_classe,$logineleve);
+			}
+
+			echo "<select name='logineleve' onchange=\"document.forms['form_change_eleve'].submit();\">\n";
+			echo $lignes_options_select_eleve;
+			echo "</select>\n";
+			echo "<input type='hidden' name='id_classe' value='$id_classe' />\n";
+
+			if(isset($annee_scolaire)) {
+				echo "<input type='hidden' name='annee_scolaire' value='$annee_scolaire' />\n";
+			}
+			if(isset($num_periode)) {
+				echo "<input type='hidden' name='num_periode' value='$num_periode' />\n";
+			}
+			if(isset($mode)) {
+				echo "<input type='hidden' name='mode' value='$mode' />\n";
+			}
 		}
 
 		require("fonctions_annees_anterieures.inc.php");
@@ -791,27 +824,29 @@ else{
 
 		//if(!isset($logineleve)){
 		if((!isset($logineleve))||(($mode!='bull_simp')&&($mode!='avis_conseil'))) {
+			echo "</p></form>\n";
 			echo "</div>\n";
-			echo "<h2 align='center'>Choix des informations antérieures</h2>\n";
+			echo "<h2 style='text-align: center;'>Choix des informations antérieures</h2>\n";
 			//tab_choix_anterieure($logineleve);
 			tab_choix_anterieure($logineleve,$id_classe);
 		}
 		else{
 			echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe&amp;logineleve=$logineleve'>Choix des informations</a>\n";
+			echo "</p></form>\n";
 			echo "</div>\n";
 			//echo "<div style='float:right; width:3em; text-align:center;'><a href='".$_SERVER['PHP_SELF']."?logineleve=$logineleve'>Retour</a></div>\n";
 			//echo "<div style='float:left; width:5em; text-align:center;'><a href='".$_SERVER['PHP_SELF']."?logineleve=$logineleve'><img src='../images/icons/back.png' alt='Retour' class='back_link' /> Retour</a></div>\n";
 
 			if($mode=='bull_simp'){
-				echo "<h2 align='center'>Bulletin simplifié d'une année antérieure</h2>\n";
+				echo "<h2 style='text-align: center;'>Bulletin simplifié d'une année antérieure</h2>\n";
 				if(!isset($annee_scolaire)){
-					echo "<p><b>ERREUR:</b> L'année scolaire antérieure ne semble pas avoir été choisie.</p>\n";
+					echo "<p><strong>ERREUR:</strong> L'année scolaire antérieure ne semble pas avoir été choisie.</p>\n";
 				}
 				elseif(!isset($num_periode)){
-					echo "<p><b>ERREUR:</b> La période ne semble pas avoir été choisie.</p>\n";
+					echo "<p><strong>ERREUR:</strong> La période ne semble pas avoir été choisie.</p>\n";
 				}
 				elseif(!isset($id_classe)){
-					echo "<p><b>ERREUR:</b> L'identifiant de la classe actuelle de cet ".$gepiSettings['denomination_eleve']." ne semble pas avoir été fourni.</p>\n";
+					echo "<p><strong>ERREUR:</strong> L'identifiant de la classe actuelle de cet ".$gepiSettings['denomination_eleve']." ne semble pas avoir été fourni.</p>\n";
 				}
 				else{
 					/*
@@ -825,9 +860,9 @@ else{
 				}
 			}
 			elseif($mode=='avis_conseil'){
-				echo "<h2 align='center'>Avis des Conseils de classe d'une année antérieure</h2>\n";
+				echo "<h2 style='text-align: center;'>Avis des Conseils de classe d'une année antérieure</h2>\n";
 				if(!isset($annee_scolaire)){
-					echo "<p><b>ERREUR:</b> L'année scolaire antérieure ne semble pas avoir été choisie.</p>\n";
+					echo "<p><strong>ERREUR:</strong> L'année scolaire antérieure ne semble pas avoir été choisie.</p>\n";
 				}
 				else{
 					avis_conseils_de_classes_annee_anterieure($logineleve,$annee_scolaire);
@@ -919,6 +954,6 @@ else{
 //echo "<center><input type=\"submit\" name='ok' value=\"Valider\" style=\"font-variant: small-caps;\" /></center>\n";
 
 //echo "</form>\n";
-echo "<br />\n";
+//echo "<br />\n";
 require("../lib/footer.inc.php");
 ?>

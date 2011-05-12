@@ -110,7 +110,31 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 	    }
 	    return $result;
 	}
-	
+
+    /**
+	 *
+	 * Renvoi une liste des types associes ou non traitée sinon
+	 *
+	 * @return     String description
+	 *
+	 */
+	public function getTypesTraitements() {
+        $traitement_col = $this->getAbsenceEleveTraitements();
+        $result = '';
+        $besoin_echo_virgule = false;
+        foreach ($traitement_col as $bou_traitement) {
+            if ($bou_traitement->getAbsenceEleveType() != null) {
+                if ($besoin_echo_virgule) {
+                    $result .= ', ';
+                    $besoin_echo_virgule = false;
+                }
+                $result .= $bou_traitement->getAbsenceEleveType()->getNom();
+                $besoin_echo_virgule = true;
+            }
+        }
+        if ($result == '') $result = 'Non traitée';
+        return $result;
+    }
 	/**
 	 *
 	 * Renvoi true ou false en fonction des types associé
@@ -128,7 +152,63 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 	    }
 	    return false;
 	}
+    /**
+	 *
+	 * Renvoi true ou false si un type est defini ou non
+	 *
+	 * @return     boolean
+	 *
+	 */
+	public function hasTypeSaisie() {
+	    $traitements = $this->getAbsenceEleveTraitements();
+	    foreach ($traitements as $traitement) {
+		if ($traitement->getAbsenceEleveType() != null ) {
+		    return true;
+		}
+	    }
+	    return false;
+	}
+    /**
+	 *
+	 * Renvoi true ou false si le lieu est rattaché a cette saisie ou non
+	 * @param      $id_lieu id du lieu à tester
+	 * @return     boolean
+	 *
+	 */
+    public function hasLieuSaisie($id_lieu) {
 
+        if (!$this->getTraitee() && $id_lieu == null) {
+            return true;
+        }
+        $traitements = $this->getAbsenceEleveTraitements();
+        foreach ($traitements as $traitement) {
+            if ($traitement->getAbsenceEleveType() == null && $id_lieu == null) {
+                return true;
+            }
+            if ($traitement->getAbsenceEleveType() != null && $traitement->getAbsenceEleveType()->getIdLieu() == $id_lieu) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+	 *
+	 * Renvoi true ou false si le type  est du type erreur de saisie
+	 *
+	 * @return     boolean
+	 *
+	 */
+    public function hasTypeLikeErreurSaisie() {
+
+        $traitements = $this->getAbsenceEleveTraitements();
+        foreach ($traitements as $traitement) {
+            if ($traitement->getAbsenceEleveType() != null && $traitement->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::$SOUS_RESP_ETAB_NON_PRECISE
+                    && $traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_NON_PRECISE) {
+                return true;
+            }
+        }
+        return false;
+    }
 	/**
 	 *
 	 * Renvoi une chaine de caractere compréhensible concernant les dates de debut et de fin
@@ -342,6 +422,54 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 	    }
 	}
 
+  /**
+	 *
+	 * Renvoi le motif s'il existe ou Null sinon
+	 *
+	 * @return     string
+	 *
+	 */
+    public function getMotif() {
+        $motif = Null;
+        $besoin_echo_virgule = false;
+        if ($this->getTraitee()) {
+            foreach ($this->getAbsenceEleveTraitements() as $traitement) {
+                if ($traitement->getAbsenceEleveMotif() != null) {
+                    if ($besoin_echo_virgule) {
+                        $motif.= ', ';                        
+                    }                   
+                    $motif.=$traitement->getAbsenceEleveMotif()->getNom();
+                    $besoin_echo_virgule = true;
+                }
+            }
+        }
+        return ($motif);
+    }
+
+    /**
+     *
+     * Renvoi la justification si elle existe ou Null sinon
+     *
+     * @return     string
+     *
+     */
+    public function getJustification() {
+        $justification = Null;
+        $besoin_echo_virgule = false;
+        if ($this->getJustifiee()) {
+            foreach ($this->getAbsenceEleveTraitements() as $traitement) {
+                if ($traitement->getAbsenceEleveJustification() != null) {
+                    if ($besoin_echo_virgule) {
+                        $justification.= ', ';
+                    }
+                    $justification.=$traitement->getAbsenceEleveJustification()->getNom();
+                    $besoin_echo_virgule = true;
+                }
+            }
+        }
+        return ($justification);
+    }
+
 	/**
 	 *
 	 * Renvoi true ou false en fonction des justifications apporte
@@ -468,7 +596,7 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 					//WARNING WARNING WARNING WARNING
 					//si le modele change ca va bugger, il faut utiliser la requete AbsenceEleveTraitementQuery en dessous
 					//le sql a ete generer en activant les logs propel et en recuperant le sql de la requete ci-dessous
-					$sql = "SELECT /* comment_getAbsenceEleveTraitements */ a_traitements.ID, a_traitements.UTILISATEUR_ID, a_traitements.A_TYPE_ID, a_traitements.A_MOTIF_ID, a_traitements.A_JUSTIFICATION_ID, a_traitements.COMMENTAIRE, a_traitements.MODIFIE_PAR_UTILISATEUR_ID, a_traitements.CREATED_AT, a_traitements.UPDATED_AT, a_types.ID, a_types.NOM, a_types.JUSTIFICATION_EXIGIBLE, a_types.SOUS_RESPONSABILITE_ETABLISSEMENT, a_types.MANQUEMENT_OBLIGATION_PRESENCE, a_types.RETARD_BULLETIN, a_types.TYPE_SAISIE, a_types.COMMENTAIRE, a_types.SORTABLE_RANK, a_notifications.ID, a_notifications.UTILISATEUR_ID, a_notifications.A_TRAITEMENT_ID, a_notifications.TYPE_NOTIFICATION, a_notifications.EMAIL, a_notifications.TELEPHONE, a_notifications.ADR_ID, a_notifications.COMMENTAIRE, a_notifications.STATUT_ENVOI, a_notifications.DATE_ENVOI, a_notifications.ERREUR_MESSAGE_ENVOI, a_notifications.CREATED_AT, a_notifications.UPDATED_AT, a_justifications.ID, a_justifications.NOM, a_justifications.COMMENTAIRE, a_justifications.SORTABLE_RANK FROM `a_traitements` INNER JOIN j_traitements_saisies ON (a_traitements.ID=j_traitements_saisies.A_TRAITEMENT_ID) LEFT JOIN a_types ON (a_traitements.A_TYPE_ID=a_types.ID) LEFT JOIN a_notifications ON (a_traitements.ID=a_notifications.A_TRAITEMENT_ID) LEFT JOIN a_justifications ON (a_traitements.A_JUSTIFICATION_ID=a_justifications.ID) WHERE j_traitements_saisies.A_SAISIE_ID='".$this->getId()."'";
+					$sql = "SELECT /* comment_getAbsenceEleveTraitements */ a_traitements.ID, a_traitements.UTILISATEUR_ID, a_traitements.A_TYPE_ID, a_traitements.A_MOTIF_ID, a_traitements.A_JUSTIFICATION_ID, a_traitements.COMMENTAIRE, a_traitements.MODIFIE_PAR_UTILISATEUR_ID, a_traitements.CREATED_AT, a_traitements.UPDATED_AT, a_types.ID, a_types.NOM, a_types.JUSTIFICATION_EXIGIBLE, a_types.SOUS_RESPONSABILITE_ETABLISSEMENT, a_types.MANQUEMENT_OBLIGATION_PRESENCE, a_types.RETARD_BULLETIN, a_types.TYPE_SAISIE, a_types.COMMENTAIRE, a_types.ID_LIEU, a_types.SORTABLE_RANK, a_notifications.ID, a_notifications.UTILISATEUR_ID, a_notifications.A_TRAITEMENT_ID, a_notifications.TYPE_NOTIFICATION, a_notifications.EMAIL, a_notifications.TELEPHONE, a_notifications.ADR_ID, a_notifications.COMMENTAIRE, a_notifications.STATUT_ENVOI, a_notifications.DATE_ENVOI, a_notifications.ERREUR_MESSAGE_ENVOI, a_notifications.CREATED_AT, a_notifications.UPDATED_AT, a_justifications.ID, a_justifications.NOM, a_justifications.COMMENTAIRE, a_justifications.SORTABLE_RANK FROM `a_traitements` INNER JOIN j_traitements_saisies ON (a_traitements.ID=j_traitements_saisies.A_TRAITEMENT_ID) LEFT JOIN a_types ON (a_traitements.A_TYPE_ID=a_types.ID) LEFT JOIN a_notifications ON (a_traitements.ID=a_notifications.A_TRAITEMENT_ID) LEFT JOIN a_justifications ON (a_traitements.A_JUSTIFICATION_ID=a_justifications.ID) WHERE j_traitements_saisies.A_SAISIE_ID='".$this->getId()."'";
 					$con = Propel::getConnection(AbsenceEleveTraitementPeer::DATABASE_NAME, Propel::CONNECTION_READ);
 					$stmt = $con->prepare($sql);
 					$stmt->execute();
@@ -819,5 +947,48 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 	    }
 	    return parent::save($con);
 	}
+
+	/**
+	 *
+	 * Renvoi le lieu de l'absence ou le lieu de plus petit rang des types d'absence associé.
+	 *
+	 * @return     AbsenceEleveLieu
+	 *
+	 */
+	public function  getAbsenceEleveLieuEtendu(PropelPDO $con = null) {
+            $lieu = parent::getAbsenceEleveLieu($con);
+            if ($lieu != null) {
+                return $lieu;
+            } else {
+                //parcourir les types associés et retourner le lieu de plus petit rang
+                throw new PropelException("non implémenté");
+            }
+        }
+
+     /**
+	 *
+	 * Renvoi true/false selon que l'élève est sorti ou non de l'établissement
+	 *
+	 * @return Boolean
+	 *
+	 */
+    public function isSaisieEleveSorti($date_debut_test) {
+
+        $eleve = $this->getEleve();
+        if (!is_null($eleve)) {
+            $date_sortie_eleve = $eleve->getDateSortie('U');            
+            if (is_null($date_sortie_eleve) || $date_sortie_eleve == 0) {
+                return false;
+            } else {
+                if ($date_debut_test->format('U') > $date_sortie_eleve) {
+                    return(true);
+                } else {
+                    return(false);
+                }
+            }
+        }else{
+            return(false);
+        }
+    }
 
 } // AbsenceEleveSaisie

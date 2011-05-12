@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: professeurs.php 6074 2010-12-08 15:43:17Z crob $
+* $Id: professeurs.php 6468 2011-02-06 17:21:41Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -193,7 +193,7 @@ if (!isset($_POST["action"])) {
 			//if ($reg_civilite != "M." AND $reg_civilite != "MME" AND $reg_civilite != "MLLE") $reg_civilite = "M.";
 			if ($reg_civilite != "M." AND $reg_civilite != "MME" AND $reg_civilite != "MLLE") { $reg_civilite = "";}
 
-			if (!eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $reg_email)) $reg_email = "-";
+			if (!my_eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $reg_email)) $reg_email = "-";
 
 			$reg_login = preg_replace("/[^A-Za-z0-9._]/","",trim(strtoupper($reg_login)));
 			if (strlen($reg_login) > 50) $reg_login = substr($reg_login, 0, 50);
@@ -325,7 +325,7 @@ if (!isset($_POST["action"])) {
 							if ($tabligne[2] != "M." AND $tabligne[2] != "MME" AND $tabligne[2] != "MLLE") { $tabligne[2] = "";}
 
 							$tabligne[3] = preg_replace("/\"/", "", trim($tabligne[3]));
-							if (!eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $tabligne[3])) $tabligne[3] = "-";
+							if (!my_eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $tabligne[3])) $tabligne[3] = "-";
 
 
 							// On regarde si le prof existe déjà dans la base

@@ -77,6 +77,12 @@ color: green;
 .no{
 color: red;
 }
+.orange{
+ color: orangered;
+}
+.purple{
+    color:purple;
+}
 #presentations{
 padding: 10px 5px 10px 5px; width: 200px;
 }
@@ -111,4 +117,10 @@ background-color:silver;
 }
 .lig2{
 background-color:white;
+}
+td.couleur_manquement{
+  background-color:#FFBACD;
+}
+td.couleur_retard{
+  background-color:#FFF5AF;
 }

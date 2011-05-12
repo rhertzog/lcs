@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: see_all.php 5879 2010-11-16 20:17:37Z crob $
+ * @version: $Id: see_all.php 5881 2010-11-16 20:17:56Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
  *

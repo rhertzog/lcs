@@ -2,7 +2,7 @@
 
 /**
  *
- * @version $Id: creer_statut_admin.php 6074 2010-12-08 15:43:17Z crob $
+ * @version $Id: creer_statut_admin.php 5951 2010-11-22 17:05:48Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *

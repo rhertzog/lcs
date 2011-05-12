@@ -1,5 +1,5 @@
 <?php
-/* $Id: verrouillage_saisie_app.php 6074 2010-12-08 15:43:17Z crob $ */
+/* $Id: verrouillage_saisie_app.php 6730 2011-03-30 09:43:45Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -62,7 +62,7 @@ if (isset($_POST['is_posted'])) {
 	$nb_enr=0;
 
 	for($i=0;$i<count($id_classe);$i++) {
-		if((strlen(my_ereg_replace("[0-9]","",$id_classe[$i]))==0)&&($id_classe[$i]!="")){
+		if((strlen(preg_replace("/[0-9]/","",$id_classe[$i]))==0)&&($id_classe[$i]!="")){
 			//$sql="SELECT 1=1 FROM classes c, notanet n WHERE c.id='".$id_classe[$i]."' AND n.id_classe=c.id;";
 			$sql="SELECT 1=1 FROM classes c WHERE c.id='".$id_classe[$i]."';";
 			$res_test=mysql_query($sql);

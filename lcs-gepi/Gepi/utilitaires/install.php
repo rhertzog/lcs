@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: install.php 5062 2010-08-16 19:49:23Z jjacquard $
+* $Id: install.php 6837 2011-04-28 12:30:09Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -106,7 +106,7 @@ if ($etape == 4) {
 
 	if ($_POST['choix_db'] == "new_gepi") {
 		$sel_db = $_POST['table_new'];
-		$result=mysql_query("CREATE DATABASE $sel_db;");
+		$result=mysql_query("CREATE DATABASE `$sel_db`;");
 	}
 	else {
 		$sel_db = $_POST['choix_db'];
@@ -191,7 +191,7 @@ if ($etape == 4) {
 			$conn .= "#\n";
 			$conn .= "# Authentification par CAS ?\n";
 			$conn .= "# Si vous souhaitez intégrer Gepi dans un environnement SSO avec CAS,\n";
-			$conn .= "# vous devrez renseigner le fichier /lib/CAS/cas.sso.php avec les\n";
+			$conn .= "# vous devrez renseigner le fichier /secure/config_cas.inc.php avec les\n";
 			$conn .= "# informations nécessaires à l'identification du serveur CAS\n";
 			$conn .= "\$use_cas = false; // false|true\n";
 			$conn .= "?".">";

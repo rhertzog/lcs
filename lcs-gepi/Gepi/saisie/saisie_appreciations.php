@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_appreciations.php 6496 2011-02-12 18:42:14Z crob $
+* $Id: saisie_appreciations.php 6727 2011-03-29 15:14:30Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -107,9 +107,12 @@ if (isset($_POST['is_posted'])) {
 				else{
 					$app = "";
 				}
-				//echo "$k: $app<br />";
+				//echo "<pre>$k: $app</pre>";
 				// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-				$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
+				//$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
+				$app=preg_replace('/(\\\r\\\n)+/',"\r\n",$app);
+				$app=preg_replace('/(\\\r)+/',"\r",$app);
+				$app=preg_replace('/(\\\n)+/',"\n",$app);
 
 				$test_grp_app_query = mysql_query("SELECT * FROM matieres_appreciations_grp WHERE (id_groupe='" . $current_group["id"]."' AND periode='$k')");
 				$test = mysql_num_rows($test_grp_app_query);
@@ -165,9 +168,18 @@ if (isset($_POST['is_posted'])) {
 							}
 
 							//echo "\$app=$app<br />";
+							//echo "<pre style='color: red'>$reg_eleve_login: $app</pre>\n";
 
 							// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
+							/*
 							$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
+							$app=my_ereg_replace('(\\\r)+',"\r",$app);
+							$app=my_ereg_replace('(\\\n)+',"\n",$app);
+							*/
+							$app=preg_replace('/(\\\r\\\n)+/',"\r\n",$app);
+							$app=preg_replace('/(\\\r)+/',"\r",$app);
+							$app=preg_replace('/(\\\n)+/',"\n",$app);
+							//echo "<pre style='color: green'>$reg_eleve_login: $app</pre>\n";
 
 
 							//=========================
@@ -432,10 +444,7 @@ elseif((isset($_POST['correction_login_eleve']))&&(isset($_POST['correction_peri
 									$salutation=(date("H")>=18 OR date("H")<=5) ? "Bonsoir" : "Bonjour";
 									$texte_mail=$salutation.",\n\n".$texte_mail."\nCordialement.\n-- \n".$nom_declarant;
 		
-									$envoi = mail($email_destinataires,
-										$gepiPrefixeSujetMail.$sujet_mail,
-										$texte_mail,
-										"From: Mail automatique Gepi\r\n".$ajout_header."X-Mailer: PHP/".phpversion());
+									$envoi = envoi_mail($sujet_mail, $texte_mail, $email_destinataires, $ajout_header);
 								}
 							}	
 						}
@@ -699,6 +708,9 @@ echo "</div>\n";
 //===========================================================
 
 echo "<h2 class='gepi'>Bulletin scolaire - Saisie des appréciations</h2>\n";
+
+echo "<p>Vous pouvez faire apparaître dans votre appréciation la liste des notes de l'élève pour la période en insérant la chaine de caractères <b>@@Notes</b><br />(<i>les notes apparaîtront alors lors de la visualisation/impression du bulletin</i>)</p>\n";
+
 //echo "<p><b>Groupe : " . $current_group["description"] ." | Matière : $matiere_nom</b></p>\n";
 echo "<p><b>Groupe : " . htmlentities($current_group["description"]) ." (".$current_group["classlist_string"].")</b></p>\n";
 
@@ -949,6 +961,8 @@ $i=0;
 //=========================
 // Pour permettre le remplacement de la chaine _PRENOM_ par le prénom de l'élève dans les commentaires types (ctp.php)
 $chaine_champs_input_prenom="";
+//=========================
+$chaine_test_vocabulaire="";
 //=========================
 foreach ($liste_eleves as $eleve_login) {
 
@@ -1237,7 +1251,10 @@ foreach ($liste_eleves as $eleve_login) {
 				//$mess[$k].="<input type='hidden' name='prenom_eleve_".$k."[$i]' id='prenom_eleve_".$k.$num_id."' value=\"".$eleve_prenom."\" />\n";
 				$chaine_champs_input_prenom.="<input type='hidden' name='prenom_eleve_".$k."[$i]' id='prenom_eleve_".$k.$num_id."' value=\"".$eleve_prenom."\" />\n";
 
-				$mess[$k].="<textarea id=\"n".$k.$num_id."\" class='wrap' onKeyDown=\"clavier(this.id,event);\" name=\"no_anti_inject_app_eleve_".$k."_".$i."\" rows='2' cols='100' onchange=\"changement()\" onBlur=\"ajaxAppreciations('".$eleve_login_t[$k]."', '".$id_groupe."', 'n".$k.$num_id."');\"";
+				$mess[$k].="<textarea id=\"n".$k.$num_id."\" class='wrap' onKeyDown=\"clavier(this.id,event);\" name=\"no_anti_inject_app_eleve_".$k."_".$i."\" rows='2' cols='100' onchange=\"changement()\" onBlur=\"ajaxAppreciations('".$eleve_login_t[$k]."', '".$id_groupe."', 'n".$k.$num_id."');";
+				$mess[$k].="ajaxVerifAppreciations('".$eleve_login_t[$k]."', '".$id_groupe."', 'n".$k.$num_id."');";
+				$chaine_test_vocabulaire.="ajaxVerifAppreciations('".$eleve_login_t[$k]."', '".$id_groupe."', 'n".$k.$num_id."');\n";
+				$mess[$k].="\"";
 
 				//==================================
 				// Rétablissement: boireaus 20080219
@@ -1275,6 +1292,10 @@ foreach ($liste_eleves as $eleve_login) {
 				$mess[$k].=">".$eleve_app."</textarea>\n";
 				// on affiche si besoin l'appréciation temporaire (en sauvegarde)
 				$mess[$k].=$eleve_app_t;
+
+				// Espace pour afficher les éventuelles fautes de frappe
+				$mess[$k].="<div id='div_verif_n".$k.$num_id."' style='color:red;'></div>\n";
+
 				$mess[$k].= "</td>\n";
 
 				//=========================
@@ -1291,6 +1312,7 @@ foreach ($liste_eleves as $eleve_login) {
 		}
 		$k++;
 	}
+
 	//
 	//Affichage de la ligne
 	//
@@ -1476,6 +1498,12 @@ echo "<input type='hidden' name='indice_max_log_eleve' value='$i' />\n";
 	// Dispositif spécifique: décommenter la ligne pour l'activer
 	if(getSettingValue('appreciations_types_profs')=='y' || getSettingValue('appreciations_types_profs')=='yes') {include('ctp.php');}
 	//============================================
+
+
+	echo "<a href='#' onClick=\"insere_notes();return false;\">";
+	echo "<img src='../images/icons/wizard.png' width='16' height='16' alt='Insérer les notes des devoirs' title='Insérer les notes des devoirs' />";
+	echo "</a>\n";
+
 ?>
 
 <!-- Champ destiné à recevoir la valeur du champ suivant celui qui a le focus pour redonner le focus à ce champ après une validation -->
@@ -1488,7 +1516,13 @@ echo "<input type='hidden' name='indice_max_log_eleve' value='$i' />\n";
 
 
 
-echo "<script type='text/javascript'>
+echo "<script type='text/javascript'>\n";
+
+if((isset($chaine_test_vocabulaire))&&($chaine_test_vocabulaire!="")) {
+	echo $chaine_test_vocabulaire;
+}
+
+echo "
 	/*
 	function get_div_size(id_div) {
 		if(document.getElementById(id_div)) {
@@ -1504,6 +1538,19 @@ echo "<script type='text/javascript'>
 		new Ajax.Updater($('corps_bull_simp'),'ajax_edit_limite.php?choix_edit=2&login_eleve='+login_eleve+'&id_classe='+id_classe+'&periode1='+num_per1+'&periode2='+num_per2,{method: 'get'});
 	}
 	//]]>
+
+	function insere_notes() {
+		id_focus_courant=document.getElementById('focus_courant').value;
+	
+		if(document.getElementById('n'+id_focus_courant)) {
+			app0=document.getElementById('n'+id_focus_courant).value;
+
+			app1=app0+'@@Notes';
+			document.getElementById('n'+id_focus_courant).value=app1;
+			document.getElementById('n'+id_focus_courant).focus();
+		}
+	}
+
 </script>\n";
 
 

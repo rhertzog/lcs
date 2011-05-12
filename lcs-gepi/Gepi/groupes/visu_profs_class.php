@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: visu_profs_class.php 3377 2009-09-06 19:22:28Z crob $
+* $Id: visu_profs_class.php 6529 2011-02-23 12:40:32Z crob $
 *
 *  Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -176,7 +176,7 @@ if(isset($id_classe)){
 		echo "<script type='text/javascript' language='JavaScript'>
 	var fen;
 	function ouvre_popup(id_groupe,id_classe){
-		eval(\"fen=window.open('popup.php?id_groupe=\"+id_groupe+\"&id_classe=\"+id_classe+\"','','width=300,height=400,menubar=yes,scrollbars=yes')\");
+		eval(\"fen=window.open('popup.php?id_groupe=\"+id_groupe+\"&id_classe=\"+id_classe+\"','','width=400,height=400,menubar=yes,scrollbars=yes')\");
 		setTimeout('fen.focus()',500);
 	}
 </script>\n";

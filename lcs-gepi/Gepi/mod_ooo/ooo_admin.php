@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: ooo_admin.php 6074 2010-12-08 15:43:17Z crob $
+ * @version: $Id: ooo_admin.php 6740 2011-04-01 14:36:09Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -84,6 +84,7 @@ $droitRepertoire =array();
 include_once ("./lib/chemin.inc.php");
 // test d'écriture dans le dossier mes_modeles
 $dossier_test = "./".$nom_dossier_modeles_ooo_mes_modeles."dossier_test";
+@rmdir($dossier_test);
 $resultat_mkdir = @mkdir($dossier_test);
 if (!($resultat_mkdir)) {
   $droitRepertoire[]="ATTENTION : Les droits d'écriture sur le dossier
@@ -95,6 +96,7 @@ else {
 }
 
 $dossier_test = "./tmp/dossier_test";
+@rmdir($dossier_test);
 $resultat_mkdir = @mkdir($dossier_test);
 if (!($resultat_mkdir)) {
   $droitRepertoire[]="ATTENTION : Les droits d'écriture sur le dossier /mod_ooo/tmp/ sont incorrects.

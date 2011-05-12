@@ -1,6 +1,6 @@
 <?php
 /**
- * @version : $Id: index.php 6417 2011-01-24 12:18:57Z crob $
+ * @version : $Id: index.php 6416 2011-01-24 12:18:50Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Julien Jocal
  *

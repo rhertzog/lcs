@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: accueil_sauve.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: accueil_sauve.php 6770 2011-04-11 08:34:41Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -1728,10 +1728,15 @@ echo "<input type=\"hidden\" name=\"action\" value=\"zip\" />\n
 
 echo "<br /><hr />";
 
-echo "<h3 id=\"rw\">Contrôle des dossiers devant être accessibles en écriture</h3>\n";
+echo "<h3 id=\"rw\">Contrôle des dossiers devant être accessibles en écriture pour la sauvegarde/restauration</h3>\n";
 
-test_ecriture_dossier();
-echo "<br />";
+$tab_restriction=array("backup");
+test_ecriture_dossier($tab_restriction);
+echo "<br />\n";
+echo "<p>Les autres fichiers et dossiers devant être accessibles en écriture peuvent être contrôlés dans la page <a href='../mod_serveur/test_serveur.php'>Configuration serveur</a>";
+echo "<br />\n";
+echo "&nbsp;\n";
+echo "</p>\n";
 
 require("../lib/footer.inc.php");
 ?>

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: maj.php 5927 2010-11-21 10:45:07Z crob $
+ * $Id: maj.php 6098 2010-12-11 14:15:46Z tbelliard $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -205,6 +205,10 @@ if (isset ($_POST['maj'])) {
 
 	if (($force_maj == 'yes') or (quelle_maj("1.5.3.1"))) {
             require 'updates/153_to_1531.inc.php';
+	}
+
+	if (($force_maj == 'yes') or (quelle_maj("1.5.4"))) {
+            require 'updates/1531_to_154.inc.php';
 	}
 
 	// Mise à jour du numéro de version

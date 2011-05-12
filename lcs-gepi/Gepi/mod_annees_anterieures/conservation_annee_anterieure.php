@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: conservation_annee_anterieure.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: conservation_annee_anterieure.php 6691 2011-03-25 09:31:06Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -392,6 +392,7 @@ else{
 					// On vérifie que l'élève est enregistré dans archive_eleves. Sinon, on l'enregistre
 			
 					$error_enregistre_eleve[$tab_eleve[$cpt]['login_eleve']] = insert_eleve($tab_eleve[$cpt]['login_eleve'],$tab_eleve[$cpt]['ine'],$annee_scolaire,'y');
+					//echo "insert_eleve(\$tab_eleve[$cpt]['login_eleve'],\$tab_eleve[$cpt]['ine'],$annee_scolaire,'y') soit insert_eleve(".$tab_eleve[$cpt]['login_eleve'].",".$tab_eleve[$cpt]['ine'].",$annee_scolaire,'y')<br />";
 
 					// Statut de redoublant ou non:
 					$sql="SELECT * FROM j_eleves_regime WHERE login='".$tab_eleve[$cpt]['login_eleve']."'";
@@ -490,18 +491,23 @@ else{
 
 
 					// Calculer les moyennes de classe, rechercher min et max pour tous les groupes associés à la classe sur la période.
-					$sql="SELECT DISTINCT id_groupe FROM j_groupes_classes WHERE id_classe='".$id_classe[0]."'";
+					//$sql="SELECT DISTINCT id_groupe FROM j_groupes_classes WHERE id_classe='".$id_classe[0]."'";
+					$sql="SELECT DISTINCT id_groupe, priorite FROM j_groupes_classes WHERE id_classe='".$id_classe[0]."'";
 					$res_groupes=mysql_query($sql);
 
 					$moymin=array();
 					$moymax=array();
 					$moyclasse=array();
+					$ordre_matiere=array();
+
 					if(mysql_num_rows($res_groupes)==0){
 						// Dans ce cas, il ne doit pas y avoir de note,... pour les élèves
 					}
 					else{
 						while($lig_groupes=mysql_fetch_object($res_groupes)){
 							$id_groupe=$lig_groupes->id_groupe;
+
+							$ordre_matiere[$id_groupe]=$lig_groupes->priorite;
 
 							$sql="SELECT AVG(note) moyenne FROM matieres_notes WHERE id_groupe='$id_groupe' AND statut='' AND periode='$i'";
 							//echo "$sql<br />\n";
@@ -592,12 +598,13 @@ else{
 											non_justifie='$non_justifie',
 											nb_retards='$nb_retards'
 											";
-						//echo "$sql<br />";
 						echo "<!-- $sql -->\n";
 						$res_insert=mysql_query($sql);
 
 						if(!$res_insert){
 							$erreur++;
+
+							//echo "<span style='color:red'>$sql</span><br />";
 
 							echo "<script type='text/javascript'>
 	document.getElementById('td_".$i."_".$j."').style.backgroundColor='red';
@@ -645,6 +652,8 @@ else{
 						if(!$res_insert){
 							$erreur++;
 
+							//echo "<span style='color:red'>$sql</span><br />";
+
 							echo "<script type='text/javascript'>
 	document.getElementById('td_".$i."_".$j."').style.backgroundColor='red';
 </script>\n";
@@ -659,32 +668,56 @@ else{
 														WHERE login='$login_eleve' AND
 																periode='$num_periode'";
 						*/
+						/*
 						$sql="SELECT mn.*,m.nom_complet FROM j_groupes_matieres jgm,matieres m,matieres_notes mn
 														WHERE mn.login='$login_eleve' AND
 																mn.periode='$num_periode' AND
 																jgm.id_groupe=mn.id_groupe AND
-																jgm.id_matiere=m.matiere";
+																jgm.id_matiere=m.matiere;";
+						*/
+						$sql="SELECT jeg.id_groupe, m.nom_complet FROM j_groupes_matieres jgm,matieres m,j_eleves_groupes jeg
+														WHERE jeg.login='$login_eleve' AND
+																jeg.periode='$num_periode' AND
+																jgm.id_groupe=jeg.id_groupe AND
+																jgm.id_matiere=m.matiere;";
+
 						echo "<!-- $sql -->\n";
 						$res_grp=mysql_query($sql);
 
 						if(mysql_num_rows($res_grp)==0){
 							// Que faire? Est-il possible qu'il y ait quelque chose dans matieres_appreciations dans ce cas?
 							// Ca ne devrait pas...
-							echo "<!-- Aucune note sur le bulletin de période $num_periode pour l'élève $login_eleve -->\n";
+							// Si... on peut avoir un professeur qui n'a pas saisi de note ni même un tiret (malheureusement), mais mis une appréciation
+							//echo "<!-- Aucune note sur le bulletin de période $num_periode pour l'élève $login_eleve -->\n";
+
+							echo "<!-- En période $num_periode, l'élève $login_eleve n'est associé à aucun enseignement -->\n";
 						}
 						else{
 							while($lig_grp=mysql_fetch_object($res_grp)){
 
 								$id_groupe=$lig_grp->id_groupe;
 								$matiere=$lig_grp->nom_complet;
-								if($lig_grp->statut!=''){
-									$note=$lig_grp->statut;
-								}
-								else{
-									$note=$lig_grp->note;
-								}
-								$rang=$lig_grp->rang;
 
+								$sql="SELECT mn.* FROM matieres_notes mn
+														WHERE mn.login='$login_eleve' AND
+																mn.periode='$num_periode' AND
+																mn.id_groupe='$id_groupe';";
+								$res_note=mysql_query($sql);
+								if(mysql_num_rows($res_note)==0) {
+									$note='';
+									$rang=-1;
+								}
+								else {
+									$lig_note=mysql_fetch_object($res_note);
+
+									if($lig_note->statut!=''){
+										$note=$lig_note->statut;
+									}
+									else{
+										$note=$lig_note->note;
+									}
+									$rang=$lig_note->rang;
+								}
 
 								// Récupération de l'appréciation
 								$sql="SELECT appreciation FROM matieres_appreciations
@@ -702,57 +735,61 @@ else{
 									$appreciation=$lig_app->appreciation;
 								}
 
-								// Récupération des professeurs associés
-								$sql="SELECT login FROM j_groupes_professeurs WHERE id_groupe='$id_groupe' ORDER BY login";
-								echo "<!-- $sql -->\n";
-								$res_prof=mysql_query($sql);
-
-								if(mysql_num_rows($res_prof)==0){
-									$prof="";
-								}
-								else{
-									$lig_prof=mysql_fetch_object($res_prof);
-									$prof=affiche_utilisateur($lig_prof->login,$id_classe[0]);
-									while($lig_prof=mysql_fetch_object($res_prof)){
-										$prof.=", ".affiche_utilisateur($lig_prof->login,$id_classe[0]);
+								if(($note!='')||($appreciation!='-')) {
+									// Récupération des professeurs associés
+									$sql="SELECT login FROM j_groupes_professeurs WHERE id_groupe='$id_groupe' ORDER BY login";
+									echo "<!-- $sql -->\n";
+									$res_prof=mysql_query($sql);
+	
+									if(mysql_num_rows($res_prof)==0){
+										$prof="";
 									}
-								}
+									else{
+										$lig_prof=mysql_fetch_object($res_prof);
+										$prof=affiche_utilisateur($lig_prof->login,$id_classe[0]);
+										while($lig_prof=mysql_fetch_object($res_prof)){
+											$prof.=", ".affiche_utilisateur($lig_prof->login,$id_classe[0]);
+										}
+									}
+	
+									// Insertion de la note, l'appréciation,... dans la matière,...
+									if (!isset($moymin[$id_groupe])) $moymin[$id_groupe]="-";
+									if (!isset($moymax[$id_groupe])) $moymax[$id_groupe]="-";
+									if (!isset($moyclasse[$id_groupe])) $moyclasse[$id_groupe]="-";
+	
+									$sql="INSERT INTO archivage_disciplines SET
+														annee='$annee_scolaire',
+														ine='$ine',
+														classe='".addslashes($classe)."',
+														num_periode='$num_periode',
+														nom_periode='".addslashes($nom_periode)."',
+														matiere='".addslashes($matiere)."',
+														special='',
+														prof='".addslashes($prof)."',
+														note='$note',
+														moymin='".$moymin[$id_groupe]."',
+														moymax='".$moymax[$id_groupe]."',
+														moyclasse='".$moyclasse[$id_groupe]."',
+														rang='".$rang."',
+														appreciation='".addslashes($appreciation)."',
+														nb_absences='',
+														non_justifie='',
+														nb_retards='',
+														ordre_matiere='".$ordre_matiere[$id_groupe]."'
+														";
+									echo "<!-- $sql -->\n";
+									$res_insert=mysql_query($sql);
+	
+									if(!$res_insert){
+										$erreur++;
 
-								// Insertion de la note, l'appréciation,... dans la matière,...
-								if (!isset($moymin[$id_groupe])) $moymin[$id_groupe]="-";
-								if (!isset($moymax[$id_groupe])) $moymax[$id_groupe]="-";
-								if (!isset($moyclasse[$id_groupe])) $moyclasse[$id_groupe]="-";
+										//echo "<span style='color:red'>$sql</span><br />";
 
-								$sql="INSERT INTO archivage_disciplines SET
-													annee='$annee_scolaire',
-													ine='$ine',
-													classe='".addslashes($classe)."',
-													num_periode='$num_periode',
-													nom_periode='".addslashes($nom_periode)."',
-													matiere='".addslashes($matiere)."',
-													special='',
-													prof='".addslashes($prof)."',
-													note='$note',
-													moymin='".$moymin[$id_groupe]."',
-													moymax='".$moymax[$id_groupe]."',
-													moyclasse='".$moyclasse[$id_groupe]."',
-													rang='".$rang."',
-													appreciation='".addslashes($appreciation)."',
-													nb_absences='',
-													non_justifie='',
-													nb_retards=''
-													";
-								echo "<!-- $sql -->\n";
-								$res_insert=mysql_query($sql);
-
-								if(!$res_insert){
-									$erreur++;
-
-									echo "<script type='text/javascript'>
+										echo "<script type='text/javascript'>
 	document.getElementById('td_".$i."_".$j."').style.backgroundColor='red';
 </script>\n";
+									}
 								}
-
 
 							} // Fin de la boucle matières
 
@@ -811,494 +848,6 @@ else{
 //**************************************************
 //==================================================
 
-			/*
-			while($lig_periode=mysql_fetch_object($res_periode)){
-
-				$num_periode=$lig_periode->num_periode;
-				$nom_periode=$lig_periode->nom_periode;
-
-				// Nettoyage:
-				$sql="DELETE FROM archivage_disciplines WHERE annee='$annee_scolaire' AND classe='$classe' AND num_periode='$num_periode'";
-				$res_nettoyage=mysql_query($sql);
-
-				if(!$res_nettoyage){
-					echo "<p style='color:red'><b>ERREUR</b> lors du nettoyage</p>\n";
-					echo "</form>\n";
-					require("../lib/footer.inc.php");
-					die();
-				}
-
-				echo "<p>Période: $nom_periode</p>\n";
-
-				// Calculer les moyennes de classe, rechercher min et max pour tous les groupes associés à la classe sur la période.
-				$sql="SELECT DISTINCT id_groupe FROM j_groupes_classes WHERE id_classe='".$id_classe[0]."'";
-				$res_groupes=mysql_query($sql);
-
-				$moymin=array();
-				$moymax=array();
-				$moyclasse=array();
-				if(mysql_num_rows($res_groupes)==0){
-					// Dans ce cas, il ne doit pas y avoir de note,... pour les élèves
-				}
-				else{
-					while($lig_groupes=mysql_fetch_object($res_groupes)){
-						$id_groupe=$lig_groupes->id_groupe;
-
-						$sql="SELECT AVG(note) moyenne FROM matieres_notes WHERE id_groupe='$id_groupe' AND statut=''";
-						//echo "$sql<br />\n";
-						$res_moy=mysql_query($sql);
-						if(mysql_num_rows($res_moy)==0){
-							$moyclasse[$id_groupe]="-";
-						}
-						else{
-							$lig_moy=mysql_fetch_object($res_moy);
-							$moyclasse[$id_groupe]=round($lig_moy->moyenne*10)/10;
-						}
-
-						$sql="SELECT MAX(note) moyenne FROM matieres_notes WHERE id_groupe='$id_groupe' AND statut=''";
-						$res_moy=mysql_query($sql);
-						if(mysql_num_rows($res_moy)==0){
-							$moymax[$id_groupe]="-";
-						}
-						else{
-							$lig_moy=mysql_fetch_object($res_moy);
-							$moymax[$id_groupe]=$lig_moy->moyenne;
-						}
-
-						$sql="SELECT MIN(note) moyenne FROM matieres_notes WHERE id_groupe='$id_groupe' AND statut=''";
-						$res_moy=mysql_query($sql);
-						if(mysql_num_rows($res_moy)==0){
-							$moymin[$id_groupe]="-";
-						}
-						else{
-							$lig_moy=mysql_fetch_object($res_moy);
-							$moymin[$id_groupe]=$lig_moy->moyenne;
-						}
-					}
-				}
-
-
-
-
-				// Boucle sur les élèves de la classe pour la période
-				$sql="SELECT e.* FROM eleves e,j_eleves_classes jec WHERE id_classe='".$id_classe[0]."' AND periode='$num_periode' AND jec.login=e.login ORDER BY login";
-				//echo "$sql<br />\n";
-				$res_ele=mysql_query($sql);
-
-				if(mysql_num_rows($res_ele)==0){
-					echo "<p>Aucun élève dans la classe $classe pour la période '$nom_periode'.</p>\n";
-				}
-				else{
-					echo "<table border='1'>\n";
-					while($lig_ele=mysql_fetch_object($res_ele)){
-						// Infos élève
-						$ine=$lig_ele->no_gep;
-						$nom=$lig_ele->nom;
-						$prenom=$lig_ele->prenom;
-						$naissance=$lig_ele->naissance;
-						$naissance2=formate_date($lig_ele->naissance);
-						$login_eleve=$lig_ele->login;
-
-						echo "<tr>\n";
-						echo "<td>$nom</td>\n";
-						echo "<td>$prenom</td>\n";
-
-						if($ine==""){
-							$ine="LOGIN_".$login_eleve;
-						}
-
-						// Statut de redoublant ou non:
-						$sql="SELECT * FROM j_eleves_regime WHERE login='$login_eleve'";
-						$res_red=mysql_query($sql);
-
-						if(mysql_num_rows($res_red)==0){
-							$doublant="-";
-						}
-						else{
-							$lig_red=mysql_fetch_object($res_red);
-							$doublant=$lig_red->doublant;
-						}
-						//echo "doublant=$doublant<br />\n";
-
-						// CPE associé à l'élève
-						//$sql="SELECT u.nom,u.prenom FROM j_eleves_cpe jec, utilisateurs u WHERE jec.cpe_login=u.login AND jec.e_login='$login_eleve'";
-						$sql="SELECT jec.cpe_login FROM j_eleves_cpe jec WHERE jec.e_login='$login_eleve'";
-						$res_cpe=mysql_query($sql);
-
-						if(mysql_num_rows($res_cpe)==0){
-							$cpe="";
-						}
-						else{
-							$lig_cpe=mysql_fetch_object($res_cpe);
-							$cpe=affiche_utilisateur($lig_cpe->cpe_login,$id_classe[0]);
-
-							while($lig_cpe=mysql_fetch_object($res_cpe)){
-								$cpe.=", ".affiche_utilisateur($lig_cpe->cpe_login,$id_classe[0]);
-							}
-						}
-
-						// Absences, retards,... de l'élève
-						$sql="SELECT * FROM absences WHERE login='$login_eleve' AND periode='$num_periode'";
-						$res_abs=mysql_query($sql);
-
-						if(mysql_num_rows($res_abs)==0){
-							$nb_absences="-";
-							$non_justifie="-";
-							$nb_retards="-";
-							$appreciation="-";
-						}
-						else{
-							$lig_abs=mysql_fetch_object($res_abs);
-							$nb_absences=$lig_abs->nb_absences;
-							$non_justifie=$lig_abs->non_justifie;
-							$nb_retards=$lig_abs->nb_retards;
-							$appreciation=$lig_abs->appreciation;
-						}
-
-						// Insertion de l'absence dans archivage_disciplines
-						$sql="SELECT 1=1 FROM archivage_disciplines WHERE annee='$annee_scolaire' AND
-																		ine='$ine' AND
-																		num_periode='$num_periode' AND
-																		special='ABSENCES'";
-						$res_test=mysql_query($sql);
-
-
-						echo "<td>\n";
-							echo "<table border='1'>\n";
-							echo "<tr>\n";
-								echo "<td rowspan='3'>$cpe</td>\n";
-								echo "<td>nb_absences</td>\n";
-								echo "<td>$nb_absences</td>\n";
-							echo "</tr>\n";
-
-							echo "<tr>\n";
-								echo "<td>non_justifie</td>\n";
-								echo "<td>$non_justifie</td>\n";
-							echo "</tr>\n";
-
-							echo "<tr>\n";
-								echo "<td>nb_retards</td>\n";
-								echo "<td>$nb_retards</td>\n";
-							echo "</tr>\n";
-							echo "</table>\n";
-						echo "</td>\n";
-
-
-
-						if(mysql_num_rows($res_test)==0){
-							$sql="INSERT INTO archivage_disciplines SET
-												annee='$annee_scolaire',
-												ine='$ine',
-												classe='".addslashes($classe)."',
-												num_periode='$num_periode',
-												nom_periode='".addslashes($nom_periode)."',
-												special='ABSENCES',
-												matiere='',
-												prof='".addslashes($cpe)."',
-												note='',
-												moymin='',
-												moymax='',
-												moyclasse='',
-												appreciation='".addslashes($appreciation)."',
-												nb_absences='$nb_absences',
-												non_justifie='$non_justifie',
-												nb_retards='$nb_retards'
-												";
-							//echo "$sql<br />";
-							echo "<!-- $sql -->\n";
-							$res_insert=mysql_query($sql);
-
-							// AJOUTER UN TRAITEMENT D'ERREUR...
-
-						}
-						else{
-							$sql="UPDATE archivage_disciplines SET
-												classe='".addslashes($classe)."',
-												nom_periode='".addslashes($nom_periode)."',
-												matiere='',
-												prof='".addslashes($cpe)."',
-												note='',
-												moymin='',
-												moymax='',
-												moyclasse='',
-												appreciation='".addslashes($appreciation)."',
-												nb_absences='$nb_absences',
-												non_justifie='$non_justifie',
-												nb_retards='$nb_retards'
-											WHERE
-												annee='$annee_scolaire',
-												ine='$ine',
-												num_periode='$num_periode',
-												special='ABSENCES'
-												";
-							echo "<!-- $sql -->\n";
-							$res_update=mysql_query($sql);
-
-							// AJOUTER UN TRAITEMENT D'ERREUR...
-
-						}
-
-
-
-
-						// Personne assurant le suivi de la classe...
-						$sql="SELECT suivi_par FROM classes WHERE id='$id_classe[0]'";
-						$res_suivi=mysql_query($sql);
-						if(mysql_num_rows($res_suivi)==0){
-							$suivi_par="-";
-						}
-						else{
-							$lig_suivi=mysql_fetch_object($res_suivi);
-							$suivi_par=$lig_suivi->suivi_par;
-						}
-
-
-						// Avis du conseil de classe
-						$sql="SELECT * FROM avis_conseil_classe WHERE login='$login_eleve' AND periode='$num_periode'";
-						$res_avis=mysql_query($sql);
-
-						if(mysql_num_rows($res_avis)==0){
-							$avis="-";
-						}
-						else{
-							$lig_avis=mysql_fetch_object($res_avis);
-							$avis=$lig_avis->avis;
-							// A quoi sert le champ statut de la table avis_conseil_classe ?
-						}
-
-
-
-
-						echo "<td>\n";
-							echo "<table border='1'>\n";
-							echo "<tr>\n";
-								echo "<td>$suivi_par</td>\n";
-							echo "</tr>\n";
-							echo "<tr>\n";
-								echo "<td>Avis</td>\n";
-							echo "</tr>\n";
-							echo "<tr>\n";
-								echo "<td>$avis</td>\n";
-							echo "</tr>\n";
-							echo "</table>\n";
-						echo "</td>\n";
-
-
-
-						// Insertion de l'avis dans archivage_disciplines
-						$sql="SELECT 1=1 FROM archivage_disciplines WHERE annee='$annee_scolaire' AND
-																		ine='$ine' AND
-																		num_periode='$num_periode' AND
-																		special='AVIS_CONSEIL'";
-						$res_test=mysql_query($sql);
-
-						if(mysql_num_rows($res_test)==0){
-							$sql="INSERT INTO archivage_disciplines SET
-												annee='$annee_scolaire',
-												ine='$ine',
-												classe='".addslashes($classe)."',
-												num_periode='$num_periode',
-												nom_periode='".addslashes($nom_periode)."',
-												special='AVIS_CONSEIL',
-												matiere='',
-												prof='".addslashes($suivi_par)."',
-												note='',
-												moymin='',
-												moymax='',
-												moyclasse='',
-												appreciation='".addslashes($avis)."',
-												nb_absences='',
-												non_justifie='',
-												nb_retards=''
-												";
-							echo "<!-- $sql -->\n";
-							$res_insert=mysql_query($sql);
-
-							// AJOUTER UN TRAITEMENT D'ERREUR...
-
-						}
-						else{
-							$sql="UPDATE archivage_disciplines SET
-												classe='".addslashes($classe)."',
-												nom_periode='".addslashes($nom_periode)."',
-												matiere='',
-												prof='".addslashes($suivi_par)."',
-												note='',
-												moymin='',
-												moymax='',
-												moyclasse='',
-												appreciation='".addslashes($avis)."',
-												nb_absences='',
-												non_justifie='',
-												nb_retards=''
-											WHERE
-												annee='$annee_scolaire',
-												ine='$ine',
-												num_periode='$num_periode',
-												special='AVIS_CONSEIL'
-												";
-							echo "<!-- $sql -->\n";
-							$res_update=mysql_query($sql);
-
-							// AJOUTER UN TRAITEMENT D'ERREUR...
-
-						}
-
-
-
-						// Boucle sur les matières de l'élève
-
-						//$sql="SELECT mn.*,g.description FROM groupes g,matieres_notes mn
-						//								WHERE login='$login_eleve' AND
-						//										periode='$num_periode'";
-
-						$sql="SELECT mn.*,m.nom_complet FROM j_groupes_matieres jgm,matieres m,matieres_notes mn
-														WHERE mn.login='$login_eleve' AND
-																mn.periode='$num_periode' AND
-																jgm.id_groupe=mn.id_groupe AND
-																jgm.id_matiere=m.matiere";
-						$res_grp=mysql_query($sql);
-
-						if(mysql_num_rows($res_grp)==0){
-							// Que faire? Est-il possible qu'il y ait quelque chose dans matieres_appreciations dans ce cas?
-							// Ca ne devrait pas...
-						}
-						else{
-
-							echo "<td>\n";
-								echo "<table border='1'>\n";
-
-
-							while($lig_grp=mysql_fetch_object($res_grp)){
-
-								$id_groupe=$lig_grp->id_groupe;
-								$matiere=$lig_grp->nom_complet;
-								if($lig_grp->statut!=''){
-									$note=$lig_grp->statut;
-								}
-								else{
-									$note=$lig_grp->note;
-								}
-								$rang=$lig_grp->rang;
-
-
-								// Récupération de l'appréciation
-								$sql="SELECT appreciation FROM matieres_appreciations
-														WHERE login='$login_eleve' AND
-																periode='$num_periode' AND
-																id_groupe='$id_groupe'";
-								$res_app=mysql_query($sql);
-
-								if(mysql_num_rows($res_app)==0){
-									$appreciation="-";
-								}
-								else{
-									$lig_app=mysql_fetch_object($res_app);
-									$appreciation=$lig_app->appreciation;
-								}
-
-								// Récupération des professeurs associés
-								$sql="SELECT login FROM j_groupes_professeurs WHERE id_groupe='$id_groupe' ORDER BY login";
-								$res_prof=mysql_query($sql);
-
-								if(mysql_num_rows($res_prof)==0){
-									$prof="";
-								}
-								else{
-									$lig_prof=mysql_fetch_object($res_prof);
-									$prof=affiche_utilisateur($lig_prof->login,$id_classe[0]);
-									while($lig_prof=mysql_fetch_object($res_prof)){
-										$prof.=", ".affiche_utilisateur($lig_prof->login,$id_classe[0]);
-									}
-								}
-
-
-
-								echo "<tr>\n";
-									echo "<td>$matiere</td>\n";
-									echo "<td>$prof</td>\n";
-									echo "<td>$note</td>\n";
-									echo "<td>$rang</td>\n";
-									echo "<td>$appreciation</td>\n";
-								echo "</tr>\n";
-
-
-								// Insertion de la note, l'appréciation,... dans la matière,...
-								$sql="SELECT 1=1 FROM archivage_disciplines WHERE annee='$annee_scolaire' AND
-																				ine='$ine' AND
-																				num_periode='$num_periode' AND
-																				matiere='$matiere'";
-								$res_test=mysql_query($sql);
-
-								if(mysql_num_rows($res_test)==0){
-									$sql="INSERT INTO archivage_disciplines SET
-														annee='$annee_scolaire',
-														ine='$ine',
-														classe='".addslashes($classe)."',
-														num_periode='$num_periode',
-														nom_periode='".addslashes($nom_periode)."',
-														matiere='".addslashes($matiere)."',
-														special='',
-														prof='".addslashes($prof)."',
-														note='$note',
-														moymin='".$moymin[$id_groupe]."',
-														moymax='".$moymax[$id_groupe]."',
-														moyclasse='".$moyclasse[$id_groupe]."',
-														rang='".$rang."',
-														appreciation='".addslashes($appreciation)."',
-														nb_absences='',
-														non_justifie='',
-														nb_retards=''
-														";
-									echo "<!-- $sql -->\n";
-									$res_insert=mysql_query($sql);
-
-									// AJOUTER UN TRAITEMENT D'ERREUR...
-
-								}
-								else{
-									$sql="UPDATE archivage_disciplines SET
-														classe='".addslashes($classe)."',
-														nom_periode='".addslashes($nom_periode)."',
-														special='',
-														prof='".addslashes($prof)."',
-														note='$note',
-														moymin='".$moymin[$id_groupe]."',
-														moymax='".$moymax[$id_groupe]."',
-														moyclasse='".$moyclasse[$id_groupe]."',
-														rang='".$rang."',
-														appreciation='".addslashes($appreciation)."',
-														nb_absences='',
-														non_justifie='',
-														nb_retards=''
-													WHERE
-														annee='$annee_scolaire',
-														ine='$ine',
-														num_periode='$num_periode',
-														matiere='".addslashes($matiere)."'
-														";
-									echo "<!-- $sql -->\n";
-									$res_update=mysql_query($sql);
-
-									// AJOUTER UN TRAITEMENT D'ERREUR...
-
-								}
-
-
-							}
-
-
-								echo "</table>\n";
-							echo "</td>\n";
-
-						}
-						echo "</tr>\n";
-					}
-					echo "</table>\n";
-				}
-			}
-			*/
-
 		}
 
 
@@ -1336,6 +885,7 @@ else{
 
 		echo "<input type='hidden' name='annee_scolaire' value='$annee_scolaire' />\n";
 		echo "<input type='hidden' name='confirmer' value='ok' />\n";
+		echo add_token_field();
 		//echo "<center><input type=\"submit\" name='ok' value=\"Valider\" style=\"font-variant: small-caps;\" /></center>\n";
 
 	//===================================

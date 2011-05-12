@@ -38,7 +38,7 @@
 <head>
 <!-- on inclut l'entête -->
 	<?php
-	  $tbs_bouton_taille = "..";
+		$tbs_bouton_taille=$gepiPath;
 	  include('../../templates/origine/header_template.php');
 	?>
 
@@ -92,10 +92,10 @@
 <!-- Fin haut de page -->
   
   <form action="index.php" id="form1" method="post">
+	<p class="center grandEspaceHaut">
 <?php
 echo add_token_field();
 ?>
-	<p class="center grandEspaceHaut">
 	  <input type="submit" value="Enregistrer"/>
 	</p>
 	

@@ -2,7 +2,7 @@
 
 @set_time_limit(0);
 /*
-* $Id: disciplines_csv.php 6074 2010-12-08 15:43:17Z crob $
+* $Id: disciplines_csv.php 6598 2011-03-03 09:56:30Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -162,6 +162,8 @@ if (!isset($is_posted)) {
 	echo "</form>";
 
 } else {
+	check_token(false);
+
 	$dbf_file = isset($_FILES["dbf_file"]) ? $_FILES["dbf_file"] : NULL;
 	//if(strtoupper($dbf_file['name']) == "F_TMT.DBF") {
 	if(strtoupper($dbf_file['name']) == "F_TMT.CSV") {
@@ -247,7 +249,7 @@ if (!isset($is_posted)) {
 					//=========================
 					// MODIF: boireaus 20071024
 					//$ligne = fgets($fp, 4096);
-					$ligne = my_ereg_replace('"','',fgets($fp, 4096));
+					$ligne = preg_replace('/"/','',fgets($fp, 4096));
 					//=========================
 					if(trim($ligne)!=""){
 						$tabligne=explode(";",$ligne);

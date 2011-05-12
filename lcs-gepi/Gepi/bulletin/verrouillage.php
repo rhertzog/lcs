@@ -1,6 +1,6 @@
 <?php
 /*
-* @version: $Id: verrouillage.php 6254 2010-12-29 21:10:49Z crob $
+* @version: $Id: verrouillage.php 6259 2011-01-01 22:29:34Z dblanqui $
 *
 * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -46,8 +46,6 @@ $periode=isset($_GET['periode']) ? $_GET['periode'] : 0;
 // quelle action après le verrouillage ?
 $action_apres=isset($_GET['action']) ? $_GET['action'] : NULL;
 
-// Passer à 'n' pour désactiver DateTime()
-$datetime_actif="y";
 
 if (isset($_POST['deverouillage_auto_periode_suivante'])) {
 	check_token();
@@ -85,8 +83,7 @@ if (isset($_POST['ok'])) {
 						    if (!$register) {$pb_reg_ver = 'yes';}
 						}
 					}
-
-					if(($datetime_actif=='y')&&(isset($_POST["date_fin_".$nom_classe]))&&($_POST["date_fin_".$nom_classe]!=""))  {
+					if ((isset($_POST["date_fin_".$nom_classe]))&&($_POST["date_fin_".$nom_classe]!=""))  {
 						try {
 						    $date_fin = new DateTime(str_replace("/",".",$_POST["date_fin_".$nom_classe]));
 						    if ($date_fin->format('U') != $row_per[1]) {
@@ -318,7 +315,9 @@ if (($classe != 0) AND ($periode !=0)) {
 			echo "<th><img src=\"../lib/create_im_mat.php?texte=".$texte_deverrouiller."&amp;width=22\" width=\"22\" border=0 alt=\"Déverrouiller\" /></th>\n";
 			echo "<th><img src=\"../lib/create_im_mat.php?texte=".$texte_verrouiller_part."&amp;width=22\" width=\"22\" border=0 alt=\"Verrouiller partiellement\" /></th>\n";
 			echo "<th><img src=\"../lib/create_im_mat.php?texte=".$texte_verrouiller_tot."&amp;width=22\" width=\"22\" border=0 alt=\"Verrouiller totalement\" /></th>\n";
-			echo "<th>Date Fin</th>\n";
+            if(getSettingValue("active_module_absence")=="2"){
+                echo "<th>Date Fin</th>\n";
+            }
 		}
 		echo "</tr>\n";
 		//$flag = 0;
@@ -369,17 +368,19 @@ if (($classe != 0) AND ($periode !=0)) {
 						echo "<td><input type=\"radio\" name=\"".$nom_classe."\" value=\"O\" onchange=\"changement();actualise_cell_($id_classe,$i);\" ";
 						if ($row_per[1] == "O") {echo "checked";}
 						echo " /></td>\n";
-						echo "<td>";
-						echo "<input type=\"text\" size=\"8\" name=\"date_fin_".$nom_classe."\" value=\"";
-						if ($row_per[2] != 0) {
-						    echo date("d/m/Y", strtotime($row_per[2]));
-						}
-						echo "\"/>";
-						echo "</td>\n";
+                        if(getSettingValue("active_module_absence")=="2"){
+                            echo "<td>";
+                            echo "<input type=\"text\" size=\"8\" name=\"date_fin_".$nom_classe."\" value=\"";
+                            if ($row_per[2] != 0) {
+                                echo date("d/m/Y", strtotime($row_per[2]));
+                            }
+                            echo "\"/>";
+                            echo "</td>\n";
+                        }
 						$j++;
 					}
 				}
-				for ($i = $j; $i < $max_per; $i++) echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>\n";
+				for ($i = $j; $i < $max_per; $i++) echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>\n";
 		
 				echo "</tr>\n";
 			}

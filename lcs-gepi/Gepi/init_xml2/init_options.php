@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: init_options.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: init_options.php 5935 2010-11-21 16:20:26Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

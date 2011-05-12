@@ -1,5 +1,5 @@
 <?php
-/* $Id: definir_salles.php 6074 2010-12-08 15:43:17Z crob $ */
+/* $Id: definir_salles.php 6760 2011-04-09 17:54:37Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -186,7 +186,10 @@ if(isset($definition_salles)) {
 						// La salle existe
 
 						$lig=mysql_fetch_object($res);
-						if((!in_array($lig->salle,$salle))&&(!in_array($lig->salle,$tab_salles))) {
+						//if((!in_array($lig->salle,$salle))&&(!in_array($lig->salle,$tab_salles))) {
+						if(((!in_array($lig->salle,$tab_salles))&&(!is_array($salle)))||
+						((is_array($salle))&&(!in_array($lig->salle,$salle))&&(!in_array($lig->salle,$tab_salles))))
+						 {
 							$sql="INSERT INTO eb_salles SET salle='".$lig->salle."', id_epreuve='$id_epreuve';";
 							$insert=mysql_query($sql);
 							if(!$insert) {$msg.="Erreur lors de l'ajout de la salle '$lig->salle'<br />";}

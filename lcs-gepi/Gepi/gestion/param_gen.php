@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: param_gen.php 6074 2010-12-08 15:43:17Z crob $
+* $Id: param_gen.php 6675 2011-03-22 16:57:28Z crob $
 *
 * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -233,8 +233,17 @@ if (isset($_POST['is_posted'])) {
 				$msg .= "Erreur lors de l'enregistrement de 'contact_admin_mailto' !";
 			}
 		}
-		
 
+		if (isset($_POST['envoi_mail_liste'])) {
+			if (!saveSetting("envoi_mail_liste", 'y')) {
+				$msg .= "Erreur lors de l'enregistrement de 'envoi_mail_liste' !";
+			}
+		}
+		else {
+			if (!saveSetting("envoi_mail_liste", 'n')) {
+				$msg .= "Erreur lors de l'enregistrement de 'envoi_mail_liste' !";
+			}
+		}
 
 		if (isset($_POST['gepiAdminAdressFormHidden'])) {
 			if (!saveSetting("gepiAdminAdressFormHidden", 'n')) {
@@ -273,7 +282,48 @@ if (isset($_POST['is_posted'])) {
 				$msg .= "Erreur lors de l'enregistrement du paramètre d'exclusion des caractères prêtant à confusion sur les mots de passe !";
 			}
 		}
-	
+
+		if (isset($_POST['mode_email_resp'])) {
+			if (!saveSetting("mode_email_resp", $_POST['mode_email_resp'])) {
+				$msg .= "Erreur lors de l'enregistrement du mode de mise à jour des email responsables !";
+			}
+			else {
+				$sql="SELECT * FROM infos_actions WHERE titre='Paramétrage mode_email_resp requis';";
+				$res_test=mysql_query($sql);
+				if(mysql_num_rows($res_test)>0) {
+					while($lig_ia=mysql_fetch_object($res_test)) {
+						$sql="DELETE FROM infos_actions_destinataires WHERE id_info='$lig_ia->id';";
+						$del=mysql_query($sql);
+						if($del) {
+							$sql="DELETE FROM infos_actions WHERE id='$lig_ia->id';";
+							$del=mysql_query($sql);
+						}
+					}
+				}
+
+			}
+		}
+
+		if (isset($_POST['mode_email_ele'])) {
+			if (!saveSetting("mode_email_ele", $_POST['mode_email_ele'])) {
+				$msg .= "Erreur lors de l'enregistrement du mode de mise à jour des email élèves !";
+			}
+			else {
+				$sql="SELECT * FROM infos_actions WHERE titre='Paramétrage mode_email_ele requis';";
+				$res_test=mysql_query($sql);
+				if(mysql_num_rows($res_test)>0) {
+					while($lig_ia=mysql_fetch_object($res_test)) {
+						$sql="DELETE FROM infos_actions_destinataires WHERE id_info='$lig_ia->id';";
+						$del=mysql_query($sql);
+						if($del) {
+							$sql="DELETE FROM infos_actions WHERE id='$lig_ia->id';";
+							$del=mysql_query($sql);
+						}
+					}
+				}
+			}
+		}
+
 		//===============================================================
 		// Traitement des problemes de points d'interrogation à la place des accents
 		if (isset($_POST['mode_utf8_bulletins_pdf'])) {
@@ -473,6 +523,14 @@ if (isset($_POST['is_posted'])) {
 		}
 
 
+		if (isset($_POST['bul_rel_nom_matieres'])) {
+			$bul_rel_nom_matieres=$_POST['bul_rel_nom_matieres'];
+			if (!saveSetting("bul_rel_nom_matieres", $bul_rel_nom_matieres)) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre bul_rel_nom_matieres !";
+			}
+		}
+
+
 
 		if (isset($_POST['delais_apres_cloture'])) {
 			$delais_apres_cloture=$_POST['delais_apres_cloture'];
@@ -539,6 +597,9 @@ $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter
 $titre_page = "Paramètres généraux";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
+
+//debug_var();
+
 ?>
 <p class=bold><a href="index.php#param_gen"<?php
 echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
@@ -708,6 +769,20 @@ echo add_token_field();
 	</tr>
 	<tr>
 		<td style="font-variant: small-caps;">
+		<label for='envoi_mail_liste' style='cursor: pointer;'>Permettre d'envoyer des mails à une liste d'élèves :<br />
+		<span style='font-size: small'>(<i>sous réserve que les mails soient remplis</i>)</span><br />
+		<span style='font-size: small'>Nous attirons votre attention sur le fait qu'envoyer un mail à une liste d'utilisateurs via un lien mailto permet à chaque élève de connaitre les email des autres élèves sans que l'autorisation de divulgation ou non paramétrée dans <b>Gérer mon compte</b> soit prise en compte.</span></label>
+		</td>
+		<td valign='top'>
+		<input type="checkbox" id='envoi_mail_liste' name="envoi_mail_liste" value="y"
+		<?php
+			if(getSettingValue("envoi_mail_liste")=='y'){echo " checked";}
+		?>
+		onchange='changement()' />
+		</td>
+	</tr>
+	<tr>
+		<td style="font-variant: small-caps;">
 		Durée maximum d'inactivité : <br />
 		<span class='small'>(Durée d'inactivité, en minutes, au bout de laquelle un utilisateur est automatiquement déconnecté de Gepi.) Attention, la variable session.maxlifetime dans le fichier php.ini est réglée à <?php echo(ini_get("session.gc_maxlifetime")); ?> secondes, soit un maximum de <?php echo(ini_get("session.gc_maxlifetime")/60); ?> minutes pour la session.</span>
 		</td>
@@ -796,6 +871,39 @@ echo add_token_field();
 		</td>
 		</tr>
 		</table>
+	</td>
+	</tr>
+
+
+
+
+	<tr>
+	<td style="font-variant: small-caps;" valign='top'>
+		<a name='mode_email_resp'></a>
+		<!--Mode de mise à jour des emails responsables et élèves :<br />(<i style='font-size:small;'>Les élèves et responsables peuvent avoir un email dans deux tables s'ils disposent d'un compte utilisateur ('eleves' et 'utilisateurs' pour les premiers, 'resp_pers' et 'utilisateurs' pour les seconds)<br />Ces email peuvent donc se trouver non synchronisés entre les tables</i>)-->
+		Mode de mise à jour des emails responsables :<br />(<i style='font-size:small;'>Les responsables peuvent avoir un email dans deux tables s'ils disposent d'un compte utilisateur ('resp_pers' et 'utilisateurs')<br />Ces email peuvent donc se trouver non synchronisés entre les tables</i>)
+	</td>
+	<td valign='top'>
+		<input type="radio" name="mode_email_resp" id="mode_email_resp_sconet" value="sconet" <?php if((getSettingValue("mode_email_resp")=="sconet")||(getSettingValue("mode_email_resp")=="")) {echo 'checked';} ?> onchange='changement()' /> <label for='mode_email_resp_sconet' style='cursor: pointer;'>Mise à jour de l'email via Sconet uniquement</label><br />
+		<input type="radio" name="mode_email_resp" id="mode_email_resp_mon_compte" value="mon_compte" <?php if(getSettingValue("mode_email_resp")=="mon_compte"){echo 'checked';} ?> onchange='changement()' /> <label for='mode_email_resp_mon_compte' style='cursor: pointer;'>Mise à jour de l'email depuis Gérer mon compte uniquement<br />&nbsp;&nbsp;&nbsp;&nbsp;(<i>modifications dans Sconet non prises en compte</i>)<br />&nbsp;&nbsp;&nbsp;&nbsp;(<i>sauf sso, voir dans ce cas [<a href='options_connect.php#cas_attribut_email'>Options de connexion</a>]</i>)</label><br />
+		<!--
+		<input type="radio" name="mode_email_resp" id="mode_email_resp_sso" value="sso" <?php if(getSettingValue("mode_email_resp")=="sso"){echo 'checked';} ?> onchange='changement()' /> <label for='mode_email_resp_sso' style='cursor: pointer;'>Mise à jour de l'email via SSO (<i>???</i>)</label><br />
+		-->
+	</td>
+	</tr>
+
+
+	<tr>
+	<td style="font-variant: small-caps;" valign='top'>
+		<a name='mode_email_ele'></a>
+		Mode de mise à jour des emails élèves :<br />(<i style='font-size:small;'>Les élèves peuvent avoir un email dans deux tables s'ils disposent d'un compte utilisateur ('eleves' et 'utilisateurs')<br />Ces email peuvent donc se trouver non synchronisés entre les tables</i>)
+	</td>
+	<td valign='top'>
+		<input type="radio" name="mode_email_ele" id="mode_email_ele_sconet" value="sconet" <?php if((getSettingValue("mode_email_ele")=="sconet")||(getSettingValue("mode_email_ele")=="")) {echo 'checked';} ?> onchange='changement()' /> <label for='mode_email_ele_sconet' style='cursor: pointer;'>Mise à jour de l'email via Sconet uniquement</label><br />
+		<input type="radio" name="mode_email_ele" id="mode_email_ele_mon_compte" value="mon_compte" <?php if(getSettingValue("mode_email_ele")=="mon_compte"){echo 'checked';} ?> onchange='changement()' /> <label for='mode_email_ele_mon_compte' style='cursor: pointer;'>Mise à jour de l'email depuis Gérer mon compte uniquement<br />&nbsp;&nbsp;&nbsp;&nbsp;(<i>modifications dans Sconet non prises en compte</i>)<br />&nbsp;&nbsp;&nbsp;&nbsp;(<i>sauf sso, voir dans ce cas [<a href='options_connect.php#cas_attribut_email'>Options de connexion</a>]</i>)</label><br />
+		<!--
+		<input type="radio" name="mode_email_ele" id="mode_email_ele_sso" value="sso" <?php if(getSettingValue("mode_email_ele")=="sso"){echo 'checked';} ?> onchange='changement()' /> <label for='mode_email_ele_sso' style='cursor: pointer;'>Mise à jour de l'email via SSO (<i>???</i>)</label><br />
+		-->
 	</td>
 	</tr>
 
@@ -963,6 +1071,40 @@ En mettant une valeur négative, vous désactivez le désarchivage</i>)</td>\n";
 			?>
 		</td>
 	</tr-->
+
+
+
+	<tr>
+		<td style="font-variant: small-caps; vertical-align:top;">
+		<a name='bul_rel_nom_matieres'></a>
+		Pour la colonne matière/enseignement dans les bulletins et relevés de notes, utiliser&nbsp;:
+		</td>
+		<td valign='top'>
+
+			<?php
+			$bul_rel_nom_matieres=getSettingValue("bul_rel_nom_matieres");
+			if($bul_rel_nom_matieres=="") {$bul_rel_nom_matieres="nom_complet_matiere";}
+
+			echo "<input type='radio' name='bul_rel_nom_matieres' id='bul_rel_nom_matieres_nom_complet_matiere' value='nom_complet_matiere'";
+			if($bul_rel_nom_matieres=='nom_complet_matiere') {echo " checked";}
+			echo " onchange='changement()' />\n";
+			echo "<label for='bul_rel_nom_matieres_nom_complet_matiere' style='cursor: pointer'> le nom complet de matière</label>\n";
+			echo "<br />\n";
+
+			echo "<input type='radio' name='bul_rel_nom_matieres' id='bul_rel_nom_matieres_nom_groupe' value='nom_groupe'";
+			if($bul_rel_nom_matieres=='nom_groupe') {echo " checked";}
+			echo " onchange='changement()' />";
+			echo "<label for='bul_rel_nom_matieres_nom_groupe' style='cursor: pointer'> le nom (court) du groupe</label>\n";
+			echo "<br />\n";
+
+			echo "<input type='radio' name='bul_rel_nom_matieres' id='bul_rel_nom_matieres_description_groupe' value='description_groupe'";
+			if($bul_rel_nom_matieres=='description_groupe') {echo " checked";}
+			echo " onchange='changement()' />";
+			echo "<label for='bul_rel_nom_matieres_description_groupe' style='cursor: pointer'> la description du groupe</label>\n";
+			?>
+		</td>
+	</tr>
+
 
 
 	<tr>

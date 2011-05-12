@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: classes_const.php 6411 2011-01-23 16:11:13Z crob $
+* $Id: classes_const.php 6410 2011-01-23 16:11:00Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

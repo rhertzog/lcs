@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: prof_disc_classes.php 6074 2010-12-08 15:43:17Z crob $
+* $Id: prof_disc_classes.php 5939 2010-11-21 18:41:12Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

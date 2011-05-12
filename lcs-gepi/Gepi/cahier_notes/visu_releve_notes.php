@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: visu_releve_notes.php 3323 2009-08-05 10:06:18Z crob $
+ * $Id: visu_releve_notes.php 6721 2011-03-28 19:47:06Z crob $
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -35,7 +35,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -45,7 +45,7 @@ if (!checkAccess()) {
 // rajout christian
 
 function verif_num($texte_ver) {
-	if(!ereg("^[0-9]+$",$texte_ver)){ $texte_ver = ""; } else { $texte_ver = $texte_ver; }
+	if(!my_ereg("^[0-9]+$",$texte_ver)){ $texte_ver = ""; } else { $texte_ver = $texte_ver; }
 	return $texte_ver;
  }
 
@@ -503,7 +503,7 @@ function releve_notes($current_eleve_login,$nb_periode,$anneed,$moisd,$jourd,$an
 	$larg_tab = 680;
 	$larg_col1 = 120;
 	$larg_col2 = $larg_tab - $larg_col1;
-	echo "<table class='tab_releve_note' summary='relevé de notes. Colonne 1 : Matière et enseignants. Colonne 2 : Notes etautres informations'>\n";
+	echo "<table class='tab_releve_note' summary='relevé de notes. Colonne 1 : Matière et enseignants. Colonne 2 : Notes et autres informations'>\n";
 		echo "<caption class='invisible no_print'>relevé de notes</caption>\n";
 		echo "<tr>\n";
 			//=================================
@@ -1022,14 +1022,14 @@ if (!isset($id_classe) and (!isset($id_groupe)) and $_SESSION['statut'] != "resp
 
 							echo "<h2 class='invisible'>Dates</h2>";
 		  					echo "<a name='calend'></a>Du : \n";
-							echo "<input type='text' id='display_date_debut' name='display_date_debut' size='10' value='$display_date_debut' />\n";
+							echo "<input type='text' id='display_date_debut' name='display_date_debut' size='10' value='$display_date_debut' onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 							echo "<label for='display_date_debut' class='invisible'>Date de début</label>\n";
 							echo "<a href=\"#calend\" onclick=\"".$cal3->get_strPopup('../lib/calendrier/pop.calendrier_id.php', 350, 170)."\">\n";
 							//echo "<a href=\"#calend\" onclick=\"".$cal3->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\">\n";
 								echo "<img src='../lib/calendrier/petit_calendrier.gif' alt='Calendrier' />\n";
 							echo "</a>\n";
 							echo "&nbsp;au :\n";
-							echo "<input type='text' id='display_date_fin' name ='display_date_fin' size='10' value='$display_date_fin' />\n";
+							echo "<input type='text' id='display_date_fin' name ='display_date_fin' size='10' value='$display_date_fin' onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 							echo "<label for='display_date_fin' class='invisible'>Date de fin</label>\n";
 							echo "<a href=\"#calend\" onclick=\"".$cal4->get_strPopup('../lib/calendrier/pop.calendrier_id.php', 350, 170)."\">\n";
 								echo "<img src='../lib/calendrier/petit_calendrier.gif' alt='Calendrier' />\n";
@@ -1853,7 +1853,7 @@ function aff_lig_adresse_parent(mode){
 	echo "<a name=\"calend\"></a>\n";
 	echo "<input type=\"radio\" name=\"choix_periode\" id='choix_periode_dates' value=\"0\" checked='checked' />\n";
 	echo "<label for='choix_periode_dates' class='curseur_pointeur'> \nDe la date : </label>\n";
-	echo "<input type='text' id='display_date_debut' name = 'display_date_debut' size='10' value = \"".$display_date_debut."\" />\n";
+	echo "<input type='text' id='display_date_debut' name = 'display_date_debut' size='10' value = \"".$display_date_debut."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 	echo "<label for='display_date_debut' class='curseur_pointeur'>\n";
 		echo "<a href=\"#calend\" onclick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier_id.php', 350, 170)."\">\n";
 			// echo "<img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" />\n";
@@ -1862,7 +1862,7 @@ function aff_lig_adresse_parent(mode){
 
 		echo "&nbsp;à la date : \n";
 	echo "</label>";
-	echo "<input type='text' id='display_date_fin' name='display_date_fin' size='10' value = \"".$display_date_fin."\" />";
+	echo "<input type='text' id='display_date_fin' name='display_date_fin' size='10' value = \"".$display_date_fin."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
 	echo "<label for='display_date_fin' class='curseur_pointeur'>\n";
 		echo "<a href=\"#calend\" onclick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier_id.php', 350, 170)."\">\n";
 			// echo "<img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" />\n";

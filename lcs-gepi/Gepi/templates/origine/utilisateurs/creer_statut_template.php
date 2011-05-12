@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: creer_statut_template.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: creer_statut_template.php 6697 2011-03-25 21:54:27Z regis $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -100,10 +100,10 @@
 	</p>
 
 	<form id="auth_statuts_perso" action="creer_statut_admin.php" method="post">
+	  <p>
 <?php
 echo add_token_field();
 ?>
-	  <p>
 		<input type="hidden" name="action" value="valide" />
 		<input type="checkbox" 
 			   id="idAutorise" 

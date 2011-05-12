@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: admin_template.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: admin_template.php 6697 2011-03-25 21:54:27Z regis $
  * 
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -105,10 +105,10 @@
 	</em>
   </p>
   <form action="<?php echo $_SERVER['PHP_SELF']; ?>" id="form1" method="post">
+	<fieldset class="no_bordure">
 <?php
 echo add_token_field();
 ?>
-	<fieldset class="no_bordure">
 	  <legend class="invisible">Activation</legend>
 	  <input type="radio" 
 			 name="activer" 

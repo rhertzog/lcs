@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: sauve_famille_avertie.php 5400 2010-09-23 10:01:22Z crob $
+ * $Id: sauve_famille_avertie.php 6606 2011-03-03 14:09:03Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -56,6 +56,8 @@ $login=isset($_GET['login']) ? $_GET['login'] : NULL;
 $avertie=isset($_GET['avertie']) ? $_GET['avertie'] : NULL;
 
 if((isset($id_incident))&&(isset($login))&&(isset($avertie))) {
+	check_token();
+
 	/*
 	echo "\$id_incident=$id_incident<br />";
 	echo "\$login=$login<br />";

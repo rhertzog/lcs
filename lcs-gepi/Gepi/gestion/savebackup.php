@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: savebackup.php 6372 2011-01-19 09:53:19Z tbelliard $
+ * $Id: savebackup.php 6370 2011-01-19 08:54:56Z tbelliard $
  *
  * Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -80,6 +80,6 @@ if ($n > 0) {
     clearstatcache();
 }
 
-send_file_download_headers('text/x-sql', $filename);
+send_file_download_headers('text/x-sql',$filename);
 readfile($filepath);
 ?>

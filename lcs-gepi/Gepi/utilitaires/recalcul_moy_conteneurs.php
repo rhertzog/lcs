@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: recalcul_moy_conteneurs.php 6074 2010-12-08 15:43:17Z crob $
+* $Id: recalcul_moy_conteneurs.php 5934 2010-11-21 13:33:58Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

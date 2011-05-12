@@ -1,8 +1,8 @@
 <?php
 /**
- * @version : $Id: creer_seq_ajax_step1.php 4317 2010-04-16 20:55:02Z jjacquard $
+ * @version : $Id: creer_seq_ajax_step1.php 6614 2011-03-03 17:41:34Z crob $
  *
- * Copyright 2001, 2009 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
  * This file is part of GEPI.
  *
@@ -104,6 +104,9 @@ if ($select == "nbre_sequences"){
     ';
     $ts = $ts + 86400;
   }
+
+	echo add_token_field();
+
   echo '
   <p>
     <input type="submit" name="enregistrer" value="Enregistrer" />

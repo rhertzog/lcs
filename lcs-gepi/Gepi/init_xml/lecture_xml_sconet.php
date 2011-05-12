@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 
-// $Id: lecture_xml_sconet.php 6074 2010-12-08 15:43:17Z crob $
+// $Id: lecture_xml_sconet.php 5936 2010-11-21 17:32:17Z crob $
 
 // Initialisations files
 require_once("../lib/initialisations.inc.php");

@@ -1,6 +1,6 @@
 <?php
 /*
-* @version: $Id: import_absences_sconet.php 6074 2010-12-08 15:43:17Z crob $
+* @version: $Id: import_absences_sconet.php 5971 2010-11-23 20:19:04Z crob $
 */
 
 @set_time_limit(0);

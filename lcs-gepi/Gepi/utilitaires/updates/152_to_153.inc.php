@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: 152_to_153.inc.php 6126 2010-12-13 20:09:52Z crob $
+ * $Id: 152_to_153.inc.php 6125 2010-12-13 20:09:44Z crob $
  *
  * Fichier de mise à jour de la version 1.5.2 à la version 1.5.3
  * Le code PHP présent ici est exécuté tel quel.

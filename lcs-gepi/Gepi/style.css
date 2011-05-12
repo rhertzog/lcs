@@ -1,4 +1,4 @@
-/* $Id: style.css 4907 2010-07-27 19:37:46Z jjacquard $ */
+/* $Id: style.css 6116 2010-12-12 19:02:34Z crob $ */
 
 body {
 	padding: 0;
@@ -1006,3 +1006,34 @@ div.resize-handle {
 	left:0;
 }
 /* ===================== */
+div.appreciations_deroulantes_graphe_old {
+position : absolute;/*j"ai choisi de positionner la boite à partir de l'entête*/
+top : 515px;/*idem*/
+left : 5px;/*idem*/
+font-family: Tahoma, Arial, Helvetica, Sans-Serif;
+font-size: 16px;/*0.95em;*/
+border: 1px solid #FFFFFF;
+width : 320px; /*largeur de la boite*/
+padding : 2px;
+background: white;
+text-align:left;
+overflow: hidden;
+border: 1px solid black;
+}
+
+div.appreciations_deroulantes_graphe {
+position : relative;/*j"ai choisi de positionner la boite à partir de l'entête*/
+top : 0px;/*idem*/
+left : 5px;/*idem*/
+font-family: Tahoma, Arial, Helvetica, Sans-Serif;
+font-size: 16px;/*0.95em;*/
+border: 1px solid #FFFFFF;
+width : 320px; /*largeur de la boite*/
+padding : 2px;
+background: white;
+text-align:left;
+overflow: hidden;
+border: 1px solid black;
+}
+#appreciations_deroulantes {  overflow: hidden;  position: relative; }
+#appreciations_defile {  position: relative; }

@@ -1,9 +1,9 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: step2.php 3212 2009-06-12 09:47:53Z crob $
+ * $Id: step2.php 5937 2010-11-21 17:42:55Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -35,13 +35,16 @@ die();
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
 die();
-};
+}
 
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
 die();
 }
+
+// Page bourrinée... la gestion du token n'est pas faite... et ne sera faite que si quelqu'un utilise encore ce mode d'initialisation et le manifeste sur la liste de diffusion gepi-users
+check_token();
 
 //**************** EN-TETE *****************
 $titre_page = "Outil d'initialisation de l'année : Importation des élèves - Etape 2";

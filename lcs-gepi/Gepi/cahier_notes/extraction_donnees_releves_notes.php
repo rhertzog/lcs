@@ -1,6 +1,6 @@
 <?php
 	/*
-		$Id: extraction_donnees_releves_notes.php 6315 2011-01-09 08:41:14Z crob $
+		$Id: extraction_donnees_releves_notes.php 6317 2011-01-09 08:41:35Z crob $
 	*/
 
 	$debug_extract="n";
@@ -228,6 +228,8 @@
 			$tab_releve[$id_classe][$periode_num]['rn_moy_classe']=isset($tab_rn_moy_classe[$loop_classe]) ? "y" : "n";
 
 			$tab_releve[$id_classe][$periode_num]['rn_retour_ligne']=isset($tab_rn_retour_ligne[$loop_classe]) ? "y" : "n";
+			$_SESSION['pref_rn_retour_ligne']=$tab_releve[$id_classe][$periode_num]['rn_retour_ligne'];
+
 			$tab_releve[$id_classe][$periode_num]['rn_rapport_standard_min_font']=((isset($tab_rn_rapport_standard_min_font[$loop_classe]))&&($tab_rn_rapport_standard_min_font[$loop_classe]!='')&&(preg_match("/^[0-9.]*$/",$tab_rn_rapport_standard_min_font[$loop_classe]))&&($tab_rn_rapport_standard_min_font[$loop_classe]>0)) ? $tab_rn_rapport_standard_min_font[$loop_classe] : 3;
 
 			$_SESSION['pref_rn_rapport_standard_min_font']=$tab_releve[$id_classe][$periode_num]['rn_rapport_standard_min_font'];
@@ -487,7 +489,6 @@
 							$sql.=") " .
 							"ORDER BY jgc.priorite,jgm.id_matiere";
 						}
-//echo "$sql<br />\n";
 						$appel_liste_groupes = mysql_query($sql);
 						$nombre_groupes = mysql_num_rows($appel_liste_groupes);
 
@@ -512,8 +513,17 @@
 								$k++;
 							}
 
-							$current_matiere_nom_complet_query = mysql_query("SELECT nom_complet FROM matieres WHERE matiere='$current_matiere'");
-							$current_matiere_nom_complet = mysql_result($current_matiere_nom_complet_query, 0, "nom_complet");
+							if(getSettingValue('bul_rel_nom_matieres')=='nom_groupe') {
+								$current_matiere_nom_complet = sql_query1("SELECT name FROM groupes WHERE id='$current_groupe'");
+							}
+							elseif(getSettingValue('bul_rel_nom_matieres')=='description_groupe') {
+								$current_matiere_nom_complet = sql_query1("SELECT description FROM groupes WHERE id='$current_groupe'");
+							}
+							else {
+								$current_matiere_nom_complet_query = mysql_query("SELECT nom_complet FROM matieres WHERE matiere='$current_matiere'");
+								$current_matiere_nom_complet = mysql_result($current_matiere_nom_complet_query, 0, "nom_complet");
+							}
+
 							$tab_ele['groupe'][$j]['matiere_nom_complet']=$current_matiere_nom_complet;
 
 							//if($avec_coef_devoir=="oui"){
@@ -745,7 +755,7 @@
 									$current_id_devoir = @mysql_result($query_notes,$mm,'d.id');
 									$tab_ele['groupe'][$j]['devoir'][$m]['id_devoir']=$current_id_devoir;
 									//===========================================
-	
+
 									$tab_ele['groupe'][$j]['devoir'][$m]['display_app']=$eleve_display_app;
 									$tab_ele['groupe'][$j]['devoir'][$m]['app']=$eleve_app;
 									$tab_ele['groupe'][$j]['devoir'][$m]['note']=$eleve_note;
@@ -843,6 +853,7 @@ if($i==0) {
 
 						//$sql="SELECT e.* FROM etablissements e, j_eleves_etablissements j WHERE (j.id_eleve ='".$current_eleve_login[$i]."' AND e.id = j.id_etablissement);";
 						$sql="SELECT e.* FROM etablissements e, j_eleves_etablissements j WHERE (j.id_eleve ='".$tab_ele['elenoet']."' AND e.id = j.id_etablissement);";
+						//echo "$sql<br />\n";
 						$data_etab = mysql_query($sql);
 						if(mysql_num_rows($data_etab)>0) {
 							$tab_ele['etab_id'] = @mysql_result($data_etab, 0, "id");
@@ -962,5 +973,4 @@ if($i==0) {
 			}
 		}
 	}
-
 ?>

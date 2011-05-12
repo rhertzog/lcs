@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_lvr.php 6074 2010-12-08 15:43:17Z crob $
+* $Id: saisie_lvr.php 5984 2010-11-24 14:54:46Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger, Stephane Boireau
 *

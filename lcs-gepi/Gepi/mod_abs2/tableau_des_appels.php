@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: tableau_des_appels.php 5696 2010-10-18 18:55:59Z jjacquard $
+ * @version $Id: tableau_des_appels.php 6557 2011-02-28 20:41:35Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -221,7 +221,16 @@ foreach($classe_col as $classe){
 		  ->condition('cond2', 'AbsenceEleveSaisie.IdGroupe IN ?', $classe->getGroupes()->toKeyValue('Id', 'Id'))       // create a condition named 'cond2'
 		  ->where(array('cond1', 'cond2'), 'or')              // combine 'cond1' and 'cond2' with a logical OR
 		  ->find();
-	if ($abs_col->isEmpty()) {
+    $test_saisies_sorti=false;
+    foreach($abs_col as $abs){
+        if($abs->isSaisieEleveSorti($dt_debut_creneau)){
+            $test_saisies_sorti=true;
+        }else{
+            $test_saisies_sorti=false;
+            break;
+        }
+    }
+	if ($abs_col->isEmpty()||$test_saisies_sorti) {
 	    if ($cours_col->isEmpty()) {
 		$appel_manquant = true;
 		$echo_str .= 'Appel non fait<br/>';
@@ -231,6 +240,9 @@ foreach($classe_col as $classe){
 		$appel_manquant = false;
 	    }
 	    foreach ($abs_col as $abs) {//$abs = new AbsenceEleveSaisie();
+        if($abs->isSaisieEleveSorti($dt_debut_creneau)){
+            continue;
+        }
 		$affiche = false;
 		if ($abs->getIdClasse()!=null && !in_array(Array($abs->getIdClasse(), $abs->getUtilisateurId()), $classe_deja_sorties)) {
 		    $echo_str .= $abs->getCreatedAt('H:i').' ';
@@ -273,7 +285,9 @@ foreach($classe_col as $classe){
 	    echo '<br/>';
 	}
 	foreach ($abs_col as $absenceSaisie) {
-	    if ($absenceSaisie->getManquementObligationPresence()) {
+        if($absenceSaisie->isSaisieEleveSorti($dt_debut_creneau)){
+            continue;
+        }elseif ($absenceSaisie->getManquementObligationPresence()) {
 		echo "<a style='color: red;' href='visu_saisie.php?id_saisie=".$absenceSaisie->getPrimaryKey()."'>";
 	    } elseif (!$absenceSaisie->getManquementObligationPresenceSpecifie_NON_PRECISE()) {
 		echo "<a href='visu_saisie.php?id_saisie=".$absenceSaisie->getPrimaryKey()."'>";
@@ -310,6 +324,9 @@ foreach($classe_col as $classe){
 	if (!$abs_col->isEmpty()) {
 	    $aid_deja_sorties = Array();
 	    foreach ($abs_col as $absenceSaisie) {
+            if($absenceSaisie->isSaisieEleveSorti($dt_debut_creneau)){
+            continue;
+            }
 		    if ($absenceSaisie->getIdAid()!==null && !in_array($absenceSaisie->getIdAid(), $aid_deja_sorties)) {
 			echo  $absenceSaisie->getCreatedAt('H:i').' ';
 			echo  $absenceSaisie->getAidDetails()->getNom().' ';

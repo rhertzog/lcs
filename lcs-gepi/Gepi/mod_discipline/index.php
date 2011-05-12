@@ -1,7 +1,7 @@
 <?php
 
 /*
-* $Id: index.php 5526 2010-10-03 07:43:11Z crob $
+* $Id: index.php 6442 2011-01-29 20:49:46Z eabgrall $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -455,6 +455,18 @@ if($_SESSION['statut']=='administrateur') {
 		$menuPage[]=$nouveauItem;
 	}
 	unset($nouveauItem);
+	
+	$nouveauItem = new itemGeneral();
+	$nouveauItem->chemin='/mod_discipline/delegation.php';
+	if ($nouveauItem->acces($nouveauItem->chemin,$_SESSION['statut']))
+	{
+		$nouveauItem->titre="Gestion des délégations d'exclusions temporaires" ;
+		$nouveauItem->expli="Permet de gérer la liste des délégataires pour la génération des courriers d'exclusion temporaire" ;
+		$nouveauItem->indexMenu=$a;
+		$menuPage[]=$nouveauItem;
+	}
+	unset($nouveauItem);
+
 
 }
 //fin de la table configuration

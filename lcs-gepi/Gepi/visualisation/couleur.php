@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: couleur.php 6074 2010-12-08 15:43:17Z crob $
+* $Id: couleur.php 5969 2010-11-23 18:39:40Z crob $
 *
 * Modification... Stephane Boireau
 *

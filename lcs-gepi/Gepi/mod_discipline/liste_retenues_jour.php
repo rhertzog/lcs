@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: liste_retenues_jour.php 5400 2010-09-23 10:01:22Z crob $
+ * $Id: liste_retenues_jour.php 6727 2011-03-29 15:14:30Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -66,49 +66,62 @@ else {
 	$mois=$tab_date[1];
 	$jour=$tab_date[0];
 
-	$sql="SELECT * FROM s_sanctions s, s_retenues sr WHERE s.id_sanction=sr.id_sanction AND date='".$annee."-".$mois."-".$jour."' ORDER BY heure_debut, lieu;";
-	$res_sanction=mysql_query($sql);
-	if(mysql_num_rows($res_sanction)>0) {
+	/*
+	if(!checkdate($tmp_date[1],$tmp_date[0],$tmp_date[2])) {
+		$msg.="La date saisie n'est pas valide.<br />";
+	}
+	*/
 
-		echo "<table class='boireaus' summary='Retenues du jour'>\n";
-		echo "<tr>\n";
-		echo "<th style='font-size:x-small;'>Heure</th>\n";
-		echo "<th style='font-size:x-small;'>Dur&eacute;e</th>\n";
-		echo "<th style='font-size:x-small;'>Lieu</th>\n";
-		echo "<th style='font-size:x-small;'>El&egrave;ve</th>\n";
-		echo "</tr>\n";
-
-		$alt=1;
-		while($lig_sanction=mysql_fetch_object($res_sanction)) {
-
-			$date=formate_date($lig_sanction->date);
-			$heure_debut=$lig_sanction->heure_debut;
-			$duree=$lig_sanction->duree;
-			$lieu=$lig_sanction->lieu;
-			$travail=$lig_sanction->travail;
-			$current_eleve_login=$lig_sanction->login;
-
-			$alt=$alt*(-1);
-			echo "<tr class='lig$alt'>\n";
-			echo "<td style='font-size:x-small;'>$heure_debut</td>\n";
-			echo "<td style='font-size:x-small;'>$duree</td>\n";
-			echo "<td style='font-size:x-small;'>$lieu</td>\n";
-			echo "<td style='font-size:x-small;'>";
-			echo htmlentities(p_nom($current_eleve_login));
-
-			echo " (<em>";
-			$tmp_tab=get_class_from_ele_login($current_eleve_login);
-			//if(isset($tmp_tab['liste_nbsp'])) {echo htmlentities($tmp_tab['liste_nbsp']);}
-			if(isset($tmp_tab['liste'])) {echo my_ereg_replace(" ","&nbsp;",htmlentities($tmp_tab['liste']));}
-			echo "</em>)";
-
-			echo "</td>\n";
-			echo "</tr>\n";
-		}
-		echo "</table>\n";
+	if((!preg_match("/^[0-9]*$/",$annee))||
+	(!preg_match("/^[0-9]*$/",$mois))||
+	(!preg_match("/^[0-9]*$/",$jour))) {
+		echo "<p style='color:red;'>La date '$date' est invalide.</p>\n";
 	}
 	else {
-		echo "<p>Aucune retenue n'est encore saisie<br />pour ce jour (<em>$date</em>).</p>\n";
+		$sql="SELECT * FROM s_sanctions s, s_retenues sr WHERE s.id_sanction=sr.id_sanction AND date='".$annee."-".$mois."-".$jour."' ORDER BY heure_debut, lieu;";
+		$res_sanction=mysql_query($sql);
+		if(mysql_num_rows($res_sanction)>0) {
+	
+			echo "<table class='boireaus' summary='Retenues du jour'>\n";
+			echo "<tr>\n";
+			echo "<th style='font-size:x-small;'>Heure</th>\n";
+			echo "<th style='font-size:x-small;'>Dur&eacute;e</th>\n";
+			echo "<th style='font-size:x-small;'>Lieu</th>\n";
+			echo "<th style='font-size:x-small;'>El&egrave;ve</th>\n";
+			echo "</tr>\n";
+	
+			$alt=1;
+			while($lig_sanction=mysql_fetch_object($res_sanction)) {
+	
+				$date=formate_date($lig_sanction->date);
+				$heure_debut=$lig_sanction->heure_debut;
+				$duree=$lig_sanction->duree;
+				$lieu=$lig_sanction->lieu;
+				$travail=$lig_sanction->travail;
+				$current_eleve_login=$lig_sanction->login;
+	
+				$alt=$alt*(-1);
+				echo "<tr class='lig$alt'>\n";
+				echo "<td style='font-size:x-small;'>$heure_debut</td>\n";
+				echo "<td style='font-size:x-small;'>$duree</td>\n";
+				echo "<td style='font-size:x-small;'>$lieu</td>\n";
+				echo "<td style='font-size:x-small;'>";
+				echo htmlentities(p_nom($current_eleve_login));
+	
+				echo " (<em>";
+				$tmp_tab=get_class_from_ele_login($current_eleve_login);
+				//if(isset($tmp_tab['liste_nbsp'])) {echo htmlentities($tmp_tab['liste_nbsp']);}
+				if(isset($tmp_tab['liste'])) {echo preg_replace("/ /","&nbsp;",htmlentities($tmp_tab['liste']));}
+				echo "</em>)";
+	
+				echo "</td>\n";
+				echo "</tr>\n";
+			}
+			echo "</table>\n";
+		}
+		else {
+			echo "<p>Aucune retenue n'est encore saisie<br />pour ce jour (<em>$date</em>).</p>\n";
+		}
 	}
 }
 ?>

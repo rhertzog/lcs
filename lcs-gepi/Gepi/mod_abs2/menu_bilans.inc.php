@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: menu_bilans.inc.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: menu_bilans.inc.php 6311 2011-01-08 17:52:09Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -50,6 +50,10 @@ if(($_SESSION['statut']=='cpe')||
     if($onglet_abs=='bilan_du_jour.php') {echo "class='current' ";}
     echo "title='Bilan du jour'>Bilan du jour</a></li>\n";
 
+    echo "<li><a href='totaux_du_jour.php' ";
+    if($onglet_abs=='totaux_du_jour.php') {echo "class='current' ";}
+    echo "title='Totaux du jour'>Totaux du jour</a></li>\n";
+
     echo "<li><a href='extraction_saisies.php' ";
     if($onglet_abs=='extraction_saisies.php') {echo "class='current' ";}
     echo "title='Extraction des saisies'>Extraction des saisies</a></li>\n";
@@ -58,6 +62,10 @@ if(($_SESSION['statut']=='cpe')||
     if($onglet_abs=='extraction_demi-journees.php') {echo "class='current' ";}
     echo "title='Extraction des saisies'>Extraction des demi-journées</a></li>\n";
 
+    echo "<li><a href='bilan_individuel.php' ";
+    if($onglet_abs=='bilan_individuel.php') {echo "class='current' ";}
+    echo "title='Bilan individuel'>Bilan individuel</a></li>\n";
+    
     echo "</ul>\n";
 
 }

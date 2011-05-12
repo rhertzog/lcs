@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: liste_saisies_selection_traitement.php 6375 2011-01-19 15:27:58Z dblanqui $
+ * @version $Id: liste_saisies_selection_traitement.php 6423 2011-01-26 15:28:41Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -89,10 +89,16 @@ echo "<div class='css-panes' style='background-color:#cae7cb;' id='containDiv' s
 
 
 $query = AbsenceEleveSaisieQuery::create();
+if(isset($_GET['saisies'])){
+    $saisies=unserialize($_GET['saisies']);
+    //on reinitialise les filtres au besoin
+    $_SESSION['filtre_recherche'] = Array();
+    $_SESSION['filtre_recherche']['order'] = 'des_id';
+    $query->filterById($saisies);
+}
 //$query->leftJoin('AbsenceEleveSaisie.JTraitementSaisieEleve')->leftJoin('JTraitementSaisieEleve.AbsenceEleveTraitement')->with('AbsenceEleveTraitement');
 if (isFiltreRechercheParam('filter_saisie_id')) {
-    $query->filterById(getFiltreRechercheParam('filter_saisie_id'));
-    echo 'filter_id_oui : '.getFiltreRechercheParam('filter_saisie_id');
+    $query->filterById(getFiltreRechercheParam('filter_saisie_id'));    
 }
 if (isFiltreRechercheParam('filter_utilisateur')) {
     $query->useUtilisateurProfessionnelQuery()->filterByNom('%'.getFiltreRechercheParam('filter_utilisateur').'%', Criteria::LIKE)->endUse();
@@ -211,6 +217,8 @@ if ($recherche_saisie_a_rattacher == 'oui' && $traitement != null) {
 	$id_eleve_array[] = $saisie->getEleveId();
 	$id_saisie_array[] = $saisie->getId();
     }
+    date_date_set($date_debut, $date_debut->format('Y'), $date_debut->format('m'), $date_debut->format('d') - 1);
+    date_date_set($date_fin, $date_fin->format('Y'), $date_fin->format('m'), $date_fin->format('d') + 1);
     $query->filterByPlageTemps($date_debut, $date_fin)->filterByEleveId($id_eleve_array)->filterById($id_saisie_array, Criteria::NOT_IN);
 }
 
@@ -820,14 +828,21 @@ echo '</thead>';
 
 echo '<tbody>';
 $results = $saisies_col->getResults();
+$hier='';
+$numero_couleur=1;
 foreach ($results as $saisie) {
-
-    if ($results->getPosition() %2 == '1') {
+    $aujourdhui=strftime("%d/%m/%Y", $saisie->getDebutAbs('U'));    
+    if (!isFiltreRechercheParam('filter_eleve')) {
+        $numero_couleur = $results->getPosition();
+    } else {
+        if ($aujourdhui !== $hier)
+            $numero_couleur++;
+    }
+    if ($numero_couleur %2 == '1') {
 	    $background_couleur="rgb(220, 220, 220);";
     } else {
 	    $background_couleur="rgb(210, 220, 230);";
     }
-
     echo "<tr style='background-color :$background_couleur'>\n";
 
     if ($saisie->getNotifiee()) {
@@ -1053,8 +1068,7 @@ foreach ($results as $saisie) {
     echo '</td>';
 
     echo '</tr>';
-
-
+    $hier=$aujourdhui;
 }
 
 echo '</tbody>';

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: Session.class.php 6054 2010-12-05 18:47:10Z crob $
+ * $Id: Session.class.php 6367 2011-01-18 08:07:19Z tbelliard $
  *
  * Copyright 2001, 2011 Thomas Belliard
  *
@@ -56,15 +56,18 @@ class Session {
 
 	private $etat = false; 	# actif/inactif. Utilisé simplement en interne pour vérifier que
 							# l'utilisateur authentifié de source externe est bien actif dans Gepi.
+							
+  private $cas_extra_attributes = false; # D'éventuels attributs chargés depuis la réponse CAS
 
-	public function __construct() {
+	public function __construct($login_CAS_en_cours = false) {
 
-		# On initialise la session
-		session_name("GEPI");
-
-		set_error_handler("my_warning_handler", E_WARNING);
-		session_start();
-		restore_error_handler();
+    if (!$login_CAS_en_cours) {
+      # On initialise la session
+      session_name("GEPI");
+      set_error_handler("my_warning_handler", E_WARNING);
+      session_start();
+      restore_error_handler();
+    }
 
 		# Avant de faire quoi que ce soit, on initialise le fuseau horaire
 		if (isset($GLOBALS['timezone']) && $GLOBALS['timezone'] != '') {
@@ -82,30 +85,32 @@ class Session {
 		$this->auth_sso = in_array(getSettingValue("auth_sso"), array("lemon", "cas", "lcs")) ? getSettingValue("auth_sso") : false;
 		if (!$this->is_anonymous()) {
 		  # Il s'agit d'une session non anonyme qui existait déjà.
-		  # On regarde s'il n'y a pas de timeout
-		  if ($this->timeout()) {
-		  	# timeout : on remet à zéro.
-		  	$debut_session = $_SESSION['start'];
-		  	$this->reset(3);
-		  	if (isset($GLOBALS['niveau_arbo'])) {
-		  		if ($GLOBALS['niveau_arbo'] == "0") {
-		  			$logout_path = "./logout.php";
-		  		} elseif ($GLOBALS['niveau_arbo'] == "2") {
-		  			$logout_path = "../../logout.php";
-		  		} elseif ($GLOBALS['niveau_arbo'] == "3") {
-		  			$logout_path = "../../../logout.php";
-		  		} else {
-		  			$logout_path = "../logout.php";
-		  		}
-		  	} else {
-		  		$logout_path = "../logout.php";
-		  	}
-		  	header("Location:".$logout_path."?auto=3&debut_session=".$debut_session."&session_id=".session_id());
-		  	exit();
-		  } else {
-		  	# Pas de timeout : on met à jour le log
-		  	$this->update_log();
-		  }
+      if (!$login_CAS_en_cours) {
+        # On regarde s'il n'y a pas de timeout
+        if ($this->timeout()) {
+          # timeout : on remet à zéro.
+          $debut_session = $_SESSION['start'];
+          $this->reset(3);
+          if (isset($GLOBALS['niveau_arbo'])) {
+            if ($GLOBALS['niveau_arbo'] == "0") {
+              $logout_path = "./logout.php";
+            } elseif ($GLOBALS['niveau_arbo'] == "2") {
+              $logout_path = "../../logout.php";
+            } elseif ($GLOBALS['niveau_arbo'] == "3") {
+              $logout_path = "../../../logout.php";
+            } else {
+              $logout_path = "../logout.php";
+            }
+          } else {
+            $logout_path = "../logout.php";
+          }
+          header("Location:".$logout_path."?auto=3&debut_session=".$debut_session."&session_id=".session_id());
+          exit();
+        } else {
+          # Pas de timeout : on met à jour le log
+          $this->update_log();
+        }
+      }
 		}
 
 	}
@@ -138,7 +143,7 @@ class Session {
 		  tentative_intrusion(1, "Tentative de connexion depuis une IP sur liste noire (login utilisé : ".$_login.")");
 	      return "3";
 		  die();
-	    }
+		}
 
 		if (strtoupper($_login) != strtoupper($this->login)) {
 			//on a une connexion sous un nouveau login, on purge la session
@@ -343,6 +348,12 @@ class Session {
 		    	exit;
 		    }
 
+      # Si on est en mode CAS, on met à jour à la volée les attributs de
+      # l'utilisateur (le cas échéant)
+      if ($this->auth_sso == 'cas') {
+        $this->update_user_with_cas_attributes();
+      }
+
 			# Tout est bon. On valide définitivement la session.
 			$this->start = mysql_result(mysql_query("SELECT now();"),0);
 			$_SESSION['start'] = $this->start;
@@ -522,17 +533,19 @@ class Session {
     	return sql_query1($sql);
 	}
 
-	// Remise à zéro de la session : on supprime toutes les informations présentes
-	private function reset($_auto = "0") {
-		# Codes utilisés pour $_auto :
-		# 0 : logout normal
-		# 2 : logout renvoyé par la fonction checkAccess (problème gepiPath ou accès interdit)
-		# 3 : logout lié à un timeout
-		# 4 : logout lié à une nouvelle connexion sous un nouveau profil
+  // Function appelée par phpCAS lors du logout (cf. login_sso.php), destinée
+  // à enregistrer proprement un logout initié par le serveur CAS lui-même
+  // dans le cas d'une déconnexion depuis une autre application.
+  function cas_logout_callback($ticket) {
+    // On enregistre la fin de la session dans le journal
+    $this->register_logout(0);
+    
+    // Rien d'autre à faire. C'est phpCAS qui va détruire la session totalement.
+  }
 
-	    # On teste 'start' simplement pour simplement vérifier que la session n'a pas encore été fermée.
-	    if ($this->start) {
-	      $sql = "UPDATE log SET AUTOCLOSE = '" . $_auto . "', END = now() where SESSION_ID = '" . session_id() . "' and START = '" . $this->start . "'";
+  // Enregistrement de la fin de la session dans la base de données
+  private function register_logout($_auto) {
+      $sql = "UPDATE log SET AUTOCLOSE = '" . $_auto . "', END = now() where SESSION_ID = '" . session_id() . "' and START = '" . $this->start . "'";
               $res = sql_query($sql);
 
 			if((getSettingValue('csrf_log')=='y')&&(isset($_SESSION['login']))) {
@@ -546,8 +559,21 @@ class Session {
 				fwrite($f,"-----------------\n");
 				fclose($f);
 			}
+  }
 
-	   }
+
+	// Remise à zéro de la session : on supprime toutes les informations présentes
+	private function reset($_auto = "0") {
+		# Codes utilisés pour $_auto :
+		# 0 : logout normal
+		# 2 : logout renvoyé par la fonction checkAccess (problème gepiPath ou accès interdit)
+		# 3 : logout lié à un timeout
+		# 4 : logout lié à une nouvelle connexion sous un nouveau profil
+
+	    # On teste 'start' simplement pour simplement vérifier que la session n'a pas encore été fermée.
+	    if ($this->start) {
+        $this->register_logout($_auto);
+	    }
 
 	   // Détruit toutes les variables de session
 	    session_unset();
@@ -603,6 +629,9 @@ class Session {
 		}
 	}
 
+	/*
+	// Supprimé en trunk (après la 1.5.3.1)
+
 	# Cette fonction permet de tester sous quelle forme le login est stocké dans la base
 	# de données. Elle renvoie true ou false.
 	private function use_uppercase_login($_login) {
@@ -616,21 +645,26 @@ class Session {
 			return false;
 		}
 	}
+	*/
 
 	private function authenticate_gepi($_login,$_password) {
 		global $debug_test_mdp, $debug_test_mdp_file;
 
+		/*
 		if ($this->use_uppercase_login($_login)) {
 			# On passe le login en majuscule pour toute la session.
 			$_login = strtoupper($_login);
 		}
+		*/
 		$sql = "SELECT login, password FROM utilisateurs WHERE (login = '" . $_login . "' and etat != 'inactif')";
 		$query = mysql_query($sql);
 		if (mysql_num_rows($query) == "1") {
 			# Un compte existe avec ce login
 			if (mysql_result($query, 0, "password") == md5($_password)) {
 				# Le mot de passe correspond. C'est bon !
-				$this->login = $_login;
+				//$this->login = $_login;
+				// On ne prend plus le login fourni dans le formulaire, mais celui dans la base pour avoir la même casse que dans la base (après la 1.5.3.1)
+				$this->login = mysql_result($query, 0, "login");
 				$this->current_auth_mode = "gepi";
 
 				if($debug_test_mdp=="y") {
@@ -650,7 +684,9 @@ class Session {
 						//if (mysql_result($query, 0, "password") == md5(unhtmlentities($_password))) {
 						if (mysql_result($query, 0, "password") == md5($_password_unhtmlentities)) {
 							# Le mot de passe correspond. C'est bon !
-							$this->login = $_login;
+							//$this->login = $_login;
+							// On ne prend plus le login fourni dans le formulaire, mais celui dans la base pour avoir la même casse que dans la base (après la 1.5.3.1)
+							$this->login = mysql_result($query, 0, "login");
 							$this->current_auth_mode = "gepi";
 	
 							if($debug_test_mdp=="y") {
@@ -672,7 +708,9 @@ class Session {
 					else {
 						if (mysql_result($query, 0, "password") == md5(htmlentities($_password))) {
 							# Le mot de passe correspond. C'est bon !
-							$this->login = $_login;
+							//$this->login = $_login;
+							// On ne prend plus le login fourni dans le formulaire, mais celui dans la base pour avoir la même casse que dans la base (après la 1.5.3.1)
+							$this->login = mysql_result($query, 0, "login");
 							$this->current_auth_mode = "gepi";
 	
 							if($debug_test_mdp=="y") {
@@ -719,16 +757,34 @@ class Session {
 	}
 
 	private function authenticate_cas() {
+/* *****
+ *  Toute la partie authentification en elle-même a été déplacée dans le
+ *  fichier login_sso.php, afin de permettre à phpCAS de gérer tout seul
+ *  la session PHP.
+ * *****
+ * 
 		include_once('CAS.php');
 		if ($GLOBALS['mode_debug']) {
 		    phpCAS::setDebug($GLOBALS['debug_log_file']);
-                }
+    }
 		// config_cas.inc.php est le fichier d'informations de connexions au serveur cas
 		$path = dirname(__FILE__)."/../secure/config_cas.inc.php";
 		include($path);
 
+		# On défini l'URL de base, pour que phpCAS ne se trompe pas dans la génération
+		# de l'adresse de retour vers le service (attention, requiert patchage manuel
+		# de phpCAS !!)
+		if (isset($GLOBALS['gepiBaseUrl'])) {
+			$url_base = $GLOBALS['gepiBaseUrl'];
+		} else {
+			$url_base = $this->https_request() ? 'https' : 'http';
+			$url_base .= '://';
+			$url_base .= $_SERVER['SERVER_NAME'];
+		}
+
 		// Le premier argument est la version du protocole CAS
-		phpCAS::client(CAS_VERSION_2_0, $cas_host, $cas_port, $cas_root, false);
+		// Le dernier argument a été ajouté par patch manuel de phpCAS.
+		phpCAS::client(CAS_VERSION_2_0, $cas_host, $cas_port, $cas_root, false, $url_base);
 		phpCAS::setLang('french');
 
 		// redirige vers le serveur d'authentification si aucun utilisateur authentifié n'a
@@ -740,16 +796,35 @@ class Session {
 		
 		// Authentification
 		phpCAS::forceAuthentication();
+*/
 
 		$this->login = phpCAS::getUser();
-
-		// On réinitialise la session
+/* La session est gérée par phpCAS directement, en amont. On n'y touche plus.
 		session_name("GEPI");
 		session_start();
+*/
 		$_SESSION['login'] = $this->login;
 
 		$this->current_auth_mode = "sso";
-
+    
+    // Extractions des attributs supplémentaires, le cas échéant
+    $tab = phpCAS::getAttributes();
+    $attributs = array('prenom','nom','email');
+    foreach($attributs as $attribut) {
+      $code_attribut = getSettingValue('cas_attribut_'.$attribut);
+      // Si un attribut a été spécifié, on va le chercher
+      if (!empty($code_attribut)) {
+      	if (isset($tab[$code_attribut])) {
+        	$valeur = $tab[$code_attribut];
+					if (!empty($valeur)){						// L'attribut est trouvé et non vide, on l'assigne pour mettre à jour l'utilisateur
+						// On s'assure que la chaîne est bien enregistrée en iso-8859-1.
+						// Il est en effet probable que la chaîne d'origine soit en UTF-8.
+						$valeur = ensure_iso8859_1($valeur);
+						$this->cas_extra_attributes[$attribut] = trim(mysql_real_escape_string($valeur));
+					}
+        }
+      }
+    }
 		return true;
 	}
 
@@ -873,14 +948,17 @@ class Session {
 			$this->rne = $user["rne"][0];
 		}
 
+		/*
+		// Supprimé en trunk (après la 1.5.3.1)
 		# On regarde si on doit utiliser un login en majuscule. Si c'est le cas, il faut impérativement
 		# le faire *après* un éventuel import externe.
 		if ($this->use_uppercase_login($this->login)) {
 			$this->login = strtoupper($this->login);
 		}
+		*/
 
 		# On interroge la base de données
-		$query = mysql_query("SELECT nom, prenom, statut, etat, now() start, change_mdp, auth_mode FROM utilisateurs WHERE (login = '".$this->login."')");
+		$query = mysql_query("SELECT nom, prenom, email, statut, etat, now() start, change_mdp, auth_mode FROM utilisateurs WHERE (login = '".$this->login."')");
 
 		# Est-ce qu'on a bien une entrée ?
 		if (mysql_num_rows($query) != "1") {
@@ -896,6 +974,7 @@ class Session {
 	    $_SESSION['login'] = $this->login;
 	    $_SESSION['prenom'] = $row->prenom;
 	    $_SESSION['nom'] = $row->nom;
+      $_SESSION['email'] = $row->email;
 	    $_SESSION['statut'] = $row->statut;
 	    $_SESSION['start'] = $row->start;
 	    $_SESSION['matiere'] = $matiere_principale;
@@ -926,7 +1005,8 @@ class Session {
 		for($len=$length,$r='';strlen($r)<$len;$r.=chr(!mt_rand(0,2)? mt_rand(48,57):(!mt_rand(0,1) ? mt_rand(65,90) : mt_rand(97,122))));
 		$_SESSION["gepi_alea"] = $r;
 		*/
-		generate_token($_SESSION['login']);
+		//generate_token($_SESSION['login']);
+		generate_token();
 
 	    # On charge les données dans l'instance de Session.
 	    $this->load_session_data();
@@ -1299,7 +1379,47 @@ class Session {
 		}
 	}
 
+  # Mise à jour de quelques attributs de l'utilisateur à partir des attributs transmis
+  # par CAS directement.
+  private function update_user_with_cas_attributes(){
+    $need_update = false;
+    if (isset($GLOBALS['debug_log_file'])){
+    error_log("Mise à jour de l'utilisateur à partir des attributs CAS.", $GLOBALS['debug_log_file']);
+    error_log("Attribut email :".$this->cas_extra_attributes['email'], $GLOBALS['debug_log_file']);
+    error_log("Attribut prenom :".$this->cas_extra_attributes['prenom'], $GLOBALS['debug_log_file']);
+    error_log("Attribut nom :".$this->cas_extra_attributes['nom'], $GLOBALS['debug_log_file']);
+    }
+    if (!empty($this->cas_extra_attributes)) {
+      $query = 'UPDATE utilisateurs SET ';
+      $first = true;
+      foreach($this->cas_extra_attributes as $attribute => $value) {				
+				// On compare la valeur envoyée avec la valeur présente dans Gepi
+        if ($_SESSION[$attribute] != $value){
+          $_SESSION[$attribute] = $value;
+          $need_update = true;
+          if (!$first) {
+            $query .= ", ";
+          }
 
+          $query .= "$attribute = '$value'";
+          $first = false;
+        }
+      }
+      $query .= " WHERE login = '$this->login'";
+			error_log("Détail requête : ".$query, $GLOBALS['debug_log_file']);
+      if ($need_update) $res = mysql_query($query); // On exécute la mise à jour, si nécessaire
+      if ($need_update && $this->statut == 'eleve') {
+        # On a eu une mise à jour qui concerne un élève, il faut synchroniser l'info dans la table eleves
+        mysql_query("UPDATE eleves, utilisateurs
+                      SET eleves.nom = utilisateurs.nom,
+                          eleves.prenom = utilisateurs.prenom,
+                          eleves.email = utilisateurs.email
+                      WHERE eleves.login = utilisateurs.login
+                        AND utilisateurs.login = '".$this->login."'");
+      }
+      return $res;
+    }
+  }
 
 
 
@@ -1329,6 +1449,17 @@ class Session {
 		$test = mysql_query("SET time_zone = '".$mysql_offset."'");
 	    }
 	    return $update_timezone;
-        }
+    }
+    
+  # Renvoie 'true' si l'accès à Gepi se fait en https
+  static function https_request() {
+  	if (!isset($_SERVER['HTTPS'])
+    			OR (isset($_SERVER['HTTPS']) AND strtolower($_SERVER['HTTPS']) != "on")
+    			OR (isset($_SERVER['X-Forwaded-Proto']) AND $_SERVER['X-Forwaded-Proto'] != "https")) {
+    	return false;
+    } else {
+      return true;
+    }
+  }
 }
 ?>

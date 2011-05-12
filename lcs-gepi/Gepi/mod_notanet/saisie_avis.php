@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_avis.php 6074 2010-12-08 15:43:17Z crob $
+* $Id: saisie_avis.php 6730 2011-03-30 09:43:45Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
 *
@@ -71,7 +71,10 @@ if (isset($_POST['is_posted'])) {
 		else{
 			$app = "";
 		}
-		$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
+		//$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
+		$app=preg_replace('/(\\\r\\\n)+/',"\r\n",$app);
+		$app=preg_replace('/(\\\r)+/',"\r",$app);
+		$app=preg_replace('/(\\\n)+/',"\n",$app);
 
 
 

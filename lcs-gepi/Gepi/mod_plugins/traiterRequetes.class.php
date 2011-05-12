@@ -1,6 +1,6 @@
 <?php
 /**
- * @version : $Id: traiterRequetes.class.php 4465 2010-05-18 14:36:49Z delineau $
+ * @version : $Id: traiterRequetes.class.php 6738 2011-04-01 11:25:33Z crob $
  *
  * Copyright 2001, 2009 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -55,7 +55,8 @@ class traiterRequetes {
    *
    * @var array Liste des requêtes possibles
    */
-  private $_requetes_possibles = array('insert', 'INSERT', 'create', 'CREATE', 'update', 'UPDATE', 'drop', 'DROP');
+  //private $_requetes_possibles = array('insert', 'INSERT', 'create', 'CREATE', 'update', 'UPDATE', 'drop', 'DROP');
+  private $_requetes_possibles = array('insert', 'INSERT', 'create', 'CREATE', 'update', 'UPDATE', 'drop', 'DROP', 'delete', 'DELETE');
 
   /**
    * Vérification et envoie des requêtes par Propel::PDO

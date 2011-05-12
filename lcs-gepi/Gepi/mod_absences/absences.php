@@ -2,7 +2,7 @@
 
 /**
  *
- * @version $Id: absences.php 6282 2011-01-04 17:26:54Z crob $
+ * @version $Id: absences.php 6281 2011-01-04 17:26:47Z crob $
  *
  * Fichier destiné à gérer les accès responsables et élèves du module absences
  *

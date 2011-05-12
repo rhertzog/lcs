@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: contacter_admin.php 4022 2010-01-16 15:17:11Z crob $
+ * $Id: contacter_admin.php 6468 2011-02-06 17:21:41Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Patrick Duthilleul
  *
@@ -130,13 +130,26 @@ case "envoi":
 	//stripslashes($objet_msg);
 	//if($objet_msg=='') {$objet_msg="Demande d'aide dans GEPI";}
 
+  $subject = $gepiPrefixeSujetMail.$objet_msg;
+  $subject = "=?ISO-8859-1?B?".base64_encode($subject)."?=\r\n";
+
+  $from = $email_reponse != "" ? "$nama <$email_reponse>" : $gepiAdminAdress;
+  
+  $headers = "X-Mailer: PHP/" . phpversion()."\r\n";
+  $headers .= "MIME-Version: 1.0\r\n";
+  $headers .= "Content-type: text/plain; charset=iso-8859-1\r\n";
+  $headers .= "From: $from\r\n";
+  if ($email_reponse != "") {
+    $headers .= "Reply-To: $from\r\n";
+    if (getSettingValue("gepiAdminAdressFormHidden")!="y") {
+      $headers .= "Cc: $nama <$email_reponse>\r\n";
+    }
+  }
+
 	$envoi = mail($gepiAdminAdress,
-		$gepiPrefixeSujetMail.$objet_msg,
+		$subject,
 		$message,
-	"From: ".($email_reponse != "" ? "$nama <$email_reponse>" : $gepiAdminAdress)."\r\n"
-	.($email_reponse != "" ? "Reply-To: $nama <$email_reponse>\r\n" :"")
-	.(getSettingValue("gepiAdminAdressFormHidden")!="y" ? "Cc: $nama <$email_reponse>\r\n" : "")
-	."X-Mailer: PHP/" . phpversion());
+    $headers);
 
 	if ($envoi) {
 		echo "<br /><br /><br />\n";
@@ -145,7 +158,7 @@ case "envoi":
 		if($email_reponse!="") {
 			echo ", vous recevrez rapidement<br />une réponse dans votre boîte aux lettres électronique, veuillez la consulter régulièrement.";
 
-			if(!ereg("[a-zA-Z0-9_.-]+@[a-zA-Z0-9.-]{2,}[.][a-zA-Z]{2,3}",$email_reponse)) {
+			if(!my_ereg("[a-zA-Z0-9_.-]+@[a-zA-Z0-9.-]{2,}[.][a-zA-Z]{2,3}",$email_reponse)) {
 				echo "</p>\n";
 				echo "<p style=\"text-align: center\">L'adresse <span style='color:red'>$email_reponse</span> ne semble pas correctement formatée.<br />Si l'adresse est correcte, ne tenez pas compte de cette remarque.<br />Sinon, vous ne pourrez pas obtenir de réponse par courriel/email.\n";
 			}

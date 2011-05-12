@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: import_pays.php 3966 2009-12-22 18:46:25Z crob $
+ * $Id: import_pays.php 6618 2011-03-03 18:25:55Z crob $
  *
- * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -78,6 +78,8 @@ if(!isset($is_posted)) {
 		echo "<p>Veuillez dézipper le fichier (<i>évitez de l'ouvrir/modifier/enregistrer avec un tableur</i>) et fournissez le fichier <b>pays.csv</b>&nbsp;:<br />\n";
 	}
 
+	echo add_token_field();
+
 	echo "<input type=\"file\" size=\"80\" name=\"csv_file\" /></p>\n";
 	echo "<p><input type=submit value='Valider' /></p>\n";
 	echo "</form>\n";
@@ -91,6 +93,8 @@ if(!isset($is_posted)) {
 else {
 	echo " | <a href=\"".$_SERVER['PHP_SELF']."\">Import des pays</a>";
 	echo "</p>\n";
+
+	check_token(false);
 
 	if(!isset($_POST['valide_insertion_pays'])) {
 		$csv_file = isset($_FILES["csv_file"]) ? $_FILES["csv_file"] : NULL;
@@ -199,6 +203,13 @@ else {
 
 			//echo "\$dest_file=$dest_file<br />";
 
+			/*
+			$handle = fopen ($dest_file, "r");
+			$contents = fread ($handle, filesize ($dest_file));
+			fclose ($handle);
+			echo "<pre>$contents</pre>";
+			*/
+
 			//$fp=fopen($csv_file['tmp_name'],"r");
 			$fp=fopen($dest_file,"r");
 
@@ -214,7 +225,7 @@ else {
 				$ligne=fgets($fp, 4096);
 				$temp=explode(";",$ligne);
 				for($i=0;$i<sizeof($temp);$i++){
-					$en_tete[$i]=my_ereg_replace('"','',$temp[$i]);
+					$en_tete[$i]=preg_replace('/"/','',$temp[$i]);
 				}
 				$nbchamps=sizeof($en_tete);
 				fclose($fp);
@@ -260,11 +271,15 @@ else {
 						$ligne=trim($ligne);
 						//echo "<p>ligne=$ligne<br />\n";
 	
-						$tabligne=explode(";",my_ereg_replace('"','',$ligne));
+						$tabligne=explode(";",preg_replace('/"/','',$ligne));
 	
-						$code_pays[]=my_ereg_replace("[^0-9]","",corriger_caracteres($tabligne[$tabindice[0]]));
-						$nom_pays[]=my_ereg_replace("[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_. ()'-]","",corriger_caracteres(html_entity_decode_all_version(my_ereg_replace("&#039;","'",$tabligne[$tabindice[1]]))));
-	
+						$code_pays[]=preg_replace("/[^0-9]/","",corriger_caracteres($tabligne[$tabindice[0]]));
+						//$nom_pays[]=my_ereg_replace("[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_. ()'-]","",corriger_caracteres(html_entity_decode_all_version(my_ereg_replace("&#039;","'",$tabligne[$tabindice[1]]))));
+						//echo $tabligne[$tabindice[1]]." -&gt; ".my_ereg_replace("[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_. ()'-]","",corriger_caracteres(html_entity_decode_all_version(my_ereg_replace("&#039;","'",$tabligne[$tabindice[1]]))))."</p>";
+
+
+						$nom_pays[]=preg_replace("/[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_. ()'-]/","",corriger_caracteres(html_entity_decode_all_version(preg_replace("/&#039;/","'",$tabligne[$tabindice[1]]))));
+						//echo $tabligne[$tabindice[1]]." -&gt; ".preg_replace("/[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_. ()'-]/","",corriger_caracteres(html_entity_decode_all_version(my_ereg_replace("&#039;","'",$tabligne[$tabindice[1]]))))."</p>";
 					}
 				}
 				fclose($fp);
@@ -275,6 +290,8 @@ else {
 				echo "<input type='hidden' name='is_posted' value='y' />\n";
 				echo "<input type='hidden' name='valide_insertion_pays' value='y' />\n";
 				echo "<p align=\"center\"><input type=submit value=\"Importer\" /></p>\n";
+
+				echo add_token_field();
 
 				$tab_code_pays_connus=array();
 				$tab_nom_pays_connus=array();
@@ -392,10 +409,10 @@ else {
 			for($i=0;$i<$nb_pays;$i++) {
 				if(isset($code_pays[$i])) {
 					if(in_array($code_pays[$i],$tab_code_pays_connus)) {
-						$sql="UPDATE pays SET nom_pays='".addslashes(my_ereg_replace("[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_. ()'-]","",corriger_caracteres(html_entity_decode_all_version(my_ereg_replace("&#039;","'",$nom_pays[$i])))))."' WHERE code_pays='$code_pays[$i]';";
+						$sql="UPDATE pays SET nom_pays='".addslashes(preg_replace("/[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_. ()'-]/","",corriger_caracteres(html_entity_decode_all_version(preg_replace("/&#039;/","'",$nom_pays[$i])))))."' WHERE code_pays='$code_pays[$i]';";
 					}
 					else {
-						$sql="INSERT INTO pays SET nom_pays='".addslashes(my_ereg_replace("[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_. ()'-]","",corriger_caracteres(html_entity_decode_all_version(my_ereg_replace("&#039;","'",$nom_pays[$i])))))."', code_pays='$code_pays[$i]';";
+						$sql="INSERT INTO pays SET nom_pays='".addslashes(preg_replace("/[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_. ()'-]/","",corriger_caracteres(html_entity_decode_all_version(preg_replace("/&#039;/","'",$nom_pays[$i])))))."', code_pays='$code_pays[$i]';";
 					}
 					//echo "$sql<br />";
 					$res=mysql_query($sql);

@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: changement_eleve_classe.php 6481 2011-02-09 13:40:06Z crob $
+* $Id: changement_eleve_classe.php 6480 2011-02-09 13:39:57Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

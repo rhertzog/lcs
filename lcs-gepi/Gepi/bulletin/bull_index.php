@@ -1,9 +1,9 @@
 <?php
 /*
 *
-* $Id: bull_index.php 6372 2011-01-19 09:53:19Z tbelliard $
+* $Id: bull_index.php 6728 2011-03-30 09:20:17Z crob $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
 * This file is part of GEPI.
 *
@@ -58,6 +58,32 @@ $contexte_document_produit="bulletin";
 // Pour sur le verso du bulletin n'avoir qu'un relevé de notes et pas deux... et surtout pas celui de l'élève suivant dans la liste:
 $nb_releve_par_page=1;
 
+$bull_pdf_debug=isset($_POST['bull_pdf_debug']) ? $_POST['bull_pdf_debug'] : "n";
+
+//debug_var();
+
+// Fonction de recherche des conteneurs derniers enfants (sans enfants (non parents, en somme))
+// avec recalcul des moyennes lancé...
+function recherche_enfant($id_parent_tmp){
+	global $current_group, $periode_num, $id_racine;
+	$sql="SELECT * FROM cn_conteneurs WHERE parent='$id_parent_tmp'";
+	//echo "<!-- $sql -->\n";
+	$res_enfant=mysql_query($sql);
+	if(mysql_num_rows($res_enfant)>0){
+		while($lig_conteneur_enfant=mysql_fetch_object($res_enfant)){
+			recherche_enfant($lig_conteneur_enfant->id);
+		}
+	}
+	else{
+		$arret = 'no';
+		$id_conteneur_enfant=$id_parent_tmp;
+		// Mise_a_jour_moyennes_conteneurs pour un enfant non parent...
+		mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_conteneur_enfant,$arret);
+		//echo "<!-- ========================================== -->\n";
+	}
+}
+
+
 //====================================================
 //=============== ENTETE STANDARD ====================
 if (!isset($_POST['valide_select_eleves'])) {
@@ -91,6 +117,13 @@ elseif ((isset($_POST['mode_bulletin']))&&($_POST['mode_bulletin']=='pdf')) {
 
 	// DEBUG Décommenter la ligne ci-dessous pour débugger
 	//echo "<p style='color:red;'>Insertion d'une ligne avant le Header pour provoquer l'affichage dans le navigateur et ainsi repérer des erreurs.</p>";
+	//echo "\$bull_pdf_debug=$bull_pdf_debug<br />";
+	if($bull_pdf_debug=='y') {
+		echo "<p style='color:red'>DEBUG:<br />
+La génération du PDF va échouer parce qu'on affiche ces informations de debuggage,<br />
+mais il se peut que vous ayez ainsi des précisions sur ce qui pose problème.<br />
+</p>\n";
+	}
 
 	include("header_bulletin_pdf.php");
 
@@ -323,7 +356,7 @@ elseif((!isset($choix_periode_num))||(!isset($tab_periode_num))) {
 	$max_per=0;
 	for($i=0;$i<count($tab_id_classe);$i++) {
 		// Est-ce bien un entier?
-		if((strlen(my_ereg_replace("[0-9]","",$tab_id_classe[$i])))||($tab_id_classe[$i]=="")) {
+		if((strlen(preg_replace("/[0-9]/","",$tab_id_classe[$i])))||($tab_id_classe[$i]=="")) {
 			echo "<p>Identifiant de classe erroné: <span style='color:red'>".$tab_id_classe[$i]."</span></p>\n";
 			require("../lib/footer.inc.php");
 			die();
@@ -524,7 +557,7 @@ elseif(!isset($_POST['valide_select_eleves'])) {
 				}
 			//echo "</span>\n";
 
-			echo "<label for='use_cell_ajustee' style='cursor: pointer;'><input type='checkbox' name='use_cell_ajustee' id='use_cell_ajustee' value='n' /> Ne pas utiliser la nouvelle fonction use_cell_ajustee() pour l'écriture des appréciations.</label>";
+			echo "<input type='checkbox' name='use_cell_ajustee' id='use_cell_ajustee' value='n' /><label for='use_cell_ajustee' style='cursor: pointer;'> Ne pas utiliser la nouvelle fonction use_cell_ajustee() pour l'écriture des appréciations.</label>";
 
 			$titre_infobulle="Fonction cell_ajustee()\n";
 			$texte_infobulle="Pour les appréciations sur les bulletins, relevés,... on utilisait auparavant la fonction DraxTextBox() de FPDF.<br />Cette fonction avait parfois un comportement curieux avec des textes tronqués ou beaucoup plus petits dans la cellule que ce qui semblait pouvoir tenir dans la case.<br />La fonction cell_ajustee() est une fonction que mise au point pour tenter de faire mieux que DraxTextBox().<br />Comme elle n'a pas été expérimentée par suffisamment de monde sur trunk, nous avons mis une case à cocher qui permet d'utiliser l'ancienne fonction DrawTextBox() si cell_ajustee() ne se révélait pas aussi bien fichue que nous l'espèrons;o).<br />\n";
@@ -532,6 +565,20 @@ elseif(!isset($_POST['valide_select_eleves'])) {
 			$tabdiv_infobulle[]=creer_div_infobulle('a_propos_cell_ajustee',$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
 	
 			echo "<a href=\"#\" onclick='return false;' onmouseover=\"afficher_div('a_propos_cell_ajustee','y',100,100);\"  onmouseout=\"cacher_div('a_propos_cell_ajustee');\"><img src='../images/icons/ico_ampoule.png' width='15' height='25' /></a>";
+
+			echo "<br />\n";
+
+			// Debug
+			echo "<input type='checkbox' name='bull_pdf_debug' id='bull_pdf_debug' value='y' />&nbsp;<label for='bull_pdf_debug' style='cursor: pointer;'>Activer le debug pour afficher les erreurs perturbant la génération de PDF.</label>\n";
+
+			$titre_infobulle="Debug\n";
+			$texte_infobulle="Il arrive que la génération de PDF échoue.<br />Les raisons peuvent être variables (<em>manque de ressources serveur, bug,...</em>).<br />Dans ce cas, la présence d'un plugin lecteur PDF peut empêcher de voir quelles erreurs provoquent l'échec.<br />En cochant la case DEBUG, vous obtiendrez l'affichage des erreurs et ainsi vous pourrez obtenir de l'aide plus facilement sur la liste 'gepi-users'<br />\n";
+			//$texte_infobulle.="\n";
+			$tabdiv_infobulle[]=creer_div_infobulle('div_bull_debug_pdf',$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
+	
+			echo "<a href=\"#\" onclick='return false;' onmouseover=\"afficher_div('div_bull_debug_pdf','y',100,100);\"  onmouseout=\"cacher_div('div_bull_debug_pdf');\"><img src='../images/icons/ico_ampoule.png' width='15' height='25' /></a>";
+
+			echo "<br />\n";
 
 			echo "<br />\n";
 
@@ -590,6 +637,12 @@ elseif(!isset($_POST['valide_select_eleves'])) {
 		echo "<tr><td valign='top'><input type='checkbox' name='moyennes_periodes_precedentes' id='moyennes_periodes_precedentes' value='y'  /></td><td><label for='moyennes_periodes_precedentes' style='cursor: pointer;'>Afficher les moyennes de l'élève pour les périodes précédentes (<i>incompatible avec l'affichage des moyennes min/max/classe dans la même cellule que la moyenne de l'élève</i>).</label></td></tr>\n";
 
 		echo "<tr><td valign='top'><input type='checkbox' name='tri_par_etab_orig' id='tri_par_etab_orig' value='y' /></td><td><label for='tri_par_etab_orig' style='cursor: pointer;'>Trier les bulletins par établissement d'origine.</label></td></tr>\n";
+
+		if(($_SESSION['statut']=='scolarite')||($_SESSION['statut']=='administrateur')) {
+			echo "<tr><td valign='top'><input type='checkbox' name='forcer_recalcul_moy_conteneurs' id='forcer_recalcul_moy_conteneurs' value='y' /></td><td><label for='forcer_recalcul_moy_conteneurs' style='cursor: pointer;'>Forcer le recalcul des moyennes de conteneurs.</label></td></tr>\n";
+
+			echo "<tr><td valign='top'><input type='checkbox' name='forcer_recalcul_rang' id='forcer_recalcul_rang' value='y' /></td><td><label for='forcer_recalcul_rang' style='cursor: pointer;'>Forcer le recalcul des rangs.</label></td></tr>\n";
+		}
 	//}
 	echo "</table>\n";
 
@@ -723,7 +776,7 @@ function ToutDeCocher() {
 	$max_eff_classe=0;
 	for($i=0;$i<count($tab_id_classe);$i++) {
 		// Est-ce bien un entier?
-		if((strlen(my_ereg_replace("[0-9]","",$tab_id_classe[$i])))||($tab_id_classe[$i]=="")) {
+		if((strlen(preg_replace("/[0-9]/","",$tab_id_classe[$i])))||($tab_id_classe[$i]=="")) {
 			echo "<p>Identifiant de classe erroné: <span style='color:red'>".$tab_id_classe[$i]."</span></p></form>\n";
 			require("../lib/footer.inc.php");
 			die();
@@ -738,7 +791,7 @@ function ToutDeCocher() {
 		echo "<th>Elèves</th>\n";
 		for($j=0;$j<count($tab_periode_num);$j++) {
 			// Est-ce bien un entier?
-			if((strlen(my_ereg_replace("[0-9]","",$tab_periode_num[$j])))||($tab_periode_num[$j]=="")) {
+			if((strlen(preg_replace("/[0-9]/","",$tab_periode_num[$j])))||($tab_periode_num[$j]=="")) {
 				echo "<td>Identifiant de période erroné: <span style='color:red'>".$tab_periode_num[$j]."</span></td></tr></table></form>\n";
 				require("../lib/footer.inc.php");
 				die();
@@ -913,6 +966,8 @@ else {
 
 	// 20100615
 	$moyennes_periodes_precedentes=isset($_POST['moyennes_periodes_precedentes']) ? $_POST['moyennes_periodes_precedentes'] : "n";
+
+	//$bull_pdf_debug=isset($_POST['bull_pdf_debug']) ? $_POST['bull_pdf_debug'] : "n";
 
 	//========================================
 	/*
@@ -1090,6 +1145,26 @@ else {
 	// Boucle sur les classes
 	for($loop_classe=0;$loop_classe<count($tab_id_classe);$loop_classe++) {
 
+
+		if((isset($_POST['forcer_recalcul_rang']))&&($_POST['forcer_recalcul_rang']=='y')) {
+			$sql="SELECT num_periode FROM periodes WHERE id_classe='".$tab_id_classe[$loop_classe]."' ORDER BY num_periode DESC LIMIT 1;";
+			$res_per=mysql_query($sql);
+			if(mysql_num_rows($res_per)>0) {
+				$lig_per=mysql_fetch_object($res_per);
+				$recalcul_rang="";
+				for($i=0;$i<$lig_per->num_periode;$i++) {$recalcul_rang.="y";}
+				$sql="UPDATE groupes SET recalcul_rang='$recalcul_rang' WHERE id in (SELECT id_groupe FROM j_groupes_classes WHERE id_classe='".$tab_id_classe[$loop_classe]."');";
+				//echo "$sql<br />";
+				$res=mysql_query($sql);
+				if(!$res) {
+					$msg.="<br />Erreur lors de la programmation du recalcul des rangs pour la classe ".get_nom_classe($tab_id_classe[$loop_classe]).".";
+				}
+			}
+			// Les rangs seront recalculés lors de l'appel à calcul_rang.inc.php
+		}
+
+
+
 		//==============================
 		if($mode_bulletin=="html") {
 			$motif="Temoin_classe";
@@ -1255,6 +1330,9 @@ else {
 			$tab_modele_pdf["affiche_ine"][$tab_id_classe[$loop_classe]] = '0'; // affiche l'INE de l'élève
 
 			$tab_modele_pdf["affiche_moyenne_general_coef_1"][$tab_id_classe[$loop_classe]] = '0'; // affichage des moyennes générales avec coef 1 en plus des autres coeff saisis dans Gestion des classes/<Classe> Enseignements
+			
+			$tab_modele_pdf["affiche_numero_responsable"][$tab_id_classe[$loop_classe]] = '0'; // affichage du numéro du responsable legal de l'élève dont le bulletin est imprimé. 1 ==> affiche 0 ==> n'affiche pas
+			
 
 			//================================
 			//================================
@@ -1325,7 +1403,7 @@ else {
 		//$id_classe=2;
 		$id_classe=$tab_id_classe[$loop_classe];
 		// Est-ce bien un entier?
-		if((strlen(my_ereg_replace("[0-9]","",$id_classe)))||($id_classe=="")) {
+		if((strlen(preg_replace("/[0-9]/","",$id_classe)))||($id_classe=="")) {
 			echo "<p>Identifiant de classe erroné: <span style='color:red'>$id_classe</span></p>\n";
 			require("../lib/footer.inc.php");
 			die();
@@ -1405,11 +1483,36 @@ else {
 		// Boucle sur les périodes
 		for($loop_periode_num=0;$loop_periode_num<count($tab_periode_num);$loop_periode_num++) {
 
+
+			if((isset($_POST['forcer_recalcul_moy_conteneurs']))&&($_POST['forcer_recalcul_moy_conteneurs']=='y')) {
+					$sql="SELECT DISTINCT ccn.id_cahier_notes,ccn.id_groupe FROM cn_cahier_notes ccn,groupes g,j_groupes_classes jgc,classes c WHERE
+						ccn.id_groupe=g.id AND
+						jgc.id_groupe=g.id AND
+						c.id=jgc.id_classe AND
+						ccn.periode='".$tab_periode_num[$loop_periode_num]."' AND
+						c.id='".$id_classe."'
+						ORDER BY c.classe,g.description";
+					//echo "$sql";
+					$res_recalcul_moy_conteneurs=mysql_query($sql);
+					if(mysql_num_rows($res_recalcul_moy_conteneurs)>0){
+						while($lig_recalcul_moy_conteneurs=mysql_fetch_object($res_recalcul_moy_conteneurs)) {
+							$current_group=get_group($lig_recalcul_moy_conteneurs->id_groupe);
+							$periode_num=$tab_periode_num[$loop_periode_num];
+							$id_racine=$lig_recalcul_moy_conteneurs->id_cahier_notes;
+							recherche_enfant($lig_recalcul_moy_conteneurs->id_cahier_notes);
+						}
+						unset($current_group);
+						unset($periode_num);
+						unset($id_racine);
+					}
+			}
+	
+
 			//$periode_num=1;
 			$periode_num=$tab_periode_num[$loop_periode_num];
 
 			// Est-ce bien un entier?
-			if((strlen(my_ereg_replace("[0-9]","",$periode_num)))||($periode_num=="")) {
+			if((strlen(preg_replace("/[0-9]/","",$periode_num)))||($periode_num=="")) {
 				echo "<p>Identifiant de période erroné: <span style='color:red'>".$periode_num."</span></p>\n";
 				require("../lib/footer.inc.php");
 				die();
@@ -1481,7 +1584,7 @@ else {
 			$lig_per=mysql_fetch_object($res_per);
 			$tab_bulletin[$id_classe][$periode_num]['num_periode']=$lig_per->num_periode;
 			//$tab_bulletin[$id_classe][$periode_num]['nom_periode']=$lig_per->nom_periode;
-			$tab_bulletin[$id_classe][$periode_num]['nom_periode']=my_ereg_replace("&#039;","'",$lig_per->nom_periode);
+			$tab_bulletin[$id_classe][$periode_num]['nom_periode']=preg_replace("/&#039;/","'",$lig_per->nom_periode);
 			$tab_bulletin[$id_classe][$periode_num]['verouiller']=$lig_per->verouiller;
 
 
@@ -1886,7 +1989,12 @@ else {
 				// Les paramètres HTML sont généraux à toutes les classes sauf ceux décidés directement dans bull_index.php alors que les paramètres PDF sont essentiellement liés aux modèles.
 				$tab_bulletin[$id_classe][$periode_num]['affiche_moyenne_general_coef_1']=0;
 			}
-
+			
+			//ERIC
+			if($mode_bulletin=="pdf") { // affichage du numéro du responsable
+				$tab_bulletin[$id_classe][$periode_num]['affiche_numero_responsable']=$tab_modele_pdf["affiche_numero_responsable"][$tab_id_classe[$loop_classe]];
+			}
+			
 			// Variables récupérées de calcul_moy_gen.inc.php
 			// Quartiles au niveau moyenne générale:
 			// $place_eleve_classe est un tableau d'indice [$i] le numéro de l'élève
@@ -2775,7 +2883,7 @@ else {
 		/*****************************************
 		* début de la génération du fichier PDF  *
 		* ****************************************/
-		send_file_download_headers('application/pdf', 'bulletin.pdf');
+		send_file_download_headers('application/pdf','bulletin.pdf');
 		//création du PDF en mode Portrait, unitée de mesure en mm, de taille A4
 		$pdf=new bul_PDF('p', 'mm', 'A4');
 		$nb_eleve_aff = 1;

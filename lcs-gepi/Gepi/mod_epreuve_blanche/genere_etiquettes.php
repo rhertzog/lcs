@@ -1,5 +1,5 @@
 <?php
-/* $Id: genere_etiquettes.php 6074 2010-12-08 15:43:17Z crob $ */
+/* $Id: genere_etiquettes.php 6755 2011-04-08 17:46:27Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -93,7 +93,7 @@ if((isset($mode))&&($mode=='parametrer')) {
 
 		//echo "$nom -&gt; ".$$nom;
 		//if(ereg("^[0-9]*$",$$nom)) {
-		if((isset($$nom))&&(ereg("^[0-9]*$",$$nom))) {
+		if((isset($$nom))&&(preg_match("/^[0-9]*$/",$$nom))) {
 			//echo " valide";
 			//echo "<br />";
 			$sql="DELETE FROM eb_param WHERE type='etiquette' AND nom='$nom';";
@@ -174,9 +174,6 @@ if((isset($mode))&&($mode=='imprime')) {
 			$id_salle[]=$lig_salle->id;
 		}
 
-		header('Content-Type: application/pdf');
-		Header('Pragma: public');
-
 		require('../fpdf/fpdf.php');
 		require('../fpdf/ex_fpdf.php');
 		
@@ -248,7 +245,7 @@ if((isset($mode))&&($mode=='imprime')) {
 		for($i=0;$i<count($id_salle);$i++) {
 			$decompte_page=$num_page;
 
-			$sql="SELECT e.nom, e.prenom, e.naissance, e.login, ec.n_anonymat FROM eb_copies ec, eleves e WHERE e.login=ec.login_ele AND ec.id_salle='$id_salle[$i]' AND ec.id_epreuve='$id_epreuve';";
+			$sql="SELECT e.nom, e.prenom, e.naissance, e.login, ec.n_anonymat FROM eb_copies ec, eleves e WHERE e.login=ec.login_ele AND ec.id_salle='$id_salle[$i]' AND ec.id_epreuve='$id_epreuve' ORDER BY e.nom, e.prenom;";
 			//echo "$sql<br />";
 			$res=mysql_query($sql);
 			if(mysql_num_rows($res)>0) {
@@ -350,7 +347,7 @@ if((isset($mode))&&($mode=='imprime')) {
 
 		$date=date("Ymd_Hi");
 		$nom_fich='Etiquettes_'.$id_epreuve.'_'.$date.'.pdf';
-		header('Content-Type: application/pdf');
+		send_file_download_headers('application/pdf',$nom_fich);	
 		$pdf->Output($nom_fich,'I');
 		die();
 

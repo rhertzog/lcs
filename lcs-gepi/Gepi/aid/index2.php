@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: index2.php 6636 2011-03-07 18:03:20Z crob $
+ * @version: $Id: index2.php 6635 2011-03-07 17:58:33Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: visu_saisie.php 5789 2010-11-03 15:34:34Z jjacquard $
+ * @version $Id: visu_saisie.php 5901 2010-11-19 18:49:15Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *

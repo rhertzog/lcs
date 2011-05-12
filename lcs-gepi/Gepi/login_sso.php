@@ -1,5 +1,5 @@
 <?php
-/* $Id: login_sso.php 4295 2010-04-12 06:24:30Z tbelliard $
+/* $Id: login_sso.php 6367 2011-01-18 08:07:19Z tbelliard $
 *
 * Copyright 2001, 2008 Thomas Belliard
 *
@@ -26,6 +26,7 @@ if (isset($_GET["rne"])) {
 }
 
 $niveau_arbo = 0;
+$prevent_session_init = true; // On bloque l'initialisation automatique de la session.
 
 // Cas particulier du single sign-out CAS
 // On doit empêcher le filtrage de $_POST['logoutRequest'], qui contient des
@@ -37,8 +38,9 @@ if (isset($_POST) && array_key_exists('logoutRequest', $_POST)) {
 require_once("./lib/initialisations.inc.php");
 include("./lib/initialisationsPropel.inc.php");
 
+$auth_sso = in_array($gepiSettings['auth_sso'], array("lemon", "cas", "lcs"));
 
-if ($session_gepi->auth_sso && isset($logout_request)) {
+if ($auth_sso && isset($logout_request)) {
     $_POST['logoutRequest'] = $logout_request;
 }
 
@@ -46,16 +48,74 @@ if ($session_gepi->auth_sso && isset($logout_request)) {
 # Si l'authentification SSO n'est pas paramétrée, on renvoie tout de suite
 # vers la page de login classique.
 
-if (!$session_gepi->auth_sso) {
+if (!$auth_sso) {
 	session_write_close();
 	header("Location:login.php");
 	die();
 }
 
+// Authentification CAS : la session doit être gérée par phpCAS directement
+// Il est donc indispensable de placer toute l'initialisation ici, et
+// d'instancier la classe 'Session' sans initialiser la session php, qui
+// sera déjà initialisée.
+if ($gepiSettings['auth_sso'] == 'cas') {
+		include_once('./lib/CAS.php');
+		if ($mode_debug) {
+		    phpCAS::setDebug($debug_log_file);
+    }
+		// config_cas.inc.php est le fichier d'informations de connexions au serveur cas
+		$path = "./secure/config_cas.inc.php";
+		include($path);
+
+		# On défini l'URL de base, pour que phpCAS ne se trompe pas dans la génération
+		# de l'adresse de retour vers le service (attention, requiert patchage manuel
+		# de phpCAS !!)
+		if (isset($gepiBaseUrl)) {
+			$url_base = $gepiBaseUrl;
+		} else {
+			$url_base = Session::https_request() ? 'https' : 'http';
+			$url_base .= '://';
+			$url_base .= $_SERVER['SERVER_NAME'];
+		}
+
+    // La session doit être nommée de la même manière dans Session.class.php
+    // sinon ça ne marchera pas...
+    session_name("GEPI");
+    
+		// Le premier argument est la version du protocole CAS
+		// Le dernier argument a été ajouté par patchage manuel de phpCAS.
+		phpCAS::client(CAS_VERSION_2_0, $cas_host, $cas_port, $cas_root, true, $url_base);
+		phpCAS::setLang('french');
+
+		// redirige vers le serveur d'authentification si aucun utilisateur authentifié n'a
+		// été trouvé par le client CAS.
+		phpCAS::setNoCasServerValidation();
+
+    // On a une demande de logout envoyée par le serveur CAS :
+    //   il faut initialiser la session tout de suite, pour pouvoir la détruire complètement
+    if (isset($logout_request)) {
+      $session_gepi = new Session();
+  		// Gestion du single sign-out
+      phpCAS::setSingleSignoutCallback(array($session_gepi, 'cas_logout_callback'));
+		  phpCAS::handleLogoutRequests(false);
+		}
+		// Authentification
+		phpCAS::forceAuthentication();
+    
+    // Initialisation de la session, avec blocage de l'initialisation de la
+    // session php ainsi que des tests de timeout et update de logs,
+    // car l'authentification CAS n'est pas encore validée côté Gepi !
+    $session_gepi = new Session(true);
+} else {
+  $session_gepi = new Session();
+}
+
+
+
 # L'instance de Session permettant de gérer directement les authentifications
 # SSO, on ne s'embête pas :
-
 $auth = $session_gepi->authenticate();
+
 if ($auth == "1") {
 	# Authentification réussie
 	session_write_close();

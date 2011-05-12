@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: signalement_eleves.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: signalement_eleves.php 6438 2011-01-28 13:47:26Z tbelliard $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -200,11 +200,7 @@ if (isset($_POST['is_posted'])) {
 				$ajout_header="";
 				if($email_declarant!="") {$ajout_header.="Cc: $nom_declarant <".$email_declarant.">\r\n";}
 	
-				$envoi = mail(getSettingValue("gepiAdminAdress"),
-					$gepiPrefixeSujetMail.$sujet_mail,
-					$texte_mail,
-					"From: Mail automatique Gepi\r\n".$ajout_header."X-Mailer: PHP/".phpversion());
-	
+        $envoi = envoi_mail($sujet_mail, $texte_mail, getSettingValue("gepiAdminAdress"), $ajout_header);	
 			}
 		}
 

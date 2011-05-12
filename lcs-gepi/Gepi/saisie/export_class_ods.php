@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: export_class_ods.php 3983 2010-01-02 12:16:31Z crob $
+ * $Id: export_class_ods.php 6469 2011-02-06 17:40:38Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -63,10 +63,10 @@ $chemin_temp="../temp/".$user_tmp;
 $chemin_modele_ods="export_note_app_modele_ods";
 
 if(isset($nettoyage)){
-	if(!ereg(".ods$",$nettoyage)){
+	if(!my_ereg(".ods$",$nettoyage)){
 		$msg="Le fichier n'est pas d'extension ODS.";
 	}
-	elseif(!ereg("^".$_SESSION['login'],$nettoyage)){
+	elseif(!my_ereg("^".$_SESSION['login'],$nettoyage)){
 		$msg="Vous tentez de supprimer des fichiers qui ne vous appartiennent pas.";
 	}
 	else{

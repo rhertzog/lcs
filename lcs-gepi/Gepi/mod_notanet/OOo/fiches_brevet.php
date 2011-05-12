@@ -1,7 +1,7 @@
 <?php
-/* $Id: fiches_brevet.php 4514 2010-05-30 10:34:29Z regis $ */
+/* $Id: fiches_brevet.php 6522 2011-02-21 20:13:20Z crob $ */
 /*
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -91,7 +91,7 @@ $id_classe = isset($_POST['id_classe']) ? $_POST['id_classe'] : (isset($_GET['id
 
 $type_brevet = isset($_POST['type_brevet']) ? $_POST['type_brevet'] : (isset($_GET['type_brevet']) ? $_GET['type_brevet'] : NULL);
 if(isset($type_brevet)) {
-	if((!ereg("[0-9]",$type_brevet))||(strlen(my_ereg_replace("[0-9]","",$type_brevet))!=0)) {
+	if((!my_ereg("[0-9]",$type_brevet))||(strlen(my_ereg_replace("[0-9]","",$type_brevet))!=0)) {
 		$type_brevet=NULL;
 	}
 }
@@ -418,7 +418,7 @@ $gepiSchoolCity=getSettingValue("gepiSchoolCity");
 
 
 $tabmatieres=array();
-for($j=101;$j<=122;$j++){
+for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 	$tabmatieres[$j]=array();
 }
 
@@ -505,7 +505,7 @@ $tabmatieres=tabmatieres($type_brevet);
 
 // tableau de correspondance Champs de $tabmatieres -> champs de publipostage OOo
 $tab_champs_OOo=array();
-for($j=101;$j<=122;$j++){
+for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 	if($tabmatieres[$j][0]!=''){
 		$tab_champs_OOo[$j]=array();
 		$tab_champs_OOo[$j][0]=$j;												// code de la matière
@@ -569,7 +569,7 @@ for($i=0;$i<count($id_classe);$i++){
 
 	// Calcul des moyennes de classes... pb avec le statut...
 	$moy_classe=array();
-	for($j=101;$j<=122;$j++){
+	for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 		if($tabmatieres[$j][0]!=''){
 			$sql="SELECT ROUND(AVG(note),1) moyenne FROM notanet WHERE note!='DI' AND note!='AB' AND note!='NN' AND id_classe='$id_classe[$i]' AND notanet_mat='".$tabmatieres[$j][0]."'";
 			$res_moy=mysql_query($sql);
@@ -586,7 +586,7 @@ for($i=0;$i<count($id_classe);$i++){
 
 	// Récupération du statut des matières : ceux validés lors du traitement NOTANET
 	// pour repérer les matières non dispensées.
-	for($j=101;$j<=122;$j++){
+	for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 		if($tabmatieres[$j][0]!=''){
 			$sql="SELECT * FROM notanet_corresp WHERE notanet_mat='".$tabmatieres[$j][0]."' AND type_brevet='$type_brevet' LIMIT 1";
 			$res=mysql_query($sql);
@@ -653,7 +653,7 @@ for($i=0;$i<count($id_classe);$i++){
 				$TOTAL=0;
 				$TOTAL_COEF=0;
 				$TOTAL_POINTS=0;
-				for($j=101;$j<=122;$j++){
+				for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 
 					//if ($tab_champs_OOo[$j][0]!='') {
 					if ((isset($tab_champs_OOo[$j][0]))&&($tab_champs_OOo[$j][0]!='')) {

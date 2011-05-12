@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: imprime_pdf.php 6386 2011-01-20 07:27:54Z crob $
+ * $Id: imprime_pdf.php 6620 2011-03-03 20:24:07Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -166,7 +166,7 @@ elseif(!isset($_GET['nom_pdf_en_detail'])) {
 	$ident_plus="";
 
 	$ident_plus .= date("Ymd");
-	$ident_plus = my_ereg_replace("[^A-Za-z0-9]","_",$current_group["classlist_string"].'_'.$current_group["description"].'_'.$ident_plus);
+	$ident_plus = preg_replace("/[^A-Za-z0-9]/","_",$current_group["classlist_string"].'_'.$current_group["description"].'_'.$ident_plus);
 	$ident_plus=str_replace(" ", "_", $ident_plus);
 
 	send_file_download_headers('application/pdf',$ident_plus.'.pdf');
@@ -181,7 +181,7 @@ else{
 		$ident_plus .= "Periode_".$_GET['periode_num']."_";
 	}
 	$ident_plus .= date("Ymd");
-	$ident_plus = my_ereg_replace("[^A-Za-z0-9]","_",$current_group["classlist_string"].'_'.$current_group["description"].'_'.$ident_plus);
+	$ident_plus = preg_replace("/[^A-Za-z0-9]/","_",$current_group["classlist_string"].'_'.$current_group["description"].'_'.$ident_plus);
 	$ident_plus=str_replace(" ", "_", $ident_plus);
 
 	send_file_download_headers('application/pdf',$ident_plus.'.pdf');

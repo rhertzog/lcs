@@ -1,6 +1,6 @@
 <?php
 
-	/* $Id: fb_rouen_pdf.php 4497 2010-05-25 16:16:37Z crob $ */
+	/* $Id: fb_rouen_pdf.php 6730 2011-03-30 09:43:45Z crob $ */
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");
@@ -68,7 +68,7 @@
 
 	$type_brevet = isset($_POST['type_brevet']) ? $_POST['type_brevet'] : (isset($_GET['type_brevet']) ? $_GET['type_brevet'] : NULL);
 	if(isset($type_brevet)) {
-		if((!ereg("[0-9]",$type_brevet))||(strlen(my_ereg_replace("[0-9]","",$type_brevet))!=0)) {
+		if((!preg_match("/[0-9]/",$type_brevet))||(strlen(preg_replace("/[0-9]/","",$type_brevet))!=0)) {
 			$type_brevet=NULL;
 		}
 	}
@@ -748,10 +748,10 @@
 										$valeur_tmp="";
 		
 										// On traite le cas des notes non numériques AB, DI,... plus pour décrémenter les SUR_TOTAUX
-										if((strlen(my_ereg_replace("[0-9]","",$tabmatieres[$j]['fb_col'][1]))==0)&&($tabmatieres[$j][-1]!='PTSUP')&&($tabmatieres[$j]['socle']=='n')){
+										if((strlen(preg_replace("/[0-9]/","",$tabmatieres[$j]['fb_col'][1]))==0)&&($tabmatieres[$j][-1]!='PTSUP')&&($tabmatieres[$j]['socle']=='n')){
 											$SUR_TOTAL[1]+=$tabmatieres[$j]['fb_col'][1];
 										}
-										if((strlen(my_ereg_replace("[0-9]","",$tabmatieres[$j]['fb_col'][2]))==0)&&($tabmatieres[$j][-1]!='PTSUP')&&($tabmatieres[$j]['socle']=='n')){
+										if((strlen(preg_replace("/[0-9]/","",$tabmatieres[$j]['fb_col'][2]))==0)&&($tabmatieres[$j][-1]!='PTSUP')&&($tabmatieres[$j]['socle']=='n')){
 											$SUR_TOTAL[2]+=$tabmatieres[$j]['fb_col'][2];
 										}
 				

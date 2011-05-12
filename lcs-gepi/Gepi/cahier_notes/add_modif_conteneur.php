@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: add_modif_conteneur.php 6074 2010-12-08 15:43:17Z crob $
+ * @version: $Id: add_modif_conteneur.php 5958 2010-11-22 21:39:02Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

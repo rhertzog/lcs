@@ -1,6 +1,6 @@
 <?php
 /*
-$Id: saisie_sanction.inc.php 4152 2010-03-21 23:32:16Z adminpaulbert $
+$Id: saisie_sanction.inc.php 6723 2011-03-29 10:53:51Z crob $
 */
 
 // Page incluse dans saisie_sanction.php ou appelée via ajax depuis saisie_sanction.php->ajout_sanction.php
@@ -149,11 +149,11 @@ elseif($valeur=='retenue') {
 	echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Heure de début&nbsp;: </td>\n";
 	echo "<td style='text-align:left;'>\n";
 	//echo "<input type='text' name='heure_debut' value='' />\n";
-	echo "<input type='text' name='heure_debut_main' id='display_heure_main' size='5' value=\"$heure_debut\" /> ou \n";
+	echo "<input type='text' name='heure_debut_main' id='display_heure_main' size='5' value=\"$heure_debut\" onKeyDown=\"clavier_heure(this.id,event);\" AutoComplete=\"off\" /> ou \n";
 	choix_heure2('heure_debut',$heure_debut,'');
 	
 	//pour infobulle
-	$texte="- 2 choix possible pour inscrire l'heure de début de la retenue<br />Le premier grace à la liste déroulante. Vous choisissez un créneau. Dans ce cas, c'est l'heure début de créenaux HH:MM qui sera pris en compte pour l'impression de la retenue.<br/>Dans l'autre cas, vous saisisssez l'heure à la place de '00:00' sous ce format.";
+	$texte="- 2 choix possibles pour inscrire l'heure de début de la retenue<br />Le premier grace à la liste déroulante. Vous choisissez un créneau. Dans ce cas, c'est l'heure début de crénaux HH:MM qui sera pris en compte pour l'impression de la retenue.<br/>Dans l'autre cas, vous saisissez l'heure à la place de '00:00' sous ce format.";
 	
 	echo "</td>\n";
 	echo "</tr>\n";
@@ -202,8 +202,33 @@ elseif($valeur=='retenue') {
 	echo "<textarea name='no_anti_inject_travail' cols='30' onchange='changement();'>$travail</textarea>\n";
 	echo "</td>\n";
 	echo "</tr>\n";
-
+	
 	echo "<tr class='lig-1'>\n";
+	echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Report&nbsp;: </td>\n";
+	echo "<td style='text-align:left;'>\n";
+	
+	echo "<b>Gestion d'un report :</b><br/>";
+	
+	echo "1- Cocher cette case pour traiter un report : <input type='checkbox' name='report_demande' id='report_demande' value='OK' onchange=\"changement();\" /><br/>\n";
+	echo "2- Saisir le motif du report : <select name='choix_motif_report' id='choix_motif_report' changement();\">\n";
+	echo "<option value=''>---</option>\n";
+	echo "<option value='absent'>Absent</option>\n";
+	echo "<option value='aucun_motif'>Aucun motif</option>\n";
+	echo "<option value='report_demande'>Report demandé</option>\n";
+	echo "<option value='autre'>Autre</option>\n";
+	echo "</select><br/>\n";
+	echo "3- Modifier les données (date, heure, ...) pour le report<br/>";
+	echo "4- Enregistrer les modifications<br/>";
+	echo "5- Imprimer le document sur la page suivante<br/>\n";
+	
+	if (isset($id_sanction)) {
+	echo "<b>Liste des reports</b><br/>\n";
+	echo afficher_tableau_des_reports($id_sanction);
+	}
+	echo "</td>\n";
+	echo "</tr>\n";
+	
+	echo "<tr class='lig1'>\n";
 	echo "<td colspan='2'>\n";
 	echo "<input type='submit' name='enregistrer_sanction' value='Enregistrer' />\n";
 	echo "</td>\n";
@@ -234,6 +259,15 @@ elseif($valeur=='exclusion') {
 
 	$lieu_exclusion="";
 	$travail="";
+	
+	$nombre_jours="";
+	$qualification_faits="";
+	$numero_courrier="";
+	$type_exclusion="";
+	$fct_autorite="";
+	$nom_autorite="";
+	$fct_delegation="";
+	
 	if(isset($id_sanction)) {
 		$sql="SELECT * FROM s_exclusions WHERE id_sanction='$id_sanction';";
 		$res_sanction=mysql_query($sql);
@@ -246,6 +280,11 @@ elseif($valeur=='exclusion') {
 			$lieu_exclusion=$lig_sanction->lieu;
 			$travail=$lig_sanction->travail;
 			$afficher_creneau_final='';
+			$nombre_jours=$lig_sanction->nombre_jours;
+			$qualification_faits=$lig_sanction->qualification_faits;
+			$numero_courrier=$lig_sanction->num_courrier;
+			$type_exclusion=$lig_sanction->type_exclusion;
+			$signataire=$lig_sanction->id_signataire;
 		} 
 	}
 	echo "<tr class='lig1'>\n";
@@ -313,7 +352,78 @@ elseif($valeur=='exclusion') {
 	echo "</td>\n";
 	echo "</tr>\n";
 
+// Ajout Eric génération Ooo de l'exclusion
+	echo "<tr>\n";
+	echo "<td colspan=2 style='text-align:center;'>\n";
+	echo "Données à renseigner pour l'impression Open Office de l'exclusion temporaire :</td>\n";
+	echo "</tr>\n";
+
 	echo "<tr class='lig1'>\n";
+	echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Numero de courrier&nbsp;: </td>\n";
+	echo "<td style='text-align:left;'>\n";
+	echo "<input type='text' name='numero_courrier' id='numero_courrier' value=\"$numero_courrier\" onchange='changement();' />\n";
+	echo "<i>La référence du courrier dans le registre courrier départ. Ex : ADM/SD/012/11</i></td>\n";
+	echo "</tr>\n";
+	
+	echo "<tr class='lig-1'>\n";
+	echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Type d'exclusion&nbsp;: </td>\n";
+	echo "<td style='text-align:left;'>\n";
+	echo "<input type='text' name='type_exclusion' id='type_exclusion' value=\"$type_exclusion\" onchange='changement();' />\n";
+	echo "<select name='type_exclusion' id='type_exclusion_select' onchange=\"maj_lieu('type_exclusion','type_exclusion_select','type_exclusion');changement();\">\n";
+	if ($type_exclusion=='exclusion temporaire') {
+	    echo "<option value=\"exclusion temporaire\" selected>Exclusion temporaire</option>\n";
+	} else {
+	    echo "<option value=\"exclusion temporaire\">Exclusion temporaire</option>\n";
+	}
+	if ($type_exclusion=='exclusion-inclusion temporaire') {
+	    echo "<option value=\"exclusion-inclusion temporaire\" selected>Exclusion-inclusion temporaire</option>\n";
+	} else {
+	    echo "<option value=\"exclusion-inclusion temporaire\">Exclusion-inclusion temporaire</option>\n";
+	}
+	
+	
+	echo "</select>\n";
+	echo "<i>Choisir le type dans la liste.</i></td>\n";
+	echo "</tr>\n";	
+	
+	echo "<tr class='lig1'>\n";
+	echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Nombre de jours d'exclusion&nbsp;: </td>\n";
+	echo "<td style='text-align:left;'>\n";
+	echo "<input type='text' name='nombre_jours' id='nombre_jours' value=\"$nombre_jours\" onchange='changement();' />\n";
+	echo "<i>en toutes lettres</i></td>\n";
+	echo "</tr>\n";
+	
+	echo "<tr class='lig-1'>\n";
+	echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Qualification des faits&nbsp;: </td>\n";
+	echo "<td style='text-align:left;'>\n";
+	echo "<textarea name='no_anti_inject_qualification_faits' cols='100' onchange='changement();'>$qualification_faits</textarea>\n";
+	echo "</td>\n";
+	echo "</tr>\n";
+	
+	echo "<tr class='lig1'>\n";
+	echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Choix du signataire de l'exclusion&nbsp;: </td>\n";
+	echo "<td style='text-align:left;'>\n";
+	// Sélectionner parmi les signataires déjà saisis?
+	$sql="SELECT * FROM s_delegation ORDER BY fct_autorite";
+	$res_signataire=mysql_query($sql);
+	if(mysql_num_rows($res_signataire)>0) {
+		echo "<select name='signataire' id='choix_signataire' onchange=\"changement();\">\n";
+		echo "<option value=''>---</option>\n";
+		while($lig_signataire=mysql_fetch_object($res_signataire)) {
+		    if ($signataire==$lig_signataire->id_delegation) {
+			echo "<option value=\"$lig_signataire->id_delegation\" selected >$lig_signataire->fct_autorite</option>\n";
+			} else {
+			echo "<option value=\"$lig_signataire->id_delegation\">$lig_signataire->fct_autorite</option>\n";
+			}
+		}
+		echo "</select>\n";
+	} else {
+	    echo "<i>Aucun signataire n'est saisi dans la base. Demandez à votre administrateur de saisir cette liste en admin du module</i>";
+	};
+	echo "</td>\n";
+	echo "</tr>\n";
+	
+	echo "<tr class='lig-1'>\n";
 	echo "<td colspan='2'>\n";
 	echo "<input type='submit' name='enregistrer_sanction' value='Enregistrer' />\n";
 	echo "</td>\n";

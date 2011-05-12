@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: accueil_template.php 6275 2011-01-04 13:04:37Z crob $
+ * $Id: accueil_template.php 6697 2011-03-25 21:54:27Z regis $
 */
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
@@ -60,6 +60,14 @@
 <!-- fin bandeau_template.html      -->
 
 <div id='container'>
+
+<a name='haut_de_page'></a>
+
+<div class='fixeMilieuDroit'>
+	<a href='#haut_de_page'><img src='images/up.png' width='18' height='18' alt="haut de la page" title="Remonter en haut de la page" /></a>
+	<br />
+	<a href='#bas_de_page'><img src='images/down.png' width='18' height='18' alt="bas de la page" title="Descendre en bas de la page" /></a>
+</div>
 
 <!-- droits dossiers -->
 
@@ -170,6 +178,16 @@
 
 <?php
 	}
+?>
+
+<!-- Actions à effectuer -->
+<?php
+	affiche_infos_actions();
+?>
+
+<!-- Accès CDT ouverts -->
+<?php
+	affiche_acces_cdt();
 ?>
 
 <!-- messagerie -->
@@ -440,6 +458,7 @@
 	</script>
 
 
+<a name='bas_de_page'></a>
 </div>
 
 		<?php
@@ -465,6 +484,7 @@
    			";
 		}
 ?>
+
 
 </body>
 </html>

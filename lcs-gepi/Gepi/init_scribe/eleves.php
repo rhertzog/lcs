@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: eleves.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: eleves.php 6600 2011-03-03 11:14:32Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -97,6 +97,17 @@ $liste_tables_del = array(
 "cn_notes_conteneurs",
 "cn_notes_devoirs",
 //"setting"
+"ex_classes",
+"ex_examens",
+"ex_groupes",
+"ex_matieres",
+"ex_notes",
+
+"eb_copies",
+"eb_epreuves",
+"eb_groupes",
+"eb_profs"
+//,"eb_salles"
 );
 
 //**************** EN-TETE *****************

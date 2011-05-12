@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: saisie_app.php 4878 2010-07-24 13:54:01Z regis $
+* $Id: saisie_app.php 6730 2011-03-30 09:43:45Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
 *
 * This file is part of GEPI.
 *
@@ -65,6 +65,8 @@ if (isset($id_groupe)) {
 
 
 if (isset($_POST['is_posted'])) {
+	check_token();
+
 	$pb_record="no";
 
 	for($i=0;$i<$nb_tot_eleves;$i++) {
@@ -87,7 +89,10 @@ if (isset($_POST['is_posted'])) {
 					$app = "";
 				}
 
-				$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
+				//$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
+				$app=preg_replace('/(\\\r\\\n)+/',"\r\n",$app);
+				$app=preg_replace('/(\\\r)+/',"\r",$app);
+				$app=preg_replace('/(\\\n)+/',"\n",$app);
 
 				$sql="SELECT * FROM notanet_app WHERE (login='$log_eleve[$i]' AND matiere='$matiere');";
 				//echo "$sql<br />";
@@ -207,7 +212,7 @@ else {
 	echo "<p class='bold'>".$current_group['description']." (<i>".$current_group["classlist_string"]."</i>)</p>\n";
 
 	echo "<form enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
-
+	echo add_token_field();
 	//echo "<table class='boireaus' width='100%'>\n";
 	echo "<table class='boireaus'>\n";
 	echo "<tr>\n";

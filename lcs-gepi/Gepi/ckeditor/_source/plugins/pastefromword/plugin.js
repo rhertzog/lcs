@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 (function()
@@ -12,9 +12,10 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			// Flag indicate this command is actually been asked instead of a generic
 			// pasting.
 			var forceFromWord = 0;
-			var resetFromWord = function()
+			var resetFromWord = function( evt )
 				{
-					setTimeout( function() { forceFromWord = 0; }, 0 );
+					evt && evt.removeListener();
+					forceFromWord && setTimeout( function() { forceFromWord = 0; }, 0 );
 				};
 
 			// Features bring by this command beside the normal process:
@@ -27,14 +28,21 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				exec : function()
 				{
 					forceFromWord = 1;
-					if( editor.execCommand( 'paste' ) === false )
+					if ( editor.execCommand( 'paste' ) === false )
 					{
-						editor.on( 'dialogHide', function ( evt )
-							{
-								evt.removeListener();
-								resetFromWord();
-							});
+						editor.on( 'dialogShow', function ( evt )
+						{
+							evt.removeListener();
+							evt.data.on( 'cancel', resetFromWord );
+						});
+
+						editor.on( 'dialogHide', function( evt )
+						{
+							evt.data.removeListener( 'cancel', resetFromWord );
+						} );
 					}
+
+					editor.on( 'afterPaste', resetFromWord );
 				}
 			});
 
@@ -43,6 +51,11 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 				{
 					label : editor.lang.pastefromword.toolbar,
 					command : 'pastefromword'
+				});
+
+			editor.on( 'pasteState', function( evt )
+				{
+					editor.getCommand( 'pastefromword' ).setState( evt.data );
 				});
 
 			editor.on( 'paste', function( evt )
@@ -59,7 +72,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 							// Event continuation with the original data.
 							if ( isLazyLoad )
 								editor.fire( 'paste', data );
-							else if( !editor.config.pasteFromWordPromptCleanup
+							else if ( !editor.config.pasteFromWordPromptCleanup
 							  || ( forceFromWord || confirm( editor.lang.pastefromword.confirmCleanup ) ) )
 							 {
 								data[ 'html' ] = CKEDITOR.cleanWord( mswordHtml, editor );
@@ -87,17 +100,21 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 						|| ( this.path + 'filter/default.js' ) );
 
 				// Load with busy indicator.
-				CKEDITOR.scriptLoader.load( filterFilePath, callback, null, false, true );
+				CKEDITOR.scriptLoader.load( filterFilePath, callback, null, true );
 			}
 
 			return !isLoaded;
-		}
+		},
+
+		requires : [ 'clipboard' ]
 	});
 })();
 
 /**
- * Whether prompt the user about the clean-up of content from MS-Word.
+ * Whether to prompt the user about the clean up of content being pasted from
+ * MS Word.
  * @name CKEDITOR.config.pasteFromWordPromptCleanup
+ * @since 3.1
  * @type Boolean
  * @default undefined
  * @example
@@ -105,9 +122,11 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
  */
 
 /**
- * The file that provides the MS-Word Filtering rules.
- * Note: It's a global configuration which are shared by all editor instances.
+ * The file that provides the MS Word cleanup function for pasting operations.
+ * Note: This is a global configuration shared by all editor instances present
+ * in the page.
  * @name CKEDITOR.config.pasteFromWordCleanupFile
+ * @since 3.1
  * @type String
  * @default 'default'
  * @example

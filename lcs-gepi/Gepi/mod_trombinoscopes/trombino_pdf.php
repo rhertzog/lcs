@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: trombino_pdf.php 5337 2010-09-17 19:28:57Z crob $
+* $Id: trombino_pdf.php 6331 2011-01-11 16:40:51Z crob $
 *
-* Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
 *
 * This file is part of GEPI.
 *
@@ -50,7 +50,7 @@ if(mysql_num_rows($test)==0) {
 	eleve='F',
 	responsable='F',
 	secours='F',
-	autre='F',
+	autre='V',
 	description='Trombinoscopes PDF',
 	statut='';";
 	$insert=mysql_query($sql);

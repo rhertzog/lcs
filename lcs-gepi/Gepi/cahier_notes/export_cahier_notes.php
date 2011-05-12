@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: export_cahier_notes.php 6399 2011-01-20 12:29:56Z crob $
+ * @version: $Id: export_cahier_notes.php 6464 2011-02-06 17:04:36Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -82,10 +82,10 @@ else{
 			$id_groupe=isset($_GET['id_groupe']) ? $_GET['id_groupe'] : NULL;
 			$periode_num=isset($_GET['periode_num']) ? $_GET['periode_num'] : NULL;
 
-			if(!ereg(".ods$",$nettoyage)) {
+			if(!my_ereg(".ods$",$nettoyage)) {
 				$msg="Le fichier n'est pas d'extension ODS.";
 			}
-			elseif(!ereg("^".$_SESSION['login'],$nettoyage)) {
+			elseif(!my_ereg("^".$_SESSION['login'],$nettoyage)) {
 				$msg="Vous tentez de supprimer des fichiers qui ne vous appartiennent pas.";
 			}
 			else {

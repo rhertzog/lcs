@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: sauve_role.php 5400 2010-09-23 10:01:22Z crob $
+ * $Id: sauve_role.php 5989 2010-11-25 11:51:39Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -56,6 +56,8 @@ $login=isset($_GET['login']) ? $_GET['login'] : NULL;
 $qualite=isset($_GET['qualite']) ? $_GET['qualite'] : NULL;
 
 if((isset($id_incident))&&(isset($login))&&(isset($qualite))) {
+	check_token();
+
 	/*
 	echo "\$id_incident=$id_incident<br />";
 	echo "\$login=$login<br />";

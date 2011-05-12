@@ -1,5 +1,5 @@
 <?php
-/* $Id: attribuer_copies.php 6074 2010-12-08 15:43:17Z crob $ */
+/* $Id: attribuer_copies.php 6768 2011-04-10 17:51:29Z eabgrall $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: save_csv.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * $Id: save_csv.php 5937 2010-11-21 17:42:55Z crob $
  *
- * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -40,6 +40,9 @@ if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
     die();
 }
+
+// Page bourrinée... la gestion du token n'est pas faite... et ne sera faite que si quelqu'un utilise encore ce mode d'initialisation et le manifeste sur la liste de diffusion gepi-users
+check_token();
 
 // Initialisation du répertoire actuel de sauvegarde
 $dirname = getSettingValue("backup_directory");

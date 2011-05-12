@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: modify_aid.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: modify_aid.php 5907 2010-11-19 20:30:52Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *

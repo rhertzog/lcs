@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: bulletin_pdf_avec_modele_classe.php 6372 2011-01-19 09:53:19Z tbelliard $
+* $Id: bulletin_pdf_avec_modele_classe.php 6370 2011-01-19 08:54:56Z tbelliard $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -53,6 +53,7 @@ if (!checkAccess()) {
 //================================
 // AJOUT: boireaus 20080102
 if(!isset($_SESSION["bull_pdf_debug"])) {
+  // On envoie les en-têtes HTTP si on n'est pas en mode debug
   send_file_download_headers('application/pdf', 'bulletin.pdf');
 }
 else{

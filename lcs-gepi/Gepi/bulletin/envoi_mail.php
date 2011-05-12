@@ -1,6 +1,6 @@
 <?php
 
-/* @version $Id: envoi_mail.php 6074 2010-12-08 15:43:17Z crob $ */
+/* @version $Id: envoi_mail.php 5969 2010-11-23 18:39:40Z crob $ */
 
 // ============== Initialisation ===================
 $affiche_connexion = 'yes';

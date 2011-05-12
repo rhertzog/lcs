@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_class_grp_lot.php 6074 2010-12-08 15:43:17Z crob $
+ * $Id: edit_class_grp_lot.php 5920 2010-11-20 21:04:58Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

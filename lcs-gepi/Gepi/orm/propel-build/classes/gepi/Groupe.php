@@ -139,12 +139,15 @@ class Groupe extends BaseGroupe {
 			return $this->nameAvecClasses;
 		} else {
 			$str = $this->getName();
-			$str .= "&nbsp;-&nbsp;(";
+			$str .= " - (";
 			foreach ($this->getClasses() as $classe) {
-				$str .= $classe->getNom() . ",&nbsp;";
+				$str .= $classe->getNom();
+                                if ($this->getClasses()->isLast()) {
+                                    $str .= ")";
+                                } else {
+                                    $str .= ", ";
+                                }
 			}
-			$str = substr($str, 0, -7);
-			$str.= ")";
 			$this->nameAvecClasses = $str;
 			return $str;
 		}
@@ -246,7 +249,7 @@ class Groupe extends BaseGroupe {
 		$criteria = new Criteria();
 		$criteria->add(JGroupesProfesseursPeer::ID_GROUPE,$this->getId());
 		foreach($this->getJGroupesProfesseurssJoinUtilisateurProfessionnel($criteria) as $ref) {
-		    if ($ref != null) {
+		    if ($ref != null && $ref->getUtilisateurProfessionnel() != null) {
 			$profs->append($ref->getUtilisateurProfessionnel());
 		    }
 		}
@@ -381,4 +384,21 @@ class Groupe extends BaseGroupe {
 		return $classes->getFirst()->getPeriodeNoteOuverte();
 	    }
 	}
+
+
+	/**
+	 *
+	 * Renvoi une collection des mefs des eleves de ce groupe. Un seul mef de chaque type sera retourné.
+	 *
+	 * @periode integer numero de la periode
+	 * @return     PropelObjectCollection Eleves[]
+	 *
+	 */
+	public function getMefs($periode = null) {
+            $mef_collection = new PropelObjectCollection();
+            foreach($this->getEleves($periode) as $eleve) {
+                $mef_collection->add($eleve->getMef());
+            }
+            return $mef_collection;
+        }
 } // Groupe

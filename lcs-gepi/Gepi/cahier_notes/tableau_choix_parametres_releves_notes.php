@@ -1,4 +1,8 @@
 <?php
+	/*
+	$Id: tableau_choix_parametres_releves_notes.php 6327 2011-01-11 16:30:58Z crob $
+	*/
+
 	echo "<table class='boireaus' border='1' summary='Tableau des items'>\n";
 	echo "<tr>\n";
 	//echo "<th width='30%'>Item</th>\n";
@@ -126,7 +130,7 @@
 	//=================================
 	// 20100526
 	// Il ne faut peut-être pas l'autoriser pour tous les utilisateurs?
-	if(($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable')) {
+	//if(($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable')) {
 		$alt=$alt*(-1);
 		echo "<tr class='lig$alt white_hover'>\n";
 		echo "<td style='text-align:left;'>Avec la moyenne de la classe pour chaque devoir\n";
@@ -157,9 +161,13 @@
 		echo "</td>\n";
 		echo "</tr>\n";
 
-	}
+	//}
 	//=================================
 
+	$rn_retour_ligne_defaut="y";
+	if((isset($_SESSION['pref_rn_retour_ligne']))&&(($_SESSION['pref_rn_retour_ligne']=='y')||($_SESSION['pref_rn_retour_ligne']=='n'))) {
+		$rn_retour_ligne_defaut=$_SESSION['pref_rn_retour_ligne'];
+	}
 
 	$alt=$alt*(-1);
 	echo "<tr class='lig$alt white_hover'>\n";
@@ -167,7 +175,9 @@
 	echo "</td>\n";
 	for($i=0;$i<count($tab_id_classe);$i++) {
 		echo "<td>\n";
-		echo "<input type='checkbox' name='rn_retour_ligne[$i]' id='rn_retour_ligne_".$i."' size='2' value='y' checked />\n";
+		echo "<input type='checkbox' name='rn_retour_ligne[$i]' id='rn_retour_ligne_".$i."' size='2' value='y' ";
+		if($rn_retour_ligne_defaut=='y') {echo "checked ";}
+		echo "/>\n";
 		echo "</td>\n";
 	}
 	echo "<td>\n";

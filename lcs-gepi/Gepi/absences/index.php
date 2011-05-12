@@ -1,7 +1,7 @@
 <?php
 
 /*
-* $Id: index.php 5061 2010-08-16 19:22:09Z regis $
+* $Id: index.php 5970 2010-11-23 19:45:11Z dblanqui $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -114,7 +114,7 @@ if (!isset($id_classe)) {
 
 	// si le module de gestion des absences est activé alors on ajout un colspan de 2 pour l'entêt d'importation
 	$colspan = '2';
-	if ( getSettingValue("active_module_absence") === 'y' ) {
+	if ( getSettingValue("active_module_absence") === 'y' || getSettingValue("abs2_import_manuel_bulletin")==='y') {
 		$colspan = '3';
 	}
 
@@ -141,7 +141,7 @@ if (!isset($id_classe)) {
 		}
 
 	    // si le module de gestion des absences de gepi est activé alors on propose l'importation des absences de ce module
-	    if ( getSettingValue("active_module_absence") === 'y' ) {
+	    if ( getSettingValue("active_module_absence") === 'y' || getSettingValue("abs2_import_manuel_bulletin")==='y' ) {
 			if(($ver_periode[$i] == "N")||
 			(($ver_periode[$i]!="O")&&($_SESSION['statut']=='secours'))) {
 				echo "<td style='width:5em;'><a href='import_absences_gepi.php?id_classe=$id_classe&amp;periode_num=$i'>de GEPI</a></td>\n";

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: accueil_admin.php 4884 2010-07-25 07:09:32Z regis $
+ * $Id: accueil_admin.php 6491 2011-02-11 17:10:43Z jjacquard $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -68,7 +68,7 @@ $tab[2] = "cpe";
 $tab[3] = "scolarite";
 $tab[4] = "eleve";
 $tab[5] = "secours";
-
+/*
 function acces($id,$statut) {
     $tab_id = explode("?",$id);
     $query_droits = @mysql_query("SELECT * FROM droits WHERE id='$tab_id[0]'");
@@ -79,7 +79,7 @@ function acces($id,$statut) {
         return "0";
     }
 }
-
+*/
 // function affiche_ligne($chemin_,$titre_,$expli_,$tab,$statut_) {
 function affiche_ligne($chemin_,$statut_) {
 
@@ -142,7 +142,8 @@ $chemin = array(
 "/classes/index.php",
 //"/groupes/index.php",
 "/aid/index.php",
-"/mod_trombinoscopes/trombinoscopes_admin.php#gestion_fichiers"
+"/mod_trombinoscopes/trombinoscopes_admin.php#gestion_fichiers",
+"/mef/admin_mef.php"
 );
 
 $titre = array(
@@ -154,7 +155,8 @@ $titre = array(
 "Gestion des classes",
 //"Gestion des groupes",
 "Gestion des AID",
-"Gestion du trombinoscope"
+"Gestion du trombinoscope",
+"Gestion des mef (niveaux)"
 );
 
 $expli = array(
@@ -174,7 +176,8 @@ $expli = array(
 "Définir, modifier, supprimer des AID (Activités Inter-Disciplinaires).
 <br />Affecter les ".$gepiSettings['denomination_professeurs']." et les ".$gepiSettings['denomination_eleves'].".",
 "Repérer les personnels/".$gepiSettings['denomination_eleves']." n'ayant pas de photo.
-<br />Vider le dossier des photos,..."
+<br />Vider le dossier des photos,...",
+"Gestion des mef (niveaux)"
 );
 
 $nb_ligne = count($chemin);

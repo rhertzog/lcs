@@ -1,9 +1,9 @@
 <?php
 @set_time_limit(0);
 /*
- * Last $Id: init_options.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * Last $Id: init_options.php 5937 2010-11-21 17:42:55Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -41,6 +41,9 @@ if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
 die();
 }
+
+// Page bourrinée... la gestion du token n'est pas faite... et ne sera faite que si quelqu'un utilise encore ce mode d'initialisation et le manifeste sur la liste de diffusion gepi-users
+check_token();
 
 //**************** EN-TETE *****************
 $titre_page = "Outil d'initialisation de l'année | Initialisation  des options par GEP";

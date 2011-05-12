@@ -77,10 +77,21 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 	protected $commentaire;
 
 	/**
+	 * The value for the id_lieu field.
+	 * @var        int
+	 */
+	protected $id_lieu;
+
+	/**
 	 * The value for the sortable_rank field.
 	 * @var        int
 	 */
 	protected $sortable_rank;
+
+	/**
+	 * @var        AbsenceEleveLieu
+	 */
+	protected $aAbsenceEleveLieu;
 
 	/**
 	 * @var        array AbsenceEleveTypeStatutAutorise[] Collection to store aggregation of AbsenceEleveTypeStatutAutorise objects.
@@ -216,6 +227,16 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 	public function getCommentaire()
 	{
 		return $this->commentaire;
+	}
+
+	/**
+	 * Get the [id_lieu] column value.
+	 * cle etrangere du lieu ou se trouve l'élève
+	 * @return     int
+	 */
+	public function getIdLieu()
+	{
+		return $this->id_lieu;
 	}
 
 	/**
@@ -389,6 +410,30 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 	} // setCommentaire()
 
 	/**
+	 * Set the value of [id_lieu] column.
+	 * cle etrangere du lieu ou se trouve l'élève
+	 * @param      int $v new value
+	 * @return     AbsenceEleveType The current object (for fluent API support)
+	 */
+	public function setIdLieu($v)
+	{
+		if ($v !== null) {
+			$v = (int) $v;
+		}
+
+		if ($this->id_lieu !== $v) {
+			$this->id_lieu = $v;
+			$this->modifiedColumns[] = AbsenceEleveTypePeer::ID_LIEU;
+		}
+
+		if ($this->aAbsenceEleveLieu !== null && $this->aAbsenceEleveLieu->getId() !== $v) {
+			$this->aAbsenceEleveLieu = null;
+		}
+
+		return $this;
+	} // setIdLieu()
+
+	/**
 	 * Set the value of [sortable_rank] column.
 	 * 
 	 * @param      int $v new value
@@ -464,7 +509,8 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 			$this->retard_bulletin = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
 			$this->type_saisie = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
 			$this->commentaire = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
-			$this->sortable_rank = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
+			$this->id_lieu = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
+			$this->sortable_rank = ($row[$startcol + 9] !== null) ? (int) $row[$startcol + 9] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -473,7 +519,7 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 9; // 9 = AbsenceEleveTypePeer::NUM_COLUMNS - AbsenceEleveTypePeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + 10; // 10 = AbsenceEleveTypePeer::NUM_COLUMNS - AbsenceEleveTypePeer::NUM_LAZY_LOAD_COLUMNS).
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating AbsenceEleveType object", $e);
@@ -496,6 +542,9 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 	public function ensureConsistency()
 	{
 
+		if ($this->aAbsenceEleveLieu !== null && $this->id_lieu !== $this->aAbsenceEleveLieu->getId()) {
+			$this->aAbsenceEleveLieu = null;
+		}
 	} // ensureConsistency
 
 	/**
@@ -534,8 +583,12 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 		$this->hydrate($row, 0, true); // rehydrate
 
 		if ($deep) {  // also de-associate any related objects?
+
+			$this->aAbsenceEleveLieu = null;
 			$this->collAbsenceEleveTypeStatutAutorises = null;
+
 			$this->collAbsenceEleveTraitements = null;
+
 		} // if (deep)
 	}
 
@@ -658,6 +711,18 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 		if (!$this->alreadyInSave) {
 			$this->alreadyInSave = true;
 
+			// We call the save method on the following object(s) if they
+			// were passed to this object by their coresponding set
+			// method.  This object relates to these object(s) by a
+			// foreign key reference.
+
+			if ($this->aAbsenceEleveLieu !== null) {
+				if ($this->aAbsenceEleveLieu->isModified() || $this->aAbsenceEleveLieu->isNew()) {
+					$affectedRows += $this->aAbsenceEleveLieu->save($con);
+				}
+				$this->setAbsenceEleveLieu($this->aAbsenceEleveLieu);
+			}
+
 			if ($this->isNew() ) {
 				$this->modifiedColumns[] = AbsenceEleveTypePeer::ID;
 			}
@@ -671,11 +736,11 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 					}
 
 					$pk = BasePeer::doInsert($criteria, $con);
-					$affectedRows = 1;
+					$affectedRows += 1;
 					$this->setId($pk);  //[IMV] update autoincrement primary key
 					$this->setNew(false);
 				} else {
-					$affectedRows = AbsenceEleveTypePeer::doUpdate($this, $con);
+					$affectedRows += AbsenceEleveTypePeer::doUpdate($this, $con);
 				}
 
 				$this->resetModified(); // [HL] After being saved an object is no longer 'modified'
@@ -763,6 +828,18 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 			$failureMap = array();
 
 
+			// We call the validate method on the following object(s) if they
+			// were passed to this object by their coresponding set
+			// method.  This object relates to these object(s) by a
+			// foreign key reference.
+
+			if ($this->aAbsenceEleveLieu !== null) {
+				if (!$this->aAbsenceEleveLieu->validate($columns)) {
+					$failureMap = array_merge($failureMap, $this->aAbsenceEleveLieu->getValidationFailures());
+				}
+			}
+
+
 			if (($retval = AbsenceEleveTypePeer::doValidate($this, $columns)) !== true) {
 				$failureMap = array_merge($failureMap, $retval);
 			}
@@ -842,6 +919,9 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 				return $this->getCommentaire();
 				break;
 			case 8:
+				return $this->getIdLieu();
+				break;
+			case 9:
 				return $this->getSortableRank();
 				break;
 			default:
@@ -860,10 +940,11 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM.
 	 *                    Defaults to BasePeer::TYPE_PHPNAME.
 	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
+	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
 	 *
 	 * @return    array an associative array containing the field names (as keys) and field values
 	 */
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $includeForeignObjects = false)
 	{
 		$keys = AbsenceEleveTypePeer::getFieldNames($keyType);
 		$result = array(
@@ -875,8 +956,14 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 			$keys[5] => $this->getRetardBulletin(),
 			$keys[6] => $this->getTypeSaisie(),
 			$keys[7] => $this->getCommentaire(),
-			$keys[8] => $this->getSortableRank(),
+			$keys[8] => $this->getIdLieu(),
+			$keys[9] => $this->getSortableRank(),
 		);
+		if ($includeForeignObjects) {
+			if (null !== $this->aAbsenceEleveLieu) {
+				$result['AbsenceEleveLieu'] = $this->aAbsenceEleveLieu->toArray($keyType, $includeLazyLoadColumns, true);
+			}
+		}
 		return $result;
 	}
 
@@ -932,6 +1019,9 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 				$this->setCommentaire($value);
 				break;
 			case 8:
+				$this->setIdLieu($value);
+				break;
+			case 9:
 				$this->setSortableRank($value);
 				break;
 		} // switch()
@@ -966,7 +1056,8 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 		if (array_key_exists($keys[5], $arr)) $this->setRetardBulletin($arr[$keys[5]]);
 		if (array_key_exists($keys[6], $arr)) $this->setTypeSaisie($arr[$keys[6]]);
 		if (array_key_exists($keys[7], $arr)) $this->setCommentaire($arr[$keys[7]]);
-		if (array_key_exists($keys[8], $arr)) $this->setSortableRank($arr[$keys[8]]);
+		if (array_key_exists($keys[8], $arr)) $this->setIdLieu($arr[$keys[8]]);
+		if (array_key_exists($keys[9], $arr)) $this->setSortableRank($arr[$keys[9]]);
 	}
 
 	/**
@@ -986,6 +1077,7 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 		if ($this->isColumnModified(AbsenceEleveTypePeer::RETARD_BULLETIN)) $criteria->add(AbsenceEleveTypePeer::RETARD_BULLETIN, $this->retard_bulletin);
 		if ($this->isColumnModified(AbsenceEleveTypePeer::TYPE_SAISIE)) $criteria->add(AbsenceEleveTypePeer::TYPE_SAISIE, $this->type_saisie);
 		if ($this->isColumnModified(AbsenceEleveTypePeer::COMMENTAIRE)) $criteria->add(AbsenceEleveTypePeer::COMMENTAIRE, $this->commentaire);
+		if ($this->isColumnModified(AbsenceEleveTypePeer::ID_LIEU)) $criteria->add(AbsenceEleveTypePeer::ID_LIEU, $this->id_lieu);
 		if ($this->isColumnModified(AbsenceEleveTypePeer::SORTABLE_RANK)) $criteria->add(AbsenceEleveTypePeer::SORTABLE_RANK, $this->sortable_rank);
 
 		return $criteria;
@@ -1055,6 +1147,7 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 		$copyObj->setRetardBulletin($this->retard_bulletin);
 		$copyObj->setTypeSaisie($this->type_saisie);
 		$copyObj->setCommentaire($this->commentaire);
+		$copyObj->setIdLieu($this->id_lieu);
 		$copyObj->setSortableRank($this->sortable_rank);
 
 		if ($deepCopy) {
@@ -1117,6 +1210,55 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 			self::$peer = new AbsenceEleveTypePeer();
 		}
 		return self::$peer;
+	}
+
+	/**
+	 * Declares an association between this object and a AbsenceEleveLieu object.
+	 *
+	 * @param      AbsenceEleveLieu $v
+	 * @return     AbsenceEleveType The current object (for fluent API support)
+	 * @throws     PropelException
+	 */
+	public function setAbsenceEleveLieu(AbsenceEleveLieu $v = null)
+	{
+		if ($v === null) {
+			$this->setIdLieu(NULL);
+		} else {
+			$this->setIdLieu($v->getId());
+		}
+
+		$this->aAbsenceEleveLieu = $v;
+
+		// Add binding for other direction of this n:n relationship.
+		// If this object has already been added to the AbsenceEleveLieu object, it will not be re-added.
+		if ($v !== null) {
+			$v->addAbsenceEleveType($this);
+		}
+
+		return $this;
+	}
+
+
+	/**
+	 * Get the associated AbsenceEleveLieu object
+	 *
+	 * @param      PropelPDO Optional Connection object.
+	 * @return     AbsenceEleveLieu The associated AbsenceEleveLieu object.
+	 * @throws     PropelException
+	 */
+	public function getAbsenceEleveLieu(PropelPDO $con = null)
+	{
+		if ($this->aAbsenceEleveLieu === null && ($this->id_lieu !== null)) {
+			$this->aAbsenceEleveLieu = AbsenceEleveLieuQuery::create()->findPk($this->id_lieu, $con);
+			/* The following can be used additionally to
+				 guarantee the related object contains a reference
+				 to this object.  This level of coupling may, however, be
+				 undesirable since it could result in an only partially populated collection
+				 in the referenced object.
+				 $this->aAbsenceEleveLieu->addAbsenceEleveTypes($this);
+			 */
+		}
+		return $this->aAbsenceEleveLieu;
 	}
 
 	/**
@@ -1450,6 +1592,7 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 		$this->retard_bulletin = null;
 		$this->type_saisie = null;
 		$this->commentaire = null;
+		$this->id_lieu = null;
 		$this->sortable_rank = null;
 		$this->alreadyInSave = false;
 		$this->alreadyInValidation = false;
@@ -1486,6 +1629,7 @@ abstract class BaseAbsenceEleveType extends BaseObject  implements Persistent
 
 		$this->collAbsenceEleveTypeStatutAutorises = null;
 		$this->collAbsenceEleveTraitements = null;
+		$this->aAbsenceEleveLieu = null;
 	}
 
 	// sortable behavior
