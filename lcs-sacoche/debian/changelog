@@ -1,3 +1,9 @@
+lcs-sacoche (2.4.8.2) LCS; urgency=low
+
+  * update to 2011-05-10 version
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 12 May 2011 10:38:16 +0200
+
 lcs-sacoche (2.4.8.1) LCS; urgency=low
 
   * remove tilde

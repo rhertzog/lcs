@@ -105,17 +105,14 @@ if(is_file($fichier_constantes))
 		// DEBUT A compter du 02/08/2010, déplacement du port dans le fichier créé à l'installation. [à retirer dans quelques mois]
 		if(!defined('SACOCHE_'.$PATCH.'_BD_PORT'))
 		{
-			$tab_fichier = scandir($CHEMIN_MYSQL);
+			$tab_fichier = Lister_Contenu_Dossier($CHEMIN_MYSQL);
 			$bad = array( "define('SACOCHE_STRUCTURE_BD_NAME" , "define('SACOCHE_WEBMESTRE_BD_NAME" );
 			$bon = array( "define('SACOCHE_STRUCTURE_BD_PORT','3306');	// Port de connexion\r\ndefine('SACOCHE_STRUCTURE_BD_NAME" , "define('SACOCHE_WEBMESTRE_BD_PORT','3306');	// Port de connexion\r\ndefine('SACOCHE_WEBMESTRE_BD_NAME" );
 			foreach($tab_fichier as $fichier)
 			{
-				if( ($fichier!='.') && ($fichier!='..') )
-				{
-					$fichier_contenu = file_get_contents($CHEMIN_MYSQL.'/'.$fichier);
-					$fichier_contenu = str_replace($bad,$bon,$fichier_contenu);
-					Ecrire_Fichier($CHEMIN_MYSQL.'/'.$fichier,$fichier_contenu);
-				}
+				$fichier_contenu = file_get_contents($CHEMIN_MYSQL.'/'.$fichier);
+				$fichier_contenu = str_replace($bad,$bon,$fichier_contenu);
+				Ecrire_Fichier($CHEMIN_MYSQL.'/'.$fichier,$fichier_contenu);
 			}
 			define('SACOCHE_'.$PATCH.'_BD_PORT','3306');	// Port de connexion
 		}
@@ -208,7 +205,7 @@ entete();
 	<link rel="stylesheet" type="text/css" href="<?php echo compacter('./_css/style.css',VERSION_CSS_SCREEN,'mini') ?>" />
 	<link rel="stylesheet" type="text/css" href="<?php echo compacter('./_css/style_print.css',VERSION_CSS_SCREEN,'mini') ?>" media="print" />
 	<?php if(isset($_SESSION['CSS'])){echo'<style type="text/css">'.$_SESSION['CSS'].'</style>';} ?>
-	<script type="text/javascript" charset="utf-8" src="./_js/jquery-librairies-<?php echo VERSION_JS_BIBLIO ?>.js"></script>
+	<script type="text/javascript" charset="utf-8" src="<?php echo compacter('./_js/jquery-librairies.js',VERSION_JS_BIBLIO,'mini') ?>"></script>
 	<script type="text/javascript" charset="utf-8" src="<?php echo compacter('./_js/script.js',VERSION_JS_GLOBAL,'mini') ?>"></script>
 	<title><?php echo $TITRE_NAVIGATEUR ?></title>
 </head>

@@ -29,7 +29,7 @@ if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');
 $TITRE = "Gérer les professeurs principaux";
 ?>
 
-<p class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_professeurs">DOC : Gestion des professeurs</a></p>
+<p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_professeurs">DOC : Gestion des professeurs</a></span></p>
 
 <form id="pp" action="">
 
@@ -54,7 +54,7 @@ $TITRE = "Gérer les professeurs principaux";
 			if(!is_null($DB_ROW['user_id']))
 			{
 				// Nouveau professeur
-				$checked = ($DB_ROW['jointure_pp']) ? ' checked="checked"' : '' ;
+				$checked = ($DB_ROW['jointure_pp']) ? ' checked' : '' ;
 				$id = $DB_ROW['groupe_id'].'x'.$DB_ROW['user_id'];
 				$tab_user[$DB_ROW['groupe_id']] .= '<input type="checkbox" id="id_'.$id.'" name="f_tab_id" value="'.$id.'"'.$checked.' /> <label for="id_'.$id.'">'.html($DB_ROW['user_nom'].' '.$DB_ROW['user_prenom']).'</label><br />';
 				$nb_professeurs++;

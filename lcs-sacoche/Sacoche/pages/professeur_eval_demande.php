@@ -27,7 +27,7 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Demandes d'évaluations";
-$VERSION_JS_FILE += 10;
+$VERSION_JS_FILE += 12;
 
 // Lister le nb de demandes d'évaluations autorisées suivant les matières
 $infobulle = '';
@@ -71,10 +71,10 @@ $select_groupe  = afficher_select(DB_STRUCTURE_OPT_groupes_professeur($_SESSION[
 		<thead><tr><th>élève(s) sans demande</th></tr></thead>
 		<tbody><tr id="tr_sans"><td class="nu"></td></tr></tbody>
 	</table>
-	<table class="form">
+	<table id="table_demandes" class="form">
 		<thead>
 			<tr>
-				<th class="nu"></th>
+				<th class="nu"><input id="all_check" type="image" src="./_img/all_check.gif" title="Tout cocher." /> <input id="all_uncheck" type="image" src="./_img/all_uncheck.gif" title="Tout décocher." /></th>
 				<th>Matière</th>
 				<th>Item</th>
 				<th>Popularité</th>
@@ -90,10 +90,6 @@ $select_groupe  = afficher_select(DB_STRUCTURE_OPT_groupes_professeur($_SESSION[
 		</tbody>
 	</table>
 	<div id="zone_actions" class="hide">
-		<div class="ti">
-			<a href="#zone_actions" id="all_check">[ Tout cocher. ]</a>
-			<a href="#zone_actions" id="all_uncheck">[ Tout décocher. ]</a>
-		</div>
 		<h2>Avec les demandes cochées :<input type="hidden" id="ids" name="ids" value="" /></h2>
 		<fieldset>
 			<label class="tab" for="f_quoi">Action :</label><select id="f_quoi" name="f_quoi"><option value=""></option><option value="creer">Créer une nouvelle évaluation.</option><option value="completer">Compléter une évaluation existante.</option><option value="changer">Changer le statut pour "évaluation en préparation".</option><option value="retirer">Retirer de la liste des demandes.</option></select>
@@ -102,7 +98,8 @@ $select_groupe  = afficher_select(DB_STRUCTURE_OPT_groupes_professeur($_SESSION[
 			<label class="tab" for="f_qui">Élève(s) :</label><select id="f_qui" name="f_qui"><option value="select">Élèves sélectionnés</option><option value="groupe"></option></select>
 		</fieldset>
 		<fieldset id="step_creer" class="hide">
-			<label class="tab" for="f_date">Date :</label><input id="f_date" name="f_date" size="9" type="text" value="<?php echo date("d/m/Y") ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q><br />
+			<label class="tab" for="f_date">Date devoir :</label><input id="f_date" name="f_date" size="9" type="text" value="<?php echo date("d/m/Y") ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q><br />
+			<label class="tab" for="f_date_visible">Date visible :</label><input id="box_date" type="checkbox" checked /> <span>identique</span><span class="hide"><input id="f_date_visible" name="f_date_visible" size="9" type="text" value="<?php echo date("d/m/Y") ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q></span><br />
 			<label class="tab" for="f_info">Description :</label><input id="f_info" name="f_info" size="30" type="text" value="" />
 		</fieldset>
 		<fieldset id="step_completer" class="hide">

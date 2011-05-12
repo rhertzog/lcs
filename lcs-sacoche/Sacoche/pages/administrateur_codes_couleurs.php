@@ -41,7 +41,7 @@ foreach($tab_notes_txt as $note_nom => $tab_note_texte)
 {
 	if(is_dir($dossier.$note_nom))
 	{
-		$checked = ($note_nom==$_SESSION['NOTE_IMAGE_STYLE']) ? ' checked="checked"' : '' ;
+		$checked = ($note_nom==$_SESSION['NOTE_IMAGE_STYLE']) ? ' checked' : '' ;
 		$listing_notes_texte = implode('/',$tab_note_texte);
 		$simulation_lignes[0] .= 	'<td style="width:5em"><label for="dossier_'.$note_nom.'">'.$note_nom.'</label><br /><input type="radio" id="dossier_'.$note_nom.'" name="note_image_style" value="'.$note_nom.'"'.$checked.' lang="'.$listing_notes_texte.'" /></td>';
 		$simulation_lignes[1] .= 	'<td><img alt="'.$tab_note_texte['RR'].'" src="'.$dossier.$note_nom.'/h/RR.gif" /><br />'.$tab_note_texte['RR'].'</td>';
@@ -87,7 +87,7 @@ foreach($tab_acquis as $acquis => $class)
 	<?php echo $tab_notes_txt_js ?>
 </script>
 
-<div class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_codes_couleurs">DOC : Notation : codes, couleurs, légendes</a></div>
+<div><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_codes_couleurs">DOC : Notation : codes, couleurs, légendes</a></span></div>
 
 <hr />
 

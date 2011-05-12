@@ -30,7 +30,7 @@ $TITRE = "Niveaux &amp; Cycles";
 $VERSION_JS_FILE += 1;
 ?>
 
-<div class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_niveaux">DOC : Niveaux &amp; Cycles</a></div>
+<div><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_niveaux">DOC : Niveaux &amp; Cycles</a></span></div>
 
 <hr />
 
@@ -49,7 +49,7 @@ $VERSION_JS_FILE += 1;
 			$DB_TAB = DB_STRUCTURE_lister_cycles_SACoche();
 			foreach($DB_TAB as $DB_ROW)
 			{
-				$checked  = (in_array($DB_ROW['niveau_id'],$tab_check)) ? ' checked="checked"' : '' ;
+				$checked  = (in_array($DB_ROW['niveau_id'],$tab_check)) ? ' checked' : '' ;
 				echo'<tr>';
 				echo'	<td class="nu"><input type="checkbox" name="f_tab_id" value="'.$DB_ROW['niveau_id'].'"'.$checked.' /></td>';
 				echo'	<td class="label">'.html($DB_ROW['niveau_ref']).'</td>';
@@ -81,7 +81,7 @@ $VERSION_JS_FILE += 1;
 			$DB_TAB = DB_STRUCTURE_lister_niveaux_SACoche();
 			foreach($DB_TAB as $DB_ROW)
 			{
-				$checked  = (in_array($DB_ROW['niveau_id'],$tab_check)) ? ' checked="checked"' : '' ;
+				$checked  = (in_array($DB_ROW['niveau_id'],$tab_check)) ? ' checked' : '' ;
 				echo'<tr>';
 				echo'	<td class="nu"><input type="checkbox" name="f_tab_id" value="'.$DB_ROW['niveau_id'].'"'.$checked.' /></td>';
 				echo'	<td class="label">'.html($DB_ROW['niveau_ref']).'</td>';

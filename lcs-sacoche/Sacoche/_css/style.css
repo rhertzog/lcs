@@ -55,12 +55,12 @@ a {color:#139;text-decoration:none}a:hover{color:#D41;text-decoration:underline}
 hr {display:block;height:1px;margin:1em 0;border-top:1px dotted #66F;}
 *.astuce {background:transparent url(../_img/puce_astuce.png) no-repeat top left;padding-left:19px}
 *.danger {background:transparent url(../_img/puce_danger.gif) no-repeat top left;padding-left:19px;color:#C00}
-*.manuel {background:transparent url(../_img/puce_manuel.png) no-repeat top left;padding-left:19px}
+*.manuel {background:#EE7 url(../_img/puce_manuel.png) no-repeat top left;padding-left:19px}
 *.rss    {background:transparent url(../_img/rss.gif)         no-repeat top left;padding-left:19px}
 *.manuel:hover {background:transparent url(../_img/puce_manuel_ouvert.png) no-repeat top left;}
 #titre_aide{background:transparent url(../_img/puce_manuel_ouvert.png) no-repeat left;padding-left:24px;margin:1ex 2em;text-align:left}
 #aide_en_ligne {margin:1ex 1em}
-em {display:inline;font-style:normal;font-weight:bold;font-variant:small-caps} /* "SACoche" et divers noms propres */
+em {display:inline;font-style:normal;font-weight:bold;font-variant:small-caps} /* "SACoche" et divers noms propres ou sigles */
 del{text-decoration:line-through;color:#666}
 .hc{text-align:center} .hg{text-align:left} .hd{text-align:right} .ti{text-indent:3em}
 .i{font-style:italic} .u{text-decoration:underline} .b{font-weight:bold}
@@ -167,7 +167,8 @@ form label.mini{width:8em;}
 button{padding:0 1px;margin:1px 0;background:#CCF;color:#139;border:1px solid #66F;}
 button{width:auto;overflow:visible;} /* patch pour IE : voir http://jehiah.cz/archive/button-width-in-ie */
 button:hover,button.hover{background:#DDF;color:#D41;cursor:pointer;} /* button.hover pour une compatibilité avec AjaxUpload (pour background, car pas mieux pour cursor) */
-button[disabled]{background:#EAEAFF;color:#888;border:1px solid #BBF} /* Attention à un bug de jquery : quand on lui demande de mettre disabled="disabled", il met disabled="" ! */ 
+button[disabled]{background:#EAEAFF;color:#888;border:1px solid #BBF}
+button img{width:16px;height:16px}
 
 /* Input / Select */
 input[type=radio],input[type=checkbox],input[type=image] {vertical-align:-1px}

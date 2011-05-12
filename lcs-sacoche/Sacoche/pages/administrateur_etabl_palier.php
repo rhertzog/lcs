@@ -30,7 +30,7 @@ $TITRE = "Paliers du socle";
 $VERSION_JS_FILE += 1;
 ?>
 
-<div class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_paliers_socle">DOC : Paliers du socle</a></div>
+<div><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_paliers_socle">DOC : Paliers du socle</a></span></div>
 
 <hr />
 
@@ -48,7 +48,7 @@ $VERSION_JS_FILE += 1;
 			foreach($DB_TAB as $DB_ROW)
 			{
 				// Afficher une ligne du tableau
-				$checked = (in_array($DB_ROW['palier_id'],$tab_check)) ? ' checked="checked"' : '' ;
+				$checked = (in_array($DB_ROW['palier_id'],$tab_check)) ? ' checked' : '' ;
 				echo'<tr>';
 				echo	'<td class="nu"><input type="checkbox" name="f_tab_id" value="'.$DB_ROW['palier_id'].'"'.$checked.' /></td>';
 				echo	'<td class="label">'.html($DB_ROW['palier_nom']).'</td>';

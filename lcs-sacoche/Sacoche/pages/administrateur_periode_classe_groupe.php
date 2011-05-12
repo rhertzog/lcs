@@ -36,7 +36,7 @@ $select_periodes        = afficher_select(DB_STRUCTURE_OPT_periodes_etabl()     
 $select_classes_groupes = afficher_select(DB_STRUCTURE_OPT_classes_groupes_etabl() , $select_nom=false , $option_first='non' , $selection=false , $optgroup='oui');
 ?>
 
-<p class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_periodes">DOC : Gestion des périodes</a></p>
+<p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_periodes">DOC : Gestion des périodes</a></span></p>
 
 <hr />
 
@@ -44,11 +44,11 @@ $select_classes_groupes = afficher_select(DB_STRUCTURE_OPT_classes_groupes_etabl
 	<table><tr>
 		<td class="nu" style="width:25em">
 			<b>Liste des périodes :</b><br />
-			<select id="select_periodes" name="select_periodes[]" multiple="multiple" size="11" class="t8"><?php echo $select_periodes; ?></select>
+			<select id="select_periodes" name="select_periodes[]" multiple size="11" class="t8"><?php echo $select_periodes; ?></select>
 		</td>
 		<td class="nu" style="width:20em">
 			<b>Liste des classes &amp; groupes :</b><br />
-			<select id="select_classes_groupes" name="select_classes_groupes[]" multiple="multiple" size="11" class="t8"><?php echo $select_classes_groupes; ?></select>
+			<select id="select_classes_groupes" name="select_classes_groupes[]" multiple size="11" class="t8"><?php echo $select_classes_groupes; ?></select>
 		</td>
 		<td class="nu" style="width:25em">
 			<p><span class="astuce">Utiliser "<span class="i">Shift + clic</span>" ou "<span class="i">Ctrl + clic</span>"<br />pour une sélection multiple.</span></p>

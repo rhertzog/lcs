@@ -424,15 +424,16 @@ function modifier_mdp_webmestre($password_ancien,$password_nouveau)
 /**
  * bloquer_application
  * 
- * @param string $profil_demandeur
+ * @param string $profil_demandeur (webmestre|administrateur|automate)
+ * @param int    $id_base   (0 si demande mono-structure ou du webmestre multi-structures de bloquer tous les établissements)
  * @param string $motif
  * @return void
  */
 
-function bloquer_application($profil_demandeur,$motif)
+function bloquer_application($profil_demandeur,$id_base,$motif)
 {
 	global $CHEMIN_CONFIG;
-	$fichier_nom = ($profil_demandeur=='webmestre') ? $CHEMIN_CONFIG.'blocage_webmestre.txt' : $CHEMIN_CONFIG.'blocage_admin_'.$_SESSION['BASE'].'.txt' ;
+	$fichier_nom = $CHEMIN_CONFIG.'blocage_'.$profil_demandeur.'_'.$id_base.'.txt' ;
 	Ecrire_Fichier($fichier_nom,$motif);
 	// Log de l'action
 	ajouter_log_SACoche('Blocage de l\'accès à l\'application ['.$motif.'].');
@@ -441,14 +442,15 @@ function bloquer_application($profil_demandeur,$motif)
 /**
  * debloquer_application
  * 
- * @param string $profil_demandeur
+ * @param string $profil_demandeur (webmestre|administrateur|automate)
+ * @param int    $id_base   (0 si demande mono-structure ou du webmestre multi-structures de débloquer tous les établissements)
  * @return void
  */
 
-function debloquer_application($profil_demandeur)
+function debloquer_application($profil_demandeur,$id_base)
 {
 	global $CHEMIN_CONFIG;
-	$fichier_nom = ($profil_demandeur=='webmestre') ? $CHEMIN_CONFIG.'blocage_webmestre.txt' : $CHEMIN_CONFIG.'blocage_admin_'.$_SESSION['BASE'].'.txt' ;
+	$fichier_nom = $CHEMIN_CONFIG.'blocage_'.$profil_demandeur.'_'.$id_base.'.txt' ;
 	@unlink($fichier_nom);
 	// Log de l'action
 	ajouter_log_SACoche('Déblocage de l\'accès à l\'application.');
@@ -456,9 +458,20 @@ function debloquer_application($profil_demandeur)
 
 /**
  * tester_blocage_application
+ * 
  * Blocage des sites sur demande du webmestre ou d'un administrateur (maintenance, sauvegarde/restauration, ...).
+ * 
  * Nécessite que la session soit ouverte.
  * Appelé depuis les pages index.php + ajax.php + lors d'une demande d'identification d'un utilisateur (sauf webmestre)
+ * 
+ * En cas de blocage demandé par le webmestre, on ne laisse l'accès que :
+ * - pour le webmestre déjà identifié
+ * - pour la partie publique, si pas une demande d'identification, sauf demande webmestre
+ * 
+ * En cas de blocage demandé par un administrateur ou par l'automate (sauvegarde/restauration) pour un établissement donné, on ne laisse l'accès que :
+ * - pour le webmestre déjà identifié
+ * - pour un administrateur déjà identifié
+ * - pour la partie publique, si pas une demande d'identification, sauf demande webmestre ou administrateur
  * 
  * @param string $BASE                       car $_SESSION['BASE'] non encore renseigné si demande d'identification
  * @param string $demande_connexion_profil   false si appel depuis index.php ou ajax.php, le profil si demande d'identification
@@ -468,22 +481,38 @@ function debloquer_application($profil_demandeur)
 function tester_blocage_application($BASE,$demande_connexion_profil)
 {
 	global $CHEMIN_CONFIG;
-	// Blocage demandé par le webmestre : on ne laisse l'accès que
-	// + pour le webmestre déjà identifié
-	// + pour la partie publique, si pas une demande d'identification, sauf demande webmestre
-	$fichier_blocage_webmestre = $CHEMIN_CONFIG.'blocage_webmestre.txt';
-	if( (is_file($fichier_blocage_webmestre)) && ($_SESSION['USER_PROFIL']!='webmestre') && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil!=false)) )
+	// Blocage demandé par le webmestre pour tous les établissements (multi-structures) ou pour l'établissement (mono-structure).
+	$fichier_blocage = $CHEMIN_CONFIG.'blocage_webmestre_0.txt';
+	if( (is_file($fichier_blocage)) && ($_SESSION['USER_PROFIL']!='webmestre') && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil!=false)) )
 	{
-		affich_message_exit($titre='Blocage par le webmestre',$contenu='Blocage par le webmestre : '.file_get_contents($fichier_blocage_webmestre) );
+		affich_message_exit($titre='Blocage par le webmestre',$contenu='Blocage par le webmestre - '.file_get_contents($fichier_blocage) );
 	}
-	// Blocage demandé par un administrateur : on ne laisse l'accès que
-	// + pour le webmestre déjà identifié
-	// + pour un administrateur déjà identifié
-	// + pour la partie publique, si pas une demande d'identification, sauf demande webmestre ou administrateur
-	$fichier_blocage_administrateur = $CHEMIN_CONFIG.'blocage_admin_'.$BASE.'.txt';
-	if( (is_file($fichier_blocage_administrateur)) && ($_SESSION['USER_PROFIL']!='webmestre') && ($_SESSION['USER_PROFIL']!='administrateur') && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil!='administrateur')) )
+	// Blocage demandé par le webmestre pour un établissement donné (multi-structures).
+	$fichier_blocage = $CHEMIN_CONFIG.'blocage_webmestre_'.$BASE.'.txt';
+	if( (is_file($fichier_blocage)) && ($_SESSION['USER_PROFIL']!='webmestre') && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil!=false)) )
 	{
-		affich_message_exit($titre='Blocage par un administrateur',$contenu='Blocage par un administrateur : '.file_get_contents($fichier_blocage_administrateur) );
+		affich_message_exit($titre='Blocage par le webmestre',$contenu='Blocage par le webmestre - '.file_get_contents($fichier_blocage) );
+	}
+	// Blocage demandé par un administrateur pour son établissement.
+	$fichier_blocage = $CHEMIN_CONFIG.'blocage_administrateur_'.$BASE.'.txt';
+	if( (is_file($fichier_blocage)) && (!in_array($_SESSION['USER_PROFIL'],array('webmestre','administrateur'))) && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil=='normal')) )
+	{
+		affich_message_exit($titre='Blocage par un administrateur',$contenu='Blocage par un administrateur - '.file_get_contents($fichier_blocage) );
+	}
+	// Blocage demandé par l'automate pour un établissement donné.
+	$fichier_blocage = $CHEMIN_CONFIG.'blocage_automate_'.$BASE.'.txt';
+	if( (is_file($fichier_blocage)) && (!in_array($_SESSION['USER_PROFIL'],array('webmestre','administrateur'))) && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil=='normal')) )
+	{
+		// Au cas où une procédure de sauvegarde / restauration / nettoyage / tranfert échouerait, un fichier de blocage automatique pourrait être créé et ne pas être effacé.
+		// Pour cette raison on teste une durée de vie anormalement longue d'une tel fichier de blocage (puisqu'il ne devrait être que temporaire).
+		if( time() - filemtime($fichier_blocage) < 5*60 )
+		{
+			affich_message_exit($titre='Blocage automatique',$contenu='Blocage automatique - '.file_get_contents($fichier_blocage) );
+		}
+		else
+		{
+			debloquer_application('automate',$BASE);
+		}
 	}
 }
 
@@ -1374,6 +1403,32 @@ function afficher_contenu_referentiel($sesamath_id,$sesamath_key,$referentiel_id
 }
 
 /**
+ * Lister_Contenu_Dossier
+ * Liste le contenu d'un dossier (fichiers et dossiers).
+ * 
+ * @param string   $dossier
+ * @return array
+ */
+
+function Lister_Contenu_Dossier($dossier)
+{
+	return array_diff( scandir($dossier) , array('.','..') );
+}
+
+/**
+ * Lister_Contenu_Dossier_Programme
+ * Liste les noms des fichiers contenus dans un dossier, sans le contenu temporaire ou personnel.
+ * 
+ * @param string   $dossier
+ * @return array
+ */
+
+function Lister_Contenu_Dossier_Programme($dossier)
+{
+	return array_diff( scandir($dossier) , array('.','..','__private','__tmp','webservices','.svn') );
+}
+
+/**
  * Creer_Dossier
  * Tester l'existence d'un dossier, le créer, tester son accès en écriture.
  * 
@@ -1421,11 +1476,30 @@ function Creer_Dossier($dossier)
 
 function Vider_Dossier($dossier)
 {
-	$tab_fichier = scandir($dossier);
-	unset($tab_fichier[0],$tab_fichier[1]);	// fichiers '.' et '..'
+	$tab_fichier = Lister_Contenu_Dossier($dossier);
 	foreach($tab_fichier as $fichier_nom)
 	{
 		unlink($dossier.'/'.$fichier_nom);
+	}
+}
+
+/**
+ * Creer_ou_Vider_Dossier
+ * Créer un dossier s'il n'existe pas, le vider de ses éventueles fichiers sinon.
+ * 
+ * @param string   $dossier
+ * @return void
+ */
+
+function Creer_ou_Vider_Dossier($dossier)
+{
+	if(!is_dir($dossier))
+	{
+		Creer_Dossier($dossier);
+	}
+	else
+	{
+		Vider_Dossier($dossier);
 	}
 }
 
@@ -1439,24 +1513,48 @@ function Vider_Dossier($dossier)
 
 function Supprimer_Dossier($dossier)
 {
-	$tab_contenu = scandir($dossier);
+	$tab_contenu = Lister_Contenu_Dossier($dossier);
 	foreach($tab_contenu as $contenu)
 	{
-		if( ($contenu!='.') && ($contenu!='..') )
+		$chemin_contenu = $dossier.'/'.$contenu;
+		if(is_dir($chemin_contenu))
 		{
-			$chemin_contenu = $dossier.'/'.$contenu;
-			if(is_dir($chemin_contenu))
-			{
-				Supprimer_Dossier($chemin_contenu);
-				rmdir($chemin_contenu);
-			}
-			else
-			{
-				unlink($chemin_contenu);
-			}
+			Supprimer_Dossier($chemin_contenu);
+		}
+		else
+		{
+			unlink($chemin_contenu);
 		}
 	}
 	rmdir($dossier);
+}
+
+/**
+ * Analyser_Dossier
+ * Recense récursivement les dossiers présents et les md5 des fichiers (utiliser pour la maj automatique par le webmestre).
+ * 
+ * @param string   $dossier
+ * @param int      $longueur_prefixe   longueur de $dossier lors du premier appel
+ * @param string   $indice   "avant" ou "apres"
+ * @return void
+ */
+
+function Analyser_Dossier($dossier,$longueur_prefixe,$indice)
+{
+	$tab_contenu = Lister_Contenu_Dossier_Programme($dossier);
+	foreach($tab_contenu as $contenu)
+	{
+		$chemin_contenu = $dossier.'/'.$contenu;
+		if(is_dir($chemin_contenu))
+		{
+			Analyser_Dossier($chemin_contenu,$longueur_prefixe,$indice);
+		}
+		else
+		{
+			$_SESSION['tmp']['fichier'][substr($chemin_contenu,$longueur_prefixe)][$indice] = md5_file($chemin_contenu);
+		}
+	}
+	$_SESSION['tmp']['dossier'][substr($dossier,$longueur_prefixe)][$indice] = TRUE;
 }
 
 /**
@@ -1562,7 +1660,7 @@ function Modifier_RSS($fichier_chemin,$titre,$texte,$guid)
 /**
  * extraire_lignes
  * Pour retourner un tableau de lignes à partir d'un texte en se basant sur les retours chariot.
- * Utilisé notamment lors de la récupération d'un fichier CSS.
+ * Utilisé notamment lors de la récupération d'un fichier CSV.
  * 
  * @param string   $texte
  * @return array
@@ -1594,6 +1692,61 @@ function extraire_separateur_csv($ligne)
 	arsort($tab_separateur);
 	reset($tab_separateur);
 	return key($tab_separateur);
+}
+
+/**
+ * tester_courriel
+ * Tester si une adresse de courriel semble normale.
+ * Utilisé pour une récupération via un CSV parce que pour un champ de saisie javascript fait déjà le ménage.
+ * http://fr2.php.net/manual/fr/function.preg-match.php#96910
+ * 
+ * @param string   $courriel
+ * @return bool
+ */
+
+function tester_courriel($courriel)
+{
+	return preg_match('/^[^@]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$/',$courriel) ? TRUE : FALSE;
+}
+
+/**
+ * tester_UAI
+ * Tester si un numéro UAI est valide.
+ * Utilisé pour une récupération via un CSV parce que pour un champ de saisie javascript fait déjà le ménage.
+ * 
+ * @param string   $uai
+ * @return bool
+ */
+
+function tester_UAI($uai)
+{
+	// Il faut 7 chiffres suivis d'une lettre.
+	if(!preg_match('#^[0-9]{7}[A-Z]{1}$#',$uai))
+	{
+		return FALSE;
+	}
+	// Il faut vérifier la clef de contrôle.
+	$uai_nombre = substr($uai,0,7);
+	$uai_lettre = substr($uai,-1);
+	$reste = $uai_nombre - (23*floor($uai_nombre/23));
+	$alphabet = "ABCDEFGHJKLMNPRSTUVWXYZ";
+	$clef = substr($alphabet,$reste,1);
+	return ($clef==$uai_lettre) ? TRUE : FALSE;
+}
+
+/**
+ * tester_date
+ * Tester si une date est valide : format AAAA-MM-JJ par exemple.
+ * Utilisé pour une récupération via un CSV parce que pour un champ de saisie javascript fait déjà le ménage.
+ * 
+ * @param string   $date
+ * @return bool
+ */
+
+function tester_date($date)
+{
+	$date_unix = strtotime($date);
+	return ( ($date_unix!==FALSE) && ($date_unix!==-1) ) ? TRUE : FALSE ;
 }
 
 ?>

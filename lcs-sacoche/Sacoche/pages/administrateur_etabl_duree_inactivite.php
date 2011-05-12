@@ -29,7 +29,7 @@ if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');
 $TITRE = "Délai avant déconnexion";
 ?>
 
-<div class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_delai_deconnexion">DOC : Délai avant déconnexion</a></div>
+<div><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_delai_deconnexion">DOC : Délai avant déconnexion</a></span></div>
 
 <hr />
 
@@ -37,7 +37,7 @@ $TITRE = "Délai avant déconnexion";
 $options = '';
 for($delai=10 ; $delai<100 ; $delai+=10)
 {
-	$selected = ($delai==$_SESSION['DUREE_INACTIVITE']) ? ' selected="selected"' : '' ;
+	$selected = ($delai==$_SESSION['DUREE_INACTIVITE']) ? ' selected' : '' ;
 	$options .= '<option value="'.$delai.'"'.$selected.'>'.$delai.' minutes</option>';
 }
 ?>

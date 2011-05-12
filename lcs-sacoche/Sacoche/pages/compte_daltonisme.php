@@ -29,8 +29,8 @@ if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');
 $TITRE = "Daltonisme";
 $VERSION_JS_FILE += 0;
 
-$checked_normal = $_SESSION['USER_DALTONISME'] ? '' : ' checked="checked"' ;
-$checked_dalton = $_SESSION['USER_DALTONISME'] ? ' checked="checked"' : '' ;
+$checked_normal = $_SESSION['USER_DALTONISME'] ? '' : ' checked' ;
+$checked_dalton = $_SESSION['USER_DALTONISME'] ? ' checked' : '' ;
 
 // codes de notation
 $td_normal = '<td class="nu">&nbsp;</td>';
@@ -63,7 +63,7 @@ foreach($tab_valid as $etat => $tab_style)
 }
 ?>
 
-<div class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=environnement_generalites__daltonisme">DOC : Daltonisme</a></div>
+<div><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=environnement_generalites__daltonisme">DOC : Daltonisme</a></span></div>
 
 <hr />
 

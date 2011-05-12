@@ -33,15 +33,15 @@
 // VERSION_PROG : version des fichiers installés, à comparer avec la dernière version disponible sur le serveur communautaire
 // VERSION_BASE : version de la base associée, à comparer avec la version de la base actuellement installée
 define('VERSION_PROG', @file_get_contents('VERSION.txt') );	// Ne pas mettre de chemin ! Dans un fichier texte pour permettre un appel au serveur communautaire sans lui faire utiliser PHP.
-define('VERSION_BASE','2011-03-16');
+define('VERSION_BASE','2011-05-10');
 
 // VERSION_CSS_SCREEN / VERSION_CSS_PRINT / VERSION_JS_BIBLIO / VERSION_JS_GLOBAL / VERSION_JS_FILE
 // Pour éviter les problèmes de mise en cache (hors serveur localhost), modifier ces valeurs lors d'une mise à jour
-define('VERSION_CSS_SCREEN',52);
+define('VERSION_CSS_SCREEN',54);
 define('VERSION_CSS_PRINT',2);
-define('VERSION_JS_BIBLIO',6);
-define('VERSION_JS_GLOBAL',38);
-$VERSION_JS_FILE = 4;	// Modifiée ensuite si besoin dans le script associé à la page
+define('VERSION_JS_BIBLIO',7);
+define('VERSION_JS_GLOBAL',40);
+$VERSION_JS_FILE = 5;	// Modifiée ensuite si besoin dans le script associé à la page
 
 // Quelques chemins... en variables et non constantes car pouvant être modifiés ensuite dans un cadre particulier (installation Sésamath)
 $CHEMIN_MYSQL  = './__private/mysql/';
@@ -83,10 +83,11 @@ define('SERVEUR_TYPE',$serveur);
 // SERVEUR_COMMUNAUTAIRE : URL complète du fichier chargé d'effectuer la liaison entre les installations de SACoche et le serveur communautaire concernant les référentiels.
 // SERVEUR_DOCUMENTAIRE  : URL complète du fichier chargé d'afficher les documentations
 // SERVEUR_VERSION       : URL complète du fichier chargé de renvoyer le numéro de la dernière version disponible
-define('SERVEUR_PROJET'        , 'http://sacoche.sesamath.net');
-define('SERVEUR_COMMUNAUTAIRE' , SERVEUR_PROJET.'/appel_externe.php');
-define('SERVEUR_DOCUMENTAIRE'  , SERVEUR_PROJET.'/appel_doc.php');
-define('SERVEUR_VERSION'       , SERVEUR_PROJET.'/sacoche/VERSION.txt');
+define('SERVEUR_PROJET'         , 'http://sacoche.sesamath.net');
+define('SERVEUR_COMMUNAUTAIRE'  , SERVEUR_PROJET.'/appel_externe.php');
+define('SERVEUR_DOCUMENTAIRE'   , SERVEUR_PROJET.'/appel_doc.php');
+define('SERVEUR_VERSION'        , SERVEUR_PROJET.'/sacoche/VERSION.txt');
+define('SERVEUR_TELECHARGEMENT' , SERVEUR_PROJET.'/telechargement.php');
 
 // COOKIE_STRUCTURE : nom du cookie servant à retenir l'établissement sélectionné.
 define('COOKIE_STRUCTURE','SACoche-etablissement');

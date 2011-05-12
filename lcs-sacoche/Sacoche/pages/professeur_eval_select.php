@@ -27,7 +27,7 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Évaluer des élèves sélectionnés";
-$VERSION_JS_FILE += 16;
+$VERSION_JS_FILE += 18;
 ?>
 
 <?php
@@ -39,7 +39,6 @@ $annee_fin   = $annee_debut+1 ;
 <ul class="puce">
 	<li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_gestion">DOC : Gestion des évaluations.</a></span></li>
 	<li><span class="astuce">Choisir des evaluations existantes à afficher, ou cliquer sur le "<span style="background:transparent url(./_img/sprite10.png) 0 0 no-repeat;background-position:-20px 0;width:16px;height:16px;display:inline-block;vertical-align:middle"></span>" pour créer une nouvelle évaluation.</span></li>
-	<li><span class="danger">Une évaluation dont la saisie a commencé ne devrait pas voir ses élèves ou ses items modifiés (sinon vous n'aurez plus accès à certaines données) !</span></li>
 </ul>
 
 <hr />
@@ -54,10 +53,12 @@ $annee_fin   = $annee_debut+1 ;
 
 <form action="" id="form1">
 	<hr />
+	<p id="p_alerte" class="danger hide">Une évaluation dont la saisie a commencé ne devrait pas voir ses élèves ou items modifiés.<br />En particulier, retirer des élèves ou des items d'une évaluation efface les scores correspondants qui sont saisis !</p>
 	<table class="form">
 		<thead>
 			<tr>
-				<th>Date</th>
+				<th>Date devoir</th>
+				<th>Date visible</th>
 				<th>Élèves</th>
 				<th>Description</th>
 				<th>Items</th>
@@ -65,7 +66,7 @@ $annee_fin   = $annee_debut+1 ;
 			</tr>
 		</thead>
 		<tbody>
-			<tr><td class="nu" colspan="5"></td></tr>
+			<tr><td class="nu" colspan="6"></td></tr>
 		</tbody>
 	</table>
 </form>
@@ -154,7 +155,7 @@ $annee_fin   = $annee_debut+1 ;
 		<img alt="VV" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/VV.gif" /><img alt="X" src="./_img/note/commun/h/X.gif" />
 	</div></div>
 	<p class="ti" id="aide_en_ligne"><button id="report_note" type="button">Reporter</button> le code 
-		<label for="f_defaut_VV"><input type="radio" id="f_defaut_VV" name="f_defaut" value="VV" checked="checked" /><img alt="VV" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/VV.gif" /></label>
+		<label for="f_defaut_VV"><input type="radio" id="f_defaut_VV" name="f_defaut" value="VV" checked /><img alt="VV" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/VV.gif" /></label>
 		<label for="f_defaut_V"><input type="radio" id="f_defaut_V" name="f_defaut" value="V" /><img alt="V" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/V.gif" /></label>
 		<label for="f_defaut_R"><input type="radio" id="f_defaut_R" name="f_defaut" value="R" /><img alt="R" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/R.gif" /></label>
 		<label for="f_defaut_RR"><input type="radio" id="f_defaut_RR" name="f_defaut" value="RR" /><img alt="RR" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/RR.gif" /></label>
