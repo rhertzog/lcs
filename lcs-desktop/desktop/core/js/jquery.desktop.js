@@ -2371,17 +2371,15 @@ var JQD = (function($, window, undefined) {
         		setTimeout(function(){
                             JQD.build.btopr( opt );
 
-                            var spipAccueil = $('<iframe/>').hide()
-                            .addClass('abs')
+                            var spipAccueil = $('<iframe/>').css({opacity: 0})
+                            .addClass('abs iframe_accueil')
                             .attr({src: u_a,width:'960'}).load(function(){
                                // console.info('largeur fenetre: ', $(this).contents().width().length>0  ? 'yex' :'no');
                                 //console.info('largeur document: ', $('#desktop').width());
-                                $(this).show()
-                                .css({
-                                	opacity:0,
+                                $(this).css({
                                     top:'23px',
                                     'min-width': '960px',
-                                    width:  u_a.match(/^http/) ? '960px' : $(this).contents().width()+50,
+                                    width:  u_a.match(/^http/) ? '960px' : $(this).contents().width(),
                                     height: '100%',
                                     bottom: '0px',
                                     left : ($('#desktop').width()-$(spipAccueil).width()-50)/2
