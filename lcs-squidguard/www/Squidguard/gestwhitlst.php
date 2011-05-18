@@ -1,13 +1,5 @@
 <?php
-/* ===============================================
-   Projet LCS
-   Gestion des whitelists squidGuard
-   squidGuard/gestwhitlst.php.php
-   Equipe Tice académie de Caen
-   Dernière modification :13 Juin 2008
-   Distribué selon les termes de la licence GPL
-   ============================================= */
-
+/* squidGuard/gestwhitlst.php.php Derniere modification : 18/05/2011*/
 
 include "../lcs/includes/headerauth.inc.php";
 include "../Annu/includes/ldap.inc.php";
@@ -58,9 +50,11 @@ function read_white_list ($name) {
 list ($idpers,$login)= isauth();
 if ($idpers == "0") header("Location:$urlauth");
 
-$html  = "<html>\n";
-$html .= "	<hed>\n";
+$html ="<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
+$html .= "<html>\n";
+$html .= "	<head>\n";
 $html .= "		<title>Interface d'administration SquidGuard</title>\n";
+$html .= "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n";
 $html .= "		<link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n";
 echo $html;
 ?>
@@ -105,9 +99,9 @@ echo $html;
 $html = "	</head>\n";
 $html .= "	<body>\n";
 
-//Test si le paquet se3-internet est installé sur le se3
+//Test si le paquet se3-internet est installe sur le se3
 	if ( count(search_machines("cn=portables_eleves","parcs"))==0) {
-		$html .="<div class=alert_msg>La gestion de la liste blanche nécessite l'installation du paquet se3-internet sur le serveur SE3, et une réplication d'annuaire ! </div>\n"; 
+		$html .="<div class=alert_msg>La gestion de la liste blanche n&eacute;cessite l'installation du paquet se3-internet sur le serveur SE3, et une r&eacute;plication d'annuaire ! </div>\n"; 
 	echo $html;	exit;
 	}
 echo $html;	            
@@ -124,7 +118,7 @@ exec ("/usr/bin/sudo -H /usr/share/lcs/scripts/squidGuard.sh $cmd");
 
 
 if (ldap_get_right("lcs_is_admin",$login)=="Y") {
-	echo "<div align='center'><h2>Modification de la «Liste Blanche» LCS</h2></div>\n";
+	echo "<div align='center'><h2>Modification de la &#171;Liste Blanche&#187; LCS</h2></div>\n";
 	if ( !$action || ( $action=="Ajouter" && !$list_add ) || ( $action=="Supprimer" && count($list_del) == 0 ) ) {	
 		// lecture des fichiers domains pour affichage de l'etat de la liste LCS
 		$file_domains=read_white_list ("domains");
@@ -147,7 +141,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		$html .= "		ou<br>\n";
 		$html .= "		adresse IP<br>\n";
 		$html .= "		ou<br>\n";								
-		$html .= "		www.domaine.ext/répertoire/fichier&nbsp;\n";
+		$html .= "		www.domaine.ext/r&eacute;pertoire/fichier&nbsp;\n";
 		$html .= "		</center>\n";
 		$html .= "	</td>\n";
 		$html .= "	<td class='cadred'><textarea name='list_add' rows='12' cols='30'></textarea></td>\n";
@@ -183,16 +177,16 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		$html .= "</table>\n";
 		$html .= "</form>\n";
 		echo $html;
-		if ( $action == "Ajouter" && !$list_add ) echo "<div class='error_msg'>Vous devez compléter le champ de saisie avec au moins un nom de domaine une url ou une adresse IP à ajouter !</div>";
-		if ( $action == "Supprimer" && count($list_del) == 0 ) echo "<div class='error_msg'>Vous devez choisir dans la liste au moins un élément à supprimer !</div>";
+		if ( $action == "Ajouter" && !$list_add ) echo "<div class='error_msg'>Vous devez compl&eacute;ter le champ de saisie avec au moins un nom de domaine une url ou une adresse IP &agrave; ajouter !</div>";
+		if ( $action == "Supprimer" && count($list_del) == 0 ) echo "<div class='error_msg'>Vous devez choisir dans la liste au moins un &eacute;l&eacute;ment &agrave; supprimer !</div>";
 		
 	} elseif ( $action == "Ajouter" ) {
 		// AJOUT
-		// Verification des entrées saisies
+		// Verification des entrees saisies
 		// ================================
-		// Mise en tableau des entrées saisies
+		// Mise en tableau des entrees saisies
 		$result = split ("[\r]|[\ \]",$list_add,256);
-		// Vérifications de l'existance des entrées
+		// Verifications de l'existance des entrees
 		$i=0;$j=0;
 		for ($loop=0; $loop < count($result); $loop++) {
 			// suppression des espaces
@@ -201,7 +195,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 			$result[$loop] = ereg_replace ("^http://","",$tmp);
 			// $result[$loop] ne comporte pas de slash => Transfert dans $domains_list[$loop] si le domain est valide
 			if ( strpos($result[$loop],"/") === False  ) {
-				// Verification validité
+				// Verification validite
 				if ( is_ip($result[$loop]) == "true" ) {
 				        // L'entree est une adresse ip
 					if ( gethostbyaddr($result[$loop]) != $result[$loop] ) {
@@ -215,7 +209,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 				}
 			}  else {
 			// $result[$loop] comporte des slash => Transfert dans $urls_list[$loop] si le domain est valide
-				// Verification validité
+				// Verification validite
 				if ( is_ip( extract_domain($result[$loop]) ) == "true" ) {
 				        // L'entree est une adresse ip
 					if ( gethostbyaddr( extract_domain($result[$loop]) ) != $result[$loop] ) {
@@ -233,17 +227,17 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 			echo "<h4>Les domaines ci-dessous sont </h4>\n";
 			// Lecture du fichier domains
 			$file_domains=read_white_list ("domains");
-			// Recherche si les éléments de $domains_list sont présents dans $file_domains
+			// Recherche si les elements de $domains_list sont presents dans $file_domains
 			// et constitution des fichiers domains et domains.diff
 			$fp=@fopen($path2wl."domains.diff","w");
 			$fp1=@fopen($path2wl."domains","a");
 			for ( $loop=0; $loop < count($domains_list); $loop++ ) {
 				if ( @in_array ($domains_list[$loop], $file_domains) )
-   					print "<li>".$domains_list[$loop]." déja dans la liste blanche<br>\n";
+   					print "<li>".$domains_list[$loop]." d&eacute;ja dans la liste blanche<br>\n";
   				else {
 					if ($fp) fwrite($fp,"+".$domains_list[$loop]."\n");
 					if ($fp1) fputs($fp1,$domains_list[$loop]."\n");
-					print "<li>".$domains_list[$loop]." ajouté à la liste blanche<br>\n";
+					print "<li>".$domains_list[$loop]." ajout&eacute; &agrave; la liste blanche<br>\n";
 				}
 			}
 			@fclose($fp);	
@@ -254,17 +248,17 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 			echo "<h4>Les urls ci-dessous sont </h4>";
 			// Lecture du fichier domains
 			$file_urls=read_white_list ("urls");
-			// Recherche si les éléments de $domains_list sont présents dans $file_domains
+			// Recherche si les elements de $domains_list sont presents dans $file_domains
 			// et constitution des fichiers domains et domains.diff
 			$fp=@fopen($path2wl."urls.diff","w");
 			$fp1=@fopen($path2wl."urls","a");
 			for ( $loop=0; $loop < count($urls_list); $loop++ ) {
 				if ( @in_array ($urls_list[$loop], $file_urls) )
-   					print "<li>".$urls_list[$loop]." déja dans la liste blanche<br>\n";
+   					print "<li>".$urls_list[$loop]." d&eacute;ja dans la liste blanche<br>\n";
   				else {
 					if ($fp) fwrite($fp,"+".$urls_list[$loop]."\n");
 					if ($fp1) fputs($fp1,$urls_list[$loop]."\n");
-					print "<li>".$urls_list[$loop]." ajouté à la liste blanche<br>\n";
+					print "<li>".$urls_list[$loop]." ajout&eacute; &agrave; la liste blanche<br>\n";
 				}
 			}
 			@fclose($fp);	
@@ -274,10 +268,10 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		if ( $add_domains || $add_urls ) {			
 			// Modification de la whitelist LCS pour AJOUTs
 			exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh lcs");
-                        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");		
+            exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");		
 		} else {
-			echo "<h4>Aucune modification n'a été apportée à la base de données squidguard .</h4>\n";
-			echo "<div class='error_msg'>Vous devez compléter le champ de saisie avec au moins un nom de domaine une URL ou une adresse IP valide !</div>\n";
+			echo "<h4>Aucune modification n'a &eacute;t&eacute; apport&eacute;e &agrave; la base de donn&eacute;es squidguard .</h4>\n";
+			echo "<div class='error_msg'>Vous devez compl&eacute;ter le champ de saisie avec au moins un nom de domaine une URL ou une adresse IP valide !</div>\n";
 		}		
 		
 	} else {
@@ -301,7 +295,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		}
 		@fclose($fp);	
 		@fclose($fp1);	
-		echo "</ul>\n<h4>ont été supprimées de la «liste blanche» LCS.</h4>\n";
+		echo "</ul>\n<h4>ont &eacute;t&eacute; supprim&eacute;es de la «liste blanche» LCS.</h4>\n";
 		if ( count($list_del_domains) > 0 ) {
 			$domain_file = read_white_list ("domains");
 			$result_domains = array_diff($domain_file, $list_del_domains);
@@ -326,12 +320,12 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		}
 		// Modification de la whitellist LCS pour SUPPRESSION
 		exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh lcs");
-                exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");		
+        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");		
 										
 	}
 
 } else {
-	echo "<div class=error_msg>Cette application, nécessite les droits d'administrateur du serveur LCS !</div>\n";
+	echo "<div class=error_msg>Cette application, n&eacute;cessite les droits d'administrateur du serveur LCS !</div>\n";
 }
 include ("../lcs/includes/pieds_de_page.inc.php");
 ?>

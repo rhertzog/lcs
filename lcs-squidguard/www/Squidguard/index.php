@@ -1,12 +1,5 @@
 <?php
-/* ===============================================
-   Projet LCS
-   Gestion des balacklist squidGuard
-   squidGuard/index.php
-   Equipe Tice academie de Caen
-   Derniere modification : 25 03 2010 
-   Distribue selon les termes de la licence GPL
-   ============================================= */
+/* squidGuard/index.php Derniere modification : 18/05/2011*/
 
 
 include "../lcs/includes/headerauth.inc.php";
@@ -77,9 +70,11 @@ function read_black_list ($name) {
 list ($idpers,$login)= isauth();
 if ($idpers == "0") header("Location:$urlauth");
 
-$html  = "<html>\n";
-$html .= "	<hed>\n";
+$html  ="<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
+$html .= "<html>\n";
+$html .= "	<head>\n";
 $html .= "		<title>Interface d'administration SquidGuard</title>\n";
+$html .= "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n";
 $html .= "		<link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n";
 echo $html;
 ?>
@@ -153,7 +148,7 @@ if ( $modif_status ) {
 }
 
 if (ldap_get_right("lcs_is_admin",$login)=="Y") {
-	echo "<div align='center'><h2>Modification de la «Liste Noire» LCS</h2></div>\n";
+	echo "<div align='center'><h2>Modification de la &#171;Liste Noire&#187; LCS</h2></div>\n";
 	if ( !$action || ( $action=="Ajouter" && !$list_add ) || ( $action=="Supprimer" && count($list_del) == 0 ) ) {	
 		// lecture des fichiers domains pour affichage de l'etat de la liste LCS
 		$file_domains=read_black_list ("domains");
@@ -212,13 +207,13 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		$html .= "</table>\n";
 		$html .= "</form>\n";
 		echo $html;
-		if ( $action == "Ajouter" && !$list_add ) echo "<div class='error_msg'>Vous devez compléter le champ de saisie avec au moins un nom de domaine une url ou une adresse IP à ajouter !</div>";
-		if ( $action == "Supprimer" && count($list_del) == 0 ) echo "<div class='error_msg'>Vous devez choisir dans la liste au moins un élément à supprimer !</div>";
+		if ( $action == "Ajouter" && !$list_add ) echo "<div class='error_msg'>Vous devez compléter le champ de saisie avec au moins un nom de domaine une url ou une adresse IP &agrave; ajouter !</div>";
+		if ( $action == "Supprimer" && count($list_del) == 0 ) echo "<div class='error_msg'>Vous devez choisir dans la liste au moins un élément &agrave; supprimer !</div>";
 		
 		// Section formulaire de choix type de liste noire et liste noir webmail webmail
 		exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh status", $AllOutPut);
 		$status=explode(" ",$AllOutPut[0]); 
-		$html = "<div align='center'><h2>Configuration des «Listes Noires»</h2></div>\n";
+		$html = "<div align='center'><h2>Configuration des &#171;Listes Noires&#187;</h2></div>\n";
 		$html .= "<form method='POST' action='index.php'>\n";
                 $html .= "RAZ liste noire LCS : <input type='checkbox' value='1' name='raz_db'><br>\n";
 		$html .= "Validation liste noire webmail : <input type='checkbox' value='webmailOn' name='webmail'";
@@ -303,7 +298,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
   				else {
 					if ($fp) fwrite($fp,"+".$domains_list[$loop]."\n");
 					if ($fp1) fputs($fp1,$domains_list[$loop]."\n");
-					print "<li>".$domains_list[$loop]." ajouté à la liste noire<br>\n";
+					print "<li>".$domains_list[$loop]." ajouté &agrave; la liste noire<br>\n";
 				}
 			}
 			@fclose($fp);	
@@ -324,7 +319,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
   				else {
 					if ($fp) fwrite($fp,"+".$urls_list[$loop]."\n");
 					if ($fp1) fputs($fp1,$urls_list[$loop]."\n");
-					print "<li>".$urls_list[$loop]." ajouté à la liste noire<br>\n";
+					print "<li>".$urls_list[$loop]." ajouté &agrave; la liste noire<br>\n";
 				}
 			}
 			@fclose($fp);	
@@ -336,8 +331,8 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 			exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh lcs");
                         exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");		
 		} else {
-			echo "<h4>Aucune modification n'a été apportée à la base de données squidguard .</h4>\n";
-			echo "<div class='error_msg'>Vous devez compléter le champ de saisie avec au moins un nom de domaine une URL ou une adresse IP valide !</div>\n";
+			echo "<h4>Aucune modification n'a été apportée &agrave; la base de donn&eacute;es squidguard .</h4>\n";
+			echo "<div class='error_msg'>Vous devez compl&eacute;ter le champ de saisie avec au moins un nom de domaine une URL ou une adresse IP valide !</div>\n";
 		}		
 		
 	} else {
@@ -361,7 +356,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		}
 		@fclose($fp);	
 		@fclose($fp1);	
-		echo "</ul>\n<h4>ont été supprimées de la «liste noire» LCS.</h4>\n";
+		echo "</ul>\n<h4>ont &eacute;t&eacute; supprim&eacute;es de la &#171;liste noire&#187; LCS.</h4>\n";
 		if ( count($list_del_domains) > 0 ) {
 			$domain_file = read_black_list ("domains");
 			$result_domains = array_diff($domain_file, $list_del_domains);
@@ -391,7 +386,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 	}
 
 } else {
-	echo "<div class=error_msg>Cette application, nécessite les droits d'administrateur du serveur LCS !</div>\n";
+	echo "<div class=error_msg>Cette application, n&eacute;cessite les droits d'administrateur du serveur LCS !</div>\n";
 }
 include ("../lcs/includes/pieds_de_page.inc.php");
 ?>
