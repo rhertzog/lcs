@@ -1,8 +1,9 @@
 lcs-desktop (2.4.8~7) Lcs; urgency=low
 
-  * Fix bug in the homepage Offline 
+  * Fix bug in the homepage Offline
+  * Modify homepage width 
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 06 May 2011 04:00:22 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 06 May 2011 21:02:34 +0200
 
 lcs-desktop (2.4.8~6) Lcs; urgency=low
 

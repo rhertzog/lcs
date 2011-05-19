@@ -2360,42 +2360,37 @@ var JQD = (function($, window, undefined) {
 		},
 		//
 		// JQD.pgaccueil( opt ) : appel de la page d'accueil hors connexion'
-		// TODO : Passer la largeur de page (iframe) en parametre
+		// 
 		pgaccueil: function(opt) {
-                    var u_a = opt.url_accueil;
-                    // TODO: commenter les logs
-                    //console.log('opt.idpers : ', opt.idpers );
-                    //console.log('url_accueil : ', u_a );
-        	    if (!u_a.match("auth\.php|accueil\.phps|monlcs") ) {
-                        u_a = u_a.match(/^http/) ? u_a : '../'+u_a;
-        		setTimeout(function(){
-                            JQD.build.btopr( opt );
-
-                            var spipAccueil = $('<iframe/>').css({opacity: 0})
-                            .addClass('abs iframe_accueil')
-                            .attr({src: u_a,width:'960'}).load(function(){
-                               // console.info('largeur fenetre: ', $(this).contents().width().length>0  ? 'yex' :'no');
-                                //console.info('largeur document: ', $('#desktop').width());
-                                $(this).css({
-                                    top:'23px',
-                                    'min-width': '960px',
-                                    width:  u_a.match(/^http/) ? '960px' : $(this).contents().width(),
-                                    height: '100%',
-                                    bottom: '0px',
-                                    left : ($('#desktop').width()-$(spipAccueil).width()-50)/2
-                                })
-                                .animate({height:'-=24px'},100).animate({opacity:1},1500)
-                            }).insertAfter('#desktop');
-                            $('#bar_bottom').hide();
-                            $('#bar_top').append(
-                                JQD.build.btopr(opt)
-                            ).find('a.auth').prepend(
-                                    $('<span/>').addClass('connect').html('&nbsp;&nbsp;&nbsp;Se connecter >>')
-                                    .click(function(){JQD.logform('../lcs/auth.php')})
-                                );
-			},100)
-                    }
-                    else JQD.logform('../lcs/auth.php') ;
+			var u_a = opt.url_accueil;
+			if (!u_a.match("auth\.php|accueil\.phps|monlcs") ) {
+				u_a = u_a.match(/^http/) ? u_a : '../'+u_a;
+				setTimeout(function(){
+					JQD.build.btopr( opt );
+					var cacc=0;
+					var spipAccueil = $('<iframe/>').css({opacity: 0})
+					.addClass('abs iframe_accueil')
+					.attr({src: u_a,width:'1014'}).load(function(){
+						$(this).css({
+							top:'23px',
+							'min-width': '1014px',
+							width:  u_a.match(/^http/) ? '960px' : $(this).contents().width(),
+							height: '100%',
+							bottom: '0px',
+							left : ($('#desktop').width()-$(spipAccueil).width()-50)/2
+						})
+						.animate({ height:'-=24px'},100).animate({opacity:1},1500)
+					}).insertAfter('#desktop');
+					cacc+=1;
+					$('#bar_bottom').hide();
+					$('#bar_top').append( JQD.build.btopr(opt) )
+					.find('a.auth').prepend(
+						$('<span/>').addClass('connect').html('&nbsp;&nbsp;&nbsp;Se connecter >>')
+						.click(function(){JQD.logform('../lcs/auth.php')})
+					);
+				},100)
+			}
+			else JQD.logform('../lcs/auth.php') ;
 		},
 		//
 		// JQD.btr : bar-top right side -
@@ -2459,7 +2454,7 @@ var JQD = (function($, window, undefined) {
 			}
 		},
 		//
-		//
+		// JQD.desktop_space() : Gestion des multi-bureaux
 		//
 		desktop_space: function(){
 			// gestion des bureaux secondaires // A REVOIR ENTIEREMENT
