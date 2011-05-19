@@ -1,7 +1,7 @@
 #!/bin/bash
 # Connection d'un LCS sur l'annuaire ldap SE3
-# Olivier lecluse & Jean-Luc Chretien
-# 15/10/2008
+# Olivier lecluse, Jean-Luc Chretien, Franck Molle
+# 19/05/2011
 
 # recuperation des params bdd
 
@@ -121,7 +121,7 @@ echo "UPDATE params SET value=\"$LDAPIP\" WHERE name='ldap_server'" | mysql -h $
 
 # Application des droits
 if [ -d /home/admin ]; then
-        rm -r /home/admin
+	chown -R admin /home/admin
 fi
 chown -R webmaster.etab /home/webmaster.etab/public_html/
 chgrp -R lcs-users /home/*

@@ -1,4 +1,4 @@
-lcs-web (2.4.8~15) Lcs; urgency=low
+lcs-web (2.4.8~16) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -31,7 +31,7 @@ lcs-web (2.4.8~15) Lcs; urgency=low
   * Fix some problems in lcs-etch2lenny
   * Modify meta charset in many pages and scripts
   * Fix bug on path to libjs in barre.php
-  * Import all the rights tree of SE3 in LCS in ldaplcs2se3.sh (Franck Molle)
+  * Import all the rights tree of SE3 in LCS in ldaplcs2se3.sh, modify rm -R admin by cown -R admin (Franck Molle)
   * Remove chown /var/www/lib in lcs-web-fixrights 
   * Fix bug in mkSlapdConf.sh
   * Fix module name for clientftp and elfinder
@@ -66,7 +66,7 @@ lcs-web (2.4.8~15) Lcs; urgency=low
   * Fix recovery of the server name in case of failure authenfication
   * Fix authentification in auth_lcs() in user_lcs.inc.php 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Apr 2011 09:53:31 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 May 2011 10:42:38 +0200
 
 lcs-web (2.4.7) Lcs; urgency=low
 
