@@ -1,4 +1,4 @@
-lcs-desktop (2.4.8~7) Lcs; urgency=low
+lcs-desktop (2.4.8~8) Lcs; urgency=low
 
   * Fix bug in the homepage Offline
   * Modify homepage width 
