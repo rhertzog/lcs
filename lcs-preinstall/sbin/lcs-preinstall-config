@@ -130,8 +130,14 @@ case "$1" in
             # Create lcsmgr account if not exist
             #
             if [ -z "`mysql -e "SELECT User FROM mysql.user WHERE user='lcsmgr';"`" ]; then
-                mysql -e "INSERT INTO mysql.user  VALUES ('localhost', 'lcsmgr', PASSWORD( '$LCSMGRPASS' ) , 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '', '', '', '', '0', '0', '0', '0');"
-                mysql -e "INSERT INTO mysql.db VALUES ( 'localhost', 'lcs_db', 'lcsmgr', 'Y', 'Y', 'Y', 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N');"
+				# If Debian Squeeze
+				if grep -q ^6 /etc/debian_version; then
+					mysql -e "INSERT INTO mysql.user  VALUES ('localhost','lcsmgr',PASSWORD('$LCSMGRPASS'),'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','','','','',0,0,0,0);"
+					mysql -e "INSERT INTO mysql.db VALUES ('localhost','lcs_db','lcsmgr','Y','Y','Y','Y','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N');"
+				else
+                	mysql -e "INSERT INTO mysql.user  VALUES ('localhost', 'lcsmgr', PASSWORD( '$LCSMGRPASS' ) , 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '', '', '', '', '0', '0', '0', '0');"
+                	mysql -e "INSERT INTO mysql.db VALUES ( 'localhost', 'lcs_db', 'lcsmgr', 'Y', 'Y', 'Y', 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N');"
+				fi
                 mysqladmin reload
             fi
             #

@@ -1,12 +1,14 @@
-lcs-preinstall (2.4.8~2) Lcs; urgency=low
+lcs-preinstall (2.4.8~4) Lcs; urgency=low
 
   [ Raphaël Hertzog ]
   * Add new parameters for Active Directory synchronization.
   [ Jean-Luc Chretien ]
-  *  Modify VERSIONLCS to 2.4.8 in postinst
+  * Modify VERSIONLCS to 2.4.8 in postinst
   * Modify sed in lcs-preinstall-config for AD_BASE_DN param
+  * Change charset in documentation index.html 
+  * Fix Create lcsmgr account in lcs-preinstall-config for Squeeze
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Mar 2011 11:28:26 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 20 May 2011 13:25:40 +0200
 
 lcs-preinstall (2.4.7) Lcs; urgency=low
 
