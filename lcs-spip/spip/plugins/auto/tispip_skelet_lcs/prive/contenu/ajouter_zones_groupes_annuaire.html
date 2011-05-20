@@ -1,0 +1,24 @@
+#CACHE{0}
+[(#REM)
+Test de recup et de boucle pour
+]
+<h2 class='titrem'><a name="item_#ENV{group}"></a>#ENV{titre}
+<BOUCLE_zones_creees(ZONES)>
+[(#TITRE|match{[(#ENV{titre})]}|oui)1]
+</BOUCLE_zones_creees>
+<B_cours>[(#REM)]
+[(#AUTORISER{supprimer,zone,#ID_ZONE})<span class='lien_supprimer' style='float:right;font-size:.75em;'>&#91;<a href='#URL_ACTION_AUTEUR{supprimer_zone,#ID_ZONE,[(#SELF)]}' onclick="return confirm('<:accesrestreint:confirmer_supprimer_zone:>');"><:accesrestreint:tout_supprimer:></a>&#93;</span>]
+<span class="lien_supprimer" style='float:right;font-size:.75em'>&#91;<a href="[(#URL_ACTION_AUTEUR{ajouter_zone_groupe,#VALEUR,#SELF})]">Tout ajouter</a>&#93;</span><br class='leon' />
+</h2>
+[(#REM)]
+<p class="pagination">[(#GRAND_TOTAL) groupes][ .:|:. (#PAGINATION{page})]</p>
+<ul class="liste_items">
+
+<BOUCLE_cours(POUR){tableau #ENV{groupes_secondaires}}{pagination 10}>
+<BOUCLE_zone_exist(ZONES){titre=#VALEUR}></BOUCLE_zone_exist>
+<li class="item">
+[(#INCLURE{fond=prive/contenu/ajouter_zone_annuaire}{groupe=#VALEUR}{env}{ajax})]
+</li>
+</BOUCLE_cours>
+</B_cours>
+</ul>
