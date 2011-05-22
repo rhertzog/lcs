@@ -1,3 +1,15 @@
+lcs-spip (2.4.8~6) Lcs; urgency=low
+
+  * Fix bug with verif ldap in spip_session_lcs.php
+  * Fix bug in path of icon tispip
+  * Update deprecated fonctions spip_abstact_quote and spip_num_rows
+  * fix bug in pagination on cleaning accounts
+  * Update tispip plugin install
+  * Add icons for cleaning accaunts and areas/groups access restricted
+  * Change version num 2.0.5 to 2.4.8
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 05:07:56 +0200
+
 lcs-spip (2.4.8~5) Lcs; urgency=low
 
   * Added the creation of restricted areas from the groups in the LDAP
