@@ -10,6 +10,7 @@ lcs-spip (2.4.8~6) Lcs; urgency=low
   * Change version num 2.0.5 to 2.4.8
   * Cleaning postint old apache config
   * Merge changelog
+  * Modfy layout and change comments on restricted areas/groups
 
   [ Prepare 2.4.8~x version ]
   * Fix rights on IMG and tmp in chown.sh
@@ -29,7 +30,7 @@ lcs-spip (2.4.8~6) Lcs; urgency=low
   * Fix bug in tispip_config_import.html
   * Fix bugs in fonds/cfg_tispip_aide.html
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 22 May 2011 18:28:03 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 10:35:10 +0200
 
 lcs-spip (2.4.7.1~1) Lcs; urgency=low
 

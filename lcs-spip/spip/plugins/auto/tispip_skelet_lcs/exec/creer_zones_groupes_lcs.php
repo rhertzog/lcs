@@ -1,4 +1,11 @@
 <?php
+/**
+ * Plugin Lcs-TiSpiP pour spip2.0
+ * Mise en concordance des auteurs avec l'annuaire
+ * Licence GPL (c) 2006-2011 Dominique Lepaisant 
+ * 
+ */
+
 if (!defined("_ECRIRE_INC_VERSION")) return;
 include_spip('inc/presentation');
 function exec_creer_zones_groupes_lcs_dist(){
@@ -17,7 +24,7 @@ function exec_creer_zones_groupes_lcs_dist(){
 	
 	// titre
 	echo "<br /><br /><br />\n"; // outch ! aie aie aie ! au secours !
-	$ze_logo='<img src="'._DIR_PLUGIN_TISPIPSKELET.'/img_pack/logo_biduls_acces-restreint_120.png" style="width:96px">';
+	$ze_logo='<img src="'._DIR_PLUGIN_TISPIPSKELET.'/img_pack/logo_biduls_acces-restreint_120.png" style="width:96px;vertical-align:middle;">';
 	echo gros_titre(_T('tispipskelet:Cr&eacute;ation des zones d&rsquo;acc&egrave;s restreint issues des groupes de l&rsquo;annuaire LCS'), $ze_logo, false);
 	
 	// colonne gauche
