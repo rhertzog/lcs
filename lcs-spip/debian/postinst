@@ -113,27 +113,7 @@ fi
     #
     echo "Fixation des droits sur l'arborescence du module : $MODULE"
     $CONF/Scripts/chown.sh $MODULE
-    # cas de l'ancienne conf apache
-    if [ -e $APACHECONF ]; then
-      # Nettoyage
-      if [ `grep -c "Alias /$MODULE/ /usr/share/lcs/$MODULE/" $APACHECONF` = 1 ]; then
-        grep -v 'Alias /$MODULE/ /usr/share/lcs/$MODULE/' $APACHECONF > /tmp/apache.conf
-        mv /tmp/apache.conf $APACHECONF
-      fi
-      sed -i "/# Debut section spip/,/# Fin section spip/d" $APACHECONF
-      # Fin nettoyage
-      #
-      # Ajout conf spip
-      #
-      echo "Mise en place de l'alias $MODULE"
-      echo "# Debut section spip" >> $APACHECONF
-      echo "Alias /$MODULE/ /usr/share/lcs/$MODULE/" >> $APACHECONF
-      echo "<Directory  /usr/share/lcs/$MODULE/>" >> $APACHECONF
-      echo "        Allowoverride All" >> $APACHECONF
-      echo "</Directory>" >> $APACHECONF
-      echo "# Fin section spip" >> $APACHECONF
-    fi
-    # cas de la nouvelle configuration apache
+    # Configuration apache
     if [ -d $LCSAPACHE2PATH ] && [ ! -e $APACHE2CONF ] ; then
       cat >$APACHE2CONF <<EOF
 Alias /$MODULE/ /usr/share/lcs/$MODULE/

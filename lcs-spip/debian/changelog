@@ -1,5 +1,6 @@
 lcs-spip (2.4.8~6) Lcs; urgency=low
 
+  [ Jean Luc Chretien & Dominique Lepaisant ]
   * Fix bug with verif ldap in spip_session_lcs.php
   * Fix bug in path of icon tispip
   * Update deprecated fonctions spip_abstact_quote and spip_num_rows
@@ -7,39 +8,28 @@ lcs-spip (2.4.8~6) Lcs; urgency=low
   * Update tispip plugin install
   * Add icons for cleaning accaunts and areas/groups access restricted
   * Change version num 2.0.5 to 2.4.8
+  * Cleaning postint old apache config
+  * Merge changelog
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 05:07:56 +0200
-
-lcs-spip (2.4.8~5) Lcs; urgency=low
-
+  [ Prepare 2.4.8~x version ]
+  * Fix rights on IMG and tmp in chown.sh
+  * Update spip 2.1.10
+  * Fix bug in plugin.xml for tispip_skelet_lcs and recherche_multicriteres
+  * Update plugins to 2.1.xx
+  * Modify cleaning tmp in maj7.sh
+  * Add backup old spip in preinst script
+  * Remove deprecated plugins 
+  * Fix bug with icons in tispip_skelet_lcs and recherche_multicriteres
+  * Fix bug in tispip_config_import.html
+  * Fix bugs in fonds/cfg_tispip_aide.html
   * Added the creation of restricted areas from the groups in the LDAP
   * Added cleaning accounts
-
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 04:59:55 +0200
-
-lcs-spip (2.4.8~4) Lcs; urgency=low
-
-  [Dominique Lepaisant]
   * Remove deprecated plugins 
   * Fix bug with icons in tispip_skelet_lcs and recherche_multicriteres
   * Fix bug in tispip_config_import.html
   * Fix bugs in fonds/cfg_tispip_aide.html
 
-  [Jean-Luc Chretien]
-  * Modify cleaning tmp in maj7.sh
-  * Add backup old spip in preinst script
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 09 May 2011 19:57:28 +0200
-
-lcs-spip (2.4.8~3) Lcs; urgency=low
-
-  [ Jean Luc Chretien & Dominique Lepaisant ]
-  * Fix rights on IMG and tmp in chown.sh
-  * Update spip 2.1.10
-  * Fix bug in plugin.xml for tispip_skelet_lcs and recherche_multicriteres
-  * Update plugins to 2.1.xx
-
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Tue, 26 Apr 2011 23:49:24 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 22 May 2011 18:28:03 +0200
 
 lcs-spip (2.4.7.1~1) Lcs; urgency=low
 

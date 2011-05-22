@@ -41,8 +41,8 @@ if ( $action=="login" ) {
  #          spip_connect_ldap();
  #          auth_ldap_inserer("uid=$login,ou=People,".$GLOBALS['ldap_base'], $GLOBALS['meta']["ldap_statut_import"], $login);
  #          $result = spip_query("SELECT * FROM spip_auteurs WHERE login=" . sql_quote($login) . " AND source='ldap'");
-            $dn="uid=$login,ou=People,".$GLOBALS['ldap_base'];
- #            if ($GLOBALS['meta']["ldap_statut_import"]
+ #          $dn="uid=$login,ou=People,".$GLOBALS['ldap_base'];
+ #          if ($GLOBALS['meta']["ldap_statut_import"]
  #           AND $desc = auth_ldap_retrouver($dn)) {
             // rajouter le statut indique  a l'install
             
