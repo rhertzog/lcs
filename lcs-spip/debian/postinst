@@ -96,12 +96,6 @@ fi
         mkdir -p $PATHMOD/plugins/auto
     fi
     #
-    # Configuration des filtres pour les flux audio et video.
-    #
-    echo "Configuration des filtres pour les flux audio et video."
-    cat $CONF/Mod/config/mes_options.php.in | sed -e "s/@DOMAINENAME@/$DOMAINENAME/g" > /tmp/mes_options.php
-    mv /tmp/mes_options.php /usr/share/lcs/spip/config/
-    #
     # Création de l'utilisateur spip.manager si il n'existe pas
     #
     if [ `getent passwd spip.manager | wc -l` = "0" ]; then

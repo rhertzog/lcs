@@ -11,7 +11,7 @@ lcs-spip (2.4.8~6) Lcs; urgency=low
   * Cleaning postint old apache config
   * Merge changelog
   * Modfy layout and change comments on restricted areas/groups
-
+  * Remove deprecated mes_options.php in postinst
   [ Prepare 2.4.8~x version ]
   * Fix rights on IMG and tmp in chown.sh
   * Update spip 2.1.10
@@ -30,7 +30,7 @@ lcs-spip (2.4.8~6) Lcs; urgency=low
   * Fix bug in tispip_config_import.html
   * Fix bugs in fonds/cfg_tispip_aide.html
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 10:35:10 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 23 May 2011 18:24:19 +0200
 
 lcs-spip (2.4.7.1~1) Lcs; urgency=low
 
