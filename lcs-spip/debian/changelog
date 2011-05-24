@@ -1,4 +1,4 @@
-lcs-spip (2.4.8~6) Lcs; urgency=low
+lcs-spip (2.4.8~7) Lcs; urgency=low
 
   [ Jean Luc Chretien & Dominique Lepaisant ]
   * Fix bug with verif ldap in spip_session_lcs.php
@@ -29,8 +29,9 @@ lcs-spip (2.4.8~6) Lcs; urgency=low
   * Fix bug with icons in tispip_skelet_lcs and recherche_multicriteres
   * Fix bug in tispip_config_import.html
   * Fix bugs in fonds/cfg_tispip_aide.html
+  * Redirect stdout et sdterre to /dev/nul for tar command in preinst
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 23 May 2011 18:24:19 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 24 May 2011 17:52:45 +0200
 
 lcs-spip (2.4.7.1~1) Lcs; urgency=low
 
