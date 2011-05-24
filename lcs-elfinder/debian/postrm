@@ -2,7 +2,6 @@
 set -e
 
 MODULE="elfinder"
-MODULENAME="filexplorer"
 APACHE2CONF="/etc/apache2/lcs-main/70_elfinder.conf"
 
 case "$1" in
@@ -10,15 +9,12 @@ case "$1" in
         #
         # Suppression de l'alias 
         #
-        # cas de la nouvelle configuration apache
-        if [ -e $APACHE2CONF ]; then
-          rm -f $APACHE2CONF
-          /etc/init.d/apache2 reload > /dev/null 2>&1
-        fi
+		rm -f $APACHE2CONF
+        /etc/init.d/apache2 reload > /dev/null 2>&1
         #
         # Desinscription du module de la table lcs_db.applis
         #
-        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULENAME';" > /dev/null 2>&1
+        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1
         #
         # Nettoyage des repertoires
         # 
