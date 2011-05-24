@@ -1,13 +1,15 @@
-lcs-clientftp (2.4.8~3) Lcs; urgency=low
+lcs-clientftp (2.4.8~4) Lcs; urgency=low
   [Cyril Bouthors]
   * Added symlink support.
 
   [Chretien Jean-Luc]
   * Change to 2.4.8 version
   * Add conflict whit lcs-elfinder
-  * Convert doc-html to utf-8
+  * Convert doc-html to utf-8 and change charset doc-html to utf-8
+  * Cleaning postrm
+  * Modify open_basedir in postinst for squeeze
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Apr 2011 11:31:54 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 24 May 2011 14:46:04 +0200
 
 lcs-clientftp (2.4.6) Lcs; urgency=low
 

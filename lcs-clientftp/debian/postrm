@@ -2,7 +2,6 @@
 set -e
 
 MODULE="clientftp"
-APACHECONF="/etc/lcs/apache.conf"
 APACHE2CONF="/etc/apache2/lcs-main/70_clientftp.conf"
 
 case "$1" in
@@ -10,11 +9,8 @@ case "$1" in
         #
         # Suppression de l'alias 
         #
-        # cas de la nouvelle configuration apache
-        if [ -e $APACHE2CONF ]; then
-          rm -f $APACHE2CONF
-          /etc/init.d/apache2 reload > /dev/null 2>&1
-        fi
+		rm -f $APACHE2CONF
+		/etc/init.d/apache2 reload > /dev/null 2>&1
         #
         # Desinscription du module de la table lcs_db.applis
         #
@@ -23,7 +19,7 @@ case "$1" in
         # Nettoyage des repertoires
         # 
         if [ -e /usr/share/lcs/$MODULE ]; then
-	   rm -Rf /usr/share/lcs/$MODULE
+			rm -Rf /usr/share/lcs/$MODULE
         fi
         ;;
 
