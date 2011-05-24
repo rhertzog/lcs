@@ -60,7 +60,7 @@ if [ -d $LCSAPACHE2PATH ]; then
 Alias /clientftp/ /usr/share/lcs/clientftp/
 <Directory /usr/share/lcs/clientftp>
 php_admin_value register_globals off
-php_admin_value open_basedir .:/.:/tmp:/home:/var/www/lcs/includes:/usr/share/php/smarty/libs
+php_admin_value open_basedir .:/tmp:/home:/var/www/lcs/includes:/usr/share/php/smarty/libs
 </Directory>
 EOF
    /etc/init.d/apache2 reload > /dev/null 2>&1
