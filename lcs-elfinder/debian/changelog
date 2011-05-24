@@ -1,4 +1,4 @@
-lcs-elfinder (2.4.8~8) Lcs; urgency=low
+lcs-elfinder (2.4.8~9) Lcs; urgency=low
 
   [ Dominique Lepaisant ]
   * Redirection to the authentication page lcs if a user calls elFinder without being authenticated
@@ -9,7 +9,7 @@ lcs-elfinder (2.4.8~8) Lcs; urgency=low
   * Convert doc-html to utf-8
   * Cleaning postinst and postrm scripts
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 24 May 2011 14:50:29 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 24 May 2011 14:58:19 +0200
 
 lcs-elfinder (2.4.8~3) Lcs; urgency=low
 
