@@ -1,4 +1,4 @@
-lcs-web (2.4.8~18) Lcs; urgency=low
+lcs-web (2.4.8~19) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -38,6 +38,7 @@ lcs-web (2.4.8~18) Lcs; urgency=low
   * Remove utf8-decode and encode  in Annu scripts
   * Fix error when cretaing Mail_can_redi right in lcs-web-config whis Squeeze (add sleep 2)	
   * Delete underscore at the end of uid in crob_ldap_functions.php
+  * add utf8-encode in Modules/modules_dispo.php and modules_installes.php
 
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
@@ -68,7 +69,7 @@ lcs-web (2.4.8~18) Lcs; urgency=low
   * Fix recovery of the server name in case of failure authenfication
   * Fix authentification in auth_lcs() in user_lcs.inc.php 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 20 May 2011 11:30:17 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 26 May 2011 17:43:02 +0200
 
 lcs-web (2.4.7) Lcs; urgency=low
 

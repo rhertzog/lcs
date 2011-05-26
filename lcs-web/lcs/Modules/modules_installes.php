@@ -1,13 +1,5 @@
 <?php
-/* =============================================
-   Projet LCS
-   Administration serveur LCS «Liste des Modules installes»
-   AdminLCS/Modules_installes.php
-   Equipe Tice academie de Caen
-   maj : 08/01/2011
-   Distribue selon les termes de la licence GPL
-   ============================================= */
-
+/* lcs/Modules_installes.php derniere modification 26/06/2011 */
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include ("/var/www/Annu/includes/ldap.inc.php");
 $msgIntro = "<H1>Gestion des Modules LCS</H1>\n";
@@ -122,7 +114,7 @@ if ($result)
 	  		{ 		  	  list ($v,$plug) = maj_dispo($r->name);
 			  echo "<TR>\n";
 			  echo "<TD>" . $r->name . "</TD>\n";
-			  echo "<TD>" . $r->descr . "</TD>\n";
+			  echo "<TD>" . utf8_encode($r->descr) . "</TD>\n";
 			  echo "<TD>" . $r->version . "</TD>\n";
 	          echo "<TD class=\"centr\"><A HREF=\"../../doc/" . $r->name . "/html/index.html\" TITLE=\"Aide\"><IMG SRC=\"../Plugins/Images/plugins_help.png\" ALT=\"Aide\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\" /></A></TD>\n";
 	          if ($r->type =='N' && $r->value != "0")

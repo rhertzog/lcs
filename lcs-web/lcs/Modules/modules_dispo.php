@@ -1,12 +1,5 @@
 <?
-/* =============================================
-   Projet LCS
-   Administration serveur LCS «Liste des Modules disponibles»
-   AdminLCS/Modules_dispo.php
-   Equipe Tice academie de Caen
-   10/12/2010
-   Distribue selon les termes de la licence GPL
-   ============================================= */
+/* lcs/Modules_dispo.php derniere modification 26/06/2011 */
 
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include ("/var/www/Annu/includes/ldap.inc.php");
@@ -54,7 +47,7 @@ while(list($nomModule,$Module) = each($Modules))
 	  	$mod_dispo=true;
 	  	  echo "<TR>\n";
 	  	  echo "<TD >$nomModule</TD>\n";
-	  	  echo "<TD >" . $Module["intitule"] . "</TD>\n";
+	  	  echo "<TD >" . utf8_encode($Module["intitule"]) . "</TD>\n";
 	  	   while(list($version,$Mod) = each($Module["version"]))
 			{
 		  	  echo "<TD>$version</TD>\n";
