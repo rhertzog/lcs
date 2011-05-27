@@ -1,8 +1,9 @@
-lcs-smtp (2.4.8~1) lcs; urgency=low
+lcs-smtp (2.4.8) lcs; urgency=low
 
   * Change meta charset iso to utf-8 in doc-html
+  * Make a 2.4.8 stable version
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 May 2011 16:10:07 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 May 2011 13:13:28 +0200
 
 lcs-smtp (2.4.7) Lcs; urgency=low
 
