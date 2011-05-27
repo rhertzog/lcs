@@ -8,8 +8,9 @@ lcs-clientftp (2.4.8~4) Lcs; urgency=low
   * Convert doc-html to utf-8 and change charset doc-html to utf-8
   * Cleaning postrm
   * Modify open_basedir in postinst for squeeze
+  * Make a 2.4.8 stable release
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 24 May 2011 14:46:04 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 May 2011 14:00:33 +0200
 
 lcs-clientftp (2.4.6) Lcs; urgency=low
 
