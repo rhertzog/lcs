@@ -1,12 +1,13 @@
-lcs-cas (2.4.8~10) Lcs; urgency=low
+lcs-cas (2.4.8) Lcs; urgency=low
   * Change charset in documentation index.html 
   * Install or update with official rubycas-server V 0.7.999999.20100202
   * Modify lcs-cas-install.sh and lcs-cas-update.sh  
   * Fix error on path cert and in lcs-cas-update.sh
   * Add cron.weekly task lcs-cas-clean-tickets
   * Fix bug in logrotate/casserver
+  * Make a 2.4.8 stable release
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Feb 2011 11:37:05 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 May 2011 13:42:52 +0200
 
 lcs-cas (2.4.7.1) Lcs; urgency=low
 
