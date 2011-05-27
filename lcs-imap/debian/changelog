@@ -1,11 +1,13 @@
-lcs-imap (2.4.8~1) Lcs; urgency=low
+lcs-imap (2.4.8) Lcs; urgency=low
 
   * Change authldaprc to bind to LDAP to validate credentials so that
     it still works when userPasswd doesn't contain a crypted password
     and when the LDAP authentication is delegated to a remote Active Directory
     server.
+  * Change meta charset iso to utf-8 in doc-html
+  * Make a 2.4.8 stable version
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 28 Jan 2011 10:55:11 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 May 2011 13:20:22 +0200
 
 lcs-imap (2.4.7) Lcs; urgency=low
 
