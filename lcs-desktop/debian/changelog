@@ -1,15 +1,11 @@
-lcs-desktop (2.4.8~8) Lcs; urgency=low
-
-  * Fix bug in the homepage Offline
-  * Modify homepage width 
-
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 06 May 2011 21:02:34 +0200
-
-lcs-desktop (2.4.8~6) Lcs; urgency=low
-
+lcs-desktop (2.4.8) Lcs; urgency=low
+  
   [ Dominique Lepaisant ]
   * Fix bug on smbwebclient on bar-top menus
   * Fix bug on icon place 
+  * Fix bug in the homepage Offline
+  * Modify homepage width 
+  * Make a 2.4.8 stable version
 
   [ Dominique Lepaisant ]
   * Prepares version 2.4.8~5
@@ -64,7 +60,7 @@ lcs-desktop (2.4.8~6) Lcs; urgency=low
   * Modify index.php and inc-lcs-applis.php for roundcube and lcs-notify-desktop
   * Fix rights on desktop folder 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 23 Apr 2011 13:47:38 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 May 2011 13:55:15 +0200
 
 lcs-desktop (0.2~18) Lcs; urgency=low
 
