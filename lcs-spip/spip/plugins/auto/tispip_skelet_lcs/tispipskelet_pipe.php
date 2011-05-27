@@ -121,7 +121,8 @@ function affiche_message_admins () {
 			if ($exec == "accueil") {
 				$data = $flux["data"];
 				
-				$ret = affiche_message_admins();
+				#$ret = affiche_message_admins();
+				$ret = "";
 		
 				$flux["data"] = $data.$ret;
 			}

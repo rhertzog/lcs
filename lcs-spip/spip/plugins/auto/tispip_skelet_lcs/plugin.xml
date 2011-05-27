@@ -13,12 +13,6 @@
 	<icon>img_pack/tispip-skelet_24.png</icon>
 	<fonctions>tispipskelet_fonctions.php</fonctions>
 	<install>action/tispipskelet_install.php</install>
-	<bouton id="tispipskelet_nettoyer_compte" parent="auteurs">
-		<icone>img_pack/nettoyer_comptes_lcs_spip_24.png</icone>
-		<titre>Nettoyer les comptes</titre>   
-		<url>accorder_comptes_lcs</url>   
-		<args></args>
-	</bouton>
 	<bouton id="creer_zones_groupes" parent="auteurs">
 		<icone>img_pack/logo_biduls_acces-restreint_24.png</icone>
 		<titre>Zones des groupes</titre>   

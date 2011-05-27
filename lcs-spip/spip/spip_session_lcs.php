@@ -12,6 +12,8 @@ function fich_debug($texte){
 }
 include "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers,$login)= isauth();
+include ("/var/www/lcs/includes/user_lcs.inc.php");
+list($user, $groups)=people_get_variables($login, true);
 
 if ( $action=="login" ) {
     if ($idpers != "0") {
@@ -46,7 +48,9 @@ if ( $action=="login" ) {
  #           AND $desc = auth_ldap_retrouver($dn)) {
             // rajouter le statut indique  a l'install
             
- #              $desc['statut'] = $GLOBALS['meta']["ldap_statut_import"];
+                $desc['nom'] = $user["fullname"];
+                $desc['email'] = $user["email"];
+ #             $desc['statut'] = $GLOBALS['meta']["ldap_statut_import"];
                 $desc['statut'] = "1comite";
                 $desc['login'] = $login;
                 $desc['source'] = 'ldap';
@@ -90,8 +94,6 @@ if ( $action=="login" ) {
 	        	
 	        	////// script de MrPhi (extrait)
 	        	// Recherche des groupes d'appartenance de l'utilisateur $login
-				include ("/var/www/lcs/includes/user_lcs.inc.php");
-			  	list($user, $groups)=people_get_variables($login, true);
 				$i=0;
 
 				// Recherche du groupe principal 
