@@ -1,11 +1,4 @@
-lcs-spip (2.4.8~8) Lcs; urgency=low
-
-  * Remove function "accorder compte" 
-  * Fix bug in count import with spip
-
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 24 Sep 2010 01:53:37 +0200
-
-lcs-spip (2.4.8~7) Lcs; urgency=low
+lcs-spip (2.4.8) Lcs; urgency=low
 
   [ Jean Luc Chretien & Dominique Lepaisant ]
   * Fix bug with verif ldap in spip_session_lcs.php
@@ -19,6 +12,9 @@ lcs-spip (2.4.8~7) Lcs; urgency=low
   * Merge changelog
   * Modfy layout and change comments on restricted areas/groups
   * Remove deprecated mes_options.php in postinst
+  * Remove function "accorder compte"
+  * Fix bug in count import with spip
+
   [ Prepare 2.4.8~x version ]
   * Fix rights on IMG and tmp in chown.sh
   * Update spip 2.1.10
