@@ -1,7 +1,7 @@
 <?php
 
 /*
-$Id: lib_brevets.php 6901 2011-05-10 14:58:05Z crob $
+$Id: lib_brevets.php 7031 2011-05-27 15:00:39Z crob $
  */
 
 $tab_type_brevet=array();
@@ -127,7 +127,6 @@ function tabmatieres($type_brevet){
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
 
 			// Mode de calcul:
-			//for($j=101;$j<=122;$j++){
 			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-1]='POINTS';
 			}
@@ -555,7 +554,6 @@ function tabmatieres($type_brevet){
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
 
-			//for($j=101;$j<=122;$j++){
 			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-1]='POINTS';
 			}
@@ -665,12 +663,12 @@ function tabmatieres($type_brevet){
 		case 3:
 			// PROFESSIONNELLE, option de série DP6
 
-			$tabmatieres[5][0]='HISTOIRE DES ARTS';
-
 			// Initialisation
 			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][0]='';
 			}
+
+			$tabmatieres[5][0]='HISTOIRE DES ARTS';
 
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
@@ -1387,6 +1385,7 @@ function tab_extract_moy($tab_ele,$id_clas) {
 	global $num_eleve, $classe, $tab_mat;
 	global $indice_max_matieres;
 	global $indice_premiere_matiere;
+	global $compteur_champs_notes;
 
 	$affiche_enregistrements_precedents="y";
 	//global $affiche_enregistrements_precedents;
@@ -1666,7 +1665,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 						//La note globale attribuée aux élèves dans chaque discipline, à l'issue des deux classes, est calculée sur la base de la moyenne des deux notes attribuées en quatrième et en troisième. Chaque note globale est affectée du coefficient défini par l'arrêté du 18 août 1999. Les notes globales, arrondies au demi point supérieur, sont arrêtées par le conseil des professeurs du troisième trimestre.
 						$moyenne_arrondie=ceil($moyenne*2)/2;
 						//echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='".$moyenne_arrondie."' size='6' /></td>\n";
-						echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='".$moyenne_arrondie."' size='6' />";
+						//echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='".$moyenne_arrondie."' size='6' />";
+						echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' id='n".$compteur_champs_notes."' value='".$moyenne_arrondie."' size='6' onKeyDown=\"clavier(this.id,event);\" autocomplete=\"off\" onfocus=\"javascript:this.select()\" />";
+						$compteur_champs_notes++;
 						//echo "<input type='hidden' name='matiere_".$j."_[$num_eleve]' value='".$id_matiere[$j][$k]."' size='6' />";
 						echo "</td>\n";
 
@@ -1691,7 +1692,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 						echo "<td style='font-weight:bold; text-align:center;$bgmoy'>X</td>\n";
 						//echo "<td><input type='text' name='moy.$j.$k[$num_eleve]' value='' size='6'></td>\n";
 						//echo "<td><input type='text' name='moy_$j"."_"."$k[$num_eleve]' value='' size='6'></td>\n";
-						echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='' size='6' /></td>\n";
+						//echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='' size='6' /></td>\n";
+						echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' id='n".$compteur_champs_notes."' value='' size='6' onKeyDown=\"clavier(this.id,event);\" autocomplete=\"off\" onfocus=\"javascript:this.select()\" /></td>\n";
+						$compteur_champs_notes++;
 						//echo "<td></td>\n";
 					}
 					/*
@@ -1941,10 +1944,6 @@ function tab_extract_moy($tab_ele,$id_clas) {
 		$TOT=0;
 
 
-
-
-
-
 		echo "<p>\n";
 		echo "Portion de fichier générée:<br />";
 		for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
@@ -2001,6 +2000,24 @@ function tab_extract_moy($tab_ele,$id_clas) {
 				}
 			}
 		}
+
+		// Dans le cas brevet PRO, il ne faut retenir qu'une seule des deux matières 103 et 104
+		if(($tab_ele['type_brevet']==2)||($tab_ele['type_brevet']==3)) {
+			$num_matiere_LV1=103;
+			$num_matiere_ScPhy=104;
+			if(($moy_NOTANET[$num_matiere_LV1]!="AB")&&($moy_NOTANET[$num_matiere_LV1]!="DI")&&($moy_NOTANET[$num_matiere_LV1]!="NN")){
+				if(($moy_NOTANET[$num_matiere_ScPhy]!="AB")&&($moy_NOTANET[$num_matiere_ScPhy]!="DI")&&($moy_NOTANET[$num_matiere_ScPhy]!="NN")) {
+					// Il ne faut retenir qu'une seule des deux notes
+					if($moy_NOTANET[$num_matiere_ScPhy]>$moy_NOTANET[$num_matiere_LV1]) {
+						$TOT-=round($moy_NOTANET[$num_matiere_LV1]*$tabmatieres[$num_matiere_LV1][-2]*2)/2;
+					}
+					else {
+						$TOT-=round($moy_NOTANET[$num_matiere_ScPhy]*$tabmatieres[$num_matiere_ScPhy][-2]*2)/2;
+					}
+				}
+			}
+		}
+
 		//echo "$INE|TOT|$TOT|<br />\n";
 		echo colore_ligne_notanet("$INE|TOT|".sprintf("%02.2f",$TOT)."|")."<br />\n";
 		$tabnotanet[]="$INE|TOT|".sprintf("%02.2f",$TOT)."|";
@@ -2389,6 +2406,8 @@ function fs_pt2mm($fs) {
 	[eleves.101.3]  ->      moyenne de la classe
 	[eleves.101.4]  ->      appréciation
 	où 101 est le numéro de matière
+	[eleves.totalpoints] /[eleves.totalcoef]
+	[eleves.appreciation]	->	Avis du chef d'etablissement
 	...
 */
 ?>

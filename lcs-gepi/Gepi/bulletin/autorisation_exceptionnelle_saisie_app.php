@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: autorisation_exceptionnelle_saisie_app.php 6727 2011-03-29 15:14:30Z crob $
+ * $Id: autorisation_exceptionnelle_saisie_app.php 7037 2011-05-28 09:20:21Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stephane Boireau
  *
@@ -169,12 +169,6 @@ if((isset($is_posted))&&(isset($id_classe))&&(isset($id_groupe))&&(isset($period
 								$salutation=(date("H")>=18 OR date("H")<=5) ? "Bonsoir" : "Bonjour";
 								$texte_mail=$salutation.",\n\n".$texte_mail."\nCordialement.\n-- \n".$nom_personne_autorisant;
 
-								/*
-								$envoi = mail($email_destinataires,
-									$gepiPrefixeSujetMail.$sujet_mail,
-									$texte_mail,
-									"From: Mail automatique Gepi\r\n".$ajout_header."X-Mailer: PHP/".phpversion());
-								*/
 								$envoi = envoi_mail($sujet_mail, $texte_mail, $email_destinataires, $ajout_header);
 
 								if($envoi) {$msg.="Email expédié à ".htmlentities($email_destinataires)."<br />";}

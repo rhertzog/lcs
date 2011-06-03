@@ -1,6 +1,6 @@
 <?php
 
-/* @version $Id: envoi_mail.php 5969 2010-11-23 18:39:40Z crob $ */
+/* @version $Id: envoi_mail.php 7028 2011-05-27 11:27:20Z crob $ */
 
 // ============== Initialisation ===================
 $affiche_connexion = 'yes';
@@ -35,7 +35,7 @@ $message_mail=isset($_GET["message"]) ? $_GET["message"] : NULL;
 
 // ========== Fin de l'initialisation de la page =============
 
-$message_mail=my_ereg_replace("\\\\n","\n",$message_mail);
+$message_mail=preg_replace("/\\\\n/","\n",$message_mail);
 $message_mail=stripslashes($message_mail);
 /*
 $fich=fopen("/tmp/envoi_mail.txt","a+");
@@ -52,7 +52,7 @@ $gepiPrefixeSujetMail=getSettingValue("gepiPrefixeSujetMail") ? getSettingValue(
 if($gepiPrefixeSujetMail!='') {$gepiPrefixeSujetMail.=" ";}
 
 $expediteur=retourne_email($_SESSION['login']);
-if($expediteur=='') {$expediteur="Mail automatique Gepi";}
+if($expediteur=='') {$expediteur="Mail automatique Gepi <ne-pas-repondre@".$_SERVER['SERVER_NAME'].">";}
 
 $envoi=mail($destinataire,
 	$gepiPrefixeSujetMail.$sujet_mail,

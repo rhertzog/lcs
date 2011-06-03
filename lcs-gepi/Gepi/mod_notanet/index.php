@@ -1,5 +1,5 @@
 <?php
-/* $Id: index.php 6522 2011-02-21 20:13:20Z crob $ */
+/* $Id: index.php 7051 2011-05-29 12:27:22Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -174,6 +174,25 @@ statut='';";
 $insert=mysql_query($sql);
 }
 
+/* Ajout des droits pour saisie_socle_commun.php dans la table droits */
+$sql="SELECT 1=1 FROM droits WHERE id='/mod_notanet/saisie_socle_commun.php';";
+$test=mysql_query($sql);
+if(mysql_num_rows($test)==0) {
+$sql="INSERT INTO droits SET id='/mod_notanet/saisie_socle_commun.php',
+administrateur='V',
+professeur='F',
+cpe='F',
+scolarite='F',
+eleve='F',
+responsable='F',
+secours='F',
+autre='F',
+description='Notanet: Saisie socle commun',
+statut='';";
+$insert=mysql_query($sql);
+}
+
+
 
 if(!isset($msg)) {$msg="";}
 //===========================================================
@@ -292,6 +311,16 @@ PRIMARY KEY ( id )
 );";
 $create_table=mysql_query($sql);
 
+$sql="CREATE TABLE IF NOT EXISTS notanet_socle_commun (
+id INT(11) NOT NULL auto_increment,
+login VARCHAR( 50 ) NOT NULL ,
+champ VARCHAR( 10 ) NOT NULL ,
+valeur ENUM( 'MS', 'ME', 'MN', 'AB', '' ) NOT NULL ,
+PRIMARY KEY ( id )
+);";
+$create_table=mysql_query($sql);
+
+
 if($_SESSION['statut']=="administrateur") {
 	$truncate_tables=isset($_GET['truncate_tables']) ? $_GET['truncate_tables'] : NULL;
 	if($truncate_tables=='y') {
@@ -333,6 +362,8 @@ if($_SESSION['statut']=="administrateur") {
 
 	echo "<li><a href='choix_generation_csv.php?extract_mode=tous'>Générer un export Notanet</a> pour tous les élèves de telle(s) ou telle(s) classe(s) ou juste une sélection (cf. select_eleves.php)</li>\n";
 
+	echo "<li><a href='saisie_socle_commun.php'>Saisir ou importer les résultats du Socle commun.</li>\n";
+
 	echo "<li><a href='verrouillage_saisie_app.php'>Verrouiller/déverrouiller la saisie des appréciations pour les fiches brevet</a><br />La saisie n'est possible pour les professeurs que si l'extraction des moyennes a été effectuée.</li>\n";
 
 	echo "<li><a href='saisie_avis.php'>Saisir l'avis du chef d'établissement</a>.</li>\n";
@@ -359,7 +390,8 @@ if($_SESSION['statut']=="administrateur") {
 
 	echo "<p>Au changement d'année: <a href='".$_SERVER['PHP_SELF']."?truncate_tables=y".add_token_in_url()."'>Vider les saisies Notanet antérieures</a>.</p>\n";
 
-	echo "<p><b>NOTES:</b> Pour un bon fonctionnement du dispositif, il faut parcourir les points ci-dessus dans l'ordre.</p>\n";
+	echo "<p><b>NOTES:</b> Pour un bon fonctionnement du dispositif, il faut parcourir les points ci-dessus dans l'ordre.<br />
+	Voir <a href='https://www.sylogix.org/projects/gepi/wiki/Module_notanet' target='_blank'>https://www.sylogix.org/projects/gepi/wiki/Module_notanet</a></p>\n";
 }
 elseif($_SESSION['statut']=="scolarite") {
 	echo "<ul>\n";

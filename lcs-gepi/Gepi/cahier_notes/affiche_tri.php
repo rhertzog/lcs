@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: affiche_tri.php 6206 2010-12-19 16:41:49Z crob $
+* $Id: affiche_tri.php 6967 2011-05-20 10:53:46Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -62,6 +62,8 @@ $chaine1= isset($_POST["chaine1"]) ? $_POST["chaine1"] : (isset($_GET["chaine1"]
 $chaine2= isset($_POST["chaine2"]) ? $_POST["chaine2"] : (isset($_GET["chaine2"]) ? $_GET["chaine2"] : NULL);
 
 $mode=isset($_GET['mode']) ? $_GET['mode'] : "";
+
+header('Content-Type: text/xml; charset=ISO-8859-1');
 
 if($mode!="ajax") {
 	//**************** EN-TETE *****************

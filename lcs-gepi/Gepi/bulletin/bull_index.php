@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: bull_index.php 6728 2011-03-30 09:20:17Z crob $
+* $Id: bull_index.php 6963 2011-05-20 06:48:41Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -2201,7 +2201,14 @@ else {
 								$tab_ele['etab_type']='';
 							}
 							else {
-								$tab_ele['etab_type']= $type_etablissement2[remplace_accents($tab_ele['etab_type'],'')][remplace_accents($tab_ele['etab_niveau'],'')];
+								//$tab_ele['etab_type']= $type_etablissement2[remplace_accents($tab_ele['etab_type'],'')][remplace_accents($tab_ele['etab_niveau'],'')];
+								if(strtoupper($tab_ele['etab_niveau'])=='EREA') {
+									$tmp_etab_niveau='EREA';
+								}
+								else {
+									$tmp_etab_niveau=strtolower(remplace_accents($tab_ele['etab_niveau'],''));
+								}
+								$tab_ele['etab_type']= $type_etablissement2[strtolower(remplace_accents($tab_ele['etab_type'],''))][$tmp_etab_niveau];
 								//echo "\$type_etablissement2[".$tab_ele['etab_type']."][".$tab_ele['etab_niveau']."]=".$type_etablissement2[remplace_accents($tab_ele['etab_type'],'')][remplace_accents($tab_ele['etab_niveau'],'')]."<br />\n";
 							}
 						}

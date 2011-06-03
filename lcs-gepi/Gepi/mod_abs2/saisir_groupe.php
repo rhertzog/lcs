@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: saisir_groupe.php 6550 2011-02-28 12:21:14Z dblanqui $
+ * @version $Id: saisir_groupe.php 6960 2011-05-20 05:16:14Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -393,7 +393,7 @@ if (isset($current_groupe) && $current_groupe != null) {
     $eleve_col = $query->useJEleveGroupeQuery()
                         ->filterByIdGroupe($current_groupe->getId())
                         ->endUse()
-            ->where('Eleve.DateSortie=?','0')
+            ->where('Eleve.DateSortie<?','0')
             ->orWhere('Eleve.DateSortie is NULL')
             ->orWhere('Eleve.DateSortie>?', $dt_date_absence_eleve->format('U'))
             ->orderBy('Eleve.Nom','asc')
@@ -405,7 +405,7 @@ if (isset($current_groupe) && $current_groupe != null) {
     $eleve_col = $query->useJAidElevesQuery()
                         ->filterByIdAid($current_aid->getId())
                         ->endUse()
-            ->where('Eleve.DateSortie=?','0')
+            ->where('Eleve.DateSortie<?','0')
             ->orWhere('Eleve.DateSortie is NULL')
             ->orWhere('Eleve.DateSortie>?', $dt_date_absence_eleve->format('U'))
             ->orderBy('Eleve.Nom','asc')
@@ -417,7 +417,7 @@ if (isset($current_groupe) && $current_groupe != null) {
     $eleve_col = $query->useJEleveClasseQuery()
                         ->filterByIdClasse($current_classe->getId())
                         ->endUse()
-            ->where('Eleve.DateSortie=?','0')
+            ->where('Eleve.DateSortie<?','0')
             ->orWhere('Eleve.DateSortie is NULL')
             ->orWhere('Eleve.DateSortie>?', $dt_date_absence_eleve->format('U'))
             ->orderBy('Eleve.Nom','asc')

@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_notes.php 6727 2011-03-29 15:14:30Z crob $
+* $Id: saisie_notes.php 6984 2011-05-23 15:07:36Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -406,18 +406,24 @@ echo "</p>";
 if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 	//$sql="SELECT DISTINCT c.id,c.classe FROM classes c, periodes p, j_groupes_classes jgc, j_groupes_professeurs jgp WHERE p.id_classe = c.id AND jgc.id_classe=c.id AND jgp.id_groupe=jgc.id_groupe AND jgp.login='".$_SESSION['login']."' ORDER BY c.classe";
 
+	$login_prof_groupe_courant="";
+	$tab_groups=array();
 	if($_SESSION['statut']=='professeur') {
 		$login_prof_groupe_courant=$_SESSION["login"];
 	}
 	else {
 		$tmp_current_group=get_group($id_groupe);
 
-		$login_prof_groupe_courant=$tmp_current_group["profs"]["list"][0];
+		if(isset($tmp_current_group["profs"]["list"][0])) {
+			$login_prof_groupe_courant=$tmp_current_group["profs"]["list"][0];
+		}
 	}
 
-	//$tab_groups = get_groups_for_prof($_SESSION["login"],"classe puis matière");
-	$tab_groups = get_groups_for_prof($login_prof_groupe_courant,"classe puis matière");
-	//$tab_groups = get_groups_for_prof($_SESSION["login"]);
+	if($login_prof_groupe_courant!='') {
+		//$tab_groups = get_groups_for_prof($_SESSION["login"],"classe puis matière");
+		$tab_groups = get_groups_for_prof($login_prof_groupe_courant,"classe puis matière");
+		//$tab_groups = get_groups_for_prof($_SESSION["login"]);
+	}
 
 	if(!empty($tab_groups)) {
 

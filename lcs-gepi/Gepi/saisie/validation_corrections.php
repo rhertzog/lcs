@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: validation_corrections.php 5969 2010-11-23 18:39:40Z crob $
+ * $Id: validation_corrections.php 7037 2011-05-28 09:20:21Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -194,10 +194,7 @@ if(isset($_POST['action_corrections'])) {
 						$salutation=(date("H")>=18 OR date("H")<=5) ? "Bonsoir" : "Bonjour";
 						$texte=$salutation.",\n\n".$texte."\nCordialement.\n-- \n".civ_nom_prenom($_SESSION['login']);
 
-						$envoi = mail($email_destinataires,
-							$gepiPrefixeSujetMail.$sujet_mail,
-							$texte,
-							"From: Mail automatique Gepi\r\n".$ajout_header."X-Mailer: PHP/".phpversion());
+						$envoi = envoi_mail($sujet_mail, $texte, $email_destinataires, $ajout_header);
 					}
 				}
 			}

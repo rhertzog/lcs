@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: liste_sanctions_jour.php 6521 2011-02-21 17:33:14Z eabgrall $
+ * $Id: liste_sanctions_jour.php 7088 2011-06-02 11:49:57Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -419,7 +419,7 @@ if(mysql_num_rows($res_sanction)>0) {
 		echo "</td>\n";
 		
 		echo "<td>\n";
-		echo get_declarant_incident($lig_sanction->id_incident);
+		echo civ_nom_prenom(get_login_declarant_incident($lig_sanction->id_incident));
         echo "</td>\n";
 		
 		echo "<td>\n";

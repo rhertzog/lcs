@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_appreciations.php 6727 2011-03-29 15:14:30Z crob $
+* $Id: saisie_appreciations.php 7003 2011-05-25 17:35:45Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -109,7 +109,6 @@ if (isset($_POST['is_posted'])) {
 				}
 				//echo "<pre>$k: $app</pre>";
 				// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-				//$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
 				$app=preg_replace('/(\\\r\\\n)+/',"\r\n",$app);
 				$app=preg_replace('/(\\\r)+/',"\r",$app);
 				$app=preg_replace('/(\\\n)+/',"\n",$app);
@@ -144,7 +143,7 @@ if (isset($_POST['is_posted'])) {
 				//echo "\$log_eleve[$i]=$log_eleve[$i]<br />\n";
 				if(isset($log_eleve[$i])) {
 					// On supprime le suffixe indiquant la période:
-					$reg_eleve_login=my_ereg_replace("_t".$k."$","",$log_eleve[$i]);
+					$reg_eleve_login=preg_replace("/_t".$k."$/","",$log_eleve[$i]);
 
 					//echo "\$i=$i<br />";
 					//echo "\$reg_eleve_login=$reg_eleve_login<br />";
@@ -171,11 +170,6 @@ if (isset($_POST['is_posted'])) {
 							//echo "<pre style='color: red'>$reg_eleve_login: $app</pre>\n";
 
 							// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-							/*
-							$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
-							$app=my_ereg_replace('(\\\r)+',"\r",$app);
-							$app=my_ereg_replace('(\\\n)+',"\n",$app);
-							*/
 							$app=preg_replace('/(\\\r\\\n)+/',"\r\n",$app);
 							$app=preg_replace('/(\\\r)+/',"\r",$app);
 							$app=preg_replace('/(\\\n)+/',"\n",$app);
@@ -236,7 +230,7 @@ if (isset($_POST['is_posted'])) {
 						$app = "";
 
 						// Contrôle des saisies pour supprimer les sauts de lignes surnuméraire.
-						$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
+						$app=preg_replace('/(\\\r\\\n)+/',"\r\n",$app);
 
 
 						$test_eleve_app_query = mysql_query("SELECT * FROM matieres_appreciations WHERE (login='$reg_eleve_login' AND id_groupe='" . $current_group["id"]."' AND periode='$k')");
@@ -329,14 +323,16 @@ elseif((isset($_POST['correction_login_eleve']))&&(isset($_POST['correction_peri
 			if (isset($NON_PROTECT["correction_app_eleve"])) {
 				$app = traitement_magic_quotes(corriger_caracteres($NON_PROTECT["correction_app_eleve"]));
 				// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-				$app=my_ereg_replace('(\\\r\\\n)+',"\r\n",$app);
-		
+				$app=preg_replace('/(\\\r\\\n)+/',"\r\n",$app);
+				$app=preg_replace('/(\\\r)+/',"\r",$app);
+				$app=preg_replace('/(\\\n)+/',"\n",$app);
+
 				$texte_mail="";
 		
 				$correction_nom_prenom_eleve=get_nom_prenom_eleve($correction_login_eleve);
 		
-				if((strlen(my_ereg_replace('[A-Za-z0-9._-]','',$correction_login_eleve))!=0)||
-				(strlen(my_ereg_replace('[0-9]','',$correction_periode))!=0)) {
+				if((strlen(preg_replace('/[A-Za-z0-9._-]/','',$correction_login_eleve))!=0)||
+				(strlen(preg_replace('/[0-9]/','',$correction_periode))!=0)) {
 					$msg.="Des caractères invalides sont proposés pour le login élève $correction_nom_prenom_eleve ou pour la période $correction_periode.<br />";
 				}
 				else {
@@ -521,18 +517,24 @@ else
 if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 	//$sql="SELECT DISTINCT c.id,c.classe FROM classes c, periodes p, j_groupes_classes jgc, j_groupes_professeurs jgp WHERE p.id_classe = c.id AND jgc.id_classe=c.id AND jgp.id_groupe=jgc.id_groupe AND jgp.login='".$_SESSION['login']."' ORDER BY c.classe";
 
+	$login_prof_groupe_courant="";
+	$tab_groups=array();
 	if($_SESSION['statut']=='professeur') {
 		$login_prof_groupe_courant=$_SESSION["login"];
 	}
 	else {
 		$tmp_current_group=get_group($id_groupe);
 
-		$login_prof_groupe_courant=$tmp_current_group["profs"]["list"][0];
+		if(isset($tmp_current_group["profs"]["list"][0])) {
+			$login_prof_groupe_courant=$tmp_current_group["profs"]["list"][0];
+		}
 	}
 
-	//$tab_groups = get_groups_for_prof($_SESSION["login"],"classe puis matière");
-	$tab_groups = get_groups_for_prof($login_prof_groupe_courant,"classe puis matière");
-	//$tab_groups = get_groups_for_prof($_SESSION["login"]);
+	if($login_prof_groupe_courant!='') {
+		//$tab_groups = get_groups_for_prof($_SESSION["login"],"classe puis matière");
+		$tab_groups = get_groups_for_prof($login_prof_groupe_courant,"classe puis matière");
+		//$tab_groups = get_groups_for_prof($_SESSION["login"]);
+	}
 
 	if(!empty($tab_groups)) {
 
@@ -961,6 +963,7 @@ $i=0;
 //=========================
 // Pour permettre le remplacement de la chaine _PRENOM_ par le prénom de l'élève dans les commentaires types (ctp.php)
 $chaine_champs_input_prenom="";
+$chaine_champs_input_login="";
 //=========================
 $chaine_test_vocabulaire="";
 //=========================
@@ -1251,7 +1254,11 @@ foreach ($liste_eleves as $eleve_login) {
 				//$mess[$k].="<input type='hidden' name='prenom_eleve_".$k."[$i]' id='prenom_eleve_".$k.$num_id."' value=\"".$eleve_prenom."\" />\n";
 				$chaine_champs_input_prenom.="<input type='hidden' name='prenom_eleve_".$k."[$i]' id='prenom_eleve_".$k.$num_id."' value=\"".$eleve_prenom."\" />\n";
 
-				$mess[$k].="<textarea id=\"n".$k.$num_id."\" class='wrap' onKeyDown=\"clavier(this.id,event);\" name=\"no_anti_inject_app_eleve_".$k."_".$i."\" rows='2' cols='100' onchange=\"changement()\" onBlur=\"ajaxAppreciations('".$eleve_login_t[$k]."', '".$id_groupe."', 'n".$k.$num_id."');";
+				$chaine_champs_input_login.="<input type='hidden' name='login_eleve_".$k."[$i]' id='login_eleve_".$k.$num_id."' value=\"".$eleve_login_t[$k]."\" />\n";
+
+				//$mess[$k].="<textarea id=\"n".$k.$num_id."\" class='wrap' onKeyDown=\"clavier(this.id,event);\" name=\"no_anti_inject_app_eleve_".$k."_".$i."\" rows='2' cols='100' onchange=\"changement()\" onBlur=\"ajaxAppreciations('".$eleve_login_t[$k]."', '".$id_groupe."', 'n".$k.$num_id."');";
+				$mess[$k].="<textarea id=\"n".$k.$num_id."\" class='wrap' onKeyDown=\"clavier(this.id,event);\" name=\"no_anti_inject_app_eleve_".$k."_".$i."\" rows='2' cols='100' onchange=\"changement();";
+				$mess[$k].="ajaxAppreciations('".$eleve_login_t[$k]."', '".$id_groupe."', 'n".$k.$num_id."');";
 				$mess[$k].="ajaxVerifAppreciations('".$eleve_login_t[$k]."', '".$id_groupe."', 'n".$k.$num_id."');";
 				$chaine_test_vocabulaire.="ajaxVerifAppreciations('".$eleve_login_t[$k]."', '".$id_groupe."', 'n".$k.$num_id."');\n";
 				$mess[$k].="\"";
@@ -1603,6 +1610,10 @@ function affiche_div_correction(eleve_login,num_periode,num_eleve) {
 	document.getElementById('span_correction_periode').innerHTML=num_periode;
 	document.getElementById('correction_app_eleve').value=document.getElementById('reserve_correction_app_eleve_'+num_eleve).value;
 	afficher_div('div_correction','y',-100,20)
+
+	if(change!='no') {
+		alert(\"Des modifications n'ont pas été enregistrées. Si vous validez la proposition de correction sans d'abord enregistrer, les modifications seront perdues.\")
+	}
 }
 
 /*
@@ -1638,6 +1649,7 @@ function addslashes (str) {
 // Les champs INPUT des prénoms sont insérés hors du formulaire principal pour éviter d'envoyer trop de champs lors du submit (problèmes avec suhosin qui limite le nombre de champs pouvant être POSTés)
 echo "<form enctype=\"multipart/form-data\" action=\"saisie_appreciations.php\" name='form2' method=\"post\">\n";
 echo $chaine_champs_input_prenom;
+echo $chaine_champs_input_login;
 echo "</form>\n";
 // ==============================================================
 
@@ -1652,6 +1664,8 @@ if ($restauration == "oui" OR $restauration == "non") {
 echo "<script type='text/javascript'>
 cpt=".$tmp_timeout.";
 compte_a_rebours='y';
+
+id_groupe=$id_groupe;
 
 function decompte(cpt){
 	if(compte_a_rebours=='y'){

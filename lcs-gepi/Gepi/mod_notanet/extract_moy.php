@@ -1,5 +1,5 @@
 <?php
-/* $Id: extract_moy.php 6730 2011-03-30 09:43:45Z crob $ */
+/* $Id: extract_moy.php 7078 2011-05-31 17:32:11Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -165,6 +165,7 @@ else {
 	//=========================================================
 
 	if(!isset($_POST['enregistrer_extract_moy'])) {
+		$compteur_champs_notes=0;
 
 		if($extract_mode=="tous") {
 
@@ -525,7 +526,8 @@ else {
 												}
 												else{
 													// Le test ci-dessous convient parce que la première matière n'est pas optionnelle...
-													if(($j!=101)||($k!=0)){
+													//if(($j!=101)||($k!=0)){
+													if(($j!=$indice_premiere_matiere)||($k!=0)){
 														echo " - ";
 													}
 													// On affiche la correspondance AGL1=12.0,...
@@ -535,7 +537,8 @@ else {
 											}
 											else{
 												// Le test ci-dessous convient parce que la première matière n'est pas optionnelle...
-												if(($j!=101)||($k!=0)){
+												//if(($j!=101)||($k!=0)){
+												if(($j!=$indice_premiere_matiere)||($k!=0)){
 													echo " - ";
 												}
 												echo "<span style='color:purple;'>".$id_matiere[$j][$k]."=".$moy[$j][$k][$m]."</span>";
@@ -591,7 +594,8 @@ else {
 											}
 											else{
 												// Le test ci-dessous convient parce que la première matière n'est pas optionnelle...
-												if(($j!=101)||($k!=0)){
+												//if(($j!=101)||($k!=0)){
+												if(($j!=$indice_premiere_matiere)||($k!=0)){
 													echo " - ";
 												}
 												// On affiche la correspondance AGL1=12.0,...
@@ -601,7 +605,8 @@ else {
 										}
 										else{
 											// Le test ci-dessous convient parce que la première matière n'est pas optionnelle...
-											if(($j!=101)||($k!=0)){
+											//if(($j!=101)||($k!=0)){
+											if(($j!=$indice_premiere_matiere)||($k!=0)){
 												echo " - ";
 											}
 											echo "<span style='color:purple;'>".$tabmatieres[$j][0]."=".$moy[$j][$k][$m]."</span>";
@@ -622,7 +627,8 @@ else {
 								//if(isset($tabmatieres[$j][0])){
 								//if(isset($statut_matiere[$j])){
 								if(isset($moy_NOTANET[$j])) {
-									if(($tabmatieres[$j][0]!='')&&($statut_matiere[$j]!='non dispensee dans l etablissement')&&($moy_NOTANET[$j]!="")) {
+									//if(($tabmatieres[$j][0]!='')&&($statut_matiere[$j]!='non dispensee dans l etablissement')&&($moy_NOTANET[$j]!="")) {
+									if(($tabmatieres[$j][0]!='')&&($statut_matiere[$j]!='non dispensee dans l etablissement')&&("$moy_NOTANET[$j]"!="")) {
 										$ligne_NOTANET=$INE[$m]."|".sprintf("%03d",$j);
 										//$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($moy_NOTANET[$j])."|";
 
@@ -631,7 +637,8 @@ else {
 										if($tabmatieres[$j]['socle']=='n') {
 											switch($tabmatieres[$j][-1]){
 												case "POINTS":
-													if(($moy_NOTANET[$j]!="AB")&&($moy_NOTANET[$j]!="DI")&&($moy_NOTANET[$j]!="NN")){
+													//if(($moy_NOTANET[$j]!="AB")&&($moy_NOTANET[$j]!="DI")&&($moy_NOTANET[$j]!="NN")){
+													if(("$moy_NOTANET[$j]"!="AB")&&("$moy_NOTANET[$j]"!="DI")&&("$moy_NOTANET[$j]"!="NN")){
 														$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($moy_NOTANET[$j]*$tabmatieres[$j][-2])."|";
 														//$TOT=$TOT+round($moy_NOTANET[$j]*2)/2;
 														$TOT=$TOT+round($moy_NOTANET[$j]*$tabmatieres[$j][-2]*2)/2;
@@ -643,24 +650,38 @@ else {
 													}
 													break;
 												case "PTSUP":
-													$ptsup=$moy_NOTANET[$j]-10;
-													if($ptsup>0){
-														//$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($ptsup)."|";
-														$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($ptsup*$tabmatieres[$j][-2])."|";
-														//$TOT=$TOT+$ptsup;
-														//$TOT=$TOT+round($ptsup*2)/2;
-														//$note_notanet=formate_note_notanet($ptsup);
-														$TOT=$TOT+round($ptsup*$tabmatieres[$j][-2]*2)/2;
-														$note_notanet=formate_note_notanet($ptsup*$tabmatieres[$j][-2]);
+													//if(($moy_NOTANET[$j]!="AB")&&($moy_NOTANET[$j]!="DI")&&($moy_NOTANET[$j]!="NN")){
+													if(("$moy_NOTANET[$j]"!="AB")&&("$moy_NOTANET[$j]"!="DI")&&("$moy_NOTANET[$j]"!="NN")){
+														$ptsup=$moy_NOTANET[$j]-10;
+														if($ptsup>0){
+															//$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($ptsup)."|";
+															$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($ptsup*$tabmatieres[$j][-2])."|";
+															//$TOT=$TOT+$ptsup;
+															//$TOT=$TOT+round($ptsup*2)/2;
+															//$note_notanet=formate_note_notanet($ptsup);
+															$TOT=$TOT+round($ptsup*$tabmatieres[$j][-2]*2)/2;
+															$note_notanet=formate_note_notanet($ptsup*$tabmatieres[$j][-2]);
+														}
+														else{
+															$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet(0)."|";
+															$note_notanet=formate_note_notanet(0);
+														}
 													}
-													else{
-														$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet(0)."|";
-														$note_notanet=formate_note_notanet(0);
+													else {
+														$ligne_NOTANET=$ligne_NOTANET."|".$moy_NOTANET[$j]."|";
+														$note_notanet=$moy_NOTANET[$j];
 													}
 													break;
 												case "NOTNONCA":
-													$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($moy_NOTANET[$j])."|";
-													$note_notanet=formate_note_notanet($moy_NOTANET[$j]);
+													//if(($moy_NOTANET[$j]!="AB")&&($moy_NOTANET[$j]!="DI")&&($moy_NOTANET[$j]!="NN")){
+													if(("$moy_NOTANET[$j]"!="AB")&&("$moy_NOTANET[$j]"!="DI")&&("$moy_NOTANET[$j]"!="NN")){
+														$ligne_NOTANET=$ligne_NOTANET."|".formate_note_notanet($moy_NOTANET[$j])."|";
+														$note_notanet=formate_note_notanet($moy_NOTANET[$j]);
+													}
+													else {
+														$ligne_NOTANET=$ligne_NOTANET."|".$moy_NOTANET[$j]."|";
+														$note_notanet=$moy_NOTANET[$j];
+													}
 													break;
 											}
 										}
@@ -711,6 +732,24 @@ else {
 									}
 								}
 							}
+
+							// Dans le cas brevet PRO, il ne faut retenir qu'une seule des deux matières 103 et 104
+							if(($extract_mode==2)||($extract_mode==3)) {
+								$num_matiere_LV1=103;
+								$num_matiere_ScPhy=104;
+								if(("$moy_NOTANET[$num_matiere_LV1]"!="AB")&&("$moy_NOTANET[$num_matiere_LV1]"!="DI")&&("$moy_NOTANET[$num_matiere_LV1]"!="NN")){
+									if(("$moy_NOTANET[$num_matiere_ScPhy]"!="AB")&&("$moy_NOTANET[$num_matiere_ScPhy]"!="DI")&&("$moy_NOTANET[$num_matiere_ScPhy]"!="NN")) {
+										// Il ne faut retenir qu'une seule des deux notes
+										if($moy_NOTANET[$num_matiere_ScPhy]>$moy_NOTANET[$num_matiere_LV1]) {
+											$TOT-=round($moy_NOTANET[$num_matiere_LV1]*$tabmatieres[$num_matiere_LV1][-2]*2)/2;
+										}
+										else {
+											$TOT-=round($moy_NOTANET[$num_matiere_ScPhy]*$tabmatieres[$num_matiere_ScPhy][-2]*2)/2;
+										}
+									}
+								}
+							}
+
 							echo colore_ligne_notanet($INE[$m]."|TOT|".sprintf("%02.2f",$TOT)."|")."<br />\n";
 							$tabnotanet[]=$INE[$m]."|TOT|".sprintf("%02.2f",$TOT)."|";
 

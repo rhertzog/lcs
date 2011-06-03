@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: generer_csv.php 6730 2011-03-30 09:43:45Z crob $
+* $Id: generer_csv.php 6914 2011-05-13 17:44:14Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -44,7 +44,7 @@ if (!checkAccess()) {
 check_token();
 
 $nom_fic = "notanet_".date('Y.m.d_H.i.s_').preg_replace("/ /","_",microtime()).".csv";
-
+/*
 $now = gmdate('D, d M Y H:i:s') . ' GMT';
 header('Content-Type: text/x-csv');
 header('Expires: ' . $now);
@@ -57,6 +57,8 @@ if (preg_match('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
 	header('Content-Disposition: attachment; filename="' . $nom_fic . '"');
 	header('Pragma: no-cache');
 }
+*/
+send_file_download_headers('text/x-csv',$nom_fic);
 
 
 //header('Content-Type: application/octetstream');

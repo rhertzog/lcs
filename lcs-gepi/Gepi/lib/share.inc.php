@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: share.inc.php 6858 2011-05-02 14:41:07Z crob $
+ * $Id: share.inc.php 7037 2011-05-28 09:20:21Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
@@ -178,7 +178,8 @@ function envoi_mail($sujet, $message, $destinataire, $ajout_headers='') {
 
 	if($gepiPrefixeSujetMail!='') {$gepiPrefixeSujetMail.=" ";}
 
-	if($ajout_headers!='') {$ajout_headers="\r\n".$ajout_headers;}
+	// Si on ajoute un retour à la ligne de plus, l'ajout_headers est mis dans le corps du message
+	//if($ajout_headers!='') {$ajout_headers="\r\n".$ajout_headers;}
 
   $subject = $gepiPrefixeSujetMail."GEPI : $sujet";
   $subject = "=?ISO-8859-1?B?".base64_encode($subject)."?=\r\n";
@@ -4177,14 +4178,7 @@ function mail_connexion() {
 			$message .= "(*) Vous ou une personne tentant d'usurper votre identité.\n";
 
 			// On envoie le mail
-			/*
-			// getSettingValue("gepiAdminAdress")
-			$envoi = mail($lig_user->email,
-				"GEPI : Connexion $date",
-				$message,
-			"From: Mail automatique Gepi\r\n"."X-Mailer: PHP/" . phpversion());
 			//fdebug_mail_connexion("\$message=$message\n====================\n");
-			*/
 			$destinataire=$lig_user->email;
 			$sujet="GEPI : Connexion $date";
 			envoi_mail($sujet, $message, $destinataire);
@@ -4253,15 +4247,7 @@ function mail_alerte($sujet,$texte,$informer_admin='n') {
 		}
 
 		// On envoie le mail
-		/*
-		// getSettingValue("gepiAdminAdress")
-		$envoi = mail($lig_user->email,
-			"GEPI : $sujet $date",
-			$message,
-		"From: Mail automatique Gepi\r\n".$ajout."X-Mailer: PHP/" . phpversion());
 		//fdebug_mail_connexion("\$message=$message\n====================\n");
-		*/
-
 		$destinataire=$lig_user->email;
 		$sujet="GEPI : $sujet $date";
 		envoi_mail($sujet, $message, $destinataire, $ajout);

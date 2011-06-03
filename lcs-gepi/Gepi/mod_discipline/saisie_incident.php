@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: saisie_incident.php 6772 2011-04-11 11:09:33Z crob $
+ * $Id: saisie_incident.php 7037 2011-05-28 09:20:21Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -883,21 +883,14 @@ if($etat_incident!='clos') {
       
 								// On envoie le mail
 								$envoi = envoi_mail($subject, $texte_mail, $destinataires, $headers);
-
+/*
 echo "<pre>
 envoi_mail($subject, 
 $texte_mail, 
 $destinataires, 
 $headers);
 </pre>";
-
-							/*
-	$msg.="Envoi d'un mail:<br /><pre>mail($destinataires,
-								//$gepiPrefixeSujetMail.\"GEPI : Incident num $id_incident\",
-								$gepiPrefixeSujetMail.\"[GEPI][Incident n°$id_incident]\".$info_classe_prot.$liste_protagonistes_responsables,
-								$texte_mail,
-								\"From: Mail automatique Gepi\r\n\".$header_mail.\"X-Mailer: PHP/\" . phpversion()</pre>";
-							*/
+*/
 							}
 						}
 					}
