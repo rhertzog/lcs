@@ -106,6 +106,14 @@ $tab_select_cases_size[] = array('valeur'=>13 , 'texte'=>'13 mm');
 $tab_select_cases_size[] = array('valeur'=>14 , 'texte'=>'14 mm');
 $tab_select_cases_size[] = array('valeur'=>15 , 'texte'=>'15 mm');
 
+$tab_select_colonne_vide   = array();
+$tab_select_colonne_vide[] = array('valeur'=>0   , 'texte'=>'sans colonne vide supplémentaire');
+$tab_select_colonne_vide[] = array('valeur'=>30  , 'texte'=>'avec une colonne vide de largeur 1cm');
+$tab_select_colonne_vide[] = array('valeur'=>30  , 'texte'=>'avec une colonne vide de largeur 3cm');
+$tab_select_colonne_vide[] = array('valeur'=>50  , 'texte'=>'avec une colonne vide de largeur 5cm');
+$tab_select_colonne_vide[] = array('valeur'=>70  , 'texte'=>'avec une colonne vide de largeur 7cm');
+$tab_select_colonne_vide[] = array('valeur'=>90  , 'texte'=>'avec une colonne vide de largeur 9cm');
+
 $tab_select_remplissage   = array();
 $tab_select_remplissage[] = array('valeur'=>'vide'  , 'texte'=>'sans indication des notes antérieures');
 $tab_select_remplissage[] = array('valeur'=>'plein' , 'texte'=>'avec les notes des dernières évaluations');
@@ -128,26 +136,30 @@ $tab_select_cart_detail[] = array('valeur'=>'minimal' , 'texte'=>'cartouche mini
 
 function load_cookie_select($page)
 {
+	// Initialisation du tableau retourné au cas où le cookie n'existerait pas ou au cas ou des informations manquerait dans le cookie (ajout ultérieur d'une fonctionnalité)
+	switch($page)
+	{
+		case 'releve_synthese' :
+			$tab_return = array( 'couleur'=>'oui' , 'legende'=>'oui' );
+			break;
+		case 'releve_items' :
+			$tab_return = array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'legende'=>'oui' , 'marge_min'=>5 , 'cases_nb'=>5 , 'cases_largeur'=>5 );
+				break;
+		case 'grille_referentiel' :
+			$tab_return = array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'legende'=>'oui' , 'marge_min'=>5 , 'cases_nb'=>3 , 'cases_largeur'=>5 , 'colonne_vide'=>0 );
+			break;
+		case 'cartouche' :
+			$tab_return = array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'marge_min'=>5 , 'cart_contenu'=>'AVEC_nom_SANS_result' , 'cart_detail'=>'complet' );
+			break;
+	}
+	// Récupération du contenu du cookie
 	$filename = './__tmp/cookie/etabl'.$_SESSION['BASE'].'_user'.$_SESSION['USER_ID'].'_'.$page.'.txt';
 	if(is_file($filename))
 	{
 		$contenu = file_get_contents($filename);
-		return @unserialize($contenu);
+		$tab_return = array_merge( $tab_return, @unserialize($contenu) );
 	}
-	else
-	{
-		switch($page)
-		{
-			case 'releve_synthese' :
-				return array( 'couleur'=>'oui' , 'legende'=>'oui' );
-			case 'releve_items' :
-				return array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'legende'=>'oui' , 'marge_min'=>5 , 'cases_nb'=>5 , 'cases_largeur'=>5 );
-			case 'grille_referentiel' :
-				return array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'legende'=>'oui' , 'marge_min'=>5 , 'cases_nb'=>3 , 'cases_largeur'=>5 );
-			case 'cartouche' :
-				return array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'marge_min'=>5 , 'cart_contenu'=>'AVEC_nom_SANS_result' , 'cart_detail'=>'complet' );
-		}
-	}
+	return $tab_return;
 }
 
 /**
@@ -163,16 +175,19 @@ function load_cookie_select($page)
 	{
 		case 'releve_synthese' :
 			global $couleur,$legende;
-			$tab_cookie = array('couleur'=>$couleur,'legende'=>$legende);
+			$tab_cookie = compact('couleur','legende');
 			break;
 		case 'releve_items' :
-		case 'grille_referentiel' :
 			global $orientation,$couleur,$legende,$marge_min,$cases_nb,$cases_largeur;
-			$tab_cookie = array('orientation'=>$orientation,'couleur'=>$couleur,'legende'=>$legende,'marge_min'=>$marge_min,'cases_nb'=>$cases_nb,'cases_largeur'=>$cases_largeur);
+			$tab_cookie = compact('orientation','couleur','legende','marge_min','cases_nb','cases_largeur');
 			break;
-			case 'cartouche' :
+		case 'grille_referentiel' :
+			global $orientation,$couleur,$legende,$marge_min,$cases_nb,$cases_largeur,$colonne_vide;
+			$tab_cookie = compact('orientation','couleur','legende','marge_min','cases_nb','cases_largeur','colonne_vide');
+			break;
+		case 'cartouche' :
 			global $orientation,$couleur,$legende,$marge_min,$contenu,$detail;
-			$tab_cookie = array('orientation'=>$orientation,'couleur'=>$couleur,'legende'=>$legende,'marge_min'=>$marge_min,'cart_contenu'=>$contenu,'cart_detail'=>$detail);
+			$tab_cookie = compact('orientation','couleur','legende','marge_min','cart_contenu','cart_detail');
 			break;
 	}
 	/*

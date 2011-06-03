@@ -227,15 +227,16 @@ function _endpage()
 	private $eleve_nom    = '';
 	private $eleve_prenom = '';
 	// Définition de qqs variables supplémentaires
-	private $cases_nb          = 0;
-	private $cases_largeur     = 0;
-	private $cases_hauteur     = 0;
-	private $lignes_hauteur    = 0;
-	private $lignes_nb         = 0;
-	private $reference_largeur = 0;
-	private $intitule_largeur  = 0;
-	private $synthese_largeur  = 0;
-	private $etiquette_hauteur = 0;
+	private $cases_nb             = 0;
+	private $cases_largeur        = 0;
+	private $cases_hauteur        = 0;
+	private $lignes_hauteur       = 0;
+	private $lignes_nb            = 0;
+	private $reference_largeur    = 0;
+	private $intitule_largeur     = 0;
+	private $synthese_largeur     = 0;
+	private $etiquette_hauteur    = 0;
+	private $colonne_vide_largeur = 0;
 
 	private $pilier_largeur      = 0;
 	private $section_largeur     = 0;
@@ -560,12 +561,44 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 	}
 
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//	Méthode pour tester si un intitulé rentre dans une case sur une seule ligne (sinon => 2 lignes, pas prévu plus)
+	//	Méthode pour tester si un intitulé rentre dans une case sur une seule ligne (sinon => 2 lignes, pas prévu plus) [méthode publique car appelée depuis professeur_eval_*.ajax.php]
+	//	Méthode pour afficher un texte sur 1 ou 2 lignes maxi si pas la place.
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public function test_pas_trop_long($texte,$taille_police,$longueur_cellule)
 	{
 		return (mb_strlen($texte)*$taille_police*0.15 < $longueur_cellule) ? true : false ;
+	}
+
+	private function afficher_texte_sur_2lignes_maxi($texte,$taille_police,$longueur_cellule,$hauteur_cellule,$bordure,$br,$alignement,$remplissage)
+	{
+		if($this->test_pas_trop_long($texte,$taille_police,$longueur_cellule))
+		{
+			$this->Cell($longueur_cellule , $hauteur_cellule , pdf($texte) , $bordure , $br , $alignement , $remplissage , '');
+		}
+		elseif($this->test_pas_trop_long($texte,$taille_police*0.9,$longueur_cellule))
+		{
+			$this->SetFont('Arial' , '' , $taille_police*0.9);
+			$this->Cell($longueur_cellule , $hauteur_cellule , pdf($texte) , $bordure , $br , $alignement , $remplissage , '');
+			$this->SetFont('Arial' , '' , $taille_police);
+		}
+		elseif($this->test_pas_trop_long($texte,$taille_police*0.8,$longueur_cellule))
+		{
+			$this->SetFont('Arial' , '' , $taille_police*0.8);
+			$this->Cell($longueur_cellule , $hauteur_cellule , pdf($texte) , $bordure , $br , $alignement , $remplissage , '');
+			$this->SetFont('Arial' , '' , $taille_police);
+		}
+		else
+		{
+			$abscisse = $this->GetX();
+			$ordonnee = $this->GetY();
+			$demihauteur = $hauteur_cellule *0.48 ;
+			$this->SetFont('Arial' , '' , $taille_police * 0.8);
+			$this->MultiCell($longueur_cellule , $demihauteur , pdf($texte) , 0 , $alignement , $remplissage );
+			$this->SetFont('Arial' , '' , $taille_police);
+			$this->SetXY($abscisse , $ordonnee);
+			$this->Cell($longueur_cellule , $hauteur_cellule , '' , $bordure , $br , '' , false , '');
+		}
 	}
 
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -832,19 +865,7 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 		$this->SetFont('Arial' , '' , $this->taille_police*0.8);
 		$this->Cell($this->reference_largeur , $this->cases_hauteur , pdf($ref_suite) , 1 , 0 , 'C' , true , '');
 		$this->SetFont('Arial' , '' , $this->taille_police);
-		if($this->test_pas_trop_long($item_texte,8,$this->intitule_largeur))
-		{
-			$this->Cell($this->intitule_largeur , $this->cases_hauteur , pdf($item_texte) , 1 , 0 , 'L' , false , '');
-		}
-		else
-		{
-			$abscisse = $this->GetX();
-			$ordonnee = $this->GetY();
-			$demihauteur = $this->cases_hauteur / 2 ;
-			$this->MultiCell($this->intitule_largeur , $demihauteur , pdf($item_texte) , 0 , 'L' , false );
-			$this->SetXY($abscisse , $ordonnee);
-			$this->Cell($this->intitule_largeur , $this->cases_hauteur , '' , 1 , 0 , 'L' , false , '');
-		}
+		$this->afficher_texte_sur_2lignes_maxi( $item_texte , 8 , $this->intitule_largeur , $this->cases_hauteur , $bordure=1 , $br=0 , $alignement='L' , $remplissage=false );
 		$this->choisir_couleur_fond('blanc');
 	}
 
@@ -874,7 +895,7 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 	//	grille_referentiel_item()
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public function grille_referentiel_initialiser($cases_nb,$cases_largeur,$lignes_nb)
+	public function grille_referentiel_initialiser($cases_nb,$cases_largeur,$lignes_nb,$colonne_vide)
 	{
 		// On calcule la hauteur de la ligne et la taille de la police pour tout faire rentrer sur une page si possible, un minimum de pages sinon
 		$hauteur_dispo_par_page = $this->page_hauteur - $this->marge_haut - $this->marge_bas ;
@@ -900,8 +921,9 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 		$this->cases_nb          = $cases_nb;
 		$this->cases_largeur     = $cases_largeur;
 		$this->cases_hauteur     = $this->lignes_hauteur;
+		$this->colonne_vide_largeur = $colonne_vide;
 		$this->reference_largeur = 10;
-		$this->intitule_largeur  = $this->page_largeur - $this->marge_gauche - $this->marge_droit - $this->reference_largeur - ($this->cases_nb * $this->cases_largeur);
+		$this->intitule_largeur  = $this->page_largeur - $this->marge_gauche - $this->marge_droit - $this->reference_largeur - ($this->cases_nb * $this->cases_largeur) - $this->colonne_vide_largeur ;
 		$this->SetMargins($this->marge_gauche , $this->marge_haut , $this->marge_droit);
 		$this->SetAutoPageBreak(false);
 		$this->calculer_dimensions_images($this->cases_largeur,$this->cases_hauteur);
@@ -960,6 +982,15 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 		$this->choisir_couleur_fond('gris_moyen');
 		$this->Cell($this->reference_largeur , $this->cases_hauteur , pdf($theme_ref) , 1 , 0 , 'C' , true , '');
 		$this->Cell($this->intitule_largeur , $this->cases_hauteur , pdf($theme_nom) , 1 , 1 , 'L' , true , '');
+		if($this->colonne_vide_largeur)
+		{
+			// Ajouter une case vide sur la hauteur du nombre d'items du thème
+			$abscisse = $this->GetX();
+			$ordonnee = $this->GetY();
+			$this->SetXY( $this->page_largeur - $this->marge_droit - $this->colonne_vide_largeur , $ordonnee );
+			$this->Cell($this->colonne_vide_largeur , $this->cases_hauteur * ($theme_nb_lignes-1) , '' , 1 , 0 , '' , false , '');
+			$this->SetXY( $abscisse , $ordonnee );
+		}
 		$this->SetFont('Arial' , '' , $this->taille_police);
 	}
 
@@ -967,19 +998,7 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 	{
 		$this->choisir_couleur_fond('gris_clair');
 		$this->Cell($this->reference_largeur , $this->cases_hauteur , pdf($item_ref) , 1 , 0 , 'C' , true , '');
-		if($this->test_pas_trop_long($item_texte,$this->taille_police,$this->intitule_largeur))
-		{
-			$this->Cell($this->intitule_largeur , $this->cases_hauteur , pdf($item_texte) , 1 , 0 , 'L' , false , '');
-		}
-		else
-		{
-			$abscisse = $this->GetX();
-			$ordonnee = $this->GetY();
-			$demihauteur = $this->cases_hauteur / 2 ;
-			$this->MultiCell($this->intitule_largeur , $demihauteur , pdf($item_texte) , 0 , 'L' , false );
-			$this->SetXY($abscisse , $ordonnee);
-			$this->Cell($this->intitule_largeur , $this->cases_hauteur , '' , 1 , 0 , 'L' , false , '');
-		}
+		$this->afficher_texte_sur_2lignes_maxi( $item_texte , $this->taille_police , $this->intitule_largeur , $this->cases_hauteur , $bordure=1 , $br=0 , $alignement='L' , $remplissage=false );
 		$this->choisir_couleur_fond('blanc');
 	}
 
@@ -1034,7 +1053,7 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 		$this->Cell(50 , $this->cases_hauteur , pdf($this->eleve_nom.' '.$this->eleve_prenom) , 0 , 2 , 'R' , false , '');
 	}
 
-	public function releve_socle_entete($palier_nom,$break,$eleve_id,$eleve_nom,$eleve_prenom)
+	public function releve_socle_entete($titre,$palier_nom,$break,$eleve_id,$eleve_nom,$eleve_prenom)
 	{
 		// On prend une nouvelle page PDF pour chaque élève en cas d'affichage d'un palier avec tous les piliers ; pour un seul pilier, on étudie la place restante... tout en forçant une nouvelle page pour le 1er élève
 		if( ($break==0) || ($this->GetY()==0) )
@@ -1058,7 +1077,7 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 		}
 		// Intitulé
 		$this->SetFont('Arial' , 'B' , $this->taille_police*1.5);
-		$this->Cell($this->page_largeur-$this->marge_droit-75 , $this->cases_hauteur , pdf('Détail de maîtrise du socle commun') , 0 , 2 , 'L' , false , '');
+		$this->Cell($this->page_largeur-$this->marge_droit-75 , $this->cases_hauteur , pdf($titre) , 0 , 2 , 'L' , false , '');
 		$this->Cell($this->page_largeur-$this->marge_droit-75 , $this->cases_hauteur , pdf($palier_nom) , 0 , 2 , 'L' , false , '');
 		// Nom / prénom
 		$this->eleve_id     = $eleve_id;
@@ -1067,7 +1086,7 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 		$this->releve_socle_identite();
 	}
 
-	public function releve_socle_pilier($pilier_nom,$pilier_nb_lignes,$test_affichage_Validation,$tab_pilier_validation)
+	public function releve_socle_pilier($pilier_nom,$pilier_nb_lignes,$test_affichage_Validation,$tab_pilier_validation,$drapeau_langue)
 	{
 		$this->SetXY($this->marge_gauche+$this->retrait_pourcentage , $this->GetY() + 0.5*$this->cases_hauteur);
 		$hauteur_requise = $this->cases_hauteur * $pilier_nb_lignes;
@@ -1086,6 +1105,10 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 		if($test_affichage_Validation)
 		{
 			$this->afficher_etat_validation('B',$tab_pilier_validation);
+		}
+		if($drapeau_langue)
+		{
+			$this->Image('./_img/drapeau/'.$drapeau_langue.'.gif',$this->GetX()+$this->pilier_largeur-$this->cases_hauteur-0.5,$this->GetY()-$this->cases_hauteur,$this->cases_hauteur,$this->cases_hauteur,'GIF');
 		}
 	}
 
@@ -1108,19 +1131,7 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 		$this->choisir_couleur_fond('gris_clair');
 		$this->SetFont('Arial' , '' , $this->taille_police);
 		$br = $test_affichage_Validation ? 0 : 1 ;
-		if($this->test_pas_trop_long($item_nom,$this->taille_police,$this->item_largeur))
-		{
-			$this->Cell($this->item_largeur , $this->cases_hauteur , pdf($item_nom) , 1 , $br , 'L' , true , '');
-		}
-		else
-		{
-			$abscisse = $this->GetX();
-			$ordonnee = $this->GetY();
-			$demihauteur = $this->cases_hauteur / 2 ;
-			$this->MultiCell($this->item_largeur , $demihauteur , pdf($item_nom) , 0 , 'L' , true );
-			$this->SetXY($abscisse , $ordonnee);
-			$this->Cell($this->item_largeur , $this->cases_hauteur , '' , 1 , $br , 'L' , false , '');
-		}
+		$this->afficher_texte_sur_2lignes_maxi( $item_nom , $this->taille_police , $this->item_largeur , $this->cases_hauteur , $bordure=1 , $br , $alignement='L' , $remplissage=true );
 		// Case validation
 		if($test_affichage_Validation)
 		{
@@ -1169,10 +1180,15 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 		$this->SetXY( $this->marge_gauche , $this->GetY()+$this->cases_hauteur+1 );
 	}
 
-	public function releve_synthese_socle_validation_eleve($eleve_id,$eleve_nom,$eleve_prenom,$tab_user_pilier,$tab_user_entree,$tab_pilier,$tab_socle)
+	public function releve_synthese_socle_validation_eleve($eleve_id,$eleve_nom,$eleve_prenom,$tab_user_pilier,$tab_user_entree,$tab_pilier,$tab_socle,$drapeau_langue)
 	{
 		$this->choisir_couleur_fond('gris_moyen');
 		$this->Cell($this->eleve_largeur , $this->cases_hauteur , pdf($eleve_nom.' '.$eleve_prenom) , 1 , 0 , 'L' , true , '');
+		if($drapeau_langue)
+		{
+			$taille_image = min($this->cases_hauteur,5);
+			$this->Image('./_img/drapeau/'.$drapeau_langue.'.gif',$this->GetX()-$taille_image-0.5,$this->GetY(),$taille_image,$taille_image,'GIF');
+		}
 		$demi_hauteur = $this->cases_hauteur / 2 ;
 		// - - - - -
 		// Indication des compétences validées
@@ -1205,12 +1221,17 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 		$this->SetXY( $this->marge_gauche , $this->GetY()+$demi_hauteur+1 );
 	}
 
-	public function releve_synthese_socle_pourcentage_eleve($eleve_id,$eleve_nom,$eleve_prenom,$tab_score_socle_eleve,$tab_socle)
+	public function releve_synthese_socle_pourcentage_eleve($eleve_id,$eleve_nom,$eleve_prenom,$tab_score_socle_eleve,$tab_socle,$drapeau_langue)
 	{
 		$this->pourcentage_largeur = $this->cases_largeur;
 		$this->choisir_couleur_fond('gris_moyen');
 		$this->SetFont('Arial' , '' , $this->taille_police);
 		$this->Cell($this->eleve_largeur , $this->cases_hauteur , pdf($eleve_nom.' '.$eleve_prenom) , 1 , 0 , 'L' , true , '');
+		if($drapeau_langue)
+		{
+			$taille_image = min($this->cases_hauteur,5);
+			$this->Image('./_img/drapeau/'.$drapeau_langue.'.gif',$this->GetX()-$taille_image-0.5,$this->GetY(),$taille_image,$taille_image,'GIF');
+		}
 		// - - - - -
 		// Indication des pourcentages
 		// - - - - -
@@ -1491,19 +1512,7 @@ function afficher_pourcentage_acquis($gras,$tab_infos,$detail)
 		$this->SetFont('Arial' , '' , 8);
 		$this->SetXY($memo_x , $memo_y);
 		$this->Cell($this->reference_largeur , $this->cases_hauteur , '' , 1 , 0 , 'C' , false , '');
-		if($this->test_pas_trop_long($item_intitule,8,$this->intitule_largeur))
-		{
-			$this->Cell($this->intitule_largeur , $this->cases_hauteur , pdf($item_intitule) , 1 , 0 , 'L' , false , '');
-		}
-		else
-		{
-			$abscisse = $this->GetX();
-			$ordonnee = $this->GetY();
-			$demihauteur = $this->cases_hauteur / 2 ;
-			$this->MultiCell($this->intitule_largeur , $demihauteur , pdf($item_intitule) , 0 , 'L' , false );
-			$this->SetXY($abscisse , $ordonnee);
-			$this->Cell($this->intitule_largeur , $this->cases_hauteur , '' , 1 , 0 , 'L' , false , '');
-		}
+		$this->afficher_texte_sur_2lignes_maxi( $item_intitule , 8 , $this->intitule_largeur , $this->cases_hauteur , $bordure=1 , $br=0 , $alignement='L' , $remplissage=false );
 		$this->afficher_note_lomer($note,$border=1,$br=1);
 	}
 
