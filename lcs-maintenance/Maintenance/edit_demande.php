@@ -23,6 +23,7 @@
         $OpenTimeStamp=$_POST['OpenTimeStamp'];
         $post=$_POST['post'];
 
+		//
         html();
 	list ($idpers,$uid)= isauth();
   	if ($idpers == "0") {
@@ -57,150 +58,116 @@
 						)
 				)
 		   ) {
-
-			// (1) Affichage form
 		?>
-<table WIDTH="100%" HEIGHT="210" class="tablenul" >
-<tr>
-<td ALIGN=CENTER HEIGHT="339"><form action="edit_demande.php?Rid=<?php echo $Rid ?>" METHOD="POST">
+<script>
+ 	$(document).ready(function(){
+		$('div.mnu>a').removeClass('active');
+ 		$('div.mnu>a.wait').addClass('active');
+ 	});
+ 	</script>
+ 
+ <form action="edit_demande.php?Rid=<?php echo $Rid ?>" method="POST">
 
 <?php
  if ( $post && ( empty($secteur) || empty($bat) || empty($salle) || empty($poste) || empty($se) || empty($texte) ) ) {
 ?>
-<table BORDER=0 WIDTH="100%" >
-	<tr>
-		<td WIDTH="20%" HEIGHT="2" BGCOLOR="#003366" class="tableau">
-			<center><b><u><font color="#FFFFFF">ATTENTION!</font></u></b></center>
-		</td>
-		<td WIDTH="80%" HEIGHT="2" class="tableau">
-			<i>Tous les champs marqu&eacute;s d'un ast&eacute;risque ' * ' doivent obligatoirement &ecirc;tre compl&eacute;t&eacute;s.</i>
-		</td>
-	</tr>
-</table>
+    <div class="tableintro divintro info tableau">
+            <img src="Style/img/exclamation.png" alt="Important" />
+            <i>Tous les champs marqu&eacute;s d'un ast&eacute;risque ' * ' doivent obligatoirement &ecirc;tre compl&eacute;t&eacute;s.</i>
+            <br class="cleaner" style="clear:both"/>
+    </div>
 <?php } ?>
+     <div class="tableau tableint">
+          <h3 class="subconfigsubtitle"><img src="Style/img/24/user.png" alt="" />&nbsp;Identification</h3>
+          
+          <div class="fieldcontainer">
+            Vos nom et pr&#233;nom:&nbsp;<?php echo "<b>".$user["fullname"]."</b>";?>&nbsp;
+          </div>
+      </div>
+      
+      <div id="divAjax">
+			<div id="loadingContainer">
+				<div id="loading">
+					Chargement...
+				</div>
+			</div>
+      <a name="localise"></a>
+      <div id="contentDiv">
+<div id="ajaxPreview"></div><!-- :: Pour tests - style="height:24px;background:#ffcc33;font-size:.8em;" -->
+</div>
 
-<table BORDER=0 WIDTH="100%" >
-	<tr>
-		<td COLSPAN="2" HEIGHT="2" class="titreParag">Identification</td>
-	</tr>
-	<tr>
-		<td WIDTH="100%" class="tableau">Vos nom et pr&#233;nom:&nbsp;<?php echo "<b>".$user["fullname"]."</b>";?>&nbsp;</td>
-	</tr>
-</table>
+     <div class="tableau tableint">
+          <h3 class="subconfigsubtitle"><img src="Style/img/24/computer.png" alt="" />&nbsp;Ordinateur</h3>
+          <div class="fieldcontainer">
+<table style="width:940px">
 
-<table BORDER=0 WIDTH="100%" >
-	<tr>
-		<td WIDTH="45%" HEIGHT="8" class="titreParag">Localisation</td>
-		<td WIDTH="24%" HEIGHT="8" class="tableau">&nbsp;</td>
-		<td WIDTH="31%" HEIGHT="8" class="tableau">&nbsp;</td>
-	</tr>
-	<tr>
-	<td WIDTH="45%" class="tableau">
-		Secteur d'enseignement&nbsp;
-		<select name="secteur">
-			<option><?php echo $Sector ?></option>
-			<option>G&eacute;n&eacute;ral</option>
-			<option>Industriel</option>
-			<option>Tertiaire</option>
-			<option>Administratif</option>
-		</select>*&nbsp;
-	</td>
-	<td WIDTH="24%" class="tableau">
-		B&acirc;timent :&nbsp;
-		<select name="bat">
-			<option><?php echo $Building ?></option>
-			<option>A</option>
-			<option>B</option>
-			<option>B'</option>
-			<option>C</option>
-			<option>D</option>
-			<option>E</option>
-		</select>*&nbsp;
-	</td>
-	<td WIDTH="31%" class="tableau">
-		Salle :&nbsp;<input type="text" name="salle" value="<?php echo $Room?>" size="3" maxlength="3">*
-		<i><font size=-1>(3 chiffres)</font></i>
-	</td>
-</tr>
-</table>
+<tr>
+<td class="tableau" style="width:30%"><label for="marque">Marque&nbsp;</label><input type="text" name="marque" size="15" id="marque" value="<?php echo $Mark ?>"/></td>
 
-<table BORDER=0 WIDTH="100%" >
-	<tr>
-		<td WIDTH="27%" class="titreParag">Ordinateur</td>
-		<td COLSPAN="2" class="tableau">&nbsp;</td>
-	</tr>
-	<tr>
-		<td WIDTH="27%" class="tableau">
-			Marque&nbsp;<input type="text" name="marque" value="<?php echo $Mark ?>"size="15">
-		</td>
-		<td WIDTH="23%" class="tableau">
-			N&deg; de poste&nbsp;<input type="text" name="poste" value="<?php echo $NumComp ?>" size="5" maxlength="5">*
-		</td>
-		<td WIDTH="50%" class="tableau">
-			SO<i><font size=-1>(Syst&egrave;me d'exploitation)</font></i>:&nbsp;
-			<select name="se">
-				<option><?php echo $Os ?></option></option>
-				<option>Windows 98 SE</option>
-				<option>Windows Mill&eacute;nium</option>
-				<option>Windows 2000</option>
-				<option>Windows XP</option>
-				<option>Windows 95</option>
-				<option>MAC OS X</option>
-				<option>Linux</option>
-				<option>Windows 3.1</option>
-				<option>DOS</option>
-			</select>
-		</td>
-	</tr>
-</table>
+<td class="tableau" style="width:30%"><label for="poste">N&deg; de poste&nbsp;</label><span>&nbsp;*&nbsp;</span><input type="text" name="poste" id="poste" size="5" maxlength="5" class="required" value="<?php echo $NumComp ?>" ></td>
 
-<table BORDER=0 WIDTH="100%" >
-	<tr>
-		<td COLSPAN="2" class="titreParag">Probl&egrave;me</td>
-	</tr>
-	<tr>
-		<td COLSPAN="2" HEIGHT="25" class="tableau">
-			Le probl&egrave;me constat&eacute; est un probl&egrave;me :&nbsp;
-			<select name="typpb">
-				<option><?php echo $Cat ?></option>
-				<option>Ne sait pas</option>
-				<option>Logiciel</option>
-				<option>Mat&eacute;riel</option>
-			</select>
-		</td>
-	</tr>
-	<tr>
-		<td VALIGN=TOP COLSPAN="2" HEIGHT="0" class="tableau">
-			Description du probl&egrave;me &nbsp;
-		</td>
-	</tr>
-	<tr>
-		<td VALIGN=TOP WIDTH="2%" HEIGHT="2" class="tableau">
-			<div align=right>*&nbsp;</div>
-		</td>
-		<td VALIGN=TOP WIDTH="100%" HEIGHT="2" class="tableau">
-  			<textarea name="texte" wrap="PHYSICAL" rows="6" cols="90"><?php echo $Content ?></textarea>
-		</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-	</tr>
-</table>
-<input type="hidden" value="<?php echo $user["email"] ?>" name="mail">
-<input type="hidden" value="<?php echo $Rid ?>" name="rid">
-<input type="hidden" value="<?php echo $OpenTimeStamp ?>" name="OpenTimeStamp">
-<input type="hidden" value="true" name="post">
-<table class='tablenul' BORDER=0 WIDTH="40%" >
-	<tr>
-		<td ALIGN=CENTER WIDTH="50%"><input type="submit" value="Soumettre" name="submit"></td>
-		<td WIDTH="50%"><input type="reset" value="Recommencer" name="reset"></td>
-	</tr>
-</table>
-
-<p></form>
+<td class="tableau">
+<label for="se">Syst&#232;me d'exploitation :&nbsp;</label>
+	<select name="se" id="se">
+		<option>Windows XP</option>
+		<option>Windows 2000</option>
+		<option>MAC OS X</option>
+		<option>Linux</option>
+		<option>Windows Vista</option>
+		<option>Windows 7</option>
+		<option>Windows 95</option>
+		<option>Windows 98 SE</option>
+		<option>Windows Mill&#233;nium</option>
+		<option>Windows 3.1</option>
+		<option>DOS</option>
+	</select>
 </td>
 </tr>
 </table>
+</div></div>
+
+     <div class="tableau tableint">
+          <h3 class="subconfigsubtitle"><img src="Style/img/24/bug_error.png" alt="" />&nbsp;Probl&egrave;me</h3>
+          <div class="fieldcontainer">
+<table>
+<tr>
+  <td class="tableau">
+    <label for="typpb">L'origine du probl&#232;me constat&#233; :&nbsp;</label>
+    </td>
+    <td>
+    <select name="typpb" id="typpb">
+      <option>Ne sait pas</option>
+      <option>Logiciel</option>
+      <option>Mat&#233;riel</option>
+    </select>
+  </td>
+</tr>
+
+<tr>
+<td VALIGN=TOP class="tableau"><div style="float:right"><span>&nbsp;*&nbsp;</span></div>
+<label for="texte">Description du probl&egrave;me:&nbsp;</label></td>
+<td VALIGN=TOP class="tableau">
+  	<textarea name="texte" id="texte" rows="6" cols="90"  class="required" ><?php echo $Content ?></textarea>
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+<div class="tableau tableint tablenul" style="text-align:center;">
+	<input type="hidden" value="<?php echo $user["email"] ?>" name="mail"/>
+	<input type="hidden" value="<?php echo $Rid ?>" name="rid"/>
+	<input type="hidden" value="<?php echo $OpenTimeStamp ?>" name="OpenTimeStamp"/>
+	<input type="hidden" value="true" name="post">
+    <input type="submit" value="Soumettre" name="submit" id="submitTopo" class="button"/>
+    <input type="button" value="Recommencer" name="reset" class="button"/>
+</div>
+
+</form>
+
+<div id="maintData">
+</div>
+
 		<?php
 		// (1) Fin Affichage form
 		} else {
@@ -224,7 +191,7 @@
 			mail_to ($MAILMAINT, $OwnerMail, $Subject, $Body, $OwnerMail);
 			// Reaffichage de la demande
 			$filter = "Acq='0' AND Rid='$Rid'";
-			Aff_feed_wait($mode,$filter);
+			Aff_feed_wait($mode,$filter,"desc");
 			Aff_bar_mode ("Votre modification &#233; &#233;t&#233; prise en compte !");
 		}
 	}
