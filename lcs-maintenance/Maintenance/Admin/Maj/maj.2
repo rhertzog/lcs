@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "Mise a jour du fichier de configuration";
+num=`sed -n '/\$authlinkmaint =/=' config.inc.php`
+sed -i "$num a\mysql_set_charset('utf8',\$authlinkmaint);" config.inc.php
