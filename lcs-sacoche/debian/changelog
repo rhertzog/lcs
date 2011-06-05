@@ -1,3 +1,9 @@
+lcs-sacoche (2.4.8.5) LCS; urgency=low
+
+  * update to version 2011-06-05b
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 04 Jun 2011 09:39:40 +0200
+
 lcs-sacoche (2.4.8.4) LCS; urgency=low
 
   * update to 2011-06-01c version
