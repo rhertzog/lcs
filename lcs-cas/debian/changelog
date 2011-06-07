@@ -1,3 +1,9 @@
+lcs-cas (2.4.8.1) Lcs; urgency=low
+
+  * Fix path error in logrotate 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 07 Jun 2011 17:59:12 +0200
+
 lcs-cas (2.4.8) Lcs; urgency=low
   * Change charset in documentation index.html 
   * Install or update with official rubycas-server V 0.7.999999.20100202
