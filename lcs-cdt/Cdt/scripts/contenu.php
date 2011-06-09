@@ -58,8 +58,8 @@ if (mysql_num_rows($result) >0) {
   mysql_free_result($result);
  //recherche articles + récents que n et -récents que n-1
  for ($index2 = 0; $index2 < count($der_seq); $index2++) {
-     if ($index2==0) $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib' AND date >= '".$der_seq[$index2]."'".$dlm1.$dlm2." order by date desc";
-     else $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib' AND date >= '".$der_seq[$index2]."' AND date < '".$prem_seq[$index2-1]."'".$dlm1.$dlm2." order by date desc";
+     if ($index2==0) $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib' AND date >= '".$prem_seq[$index2]."'".$dlm1.$dlm2." order by date desc";
+     else $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib' AND date >= '".$prem_seq[$index2]."' AND date < '".$prem_seq[$index2-1]."'".$dlm1.$dlm2." order by date desc";
     $result = @mysql_query ($rq) or die (mysql_error());
     if (mysql_num_rows($result) >0) {
          while ($row = mysql_fetch_array($result)) {
