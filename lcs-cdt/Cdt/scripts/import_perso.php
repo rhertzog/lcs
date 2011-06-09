@@ -121,13 +121,13 @@ if (isset($_POST['Valider']))
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data">
     <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <fieldset id="field7">
-<legend id="legende">Import de données</legend>
+<legend id="legende">Import de donn&#233;es</legend>
 
 <?php
 //affichage du formulaire
 if (!isset($_POST['Valider']))
 	{
-	echo ' <p>Ce formulaire vous permet d\'importer les données que vous avez pr&#233;c&#233;demment export&#233;es du cahier de textes d\'un autre établissement. </p>';
+	echo ' <p>Ce formulaire vous permet d\'importer les donn&#233;es que vous avez pr&#233;c&#233;demment export&#233;es du cahier de textes d\'un autre &#233;tablissement. </p>';
 	echo '<p>Vous pourrez les exploiter dans la partie <b>Archives personnelles </b> du  volet "Archives" </p>';
 	echo '<p></p>';
 	echo '<ol>';
