@@ -46,7 +46,7 @@ include_once("../Includes/fonctions.inc.php");
 			{//élaboration de la date limite a partir de la date selectionnée
 			if ($_SESSION['version']==">=432") setlocale(LC_TIME,"french");
 			else setlocale("LC_TIME","french");
-			$rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,date FROM cahiertxt".$an_arch."
+			$rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,date FROM cahiertxt".$ann_arch."
 			WHERE id_auteur=$cible  ORDER BY date asc";
 
 			// lancer la requête
@@ -58,9 +58,9 @@ include_once("../Includes/fonctions.inc.php");
 			echo '<table id="tb-cdt" cellpadding="1" cellspacing="2">';
 			while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 				{
-				  $textcours=stripslashes($ligne[1]);
+				  $textcours=utf8_encode(stripslashes($ligne[1]));
 				  //$textcours=$ligne[1];
-				  $textafaire=stripslashes($ligne[2]);
+				  $textafaire=utf8_encode(stripslashes($ligne[2]));
 				  //$day="1,0,0,12,1,2007";echo $day;
 				  $jour=LeJour(strToTime($ligne[5]));
 				  //debut

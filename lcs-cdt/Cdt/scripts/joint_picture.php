@@ -74,7 +74,7 @@ if (isset($_POST['Valider']))
 	if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep)) 
 		{
 		if (!is_dir("/home/".$_SESSION['login']."/public_html/".$sousrep))
-			{$mess1= "<h3 class='ko'>1. le nom indiqu&#233; ne correspond pas à un répertoire"."<br /></h3>";
+			{$mess1= "<h3 class='ko'>1. le nom indiqu&#233; ne correspond pas &agrave; un r&#233;pertoire"."<br /></h3>";
 			$pb=1;
 			}
 		else $pb=0;

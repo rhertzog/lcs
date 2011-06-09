@@ -139,14 +139,16 @@ if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
 	$rq="";
 	// Vérifier $matiere  et la débarrasser de tout antislash et tags possibles
 	if (strlen($_POST['matiere']) > 0)
-		{ 		$matiere  = addSlashes(strip_tags(stripslashes($_POST['matiere'])));}
+		{ 	
+			$matiR = mb_ereg_replace("&|[[:blank:]]","_",$_POST['matiere']);	
+			$matiere  = utf8_decode(addSlashes(strip_tags(stripslashes($matiR))));}
 		else
 			{ // Si aucun commentaire n'a été saisi
 			  $matiere = "";
 			}
 	// Vérifier $préfixe et la débarrasser de tout antislash et tags possibles
 	if (strlen($_POST['prefixe']) > 0)
-		{ 		$prefixe= addSlashes(strip_tags(stripslashes($_POST['prefixe'])));	}
+		{ 		$prefixe= utf8_decode(addSlashes(strip_tags(stripslashes($_POST['prefixe']))));	}
 		else
 			{ // Si aucun commentaire n'a été saisi
 			  $prefixe= "";
@@ -231,8 +233,8 @@ if (isset($_GET['modrub'])&& isset($_GET['num']))
 		{while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 		{
 		$val_classe=$enrg[1];
-		$val_matiere=$enrg[2];
-		$val_prefix=$enrg[3];
+		$val_matiere=utf8_encode($enrg[2]);
+		$val_prefix=utf8_encode($enrg[3]);
 		$val_edt=$enrg[4];
 		}}
 	} 
@@ -253,10 +255,10 @@ $loop=0;
 while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 	{
 	$clas[$loop]=$enrg[0]; //classe
-	$mat[$loop]=$enrg[1]; // matiere
+	$mat[$loop]=utf8_encode($enrg[1]); // matiere
 	$numero[$loop]=$enrg[2];//numéro de la rubrique
 	$prof[$loop]=$enrg[3]; // nom du prof
-	$pref[$loop]=$enrg[4]; //préfixe
+	$pref[$loop]=utf8_encode($enrg[4]); //préfixe
 	$edt[$loop]=$enrg[5];//edt
 	$loop++;
 	}
@@ -358,7 +360,7 @@ echo '<ul id="cfg-navlist-elv">';
 		{
 		if ($x==0) 
 			{
-			echo '<li><a href="config_ctxt.php?suppr=yes&amp;numong='.$numero[$x].'" title="Supprimer cet onglet">'.$mat[$x].' ( '.$clas[$x].' ) <br />'.$pref[$x].'&nbsp;'.$prof[$x].'</a></li>';
+			echo '<li><a href="config_ctxt.php?suppr=yes&amp;numong='.$numero[$x].'" title="Supprimer cet onglet">'.htmlentities($mat[$x]).' ( '.$clas[$x].' )<br />'.$pref[$x].'&nbsp;'.$prof[$x].'</a></li>';
 			}
 			else 
 			{

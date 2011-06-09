@@ -43,7 +43,7 @@ if ( mysql_num_rows($result)>0)
 	while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 		{
 		$clas[$loop]=$enrg[0];
-		$mat[$loop]=$enrg[1];
+		$mat[$loop]=utf8_encode($enrg[1]);
 		$numero[$loop]=$enrg[2];
 		if ($numero[$loop]==$_GET['rubrique'] || $numero[$loop]==$_POST['numongl'] ) $ind=$loop;
 		$loop++;
@@ -168,9 +168,9 @@ for ($loop=0; $loop < count ($clas); $loop++)
 	while ($row = mysql_fetch_object($result))
 		{
 		$IdSeq[$j]=$row->id_seq;
-		$TitreSeq[$j]=$row->titre;
-		$TitreCourSeq[$j]=$row->titrecourt;
-		$ContenuSeq[$j]=$row->contenu;
+		$TitreSeq[$j]=utf8_encode($row->titre);
+		$TitreCourSeq[$j]=utf8_encode($row->titrecourt);
+		$ContenuSeq[$j]=utf8_encode($row->contenu);
 		$OrdreSeq[$j]=$row->ordre;
 		$j++;
 		} 

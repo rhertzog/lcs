@@ -166,7 +166,7 @@ $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 $loop=0;
 while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 	{$clas[$loop]=$enrg[0];
-	$mat[$loop]=$enrg[1];
+	$mat[$loop]=utf8_encode($enrg[1]);
 	$numero[$loop]=$enrg[2];
 	$loop++;
 	}
@@ -223,7 +223,8 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
   {
   $textcours=stripslashes($ligne[1]);
   $textafaire=stripslashes($ligne[2]);
-
+  $textco=utf8_encode(stripslashes($ligne[1]));
+  $textafa=utf8_encode(stripslashes($ligne[2]));
 
 if ($ligne[1]!="") {
 	   echo '<tbody><tr><th colspan="2"></th></tr></tbody>';
@@ -232,11 +233,11 @@ if ($ligne[1]!="") {
 	  //affichage de la seance
 	  echo '<td class="seance">S&eacute;ance du <br/>'.$jour.'&nbsp;'.$ligne[0].'<br /> </td>';
 	  echo '<td class="contenu">';
-	  echo $textcours.'</td></tr>';
+	  echo $textco.'</td></tr>';
 	  //affichage, s'il existe, du travail a effectuer
 	  if ($ligne[2]!="") {
 	  echo '<tr><td class="afaire">A faire pour le :<br/>'.$ligne[3].'</td><td class="contenu">';
-	  echo $textafaire.'</td></tr>';
+	  echo $textafa.'</td></tr>';
 	  }
 	  //fin
 
@@ -261,7 +262,7 @@ if ($ligne[1]!="") {
 	  if ($ligne[2]!="") {
 	  echo '<br/>Pour le :&nbsp;'.$ligne[3].'</td>';
 	  echo '<td class="contenu">';
-	  echo $textafaire.'</td></tr>';
+	  echo $textafa.'</td></tr>';
 	  }
 	  //fin
 

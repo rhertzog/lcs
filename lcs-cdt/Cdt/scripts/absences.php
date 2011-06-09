@@ -132,7 +132,8 @@ if (isset($_POST['cren']))
 	$tab_cren=array();
 
 if (isset($_POST['Valider'])) 
-	{	
+	{
+	$crd="";	
 	//tableau des absences et retards nouveaux creneaux (checkbox) 
 	if (!isset($_POST['abs_x'])) $tab_absx=array(); else $tab_absx=$_POST['abs_x'];
 	if (!isset($_POST['ret_x'])) $tab_retx=array(); else $tab_retx=$_POST['ret_x'];
@@ -161,7 +162,7 @@ if (isset($_POST['Valider']))
 			if (get_magic_quotes_gpc())
 			    {
 				$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-				$mot_x = $oMyFilter->process($_POST['motif_x'][$uidpot]);
+				$mot_x = $oMyFilter->process(utf8_decode($_POST['motif_x'][$uidpot]));
 				}
 			else
 				{
@@ -181,7 +182,7 @@ if (isset($_POST['Valider']))
 			if (get_magic_quotes_gpc())
 			    {
 				$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-				$mot_x = $oMyFilter->process($_POST['motif_x'][$uidpot]);
+				$mot_x = $oMyFilter->process(utf8_decode($_POST['motif_x'][$uidpot]));
 				}
 			else
 				{
@@ -218,6 +219,7 @@ if (isset($_POST['Valider']))
 			 				mysql_close();     // refermer la connexion avec la base de données
 							exit();
 	    					}
+	    					else $crd="Okey";
 	    				}
 	    		else
 	    			{	
@@ -230,6 +232,7 @@ if (isset($_POST['Valider']))
 			 			mysql_close();     // refermer la connexion avec la base de données
 				 		exit(); 
 	    				}
+	    					else $crd="Okey";
 	    			}//fin inser
 					}
 				}
@@ -251,7 +254,7 @@ if (isset($_POST['Valider']))
 				if (get_magic_quotes_gpc())
 			    {
 				$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-				$motiph = $oMyFilter->process($_POST['motif_'.$valeur.''][$uidpot]);
+				$motiph = $oMyFilter->process(utf8_decode($_POST['motif_'.$valeur.''][$uidpot]));
 				}
 			else
 				{
@@ -272,7 +275,7 @@ if (isset($_POST['Valider']))
 				if (get_magic_quotes_gpc())
 				    {
 					$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-					$motiph = $oMyFilter->process($_POST['motif_'.$valeur.''][$uidpot]);
+					$motiph = $oMyFilter->process(utf8_decode($_POST['motif_'.$valeur.''][$uidpot]));
 					}
 				else
 					{
@@ -304,6 +307,7 @@ if (isset($_POST['Valider']))
 			 				mysql_close();     // refermer la connexion avec la base de données
 							exit();
 	    					}
+	    					else $crd="Okey";
 	    				}
 	    				
 	    		elseif ($type!="")
@@ -317,6 +321,7 @@ if (isset($_POST['Valider']))
 			 			mysql_close();     // refermer la connexion avec la base de données
 				 		exit(); 
 	    				}
+	    					else $crd="Okey";
 					}
 				}//fin foreach 
 			}
@@ -343,7 +348,8 @@ if (isset($_POST['Valider']))
 		     		echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error() . "<p></p>";
 			 		mysql_close();     // refermer la connexion avec la base de données
 				 	exit(); 
-	    			} 
+	    			}
+	    			else $crd="Okey"; 
 				}	
 				
 			}
@@ -368,7 +374,8 @@ if (isset($_POST['Valider']))
 				    	echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error() . "<p></p>";
 						mysql_close();     // refermer la connexion avec la base de données
 						exit(); 
-			    		} 
+			    		}
+	    					else $crd="Okey"; 
 			 		} 
 			 	else 
 			 		{
@@ -381,6 +388,7 @@ if (isset($_POST['Valider']))
 						mysql_close();     // refermer la connexion avec la base de données
 					 	exit(); 
 			    		}
+	    					else $crd="Okey";
 			 		}
 			 	}
 			}
@@ -409,6 +417,7 @@ if (isset($_POST['Valider']))
 					 		mysql_close();     // refermer la connexion avec la base de données
 							exit(); 
 			    			}
+	    					else $crd="Okey";
 			    		}
 		 			}
 		 		else 
@@ -422,6 +431,7 @@ if (isset($_POST['Valider']))
 				 		mysql_close();     // refermer la connexion avec la base de données
 					 	exit(); 
 		    			}
+	    					else $crd="Okey";
 		 			}				
 				}
 			}
@@ -516,7 +526,7 @@ if ($exist=="true")
 	<script  type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
 	<script  type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
 	<script  type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
-        <script type="text/javascript" src="../Includes/cdt.js"></script>
+    <script type="text/javascript" src="../Includes/cdt.js"></script>
 
 </head>
 <body>
@@ -556,9 +566,22 @@ if (!mysql_num_rows($result)==0)
     //pas de tableau avant la sélection des creneaux
     if (!isset($_GET['mlec547trg2s5hy'])  && count($_POST['cren'])>0)
 	{	
-	echo '<div id="bt-fixe" ><input class="bt-enregistre" type="submit" name="Valider" value="" /><br /><br />
-	<input class="bt-fermer" type="submit" name="Fermer" value="" />
-	</div>';
+	echo '<div id="bt-fixe" ><input class="bt-enregistre" type="submit" name="Valider" value="" />';
+	echo '<div >';
+	if ($crd=="Okey") 
+	{
+	echo '
+		<script type="text/javascript">
+        // <![CDATA[
+		setTimeout("vider()",2000);
+ 	    //]]>
+		</script>
+		';
+	echo '<span id="crd" class="retard"> &nbsp;Enregistrement effectu&eacute;&nbsp; </span>';
+	}
+	 else echo '<br />';
+	echo '</div>';
+	echo '<input class="bt-fermer" type="submit" name="Fermer" value="" /></div>';
         echo '<h5 class="perso"> Si tous les &eacute;l&egrave;ves sont pr&eacute;sents, cliquez sur Enregistrer pour indiquer que l\'appel a &eacute;t&eacute; effectu&eacute;.</h5>';
         echo '<table id="abs" border="0">';
         echo '<thead>';
@@ -617,34 +640,34 @@ if (!mysql_num_rows($result)==0)
 					{
 					if ($_m1[$a]=="A") $absm1="A";
 					if ($_m1[$a]=="R") $rm1="R";
-					$motm1=$_motifm1[$a];
+					$motm1=utf8_encode($_motifm1[$a]);
 					if ($_m2[$a]=="A") $absm2="A";
 					if ($_m2[$a]=="R") $rm2="R";
-					$motm2=$_motifm2[$a];
+					$motm2=utf8_encode($_motifm2[$a]);
 					if ($_m3[$a]=="A") $absm3="A";
 					if ($_m3[$a]=="R") $rm3="R";
-					$motm3=$_motifm3[$a];
+					$motm3=utf8_encode($_motifm3[$a]);
 					if ($_m4[$a]=="A") $absm4="A";
 					if ($_m4[$a]=="R") $rm4="R";
-					$motm4=$_motifm4[$a];
+					$motm4=utf8_encode($_motifm4[$a]);
 					if ($_m5[$a]=="A") $absm5="A";
 					if ($_m5[$a]=="R") $rm5="R";
-					$motm5=$_motifm5[$a];
+					$motm5=utf8_encode($_motifm5[$a]);
 					if ($_s1[$a]=="A") $abss1="A";
 					if ($_s1[$a]=="R") $rs1="R";
-					$mots1=$_motifs1[$a];
+					$mots1=utf8_encode($_motifs1[$a]);
 					if ($_s2[$a]=="A") $abss2="A";
 					if ($_s2[$a]=="R") $rs2="R";
-					$mots2=$_motifs2[$a];
+					$mots2=utf8_encode($_motifs2[$a]);
 					if ($_s3[$a]=="A") $abss3="A";
 					if ($_s3[$a]=="R") $rs3="R";
-					$mots3=$_motifs3[$a];
+					$mots3=utf8_encode($_motifs3[$a]);
 					if ($_s4[$a]=="A") $abss4="A";
 					if ($_s4[$a]=="R") $rs4="R";
-					$mots4=$_motifs4[$a];
+					$mots4=utf8_encode($_motifs4[$a]);
 					if ($_s5[$a]=="A") $abss5="A";
 					if ($_s5[$a]=="R") $rs5="R";
-					$mots5=$_motifs5[$a];
+					$mots5=utf8_encode($_motifs5[$a]);
 					break;
 					}			
 				else
@@ -660,7 +683,7 @@ if (!mysql_num_rows($result)==0)
         echo '><td><a href="#" class="open_wi" title="Bilan des absences et retards"
             onclick="open_new_win(\'bilan.php?uid='.$users[$loop]["uid"].'&amp;fn='.$users[$loop]["fullname"].'\')">'
         .$users[$loop]["fullname"].'</a></td>';
-	echo '<td><a href="#" title="Aperçu hebdomadaire" onclick="abs_popup(\''.$uid_e.'\',\'' .$users[$loop]["fullname"].'\'); return false" > <img src="../images/b_calendar.png"  alt="hebdo"/></a></td>';
+	echo '<td><a href="#" title="Aper&ccedil;u hebdomadaire" onclick="abs_popup(\''.$uid_e.'\',\'' .$users[$loop]["fullname"].'\'); return false" > <img src="../images/b_calendar.png"  alt="hebdo"/></a></td>';
 	 //affichage des cumuls
         echo '<td><table border="0" class="motif"><tr><td class="nbA">'. $nbabs.'h</td><td class="nbR">'.$nbrtd.'</td></tr></table></td>';
          //affichage nouveaux creneaux
@@ -672,7 +695,7 @@ if (!mysql_num_rows($result)==0)
 		  }
 	 if (count($cren_y)>0)
 		 {
-		 foreach ( $cren_y as $clé => $valeur) 
+		 foreach ( $cren_y as $cle => $valeur) 
                      {
                      $testabs="abs".strtolower($valeur);
                      $testret="r".strtolower($valeur);

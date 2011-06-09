@@ -88,9 +88,9 @@ if ($nb>0)
 	while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 		{
 		$prof[$loop]=$enrg[0];//nom du prof
-		$mat[$loop]=$enrg[1];//matière
+		$mat[$loop]=utf8_encode($enrg[1]);//matière
 		$numero[$loop]=$enrg[2];//numéro de l'onglet
-		$pref[$loop]=$enrg[3];// préfixe
+		$pref[$loop]=utf8_encode($enrg[3]);// préfixe
 		$loop++;
 		}
 //modif grp
@@ -110,9 +110,9 @@ if ( count($groups) > 0 ) {
 			while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 		{
 		$prof[$loop]=$enrg[0];//nom du prof
-		$mat[$loop]=$enrg[1];//matière
+		$mat[$loop]=utf8_encode($enrg[1]);//matière
 		$numero[$loop]=$enrg[2];//numéro de l'onglet
-		$pref[$loop]=$enrg[3];// préfixe
+		$pref[$loop]=utf8_encode($enrg[3]);// préfixe
 		$loop++;
 		}
 			}
@@ -168,9 +168,9 @@ else
 				while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 		{
 		$prof[$loop]=$enrg[0];//nom du prof
-		$mat[$loop]=$enrg[1];//matière
+		$mat[$loop]=utf8_encode($enrg[1]);//matière
 		$numero[$loop]=$enrg[2];//numéro de l'onglet
-		$pref[$loop]=$enrg[3];// préfixe
+		$pref[$loop]=utf8_encode($enrg[3]);// préfixe
 		$loop++;
 		}
 				}

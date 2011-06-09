@@ -130,8 +130,8 @@ if ($nb>0)
 					//on mémorise les données dans des tableaux à 3 dimensions
 					$num[$j][$h][$col] = $row[0];//numéro
 					$plan[$j][$h] [$col]= "R";//on pose une marque (Réservé) pour le créneau
-					$mat[$j][$h][$col] = $row[5];//matière
-					$suj[$j][$h][$col] = stripslashes($row[6]);//sujet
+					$mat[$j][$h][$col] = utf8_encode($row[5]);//matière
+					$suj[$j][$h][$col] = utf8_encode(stripslashes($row[6]));//sujet
 					$log[$j][$h][$col] = $row[7];//login de l'auteur
 					$dur[$j][$h][$col] = $row[8];//durée
 					//on marque les autres créneaux utilisés par le devoir

@@ -1,3 +1,9 @@
+lcs-cdt (2.4.8.2~1) LCS; urgency=low
+
+  * UTF8 compatibility
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 04 Jun 2011 10:19:28 +0200
+
 lcs-cdt (2.4.8.1) LCS; urgency=low
 
   * remove tilde

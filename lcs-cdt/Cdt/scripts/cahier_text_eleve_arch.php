@@ -152,7 +152,7 @@ if (isset($_POST['an_archive']))
 	//si on ne  connait pas la classe , on affiche un menu déroulant  
 		echo "<select name='klasse' onchange='javascript:document.getElementById(\"monform\").submit()' style='background-color:#E6E6FA'>";
 		echo "<option value='--'>--</option>\n";
-		foreach ($list_classe as $clé => $valeur)
+		foreach ($list_classe as $cle => $valeur)
 		  { echo "<option value=\"$valeur\"";
 		  if ($valeur==$ch) {echo ' selected="selected"';}
 		  echo ">$valeur</option>\n";
@@ -175,10 +175,10 @@ if ($ch!="--")
 		$loop=0;
 		while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 			{
-			$prof[$loop]=$enrg[0];//nom du prof
-			$mat[$loop]=$enrg[1];//matiere 
+			$prof[$loop]=utf8_encode($enrg[0]);//nom du prof
+			$mat[$loop]=utf8_encode($enrg[1]);//matiere 
 			$numero[$loop]=$enrg[2];//numéro de l'onglet
-			$pref[$loop]=$enrg[3];// préfixe
+			$pref[$loop]=utf8_encode($enrg[3]);// préfixe
 			$restr[$loop]=0;//restric
 			$visa[$loop]=0;// 
 			$datvisa[$loop]=0;
@@ -248,9 +248,11 @@ if ($ch!="--")
 			echo '<table id="tb-cdt" cellpadding="1" cellspacing="2">';
 			while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 				{ 
-				  $textcours=stripslashes($ligne[1]);
+				  //$textcours=stripslashes($ligne[1]);
+				  $textc=utf8_encode(stripslashes($ligne[1]));
 				  //$textcours=$ligne[1];
-				  $textafaire=stripslashes($ligne[2]);
+				  //$textafaire=stripslashes($ligne[2]);
+				  $textaf=utf8_encode(stripslashes($ligne[2]));
 				  //$day="1,0,0,12,1,2007";echo $day;
 				  $jour=LeJour(strToTime($ligne[5]));
 				  //debut
@@ -263,11 +265,11 @@ if ($ch!="--")
                                   if($ligne[1]!="" && $ligne[6]==1) echo '<td class="contenu2">';
                                   elseif($ligne[1]!="" && $ligne[6]==2) echo '<td class="contenu3">';
                                   else echo '<td class="contenu">';
-                                  echo $textcours.'</td></tr>';
+                                  echo $textc.'</td></tr>';
                                   //affichage, s'il existe, du travail a effectuer
                                   if ($ligne[2]!="") {
                                   echo '<tr><td class="afaire">A faire pour le :<br />'.$ligne[3].'</td><td class="contenu">';
-                                  echo $textafaire.'</td></tr>';
+                                  echo $textaf.'</td></tr>';
                                   }
                                   //fin
 				
@@ -287,7 +289,7 @@ if ($ch!="--")
                                   if($ligne[6]==1) echo '<td class="contenu2">';
                                   elseif($ligne[6]==2) echo '<td class="contenu3">';
                                   else echo '<td class="contenu">';
-                                  echo $textafaire.'</td></tr>';
+                                  echo $textaf.'</td></tr>';
                                   }
                                   //fin
 				  echo '</tbody>';

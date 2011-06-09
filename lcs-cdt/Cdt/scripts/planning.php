@@ -59,7 +59,7 @@ if (isset($_POST['enregistrer']) )
 		
 		if (get_magic_quotes_gpc())
 		    {
-			$Sujet  =htmlentities($_POST['sujet']);
+			$Sujet  =htmlentities(utf8_decode($_POST['sujet']));
 			$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
 			$Sujet = $oMyFilter->process($Sujet);
 			}
@@ -143,7 +143,7 @@ if (isset($_POST['enregistrer']) )
 	if ((isset($_POST['enregistrer'])) && ($duree!="") && ($Sujet!=""))
 		{
 		$rq = "INSERT INTO devoir (date, creneau,login, matiere, sujet, classe, durée ) 
-		VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '{$_POST['matiere']}', '$Sujet',
+		VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '".utf8_decode($_POST['matiere'])."', '$Sujet',
 		'{$_POST['classe']}', '$duree')";
 							
 		// lancer la requête
@@ -189,7 +189,7 @@ if (isset($_POST['enregistrer']) )
 				$mailSubject = "Nouveau devoir";
 				//Le message
 				$mailBody = " CECI EST UN MESSAGE AUTOMATIQUE, MERCI DE NE PAS REPONDRE.  \n \n Un devoir de "
-				. $_POST['matiere']." a été programmé le ".  strftime("%A %d %B %Y",$dat_new);
+				. utf8_decode($_POST['matiere'])." a été programmé le ".  strftime("%A %d %B %Y",$dat_new);
 				//l'expediteur
 				$mailHeaders = "From: Cahier\ de\ textes\n";
 				//envoi du mail
@@ -221,7 +221,7 @@ if (isset($_POST['enregistrer']) )
 				$groupe=$gr[0];
 				$idr=$gr[1];
  				$rq = "INSERT INTO devoir (date, creneau,login, matiere, sujet, classe, durée ) 
- 				VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '{$_POST['matiere']}',
+ 				VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '".utf8_decode($_POST['matiere'])."',
  				'$Sujet', '$groupe', '$duree')";
 							
 				// lancer la requête
@@ -283,7 +283,7 @@ if (isset($_POST['enregistrer']) )
 				$mailSubject = "Nouveau devoir";
 				//Le message
 				$mailBody = " CECI EST UN MESSAGE AUTOMATIQUE, MERCI DE NE PAS REPONDRE.  \n \n Un devoir de "
-				. $_POST['matiere']." a été programmé le ".  strftime("%A %d %B %Y",$dat_new);
+				.utf8_decode($_POST['matiere'])." a été programmé le ".  strftime("%A %d %B %Y",$dat_new);
 				//l'expediteur
 				$mailHeaders = "From: Cahier\ de\ textes\n";
 				//envoi du mail
@@ -328,7 +328,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
 		$rq = "DELETE  FROM devoir WHERE id_ds='$cible' and login='$login' LIMIT 1";
 		else
 		$rq = "DELETE  FROM devoir WHERE  login='$login' and date='$dat_supp' and matiere='$mat_supp' and creneau='$cren_supp' and 
-		sujet='$suj_supp' and duree= '$dur_supp'";
+		sujet='$suj_supp' and durée= '$dur_supp'";
 		
 		$result2 = @mysql_query ($rq) or die (mysql_error());
 		//envoi d'un mail
@@ -387,7 +387,7 @@ if (isset($_GET['rubrique']))
 	//on recupere les donnees
 	while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 		{$clas=$enrg[0];//classe
-		$mati=$enrg[1];//matiere
+		$mati=utf8_encode($enrg[1]);//matiere
 		}
 	$numrub=$_GET['rubrique'];
 	}
@@ -567,8 +567,8 @@ if ($nb>0)
 					//on memorise les donnees dans des tableaux à 3 dimensions
 					$num[$j][$h][$col] = $row[0];//numero
 					$plan[$j][$h] [$col]= "R";//on pose une marque (Reserve) pour le creneau
-					$mat[$j][$h][$col] = $row[5];//matiere
-					$suj[$j][$h][$col] = stripslashes($row[6]);//sujet
+					$mat[$j][$h][$col] = utf8_encode($row[5]);//matiere
+					$suj[$j][$h][$col] = utf8_encode(stripslashes($row[6]));//sujet
 					$log[$j][$h][$col] = $row[7];//login de l'auteur
 					$dur[$j][$h][$col] = $row[8];//duree
 					//on marque les autres creneaux utilises par le devoir

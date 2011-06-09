@@ -326,10 +326,10 @@ if ($nb>0)
 	$loop=0;
 	while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 		{
-		$prof[$loop]=$enrg[0];//nom du prof
-		$mat[$loop]=$enrg[1];//matière 
+		$prof[$loop]=utf8_encode($enrg[0]);//nom du prof
+		$mat[$loop]=utf8_encode($enrg[1]);//matière 
 		$numero[$loop]=$enrg[2];//numéro de l'onglet
-		$pref[$loop]=$enrg[3];// préfixe
+		$pref[$loop]=utf8_encode($enrg[3]);// préfixe
 		$restr[$loop]=$enrg[4];//restric
 		$visa[$loop]=$enrg[5];// 
 		$datvisa[$loop]=$enrg[6];
@@ -349,10 +349,10 @@ if ( count($groups) > 0 ) {
 			//on récupère les données 
 			while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 				{
-				$prof[$loop]=$enrg[0];//nom du prof
-				$mat[$loop]=$enrg[1];//matière 
+				$prof[$loop]=utf8_encode($enrg[0]);//nom du prof
+				$mat[$loop]=utf8_encode($enrg[1]);//matière 
 				$numero[$loop]=$enrg[2];//numéro de l'onglet
-				$pref[$loop]=$enrg[3];// préfixe
+				$pref[$loop]=utf8_encode($enrg[3]);// préfixe
 				$restr[$loop]=$enrg[4];//restric
 				$visa[$loop]=$enrg[5];// 
 				$datvisa[$loop]=$enrg[6];
@@ -411,10 +411,10 @@ else
 			//on récupère les données 
 				while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 					{
-					$prof[$loop]=$enrg[0];//nom du prof
-					$mat[$loop]=$enrg[1];//matière 
+					$prof[$loop]=utf8_encode($enrg[0]);//nom du prof
+					$mat[$loop]=utf8_encode($enrg[1]);//matière 
 					$numero[$loop]=$enrg[2];//numéro de l'onglet
-					$pref[$loop]=$enrg[3];// préfixe
+					$pref[$loop]=utf8_encode($enrg[3]);// préfixe
 					$restr[$loop]=$enrg[4];//restric
 					$visa[$loop]=$enrg[5];// 
 					$datvisa[$loop]=$enrg[6];

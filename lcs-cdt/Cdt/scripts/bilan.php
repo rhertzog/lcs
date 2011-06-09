@@ -80,14 +80,14 @@ global 	$dtajadebut, $dtajafin;
  			
  			if ($nbabs>0)
  				{
- 				 echo "<h2>".$nbabs."h d'absence  - ";
+ 				 echo "<h3 class='perso'>".$nbabs."h d'absence  - ";
  				}
- 				else echo "<h2>Aucune absence - ";
+ 				else echo "<h3 class='perso'>Aucune absence - ";
  			if ($nbrtd>0)
  				{
- 				if ($nbrtd>1) echo $nbrtd." retards  <br />"; else echo $nbrtd." retard  </h2>";
+ 				if ($nbrtd>1) echo $nbrtd." retards  <br />"; else echo $nbrtd." retard  </h3>";
  				}
-				else echo "Aucun retard </h2>";
+				else echo "Aucun retard </h3>";
 	
 	$rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),M1,motifM1,M2,motifM2,M3,motifM3,M4,motifM4,M5,motifM5,
 	S1,motifS1,S2,motifS2,S3,motifS3,S4,motifS4,S5,motifS5,date FROM absences WHERE  uidprof='{$_SESSION['login']}' 
@@ -102,8 +102,8 @@ global 	$dtajadebut, $dtajafin;
 	  $typmat ="";
 	  foreach ( $horaire as $cle => $val)
 	  			{
-	  			if ($ligne[2*$cle+1]==A) $typmat .=" : absence en $val ( ".$ligne[2*$cle+2]." )";
-	  			elseif ($ligne[2*$cle+1]==R) $typmat .=" : retard en $val ( ".$ligne[2*$cle+2]." )";
+	  			if ($ligne[2*$cle+1]==A) $typmat .=" : absence en $val ( ".utf8_encode($ligne[2*$cle+2])." )";
+	  			elseif ($ligne[2*$cle+1]==R) $typmat .=" : retard en $val ( ".utf8_encode($ligne[2*$cle+2])." )";
 	  			else $typmat .="";
 	  			}
 	  

@@ -127,13 +127,13 @@ if (isset($_POST['OKclasse']))
 
 if (isset($_POST['OKeleve']))
 	{
-		$nom_propre = SansAccent($_POST['nom']);
+		$nom_propre = SansAccent(utf8_decode($_POST['nom']));
 		 $nom_propre = mb_ereg_replace("^[[:blank:]]","",$nom_propre);
 		 $nom_propre = mb_ereg_replace("[[:blank:]]$","",$nom_propre);
 		 $nom_propre = mb_ereg_replace("'|[[:blank:]]","_",$nom_propre);
 		 $nom_propre = StrToLower($nom_propre);
 		 $nom_propre = strip_tags(stripslashes($nom_propre));
-		 $prenom_propre = SansAccent($_POST['prenom']);
+		 $prenom_propre = SansAccent(utf8_decode($_POST['prenom']));
 		 $prenom_propre = mb_ereg_replace("^[[:blank:]]","",$prenom_propre);
 		 $prenom_propre= mb_ereg_replace("[[:blank:]]$","",$prenom_propre);
 		 $prenom_propre = mb_ereg_replace("'|[[:blank:]]","_",$prenom_propre);

@@ -5,7 +5,7 @@
    VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
-   - script de mise a jour du post-it-
+   - script d action sur les sequences-
 			_-=-_
    =================================================== */
    

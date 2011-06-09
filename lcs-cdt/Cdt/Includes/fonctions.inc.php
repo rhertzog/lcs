@@ -63,9 +63,9 @@ if (mysql_num_rows($result) >0) {
     while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  {
 	  //$textcours=stripslashes(markdown($ligne[1]));
-	  $textcours=stripslashes($ligne[1]);
+	  $textcours=utf8_encode(stripslashes($ligne[1]));
 	  //$textafaire=stripslashes(markdown($ligne[2]));
-	  $textafaire=stripslashes($ligne[2]);
+	  $textafaire=utf8_encode(stripslashes($ligne[2]));
 	  //$day="1,0,0,12,1,2007";echo $day;
 	  $jour=LeJour (strToTime($ligne[5]));
 	  //debut
@@ -157,7 +157,7 @@ function Affiche_seq($param) {
             $rows = mysql_fetch_array($results, MYSQL_NUM);
              echo '<tbody><tr><th colspan="2"></th></tr></tbody>';
              //echo '<tbody>';
-              echo '<tbody><tr><td colspan="2" ><span class="malegende" ><span class="titre_seq">'.$rows[1]."</span></span></td></tr></tbody>";
+              echo '<tbody><tr><td colspan="2" ><span class="malegende" ><span class="titre_seq">'.utf8_encode($rows[1])."</span></span></td></tr></tbody>";
               echo '<tbody class="field11"><tr><td colspan="2">';
              // if ($_SESSION['cequi']=="prof" && (mb_ereg('prof\.', $_SERVER['REQUEST_URI'])))
                 echo '<div class="switch_seq clos" id="_s'.$param.'" title="+ de d&eacute;tails"> &nbsp;</div ><div  id="d_s'.$param.'" class="descr_seq off">'.$rows[2].'</div>';
@@ -186,9 +186,9 @@ if (mysql_num_rows($result) >0) {
     while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  {
 	  //$textcours=stripslashes(markdown($ligne[1]));
-	  $textcours=stripslashes($ligne[1]);
+	  $textcours=utf8_encode(stripslashes($ligne[1]));
 	  //$textafaire=stripslashes(markdown($ligne[2]));
-	  $textafaire=stripslashes($ligne[2]);
+	  $textafaire=utf8_encode(stripslashes($ligne[2]));
 	  //$day="1,0,0,12,1,2007";echo $day;
 	  $jour=LeJour (strToTime($ligne[5]));
 	  //debut

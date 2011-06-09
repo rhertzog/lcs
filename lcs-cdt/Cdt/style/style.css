@@ -61,6 +61,7 @@ float:left;height:200px;margin:60px;opacity:0.9;padding:10px;width:520px;}
 h1.title {margin:5px 10px;text-align:left;font-family:arial;font-weight:bold;color:#0d6a1e;}
 h2 {color: #486591;margin:5px;text-align: left;font-weight: normal;}
 h3 {color: #1b2c68;text-align: center;font-weight: normal;font-size:14px;width:979px;}
+h3.perso {text-align: left;}
 h4 {float:left;color: #486591;margin:5px 25px;text-align: left;font-family: arial;font-weight: normal;}
 h4.perso  {float:left;color: #1b2c68;margin:5px 25px;text-align: left;font-weight: normal;}
 h5 {color: #1b2c68;font-weight: normal;text-align: center;}
@@ -237,6 +238,7 @@ table.motif td.enbas {vertical-align: bottom;}
 table#abs img {border :0px;}
 td.absence a {color: #000;}
 table#plan-cdt thead td.abs{width:13%;text-align: center;}
+#crd {margin-left:10px;}
 /*********************************************************** Impression du cdt ************************************************************/
 table#impr {text-align:left;padding:1px 0;width:980px;}
 table#impr caption {background:white; caption-side:top;margin:20px 20px 0;padding:5px;font-size: 20pt;}

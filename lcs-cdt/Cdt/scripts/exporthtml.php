@@ -144,8 +144,8 @@ if (count ($list_dates)>0)
 			while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 				{
 				$id[$n]=$enrg[0];
-				$cours[$n]=$enrg[1];
-				$afR[$n]=$enrg[2];
+				$cours[$n]=utf8_encode(mb_ereg_replace("../../../","http://".$hostname.".".$domain."/",$enrg[1]));
+				$afR[$n]=utf8_encode(mb_ereg_replace("../../../","http://".$hostname.".".$domain."/",$enrg[1]));
 				$n++;
 				}
 			}
@@ -167,8 +167,8 @@ if (count ($list_dates)>0)
 						{
 						while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 							{
-							$Prof=$enrg[0]." ".$enrg[1];
-							$matiere=$enrg[2];
+							$Prof=utf8_encode($enrg[0])." ".utf8_encode($enrg[1]);
+							$matiere=utf8_encode($enrg[2]);
 							}
 						}
 					mysql_free_result($result);

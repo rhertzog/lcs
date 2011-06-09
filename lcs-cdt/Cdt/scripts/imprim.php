@@ -75,7 +75,7 @@ function Imprime_seq($param) {
     if (mysql_num_rows($results)>0)
            {
             $rows = mysql_fetch_array($results, MYSQL_NUM);
-              echo '<tbody><tr><th  >'.$rows[1]."</th></tr></tbody>";
+              echo '<tbody><tr><th  >'.utf8_encode($rows[1])."</th></tr></tbody>";
               echo '<tbody><tr><td class="description"  colspan="2" >'.$rows[2];
               echo ' </td></tr></tbody>';
               $rq2 = "SELECT id_rubrique FROM cahiertxt  WHERE seq_id='$param'".$dlm1." order by date asc ";
@@ -230,7 +230,7 @@ if (isset($cible))
 	//on recupère les donnees
 	while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 		{$classe_active=$enrg[0];//classe
-		$mati_active=$enrg[1];//matière
+		$mati_active=utf8_encode($enrg[1]);//matière
 		$tampon=$enrg[2];
 		$datetampon=$enrg[3];
 		}

@@ -78,7 +78,7 @@ if (isset($_POST['Valider']))
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data">
     <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <fieldset id="field7">
-<legend id="legende">Définition du lien</legend>
+<legend id="legende">D&eacute;finition du lien</legend>
 <?php
 //affichage du formulaire
 if (!isset($_POST['Valider']))

@@ -192,7 +192,7 @@ if (isset($_POST['Lien']))
 	echo '</span>';
 	echo '<ol>';
         echo '<h4 class="perso">
-	<li> Copiez ce lien avec  un clic droit, et copiez le dans un mail destin&#233; au demandeur.</li>
+	<li> Copiez ce lien avec  un clic droit, et collez le dans un mail destin&#233; au demandeur.</li>
 	<li> N\'essayez pas ce lien, il n\'est pas valide lorsque vous &#234;tes connect&#233; au LCS.</li>';
 	//envoi du mail
 	if ($_POST['mel']=="yes")

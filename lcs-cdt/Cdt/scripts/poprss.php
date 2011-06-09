@@ -66,8 +66,8 @@ exit;
 		while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 			{
 			$proftaf=$enrg[0];//nom du prof
-			$mattaf=$enrg[1];//matiere
-			$preftaf=$enrg[3];// prefixe
+			$mattaf=utf8_encode($enrg[1]);//matiere
+			$preftaf=utf8_encode($enrg[3]);// prefixe
 			
 			}
                 //fin recup

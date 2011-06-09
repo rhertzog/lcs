@@ -395,8 +395,8 @@ $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 $loop=0;
 while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 	{
-        $clas[$loop]=$enrg[0];
-	$mat[$loop]=$enrg[1];
+    $clas[$loop]=$enrg[0];
+	$mat[$loop]=utf8_encode($enrg[1]);
 	$numero[$loop]=$enrg[2];
 	$com[$loop]=$enrg[3];
 	$visa[$loop]=$enrg[4];// 
@@ -419,7 +419,7 @@ for($x=0;$x < $nmax;$x++)
         if ($cible == ($numero[$x]))
                 {//cellule active
                 echo '<li id="select"><a href="cahier_texte_prof.php?rubrique='.$numero[$x].'"
-                onmouseover="window.status=\'\';return true" id="courant">'.htmlentities($mat[$x]).'<br />'.$clas[$x].' </a></li>';
+                onmouseover="window.status=\'\';return true" id="courant">'.$mat[$x].'<br />'.$clas[$x].' </a></li>';
                 $contenu_postit = stripslashes($com[$x]);
                 if ($visa[$x])
                         {
@@ -436,7 +436,7 @@ for($x=0;$x < $nmax;$x++)
                 echo '<li><a href="#">$clas[$x]'.'</a></li>';
                 else
                 {
-                echo '<li><a href="cahier_texte_prof.php?rubrique='.$numero[$x].'" onmouseover="window.status=\'\';return true">'.htmlentities($mat[$x]).'<br />'.$clas[$x].'</a></li>';
+                echo '<li><a href="cahier_texte_prof.php?rubrique='.$numero[$x].'" onmouseover="window.status=\'\';return true">'.$mat[$x].'<br />'.$clas[$x].'</a></li>';
                 }
                 }
 	}
@@ -576,7 +576,7 @@ if (isset($tsmp3))
           {
             echo "<option value=\"$row->id_seq\"";
             if ($row->id_seq==$Seq) {echo ' selected';}
-            echo ">$row->titrecourt</option>\n";
+            echo ">".utf8_encode($row->titrecourt)."</option>\n";
            }
          }
         echo "</select>";

@@ -66,7 +66,7 @@ if (isset($_GET['rubrique']))
 	//classe active 
 	$clas_act=$enrg[0];
 	//matière de la classe active
-	$mat=$enrg[1];
+	$mat=utf8_encode($enrg[1]);
 	
 	}
 	
@@ -115,7 +115,7 @@ if (isset($_POST['Valider']))
 	unset ($_SESSION['dif_c']);
 	unset ($_SESSION['dif_af']);
 	unset ($_SESSION['dif_vi']);
-        unset ($_SESSION['dif_sq']);
+    unset ($_SESSION['dif_sq']);
 
 	//création des tableaux de date des cours et "a faire"
 	for ($loop=0; $loop < count ($_POST['grp'])  ; $loop++)
@@ -175,7 +175,7 @@ if (!isset($_POST['Valider']))
 	//sinon, affichage des classes de meme niveau
 	else
 		{
-		echo '<h4>Lorsque vous enregistrerez votre commentaire de <b>'.$mat.'</b> en <b>'.$clas_act.'</b>, il sera diffus&#233; vers les classes que vous aurez sélectionn&#233;es ci-dessous </h4><br />';
+		echo '<h4>Lorsque vous enregistrerez votre commentaire de <b>'.$mat.'</b> en <b>'.$clas_act.'</b>, il sera diffus&#233; vers les classes que vous aurez s&#233;lectionn&#233;es ci-dessous </h4><br />';
 		echo '<div id="classes">';
 		echo '<table id="pop" cellspacing="2"> ';
 		echo '<tr><td ></td><td>Classe</td><td>Date du cours</td><td>Date "&#224; faire" </td><td>Date visiblit&#233; </td><td>S&#233;quence</td></tr>';
@@ -203,7 +203,7 @@ if (!isset($_POST['Valider']))
            while ($rows = mysql_fetch_object($resulta))
           {
             echo '<option value="'.$rows->id_seq.'"';
-            echo ">$rows->titrecourt</option>";
+            echo ">".utf8_encode($rows->titrecourt)."</option>";
            }
          }
         echo "</select></td></tr>";

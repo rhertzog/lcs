@@ -164,7 +164,7 @@ if (isset($_POST['Valider']))
 		  {
 		  $erreur[$indecs]="false";
 		  //nettoyer les entrees
-		  $nom_propre[$indecs]  =$_POST['nom'.$indecs];
+		  $nom_propre[$indecs]  =utf8_decode($_POST['nom'.$indecs]);
 		  $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
 		  $nom_propre[$indecs] = $oMyFilter->process($nom_propre[$indecs]);
 		  if (get_magic_quotes_gpc())
@@ -190,7 +190,7 @@ if (isset($_POST['Valider']))
 		  $nom_propre2[$indecs] = StrToLower($nom_propre2[$indecs]);
 		  $nom_propre1[$indecs] = strip_tags(stripslashes($nom_propre1[$indecs]));
 		  $nom_propre2[$indecs] = strip_tags(stripslashes($nom_propre2[$indecs]));
-		  $prenom_propre[$indecs]  =$_POST['prenom'.$indecs];
+		  $prenom_propre[$indecs]  =utf8_decode($_POST['prenom'.$indecs]);
 		  if (get_magic_quotes_gpc())
                         {
                         $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);

@@ -89,10 +89,10 @@ echo ("<ul id='arch-navlist'>");
 	$archive=explode('s',$table[0]);
 	$x++;
 	//archive courante
-	if ($arch==$archive[1]) echo "<li class=\"arch\"> <a href='cahier_texte_arch.php?arch=$archive[1]' id='courant2'>$archive[1]</a></li>";
+	if ($arch==$archive[1]) echo "<li class=\"arch\"> <a href='cahier_texte_arch.php?arch=$archive[1]' id='courant2'>".utf8_encode($archive[1])."</a></li>";
 	else
 	//autres archives
-	echo "<li class=\"arch\"><a href='cahier_texte_arch.php?arch=$archive[1]'>$archive[1]</a></li> ";
+	echo "<li class=\"arch\"><a href='cahier_texte_arch.php?arch=$archive[1]'>".utf8_encode($archive[1])."</a></li> ";
 	}
 	//s'il n'esiste pas d'archive
 	if ($x==0) 
@@ -153,7 +153,7 @@ $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 $loop=0;
 while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 	{$clas[$loop]=$enrg[0];
-	$mat[$loop]=$enrg[1];
+	$mat[$loop]=utf8_encode($enrg[1]);
 	$numero[$loop]=$enrg[2];
 	$loop++;
 	}
@@ -170,7 +170,7 @@ for($x=0;$x < $nmax;$x++)
 	{
 		if ($cible == ($numero[$x]))
 			{//cellule active	
-			echo "<li id='select'><a href='cahier_texte_arch.php?rubrique=$numero[$x]&amp;arch=$arch' id='courant'>".htmlentities($mat[$x])."<br />$clas[$x] "."</a></li>";
+			echo "<li id='select'><a href='cahier_texte_arch.php?rubrique=$numero[$x]&amp;arch=$arch' id='courant'>".$mat[$x]."<br />$clas[$x] "."</a></li>";
 			$contenu_postit=stripslashes($com[$x]);
 			}
 		else 
@@ -182,7 +182,7 @@ for($x=0;$x < $nmax;$x++)
 			else
 			{
 			echo ("<li><a href='cahier_texte_arch.php?rubrique=$numero[$x]&amp;arch=$arch'
-			>".htmlentities($mat[$x])."<br />$clas[$x]"."</a></li>");
+			>".$mat[$x]."<br />$clas[$x]"."</a></li>");
 			}
 			}
 	}
@@ -213,7 +213,9 @@ echo '<table id="tb-cdt" cellpadding="1" cellspacing="2">';
 while ($ligne = mysql_fetch_array($result, MYSQL_NUM)) 
   { 
   $textcours=stripslashes($ligne[1]);
+  $textc=utf8_encode(stripslashes($ligne[1]));
   $textafaire=stripslashes($ligne[2]);
+  $textaf=utf8_encode(stripslashes($ligne[2]));
   
  
 if ($ligne[1]!="") {
@@ -223,11 +225,11 @@ if ($ligne[1]!="") {
 	  //affichage de la seance
 	  echo '<td class="seance">S&eacute;ance du <br/>'.$jour.'&nbsp;'.$ligne[0].'<br /> </td>';
 	  echo '<td class="contenu">';
-	  echo $textcours.'</td></tr>';
+	  echo $textc.'</td></tr>';
 	  //affichage, s'il existe, du travail a effectuer
 	  if ($ligne[2]!="") {
 	  echo '<tr><td class="afaire">A faire pour le :<br/>'.$ligne[3].'</td><td class="contenu">';
-	  echo $textafaire.'</td></tr>';
+	  echo $textaf.'</td></tr>';
 	  }
 	  //fin
 
@@ -252,7 +254,7 @@ if ($ligne[1]!="") {
 	  if ($ligne[2]!="") {
 	  echo '<br/>Pour le :&nbsp;'.$ligne[3].'</td>';
 	  echo '<td class="contenu">';
-	  echo $textafaire.'</td></tr>';
+	  echo $textaf.'</td></tr>';
 	  }
 	  //fin
 
