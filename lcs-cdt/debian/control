@@ -7,6 +7,6 @@ Standards-Version: 3.7.3
 
 Package: lcs-cdt
 Architecture: all
-Depends: lcs-web
+Depends: lcs-web(>= 2.4.8)
 Description: Install homework notebook on LCS server
  This package sets up homework notebook
