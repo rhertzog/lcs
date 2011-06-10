@@ -95,7 +95,7 @@ if (mysql_num_rows($result) >0) {
               echo '" method="post"><div><input type="hidden" name="number" value="';
               echo $ligne[4];
               echo '" /><input type="hidden" name="rubriq" value="';
-              echo $cible ;
+              echo $cible;
               echo '" /><input name="date" type="hidden"  value="'.$date.'" />';
               if($ligne[6]=="0") echo '<input type="submit" name="modif" value="" class="bt-modifier" />&nbsp;
               <input type="submit" name="suppr" value="" class="bt-supprimer" />';
@@ -130,8 +130,8 @@ if (mysql_num_rows($result) >0) {
               echo '" method="post"><div><input type="hidden" name="number" value="';
               echo $ligne[4];
                echo '" /><input type="hidden" name="rubriq" value="';
-              echo $cible ;
-              echo ' "/><input name="date" type="hidden" value="'.$date.'" />';
+              echo $cible;
+              echo '"/><input name="date" type="hidden" value="'.$date.'" />';
               if($ligne[6]=="0") echo '<input type="submit" name="modif" value="" class="bt-modifier" />&nbsp;
               <input type="submit" name="suppr" value="" class="bt-supprimer" />';
               echo '<input name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'" />';
