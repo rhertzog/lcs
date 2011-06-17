@@ -2,12 +2,12 @@
 
 	// inc/player_affiche_config_form.php
 	
-	// $LastChangedRevision: 23343 $
-	// $LastChangedBy: kent1@arscenic.info $
-	// $LastChangedDate: 2008-10-16 01:33:06 +0200 (jeu, 16 oct 2008) $
+	// $LastChangedRevision: 31822 $
+	// $LastChangedBy: paladin@quesaco.org $
+	// $LastChangedDate: 2009-09-27 16:49:33 +0200 (dim, 27 sep 2009) $
 
 // CP-20080321 : correction style (tous les formul en espace prive utilisent verdana2)
-// CP-20080321 : deplacement de la fonction initiale ici. Peut-etre a recoler en page admin ?
+// CP-20080321 : deplacement de la fonction initiale ici. Pour ajax
 
 function player_affiche_config_form ($exec_page){
 

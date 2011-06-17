@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: signalement_eleves.php 5464 2010-09-28 16:12:04Z crob $
+ * $Id: signalement_eleves.php 6438 2011-01-28 13:47:26Z tbelliard $
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -123,6 +123,7 @@ foreach ($current_group["periodes"] as $period) {
 
 $msg="";
 if (isset($_POST['is_posted'])) {
+	check_token();
 	//$error = false;
 
 	// Ménage:
@@ -199,11 +200,7 @@ if (isset($_POST['is_posted'])) {
 				$ajout_header="";
 				if($email_declarant!="") {$ajout_header.="Cc: $nom_declarant <".$email_declarant.">\r\n";}
 	
-				$envoi = mail(getSettingValue("gepiAdminAdress"),
-					$gepiPrefixeSujetMail.$sujet_mail,
-					$texte_mail,
-					"From: Mail automatique Gepi\r\n".$ajout_header."X-Mailer: PHP/".phpversion());
-	
+        $envoi = envoi_mail($sujet_mail, $texte_mail, getSettingValue("gepiAdminAdress"), $ajout_header);	
 			}
 		}
 
@@ -270,7 +267,6 @@ change='no';
 </script>\n";
 
 echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' name='form_passage_a_un_autre_groupe' method='post'>\n";
-
 echo "<p class='bold'>\n";
 echo "<a href='".$_SESSION['chemin_retour']."'";
 echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
@@ -361,6 +357,7 @@ echo "</form>\n";
 <?php
 
 echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' name='formulaire' method='post'>\n";
+echo add_token_field();
 echo "<p><input type='submit' value='Enregistrer' /></p>\n";
 
 // Edition des élèves

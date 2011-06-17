@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/cookie');
 
@@ -37,7 +37,6 @@ function action_logout_dist()
 		// si authentification http, et que la personne est loge,
 		// pour se deconnecter, il faut proposer un nouveau formulaire de connexion http
 		if (isset($_SERVER['PHP_AUTH_USER']) AND !$ignore_auth_http AND $GLOBALS['auth_can_disconnect']) {
-			include_spip('inc/actions');
 			  ask_php_auth(_T('login_deconnexion_ok'),
 				       _T('login_verifiez_navigateur'),
 				       _T('login_retour_public'),

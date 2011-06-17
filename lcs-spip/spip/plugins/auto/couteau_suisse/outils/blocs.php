@@ -9,8 +9,12 @@
 
 @define('_BLOC_TITRE_H', 'h4');
 
-// cette fonction est appelee automatiquement a chaque affichage de la page privee du Couteau Suisse
-// le resultat est une chaine apportant des informations sur les nouveaux raccourcis ajoutes par l'outil
+// depliage/repliage - fonction de personnalisation des title a placer dans mes_fonctions.php
+// function blocs_title($titre='', $corps='', $num='') {
+//	return array(_T('couteau:bloc_deplier'), _T('couteau:bloc_replier'));
+// }
+
+// liste des nouveaux raccourcis ajoutes par l'outil
 // si cette fonction n'existe pas, le plugin cherche alors  _T('couteauprive:un_outil:aide');
 function blocs_raccourcis() {
 	return _T('couteauprive:blocs:aide');
@@ -19,7 +23,7 @@ function blocs_raccourcis() {
 function blocs_callback($matches) {
 	list($titre, $corps) = preg_split(',(\n\n|\r\n\r\n|\r\r),', trim($matches[3]), 2);
 	// pas de corps !
-	if(!strlen($corps=trim($corps))) {
+	if(!strlen($corps = trim($corps))) {
 		$corps = $titre;
 		$titre = preg_replace(',[\n\r]+,s', ' ', couper(propre($titre), 30));
 	}
@@ -32,18 +36,22 @@ function blocs_callback($matches) {
 	// types de blocs : bloc|invisible|visible
 	if ($matches[1]=='visible' || defined('_CS_PRINT')) {
 		$h = $d = '';
-		$r = ' blocs_invisible ';
+		$r = ' blocs_invisible blocs_slide';
 	} else {
 		$h = ' blocs_replie';
-		$d = ' blocs_invisible';
+		$d = ' blocs_invisible blocs_slide';
 		$r = '';
 	}
 
 	// blocs numerotes
 	$b = strlen($matches[2])?" cs_bloc$matches[2]":''; 
+	// title
+	$title = function_exists('blocs_title')
+		?"<div class='blocs_title blocs_invisible'>".join(_BLOC_TITLE_SEP, blocs_title($titre, $corps, $matches[2], $h<>'')).'</div>'
+		:''; // valeur par defaut geree en JS
 	return "<div class='cs_blocs$b'><"._BLOC_TITRE_H." class='blocs_titre$h blocs_click'><a href='javascript:;'>$titre</a></"._BLOC_TITRE_H.">"
 		.(strlen($res)?"<div class='blocs_resume$r'>\n$res\n</div>":"")
-		."<div class='blocs_destination$d'>\n".blocs_rempl($corps)."\n</div></div>";
+		."<div class='blocs_destination$d'>\n\n".blocs_rempl($corps)."\n\n</div>$title</div>";
 }
 
 // cette fonction n'est pas appelee dans les balises html : html|code|cadre|frame|script
@@ -60,9 +68,27 @@ function blocs_pre_typo($texte) {
 	return cs_echappe_balises('', 'blocs_rempl', $texte);
 }
 
-// cette fonction renvoie une ligne de tableau entre <tr></tr> afin de l'inserer dans la Barre Typo V2, si elle est presente
-function blocs_BarreTypo($tr) {
-	return $tr.'<tr><td>'._T('couteauprive:blocs:nom').' (en projet)</td></tr>';
+// 2 fonctions pour le plugin Porte Plume, s'il est present (SPIP>=2.0)
+function blocs_CS_pre_charger($flux) {
+	$r = array(array(
+		"id" => 'blocs_bloc',
+		"name" => _T('couteau:pp_blocs_bloc'),
+		"className" => 'blocs_bloc',
+		"replaceWith" => "\n<bloc>"._T('couteau:pp_un_titre')."\n\n"._T('couteau:pp_votre_texte')."\n</bloc>\n",
+		"display" => true), array(
+		"id" => 'blocs_visible',
+		"name" => _T('couteau:pp_blocs_visible'),
+		"className" => 'blocs_visible',
+		"replaceWith" => "\n<visible>"._T('couteau:pp_un_titre')."\n\n"._T('couteau:pp_votre_texte')."\n</visible>\n",
+		"display" => true));
+	foreach(cs_pp_liste_barres('blocs') as $b)
+		$flux[$b] = isset($flux[$b])?array_merge($flux[$b], $r):$r;
+	return $flux;
+}
+function blocs_PP_icones($flux) {
+	$flux['blocs_bloc'] = 'bloc_invisible.png';
+	$flux['blocs_visible'] = 'bloc_visible.png';
+	return $flux;
 }
 
 ?>

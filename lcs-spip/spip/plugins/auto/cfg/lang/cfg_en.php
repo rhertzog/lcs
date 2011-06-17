@@ -3,12 +3,14 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 	// B
+	'bouton_effacer' => 'Delete',
 	'bouton_mettre_a_jour' => 'Update',
+	'bouton_reset' => 'Reset',
 
 	// C
 	'cfg' => 'CFG',
@@ -18,7 +20,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'configuration_modules' => 'Module configuration',
 
 	// E
-	'erreur_copie_fichier' => 'It is impossible to copythe file @fichier@ to its final destination',
+	'erreur_copie_fichier' => 'It is impossible to copy the file @fichier@ to its final destination',
 	'erreur_enregistrement' => 'An error occurred while saving <b>@nom@</b>',
 	'erreur_lecture' => 'Impossible to read @nom@',
 	'erreur_open_w_fichier' => 'Impossible to open @fichier@ for modification',
@@ -34,6 +36,10 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'installation_liste_libs' => 'List of libraries',
 	'installer_dossier_lib' => 'You must create a directory named @dir@ with write permissions at the root of your SPIP site.',
 	'installer_lib_192' => 'To install a library, unzip the zip file manually and copy its contents to the @dir@ directory.',
+
+	// L
+	'label_activer' => 'Activate',
+	'label_obligatoire' => 'Required entry',
 
 	// N
 	'nom_table_manquant' => 'Missing SQL table name',
@@ -52,7 +58,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'reset' => 'Delete',
 
 	// S
-	'supprimer' => 'Delete'
+	'supprimer' => 'Reset to the default values'
 );
 
 ?>

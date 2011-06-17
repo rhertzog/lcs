@@ -2,44 +2,78 @@
 
 	// player_fonctions.php
 
-	// $LastChangedRevision:$
-	// $LastChangedBy:$
-	// $LastChangedDate:$
+	// $LastChangedRevision: 35894 $
+	// $LastChangedBy: root $
+	// $LastChangedDate: 2011-02-12 16:00:12 +0100 (Sat, 12 Feb 2011) $
 
 if (!defined('_DIR_PLUGIN_PLAYER')){ // defini automatiquement par SPIP 1.9.2
 	$p=explode(basename(_DIR_PLUGINS)."/",str_replace('\\','/',realpath(dirname(__FILE__))));
 	define('_DIR_PLUGIN_PLAYER',(_DIR_PLUGINS.end($p)."/"));
 }
 
+function Player_call_js() {
+	$flux = "\n"
+		. "<!-- Player JS -->\n"
+		. '<script type="text/javascript" src="'.find_in_path('soundmanager/soundmanager2.js').'"></script>'
+		. '<script type="text/javascript"><!--' . "\n"
+		// . 'var musicplayerurl="'.find_in_path('flash/eraplayer_playlist.swf').'";'."\n"
+		. 'var musicplayerurl="' . find_in_path('flash/' . $player_ . '.swf') . '";'."\n"
+		. "var key_espace_stop = true;\n"
+		. 'var image_play="'.find_in_path('images/playl.gif').'";'."\n"
+		. 'var image_pause="'.find_in_path('images/pausel.gif').'";'."\n"
+		. 'soundManager.url = "'.find_in_path('soundmanager/soundmanager2.swf').'";'."\n"
+  		. 'soundManager.nullURL = "'.find_in_path('soundmanager/null.mp3').'";'."\n"
+		. 'var videoNullUrl = "null.flv";'."\n"
+		. 'var DIR_PLUGIN_PLAYER = "' . _DIR_PLUGIN_PLAYER . '";'
+		. "//--></script>\n"
+		. '<script type="text/javascript" src="'._DIR_PLUGIN_PLAYER.'javascript/jscroller.js"></script>'."\n"
+		. '<script type="text/javascript" src="'._DIR_PLUGIN_PLAYER.'player_enclosure.js"></script>'."\n"
+		;
+	return $flux;
+}
+
+function Player_call_css() {
+	$flux = "\n".'<link rel="stylesheet" href="'.direction_css(find_in_path('player.css')).'" type="text/css" media="all" />';
+	return $flux;
+}
+
 function Player_head(){
-	$flux = "";
-	$flux .= '<script type="text/javascript" src="'.find_in_path('soundmanager/soundmanager2.js').'"></script>';
-	$flux .= '<script type="text/javascript"><!--'."\n"
-	. 'var musicplayerurl="'.find_in_path('flash/eraplayer_playlist.swf').'";'."\n"
-	. 'var image_play="'.find_in_path('images/playl.gif').'";'."\n"
-	. 'var image_pause="'.find_in_path('images/pausel.gif').'";'."\n"
-	. 'soundManager.url = "'.find_in_path('soundmanager/soundmanager2.swf').'";'."\n"
-  	. 'soundManager.nullURL = "'.find_in_path('soundmanager/null.mp3').'";'."\n"
-	. 'var videoNullUrl = "'._DIR_PLUGIN_PLAYER.'null.flv";'."\n"
-	. 'var DIR_PLUGIN_PLAYER = "'._DIR_PLUGIN_PLAYER.'";'
-	. "//--></script>\n";
 	
-	$flux .= '<script type="text/javascript" src="'._DIR_PLUGIN_PLAYER.'javascript/jscroller.js"></script>'."\n";
-	$flux .= '<script type="text/javascript" src="'._DIR_PLUGIN_PLAYER.'player_enclosure.js"></script>'."\n";
-	$flux .= '<link rel="stylesheet" href="'.find_in_path('player.css').'" type="text/css" media="all" />'."\n";
+	$player_ = ($p = $GLOBALS['meta']['player']) ? $p : _PLAYER_MP3_LECTEUR_DEFAULT;
+	
+	$flux =	Player_call_js();
+	$flux .= Player_call_css();
+
+	return $flux;
+}
+
+function Player_insert_head_css($flux){
+	static $done = false;
+	if (!$done) {
+		$done = true;
+		if (!defined('_PLAYER_AFFICHAGE_FINAL') OR !_PLAYER_AFFICHAGE_FINAL)
+		{
+			$flux .= Player_call_css();
+		}
+	}
 	return $flux;
 }
 
 function Player_insert_head($flux){
 	if (!defined('_PLAYER_AFFICHAGE_FINAL') OR !_PLAYER_AFFICHAGE_FINAL)
-		$flux .= Player_head();
+	{
+		$flux = Player_insert_head_css($flux);
+		$flux .= Player_call_js();
+	}
 	return $flux;
 }
+
 function Player_affichage_final($flux){
 	if (defined('_PLAYER_AFFICHAGE_FINAL') AND _PLAYER_AFFICHAGE_FINAL){
 		// inserer le head seulement si presente d'un rel='enclosure'
-		if ((strpos($flux,'rel="enclosure"')!==FALSE)){
-			$flux = str_replace('</head>',Player_head().'</head>',$flux);
+		if ((strpos($flux,'rel="enclosure"')!==FALSE)
+		  OR (strpos($flux,'playliste_video')!==FALSE)){
+			$flux = str_replace('</head>', Player_head().'</head>', $flux);
 		}
 	}
 	return $flux;
@@ -53,7 +87,7 @@ function Player_affichage_final($flux){
  * peut etre appele dans un squelette apres |liens_absolus
  */
  
- function Player_post_propre($texte) {
+function Player_post_propre($texte) {
 
 	$reg_formats="mp3";
 
@@ -66,14 +100,15 @@ function Player_affichage_final($flux){
 }
 
 function joli_titre($titre){
-$titre=basename($titre);
-$titre=ereg_replace('.mp3','',$titre);
-$titre=ereg_replace('^ ','',$titre);
-$titre = eregi_replace("_"," ", $titre );
-$titre = eregi_replace("'"," ",$titre );
+	$titre=basename($titre);
+	$titre=preg_replace('/.mp3/','',$titre);
+	$titre=preg_replace('/^ /','',$titre);
+	$titre = preg_replace("/_/i"," ", $titre );
+	$titre = preg_replace("/'/i"," ",$titre );
 
-return $titre ;
+	return $titre ;
 }
+
 
 // CP 20080321
 // balise a' placer dans le modele
@@ -82,28 +117,14 @@ function balise_PLAYER_FLV_FLASHVVARS ($p) {
 	
 	static $player_flv_flashvars = null;
 
-/* pour debug. Dump du parametre 
-spip_log("######################################");
-if(!function_exists('dump_me')) {
-	function dump_me($p, $m = "###: ") {
-		foreach($p as $k => $v) {
-			spip_log($m . $k . " = ".$v);
-			if(is_array($v) || is_object($v)) {
-				dump_me($v, $m . $k.": ");
-			}
-		}
-	}
-}
-dump_me($p);
-/**/
-
 	$id_boucle = $p->nom_boucle ? $p->nom_boucle : $p->id_boucle;
 	
 	// #PLAYER_FLV_FLASHVVARS hors boucle ? ne rien faire !
 	if (!$type = $p->boucles[$id_boucle]->type_requete) {
 		$p->code = "''";
-	} else {
-	// sinon, renvoyer les Flashvars sur une seule ligne
+	}
+	else {
+		// sinon, renvoyer les Flashvars sur une seule ligne
 
 		if(!$player_flv_flashvars) {
 		
@@ -133,7 +154,7 @@ dump_me($p);
 		
 		$p->code = "'$player_flv_flashvars'";
 	}
-	$p->interdire_scripts = true;
+	$p->interdire_scripts = false;
 	return($p);
 }
 
@@ -158,8 +179,38 @@ function balise_PLAYER_FLV_PLAYER ($p) {
 		}
 		$p->code = "'$result'";
 	}
-	$p->interdire_scripts = true;
+	$p->interdire_scripts = false;
 	return($p);
 }
 
-?>
+function balise_PLAYER_VIDEOS_DIR ($p) {
+
+	$p->code = "'/videos/'";
+	$p->interdire_scripts = false;
+
+	return($p);
+	
+}
+
+function player_meta_prefs_item ($ii) {
+	
+	static $prefs;
+	
+	if($prefs == null)
+	{
+		lire_metas();
+		$prefs = unserialize($GLOBALS['meta'][_PLAYER_META_PREFERENCES]);
+		$prefs = $prefs['player_video_prefs'];
+	}
+	return($ii && isset($prefs[$ii]) ? $prefs[$ii] : null);
+}
+
+function balise_PLAYER_META_GET ($p) {
+
+	if($key = trim(interprete_argument_balise(1, $p))) {
+		$p->code = "player_meta_prefs_item($key)";
+	}
+		
+	return($p);
+}
+

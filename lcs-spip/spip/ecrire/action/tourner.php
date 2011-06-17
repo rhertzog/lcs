@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@action_tourner_dist
 function action_tourner_dist() {
@@ -31,7 +31,7 @@ function action_tourner_post($r)
 	if (!$row) return;
 
 	include_spip('inc/charsets');	# pour le nom de fichier
-	include_spip('inc/documents'); 
+	include_spip('inc/documents');
 	// Fichier destination : on essaie toujours de repartir de l'original
 	$var_rot = $r[2];
 	include_spip('inc/distant'); # pour copie_locale
@@ -170,7 +170,7 @@ function gdRotate ($src, $dest, $rtt){
 			$size_dest = $size;
 		else
 			$size_dest = array($size[1],$size[0]);
-		
+
 		if ($GLOBALS['meta']['image_process'] == "gd2")
 			$dst_img=ImageCreateTrueColor($size_dest[0],$size_dest[1]);
 		else
@@ -209,7 +209,6 @@ function gdRotate ($src, $dest, $rtt){
 function tourner_selon_exif_orientation($id_document, $fichier) {
 
 	if (function_exists('exif_read_data')
-	AND function_exists('imagerotate')
 	AND $exif = exif_read_data($fichier)
 	AND (
 		$ort = $exif['IFD0']['Orientation']

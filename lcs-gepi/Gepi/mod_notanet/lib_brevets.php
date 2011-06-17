@@ -1,7 +1,7 @@
 <?php
 
 /*
-$Id: lib_brevets.php 4586 2010-06-15 15:49:28Z crob $
+$Id: lib_brevets.php 7031 2011-05-27 15:00:39Z crob $
  */
 
 $tab_type_brevet=array();
@@ -20,6 +20,8 @@ $tab_type_brevet[7]="TECHNOLOGIQUE, option de série AGRICOLE";
 
 // Indice max des matières
 $indice_max_matieres=130;
+
+$indice_premiere_matiere=5;
 
 // *****************
 // A FAIRE:
@@ -78,21 +80,24 @@ function tabmatieres($type_brevet){
 	unset($tabmatieres);
 	//====================
 	global $indice_max_matieres;
+	global $indice_premiere_matiere;
 
 	switch($type_brevet){
 		case 0:
 			// COLLEGE, option de série LV2
 
 			// Initialisation
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][0]='';
 			}
+
+			$tabmatieres[5][0]='HISTOIRE DES ARTS';
 
 			//$tabmatieres[101][0]='FRANCAIS';
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
 			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
-			$tabmatieres[103][0]='LANGUE VIVANTE 1';
+			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
 			$tabmatieres[104][0]='SCIENCES DE LA VIE ET DE LA TERRE';
 			$tabmatieres[105][0]='PHYSIQUE-CHIMIE';
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
@@ -100,16 +105,16 @@ function tabmatieres($type_brevet){
 			$tabmatieres[108][0]='EDUCATION MUSICALE';
 			$tabmatieres[109][0]='TECHNOLOGIE';
 			//$tabmatieres[110][0]='DEUXIEME LANGUE VIVANTE';
-			$tabmatieres[110][0]='LANGUE VIVANTE 2';
+			$tabmatieres[110][0]='DEUXIEME LANGUE VIVANTE';
 			//$tabmatieres[110][0]='DEUXIEME LANGUE VIVANTE OU DECOUVERTE PROFESSIONNELLE (module de 6 heures)';
 			$tabmatieres[111][0]='';
 			$tabmatieres[112][0]='VIE SCOLAIRE';
 			//$tabmatieres[113][0]='OPTION FACULTATIVE (1)';
 			$tabmatieres[113][0]='OPTION FACULTATIVE';
 
-			$tabmatieres[114][0]='SOCLE B2I';
+			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
-			$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
+			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
 
 			$tabmatieres[116][0]='';
 			$tabmatieres[117][0]='';
@@ -122,10 +127,12 @@ function tabmatieres($type_brevet){
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
 
 			// Mode de calcul:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-1]='POINTS';
 			}
+
+			$tabmatieres[5][-1]='POINTS';
+
 			// Optionnelle
 			$tabmatieres[113][-1]='PTSUP';
 			// A titre indicatif
@@ -133,18 +140,24 @@ function tabmatieres($type_brevet){
 			$tabmatieres[122][-1]='NOTNONCA';
 
 			// Coefficients:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-2]=1;
 			}
+
+			$tabmatieres[5][-2]=2;
+
 			$tabmatieres[121][-2]=0;
 			$tabmatieres[122][-2]=0;
 
 			// Notes spéciales autorisées:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-3]='AB';
 			}
+
+			$tabmatieres[5][-3]='AB';
+
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
@@ -155,14 +168,14 @@ function tabmatieres($type_brevet){
 			$tabmatieres[110][-3]='AB DI';
 			$tabmatieres[113][-3]='AB DI';
 
-			$tabmatieres[114][-3]='MS ME MN AB';
+			//$tabmatieres[114][-3]='MS ME MN AB';
 			//$tabmatieres[115][-3]='MS ME AB';
-			$tabmatieres[115][-3]='MS ME MN AB';
+			//$tabmatieres[115][-3]='MS ME MN AB';
 			$tabmatieres[130][-3]='AB VA NV'; // 20100425
 
 
 			// Colonnes pour les fiches brevet:
-			for($j=101;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 				$tabmatieres[$j]['fb_col'][1]=20;
 				$tabmatieres[$j]['fb_col'][2]=20;
 			}
@@ -187,12 +200,12 @@ function tabmatieres($type_brevet){
 
 			// POUR NE PAS FAIRE D'ASSOCIATION AVEC DES MATIERES
 			// ET NE PAS FAIRE L'EXTRATION DES MOYENNES DANS LES MEMES TABLES
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['socle']='n';
 			}
-			$tabmatieres[114]['socle']='y';
-			$tabmatieres[115]['socle']='y';
+			//$tabmatieres[114]['socle']='y';
+			//$tabmatieres[115]['socle']='y';
 			$tabmatieres[130]['socle']='y'; // 20100425
 
 
@@ -222,14 +235,16 @@ function tabmatieres($type_brevet){
 			// COLLEGE, option de série DP6
 
 			// Initialisation
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][0]='';
 			}
+
+			$tabmatieres[5][0]='HISTOIRE DES ARTS';
 
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
 			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
-			$tabmatieres[103][0]='LANGUE VIVANTE 1';
+			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
 			$tabmatieres[104][0]='SCIENCES DE LA VIE ET DE LA TERRE';
 			$tabmatieres[105][0]='PHYSIQUE-CHIMIE';
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
@@ -245,8 +260,8 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[113][0]='OPTION FACULTATIVE (1)';
 			$tabmatieres[113][0]='OPTION FACULTATIVE';
 
-			$tabmatieres[114][0]='SOCLE B2I';
-			$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
+			//$tabmatieres[114][0]='SOCLE B2I';
+			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
 
 			$tabmatieres[116][0]='';
 			$tabmatieres[117][0]='';
@@ -259,18 +274,24 @@ function tabmatieres($type_brevet){
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
 
 			// Mode de calcul:
-			for($j=101;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 				$tabmatieres[$j][-1]='POINTS';
 			}
+
+			$tabmatieres[5][-1]='POINTS';
+
 			$tabmatieres[113][-1]='PTSUP';
 			$tabmatieres[121][-1]='NOTNONCA';
 			$tabmatieres[122][-1]='NOTNONCA';
 
 			// Coefficients:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-2]=1;
 			}
+
+			$tabmatieres[5][-2]=2;
+
 			// DP6
 			$tabmatieres[110][-2]=2;
 			// A titre indicatif
@@ -278,10 +299,13 @@ function tabmatieres($type_brevet){
 			$tabmatieres[122][-2]=0;
 
 			// Notes spéciales autorisées:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-3]='AB';
 			}
+
+			$tabmatieres[5][-3]='AB';
+
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
@@ -292,15 +316,15 @@ function tabmatieres($type_brevet){
 			$tabmatieres[110][-3]='AB DI';
 			$tabmatieres[113][-3]='AB DI';
 
-			$tabmatieres[114][-3]='MS ME MN AB';
+			//$tabmatieres[114][-3]='MS ME MN AB';
 			//$tabmatieres[115][-3]='MS ME AB';
-			$tabmatieres[115][-3]='MS ME MN AB';
+			//$tabmatieres[115][-3]='MS ME MN AB';
 
 			$tabmatieres[130][-3]='AB VA NV'; // 20100425
 
 			// Colonnes pour les fiches brevet:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['fb_col'][1]=20;
 				$tabmatieres[$j]['fb_col'][2]=20;
 			}
@@ -322,12 +346,12 @@ function tabmatieres($type_brevet){
 
 			// POUR NE PAS FAIRE D'ASSOCIATION AVEC DES MATIERES
 			// ET NE PAS FAIRE L'EXTRATION DES MOYENNES DANS LES MEMES TABLES
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['socle']='n';
 			}
-			$tabmatieres[114]['socle']='y';
-			$tabmatieres[115]['socle']='y';
+			//$tabmatieres[114]['socle']='y';
+			//$tabmatieres[115]['socle']='y';
 
 			$tabmatieres[130]['socle']='y'; // 20100425
 
@@ -489,15 +513,17 @@ function tabmatieres($type_brevet){
 			// PROFESSIONNELLE, sans option de série
 
 			// Initialisation
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][0]='';
 			}
 
+			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
-			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
+			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
 			//$tabmatieres[103][0]='LANGUE VIVANTE 1';
-			$tabmatieres[103][0]='LANGUE VIVANTE';
+			//$tabmatieres[103][0]='LANGUE VIVANTE';
 			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE OU SCIENCES PHYSIQUES';
 			$tabmatieres[104][0]='SCIENCES PHYSIQUES';
 			//$tabmatieres[104][0]='';
@@ -512,13 +538,13 @@ function tabmatieres($type_brevet){
 			$tabmatieres[112][0]='VIE SCOLAIRE';
 			$tabmatieres[113][0]='';
 
-			$tabmatieres[114][0]='SOCLE B2I';
+			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
-			$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
+			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
 
 			$tabmatieres[116][0]='';
 			$tabmatieres[117][0]='';
-			$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
+			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
 			$tabmatieres[119][0]='';
 			$tabmatieres[120][0]='';
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE EDUCATION CIVIQUE';
@@ -528,14 +554,16 @@ function tabmatieres($type_brevet){
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
 
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-1]='POINTS';
 			}
+
+			$tabmatieres[5][-1]='POINTS';
+
 			$tabmatieres[121][-1]='NOTNONCA';
 			//$tabmatieres[122][-1]='NOTNONCA';
 
-			$tabmatieres[118][-1]='PTSUP'; // 20100425
+			//$tabmatieres[118][-1]='PTSUP'; // 20100425
 
 			// PROBLEME: TECHNOLOGIE POINTS /60
 			//           GEPI ne doit donner que des notes sur 20.
@@ -545,18 +573,24 @@ function tabmatieres($type_brevet){
 			// Il faudrait donc considérer les deux matières commme optionnelles et on a alors un problème pour relever une note manquante...
 
 			// Coefficients:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-2]=1;
 			}
+
+			$tabmatieres[5][-2]=2;
+
 			$tabmatieres[108][-2]=3;
 			$tabmatieres[121][-2]=0;
 
 			// Notes spéciales autorisées:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-3]='AB';
 			}
+
+			$tabmatieres[5][-3]='AB';
+
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
@@ -564,15 +598,15 @@ function tabmatieres($type_brevet){
 			$tabmatieres[107][-3]='AB DI NN';
 			$tabmatieres[108][-3]='AB DI';
 
-			$tabmatieres[114][-3]='MS ME MN AB';
+			//$tabmatieres[114][-3]='MS ME MN AB';
 			//$tabmatieres[115][-3]='MS ME AB';
-			$tabmatieres[115][-3]='MS ME MN AB';
+			//$tabmatieres[115][-3]='MS ME MN AB';
 			$tabmatieres[130][-3]='AB VA NV'; // 20100425
 
 
 			// Colonnes pour les fiches brevet:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['fb_col'][1]=20;
 				$tabmatieres[$j]['fb_col'][2]=20;
 			}
@@ -580,8 +614,8 @@ function tabmatieres($type_brevet){
 			$tabmatieres[108]['fb_col'][1]=60;
 			$tabmatieres[108]['fb_col'][2]=40;
 			// DP6: Je n'ai pas le numéro pour la DP6... est-ce bien le 110
-			$tabmatieres[111]['fb_col'][1]="X";
-			$tabmatieres[111]['fb_col'][2]=60;
+			//$tabmatieres[111]['fb_col'][1]="X";
+			//$tabmatieres[111]['fb_col'][2]=60;
 			// Pas d'option facultative
 
 			/*
@@ -606,22 +640,22 @@ function tabmatieres($type_brevet){
 
 			// Il faudrait ajouter une ligne spéciale pour la DP6 alors que ce n'est pas compté dans cette série
 			//$tabmatieres[111]["lig_speciale"]="DÉCOUVERTE PROFESSIONNELLE<br />(module de 6 heures)";
-			$tabmatieres[111]["lig_speciale"]="DÉCOUVERTE PROFESSIONNELLE 6 heures";
+			//$tabmatieres[111]["lig_speciale"]="DÉCOUVERTE PROFESSIONNELLE 6 heures";
 
 
 			// Intitulé de la ligne pour la fiche brevet option DP6h
-			$tabmatieres[111]['fb_lig_alt']="Découverte professionnelle 6 heures";
+			//$tabmatieres[111]['fb_lig_alt']="Découverte professionnelle 6 heures";
 			// L'indice 111 n'est pas présent sinon en PROFESSIONNELLE sans option de série
 
 
 			// POUR NE PAS FAIRE D'ASSOCIATION AVEC DES MATIERES
 			// ET NE PAS FAIRE L'EXTRATION DES MOYENNES DANS LES MEMES TABLES
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['socle']='n';
 			}
-			$tabmatieres[114]['socle']='y';
-			$tabmatieres[115]['socle']='y';
+			//$tabmatieres[114]['socle']='y';
+			//$tabmatieres[115]['socle']='y';
 
 			$tabmatieres[130]['socle']='y'; //20100425
 
@@ -630,14 +664,17 @@ function tabmatieres($type_brevet){
 			// PROFESSIONNELLE, option de série DP6
 
 			// Initialisation
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][0]='';
 			}
+
+			$tabmatieres[5][0]='HISTOIRE DES ARTS';
 
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
 			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
-			$tabmatieres[103][0]='LANGUE VIVANTE 1';
+			//$tabmatieres[103][0]='LANGUE VIVANTE 1';
+			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
 			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE OU SCIENCES PHYSIQUES';
 			$tabmatieres[104][0]='SCIENCES PHYSIQUES';
 			//$tabmatieres[104][0]='';
@@ -653,13 +690,13 @@ function tabmatieres($type_brevet){
 			$tabmatieres[112][0]='VIE SCOLAIRE';
 			$tabmatieres[113][0]='';
 
-			$tabmatieres[114][0]='SOCLE B2I';
+			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
-			$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
+			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
 
 			$tabmatieres[116][0]='';
 			$tabmatieres[117][0]='';
-			$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
+			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
 
 			$tabmatieres[119][0]='';
 			$tabmatieres[120][0]='';
@@ -670,14 +707,17 @@ function tabmatieres($type_brevet){
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
 
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-1]='POINTS';
 			}
+
+			$tabmatieres[5][-1]='POINTS';
+
 			$tabmatieres[121][-1]='NOTNONCA';
 			//$tabmatieres[122][-1]='NOTNONCA';
 
-			$tabmatieres[118][-1]='PTSUP'; //20100425
+			//$tabmatieres[118][-1]='PTSUP'; //20100425
 
 			// PROBLEME: TECHNOLOGIE POINTS /60
 			//           GEPI ne doit donner que des notes sur 20.
@@ -687,20 +727,26 @@ function tabmatieres($type_brevet){
 			// Il faudrait donc considérer les deux matières commme optionnelles et on a alors un problème pour relever une note manquante...
 
 			// Coefficients:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-2]=1;
 			}
+
+			$tabmatieres[5][-2]=2;
+
 			$tabmatieres[108][-2]=2;
 			$tabmatieres[111][-2]=3;
 			// DP6: $tabmatieres[???][-2]=3;
 			$tabmatieres[121][-2]=0;
 
 			// Notes spéciales autorisées:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-3]='AB';
 			}
+
+			$tabmatieres[5][-3]='AB';
+
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
@@ -709,15 +755,15 @@ function tabmatieres($type_brevet){
 			$tabmatieres[108][-3]='AB DI';
 			$tabmatieres[111][-3]='AB DI';
 
-			$tabmatieres[114][-3]='MS ME MN AB';
+			//$tabmatieres[114][-3]='MS ME MN AB';
 			//$tabmatieres[115][-3]='MS ME AB';
-			$tabmatieres[115][-3]='MS ME MN AB';
+			//$tabmatieres[115][-3]='MS ME MN AB';
 
 			$tabmatieres[130][-3]='AB VA NV'; // 20100512
 
 			// Colonnes pour les fiches brevet:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['fb_col'][1]=20;
 				$tabmatieres[$j]['fb_col'][2]=20;
 			}
@@ -752,12 +798,12 @@ function tabmatieres($type_brevet){
 
 			// POUR NE PAS FAIRE D'ASSOCIATION AVEC DES MATIERES
 			// ET NE PAS FAIRE L'EXTRATION DES MOYENNES DANS LES MEMES TABLES
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['socle']='n';
 			}
-			$tabmatieres[114]['socle']='y';
-			$tabmatieres[115]['socle']='y';
+			//$tabmatieres[114]['socle']='y';
+			//$tabmatieres[115]['socle']='y';
 
 			$tabmatieres[130]['socle']='y';
 
@@ -766,16 +812,18 @@ function tabmatieres($type_brevet){
 			// PROFESSIONNELLE, option de série AGRICOLE
 
 			// Initialisation
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][0]='';
 			}
 
+			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
-			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
-			$tabmatieres[103][0]='LANGUE VIVANTE 1';
+			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
+			//$tabmatieres[103][0]='LANGUE VIVANTE 1';
 			$tabmatieres[104][0]='';
-			$tabmatieres[105][0]='ECONOMIE FAMILIALE ET SOCIALE';
+			$tabmatieres[105][0]='PREVENTION SANTE ENVIRONNEMENT';
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
 			$tabmatieres[107][0]='EDUCATION SOCIO-CULTURELLE';
 			// CES TROIS Là DEVRAIENT ETRE SUR UNE MEME LIGNE POUR LES FICHES BREVET
@@ -786,13 +834,13 @@ function tabmatieres($type_brevet){
 			$tabmatieres[112][0]='VIE SCOLAIRE';
 			$tabmatieres[113][0]='';
 
-			$tabmatieres[114][0]='SOCLE B2I';
+			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
-			$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; //20100425
+			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; //20100425
 
 			$tabmatieres[116][0]='';
 			$tabmatieres[117][0]='';
-			$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
+			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
 			$tabmatieres[119][0]='';
 			$tabmatieres[120][0]='';
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE EDUCATION CIVIQUE';
@@ -803,20 +851,26 @@ function tabmatieres($type_brevet){
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
 
 
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-1]='POINTS';
 			}
+
+			$tabmatieres[5][-1]='POINTS';
+
 			$tabmatieres[121][-1]='NOTNONCA';
 			//$tabmatieres[122][-1]='NOTNONCA';
 
-			$tabmatieres[118][-1]='PTSUP';
+			//$tabmatieres[118][-1]='PTSUP';
 
 			// Coefficients:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-2]=1;
 			}
+
+			$tabmatieres[5][-2]=2;
+
 			//$tabmatieres[108][-2]=3;
 			//$tabmatieres[109][-2]=3;
 			//$tabmatieres[110][-2]=3;
@@ -824,10 +878,13 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[122][-2]=0;
 
 			// Notes spéciales autorisées:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-3]='AB';
 			}
+
+			$tabmatieres[5][-3]='AB';
+
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
 			$tabmatieres[106][-3]='AB DI NN';
@@ -836,9 +893,9 @@ function tabmatieres($type_brevet){
 			$tabmatieres[109][-3]='AB DI';
 			$tabmatieres[110][-3]='AB DI';
 
-			$tabmatieres[114][-3]='MS ME MN AB';
+			//$tabmatieres[114][-3]='MS ME MN AB';
 			//$tabmatieres[115][-3]='MS ME AB';
-			$tabmatieres[115][-3]='MS ME MN AB';
+			//$tabmatieres[115][-3]='MS ME MN AB';
 
 			$tabmatieres[130][-3]='AB VA NV'; // 20100425
 
@@ -846,8 +903,8 @@ function tabmatieres($type_brevet){
 			$tabmatieres["num_fb_col"]=1;
 
 			// Colonnes pour les fiches brevet:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['fb_col'][1]=20;
 			}
 			// Technologie
@@ -857,7 +914,7 @@ function tabmatieres($type_brevet){
 			// Il n'y a qu'une seule colonne pour les fiches brevet en agricole
 			/*
 			// Colonnes pour les fiches brevet:
-			for($j=101;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=122;$j++){
 				$tabmatieres[$j]['fb_col'][1]=20;
 				$tabmatieres[$j]['fb_col'][2]=20;
 			}
@@ -876,7 +933,7 @@ function tabmatieres($type_brevet){
 
 
 			// Colonnes pour les fiches brevet:
-			for($j=101;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=122;$j++){
 				$tabmatieres[$j]['fb_col'][1]=20;
 				$tabmatieres[$j]['fb_col'][2]=20;
 			}
@@ -895,12 +952,12 @@ function tabmatieres($type_brevet){
 
 			// POUR NE PAS FAIRE D'ASSOCIATION AVEC DES MATIERES
 			// ET NE PAS FAIRE L'EXTRATION DES MOYENNES DANS LES MEMES TABLES
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['socle']='n';
 			}
-			$tabmatieres[114]['socle']='y';
-			$tabmatieres[115]['socle']='y';
+			//$tabmatieres[114]['socle']='y';
+			//$tabmatieres[115]['socle']='y';
 
 			$tabmatieres[130]['socle']='y'; // 20100425
 
@@ -909,16 +966,18 @@ function tabmatieres($type_brevet){
 			// TECHNOLOGIQUE, sans option de série
 
 			// Initialisation
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][0]='';
 			}
 
+			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
-			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
-			$tabmatieres[103][0]='LANGUE VIVANTE 1';
+			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
+			//$tabmatieres[103][0]='LANGUE VIVANTE 1';
 			$tabmatieres[104][0]='SCIENCES PHYSIQUES';
-			$tabmatieres[105][0]='ECONOMIE FAMILIALE ET SOCIALE';
+			$tabmatieres[105][0]='PREVENTION SANTE ENVIRONNEMENT';
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
 			$tabmatieres[107][0]='EDUCATION ARTISTIQUE';
 			$tabmatieres[108][0]='TECHNOLOGIE';
@@ -928,13 +987,13 @@ function tabmatieres($type_brevet){
 			$tabmatieres[112][0]='VIE SCOLAIRE';
 			$tabmatieres[113][0]='';
 
-			$tabmatieres[114][0]='SOCLE B2I';
+			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
-			$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; //20100425
+			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; //20100425
 
 			$tabmatieres[116][0]='';
 			$tabmatieres[117][0]='';
-			$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
+			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
 
 			$tabmatieres[119][0]='';
 			$tabmatieres[120][0]='';
@@ -945,32 +1004,41 @@ function tabmatieres($type_brevet){
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
 
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-1]='POINTS';
 			}
+
+			$tabmatieres[5][-1]='POINTS';
+
 			$tabmatieres[121][-1]='NOTNONCA';
 
-			$tabmatieres[118][-1]='PTSUP'; //20100425
+			//$tabmatieres[118][-1]='PTSUP'; //20100425
 
 			// PROBLEME: TECHNOLOGIE POINTS /40
 			//           GEPI ne doit donner que des notes sur 20.
 			//           Il faudrait donc multiplier par deux...
 
 			// Coefficients:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-2]=1;
 			}
+
+			$tabmatieres[5][-2]=2;
+
 			$tabmatieres[108][-2]=2;
 			$tabmatieres[121][-2]=0;
 			//$tabmatieres[122][-2]=0;
 
 			// Notes spéciales autorisées:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-3]='AB';
 			}
+
+			$tabmatieres[5][-3]='AB';
+
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
@@ -978,15 +1046,15 @@ function tabmatieres($type_brevet){
 			$tabmatieres[107][-3]='AB DI NN';
 			$tabmatieres[108][-3]='AB DI';
 
-			$tabmatieres[114][-3]='MS ME MN AB';
+			//$tabmatieres[114][-3]='MS ME MN AB';
 			//$tabmatieres[115][-3]='MS ME AB';
-			$tabmatieres[115][-3]='MS ME MN AB';
+			//$tabmatieres[115][-3]='MS ME MN AB';
 
 			$tabmatieres[130][-3]='AB VA NV'; // 20100425
 
 			// Colonnes pour les fiches brevet:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['fb_col'][1]=20;
 				$tabmatieres[$j]['fb_col'][2]=20;
 			}
@@ -1017,12 +1085,12 @@ function tabmatieres($type_brevet){
 
 			// POUR NE PAS FAIRE D'ASSOCIATION AVEC DES MATIERES
 			// ET NE PAS FAIRE L'EXTRATION DES MOYENNES DANS LES MEMES TABLES
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['socle']='n';
 			}
-			$tabmatieres[114]['socle']='y';
-			$tabmatieres[115]['socle']='y';
+			//$tabmatieres[114]['socle']='y';
+			//$tabmatieres[115]['socle']='y';
 
 			$tabmatieres[130]['socle']='y'; // 20100425
 
@@ -1031,16 +1099,18 @@ function tabmatieres($type_brevet){
 			// TECHNOLOGIQUE, option de série DP6
 
 			// Initialisation
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][0]='';
 			}
 
+			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
-			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
-			$tabmatieres[103][0]='LANGUE VIVANTE 1';
+			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
+			//$tabmatieres[103][0]='LANGUE VIVANTE 1';
 			$tabmatieres[104][0]='SCIENCES PHYSIQUES';
-			$tabmatieres[105][0]='ECONOMIE FAMILIALE ET SOCIALE';
+			$tabmatieres[105][0]='PREVENTION SANTE ENVIRONNEMENT';
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
 			$tabmatieres[107][0]='EDUCATION ARTISTIQUE';
 			$tabmatieres[108][0]='TECHNOLOGIE';
@@ -1050,13 +1120,13 @@ function tabmatieres($type_brevet){
 			$tabmatieres[112][0]='VIE SCOLAIRE';
 			$tabmatieres[113][0]='';
 
-			$tabmatieres[114][0]='SOCLE B2I';
+			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
-			$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
+			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
 
 			$tabmatieres[116][0]='';
 			$tabmatieres[117][0]='';
-			$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100512
+			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100512
 			$tabmatieres[119][0]='';
 			$tabmatieres[120][0]='';
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE EDUCATION CIVIQUE';
@@ -1066,10 +1136,13 @@ function tabmatieres($type_brevet){
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
 
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-1]='POINTS';
 			}
+
+			$tabmatieres[5][-1]='POINTS';
+
 			$tabmatieres[121][-1]='NOTNONCA';
 
 			// PROBLEME: TECHNOLOGIE POINTS /40
@@ -1077,20 +1150,26 @@ function tabmatieres($type_brevet){
 			//           Il faudrait donc multiplier par deux...
 
 			// Coefficients:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-2]=1;
 			}
+
+			$tabmatieres[5][-2]=2;
+
 			//$tabmatieres[108][-2]=2;
 			$tabmatieres[110][-2]=2;
 			$tabmatieres[121][-2]=0;
 			//$tabmatieres[122][-2]=0;
 
 			// Notes spéciales autorisées:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-3]='AB';
 			}
+
+			$tabmatieres[5][-3]='AB';
+
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
@@ -1099,16 +1178,16 @@ function tabmatieres($type_brevet){
 			$tabmatieres[108][-3]='AB DI';
 			$tabmatieres[110][-3]='AB DI';
 
-			$tabmatieres[114][-3]='MS ME MN AB';
+			//$tabmatieres[114][-3]='MS ME MN AB';
 			//$tabmatieres[115][-3]='MS ME AB';
-			$tabmatieres[115][-3]='MS ME MN AB';
+			//$tabmatieres[115][-3]='MS ME MN AB';
 
 			$tabmatieres[130][-3]='AB VA NV'; // 20100512
 
 
 			// Colonnes pour les fiches brevet:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['fb_col'][1]=20;
 				$tabmatieres[$j]['fb_col'][2]=20;
 			}
@@ -1138,12 +1217,12 @@ function tabmatieres($type_brevet){
 
 			// POUR NE PAS FAIRE D'ASSOCIATION AVEC DES MATIERES
 			// ET NE PAS FAIRE L'EXTRATION DES MOYENNES DANS LES MEMES TABLES
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['socle']='n';
 			}
-			$tabmatieres[114]['socle']='y';
-			$tabmatieres[115]['socle']='y';
+			//$tabmatieres[114]['socle']='y';
+			//$tabmatieres[115]['socle']='y';
 
 			$tabmatieres[130]['socle']='y'; // 20100425
 
@@ -1152,16 +1231,18 @@ function tabmatieres($type_brevet){
 			// TECHNOLOGIQUE, option de série AGRICOLE
 
 			// Initialisation
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][0]='';
 			}
 
+			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
-			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
-			$tabmatieres[103][0]='LANGUE VIVANTE 1';
+			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
+			//$tabmatieres[103][0]='LANGUE VIVANTE 1';
 			$tabmatieres[104][0]='SCIENCES PHYSIQUES';
-			$tabmatieres[105][0]='ECONOMIE FAMILIALE ET SOCIALE';
+			$tabmatieres[105][0]='PREVENTION SANTE ENVIRONNEMENT';
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
 			$tabmatieres[107][0]='EDUCATION SOCIOCULTURELLE';
 			$tabmatieres[108][0]='SCIENCES BIOLOGIQUES';
@@ -1171,12 +1252,12 @@ function tabmatieres($type_brevet){
 			$tabmatieres[112][0]='VIE SCOLAIRE';
 			$tabmatieres[113][0]='';
 
-			$tabmatieres[114][0]='SOCLE B2I';
-			$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
+			//$tabmatieres[114][0]='SOCLE B2I';
+			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
 
 			$tabmatieres[116][0]='';
 			$tabmatieres[117][0]='';
-			$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
+			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
 			$tabmatieres[119][0]='';
 			$tabmatieres[120][0]='';
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE EDUCATION CIVIQUE';
@@ -1186,27 +1267,36 @@ function tabmatieres($type_brevet){
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
 
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-1]='POINTS';
 			}
+
+			$tabmatieres[5][-1]='POINTS';
+
 			$tabmatieres[121][-1]='NOTNONCA';
 
-			$tabmatieres[118][-1]='PTSUP';
+			//$tabmatieres[118][-1]='PTSUP';
 
 			// Coefficients:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-2]=1;
 			}
+
+			$tabmatieres[5][-2]=2;
+
 			//$tabmatieres[109][-2]=2;
 			$tabmatieres[121][-2]=0;
 
 			// Notes spéciales autorisées:
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-3]='AB';
 			}
+
+			$tabmatieres[5][-3]='AB';
+
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
@@ -1215,16 +1305,16 @@ function tabmatieres($type_brevet){
 			$tabmatieres[108][-3]='AB DI';
 			$tabmatieres[109][-3]='AB DI';
 
-			$tabmatieres[114][-3]='MS ME MN AB';
+			//$tabmatieres[114][-3]='MS ME MN AB';
 			//$tabmatieres[115][-3]='MS ME AB';
-			$tabmatieres[115][-3]='MS ME MN AB';
+			//$tabmatieres[115][-3]='MS ME MN AB';
 
 			$tabmatieres[130][-3]='AB VA NV'; // 20100512
 
 			// Colonnes pour les fiches brevet:
 			// Il n'y a qu'une seule colonne pour les fiches brevet en agricole
 			/*
-			for($j=101;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=122;$j++){
 				$tabmatieres[$j]['fb_col'][1]=20;
 				$tabmatieres[$j]['fb_col'][2]=20;
 			}
@@ -1243,12 +1333,12 @@ function tabmatieres($type_brevet){
 
 			// POUR NE PAS FAIRE D'ASSOCIATION AVEC DES MATIERES
 			// ET NE PAS FAIRE L'EXTRATION DES MOYENNES DANS LES MEMES TABLES
-			//for($j=101;$j<=122;$j++){
-			for($j=101;$j<=$indice_max_matieres;$j++){ // 20100425
+			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['socle']='n';
 			}
-			$tabmatieres[114]['socle']='y';
-			$tabmatieres[115]['socle']='y';
+			//$tabmatieres[114]['socle']='y';
+			//$tabmatieres[115]['socle']='y';
 
 			$tabmatieres[130]['socle']='y';
 
@@ -1294,6 +1384,8 @@ $tab_liste_notes_non_numeriques=array("MS","ME","MN","AB","DI","NN","VA","NV");
 function tab_extract_moy($tab_ele,$id_clas) {
 	global $num_eleve, $classe, $tab_mat;
 	global $indice_max_matieres;
+	global $indice_premiere_matiere;
+	global $compteur_champs_notes;
 
 	$affiche_enregistrements_precedents="y";
 	//global $affiche_enregistrements_precedents;
@@ -1364,7 +1456,7 @@ function tab_extract_moy($tab_ele,$id_clas) {
 	echo "</tr>\n";
 
 	$alt=1;
-	for($j=101;$j<=$indice_max_matieres;$j++){
+	for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 
 
 		// Initialisation de la moyenne pour la matière NOTANET courante.
@@ -1573,7 +1665,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 						//La note globale attribuée aux élèves dans chaque discipline, à l'issue des deux classes, est calculée sur la base de la moyenne des deux notes attribuées en quatrième et en troisième. Chaque note globale est affectée du coefficient défini par l'arrêté du 18 août 1999. Les notes globales, arrondies au demi point supérieur, sont arrêtées par le conseil des professeurs du troisième trimestre.
 						$moyenne_arrondie=ceil($moyenne*2)/2;
 						//echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='".$moyenne_arrondie."' size='6' /></td>\n";
-						echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='".$moyenne_arrondie."' size='6' />";
+						//echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='".$moyenne_arrondie."' size='6' />";
+						echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' id='n".$compteur_champs_notes."' value='".$moyenne_arrondie."' size='6' onKeyDown=\"clavier(this.id,event);\" autocomplete=\"off\" onfocus=\"javascript:this.select()\" />";
+						$compteur_champs_notes++;
 						//echo "<input type='hidden' name='matiere_".$j."_[$num_eleve]' value='".$id_matiere[$j][$k]."' size='6' />";
 						echo "</td>\n";
 
@@ -1598,7 +1692,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 						echo "<td style='font-weight:bold; text-align:center;$bgmoy'>X</td>\n";
 						//echo "<td><input type='text' name='moy.$j.$k[$num_eleve]' value='' size='6'></td>\n";
 						//echo "<td><input type='text' name='moy_$j"."_"."$k[$num_eleve]' value='' size='6'></td>\n";
-						echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='' size='6' /></td>\n";
+						//echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='' size='6' /></td>\n";
+						echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' id='n".$compteur_champs_notes."' value='' size='6' onKeyDown=\"clavier(this.id,event);\" autocomplete=\"off\" onfocus=\"javascript:this.select()\" /></td>\n";
+						$compteur_champs_notes++;
 						//echo "<td></td>\n";
 					}
 					/*
@@ -1824,11 +1920,11 @@ function tab_extract_moy($tab_ele,$id_clas) {
 			// Un élève a des notes dans deux options d'un même choix NOTANET (par exemple AGL1 et ALL1)
 			if($info_erreur==""){
 				//$info_erreur="Plusieurs options d'une même matière.";
-				$info_erreur="Plusieurs options d'une même matière: <b>$liste_matieres_gepi</b><br />(<span style='font-size:x-small'><i>il faudra vider le champ de formulaire correspondant à la matière à abandonner</i></span>)";
+				$info_erreur="Plusieurs options d'une même matière: <b>$liste_matieres_gepi</b><br />(<span style='font-size:x-small'><i>il faudra vider le champ de formulaire correspondant à la matière à abandonner</i></span>)<br />";
 			}
 			else{
 				//$info_erreur=$info_erreur." - Plusieurs options d'une même matière.";
-				$info_erreur=$info_erreur."Plusieurs options d'une même matière: <b>$liste_matieres_gepi</b><br />(<span style='font-size:x-small'><i>il faudra vider le champ de formulaire correspondant à la matière à abandonner</i></span>)";
+				$info_erreur=$info_erreur."Plusieurs options d'une même matière: <b>$liste_matieres_gepi</b><br />(<span style='font-size:x-small'><i>il faudra vider le champ de formulaire correspondant à la matière à abandonner</i></span>)<br />";
 			}
 		}
 	}
@@ -1848,13 +1944,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 		$TOT=0;
 
 
-
-
-
-
 		echo "<p>\n";
 		echo "Portion de fichier générée:<br />";
-		for($j=101;$j<=$indice_max_matieres;$j++){
+		for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 			// Pour les matières NOTANET existantes:
 			if($tabmatieres[$j][0]!=''){
 				// Si une moyenne a été extraite
@@ -1862,7 +1954,7 @@ function tab_extract_moy($tab_ele,$id_clas) {
 				//echo "\$tabmatieres[$j][-1]=".$tabmatieres[$j][-1]."<br />\n";
 				//echo "\$moy_NOTANET[$j]=".$moy_NOTANET[$j]."<br />\n";
 				if($moy_NOTANET[$j]!=""){
-					$ligne_NOTANET="$INE|$j";
+					$ligne_NOTANET="$INE|".sprintf("%03d",$j);
 
 					if($tabmatieres[$j]['socle']=="y"){
 						$ligne_NOTANET=$ligne_NOTANET."|".$moy_NOTANET[$j]."|";
@@ -1908,6 +2000,24 @@ function tab_extract_moy($tab_ele,$id_clas) {
 				}
 			}
 		}
+
+		// Dans le cas brevet PRO, il ne faut retenir qu'une seule des deux matières 103 et 104
+		if(($tab_ele['type_brevet']==2)||($tab_ele['type_brevet']==3)) {
+			$num_matiere_LV1=103;
+			$num_matiere_ScPhy=104;
+			if(($moy_NOTANET[$num_matiere_LV1]!="AB")&&($moy_NOTANET[$num_matiere_LV1]!="DI")&&($moy_NOTANET[$num_matiere_LV1]!="NN")){
+				if(($moy_NOTANET[$num_matiere_ScPhy]!="AB")&&($moy_NOTANET[$num_matiere_ScPhy]!="DI")&&($moy_NOTANET[$num_matiere_ScPhy]!="NN")) {
+					// Il ne faut retenir qu'une seule des deux notes
+					if($moy_NOTANET[$num_matiere_ScPhy]>$moy_NOTANET[$num_matiere_LV1]) {
+						$TOT-=round($moy_NOTANET[$num_matiere_LV1]*$tabmatieres[$num_matiere_LV1][-2]*2)/2;
+					}
+					else {
+						$TOT-=round($moy_NOTANET[$num_matiere_ScPhy]*$tabmatieres[$num_matiere_ScPhy][-2]*2)/2;
+					}
+				}
+			}
+		}
+
 		//echo "$INE|TOT|$TOT|<br />\n";
 		echo colore_ligne_notanet("$INE|TOT|".sprintf("%02.2f",$TOT)."|")."<br />\n";
 		$tabnotanet[]="$INE|TOT|".sprintf("%02.2f",$TOT)."|";
@@ -2288,4 +2398,16 @@ function fs_pt2mm($fs) {
 	return $fs*26/100;
 }
 
+/*
+// Liste de codes du module OOo
+	[eleves.101.0]  ->      note de l'élève non coefficientée
+	[eleves.101.1]  ->      note de l'élève coefficientée
+	[eleves.101.2]  ->      Nom de matière Gepi
+	[eleves.101.3]  ->      moyenne de la classe
+	[eleves.101.4]  ->      appréciation
+	où 101 est le numéro de matière
+	[eleves.totalpoints] /[eleves.totalcoef]
+	[eleves.appreciation]	->	Avis du chef d'etablissement
+	...
+*/
 ?>

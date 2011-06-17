@@ -1,40 +1,43 @@
 <?php
-/**
- * Plugin Agenda pour Spip 2.0
- * Licence GPL
- * 
- *
- */
-
 
 /**
- * Recuperer les champs date_xx et heure_xx, verifier leur coherence et les reformater
- *
- * @param string $suffixe
- * @param bool $horaire
- * @param array $erreurs
- * @return int
+ * Compat ascendante pour d'autre plugins
+ * http://zone.spip.org/trac/spip-zone/changeset/36546
  */
+
 function agenda_verifier_corriger_date_saisie($suffixe,$horaire,&$erreurs){
-	include_spip('inc/filtres');
-	$date = _request("date_$suffixe").($horaire?' '.trim(_request("heure_$suffixe")).':00':'');
-	$date = recup_date($date);
-	$ret = null;
-	if (!$ret=mktime(0,0,0,$date[1],$date[2],$date[0]))
-		$erreurs["date_$suffixe"] = _L('date incorrecte');
-	elseif (!$ret=mktime($date[3],$date[4],$date[5],$date[1],$date[2],$date[0]))
-		$erreurs["date_$suffixe"] = _L('heure incorrecte');
-	if ($ret){
-		if (trim(_request("date_$suffixe")!==($d=date('d/m/Y',$ret)))){
-			$erreurs["date_$suffixe"] = _L('saisie corrigee');
-			set_request("date_$suffixe",$d);
-		}
-		if ($horaire AND trim(_request("heure_$suffixe")!==($h=date('H:i',$ret)))){
-			$erreurs["heure_$suffixe"] = _L('saisie corrigee');
-			set_request("heure_$suffixe",$h);
-		}
+	include_spip('inc/date_gestion');
+	return verifier_corriger_date_saisie($suffixe,$horaire,$erreurs);
+}
+
+
+/**
+ * Calcul d'une hierarchie
+ * (liste des id_rubrique contenants une rubrique donnee)
+ * (contrairement a la fonction calcul_branche_in du core qui calcule les
+ * rubriques contenues)
+ *
+ * @param mixed $id
+ * @return string
+ */
+function calcul_hierarchie_in($id) {
+
+	// normaliser $id qui a pu arriver comme un array, comme un entier, ou comme une chaine NN,NN,NN
+	if (!is_array($id)) $id = explode(',',$id);
+	$id = join(',', array_map('intval', $id));
+
+	// Notre branche commence par la rubrique de depart
+	$hier = $id;
+
+	// On ajoute une generation (les filles de la generation precedente)
+	// jusqu'a epuisement
+	while ($parents = sql_allfetsel('id_parent', 'spip_rubriques',
+	sql_in('id_rubrique', $id))) {
+		$id = join(',', array_map('reset', $parents));
+		$hier .= ',' . $id;
 	}
-	return $ret;
+
+	return $hier;
 }
 
 ?>

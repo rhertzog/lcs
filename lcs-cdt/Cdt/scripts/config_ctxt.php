@@ -1,12 +1,13 @@
-<?
+<?php
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de personnalisation du cahier de textes -
 			_-=-_
+   "Valid XHTML 1.0 Strict"
    ============================================= */
 //inclusion fichier liste des classes
 include ('../Includes/data.inc.php');
@@ -37,6 +38,8 @@ if ($code!='s61lyc6uby54trh')
 	}
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) exit;
 	//si la page est applée par un utilisateur non identifié,
 		if (!isset($_SESSION['cequi'])) {exit;}
 		// autorisation d'accés ?  si pas prof, non autorisé
@@ -49,23 +52,20 @@ session_name("Cdt_Lcs");
 }
 		
 ?>
-<! config_ctxt.php version 1.0 par Ph LECLERC - Lgt "Arcisse de Caumont" 14400 BAYEUX - philippe.leclerc1@ac-caen.fr >
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
-	<TITLE>Personnalisation du cahier textes</TITLE>
-	<meta name="generator" content="Bluefish 1.0.7">
-	<META NAME="CREATED" CONTENT="20041027;9273332">
-	<META NAME="CHANGED" CONTENT="20041029;16402790">
-	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
-	<link  href="../style/navlist-prof.css" rel=StyleSheet type="text/css">
-	<link  href="../style/navlist-eleve.css" rel=StyleSheet type="text/css">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<title>Personnalisation du cahier de textes num&eacute;rique</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link href="../style/style.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
+	<link  href="../style/navlist-eleve.css" rel="stylesheet" type="text/css" />
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-</HEAD>
-<BODY>
+</head>
+<body>
 <?php
 //recherche des groupes cours
 $ind=count($classe);
@@ -107,6 +107,7 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 	$mati= explode(":",$enrg[1]);
 	$mati[1]=preg_replace ( "/[\r\n]+/", "", $mati[1] );
 	$ong=$enrg[0].":".$mati[1];
+	$ong=mb_ereg_replace("[[:blank:]]$","",$ong);
 	if (!in_array($ong,$tab) && $enrg[0]!="" && $mati[1]!="")
 		{
 		$tab[$loop]=$ong;
@@ -116,8 +117,6 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 }
 mysql_close();
 }
-
-
 	
 // Connexion à la base de données Cdt	
 require_once ('../Includes/config.inc.php');
@@ -140,14 +139,16 @@ if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
 	$rq="";
 	// Vérifier $matiere  et la débarrasser de tout antislash et tags possibles
 	if (strlen($_POST['matiere']) > 0)
-		{ 		$matiere  = addSlashes(strip_tags(stripslashes($_POST['matiere'])));}
+		{ 	
+			$matiR = mb_ereg_replace("&|[[:blank:]]","_",$_POST['matiere']);	
+			$matiere  = utf8_decode(addSlashes(strip_tags(stripslashes($matiR))));}
 		else
 			{ // Si aucun commentaire n'a été saisi
 			  $matiere = "";
 			}
 	// Vérifier $préfixe et la débarrasser de tout antislash et tags possibles
 	if (strlen($_POST['prefixe']) > 0)
-		{ 		$prefixe= addSlashes(strip_tags(stripslashes($_POST['prefixe'])));	}
+		{ 		$prefixe= utf8_decode(addSlashes(strip_tags(stripslashes($_POST['prefixe']))));	}
 		else
 			{ // Si aucun commentaire n'a été saisi
 			  $prefixe= "";
@@ -193,7 +194,7 @@ if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
 //§2. SUPPRESSION D'UNE RUBRIQUE
 
 //si la suppression d'une rubrique est confirmée
-if (isset($_GET['delrub'])&& isset($_GET['num']) && $_GET['TA']==$_SESSION['RT']) 
+if (isset($_GET['delrub'])&& isset($_GET['num']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF']))) 
 	{
 	$action=$_GET['delrub'];
 	$cible=$_GET['num'];
@@ -232,8 +233,8 @@ if (isset($_GET['modrub'])&& isset($_GET['num']))
 		{while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 		{
 		$val_classe=$enrg[1];
-		$val_matiere=$enrg[2];
-		$val_prefix=$enrg[3];
+		$val_matiere=utf8_encode($enrg[2]);
+		$val_prefix=utf8_encode($enrg[3]);
 		$val_edt=$enrg[4];
 		}}
 	} 
@@ -254,10 +255,10 @@ $loop=0;
 while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 	{
 	$clas[$loop]=$enrg[0]; //classe
-	$mat[$loop]=$enrg[1]; // matiere
+	$mat[$loop]=utf8_encode($enrg[1]); // matiere
 	$numero[$loop]=$enrg[2];//numéro de la rubrique
 	$prof[$loop]=$enrg[3]; // nom du prof
-	$pref[$loop]=$enrg[4]; //préfixe
+	$pref[$loop]=utf8_encode($enrg[4]); //préfixe
 	$edt[$loop]=$enrg[5];//edt
 	$loop++;
 	}
@@ -267,125 +268,129 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
 ?>
 <div id="cfg-container">
 <div id="cfg-contenu">
+<h1 class='title'>Personnalisation du cahier de textes de <span class="evidence"> <?echo $_SESSION['nomcomplet'];?></span></h1>
 <form id="cfg-form" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>?bn16drgv2r=s61lyc6uby54trh" method="post">
-<H1 class='title'><U>Personnalisation du cahier de textes de</U> &nbsp<FONT COLOR="#990000"><?echo $_SESSION['nomcomplet'];?></FONT></h1>
+<p><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" /></p>
 <ol>
-<li>Cr&eacute;ation des rubriques (onglets) <br />
-		<ul>
+<li>Cr&eacute;ation des rubriques (onglets) 
+<ul>
 <?php
 		if (count($tab)>0) 
 		{
 		echo '<li> Selectionnez le cours de votre emploi du temps : ';
-		echo "<select name='cours_edt'";
-		if (!isset($_GET['modrub'])) echo "onChange='submit()'";
-		echo " >\n";
-		echo "<option valeur='--'>--</option>\n";
-		foreach ($tab as $clé => $valeur)
+		echo '<select name="cours_edt"';
+		if (!isset($_GET['modrub'])) echo ' onchange="submit()"';
+		echo ' >';
+		echo '<option value="--">--</option>';
+		foreach ($tab as $cle => $valeur)
 		    {
 		    if (!in_array($valeur,$edt)) 
 		    {
-			    echo "<option valeur=\"$valeur\"";
-				if ($valeur==$val_edt) {echo 'selected';}
-				echo ">$valeur</option>\n";
+			    echo '<option value="'.htmlentities($valeur).'"';
+				if (htmlentities($valeur)==htmlentities($val_edt) ){echo ' selected="selected"';}
+				echo '>'.htmlentities($valeur).'</option>';
 	  			}
 	  		}
-  		echo "</select>\n</li>";
+  		echo '</select></li>';
 		}
 		if (count($tab)>0)  echo '<li>Modifiez s\'il y a lieu le nom de la classe ou du groupe : ';
-		else echo '<li>Choisissez votre classe ou votre groupe :'; 
+		else echo '<li>Choisissez votre classe ou votre groupe : ';
 		//liste de selection de la classe
-		echo "<select id='laclasse' name='div'>\n";
-		echo "<option valeur='--'>--</option>\n";
-		foreach ($classe as $clé => $valeur)
+		echo '<select id="laclasse" name="div">';
+		echo '<option value="--">--</option>';
+		foreach ($classe as $cle => $valeur)
 		    {
-		    echo "<option valeur=\"$valeur\"";
-			if ($valeur==$val_classe) {echo 'selected';}
-			echo ">$valeur</option>\n";
+		    echo '<option value="'.$valeur.'"';
+			if ($valeur==$val_classe) {echo ' selected="selected"';}
+			echo '>'.$valeur.'</option>';
   			}
-  		echo "</select>\n</li>";
-  		if (count($tab)>0)  echo '<li>Modifiez s\'il y a lieu le nom de la matière : ';
+  		echo '</select></li>';
+  		if (count($tab)>0)  echo '<li>Modifiez s\'il y a lieu le nom de la mati&egrave;re : ';
 		else echo '<li>Indiquez la mati&egrave;re enseign&eacute;e : ';
-?>		
-		<INPUT TYPE=TEXT id="lamat" NAME="matiere" VALUE="<?php echo $val_matiere ?>" SIZE=20 MAXLENGTH=20></li>
-		</ul>
-	<li>Sur	les onglets du <B>cahier de textes de vos &eacute;l&egrave;ves</B> apparaitront la mati&egrave;re enseign&eacute;e et votre nom
+		echo '<input type="text" id="lamat" name="matiere" value="'.$val_matiere.'" size="20" maxlength="20" /></li>';
+?>
+</ul>
+</li>
+	<li>Sur	les onglets du <b>cahier de textes de vos &eacute;l&egrave;ves</b> apparaitront la mati&egrave;re enseign&eacute;e et votre nom
 		pr&eacute;c&eacute;d&eacute; d&rsquo;un &quot;&nbsp;pr&eacute;fixe&nbsp;&quot;
 		<ul>
-			<li>Indiquez le <B>pr&eacute;fixe </B> que vous souhaitez voir appara&icirc;tre (M, Mme, pr&eacute;nom abr&eacute;g&eacute;, ....) : <INPUT TYPE=TEXT NAME="prefixe" Value="<?php echo $val_prefix ?>"SIZE=10></li>
-		</ul>
+			<li>Indiquez le <b>pr&eacute;fixe </b> que vous souhaitez voir appara&icirc;tre (M, Mme, pr&eacute;nom abr&eacute;g&eacute;, ....) : 
+                        <input type="text" name="prefixe" value="<?php echo $val_prefix ?>" size="10" /></li>
+		</ul></li>
 </ol>
 		
 <div id="cfg-btn">	
 		<input type="hidden" name="numrub" value= "<?php echo $cible ; ?>" />
 		<?php if (isset($_GET['modrub'])&& isset($_GET['num'])) 
-		{echo ('<INPUT class="modif" TYPE=SUBMIT NAME="modifier" VALUE="">');}
-		else {echo ('<INPUT class="enreg" TYPE=SUBMIT NAME="enregistrer" VALUE="">');}
-		if ($nb>0) {echo('<INPUT class="retour" TYPE=SUBMIT NAME="retour" VALUE="">');}
+		{echo ('<input class="modif" type="submit" name="modifier" value="" />');}
+		else {echo ('<input class="enreg" type="submit" name="enregistrer" value="" />');}
+		if ($nb>0) {echo('<input class="retour" type="submit" name="retour" value="" />');}
 		?>
-<INPUT TYPE="button" class="annul" VALUE="" onClick="history.back()"/> 
+<input type="button" class="annul" value="" onclick="history.back()"/>
 </div>	
-</FORM>
+</form>
 <?php 
 
 //AFFICHAGE DES ONGLETS EXISTANTS
 //création du tableau , onglets prof
-
+if ($nb>0) {
 echo '<div id="cfg-onglet">';
-echo '<H4 class="perso">Aspect des onglets de votre cahier de textes (cliquer sur un onglet pour le <B><FONT SIZE="3" color="#660000">Modifier</FONT></B> )</H4>';
-echo ("<ul id='cfg-navlist'>");
+echo '<h4 class="perso">Aspect des onglets de votre cahier de textes (cliquer sur un onglet pour le <span class="evidence"><b>Modifier</b></span> )</h4>';
+
+    echo '<ul id="cfg-navlist">';
+
 for($x=0;$x < $nb;$x++){
 	if ($x==0) 
 	{
-		echo ("<li><a href='config_ctxt.php?modrub=erg45er5ze&num=$numero[$x]'title='Modifier cet onglet'>$mat[$x]<br />$clas[$x]"."</a></li>");
+		echo '<li><a href="config_ctxt.php?modrub=erg45er5ze&amp;num='.$numero[$x].'" title="Modifier cet onglet" >'.$mat[$x].'<br />'.$clas[$x].'</a></li>';
 	}
 	else 
 	{
-		echo("<li><a href='config_ctxt.php?modrub=erg45er5ze&num=$numero[$x]' title='Modifier cet onglet' >$mat[$x]<br />$clas[$x]</a></li>");
+		echo '<li><a href="config_ctxt.php?modrub=erg45er5ze&amp;num='.$numero[$x].'" title="Modifier cet onglet" >'.$mat[$x].'<br />'.$clas[$x].'</a></li>';
 	}
 }
-	echo("</ul>");
+	echo '</ul>';
 
 
-echo ('<H4 class="perso"> Aspect des onglets du cahier de textes des élèves
-	( cliquer sur un onglet pour le <B><FONT SIZE="3" color="#660000">Supprimer</FONT></B> )</H4>');
-
+echo '<h4 class="perso"> Aspect des onglets du cahier de textes des &#233;l&#232;ves ( cliquer sur un onglet pour le <span class="evidence"><b>Supprimer</b></span>)</h4>';
 	
 //création du tableau , onglets élèves
-echo ("<ul id='cfg-navlist-elv'>");
+echo '<ul id="cfg-navlist-elv">';
 	for($x=0;$x < $nb;$x++)
 		{
 		if ($x==0) 
 			{
-			echo("<li><a href='config_ctxt.php?suppr=yes&numong=$numero[$x]' title='Supprimer cet onglet'>".$mat[$x]." (".$clas[$x].")<br />".$pref[$x]."&nbsp;".$prof[$x]."</a></li>");
+			echo '<li><a href="config_ctxt.php?suppr=yes&amp;numong='.$numero[$x].'" title="Supprimer cet onglet">'.htmlentities($mat[$x]).' ( '.$clas[$x].' )<br />'.$pref[$x].'&nbsp;'.$prof[$x].'</a></li>';
 			}
 			else 
 			{
-			echo("<li><a href='config_ctxt.php?suppr=yes&numong=$numero[$x]' title='Supprimer cet onglet'>".$mat[$x]." (".$clas[$x].")<br />".$pref[$x]."&nbsp;".$prof[$x]."</a></li>");
+			echo '<li><a href="config_ctxt.php?suppr=yes&amp;numong='.$numero[$x].'" title="Supprimer cet onglet">'.$mat[$x].' ( '.$clas[$x].' )<br />'.$pref[$x].'&nbsp;'.$prof[$x].'</a></li>';
 			}
 		}
-	echo("</ul>");	
+	echo '</ul>';
 echo '</div>';
-	
+}
+
 //ouverture d'un popup de confirmation de suppression
 if (isset($_GET["suppr"]))
 	{
 	echo "<script type='text/javascript'>";
 	echo"      if (confirm('Confirmer la suppression de cette rubrique')){";
 	echo ' location.href = "';
-	echo $_SERVER['PHP_SELF'];echo'" + "?num=" +'." '";
+	echo htmlentities($_SERVER['PHP_SELF']);echo'" + "?num=" +'." '";
 	echo $_GET["numong"] ;
 	echo "'".' + "&delrub=" +'."1245";
-	echo ' + "&TA=" +'." '". $_SESSION['RT']."'";
+	echo ' + "&TA=" +'." '". md5($_SESSION["RT"].htmlentities($_SERVER["PHP_SELF"]))."'";
 	echo " ;} else  {";
 	echo ' location.href = "';
-	echo $_SERVER['PHP_SELF'];
+	echo htmlentities($_SERVER['PHP_SELF']);
 	echo '"; } </script>';
 	}
-echo '</div>'; 	//fin du contenu
-echo '</div>'; 	//fin du container
-	include ('../Includes/pied.inc'); 
-echo '</div>';
 ?>
-
-</BODY>
-</HTML>
+</div><!-- fin du contenu -->
+</div><!-- fin du container -->
+<?php
+include ('../Includes/pied.inc'); 
+?>
+</body>
+</html>

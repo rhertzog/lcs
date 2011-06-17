@@ -1,5 +1,4 @@
 <div class="formulaire_spip formulaire_editer formulaire_editer_site formulaire_editer_site-#ENV{id_site,nouveau}">
-	<!-- <br class='bugajaxie' /> -->
 	[<p class="reponse_formulaire reponse_formulaire_ok">(#ENV**{message_ok})</p>]
 	[<p class="reponse_formulaire reponse_formulaire_erreur">(#ENV*{message_erreur})</p>]
 	[(#ENV{editable})
@@ -14,11 +13,7 @@
 
 
 		[<!-- Le logo auto-detecte -->
-		<div style='height:1px;'>(#ENV**{logo}|image_reduire{180,999}|inserer_attribut{style,
-			position: relative;
-			#LANG_LEFT: -220px;
-			top: -60px;
-		})</div>]
+		<div class='previsu_logo_site'>(#ENV**{logo}|image_reduire{180,999})</div>]
 
 		<ul>
 		[(#ENV{id_syndic}|intval|>{0}|sinon{#ENV{url_site}}|non)

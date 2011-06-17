@@ -40,13 +40,15 @@ class AbsencesEleveSaisieHelper {
             if ($abs_saisie_col->isEmpty()) {
                 return new PropelCollection();
             }
-            //on va tester si les saisies sont bien ordonnée.
-            $compteur = $abs_saisie_col->getFirst()->getDebutAbs('U');
+
+            //on va tester si les saisies sont bien ordonnée.$compteur_test n'est pas utilisé dans le reste de la fonction
+            $compteur_test = $abs_saisie_col->getFirst()->getDebutAbs('U');
             foreach($abs_saisie_col as $saisie) {
-                if ($compteur > $saisie->getDebutAbs('U')) {
-                    throw new PropelException('L');
+                $ts = $saisie->getDebutAbs('U');
+                if ($compteur_test > $ts) {
+                    throw new PropelException('Les saisies doivent etre triees par ordre chronologique de debut d absence.');
                 }
-                $compteur = $saisie->getDebutAbs('Les saisies doivent etre triees par ordre de debut.');
+                $compteur_test = $ts;
             }
             
 	    if ($date_debut_iteration == null) {
@@ -77,11 +79,6 @@ class AbsencesEleveSaisieHelper {
 	    foreach($abs_saisie_col as $saisie) {
 		if ($date_compteur->format('U') < $saisie->getDebutAbs('U')) {
 		    $date_compteur = clone $saisie->getDebutAbs(null);
-		    if ($date_compteur->format('Hi') < $heure_demi_journee.$minute_demi_journee) {
-			$date_compteur->setTime(0, 0);
-		    } else {
-			$date_compteur->setTime($heure_demi_journee, $minute_demi_journee);//on calle la demi journée a 11h50
-		    }
 		}
 		if ($date_compteur->format('U') > $date_fin_iteration_timestamp) {
 		    break;
@@ -90,14 +87,23 @@ class AbsencesEleveSaisieHelper {
 		while ($date_compteur->format('U') < $saisie->getFinAbs('U') && $date_compteur->format('U') < $date_fin_iteration_timestamp) {
 		    //est-ce un jour de la semaine ouvert ?
 		    if (!EdtHelper::isJourneeOuverte($date_compteur)) {
-			//etab fermé
-			$date_compteur->modify("+9 hours");
+			//etab fermé on va passer au lendemain
+                        $date_compteur->setTime(23, 59);
+                        $date_compteur->modify("+2 hours");
 			continue;
-                    } elseif (!EdtHelper::isEtablissementOuvert($date_compteur)) {
-                        $date_compteur->modify("+54 minutes");
+                    } elseif (!EdtHelper::isHoraireOuvert($date_compteur)) {
+                        $horaire = $horaire_tab[EdtHelper::$semaine_declaration[$date_compteur->format("w")]];
+                        if ($date_compteur->format('Hi') < $horaire->getOuvertureHoraireEtablissement('Hi')) {
+                            //c'est le matin, on règle sur l'heure d'ouverture
+                            $date_compteur->setTime($horaire->getOuvertureHoraireEtablissement('H'), $horaire->getOuvertureHoraireEtablissement('i'));
+                        } else {
+                            //on est apres la fermeture, on va passer au lendemain
+                            $date_compteur->setTime(23, 59);
+                            $date_compteur->modify("+2 hours");
+                        }
                         continue;
-                    } elseif ($date_compteur->format('U') < $saisie->getDebutAbs('U') && !EdtHelper::isEtablissementOuvert($saisie->getDebutAbs(null))) {
-                        $date_compteur->modify("+54 minutes");
+                    } elseif ($date_compteur->format('U') < $saisie->getDebutAbs('U') && !EdtHelper::isHoraireOuvert($saisie->getDebutAbs(null))) {
+                        $date_compteur->modify("+19 minutes");
                         continue;
                     }
                     

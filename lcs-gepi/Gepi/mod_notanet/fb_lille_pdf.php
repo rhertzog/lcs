@@ -1,6 +1,6 @@
 <?php
 
-	/* $Id: fb_rouen_pdf.php 3157 2009-05-25 14:32:18Z crob $ */
+	/* $Id*/
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");
@@ -68,7 +68,7 @@
 
 	$type_brevet = isset($_POST['type_brevet']) ? $_POST['type_brevet'] : (isset($_GET['type_brevet']) ? $_GET['type_brevet'] : NULL);
 	if(isset($type_brevet)) {
-		if((!ereg("[0-9]",$type_brevet))||(strlen(my_ereg_replace("[0-9]","",$type_brevet))!=0)) {
+		if((!preg_match("/[0-9]/",$type_brevet))||(strlen(preg_replace("/[0-9]/","",$type_brevet))!=0)) {
 			$type_brevet=NULL;
 		}
 	}
@@ -121,14 +121,14 @@
 	
 	// Le type_brevet est choisi
 	$tabmatieres=array();
-	for($j=101;$j<=122;$j++){
+	for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 		$tabmatieres[$j]=array();
 	}
 	
 	$tabmatieres=tabmatieres($type_brevet);
 	$num_fb_col=$tabmatieres["num_fb_col"];
 	
-	for($j=101;$j<=122;$j++) {
+	for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++) {
 		if($tabmatieres[$j][0]!=''){
 			//$sql="SELECT * FROM notanet_corresp WHERE notanet_mat='".$tabmatieres[$j][0]."' LIMIT 1";
 			$sql="SELECT * FROM notanet_corresp WHERE notanet_mat='".$tabmatieres[$j][0]."' AND type_brevet='$type_brevet' LIMIT 1";
@@ -219,7 +219,7 @@
 	for($i=0;$i<count($id_classe);$i++) {
 		// Calcul des moyennes de classes... pb avec le statut...
 		$moy_classe=array();
-		for($j=101;$j<=122;$j++) {
+		for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++) {
 			if($tabmatieres[$j][0]!='') {
 				//$somme=0;
 				// Dans la table 'notanet', matiere='PREMIERE LANGUE VIVANTE'
@@ -535,7 +535,7 @@
 				//$y=100;
 				$nb_mat=0;
 				$nb_mat_notnonca=0;
-				for($j=101;$j<=122;$j++) {
+				for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++) {
 					if($tabmatieres[$j][0]!='') {
 						$nb_mat++;
 						if($tabmatieres[$j][-1]=='NOTNONCA') {
@@ -563,7 +563,7 @@
 				// Les notes con calculées (à titre indicatif) sont en bas de tableau
 				$temoin_notnonca=0;
 				$cpt=0;
-				for($j=101;$j<=122;$j++) {
+				for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++) {
 					$temoin_note_non_numerique="n";
 
 					//$hauteur_texte=$fs_txt;
@@ -758,10 +758,10 @@
 									$valeur_tmp="";
 	
 									// On traite le cas des notes non numériques AB, DI,... plus pour décrémenter les SUR_TOTAUX
-									if((strlen(my_ereg_replace("[0-9]","",$tabmatieres[$j]['fb_col'][1]))==0)&&($tabmatieres[$j][-1]!='PTSUP')&&($tabmatieres[$j]['socle']=='n')){
+									if((strlen(preg_replace("/[0-9]/","",$tabmatieres[$j]['fb_col'][1]))==0)&&($tabmatieres[$j][-1]!='PTSUP')&&($tabmatieres[$j]['socle']=='n')){
 										$SUR_TOTAL[1]+=$tabmatieres[$j]['fb_col'][1];
 									}
-									if((strlen(my_ereg_replace("[0-9]","",$tabmatieres[$j]['fb_col'][2]))==0)&&($tabmatieres[$j][-1]!='PTSUP')&&($tabmatieres[$j]['socle']=='n')){
+									if((strlen(preg_replace("/[0-9]/","",$tabmatieres[$j]['fb_col'][2]))==0)&&($tabmatieres[$j][-1]!='PTSUP')&&($tabmatieres[$j]['socle']=='n')){
 										$SUR_TOTAL[2]+=$tabmatieres[$j]['fb_col'][2];
 									}
 			

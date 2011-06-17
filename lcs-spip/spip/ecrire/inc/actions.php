@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 
 // http://doc.spip.org/@generer_action_auteur
@@ -66,7 +66,7 @@ function ajax_action_auteur($action, $id, $script, $args='', $corps=false, $args
 		// Methode Ajax
 		else {
 			if ($args AND !$args_ajax) $args_ajax = "&$args";
-			if ($GLOBALS['var_profile'])
+			if (isset($_GET['var_profile']))
 				$args_ajax .= '&var_profile=1';
 			return redirige_action_post($action,
 				$id,
@@ -88,7 +88,7 @@ function ajax_action_auteur($action, $id, $script, $args='', $corps=false, $args
 			false);
 
 		if ($args AND !$args_ajax) $args_ajax = "&$args";
-		if (isset($GLOBALS['var_profile']))
+		if (isset($_GET['var_profile']))
 			$args_ajax .= '&var_profile=1';
 
 		$ajax = redirige_action_auteur($action,
@@ -123,7 +123,7 @@ function ajax_action_post($action, $arg, $retour, $gra, $corps, $clic='', $atts_
 	}
 
 	if (!$atts_i) 
-		$atts_i = " class='fondo' style='float: $spip_lang_right'";
+		$atts_i = " style='float: $spip_lang_right'";
 
 	if (is_array($clic)) {
 		$submit = "";
@@ -194,43 +194,39 @@ function ajax_action_greffe($fonction, $id, $corps)
 }
 
 // http://doc.spip.org/@ajax_retour
-function ajax_retour($corps,$xml = true)
+function ajax_retour($corps, $xml = true)
 {
-	if (isset($GLOBALS['transformer_xml']) OR $GLOBALS['exec'] == 'valider_xml') {
-	 	$debut = _DOCTYPE_ECRIRE
-		. "<html><head><title>Debug Spip Ajax</title></head>"
-		.  "<body><div>\n\n"
-		. "<!-- %%%%%%%%%%%%%%%%%%% Ajax %%%%%%%%%%%%%%%%%%% -->\n";
+	if (isset($_COOKIE['spip_admin']) AND $GLOBALS['tableau_des_temps'])
+		erreur_squelette();
+	else { 
+		if ($GLOBALS['exec'] == 'valider_xml') {
+		 	$debut = _DOCTYPE_ECRIRE
+			. "<html><head><title>Debug Spip Ajax</title></head>"
+			.  "<body><div>\n\n"
+			. "<!-- %%%%%%%%%%%%%%%%%%% Ajax %%%%%%%%%%%%%%%%%%% -->\n";
 
-		$fin = '</div></body></html>';
-	} else {
+			$fin = '</div></body></html>';
 
-		if (isset($GLOBALS['tableau_des_temps'])) {
-			include_spip('public/debug');
-			$fin = chrono_requete($GLOBALS['tableau_des_temps']);
-		} else $fin = '';
-
-		$c = $GLOBALS['meta']["charset"];
-		header('Content-Type: text/html; charset='. $c);
-		$debut = (($xml AND strlen(trim($corps)))?'<' . "?xml version='1.0' encoding='" . $c . "'?" . ">\n":'');
+		} else {
+			$c = $GLOBALS['meta']["charset"];
+			header('Content-Type: text/html; charset='. $c);
+			$debut = (($xml AND strlen(trim($corps)))?'<' . "?xml version='1.0' encoding='" . $c . "'?" . ">\n":'');
+			$fin = '';
+		}
+		echo $debut, $corps, $fin;
 	}
-	if (count($GLOBALS['tableau_des_erreurs']) AND isset($_COOKIE['spip_admin'])) {
-		find_in_path('debug.php','public/',true);
-		$corps = affiche_erreurs_page($GLOBALS['tableau_des_erreurs']) . $corps;
-	}
-
-	echo $debut, $corps, $fin;
 }
 
 // http://doc.spip.org/@determine_upload
 function determine_upload($type='') {
-
+	include_spip('inc/autoriser');
+	
 	if (!autoriser('chargerftp')
 	OR $type == 'logos') # on ne le permet pas pour les logos
 		return false;
 
 	$repertoire = _DIR_TRANSFERT;
-	if(!@is_dir($repertoire)) {
+	if (!@is_dir($repertoire)) {
 		$repertoire = str_replace(_DIR_TMP, '', $repertoire);
 		$repertoire = sous_repertoire(_DIR_TMP, $repertoire);
 	}
@@ -239,73 +235,5 @@ function determine_upload($type='') {
 		return $repertoire;
 	else
 		return sous_repertoire($repertoire, $GLOBALS['visiteur_session']['login']);
-}
-
-//
-//  Verif d'un utilisateur authentifie en php_auth
-//
-
-// http://doc.spip.org/@lire_php_auth
-function lire_php_auth($user, $pw) {
-
-	include_spip('base/abstract_sql');
-	$row = sql_fetsel("*", "spip_auteurs", "login=" . sql_quote($user));
-
-	if ($row AND $row['source'] != 'ldap')
-		return ($row['pass'] == md5($row['alea_actuel'] . $pw)) ? $row : false;
-	elseif (spip_connect_ldap()) {
-		$auth_ldap = charger_fonction('ldap', 'auth', true);
-		if ($auth_ldap) return $auth_ldap($user, $pw);
-	}
-	return false;
-}
-
-
-// http://doc.spip.org/@verifier_php_auth
-function verifier_php_auth() {
-
-	if (@$_SERVER['PHP_AUTH_USER'] && $_SERVER['PHP_AUTH_PW']
-	&& !@$GLOBALS['ignore_auth_http']) {
-		if ($r = lire_php_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {
-		  $GLOBALS['visiteur_session'] = $r;
-		  return $GLOBALS['visiteur_session']['statut'];
-		} 
-	}
-	return false;
-}
-
-//
-// entete php_auth (est-encore utilise ?)
-//
-// http://doc.spip.org/@ask_php_auth
-function ask_php_auth($pb, $raison, $retour, $url='', $re='', $lien='') {
-	@Header("WWW-Authenticate: Basic realm=\"espace prive\"");
-	@Header("HTTP/1.0 401 Unauthorized");
-	$ici = generer_url_ecrire();
-	echo "<b>$pb</b><p>$raison</p>[<a href='$ici'>$retour</a>] ";
-	if ($url) {
-		echo "[<a href='", generer_url_action('cookie',"essai_auth_http=oui&$url"), "'>$re</a>]";
-	}
-	
-	if ($lien)
-		echo " [<a href='$ici'>"._T('login_espace_prive')."</a>]";
-	exit;
-}
-
-// Verifie si le visiteur est authentifie en http,
-// sinon lui renvoie une demande (status 401)
-// http://doc.spip.org/@auth_http
-function auth_http($url) {
-
-	if (verifier_php_auth())
-		redirige_par_entete($url);
-	else {
-		ask_php_auth(_T('info_connexion_refusee'),
-			     _T('login_login_pass_incorrect'),
-			     _T('login_retour_site'),
-			     "url=".rawurlencode($url),
-			     _T('login_nouvelle_tentative'),
-			     (strpos($url,_DIR_RESTREINT_ABS)!==false));
-	}
 }
 ?>

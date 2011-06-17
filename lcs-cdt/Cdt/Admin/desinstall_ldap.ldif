@@ -1,5 +1,5 @@
-dn: cn=Cdt_can_sign,ou=Rights,dc=demo,dc=ac-caen,dc=fr
+dn: cn=Cdt_can_sign,ou=Rights,#BASEDN# 
 changetype: delete
 
-dn: cn=Cdt_is_cpe,ou=Rights,dc=demo,dc=ac-caen,dc=fr
+dn: cn=Cdt_is_cpe,ou=Rights,#BASEDN# 
 changetype: delete

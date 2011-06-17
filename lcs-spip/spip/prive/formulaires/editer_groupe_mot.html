@@ -1,5 +1,4 @@
 <div class='formulaire_spip formulaire_editer formulaire_editer_groupe_mot formulaire_editer_groupe_mot-#ENV{id_groupe_mot,nouveau}'>
-	<!-- <br class='bugajaxie' /> -->
 	[<p class='reponse_formulaire reponse_formulaire_ok'>(#ENV**{message_ok})</p>]
 	[<p class='reponse_formulaire reponse_formulaire_erreur'>(#ENV*{message_erreur})</p>]
 	[(#ENV{editable})
@@ -10,7 +9,7 @@
 	  <input type='hidden' name='id_groupe_mot' value='#ENV{id_groupe_mot}' />
 	  <ul>
 	    <li class='editer_titre obligatoire[ (#ENV**{erreurs}|table_valeur{titre}|oui)erreur] editer_type_input'>
-				<label for='titre'><:info_changer_nom_groupe:><em class='aide'>#AIDER{motsgroupes}</em></label>[
+				<label for='titre'><:info_changer_nom_groupe:><em class='aide'>#AIDER{titre}</em></label>[
 				<span class='erreur_message'>(#ENV**{erreurs}|table_valeur{titre})</span>
 				]<input type='text' class='text' name='titre' id='titre' value='[(#ENV**{titre,#VAL{titre_nouveau_groupe}|_T|filtrer_entites})]'
 				[(#ENV{titre,''}|?{'',' '})onfocus="if(!antifocus){this.value='';antifocus=true;}"]/>
@@ -24,14 +23,12 @@
 				<label for='text_area'><:info_texte_explicatif:></label>[
 				<span class='erreur_message'>(#ENV**{erreurs}|table_valeur{texte})</span>
 				][(#ENV**{_texte_trop_long,''})
-				]<div class='explication'><:texte_enrichir_mise_a_jour:><em>#AIDER{raccourcis}</em></div>
-				[(#ENV**{config}|table_valeur{afficher_barre}|?{#VAL{text_area}|barre_typo{#LANG}})]
-				<textarea name='texte' id='text_area' class='barre_inserer' cols='40' rows='[(#ENV**{config}|table_valeur{lignes}|plus{2})]'[
-				(#ENV**{_browser_caret,''})]>[(#ENV**{texte})]</textarea>
+				]<textarea name='texte' id='text_area' cols='40' rows='[(#ENV**{config}|table_valeur{lignes}|plus{2})]'>[(#ENV**{texte})]</textarea>
 	    </li>
 	    <li class="fieldset">
 	      <fieldset><h3 class="legend"><:info_mots_cles_association:></h3>
 	      <ul><li class="editer_groupe_mots_associer">
+				<input type='hidden' name='tables_liees&#91;&#93;' value='' />
 	    	<div class='choix'><input type='checkbox' class='checkbox' name='tables_liees&#91;&#93;' value='articles'[(#VAL{articles}|in_any{#ENV{tables_liees}})checked='checked'] id='articles' /><label for='articles'><:item_mots_cles_association_articles:></label></div>
 	    	[(#ENV{config}|table_valeur{activer_breves}|=={oui}|oui)
 	    	<div class='choix'><input type='checkbox' class='checkbox' name='tables_liees&#91;&#93;' value='breves'[(#VAL{breves}|in_any{#ENV{tables_liees}})checked='checked'] id='breves' /><label for='breves'><:item_mots_cles_association_breves:></label></div>

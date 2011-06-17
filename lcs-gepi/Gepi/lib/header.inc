@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: header.inc 5359 2010-09-20 19:19:07Z jjacquard $
+ * $Id: header.inc 6666 2011-03-17 18:00:17Z crob $
  *
  * Basé sur  header.inc 2968 2009-03-03 20:11:00Z jjocal $
  * modifié avec getSettingValue("contact_admin_mailto")=='y'
@@ -205,8 +205,7 @@ if (isset($utilisation_jsdivdrag) AND $utilisation_jsdivdrag == "non") {
 	$posDiv_infobulle=0;
 	// $posDiv_infobulle permet de fixer la position horizontale initiale du Div.
 
-	$tabdiv_infobulle=array();
-	$tabid_infobulle=array();
+
 
 	// Choix de l'unité pour les dimensions des DIV: em, px,...
 	$unite_div_infobulle="em";
@@ -549,7 +548,7 @@ if (isset($titre_page)) {
 					if ($session_gepi->current_auth_mode == "sso" && $gepiSettings['sso_display_portail'] == 'yes') {
 					echo "<li class='ligne_premier_menu'>\n";
 						echo " <a href='".$gepiSettings['sso_url_portail']."'>";
-							echo "<img src='$gepiPath/images/icons/home.png' alt='Portail' title='Retour portail' />";
+							echo "<img src='$gepiPath/images/icons/retour_sso.png' width='16' height='16' alt='Portail' title='Retour portail' />";
 							echo "<span class='menu_bandeau'>";
 								echo "&nbsp;Retour portail";
 							echo "</span>";

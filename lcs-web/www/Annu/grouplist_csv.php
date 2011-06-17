@@ -1,13 +1,6 @@
 <?php
 
-/* =============================================
-   Projet LCS-SE3
-   Consultation de l'annuaire LDAP
-   Annu/grouplist_csv.php
-   * @auteurs Equipe Tice academie de Caen
-   Derniere modifications : 15/01/2010
-   Distribue selon les termes de la licence GPL
-   ============================================= */
+/* Annu/grouplist_csv.php Derniere modifications : 22/04/2011 */
 
 
 //====================================
@@ -91,12 +84,12 @@ if ($login == "") {
 
 							// traitement du gecos pour identification du sexe
 							$gecos = $info[0]["gecos"][0];
-							$tmp = split ("[\,\]",$gecos,4);
+							$tmp = preg_split ("/,/",$gecos,4);
 							#echo "debug ".$info["count"]." init ".$init." loop ".$loop."<BR>";
 							$ret[$loop1] = array (
 								"uid"           => $uids[$loop]["uid"],
-								"fullname"      => utf8_decode($info[0]["cn"][0]),
-								"name"          => utf8_decode($info[0]["sn"][0]),
+								"fullname"      => $info[0]["cn"][0],
+								"name"          => $info[0]["sn"][0],
 								"sexe"          => $tmp[2],
 								"owner"         => $uids[$loop]["owner"],
 								"group"         => $uids[$loop]["group"],
@@ -174,7 +167,7 @@ if ($login == "") {
 			header('Content-Type: text/x-csv');
 			header('Expires: ' . $now);
 			// lem9 & loic1: IE need specific headers
-			if (ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
+			if (mb_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
 				header('Content-Disposition: inline; filename="' . $nom_fic . '"');
 				header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 				header('Pragma: public');
@@ -187,7 +180,7 @@ if ($login == "") {
 			$contenu_fichier="Login;Nom complet;Nom;Prenom;Naissance;Sexe;Email\n";
 
 			for ($loop=0; $loop < count($people); $loop++) {
-				ereg("([0-9]{8})",$people[$loop]["gecos"],$naiss);
+				mb_ereg("([0-9]{8})",$people[$loop]["gecos"],$naiss);
 				$contenu_fichier.=$people[$loop]["uid"].";".$people[$loop]["fullname"].";".$people[$loop]["name"].";".getprenom($people[$loop]["fullname"],$people[$loop]["name"]).";".$naiss[0].";".$people[$loop]["sexe"].";".$people[$loop]["mail"]."\n";
 			}
 			echo $contenu_fichier;

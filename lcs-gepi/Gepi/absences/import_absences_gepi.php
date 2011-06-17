@@ -1,9 +1,9 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: import_absences_gepi.php 4257 2010-04-09 16:34:06Z crob $
+ * $Id: import_absences_gepi.php 6615 2011-03-03 17:47:06Z crob $
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
  * This file is part of GEPI.
  *
@@ -24,7 +24,9 @@
 
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
-
+if(getSettingValue("active_module_absence")==='2'){
+    require_once("../lib/initialisationsPropel.inc.php");
+}
 // Resume session
 $resultat_session = $session_gepi->security_check();
 if ($resultat_session == 'c') {
@@ -60,7 +62,7 @@ $cal_2 = new Calendrier("form_absences", "au");
    else { if (isset($_GET['periode_num'])) { $periode_num = $_GET['periode_num']; } if (isset($_POST['periode_num'])) { $periode_num = $_POST['periode_num']; } }
 
 // gestion des dates
-	if (empty($_GET['du']) and empty($_POST['du'])) { 
+	if (empty($_GET['du']) and empty($_POST['du'])) {
 		if(isset($_SESSION['import_absences_du'])) {
 			$du = $_SESSION['import_absences_du'];
 		}
@@ -101,6 +103,31 @@ $cal_2 = new Calendrier("form_absences", "au");
 		} 
 		$_SESSION['import_absences_au']=$au;
 	}
+ if (getSettingValue("active_module_absence") === '2') {
+    $date_absence_eleve_debut = isset($_POST["du"]) ? $_POST["du"] : (isset($_GET["du"]) ? $_GET["du"] : NULL);
+    $date_absence_eleve_fin = isset($_POST["au"]) ? $_POST["au"] : (isset($_GET["au"]) ? $_GET["au"] : NULL);
+    if ($date_absence_eleve_debut != null) {
+        if (isset($_SESSION['import_absences_du'])) {
+            $date_absence_eleve_debut = new DateTime(str_replace("/", ".",$_SESSION['import_absences_du']));
+        } else {
+            $date_absence_eleve_debut = new DateTime(str_replace("/", ".", $date_absence_eleve_debut));
+        }
+    } else {
+        $date_absence_eleve_debut = new DateTime('now');
+        $date_absence_eleve_debut->setDate($date_absence_eleve_debut->format('Y'), $date_absence_eleve_debut->format('m') - 1, $date_absence_eleve_debut->format('d'));
+    }
+    if ($date_absence_eleve_fin != null) {
+        if (isset($_SESSION['import_absences_au'])) {
+            $date_absence_eleve_fin = new DateTime(str_replace("/", ".",$_SESSION['import_absences_au']));
+        } else {
+        $date_absence_eleve_fin = new DateTime(str_replace("/", ".", $date_absence_eleve_fin));
+        }
+    } else {
+        $date_absence_eleve_fin = new DateTime('now');
+    }
+    $date_absence_eleve_debut->setTime(0, 0, 0);
+    $date_absence_eleve_fin->setTime(23, 59, 59);
+}
 
 // fonction de sécurité
 // uid de pour ne pas refaire renvoyer plusieurs fois le même formulaire
@@ -111,7 +138,7 @@ $cal_2 = new Calendrier("form_absences", "au");
 	$uid = md5(uniqid(microtime(), 1));
 	$valide_form='';
 	   // on remplace les %20 par des espaces
-	    $uid_post = my_eregi_replace('%20',' ',$uid_post);
+	    $uid_post = preg_replace('/%20/',' ',$uid_post);
 	if($uid_post===$_SESSION['uid_prime']) { $valide_form = 'yes'; } else { $valide_form = 'no'; }
 	$_SESSION['uid_prime'] = $uid;
 // fin de la fonction de sécurité
@@ -174,6 +201,9 @@ if ( $etape === '0' ) {
 
 <div style="text-align: center;">
    <form method="post" action="import_absences_gepi.php" name="form_absences">
+<?php
+		echo add_token_field();
+?>
       <fieldset style="width: 450px; margin: auto;" class="couleur_ligne_3">
          <legend style="font: normal 10pt Arial;">&nbsp;Sélection&nbsp;</legend>
             <div style="color: #E8F1F4; text-align: left; font: normal 12pt verdana, sans-serif; font-weight: bold; background-image: url(../mod_absences/images/haut_tab.png); border: 0px solid #F8F8F8;">Importation des absences</div>
@@ -200,6 +230,8 @@ if ( $etape === '0' ) {
 }
 
 if ( $etape === '1' ) {
+	check_token(false);
+
  // affiché le résultats
 
 	 // si la date au et vide ou alors erroné alors on prend du
@@ -208,8 +240,9 @@ if ( $etape === '1' ) {
 ?>
 
 	<form enctype="multipart/form-data" action="saisie_absences.php" method=post>
-
 	<?php
+		echo add_token_field();
+
 		$call_classe = mysql_query("SELECT classe FROM classes WHERE id = '".$id_classe."'");
 		$classe = mysql_result($call_classe, "0", "classe");
 	?>
@@ -247,13 +280,27 @@ if ( $etape === '1' ) {
 	$num_id=10;
 	while($i < $nombre_lignes) {
 	    $current_eleve_login = mysql_result($appel_donnees_eleves, $i, "login");
+        if(getSettingValue("active_module_absence")==='2'){
+            $eleve = EleveQuery::create()->findOneByLogin($current_eleve_login);
+        }
 	    $current_eleve_absences_query = mysql_query("SELECT * FROM  absences WHERE (login='$current_eleve_login' AND periode='$periode_num')");
-
+        if(getSettingValue("active_module_absence")==='2'){
+            $current_eleve_nb_absences = strval($eleve->getDemiJourneesAbsence($date_absence_eleve_debut, $date_absence_eleve_fin)->count());
+        }else{
 	    $current_eleve_nb_absences = nb_total_demijournee_absence($current_eleve_login, $du, $au, $id_classe);
+        }
 	    if ( $current_eleve_nb_absences == '0' ) { $current_eleve_nb_absences = ''; }
+        if(getSettingValue("active_module_absence")==='2'){
+            $current_eleve_nb_nj=strval($eleve->getDemiJourneesNonJustifieesAbsence($date_absence_eleve_debut, $date_absence_eleve_fin)->count());
+        }else{
 	    $current_eleve_nb_nj = nb_absences_nj($current_eleve_login, $du, $au, $id_classe);
+        }
 	    if ( $current_eleve_nb_nj == '0' ) { $current_eleve_nb_nj = ''; }
+        if(getSettingValue("active_module_absence")==='2'){
+            $current_eleve_nb_retards=strval($eleve->getRetards($date_absence_eleve_debut, $date_absence_eleve_fin)->count());
+        }else{
 	    $current_eleve_nb_retards = nb_retard($current_eleve_login, $du, $au, $id_classe);
+        }
 	    if ( $current_eleve_nb_retards == '0' ) { $current_eleve_nb_retards = ''; }
 
 	    $current_eleve_ap_absences = @mysql_result($current_eleve_absences_query, 0, "appreciation");

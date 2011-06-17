@@ -26,10 +26,10 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Matières utilisées";
+$TITRE = "Matières";
 ?>
 
-<div class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_matieres">DOC : Matières utilisées</a></div>
+<div><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_matieres">DOC : Matières</a></span></div>
 
 <hr />
 
@@ -49,8 +49,8 @@ $TITRE = "Matières utilisées";
 			foreach($DB_TAB as $DB_ROW)
 			{
 				// Afficher une ligne du tableau
-				$checked  = (in_array($DB_ROW['matiere_id'],$tab_check)) ? ' checked="checked"' : '' ;
-				$disabled = ($DB_ROW['matiere_transversal']) ? ' disabled="disabled"' : '' ;
+				$checked  = (in_array($DB_ROW['matiere_id'],$tab_check)) ? ' checked' : '' ;
+				$disabled = ($DB_ROW['matiere_transversal']) ? ' disabled' : '' ;
 				$tr_class = ($DB_ROW['matiere_transversal']) ? ' class="new"' : '' ;
 				$td_label = ($DB_ROW['matiere_transversal']) ? '' : ' class="label"' ;
 				$indic    = ($DB_ROW['matiere_transversal']) ? ' <b>[obligatoire]</b>' : '' ;

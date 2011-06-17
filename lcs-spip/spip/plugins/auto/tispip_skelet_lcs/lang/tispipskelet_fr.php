@@ -221,14 +221,8 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_config_page'=> 'Glissez/glissez un item de la liste ci-dessous et d&eacute;posez le sur la zone \"titre\" d&rsquo;une colonne. Compl&eacute ensuite le formulaire affich&eacute;',
 'info_creer_zones_groupes_ldap'=>'Cette page est destin&eacute;e &agrave; la cr&eacute;ation des <a href=\"http://www.spip-contrib.net/Le-plugin-Acces-Restreint\" title=\"Documentation du plugin Acc&egrave;s-restreint\">zones d&rsquo;acc&egrave;s restreint</a>, issues des groupes de l&rsquo;annuaire LCS.
 Elle liste les groupes principaux (Administratifs, Profs, Eleves) et les groupes secondaires Equipe, Classe, Matiere, Cours.  
-Vous pouvez cr&eacute;er une zone d&rsquo;acc&egrave;s restreint pour chaque groupe (s&eacute;par&eacute;ment ou  par type).
-Chaque zone cr&eacute;&eacute;e &agrave; partir de l&rsquo;annuaire sera automatiquement peupl&eacute;e par les membres du groupe correspondant, ceci lors de la premi&egrave;re connexion. 
-<h5>Propositions d&rsquo;&eacute;volutions : </h5>
-<ul>
-<li> Pemettre la cr&eacute;ation de tous les groupes de l&rsquo;annuaire quel qu&rsquo;il soit.</li>
-<li> A la cr&eacute;ation du zone/groupe, cr&eacute;er &eacute;galement une rubrique de m&ecirc;me nom que le groupe (et la zone) et l&rsquo;associer &agrave; la zone cr&eacute;&eacute;e</li>
-<li>Permettre d&rsquo;associer les Equipes et les Classes portant le m&ecirc;me intitul&eacute; hors pr&eacute;fixe pour l&rsquo;acc&egrave;s &agrave; une m&ecirc;me zone (est-ce pertinent ???)</li>
-</ul>',
+Vous pouvez cr&eacute;er une zone d&rsquo;acc&egrave;s restreint pour chaque groupe.
+Chaque zone cr&eacute;&eacute;e &agrave; partir de l&rsquo;annuaire sera automatiquement peupl&eacute;e par les membres du groupe correspondant, ceci lors de la premi&egrave;re connexion.',
 'info_descriptif'=> 'Veuillez saisir un descriptif dans la [configuration du site->?exec=conf?exec=configuration]. ',
 'insert_bord' =>'Couleur de bordure du tableau. <i>Vous pouvez l&apos;indiquer en litt&eacute;ral (c.&agrave;.d. blue, red, etc...) ou en hexad&eacute;cimal </i>',
 'insert_bord_rub' =>'Couleur de bordure du tableau. <i>Vous pouvez l&apos;indiquer en litt&eacute;ral (c.&agrave;.d. blue, red, etc...) ou en hexad&eacute;cimal </i>',

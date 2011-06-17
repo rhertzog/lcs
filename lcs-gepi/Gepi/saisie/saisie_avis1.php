@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: saisie_avis1.php 4878 2010-07-24 13:54:01Z regis $
+* $Id: saisie_avis1.php 6727 2011-03-29 15:14:30Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
 *
 * This file is part of GEPI.
 *
@@ -35,7 +35,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
@@ -47,6 +47,7 @@ $id_classe = isset($_POST["id_classe"]) ? $_POST["id_classe"] :(isset($_GET["id_
 include "../lib/periodes.inc.php";
 
 if (isset($_POST['is_posted'])) {
+	check_token();
 
 	// Synthèse
 	$i = '1';
@@ -56,8 +57,11 @@ if (isset($_POST['is_posted'])) {
 				// On enregistre la synthese
 				$synthese=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["synthese_".$i]));
 		
-				$synthese=my_ereg_replace('(\\\r\\\n)+',"\r\n",$synthese);
-		
+				//$synthese=my_ereg_replace('(\\\r\\\n)+',"\r\n",$synthese);
+				$synthese=preg_replace('/(\\\r\\\n)+/',"\r\n",$synthese);
+				$synthese=preg_replace('/(\\\r)+/',"\r",$synthese);
+				$synthese=preg_replace('/(\\\n)+/',"\n",$synthese);
+
 				$sql="SELECT 1=1 FROM synthese_app_classe WHERE id_classe='$id_classe' AND periode='$i';";
 				$test=mysql_query($sql);
 				if(mysql_num_rows($test)==0) {
@@ -147,6 +151,7 @@ if (isset($_POST['is_posted'])) {
 }
 $themessage = 'Des appréciations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 $message_enregistrement = "Les modifications ont été enregistrées !";
+$javascript_specifique = "saisie/scripts/js_saisie";
 //**************** EN-TETE *****************
 $titre_page = "Saisie des avis | Saisie";
 require_once("../lib/header.inc");
@@ -291,6 +296,7 @@ echo "</form>\n";
 
 
 echo "<form enctype='multipart/form-data' action='saisie_avis1.php' method='post'>\n";
+echo add_token_field(true);
 
 if ($id_classe) {
 	$classe = sql_query1("SELECT classe FROM classes WHERE id = '$id_classe'");
@@ -405,7 +411,8 @@ function focus_suivant(num){
 
 		if ($ver_periode[$k] != "O") {
 			echo "<td>\n";
-			echo "<textarea id=\"n".$k.$num_id."\" onKeyDown=\"clavier(this.id,event);\"  name=\"no_anti_inject_synthese_".$k."\" rows='2' cols='120' class='wrap' onchange=\"changement()\">";
+			echo "<textarea id=\"n".$k.$num_id."\" onKeyDown=\"clavier(this.id,event);\"  name=\"no_anti_inject_synthese_".$k."\" rows='2' cols='120' class='wrap' onchange=\"changement()\"";
+			echo ">";
 			//=========================
 
 			echo "$current_synthese[$k]";
@@ -425,6 +432,7 @@ function focus_suivant(num){
 	echo "</table>\n<br />\n<br />\n";
 
 
+	$chaine_test_vocabulaire="";
 
 	$i = "0";
 	//$num_id=10;
@@ -521,7 +529,13 @@ function focus_suivant(num){
 					//echo "<td>\n<textarea id=\"n".$k.$num_id."\" onKeyDown=\"clavier(this.id,event);\"  name=\"no_anti_inject_".$current_eleve_login_t[$k]."\" rows=2 cols=120 wrap='virtual' onchange=\"changement()\" onfocus=\"focus_suivant(".$k.$num_id.");\">";
 					echo "<td>\n";
 					echo "<input type='hidden' name='log_eleve_".$k."[$i]' value=\"".$current_eleve_login_t[$k]."\" />\n";
-					echo "<textarea id=\"n".$k.$num_id."\" onKeyDown=\"clavier(this.id,event);\"  name=\"no_anti_inject_avis_eleve_".$k."_".$i."\" rows='2' cols='120' class='wrap' onchange=\"changement()\">";
+					echo "<textarea id=\"n".$k.$num_id."\" onKeyDown=\"clavier(this.id,event);\"  name=\"no_anti_inject_avis_eleve_".$k."_".$i."\" rows='2' cols='120' class='wrap' onchange=\"changement()\"";
+
+					echo " onBlur=\"ajaxVerifAppreciations('".$current_eleve_login_t[$k]."', '".$id_classe."', 'n".$k.$num_id."');\"";
+		
+					$chaine_test_vocabulaire.="ajaxVerifAppreciations('".$current_eleve_login_t[$k]."', '".$id_classe."', 'n".$k.$num_id."');\n";
+
+					echo ">";
 					//=========================
 
 					echo "$current_eleve_avis_t[$k]";
@@ -536,6 +550,9 @@ function focus_suivant(num){
 							echo "<a href='#' onClick=\"document.getElementById('textarea_courant').value='n".$k.$num_id."';afficher_div('commentaire_type','y',30,-50);return false;\">Ajouter un commentaire-type</a>\n";
 						}
 					}
+
+					echo "<div id='div_verif_n".$k.$num_id."' style='color:red;'></div>\n";
+
 					echo "</td>\n";
 				} else {
 					echo "<td><p>$current_eleve_avis_t[$k]&nbsp;</p></td>\n";
@@ -585,6 +602,9 @@ function focus_suivant(num){
 			// Il faudra permettre de n'afficher ce décompte que si l'administrateur le souhaite.
 
 			echo "<script type='text/javascript'>
+
+$chaine_test_vocabulaire;
+
 cpt=".$tmp_timeout.";
 compte_a_rebours='y';
 

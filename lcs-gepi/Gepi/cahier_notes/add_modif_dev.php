@@ -1,8 +1,8 @@
 <?php
 /*
- * @version: $Id: add_modif_dev.php 3622 2009-10-17 12:29:49Z crob $
+ * @version: $Id: add_modif_dev.php 6909 2011-05-12 16:25:37Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -32,7 +32,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -98,8 +98,11 @@ $nom_classe = $current_group["classlist_string"];
 isset($id_devoir);
 $id_devoir = isset($_POST["id_devoir"]) ? $_POST["id_devoir"] : (isset($_GET["id_devoir"]) ? $_GET["id_devoir"] : NULL);
 
+//debug_var();
+
 // enregistrement des données
 if (isset($_POST['ok'])) {
+	check_token();
 	unset($tab_group);
 	$tab_group=array();
 
@@ -320,10 +323,8 @@ if (isset($_POST['ok'])) {
 		$reg=mysql_query($sql);
 	}
 
-    if (isset($_POST['ramener_sur_referentiel'])) {
-        if ($_POST['ramener_sur_referentiel']) {
-            $ramener_sur_referentiel='V';
-        }
+    if ((isset($_POST['ramener_sur_referentiel']))&&($_POST['ramener_sur_referentiel']=="V")) {
+        $ramener_sur_referentiel='V';
     } else {
         $ramener_sur_referentiel='F';
     }
@@ -548,6 +549,7 @@ $titre_page = "Carnet de notes - Ajout/modification d'une évaluation";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 echo "<form enctype=\"multipart/form-data\" name= \"formulaire\" action=\"add_modif_dev.php\" method=\"post\">\n";
+echo add_token_field();
 if ($mode_navig == 'retour_saisie') {
     echo "<div class='norme'><p class=bold><a href='./saisie_notes.php?id_conteneur=$id_retour'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>\n";
 } else {
@@ -721,10 +723,10 @@ if($interface_simplifiee=="y"){
 			echo "</tr>\n";
 			echo "<tr>\n";
 			echo "<td style='background-color: #aae6aa; font-weight: bold; vertical-align: top;'>Ramener la note sur ".getSettingValue("referentiel_note")."<br />lors du calcul de la moyenne : </td>\n";
-    		echo "<td><input type='checkbox' name='ramener_sur_referentiel'"; if ($ramener_sur_referentiel == 'V') echo " checked"; echo " /><br />";
-			echo "<span style=\"font-size: x-small;\">Exemple avec 3 notes : 18/20 ; 4/10 ; 1/5<br />";
-			echo "Case cochée : moyenne = 18/20 + 8/20 + 4/20 = 30/60 = 10/20<br />";
-			echo "Case non cochée : moyenne = 18/20 + 4/10 + 1/5 = 23/35 = 13,1/20</span><br /><br />";
+    		echo "<td><input type='checkbox' name='ramener_sur_referentiel' value='V' "; if ($ramener_sur_referentiel == 'V') {echo " checked";} echo " /><br />\n";
+			echo "<span style=\"font-size: x-small;\">Exemple avec 3 notes : 18/20 ; 4/10 ; 1/5<br />\n";
+			echo "Case cochée : moyenne = 18/20 + 8/20 + 4/20 = 30/60 = 10/20<br />\n";
+			echo "Case non cochée : moyenne = 18/20 + 4/10 + 1/5 = 23/35 = 13,1/20</span><br /><br />\n";
 			echo "</td>\n";
 			echo "</tr>\n";
 		}
@@ -732,8 +734,8 @@ if($interface_simplifiee=="y"){
 		echo "<tr style='display:none;'>\n";
 		echo "<td>Note sur :</td>\n";
 		echo "<td>\n";
-           	echo("<input type='hidden' name = 'note_sur' value = '".getSettingValue("referentiel_note")."'/>");
-            	echo("<input type='hidden' name = 'ramener_sur_referentiel' value = 'F'/>");
+		echo "<input type='hidden' name = 'note_sur' value = '".getSettingValue("referentiel_note")."' />\n";
+		echo "<input type='hidden' name = 'ramener_sur_referentiel' value = 'F' />\n";
  		echo "</td>\n";
 		echo "</tr>\n";
 	}
@@ -743,7 +745,7 @@ if($interface_simplifiee=="y"){
 		echo "<tr>\n";
 		echo "<td style='background-color: #aae6aa; font-weight: bold;'>Date:</td>\n";
 		echo "<td>\n";
-		echo "<input type='text' name='display_date' id='display_date' size='10' value = \"".$display_date."\" />\n";
+		echo "<input type='text' name='display_date' id='display_date' size='10' value = \"".$display_date."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 		echo "<a href=\"#calend\" onClick=\"".$cal->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"";
 		if($aff_date_ele_resp!='y'){
 			echo " onchange=\"document.getElementById('date_ele_resp').value=document.getElementById('display_date').value\"";
@@ -765,7 +767,7 @@ if($interface_simplifiee=="y"){
 		echo "<tr>\n";
 		echo "<td style='background-color: #aae6aa; font-weight: bold;'>Date de visibilité<br />de la note pour les<br />élèves et responsables:</td>\n";
 		echo "<td>\n";
-		echo "<input type='text' name = 'date_ele_resp' size='10' value = \"".$date_ele_resp."\" />\n";
+		echo "<input type='text' name = 'date_ele_resp' id='date_ele_resp' size='10' value = \"".$date_ele_resp."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
 		echo "<a href=\"#calend\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Petit calendrier\" /></a>\n";
 		echo "</td>\n";
 		echo "</tr>\n";
@@ -889,12 +891,12 @@ else{
 		echo "Case cochée : moyenne = 18/20 + 8/20 + 4/20 = 30/60 = 10/20<br />";
 		echo "Case non cochée : moyenne = 18/20 + 4/10 + 1/5 = 23/35 = 13,1/20</span><br /><br />";
 		echo "</td>";
-		echo "</td><td><input type='checkbox' name='ramener_sur_referentiel'"; if ($ramener_sur_referentiel == 'V') echo " checked"; echo " /><br />";
+		echo "</td><td><input type='checkbox' name='ramener_sur_referentiel' value='V'"; if ($ramener_sur_referentiel == 'V') {echo " checked";} echo " /><br />";
 		echo "</td></tr>\n";
-		} else {
-            echo("<input type='hidden' name = 'note_sur' value = '".getSettingValue("referentiel_note")."'/>");
-            echo("<input type='hidden' name = 'ramener_sur_referentiel' value = 'F'/>");
-        }
+	} else {
+		echo "<input type='hidden' name = 'note_sur' value = '".getSettingValue("referentiel_note")."'/>\n";
+		echo "<input type='hidden' name = 'ramener_sur_referentiel' value = 'F' />\n";
+	}
 
 	//====================================
 	// Statut
@@ -921,13 +923,13 @@ else{
 
 	echo "<a name=\"calend\"></a><h3 class='gepi'>Date de l'évaluation (format jj/mm/aaaa) : </h3>
 	<b>Remarque</b> : c'est cette date qui est prise en compte pour l'édition des relevés de notes à différentes périodes de l'année.
-	<input type='text' name = 'display_date' size='10' value = \"".$display_date."\" />";
+	<input type='text' name = 'display_date' id='display_date' size='10' value = \"".$display_date."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
 	echo "<a href=\"#calend\" onClick=\"".$cal->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Petit calendrier\" /></a>\n";
 
 
 	echo "<a name=\"calend\"></a><h3 class='gepi'>Date de visibilité de l'évaluation pour les élèves et responsables (format jj/mm/aaaa) : </h3>
 	<b>Remarque</b> : Cette date permet de ne rendre la note visible qu'une fois que le devoir est corrigé en classe.
-	<input type='text' name='date_ele_resp' size='10' value=\"".$date_ele_resp."\" />";
+	<input type='text' name='date_ele_resp' id='date_ele_resp' size='10' value=\"".$date_ele_resp."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
 	echo "<a href=\"#calend\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Petit calendrier\" /></a>\n";
 
 	//====================================
@@ -990,15 +992,19 @@ if ($new_devoir=='yes') {
 				echo "<td>\n";
 				if($tab_group[$i]["classe"]["ver_periode"]["all"][$periode_num]>=2) {
 					echo "<input type='checkbox' name='id_autre_groupe[]' id='case_$cpt' value='".$tab_group[$i]['id']."' />\n";
+					echo "</td>\n";
+					echo "<td><label for='case_$cpt'>".htmlentities($tab_group[$i]['name'])."</label></td>\n";
+					echo "<td><label for='case_$cpt'>".htmlentities($tab_group[$i]['description'])."</label></td>\n";
+					echo "<td><label for='case_$cpt'>".$tab_group[$i]['classlist_string']."</label></td>\n";
 					$cpt++;
 				}
 				else {
 					echo "<span style='color:red;'>Clos</span>";
+					echo "</td>\n";
+					echo "<td>".htmlentities($tab_group[$i]['name'])."</td>\n";
+					echo "<td>".htmlentities($tab_group[$i]['description'])."</td>\n";
+					echo "<td>".$tab_group[$i]['classlist_string']."</td>\n";
 				}
-				echo "</td>\n";
-				echo "<td>".htmlentities($tab_group[$i]['name'])."</td>\n";
-				echo "<td>".htmlentities($tab_group[$i]['description'])."</td>\n";
-				echo "<td>".$tab_group[$i]['classlist_string']."</td>\n";
 				//echo "<td>...</td>\n";
 				echo "</tr>\n";
 			}

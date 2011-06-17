@@ -1,0 +1,53 @@
+var iJabConf =
+{
+    client_type:"xmpp",
+    app_type:"bar",
+    theme:"standard",
+    debug:true,
+    avatar_url:"http://@@DOMAINE@@/jabber/portraits/{username}",
+    enable_roster_manage:true,
+    enable_talkto_stranger:true,
+    expand_bar_default:false,
+    enable_login_dialog:true,
+    hide_online_group:false,
+    disable_option_setting:false,
+    disable_msg_browser_prompt:false,
+    xmpp:{
+        domain:"@@DOMAINE@@",
+        http_bind:"http://lcs.@@DOMAINE@@/http-bind/",
+        host:"",
+        port:5222,
+        server_type:"ejabberd",
+        auto_login:false,
+        none_roster:false,
+        get_roster_delay:true,
+        username_cookie_field:"username",
+        token_cookie_field:"SID",
+        anonymous_prefix:"",
+        max_reconnect:3,
+        enable_muc:true,
+        muc_servernode:"conference.@@DOMAINE@@",
+        vcard_search_servernode:"vjud.@@DOMAINE@@",
+    },
+    disable_toolbox:true,
+    tools:
+    [
+    	{
+    		href:"http://www.google.com",
+    		target:"_blank",
+    		img:"http://www.google.cn/favicon.ico",
+    		text:"Google Search"
+    	},
+    	{
+    		href:"http://lcs.crdp.ac-caen.fr/",
+    		target:"_blank",
+    		img:"http://lcs.crdp.ac-caen.fr/favicon.ico",
+    		text:"LCS"
+    	}
+    ],
+    shortcuts:
+    [
+    ],
+    ijabcometd:{
+    }
+};

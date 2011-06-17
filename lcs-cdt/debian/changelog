@@ -1,3 +1,72 @@
+lcs-cdt (2.4.8.2) LCS; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 11 Jun 2011 13:26:15 +0200
+
+lcs-cdt (2.4.8.2~2) LCS; urgency=low
+
+  * change depends
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 10 Jun 2011 14:34:56 +0200
+
+lcs-cdt (2.4.8.2~1) LCS; urgency=low
+
+  * UTF8 compatibility
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 04 Jun 2011 10:19:28 +0200
+
+lcs-cdt (2.4.8.1) LCS; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 28 May 2011 12:37:51 +0200
+
+lcs-cdt (2.4.8.1~2) LCS; urgency=low
+
+  * change ldif files with no patched files
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 19 Mar 2011 05:44:33 +0100
+
+lcs-cdt (2.4.8.1~1) LCS; urgency=low
+
+  * fix bugs  with french caracters
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 18 Mar 2011 20:10:16 +0100
+
+lcs-cdt (2.4.8) LCS; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 18 Feb 2011 23:48:07 +0100
+
+lcs-cdt (2.4.8~2) LCS; urgency=low
+
+  * modify indicemaj in postinst and number version in doc-html
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 03 Feb 2011 17:49:03 +0100
+
+lcs-cdt (2.4.8~1) LCS; urgency=low
+
+  * update to version 2.3
+  	- validation W3C XHTML 1.0 strict
+        - add "sequences pedagogiques" management 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 03 Feb 2011 15:14:42 +0100
+
+lcs-cdt (2.4.7.4~1) LCS; urgency=low
+
+  * fix bug in link "absences" 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 09 Dec 2010 17:35:42 +0100
+
+lcs-cdt (2.4.7.3) LCS; urgency=low
+
+  * protection against attacks like Cross-Site Request Forgery
+  * add choosing the size of a mathematical formula
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 21 Nov 2010 11:04:38 +0100
+
 lcs-cdt (2.4.7.2.4) LCS; urgency=low
 
   * fix bug in accesfilter.php

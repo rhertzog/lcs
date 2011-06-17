@@ -4,7 +4,7 @@
    /**
    * Fonctions pour l'import sconet
 
-   * @Version $Id: crob_ldap_functions.php 5767 2010-09-10 18:04:45Z crob $
+   * @Version $Id: crob_ldap_functions.php 6299 2011-04-16 09:12:56Z crob $
 
    * @Projet LCS / SambaEdu
 
@@ -168,6 +168,34 @@ function my_echo($texte){
 	}
 }
 
+//================================================
+
+/**
+
+* Affiche le tableau à la façon de print_r ou l ecrit dans un fichier
+* @Parametres tableau
+* @Return
+
+*/
+
+function my_print_r($tab) {
+	global $echo_file, $dest_mode;
+
+	my_echo("Array<br />(<br />\n");
+	my_echo("<blockquote>\n");
+	foreach($tab as $key => $value) {
+		if(is_array($value)) {
+			my_echo("[$key] =&gt; ");
+			my_print_r($value);
+		}
+		else {
+			my_echo("[$key] =&gt; $value<br />\n");
+		}
+	}
+	my_echo("</blockquote>\n");
+	my_echo(")<br />\n");
+}
+
 
 //================================================
 
@@ -183,10 +211,77 @@ function remplace_accents($chaine){
 	global $liste_caracteres_accentues, $liste_caracteres_desaccentues;
 	//$retour=strtr(ereg_replace("¼","OE",ereg_replace("½","oe",$chaine)),"ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü","AAAEEEEIIOOUUUCcaaaeeeeiioouuu");
 	//$retour=strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$chaine"))))," 'ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸","__AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz");
-	$retour=strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$chaine"))))," '$liste_caracteres_accentues","__$liste_caracteres_desaccentues");
+	$retour=strtr(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe","$chaine"))))," '$liste_caracteres_accentues","__$liste_caracteres_desaccentues");
 	return $retour;
 }
 
+//================================================
+
+/**
+
+* dédoublonnage des espaces dans une chaine
+* @Parametres chaine a traiter
+* @Return la chaine sans doublons d'espaces
+
+*/
+
+function traite_espaces($chaine) {
+	//$chaine="  Bla   ble bli  blo      blu  ";
+	/*
+	$tab=explode(" ",$chaine);
+
+	$retour=$tab[0];
+	for($i=1;$i<count($tab);$i++) {
+		if($tab[$i]!="") {
+			$retour.=" ".$tab[$i];
+		}
+	}
+	*/
+	$retour=preg_replace("/ {2,}/"," ",$chaine);
+	$retour=trim($retour);
+	return $retour;
+}
+
+//================================================
+
+/**
+
+* remplacement des apostrophes et espaces par des underscore
+* @Parametres chaine a traiter
+* @Return la chaine nettoyee
+
+*/
+
+function apostrophes_espaces_2_underscore($chaine) {
+	$retour=preg_replace("/'/","_",preg_replace("/ /","_",$chaine));
+	return $retour;
+}
+
+//================================================
+
+/**
+
+* traitement des chaines accentuees (simpleXML recupere des chaines UTF8, meme si l'entete du XML est ISO)
+* @Parametres chaine a traiter
+* @Return la chaine correctement encodee
+
+*/
+
+function traite_utf8($chaine) {
+	// On passe par cette fonction pour pouvoir desactiver rapidement ce traitement s'il ne se revele plus necessaire
+	//$retour=$chaine;
+
+	// mb_detect_encoding($chaine . 'a' , 'UTF-8, ISO-8859-1');
+
+	//$retour=utf8_decode($chaine);
+	// utf8_decode() va donner de l'iso-8859-1 d'ou probleme sur quelques caracteres
+
+	//$retour=recode_string("utf8..lat9", $chaine);
+	//Warning: recode_string(): Illegal recode request 'utf8..lat9' in /var/www/se3/includes/crob_ldap_functions.php on line 277
+
+	$retour=recode_string("utf8..iso-8859-15", $chaine);
+	return $retour;
+}
 
 //================================================
 
@@ -669,8 +764,8 @@ function creer_uid($nom,$prenom){
 	//$prenom=strtolower(strtr("$prenom"," 'àâäéèêëîïôöùûüçÇÂÄÊËÎÏÔÖÙÛÜ","__aaaeeeeiioouuucCAAEEIIOOUUU"));
 	//$nom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom"))))," 'ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸","__AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz"));
 	//$prenom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," 'ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸","__AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz"));
-	$nom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom"))))," '$liste_caracteres_accentues","__$liste_caracteres_desaccentues"));
-	$prenom=strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," '$liste_caracteres_accentues","__$liste_caracteres_desaccentues"));
+	$nom=strtolower(strtr(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe","$nom"))))," '$liste_caracteres_accentues","__$liste_caracteres_desaccentues"));
+	$prenom=strtolower(strtr(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe","$prenom"))))," '$liste_caracteres_accentues","__$liste_caracteres_desaccentues"));
 
 	fich_debug("Apr&#232;s filtrage...\n");
 	fich_debug("\$nom=$nom\n");
@@ -723,16 +818,23 @@ function creer_uid($nom,$prenom){
 	}
 
 	fich_debug("\$uid=$uid\n");
-	fich_debug("\$ERREUR=$ERREUR\n");
+	if(isset($ERREUR)) {fich_debug("\$ERREUR=$ERREUR\n");}
 
 	// Pour faire disparaitre les caracteres speciaux restants:
-	$uid=ereg_replace("[^a-z_.-]","",$uid);
+	$uid=preg_replace("/[^a-z_.-]/","",$uid);
+
+	// Pour eviter les _ en fin d'UID... pb avec des connexions machine de M$7
+	$uid=preg_replace("/_*$/","",$uid);
 
 	fich_debug("Apr&#232;s filtrage...\n");
 	fich_debug("\$uid=$uid\n");
 
 	$test_caract1=substr($uid,0,1);
-	if(strlen(ereg_replace("[a-z]","",$test_caract1))!=0){
+	//if(strlen(preg_replace("/[a-z]/","",$test_caract1))!=0){
+	if($uid=='') {
+		$error="L'uid obtenu avec le nom '$nom' et le prenom '$prenom' en uidPolicy '$uidPolicy' est vide.";
+	}
+	elseif(strlen(preg_replace("/[a-z]/","",$test_caract1))!=0) {
 		$error="Le premier caract&#232;re de l'uid n'est pas une lettre.";
 	}
 	else{
@@ -743,7 +845,7 @@ function creer_uid($nom,$prenom){
 		$uid_souche=$uid;
 
 		//$tab_logins_non_permis=array('prof', 'progs', 'docs', 'classes', 'homes', 'admhomes', 'admse3');
-		$tab_logins_non_permis=array('prof', 'progs', 'docs', 'classes', 'homes', 'admhomes', 'netlogon');
+		$tab_logins_non_permis=array('prof', 'progs', 'docs', 'classes', 'homes', 'admhomes', 'netlogon','profiles');
 		if(in_array($uid_souche,$tab_logins_non_permis)) {
 			$cpt=1;
 			$uid_souche=substr($uid,0,strlen($uid)-strlen($cpt)).$cpt;
@@ -780,7 +882,7 @@ function creer_uid($nom,$prenom){
 										//$uid=$prefuid.$cpt;
 										$uid=substr($uid_souche,0,strlen($uid_souche)-strlen($cpt)).$cpt;
 
-										if($uid=="admse3") {$uid="admse4";}
+										if($uid=="admse3") {$uid="admse4";$cpt++;}
 
 										fich_debug("Doublons... \$uid=$uid\n");
 										$cpt++;
@@ -1245,7 +1347,7 @@ function get_first_free_gidNumber($start=NULL){
 	$last_gidNumber=4999;
 	//$last_gidNumber=2010;
 
-	if((isset($start))&&(strlen(ereg_replace("[0-9]","",$start))==0)&&($start>=$first_gidNumber)) {
+	if((isset($start))&&(strlen(preg_replace("/[0-9]/","",$start))==0)&&($start>=$first_gidNumber)) {
 		$first_gidNumber=$start;
 		$last_gidNumber=64000;
 	}
@@ -1459,8 +1561,8 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	//$prenom=ereg_replace("[^a-z_-]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom"))))," 'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõ¨ûüùúıÿ¸","__AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz")));
 	//$nom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom")))),"'ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸","_AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz")));
 	//$prenom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom")))),"'ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚİ¾´áàâäãåçéèêëîïìíñôöğòóõø¨ûüùúıÿ¸","_AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz")));
-	$nom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$nom")))),"'$liste_caracteres_accentues","_$liste_caracteres_desaccentues")));
-	$prenom=ereg_replace("[^a-z_ -]","",strtolower(strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$prenom")))),"'$liste_caracteres_accentues","_$liste_caracteres_desaccentues")));
+	$nom=preg_replace("/[^a-z_ -]/","",strtolower(strtr(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe","$nom")))),"'$liste_caracteres_accentues","_$liste_caracteres_desaccentues")));
+	$prenom=preg_replace("/[^a-z_ -]/","",strtolower(strtr(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe","$prenom")))),"'$liste_caracteres_accentues","_$liste_caracteres_desaccentues")));
 
 	$nom=ucfirst(strtolower($nom));
 	$prenom=ucfirst(strtolower($prenom));
@@ -1499,7 +1601,7 @@ function add_user($uid,$nom,$prenom,$sexe,$naissance,$password,$employeeNumber){
 	//$attribut["givenName"]=strtolower($prenom).strtoupper(substr($nom,0,1));
 	$attribut["givenName"]=ucfirst(strtolower($prenom));
 	//$attribut["$attribut_pseudo"]=strtolower($prenom).strtoupper(substr($nom,0,1));
-	$attribut["$attribut_pseudo"]=ereg_replace(" ","_",strtolower($prenom).strtoupper(substr($nom,0,1)));
+	$attribut["$attribut_pseudo"]=preg_replace("/ /","_",strtolower($prenom).strtoupper(substr($nom,0,1)));
 
 	$attribut["sn"]="$nom";
 
@@ -1600,8 +1702,8 @@ function verif_et_corrige_gecos($uid,$nom,$prenom,$naissance,$sexe){
 	$nom=remplace_accents(traite_espaces($nom));
 	$prenom=remplace_accents(traite_espaces($prenom));
 
-	$nom=ereg_replace("[^a-z_-]","",strtolower("$nom"));
-	$prenom=ereg_replace("[^a-z_-]","",strtolower("$prenom"));
+	$nom=preg_replace("/[^a-z_-]/","",strtolower("$nom"));
+	$prenom=preg_replace("/[^a-z_-]/","",strtolower("$prenom"));
 
 	$nom=ucfirst(strtolower($nom));
 	$prenom=ucfirst(strtolower($prenom));
@@ -1652,7 +1754,7 @@ function verif_et_corrige_givenname($uid,$prenom) {
 	// Correction du nom/prenom fournis
 	$prenom=remplace_accents(traite_espaces($prenom));
 
-	$prenom=ereg_replace("[^a-z_-]","",strtolower("$prenom"));
+	$prenom=preg_replace("/[^a-z_-]/","",strtolower("$prenom"));
 
 	// FAUT-IL LA MAJUSCULE?
 	$prenom=ucfirst(strtolower($prenom));
@@ -1710,8 +1812,8 @@ function verif_et_corrige_pseudo($uid,$nom,$prenom) {
 	$nom=remplace_accents(traite_espaces($nom));
 	$prenom=remplace_accents(traite_espaces($prenom));
 
-	$nom=ereg_replace("[^a-z_-]","",strtolower("$nom"));
-	$prenom=ereg_replace("[^a-z_-]","",strtolower("$prenom"));
+	$nom=preg_replace("/[^a-z_-]/","",strtolower("$nom"));
+	$prenom=preg_replace("/[^a-z_-]/","",strtolower("$prenom"));
 
 	unset($attribut);
 	$attribut=array("$attribut_pseudo_min");
@@ -1783,7 +1885,7 @@ function get_uid_from_f_uid_file($employeeNumber) {
 			if($tab=explode(";",$ligne)) {
 				if("$tab[0]"=="$employeeNumber") {
 					// On controle le login
-					if(strlen(ereg_replace("[A-Za-z0-9._\-]","",$tab[1]))==0) {
+					if(strlen(preg_replace("/[A-Za-z0-9._\-]/","",$tab[1]))==0) {
 						return $tab[1];
 					}
 					else {

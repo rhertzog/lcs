@@ -1,10 +1,11 @@
 <?php
-// _SPIPLISTES_EXEC_AUTOCRON
-
-// $LastChangedRevision: 21059 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2008-06-21 09:53:42 +0200 (sam, 21 jun 2008) $
-
+/**
+ * @version Original From SPIP-Listes-V :: Id: spiplistes_listes_forcer_abonnement.php paladin@quesaco.org
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
@@ -18,7 +19,7 @@ function exec_spiplistes_autocron () {
 
 	include_spip('inc/spiplistes_api');
 
-	spiplistes_log("exec_autocron() <<", _SPIPLISTES_LOG_DEBUG); 	
+	spiplistes_debug_log ("exec_autocron()"); 	
 
 	$sql_result = sql_select(
 		"id_courrier,total_abonnes,nb_emails_envoyes"
@@ -48,9 +49,8 @@ function exec_spiplistes_autocron () {
 	$action = generer_url_action('cron','&var='.time());
 	echo ' <div style="background-image: url(\''. $action . '\');"> </div> ';
 
-	spiplistes_log("exec_autocron ACTION: $action", _SPIPLISTES_LOG_DEBUG);	
-	spiplistes_log("exec_autocron() >>", _SPIPLISTES_LOG_DEBUG);	
+	spiplistes_debug_log ("exec_autocron ACTION: $action");	
+	spiplistes_debug_log("fin exec_autocron()");	
  
 }
 
-?>

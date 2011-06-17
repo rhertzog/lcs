@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('base/abstract_sql');
 
@@ -395,7 +395,39 @@ function optimiser_base_disparus($attente = 86400) {
 			"forum.id_forum IS NULL");
 
 	$n+= optimiser_sansref('spip_mots_forum', 'id_forum', $res);
+	
+	$n = pipeline('optimiser_base_disparus', array(
+			'args'=>array(
+				'attente' => $attente,
+				'date' => $mydate),
+			'data'=>$n
+	));
+
+
+	//
+	// CNIL -- Informatique et libertes
+	//
+	// masquer le numero IP des vieux forums
+	//
+	## date de reference = 4 mois
+	## definir a 0 pour desactiver
+	define('_CNIL_PERIODE', 3600*24*31*4);
+
+	if (_CNIL_PERIODE) {
+		$critere_cnil = 'date_heure<"'.date('Y-m-d', time()-_CNIL_PERIODE).'"'
+			. ' AND statut != "spam"'
+			. ' AND (ip LIKE "%.%" OR ip LIKE "%:%")'; # ipv4 ou ipv6
+
+		$c = sql_countsel('spip_forum', $critere_cnil);
+
+		if ($c>0) {
+			spip_log("CNIL: masquer IP de $c forums anciens");
+			sql_update('spip_forum', array('ip' => 'MD5(ip)'), $critere_cnil);
+		}
+	}
+
 
 	if (!$n) spip_log("Optimisation des tables: aucun lien mort");
 }
+
 ?>

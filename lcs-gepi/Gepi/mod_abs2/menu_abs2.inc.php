@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: menu_abs2.inc.php 5370 2010-09-20 19:23:03Z jjacquard $
+ * @version $Id: menu_abs2.inc.php 6532 2011-02-23 18:58:33Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -42,7 +42,8 @@ if(($_SESSION['statut']=='cpe')||
     if($onglet_abs=='absences_du_jour.php'
 	    || $onglet_abs=='tableau_des_appels.php'
 	    || $onglet_abs=='bilan_du_jour.php'
-	    || $onglet_abs=='extraction_saisies.php') {echo "class='current' ";}
+	    || $onglet_abs=='extraction_saisies.php'
+        || $onglet_abs=='bilan_individuel.php') {echo "class='current' ";}
     echo "title='Bilans'>Bilans</a></li>\n";
 
     echo "<li><a href='saisir_groupe.php' ";
@@ -92,8 +93,10 @@ if(($_SESSION['statut']=='cpe')||
 	echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Saisie_cpe">wiki</a></div>';
     } else if($onglet_abs=='liste_notifications.php') {
 	echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Suivi">wiki</a></div>';
+    } else if($onglet_abs=='tableau_des_appels.php'|| $onglet_abs=='absences_du_jour.php'||$onglet_abs=='bilan_du_jour.php'||$onglet_abs=='totaux_du_jour.php'||$onglet_abs=='extraction_saisies.php'||$onglet_abs=='extraction_demi-journees.php'||$onglet_abs=='bilan_individuel.php') {
+	echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Bilans">wiki</a></div>';
     } else {
-	echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Traitement_notification">wiki</a></div>';
+    echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Traitement_notification">wiki</a></div>';
     }
 
     echo "</ul>\n";
@@ -114,7 +117,13 @@ if(($_SESSION['statut']=='cpe')||
     echo "<li><a href='liste_saisies.php' ";
     if($onglet_abs=='liste_saisies.php') {echo "class='current' style='background-color:#cae7cb; border-bottom:2px solid #cae7cb;' ";}
     else {echo "style='background-color:#e6f8e7;' ";}
-    echo "title='Liste des saisies'>Liste des saisies</a></li>\n";
+    echo "title='Liste des saisies'>Liste des saisies</a></li>\n";    
+
+    if(!$utilisateur->getClasses()->isEmpty()){
+    echo "<li><a href='bilan_individuel.php' ";
+    if($onglet_abs=='bilan_individuel.php') {echo "class='current' border-bottom:2px solid #cae7cb;' ";}
+    echo "title='Bilans'>Bilan individuel</a></li>\n";
+    }
 
     echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Fond_de_salle">wiki</a></div>';
 
@@ -124,19 +133,31 @@ if(($_SESSION['statut']=='cpe')||
 
 	echo "<ul class='css-tabs' id='menutabs'>\n";
 
-    echo "<li><a href='saisir_eleve.php' ";
-    if($onglet_abs=='saisir_eleve.php') {echo "class='current' ";}
-    echo "title='Saisir pour un eleve'>Saisir un élève</a></li>\n";
+    if(acces('/mod_abs2/saisir_eleve.php','autre')) {
+        echo "<li><a href='saisir_eleve.php' ";
+        if($onglet_abs=='saisir_eleve.php') {echo "class='current' ";}
+        echo "title='Saisir pour un eleve'>Saisir un élève</a></li>\n";        
+    
+        echo "<li><a href='visu_saisie.php' ";
+        if($onglet_abs=='visu_saisie.php' || $onglet_abs=='enregistrement_modif_saisie.php') {echo "class='current' style='background-color:#cae7cb; border-bottom:2px solid #cae7cb;' ";}
+        else {echo "style='background-color:#e6f8e7;' ";}
+        echo "title='Visualiser une saisie'>Saisie</a></li>\n";
 
-    echo "<li><a href='visu_saisie.php' ";
-    if($onglet_abs=='visu_saisie.php' || $onglet_abs=='enregistrement_modif_saisie.php') {echo "class='current' style='background-color:#cae7cb; border-bottom:2px solid #cae7cb;' ";}
-    else {echo "style='background-color:#e6f8e7;' ";}
-    echo "title='Visualiser une saisie'>Saisie</a></li>\n";
-
-    echo "<li><a href='liste_saisies.php' ";
-    if($onglet_abs=='liste_saisies.php') {echo "class='current' style='background-color:#cae7cb; border-bottom:2px solid #cae7cb;' ";}
-    else {echo "style='background-color:#e6f8e7;' ";}
-    echo "title='Liste des saisies'>Liste des saisies</a></li>\n";
+        echo "<li><a href='liste_saisies.php' ";
+        if($onglet_abs=='liste_saisies.php') {echo "class='current' style='background-color:#cae7cb; border-bottom:2px solid #cae7cb;' ";}
+        else {echo "style='background-color:#e6f8e7;' ";}
+        echo "title='Liste des saisies'>Liste des saisies</a></li>\n";
+    }
+    if(acces('/mod_abs2/bilan_individuel.php','autre')) {
+        echo "<li><a href='bilan_individuel.php' ";
+        if($onglet_abs=='bilan_individuel.php') {echo "class='current' border-bottom:2px solid #cae7cb;' ";}
+        echo "title='Bilan individuel'>Bilan individuel</a></li>\n";
+    }
+    if(acces('/mod_abs2/totaux_du_jour.php','autre')) {
+        echo "<li><a href='totaux_du_jour.php' ";
+        if($onglet_abs=='totaux_du_jour.php') {echo "class='current' border-bottom:2px solid #cae7cb;' ";}
+        echo "title='Totaux du jour'>Totaux du jour</a></li>\n";
+    }
 
     echo "</ul>\n";
 }

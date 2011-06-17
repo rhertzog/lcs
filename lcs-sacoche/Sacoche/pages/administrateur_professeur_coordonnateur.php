@@ -29,7 +29,7 @@ if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');
 $TITRE = "Gérer les professeurs coordonnateurs";
 ?>
 
-<p class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_professeurs">DOC : Gestion des professeurs</a></p>
+<p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_professeurs">DOC : Gestion des professeurs</a></span></p>
 
 <form id="coord" action="">
 
@@ -43,7 +43,7 @@ $TITRE = "Gérer les professeurs coordonnateurs";
 	$DB_SQL.= 'LEFT JOIN sacoche_jointure_user_matiere USING (matiere_id) ';
 	$DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
 	$DB_SQL.= 'WHERE user_profil=:profil AND user_statut=:statut ';
-	$DB_SQL.= ($_SESSION['MATIERES']) ? 'AND (matiere_id IN('.$_SESSION['MATIERES'].') OR matiere_partage=:partage) ' : 'AND matiere_partage=:partage ';
+	$DB_SQL.= 'AND (matiere_id IN('.$_SESSION['MATIERES'].') OR matiere_partage=:partage) '; // Test matiere car un prof peut être encore relié à des matières décochées par l'admin.
 	$DB_SQL.= 'ORDER BY matiere_transversal DESC, matiere_nom ASC, user_nom ASC, user_prenom ASC';
 	$DB_VAR = array(':profil'=>'professeur',':statut'=>1,':partage'=>0);
 	$DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
@@ -63,7 +63,7 @@ $TITRE = "Gérer les professeurs coordonnateurs";
 				// Nouveau professeur
 				if($DB_ROW['user_statut'])
 				{
-					$checked = ($DB_ROW['jointure_coord']) ? ' checked="checked"' : '' ;
+					$checked = ($DB_ROW['jointure_coord']) ? ' checked' : '' ;
 					$id = $DB_ROW['matiere_id'].'x'.$DB_ROW['user_id'];
 					$tab_user[$DB_ROW['matiere_id']] .= '<input type="checkbox" id="id_'.$id.'" name="f_tab_id" value="'.$id.'"'.$checked.' /> <label for="id_'.$id.'">'.html($DB_ROW['user_nom'].' '.$DB_ROW['user_prenom']).'</label><br />';
 					$nb_professeurs++;

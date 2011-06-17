@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('base/abstract_sql');
 
@@ -24,8 +24,14 @@ define('_ADMINS_RESTREINTS', true);
 define('_STATUT_AUTEUR_CREATION', '1comite');
 // statuts associables a des rubriques (separes par des virgules)
 define('_STATUT_AUTEUR_RUBRIQUE', _ADMINS_RESTREINTS ? '0minirezo' : '');
-// id du ou des webmestres, '1:5:90' a regler dans mes_options
-if (!defined ('_ID_WEBMESTRES')) define ('_ID_WEBMESTRES', '1');
+
+
+// mes_fonctions peut aussi declarer des autorisations, donc il faut donc le charger
+if ($f = find_in_path('mes_fonctions.php')) {
+	global $dossier_squelettes;
+	include_once(_ROOT_CWD . $f);
+}
+
 
 // surcharge possible de autoriser(), sinon autoriser_dist()
 if (!function_exists('autoriser')) {
@@ -59,7 +65,7 @@ function autoriser_dist($faire, $type='', $id=0, $qui = NULL, $opt = NULL) {
 	// Qui ? visiteur_session ?
 	// si null ou '' (appel depuis #AUTORISER) on prend l'auteur loge
 	if ($qui === NULL OR $qui==='')
-	  $qui = $GLOBALS['visiteur_session'] ? $GLOBALS['visiteur_session'] : array('statut' => '', 'id_auteur' =>0);
+	  $qui = $GLOBALS['visiteur_session'] ? $GLOBALS['visiteur_session'] : array('statut' => '', 'id_auteur' =>0, 'webmestre' => 'non');
 	elseif (is_numeric($qui)) {
 		$qui = sql_fetsel("*", "spip_auteurs", "id_auteur=".$qui);
 	}
@@ -81,23 +87,23 @@ function autoriser_dist($faire, $type='', $id=0, $qui = NULL, $opt = NULL) {
 		return true;
 	
 	// Chercher une fonction d'autorisation
-	// Dans l'ordre on va chercher autoriser_type_faire, autoriser_type,
-	// autoriser_faire, autoriser_defaut ; puis les memes avec _dist
+	// Dans l'ordre on va chercher autoriser_type_faire[_dist], autoriser_type[_dist],
+	// autoriser_faire[_dist], autoriser_defaut[_dist]
 	$fonctions = $type
 		? array (
 			'autoriser_'.$type.'_'.$faire,
-			'autoriser_'.$type,
-			'autoriser_'.$faire,
-			'autoriser_defaut',
 			'autoriser_'.$type.'_'.$faire.'_dist',
+			'autoriser_'.$type,
 			'autoriser_'.$type.'_dist',
+			'autoriser_'.$faire,
 			'autoriser_'.$faire.'_dist',
+			'autoriser_defaut',
 			'autoriser_defaut_dist'
 		)
 		: array (
 			'autoriser_'.$faire,
-			'autoriser_defaut',
 			'autoriser_'.$faire.'_dist',
+			'autoriser_defaut',
 			'autoriser_defaut_dist'
 		);
 	
@@ -150,6 +156,27 @@ function autoriser_previsualiser_dist($faire, $type, $id, $qui, $opt) {
 		!==false;
 }
 
+function autoriser_dater_dist($faire, $type, $id, $qui, $opt) {
+	if (!isset($opt['statut'])){
+		$table = table_objet($type);
+		$trouver_table = charger_fonction('trouver_table','base');
+		$desc = $trouver_table($table);
+		if (!$desc)
+			return false;
+		if (isset($desc['field']['statut'])){
+			$statut = sql_getfetsel("statut", $desc['table'], id_table_objet($type)."=".intval($id));
+		}
+		else
+			$statut = 'publie'; // pas de statut => publie
+	}
+	else
+		$statut = $opt['statut'];
+
+	if ($statut == 'publie'
+	 OR ($statut == 'prop' AND $type=='article' AND $GLOBALS['meta']["post_dates"] == "non"))
+		return autoriser('modifier', $type, $id);
+	return false;
+}
 // Autoriser a publier dans la rubrique $id
 // http://doc.spip.org/@autoriser_rubrique_publierdans_dist
 function autoriser_rubrique_publierdans_dist($faire, $type, $id, $qui, $opt) {
@@ -367,6 +394,14 @@ function autoriser_voir_dist($faire, $type, $id, $qui, $opt) {
 		return autoriser_document_voir_dist($faire, $type, $id, $qui, $opt);
 	if ($qui['statut'] == '0minirezo') return true;
 	if ($type == 'auteur') return false;
+	if ($type == 'groupemots') {
+		$acces = sql_fetsel("comite,forum", "spip_groupes_mots", "id_groupe=".intval($id));
+		if ($qui['statut']=='1comite' AND ($acces['comite'] == 'oui' OR $acces['forum'] == 'oui'))
+			return true;
+		if ($qui['statut']=='6forum' AND $acces['forum'] == 'oui')
+			return true;
+		return false;
+	}
 	if ($type != 'article') return true;
 	if (!$id) return false;
 
@@ -427,8 +462,9 @@ function autoriser_modererpetition_dist($faire, $type, $id, $qui, $opt) {
 // http://doc.spip.org/@autoriser_webmestre_dist
 function autoriser_webmestre_dist($faire, $type, $id, $qui, $opt) {
 	return
-		defined('_ID_WEBMESTRES')
-		AND in_array($qui['id_auteur'], explode(':', _ID_WEBMESTRES))
+		(defined('_ID_WEBMESTRES')?
+			in_array($qui['id_auteur'], explode(':', _ID_WEBMESTRES))
+			:$qui['webmestre']=='oui')
 		AND $qui['statut'] == '0minirezo'
 		AND !$qui['restreint']
 		;
@@ -453,13 +489,19 @@ function autoriser_sauvegarder_dist($faire, $type, $id, $qui, $opt) {
 }
 
 // Effacer la base de donnees ?
-// admins seulement (+auth ftp)
-// a transformer en webmestre quand la notion sera fixee
+// webmestres seulement
 // http://doc.spip.org/@autoriser_detruire_dist
 function autoriser_detruire_dist($faire, $type, $id, $qui, $opt) {
 	return
+		autoriser('webmestre', null, null, $qui, $opt);
+}
+
+// Consulter le forum des admins ?
+// admins y compris restreints
+// http://doc.spip.org/@autoriser_forum_admin_dist
+function autoriser_forum_admin_dist($faire, $type, $id, $qui, $opt) {
+	return
 		$qui['statut'] == '0minirezo'
-		AND !$qui['restreint']
 		;
 }
 
@@ -486,9 +528,11 @@ function autoriser_auteur_modifier_dist($faire, $type, $id, $qui, $opt) {
 	// Un redacteur peut modifier ses propres donnees mais ni son login/email
 	// ni son statut (qui sont le cas echeant passes comme option)
 	if ($qui['statut'] == '1comite') {
-		if ($opt['statut'] OR $opt['restreintes'] OR $opt['email'])
+		if ($opt['webmestre'])
 			return false;
-		else if ($id == $qui['id_auteur'])
+		elseif ($opt['statut'] OR $opt['restreintes'] OR $opt['email'])
+			return false;
+		elseif ($id == $qui['id_auteur'])
 			return true;
 		else
 			return false;
@@ -497,10 +541,11 @@ function autoriser_auteur_modifier_dist($faire, $type, $id, $qui, $opt) {
 	// Un admin restreint peut modifier/creer un auteur non-admin mais il
 	// n'a le droit ni de le promouvoir admin, ni de changer les rubriques
 	if ($qui['restreint']) {
-		if ($opt['statut'] == '0minirezo'
-		OR $opt['restreintes']) {
+		if ($opt['webmestre'])
 			return false;
-		} else {
+		elseif ($opt['statut'] == '0minirezo' OR $opt['restreintes'])
+			return false;
+		else {
 			if ($id == $qui['id_auteur']) {
 				if ($opt['statut'])
 					return false;
@@ -523,6 +568,13 @@ function autoriser_auteur_modifier_dist($faire, $type, $id, $qui, $opt) {
 	// Un admin complet fait ce qu'elle veut
 	// sauf se degrader
 	if ($id == $qui['id_auteur'] && $opt['statut'])
+		return false;
+	// et toucher au statut webmestre si il ne l'est pas lui meme
+	// ou si les webmestres sont fixes par constante (securite)
+	elseif ($opt['webmestre'] AND (defined('_ID_WEBMESTRES') OR !autoriser('webmestre')))
+		return false;
+	// et toucher au statut d'un webmestre si il ne l'est pas lui meme
+	elseif ($opt['statut'] AND autoriser('webmestre','',0,$id) AND !autoriser('webmestre'))
 		return false;
 	else
 		return true;
@@ -626,16 +678,15 @@ function autoriser_modifierurl_dist($faire, $quoi, $id, $qui, $opt) {
 
 // http://doc.spip.org/@autoriser_rubrique_editermots_dist
 function autoriser_rubrique_editermots_dist($faire,$quoi,$id,$qui,$opts){
-	// on verifie que le champ de droit passe en opts colle bien
+	// on recupere les champs du groupe s'ils ne sont pas passes en opt
 	$droit = substr($GLOBALS['visiteur_session']['statut'],1);
-	if (!isset($opts['groupe_champs'][$droit])){
+	if (!isset($opts['groupe_champs'])){
 		if (!$id_groupe = $opts['id_groupe'])
 			return false;
 		include_spip('base/abstract_sql');
-		$droit = sql_getfetsel($droit, "spip_groupes_mots", "id_groupe=".intval($id_groupe));
+		$opts['groupe_champs'] = sql_fetsel("*", "spip_groupes_mots", "id_groupe=".intval($id_groupe));
 	}
-	else
-		$droit = $opts['groupe_champs'][$droit];
+	$droit = $opts['groupe_champs'][$droit];
 
 	return
 		($droit == 'oui')
@@ -657,6 +708,38 @@ function autoriser_breve_editermots_dist($faire,$quoi,$id,$qui,$opts){
 // http://doc.spip.org/@autoriser_syndic_editermots_dist
 function autoriser_syndic_editermots_dist($faire,$quoi,$id,$qui,$opts){
 	return autoriser_rubrique_editermots_dist($faire,'syndic',0,$qui,$opts);
+}
+
+// http://doc.spip.org/@autoriser_rubrique_iconifier_dist
+function autoriser_rubrique_iconifier_dist($faire,$quoi,$id,$qui,$opts){
+	return autoriser('publierdans', 'rubrique', $id, $qui, $opt);
+}
+// http://doc.spip.org/@autoriser_auteur_iconifier_dist
+function autoriser_auteur_iconifier_dist($faire,$quoi,$id,$qui,$opts){
+ return (($id == $qui['id_auteur']) OR
+ 		(($qui['statut'] == '0minirezo') AND !$qui['restreint']));
+}
+// http://doc.spip.org/@autoriser_mot_iconifier_dist
+function autoriser_mot_iconifier_dist($faire,$quoi,$id,$qui,$opts){
+ return (($qui['statut'] == '0minirezo') AND !$qui['restreint']);
+}
+// http://doc.spip.org/@autoriser_article_iconifier_dist
+function autoriser_iconifier_dist($faire,$quoi,$id,$qui,$opts){
+	// On reprend le code de l'ancien iconifier pour definir les autorisations pour les autres
+	// objets SPIP. De ce fait meme de nouveaux objets bases sur cet algorithme peuvent continuer
+	// a fonctionner. Cependant il est recommander de leur definir une autorisation specifique
+	$table = table_objet_sql($quoi);
+	$id_objet = id_table_objet($quoi);
+	$row = sql_fetsel("id_rubrique, statut", $table, "$id_objet=$id");
+	$droit = autoriser('publierdans','rubrique',$row['id_rubrique']);
+
+	if (!$droit AND  ($row['statut'] == 'prepa' OR $row['statut'] == 'prop' OR $row['statut'] == 'poubelle')) {
+	  $jointure = table_jointure('auteur', 'article');
+	  if ($droit = sql_fetsel("id_auteur", "spip_$jointure", "id_article=".sql_quote($id) . " AND id_auteur=$connect_id_auteur"))
+		$droit = true;
+	}
+
+	return $droit;
 }
 
 // Deux fonctions sans surprise pour permettre les tests

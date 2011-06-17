@@ -1,5 +1,5 @@
 <?php
-/* functions.inc.php Derniere mise a jour 01/10/2010  */
+/* functions.inc.php Derniere mise a jour 10/12/2010  */
 
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
@@ -14,9 +14,9 @@ include ("/var/www/lcs/includes/xoft.php");
        $r = (integer) time();
        $r .= 'r';
        for ($x=0;$x<8;$x++) {
-           $r .= strtoupper(dechex($r % mt_rand(1,$MAX)));
+           $r .= mb_strtoupper(dechex($r % mt_rand(1,$MAX)));
        }
-       return substr($r,0,$length);
+       return mb_substr($r,0,$length);
     }
  
 
@@ -135,22 +135,20 @@ include ("/var/www/lcs/includes/xoft.php");
         $idpers=0;$login="";
         if (! empty($_COOKIE["LCSAuth"])) {
             $sess=$_COOKIE["LCSAuth"];
-            //$result=@mysql_db_query("$DBAUTH","SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'", $authlink);
-	    if (!@mysql_select_db($DBAUTH, $authlink)) 
-    		die ("S&#233;lection de base de donn&#233;es impossible.");
-	    $query="SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'";
+	    	if (!@mysql_select_db($DBAUTH, $authlink)) 
+    			die ("S&#233;lection de base de donn&#233;es impossible.");
+	    	$query="SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'";
             $result=@mysql_query($query,$authlink);
             if ($result && @mysql_num_rows($result) ) {
-		// Split ip variable too take first ip only
-		// (BDD field is too short on multiple proxy case)
+				// Split ip variable too take first ip only
+				// (BDD field is too short on multiple proxy case)
                 list($ip_session,$null) = preg_split("/,/",mysql_result($result,0,0),2);
                 list($first_remote_ip,$null) = preg_split("/,/",remote_ip(),2);
                 if ( $ip_session == $first_remote_ip ) {
                         $idpers =  mysql_result($result,0,1);
                         // Recherche du login a partir de l'idpers
                         $query="SELECT login FROM personne WHERE id=$idpers";
-                        //$result=@mysql_db_query("$DBAUTH",$query, $authlink);
-			$result=@mysql_query($query,$authlink);
+						$result=@mysql_query($query,$authlink);
                         if ($result && @mysql_num_rows($result)) $login=str_replace(" ", "", @mysql_result($result,0,0));
                 }
                 @mysql_free_result($result);
@@ -170,7 +168,7 @@ include ("/var/www/lcs/includes/xoft.php");
             $sid="";
             $count--;
             for ($i = 0; $i < $SessLen ; $i++)
-                $sid .= substr($Pool, (mt_rand()%(strlen($Pool))),1);
+                $sid .= mb_substr($Pool, (mt_rand()%(mb_strlen($Pool))),1);
 	    if (!@mysql_select_db($DBAUTH, $authlink)) 
     		die ("S&#233;lection de base de donn&#233;es impossible.");
             $query="SELECT id FROM sessions WHERE sess='$sid'";
@@ -299,30 +297,32 @@ include ("/var/www/lcs/includes/xoft.php");
     {
 		/* Ferme la session de idpers */
 		global $authlink, $DBAUTH,$Nom_Appli, $VER;
-	        if (!@mysql_select_db($DBAUTH, $authlink)) 
-    			die ("S&#233;lection de base de donn&#233;es impossible.");
+		if (!@mysql_select_db($DBAUTH, $authlink)) 
+			die ("S&#233;lection de base de donn&#233;es impossible.");
 		// Destruction des cookies LCS
-                setcookie("LCSAuth","", 0,"/","",0);
-                setcookie("LCSuser","", 0,"/","",0);
-                // Destruction du cookie spip_admin
-                setcookie("spip_admin","", 0,"/spip/","",0);
-                // Destruction du cookie spip_session
-                setcookie("spip_session","", 0,"/spip/","",0);
+		setcookie("LCSAuth","", 0,"/","",0);
+		setcookie("LCSuser","", 0,"/","",0);
+		// Destruction du cookie spip_admin
+		setcookie("spip_admin","", 0,"/spip/","",0);
+		// Destruction du cookie spip_session
+		setcookie("spip_session","", 0,"/spip/","",0);
 		// Destruction du cookie admin du Forum
-                setcookie(md5($Nom_Appli.$VER."_admin"),"",0,"/","",0);
-                // Destruction du cookie smbwebclient
-                setcookie("SmbWebClientID","", 0,"/","",0);
-                // Destruction cookie tgt service CAS
-                $t=$_COOKIE['tgt'];
-                if ( isset($t) ) {
-	           $query="DELETE from casserver.casserver_tgt where ticket='$t'";
-	           $result=@mysql_query($query) or die($query);
-	           setcookie("lt","", 0,"/","",0);
-	           setcookie("tgt","", 0,"/","",0);
-                }
-		// Destruction des cookies squirrelmail
-	        setcookie("SQMSESSID","", 0,"/","",0);
+		setcookie(md5($Nom_Appli.$VER."_admin"),"",0,"/","",0);
+		// Destruction du cookie smbwebclient
+		setcookie("SmbWebClientID","", 0,"/","",0);
+		// Destruction cookie tgt service CAS
+		$t=$_COOKIE['tgt'];
+		if ( isset($t) ) {
+			$query="DELETE from casserver.casserver_tgt where ticket='$t'";
+			$result=@mysql_query($query) or die($query);
+			setcookie("lt","", 0,"/","",0);
+			setcookie("tgt","", 0,"/","",0);
+		}
+		// Destruction des cookies Squirrelmail
+		setcookie("SQMSESSID","", 0,"/","",0);
 		setcookie("key","", 0,"/squirrelmail/","",0);
+		// Destruction du cookie de session Roundcube
+		setcookie("roundcube_sessid","", 0,"/","",0);
 		// Destruction des cookies Plugins LCS
 		$query="SELECT chemin from applis where ( type='P' OR type='N' ) and value='1'";
 		$result=@mysql_query($query);
@@ -339,14 +339,14 @@ include ("/var/www/lcs/includes/xoft.php");
 		// Nettoyage de la session 
         if ($idpers) :
             //mysql_db_query("$DBAUTH","DELETE FROM sessions WHERE idpers=$idpers", $authlink);
-	    $query="DELETE FROM sessions WHERE idpers=$idpers";
-	    $result=@mysql_query($query,$authlink);
+	    	$query="DELETE FROM sessions WHERE idpers=$idpers";
+	    	$result=@mysql_query($query,$authlink);
         endif;
         /* update last_log */
         // lecture de act_log
         //$result=mysql_db_query("$DBAUTH","SELECT act_log FROM personne WHERE id=$idpers", $authlink);
-	$query="SELECT act_log FROM personne WHERE id=$idpers";
-	$result=@mysql_query($query,$authlink);
+		$query="SELECT act_log FROM personne WHERE id=$idpers";
+		$result=@mysql_query($query,$authlink);
         if ($result && mysql_num_rows($result)):
           $act_log=@mysql_result($result,0,0);
           @mysql_free_result($result);
@@ -444,7 +444,7 @@ function getmenuarray()
     $folders[0]=""; // 1ere element vide pour rester compatible avec les boucles de menuprint
     $namesfolders = scandir($path2menud);
     for ($t=0; $t < count($namesfolders); $t++ ) {
-        if ( ! ereg ( "^\.", $namesfolders[$t] ) ) {
+        if ( ! mb_ereg ( "^\.", $namesfolders[$t] ) ) {
             $countfiles=scandir($path2menud."/".$namesfolders[$t]);
             if ( count($countfiles) > 3 ) // On retiend le nom du repertoire si il y a des fichiers sous menu dedans
                 $folders[] = $namesfolders[$t];
@@ -456,7 +456,7 @@ function getmenuarray()
         $filesdd = array();
         $dh2  = opendir($path2menud."/".$folders[$i]);
         while (false !== ($namesfiles = readdir($dh2))) 
-            if ( ! ereg ( "^\.", $namesfiles ) )
+            if ( ! mb_ereg ( "^\.", $namesfiles ) )
                 $filesdd[] = $namesfiles;  
         sort($filesdd);
 
@@ -465,7 +465,7 @@ function getmenuarray()
             $fd = fopen($path2menud."/".$folders[$i]."/".$filesdd[$j], "r");
             while ( !feof($fd) ) {
                 $tmp=fgets($fd, 125);
-                if ( strlen($tmp) > 0 ) {
+                if ( mb_strlen($tmp) > 0 ) {
                     $element = explode(",",$tmp);
                     for ($k=0; $k < count($element); $k++) {
                         $liens[$i][$loop] = $element[$k];
@@ -592,5 +592,94 @@ function acces_btn_admin ($idpers_recu, $login_recu)
     // on a parcouru tous les menus et sous-menus et l'utilisateur n'a pas les droits
     return ("N");
 } // Fin fonction acces_btn_admin
+
+/**
+ * Recursively load hooks from /usr/share/lcs/lcs-web-hooks.d/. The directory
+ * structure is hook_name/file.php. "hook_name" must be a supported valid
+ * hook name, only "post_auth" is currently supported. file.php must contain at
+ * least one procedural function. The function name format is
+ * hook_<hook_name>_<file>().
+ *
+ * For example, /usr/share/lcs/lcs-web-hooks.d/post_auth/update_zonep_config.php
+ * contains a function called "hook_post_auth_update_zonep_config()" that will
+ * be called during "post_auth" hook.
+ *
+ * @param hook_name string. The name of the hook. For example "post_auth".
+ *
+ * @param hook_base_dir string. The directory where the hooks are stored.
+ *
+ * @return status bool. True on success, false otherwise
+ */
+function lcs_web_load_hook($hook_name = null,
+			   $hook_base_dir = '/usr/share/lcs/lcs-web-hooks.d') {
+	global $lcs_hooks;
+
+	if (!isset($lcs_hooks[$hook_name]))
+		$lcs_hooks[$hook_name] = array();
+
+	// Check arguments
+	if(!is_string($hook_name)
+	   or empty($hook_name)
+	   or !is_string($hook_base_dir)
+	   or empty($hook_base_dir)
+	   or !file_exists($hook_base_dir)
+	   or !is_dir($hook_base_dir)
+	   or !is_dir("$hook_base_dir/$hook_name"))
+		return false;
+
+	if (!$handle_hookdir = opendir("$hook_base_dir/$hook_name"))
+		return false;
+
+	// Read hook directory
+	while (false !== ($hook_file = readdir($handle_hookdir))) {
+		// Ignore non files entries (directories, sockets, etc.)
+		if(!is_file("$hook_base_dir/$hook_name/$hook_file"))
+			continue;
+
+		// Check hook file name syntax
+		if(!preg_match('/^(\w+)\.php$/', $hook_file, $matches))
+			continue;
+
+		// Load hooked function
+		require_once("$hook_base_dir/$hook_name/$hook_file");
+
+		// Add hooked function to the hook if it's correctly defined
+		$hook_function = "hook_" . $hook_name . "_" . $matches[1];
+
+		if(function_exists($hook_function))
+			$lcs_hooks[$hook_name][] = $hook_function;
+	}
+
+	closedir($handle_hookdir);
+	return true;
+}
+
+/**
+ * Run the hook specified by $hook_name
+ *
+ * @param hook_name string. Defines the name of the hook to call
+ *
+ * @param parameters array. An array containing the parameters to call the hook
+ * with.
+ *
+ * @return status bool. True on success, false otherwise
+ */
+function lcs_web_run_hook($hook_name = null, array $parameters = array()) {
+	global $lcs_hooks;
+
+	// Check parameters
+	if(!is_string($hook_name) or empty($hook_name)
+	   or !is_array($parameters) or empty($parameters))
+		return false;
+
+	// Load hooks if needed
+	if(!isset($lcs_hooks[$hook_name]))
+		lcs_web_load_hook($hook_name);
+
+	foreach($lcs_hooks[$hook_name] as $hook)
+		call_user_func_array($hook, $parameters);
+
+	return true;
+}
 
 ?>

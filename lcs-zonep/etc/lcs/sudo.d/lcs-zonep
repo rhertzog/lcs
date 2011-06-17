@@ -1,0 +1,2 @@
+Cmnd_Alias LCSZONEPUPDATECREDENTIALS = /usr/bin/lcs-zonep-update-credentials
+www-data ALL=NOPASSWD:LCSZONEPUPDATECREDENTIALS

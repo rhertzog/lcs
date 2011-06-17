@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: modify_matiere.php 4661 2010-06-28 22:34:03Z regis $
+ * $Id: modify_matiere.php 5913 2010-11-20 10:42:44Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -40,6 +40,7 @@ if (!checkAccess()) {
 
 
 if (isset($_POST['isposted'])) {
+	check_token();
     $ok = 'yes';
     if (isset($_POST['reg_current_matiere'])) {
         // On vérifie d'abord que l'identifiant est constitué uniquement de lettres et de chiffres :
@@ -60,10 +61,14 @@ if (isset($_POST['isposted'])) {
                 // MODIF: boireaus
                 // Quand on poste un &, c'est un &amp; qui est reçu.
                 //$matiere_nom_complet = $_POST['matiere_nom_complet'];
+				//echo "\$matiere_nom_complet=$matiere_nom_complet<br />\n";
                 $matiere_nom_complet = html_entity_decode_all_version($_POST['matiere_nom_complet']);
+				//echo "\$matiere_nom_complet=$matiere_nom_complet<br />\n";
                 //========================
                 $matiere_priorite = $_POST['matiere_priorite'];
-                $register_matiere = mysql_query("INSERT INTO matieres SET matiere='".$matiere_name."', nom_complet='".$matiere_nom_complet."', priority='".$matiere_priorite."', categorie_id = '" . $matiere_categorie . "',matiere_aid='n',matiere_atelier='n'");
+                $sql="INSERT INTO matieres SET matiere='".$matiere_name."', nom_complet='".$matiere_nom_complet."', priority='".$matiere_priorite."', categorie_id = '" . $matiere_categorie . "',matiere_aid='n',matiere_atelier='n';";
+				//echo "$sql<br />\n";
+                $register_matiere = mysql_query($sql);
                 if (!$register_matiere) {
                     $msg = rawurlencode("Une erreur s'est produite lors de l'enregistrement de la nouvelle matière.");
                     $ok = 'no';
@@ -81,6 +86,7 @@ if (isset($_POST['isposted'])) {
     } else {
 
         $matiere_nom_complet = $_POST['matiere_nom_complet'];
+		$matiere_nom_complet = html_entity_decode_all_version($_POST['matiere_nom_complet']);
         $matiere_priorite = $_POST['matiere_priorite'];
         $matiere_name = $_POST['matiere_name'];
         if (!is_numeric($_POST['matiere_categorie'])) {
@@ -89,7 +95,9 @@ if (isset($_POST['isposted'])) {
             $matiere_categorie = $_POST['matiere_categorie'];
         }
 
-        $register_matiere = mysql_query("UPDATE matieres SET nom_complet='".$matiere_nom_complet."', priority='".$matiere_priorite."', categorie_id = '" . $matiere_categorie . "' WHERE matiere='".$matiere_name."'");
+        $sql="UPDATE matieres SET nom_complet='".$matiere_nom_complet."', priority='".$matiere_priorite."', categorie_id = '" . $matiere_categorie . "' WHERE matiere='".$matiere_name."';";
+		//echo "$sql<br />\n";
+        $register_matiere = mysql_query($sql);
 
         if (!$register_matiere) {
             $msg = rawurlencode("Une erreur s'est produite lors de la modification de la matière");
@@ -127,6 +135,7 @@ require_once("../lib/header.inc");
 <p class=bold><a href="index.php"<?php echo insert_confirm_abandon();?>><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a> | <input type=submit value=Enregistrer></input>
 </p>
 <?php
+echo add_token_field();
 // On va chercher les infos de la matière que l'on souhaite modifier
 if (isset($_GET['current_matiere'])) {
     $call_data = mysql_query("SELECT nom_complet, priority, categorie_id from matieres WHERE matiere='".$_GET['current_matiere']."'");

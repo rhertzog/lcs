@@ -39,11 +39,11 @@ $action = (isset($_POST['f_action'])) ? clean_texte($_POST['f_action']) : '';
 if($action=='nettoyer')
 {
 	// Bloquer l'application
-	bloquer_application($_SESSION['USER_PROFIL'],'Recherche et suppression de données orphelines en cours.');
+	bloquer_application('automate',$_SESSION['BASE'],'Recherche et suppression de données orphelines en cours.');
 	// Rechercher et corriger les anomalies
 	$tab_bilan = DB_STRUCTURE_corriger_anomalies();
 	// Débloquer l'application
-	debloquer_application($_SESSION['USER_PROFIL']);
+	debloquer_application('automate',$_SESSION['BASE']);
 	// Afficher le retour
 	echo'<li>'.implode('</li><li>',$tab_bilan).'</li>';
 	$top_arrivee = microtime(TRUE);
@@ -60,7 +60,7 @@ if($action=='purger')
 {
 
 	// Bloquer l'application
-	bloquer_application($_SESSION['USER_PROFIL'],'Purge annuelle de la base en cours.');
+	bloquer_application('automate',$_SESSION['BASE'],'Purge annuelle de la base en cours.');
 	// Supprimer tous les devoirs associés aux classes, mais pas les saisies associées
 	DB_STRUCTURE_supprimer_devoirs_sans_saisies();
 	// Supprimer tous les types de groupes, sauf les classes (donc 'groupe' ; 'besoin' ; 'eval'), ainsi que les jointures avec les périodes.
@@ -74,17 +74,28 @@ if($action=='purger')
 	}
 	// Supprimer les jointures classes/périodes
 	DB_STRUCTURE_modifier_liaison_groupe_periode($groupe_id=true,$periode_id=true,$etat=false,$date_debut_mysql='',$date_fin_mysql='');
+	// Supprimer les comptes utilisateurs désactivés depuis plus de 3 ans
+	$DB_TAB = DB_STRUCTURE_lister_users_desactives_obsoletes();
+	if(count($DB_TAB))
+	{
+		foreach($DB_TAB as $DB_ROW)
+		{
+			$param_profil = ($DB_ROW['user_profil']=='eleve') ? 'eleve' : 'professeur' ; // On transmet 'professeur' y compris pour les directeurs.
+			DB_STRUCTURE_supprimer_utilisateur($DB_ROW['user_id'],$param_profil);
+		}
+	}
 	// Supprimer les demandes d'évaluations, ainsi que les reliquats de notes 'REQ'
 	DB_STRUCTURE_supprimer_demandes(true);
-	DB::query(SACOCHE_STRUCTURE_BD_NAME , 'DELETE FROM sacoche_saisie WHERE saisie_note="REQ"' , null);
+	DB_STRUCTURE_supprimer_saisies_REQ();
 	// En profiter pour optimiser les tables (1 fois par an, ça ne peut pas faire de mal)
 	DB_STRUCTURE_optimiser_tables_structure();
 	// Débloquer l'application
-	debloquer_application($_SESSION['USER_PROFIL']);
+	debloquer_application('automate',$_SESSION['BASE']);
 	// Afficher le retour
 	echo'<li><label class="valide">Évaluations supprimées (saisies associées conservées).</label></li>';
 	echo'<li><label class="valide">Groupes supprimés (avec leurs associations).</label></li>';
 	echo'<li><label class="valide">Jointures classes / périodes supprimées.</label></li>';
+	echo'<li><label class="valide">Comptes utilisateurs obsolètes supprimés.</label></li>';
 	echo'<li><label class="valide">Demandes d\'évaluations supprimées.</label></li>';
 	echo'<li><label class="valide">Tables optimisées par MySQL (équivalent d\'un défragmentage).</label></li>';
 	$top_arrivee = microtime(TRUE);
@@ -100,13 +111,13 @@ if($action=='purger')
 if($action=='supprimer')
 {
 	// Bloquer l'application
-	bloquer_application($_SESSION['USER_PROFIL'],'Suppression des notes et des validations en cours.');
+	bloquer_application('automate',$_SESSION['BASE'],'Suppression des notes et des validations en cours.');
 	// Supprimer toutes les saisies aux évaluations
 	DB_STRUCTURE_supprimer_saisies();
 	// Supprimer toutes les validations du socle
 	DB_STRUCTURE_supprimer_validations();
 	// Débloquer l'application
-	debloquer_application($_SESSION['USER_PROFIL']);
+	debloquer_application('automate',$_SESSION['BASE']);
 	// Afficher le retour
 	echo'<li><label class="valide">Notes saisies aux évaluations supprimées.</label></li>';
 	echo'<li><label class="valide">Validations des items et des compétences du socle supprimées.</label></li>';

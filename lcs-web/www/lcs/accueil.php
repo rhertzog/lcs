@@ -1,11 +1,6 @@
 <?php
-/* =============================================
-   Projet LCS : Linux Communication Server
-   accueil.php
-   jLCF : jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice academie de Caen
-   derniere mise a jour : 14/10/2010
-   ============================================= */
+/* lcs/accueil derniere mise a jour : 07/04/2011 */
+
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
@@ -39,7 +34,7 @@ $html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
 $html .= "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\">\n";
 $html .= "<head>\n";
 $html .= "  <title>Accueil LCS</title>\n";
-$html .= "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\n";
+$html .= "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n";
 $html .= "  <link  href='../c/lcs.css' rel='StyleSheet' type='text/css'/>\n";
 $html .= "</head>\n";
 $html .= "<body class='accueil'>\n";
@@ -81,7 +76,8 @@ echo $html;
   $result=@mysql_query($query);
   if ($result) {
         while ( $r=@mysql_fetch_object($result) ) {
-            if ( $r->name == "clientftp" ) $ftpclient = true;
+            if ( $r->name == "clientftp" ) $clientftp = true;
+            if ( $r->name == "elfinder" ) $elfinder = true;
             if ( $r->name == "pma" ) $pma = true;
             if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
         }
@@ -93,10 +89,16 @@ echo $html;
   if ( is_dir("/home/".$login) && is_dir("/home/".$login."/public_html") && is_dir("/home/".$login."/Documents")) {
     if ( !isset($monlcs) ){ 
       $html = "<table width='100%' border='0' cellspacing='10'>\n";
-      if ( $ftpclient ) {
+      if ( $clientftp ) {
         $html .= "<tr>\n";
         $html .= "  <td width='80'><img src='images/bt-V1-2.jpg' alt='ftpclient' align='middle' /></td>\n";
-        $html .= "  <td><a href='statandgo.php?use=clientftp'>Espace web &#171; LCS &#187;</a></td>\n";
+        $html .= "  <td><a href='statandgo.php?use=clientftp'>Explorateur de fichiers</a></td>\n";
+        $html .= "</tr>\n";
+      }
+      if ( $elfinder ) {
+        $html .= "<tr>\n";
+        $html .= "  <td width='80'><img src='images/bt-V1-2.jpg' alt='elfinder' align='middle' /></td>\n";
+        $html .= "  <td><a href='statandgo.php?use=elfinder'>Explorateur de fichiers</a></td>\n";
         $html .= "</tr>\n";
       }
       if ( $pma ) {

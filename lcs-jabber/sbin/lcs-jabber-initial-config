@@ -1,0 +1,58 @@
+#!/bin/bash
+
+##
+# LCS - Jabber
+# Création de la configuration initial du serveur Jabber et de l'interface Web.
+# Projet LCS 2
+# auteur : Simon CAVEY - simon.cavey@crdp.ac-caen.fr
+# Creation : 02/01/2011
+## 
+
+
+function get_lcsdb_params
+{
+PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
+echo "$PARAMS"
+}
+
+
+## On recupere les infos pour la config : 
+HOSTNAME=`hostname`
+DOMAINE=`hostname -d`
+FULLDOMAINE=`hostname -f`
+
+LDAPSERVER=$(get_lcsdb_params ldap_server)
+LDAPPORT=$(get_lcsdb_params ldap_port)
+BASEURL=$(get_lcsdb_params baseurl)
+LDAPBASEDN=$(get_lcsdb_params ldap_base_dn)
+LDAPADMIN=$(get_lcsdb_params adminRdn)
+LDAPADMINPWD=$(get_lcsdb_params adminPw)
+PEOPLERDN=$(get_lcsdb_params peopleRdn)
+JABLDAP=$PEOPLERDN,$LDAPBASEDN
+
+sed -e "s|@@JABLDAP@@|"$JABLDAP"|g" \
+-e "s|@@DOMAINE@@|$DOMAINE|g" \
+-e "s|@@FULLDOMAINE@@|$FULLDOMAINE|g" \
+-e "s|@@LDAPSERVER@@|$LDAPSERVER|g" \
+-e "s|@@LDAPPORT@@|$LDAPPORT|g" \
+/var/lib/lcs/jabber/ejabberd.cfg.in > /etc/ejabberd/ejabberd.cfg
+
+sed -e "s|@@DOMAINE@@|$DOMAINE|g" \
+-e "s|@@FULLDOMAINE@@|$FULLDOMAINE|g" \
+/var/lib/lcs/jabber/ijab_config.js.in > /usr/share/lcs/jabber/ijab_config.js
+
+### On donne les droits a www-data pour le client web
+chown -R www-data:www-data /usr/share/lcs/jabber
+
+
+## On relance les services 
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d apache2 restart
+else
+	/etc/init.d/apache2 restart
+fi
+if [ -x /usr/sbin/invoke-rc.d ]; then
+	invoke-rc.d ejabberd restart
+else
+	/etc/init.d/ejabberd restart
+fi

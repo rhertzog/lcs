@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: validation_corrections.php 4574 2010-06-09 15:20:03Z crob $
+ * $Id: validation_corrections.php 7037 2011-05-28 09:20:21Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -58,6 +58,7 @@ include "../lib/periodes.inc.php";
 $msg="";
 $tab_id_classe=isset($_POST['tab_id_classe']) ? $_POST['tab_id_classe'] : NULL;
 if(isset($_POST['action_corrections'])) {
+	check_token();
 	$enregistrement=isset($_POST['enregistrement']) ? $_POST['enregistrement'] : array();
 	$action=isset($_POST['action']) ? $_POST['action'] : array();
 
@@ -193,10 +194,7 @@ if(isset($_POST['action_corrections'])) {
 						$salutation=(date("H")>=18 OR date("H")<=5) ? "Bonsoir" : "Bonjour";
 						$texte=$salutation.",\n\n".$texte."\nCordialement.\n-- \n".civ_nom_prenom($_SESSION['login']);
 
-						$envoi = mail($email_destinataires,
-							$gepiPrefixeSujetMail.$sujet_mail,
-							$texte,
-							"From: Mail automatique Gepi\r\n".$ajout_header."X-Mailer: PHP/".phpversion());
+						$envoi = envoi_mail($sujet_mail, $texte, $email_destinataires, $ajout_header);
 					}
 				}
 			}
@@ -229,7 +227,8 @@ if(!isset($tab_id_classe)) {
 	}
 	
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
-	echo "<p class='bold'>Veuillez choisir la ou les classes pour lesquelles vous souhaiter consulter/valider les propositions de corrections.</p>\n";
+	//echo add_token_field();
+	echo "<p class='bold'>Veuillez choisir la ou les classes pour lesquelles vous souhaitez consulter/valider les propositions de corrections.</p>\n";
 
 	$cpt=0;
 	$nb_class_par_colonne=round($nb_classes/3);
@@ -283,7 +282,8 @@ else {
 	if((isset($reimprimer_bulletins))&&(count($reimprimer_bulletins)>0)) {
 		echo "<div class='infobulle_corps' style='border: 1px solid black;'>\n";
 		echo "<form enctype='multipart/form-data' action='../bulletin/bull_index.php' method='post' name='form_bulletin' target='_blank'>\n";
-	
+		//echo add_token_field();
+
 		echo "<p><span style='font-weight:bold; color:red'>ATTENTION&nbsp;:</span> Des modifications ont été effectuées.<br />Il faut sans doute réimprimer les bulletins correspondants.</p>\n";
 	
 		for($i=0;$i<count($tab_id_classe);$i++) {
@@ -307,6 +307,7 @@ else {
 
 	$compteur=0;
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
+	echo add_token_field();
 	echo "<input type='hidden' name='action_corrections' value='y' />\n";
 
 	for($i=0;$i<count($tab_id_classe);$i++) {

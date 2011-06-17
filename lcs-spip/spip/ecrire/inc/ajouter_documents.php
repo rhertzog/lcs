@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/getdocument');
 include_spip('inc/documents');
@@ -55,7 +55,7 @@ function inc_choisir_mode_document_dist($fichier, $type_lien, $type_image, $larg
 	// il suffit de faire dans mes_options
 	// define('_LARGEUR_MODE_IMAGE', 450);
 	// pour beneficier de cette detection auto
-	@define('_LARGEUR_MODE_IMAGE', 0);
+	if (!defined('_LARGEUR_MODE_IMAGE')) define('_LARGEUR_MODE_IMAGE', 0);
 	
 	if (!_LARGEUR_MODE_IMAGE)
 		return 'image';
@@ -501,7 +501,7 @@ function liste_archive_jointe($valables, $zip, $type, $id, $mode, $id_document, 
 		. fin_block()
 
 
-		. "<div style='text-align: right;'><input class='fondo spip_xx-small' type='submit' value='".
+		. "<div style='text-align: right;'><input type='submit' value='".
 		_T('bouton_valider').
 		  "' />";
 

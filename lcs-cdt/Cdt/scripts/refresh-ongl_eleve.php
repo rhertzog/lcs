@@ -26,10 +26,10 @@ header("Content-Type: text/plain" );
 header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
 header("Pragma: no-cache");
-if(isset($_REQUEST['rubrik']) && isset($_REQUEST['thedate']))
+if(isset($_POST['rubrik']) && isset($_POST['thedate']))
 {
-$tsmp=$_REQUEST['thedate'];
-$cible=$_REQUEST['rubrik'];
+$tsmp=$_POST['thedate'];
+$cible=$_POST['rubrik'];
 //affichage du contenu du cahier de textes
 // onglets
 	// Affichage de la colonne de gauche
@@ -51,7 +51,7 @@ $cible=$_REQUEST['rubrik'];
 			}
 			else 
 			{
-			echo '<li><a href="#" title="" onclick="refresh_cdt('. $_SESSION['numero'][$x].','.$tsmp.')" >&nbsp;'.$_SESSION["mat"][$x].'&nbsp;<br />&nbsp;'.$_SESSION["pref"][$x].'  '.$_SESSION["prof"][$x].'&nbsp;</a>';
+			echo '<li><a href="#" title="" onclick="refresh_cdt('. $_SESSION['numero'][$x].','.$tsmp.')" >&nbsp;'.$_SESSION["mat"][$x].'&nbsp;<br />&nbsp;'.$_SESSION["pref"][$x].'  '.$_SESSION["prof"][$x].'&nbsp;</a></li>';
 			}
 		}
 

@@ -163,7 +163,7 @@ $(document).ready
 
 		function changer_fichier(fichier_nom,fichier_extension)
 		{
-			$("button").attr('disabled','disabled');
+			$("button").prop('disabled',true);
 			$('#ajax_upload').removeAttr("class").html('&nbsp;');
 			return true;
 		}
@@ -172,13 +172,13 @@ $(document).ready
 		{
 			if (fichier_nom==null || fichier_nom.length<5)
 			{
-				$("button").removeAttr('disabled');
+				$("button").prop('disabled',false);
 				$('#ajax_upload').removeAttr("class").addClass("erreur").html('Cliquer sur "Parcourir..." pour indiquer un chemin de fichier correct.');
 				return false;
 			}
 			else if ('.bmp.gif.jpg.jpeg.png.svg.'.indexOf('.'+fichier_extension.toLowerCase()+'.')==-1)
 			{
-				$("button").removeAttr('disabled');
+				$("button").prop('disabled',false);
 				$('#ajax_upload').removeAttr("class").addClass("erreur").html('Le fichier "'+fichier_nom+'" n\'a pas une extension d\'image autorisée (bmp gif jpg jpeg png svg).');
 				return false;
 			}
@@ -193,13 +193,13 @@ $(document).ready
 		{
 			if(responseHTML!='ok')
 			{
-				$("button").removeAttr('disabled');
+				$("button").prop('disabled',false);
 				$('#ajax_upload').removeAttr("class").addClass("alerte").html(responseHTML);
 			}
 			else
 			{
 				maj_clock(1);
-				$("button").removeAttr('disabled');
+				$("button").prop('disabled',false);
 				$('#ajax_upload').removeAttr("class").html('&nbsp;');
 				chargement_select_logo();
 				chargement_ul_logo();
@@ -216,7 +216,8 @@ $(document).ready
 			{
 				if($('#f_cnil_oui').is(':checked')==false)
 				{
-					$('#f_cnil_oui').attr('checked','checked');
+					$('#f_cnil_oui').prop('checked',true);
+					$("#cnil_dates").show();
 					return false; // important, sinon pb de récursivité
 				}
 			}
@@ -227,6 +228,18 @@ $(document).ready
 			function()
 			{
 				$('#f_cnil_numero').focus();
+				$("#cnil_dates").show();
+			}
+		);
+
+		$('#f_cnil_non').click
+		(
+			function()
+			{
+				$("#cnil_dates").hide();
+				$("#f_cnil_numero").val('');
+				$("#f_cnil_date_engagement").val('');
+				$("#f_cnil_date_recepisse").val('');
 			}
 		);
 
@@ -293,39 +306,71 @@ $(document).ready
 			, "clef de contrôle incompatible"
 		); 
 
+		// Ajout d'une méthode pour valider les dates de la forme jj/mm/aaaa (trouvé dans le zip du plugin, corrige en plus un bug avec Safari)
+		jQuery.validator.addMethod
+		(
+			"dateITA",
+			function(value, element)
+			{
+				var check = false;
+				var re = /^\d{1,2}\/\d{1,2}\/\d{4}$/ ;
+				if( re.test(value))
+				{
+					var adata = value.split('/');
+					var gg = parseInt(adata[0],10);
+					var mm = parseInt(adata[1],10);
+					var aaaa = parseInt(adata[2],10);
+					var xdata = new Date(aaaa,mm-1,gg);
+					if ( ( xdata.getFullYear() == aaaa ) && ( xdata.getMonth () == mm - 1 ) && ( xdata.getDate() == gg ) )
+						check = true;
+					else
+						check = false;
+				}
+				else
+					check = false;
+				return this.optional(element) || check;
+			}, 
+			"Veuillez entrer une date correcte."
+		);
+
 		// Vérifier la validité du formulaire (avec jquery.validate.js)
 		var validation = formulaire.validate
 		(
 			{
 				rules :
 				{
-					f_denomination : { required:true , maxlength:60 },
-					f_uai :          { required:false , uai_format:true , uai_clef:true },
-					f_adresse_site : { required:false , maxlength:150 },
-					f_logo :         { required:false },
-					f_cnil_etat :    { required:true },
-					f_cnil_numero :  { required:function(){return $('#f_cnil_oui').is(':checked');} , digits:true },
-					f_nom :          { required:true , maxlength:20 },
-					f_prenom :       { required:true , maxlength:20 },
-					f_courriel :     { required:true , email:true , maxlength:60 }
+					f_denomination         : { required:true , maxlength:60 },
+					f_uai                  : { required:false , uai_format:true , uai_clef:true },
+					f_adresse_site         : { required:false , maxlength:150 },
+					f_logo                 : { required:false },
+					f_cnil_etat            : { required:true },
+					f_cnil_numero          : { required:function(){return $('#f_cnil_oui').is(':checked');} , digits:true },
+					f_cnil_date_engagement : { required:function(){return $('#f_cnil_oui').is(':checked');} , dateITA:true },
+					f_cnil_date_recepisse  : { required:function(){return $('#f_cnil_oui').is(':checked');} , dateITA:true },
+					f_nom                  : { required:true , maxlength:20 },
+					f_prenom               : { required:true , maxlength:20 },
+					f_courriel             : { required:true , email:true , maxlength:60 }
 				},
 				messages :
 				{
-					f_denomination : { required:"dénomination manquante" , maxlength:"60 caractères maximum" },
-					f_uai :          { uai_format:"n°UAI invalide" , uai_clef:"n°UAI invalide" },
-					f_adresse_site : { maxlength:"150 caractères maximum" },
-					f_logo :         { },
-					f_cnil_etat :    { required:"indication CNIL manquante" },
-					f_cnil_numero :  { required:"numéro CNIL manquant" , digits:"nombre entier requis" },
-					f_nom :          { required:"nom manquant" , maxlength:"20 caractères maximum" },
-					f_prenom :       { required:"prénom manquant" , maxlength:"20 caractères maximum" },
-					f_courriel :     { required:"courriel manquant" , email:"courriel invalide", maxlength:"63 caractères maximum" }
+					f_denomination         : { required:"dénomination manquante" , maxlength:"60 caractères maximum" },
+					f_uai                  : { uai_format:"n°UAI invalide" , uai_clef:"n°UAI invalide" },
+					f_adresse_site         : { maxlength:"150 caractères maximum" },
+					f_logo                 : { },
+					f_cnil_etat            : { required:"indication CNIL manquante" },
+					f_cnil_numero          : { required:"numéro CNIL manquant" , digits:"nombre entier requis" },
+					f_cnil_date_engagement : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
+					f_cnil_date_recepisse  : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
+					f_nom                  : { required:"nom manquant" , maxlength:"20 caractères maximum" },
+					f_prenom               : { required:"prénom manquant" , maxlength:"20 caractères maximum" },
+					f_courriel             : { required:"courriel manquant" , email:"courriel invalide", maxlength:"63 caractères maximum" }
 				},
 				errorElement : "label",
 				errorClass : "erreur",
 				errorPlacement : function(error,element)
 				{
 					if(element.attr("type")=="radio") {$('#f_cnil_numero').after(error);}
+					else if(element.attr("size")==9){ element.next().after(error); }
 					else { element.after(error); }
 				}
 				// success: function(label) {label.text("ok").removeAttr("class").addClass("valide");} Pas pour des champs soumis à vérification PHP
@@ -363,7 +408,7 @@ $(document).ready
 			var readytogo = validation.form();
 			if(readytogo)
 			{
-				$("button").attr('disabled','disabled');
+				$("button").prop('disabled',true);
 				$('#ajax_msg').removeAttr("class").addClass("loader").html("Soumission du formulaire en cours... Veuillez patienter.");
 			}
 			return readytogo;
@@ -372,7 +417,7 @@ $(document).ready
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)
 		function retour_form_erreur(msg,string)
 		{
-			$("button").removeAttr('disabled');
+			$("button").prop('disabled',false);
 			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion ! Veuillez valider de nouveau.");
 		}
 
@@ -380,7 +425,7 @@ $(document).ready
 		function retour_form_valide(responseHTML)
 		{
 			maj_clock(1);
-			$("button").removeAttr('disabled');
+			$("button").prop('disabled',false);
 			if(responseHTML=='ok')
 			{
 				$('#ajax_msg').removeAttr("class").addClass("valide").html("Données enregistrées !");

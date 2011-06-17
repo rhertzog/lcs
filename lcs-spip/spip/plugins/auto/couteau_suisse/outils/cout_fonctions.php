@@ -79,19 +79,40 @@ function cs_supprime_notes($texte) {
 }
 
 // filtre appliquant les traitements SPIP d'un champ (et eventuellement d'un type d'objet) sur un texte
-// (voir la fonction champs_traitements($p) dans : public/refereces.php)
+// (voir la fonction champs_traitements($p) dans : public/references.php)
 // => permet d'utiliser les balises etoilees : #TEXTE*|mon_filtre|cs_traitements{TEXTE,articles}
 // ce mecanisme est a preferer au traditionnel #TEXTE*|mon_filtre|propre
 // cs_traitements() consulte simplement la globale $table_des_traitements et applique le traitement adequat
-function cs_traitements($texte, $nom_champ='NULL', $type_objet='NULL') {
+// $exclusions est une chaine ou un tableau de filtres a exclure du traitement
+function cs_traitements($texte, $nom_champ='NULL', $type_objet='NULL', $exclusions=NULL) {
 	global $table_des_traitements;
 	if(!isset($table_des_traitements[$nom_champ])) return $texte;
 	$ps = $table_des_traitements[$nom_champ];
 	if(is_array($ps)) $ps = $ps[isset($ps[$type_objet]) ? $type_objet : 0];
 	if(!$ps) return $texte;
+	// retirer les filtres a exclure
+	if($exclusions!==NULL) $ps = str_replace($exclusions, 'cs_noop', $ps);
 	// remplacer le placeholder %s par le texte fourni
 	eval('$texte=' . str_replace('%s', '$texte', $ps) . ';');
 	return $texte;
+}
+function cs_noop($t='',$a=NULL,$b=NULL,$c=NULL) { return $t; }
+
+// renvoie un champ d'un objet en base
+function cs_champ_sql($id, $champ='texte', $objet='article') {
+	// Utiliser la bonne requete en fonction de la version de SPIP
+	if(function_exists('sql_getfetsel')) {
+		// SPIP 2.0
+		// TODO : fonctions SPIP pour trouver la table et l'id_objet
+		if($r = sql_getfetsel($champ, 'spip_'.$objet.'s', 'id_'.$objet.'='.intval($id)))
+			return $r;
+	} else {
+		if($r = spip_query('SELECT '.$champ.' FROM spip_'.$objet.'s WHERE id_'.$objet.'='.intval($id)))
+			// s'il existe un champ, on le retourne
+			if($row = spip_fetch_array($r)) return $row[$champ];
+	}
+	// sinon rien !
+	return '';
 }
 
 ?>

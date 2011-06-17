@@ -1,9 +1,11 @@
 <?php
-
-// exec/spiplistes_courrier_edit.php
-
-// _SPIPLISTES_EXEC_COURRIER_EDIT
-
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
+ 
 /******************************************************************************************/
 /* SPIP-listes est un systeme de gestion de listes d'information par email pour SPIP      */
 /* Copyright (C) 2004 Vincent CARON  v.caron<at>laposte.net , http://bloog.net            */
@@ -22,9 +24,6 @@
 /* Free Software Foundation,                                                              */
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, etats-Unis.                   */
 /******************************************************************************************/
-// $LastChangedRevision: 28094 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-04-26 15:12:42 +0200 (dim, 26 avr 2009) $
 
 /*
 	Formulaire de creation de courrier
@@ -37,6 +36,7 @@ include_spip('inc/spiplistes_api_globales');
 function exec_spiplistes_courrier_edit(){
 
 	include_spip('inc/barre');
+	include_spip('inc/documents');
 	include_spip('base/spiplistes_tables');
 	include_spip('inc/spiplistes_api');
 	include_spip('inc/spiplistes_api_presentation');
@@ -51,7 +51,10 @@ function exec_spiplistes_courrier_edit(){
 		, $spip_ecran
 		, $compteur_block
 		;
-		
+	
+	$eol = "\n";
+	$id_temp = false;
+	
 	$type = _request('type');
 	$id_courrier = intval(_request('id_courrier'));
 
@@ -73,6 +76,11 @@ function exec_spiplistes_courrier_edit(){
 		else {
 			$id_courrier = false;
 		}
+	}
+	// n'existe pas encore ?
+	// placer un marqueur pour les documents joints
+	else {
+		$id_temp = 0-intval(substr(creer_uniqid(),0,5));
 	}
 
 	// l'edition du courrier est reservee aux super-admins 
@@ -105,6 +113,9 @@ function exec_spiplistes_courrier_edit(){
 				)
 			: ""
 			;
+		$boite_documents = afficher_documents_colonne(
+							  ($id_courrier ? $id_courrier : $id_temp )
+							  , 'courrier');
 	}
 	
 ////////////////////////////////////
@@ -130,6 +141,7 @@ function exec_spiplistes_courrier_edit(){
 		. debut_gauche($rubrique, true)
 		. spiplistes_boite_info_id(_T('spiplistes:Courrier_numero_'), $id_courrier, true)
 		. spiplistes_naviguer_paniers_courriers(_T('spiplistes:aller_au_panier_'), true)
+		. $boite_documents
 		. pipeline('affiche_gauche', array('args'=>array('exec'=>$sous_rubrique),'data'=>''))
 		//. creer_colonne_droite($rubrique, true)  // spiplistes_boite_raccourcis() s'en occupe
 		. spiplistes_boite_raccourcis(true)
@@ -178,7 +190,7 @@ function exec_spiplistes_courrier_edit(){
 		;
 		
 	$titre_block_depliable = _T('spiplistes:Generer_le_contenu');
-	$page_result .= ""
+	$page_result .= ''
 		//
 		// generer le contenu
 		// Reprise du Formulaire adapte de abomailman () // MaZiaR - NetAktiv	// tech@netaktiv.com
@@ -190,7 +202,16 @@ function exec_spiplistes_courrier_edit(){
 			. "</span>\n"
 		. spiplistes_debut_block_invisible(md5(_T('spiplistes:charger_patron')))
 		// 
-		. "<div id='ajax-loader' align='right'><img src='"._DIR_PLUGIN_SPIPLISTES_IMG_PACK."ajax_indicator.gif' alt='' /></div>\n"
+		. '<div id="ajax-loader" align="right">'
+			. '<script type="text/javascript">'.$eol
+			. 'document.write(\'<img src="' . _DIR_PLUGIN_SPIPLISTES_IMG_PACK . 'ajax_indicator.gif" alt="" />\');'	
+			. '</script>'.$eol
+			. '<noscript>'.$eol
+			. spiplistes_boite_alerte (_T('spiplistes:javascript_inactif'), true)
+			. $eol
+			. '</noscript>'.$eol
+			//. '<img src="' . _DIR_PLUGIN_SPIPLISTES_IMG_PACK . 'ajax_indicator.gif" alt="" />'
+			. '</div>'.$eol
 		;
 	
 	if(strpos($GLOBALS['meta']['langues_multilingue'], ",") !== false) {
@@ -218,23 +239,23 @@ function exec_spiplistes_courrier_edit(){
 		
 	$page_result .= ""
 		// texte introduction a placer avant le patron et sommaire 
-		. "<div class='boite-generer-option'>\n"
-		. "<label class='verdana2'>"
-		. "<input type='checkbox' id='avec_intro' name='avec_intro' value='non' />"
+		. '<div class="boite-generer-option">'.$eol
+		. '<label class="verdana2">'
+		. '<input type="checkbox" id="avec_intro" name="avec_intro" value="non" />'
 		. _T('spiplistes:avec_introduction')
-		. "</label>\n"
-		. "<div id='choisir_intro' class='option'>"
-		. "<label class='verdana2' style='display:block;' for='message_intro'>"
-		. _T('spiplistes:introduction_du_courrier_').":</label>\n"
+		. '</label>'.$eol
+		. '<div id="choisir_intro" class="option">'.$eol
+		. '<label class="verdana2" style="display:block;" for="message_intro">'
+		. _T('spiplistes:introduction_du_courrier_').':</label>'.$eol
 		. afficher_barre('document.formulaire_courrier_edit.message_intro')
-		. "<textarea id='message_intro' name='message_intro' ".$GLOBALS['browser_caret']." rows='5' cols='40' wrap='soft' style='width:100%;'>\n"
-		. "</textarea>\n"
-		. "</div>\n"
-		. "</div>\n"
+		. '<textarea id="message_intro" name="message_intro" '.$GLOBALS['browser_caret'].' rows="5" cols="40" wrap="soft" style="width:100%">'.$eol
+		. '</textarea>'
+		. '</div>'.$eol
+		. '</div>'.$eol
 		;
 		
 	// selection du patron
-	$page_result .= ""
+	$page_result .= ''
 		. "<div class='boite-generer-option'>\n"
 		. "<label class='verdana2'>"
 		. "<input type='checkbox' id='avec_patron' name='avec_patron' value='non' />"
@@ -329,20 +350,22 @@ function exec_spiplistes_courrier_edit(){
 		
 	//
 	// bloc du courrier (titre, texte), toujours visible
-	$page_result .= ""
-		. "<label for='texte_courrier'>"._T('spiplistes:texte_courrier')."</label>\n"
+	$page_result .= ''
+		. '<label for="texte_courrier">'._T('spiplistes:texte_courrier').'</label>'
 		. afficher_barre('document.formulaire_courrier_edit.message')
-		. "<textarea id='texte_courrier' name='message' ".$GLOBALS['browser_caret']." class='formo' rows='20' cols='40' wrap=soft>\n"
+		. '<textarea id="texte_courrier" name="message" '.$GLOBALS['browser_caret'].' class="porte_plume_partout barre_inserer formo" rows="20" cols="40" wrap=soft>'.$eol
 		. $texte
-		. "</textarea>\n"
-		. (!$id_courrier ? "<input type='hidden' name='new' value=\"oui\" />\n" : "")
+		. '</textarea>'.$eol
+		. (!$id_courrier ? '<input type="hidden" name="new" value="oui" />'.$eol : '')
 		//
-		. "<p style='text-align:right;'>\n"
-		. "<input type='submit' onclick='this.value=\"oui\";' id='btn_courrier_edit' "
-			. " name='btn_courrier_valider' value='"._T('bouton_valider')."' class='fondo' /></p>\n"
+		. '<p style="text-align:right;">'.$eol
+		. '<input type="submit" onclick="this.value=\'oui\';" id="btn_courrier_edit" '
+			. ' name="btn_courrier_valider" value="'._T('bouton_valider').'" class="fondo" /></p>'.$eol
+		// le marqueur pour les documents joints
+		. (($id_temp!==false) ? '<input type="hidden" name="id_temp" value="' . $id_temp . '" />'.$eol : '')
 		//
 		// fin formulaire
-		. "</form>\n"
+		. '</form>'.$eol
 		. fin_cadre_formulaire(true)
 		;
 	

@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: index2.php 4627 2010-06-24 06:57:54Z crob $
+* $Id: index2.php 6627 2011-03-04 15:37:19Z crob $
 *
-* Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stephane Boireau
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stephane Boireau
 *
 * This file is part of GEPI.
 *
@@ -153,6 +153,7 @@ if (isset($id_classe)) {
 	}
 
 	echo "<form target=\"_blank\" name=\"visu_toutes_notes\" method=\"post\" action=\"visu_toutes_notes.php\">\n";
+	echo add_token_field();
 	echo "<table border=\"1\" cellspacing=\"1\" cellpadding=\"10\" summary=\"Choix de la période\"><tr>";
 	echo "<td valign=\"top\"><strong>Choisissez&nbsp;la&nbsp;période&nbsp;:&nbsp;</strong><br />\n";
 	include "../lib/periodes.inc.php";
@@ -175,6 +176,11 @@ if (isset($id_classe)) {
 	echo "<label for='num_periode_annee' style='cursor:pointer;'>\n";
 	echo "Année entière";
 	echo "</label>\n";
+
+	echo "<p><input type='checkbox' name='avec_moy_gen_periodes_precedentes' id='avec_moy_gen_periodes_precedentes' value='y' ";
+	if((isset($_SESSION['vtn_pref_avec_moy_gen_periodes_precedentes']))&&($_SESSION['vtn_pref_avec_moy_gen_periodes_precedentes']=='y')) {echo "checked ";}
+	echo "/><label for='avec_moy_gen_periodes_precedentes'> Avec les moyennes de périodes précédentes</label></p>\n";
+
 	echo "</td>\n";
 
 	echo "<td valign=\"top\">\n";

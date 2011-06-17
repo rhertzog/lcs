@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: bandeau_template.php 4944 2010-07-29 00:10:56Z regis $
+ * $Id: bandeau_template.php 6673 2011-03-18 20:15:29Z regis $
 */
 ?>
 
@@ -122,7 +122,7 @@
 						echo "
 	<li class='ligne_premier_menu'>
 		<a href='$value[lien]'>
-			<img src='$value[image]' alt='$value[alt]' title='$value[title]' />
+			<img src='$value[image]' alt='$value[alt]' title='$value[title]' height='16' width='16' />
 			<span class='menu_bandeau'>
 				&nbsp;$value[texte]
 			</span>

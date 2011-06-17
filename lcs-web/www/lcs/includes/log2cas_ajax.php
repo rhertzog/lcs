@@ -66,7 +66,7 @@ if ($login)  {
             $Rec_Data = curl_exec($ch);
 
             $Final_Out=ob_get_clean();
-            if (eregi('Set-Cookie:',$Rec_Data)) {
+            if (mb_eregi('Set-Cookie:',$Rec_Data)) {
                 $infos = explode('Set-Cookie:',$Rec_Data);
 		$t = explode(';',$infos[1]);
 		$ticket=explode('=',$t[0]);

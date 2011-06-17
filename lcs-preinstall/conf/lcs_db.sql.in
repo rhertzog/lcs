@@ -85,41 +85,47 @@ INSERT INTO `params` (`id`, `name`, `value`, `srv_id`, `descr`, `cat`) VALUES
 (35, 'elevesRdn', 'cn=Eleves', 0, 'Eleves Rdn', 2),
 (36, 'profsRdn', 'cn=Profs', 0, 'Professeurs Rdn', 2),
 (37, 'pla_bind', '0', 0, 'Droits sur l''annuaire pour PhpLdapAdmin', 2),
+(38, 'ad_auth_delegation', '@@AD_AUTH_DELEGATION@@', 0, 'Authentification déportée au serveur Active Directory (true/false)', 2),
+(39, 'ad_server', '@@AD_SERVER@@', 0, 'Adresse du serveur Active Directory', 2),
+(40, 'ad_base_dn', '@@AD_BASE_DN@@', 0, 'Dn de base de l''annuaire Active Directory', 2),
+(41, 'ad_bind_dn', '@@AD_BIND_DN@@', 0, 'Dn employé pour la connexion', 2),
+(42, 'ad_bind_pw', '@@AD_BIND_PW@@', 0, 'Mot de passe de connexion', 2),
+
 -- Network params
 -- -------------------------------------------------------------------------------------
-(40, 'gateway', '@@GATEWAY@@', 0, 'Passerelle par défaut LCS', 3),
-(41, 'iplcs', '@@IPLCS@@', 0, 'Adresse IP LCS', 3),
-(42, 'network', '@@NETWORK@@', 0, 'Adresse réseau', 3),
-(43, 'netmask', '@@NETMASK@@', 0, 'Masque réseau', 3),
-(44, 'broadcast', '@@BROADCAST@@', 0, 'Adresse de diffusion', 3),
-(45, 'dns1', '@@DNS1@@', 0, 'DNS primaire', 3),
-(46, 'dns2', '@@DNS2@@', 0, 'DNS secondaire', 3),
-(47, 'xennet', '@@XENNET@@', 0, 'Reseau Xen', 3),
-(48, 'relayhost', '@@RELAYHOST@@', 0, 'Hote relais smtp', 3),
-(49, 'mtaip', '@@MTAIP@@', 0, 'Local @IP serveur smtp', 3),
+(50, 'gateway', '@@GATEWAY@@', 0, 'Passerelle par défaut LCS', 3),
+(51, 'iplcs', '@@IPLCS@@', 0, 'Adresse IP LCS', 3),
+(52, 'network', '@@NETWORK@@', 0, 'Adresse réseau', 3),
+(53, 'netmask', '@@NETMASK@@', 0, 'Masque réseau', 3),
+(54, 'broadcast', '@@BROADCAST@@', 0, 'Adresse de diffusion', 3),
+(55, 'dns1', '@@DNS1@@', 0, 'DNS primaire', 3),
+(56, 'dns2', '@@DNS2@@', 0, 'DNS secondaire', 3),
+(57, 'xennet', '@@XENNET@@', 0, 'Reseau Xen', 3),
+(58, 'relayhost', '@@RELAYHOST@@', 0, 'Hote relais smtp', 3),
+(59, 'mtaip', '@@MTAIP@@', 0, 'Local @IP serveur smtp', 3),
 -- Vlans params
 -- -------------------------------------------------------------------------------------
-(50, 'vlansc', '@@VLANSC@@', 0, 'VLAN Service commun', 4),
-(51, 'vlanadmin', '@@VLANADMINISTRATIF@@', 0, 'VLAN Administratif', 4),
-(52, 'vlanpeda1', '@@VLANPEDA1@@', 0, 'VLAN Pedagogique 1', 4),
-(53, 'vlanpeda2', '@@VLANPEDA2@@', 0, 'VLAN Pedagogique 2', 4),
-(54, 'vlanpeda3', '@@VLANPEDA3@@', 0, 'VLAN Pedagogique 3', 4),
-(55, 'vlanpeda4', '@@VLANPEDA4@@', 0, 'VLAN Pedagogique 4', 4),
+(60, 'vlansc', '@@VLANSC@@', 0, 'VLAN Service commun', 4),
+(61, 'vlanadmin', '@@VLANADMINISTRATIF@@', 0, 'VLAN Administratif', 4),
+(62, 'vlanpeda1', '@@VLANPEDA1@@', 0, 'VLAN Pedagogique 1', 4),
+(63, 'vlanpeda2', '@@VLANPEDA2@@', 0, 'VLAN Pedagogique 2', 4),
+(64, 'vlanpeda3', '@@VLANPEDA3@@', 0, 'VLAN Pedagogique 3', 4),
+(65, 'vlanpeda4', '@@VLANPEDA4@@', 0, 'VLAN Pedagogique 4', 4),
 -- SSL params
 -- -------------------------------------------------------------------------------------
-(60, 'country', '@@COUNTRYNAME@@', 0, 'Nom du pays sur deux lettres', 5),
-(61, 'province', '@@PROVINCENAME@@', 0, 'Nom de la province', 5),
-(62, 'locality', '@@LOCALITYNAME@@', 0, 'Nom de la ville', 5),
-(63, 'organization', '@@ORGANIZATIONNAME@@', 0, 'Nom de l''établissement', 5),
-(64, 'organizationalunit', '@@ORGANIZATIONALUNITNAME@@', 0, 'Nom de l''unité organisationnelle', 5),
-(65, 'rne', '@@RNE@@', 0, 'Numéro répertoire national de l''établissement', 5),
+(70, 'country', '@@COUNTRYNAME@@', 0, 'Nom du pays sur deux lettres', 5),
+(71, 'province', '@@PROVINCENAME@@', 0, 'Nom de la province', 5),
+(72, 'locality', '@@LOCALITYNAME@@', 0, 'Nom de la ville', 5),
+(73, 'organization', '@@ORGANIZATIONNAME@@', 0, 'Nom de l''établissement', 5),
+(74, 'organizationalunit', '@@ORGANIZATIONALUNITNAME@@', 0, 'Nom de l''unité organisationnelle', 5),
+(75, 'rne', '@@RNE@@', 0, 'Numéro répertoire national de l''établissement', 5),
 -- Hidden params
 -- -------------------------------------------------------------------------------------
-(70, 'majnbr', '0', 0, 'Indice de mis a jour', 10),
-(71, 'VER', '@@VERSION_NUM@@', 0, 'No de version', 10),
-(72, 'type_Equipe_Matiere', '@@TYPEGROUPS@@', 0, 'Type grp. Equipe Matiere (groupOfNames posixGroup)', 10),
-(73, 'ldap_master_server', '@@LDAP_MASTER_SERVER@@', 0, 'Adresse du serveur LDAP maitre', 10),
-(74, 'ldaprid', '@@LDAP_RID@@', 0, 'Identificateur de replica', 10);
+(80, 'majnbr', '0', 0, 'Indice de mis a jour', 10),
+(81, 'VER', '@@VERSION_NUM@@', 0, 'No de version', 10),
+(82, 'type_Equipe_Matiere', '@@TYPEGROUPS@@', 0, 'Type grp. Equipe Matiere (groupOfNames posixGroup)', 10),
+(83, 'ldap_master_server', '@@LDAP_MASTER_SERVER@@', 0, 'Adresse du serveur LDAP maitre', 10),
+(84, 'ldaprid', '@@LDAP_RID@@', 0, 'Identificateur de replica', 10);
 -- --------------------------------------------------------
 
 --

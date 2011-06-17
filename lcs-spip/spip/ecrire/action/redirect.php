@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // Un script utile pour recalculer une URL symbolique des son changement
 
@@ -23,10 +23,14 @@ function action_redirect_dist()
 		$m = 'var_mode='.urlencode($m);
 	}
 	$h = generer_url_entite_absolue(intval(_request('id')), $type, $m, '', true);
+	$status = '302';
+	if (_request('status') AND _request('status')=='301')
+		$status = '301';
+
 	if ($h)
-		redirige_par_entete(str_replace('&amp;', '&', $h));
+		redirige_par_entete(str_replace('&amp;', '&', $h),'',$status);
 	else
-		redirige_par_entete('/');
+		redirige_par_entete('/','',$status);
 }
 
 ?>

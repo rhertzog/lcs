@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 //
 // Utilitaires indispensables autour du serveur Http.
@@ -105,7 +105,7 @@ function pipeline($action, $val=null) {
 			include_spip('inc/plugin');
 			// generer les fichiers php precompiles
 			// de chargement des plugins et des pipelines
-			verif_plugin();
+			actualise_plugins_actifs();
 			if (!($ok = @is_readable($charger)))
 				spip_log("fichier $charger pas cree");
 		}
@@ -124,7 +124,7 @@ function pipeline($action, $val=null) {
 		include_spip('inc/plugin');
 		// on passe $action en arg pour creer la fonction meme si le pipe
 		// n'est defini nul part ; vu qu'on est la c'est qu'il existe !
-		verif_plugin(strtolower($action));
+		actualise_plugins_actifs(strtolower($action));
 		spip_log("fonction $fonc absente : pipeline desactive");
 	}
 
@@ -143,57 +143,8 @@ function pipeline($action, $val=null) {
 //
 // http://doc.spip.org/@spip_log
 function spip_log($message, $logname=NULL, $logdir=NULL, $logsuf=NULL) {
-	static $compteur = array();
-	global $nombre_de_logs, $taille_des_logs;
-
-	if (is_null($logname))
-		$logname = defined('_FILE_LOG') ? _FILE_LOG : 'spip';
-	if (!isset($compteur[$logname])) $compteur[$logname] = 0;
-	if (($logname != 'maj') AND
-	    ( $compteur[$logname]++ > _MAX_LOG || !$nombre_de_logs || !$taille_des_logs))
-		return;
-
-	$logfile = ($logdir===NULL ? _DIR_LOG : $logdir)
-	  . (test_espace_prive()?'prive_':'') //distinguer les logs prives et publics
-	  . ($logname)
-	  . ($logsuf===NULL ? _FILE_LOG_SUFFIX : $logsuf);
-
-	// si spip_log() dans mes_options, poser dans spip.log
-	if (!defined('_DIR_LOG'))
-		$logfile = _DIR_RACINE._NOM_TEMPORAIRES_INACCESSIBLES.$logname.'.log';
-
-	$rotate = 0;
-	$pid = '(pid '.@getmypid().')';
-
-	// accepter spip_log( Array )
-	if (!is_string($message)) $message = var_export($message, true);
-
-	$m = date("M d H:i:s").' '.$GLOBALS['ip'].' '.$pid.' '
-		.preg_replace("/\n*$/", "\n", $message);
-
-
-	if (@is_readable($logfile)
-	AND (!$s = @filesize($logfile) OR $s > $taille_des_logs * 1024)) {
-		$rotate = $nombre_de_logs;
-		$m .= "[-- rotate --]\n";
-	}
-
-	$f = @fopen($logfile, "ab");
-	if ($f) {
-		fputs($f, ($logname!==NULL) ? $m : str_replace('<','&lt;',$m));
-		fclose($f);
-	}
-
-	if ($rotate-- > 0) {
-		spip_unlink($logfile . '.' . $rotate);
-		while ($rotate--) {
-			@rename($logfile . ($rotate ? '.' . $rotate : ''), $logfile . '.' . ($rotate + 1));
-		}
-	}
-
-	// Dupliquer les erreurs specifiques dans le log general
-	if ($logname !== _FILE_LOG)
-		spip_log($logname=='maj' ? 'cf maj.log' : $message);
+	$log = charger_fonction('log', 'inc');
+	$log( $message, $logname, $logdir, $logsuf);
 }
 
 // Renvoie le _GET ou le _POST emis par l'utilisateur
@@ -241,6 +192,16 @@ function set_request($var, $val = NULL, $c=false) {
 		$_GET[$var] = $val;
 
 	return false; # n'affecte pas $c
+}
+
+
+/**
+ * Tester si une url est absolue
+ * @param  $url
+ * @return bool
+ */
+function tester_url_absolue($url){
+	return preg_match(";^([a-z]+:)?//;Uims",trim($url))?true:false;
 }
 
 //
@@ -333,10 +294,11 @@ function ancre_url($url, $ancre) {
 // pour le nom du cache, les types_urls et self
 //
 // http://doc.spip.org/@nettoyer_uri
-function nettoyer_uri()
+function nettoyer_uri($reset = null)
 {
 	static $done = false;
 	static $propre = '';
+	if (!is_null($reset)) return $propre=$reset;
 	if ($done) return $propre;
 	$done = true;
 
@@ -394,11 +356,22 @@ function test_espace_prive() {
 	return defined('_ESPACE_PRIVE') ? _ESPACE_PRIVE : false;
 }
 
+/**
+ * Verifie la presence d'un plugin active, identifie par son prefix
+ *
+ *
+ * @param string $plugin
+ * @return bool
+ */
+function test_plugin_actif($plugin){
+	return ($plugin AND defined('_DIR_PLUGIN_'.strtoupper($plugin)))? true:false;
+}
+
 //
 // Traduction des textes de SPIP
 //
 // http://doc.spip.org/@_T
-function _T($texte, $args=array()) {
+function _T($texte, $args=array(), $class='') {
 
 	static $traduire=false ;
 
@@ -409,27 +382,34 @@ function _T($texte, $args=array()) {
 	$text = $traduire($texte,$GLOBALS['spip_lang']);
 
 	if (!strlen($text))
-		// pour les chaines non traduites
+		// pour les chaines non traduites, assurer un service minimum
 		$text = str_replace('_', ' ',
 			 (($n = strpos($texte,':')) === false ? $texte :
 				substr($texte, $n+1)));
 
-	if (is_array($args))
-	foreach ($args as $name => $value)
-		$text = str_replace ("@$name@", $value, $text);
-
-	return $text;
+	return _L($text, $args, $class);
 
 }
 
-// chaines en cours de traduction
+// Remplacer les variables @....@ par leur valeur dans une chaine de langue.
+// Aussi appelee quand une chaine n'est pas encore dans les fichiers de langue
 // http://doc.spip.org/@_L
-function _L($text, $args=array()) {
-	if (is_array($args))
-	foreach ($args as $name => $value)
-		$text = str_replace ("@$name@", $value, $text);
+function _L($text, $args=array(), $class=NULL) {
+	$f = $text;
+	if (is_array($args)) {
+		foreach ($args as $name => $value) {
+			if ($class)
+				$value = "<span class='$class'>$value</span>";
+			$t = str_replace ("@$name@", $value, $text);
+			if ($text !== $t) {unset($args[$name]); $text = $t;}
+		}
+		// Si des variables n'ont pas ete inserees, le signaler
+		// (chaines de langues pas a jour)
+		// NOTE: c'est du debug, gere comme tel pour SPIP >= 2.3
+		## if ($args) spip_log("$f:  variables inutilisees " . join(', ', array_keys($args)));
+	}
 
-	if ($GLOBALS['test_i18n'])
+	if ($GLOBALS['test_i18n'] AND $class===NULL)
 		return "<span style='color:red;'>$text</span>";
 	else
 		return $text;
@@ -458,14 +438,21 @@ function spip_timer($t='rien', $raw = false) {
 	$b=explode(' ',$b);
 	if (count($b)==2) $a = end($b); // plus precis !
 	$b = reset($b);
-	if (isset($time[$t])) {
-		$p = $a + $b - $time[$t];
-		unset($time[$t]);
-		if ($raw) return $p;
-		if ($p>0.01)	return sprintf("%.3fs", $p);
-		else					return sprintf("%.1fms", $p*1000);
-	} else
+	if (!isset($time[$t])) {
 		$time[$t] = $a + $b;
+	} else {
+		$p = ($a + $b - $time[$t]) * 1000;
+		unset($time[$t]);
+#			echo "'$p'";exit;
+		if ($raw) return $p;
+		if ($p < 1000)
+			$s = '';
+		else {
+			$s = sprintf("%d ", $x = floor($p/1000));
+			$p -= ($x*1000);
+		}
+		return $s . sprintf("%.3f ms", $p);
+	}
 }
 
 
@@ -527,7 +514,7 @@ function cron ($gourmand=false, $taches= array()) {
 	// ca soulage le serveur et ca evite
 	// les conflits sur la base entre taches.
 
-	if (!_CRON_DELAI
+	if (!_CRON_DELAI 
 	  OR spip_touch(_DIR_TMP.'cron.lock',_CRON_DELAI)) {
 			// Si base inaccessible, laisser tomber.
 			if (!spip_connect()) return false;
@@ -678,7 +665,6 @@ function chemin($file, $dirname='', $include=false){
 // chercher un fichier $file dans le SPIP_PATH
 // si on donne un sous-repertoire en 2e arg optionnel, il FAUT le / final
 // si 3e arg vrai, on inclut si ce n'est fait.
-define('_ROOT_CWD', getcwd().'/');
 $GLOBALS['path_sig'] = '';
 $GLOBALS['path_files'] = null;
 
@@ -726,11 +712,16 @@ function find_in_path ($file, $dirname='', $include=false) {
 			}
 		}
 	}
+
 	if (!defined('_SAUVER_CHEMIN'))
 		define('_SAUVER_CHEMIN',true);
 	return $GLOBALS['path_files'][$GLOBALS['path_sig']][$dirname][$file] = $GLOBALS['path_files'][$GLOBALS['path_sig']][''][$dirname . $file] = false;
 }
 
+function clear_path_cache(){
+	$GLOBALS['path_files'] = array();
+	spip_unlink(_CACHE_CHEMIN);
+}
 function load_path_cache(){
 	// charger le path des plugins
 	if (@is_readable(_CACHE_PLUGINS_PATH)){
@@ -740,9 +731,14 @@ function load_path_cache(){
 	// si le visiteur est admin,
 	// on ne recharge pas le cache pour forcer sa mise a jour
 	// le cache de chemin n'est utilise que dans le public
-	if (_DIR_RESTREINT 
+	if (_DIR_RESTREINT
+		// la session n'est pas encore chargee a ce moment, on ne peut donc pas s'y fier
 		//AND (!isset($GLOBALS['visiteur_session']['statut']) OR $GLOBALS['visiteur_session']['statut']!='0minirezo')
+		// utiliser le cookie est un pis aller qui marche 'en general'
+		// on blinde par un second test au moment de la lecture de la session
 		AND !isset($_COOKIE[$GLOBALS['cookie_prefix'].'_admin'])
+		// et en ignorant ce cache en cas de recalcul explicite
+		AND _request('var_mode')!=='recalcul'
 		){
 		// on essaye de lire directement sans verrou pour aller plus vite
 		if ($contenu = spip_file_get_contents(_CACHE_CHEMIN)){
@@ -765,6 +761,17 @@ function save_path_cache(){
 		ecrire_fichier(_CACHE_CHEMIN,serialize($GLOBALS['path_files']));
 }
 
+
+/**
+ * Trouve tous les fichiers du path correspondants a un pattern
+ * pour un nom de fichier donne, ne retourne que le premier qui sera trouve
+ * par un find_in_path
+ *
+ * @param string $dir
+ * @param string $pattern
+ * @param bool $recurs
+ * @return array
+ */
 // http://doc.spip.org/@find_all_in_path
 function find_all_in_path($dir,$pattern, $recurs=false){
 	$liste_fichiers=array();
@@ -901,12 +908,16 @@ function test_valeur_serveur($truc) {
 // racine de SPIP : par exemple, sur ecrire/ elle vaut 1, sur sedna/ 1, et a
 // la racine 0. Sur url/perso/ elle vaut 2
 // http://doc.spip.org/@url_de_base
-function url_de_base() {
+function url_de_base($profondeur=null) {
 
 	static $url = array();
+	if (is_array($profondeur)) return $url = $profondeur;
+	if ($profondeur===false) return $url;
 
-	if (isset($url[$GLOBALS['profondeur_url']]))
-		return $url[$GLOBALS['profondeur_url']];
+	if (is_null($profondeur)) $profondeur = $GLOBALS['profondeur_url'];
+
+	if (isset($url[$profondeur]))
+		return $url[$profondeur];
 
 	$http = (
 		(isset($_SERVER["SCRIPT_URI"]) AND
@@ -925,17 +936,40 @@ function url_de_base() {
 				$GLOBALS['REQUEST_URI'] .= '?'.$_SERVER['QUERY_STRING'];
 		}
 	}
-	$myself = $http.'://'.$_SERVER['HTTP_HOST'].$GLOBALS['REQUEST_URI'];
 
+	$url[$profondeur] = url_de_($http,$_SERVER['HTTP_HOST'],$GLOBALS['REQUEST_URI'],$profondeur);
+
+	return $url[$profondeur];
+}
+/**
+ * fonction testable de construction d'une url appelee par url_de_base()
+ * @param string $http
+ * @param string $host
+ * @param string $request
+ * @param int $prof
+ * @return string
+ */
+function url_de_($http,$host,$request,$prof=0){
+	$prof = max($prof,0);
+
+	$myself = ltrim($request,'/');
 	# supprimer la chaine de GET
 	list($myself) = explode('?', $myself);
+	$url = join('/', array_slice(explode('/', $myself), 0, -1-$prof)).'/';
 
-	# supprimer n sous-repertoires
-	$url[$GLOBALS['profondeur_url']] = join('/', array_slice(explode('/', $myself), 0, -1-$GLOBALS['profondeur_url'])).'/';
-
-	return $url[$GLOBALS['profondeur_url']];
+	$url = $http.'://'.rtrim($host,'/').'/'.ltrim($url,'/');
+	return $url;
 }
 
+
+function tester_url_ecrire($nom){
+	// tester si c'est une page en squelette
+	if (find_in_path('prive/exec/' . $nom . '.' . _EXTENSION_SQUELETTES))
+		return 'fond';
+	// attention, il ne faut pas inclure l'exec ici car sinon on modifie l'environnement
+	// par un simple #URL_ECRIRE dans un squelette (cas d'un define en debut d'exec/nom )
+	return (find_in_path("{$nom}.php",'exec/') OR charger_fonction($nom,'exec',true))?$nom:'';
+}
 
 // Pour une redirection, la liste des arguments doit etre separee par "&"
 // Pour du code XHTML, ca doit etre &amp;
@@ -1005,7 +1039,7 @@ function generer_url_public($script='', $args="", $no_entities=false, $rel=false
 		$action = quote_amp($action);
 
 	// ne pas generer une url avec /./?page= en cas d'url absolue et de _SPIP_SCRIPT vide
-	return ($rel ? $action : rtrim(url_de_base(),'/') . preg_replace(",^/[.]/,","/","/$action"));
+	return ($rel ? _DIR_RACINE . $action : rtrim(url_de_base(),'/') . preg_replace(",^/[.]/,","/","/$action"));
 }
 
 // http://doc.spip.org/@generer_url_prive
@@ -1023,15 +1057,17 @@ function generer_url_prive($script, $args="", $no_entities=false) {
 function generer_form_ecrire($script, $corps, $atts='', $submit='') {
 	global $spip_lang_right;
 
+	$script1 = array_shift(explode('&', $script));
+
 	return "<form action='"
 	. ($script ? generer_url_ecrire($script) : '')
 	. "' "
 	. ($atts ? $atts : " method='post'")
 	.  "><div>\n"
-	. "<input type='hidden' name='exec' value='$script' />"
+	. "<input type='hidden' name='exec' value='$script1' />"
 	. $corps
 	. (!$submit ? '' :
-	     ("<div style='text-align: $spip_lang_right'><input class='fondo' type='submit' value='$submit' /></div>"))
+	     ("<div style='text-align: $spip_lang_right'><input type='submit' value='$submit' /></div>"))
 	. "</div></form>\n";
 }
 
@@ -1105,7 +1141,7 @@ function spip_initialisation($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 function spip_initialisation_core($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 	static $too_late = 0;
 	if ($too_late++) return;
-	
+
 	// Declaration des repertoires
 
 	// le nom du repertoire plugins/ activables/desactivables
@@ -1183,7 +1219,9 @@ function spip_initialisation_core($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 
 	// Le charset par defaut lors de l'installation
 	define('_DEFAULT_CHARSET', 'utf-8');
+
 	define('_ROOT_PLUGINS', _ROOT_RACINE . "plugins/");
+	define('_ROOT_EXTENSIONS', _ROOT_RACINE . "extensions/");
 
 	// La taille des Log
 	define('_MAX_LOG', 100);
@@ -1205,7 +1243,7 @@ function spip_initialisation_core($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 	// (non surchargeable en l'etat ; attention si on utilise include_spip()
 	// pour le rendre surchargeable, on va provoquer un reecriture
 	// systematique du noyau ou une baisse de perfs => a etudier)
-	include_once _DIR_RESTREINT . 'inc/flock.php';
+	include_once  _ROOT_RESTREINT . 'inc/flock.php';
 
 	// charger tout de suite le path et son cache
 	load_path_cache();
@@ -1234,7 +1272,7 @@ function spip_initialisation_core($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 	OR  _FEED_GLOBALS) {
 		// ne pas desinfecter les globales en profondeur car elle contient aussi les
 		// precedentes, qui seraient desinfectees 2 fois.
-		spip_desinfecte($GLOBALS);
+		spip_desinfecte($GLOBALS,false);
 		include_spip('inc/php3');
 		spip_register_globals($x);
 	}
@@ -1276,22 +1314,43 @@ function spip_initialisation_core($pi=NULL, $pa=NULL, $ti=NULL, $ta=NULL) {
 	$inc_meta();
 
 	// nombre de repertoires depuis la racine
-	// on compare a l'adresse donnee en meta ; si celle-ci est fausse
-	// le calcul est faux. Meilleure idee ??
+	// on compare a l'adresse de spip.php : $_SERVER["SCRIPT_NAME"]
+	// ou a defaut celle donnee en meta ; (mais si celle-ci est fausse
+	// le calcul est faux)
 	if (!_DIR_RESTREINT)
 		$GLOBALS['profondeur_url'] = 1;
 	else {
 		$uri = isset($_SERVER['REQUEST_URI']) ? explode('?', $_SERVER['REQUEST_URI']) : '';
-		if (!$uri OR  !isset($GLOBALS['meta']['adresse_site']))
+		$uri_ref = $_SERVER["SCRIPT_NAME"];
+		if (!$uri_ref
+			// si on est appele avec un autre ti, on est sans doute en mutu
+			// si jamais c'est de la mutu avec sous rep, on est perdu si on se fie
+			// a spip.php qui est a la racine du spip, et vue qu'on sait pas se reperer
+			// s'en remettre a l'adresse du site. alea jacta est.
+			OR $ti!==_NOM_TEMPORAIRES_INACCESSIBLES){
+
+			if (isset($GLOBALS['meta']['adresse_site'])) {
+				$uri_ref = parse_url($GLOBALS['meta']['adresse_site']);
+				$uri_ref = $uri_ref['path'].'/';
+			}
+		  else
+			  $uri_ref = "";
+		}
+		if (!$uri OR !$uri_ref)
 			$GLOBALS['profondeur_url'] = 0;
 		else {
-			$GLOBALS['profondeur_url'] = max(0, 1+
+			$GLOBALS['profondeur_url'] = max(0,
 				substr_count($uri[0], '/')
-				- substr_count($GLOBALS['meta']['adresse_site'],'/'));
+				- substr_count($uri_ref,'/'));
 		}
 	}
 	// s'il y a un cookie ou PHP_AUTH, initialiser visiteur_session
-	if (_FILE_CONNECT) verifier_visiteur();
+	if (_FILE_CONNECT) {
+		if (verifier_visiteur()=='0minirezo'
+			// si c'est un admin sans cookie admin, il faut ignorer le cache chemin !
+		  AND !isset($COOKIE['spip_admin']))
+			clear_path_cache();
+	}
 
 }
 
@@ -1327,6 +1386,8 @@ function spip_initialisation_suite() {
 	define('_CACHE_RUBRIQUES', _DIR_TMP.'menu-rubriques-cache.txt');
 	define('_CACHE_RUBRIQUES_MAX', 500);
 
+	define('_EXTENSION_SQUELETTES', 'html');
+
 	define('_DOCTYPE_ECRIRE',
 		// "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'>\n");
 		//"<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>\n");
@@ -1340,7 +1401,6 @@ function spip_initialisation_suite() {
 	define('_SPIP_SCRIPT', 'spip.php');
 	// argument page, personalisable en cas de conflit avec un autre script
 	define('_SPIP_PAGE', 'page');
-	define('_SPIP_FLUX', 'feed');
 
 	// le script de l'espace prive
 	// Mettre a "index.php" si DirectoryIndex ne le fait pas ou pb connexes:
@@ -1384,7 +1444,7 @@ function spip_initialisation_suite() {
 	define('_IMG_GD_MAX_PIXELS', (isset($GLOBALS['meta']['max_taille_vignettes'])&&$GLOBALS['meta']['max_taille_vignettes']<5500000)?$GLOBALS['meta']['max_taille_vignettes']:0);
 	define('_IMG_GD_QUALITE', 85);
 
-	@define('_MEMORY_LIMIT_MIN',10); // en Mo
+	if (!defined('_MEMORY_LIMIT_MIN')) define('_MEMORY_LIMIT_MIN', 16);
 	// si on est dans l'espace prive et si le besoin est superieur a 8Mo (qui est vraiment le standard)
 	// on verifie que la memoire est suffisante pour le compactage css+js pour eviter la page blanche
 	// il y aura d'autres problemes et l'utilisateur n'ira pas tres loin, mais ce sera plus comprehensible qu'une page blanche
@@ -1464,6 +1524,11 @@ function init_var_mode(){
 							// indiquer qu'on doit recalculer les images
 							$GLOBALS['var_images'] = true;
 							break;
+						case 'debug':
+							$GLOBALS['var_mode'] = 'debug';
+							// et ne pas enregistrer de cache
+							$GLOBALS['var_nocache'] = true;
+							break;
 						default :
 							$GLOBALS['var_mode'] = $_GET['var_mode'];
 							break;
@@ -1493,7 +1558,7 @@ function init_var_mode(){
 // supprimer aussi les eventuels caracteres nuls %00, qui peuvent tromper
 // la commande is_readable('chemin/vers/fichier/interdit%00truc_normal')
 // http://doc.spip.org/@spip_desinfecte
-function spip_desinfecte(&$t) {
+function spip_desinfecte(&$t,$deep = true) {
 	static $magic_quotes;
 	if (!isset($magic_quotes))
 		$magic_quotes = @get_magic_quotes_gpc();
@@ -1505,12 +1570,13 @@ function spip_desinfecte(&$t) {
 			$t[$key] = str_replace(chr(0), '-', $t[$key]);
 		}
 		// traiter aussi les "texte_plus" de articles_edit
-		else if ($key == 'texte_plus' AND is_array($t[$key]))
-			spip_desinfecte($t[$key]);
+		else if ($deep AND is_array($t[$key]) AND $key!=='GLOBALS')
+			spip_desinfecte($t[$key],$deep);
 	}
 }
 
 //  retourne le statut du visiteur s'il s'annonce
+
 
 // http://doc.spip.org/@verifier_visiteur
 function verifier_visiteur() {
@@ -1546,8 +1612,8 @@ function verifier_visiteur() {
 		return 0;
 	}
 
-	if (isset($_COOKIE['spip_session']) OR isset($_COOKIE[$GLOBALS['cookie_prefix'].'_session']) OR
-	(isset($_SERVER['PHP_AUTH_USER'])  AND !$GLOBALS['ignore_auth_http'])) {
+	$h = (isset($_SERVER['PHP_AUTH_USER'])  AND !$GLOBALS['ignore_auth_http']);
+	if ($h OR isset($_COOKIE['spip_session']) OR isset($_COOKIE[$GLOBALS['cookie_prefix'].'_session'])) {
 
 		// Rq: pour que cette fonction marche depuis mes_options
 		// il faut forcer l'init si ce n'est fait
@@ -1565,8 +1631,14 @@ function verifier_visiteur() {
 		if ($session()) {
 			return $GLOBALS['visiteur_session']['statut'];
 		}
-		include_spip('inc/actions');
-		return verifier_php_auth();
+		if ($h  AND isset($_SERVER['PHP_AUTH_PW'])) {
+			include_spip('inc/auth');
+			$h = lire_php_auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+		}
+		if ($h) {
+			$GLOBALS['visiteur_session'] = $h;
+			return $GLOBALS['visiteur_session']['statut'];
+		}
 	}
 	// au moins son navigateur nous dit la langue preferee de cet inconnu
 	include_spip('inc/lang');
@@ -1641,6 +1713,14 @@ function exec_info_dist() {
 		echo "pas admin";
 }
 
+function erreur_squelette($message='', $lieu='') {
+	$debusquer = charger_fonction('debusquer', 'public');
+	if (is_array($lieu)) {
+		include_spip('public/compiler');
+		$lieu = reconstruire_contexte_compil($lieu);
+	}
+	return $debusquer($message, $lieu);
+}
 
 /**
  * La fonction de base de SPIP : un squelette + un contexte => une page.
@@ -1695,13 +1775,17 @@ function recuperer_fond($fond, $contexte=array(), $options = array(), $connect='
 
 	foreach(is_array($fond) ? $fond : array($fond) as $f){
 		$page = evaluer_fond($f, $contexte, $connect);
+		if ($page === '') {
+			$c = isset($options['compil']) ? $options['compil'] :'';
+			$a = array('fichier'=>$fond.'.'._EXTENSION_SQUELETTES);
+			erreur_squelette(_T('info_erreur_squelette2', $a), $c);
+		}
+					 
 		if (isset($options['ajax'])AND $options['ajax']){
 			include_spip('inc/filtres');
 			$page['texte'] = encoder_contexte_ajax(array_merge($contexte,array('fond'=>$f)),'',$page['texte']);
 		}
 
-		if ($GLOBALS['var_inclure'])
-			$page['texte'] = "<fieldset class='blocs'><legend>".$page['sourcefile']."</legend>".$page['texte']."</fieldset>";
 		$page = pipeline('recuperer_fond',array(
 			'args'=>array('fond'=>$fond,'contexte'=>$contexte,'options'=>$options,'connect'=>$connect),
 			'data'=>$page
@@ -1719,6 +1803,11 @@ function recuperer_fond($fond, $contexte=array(), $options = array(), $connect='
 		return is_array($fond)?$pages:reset($pages);
 	else
 		return $options['trim'] ? ltrim($texte) : $texte;
+}
+
+function trouve_modele($nom)
+{
+	return find_in_path( 'modeles/' . $nom.'.'. _EXTENSION_SQUELETTES);
 }
 
 // Charger dynamiquement une extension php

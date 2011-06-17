@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: bilan_parent.php 5772 2010-10-28 16:39:02Z dblanqui $
+ * @version $Id: bilan_parent.php 5751 2010-10-25 11:37:36Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -186,7 +186,7 @@ include('menu_bilans.inc.php');
     <tr>
       <th style="border: 1px solid black; background-color: gray; min-width: 300px; max-width: 500px;">Nom Pr&eacute;nom</th>
       <?php
-      //afficher les créneaux
+//afficher les créneaux
       foreach (EdtCreneauPeer::retrieveAllEdtCreneauxOrderByTime() as $creneau) {
       ?>
         <th style="border: 1px solid black; background-color: gray;">
@@ -236,7 +236,7 @@ include('menu_bilans.inc.php');
             $date_actuelle_heure_creneau->setTime($tab_heure[0], $tab_heure[1], $tab_heure[2]);
             if ($abs_col->isEmpty() || !EdtHelper::isEtablissementOuvert($date_actuelle_heure_creneau)) {
       ?>
-              <td> </td>
+              <td> </td>        
       <?php
             } else {
               $priorite = 5;
@@ -279,19 +279,19 @@ include('menu_bilans.inc.php');
 
     <p>
       <span style="background-color:red;">&nbsp;&nbsp;NJ&nbsp;&nbsp;</span>
-      	Manquement aux obligations scolaires : Absence non justifiée
+              	Manquement aux obligations scolaires : Absence non justifiée
     </p>
     <p>
       <span style="background-color:fuchsia;">&nbsp;RNJ&nbsp;</span>
-      	Manquement aux obligations scolaires : Retard non justifiée
+              	Manquement aux obligations scolaires : Retard non justifiée
     </p>
     <p>
       <span style="background-color:blue;">&nbsp;&nbsp;&nbsp;J&nbsp;&nbsp;&nbsp;&nbsp;</span>
-      	Manquement aux obligations scolaires : Absence justifiée
+              	Manquement aux obligations scolaires : Absence justifiée
     </p>
     <p>
       <span style="background-color:aqua;">&nbsp;&nbsp;RJ&nbsp;&nbsp;</span>
-      	Manquement aux obligations scolaires : Retard justifiée
+              	Manquement aux obligations scolaires : Retard justifiée
     </p>
 
     <!-- Absences totales -->
@@ -358,7 +358,6 @@ include('menu_bilans.inc.php');
     <?php
         unset($date_actuelle);
         $date_actuelle = clone $dt_fin_toutes;
-
         while ($date_actuelle >= $dt_debut_toutes) {
           //on regarde si une des saisies du jour est affichable selon les critères (etab ouvert et manquement obligation)
           $affichage = false;

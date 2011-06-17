@@ -23,7 +23,17 @@
 	if (!isset($t['field']['cfg'])) {
 		sql_alter('TABLE spip_auteurs ADD COLUMN cfg TEXT DEFAULT \'\' NOT NULL');
 	}
+	
+### creation de la colonne 'extra' si absente ###
 
+	// creation de la colonne 'cfg' sur spip_auteurs si elle n'existe pas.
+	include_spip('base/abstract_sql');
+	$t = sql_showtable('spip_rubriques');
+	if (!isset($t['field']['extra'])) {
+		sql_alter('TABLE spip_rubriques ADD COLUMN extra TEXT DEFAULT \'\' NOT NULL');
+	}
+	
+	
 ### ecrire_config ###
 	// les bases de test
 	$assoc = array(
@@ -45,8 +55,9 @@
 	$essais[] = array(true, 'tablepack::~/test_cfg_chemin/casier', $assoc);
 	$essais[] = array(true, 'tablepack::~/test_cfg_chemin/casier/truc', 'trac');
 	// dans rubriques
-	$essais[] = array(true, 'tablepack::rubriques@extra:1/test_cfg_chemin/casier/truc', 'trac');
-	$essais[] = array(true, 'tablepack::rubrique@extra:1/test_cfg_chemin/casier/chose', 'trac');
+	$id_rubrique = sql_getfetsel('id_rubrique', 'spip_rubriques', '', '', '', '0,1');
+	$essais[] = array(true, "tablepack::rubriques@extra:$id_rubrique/test_cfg_chemin/casier/truc", 'trac');
+	$essais[] = array(true, "tablepack::rubrique@extra:$id_rubrique/test_cfg_chemin/casier/chose", 'trac');
 	
 	$err = tester_fun('ecrire_config', $essais);
 	
@@ -70,8 +81,8 @@
 	// chemin pas la
 	$essais[] = array(null, 'tablepack::~/test_cfg_chemin/casier/three/huit');
 	// dans rubrique
-	$essais[] = array('trac', 'tablepack::rubriques@extra:1/test_cfg_chemin/casier/truc');
-	$essais[] = array('trac', 'tablepack::rubrique@extra:1/test_cfg_chemin/casier/chose');
+	$essais[] = array('trac', "tablepack::rubriques@extra:$id_rubrique/test_cfg_chemin/casier/truc");
+	$essais[] = array('trac', "tablepack::rubrique@extra:$id_rubrique/test_cfg_chemin/casier/chose");
 	
 	$err = tester_fun('lire_config', $essais);
 	
@@ -98,8 +109,8 @@
 	$essais[] = array(true, 'tablepack::~/test_cfg_chemin/casier/two'); 
 	$essais[] = array(true, 'tablepack::~/test_cfg_chemin/casier/truc'); // supprimer chemin/casier
 	// dans rubrique
-	$essais[] = array(true, 'tablepack::rubriques@extra:1/test_cfg_chemin/casier/truc');
-	$essais[] = array(true, 'tablepack::rubrique@extra:1/test_cfg_chemin/casier/chose');
+	$essais[] = array(true, "tablepack::rubriques@extra:$id_rubrique/test_cfg_chemin/casier/truc");
+	$essais[] = array(true, "tablepack::rubrique@extra:$id_rubrique/test_cfg_chemin/casier/chose");
 	
 	$err = tester_fun('effacer_config', $essais);
 	
@@ -119,9 +130,9 @@
 	$essais[] = array(null, 'tablepack::~/test_cfg_serie');
 	$essais[] = array(null, 'tablepack::~/test_cfg_chemin');
 	// dans rubrique
-	$essais[] = array(null, 'tablepack::rubriques@extra:1/test_cfg_chemin/casier/truc');
-	$essais[] = array(null, 'tablepack::rubrique@extra:1/test_cfg_chemin/casier/chose');
-	$essais[] = array(null, 'tablepack::rubriques@extra:1/test_cfg_chemin');
+	$essais[] = array(null, "tablepack::rubriques@extra:$id_rubrique/test_cfg_chemin/casier/truc");
+	$essais[] = array(null, "tablepack::rubrique@extra:$id_rubrique/test_cfg_chemin/casier/chose");
+	$essais[] = array(null, "tablepack::rubriques@extra:$id_rubrique/test_cfg_chemin");
 	
 	$err = tester_fun('lire_config', $essais);
 	

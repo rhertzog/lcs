@@ -28,23 +28,24 @@
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 if($_SESSION['SESAMATH_ID']==ID_DEMO) {}
 
-$matiere_id    = (isset($_POST['f_matiere']))     ? clean_entier($_POST['f_matiere'])    : 0;
-$niveau_id     = (isset($_POST['f_niveau']))      ? clean_entier($_POST['f_niveau'])     : 0;
-$matiere_nom   = (isset($_POST['f_matiere_nom'])) ? clean_texte($_POST['f_matiere_nom']) : '';
-$niveau_nom    = (isset($_POST['f_niveau_nom']))  ? clean_texte($_POST['f_niveau_nom'])  : '';
-$remplissage   = (isset($_POST['f_remplissage'])) ? clean_texte($_POST['f_remplissage']) : '';
-$orientation   = (isset($_POST['f_orientation'])) ? clean_texte($_POST['f_orientation']) : '';
-$couleur       = (isset($_POST['f_couleur']))     ? clean_texte($_POST['f_couleur'])     : '';
-$legende       = (isset($_POST['f_legende']))     ? clean_texte($_POST['f_legende'])     : '';
-$marge_min     = (isset($_POST['f_marge_min']))   ? clean_texte($_POST['f_marge_min'])   : '';
-$cases_nb      = (isset($_POST['f_cases_nb']))    ? clean_entier($_POST['f_cases_nb'])   : 0;
-$cases_largeur = (isset($_POST['f_cases_larg']))  ? clean_entier($_POST['f_cases_larg']) : 0;
-$only_socle    = (isset($_POST['f_restriction'])) ? 1                                    : 0;
-$aff_coef      = (isset($_POST['f_coef']))        ? 1                                    : 0;
-$aff_socle     = (isset($_POST['f_socle']))       ? 1                                    : 0;
-$aff_lien      = (isset($_POST['f_lien']))        ? 1                                    : 0;
-$groupe_id     = (isset($_POST['f_groupe']))      ? clean_entier($_POST['f_groupe'])     : 0;	// en cas de manipulation type Firebug, peut être forcé pour l'élève à $_SESSION['ELEVE_CLASSE_ID']
-$tab_eleve_id  = (isset($_POST['eleves']))        ? array_map('clean_entier',explode(',',$_POST['eleves'])) : array() ;	// en cas de manipulation type Firebug, peut être forcé pour l'élève avec $_SESSION['USER_ID']
+$matiere_id    = (isset($_POST['f_matiere']))      ? clean_entier($_POST['f_matiere'])      : 0;
+$niveau_id     = (isset($_POST['f_niveau']))       ? clean_entier($_POST['f_niveau'])       : 0;
+$matiere_nom   = (isset($_POST['f_matiere_nom']))  ? clean_texte($_POST['f_matiere_nom'])   : '';
+$niveau_nom    = (isset($_POST['f_niveau_nom']))   ? clean_texte($_POST['f_niveau_nom'])    : '';
+$only_socle    = (isset($_POST['f_restriction']))  ? 1                                      : 0;
+$aff_coef      = (isset($_POST['f_coef']))         ? 1                                      : 0;
+$aff_socle     = (isset($_POST['f_socle']))        ? 1                                      : 0;
+$aff_lien      = (isset($_POST['f_lien']))         ? 1                                      : 0;
+$cases_nb      = (isset($_POST['f_cases_nb']))     ? clean_entier($_POST['f_cases_nb'])     : 0;
+$cases_largeur = (isset($_POST['f_cases_larg']))   ? clean_entier($_POST['f_cases_larg'])   : 0;
+$remplissage   = (isset($_POST['f_remplissage']))  ? clean_texte($_POST['f_remplissage'])   : '';
+$colonne_vide  = (isset($_POST['f_colonne_vide'])) ? clean_entier($_POST['f_colonne_vide']) : 0;
+$orientation   = (isset($_POST['f_orientation']))  ? clean_texte($_POST['f_orientation'])   : '';
+$couleur       = (isset($_POST['f_couleur']))      ? clean_texte($_POST['f_couleur'])       : '';
+$legende       = (isset($_POST['f_legende']))      ? clean_texte($_POST['f_legende'])       : '';
+$marge_min     = (isset($_POST['f_marge_min']))    ? clean_texte($_POST['f_marge_min'])     : '';
+$groupe_id     = (isset($_POST['f_groupe']))       ? clean_entier($_POST['f_groupe'])       : 0;	// en cas de manipulation type Firebug, peut être forcé pour l'élève à $_SESSION['ELEVE_CLASSE_ID']
+$tab_eleve_id  = (isset($_POST['eleves']))         ? array_map('clean_entier',explode(',',$_POST['eleves'])) : array() ;	// en cas de manipulation type Firebug, peut être forcé pour l'élève avec $_SESSION['USER_ID']
 
 save_cookie_select('grille_referentiel');
 
@@ -53,8 +54,6 @@ $liste_eleve   = implode(',',$tab_eleve_id);
 
 if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && $orientation && $couleur && $legende && $marge_min && $cases_nb && $cases_largeur )
 {
-
-	ajouter_log_PHP( $log_objet='Demande de bilan' , $log_contenu=serialize($_POST) , $log_fichier=__FILE__ , $log_ligne=__LINE__ , $only_sesamath=true );
 
 	$tab_domaine    = array();	// [domaine_id] => array(domaine_ref,domaine_nom,domaine_nb_lignes);
 	$tab_theme      = array();	// [domaine_id][theme_id] => array(theme_ref,theme_nom,theme_nb_lignes);
@@ -123,7 +122,7 @@ if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && 
 	}
 	elseif($groupe_id && count($tab_eleve_id))
 	{
-		$tab_eleve = DB_STRUCTURE_lister_eleves_cibles($liste_eleve);
+		$tab_eleve = DB_STRUCTURE_lister_eleves_cibles($liste_eleve,$with_gepi=FALSE,$with_langue=FALSE);
 	}
 	else
 	{
@@ -135,7 +134,7 @@ if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && 
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 	if($groupe_id && count($tab_eleve_id) && $remplissage=='plein')
 	{
-		$DB_TAB = DB_STRUCTURE_lister_result_eleves_matiere($liste_eleve , $liste_item , $date_debut=false , $date_fin=false) ;
+		$DB_TAB = DB_STRUCTURE_lister_result_eleves_matiere($liste_eleve , $liste_item , $date_debut=false , $date_fin=false , $_SESSION['USER_PROFIL']) ;
 		foreach($DB_TAB as $DB_ROW)
 		{
 			$user_id = ($_SESSION['USER_PROFIL']=='eleve') ? $_SESSION['USER_ID'] : $DB_ROW['eleve_id'] ;
@@ -156,6 +155,16 @@ if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && 
 	}
 
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+	/* 
+	 * Libérer de la place mémoire car les scripts de bilans sont assez gourmands.
+	 * Supprimer $DB_TAB ne fonctionne pas si on ne force pas auparavant la fermeture de la connexion.
+	 * SebR devrait peut-être envisager d'ajouter une méthode qui libère cette mémoire, si c'est possible...
+	 */
+	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+	DB::close(SACOCHE_STRUCTURE_BD_NAME);
+	unset($DB_TAB);
+
+	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 	// Elaboration de la grille d'items d'un référentiel, en HTML et PDF
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 
@@ -173,7 +182,7 @@ if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && 
 	require('./_fpdf/fpdf.php');
 	require('./_inc/class.PDF.php');
 	$releve_PDF = new PDF($orientation,$marge_min,$couleur,$legende);
-	$releve_PDF->grille_referentiel_initialiser($cases_nb,$cases_largeur,$lignes_nb);
+	$releve_PDF->grille_referentiel_initialiser($cases_nb,$cases_largeur,$lignes_nb,$colonne_vide);
 
 	// Pour chaque élève...
 	foreach($tab_eleve as $tab)
@@ -266,15 +275,15 @@ if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && 
 	if($_SESSION['USER_PROFIL']=='eleve')
 	{
 		echo'<ul class="puce">';
-		echo'<li><label class="alerte"><a class="lien_ext" href="'.$dossier.$fichier_lien.'.pdf">Télécharger la grille au format PDF (imprimable).</a></label></li>';
+		echo'<li><label class="alerte"><a class="lien_ext" href="'.$dossier.$fichier_lien.'.pdf">Archiver / Imprimer (format <em>pdf</em>).</a></label></li>';
 		echo'</ul><p />';
 		echo $releve_HTML;
 	}
 	else
 	{
 		echo'<ul class="puce">';
-		echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_lien.'">Grille au format HTML (bulles d\'information, liens...).</a></li>';
-		echo'<li><a class="lien_ext" href="'.$dossier.$fichier_lien.'.pdf">Grille au format PDF (imprimable).</a></li>';
+		echo'<li><a class="lien_ext" href="'.$dossier.$fichier_lien.'.pdf">Archiver / Imprimer (format <em>pdf</em>).</a></li>';
+		echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_lien.'">Explorer / Détailler (format <em>html</em>).</a></li>';
 		echo'</ul><p />';
 	}
 

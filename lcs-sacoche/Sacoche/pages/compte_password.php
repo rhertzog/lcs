@@ -30,7 +30,7 @@ $TITRE = "Changer son mot de passe";
 
 if ( ($_SESSION['CONNEXION_MODE']!='normal') && ($_SESSION['USER_PROFIL']!='administrateur') && ($_SESSION['USER_PROFIL']!='webmestre') )
 { $fin = 'non1'; }
-elseif ( (strpos($_SESSION['DROIT_MODIFIER_MDP'],$_SESSION['USER_PROFIL'])!==false) || ($_SESSION['USER_PROFIL']=='administrateur') || ($_SESSION['USER_PROFIL']=='webmestre') )
+elseif ( ($_SESSION['USER_PROFIL']=='administrateur') || ($_SESSION['USER_PROFIL']=='webmestre') || (mb_substr_count($_SESSION['DROIT_MODIFIER_MDP'],$_SESSION['USER_PROFIL'])) )
 { $fin = 'oui'; }
 else
 { $fin = 'non2'; }

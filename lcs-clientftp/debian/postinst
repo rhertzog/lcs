@@ -8,7 +8,6 @@ INDICEMAJNBR="0"
 
 CONF="/var/lib/lcs/$MODULE"
 PATHMOD="/usr/share/lcs/$MODULE"
-APACHECONF="/etc/lcs/apache.conf"
 LCSAPACH2PATH="/etc/apache2/lcs-main/"
 APACHE2CONF=$LCSAPACH2PATH"70_clientftp.conf"
 
@@ -16,12 +15,10 @@ if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
     #
     # Inscription du module dans applis.lcs_db
     #
-    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Explorateur de fichiers espace perso', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'M');"
-    # Modification de statandgo.php pour lcs 1.4x
-    grep -v "clientftp"  /var/www/lcs/statandgo.php > /tmp/statandgo.php
-    grep -v "authftpclient.php" /tmp/statandgo.php > /var/www/lcs/statandgo.php
-    chown www-data:www-data /var/www/lcs/statandgo.php
+    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Explorateur de fichiers espace perso basé sur OFB', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'M');"
 else
+    echo "Mise a jour du nom du module filexplorer en clientfp"
+    /usr/bin/mysql -e "UPDATE lcs_db.applis SET name='$MODULE' WHERE name='filexplorer';"
     echo "Mise à jour du paquet module LCS $MODULE de $2 vers $VER"
     #
     # Lecture de l'indice de maj dans la table lcs_db.applis
@@ -39,7 +36,7 @@ else
         #
         # Fin de la mise à jour
         #
-        echo "Application des maj terminée."
+        echo "Application des maj terminee."
     fi
     #
     # Mise à jour de l'indice de Maj
@@ -56,29 +53,14 @@ if [ ! -e /usr/share/doc/lcs-$MODULE ]; then
     ln -s /usr/share/doc/lcs/$MODULE /usr/share/doc/lcs-$MODULE
 fi
 
-# cas de l'ancienne conf apache
-if [ -e $APACHECONF ]; then
-  if [ `grep -c "Include /etc/lcs/clientftp.conf" $APACHECONF` = 0 ]; then
-    #
-    # Ajout de l'include
-    #
-    echo "Mise en place de l'include du $MODULE"
-    echo "Include /etc/lcs/clientftp.conf" >> $APACHECONF
-    if [ -e /etc/init.d/apache2 ]; then
-        /etc/init.d/apache2 reload > /dev/null 2>&1
-    else
-        /etc/init.d/apache reload > /dev/null 2>&1
-    fi
-  fi
-fi
 
-# cas de la nouvelle configuration apache
-if [ -d $LCSAPACHE2PATH ] && [ ! -e $APACHE2CONF ] ; then
+# Mise en place de la configuration apache
+if [ -d $LCSAPACHE2PATH ]; then
   cat >$APACHE2CONF <<EOF
 Alias /clientftp/ /usr/share/lcs/clientftp/
 <Directory /usr/share/lcs/clientftp>
 php_admin_value register_globals off
-php_admin_value open_basedir /.:/tmp:/home:/var/www/lcs/includes
+php_admin_value open_basedir .:/tmp:/home:/var/www/lcs/includes:/usr/share/php/smarty/libs
 </Directory>
 EOF
    /etc/init.d/apache2 reload > /dev/null 2>&1

@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: mon_compte.php 5811 2010-11-05 10:33:55Z crob $
+* $Id: mon_compte.php 6513 2011-02-17 12:26:55Z crob $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -51,6 +51,8 @@ if (($_SESSION['statut'] == 'professeur') or ($_SESSION['statut'] == 'cpe') or (
 }
 
 if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
+	check_token();
+
 	$msg = '';
 	$no_modif = "yes";
 	$no_anti_inject_password_a = isset($_POST["no_anti_inject_password_a"]) ? $_POST["no_anti_inject_password_a"] : NULL;
@@ -141,18 +143,90 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 	$call_email = mysql_query("SELECT email,show_email FROM utilisateurs WHERE login='" . $_SESSION['login'] . "'");
 	$user_email = mysql_result($call_email, 0, "email");
 	$user_show_email = mysql_result($call_email, 0, "show_email");
-	if ($user_email != $reg_email) {
-		if ($user_auth_mode != "gepi" && $gepiSettings['ldap_write_access'] == "yes") {
-			if (!isset($ldap_server)) $ldap_server = new LDAPServer;
-			$write_ldap_success = $ldap_server->update_user($session_gepi->login, '', '', $reg_email, '', '', '');
-		}
-		$reg = mysql_query("UPDATE utilisateurs SET email = '$reg_email' WHERE login = '" . $_SESSION['login'] . "'");
-		if ($reg) {
-			if($msg!="") {$msg.="<br />";}
-			$msg.="L'adresse e_mail a été modifiéé !";
-			$no_modif = "no";
+
+	if(($_SESSION['statut']!='responsable')&&($_SESSION['statut']!='eleve')) {
+		if ($user_email != $reg_email) {
+			if ($user_auth_mode != "gepi" && $gepiSettings['ldap_write_access'] == "yes") {
+				if (!isset($ldap_server)) $ldap_server = new LDAPServer;
+				$write_ldap_success = $ldap_server->update_user($session_gepi->login, '', '', $reg_email, '', '', '');
+			}
+			$reg = mysql_query("UPDATE utilisateurs SET email = '$reg_email' WHERE login = '" . $_SESSION['login'] . "'");
+			if ($reg) {
+				if($msg!="") {$msg.="<br />";}
+				$msg.="L'adresse e_mail a été modifiéé !";
+				$no_modif = "no";
+			}
 		}
 	}
+	if(($_SESSION['statut']=='responsable')&&((getSettingValue('mode_email_resp')=='')||(getSettingValue('mode_email_resp')=='mon_compte'))) {
+		if ($user_email != $reg_email) {
+			if ($user_auth_mode != "gepi" && $gepiSettings['ldap_write_access'] == "yes") {
+				if (!isset($ldap_server)) $ldap_server = new LDAPServer;
+				$write_ldap_success = $ldap_server->update_user($session_gepi->login, '', '', $reg_email, '', '', '');
+			}
+			$reg = mysql_query("UPDATE utilisateurs SET email = '$reg_email' WHERE login = '" . $_SESSION['login'] . "'");
+			if ($reg) {
+				if($msg!="") {$msg.="<br />";}
+				$msg.="L'adresse e_mail a été modifiéé !";
+				$no_modif = "no";
+
+				if((getSettingValue('mode_email_resp')=='mon_compte')) {
+					$sql="UPDATE resp_pers SET mel='$reg_email' WHERE login='".$_SESSION['login']."';";
+					$update_resp=mysql_query($sql);
+					if(!$update_resp) {$msg.="<br />Erreur lors de la mise à jour de la table 'resp_pers'.";}
+
+					if((getSettingValue('envoi_mail_actif')!='n')&&(getSettingValue('informer_scolarite_modif_mail')!='n')) {
+						$sujet_mail=remplace_accents("Mise à jour mail ".$_SESSION['nom']." ".$_SESSION['prenom'],'all');
+						$message_mail="L'adresse email du responsable ";
+						$message_mail.=remplace_accents($_SESSION['nom']." ".$_SESSION['prenom'],'all')." est passée à '$reg_email'. Vous devriez mettre à jour Sconet en conséquence.";
+						$destinataire_mail=getSettingValue('gepiSchoolEmail');
+						if(getSettingValue('gepiSchoolEmail')!='') {
+							envoi_mail($sujet_mail, $message_mail, $destinataire_mail);
+						}
+					}
+
+					if(getSettingValue('envoi_mail_actif')!='n') {
+						$sujet_mail="Mise à jour de votre adresse mail";
+						$message_mail="Vous avez procédé à la modification de votre adresse mail dans 'Gérer mon compte' le ".strftime('%A %d/%m/%Y à %H:%M:%S').". Votre nouvelle adresse est donc '$reg_email'. C'est cette adresse qui sera utilisée pour les éventuels prochains messages.";
+						$destinataire_mail=$user_email;
+						envoi_mail($sujet_mail, $message_mail, $destinataire_mail);
+					}
+				}
+			}
+		}
+	}
+	elseif(($_SESSION['statut']=='eleve')&&((getSettingValue('mode_email_ele')=='')||(getSettingValue('mode_email_ele')=='mon_compte'))) {
+		if ($user_email != $reg_email) {
+			if ($user_auth_mode != "gepi" && $gepiSettings['ldap_write_access'] == "yes") {
+				if (!isset($ldap_server)) $ldap_server = new LDAPServer;
+				$write_ldap_success = $ldap_server->update_user($session_gepi->login, '', '', $reg_email, '', '', '');
+			}
+			$reg = mysql_query("UPDATE utilisateurs SET email = '$reg_email' WHERE login = '" . $_SESSION['login'] . "'");
+			if ($reg) {
+				if($msg!="") {$msg.="<br />";}
+				$msg.="L'adresse e_mail a été modifiéé !";
+				$no_modif = "no";
+
+				if((getSettingValue('mode_email_ele')=='mon_compte')) {
+					$sql="UPDATE eleves SET email='$reg_email' WHERE login='".$_SESSION['login']."';";
+					$update_eleve=mysql_query($sql);
+					if(!$update_eleve) {$msg.="<br />Erreur lors de la mise à jour de la table 'eleves'.";}
+
+					if((getSettingValue('envoi_mail_actif')!='n')&&(getSettingValue('informer_scolarite_modif_mail')!='n')) {
+						$sujet_mail=remplace_accents("Mise à jour mail ".$_SESSION['nom']." ".$_SESSION['prenom'],'all');
+						$message_mail="L'adresse email de l'élève ";
+						$message_mail.=remplace_accents($_SESSION['nom']." ".$_SESSION['prenom'],'all')." est passée à '$reg_email'. Vous devriez mettre à jour Sconet en conséquence.";
+						$destinataire_mail=getSettingValue('gepiSchoolEmail');
+						if(getSettingValue('gepiSchoolEmail')!='') {
+							envoi_mail($sujet_mail, $message_mail, $destinataire_mail);
+						}
+					}
+				}
+			}
+		}
+	}
+
+
 	if ($_SESSION['statut'] == "scolarite" OR $_SESSION['statut'] == "professeur" OR $_SESSION['statut'] == "cpe")
 	if ($user_show_email != $reg_show_email) {
 	if ($reg_show_email != "no" and $reg_show_email != "yes") $reg_show_email = "no";
@@ -502,6 +576,26 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 			}
 		}
 	}
+
+	if((($_SESSION['statut']=='professeur')||
+		($_SESSION['statut']=='scolarite')||
+		($_SESSION['statut']=='cpe'))&&(isset($_POST['reg_civilite']))) {
+		if($msg!="") {$msg.="<br />";}
+		if(($_POST['reg_civilite']!='M.')&&($_POST['reg_civilite']!='Mlle')&&($_POST['reg_civilite']!='Mme')) {
+			$msg.="La civilité choisie n'est pas valide.";
+		}
+		else {
+			$sql="UPDATE utilisateurs SET civilite='".$_POST['reg_civilite']."' WHERE login='".$_SESSION['login']."';";
+			$update=mysql_query($sql);
+			if(!$update) {
+				$msg.="Erreur lors de la mise à jour de la civilité.";
+			}
+			else {
+				$msg.="Civilité mise à jour.";
+				$no_modif="no";
+			}
+		}
+	}
 	//======================================
 
 	if ($no_modif == "yes") {
@@ -540,6 +634,7 @@ if ($session_gepi->current_auth_mode == "gepi" || $gepiSettings['ldap_write_acce
 
 echo "<p class=bold><a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>\n";
 echo "<form enctype=\"multipart/form-data\" action=\"mon_compte.php\" method=\"post\">\n";
+echo add_token_field();
 echo "<h2>Informations personnelles *</h2>\n";
 
 if ($session_gepi->current_auth_mode != "gepi" && $gepiSettings['ldap_write_access'] == "yes") {
@@ -550,10 +645,39 @@ echo "<table summary='Mise en forme'>\n";
 echo "<tr><td>\n";
 	echo "<table summary='Infos'>\n";
 	echo "<tr><td>Identifiant GEPI : </td><td>" . $_SESSION['login']."</td></tr>\n";
-	echo "<tr><td>Civilité : </td><td>".$user_civilite."</td></tr>\n";
+
+	echo "<tr>\n";
+	echo "<td>Civilité : </td>\n";
+	echo "<td>\n";
+	if(($_SESSION['statut']=='professeur')||
+		($_SESSION['statut']=='scolarite')||
+		($_SESSION['statut']=='cpe')) {
+
+		echo "<select name='reg_civilite' onchange='changement()'>\n";
+		echo "<option value='M.' ";
+		if ($user_civilite=='M.') {echo " selected ";}
+		echo ">M.</option>\n";
+
+		echo "<option value='Mme' ";
+		if ($user_civilite=='Mme') {echo " selected ";}
+		echo ">Mme</option>\n";
+
+		echo "<option value='Mlle' ";
+		if ($user_civilite=='Mlle') {echo " selected ";}
+		echo ">Mlle</option>\n";
+		echo "</select>\n";
+	}
+	else {
+		echo $user_civilite;
+	}
+	echo "</td>\n";
+	echo "</tr>\n";
+
 	echo "<tr><td>Nom : </td><td>".$user_nom."</td></tr>\n";
 	echo "<tr><td>Prénom : </td><td>".$user_prenom."</td></tr>\n";
-	if ($editable_user) {
+	if (($editable_user)&&
+		((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
+		(getSettingValue('mode_email_resp')!='sconet'))) {
 		echo "<tr><td>Email : </td><td><input type=text name=reg_email size=30";
 		if ($user_email) { echo " value=\"".$user_email."\"";}
 		echo " /></td></tr>\n";

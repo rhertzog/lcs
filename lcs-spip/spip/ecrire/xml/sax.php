@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/filtres');
 include_spip('inc/charsets');
@@ -81,8 +81,7 @@ function xml_textElement($phraseur, $data)
 	  : entites_html($data);
 }
 
-// http://doc.spip.org/@xml_PiElement
-function xml_PiElement($phraseur, $target, $data)
+function xml_piElement($phraseur, $target, $data)
 {
 	$depth = $phraseur->depth;
 
@@ -99,7 +98,7 @@ function xml_PiElement($phraseur, $target, $data)
 
 
 // http://doc.spip.org/@xml_defautElement
-function xml_defautElement($phraseur, $data)
+function xml_defaultElement($phraseur, $data)
 {
 	$depth = $phraseur->depth;
 
@@ -157,10 +156,10 @@ function xml_sax_dist($page, $apply=false, $phraseur=NULL)
 				       array($phraseur, "textElement"));
 
 	xml_set_processing_instruction_handler($xml_parser,
-				       array($phraseur, 'PiElement'));
+				       array($phraseur, 'piElement'));
 
 	xml_set_default_handler($xml_parser,
-				array($phraseur, "defautElement"));
+				array($phraseur, "defaultElement"));
 
 	xml_parser_set_option($xml_parser, XML_OPTION_CASE_FOLDING, false);
 
@@ -197,8 +196,6 @@ function xml_sax_dist($page, $apply=false, $phraseur=NULL)
 // http://doc.spip.org/@sax_bug
 function sax_bug($data)
 {
-	static $dtd = array(); # cache bien utile pour le validateur en boucle
-
 	$r = analyser_doctype($data);
 
 	if (!$r) {
@@ -208,21 +205,9 @@ function sax_bug($data)
 	}
 
 	list($doctype, $topelement, $avail, $grammaire, $rotlvl, $len) = $r;
-	$file = _DIR_CACHE_XML . preg_replace('/[^\w.]/','_', $rotlvl) . '.gz';
 
-	if (isset($dtd[$file]))
-		$dtc = $dtd[$file];
-	else {
-		if (lire_fichier($file, $r)) {
-			$dtc = unserialize($r);
-		} else {
-			include_spip('xml/analyser_dtd');
-			$dtc = charger_dtd($grammaire, $avail);
-			if (($avail == 'PUBLIC' ) AND $dtc)
-				ecrire_fichier($file, serialize($dtc), true);
-		}
-		$dtd[$file] = $dtc;
-	}
+	include_spip('xml/analyser_dtd');
+	$dtc = charger_dtd($grammaire, $avail, $rotlvl);
 
 	// l'entete contient eventuellement < ? xml... ? >, le Doctype, 
 	// et des commentaires autour d'eux
@@ -251,16 +236,27 @@ function sax_bug($data)
 function analyser_doctype($data)
 {
 	if (!preg_match(_REGEXP_DOCTYPE, $data, $page)) {
-		if (!preg_match(_REGEXP_XML_RSS, $data, $page))
-			return array();
-		else return array('',
-				  'rss',
-				  'PUBLIC', 
-				  _DOCTYPE_RSS,
-				  'rss-0.91.dtd',
-				  strlen($page[1]));
+		if (preg_match(_REGEXP_XML, $data, $page)) {
+			list(,$pico, $topelement) = $page;
+			$pico = strlen($pico);
+			if ($topelement == 'rss')
+				return array('',
+					     'rss',
+					     'PUBLIC', 
+					     _DOCTYPE_RSS,
+					     'rss-0.91.dtd',
+					     $pico);
+			else {
+				$dtd = $topelement . '.dtd';
+				$f = find_in_path($dtd);
+				if (file_exists($f))
+					return array('', $topelement, 'SYSTEM', $f, $dtd, $pico);
+			}
+		}
+		spip_log("Dtd pas vu pour " . substr($data, 0, 100));
+		return array();
 	}
-	list($doctype,$pi,$co,$pico, $topelement, $avail,$suite) = $page;
+	list($doctype,$pico, $topelement, $avail,$suite) = $page;
 
 	if (!preg_match('/^"([^"]*)"\s*(.*)$/', $suite, $r))
 		if (!preg_match("/^'([^']*)'\s*(.*)$/", $suite, $r))

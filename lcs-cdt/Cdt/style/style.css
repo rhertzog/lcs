@@ -3,19 +3,19 @@ a:visited { color: #cc0000; font-family: arial, verdana ; font-size: 12px}
 a:active { color: #000099; font-family: arial, verdana ; font-size: 12px}
 a:hover { color: #990000; font-family: arial, verdana ; font-size: 12px}
 
-body {margin: 0 auto;padding: 0;overflow: auto;text-align:center;background: #f8f8ff;font-size:14px;color: #000000;font-family: arial Helvetica sans-serif verdana;width:100%}
+body {margin: 0 auto;padding: 0;overflow: auto;text-align:center;background: #f8f8ff;font-size:14px;color: #000000;font-family: arial ,Helvetica, sans-serif, verdana;width:100%}
 body.imprim {color: #000000;font-size: 12pt;font-weight: bold;}
 
 /*********************************************** Coloration synthaxique des titres **************************************************/
 
-#crsdu{font-size:14px;color:#1b2c68;padding:2px;text-align:left;width:380px;background:#fff;border-top: solid 1px #d4d4d4;border-left: solid 1px #d4d4d4;border-right: solid 1px #4d4d4d;border-bottom: solid 1px #4d4d4d;}
-#afRle{font-size:14px;color:#1b2c68;padding:2px;text-align:left;width:380px;background:#fff;border-top: solid 1px #d4d4d4;border-left: solid 1px #d4d4d4;border-right: solid 1px #4d4d4d;border-bottom: solid 1px #4d4d4d;}
+#crsdu{font-family: Arial, Helvetica, sans-serif, verdana;font-size:12px;color:#1b2c68;padding:2px;text-align:left;width:520px;background:#fff;border-top: solid 1px #d4d4d4;border-left: solid 1px #d4d4d4;border-right: solid 1px #4d4d4d;border-bottom: solid 1px #4d4d4d;}
+#afRle{font-family: Arial, Helvetica, sans-serif, verdana;font-size:12px;color:#1b2c68;padding:2px;text-align:left;width:380px;background:#fff;border-top: solid 1px #d4d4d4;border-left: solid 1px #d4d4d4;border-right: solid 1px #4d4d4d;border-bottom: solid 1px #4d4d4d;}
 
 /*********************************************** Blocs de la page **************************************************************/
 
-#entete{-moz-background-clip:border;-moz-background-inline-policy:continuous;-moz-background-origin:padding;background:#F8F8FF url(../images/fond-ong-prof-cdt.png) repeat-x scroll center bottom;float:left;position:fixed;top:1;width:100%;opacity:0.9}
-#container {margin: 70px auto 0;padding: 0;width: 990px;background: #f8f8ff;text-align: left;font-size:14px;font-family: Arial Helvetica sans-serif verdana;}
-#container2 {margin: 70px auto 0;padding: 0;width: 990px;background: #f8f8ff;text-align: left;font-size:14px;font-family: Arial Helvetica sans-serif verdana;}
+#entete{-moz-background-clip:border;-moz-background-inline-policy:continuous;-moz-background-origin:padding;background:#F8F8FF url(../images/fond-ong-prof-cdt.png) repeat-x scroll  bottom ;float:left;position:fixed;top:1px;width:100%;opacity:0.9}
+#container {margin: 70px auto 0;padding: 0;width: 990px;background: #f8f8ff;text-align: left;font-size:14px;font-family: Arial ,Helvetica, sans-serif, verdana;}
+#container2 {margin: 70px auto 0;padding: 0;width: 990px;background: #f8f8ff;text-align: left;font-size:14px;font-family: Arial ,Helvetica, sans-serif, verdana;}
 #container-cdt-elv {float:left;margin: 10px 0 0 1%;padding: 0;width: 990px;background: #f8f8ff;text-align: left;font-size:14px;}
 #secondaire {float:left;margin: 20px 0 0 0;padding: 0;width: 100%;text-align: left;}
 #saisie {float: left;margin:0;padding:0;width:678px;background:url(../images/fond-cdt-gch.png) no-repeat;}
@@ -31,22 +31,23 @@ float:left;height:200px;margin:60px;opacity:0.9;padding:10px;width:520px;}
 #boite4 {float:left;width: 60px;margin: 25px 0px;}
 #boite4 li {float:left;list-style: none;}
 #boite1 input, #boite2 input {margin:0 3px}
-#visa-cdt1 {position:fixed; top:70px; left:10px;width:70px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;-moz-border-radius:0.5em;-webkit-border-radius: 0.5em;border:2px outset #1b2c68;background:#fff url('../images/tampon.png') no-repeat center 5px;}
-#visa-cdt2 {position:fixed; top:70px; left:10px;width:70px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;-moz-border-radius:0.5em;-webkit-border-radius: 0.5em;border:2px outset #1b2c68;background:#fff url('../images/tampon_e.png') no-repeat center 5px;}
-#visa-cdt1e {position:fixed; top:55px; left:29px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;-moz-border-radius:0.5em;-webkit-border-radius: 0.5em;border:2px outset #1b2c68;background:#fff url('../images/tampon.png') no-repeat center 5px;}
-#visa-cdt2e {position:fixed; top:55px; left:29px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;-moz-border-radius:0.5em;-webkit-border-radius: 0.5em;border:2px outset #1b2c68;background:#fff url('../images/tampon_e.png') no-repeat center 5px;}
+#visa-cdt1 {position:fixed; top:70px; left:10px;width:70px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;-moz-border-radius:0.5em;-webkit-border-radius: 0.5em;border:2px outset #1b2c68;background:#fff url('../images/tampon.png') no-repeat center;}
+#visa-cdt2 {position:fixed; top:70px; left:10px;width:70px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;-moz-border-radius:0.5em;-webkit-border-radius: 0.5em;border:2px outset #1b2c68;background:#fff url('../images/tampon_e.png') no-repeat center ;}
+#visa-cdt1e {position:fixed; top:55px; left:29px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;-moz-border-radius:0.5em;-webkit-border-radius: 0.5em;border:2px outset #1b2c68;background:#fff url('../images/tampon.png') no-repeat center ;}
+#visa-cdt2e {position:fixed; top:55px; left:29px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;-moz-border-radius:0.5em;-webkit-border-radius: 0.5em;border:2px outset #1b2c68;background:#fff url('../images/tampon_e.png') no-repeat center ;}
 
 .bt-visa {background:url('../images/bt-cdt-visa.png') no-repeat;margin:0 10px 0 0;padding:0px;border:none;width:120px;height:20px;cursor:pointer;}
 
 /************************************ Blocs pour les boutons du menu de saisie ******************************************************/
 
-.submit-perso, .a-saveplus, .a-imprime, .submit-save, .submit-modif, .submit-del, .submit-plan,.load-model,.save-model {float:left;border:none;color:#000000;width:56px;height:50px;margin-top: 3px;cursor: pointer;}
+.submit-perso, .a-saveplus, .a-imprime, .submit-save, .submit-modif, .submit-seq, .submit-plan,.load-model,.save-model {float:left;border:none;color:#000000;width:56px;height:50px;margin-top: 3px;cursor: pointer;}
 .submit-perso {background: transparent url('../images/perso-cdt2.png') no-repeat top left;}
 .a-saveplus {background: transparent url('../images/sauve-plus-cdt2.png') no-repeat top left;}
 .a-imprime {background: transparent url('../images/imprimer-cdt2.png') no-repeat top left;}
 .submit-save {background: transparent url('../images/sauve-cdt2.png') no-repeat top left;}
 .submit-modif {background: transparent url('../images/sauve-cdt2.png') no-repeat top left;}
 .submit-del {background: transparent url('../images/annuler-cdt2.png') no-repeat top left;}
+.submit-seq {background: transparent url('../images/btn-seq-cdt.png') no-repeat top left;}
 .submit-plan {background: transparent url('../images/planifier-cdt2.png') no-repeat top left;}
 .load-model {background: transparent url('../images/btn-cdt-charge-modele2.png') no-repeat top left;}
 .save-model {background: transparent url('../images/btn-cdt-sauve-modele2.png') no-repeat top left;}
@@ -60,8 +61,9 @@ float:left;height:200px;margin:60px;opacity:0.9;padding:10px;width:520px;}
 h1.title {margin:5px 10px;text-align:left;font-family:arial;font-weight:bold;color:#0d6a1e;}
 h2 {color: #486591;margin:5px;text-align: left;font-weight: normal;}
 h3 {color: #1b2c68;text-align: center;font-weight: normal;font-size:14px;width:979px;}
+h3.perso {text-align: left;}
 h4 {float:left;color: #486591;margin:5px 25px;text-align: left;font-family: arial;font-weight: normal;}
-h4.perso {float:left;color: #1b2c68;margin:5px 25px;text-align: left;font-weight: normal;}
+h4.perso  {float:left;color: #1b2c68;margin:5px 25px;text-align: left;font-weight: normal;}
 h5 {color: #1b2c68;font-weight: normal;text-align: center;}
 h5.perso {color: #1b2c68;text-align: left;font-weight: normal;}
 h6.perso {color: #1b2c68;margin-left: 3%;text-align: left;font-weight: normal;}
@@ -78,30 +80,30 @@ h6.perso {color: #1b2c68;margin-left: 3%;text-align: left;font-weight: normal;}
 
 /************************************************ Affichage du contenu du cdt *******************************************************/
 
-#boite5 {float: left;padding:10px;background:#f8f8ff;width:95%;}
+#boite5 {float: left;padding:10px;background:#f8f8ff;width:95%;margin-top:40px;}
 #boite5elv {float: left;padding:10px;background:#f8f8ff;margin:5px;width:720px;}
 table#tb-cdt {font-size:10px;color:#000000;width:100%;margin:10px;border:none;font-size: 14px;}
-table#tb-cdt tbody {padding:5px;border: solid 1px red;text-align:left;color: #000000;}
+table#tb-cdt tbody {padding:5px;border: solid 1px red;text-align:left;color: #000000;width:98%;}
 table#tb-cdt tbody hr{padding:0;color:#9207c2;background:#fff;}
 table#tb-cdt td {padding:10px;border: none;text-align:left;}
-table#tb-cdt td.seance {padding:10px;margin:2px;width:180px;font-weight: bold;background:url('../images/bdh-aff-cdt.png') repeat-y;	text-align:left;color:#3d3d3d;}
+table#tb-cdt td.seance {padding:10px;margin:10px;width:180px;font-weight: bold;background:url('../images/bdh-aff-cdt.png') repeat-y;	text-align:left;color:#3d3d3d;}
 table#tb-cdt td.afaire {width:180px;font-weight: bold;background:url('../images/bdb-aff-cdt.png') repeat-y;text-align:left;color:#3d3d3d;}
 table#tb-cdt td.contenu {border: solid 1px #fdb218;background:#fff;text-align:left;color:#000; font-family:Arial,Verdana,  Helvetica, sans-serif; font-size:14px;}
 table#tb-cdt td.contenu2 {border: solid 1px #fdb218;background:url('../images/tampon2.png') no-repeat #fff;background-position:center right; text-align:left;color:#000; font-family:Arial,Verdana,  Helvetica, sans-serif; font-size:14px;}
 table#tb-cdt td.contenu3 {border: solid 1px #fdb218;background:url('../images/tampon3.png') no-repeat #fff;background-position:center right; text-align:left;color:#000; font-family:Arial,Verdana,  Helvetica, sans-serif; font-size:14px;}
 table#tb-cdt th {text-align: center;font-size: 14px;padding: 3px;color:#1b2c68;}
-table#tb-cdt th.bas {text-align: center;font-size: 14px;padding: 3px;background-color: #f8f8ff;}
+table#tb-cdt th.bas {text-align: center;font-size: 14px;padding: 3px;}
 table#tb-cdt th input.bt-modifier {background:url('../images/bt-cdt-modifier.png') no-repeat;border:none;font-size:14px;height:20px;width:120px;cursor:pointer}
 table#tb-cdt th input.bt-supprimer {background:url('../images/bt-cdt-supprimer.png') no-repeat;border:none;font-size:14px;height:20px;width:120px;cursor:pointer}
 .btn{border: #000000 1px outset;text-align:center;padding: 3px 0;background:#1b2c68;color:#fff;width: 120px;}
 .tb-cdt-date {text-align: left;font-size: 16px;padding: 3px;background-color: #d4d4d4;color:#1b2c68;}
-#postit-eleve {position:fixed; top:40px; right:5px;font-size:14px;opacity:0.9;width: 201px;height:320px;background: url('../images/fond-postit.png') no-repeat center 5px;}
-
-
+#postit-eleve {position:fixed; top:40px; right:5px;font-size:14px;opacity:0.9;width: 201px;height:320px;background: url('../images/fond-postit.png') no-repeat center;}
+.vide {background-color: #FF0000;color: #FFFFFF;font-family: Arial;margin-left: 40%;margin-right: 40%;text-align: center;font-size: 16px;}
+.nobord {border: 0px;}
 /******************************************************** Configuration du cdt **********************************************************/
 
-#cfg-container{margin: 0 10px;padding:0;width:979px;height:800px;background:url('../images/fond-cdt-cfg.png') #f8f8ff no-repeat;text-align:left;font-size:14px;font-family: Arial Helvetica sans-serif verdana;}
-#cfg-contenu{float:left;margin:80px 0 10px 50px;padding:1px;width:820px;height:560;background:white;text-align:left;font-size:14px;opacity:0.9;-moz-border-radius:12px;-webkit-border-radius: 12px}
+#cfg-container{margin: 0 10px;padding:0;width:979px;height:800px;background:url('../images/fond-cdt-cfg.png') #f8f8ff no-repeat;text-align:left;font-size:14px;font-family: Arial, Helvetica ,sans-serif, verdana;}
+#cfg-contenu{float:left;margin:80px 0 10px 50px;padding:1px;width:820px;height:560px;background:white;text-align:left;font-size:14px;opacity:0.9;-moz-border-radius:12px;-webkit-border-radius: 12px}
 #cfg-onglet{position:relative;margin:0}
 #cfg-form{float:left;margin:0;text-align:left}
 #cfg-contenu ol{float:left;margin-left:0;}
@@ -113,9 +115,12 @@ table#tb-cdt th input.bt-supprimer {background:url('../images/bt-cdt-supprimer.p
 .bt-perso {background:url('../images/bt-cdt-personnaliser.png') no-repeat;float:left;margin:30px 200px;padding:0px;border:none;font-size:13px;width:120px;height:20px;cursor:pointer;}
 .archive {text-align: left;font-size: 12px;color: #3333ff;}
 .archive_nok {text-align: left;font-size: 12px;color: #ff3333;}
+.evidence {color: #660000;text-decoration: underline;}
+#cfg-form li {padding :3px;}
 /********************************************************* Pied de page du cdt **********************************************************/
 
-#pied{-moz-background-clip:border;
+#pied{
+ -moz-background-clip:border;
 -moz-background-inline-policy:continuous;
 -moz-background-origin:padding;
 background:#1B2C68 none repeat scroll 0 0;
@@ -125,8 +130,10 @@ font-size:14px;
 margin:0;
 padding:10px 0;
 text-align:center;
-width:100%;}
-
+width:100%;
+}
+#pied img {vertical-align: middle;float: right;border: 0px;margin-right: 20px;}
+#pied img.ie {vertical-align: middle;float: left;border: 0px;margin-left: 20px;}
 /*********************************************************** Planning du cdt ************************************************************/
 
 #form-ajt-dev {color:#1b2c68;margin:5px 40px;font-size:14px;border:solid 2px #0d6a1e;padding:0 15px; width:810px;-moz-border-radius: 12px;-webkit-border-radius: 12px;}
@@ -138,9 +145,9 @@ width:100%;}
 table#plan-cdt {font-size:14px;width:100%;margin:10px 0;border:none;padding:5px}
 table#plan-cdt tbody {text-align:center;}
 table#plan-cdt thead th{background:none;}
-table#plan-cdt thead td{color:fff;background:#1b2c68;opacity: 0.7;-moz-border-radius:12px;-webkit-border-radius:12px;}
+table#plan-cdt thead td{color:#fff;background:#1b2c68;opacity: 0.7;-moz-border-radius:12px;-webkit-border-radius:12px;}
 table#plan-cdt th {color: #fff;width:100px;font-weight: normal;background:#1b2c68; opacity: 0.7;-moz-border-radius:12px;-webkit-border-radius: 12px;}
-table#plan-cdt td {padding:6px;border-top:solid 1px #1b2c68;border-left:solid 1px #1b2c68;-moz-border-radius:12px;-webkit-border-radius: 12px}
+table#plan-cdt td {padding:6px;border-top:solid 1px #1b2c68;border-left:solid 1px #1b2c68;-moz-border-radius:12px;-webkit-border-radius: 12px;}
 table#plan-cdt td.mi-jour {background:#fff;border:solid 0 white;}
 .libre, .reserve, .passe, .devoir, .encours, .erreur, .absence, .retard, .hebdo {font-family: arial;font-size: 8pt;text-align: center;}
 .hebdo {color:#0d6a1e;font-size:16px;padding:6px;border:solid 1px #1b2c68;-moz-border-radius:12px;-webkit-border-radius: 12px}
@@ -188,12 +195,19 @@ table#diff-dev {margin:0 20px;padding:2px;}
 #services {text-align:center;margin:30px 0 5px;}
 #eqt {margin:5px 20px;padding:2px 5px;text-align:left;background:#fff;border:inset 1px #eee;}
 #classes {clear:both;font-size:6px;width:100%;margin:10px 0;border:none;padding:5px}
+#classes td.sele {vertical-align: top;}
 #chrono {width:400px;margin:12px auto; padding:5px;border:solid 1px #1b2c68;-moz-border-radius: 12px;-webkit-border-radius: 12px;}
 #impression {float:left;width: 960px;margin: 12px; padding:5px;}
 #taf {margin:10px;padding:20px;border: solid 1px #0d6a1e;-moz-border-radius: 12px;-webkit-border-radius: 12px;background: url('../images/fond-popup.png');}
 #poprss{width:80%;margin:13px;padding:20px;border: solid 1px #0d6a1e;-moz-border-radius: 12px;-webkit-border-radius: 12px;background: url('../images/fond-popup.png');}
-
-
+#field7 img {border : none;}
+table#pop {text-align:left;padding:1px;border : 0px;}
+table#pop {font-size:14px;width:100%;margin:10px 0;border:none;padding:5px}
+table#pop tbody {text-align:center;}
+table#pop thead th{background:none;}
+table#pop thead td{color:#fff;background:#1b2c68;opacity: 0.7;-moz-border-radius:12px;-webkit-border-radius:12px;}
+table#pop th {color: #fff;width:100px;font-weight: normal;background:#1b2c68; opacity: 0.7;-moz-border-radius:12px;-webkit-border-radius: 12px;}
+table#pop td {padding:6px;}
 /*********************************************************** Absences du cdt ************************************************************/
 #abs-contenu{padding:12px;background:white;text-align:left;font-size:14px;opacity:0.9;-moz-border-radius:12px;-webkit-border-radius: 12px;}
 #crenos {margin:10px 0 20px;}
@@ -215,27 +229,112 @@ table#abs td.boxA {width:25px;padding:1px}
 table#abs td.boxR {width:25px;padding:1px}
 table.motif {text-align:center; width:100%;}
 table.motif td.h-motif {font-weight:bold;padding:2px;color:#0d6a1e;}
-table.motif td.AR {width:25px;}
+table.motif td.AR {width:25px;vertical-align: bottom;}
 table.motif td.nbA {width:50%;padding:1px;}
 table.motif td.nbR {width:50%;padding:1px;}
 table.motif td.boxA {width:30px;padding:1px;}
 table.motif td.boxR {width:30px;padding:1px;}
-
+table.motif td.enbas {vertical-align: bottom;}
+table#abs img {border :0px;}
+td.absence a {color: #000;}
+table#plan-cdt thead td.abs{width:13%;text-align: center;}
+#crd {margin-left:10px;}
 /*********************************************************** Impression du cdt ************************************************************/
 table#impr {text-align:left;padding:1px 0;width:980px;}
-table#impr caption {background:white; caption-side:top;margin:20px 20px 0;padding:5px;}
+table#impr caption {background:white; caption-side:top;margin:20px 20px 0;padding:5px;font-size: 20pt;}
 table#impr caption h2 {float:left;margin:20px 0;color:#1b2c68;text-align:center;width:100%}
 table#impr caption h6 {float:right;margin:0 50px;color:red;}
 table#impr caption img {float:right;}
 table#impr tbody {padding:5px;margin:5px}
-table#impr tbody tr th {background:#eee;padding:2px;border-top:20px solid #FFF;border-bottom:solid 1px #000;font-size:16px;font-weight:normal;padding:5px 10px;}
+table#impr tbody tr th {background:#E6E6FA;border-top:20px solid #FFF;border-bottom:solid 1px #000;font-size:16px;font-weight:normal;padding:2px 10px;}
 table#impr tbody tr td {background:#fff;padding:5px 40px;font-size:16px;}
-table#impr tbody td.afR {background:#fff;padding:5px 20px;text-decoration:underline;font-size:14px;color:#0d6a1e;font-weight:bold;}
+table#impr tbody td.afR {background:#fff;text-decoration:underline;font-size:1em;color:#0d6a1e;font-weight:bold;}
+table#impr tbody  .cours {background:#fff;text-decoration:underline;font-size:1em;font-weight:bold;color:#1b2c68 }
+table#impr tbody td.description {background:#fff;font-size:0.9em;font-style:italic;border: 2px Groove Green;}
+table#impr tbody tr th.seance {color: #660000;font-style:italic;background:#eee ; }
 /********************************************************** Administration du cdt ********************************************************/
-.nook {font-family: cursive;font-size: 12pt;color: #FF0000;text-align: left;}
-.cok {font-family: cursive;font-size: 12pt;color: #003300;text-align: left;}
+.nook {background: tomato ;font-family: cursive;font-size: 12pt;color: #fff;text-align: left;padding: 3px;}
+.cok {background: lightgreen  ;font-family: cursive;font-size: 12pt;color: #003300;text-align: left;padding: 3px;}
 #bt-rss{background:url('../images/lcs-cdt.png') no-repeat;margin: 0 5px;padding:2px 50px 0px 50px;border:none;width:60px;height:20px;}
 #bt-google{background:url('http://gmodules.com/ig/images/plus_google.gif') no-repeat;margin: 0 5px;padding:2px 12px 3px 60px;border:none;width:62px;height:20px;}
+.field7d ul.perso,.field7d ol.perso {float:left;color: #1b2c68;margin:5px 25px;text-align: left;font-weight: normal;}
 /***********************************************************Archives *********************************************************************/
 .bt-copier {background:url('../images/bt-cdt-copiercoller.png') no-repeat;border:none;font-size:14px;height:20px;width:120px;cursor:pointer;}
 .bt2-fermer {background:url('../images/bt-cdt-fermer.png') no-repeat;margin:0 0 0 10px;padding:0;border:none;font-size:13px;width:120px;height:20px;cursor:pointer;}
+/***********************************************************Cdt direction ****************************************************************/
+.field7d {text-align:center;margin:10px;padding:20px;-moz-border-radius: 12px;-webkit-border-radius: 12px;background: url('../images/fond-popup.png');}
+.field7d p {text-align:left;}
+.field7d a {text-decoration:none;}
+.legended {color: #0d6a1e;background:#fff;padding:3px 10px;font-size:16px;-moz-border-radius: 12px;-webkit-border-radius: 12px;border:solid 1px #0d6a1e;}
+.field7d ol, .field7d ul {margin:0;color:#1b2c68;padding:5px;border:none;text-align:center;width:100%;}
+.field7d li {margin: 4px 20px;text-align:left;}
+.field7d input.text {padding:2px;margin:2px 0}
+.field7d input.bt-valid  {background:url('../images/bt-cdt-valider.png') no-repeat;margin:0 0 0 10px;padding:0;border:none;font-size:13px;width:120px;height:20px;cursor:pointer;}
+
+/***********************************************************Sequences *********************************************************************/
+#field10 {
+    text-align:left;
+    -moz-border-radius: 12px;
+    -webkit-border-radius: 12px;
+    background: url('../images/fond-popup.png');
+    }
+
+table#tb-cdt tbody.field11 {
+    text-align:left;
+    -moz-border-top-right-radius: 12px; -webkit-border-top-right-radius: 12px;
+    -moz-border-bottom-right-radius: 12px; -webkit-border-bottom-right-radius: 12px;
+    -moz-border-bottom-left-radius: 12px; -webkit-border-bottom-left-radius: 12px;
+    background: url('../images/fond-sequence.png');
+    }
+	
+.malegende {
+    background: url('../images/fond-sequence.png');
+    font-size:16px;
+    margin-left:-10px ;
+    padding:14px;
+    -moz-border-radius: 12px 12px 0 0;
+    -webkit-border-top-right-radius: 12px;
+    -webkit-border-top-left-radius: 12px;
+    font-family:Arial,Verdana,  Helvetica, sans-serif;
+    text-align:left;
+     }
+
+.descr_seq {
+    margin: 10px;
+    padding:10px;
+    background-color:#f8f8ff;
+    
+    }
+.descr_seq.off {
+        display:none;
+    }
+
+.titre_seq {
+    font-family:Arial,Verdana,  Helvetica, sans-serif;
+    font-size:16px;
+    padding:5px;
+    background-color:#f8f8ff;
+    color:#0d6a1e;
+    border: solid 2px  #0d6a1e;
+    -moz-border-radius: 12px;
+    -webkit-border-radius: 12px;
+    }
+
+.sea_seq {
+    padding:10px;
+    margin: 10px;
+    width:50%;
+    }
+
+.switch_seq.clos {
+    background:url('../images/zoom_in.png') no-repeat;
+   margin : 5px;
+   cursor:pointer;
+   }
+
+.switch_seq.open {
+   background:url('../images/zoom_out.png') no-repeat;
+   margin : 5px;
+   cursor:pointer;
+   }
+.agauche {float:left;color: #486591;margin:5px 25px;text-align: left;font-family: arial;font-weight: normal;}

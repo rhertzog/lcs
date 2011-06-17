@@ -1,8 +1,11 @@
-lcs-dns (2.4.7) Lcs; urgency=low
+lcs-dns (2.4.8) Lcs; urgency=low
 
-  * Fix bug define function exit_fatal and get_lcsdb_params in postinst
+  * Fix bug with define function exit_fatal and get_lcsdb_params
+  * Add allow-query and allow-recursion options
+  * Change meta charset iso to utf-8 in doc-html
+  * Make a 2.4.8 stable release
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 09 Dec 2010 09:31:24 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 May 2011 13:36:34 +0200
 
 lcs-dns (2.4.6) Lcs; urgency=low
 
@@ -12,15 +15,10 @@ lcs-dns (2.4.6) Lcs; urgency=low
 
 lcs-dns (2.4.2) Lcs; urgency=low
 
+  * Modify postinst to not overwrite configuration files during update package
   * Make a stable release
 
  -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 02 Oct 2009 14:32:41 +0200
-
-lcs-dns (2.4.2~1) Lcs; urgency=low
-
-  * Modify postinst to not overwrite configuration files during update package 
-
- -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 02 Oct 2009 11:51:39 +0200
 
 lcs-dns (2.4.1) Lcs; urgency=low
 

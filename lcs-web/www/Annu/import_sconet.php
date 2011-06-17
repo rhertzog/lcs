@@ -4,7 +4,7 @@
    /**
 
    * Page d'import des comptes depuis les fichiers CSV/XML de Sconet
-   * @Version $Id: import_sconet.php 4597 2009-10-20 23:32:34Z keyser $
+   * @Version $Id: import_sconet.php 6001 2010-11-27 20:32:49Z crob $
 
    * @Projet LCS / SambaEdu
 
@@ -322,6 +322,14 @@
 				echo "<label for='corriger_gecos_si_diff' style='cursor: pointer;'>Corriger les nom, pr&#233;nom, sexe, date de naissance des comptes existants ? </label><input name='corriger_gecos_si_diff' id='corriger_gecos_si_diff' type='checkbox' value='y' />\n";
 				echo "&nbsp;&nbsp;";
 				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Il peut arriver que les comptes existants comportent des informations erron&#233;es<br />(<i>Sconet mal rempli, changement de nom d\'un professeur qui se marie,...</i>)<br />En cochant la case, vous autorisez les corrections des attributs cn, sn, givenName et gecos si des changements sont rep&#233;r&#233;s.<br />Le login/uid n\'est en revanche pas modifi&#233;.')")."\"><img name=\"action_image5\"  src=\"$helpinfo\"></u>\n";
+				echo "</li>\n";
+
+				// ===========================================================
+
+				echo "<li>\n";
+				echo "<label for='alimenter_groupe_pp' style='cursor: pointer;'>Cr&#233;er et alimenter le groupe Professeurs Principaux ? </label><input name='alimenter_groupe_pp' id='alimenter_groupe_pp' type='checkbox' value='y' />\n";
+				echo "&nbsp;&nbsp;";
+				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Le groupe des Professeurs Principaux...')")."\"><img name=\"action_image5\"  src=\"$helpinfo\"></u>\n";
 				echo "</li>\n";
 
 				echo "</ul>\n";
@@ -653,7 +661,7 @@ body{
 </style>
 <!--head-->
 <title>Import de comptes</title>
-<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1' />
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 <!--meta http-equiv='Refresh' CONTENT='120;URL=result.$timestamp.html#menu' /-->
 <link type='text/css' rel='stylesheet' href='$stylecss' />
 <body>
@@ -710,6 +718,7 @@ decompte(cpt);
 			$creer_matieres=isset($_POST['creer_matieres']) ? $_POST['creer_matieres'] : 'y';
 			// ===========================================================
 			$corriger_gecos_si_diff=isset($_POST['corriger_gecos_si_diff']) ? $_POST['corriger_gecos_si_diff'] : 'n';
+			$alimenter_groupe_pp=isset($_POST['alimenter_groupe_pp']) ? $_POST['alimenter_groupe_pp'] : 'n';
 
 
 			// Dossier pour les CSV
@@ -780,7 +789,7 @@ decompte(cpt);
 
 			//fwrite($fich,"#!/bin/bash\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff'\n");
 
-			fwrite($fich,"#!/bin/bash\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff' '$temoin_f_uid'\n");
+			fwrite($fich,"#!/bin/bash\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff' '$temoin_f_uid' '$alimenter_groupe_pp'\n");
 
 			//echo "<p>#!/bin/bash<br />\n/usr/bin/php $chemin/import_comptes.php '$type_fichier_eleves' '$chemin_fich/fichier_eleves' '$chemin_fich/fichier_sts' '$prefix' '$annuelle' '$simulation' '$timestamp' '$randval' '$temoin_creation_fichiers' '$chrono' '$creer_equipes_vides' '$creer_cours' '$creer_matieres' '$corriger_gecos_si_diff'</p>\n";
 			// ===========================================================

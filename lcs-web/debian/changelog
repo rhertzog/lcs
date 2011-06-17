@@ -1,35 +1,4 @@
-lcs-web (2.4.7.5) Lcs; urgency=low
-
-  * Make lcs-etch2lenny quiet and fix bug in update slapd (by Franck Molle)
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 02 Apr 2011 16:55:03 +0200
-
-lcs-web (2.4.7.4) Lcs; urgency=low
-
-  * Fix some problems in lcs-etch2lenny
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 15 Feb 2011 10:49:38 +0100
-
-lcs-web (2.4.7.3) Lcs; urgency=low
-
-  * Fix bug in auth.php mysql_query statusages
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 02 Feb 2011 09:51:28 +0100
-
-lcs-web (2.4.7.2) Lcs; urgency=low
-
-  * delete space before/after login in auth.php
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 31 Jan 2011 16:50:45 +0100
-
-lcs-web (2.4.7.1) Lcs; urgency=low
-
-  [ Philippe Leclerc ]
-  *  add modif referential of the modules in etch2lenny
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 20 Jan 2011 14:15:29 +0100
-
-lcs-web (2.4.7.1~5) Lcs; urgency=low
+lcs-web (2.4.8) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
   * Modify lcs-etch2lenny script
@@ -43,14 +12,65 @@ lcs-web (2.4.7.1~5) Lcs; urgency=low
   * Rename function search_people_trash to search_people_trash_lcs 
   * Modify mkTicket.rb to generate CAS ticket with gem rubycas-server
   * Fix make replica config in mkSlapdConf.sh for Etch or Lenny...
-  * Fix typo in user_user_lcs.inc.php
+  * Fix typo in user_lcs.inc.php
+  * Add change-ip.sh script in /usr/share/lcs/scripts
+  * Delete Roundcube session cookie in functions.inc.php
+  * Modify applis.php and accueil.php for filexplorer module
+  * Modify barre.php for roundcube webmail
+  * Add cron.weekly task lcs-clean-sessions
+  * Add scripts to create all Maildir users
+  * Add depend on lcs-libjs
+  * Remove www/lib folder with js libraries
+  * Fix bug in auth.php  mysql_query statusages
+  * LcSe.pm : Ban following logins : prof docs progs netlogon classes homes admhomes profiles
+  * Import Comptes Sconet with simpeXML (by Stephane Boireau):
+     - Add depend on php5-recode
+     - Modify Annu/import_sconet.php
+     - Modify Annu/includes/crob_ldap_functions.php and se3orlcs_import_sconet.php
+     - Modify /usr/share/lcs/scripts/run_import-comptes.sh sauvegarde_ldap_avant_import.sh se3orlcs_import_comptes.php
+  * Fix some problems in lcs-etch2lenny
+  * Modify meta charset in many pages and scripts
+  * Fix bug on path to libjs in barre.php
+  * Import all the rights tree of SE3 in LCS in ldaplcs2se3.sh, modify rm -R admin by cown -R admin (Franck Molle)
+  * Remove chown /var/www/lib in lcs-web-fixrights 
+  * Fix bug in mkSlapdConf.sh
+  * Fix module name for clientftp and elfinder
+  * Remove utf8-decode and encode  in Annu scripts
+  * Fix error when cretaing Mail_can_redi right in lcs-web-config whis Squeeze (add sleep 2)	
+  * Delete underscore at the end of uid in crob_ldap_functions.php
+  * Add utf8-encode in Modules/modules_dispo.php and modules_installes.php
+  * Make a 2.4.8 stable release
+
   [ Raphaël Hertzog ]
   * Remove /tmp/{applilcs,moduleslcs}.xml before calling wget otherwise wget
     might download into {applilcs,moduleslcs}.xml.1 and we don't see the new
     content. This is required because when a broken XML file is downloaded,
     it's not removed...
+  * Add new page "Synchronization Active Directory" in the administration
+    menu and associated features in the directory application.
+  * Implement uidPolicy=20 and 21 for compatiblity with the HARP directory in
+    use in the académie of grenoble.
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 09 Dec 2010 17:57:42 +0100
+  [ Philippe LECLERC ]
+  * add display infos in modules_installes.php
+  * add display infos with gestpack.sh when package is hold
+  * add activation/desactivation modules
+  * fix damage collateral of change.sh on mod_mail.php
+  * Modify css in Management modules 
+  * Delete space before/after login in auth.php	
+  * change accented characters in swekey confirm
+  * fix bug in swekey/authframe.php
+  * fix accentued characters in edit_params.php and plugins_installes.php
+
+  [ Cyril Bouthors ]
+  * Added support for hooks in /usr/share/lcs/lcs-web-hooks.d
+
+  [Fernando Lagrange]
+  * Update config.inc.php even if not initial config.
+  * Fix recovery of the server name in case of failure authenfication
+  * Fix authentification in auth_lcs() in user_lcs.inc.php 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 May 2011 12:04:32 +0200
 
 lcs-web (2.4.7) Lcs; urgency=low
 

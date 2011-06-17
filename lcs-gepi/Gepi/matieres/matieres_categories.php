@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: matieres_categories.php 3872 2009-12-05 15:34:12Z crob $
+* $Id: matieres_categories.php 6181 2010-12-17 16:54:04Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -33,7 +33,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -48,6 +48,7 @@ if ($orderby != "nom_court" AND $orderby != "nom_complet" AND $orderby != "prior
 $msg = null;
 
 if (isset($_POST['action'])) {
+	check_token();
     $error = false;
     if ($_POST['action'] == "add") {
         // On enregistre une nouvelle catégorie
@@ -124,11 +125,30 @@ if (isset($_POST['action'])) {
             } else {
 
                 // On teste l'utilisation de cette catégorie
-                $test = mysql_result(mysql_query("SELECT count(matiere) FROM matieres WHERE categorie_id = '" . $_POST['categorie_id'] ."'"), 0);
-                if ($test > "0") {
+                $res = mysql_query("SELECT matiere FROM matieres WHERE categorie_id = '" . $_POST['categorie_id'] ."'");
+                $test = mysql_num_rows($res);
+
+                $res2 = mysql_query("SELECT DISTINCT id_groupe, c.id, c.classe FROM j_groupes_classes jgc, classes c WHERE c.id=jgc.id_classe AND categorie_id='".$_POST['categorie_id']."'");
+                $test2 = mysql_num_rows($res2);
+
+                if ($test>0) {
                     // On a des entrées... la catégorie a déjà été associée à des matières, donc on ne la supprime pas.
-                    $msg .= "La catégorie n'a pas pu être supprimée, car elle a déjà été associée à des matières.<br/>";
-                } else {
+					$liste_matieres_associees="";
+					while($lig=mysql_fetch_object($res)) {
+						if($liste_matieres_associees!='') {$liste_matieres_associees.=", ";}
+						$liste_matieres_associees.="<a href='index.php' target='_blank'>".$lig->matiere."</a>";
+					}
+                    $msg .= "La catégorie n'a pas pu être supprimée, car elle a déjà été associée à des matières (<i>$liste_matieres_associees</i>).<br/>";
+				}
+                elseif ($test2>0) {
+					$liste_classes_associees="";
+					while($lig=mysql_fetch_object($res2)) {
+						if($liste_classes_associees!='') {$liste_classes_associees.=", ";}
+						$liste_classes_associees.="<a href='../groupes/edit_class.php?id_classe=$lig->id_classe' target='_blank'>".get_class_from_id($lig->id_classe)."</a>";
+					}
+                    $msg .= "La catégorie n'a pas pu être supprimée, car elle a déjà été associée à des enseignements pour des classes (<i>$liste_classes_associees</i>).<br/>";
+                }
+				else {
                     $res = mysql_query("DELETE FROM matieres_categories WHERE id = '" . $_POST['categorie_id']."'");
                     if (!$res) {
                         $msg .= "Erreur lors de la suppression de la catégorie.<br/>";
@@ -155,6 +175,7 @@ if (isset($_GET['action'])) {
         // On ajoute une catégorie
         // On affiche le formulaire d'ajout
         echo "<form enctype='multipart/form-data' action='matieres_categories.php' name='formulaire' method=post>";
+		echo add_token_field();
         echo "<input type='hidden' name='action' value='add'>";
         echo "<p>Nom court (utilisé dans les outils de configuration) : <input type='text' name='nom_court'></p>";
         echo "<p>Intitulé complet (utilisé sur les documents officiels) : <input type='text' name='nom_complet'></p>";
@@ -181,6 +202,7 @@ if (isset($_GET['action'])) {
 				echo "<p style='color:red'>ANOMALIE&nbsp;: Il ne devrait pas exister de catégorie intitulée 'Aucune'.<br />Voir <a href='http://www.sylogix.org/wiki/gepi/Enseignement_invisible'>http://www.sylogix.org/wiki/gepi/Enseignement_invisible</a> et <a href='http://www.sylogix.org/wiki/gepi/Suppr_Cat_Aucune'>http://www.sylogix.org/wiki/gepi/Suppr_Cat_Aucune</a> pour des explications</p>\n";
 			}
             echo "<form enctype='multipart/form-data' action='matieres_categories.php' name='formulaire' method=post>";
+			echo add_token_field();
             echo "<input type='hidden' name='action' value='edit'>";
             echo "<input type='hidden' name='categorie_id' value='".$current_cat["id"] . "'>";
             echo "<p>Nom court (utilisé dans les outils de configuration) : <input type='text' name='nom_court' value='".html_entity_decode_all_version($current_cat["nom_court"]) ."' /></p>";
@@ -230,6 +252,7 @@ if (isset($_GET['action'])) {
         echo "<td>";
         if ($current_cat["id"] != "1") {
             echo "<form enctype='multipart/form-data' action='matieres_categories.php' name='formulaire' method=post>\n";
+			echo add_token_field();
             echo "<input type='hidden' name='action' value='delete' />\n";
             echo "<input type='hidden' name='categorie_id' value='".$current_cat["id"]."' />\n";
             echo "<input type='submit' value='Supprimer' />\n</form>\n";

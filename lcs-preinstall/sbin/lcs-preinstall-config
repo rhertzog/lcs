@@ -77,6 +77,11 @@ case "$1" in
             -e "s|@@PARKSRDN@@|"ou=$LDAP_PARKS_RDN"|g" \
             -e "s|@@RIGHTSRDN@@|"ou=$LDAP_RIGHTS_RDN"|g" \
             -e "s|@@TRASHRDN@@|"ou=$LDAP_TRASH_RDN"|g" \
+            -e "s|@@AD_AUTH_DELEGATION@@|${AD_AUTH_DELEGATION:-false}|g" \
+            -e "s|@@AD_SERVER@@|$AD_SERVER|g" \
+            -e "s|@@AD_BASE_DN@@|$AD_SERVER|g" \
+            -e "s|@@AD_BIND_DN@@|$AD_BIND_DN|g" \
+            -e "s|@@AD_BIND_PW@@|$AD_BIND_PW|g" \
             -e "s|@@NTP_SERVER@@|"$NTP_SERVER"|g" \
             -e "s|@@GATEWAY@@|"$GATEWAY"|g" \
             -e "s|@@IPLCS@@|"$IPADDR0"|g" \
@@ -125,8 +130,14 @@ case "$1" in
             # Create lcsmgr account if not exist
             #
             if [ -z "`mysql -e "SELECT User FROM mysql.user WHERE user='lcsmgr';"`" ]; then
-                mysql -e "INSERT INTO mysql.user  VALUES ('localhost', 'lcsmgr', PASSWORD( '$LCSMGRPASS' ) , 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '', '', '', '', '0', '0', '0', '0');"
-                mysql -e "INSERT INTO mysql.db VALUES ( 'localhost', 'lcs_db', 'lcsmgr', 'Y', 'Y', 'Y', 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N');"
+				# If Debian Squeeze
+				if grep -q ^6 /etc/debian_version; then
+					mysql -e "INSERT INTO mysql.user  VALUES ('localhost','lcsmgr',PASSWORD('$LCSMGRPASS'),'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','','','','',0,0,0,0);"
+					mysql -e "INSERT INTO mysql.db VALUES ('localhost','lcs_db','lcsmgr','Y','Y','Y','Y','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N');"
+				else
+                	mysql -e "INSERT INTO mysql.user  VALUES ('localhost', 'lcsmgr', PASSWORD( '$LCSMGRPASS' ) , 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', '', '', '', '', '0', '0', '0', '0');"
+                	mysql -e "INSERT INTO mysql.db VALUES ( 'localhost', 'lcs_db', 'lcsmgr', 'Y', 'Y', 'Y', 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N');"
+				fi
                 mysqladmin reload
             fi
             #

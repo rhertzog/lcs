@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: eleves.php 3318 2009-07-31 11:27:01Z crob $
+ * $Id: eleves.php 6600 2011-03-03 11:14:32Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -55,7 +55,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -121,8 +121,19 @@ $liste_tables_del = array(
 "j_groupes_classes",
 //"j_groupes_matieres",
 //"j_groupes_professeurs",
-"eleves_groupes_settings"
+"eleves_groupes_settings",
 //"setting"
+"ex_classes",
+"ex_examens",
+"ex_groupes",
+"ex_matieres",
+"ex_notes",
+
+"eb_copies",
+"eb_epreuves",
+"eb_groupes",
+"eb_profs"
+//,"eb_salles"
 );
 
 // Initialisation
@@ -213,9 +224,11 @@ document.formulaire.elements[i+a].value = b ;
 
 
 
-echo "<p class=bold><a href='../init_lcs/index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>";
+echo "<p class='bold'><a href='../init_lcs/index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>";
 
 if (isset($_POST['step'])) {
+	check_token(false);
+
     // L'admin a validé la procédure, on procède donc...
 
     // On se connecte au LDAP
@@ -332,6 +345,7 @@ if (isset($_POST['step'])) {
             <br />Vous devrez pour cela fournir des fichiers CSV (ELEVES.CSV, PERSONNES.CSV, RESPONSABLES.CSV et ADRESSES.CSV) <b><a href=\"../init_xml/lecture_xml_sconet.php\" target=\"_blank\">générés ici</a></b> depuis des fichiers XML extraits de SCONET.</p>";
             echo "<center>";
             echo "<form enctype='multipart/form-data' action='eleves.php' method=post name='formulaire'>";
+			echo add_token_field();
             echo "<input type=\"hidden\" name=\"record\" value=\"no\" />";
             echo "<input type=\"hidden\" name=\"step\" value=\"2\" />";
             echo "<input type=\"submit\" value=\"Accéder à l'étape 2\" />";
@@ -355,6 +369,7 @@ if (isset($_POST['step'])) {
             // On va enregistrer la liste des classes, ainsi que les périodes qui leur seront attribuées
 
             echo "<form enctype='multipart/form-data' action='eleves.php' method=post name='formulaire'>";
+			echo add_token_field();
             echo "<input type=hidden name='record' value='yes'>";
             echo "<input type=hidden name='step' value='1'>";
 
@@ -582,6 +597,7 @@ if (isset($_POST['step'])) {
 
 
     echo "<form enctype='multipart/form-data' action='eleves.php' method=post>";
+	echo add_token_field();
     echo "<input type=hidden name='step' value='1'>";
     echo "<input type=hidden name='record' value='no'>";
     $j=0;

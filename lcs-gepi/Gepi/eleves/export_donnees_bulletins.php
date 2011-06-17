@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * @version $Id: export_donnees_bulletins.php 5518 2010-10-02 13:27:00Z crob $
+ * @version $Id: export_donnees_bulletins.php 5860 2010-11-13 17:39:59Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -286,7 +286,7 @@ if((isset($id_classe))&&
 											$test_ele_clas_per=mysql_query($sql);
 											if(mysql_num_rows($test_ele_clas_per)>0) {
 												if(in_array($lig_app->login,$tab_ele)) {
-													$tab_ele_app_grp[$lig_app->login]=$lig_app->app;
+													$tab_ele_app_grp[$lig_app->login]=$lig_app->appreciation;
 												}
 											}
 										}
@@ -369,7 +369,9 @@ if((isset($id_classe))&&
 									if(in_array('app',$champ_eleve)) {
 										$csv.=';"';
 										// Si on fait l'export avant que les bulletins ne soient remplis, on ne récupère rien:
-										if(isset($tab_ele_note_grp[$tab_ele[$m]])) {$csv.=clean_string_csv($tab_ele_app_grp[$tab_ele[$m]]);}
+										//echo "\$tab_ele[$m]=$tab_ele[$m]<br />";
+										//echo "\$tab_ele_app_grp[$tab_ele[$m]]=".$tab_ele_app_grp[$tab_ele[$m]]."<br />";
+										if(isset($tab_ele_app_grp[$tab_ele[$m]])) {$csv.=clean_string_csv($tab_ele_app_grp[$tab_ele[$m]]);}
 										$csv.='"';
 									}
 		

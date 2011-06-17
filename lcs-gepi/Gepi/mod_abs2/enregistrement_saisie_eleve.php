@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: enregistrement_saisie_eleve.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: enregistrement_saisie_eleve.php 6607 2011-03-03 14:10:16Z crob $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -99,11 +99,11 @@ if ($type_absence != null && $type_absence != -1) {
     $type = AbsenceEleveTypeQuery::create()->findPk($type_absence);
     if ($type != null) {
 	if (!$type->isStatutAutorise($utilisateur->getStatut())) {
-	    $message_enregistrement .= "Type d'absence non autorisé pour ce statut : ".$_POST['type_absence_eleve'][$i]."<br/>";
+	    $message_enregistrement .= "Type d'absence non autorisé pour ce statut : ".$_POST['type_absence']."<br/>";
 	    $type = null;
 	}
     } else {
-	$message_enregistrement .= "Probleme avec l'id du type d'absence : ".$_POST['type_absence_eleve'][$i]."<br/>";
+	$message_enregistrement .= "Probleme avec l'id du type d'absence : ".$_POST['type_absence']."<br/>";
     }
 }
 
@@ -251,7 +251,7 @@ for($i=0; $i<$total_eleves; $i++) {
 	    $message_enregistrement .= "<a href='visu_saisie.php?id_saisie=".$saisie->getPrimaryKey()."'>Saisie enregistrée pour l'eleve : ".$eleve->getNom()."</a>";
 	    if (isset($saisie_discipline) && $saisie_discipline == true) {
 		$message_enregistrement .= " &nbsp;<a href='../mod_discipline/saisie_incident_abs2.php?id_absence_eleve_saisie=".
-		    $saisie->getId()."&return_url=no_return'>Saisir un incident disciplinaire pour l'élève : ".$eleve->getNom()."</a>";
+		    $saisie->getId()."&return_url=no_return".add_token_in_url()."'>Saisir un incident disciplinaire pour l'élève : ".$eleve->getNom()."</a>";
 	    }
 	    $message_enregistrement .= "<br/>";
 	} else {

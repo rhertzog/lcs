@@ -71,12 +71,12 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 	    //formulaire
 	    $i=0;
 	    for ($loop=0; $loop < count ($listegroupesvides) ; $loop++) {
-		if (!ereg ("^Eleves", $listegroupesvides[$loop]) &&
-		    !ereg ("^overfill", $listegroupesvides[$loop]) &&
-		    !ereg ("^lcs-users", $listegroupesvides[$loop]) &&
-		    !ereg ("^machines", $listegroupesvides[$loop]) &&
-		    !ereg ("^Administratifs", $listegroupesvides[$loop]) &&
-		    !ereg ("^Profs", $listegroupesvides[$loop]) ) {
+		if (!mb_ereg ("^Eleves", $listegroupesvides[$loop]) &&
+		    !mb_ereg ("^overfill", $listegroupesvides[$loop]) &&
+		    !mb_ereg ("^lcs-users", $listegroupesvides[$loop]) &&
+		    !mb_ereg ("^machines", $listegroupesvides[$loop]) &&
+		    !mb_ereg ("^Administratifs", $listegroupesvides[$loop]) &&
+		    !mb_ereg ("^Profs", $listegroupesvides[$loop]) ) {
 		    $groupevide[$i] = $listegroupesvides[$loop];
 		    $i++;}
 	    }

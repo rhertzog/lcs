@@ -1,7 +1,7 @@
 <?php
-/* $Id: genere_emargement.php 4315 2010-04-16 10:50:57Z eabgrall $ */
+/* $Id: genere_emargement.php 6394 2011-01-20 09:16:41Z crob $ */
 /*
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -68,6 +68,8 @@ $mode=isset($_POST['mode']) ? $_POST['mode'] : (isset($_GET['mode']) ? $_GET['mo
 include('lib_eb.php');
 
 if(isset($imprime)) {
+	check_token();
+
 	$sql="SELECT * FROM eb_epreuves WHERE id='$id_epreuve';";
 	//echo "$sql<br />";
 	$res=mysql_query($sql);
@@ -131,27 +133,12 @@ if(isset($imprime)) {
 			$nom_fic="emargement_epreuve_$id_epreuve.csv";
 	
 			$now = gmdate('D, d M Y H:i:s') . ' GMT';
-			header('Content-Type: text/x-csv');
-			header('Expires: ' . $now);
-			// lem9 & loic1: IE need specific headers
-			if (ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
-				header('Content-Disposition: inline; filename="' . $nom_fic . '"');
-				header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-				header('Pragma: public');
-			}
-			else {
-				header('Content-Disposition: attachment; filename="' . $nom_fic . '"');
-				header('Pragma: no-cache');
-			}
-	
+			send_file_download_headers('text/x-csv',$nom_fic);
 			echo $csv;
 			die();
 	
 		}
 		elseif($mode=='pdf') {
-
-			header('Content-Type: application/pdf');
-			Header('Pragma: public');
 
 			require('../fpdf/fpdf.php');
 			require('../fpdf/ex_fpdf.php');
@@ -418,7 +405,7 @@ if(isset($imprime)) {
 
 			$date=date("Ymd_Hi");
 			$nom_fich='Emargement_'.$id_epreuve.'_'.$date.'.pdf';
-			header('Content-Type: application/pdf');
+			send_file_download_headers('application/pdf',$nom_fich);
 			$pdf->Output($nom_fich,'I');
 			die();
 
@@ -514,15 +501,15 @@ if(!isset($imprime)) {
 	echo "<ul>\n";
 	echo "<li><b>CSV</b>&nbsp;:\n";
 	 	echo "<ul>\n";
-		echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;imprime=sans_num_anonymat&amp;mode=csv'>Avec les colonnes 'NOM;PRENOM;SIGNATURE'</a></li>\n";
-		echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;imprime=avec_num_anonymat&amp;mode=csv'>Avec les colonnes 'NOM;PRENOM;NUM_ANONYMAT;SIGNATURE'</a></li>\n";
-		echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;imprime=tout&amp;mode=csv'>Avec les colonnes 'NOM;PRENOM;CLASSE;DATE_DE_NAISSANCE;NUM_ANONYMAT;SIGNATURE'</a></li>\n";
+		echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;imprime=sans_num_anonymat&amp;mode=csv".add_token_in_url()."'>Avec les colonnes 'NOM;PRENOM;SIGNATURE'</a></li>\n";
+		echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;imprime=avec_num_anonymat&amp;mode=csv".add_token_in_url()."'>Avec les colonnes 'NOM;PRENOM;NUM_ANONYMAT;SIGNATURE'</a></li>\n";
+		echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;imprime=tout&amp;mode=csv".add_token_in_url()."'>Avec les colonnes 'NOM;PRENOM;CLASSE;DATE_DE_NAISSANCE;NUM_ANONYMAT;SIGNATURE'</a></li>\n";
 		echo "</ul>\n";
 	echo "</li>\n";
 	echo "<li><b>PDF</b>&nbsp;:\n";
 	 	echo "<ul>\n";
-		echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;imprime=sans_num_anonymat&amp;mode=pdf'>Avec les colonnes 'NOM_PRENOM;SIGNATURE'</a></li>\n";
-		echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;imprime=avec_num_anonymat&amp;mode=pdf'>Avec les colonnes 'NOM_PRENOM;NUM_ANONYMAT;SIGNATURE'</a></li>\n";
+		echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;imprime=sans_num_anonymat&amp;mode=pdf".add_token_in_url()."'>Avec les colonnes 'NOM_PRENOM;SIGNATURE'</a></li>\n";
+		echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;imprime=avec_num_anonymat&amp;mode=pdf".add_token_in_url()."'>Avec les colonnes 'NOM_PRENOM;NUM_ANONYMAT;SIGNATURE'</a></li>\n";
 		echo "</ul>\n";
 	echo "</li>\n";
 	echo "</ul>\n";

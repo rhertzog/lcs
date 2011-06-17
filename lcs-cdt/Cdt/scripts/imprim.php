@@ -1,15 +1,18 @@
-<?
+<?php
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'impression -
 			_-=-_
+  "Valid XHTML 1.0 Strict"
    ============================================= */
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) exit; 
 
 //si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
@@ -17,15 +20,125 @@ if (!isset($_SESSION['login']) )exit;
 elseif ($_SESSION['cequi']!="prof") exit;
 //si prof, connexion à la base de donnees
 require_once ('../Includes/config.inc.php');
-?>
 
-<!-- cahier_textes_prof.php version 1.0 par Ph LECLERC - Lgt "Arcisse de Caumont" 14400 BAYEUX - philippe.leclerc1@ac-caen.fr -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
+function Imprime_seance($param) {
+    //affiche une seance dans le contenu du cdt
+    global $cible,$dlm1;
+    $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off,DATE_FORMAT(datevisibi,'%d/%m/%Y') FROM cahiertxt
+ WHERE (id_rubrique=$param) ";
+// lancer la requete
+$result = @mysql_query ($rq) or die (mysql_error());
+if (mysql_num_rows($result) >0) {
+    while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
+	  {
+	  $textcours=stripslashes($ligne[1]);
+	  $textafaire=stripslashes($ligne[2]);
+	  $jour=LeJour (strToTime($ligne[5]));
+	  //debut
+	  if ($ligne[1]!="") {
+          echo '<tbody><tr><th class="seance">S&eacute;ance du '.$ligne[0].'</th></tr>';
+	  echo '<tr><td>'.$textcours.'</td></tr>';
+	  //affichage, s'il existe, du travail a effectuer
+	  if ($ligne[2]!="") {
+	  echo '<tr><td  class="afR">A faire pour le :'.$ligne[3].'</td></tr >';
+	  echo '<tr><td>'.$textafaire.'</td></tr>';
+	  }
+	  //fin
+	  echo '</tbody>';
+	  echo ' <tbody><tr><td ><hr /></td></tr></tbody>';
+	  }
+	  else {
+	  echo '<tbody><tr><th class="seance">Donn&eacute; le :&nbsp;'.$ligne[0].'</th></tr>';
+	  echo '<tr>';
+	  //affichage de la seance
+	  //affichage, s'il existe, du travail a effectuer
+	  if ($ligne[2]!="") {
+	  echo '<td><br/>Pour le :&nbsp;'.$ligne[3].'</td></tr>';
+	  echo '<tr><td >';
+	  echo $textafaire.'</td></tr>';
+	  }
+	  //fin
+          echo '</tbody>';
+	  echo '<tbody><tr><th><hr /></th></tr></tbody>';
+	  }
+        }
+    }
+}
+
+function Imprime_seq($param) {
+    global $dlm1;
+    //affiche une sequence et son contenu dans le cdt
+    $rqs = "SELECT titrecourt,titre,contenu FROM sequences WHERE id_seq='$param'";
+    // lancer la requête
+    $results = @mysql_query ($rqs) or die (mysql_error());
+    // Combien y a-t-il d'enregistrements ?
+    if (mysql_num_rows($results)>0)
+           {
+            $rows = mysql_fetch_array($results, MYSQL_NUM);
+              echo '<tbody><tr><th  >'.utf8_encode($rows[1])."</th></tr></tbody>";
+              echo '<tbody><tr><td class="description"  colspan="2" >'.$rows[2];
+              echo ' </td></tr></tbody>';
+              $rq2 = "SELECT id_rubrique FROM cahiertxt  WHERE seq_id='$param'".$dlm1." order by date asc ";
+              $result2 = @mysql_query ($rq2) or die (mysql_error());
+              while ($ligne = mysql_fetch_array($result2, MYSQL_NUM))
+              {
+                Imprime_seance_seq ($ligne[0]);
+              }
+              echo '<tbody><tr><th><hr /></th></tr></tbody>';
+            }
+}
+
+function Imprime_seance_seq ($param) {
+    //affiche une sequence associee a une sequence
+     global $cible;
+   $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off,DATE_FORMAT(datevisibi,'%d/%m/%Y') FROM cahiertxt
+ WHERE (id_rubrique=$param) ";
+
+$result = @mysql_query ($rq) or die (mysql_error());
+if (mysql_num_rows($result) >0) {
+    while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
+	  {
+	  $textcours=stripslashes($ligne[1]);
+	  $textafaire=stripslashes($ligne[2]);
+	  $jour=LeJour (strToTime($ligne[5]));
+	  //debut
+	  if ($ligne[1]!="") {
+	  echo '<tbody><tr>';
+	  //affichage de la seance
+	  echo '<td><span  class="cours">S&eacute;ance du '.$jour.'&nbsp;'.$ligne[0].' </span></td></tr>';
+	  echo '<tr ><td>';
+	  echo $textcours.'</td></tr>';
+	  //affichage, s'il existe, du travail a effectuer
+	  if ($ligne[2]!="") {
+	  echo '<tr><td class="afR">A faire pour le : '.$ligne[3].'</td><tr>';
+	  echo '<tr><td>'.$textafaire.'</td></tr></tbody>';
+	  }
+         
+          }
+	   else
+          {
+	   echo '<tbody><tr>';
+	  //affichage de la seance
+	  echo '<td><span  class="cours">Donn&eacute; le :&nbsp;'.$ligne[0].' </span></td></tr>';
+	  //affichage, s'il existe, du travail a effectuer
+	  if ($ligne[2]!="") {
+	  echo '<tr><td >Pour le :&nbsp;'.$ligne[3].'</td></tr>';
+	  echo '<tr><td >';
+	  echo $textafaire.'</td></tr>';
+	   }
+        }
+        echo ' <tr><td ><hr /></td></tr></tbody>';
+    }
+}
+}
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
 <head>
-<title>Cahier de textes numerique</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<LINK rel="stylesheet" type="text/css" href="../style/style.css"  media="screen">
+<title>Impression Cdt</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="../style/style.css"  media="screen" />
 <link rel="stylesheet" href="../style/style_imp.css" type="text/css" media="print" />
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
@@ -34,7 +147,7 @@ require_once ('../Includes/config.inc.php');
 
 <body style="background:#fff">
 
-<?
+<?php
 $tsmp=time();
 $tsmp2=time();
 $cours="";//variable temporaire de $Cours (avec une majuscule) pour un UPDATE
@@ -59,27 +172,27 @@ $ann=date('Y',$dateinfo['0']+($offset*86400));
 
 // Creation des menus deroulants
  //les jours
-  echo "<select name=$var_j>\n";
+  echo "<select name=\"$var_j\">\n";
   foreach ($jours as $cle => $valeur)
-  { echo "<option valeur=\"$cle\"";
-  if ($cle==$jo) {echo 'selected';}
+  { echo "<option value=\"$cle\"";
+  if ($cle==$jo) {echo ' selected="selected"';}
   echo ">$valeur</option>\n";
   }
   echo "</select>\n";
 //les mois
-  echo "<select name=$var_m>";
+  echo "<select name=\"$var_m\">";
   foreach ($mois as $cle => $valeur)
-  { echo "<option valeur=\"$cle\"";
-  if ($cle==$mo) {echo 'selected';}
+  { echo "<option value=\"$cle\"";
+  if ($cle==$mo) {echo ' selected="selected"';}
   echo ">$valeur</option>\n";
   }
   echo "</select>\n";
 //les annees
-  echo "<select name=$var_a>";
+  echo "<select name=\"$var_a\">";
   $annee = 2005;
   while ($annee <= 2015)
-  { echo "<option valeur=\"$annee\"";
-  if ($annee==$ann) {echo 'selected';}
+  { echo "<option value=\"$annee\"";
+  if ($annee==$ann) {echo ' selected="selected"';}
   echo ">$annee</option>\n";
     $annee++;
   }
@@ -117,7 +230,7 @@ if (isset($cible))
 	//on recupère les donnees
 	while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
 		{$classe_active=$enrg[0];//classe
-		$mati_active=$enrg[1];//matière
+		$mati_active=utf8_encode($enrg[1]);//matière
 		$tampon=$enrg[2];
 		$datetampon=$enrg[3];
 		}
@@ -134,8 +247,6 @@ if (isset($_POST['valider']))
 		$date_c = $_POST['an_c'].$_POST['mois_c'].$_POST['jour_c'];
 		$tsmp=mkTime(0,0,1,$_POST['mois_c'],$_POST['jour_c'],$_POST['an_c']) + 2592000;
 
-include_once ('../Includes/markdown.php'); //convertisseur txt-->HTML
-
 // Connexion à la base de donnees
 require_once ('../Includes/config.inc.php');
 
@@ -144,83 +255,147 @@ if ($cible!="")
 {//laboration de la date limite à partir de la date selectionnee
 $dat=date('Ymd',$tsmp-2592000);//2592000=nbre de secondes dans 30 jours
 }
-
-	
-
-//creer la requête
-$rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique FROM cahiertxt$arch
- WHERE id_auteur=$cible AND login='{$_SESSION['login']}' AND date>=$dat ORDER BY date $sens ,id_rubrique desc";
- 
-// lancer la requête
+/*************************************************************************
+creation d'un tableau trie contenant les donnees a afficher
+**************************************************************************/
+include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");
+$cib=$cible; $i=$j=$k=0;$list_art=$list_seq=$Sekance=array();
+$dlm1=" AND date>='".$dat."'";
+// Connexion a la base de donnees Cdt
+include ('../Includes/config.inc.php');
+$senseq=($sens=="asc") ? "desc" :"asc";
+// recuperer les sequences dans l'ordre d affichage
+$rq = "SELECT id_seq  FROM sequences WHERE id_ong='$cib' order by ordre ".$senseq;
 $result = @mysql_query ($rq) or die (mysql_error());
+if (mysql_num_rows($result) >0) {
+   while ($idr = mysql_fetch_object($result))
+        {
+        $Sek[$i]= $idr ->id_seq ;
+        $i++;
+        }
+        mysql_free_result($result);
+    }
+ //dates debut&fin des sequences non vides et comprises ente les dates limites
+ for ($index = 0; $index < count($Sek); $index++) {
+        $rq = "SELECT MAX(date),MIN(date) from cahiertxt  WHERE seq_id='$Sek[$index]'".$dlm1;
+        $result = @mysql_query ($rq) or die (mysql_error());
+        if (mysql_num_rows($result) >0) {
+	$r = mysql_fetch_array($result);
+	 if ($r[0]!=null) {
+            $der_seq[$k] = $r[0] ;
+            $prem_seq[$k] =$r[1] ;
+            $Sekance[$k]=$Sek[$index];
+            $k++;
+            }
+         }
+   }
+  mysql_free_result($result);
 
-// Combien y a-t-il d'enregistrements ?
-$nb2 = mysql_num_rows($result);
+ for ($index2 = 0; $index2 < count($der_seq); $index2++) {
+    if ($sens=="desc")
+        {
+        //seances + recentes que la derniere sequence
+        $Critere1=" AND date >= '".$der_seq[$index2]."'".$dlm1." order by date desc";
+        //seances entre deux sequences
+        $Critere2=" AND date >= '".$der_seq[$index2]."' AND date < '".$prem_seq[$index2-1]."'".$dlm1." order by date desc";
+        }
+    else
+        {
+         //seances + anciennes que la premiere sequence
+        $Critere1=" AND date <= '".$prem_seq[$index2]."'".$dlm1." order by date asc";
+         //seances entre deux sequences
+        $Critere2=" AND date <= '".$prem_seq[$index2]."' AND date > '".$der_seq[$index2-1]."'".$dlm1." order by date asc";
+        }
 
-//Affichage du cahier de textes à imprimer
-echo('<TABLE id="impr" CELLPADDING=2 CELLSPACING=1 >');
-echo '<caption>';	
-	if ($nb2>0 ) {echo "<h2>Classe : <B>".$classe_active ."</B>&nbsp;&nbsp;&nbsp;Mati&egrave;re : &nbsp;<b> ".$mati_active."</b></h2>";}
-	if ($tampon == 1) echo '<div id="visa-cdt">'.$datetampon.'</div>';
+    if ($index2==0) $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'" .$Critere1;
+    else $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'" .$Critere2;
+    $result = @mysql_query ($rq) or die (mysql_error());
+    if (mysql_num_rows($result) >0) {
+         while ($row = mysql_fetch_array($result)) {
+            if ( ! in_array($row[0], $list_art)) {
+                $list_art[$j]=$row[0];
+                $list_seq[$j]='0';
+                $j++;
+            }
+        }
+    }
+    $list_art[$j]='0';
+    $list_seq[$j]=$Sekance[$index2];
+    $j++;
+}
+
+if ($sens=="desc")
+    {
+        //seances +anciennes que la pemiere sequence
+        if (isset($prem_seq[$index2-1]))
+        $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib' AND  date < '".$prem_seq[$index2-1]."'".$dlm1." order by date desc";
+        else
+        {
+        $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'".$dlm1."  order by date desc";
+        }
+    }
+if ($sens=="asc")
+    {
+        //seances  + recentes que la derniere sequence
+        if (isset($der_seq[$index2-1]))
+        $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib' AND  date > '".$der_seq[$index2-1]."'".$dlm1." order by date asc";
+        else
+        {
+        $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'".$dlm1."  order by date asc";
+        }
+    }
+
+$result = @mysql_query ($rq) or die (mysql_error());
+if (mysql_num_rows($result) >0) {
+     while ($row = mysql_fetch_array($result)) {
+        if ( ! in_array($row[0], $list_art)) {
+            $list_art[$j]=$row[0];
+            $list_seq[$j]='0';
+            $j++;
+        }
+    }
+}
+//Affichage des donnees
+echo '<table id="impr" cellpadding="1" cellspacing="2">';
+echo '<caption>';
+	echo "Classe : <b>".$classe_active ."</b>&nbsp;&nbsp;&nbsp;Mati&egrave;re : &nbsp;<b> ".$mati_active."</b>";
+	//if ($tampon == 1) echo '<div id="visa-cdt">'.$datetampon.'</div>';
 echo '</caption>';
-
-	while ($ligne = mysql_fetch_array($result, MYSQL_NUM)) 
-  { 
-  $textcours=markdown($ligne[1]);
-  $textafaire=markdown($ligne[2]);
-  
-	//debut
-	echo '<tbody><tr><th>S&eacute;ance du '.$ligne[0].'</th></tr>';
-	echo '<tr><td>'.$textcours.'</td></tr>';
-	if($ligne[2]!="") 
-	{
-		echo ('<tr><td class="afR">A faire pour le :</B> '.$ligne[3].'</td></tr>');
-		echo ('<tr><td>'.$textafaire.'</td></tr></tbody>');
-	}
-	//fin
+for ($index1 = 0; $index1 < count($list_seq); $index1++) {
+  if ($list_art[$index1]!='0')Imprime_seance ($list_art[$index1]); else Imprime_seq( $list_seq[$index1]);
   }
-  echo '</table>';	exit;
-	}
-
-
-
-
-/*
-   ================================
-   - Traitement de la barre des menus  -
-   ================================
-*/
-
-
+echo '</table>';
+ include ('../Includes/pied.inc');
+echo '</body>
+</html>';exit;
+ }
 /*================================
    -      Affichage du formulaire  -
    ================================*/
 ?>
-<form id="impression" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>?rubrique=<?echo $cible;?>&arch=<?echo $arch;?>" method="post" name= "cahtxt" >
-<H1 class='title'>Impression du Cahier de Textes</h1>
+<form id="impression" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>?rubrique=<?echo $cible;?>&amp;arch=<?echo $arch;?>" method="post"  >
+    <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
+<h1 class='title'>Impression du Cahier de Textes</h1>
 <fieldset id="field7">
-<legend id="legende">Classe  de <B> <?echo $classe_active .'</B> en <B>'. $mati_active ?></B></legend>
-<p>Imprimer le contenu du cahier de textes de la classe  de <B> <?echo $classe_active .'</B> en <B>'. $mati_active ?></B>
- depuis le : <?calendrier_auto(-365,'jour_c','mois_c','an_c',$tsmp);?><input type="hidden" name="numrub" value= "<?php echo $ch ; ?>"></p>
+<legend id="legende">Classe  de <b> <?echo $classe_active .'</b> en <b>'. $mati_active ?></b></legend>
+<p>Imprimer le contenu du cahier de textes de la classe  de <b> <?echo $classe_active .'</b> en <b>'. $mati_active ?></b>
+ depuis le : <?calendrier_auto(-365,'jour_c','mois_c','an_c',$tsmp);?><input type="hidden" name="numrub" value= "<?php echo $ch ; ?>" /></p>
 <div id="chrono">
-<INPUT TYPE=RADIO NAME="Option1" VALUE="asc" <?php IF (($sens=="asc")||($sens=="")) echo "CHECKED" ; ?>>par date croissante &nbsp;&nbsp;&nbsp;&nbsp
-<INPUT TYPE=RADIO NAME="Option1" VALUE="desc"<?php IF ($sens=="desc") echo "CHECKED" ; ?>>par	date d&eacute;croissante 
+<input type="radio" name="Option1" value="asc" <?php IF (($sens=="asc")||($sens=="")) echo ' checked="checked"' ; ?> />par date croissante &nbsp;&nbsp;&nbsp;&nbsp;
+<input type="radio" name="Option1" value="desc"<?php IF ($sens=="desc") echo ' checked="checked"' ; ?> />par	date d&eacute;croissante
 </div>
-<UL>
-	<LI>En cliquant sur OK, le contenu du cahier de texte appara&icirc;t dans un nouvel onglet. </li>
-	<LI>Avec Firefox, cocher l'option &quot;Imprimer le fond de page&quot; du menu mise en page.</li>
-	<LI>Avec Internet Explorer, cliquez sur Outils, options Internet, onglet  &quot;avanc&eacute;&quot; et cocher la case &quot;imprimer les couleurs et les images&quot;</li>
-	<LI>Utiliser la fonction Imprimer de votre navigateur pour imprimer le contenu de la fen&ecirc;tre</li>
-	<LI>Fermer l'onglet pour revenir au cahier de texte</li>
-</UL>
-
-
-<input align="center" type="submit" name="valider" value="OK" class="bt50"> 
-
+<ul>
+	<li>En cliquant sur OK, le contenu du cahier de texte appara&icirc;t dans un nouvel onglet. </li>
+	<li>Avec Firefox, cocher l'option &quot;Imprimer le fond de page&quot; du menu mise en page.</li>
+	<li>Avec Internet Explorer, cliquez sur Outils, options Internet, onglet  &quot;avanc&eacute;&quot; et cocher la case &quot;imprimer les couleurs et les images&quot;</li>
+	<li>Utiliser la fonction Imprimer de votre navigateur pour imprimer le contenu de la fen&ecirc;tre</li>
+	<li>Fermer l'onglet pour revenir au cahier de texte</li>
+</ul>
+<input type="submit" name="valider" value="OK" class="bt50" />
 </fieldset>
-</FORM>
-<?
-
+    </div>
+</form>
+<?php
   include ('../Includes/pied.inc'); 
 ?>
 </body>

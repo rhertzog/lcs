@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: ordre_item_template.php 5287 2010-09-14 14:50:32Z delineau $
+* $Id: ordre_item_template.php 6744 2011-04-03 22:29:54Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -181,9 +181,11 @@
 		  <div class='div_tableau'>
 			<h4 class="colonne ie_gauche">
 				menu : <?php echo $newentree->indexMenu ?> - item : <?php echo $newentree->indexItem ?>
-				<a href="" title="menu <?php echo $menuAfficheAdministrateur->statutUtilisateur ?> <?php echo $newentree->titre ?>">
+				<p class='bold'>
+				<!-- <a href="" title="menu <?php echo $menuAfficheAdministrateur->statutUtilisateur ?> <?php echo $newentree->titre ?>"> -->
 					<?php echo $newentree->titre ?>
-				</a>
+				<!-- </a> -->
+				</p>
 			</h4>
 			<p class="colonne ie_droite">
 				<?php echo $newentree->expli ?>

@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de chargement du modèle-
@@ -14,6 +14,8 @@ header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
   
 session_name("Cdt_Lcs");
 @session_start();
+include "../Includes/check.php";
+if (!check()) exit;
 //si la page est appeleee par un utilisateur non identifiÃ©
 if (!isset($_SESSION['login']) )exit;
 
@@ -26,7 +28,7 @@ header('Content-Type: text/xml');
 header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
 header("Pragma: no-cache");
-if( isset($_REQUEST['cibl'])  )
+if( isset($_POST['cibl'])  )
 	{
 	if (get_magic_quotes_gpc()) require_once("/usr/share/lcs/Plugins/Cdt/Includes/class.inputfilter_clean.php");
 	else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';

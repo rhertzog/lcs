@@ -148,7 +148,7 @@
 
     } else {
       // Verification si ce nouvel utilisateur n'existe pas deja
-      $cn =stripslashes( utf8_encode($prenom." ".$nom) );
+      $cn =stripslashes($prenom." ".$nom);
       $people_exist=search_people("(cn=$cn)");
       if (count($people_exist)) {
         echo "<div class='error_msg'>

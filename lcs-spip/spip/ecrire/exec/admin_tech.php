@@ -3,16 +3,17 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
+include_spip('base/dump');
 
 // http://doc.spip.org/@exec_admin_tech_dist
 function exec_admin_tech_dist()
@@ -73,18 +74,22 @@ function exec_admin_tech_dist()
 	 _T('texte_admin_tech_01',
 	   array('dossier' => '<i>'.$dir_dump.'</i>', 'img'=>'<i>'.$dir_img.'</i>')) .
 	 '&nbsp;' .
-	 _T('texte_admin_tech_02') .
+	 _T('texte_admin_tech_02',
+		array('spipnet' => $GLOBALS['home_server']
+		      . '/' .  $GLOBALS['spip_lang'] . '_article1489.html'
+		      )) .
 	"</p>";
 	
 	$chercher_rubrique = charger_fonction('chercher_rubrique', 'inc');
 
 	$form = $chercher_rubrique(0, 'rubrique', !$GLOBALS['connect_toutes_rubriques'], 0, 'admin_tech');
 
-	$res .= "\n<label for='id_parent'>" .
-		  _T('texte_admin_tech_04') .
-		  "</label><br /><br />" .
-		  $form . '<br />';
-
+	if ($form) {
+		$res .= "\n<label for='id_parent'>" .
+			  _T('texte_admin_tech_04') .
+			  "</label><br /><br />" .
+			  $form . '<br />';
+	}
 	$file = nom_fichier_dump();
 	$nom = "\n<input name='nom_sauvegarde' id='nom_sauvegarde' size='40' value='$file' />";
 	$znom = "\n<input name='znom_sauvegarde' id='znom_sauvegarde' size='40' value='$file' />";
@@ -104,7 +109,8 @@ function exec_admin_tech_dist()
 	  $dir_dump .
 	  "</b>$nom<b>.xml</b></li></ul>\n"
 	  . "\n<input type='hidden' name='reinstall' value='non' />";
- 
+
+	$res .= options_avancees_dump();
 	echo 
  		generer_form_ecrire('export_all', $res, '', _T('texte_sauvegarde_base')),
  		fin_cadre_trait_couleur(true);
@@ -169,16 +175,16 @@ function admin_sauvegardes($dir_dump, $tri)
 	$self = self();
 	$class = 'row_'.alterner($i+1, 'even', 'odd');
 	$head = !$tl ? '' : (
-		"<tr>"
+		"\n<tr>"
 		. '<th></th><th><a href="'
 		. parametre_url($self, 'tri', 'nom')
 		. '#sauvegardes">'
 		. _T('info_nom')
-	  	. '</a></th><th><a href="'
+	  	. "</a></th>\n" . '<th><a href="'
 		. parametre_url($self, 'tri', 'taille')
 		. '#sauvegardes">'
 		. _T('taille_octets', array('taille' => ''))
-	 	. '</th><th><a href="'
+	 	. "</a></th>\n" . '<th><a href="'
 		. parametre_url($self, 'tri', 'date')
 		. '#sauvegardes">'
 		. _T('public:date')
@@ -193,7 +199,7 @@ function admin_sauvegardes($dir_dump, $tri)
 		.  '</p>'
 		. _T('entree_nom_fichier', array('texte_compresse' => $texte))
 
-		. "<br /><br /><table class='spip' id='sauvegardes'>"
+		. "\n<br /><br /><table class='spip' id='sauvegardes'>"
 		. $head
 		.  join('',$tl)
 		. "\n<tr class='$class'><td><input type='radio' name='archive' id='archive' value='' /></td><td  colspan='3'>"
@@ -201,8 +207,9 @@ function admin_sauvegardes($dir_dump, $tri)
 		. '</table>';
 
 
+	$plie = _T('info_options_avancees');
 	// restauration partielle / fusion
-	$res .= debut_cadre_enfonce('',true) .
+	$opt = debut_cadre_enfonce('',true) .
 		"\n<div>" .
 		 "<input name='insertion' id='insertion' type='checkbox' />&nbsp; <label for='insertion'>". 
 		  _T('sauvegarde_fusionner') .
@@ -216,6 +223,8 @@ function admin_sauvegardes($dir_dump, $tri)
 		  " &nbsp;\n<input name='url_site' id='url_site' type='text' size='25' />" .
 		  '</div>' .
 		  fin_cadre_enfonce(true);
+
+	$res .= block_parfois_visible('import_tables', $plie, $opt, '', false);
 
 	return generer_form_ecrire('import_all', $res, '', _T('bouton_restaurer_base'));
 }
@@ -259,4 +268,45 @@ function nom_fichier_dump()
 	}
 	return $nom;
 }
+
+
+function options_avancees_dump(){
+	list($tables,) = base_liste_table_for_dump(lister_tables_noexport());
+	$plie = _T('info_options_avancees');
+	$res = controle_tables_en_base('export', $tables);
+	$res = "<h3>"._T('install_tables_base')."</h3>"
+	 . "\n<ol style='spip'><li>\n" .
+			join("</li>\n<li>", $res) .
+			"</li></ol>\n";
+
+	$res = block_parfois_visible('export_tables', $plie, $res, '', false);
+ 	return $res;
+}
+
+
+// Fabrique la liste a cocher des tables presentes
+function controle_tables_en_base($name, $check)
+{
+	$p = '/^' . $GLOBALS['table_prefix'] . '/';
+	$res = $check;
+	foreach(sql_alltable() as $t) {
+		$t = preg_replace($p, 'spip', $t);
+		if (!in_array($t, $check)) $res[]= $t;
+	}
+	sort($res);
+
+	foreach ($res as $k => $t) {
+
+		$res[$k] = "<input type='checkbox' value='$t' name='$name"
+			. "[]'"
+			. (in_array($t, $check) ? " checked='checked'" : '') 
+			. "/>\n"
+			. $t
+			. " ("
+			.  sql_countsel($t)
+	  		. ")";
+	}
+	return $res;
+}
+
 ?>

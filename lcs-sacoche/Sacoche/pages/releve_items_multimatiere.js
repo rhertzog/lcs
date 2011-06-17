@@ -106,7 +106,7 @@ $(document).ready
 					var tab_split = tab_groupe_periode[id_groupe][id_periode].split('_');
 					if( (date_mysql>=tab_split[0]) && (date_mysql<=tab_split[1]) )
 					{
-						$("#f_periode option[value="+id_periode+"]").attr('selected','selected');
+						$("#f_periode option[value="+id_periode+"]").prop('selected',true);
 						view_dates_perso();
 					}
 				}
@@ -129,12 +129,12 @@ $(document).ready
 							// classe ou groupe classique -> toutes périodes accessibles
 							if(groupe_type!='Besoins')
 							{
-								$(this).removeAttr('disabled');
+								$(this).prop('disabled',false);
 							}
 							// groupe de besoin -> desactiver les périodes prédéfinies
 							else
 							{
-								$(this).attr('disabled','disabled');
+								$(this).prop('disabled',true);
 							}
 						}
 					}
@@ -142,19 +142,19 @@ $(document).ready
 				// Sélectionner si besoin la période personnalisée
 				if(groupe_type=='Besoins')
 				{
-					$("#f_periode option[value=0]").attr('selected','selected');
+					$("#f_periode option[value=0]").prop('selected',true);
 					$("#dates_perso").attr("class","show");
 				}
 				// Modification automatique du formulaire : périodes
 				if(autoperiode)
 				{
-					if(groupe_type!='Besoins')
+					if( (typeof(groupe_type)!='undefined') && (groupe_type!='Besoins') )
 					{
 						// Rechercher automatiquement la meilleure période
 						selectionner_periode_adaptee();
 					}
 					// Afficher la zone de choix des périodes
-					if($('#zone_periodes').hasClass("hide"))
+					if(typeof(groupe_type)!='undefined')
 					{
 						$('#zone_periodes').removeAttr("class");
 					}
@@ -191,7 +191,7 @@ $(document).ready
 						maj_clock(1);
 						if(responseHTML.substring(0,7)=='<option')	// Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
 						{
-							$('#ajax_maj').removeAttr("class").html('&nbsp;<span class="astuce">Utiliser "<i>Shift + clic</i>" ou "<i>Ctrl + clic</i>" pour une sélection multiple.</span>');
+							$('#ajax_maj').removeAttr("class").html("&nbsp;");
 							$('#f_eleve').html(responseHTML).show();
 						}
 						else
@@ -268,6 +268,7 @@ $(document).ready
 					f_couleur     : { required:true },
 					f_legende     : { required:true },
 					f_marge_min   : { required:true },
+					f_pages_nb    : { required:true },
 					f_cases_nb    : { required:true },
 					f_cases_larg  : { required:true },
 					f_restriction : { required:false },
@@ -290,6 +291,7 @@ $(document).ready
 					f_couleur     : { required:"couleur manquante" },
 					f_legende     : { required:"légende manquante" },
 					f_marge_min   : { required:"marge mini manquante" },
+					f_pages_nb    : { required:"choix manquant" },
 					f_cases_nb    : { required:"nombre manquant" },
 					f_cases_larg  : { required:"largeur manquante" },
 					f_restriction : { },
@@ -360,7 +362,7 @@ $(document).ready
 			var readytogo = validation.form();
 			if(readytogo)
 			{
-				$('button').attr('disabled','disabled');
+				$('button').prop('disabled',true);
 				$('#ajax_msg').removeAttr("class").addClass("loader").html("Génération du relevé en cours... Veuillez patienter.");
 				$('#bilan').html('');
 			}
@@ -370,7 +372,7 @@ $(document).ready
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)
 		function retour_form_erreur(msg,string)
 		{
-			$('button').removeAttr('disabled');
+			$('button').prop('disabled',false);
 			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion ! Veuillez valider de nouveau.");
 		}
 
@@ -378,7 +380,7 @@ $(document).ready
 		function retour_form_valide(responseHTML)
 		{
 			maj_clock(1);
-			$('button').removeAttr('disabled');
+			$('button').prop('disabled',false);
 			if(responseHTML.substring(0,17)!='<ul class="puce">')
 			{
 				$('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);

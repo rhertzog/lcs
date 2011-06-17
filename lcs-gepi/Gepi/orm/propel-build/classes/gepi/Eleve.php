@@ -590,8 +590,25 @@ class Eleve extends BaseEleve {
 		       $query->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, $periodeCalendrier->getIdCalendrier());
 		}
 	    }
-
 	    $edtCoursCol = $query->find();
+
+ 	    //si il n'y a aucune periode ouverte actuellement, on renvoi tous les groupe et donc tous les emplacements de cours
+	    $colAidId = $id_array = $this->getAidDetailss()->getPrimaryKeys();
+
+	    $query = EdtEmplacementCoursQuery::create()->filterByIdAid($colAidId)
+		    ->filterByIdCalendrier(0)
+		    ->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, NULL);
+
+	    if ($v instanceof EdtCalendrierPeriode) {
+		$query->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, $v->getIdCalendrier());
+	    } else {
+		$periodeCalendrier = EdtCalendrierPeriodePeer::retrieveEdtCalendrierPeriodeActuelle($v);
+		if ($periodeCalendrier != null) {
+		       $query->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, $periodeCalendrier->getIdCalendrier());
+		}
+	    }
+	    $edtCoursCol->addCollection($query->find());
+
 	    require_once("helpers/EdtEmplacementCoursHelper.php");
 	    EdtEmplacementCoursHelper::orderChronologically($edtCoursCol);
 
@@ -718,6 +735,27 @@ class Eleve extends BaseEleve {
 
 	}
 
+    /**
+	 *
+	 * Retourne une liste d'absence pour le creneau et le jour donné.
+	 *
+	 * @param      EdtCreneau $edtcreneau
+     * @param      Id lieu $id_lieu
+     * @param      mixed $v string, integer (timestamp), or DateTime value.  
+	 *
+ 	 * @return PropelColection AbsenceEleveSaisie[]
+	 */
+    public function getAbsenceEleveSaisiesDuCreneauByLieu($edtcreneau = null, $id_lieu = null, $v = 'now') {
+        $result = new PropelObjectCollection();
+        $result->setModel('AbsenceEleveSaisie');
+        $saisie_col = $this->getAbsenceEleveSaisiesDuCreneau($edtcreneau, $v);
+        foreach ($saisie_col as $saisie) {
+            if ($saisie->hasLieuSaisie($id_lieu) && !$saisie->hasTypeLikeErreurSaisie()) {
+                $result->append($saisie);
+            }
+        }
+        return($result);
+    }
   	/**
 	 *
 	 * Retourne une liste d'absence pour le creneau et le jour donné.
@@ -1008,8 +1046,23 @@ class Eleve extends BaseEleve {
 	 *
 	 * @return PropelCollection DateTime[]
 	 */
-	public function getDemiJourneesAbsence($date_debut, $date_fin = null) {
-	    $abs_saisie_col = $this->getAbsColDecompteDemiJournee($date_debut, $date_fin); 
+	public function getDemiJourneesAbsence($date_debut=null, $date_fin = null) {
+	    $abs_saisie_col = $this->getAbsColDecompteDemiJournee($date_debut, $date_fin);
+            return ($this->getDemiJourneesAbsenceParCollection($abs_saisie_col,$date_debut, $date_fin));
+        }
+
+	/**
+	 *
+	 * Retourne une collection contenant sous forme de DateTime les demi journees d'absence
+	 * Un DateTime le 23/05/2010 à 00:00 signifie que l'eleve a ete saisie absent le 23/05/2010 au matin
+	 * Pour l'apres midi la date est 23/05/2010 à 12:30
+         * Il faut en entré une collection de saisies ordonnée par date de debut
+	 *
+	 * @param      PropelObjectCollection $abs_saisie_col collection de saisies d'absence ordonne par date de début
+	 *
+	 * @return PropelCollection DateTime[]
+	 */
+	public function getDemiJourneesAbsenceParCollection($abs_saisie_col,$date_debut=null, $date_fin=null) {
 	    if ($abs_saisie_col->isEmpty()) {
 		return new PropelCollection();
 	    }
@@ -1046,11 +1099,25 @@ class Eleve extends BaseEleve {
 		$date_fin_iteration = new DateTime('now');
 		$date_fin_iteration->setTime(23,59);
 	    }
+            if ($this->getDateSortie() != null && $this->getDateSortie('U') < $date_fin_iteration->format('U')) {
+                $date_fin_iteration = $this->getDateSortie(null);
+            }
+
 	    require_once("helpers/AbsencesEleveSaisieHelper.php");
 	    return AbsencesEleveSaisieHelper::compte_demi_journee($abs_saisie_col_filtre, $date_debut, $date_fin_iteration);
 	}
 
- 	private function getAbsColDecompteDemiJournee($date_debut, $date_fin) {
+        /**
+	 *
+	 * Retourne une collection contenant les saisies des absences à prendre en compte dans les decomptes de demi-journées
+	 * entre deux dates
+	 *
+	 * @param      DateTime $date_debut
+	 * @param      DateTime $date_fin
+	 *
+	 * @return PropelCollection  AbsenceEleveSaisie[]
+	 */
+	private function getAbsColDecompteDemiJournee($date_debut= null, $date_fin= null) {
 	    $request_query_hash = 'query_AbsenceEleveSaisieQuery_filterByEleve_'.$this->getIdEleve().'_filterByPlageTemps_deb_';
 	    if ($date_debut != null) { $request_query_hash .= $date_debut->format('U');}
 	    else {$request_query_hash .= 'null';}
@@ -1110,8 +1177,23 @@ class Eleve extends BaseEleve {
 	 *
 	 * @return PropelCollection DateTime[]
 	 */
-	public function getDemiJourneesNonJustifieesAbsence($date_debut, $date_fin = null) {
+	public function getDemiJourneesNonJustifieesAbsence($date_debut=null, $date_fin = null) {
 	    $abs_saisie_col = $this->getAbsColDecompteDemiJournee($date_debut, $date_fin);
+	    return ($this->getDemiJourneesNonJustifieesAbsenceParCollection($abs_saisie_col,$date_debut, $date_fin));
+	}
+/**
+	 *
+	 * Retourne une collection contenant sous forme de DateTime les demi journees d'absence non justifiees
+	 * Un DateTime le 23/05/2010 à 00:00 signifie que l'eleve a ete saisie absent le 23/05/2010 au matin
+	 * Pour l'apres midi la date est 23/05/2010 à 12:30
+	 *
+	 * @param      PropelObjectCollection $abs_saisie_col collection de saisies d'absence ordonne par date de début
+	 * @param      DateTime $date_debut
+	 * @param      DateTime $date_fin
+	 *
+	 * @return PropelCollection DateTime[]
+	 */
+	public function getDemiJourneesNonJustifieesAbsenceParCollection($abs_saisie_col,$date_debut=null,$date_fin=null) {
 	    if ($abs_saisie_col->isEmpty()) {
 		return new PropelCollection();
 	    }
@@ -1148,6 +1230,9 @@ class Eleve extends BaseEleve {
 		$date_fin_iteration = new DateTime('now');
 		$date_fin_iteration->setTime(23,59);
 	    }
+            if ($this->getDateSortie() != null && $this->getDateSortie('U') < $date_fin_iteration->format('U')) {
+                $date_fin_iteration = $this->getDateSortie(null);
+            }
 
 	    require_once("helpers/AbsencesEleveSaisieHelper.php");
 	    return AbsencesEleveSaisieHelper::compte_demi_journee($abs_saisie_col_filtre, $date_debut, $date_fin_iteration);
@@ -1186,7 +1271,7 @@ class Eleve extends BaseEleve {
 	 *
 	 * @return PropelCollection DateTime[]
 	 */
-	public function getRetards($date_debut, $date_fin = null) {
+	public function getRetards($date_debut=null, $date_fin = null) {
 	    $abs_saisie_col = $this->getAbsColDecompteDemiJournee($date_debut, $date_fin);
 	    if ($abs_saisie_col->isEmpty()) {
 		return new PropelCollection();
@@ -1207,10 +1292,14 @@ class Eleve extends BaseEleve {
 		$date_fin_iteration->setTime(23,59);
 	    }
 
+            if ($this->getDateSortie() != null && $this->getDateSortie('U') < $date_fin_iteration->format('U')) {
+                $date_fin_iteration = $this->getDateSortie(null);
+            }
+
 	    require_once("helpers/AbsencesEleveSaisieHelper.php");
 	    $retards_result = AbsencesEleveSaisieHelper::compte_demi_journee($abs_saisie_col_filtre, $date_debut, $date_fin_iteration);
 
-	    //on recupere les demi-journees pendant lesquels l'eleve est absent
+	    //on recupere les demi-journees pendant lesquels l'eleve est absent, pour ne pas les compter comme retard
 	    require_once("helpers/AbsencesEleveSaisieHelper.php");
 	    $absences = AbsencesEleveSaisieHelper::compte_demi_journee($abs_saisie_col_filtre, $date_debut, $date_fin_iteration);
 	    $abs_saisie_col_filtre_abs = new PropelCollection();
@@ -1401,7 +1490,7 @@ class Eleve extends BaseEleve {
 	 * @return     Boolean
 	 *
 	 */
-	public function getPresent($v = 'now') {
+	public function getSousResponsabiliteEtablissement($v = 'now') {
 	    // we treat '' as NULL for temporal objects because DateTime('') == DateTime('now')
 	    // -- which is unexpected, to say the least.
 	    //$dt = new DateTime();
@@ -1430,7 +1519,7 @@ class Eleve extends BaseEleve {
 	    //premierement on verifie que l'eleve n'a pas ete saisie absent a cette date
 	    $resp_etab = true;
 	    foreach ($this->getAbsenceEleveSaisiesFilterByDate($dt,$dt) as $saisie) {
-		if ($saisie->getSousResponsabiliteEtablissement() || !$saisie->getManquementObligationPresence()) {
+		if ($saisie->getSousResponsabiliteEtablissement()) {
 		    return true;
 		} else {
 		    $resp_etab = false;
@@ -1443,14 +1532,14 @@ class Eleve extends BaseEleve {
 
 	    //on recupere toute les saisies a cette heure
 	    //optimisation : utiliser la requete pour stocker ca
-	    if (isset($_REQUEST['query_AbsenceEleveSaisieQuery_getPresent_'.$dt->format('U')])
-		    && $_REQUEST['query_AbsenceEleveSaisieQuery_getPresent_'.$dt->format('U')] != null) {
-		$saisie_col = $_REQUEST['query_AbsenceEleveSaisieQuery_getPresent_'.$dt->format('U')];
+	    if (isset($_REQUEST['query_AbsenceEleveSaisieQuery_getSousResponsabiliteEtablissement_'.$dt->format('U')])
+		    && $_REQUEST['query_AbsenceEleveSaisieQuery_getSousResponsabiliteEtablissement_'.$dt->format('U')] != null) {
+		$saisie_col = $_REQUEST['query_AbsenceEleveSaisieQuery_getSousResponsabiliteEtablissement_'.$dt->format('U')];
 	    } else {
 		$saisie_col = AbsenceEleveSaisieQuery::create()
 		    ->filterByPlageTemps($dt, $dt)
 		    ->find();
-		$_REQUEST['query_AbsenceEleveSaisieQuery_getPresent_'.$dt->format('U')] = $saisie_col;
+		$_REQUEST['query_AbsenceEleveSaisieQuery_getSousResponsabiliteEtablissement_'.$dt->format('U')] = $saisie_col;
 	    }
 
 	    if ($saisie_col->isEmpty()) {

@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: accueil.php 5397 2010-09-21 22:39:46Z regis $
+ * $Id: accueil.php 6792 2011-04-15 06:36:40Z crob $
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -153,6 +153,32 @@ if ($_SESSION['statut']=="autre") {
   $afficheAccueil=new class_page_accueil_autre($gepiSettings, $niveau_arbo,$ordre_menus);
 } else {
   $afficheAccueil=new class_page_accueil($_SESSION['statut'], $gepiSettings, $niveau_arbo,$ordre_menus);
+}
+
+if(isset($_GET['del_id_info'])) {
+	check_token();
+
+	if(!isset($msg)) {$msg="";}
+
+	if(del_info_action($_GET['del_id_info'])) {
+		$msg.="Action n° ".$_GET['del_id_info']." supprimée.<br />";
+	}
+	else {
+		$msg.="Erreur lors de la suppression de l'action n° ".$_GET['del_id_info'].".<br />";
+	}
+}
+
+if((($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite'))&&(isset($_GET['del_id_acces_cdt']))) {
+	check_token();
+
+	if(!isset($msg)) {$msg="";}
+
+	if(del_acces_cdt($_GET['del_id_acces_cdt'])) {
+		$msg.="Accès CDT n° ".$_GET['del_id_acces_cdt']." supprimé.<br />";
+	}
+	else {
+		$msg.="Erreur lors de la suppression de l'accès CDT n° ".$_GET['del_id_acces_cdt'].".<br />";
+	}
 }
 
 $post_reussi=FALSE;
@@ -470,7 +496,8 @@ $appel_messages = mysql_query("SELECT id, texte, date_debut, date_fin, date_deco
     date_debut <= '".$today."' and
     date_fin >= '".$today."'
     )
-    order by id DESC");
+    order by date_debut DESC, id DESC;");
+//    order by id DESC");
 
 $nb_messages = mysql_num_rows($appel_messages);
 //echo "\$nb_messages=$nb_messages<br />";
@@ -480,9 +507,10 @@ $affiche_messages = 'no';
 $autre_message = "";
 while ($ind < $nb_messages) {
 	$destinataires1 = mysql_result($appel_messages, $ind, 'destinataires');
-$autre_message = "";
+	$autre_message = "";
 
 	if (strpos($destinataires1, substr($_SESSION['statut'], 0, 1))) {
+	//if ((strtolower($_SESSION['login'])==strtolower($destinataires1)) || ((strpos(strtolower($destinataires1), substr(strtolower($_SESSION['statut']), 0, 1)))&&(substr($destinataires1,0,1)=="_"))) {
 		if ($affiche_messages == 'yes') {
 			$autre_message = "hr";
 		}
@@ -517,7 +545,7 @@ $autre_message = "";
 			if($decompte_m==1) {$decompte_remplace.=$decompte_m." minute";}
 			elseif($decompte_m>1) {$decompte_remplace.=$decompte_m." minutes";}
 
-			$content=my_ereg_replace("_DECOMPTE_",$decompte_remplace,$content);
+			$content=preg_replace("/_DECOMPTE_/",$decompte_remplace,$content);
 		}
 
 		// fin _DECOMPTE_

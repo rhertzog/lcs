@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@action_editer_mots_dist
 function action_editer_mots_dist() {
@@ -36,12 +36,17 @@ function action_editer_mots_post($r)
 			  // desassocier un/des mot d'un objet precis
 				sql_delete("spip_mots_$table", "$table_id=$id_objet" . (($id_mot <= 0) ? "" : " AND id_mot=$id_mot"));
 			else {
-			  // disparition complete d'un mot
-			sql_delete("spip_mots", "id_mot=$id_mot");
-			sql_delete("spip_mots_articles", "id_mot=$id_mot");
-			sql_delete("spip_mots_rubriques", "id_mot=$id_mot");
-			sql_delete("spip_mots_syndic", "id_mot=$id_mot");
-			sql_delete("spip_mots_forum", "id_mot=$id_mot");
+				// disparition complete d'un mot
+				sql_delete("spip_mots", "id_mot=$id_mot");
+				sql_delete("spip_mots_articles", "id_mot=$id_mot");
+				sql_delete("spip_mots_rubriques", "id_mot=$id_mot");
+				sql_delete("spip_mots_syndic", "id_mot=$id_mot");
+				sql_delete("spip_mots_forum", "id_mot=$id_mot");
+				pipeline('trig_supprimer_objets_lies',
+					array(
+						array('type'=>'mot','id'=>$id_mot)
+					)
+				);
 			}
 	}
 	if ($nouv_mot ? $nouv_mot : ($nouv_mot = _request('nouv_mot'))) {

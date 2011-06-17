@@ -1,10 +1,10 @@
 <?php 
-
-// inc/spiplistes_pipeline_insert_head.php (CP-20071019)
-
-// $LastChangedRevision: 30780 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-08-10 10:09:37 +0200 (lun, 10 aoû 2009) $
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:13 +0200 (Mon, 25 Apr 2011) $
 
 /*
 	SPIP-Listes pipeline

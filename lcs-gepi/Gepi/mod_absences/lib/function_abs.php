@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * $Id: function_abs.php 3323 2009-08-05 10:06:18Z crob $
+ * $Id: function_abs.php 6468 2011-02-06 17:21:41Z crob $
  *
  *
  */
@@ -11,13 +11,13 @@
 
 // fonction qui permet de vérifier si la variable ne contient que des caractère
 function verif_texte($texte_ver) {
-	if(!ereg("^[a-zA-Z_]+$",$texte_ver)){ $texte_ver = FALSE; } else { $texte_ver = $texte_ver; }
+	if(!my_ereg("^[a-zA-Z_]+$",$texte_ver)){ $texte_ver = FALSE; } else { $texte_ver = $texte_ver; }
 	return $texte_ver;
  }
 
 // fonction qui permet de vérifier si la variable ne contient que des chiffres
 function verif_num($texte_ver) {
-	if(!ereg("^[0-9]+$",$texte_ver)){ $texte_ver = FALSE; } else { $texte_ver = $texte_ver; }
+	if(!my_ereg("^[0-9]+$",$texte_ver)){ $texte_ver = FALSE; } else { $texte_ver = $texte_ver; }
 	return $texte_ver;
  }
 

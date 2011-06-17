@@ -1,10 +1,10 @@
 <?php 
-
-// inc/spiplistes_pipeline_ajouter_onglets.php
-
-// $LastChangedRevision: 24824 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2008-12-01 09:56:42 +0100 (lun, 01 déc 2008) $
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:13 +0200 (Mon, 25 Apr 2011) $
 
 /*
 	SPIP-Listes
@@ -17,7 +17,7 @@
 	From: SPIP-Listes-V, http://www.quesaco.org/
 */
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if(!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/spiplistes_api_globales');
 

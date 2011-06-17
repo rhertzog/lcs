@@ -46,6 +46,16 @@ $tab_titre       = array('matiere'=>'d\'une matière' , 'multimatiere'=>'multidi
 require('./_fpdf/fpdf.php');
 require('./_inc/class.PDF.php');
 
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+/* 
+ * Libérer de la place mémoire car les scripts de bilans sont assez gourmands.
+ * Supprimer $DB_TAB ne fonctionne pas si on ne force pas auparavant la fermeture de la connexion.
+ * SebR devrait peut-être envisager d'ajouter une méthode qui libère cette mémoire, si c'est possible...
+ */
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+DB::close(SACOCHE_STRUCTURE_BD_NAME);
+unset($DB_TAB);
+
 //	////////////////////////////////////////////////////////////////////////////////////////////////////
 //	Tableaux et variables pour mémoriser les infos ; dans cette partie on ne fait que les calculs (aucun affichage)
 //	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +102,7 @@ foreach($tab_eleve as $key => $tab)
 				$texte_lien_apres = ($item_lien) ? '</a>' : '';
 			}
 			$indice = test_A($score) ? 'A' : ( test_NA($score) ? 'NA' : 'VA' ) ;
-			$texte_demande_eval = ( ($_SESSION['USER_PROFIL']!='eleve') || ($_SESSION['DROIT_ELEVE_DEMANDES']==0) ) ? '' : ( ($item_cart) ? '<q class="demander_add" lang="ids_'.$matiere_id.'_'.$item_id.'_'.$score.'" title="Ajouter aux demandes d\'évaluations."></q>' : '<q class="demander_non" title="Demande interdite."></q>' ) ;
+			$texte_demande_eval = ($_SESSION['USER_PROFIL']!='eleve') ? '' : ( ($item_cart) ? '<q class="demander_add" lang="ids_'.$matiere_id.'_'.$item_id.'_'.$score.'" title="Ajouter aux demandes d\'évaluations."></q>' : '<q class="demander_non" title="Demande interdite."></q>' ) ;
 			$tab_infos_detail_synthese[$eleve_id][$synthese_ref][] = '<span class="'.$tab_etat[$indice].'">'.$texte_coef.$texte_socle.$texte_lien_avant.html($item_ref.' || '.$item_nom.' ['.$score.'%]').'</span>'.$texte_lien_apres.$texte_demande_eval;
 		}
 		// Pour chaque élément de synthèse, et pour chaque matière on recense le nombre d'items considérés acquis ou pas
@@ -133,18 +143,19 @@ foreach($tab_eleve as $key => $tab)
 $releve_HTML  = '<style type="text/css">'.$_SESSION['CSS'].'</style>';
 $releve_HTML .= '<h1>Synthèse '.$tab_titre[$format].'</h1>';
 $releve_HTML .= '<h2>'.html($texte_periode).'</h2>';
+$releve_HTML .= '<div class="astuce">Cliquer sur les icones &laquo;<img src="./_img/toggle_plus.gif" alt="+" />&raquo; pour accéder au détail.';
 $releve_PDF = new PDF($orientation='portrait',$marge_min=7,$couleur,$legende);
 $releve_PDF->bilan_synthese_initialiser($format,$nb_syntheses_total,$eleve_nb);
 // Pour chaque élève...
 foreach($tab_eleve as $tab)
 {
 	extract($tab);	// $eleve_id $eleve_nom $eleve_prenom $eleve_id_gepi $nb_matieres $nb_syntheses
-	$releve_PDF->bilan_synthese_entete($format,$nb_matieres,$nb_syntheses,$tab_titre[$format],$texte_periode,$groupe_nom,$eleve_nom,$eleve_prenom);
-	// Intitulé
-	$releve_HTML .= '<hr class="breakafter" /><h2>'.html($groupe_nom).' - '.html($eleve_nom).' '.html($eleve_prenom).'</h2>';
 	// Si cet élève a été évalué...
 	if(isset($tab_infos_acquis_eleve[$eleve_id]))
 	{
+		// Intitulé
+		$releve_PDF->bilan_synthese_entete($format,$nb_matieres,$nb_syntheses,$tab_titre[$format],$texte_periode,$groupe_nom,$eleve_nom,$eleve_prenom);
+		$releve_HTML .= '<hr class="breakafter" /><h2>'.html($groupe_nom).' - '.html($eleve_nom).' '.html($eleve_prenom).'</h2>';
 		// On passe en revue les matières...
 		foreach($tab_infos_acquis_eleve[$eleve_id] as $matiere_id => $tab_infos_matiere)
 		{

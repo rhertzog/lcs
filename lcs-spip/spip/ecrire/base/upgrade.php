@@ -3,14 +3,23 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
+
+// Programme de mise a jour des tables SQL lors d'un chgt de version.
+// Marche aussi pour les plugins en appelant directement la fonction maj_while.
+// Pour que ceux-ci profitent aussi de la reprise sur interruption,
+// ils doivent indiquer leur numero de version installee dans une meta.
+// Le nom de cette meta doit aussi etre un tableau global
+// dont l'index "maj" est le sous-tableau des mises a jours
+// et l'index "cible" la version a atteindre
+// A tester.
 
 // http://doc.spip.org/@base_upgrade_dist
 function base_upgrade_dist($titre='', $reprise='')
@@ -22,7 +31,24 @@ function base_upgrade_dist($titre='', $reprise='')
 			spip_log("recree les tables eventuellement disparues");
 			creer_base();
 		}
-		maj_base();
+		$meta = _request('meta');
+		if (!$meta)
+			$res = maj_base();
+		// reprise sur demande de mise a jour interrompue pour plugin 
+		else $res= maj_while($GLOBALS['meta'][$meta],
+				  $GLOBALS[$meta]['cible'],
+				  $GLOBALS[$meta]['maj'],
+				  $meta,
+				  _request('table'));
+		if ($res) {
+			if (!is_array($res))
+				spip_log("Pb d'acces SQL a la mise a jour");
+			else {
+				include_spip('inc/minipres');
+				echo minipres(_T('avis_operation_echec') . ' ' . join(' ', $res));
+				exit;
+			}
+		}
 	}
 	spip_log("Fin de mise a jour SQL. Debut m-a-j acces et config");
 	
@@ -60,9 +86,9 @@ function maj_base($version_cible = 0) {
 		      array('nom' => 'version_installee',
 			    'valeur' => $spip_version_base,
 			    'impt' => 'non'));
-		return;
+		return false;
 	}
-	if (!upgrade_test()) return;
+	if (!upgrade_test()) return true;
 	
 	$cible = ($version_cible ? $version_cible : $spip_version_base);
 
@@ -88,63 +114,75 @@ function maj_base($version_cible = 0) {
 	if ($cible < 2)
 		$cible = $cible*1000;
 
-	maj_while($version_installee, $cible);
+	include_spip('maj/svn10000');
+	return maj_while($version_installee, $cible, $GLOBALS['maj'], 'version_installee');
 }
-
 
 // A partir des > 1.926 (i.e SPIP > 1.9.2), cette fonction gere les MAJ.
 // Se relancer soi-meme pour eviter l'interruption pendant une operation SQL
 // (qu'on espere pas trop longue chacune)
 // evidemment en ecrivant dans la meta a quel numero on en est.
+// Cette fonction peut servir aux plugins qui doivent donner comme arguments:
+// 1. le numero de version courant (nombre entier; ex: numero de commit)
+// 2. le numero de version a atteindre (idem)
+// 3. le tableau des instructions de mise a jour a executer
+// Pour profiter du mecanisme de reprise sur interruption il faut de plus
+// 4. le nom de la meta permettant de retrouver tout ca
+// 5. la table des meta ou elle se trouve ($table_prefix . '_meta' par defaut)
+// (cf debut de fichier)
+// en cas d'echec, cette fonction retourne un tableau (etape,sous-etape)
+// sinon elle retourne un tableau vide
 
 define('_UPGRADE_TIME_OUT', 20);
 
 // http://doc.spip.org/@maj_while
-function maj_while($installee, $cible)
+function maj_while($installee, $cible, $maj, $meta='', $table='meta')
 {
-	include_spip('maj/svn10000');
-
 	$n = 0;
 	$time = time();
 
 	while ($installee < $cible) {
 		$installee++;
-		if (isset($GLOBALS['maj'][$installee])) {
-			serie_alter($installee, $GLOBALS['maj'][$installee]);
+		if (isset($maj[$installee])) {
+			$etape = serie_alter($installee, $maj[$installee], $meta, $table);
+			
+			if ($etape) return array($installe, $etape);
 			$n = time() - $time;
-			spip_log("MAJ vers $installee en $n secondes",'maj');
-			ecrire_meta('version_installee', $installee,'non');
+			spip_log("$table $meta: $installee en $n secondes",'maj');
+			if ($meta) ecrire_meta($meta, $installee,'non', $table);
 		} // rien pour SQL
 		if ($n >= _UPGRADE_TIME_OUT) {
-			redirige_url_ecrire('upgrade', "reinstall=$installee");
+			redirige_url_ecrire('upgrade', "reinstall=$installee&meta=$meta&table=$table");
 		}
 	}
 	// indispensable pour les chgt de versions qui n'ecrivent pas en base
 	// tant pis pour la redondance eventuelle avec ci-dessus
-	ecrire_meta('version_installee', $installee,'non');
+	if ($meta) ecrire_meta($meta, $installee,'non');
+	spip_log("MAJ terminee. $meta: $installee",'maj');
+	return array();
 }
 
 // Appliquer une serie de chgt qui risquent de partir en timeout
 // (Alter cree une copie temporaire d'une table, c'est lourd)
 
 // http://doc.spip.org/@serie_alter
-function serie_alter($serie, $q = array()) {
-	$etape = intval(@$GLOBALS['meta']['upgrade_etape_'.$serie]);
+function serie_alter($serie, $q = array(), $meta='', $table='meta') {
+	$meta .= '_maj_' . $serie;
+	$etape = intval(@$GLOBALS[$table][$meta]);
 	foreach ($q as $i => $r) {
 		if ($i >= $etape) {
+			$msg = "maj $table $meta etape $i";
 			if (is_array($r)
 			AND function_exists($f = array_shift($r))) {
-				spip_log("$serie/$i: $f " . join(',',$r),'maj');
-				ecrire_meta('upgrade_etape_'.$serie, $i+1); // attention on enregistre le meta avant de lancer la fonction, de maniere a eviter de boucler sur timeout
+				spip_log("$msg: $f " . join(',',$r),'maj');
+				ecrire_meta($meta, $i+1, 'non', $table); // attention on enregistre le meta avant de lancer la fonction, de maniere a eviter de boucler sur timeout
 				call_user_func_array($f, $r);
-				spip_log("$serie/$i: ok", 'maj');
-			} else {
-			  echo "maj $serie etape $i incorrecte";
-			  exit;
-			}
+				spip_log("$meta: ok", 'maj');
+			} else return $i+1;
 		}
 	}
-	effacer_meta('upgrade_etape_'.$serie);
+	effacer_meta($meta, $table);
+	return 0;
 }
 
 

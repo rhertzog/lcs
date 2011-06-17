@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/layer');
 include_spip('inc/texte'); // inclut inc_filtre 
@@ -74,23 +74,28 @@ function calendrier_args_date($script, $annee, $mois, $jour, $type, $finurl) {
 // http://doc.spip.org/@calendrier_href
 function calendrier_href($script, $annee, $mois, $jour, $type, $fin, $ancre, $img, $titre, $class='', $alt='', $clic='', $style='', $evt='')
 {
-	$h = calendrier_args_date($script, $annee, $mois, $jour, $type, $fin);
-	$evt .= " rel='nofollow'";
-	$a = ($ancre ? "#$ancre" : '');
-	$t = ($titre ? " title=\"$titre\"" : '');
-	$s = ($style ? " style=\"$style\"" : '');
-	$c = ($class ? " class=\"$class\"" : '');
-
-	$moi = preg_match("/exec=" . _request('exec') .'$/', $script);
-	if ($img) $clic =  http_img_pack($img, ($alt ? $alt : $titre), $c);
-	  // pas d'Ajax pour l'espace public pour le moment ou si indispo
-	if (!test_espace_prive() || !$moi || (_SPIP_AJAX !== 1 ))
-
-		return http_href("$h$a", $clic, $titre, $style, $class, $evt);
-	else {
-		$evt .= "\nonclick=" . ajax_action_declencheur($h,$ancre);
-		return "<a$c$s$t\nhref='$h$a'$evt>$clic</a>";
+	static $moi = NULL;
+	// pas d'Ajax pour l'espace public pour le moment ou si indispo
+	// sinon preparer la RegExp qui l'empeche aussi pour la page elle-meme
+	if ($moi === NULL)  {
+		$moi = (test_espace_prive() AND (_SPIP_AJAX === 1 ))
+		? ("/exec=" . _request('exec') .'$/')
+		: '';
 	}
+	$d = mktime (1,1,1, $mois, $jour, $annee);
+	$jour = date("d",$d);
+	$mois = date("m",$d);
+	$annee = date("Y",$d);
+
+	$h = calendrier_args_date($script, $annee, $mois, $jour, $type, $fin);
+	$url = $h . ($ancre ? "#$ancre" : '');
+	$c = ($class ? " class=\"$class\"" : '');
+	
+	if ($img) $clic =  http_img_pack($img, ($alt ? $alt : $titre), $c);
+
+	if ($moi AND preg_match($moi, $script))
+		$evt .= "\nonclick=" . ajax_action_declencheur($h,$ancre);
+	return http_href($url, PtoBR($clic), attribut_html($titre), $style, $class, $evt);
 }
 
 // Fabrique une balise A, avec tous les attributs possibles
@@ -99,19 +104,8 @@ function calendrier_href($script, $annee, $mois, $jour, $type, $fin, $ancre, $im
 
 // http://doc.spip.org/@http_href
 function http_href($href, $clic, $title='', $style='', $class='', $evt='') {
-	$atts = ' href="' .
-		$href .
-		'"' .
-		(!$title ? '' : ("\ntitle=\"" . supprimer_tags($title)."\"")) .
-		(!$style ? '' : ("\nstyle=\"" . $style . "\"")) .
-		(!$class ? '' : ("\nclass=\"" . $class . "\"")) .
-		($evt ? "\n$evt" : '');
-	if (!preg_match('@^<(p|div)>(.*)</\1>$@', $clic, $r))
-	  return "<a$atts>$clic</a>";
-	else {
-	  list(,$b,$c) = $r;
-	  return "<$b><a$atts>$c</a></$b>";
-	}
+	if ($style) $evt .= " style='$style'";
+	return lien_ou_expose($href, $clic, false, $class, $title, 'nofollow', $evt);
 }
 
 # prend une heure de debut et de fin, ainsi qu'une echelle (seconde/pixel)
@@ -264,7 +258,7 @@ function http_calendrier_mois_navigation($annee, $mois, $premier_jour, $dernier_
 	  "\n<tr><td colspan='7'>" .
 	  http_calendrier_navigation($annee,
 				   $mois,
-				   0,
+				   1,
 				   $echelle,
 				   $partie_cal,
 				   $periode,
@@ -701,7 +695,7 @@ function http_calendrier_ics($annee, $mois, $jour,$echelle, $partie_cal,  $large
 			
 			$url = isset($evenement['URL'])
 			  ? $evenement['URL'] : ''; 
-			$desc = propre($evenement['DESCRIPTION']);
+			$desc = PtoBR(propre($evenement['DESCRIPTION']));
 			$perso = substr($evenement['ATTENDEE'], 0,strpos($evenement['ATTENDEE'],'@'));
 			$lieu = isset($evenement['LOCATION']) ?
 				$evenement['LOCATION'] : '';
@@ -715,7 +709,7 @@ function http_calendrier_ics($annee, $mois, $jour,$echelle, $partie_cal,  $large
 			if (($largeur > 90) && $desc)
 			  $sum .=  "\n<br /><span class='calendrier-noir'>$desc</span>";
 			$colors = $evenement['CATEGORIES'];
-		  $sum = ((!$url) ? $sum : http_href(quote_amp($url), $sum, $desc,"border: 0px",$colors));
+		  $sum = ((!$url) ? $sum : http_href(quote_amp($url), $sum, attribut_html($desc),"border: 0px",$colors));
 			$sum = pipeline('agenda_rendu_evenement',array('args'=>array('evenement'=>$evenement,'type'=>'ics'),'data'=>$sum));
 
 			$total .= "\n<div class='calendrier-arial10 $colors' 
@@ -848,12 +842,12 @@ function http_calendrier_sans_date($annee, $mois, $evenements)
 // http://doc.spip.org/@http_calendrier_sans_heure
 function http_calendrier_sans_heure($ev)
 {
-	$desc = propre($ev['DESCRIPTION']);
+	$desc = PtoBR(propre($ev['DESCRIPTION']));
 	$sum = typo($ev['SUMMARY']);
 	if (!$sum) $sum = $desc;
 	$i = isset($ev['DESCRIPTION']) ? 11 : 9; // 11: article; 9:autre
 	if ($ev['URL'])
-	  $sum = http_href(quote_amp($ev['URL']), $sum, $desc);
+	  $sum = http_href(quote_amp($ev['URL']), $sum, attribut_html($desc));
 	$sum = pipeline('agenda_rendu_evenement',array('args'=>array('evenement'=>$ev,'type'=>'sans_heure'),'data'=>$sum));
 	return "\n<div class='calendrier-arial$i calendrier-evenement'>" .
 	  "<span class='" . $ev['CATEGORIES'] . "'>&nbsp;</span>&nbsp;$sum</div>"; 
@@ -868,7 +862,7 @@ function http_calendrier_avec_heure($evenement, $amj)
 	if (($jour_debut <= 0) OR ($jour_debut > $amj) OR ($jour_fin < $amj))
 	  return "";
 	
-	$desc = propre($evenement['DESCRIPTION']);
+	$desc = PtoBR(propre($evenement['DESCRIPTION']));
 	$sum = $evenement['SUMMARY'];
 	$u = $GLOBALS['meta']['pcre_u'];
 	$sum = typo($sum);
@@ -878,7 +872,7 @@ function http_calendrier_avec_heure($evenement, $amj)
 	if ($perso = $evenement['ATTENDEE'])
 	  $sum .=  '<br />' . substr($evenement['ATTENDEE'], 0,strpos($evenement['ATTENDEE'],'@'));
 	if ($evenement['URL'])
-	  $sum = http_href(quote_amp($evenement['URL']), $sum, $desc, 'border: 0px');
+	  $sum = http_href(quote_amp($evenement['URL']), $sum, attribut_html($desc), 'border: 0px');
 
 	$sum = pipeline('agenda_rendu_evenement',array('args'=>array('evenement'=>$evenement,'type'=>'avec_heure'),'data'=>$sum));
 	$opacity = "";
@@ -1224,8 +1218,7 @@ function http_calendrier_rv($messages, $type) {
 				     ($rv ?
 				      http_img_pack("rv.gif", 'rv',
 						    http_style_background($bouton . '.gif', "no-repeat;")) : 
-				      http_img_pack($bouton.".gif", $bouton, "")),
-				     '', '') .
+				      http_img_pack($bouton.".gif", $bouton, ""))) .
 		"</td>\n" .
 		"<td valign='middle'><div style='font-weight: bold;$c'>" .
 		$rv .
@@ -1277,20 +1270,20 @@ function http_calendrier_ics_message($annee, $mois, $jour, $large)
   return "&nbsp;" .
     http_href(generer_action_auteur("editer_message","pb/$annee-$mois-$jour"), 
 	       ($large ? $b : '&nbsp;'), 
-	      $b,
+	      attribut_html($b),
 	      'color: blue;',
 	      'calendrier-arial10 pense-bete') .
     "\n" .
     http_href(generer_action_auteur("editer_message","normal/$annee-$mois-$jour"), 
 	       ($large ? $v : '&nbsp;'), 
-	      $v,
+	      attribut_html($v),
 	      'color: green;',
 	      'calendrier-arial10 message') .
     (($GLOBALS['connect_statut'] != "0minirezo") ? "" :
      ("\n" .
     http_href(generer_action_auteur("editer_message","affich/$annee-$mois-$jour"), 
 		($large ? $j : '&nbsp;'), 
-		$j,
+		attribut_html($j),
 		'color: #ff9900;',
 		'calendrier-arial10 annonce')));
 }

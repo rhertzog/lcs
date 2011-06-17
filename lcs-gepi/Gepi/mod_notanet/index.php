@@ -1,7 +1,7 @@
 <?php
-/* $Id: index.php 4510 2010-05-29 18:06:09Z regis $ */
+/* $Id: index.php 7051 2011-05-29 12:27:22Z crob $ */
 /*
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -174,6 +174,25 @@ statut='';";
 $insert=mysql_query($sql);
 }
 
+/* Ajout des droits pour saisie_socle_commun.php dans la table droits */
+$sql="SELECT 1=1 FROM droits WHERE id='/mod_notanet/saisie_socle_commun.php';";
+$test=mysql_query($sql);
+if(mysql_num_rows($test)==0) {
+$sql="INSERT INTO droits SET id='/mod_notanet/saisie_socle_commun.php',
+administrateur='V',
+professeur='F',
+cpe='F',
+scolarite='F',
+eleve='F',
+responsable='F',
+secours='F',
+autre='F',
+description='Notanet: Saisie socle commun',
+statut='';";
+$insert=mysql_query($sql);
+}
+
+
 
 if(!isset($msg)) {$msg="";}
 //===========================================================
@@ -292,9 +311,20 @@ PRIMARY KEY ( id )
 );";
 $create_table=mysql_query($sql);
 
+$sql="CREATE TABLE IF NOT EXISTS notanet_socle_commun (
+id INT(11) NOT NULL auto_increment,
+login VARCHAR( 50 ) NOT NULL ,
+champ VARCHAR( 10 ) NOT NULL ,
+valeur ENUM( 'MS', 'ME', 'MN', 'AB', '' ) NOT NULL ,
+PRIMARY KEY ( id )
+);";
+$create_table=mysql_query($sql);
+
+
 if($_SESSION['statut']=="administrateur") {
 	$truncate_tables=isset($_GET['truncate_tables']) ? $_GET['truncate_tables'] : NULL;
 	if($truncate_tables=='y') {
+		check_token();
 		echo "<p>Nettoyage des tables Notanet</p>\n";
 		$sql="TRUNCATE TABLE notanet;";
 		$del=mysql_query($sql);
@@ -322,7 +352,7 @@ if($_SESSION['statut']=="administrateur") {
 
 	echo "<li><a href='select_matieres.php'>Effectuer les associations Type de brevet/Matières</a>  (<i>en précisant le statut: imposées et options</i>)</li>\n";
 
-	echo "<li><a href='saisie_b2i_a2.php'>Saisir les 'notes' B2i et niveau A2 de langue</a> (<i>nécessaire pour réaliser ensuite l'extraction des moyennes</i>)</li>\n";
+	//echo "<li><a href='saisie_b2i_a2.php'>Saisir les 'notes' B2i et niveau A2 de langue</a> (<i>nécessaire pour réaliser ensuite l'extraction des moyennes</i>)</li>\n";
 
 	echo "<li><a href='saisie_lvr.php'>Saisir les 'notes' de Langue Vivante Régionale</a> (<i>si un tel enseignement est évalué dans l'établissement</i>)</li>\n";
 
@@ -332,34 +362,43 @@ if($_SESSION['statut']=="administrateur") {
 
 	echo "<li><a href='choix_generation_csv.php?extract_mode=tous'>Générer un export Notanet</a> pour tous les élèves de telle(s) ou telle(s) classe(s) ou juste une sélection (cf. select_eleves.php)</li>\n";
 
+	echo "<li><a href='saisie_socle_commun.php'>Saisir ou importer les résultats du Socle commun.</li>\n";
+
 	echo "<li><a href='verrouillage_saisie_app.php'>Verrouiller/déverrouiller la saisie des appréciations pour les fiches brevet</a><br />La saisie n'est possible pour les professeurs que si l'extraction des moyennes a été effectuée.</li>\n";
 
 	echo "<li><a href='saisie_avis.php'>Saisir l'avis du chef d'établissement</a>.</li>\n";
 
 	echo "<li><p>Générer les fiches brevet selon le modèle de:</p>
-	<ul>
-		<li><a href='poitiers/fiches_brevet.php'>Poitiers</a></li>
+	<ul>\n";
+	/*
+	echo "		<li><a href='poitiers/fiches_brevet.php'>Poitiers</a></li>
 		<li><a href='rouen/fiches_brevet.php'>Rouen (<i>version HTML</i>)</a> - <a href='fb_rouen_pdf.php'>version PDF</a></li>
 		<li><a href='fb_montpellier_pdf.php'>Montpellier (<i>version PDF</i>)</a></li>
 		<li><a href='fb_creteil_pdf.php'>Creteil (<i>version PDF</i>)</a></li>
 		<li><a href='fb_lille_pdf.php'>Lille (<i>version PDF</i>)</a></li>\n";
+
 	$gepi_version=getSettingValue('version');
 	if(($gepi_version!='1.5.1')&&($gepi_version!='1.5.0')) {  
+	*/
 		echo "		<li><a href='OOo/imprime_ooo.php'>Modèle au format OpenOffice</a> <a href='https://www.sylogix.org/projects/gepi/wiki/GepiDoc_fbOooCalc'><img src='../images/icons/ico_question.png' alt='aide construction gabarit' title='Aide pour utiliser les gabarits .ods pour éditer les fiches brevets' title='Aide pour utiliser les gabarits .ods pour éditer les fiches brevets' /></a></li>\n";
-	}
+	//}
 	echo "	</ul>
 </li>\n";
 	//echo "<li><a href='#'>Vider les tables notanet</a></li>\n";
 	//echo "<li><a href=''></a></li>\n";
 	echo "</ol>\n";
 
-	echo "<p>Au changement d'année: <a href='".$_SERVER['PHP_SELF']."?truncate_tables=y'>Vider les saisies Notanet antérieures</a>.</p>\n";
+	echo "<p>Au changement d'année: <a href='".$_SERVER['PHP_SELF']."?truncate_tables=y".add_token_in_url()."'>Vider les saisies Notanet antérieures</a>.</p>\n";
 
-	echo "<p><b>NOTES:</b> Pour un bon fonctionnement du dispositif, il faut parcourir les points ci-dessus dans l'ordre.</p>\n";
+	echo "<p><b>NOTES:</b> Pour un bon fonctionnement du dispositif, il faut parcourir les points ci-dessus dans l'ordre.<br />
+	Voir <a href='https://www.sylogix.org/projects/gepi/wiki/Module_notanet' target='_blank'>https://www.sylogix.org/projects/gepi/wiki/Module_notanet</a></p>\n";
 }
 elseif($_SESSION['statut']=="scolarite") {
 	echo "<ul>\n";
-	echo "<li><a href='saisie_b2i_a2.php'>Saisir les 'notes' B2i et niveau A2 de langue</a> (<i>nécessaire pour réaliser ensuite l'extraction des moyennes</i>)</li>\n";
+	//echo "<li><a href='saisie_b2i_a2.php'>Saisir les 'notes' B2i et niveau A2 de langue</a> (<i>nécessaire pour réaliser ensuite l'extraction des moyennes</i>)</li>\n";
+
+	echo "<li><a href='saisie_lvr.php'>Saisir les 'notes' de Langue Vivante Régionale</a> (<i>si un tel enseignement est évalué dans l'établissement</i>)</li>\n";
+
 	echo "<li><a href='saisie_avis.php'>Saisir l'avis du chef d'établissement</a>.</li>\n";
 	echo "</ul>\n";
 

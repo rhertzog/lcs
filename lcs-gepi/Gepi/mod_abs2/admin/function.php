@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * $Id: function.php 5114 2010-08-26 15:29:50Z crob $
+ * $Id: function.php 6699 2011-03-25 22:04:13Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -48,6 +48,26 @@ function ajoutMotifsParDefaut() {
     }
 }
 
+function ajoutLieuxParDefaut() {
+    $lieu = new AbsenceEleveLieu();
+    $lieu->setNom("Etablissement");
+    $lieu->setCommentaire("L'élève est dans l'enceinte de l'établissement");
+    if (AbsenceEleveLieuQuery::create()->filterByNom($lieu->getNom())->find()->isEmpty()) {
+	$lieu->save();
+    }
+}
+
+function initLieuEtab(){
+    $lieu_etab=AbsenceEleveLieuQuery::create()->filterByNom("Etablissement")->findOne();
+    if(is_null($lieu_etab)){
+       $lieu_etab= new AbsenceEleveLieu();
+       $lieu_etab->setNom("Etablissement");
+       $lieu_etab->setCommentaire("L'élève est dans l'enceinte de l'établissement");
+       $lieu_etab->save();
+    }
+    return($lieu_etab->getId());
+}
+
 function ajoutJustificationsParDefaut() {
     $justifications = new AbsenceEleveJustification();
     $justifications->setNom("Certificat médical");
@@ -72,7 +92,7 @@ function ajoutJustificationsParDefaut() {
 }
 
 function ajoutTypesParDefaut() {
-
+    $id_lieu_etab=initLieuEtab();
     $type = new AbsenceEleveType();
     $type->setNom("Absence scolaire");
     if (AbsenceEleveTypeQuery::create()->filterByNom($type->getNom())->find()->isEmpty()) {
@@ -111,6 +131,7 @@ function ajoutTypesParDefaut() {
 	$type->setJustificationExigible(false);
 	$type->setSousResponsabiliteEtablissement(AbsenceEleveType::$SOUS_RESP_ETAB_VRAI);
 	$type->setManquementObligationPresence(AbsenceEleveType::$MANQU_OBLIG_PRESE_FAUX);
+    $type->setIdLieu($id_lieu_etab);
 
 	$statut = new AbsenceEleveTypeStatutAutorise();
 	$statut->setStatut("professeur");
@@ -143,7 +164,7 @@ function ajoutTypesParDefaut() {
 	$type->setSousResponsabiliteEtablissement(AbsenceEleveType::$SOUS_RESP_ETAB_FAUX);
 	$type->setManquementObligationPresence(AbsenceEleveType::$MANQU_OBLIG_PRESE_VRAI);
 	$type->setRetardBulletin(AbsenceEleveType::$RETARD_BULLETIN_VRAI);
-
+        
 	$statut = new AbsenceEleveTypeStatutAutorise();
 	$statut->setStatut("cpe");
 	$type->addAbsenceEleveTypeStatutAutorise($statut);
@@ -165,7 +186,8 @@ function ajoutTypesParDefaut() {
     $type = new AbsenceEleveType();
     $type->setNom("Erreur de saisie");
     if (AbsenceEleveTypeQuery::create()->filterByNom($type->getNom())->find()->isEmpty()) {
-	$type->setCommentaire("Il y a probablement une erreur de saisie sur cet enregistrement.");
+	$type->setCommentaire("Il y a probablement une erreur de saisie sur cet enregistrement. Pour être non comptabilisée,
+            une saisie de type 'Erreur de saisie' ne doit être associée avec aucun autre type, mais exclusivement avec le type erreur de saisie.");
 	$type->setJustificationExigible(false);
 	$type->setSousResponsabiliteEtablissement(AbsenceEleveType::$SOUS_RESP_ETAB_NON_PRECISE);
 	$type->setManquementObligationPresence(AbsenceEleveType::$MANQU_OBLIG_PRESE_NON_PRECISE);
@@ -200,6 +222,7 @@ function ajoutTypesParDefaut() {
 	$type->setJustificationExigible(false);
 	$type->setSousResponsabiliteEtablissement(AbsenceEleveType::$SOUS_RESP_ETAB_VRAI);
 	$type->setManquementObligationPresence(AbsenceEleveType::$MANQU_OBLIG_PRESE_FAUX);
+    $type->setIdLieu($id_lieu_etab);
 
 	$statut = new AbsenceEleveTypeStatutAutorise();
 	$statut->setStatut("professeur");
@@ -278,6 +301,7 @@ function ajoutTypesParDefaut() {
 	$type->setJustificationExigible(false);
 	$type->setSousResponsabiliteEtablissement(AbsenceEleveType::$SOUS_RESP_ETAB_VRAI);
 	$type->setManquementObligationPresence(AbsenceEleveType::$MANQU_OBLIG_PRESE_FAUX);
+    $type->setIdLieu($id_lieu_etab);
 
 	$statut = new AbsenceEleveTypeStatutAutorise();
 	$statut->setStatut("cpe");
@@ -300,6 +324,7 @@ function ajoutTypesParDefaut() {
 	$type->setSousResponsabiliteEtablissement(AbsenceEleveType::$SOUS_RESP_ETAB_VRAI);
 	$type->setManquementObligationPresence(AbsenceEleveType::$MANQU_OBLIG_PRESE_FAUX);
 	$type->setTypeSaisie(AbsenceEleveType::$TYPE_SAISIE_DISCIPLINE);
+    $type->setIdLieu($id_lieu_etab);
 
 	$statut = new AbsenceEleveTypeStatutAutorise();
 	$statut->setStatut("professeur");
@@ -326,6 +351,7 @@ function ajoutTypesParDefaut() {
 	$type->setJustificationExigible(true);
 	$type->setSousResponsabiliteEtablissement(AbsenceEleveType::$SOUS_RESP_ETAB_VRAI);
 	$type->setManquementObligationPresence(AbsenceEleveType::$MANQU_OBLIG_PRESE_FAUX);
+    $type->setIdLieu($id_lieu_etab);
 
 	$statut = new AbsenceEleveTypeStatutAutorise();
 	$statut->setStatut("cpe");
@@ -389,7 +415,8 @@ function ajoutTypesParDefaut() {
 	$type->setJustificationExigible(false);
 	$type->setSousResponsabiliteEtablissement(AbsenceEleveType::$SOUS_RESP_ETAB_VRAI);
 	$type->setManquementObligationPresence(AbsenceEleveType::$MANQU_OBLIG_PRESE_FAUX);
-
+    $type->setIdLieu($id_lieu_etab);
+    
 	$statut = new AbsenceEleveTypeStatutAutorise();
 	$statut->setStatut("professeur");
 	$type->addAbsenceEleveTypeStatutAutorise($statut);

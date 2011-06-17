@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -11,7 +11,7 @@
 \***************************************************************************/
 
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@base_serial
 function base_serial(&$tables_principales){
@@ -70,6 +70,7 @@ $spip_auteurs = array(
 		"pass"	=> "tinytext DEFAULT '' NOT NULL",
 		"low_sec"	=> "tinytext DEFAULT '' NOT NULL",
 		"statut"	=> "varchar(255)  DEFAULT '0' NOT NULL",
+		"webmestre"	=> "varchar(3)  DEFAULT 'non' NOT NULL",
 		"maj"	=> "TIMESTAMP",
 		"pgp"	=> "TEXT DEFAULT '' NOT NULL",
 		"htpass"	=> "tinytext DEFAULT '' NOT NULL",
@@ -312,7 +313,7 @@ $spip_forum = array(
 		"nom_site"	=> "text DEFAULT '' NOT NULL",
 		"url_site"	=> "text DEFAULT '' NOT NULL",
 		"statut"	=> "varchar(8) DEFAULT '0' NOT NULL",
-		"ip"	=> "varchar(16) DEFAULT '' NOT NULL",
+		"ip"	=> "varchar(40) DEFAULT '' NOT NULL",
 		"maj"	=> "TIMESTAMP",
 		"id_auteur"	=> "bigint DEFAULT '0' NOT NULL",
 		"id_message"	=> "bigint(21) DEFAULT '0' NOT NULL",

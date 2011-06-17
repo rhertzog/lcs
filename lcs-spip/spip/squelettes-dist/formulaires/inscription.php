@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 function formulaires_inscription_charger_dist($mode, $focus, $id=0) {
 	$valeurs = array('nom_inscription'=>'','mail_inscription'=>'', 'id'=>$id);
@@ -102,6 +102,12 @@ function formulaires_inscription_traiter_dist($mode, $focus, $id=0) {
 		list($sujet,$msg,$from,$head) = $f($desc, $nom, $mode, $id);
 		if (!$envoyer_mail($mail_complet, $sujet, $msg, $from, $head))
 			$desc = _T('form_forum_probleme_mail');
+		// Notifications
+		if ($notifications = charger_fonction('notifications', 'inc')) {
+			$notifications('inscription', $desc['id_auteur'],
+				array('nom' => $desc['nom'], 'email' => $desc['email'])
+			);
+		}
 	}
 
 	return array('message_ok'=>is_string($desc) ? $desc : _T('form_forum_identifiant_mail'));
@@ -184,7 +190,7 @@ function test_login($nom, $mail) {
 	// il faut eviter que le login soit vraiment trop court
 	if (strlen($login_base) < 3) {
 		$mail = strtolower(translitteration(preg_replace('/@.*/', '', $mail)));
-		$login_base = preg_replace("/[^\w\d]/", "_", $nom);
+		$login_base = preg_replace("/[^\w\d]/", "_", $mail);
 	}
 	if (strlen($login_base) < 3)
 		$login_base = 'user';
@@ -209,11 +215,8 @@ function test_login($nom, $mail) {
 function creer_pass_pour_auteur($id_auteur) {
 	include_spip('inc/acces');
 	$pass = creer_pass_aleatoire(8, $id_auteur);
-	$mdpass = md5($pass);
-	$htpass = generer_htpass($pass);
-	sql_updateq('spip_auteurs', array('pass'=>$mdpass, 'htpass'=>$htpass),"id_auteur = ".intval($id_auteur));
-	ecrire_acces();
-	
+	include_spip('action/editer_auteur');
+	instituer_auteur($id_auteur, array('pass'=>$pass));
 	return $pass;
 }
 

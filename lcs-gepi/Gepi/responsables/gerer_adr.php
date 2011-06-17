@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: gerer_adr.php 3323 2009-08-05 10:06:18Z crob $
+ * $Id: gerer_adr.php 6618 2011-03-03 18:25:55Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -35,7 +35,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 
 if (!checkAccess()) {
@@ -48,7 +48,9 @@ if(!isset($msg)){
 	$msg="";
 }
 
-if(isset($suppr_ad)){
+if(isset($suppr_ad)) {
+	check_token();
+
 	$temoin_suppr=0;
 	for($i=0;$i<count($suppr_ad);$i++){
 		$sql="SELECT pers_id FROM resp_pers WHERE adr_id='$suppr_ad[$i]'";
@@ -88,6 +90,8 @@ if(isset($suppr_ad)){
 $titre_page = "Gestion des adresses de responsables";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE ***************************
+
+//debug_var();
 
 if(!getSettingValue('conv_new_resp_table')){
 	$sql="SELECT 1=1 FROM responsables";
@@ -132,18 +136,18 @@ if(!getSettingValue('conv_new_resp_table')){
 	*/
 
 	$critere_recherche=isset($_POST['critere_recherche']) ? $_POST['critere_recherche'] : "";
-	$critere_recherche=my_ereg_replace("[^a-zA-ZÀÄÂÉÈÊËÎÏÔÖÙÛÜ½¼Ççàäâéèêëîïôöùûü0-9_ -]", "", $critere_recherche);
+	$critere_recherche=preg_replace("/[^a-zA-ZÀÄÂÉÈÊËÎÏÔÖÙÛÜ½¼Ççàäâéèêëîïôöùûü0-9_ -]/", "", $critere_recherche);
 	$afficher_toutes_les_adr=isset($_POST['afficher_toutes_les_adr']) ? $_POST['afficher_toutes_les_adr'] : "n";
 
 	$champ_rech=isset($_POST['champ_rech']) ? $_POST['champ_rech'] : "commune";
 	if(($champ_rech!='commune')&&($champ_rech!='cp')&&($champ_rech!='adrX')&&($champ_rech!='non_assoc')) {$champ_rech="commune";}
 
 	$nb_adr=isset($_POST['nb_adr']) ? $_POST['nb_adr'] : 20;
-	if(strlen(my_ereg_replace("[0-9]","",$nb_adr))!=0) {
+	if(strlen(preg_replace("/[0-9]/","",$nb_adr))!=0) {
 		$nb_adr=20;
 	}
 	$num_premier_adr_rech=isset($_POST['num_premier_adr_rech']) ? $_POST['num_premier_adr_rech'] : 0;
-	if((strlen(my_ereg_replace("[0-9]","",$num_premier_adr_rech))!=0)||($num_premier_adr_rech=="")) {
+	if((strlen(preg_replace("/[0-9]/","",$num_premier_adr_rech))!=0)||($num_premier_adr_rech=="")) {
 		$num_premier_adr_rech=0;
 	}
 
@@ -202,9 +206,9 @@ if(!getSettingValue('conv_new_resp_table')){
 	echo " premières adresses ";
 	echo " à partir de l'enregistrement ";
 
-	echo "<input type='button' name='prec' value='<<' onclick=\"document.getElementById('num_premier_adr_rech').value=Math.max(0,document.getElementById('num_premier_adr_rech').value-document.getElementById('nb_adr').value);document.form_rech.submit();\" />\n";
+	echo "<input type='button' name='prec' value='<<' onclick=\"document.getElementById('num_premier_adr_rech').value=Math.max(0,eval(document.getElementById('num_premier_adr_rech').value)-eval(document.getElementById('nb_adr').value));document.form_rech.submit();\" />\n";
 	echo "<input type='text' name='num_premier_adr_rech' id='num_premier_adr_rech' value='$num_premier_adr_rech' size='4' />\n";
-	echo "<input type='button' name='prec' value='>>' onclick=\"document.getElementById('num_premier_adr_rech').value=Math.min($nb_tot_adr_id,document.getElementById('num_premier_adr_rech').value+document.getElementById('nb_adr').value);document.form_rech.submit();\" />\n";
+	echo "<input type='button' name='suiv' value='>>' onclick=\"document.getElementById('num_premier_adr_rech').value=Math.min($nb_tot_adr_id,eval(document.getElementById('num_premier_adr_rech').value)+eval(document.getElementById('nb_adr').value));document.form_rech.submit();\" />\n";
 	echo "</td>\n";
 	echo "</tr>\n";
 
@@ -283,6 +287,7 @@ if(mysql_num_rows($res_adr)>0){
 	//echo "<b>ou</b> <input type='checkbox' name='select_ad_existante' id='select_ad_existante' value='y' onchange='modif_div_ad()' /> Sélectionner une adresse existante.";
 
 	echo "<form enctype=\"multipart/form-data\" name=\"choix_adr\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
+	echo add_token_field();
 	echo "<input type='hidden' name='nb_adr' value='$nb_adr' />\n";
 	echo "<input type='hidden' name='num_premier_adr_rech' value='$num_premier_adr_rech' />\n";
 	echo "<input type='hidden' name='champ_rech' value='$champ_rech' />\n";
@@ -315,7 +320,13 @@ if(mysql_num_rows($res_adr)>0){
 	$ligne_titre.="<td style='text-align:center; font-weight:bold; background-color:#AAE6AA;'>Commune</td>\n";
 	$ligne_titre.="<td style='text-align:center; font-weight:bold; background-color:#AAE6AA;'>Pays</td>\n";
 	$ligne_titre.="<td style='text-align:center; font-weight:bold; background-color:#96C8F0;'>Responsable associé</td>\n";
-	$ligne_titre.="<td style='text-align:center; font-weight:bold; background-color:red;'>Supprimer adresse(s)</td>\n";
+	$ligne_titre.="<td style='text-align:center; font-weight:bold; background-color:red;'>Supprimer adresse(s)<br />\n";
+	$ligne_titre.="<a href=\"javascript:modif_case(true)\">";
+	$ligne_titre.="<img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>";
+	$ligne_titre.=" / ";
+	$ligne_titre.="<a href=\"javascript:modif_case(false)\">";
+	$ligne_titre.="<img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+	$ligne_titre.="</td>\n";
 	$ligne_titre.="</tr>\n";
 
 	/*
@@ -434,6 +445,15 @@ if(mysql_num_rows($res_adr)>0){
 
 
 		echo "<script type='text/javascript'>
+
+	function modif_case(mode) {
+		for(i=0;i<$cpt;i++) {
+			if(document.getElementById('suppr_'+i)) {
+				document.getElementById('suppr_'+i).checked=mode;
+			}
+		}
+	}
+
 	tab_non_assoc=new Array();\n";
 
 		for($i=0;$i<count($tab_adr_id_non_assoc);$i++){

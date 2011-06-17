@@ -1,9 +1,9 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: gestion_temp_dir.php 5354 2010-09-20 17:32:08Z crob $
+ * $Id: gestion_temp_dir.php 6468 2011-02-06 17:21:41Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -51,7 +51,9 @@ $reinitialiser=isset($_POST['reinitialiser']) ? $_POST['reinitialiser'] : (isset
 
 
 //if((isset($_POST['is_posted']))&&(($suppr))||(isset($reinit))) {
-if(isset($reinitialiser)){
+if(isset($reinitialiser)) {
+	check_token();
+
 	$msg="";
 
 	$nb_reinit=0;
@@ -113,12 +115,13 @@ if(isset($reinitialiser)){
 }
 else{
 	if((isset($_POST['is_posted']))&&(isset($suppr))) {
+		check_token();
 		$msg="";
 
 		$nb_suppr=0;
 		for($i=0;$i<count($suppr);$i++){
-			//if(!ereg("_[A-Za-z0-9]{40}",$suppr[$i])) {
-			if(!ereg("_",$suppr[$i])) {
+			//if(!my_ereg("_[A-Za-z0-9]{40}",$suppr[$i])) {
+			if(!my_ereg("_",$suppr[$i])) {
 				$msg.="Le choix $suppr[$i] n'est pas valide.<br />\n";
 			}
 			//elseif(strlen(my_ereg_replace("[A-Za-z0-9_.]","",$suppr[$i]))!=0) {
@@ -168,7 +171,9 @@ require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 
 echo "<p class='bold'><a href='index.php#gestion_temp_dir'><img src='../images/icons/back.png' alt='Retour' class='back_link' /> Retour</a> | \n";
-if(isset($reinitialiser)){
+if(isset($reinitialiser)) {
+	check_token(false);
+
 	echo "<a href='".$_SERVER['PHP_SELF']."'>Suppression</a>";
 	echo "</p>\n";
 	echo "<h2>Réinitialisation des dossiers temporaires</h2>\n";
@@ -183,6 +188,7 @@ if(isset($reinitialiser)){
 	}
 	else{
 		echo "<form action='".$_SERVER['PHP_SELF']."' method=\"post\" name=\"formulaire\">\n";
+		echo add_token_field();
 
 		echo "<p>Voici la liste des utilisateurs dont l'aléa peut être recalculé<br />(<i>Les utilisateurs qui n'apparaissent pas, auront de toute façon un nouveau dossier temporaire généré lors de leur prochain login</i>):</p>\n";
 
@@ -255,12 +261,13 @@ if(isset($reinitialiser)){
 	}
 }
 else{
-	echo "<a href='".$_SERVER['PHP_SELF']."?reinitialiser=y'>Réinitialisation</a>";
+	echo "<a href='".$_SERVER['PHP_SELF']."?reinitialiser=y".add_token_in_url()."'>Réinitialisation</a>";
 	echo "</p>\n";
 	echo "<h2>Suppression de dossiers temporaires</h2>\n";
 
 	echo "<div align='center' class='gestion_temp_dir'>\n";
 	echo "<form action='".$_SERVER['PHP_SELF']."' method=\"post\" name=\"formulaire\">\n";
+	echo add_token_field();
 
 	echo "<table border='1' class='boireaus' summary='Tableau des utilisateurs et volumes'>\n";
 	echo "<tr>\n";
@@ -296,8 +303,8 @@ else{
 
 			// Test:
 			//if(strlen(my_ereg_replace("[A-Za-z0-9_.]","",$file))!=0) {
-			//if((strlen(my_ereg_replace("[A-Za-z0-9_.]","",$file))!=0)||(!ereg("_[A-Za-z0-9]{40}",$file))) {
-			//if((strlen(my_ereg_replace("[A-Za-z0-9_.-]","",$file))!=0)||(!ereg("_",$file))) {
+			//if((strlen(my_ereg_replace("[A-Za-z0-9_.]","",$file))!=0)||(!my_ereg("_[A-Za-z0-9]{40}",$file))) {
+			//if((strlen(my_ereg_replace("[A-Za-z0-9_.-]","",$file))!=0)||(!my_ereg("_",$file))) {
 			if((strlen(my_ereg_replace("[A-Za-z0-9_.-]","",$file))!=0)||(!my_ereg("_",$file))) {
 				// Il y a des caractères inattendus dans le nom de dossier
 				$bizarre++;

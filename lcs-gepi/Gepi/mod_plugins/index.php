@@ -1,8 +1,8 @@
 <?php
 /**
- * @version : $Id: index.php 4444 2010-05-15 19:32:19Z delineau $
+ * @version : $Id: index.php 6416 2011-01-24 12:18:50Z crob $
  *
- * Copyright 2001, 2009 Thomas Belliard, Julien Jocal
+ * Copyright 2001, 2011 Thomas Belliard, Julien Jocal
  *
  * This file is part of GEPI.
  *
@@ -68,7 +68,8 @@ function aff_debug($tab){
 }
 
 # On traite d'un plugin qui n'est pas installé
-if (isset($nom_plugin)){
+if (isset($nom_plugin)) {
+  check_token();
   if ($action == "installer"){
     // On ouvre le répertoire et on scanne le contenu, il faut y trouver un fichier xml et un fichier index.php au minimum
     $plugin = scandir($nom_plugin);
@@ -113,7 +114,8 @@ if (isset($nom_plugin)){
 
   }
 # On traite des plugin déjà installés
-}elseif(isset($plugin_id)){
+}elseif(isset($plugin_id)) {
+  check_token();
   // On s'attache à faire les actions demandées sur ce plugin déjà installé
   $pluginAmodifier = PlugInPeer::retrieveByPK($plugin_id);
   switch ($action) {
@@ -139,7 +141,7 @@ if (isset($nom_plugin)){
 $liste_plugins  = array();
 $open_dir       = scandir("./");
 
-foreach ($open_dir as $dir){
+foreach ($open_dir as $dir) {
 
   // On vérifie la présence d'un point dans le nom retourné
   $test = explode(".", $dir);
@@ -163,7 +165,7 @@ switch ($_erreur) {
     $_msg = "<p class=\"red\">Il manque le fichier plugin.xml &agrave; ce plugin, impossible de l'installer !</p>";
     break;
   case "2":
-    $_msg = "<p class=\"red\">Le fichier plugin.xml ne respecte pas la struture demand&eacute;e ! voir <a href=\"http://projects.sylogix.org/gepi/wiki/plugin\">la page sur TRAC</a></p>";
+    $_msg = "<p class=\"red\">Le fichier plugin.xml ne respecte pas la struture demand&eacute;e ! voyez <a href=\"https://www.sylogix.org/wiki/gepi/plugin\">la documentation collaborative (wiki)</a></p>";
     break;
 
 default:
@@ -176,12 +178,13 @@ include '../lib/header.inc';
 // ================ FIN HEADER =====================//
 //print_r($liste_plugins);
 //aff_debug($testXML);
+echo "<p class='bold'><a href='../accueil_modules.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 ?>
 
 
 <h3 class="Gepi">Liste des plugins install&eacute;s</h3>
 <p>Pour plus d'informations concernant les plugins de Gepi, voyez
-  <a onclick="window.open(this.href, '_blank'); return false;" href="http://projects.sylogix.org/gepi/wiki/plugin">la page sur TRAC</a>
+  <a onclick="window.open(this.href, '_blank'); return false;" href="https://www.sylogix.org/projects/gepi/wiki/GuideAdministrateur#Syst%C3%A8me-de-plugins">la documentation collaborative (wiki)</a>
 </p>
 <?php echo $_msg; ?>
  <table class="table">
@@ -203,7 +206,7 @@ foreach($liste_plugins as $plugin){
       <td>-</td>
       <td>-</td>
       <td>-</td>
-      <td><a href="index.php?nom_plugin='.$plugin.'&amp;action=installer" title="Voulez-vous l\'installer ?">NON</a></td>
+      <td><a href="index.php?nom_plugin='.$plugin.'&amp;action=installer'.add_token_in_url().'" title="Voulez-vous l\'installer ?">NON</a></td>
       <td>NON</td>
     </tr>';
   }else{
@@ -211,9 +214,9 @@ foreach($liste_plugins as $plugin){
     $xml = simplexml_load_file($plugin->getNom() . "/plugin.xml");
     // On teste s'il est ouvert
     if ($plugin->getOuvert() == 'y'){
-      $aff_ouvert = '<a href="index.php?plugin_id='.$plugin->getId().'&amp;action=fermer" title="Voulez-vous le fermer ?">OUI</a>';
+      $aff_ouvert = '<a href="index.php?plugin_id='.$plugin->getId().'&amp;action=fermer'.add_token_in_url().'" title="Voulez-vous le fermer ?">OUI</a>';
     }else{
-      $aff_ouvert = '<a href="index.php?plugin_id='.$plugin->getId().'&amp;action=ouvrir" title="Voulez-vous l\'ouvrir ?">NON</a>';
+      $aff_ouvert = '<a href="index.php?plugin_id='.$plugin->getId().'&amp;action=ouvrir'.add_token_in_url().'" title="Voulez-vous l\'ouvrir ?">NON</a>';
     }
     echo '
     <tr>
@@ -221,7 +224,7 @@ foreach($liste_plugins as $plugin){
       <td>'.iconv("utf-8","iso-8859-1",$xml->description).'</td>
       <td>'.iconv("utf-8","iso-8859-1",$xml->auteur).'</td>
       <td>'.iconv("utf-8","iso-8859-1",$xml->version).'</td>
-      <td><a href="index.php?plugin_id='.$plugin->getId().'&amp;action=desinstaller" title="Voulez-vous le d&eacute;sinstaller ?" onclick="return confirm('."'La desinstallation d\'un plugin entraîne la suppression des tables éventuellement associées et des données qu\'elles contiennent. Etes-vous sûr de vouloir désinstaller ce plugin ?'".');">OUI</a></td>
+      <td><a href="index.php?plugin_id='.$plugin->getId().'&amp;action=desinstaller'.add_token_in_url().'" title="Voulez-vous le d&eacute;sinstaller ?" onclick="return confirm('."'La desinstallation d\'un plugin entraîne la suppression des tables éventuellement associées et des données qu\'elles contiennent. Etes-vous sûr de vouloir désinstaller ce plugin ?'".');">OUI</a></td>
       <td>'.$aff_ouvert.'</td>
     </tr>';
   }

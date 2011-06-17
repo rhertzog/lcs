@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: class_accueil_change_menu.php 4869 2010-07-22 13:32:34Z jjocal $
+ * $Id: class_accueil_change_menu.php 6743 2011-04-03 19:22:58Z regis $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -54,18 +54,19 @@ class class_accueil_change_menu {
   }
   
   private function chargeNouvelOrdre($ordreDemande){
-	while(next($ordreDemande))
-	  {
-		switch (current($ordreDemande)){
-		  case "menu":
-			$this->ordreFuturMenu[]=array('bloc'=>next($ordreDemande), 'statut'=>next($ordreDemande),'ancienNum'=>next($ordreDemande),'nouveauNum'=>next($ordreDemande),'nouveauNom'=>next($ordreDemande));
-			// $this->ordreFuturMenu[]=array('statut'=>next($ordreDemande),'ancienNum'=>next($ordreDemande),'nouveauNum'=>next($ordreDemande));
-			break;
-		  default:
-			break;
+ 		$nbItem= count($ordreDemande) ;
+ 		$i=0;
+		while ($i<$nbItem) {
+			switch (current($ordreDemande)){
+				case "menu":
+				$this->ordreFuturMenu[]=array('bloc'=>next($ordreDemande), 'statut'=>next($ordreDemande),'ancienNum'=>next($ordreDemande),'nouveauNum'=>next($ordreDemande),'nouveauNom'=>next($ordreDemande));
+				$i+=5;
+				default:
+			}
+ 		next($ordreDemande);
+ 		$i++;
 		}
-	  }
-	return true;
+		return true;
   }
 
   private function chargeAncienOrdre(){

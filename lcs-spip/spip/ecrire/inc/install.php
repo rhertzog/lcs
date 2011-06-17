@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 //  Pour ecrire les fichiers memorisant les parametres de connexion
 
@@ -43,23 +43,28 @@ function install_connexion($adr, $port, $login, $pass, $base, $type, $pref, $lda
 	. "spip_connect_db("
 	. "'$adr','$port','$login','$pass','$base'"
 	. ",'$type', '$pref','$ldap');\n";
-
 }
+
+// Analyse si un fichier contient le resultat de la fonction install_connexion
+// y compris ce qu'elle produisait dans les versions precedentes
 
 // http://doc.spip.org/@analyse_fichier_connection
 function analyse_fichier_connection($file)
 {
-
 	$s = @join('', file($file));
 	if (preg_match("#mysql_connect\([\"'](.*)[\"'],[\"'](.*)[\"'],[\"'](.*)[\"']\)#", $s, $regs)) {
 		array_shift($regs);
 		return $regs;
-	} else if (preg_match("#spip_connect_db\('([^']*)'\s*,\s*'([^']*)'\s*,\s*'([^']*)'\s*,\s*'([^']*)'\s*,\s*'([^']*)'\s*,\s*'([^']*)#", $s, $regs)) {
-		$regs[2] = $regs[1] . (!$regs[2] ? '' : ":$port_db;");
-		array_shift($regs);
-		array_shift($regs);
-		return $regs;
-	} else spip_log("$file n'est pas un fichier de connexion");
+	} else {
+		$arg = '\s*\'([^\']*)\'\s*,';
+		if (preg_match("#spip_connect_db\($arg$arg$arg$arg\s*'([^']*)'\s*(?:,\s*'([^']*))?#", $s, $regs)) {
+			$regs[2] = $regs[1] . (!$regs[2] ? '' : ":$port_db;");
+			array_shift($regs);
+			array_shift($regs);
+			return $regs;
+		}
+	}
+	spip_log("$file n'est pas un fichier de connexion");
 	return '';
 }
 
@@ -74,6 +79,13 @@ function bases_referencees($exclu='')
 	return $tables;
 }
 
+
+function install_mode_appel($server_db, $tout=true)
+{
+	return ($server_db != 'mysql') ? ''
+	: (($tout  ? test_rappel_nom_base_mysql($server_db) : '')
+		. test_sql_mode_mysql($server_db)	);
+}
 
 //
 // Verifier que l'hebergement est compatible SPIP ... ou l'inverse :-)
@@ -163,7 +175,7 @@ function bouton_suivant($code = '') {
 	static $suivant = 0;
 	$id = 'suivant'.(($suivant>0)?strval($suivant):'');
 	$suivant +=1;
-	return "\n<span class='suivant'><input id='".$id."' type='submit' class='fondl'\nvalue=\"" .
+	return "\n<span class='suivant'><input id='".$id."' type='submit'\nvalue=\"" .
 		$code .
 		" >>\" /></span>\n";
 }
@@ -214,9 +226,18 @@ function info_progression_etape($en_cours,$phase,$dir, $erreur = false){
 
 
 // http://doc.spip.org/@fieldset
-function fieldset($legend, $champs = array(), $horchamps='') {
-	$fieldset = "<fieldset>\n" .
-	($legend ? "<legend>".$legend."</legend>\n" : '');
+function fieldset($legend,  $champs = array(), $apres='', $avant='') {
+	return "<fieldset>\n" .
+	  $avant .
+	  ($legend ? "<legend>".$legend."</legend>\n" : '') .
+	  fieldset_champs($champs) .
+	  $apres .
+	  "</fieldset>\n";
+}
+
+function fieldset_champs($champs = array())
+  {
+	$fieldset = '';
 	foreach ($champs as $nom => $contenu) {
 		$type = isset($contenu['hidden']) ? 'hidden' : (preg_match(',^pass,', $nom) ? 'password' : 'text');
 		$class = isset($contenu['hidden']) ? '' : "class='formo' size='40' ";
@@ -237,48 +258,37 @@ function fieldset($legend, $champs = array(), $horchamps='') {
 							  .(preg_match(',^(pass|login),', $nom)?" autocomplete='off'":'') .	" />\n";
 		}
 	}
-	$fieldset .= "$horchamps</fieldset>\n";
 	return $fieldset;
+}
+
+function install_select_serveur()
+{
+	$options = array();
+	$dir = _DIR_RESTREINT . 'req/';
+	$d = @opendir($dir);
+	if (!$d) return array();
+	while ($f = readdir($d)) {
+		if ((preg_match('/^(.*)[.]php$/', $f, $s))
+		AND is_readable($f = $dir . $f)) {
+			require_once($f);
+			$s = $s[1];
+			$v = 'spip_versions_' . $s;
+			if (function_exists($v) AND $v()) {
+			  $titre = _T("install_select_type_$s");
+			  $options[$s] =  "<option value='$s'>"
+			    . ($titre ? $titre : $s)
+			    ."</option>";
+			} else spip_log("$s: portage indisponible");
+		}
+	}
+	sort($options);
+	return $options;
 }
 
 // http://doc.spip.org/@install_connexion_form
 function install_connexion_form($db, $login, $pass, $predef, $hidden, $etape)
 {
-
-	// demander les version dispo de postgres
-	if (include_spip('req/pg')) {
-		$versions = spip_versions_pg();
-		$pg = !!$versions;
-	}
-
-	// demander les version dispo de mysql
-	if (include_spip('req/mysql')) {
-		$versions = spip_versions_mysql();
-		$mysql = !!$versions;
-	}
-
-	// demander les version dispo de sqlite
-	if (include_spip('req/sqlite_generique')) {
-		$versions = spip_versions_sqlite();
-		$sqlite2 = in_array(2, $versions);
-		$sqlite3 = in_array(3, $versions);
-	}
-
-	// ne pas cacher le formulaire s'il n'a qu'un serveur :
-	// ca permet de se rendre compte de ce qu'on fait !
-/*
-	if (($pg + $mysql + $sqlite2 + $sqlite3) == 1){
-		if ($mysql) 	$server_db = 'mysql';
-		if ($pg) 		$server_db = 'pg';
-		if ($sqlite2) 	$server_db = 'sqlite2';
-		if ($sqlite3) 	$server_db = 'sqlite3';
-	} else
-*/
-
-	// le cacher si l'installation est predefinie avec un serveur particulier
-	if (is_string($predef[0])) {
-		$server_db = $predef[0];
-	}
+	$server_db = (is_string($predef[0])) ? $predef[0] : '';
 
 	return generer_form_ecrire('install', (
 	  "\n<input type='hidden' name='etape' value='$etape' />"
@@ -314,7 +324,7 @@ function install_connexion_form($db, $login, $pass, $predef, $hidden, $etape)
 	. ($server_db
 		? '<input type="hidden" name="server_db" value="'.$server_db.'" />'
 			. (($predef[0])
-			   ?('<b>'._T('install_serveur_hebergeur').'</b>')
+			   ?('<h3>'._T('install_serveur_hebergeur').'</h3>')
 				:'')
 		: ('<fieldset><legend>'
 		   ._T('install_select_type_db')
@@ -323,21 +333,10 @@ function install_connexion_form($db, $login, $pass, $predef, $hidden, $etape)
 			. _T('install_types_db_connus')
 			// Passer l'avertissement SQLIte en  commentaire, on pourra facilement le supprimer par la suite sans changer les traductions.
 			. "<br /><small>(". _T('install_types_db_connus_avertissement') .')</small>'
-			.'</label>'		
-		. "\n<div style='text-align: center;'><select name='server_db' id='sql_serveur_db' >"
-		. ($mysql
-			? "\n<option value='mysql'>"._T('install_select_type_mysql')."</option>"
-			: '')
-		. ($pg
-			? "\n<option value='pg'>"._T('install_select_type_pgsql')."</option>"
-			: '')
-		. (($sqlite2)
-			? "\n<option value='sqlite2'>"._T('install_select_type_sqlite2')."</option>"
-			: '')
-		. (($sqlite3)
-			? "\n<option value='sqlite3'>"._T('install_select_type_sqlite3')."</option>"
-			: '')
-		   . "\n</select></div></fieldset>")
+			.'</label>'
+		. "\n<div style='text-align: center;'><select name='server_db' id='sql_serveur_db' >\n"
+		.   join("\n", install_select_serveur())
+		. "\n</select></div></fieldset>")
 	)
 	. '<div id="install_adresse_base_hebergeur">'
 	. ($predef[1]
@@ -413,7 +412,7 @@ function predef_ou_cache($adresse_db, $login_db, $pass_db, $server_db)
 // presentation des bases existantes
 
 // http://doc.spip.org/@install_etape_liste_bases
-function install_etape_liste_bases($server_db, $disabled=array())
+function install_etape_liste_bases($server_db, $login_db, $disabled=array())
 {
 	$result = sql_listdbs($server_db);
 	if (!$result) return '';
@@ -454,5 +453,15 @@ function install_etape_liste_bases($server_db, $disabled=array())
 	if ($checked) {array_unshift($bases, $checked); $checked = true;}
 
 	return array($checked, $bases);
+}
+
+function install_propager($hidden)
+{
+	$res = '';
+	foreach($hidden as $k) {
+		$v = htmlentities(_request($k));
+		$res .= "<input type='hidden' name='$k' value='$v' />";
+	}
+	return $res;
 }
 ?>

@@ -3,7 +3,7 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -24,7 +24,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'admin_modifier_rubrique' => 'Iguar la estaya',
 'admin_recalculer' => 'Recalcular esta p&aacute;xina',
 'afficher_trad' => 'amosar les tornes',
-'alerte_maj_impossible' => '<b>&iexcl;Alerta!</b> El remocique de la base SQL a la versi&oacute;n @version@ nun ye posible, pue ser por un problema de permisos pa modificar la base de datos. Contauta col to agospiamientu web.',
+'alerte_maj_impossible' => '<b>&iexcl;Alerta!</b> El remocique de la base SQL a la versi&oacute;n @version@ nun ye posible, seique por un problema de permisos pa camudar la base de datos. Contauta col to agospiamientu web.',
 'alerte_modif_info_concourante' => 'ATENCI&Oacute;N: Esta informaci&oacute;n camudose n\'otru llugar. El valor actual ye:',
 'analyse_xml' => 'An&aacute;lisis XML',
 'annuler' => 'Anular',
@@ -58,7 +58,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'barre_intertitre' => 'Camudar a {{{inter-t&iacute;tulu}}}',
 'barre_italic' => 'Poner en {cursiva}',
 'barre_lien' => 'Camudar a [enllaz d\'hipertestu->http://...]',
-'barre_lien_input' => 'Indica les se&ntilde;es del to enllaz. Puen indicase unes se&ntilde;es web na forma http://www.talsitiu.ast/direutoriu/ o nam&aacute;i poner el n&uacute;mberu d\'un art&iacute;culu d\'esti sitiu.',
+'barre_lien_input' => 'Indica les se&ntilde;es del to enllaz. Pueden conse&ntilde;ase unes se&ntilde;es web na forma http://www.talsitiu.ast/direutoriu/ o s&oacute;lo poner el n&uacute;mberu d\'un art&iacute;culu d\'esti sitiu.',
 'barre_note' => 'Camudar en [[Nota de pie de p&aacute;xina]]',
 'barre_paragraphe' => 'Crear un p&aacute;rrafu',
 'barre_quote' => '<quote>Citar un mensaxe</quote>',
@@ -188,7 +188,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'date_saison_2' => 'primavera',
 'date_saison_3' => 'branu',
 'date_saison_4' => 'seronda',
+'date_secondes' => 'segundos',
 'date_semaines' => 'selmanes',
+'date_un_mois' => 'mes',
+'date_une_heure' => 'hora',
+'date_une_minute' => 'minutu',
+'date_une_seconde' => 'segundu',
+'date_une_semaine' => 'selmana',
 'dirs_commencer' => 'pa entamar dafechu la instalaci&oacute;n',
 'dirs_preliminaire' => 'Previo: <b>Iguar los permisos d\'accesu</b>',
 'dirs_probleme_droits' => 'Problema colos permisos d\'accesu',
@@ -201,7 +207,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
   <p>Pa igualo, usa el to cliente FTP pa reglar los permisos d\'accesu de ca&uacute;n
   d\'estos direutorios. El procesu espl&iacute;case en detalle na gu&iacute;a d\'asitiamientu.</p>
   <p>De magar fechu el camb&eacute;u, vas poder ',
-'double_occurrence' => 'Doble ocurrencia',
+'double_occurrence' => 'Ocurrencia doble de @balise@',
 
 // E
 'en_cours' => 'en cursu',
@@ -215,12 +221,24 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'etape' => 'Etapa',
 
 // F
-'fichier_introuvable' => 'Nun s\'alcuentra l\'archivu @fichier@',
+'fichier_introuvable' => 'Nun s\'alcuentra el ficheru @fichier@',
+'form_auteur_confirmation' => 'Confirmez votre adresse email', # NEW
+'form_auteur_email_modifie' => 'Votre adresse email a &eacute;t&eacute; modifi&eacute;e.', # NEW
+'form_auteur_envoi_mail_confirmation' => 'Un courrier &eacute;lectronique de confirmation vient d\'&ecirc;tre envoy&eacute; &agrave; @email@. Vous devrez visiter l\'adresse Web mentionn&eacute;e dans ce courrier pour valider votre adresse mail.', # NEW
+'form_auteur_mail_confirmation' => 'Bonjour,
+
+Vous avez demand&eacute; &agrave; changer votre adresse email.
+Pour confirmer votre nouvelle adresse, il suffit de vous connecter &agrave;
+l\'adresse ci-dessous (dans le cas contraire, votre demande
+sera ignor&eacute;e) :
+
+    @url@
+', # NEW
 'form_deja_inscrit' => 'Ya tas apunt&aacute;u.',
 'form_email_non_valide' => 'Les se&ntilde;es de corr&eacute;u electr&oacute;nicu nun son v&aacute;lides.',
 'form_forum_access_refuse' => 'Ya nun ties accesu a esti sitiu.',
 'form_forum_bonjour' => 'Hola, @nom@,',
-'form_forum_email_deja_enregistre' => 'Estes se&ntilde;es de corr&eacute;u electr&oacute;nicu ya tan rexistr&aacute;es; poro, pues usar la to contrase&ntilde;a habitual.',
+'form_forum_email_deja_enregistre' => 'Estes se&ntilde;es de corr&eacute;u electr&oacute;nicu ya tan rexistr&aacute;es; poro, puedes usar la to contrase&ntilde;a normal.',
 'form_forum_identifiant_mail' => 'La to nueva identificaci&oacute;n ta acabante d\'unviase por email.',
 'form_forum_identifiants' => 'Identificaci&oacute;n personal',
 'form_forum_indiquer_nom_email' => 'Indica equ&iacute; el to nome y les tos se&ntilde;es d\'email. La to identificaci&oacute;n personal va llegate de secute por corr&eacute;u ellectr&oacute;nicu.',
@@ -271,7 +289,7 @@ Gracies por participar
 'form_pet_url_invalide' => 'L\'URL que indicaste nun ye v&aacute;lida.',
 'form_pet_votre_email' => 'Les tos se&ntilde;es de corr&eacute;u electr&oacute;nicu',
 'form_pet_votre_nom' => 'El to nome o nomatu',
-'form_pet_votre_site' => 'Si tienes un sitiu Web, pues indicalu darr&eacute;u',
+'form_pet_votre_site' => 'Si tienes un sitiu Web, puedes conse&ntilde;alu darr&eacute;u',
 'form_prop_confirmer_envoi' => 'Confirmar l\'unv&iacute;u',
 'form_prop_description' => 'Descripci&oacute;n/comentariu',
 'form_prop_enregistre' => 'La to propuesta qued&oacute; rexistrada, apaecer&aacute; en ll&iacute;nia tres de la validaci&oacute;n polos responsables d\'esti sitiu.',
@@ -317,9 +335,9 @@ Gracies por participar
 'forum_vous_inscrire' => 'inscribite.',
 
 // I
-'ical_texte_rss_articles' => 'L\'archivu &laquo;backend&raquo; de los art&iacute;culos d\'esti sitiu alcu&eacute;ntrase na direici&oacute;n:',
-'ical_texte_rss_articles2' => 'Lo mesmo pues alcontrar archivos &laquo;backend&raquo; pa los art&iacute;culos de cada estaya d\'esti sitiu:',
-'ical_texte_rss_breves' => 'Am&aacute;s esiste un archivu coles breves del sitiu. En escribiendo un n&uacute;mberu d\'estaya, vas obtener nam&aacute;i les breves d\'esa estaya.',
+'ical_texte_rss_articles' => 'El ficheru &laquo;backend&raquo; de los art&iacute;culos d\'esti sitiu alcu&eacute;ntrase na direici&oacute;n:',
+'ical_texte_rss_articles2' => 'Lo mesmo puedes alcontrar ficheros &laquo;backend&raquo; pa los art&iacute;culos de cada estaya d\'esti sitiu:',
+'ical_texte_rss_breves' => 'Am&aacute;s esiste un ficheru que conti&eacute;n les breves del sitiu. Escribiendo un n&uacute;mberu d\'estaya, tendr&aacute;s nam&aacute;i les breves d\'esa estaya.',
 'icone_a_suivre' => 'A siguir',
 'icone_admin_site' => 'Alministraci&oacute;n del sitiu',
 'icone_agenda' => 'Axenda',
@@ -380,7 +398,7 @@ Gracies por participar
 'info_acces_interdit' => 'Accesu torg&aacute;u',
 'info_acces_refuse' => 'Accesu refug&aacute;u',
 'info_action' => 'Aici&oacute;n: @action@',
-'info_administrer_rubriques' => 'Pues alministrar esta estaya y les dependientes d\'ella',
+'info_administrer_rubriques' => 'Puedes alministrar esta estaya y les dependientes d\'ella',
 'info_adresse_non_indiquee' => '&iexcl;Nun indicasti qu&eacute; se&ntilde;es hai que prebar!',
 'info_aide' => 'AIDA:',
 'info_ajouter_mot' => 'Amestar esta pallabra',
@@ -393,22 +411,26 @@ Gracies por participar
 'info_article_supprime' => 'Art&iacute;culu desanici&aacute;u',
 'info_articles' => 'Art&iacute;culos',
 'info_articles_a_valider' => 'Los art&iacute;culos por validar',
+'info_articles_nb' => '@nb@ articles', # NEW
 'info_articles_proposes' => 'Art&iacute;culos propuestos',
+'info_articles_un' => '1 article', # NEW
 'info_auteurs_nombre' => 'autor(es):',
 'info_authentification_ftp' => 'Autentificaci&oacute;n (per FTP).',
 'info_bloquer_lien' => 'bloquiar esti enllace',
 'info_breves_02' => 'Breves',
 'info_breves_2' => 'breves',
+'info_breves_nb' => '@nb@ br&egrave;ves', # NEW
+'info_breves_un' => '1 br&egrave;ve', # NEW
 'info_breves_valider' => 'Curties por validar',
 'info_connexion_refusee' => 'Conex&oacute;n refugada',
 'info_contact_developpeur' => 'Ponte en contautu con un desendolcador.',
 'info_contenance' => 'Esti sitiu contien:',
 'info_contribution' => 'contribuciones del foru',
 'info_copyright' => '@spip@ ye un programa llibre distribuy&iacute;u @lien_gpl@.',
-'info_copyright_doc' => 'Pa m&aacute;s informaci&oacute;n, dir al sitiu <a href=\'http://www.spip.net/\'>http://www.spip.net/</a>.',
+'info_copyright_doc' => 'Pa m&aacute;s informaci&oacute;n, dir al sitiu <a href="@spipnet@">http://www.spip.net/</a>.',
 'info_copyright_gpl' => 'so llicencia GPL',
 'info_cours_edition' => 'Los tos art&iacute;culos en cursu de redaici&oacute;n',
-'info_creer_repertoire' => 'Debes crear un archivu o un direutoriu nom&aacute;u:',
+'info_creer_repertoire' => 'Debes crear un ficheru o un direutoriu nom&aacute;u:',
 'info_creer_repertoire_2' => 'dientro\'l direutoriu <b>@repertoire@</b>, y llueu:',
 'info_creer_vignette' => 'creaci&oacute;n autom&aacute;tica de la vi&ntilde;eta',
 'info_deplier' => 'Desplegar',
@@ -419,6 +441,8 @@ Gracies por participar
 'info_document' => 'Documentu',
 'info_document_indisponible' => 'Esti documentu nun ta disponible',
 'info_documents' => 'Documentos',
+'info_documents_nb' => '@nb@ documents', # NEW
+'info_documents_un' => '1 document', # NEW
 'info_echange_message' => 'SPIP permite l\'intercamb&eacute;u de mensaxes y la creaci&oacute;n de foros de discutiniu
   privaos ente los participantes nel sitiu. Pues activar o
   desactivar esta carauter&iacute;stica.',
@@ -430,11 +454,11 @@ Gracies por participar
 'info_erreur_requete' => 'Fallu na consulta:',
 'info_erreur_squelette2' => 'Nun hai denguna cadarma <b>@fichier@</b> disponible...',
 'info_erreur_systeme' => 'Fallu del sistema (errno @errsys@)',
-'info_erreur_systeme2' => 'El discu duru pue tar enllenu, o la base de datos da&ntilde;ada. <br />
- <font color=\'red\'>Tenta de <a href=\'@script@\'>iguar la base</a>,
+'info_erreur_systeme2' => 'El discu duru puede tar enllenu, o la base de datos da&ntilde;ada. <br />
+ <font color=\'red\'>Tenta <a href=\'@script@\'>iguar la base</a>,
  o ponte en contautu col to agospiamientu.</font>',
 'info_fini' => '&iexcl;Acabose!',
-'info_format_image' => 'Formatos d\'imaxe que puen utilizase pa crear les vi&ntilde;etes: @gd_formats@.',
+'info_format_image' => 'Formatos d\'imaxe que pueden utilizase pa crear les vi&ntilde;etes: @gd_formats@.',
 'info_format_non_defini' => 'formatu nun defin&iacute;u',
 'info_grand_ecran' => 'Pantalla completa',
 'info_image_aide' => 'AIDA',
@@ -443,16 +467,16 @@ Gracies por participar
 'info_inclusion_directe' => 'Inclusi&oacute;n direuta:',
 'info_inclusion_vignette' => 'Inclusi&oacute;n de la vi&ntilde;eta:',
 'info_installation_systeme_publication' => 'Instalaci&oacute;n del sistema d\'espublizamientu...',
-'info_installer_documents' => 'Pues instalar de mou autom&aacute;ticu tolos documentos contenios nel direutoriu @upload@.',
-'info_installer_ftp' => 'Como alministrador, pues instalar (por FTP) archivos nel direutoriu @upload@ pa poder llu&eacute;u seleicionalos direutamente equ&iacute;.',
-'info_installer_images' => 'Puedes instalar im&aacute;xenes nos formatos JPEG, GIF y PNG.',
+'info_installer_documents' => 'Puedes instalar autom&aacute;ticamente tolos documentos contenios nel direutoriu @upload@.',
+'info_installer_ftp' => 'Como alministrador, puedes instalar ficheros (per FTP) nel direutoriu @upload@ pa poder llu&eacute;u seleicionalos direutamente equ&iacute;.',
+'info_installer_images' => 'Puedes instalar imaxes nos formatos JPEG, GIF y PNG.',
 'info_installer_images_dossier' => 'Instalar im&aacute;xenes nel direutoriu @upload@ pa poder seleicionales equ&iacute;.',
 'info_installer_tous_documents' => 'Instalar tolos documentos',
 'info_interface_complete' => 'interfaz completa',
 'info_interface_simple' => 'Interfaz simplificada',
-'info_joindre_document_article' => 'Pues amesta-y a esti art&iacute;culu documentos del tipu',
-'info_joindre_document_rubrique' => 'Pues amestar na estaya documentos del tipu',
-'info_joindre_documents_article' => 'Pues amesta-y al to art&iacute;culu documentos del tipu:',
+'info_joindre_document_article' => 'Pues amesta-y a esti art&iacute;culu documentos de tipu',
+'info_joindre_document_rubrique' => 'Pues amestar na estaya documentos de tipu',
+'info_joindre_documents_article' => 'Pues amesta-y al to art&iacute;culu documentos de tipu:',
 'info_l_article' => 'l\'art&iacute;culu',
 'info_la_breve' => 'la breve',
 'info_la_rubrique' => 'la estaya',
@@ -465,6 +489,8 @@ Gracies por participar
 'info_mail_fournisseur' => 'el_to_nome@de.correu.ast',
 'info_message_2' => 'MENSAXE',
 'info_message_supprime' => 'MENSAXE DESANICI&Aacute;U',
+'info_messages_nb' => '@nb@ messages', # NEW
+'info_messages_un' => '1 message', # NEW
 'info_mise_en_ligne' => 'Fecha d\'espublizamientu:',
 'info_modification_parametres_securite' => 'camb&eacute;os de los par&aacute;metros de segurid&aacute;',
 'info_mois_courant' => 'A lo llargo d\'esti mes:',
@@ -495,7 +521,7 @@ Gracies por participar
 'info_probleme_grave' => 'problema de',
 'info_propose_1' => '[@nom_site_spip@] Propuesta: @titre@',
 'info_propose_2' => 'Art&iacute;culu propuestu
----------------',
+------------------',
 'info_propose_3' => 'L\'art&iacute;culu "@titre@" vien de proponese pa ser espubliz&aacute;u.',
 'info_propose_4' => 'Quedes convid&aacute;u a consultalu y a dar la to opini&oacute;n',
 'info_propose_5' => 'nel foru que tien axuntu. Ti&eacute;neslu disponible n\'estes se&ntilde;es:',
@@ -509,15 +535,19 @@ Gracies por participar
 'info_retablir_lien' => 'reestablecer esti enllaz',
 'info_retirer_mot' => 'Retirar esta pallabra',
 'info_retirer_mots' => 'Retirar toles pallabres',
+'info_rubriques_nb' => '@nb@ rubriques', # NEW
+'info_rubriques_un' => '1 rubrique', # NEW
 'info_sans_titre_2' => 'ensin t&iacute;tulu',
-'info_selectionner_fichier' => 'Pues escoyer un archivu del direutoriu @upload@',
-'info_selectionner_fichier_2' => 'Escueye un archivu:',
+'info_selectionner_fichier' => 'Puedes escoyer un ficheru del direutoriu @upload@',
+'info_selectionner_fichier_2' => 'Escueye un ficheru:',
 'info_signature_supprimee' => 'Robla desaniciada',
 'info_signature_supprimee_erreur' => 'Error: esi c&oacute;digu de desaniciu nun concasa con denguna robla',
 'info_site_attente' => 'Sitiu Web esperando validaci&oacute;n',
 'info_site_reference' => 'Sitiu referenci&aacute;u en llinia',
 'info_site_refuse' => 'Sitiu Web refug&aacute;u',
+'info_sites_nb' => '@nb@ sites', # NEW
 'info_sites_referencer' => 'Referenciar un sitiu Web',
+'info_sites_un' => '1 site', # NEW
 'info_supprimer_vignette' => 'desaniciar la vi&ntilde;eta',
 'info_symbole_bleu' => 'La marca <b>azul</b> indica un <b>recordatoriu</b>: ye un mensaxe pal to usu personal.',
 'info_symbole_jaune' => 'La marca <b>mariella</b> indica una <b>anuncia pa tolos redactores</b>: puede modificase por tolos alministradores, y ye visible por tolos redactores.',
@@ -541,14 +571,13 @@ Gracies por participar
 'info_visites' => 'visites:',
 'info_vos_rendez_vous' => 'Aconceyamientos pendientes',
 'info_zoom' => 'zoom',
-'infos_vos_pense_bete' => 'Los tos recordatorios',
+'infos_vos_pense_bete' => 'Los tos recordatorios', # MODIF
 'item_breve_proposee' => 'Breve propuesta',
 
 // L
 'lien_afficher_icones_seuls' => 'Amosar nam&aacute;i los iconos',
 'lien_afficher_texte_icones' => 'Amosar los iconos y el testu',
 'lien_afficher_texte_seul' => 'Amosar s&oacute;lo el testu',
-'lien_icones_interface' => 'Los iconos de l\'interfaz son de <a href=\'http://jimmac.musichall.cz/\'>Jakub \'Jimmac\' Steiner</a>.',
 'lien_liberer' => 'lliberar',
 'lien_liberer_tous' => 'lliberar estos art&iacute;culos',
 'lien_nouvea_pense_bete' => 'RECORDATORIU NUEVU',
@@ -578,10 +607,10 @@ Gracies por participar
 'login_login2' => 'Login (alcu&ntilde;u de conex&oacute;n al sitiu):',
 'login_login_pass_incorrect' => '(Login o contrase&ntilde;a incorreutu.)',
 'login_motpasseoublie' => '&iquest;escaecisti&nbsp;la&nbsp;contrase&ntilde;a?',
-'login_non_securise' => 'Atenci&oacute;n, esti formulariu nun ta asegur&aacute;u.
+'login_non_securise' => 'Atenci&oacute;n, esti formulariu nun ye seguru.
    Si nun quies que la to contrase&ntilde;a pueda
-   interceutase pel cam&iacute;n, ties que activar Javascript
-   nel to &ntilde;avegador y',
+   interceutase pel cam&iacute;n, tienes qu\'activar
+   Javascript nel to &ntilde;avegador y',
 'login_nouvelle_tentative' => 'Nuevu intentu',
 'login_par_ici' => 'Tas rexistr&aacute;u... per equ&iacute;...',
 'login_pass2' => 'Contrase&ntilde;a:',
@@ -592,6 +621,7 @@ Gracies por participar
 'login_retour_site' => 'Tornar pal sitiu p&uacute;blicu',
 'login_retoursitepublic' => 'tornar&nbsp;pal&nbsp;sitiu&nbsp;p&uacute;blicu',
 'login_sans_cookiie' => 'Identificaci&oacute;n ensin cookie',
+'login_securise' => 'Login s&eacute;curis&eacute;', # NEW
 'login_sinscrire' => 'inscribise',
 'login_test_navigateur' => 'preba de &ntilde;avegador/reconex&oacute;n',
 'login_verifiez_navigateur' => '(Verifica dafechu que\'l &ntilde;avegador nun s\'alcuerde de la to contrase&ntilde;a...)',
@@ -624,7 +654,6 @@ Gracies por participar
 'onglet_repartition_rubrique' => 'Repart&iacute;o por estayes',
 'onglet_save_restaur_base' => 'Sofitar/restaurar la base',
 'onglet_vider_cache' => 'Vaciar la cach&eacute;',
-'ortho_trop_de_fautes2' => 'Entama por iguar les faltes m&aacute;s evidentes y llu&eacute;u torna a intentalo.',
 
 // P
 'pass_choix_pass' => 'Escueye la nueva contrase&ntilde;a:',
@@ -686,7 +715,7 @@ pa volver a coneutate al sitiu.
 'taille_ko' => '@taille@&nbsp;KB',
 'taille_mo' => '@taille@&nbsp;MB',
 'taille_octets' => '@taille@&nbsp;bytes',
-'texte_actualite_site_1' => 'Cuando ya t\'afayes cola interfaz, pues calcar enriba de &laquo;',
+'texte_actualite_site_1' => 'Cuando y&aacute; t\'afayes cola interfaz, puedes calcar en &laquo;',
 'texte_actualite_site_2' => 'interfaz completa',
 'texte_actualite_site_3' => '&raquo; pa amosar m&aacute;s posibilid&aacute;es.',
 'texte_creation_automatique_vignette' => 'La creaci&oacute;n autom&aacute;tica de miniatures de vista previa ta activa nesti sitiu. Si instales dende esti formulariu im&aacute;xenes en formatu(os) @gd_formats@, elles van acompa&ntilde;ase d\'una miniatura con un tama&ntilde;u m&aacute;ximu de @taille_preview@&nbsp;pixels.',
@@ -710,7 +739,7 @@ Intenta',
  funcionamientu del to sitiu. Encament&aacute;mos-te de nun tocales demientres que nun tes
  familiariz&aacute;u col funcionamientu del sistema SPIP. <br /><br /><b>M&aacute;s en xeneral, encamentamos
  dexar que s\'encargue d\'estes p&aacute;xines el webmaster principal del sitiu.</b>',
-'texte_inc_meta_1' => 'El sistema atop&oacute; un fallu demientres s\'escrib&iacute;a l\'archivu <code>@fichier@</code>. Como alministrador del sitiu,',
+'texte_inc_meta_1' => 'El sistema atop&oacute; un error mientres s\'escrib&iacute;a el ficheru <code>@fichier@</code>. Como alministrador del sitiu,',
 'texte_inc_meta_2' => 'hai que verificar los permisos d\'escritura',
 'texte_inc_meta_3' => 'nel direutoriu <code>@repertoire@</code>.',
 'texte_statut_en_cours_redaction' => 'en cursu de redaici&oacute;n',
@@ -725,7 +754,7 @@ Intenta',
 'titre_cadre_raccourcis' => 'ATAYOS:',
 'titre_changer_couleur_interface' => 'Cambear la color de l\'interfaz',
 'titre_forum' => 'Foru',
-'titre_image_admin_article' => 'Pues alministrar esti art&iacute;culu',
+'titre_image_admin_article' => 'Puedes alministrar esti art&iacute;culu',
 'titre_image_administrateur' => 'Alministrador',
 'titre_image_aide' => 'Aida so esti elementu',
 'titre_image_auteur_supprime' => 'Autor desanici&aacute;u',
@@ -746,34 +775,34 @@ Intenta',
 
 // Z
 'zbug_balise_b_aval' => '&nbsp;: baliza B detr&aacute;s',
-'zbug_balise_inexistante' => 'fallu @from@: la baliza #@balise@ nun esiste',
+'zbug_balise_inexistante' => 'La baliza @balise@ ta mal declarada pa @from@',
 'zbug_balise_sans_argument' => 'Falta un par&aacute;metru na baliza @balise@',
 'zbug_boucle' => 'bucle',
-'zbug_boucle_recursive_undef' => 'bucle recursivu nun defin&iacute;u',
+'zbug_boucle_recursive_undef' => 'Bucle recursivu non defin&iacute;u: @nom@',
 'zbug_calcul' => 'c&aacute;lculu',
 'zbug_champ_hors_boucle' => 'Campu @champ@ fuera de bucle',
-'zbug_champ_hors_motif' => 'Campu @champ@ fuera d\'un bucle de motivu @motif@',
+'zbug_champ_hors_motif' => 'El campu @champ@ ta fuera d\'un contestu @motif@',
 'zbug_code' => 'c&oacute;digu',
-'zbug_critere_inconnu' => 'criteriu desconoc&iacute;u @critere@',
-'zbug_distant_interdit' => 'esternu torg&aacute;u',
-'zbug_doublon_table_sans_cle_primaire' => 'repet&iacute;os en una tabla ensin clave primaria simple',
-'zbug_doublon_table_sans_index' => 'duplicaos pa una tabla ensin &iacute;ndiz',
-'zbug_erreur_boucle_double' => 'BUCLE@id@: doble definici&oacute;n',
-'zbug_erreur_boucle_fermant' => 'BUCLE@id@: falta la marca de pieslle',
-'zbug_erreur_boucle_syntaxe' => 'Sintaxis del bucle incorreuta',
+'zbug_critere_inconnu' => 'Criteriu desconoc&iacute;u @critere@',
+'zbug_distant_interdit' => 'Esternu torg&aacute;u',
+'zbug_doublon_table_sans_cle_primaire' => 'Repet&iacute;os nuna tabla ensin clave primaria simple',
+'zbug_doublon_table_sans_index' => 'Duplicaos nuna tabla ensin &iacute;ndiz',
+'zbug_erreur_boucle_double' => 'Doble definici&oacute;n del bucle @id@',
+'zbug_erreur_boucle_fermant' => 'El bucle @id@ ta ensin zarrar',
+'zbug_erreur_boucle_syntaxe' => 'Sintaxis del bucle @id@ incorreuta',
 'zbug_erreur_compilation' => 'Error de compilaci&oacute;n',
-'zbug_erreur_execution_page' => 'error d\'execuci&oacute;n de la p&aacute;xina',
-'zbug_erreur_filtre' => 'Error: filtru <b>&laquo; @filtre@ &raquo;</b> nun defin&iacute;u',
-'zbug_erreur_meme_parent' => '{meme_parent} nun s\'aplica m&aacute;s que a los bucles (FORUMS) o (RUBRIQUES)',
+'zbug_erreur_execution_page' => 'Error d\'execuci&oacute;n',
+'zbug_erreur_filtre' => 'El filtru @filtre@ nun ta defin&iacute;u',
+'zbug_erreur_meme_parent' => 'El criteriu {meme_parent} nun s\'aplica m&aacute;s que a los bucles (FORUMS) o (RUBRIQUES)',
 'zbug_erreur_squelette' => 'Error(es) na cadarma',
 'zbug_hors_compilation' => 'Fuera de Compilaci&oacute;n',
 'zbug_info_erreur_squelette' => 'Error nel sitiu',
-'zbug_inversion_ordre_inexistant' => 'inversi&oacute;n d\'un orde inesistente',
-'zbug_pagination_sans_critere' => '#PAGINATION ensin criteriu {pagination} o emplegao nun bucle recursivu',
-'zbug_parametres_inclus_incorrects' => 'Par&aacute;metros d\'inclusi&oacute;n incorreutos',
+'zbug_inversion_ordre_inexistant' => 'Inversi&oacute;n d\'un orde inesistente',
+'zbug_pagination_sans_critere' => 'Baliza #PAGINATION ensin criteriu {pagination} o emplegada nun bucle recursivu',
+'zbug_parametres_inclus_incorrects' => 'Par&aacute;metru d\'inclusi&oacute;n incorreutu: @param@',
 'zbug_profile' => 'Tiempu pal c&aacute;lculu: @time@',
 'zbug_resultat' => 'result&aacute;u',
-'zbug_serveur_indefini' => 'sirvidor SQL indefin&iacute;u',
+'zbug_serveur_indefini' => 'Sirvidor SQL indefin&iacute;u',
 'zbug_statistiques' => 'Estad&iacute;stiques de les consultes SQL clasificaes por duraci&oacute;n',
 'zbug_table_inconnue' => 'Tabla SQL &laquo;@table@&raquo; desconoc&iacute;a',
 'zxml_connus_attributs' => 'atributos conoc&iacute;os',

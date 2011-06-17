@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 
 // Une fonction generique pour l'API de modification de contenu
@@ -44,7 +44,7 @@ function modifier_contenu($type, $id, $options, $c=false, $serveur='') {
 	}
 
 	// Securite : certaines variables ne sont jamais acceptees ici
-	// car elles ne relevent pas de autoriser(article, modifier) ;
+	// car elles ne relevent pas de autoriser(xxx, modifier) ;
 	// il faut passer par instituer_XX()
 	// TODO: faut-il passer ces variables interdites
 	// dans un fichier de description separe ?
@@ -113,6 +113,26 @@ function modifier_contenu($type, $id, $options, $c=false, $serveur='') {
 		// allez on commit la modif
 		sql_updateq($spip_table_objet, $champs, "$id_table_objet=$id", $serveur);
 
+		// on verifie si elle est bien passee
+		// pour detecter le cas ou un caractere illicite a ete utilise dans un champ texte
+		// et provoque la troncature du champ lors de l'enregistrement
+		$moof = sql_fetsel(array_keys($champs), $spip_table_objet, "$id_table_objet=$id", array(), array(), '', array(), $serveur);
+		if ($moof != $champs) {
+			foreach($moof as $k=>$v) {
+				if ($v !== $champs[$k]
+					// ne pas alerter si le champ est d'un type numerique ou date
+				  // car c'est surement un cast sql, tout a fait normal
+				  // sinon cela provoque des fausses alertes a la moindre saisie vide
+				  // ou n'ayant pas la bonne resolution numerique ou le bon format
+					AND (!preg_match(',(int|float|double|date|time|year|enum|decimal),',$desc['field'][$k]))
+					) {
+					$conflits[$k]['post'] = $champs[$k];
+					$conflits[$k]['save'] = $v;
+				}
+			}
+		}
+
+
 		// Cas particulier des groupes de mots dont le titre est repris
 		// dans la table spip_mots
 		if ($spip_table_objet == 'spip_groupes_mots'
@@ -126,9 +146,11 @@ function modifier_contenu($type, $id, $options, $c=false, $serveur='') {
 			suivre_invalideur($options['invalideur']);
 		}
 
-		// marquer les documents vus dans le texte si il y a lieu
-		include_spip('base/auxiliaires');
-		marquer_doublons_documents($champs,$id,$type,$id_table_objet,$table_objet,$spip_table_objet, $desc, $serveur);
+		if (!in_array($type,array('forum','signature'))) {
+			// marquer les documents vus dans le texte si il y a lieu
+			include_spip('base/auxiliaires');
+			marquer_doublons_documents($champs,$id,$type,$id_table_objet,$table_objet,$spip_table_objet, $desc, $serveur);
+		}
 
 		// Notifications, gestion des revisions...
 		// appelle |enregistrer_nouvelle_revision @inc/revisions
@@ -148,9 +170,9 @@ function modifier_contenu($type, $id, $options, $c=false, $serveur='') {
 			)
 		);
 	}
-
+	
 	// S'il y a un conflit, prevenir l'auteur de faire un copier/coller
-	if ($conflit AND count($conflits)) {
+	if ($conflits) {
 		$redirect = url_absolue(
 			parametre_url(rawurldecode(_request('redirect')), $id_table_objet, $id)
 		);
@@ -194,7 +216,19 @@ function marquer_doublons_documents($champs,$id,$type,$id_table_objet,$table_obj
 			// Mettre le lien a jour ou le creer s'il n'existe pas deja
 			if (!sql_updateq("spip_documents_liens", array("vu" => 'oui'), "id_objet=$id AND objet=".sql_quote($type)." AND id_document=".$row['id_document']) OR
 			!sql_getfetsel("id_document", "spip_documents_liens", "id_document=".$row['id_document']." AND id_objet=$id AND objet=".sql_quote($type))) {
-				sql_insertq("spip_documents_liens", array('id_objet'=>$id, 'objet'=>$type, 'id_document' => $row['id_document'], 'vu' => 'oui'));
+				sql_insertq("spip_documents_liens", array('id_objet' => $id, 'objet' => $type, 'id_document' => $row['id_document'], 'vu' => 'oui'));
+				pipeline('post_edition',
+					array(
+						'args' => array(
+							'operation' => 'lier_document',
+							'table' => 'spip_documents',
+							'id_objet' => $row['id_document'],
+							'objet' => $type,
+							'id' => $id
+						),
+						'data' => null
+					)
+				);
 			}
 		}
 	}
@@ -345,7 +379,7 @@ function revision_forum($id_forum, $c=false) {
 		),
 		$c);
 
-	$t = $t["id_thread"];
+	$id_thread = $t["id_thread"];
 	$cles = array();
 	foreach (array('id_article', 'id_rubrique', 'id_syndic', 'id_breve')
 		 as $k) {
@@ -356,13 +390,15 @@ function revision_forum($id_forum, $c=false) {
 	// (non autorise en standard mais utile pour des crayons)
 	// on deplace tout le thread {sauf les originaux}.
 	if ($cles) {
-		sql_updateq("spip_forum", $cles, "id_thread=$t AND statut!='original'");
+		sql_updateq("spip_forum", $cles, "id_thread=$id_thread AND statut!='original'");
 		// on n'affecte pas $r, car un deplacement ne change pas l'auteur
 	}
 
 	// s'il y a vraiment eu une modif, on
-	// enregistre le nouveau date_thread
-	if ($r) {
+	// enregistre le nouveau date_thread,
+	// si le message est bien publie ou si c'est un thread non public
+	if ($r AND
+		($t['statut'] == 'publie' OR !sql_countsel("spip_forum", "statut='publie' AND id_thread=".intval($id_thread)))) {
 		// on ne stocke ni le numero IP courant ni le nouvel id_auteur
 		// dans le message modifie (trop penible a l'usage) ; mais du
 		// coup attention a la responsabilite editoriale
@@ -371,7 +407,7 @@ function revision_forum($id_forum, $c=false) {
 		*/
 
 		// & meme ca ca pourrait etre optionnel
-		sql_updateq("spip_forum", array("date_thread" => date('Y-m-d H:i:s')), "id_thread=".$t);
+		sql_updateq("spip_forum", array("date_thread" => date('Y-m-d H:i:s')), "id_thread=".intval($id_thread));
 	}
 }
 

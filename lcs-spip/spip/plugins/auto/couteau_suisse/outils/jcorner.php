@@ -1,7 +1,7 @@
 <?php
 function jcorner_installe() {
 cs_log("jcorner_installe()");
-	if(!defined('_jcorner_CLASSES')) return;
+	if(!defined('_jcorner_CLASSES')) return NULL;
 
 	// on decode les balises entrees dans la config
 	$classes = preg_split("/[\r\n]+/", trim(_jcorner_CLASSES));
@@ -20,17 +20,13 @@ cs_log("jcorner_installe()");
 			if (strlen($a)) $code[] = "jQuery(\"$a\", this).not('.jc_done').addClass('jc_done').corner();";
 		}
 	}
-	// sauvegarde en meta : le code jQuery
-	ecrire_meta('cs_jcorner', join("\n\t", $code));
-	ecrire_metas();
-//print_r($classes); print_r($code);
+	// en retour : le code jQuery
+	return array('jcorner' => join("\n\t", $code));
 }
 
 
 function jcorner_insert_head($flux) {
-	// le code jQuery est-il dispo ?
-	if (!isset($GLOBALS['meta']['cs_jcorner'])) jcorner_installe();
-	return $flux . "<script type=\"text/javascript\"><!--\nfunction jcorner_init() {\n\tif(typeof jQuery.fn.corner!='function') return;\n\t" . $GLOBALS['meta']['cs_jcorner'] . "\n}\n// --> </script>\n";
+	return $flux . "<script type=\"text/javascript\"><!--\nfunction jcorner_init() {\n\tif(typeof jQuery.fn.corner!='function') return;\n\t".cs_lire_data_outil('jcorner')."\n}\n// --> </script>\n";
 }
 
 ?>

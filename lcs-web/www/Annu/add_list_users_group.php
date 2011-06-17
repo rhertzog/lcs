@@ -28,7 +28,7 @@ $add_list_users_group=$_POST['add_list_users_group'];
     if ( !$add_list_users_group ) {
       echo "<H4>Ajouter des membres au groupe : $cn</H4>\n";
       // cas d'un groupe de type Equipe
-      if ( ereg ("Equipe_", $cn) ) {
+      if ( mb_ereg ("Equipe_", $cn) ) {
         // Recherche de la liste des uid  des membres de ce groupe
         $uids_act = search_uids ("(cn=$cn)","half");
         // Reherche de la liste des professeurs
@@ -48,7 +48,7 @@ $add_list_users_group=$_POST['add_list_users_group'];
             }
         }
          $people_new_members=search_people_groups ($uids_new_members,"(sn=*)","cat");
-      } elseif   ( ereg ("Classe_", $cn) ) {
+      } elseif   ( mb_ereg ("Classe_", $cn) ) {
         // Recherche de la liste des Eleves appartenant a une classe
         $uids_eleves_classes =   search_uids ("(cn=Classe_*)", "half");
         

@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return; // securiser
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@action_purger_dist
 function action_purger_dist()
@@ -33,7 +33,7 @@ function action_purger_dist()
 		@spip_unlink(_CACHE_PLUGINS_FCT);
 		@spip_unlink(_CACHE_PLUGINS_VERIF);
 		@spip_unlink(_CACHE_CHEMIN);
-		purger_repertoire(_DIR_CACHE);
+		purger_repertoire(_DIR_CACHE,array('subdir'=>true));
 		purger_repertoire(_DIR_AIDE);
 		purger_repertoire(_DIR_VAR.'cache-css');
 		purger_repertoire(_DIR_VAR.'cache-js');

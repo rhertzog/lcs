@@ -26,12 +26,30 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
+
+// Indication des profils ayant accès à cette page
+$tab_texte = array( 'directeur'=>'les directeurs' , 'professeur'=>'les professeurs' , 'eleve'=>'les élèves' );
+$str_objet = $_SESSION['DROIT_VOIR_REFERENTIELS'];
+if($str_objet=='')
+{
+	$texte = 'aucun';
+}
+elseif(strpos($str_objet,',')===false)
+{
+	$texte = 'uniquement '.$tab_texte[$str_objet];
+}
+else
+{
+	$texte = str_replace( array('directeur','professeur','eleve',',') , array($tab_texte['directeur'],$tab_texte['professeur'],$tab_texte['eleve'],' et ') , $str_objet );
+}
 ?>
 
 <ul class="puce">
 	<li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=referentiels_socle__referentiel_organisation">DOC : Organisation des items dans les référentiels.</a></span></li>
 	<li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=environnement_generalites__calcul_scores_etats_acquisitions">DOC : Calcul des scores et des états d'acquisitions.</a></span></li>
+	<li><span class="astuce">Profils autorisés par les administrateurs : <span class="u"><?php echo $texte ?></span>.</span></li>
 </ul>
+<hr />
 
 <form action="">
 
@@ -49,49 +67,45 @@ if(count($DB_TAB))
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$tab_matiere[$DB_ROW['matiere_id']]['nom'] = html($DB_ROW['matiere_nom']);
+		$tab_matiere[$DB_ROW['matiere_id']]['nb_demandes'] = $DB_ROW['matiere_nb_demandes'];
 	}
 }
-$liste_matieres = implode(',',array_keys($tab_matiere));
+$listing_matieres_id = implode(',',array_keys($tab_matiere));
 
-if(!$liste_matieres)
+if(!$listing_matieres_id)
 {
 	echo'<p><span class="danger">Aucune matière enregistrée ou associée à l\'établissement !</span></p>';
 }
-elseif(!$_SESSION['NIVEAUX'])
+elseif(!$_SESSION['NIVEAUX']) // normalement impossible
 {
 	echo'<p><span class="danger">Aucun niveau n\'est rattaché à l\'établissement !</span></p>';
+}
+elseif(!$_SESSION['CYCLES']) // normalement impossible
+{
+	echo'<p><span class="danger">Aucun cycle n\'est rattaché à l\'établissement !</span></p>';
 }
 else
 {
 	echo'<p><span class="astuce">Cliquer sur l\'&oelig;il pour voir le détail d\'un référentiel.</span></p>';
 	// On récupère la liste des niveaux utilisés par l'établissement
-	$DB_TAB = DB_STRUCTURE_lister_niveaux_etablissement($_SESSION['NIVEAUX'],$_SESSION['PALIERS']);
+	$DB_TAB = DB_STRUCTURE_lister_niveaux_etablissement($_SESSION['NIVEAUX'],$_SESSION['CYCLES']);
 	$nb_niveaux = count($DB_TAB);
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$tab_niveau[$DB_ROW['niveau_id']] = html($DB_ROW['niveau_nom']);
 	}
 	// On récupère la liste des coordonnateurs responsables par matières
-	$DB_SQL = 'SELECT matiere_id, GROUP_CONCAT(CONCAT(user_nom," ",user_prenom) SEPARATOR ";") AS coord_liste FROM sacoche_jointure_user_matiere ';
-	$DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
-	$DB_SQL.= 'WHERE matiere_id IN('.$liste_matieres.') AND jointure_coord=:coord AND user_statut=:statut ';
-	$DB_SQL.= 'GROUP BY matiere_id';
-	$DB_VAR = array(':coord'=>1,':statut'=>1);
-	$DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+	$DB_TAB = DB_STRUCTURE_lister_identite_coordonnateurs_par_matiere($listing_matieres_id);
 	if(count($DB_TAB))
 	{
 		foreach($DB_TAB as $DB_ROW)
 		{
-			$tab_matiere[$DB_ROW['matiere_id']]['coord'] = str_replace(';','<br />',html($DB_ROW['coord_liste']));
+			$tab_matiere[$DB_ROW['matiere_id']]['coord'] = str_replace('][','<br />',html($DB_ROW['coord_liste']));
 		}
 	}
 	// On récupère la liste des référentiels par matière et niveau
 	$tab_partage = array('oui'=>'<img title="Référentiel partagé sur le serveur communautaire (MAJ le ◄DATE►)." alt="" src="./_img/partage1.gif" />','non'=>'<img title="Référentiel non partagé avec la communauté (choix du ◄DATE►)." alt="" src="./_img/partage0.gif" />','bof'=>'<img title="Référentiel dont le partage est sans intérêt (pas novateur)." alt="" src="./_img/partage0.gif" />','hs'=>'<img title="Référentiel dont le partage est sans objet (matière spécifique)." alt="" src="./_img/partage0.gif" />');
-	$DB_SQL = 'SELECT matiere_id,niveau_id,niveau_nom,referentiel_partage_etat,referentiel_partage_date,referentiel_calcul_methode,referentiel_calcul_limite FROM sacoche_referentiel ';
-	$DB_SQL.= 'LEFT JOIN sacoche_niveau USING (niveau_id) ';
-	$DB_SQL.= 'WHERE matiere_id IN('.$liste_matieres.') AND ( niveau_id IN('.$_SESSION['NIVEAUX'].') OR palier_id IN('.$_SESSION['PALIERS'].') ) ';
-	$DB_SQL.= 'ORDER BY matiere_id ASC, niveau_ordre ASC';
-	$DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , null);
+	$DB_TAB = DB_STRUCTURE_lister_referentiels_infos_details_matieres_niveaux($listing_matieres_id,$_SESSION['NIVEAUX'],$_SESSION['CYCLES']);
 	if(count($DB_TAB))
 	{
 		foreach($DB_TAB as $DB_ROW)
@@ -124,15 +138,17 @@ else
 		}
 	}
 	// On construit et affiche le tableau résultant
-	$tab_paliers = explode( '.' , substr(LISTING_ID_NIVEAUX_PALIERS,1,-1) );
-	$affichage = '<table class="comp_view"><thead><tr><th>Matière</th><th>Coordonnateur(s)</th><th>Niveau</th><th>Référentiel</th><th>Méthode de calcul</th><th class="nu"></th></tr></thead><tbody>'."\r\n";
+	$tab_paliers = explode( '.' , substr(LISTING_ID_NIVEAUX_CYCLES,1,-1) );
+	$affichage = '<table class="vm_nug"><thead><tr><th>Matière</th><th>Nb</th><th>Coordonnateur(s)</th><th>Niveau</th><th>Référentiel</th><th>Méthode de calcul</th><th class="nu"></th></tr></thead><tbody>'."\r\n";
+	$infobulle = '<img src="./_img/bulle_aide.png" alt="" title="Nombre maximal de demandes d\'évaluations simultanées autorisées pour un élève." />';
 	foreach($tab_matiere as $matiere_id => $tab)
 	{
-		$rowspan = ($matiere_id!=ID_MATIERE_TRANSVERSALE) ? $nb_niveaux : mb_substr_count($_SESSION['PALIERS'],',','UTF-8')+1 ;
+		$rowspan = ($matiere_id!=ID_MATIERE_TRANSVERSALE) ? $nb_niveaux : mb_substr_count($_SESSION['CYCLES'],',','UTF-8')+1 ;
 		$matiere_nom   = $tab['nom'];
+		$matiere_nb    = $tab['nb_demandes'].' '.$infobulle;
 		$matiere_coord = (isset($tab['coord'])) ? '>'.$tab['coord'] : ' class="r">Absence de coordonnateur.' ;
 		$affichage .= '<tr><td colspan="6" class="nu">&nbsp;</td></tr>'."\r\n";
-		$affichage .= '<tr><td rowspan="'.$rowspan.'">'.$matiere_nom.'</td><td rowspan="'.$rowspan.'"'.$matiere_coord.'</td>';
+		$affichage .= '<tr><td rowspan="'.$rowspan.'">'.$matiere_nom.'</td><td rowspan="'.$rowspan.'">'.$matiere_nb.'</td><td rowspan="'.$rowspan.'"'.$matiere_coord.'</td>';
 		$affichage_suite = false;
 		foreach($tab_niveau as $niveau_id => $niveau_nom)
 		{

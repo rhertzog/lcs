@@ -52,17 +52,21 @@ $tab_select_orientation[] = array('valeur'=>'portrait'  , 'texte'=>'Portrait (ve
 $tab_select_orientation[] = array('valeur'=>'landscape' , 'texte'=>'Paysage (horizontal)');
 
 $tab_select_marge_min   = array();
-$tab_select_marge_min[] = array('valeur'=>5  , 'texte'=>'5 mm');
-$tab_select_marge_min[] = array('valeur'=>6  , 'texte'=>'6 mm');
-$tab_select_marge_min[] = array('valeur'=>7  , 'texte'=>'7 mm');
-$tab_select_marge_min[] = array('valeur'=>8  , 'texte'=>'8 mm');
-$tab_select_marge_min[] = array('valeur'=>9  , 'texte'=>'9 mm');
-$tab_select_marge_min[] = array('valeur'=>10 , 'texte'=>'10 mm');
-$tab_select_marge_min[] = array('valeur'=>11 , 'texte'=>'11 mm');
-$tab_select_marge_min[] = array('valeur'=>12 , 'texte'=>'12 mm');
-$tab_select_marge_min[] = array('valeur'=>13 , 'texte'=>'13 mm');
-$tab_select_marge_min[] = array('valeur'=>14 , 'texte'=>'14 mm');
-$tab_select_marge_min[] = array('valeur'=>15 , 'texte'=>'15 mm');
+$tab_select_marge_min[] = array('valeur'=>5  , 'texte'=>'marges de 5 mm');
+$tab_select_marge_min[] = array('valeur'=>6  , 'texte'=>'marges de 6 mm');
+$tab_select_marge_min[] = array('valeur'=>7  , 'texte'=>'marges de 7 mm');
+$tab_select_marge_min[] = array('valeur'=>8  , 'texte'=>'marges de 8 mm');
+$tab_select_marge_min[] = array('valeur'=>9  , 'texte'=>'marges de 9 mm');
+$tab_select_marge_min[] = array('valeur'=>10 , 'texte'=>'marges de 10 mm');
+$tab_select_marge_min[] = array('valeur'=>11 , 'texte'=>'marges de 11 mm');
+$tab_select_marge_min[] = array('valeur'=>12 , 'texte'=>'marges de 12 mm');
+$tab_select_marge_min[] = array('valeur'=>13 , 'texte'=>'marges de 13 mm');
+$tab_select_marge_min[] = array('valeur'=>14 , 'texte'=>'marges de 14 mm');
+$tab_select_marge_min[] = array('valeur'=>15 , 'texte'=>'marges de 15 mm');
+
+$tab_select_pages_nb   = array();
+$tab_select_pages_nb[] = array('valeur'=>'optimise' , 'texte'=>'nombre de pages optimisé');
+$tab_select_pages_nb[] = array('valeur'=>'augmente' , 'texte'=>'nombre de pages augmenté');
 
 $tab_select_couleur   = array();
 $tab_select_couleur[] = array('valeur'=>'oui' , 'texte'=>'en couleurs');
@@ -83,6 +87,11 @@ $tab_select_cases_nb[] = array('valeur'=>7  , 'texte'=>'7 cases');
 $tab_select_cases_nb[] = array('valeur'=>8  , 'texte'=>'8 cases');
 $tab_select_cases_nb[] = array('valeur'=>9  , 'texte'=>'9 cases');
 $tab_select_cases_nb[] = array('valeur'=>10 , 'texte'=>'10 cases');
+$tab_select_cases_nb[] = array('valeur'=>11 , 'texte'=>'11 cases');
+$tab_select_cases_nb[] = array('valeur'=>12 , 'texte'=>'12 cases');
+$tab_select_cases_nb[] = array('valeur'=>13 , 'texte'=>'13 cases');
+$tab_select_cases_nb[] = array('valeur'=>14 , 'texte'=>'14 cases');
+$tab_select_cases_nb[] = array('valeur'=>15 , 'texte'=>'15 cases');
 
 $tab_select_cases_size   = array();
 $tab_select_cases_size[] = array('valeur'=>5  , 'texte'=>'5 mm');
@@ -96,6 +105,14 @@ $tab_select_cases_size[] = array('valeur'=>12 , 'texte'=>'12 mm');
 $tab_select_cases_size[] = array('valeur'=>13 , 'texte'=>'13 mm');
 $tab_select_cases_size[] = array('valeur'=>14 , 'texte'=>'14 mm');
 $tab_select_cases_size[] = array('valeur'=>15 , 'texte'=>'15 mm');
+
+$tab_select_colonne_vide   = array();
+$tab_select_colonne_vide[] = array('valeur'=>0   , 'texte'=>'sans colonne vide supplémentaire');
+$tab_select_colonne_vide[] = array('valeur'=>30  , 'texte'=>'avec une colonne vide de largeur 1cm');
+$tab_select_colonne_vide[] = array('valeur'=>30  , 'texte'=>'avec une colonne vide de largeur 3cm');
+$tab_select_colonne_vide[] = array('valeur'=>50  , 'texte'=>'avec une colonne vide de largeur 5cm');
+$tab_select_colonne_vide[] = array('valeur'=>70  , 'texte'=>'avec une colonne vide de largeur 7cm');
+$tab_select_colonne_vide[] = array('valeur'=>90  , 'texte'=>'avec une colonne vide de largeur 9cm');
 
 $tab_select_remplissage   = array();
 $tab_select_remplissage[] = array('valeur'=>'vide'  , 'texte'=>'sans indication des notes antérieures');
@@ -119,26 +136,30 @@ $tab_select_cart_detail[] = array('valeur'=>'minimal' , 'texte'=>'cartouche mini
 
 function load_cookie_select($page)
 {
+	// Initialisation du tableau retourné au cas où le cookie n'existerait pas ou au cas ou des informations manquerait dans le cookie (ajout ultérieur d'une fonctionnalité)
+	switch($page)
+	{
+		case 'releve_synthese' :
+			$tab_return = array( 'couleur'=>'oui' , 'legende'=>'oui' );
+			break;
+		case 'releve_items' :
+			$tab_return = array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'legende'=>'oui' , 'marge_min'=>5 , 'cases_nb'=>5 , 'cases_largeur'=>5 );
+				break;
+		case 'grille_referentiel' :
+			$tab_return = array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'legende'=>'oui' , 'marge_min'=>5 , 'cases_nb'=>3 , 'cases_largeur'=>5 , 'colonne_vide'=>0 );
+			break;
+		case 'cartouche' :
+			$tab_return = array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'marge_min'=>5 , 'cart_contenu'=>'AVEC_nom_SANS_result' , 'cart_detail'=>'complet' );
+			break;
+	}
+	// Récupération du contenu du cookie
 	$filename = './__tmp/cookie/etabl'.$_SESSION['BASE'].'_user'.$_SESSION['USER_ID'].'_'.$page.'.txt';
 	if(is_file($filename))
 	{
 		$contenu = file_get_contents($filename);
-		return @unserialize($contenu);
+		$tab_return = array_merge( $tab_return, @unserialize($contenu) );
 	}
-	else
-	{
-		switch($page)
-		{
-			case 'releve_synthese' :
-				return array( 'couleur'=>'oui' , 'legende'=>'oui' );
-			case 'releve_items' :
-				return array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'legende'=>'oui' , 'marge_min'=>5 , 'cases_nb'=>5 , 'cases_largeur'=>5 );
-			case 'grille_referentiel' :
-				return array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'legende'=>'oui' , 'marge_min'=>5 , 'cases_nb'=>3 , 'cases_largeur'=>5 );
-			case 'cartouche' :
-				return array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'marge_min'=>5 , 'cart_contenu'=>'AVEC_nom_SANS_result' , 'cart_detail'=>'complet' );
-		}
-	}
+	return $tab_return;
 }
 
 /**
@@ -154,16 +175,19 @@ function load_cookie_select($page)
 	{
 		case 'releve_synthese' :
 			global $couleur,$legende;
-			$tab_cookie = array('couleur'=>$couleur,'legende'=>$legende);
+			$tab_cookie = compact('couleur','legende');
 			break;
 		case 'releve_items' :
-		case 'grille_referentiel' :
 			global $orientation,$couleur,$legende,$marge_min,$cases_nb,$cases_largeur;
-			$tab_cookie = array('orientation'=>$orientation,'couleur'=>$couleur,'legende'=>$legende,'marge_min'=>$marge_min,'cases_nb'=>$cases_nb,'cases_largeur'=>$cases_largeur);
+			$tab_cookie = compact('orientation','couleur','legende','marge_min','cases_nb','cases_largeur');
 			break;
-			case 'cartouche' :
+		case 'grille_referentiel' :
+			global $orientation,$couleur,$legende,$marge_min,$cases_nb,$cases_largeur,$colonne_vide;
+			$tab_cookie = compact('orientation','couleur','legende','marge_min','cases_nb','cases_largeur','colonne_vide');
+			break;
+		case 'cartouche' :
 			global $orientation,$couleur,$legende,$marge_min,$contenu,$detail;
-			$tab_cookie = array('orientation'=>$orientation,'couleur'=>$couleur,'legende'=>$legende,'marge_min'=>$marge_min,'cart_contenu'=>$contenu,'cart_detail'=>$detail);
+			$tab_cookie = compact('orientation','couleur','legende','marge_min','cart_contenu','cart_detail');
 			break;
 	}
 	/*
@@ -241,7 +265,7 @@ function afficher_select($DB_TAB,$select_nom,$option_first,$selection,$optgroup)
 		elseif($selection===true)
 		{
 			// ... tout sélectionner
-			$options = str_replace('<option' , '<option selected="selected"' , $options);
+			$options = str_replace('<option' , '<option selected' , $options);
 		}
 		else
 		{
@@ -249,13 +273,13 @@ function afficher_select($DB_TAB,$select_nom,$option_first,$selection,$optgroup)
 			$selection = ($selection=='val') ? $GLOBALS['select_option_selected'] : $selection ;
 			if(!is_array($selection))
 			{
-				$options = str_replace('value="'.$selection.'"' , 'value="'.$selection.'" selected="selected"' , $options);
+				$options = str_replace('value="'.$selection.'"' , 'value="'.$selection.'" selected' , $options);
 			}
 			else
 			{
 				foreach($selection as $selection_val)
 				{
-					$options = str_replace('value="'.$selection_val.'"' , 'value="'.$selection_val.'" selected="selected"' , $options);
+					$options = str_replace('value="'.$selection_val.'"' , 'value="'.$selection_val.'" selected' , $options);
 				}
 			}
 		}
@@ -263,7 +287,7 @@ function afficher_select($DB_TAB,$select_nom,$option_first,$selection,$optgroup)
 	// Si $DB_TAB n'est pas un tableau alors c'est une chaine avec un message d'erreur affichée sous la forme d'une option disable
 	else
 	{
-		$options .= '<option value="" disabled="disabled">'.$DB_TAB.'</option>';
+		$options .= '<option value="" disabled>'.$DB_TAB.'</option>';
 	}
 	// On insère dans un select si demandé
 	return ($select_nom) ? '<select id="'.$select_nom.'" name="'.$select_nom.'">'.$options.'</select>' : $options ;

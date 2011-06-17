@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -11,7 +11,7 @@
 \***************************************************************************/
 
 //
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@my_sel
 function my_sel($num, $tex, $comp) {
@@ -111,11 +111,11 @@ function afficher_minute($minute, $attributs, $autre=false){
 function afficher_jour_mois_annee_h_m($date, $heures, $minutes, $suffixe='')
 {
   return 
-    afficher_jour(jour($date), "name='jour$suffixe' id='jour$suffixe' size='1' class='fondl verdana1'") .
-    afficher_mois(mois($date), "name='mois$suffixe' id='mois$suffixe' size='1' class='fondl verdana1'") .
-    afficher_annee(annee($date), "name='annee$suffixe' id='annee$suffixe' class='fondl verdana1'", date('Y')-1) .
-    "&nbsp;  <input type='text' class='fondl verdana1' name='heures$suffixe' id='heures$suffixe' value=\"".$heures."\" size='3'/>&nbsp;".majuscules(_T('date_mot_heures'))."&nbsp;" .
-    "<input type='text' class='fondl verdana1' name='minutes$suffixe' id='minutes$suffixe' value=\"$minutes\" size='3'/>";
+    afficher_jour(jour($date), "name='jour$suffixe' id='jour$suffixe' size='1' class='verdana1'") .
+    afficher_mois(mois($date), "name='mois$suffixe' id='mois$suffixe' size='1' class='verdana1'") .
+    afficher_annee(annee($date), "name='annee$suffixe' id='annee$suffixe' class='verdana1'", date('Y')-1) .
+    "&nbsp;  <input type='text' class='verdana1' name='heures$suffixe' id='heures$suffixe' value=\"".$heures."\" size='3'/>&nbsp;".majuscules(_T('date_mot_heures'))."&nbsp;" .
+    "<input type='text' class='verdana1' name='minutes$suffixe' id='minutes$suffixe' value=\"$minutes\" size='3'/>";
 }
 
 ?>

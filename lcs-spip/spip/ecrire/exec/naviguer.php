@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 include_spip('inc/forum');
@@ -138,7 +138,7 @@ function naviguer_droite($row, $id_rubrique, $id_parent, $id_secteur, $haut, $n_
 		    ? icone_inline(_T('icone_creer_rubrique'), generer_url_ecrire("rubriques_edit","new=oui&retour=nav"), "secteur-24.gif", "creer.gif",$spip_lang_right)
 		    : icone_inline(_T('icone_creer_sous_rubrique'), generer_url_ecrire("rubriques_edit","new=oui&retour=nav&id_parent=$id_rubrique"), "rubrique-24.gif", "creer.gif",$spip_lang_right))
 	    ."</div>":""))
-	  . "<br class='nettoyeur' />"
+	  . "<div class='nettoyeur'></div>"
 	  . $boucles;
 
 	$onglet_enfants = pipeline('affiche_enfants',array('args'=>array('exec'=>'naviguer','id_rubrique'=>$id_rubrique),'data'=>$onglet_enfants));
@@ -153,6 +153,7 @@ function naviguer_droite($row, $id_rubrique, $id_parent, $id_secteur, $haut, $n_
 	else $onglet_interactivite = "";
 
 	return
+	  pipeline('afficher_fiche_objet',array('args'=>array('type'=>'rubrique','id'=>$id_rubrique),'data'=>
 	  "<div class='fiche_objet'>".
 		$haut.
 		(_INTERFACE_ONGLETS?
@@ -171,7 +172,8 @@ function naviguer_droite($row, $id_rubrique, $id_parent, $id_secteur, $haut, $n_
 			))
 		 :$onglet_contenu.$onglet_proprietes).
 	  "</div>".
-	  (_INTERFACE_ONGLETS?"":$onglet_enfants.$onglet_documents.$onglet_interactivite);
+	  (_INTERFACE_ONGLETS?"":$onglet_enfants.$onglet_documents.$onglet_interactivite)
+				));
 }
 
 // http://doc.spip.org/@infos_naviguer
@@ -295,28 +297,22 @@ function contenu_naviguer($id_rubrique, $id_parent) {
 
 	if ($relief) {
 
-		$res .= debut_cadre_couleur('',true);
-		$res .= "<div class='verdana2' style='color: black;'><b>"._T('texte_en_cours_validation')
-		. (($GLOBALS['meta']['forum_prive_objets'] != 'non')
-			? ' '._T('texte_en_cours_validation_forum')
-			: '' )
-		. "</b></div>";
-
+		$encours = "";
 		//
 		// Les articles a valider
 		//
-		$res .= afficher_objets('article',_T('info_articles_proposes'),	array('WHERE' => "id_rubrique=$id_rubrique AND statut='prop'", 'ORDER BY' => "date DESC"));
+		$encours .= afficher_objets('article',_T('info_articles_proposes'),	array('WHERE' => "id_rubrique=$id_rubrique AND statut='prop'", 'ORDER BY' => "date DESC"));
 
 		//
 		// Les breves a valider
 		//
-		$res .= afficher_objets('breve','<b>' . _T('info_breves_valider') . '</b>', array("FROM" => 'spip_breves', 'WHERE' => "id_rubrique=$id_rubrique AND (statut='prepa' OR statut='prop')", 'ORDER BY' => "date_heure DESC"), true);
+		$encours .= afficher_objets('breve','<b>' . _T('info_breves_valider') . '</b>', array("FROM" => 'spip_breves', 'WHERE' => "id_rubrique=$id_rubrique AND (statut='prepa' OR statut='prop')", 'ORDER BY' => "date_heure DESC"), true);
 
 		//
 		// Les sites references a valider
 		//
 		if ($GLOBALS['meta']['activer_sites'] != 'non') {
-			$res .= afficher_objets('site','<b>' . _T('info_site_valider') . '</b>', array("FROM" => 'spip_syndic', 'WHERE' => "id_rubrique=$id_rubrique AND statut='prop'", 'ORDER BY' => "nom_site"));
+			$encours .= afficher_objets('site','<b>' . _T('info_site_valider') . '</b>', array("FROM" => 'spip_syndic', 'WHERE' => "id_rubrique=$id_rubrique AND statut='prop'", 'ORDER BY' => "nom_site"));
 		}
 
 		//
@@ -325,7 +321,7 @@ function contenu_naviguer($id_rubrique, $id_parent) {
 		if ($GLOBALS['meta']['activer_sites'] != 'non'
 		AND autoriser('publierdans','rubrique',$id_rubrique)) {
 
-			$res .= afficher_objets('site','<b>' . _T('avis_sites_syndiques_probleme') . '</b>', array('FROM' => 'spip_syndic', 'WHERE' => "id_rubrique=$id_rubrique AND (syndication='off' OR syndication='sus') AND statut='publie'", 'ORDER BY' => "nom_site"));
+			$encours .= afficher_objets('site','<b>' . _T('avis_sites_syndiques_probleme') . '</b>', array('FROM' => 'spip_syndic', 'WHERE' => "id_rubrique=$id_rubrique AND (syndication='off' OR syndication='sus') AND statut='publie'", 'ORDER BY' => "nom_site"));
 		}
 
 		// Les articles syndiques en attente de validation
@@ -334,7 +330,7 @@ function contenu_naviguer($id_rubrique, $id_parent) {
 
 			$cpt = sql_countsel("spip_syndic_articles", "statut='dispo'");
 			if ($cpt)
-				$res .= "<br /><small><a href='" .
+				$encours .= "<br /><small><a href='" .
 					generer_url_ecrire("sites_tous") .
 					"' style='color: black;'>" .
 					$cpt .
@@ -345,7 +341,13 @@ function contenu_naviguer($id_rubrique, $id_parent) {
 					"</a></small>";
 		}
 
-		$res .= fin_cadre_couleur(true);
+		$res .= debut_cadre_couleur_foncee("",true, "", _T('texte_en_cours_validation')
+				. (($GLOBALS['meta']['forum_prive_objets'] != 'non')
+					? ' '._T('texte_en_cours_validation_forum')
+					: '' )
+				)
+			. pipeline('rubrique_encours',array('args'=>array('type'=>'rubrique','id_objet'=>$id_rubrique),'data'=>$encours))
+			. fin_cadre_couleur(true);
 	}
 
 	$n = sql_countsel('spip_rubriques');
@@ -353,16 +355,16 @@ function contenu_naviguer($id_rubrique, $id_parent) {
 	if ($n && !_INTERFACE_ONGLETS) {
 		if (autoriser('creerarticledans','rubrique',$id_rubrique))
 		  $bouton_article .= icone_inline(_T('icone_ecrire_article'), generer_url_ecrire("articles_edit","id_rubrique=$id_rubrique&new=oui"), "article-24.gif","creer.gif", $spip_lang_right)
-		  . "<br class='nettoyeur' />";
+		  . "<div class='nettoyeur'></div>";
 
 		$activer_breves = $GLOBALS['meta']["activer_breves"];
 		if (autoriser('creerbrevedans','rubrique',$id_rubrique,NULL,array('id_parent'=>$id_parent)))
 		  $bouton_breves .= icone_inline(_T('icone_nouvelle_breve'), generer_url_ecrire("breves_edit","id_rubrique=$id_rubrique&new=oui"), "breve-24.gif","creer.gif", $spip_lang_right)
-		  . "<br class='nettoyeur' />";
+		  . "<div class='nettoyeur'></div>";
 
 		if (autoriser('creersitedans','rubrique',$id_rubrique))
 			$bouton_sites .= icone_inline(_T('info_sites_referencer'), generer_url_ecrire('sites_edit', "id_rubrique=$id_rubrique"), "site-24.gif", "creer.gif", $spip_lang_right)
-		  . "<br class='nettoyeur' />";
+		  . "<div class='nettoyeur'></div>";
 	}
 
 	//////////  Les articles en cours de redaction
@@ -376,6 +378,12 @@ function contenu_naviguer($id_rubrique, $id_parent) {
 
 	define('_TRI_ARTICLES_RUBRIQUE', 'date DESC');  # 0+titre,titre
 	$res .= afficher_objets('article',_T('info_tous_articles_presents'), array("WHERE" => "statut='publie' AND id_rubrique=$id_rubrique", 'ORDER BY' => _TRI_ARTICLES_RUBRIQUE));
+
+	// si une rubrique n'a pas/plus d'article publie, afficher les eventuels articles refuses
+	// pour permettre de la vider et la supprimer eventuellement
+	if (sql_countsel("spip_articles", "statut='publie' AND id_rubrique=".intval($id_rubrique), $groupby, $having)==0)
+		$res .= afficher_objets('article',_T('info_tous_articles_refuses'), array("WHERE" => "statut='refuse' AND id_rubrique=$id_rubrique", 'ORDER BY' => _TRI_ARTICLES_RUBRIQUE));
+
   $res .= $bouton_article;
 
 	//// Les breves
@@ -427,7 +435,7 @@ function tester_rubrique_vide($id_rubrique) {
 	if (sql_countsel('spip_rubriques', "id_parent=$id_rubrique"))
 		return false;
 
-	if (sql_countsel('spip_articles', "id_rubrique=$id_rubrique AND (statut='publie' OR statut='prepa' OR statut='prop')"))
+	if (sql_countsel('spip_articles', "id_rubrique=$id_rubrique AND (statut<>'poubelle')"))
 		return false;
 
 	if (sql_countsel('spip_breves', "id_rubrique=$id_rubrique AND (statut='publie' OR statut='prop')"))

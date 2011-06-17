@@ -173,7 +173,7 @@
 		// recherche du caratere separateur	
                 function recherche_sep($v)
 		        {
-		           for ($i = 0; $i < strlen($v); $i++)
+		           for ($i = 0; $i < mb_strlen($v); $i++)
 		                if (!est_un_chiffre($v[$i]))
 			             return $v[$i];
 			   return "";
@@ -197,8 +197,8 @@
 
 		function get_nom_de_fichier($url) // renvoi seulement le nom de fichier de l'url (sans la base)
 			{ 
-			  $pos = strrpos($url,"/");
-			  return substr($url,$pos+1);
+			  $pos = mb_strrpos($url,"/");
+			  return mb_substr($url,$pos+1);
 			}
 
 		

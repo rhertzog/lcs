@@ -29,7 +29,7 @@ if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');
 $TITRE = "Blocage des connexions";
 
 // Initialisation de l'état de l'accès
-$fichier_blocage_administrateur = $CHEMIN_CONFIG.'blocage_admin_'.$_SESSION['BASE'].'.txt';
+$fichier_blocage_administrateur = $CHEMIN_CONFIG.'blocage_administrateur_'.$_SESSION['BASE'].'.txt';
 if(is_file($fichier_blocage_administrateur))
 {
 	$label = '<label class="erreur">Application fermée : '.html(file_get_contents($fichier_blocage_administrateur)).'</label>';
@@ -40,7 +40,7 @@ else
 }
 ?>
 
-<p class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=environnement_generalites__verrouillage">DOC : Verrouillage de l'application</a></p>
+<p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=environnement_generalites__verrouillage">DOC : Verrouillage de l'application</a></span></p>
 
 <hr />
 
@@ -57,7 +57,7 @@ else
 	<span id="span_motif" class="hide">
 		<label class="tab" for="f_motif">Motif :</label>
 			<select id="f_proposition" name="f_proposition">
-				<option value="rien" selected="selected">autre motif</option>
+				<option value="rien" selected>autre motif</option>
 				<option value="demenagement">déménagement</option>
 			</select>
 			<input id="f_motif" name="f_motif" size="50" maxlength="100" type="text" value="" />

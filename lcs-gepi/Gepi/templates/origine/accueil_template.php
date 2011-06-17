@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: accueil_template.php 5766 2010-10-26 13:25:24Z regis $
+ * $Id: accueil_template.php 6697 2011-03-25 21:54:27Z regis $
 */
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
@@ -61,6 +61,14 @@
 
 <div id='container'>
 
+<a name='haut_de_page'></a>
+
+<div class='fixeMilieuDroit'>
+	<a href='#haut_de_page'><img src='images/up.png' width='18' height='18' alt="haut de la page" title="Remonter en haut de la page" /></a>
+	<br />
+	<a href='#bas_de_page'><img src='images/down.png' width='18' height='18' alt="bas de la page" title="Descendre en bas de la page" /></a>
+</div>
+
 <!-- droits dossiers -->
 
 <?php
@@ -87,9 +95,14 @@
 ?>
 	  <p>
 		Nombre de personnes actuellement connectées :
-		<a href='<?php echo $afficheAccueil->nb_connect_lien; ?>' onmouseover="delais_afficher_div('personnes_connectees','y',-10,20,500,20,20);">
-		  <?php echo $afficheAccueil->nb_connect; ?>
-		</a>
+		<?php
+			if($afficheAccueil->nb_connect>1) {
+				echo "<a style='font-weight:bold;' href='$afficheAccueil->nb_connect_lien' onmouseover=\"delais_afficher_div('personnes_connectees','y',-10,20,500,20,20);\">$afficheAccueil->nb_connect</a>";
+			}
+			else {
+				echo "<b>".$afficheAccueil->nb_connect."</b>";
+			}
+		?>
 		(
 		<a href = 'gestion/gestion_connect.php?mode_navig=accueil'>
 		  Gestion des connexions
@@ -105,7 +118,7 @@
 	if ($afficheAccueil->alert_sums>0) {
 ?>
 	  <p>
-		Alertes sécurité (niveaux cumulés) : <?php echo $afficheAccueil->alert_sums; ?> (
+		Alertes sécurité (niveaux cumulés) : <?php echo "<b>".$afficheAccueil->alert_sums."</b>"; ?> (
 		<a href='gestion/security_panel.php'>Panneau de contrôle</a>)
 	  </p>
 <?php
@@ -122,8 +135,8 @@
 		Votre établissement n'est pas référencé parmi les utilisateurs de Gepi.
 		<span>
 			<br />
-			<a href=\"javascript:ouvre_popup_reference('$value[lien]')\" title='$value[titre]'>
-				<?php echo $value[titre]; ?>
+			<a href="javascript:ouvre_popup_reference('<?php echo $value['lien'];?>')" title="<?php echo $value['titre'];?>">
+				<?php echo $value['titre']; ?>
 			</a>
 		</span>
 		</p>
@@ -165,6 +178,16 @@
 
 <?php
 	}
+?>
+
+<!-- Actions à effectuer -->
+<?php
+	affiche_infos_actions();
+?>
+
+<!-- Accès CDT ouverts -->
+<?php
+	affiche_acces_cdt();
 ?>
 
 <!-- messagerie -->
@@ -270,6 +293,9 @@
 	<div class="div_tableau cellule_1">
 		<form enctype="multipart/form-data" action="gestion/accueil_sauve.php" method="post" id="formulaire" >
 			<p>
+				<?php
+					echo add_token_field();
+				?>
 				<input type='hidden' name='action' value='system_dump' />
 				<input type="submit" value="Lancer une sauvegarde de la base de données" />
 			</p>
@@ -399,7 +425,7 @@
 ?>
 						<tr  class='<?php echo $newentree['style']; ?>'>
 							<td>
-                               <a href='mailto:<?php echo $newentree[courriel]; ?>'>
+                               <a href='mailto:<?php echo $newentree['courriel']; ?>'>
 									<?php echo $newentree['texte']; ?>
 								</a>
 							</td>
@@ -432,6 +458,7 @@
 	</script>
 
 
+<a name='bas_de_page'></a>
 </div>
 
 		<?php
@@ -457,6 +484,7 @@
    			";
 		}
 ?>
+
 
 </body>
 </html>

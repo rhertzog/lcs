@@ -1,0 +1,6 @@
+The Debian Package lcs-zonep
+----------------------------
+
+This package enables access to P: SMB share
+
+Cyril Bouthors <cyb@debian.org>, Fri Nov 26 18:03:18 CET 2010

@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 include_spip('inc/actions');
@@ -58,7 +58,6 @@ function presenter_groupe_mots_boucle($row, $own)
 	$droit = autoriser('modifier', 'mot', $id_mot, null, array('id_groupe' => $id_groupe));
 
 	if ($droit OR $occurrences['articles'][$id_mot] > 0) {
-			
 		$h = generer_url_ecrire('mots_edit', "id_mot=$id_mot&redirect=" . generer_url_retour('mots_tous') . "#editer_mots-$id_groupe");
 		if ($descriptif)  $descriptif = " title=\"$descriptif\"";
 		$cle = $puce_statut($id_mot, 'publie', $id_groupe, 'mot');
@@ -92,6 +91,7 @@ function presenter_groupe_mots_boucle($row, $own)
 	else if ($nr > 1)
 		$texte_lie[] = $nr." "._T('info_rubriques_02');
 
+	$texte_lie = pipeline('afficher_nombre_objets_associes_a',array('args'=>array('objet'=>'mot','id_objet'=>$id_mot),'data'=>$texte_lie));
 	$texte_lie = join($texte_lie,", ");
 
 	$vals[] = $texte_lie;

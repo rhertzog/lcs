@@ -1,7 +1,7 @@
 <?php
-/* $Id: saisie_notes.php 3972 2009-12-24 11:44:52Z crob $ */
+/* $Id: saisie_notes.php 6755 2011-04-08 17:46:27Z crob $ */
 /*
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -67,6 +67,8 @@ $id_epreuve=isset($_POST['id_epreuve']) ? $_POST['id_epreuve'] : (isset($_GET['i
 $mode=isset($_POST['mode']) ? $_POST['mode'] : (isset($_GET['mode']) ? $_GET['mode'] : NULL);
 
 if(isset($_POST['saisie_notes'])) {
+	check_token();
+
 	$sql="SELECT * FROM eb_epreuves WHERE id='$id_epreuve';";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
@@ -75,6 +77,7 @@ if(isset($_POST['saisie_notes'])) {
 	else {
 		$lig=mysql_fetch_object($res);
 		$etat=$lig->etat;
+		$note_sur=$lig->note_sur;
 	
 		if($etat!='clos') {
 		
@@ -109,9 +112,9 @@ if(isset($_POST['saisie_notes'])) {
 						$elev_note='0';
 						$elev_statut='-';
 					}
-					elseif(ereg("^[0-9\.\,]{1,}$",$note[$i])) {
+					elseif(preg_match("/^[0-9\.\,]{1,}$/",$note[$i])) {
 						$elev_note=str_replace(",", ".", "$note[$i]");
-						if(($elev_note<0)||($elev_note>20)){
+						if(($elev_note<0)||($elev_note>$note_sur)){
 							$elev_note='';
 							$elev_statut='';
 						}
@@ -141,6 +144,7 @@ if(isset($_POST['saisie_notes'])) {
 	}
 }
 elseif((isset($mode))&&($mode=='export_csv')) {
+	check_token();
 
 	$export="y";
 
@@ -202,19 +206,7 @@ elseif((isset($mode))&&($mode=='export_csv')) {
 		$nom_fic="export_saisie_notes_".$_SESSION['login']."_$id_epreuve.csv";
 	
 		$now = gmdate('D, d M Y H:i:s') . ' GMT';
-		header('Content-Type: text/x-csv');
-		header('Expires: ' . $now);
-		// lem9 & loic1: IE need specific headers
-		if (ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
-			header('Content-Disposition: inline; filename="' . $nom_fic . '"');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Pragma: public');
-		}
-		else {
-			header('Content-Disposition: attachment; filename="' . $nom_fic . '"');
-			header('Pragma: no-cache');
-		}
-	
+		send_file_download_headers('text/x-csv',$nom_fic);
 		echo $csv;
 		die();
 	}
@@ -239,7 +231,7 @@ require_once("../lib/header.inc");
 if(isset($id_epreuve)) {
 	echo "<p class='bold'><a href='index.php?id_epreuve=$id_epreuve&amp;mode=modif_epreuve'";
 	echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
-	echo ">Menu Epreuve blanche</a>";
+	echo ">Epreuve blanche n°$id_epreuve</a>";
 }
 else {
 	echo "<p class='bold'><a href='index.php'";
@@ -306,7 +298,7 @@ echo " | <a href='".$_SERVER['PHP_SELF']."'";
 echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
 echo ">Choix de l'épreuve</a>";
 
-echo " | <a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;mode=export_csv'";
+echo " | <a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;mode=export_csv".add_token_in_url()."'";
 echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
 echo ">Exporter au format CSV</a>";
 
@@ -342,6 +334,7 @@ if(mysql_num_rows($res)==0) {
 
 $lig=mysql_fetch_object($res);
 $etat=$lig->etat;
+$note_sur=$lig->note_sur;
 
 echo "<blockquote>\n";
 echo "<p><b>".$lig->intitule."</b> (<i>".formate_date($lig->date)."</i>)<br />\n";
@@ -427,6 +420,7 @@ $couleur_moy_cn = '#96C8F0';
 
 if($etat!='clos') {
 	echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form1'>\n";
+	echo add_token_field();
 }
 
 echo "<table border='1' cellspacing='2' cellpadding='1' class='boireaus' summary='Saisie'>\n";
@@ -437,7 +431,7 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 	echo "<th$title_col_sp>Nom Prénom</th>\n";
 }
 //echo "<th width='100px'>Note</th>\n";
-echo "<th style='width:5em;'>Note</th>\n";
+echo "<th style='width:5em;'>Note sur $note_sur</th>\n";
 echo "</tr>\n";
 
 $cpt=0;
@@ -513,7 +507,7 @@ function verifcol(num_id){
 		//if((note.search(/^[0-9.]+$/)!=-1)&&(note.lastIndexOf('.')==note.indexOf('.',0))){
 		if(((note.search(/^[0-9.]+$/)!=-1)&&(note.lastIndexOf('.')==note.indexOf('.',0)))||
 	((note.search(/^[0-9,]+$/)!=-1)&&(note.lastIndexOf(',')==note.indexOf(',',0)))){
-			if((note>20)||(note<0)){
+			if((note>$note_sur)||(note<0)){
 				couleur='red';
 			}
 			else{
@@ -537,7 +531,7 @@ function verifcol(num_id){
 echo "<p><br /></p>\n";
 echo "<p style='color:red;'>A FAIRE:</p>\n";
 echo "<ul>\n";
-echo "<li><p style='color:red;'>Permettre de saisir des notes sur autre chose que 20.</p>\n";
+//echo "<li><p style='color:red;'>Permettre de saisir des notes sur autre chose que 20.</p>\n";
 //echo "<li><p style='color:red;'>Calculer la moyenne, médiane,...</p></li>\n";
 echo "<li><p style='color:red;'>Permettre d'importer/exporter ses saisies au format CSV</p></li>\n";
 echo "</ul>\n";

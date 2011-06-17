@@ -2,9 +2,9 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    config.inc.php
-   jLCF <(-_°)/> jean-luc.chretien@tice.ac-caen.fr
+   jLCF : jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   Derniere modification 09/10/2009
+   Derniere modification 24/03/2011
    ============================================= */
 
 # Mode DEBUG LCS 
@@ -12,7 +12,7 @@
 $DEBUG = false;
 $MsgD  = "DEBUG >> ";
 
-# Param&#232;tres MySQL
+# Parametres MySQL
 #----------------------
 $HOSTAUTH="localhost";
 $USERAUTH="lcsmgr";
@@ -60,7 +60,15 @@ $secook= 0;
 # Chemins
 $basedir="/var/www/";
 $basedir_perso="/home/";
-$baseurl="http://".$_SERVER['SERVER_NAME']."/";
+$baseurl="http://";
+if(getenv("HTTP_X_FORWARDED_HOST")) {
+  $baseurl = $baseurl.getenv("HTTP_X_FORWARDED_HOST");
+} elseif (getenv("HTTP_X_FORWARDED_SERVER")) {
+  $baseurl = $baseurl.getenv("HTTP_X_FORWARDED_SERVER");
+} else {
+  $baseurl = $baseurl.getenv("SERVER_NAME");
+}
+$baseurl = $baseurl."/";
 if ( @$_SERVER['SERVER_PORT']=="443" ) 
     $baseurl=ereg_replace("http","https",$baseurl);
 $urlauth=$baseurl."lcs/auth.php";

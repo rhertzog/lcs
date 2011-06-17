@@ -1,5 +1,5 @@
 <?php
-/* $Id: login.php 5743 2010-10-24 16:23:13Z regis $
+/* $Id: login.php 5744 2010-10-24 16:24:32Z regis $
 *
 * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: ajax_edit_limite.php 4002 2010-01-10 14:13:16Z crob $
+ * $Id: ajax_edit_limite.php 6020 2010-11-28 14:13:13Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -69,6 +69,7 @@ include "../lib/bulletin_simple_classe.inc.php";
 //include "../lib/bulletin_simple_classe_bis.inc.php";
 //==============================
 
+header('Content-Type: text/html; charset=ISO-8859-15');
 
 //==============================
 // Dans le cas d'un appel via ajax, on ne met pas de header: affichage dans une infobulle

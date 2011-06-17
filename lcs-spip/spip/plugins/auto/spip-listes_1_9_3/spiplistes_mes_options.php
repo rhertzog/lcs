@@ -1,11 +1,12 @@
 <?php
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47089 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-26 18:00:15 +0200 (Tue, 26 Apr 2011) $
 
-
-// spiplistes_mes_options.php
-
-// $LastChangedRevision: 27718 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-04-08 18:15:50 +0200 (mer, 08 avr 2009) $
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('base/abstract_sql');
 // la declaration des tables en spiplites 192 est dans 'spip-listes.php'. Elle se trouve dans 'spiplistes_tables.php' en 193
@@ -14,10 +15,10 @@ include_spip('base/spiplistes_tables');
 include_spip('inc/spiplistes_api_globales');
 include_spip('inc/spiplistes_api_abstract_sql');
 
-define("_SPIPLISTES_PREFIX", "spiplistes");
+define('_SPIPLISTES_PREFIX', 'spiplistes');
 
 if (!defined('_DIR_PLUGIN_SPIPLISTES')) {
-	$p=explode(basename(_DIR_PLUGINS)."/",str_replace('\\','/',realpath(dirname(__FILE__))));
+	$p=explode(basename(_DIR_PLUGINS).'/',str_replace('\\','/',realpath(dirname(__FILE__))));
 	define('_DIR_PLUGIN_SPIPLISTES',(_DIR_PLUGINS.end($p)).'/');
 } 
 
@@ -29,140 +30,159 @@ if (!defined('_DIR_PLUGIN_SPIPLISTES')) {
 // avis aux specialistes !!
 define('_SIGNALER_ECHOS', false); // horrible 
 
-// mode debug dans le log, peut-etre augmente pour avoir tous
-// les messages dans spip.log (par exemple)
-// voir doc php
-define("_SPIPLISTES_LOG_DEBUG", LOG_DEBUG);
+define('_SPIPLISTES_PREFIX_LOG', 'MEL: ');
 
-define("_DIR_PLUGIN_SPIPLISTES_IMG_PACK", _DIR_PLUGIN_SPIPLISTES."img_pack/");
+define('_DIR_PLUGIN_SPIPLISTES_IMG_PACK', _DIR_PLUGIN_SPIPLISTES.'img_pack/');
 
 // nombre max de chiffres ajoutes au login (creation abo)
-define("_SPIPLISTES_MAX_LOGIN_NN", 32766);
+define('_SPIPLISTES_MAX_LOGIN_NN', 32766);
 
-define("_SPIPLISTES_PATRONS_DIR", "patrons/");
-define("_SPIPLISTES_PATRONS_TETE_DIR", _SPIPLISTES_PATRONS_DIR."lien_en_tete_courriers/");
-define("_SPIPLISTES_PATRONS_PIED_DIR", _SPIPLISTES_PATRONS_DIR."pieds_courriers/");
-define("_SPIPLISTES_PATRON_PIED_DEFAUT", "piedmail");
-define("_SPIPLISTES_PATRON_PIED_IGNORE", "aucun");
-define("_SPIPLISTES_PATRONS_PIED_DEFAUT", _SPIPLISTES_PATRONS_PIED_DIR._SPIPLISTES_PATRON_PIED_DEFAUT);
-define("_SPIPLISTES_PATRONS_TAMPON_DIR", _SPIPLISTES_PATRONS_DIR."tampons_courriers/");
-define("_SPIPLISTES_PATRONS_MESSAGES_DIR", _SPIPLISTES_PATRONS_DIR."messages_abo/");
+define('_SPIPLISTES_PATRONS_DIR', 'patrons/');
+define('_SPIPLISTES_PATRONS_TETE_DIR', _SPIPLISTES_PATRONS_DIR.'lien_en_tete_courriers/');
+define('_SPIPLISTES_PATRONS_LIEN_DIR', _SPIPLISTES_PATRONS_DIR.'lien_en_pied_courriers/');
+define('_SPIPLISTES_PATRONS_PIED_DIR', _SPIPLISTES_PATRONS_DIR.'pieds_courriers/');
+define('_SPIPLISTES_PATRON_PIED_DEFAUT', 'piedmail');
+define('_SPIPLISTES_PATRON_PIED_IGNORE', 'aucun');
+define('_SPIPLISTES_PATRONS_PIED_DEFAUT', _SPIPLISTES_PATRONS_PIED_DIR._SPIPLISTES_PATRON_PIED_DEFAUT);
+define('_SPIPLISTES_PATRONS_TAMPON_DIR', _SPIPLISTES_PATRONS_DIR.'tampons_courriers/');
+define('_SPIPLISTES_PATRONS_MESSAGES_DIR', _SPIPLISTES_PATRONS_DIR.'messages_abo/');
 
 // au dela de cette taille, le contenu du champ est considéré
 // comme le contenu du patron
 // (compat anciennes versions de SPIP-Listes)
-define("_SPIPLISTES_PATRON_FILENAMEMAX", 30);
+define('_SPIPLISTES_PATRON_FILENAMEMAX', 30);
 
-define("_SPIPLISTES_RUBRIQUE", "messagerie");
+define('_SPIPLISTES_RUBRIQUE', 'messagerie');
 
-define("_SPIPLISTES_LOT_TAILLE", 30);
+define('_SPIPLISTES_LOT_TAILLE', 30);
 
-define("_SPIPLISTES_LOTS_PERMIS", "1;5;10;30;100");
+define('_SPIPLISTES_LOTS_PERMIS', '1;5;10;30;100');
 
-define("_SPIPLISTES_ZERO_TIME_DATE", "0000-00-00 00:00:00");
+define('_SPIPLISTES_ZERO_TIME_DATE', '0000-00-00 00:00:00');
 
 // documentation: http://www.quesaco.org/Spiplistes-les-etats-du-courrier
-define("_SPIPLISTES_COURRIER_STATUT_REDAC", "redac"); // en cours de redac
-define("_SPIPLISTES_COURRIER_STATUT_READY", "ready"); // pret a etre envoye
-define("_SPIPLISTES_COURRIER_STATUT_ENCOURS", "encour"); // en cours par meleuse
-define("_SPIPLISTES_COURRIER_STATUT_AUTO", "auto"); // publie de liste
-define("_SPIPLISTES_COURRIER_STATUT_PUBLIE", "publie"); // publie
-define("_SPIPLISTES_COURRIER_STATUT_VIDE", "vide"); // moins de 10 car.
-define("_SPIPLISTES_COURRIER_STATUT_IGNORE", "ignore"); // pas de destinataire
-define("_SPIPLISTES_COURRIER_STATUT_STOPE", "stope"); // stope par admin
-define("_SPIPLISTES_COURRIER_STATUT_ERREUR", "erreur"); // en erreur
+define('_SPIPLISTES_COURRIER_STATUT_REDAC', 'redac'); // en cours de redac
+define('_SPIPLISTES_COURRIER_STATUT_READY', 'ready'); // pret a etre envoye
+define('_SPIPLISTES_COURRIER_STATUT_ENCOURS', 'encour'); // en cours par meleuse
+define('_SPIPLISTES_COURRIER_STATUT_AUTO', 'auto'); // publie de liste
+define('_SPIPLISTES_COURRIER_STATUT_PUBLIE', 'publie'); // publie
+define('_SPIPLISTES_COURRIER_STATUT_VIDE', 'vide'); // moins de 10 car.
+define('_SPIPLISTES_COURRIER_STATUT_IGNORE', 'ignore'); // pas de destinataire
+define('_SPIPLISTES_COURRIER_STATUT_STOPE', 'stope'); // stope par admin
+define('_SPIPLISTES_COURRIER_STATUT_ERREUR', 'erreur'); // en erreur
 
-define("_SPIPLISTES_COURRIER_TYPE_NEWSLETTER", "nl");
-define("_SPIPLISTES_COURRIER_TYPE_LISTEAUTO", "auto");
+define('_SPIPLISTES_COURRIER_TYPE_NEWSLETTER', 'nl');
+define('_SPIPLISTES_COURRIER_TYPE_LISTEAUTO', 'auto');
 
-// champ 'statut' de 'spip_listes' varchar(10)
-define("_SPIPLISTES_PUBLIC_LIST", "liste");
-define("_SPIPLISTES_PRIVATE_LIST", "inact");
-define("_SPIPLISTES_DAILY_LIST", "pub_jour"); // periode = nb jours
-define("_SPIPLISTES_HEBDO_LIST", "pub_hebdo");
-define("_SPIPLISTES_WEEKLY_LIST", "pub_7jours"); // debut de semaine
-define("_SPIPLISTES_MENSUEL_LIST", "pub_mensul"); // mensuelle
-define("_SPIPLISTES_MONTHLY_LIST", "pub_mois"); // debut de mois
-define("_SPIPLISTES_YEARLY_LIST", "pub_an");
-define("_SPIPLISTES_TRASH_LIST", "poublist");
+// champ 'statut' de la table 'spip_listes' varchar(10)
+// les listes privees (reservees aux auteurs et admins)
+define('_SPIPLISTES_LIST_PRIVATE', 'inact');
+define('_SPIPLISTES_LIST_PRIV_DAILY', 'prv_jour'); // periode = nb jours
+define('_SPIPLISTES_LIST_PRIV_HEBDO', 'prv_hebdo');
+define('_SPIPLISTES_LIST_PRIV_WEEKLY', 'prv_7jours'); // debut de semaine
+define('_SPIPLISTES_LIST_PRIV_MENSUEL', 'prv_mensul'); // mensuelle
+define('_SPIPLISTES_LIST_PRIV_MONTHLY', 'prv_mois'); // debut de mois
+define('_SPIPLISTES_LIST_PRIV_YEARLY', 'prv_an');
+// les listes publiques (pour tous les inscrits)
+define('_SPIPLISTES_LIST_PUBLIC', 'liste');
+define('_SPIPLISTES_LIST_PUB_DAILY', 'pub_jour'); // periode = nb jours
+define('_SPIPLISTES_LIST_PUB_HEBDO', 'pub_hebdo');
+define('_SPIPLISTES_LIST_PUB_WEEKLY', 'pub_7jours'); // debut de semaine
+define('_SPIPLISTES_LIST_PUB_MENSUEL', 'pub_mensul'); // mensuelle
+define('_SPIPLISTES_LIST_PUB_MONTHLY', 'pub_mois'); // debut de mois
+define('_SPIPLISTES_LIST_PUB_YEARLY', 'pub_an');
+// statut commun
+define('_SPIPLISTES_TRASH_LIST', 'poublist');
 
 // les statuts des periodique
-define("_SPIPLISTES_LISTES_STATUTS_PERIODIQUES", 
-	_SPIPLISTES_DAILY_LIST
-	. ";" . _SPIPLISTES_HEBDO_LIST
-	. ";" . _SPIPLISTES_WEEKLY_LIST
-	. ";" . _SPIPLISTES_MENSUEL_LIST
-	. ";" . _SPIPLISTES_MONTHLY_LIST
-	. ";" . _SPIPLISTES_YEARLY_LIST
+define('_SPIPLISTES_LISTES_STATUTS_PERIODIQUES',
+	// les listes privees
+			_SPIPLISTES_LIST_PRIV_DAILY
+	. ';' . _SPIPLISTES_LIST_PRIV_HEBDO
+	. ';' . _SPIPLISTES_LIST_PRIV_WEEKLY
+	. ';' . _SPIPLISTES_LIST_PRIV_MENSUEL
+	. ';' . _SPIPLISTES_LIST_PRIV_MONTHLY
+	. ';' . _SPIPLISTES_LIST_PRIV_YEARLY
+	// et les listes publiques
+	. ';' . _SPIPLISTES_LIST_PUB_DAILY
+	. ';' . _SPIPLISTES_LIST_PUB_HEBDO
+	. ';' . _SPIPLISTES_LIST_PUB_WEEKLY
+	. ';' . _SPIPLISTES_LIST_PUB_MENSUEL
+	. ';' . _SPIPLISTES_LIST_PUB_MONTHLY
+	. ';' . _SPIPLISTES_LIST_PUB_YEARLY
 	);
 
 // les statuts des listes publiees
-define("_SPIPLISTES_LISTES_STATUTS_OK", 
-	_SPIPLISTES_PRIVATE_LIST
-	. ";" . _SPIPLISTES_PUBLIC_LIST
-	. ";" . _SPIPLISTES_LISTES_STATUTS_PERIODIQUES
+define('_SPIPLISTES_LISTES_STATUTS_OK', 
+	_SPIPLISTES_LIST_PRIVATE
+	. ';' . _SPIPLISTES_LIST_PUBLIC
+	. ';' . _SPIPLISTES_LISTES_STATUTS_PERIODIQUES
 	);
 
 // statuts des listes tels qu'affichees en liste 
-define("_SPIPLISTES_LISTES_STATUTS_TOUS", 
+define('_SPIPLISTES_LISTES_STATUTS_TOUS', 
 	_SPIPLISTES_LISTES_STATUTS_OK
-	. ";" . _SPIPLISTES_TRASH_LIST
+	. ';' . _SPIPLISTES_TRASH_LIST
 	);
 
 // statuts des courriers tels qu'affiches en liste 
-define("_SPIPLISTES_COURRIERS_STATUTS"
+define('_SPIPLISTES_COURRIERS_STATUTS'
 	,	_SPIPLISTES_COURRIER_STATUT_REDAC
-	. ";" . _SPIPLISTES_COURRIER_STATUT_READY
-	//. ";" . _SPIPLISTES_COURRIER_STATUT_ENCOURS
-	. ";" . _SPIPLISTES_COURRIER_STATUT_AUTO
-	. ";" . _SPIPLISTES_COURRIER_STATUT_PUBLIE
-	. ";" . _SPIPLISTES_COURRIER_STATUT_VIDE
-	. ";" . _SPIPLISTES_COURRIER_STATUT_IGNORE
-	. ";" . _SPIPLISTES_COURRIER_STATUT_STOPE
-	. ";" . _SPIPLISTES_COURRIER_STATUT_ERREUR
+	. ';' . _SPIPLISTES_COURRIER_STATUT_READY
+	//. ';' . _SPIPLISTES_COURRIER_STATUT_ENCOURS
+	. ';' . _SPIPLISTES_COURRIER_STATUT_AUTO
+	. ';' . _SPIPLISTES_COURRIER_STATUT_PUBLIE
+	. ';' . _SPIPLISTES_COURRIER_STATUT_VIDE
+	. ';' . _SPIPLISTES_COURRIER_STATUT_IGNORE
+	. ';' . _SPIPLISTES_COURRIER_STATUT_STOPE
+	. ';' . _SPIPLISTES_COURRIER_STATUT_ERREUR
 	);
 
 // charsets:
 // charsets autorises :
-define("_SPIPLISTES_CHARSETS_ALLOWED", "iso-8859-1;iso-8859-9;iso-8859-6;iso-8859-15;utf-8");
-define("_SPIPLISTES_CHARSET_ENVOI", "iso-8859-1"); // pour historique
-define("_SPIPLISTES_CHARSET_DEFAULT", _SPIPLISTES_CHARSET_ENVOI);
+define('_SPIPLISTES_CHARSETS_ALLOWED', 'iso-8859-1;iso-8859-9;iso-8859-6;iso-8859-15;utf-8');
+define('_SPIPLISTES_CHARSET_ENVOI', 'iso-8859-1'); // pour historique
+define('_SPIPLISTES_CHARSET_DEFAULT', _SPIPLISTES_CHARSET_ENVOI);
 
-define("_SPIPLISTES_EXEC_PREFIX", _SPIPLISTES_PREFIX."_");
-define("_SPIPLISTES_EXEC_ABONNE_EDIT", _SPIPLISTES_EXEC_PREFIX."abonne_edit");
-define("_SPIPLISTES_EXEC_ABONNES_LISTE", _SPIPLISTES_EXEC_PREFIX."abonnes_tous");
-define("_SPIPLISTES_EXEC_AIDE", _SPIPLISTES_EXEC_PREFIX."aide");
-define("_SPIPLISTES_EXEC_AUTOCRON", _SPIPLISTES_EXEC_PREFIX."autocron");
-define("_SPIPLISTES_EXEC_CONFIGURE", _SPIPLISTES_EXEC_PREFIX."config");
-define("_SPIPLISTES_EXEC_COURRIER_EDIT", _SPIPLISTES_EXEC_PREFIX."courrier_edit");
-define("_SPIPLISTES_EXEC_COURRIER_GERER", _SPIPLISTES_EXEC_PREFIX."courrier_gerer");
-define("_SPIPLISTES_EXEC_COURRIER_PREVUE", _SPIPLISTES_EXEC_PREFIX."courrier_previsu");
-define("_SPIPLISTES_EXEC_COURRIERS_LISTE", _SPIPLISTES_EXEC_PREFIX."courriers_casier"); // ancien listes_toutes
-define("_SPIPLISTES_EXEC_IMPORT_EXPORT", _SPIPLISTES_EXEC_PREFIX."import_export");
-define("_SPIPLISTES_EXEC_IMPORT_PATRON", _SPIPLISTES_EXEC_PREFIX."import_patron");
-define("_SPIPLISTES_EXEC_LISTE_EDIT", _SPIPLISTES_EXEC_PREFIX."liste_edit");
-define("_SPIPLISTES_EXEC_LISTE_GERER", _SPIPLISTES_EXEC_PREFIX."liste_gerer"); //ancien listes
-define("_SPIPLISTES_EXEC_LISTES_LISTE", _SPIPLISTES_EXEC_PREFIX."listes_toutes");
-define("_SPIPLISTES_EXEC_MAINTENANCE", _SPIPLISTES_EXEC_PREFIX."maintenance");
+define('_SPIPLISTES_EXEC_PREFIX', _SPIPLISTES_PREFIX.'_');
+define('_SPIPLISTES_EXEC_ABONNE_EDIT', _SPIPLISTES_EXEC_PREFIX.'abonne_edit');
+define('_SPIPLISTES_EXEC_ABONNES_LISTE', _SPIPLISTES_EXEC_PREFIX.'abonnes_tous');
+define('_SPIPLISTES_EXEC_AIDE', _SPIPLISTES_EXEC_PREFIX.'aide');
+define('_SPIPLISTES_EXEC_AUTOCRON', _SPIPLISTES_EXEC_PREFIX.'autocron');
+define('_SPIPLISTES_EXEC_CONFIGURE', _SPIPLISTES_EXEC_PREFIX.'config');
+define('_SPIPLISTES_EXEC_COURRIER_EDIT', _SPIPLISTES_EXEC_PREFIX.'courrier_edit');
+define('_SPIPLISTES_EXEC_COURRIER_GERER', _SPIPLISTES_EXEC_PREFIX.'courrier_gerer');
+define('_SPIPLISTES_EXEC_COURRIER_PREVUE', _SPIPLISTES_EXEC_PREFIX.'courrier_previsu');
+define('_SPIPLISTES_EXEC_COURRIERS_LISTE', _SPIPLISTES_EXEC_PREFIX.'courriers_casier'); // ancien listes_toutes
+define('_SPIPLISTES_EXEC_IMPORT_EXPORT', _SPIPLISTES_EXEC_PREFIX.'import_export');
+define('_SPIPLISTES_EXEC_IMPORT_PATRON', _SPIPLISTES_EXEC_PREFIX.'import_patron');
+define('_SPIPLISTES_EXEC_LISTE_EDIT', _SPIPLISTES_EXEC_PREFIX.'liste_edit');
+define('_SPIPLISTES_EXEC_LISTE_GERER', _SPIPLISTES_EXEC_PREFIX.'liste_gerer'); //ancien listes
+define('_SPIPLISTES_EXEC_LISTES_LISTE', _SPIPLISTES_EXEC_PREFIX.'listes_toutes');
+define('_SPIPLISTES_EXEC_MAINTENANCE', _SPIPLISTES_EXEC_PREFIX.'maintenance');
 
-define("_SPIPLISTES_ACTION_PREFIX", _SPIPLISTES_PREFIX."_");
-define("_SPIPLISTES_ACTION_SUPPRIMER_ABONNER", _SPIPLISTES_ACTION_PREFIX."supprimer_abonne");
-define("_SPIPLISTES_ACTION_CHANGER_STATUT_ABONNE", _SPIPLISTES_ACTION_PREFIX."changer_statut_abonne");
-define("_SPIPLISTES_ACTION_ABONNER_AUTEUR", _SPIPLISTES_ACTION_PREFIX."listes_abonner_auteur");
-define("_SPIPLISTES_ACTION_LISTE_ABONNES", _SPIPLISTES_ACTION_PREFIX."liste_des_abonnes");
-define("_SPIPLISTES_ACTION_MOD_GERER", _SPIPLISTES_ACTION_PREFIX."moderateurs_gerer");
+define('_SPIPLISTES_ACTION_PREFIX', _SPIPLISTES_PREFIX.'_');
+define('_SPIPLISTES_ACTION_SUPPRIMER_ABONNER', _SPIPLISTES_ACTION_PREFIX.'supprimer_abonne');
+define('_SPIPLISTES_ACTION_CHANGER_STATUT_ABONNE', _SPIPLISTES_ACTION_PREFIX.'changer_statut_abonne');
+define('_SPIPLISTES_ACTION_ABONNER_AUTEUR', _SPIPLISTES_ACTION_PREFIX.'listes_abonner_auteur');
+define('_SPIPLISTES_ACTION_LISTE_ABONNES', _SPIPLISTES_ACTION_PREFIX.'liste_des_abonnes');
+define('_SPIPLISTES_ACTION_MOD_GERER', _SPIPLISTES_ACTION_PREFIX.'moderateurs_gerer');
 
 // les formats d'envoi autorises, ou non pour pseudo-desabonne
-define("_SPIPLISTES_FORMATS_ALLOWED", "html;texte;non");
-define("_SPIPLISTES_FORMAT_DEFAULT", "html");
+define('_SPIPLISTES_FORMATS_ALLOWED', 'html;texte;non');
+define('_SPIPLISTES_FORMAT_DEFAULT', 'html');
 
-define("_SPIPLISTES_META_PREFERENCES", 'spiplistes_preferences');
+define('_SPIPLISTES_META_PREFERENCES', 'spiplistes_preferences');
 
 // tampon
-define("_SPIPLISTES_TAMPON_CLES", "editeur_nom,editeur_adresse,editeur_rcs,editeur_siret,editeur_url,editeur_logo");
+define('_SPIPLISTES_TAMPON_CLES', 'editeur_nom,editeur_adresse,editeur_rcs,editeur_siret,editeur_url,editeur_logo');
 
-define("_SPIPLISTES_TIME_1_DAY", (3600 * 24));
+define('_SPIPLISTES_TIME_1_DAY', (3600 * 24));
 
+// utiliser plugin FACTEUR si present
+// nota: CP-Sun Oct 17 20:26:34 CEST 2010
+//	ne pas modifier, hors dev. N'est pas operationnel.
+define('_SPIPLISTES_UTILISER_FACTEUR', 'non');
 
 if(spiplistes_spip_est_inferieur_193()) { 
 	@define('SPIP_BOTH', MYSQL_BOTH);
@@ -181,18 +201,18 @@ function balise_MELEUSE_CRON($p) {
 function calcul_DATE_MODIF_SITE () {
    $date_art = sql_getfetsel(
 		'date'
-		, "spip_articles"
-		, "statut=".sql_quote('publie')
+		, 'spip_articles'
+		, 'statut='.sql_quote('publie')
 		, ''
-		, array("date DESC")
+		, array('date DESC')
 		, 1
 		);
    $date_bre = sql_getfetsel(
 		'date_heure'
-		, "spip_breves"
-		, "statut=".sql_quote('publie')
+		, 'spip_breves'
+		, 'statut='.sql_quote('publie')
 		, ''
-		, array("date_heure DESC")
+		, array('date_heure DESC')
 		, 1
 		);
    $date_modif = ($date_bre > $date_art)? $date_bre : $date_art;
@@ -200,7 +220,7 @@ function calcul_DATE_MODIF_SITE () {
 }
 
 function balise_DATE_MODIF_SITE($p) {
-   $p->code = "calcul_DATE_MODIF_SITE()";
+   $p->code = 'calcul_DATE_MODIF_SITE()';
    $p->statut = 'php';
    return $p;
 }
@@ -209,17 +229,17 @@ function balise_DATE_MODIF_SITE($p) {
 function calcul_DATE_MODIF_FORUM() {
    $date_f = sql_getfetsel(
 		'date_heure'
-		, "spip_forum"
-		, "statut=".sql_quote('publie')
+		, 'spip_forum'
+		, 'statut='.sql_quote('publie')
 		, ''
-		, array("date_heure DESC")
+		, array('date_heure DESC')
 		, 1
 		);
    return($date_f);
 }
 
 function balise_DATE_MODIF_FORUM($p) {
-   $p->code = "calcul_DATE_MODIF_FORUM()";
+   $p->code = 'calcul_DATE_MODIF_FORUM()';
    $p->statut = 'php';
    return $p;
 }
@@ -241,7 +261,7 @@ if(spiplistes_spip_est_inferieur_193() && !function_exists('autoriser_webmestre'
 			&& ($qui['statut'] == '0minirezo')
 			&& !$qui['restreint']
 			;
-		// spiplistes_log("resultat de autoriser_webmestre() ".gettype($r)." ". ($r ? "OK" : "niet"));
+		// spiplistes_log('resultat de autoriser_webmestre() '.gettype($r).' '. ($r ? 'OK' : 'niet'));
 		return($r);
 	} 
 }
@@ -262,19 +282,19 @@ function autoriser_liste_moderer ($faire = '', $type = '', $id_objet = 0, $qui =
 		;
 
 	$result = false;
-	if(($type == 'liste') && ($faire == "moderer")) {
+	if(($type == 'liste') && ($faire == 'moderer')) {
 		if(!$qui) {
 			$qui = $GLOBALS['auteur_session']['id_auteur'];
 		}
-		$sql_where = array("id_auteur=".$qui['id_auteur']);
+		$sql_where = array('id_auteur='.$qui['id_auteur']);
 		if($id_objet > 0) {
-			$sql_where[] = "id_liste=".sql_quote($id_objet);
+			$sql_where[] = 'id_liste='.sql_quote($id_objet);
 		}
 		$result = 
 			(($connect_statut == '0minirezo') && $connect_toutes_rubriques)
 			|| (
 				sql_getfetsel(
-					"id_auteur"
+					'id_auteur'
 					, 'spip_auteurs_mod_listes'
 					, $sql_where
 					, '', '', 1
@@ -297,45 +317,45 @@ function spiplistes_taches_generales_cron($taches_generales) {
 $spiplistes_items = array(
 	// les courriers
 	_SPIPLISTES_COURRIER_STATUT_REDAC => array(
-		'puce' => _DIR_IMG_PACK."puce-blanche.gif"
+		'puce' => _DIR_IMG_PACK.'puce-blanche.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_brouillon-24.png'
-		, 'icon_color' => "9dba00"
+		, 'icon_color' => '9dba00'
 		, 'alt' => _T('spiplistes:message_en_cours')
 		, 'nav_t' => _T('spiplistes:En_redaction') // nav_t = titre dans naviguer rapide (boite gauche)
 		, 'tab_t' => _T('spiplistes:Courriers_en_cours_de_redaction') // tab_t = titre du tableau dans spip_listes
 		, 'desc' => null // description, sous-titre
 	)
 	, _SPIPLISTES_COURRIER_STATUT_READY => array(
-		'puce' => _DIR_IMG_PACK."puce-orange.gif"
+		'puce' => _DIR_IMG_PACK.'puce-orange.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_brouillon-24.png'
-		, 'icon_color' => "9dba00"
+		, 'icon_color' => '9dba00'
 		, 'alt' => _T('spiplistes:message_redac')
 		, 'nav_t' => _T('spiplistes:Prets_a_envoi')
 		, 'tab_t' => _T('spiplistes:Courriers_prets_a_etre_envoye')
 		, 'desc' => null
 		)
 	, _SPIPLISTES_COURRIER_STATUT_ENCOURS => array(
-		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK."puce_verte_encour.gif"
+		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'puce_verte_encour.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_encour-24.png'
-		, 'icon_color' => "9dba00"
+		, 'icon_color' => '9dba00'
 		, 'alt' => _T('spiplistes:message_en_cours')
 		, 'nav_t' => _T('spiplistes:En_cours')
 		, 'tab_t' => _T('spiplistes:Courriers_en_cours_denvoi')
 		, 'desc' => null
 		)
 	, _SPIPLISTES_COURRIER_STATUT_AUTO => array(
-		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK."puce-grise.gif"
+		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'puce-grise.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_publie-24.png'
-		, 'icon_color' => "9dba00"
+		, 'icon_color' => '9dba00'
 		, 'alt' => _T('spiplistes:message_arch')
 		, 'nav_t' => _T('spiplistes:publies_auto')
 		, 'tab_t' => _T('spiplistes:Courriers_auto_publies')
 		, 'desc' => null
 		)
 	, _SPIPLISTES_COURRIER_STATUT_PUBLIE => array(
-		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK."puce-grise.gif"
+		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'puce-grise.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_publie-24.png'
-		, 'icon_color' => "9dba00"
+		, 'icon_color' => '9dba00'
 		, 'alt' => _T('spiplistes:message_arch')
 		, 'nav_t' => _T('spiplistes:Publies')
 		, 'tab_t' => _T('spiplistes:Courriers_publies')
@@ -343,9 +363,9 @@ $spiplistes_items = array(
 		)
 	, _SPIPLISTES_COURRIER_STATUT_STOPE => array(
 		// courrier stope en cours d'envoi
-		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK."puce-stop.png"
+		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'puce-stop.png'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_stop-24.png'
-		, 'icon_color' => "f00"
+		, 'icon_color' => 'f00'
 		, 'alt' => _T('spiplistes:Envoi_abandonne')
 		, 'nav_t' => _T('spiplistes:Stoppes')
 		, 'tab_t' => _T('spiplistes:Courriers_stope')
@@ -353,9 +373,9 @@ $spiplistes_items = array(
 		)
 	, _SPIPLISTES_COURRIER_STATUT_VIDE => array(
 		// courrier sans contenu
-		'puce' => _DIR_IMG_PACK."puce-rouge.gif"
+		'puce' => _DIR_IMG_PACK.'puce-rouge.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_vide-24.png'
-		, 'icon_color' => "000"
+		, 'icon_color' => '000'
 		, 'alt' => _T('spiplistes:Envoi_abandonne')
 		, 'nav_t' => _T('spiplistes:Vides')
 		, 'tab_t' => _T('spiplistes:Courriers_vides')
@@ -363,9 +383,9 @@ $spiplistes_items = array(
 		)
 	, _SPIPLISTES_COURRIER_STATUT_IGNORE => array(
 		// courrier sans abonne
-		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK."puce-inconnu.gif"
+		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'puce-inconnu.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_ignore-24.png'
-		, 'icon_color' => "000"
+		, 'icon_color' => '000'
 		, 'alt' => _T('spiplistes:Envoi_abandonne')
 		, 'nav_t' => _T('spiplistes:Sans_destinataire')
 		, 'tab_t' => _T('spiplistes:Courriers_sans_destinataire')
@@ -373,64 +393,73 @@ $spiplistes_items = array(
 		)
 	, _SPIPLISTES_COURRIER_STATUT_ERREUR => array(
 		// courrier en erreur (liste manquante)
-		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK."puce-inconnu.gif"
+		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'puce-inconnu.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_ignore-24.png'
-		, 'icon_color' => "000"
+		, 'icon_color' => '000'
 		, 'alt' => _T('spiplistes:Envoi_abandonne')
 		, 'nav_t' => _T('spiplistes:Sans_destinataire')
 		, 'tab_t' => _T('spiplistes:Courriers_sans_liste')
 		, 'desc' => null
 		)
 	// les listes
-	, _SPIPLISTES_PRIVATE_LIST  => array(
-		'puce' => _DIR_IMG_PACK."puce-rouge.gif"
+	, _SPIPLISTES_LIST_PRIVATE  => array(
+		'puce' => _DIR_IMG_PACK.'puce-rouge.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_listes-24.png'
-		, 'icon_color' => "ff0"
+		, 'icon_color' => 'ff0'
 		, 'alt' => _T('spiplistes:Liste_prive')
 		, 'nav_t' => _T('spiplistes:Listes_privees')
 		, 'tab_t' => _T('spiplistes:Listes_diffusion_privees')
 		, 'desc' => _T('spiplistes:Listes_diffusion_privees_desc')
 		)
-	, _SPIPLISTES_PUBLIC_LIST => array(
-		'puce' => _DIR_IMG_PACK."puce-verte.gif"
+	, _SPIPLISTES_LIST_PUBLIC => array(
+		'puce' => _DIR_IMG_PACK.'puce-verte.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_listes-24.png'
-		, 'icon_color' => "9dba00"
+		, 'icon_color' => '9dba00'
 		, 'alt' => _T('spiplistes:Liste_publique')
 		, 'nav_t' => _T('spiplistes:Listes_publiques')
 		, 'tab_t' => _T('spiplistes:Listes_diffusion_publique')
 		, 'desc' => _T('spiplistes:Listes_diffusion_publiques_desc')
 		)
-	, _SPIPLISTES_WEEKLY_LIST => array(
-		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK."puce-bleue.gif"
+	, _SPIPLISTES_LIST_PUB_WEEKLY => array(
+		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'puce-bleue.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_listes-24.png'
-		, 'icon_color' => "00f"
+		, 'icon_color' => '00f'
 		, 'alt' => _T('spiplistes:Liste_hebdo')
 		, 'nav_t' => _T('spiplistes:Publiques_hebdos')
 		, 'tab_t' => _T('spiplistes:Listes_diffusion_hebdo')
 		, 'desc' => _T('spiplistes:Listes_diffusion_publiques_desc')
 		)
-	, _SPIPLISTES_MONTHLY_LIST => array(
-		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK."puce-bleue.gif"
+	, _SPIPLISTES_LIST_PUB_MONTHLY => array(
+		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'puce-bleue.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_listes-24.png'
-		, 'icon_color' => "00f"
+		, 'icon_color' => '00f'
 		, 'alt' => _T('spiplistes:Liste_mensuelle')
 		, 'nav_t' => _T('spiplistes:Publiques_mensuelles')
 		, 'tab_t' => _T('spiplistes:Listes_diffusion_mensuelle')
 		, 'desc' => _T('spiplistes:Listes_diffusion_publiques_desc')
 		)
-	, _SPIPLISTES_YEARLY_LIST => array(
-		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK."puce-bleue.gif"
+	, _SPIPLISTES_LIST_PRIV_YEARLY => array(
+		'puce' => _DIR_IMG_PACK.'puce-rouge.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_listes-24.png'
-		, 'icon_color' => "00f"
+		, 'icon_color' => 'ff0'
+		, 'alt' => _T('spiplistes:Liste_annuelle')
+		, 'nav_t' => _T('spiplistes:privees_annuelles')
+		, 'tab_t' => _T('spiplistes:listes_privees_annuelle')
+		, 'desc' => _T('spiplistes:Listes_diffusion_privees_desc')
+		)
+	, _SPIPLISTES_LIST_PUB_YEARLY => array(
+		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'puce-bleue.gif'
+		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_listes-24.png'
+		, 'icon_color' => '00f'
 		, 'alt' => _T('spiplistes:Liste_annuelle')
 		, 'nav_t' => _T('spiplistes:Publiques_annuelles')
 		, 'tab_t' => _T('spiplistes:Listes_diffusion_annuelle')
 		, 'desc' => _T('spiplistes:Listes_diffusion_publiques_desc')
 		)
 	, _SPIPLISTES_TRASH_LIST => array(
-		'puce' => _DIR_IMG_PACK."puce-poubelle.gif"
+		'puce' => _DIR_IMG_PACK.'puce-poubelle.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_listes-24.png'
-		, 'icon_color' => "000"
+		, 'icon_color' => '000'
 		, 'alt' => _T('spiplistes:Listes_suspendues')
 		, 'nav_t' => _T('spiplistes:Listes_suspendues')
 		, 'tab_t' => _T('spiplistes:Listes_diffusion_suspendue')
@@ -438,9 +467,9 @@ $spiplistes_items = array(
 		)
 	// l'inconnu ???
 	, 'default' => array(
-		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK."puce-inconnu.gif"
+		'puce' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'puce-inconnu.gif'
 		, 'icon' => _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'courriers_ignore-24.png'
-		, 'icon_color' => "9cc"
+		, 'icon_color' => '9cc'
 		, 'alt' => _T('spiplistes:Inconnu')
 		, 'nav_t' => _T('spiplistes:Inconnu')
 		, 'tab_t' => _T('spiplistes:Inconnu')
@@ -448,15 +477,15 @@ $spiplistes_items = array(
 		)
 	);
 	
-	$spiplistes_items[_SPIPLISTES_DAILY_LIST] = $spiplistes_items[_SPIPLISTES_PUBLIC_LIST];
-	$spiplistes_items[_SPIPLISTES_HEBDO_LIST] = $spiplistes_items[_SPIPLISTES_WEEKLY_LIST];
-	$spiplistes_items[_SPIPLISTES_MENSUEL_LIST] = $spiplistes_items[_SPIPLISTES_MONTHLY_LIST];
-	$spiplistes_items[_SPIPLISTES_MONTHLY_LIST]['nav_t'] = _T('spiplistes:Listes_1_du_mois');
-	$spiplistes_items[_SPIPLISTES_MONTHLY_LIST]['tab_t'] = _T('spiplistes:Liste_diffusee_le_premier_de_chaque_mois');
+	$spiplistes_items[_SPIPLISTES_LIST_PUB_DAILY] = $spiplistes_items[_SPIPLISTES_LIST_PUBLIC];
+	$spiplistes_items[_SPIPLISTES_LIST_PUB_HEBDO] = $spiplistes_items[_SPIPLISTES_LIST_PUB_WEEKLY];
+	$spiplistes_items[_SPIPLISTES_LIST_PUB_MENSUEL] = $spiplistes_items[_SPIPLISTES_LIST_PUB_MONTHLY];
+	$spiplistes_items[_SPIPLISTES_LIST_PUB_MONTHLY]['nav_t'] = _T('spiplistes:Listes_1_du_mois');
+	$spiplistes_items[_SPIPLISTES_LIST_PUB_MONTHLY]['tab_t'] = _T('spiplistes:Liste_diffusee_le_premier_de_chaque_mois');
 	
-	$spiplistes_version = $meta['spiplistes_version'];
+	$spiplistes_version = isset($meta['spiplistes_version'])?$meta['spiplistes_version']:"";
 	$spiplistes_real_version = spiplistes_real_version_get(_SPIPLISTES_PREFIX);
-	$spiplistes_base_version = $meta['spiplistes_base_version'];
+	$spiplistes_base_version = isset($meta['spiplistes_base_version'])?$meta['spiplistes_base_version']:"";
 	$spiplistes_real_base_version = spiplistes_real_version_base_get(_SPIPLISTES_PREFIX);
 	
 	if(
@@ -469,11 +498,12 @@ $spiplistes_items = array(
 		spiplistes_upgrade();
 	}
 /*
-spiplistes_log("version: ".$spiplistes_version . " "
-	. "real_version: ".$spiplistes_real_version . " "
-	. "base_version: ".$spiplistes_base_version . " "
-	. "real_base_version: ".$spiplistes_real_base_version
-	, _SPIPLISTES_LOG_DEBUG);
+spiplistes_debug_log('version: '.$spiplistes_version . ' '
+	. 'real_version: '.$spiplistes_real_version . ' '
+	. 'base_version: '.$spiplistes_base_version . ' '
+	. 'real_base_version: '.$spiplistes_real_base_version);
 */
 
-?>
+//$opt_console_debug = (spiplistes_pref_lire ('opt_console_debug' == 'oui') ?  true : false);
+
+//($opt_console_debug && spiplistes_log('-- starting spiplistes plugin'));

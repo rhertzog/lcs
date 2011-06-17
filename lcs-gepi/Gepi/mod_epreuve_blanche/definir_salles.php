@@ -1,7 +1,7 @@
 <?php
-/* $Id: definir_salles.php 5535 2010-10-03 12:18:20Z crob $ */
+/* $Id: definir_salles.php 6760 2011-04-09 17:54:37Z crob $ */
 /*
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -70,6 +70,8 @@ $definition_salles=isset($_POST['definition_salles']) ? $_POST['definition_salle
 $mode=isset($_POST['mode']) ? $_POST['mode'] : (isset($_GET['mode']) ? $_GET['mode'] : NULL);
 
 if(isset($definition_salles)) {
+	check_token();
+
 	$sql="SELECT * FROM eb_epreuves WHERE id='$id_epreuve';";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
@@ -184,7 +186,10 @@ if(isset($definition_salles)) {
 						// La salle existe
 
 						$lig=mysql_fetch_object($res);
-						if((!in_array($lig->salle,$salle))&&(!in_array($lig->salle,$tab_salles))) {
+						//if((!in_array($lig->salle,$salle))&&(!in_array($lig->salle,$tab_salles))) {
+						if(((!in_array($lig->salle,$tab_salles))&&(!is_array($salle)))||
+						((is_array($salle))&&(!in_array($lig->salle,$salle))&&(!in_array($lig->salle,$tab_salles))))
+						 {
 							$sql="INSERT INTO eb_salles SET salle='".$lig->salle."', id_epreuve='$id_epreuve';";
 							$insert=mysql_query($sql);
 							if(!$insert) {$msg.="Erreur lors de l'ajout de la salle '$lig->salle'<br />";}
@@ -220,6 +225,8 @@ if(isset($definition_salles)) {
 	}
 }
 elseif(isset($_POST['valide_affect_eleves'])) {
+	check_token();
+
 	$login_ele=isset($_POST['login_ele']) ? $_POST['login_ele'] : (isset($_GET['login_ele']) ? $_GET['login_ele'] : array());
 	$id_salle_ele=isset($_POST['id_salle_ele']) ? $_POST['id_salle_ele'] : (isset($_GET['id_salle_ele']) ? $_GET['id_salle_ele'] : array());
 
@@ -300,6 +307,7 @@ if(!isset($mode)) {
 	// Définir les salles
 	if($etat!='clos') {
 		echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n";
+		echo add_token_field();
 	}
 
 	$menu_a_droite="";
@@ -618,7 +626,8 @@ else {
 	if($tri=='groupe') {
 
 		echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n";
-	
+		echo add_token_field();
+
 		echo "<p align='center'><input type='submit' name='bouton_valide_affect_eleves1' value='Valider' /></p>\n";
 	
 		$sql="SELECT DISTINCT g.* FROM eb_groupes eg, groupes g WHERE id_epreuve='$id_epreuve' AND eg.id_groupe=g.id ORDER BY g.name, g.description;";
@@ -818,7 +827,8 @@ function coche(colonne,rang_groupe,mode) {
 	elseif($tri=='alpha') {
 
 		echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n";
-	
+		echo add_token_field();
+
 		echo "<p align='center'><input type='submit' name='bouton_valide_affect_eleves1' value='Valider' /></p>\n";
 	
 		$sql="SELECT DISTINCT g.* FROM eb_groupes eg, groupes g WHERE id_epreuve='$id_epreuve' AND eg.id_groupe=g.id ORDER BY g.name, g.description;";

@@ -90,3 +90,32 @@ button.positive, .buttons a.positive{
     border:3px solid #d12f19;
     color:#fff;
 }
+
+.mesg {
+background-color:#FCFCFC;
+border:1px solid #1B2C68;
+color:#1B2C68;
+padding: 10px;
+margin: 20px auto;
+font-family:Arial,"Lucida Grande", Tahoma,  Verdana, sans-serif;
+font-size: 14px;
+width: 800px
+}
+
+.mesg  ul {
+margin:10px  0px 15px 30px}
+
+.sortable th {
+font-weight:normal;
+font-size: 14px;
+}
+
+.sortable td.centr {
+text-align: center;
+}
+
+.sortable td{
+font-family:Arial,"Lucida Grande", Tahoma,  Verdana, sans-serif;
+font-size: 14px;
+color:#1B2C68;
+}

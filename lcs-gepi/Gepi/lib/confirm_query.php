@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: confirm_query.php 5639 2010-10-12 14:40:47Z crob $
+ * $Id: confirm_query.php 5907 2010-11-19 20:30:52Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -47,6 +47,8 @@ function AfficheNiveauGraviteRequete($_texte,$_niveau){
     }
 }
 
+// Controle attaques CSRF
+check_token();
 
 // Initialisation
 $liste_cible = isset($_POST["liste_cible"]) ? $_POST["liste_cible"] :(isset($_GET["liste_cible"]) ? $_GET["liste_cible"] :NULL);
@@ -139,6 +141,7 @@ if (($k < $nb_cible1) and ($tab_cible1[$k] != '')){
     $mess[1] = "Mise à jour de la table eleves";
     $test_nb[1] = "SELECT * FROM eleves WHERE ereno='$cible1'";
     $req[1] = "UPDATE eleves SET ereno='' WHERE ereno='$cible1'";
+
     break;
 
 
@@ -190,6 +193,16 @@ if (($k < $nb_cible1) and ($tab_cible1[$k] != '')){
     $mess[] = "Table de jointure Aid/utilisateurs gestionnaires :";
     $test_nb[] = "SELECT * FROM j_aid_utilisateurs_gest WHERE id_utilisateur='$cible1'";
     $req[] = "DELETE FROM j_aid_utilisateurs_gest WHERE id_utilisateur='$cible1';";
+    $nombre_req++;
+
+    $mess[] = "Table des modèles de grilles PDF :";
+    $test_nb[] = "select * from modeles_grilles_pdf_valeurs mv, modeles_grilles_pdf m where m.id_modele=mv.id_modele and m.login='$cible1'";
+    $req[] = "delete from modeles_grilles_pdf_valeurs where id_modele in (select id_modele from modeles_grilles_pdf where login='$cible1');";
+    $nombre_req++;
+
+    $mess[] = "Table des valeurs des modèles de grilles PDF :";
+    $test_nb[] = "select * from modeles_grilles_pdf where login='$cible1'";
+    $req[] = "delete from modeles_grilles_pdf WHERE login='$cible1';";
     $nombre_req++;
 
 
@@ -496,6 +509,13 @@ if (($k < $nb_cible1) and ($tab_cible1[$k] != '')){
         require_once("../lib/header.inc");
         //**************** FIN EN-TETE *****************
         ?><form action="confirm_query.php" method="post" enctype="application/x-www-form-urlencoded"><?php
+
+		//=====================
+		// Sécurité: 20101118
+		//echo "<input type='hidden' name='csrf_alea' value='".$csrf_alea."' />\n";
+		echo add_token_field();
+		//=====================
+
         echo "<p class='grand'>Confirmation de la suppression : ";
         echo "<input type='submit' name='confirm' value='Oui' /> ";
         echo "<input type='submit' name='confirm' value='Non' /></p>";
@@ -578,12 +598,22 @@ if (($k < $nb_cible1) and ($tab_cible1[$k] != '')){
             echo "<p><a href='confirm_query.php?cible1=$cible1&amp;cible2=$cible2&amp;cible3=$cible3&amp;action=$action&amp;k=$k&amp;liste_cible=$liste_cible";
             if (isset($liste_cible2)) echo "&amp;liste_cible2=$liste_cible2";
             if (isset($liste_cible3)) echo "&amp;liste_cible3=$liste_cible3";
+			//===========================
+			// Sécurité: 20101118
+			//echo "&amp;csrf_alea=".$csrf_alea;
+			echo add_token_in_url();
+			//===========================
             echo "'>Suite</a></p>";
             die();
         } else {
             $page ="Location: confirm_query.php?cible1=$cible1&cible2=$cible2&cible3=$cible3&action=$action&k=$k&liste_cible=$liste_cible";
             if (isset($liste_cible2)) $page .= "&liste_cible2=$liste_cible2";
             if (isset($liste_cible3)) $page .= "&liste_cible3=$liste_cible3";
+			//===========================
+			// Sécurité: 20101118
+			//$page.="&csrf_alea=".$csrf_alea;
+			$page.=add_token_in_url(false);
+			//===========================
             header($page);
             die();
         }

@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/actions');
 global $logo_libelles;
@@ -75,7 +75,7 @@ function inc_iconifier_dist($id_objet, $id,  $script, $visible=false, $flag_modi
 			. fin_cadre_relief(true);
 
 		if(_request("exec")!="iconifier") {
-		  $js .= http_script('',  'async_upload.js')
+		  $js = http_script('',  'async_upload.js')
 		    . http_script('$("form.form_upload_icon").async_upload(async_upload_icon)');
 
 		} else $js = "";
@@ -120,7 +120,7 @@ function indiquer_logo($titre, $id_objet, $mode, $id, $script, $iframe_script) {
 			$GLOBALS['spip_lang_right'] .
 			"'><input name='sousaction2' type='submit' value='".
 			_T('bouton_choisir') .
-			"' class='fondo spip_xx-small'  /></div>";
+			"'  /></div>";
 	}
 */
 
@@ -131,7 +131,7 @@ function indiquer_logo($titre, $id_objet, $mode, $id, $script, $iframe_script) {
 		"<div style='text-align: " .  $GLOBALS['spip_lang_right'] . "'>" .
 		"\n<input name='sousaction1' type='submit' value='" .
 		_T('bouton_telecharger') .
-		"' class='fondo spip_xx-small' /></div>" .
+		"'  /></div>" .
 		$afficher;
 
 	$type = type_du_logo($id_objet);
@@ -146,14 +146,18 @@ function indiquer_logo($titre, $id_objet, $mode, $id, $script, $iframe_script) {
 // http://doc.spip.org/@decrire_logo
 function decrire_logo($id_objet, $mode, $id, $width, $height, $img, $titre="", $script="", $flag_modif=true) {
 
-	list($fid, $dir, $nom, $format) = $img;
+	list($fid, $dir, $nom, $format, $timestamp) = $img;
 	include_spip('inc/filtres_images_mini');
+
 	$res = image_reduire("<img src='$fid' alt='' class='miniature_logo' />", $width, $height);
 
-	if ($res)
+	if ($res){
+			$src = extraire_attribut($res,'src');
+			$res = inserer_attribut($res, 'src', "$src?$timestamp");
 	    $res = "<div><a href='" .	$fid . "'>$res</a></div>";
+	}
 	else
-	    $res = "<img src='$fid' width='$width' height='$height' alt=\"" . htmlentities($titre) . '" />';
+	    $res = "<img src='$fid?$timestamp' width='$width' height='$height' alt=\"" . htmlentities($titre) . '" />';
 	if ($taille = @getimagesize($fid))
 		$taille = _T('info_largeur_vignette', array('largeur_vignette' => $taille[0], 'hauteur_vignette' => $taille[1]));
 

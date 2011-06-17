@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/revisions');
 include_spip('inc/diff');
@@ -96,7 +96,7 @@ function afficher_suivi_versions ($debut = 0, $id_secteur = 0, $uniq_auteur = fa
 						$bouton_id = "b$id_version-$id_article-$id_auteur";
 						$aff = bouton_block_depliable($aff,false,$bouton_id)
 						  . debut_block_depliable(false,$bouton_id)
-						  . revisions_diff ($id_article, $id_version, $court)
+						  . safehtml(revisions_diff ($id_article, $id_version, $court))
 						  . fin_block();
 				}
 				$revisions .= "\n<div class='tr_liste' style='padding: 5px; border-top: 1px solid #aaaaaa;'>$aff</div>";

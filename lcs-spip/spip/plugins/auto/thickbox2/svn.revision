@@ -1,15 +1,10 @@
-<svn_revision><text_version>
-Origine svn://zone.spip.org/spip-zone/_plugins_/_dev_/thickbox2 le mardi 10 mars 2009, 19:33:57 (UTC+0100)
-Revision: 27182
-Dernier commit 2009-03-10 08:58:38 +0100 (Tue, 10 Mar 2009)
-Voir http://trac.rezo.net/trac/spip-zone/browser/_plugins_/_dev_/thickbox2
-Archive: http://files.spip.org/spip-zone/thickbox2.zip
+<svn_revision>
+<text_version>
+Origine: file:///home/svn/repository/spip-zone/_plugins_/thickbox2
+Revision: 39716
+Dernier commit: 2010-08-08 21:48:25 +0200 
 </text_version>
-<uri>http://trac.rezo.net/trac/spip-zone/browser/_plugins_/_dev_/thickbox2</uri>
-<archive>http://files.spip.org/spip-zone/thickbox2.zip</archive>
-<origine>svn://zone.spip.org/spip-zone/_plugins_/_dev_/thickbox2</origine>
-<date_production>mardi 10 mars 2009, 19:33:57 (UTC+0100)</date_production>
-<revision>27182</revision>
-<commit>2009-03-10 08:58:38 +0100 (Tue, 10 Mar 2009)</commit>
+<origine>file:///home/svn/repository/spip-zone/_plugins_/thickbox2</origine>
+<revision>39716</revision>
+<commit>2010-08-08 21:48:25 +0200 </commit>
 </svn_revision>
-<archivelist>_plugins_/_dev_/thickbox2;thickbox2;thickbox2</archivelist>

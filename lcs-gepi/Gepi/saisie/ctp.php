@@ -1,6 +1,6 @@
 <?php
 	/*
-		$Id: ctp.php 2635 2008-11-16 16:05:08Z crob $
+		$Id: ctp.php 7003 2011-05-25 17:35:45Z crob $
 	*/
 
 	// Hauteur du DIV des appréciations-types
@@ -48,6 +48,11 @@ function insere_cmt(num) {
 		prenom_eleve=document.getElementById('prenom_eleve_'+id_focus_courant).value;
 	}
 
+	login_eleve='';
+	if(document.getElementById('login_eleve_'+id_focus_courant)) {
+		login_eleve=document.getElementById('login_eleve_'+id_focus_courant).value;
+	}
+
 	app0=document.getElementById('n'+id_focus_courant).value;
 
 	cmt=document.getElementById('cmt_'+num).innerHTML;
@@ -57,6 +62,11 @@ function insere_cmt(num) {
 
 	app1=app0+cmt;
 	document.getElementById('n'+id_focus_courant).value=app1;
+
+	if((id_groupe!='')&&(login_eleve!='')) {
+		ajaxAppreciations(login_eleve, id_groupe, 'n'+id_focus_courant);
+	}
+
 	document.getElementById('n'+id_focus_courant).focus();
 }
 

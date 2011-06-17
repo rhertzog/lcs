@@ -17,14 +17,14 @@ function enleveaccents($chaine){
 function unac_string_with_space ($chaine){
   $motif="ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüıÿÑñ¾";
   $motifr="aaaaaaaaaaaaooooooooooooeeeeeeeecciiiiiiiiuuuuuuuuyynnY";
-  $retour=strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$chaine")))),"$motif","$motifr");
+  $retour=strtr(mb_ereg_replace("Æ","AE",mb_ereg_replace("æ","ae",mb_ereg_replace("¼","OE",mb_ereg_replace("½","oe","$chaine")))),"$motif","$motifr");
   return $retour;
 }
 
 function unac_string_with_underscore ($chaine){
   $motif="ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ¾ ";
   $motifr="aaaaaaaaaaaaooooooooooooeeeeeeeecciiiiiiiiuuuuuuuuynnY_";
-  $retour=strtr(ereg_replace("Æ","AE",ereg_replace("æ","ae",ereg_replace("¼","OE",ereg_replace("½","oe","$chaine")))),"$motif","$motifr");
+  $retour=strtr(mb_ereg_replace("Æ","AE",mb_ereg_replace("æ","ae",mb_ereg_replace("¼","OE",mb_ereg_replace("½","oe","$chaine")))),"$motif","$motifr");
   return $retour;
 }
 
@@ -37,7 +37,7 @@ function verifIntituleGrp ($intitule) {
   $motif2 = "^Cours$";
   $motif3 = "^Equipe$";
   $motif4 = "^Matiere$";
-  if ( ereg($motif1,$intitule)||ereg($motif2,$intitule)||ereg($motif3,$intitule)||ereg($motif4,$intitule) ) {
+  if ( mb_ereg($motif1,$intitule)||mb_ereg($motif2,$intitule)||mb_ereg($motif3,$intitule)||mb_ereg($motif4,$intitule) ) {
     $ret = false;
   } else $ret = true;
   return $ret;
@@ -51,9 +51,9 @@ function verifIntituleGrp ($intitule) {
 function verifPwd ($password) {
   global $char_spec;
 
-  if ( ereg("(^[a-zA-Z]*$)|(^[0-9]*$)", $password) )
+  if ( mb_ereg("(^[a-zA-Z]*$)|(^[0-9]*$)", $password) )
   	return false;
-  elseif ( ereg("^[[:alnum:]$char_spec]{4,8}$", $password) )
+  elseif ( mb_ereg("^[[:alnum:]$char_spec]{4,8}$", $password) )
     	return true; else return false;
 }
 
@@ -61,12 +61,12 @@ function verifPwd ($password) {
 function verifDateNaissance ($date) {
 $motif = "^[0-9]{8}$";
 
- if ( ereg($motif, $date) ) {
+ if ( mb_ereg($motif, $date) ) {
    // Vérification de l'année
-   if ( (date(Y) - substr ($date,0,4) < 75) && (date(Y) - substr ($date,0,4) > 4) ) {
+   if ( (date(Y) - mb_substr ($date,0,4) < 75) && (date(Y) - mb_substr ($date,0,4) > 4) ) {
      // Verification du mois
-     if ( (substr ($date,4,2) > 0) && (substr ($date,4,2) <= 12 ) ) {
-       if ( (substr ($date,6,2) > 0) && (substr ($date,6,2) <= 31) ) {
+     if ( (mb_substr ($date,4,2) > 0) && (mb_substr ($date,4,2) <= 12 ) ) {
+       if ( (mb_substr ($date,6,2) > 0) && (mb_substr ($date,6,2) <= 31) ) {
          $ret = true;
        }
      }
@@ -81,7 +81,7 @@ $motif = "^[0-9]{8}$";
 function verifEntree($entree) {
   $motif = "^[-a-zA-Z0-9 \'ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ ]{1,20}$";
 
-  if ( ereg($motif, $entree) ) {
+  if ( mb_ereg($motif, $entree) ) {
      $ret= true;
   } else {
     $ret= false;
@@ -93,7 +93,7 @@ function verifEntree($entree) {
 function verifPseudo($pseudo) {
   $motif = "[\|,/ ]";
 
-  if ( ereg($motif, $pseudo) || strlen ($pseudo) > 20 || strlen ($pseudo) == 0 ) {
+  if ( mb_ereg($motif, $pseudo) || mb_strlen ($pseudo) > 20 || mb_strlen ($pseudo) == 0 ) {
     $ret = false;
   } else {
     $ret = true;
@@ -116,7 +116,7 @@ function verifDescription($entree) {
 function verifTel ($tel) {
   $motif ="^[0-9]{10}$";
 
-  if ( ereg($motif, $tel) || strlen ($tel) == 0 ) {
+  if ( mb_ereg($motif, $tel) || mb_strlen ($tel) == 0 ) {
     $ret = true;
   } else {
     $ret = false;

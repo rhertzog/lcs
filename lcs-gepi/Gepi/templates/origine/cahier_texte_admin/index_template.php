@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: index_template.php 5616 2010-10-09 09:53:36Z crob $
+* $Id: index_template.php 6700 2011-03-25 22:21:51Z regis $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -91,10 +91,31 @@
 
   <div id='container'>
 
+<?php
+	if(isset($_GET['ajout_index_documents'])) {
+		echo ajout_index_sous_dossiers("../documents");
 
+		$sql="SELECT * FROM infos_actions WHERE titre='Contrôle des index dans les documents des CDT requis';";
+		$res_test=mysql_query($sql);
+		if(mysql_num_rows($res_test)>0) {
+			while($lig_ia=mysql_fetch_object($res_test)) {
+				$sql="DELETE FROM infos_actions_destinataires WHERE id_info='$lig_ia->id';";
+				$del=mysql_query($sql);
+				if($del) {
+					$sql="DELETE FROM infos_actions WHERE id='$lig_ia->id';";
+					$del=mysql_query($sql);
+				}
+			}
+		}
+
+	}
+?>
 
 	<form action="index.php" id="form1" method="post">
 	  <p class="center">
+<?php
+echo add_token_field();
+?>
 		<input type="submit" value="Enregistrer" />
 	  </p>
 	<h2>Activation des cahiers de textes</h2>
@@ -301,25 +322,25 @@
 	  <h2>Cahiers de texte en commun</h2>
 	  <fieldset class="no_bordure">
 		<legend class="invisible">Cahiers de texte en commun</legend>
-			<p>Dans le CDT2, par défaut, un professeur ne peut pas modifier une notice/devoir réalisé par un collègue, même si il s'agit d'une enseignement partagé (<i>plusieurs professeurs devant un même groupe d'élèves</i>).<br />
+			<p>Dans le CDT2, par défaut, un professeur ne peut pas modifier une notice/devoir réalisé par un collègue, même si il s'agit d'un enseignement partagé (<i>plusieurs professeurs devant un même groupe d'élèves</i>).<br />
 			Pour modifier ce paramétrage&nbsp;:</p>
 		  <input type='radio'
-				 name='cdt_autoriser_modif_binome'
-				 id='cdt_autoriser_modif_binome_y'
+				 name='cdt_autoriser_modif_multiprof'
+				 id='cdt_autoriser_modif_multiprof_y'
 				 value='yes'
 			 onchange='changement();'
-			   <?php if (getSettingValue("cdt_autoriser_modif_binome") == "yes") {echo " checked='checked'";}?> />
-		<label for='cdt_autoriser_modif_binome_y' style='cursor: pointer;'>
+			   <?php if (getSettingValue("cdt_autoriser_modif_multiprof") == "yes") {echo " checked='checked'";}?> />
+		<label for='cdt_autoriser_modif_multiprof_y' style='cursor: pointer;'>
 		  Autoriser les collègues travaillant en binome sur une enseignement à modifier les notices/devoirs créés par leur collègue.
 		</label>
 	  <br />
 		  <input type='radio'
-				 name='cdt_autoriser_modif_binome'
-				 id='cdt_autoriser_modif_binome_n'
+				 name='cdt_autoriser_modif_multiprof'
+				 id='cdt_autoriser_modif_multiprof_n'
 				 value='no'
 			 onchange='changement();'
-			   <?php if ((getSettingValue("cdt_autoriser_modif_binome") == "no")||(getSettingValue("cdt_autoriser_modif_binome") == "")) {echo " checked='checked'";}?> />
-		<label for='cdt_autoriser_modif_binome_n' style='cursor: pointer;'>
+			   <?php if ((getSettingValue("cdt_autoriser_modif_multiprof") == "no")||(getSettingValue("cdt_autoriser_modif_multiprof") == "")) {echo " checked='checked'";}?> />
+		<label for='cdt_autoriser_modif_multiprof_n' style='cursor: pointer;'>
 		  Interdire la modification de notice/devoir créés par leur collègue.
 		</label>
 	  </fieldset>
@@ -338,6 +359,9 @@
 	  <li><a href='modify_type_doc.php'>Types de fichiers autorisés en téléchargement</a></li>
 	  <li><a href='admin_ct.php'>Administration des cahiers de textes</a> (recherche des incohérences, modifications, suppressions)</li>
 	  <li><a href='visa_ct.php'>Viser les cahiers de textes</a> (Signer les cahiers de textes)</li>
+	  <li><a href='index.php?ajout_index_documents=y'>Protéger les sous-dossiers de 'documents/' contre des accès anormaux</a></li>
+	  <li><a href='../cahier_texte_2/archivage_cdt.php'>Archivage des cahiers de textes en fin d'année scolaire</a></li>
+	  <li><a href='../cahier_texte_2/export_cdt.php'>Export de cahiers de textes et accès inspecteur (<i>sans authentification</i>)</a></li>
 	</ul>
 	
 	<hr />

@@ -2,11 +2,11 @@
 
 // balise/formulaire_abonnement.php
 
-// $LastChangedRevision: 30779 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-08-10 09:05:57 +0200 (lun, 10 aoû 2009) $
+// $LastChangedRevision: 45969 $
+// $LastChangedBy: root $
+// $LastChangedDate: 2011-03-26 20:00:13 +0100 (Sat, 26 Mar 2011) $
 
-if(!defined("_ECRIRE_INC_VERSION")) return;	#securite
+if(!defined('_ECRIRE_INC_VERSION')) return;	#securite
 
 include_spip('base/abstract_sql');
 include_spip('inc/spiplistes_api_globales');
@@ -16,10 +16,9 @@ include_once(_DIR_PLUGIN_SPIPLISTES.'inc/spiplistes_mail.inc.php');
 
 // Balise independante du contexte
 
-
 function balise_FORMULAIRE_ABONNEMENT ($p) {
 
-spiplistes_log("balise_FORMULAIRE_ABONNEMENT()", _SPIPLISTES_LOG_DEBUG);
+	spiplistes_debug_log('balise_FORMULAIRE_ABONNEMENT()');
 
 	return(calculer_balise_dynamique($p, 'FORMULAIRE_ABONNEMENT', array('id_liste')));
 }
@@ -33,7 +32,7 @@ spiplistes_log("balise_FORMULAIRE_ABONNEMENT()", _SPIPLISTES_LOG_DEBUG);
 
 function balise_FORMULAIRE_ABONNEMENT_stat($args, $filtres) {
 
-	preg_match_all("/liste([0-9]+)/x", $args[1], $matches);
+	preg_match_all('/liste([0-9]+)/x', $args[1], $matches);
 	if($id_liste = intval($matches[1][0])) {
 		$args[0]=$id_liste;
 	}
@@ -51,16 +50,16 @@ function balise_FORMULAIRE_ABONNEMENT_stat($args, $filtres) {
 
 function balise_FORMULAIRE_ABONNEMENT_dyn($id_liste, $formulaire) {
 
-	//spiplistes_log("balise_FORMULAIRE_ABONNEMENT_dyn() -$id_liste-", _SPIPLISTES_LOG_DEBUG);
+	//spiplistes_debug_log("balise_FORMULAIRE_ABONNEMENT_dyn() -$id_liste-");
 
-	include_spip ("inc/meta");
-	include_spip ("inc/session");
-	include_spip ("inc/filtres");
-	include_spip ("inc/texte");
-	include_spip ("inc/meta");
-	include_spip ("inc/mail");
-	include_spip ("inc/acces");
-	include_once(_DIR_PLUGIN_SPIPLISTES.'inc/spiplistes_mail.inc.php');
+	include_spip ('inc/meta');
+	include_spip ('inc/session');
+	include_spip ('inc/filtres');
+	include_spip ('inc/texte');
+	include_spip ('inc/meta');
+	include_spip ('inc/mail');
+	include_spip ('inc/acces');
+	include_once (_DIR_PLUGIN_SPIPLISTES.'inc/spiplistes_mail.inc.php');
 
 		
 	//recuperation des variables utiles
@@ -74,35 +73,30 @@ function balise_FORMULAIRE_ABONNEMENT_dyn($id_liste, $formulaire) {
 	$acces_membres = ($GLOBALS['meta']['abonnement_config'] == 'membre') ? 'oui' : 'non';
 		
 	// aller chercher le formulaire html qui va bien				
-	$formulaire = "formulaires/".$formulaire ;		
+	$formulaire = 'formulaires/'.$formulaire ;		
 			
 	// Accepter l'inscription en tant qu'auteur ?
 	// pour memo: l'auteur a acces a l'espace prive'
-	$inscriptions_ecrire = ($GLOBALS['meta']['accepter_inscriptions'] == "oui");
+	$inscriptions_ecrire = ($GLOBALS['meta']['accepter_inscriptions'] == 'oui');
 	// Accepter l'inscription en tant que visiteur ?
 	// pour memo: le visiteur n'a pas acces a l'espace prive'
-	$inscriptions_publiques = ($GLOBALS['meta']['accepter_visiteurs'] == "oui");
+	$inscriptions_publiques = ($GLOBALS['meta']['accepter_visiteurs'] == 'oui');
 	
-	$affiche_formulaire = $inscription_redacteur = $inscription_visiteur = "";
+	$affiche_formulaire = $inscription_redacteur = $inscription_visiteur = '';
 	
-	$nom_site_spip = $GLOBALS['meta']['nom_site'];
+	$nom_site_spip = spiplistes_nom_site_texte ($lang);
 	$adresse_site = $GLOBALS['meta']['adresse_site'];
 	
-	$charset = $GLOBALS['meta']['spiplistes_charset_envoi'];
-	if($charset != $GLOBALS['meta']['charset'])
-	{
-		include_spip('inc/charsets');
-		$nom_site_spip = unicode2charset(charset2unicode($nom_site_spip), $charset);
-	}
-
 	// envoyer le cookie de relance mot de passe si pass oublie
 	if($email_oubli)
 	{
 		if(email_valide($email_oubli))
 		{
-			$sql_result = spiplistes_auteurs_auteur_select('id_auteur,statut', "email=".sql_quote($email_oubli));
+			$row = spiplistes_auteurs_auteur_select('id_auteur,statut'
+													, 'email='.sql_quote($email_oubli)
+													);
 			
-			if($row = sql_fetch($sql_result))
+			if($row /* = sql_fetch($sql_result) */ )
 			{
 				if($row['statut'] == '5poubelle')
 				{
@@ -147,18 +141,23 @@ function balise_FORMULAIRE_ABONNEMENT_dyn($id_liste, $formulaire) {
 			}
 			else
 			{
-				$erreur = _T('pass_erreur_non_enregistre', array('email_oubli' => htmlspecialchars($email_oubli)));
+				$erreur = _T('pass_erreur_non_enregistre'
+							 , array('email_oubli' => htmlspecialchars($email_oubli))
+							 );
 			}
 		}
 		else
 		{
-			$erreur = _T('pass_erreur_non_valide', array('email_oubli' => htmlspecialchars($email_oubli)));
+			$erreur = _T('pass_erreur_non_valide'
+						 , array('email_oubli' => htmlspecialchars($email_oubli))
+						 );
 		}
 	} // end if $email_oubli
 	
 	// afficher le formulaire d'oubli du pass
-	if($oubli_pass == "oui") {
-		return array($formulaire, $GLOBALS['delais'],
+	if($oubli_pass == 'oui') {
+		return array($formulaire,
+					 $GLOBALS['delais'],
 			array(
 				'oubli_pass' => $oubli_pass
 				, 'erreur' => $erreur
@@ -177,20 +176,20 @@ function balise_FORMULAIRE_ABONNEMENT_dyn($id_liste, $formulaire) {
 		|| $inscriptions_publiques 
 		|| ($GLOBALS['meta']['forums_publics'] == 'abo') 
 	) {
-		$accepter_nouveau = "oui";
+		$accepter_nouveau = 'oui';
 		
 		// debut presentation
 	
 		$inscription_redacteur = 
-			($inscriptions_ecrire && ($type=="redac")) 
-			? "oui" 
-			: "non"
+			($inscriptions_ecrire && ($type=='redac')) 
+			? 'oui' 
+			: 'non'
 			;
 
 		$inscription_visiteur = 
-			(($type!="redac") && $inscriptions_publiques && ($acces_membres=='oui')) 
-			? "oui" 
-			: "non"
+			(($type!='redac') && $inscriptions_publiques && ($acces_membres=='oui')) 
+			? 'oui' 
+			: 'non'
 			;
 				
 		list($affiche_formulaire
@@ -199,7 +198,7 @@ function balise_FORMULAIRE_ABONNEMENT_dyn($id_liste, $formulaire) {
 			 , $abonne
 			 ) = 
 			spiplistes_formulaire_abonnement(
-				(($type=="redac") ? 'redac' : 'forum')
+				(($type=='redac') ? 'redac' : 'forum')
 				, $acces_membres
 				, $formulaire
 				, $nom_site_spip
@@ -208,7 +207,7 @@ function balise_FORMULAIRE_ABONNEMENT_dyn($id_liste, $formulaire) {
 			);
 	}
 	else {
-		spiplistes_log(_T('pass_erreur')." acces visiteurs non autorises", _SPIPLISTES_LOG_DEBUG);
+		spiplistes_debug_log (_T('pass_erreur').' acces visiteurs non autorises');
 	}
 	
 	return array($formulaire, $GLOBALS['delais'],
@@ -264,7 +263,7 @@ function spiplistes_formulaire_abonnement (
 	
 	$adresse_site = $GLOBALS['meta']['adresse_site'];
 
-	$reponse_formulaire = "";
+	$reponse_formulaire = '';
 	$email_a_envoyer = $mode_modifier = $sql_where = false;
 	$abonne = array();
 	
@@ -272,9 +271,9 @@ function spiplistes_formulaire_abonnement (
 	$d = _request('d');
 	if(!empty($d)) {
 		$sql_where = array(
-				"cookie_oubli=".sql_quote($d)
-				, "statut<>".sql_quote('5poubelle')
-				, "pass<>".sql_quote('')
+				'cookie_oubli='.sql_quote($d)
+				, 'statut<>'.sql_quote('5poubelle')
+				, 'pass<>'.sql_quote('')
 			);
 	}
 	// ou si identifie'
@@ -284,7 +283,7 @@ function spiplistes_formulaire_abonnement (
 	}
 	if($sql_where) {
 		// cherche les coordonnees de l'abonne'
-		$sql_select = "id_auteur,statut,nom,email,cookie_oubli";
+		$sql_select = 'id_auteur,statut,nom,email,cookie_oubli';
 		$sql_result = sql_select(
 			$sql_select
 			, 'spip_auteurs'
@@ -292,7 +291,7 @@ function spiplistes_formulaire_abonnement (
 			, '', '', 1
 		);
 		if($row = sql_fetch($sql_result)) {
-			foreach(explode(",", $sql_select) as $key) {
+			foreach(explode(',', $sql_select) as $key) {
 				$abonne[$key] = $row[$key];
 			}
 		}
@@ -307,7 +306,7 @@ function spiplistes_formulaire_abonnement (
 		// toujours rester en mode modif pour permettre la correction
 		$mode_modifier = 'oui';
 		
-		if($desabo == "oui")
+		if($desabo == 'oui')
 		{
 			spiplistes_format_abo_modifier($abonne['id_auteur']);
 			$reponse_formulaire = _T('spiplistes:vous_etes_desabonne');
@@ -316,16 +315,20 @@ function spiplistes_formulaire_abonnement (
 		
 		else if($listes_demande)
 		{
-			//spiplistes_log("demande modification abonnements listes " . implode(",", $listes_demande), _SPIPLISTES_LOG_DEBUG);
+			//spiplistes_debug_log("demande modification abonnements listes " . implode(",", $listes_demande));
 			
 			if(is_array($listes_demande) && count($listes_demande))
 			{
-				$listes_ajoutees = spiplistes_abonnements_ajouter($abonne['id_auteur'], array_map('intval', $listes_demande));
+				$listes_ajoutees = spiplistes_abonnements_ajouter($abonne['id_auteur']
+															, array_map('intval', $listes_demande)
+															);
 				$curr_abos_auteur = spiplistes_abonnements_listes_auteur($abonne['id_auteur']);
 				
 				foreach($curr_abos_auteur as $id_liste) {
 					if(!in_array($id_liste, $listes_demande)) {
-						spiplistes_abonnements_auteur_desabonner($abonne['id_auteur'], $id_liste);
+						spiplistes_abonnements_auteur_desabonner($abonne['id_auteur']
+																 , $id_liste
+																 );
 					}
 				}
 			}
@@ -343,10 +346,10 @@ function spiplistes_formulaire_abonnement (
 		}
 		else
 		{
-			//spiplistes_log("pas de demande, afficher formulaire de modif au complet", _SPIPLISTES_LOG_DEBUG);
-			$reponse_formulaire = ""
-				. "<span class='nom'>" . $abonne['nom'] . "</span>\n"
-				. "<span class='souhait'>" . _T('spiplistes:effectuez_modif_validez'). "</span>\n"
+			//spiplistes_debug_log('pas de demande, afficher formulaire de modif au complet');
+			$reponse_formulaire = ''
+				. '<span class="nom">' . $abonne['nom'] . "</span>\n"
+				. '<span class="souhait">' . _T('spiplistes:effectuez_modif_validez', array('s'=>$abonne['nom'])). "</span>\n"
 				;
 		}
 		
@@ -357,16 +360,18 @@ function spiplistes_formulaire_abonnement (
 	}
 	else // non identifie' ? gestion par cookie_oubli.
 	{
-		$texte_intro = _T('form_forum_message_auto') . "<br /><br />"._T('spiplistes:bonjour') . "<br />\n";
+		$texte_intro = _T('form_forum_message_auto') . '<br /><br />'._T('spiplistes:bonjour') . "<br />\n";
 		
 		$abonne = array('email' => email_valide($mail_inscription_));
 		
 		if($abonne['email'])
 		{
-			// si l'abonne existe deja mais pas d'action demandee, affiche formulaire complet
-			if($row = sql_fetch(
-				spiplistes_auteurs_auteur_select('id_auteur,login,nom,statut,lang', "email=".sql_quote($abonne['email']))
-				)
+			// si l'abonne existe deja mais pas d'action demandee,
+			// affiche formulaire complet
+			//if($row = sql_fetch(
+			if ($row = 
+				spiplistes_auteurs_auteur_select ('id_auteur,login,nom,statut,lang', 'email='.sql_quote($abonne['email']))
+				
 			) {
 				
 				$abonne['id_auteur'] = intval($row['id_auteur']);
@@ -388,7 +393,7 @@ function spiplistes_formulaire_abonnement (
 				else if($abonne['statut'] == 'nouveau')
 				{
 					// le supprimer. Il sera re-cree plus loin
-					spiplistes_auteurs_auteur_delete("id_auteur=".sql_quote($abonne['id_auteur']));
+					spiplistes_auteurs_auteur_delete('id_auteur='.sql_quote($abonne['id_auteur']));
 					$abonne['id_auteur'] = false;
 				}
 				else {
@@ -423,7 +428,7 @@ function spiplistes_formulaire_abonnement (
 				
 				$abonne['cookie_oubli'] = creer_uniqid();
 				
-				$abonne['statut'] = ($inscription_redacteur == "oui") ? "nouveau" : "6forum";
+				$abonne['statut'] = ($inscription_redacteur == 'oui') ? 'nouveau' : '6forum';
 	
 				// format d'envoi par defaut pour le premier envoi de confirmation
 				$abonne['format'] = 'texte'; 
@@ -451,7 +456,7 @@ function spiplistes_formulaire_abonnement (
 				
 				$contexte = array(
 								'titre' => $objet_email
-								, 'nouvel_inscription' => "oui"
+								, 'nouvel_inscription' => 'oui'
 								, 'inscription_redacteur' => $inscription_redacteur
 								, 'inscription_visiteur' => $inscription_visiteur
 							);
@@ -481,7 +486,8 @@ function spiplistes_formulaire_abonnement (
 				$abonne['email']
 				, $objet_email
 				, $email_a_envoyer
-				, false, ""
+				, false
+				, ''
 				, $abonne['format']
 			)
 		) {
@@ -538,12 +544,12 @@ function spiplistes_preparer_message ($objet, $patron, $contexte) {
 function spiplistes_texte_inventaire_abos ($id_abonne, $type_abo, $nom_site_spip) {
 	
 	// fait l'inventaire des abos
-	$listes_abonnements = spiplistes_abonnements_listes_auteur($id_abonne, true);
+	$listes_abonnements = spiplistes_abonnements_listes_auteur ($id_abonne, true);
 	$nb = count($listes_abonnements);
 	$message_list = 
 		($nb)
 		? "\n- " . implode("\n- ", $listes_abonnements) . ".\n"
-		: ""
+		: ''
 		;
 
 	$m1 = ($nb > 1) ? 'inscription_reponses_s' : 'inscription_reponse_s';
@@ -554,7 +560,7 @@ function spiplistes_texte_inventaire_abos ($id_abonne, $type_abo, $nom_site_spip
 	} else {
 		$m2 = _T('spiplistes:vous_abonne_aucune_liste');
 	}
-	$texte = ""
+	$texte = ''
 		. "\n"._T('spiplistes:'.$m1, array('s' => htmlentities($nom_site_spip)))
 		. ".\n"
 		. $m2.$message_list
@@ -568,6 +574,5 @@ function spiplistes_texte_inventaire_abos ($id_abonne, $type_abo, $nom_site_spip
  * @return string
  * */
 function spiplistes_patron_message () {
-	return('standard');
+	return ('standard');
 }
-?>

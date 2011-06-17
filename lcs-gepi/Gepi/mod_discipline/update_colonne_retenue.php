@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: update_colonne_retenue.php 5400 2010-09-23 10:01:22Z crob $
+ * $Id: update_colonne_retenue.php 5989 2010-11-25 11:51:39Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -55,9 +55,12 @@ $id_incident=isset($_GET['id_incident']) ? $_GET['id_incident'] : NULL;
 $login=isset($_GET['login']) ? $_GET['login'] : NULL;
 $qualite=isset($_GET['qualite']) ? $_GET['qualite'] : NULL;
 
+$csrf_alea=isset($_GET['csrf_alea']) ? $_GET['csrf_alea'] : NULL;
+
+
 if((isset($id_incident))&&(isset($login))&&(isset($qualite))) {
 	if($qualite=='Responsable') {
-echo "<a href='../mod_ooo/retenue.php?mode=module_discipline&amp;id_incident=$id_incident&amp;ele_login=$login' title='Imprimer la retenue'><img src='../images/icons/print.png' width='16' height='16' alt='Imprimer Retenue' /></a>\n";
+echo "<a href='../mod_ooo/retenue.php?mode=module_discipline&amp;id_incident=$id_incident&amp;ele_login=$login&amp;csrf_alea=$csrf_alea' title='Imprimer la retenue'><img src='../images/icons/print.png' width='16' height='16' alt='Imprimer Retenue' /></a>\n";
 	}
 	else {
 		echo "&nbsp;";

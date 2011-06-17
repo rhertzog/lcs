@@ -1,9 +1,9 @@
 <?php
 //@set_time_limit(0);
 /*
- * @version: $Id: import_cahier_notes.php 3984 2010-01-02 12:17:14Z crob $
+ * @version: $Id: import_cahier_notes.php 6618 2011-03-03 18:25:55Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -143,6 +143,7 @@ if (!isset($is_posted)) {
 	echo "<p>Pour importer des devoirs dans le carnet de notes, vous devez fournir un fichier correctement formaté...</p>";
 	echo "<p>Veuillez préciser le nom complet du fichier <b>CSV</b> à importer.";
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method=post>\n";
+	echo add_token_field();
 	echo "<input type=hidden name='is_posted' value='yes' />\n";
 	echo "<input type=\"hidden\" name=\"id_racine\" value=\"$id_racine\" />\n";
 	echo "<p><input type=\"file\" size=\"80\" name=\"csv_file\" /></p>\n";
@@ -177,7 +178,8 @@ GEPI_LOGIN_ELEVE;ZETOFRE_M_L;ZETOFREY;Melanie;3 A2;;10,5;14,5;19,0
 <p>Il est plus simple de créer une évaluation et d'Exporter ensuite le carnet de notes (<i>même vide</i>) pour disposer d'un CSV correctement formaté.</p>\n";
 
 }
-else{
+else {
+	check_token(false);
 	if(!isset($_POST['valide_insertion_devoirs'])) {
 		$csv_file = isset($_FILES["csv_file"]) ? $_FILES["csv_file"] : NULL;
 
@@ -208,7 +210,7 @@ else{
 				$ligne=fgets($fp, 4096);
 				$temp=explode(";",$ligne);
 				for($i=0;$i<sizeof($temp);$i++){
-					$en_tete[$i]=my_ereg_replace('"','',$temp[$i]);
+					$en_tete[$i]=preg_replace('/"/','',$temp[$i]);
 				}
 				$nbchamps=sizeof($en_tete);
 				fclose($fp);
@@ -246,7 +248,7 @@ else{
 					if(trim($ligne)!=""){
 						$ligne=trim($ligne);
 						//echo "<p>ligne=$ligne<br />\n";
-						$tabligne=explode(";",my_ereg_replace('"','',$ligne));
+						$tabligne=explode(";",preg_replace('/"/','',$ligne));
 
 						switch($tabligne[$tabindice[0]]){
 							case "GEPI_DEV_NOM_COURT":
@@ -260,7 +262,7 @@ else{
 									// Si: il faut que les nomc_dev, coef_dev et date_dev aient le même nombre de colonnes...
 									// ... le test est fait plus loin pour ne pas créer de devoir avec un nom vide.
 									//if(trim($tabligne[$i])!=""){
-										$nomc_dev[]=my_ereg_replace("[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_. - ]","",corriger_caracteres($tabligne[$i]));
+										$nomc_dev[]=preg_replace("/[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_\. - ]/","",corriger_caracteres($tabligne[$i]));
 									//}
 									/*
 									if($mode=="remplacer"){
@@ -274,7 +276,7 @@ else{
 								$coef_dev=array();
 								for($i=$tabindice[2];$i<sizeof($tabligne);$i++){
 									// Reformater le coef...
-									if(my_ereg("^[0-9\.\,]{1,}$",$tabligne[$i])){
+									if(preg_match("/^[0-9\.\,]{1,}$/",$tabligne[$i])){
 										$coef_dev[]=strtr($tabligne[$i],",",".");
 									}
 									else{
@@ -287,7 +289,7 @@ else{
 								$note_sur_dev=array();
 								for($i=$tabindice[2];$i<sizeof($tabligne);$i++){
 									// Reformater le coef...
-									if(my_ereg("^[0-9\.\,]{1,}$",$tabligne[$i])){
+									if(preg_match("/^[0-9\.\,]{1,}$/",$tabligne[$i])){
 										$note_sur_dev[]=strtr($tabligne[$i],",",".");
 									} else{
 										$note_sur_dev[]="20";
@@ -306,7 +308,7 @@ else{
 									// Dans le cas d'un import de CSV réalisé depuis l'enregistrement ODS->CSV, on a 46 colonnes de devoirs
 									// Le tabeau $date_dev[] est rempli jusqu'à l'indice 45.
 									// Par contre, pour les devoirs, ne sont créés que ceux dont le nomc_dev[] est non vide
-									if((strlen(my_ereg_replace("[0-9/]","",$tabligne[$i]))!=0)||($tabligne[$i]=="")){
+									if((strlen(preg_replace("#[0-9/]#","",$tabligne[$i]))!=0)||($tabligne[$i]=="")){
 										$tabligne[$i]="$jour/$mois/$annee";
 									}
 									//echo "\$tabligne[$i]=$tabligne[$i]<br />\n";
@@ -333,7 +335,7 @@ else{
 									$tab_dev[$cpt_ele]['login']=$tabligne[$tabindice[1]];
 									// Il faudrait tester qu'il n'y a pas de caractères invalides dans le login...
 
-									if(strlen(my_ereg_replace("[A-Z0-9_]","",$tabligne[$tabindice[1]]))==0){
+									if(strlen(preg_replace("/[A-Z0-9_]/","",$tabligne[$tabindice[1]]))==0){
 										// L'élève fait-il partie du groupe?
 										$sql="SELECT 1=1 FROM j_eleves_groupes WHERE (login='".$tab_dev[$cpt_ele]['login']."' AND id_groupe='$id_groupe' AND periode='$periode_num')";
 										$test=mysql_query($sql);
@@ -358,7 +360,7 @@ else{
 													$note='0';
 													$elev_statut='-';
 												}
-												elseif(my_ereg("^[0-9\.\,]{1,}$",$note)){
+												elseif(preg_match("/^[0-9\.\,]{1,}$/",$note)){
 													$note=str_replace(",",".","$note");
 													if(($note<0)or($note > 20)){
 														$note='';
@@ -414,6 +416,7 @@ else{
 
 				echo "<div align='center'>\n";
 				echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
+				echo add_token_field();
 				echo "<input type='hidden' name='is_posted' value='y' />\n";
 				echo "<input type='hidden' name='valide_insertion_devoirs' value='y' />\n";
 				echo "<input type='hidden' name=\"id_racine\" value=\"$id_racine\" />\n";
@@ -705,7 +708,7 @@ else{
 									$note=0;
 									$elev_statut="-";
 								}
-								elseif(my_ereg("^[0-9\.\,]{1,}$",$tab_dev_note[$i][$j])){
+								elseif(preg_match("/^[0-9\.\,]{1,}$/",$tab_dev_note[$i][$j])){
 									$note=str_replace(",",".",$tab_dev_note[$i][$j]);
 									$elev_statut='';
 									if(($note<0)or($note > 20)){

@@ -1,13 +1,13 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>...::: Serveur LCS :::...</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <LINK  href='../style/style.css' rel='StyleSheet' type='text/css'>
+        <meta name="author" content="Philippe LECLERC -TICE CAEN" />
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<title>.:.  No authorized .:.</title>
+	<link href="../style/style.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-<br /><br /><br /><br /><br />
-<div align="center"><h3>Vous n'avez pas la permission d'accéder au contenu de ce répertoire !</h1></div>
-<br /><br /><br /><br /><br />
+<p><br /><br /></p>
+<div class="erreur">Vous n'avez pas la permission d'acc&#232;der au contenu de ce r&#233;pertoire ! </div>
 </body>
 </html>

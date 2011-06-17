@@ -1,8 +1,8 @@
 #!/bin/sh
 MODULE="spip"
 VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
-VERAPPLI="2.0.7"
-INDICEMAJNBR="6"
+VERAPPLI="2.1.10"
+INDICEMAJNBR="7"
 CONF="/var/lib/lcs/$MODULE"
 PATHMOD="/usr/share/lcs/$MODULE"
 PATHMAJ="/var/lib/lcs/$MODULE"
@@ -96,12 +96,6 @@ fi
         mkdir -p $PATHMOD/plugins/auto
     fi
     #
-    # Configuration des filtres pour les flux audio et video.
-    #
-    echo "Configuration des filtres pour les flux audio et video."
-    cat $CONF/Mod/config/mes_options.php.in | sed -e "s/@DOMAINENAME@/$DOMAINENAME/g" > /tmp/mes_options.php
-    mv /tmp/mes_options.php /usr/share/lcs/spip/config/
-    #
     # Création de l'utilisateur spip.manager si il n'existe pas
     #
     if [ `getent passwd spip.manager | wc -l` = "0" ]; then
@@ -113,27 +107,7 @@ fi
     #
     echo "Fixation des droits sur l'arborescence du module : $MODULE"
     $CONF/Scripts/chown.sh $MODULE
-    # cas de l'ancienne conf apache
-    if [ -e $APACHECONF ]; then
-      # Nettoyage
-      if [ `grep -c "Alias /$MODULE/ /usr/share/lcs/$MODULE/" $APACHECONF` = 1 ]; then
-        grep -v 'Alias /$MODULE/ /usr/share/lcs/$MODULE/' $APACHECONF > /tmp/apache.conf
-        mv /tmp/apache.conf $APACHECONF
-      fi
-      sed -i "/# Debut section spip/,/# Fin section spip/d" $APACHECONF
-      # Fin nettoyage
-      #
-      # Ajout conf spip
-      #
-      echo "Mise en place de l'alias $MODULE"
-      echo "# Debut section spip" >> $APACHECONF
-      echo "Alias /$MODULE/ /usr/share/lcs/$MODULE/" >> $APACHECONF
-      echo "<Directory  /usr/share/lcs/$MODULE/>" >> $APACHECONF
-      echo "        Allowoverride All" >> $APACHECONF
-      echo "</Directory>" >> $APACHECONF
-      echo "# Fin section spip" >> $APACHECONF
-    fi
-    # cas de la nouvelle configuration apache
+    # Configuration apache
     if [ -d $LCSAPACHE2PATH ] && [ ! -e $APACHE2CONF ] ; then
       cat >$APACHE2CONF <<EOF
 Alias /$MODULE/ /usr/share/lcs/$MODULE/

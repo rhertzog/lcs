@@ -4,25 +4,26 @@ if (!defined("_ECRIRE_INC_VERSION")) return;
 # Fichier de configuration pris en compte par config_outils.php et specialement dedie a la configuration des 'class' SPIP
 # -----------------------------------------------------------------------------------------------------------------------
 
-// Fonction d'ajout de l'outil 'class_spip'
-function class_spip_add_outil() { return array(
+function outils_class_spip_config_dist() {
+
+// Ajout de l'outil 'class_spip'
+add_outil(array(
+	'id' => 'class_spip',
 	'code:spip_options' => "\$GLOBALS['class_spip']='%%style_p%%';\n\$GLOBALS['class_spip_plus']='%%style_h%%';\n%%racc_hr%%%%racc_h1%%%%racc_h2%%%%racc_i1%%%%racc_i2%%%%racc_g1%%%%racc_g2%%%%puce%%",
 	'code:fonctions'=>"%%ouvre_ref%%%%ferme_ref%%%%ouvre_note%%%%ferme_note%%",
 	'categorie' => 'public',
 	'description' => 
-	// avant SPIP 1.93 : <hr/> seulement
+	// avant SPIP 2.0 : <hr/> seulement
 	// et apres : <hr/> + puce
 		(!defined('_SPIP19300')?'<:class_spip:1:>':'<:class_spip:2:>').
 	// des SPIP 1.91 : les intertitres
 		'<:class_spip:3:>'.
-	// des SPIP 1.93 : les italiques, les gras + les styles
+	// des SPIP 2.0 : les italiques, les gras + les styles
 		(!defined('_SPIP19300')?'':'<:class_spip:4:>'),
-);}
+));
 
-# Definition des variables utilisee ci-dessus
-# -------------------------------------------
-
-add_variables( array(
+// Ajout des variables utilisees ci-dessus
+add_variables(array(
 	'nom' => 'style_p',
 	'format' => _format_CHAINE,
 	'defaut' =>  "''",
@@ -100,3 +101,7 @@ add_variables( array(
 	'defaut' => defined('_SPIP19300')?"''":'"AUTO"',
 	'code:strlen(%s)' => "\$GLOBALS['puce']=%s;",
 ));
+
+}
+
+?>

@@ -37,11 +37,11 @@ if ((is_admin("Annu_is_admin",$login)=="Y") || (is_admin("sovajon_is_admin",$log
         			if ( $info["count"]) {
           				for ($loop=0; $loop<$info["count"];$loop++) {
          					$gecos = $info[0]["gecos"][0];
-         					$tmp = split ("[\,\]",$info[0]["gecos"][0],4);
+         					$tmp = preg_split ("/,/",$info[0]["gecos"][0],4);
          					$date_naiss=$tmp[1];
          					echo "Vous avez choisi de r&#233;initialiser le mot de passe de l'utilisateur <b>$uid_init</b> avec sa date de naissance. <br/><br/>";
         					// echo $date_naiss;
-        		 			if ( userChangedPwd($uid_init, $date_naiss) ) 
+        		 			if (userChangedPwd($uid_init, $date_naiss, '')) 
         		 				echo "<strong>Le mot de passe a &#233;t&#233; modifi&#233; avec succ&#232;s</strong><br>\n";
         		 			else
         		 				echo "<div class=error_msg><strong>Echec de la r&#233;initialisation du mot de passe !</strong><br></div>\n";

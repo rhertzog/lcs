@@ -55,8 +55,8 @@ cs_log("smileys_installe() : $path");
 	 '|)'	=> 'rouge.png',
 	 ':/'	=> 'mouais.png',
 	);
-
-	$liste = array();
+	
+	$aide = array();
 	foreach ($smileys as $smy=>$val) {
 		$espace = strlen($smy)==2?' ':'';
 		$smileys2[0][] = $espace.$smy;
@@ -64,19 +64,24 @@ cs_log("smileys_installe() : $path");
 		// cs_code_echappement evite que le remplacement se fasse a l'interieur des attributs de la balise <img>
 		$smileys2[1][] = cs_code_echappement($espace."<img alt=\"$smy\" title=\"$smy\" class=\"no_image_filtrer format_png\" src=\"$path2/$val\" $size/>", 'SMILE');
 		$smileys2[2][] = $val;
-		// liste des raccourcis et smileys disponibles
-		$liste[] = '<b>'.$smy.'</b>';
+		// aide : liste des smileys disponibles
+		$aide[] = $smy;
 	}
-	ecrire_meta('cs_smileys_racc', join(', ', $liste));
-	ecrire_meta('cs_smileys', serialize($smileys2));
-	ecrire_metas();
+
+	if(defined('_DIR_PLUGIN_PORTE_PLUME')) {
+		$sm = smileys_uniques($smileys2);
+ 		$max = count($sm[2]);
+		for ($i=0; $i<$max; $i++)
+			$smileys2[4]['smiley_'.str_replace('.png','',$sm[2][$i])] = $sm[2][$i];
+	}
+	return array('smileys'=>$smileys2, 'smileys_racc'=>$aide);
 }
 
-// cette fonction est appelee automatiquement a chaque affichage de la page privee du Couteau Suisse
-// le resultat est une chaine apportant des informations sur les nouveaux raccourcis ajoutes par l'outil
+// liste des nouveaux raccourcis ajoutes par l'outil
 // si cette fonction n'existe pas, le plugin cherche alors  _T('couteauprive:un_outil:aide');
 function smileys_raccourcis() {
-	return _T('couteauprive:smileys:aide', array('liste' => $GLOBALS['meta']['cs_smileys_racc']));
+	$racc = cs_lire_data_outil('smileys', 'smileys_racc');
+	return _T('couteauprive:smileys:aide', array('liste' => '<b>'.join('</b>, <b>', $racc).'</b>'));
 }
 
 function smileys_echappe_balises_callback($matches) {
@@ -87,7 +92,7 @@ function smileys_echappe_balises_callback($matches) {
 // les balises suivantes sont protegees : html|code|cadre|frame|script|acronym|cite
 function cs_rempl_smileys($texte) {
 	if (strpos($texte, ':')===false && strpos($texte, ')')===false) return $texte;
-	$smileys_rempl = unserialize($GLOBALS['meta']['cs_smileys']);
+	$smileys_rempl = cs_lire_data_outil('smileys');
 	// protection des images, on ne sait jamais...
 	$texte = preg_replace_callback(',(<img .*?/>),ms', 'smileys_echappe_balises_callback', $texte);
 	// smileys a probleme :
@@ -97,16 +102,12 @@ function cs_rempl_smileys($texte) {
 	$texte = str_replace(':'.chr(146).'-', ':&#8217;-', $texte);
 	// voila, on remplace tous les smileys d'un coup...
 	$texte = str_replace($smileys_rempl[0], $smileys_rempl[1], $texte);
-//cs_log('smileys traités : '.$texte);
 	return echappe_retour($texte, 'SMILE');
 }
 
 // fonction principale (pipeline pre_typo)
 function cs_smileys_pre_typo($texte) {
 	if (strpos($texte, ':')===false && strpos($texte, ')')===false) return $texte;
-	if (!isset($GLOBALS['meta']['cs_smileys']))
-		smileys_installe();
-//cs_log('smileys trouvés !');
 	// appeler cs_rempl_smileys() une fois que certaines balises ont ete protegees
 	return cs_echappe_balises('html|code|cadre|frame|script|acronym|cite', 'cs_rempl_smileys', $texte);
 }
@@ -127,15 +128,56 @@ function smileys_uniques($smileys) {
 
 // cette fonction renvoie une ligne de tableau entre <tr></tr> afin de l'inserer dans la Barre Typo V2, si elle est presente
 function cs_smileys_BarreTypo($tr) {
-	if (!isset($GLOBALS['meta']['cs_smileys']))	smileys_installe();
-	// le tableau des smileys est present dans les metas
-	$smileys = smileys_uniques(unserialize($GLOBALS['meta']['cs_smileys']));
+	$smileys = smileys_uniques(cs_lire_data_outil('smileys'));
 	$max = count($smileys[0]);
 	$res = '';
 	for ($i=0; $i<$max; $i++)
 		$res .= "<a href=\"javascript:barre_inserer('{$smileys[0][$i]}',@@champ@@)\">{$smileys[1][$i]}</a>";
-
 	return $tr.'<tr><td><@@span@@>'._T('couteauprive:smileys:nom').'</span>&nbsp;'.echappe_retour($res, 'SMILE').'</td></tr>';
+}
+
+// les 2 fonctions suivantes inserent les boutons pour le plugin Porte Plume, s'il est present (SPIP>=2.0)
+function cs_smileys_PP_pre_charger($flux) {
+	$smileys = smileys_uniques(cs_lire_data_outil('smileys'));
+	$max = count($smileys[0]);
+	$r = array();
+	for ($i=0; $i<$max; $i++) {
+		$id = 'smiley_'.str_replace('.png','',$smileys[2][$i]);
+		$r[] = array(
+				"id" => $id,
+				"name" => _T('couteau:pp_smileys_inserer', array('smiley'=>$smileys[0][$i])),
+				"className" => $id,
+				"replaceWith" => $smileys[0][$i],
+				"display" => true);
+	}
+	$r = array(
+		"id" => 'cs_smileys_drop',
+		"name" => _T('couteau:pp_smileys_inserer', array('smiley'=>'')),
+		"className" => 'cs_smileys_drop',
+		"replaceWith" => '',
+		"display" => true,
+		"dropMenu"	=> $r,
+	);
+	foreach(cs_pp_liste_barres('smileys') as $b)
+		$flux[$b]->ajouterApres('grpCaracteres', $r);
+	return $flux;
+}
+function cs_smileys_PP_icones($flux) {
+	$smileys = cs_lire_data_outil('smileys');
+	$path = find_in_path('img/smileys').'/';
+	// icones utilisees. Attention : mettre les drop-boutons en premier !!
+	$flux['cs_smileys_drop'] = smileys_creer_icone_barre(find_in_path('img/smileys/mort_de_rire.png'));
+	foreach($smileys[4] as $i=>$v) $flux[$i] = smileys_creer_icone_barre($path.$v);
+	return $flux;
+}
+// creation d'icone pour le plugin porte-plume
+function smileys_creer_icone_barre($file) {
+	static $icones_barre;
+	rep_icones_barre($icones_barre);
+	$file = filtrer('image_recadre', $file, 16, 16, 'topleft');
+	$nom = basename($src = extraire_attribut($file, 'src'));
+	@copy($src, $icones_barre.$nom);
+	return $nom;
 }
 
 ?>

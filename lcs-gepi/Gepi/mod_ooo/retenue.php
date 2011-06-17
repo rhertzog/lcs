@@ -49,7 +49,7 @@ include_once('./lib/tbsooo_class.php');
 define( 'PCLZIP_TEMPORARY_DIR', '../mod_ooo/tmp/' );
 include_once('../lib/pclzip.lib.php');
 
-include_once('../mod_discipline/sanctions_func_lib.php'); // la librairie de fonction du module discipline pour la fonction p_nom , u_p_nom
+include_once('../mod_discipline/sanctions_func_lib.php'); // la librairie de fonction du module discipline pour la fonction p_nom , u_p_nom, nombre_report
 
 //debug_var();
 
@@ -89,6 +89,8 @@ $lieu = '';
 $duree ='';
 $h_deb ='';
 $num_incident = '';
+$nb_report='';
+$texte_report='';
 
 //echo "\$mode=$mode<br />";
 //echo "\$id_incident=$id_incident<br />";
@@ -122,7 +124,7 @@ if (($mode=='module_discipline')||($mode=='module_retenue')) {
 		    $classe = '';
 		}
 
-		$sql="SELECT * FROM resp_pers rp, resp_adr ra, responsables2 r, eleves e WHERE rp.pers_id=r.pers_id AND rp.adr_id=ra.adr_id AND r.ele_id=e.ele_id AND e.login='$ele_login' AND (r.resp_legal='1' OR r.resp_legal='2') ORDER BY r.resp_legal;";
+		$sql="SELECT rp.civilite,rp.nom,rp.prenom,ra.adr1,ra.adr2,ra.adr3,ra.cp,ra.commune FROM resp_pers rp, resp_adr ra, responsables2 r, eleves e WHERE rp.pers_id=r.pers_id AND rp.adr_id=ra.adr_id AND r.ele_id=e.ele_id AND e.login='$ele_login' AND (r.resp_legal='1' OR r.resp_legal='2') ORDER BY r.resp_legal;";
 		$res_resp=mysql_query($sql);
 		if(mysql_num_rows($res_resp)==0) {
 			$ad_nom_resp="";
@@ -213,7 +215,16 @@ if (($mode=='module_discipline')||($mode=='module_retenue')) {
 			  
 			  // LE CRENEAU EST INCONNU on se retrouve dans le cas d'une heure saisie à la main.
 			  $h_deb = $lig_sanction->heure_debut;
-			}	
+			}
+
+			//Traitement d'un eventuel report
+			$nb_report=nombre_reports($lig_sanction->id_sanction,0);
+			if ($nb_report<>0) {
+			  $texte_report="REPORT N° ".$nb_report;
+			} else {
+			  $texte_report="";
+			}
+			
 	    } else {
 			return "LA RETENUE EST INCONNUE";
 		}     
@@ -276,6 +287,12 @@ if ($mode=='formulaire_retenue') { //les donnée provenant du formulaire
 	$duree ='';
 	$h_deb ='';
 	$num_incident = '';
+    $ad_nom_resp= '';
+	$adr1_resp= '';
+	$adr2_resp= '';
+	$adr3_resp= '';
+	$cp_resp= '';
+	$commune_resp= '';
 
 } // formulaire_retenue
 

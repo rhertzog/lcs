@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;	#securite
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/headers');
 include_spip('base/abstract_sql');
@@ -45,7 +45,7 @@ function install_bases($adresse_db, $login_db, $pass_db,  $server_db, $choix_db,
 	if ($choix_db == "new_spip") {
 		$re = ',^[a-z_][a-z_0-9-]*$,i';
 		if (preg_match($re, $sel_db))
-			$fquery("CREATE DATABASE `$sel_db`", $server_db);
+			sql_create_base($sel_db, $server_db);
 		else {
 		  $re = "Le nom de la base doit correspondre a $re";
 		  spip_log($re);
@@ -55,7 +55,7 @@ function install_bases($adresse_db, $login_db, $pass_db,  $server_db, $choix_db,
 
 	// on rejoue la connexion apres avoir teste si il faut lui indiquer
 	// un sql_mode
-	test_sql_mode_mysql($server_db);
+	install_mode_appel($server_db, false);
 	$GLOBALS['connexions'][$server_db]
 	= spip_connect_db($adresse_db, $sel_db, $login_db, $pass_db, $sel_db, $server_db);
 
@@ -136,20 +136,25 @@ function install_bases($adresse_db, $login_db, $pass_db,  $server_db, $choix_db,
 	  @$fquery("DELETE FROM spip_meta WHERE nom='import_all' OR  nom='admin'", $server_db);
 	}
 
-	$ligne_rappel = ($server_db != 'mysql') ? ''
-	: (test_rappel_nom_base_mysql($server_db)
-	  .test_sql_mode_mysql($server_db)	);
+	$ligne_rappel = install_mode_appel($server_db);
 
 	$result_ok = @$fquery("SELECT COUNT(*) FROM spip_meta", $server_db);
 	if (!$result_ok) return "<!--\nvielle = $old rappel= $ligne_rappel\n-->";
 
 	if ($chmod_db) {
-		install_fichier_connexion(_FILE_CHMOD_TMP, "@define('_SPIP_CHMOD', ". sprintf('0%3o',$chmod_db).");\n");
+		install_fichier_connexion(_FILE_CHMOD_TMP, "if (!defined('_SPIP_CHMOD')) define('_SPIP_CHMOD', ". sprintf('0%3o',$chmod_db).");\n");
 	}
 
 	if (preg_match(',(.*):(.*),', $adresse_db, $r))
 		list(,$adresse_db, $port) = $r;
 	else $port = '';
+
+	// si ce fichier existe a cette etape c'est qu'il provient
+	// d'une installation qui ne l'a pas cree correctement.
+	// Le supprimer pour que _FILE_CONNECT_TMP prime.
+
+	if (_FILE_CONNECT AND file_exists(_FILE_CONNECT))
+		spip_unlink(_FILE_CONNECT);
 
 	install_fichier_connexion(_FILE_CONNECT_TMP, 
 				  $ligne_rappel
@@ -192,7 +197,7 @@ function install_premier_auteur($email, $login, $nom, $pass, $hidden)
 			     _T('info_laisser_champs_vides')
 			     )
 	. generer_form_ecrire('install', (
-			  "\n<input type='hidden' name='etape' value='4' />"
+			  "\n<input type='hidden' name='etape' value='3b' />"
 			  . $hidden
 			  . fieldset(_T('info_identification_publique'),
 				    array(
@@ -304,32 +309,4 @@ function install_etape_3_dist()
 	echo install_fin_html();
 }
 
-// Tester si mysql ne veut pas du nom de la base dans les requetes
-
-// http://doc.spip.org/@test_rappel_nom_base_mysql
-function test_rappel_nom_base_mysql($server_db)
-{
-	$GLOBALS['mysql_rappel_nom_base'] = true;
-	sql_delete('spip_meta', "nom='mysql_rappel_nom_base'", $server_db);
-	$ok = spip_query("INSERT INTO spip_meta (nom,valeur) VALUES ('mysql_rappel_nom_base', 'test')", $server_db);
-
-	if ($ok) {
-		sql_delete('spip_meta', "nom='mysql_rappel_nom_base'", $server_db);
-		return '';
-	} else {
-		$GLOBALS['mysql_rappel_nom_base'] = false;
-		return "\$GLOBALS['mysql_rappel_nom_base'] = false; ".
-		"/* echec de test_rappel_nom_base_mysql a l'installation. */\n";
-	}
-}
-// http://doc.spip.org/@test_sql_mode_mysql
-function test_sql_mode_mysql($server_db){
-	$res = sql_select("version() as v",'','','','','','',$server_db);
-	$row = sql_fetch($res,$server_db);
-	if (version_compare($row['v'],'5.0.0','>=')){
-		define('_MYSQL_SET_SQL_MODE',true);
-		return "define('_MYSQL_SET_SQL_MODE',true);\n";
-	}
-	return '';
-}
 ?>

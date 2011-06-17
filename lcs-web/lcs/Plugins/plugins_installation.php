@@ -51,7 +51,7 @@ if ($etape == 1) // on rapatrie le tgz
 		ecrit_ecran($fecran,"<DIR><DIR><PRE>");
 		for($i = 0; $i < count($lignes_retournees); $i++)
 			ecrit_ecran($fecran, $lignes_retournees[$i] . "<BR>");
-		$repdes = substr($lignes_retournees[0],0,strlen($lignes_retournees[0])-1);
+		$repdes = mb_substr($lignes_retournees[0],0,mb_strlen($lignes_retournees[0])-1);
 		ecrit_ecran($fecran,"</PRE></DIR></DIR>");
 		$texte = implode("\r\n",$lignes_retournees);
 		ecrit_log($flog,$texte);
@@ -97,7 +97,7 @@ if ($etape == 3) // on desarchive le tgz
 		ecrit_ecran($fecran,"<DIR><DIR><PRE>");
 		for($i = 0; $i < count($lignes_retournees); $i++)
 			ecrit_ecran($fecran, $lignes_retournees[$i] . "<BR>");
-		$repdes = substr($lignes_retournees[0],0,strlen($lignes_retournees[0])-1);
+		$repdes = mb_substr($lignes_retournees[0],0,mb_strlen($lignes_retournees[0])-1);
 		ecrit_ecran($fecran,"</PRE></DIR></DIR>");
 		$texte = implode("\r\n",$lignes_retournees);
 		ecrit_log($flog,$texte);

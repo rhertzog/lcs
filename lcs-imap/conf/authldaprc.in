@@ -66,7 +66,7 @@ LDAP_TIMEOUT		5
 # Additionally, if LDAP_AUTHBIND is 1 then password changes are done under
 # the credentials of the user themselves, not LDAP_BINDDN/BINDPW
 #
-# LDAP_AUTHBIND		1
+LDAP_AUTHBIND		1
 
 ##NAME: LDAP_MAIL:0
 #

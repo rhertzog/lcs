@@ -2,7 +2,7 @@
 
 @set_time_limit(0);
 /*
-* $Id: init_pp.php 5343 2010-09-19 17:45:42Z crob $
+* $Id: init_pp.php 6243 2010-12-28 16:19:40Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -51,7 +51,7 @@ $titre_page = "Outil d'initialisation de l'année : Importation des professeurs p
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 ?>
-<p class=bold><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil initialisation</a></p>
+<p class="bold"><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil initialisation</a></p>
 
 <?php
 
@@ -60,9 +60,115 @@ require_once("../lib/header.inc");
 
 //debug_var();
 
-echo "<center><h3 class='gepi'>Sixième phase<br />Importation des professeurs principaux</h3></center>\n";
-
 if (!isset($step1)) {
+
+	$dirname=get_user_temp_directory();
+	if(@file_exists("../temp/".$dirname."/matiere_principale.csv")) {
+		/*
+		$fich_mp=fopen("../temp/".$dirname."/matiere_principale.csv","r");
+		while(!feof($fich_mp)) {
+			$ligne=trim(fgets($fich_mp, 4096));
+			echo "\$ligne=$ligne<br />\n";
+		}
+		fclose($fich_mp);
+		*/
+
+		$fich_mp=fopen("../temp/".$dirname."/matiere_principale.csv","r");
+		if($fich_mp) {
+			echo "<p class='bold'>Rétablissement de la matière principale de chaque professeur d'après les enregistrements de l'année précédente.</p>\n";
+
+			$temoin_erreur=0;
+
+			$temoin_debut_mp=0;
+			while(!feof($fich_mp)) {
+				$ligne=trim(fgets($fich_mp, 4096));
+
+				$tab=explode(";",$ligne);
+				if(($tab[0]!="")&&($tab[1]!="")) {
+					$login_prof=$tab[0];
+					$matiere_prof=$tab[1];
+	
+					unset($tab_matiere_prof);
+					unset($tab_matiere_prof_reordonne);
+					$tab_matiere_prof=array();
+					$tab_matiere_prof_reordonne=array();
+					$sql="SELECT * FROM j_professeurs_matieres WHERE id_professeur='$login_prof' ORDER BY ordre_matieres;";
+					//echo "$sql<br />\n";
+					$res=mysql_query($sql);
+					if(mysql_num_rows($res)>0) {
+						while($lig_mp=mysql_fetch_object($res)) {
+							$tab_matiere_prof[]=$lig_mp->id_matiere;
+						}
+					}
+	
+					if(in_array($matiere_prof,$tab_matiere_prof)) {
+						// On va contrôler si la matière est bien au premier rang
+						if($tab_matiere_prof[0]!=$matiere_prof) {
+							// Il faut réordonner
+							$tab_matiere_prof_reordonne[]=$matiere_prof;
+							for($loop=0;$loop<count($tab_matiere_prof);$loop++) {
+								if($tab_matiere_prof[$loop]!=$matiere_prof) {
+									$tab_matiere_prof_reordonne[]=$tab_matiere_prof[$loop];
+								}
+							}
+	
+							if($temoin_debut_mp==0) {
+								echo "<p>Correction de la matière principale pour ";
+							}
+							else {
+								echo ", ";
+							}
+	
+							echo "<a href='../utilisateurs/modify_user.php?user_login=$login_prof' target='_blank'>$login_prof</a>";
+	
+							$sql="DELETE FROM j_professeurs_matieres WHERE id_professeur='$login_prof';";
+							//echo "$sql<br />\n";
+							$del=mysql_query($sql);
+							if(!$del) {
+								echo " (<span style='color:red'>ERREUR</span>)";
+								$temoin_erreur++;
+							}
+							else {
+								for($loop=0;$loop<count($tab_matiere_prof_reordonne);$loop++) {
+									$k=$loop+1;
+									$sql="INSERT INTO j_professeurs_matieres SET id_professeur='$login_prof', id_matiere='".$tab_matiere_prof_reordonne[$loop]."', ordre_matieres='$k';";
+									//echo "$sql<br />\n";
+									$insert=mysql_query($sql);
+									if($insert) {
+										echo " (<span style='color:green";
+										if($loop==0) {echo "; font-weight: bold";}
+										echo "'>".$tab_matiere_prof_reordonne[$loop]."</span>)";
+									}
+									else {
+										echo " (<span style='color:red'>".$tab_matiere_prof_reordonne[$loop]."</span>)";
+										$temoin_erreur++;
+									}
+								}
+							}
+							$temoin_debut_mp++;
+						}
+						//else {
+						//	echo "$login_prof a déjà la bonne matière principale&nbsp;: $matiere_prof<br />";
+						//}
+					}
+				}
+			}
+			fclose($fich_mp);
+
+			if($temoin_erreur==0) {
+				unlink("../temp/".$dirname."/matiere_principale.csv");
+			}
+
+			if($temoin_debut_mp>0) {
+				echo ".</p>\n";
+	
+				echo "<p><i>Remarque&nbsp;:</i> Les professeurs pour lesquels la matière principale est déjà la bonne n'apparaissent pas dans les corrections ci-dessus.</p>\n";
+			}
+		}
+	}
+
+	echo "<center><h3 class='gepi'>Sixième phase<br />Importation des professeurs principaux</h3></center>\n";
+
 	$j=0;
 	$flag=0;
 	while (($j < count($liste_tables_del)) and ($flag==0)) {
@@ -71,6 +177,7 @@ if (!isset($step1)) {
 		}
 		$j++;
 	}
+
 	if ($flag != 0){
 		echo "<p><b>ATTENTION ...</b><br />\n";
 		echo "Des professeurs principaux sont actuellement définis dans la base GEPI (<i>table 'j_eleves_professeurs'</i>)<br /></p>\n";
@@ -78,6 +185,7 @@ if (!isset($step1)) {
 		echo "<p>Si vous poursuivez la procédure ces données seront supprimées et remplacées par celles de votre import XML.</p>\n";
 
 		echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
+		echo add_token_field();
 		echo "<input type='hidden' name='step1' value='y' />\n";
 		echo "<input type='submit' name='confirm' value='Poursuivre la procédure' />\n";
 		echo "</form>\n";
@@ -85,6 +193,9 @@ if (!isset($step1)) {
 		require("../lib/footer.inc.php");
 		die();
 	}
+}
+else {
+	echo "<center><h3 class='gepi'>Sixième phase<br />Importation des professeurs principaux</h3></center>\n";
 }
 
 $tempdir=get_user_temp_directory();
@@ -95,13 +206,16 @@ if(!$tempdir){
 }
 
 if (!isset($is_posted)) {
-	$j=0;
-	while ($j < count($liste_tables_del)) {
-		if (mysql_result(mysql_query("SELECT count(*) FROM $liste_tables_del[$j]"),0)!=0) {
-			//echo "DELETE FROM $liste_tables_del[$j]<br />";
-			$del = @mysql_query("DELETE FROM $liste_tables_del[$j]");
+	if(isset($step1)) {
+		check_token(false);
+		$j=0;
+		while ($j < count($liste_tables_del)) {
+			if (mysql_result(mysql_query("SELECT count(*) FROM $liste_tables_del[$j]"),0)!=0) {
+				//echo "DELETE FROM $liste_tables_del[$j]<br />";
+				$del = @mysql_query("DELETE FROM $liste_tables_del[$j]");
+			}
+			$j++;
 		}
-		$j++;
 	}
 
 	if(!file_exists("../temp/$tempdir/f_div.csv")){
@@ -114,6 +228,7 @@ if (!isset($is_posted)) {
 	//echo "<p>Importation du fichier <b>F_div.csv</b> (<i>généré lors de l'importation des professeurs</i>) contenant les associations classe/professeur principal.</p>\n";
 	echo "<p>Importation des associations classe/professeur principal.</p>\n";
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
+	echo add_token_field();
 	echo "<input type=hidden name='is_posted' value='yes' />\n";
 	echo "<input type=hidden name='step1' value='y' />\n";
 	//echo "<p><input type='file' size='80' name='dbf_file' />";
@@ -121,6 +236,7 @@ if (!isset($is_posted)) {
 	echo "</form>\n";
 
 } else {
+	check_token(false);
 	//$dbf_file = isset($_FILES["dbf_file"]) ? $_FILES["dbf_file"] : NULL;
 	//if(strtoupper($dbf_file['name']) == "F_TMT.DBF") {
 	//if(strtoupper($dbf_file['name']) == "F_DIV.CSV") {
@@ -296,13 +412,13 @@ if (!isset($is_posted)) {
 				if(getSettingValue("mode_sauvegarde")=="mysqldump") {$mode_sauvegarde="system_dump";}
 				else {$mode_sauvegarde="dump";}
 
-				echo "<p>Avant de procéder à un nettoyage des tables pour supprimer les données inutiles, vous devriez effectuer une <a href='../gestion/accueil_sauve.php?action=$mode_sauvegarde&amp;quitter_la_page=y' target='_blank'>sauvegarde</a><br />\n";
+				echo "<p>Avant de procéder à un nettoyage des tables pour supprimer les données inutiles, vous devriez effectuer une <a href='../gestion/accueil_sauve.php?action=$mode_sauvegarde&amp;quitter_la_page=y".add_token_in_url()."' target='_blank'>sauvegarde</a><br />\n";
 				echo "Après cette sauvegarde, effectuez le nettoyage en repassant par 'Gestion générale/Initialisation des données à partir de fichiers DBF et XML/Procéder à la septième phase'.<br />\n";
 				echo "Si les données sont effectivement inutiles, c'est terminé.<br />\n";
 				echo "Sinon, vous pourrez restaurer votre sauvegarde et vous aurez pu noter les associations profs/matières/classes manquantes... à effectuer par la suite manuellement dans 'Gestion des bases'.</p>\n";
 
 				echo "<p>Vous pouvez procéder à l'étape suivante de nettoyage des tables GEPI.</p>\n";
-				echo "<center><p><a href='clean_tables.php'>Suppression des données inutiles</a></p></center>\n";
+				echo "<center><p><a href='clean_tables.php?a=a".add_token_in_url()."'>Suppression des données inutiles</a></p></center>\n";
 			}
 		}
 	/*

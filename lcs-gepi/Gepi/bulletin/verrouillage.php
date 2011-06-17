@@ -1,8 +1,8 @@
 <?php
 /*
-* @version: $Id: verrouillage.php 4753 2010-07-11 20:06:16Z jjacquard $
+* @version: $Id: verrouillage.php 6259 2011-01-01 22:29:34Z dblanqui $
 *
-* Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -48,6 +48,7 @@ $action_apres=isset($_GET['action']) ? $_GET['action'] : NULL;
 
 
 if (isset($_POST['deverouillage_auto_periode_suivante'])) {
+	check_token();
 	if (!saveSetting("deverouillage_auto_periode_suivante", $_POST['deverouillage_auto_periode_suivante'])) {
 		$msg .= "Erreur lors de l'enregistrement de deverouillage_auto_periode_suivante !";
 		$reg_ok = 'no';
@@ -55,6 +56,7 @@ if (isset($_POST['deverouillage_auto_periode_suivante'])) {
 }
 
 if (isset($_POST['ok'])) {
+	check_token();
 
 	$pb_reg_ver = 'no';
 	//$calldata = sql_query("SELECT DISTINCT c.id, c.classe FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe");
@@ -210,7 +212,7 @@ echo "<br /><br />\n";
 if (($classe != 0) AND ($periode !=0)) {
 
 	echo "<form action=\"verrouillage.php?classe=$classe&periode=$periode&action=$action_apres\" name=\"formulaire\" method=\"post\">\n";
-
+	echo add_token_field();
 	echo "<table class='boireaus' cellpadding='3' cellspacing='0' border='1' align='center'>\n";
 	//echo "<tr class='fond_sombre'>\n<td>&nbsp;</td>\n";
 	echo "<tr>\n";
@@ -298,7 +300,8 @@ if (($classe != 0) AND ($periode !=0)) {
 } else {
 	if ($nombreligne != 0) {
 		echo "<form action=\"verrouillage.php\" name=\"formulaire\" method=\"post\">";
-	
+		echo add_token_field();
+
 		echo "<p align='center'><input type=\"submit\" name=\"ok\" value=\"Enregistrer\" /></p>\n";
 		//echo "<table cellpadding='3' cellspacing='0' border='1' align='center'>";
 		echo "<table class='boireaus' summary='Verrouillage des périodes' cellpadding='3' cellspacing='0' align='center'>\n";
@@ -312,7 +315,9 @@ if (($classe != 0) AND ($periode !=0)) {
 			echo "<th><img src=\"../lib/create_im_mat.php?texte=".$texte_deverrouiller."&amp;width=22\" width=\"22\" border=0 alt=\"Déverrouiller\" /></th>\n";
 			echo "<th><img src=\"../lib/create_im_mat.php?texte=".$texte_verrouiller_part."&amp;width=22\" width=\"22\" border=0 alt=\"Verrouiller partiellement\" /></th>\n";
 			echo "<th><img src=\"../lib/create_im_mat.php?texte=".$texte_verrouiller_tot."&amp;width=22\" width=\"22\" border=0 alt=\"Verrouiller totalement\" /></th>\n";
-			echo "<th>Date Fin</th>\n";
+            if(getSettingValue("active_module_absence")=="2"){
+                echo "<th>Date Fin</th>\n";
+            }
 		}
 		echo "</tr>\n";
 		//$flag = 0;
@@ -363,17 +368,19 @@ if (($classe != 0) AND ($periode !=0)) {
 						echo "<td><input type=\"radio\" name=\"".$nom_classe."\" value=\"O\" onchange=\"changement();actualise_cell_($id_classe,$i);\" ";
 						if ($row_per[1] == "O") {echo "checked";}
 						echo " /></td>\n";
-						echo "<td>";
-						echo "<input type=\"text\" size=\"8\" name=\"date_fin_".$nom_classe."\" value=\"";
-						if ($row_per[2] != 0) {
-						    echo date("d/m/Y", strtotime($row_per[2]));
-						}
-						echo "\"/>";
-						echo "</td>\n";
+                        if(getSettingValue("active_module_absence")=="2"){
+                            echo "<td>";
+                            echo "<input type=\"text\" size=\"8\" name=\"date_fin_".$nom_classe."\" value=\"";
+                            if ($row_per[2] != 0) {
+                                echo date("d/m/Y", strtotime($row_per[2]));
+                            }
+                            echo "\"/>";
+                            echo "</td>\n";
+                        }
 						$j++;
 					}
 				}
-				for ($i = $j; $i < $max_per; $i++) echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>\n";
+				for ($i = $j; $i < $max_per; $i++) echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>\n";
 		
 				echo "</tr>\n";
 			}
@@ -413,9 +420,14 @@ if (($classe != 0) AND ($periode !=0)) {
 			}
 		}
 	</script>\n";
-	
-	} else {
-		echo "<p class='grand'>Attention : aucune classe n'a été définie dans la base GEPI !</p>\n";
+
+		echo "<br />\n";
+
+		echo "<p><i>Remarque&nbsp;:</i><br /><span style='margin-left: 3em;'>Si vous ne voyez pas toutes les classes, il se peut que certaines classes ne vous soient pas associées.</span><br /><span style='margin-left: 3em;'>Demandez alors à un compte administrateur de vous associer des classes dans <b>Gestion des bases/Gestion des classes/Paramétrage scolarité</b></span></p>\n";
+
+	}
+	else {
+		echo "<p class='grand'>Attention : aucune classe n'a été définie dans la base GEPI !<br />Ou alors aucune classe ne vous est associée (<i>demandez alors à un compte administrateur de vous associer des classes dans <b>Gestion des bases/Gestion des classes/Paramétrage scolarité</b></i>)</p>\n";
 	}
 } //else
 echo "<p><br /></p>\n";

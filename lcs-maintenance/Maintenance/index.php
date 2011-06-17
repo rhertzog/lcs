@@ -16,7 +16,7 @@
 	list ($idpers,$uid)= isauth();
   	if ($idpers == "0") {
 		// L'utilisateur n'est pas authentifié
-		table_alert ("Vous devez préalablement vous authentifier sur votre «Espace perso  LCS» pour accéder à cette application !");
+		table_alert ("Vous devez préalablement vous authentifier sur votre &#171;Espace perso  LCS» pour accéder à cette application !");
 	} else {
 		// L'utilisateur est authentifié
 		list($user, $groups)=people_get_variables($uid, false);
@@ -45,6 +45,8 @@
 			list($user, $groups)=people_get_variables($uid, false);
 			// Affichage du menu haut
 			Aff_mnu($mode);
+		//	echo '<div id="loadingContainer"><div id="loading">Chargement...</div></div>';
+
 			if ($mnuchoice == "wait" ) {
 				Aff_bar_mode ("En attente");
 				// Affichage du feed en attente
@@ -71,6 +73,7 @@
 				$filter = "Acq='2' ";
 				if (Is_feed ($mode, $filter, "Il  n'y a pas d'intervention clotur&eacute;e. !") )
 				Aff_feed_close($mode,$filter,$tri);
+			//	Aff_feed_closeTab($mode,$filter,$tri);
 			}
 		} else {
 			// l'utilisateur ne fait pas partie de l'équipe de maintenance
@@ -95,4 +98,10 @@
 		}
 	}
  	include "Includes/pieds_de_page.inc.php";
+ 	echo "<script>
+ 	$(document).ready(function(){
+		$('div.mnu>a').removeClass('active');
+ 		$('div.mnu>a.".$mnuchoice ."').addClass('active');
+ 	});
+ 	</script>";
  ?>

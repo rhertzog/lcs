@@ -1,7 +1,7 @@
 <?php
-/* $Id: fiches_brevet.php 4514 2010-05-30 10:34:29Z regis $ */
+/* $Id: fiches_brevet.php 7093 2011-06-03 12:53:17Z regis $ */
 /*
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -91,7 +91,7 @@ $id_classe = isset($_POST['id_classe']) ? $_POST['id_classe'] : (isset($_GET['id
 
 $type_brevet = isset($_POST['type_brevet']) ? $_POST['type_brevet'] : (isset($_GET['type_brevet']) ? $_GET['type_brevet'] : NULL);
 if(isset($type_brevet)) {
-	if((!ereg("[0-9]",$type_brevet))||(strlen(my_ereg_replace("[0-9]","",$type_brevet))!=0)) {
+	if((!my_ereg("[0-9]",$type_brevet))||(strlen(my_ereg_replace("[0-9]","",$type_brevet))!=0)) {
 		$type_brevet=NULL;
 	}
 }
@@ -418,7 +418,7 @@ $gepiSchoolCity=getSettingValue("gepiSchoolCity");
 
 
 $tabmatieres=array();
-for($j=101;$j<=122;$j++){
+for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 	$tabmatieres[$j]=array();
 }
 
@@ -505,27 +505,29 @@ $tabmatieres=tabmatieres($type_brevet);
 
 // tableau de correspondance Champs de $tabmatieres -> champs de publipostage OOo
 $tab_champs_OOo=array();
-for($j=101;$j<=122;$j++){
+for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 	if($tabmatieres[$j][0]!=''){
 		$tab_champs_OOo[$j]=array();
-		$tab_champs_OOo[$j][0]=$j;												// code de la matière
-		$tab_champs_OOo[$j][1]=$tabmatieres[$j][0];			// Nom long
+		$tab_champs_OOo[$j][0]=$j;									// code de la matière
+		$tab_champs_OOo[$j][1]=$tabmatieres[$j][0];					// Nom long
 		$tab_champs_OOo[$j][2]="fb_note_".$j;						// Nom variable OOo
-		switch($tabmatieres[$j][-1]){											// Coefficient
-			case "NOTNONCA":																// Note non comptabilisée
+//echo "\$tabmatieres[$j][-1]<br />\n";
+		switch($tabmatieres[$j][-1]){								// Coefficient
+			case "NOTNONCA":										// Note non comptabilisée
 				$tab_champs_OOo[$j][3]="-1";
 			break;
-			case "PTSUP":																		// Seuls les points au dessus de la moyenne sont comptabilisés
+			case "PTSUP":											// Seuls les points au dessus de la moyenne sont comptabilisés
 				$tab_champs_OOo[$j][3]="0";
 			break;
-			case "POINTS":																		// On récupère le coef
+			case "POINTS":											// On récupère le coef
 				if ($tabmatieres[$j]['socle']=='n'){
 					$tab_champs_OOo[$j][3]=$tabmatieres[$j][-2];	// On récupère le coef
 				} else{
-					$tab_champs_OOo[$j][3]="-2";									// cas du B2I et A2 langue
+					$tab_champs_OOo[$j][3]="-2";					// cas du B2I et A2 langue
 				}
 			break;
 		}
+//echo "<hr />\n";
 	}
 }
 
@@ -569,7 +571,7 @@ for($i=0;$i<count($id_classe);$i++){
 
 	// Calcul des moyennes de classes... pb avec le statut...
 	$moy_classe=array();
-	for($j=101;$j<=122;$j++){
+	for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 		if($tabmatieres[$j][0]!=''){
 			$sql="SELECT ROUND(AVG(note),1) moyenne FROM notanet WHERE note!='DI' AND note!='AB' AND note!='NN' AND id_classe='$id_classe[$i]' AND notanet_mat='".$tabmatieres[$j][0]."'";
 			$res_moy=mysql_query($sql);
@@ -586,7 +588,7 @@ for($i=0;$i<count($id_classe);$i++){
 
 	// Récupération du statut des matières : ceux validés lors du traitement NOTANET
 	// pour repérer les matières non dispensées.
-	for($j=101;$j<=122;$j++){
+	for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 		if($tabmatieres[$j][0]!=''){
 			$sql="SELECT * FROM notanet_corresp WHERE notanet_mat='".$tabmatieres[$j][0]."' AND type_brevet='$type_brevet' LIMIT 1";
 			$res=mysql_query($sql);
@@ -653,7 +655,7 @@ for($i=0;$i<count($id_classe);$i++){
 				$TOTAL=0;
 				$TOTAL_COEF=0;
 				$TOTAL_POINTS=0;
-				for($j=101;$j<=122;$j++){
+				for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 
 					//if ($tab_champs_OOo[$j][0]!='') {
 					if ((isset($tab_champs_OOo[$j][0]))&&($tab_champs_OOo[$j][0]!='')) {
@@ -709,9 +711,11 @@ for($i=0;$i<count($id_classe);$i++){
 									include("fb_appreciation.inc.php");
 
 									// on extrait les points à ajouter
-									if($tab_eleves_OOo[$nb_eleve][$j][0]>10) {
-										$tab_eleves_OOo[$nb_eleve][$j][1]=($lig_note->note)-10;
-										$TOTAL_POINTS= $TOTAL_POINTS+$tab_eleves_OOo[$nb_eleve][$j][1];
+									if($tab_eleves_OOo[$nb_eleve][$j][0]!="DI" && $tab_eleves_OOo[$nb_eleve][$j][0]!="NN" && $tab_eleves_OOo[$nb_eleve][$j][0]!="ABS" && $tab_eleves_OOo[$nb_eleve][$j][0]!="AB") {
+										if($tab_eleves_OOo[$nb_eleve][$j][0]>10) {
+											$tab_eleves_OOo[$nb_eleve][$j][1]=($lig_note->note)-10;
+											$TOTAL_POINTS= $TOTAL_POINTS+$tab_eleves_OOo[$nb_eleve][$j][1];
+										}
 									}
 								break;
 								default:
@@ -723,12 +727,20 @@ for($i=0;$i<count($id_classe);$i++){
 										$tab_eleves_OOo[$nb_eleve][$j][2]=ucfirst(accent_min(strtolower($lig_mat_fac->matiere)));
 									}
 
-									// On calcul la note coefficientée
-									if($tab_eleves_OOo[$nb_eleve][$j][0]!="DI" && $tab_eleves_OOo[$nb_eleve][$j][0]!="NN" && $tab_eleves_OOo[$nb_eleve][$j][0]!="ABS") {
+									// On calcule la note coefficientée
+									//if($tab_eleves_OOo[$nb_eleve][$j][0]!="DI" && $tab_eleves_OOo[$nb_eleve][$j][0]!="NN" && $tab_eleves_OOo[$nb_eleve][$j][0]!="ABS" && $tab_eleves_OOo[$nb_eleve][$j][0]!="AB") {
+										// ABS ne doit pas arriver... c'est AB
+									if($tab_eleves_OOo[$nb_eleve][$j][0]!="DI" && $tab_eleves_OOo[$nb_eleve][$j][0]!="NN" && $tab_eleves_OOo[$nb_eleve][$j][0]!="ABS" && $tab_eleves_OOo[$nb_eleve][$j][0]!="AB") {
+										// ABS ne doit pas arriver... c'est AB
 										$tab_eleves_OOo[$nb_eleve][$j][1]=($lig_note->note)*$tab_champs_OOo[$j][3];
 										$TOTAL_POINTS =$TOTAL_POINTS+$tab_eleves_OOo[$nb_eleve][$j][1];
 										$TOTAL_COEF= $TOTAL_COEF+$tab_champs_OOo[$j][3];
-									}else {
+									}
+									elseif($tab_eleves_OOo[$nb_eleve][$j][0]=="ABS" || $tab_eleves_OOo[$nb_eleve][$j][0]=="AB") {
+										$tab_eleves_OOo[$nb_eleve][$j][1]=$tab_eleves_OOo[$nb_eleve][$j][0];
+										$TOTAL_COEF= $TOTAL_COEF+$tab_champs_OOo[$j][3];
+									}
+									else {
 										$tab_eleves_OOo[$nb_eleve][$j][1]=$tab_eleves_OOo[$nb_eleve][$j][0];
 									}
 									// on calcule la moyenne de la matière
@@ -791,9 +803,128 @@ for($i=0;$i<count($id_classe);$i++){
 
 			$tab_eleves_OOo[$nb_eleve]['totalpoints']=$TOTAL_POINTS;
 			$tab_eleves_OOo[$nb_eleve]['totalcoef']=$TOTAL_COEF*20;
+
+			// L'Histoire des arts ne doit pas être dans le total sur les fiches brevet... alors qu'elle y est pour Notanet
+			$tab_eleves_OOo[$nb_eleve]['totalpoints_bis']=$TOTAL_POINTS;
+			$tab_eleves_OOo[$nb_eleve]['totalcoef_bis']=$TOTAL_COEF*20;
+			if($tab_eleves_OOo[$nb_eleve][5][0]!='AB') {
+				$tab_eleves_OOo[$nb_eleve]['totalpoints_bis']-=$tab_eleves_OOo[$nb_eleve][5][1];
+				//$tab_eleves_OOo[$nb_eleve]['totalcoef_bis']-=$tab_eleves_OOo[$nb_eleve][5][-2]*20;
+				// L'Histoire des arts est sur 40... à extraire de là par la suite
+				$tab_eleves_OOo[$nb_eleve]['totalcoef_bis']-=2*20;
+			}
+
 			$tab_eleves_OOo[$nb_eleve]['classe']=get_classe_from_id($id_classe[$i]);
 
 
+			//===== Ajout mai 2011 ======
+			// Afficher soit LV1 soit Sciences physiques
+			if ($tab_eleves_OOo[$nb_eleve][103][0] > $tab_eleves_OOo[$nb_eleve][104][0]) {
+				$tab_eleves_OOo[$nb_eleve]['LV1_ou_ScPhy']=$tab_eleves_OOo[$nb_eleve][103];
+			}else{
+				$tab_eleves_OOo[$nb_eleve]['LV1_ou_ScPhy']=$tab_eleves_OOo[$nb_eleve][104];
+			}
+			
+			// Total des points sans Histoire des arts
+			$pointsHistoireArts=40;
+			if ($tab_eleves_OOo[$nb_eleve][5][1]) {
+				$tab_eleves_OOo[$nb_eleve]['totalSansHistoireArts']=$tab_eleves_OOo[$nb_eleve]['totalpoints']-$tab_eleves_OOo[$nb_eleve][5][1];
+				$tab_eleves_OOo[$nb_eleve]['totalcoefSansHistoireArts']=$tab_eleves_OOo[$nb_eleve]['totalcoef']-$pointsHistoireArts;
+			}else{
+				$tab_eleves_OOo[$nb_eleve]['totalSansHistoireArts']=$tab_eleves_OOo[$nb_eleve]['totalpoints'];
+				$tab_eleves_OOo[$nb_eleve]['totalcoefSansHistoireArts']=$tab_eleves_OOo[$nb_eleve]['totalcoef'];
+			}
+			//===== Fin ajout mai 2011 ======
+
+			// Pour les brevets PRO, on a soit LV1 soit ScPhy
+			if(($type_brevet==2)||($type_brevet==3)) {
+				$max_indice=5;
+				for($loop=0;$loop<$max_indice;$loop++) {
+					$tab_eleves_OOo[$nb_eleve]['LV_SC'][$loop]="";
+				}
+
+				/*
+				echo "<p>$lig1->login<br />\n";
+				echo "\$tab_eleves_OOo[$nb_eleve][103][0]=".$tab_eleves_OOo[$nb_eleve][103][0]."<br />\n";
+				echo "\$tab_eleves_OOo[$nb_eleve][103][1]=".$tab_eleves_OOo[$nb_eleve][103][1]."<br />\n";
+				echo "\$tab_eleves_OOo[$nb_eleve][104][0]=".$tab_eleves_OOo[$nb_eleve][104][0]."<br />\n";
+				echo "\$tab_eleves_OOo[$nb_eleve][104][1]=".$tab_eleves_OOo[$nb_eleve][104][1]."<br />\n";
+				*/
+
+				if((isset($tab_eleves_OOo[$nb_eleve][103][0]))&&(preg_match("/^[0-9\.]*$/",$tab_eleves_OOo[$nb_eleve][103][0]))) {
+
+					if((isset($tab_eleves_OOo[$nb_eleve][104][0]))&&(preg_match("/^[0-9\.]*$/",$tab_eleves_OOo[$nb_eleve][104][0]))) {
+						if($tab_eleves_OOo[$nb_eleve][103][0]>$tab_eleves_OOo[$nb_eleve][104][0]) {
+							$num_lv_ou_sc=103;
+
+							$num_matiere_a_decompter=104;
+						}
+						else {
+							$num_lv_ou_sc=104;
+
+							$num_matiere_a_decompter=103;
+						}
+
+						for($loop=0;$loop<$max_indice;$loop++) {
+							if(isset($tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop])) {
+								$tab_eleves_OOo[$nb_eleve]['LV_SC'][$loop]=$tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop];
+								//echo "1 \$tab_eleves_OOo[$nb_eleve]['LV_SC'][$loop]=\$tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop]=".$tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop]."<br />\n";
+							}
+						}
+
+						$tab_eleves_OOo[$nb_eleve]['totalpoints']-=$tab_eleves_OOo[$nb_eleve][$num_matiere_a_decompter][1];
+						$tab_eleves_OOo[$nb_eleve]['totalcoef']-=$tab_champs_OOo[$num_matiere_a_decompter][3]*20;
+						$tab_eleves_OOo[$nb_eleve]['totalpoints_bis']-=$tab_eleves_OOo[$nb_eleve][$num_matiere_a_decompter][1];
+						$tab_eleves_OOo[$nb_eleve]['totalcoef_bis']-=$tab_champs_OOo[$num_matiere_a_decompter][3]*20;
+						$tab_eleves_OOo[$nb_eleve]['totalSansHistoireArts']-=$tab_eleves_OOo[$nb_eleve][$num_matiere_a_decompter][1];
+						$tab_eleves_OOo[$nb_eleve]['totalcoefSansHistoireArts']-=$tab_champs_OOo[$num_matiere_a_decompter][3]*20;
+
+					}
+					else {
+						$num_lv_ou_sc=103;
+
+						for($loop=0;$loop<$max_indice;$loop++) {
+							if(isset($tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop])) {
+								$tab_eleves_OOo[$nb_eleve]['LV_SC'][$loop]=$tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop];
+								//echo "2 \$tab_eleves_OOo[$nb_eleve]['LV_SC'][$loop]=\$tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop]=".$tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop]."<br />\n";
+							}
+						}
+					}
+				}
+				else {
+					$num_lv_ou_sc=104;
+
+					for($loop=0;$loop<$max_indice;$loop++) {
+						if(isset($tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop])) {
+							$tab_eleves_OOo[$nb_eleve]['LV_SC'][$loop]=$tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop];
+							//echo "3 \$tab_eleves_OOo[$nb_eleve]['LV_SC'][$loop]=\$tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop]=".$tab_eleves_OOo[$nb_eleve][$num_lv_ou_sc][$loop]."<br />\n";
+						}
+					}
+				}
+				//echo "</p>\n";
+
+			}
+
+			// Socle commun
+			// Initialisation
+			$tab_indices_socle=array('116', '116A', '116B', '116C', '116D', '116E', '116F', '116G');
+			for($loop=0;$loop<count($tab_indices_socle);$loop++) {
+				$tab_eleves_OOo[$nb_eleve]['sc']["$loop"]="";
+			}
+			$tab_eleves_OOo[$nb_eleve]['sc']['nbItemValide']=0;
+
+			$sql="SELECT * FROM notanet_socle_commun WHERE login='$lig1->login';";
+			$res_socle=mysql_query($sql);
+			if(mysql_num_rows($res_socle)>0) {
+				$ligne=0;
+				while($lig_socle=mysql_fetch_object($res_socle)) {
+					$tab_eleves_OOo[$nb_eleve]['sc']["$lig_socle->champ"]=$lig_socle->valeur;
+					if (($lig_socle->valeur =="MS")&&($ligne!=0)){
+						$tab_eleves_OOo[$nb_eleve]['sc']['nbItemValide']++;
+					}
+				$ligne++;		
+				}
+			}
 
 			$nb_eleve=$nb_eleve+1;
 		}

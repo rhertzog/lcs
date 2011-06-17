@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // Tester nos capacites
 // http://doc.spip.org/@action_tester_dist
@@ -126,12 +126,12 @@ function action_tester_dist() {
 	// et maintenant envoyer la vignette de tests
 	if (in_array($arg,array("gd1","gd2","imagick","convert","netpbm"))) {
 		include_spip('inc/filtres');
-		include_spip('inc/filtres_images');
+		include_spip('inc/filtres_images_mini');
 		$taille_preview = 150;
-		$image = image_valeurs_trans(_DIR_IMG_PACK.'test_image.jpg',"reduire-$taille_preview-$taille_preview",'jpg');
+		$image = _image_valeurs_trans(_DIR_IMG_PACK.'test_image.jpg',"reduire-$taille_preview-$taille_preview",'jpg');
 
 		$image['fichier_dest']=_DIR_VAR."test_$arg";
-		if ($preview = image_creer_vignette($image, $taille_preview, $taille_preview, $arg, true)
+		if ($preview = _image_creer_vignette($image, $taille_preview, $taille_preview, $arg, true)
 		AND ($preview['width'] * $preview['height'] > 0))
 			redirige_par_entete($preview['fichier']);
 	}

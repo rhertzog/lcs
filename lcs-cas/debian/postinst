@@ -45,7 +45,11 @@ END
                 #
                 # Update package and gem
                 #
-                /usr/sbin/lcs-cas-update.sh
+                #/usr/sbin/lcs-cas-update.sh
+                echo "rubycas-server  update in one minute"
+                at now+1minutes <<END
+/usr/sbin/lcs-cas-update.sh
+END
             fi
     	;;
 

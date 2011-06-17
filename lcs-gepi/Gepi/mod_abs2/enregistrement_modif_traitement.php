@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: enregistrement_modif_traitement.php 5114 2010-08-26 15:29:50Z crob $
+ * @version $Id: enregistrement_modif_traitement.php 6313 2011-01-08 22:39:13Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -74,14 +74,8 @@ if ($traitement == null) {
     die();
 }
 
-if ($modif == 'type') {
-    if (!$traitement->getModifiable()) {
-	$message_enregistrement .= 'Modification impossible.';
-	include("visu_traitement.php");
-	die();
-    } else {
-	$traitement->setAbsenceEleveType(AbsenceEleveTypeQuery::create()->findPk($_POST["id_type"]));
-    }
+if ($modif == 'type') {    
+	$traitement->setAbsenceEleveType(AbsenceEleveTypeQuery::create()->findPk($_POST["id_type"]));   
 } elseif ($modif == 'commentaire') {
     $traitement->setCommentaire($_POST["commentaire"]);
 } elseif ($modif == 'justification') {

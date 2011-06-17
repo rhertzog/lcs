@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: Modele.Select.php 5095 2010-08-22 14:18:13Z eabgrall $
+ * $Id: Modele.Select.php 6223 2010-12-24 13:08:18Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -75,8 +75,7 @@ Class modele_select extends Modele {
   }
   public function get_infos_classe($id) {
     $this->sql = 'SELECT id, classe, nom_complet FROM classes where id='.$id;
-    $this->res = mysql_query($this->sql);
-
+    $this->res = mysql_query($this->sql);    
     return ($this->noms_classe=parent::set_array('array',$this->res));
   }
 
@@ -107,6 +106,13 @@ Class modele_select extends Modele {
         }
     }
     return($this->individu_identite) ;
+  }
+
+  public function get_id_from_classe($classe){
+    $this->sql = "SELECT id FROM classes where classe ='".$classe."'";
+    $this->res = mysql_query($this->sql);
+    $id=parent::set_array('array',$this->res);
+    return($id[0]['id']);
   }
 }
 ?>

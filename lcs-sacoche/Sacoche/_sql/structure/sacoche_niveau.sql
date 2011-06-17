@@ -2,23 +2,23 @@ DROP TABLE IF EXISTS sacoche_niveau;
 
 CREATE TABLE sacoche_niveau (
 	niveau_id    TINYINT(3)  UNSIGNED                NOT NULL AUTO_INCREMENT,
-	palier_id    TINYINT(3)  UNSIGNED                NOT NULL DEFAULT 0,
+	niveau_cycle TINYINT(1)  UNSIGNED                NOT NULL DEFAULT 0 COMMENT "Indique un niveau 'longitudinal' nommé 'cycle'.",
 	niveau_ordre TINYINT(3)  UNSIGNED                NOT NULL DEFAULT 0,
 	niveau_ref   VARCHAR(5)  COLLATE utf8_unicode_ci NOT NULL DEFAULT "",
 	code_mef     CHAR(11)    COLLATE utf8_unicode_ci NOT NULL DEFAULT "" COMMENT "Masque à comparer avec le code_mef d'une classe (nomenclature Sconet).",
 	niveau_nom   VARCHAR(55) COLLATE utf8_unicode_ci NOT NULL DEFAULT "",
-	PRIMARY KEY (niveau_id),
-	KEY palier_id (palier_id)
+	PRIMARY KEY (niveau_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE sacoche_niveau DISABLE KEYS;
 
--- Socle
+-- Niveaux "longitudinaux" nommés "cycles"
 
 INSERT INTO sacoche_niveau VALUES 
-(   1, 1,   9,    "P1",            "", "Palier 1 (PS - CE1)"),
-(   2, 2,  29,    "P2",            "", "Palier 2 (CE2 - CM2)"),
-(   3, 3,  69,    "P3",            "", "Palier 3 (6e - 3e)");
+(   1, 1,   9,    "P1",            "", "Cycle 2 (GS-CE1)"),
+(   2, 1,  29,    "P2",            "", "Cycle 3 (CE2-CM2)"),
+(   3, 1,  69,    "P3",            "", "Cycle Collège"),
+(   4, 1, 159,    "P4",            "", "Cycle Lycée");
 
 -- Primaire
 
@@ -68,7 +68,9 @@ INSERT INTO sacoche_niveau VALUES
 (  64, 0,  83,    "1L", "20113...11.", "Première L"),
 (  65, 0,  91,    "TS", "20211...11.", "Terminale S"),
 (  66, 0,  92,   "TES", "20212...11.", "Terminale ES"),
-(  67, 0,  93,    "TL", "20213...11.", "Terminale L");
+(  67, 0,  93,    "TL", "20213...11.", "Terminale L"),
+(  68, 0,  84,     "1", "2011....11.", "Première générale"),
+(  69, 0,  94,     "T", "2021....11.", "Terminale générale");
 
 -- Lycée technologique
 

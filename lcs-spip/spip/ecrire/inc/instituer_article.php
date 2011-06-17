@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@inc_instituer_article_dist
 function inc_instituer_article_dist($id_article, $statut, $id_rubrique)
@@ -31,6 +31,8 @@ function inc_instituer_article_dist($id_article, $statut, $id_rubrique)
 	$etats = $GLOBALS['liste_des_etats'];
 
 	if (!autoriser('publierdans', 'rubrique', $id_rubrique)) {
+		if ($statut == 'publie')
+			return '';
 		unset($etats[array_search('publie', $etats)]);
 		unset($etats[array_search('refuse', $etats)]);
 		if ($statut == 'prepa')
@@ -44,6 +46,7 @@ function inc_instituer_article_dist($id_article, $statut, $id_rubrique)
 	  ."<ul>";
 	
 	$href = redirige_action_auteur('instituer_article',$id_article,'articles', "id_article=$id_article");
+	$href = parametre_url($href,'statut_old',$statut);
 
 	foreach($etats as $affiche => $s){
 		$puce = puce_statut($s) . _T($affiche);

@@ -1,5 +1,5 @@
 <?php 
-/* lcs/applis.php derniere mise a jour : 30/09/2010 */
+/* lcs/applis.php derniere mise a jour : 07/04/2011 */
 
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -30,7 +30,7 @@ $html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
     \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
 $html .= "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\">\n";
 $html .= "<head>\n";
-$html .= "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\n";
+$html .= "  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n";
 $html .= "  <title>Applications LCS</title>\n";
 $html .= "  <link  href='../style.css' rel='StyleSheet' type='text/css'/>\n";
 $html .= "</head>\n";
@@ -56,17 +56,23 @@ $liste['Titres'][] = "Annuaire des utilisateurs";
   $result=mysql_query($query);
   if ($result) {
         while ( $r=mysql_fetch_object($result) ) {
-            if ( $r->name == "clientftp" ) $ftpclient = true;
+            if ( $r->name == "clientftp" ) $clientftp = true;
+            if ( $r->name == "elfinder" ) $elfinder = true;
             if ( $r->name == "pma" ) $pma = true;
             if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
         }
     }
     mysql_free_result($result);
 
-if ( $ftpclient ) {
+if ( $clientftp ) {
   $liste['Images'][] = "images/bt-V1-2.jpg";
   $liste['Liens'][] = "statandgo.php?use=clientftp";
-  $liste['Titres'][] = "Client FTP";
+  $liste['Titres'][] = "Explorateur de fichiers";
+}
+if ( $elfinder ) {
+  $liste['Images'][] = "images/bt-V1-2.jpg";
+  $liste['Liens'][] = "statandgo.php?use=elfinder";
+  $liste['Titres'][] = "Explorateur de fichiers";
 }
 if ( $pma ) {
   $liste['Images'][] = "images/bt-V1-3.jpg";

@@ -1,8 +1,11 @@
 <?php
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
 
-// exec/spiplistes_courrier_gerer.php
-
-// _SPIPLISTES_EXEC_COURRIER_GERER
 /******************************************************************************************/
 /* SPIP-Listes est un systeme de gestion de listes d'abonnes et d'envoi d'information     */
 /* par email pour SPIP. http://bloog.net/spip-listes                                      */
@@ -22,9 +25,6 @@
 /* Free Software Foundation,                                                              */
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
-// $LastChangedRevision: 28141 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-04-27 14:12:43 +0200 (lun, 27 avr 2009) $
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
@@ -42,6 +42,7 @@ include_spip('inc/spiplistes_api_globales');
 function exec_spiplistes_courrier_gerer () {
 
 	include_spip('inc/barre');
+	include_spip('inc/documents');
 	include_spip('base/spiplistes_tables');
 	include_spip('inc/spiplistes_api');
 	include_spip('inc/spiplistes_api_courrier');
@@ -54,6 +55,8 @@ function exec_spiplistes_courrier_gerer () {
 		, $connect_id_auteur
 		, $spip_ecran
 		;
+	
+	$eol = "\n";
 
 	// initialise les variables postees par le formulaire
 	foreach(array(
@@ -65,6 +68,7 @@ function exec_spiplistes_courrier_gerer () {
 		, 'change_statut' // (formulaire spiplistes_boite_autocron) 'publie' pour annuler envoi par boite autocron
 		, 'btn_dupliquer_courrier' // (formulaire local) dupliquer le courrier
 		, 'supp_dest'
+		, 'id_temp' // pour recuperer les documents joints
 		) as $key) {
 		$$key = _request($key);
 	}
@@ -77,7 +81,7 @@ function exec_spiplistes_courrier_gerer () {
 	$texte = $message;
 
 	$page_result = $message_erreur = $str_destinataire =
-		$boite_confirme_envoi = "";
+		$boite_confirme_envoi = '';
 
 	$flag_admin = ($connect_statut == "0minirezo") && $connect_toutes_rubriques;
 	$flag_moderateur = count($listes_moderees = spiplistes_mod_listes_id_auteur($connect_id_auteur));
@@ -103,11 +107,17 @@ function exec_spiplistes_courrier_gerer () {
 		// effectue les modifications demandees si retour local ou retour editeur
 		if($id_courrier > 0) {
 
-			if($btn_dupliquer_courrier > 0) {
-				if($row = sql_fetsel('titre,texte', 'spip_courriers', "id_courrier=".sql_quote($id_courrier),'','',1)) {
+			if($btn_dupliquer_courrier > 0)
+			{
+				if($row = sql_fetsel('titre,texte', 'spip_courriers', 'id_courrier='.sql_quote($id_courrier),'','',1))
+				{
 					$titre = typo($row['titre']);
+					
 					$texte = typo($row['texte']);
-					$texte = typo($row['message_texte']);
+					//
+					// @see: http://www.spip-contrib.net/SPIP-Listes#comment441566
+					//$texte = typo($row['message_texte']);
+					
 					$str_log = "id_courrier #$id_courrier";
 					$statut = _SPIPLISTES_COURRIER_STATUT_REDAC;
 					$type = _SPIPLISTES_COURRIER_TYPE_NEWSLETTER;
@@ -208,6 +218,7 @@ function exec_spiplistes_courrier_gerer () {
 							, 'message_texte' => $message_texte
 						);
 					spiplistes_courrier_modifier($id_courrier, $sql_set);
+					spiplistes_courrier_attacher_documents($id_courrier, $id_temp);
 				}
 				else {
 					$message_erreur .= spiplistes_boite_alerte (_T('spiplistes:Erreur_courrier_titre_vide'), true);
@@ -215,7 +226,7 @@ function exec_spiplistes_courrier_gerer () {
 			}
 			// FIN DES MODIFICATIONS
 		}
-	
+					
 		// Ok. recharge les donnees pour completer le formulaire
 		$sql_select_array = array('titre', 'texte', 'email_test', 'statut');
 		if($row = spiplistes_courriers_premier($id_courrier, $sql_select_array)) {
@@ -240,6 +251,7 @@ function exec_spiplistes_courrier_gerer () {
 				, "(".sql_quote($titre).",".sql_quote($texte).",".sql_quote($message_texte)
 					.",NOW(),".sql_quote($statut).",".sql_quote($type).",".sql_quote($connect_id_auteur).")"
 			);
+			spiplistes_courrier_attacher_documents($id_courrier, $id_temp);
 		}
 		else {
 			$message_erreur .= spiplistes_boite_alerte (_T('spiplistes:Erreur_courrier_titre_vide'), true);
@@ -270,7 +282,10 @@ function exec_spiplistes_courrier_gerer () {
 				//$titre = propre($titre); // pas de propre ici, ca fait un <p> </p>
 				// Le statut n'est modifie ici, mais 
 				// par courrier_casier en retour de ce formulaire
-				$texte = spiplistes_courrier_propre($texte);
+				
+				// $texte = spiplistes_courrier_propre($texte);
+				$texte = spiplistes_texte_propre ($texte);
+				
 				spiplistes_courrier_modifier(
 					$id_courrier
 					, array(
@@ -293,8 +308,10 @@ function exec_spiplistes_courrier_gerer () {
 					, _SPIPLISTES_COURRIER_STATUT_PUBLIE
 					, _SPIPLISTES_COURRIER_STATUT_STOPE
 					))
-				) {
-				$texte = spiplistes_courrier_propre($texte);
+			) {
+				
+				//$texte = spiplistes_courrier_propre($texte);
+				$texte = spiplistes_texte_propre ($texte);
 			}
 			if(!empty($message_texte)){
 				$alt_message_texte = _T('spiplistes:calcul_patron');
@@ -321,8 +338,8 @@ function exec_spiplistes_courrier_gerer () {
 	$gros_bouton_modifier = 
 		$gros_bouton_dupliquer = 
 		$gros_bouton_supprimer = 
-		$gros_bouton_arreter_envoi = ""
-		;
+		$gros_bouton_arreter_envoi = '';
+	
 
 	if($flag_autorise) {
 		
@@ -337,12 +354,14 @@ function exec_spiplistes_courrier_gerer () {
 					, '' // alignement
 					, false // pas echo, demande retour
 					) 
-					. "\n"
+					. $eol
 				;
+			
 		}
 		
 		// Le courrier peut-etre supprime si obsolete
-		if(in_array($statut, array(_SPIPLISTES_COURRIER_STATUT_PUBLIE
+		if(in_array($statut, array(_SPIPLISTES_COURRIER_STATUT_REDAC
+								   , _SPIPLISTES_COURRIER_STATUT_PUBLIE
 								   , _SPIPLISTES_COURRIER_STATUT_AUTO
 								   , _SPIPLISTES_COURRIER_STATUT_VIDE
 								   , _SPIPLISTES_COURRIER_STATUT_IGNORE
@@ -350,16 +369,16 @@ function exec_spiplistes_courrier_gerer () {
 								   , _SPIPLISTES_COURRIER_STATUT_ERREUR))
 					) {
 			$gros_bouton_supprimer = 
-				"<div style='margin-top:1ex;'>"
+				'<div style="margin-top:1ex">'
 				. icone (
 					_T('spiplistes:Supprimer_ce_courrier')
-					, generer_url_ecrire(_SPIPLISTES_EXEC_COURRIERS_LISTE, "btn_supprimer_courrier=$id_courrier")
+					, generer_url_ecrire(_SPIPLISTES_EXEC_COURRIERS_LISTE, 'btn_supprimer_courrier='.$id_courrier)
 					, _DIR_PLUGIN_SPIPLISTES_IMG_PACK.'poubelle_msg.gif'
-					, ""
-					, "right"
+					, ''
+					, 'right'
 					, false
 					)
-				. "</div>\n"
+				. '</div>'.$eol
 				;
 		}
 		// Un courrier publie ou stoppe peut-etre duplique pour edition
@@ -408,24 +427,28 @@ function exec_spiplistes_courrier_gerer () {
 				}
 			}
 			if(($id_liste > 0) || ($id_auteur_test > 0)) {
-				$boite_confirme_envoi = ""
-					. debut_cadre_couleur('', true)
+				$boite_confirme_envoi = 
+					  debut_cadre_couleur('', true)
 					// formulaire de confirmation envoi
 					// renvoie sur la page des casiers
-					. "<form action='".generer_url_ecrire(_SPIPLISTES_EXEC_COURRIERS_LISTE,"id_courrier=$id_courrier")."' method='post'>"
-					. "<p style='text-align:center;font-weight:bold;' class='verdana2'>"
-					. _T('spiplistes:confirme_envoi')
-					. "</p>"
-					. "<input type='hidden' name='id_liste' value='$id_liste' />"
-					. "<input type='hidden' name='id_courrier' value='$id_courrier' />"
-					. "<input type='hidden' name='id_auteur_test' value='$id_auteur_test' />"
-					. "<div style='text-align:left;'>"
-					. "<input type='submit' name='btn_annuler_envoi' value='"._T('spiplistes:annuler_envoi')."' class='fondo' style='float:left' />"
-					. "<div style='text-align:right;width:100%'>"
-					. "<input type='submit' name='btn_confirmer_envoi' value='"._T('spiplistes:Envoyer_ce_courrier')."' class='fondo' />"
-					. "</div>\n"
-					. "</div>\n"
-					. "</form>"
+					. '<form action="'
+						. generer_url_ecrire(_SPIPLISTES_EXEC_COURRIERS_LISTE,'id_courrier='.$id_courrier)
+						. '" method="post">'.$eol
+					. '<p style="text-align:center;font-weight:bold;" class="verdana2">'
+						. _T('spiplistes:confirme_envoi')
+						. '</p>'.$eol
+					. '<input type="hidden" name="id_liste" value="'.$id_liste.'" />'.$eol
+					. '<input type="hidden" name="id_courrier" value="'.$id_courrier.'" />'.$eol
+					. '<input type="hidden" name="id_auteur_test" value="'.$id_auteur_test.'" />'.$eol
+					. '<div style="text-align:left;">'.$eol
+					. '<input type="submit" name="btn_annuler_envoi" value="'
+						. _T('spiplistes:annuler_envoi').'" class="fondo" style="float:left" />'.$eol
+					. '<div style="text-align:right;width:100%">'.$eol
+					. '<input type="submit" name="btn_confirmer_envoi" value="'
+						. _T('spiplistes:Envoyer_ce_courrier').'" class="fondo" />'.$eol
+					. '</div>'.$eol
+					. '</div>'.$eol
+					. '</form>'
 					. fin_cadre_couleur(true)
 					;
 			}
@@ -531,8 +554,9 @@ function exec_spiplistes_courrier_gerer () {
 		. debut_gauche($rubrique, true)
 		. spiplistes_boite_info_id(_T('spiplistes:Courrier_numero_'), $id_courrier, true)
 		. spiplistes_naviguer_paniers_courriers(_T('spiplistes:aller_au_panier_'), true)
+		//. $boite_documents
 		. pipeline('affiche_gauche', array('args'=>array('exec'=>$sous_rubrique),'data'=>''))
-		//. creer_colonne_droite($rubrique, true)  // spiplistes_boite_raccourcis() s'en occupe
+			//. creer_colonne_droite($rubrique, true)  // spiplistes_boite_raccourcis() s'en occupe
 		. spiplistes_boite_raccourcis(true)
 		. spiplistes_boite_autocron()
 		. pipeline('affiche_droite', array('args'=>array('exec'=>$sous_rubrique),'data'=>''))

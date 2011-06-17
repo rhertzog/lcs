@@ -1,4 +1,5 @@
 <?php
+header ('Content-type" => "text/html; charset=utf-8');
       include "Includes/basedir.inc.php";
       include "$BASEDIR/lcs/includes/headerauth.inc.php";
       include "$BASEDIR/Annu/includes/ldap.inc.php";
@@ -9,10 +10,11 @@
       $etage=$_GET['etage']; 
       $salle=$_GET['salle'];
       $action=$_GET['action'];
-
+     $secteur=$_GET['secteur'];
+ 
       // Register Global POST
       $nom=$_POST['nom'];
-      $secteur=$_POST['secteur'];
+      //$secteur=isset($_GET['secteur'])?$_GET['secteur']:$_POST['secteur'];
       #$bat=$_POST['bat'];
       #$etage=$_POST['etage'];
       #$salle=$_POST['salle'];
@@ -28,7 +30,7 @@
         // L'utilisateur n'est pas authentifie
 	table_alert ("Vous devez pr&#233;alablement vous authentifier sur votre «Espace perso  LCS» pour acc&#233;der &#233; cette application !");
       } else {
-        include "Includes/config.inc.php";
+     include "Includes/config.inc.php";
 	include "Includes/func_maint.inc.php";
         # DEBUG
 	if ($DEBUG) echo "DEBUG   bat etage >> $bat, $etage<br>";
@@ -40,149 +42,52 @@
         if (is_admin("Maint_is_admin",$uid)=="Y") $type_mnu="team"; else $type_mnu="user";
         Aff_mnu($type_mnu);
 ?>
-<table WIDTH="100%" class="tablenul" >
-  <tr>
-    <td ALIGN=CENTER HEIGHT="339">
-      <form name="demande" action="envoi.php" method="POST">
-      <table BORDER=0 WIDTH="100%" class="tableintro" >
-        <tr>
-          <td HEIGHT="27" class="tableau">
-            <ul>
-              <li>Vous avez constat&eacute; un dysfonctionnement sur un des ordinateurs que vous utilisez et vous d&eacute;sirez l'intervention d'un technicien.&nbsp;</li>
-              <li>Compl&eacute;tez le formulaire ci-dessous et votre demande sera prise en compte le plus rapidement possible.</li>
-            </ul>
-            <div align=right>L'&eacute;quipe de maintenance informatique.</div>
-          </td>
-        </tr>
-      </table>
-      <table BORDER=0 WIDTH="100%" >
-        <tr>
-          <td WIDTH="20%" HEIGHT="2" BGCOLOR="#003366" class="tableau">
-            <center><b><u><font color="#FFFFFF">ATTENTION!</font></u></b></center>
-          </td>
-          <td WIDTH="80%" HEIGHT="2" class="tableau">
+      <form name="demande" id="demandeForm" action="action/envoi.ajax.php" method="POST">
+	<?php
+		Aff_messIntro();
+	?>
+    <div class="tableintro divintro info tableau">
+            <img src="Style/img/exclamation.png" alt="Important" />
             <i>Tous les champs marqu&eacute;s d'un ast&eacute;risque ' * ' doivent obligatoirement &ecirc;tre compl&eacute;t&eacute;s.</i>
-          </td>
-        </tr>
-      </table>
-      <table BORDER=0 WIDTH="100%" >
-        <tr>
-          <td COLSPAN="2" HEIGHT="2" class="titreParag">Identification</td>
-        </tr>
-        <tr>
-          <td WIDTH="100%" class="tableau">
-            Vos nom et pr&#233;nom:&nbsp;<input type="text" value="<?php echo $user["fullname"];?>" name="nom">
-          </td>
-        </tr>
-      </table>
-      <table BORDER=0 WIDTH="100%" >
-        <tr>
-          <td WIDTH="30%" HEIGHT="8" class="titreParag">Localisation</td>
-          <td WIDTH="20%" HEIGHT="8" class="tableau">&nbsp;</td>
-          <td WIDTH="20%" HEIGHT="8" class="tableau">&nbsp;</td>
-          <td WIDTH="30%" HEIGHT="8" class="tableau">&nbsp;</td>
-        </tr>
-        <tr>
-        <!-- Secteur d'enseignement -->
-        <td WIDTH="30%" class="tableau">
-          Secteur d'enseignement&nbsp;
-          <select name="secteur">
+            <br class="cleaner" style="clear:both"/>
+    </div>
+ 	<div class="separate" style="height:10px"></div>
+     <div class="tableau tableint">
+          <h3 class="subconfigsubtitle"><img src="Style/img/24/user.png" alt="" />&nbsp;Identification</h3>
+          <div class="fieldcontainer">
+            <label for="nom">Vos nom et pr&#233;nom:</label>&nbsp;
+            <input type="text" value="<?php echo $user["fullname"];?>" name="nom" id="nom" class="required">
+          </div>
+      </div>
+      
+      <div id="divAjax">
+			<div id="loadingContainer">
+				<div id="loading">
+					Chargement...
+				</div>
+			</div>
+      <a name="localise"></a>
+      <div id="contentDiv">
 <?php
-// lecture de la table secteur
-$result = @mysql_query("SELECT descr from secteur ORDER BY id ASC");
-if ($result)
-while ($r = @mysql_fetch_array($result))
-  echo "<option>".$r["descr"]."</option>\n";
-@mysql_free_result($result);
-?>        
-	</select>
-  </td>
-  <!-- Batiment -->
-  <td WIDTH="20%" class="tableau">
-	Bâtiment :&nbsp;
-        <select name="bat" onChange="location = this.options[this.selectedIndex].value;">
-<?php
-// lecture de la table topologie pour affichage de la liste des batiments
-$loop=0;
-$result = @mysql_query("SELECT batiment from topologie ORDER BY batiment ASC");
-if ($result)
-while ($r = @mysql_fetch_array($result)) {
-  if ( !isset ($bat ) ) $bat = $r["batiment"];
-  $batiment[$loop] = $r["batiment"]; 
-  if ( !isset( $batiment[$loop-1] ) || ( $batiment[$loop-1] != $r["batiment"] ) ) {
-    echo "        <option value=\"demande_support.php?bat=".$r["batiment"]."\"";
-    if ( $bat == $r["batiment"] ) echo "selected";
-    echo ">".$r["batiment"]."</option>\n";
-  }
-  $loop++;  
-}
-@mysql_free_result($result);
-?>         
-	</select>
-  </td>
-  <!-- Etage -->
-  <td WIDTH="20%" class="tableau">
-    Etage :&nbsp;&nbsp;&nbsp;
-    <select name="etage" onChange="location = this.options[this.selectedIndex].value;">
-<?php
-// lecture de la table topologie pour affichage de la liste des etages
-$loop=0;
-$result = @mysql_query("SELECT etage from topologie WHERE batiment='$bat' ORDER BY etage ASC");
-if ($result)
-while ($r = @mysql_fetch_array($result)) {
-  if ( !isset ($etage) ) $etage = $r["etage"];
-  $etage_[$loop] = $r["etage"]; 
-  if ( !isset( $etage_[$loop-1] ) || ( $etage_[$loop-1] != $r["etage"] ) ) {
-    echo "      <option value=\"demande_support.php?bat=".$bat."&etage=".$r["etage"]."\"";
-    if ( $etage == $r["etage"] ) echo "selected";
-    echo ">".$r["etage"]."</option>\n";
-  }    
-  $loop++;  
-}
-@mysql_free_result($result);
-?>  
-    </select>
-  </td>
-  <!-- Salle -->
-  <td WIDTH="30%" class="tableau">
-    Salle :&nbsp;
-    <select name="salle" onChange="location = this.options[this.selectedIndex].value;">
-<?php
-// lecture de la table topologie pour affichage de la liste des salles
-$loop=0;
-$result = @mysql_query("SELECT salle from topologie WHERE batiment='$bat' AND etage='$etage' ORDER BY salle ASC");
-if ($result)
-while ($r = @mysql_fetch_array($result)) {
-  $salle_[$loop] = $r["salle"]; 
-  if ( !isset( $salle_[$loop-1] ) || ( $salle_[$loop-1] != $r["salle"] ) ) {
-    echo "      <option value=\"demande_support.php?bat=".$bat."&etage=".$etage."&salle=".$r["salle"]."\"";
-    if ( $salle == $r["salle"] ) echo "selected";
-    echo ">".$r["salle"]."</option>\n";
-  }    
-  $loop++;  
-}
-@mysql_free_result($result);
+//include "topo.php";
 ?>
-    </select>      
-  </td>
-</tr>
-</table>
+</div>
+<div id="ajaxPreview"></div><!-- :: Pour tests - style="height:24px;background:#ffcc33;font-size:.8em;" -->
+</div>
 
-<table BORDER=0 WIDTH="100%" >
-<tr>
-<td WIDTH="27%" class="titreParag">Ordinateur</td>
-
-<td COLSPAN="2" class="tableau">&nbsp;</td>
-</tr>
+     <div class="tableau tableint">
+          <h3 class="subconfigsubtitle"><img src="Style/img/24/computer.png" alt="" />&nbsp;Ordinateur</h3>
+          <div class="fieldcontainer">
+<table style="width:940px">
 
 <tr>
-<td WIDTH="27%" class="tableau">Marque&nbsp;<input type="text" name="marque" size="15"></td>
+<td class="tableau" style="width:30%"><label for="marque">Marque&nbsp;</label><input type="text" name="marque" size="15" id="marque"></td>
 
-<td WIDTH="23%" class="tableau">N&deg; de poste&nbsp;<input type="text" name="poste" size="5" maxlength="5">*</td>
+<td class="tableau" style="width:30%"><label for="poste">N&deg; de poste&nbsp;</label><span>&nbsp;*&nbsp;</span><input type="text" name="poste" id="poste" size="5" maxlength="5" class="required"></td>
 
-<td WIDTH="50%" class="tableau">
-Syst&#232;me d'exploitation :&nbsp;
-	<select name="se">
+<td class="tableau">
+<label for="se">Syst&#232;me d'exploitation :&nbsp;</label>
+	<select name="se" id="se">
 		<option>Windows XP</option>
 		<option>Windows 2000</option>
 		<option>MAC OS X</option>
@@ -198,16 +103,18 @@ Syst&#232;me d'exploitation :&nbsp;
 </td>
 </tr>
 </table>
+</div></div>
 
-<table BORDER=0 WIDTH="100%" >
+     <div class="tableau tableint">
+          <h3 class="subconfigsubtitle"><img src="Style/img/24/bug_error.png" alt="" />&nbsp;Probl&egrave;me</h3>
+          <div class="fieldcontainer">
+<table>
 <tr>
-<td COLSPAN="2" class="titreParag">Probl&egrave;me</td>
-</tr>
-
-<tr>
-  <td COLSPAN="2" HEIGHT="25" class="tableau">
-    L'origine du probl&#232;me constat&#233; :&nbsp;
-    <select name="typpb">
+  <td class="tableau">
+    <label for="typpb">L'origine du probl&#232;me constat&#233; :&nbsp;</label>
+    </td>
+    <td>
+    <select name="typpb" id="typpb">
       <option>Ne sait pas</option>
       <option>Logiciel</option>
       <option>Mat&#233;riel</option>
@@ -216,42 +123,35 @@ Syst&#232;me d'exploitation :&nbsp;
 </tr>
 
 <tr>
-<td VALIGN=TOP COLSPAN="2" HEIGHT="0" class="tableau">Description du probl&egrave;me
-:&nbsp;</td>
-</tr>
-
-<tr>
-<td VALIGN=TOP WIDTH="2%" HEIGHT="2" class="tableau">
-<div align=right>*&nbsp;</div>
+<td VALIGN=TOP class="tableau"><div style="float:right"><span>&nbsp;*&nbsp;</span></div>
+<label for="texte">Description du probl&egrave;me:&nbsp;</label></td>
+<td VALIGN=TOP class="tableau">
+  	<textarea name="texte" id="texte" rows="6" cols="90"  class="required" ></textarea>
 </td>
-
-<td VALIGN=TOP WIDTH="100%" HEIGHT="2" class="tableau">
-  	<textarea name="texte" rows="6" cols="90"></textarea>
-</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
 </tr>
 </table>
-<table class='tablenul' BORDER=0 WIDTH="40%" >
-<tr>
-  <td ALIGN=CENTER WIDTH="33%">
+</div>
+</div>
+
+<div class="tableau tableint tablenul" style="text-align:center;">
     <input type="hidden" value="<?php echo $user["email"] ?>" name="mail">
-  </td>
-  <td ALIGN=CENTER WIDTH="33%">
-    <input type="submit" value="Soumettre" name="submit">
-  </td>
-  <td WIDTH="33%">
-    <input type="reset" value="Recommencer" name="reset">
-  </td>
-</tr>
-</table>
-<p>
+    <input type="submit" value="Soumettre" name="submit" id="submitTopo" class="button">
+    <input type="button" value="Recommencer" name="reset" class="button">
+</div>
 </form>
-</td>
-</tr>
-</table>
-<?php
+ <script>
+ 	$(document).ready(function(){
+		$('div.mnu>a').removeClass('active');
+ 		//$('div.mnu>a.".$mnuchoice ."').addClass('active');
+ 		$('div.mnu>a.demand_sup').addClass('active');
+ 	});
+/* 
+	$(document).ready(function(){
+ 		initPageTopo();
+ 	});
+*/
+</script>
+  <?php
 	}
  include "Includes/pieds_de_page.inc.php";
 ?>

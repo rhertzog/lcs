@@ -2,30 +2,33 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'export de son Cdt-
 			_-=-_
+    "Valid XHTML 1.0 Strict"
    =================================================== */
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache"); 
 session_name("Cdt_Lcs");
-@session_start(); 
+@session_start();
+include "../Includes/check.php";
+if (!check()) exit; 
 //error_reporting(0);
 //si la page est appelee par un utilisateur non identifiee
 if (!isset($_SESSION['login']) )exit;
 
 //si la page est appelee par un utilisateur non prof
 elseif ($_SESSION['cequi']!="prof") exit;
-    if (isset($_POST['Fermer'])) 
-	echo "<SCRIPT language='Javascript'>
-					<!--
-					window.close()
-					// -->
-					</script>";	
+if (isset($_POST['Fermer'])) 
+	echo '<script type="text/javascript">
+                    //<![CDATA[
+                    window.close()
+                   //]]>
+                    </script>';
 include "../Includes/basedir.inc.php";
 include "$BASEDIR/lcs/includes/headerauth.inc.php";
 
@@ -139,30 +142,31 @@ $chemin = $rep_tmp.'/my_cdt.tgz';
 else
 {
 
-echo '
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
+echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
 <head>
 <title>Cahier de textes num&eacute;rique</title>
-<meta http-equiv="content-type" content="text/html;charset=utf-8" >
-	<link href="../style/style.css" rel=StyleSheet type="text/css">
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link href="../style/style.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
-<form  action="'. htmlentities($_SERVER['PHP_SELF']).'" method="post" >
-	<div id="first">
+<form  action="'. htmlentities($_SERVER['PHP_SELF']).'" method="post" >';
+echo '<div><input name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'" />';
+echo '<div id="first">
 	<div class="prg">
 		<fieldset id="field7">
 		<legend id="legende"> Export de donn&#233;es </legend>
-		<h4.perso>Cet utilitaire vous permet de t&#233;l&#233;charger toutes vos donn&#233;es personnelles saisies dans le cahier de textes. 
+		<h4 class="perso">Cet utilitaire vous permet de t&#233;l&#233;charger toutes vos donn&#233;es personnelles saisies dans le cahier de textes.
 		Celles-ci pourront &#234;tre import&#233;es ult&#233;rieurement dans les archives d\'un cahier de textes d\'un autre &#233;tablissement, &#224; condition de ne PAS RENOMMER LE FICHIER !<br /><br /></h4>
-		<input type="submit" title="Enregistrer" name="enregistrer" value="" class="bt-valid" >
-		<input class="bt-fermer" type="submit" name="Fermer" value="" >
-</fieldset>
-	</div></div>
-	</form>
-	</body>
+		<input type="submit" title="Enregistrer" name="enregistrer" value="" class="bt-valid" />
+		<input class="bt-fermer" type="submit" name="Fermer" value="" />
+                </fieldset>
+	</div></div></div>
+	</form>';
+        include ('../Includes/pied.inc');
+        echo '	</body>
 	</html>';
 	}
 	

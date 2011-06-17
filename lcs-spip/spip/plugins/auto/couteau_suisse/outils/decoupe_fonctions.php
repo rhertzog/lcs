@@ -2,19 +2,22 @@
 @define('_decoupe_NB_CARACTERES', 60);
 
 define('_onglets_CONTENU', '<div class="onglets_contenu"><h2 class="cs_onglet"><a href="#">');
+define('_onglets_CONTENU2', '</a></h2>'); // sans le </div> !
 define('_onglets_DEBUT', '<div class="onglets_bloc_initial">');
+define('_onglets_REGEXPR', ',<onglets([0-9]*)>(.*?)</onglets\1>,ms');
 
 // aide le Couteau Suisse a calculer la balise #INTRODUCTION
 $GLOBALS['cs_introduire'][] = 'decoupe_nettoyer_raccourcis';
 
 // filtre ajoutant 'artpage' a l'url 
 function decoupe_url($url, $page, $num_pages) {
-	return parametre_url($url, 'artpage',"{$page}-{$num_pages}");
+	return parametre_url($url, 'artpage',$page>1?"{$page}-{$num_pages}":'');
 }
 
 function onglets_callback($matches) {
 	// cas des onglets imbriques
-	$matches[2] = preg_replace_callback(',<onglets([0-9]*)>(.*?)</onglets\1>,ms', 'onglets_callback', $matches[2]);
+	if (strpos($matches[2], '<onglets')!==false)
+		$matches[2] = preg_replace_callback(_onglets_REGEXPR, 'onglets_callback', $matches[2]);
 	// nettoyage apres les separateurs
 	$matches[2] = preg_replace(','.preg_quote(_decoupe_SEPARATEUR,',').'\s+,', _decoupe_SEPARATEUR, $matches[2]);
 	// au cas ou on ne veuille pas d'onglets, on remplace les '++++' par un filet et on entoure d'une classe.
@@ -24,20 +27,20 @@ function onglets_callback($matches) {
 		$texte = preg_replace(','.preg_quote(_decoupe_SEPARATEUR, ',').'(.*?)(\n\n|\r\n\r\n|\r\r),ms', _decoupe_FILET."<h4>$1</h4>\n\n", $t[1]);
 		// on sait jamais...
 		str_replace(_decoupe_SEPARATEUR, _decoupe_FILET, $texte);
-		return '<div class="onglets_print"><h4>' . textebrut(echappe_retour($t[0],'CS')) . "</h4>\n$texte</div>";
+		return '<div class="onglets_print"><h4>' . textebrut(echappe_retour($t[0],'CS')) . "</h4>\n\n$texte\n\n</div>";
 	}
 	$onglets = $contenus = array();
 	$pages = explode(_decoupe_SEPARATEUR, $matches[2]);
 	foreach ($pages as $p) {
 		$t = preg_split(',(\n\n|\r\n\r\n|\r\r),', $p, 2);
 		$t = array(trim(textebrut(nettoyer_raccourcis_typo(echappe_retour($t[0],'CS')))), cs_safebalises($t[1]));
-		if(strlen($t[0].$t[1])) $contenus[] = _onglets_CONTENU.$t[0]."</a></h2><div>\n".$t[1]."\n</div></div>";
+		if(strlen($t[0].$t[1])) $contenus[] = _onglets_CONTENU.$t[0]._onglets_CONTENU2."<div>\n\n".$t[1]."\n\n</div></div>";
 	}
 	return _onglets_DEBUT.join('', $contenus).'</div>'._onglets_FIN;
 }
 
 // fonction appellee sur les parties du texte non comprises entre les balises : html|code|cadre|frame|script|acronym|cite
-function decouper_en_onglets_rempl($texte) {
+function decouper_en_onglets_rempl(&$texte) {
 	// compatibilite avec la syntaxe de Pierre Troll
 	if (strpos($texte, '<onglet|')!==false) {
 		$texte = str_replace('<onglet|fin>', '</onglets>', $texte);
@@ -45,20 +48,7 @@ function decouper_en_onglets_rempl($texte) {
 		$texte = preg_replace(',\s*<onglet\|titre=([^>]*)>\s*,', "\n\n++++\\1\n\n", $texte);
 	}
 	// il faut un callback pour analyser l'interieur du texte
-	return preg_replace_callback(',<onglets([0-9]*)>(.*?)</onglets\1>,ms', 'onglets_callback', $texte);
-}
-
-// fonction renvoyant l'image appellee dans img/decoupe
-function decoupe_image($fich, $help, $self, $off, $val, &$images, $double=false) {
-	$alt = _T('couteau:'.$help);
-	$alt = "title=\"$alt\" alt=\"$alt\"";
-	if ($off) {
-		$tmp = $images[$fich.'_off']." $alt />";
-		return $double?$tmp.$tmp:$tmp;
-	} else {
-		$tmp=$images[$fich]." $alt />";
-		return '<a href="'.parametre_url($self,'artpage', $val).'">'.($double?$tmp.$tmp:$tmp).'</a>';
-	}
+	return preg_replace_callback(_onglets_REGEXPR, 'onglets_callback', $texte);
 }
 
 // fonction appellee sur les parties du textes non comprises entre les balises : html|code|cadre|frame|script|acronym|cite
@@ -189,15 +179,18 @@ function decouper_en_pages($texte){ return cs_decoupe($texte); }
 function balise_ONGLETS_DEBUT($p) {
 	$arg = sinon(interprete_argument_balise(1,$p),'??');
 	$p->code = "calcul_balise_onglet($arg,1)";
+	$p->interdire_scripts = false;
 	return $p;
 }
 function balise_ONGLETS_TITRE($p) {
 	$arg = sinon(interprete_argument_balise(1,$p),'??');
 	$p->code = "calcul_balise_onglet($arg,2)";
+	$p->interdire_scripts = false;
 	return $p;
 }
 function balise_ONGLETS_FIN($p) {
 	$p->code = "calcul_balise_onglet('',3)";
+	$p->interdire_scripts = false;
 	return $p;
 }
 function calcul_balise_onglet($arg, $type) {
@@ -209,11 +202,14 @@ function calcul_balise_onglet($arg, $type) {
 			(...)
 		</BOUCLE_sites>
 	*/
-	global  $onglets_stade;
+	static $onglets_stade;
 	if($type==2 && !isset($onglets_stade)) $type = 1;
 	switch($type) {
-		case 1:$onglets_stade=1; return _onglets_DEBUT._onglets_CONTENU.$arg.'</a></h2>';
-		case 2:$onglets_stade=1; return '</div>'._onglets_CONTENU.$arg.'</a></h2>';
+		// #ONGLETS_DEBUT
+		case 1:$onglets_stade=1; return _onglets_DEBUT._onglets_CONTENU.$arg._onglets_CONTENU2;
+		// #ONGLETS_TITRE
+		case 2:$onglets_stade=1; return '</div>'._onglets_CONTENU.$arg._onglets_CONTENU2;
+		// #ONGLETS_FIN
 		case 3:unset($onglets_stade); return '</div></div>';
 	}
 }
@@ -237,8 +233,10 @@ function artpage_debut($t=false) {
 // si on veut la balise #CS_DECOUPE (pagination uniquement)
 if (defined('_decoupe_BALISE')) {
 	function balise_CS_DECOUPE_dist($p) {
-		if ($p->type_requete == 'articles') {
-			$p->code = 'cs_decoupe(propre(cs_onglets(cs_supprime_notes('.champ_sql('texte', $p).'))), true)';
+		// id de l'article a trouver pour retourner son texte
+		$texte = ($v = interprete_argument_balise(1,$p))!==NULL ? 'cs_champ_sql('.$v.')' : champ_sql('texte', $p);
+		if ($p->type_requete == 'articles' || $v!==NULL) {
+			$p->code = 'cs_decoupe(propre(cs_onglets(cs_supprime_notes('.$texte.'))), true)';
 		} else {
 			$p->code = "''";
 		}

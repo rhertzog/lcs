@@ -1,3 +1,24 @@
+div.pagination {
+	display:block;
+	text-align:center;
+}
+
+div.pagination img {
+	border:0pt none;
+	margin:0pt;
+	padding:0pt;
+}
+
+div.pagination a.decoupe_img {
+	border:0pt none;
+}
+
+span.cs_pagination_off {
+	color:lightgrey;
+	font-weight:bold;
+	text-decoration:underline;
+}
+
 div.onglets_print {
 	margin:1em;
 	padding:0.6em;
@@ -18,8 +39,7 @@ div.onglets_bloc {
 div.onglets_bloc h2.onglets_titre a {
 	text-decoration:none;
 	height:22px;
-/*	cursor:	inherit;
-	color:inherit; */
+	color:black;
 }
 
 div.onglets_bloc h2.onglets_titre {
@@ -27,6 +47,7 @@ div.onglets_bloc h2.onglets_titre {
 -moz-border-radius-topleft:3px;
 -moz-border-radius-topright:6px;
 	background-color:#f2f2f2;
+	color:black;
 	position:relative;
 	top:-1px;
 	display:inline;
@@ -36,7 +57,6 @@ div.onglets_bloc h2.onglets_titre {
 	margin:1px -1px 1px 0px;
 	padding:0px 0.6em;
 	border:1px solid rgb( 145, 155, 156 );
-/*	border:0;*/
 	
 	z-index:11;
 	white-space:nowrap;
@@ -53,22 +73,17 @@ div.onglets_bloc h2.onglets_titre.selected {
 	top:-3px;
 	margin:1px -1px -2px 0px;
 	border-bottom-width:0px;
-}
-
-div.onglets_bloc h2.onglets_titre.selected, div.onglets_bloc h2.onglets_titre.selected a {
 	cursor:default;
 }
 
-div.onglets_bloc h2.onglets_titre, div.onglets_bloc h2.onglets_titre a {
+div.onglets_bloc h2.onglets_titre.selected a {
 	color:black;
+	cursor:default;
 }
+
 div.onglets_bloc h2.hover a {
 	color:blue;
 }
-div.onglets_bloc h2.onglets_titre.selected a {
-	color:black;
-}
-
 
 div.onglets_bloc .onglets_liste {
 	white-space:nowrap;
@@ -87,5 +102,5 @@ div.onglets_bloc .onglets_contenu {
 
 div.onglets_bloc .onglets_contenu.selected {
 	display:block;
-	overflow:auto;
+	overflow:hidden;
 }

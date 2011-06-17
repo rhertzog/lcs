@@ -1,0 +1,75 @@
+#!/bin/sh
+set -e
+
+VER=$(dpkg-query -f '${Version}' -W lcs-elfinder)
+MODULE="elfinder"
+VERAPPLI="1.1 RC3"
+INDICEMAJNBR="0"
+
+CONF="/var/lib/lcs/$MODULE"
+PATHMOD="/usr/share/lcs/$MODULE"
+LCSAPACH2PATH="/etc/apache2/lcs-main/"
+APACHE2CONF=$LCSAPACH2PATH"70_elfinder.conf"
+
+if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
+    #
+    # Inscription du module dans applis.lcs_db
+    #
+    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Explorateur de fichiers espace perso elFinder', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'M');"
+else
+    echo "Mise à jour du paquet module LCS $MODULE de $2 vers $VER"
+    #
+    # Lecture de l'indice de maj dans la table lcs_db.applis
+    #
+    MAJNBR=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE';"`
+    let MAJNBR+=1
+    if [ ! -e $CONF/Maj/maj$MAJNBR.sh ]; then
+	echo "Pas de script de mise à jour à appliquer !"
+    else
+        while [ -e $CONF/Maj/maj$MAJNBR.sh ]; do
+            echo "Application du script Maj$MAJNBR"
+            $CONF/Maj/maj$MAJNBR.sh
+            let MAJNBR+=1
+	done
+        #
+        # Fin de la mise à jour
+        #
+        echo "Application des maj terminée."
+    fi
+    #
+    # Mise à jour de l'indice de Maj
+    #
+    /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';"
+fi
+#
+# Actions non liées a une installation initiale ou à une mise à jour.
+#
+#
+# Mise en place du lien symbolique 
+#
+if [ ! -e /usr/share/doc/lcs-$MODULE ]; then
+    ln -s /usr/share/doc/lcs/$MODULE /usr/share/doc/lcs-$MODULE
+fi
+
+
+# Configuration apache
+if [ -d $LCSAPACHE2PATH ]; then
+  cat >$APACHE2CONF <<EOF
+Alias /elfinder/ /usr/share/lcs/elfinder/
+<Directory /usr/share/lcs/elfinder>
+php_admin_value register_globals off
+php_admin_value open_basedir .:/.:/tmp:/home:/var/www/lcs/includes
+</Directory>
+EOF
+   /etc/init.d/apache2 reload > /dev/null 2>&1
+fi
+#
+# Changement des droits sur l'arborescence du module
+#
+echo "Application des droits sur l'arborescence"
+$CONF/Scripts/chown.sh $MODULE
+#
+# patch de la doc
+#
+echo "Patch de la documentation"
+$CONF/Scripts/patchdoc.sh

@@ -43,7 +43,7 @@ $error=$_GET['error'];
                         $error = 3;
                 } elseif ($test_swekey == false) {
                         $error = 5;
-				} elseif ( !open_session( strtolower($login), $pass, $string_auth) ) {
+				} elseif ( !open_session( mb_strtolower($login), $pass, $string_auth) ) {
                        $error = 4;
                 }
                 // Interpretation erreurs
@@ -77,6 +77,10 @@ $error=$_GET['error'];
     				die ("S&#233;lection de base de donn&#233;es impossible.");
 			$query="INSERT INTO statusages VALUES ('Nogroup', 'auth_ok', '$date', '$source','$login')";
         		$result=@mysql_query($query,$authlink);
+
+			// Run post_auth hook
+			lcs_web_run_hook('post_auth',
+					 array(mb_strtolower($login), $pass));
 
                         if ( file_exists ("/usr/share/lcs/spip/spip_session_lcs.php") ) {
                             // Ouverture d'une session spip

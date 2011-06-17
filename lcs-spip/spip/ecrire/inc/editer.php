@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 include_spip('base/abstract_sql');
 
 // http://doc.spip.org/@formulaires_editer_objet_traiter
@@ -18,11 +18,11 @@ function formulaires_editer_objet_traiter($type, $id='new', $id_parent=0, $lier_
 
 	$res = array();
 	$action_editer = charger_fonction("editer_$type",'action');
-	list($id,$err) = $action_editer();
+	list($id,$err) = $action_editer($id);
 	$id_table_objet = id_table_objet($type);
 	$res[$id_table_objet] = $id;
-	if ($err){
-		$res['message_erreur'] =$err;
+	if ($err OR !$id){
+		$res['message_erreur'] = ($err?$err:_T('erreur'));
 	}
 	else{
 		$res['message_ok'] = ""; // il faudrait faire mieux que cela !
@@ -85,8 +85,7 @@ function formulaires_editer_objet_charger($type, $id='new', $id_parent=0, $lier_
 
 	if ($config_fonc)
 		$contexte['config'] = $config = $config_fonc($contexte);
-	$att_text = " class='formo' "
-	. $GLOBALS['browser_caret']
+	$att_text = " class='textarea' "
 	. " rows='"
 	. ($config['lignes'] +15)
 	. "' cols='40'";
@@ -99,8 +98,6 @@ function formulaires_editer_objet_charger($type, $id='new', $id_parent=0, $lier_
 		$contexte['langue'] = $contexte['lang'];
 		unset($contexte['lang']);
 	}
-
-	$contexte['_browser_caret']=$GLOBALS['browser_caret'];
 
 	$contexte['_hidden'] = "<input type='hidden' name='editer_$type' value='oui' />\n" .
 		 (!$lier_trad ? '' :
@@ -118,7 +115,10 @@ function formulaires_editer_objet_charger($type, $id='new', $id_parent=0, $lier_
 		$contexte['extra'] = unserialize($contexte['extra']);
 	// preciser que le formulaire doit passer dans un pipeline
 	$contexte['_pipeline'] = array('editer_contenu_objet',array('type'=>$type,'id'=>$id));
+
 	// preciser que le formulaire doit etre securise auteur/action
+	// n'est plus utile lorsque l'action accepte l'id en argument direct
+	// on le garde pour compat 
 	$contexte['_action'] = array("editer_$type",$id);
 
 	return $contexte;
@@ -168,13 +168,11 @@ function editer_texte_recolle($texte, $att_text)
 	while (strlen($texte)>29*1024) {
 		$nombre ++;
 		list($texte1,$texte) = coupe_trop_long($texte);
-		$id = "document.getElementById('texte$nombre')";
-		$textes_supplement .= "<br />" . afficher_barre($id) .
+		$textes_supplement .= "<br />" .
 			"<textarea id='texte$nombre' name='texte_plus[$nombre]'$att_text>$texte1</textarea>\n";
 		}
 	return array($texte,$textes_supplement);
 }
-
 
 // Produit la liste des md5 d'un tableau de donnees, sous forme
 // de inputs html
@@ -344,18 +342,24 @@ function signaler_conflits_edition($conflits, $redirect='') {
 	include_spip('inc/suivi_versions');
 	include_spip('inc/diff');
 	foreach ($conflits as $champ=>$a) {
+		// probleme de stockage ou conflit d'edition ?
+		$base = isset($a['save']) ? $a['save'] : $a['base'];
+
 		$diff = new Diff(new DiffTexte);
 		$n = preparer_diff($a['post']);
-		$o = preparer_diff($a['base']);
+		$o = preparer_diff($base);
 		$d = propre_diff(
 			afficher_para_modifies(afficher_diff($diff->comparer($n,$o))));
-		$diffs[] = "<h2>$champ</h2>\n"
+
+		$titre = isset($a['save']) ? _L('Echec lors de l\'enregistrement du champ @champ@', array('champ' => $champ)) : $champ;
+
+		$diffs[] = "<h2>$titre</h2>\n"
 			. "<h3>"._T('info_conflit_edition_differences')."</h3>\n"
 			. "<div style='max-height:8em; overflow: auto; width:99%;'>".$d."</div>\n"
 			. "<h4>"._T('info_conflit_edition_votre_version')."</h4>"
 			. display_conflit_champ($a['post'])
 			. "<h4>"._T('info_conflit_edition_version_enregistree')."</h4>"
-			. display_conflit_champ($a['base']);
+			. display_conflit_champ($base);
 	}
 
 	if ($redirect) {

@@ -1,18 +1,15 @@
 <?php
-
-	// exec/spiplistes_voir_journal.php
-	
-	// $LastChangedRevision: 24782 $
-	// $LastChangedBy: paladin@quesaco.org $
-	// $LastChangedDate: 2008-11-30 10:46:48 +0100 (dim, 30 nov 2008) $
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
 
 	/*****************************************************
 	Copyright (C) 2008 Christian PAULUS
 	cpaulus@quesaco.org - http://www.quesaco.org/
 	/*****************************************************
-	
-	This file is part of Fmp3.
-	http://files.spip.org/spip-zone/fond_mp3.zip
 	
 /******************************************************************************************/
 /* SPIP-Listes est un systeme de gestion de listes d'abonnes et d'envoi d'information     */
@@ -34,7 +31,7 @@
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
 	
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/spiplistes_api_globales');
 include_spip('inc/spiplistes_api');
@@ -50,6 +47,8 @@ include_spip('inc/spiplistes_api_journal');
  */
 function exec_spiplistes_voir_journal () {
 
+	static $eol = PHP_EOL;
+	
 	global $connect_statut
 		, $connect_toutes_rubriques
 		, $connect_id_auteur
@@ -65,7 +64,7 @@ function exec_spiplistes_voir_journal () {
 		: _T('taille_cache_vide')
 		;
 	
-	$message_gauche = "<p class='verdana2'>" . $message_gauche . "</p>\n";
+	$message_gauche = '<p class="verdana2">' . $message_gauche . '</p>' . $eol;
 		
 ////////////////////////////////////
 // PAGE CONTENU
@@ -74,17 +73,17 @@ function exec_spiplistes_voir_journal () {
 	$titre_page = spiplistes_journal_titre();
 	// Permet entre autres d'ajouter les classes a' la page : <body class='$rubrique $sous_rubrique'>
 	$rubrique = _SPIPLISTES_PREFIX;
-	$sous_rubrique =  "voir_journal";
+	$sous_rubrique =  'voir_journal';
 
 	$commencer_page = charger_fonction('commencer_page', 'inc');
-	echo($commencer_page(_T('spiplistes:spiplistes') . " - " . trim($titre_page), $rubrique, $sous_rubrique));
+	echo($commencer_page(_T('spiplistes:spiplistes') . ' - ' . trim($titre_page), $rubrique, $sous_rubrique));
 
 	if(!$autoriser) {
 		die (spiplistes_terminer_page_non_autorisee() . fin_page());
 	}
 
-	$page_result = ""
-		. "<br /><br /><br />\n"
+	$page_result = ''
+		. '<br style="line-height:3em" />' . $eol
 		. spiplistes_gros_titre($titre_page, '', true)
 		. barre_onglets($rubrique, $sous_rubrique)
 		. debut_gauche($rubrique, true)
@@ -100,8 +99,8 @@ function exec_spiplistes_voir_journal () {
 		;
 	
 	// affiche milieu
-	$page_result .= ""
-		. debut_cadre_trait_couleur("administration-24.gif", true, "", $titre_page)
+	$page_result .= ''
+		. debut_cadre_trait_couleur("administration-24.gif", true, '', $titre_page)
 		. spiplistes_journal_lire(_SPIPLISTES_PREFIX)
 		. fin_cadre_trait_couleur(true)
 		;
@@ -115,4 +114,3 @@ function exec_spiplistes_voir_journal () {
 
 }
 
-?>

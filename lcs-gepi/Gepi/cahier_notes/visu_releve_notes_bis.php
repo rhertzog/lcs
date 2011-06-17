@@ -1,9 +1,9 @@
 <?php
 /*
 *
-* $Id: visu_releve_notes_bis.php 5689 2010-10-15 19:23:18Z crob $
+* $Id: visu_releve_notes_bis.php 6721 2011-03-28 19:47:06Z crob $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
 * This file is part of GEPI.
 *
@@ -64,6 +64,8 @@ if(($_SESSION['statut']=='eleve')||($_SESSION['statut']=='responsable')) {
 }
 */
 
+$releve_pdf_debug=isset($_POST['releve_pdf_debug']) ? $_POST['releve_pdf_debug'] : "n";
+
 //====================================================
 //=============== ENTETE STANDARD ====================
 //if (!isset($_POST['valide_select_eleves'])) {
@@ -86,6 +88,14 @@ elseif ((isset($_POST['mode_bulletin']))&&($_POST['mode_bulletin']=='html')) {
 elseif ((isset($_POST['mode_bulletin']))&&($_POST['mode_bulletin']=='pdf')) {
 	$mode_utf8_pdf=getSettingValue("mode_utf8_bulletins_pdf");
 	if($mode_utf8_pdf=="") {$mode_utf8_pdf="n";}
+
+	if($releve_pdf_debug=='y') {
+		echo "<p style='color:red'>DEBUG:<br />
+La génération du PDF va échouer parce qu'on affiche ces informations de debuggage,<br />
+mais il se peut que vous ayez ainsi des précisions sur ce qui pose problème.<br />
+</p>\n";
+	}
+
 	include("../bulletin/header_bulletin_pdf.php");
 	include("../bulletin/header_releve_pdf.php");
 }
@@ -547,11 +557,11 @@ elseif(!isset($choix_periode)) {
 	echo "<td>\n";
 	echo "<label for='choix_periode_dates' style='cursor: pointer;'> \nDe la date : </label>";
 
-    echo "<input type='text' name = 'display_date_debut' size='10' value = \"".$display_date_debut."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" />";
+    echo "<input type='text' name = 'display_date_debut' id = 'display_date_debut' size='10' value = \"".$display_date_debut."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
     echo "<label for='choix_periode_dates' style='cursor: pointer;'><a href=\"#calend\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 
     echo "&nbsp;à la date : </label>";
-    echo "<input type='text' name = 'display_date_fin' size='10' value = \"".$display_date_fin."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" />";
+    echo "<input type='text' name = 'display_date_fin' id = 'display_date_fin' size='10' value = \"".$display_date_fin."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
     echo "<label for='choix_periode_dates' style='cursor: pointer;'><a href=\"#calend\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 	echo "<br />\n";
     echo " (<i>Veillez à respecter le format jj/mm/aaaa</i>)</label>\n";
@@ -810,7 +820,9 @@ elseif(!isset($_POST['valide_select_eleves'])) {
 
 	echo "<div id='div_param_pdf'>\n";
 		//echo "<br />\n";
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for='use_cell_ajustee' style='cursor: pointer;'><input type='checkbox' name='use_cell_ajustee' id='use_cell_ajustee' value='n' /> Ne pas utiliser la nouvelle fonction use_cell_ajustee() pour l'écriture des appréciations.</label>";
+		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='use_cell_ajustee' id='use_cell_ajustee' value='n' ";
+		if((isset($_SESSION['pref_use_cell_ajustee']))&&($_SESSION['pref_use_cell_ajustee']=='n')) {echo "checked ";}
+		echo "/><label for='use_cell_ajustee' style='cursor: pointer;'> Ne pas utiliser la nouvelle fonction use_cell_ajustee() pour l'écriture des appréciations.</label>";
 
 		$titre_infobulle="Fonction cell_ajustee()\n";
 		$texte_infobulle="Pour les appréciations sur les bulletins, relevés,... on utilisait auparavant la fonction DraxTextBox() de FPDF.<br />Cette fonction avait parfois un comportement curieux avec des textes tronqués ou beaucoup plus petits dans la cellule que ce qui semblait pouvoir tenir dans la case.<br />La fonction cell_ajustee() est une fonction que mise au point pour tenter de faire mieux que DraxTextBox().<br />Comme elle n'a pas été expérimentée par suffisamment de monde sur trunk, nous avons mis une case à cocher qui permet d'utiliser l'ancienne fonction DrawTextBox() si cell_ajustee() ne se révélait pas aussi bien fichue que nous l'espèrons;o).<br />\n";
@@ -820,6 +832,19 @@ elseif(!isset($_POST['valide_select_eleves'])) {
 		echo "<a href=\"#\" onclick='return false;' onmouseover=\"afficher_div('a_propos_cell_ajustee','y',100,100);\"  onmouseout=\"cacher_div('a_propos_cell_ajustee');\"><img src='../images/icons/ico_ampoule.png' width='15' height='25' /></a>";
 
 		echo "<br />\n";
+
+		// Debug
+		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='releve_pdf_debug' id='releve_pdf_debug' value='y' />&nbsp;<label for='releve_pdf_debug' style='cursor: pointer;'>Activer le debug pour afficher les erreurs perturbant la génération de PDF.</label>\n";
+
+		$titre_infobulle="Debug\n";
+		$texte_infobulle="Il arrive que la génération de PDF échoue.<br />Les raisons peuvent être variables (<em>manque de ressources serveur, bug,...</em>).<br />Dans ce cas, la présence d'un plugin lecteur PDF peut empêcher de voir quelles erreurs provoquent l'échec.<br />En cochant la case DEBUG, vous obtiendrez l'affichage des erreurs et ainsi vous pourrez obtenir de l'aide plus facilement sur la liste 'gepi-users'<br />\n";
+		//$texte_infobulle.="\n";
+		$tabdiv_infobulle[]=creer_div_infobulle('div_bull_debug_pdf',$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
+
+		echo "<a href=\"#\" onclick='return false;' onmouseover=\"afficher_div('div_bull_debug_pdf','y',100,100);\"  onmouseout=\"cacher_div('div_bull_debug_pdf');\"><img src='../images/icons/ico_ampoule.png' width='15' height='25' /></a>";
+
+		echo "<br />\n";
+
 	echo "</div>\n";
 
 	echo "<script type='text/javascript'>
@@ -864,11 +889,17 @@ elseif(!isset($_POST['valide_select_eleves'])) {
 
 		if (($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable')) {
 			echo "<table border='0' summary='Tableau de paramètres'>\n";
-			echo "<tr><td valign='top'><input type='checkbox' name='un_seul_bull_par_famille' id='un_seul_bull_par_famille' value='oui' /></td><td><label for='un_seul_bull_par_famille' style='cursor: pointer;'>Ne pas imprimer de relevé de notes pour le deuxième parent<br />(<i>même dans le cas de parents séparés</i>).</label></td></tr>\n";
+			echo "<tr><td valign='top'><input type='checkbox' name='un_seul_bull_par_famille' id='un_seul_bull_par_famille' value='oui' ";
+			if((isset($_SESSION['pref_un_seul_bull_par_famille']))&&($_SESSION['pref_un_seul_bull_par_famille']=='oui')) {echo "checked ";}
+			echo "/></td><td><label for='un_seul_bull_par_famille' style='cursor: pointer;'>Ne pas imprimer de relevé de notes pour le deuxième parent<br />(<i>même dans le cas de parents séparés</i>).</label></td></tr>\n";
 
-			echo "<tr><td valign='top'><input type='checkbox' name='deux_releves_par_page' id='deux_releves_par_page' value='oui' /></td><td><label for='deux_releves_par_page' style='cursor: pointer;'>Produire deux relevés par page (<i>PDF</i>).</label></td></tr>\n";
+			echo "<tr><td valign='top'><input type='checkbox' name='deux_releves_par_page' id='deux_releves_par_page' value='oui' ";
+			if((isset($_SESSION['pref_deux_releves_par_page']))&&($_SESSION['pref_deux_releves_par_page']=='oui')) {echo "checked ";}
+			echo "/></td><td><label for='deux_releves_par_page' style='cursor: pointer;'>Produire deux relevés par page (<i>PDF</i>).</label></td></tr>\n";
 
-			echo "<tr><td valign='top'><input type='checkbox' name='tri_par_etab_orig' id='tri_par_etab_orig' value='y' /></td><td><label for='tri_par_etab_orig' style='cursor: pointer;'>Trier les relevés par établissement d'origine.</label></td></tr>\n";
+			echo "<tr><td valign='top'><input type='checkbox' name='tri_par_etab_orig' id='tri_par_etab_orig' value='y' ";
+			if((isset($_SESSION['pref_tri_par_etab_orig']))&&($_SESSION['pref_tri_par_etab_orig']=='y')) {echo "checked ";}
+			echo "/></td><td><label for='tri_par_etab_orig' style='cursor: pointer;'>Trier les relevés par établissement d'origine.</label></td></tr>\n";
 
 			echo "</table>\n";
 		}
@@ -924,11 +955,16 @@ function ToutDeCocher() {
 		}
 		echo "	DecocheLigne('rn_app');
 	DecocheLigne('rn_adr_resp');
-}
+}";
 
-document.getElementById('div_param_releve').style.display='none';
 
-</script>\n";
+if(($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable')) {
+    echo "document.getElementById('div_param_releve').style.display='none';";
+} else {
+    echo "document.getElementById('div_param_releve').style.display='';";
+};
+
+echo "</script>\n";
 
 	}
 	//===========================================================
@@ -1637,6 +1673,16 @@ else {
 	if($deux_releves_par_page=="oui") {
 		$nb_releve_par_page=2;
 	}
+
+
+	$use_cell_ajustee=isset($_POST['use_cell_ajustee']) ? $_POST['use_cell_ajustee'] : "y";
+
+	// Pour mémoriser le temps de la session ces paramètres
+	$_SESSION['pref_use_cell_ajustee']=$use_cell_ajustee;
+	$_SESSION['pref_un_seul_bull_par_famille']=$un_seul_bull_par_famille;
+	$_SESSION['pref_deux_releves_par_page']=$deux_releves_par_page;
+	$_SESSION['pref_tri_par_etab_orig']=$tri_par_etab_orig;
+
 
 	// Prof principal
 	$gepi_prof_suivi=getSettingValue("gepi_prof_suivi");

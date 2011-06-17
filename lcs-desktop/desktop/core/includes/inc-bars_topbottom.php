@@ -29,19 +29,17 @@
 			//
 		   	echo $text_infos;
 		   	$url_s="../squirrelmail/src/compose.php?send_to=admin@".$_SERVER['HTTP_HOST']."&subject=LCS-BUREAU : demande d'assistance";
+		   	$url_r="../roundcube/?_task=mail&_action=compose&send_to=admin@".$_SERVER['HTTP_HOST']."&subject=LCS-BUREAU : demande d'assistance";
+		    if (isset($roundcube))  $url_s = $url_r ;
 		   	$url_m="../Plugins/Maintenance/demande_support.php";
-		   	$MaintInfo ==1  ? $url_maint=array($url_m,'maintinfo') : $url_maint=array($url_s,'squirrelmail');
+		   	$MaintInfo ==1  ? $url_maint=array($url_m,'maintinfo') : $url_maint=array($url_s,'webmail');
 			?>			
 			</li>
 		</ul>
 	</li>
 	<li>
-<!--		<a class="open_win float_right msg ext_link icon_16" id="aForumRss" href="../spip/?page=backend" rel="forumrss" title="Last News"></a>-->
 	<a title="Demande d'assistance informatique" rel="<?php echo  $url_maint[1]?>" href="<?php echo $url_maint[0];?>" class="open_win float_right msg ext_link icon_16" style="background-position:-176px -112px;"></a>
 	</li>
-<!--	<li>
-		<a class="open_win float_right msg ext_link icon_16" id="aForumRss" href="../spip/?page=backend" rel="forumrss" title="Last News"></a>
-	</li> -->
 	<li>
 		<a class="open_win float_right msg ext_link icon_16" id="compose_msg" href="../squirrelmail/src/compose.php?mailbox=INBOX&startMessage=1" rel="squirrelmail" title="Envoyer un message"></a>
 	</li>
@@ -49,13 +47,12 @@
 		<a class="open_win float_right ext_link search icon_16" id="found" href="../Annu/search.php" title="Trouver un utilisateur, une classe, un groupe..." rel="annu"></a>
 	</li>
 	<li class="spaces">
-	<!--	<span class="float_right" id="mylinks_bar_btn">Listes&nbsp;&nbsp;|</span> -->
 		<span class="float_right" id="otBuro_1" style="position:relative;display:block;">
 			<span class="float_left checked"></span>
 			<span <?php if(!is_dir("/var/www/monlcs/")) echo " class=\"monlcs_dtq\""; ?> id="otBuro_2" >1</span>
 			<ul style="position:absolute;" class="menu">
 				<li><a href="#desktop" class="space">1&nbsp;&nbsp;Lcs Bureau</a></li>
-				<li class="nospace" style="display:none"><a href="#inettuts">2&nbsp;&nbsp;<strong><i>i</i></strong>Lcs</a></li>
+				<li class="nospace"><a href="#inettuts">2&nbsp;&nbsp;<strong><i>i</i></strong>Lcs</a></li>
 				<li class="nospace"><a href="#monLcs">3&nbsp;&nbsp;MonLcs</a></li>
 			</ul>
 		</span>
@@ -95,7 +92,6 @@
 <?php
 	echo $html_status_bar;
 ?>
-<!--	<a class="float_right" id="test_dialog" href="#" title="test" style="font-style:italic;text-shadow:2px 2px 2px #aaaaaa;">dialog?</a> -->
 	<a class="float_right" href="#" title="LcsDevTeam" style="font-style:italic;text-shadow:2px 2px 2px #aaaaaa;">Lcs-Team
 	</a>
 <div id="bar_bttm_icon" style="width:300px;float:right;"></div>

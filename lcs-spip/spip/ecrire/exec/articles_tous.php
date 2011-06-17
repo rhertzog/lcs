@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 
@@ -36,8 +36,10 @@ function exec_articles_tous_args($id_rubrique, $aff_art, $sel_lang)
 		AND $GLOBALS['meta']['gerer_trad'] == 'oui');
 
 	list($article,$text_article,$aff_statut) = texte_articles_tous($sel_lang, $flag_trad, $aff_art, lang_dir());
-	if (_AJAX AND $id_rubrique) 
+	if (_AJAX AND $id_rubrique) {
+		include_spip('inc/actions');
 		ajax_retour(afficher_contenu_rubrique($article, $enfant, $text_article, $id_rubrique, $flag_trad, 2));
+	}
 	else {
 
 		pipeline('exec_init',array('args'=>array('exec'=>'articles_tous'),'data'=>''));
@@ -47,7 +49,7 @@ function exec_articles_tous_args($id_rubrique, $aff_art, $sel_lang)
 		echo http_script('var img_deplierhaut = "'. chemin_image('noeud_plus.gif') .'";
 var img_deplierbas = "'. chemin_image('noeud_moins.gif') . '";');
 
-		echo http_script('', 'dragdrop_interface.js');
+		echo http_script('', 'jquery-ui-1.8-drag-drop.min.js');
 		echo http_script('', 'articles_tous_edite.js');
 		echo http_script('', 'pause.js');
 	
@@ -63,7 +65,7 @@ var img_deplierbas = "'. chemin_image('noeud_moins.gif') . '";');
 		  echo couche_formulaire_tous();
 
 		$out = "<textarea cols='1' rows='1' id='deplacements' style='display:none;' name='deplacements'></textarea>"
-		  . "\n<div id='apply' style='display:none;text-align:$spip_lang_right'><input type='submit' class='fondo' value='"._T('bouton_changer')."' /></div>";
+		  . "\n<div id='apply' style='display:none;text-align:$spip_lang_right'><input type='submit' value='"._T('bouton_changer')."' /></div>";
 
 		echo "\n<div id='cancel' class='verdana2' style='display:none;text-align:$spip_lang_left;float:$spip_lang_left'>",
 		  "<a href='javascript:annuler_deplacement();'>",
@@ -224,7 +226,7 @@ function formulaire_affiche_tous($aff_art, $aff_statut,$sel_lang)
 				    'puce-poubelle-breve.gif',
 				    _T('texte_statut_poubelle'));
 	
-	$out .= "\n<div style='text-align: $spip_lang_right'><input type='submit' class='fondo' value='"._T('bouton_changer')."' /></div>";
+	$out .= "\n<div style='text-align: $spip_lang_right'><input type='submit' value='"._T('bouton_changer')."' /></div>";
 	
 	
 	// GERER LE MULTILINGUISME
@@ -255,7 +257,7 @@ function formulaire_affiche_tous($aff_art, $aff_statut,$sel_lang)
 			}
 			$out .= "</select></div>\n";
 	
-			$out .= "\n<div style='text-align: $spip_lang_right'><input type='submit' class='fondo' value='"._T('bouton_changer')."' /></div>";
+			$out .= "\n<div style='text-align: $spip_lang_right'><input type='submit' value='"._T('bouton_changer')."' /></div>";
 		}
 	}
 

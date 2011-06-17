@@ -27,9 +27,10 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Réglages relevés &amp; bilans";
+$VERSION_JS_FILE += 1;
 ?>
 
-<div class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_releves_bilans">DOC : Réglages relevés &amp; bilans</a></div>
+<div><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_releves_bilans">DOC : Réglages relevés &amp; bilans</a></span></div>
 
 <hr />
 
@@ -38,7 +39,7 @@ $TITRE = "Réglages relevés &amp; bilans";
 <form id="form_ordonner" action=""><fieldset>
 
 <?php
-// liste des items
+// liste des matières
 $DB_TAB = DB_STRUCTURE_lister_matieres_etablissement($_SESSION['MATIERES'],$with_transversal=true,$order_by_name=false);
 if(!count($DB_TAB))
 {
@@ -100,7 +101,7 @@ else
 		echo'<ul class="puce"><li>Traitement :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 		foreach($tab_choix as $option_valeur => $option_texte)
 		{
-			$checked = ($DB_ROW['referentiel_mode_synthese']==$option_valeur) ? ' checked="checked"' : '' ;
+			$checked = ($DB_ROW['referentiel_mode_synthese']==$option_valeur) ? ' checked' : '' ;
 			echo'<label for="f_'.$ids.'_'.$option_valeur.'"><input type="radio" id="f_'.$ids.'_'.$option_valeur.'" name="f_'.$ids.'" value="'.$option_valeur.'"'.$checked.' /> '.$option_texte.'</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 		}
 		echo ($DB_ROW['referentiel_mode_synthese']=='inconnu') ? '<button id="bouton_'.$ids.'" type="button" class="hide"><img alt="" src="./_img/bouton/valider.png" /> Valider.</button><label id="label_'.$ids.'" class="erreur">Choix manquant !</label>' : '<button id="bouton_'.$ids.'" type="button"><img alt="" src="./_img/bouton/valider.png" /> Valider.</button><label id="label_'.$ids.'" class="valide">ok</label>' ;

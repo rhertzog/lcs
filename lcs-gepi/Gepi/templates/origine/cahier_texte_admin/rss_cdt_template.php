@@ -106,7 +106,7 @@ if (count($lienFlux)){
 	<?php if($lien['confirme']){ ?>
 		La table existe et les URI sont en place.&nbsp;&nbsp;
 	<?php } ?>
-	<a href="<?php echo $lien['lien']; ?>"<?php if($lien['confirme']) echo "onclick=\"return confirm_abandon(this, 'yes', '$themessage')\""; ?>>
+	<a href="<?php echo $lien['lien']; echo add_token_in_url(); ?>" <?php if($lien['confirme']) echo "onclick=\"return confirm_abandon(this, 'yes', '$themessage')\""; ?>>
 	  <?php echo $lien['texte'] ?>
 	</a>
   </p>
@@ -117,6 +117,9 @@ if (count($lienFlux)){
  
   <form id="form_rss" action="rss_cdt_admin.php" method="post">
 	<p>
+<?php
+echo add_token_field();
+?>
 	  <input type="hidden" name="action" value="modifier" />
 	  <input type="checkbox"
 			 id="autoRssCdt"
@@ -136,6 +139,9 @@ if (count($lienFlux)){
 	<form id="form_rss_ele" action="rss_cdt_admin.php" method="post">
 	  <fieldset>
 		<legend>mode de récupération</legend>
+<?php
+echo add_token_field();
+?>
 		<input type="radio"
 			   id="rssAccesEle"
 			   name="rss_acces_ele"

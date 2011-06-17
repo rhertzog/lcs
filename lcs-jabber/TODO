@@ -1,0 +1,10 @@
+La version initial install juste un serveur jabber + config LDAP
+L'intégration de iJab est juste un premier test.
+
+LCS-Jabber a faire : 
+
+* intégrer l'autentification LCS
+* Générer les listes de contacts Roadster.
+	Listes classes, Profs, Administratif.....
+* tester iJab avec lcs-desktop
+* rotation des logs

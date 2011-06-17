@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /* $Id: $
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -100,6 +100,9 @@ interface discipline_admin {
 
   <form action="discipline_admin.php" id="form1" method="post">
 	<fieldset class="no_bordure">
+<?php
+echo add_token_field();
+?>
 	  <legend class="invisible">Activation</legend>
 	  <input type="radio"
 			 name="activer"

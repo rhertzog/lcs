@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: index.php 5645 2010-10-12 15:34:12Z crob $
+ * $Id: index.php 6677 2011-03-22 17:39:28Z crob $
  *
- * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -44,7 +44,9 @@ if (!checkAccess()) {
 }
 
 //if(isset($suppr_resp)){
-if((isset($suppr_resp1))||(isset($suppr_resp2))||(isset($suppr_resp0))){
+if((isset($suppr_resp1))||(isset($suppr_resp2))||(isset($suppr_resp0))) {
+	check_token();
+
 	$msg="";
 
 	if(isset($suppr_resp1)){
@@ -297,7 +299,7 @@ $num_resp=isset($_POST['num_resp']) ? $_POST['num_resp'] : (isset($_GET['num_res
 
 
 echo "<p class='bold'>";
-if ($_SESSION['statut'] == 'administrateur'){
+if ($_SESSION['statut'] == 'administrateur') {
 	echo "<a href=\"../accueil_admin.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 	echo " | <a href=\"modify_resp.php\">Ajouter un ".$gepiSettings['denomination_responsable']."</a>\n";
 	if(getSettingValue("import_maj_xml_sconet")==1){
@@ -312,10 +314,25 @@ if ($_SESSION['statut'] == 'administrateur'){
 	}
 
 	echo " | <a href=\"gerer_adr.php\">Gérer les adresses</a>\n";
+
+	$sql="SELECT 1=1 FROM utilisateurs WHERE statut='responsable';";
+	$test_resp=mysql_query($sql);
+	if(mysql_num_rows($test_resp)>0) {
+		echo " | <a href=\"synchro_mail.php\">Synchroniser les adresses mail responsables</a>\n";
+	}
 }
 else{
 	echo "<a href=\"../accueil.php\"> <img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 }
+
+if($_SESSION['statut']=="scolarite") {
+	$sql="SELECT 1=1 FROM utilisateurs WHERE statut='responsable';";
+	$test_resp=mysql_query($sql);
+	if(mysql_num_rows($test_resp)>0) {
+		echo " | <a href=\"synchro_mail.php\">Synchroniser les adresses mail responsables</a>\n";
+	}
+}
+
 echo "</p>\n";
 
 $_SESSION['chemin_retour'] = $_SERVER['REQUEST_URI'];
@@ -535,6 +552,7 @@ echo ".</p>\n";
 
 
 echo "<form enctype='multipart/form-data' name='liste_resp' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
+echo add_token_field();
 
 echo "<p align='center'>";
 if(!isset($debut)){

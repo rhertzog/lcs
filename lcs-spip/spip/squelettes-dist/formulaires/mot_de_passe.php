@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // chargement des valeurs par defaut des champs du formulaire
 /**
@@ -24,6 +24,7 @@ if (!defined("_ECRIRE_INC_VERSION")) return;
  */
 function formulaires_mot_de_passe_charger_dist($id_auteur=null){
 
+	include_spip('base/abstract_sql');
 	$valeurs = array();
 	if ($id_auteur=intval($id_auteur)) {
 		$id_auteur = sql_getfetsel('id_auteur','spip_auteurs',array('id_auteur='.intval($id_auteur),"statut<>'5poubelle'","pass<>''"));
@@ -75,18 +76,15 @@ function formulaires_mot_de_passe_traiter_dist($id_auteur=null){
 	}
 	elseif ($p=_request('p')) {
 		$p = preg_replace(',[^0-9a-f.],i','',$p);
-		$row = sql_fetsel('id_auteur,login','spip_auteurs',array('cookie_oubli='.sql_quote($p),"statut<>'5poubelle'","pass<>''"));
+		$row = sql_fetsel('id_auteur,login,source','spip_auteurs',array('cookie_oubli='.sql_quote($p),"statut<>'5poubelle'","pass<>''"));
 	}
 
 	if ($row
 	 && ($id_auteur = $row['id_auteur'])
 	 && ($oubli = _request('oubli'))) {
-		include_spip('inc/acces');
-		$mdpass = md5($oubli);
-		$htpass = generer_htpass($oubli);
-		include_spip('base/abstract_sql');
-		sql_updateq('spip_auteurs', array('htpass' =>$htpass, 'pass'=>$mdpass, 'alea_actuel'=>'', 'cookie_oubli'=>''), "id_auteur=" . intval($id_auteur));
-	
+		include_spip('action/editer_auteur');
+		auteurs_set($id_auteur, array('pass'=>$oubli,'cookie_oubli'=>''));
+
 		$login = $row['login'];
 		$message = "<b>" . _T('pass_nouveau_enregistre') . "</b>".
 		"<p>" . _T('pass_rappel_login', array('login' => $login));

@@ -1,7 +1,7 @@
 <?php
-/* $Id: index.php 4373 2010-04-27 13:33:23Z crob $ */
+/* $Id: index.php 6748 2011-04-05 11:48:21Z crob $ */
 /*
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -189,6 +189,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 	if((isset($_POST['creer_exam']))||(isset($_POST['modif_exam']))) {
 		// Correction, modification des paramètres d'un examen
 
+		check_token();
+
 		$intitule=isset($_POST['intitule']) ? $_POST['intitule'] : "Examen blanc";
 		$date=isset($_POST['date']) ? $_POST['date'] : "";
 		$description=isset($_POST['description']) ? $_POST['description'] : "";
@@ -241,6 +243,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 		$mode="modif_exam";
 	}
 	elseif((isset($id_exam))&&($mode=='modif_coef')) {
+		check_token();
+
 		$tab_matiere=isset($_POST['tab_matiere']) ? $_POST['tab_matiere'] : array();
 		$bonus=isset($_POST['bonus']) ? $_POST['bonus'] : array();
 		$coef=isset($_POST['coef']) ? $_POST['coef'] : array();
@@ -276,6 +280,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 		$mode="modif_exam";
 	}
 	elseif((isset($id_exam))&&($mode=='suppr_exam')) {
+		check_token();
+
 		// Suppression d'un examen
 		//echo "gloups";
 		//$tab_tables=array('ex_notes', 'ex_groupes', 'ex_matieres', 'ex_classes', 'ex_examens');
@@ -309,6 +315,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 		unset($mode);
 	}
 	elseif((isset($id_exam))&&($mode=='ajout_classes')) {
+		check_token();
+
 		// Ajout de classes pour l'examen sélectionné
 		$id_classe=isset($_POST['id_classe']) ? $_POST['id_classe'] : (isset($_GET['id_classe']) ? $_GET['id_classe'] : array());
 
@@ -361,6 +369,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 
 	}
 	elseif((isset($id_exam))&&($mode=='ajout_matieres')) {
+		check_token();
+
 		// Ajout de matières pour l'examen sélectionné
 		$matiere=isset($_POST['matiere']) ? $_POST['matiere'] : (isset($_GET['matiere']) ? $_GET['matiere'] : array());
 
@@ -397,6 +407,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 
 	}
 	elseif((isset($id_exam))&&($mode=='ajout_groupes')) {
+		check_token();
+
 		// Ajout de groupes pour l'examen sélectionnée
 		$id_groupe=isset($_POST['id_groupe']) ? $_POST['id_groupe'] : (isset($_GET['id_groupe']) ? $_GET['id_groupe'] : array());
 		$matiere=isset($_POST['matiere']) ? $_POST['matiere'] : (isset($_GET['matiere']) ? $_GET['matiere'] : array());
@@ -498,6 +510,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 	}
 */
 	elseif((isset($id_exam))&&($mode=='modif_choix_dev')) {
+		check_token();
+
 		// Ajout de groupes pour l'examen sélectionnée
 		$id_groupe=isset($_POST['id_groupe']) ? $_POST['id_groupe'] : (isset($_GET['id_groupe']) ? $_GET['id_groupe'] : array());
 		$matiere=isset($_POST['matiere']) ? $_POST['matiere'] : (isset($_GET['matiere']) ? $_GET['matiere'] : array());
@@ -815,7 +829,7 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 
 					}
 					echo ">$lig->intitule</a> (<i>".formate_date($lig->date)."</i>)";
-					echo " - <a href='".$_SERVER['PHP_SELF']."?id_exam=$lig->id&amp;mode=suppr_exam' onclick=\"return confirm('Etes vous sûr de vouloir supprimer l examen?')\">Supprimer</a><br />\n";
+					echo " - <a href='".$_SERVER['PHP_SELF']."?id_exam=$lig->id&amp;mode=suppr_exam".add_token_in_url()."' onclick=\"return confirm('Etes vous sûr de vouloir supprimer l examen?')\">Supprimer</a><br />\n";
 				}
 				echo "</li>\n";
 			}
@@ -835,6 +849,7 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 
 			echo "<blockquote>\n";
 			echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form1'>\n";
+			echo add_token_field();
 
 			echo "<table summary='Paramètres'>\n";
 			echo "<tr>\n";
@@ -966,6 +981,7 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 
 			echo "<blockquote>\n";
 			echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form1'>\n";
+			echo add_token_field();
 
 			//echo "<fieldset style='padding: 8px;  margin: 8px;'>\n";
 			//echo "<div style='border: 1px solid black;'>\n";
@@ -1097,6 +1113,7 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 
 			if((count($tab_matiere)>0)&&(count($tab_classe)>0)) {
 				echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form2'>\n";
+				echo add_token_field();
 
 				echo "<p class='bold'>Choix des groupes et devoirs&nbsp;:</p>\n";
 
@@ -1136,7 +1153,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 					echo ">Choix des groupes</a><br />\n";
 
 					//$sql="SELECT 1=1 FROM ex_groupes eg WHERE eg.id_exam='$id_exam' AND eg.matiere='$tab_matiere[$j]' LIMIT 1;";
-					$sql="SELECT 1=1 FROM ex_groupes eg WHERE eg.id_exam='$id_exam' AND eg.matiere='$tab_matiere[$j]' AND type!='hors_enseignement' LIMIT 1;";
+					//$sql="SELECT 1=1 FROM ex_groupes eg WHERE eg.id_exam='$id_exam' AND eg.matiere='$tab_matiere[$j]' AND type!='hors_enseignement' LIMIT 1;";
+					$sql="SELECT 1=1 FROM ex_groupes eg, groupes g WHERE g.id=eg.id_groupe AND eg.id_exam='$id_exam' AND eg.matiere='$tab_matiere[$j]' AND type!='hors_enseignement' LIMIT 1;";
 					//echo "$sql<br />";
 					$test=mysql_query($sql);
 					if(mysql_num_rows($test)>0) {
@@ -1491,7 +1509,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) 
 
 				// Choix des classes dont il faudra lister les groupes
 				echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form1'>\n";
-	
+				echo add_token_field();
+
 				$nb_class_par_colonne=round($nb/3);
 				echo "<table width='100%' summary='Choix des classes'>\n";
 				echo "<tr valign='top' align='center'>\n";
@@ -1592,7 +1611,8 @@ function checkbox_change(cpt) {
 
 				// Choix des matières
 				echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form1'>\n";
-	
+				echo add_token_field();
+
 				$nb_matier_par_colonne=round($nb/3);
 				echo "<table width='100%' summary='Choix des matières'>\n";
 				echo "<tr valign='top' align='center'>\n";
@@ -1697,6 +1717,7 @@ function checkbox_change(cpt) {
 			}
 
 			echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form1'>\n";
+			echo add_token_field();
 
 			echo "<p class='bold'>Choix des groupes pour l'examen $id_exam&nbsp;: Classe ".get_class_from_id($id_classe)." et matière $matiere</p>\n";
 
@@ -1838,15 +1859,33 @@ function cocher_decocher(mode) {
 			//$sql="SELECT DISTINCT ec.id_classe, c.classe FROM ex_classes ec, classes c WHERE c.id=ec.id_classe AND ec.id_exam='$id_exam' ORDER BY c.classe;";
 			$sql="SELECT DISTINCT ec.id_classe, c.classe FROM ex_classes ec, ex_groupes eg, classes c, j_groupes_classes jgc WHERE c.id=ec.id_classe AND ec.id_exam='$id_exam' AND eg.id_exam=ec.id_exam AND eg.matiere='$matiere' AND jgc.id_classe=ec.id_classe AND jgc.id_groupe=eg.id_groupe ORDER BY c.classe;";
 			$res=mysql_query($sql);
+			$id_classe=array();
+			$classe=array();
 			while($lig=mysql_fetch_object($res)) {
 				$classe[]=$lig->classe;
 				$id_classe[]=$lig->id_classe;
 			}
 			$nb_classes=count($id_classe);
 
-			echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form1'>\n";
+			if($nb_classes==0) {
+				echo "<p style='color:red'>Aucune classe n'a été choisie.</p>\n";
+				require("../lib/footer.inc.php");
+				die();
+			}
 
-			echo "<p class='bold'>Choix des groupes pour l'examen $id_exam&nbsp;: Classe ".get_class_from_id($id_classe)." et matière $matiere</p>\n";
+			echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form1'>\n";
+			echo add_token_field();
+
+			echo "<p class='bold'>Choix des groupes pour l'examen $id_exam&nbsp;: Classe";
+			if($nb_classes>1) {
+				echo "s";
+			}
+			echo " ";
+			for($loop=0;$loop<count($id_classe);$loop++) {
+				if($loop>0) {echo ", ";}
+				echo get_class_from_id($id_classe[$loop]);
+			}
+			echo " et matière $matiere</p>\n";
 
 			$tab_moy_bull_inscrits=array();
 			$tab_moy_pp_inscrits=array();
@@ -1967,6 +2006,35 @@ function cocher_decocher(mode) {
 						else {
 							echo "Aucun devoir.<br />";
 						}
+
+
+
+						$sql="SELECT DISTINCT mn.periode, p.nom_periode, p.verouiller FROM matieres_notes mn, periodes p WHERE mn.id_groupe='$lig->id' AND p.id_classe='$id_classe[$i]' AND p.num_periode=mn.periode ORDER BY periode;";
+						//echo "$sql<br />\n";
+						$res2=mysql_query($sql);
+						if(mysql_num_rows($res2)>0) {
+							while($lig2=mysql_fetch_object($res2)) {
+								if((!isset($tab_periodes[$cpt_grp]))||(!in_array($lig2->periode, $tab_periodes[$cpt_grp]))) {
+									echo "<label for='id_dev_".$cpt_grp."_$cpt' style='cursor: pointer;' alt='Moyenne du bulletin pour la période' title='Moyenne du bulletin pour la période'>";
+									echo "<span class='bold'>".htmlentities($lig2->nom_periode)."</span>\n";
+									$tab_periodes[$cpt_grp][]=$lig2->periode;
+									echo "</label>\n";
+									echo "&nbsp;<input type='radio' name='id_dev_".$cpt_grp."' id='id_dev_".$cpt_grp."_$cpt' value='P$lig2->periode' ";
+									echo "onchange=\"radio_change($cpt_grp,$cpt);changement();\" ";
+									if((isset($tab_moy_bull_inscrits[$lig->id]))&&($tab_moy_bull_inscrits[$lig->id]==$lig2->periode)) {
+										echo "checked ";
+									}
+									echo "/>";
+
+									if($lig2->verouiller=='N') {echo "<img src='../images/icons/flag.png' width='17' height='18' alt='ATTENTION: Période non close' title='ATTENTION: Période non close' />\n";}
+									echo "<br />\n";
+
+									$cpt++;
+								}
+							}
+						}
+
+
 
 						// Et proposer de saisir des notes hors devoir
 

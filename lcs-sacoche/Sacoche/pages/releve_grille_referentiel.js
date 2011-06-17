@@ -62,25 +62,25 @@ $(document).ready
 					{
 						niveau_id = $(this).val();
 						findme = '.'+niveau_id+'.';
-						// Les niveaux "paliers" sont tout le temps accessibles
-						if(listing_id_niveaux_paliers.indexOf(findme) == -1)
+						// Les niveaux "cycles" sont tout le temps accessibles
+						if(listing_id_niveaux_cycles.indexOf(findme) == -1)
 						{
 							// matière classique -> tous niveaux actifs
 							if(matiere_id != id_matiere_transversale)
 							{
-								$(this).removeAttr('disabled');
+								$(this).prop('disabled',false);
 							}
 							// matière transversale -> desactiver les autres niveaux
 							else
 							{
-								$(this).attr('disabled','disabled');
+								$(this).prop('disabled',true);
 								modif_niveau_selected = Math.max(modif_niveau_selected,1);
 							}
 						}
-						// C'est un niveau palier ; le sélectionner si besoin
+						// C'est un niveau cycle ; le sélectionner si besoin
 						else if(modif_niveau_selected==1)
 						{
-							$(this).attr('selected','selected');
+							$(this).prop('selected',true);
 							modif_niveau_selected = 2;
 						}
 					}
@@ -110,7 +110,7 @@ $(document).ready
 						maj_clock(1);
 						if(responseHTML.substring(0,7)=='<option')	// Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
 						{
-							$('#ajax_maj').removeAttr("class").html('&nbsp;<span class="astuce">Utiliser "<i>Shift + clic</i>" ou "<i>Ctrl + clic</i>" pour une sélection multiple.</span>');
+							$('#ajax_maj').removeAttr("class").html("&nbsp;");
 							$('#f_eleve').html(responseHTML).show();
 						}
 					else
@@ -153,35 +153,41 @@ $(document).ready
 			{
 				rules :
 				{
-					f_matiere     : { required:true },
-					f_niveau      : { required:true },
-					f_orientation : { required:true },
-					f_couleur     : { required:true },
-					f_legende     : { required:true },
-					f_marge_min   : { required:true },
-					f_cases_nb    : { required:true },
-					f_cases_larg  : { required:true },
-					f_cases_haut  : { required:true },
-					f_restriction : { required:false },
-					f_coef        : { required:false },
-					f_socle       : { required:false },
-					f_lien        : { required:false }
+					f_matiere      : { required:true },
+					f_niveau       : { required:true },
+					f_groupe       : { required:true },
+					f_eleve        : { required:false },
+					f_restriction  : { required:false },
+					f_coef         : { required:false },
+					f_socle        : { required:false },
+					f_lien         : { required:false },
+					f_cases_nb     : { required:true },
+					f_cases_larg   : { required:true },
+					f_remplissage  : { required:true },
+					f_colonne_vide : { required:false },
+					f_orientation  : { required:true },
+					f_couleur      : { required:true },
+					f_legende      : { required:true },
+					f_marge_min    : { required:true }
 				},
 				messages :
 				{
-					f_matiere     : { required:"matière manquante" },
-					f_niveau      : { required:"niveau manquant" },
-					f_orientation : { required:"orientation manquante" },
-					f_couleur     : { required:"couleur manquante" },
-					f_legende     : { required:"légende manquante" },
-					f_marge_min   : { required:"marge mini manquante" },
-					f_cases_nb    : { required:"nombre manquant" },
-					f_cases_larg  : { required:"largeur manquante" },
-					f_cases_haut  : { required:"hauteur manquante" },
-					f_restriction : { },
-					f_coef        : { },
-					f_socle       : { },
-					f_lien        : { }
+					f_matiere      : { required:"matière manquante" },
+					f_niveau       : { required:"niveau manquant" },
+					f_groupe       : { required:"classe/groupe manquant" },
+					f_eleve        : { },
+					f_restriction  : { },
+					f_coef         : { },
+					f_socle        : { },
+					f_lien         : { },
+					f_cases_nb     : { required:"nombre manquant" },
+					f_cases_larg   : { required:"largeur manquante" },
+					f_remplissage  : { required:"contenu manquant" },
+					f_colonne_vide : { },
+					f_orientation  : { required:"orientation manquante" },
+					f_couleur      : { required:"couleur manquante" },
+					f_legende      : { required:"légende manquante" },
+					f_marge_min    : { required:"marge mini manquante" }
 				},
 				errorElement : "label",
 				errorClass : "erreur",
@@ -228,7 +234,7 @@ $(document).ready
 			var readytogo = validation.form();
 			if(readytogo)
 			{
-				$('button').attr('disabled','disabled');
+				$('button').prop('disabled',true);
 				$('#bilan').html("&nbsp;");
 				$('#ajax_msg').removeAttr("class").addClass("loader").html("Génération du relevé en cours... Veuillez patienter.");
 			}
@@ -238,7 +244,7 @@ $(document).ready
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)
 		function retour_form_erreur(msg,string)
 		{
-			$('button').removeAttr('disabled');
+			$('button').prop('disabled',false);
 			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion ! Veuillez valider de nouveau.");
 		}
 
@@ -246,7 +252,7 @@ $(document).ready
 		function retour_form_valide(responseHTML)
 		{
 			maj_clock(1);
-			$('button').removeAttr('disabled');
+			$('button').prop('disabled',false);
 			if(responseHTML.substring(0,17)!='<ul class="puce">')
 			{
 				$('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);

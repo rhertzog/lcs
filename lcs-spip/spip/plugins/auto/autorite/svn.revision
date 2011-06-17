@@ -1,15 +1,10 @@
-<svn_revision><text_version>
-Origine svn://zone.spip.org/spip-zone/_plugins_/autorite le dimanche 31 mai 2009, 06:46:10 (UTC+0200)
-Revision: 28933
-Dernier commit 2009-05-31 02:26:55 +0200 (Sun, 31 May 2009)
-Voir http://trac.rezo.net/trac/spip-zone/browser/_plugins_/autorite
-Archive: http://files.spip.org/spip-zone/autorite.zip
+<svn_revision>
+<text_version>
+Origine: file:///home/svn/repository/spip-zone/_plugins_/autorite
+Revision: 46863
+Dernier commit: 2011-04-19 02:34:54 +0200 
 </text_version>
-<uri>http://trac.rezo.net/trac/spip-zone/browser/_plugins_/autorite</uri>
-<archive>http://files.spip.org/spip-zone/autorite.zip</archive>
-<origine>svn://zone.spip.org/spip-zone/_plugins_/autorite</origine>
-<date_production>dimanche 31 mai 2009, 06:46:10 (UTC+0200)</date_production>
-<revision>28933</revision>
-<commit>2009-05-31 02:26:55 +0200 (Sun, 31 May 2009)</commit>
+<origine>file:///home/svn/repository/spip-zone/_plugins_/autorite</origine>
+<revision>46863</revision>
+<commit>2011-04-19 02:34:54 +0200 </commit>
 </svn_revision>
-<archivelist>_plugins_/autorite;autorite;autorite</archivelist>

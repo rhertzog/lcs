@@ -16,7 +16,7 @@
 <h2 class="titrem">Les auteurs figurant dans l'annuaire :</h2>
 <ul class="liste_items">
 ]
-<BOUCLE_auteurs_ds_annuaire(AUTEURS){par nom}{id_auteur!=1}{tout}{login IN #GET{lcs_users}}{tout}{statut IN 0minirezo, 1comite, 6forum}{doublons pagin}>
+<BOUCLE_auteurs_ds_annuaire(AUTEURS){par nom}{id_auteur!=1}{tout}{login IN #GET{lcs_users}}{tout}{statut IN 0minirezo, 1comite, 6forum}{doublons pagin}{pagination 20}>
 [(#REM)		
 [(#STATUT|=={0minirezo}|oui) #SET{icone, admin-12} ]
 [(#STATUT|=={1comite}|oui) #SET{icone, redac-12} ]

@@ -73,11 +73,7 @@ function format_liens(element)
 
 function infobulle()
 {
-	$('img[title]').tooltip({showURL:false});
-	$('th[title]').tooltip({showURL:false});
-	$('td[title]').tooltip({showURL:false});
-	$('a[title]').tooltip({showURL:false});
-	$('q[title]').tooltip({showURL:false});
+	$('img[title] , th[title] , td[title] , a[title] , q[title] , input[title]').tooltip({showURL:false});
 }
 
 /**
@@ -247,6 +243,7 @@ function setVolume(volume)
  * => Webkit, 	avec -webkit-border-radius 	(valable pour Safari, Chrome et tout navigateur basé sur Webkit).
  * => KHTML, 	avec -khtml-border-radius 	(valable pour Konqueror),
  * => Opera, 	avec -o-border-radius 	(valable pour Opéra depuis la version 10.50),
+ * => MSIE à partir de sa version 9
  * Sinon (MSIE...) il y a des techniques tordues et pas universelles (div imbriqués, pixel par pixel...).
  * => http://plugins.jquery.com/project/backgroundCanvas
  * => http://plugins.jquery.com/project/roundCorners => fonctionne à peu près mais temps de calcul long + plante IE si masquage cadre_haut + fait disparaitre la ligne centrale et pb de bordures à cause de l'overflow...
@@ -285,8 +282,8 @@ $(document).ready
 		format_liens('body');
 		infobulle();
 
-		// MENU - Styler les puces avec les images
-		$("#menu a").each
+		// MENU - Styler les puces avec les images ; span pourrait servir pour un menu inactif, mais il n'est pas utilisé.
+		$("#menu a , #menu span").each
 		(
 			function()
 			{
@@ -303,21 +300,26 @@ $(document).ready
 		// Difficultés pour utiliser fadeTo('slow',0.2) et fadeTo('normal',1) car une durée d'animation provoque des boucles
 		// Difficultés pour utiliser aussi css('opacity',0.2) et css('opacity',1) car un passage de la souris au dessus du menu provoque un clignotement désagréable
 		// Alors il a fallu ruser (compliquer) avec un marqueur et un timing...
-		var test_over = false;
-		$('#menu li').mouseover( function(){test_over = true; });
-		$('#menu li').mouseout(  function(){test_over = false;});
+		var test_over_avant = false;
+		var test_over_apres = false;
+		$('#menu li').mouseenter( function(){test_over_apres = true; });
+		$('#menu li').mouseleave( function(){test_over_apres = false;});
 		function page_transparente()
 		{
 			$("body").everyTime
 			('5ds', function()
 				{
-					if(test_over)
+					if( test_over_avant != test_over_apres )
 					{
-						$('#cadre_bas').fadeTo('normal',0.2);
-					}
-					else
-					{
-						$('#cadre_bas').fadeTo('fast',1);
+						test_over_avant = test_over_apres ;
+						if(test_over_apres)
+						{
+							$('#cadre_bas').fadeTo('normal',0.2);
+						}
+						else
+						{
+							$('#cadre_bas').fadeTo('fast',1);
+						}
 					}
 				}
 			);
@@ -643,6 +645,7 @@ $(document).ready
 				m = $("#m option:selected").val();
 				a = $("#a option:selected").val();
 				reload_calendrier(m,a);
+				return false;
 			}
 		);
 		$("#form_calque input.actu").live // live est utilisé pour prendre en compte les nouveaux éléments créés

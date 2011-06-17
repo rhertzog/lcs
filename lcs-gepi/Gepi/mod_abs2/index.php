@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: index.php 5018 2010-08-04 21:23:31Z jjacquard $
+ * @version $Id: index.php 6311 2011-01-08 17:52:09Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -75,8 +75,19 @@ if ($utilisateur->getStatut()=="cpe" || $utilisateur->getStatut()=="scolarite") 
     header("Location: ./saisir_groupe.php");
     die();
 } else if ($utilisateur->getStatut()=="autre") {
-    header("Location: ./saisir_eleve.php");
-    die();
+    if(acces('/mod_abs2/saisir_eleve.php', 'autre')){
+        header("Location: ./saisir_eleve.php");
+        die();
+    }else if(acces('/mod_abs2/bilan_individuel.php', 'autre')){
+        header("Location: ./bilan_individuel.php");
+        die();
+    }else if(acces('/mod_abs2/totaux_du_jour.php', 'autre')){
+        header("Location: ./totaux_du_jour.php");
+        die();
+    }else{
+        echo"Vous n'avez les droits sur aucune action dans le module";
+        die();
+    }
 }
 
 //==============================================

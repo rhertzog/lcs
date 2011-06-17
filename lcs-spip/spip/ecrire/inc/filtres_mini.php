@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -11,7 +11,7 @@
 \***************************************************************************/
 
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 //
 // Filtres d'URLs
@@ -24,10 +24,14 @@ if (!defined("_ECRIRE_INC_VERSION")) return;
 //
 // http://doc.spip.org/@resolve_path
 function resolve_path($url) {
+	list($url, $query) = explode('?', $url,2);
 	while (preg_match(',/\.?/,', $url, $regs)		# supprime // et /./
 	OR preg_match(',/[^/]*/\.\./,S', $url, $regs)	# supprime /toto/../
 	OR preg_match(',^/\.\./,S', $url, $regs))		# supprime les /../ du haut
 		$url = str_replace($regs[0], '/', $url);
+
+	if ($query)
+		$url .= '?'.$query;
 
 	return '/'.preg_replace(',^/,S', '', $url);
 }

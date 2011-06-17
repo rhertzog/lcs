@@ -1,12 +1,13 @@
-<?
+<?php
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de diffusion -
 			_-=-_
+    "Valid XHTML 1.0 Strict"
    =================================================== */
    
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -15,7 +16,8 @@ header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache"); 
 session_name("Cdt_Lcs");
 @session_start();
-
+include "../Includes/check.php";
+if (!check()) exit;
 //si la page est appelée par un utilisateur non identifié
 if (!isset($_SESSION['login']) )exit;
 
@@ -81,90 +83,77 @@ while ($row = mysql_fetch_object($result))
 	$data2[$loop]=$row->id_prof;
 	$loop++;
 	}
-
-
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
-	<TITLE>devoirs multiples</TITLE>
-	<meta name="generator" content="Bluefish 1.0.7">
-	<META NAME="CREATED" CONTENT="20051226;22304481">
-	<META NAME="CHANGED" CONTENT="20051226;22565970">
-	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
-		<!--[if IE]>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<title>Devoirs multiples</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link href="../style/style.css" rel="stylesheet" type="text/css"/>
+<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-	<STYLE>
-	
-	</STYLE>
-</HEAD>
-<BODY LANG="fr-FR" DIR="LTR">
-<H1 class='title'>Planifier un devoir pour plusieurs classes</H1>
-
-<?
+</head>
+<body >
+<h1 class='title'>Planifier un devoir pour plusieurs classes</h1>
+<?php
 
 //si clic sur le bouton Valider
 if (isset($_POST['Valider']))
 	{
 	//initialisation des variables de session
 	unset ($_SESSION['sel_cl']);
-	
 	//mémorisation des données dans des variables de session		
 	$_SESSION['sel_cl']=$_POST['sel_cl'];
-	
-
 	//fermeture du popup
-	echo "<SCRIPT language='Javascript'>
-					<!--
-					window.close()
-					// -->
-					</script>";	
+	echo '<script type="text/javascript">
+                    //<![CDATA[
+                    window.close();
+                   //]]>
+                    </script>';
 	}
 
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
+ <div>
+ <input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>"/>
 <fieldset id="field7">
-<legend id="legende">
-<FONT FACE="Trebuchet MS, sans-serif" color="#009933">  Sélection des classes   </FONT>
-</legend>
+<legend id="legende">S&eacute;lection des classes </legend>
 
-<?
+<?php
 //affichage du formulaire
 
 if (!isset($_POST['Valider']))
 	{
 	//si pas de classe de même niveau dans la matière
 	if (mysql_num_rows($result)==0) 
-		echo '<H4> Apparemment, vous n\'avez pas d\'autre classe  en <B>'.$mat.'</B> !<br /> V&eacute;rifiez que la mati&egrave;re n\'est
-		pas orthographi&eacute;e diff&eacute;remment pour les autres classes .<br /><br /><DIV align="center" ><input type="submit" name="Valider"
-		value="OK " ></DIV>';
+		echo '<h4> Apparemment, vous n\'avez pas d\'autre classe  en <b>'.$mat.'</b> !<br /> V&eacute;rifiez que la mati&egrave;re n\'est
+		pas orthographi&eacute;e diff&eacute;remment pour les autres classes .<br /><br /></h4><div><input type="submit" name="Valider"
+		value="OK " /></div>';
 	//sinon, affichage des classes de même niveau 	
 	else
 		{
-		echo '<ul> <Li>Si vous avez un cours compos&eacute; d\'&eacute;l&egrave;ves issus de plusieurs classes,
-		 vous pouvez planifier en une fois, ce devoir pour tous vos d\'&eacute;l&egrave;ves.</li><br />
-		<LI>Lorsque vous enregistrerez votre devoir de <B>'.$mat.'</B> en <B>'.$clas_act.'</B> , il sera aussi planifi&eacute;  pour  les		classes que vous aurez s&eacute;lectionn&eacute;es ci-dessous </li></ul>';
-		echo '<div id="sel-classe"><TABLE id="diff-dev"><TR>';
+		echo '<ul class="perso"> <li>Si vous avez un cours compos&eacute; d\'&eacute;l&egrave;ves issus de plusieurs classes,
+		 vous pouvez planifier en une fois, ce devoir pour tous vos &eacute;l&egrave;ves.</li>
+		<li>Lorsque vous enregistrerez votre devoir de <b>'.$mat.'</b> en <b>'.$clas_act.'</b> , il sera aussi planifi&eacute;  pour  les classes que vous aurez s&eacute;lectionn&eacute;es ci-dessous </li></ul>';
+		echo '<div id="sel-classe"><table id="diff-dev"><tr>';
 		for ($loop=1; $loop < count ($data1)+1  ; $loop++)
 			{
-			echo '<TD><H5><input type="checkbox" name="sel_cl[]" value="'.$data1[$loop-1].'#'.$data2[$loop-1].'" />'.$data1[$loop-1].'&nbsp&nbsp&nbsp</H5>
-			
-			</TD>';
-			if (($loop %5)==0 ) echo'</TR><TR>';
+			echo '<td><input type="checkbox" name="sel_cl[]" value="'.$data1[$loop-1].'#'.$data2[$loop-1].'" />'.$data1[$loop-1].'</td>';
+			if (($loop %5)==0 ) echo'</tr><tr>';
 			}
-		echo '</TR></TABLE></div>';
-		echo '<DIV align="center" ><input type="submit" name="Valider" value="Valider la s&eacute;lection" class="bt"></DIV>'; 
-		echo '<br /><Div class="notabene"> N\'oubliez pas apr&egrave;s avoir Valider la s&eacute;lection, de cliquer sur <B>Enregistrer </B>dans la page "Planning" </div>';
+		echo '</tr></table></div>';
+		echo '<div><input type="submit" name="Valider" value="Valider la s&eacute;lection" class="bt" /></div>';
+		echo '<br /><div class="notabene"> N\'oubliez pas apr&egrave;s avoir Valider la s&eacute;lection, de cliquer sur <b>Enregistrer </b>dans la page "Planning" </div>';
 		}
 	}
 ?>
-
 </fieldset>	
-</FORM>
-</BODY>
-</HTML>
-
-
-
+</div>
+</form>
+<?php
+include ('../Includes/pied.inc');
+?>
+</body>
+</html>

@@ -2,30 +2,33 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
-   - script d'ï¿½dition de la liste des classes-
+   - script d'edition de la liste des classes-
 			_-=-_
+    "Valid XHTML 1.0 Strict"
    =================================================== */
 session_name("Cdt_Lcs");
 @session_start();
-//si la page est appelï¿½e par un utilisateur non identifiï¿½
+include "../Includes/check.php";
+if (!check()) exit;
+//si la page est appelee par un utilisateur non identifiï¿½
 if (!isset($_SESSION['login']) )exit;
 
-//si la page est appelï¿½e par un utilisateur non admin
+//si la page est appelee par un utilisateur non admin
 elseif ($_SESSION['login']!="admin") exit;
 
 //si clic sur le bouton Valider
 if (isset($_POST['Valider']))
 	{	
-	// Vï¿½rifier $nom_lien et la dï¿½barrasser de tout antislash et tags possibles
+	// Verifier $nom_lien et la debarrasser de tout antislash et tags possibles
 	if (strlen($_POST['list']) > 0)
 		{ 
 		$list= addSlashes(strip_tags(stripslashes($_POST['list'])));
 		}
 	else
-		{ // Si aucun commentaire n'a ï¿½tï¿½ saisi
+		{ // Si aucun commentaire n'a ete saisi
 		$list= "";
 		}
 			$loop=0;
@@ -36,7 +39,7 @@ if (isset($_POST['Valider']))
 					$loop++;
 					}
 	
-	//crï¿½ation du fichier
+	//creation du fichier
 	$nom_fichier="../Includes/data.inc.php";
 	$fichier=fopen($nom_fichier,"w");
 	fputs($fichier, "<?php \n");
@@ -48,21 +51,20 @@ if (isset($_POST['Valider']))
 	
 	}
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" >
-	<TITLE></TITLE>
-	<meta name="generator" content="Bluefish 1.0.7">
-	<META NAME="CREATED" CONTENT="20051226;22304481">
-	<META NAME="CHANGED" CONTENT="20051226;22565970">
-	<LINK href="../style/style.css" rel="stylesheet" type="text/css">
-	</HEAD>
-<BODY LANG="fr-FR" DIR="LTR">
-<form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<title>Cahier de textes num&eacute;rique</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link href="../style/style.css" rel="stylesheet" type="text/css" />
+	</head>
+<body>
+<fieldset id="field7">
 <legend id="legende"> Modification de la liste des classes </legend>
-<H4> Attention : pas de virgule ni de caract&#232;re CR &#224; la fin de la derni&#232;re ligne </H4>
-<?
+<form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
+ <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
+<?php
 //affichage du formulaire
 if (!isset($_POST['Valider']))
 	{
@@ -73,29 +75,29 @@ if (! ($NameFile) )
 	}
 	else
 	{
-	echo '<DIV><TEXTAREA NAME="list" COLS=80 ROWS=4 WRAP=virtual >'; 
+	echo '<p></p><div class="perso"><textarea name="list" cols="80" rows="4"  >';
 	while (!feof($NameFile))
 		{
 		$UneLigne= fgets($NameFile,255);
 		$extr=explode("\"",$UneLigne);
 		
-		if  (count($extr)==3 ) // ce n'est pas la 1ere ou la deniï¿½re ligne
+		if  (count($extr)==3 ) // ce n'est pas la 1ere ou la deniïere ligne
 		{
-		if ($extr[0]!="\$classe[0]=") echo ",";//on ne met pas de virgule devant la premiï¿½re classe
+		if ($extr[0]!="\$classe[0]=") echo ",";//on ne met pas de virgule devant la premiere classe
 		echo ($extr[1]);
 		}
 	}
-	echo '</TEXTAREA></div>';
+	echo '</textarea></div> Attention : pas de virgule ni de caract&#232;re CR &#224; la fin de la derni&#232;re ligne <br /><br />';
 	//affichage du bouton
-		echo '<div align="left"><input type="submit" name="Valider" value="Valider" ></div>';
+		echo '<div ><input type="submit" name="Valider" value="Valider" /></div>';
 	}
-	}
-
+}
 ?>
-
+ </div>
 </form>
-</BODY>
-</HTML>
-
-
-
+</fieldset>
+<?php
+include ('../Includes/pied.inc');
+?>
+</body>
+</html>

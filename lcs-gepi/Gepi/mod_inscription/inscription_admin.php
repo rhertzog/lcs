@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: inscription_admin.php 4950 2010-07-29 13:10:01Z regis $
+ * $Id: inscription_admin.php 5951 2010-11-22 17:05:48Z crob $
  *
- * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -40,7 +40,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
    header("Location: ../logout.php?auto=1");
    die();
-};
+}
 
 // Check access
 if (!checkAccess()) {
@@ -50,6 +50,7 @@ if (!checkAccess()) {
 
 
 if (isset($_POST['activer'])) {
+	check_token();
     if (!saveSetting("active_inscription", $_POST['activer'])){
 		$msg = "Erreur lors de l'enregistrement du paramètre activation/désactivation !";
 	}

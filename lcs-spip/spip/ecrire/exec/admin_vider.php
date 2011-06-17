@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 include_spip('inc/actions');
@@ -87,7 +87,7 @@ function exec_admin_vider_dist()
 		echo debut_cadre_relief("", true, "", _T('taille_repertoire_cache'));
 
 		include_spip('inc/invalideur');
-		if ($n = taille_du_cache())
+		if (($n = taille_du_cache())>250*1024)
 		  $info = _T('taille_cache_octets', array('octets' => taille_en_octets($n)));
 		else
 		  $info = _T('taille_cache_vide');
@@ -104,7 +104,7 @@ function exec_admin_vider_dist()
 
 		echo ' (', _T('cache_modifiable_webmestre'),')</p>', 
 			redirige_action_post('purger', 'cache', "admin_vider", '',
-					 "\n<div style='text-align: right'><input class='fondo' type='submit' value=\"" .
+					 "\n<div style='text-align: right'><input  type='submit' value=\"" .
 			 str_replace('"', '&quot;', _T('bouton_vider_cache')) .
 					 "\" /></div>");
 		echo fin_cadre_relief(true);
@@ -114,7 +114,7 @@ function exec_admin_vider_dist()
 		echo afficher_taille_cache_vignettes();
 
 		echo redirige_action_post('purger', 'vignettes', "admin_vider",'',
-					    "\n<div style='text-align: right'><input class='fondo' type='submit' value=\"" .
+					    "\n<div style='text-align: right'><input  type='submit' value=\"" .
 					    str_replace('"', '&quot;', _T('bouton_vider_cache')) .
 					    "\" /></div>");
 

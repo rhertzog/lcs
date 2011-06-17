@@ -27,7 +27,7 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Créer / paramétrer les référentiels";
-$VERSION_JS_FILE += 8;
+$VERSION_JS_FILE += 10;
 ?>
 
 <script type="text/javascript">
@@ -58,15 +58,16 @@ $VERSION_JS_FILE += 8;
 		$methode_calcul_texte = ($_SESSION['CALCUL_LIMITE']==0) ? 'Moyenne des '.$nb_best.' meilleures saisies.' : 'Moyenne des '.$nb_best.' meilleures saisies parmi les '.$_SESSION['CALCUL_LIMITE'].' dernières.';
 	}
 	?>
-	var methode_calcul_langue      = "<?php echo $methode_calcul_langue ?>";
-	var methode_calcul_texte       = "<?php echo $methode_calcul_texte ?>";
-	var id_matiere_transversale    = "<?php echo ID_MATIERE_TRANSVERSALE ?>";
-	var listing_id_niveaux_paliers = "<?php echo LISTING_ID_NIVEAUX_PALIERS ?>";
+	var methode_calcul_langue     = "<?php echo $methode_calcul_langue ?>";
+	var methode_calcul_texte      = "<?php echo $methode_calcul_texte ?>";
+	var id_matiere_transversale   = "<?php echo ID_MATIERE_TRANSVERSALE ?>";
+	var listing_id_niveaux_cycles = "<?php echo LISTING_ID_NIVEAUX_CYCLES ?>";
 </script>
 
 <form id="form_instance" action="">
 
 <ul class="puce">
+	<li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=referentiels_socle__referentiel_creer_parametrer">DOC : Créer / paramétrer les référentiels.</a></span></li>
 	<li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=referentiels_socle__referentiel_organisation">DOC : Organisation des items dans les référentiels.</a></span></li>
 	<li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=environnement_generalites__calcul_scores_etats_acquisitions">DOC : Calcul des scores et des états d'acquisitions.</a></span></li>
 	<li><span class="danger">Détruire un référentiel supprime les résultats associés de tous les élèves !</span></li>
@@ -82,33 +83,32 @@ $tab_niveau  = array();
 $tab_colonne = array();
 
 // On récupère la liste des matières où le professeur est rattaché, et s'il en est coordonnateur
-$DB_SQL = 'SELECT matiere_id,matiere_nom,matiere_partage,jointure_coord FROM sacoche_jointure_user_matiere ';
-$DB_SQL.= 'LEFT JOIN sacoche_matiere USING (matiere_id) ';
-$DB_SQL.= 'WHERE user_id=:user_id ';
-$DB_SQL.= 'ORDER BY matiere_nom ASC';
-$DB_VAR = array(':user_id'=>$_SESSION['USER_ID']);
-$DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+$DB_TAB = DB_STRUCTURE_lister_matieres_professeur_infos_referentiel($_SESSION['MATIERES'],$_SESSION['USER_ID']);
 if(count($DB_TAB))
 {
 	foreach($DB_TAB as $DB_ROW)
 	{
-		$tab_matiere[$DB_ROW['matiere_id']] = array( 'nom'=>html($DB_ROW['matiere_nom']) , 'partage'=>$DB_ROW['matiere_partage'] , 'coord'=>$DB_ROW['jointure_coord'] );
+		$tab_matiere[$DB_ROW['matiere_id']] = array( 'nom'=>html($DB_ROW['matiere_nom']) , 'partage'=>$DB_ROW['matiere_partage'] , 'nb_demandes'=>$DB_ROW['matiere_nb_demandes'] , 'coord'=>$DB_ROW['jointure_coord'] );
 	}
 }
-$liste_matieres = implode(',',array_keys($tab_matiere));
+$listing_matieres_id = implode(',',array_keys($tab_matiere));
 
-if(!$liste_matieres)
+if(!$listing_matieres_id)
 {
-	echo'<p><span class="danger">Vous n\'êtes coordonnateur d\'aucune matière de cet établissement !</span></p>';
+	echo'<p><span class="danger">Vous n\'êtes rattaché à aucune matière de l\'établissement !</span></p>';
 }
-elseif(!$_SESSION['NIVEAUX'])
+elseif(!$_SESSION['NIVEAUX']) // normalement impossible
 {
 	echo'<p><span class="danger">Aucun niveau n\'est rattaché à l\'établissement !</span></p>';
+}
+elseif(!$_SESSION['CYCLES']) // normalement impossible
+{
+	echo'<p><span class="danger">Aucun cycle n\'est rattaché à l\'établissement !</span></p>';
 }
 else
 {
 	// On récupère la liste des niveaux utilisés par l'établissement
-	$DB_TAB = DB_STRUCTURE_lister_niveaux_etablissement($_SESSION['NIVEAUX'],$_SESSION['PALIERS']);
+	$DB_TAB = DB_STRUCTURE_lister_niveaux_etablissement($_SESSION['NIVEAUX'],$_SESSION['CYCLES']);
 	$nb_niveaux = count($DB_TAB);
 	foreach($DB_TAB as $DB_ROW)
 	{
@@ -116,11 +116,7 @@ else
 	}
 	// On récupère la liste des référentiels par matière et niveau
 	$tab_partage = array('oui'=>'<img title="Référentiel partagé sur le serveur communautaire (MAJ le ◄DATE►)." alt="" src="./_img/partage1.gif" />','non'=>'<img title="Référentiel non partagé avec la communauté (choix du ◄DATE►)." alt="" src="./_img/partage0.gif" />','bof'=>'<img title="Référentiel dont le partage est sans intérêt (pas novateur)." alt="" src="./_img/partage0.gif" />','hs'=>'<img title="Référentiel dont le partage est sans objet (matière spécifique)." alt="" src="./_img/partage0.gif" />');
-	$DB_SQL = 'SELECT matiere_id,niveau_id,niveau_nom,referentiel_partage_etat,referentiel_partage_date,referentiel_calcul_methode,referentiel_calcul_limite FROM sacoche_referentiel ';
-	$DB_SQL.= 'LEFT JOIN sacoche_niveau USING (niveau_id) ';
-	$DB_SQL.= 'WHERE matiere_id IN('.$liste_matieres.') AND ( niveau_id IN('.$_SESSION['NIVEAUX'].') OR palier_id IN('.$_SESSION['PALIERS'].') ) ';
-	$DB_SQL.= 'ORDER BY matiere_id ASC, niveau_ordre ASC';
-	$DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , null);
+	$DB_TAB = DB_STRUCTURE_lister_referentiels_infos_details_matieres_niveaux($listing_matieres_id,$_SESSION['NIVEAUX'],$_SESSION['CYCLES']);
 	if(count($DB_TAB))
 	{
 		foreach($DB_TAB as $DB_ROW)
@@ -152,20 +148,30 @@ else
 			$tab_colonne[$DB_ROW['matiere_id']][$DB_ROW['niveau_id']] = '<td lang="'.$DB_ROW['referentiel_partage_etat'].'" class="v">Référentiel présent. '.str_replace('◄DATE►',affich_date($DB_ROW['referentiel_partage_date']),$tab_partage[$DB_ROW['referentiel_partage_etat']]).'</td>'.'<td lang="'.$DB_ROW['referentiel_calcul_methode'].'_'.$DB_ROW['referentiel_calcul_limite'].'" class="v">'.$methode_calcul_texte.'</td>';
 		}
 	}
+	// Construction du formulaire select du nombre de demandes
+	$select_demandes = '<select name="f_eleve_demandes" class="t8">';
+	for($nb_demandes=0 ; $nb_demandes<10 ; $nb_demandes++)
+	{
+		$texte = ($nb_demandes>0) ? ( ($nb_demandes>1) ? $nb_demandes.' demandes' : '1 seule demande' ) : 'aucune demande' ;
+		$select_demandes .= '<option value="'.$nb_demandes.'">'.$texte.'</option>';
+	}
+	$select_demandes .= '</select>';
+	$infobulle = '<img src="./_img/bulle_aide.png" alt="" title="Nombre maximal de demandes d\'évaluations simultanées autorisées pour un élève." />';
 	// On construit et affiche le tableau résultant
-	$affichage = '<table class="comp_view"><thead><tr><th>Matière</th><th>Niveau</th><th>Référentiel</th><th>Méthode de calcul</th><th class="nu"></th></tr></thead><tbody>'."\r\n";
+	$affichage = '<table class="vm_nug"><thead><tr><th>Matière</th><th>Niveau</th><th>Référentiel</th><th>Méthode de calcul</th><th class="nu"></th></tr></thead><tbody>'."\r\n";
 	foreach($tab_matiere as $matiere_id => $tab)
 	{
-		$rowspan = ($matiere_id!=ID_MATIERE_TRANSVERSALE) ? $nb_niveaux : mb_substr_count($_SESSION['PALIERS'],',','UTF-8')+1 ;
-		$matiere_nom   = $tab['nom'];
-		$matiere_coord = $tab['coord'];
-		$matiere_perso = ($tab['partage']) ? 0 : 1 ;
+		$rowspan = ($matiere_id!=ID_MATIERE_TRANSVERSALE) ? $nb_niveaux : mb_substr_count($_SESSION['CYCLES'],',','UTF-8')+1 ;
+		$matiere_nom    = $tab['nom'];
+		$matiere_coord  = $tab['coord'];
+		$matiere_perso  = ($tab['partage']) ? 0 : 1 ;
+		$matiere_nombre = ($matiere_coord) ? str_replace('value="'.$tab['nb_demandes'].'"','value="'.$tab['nb_demandes'].'" selected',$select_demandes) : str_replace('<select','<select disabled',$select_demandes) ;
 		$affichage .= '<tr><td colspan="5" class="nu">&nbsp;</td></tr>'."\r\n";
-		$affichage .= '<tr><td rowspan="'.$rowspan.'">'.$matiere_nom.'</td>';
+		$affichage .= '<tr><td rowspan="'.$rowspan.'" id="mat_'.$matiere_id.'"><b>'.$matiere_nom.'</b><br />'.$matiere_nombre.$infobulle.'</td>';
 		$affichage_suite = false;
 		foreach($tab_niveau as $niveau_id => $niveau_nom)
 		{
-			if( ($matiere_id!=ID_MATIERE_TRANSVERSALE) || (strpos(LISTING_ID_NIVEAUX_PALIERS,'.'.$niveau_id.'.')!==FALSE) )
+			if( ($matiere_id!=ID_MATIERE_TRANSVERSALE) || (strpos(LISTING_ID_NIVEAUX_CYCLES,'.'.$niveau_id.'.')!==FALSE) )
 			{
 				$ids = 'ids_'.$matiere_perso.'_'.$matiere_id.'_'.$niveau_id;
 				if($matiere_coord)

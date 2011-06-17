@@ -1,0 +1,3 @@
+use agendas_plug;
+UPDATE webcal_config SET cal_value = 'Y' WHERE cal_setting = 'DISABLE_CROSSDAY_EVENTS';
+UPDATE webcal_user_pref SET cal_value = 'Y' WHERE  webcal_user_pref.cal_setting = 'DISABLE_CROSSDAY_EVENTS';

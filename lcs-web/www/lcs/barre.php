@@ -1,5 +1,5 @@
 <?php
-/* lcs/barre.php derniere mise a jour : 29/10/2010 */
+/* lcs/barre.php derniere mise a jour : 13/01/2011 */
 
 // HelpDesk Ajout variable session userHD pour memoriser choix user helpdesk autre qu'admin
 session_start();
@@ -32,9 +32,8 @@ list ($idpers, $login)= isauth();
 <html>
 <head>
   <title>...::: Barre LCS 2.0 :::...</title>
-  <meta HTTP-EQUIV="Content-Type" CONTENT="tetx/html; charset=ISO-8859-1">
-  <!--script type="text/javascript" src="../libjs/jquery/jquery.js"></script-->
-  <script type="text/javascript" src="../lib/js/jquery.js"></script>
+  <meta HTTP-EQUIV="Content-Type" CONTENT="tetx/html; charset=utf-8">
+  <script type="text/javascript" src="../libjs/jquery/jquery.js"></script>
 <style type="text/css">
 body	{
 	margin-right: 6%;
@@ -178,8 +177,11 @@ if ( $idpers==0 ) {
  	// Un utilisateur est authentifie
 	echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Accueil\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c3','images/$path/mon_LCS_BP_r1_c3_f2.gif','images/$path/mon_LCS_BP_r1_c3_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c3','images/$path/mon_LCS_BP_r1_c3_f3.gif',1);\" ><img name=\"BP_r1_c3\" title=\"Mon LCS\" alt=\"Mon LCS\" src=\"images/$path/mon_LCS_BP_r1_c3.gif\" border=\"0\"></a></div>\n";
    	echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Applis\" target=\"principale\"  onMouseOut=\"MM_nbGroup('out');\" onMouseOver=\"MM_nbGroup('over','BP_r1_c4','images/$path/BP_r1_c4_f2.gif','images/$path/BP_r1_c4_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c4','images/$path/BP_r1_c4_f3.gif',1);\" ><img name=\"BP_r1_c4\" title=\"Applications\" alt=\"Applications\" src=\"images/$path/BP_r1_c4.gif\" border=\"0\"></a></div>\n";
-	if ( isset($squirrelmail) ) // Webmail
+	// Webmail
+	if ( isset($squirrelmail) ) // Squirrelmail
             echo "<div class=\"bouton\"><a href=\"statandgo.php?use=squirrelmail\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\" onMouseOver=\"MM_nbGroup('over','BP_r1_c5','images/$path/BP_r1_c5_f2.gif','images/$path/BP_r1_c5_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c5','images/$path/BP_r1_c5_f3.gif',1);\" ><img name=\"BP_r1_c5\" title=\"Webmail\" alt=\"Webmail\"  src=\"images/$path/BP_r1_c5.gif\" border=\"0\"></a></div>\n";
+	elseif ( isset($roundcube) ) // Roundcube
+            echo "<div class=\"bouton\"><a href=\"statandgo.php?use=roundcube\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\" onMouseOver=\"MM_nbGroup('over','BP_r1_c5','images/$path/BP_r1_c5_f2.gif','images/$path/BP_r1_c5_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c5','images/$path/BP_r1_c5_f3.gif',1);\" ><img name=\"BP_r1_c5\" title=\"Webmail\" alt=\"Webmail\"  src=\"images/$path/BP_r1_c5.gif\" border=\"0\"></a></div>\n";
 	if ( isset($spip) ) // CMS
             echo "<div class=\"bouton\"><a href=\"statandgo.php?use=spip\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c6','images/$path/BP_r1_c6_f2.gif','images/$path/BP_r1_c6_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c6','images/$path/BP_r1_c6_f3.gif',1);\" ><img name=\"BP_r1_c6\" title=\"Forum\" alt=\"Forum\" src=\"images/$path/BP_r1_c6.gif\" border=\"0\"></a></div>\n";
         if ( acces_btn_admin($idpers, $login) =="Y") // acces au menu d'administration

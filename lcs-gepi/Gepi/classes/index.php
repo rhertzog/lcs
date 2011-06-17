@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: index.php 5665 2010-10-14 15:51:55Z crob $
+* $Id: index.php 5907 2010-11-19 20:30:52Z crob $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -113,7 +113,7 @@ if ($nombre_lignes != 0) {
 		echo "</td>\n";
 
 		echo "<td>\n";
-		echo "<a href='../lib/confirm_query.php?liste_cible=$id_classe&amp;action=del_classe'><img src='../images/icons/delete.png' alt='' /> Supprimer</a>\n";
+		echo "<a href='../lib/confirm_query.php?liste_cible=$id_classe&amp;action=del_classe".add_token_in_url()."'><img src='../images/icons/delete.png' alt='' /> Supprimer</a>\n";
 		echo "</td>\n";
 
 		//=======================================

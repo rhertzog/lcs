@@ -3,7 +3,7 @@
 /*
  *
  *
- * @version $Id: visu_ele_func.lib.php 5512 2010-10-01 11:03:53Z crob $
+ * @version $Id: visu_ele_func.lib.php 6544 2011-02-26 22:31:25Z eabgrall $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -99,6 +99,7 @@ function info_eleve($ele_login) {
 	$tab_ele['ele_id']=$lig_ele->ele_id;
 	$tab_ele['no_gep']=$lig_ele->no_gep;
 	$tab_ele['email']=$lig_ele->email;
+	$tab_ele['date_sortie']=$lig_ele->date_sortie;
 
 	$tab_ele['code_lieu_naissance']=$lig_ele->lieu_naissance;
 	if($ele_lieu_naissance=="y") {

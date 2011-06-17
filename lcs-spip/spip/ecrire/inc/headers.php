@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -11,7 +11,7 @@
 \***************************************************************************/
 
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // envoyer le navigateur sur une nouvelle adresse
 // en evitant les attaques par la redirection (souvent indique par 1 $_GET)
@@ -25,7 +25,7 @@ function redirige_par_entete($url, $equiv='', $status = 302) {
 	# en theorie on devrait faire ca tout le temps, mais quand la chaine
 	# commence par ? c'est imperatif, sinon l'url finale n'est pas la bonne
 	if ($url[0]=='?')
-		$url = url_de_base().$url;
+		$url = url_de_base().(_DIR_RESTREINT?'':_DIR_RESTREINT_ABS).$url;
 	if ($url[0]=='#')
 		$url = self('&').$url;
 
@@ -98,7 +98,7 @@ function redirige_formulaire($url, $equiv = '', $format='message') {
 		# en theorie on devrait faire ca tout le temps, mais quand la chaine
 		# commence par ? c'est imperatif, sinon l'url finale n'est pas la bonne
 		if ($url[0]=='?')
-			$url = url_de_base().$url;
+			$url = url_de_base().(_DIR_RESTREINT?'':_DIR_RESTREINT_ABS).$url;
 		$url = str_replace('&amp;','&',$url);
 		spip_log("redirige formulaire ajax: $url");
 		include_spip('inc/filtres');

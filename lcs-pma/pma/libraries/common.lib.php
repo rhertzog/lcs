@@ -7,7 +7,7 @@
      $_LCS['login']=$login;
  }
  // fin jlcf modif 1/3
-/* vim: set expandtab sw=4 ts=4 sts=4: */
+ /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * Misc functions used all over the scripts.
  *
@@ -1088,6 +1088,9 @@ function PMA_showMessage($message, $sql_query = null, $type = 'notice')
 
         // Basic url query part
         $url_params = array();
+        if (! isset($GLOBALS['db'])) {
+            $GLOBALS['db'] = '';
+        }
         if (strlen($GLOBALS['db'])) {
             $url_params['db'] = $GLOBALS['db'];
             if (strlen($GLOBALS['table'])) {
@@ -1639,7 +1642,7 @@ function PMA_linkOrButton($url, $message, $tag_params = array(),
         $tmp = $tag_params;
         $tag_params = array();
         if (!empty($tmp)) {
-            $tag_params['onclick'] = 'return confirmLink(this, \'' . $tmp . '\')';
+            $tag_params['onclick'] = 'return confirmLink(this, \'' . PMA_escapeJsString($tmp) . '\')';
         }
         unset($tmp);
     }

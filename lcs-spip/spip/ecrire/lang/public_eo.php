@@ -3,12 +3,13 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // A
 'accueil_site' => 'Hejmpa&#285;o',
+'article' => 'Article', # NEW
 'articles' => 'Artikoloj',
 'articles_auteur' => 'Artikoloj de tiu a&#365;toro',
 'articles_populaires' => 'La plej popularaj artikoloj',
@@ -18,16 +19,20 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'aucun_site' => 'Neniu retejo &#265;e tiu adreso',
 'aucune_breve' => 'Neniu fulm-informo &#265;e tiu adreso',
 'aucune_rubrique' => 'Neniu rubriko &#265;e tiu adreso',
+'auteur' => 'Auteur', # NEW
+'autres' => 'Aliaj',
 'autres_breves' => 'Neniu fulm-informo',
 'autres_groupes_mots_clefs' => 'Aliaj grupoj de &#349;losilvortoj',
 'autres_sites' => 'Aliaj retejoj',
 
 // B
 'bonjour' => 'Bonan tagon',
+'breve' => 'Br&egrave;ve', # NEW
 'breves' => 'Fulm-informoj',
 
 // C
 'commenter_site' => 'Komenti tiun retejon',
+'copie_document_impossible' => 'Estas neeble kopii la dokumenton',
 
 // D
 'date' => 'Dato',
@@ -36,6 +41,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'derniers_articles' => 'Lastaj artikoloj',
 'derniers_commentaires' => 'Lastaj komentoj',
 'derniers_messages_forum' => 'Lastaj mesa&#285;oj publikigitaj en la forumoj',
+'documents_interdits_forum' => 'Dokumentoj malpermesitaj en la forumo',
 
 // E
 'edition_mode_texte' => 'Teksta eldono de',
@@ -45,6 +51,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'espace_prive' => 'Privata spaco',
 
 // F
+'formats_acceptes' => 'Formatoj akceptitaj : @formats@.',
 'forum' => 'Forumo',
 
 // H
@@ -53,6 +60,9 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 // J
 'jours' => 'tagoj',
 
+// L
+'lien_connecter' => 'Ensaluti',
+
 // M
 'meme_auteur' => 'De la sama a&#365;toro',
 'meme_rubrique' => 'En la sama rubriko',
@@ -60,6 +70,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'message' => 'Mesa&#285;o',
 'messages_forum' => 'Forum-mesa&#285;oj',
 'messages_recents' => 'La plej fre&#349;aj forum-mesa&#285;oj',
+'mots_clef' => 'Mot-cl&eacute;', # NEW
 'mots_clefs' => '&#348;losilvortoj',
 'mots_clefs_meme_groupe' => '&#348;losilvortoj en la sama grupo',
 
@@ -95,6 +106,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'site_realise_avec_spip' => 'Retejo pelata de SPIP',
 'sites_web' => 'Retejoj',
 'sous_rubriques' => 'Sub-rubrikoj',
+'spam' => 'Trudmesa&#285;o',
 'suite' => 'sekvo',
 'sur_web' => '&#264;e la reto',
 'syndiquer_rubrique' => 'Abonrilatigi tiun rubrikon',

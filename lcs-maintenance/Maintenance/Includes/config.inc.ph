@@ -28,6 +28,7 @@ $DBAUTHMAINT	= "maint_plug";
 $PATH2PLUG      = "/usr/share/lcs/Plugins/Maintenance";
 
 $authlinkmaint = @mysql_connect("$HOSTAUTH", "$USERAUTH", "$PASSAUTH");
+mysql_set_charset('utf8',$authlinkmaint);
 $resultmaint = @mysql_select_db($DBAUTHMAINT)or die("Impossible de se connecter à la base $DBAUTHMAINT.") ;
 
 # Recuperation des parametres Catégorie 1 de l'appli depuis la table params de la bdd

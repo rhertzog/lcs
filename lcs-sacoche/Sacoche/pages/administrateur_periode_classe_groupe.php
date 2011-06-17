@@ -27,31 +27,30 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Affecter les périodes aux classes &amp; groupes";
-$VERSION_JS_FILE += 1;
+$VERSION_JS_FILE += 2;
 ?>
 
 <?php
 // Fabrication des éléments select du formulaire
-$select_periodes        = afficher_select(DB_STRUCTURE_OPT_periodes_etabl()        , $select_nom=false , $option_first='non' , $selection=false , $optgroup='non');
-$select_classes_groupes = afficher_select(DB_STRUCTURE_OPT_classes_groupes_etabl() , $select_nom=false , $option_first='non' , $selection=false , $optgroup='oui');
+$select_periodes        = afficher_select(DB_STRUCTURE_OPT_periodes_etabl($alerte=TRUE) , $select_nom=false , $option_first='non' , $selection=false , $optgroup='non');
+$select_classes_groupes = afficher_select(DB_STRUCTURE_OPT_classes_groupes_etabl()      , $select_nom=false , $option_first='non' , $selection=false , $optgroup='oui');
 ?>
 
-<p class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_periodes">DOC : Gestion des périodes</a></p>
+<p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_periodes">DOC : Gestion des périodes</a></span></p>
 
 <hr />
 
 <form action="">
 	<table><tr>
 		<td class="nu" style="width:25em">
-			<b>Liste des périodes :</b><br />
-			<select id="select_periodes" name="select_periodes[]" multiple="multiple" size="11" class="t8"><?php echo $select_periodes; ?></select>
+			<b>Liste des périodes :</b> <img alt="" src="./_img/bulle_aide.png" title="Utiliser la touche &laquo&nbsp;Shift&nbsp;&raquo; pour une sélection multiple contiguë.<br />Utiliser la touche &laquo&nbsp;Ctrl&nbsp;&raquo; pour une sélection multiple non contiguë." /><br />
+			<select id="select_periodes" name="select_periodes[]" multiple size="11" class="t8"><?php echo $select_periodes; ?></select>
 		</td>
 		<td class="nu" style="width:20em">
-			<b>Liste des classes &amp; groupes :</b><br />
-			<select id="select_classes_groupes" name="select_classes_groupes[]" multiple="multiple" size="11" class="t8"><?php echo $select_classes_groupes; ?></select>
+			<b>Liste des classes &amp; groupes :</b> <img alt="" src="./_img/bulle_aide.png" title="Utiliser la touche &laquo&nbsp;Shift&nbsp;&raquo; pour une sélection multiple contiguë.<br />Utiliser la touche &laquo&nbsp;Ctrl&nbsp;&raquo; pour une sélection multiple non contiguë." /><br />
+			<select id="select_classes_groupes" name="select_classes_groupes[]" multiple size="11" class="t8"><?php echo $select_classes_groupes; ?></select>
 		</td>
 		<td class="nu" style="width:25em">
-			<p><span class="astuce">Utiliser "<span class="i">Shift + clic</span>" ou "<span class="i">Ctrl + clic</span>"<br />pour une sélection multiple.</span></p>
 			<p>
 				<button id="ajouter" type="button"><img alt="" src="./_img/bouton/periode_ajouter.png" /> Ajouter ces associations.</button><br />
 				du <input id="f_date_debut" name="f_date_debut" size="9" type="text" value="<?php echo date("d/m/Y") ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q><br />

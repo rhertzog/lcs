@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // http://doc.spip.org/@action_instituer_article_dist
 function action_instituer_article_dist() {
@@ -23,6 +23,13 @@ function action_instituer_article_dist() {
 	if (!$statut) return; // impossible mais sait-on jamais
 
 	$id_article = intval($id_article);
+
+	// si on passe un statut_old, le controler
+	// http://trac.rezo.net/trac/spip/ticket/1932
+	if ($old = _request('statut_old')
+	AND $s = sql_fetsel('statut', 'spip_articles', 'id_article='.sql_quote($id_article))
+	AND $s['statut'] != $old)
+		return;
 
 	include_spip('action/editer_article');
 

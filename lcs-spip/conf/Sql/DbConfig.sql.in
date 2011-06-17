@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: spip_lcs
 -- ------------------------------------------------------
--- Server version	5.0.32-Debian_7etch8-log
+-- Server version	5.0.51a-24+lenny5
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,52 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `fichiers`
+--
+
+DROP TABLE IF EXISTS `fichiers`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `fichiers` (
+  `chemin` varchar(200) NOT NULL default '',
+  PRIMARY KEY  (`chemin`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `fichiers`
+--
+
+LOCK TABLES `fichiers` WRITE;
+/*!40000 ALTER TABLE `fichiers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `fichiers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_affecter`
+--
+
+DROP TABLE IF EXISTS `spip_affecter`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_affecter` (
+  `var` varchar(100) default NULL,
+  `fonction` varchar(100) default NULL,
+  `cle` varchar(100) default NULL,
+  `valeur` varchar(100) default NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_affecter`
+--
+
+LOCK TABLES `spip_affecter` WRITE;
+/*!40000 ALTER TABLE `spip_affecter` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_affecter` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `spip_articles`
@@ -100,6 +146,7 @@ CREATE TABLE `spip_auteurs` (
   `source` varchar(10) NOT NULL default 'spip',
   `lang` varchar(10) NOT NULL default '',
   `extra` longtext,
+  `webmestre` varchar(3) NOT NULL default 'non',
   PRIMARY KEY  (`id_auteur`),
   KEY `login` (`login`),
   KEY `statut` (`statut`),
@@ -113,7 +160,7 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `spip_auteurs` WRITE;
 /*!40000 ALTER TABLE `spip_auteurs` DISABLE KEYS */;
-INSERT INTO `spip_auteurs` VALUES (1,'admin','','admin@@DOMAINE@','','','admin','','','0minirezo','2009-04-10 15:41:54','','','0000-00-00 00:00:00',NULL,NULL,'NULL','NULL','a:1:{s:3:\"cnx\";s:0:\"\";}',NULL,'ldap','',NULL);
+INSERT INTO `spip_auteurs` VALUES (1,'admin','','admin@@DOMAINE@','','','admin','','','0minirezo','2011-04-05 14:04:41','','','2011-04-05 16:04:41',NULL,NULL,'NULL','NULL','a:1:{s:3:\"cnx\";s:0:\"\";}',NULL,'ldap','',NULL,'oui');
 /*!40000 ALTER TABLE `spip_auteurs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -142,6 +189,83 @@ LOCK TABLES `spip_auteurs_articles` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `spip_auteurs_courriers`
+--
+
+DROP TABLE IF EXISTS `spip_auteurs_courriers`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_auteurs_courriers` (
+  `id_auteur` bigint(21) NOT NULL default '0',
+  `id_courrier` bigint(21) NOT NULL default '0',
+  `statut` enum('a_envoyer','envoye','echec') NOT NULL default 'a_envoyer',
+  `etat` varchar(5) NOT NULL default '',
+  `maj` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id_auteur`,`id_courrier`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_auteurs_courriers`
+--
+
+LOCK TABLES `spip_auteurs_courriers` WRITE;
+/*!40000 ALTER TABLE `spip_auteurs_courriers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_auteurs_courriers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_auteurs_elargis`
+--
+
+DROP TABLE IF EXISTS `spip_auteurs_elargis`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_auteurs_elargis` (
+  `id` bigint(21) NOT NULL auto_increment,
+  `id_auteur` bigint(21) NOT NULL,
+  `spip_listes_format` varchar(8) NOT NULL default 'non',
+  PRIMARY KEY  (`id`),
+  KEY `id_auteur` (`id_auteur`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_auteurs_elargis`
+--
+
+LOCK TABLES `spip_auteurs_elargis` WRITE;
+/*!40000 ALTER TABLE `spip_auteurs_elargis` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_auteurs_elargis` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_auteurs_listes`
+--
+
+DROP TABLE IF EXISTS `spip_auteurs_listes`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_auteurs_listes` (
+  `id_auteur` bigint(21) NOT NULL default '0',
+  `id_liste` bigint(21) NOT NULL default '0',
+  `date_inscription` datetime NOT NULL default '0000-00-00 00:00:00',
+  `statut` enum('a_valider','valide') NOT NULL default 'a_valider',
+  `format` enum('html','texte') NOT NULL default 'html',
+  PRIMARY KEY  (`id_auteur`,`id_liste`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_auteurs_listes`
+--
+
+LOCK TABLES `spip_auteurs_listes` WRITE;
+/*!40000 ALTER TABLE `spip_auteurs_listes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_auteurs_listes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `spip_auteurs_messages`
 --
 
@@ -164,6 +288,29 @@ SET character_set_client = @saved_cs_client;
 LOCK TABLES `spip_auteurs_messages` WRITE;
 /*!40000 ALTER TABLE `spip_auteurs_messages` DISABLE KEYS */;
 /*!40000 ALTER TABLE `spip_auteurs_messages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_auteurs_mod_listes`
+--
+
+DROP TABLE IF EXISTS `spip_auteurs_mod_listes`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_auteurs_mod_listes` (
+  `id_auteur` bigint(21) NOT NULL,
+  `id_liste` bigint(21) NOT NULL,
+  PRIMARY KEY  (`id_auteur`,`id_liste`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_auteurs_mod_listes`
+--
+
+LOCK TABLES `spip_auteurs_mod_listes` WRITE;
+/*!40000 ALTER TABLE `spip_auteurs_mod_listes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_auteurs_mod_listes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -222,6 +369,47 @@ SET character_set_client = @saved_cs_client;
 LOCK TABLES `spip_breves` WRITE;
 /*!40000 ALTER TABLE `spip_breves` DISABLE KEYS */;
 /*!40000 ALTER TABLE `spip_breves` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_courriers`
+--
+
+DROP TABLE IF EXISTS `spip_courriers`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_courriers` (
+  `id_courrier` bigint(21) NOT NULL auto_increment,
+  `id_auteur` bigint(21) NOT NULL,
+  `id_liste` bigint(21) NOT NULL default '0',
+  `titre` text NOT NULL,
+  `texte` longblob NOT NULL,
+  `message_texte` longblob NOT NULL,
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `statut` varchar(10) NOT NULL,
+  `type` varchar(10) NOT NULL,
+  `email_test` varchar(255) NOT NULL default '',
+  `total_abonnes` bigint(21) NOT NULL default '0',
+  `nb_emails_envoyes` bigint(21) NOT NULL default '0',
+  `nb_emails_non_envoyes` bigint(21) NOT NULL default '0',
+  `nb_emails_echec` bigint(21) NOT NULL default '0',
+  `nb_emails_html` bigint(21) NOT NULL default '0',
+  `nb_emails_texte` bigint(21) NOT NULL default '0',
+  `date_debut_envoi` datetime NOT NULL default '0000-00-00 00:00:00',
+  `date_fin_envoi` datetime NOT NULL default '0000-00-00 00:00:00',
+  `idx` enum('','1','non','oui','idx') NOT NULL default '',
+  PRIMARY KEY  (`id_courrier`),
+  KEY `idx` (`idx`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_courriers`
+--
+
+LOCK TABLES `spip_courriers` WRITE;
+/*!40000 ALTER TABLE `spip_courriers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_courriers` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -288,6 +476,91 @@ LOCK TABLES `spip_documents_liens` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `spip_evenements`
+--
+
+DROP TABLE IF EXISTS `spip_evenements`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_evenements` (
+  `id_evenement` bigint(21) NOT NULL auto_increment,
+  `id_article` bigint(21) NOT NULL default '0',
+  `date_debut` datetime NOT NULL default '0000-00-00 00:00:00',
+  `date_fin` datetime NOT NULL default '0000-00-00 00:00:00',
+  `titre` text NOT NULL,
+  `descriptif` text NOT NULL,
+  `lieu` text NOT NULL,
+  `adresse` text NOT NULL,
+  `inscription` tinyint(1) NOT NULL default '0',
+  `places` int(11) NOT NULL default '0',
+  `horaire` varchar(3) NOT NULL default 'oui',
+  `id_evenement_source` bigint(21) NOT NULL,
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id_evenement`),
+  KEY `date_debut` (`date_debut`),
+  KEY `date_fin` (`date_fin`),
+  KEY `id_article` (`id_article`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_evenements`
+--
+
+LOCK TABLES `spip_evenements` WRITE;
+/*!40000 ALTER TABLE `spip_evenements` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_evenements` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_evenements_participants`
+--
+
+DROP TABLE IF EXISTS `spip_evenements_participants`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_evenements_participants` (
+  `id_evenement` bigint(21) NOT NULL default '0',
+  `id_auteur` bigint(21) NOT NULL default '0',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `reponse` char(3) NOT NULL default '?',
+  PRIMARY KEY  (`id_evenement`,`id_auteur`),
+  KEY `id_auteur` (`id_auteur`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_evenements_participants`
+--
+
+LOCK TABLES `spip_evenements_participants` WRITE;
+/*!40000 ALTER TABLE `spip_evenements_participants` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_evenements_participants` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_for`
+--
+
+DROP TABLE IF EXISTS `spip_for`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_for` (
+  `debut` int(11) default NULL,
+  `fin` int(11) default NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_for`
+--
+
+LOCK TABLES `spip_for` WRITE;
+/*!40000 ALTER TABLE `spip_for` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_for` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `spip_forum`
 --
 
@@ -310,7 +583,7 @@ CREATE TABLE `spip_forum` (
   `nom_site` text NOT NULL,
   `url_site` text NOT NULL,
   `statut` varchar(8) NOT NULL default '0',
-  `ip` varchar(16) NOT NULL default '',
+  `ip` varchar(40) NOT NULL default '',
   `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   `id_auteur` bigint(20) NOT NULL default '0',
   `id_message` bigint(21) NOT NULL default '0',
@@ -351,6 +624,7 @@ CREATE TABLE `spip_groupes_mots` (
   `comite` varchar(3) NOT NULL default '',
   `forum` varchar(3) NOT NULL default '',
   `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `technique` varchar(15) NOT NULL default '',
   PRIMARY KEY  (`id_groupe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -362,6 +636,66 @@ SET character_set_client = @saved_cs_client;
 LOCK TABLES `spip_groupes_mots` WRITE;
 /*!40000 ALTER TABLE `spip_groupes_mots` DISABLE KEYS */;
 /*!40000 ALTER TABLE `spip_groupes_mots` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_langues`
+--
+
+DROP TABLE IF EXISTS `spip_langues`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_langues` (
+  `langue` varchar(2) NOT NULL default '',
+  PRIMARY KEY  (`langue`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_langues`
+--
+
+LOCK TABLES `spip_langues` WRITE;
+/*!40000 ALTER TABLE `spip_langues` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_langues` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_listes`
+--
+
+DROP TABLE IF EXISTS `spip_listes`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_listes` (
+  `id_liste` bigint(21) NOT NULL auto_increment,
+  `titre` text NOT NULL,
+  `descriptif` text NOT NULL,
+  `texte` longblob NOT NULL,
+  `pied_page` longblob NOT NULL,
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `titre_message` varchar(255) NOT NULL default '',
+  `patron` varchar(255) NOT NULL default '',
+  `periode` bigint(21) NOT NULL,
+  `lang` varchar(10) NOT NULL,
+  `maj` datetime NOT NULL default '0000-00-00 00:00:00',
+  `statut` varchar(10) NOT NULL,
+  `email_envoi` tinytext NOT NULL,
+  `message_auto` varchar(10) NOT NULL,
+  `extra` longblob,
+  `idx` enum('','1','non','oui','idx') NOT NULL default '',
+  PRIMARY KEY  (`id_liste`),
+  KEY `idx` (`idx`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_listes`
+--
+
+LOCK TABLES `spip_listes` WRITE;
+/*!40000 ALTER TABLE `spip_listes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_listes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -418,8 +752,35 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `spip_meta` WRITE;
 /*!40000 ALTER TABLE `spip_meta` DISABLE KEYS */;
-INSERT INTO `spip_meta` VALUES ('charset_sql_base','utf8','non','2009-11-06 08:19:46'),('charset_collation_sql_base','utf8_general_ci','non','2009-11-06 08:19:46'),('charset_sql_connexion','utf8','non','2009-11-06 08:19:46'),('version_installee','14558','non','2009-11-06 08:19:46'),('nouvelle_install','1','non','2009-11-06 08:19:46'),('plugin','a:0:{}','oui','2009-11-06 08:19:46'),('plugin_header','','oui','2009-11-06 08:19:46'),('charset','utf-8','oui','2009-11-06 08:20:18'),('alea_ephemere_ancien','','oui','2009-11-06 08:20:18'),('alea_ephemere','57f78510a3e21375f1f8e11b2b9202cb','oui','2009-11-06 08:20:18'),('alea_ephemere_date','1257495618','oui','2009-11-06 08:20:18'),('langues_proposees','ar,ast,bg,br,bs,ca,cpf,cpf_hat,cs,da,de,en,eo,es,eu,fa,fon,fr,gl,hu,id,it,it_fem,ja,km,lb,my,nl,oc_auv,oc_gsc,oc_lms,oc_lnc,oc_ni,oc_ni_la,oc_prv,oc_va,pl,pt,pt_br,ro,ru,sv,tr,vi,zh','oui','2009-11-06 08:20:18'),('langue_site','fr','oui','2009-11-06 08:20:18'),('pcre_u','u','oui','2009-11-06 08:20:18'),('ldap_statut_import','1comite','oui','2009-11-06 08:20:40'),('email_webmaster','admin@@DOMAINE@','oui','2009-11-06 08:21:13'),('nom_site','Forum LCS','oui','2009-11-06 08:21:13'),('adresse_site','http://@DOMAINENAME@/spip','oui','2009-11-06 08:21:13'),('descriptif_site','','oui','2009-11-06 08:21:13'),('activer_breves','non','oui','2009-11-06 08:21:13'),('activer_logos','oui','oui','2009-11-06 08:21:13'),('activer_logos_survol','non','oui','2009-11-06 08:21:13'),('config_precise_groupes','non','oui','2009-11-06 08:21:13'),('mots_cles_forums','non','oui','2009-11-06 08:21:13'),('articles_surtitre','non','oui','2009-11-06 08:21:13'),('articles_soustitre','non','oui','2009-11-06 08:21:13'),('articles_descriptif','non','oui','2009-11-06 08:21:13'),('articles_chapeau','non','oui','2009-11-06 08:21:13'),('articles_texte','oui','oui','2009-11-06 08:21:13'),('articles_ps','non','oui','2009-11-06 08:21:13'),('articles_redac','non','oui','2009-11-06 08:21:13'),('articles_mots','non','oui','2009-11-06 08:21:13'),('post_dates','non','oui','2009-11-06 08:21:13'),('articles_urlref','non','oui','2009-11-06 08:21:13'),('articles_redirection','non','oui','2009-11-06 08:21:13'),('creer_preview','non','oui','2009-11-06 08:21:13'),('taille_preview','150','oui','2009-11-06 08:21:13'),('articles_modif','non','oui','2009-11-06 08:21:13'),('rubriques_descriptif','non','oui','2009-11-06 08:21:13'),('rubriques_texte','oui','oui','2009-11-06 08:21:13'),('forums_titre','oui','oui','2009-11-06 08:21:13'),('forums_texte','oui','oui','2009-11-06 08:21:13'),('forums_urlref','non','oui','2009-11-06 08:21:13'),('forums_afficher_barre','oui','oui','2009-11-06 08:21:13'),('formats_documents_forum','','oui','2009-11-06 08:21:13'),('activer_sites','non','oui','2009-11-06 08:21:13'),('proposer_sites','0','oui','2009-11-06 08:21:13'),('activer_syndic','oui','oui','2009-11-06 08:21:13'),('moderation_sites','non','oui','2009-11-06 08:21:13'),('forums_publics','posteriori','oui','2009-11-06 08:21:13'),('accepter_inscriptions','non','oui','2009-11-06 08:21:13'),('accepter_visiteurs','non','oui','2009-11-06 08:21:13'),('prevenir_auteurs','non','oui','2009-11-06 08:21:13'),('suivi_edito','non','oui','2009-11-06 08:21:13'),('adresse_suivi','','oui','2009-11-06 08:21:13'),('adresse_suivi_inscription','','oui','2009-11-06 08:21:13'),('adresse_neuf','','oui','2009-11-06 08:21:13'),('jours_neuf','','oui','2009-11-06 08:21:13'),('quoi_de_neuf','non','oui','2009-11-06 08:21:13'),('forum_prive','oui','oui','2009-11-06 08:21:13'),('forum_prive_objets','oui','oui','2009-11-06 08:21:13'),('forum_prive_admin','non','oui','2009-11-06 08:21:13'),('messagerie_agenda','oui','oui','2009-11-06 08:21:13'),('articles_versions','non','oui','2009-11-06 08:21:13'),('activer_statistiques','non','oui','2009-11-06 08:21:13'),('activer_captures_referers','non','oui','2009-11-06 08:21:13'),('documents_article','non','oui','2009-11-06 08:21:13'),('documents_rubrique','non','oui','2009-11-06 08:21:13'),('documents_date','non','oui','2009-11-06 08:21:13'),('syndication_integrale','oui','oui','2009-11-06 08:21:13'),('dir_img','IMG/','oui','2009-11-06 08:21:13'),('multi_articles','non','oui','2009-11-06 08:21:13'),('multi_rubriques','non','oui','2009-11-06 08:21:13'),('multi_secteurs','non','oui','2009-11-06 08:21:13'),('gerer_trad','non','oui','2009-11-06 08:21:13'),('langues_multilingue','','oui','2009-11-06 08:21:13'),('type_urls','page','oui','2009-11-06 08:21:13'),('email_envoi','','oui','2009-11-06 08:21:13'),('auto_compress_http','non','oui','2009-11-06 08:21:13'),('auto_compress_js','non','oui','2009-11-06 08:21:13'),('auto_compress_css','non','oui','2009-11-06 08:21:13'),('langues_utilisees','fr','oui','2009-11-06 08:21:13'),('secret_du_site','4176044664af3dc7b41e565.20754339','oui','2009-11-06 08:21:15');
+INSERT INTO `spip_meta` VALUES ('charset_sql_base','utf8','non','2009-11-06 08:19:46'),('charset_collation_sql_base','utf8_general_ci','non','2009-11-06 08:19:46'),('charset_sql_connexion','utf8','non','2009-11-06 08:19:46'),('version_installee','15828','non','2011-04-05 14:04:02'),('nouvelle_install','1','non','2009-11-06 08:19:46'),('plugin','a:28:{s:6:\"IMAGES\";a:5:{s:3:\"nom\";s:26:\"Filtres Images et Couleurs\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:15:\"_DIR_EXTENSIONS\";s:3:\"dir\";s:14:\"filtres_images\";s:7:\"version\";s:5:\"1.0.1\";}s:11:\"MSIE_COMPAT\";a:5:{s:3:\"nom\";s:86:\"<multi>Support vieux navigateurs[de]Unterst&uuml;tzung &auml;lterer Webbrowser</multi>\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:15:\"_DIR_EXTENSIONS\";s:3:\"dir\";s:11:\"msie_compat\";s:7:\"version\";s:3:\"1.0\";}s:11:\"PORTE_PLUME\";a:5:{s:3:\"nom\";s:100:\"<multi>[fr]Porte plume[en]Quill[ar]&#1575;&#1604;&#1585;&#1610;&#1588;&#1577;[de]Federhalter</multi>\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:15:\"_DIR_EXTENSIONS\";s:3:\"dir\";s:11:\"porte_plume\";s:7:\"version\";s:5:\"1.7.8\";}s:8:\"SAFEHTML\";a:5:{s:3:\"nom\";s:8:\"SafeHTML\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:15:\"_DIR_EXTENSIONS\";s:3:\"dir\";s:8:\"safehtml\";s:7:\"version\";s:5:\"1.3.7\";}s:9:\"VERTEBRES\";a:5:{s:3:\"nom\";s:28:\"Vertebres, lecteur de tables\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:15:\"_DIR_EXTENSIONS\";s:3:\"dir\";s:9:\"vertebres\";s:7:\"version\";s:3:\"1.0\";}s:6:\"PLAYER\";a:5:{s:3:\"nom\";s:49:\" \n	Lecteur Multim&eacute;dia en Flash (MP3,flv)\n	\";s:4:\"etat\";s:3:\"dev\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:23:\"auto/Lecteur_multimedia\";s:7:\"version\";s:4:\"0.67\";}s:17:\"BOUCLESSANSTABLES\";a:5:{s:3:\"nom\";s:19:\"Boucles sans tables\";s:4:\"etat\";s:4:\"test\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:24:\"auto/boucles_sans_tables\";s:7:\"version\";s:3:\"1.0\";}s:3:\"CFG\";a:5:{s:3:\"nom\";s:90:\"<multi>\n    [fr]cfg: moteur de configuration\n    [de]cfg: Konfigurationsmotor\n    </multi>\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:8:\"auto/cfg\";s:7:\"version\";s:6:\"1.12.5\";}s:7:\"CEXTRAS\";a:5:{s:3:\"nom\";s:14:\"Champs Extras2\";s:4:\"etat\";s:4:\"test\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:18:\"auto/champs_extra2\";s:7:\"version\";s:5:\"0.8.4\";}s:14:\"COUTEAU_SUISSE\";a:5:{s:3:\"nom\";s:399:\"<multi>Swiss Knife[fr]Le Couteau Suisse[ca]El Ganivet Su&#237;s[ar]&#1587;&#1603;&#1610;&#1606; &#1575;&#1604;&#1580;&#1610;&#1576;[nl]Het Zwitserland Mes[gl]A navalla su&#237;za[es]La Navaja Suiza[de]Schweizer Taschenmesser[tr]&#304;svi&#231;re &#199;ak&#305;s&#305;[br]Ar Gontell Suis[pt_br]Canivete Su&#237;&#231;o[ast]La Navaya Suiza[gl]A navalla su&#237;za[ro]Cu&#355;itul Elve&#355;ian</multi>\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:19:\"auto/couteau_suisse\";s:7:\"version\";s:9:\"1.8.09.01\";}s:2:\"DD\";a:5:{s:3:\"nom\";s:13:\"Dump Download\";s:4:\"etat\";s:3:\"dev\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:18:\"auto/download_dump\";s:7:\"version\";s:3:\"0.2\";}s:5:\"ISPIP\";a:5:{s:3:\"nom\";s:112:\" \n	iSPIP 1.0 - <multi>\n	[fr]Squelette optimis&eacute; pour l\'iPhone / iPod Touch bas&eacute; sur iUI\n	</multi>\n	\";s:4:\"etat\";s:4:\"test\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:10:\"auto/ispip\";s:7:\"version\";s:3:\"1.0\";}s:15:\"MOTS_TECHNIQUES\";a:5:{s:3:\"nom\";s:27:\"Mots techniques pour SPIP 2\";s:4:\"etat\";s:4:\"test\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:20:\"auto/mots_techniques\";s:7:\"version\";s:3:\"0.7\";}s:5:\"NUAGE\";a:5:{s:3:\"nom\";s:5:\"Nuage\";s:4:\"etat\";s:4:\"test\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:10:\"auto/nuage\";s:7:\"version\";s:3:\"1.4\";}s:7:\"PALETTE\";a:5:{s:3:\"nom\";s:7:\"Palette\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:12:\"auto/palette\";s:7:\"version\";s:5:\"1.2.1\";}s:7:\"PDF2SWF\";a:5:{s:3:\"nom\";s:7:\"Pdf2Swf\";s:4:\"etat\";s:3:\"dev\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:26:\"auto/pdf2swf2spip_v0.1-dev\";s:7:\"version\";s:3:\"0.1\";}s:6:\"REC_MC\";a:5:{s:3:\"nom\";s:77:\"<multi>[fr]Recherche Multi-Crit&egrave;res[en]Multi Keywords Research</multi>\";s:4:\"etat\";s:3:\"dev\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:28:\"auto/recherche_multicriteres\";s:7:\"version\";s:3:\"0.2\";}s:8:\"SNIPPETS\";a:5:{s:3:\"nom\";s:13:\" \n	Snippets\n	\";s:4:\"etat\";s:4:\"test\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:13:\"auto/snippets\";s:7:\"version\";s:3:\"0.1\";}s:10:\"SPIP_BONUX\";a:5:{s:3:\"nom\";s:14:\"SPIP Bonux 2.0\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:15:\"auto/spip-bonux\";s:7:\"version\";s:3:\"1.8\";}s:10:\"SPIPLISTES\";a:5:{s:3:\"nom\";s:103:\"<multi>[fr]SPIP-Listes[en]SPIP-Lists[ar]&#1604;&#1608;&#1575;&#1574;&#1581; SPIP[es]SPIP-Listes</multi>\";s:4:\"etat\";s:4:\"test\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:22:\"auto/spip-listes_1_9_3\";s:7:\"version\";s:6:\"2.0125\";}s:5:\"METEO\";a:5:{s:3:\"nom\";s:20:\"SPIP-M&#233;t&#233;o\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:15:\"auto/spip-meteo\";s:7:\"version\";s:3:\"2.0\";}s:9:\"THICKBOX1\";a:5:{s:3:\"nom\";s:16:\" \n	Thickbox v2\n	\";s:4:\"etat\";s:4:\"test\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:14:\"auto/thickbox2\";s:7:\"version\";s:3:\"0.3\";}s:12:\"TISPIPSKELET\";a:5:{s:3:\"nom\";s:13:\"TiSpiP-sKeLeT\";s:4:\"etat\";s:4:\"test\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:22:\"auto/tispip_skelet_lcs\";s:7:\"version\";s:5:\"2.0.5\";}s:14:\"ACCESRESTREINT\";a:5:{s:3:\"nom\";s:85:\"<multi>[fr]Acces Restreint 3.0[es]Acceso restringido 3.0[en]Restricted Access</multi>\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:24:\"auto/acces_restreint_3_0\";s:7:\"version\";s:7:\"0.3.0.3\";}s:6:\"AGENDA\";a:5:{s:3:\"nom\";s:10:\"Agenda 2.0\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:15:\"auto/agenda_2_0\";s:7:\"version\";s:5:\"2.0.3\";}s:8:\"AUTORITE\";a:5:{s:3:\"nom\";s:64:\"<multi>\n      Autorit&#233;\n      [it]Autorit&#224;\n    </multi>\";s:4:\"etat\";s:4:\"test\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:13:\"auto/autorite\";s:7:\"version\";s:5:\"0.9.2\";}s:13:\"TYPOENLUMINEE\";a:5:{s:3:\"nom\";s:61:\" \n	Enluminures typographiques pour SPIP 2 &amp; Porte plume\n	\";s:4:\"etat\";s:4:\"test\";s:8:\"dir_type\";s:12:\"_DIR_PLUGINS\";s:3:\"dir\";s:34:\"auto/enluminures_typographiques_v3\";s:7:\"version\";s:5:\"3.0.0\";}s:11:\"COMPRESSEUR\";a:5:{s:3:\"nom\";s:11:\"Compresseur\";s:4:\"etat\";s:6:\"stable\";s:8:\"dir_type\";s:15:\"_DIR_EXTENSIONS\";s:3:\"dir\";s:11:\"compresseur\";s:7:\"version\";s:5:\"1.0.1\";}}','oui','2011-04-05 14:04:01'),('plugin_header','images(1.0.1),msie_compat(1.0),porte_plume(1.7.8),safehtml(1.3.7),vertebres(1.0),player(0.67),bouclessanstables(1.0),cfg(1.12.5),cextras(0.8.4),couteau_suisse(1.8.09.01),dd(0.2),ispip(1.0),mots_techniques(0.7),nuage(1.4),palette(1.2.1),pdf2swf(0.1),rec_mc(0.2),snippets(0.1),spip_bonux(1.8),spiplistes(2.0125),meteo(2.0),thickbox1(0.3),tispipskelet(2.0.5),accesrestreint(0.3.0.3),agenda(2.0.3),autorite(0.9.2),typoenluminee(3.0.0),compresseur(1.0.1)','oui','2011-04-05 14:04:01'),('charset','utf-8','oui','2009-11-06 08:20:18'),('alea_ephemere_ancien','06d03a0bbf8ff0f6365b8409ad3c568f','non','2011-04-05 14:04:41'),('alea_ephemere','e0d8ab25caaf88792d65c0e99cf1b58b','non','2011-04-05 14:04:41'),('alea_ephemere_date','1302012281','non','2011-04-05 14:04:41'),('langues_proposees','ar,ast,bg,br,bs,ca,cpf,cpf_hat,cs,da,de,en,eo,es,eu,fa,fon,fr,gl,hu,id,it,it_fem,ja,km,lb,my,nl,oc_auv,oc_gsc,oc_lms,oc_lnc,oc_ni,oc_ni_la,oc_prv,oc_va,pl,pt,pt_br,ro,ru,sv,tr,vi,zh','oui','2009-11-06 08:20:18'),('langue_site','fr','oui','2009-11-06 08:20:18'),('pcre_u','u','oui','2009-11-06 08:20:18'),('ldap_statut_import','1comite','oui','2009-11-06 08:20:40'),('email_webmaster','admin@@DOMAINE@','oui','2009-11-06 08:21:13'),('nom_site','Forum LCS','oui','2009-11-06 08:21:13'),('adresse_site','http://@DOMAINENAME@/spip','oui','2009-11-06 08:21:13'),('descriptif_site','','oui','2009-11-06 08:21:13'),('activer_breves','oui','oui','2010-01-31 03:50:59'),('activer_logos','oui','oui','2009-11-06 08:21:13'),('activer_logos_survol','non','oui','2009-11-06 08:21:13'),('config_precise_groupes','oui','oui','2010-01-31 03:50:59'),('mots_cles_forums','non','oui','2009-11-06 08:21:13'),('articles_surtitre','non','oui','2009-11-06 08:21:13'),('articles_soustitre','non','oui','2009-11-06 08:21:13'),('articles_descriptif','oui','oui','2010-01-31 03:50:59'),('articles_chapeau','oui','oui','2010-01-31 03:50:59'),('articles_texte','oui','oui','2009-11-06 08:21:13'),('articles_ps','oui','oui','2010-01-31 03:50:59'),('articles_redac','non','oui','2009-11-06 08:21:13'),('articles_mots','oui','oui','2010-01-31 03:50:59'),('post_dates','non','oui','2009-11-06 08:21:13'),('articles_urlref','oui','oui','2010-01-31 03:50:59'),('articles_redirection','oui','oui','2010-01-31 03:50:59'),('creer_preview','oui','oui','2010-01-31 03:50:59'),('taille_preview','150','oui','2009-11-06 08:21:13'),('articles_modif','non','oui','2009-11-06 08:21:13'),('rubriques_descriptif','non','oui','2009-11-06 08:21:13'),('rubriques_texte','oui','oui','2009-11-06 08:21:13'),('forums_titre','oui','oui','2009-11-06 08:21:13'),('forums_texte','oui','oui','2009-11-06 08:21:13'),('forums_urlref','non','oui','2009-11-06 08:21:13'),('forums_afficher_barre','oui','oui','2009-11-06 08:21:13'),('formats_documents_forum','','oui','2009-11-06 08:21:13'),('activer_sites','oui','oui','2010-01-31 03:50:59'),('proposer_sites','0','oui','2009-11-06 08:21:13'),('activer_syndic','oui','oui','2009-11-06 08:21:13'),('moderation_sites','non','oui','2009-11-06 08:21:13'),('forums_publics','posteriori','oui','2009-11-06 08:21:13'),('accepter_inscriptions','non','oui','2009-11-06 08:21:13'),('accepter_visiteurs','oui','oui','2010-01-31 03:50:59'),('prevenir_auteurs','non','oui','2009-11-06 08:21:13'),('suivi_edito','non','oui','2009-11-06 08:21:13'),('adresse_suivi','','oui','2009-11-06 08:21:13'),('adresse_suivi_inscription','','oui','2009-11-06 08:21:13'),('adresse_neuf','','oui','2009-11-06 08:21:13'),('jours_neuf','','oui','2009-11-06 08:21:13'),('quoi_de_neuf','non','oui','2009-11-06 08:21:13'),('forum_prive','oui','oui','2009-11-06 08:21:13'),('forum_prive_objets','oui','oui','2009-11-06 08:21:13'),('forum_prive_admin','non','oui','2009-11-06 08:21:13'),('messagerie_agenda','oui','oui','2009-11-06 08:21:13'),('articles_versions','non','oui','2009-11-06 08:21:13'),('activer_statistiques','oui','oui','2010-01-31 03:50:59'),('activer_captures_referers','non','oui','2009-11-06 08:21:13'),('documents_article','oui','oui','2010-01-31 03:50:59'),('documents_rubrique','non','oui','2009-11-06 08:21:13'),('documents_date','non','oui','2009-11-06 08:21:13'),('syndication_integrale','oui','oui','2009-11-06 08:21:13'),('dir_img','IMG/','oui','2009-11-06 08:21:13'),('multi_articles','non','oui','2009-11-06 08:21:13'),('multi_rubriques','non','oui','2009-11-06 08:21:13'),('multi_secteurs','non','oui','2009-11-06 08:21:13'),('gerer_trad','non','oui','2009-11-06 08:21:13'),('langues_multilingue','','oui','2009-11-06 08:21:13'),('type_urls','page','oui','2009-11-06 08:21:13'),('email_envoi','','oui','2009-11-06 08:21:13'),('auto_compress_http','non','oui','2009-11-06 08:21:13'),('auto_compress_js','non','oui','2009-11-06 08:21:13'),('auto_compress_css','non','oui','2009-11-06 08:21:13'),('langues_utilisees','fr','oui','2009-11-06 08:21:13'),('secret_du_site','455a940b8b476e1849a7e66084d9b2b0443daa3b2600aeda2adc453d54a5d7d1','non','2011-04-05 14:04:36'),('gd_formats_read','gif,jpg,png','oui','2010-01-31 03:50:59'),('gd_formats','gif,jpg,png','oui','2010-01-31 03:50:59'),('formats_graphiques','gif,jpg,png','oui','2010-01-31 03:50:59'),('image_process','gd2','oui','2010-01-31 03:50:59'),('max_taille_vignettes_test','2016400','oui','2010-01-31 03:50:59'),('max_taille_vignettes','1904400','oui','2010-01-31 03:50:59'),('max_taille_vignettes_echec','2073600','oui','2010-01-31 03:50:59'),('tispipskelet_conf','a:18:{s:8:\"sommaire\";a:8:{s:8:\"affedito\";s:3:\"oui\";s:10:\"afflistart\";s:3:\"oui\";s:10:\"ctncol_d_1\";s:5:\"prive\";s:5:\"edito\";s:5:\"texte\";s:9:\"mot_edito\";s:9:\"Editorial\";s:10:\"nbartedito\";s:1:\"1\";s:10:\"nbarticles\";s:1:\"5\";s:8:\"pos_menu\";s:6:\"gauche\";}s:5:\"menus\";a:6:{s:8:\"affmenuv\";s:3:\"oui\";s:8:\"img_menu\";s:6:\"folder\";s:9:\"larg_page\";s:4:\"1024\";s:17:\"lien_accueil_menu\";s:3:\"oui\";s:7:\"nb_cols\";s:1:\"3\";s:9:\"type_menu\";s:8:\"menu-dom\";}s:6:\"entete\";a:21:{s:15:\"affimgbg_entete\";s:3:\"oui\";s:13:\"affimg_entete\";s:3:\"oui\";s:11:\"afflogosite\";s:3:\"oui\";s:12:\"afftitresite\";s:3:\"oui\";s:18:\"color_texte_entete\";s:7:\"#000000\";s:14:\"couleur_entete\";s:7:\"#f8f8ff\";s:14:\"hauteur_entete\";s:2:\"80\";s:10:\"img_entete\";s:54:\"config/tispip_config_entete_commentaire/img_entete.png\";s:14:\"largeur_entete\";s:5:\"ecran\";s:18:\"largeur_ctn_entete\";s:4:\"page\";s:13:\"largeur_titre\";s:3:\"600\";s:11:\"logo_entete\";s:46:\"config/tispip_config_entete_bg/logo_entete.png\";s:17:\"logo_entete_pos_h\";s:6:\"center\";s:17:\"logo_entete_pos_v\";s:6:\"bottom\";s:18:\"logo_entete_repeat\";s:9:\"no-repeat\";s:12:\"police_titre\";s:18:\"WCManoNegraBoldBta\";s:18:\"posgradient_entete\";s:3:\"top\";s:12:\"taille_titre\";s:2:\"40\";s:13:\"titre_couleur\";s:7:\"#ffffff\";s:11:\"titre_pos_h\";s:3:\"130\";s:11:\"titre_pos_v\";s:2:\"-4\";}s:9:\"rubriques\";a:7:{s:10:\"afflistart\";s:3:\"oui\";s:10:\"ctncol_d_1\";s:5:\"sites\";s:24:\"intro_long_sites_col_d_2\";s:3:\"150\";s:16:\"nb_sites_col_d_2\";s:1:\"5\";s:17:\"nb_syndic_col_g_2\";s:1:\"5\";s:10:\"nbarticles\";s:1:\"5\";s:8:\"pos_menu\";s:6:\"gauche\";}s:8:\"articles\";a:4:{s:10:\"ctncol_d_1\";s:8:\"meme-rub\";s:11:\"nb_cols_art\";s:1:\"3\";s:8:\"pos_menu\";s:6:\"gauche\";s:15:\"textart_justify\";s:15:\"textart_justify\";}s:6:\"upload\";a:5:{s:11:\"aff_bg_page\";s:3:\"oui\";s:8:\"img_body\";s:41:\"config/tispip_config_bg_page/img_body.png\";s:14:\"img_body_pos_h\";s:6:\"center\";s:14:\"img_body_pos_v\";s:3:\"top\";s:15:\"img_body_repeat\";s:8:\"repeat-y\";}s:8:\"couleurs\";a:43:{s:6:\"color1\";s:7:\"#f8f8ff\";s:6:\"color2\";s:4:\"#fff\";s:6:\"color3\";s:7:\"#777777\";s:7:\"color26\";s:7:\"#ff6600\";s:7:\"color93\";s:7:\"#222222\";s:7:\"color30\";s:7:\"#fdb218\";s:7:\"color31\";s:7:\"#666666\";s:7:\"color33\";s:7:\"#fdf3be\";s:7:\"color34\";s:7:\"#666666\";s:7:\"color35\";s:7:\"#f4f4fa\";s:7:\"color36\";s:7:\"#666666\";s:7:\"color37\";s:7:\"#f8f8ff\";s:7:\"color38\";s:7:\"#999999\";s:7:\"color39\";s:7:\"#ffffff\";s:6:\"color4\";s:7:\"#111111\";s:6:\"color5\";s:7:\"#ff2900\";s:7:\"color50\";s:7:\"#f8f8ff\";s:7:\"color51\";s:7:\"#06305b\";s:7:\"color52\";s:7:\"#ffffff\";s:7:\"color53\";s:7:\"#444546\";s:7:\"color70\";s:7:\"#f8f8ff\";s:7:\"color71\";s:7:\"#fdb218\";s:7:\"color72\";s:7:\"#06305b\";s:7:\"color73\";s:7:\"#ffffff\";s:7:\"color74\";s:7:\"#444444\";s:20:\"color_bord_lien_menu\";s:7:\"#999999\";s:27:\"color_bord_lien_menu_expose\";s:7:\"#ff6600\";s:27:\"color_bord_lien_menu_ouvert\";s:7:\"#666666\";s:27:\"color_bord_lien_menu_survol\";s:7:\"#aaaaaa\";s:20:\"color_fond_lien_menu\";s:7:\"#ffffff\";s:27:\"color_fond_lien_menu_expose\";s:7:\"#666666\";s:27:\"color_fond_lien_menu_ouvert\";s:7:\"#eeeeee\";s:27:\"color_fond_lien_menu_survol\";s:7:\"#222222\";s:20:\"color_text_lien_menu\";s:7:\"#999999\";s:27:\"color_text_lien_menu_expose\";s:7:\"#ff6600\";s:27:\"color_text_lien_menu_ouvert\";s:7:\"#333333\";s:27:\"color_text_lien_menu_survol\";s:7:\"#aaaaaa\";s:11:\"indent_menu\";s:2:\"10\";s:21:\"larg_bord_menu_bottom\";s:1:\"1\";s:19:\"larg_bord_menu_left\";s:1:\"1\";s:20:\"larg_bord_menu_right\";s:1:\"1\";s:18:\"larg_bord_menu_top\";s:1:\"1\";s:12:\"marge_v_menu\";s:1:\"5\";}s:3:\"css\";a:1:{s:11:\"conf_css_01\";s:43:\"div#container{border-top:1px solid #4d4d4d}\";}s:7:\"nb_cols\";s:1:\"2\";s:8:\"affmenuv\";s:3:\"oui\";s:9:\"type_menu\";s:8:\"menu-dom\";s:8:\"img_menu\";s:6:\"folder\";s:9:\"larg_page\";s:4:\"1024\";s:17:\"lien_accueil_menu\";s:3:\"oui\";s:10:\"affonglets\";s:3:\"oui\";s:7:\"accueil\";s:3:\"oui\";s:5:\"prive\";s:3:\"oui\";s:8:\"position\";s:4:\"left\";}','oui','2010-02-04 22:22:43'),('plugin_installes','a:7:{i:0;s:23:\"auto/Lecteur_multimedia\";i:1;s:19:\"auto/couteau_suisse\";i:2;s:20:\"auto/mots_techniques\";i:3;s:22:\"auto/spip-listes_1_9_3\";i:4;s:15:\"auto/spip-meteo\";i:5;s:24:\"auto/acces_restreint_3_0\";i:6;s:15:\"auto/agenda_2_0\";}','non','2010-02-04 21:32:15'),('plugins_interessants','a:24:{s:23:\"auto/Lecteur_multimedia\";i:10;s:15:\"auto/agenda_2_0\";i:10;s:13:\"auto/autorite\";i:10;s:24:\"auto/boucles_sans_tables\";i:10;s:8:\"auto/cfg\";i:10;s:18:\"auto/champs_extra2\";i:10;s:19:\"auto/couteau_suisse\";i:10;s:15:\"auto/spip-bonux\";i:10;s:22:\"auto/tispip_skelet_lcs\";i:10;s:18:\"auto/download_dump\";i:10;s:34:\"auto/enluminures_typographiques_v3\";i:10;s:10:\"auto/ispip\";i:10;s:23:\"auto/plugin_porte_plume\";i:10;s:20:\"auto/mots_techniques\";i:10;s:10:\"auto/nuage\";i:10;s:22:\"auto/odt2spip_v0.2-dev\";i:8;s:13:\"auto/snippets\";i:10;s:12:\"auto/palette\";i:10;s:26:\"auto/pdf2swf2spip_v0.1-dev\";i:10;s:22:\"auto/spip-listes_1_9_3\";i:10;s:15:\"auto/spip-meteo\";i:10;s:28:\"auto/recherche_multicriteres\";i:10;s:14:\"auto/thickbox2\";i:10;s:24:\"auto/acces_restreint_3_0\";i:10;}','oui','2010-02-04 22:23:46'),('tweaks_actifs','a:2:{s:11:\"set_options\";a:1:{s:5:\"actif\";i:0;}s:12:\"suivi_forums\";a:1:{s:5:\"actif\";i:0;}}','oui','2010-01-31 03:51:44'),('tweaks_variables','a:2:{s:8:\"_chaines\";a:42:{i:0;s:18:\"dossier_squelettes\";i:1;s:10:\"webmestres\";i:2;s:18:\"suite_introduction\";i:3;s:18:\"radio_set_options4\";i:4;s:12:\"tri_articles\";i:5;s:9:\"tri_perso\";i:6;s:19:\"radio_suivi_forums3\";i:7;s:9:\"spam_mots\";i:8;s:15:\"message_travaux\";i:9;s:22:\"url_glossaire_externe2\";i:10;s:17:\"decoration_styles\";i:11;s:14:\"couleurs_perso\";i:12;s:17:\"glossaire_groupes\";i:13;s:7:\"bloc_h4\";i:14;s:15:\"jcorner_classes\";i:15;s:10:\"insertions\";i:16;s:7:\"style_p\";i:17;s:7:\"style_h\";i:18;s:7:\"racc_hr\";i:19;s:7:\"racc_h1\";i:20;s:7:\"racc_h2\";i:21;s:7:\"racc_i1\";i:22;s:7:\"racc_i2\";i:23;s:7:\"racc_g1\";i:24;s:7:\"racc_g2\";i:25;s:9:\"ouvre_ref\";i:26;s:9:\"ferme_ref\";i:27;s:10:\"ouvre_note\";i:28;s:10:\"ferme_note\";i:29;s:4:\"puce\";i:30;s:16:\"radio_type_urls3\";i:31;s:11:\"spip_script\";i:32;s:21:\"terminaison_urls_page\";i:33;s:20:\"separateur_urls_page\";i:34;s:15:\"url_arbo_sep_id\";i:35;s:21:\"terminaison_urls_arbo\";i:36;s:24:\"terminaison_urls_propres\";i:37;s:18:\"debut_urls_propres\";i:38;s:19:\"debut_urls_propres2\";i:39;s:23:\"terminaison_urls_libres\";i:40;s:17:\"debut_urls_libres\";i:41;s:27:\"terminaison_urls_propres_qs\";}s:8:\"_nombres\";a:67:{i:0;s:11:\"paragrapher\";i:1;s:16:\"lgr_introduction\";i:2;s:17:\"lien_introduction\";i:3;s:25:\"radio_filtrer_javascript3\";i:4;s:13:\"forum_lgrmaxi\";i:5;s:16:\"auteur_forum_nom\";i:6;s:18:\"auteur_forum_email\";i:7;s:17:\"auteur_forum_deux\";i:8;s:18:\"log_couteau_suisse\";i:9;s:15:\"spip_options_on\";i:10;s:11:\"distant_off\";i:11;s:13:\"prive_travaux\";i:12;s:13:\"admin_travaux\";i:13;s:13:\"titre_travaux\";i:14;s:14:\"bp_tri_auteurs\";i:15;s:15:\"bp_urls_propres\";i:16;s:6:\"cs_rss\";i:17;s:11:\"format_spip\";i:18;s:12:\"stat_auteurs\";i:19;s:14:\"qui_webmasters\";i:20;s:16:\"max_auteurs_page\";i:21;s:9:\"auteurs_0\";i:22;s:9:\"auteurs_1\";i:23;s:9:\"auteurs_5\";i:24;s:9:\"auteurs_6\";i:25;s:9:\"auteurs_n\";i:26;s:17:\"auteurs_tout_voir\";i:27;s:14:\"balise_decoupe\";i:28;s:12:\"lgr_sommaire\";i:29;s:13:\"auto_sommaire\";i:30;s:15:\"balise_sommaire\";i:31;s:19:\"radio_target_blank3\";i:32;s:15:\"enveloppe_mails\";i:33;s:14:\"couleurs_fonds\";i:34;s:12:\"set_couleurs\";i:35;s:11:\"expo_bofbof\";i:36;s:19:\"liens_interrogation\";i:37;s:15:\"liens_orphelins\";i:38;s:16:\"glossaire_limite\";i:39;s:12:\"glossaire_js\";i:40;s:11:\"bloc_unique\";i:41;s:12:\"blocs_cookie\";i:42;s:8:\"scrollTo\";i:43;s:11:\"LocalScroll\";i:44;s:14:\"jcorner_plugin\";i:45;s:16:\"moderation_admin\";i:46;s:16:\"moderation_redac\";i:47;s:16:\"moderation_visit\";i:48;s:14:\"titres_etendus\";i:49;s:18:\"arret_optimisation\";i:50;s:17:\"rubrique_brouteur\";i:51;s:22:\"radio_desactive_cache3\";i:52;s:22:\"radio_desactive_cache4\";i:53;s:11:\"duree_cache\";i:54;s:16:\"duree_cache_mutu\";i:55;s:11:\"quota_cache\";i:56;s:23:\"derniere_modif_invalide\";i:57;s:19:\"url_arbo_minuscules\";i:58;s:19:\"urls_arbo_sans_type\";i:59;s:22:\"marqueurs_urls_propres\";i:60;s:23:\"marqueurs_urls_propres2\";i:61;s:25:\"marqueurs_urls_propres_qs\";i:62;s:15:\"urls_minuscules\";i:63;s:12:\"urls_avec_id\";i:64;s:13:\"urls_avec_id2\";i:65;s:18:\"urls_id_3_chiffres\";i:66;s:22:\"urls_id_sauf_rubriques\";}}','oui','2010-01-31 03:51:44'),('tweaks_pipelines','a:1:{s:6:\"header\";s:271:\"<script type=\"text/javascript\"><!--\nvar cs_prive=window.location.pathname.match(/\\/ecrire\\/$/)!=null;\nif (window.jQuery) {\nvar cs_sel_jQuery=typeof jQuery(document).selector==\'undefined\'?\'@\':\'\';\nvar cs_CookiePlugin=\"/prive/javascript/jquery.cookie.js\";\n}\n// --></script>\n\";}','oui','2011-04-05 14:04:02'),('tweaks_contribs','a:0:{}','oui','2010-01-31 03:51:44'),('player_preferences','a:1:{s:12:\"date_install\";s:19:\"2010-01-31_04:51:46\";}','oui','2010-01-31 03:51:46'),('mots_techniques_base_version','0.3','oui','2010-01-31 03:51:46'),('palette','a:2:{s:14:\"palette_public\";s:0:\"\";s:14:\"palette_ecrire\";s:2:\"on\";}','oui','2010-01-31 03:51:46'),('spiplistes_base_version','1.98','oui','2010-01-31 03:51:46'),('spiplistes_preferences','a:1:{s:17:\"opt_simuler_envoi\";s:3:\"oui\";}','oui','2010-01-31 03:51:46'),('spiplistes_lots','30','oui','2010-01-31 03:51:46'),('spiplistes_charset_envoi','iso-8859-1','oui','2010-01-31 03:51:46'),('mailer_smtp','non','oui','2010-01-31 03:51:46'),('abonnement_config','simple','oui','2010-01-31 03:51:46'),('spiplistes_version','2.0125','oui','2010-01-31 03:51:46'),('spip_meteo_version','2.0','oui','2010-01-31 03:51:46'),('accesrestreint_base_version','0.3.0.2','oui','2010-01-31 03:51:46'),('agenda_base_version','0.22','oui','2010-01-31 03:51:46'),('tour_quota_cache','3','oui','2010-02-04 22:22:50'),('date_popularites','1265318408','oui','2010-02-04 21:20:08'),('optimiser_table','2','oui','2010-02-04 21:21:34'),('popularite_max','0','oui','2010-02-04 21:20:08'),('popularite_total','0','oui','2010-02-04 21:20:08'),('date_statistiques','2010-02-04','oui','2010-02-04 21:20:08');
 /*!40000 ALTER TABLE `spip_meta` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_meteo`
+--
+
+DROP TABLE IF EXISTS `spip_meteo`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_meteo` (
+  `id_meteo` bigint(21) NOT NULL auto_increment,
+  `ville` varchar(255) NOT NULL,
+  `code` varchar(255) NOT NULL,
+  `maj` datetime NOT NULL default '0000-00-00 00:00:00',
+  `statut` enum('publie','en_erreur') NOT NULL default 'en_erreur',
+  `idx` enum('','1','non','oui','idx') NOT NULL default '',
+  PRIMARY KEY  (`id_meteo`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_meteo`
+--
+
+LOCK TABLES `spip_meteo` WRITE;
+/*!40000 ALTER TABLE `spip_meteo` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_meteo` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -524,6 +885,30 @@ LOCK TABLES `spip_mots_documents` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `spip_mots_evenements`
+--
+
+DROP TABLE IF EXISTS `spip_mots_evenements`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_mots_evenements` (
+  `id_mot` bigint(21) NOT NULL default '0',
+  `id_evenement` bigint(21) NOT NULL default '0',
+  PRIMARY KEY  (`id_mot`,`id_evenement`),
+  KEY `id_evenement` (`id_evenement`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_mots_evenements`
+--
+
+LOCK TABLES `spip_mots_evenements` WRITE;
+/*!40000 ALTER TABLE `spip_mots_evenements` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_mots_evenements` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `spip_mots_forum`
 --
 
@@ -624,6 +1009,34 @@ LOCK TABLES `spip_petitions` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `spip_previsions`
+--
+
+DROP TABLE IF EXISTS `spip_previsions`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_previsions` (
+  `id_prevision` bigint(21) NOT NULL auto_increment,
+  `id_meteo` bigint(21) NOT NULL,
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `minima` varchar(255) NOT NULL default '',
+  `maxima` varchar(255) NOT NULL default '',
+  `id_temps` bigint(21) NOT NULL default '48',
+  `maj` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id_prevision`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_previsions`
+--
+
+LOCK TABLES `spip_previsions` WRITE;
+/*!40000 ALTER TABLE `spip_previsions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_previsions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `spip_referers`
 --
 
@@ -635,9 +1048,9 @@ CREATE TABLE `spip_referers` (
   `date` date NOT NULL,
   `referer` varchar(255) default NULL,
   `visites` int(10) unsigned NOT NULL,
-  `visites_jour` int(10) unsigned NOT NULL,
-  `visites_veille` int(10) unsigned NOT NULL,
+  `visites_veille` int(10) unsigned NOT NULL default '0',
   `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `visites_jour` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`referer_md5`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -703,6 +1116,52 @@ LOCK TABLES `spip_resultats` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `spip_rmc_mots_exclus`
+--
+
+DROP TABLE IF EXISTS `spip_rmc_mots_exclus`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_rmc_mots_exclus` (
+  `id_mot_exclu` int(11) NOT NULL default '0',
+  `id_rubrique` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id_mot_exclu`,`id_rubrique`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_rmc_mots_exclus`
+--
+
+LOCK TABLES `spip_rmc_mots_exclus` WRITE;
+/*!40000 ALTER TABLE `spip_rmc_mots_exclus` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_rmc_mots_exclus` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_rmc_rubs_groupes`
+--
+
+DROP TABLE IF EXISTS `spip_rmc_rubs_groupes`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_rmc_rubs_groupes` (
+  `id_groupe` int(11) NOT NULL default '0',
+  `id_rubrique` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id_groupe`,`id_rubrique`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_rmc_rubs_groupes`
+--
+
+LOCK TABLES `spip_rmc_rubs_groupes` WRITE;
+/*!40000 ALTER TABLE `spip_rmc_rubs_groupes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_rmc_rubs_groupes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `spip_rubriques`
 --
 
@@ -726,6 +1185,7 @@ CREATE TABLE `spip_rubriques` (
   `extra` longtext,
   `statut_tmp` varchar(10) NOT NULL default '0',
   `date_tmp` datetime NOT NULL default '0000-00-00 00:00:00',
+  `agenda` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id_rubrique`),
   KEY `lang` (`lang`),
   KEY `id_parent` (`id_parent`)
@@ -738,7 +1198,7 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `spip_rubriques` WRITE;
 /*!40000 ALTER TABLE `spip_rubriques` DISABLE KEYS */;
-INSERT INTO `spip_rubriques` VALUES (1,0,'Vie scolaire.','','La vie scolaire de l\'établissement.',1,'2009-04-10 15:13:18','oui',0,'publie','2009-04-10 17:13:18','fr','non',NULL,'0','0000-00-00 00:00:00'),(2,0,'LCS','','LCS le serveur de communication de l\'établissement.',2,'2009-04-10 15:26:12','oui',0,'publie','2009-04-10 17:26:12','fr','non',NULL,'0','0000-00-00 00:00:00'),(3,0,'Intranet','','Le système d\'information de l\'établissement.',3,'2009-04-10 15:29:03','oui',0,'publie','2009-04-10 17:29:03','fr','non',NULL,'0','0000-00-00 00:00:00');
+INSERT INTO `spip_rubriques` VALUES (1,0,'Vie scolaire.','','La vie scolaire de l\'établissement.',1,'2009-04-10 15:13:18','oui',0,'publie','2009-04-10 17:13:18','fr','non',NULL,'0','0000-00-00 00:00:00',0),(2,0,'LCS','','LCS le serveur de communication de l\'établissement.',2,'2009-04-10 15:26:12','oui',0,'publie','2009-04-10 17:26:12','fr','non',NULL,'0','0000-00-00 00:00:00',0),(3,0,'Intranet','','Le système d\'information de l\'établissement.',3,'2009-04-10 15:29:03','oui',0,'publie','2009-04-10 17:29:03','fr','non',NULL,'0','0000-00-00 00:00:00',0);
 /*!40000 ALTER TABLE `spip_rubriques` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -855,6 +1315,53 @@ LOCK TABLES `spip_syndic_articles` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `spip_tableau`
+--
+
+DROP TABLE IF EXISTS `spip_tableau`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_tableau` (
+  `var` varchar(100) default NULL,
+  `fonction` varchar(100) default NULL,
+  `cle` varchar(100) NOT NULL default '',
+  `valeur` varchar(100) default NULL,
+  PRIMARY KEY  (`cle`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_tableau`
+--
+
+LOCK TABLES `spip_tableau` WRITE;
+/*!40000 ALTER TABLE `spip_tableau` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_tableau` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_test`
+--
+
+DROP TABLE IF EXISTS `spip_test`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_test` (
+  `a` int(11) default NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_test`
+--
+
+LOCK TABLES `spip_test` WRITE;
+/*!40000 ALTER TABLE `spip_test` DISABLE KEYS */;
+INSERT INTO `spip_test` VALUES (NULL);
+/*!40000 ALTER TABLE `spip_test` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `spip_types_documents`
 --
 
@@ -880,7 +1387,7 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `spip_types_documents` WRITE;
 /*!40000 ALTER TABLE `spip_types_documents` DISABLE KEYS */;
-INSERT INTO `spip_types_documents` VALUES ('jpg','JPEG','','image/jpeg','image','oui','2009-04-10 14:35:04'),('png','PNG','','image/png','image','oui','2009-04-10 14:35:04'),('gif','GIF','','image/gif','image','oui','2009-04-10 14:35:04'),('bmp','BMP','','image/x-ms-bmp','image','oui','2009-04-10 14:35:04'),('tif','TIFF','','image/tiff','image','oui','2009-04-10 14:35:04'),('aiff','AIFF','','audio/x-aiff','embed','oui','2009-04-10 14:35:04'),('asf','Windows Media','','video/x-ms-asf','embed','oui','2009-04-10 14:35:04'),('avi','AVI','','video/x-msvideo','embed','oui','2009-04-10 14:35:04'),('anx','Annodex','','application/annodex','embed','oui','2009-04-10 14:35:04'),('axa','Annodex Audio','','audio/annodex','embed','oui','2009-04-10 14:35:04'),('axv','Annodex Video','','video/annodex','embed','oui','2009-04-10 14:35:04'),('flac','Free Lossless Audio Codec','','audio/x-flac','embed','oui','2009-04-10 14:35:04'),('flv','Flash Video','','video/x-flv','embed','oui','2009-04-10 14:35:04'),('mid','Midi','','audio/midi','embed','oui','2009-04-10 14:35:04'),('mka','Matroska Audio','','audio/mka','embed','oui','2009-04-10 14:35:04'),('mkv','Matroska Video','','video/mkv','embed','oui','2009-04-10 14:35:04'),('mng','MNG','','video/x-mng','embed','oui','2009-04-10 14:35:04'),('mov','QuickTime','','video/quicktime','embed','oui','2009-04-10 14:35:04'),('mp3','MP3','','audio/mpeg','embed','oui','2009-04-10 14:35:04'),('mp4','MPEG4','','application/mp4','embed','oui','2009-04-10 14:35:04'),('mpg','MPEG','','video/mpeg','embed','oui','2009-04-10 14:35:04'),('oga','Ogg Audio','','audio/ogg','embed','oui','2009-04-10 14:35:04'),('ogg','Ogg Vorbis','','audio/ogg ','embed','oui','2009-04-10 14:35:04'),('ogv','Ogg Video','','video/ogg ','embed','oui','2009-04-10 14:35:04'),('ogx','Ogg Multiplex','','application/ogg ','embed','oui','2009-04-10 14:35:04'),('qt','QuickTime','','video/quicktime','embed','oui','2009-04-10 14:35:04'),('ra','RealAudio','','audio/x-pn-realaudio','embed','oui','2009-04-10 14:35:04'),('ram','RealAudio','','audio/x-pn-realaudio','embed','oui','2009-04-10 14:35:04'),('rm','RealAudio','','audio/x-pn-realaudio','embed','oui','2009-04-10 14:35:04'),('spx','Ogg Speex','','audio/ogg','embed','oui','2009-04-10 14:35:04'),('svg','Scalable Vector Graphics','','image/svg+xml','embed','oui','2009-04-10 14:35:04'),('swf','Flash','','application/x-shockwave-flash','embed','oui','2009-04-10 14:35:04'),('wav','WAV','','audio/x-wav','embed','oui','2009-04-10 14:35:04'),('wmv','Windows Media','','video/x-ms-wmv','embed','oui','2009-04-10 14:35:04'),('3gp','3rd Generation Partnership Project','','video/3gpp','embed','oui','2009-04-10 14:35:04'),('ai','Adobe Illustrator','','application/illustrator','non','oui','2009-04-10 14:35:04'),('abw','Abiword','','application/abiword','non','oui','2009-04-10 14:35:04'),('bin','Binary Data','','application/octet-stream','non','oui','2009-04-10 14:35:04'),('blend','Blender','','application/x-blender','non','oui','2009-04-10 14:35:04'),('bz2','BZip','','application/x-bzip2','non','oui','2009-04-10 14:35:04'),('c','C source','','text/x-csrc','non','oui','2009-04-10 14:35:04'),('css','Cascading Style Sheet','','text/css','non','oui','2009-04-10 14:35:04'),('csv','Comma Separated Values','','text/csv','non','oui','2009-04-10 14:35:04'),('deb','Debian','','application/x-debian-package','non','oui','2009-04-10 14:35:04'),('doc','Word','','application/msword','non','oui','2009-04-10 14:35:04'),('djvu','DjVu','','image/vnd.djvu','non','oui','2009-04-10 14:35:04'),('dvi','LaTeX DVI','','application/x-dvi','non','oui','2009-04-10 14:35:04'),('eps','PostScript','','application/postscript','non','oui','2009-04-10 14:35:04'),('gz','GZ','','application/x-gzip','non','oui','2009-04-10 14:35:04'),('h','C header','','text/x-chdr','non','oui','2009-04-10 14:35:04'),('html','HTML','','text/html','non','oui','2009-04-10 14:35:04'),('kml','Keyhole Markup Language','','application/vnd.google-earth.kml+xml','non','oui','2009-04-10 14:35:04'),('kmz','Google Earth Placemark File','','application/vnd.google-earth.kmz','non','oui','2009-04-10 14:35:04'),('pas','Pascal','','text/x-pascal','non','oui','2009-04-10 14:35:04'),('pdf','PDF','','application/pdf','non','oui','2009-04-10 14:35:04'),('pgn','Portable Game Notation','','application/x-chess-pgn','non','oui','2009-04-10 14:35:04'),('ppt','PowerPoint','','application/vnd.ms-powerpoint','non','oui','2009-04-10 14:35:04'),('ps','PostScript','','application/postscript','non','oui','2009-04-10 14:35:04'),('psd','Photoshop','','image/x-photoshop','non','oui','2009-04-10 14:35:04'),('rpm','RedHat/Mandrake/SuSE','','application/x-redhat-package-manager','non','oui','2009-04-10 14:35:04'),('rtf','RTF','','application/rtf','non','oui','2009-04-10 14:35:04'),('sdd','StarOffice','','application/vnd.stardivision.impress','non','oui','2009-04-10 14:35:04'),('sdw','StarOffice','','application/vnd.stardivision.writer','non','oui','2009-04-10 14:35:04'),('sit','Stuffit','','application/x-stuffit','non','oui','2009-04-10 14:35:04'),('sxc','OpenOffice.org Calc','','application/vnd.sun.xml.calc','non','oui','2009-04-10 14:35:04'),('sxi','OpenOffice.org Impress','','application/vnd.sun.xml.impress','non','oui','2009-04-10 14:35:04'),('sxw','OpenOffice.org','','application/vnd.sun.xml.writer','non','oui','2009-04-10 14:35:04'),('tex','LaTeX','','text/x-tex','non','oui','2009-04-10 14:35:04'),('tgz','TGZ','','application/x-gtar','non','oui','2009-04-10 14:35:04'),('torrent','BitTorrent','','application/x-bittorrent','non','oui','2009-04-10 14:35:04'),('ttf','TTF Font','','application/x-font-ttf','non','oui','2009-04-10 14:35:04'),('txt','texte','','text/plain','non','oui','2009-04-10 14:35:04'),('xcf','GIMP multi-layer','','application/x-xcf','non','oui','2009-04-10 14:35:04'),('xls','Excel','','application/vnd.ms-excel','non','oui','2009-04-10 14:35:04'),('xspf','XSPF','','application/xspf+xml','non','oui','2009-04-10 14:35:04'),('xml','XML','','application/xml','non','oui','2009-04-10 14:35:04'),('zip','Zip','','application/zip','non','oui','2009-04-10 14:35:04'),('odt','opendocument text','','application/vnd.oasis.opendocument.text','non','oui','2009-04-10 14:35:04'),('ods','opendocument spreadsheet','','application/vnd.oasis.opendocument.spreadsheet','non','oui','2009-04-10 14:35:04'),('odp','opendocument presentation','','application/vnd.oasis.opendocument.presentation','non','oui','2009-04-10 14:35:04'),('odg','opendocument graphics','','application/vnd.oasis.opendocument.graphics','non','oui','2009-04-10 14:35:04'),('odc','opendocument chart','','application/vnd.oasis.opendocument.chart','non','oui','2009-04-10 14:35:04'),('odf','opendocument formula','','application/vnd.oasis.opendocument.formula','non','oui','2009-04-10 14:35:04'),('odb','opendocument database','','application/vnd.oasis.opendocument.database','non','oui','2009-04-10 14:35:04'),('odi','opendocument image','','application/vnd.oasis.opendocument.image','non','oui','2009-04-10 14:35:04'),('odm','opendocument text-master','','application/vnd.oasis.opendocument.text-master','non','oui','2009-04-10 14:35:04'),('ott','opendocument text-template','','application/vnd.oasis.opendocument.text-template','non','oui','2009-04-10 14:35:04'),('ots','opendocument spreadsheet-template','','application/vnd.oasis.opendocument.spreadsheet-template','non','oui','2009-04-10 14:35:04'),('otp','opendocument presentation-template','','application/vnd.oasis.opendocument.presentation-template','non','oui','2009-04-10 14:35:04'),('otg','opendocument graphics-template','','application/vnd.oasis.opendocument.graphics-template','non','oui','2009-04-10 14:35:04'),('cls','LaTeX Class','','text/x-tex','non','oui','2009-04-10 14:35:04'),('sty','LaTeX Style Sheet','','text/x-tex','non','oui','2009-04-10 14:35:04');
+INSERT INTO `spip_types_documents` VALUES ('jpg','JPEG','','image/jpeg','image','oui','2011-04-05 14:04:02'),('png','PNG','','image/png','image','oui','2011-04-05 14:04:02'),('gif','GIF','','image/gif','image','oui','2011-04-05 14:04:02'),('bmp','BMP','','image/x-ms-bmp','image','oui','2011-04-05 14:04:02'),('tif','TIFF','','image/tiff','image','oui','2011-04-05 14:04:02'),('aiff','AIFF','','audio/x-aiff','embed','oui','2011-04-05 14:04:02'),('asf','Windows Media','','video/x-ms-asf','embed','oui','2011-04-05 14:04:02'),('avi','AVI','','video/x-msvideo','embed','oui','2011-04-05 14:04:02'),('anx','Annodex','','application/annodex','embed','oui','2011-04-05 14:04:02'),('axa','Annodex Audio','','audio/annodex','embed','oui','2011-04-05 14:04:02'),('axv','Annodex Video','','video/annodex','embed','oui','2011-04-05 14:04:02'),('flac','Free Lossless Audio Codec','','audio/x-flac','embed','oui','2011-04-05 14:04:02'),('flv','Flash Video','','video/x-flv','embed','oui','2011-04-05 14:04:02'),('mid','Midi','','audio/midi','embed','oui','2011-04-05 14:04:02'),('mka','Matroska Audio','','audio/mka','embed','oui','2011-04-05 14:04:02'),('mkv','Matroska Video','','video/mkv','embed','oui','2011-04-05 14:04:02'),('mng','MNG','','video/x-mng','embed','oui','2011-04-05 14:04:02'),('mov','QuickTime','','video/quicktime','embed','oui','2011-04-05 14:04:02'),('mp3','MP3','','audio/mpeg','embed','oui','2011-04-05 14:04:02'),('mp4','MPEG4','','application/mp4','embed','oui','2011-04-05 14:04:02'),('mpg','MPEG','','video/mpeg','embed','oui','2011-04-05 14:04:02'),('oga','Ogg Audio','','audio/ogg','embed','oui','2011-04-05 14:04:02'),('ogg','Ogg Vorbis','','audio/ogg','embed','oui','2011-04-05 14:04:02'),('ogv','Ogg Video','','video/ogg','embed','oui','2011-04-05 14:04:02'),('ogx','Ogg Multiplex','','application/ogg','embed','oui','2011-04-05 14:04:02'),('qt','QuickTime','','video/quicktime','embed','oui','2011-04-05 14:04:02'),('ra','RealAudio','','audio/x-pn-realaudio','embed','oui','2011-04-05 14:04:02'),('ram','RealAudio','','audio/x-pn-realaudio','embed','oui','2011-04-05 14:04:02'),('rm','RealAudio','','audio/x-pn-realaudio','embed','oui','2011-04-05 14:04:02'),('spx','Ogg Speex','','audio/ogg','embed','oui','2011-04-05 14:04:02'),('svg','Scalable Vector Graphics','','image/svg+xml','embed','oui','2011-04-05 14:04:02'),('swf','Flash','','application/x-shockwave-flash','embed','oui','2011-04-05 14:04:02'),('wav','WAV','','audio/x-wav','embed','oui','2011-04-05 14:04:02'),('wmv','Windows Media','','video/x-ms-wmv','embed','oui','2011-04-05 14:04:02'),('3gp','3rd Generation Partnership Project','','video/3gpp','embed','oui','2011-04-05 14:04:02'),('ai','Adobe Illustrator','','application/illustrator','non','oui','2011-04-05 14:04:02'),('abw','Abiword','','application/abiword','non','oui','2011-04-05 14:04:02'),('bin','Binary Data','','application/octet-stream','non','oui','2011-04-05 14:04:02'),('blend','Blender','','application/x-blender','non','oui','2011-04-05 14:04:02'),('bz2','BZip','','application/x-bzip2','non','oui','2011-04-05 14:04:02'),('c','C source','','text/x-csrc','non','oui','2011-04-05 14:04:02'),('css','Cascading Style Sheet','','text/css','non','oui','2011-04-05 14:04:02'),('csv','Comma Separated Values','','text/csv','non','oui','2011-04-05 14:04:02'),('deb','Debian','','application/x-debian-package','non','oui','2011-04-05 14:04:02'),('doc','Word','','application/msword','non','oui','2011-04-05 14:04:02'),('djvu','DjVu','','image/vnd.djvu','non','oui','2011-04-05 14:04:02'),('dvi','LaTeX DVI','','application/x-dvi','non','oui','2011-04-05 14:04:02'),('eps','PostScript','','application/postscript','non','oui','2011-04-05 14:04:02'),('gz','GZ','','application/x-gzip','non','oui','2011-04-05 14:04:02'),('h','C header','','text/x-chdr','non','oui','2011-04-05 14:04:02'),('html','HTML','','text/html','non','oui','2011-04-05 14:04:02'),('kml','Keyhole Markup Language','','application/vnd.google-earth.kml+xml','non','oui','2011-04-05 14:04:02'),('kmz','Google Earth Placemark File','','application/vnd.google-earth.kmz','non','oui','2011-04-05 14:04:02'),('pas','Pascal','','text/x-pascal','non','oui','2011-04-05 14:04:02'),('pdf','PDF','','application/pdf','non','oui','2011-04-05 14:04:02'),('pgn','Portable Game Notation','','application/x-chess-pgn','non','oui','2011-04-05 14:04:02'),('ppt','PowerPoint','','application/vnd.ms-powerpoint','non','oui','2011-04-05 14:04:02'),('ps','PostScript','','application/postscript','non','oui','2011-04-05 14:04:02'),('psd','Photoshop','','image/x-photoshop','non','oui','2011-04-05 14:04:02'),('rpm','RedHat/Mandrake/SuSE','','application/x-redhat-package-manager','non','oui','2011-04-05 14:04:02'),('rtf','RTF','','application/rtf','non','oui','2011-04-05 14:04:02'),('sdd','StarOffice','','application/vnd.stardivision.impress','non','oui','2011-04-05 14:04:02'),('sdw','StarOffice','','application/vnd.stardivision.writer','non','oui','2011-04-05 14:04:02'),('sit','Stuffit','','application/x-stuffit','non','oui','2011-04-05 14:04:02'),('sxc','OpenOffice.org Calc','','application/vnd.sun.xml.calc','non','oui','2011-04-05 14:04:02'),('sxi','OpenOffice.org Impress','','application/vnd.sun.xml.impress','non','oui','2011-04-05 14:04:02'),('sxw','OpenOffice.org','','application/vnd.sun.xml.writer','non','oui','2011-04-05 14:04:02'),('tex','LaTeX','','text/x-tex','non','oui','2011-04-05 14:04:02'),('tgz','TGZ','','application/x-gtar','non','oui','2011-04-05 14:04:02'),('torrent','BitTorrent','','application/x-bittorrent','non','oui','2011-04-05 14:04:02'),('ttf','TTF Font','','application/x-font-ttf','non','oui','2011-04-05 14:04:02'),('txt','texte','','text/plain','non','oui','2011-04-05 14:04:02'),('xcf','GIMP multi-layer','','application/x-xcf','non','oui','2011-04-05 14:04:02'),('xls','Excel','','application/vnd.ms-excel','non','oui','2011-04-05 14:04:02'),('xspf','XSPF','','application/xspf+xml','non','oui','2011-04-05 14:04:02'),('xml','XML','','application/xml','non','oui','2011-04-05 14:04:02'),('zip','Zip','','application/zip','non','oui','2011-04-05 14:04:02'),('odt','opendocument text','','application/vnd.oasis.opendocument.text','non','oui','2011-04-05 14:04:02'),('ods','opendocument spreadsheet','','application/vnd.oasis.opendocument.spreadsheet','non','oui','2011-04-05 14:04:02'),('odp','opendocument presentation','','application/vnd.oasis.opendocument.presentation','non','oui','2011-04-05 14:04:02'),('odg','opendocument graphics','','application/vnd.oasis.opendocument.graphics','non','oui','2011-04-05 14:04:02'),('odc','opendocument chart','','application/vnd.oasis.opendocument.chart','non','oui','2011-04-05 14:04:02'),('odf','opendocument formula','','application/vnd.oasis.opendocument.formula','non','oui','2011-04-05 14:04:02'),('odb','opendocument database','','application/vnd.oasis.opendocument.database','non','oui','2011-04-05 14:04:02'),('odi','opendocument image','','application/vnd.oasis.opendocument.image','non','oui','2011-04-05 14:04:02'),('odm','opendocument text-master','','application/vnd.oasis.opendocument.text-master','non','oui','2011-04-05 14:04:02'),('ott','opendocument text-template','','application/vnd.oasis.opendocument.text-template','non','oui','2011-04-05 14:04:02'),('ots','opendocument spreadsheet-template','','application/vnd.oasis.opendocument.spreadsheet-template','non','oui','2011-04-05 14:04:02'),('otp','opendocument presentation-template','','application/vnd.oasis.opendocument.presentation-template','non','oui','2011-04-05 14:04:02'),('otg','opendocument graphics-template','','application/vnd.oasis.opendocument.graphics-template','non','oui','2011-04-05 14:04:02'),('cls','LaTeX Class','','text/x-tex','non','oui','2011-04-05 14:04:02'),('sty','LaTeX Style Sheet','','text/x-tex','non','oui','2011-04-05 14:04:02'),('ggb','GeoGebra','','application/geogebra','embed','oui','2010-01-31 03:51:28'),('glb','GeoLabo','','application/geolabo','embed','oui','2010-01-31 03:51:28'),('gxt','GeoNExT','','application/geonext','embed','oui','2010-01-31 03:51:28'),('mm','FreeMind','','application/freemind','embed','oui','2010-01-31 03:51:28'),('zir','CarMetal','','application/carmetal','embed','oui','2010-01-31 03:51:28'),('dv','Digital Video','','video/x-dv','embed','oui','2011-04-05 14:04:02'),('f4a','Audio for Adobe Flash Player','','audio/mp4','embed','oui','2011-04-05 14:04:02'),('f4b','Audio Book for Adobe Flash Player','','audio/mp4','embed','oui','2011-04-05 14:04:02'),('f4p','Protected Video for Adobe Flash Player','','video/mp4','embed','oui','2011-04-05 14:04:02'),('f4v','Video for Adobe Flash Player','','video/mp4','embed','oui','2011-04-05 14:04:02'),('m4a','MPEG4 Audio','','audio/mp4a-latm','embed','oui','2011-04-05 14:04:02'),('m4b','MPEG4 Audio','','audio/mp4a-latm','embed','oui','2011-04-05 14:04:02'),('m4p','MPEG4 Audio','','audio/mp4a-latm','embed','oui','2011-04-05 14:04:02'),('m4u','MPEG4 playliste','','video/vnd.mpegurl','non','oui','2011-04-05 14:04:02'),('m4v','MPEG4 Video','','video/x-m4v','embed','oui','2011-04-05 14:04:02'),('mpc','Musepack','','audio/x-musepack','embed','oui','2011-04-05 14:04:02'),('webm','WebM','','video/webm','embed','oui','2011-04-05 14:04:02'),('docm','Word','','application/vnd.ms-word.document.macroEnabled.12','non','oui','2011-04-05 14:04:02'),('docx','Word','','application/vnd.openxmlformats-officedocument.wordprocessingml.document','non','oui','2011-04-05 14:04:02'),('dotm','Word template','','application/vnd.ms-word.template.macroEnabled.12','non','oui','2011-04-05 14:04:02'),('dotx','Word template','','application/vnd.openxmlformats-officedocument.wordprocessingml.template','non','oui','2011-04-05 14:04:02'),('potm','Powerpoint template','','application/vnd.ms-powerpoint.template.macroEnabled.12','non','oui','2011-04-05 14:04:02'),('potx','Powerpoint template','','application/vnd.openxmlformats-officedocument.presentationml.template','non','oui','2011-04-05 14:04:02'),('ppam','Powerpoint addin','','application/vnd.ms-powerpoint.addin.macroEnabled.12','non','oui','2011-04-05 14:04:02'),('ppsm','Powerpoint slideshow','','application/vnd.ms-powerpoint.slideshow.macroEnabled.12','non','oui','2011-04-05 14:04:02'),('ppsx','Powerpoint slideshow','','application/vnd.openxmlformats-officedocument.presentationml.slideshow','non','oui','2011-04-05 14:04:02'),('pptm','Powerpoint','','application/vnd.ms-powerpoint.presentation.macroEnabled.12','non','oui','2011-04-05 14:04:02'),('pptx','Powerpoint','','application/vnd.openxmlformats-officedocument.presentationml.presentation','non','oui','2011-04-05 14:04:02'),('xlam','Excel','','application/vnd.ms-excel.addin.macroEnabled.12','non','oui','2011-04-05 14:04:02'),('xlsb','Excel binary','','application/vnd.ms-excel.sheet.binary.macroEnabled.12','non','oui','2011-04-05 14:04:02'),('xlsm','Excel','','application/vnd.ms-excel.sheet.macroEnabled.12','non','oui','2011-04-05 14:04:02'),('xlsx','Excel','','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','non','oui','2011-04-05 14:04:02'),('xltm','Excel template','','application/vnd.ms-excel.template.macroEnabled.12','non','oui','2011-04-05 14:04:02'),('xltx','Excel template','','application/vnd.openxmlformats-officedocument.spreadsheetml.template','non','oui','2011-04-05 14:04:02');
 /*!40000 ALTER TABLE `spip_types_documents` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -986,6 +1493,7 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `spip_visites` WRITE;
 /*!40000 ALTER TABLE `spip_visites` DISABLE KEYS */;
+INSERT INTO `spip_visites` VALUES ('2010-02-04',1,'2010-02-04 22:22:04');
 /*!40000 ALTER TABLE `spip_visites` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1013,6 +1521,81 @@ LOCK TABLES `spip_visites_articles` WRITE;
 /*!40000 ALTER TABLE `spip_visites_articles` DISABLE KEYS */;
 /*!40000 ALTER TABLE `spip_visites_articles` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_zones`
+--
+
+DROP TABLE IF EXISTS `spip_zones`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_zones` (
+  `id_zone` bigint(21) NOT NULL auto_increment,
+  `titre` varchar(255) NOT NULL default '',
+  `descriptif` text NOT NULL,
+  `publique` enum('non','oui') NOT NULL default 'oui',
+  `privee` enum('non','oui') NOT NULL default 'non',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id_zone`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_zones`
+--
+
+LOCK TABLES `spip_zones` WRITE;
+/*!40000 ALTER TABLE `spip_zones` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_zones` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_zones_auteurs`
+--
+
+DROP TABLE IF EXISTS `spip_zones_auteurs`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_zones_auteurs` (
+  `id_zone` bigint(21) NOT NULL,
+  `id_auteur` bigint(21) NOT NULL,
+  PRIMARY KEY  (`id_zone`,`id_auteur`),
+  KEY `id_auteur` (`id_auteur`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_zones_auteurs`
+--
+
+LOCK TABLES `spip_zones_auteurs` WRITE;
+/*!40000 ALTER TABLE `spip_zones_auteurs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_zones_auteurs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_zones_rubriques`
+--
+
+DROP TABLE IF EXISTS `spip_zones_rubriques`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_zones_rubriques` (
+  `id_zone` bigint(21) NOT NULL,
+  `id_rubrique` bigint(21) NOT NULL,
+  PRIMARY KEY  (`id_zone`,`id_rubrique`),
+  KEY `id_rubrique` (`id_rubrique`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_zones_rubriques`
+--
+
+LOCK TABLES `spip_zones_rubriques` WRITE;
+/*!40000 ALTER TABLE `spip_zones_rubriques` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_zones_rubriques` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -1023,4 +1606,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-09-10 13:02:41
+-- Dump completed on 2011-04-21 11:24:59

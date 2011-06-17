@@ -3,24 +3,6 @@
 COLTITRE="\033[1;35m"          # Rose
 COLCMD="\033[1;37m"            # Blanc
 COLQUESTION="\033[1;32m"       # Vert
-COLPARTIE="\033[1;34m"         # Bleu
-COLERREUR="\033[1;31m"  # Rouge
-COLTXT="\033[0;37m"     # Gris
-COLINFO="\033[0;36m"	# Cyan
-
-ERREUR()
-{
-	echo -e "$COLERREUR"
-	echo "ERREUR!"
-	echo -e "$1"
-	echo -e "$COLTXT"
-	DEBIAN_PRIORITY="high"
-	DEBIAN_FRONTEND="dialog" 
-	export  DEBIAN_PRIORITY
-	export  DEBIAN_FRONTEND
-	exit 1
-}
-
 
 if  ! grep -q "4.0" /etc/debian_version;  then
         if egrep -q "^5.0" /etc/debian_version; then
@@ -33,14 +15,12 @@ if  ! grep -q "4.0" /etc/debian_version;  then
         fi
 fi
 
-
-
 echo -e "$COLTITRE"
 echo "******************************"
 echo "* Migration Etch vers Lenny  *"
 echo "******************************"
 echo -e "$COLQUESTION\c"
-echo "Voulez vous continuez (o/N) ? "
+echo "Voulez vous continuez (O/n) ? "
 echo -e "$COLCMD\c"
 read REPLY
 if [ "$REPLY" != "O" ] &&  [ "$REPLY" != "o" ] && [ -n $REPLY ]; then
@@ -52,38 +32,8 @@ echo -e "$COLTITRE"
 echo "Migration LCS de Debian Etch vers Lenny"
 echo -e "$COLCMD\c"
 #######
+echo "1. Detection de la branche LCS : Lcs, LcsTesting, LcsXP"
 
-echo -e "$COLPARTIE"
-echo "1. Operations et tests preliminaires"
-
-echo -e "$COLINFO"
-echo "1.1 Mise a l'heure du serveur"
-echo -e "$COLCMD\c"
-/usr/sbin/ntpdate -s `/usr/bin/mysql -sne "select value from lcs_db.params where name='ntpserv'"`> /dev/null 2>&1
-
-echo -e "$COLINFO"
-echo "1.2 Test sur le statut de l'annuaire"
-echo -e "$COLCMD\c"
-replica_status=$(mysql -sne "select value from lcs_db.params where name='replica_status'" -N)
-if [ "$replica_status" == "" -o "$replica_status" == "0" ]
-then
-	echo -e "$COLTXT"
-	echo  "Etat replicat : $replica_status"
-	echo "Serveur ldap en standalone ---> OK"
-else
-	ERREUR "Le serveur ldap doit etre en standalone (pas de replication ldap) !!!\nModifiez cette valeur et relancez le script" 
-fi
-
-echo -e "$COLINFO"
-echo "1.3 Installation si besoin de debian-archive-keyring"
-echo -e "$COLCMD\c"
-apt-get -qq update 
-apt-get install debian-archive-keyring --allow-unauthenticated
-
-
-echo -e "$COLINFO"
-echo "1.4 Detection de la branche LCS : Lcs, LcsTesting, LcsXP"
-echo -e "$COLTXT"
 if grep LcsXP /etc/apt/sources.list; then
         LCSTREE="LcsXP"
 elif grep LcsTesting /etc/apt/sources.list; then
@@ -93,45 +43,27 @@ else
 fi
 echo "Votre LCS est sur la branche :  $LCSTREE"
 #######
-
-echo -e "$COLPARTIE"
 echo "2. Changement du source list"
-echo -e "$COLTXT"
 
 cp /etc/apt/sources.list /etc/apt/sources.list.etch
 
 echo "deb http://ftp.fr.debian.org/debian lenny main
 deb-src http://ftp.fr.debian.org/debian lenny main
 
-#deb http://lcs.crdp.ac-caen.fr/lenny $LCSTREE main
+##deb http://lcs.crdp.ac-caen.fr/lenny $LCSTREE main
 
-deb http://security.debian.org/ lenny/updates main
-deb-src http://security.debian.org/ lenny/updates main
+#deb http://security.debian.org/ lenny/updates main
+#deb-src http://security.debian.org/ lenny/updates main
 
-deb http://volatile.debian.org/debian-volatile lenny/volatile main
-deb-src http://volatile.debian.org/debian-volatile lenny/volatile main" > /etc/apt/sources.list
+#deb http://volatile.debian.org/debian-volatile lenny/volatile main
+#deb-src http://volatile.debian.org/debian-volatile lenny/volatile main" > /etc/apt/sources.list
 #######
-
-
-echo -e "$COLPARTIE"
-echo "3. Test de coherence : l'upgrade ne doit pas entrainer la suppression des paquets LCS !"
-echo -e "$COLCMD\c"
-
-aptitude update -q
+echo "3. Test si on enleve pas des paquets LCS !"
+aptitude update
 if aptitude dist-upgrade -s -y | grep Remv | grep lcs; then
-        ERREUR "Migration ETCH -> LENNY interrompue par tentative de desinstallation des paquets LCS"
+        echo "Migration ETCH -> LENNY interrompue par tentative de desinstallation des paquets LCS"
+        exit 1
 fi
-echo -e "$COLTXT"
-echo "Ok !!"
-sleep 2
-
-
-DEBIAN_PRIORITY="critical"
-DEBIAN_FRONTEND="noninteractive"
-export  DEBIAN_FRONTEND
-export  DEBIAN_PRIORITY
-
-
 ### On demande a garder les fichiers de config.
 cat > /etc/apt/apt.conf.d/lcs-upgrade-lenny <<EOF
 Dpkg::Options {
@@ -141,100 +73,58 @@ Dpkg::Options {
 EOF
 
 
-echo -e "$COLPARTIE"
-echo "4 Mise a jour des paquets prioritaires"
-echo -e "$COLINFO"
-echo "4.1 Mise a jour de la liste de paquets disponibles."
+### On repond aux questions avant qu'elles n'arrivent.
+cat > /tmp/preseed-lenny <<EOF
+# Faut-il garder le fichier de configuration de libnss-ldap automatiquement ?
+libnss-ldap     libnss-ldap/override    boolean false
+# Faut-il garder la configuration automatiquement ?
+libpam-ldap     libpam-ldap/override    boolean false
+# Services a redemarrer lors de la mise a  niveau de la bibliotheque PAM :
+libpam0g        libpam0g/restart-services       string  squid cron courier-authdaemon atd
+# Choices: Belgian, French
+console-data    console-data/keymap/azerty/layout       select
+bind9  bind9/start-as-user     string  bind
+libc6  glibc/restart-services  string  slapd rsync postfix openbsd-inetd cron courier-authdaemon atd
+libssl0.9.8    libssl0.9.8/restart-services    string  ssh
+EOF
 
-echo -e "$COLCMD\c"
-aptitude update -q
-
-echo -e "$COLINFO"
-echo "4.2 Installation des paquets libc6, locales et mysql-server."
-echo -e "$COLCMD\c"
-aptitude install -y libc6 locales mysql-server mysql-server-5.0
-
-echo -e "$COLINFO"
-echo "4.3 Traitement de l'annuaire local"
-echo -e "$COLCMD\c"
-
-#purges trace slapd backup 
-rm -rf /var/backups/slapd*
-ldap_base_dn=$(cat /etc/ldap/ldap.conf | grep ^BASE | cut -d ' ' -f 2)
-rm -rf /var/backups/${ldap_base_dn}*
-
-ldapsearch -xLLL -D $(grep ^rootdn /etc/ldap/slapd.conf|tr "\t" " " | sed -e "s/ \{2,\}/ /g" | sed -e "s/'//g"  | sed -e 's/"//g' | cut -d" " -f2) -w $(cat /etc/ldap.secret) > /var/backups/ldap/migration_lenny.ldif
-/etc/init.d/slapd stop
-rm -f /var/lib/ldap/*
-if [ -e /var/backups/ldap/DB_CONFIG ]; then
-  cp -f /var/backups/ldap/DB_CONFIG /var/lib/ldap/
-else
-  cp -f /var/backups/ldap/DB_CONFIG.lun /var/lib/ldap/DB_CONFIG
-fi
-slapadd -l /var/backups/ldap/migration_lenny.ldif
-/etc/init.d/slapd start
-
-
-echo -e "$COLPARTIE"
-echo "5.Upgrade du reste de la la distribution par dist-upgrade."
-# echo -e "$COLCMD\c"
-# aptitude dist-upgrade -y
-echo -e "$COLCMD\c"
-
-
-sed -i 's|^#||g' /etc/apt/sources.list
-aptitude update -q
+debconf-set-selections < /tmp/preseed-lenny   
+#######
+echo "4. Upgrade de la distribution (Fournir les reponses par defaut)."
+aptitude update
+echo "4.1 Upgrade des paquets de base : libc6, locales et mysql-server (Fournir les reponses par defaut)."
+aptitude install -y libc6 locales mysql-server
+echo "4.2 Upgrade de la distribution par dist-upgrade (Fournir les reponses par defaut)."
 aptitude dist-upgrade -y
-
-
-echo -e "$COLPARTIE"
-echo "6 upgrade des paquets LCS"
-echo -e "$COLCMD\c"
-echo "6.1 Test du service Mysql avant mise a jour LCS"
+sed -i 's|^#||g' /etc/apt/sources.list
+aptitude update
+aptitude dist-upgrade -y
+echo "4.3 Test du service Mysql avant mise a jour LCS"
 if  ! mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1 ; then
         echo "mysql NOK"
         /etc/init.d/mysql start
 fi
 
 if  ! mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1 ; then
-        ERREUR "Le service Mysql ne demarre pas... Mise a jour LCS interrompue !"
-	
+        echo "ERREUR : Le service Mysql ne demarre pas... Mise a jour LCS interrompue !"
+        exit 1
 fi
-echo -e "$COLTXT"
-echo "service Mysql ok !!"
-echo -e "$COLINFO"
-echo "6.2 Mise a jour LCS"
-echo -e "$COLCMD\c"
+echo "4.4 Mise a jour LCS"
 sed -i 's|#||g' /etc/apt/sources.list
-aptitude update -q
-aptitude safe-upgrade -y
+aptitude update
+aptitude upgrade -y
 #######
-
-
-echo -e "$COLPARTIE"
-echo "7 Finalisation de la migration"
-echo -e "$COLTXT"
-
-echo -e "$COLINFO"
-echo "7.1 Mise a jour des droits sur les repertoires MAILDIR"
-echo -e "$COLCMD\c"
-
+echo "5. Mise a jour des droits sur les repertoires MAILDIR"
 for MAILDIR in `find /home -name Maildir`
 do
         echo "$MAILDIR"
         chgrp -R lcs-users $MAILDIR
 done
 #######
-
-
-echo -e "$COLINFO"
-echo "7.2. Mise en place de lcs-sysinfo en remplacement de lcs-phpsysinfo"
-echo -e "$COLCMD\c"
-
+echo "6. Mise en place de lcs-sysinfo en remplacement de lcs-phpsysinfo"
 apt-get install -y --force-yes lcs-sysinfo
 
-echo -e "$COLINFO"
-echo "7.3.Modification du referentiel des modules" 
+echo "7.Modification du referentiel des modules" 
 mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLennycs/' WHERE value = 'http://linux.crdp.ac-caen.fr/modulesLcs/';" 
 mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLennycsTesting/' WHERE value ='http://linux.crdp.ac-caen.fr/modulesLcsTesting/';"
 mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLennycsXP/' WHERE value = 'http://linux.crdp.ac-caen.fr/modulesLcsXP/';"
@@ -242,8 +132,4 @@ mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modules
 rm /etc/apt/apt.conf.d/lcs-upgrade-lenny
 echo -e "$COLTITRE"
 echo "FIN !"
-echo -e "$COLTXT"
-DEBIAN_PRIORITY="high"
-DEBIAN_FRONTEND="dialog" 
-export  DEBIAN_PRIORITY
-export  DEBIAN_FRONTEND
+echo -e "$COLCMD\c"

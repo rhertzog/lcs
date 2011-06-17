@@ -1,18 +1,19 @@
-GEPI-trunk
+GEPI-1.5.4
 ==============
 
+Eric ABGRALL <eric.abgrall@free.fr>
 Thomas BELLIARD <thomas.belliard@free.fr>
+Didier BLANQUI <didier.blanqui@ac-toulouse.fr>
+Stephane BOIREAU <stephane.boireau@ac-rouen.fr>
+Regis BOUGUIN <regis.bouguin@laposte.net>
 Laurent DELINEAU <laurent.delineau@ac-poitiers.fr>
+Jerome ETHEVE <jerome.etheve@gmail.com>
+Pascal FAUTRERO <admin.paulbert@gmail.com>
+Josselin JACQUARD <josselin.jacquard@gmail.com>
 Julien JOCAL <collegerb@free.fr>
 Eric LEBRUN <eric.lebrun@ac-poitiers.fr>
 
 http://gepi.mutualibre.org/
-
-ATTENTION! Ce paquetage contient une version de test de Gepi, c'est-à-dire une version
-destinée à identifier et corriger les bugs induits par les nouvelles fonctionalités.
-
-NE PAS UTILISER CETTE VERSION EN PRODUCTION ! Vous exposeriez votre base de données à des incohérences
-qui pourraient la rendre incompatible avec la version stable.
 
 GEPI (Gestion des Elèves Par Internet) est une application développée en PHP/MySQL/HTML
 dont les fonctions s'articulent autour d'un objectif : permettre la gestion et surtout le suivi des résultats scolaires
@@ -97,4 +98,4 @@ de la liste de diffusion des utilisateurs.
 =======================================
 
 La documentation de Gepi se trouve à l'adresse suivante :
-http://www.sylogix.org/wiki/gepi.
+http://www.sylogix.org/projects/gepi/wiki

@@ -1,10 +1,11 @@
 <?php
-// spiplistes_menu_navigation.php
-// Original From SPIP-Listes-V :: $Id: spiplistes_menu_navigation.php paladin@quesaco.org $
-
-// $LastChangedRevision: 16730 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2007-11-10 07:24:55 +0100 (sam, 10 nov 2007) $
+/**
+ * @version Original From SPIP-Listes-V :: $Id: spiplistes_menu_navigation.php paladin@quesaco.org $
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
 
 //	Ajout des gadgets
 
@@ -12,6 +13,7 @@
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
 include_spip('inc/spiplistes_api_globales');
+include_spip('inc/actions');
 
 function exec_spiplistes_menu_navigation () {
 

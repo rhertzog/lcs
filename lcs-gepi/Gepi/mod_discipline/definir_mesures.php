@@ -1,9 +1,9 @@
 <?php
 
 /*
- * $Id: definir_mesures.php 5400 2010-09-23 10:01:22Z crob $
+ * $Id: definir_mesures.php 6727 2011-03-29 15:14:30Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -62,6 +62,8 @@ $cpt=isset($_POST['cpt']) ? $_POST['cpt'] : 0;
 $msg="";
 
 if(isset($suppr_mesure)) {
+	check_token();
+
 	for($i=0;$i<$cpt;$i++) {
 		if(isset($suppr_mesure[$i])) {
 			$sql="SELECT 1=1 FROM s_traitement_incident sti WHERE sti.id_mesure='".$suppr_mesure[$i]."';";
@@ -86,6 +88,8 @@ if(isset($suppr_mesure)) {
 if(isset($mesure)) {
 	$a_enregistrer='y';
 
+	check_token();
+
 	$tab_mesure=array();
 	$sql="SELECT * FROM s_mesures ORDER BY mesure;";
 	$res=mysql_query($sql);
@@ -97,7 +101,10 @@ if(isset($mesure)) {
 			//echo "Id_mesure: $lig->id<br />";
 			if(isset($NON_PROTECT["commentaire_".$lig->id])) {
 				$commentaire=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["commentaire_".$lig->id]));
-				$commentaire=my_ereg_replace('(\\\r\\\n)+',"\r\n",$commentaire);
+				//$commentaire=my_ereg_replace('(\\\r\\\n)+',"\r\n",$commentaire);
+				$commentaire=preg_replace('/(\\\r\\\n)+/',"\r\n",$commentaire);
+				$commentaire=preg_replace('/(\\\r)+/',"\r",$commentaire);
+				$commentaire=preg_replace('/(\\\n)+/',"\n",$commentaire);
 
 				$sql="UPDATE s_mesures SET commentaire='$commentaire' WHERE id='".$lig->id."';";
 				//echo "$sql<br />\n";
@@ -121,7 +128,10 @@ if(isset($mesure)) {
 
 		if($a_enregistrer=='y') {
 			//$mesure=addslashes(my_ereg_replace('(\\\r\\\n)+',"\r\n",my_ereg_replace("&#039;","'",html_entity_decode($mesure))));
-			$mesure=my_ereg_replace('(\\\r\\\n)+',"\r\n",$mesure);
+			//$mesure=my_ereg_replace('(\\\r\\\n)+',"\r\n",$mesure);
+			$mesure=preg_replace('/(\\\r\\\n)+/',"\r\n",$mesure);
+			$mesure=preg_replace('/(\\\r)+/',"\r",$mesure);
+			$mesure=preg_replace('/(\\\n)+/',"\n",$mesure);
 
 			if(isset($NON_PROTECT["commentaire"])) {
 				$commentaire=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["commentaire"]));
@@ -129,7 +139,10 @@ if(isset($mesure)) {
 			else {
 				$commentaire="";
 			}
-			$commentaire=my_ereg_replace('(\\\r\\\n)+',"\r\n",$commentaire);
+			//$commentaire=my_ereg_replace('(\\\r\\\n)+',"\r\n",$commentaire);
+			$commentaire=preg_replace('/(\\\r\\\n)+/',"\r\n",$commentaire);
+			$commentaire=preg_replace('/(\\\r)+/',"\r",$commentaire);
+			$commentaire=preg_replace('/(\\\n)+/',"\n",$commentaire);
 
 			$sql="INSERT INTO s_mesures SET mesure='".$mesure."', commentaire='$commentaire', type='".$type."';";
 			//echo "$sql<br />\n";
@@ -157,6 +170,7 @@ echo "<p class='bold'><a href='index.php' onclick=\"return confirm_abandon (this
 echo "</p>\n";
 
 echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
+echo add_token_field();
 
 echo "<p class='bold'>Saisie des mesures prises ou demandées suite à un incident&nbsp;:</p>\n";
 echo "<blockquote>\n";
@@ -199,7 +213,7 @@ else {
 		echo "</td>\n";
 
 		echo "<td>\n";
-		echo my_ereg_replace("demandee","demandée",$lig->type);
+		echo preg_replace("/demandee/","demandée",$lig->type);
 		echo "</td>\n";
 
 		//echo "<td><input type='checkbox' name='suppr_mesure[]' id='suppr_mesure_$cpt' value=\"$lig->mesure\" onchange='changement();' /></td>\n";

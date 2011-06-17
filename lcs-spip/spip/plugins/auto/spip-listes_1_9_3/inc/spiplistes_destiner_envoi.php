@@ -1,27 +1,30 @@
 <?php
-// Orginal From SPIP-Listes-V :: Id: spiplistes_destiner_envoi.php paladin@quesaco.org
-// $LastChangedRevision: 24821 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2008-12-01 08:56:13 +0100 (lun, 01 déc 2008) $
+/**
+ * @version Orginal From SPIP-Listes-V :: Id: spiplistes_destiner_envoi.php paladin@quesaco.org
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47064 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:02 +0200 (Mon, 25 Apr 2011) $
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
 include_spip('inc/spiplistes_api');
 
-/*
-	Formulaire de selection destinataire
-
-	$flag_admin: si true, possibilite de modifier le destinataire
-	sinon, ne fait qu'afficher l'etat
-	
-	Renvoie :
-	$$nom_bouton_validation: si bouton de validation presse
-	$radio_destination: determine le choix
-	-> soit 'email_test' si adresse mail choisie
-	-> soit 'id_liste' si c'est une liste qui est choisie
-	$email_test: adresse email de test
-	$id_liste: id de la liste choisie
-*/
+/**
+ * Formulaire de selection destinataire
+ * 
+ * $flag_admin: si true, possibilite de modifier le destinataire
+ * sinon, ne fait qu'afficher l'etat
+ * 
+ * Renvoie :
+ * $$nom_bouton_validation: si bouton de validation presse
+ * $radio_destination: determine le choix
+ * -> soit 'email_test' si adresse mail choisie
+ * -> soit 'id_liste' si c'est une liste qui est choisie
+ * $email_test: adresse email de test
+ * $id_liste: id de la liste choisie
+ */
 function spiplistes_destiner_envoi (
 	$id_courrier, $id_liste
 	, $flag_admin

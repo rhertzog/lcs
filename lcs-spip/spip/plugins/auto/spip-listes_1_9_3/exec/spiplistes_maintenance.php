@@ -1,12 +1,10 @@
 <?php
-
-// exec/spiplistes_maintenance.php
-// _SPIPLISTES_EXEC_MAINTENANCE
-
-// From: paladin@quesaco.org
-// $LastChangedRevision: 27922 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-04-17 14:50:36 +0200 (ven, 17 avr 2009) $
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
@@ -388,15 +386,15 @@ function exec_spiplistes_maintenance () {
 	// Boite maintenance des abonnements
 	$objet = array('objet' => _T('spiplistes:des_abonnements'));
 	$page_result .= ""
-		. debut_cadre_trait_couleur("administration-24.gif", true, "", _T('spiplistes:maintenance_objet', $objet))
+		. debut_cadre_trait_couleur('administration-24.gif', true, '', _T('spiplistes:maintenance_objet', $objet))
 		;
 	$ii = spiplistes_abonnements_zombies();
 	if(($nb_abos = count($ii)) > 0) {
 		$nb_auteurs = $ii;
 		sort($nb_auteurs);
 		$nb_auteurs = count(array_unique($nb_auteurs));
-		$nb_abos = _T('spiplistes:' . (($nb_abos > 1) ? '_n_abos_' : '_1_abo_'), array('n' => $nb_abos));
-		$nb_auteurs = _T('spiplistes:' . (($nb_auteurs > 1) ? '_n_auteurs_' : '_1_auteur_'), array('n' => $nb_auteurs));
+		$nb_abos = spiplistes_str_abonnes($nb_abos);
+		$nb_auteurs = spiplistes_str_auteurs($nb_auteurs);
 		$page_result .= ""
 			. spiplistes_form_debut ($maintenance_url_action, true)
 			. spiplistes_form_description(_T('spiplistes:conseil_sauvegarder_avant', $objet), true)

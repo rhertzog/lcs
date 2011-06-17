@@ -1,8 +1,10 @@
 <?php
-// Orginal From SPIP-Listes-V :: Id: spiplistes_dater_envoi.php paladin@quesaco.org
-// $LastChangedRevision: 30818 $
-// $LastChangedBy: brunobergot@gmail.com $
-// $LastChangedDate: 2009-08-11 15:56:51 +0200 (mar, 11 aoû 2009) $
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47064 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:02 +0200 (Mon, 25 Apr 2011) $
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 

@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Mise a jour du fichier de configuration";
+num=`sed -n '/\$authlinkmaint =/=' /usr/share/lcs/Plugins/Maintenance/Includes/config.inc.php`
+sed -i "$num a\mysql_set_charset('utf8',\$authlinkmaint);" /usr/share/lcs/Plugins/Maintenance/Includes/config.inc.php
+/usr/bin/mysql -e "UPDATE maint_plug.params SET  value='2.4.8' WHERE name='VER_PLUG'"

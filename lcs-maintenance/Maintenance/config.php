@@ -36,7 +36,7 @@
 	list ($idpers,$uid)= isauth();
   	if ($idpers == "0") {
 		// L'utilisateur n'est pas authentifie
-		table_alert ("Vous devez pr&#233;alablement vous authentifier sur votre «Espace perso  LCS» pour acc&#233;der &#224; cette application !");
+		table_alert ("Vous devez pr&#233;alablement vous authentifier sur votre &#171;&#160;Espace perso  LCS&#160;&#187; pour acc&#233;der &#224; cette application !");
 	} else {
 		// L'utilisateur est authentifie
 		list($user, $groups)=people_get_variables($uid, false);
@@ -90,29 +90,29 @@
                         $html  = "<table style=\"width:100%;\"><tr><td>\n";
                         // Affichage du menu de configuration
                         $html .= "<div id=\"mnuconfig\">\n";
-                        $html .= "    <a href=\"config.php?conf=mail\">Mail</a>\n";
-                        $html .= "    <a href=\"config.php?conf=secteur\">Secteur</a>\n";
-                        $html .= "    <a href=\"config.php?conf=topo\">Topologie</a>\n";
-                        $html .= "    <a href=\"config.php?conf=save\">Sauvegarde base</a>\n";
-                        $html .= "    <a href=\"config.php?conf=restor\">Restauration base</a>\n";
+                        $html .= "    <a href=\"config.php?conf=mail\" class=\"mail\">Mail</a>\n";
+                        $html .= "    <a href=\"config.php?conf=secteur\" class=\"secteur\">Secteur</a>\n";
+                        $html .= "    <a href=\"config.php?conf=topo\" class=\"topo\">Topologie</a>\n";
+                        $html .= "    <a href=\"config.php?conf=save\" class=\"save\">Sauvegarde base</a>\n";
+                        $html .= "    <a href=\"config.php?conf=restor\" class=\"restor\">Restauration base</a>\n";
                         $html .= "</div>\n";
                         // Affichage de mainconfig
                         if ( !isset($conf) || $conf == "mail" ) {
                           // Config mail de diffusion
-                          $html .= "<div id=\"subconfig\">\n";
-                          $html .= "<div class=\"subconfigsubtitle\">Adresse de diffusion des demandes d'intervention</div>\n";
+                          $html .= "<div id=\"subconfig\" class=\"tableint\">\n";
+                          $html .= "<div class=\"subconfigsubtitle\"><img src=\"Style/img/24/email.png\" alt=\"\"/>&nbsp;Adresse de diffusion des demandes d'intervention</div>\n";
                           $html .= "<div class=\"subconfigcontainer\">\n";
                           $html .= "  <form method=\"post\" action=\"config.php?conf=mail\">\n";
                           $html .= "    <p>Mail : <input type=\"text\" size=\"50\" name=\"MAILMAINTCONF\" value=\"$MAILMAINT\"></p>\n";
                           $html .= "    <input type=\"hidden\" name=\"mailconf\" value=\"true\">\n";
-                          $html .= "    <p><input type=\"submit\" value=\"Valider\"></p>\n";
+                          $html .= "    <p><input type=\"submit\" value=\"Valider\" class=\"button\"></p>\n";
                           $html .= "   </form>\n";
                           $html .= "</div>\n"; 
                           $html .= "</div>\n";                       
                         } elseif ( $conf == "secteur") {
                           // Config secteurs d'intervention (Modification/Ajout/Suppression)    
-                          $html .= "<div id=\"subconfig\">\n";
-                          $html .= "  <div class=\"subconfigsubtitle\">Modification/ Ajout / Suppression des secteurs d'intervention</div>\n";
+                          $html .= "<div id=\"subconfig\" class=\"tableint\">\n";
+                          $html .= "  <div class=\"subconfigsubtitle\"><img src=\"Style/img/24/map.png\" alt=\"\"/>&nbsp;Modification/ Ajout / Suppression des secteurs d'intervention</div>\n";
                           $html .= "  <div class=\"subconfigcontainer\">\n";
                           $result = @mysql_query("SELECT descr from  secteur");
                           if ($result) { 
@@ -121,7 +121,7 @@
                           $html .= "      <select name=\"secteur\" size=\"5\" onChange=\"location = this.options[this.selectedIndex].value;\">\n";
                             while ( $r = @mysql_fetch_array($result) ) {
                               $html .=  "      <option value=\"config.php?conf=secteur&secteur=".$r["descr"]."\"";
-                              if ( $secteur == $r["descr"] ) $html .=  "selected";
+                              if ( $secteur == $r["descr"]) $html .=  "selected";
                               $html .= ">".$r["descr"]."</option>\n";
                             }
                           $html .= "      </select>\n"; 
@@ -133,48 +133,68 @@
                           $html .= "      <input type=\"hidden\" name=\"SECTEUROLD\" value=\"$secteur\">\n";  
                           $html .= "      <input type=\"hidden\" name=\"secteurconf\" value=\"true\">\n";
                           if ( ! isset($secteur) )
-                            $html .= "      <p><input type=\"submit\" name=\"action\" value=\"Ajouter\">";
+                            $html .= "      <p><input type=\"submit\" name=\"action\" value=\"Ajouter\" class=\"button\">";
                           else {
-                            $html .= "<input type=\"submit\" name=\"action\" value=\"Modifier\">";
-                            $html .= "<input type=\"submit\" name=\"action\" value=\"Supprimer\"></p>\n"; 
+                            $html .= "<input type=\"submit\" name=\"action\" value=\"Modifier\" class=\"button\">";
+                            $html .= "<input type=\"submit\" name=\"action\" value=\"Supprimer\" class=\"button\"></p>\n"; 
                           }
                           $html .= "    </form>\n";             
                           $html.= "   </div>\n";  
-                          $html .= "</div>\n";                          
+                          $html .= "</div>\n";   
+                          //                       
                         } elseif ( $conf == "topo" ) {
-                          // Config topologie de l'etablissement (Import)
-                          $html .= "<div id=\"subconfig\">\n";
-                          $html .= "  <div class=\"subconfigsubtitle\">Importation d'une nouvelle structure</div>\n";
-                          $html .= "  <div class=\"subconfigcontainer\">\n";
-   	                  // Affichage du formulaire d'import
-		          $html .= "    <form action=\"config.php?conf=topo\" method=\"post\" ENCTYPE=\"multipart/form-data\">\n";
-		          $html .= "      <p>Attention, les donn&#233;es existantes seront &#233;cras&#233;es!!</p>\n<p>N'effectuez cette action qu'en connaissance de cause</p>\n";
-		          $html .= "      <p>Fichier texte &#224; importer : <input name='txtfile' type='file'></p>\n";
-		          $html .= "      <div align='center'><INPUT type='submit' VALUE='Importer le fichier!!'></div>\n";
-		          $html .= "    </form>\n";                          
-                          $html .= "  </div>";
-                          $html .= "<div class=\"subconfigsubtitle\">Consultation de la topologie de l'&#233;tablissement</div>\n";
-                          $html .= Aff_topo();
+                           // Config topologie de l'etablissement (Import)
+                           //Consultation
+                           // 2.4.8 Creer sa topologie
+                          $html .= "<div id=\"loadingContainer\" style=\"margin-left:150px;\">\n";
+                          $html .= "<div id=\"showdata\" class=\"ui-state-highlight ui-corner-all message\"></div>\n";
+                          $html .= "<div id=\"loading\">	Chargement...</div>\n";
                           $html .= "</div>\n";
+                          $html .= "<div id=\"contentDiv\"></div>";
+                          $html .= "<div id=\"divAddTopo\"></div>";
+   	                      // Affichage du formulaire d'import
+                          $html .= "<div id=\"subconfig\" class=\"tableint\">\n";
+                          $html .= "  <h3 class=\"subconfigsubtitle\"><img src=\"Style/img/24/building.png\" alt=\"\"/>&nbsp;Importation d'une nouvelle structure</h3>\n";
+                          $html .= "  <div class=\"subconfigcontainer\">\n";
+				          $html .= "    <form action=\"config.php?conf=topo\" method=\"post\" ENCTYPE=\"multipart/form-data\">\n";
+				          $html .= "      <div class=\"ui-state-highlight ui-corner-all message active\"><span class='exclam float_left'></span>&nbsp Attention, les donn&#233;es existantes seront &#233;cras&#233;es!!<br />N'effectuez cette action qu'en connaissance de cause</div>\n";
+				          $html .= "      <p>Fichier texte &#224; importer : <input name='txtfile' type='file'></p>\n";
+				          $html .= "      <div align='center'><input type='submit' VALUE='Importer le fichier!!' class=\"button\"></div>\n";
+				          $html .= "    </form>\n";                          
+                          $html .= "  </div>";
+                          $html .= "</div>\n";
+   	                      // Suppression de la topo (vidage de table)
+                          $html .= "<div id=\"subconfig\" class=\"tableint\">\n";
+                          $html .= "  <h3 class=\"subconfigsubtitle\"><img src=\"Style/img/24/building.png\" alt=\"\"/>&nbsp;Suppression de la structure</h3>\n";
+                          $html .= "  <div class=\"subconfigcontainer\">\n";
+                          $html .= "  </div>";
+                          $html .= "</div>\n";
+   	                      // Affichage du formulaire d'import
+				          $html .= "    <form action=\"config.php?conf=topo\" method=\"post\" ENCTYPE=\"multipart/form-data\">\n";
+				          //
                         } elseif ( $conf == "save" ) {
                           // sauvegarde base de donnees de l'appli
-                          $html .= "<div id=\"subconfig\">\n";
-                          $html .= "  <div class=\"subconfigsubtitle\">Sauvegarde de la base de donn&#233;es</div>\n";
+                          $html .= "<div id=\"subconfig\" class=\"tableint\">\n";
+                          $html .= "  <div class=\"subconfigsubtitle\"><img src=\"Style/img/24/database_save.png\" alt=\"\"/>&nbsp;Sauvegarde de la base de donn&#233;es</div>\n";
                           $html .= "  <div class=\"subconfigcontainer\">\n";
                           $html .= "    <form action=\"config.php?conf=save\" method=\"post\">\n";
-		          $html .= "      <p>Confirmez la sauvegarde <input type=\"submit\" name=\"saveconf\" value=\"Sauvegarde\">\n";
+		          $html .= "      <p>Sauvegarde g&#233;n&#233;rale <input type=\"submit\" name=\"saveconf\" value=\"Sauvegarde\" class=\"button\">\n";
+		          $html .= "      <p>Sauvegarde de l'ann&#233;e en cours <input type=\"submit\" name=\"savethisyear\" value=\"Sauvegarde\" class=\"button\">\n";
 		          $html .= "    </form>\n";
                           $html .= "  </div>\n";
                           $html .= "</div>\n";
                         } elseif ( $conf == "restor" ) {
                           // restauration de la base de donnees de l'appli
-                          $html .= "<div id=\"subconfig\">\n";
-                          $html .= "    <div class=\"subconfigsubtitle\">Restauration de la base de donn&#233;es</div>\n";
+                          $html .= "<div id=\"subconfig\" class=\"tableint\">\n";
+                          $html .= "<div id=\"loading\">	Chargement...</div>\n";
+                          $html .= "    <div class=\"subconfigsubtitle\"><img src=\"Style/img/24/database_refresh.png\" alt=\"\"/>&nbsp;Restauration de la base de donn&#233;es</div>\n";
           	          // Affichage du formulaire de restauration
-		          $html .= "    <form action=\"config.php?conf=restor\" method=\"post\" enctype=\"multipart/form-data\">\n";
-		          $html .= "      <p>Attention, les donn&#233;es existantes seront &#233;cras&#233;es!!</p>\n<p>N'effectuez cette action qu'en connaissance de cause</p>\n";
+                          $html .= "<div id=\"showdata\" class=\"ui-state-highlight ui-corner-all message\"></div>\n";
+		          #$html .= "    <form action=\"config.php?conf=restor\" method=\"post\" enctype=\"multipart/form-data\">\n";
+		          $html .= "    <form action=\"action/restor_db.ajax.php\" method=\"post\" enctype=\"multipart/form-data\" id=\"submitRestor\">\n";
+		          $html .= "      <p class=\"ui-state-highlight ui-corner-all message active\"><span class=\"exclam float_left\"></span>&nbsp;Attention, les donn&#233;es existantes seront &#233;cras&#233;es!!<br />N'effectuez cette action qu'en connaissance de cause</p>\n";
 		          $html .= "      <p>Fichier sql &#224; importer : <input name='sqlfile' type='file'></p>\n";
-		          $html .= "      <div align='center'><input type='submit' value='Importer le fichier!!'></div>\n";
+		          $html .= "      <div align='center'><input type='submit' value='Importer le fichier!!' class=\"button\" id=\"submitRestor\"></div>\n";
 		          $html .= "    </form>\n";                          
                           $html .= "  </div>";                   
                           $html .= "</div>\n";
@@ -188,5 +208,15 @@
                         table_alert ("Vous ne poss&#233;dez pas les droits pour configurer l'application !");
 		}
 	}
+	echo "
+	<script>
+	 	$(document).ready(function(){
+	 		var str=document.location.href.split('=');
+			$('div.mnu>a').removeClass('active');
+	 		$('div.mnu>a.config').addClass('active');
+	  		$('div#mnuconfig>a.'+str[1]).addClass('active');
+	 	});
+	</script>
+	";	
  	include "Includes/pieds_de_page.inc.php";
  ?>

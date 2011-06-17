@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: evol_eleve_classe.php 4878 2010-07-24 13:54:01Z regis $
+* $Id: evol_eleve_classe.php 6729 2011-03-30 09:33:15Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -341,8 +341,8 @@ if (!isset($id_classe)) {
 				if ($moyenne_classe == '') {$moyenne_classe = '-';}
 				echo "<td><p>$note_eleve";
 				echo "</p></td><td><p>$moyenne_classe</p></td>\n";
-				(my_ereg ("^[0-9\.\,]{1,}$", $moyenne_classe)) ? array_push($datay1[$k],"$moyenne_classe") : array_push($datay1[$k],"0");
-				(my_ereg ("^[0-9\.\,]{1,}$", $note_eleve)) ? array_push($datay2[$k],"$note_eleve") : array_push($datay2[$k],"0");
+				(preg_match("/^[0-9\.\,]{1,}$/", $moyenne_classe)) ? array_push($datay1[$k],"$moyenne_classe") : array_push($datay1[$k],"0");
+				(preg_match("/^[0-9\.\,]{1,}$/", $note_eleve)) ? array_push($datay2[$k],"$note_eleve") : array_push($datay2[$k],"0");
 
 				if ($k == '1') {
 					//array_push($etiquette,$current_group["description"]);

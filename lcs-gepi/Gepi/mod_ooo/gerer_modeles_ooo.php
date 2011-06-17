@@ -2,7 +2,7 @@
 /*
  * $Id: index.php 2554 2008-10-12 14:49:29Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -59,7 +59,10 @@ include_once('./lib/chemin.inc.php'); // le chemin des dossiers contenant les  m
     $entete_section[]="";
 	$fich[]="rapport_incident.odt";
     $utilisation[]="Formulaire de rapport d'incident";
-	
+	//Exclusion temporaire
+    $entete_section[]="";
+	$fich[]="discipline_exclusion.odt";
+    $utilisation[]="Exclusion temporaire de l'établissement";
 
     //modèle ABS2
 	$entete_section[]="MODULE ABSENCE";
@@ -70,6 +73,18 @@ include_once('./lib/chemin.inc.php'); // le chemin des dossiers contenant les  m
     $fich[]="absence_extraction_saisies.ods";
     $utilisation[]="ABS2 : Tableau des saisies d'absences";
 	
+	$entete_section[]="";
+    $fich[]="absence_extraction_traitements.ods";
+    $utilisation[]="ABS2 : Tableau des traitements d'absences";
+
+    $entete_section[]="";
+    $fich[]="absence_extraction_bilan.ods";
+    $utilisation[]="ABS2 : Tableau bilan par jour par élève au format tableur";
+
+    $entete_section[]="";
+    $fich[]="absence_extraction_bilan.odt";
+    $utilisation[]="ABS2 : Tableau bilan par jour par élève au format traitement de textes";
+
 	$entete_section[]="";
     $fich[]="absence_modele_lettre_parents.odt";
     $utilisation[]="ABS2 : Modèle de lettre aux parents";
@@ -132,8 +147,14 @@ include_once('./lib/chemin.inc.php'); // le chemin des dossiers contenant les  m
 $PHP_SELF=basename($_SERVER['PHP_SELF']);
 creertousrep($nom_dossier_modeles_ooo_mes_modeles.$rne);
 
-$retour=$_SESSION['retour'];
-$_SESSION['retour']=$_SERVER['PHP_SELF'] ;
+$retour_apres_upload=isset($_POST['retour_apres_upload']) ? $_POST['retour_apres_upload'] : (isset($_GET['retour_apres_upload']) ? $_GET['retour_apres_upload'] : NULL);
+if(!isset($retour_apres_upload)) {
+	$retour=$_SESSION['retour'];
+	$_SESSION['retour']=$_SERVER['PHP_SELF'] ;
+}
+else {
+	$retour="../accueil.php";
+}
 
 //**************** EN-TETE *****************
 $titre_page = "Modèle Open Office - gérer ses modèles";
@@ -142,17 +163,19 @@ require_once("../lib/header.inc");
 echo "<SCRIPT LANGUAGE=\"Javascript\" SRC=\"./lib/mod_ooo.js\"> </SCRIPT>";
 //debug_var();
 
-echo "<p class='bold'><a href='".$retour."'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
-echo "</p>\n";
-echo "<BR />\n";
-echo "<p>Ce module est destiné à gérer les modèles Open Office de Gepi.</p>\n";
-echo "</p>\n";
-echo "<BR />\n";
-
 if (isset($_GET['op'])) { $op=$_GET["op"]; }
 if (isset($_GET['fic'])) { $fic=$_GET["fic"]; }
 if (isset($_POST['btn'])) { $btn=$_POST["btn"]; }
 if (isset($_POST['fich_cible'])) { $fich_cible=$_POST["fich_cible"]; }
+
+echo "<p class='bold'><a href='".$retour;
+if(isset($btn)) {echo "?retour_apres_upload=y";}
+echo "'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
+echo "</p>\n";
+echo "<br />\n";
+echo "<p>Ce module est destiné à gérer les modèles Open Office de Gepi.</p>\n";
+echo "</p>\n";
+echo "<br />\n";
 
 if ((isset($op)) && ($op=="supp")) { //Supprimer un fichier perso
      // alert("EFFACER $fic");
@@ -164,11 +187,14 @@ echo "<body>";
 
 if (!isset($btn)) { //premier passage : formulaire
     echo "<p >Un modèle personnalisé, envoyé sur le serveur sera utilisé par Gepi</p><hr>\n";
-    echo "<p >Peu importe le nom actuel (gardez le format Open Office : ODT - texte, ODS - tableur ou txt - texte), chaque fichier sera renommé correctement.<br>\n";
+    echo "<p >Peu importe le nom actuel (gardez le format Open Office : ODT - texte, ODS - tableur ou txt - texte), chaque fichier sera renommé correctement.<br />\n";
     echo "Les fichiers personnalisés peuvent être supprimés (icône poubelle), contrairement à ceux par défaut.<br />\n";
 	echo "L'ensemble des fichiers peut être consulté en cliquant sur leur icône.</p><br />\n";
 	echo "Lorsque vous créez un nouveau modèle, bien faire attention à la syntaxe des variables utilisées dans le modèle par défaut.</p><br />\n";
     echo "Elles sont sensibles à la case. Le format d'une variable est [var.xxxxx]</p><br /><br />\n";
+    echo "<p><u>Cas particulier du modèle de lettre aux parents pour le module absence 2 : </u><br />\n";
+    echo "Une modification trop importante de ce modèle peut entrainer des disfonctionnements ou des problèmes de mise en page avec la fonctionnalité d'impression par lot des courriers. </u><br />\n";
+    echo "C'est pourquoi il est recommandé, dans ce cas là, de se limiter a des modifications simple (nature du texte par exemple) du modèle de base proposé dans Gépi.</p><br /><br />\n";
     //Tableau des différents fichiers à envoyer
     echo "<table class='boireaus' align='center'>\n";
     echo "<tr>\n";
@@ -190,12 +216,13 @@ if (!isset($btn)) { //premier passage : formulaire
 		  echo "</tr>";
 	  }
 	  echo "<tr class='lig$alt'><form name=\"form$i\" method='post' ENCTYPE='multipart/form-data' action='$PHP_SELF' onsubmit=\"return bonfich('$i')\" >\n";
+	echo add_token_field();
 	  echo "<input type=\"hidden\" name=fich_cible value=$fich[$i] >\n";
 		 $type_ext = renvoi_nom_image(extension_nom_fichier($fich[$i]));
 		 echo "<td align='center'><a href=\"$nom_dossier_modeles_ooo_par_defaut$fich[$i]\"><img src=\"./images/$type_ext\" border=\"0\" title=\"Consulter le modèle par défaut\"></a>\n";
 		 echo "</td>\n";
 	  if  (file_exists($nom_dossier_modeles_ooo_mes_modeles.$rne.$fich[$i]))   {
-		 echo "<td align='center'><a href=\"$PHP_SELF?op=supp&fic=$fich[$i]\" onclick='return confirmer()'><img src=\"./images/poubelle.gif\" border=\"0\" title=\"ATTENTION, suppression immédiate !\"></a>\n";
+		 echo "<td align='center'><a href=\"$PHP_SELF?op=supp&fic=$fich[$i]".add_token_in_url()."\" onclick='return confirmer()'><img src=\"./images/poubelle.gif\" border=\"0\" title=\"ATTENTION, suppression immédiate !\"></a>\n";
 		 echo "&nbsp;&nbsp;<a HREF=\"$nom_dossier_modeles_ooo_mes_modeles$rne$fich[$i]\"><img src=\"./images/$type_ext\" border=\"0\" title=\"Consulter le nouveau modèle\"></a>\n";
 		 echo "</td>\n";
 	  } else {
@@ -206,7 +233,7 @@ if (!isset($btn)) { //premier passage : formulaire
 	  echo "$utilisation[$i]</td><td>\n";
 	  echo "<INPUT TYPE=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"512000\">";
 	  echo "<input type='file' name='monfichier' value='il a cliqué le bougre'>&nbsp;</td><td>\n";
-	  echo "&nbsp;&nbsp;<input type='submit' name='btn' Align='middle' value='Envoyer'  >&nbsp;&nbsp;  \n";
+	  echo "&nbsp;&nbsp;<input type='submit' name='btn' Align='middle' value='Envoyer' />&nbsp;&nbsp;  \n";
 	  echo "</td></form>\n";
 	  echo "</tr>\n";
     }
@@ -215,7 +242,8 @@ if (!isset($btn)) { //premier passage : formulaire
 }
 else { // passage 2 : le nom du fichier a été choisi
     //print_r($_FILES['monfichier']);
-	echo "<h2>fichier envoyé : ".$_FILES['monfichier']['name']." </h2>";
+	echo "<h2>fichier envoyé : ".$_FILES['monfichier']['name']." </h2>\n";
+	check_token();
     $desterreur=$PHP_SELF;
     $dest=$desterreur;
     //alert($dest);
@@ -234,19 +262,19 @@ else { // passage 2 : le nom du fichier a été choisi
        $dest=$desterreur;
        echo "<script language='JavaScript'>\n";
        echo "<!-- \n";
-       echo "w=window.open('','mafenetre');"; //récupérer le même objet fenêtre
-       echo "w.document.writeln('<h3>Fermeture en cours...</h3>');";
-       echo "// - JavaScript - -->";
-       echo "</script>";
+       echo "w=window.open('','mafenetre');\n"; //récupérer le même objet fenêtre
+       echo "w.document.writeln('<h3>Fermeture en cours...</h3>');\n";
+       echo "// - JavaScript - -->\n";
+       echo "</script>\n";
        aller_a($dest);
     }
     else {
         echo "<script language='JavaScript'>\n";
         echo "<!-- \n";
-        echo "w=window.open('','mafenetre');"; //récupérer le même objet fenêtre
-        echo "w.document.writeln('<h3>copie en cours...</h3>');";
-        echo "// - JavaScript - -->";
-        echo "</script>";
+        echo "w=window.open('','mafenetre');\n"; //récupérer le même objet fenêtre
+        echo "w.document.writeln('<h3>copie en cours...</h3>');\n";
+        echo "// - JavaScript - -->\n";
+        echo "</script>\n";
 
 
         $fichiercopie=strtolower($monfichiername);
@@ -255,10 +283,10 @@ else { // passage 2 : le nom du fichier a été choisi
         $cible=$nom_dossier_modeles_ooo_mes_modeles.$rne.$fich_cible;
         //alert("avant la copie".$cible);
         if (!move_uploaded_file($monfichiertmp_name,$cible)) {
-            echo "Erreur de copie<br>";
-            echo "origine     : $monfichiername <br>";
+            echo "Erreur de copie<br />\n";
+            echo "origine     : $monfichiername <br />\n";
             echo "destination : $nom_dossier_modeles_ooo_mes_modeles$rne".$fichiercopie;
-            $me="La copie ne s'est pas effectuée !\n Vérifiez la taille du fichier (max 512ko)";
+            $me="La copie ne s'est pas effectuée !\n Vérifiez la taille du fichier (max 512ko)\n";
             alert($me);
             $dest=$desterreur;
         }
@@ -269,16 +297,17 @@ else { // passage 2 : le nom du fichier a été choisi
             echo "<p align='center'>";
             unset($monfichiername);
             echo "<form name='retour' method='POST' action='$PHP_SELF'>\n";
-            echo "<input type='submit' name='ret' Align='middle' value='Retour'";
-            echo "</form>";
+            echo "<input type='hidden' name='retour_apres_upload' value='y' />\n";
+            echo "<input type='submit' name='ret' Align='middle' value='Retour' />\n";
+            echo "</form>\n";
 
             }
         } //fin de monfichier != ""
         echo "<script language='JavaScript'>\n";
         echo "<!-- JavaScript\n";
-        echo "w.close()";
-        echo "// - JavaScript - -->";
-        echo "</script>";
+        echo "w.close()\n";
+        echo "// - JavaScript - -->\n";
+        echo "</script>\n";
 
 }
 ?>

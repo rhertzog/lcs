@@ -3,17 +3,17 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return; // securiser
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
-if (defined("_TEST_DIRS")) return;
-define("_TEST_DIRS", "1");
+if (defined('_TEST_DIRS')) return;
+define('_TEST_DIRS', "1");
 
 include_spip('inc/minipres');
 utiliser_langue_visiteur();
@@ -131,12 +131,13 @@ function install_etape_chmod_dist()
 	$t = (!$test_dir ? "" : 
 		 "<input type='hidden' name='test_dir' value='$test_dir' />")
 	. "<input type='hidden' name='etape' value='chmod' />"
-	. "<div style='text-align: right'><input type='submit' class='fondl' value='$t' /></div>"; 
+	. "<div style='text-align: right'><input type='submit' value='$t' /></div>"; 
 
 	echo minipres($titre, $res . generer_form_ecrire('install',  $t));
 
 	} else {
-		if (!_FILE_CONNECT)
+		$deja = (_FILE_CONNECT AND analyse_fichier_connection(_FILE_CONNECT));
+		if (!$deja)
 			redirige_url_ecrire("install", "etape=1&chmod=".$chmod);
 		else	redirige_url_ecrire();
 	}

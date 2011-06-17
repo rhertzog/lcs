@@ -1,21 +1,23 @@
 <?php 
-	//test si squirrelmail est installe pour redirection mails
 	$uid = $_GET[uid];
 	$toggle = $_GET[toggle];
 	$action = $_Get[action];
 	
-	$query="SELECT value from applis where name='squirrelmail'";
-	$result=mysql_query($query);
-	if ($result) 
-	{
-		if ( mysql_num_rows($result) !=0 ) {
-			$r=mysql_fetch_object($result);
-			$test_squir=$r->value;
-		}
-		else $test_squir="0";
+	//test si squirrelmail est installe pour redirection mails
+	if (isset($squirrelmail)) {
+		$test_webmail=$squirrelmail;
+		$url_webmail="../squirrelmail/src/compose.php?send_to=";
 	}
-	else $test_squir="0";
+	else $test_webmail="0";
 	//fin test squirrelmail
+
+	//test si roundcube est installe pour redirection mails
+	if (isset($roundcube)) {
+		$test_webmail=$roundcube;
+		$url_webmail="../roundcube/?_task=mail&_action=compose&send_to=";
+#		echo "<script>alert('$test_webmail');</script>";	
+	}
+	//fin test roundcube
 	//test listes de diffusion
 	exec ("/bin/grep \"#<listediffusionldap>\" /etc/postfix/mailing_list.cf", $AllOutPut, $ReturnValueShareName);
     $listediff = 0;
@@ -47,42 +49,42 @@
     		if (in_array($groups[$loop]["cn"], $tbl_gp)){ 
     			$group_principal = $groups[$loop]["cn"];
   				$lgp ="<li class=\"group_title\"><strong>Goupe principal :</strong></li>";
-				$lgp .=info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_squir);
+				$lgp .=info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_webmail,$url_webmail);
     		}
  			else if ( preg_match("/Cours/", $groups[$loop]["cn"] )) {
  				if($co==0 ) {
  					$lst_co .="<li class=\"group_title\"><strong>Cours</strong></li>";
  					$co++;
  				}
-		 		$lst_co .= info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_squir);
+		 		$lst_co .= info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_webmail,$url_webmail);
  			}
 		 	else if ( preg_match("/Equipe/", $groups[$loop]["cn"] )) {
 		 		if ($eq==0 ) {
 		 			$lst_eq .="<li class=\"group_title\"><strong>Equipes</strong></li>";
 		 			$eq++;
 		 		}
-		 		$lst_eq .= info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_squir);
+		 		$lst_eq .= info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_webmail,$url_webmail);
 		 	}
 		 	else if ( preg_match("/Matiere/", $groups[$loop]["cn"] )) {
 		 		if ($ma==0 ) {
 		 			$lst_ma .="<li class=\"group_title\"><strong>Mati&egrave;res</strong></li>";
 		 			$ma++;
 		 		}
-		 		$lst_ma .= info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_squir);
+		 		$lst_ma .= info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_webmail,$url_webmail);
 		 	}
 		 	else if ( preg_match("/Classe/", $groups[$loop]["cn"] ) ) {
 		 		if ($cl==0){
 		 			$lst_cl .="<li class=\"group_title\"><strong>Ma classe : </strong></li>";
 		 			$cl++;
 		 		}
-		 		$lst_cl .= info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_squir);
+		 		$lst_cl .= info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_webmail,$url_webmail);
 		 	}
 		 	else {
 		 		if ($di==0)  {
 		 		$lst_di .="<li class=\"group_title\"><strong>Divers</strong></li>";
 		 			$di++;
 		 		}
-		 		$lst_di .= info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_squir);
+		 		$lst_di .= info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_webmail,$url_webmail);
 		 	}
 			if($group_principal == ""){
 //				$lst .= info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain);
@@ -110,7 +112,7 @@
 	."<div class=\"small\">Cliquez sur l'adresse et apppuyez sur les touches Ctrl + c (Pomme + c pour Mac) pour copier votre adresse courriel</div>"
 	."</li>\n";
 	// Pourquoi une restriction aux eleves ????
-	if (!is_eleve($login) && $user["uid"]==$login && $test_squir=="1") {
+	if (!is_eleve($login) && $user["uid"]==$login && $test_webmail=="1") {
 		$lst .="<li class=\"user_link\"><a href=\"../Annu/mod_mail.php\""
 		." title=\"Aller &agrave; la redirection\""
 		." rel=\"annu\" class=\"test_ajax open_win ext_link pointer\">"
@@ -123,7 +125,7 @@
    	$lst .=  "</ul>";
   	$text_infos .=$lstLastConnect.$lstIntroGrps.$lgp.$lst;
   }
-  function info_item_group($group,$type,$domain,$login,$listediff,$test_squir) {
+  function info_item_group($group,$type,$domain,$login,$listediff,$test_webmail,$url_webmail) {
   			$ret .= "<li class=\"user_link\"><a class=\"test_ajax open_win pointer\""
 			." href=\"../Annu/group.php?filter=".$group."\""
 			." rel=\"path\" title=\"Voir le groupe "
@@ -138,8 +140,8 @@
 			$ret .= $group;
 			}
 		$ret .=  "</a>";
-		if (! is_eleve($login) && $listediff && $test_squir=="1") 
-		$ret .="<a href=\"../squirrelmail/src/compose.php?send_to=".$group."@".$domain."\" class=\"open_win ext_link\" rel=\"squirrelmail\" title=\"Envoyer un message &agrave; ce groupe\">  <img src=\"core/images/annu/mail.png\" alt=\"\" class=\"float_right\" style=\"margin:5px 5px 0 0;\"/></a>";
+		if (! is_eleve($login) && $listediff && $test_webmail=="1") 
+		$ret .="<a href=\"".$url_webmail.$group."@".$domain."\" class=\"open_win ext_link\" rel=\"squirrelmail\" title=\"Envoyer un message &agrave; ce groupe\">  <img src=\"core/images/annu/mail.png\" alt=\"\" class=\"float_right\" style=\"margin:5px 5px 0 0;\"/></a>";
 		/*
 		$ret .=  ",<small> ".$groups[$loop]["description"];
 		$uid=$login;

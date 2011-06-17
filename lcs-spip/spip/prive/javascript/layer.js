@@ -19,7 +19,10 @@ function findObj_test_forcer(n, forcer) {
 		x = d.all[n]; 
 	}
 	for (i = 0; !x && i<d.forms.length; i++) {
-		x = d.forms[i][n];
+		if (d.forms[i][n]){
+			if (d.forms[i][n].id==n)
+				x = d.forms[i][n];
+		}
 	}
 	for(i=0; !x && d.layers && i<d.layers.length; i++) x = findObj(n,d.layers[i].document);
 	if(!x && document.getElementById) x = document.getElementById(n); 
@@ -57,7 +60,7 @@ jQuery.fn.showother = function(cible) {
 				.removeClass('blocreplie')
 				.removeClass('togglewait');
 			}
-		);
+		).trigger('deplie');
 	}
 	return this;
 }
@@ -75,7 +78,7 @@ jQuery.fn.hideother = function(cible) {
 				.removeClass('blocdeplie')
 				.removeClass('togglewait');
 			}
-		);
+		).trigger('replie');
 }
 	return this;
 }
@@ -268,41 +271,45 @@ function onkey_rechercher(valeur, rac, url, img, nid, init) {
 // ici :
 // * retailler les input
 // * utiliser ctrl-s, F8 etc comme touches de sauvegarde
+var verifForm_clicked=false;
 function verifForm(racine) {
-	if(!jQuery.browser.mozilla) return;
-	jQuery("input.forml,input.formo,textarea.forml,textarea.formo", racine||document)
-	.each(function() {
-		var jField = jQuery(this);
-		var w = jField.css('width');
-		if (!w || w == '100%') {
-			jField.css('width','95%');
-		} else {
-			w = parseInt(w) -
-			(parseInt(jField.css("borderLeftWidth")) +
-				parseInt(jField.css("borderRightWidth")) +
-				parseInt(jField.css("paddingLeft")) +
-				parseInt(jField.css("paddingRight")
-			));
-			jField.width(w+'px');
-		}
-	});
 
 	// Clavier pour sauver (cf. crayons)
-	jQuery('form', racine||document)
-	.keypress(function(e){
-		if (
-		(e.ctrlKey && (
-			/* ctrl-s ou ctrl-maj-S, firefox */
-			((e.charCode||e.keyCode) == 115) || ((e.charCode||e.keyCode) == 83))
-			/* ctrl-s, safari */
-			|| (e.charCode==19 && e.keyCode==19)
-		) || (!e.charCode && e.keyCode == 119 /* F8, windows */)
-		) {
-			jQuery(this).find('input[type=submit]')
-			.click();
-			return false;
-		}
-	});
+	// cf http://www.quirksmode.org/js/keys.html
+	if (!jQuery.browser.msie)
+		// keypress renvoie le charcode correspondant au caractere frappe (ici s)
+		jQuery('form', racine||document)
+		.keypress(function(e){
+			if (
+				((e.ctrlKey && (
+					/* ctrl-s ou ctrl-maj-S, firefox */
+					(((e.charCode||e.keyCode) == 115) || ((e.charCode||e.keyCode) == 83))
+					/* ctrl-s, safari */
+					|| (e.charCode==19 && e.keyCode==19)
+				 )
+				) /* ctrl-s, Opera Mac */
+				|| (e.keyCode==19 && jQuery.browser.opera))
+				&& !verifForm_clicked
+			) {
+				verifForm_clicked = true;
+				jQuery(this).find('input[type=submit]')
+				.click();
+				return false;
+			}
+		});
+	else
+		// keydown renvoie le keycode correspondant a la touche pressee (ici F8)
+		jQuery('form', racine||document)
+		.keydown(function(e){
+			//jQuery('#ps').after("<div>ctrl:"+e.ctrlKey+"<br />charcode:"+e.charCode+"<br />keycode:"+e.keyCode+"<hr /></div>");
+			if (!e.charCode && e.keyCode == 119 /* F8, windows */ && !verifForm_clicked){
+				verifForm_clicked = true;
+				jQuery(this).find('input[type=submit]')
+				.click();
+				return false;
+			}
+		});
+
 }
 
 // Si Ajax est disponible, cette fonction l'utilise pour envoyer la requete.

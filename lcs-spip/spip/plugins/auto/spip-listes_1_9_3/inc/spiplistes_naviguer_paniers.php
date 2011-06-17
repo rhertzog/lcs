@@ -1,9 +1,13 @@
 <?php
-// Original From SPIP-Listes-V :: Id: spiplistes_naviguer_paniers.php paladin@quesaco.org
+/**
+ * @version Original From SPIP-Listes-V :: Id: spiplistes_naviguer_paniers.php paladin@quesaco.org
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:13 +0200 (Mon, 25 Apr 2011) $
 
-// $LastChangedRevision: 24347 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2008-11-15 13:45:49 +0100 (sam, 15 nov 2008) $
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/spiplistes_api_globales');
 

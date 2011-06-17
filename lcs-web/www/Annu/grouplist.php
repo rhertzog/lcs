@@ -45,7 +45,7 @@ if ((is_admin("Annu_is_admin",$login)=="Y") || (is_admin("sovajon_is_admin",$log
 					echo "<img src=\"images/gender_boy.gif\" alt=\"El&egrave;ve\" width=14 height=14 hspace=3 border=0>\n";
 				}
 			}
-			ereg("([0-9]{8})",$people[$loop]["gecos"],$naiss);
+			mb_ereg("([0-9]{8})",$people[$loop]["gecos"],$naiss);
 			echo $people[$loop]["fullname"]."</td><td>".$people[$loop]["uid"]."</td><td>".$naiss[0]."</td>\n";
 
 			echo "</tr>\n";

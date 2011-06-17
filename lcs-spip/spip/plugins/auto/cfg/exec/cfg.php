@@ -1,20 +1,29 @@
 <?php
 
-/*
- * Plugin CFG pour SPIP
- * (c) toggg 2007, distribue sous licence GNU/GPL
- * Documentation et contact: http://www.spip-contrib.net/
+/**
+ * Plugin générique de configuration pour SPIP
  *
- * la fonction appelee par le core, une simple "factory" de la classe cfg
+ * @license    GNU/GPL
+ * @package    plugins
+ * @subpackage cfg
+ * @category   outils
+ * @copyright  (c) toggg, marcimat 2007-2008
+ * @link       http://www.spip-contrib.net/
+ * @version    $Id: cfg.php 36735 2010-03-28 21:25:09Z gilles.vincent@gmail.com $
  */
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
+/**
+ * la fonction appelee par le core, une simple "factory" de la classe cfg
+ *
+ * @param mixed $class # inutilisé
+ */
 function exec_cfg_dist($class = null)
 {
 	include_spip('inc/filtres');
 	include_spip('inc/cfg');
-	$config = &new cfg(
+	$config = new cfg(
 		($nom = sinon(_request('cfg'), '')),
 		($cfg_id = sinon(_request('cfg_id'),''))
 		);
@@ -49,6 +58,9 @@ function exec_cfg_dist($class = null)
 
 	// si un formulaire cfg est demande
 	if ($s = $config->descriptif()) echo debut_boite_info(true) . $s . fin_boite_info(true);
+	
+	// affiche éventuellement une colonne supplémentaire à gauche
+	if ($s = $config->gauche()) echo debut_boite_info(true) . $s . fin_boite_info(true);
 	
 	echo pipeline('affiche_gauche',array('args'=>array('exec'=>'cfg'),'data'=>''));
 	echo creer_colonne_droite('', true);

@@ -26,11 +26,11 @@ header("Content-Type: text/plain" );
 header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
 header("Pragma: no-cache");
-if(isset($_REQUEST['rubrik']) && isset($_REQUEST['thedate']))
+if(isset($_POST['rubrik']) && isset($_POST['thedate']))
 {
-$tsmp=$_REQUEST['thedate'];
-$cible=$_REQUEST['rubrik'];
-$ann_arch=$_REQUEST['thearch'];
+$tsmp=$_POST['thedate'];
+$cible=$_POST['rubrik'];
+$ann_arch=$_POST['thearch'];
 //affichage du contenu du cahier de textes
 // onglets
 	// Affichage de la colonne de gauche
@@ -42,11 +42,11 @@ $ann_arch=$_REQUEST['thearch'];
 		if ($cible == ($_SESSION['numero'][$x])) 
 		
 			{
-			echo '<li id="active"><a href="#" title="" onclick="refresh_cdt_arch('. $numero[$x].','.$tsmp.',\''.$ann_arch.'\')" id="courant">&nbsp;'.$mat[$x].'&nbsp;<br />&nbsp;'.$pref[$x].'  '.$prof[$x].'&nbsp;</a></li>';
+			echo '<li id="active"><a href="#" title="" onclick="refresh_cdt_arch('. $_SESSION['numero'][$x].','.$tsmp.',\''.$ann_arch.'\')" id="courant">&nbsp;'.$_SESSION["mat"][$x].'&nbsp;<br />&nbsp;'.$_SESSION["pref"][$x].'  '.$_SESSION["prof"][$x].'&nbsp;</a></li>';
 			}
 			else 
 			{
-			echo '<li><a href="#" title="" onclick="refresh_cdt_arch('. $_SESSION['numero'][$x].','.$tsmp.',\''.$ann_arch.'\')" >&nbsp;'.$_SESSION["mat"][$x].'&nbsp;<br />&nbsp;'.$_SESSION["pref"][$x].'  '.$_SESSION["prof"][$x].'&nbsp;</a>';
+			echo '<li><a href="#" title="" onclick="refresh_cdt_arch('. $_SESSION['numero'][$x].','.$tsmp.',\''.$ann_arch.'\')" >&nbsp;'.$_SESSION["mat"][$x].'&nbsp;<br />&nbsp;'.$_SESSION["pref"][$x].'  '.$_SESSION["prof"][$x].'&nbsp;</a></li>';
 			}
 		}
 

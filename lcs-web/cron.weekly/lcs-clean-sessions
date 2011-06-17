@@ -1,0 +1,9 @@
+#!/bin/sh
+
+thedate=$(date +"%Y%m%d000000");
+mysql -se "select id from lcs_db.personne where act_log <= '$thedate'" | while read ID
+do
+	mysql -e "delete from lcs_db.sessions where idpers='$ID'"
+done
+
+

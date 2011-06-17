@@ -6,7 +6,7 @@
 #  Contact : patrice¡.!vanneufville¡@!laposte¡.!net   #
 #  Infos : http://www.spip-contrib.net/?article2166   #
 #-----------------------------------------------------#
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if(!defined("_ECRIRE_INC_VERSION")) return;
 
 // Noter :
 // outils/mon_outil.php : inclus par les pipelines de l'outil
@@ -25,8 +25,38 @@ add_outil( array(
 ));
 */
 
-	// ici on a besoin d'une case input. La variable est : dossier_squelettes
-	// a la toute premiere activation de l'outil, la valeur sera : $GLOBALS['dossier_squelettes']
+
+add_variables( array(
+	'nom' => 'alinea',
+	'check' => 'couteauprive:autobr_oui',
+	'defaut' => 1,
+	'code:%s' => "define('_CS_AUTOBR_TRAIT', 1);",
+) ,array(
+	'nom' => 'alinea2',
+	'check' => 'couteauprive:autobr_non',
+	'defaut' => 0,
+	'code:%s' => "define('_CS_AUTOBR_RACC', 1);",
+));
+add_outil( array(
+	'id' => 'autobr',
+	'code:options' => '%%alinea%%%%alinea2%%',
+	'categorie' => 'typo-corr',
+	// traitement automatique des TEXTE/articles, et TEXTE/forums (standard pour SPIP>=2.1)
+	'traitement:TEXTE/articles:pre_propre'
+	 .(!defined('_SPIP20100')?',traitement:TEXTE/forums:pre_propre':'') => 'autobr_pre_propre',
+	'pipelinecode:pre_typo' => 'if(%%alinea2%%) { include_spip(\'outils/autobr\'); $flux = autobr_alinea($flux); }',
+	'pipeline:nettoyer_raccourcis_typo' => 'autobr_nettoyer_raccourcis',
+	'pipeline:porte_plume_cs_pre_charger' => 'autobr_CS_pre_charger',
+	'pipeline:porte_plume_lien_classe_vers_icone' => 'autobr_PP_icones',
+	'code:fonctions' => "// pour le traitement TEXTE/articles et la balise #INTRODUCTION
+include_spip('outils/autobr');
+\$GLOBALS['cs_introduire'][] = 'autobr_nettoyer_raccourcis';",
+	'pipelinecode:pre_description_outil' => 'if($id=="autobr")
+		$texte=str_replace("@BALISES@",cs_balises_traitees("autobr"),$texte);',
+));
+
+// ici on a besoin d'une case input. La variable est : dossier_squelettes
+// a la toute premiere activation de l'outil, la valeur sera : $GLOBALS['dossier_squelettes']
 add_variable( array(
 	'nom' => 'dossier_squelettes',
 	'format' => _format_CHAINE,
@@ -38,20 +68,6 @@ add_outil( array(
 	'code:spip_options' => '%%dossier_squelettes%%',
 	'categorie' => 'admin',
 ));
-
-/*
-add_variable( array(
-	'nom' => 'cookie_prefix',
-	'format' => _format_CHAINE,
-	'defaut' => "'spip'",
-	'code' => "\$GLOBALS['cookie_prefix']=%s;",
-));
-add_outil( array(
-	'id' => 'cookie_prefix',
-	'code:options' => "%%cookie_prefix%%",
-	'categorie' => 'admin',
-));
-*/
 
 add_outil( array(
 	'id' => 'supprimer_numero',
@@ -66,7 +82,7 @@ add_outil( array(
 	'categorie' => 'public',
 ));
 
-add_variables( array(
+add_variable( array(
 	'nom' => 'paragrapher',
 	'format' => _format_NOMBRE,
 	'radio' => array(1 => 'item_oui', 0 => 'item_non', -1 => 'couteauprive:par_defaut'),
@@ -85,7 +101,7 @@ add_outil( array(
 	'categorie' => 'public',
 ));
 
-add_variables( array(
+add_variable( array(
 	'nom' => 'webmestres',
 	'format' => _format_CHAINE,
 	'defaut' => '"1"',
@@ -98,7 +114,9 @@ add_outil( array(
 	'categorie' => 'admin',
 	// non supporte avant la version 1.92
 	'version-min' => '1.9200',
-	'autoriser' => "cout_autoriser('webmestre')",
+	'autoriser' => "autoriser('webmestre')",
+	'pipelinecode:pre_description_outil' => 'if($id=="webmestres")
+		$texte=str_replace(array("@_CS_LISTE_WEBMESTRES@","@_CS_LISTE_ADMINS@"),get_liste_administrateurs(),$texte);',
 ));
 
 add_outil( array(
@@ -107,8 +125,8 @@ add_outil( array(
 	'categorie' => 'spip',
 ));
 
-	// ici on a besoin d'une case input. La variable est : suite_introduction
-	// a la toute premiere activation de l'outil, la valeur sera : '&nbsp;(...)'
+// ici on a besoin d'une case input. La variable est : suite_introduction
+// a la toute premiere activation de l'outil, la valeur sera : '&nbsp;(...)'
 add_variables( array(
 	'nom' => 'suite_introduction',
 	'format' => _format_CHAINE,
@@ -132,12 +150,13 @@ add_outil( array(
 	'categorie' => 'spip',
 ));
 
-	// ici on a besoin de deux boutons radio : _T('icone_interface_simple') et _T('icone_interface_complet')
+// ici on a besoin de deux boutons radio : _T('icone_interface_simple') et _T('icone_interface_complet')
 add_variable( array(
 	'nom' => 'radio_set_options4',
 	'format' => _format_CHAINE,
 	'radio' => array('basiques' => 'icone_interface_simple', 'avancees' => 'icone_interface_complet'),
 	'defaut' => '"avancees"',
+	'label' => '@_CS_CHOIX@',
 	'code' => "\$_GET['set_options']=\$GLOBALS['set_options']=%s;",
 ));
 add_outil( array(
@@ -151,61 +170,25 @@ add_outil( array(
 	'version-max' => '1.9299',
 ));
 
-add_outil( array(
-	'id' => 'simpl_interface',
-	'code:spip_options' => "define('_ACTIVER_PUCE_RAPIDE', false);",
-	'categorie' => 'interface',
-	'version-min' => '1.9300',
-));
-
-add_outil( array(
-	'id' => 'icone_visiter',
-	'categorie' => 'interface',
-	'pipeline:header_prive' => 'icone_visiter_header_prive',
-));
-
-add_variables( array(
-	'nom' => 'tri_articles',
-	'format' => _format_CHAINE,
-	'radio' => array(
-		'date_modif DESC' => 'couteauprive:tri_modif',
-		'0+titre,titre' => 'couteauprive:tri_titre',
-		'date DESC' => 'couteauprive:tri_publi', 
-		'perso' => 'couteauprive:tri_perso' ),
-	'radio/ligne' => 1,
-	'defaut' => "'date DESC'", //"'0+titre,titre'",
-	'code:%s!="perso"' => "define('_TRI_ARTICLES_RUBRIQUE', %s);\n",
-), array(
-	'nom' => 'tri_perso',
-	'format' => _format_CHAINE,
-	'defaut' => '',
-	'code:strlen(%s)' => "define('_TRI_ARTICLES_RUBRIQUE', %s);",
-));
-add_outil( array(
-	'id' => 'tri_articles',
-	'code:spip_options' => "%%tri_articles%%%%tri_perso%%",
-	'categorie' => 'interface',
-	'version-min' => '1.9300',
-));
-
-	// ici on a besoin de trois boutons radio : _T('couteauprive:js_jamais'), _T('couteauprive:js_defaut') et _T('couteauprive:js_toujours')
+// ici on a besoin de trois boutons radio : _T('couteauprive:js_jamais'), _T('couteauprive:js_defaut') et _T('couteauprive:js_toujours')
 add_variable( array(
 	'nom' => 'radio_filtrer_javascript3',
 	'format' => _format_NOMBRE,
 	'radio' => array(-1 => 'couteauprive:js_jamais', 0 => 'couteauprive:js_defaut', 1 => 'couteauprive:js_toujours'),
 	'defaut' => 0,
+	'label' => '@_CS_CHOIX@',
 	// si la variable est non nulle, on code...
 	'code:%s' => "\$GLOBALS['filtrer_javascript']=%s;",
 ));
 add_outil( array(
 	'id' => 'filtrer_javascript',
 	'code:options' => "%%radio_filtrer_javascript3%%",
-	'categorie' => 'admin',
+	'categorie' => 'securite',
 	'version-min' => '1.9200',
 ));
 
-	// ici on a besoin d'une case input. La variable est : forum_lgrmaxi
-	// a la toute premiere activation de l'outil, la valeur sera : 0 (aucune limite)
+// ici on a besoin d'une case input. La variable est : forum_lgrmaxi
+// a la toute premiere activation de l'outil, la valeur sera : 0 (aucune limite)
 add_variable( array(
 	'nom' => 'forum_lgrmaxi',
 	'format' => _format_NOMBRE,
@@ -215,8 +198,102 @@ add_variable( array(
 add_outil( array(
 	'id' => 'forum_lgrmaxi',
 	'code:spip_options' => "%%forum_lgrmaxi%%",
-	'categorie' => 'admin',
+	'categorie' => 'securite',
 	'version-min' => '1.9200',
+));
+
+
+add_variables( array(
+	'nom' => 'logo_Hmax',
+	'format' => _format_NOMBRE,
+	'defaut' => 0,
+	'code:%s' => "@define('_LOGO_MAX_HEIGHT', %s);\n",
+), array(
+	'nom' => 'logo_Wmax',
+	'format' => _format_NOMBRE,
+	'defaut' => 0,
+	'code:%s' => "@define('_LOGO_MAX_WIDTH', %s);\n",
+), array(
+	'nom' => 'logo_Smax',
+	'format' => _format_NOMBRE,
+	'defaut' => 0,
+	'code:%s' => "@define('_LOGO_MAX_SIZE', %s);\n",
+), array(
+	'nom' => 'img_Hmax',
+	'format' => _format_NOMBRE,
+	'defaut' => 0,
+	'code:%s' => "@define('_IMG_MAX_HEIGHT', %s);\n",
+), array(
+	'nom' => 'img_Wmax',
+	'format' => _format_NOMBRE,
+	'defaut' => 0,
+	'code:%s' => "@define('_IMG_MAX_WIDTH', %s);\n",
+), array(
+	'nom' => 'img_Smax',
+	'format' => _format_NOMBRE,
+	'defaut' => 0,
+	'code:%s' => "@define('_IMG_MAX_SIZE', %s);\n",
+), array(
+	'nom' => 'doc_Smax',
+	'format' => _format_NOMBRE,
+	'defaut' => 0,
+	'code:%s' => "@define('_DOC_MAX_SIZE', %s);\n",
+), array(
+	'nom' => 'img_GDmax',
+	'format' => _format_NOMBRE,
+	'defaut' => 0,
+	'code:%s' => "@define('_IMG_GD_MAX_PIXELS', %s);\n",
+), array(
+	'nom' => 'img_GDqual',
+	'format' => _format_NOMBRE,
+	'defaut' => 85,
+	'code:%s' => "@define('_IMG_GD_QUALITE', %s);\n",
+	'label' => '@_CS_CHOIX@',
+), array(
+	'nom' => 'copie_Smax',
+	'format' => _format_NOMBRE,
+	'defaut' => 16,
+	'code' => "@define('_COPIE_LOCALE_MAX_SIZE', %s*1048576);",
+));
+add_outil( array(
+	'id' => 'SPIP_tailles',
+	'code:spip_options' => "%%logo_Hmax%%%%logo_Wmax%%%%logo_Smax%%%%img_Hmax%%%%img_Wmax%%%%img_Smax%%%%doc_Smax%%%%img_GDmax%%%%img_GDqual%%%%copie_Smax%%",
+	'categorie' => 'securite',
+));
+
+add_outil( array(
+	'id' => 'previsualisation',
+	'categorie' => 'interface',
+	'auteur' => '[C&eacute;dric Morin->http://www.yterium.net]',
+	'pipeline:pre_boucle' => 'previsu_redac_pre_boucle',
+	'pipeline:boite_infos' => 'previsu_redac_boite_infos',
+	// fichier distant pour les pipelines
+	'distant_pipelines' => 'http://zone.spip.org/trac/spip-zone/export/32230/_plugins_/previsu_redaction/previsu_redac_pipelines.php',
+	'version-min' => '1.9300',
+));
+
+add_variable( array(
+	'nom' => 'mot_masquer',
+	'format' => _format_CHAINE,
+	'defaut' => "'masquer'",
+	'code' => "define('_MOT_MASQUER', %s);",
+	'commentaire' => '!sql_countsel("spip_mots", "titre="._q(%s))?"<span style=\"color:red\">"._T("couteauprive:erreur_mot", array("mot"=>%s))."</span>":""',
+));
+add_outil( array(
+	'id' => 'masquer',
+	'categorie' => 'spip',
+	'auteur' => 'Nicolas Hoizey, St&eacute;phanie Caron',
+	'pipeline:pre_boucle' => 'masquer_pre_boucle',
+	// fichier distant pour le pipeline
+	'distant_pipelines' => 'http://zone.spip.org/trac/spip-zone/export/35809/_plugins_/masquer/masquer_pipelines.php',
+	'code:options' => "%%mot_masquer%%",
+	'code:fonctions' => 'if (!function_exists("critere_tout_voir_dist")){
+  function critere_tout_voir_dist($idb, &$boucles, $crit) {
+    $boucle = &$boucles[$idb];
+    $boucle->modificateur["tout_voir"] = true;
+  }
+}',
+	'version-min' => '1.9300',
 ));
 
 add_variables( array(
@@ -234,18 +311,21 @@ add_variables( array(
 ));
 add_outil( array(
 	'id' => 'auteur_forum',
-	'categorie'	 => 'admin',
+	'categorie'	 => 'securite',
 	'jquery'	=> 'oui',
 	'code:jq_init' => 'cs_auteur_forum.apply(this);',
 	'code:js' => "var cs_verif_email = %%auteur_forum_email%%;\nvar cs_verif_nom = %%auteur_forum_nom%%;\nvar cs_verif_deux = %%auteur_forum_deux%%;",
+	'pipelinecode:pre_description_outil' => 'if($id=="auteur_forum") $texte=str_replace(array("@_CS_FORUM_NOM@","@_CS_FORUM_EMAIL@"),
+	array(preg_replace(\',:$,\',"",_T("forum_votre_nom")),preg_replace(\',:$,\',"",_T("forum_votre_email"))),$texte);',
 ));
 
-	// ici on a besoin de trois boutons radio : _T('couteauprive:par_defaut'), _T('couteauprive:sf_amont') et _T('couteauprive:sf_tous')
+// ici on a besoin de trois boutons radio : _T('couteauprive:par_defaut'), _T('couteauprive:sf_amont') et _T('couteauprive:sf_tous')
 add_variable( array(
 	'nom' => 'radio_suivi_forums3',
 	'format' => _format_CHAINE,
 	'radio' => array('defaut' => 'couteauprive:par_defaut', '_SUIVI_FORUMS_REPONSES' => 'couteauprive:sf_amont', '_SUIVI_FORUM_THREAD' => 'couteauprive:sf_tous'),
 	'defaut' => '"defaut"',
+	'label' => '@_CS_CHOIX@',
 	// si la variable est differente de 'defaut' alors on codera le define
 	'code:%s!=="defaut"' => "define(%s, true);",
 ));
@@ -258,23 +338,32 @@ add_outil( array(
 	'version-max' => '1.9299',
 ));
 
-add_variable( array(
+add_variables( array(
 	'nom' => 'spam_mots',
 	'format' => _format_CHAINE,
 	'lignes' => 8,
 	'defaut' => '"sucking blowjob superbabe ejakulation fucking (asses)"',
 	'code' => "define('_spam_MOTS', %s);",
+), array(
+	'nom' => 'spam_ips',
+	'format' => _format_CHAINE,
+	'lignes' => 6,
+	'defaut' => '""',
+	'code' => "define('_spam_IPS', %s);",
 ));
 add_outil( array(
 	'id' => 'spam',
-	'code:options' => '%%spam_mots%%',
-	'categorie' => 'admin',
+	'code:options' => "%%spam_mots%%\n%%spam_ips%%",
+	// sauvegarde de l'IP pour tests
+	'code:spip_options' => '$ip_=$ip;',
+	'categorie' => 'securite',
 ));
 
+// a placer apres l'outil 'spam' pour compatibilite IP
 add_outil( array(
 	'id' => 'no_IP',
 	'code:spip_options' => '$ip = substr(md5($ip),0,16);',
-	'categorie' => 'admin',
+	'categorie' => 'securite',
 ));
 
 add_outil( array(
@@ -285,6 +374,31 @@ add_outil( array(
 ));
 
 add_variables( array(
+	'nom' => 'ecran_actif',
+	'check' => 'couteauprive:ecran_activer',
+	'defaut' => 1,
+	// code d'appel en realpath() pour config/mes_options.php (SPIP < 2.1)
+	'code:%s' => "// bug SPIP 1.92, 2.0 et 2.1
+if(isset(\$_REQUEST['exec']) && strncmp('admin_couteau_suisse',\$_REQUEST['exec'],20)==0) \$_REQUEST['exec']='admin_couteau_suisse';
+".((!defined('_SPIP20100'))?"if(!defined('_ECRAN_SECURITE') && @file_exists(\$f=\"".str_replace('\\','/',realpath(dirname(__FILE__)))."/lib/ecran_securite/distant_ecran_securite.php\")) include \$f;":''),
+), array(
+	'nom' => 'ecran_load',
+	'format' => _format_NOMBRE,
+	'defaut' => 4,
+	'code:%s' => "define('_ECRAN_SECURITE_LOAD',%s);\n",
+));
+add_outil( array(
+	'id' => 'ecran_securite',
+	'code:spip_options' => '%%ecran_load%%%%ecran_actif%%',
+	'categorie' => 'securite',
+	'distant' => 'http://zone.spip.org/trac/spip-zone/browser/_core_/securite/ecran_securite.php?format=txt',
+	'pipeline:fichier_distant' => defined('_SPIP20100')?'ecran_securite_fichier_distant':'', 
+	'pipelinecode:pre_description_outil' => 'if($id=="ecran_securite") $flux["non"] = !%%ecran_actif%% || !$flux["actif"];',
+	'pipeline:pre_description_outil' => 'ecran_securite_pre_description_outil',
+	'description' => "<:ecran_securite::>{{@_ECRAN_SECURITE@}}@_ECRAN_SUITE@",
+));
+
+add_variables( array(
 	'nom' => 'log_couteau_suisse',
 	'check' => 'couteauprive:cs_log_couteau_suisse',
 	'defaut' => 0,
@@ -292,15 +406,27 @@ add_variables( array(
 	'nom' => 'spip_options_on',
 	'check' => 'couteauprive:cs_spip_options_on',
 	'defaut' => 0,
+	'commentaire' => 'cs_outils_concernes("code:spip_options");',
 ), array(
 	'nom' => 'distant_off',
 	'check' => 'couteauprive:cs_distant_off',
 	'defaut' => 0,
 	'code:%s' => "define('_CS_PAS_DE_DISTANT','oui');",
+), array(
+	'nom' => 'distant_outils_off',
+	'check' => 'couteauprive:cs_distant_outils_off',
+	'defaut' => 0,
+	'code:%s' => "define('_CS_PAS_D_OUTIL_DISTANT','oui');",
+	'commentaire' => 'cs_outils_concernes("fichiers_distants",%s);',
 ));
 add_outil( array(
 	'id' => 'cs_comportement',
-	'code:spip_options' => "%%distant_off%%",
+	'code:spip_options' => "%%distant_off%% %%distant_outils_off%%",
+	'pipelinecode:pre_description_outil' => 'if($id=="cs_comportement") {
+$tmp=(!%%spip_options_on%%||!$flux["actif"]||defined("_CS_SPIP_OPTIONS_OK"))?"":"<span style=\"color:red\">"._T("couteauprive:cs_spip_options_erreur")."</span>";
+$texte=str_replace(array("@_CS_FILE_OPTIONS_ERR@","@_CS_DIR_TMP@","@_CS_FILE_OPTIONS@"),
+	array($tmp,cs_canonicalize(_DIR_RESTREINT_ABS._DIR_TMP),show_file_options()),$texte);
+}',
 ));
 
 
@@ -314,7 +440,7 @@ add_outil( array(
 
 add_outil( array(
 	'id' => 'f_jQuery',
-	'code:options' => "\$GLOBALS['spip_pipeline']['insert_head'] = str_replace('|f_jQuery', '', \$GLOBALS['spip_pipeline']['insert_head']);",
+	'code:spip_options' => "\$GLOBALS['spip_pipeline']['insert_head'] = str_replace('|f_jQuery', '', \$GLOBALS['spip_pipeline']['insert_head']);",
 	'auteur' => 'Fil',
 	'categorie' =>'public',
 	'version-min' => '1.9200',
@@ -329,9 +455,15 @@ add_variables( array(
 ), array(
 	'nom' => 'admin_travaux',
 	'format' => _format_NOMBRE,
-	'radio' => array(0 => 'couteauprive:tous', 1 => 'couteauprive:sauf_admin'),
+	'radio' => array(0 => 'couteauprive:tous', 1 => 'couteauprive:sauf_admin', 2 => 'couteauprive:sauf_admin_redac', 3 => 'couteauprive:sauf_identifies'),
+	'radio/ligne' => 1,
 	'defaut' => 0,
-	'code:%s' => "define('_en_travaux_ADMIN', %s);\n",
+	'code' => "define('_en_travaux_PUBLIC', %s);\n",
+), array(
+	'nom' => 'avertir_travaux',
+	'check' => 'couteauprive:travaux_masquer_avert',
+	'defaut' => 0,
+	'code:%s' => "define('_en_travaux_SANSMSG', %s);\n",
 ), array(
 	'nom' => 'message_travaux',
 	'format' => _format_CHAINE,
@@ -347,9 +479,12 @@ add_variables( array(
 ));
 add_outil( array(
 	'id' => 'en_travaux',
-	'code:options' => "%%message_travaux%%%%prive_travaux%%%%admin_travaux%%%%titre_travaux%%",
+	'code:options' => "%%message_travaux%%%%prive_travaux%%%%admin_travaux%%%%avertir_travaux%%%%titre_travaux%%",
 	'categorie' => 'admin',
 	'auteur' => "Arnaud Ventre pour l'id&eacute;e originale",
+	'pipeline:affichage_final' => 'en_travaux_affichage_final',
+	'pipelinecode:pre_description_outil' => 'if($id=="en_travaux") $texte=str_replace(array("@_CS_TRAVAUX_TITRE@","@_CS_NOM_SITE@"),
+	array("["._T("info_travaux_titre")."]","[".$GLOBALS["meta"]["nom_site"]."]"),$texte);',
 ));
 
 add_variables( array(
@@ -392,6 +527,8 @@ add_outil( array(
 	'pipeline:affiche_milieu' => 'boites_privees_affiche_milieu',
 	'pipeline:affiche_droite' => 'boites_privees_affiche_droite',
 	'pipeline:affiche_gauche' => 'boites_privees_affiche_gauche',
+	// Pour la constante _CS_RSS_SOURCE
+#	'pipelinecode:pre_description_outil' => 'if($id=="boites_privees") include_spip("cout_define");',
 ));
 
 add_variables( array(
@@ -415,9 +552,10 @@ add_variables( array(
 	'radio' => array(1 => 'couteauprive:statuts_tous', 0 => 'couteauprive:statuts_spip'),
 	'radio/ligne' => 1,
 	'defaut' => 0,
+	'label' => '@_CS_CHOIX@',
 //	'code:!%s' => "@define('AUTEURS_DEFAUT', join(\$temp_auteurs,','));",
-	'code:!%s' => "if (_request('exec')=='auteurs' && !_request('statut')) \$_GET['statut'] = join(\$temp_auteurs,',');",
-	'code:%s' => "if (_request('exec')=='auteurs' && !_request('statut')) \$_GET['statut'] = '!foo';",
+	'code:!%s' => "if(_request('exec')=='auteurs' && !_request('statut')) \$_GET['statut'] = join(\$temp_auteurs,',');",
+	'code:%s' => "if(_request('exec')=='auteurs' && !_request('statut')) \$_GET['statut'] = '!foo';",
 ));
 add_outil( array(
 	'id' => 'auteurs',
@@ -453,36 +591,42 @@ add_variable( array(
 add_outil( array(
 	'id' => 'decoupe',
 	'contrib'	=> 2135,
-	'code:options' => "%%balise_decoupe%%define('_onglets_FIN', '<span class=\'_fooonglets\'></span>');\n@define('_decoupe_SEPARATEUR', '++++');
+	// Le separateur <span class="csfoo xxxx"></span> est supprime en fin de calcul de page
+	'code:options' => "%%balise_decoupe%%define('_onglets_FIN', '<span class=\"csfoo ongl\"></span>');\n@define('_decoupe_SEPARATEUR', '++++');
 if(!defined('_SPIP19300') && isset(\$_GET['var_recherche'])) {
 	include_spip('inc/headers');
 	redirige_par_entete(str_replace('var_recherche=', 'decoupe_recherche=', \$GLOBALS['REQUEST_URI']));
 }",
-	'code:css' => "div.pagination {display:block; text-align:center; }
-div.pagination img { border:0pt none; margin:0pt; padding:0pt; }
-span.cs_pagination_off {color: lightgrey; font-weight: bold; text-decoration: underline;} ",
 	// construction des onglets
 	'code:jq_init' => "onglets_init.apply(this);",
 	// pour les balises #TEXTE : $table_des_traitements['TEXTE'] = 'cs_decoupe(propre(%s))';
 	// pour les articles, breves et rubriques : $table_des_traitements['TEXTE']['articles'] = 'cs_decoupe(propre(%s))';
 	'traitement:TEXTE:post_propre,
 	 traitement:TEXTE/articles:post_propre,
+	 traitement:TEXTE/forums:post_propre,
 	 traitement:TEXTE/breves:post_propre,
 	 traitement:TEXTE/rubriques:post_propre' => 'cs_decoupe',
 	// pour les balises #TEXTE : $table_des_traitements['TEXTE'] = 'propre(cs_onglets(%s))';
 	// pour les articles, breves et rubriques : $table_des_traitements['TEXTE']['articles'] = 'propre(cs_onglets(%s))';
 	'traitement:TEXTE:pre_propre,
 	 traitement:TEXTE/articles:pre_propre,
+	 traitement:TEXTE/forums:pre_propre,
 	 traitement:TEXTE/breves:pre_propre,
 	 traitement:TEXTE/rubriques:pre_propre' => 'cs_onglets',
 	'categorie' => 'typo-racc',
-	'pipeline:bt_toolbox' => 'decoupe_BarreTypo',
 	'pipeline:nettoyer_raccourcis_typo' => 'decoupe_nettoyer_raccourcis',
+	'pipeline:porte_plume_cs_pre_charger' => 'decoupe_CS_pre_charger',
+	'pipeline:porte_plume_lien_classe_vers_icone' => 'decoupe_PP_icones',
 ));
 
 // couplage avec l'outil 'decoupe', donc 'sommaire' doit etre place juste apres :
 // il faut inserer le sommaire dans l'article et ensuite seulement choisir la page
 add_variables( array(
+	'nom' => 'prof_sommaire',
+	'format' => _format_NOMBRE,
+	'defaut' => 1,
+	'code:%s>=2 && %s<=4' => "define('_sommaire_PROFONDEUR', %s);\n",
+), array(
 	'nom' => 'lgr_sommaire',
 	'format' => _format_NOMBRE,
 	'defaut' => 30,
@@ -494,6 +638,12 @@ add_variables( array(
 	'defaut' => 1,
 	'code:%s' => "define('_sommaire_AUTOMATIQUE', %s);\n",
 ), array(
+	'nom' => 'jolies_ancres',
+	'format' => _format_NOMBRE,
+	'radio' => array(1 => 'item_oui', 0 => 'item_non'),
+	'defaut' => 0,
+	'code:%s' => "define('_sommaire_JOLIES_ANCRES', %s);\n",
+), array(
 	'nom' => 'balise_sommaire',
 	'format' => _format_NOMBRE,
 	'radio' => array(1 => 'item_oui', 0 => 'item_non'),
@@ -504,12 +654,13 @@ include_spip('inc/filtres');
 add_outil( array(
 	'id' => 'sommaire',
 	'contrib'	=> 2378,
-	'code:options' => "define('_sommaire_REM', '<span class=\'_foosommaire\'></span>');\ndefine('_CS_SANS_SOMMAIRE', '[!sommaire]');\ndefine('_CS_AVEC_SOMMAIRE', '[sommaire]');\n%%lgr_sommaire%%%%auto_sommaire%%%%balise_sommaire%%",
+	// Le separateur <span class="csfoo xxxx"></span> est supprime en fin de calcul de page
+	'code:options' => "define('_sommaire_REM', '<span class=\"csfoo somm\"></span>');\ndefine('_CS_SANS_SOMMAIRE', '[!sommaire]');\ndefine('_CS_AVEC_SOMMAIRE', '[sommaire]');\n%%prof_sommaire%%%%lgr_sommaire%%%%auto_sommaire%%%%jolies_ancres%%%%balise_sommaire%%",
 	'code:jq' => 'if(jQuery("div.cs_sommaire").length) {
 		// s\'il y a un sommaire, on cache la navigation haute sur les pages
 		jQuery("div.decoupe_haut").css("display", "none");
 		// utilisation des cookies pour conserver l\'etat du sommaire si on quitte la page
-		jQuery.getScript(cs_CookiePlugin, cs_sommaire_cookie);
+		if(cs_CookiePlugin) jQuery.getScript(cs_CookiePlugin, cs_sommaire_cookie);
 	}',
 	'code:jq_init' => 'cs_sommaire_init.apply(this);',
 	// inserer : $table_des_traitements['TEXTE']['articles']= 'sommaire_d_article(propre(%s))';
@@ -520,6 +671,47 @@ add_outil( array(
 	'traitement:CS_SOMMAIRE:post_propre' => 'sommaire_d_article_balise',
 	'categorie' => 'typo-corr',
 	'pipeline:nettoyer_raccourcis_typo' => 'sommaire_nettoyer_raccourcis',
+	'pipeline:pre_description_outil' => 'sommaire_description_outil',
+	'pipeline:pre_propre' => 'sommaire_intertitres',
+));
+
+// intertitres typo, outil compatible avec 'sommaire' :
+add_variables( array(
+	'nom' => 'i_align',
+	'radio' => array('left' => 'left', 'right' => 'right', 'center' => 'center'),
+	'defaut' => "'left'",
+), array(
+	'nom' => 'i_padding',
+	'format' => _format_NOMBRE,
+	'defaut' => 0,
+), array(
+	'nom' => 'i_hauteur',
+	'format' => _format_NOMBRE,
+	'defaut' => 0,
+), array(
+	'nom' => 'i_largeur',
+	'format' => _format_NOMBRE,
+	'defaut' => 600,
+), array(
+	'nom' => 'i_taille',
+	'format' => _format_NOMBRE,
+	'defaut' => 16,
+), array(
+	'nom' => 'i_couleur',
+	'format' => _format_CHAINE,
+	'defaut' => "'black'",
+), array(
+	'nom' => 'i_police',
+	'format' => _format_CHAINE,
+	'defaut' => "'dustismo.ttf'",
+));
+add_outil( array(
+	'id' => 'titres_typo',
+	'categorie'   => 'typo-corr',
+	'code:options' => 'define("_titres_typo_ARG", "couleur=%%i_couleur%%,taille=%%i_taille%%,police=%%i_police%%,largeur=%%i_largeur%%,hauteur_ligne=%%i_hauteur%%,padding=%%i_padding%%,align=%%i_align%%");',
+	defined('_SPIP19300')?'pipeline:pre_propre':'pipeline:pre_typo'   => 'titres_typo_pre_typo',
+	'pipelinecode:pre_description_outil' => 'if($id=="titres_typo")
+		$texte=str_replace("@_CS_FONTS@",join(" - ",get_liste_fonts()),$texte);',	
 ));
 
 //-----------------------------------------------------------------------------//
@@ -563,8 +755,8 @@ add_outil( array(
 	'jquery'	=> 'oui',
 	'description' => '<:SPIP_liens::>'.(defined('_SPIP19300')?'<:SPIP_liens:1:>':''),
 	'code:options' => "%%radio_target_blank3%%\n%%url_glossaire_externe2%%",
-	'code:jq_init' => 'if (%%radio_target_blank3%%) { if(!cs_prive) jQuery("a.spip_out,a.spip_url,a.spip_glossaire",this).attr("target", "_blank"); }',
-	'code:css' => defined('_SPIP19300')?'[[%enveloppe_mails%]]':'',
+	'code:jq_init' => 'if(%%radio_target_blank3%%) { if(!cs_prive) jQuery("a.spip_out,a.spip_url,a.spip_glossaire",this).attr("target", "_blank"); }',
+	'code:css' => defined('_SPIP19300')?'[[%enveloppe_mails%]]':NULL,
 ));
 
 //-----------------------------------------------------------------------------//
@@ -575,7 +767,8 @@ add_outil( array(
 	'id' => 'visiteurs_connectes',
 	'auteur' => "Phil d'apr&egrave;s spip-contrib",
 	'categorie' => 'public',
-	'code:options' => "define('_VISITEURS_CONNECTES',1);
+	'contrib'	=> 3412,
+	'code:options' => "
 function cs_compter_visiteurs(){ return count(preg_files(_DIR_TMP.'visites/','.')); }
 function action_visiteurs_connectes(){ echo cs_compter_visiteurs(); return true; }",
 	'version-min' => '1.9200', // pour la balise #ARRAY
@@ -598,12 +791,22 @@ add_outil( array(
 	'pipeline:pre_typo' => 'ToutMulti_pre_typo',
 ));
 
+add_variable( array(	// variable utilisee par 'pipelinecode:insert_head'
+	'nom' => 'puceSPIP',
+	'check' => 'couteauprive:puceSPIP',
+	'defaut' => 0,
+	'label' => '@_CS_CHOIX@',
+));
 add_outil( array(
 	'id' => 'pucesli',
 	'auteur' 	 => "J&eacute;r&ocirc;me Combaz pour l'id&eacute;e originale",
 	'categorie'	 => 'typo-corr',
-	'pipelinecode:pre_typo' => 'if (strpos($flux, "-")!==false) $flux = cs_echappe_balises("", "pucesli_remplace", $flux);',
-	'code:options' => 'function pucesli_remplace($texte) {	return preg_replace(\'/^-\s*(?![-*#])/m\', \'-* \', $texte); }',
+	'pipelinecode:pre_typo' => 'if(strpos($flux, "-")!==false OR strpos($flux, "*")!==false) $flux = cs_echappe_balises("", "pucesli_remplace", $flux);',
+	'code:options' => 'function pucesli_remplace($texte) {
+	if(%%puceSPIP%%) {$texte = preg_replace(\'/^[*]\s*/m\', \'- \', $texte);}
+	return preg_replace(\'/^-\s*(?![-*#])/m\', \'-* \', $texte);
+}
+if(%%puceSPIP%%) {function pucesli_raccourcis() {return _T(\'couteauprive:puceSPIP_aide\');}}',
 ));
 
 add_outil( array(
@@ -620,13 +823,13 @@ add_outil( array(
 	/* IE */
 	* html q { font-style: italic; }
 	*+html q { font-style: italic; }', 
-    'pipelinecode:pre_propre' => 'if (strpos($flux, "<qu")!==false) $flux=cs_echappe_balises("", "citations_bb_rempl", $flux);',
+    'pipelinecode:pre_propre' => 'if(strpos($flux, "<qu")!==false) $flux=cs_echappe_balises("", "citations_bb_rempl", $flux);',
 	// Remplacer <quote> par <q> quand il n'y a pas de retour a la ligne (3 niveaux, preg sans l'option s) 
     'code:options' => 'function citations_bb_rempl($texte){
 	$texte = preg_replace($a="/<quote>(.*?)<\/quote>/", $b="<q>\$1</q>", $texte);
-	if (strpos($texte, "<qu")!==false) {
+	if(strpos($texte, "<qu")!==false) {
 		$texte = preg_replace($a, $b, $texte);
-		if (strpos($texte, "<qu")!==false) $texte = preg_replace($a, $b, $texte);
+		if(strpos($texte, "<qu")!==false) $texte = preg_replace($a, $b, $texte);
 	}
 	return $texte;
 }',
@@ -654,6 +857,8 @@ add_outil( array(
 	'code:options' => "%%decoration_styles%%",
 	'pipeline:pre_typo' => 'decoration_pre_typo',
 	'pipeline:bt_toolbox' => 'decoration_BarreTypo',
+	'pipeline:porte_plume_barre_pre_charger' => 'decoration_PP_pre_charger',
+	'pipeline:porte_plume_lien_classe_vers_icone' => 'decoration_PP_icones',
 ));
 
 add_variables( array(
@@ -684,6 +889,9 @@ add_outil( array(
 	'pipeline:pre_typo' => 'couleurs_pre_typo',
 	'pipeline:nettoyer_raccourcis_typo' => 'couleurs_nettoyer_raccourcis',
 	'pipeline:bt_toolbox' => 'couleurs_BarreTypo',
+	'pipeline:porte_plume_barre_pre_charger' => 'couleurs_PP_pre_charger',
+	'pipeline:porte_plume_lien_classe_vers_icone' => 'couleurs_PP_icones',
+	'pipeline:pre_description_outil' => 'couleurs_pre_description_outil',
 	'code:options' => "%%couleurs_fonds%%%%set_couleurs%%%%couleurs_perso%%",
 	'code:fonctions' => "// aide le Couteau Suisse a calculer la balise #INTRODUCTION
 include_spip('outils/couleurs');
@@ -729,18 +937,32 @@ add_variables( array(
 	'defaut' => 0,
 	'code' => '$GLOBALS["liens_orphelins"]=%s;',
 		// empeche SPIP de convertir les URLs orphelines (URLs brutes)
-	'code:%s<>-2' => defined('_SPIP19300')?"\$GLOBALS['spip_pipeline']['pre_liens']=str_replace('|traiter_raccourci_liens','',\$GLOBALS['spip_pipeline']['pre_liens']);":'',
+	'code:%s<>-2' => defined('_SPIP19300')?"\n// Pas de traitement automatique des liens orphelins :\n\$GLOBALS['spip_pipeline']['pre_liens']=str_replace('|traiter_raccourci_liens','',\$GLOBALS['spip_pipeline']['pre_liens']);
+@define('_EXTRAIRE_LIENS',',^\$,');":'',
+), array(
+	'nom' => 'long_url',
+	'format' => _format_NOMBRE,
+	'defaut' => 40,
+	'code:%s' => "define('_MAX_LONG_URL', %s);",
+), array(
+	'nom' => 'coupe_url',
+	'format' => _format_NOMBRE,
+	'defaut' => 35,
+	'code:%s' => "define('_MAX_COUPE_URL', %s);",
+), array(
 ));
 // attention : liens_orphelins doit etre place avant mailcrypt ou liens_en_clair
 add_outil( array(
 	'id' => 'liens_orphelins',
 	'categorie'	 => 'typo-corr',
 	'contrib'	=> 2443,
-	'code:options' => '%%liens_interrogation%%%%liens_orphelins%%',
+	'code:options' => '%%liens_interrogation%%',
+	'code:spip_options' => '%%liens_orphelins%%%%long_url%%%%coupe_url%%',
 	'pipeline:pre_propre' => 'liens_orphelins_pipeline',
 	'traitement:EMAIL' => 'expanser_liens(liens_orphelins',
  	'pipeline:pre_typo'   => 'interro_pre_typo',
  	'pipeline:post_propre'   => 'interro_post_propre',
+	'description' => defined('_SPIP19300')?'<:liens_orphelins::><liens_orphelins valeur="0/1/-2"><:liens_orphelins:1:></liens_orphelins>':'<:liens_orphelins::>',
 ));
 
 add_outil( array(
@@ -750,24 +972,30 @@ add_outil( array(
 	'contrib'	=> 1563,
 	'pipeline:pre_typo' => 'filets_sep',
 	'pipeline:bt_toolbox' => 'filets_sep_BarreTypo',
+	'pipeline:porte_plume_barre_pre_charger' => 'filets_PP_pre_charger',
+	'pipeline:porte_plume_lien_classe_vers_icone' => 'filets_PP_icones',
 ));
 
 add_outil( array(
 	'id' => 'smileys',
-	'auteur' 	 => "Sylvain pour l'id&eacute;e originale",
+	'auteur' 	 => "Sylvain, Pat",
 	'categorie'	 => 'typo-corr',
 	'contrib'	=> 1561,
 	'code:css' => "table.cs_smileys td {text-align:center; font-size:90%; font-weight:bold;}",
 	'pipeline:pre_typo' => 'cs_smileys_pre_typo',
 	'pipeline:bt_toolbox' => 'cs_smileys_BarreTypo',
+	'pipeline:porte_plume_barre_pre_charger' => 'cs_smileys_PP_pre_charger',
+	'pipeline:porte_plume_lien_classe_vers_icone' => 'cs_smileys_PP_icones',
 ));
 
 add_outil( array(
 	'id' => 'chatons',
-	'auteur' 	 => "BoOz pour l'id&eacute;e originale",
+	'auteur' 	 => "BoOz, Pat",
 	'categorie'	 => 'typo-racc',
 	'pipeline:pre_typo' => 'chatons_pre_typo',
 	'pipeline:bt_toolbox' => 'chatons_BarreTypo',
+	'pipeline:porte_plume_barre_pre_charger' => 'chatons_PP_pre_charger',
+	'pipeline:porte_plume_lien_classe_vers_icone' => 'chatons_PP_icones',
 ));
 
 add_variables( array(
@@ -775,6 +1003,13 @@ add_variables( array(
 	'format' => _format_CHAINE,
 	'defaut' => "'Glossaire'",
 	'code' => "\$GLOBALS['glossaire_groupes']=%s;\n",
+	'commentaire' => defined('_SPIP19300')?'fct_glossaire_groupes(%s);
+function fct_glossaire_groupes($gr){
+	$s=""; 
+	foreach(explode(":",$gr) as $g)
+		if(!sql_countsel("spip_groupes_mots", "titre="._q($g)))	$s.=($s?"<br />":"")._T("couteauprive:erreur_groupe", array("groupe"=>$g));
+	return $s?"<p style=\"color:red\">$s</p>":"";
+}':NULL,
 ), array(
 	'nom' => 'glossaire_limite',
 	'format' => _format_NOMBRE,
@@ -793,12 +1028,13 @@ add_outil( array(
 	'contrib'	=> 2206,
 	'code:options' => "@define('_CS_SANS_GLOSSAIRE', '[!glossaire]');\n%%glossaire_limite%%%%glossaire_groupes%%%%glossaire_js%%",
 //	'traitement:LIEU:post_propre' => 'cs_glossaire',
-	// sans oublier les articles, les breves et les rubriques :
-	// SPIP ne considere pas que la definition precedente est un tronc commun...
+	// sans oublier les articles, les breves, les forums et les rubriques !
+	// SPIP ne considere pas que la premiere definition est un tronc commun...
 	// meme traitement au chapo des articles...
 	'traitement:TEXTE:post_propre,
 	 traitement:TEXTE/articles:post_propre,
 	 traitement:TEXTE/breves:post_propre,
+	 traitement:TEXTE/forums:post_propre,
 	 traitement:TEXTE/rubriques:post_propre,
 	 traitement:CHAPO:post_propre' => 'cs_glossaire',
 	// Precaution pour les articles virtuels
@@ -814,7 +1050,7 @@ add_outil( array(
 // attention : mailcrypt doit etre place apres liens_orphelins
 add_outil( array(
 	'id' => 'mailcrypt',
-	'categorie'	=> 'typo-corr',
+	'categorie'	=> 'securite',
 	'auteur' 	=> "Alexis Roussel, Paolo, Pat",
 	'contrib'	=> 2443,
 	'jquery'	=> 'oui',
@@ -841,38 +1077,6 @@ add_outil( array(
 	'code:css' => 'a.spip_out:after {display:none;}',
 )); 
 
-add_variables( array(
-	'nom' => 'bloc_h4',
-	'format' => _format_CHAINE,
-	'defaut' => '"h4"',
-	'code:preg_match(\',^h\d$,i\', trim(%s))' => "define('_BLOC_TITRE_H', %s);\n",
-), array(
-	'nom' => 'bloc_unique',
-	'format' => _format_NOMBRE,
-	'radio' => array(1 => 'item_oui', 0 => 'item_non'),
-	'defaut' => 0,
-), array(
-	'nom' => 'blocs_cookie',
-	'format' => _format_NOMBRE,
-	'radio' => array(1 => 'item_oui', 0 => 'item_non'),
-	'defaut' => 0,
-));
-add_outil( array(
-	'id' => 'blocs',
-	'categorie'	=> 'typo-racc',
-	'contrib' => 2583,
-	'code:options' => "%%bloc_h4%%",
-	// fonction blocs_init() codee dans blocs.js : executee lors du chargement de la page et a chaque hit ajax
-	'code:js' => "var blocs_replier_tout = %%bloc_unique%%;",
-	'code:jq_init' => 'blocs_init.apply(this);',
-	// utilisation des cookies pour conserver l\'etat des blocs numerotes si on quitte la page
-	'code:jq' => 'if(%%blocs_cookie%%) { if(jQuery("div.cs_blocs").length)
-		jQuery.getScript(cs_CookiePlugin, cs_blocs_cookie); }',
-	'jquery' => 'oui',
-	'pipeline:pre_typo' => 'blocs_pre_typo',
-	'pipeline:bt_toolbox' => 'blocs_BarreTypo',
-)); 
-
 add_variables( array(	// variable utilisee par 'pipelinecode:insert_head'
 	'nom' => 'scrollTo',
 	'check' => 'couteauprive:jq_scrollTo',
@@ -888,8 +1092,8 @@ add_outil( array(
 	'id' => 'soft_scroller',
 	'categorie'	=> 'public',
 	'jquery'	=> 'oui',
-	'pipelinecode:insert_head' => 'if(%%scrollTo%%) {$flux.=\'<script src="'.url_absolue(find_in_path("outils/jquery.scrollto.js")).'" type="text/javascript"></script>\'."\n";}
-if(%%LocalScroll%%) {$flux.=\'<script src="'.url_absolue(find_in_path("outils/jquery.localscroll.js")).'" type="text/javascript"></script>\'."\n";}',
+	'pipelinecode:insert_head' => 'if(%%scrollTo%%) {$flux.=\'<script src="\'.find_in_path("outils/jquery.scrollto.js").\'" type="text/javascript"></script>\'."\n";}
+if(%%LocalScroll%%) {$flux.=\'<script src="\'.find_in_path("outils/jquery.localscroll.js").\'" type="text/javascript"></script>\'."\n";}',
 	'code:js' => 'function soft_scroller_init() { if(typeof jQuery.localScroll=="function") jQuery.localScroll({hash: true}); }',
 	'code:jq_init' => 'soft_scroller_init.apply(this);',
 ));
@@ -903,8 +1107,8 @@ add_variables( array(
 .formulaire_inscription, .formulaire_forum, .formulaire_ecrire_auteur
 
 // colorisation de la dist de SPIP 2.0 en ajoutant un parent
-\".chapo, .texte\" = wrap(\'<div class=\"jc_parent\" style=\"padding:4px; background-color:#ffe0c0; margin:4px 0;\"></div>\')
-\".menu\" = wrap(\'<div class=\"jc_parent\" style=\"padding:4px; background-color:lightBlue; margin:4px 0;\"></div>\')
+\".chapo, .texte\" = wrap(\'<div class=\"jc_parent\" style=\"padding:4px; background-color:#ffe0c0; margin:4px 0;\"><\/div>\')
+\".menu\" = wrap(\'<div class=\"jc_parent\" style=\"padding:4px; background-color:lightBlue; margin:4px 0;\"><\/div>\')
 
 // coins ronds aux parents !
 .jc_parent"'
@@ -915,7 +1119,7 @@ add_variables( array(
 .liste-articles li .texte = css(\'background-color\', \'#E0F0F0\') .corner()
 
 // colorisation de la dist de SPIP 1.92 en ajoutant un parent
-\"#contenu .texte\" = wrap(\'<div class=\"jc_parent\" style=\"padding:4px; background-color:#E0F0F0; margin:4px 0;\"></div>\')
+\"#contenu .texte\" = wrap(\'<div class=\"jc_parent\" style=\"padding:4px; background-color:#E0F0F0; margin:4px 0;\"><\/div>\')
 
 // coins ronds aux parents !
 .jc_parent"',
@@ -932,7 +1136,13 @@ add_outil( array(
 	'jquery'	=> 'oui',
 	'contrib'	=> 2987,
 	'code:options' => "%%jcorner_classes%%",
-	'pipelinecode:insert_head' => 'if(%%jcorner_plugin%%) {$flux.=\'<script src="'.url_absolue(find_in_path("outils/jquery.corner.js")).'" type="text/javascript"></script>\'."\n";}',
+	// fichier distant pour le plugin jQuery : http://github.com/malsup/corner/commits/
+	'distant' => defined('_SPIP20100')
+		// version 2.09 (11-MAR-2010), jQuery v1.3.2 mini 
+		?'http://github.com/malsup/corner/raw/ca8d745fdfe054e1bb62fbd22eca9850c1353e03/jquery.corner.js'
+		// version 2.03 (05-DEC-2009) 
+		:'http://github.com/malsup/corner/raw/46bbbc8706853c879c9224b7ebf5f284f726314d/jquery.corner.js',
+	'pipelinecode:insert_head' => 'if(%%jcorner_plugin%%) {$flux.=\'<script src="\'.find_in_path("lib/jcorner/distant_jquery.corner.js").\'" type="text/javascript"></script>\'."\n";}',
 	'pipeline:insert_head' => 'jcorner_insert_head',
 	// jcorner_init() n'est disponible qu'en partie publique
 	'code:jq_init' => 'if(typeof jcorner_init=="function") jcorner_init.apply(this);',
@@ -941,14 +1151,15 @@ add_outil( array(
 add_variables( array(
 	'nom' => 'insertions',
 	'format' => _format_CHAINE,
-	'lignes' => 8,
-	'defaut' => '"coeur = c&oelig;ur
-manoeuvre = man&oelig;uvre
-(oeuvre(s?|r?)) = &oelig;uvre$1
-(O(E|e)uvre(s?|r?)\b/ = &OElig;uvre$2
-((h|H)uits) = $1uit
-/\b(c|C|m.c|M.c|rec|Rec)onn?aiss?a(nce|nces|nt|nts|nte|ntes|ble)\b/ = $1onnaissa$2
-/\boeuf(s?)\b/ = &oelig;uf$1
+	'lignes' => 10,
+	'defaut' => '"oeuf = &oelig;uf
+cceuil = ccueil
+(a priori) = {a priori}
+(([hH])uits) = $1uit
+/([cC]h?)oeur/ = $1&oelig;ur
+/oeuvre/ = &oelig;uvre
+(O[Ee]uvre([rs]?)) = &OElig;uvre$1
+/\b([cC]|[mM].c|[rR]ec)on+ais+a((?:n(?:ce|te?)|ble)s?)\b/ = $1onnaissa$2
 "',
 	'code' => "define('_insertions_LISTE', %s);",
 ));
@@ -956,11 +1167,12 @@ add_outil( array(
 	'id' => 'insertions',
 	'categorie'	 => 'typo-corr',
 	'code:options' => "%%insertions%%",
-	'traitement:TEXTE:pre_propre' => 'insertions_pre_propre',
-	// sans oublier les articles, les breves et les rubriques :
-	// SPIP ne considere pas que la definition precedente est un tronc commun...
-	'traitement:TEXTE/articles:pre_propre,
+	// sans oublier les articles, les breves, les forums et les rubriques !
+	// SPIP ne considere pas que la premiere definition est un tronc commun :
+	'traitement:TEXTE:pre_propre,
+	 traitement:TEXTE/articles:pre_propre,
 	 traitement:TEXTE/breves:pre_propre,
+	 traitement:TEXTE/forums:post_propre,
 	 traitement:TEXTE/rubriques:pre_propre' => 'insertions_pre_propre',
 ));
 
@@ -972,7 +1184,7 @@ add_outil( array(
 	'categorie' => 'admin',
 	'version-min' => '1.9300',
 	'code:options' => '%%moderation_admin%%%%moderation_redac%%%%moderation_visit%%',
-	'code:jq_init' => 'if (window.location.search.match(/page=forum/)!=null) jQuery("legend:contains(\''.addslashes(unicode2charset(html2unicode(_T('bouton_radio_modere_priori')))).'\')", this).next().html(\''.addslashes(_T('couteauprive:moderation_message')).'\');',
+	'code:jq_init' => 'if(window.location.search.match(/page=forum/)!=null) jQuery("legend:contains(\''.addslashes(unicode2charset(html2unicode(_T('bouton_radio_modere_priori')))).'\')", this).next().html(\''.addslashes(_T('couteauprive:moderation_message')).'\');',
 	'pipeline:pre_edition' => 'moderation_vip',
 ));
 add_variables( array(
@@ -1008,6 +1220,11 @@ add_variable( array(
 ));
 
 add_outil( array(
+	'id' => 'balise_set',
+	'categorie' => 'spip',
+));
+
+add_outil( array(
 	'id' => 'corbeille',
 	'categorie' => 'admin',
 	'version-min' => '1.9300',
@@ -1036,15 +1253,27 @@ add_outil( array(
 	'contrib' => 2998,
 	'pipelinecode:insert_head,
 	 pipelinecode:header_prive' => '$flux.=\'<script type="text/javascript" src="\'.generer_url_public(\'cout_dates.js\',\'lang=\'.$GLOBALS[\'spip_lang\']).\'"></script>
-<script type="text/javascript" src="'.url_absolue(find_in_path("outils/jquery.jclock.js")).'"></script>\'."\n";',
+<script type="text/javascript" src="\'.find_in_path("outils/jquery.jclock.js").\'"></script>\'."\n";',
 	'code:jq_init' => 'jclock_init.apply(this);',
 ));
 
-//reglage du nombre de case pour le brouteur
+add_outil(defined('_SPIP20100')?array(
+	'id' => 'maj_auto',
+	'categorie' => 'securite',
+	'contrib' => 3223,
+):array(
+	'id' => 'maj_auto',
+	'categorie' => 'admin',
+	'version-min' => '1.9300',
+	'contrib' => 3223,
+	'distant' => defined('_SPIP20100')?NULL:'http://core.spip.org/projects/spip/repository/raw/branches/spip-2.1/ecrire/genie/mise_a_jour.php',
+));
+
+// reglage des differents selecteurs en partie privee
 add_outil( array(
 	'id' => 'brouteur',
 	'categorie' => 'interface',
-	'code:options' => "%%rubrique_brouteur%%"
+	'code:spip_options' => "%%rubrique_brouteur%%%%select_mots_clefs%%%%select_min_auteurs%%%%select_max_auteurs%%"
 ));
 add_variable( array(
 	'nom' => 'rubrique_brouteur',
@@ -1052,18 +1281,49 @@ add_variable( array(
 	'defaut' => 20,
 	'code:%s' => "define('_SPIP_SELECT_RUBRIQUES', %s);"
 ));
+add_variable( array(
+	'nom' => 'select_mots_clefs',
+	'format' => _format_NOMBRE,
+	'defaut' => 50,
+	'code:%s<>50' => "define('_MAX_MOTS_LISTE', %s);"
+));
+add_variable( array(
+	'nom' => 'select_min_auteurs',
+	'format' => _format_NOMBRE,
+	'defaut' => 30,
+	'code:%s<>30' => "define('_SPIP_SELECT_MIN_AUTEURS', %s);"
+));
+add_variable( array(
+	'nom' => 'select_max_auteurs',
+	'format' => _format_NOMBRE,
+	'defaut' => 30,
+	'code:%s<>30' => "define('_SPIP_SELECT_MAX_AUTEURS', %s);"
+));
+
+
+// Recuperer tous les outils (et leurs variables) de la forme outils/toto_config.xml
+foreach (find_all_in_path('outils/', '\w+_config\.xml$') as $f) {
+	add_outils_xml($f);
+}
 
 // Recuperer tous les outils de la forme outils/monoutil_config.php
+// y compris les lames perso dont on met le nom en italiques
+global $outils;
 foreach (find_all_in_path('outils/', '\w+_config\.php$') as $f) 
-if (preg_match(',^([^.]*)_config$,',basename($f,'.php'),$regs)){
-	include $f;
-	if(function_exists($cs_temp=$regs[1].'_add_outil')) {
-		$cs_temp = $cs_temp();
-		$cs_temp['id'] = $regs[1];
-		add_outil($cs_temp);
-	}
-	if(function_exists($cs_temp='add_variable_'.$regs[1])) add_variable($cs_temp());
-	if(function_exists($cs_temp='add_variables_'.$regs[1])) add_variables($cs_temp());
+if(preg_match(',^([^.]*)_config$,', basename($f, '.php'),$regs)){
+	if($outil = charger_fonction($regs[0], 'outils'))
+		$outil(preg_match(',couteau_suisse/outils/,', $f));
+	/*else {
+		// compatibilite ...	
+		include $f;
+		if(function_exists($cs_temp=$regs[1].'_add_outil')) {
+			$cs_temp = $cs_temp();
+			$cs_temp['id'] = $regs[1];
+			add_outil($cs_temp);
+		}
+	}*/
+	if(isset($outils[$regs[1]]) && strpos($f, '/couteau_suisse/outils/'.$regs[1])===false)
+		$outils[$regs[1]]['perso'] = 1;
 }
 
 // Nettoyage
@@ -1073,12 +1333,11 @@ unset($cs_temp);
 if(isset($GLOBALS['mes_outils'])) {
 	foreach($GLOBALS['mes_outils'] as $id=>$outil) {
 		$outil['id'] = $id;
-		if(strlen($outil['nom'])) $outil['nom'] = "<i>$outil[nom]</i>";
+		$outil['perso'] = 1;
 		add_outil($outil);
 	}
 	unset($GLOBALS['mes_outils']);
 }
-
 
 // Idees d'ajouts :
 // http://archives.rezo.net/spip-core.mbox/

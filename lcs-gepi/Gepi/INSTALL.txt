@@ -1,15 +1,9 @@
-GEPI-trunk -- Procédure d'installation
+GEPI-1.5.4 -- Procédure d'installation
 ==========================================
 
 ****************************************************
 Installation - Etape 0 : téléchargement de l'archive
 ****************************************************
-
-ATTENTION! Ce paquetage contient une version de test de Gepi, c'est-à-dire une version
-destinée à identifier et corriger les bugs induits par les nouvelles fonctionalités.
-
-NE PAS UTILISER CETTE VERSION EN PRODUCTION ! Vous exposeriez votre base de données à des incohérences
-qui pourraient la rendre incompatible avec la version stable.
 
 L'ensemble des fichiers nécessaires à l'installation sont rassemblés dans
 l'archive que vous avez téléchargée.
@@ -148,10 +142,11 @@ Fichier php.ini
 "secure") sur le serveur web. [recommandé mais pas indispensable depuis la version 1.4.2]
 
 -> Droits d'écriture suffisants sur les répertoires :
-* /documents         (pour l'utilisation des cahiers de texte)
-* /images            (changement du logo)
-* /images/background (pour le dégradé des couleurs personnalisées)
-* /secure            (dans le cas d'une installation automatisée)
+* /documents          (pour l'utilisation des cahiers de texte)
+* /documents/archives (pour l'archivage des cahiers de texte)
+* /images             (changement du logo)
+* /images/background  (pour le dégradé des couleurs personnalisées)
+* /secure             (dans le cas d'une installation automatisée)
 * /photos
 * /backup
 * /temp

@@ -10,11 +10,11 @@
 
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include ("/var/www/Annu/includes/ldap.inc.php");
-$msgIntro = "<H1>Gestion des Plugins LCS</H1>\n";
+$msgIntro = "<h1>Gestion des Plugins LCS</h1>\n";
 list ($idpers, $login)= isauth();
 
 if (ldap_get_right("lcs_is_admin",$login)!="Y")
-  die (gettext("Vous n'avez pas les droits suffisants pour acc&#233;der &#224; cette fonction")."</BODY></HTML>");
+  die (gettext("Vous n'avez pas les droits suffisants pour acc&#233;der &#224; cette fonction")."</body></html>");
 
 $aff_der_ver=$_POST['aff_der_ver'];
 
@@ -22,7 +22,7 @@ include("plugins_commun.php");
         echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 	echo "<HTML>\n";
 	echo "	<HEAD>\n";
-        echo "    <META HTTP-EQUIV=\"Content-Type\" CONTENT=\"tetx/html; charset=ISO-8859-1\">\n";
+        echo "    <META HTTP-EQUIV=\"Content-Type\" CONTENT=\"tetx/html; charset=utf-8\">\n";
 	echo "	  <TITLE>...::: Interface d'administration Serveur LCS :::...</TITLE>\n";
 	echo "	  <LINK  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n";
 	echo "	</HEAD>\n";

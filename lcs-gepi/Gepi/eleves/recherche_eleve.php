@@ -1,21 +1,25 @@
 <?php
 
 /*
-	$Id: recherche_eleve.php 4877 2010-07-23 11:29:17Z regis $
+	$Id: recherche_eleve.php 6807 2011-04-20 18:55:33Z crob $
 */
 if(function_exists("mb_detect_encoding")&&function_exists("mb_convert_encoding")){
 	$string = "¬ƒ¿¡√ƒ≈« À»…ŒœÃÕ—‘÷“”’¶€‹Ÿ⁄›æ¥·‡‚‰„ÂÁÈËÍÎÓÔÏÌÒÙˆÚÛı®˚¸˘˙˝ˇ∏";
 	$encoding = mb_detect_encoding($string, "UTF-8, ISO-8859-1");
 	$string = mb_convert_encoding($string, "UTF-8", $encoding);
-}else{
+	//$string = mb_convert_encoding($string, "ISO-8859-1", $encoding);
+} else {
 	$string = "";
 }
 //echo $string;
 
-	$rech_nom=$_POST['rech_nom'];
+	$rech_nom=isset($_POST['rech_nom']) ? $_POST['rech_nom'] : NULL;
+	$rech_prenom=isset($_POST['rech_prenom']) ? $_POST['rech_prenom'] : NULL;
+
 	//$rech_nom=my_ereg_replace("[^A-Za-z√Ç√Ñ√Ä√Å√É√Ñ√Ö√á√ä√ã√à√â√é√è√å√ç√ë√î√ñ√í√ì√ï≈†√õ√ú√ô√ö√ù≈∏≈Ω√°√†√¢√§√£√•√ß√©√®√™√´√Æ√Ø√¨√≠√±√¥√∂√∞√≤√≥√µ≈°√ª√º√π√∫√Ω√ø≈æ]","",$rech_nom);
-	$rech_nom=my_ereg_replace("[^A-Za-z$string]","",$rech_nom);
-	$page=$_POST['page'];
+
+	$page=isset($_POST['page']) ? $_POST['page'] : "";
+
 	//if(($page!="visu_eleve.php")&&($page!="export_bull_eleve.php.php")) {
 	//if(($page!="visu_eleve.php")&&($page!="export_bull_eleve.php")&&($page!="import_bull_eleve.php")) {
 	if(($page!="fiche_eleve.php")&&($page!="visu_eleve.php")&&($page!="export_bull_eleve.php")&&($page!="import_bull_eleve.php")) {
@@ -23,17 +27,42 @@ if(function_exists("mb_detect_encoding")&&function_exists("mb_convert_encoding")
 		// Remarque: Cela n'emp√™che pas de bricoler l'adresse destination des liens affich√©s...
 	}
 
-	$sql="SELECT * FROM eleves WHERE nom LIKE '%$rech_nom%';";
-	$res_ele=mysql_query($sql);
+	//echo "rech_prenom=$rech_prenom<br />";
+	//echo "string=$string<br />";
 
-	$nb_ele=mysql_num_rows($res_ele);
+	$nb_ele=0;
 
-	if($nb_ele==0){
-		// On ne devrait pas arriver l√†.
-		//echo "<p>Aucun nom d'√©l√®ve ne contient la chaine $rech_nom.</p>\n";
-		echo "<p>Aucun nom d'&eacute;l&egrave;ve ne contient la chaine $rech_nom.</p>\n";
+	if(isset($rech_nom)) {
+		$rech_nom=preg_replace("/[^A-Za-z$string]/","",$rech_nom);
+
+		$sql="SELECT * FROM eleves WHERE nom LIKE '%$rech_nom%' ORDER BY nom, prenom;";
+		$res_ele=mysql_query($sql);
+	
+		$nb_ele=mysql_num_rows($res_ele);
+	
+		if($nb_ele==0){
+			// On ne devrait pas arriver l√†.
+			//echo "<p>Aucun nom d'√©l√®ve ne contient la chaine $rech_nom.</p>\n";
+			echo "<p>Aucun nom d'&eacute;l&egrave;ve ne contient la chaine $rech_nom.</p>\n";
+		}
 	}
-	else{
+	elseif(isset($rech_prenom)) {
+		$rech_prenom=preg_replace("/[^A-Za-z$string]/","",$rech_prenom);
+		//echo "rech_prenom=$rech_prenom<br />";
+
+		$sql="SELECT * FROM eleves WHERE prenom LIKE '%$rech_prenom%' ORDER BY nom, prenom;";
+		$res_ele=mysql_query($sql);
+	
+		$nb_ele=mysql_num_rows($res_ele);
+	
+		if($nb_ele==0){
+			// On ne devrait pas arriver l√†.
+			//echo "<p>Aucun nom d'√©l√®ve ne contient la chaine $rech_nom.</p>\n";
+			echo "<p>Aucun pr&eacute;nom d'&eacute;l&egrave;ve ne contient la chaine $rech_prenom.</p>\n";
+		}
+	}
+
+	if($nb_ele>0){
 		//echo "<p>La recherche a retourn√© <b>$nb_ele</b> r√©ponse(s):</p>\n";
 		echo "<p>La recherche a retourn&eacute; <b>$nb_ele</b> r&eacute;ponse";
 		if($nb_ele>1) {echo "s";}

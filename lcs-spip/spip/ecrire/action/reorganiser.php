@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/autoriser');
 
@@ -56,16 +56,19 @@ function reorganiser_rubrique_rubrique($id_quoi, $id_cible)
 			$id_secteur = sql_getfetsel("id_secteur", "spip_rubriques", "id_rubrique=$id_cible");
 		}
 
-		$s = sql_fetsel("statut, id_parent", "spip_rubriques", "id_rubrique=$id_quoi");
+		$s = sql_fetsel("statut, id_parent, id_secteur", "spip_rubriques", "id_rubrique=".intval($id_quoi));
 
-		sql_updateq('spip_rubriques', array('id_parent' => $id_cible, 'id_secteur'=>$id_secteur),  "id_rubrique=".sql_quote($id_quoi));
+		sql_updateq('spip_rubriques', array('id_parent' => $id_cible, 'id_secteur'=>$id_secteur),  "id_rubrique=".intval($id_quoi));
 
-		if ($s['statut'] == 'publie') {
-			include_spip('inc/rubriques');
+		include_spip('inc/rubriques');
+		// propager les secteurs si besoin
+		if ($s['id_secteur']!=$id_secteur)
+			propager_les_secteurs();
+		// changer le statut de la rubrique source
+		if ($s['statut'] == 'publie')
 			calculer_rubriques_if($s['id_parent'],
 					      array('id_rubrique' => $id_cible),
 					      'publie');
-		}
 	}
 }
 

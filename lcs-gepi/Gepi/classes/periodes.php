@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: periodes.php 2834 2008-12-29 10:51:15Z crob $
+ * $Id: periodes.php 6258 2011-01-01 18:45:39Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -30,21 +30,22 @@ extract($_POST, EXTR_OVERWRITE);
 // Resume session
 $resultat_session = $session_gepi->security_check();
 if ($resultat_session == 'c') {
-header("Location: ../utilisateurs/mon_compte.php?change_mdp=yes");
-die();
+	header("Location: ../utilisateurs/mon_compte.php?change_mdp=yes");
+	die();
 } else if ($resultat_session == '0') {
-    header("Location: ../logout.php?auto=1");
-die();
-};
+	header("Location: ../logout.php?auto=1");
+	die();
+}
 
 
 if (!checkAccess()) {
-
-   header("Location: ../logout.php?auto=1");
-die();
+	header("Location: ../logout.php?auto=1");
+	die();
 }
 
 if (isset($is_posted) and ($is_posted == "yes")) {
+	check_token();
+
     $msg = '';
     //
     // Insertion et suppresion de périodes
@@ -177,9 +178,6 @@ $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter
 $titre_page = "Gestion des classes - Gestion des périodes";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
-?>
-
-<?php
 
 echo "<form action='".$_SERVER['PHP_SELF']."' name='form1' method='post'>\n";
 
@@ -264,6 +262,9 @@ echo "</form>\n";
 <p><b>Remarque : </b>Le verrouillage/déverrouillage d'une période est possible en étant connecté sous un compte ayant le statut "scolarité".</p>
 
 <?php
+
+echo add_token_field();
+
 echo "<p>Nombre de périodes : ";
 
 //$sql="SELECT 1=1 FROM j_groupes_classes WHERE id_classe='$id_classe';";
@@ -273,6 +274,8 @@ if(mysql_num_rows($verif)>0) {
 	$temp = $nb_periode - 1;
 	echo "<b>".$temp."</b>";
 	echo "<input type='hidden' name='nombre_periode' value='$temp' />\n";
+	echo "<br />\n";
+	echo "<a href='ajouter_periode.php?id_classe=$id_classe'>Ajouter</a> / <a href='supprimer_periode.php?id_classe=$id_classe'>Supprimer</a> des périodes<br />\n";
 }
 else {
 	echo "<select size=1 name='nombre_periode'";
@@ -282,18 +285,20 @@ else {
 	$temp = $nb_periode - 1;
 	$i = "0" ;
 	while ($i < '7') {
-	echo "<option value=$i "; if ($i == $temp) {echo " selected";} echo ">$i</option>\n";
-	$i++;
+		echo "<option value=$i "; if ($i == $temp) {echo " selected";} echo ">$i</option>\n";
+		$i++;
 	}
 	echo "</select>\n";
 }
 echo "</p>\n";
 
 if ($test_periode == 0) {
-    echo "<p>Si vous choisissez de ne pas définir de périodes pour cette classe (nombre de périodes = 0), cette classe sera considérée comme virtuelle.</p><p>Remarques : </p>";
-    echo "<ul><li>Vous pouvez affecter une ou plusieurs matières à une classe virtuelle.</li>";
-    echo "<li>Vous ne pouvez pas affecter d'élèves à une classe virtuelle.</li>";
-    echo "<li>Une classe virtuelle peut être utilisée dans le cadre des cahiers de texte : création d'une rubrique accessible au public et remplie par un professeur d'une matière affectée à cette classe.</li></ul>";
+	echo "<p>Si vous choisissez de ne pas définir de périodes pour cette classe (nombre de périodes = 0), cette classe sera considérée comme virtuelle.</p>\n";
+	echo "<p>Remarques : </p>\n";
+	echo "<ul><li>Vous pouvez affecter une ou plusieurs matières à une classe virtuelle.</li>\n";
+	echo "<li>Vous ne pouvez pas affecter d'élèves à une classe virtuelle.</li>\n";
+	echo "<li>Une classe virtuelle peut être utilisée dans le cadre des cahiers de texte : création d'une rubrique accessible au public et remplie par un professeur d'une matière affectée à cette classe.</li>\n";
+	echo "</ul>\n";
 
 } else {
 ?>

@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 /* Ce fichier contient des fonctions, globales ou constantes	*/
 /* qui ont fait partie des fichiers de configurations de Spip	*/
@@ -225,11 +225,11 @@ return $GLOBALS[\'browser_layer\'];}
 	._T(\'texte_date_publication_article\')
 	. "</b></font></tr>"
 	. "<tr><td align=\'center\'>"
-	. afficher_jour($jour, "name=\'jour\' size=\'1\' class=\'fondl\'", true)
-	. afficher_mois($mois, "name=\'mois\' size=\'1\' class=\'fondl\'", true)
-	. afficher_annee($annee, "name=\'annee\' size=\'1\' class=\'fondl\'",1996)
+	. afficher_jour($jour, "name=\'jour\' size=\'1\'", true)
+	. afficher_mois($mois, "name=\'mois\' size=\'1\'", true)
+	. afficher_annee($annee, "name=\'annee\' size=\'1\'",1996)
 	. "</td><td align=\'right\'>"
-	. "<input type=\'submit\' name=\'Changer\' class=\'fondo\' value=\'"
+	. "<input type=\'submit\' name=\'Changer\'  value=\'"
 	. _T(\'bouton_changer\')
 	. "\'>"
 	. "</td></tr></table>"
@@ -243,7 +243,7 @@ return $GLOBALS[\'browser_layer\'];}
 
 	// $logo est le nom complet du logo ($logo = "chemin/$nom.$format)
 	// $nom et $format ne servent plus du fait du passage par le filtre image_reduire
-	include_spip(\'inc/filtres_images\');
+	include_spip(\'inc/filtres_images_mini\');
 	$res = image_reduire("<img src=\'$logo\' $attributs />", $taille, $taille_y);
 	return $res;
 }
@@ -870,19 +870,8 @@ $GLOBALS[\'all_langs\'] = @$GLOBALS[\'meta\'][\'langues_proposees\'];
 	include_spip("inc/layer"); // definit browser_barre
 
 	$texte = entites_html($texte);
-	if (!$GLOBALS["browser_barre"])
-		return "<textarea name=\'texte\' rows=\'$rows\' class=\'forml\' cols=\'$cols\'>$texte</textarea>";
+	return "<textarea name=\'texte\' rows=\'$rows\' class=\'forml\' cols=\'$cols\'>$texte</textarea>";
 
-	$num_textarea++;
-	include_spip("inc/barre");
-	return afficher_barre("document.getElementById(\'textarea_$num_textarea\')", true, $lang) .
-	  "
-<textarea name=\'texte\' rows=\'$rows\' class=\'forml\' cols=\'$cols\'
-id=\'textarea_$num_textarea\'
-onselect=\'storeCaret(this);\'
-onclick=\'storeCaret(this);\'
-onkeyup=\'storeCaret(this);\'
-ondblclick=\'storeCaret(this);\'>$texte</textarea>";
 }',
 
  'generer_url_article' => '($id, $args="", $ancre="")
@@ -908,7 +897,14 @@ ondblclick=\'storeCaret(this);\'>$texte</textarea>";
 
  'tester_variable' => '($n, $v) {
 	if (!isset($GLOBALS[$n])) $GLOBALS[$n] = $v;
-	return $GLOBALS[$n];}'
+	return $GLOBALS[$n];}',
+	
+	// SPIP < 2.1
+ 'barre_typo' => '($id,$lang=\'\',$forum=false){
+	return \'\';}',
+
+ 'afficher_barre' => '(){
+	 return \'\';}',
 
 ) as $f => $def) {
 	if (!function_exists($f)) {

@@ -1,0 +1,1026 @@
+-- MySQL dump 10.11
+--
+-- Host: localhost    Database: spip_lcs
+-- ------------------------------------------------------
+-- Server version	5.0.32-Debian_7etch8-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `spip_articles`
+--
+
+DROP TABLE IF EXISTS `spip_articles`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_articles` (
+  `id_article` bigint(21) NOT NULL auto_increment,
+  `surtitre` text NOT NULL,
+  `titre` text NOT NULL,
+  `soustitre` text NOT NULL,
+  `id_rubrique` bigint(21) NOT NULL default '0',
+  `descriptif` text NOT NULL,
+  `chapo` mediumtext NOT NULL,
+  `texte` longtext NOT NULL,
+  `ps` mediumtext NOT NULL,
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `statut` varchar(10) NOT NULL default '0',
+  `id_secteur` bigint(21) NOT NULL default '0',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `export` varchar(10) default 'oui',
+  `date_redac` datetime NOT NULL default '0000-00-00 00:00:00',
+  `visites` int(11) NOT NULL default '0',
+  `referers` int(11) NOT NULL default '0',
+  `popularite` double NOT NULL default '0',
+  `accepter_forum` char(3) NOT NULL default '',
+  `date_modif` datetime NOT NULL default '0000-00-00 00:00:00',
+  `lang` varchar(10) NOT NULL default '',
+  `langue_choisie` varchar(3) default 'non',
+  `id_trad` bigint(21) NOT NULL default '0',
+  `extra` longtext,
+  `id_version` int(10) unsigned NOT NULL default '0',
+  `nom_site` tinytext NOT NULL,
+  `url_site` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`id_article`),
+  KEY `id_rubrique` (`id_rubrique`),
+  KEY `id_secteur` (`id_secteur`),
+  KEY `id_trad` (`id_trad`),
+  KEY `lang` (`lang`),
+  KEY `statut` (`statut`,`date`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_articles`
+--
+
+LOCK TABLES `spip_articles` WRITE;
+/*!40000 ALTER TABLE `spip_articles` DISABLE KEYS */;
+INSERT INTO `spip_articles` VALUES (1,'','Exemple d\'utilisation du système d\'information','',1,'','','La rubrique dédiée à la vie scolaire pourra devenir la page d\'accueil des élèves qui souhaite se tenir au courant des actualités de leur établissement (expos, animations, ...).\r\n\r\nDes sous-rubriques pourront être créées pour les clubs... Et leur gestion (validation des articles, modération des forums) pourra être déléguée.','','2009-04-10 17:13:18','publie',1,'2009-04-10 15:13:18','oui','0000-00-00 00:00:00',0,0,0,'pos','2009-04-10 17:12:58','fr','non',0,NULL,0,'',''),(2,'','Le serveur de communication.','',2,'','','Le {{LCS}} est une dotation de l\'État, faîte par le Rectorat à l\'établissement.\r\n\r\nLe serveur {{LCS}} est une solution libre de serveur de communication orienté «réseau intranet d\'établissement scolaire». Il offre la majeure partie des services que l\'on peut attendre aujourd\'hui d\'un {{ENT}} pour faciliter et améliorer la circulation des informations entre les différents acteurs de la communauté éducative que sont les élèves, les professeurs, les parents d\'élèves et le personnel administratif. \r\n\r\n{{LCS}} est développé par l\'équipe académique TICE[[Technologies de l\'Information de la Communication pour l\'Enseignement]].\r\n','','2009-04-10 17:26:12','publie',2,'2009-04-10 15:26:12','oui','0000-00-00 00:00:00',0,0,0,'pos','2009-04-10 17:25:54','fr','non',0,NULL,0,'',''),(3,'','Le système d\'information de l\'établissement...','',3,'','','Le {{LCS}} permet de mettre à disposition de chacun :\r\n- un annuaire des acteurs de l\'établissement ;\r\n- un système de gestion de contenus hiérarchisé ;\r\n- un espace de publication individuel contrôlé ;\r\n- un agenda collaboratif ;\r\n- et une adresse mél valide sur tout l\'{Internet} accessible via un navigateur potentiellement visible de n\'importe où depuis l\'{Internet}.\r\n','','2009-04-10 17:29:03','publie',3,'2009-04-10 15:29:03','oui','0000-00-00 00:00:00',0,0,0,'pos','2009-04-10 17:28:54','fr','non',0,NULL,0,'','');
+/*!40000 ALTER TABLE `spip_articles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_auteurs`
+--
+
+DROP TABLE IF EXISTS `spip_auteurs`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_auteurs` (
+  `id_auteur` bigint(21) NOT NULL auto_increment,
+  `nom` text NOT NULL,
+  `bio` text NOT NULL,
+  `email` tinytext NOT NULL,
+  `nom_site` tinytext NOT NULL,
+  `url_site` text NOT NULL,
+  `login` varchar(255) character set utf8 collate utf8_bin default NULL,
+  `pass` tinytext NOT NULL,
+  `low_sec` tinytext NOT NULL,
+  `statut` varchar(255) NOT NULL default '0',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `pgp` text NOT NULL,
+  `htpass` tinytext NOT NULL,
+  `en_ligne` datetime NOT NULL default '0000-00-00 00:00:00',
+  `imessage` varchar(3) default NULL,
+  `messagerie` varchar(3) default NULL,
+  `alea_actuel` tinytext,
+  `alea_futur` tinytext,
+  `prefs` tinytext,
+  `cookie_oubli` tinytext,
+  `source` varchar(10) NOT NULL default 'spip',
+  `lang` varchar(10) NOT NULL default '',
+  `extra` longtext,
+  PRIMARY KEY  (`id_auteur`),
+  KEY `login` (`login`),
+  KEY `statut` (`statut`),
+  KEY `en_ligne` (`en_ligne`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_auteurs`
+--
+
+LOCK TABLES `spip_auteurs` WRITE;
+/*!40000 ALTER TABLE `spip_auteurs` DISABLE KEYS */;
+INSERT INTO `spip_auteurs` VALUES (1,'admin','','admin@@DOMAINE@','','','admin','','','0minirezo','2009-04-10 15:41:54','','','0000-00-00 00:00:00',NULL,NULL,'NULL','NULL','a:1:{s:3:\"cnx\";s:0:\"\";}',NULL,'ldap','',NULL);
+/*!40000 ALTER TABLE `spip_auteurs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_auteurs_articles`
+--
+
+DROP TABLE IF EXISTS `spip_auteurs_articles`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_auteurs_articles` (
+  `id_auteur` bigint(21) NOT NULL default '0',
+  `id_article` bigint(21) NOT NULL default '0',
+  PRIMARY KEY  (`id_auteur`,`id_article`),
+  KEY `id_article` (`id_article`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_auteurs_articles`
+--
+
+LOCK TABLES `spip_auteurs_articles` WRITE;
+/*!40000 ALTER TABLE `spip_auteurs_articles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_auteurs_articles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_auteurs_messages`
+--
+
+DROP TABLE IF EXISTS `spip_auteurs_messages`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_auteurs_messages` (
+  `id_auteur` bigint(21) NOT NULL default '0',
+  `id_message` bigint(21) NOT NULL default '0',
+  `vu` char(3) default NULL,
+  PRIMARY KEY  (`id_auteur`,`id_message`),
+  KEY `id_message` (`id_message`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_auteurs_messages`
+--
+
+LOCK TABLES `spip_auteurs_messages` WRITE;
+/*!40000 ALTER TABLE `spip_auteurs_messages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_auteurs_messages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_auteurs_rubriques`
+--
+
+DROP TABLE IF EXISTS `spip_auteurs_rubriques`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_auteurs_rubriques` (
+  `id_auteur` bigint(21) NOT NULL default '0',
+  `id_rubrique` bigint(21) NOT NULL default '0',
+  PRIMARY KEY  (`id_auteur`,`id_rubrique`),
+  KEY `id_rubrique` (`id_rubrique`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_auteurs_rubriques`
+--
+
+LOCK TABLES `spip_auteurs_rubriques` WRITE;
+/*!40000 ALTER TABLE `spip_auteurs_rubriques` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_auteurs_rubriques` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_breves`
+--
+
+DROP TABLE IF EXISTS `spip_breves`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_breves` (
+  `id_breve` bigint(21) NOT NULL auto_increment,
+  `date_heure` datetime NOT NULL default '0000-00-00 00:00:00',
+  `titre` text NOT NULL,
+  `texte` longtext NOT NULL,
+  `lien_titre` text NOT NULL,
+  `lien_url` text NOT NULL,
+  `statut` varchar(6) NOT NULL default '0',
+  `id_rubrique` bigint(21) NOT NULL default '0',
+  `lang` varchar(10) NOT NULL default '',
+  `langue_choisie` varchar(3) default 'non',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `extra` longtext,
+  PRIMARY KEY  (`id_breve`),
+  KEY `id_rubrique` (`id_rubrique`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_breves`
+--
+
+LOCK TABLES `spip_breves` WRITE;
+/*!40000 ALTER TABLE `spip_breves` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_breves` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_documents`
+--
+
+DROP TABLE IF EXISTS `spip_documents`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_documents` (
+  `id_document` bigint(21) NOT NULL auto_increment,
+  `id_vignette` bigint(21) NOT NULL default '0',
+  `extension` varchar(10) NOT NULL default '',
+  `titre` text NOT NULL,
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `descriptif` text NOT NULL,
+  `fichier` varchar(255) NOT NULL default '',
+  `taille` int(11) default NULL,
+  `largeur` int(11) default NULL,
+  `hauteur` int(11) default NULL,
+  `mode` enum('vignette','image','document') NOT NULL default 'document',
+  `distant` varchar(3) default 'non',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id_document`),
+  KEY `id_vignette` (`id_vignette`),
+  KEY `mode` (`mode`),
+  KEY `extension` (`extension`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_documents`
+--
+
+LOCK TABLES `spip_documents` WRITE;
+/*!40000 ALTER TABLE `spip_documents` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_documents` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_documents_liens`
+--
+
+DROP TABLE IF EXISTS `spip_documents_liens`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_documents_liens` (
+  `id_document` bigint(21) NOT NULL default '0',
+  `id_objet` bigint(21) NOT NULL default '0',
+  `objet` varchar(25) NOT NULL default '',
+  `vu` enum('non','oui') NOT NULL default 'non',
+  PRIMARY KEY  (`id_document`,`id_objet`,`objet`),
+  KEY `id_document` (`id_document`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_documents_liens`
+--
+
+LOCK TABLES `spip_documents_liens` WRITE;
+/*!40000 ALTER TABLE `spip_documents_liens` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_documents_liens` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_forum`
+--
+
+DROP TABLE IF EXISTS `spip_forum`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_forum` (
+  `id_forum` bigint(21) NOT NULL auto_increment,
+  `id_parent` bigint(21) NOT NULL default '0',
+  `id_thread` bigint(21) NOT NULL default '0',
+  `id_rubrique` bigint(21) NOT NULL default '0',
+  `id_article` bigint(21) NOT NULL default '0',
+  `id_breve` bigint(21) NOT NULL default '0',
+  `date_heure` datetime NOT NULL default '0000-00-00 00:00:00',
+  `date_thread` datetime NOT NULL default '0000-00-00 00:00:00',
+  `titre` text NOT NULL,
+  `texte` mediumtext NOT NULL,
+  `auteur` text NOT NULL,
+  `email_auteur` text NOT NULL,
+  `nom_site` text NOT NULL,
+  `url_site` text NOT NULL,
+  `statut` varchar(8) NOT NULL default '0',
+  `ip` varchar(16) NOT NULL default '',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `id_auteur` bigint(20) NOT NULL default '0',
+  `id_message` bigint(21) NOT NULL default '0',
+  `id_syndic` bigint(21) NOT NULL default '0',
+  PRIMARY KEY  (`id_forum`),
+  KEY `id_auteur` (`id_auteur`),
+  KEY `id_parent` (`id_parent`),
+  KEY `id_thread` (`id_thread`),
+  KEY `optimal` (`statut`,`id_parent`,`id_article`,`date_heure`,`id_breve`,`id_syndic`,`id_rubrique`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_forum`
+--
+
+LOCK TABLES `spip_forum` WRITE;
+/*!40000 ALTER TABLE `spip_forum` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_forum` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_groupes_mots`
+--
+
+DROP TABLE IF EXISTS `spip_groupes_mots`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_groupes_mots` (
+  `id_groupe` bigint(21) NOT NULL auto_increment,
+  `titre` text NOT NULL,
+  `descriptif` text NOT NULL,
+  `texte` longtext NOT NULL,
+  `unseul` varchar(3) NOT NULL default '',
+  `obligatoire` varchar(3) NOT NULL default '',
+  `tables_liees` text NOT NULL,
+  `minirezo` varchar(3) NOT NULL default '',
+  `comite` varchar(3) NOT NULL default '',
+  `forum` varchar(3) NOT NULL default '',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id_groupe`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_groupes_mots`
+--
+
+LOCK TABLES `spip_groupes_mots` WRITE;
+/*!40000 ALTER TABLE `spip_groupes_mots` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_groupes_mots` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_messages`
+--
+
+DROP TABLE IF EXISTS `spip_messages`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_messages` (
+  `id_message` bigint(21) NOT NULL auto_increment,
+  `titre` text NOT NULL,
+  `texte` longtext NOT NULL,
+  `type` varchar(6) NOT NULL default '',
+  `date_heure` datetime NOT NULL default '0000-00-00 00:00:00',
+  `date_fin` datetime NOT NULL default '0000-00-00 00:00:00',
+  `rv` varchar(3) NOT NULL default '',
+  `statut` varchar(6) NOT NULL default '0',
+  `id_auteur` bigint(21) NOT NULL,
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id_message`),
+  KEY `id_auteur` (`id_auteur`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_messages`
+--
+
+LOCK TABLES `spip_messages` WRITE;
+/*!40000 ALTER TABLE `spip_messages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_messages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_meta`
+--
+
+DROP TABLE IF EXISTS `spip_meta`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_meta` (
+  `nom` varchar(255) NOT NULL,
+  `valeur` text,
+  `impt` enum('non','oui') NOT NULL default 'oui',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`nom`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_meta`
+--
+
+LOCK TABLES `spip_meta` WRITE;
+/*!40000 ALTER TABLE `spip_meta` DISABLE KEYS */;
+INSERT INTO `spip_meta` VALUES ('charset_sql_base','utf8','non','2009-11-06 08:19:46'),('charset_collation_sql_base','utf8_general_ci','non','2009-11-06 08:19:46'),('charset_sql_connexion','utf8','non','2009-11-06 08:19:46'),('version_installee','14558','non','2009-11-06 08:19:46'),('nouvelle_install','1','non','2009-11-06 08:19:46'),('plugin','a:0:{}','oui','2009-11-06 08:19:46'),('plugin_header','','oui','2009-11-06 08:19:46'),('charset','utf-8','oui','2009-11-06 08:20:18'),('alea_ephemere_ancien','','oui','2009-11-06 08:20:18'),('alea_ephemere','57f78510a3e21375f1f8e11b2b9202cb','oui','2009-11-06 08:20:18'),('alea_ephemere_date','1257495618','oui','2009-11-06 08:20:18'),('langues_proposees','ar,ast,bg,br,bs,ca,cpf,cpf_hat,cs,da,de,en,eo,es,eu,fa,fon,fr,gl,hu,id,it,it_fem,ja,km,lb,my,nl,oc_auv,oc_gsc,oc_lms,oc_lnc,oc_ni,oc_ni_la,oc_prv,oc_va,pl,pt,pt_br,ro,ru,sv,tr,vi,zh','oui','2009-11-06 08:20:18'),('langue_site','fr','oui','2009-11-06 08:20:18'),('pcre_u','u','oui','2009-11-06 08:20:18'),('ldap_statut_import','1comite','oui','2009-11-06 08:20:40'),('email_webmaster','admin@@DOMAINE@','oui','2009-11-06 08:21:13'),('nom_site','Forum LCS','oui','2009-11-06 08:21:13'),('adresse_site','http://@DOMAINENAME@/spip','oui','2009-11-06 08:21:13'),('descriptif_site','','oui','2009-11-06 08:21:13'),('activer_breves','non','oui','2009-11-06 08:21:13'),('activer_logos','oui','oui','2009-11-06 08:21:13'),('activer_logos_survol','non','oui','2009-11-06 08:21:13'),('config_precise_groupes','non','oui','2009-11-06 08:21:13'),('mots_cles_forums','non','oui','2009-11-06 08:21:13'),('articles_surtitre','non','oui','2009-11-06 08:21:13'),('articles_soustitre','non','oui','2009-11-06 08:21:13'),('articles_descriptif','non','oui','2009-11-06 08:21:13'),('articles_chapeau','non','oui','2009-11-06 08:21:13'),('articles_texte','oui','oui','2009-11-06 08:21:13'),('articles_ps','non','oui','2009-11-06 08:21:13'),('articles_redac','non','oui','2009-11-06 08:21:13'),('articles_mots','non','oui','2009-11-06 08:21:13'),('post_dates','non','oui','2009-11-06 08:21:13'),('articles_urlref','non','oui','2009-11-06 08:21:13'),('articles_redirection','non','oui','2009-11-06 08:21:13'),('creer_preview','non','oui','2009-11-06 08:21:13'),('taille_preview','150','oui','2009-11-06 08:21:13'),('articles_modif','non','oui','2009-11-06 08:21:13'),('rubriques_descriptif','non','oui','2009-11-06 08:21:13'),('rubriques_texte','oui','oui','2009-11-06 08:21:13'),('forums_titre','oui','oui','2009-11-06 08:21:13'),('forums_texte','oui','oui','2009-11-06 08:21:13'),('forums_urlref','non','oui','2009-11-06 08:21:13'),('forums_afficher_barre','oui','oui','2009-11-06 08:21:13'),('formats_documents_forum','','oui','2009-11-06 08:21:13'),('activer_sites','non','oui','2009-11-06 08:21:13'),('proposer_sites','0','oui','2009-11-06 08:21:13'),('activer_syndic','oui','oui','2009-11-06 08:21:13'),('moderation_sites','non','oui','2009-11-06 08:21:13'),('forums_publics','posteriori','oui','2009-11-06 08:21:13'),('accepter_inscriptions','non','oui','2009-11-06 08:21:13'),('accepter_visiteurs','non','oui','2009-11-06 08:21:13'),('prevenir_auteurs','non','oui','2009-11-06 08:21:13'),('suivi_edito','non','oui','2009-11-06 08:21:13'),('adresse_suivi','','oui','2009-11-06 08:21:13'),('adresse_suivi_inscription','','oui','2009-11-06 08:21:13'),('adresse_neuf','','oui','2009-11-06 08:21:13'),('jours_neuf','','oui','2009-11-06 08:21:13'),('quoi_de_neuf','non','oui','2009-11-06 08:21:13'),('forum_prive','oui','oui','2009-11-06 08:21:13'),('forum_prive_objets','oui','oui','2009-11-06 08:21:13'),('forum_prive_admin','non','oui','2009-11-06 08:21:13'),('messagerie_agenda','oui','oui','2009-11-06 08:21:13'),('articles_versions','non','oui','2009-11-06 08:21:13'),('activer_statistiques','non','oui','2009-11-06 08:21:13'),('activer_captures_referers','non','oui','2009-11-06 08:21:13'),('documents_article','non','oui','2009-11-06 08:21:13'),('documents_rubrique','non','oui','2009-11-06 08:21:13'),('documents_date','non','oui','2009-11-06 08:21:13'),('syndication_integrale','oui','oui','2009-11-06 08:21:13'),('dir_img','IMG/','oui','2009-11-06 08:21:13'),('multi_articles','non','oui','2009-11-06 08:21:13'),('multi_rubriques','non','oui','2009-11-06 08:21:13'),('multi_secteurs','non','oui','2009-11-06 08:21:13'),('gerer_trad','non','oui','2009-11-06 08:21:13'),('langues_multilingue','','oui','2009-11-06 08:21:13'),('type_urls','page','oui','2009-11-06 08:21:13'),('email_envoi','','oui','2009-11-06 08:21:13'),('auto_compress_http','non','oui','2009-11-06 08:21:13'),('auto_compress_js','non','oui','2009-11-06 08:21:13'),('auto_compress_css','non','oui','2009-11-06 08:21:13'),('langues_utilisees','fr','oui','2009-11-06 08:21:13'),('secret_du_site','4176044664af3dc7b41e565.20754339','oui','2009-11-06 08:21:15');
+/*!40000 ALTER TABLE `spip_meta` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_mots`
+--
+
+DROP TABLE IF EXISTS `spip_mots`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_mots` (
+  `id_mot` bigint(21) NOT NULL auto_increment,
+  `titre` text NOT NULL,
+  `descriptif` text NOT NULL,
+  `texte` longtext NOT NULL,
+  `id_groupe` bigint(21) NOT NULL default '0',
+  `type` text NOT NULL,
+  `extra` longtext,
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id_mot`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_mots`
+--
+
+LOCK TABLES `spip_mots` WRITE;
+/*!40000 ALTER TABLE `spip_mots` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_mots` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_mots_articles`
+--
+
+DROP TABLE IF EXISTS `spip_mots_articles`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_mots_articles` (
+  `id_mot` bigint(21) NOT NULL default '0',
+  `id_article` bigint(21) NOT NULL default '0',
+  PRIMARY KEY  (`id_article`,`id_mot`),
+  KEY `id_mot` (`id_mot`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_mots_articles`
+--
+
+LOCK TABLES `spip_mots_articles` WRITE;
+/*!40000 ALTER TABLE `spip_mots_articles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_mots_articles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_mots_breves`
+--
+
+DROP TABLE IF EXISTS `spip_mots_breves`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_mots_breves` (
+  `id_mot` bigint(21) NOT NULL default '0',
+  `id_breve` bigint(21) NOT NULL default '0',
+  PRIMARY KEY  (`id_breve`,`id_mot`),
+  KEY `id_mot` (`id_mot`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_mots_breves`
+--
+
+LOCK TABLES `spip_mots_breves` WRITE;
+/*!40000 ALTER TABLE `spip_mots_breves` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_mots_breves` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_mots_documents`
+--
+
+DROP TABLE IF EXISTS `spip_mots_documents`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_mots_documents` (
+  `id_mot` bigint(21) NOT NULL default '0',
+  `id_document` bigint(21) NOT NULL default '0',
+  PRIMARY KEY  (`id_document`,`id_mot`),
+  KEY `id_mot` (`id_mot`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_mots_documents`
+--
+
+LOCK TABLES `spip_mots_documents` WRITE;
+/*!40000 ALTER TABLE `spip_mots_documents` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_mots_documents` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_mots_forum`
+--
+
+DROP TABLE IF EXISTS `spip_mots_forum`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_mots_forum` (
+  `id_mot` bigint(21) NOT NULL default '0',
+  `id_forum` bigint(21) NOT NULL default '0',
+  PRIMARY KEY  (`id_forum`,`id_mot`),
+  KEY `id_mot` (`id_mot`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_mots_forum`
+--
+
+LOCK TABLES `spip_mots_forum` WRITE;
+/*!40000 ALTER TABLE `spip_mots_forum` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_mots_forum` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_mots_rubriques`
+--
+
+DROP TABLE IF EXISTS `spip_mots_rubriques`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_mots_rubriques` (
+  `id_mot` bigint(21) NOT NULL default '0',
+  `id_rubrique` bigint(21) NOT NULL default '0',
+  PRIMARY KEY  (`id_rubrique`,`id_mot`),
+  KEY `id_mot` (`id_mot`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_mots_rubriques`
+--
+
+LOCK TABLES `spip_mots_rubriques` WRITE;
+/*!40000 ALTER TABLE `spip_mots_rubriques` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_mots_rubriques` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_mots_syndic`
+--
+
+DROP TABLE IF EXISTS `spip_mots_syndic`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_mots_syndic` (
+  `id_mot` bigint(21) NOT NULL default '0',
+  `id_syndic` bigint(21) NOT NULL default '0',
+  PRIMARY KEY  (`id_syndic`,`id_mot`),
+  KEY `id_mot` (`id_mot`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_mots_syndic`
+--
+
+LOCK TABLES `spip_mots_syndic` WRITE;
+/*!40000 ALTER TABLE `spip_mots_syndic` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_mots_syndic` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_petitions`
+--
+
+DROP TABLE IF EXISTS `spip_petitions`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_petitions` (
+  `id_article` bigint(21) NOT NULL default '0',
+  `email_unique` char(3) NOT NULL default '',
+  `site_obli` char(3) NOT NULL default '',
+  `site_unique` char(3) NOT NULL default '',
+  `message` char(3) NOT NULL default '',
+  `texte` longtext NOT NULL,
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id_article`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_petitions`
+--
+
+LOCK TABLES `spip_petitions` WRITE;
+/*!40000 ALTER TABLE `spip_petitions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_petitions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_referers`
+--
+
+DROP TABLE IF EXISTS `spip_referers`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_referers` (
+  `referer_md5` bigint(20) unsigned NOT NULL,
+  `date` date NOT NULL,
+  `referer` varchar(255) default NULL,
+  `visites` int(10) unsigned NOT NULL,
+  `visites_jour` int(10) unsigned NOT NULL,
+  `visites_veille` int(10) unsigned NOT NULL,
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`referer_md5`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_referers`
+--
+
+LOCK TABLES `spip_referers` WRITE;
+/*!40000 ALTER TABLE `spip_referers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_referers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_referers_articles`
+--
+
+DROP TABLE IF EXISTS `spip_referers_articles`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_referers_articles` (
+  `id_article` int(10) unsigned NOT NULL,
+  `referer_md5` bigint(20) unsigned NOT NULL,
+  `referer` varchar(255) NOT NULL default '',
+  `visites` int(10) unsigned NOT NULL,
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id_article`,`referer_md5`),
+  KEY `referer_md5` (`referer_md5`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_referers_articles`
+--
+
+LOCK TABLES `spip_referers_articles` WRITE;
+/*!40000 ALTER TABLE `spip_referers_articles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_referers_articles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_resultats`
+--
+
+DROP TABLE IF EXISTS `spip_resultats`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_resultats` (
+  `recherche` char(16) NOT NULL default '',
+  `id` int(10) unsigned NOT NULL,
+  `points` int(10) unsigned NOT NULL default '0',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_resultats`
+--
+
+LOCK TABLES `spip_resultats` WRITE;
+/*!40000 ALTER TABLE `spip_resultats` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_resultats` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_rubriques`
+--
+
+DROP TABLE IF EXISTS `spip_rubriques`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_rubriques` (
+  `id_rubrique` bigint(21) NOT NULL auto_increment,
+  `id_parent` bigint(21) NOT NULL default '0',
+  `titre` text NOT NULL,
+  `descriptif` text NOT NULL,
+  `texte` longtext NOT NULL,
+  `id_secteur` bigint(21) NOT NULL default '0',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `export` varchar(10) default 'oui',
+  `id_import` bigint(20) default '0',
+  `statut` varchar(10) NOT NULL default '0',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `lang` varchar(10) NOT NULL default '',
+  `langue_choisie` varchar(3) default 'non',
+  `extra` longtext,
+  `statut_tmp` varchar(10) NOT NULL default '0',
+  `date_tmp` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id_rubrique`),
+  KEY `lang` (`lang`),
+  KEY `id_parent` (`id_parent`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_rubriques`
+--
+
+LOCK TABLES `spip_rubriques` WRITE;
+/*!40000 ALTER TABLE `spip_rubriques` DISABLE KEYS */;
+INSERT INTO `spip_rubriques` VALUES (1,0,'Vie scolaire.','','La vie scolaire de l\'établissement.',1,'2009-04-10 15:13:18','oui',0,'publie','2009-04-10 17:13:18','fr','non',NULL,'0','0000-00-00 00:00:00'),(2,0,'LCS','','LCS le serveur de communication de l\'établissement.',2,'2009-04-10 15:26:12','oui',0,'publie','2009-04-10 17:26:12','fr','non',NULL,'0','0000-00-00 00:00:00'),(3,0,'Intranet','','Le système d\'information de l\'établissement.',3,'2009-04-10 15:29:03','oui',0,'publie','2009-04-10 17:29:03','fr','non',NULL,'0','0000-00-00 00:00:00');
+/*!40000 ALTER TABLE `spip_rubriques` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_signatures`
+--
+
+DROP TABLE IF EXISTS `spip_signatures`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_signatures` (
+  `id_signature` bigint(21) NOT NULL auto_increment,
+  `id_article` bigint(21) NOT NULL default '0',
+  `date_time` datetime NOT NULL default '0000-00-00 00:00:00',
+  `nom_email` text NOT NULL,
+  `ad_email` text NOT NULL,
+  `nom_site` text NOT NULL,
+  `url_site` text NOT NULL,
+  `message` mediumtext NOT NULL,
+  `statut` varchar(10) NOT NULL default '0',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id_signature`),
+  KEY `id_article` (`id_article`),
+  KEY `statut` (`statut`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_signatures`
+--
+
+LOCK TABLES `spip_signatures` WRITE;
+/*!40000 ALTER TABLE `spip_signatures` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_signatures` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_syndic`
+--
+
+DROP TABLE IF EXISTS `spip_syndic`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_syndic` (
+  `id_syndic` bigint(21) NOT NULL auto_increment,
+  `id_rubrique` bigint(21) NOT NULL default '0',
+  `id_secteur` bigint(21) NOT NULL default '0',
+  `nom_site` text NOT NULL,
+  `url_site` text NOT NULL,
+  `url_syndic` text NOT NULL,
+  `descriptif` text NOT NULL,
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `syndication` varchar(3) NOT NULL default '',
+  `statut` varchar(10) NOT NULL default '0',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `date_syndic` datetime NOT NULL default '0000-00-00 00:00:00',
+  `date_index` datetime NOT NULL default '0000-00-00 00:00:00',
+  `extra` longtext,
+  `moderation` varchar(3) default 'non',
+  `miroir` varchar(3) default 'non',
+  `oubli` varchar(3) default 'non',
+  `resume` varchar(3) default 'oui',
+  PRIMARY KEY  (`id_syndic`),
+  KEY `id_rubrique` (`id_rubrique`),
+  KEY `id_secteur` (`id_secteur`),
+  KEY `statut` (`statut`,`date_syndic`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_syndic`
+--
+
+LOCK TABLES `spip_syndic` WRITE;
+/*!40000 ALTER TABLE `spip_syndic` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_syndic` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_syndic_articles`
+--
+
+DROP TABLE IF EXISTS `spip_syndic_articles`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_syndic_articles` (
+  `id_syndic_article` bigint(21) NOT NULL auto_increment,
+  `id_syndic` bigint(21) NOT NULL default '0',
+  `titre` text NOT NULL,
+  `url` varchar(255) NOT NULL default '',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `lesauteurs` text NOT NULL,
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `statut` varchar(10) NOT NULL default '0',
+  `descriptif` text NOT NULL,
+  `lang` varchar(10) NOT NULL default '',
+  `url_source` tinytext NOT NULL,
+  `source` tinytext NOT NULL,
+  `tags` text NOT NULL,
+  PRIMARY KEY  (`id_syndic_article`),
+  KEY `id_syndic` (`id_syndic`),
+  KEY `statut` (`statut`),
+  KEY `url` (`url`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_syndic_articles`
+--
+
+LOCK TABLES `spip_syndic_articles` WRITE;
+/*!40000 ALTER TABLE `spip_syndic_articles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_syndic_articles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_types_documents`
+--
+
+DROP TABLE IF EXISTS `spip_types_documents`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_types_documents` (
+  `extension` varchar(10) NOT NULL default '',
+  `titre` text NOT NULL,
+  `descriptif` text NOT NULL,
+  `mime_type` varchar(100) NOT NULL default '',
+  `inclus` enum('non','image','embed') NOT NULL default 'non',
+  `upload` enum('oui','non') NOT NULL default 'oui',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`extension`),
+  KEY `inclus` (`inclus`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_types_documents`
+--
+
+LOCK TABLES `spip_types_documents` WRITE;
+/*!40000 ALTER TABLE `spip_types_documents` DISABLE KEYS */;
+INSERT INTO `spip_types_documents` VALUES ('jpg','JPEG','','image/jpeg','image','oui','2009-04-10 14:35:04'),('png','PNG','','image/png','image','oui','2009-04-10 14:35:04'),('gif','GIF','','image/gif','image','oui','2009-04-10 14:35:04'),('bmp','BMP','','image/x-ms-bmp','image','oui','2009-04-10 14:35:04'),('tif','TIFF','','image/tiff','image','oui','2009-04-10 14:35:04'),('aiff','AIFF','','audio/x-aiff','embed','oui','2009-04-10 14:35:04'),('asf','Windows Media','','video/x-ms-asf','embed','oui','2009-04-10 14:35:04'),('avi','AVI','','video/x-msvideo','embed','oui','2009-04-10 14:35:04'),('anx','Annodex','','application/annodex','embed','oui','2009-04-10 14:35:04'),('axa','Annodex Audio','','audio/annodex','embed','oui','2009-04-10 14:35:04'),('axv','Annodex Video','','video/annodex','embed','oui','2009-04-10 14:35:04'),('flac','Free Lossless Audio Codec','','audio/x-flac','embed','oui','2009-04-10 14:35:04'),('flv','Flash Video','','video/x-flv','embed','oui','2009-04-10 14:35:04'),('mid','Midi','','audio/midi','embed','oui','2009-04-10 14:35:04'),('mka','Matroska Audio','','audio/mka','embed','oui','2009-04-10 14:35:04'),('mkv','Matroska Video','','video/mkv','embed','oui','2009-04-10 14:35:04'),('mng','MNG','','video/x-mng','embed','oui','2009-04-10 14:35:04'),('mov','QuickTime','','video/quicktime','embed','oui','2009-04-10 14:35:04'),('mp3','MP3','','audio/mpeg','embed','oui','2009-04-10 14:35:04'),('mp4','MPEG4','','application/mp4','embed','oui','2009-04-10 14:35:04'),('mpg','MPEG','','video/mpeg','embed','oui','2009-04-10 14:35:04'),('oga','Ogg Audio','','audio/ogg','embed','oui','2009-04-10 14:35:04'),('ogg','Ogg Vorbis','','audio/ogg ','embed','oui','2009-04-10 14:35:04'),('ogv','Ogg Video','','video/ogg ','embed','oui','2009-04-10 14:35:04'),('ogx','Ogg Multiplex','','application/ogg ','embed','oui','2009-04-10 14:35:04'),('qt','QuickTime','','video/quicktime','embed','oui','2009-04-10 14:35:04'),('ra','RealAudio','','audio/x-pn-realaudio','embed','oui','2009-04-10 14:35:04'),('ram','RealAudio','','audio/x-pn-realaudio','embed','oui','2009-04-10 14:35:04'),('rm','RealAudio','','audio/x-pn-realaudio','embed','oui','2009-04-10 14:35:04'),('spx','Ogg Speex','','audio/ogg','embed','oui','2009-04-10 14:35:04'),('svg','Scalable Vector Graphics','','image/svg+xml','embed','oui','2009-04-10 14:35:04'),('swf','Flash','','application/x-shockwave-flash','embed','oui','2009-04-10 14:35:04'),('wav','WAV','','audio/x-wav','embed','oui','2009-04-10 14:35:04'),('wmv','Windows Media','','video/x-ms-wmv','embed','oui','2009-04-10 14:35:04'),('3gp','3rd Generation Partnership Project','','video/3gpp','embed','oui','2009-04-10 14:35:04'),('ai','Adobe Illustrator','','application/illustrator','non','oui','2009-04-10 14:35:04'),('abw','Abiword','','application/abiword','non','oui','2009-04-10 14:35:04'),('bin','Binary Data','','application/octet-stream','non','oui','2009-04-10 14:35:04'),('blend','Blender','','application/x-blender','non','oui','2009-04-10 14:35:04'),('bz2','BZip','','application/x-bzip2','non','oui','2009-04-10 14:35:04'),('c','C source','','text/x-csrc','non','oui','2009-04-10 14:35:04'),('css','Cascading Style Sheet','','text/css','non','oui','2009-04-10 14:35:04'),('csv','Comma Separated Values','','text/csv','non','oui','2009-04-10 14:35:04'),('deb','Debian','','application/x-debian-package','non','oui','2009-04-10 14:35:04'),('doc','Word','','application/msword','non','oui','2009-04-10 14:35:04'),('djvu','DjVu','','image/vnd.djvu','non','oui','2009-04-10 14:35:04'),('dvi','LaTeX DVI','','application/x-dvi','non','oui','2009-04-10 14:35:04'),('eps','PostScript','','application/postscript','non','oui','2009-04-10 14:35:04'),('gz','GZ','','application/x-gzip','non','oui','2009-04-10 14:35:04'),('h','C header','','text/x-chdr','non','oui','2009-04-10 14:35:04'),('html','HTML','','text/html','non','oui','2009-04-10 14:35:04'),('kml','Keyhole Markup Language','','application/vnd.google-earth.kml+xml','non','oui','2009-04-10 14:35:04'),('kmz','Google Earth Placemark File','','application/vnd.google-earth.kmz','non','oui','2009-04-10 14:35:04'),('pas','Pascal','','text/x-pascal','non','oui','2009-04-10 14:35:04'),('pdf','PDF','','application/pdf','non','oui','2009-04-10 14:35:04'),('pgn','Portable Game Notation','','application/x-chess-pgn','non','oui','2009-04-10 14:35:04'),('ppt','PowerPoint','','application/vnd.ms-powerpoint','non','oui','2009-04-10 14:35:04'),('ps','PostScript','','application/postscript','non','oui','2009-04-10 14:35:04'),('psd','Photoshop','','image/x-photoshop','non','oui','2009-04-10 14:35:04'),('rpm','RedHat/Mandrake/SuSE','','application/x-redhat-package-manager','non','oui','2009-04-10 14:35:04'),('rtf','RTF','','application/rtf','non','oui','2009-04-10 14:35:04'),('sdd','StarOffice','','application/vnd.stardivision.impress','non','oui','2009-04-10 14:35:04'),('sdw','StarOffice','','application/vnd.stardivision.writer','non','oui','2009-04-10 14:35:04'),('sit','Stuffit','','application/x-stuffit','non','oui','2009-04-10 14:35:04'),('sxc','OpenOffice.org Calc','','application/vnd.sun.xml.calc','non','oui','2009-04-10 14:35:04'),('sxi','OpenOffice.org Impress','','application/vnd.sun.xml.impress','non','oui','2009-04-10 14:35:04'),('sxw','OpenOffice.org','','application/vnd.sun.xml.writer','non','oui','2009-04-10 14:35:04'),('tex','LaTeX','','text/x-tex','non','oui','2009-04-10 14:35:04'),('tgz','TGZ','','application/x-gtar','non','oui','2009-04-10 14:35:04'),('torrent','BitTorrent','','application/x-bittorrent','non','oui','2009-04-10 14:35:04'),('ttf','TTF Font','','application/x-font-ttf','non','oui','2009-04-10 14:35:04'),('txt','texte','','text/plain','non','oui','2009-04-10 14:35:04'),('xcf','GIMP multi-layer','','application/x-xcf','non','oui','2009-04-10 14:35:04'),('xls','Excel','','application/vnd.ms-excel','non','oui','2009-04-10 14:35:04'),('xspf','XSPF','','application/xspf+xml','non','oui','2009-04-10 14:35:04'),('xml','XML','','application/xml','non','oui','2009-04-10 14:35:04'),('zip','Zip','','application/zip','non','oui','2009-04-10 14:35:04'),('odt','opendocument text','','application/vnd.oasis.opendocument.text','non','oui','2009-04-10 14:35:04'),('ods','opendocument spreadsheet','','application/vnd.oasis.opendocument.spreadsheet','non','oui','2009-04-10 14:35:04'),('odp','opendocument presentation','','application/vnd.oasis.opendocument.presentation','non','oui','2009-04-10 14:35:04'),('odg','opendocument graphics','','application/vnd.oasis.opendocument.graphics','non','oui','2009-04-10 14:35:04'),('odc','opendocument chart','','application/vnd.oasis.opendocument.chart','non','oui','2009-04-10 14:35:04'),('odf','opendocument formula','','application/vnd.oasis.opendocument.formula','non','oui','2009-04-10 14:35:04'),('odb','opendocument database','','application/vnd.oasis.opendocument.database','non','oui','2009-04-10 14:35:04'),('odi','opendocument image','','application/vnd.oasis.opendocument.image','non','oui','2009-04-10 14:35:04'),('odm','opendocument text-master','','application/vnd.oasis.opendocument.text-master','non','oui','2009-04-10 14:35:04'),('ott','opendocument text-template','','application/vnd.oasis.opendocument.text-template','non','oui','2009-04-10 14:35:04'),('ots','opendocument spreadsheet-template','','application/vnd.oasis.opendocument.spreadsheet-template','non','oui','2009-04-10 14:35:04'),('otp','opendocument presentation-template','','application/vnd.oasis.opendocument.presentation-template','non','oui','2009-04-10 14:35:04'),('otg','opendocument graphics-template','','application/vnd.oasis.opendocument.graphics-template','non','oui','2009-04-10 14:35:04'),('cls','LaTeX Class','','text/x-tex','non','oui','2009-04-10 14:35:04'),('sty','LaTeX Style Sheet','','text/x-tex','non','oui','2009-04-10 14:35:04');
+/*!40000 ALTER TABLE `spip_types_documents` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_urls`
+--
+
+DROP TABLE IF EXISTS `spip_urls`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_urls` (
+  `url` varchar(255) NOT NULL,
+  `type` varchar(15) NOT NULL default 'article',
+  `id_objet` bigint(21) NOT NULL,
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`url`),
+  KEY `type` (`type`,`id_objet`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_urls`
+--
+
+LOCK TABLES `spip_urls` WRITE;
+/*!40000 ALTER TABLE `spip_urls` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_urls` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_versions`
+--
+
+DROP TABLE IF EXISTS `spip_versions`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_versions` (
+  `id_article` bigint(21) NOT NULL,
+  `id_version` bigint(21) NOT NULL default '0',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `id_auteur` varchar(23) NOT NULL default '',
+  `titre_version` text NOT NULL,
+  `permanent` char(3) default NULL,
+  `champs` text,
+  PRIMARY KEY  (`id_article`,`id_version`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_versions`
+--
+
+LOCK TABLES `spip_versions` WRITE;
+/*!40000 ALTER TABLE `spip_versions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_versions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_versions_fragments`
+--
+
+DROP TABLE IF EXISTS `spip_versions_fragments`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_versions_fragments` (
+  `id_fragment` int(10) unsigned NOT NULL default '0',
+  `version_min` int(10) unsigned NOT NULL default '0',
+  `version_max` int(10) unsigned NOT NULL default '0',
+  `id_article` bigint(21) NOT NULL,
+  `compress` tinyint(4) NOT NULL,
+  `fragment` longblob,
+  PRIMARY KEY  (`id_article`,`id_fragment`,`version_min`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_versions_fragments`
+--
+
+LOCK TABLES `spip_versions_fragments` WRITE;
+/*!40000 ALTER TABLE `spip_versions_fragments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_versions_fragments` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_visites`
+--
+
+DROP TABLE IF EXISTS `spip_visites`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_visites` (
+  `date` date NOT NULL,
+  `visites` int(10) unsigned NOT NULL default '0',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_visites`
+--
+
+LOCK TABLES `spip_visites` WRITE;
+/*!40000 ALTER TABLE `spip_visites` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_visites` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `spip_visites_articles`
+--
+
+DROP TABLE IF EXISTS `spip_visites_articles`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `spip_visites_articles` (
+  `date` date NOT NULL,
+  `id_article` int(10) unsigned NOT NULL,
+  `visites` int(10) unsigned NOT NULL default '0',
+  `maj` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`date`,`id_article`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `spip_visites_articles`
+--
+
+LOCK TABLES `spip_visites_articles` WRITE;
+/*!40000 ALTER TABLE `spip_visites_articles` DISABLE KEYS */;
+/*!40000 ALTER TABLE `spip_visites_articles` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2009-09-10 13:02:41

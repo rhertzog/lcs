@@ -1,50 +1,51 @@
 <?php 
-	// inc/spiplistes_agenda.php
-	// CP-20080621
-	
-// $LastChangedRevision: 27772 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-04-10 12:41:09 +0200 (ven, 10 avr 2009) $
+/**
+ * @version Original From SPIP-Listes-V :: Id: spiplistes_listes_forcer_abonnement.php paladin@quesaco.org
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 20:00:13 +0200 (Mon, 25 Apr 2011) $
 
-define("_SPIPLISTES_AGENDA_PERIODE_HEBDO", 10);
-define("_SPIPLISTES_AGENDA_PERIODE_MOIS", 45);
-define("_SPIPLISTES_AGENDA_PERIODE_DEFAUT", _SPIPLISTES_AGENDA_PERIODE_MOIS);
+define('_SPIPLISTES_AGENDA_PERIODE_HEBDO', 10);
+define('_SPIPLISTES_AGENDA_PERIODE_MOIS', 45);
+define('_SPIPLISTES_AGENDA_PERIODE_DEFAUT', _SPIPLISTES_AGENDA_PERIODE_MOIS);
 
-define("_SPIPLISTES_AGENDA_CADRE_WIDTH", 200);
-define("_SPIPLISTES_AGENDA_CADRE_PADDING", 8);
-define("_SPIPLISTES_AGENDA_LOUPE_HEIGHT", 24);
-define("_SPIPLISTES_AGENDA_CAPTION_HEIGHT", 16);
-define("_SPIPLISTES_AGENDA_TABLE_WIDTH", (_SPIPLISTES_AGENDA_CADRE_WIDTH - (_SPIPLISTES_AGENDA_CADRE_PADDING * 2)));
-define("_SPIPLISTES_AGENDA_TABLE_HEIGHT", 200);
+define('_SPIPLISTES_AGENDA_CADRE_WIDTH', 200);
+define('_SPIPLISTES_AGENDA_CADRE_PADDING', 8);
+define('_SPIPLISTES_AGENDA_LOUPE_HEIGHT', 24);
+define('_SPIPLISTES_AGENDA_CAPTION_HEIGHT', 16);
+define('_SPIPLISTES_AGENDA_TABLE_WIDTH', (_SPIPLISTES_AGENDA_CADRE_WIDTH - (_SPIPLISTES_AGENDA_CADRE_PADDING * 2)));
+define('_SPIPLISTES_AGENDA_TABLE_HEIGHT', 200);
 
-define("_SPIPLISTES_ACTION_AGENDA", _SPIPLISTES_ACTION_PREFIX."agenda");
+define('_SPIPLISTES_ACTION_AGENDA', _SPIPLISTES_ACTION_PREFIX.'agenda');
 
-define("_SPIPLISTES_MIN_HEIGHT_BAR", 5);
-define("_SPIPLISTES_MAX_HEIGHT_BAR", _SPIPLISTES_AGENDA_TABLE_HEIGHT);
+define('_SPIPLISTES_MIN_HEIGHT_BAR', 5);
+define('_SPIPLISTES_MAX_HEIGHT_BAR', _SPIPLISTES_AGENDA_TABLE_HEIGHT);
 
 include_spip('inc/spiplistes_api_presentation');
 
 function spiplistes_boite_agenda ($periode = false) {
 
-	$result = ""
-		. "<!-- boite agenda spiplistes -->\n"
-		. debut_cadre_relief("statistiques-24.gif", true)
-		. "<span class='verdana2 titre-petite-boite'>"
-		. _T('spiplistes:boite_agenda_titre_').":"
-		. "</span><br />"
-		. "<div style='width:"._SPIPLISTES_AGENDA_CADRE_WIDTH."px;height:"
+	$result = ''
+		. '<!-- boite agenda spiplistes -->' . PHP_EOL
+		. debut_cadre_relief('statistiques-24.gif', true)
+		. '<span class="verdana2 titre-petite-boite">'
+		. _T('spiplistes:boite_agenda_titre_').':'
+		. '</span><br />'
+		. '<div style="width:'._SPIPLISTES_AGENDA_CADRE_WIDTH.'px;height:'
 			. (_SPIPLISTES_AGENDA_LOUPE_HEIGHT 
 				+ _SPIPLISTES_AGENDA_CAPTION_HEIGHT
 				+ _SPIPLISTES_AGENDA_TABLE_HEIGHT
 				+ (_SPIPLISTES_AGENDA_CADRE_PADDING * 4)
 				)
-			. "px'>\n"
-		. "<div id='spiplistes_boite_agenda' style='padding:"._SPIPLISTES_AGENDA_CADRE_PADDING."px 0'>\n"
+			. 'px">' . PHP_EOL
+		. '<div id="spiplistes_boite_agenda" style="padding:'._SPIPLISTES_AGENDA_CADRE_PADDING.'px 0">' . PHP_EOL
 		. spiplistes_boite_agenda_contenu($periode, self(), _DIR_IMG_PACK)
-		. "</div>\n"
-		. "</div>\n"
+		. '</div>' . PHP_EOL
+		. '</div>' . PHP_EOL
 		. fin_cadre_relief(true)
-		. "<!-- fin boite agenda spiplistes -->\n"
+		. '<!-- fin boite agenda spiplistes -->' . PHP_EOL
 		;
 	return($result);
 }
@@ -262,14 +263,17 @@ function spiplistes_listes_completer_planning ($inventaire, $periode_max) {
 			foreach($inventaire[$date_sql] as $liste) {
 				$rythme_jour = 0;
 				switch($liste['statut']) {
-					case _SPIPLISTES_DAILY_LIST:
+					case _SPIPLISTES_LIST_PRIV_DAILY:
+					case _SPIPLISTES_LIST_PUB_DAILY:
 						$rythme_jour = 
 							($liste['periode'] > 0)
 							? $liste['periode']
 							: 1
 							; // pas de break, continue sur rythme_jour
-					case _SPIPLISTES_HEBDO_LIST:
-					case _SPIPLISTES_WEEKLY_LIST:
+					case _SPIPLISTES_LIST_PRIV_HEBDO:
+					case _SPIPLISTES_LIST_PRIV_WEEKLY:
+					case _SPIPLISTES_LIST_PUB_HEBDO:
+					case _SPIPLISTES_LIST_PUB_WEEKLY:
 						if(!$rythme_jour) {
 							$rythme_jour = 7;
 						}
@@ -277,13 +281,15 @@ function spiplistes_listes_completer_planning ($inventaire, $periode_max) {
 							$planning, $liste, $rythme_jour, $ii, $periode_max
 						);
 						break;
-					case _SPIPLISTES_MENSUEL_LIST:
-					case _SPIPLISTES_MONTHLY_LIST:
+					case _SPIPLISTES_LIST_PRIV_MENSUEL:
+					case _SPIPLISTES_LIST_PRIV_MONTHLY:
+					case _SPIPLISTES_LIST_PUB_MENSUEL:
+					case _SPIPLISTES_LIST_PUB_MONTHLY:
 						$planning = spiplistes_listes_completer_planning_mois(
 							$planning, $liste, $ii, $periode_max
 						);
 						break;
-					//case _SPIPLISTES_YEARLY_LIST: // inutile, pour l'instant
+					//case _SPIPLISTES_LIST_PUB_YEARLY: // inutile, pour l'instant
 					default:
 						if(!isset($planning[$date_sql])) {
 							$planning[$date_sql] = array();

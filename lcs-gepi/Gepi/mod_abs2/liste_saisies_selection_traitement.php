@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: liste_saisies_selection_traitement.php 5758 2010-10-26 09:41:34Z jjacquard $
+ * @version $Id: liste_saisies_selection_traitement.php 6996 2011-05-24 19:03:53Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -89,10 +89,16 @@ echo "<div class='css-panes' style='background-color:#cae7cb;' id='containDiv' s
 
 
 $query = AbsenceEleveSaisieQuery::create();
+if(isset($_GET['saisies'])){
+    $saisies=unserialize($_GET['saisies']);
+    //on reinitialise les filtres au besoin
+    $_SESSION['filtre_recherche'] = Array();
+    $_SESSION['filtre_recherche']['order'] = 'des_id';
+    $query->filterById($saisies);
+}
 //$query->leftJoin('AbsenceEleveSaisie.JTraitementSaisieEleve')->leftJoin('JTraitementSaisieEleve.AbsenceEleveTraitement')->with('AbsenceEleveTraitement');
 if (isFiltreRechercheParam('filter_saisie_id')) {
-    $query->filterById(getFiltreRechercheParam('filter_saisie_id'));
-    echo 'filter_id_oui : '.getFiltreRechercheParam('filter_saisie_id');
+    $query->filterById(getFiltreRechercheParam('filter_saisie_id'));    
 }
 if (isFiltreRechercheParam('filter_utilisateur')) {
     $query->useUtilisateurProfessionnelQuery()->filterByNom('%'.getFiltreRechercheParam('filter_utilisateur').'%', Criteria::LIKE)->endUse();
@@ -211,6 +217,8 @@ if ($recherche_saisie_a_rattacher == 'oui' && $traitement != null) {
 	$id_eleve_array[] = $saisie->getEleveId();
 	$id_saisie_array[] = $saisie->getId();
     }
+    date_date_set($date_debut, $date_debut->format('Y'), $date_debut->format('m'), $date_debut->format('d') - 1);
+    date_date_set($date_fin, $date_fin->format('Y'), $date_fin->format('m'), $date_fin->format('d') + 1);
     $query->filterByPlageTemps($date_debut, $date_fin)->filterByEleveId($id_eleve_array)->filterById($id_saisie_array, Criteria::NOT_IN);
 }
 
@@ -340,13 +348,14 @@ echo '</th>';
 //en tete filtre id
 echo '<th>';
 //echo '<nobr>';
+echo '<input type="hidden" name="order" value="'.$order.'" />'; 
 echo '<span style="white-space: nowrap;"> ';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_id") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_id"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_id" onclick="this.form.order.value = this.value"/>';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "des_id") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_id"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_id" onclick="this.form.order.value = this.value"/>';
 //echo '</nobr> ';
 echo '</span>';
 echo '<br/> ';
@@ -360,10 +369,10 @@ echo '<th>';
 echo '<span style="white-space: nowrap;"> ';
 echo '<input type="image" src="../images/up.png"  title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_utilisateur") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_utilisateur"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_utilisateur" onclick="this.form.order.value = this.value"/>';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "des_utilisateur") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_utilisateur"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_utilisateur" onclick="this.form.order.value = this.value"/>';
 //echo '</nobr>';
 echo '</span>';
 echo '<br />';
@@ -377,10 +386,10 @@ echo '<th>';
 echo '<span style="white-space: nowrap;"> ';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_eleve") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_eleve"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_eleve" onclick="this.form.order.value = this.value"/>';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "des_eleve") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_eleve"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_eleve" onclick="this.form.order.value = this.value"/>';
 //echo '</nobr>';
 echo '</span>';
 echo 'Élève';
@@ -397,10 +406,10 @@ echo '<span style="white-space: nowrap"> ';
 echo 'Classe';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_classe") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_classe"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_classe"/ onclick="this.form.order.value = this.value">';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "des_classe") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_classe"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_classe"/ onclick="this.form.order.value = this.value">';
 //echo '</nobr>';
 echo '</span>';
 echo '<br />';
@@ -423,10 +432,10 @@ echo '<span style="white-space: nowrap;"> ';
 echo 'Groupe';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_groupe") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_groupe"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_groupe"/ onclick="this.form.order.value = this.value">';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "des_groupe") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_groupe"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_groupe"/ onclick="this.form.order.value = this.value">';
 //echo '</nobr>';
 echo '</span>';
 echo '<br />';
@@ -449,10 +458,10 @@ echo '<span style="white-space: nowrap;"> ';
 echo 'AID';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_aid") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_aid"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_aid"/ onclick="this.form.order.value = this.value">';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "des_aid") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_aid"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_aid"/ onclick="this.form.order.value = this.value">';
 //echo '</nobr>';
 echo '</span>';
 echo '<br />';
@@ -476,10 +485,10 @@ echo '<span style="white-space: nowrap;"> ';
 echo 'Créneau';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_creneau") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_creneau"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_creneau"/ onclick="this.form.order.value = this.value">';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "des_creneau") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_creneau"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_creneau"/ onclick="this.form.order.value = this.value">';
 //echo '</nobr>';
 echo '</span>';
 echo '<br />';
@@ -502,10 +511,10 @@ echo '<span style="white-space: nowrap;"> ';
 echo 'Date début';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_date_debut") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_date_debut"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_date_debut"/ onclick="this.form.order.value = this.value">';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "des_date_debut") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_date_debut"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_date_debut"/ onclick="this.form.order.value = this.value">';
 //echo '</nobr>';
 echo '</span>';
 echo '<br />';
@@ -557,10 +566,10 @@ echo '<span style="white-space: nowrap;"> ';
 echo 'Date fin';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_date_fin") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_date_fin"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_date_fin"/ onclick="this.form.order.value = this.value">';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "des_date_fin") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_date_fin"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_date_fin"/ onclick="this.form.order.value = this.value">';
 //echo '</nobr>';
 echo '</span>';
 echo '<br />';
@@ -664,10 +673,10 @@ echo '<span style="white-space: nowrap;"> ';
 echo 'Date traitement';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_date_traitement") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_date_traitement"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_date_traitement"/ onclick="this.form.order.value = this.value">';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "des_date_traitement") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_date_traitement"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_date_traitement"/ onclick="this.form.order.value = this.value">';
 //echo '</nobr>';
 echo '</span>';
 echo '<br />';
@@ -724,10 +733,10 @@ echo '<span style="white-space: nowrap;"> ';
 echo 'Date création';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_date_creation") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_date_creation"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px;vertical-align: middle;' ;
+echo 'border-width:1px;" alt="" name="order" value="asc_date_creation"/ onclick="this.form.order.value = this.value">';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px;vertical-align: middle;' ;
 if ($order == "des_date_creation") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_date_creation"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_date_creation"/ onclick="this.form.order.value = this.value">';
 //echo '</nobr>';
 echo '</span>';
 echo '<br />';
@@ -779,10 +788,10 @@ echo '<span style="white-space: nowrap;"> ';
 echo '';
 echo '<input type="image" src="../images/up.png"  title="monter" style="width:15px; height:15px; vertical-align: middle;';
 if ($order == "asc_date_modification") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_date_modification"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px; vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_date_modification"/ onclick="this.form.order.value = this.value">';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px; vertical-align: middle;';
 if ($order == "des_date_modification") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_date_modification"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_date_modification"/ onclick="this.form.order.value = this.value">';
 echo '<br/> ';
 echo '</span>';
 echo '<span style="white-space: nowrap;"> ';
@@ -802,10 +811,10 @@ echo '<th>';
 echo '<span style="white-space: nowrap;"> ';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px; vertical-align: middle;';
 if ($order == "asc_dis") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="asc_dis"/>';
-echo '<input type="image" src="../images/down.png" title="monter" style="width:15px; height:15px; vertical-align: middle;';
+echo 'border-width:1px;" alt="" name="order" value="asc_dis"/ onclick="this.form.order.value = this.value">';
+echo '<input type="image" src="../images/down.png" title="descendre" style="width:15px; height:15px; vertical-align: middle;';
 if ($order == "des_dis") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
-echo 'border-width:1px;" alt="" name="order" value="des_dis"/>';
+echo 'border-width:1px;" alt="" name="order" value="des_dis"/ onclick="this.form.order.value = this.value">';
 echo '</span>';
 echo '<br/>';
 //echo '<nobr>';
@@ -820,14 +829,21 @@ echo '</thead>';
 
 echo '<tbody>';
 $results = $saisies_col->getResults();
+$hier='';
+$numero_couleur=1;
 foreach ($results as $saisie) {
-
-    if ($results->getPosition() %2 == '1') {
+    $aujourdhui=strftime("%d/%m/%Y", $saisie->getDebutAbs('U'));    
+    if (!isFiltreRechercheParam('filter_eleve')) {
+        $numero_couleur = $results->getPosition();
+    } else {
+        if ($aujourdhui !== $hier)
+            $numero_couleur++;
+    }
+    if ($numero_couleur %2 == '1') {
 	    $background_couleur="rgb(220, 220, 220);";
     } else {
 	    $background_couleur="rgb(210, 220, 230);";
     }
-
     echo "<tr style='background-color :$background_couleur'>\n";
 
     if ($saisie->getNotifiee()) {
@@ -1010,9 +1026,9 @@ foreach ($results as $saisie) {
 
     echo '<td>';
     $saisies_conflit = $saisie->getSaisiesContradictoiresManquementObligation();
-    foreach ($saisies_conflit as $saisie) {
-	echo "<a href='visu_saisie.php?id_saisie=".$saisie->getPrimaryKey()."' style=''> ";
-	echo $saisie->getId();
+    foreach ($saisies_conflit as $saisie_conflit) {
+	echo "<a href='visu_saisie.php?id_saisie=".$saisie_conflit->getPrimaryKey()."' style=''> ";
+	echo $saisie_conflit->getId();
 	echo "</a>";
 	if (!$saisies_conflit->isLast()) {
 	    echo ' - ';
@@ -1053,8 +1069,7 @@ foreach ($results as $saisie) {
     echo '</td>';
 
     echo '</tr>';
-
-
+    $hier=$aujourdhui;
 }
 
 echo '</tbody>';

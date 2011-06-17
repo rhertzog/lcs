@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 include_spip('inc/statistiques');
@@ -74,9 +74,8 @@ function exec_statistiques_visites_args($id_article, $duree, $interval, $type, $
 	if ($titre) echo gros_titre($titre,'', false);
 
 	echo debut_gauche('', true);
-	echo "<br />";
-	echo "<div class='iconeoff' style='padding: 5px;'>";
-	echo "<div class='verdana1 spip_x-small'>";
+	echo "<div class='cadre cadre-e' style='padding: 5px;'>";
+	echo "<div class='cadre_padding verdana1 spip_x-small'>";
 	echo typo(_T('info_afficher_visites'));
 	echo "<ul>";
 
@@ -122,14 +121,16 @@ function exec_statistiques_visites_args($id_article, $duree, $interval, $type, $
 
 	$where2 = $duree ? "$order > DATE_SUB(".sql_quote(date('Y-m-d H:i:s')).",INTERVAL $duree $type)": '';
 	if ($where) $where2 = $where2 ?  "$where2 AND $where" : $where;
-	$log = statistiques_collecte_date('visites', "(CEIL(UNIX_TIMESTAMP($order) / $interval) *  $interval)", $table, $where2, $serveur);
 
-	
+	// sur certains SQL, la division produit un entier tronque a la valeur inferieure
+	// on ne peut donc faire un CEIL, il faut faire un FLOOR
+	$log = statistiques_collecte_date('visites', "(FLOOR((UNIX_TIMESTAMP($order)+$interval-1) / $interval) *  $interval)", $table, $where2, $serveur);
+
 	if ($log)
 	  $res = statistiques_tous($log, $id_article, $table, $where, $order, $serveur, $duree, $interval, $total_absolu, $val_popularite,  $classement, $liste);
 	  
 	$mois = statistiques_collecte_date("SUM(visites)",
-		"FROM_UNIXTIME(UNIX_TIMESTAMP($order),'%Y-%m')", 
+		"DATE_FORMAT($order,'%Y%m')", 
 		$table,
 		"$order > DATE_SUB(NOW(),INTERVAL 2700 DAY)"
 		. ($where ? " AND $where" : ''),

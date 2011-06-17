@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: generer_csv.php 4661 2010-06-28 22:34:03Z regis $
+* $Id: generer_csv.php 6914 2011-05-13 17:44:14Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -41,14 +41,15 @@ if (!checkAccess()) {
 	die();
 }
 
+check_token();
 
-$nom_fic = "notanet_".date('Y.m.d_H.i.s_').my_ereg_replace(" ","_",microtime()).".csv";
-
+$nom_fic = "notanet_".date('Y.m.d_H.i.s_').preg_replace("/ /","_",microtime()).".csv";
+/*
 $now = gmdate('D, d M Y H:i:s') . ' GMT';
 header('Content-Type: text/x-csv');
 header('Expires: ' . $now);
 // lem9 & loic1: IE need specific headers
-if (my_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
+if (preg_match('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
 	header('Content-Disposition: inline; filename="' . $nom_fic . '"');
 	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 	header('Pragma: public');
@@ -56,6 +57,8 @@ if (my_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
 	header('Content-Disposition: attachment; filename="' . $nom_fic . '"');
 	header('Pragma: no-cache');
 }
+*/
+send_file_download_headers('text/x-csv',$nom_fic);
 
 
 //header('Content-Type: application/octetstream');
@@ -169,7 +172,7 @@ else {
 							while($lig2=mysql_fetch_object($res2)) {
 								$ine=$lig2->ine;
 								$note=$lig2->note_notanet;
-								if (my_ereg ("([0-9]{2}).([0-9]{1})", $lig2->note_notanet)) {
+								if (preg_match("/([0-9]{2})\.([0-9]{1})/", $lig2->note_notanet)) {
 									if($tabmatieres[$lig2->id_mat][-1]!="NOTNONCA") {
 										$TOT+=$lig2->note_notanet;
 									}
@@ -178,7 +181,7 @@ else {
 								// Le formatage est déjà fait lors de l'insertion dans la table: NON... il faut deux chiffres après la virgule
 								//$lig_notanet[]="$lig2->ine|$lig2->id_mat|".formate_note_notanet($lig2->note_notanet)."|";
 								//$lig_notanet[]="$lig2->ine|$lig2->id_mat|".$lig2->note_notanet."|";
-								$lig_notanet[]="$lig2->ine|$lig2->id_mat|".$note."|";
+								$lig_notanet[]="$lig2->ine|".sprintf("%03d",$lig2->id_mat)."|".$note."|";
 							}
 							$lig_notanet[]="$ine|TOT|".formate_note_notanet($TOT)."|";
 						}
@@ -187,7 +190,7 @@ else {
 			}
 		}
 	}
-	elseif((my_ereg("[0-9]",$extract_mode))&&(strlen(my_ereg_replace("[0-9]","",$extract_mode))==0)) {
+	elseif((preg_match("/[0-9]/",$extract_mode))&&(strlen(preg_replace("/[0-9]/","",$extract_mode))==0)) {
 		$type_brevet=$extract_mode;
 
 		/*
@@ -228,7 +231,7 @@ else {
 					while($lig2=mysql_fetch_object($res2)) {
 						$ine=$lig2->ine;
 						$note=$lig2->note_notanet;
-						if (my_ereg ("([0-9]{2}).([0-9]{1})", $lig2->note_notanet)) {
+						if (preg_match("/([0-9]{2})\.([0-9]{1})/", $lig2->note_notanet)) {
 							if($tabmatieres[$lig2->id_mat][-1]!="NOTNONCA") {
 								$TOT+=$lig2->note_notanet;
 							}
@@ -236,7 +239,8 @@ else {
 						}
 						// Le formatage est déjà fait lors de l'insertion dans la table
 						//$lig_notanet[]="$lig2->ine|$lig2->id_mat|".formate_note_notanet($lig2->note_notanet)."|";
-						$lig_notanet[]="$lig2->ine|$lig2->id_mat|".$note."|";
+						//$lig_notanet[]="$lig2->ine|$lig2->id_mat|".$note."|";
+						$lig_notanet[]="$lig2->ine|".sprintf("%03d",$lig2->id_mat)."|".$note."|";
 					}
 					$lig_notanet[]="$ine|TOT|".formate_note_notanet($TOT)."|";
 				}

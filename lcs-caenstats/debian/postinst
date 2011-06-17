@@ -20,17 +20,8 @@ set -e
 
 case "$1" in
     configure)
-
-    if  [ ` getent passwd superviseur|wc -l` = "1" ]; then 
-	userdel superviseur
-    fi
-    if  [ ` getent group superviseur|wc -l` = "1" ]; then 
-    	groupdel superviseur
-     fi
-
     useradd -K UID_MIN=100 -K UID_MAX=999 superviseur
-    chown superviseur\:lcs-users /home/superviseur
-    chown -R superviseur\:lcs-users /home/superviseur/.ssh
+    chown superviseur\:lcs-users /home/superviseur 
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

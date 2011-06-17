@@ -8,8 +8,6 @@
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
 define ('_DEBUG_AUTORISER', false);
-define ('_ID_WEBMESTRES', '1'); // '1:5:90' a regler dans mes_options
-
 $GLOBALS['autorite'] = @unserialize($GLOBALS['meta']['autorite']);
 $autorite_erreurs = array();
 
@@ -30,6 +28,8 @@ if ($GLOBALS['autorite']['statut_auteur_creation']) {
 		switch($GLOBALS['autorite']['statut_auteur_creation']) {
 			case 'visiteur':
 				define('_STATUT_AUTEUR_CREATION', '6forum');
+			case 'redacteur':
+				define('_STATUT_AUTEUR_CREATION', '1comite');
 			case 'admin':
 				define('_STATUT_AUTEUR_CREATION', '0minirezo');
 		}
@@ -58,14 +58,51 @@ if ($GLOBALS['autorite']['statut_ignorer_admins_restreints'] == 'oui') {
 
 
 // Charger les versions *_dist des fonctions
-include _DIR_RESTREINT.'inc/autoriser.php';
+include_once _DIR_RESTREINT.'inc/autoriser.php';
+// si ca n'a pas ete fait et que l'on est dans une version ancienne de spip
+// definir _ID_WEBMESTRES
+if (!defined('_ID_WEBMESTRES')
+	AND include_spip('inc/plugin')
+	AND (!function_exists('spip_version_compare') OR
+	spip_version_compare($GLOBALS['spip_version_branche'],"2.1.0-rc","<"))) {
+	define ('_ID_WEBMESTRES', '1'); // '1:5:90' a regler dans mes_options
+}
 
 
 //
 // Les FONCTIONS
 //
 
+##
+## une fonction qui gere les droits publieurs
+##
 
+if ($GLOBALS['autorite']['espace_publieur']) {
+if (!function_exists('autorisation_publie_visiteur')) {
+	function autorisation_publie_visiteur($qui, $id_secteur) {
+		// espace publieur est un array(secteur1, secteur2), ou un id_secteur
+		if (
+			(is_array($GLOBALS['autorite']['espace_publieur'])
+			AND !in_array($id_secteur,$GLOBALS['autorite']['espace_publieur']))
+		AND
+			$id_secteur != $GLOBALS['autorite']['espace_publieur']
+		)
+			return false;
+
+		switch($qui['statut']) {
+			case '0minirezo':
+			case '1comite':
+				if ($GLOBALS['autorite']['espace_publieur_redacteurs'])
+				return true;
+			case '6forum':
+				if ($GLOBALS['autorite']['espace_publieur_visiteurs'])
+				return true;
+		}
+		return false;
+	}
+	} else
+		$autorite_erreurs[] = 'autorisation_publie_visiteur';
+}
 
 ##
 ## une fonction qui gere les droits wiki
@@ -102,26 +139,26 @@ if ($GLOBALS['autorite']['espace_wiki']) {
 
 
 ##
-## une fonction qui gere les droits wiki géré par mot clef
+## une fonction qui gere les droits wiki gÃ©rÃ© par mot clef
 ##
 if ($GLOBALS['autorite']['espace_wiki_motsclef']) {
 	if (!function_exists('autorisation_wiki_motsclef_visiteur')) {
 	function autorisation_wiki_motsclef_visiteur($qui, $id_article) {
 
-	    //determine les mots clef affectés à l'article
+	    //determine les mots clef affectÃ©s Ã  l'article
 	    $s = spip_query(
 	    "SELECT id_mot FROM spip_mots_articles WHERE id_article=".$id_article);
 
-	    //obtient la liste des mots clefs affecté à l'article
+	    //obtient la liste des mots clefs affectÃ© Ã  l'article
         while ( $r = sql_fetch($s) ) { 
             $array_mot[] = $r['id_mot'];
         }	    
         
-        //aucun mot clef d'affecter à l'article, rien à faire
+        //aucun mot clef d'affecter Ã  l'article, rien Ã  faire
         if (is_null($array_mot))
             return false;
 	            	    	    
-	    //vérification que l'article posséde un mot clef correspondant au staut du visiteur
+	    //vÃ©rification que l'article possÃ©de un mot clef correspondant au staut du visiteur
 		switch($qui['statut']) {
 			case '0minirezo':
 			case '1comite':
@@ -156,8 +193,14 @@ function autoriser_article_modifier($faire, $type, $id, $qui, $opt) {
 	"SELECT id_rubrique,id_secteur,statut FROM spip_articles WHERE id_article="._q($id));
 	$r = sql_fetch($s);
 	include_spip('inc/auth');
+	if (!$GLOBALS['autorite']['espace_publieur'])
+	$a = autoriser('publierdans', 'rubrique', $r['id_rubrique'], $qui, $opt);
+	else {
+	if (!in_array($qui['statut'],array('1comite', '6forum')))
+	$a = autoriser('publierdans', 'rubrique', $r['id_rubrique'], $qui, $opt);	
+	}
 	return
-		autoriser('publierdans', 'rubrique', $r['id_rubrique'], $qui, $opt)
+		$a
 		OR (
 			// Cas du wiki, on appelle la fonction qui verifie les droits wiki
 			$GLOBALS['autorite']['espace_wiki']
@@ -183,6 +226,12 @@ function autoriser_article_modifier($faire, $type, $id, $qui, $opt) {
 			$GLOBALS['autorite']['redacteur_mod_article']
 			AND in_array($qui['statut'], array('0minirezo', '1comite'))
 			AND $r['statut']=='prop'
+		)
+		OR (
+			// un auteur peut modifier son propre article lorsqu'il est proposé ou en cours de rédaction
+			in_array($qui['statut'], array('0minirezo', '1comite'))
+			AND in_array($r['statut'], array('prop','prepa'))
+			AND auteurs_article($id, "id_auteur=".$qui['id_auteur'])
 		);
 }
 } else
@@ -229,8 +278,19 @@ function autoriser_rubrique_publierdans($faire, $type, $id, $qui, $opt) {
 		&& ($qui['statut'] == '1comite'))
 			return true;
 	*/
+	// Sinon, verifier si la rubrique est ouverte aux publieurs
+	// et si on est bien enregistre 
+	if ($GLOBALS['autorite']['espace_publieur']) {
+		$s = spip_query(
+		"SELECT id_secteur FROM spip_rubriques WHERE id_rubrique="._q($id));
+		$r = sql_fetch($s);
 
+		if (autorisation_publie_visiteur($qui, $r['id_secteur'])
+		AND ($qui['statut'])
+		)
+			return true;
 
+	}
 	// Sinon, verifier si la rubrique est wiki
 	// et si on est bien enregistre (sauf cas de creation anonyme explicitement autorisee)
 	if ($GLOBALS['autorite']['espace_wiki']) {
@@ -474,7 +534,7 @@ function autoriser_signature_modifier($faire, $type, $id, $qui, $opt) {
 ## autoriser_configurer (pages de configuration)
 ##
 if ($GLOBALS['autorite']['configurer']
-OR false // autre possibilite de surcharge ?
+OR $GLOBALS['autorite']['configurer_plugin']
 ) {
 if (!function_exists('autoriser_configurer')) {
 function autoriser_configurer($faire, $type, $id, $qui, $opt) {
@@ -483,8 +543,10 @@ function autoriser_configurer($faire, $type, $id, $qui, $opt) {
 	// en mode 'webmestre', sinon on pourrait desactiver autorite.
 	// mais comment faire pour ne pas bloquer quelqu'un qui installe
 	// ce plugin alors qu'il est id_auteur > 1 ?
-#	if (in_array($type, array('plugins', 'admin_plugin')))
-#		return autoriser('webmestre');
+	if (in_array($type, array('plugins', 'admin_plugin'))) {
+		if ($GLOBALS['autorite']['configurer_plugin'] == 'webmestre')
+			return autoriser('webmestre');
+	}
 
 	if ($GLOBALS['autorite']['configurer'] == 'webmestre')
 		return autoriser('webmestre');
@@ -546,6 +608,24 @@ function autoriser_detruire($faire, $type, $id, $qui, $opt) {
 	$autorite_erreurs[] = 'autoriser_detruire';
 }
 
+##
+## autoriser_ecrire
+##
+if ($GLOBALS['autorite']['redacteurs_ecrire']
+OR false // autre possibilite de surcharge ?
+) {
+if (!function_exists('autoriser_ecrire')) {
+function autoriser_ecrire($faire, $type, $id, $qui, $opt) {
+    return
+        $GLOBALS['autorite']['redacteurs_ecrire']
+            ? $qui['statut'] == '0minirezo'
+            : in_array($qui['statut'], array('0minirezo', '1comite'));
+}
+} else
+    $autorite_erreurs[] = 'autoriser_ecrire';
+}
+
 if ($autorite_erreurs) $GLOBALS['autorite_erreurs'] = $autorite_erreurs;
+
 
 ?>

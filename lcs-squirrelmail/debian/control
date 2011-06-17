@@ -8,6 +8,8 @@ Standards-Version: 3.6.2
 Package: lcs-squirrelmail
 Architecture: all
 Depends: slis-common, lcs-smtp, lcs-imap, squirrelmail (>= 2:1.4.9a-2), squirrelmail-locales
+Replaces: lcs-roundcube
+Conflicts: lcs-roundcube
 Description: Setup webmail service on LCS server
  This package will configure the squirrelmail webmail for use within
  the LCS server project.

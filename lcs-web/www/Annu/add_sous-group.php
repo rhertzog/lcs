@@ -31,23 +31,23 @@ $list_groups=search_groups("(&(cn=*) $filter )");
 $j =0; $k =0; $m = 0;
 for ($loop=0; $loop < count ($list_groups) ; $loop++) {
     // Classe
-    if ( ereg ("Classe_", $list_groups[$loop]["cn"]) ) {
+    if ( mb_ereg ("Classe_", $list_groups[$loop]["cn"]) ) {
 	$classe[$j]["cn"] = $list_groups[$loop]["cn"];
 	$classe[$j]["description"] = $list_groups[$loop]["description"];
 	$j++;}
     // Equipe
-    elseif ( ereg ("Equipe_", $list_groups[$loop]["cn"]) ) {
+    elseif ( mb_ereg ("Equipe_", $list_groups[$loop]["cn"]) ) {
 	$equipe[$k]["cn"] = $list_groups[$loop]["cn"];
 	$equipe[$k]["description"] = $list_groups[$loop]["description"];
 	$k++;}
     // Autres
-    elseif (!ereg ("^Eleves", $list_groups[$loop]["cn"]) &&
-            !ereg ("^overfill", $list_groups[$loop]["cn"]) &&
-            !ereg ("^Cours_", $list_groups[$loop]["cn"]) &&
-            !ereg ("^Matiere_", $list_groups[$loop]["cn"]) &&
-            !ereg ("^lcs-users", $list_groups[$loop]["cn"]) &&
-            !ereg ("^machines", $list_groups[$loop]["cn"]) &&
-            !ereg ("^Profs", $list_groups[$loop]["cn"]) ) {
+    elseif (!mb_ereg ("^Eleves", $list_groups[$loop]["cn"]) &&
+            !mb_ereg ("^overfill", $list_groups[$loop]["cn"]) &&
+            !mb_ereg ("^Cours_", $list_groups[$loop]["cn"]) &&
+            !mb_ereg ("^Matiere_", $list_groups[$loop]["cn"]) &&
+            !mb_ereg ("^lcs-users", $list_groups[$loop]["cn"]) &&
+            !mb_ereg ("^machines", $list_groups[$loop]["cn"]) &&
+            !mb_ereg ("^Profs", $list_groups[$loop]["cn"]) ) {
             $autres[$m]["cn"] = $list_groups[$loop]["cn"];
             $autres[$m]["description"] = $list_groups[$loop]["description"];
             $m++;}

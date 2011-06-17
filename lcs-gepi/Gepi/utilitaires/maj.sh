@@ -9,6 +9,8 @@ require_once ("./update_functions.php");
 $force = false; // Force une application de tous les scripts de mise à jour
 $start_from = $gepiSettings['version']; // Permet d'appliquer les mises à jour à partir d'une version donnée
 
+$script_error=false;
+
 if ($argc != 2) {
     $script_error = true;
 } else {
@@ -122,11 +124,15 @@ Exemples d'utilisation :
     if ($force || $start_from == '1.5.2') {
         require './updates/152_to_153.inc.php';
     }
-    
+
     if ($force || $start_from == '1.5.3') {
         require './updates/153_to_1531.inc.php';
     }
-    
+
+    if ($force || $start_from == '1.5.3.1') {
+        require './updates/1531_to_154.inc.php';
+    }
+
 // Nettoyage pour envoyer le résultat dans la console
     $result = str_replace('<br />',"\n",$result);
     $result = str_replace('<br/>',"\n",$result);

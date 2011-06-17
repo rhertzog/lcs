@@ -3,22 +3,24 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/filtres');
 
 // http://doc.spip.org/@action_editer_message_dist
-function action_editer_message_dist() {
+function action_editer_message_dist($arg=null) {
 
-	$securiser_action = charger_fonction('securiser_action', 'inc');
-	$arg = $securiser_action();
+	if (is_null($arg)){
+		$securiser_action = charger_fonction('securiser_action', 'inc');
+		$arg = $securiser_action();
+	}
 
 	if (preg_match(',^(\d+)$,', $arg, $r))
 		action_editer_message_post_vieux($arg); 
@@ -48,6 +50,9 @@ function action_editer_message_post_supprimer($id_message) {
 	sql_delete("spip_messages", "id_message=".sql_quote($id_message));
 	sql_delete("spip_auteurs_messages", "id_message=".sql_quote($id_message));
 	sql_delete("spip_forum", "id_message=".sql_quote($id_message));
+	pipeline('trig_supprimer_objets_lies',array(
+		array('type'=>'message','id'=>$id_message)
+	));
 }
 
 // http://doc.spip.org/@action_editer_message_post_vu
@@ -63,6 +68,7 @@ function action_editer_message_post_retirer($id_message, $id_auteur) {
 
 // http://doc.spip.org/@action_editer_message_post_ajouter
 function action_editer_message_post_ajouter($id_message, $id_auteur) {
+
 	sql_delete("spip_auteurs_messages", "id_auteur=$id_auteur AND id_message=$id_message");
 	sql_insertq('spip_auteurs_messages',
 		   array('id_auteur' => $id_auteur,
@@ -83,7 +89,7 @@ function action_editer_message_post_choisir($id_message) {
 		include_spip('inc/charsets'); // pour tranlitteration
 		$id_auteur = $GLOBALS['visiteur_session']['id_auteur'];
 		$cherche_auteur= _request('cherche_auteur');
-		$query = sql_select("id_auteur, nom", "spip_auteurs", "messagerie<>'non' AND id_auteur<>'$id_auteur' AND pass<>'' AND login<>''");
+		$query = sql_select("id_auteur, nom", "spip_auteurs", "messagerie<>'non' AND pass<>'' AND login<>'' AND id_auteur<>" . sql_quote($id_auteur));
 		$table_auteurs = array();
 		$table_ids = array();
 		while ($row = sql_fetch($query)) {
@@ -165,6 +171,7 @@ function action_editer_message_post_vieux($id_message)
 
 	if (_request('jour'))
 		change_date_message($id_message, _request('heures'),_request('minutes'),_request('mois'), _request('jour'), _request('annee'), _request('heures_fin'),_request('minutes_fin'),_request('mois_fin'), _request('jour_fin'), _request('annee_fin'));
+	action_editer_message_post_choisir($id_message);
 }
 
 

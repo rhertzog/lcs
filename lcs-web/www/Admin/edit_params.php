@@ -47,7 +47,7 @@ function aff_param_form($cat)
 	$result=mysql_query("SELECT * from params WHERE cat=$cat ORDER BY `id`");
 	if ($result) {
 		while ($r=mysql_fetch_array($result)) {
-			$texte_form .= "<tr><td colspan=\"2\">".$r["descr"]." (<em><font color=\"red\">".$r["name"]."</font></em>)</td>";
+			$texte_form .= "<tr><td colspan=\"2\">".utf8_encode($r["descr"])." (<em><font color=\"red\">".$r["name"]."</font></em>)</td>";
 			if ( $r["name"] == "ldap_port" || $cat == 3 || $cat == 11 || $cat == 5 ) {
 				$texte_form .= "<td>".$r["value"]."</td></tr>\n";
 				$texte_form .= "<input type=\"hidden\" size=\"25\" value=\"".$r["value"]."\" name=\"form_".$r["name"]."\">";

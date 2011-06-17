@@ -37,12 +37,12 @@ $motif  = (isset($_POST['f_motif']))  ? clean_texte($_POST['f_motif'])  : '';
 
 if($action=='debloquer')
 {
-	debloquer_application($_SESSION['USER_PROFIL']);
+	debloquer_application($_SESSION['USER_PROFIL'],$_SESSION['BASE']);
 	exit('<label class="valide">Application accessible.</label>');
 }
 elseif($action=='bloquer')
 {
-	bloquer_application($_SESSION['USER_PROFIL'],$motif);
+	bloquer_application($_SESSION['USER_PROFIL'],$_SESSION['BASE'],$motif);
 	exit('<label class="erreur">Application fermée : '.html($motif).'</label>');
 }
 else

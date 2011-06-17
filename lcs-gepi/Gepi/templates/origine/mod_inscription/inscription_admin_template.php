@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: inscription_admin_template.php 4952 2010-07-29 14:17:43Z regis $
+ * $Id: inscription_admin_template.php 6697 2011-03-25 21:54:27Z regis $
  *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -93,8 +93,10 @@
 
 	<h2>Activation du module Inscription</h2>
 	<form action="inscription_admin.php" id="form1" method="post">
-	  
 	  <p>
+<?php
+echo add_token_field();
+?>
 		Le module Inscription vous permet de définir un ou plusieurs items (stage, intervention, ...),
 		au(x)quel(s) les utilisateurs pourront s'inscrire ou se désinscrire en cochant ou décochant une croix.
 		<br />

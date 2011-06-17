@@ -24,7 +24,7 @@ function Swekey_GetIntegrationScript($params)
 	}
 
     // We are logged with a swekey
-    if (isset($params['logout_url']) && $params['user_logged'] && strlen($params['user_swekey_id']) == 32)
+    if (isset($params['logout_url']) && $params['user_logged'] && mb_strlen($params['user_swekey_id']) == 32)
     {
 		$disabled_swekey = '';
 		if (empty($_COOKIE['swekey_disabled_id']))
@@ -105,7 +105,7 @@ function Swekey_GetIntegrationScript($params)
             $output .= 'swekey_mutltiple_loginnames_input = true;'."\n";
         if (! empty($params['swekey_promo_url']))
         {
-     		if (strpos($params['swekey_promo_url'], '://') === false)
+     		if (mb_strpos($params['swekey_promo_url'], '://') === false)
  	            $output .= 'swekey_promo_url = "http://www.swekey.com?promo='.$params['swekey_promo_url'].'";'."\n";
             else
     	        $output .= 'swekey_promo_url = "'.$params['swekey_promo_url'].'";'."\n";

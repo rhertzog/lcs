@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // mise a jour des donnees si envoi via formulaire
 // http://doc.spip.org/@enregistre_modif_plugin
@@ -19,7 +19,7 @@ function enregistre_modif_plugin(){
   // recuperer les plugins dans l'ordre des $_POST
 	$test = array();
 	foreach(liste_plugin_files() as $file){
-	  $test['s'.substr(md5("statusplug_$file"),0,16)] = $file;
+	  $test['s'.substr(md5($file),0,16)] = $file;
 	}
 	$plugin=array();
 
@@ -44,6 +44,10 @@ function enregistre_modif_plugin(){
 	foreach ($plugin as $plug)
 		$plugins_interessants2[$plug] = 10; // score initial
 	ecrire_meta('plugins_interessants', serialize($plugins_interessants2));
+
+	if (isset($GLOBALS['meta']['plugin_erreur_activation'])){
+		$GLOBALS['redirect'] = parametre_url(_request('redirect'),'voir','recents');
+	}
 }
 
 // http://doc.spip.org/@action_activer_plugins_dist

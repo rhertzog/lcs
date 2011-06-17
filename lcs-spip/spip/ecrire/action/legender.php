@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/filtres');
 
@@ -58,9 +58,13 @@ function action_legender_post($r)
 			$heure_doc = "00"; 
 			$minute_doc = "00"; 
 		} 
-		$date = _request('annee_doc').'-'.$mois_doc.'-'.$jour_doc.' '.$heure_doc.':'.$minute_doc; 
-		if (preg_match('/^[0-9-: ]+$/', $date))
-			$modifs['date'] = $date;
+		$date = sprintf('%04d',intval(_request('annee_doc')))
+			.'-'.sprintf('%02d', intval($mois_doc))
+			.'-'.sprintf('%02d',intval($jour_doc))
+			.' '.sprintf('%02d',intval($heure_doc))
+			.':'.sprintf('%02d',intval($minute_doc))
+			.':00'; 
+		$modifs['date'] = $date;
 	}
 	
 	if (($t = _request('titre_document')) !== NULL)

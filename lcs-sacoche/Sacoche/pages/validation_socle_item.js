@@ -48,6 +48,36 @@ $(document).ready
 
 		$("#f_pilier").change( maj_bouton_validation );
 
+		$('#f_cnil_numero').focus
+		(
+			function()
+			{
+				if($('#f_cnil_oui').is(':checked')==false)
+				{
+					$('#f_cnil_oui').prop('checked',true);
+					$("#cnil_dates").show();
+					return false; // important, sinon pb de récursivité
+				}
+			}
+		);
+
+		$('#f_mode_auto').click
+		(
+			function()
+			{
+				$("#div_matiere").hide();
+			}
+		);
+
+		$('#f_mode_manuel').click
+		(
+			function()
+			{
+				$("#div_matiere").show();
+			}
+		);
+
+
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //	Charger le select f_pilier en ajax
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
@@ -64,7 +94,7 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page=_maj_select_piliers',
-						data : 'f_palier='+palier_id,
+						data : 'f_palier='+palier_id+'&f_first='+'oui',
 						dataType : "html",
 						error : function(msg,string)
 						{
@@ -78,6 +108,7 @@ $(document).ready
 								$('#ajax_maj_pilier').removeAttr("class").html('&nbsp;');
 								$('#f_pilier').html(responseHTML).show();
 								maj_bouton_validation();
+								maj_domaine();
 							}
 							else
 							{
@@ -91,13 +122,58 @@ $(document).ready
 			else
 			{
 				$('#ajax_maj_pilier').removeAttr("class").html("&nbsp;");
-				maj_bouton_validation();
 			}
 		};
 
 		$("#f_palier").change( maj_pilier );
 
 		maj_pilier();
+
+//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+//	Charger le select f_domaine en ajax
+//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+
+		var maj_domaine = function()
+		{
+			$("#f_domaine").html('<option value=""></option>').hide();
+			pilier_id = $("#f_pilier").val();
+			if(pilier_id)
+			{
+				$('#ajax_maj_domaine').removeAttr("class").addClass("loader").html("Actualisation en cours... Veuillez patienter.");
+				$.ajax
+				(
+					{
+						type : 'POST',
+						url : 'ajax.php?page=_maj_select_domaines',
+						data : 'f_pilier='+pilier_id+'&f_first='+'non',
+						dataType : "html",
+						error : function(msg,string)
+						{
+							$('#ajax_maj_domaine').removeAttr("class").addClass("alerte").html("Echec de la connexion ! Veuillez essayer de nouveau.");
+						},
+						success : function(responseHTML)
+						{
+							maj_clock(1);
+							if(responseHTML.substring(0,7)=='<option')	// Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
+							{
+								$('#ajax_maj_domaine').removeAttr("class").html('&nbsp;');
+								$('#f_domaine').html(responseHTML).attr('size',$('#f_domaine option').size()).show();
+							}
+							else
+							{
+								$('#ajax_maj_domaine').removeAttr("class").addClass("alerte").html(responseHTML);
+							}
+						}
+					}
+				);
+			}
+			else
+			{
+				$('#ajax_maj_domaine').removeAttr("class").html("&nbsp;");
+			}
+		};
+
+		$("#f_pilier").change( maj_domaine );
 
 //	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 //	Charger le select f_eleve en ajax
@@ -128,7 +204,7 @@ $(document).ready
 							maj_clock(1);
 							if(responseHTML.substring(0,7)=='<option')	// Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
 							{
-								$('#ajax_maj_eleve').removeAttr("class").html('&nbsp;<span class="astuce">Utiliser "<i>Shift + clic</i>" ou "<i>Ctrl + clic</i>" pour une sélection multiple.</span>');
+								$('#ajax_maj_eleve').removeAttr("class").html("&nbsp;");
 								$('#f_eleve').html(responseHTML).show();
 								maj_bouton_validation();
 							}
@@ -165,21 +241,31 @@ $(document).ready
 			{
 				rules :
 				{
-					f_palier : { required:true },
-					f_pilier : { required:true },
-					f_groupe : { required:true },
-					f_eleve  : { required:true }
+					f_palier  : { required:true },
+					f_pilier  : { required:true },
+					f_domaine : { required:true },
+					f_groupe  : { required:true },
+					f_eleve   : { required:true },
+					f_mode    : { required:true },
+					f_matiere : { required:function(){return $('#f_mode_manuel').is(':checked');} }
 				},
 				messages :
 				{
-					f_palier : { required:"palier manquant" },
-					f_pilier : { required:"pilier manquant" },
-					f_groupe : { required:"classe / groupe manquant" },
-					f_eleve  : { required:"élève(s) manquant(s)" }
+					f_palier  : { required:"palier manquant" },
+					f_pilier  : { required:"pilier(s) manquant(s)" },
+					f_domaine : { required:"domaine(s) manquant(s)" },
+					f_groupe  : { required:"classe / groupe manquant" },
+					f_eleve   : { required:"élève(s) manquant(s)" },
+					f_mode    : { required:"choix manquant" },
+					f_matiere : { required:"matiere(s) manquant(e)" }
 				},
 				errorElement : "label",
 				errorClass : "erreur",
-				errorPlacement : function(error,element){element.after(error);}
+				errorPlacement : function(error,element)
+				{
+					if(element.attr("type")=="radio") {$('#div_matiere').after(error);}
+					else { element.after(error); }
+				}
 			}
 		);
 
@@ -206,6 +292,13 @@ $(document).ready
 				// alors j'ai copié le tableau dans un champ hidden...
 				var tab_eleve = new Array(); $("#f_eleve option:selected").each(function(){tab_eleve.push($(this).val());});
 				$('#eleves').val(tab_eleve);
+				var tab_domaine = new Array(); $("#f_domaine option:selected").each(function(){tab_domaine.push($(this).val());});
+				$('#domaines').val(tab_domaine);
+				if($('#f_mode_manuel').is(':checked'))
+				{
+					var tab_matiere = new Array(); $("#f_matiere option:selected").each(function(){tab_matiere.push($(this).val());});
+					$('#matieres').val(tab_matiere);
+				}
 				$(this).ajaxSubmit(ajaxOptions0);
 				return false;
 			}
@@ -218,7 +311,7 @@ $(document).ready
 			var readytogo = validation0.form();
 			if(readytogo)
 			{
-				$("button").attr('disabled','disabled');
+				$("button").prop('disabled',true);
 				$('#ajax_msg_choix').removeAttr("class").addClass("loader").html("Demande envoyée... Veuillez patienter.");
 			}
 			return readytogo;
@@ -227,7 +320,7 @@ $(document).ready
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)
 		function retour_form_erreur0(msg,string)
 		{
-			$("button").removeAttr('disabled');
+			$("button").prop('disabled',false);
 			$('#ajax_msg_choix').removeAttr("class").addClass("alerte").html("Echec de la connexion ! Veuillez recommencer.");
 		}
 
@@ -235,7 +328,7 @@ $(document).ready
 		function retour_form_valide0(responseHTML)
 		{
 			maj_clock(1);
-			$("button").removeAttr('disabled');
+			$("button").prop('disabled',false);
 			if(responseHTML.substring(0,7)!='<thead>')
 			{
 				$('#ajax_msg_choix').removeAttr("class").addClass("alerte").html(responseHTML);
@@ -249,10 +342,26 @@ $(document).ready
 				infobulle();
 				$('#zone_validation').show('fast');
 				$('#zone_choix').hide('fast');
+				var texte = ($('#f_mode_manuel').is(':checked')) ? ' [matières resteintes]' : '';
+				$('#span_restriction').html(texte);
 				$('#zone_information').show('fast');
 				$("body").oneTime("1s", function() {window.scrollTo(0,1000);} );
 			}
 		}
+
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+//	Afficher / Masquer les pourcentages d\'items acquis
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+
+		$('#Afficher_pourcentage').live // live est utilisé pour prendre en compte les nouveaux éléments créés
+		('change',
+			function()
+			{
+				cell_font_size = ($(this).is(':checked')) ? 50 : 0 ;
+				$('#tableau_validation tbody td').css('font-size',cell_font_size+'%');
+				return false;
+			}
+		);
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 //	Clic sur une cellule du tableau => Modifier visuellement des états de validation
@@ -263,7 +372,7 @@ $(document).ready
 		tab_class_next['0'] = ['2'];
 		tab_class_next['2'] = ['1'];
 
-		$('td').live // live est utilisé pour prendre en compte les nouveaux éléments créés
+		$('tbody td').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
 			function()
 			{
@@ -272,11 +381,12 @@ $(document).ready
 				var new_classe = classe.charAt(0) + tab_class_next[classe.charAt(1)] ;
 				$(this).removeAttr("class").addClass(new_classe);
 				$('#ajax_msg_validation').removeAttr("class").addClass("alerte").html('Penser à valider les modifications !');
+				$('#fermer_zone_validation').html('<img alt="" src="./_img/bouton/annuler.png" /> Annuler / Retour');
 				return false;
 			}
 		);
 
-		$('th').live // live est utilisé pour prendre en compte les nouveaux éléments créés
+		$('tbody th').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
 			function()
 			{
@@ -287,6 +397,7 @@ $(document).ready
 					return false;
 				}
 				$('#ajax_msg_validation').removeAttr("class").addClass("alerte").html('Penser à valider les modifications !');
+				$('#fermer_zone_validation').html('<img alt="" src="./_img/bouton/annuler.png" /> Annuler / Retour');
 				var classe_debut = classe.substring(0,4);
 				var classe_fin   = classe.charAt(4);
 				var new_classe_th = classe_debut + tab_class_next[classe_fin] ;
@@ -365,6 +476,7 @@ $(document).ready
 			var pos_U = last_id_survole.indexOf('U');
 			var item_id = last_id_survole.substring(pos_E+1);
 			var user_id = last_id_survole.substring(pos_U+1,pos_E);
+			var langue  = ($('#L'+user_id).length) ? $('#L'+user_id).attr('class').substring(1) : 0 ;
 			$('#identite').html( $('#I'+user_id).attr('alt') );
 			$('#entree').html( $('#E'+item_id).next('th').children('div').text() );
 			$('#stats').html('');
@@ -375,7 +487,7 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=Afficher_information&f_user='+user_id+'&f_item='+item_id,
+					data : 'f_action=Afficher_information&f_user='+user_id+'&f_item='+item_id+'&f_pilier='+$('#f_pilier').val()+'&f_mode='+$('input[type=radio]:checked').val()+'&matieres='+$('#matieres').val()+'&langue='+langue,
 					dataType : "html",
 					error : function(msg,string)
 					{
@@ -431,7 +543,7 @@ $(document).ready
 		('click',
 			function()
 			{
-				$("button").attr('disabled','disabled');
+				$("button").prop('disabled',true);
 				$('#ajax_msg_validation').removeAttr("class").addClass("loader").html("Demande envoyée... Veuillez patienter.");
 				// Récupérer les infos
 				var tab_valid = new Array();
@@ -452,14 +564,14 @@ $(document).ready
 						dataType : "html",
 						error : function(msg,string)
 						{
-							$("button").removeAttr('disabled');
+							$("button").prop('disabled',false);
 							$('#ajax_msg_validation').removeAttr("class").addClass("alerte").html('Echec de la connexion ! Veuillez recommencer.');
 							return false;
 						},
 						success : function(responseHTML)
 						{
 							maj_clock(1);
-							$("button").removeAttr('disabled');
+							$("button").prop('disabled',false);
 							if(responseHTML.substring(0,2)!='OK')
 							{
 								$('#ajax_msg_validation').removeAttr("class").addClass("alerte").html(responseHTML);
@@ -467,6 +579,7 @@ $(document).ready
 							else
 							{
 								$('#ajax_msg_validation').removeAttr("class").addClass("valide").html("Validations enregistrées !");
+								$('#fermer_zone_validation').html('<img alt="" src="./_img/bouton/retourner.png" /> Retour');
 							}
 						}
 					}

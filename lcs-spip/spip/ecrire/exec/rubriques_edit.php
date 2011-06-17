@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 include_spip('inc/documents');
@@ -22,7 +22,7 @@ function exec_rubriques_edit_dist()
 }
 
 // http://doc.spip.org/@exec_rubriques_edit_args
-function exec_rubriques_edit_args($id_rubrique, $id_parent, $new, $lier_trad=null)
+function exec_rubriques_edit_args($id_rubrique, $id_parent, $new, $lier_trad)
 {
 	global $connect_toutes_rubriques, $connect_statut, $spip_lang_right;
 
@@ -47,7 +47,6 @@ function exec_rubriques_edit_args($id_rubrique, $id_parent, $new, $lier_trad=nul
 	$commencer_page = charger_fonction('commencer_page', 'inc');
 
 	if ($titre === false
-        OR $connect_statut !='0minirezo'
 	OR ($new=='oui' AND !autoriser('creerrubriquedans','rubrique',$id_parent))
 	OR ($new!='oui' AND !autoriser('modifier','rubrique',$id_rubrique)))  {
 		include_spip('inc/minipres');

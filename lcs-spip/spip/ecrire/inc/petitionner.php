@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 include_spip('inc/actions');
@@ -39,7 +39,7 @@ function inc_petitionner_dist($id_article, $script, $args, $ajax=false)
 			$class = $ajax ? '' : ' visible_au_chargement';
 	}
 
-	$atts = " class='fondo spip_xx-small$class' style='float: $spip_lang_right;' id='valider_petition'";
+	$atts = " class='$class' style='float: $spip_lang_right;' id='valider_petition'";
 
 	$res = ajax_action_post('petitionner', $id_article, $script, $args, $res,_T('bouton_changer'), $atts);
 
@@ -69,7 +69,7 @@ function petitionner_choisir($petition)
 	}
 
 	return "<select name='change_petition' id='change_petition'
-		class='fondl spip_xx-small'
+		class='spip_xx-small'
 		onchange=\"\$('#valider_petition').css('visibility','visible');\"
 		>\n$res</select><br />\n";
 }

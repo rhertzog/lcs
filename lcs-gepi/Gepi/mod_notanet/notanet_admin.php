@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: notanet_admin.php 4946 2010-07-29 00:36:39Z regis $
+ * $Id: notanet_admin.php 5951 2010-11-22 17:05:48Z crob $
  *
- * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -39,7 +39,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
    header("Location: ../logout.php?auto=1");
    die();
-};
+}
 
 // Check access
 // Pour GEPI 1.4.3 à 1.4.4
@@ -53,6 +53,7 @@ if (!checkAccess()) {
 
 
 if (isset($_POST['activer'])) {
+	check_token();
     if (!saveSetting("active_notanet", $_POST['activer'])){
 		$msg = "Erreur lors de l'enregistrement du paramètre activation/désactivation !";
 	}

@@ -3,7 +3,7 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -26,9 +26,14 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'avis_conseil_selection_mot_cle' => '<b>Grupo importante:</b> Se aconseja seleccionar una palabra clave de este grupo.',
 'avis_deplacement_rubrique' => '&iexcl;ATENCI&Oacute;N! Esta secci&oacute;n contiene @contient_breves@ breve@scb@. Si la desplazas, activa esta casilla de confirmaci&oacute;n.',
 'avis_destinataire_obligatoire' => 'Debes indicar un destinatario antes de enviar este mensaje.',
+'avis_doublon_mot_cle' => 'Ya existe una palabra con ese t&iacute;tulo. &iquest;Est&aacute;s seguro que quieres crear otra con el mismo?',
 'avis_erreur_connexion_mysql' => 'Error de conexi&oacute;n SQL',
-'avis_erreur_version_archive' => '<b>&iexcl;ATENCI&Oacute;N! El archivo @archive@ corresponde a otra versi&oacute;n de SPIP, diferente a la instalada.</b> Te arriesgas a tener grandes problemas: destrucci&oacute;n de tu base de datos, disfuncionamientos varios del sitio, etc. No valides esta importaci&oacute;n.<p>Para mayor informaci&oacute;n, ver
- <a href=\'http://www.spip.net/es_article2436.html\'>la documentaci&oacute;n de SPIP</a>.',
+'avis_erreur_version_archive' => '<b>&iexcl;OjO! El archivo @archive@ corresponde a
+ otra versi&oacute;n de SPIP, diferente a la instalada.</b> Si sigues podr&aacute;s encontrar grandes
+ dificultades: riesgo de destrucci&oacute;n de tu base de
+ datos, disfuncionamientos varios del sitio, etc. No
+ valides esta importaci&oacute;n.<p>Para mayor informaci&oacute;n, ver
+ <a href="@spipnet@">la documentaci&oacute;n de SPIP</a></p>.',
 'avis_espace_interdit' => '<b>Espacio prohibido</b><div>SPIP ya est&aacute; instalado.</div>',
 'avis_lecture_noms_bases_1' => 'El programa de instalaci&oacute;n no logr&oacute; leer los nombres de las bases de datos instaladas.',
 'avis_lecture_noms_bases_2' => 'Dos posibilidades: o no hay ninguna base disponible o la funci&oacute;n de listado de las bases fue desactivada por razones de seguridad (caso frecuente en muchos hospedajes).',
@@ -114,6 +119,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'config_erreur_base_sup' => 'SPIP no tiene acceso a la lista de bases accesibles',
 'config_info_base_sup' => 'Si dispones de otras bases de datos a consultar mediante SPIP, con su servidor SQL o con otro, el formulario siguiente permite declararlas. Si dejas vac&iacute;os ciertos campos, se usar&aacute;n los identificadores de la conexi&oacute;n a la base principal.',
 'config_info_base_sup_disponibles' => 'Bases de datos suplementarias consultables:',
+'config_info_enregistree' => 'La nueva configuraci&oacute;n fue guardada',
 'config_info_logos' => 'Cada elemento del sitio puede tener un logo, as&iacute; como un &laquo;&nbsp;logo de paso del rat&oacute;n&nbsp;&raquo;',
 'config_info_logos_utiliser' => 'Utilizar los logos',
 'config_info_logos_utiliser_non' => 'No utilizar los logos',
@@ -139,6 +145,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 // E
 'email' => 'correo electr&oacute;nico',
 'email_2' => 'correo electr&oacute;nico:',
+'en_savoir_plus' => 'M&aacute;s informaci&oacute;n',
 'entree_adresse_annuaire' => 'Direcci&oacute;n del anuario',
 'entree_adresse_email' => 'Tu correo electr&oacute;nico',
 'entree_adresse_fichier_syndication' => 'Direcci&oacute;n del archivo de sindicaci&oacute;n:',
@@ -174,6 +181,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'entree_texte_breve' => 'Texto de la breve',
 'entree_titre_obligatoire' => '<b>T&iacute;tulo</b> [Obligatorio]<br />',
 'entree_url' => 'La direcci&oacute;n (URL) de tu sitio',
+'erreur_plugin_desinstalation_echouee' => 'La desinstalaci&oacute;n del plugin fracas&oacute;.No obstante, puedes desactivarlo.',
 'erreur_plugin_fichier_absent' => 'Archivo inexistente ',
 'erreur_plugin_fichier_def_absent' => 'Archivo de definici&oacute;n inexistente',
 'erreur_plugin_nom_fonction_interdit' => 'Nombre de funci&oacute;n prohibido',
@@ -185,9 +193,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 // F
 'forum_info_original' => 'original',
 
+// H
+'htaccess_a_simuler' => 'Advertencia: la configuraci&oacute;n de tu servidor HTTP no toma en ceunta los archivos @htaccess@. Para poder asegurar una buena seguridad, debes modificar la configuraci&oacute;n correspondiente, o si no que las constantes @constantes@ (que se pueden definir en el archivo mes_options.php) tomen valores de carpetas fuera de @document_root@.',
+'htaccess_inoperant' => 'htaccess inoperante',
+
 // I
 'ical_info1' => 'En esta p&aacute;gina se presentan diferentes maneras de quedar en contacto con la vida del sitio.',
-'ical_info2' => 'Para mayor informaci&oacute;n sobre todas estas t&eacute;cnicas, no dudes en consultar <a href="http://www.spip.net/fr_suivi">la documentaci&oacute;n de SPIP</a>.',
+'ical_info2' => 'Para mayor informaci&oacute;n sobre todas estas t&eacute;cnicas, no dudes en consultar <a href="@spipnet@">la documentaci&oacute;n de SPIP</a>.',
 'ical_info_calendrier' => 'Tienes dos calendarios a tu disposici&oacute;n. El primero es un plano del sitio que anuncia todos los art&iacute;culos publicados. El segundo contiene los anuncios editoriales y tus &uacute;ltimos mensajes privados: s&oacute;lo t&uacute; lo v&eacute;s gracias a una clave personal, que podr&aacute;s modificar en cualquier momento cambiando tu contrase&ntilde;a.',
 'ical_lien_rss_breves' => 'Sindicaci&oacute;n de breves del sitio',
 'ical_methode_http' => 'Descargar',
@@ -246,11 +258,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_activer_forum_public' => '<i>Para activar los foros p&uacute;blicos, seleccionar un modo de moderaci&oacute;n por omisi&oacute;n:</i>',
 'info_admin_gere_rubriques' => 'Esta persona administra las secciones siguientes :',
 'info_admin_gere_toutes_rubriques' => 'Este administrador gestiona <b>todas las secciones</b>.',
+'info_admin_statuer_webmestre' => 'Dar a este/a administrador/a derechos de webmestre. ',
+'info_admin_webmestre' => 'Este/a administrador/a es <b>webmestre</b>',
 'info_administrateur' => 'Administrador o administradora',
 'info_administrateur_1' => 'Administrador',
 'info_administrateur_2' => 'del sitio (<i>a utilizar con precauci&oacute;n</i>)',
 'info_administrateur_site_01' => 'Si tienes derechos de administraci&oacute;n, se ruega',
-'info_administrateur_site_02' => 'Cliquea en este enlace',
+'info_administrateur_site_02' => 'presiona y visita este enlace',
 'info_administrateurs' => 'Administradores',
 'info_administrer_rubrique' => 'Puedes administrar esta secci&oacute;n',
 'info_adresse' => 'a la direcci&oacute;n:',
@@ -318,7 +332,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_conflit_edition_votre_version' => 'Su versi&oacute;n&nbsp;:',
 'info_connexion_base' => 'Intento de conexi&oacute;n a la base',
 'info_connexion_base_donnee' => 'Conexi&oacute;n a tu base de datos',
-'info_connexion_ldap_ok' => 'La conexi&oacute;n LDAP ha funcionado.</b><p> Puedes pasar a la siguiente fase.',
+'info_connexion_ldap_ok' => 'Se logr&oacute; la conexi&oacute;n LDAP.</b><p> Puedes pasar a la etapa siguiente.</b>',
 'info_connexion_mysql' => 'Tu conexi&oacute;n SQL',
 'info_connexion_ok' => 'La conexi&oacute;n ha funcionado.',
 'info_contact' => 'Contacto',
@@ -364,9 +378,9 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'info_forum_ouvert' => 'En el espacio privado del sitio hay un foro abierto a todas las personas inscritas. A continuaci&oacute;n, puedes activar un foro suplementario reservado a los administradores y administradoras.',
 'info_forum_statistiques' => 'Estad&iacute;sticas de las visitas',
 'info_forums_abo_invites' => 'Tu sitio tiene foros para abonados; en el sitio p&uacute;blico se invita a los visitantes a que se registren.',
-'info_gauche_admin_effacer' => '<b>Esta p&aacute;gina s&oacute;lo es accesible para los/las responsables del sitio.</b><p> Da acceso a las distintas funciones de mantenimiento t&eacute;cnico. Algunas de ellas dan lugar a un proceso de autentificaci&oacute;n para el cual es necesario tener acceso por FTP al sitio web.',
-'info_gauche_admin_tech' => '<b>S&oacute;lo los y las responsables del sitio acceden a esta p&aacute;gina.</b><p> Da acceso a las distintas funciones de mantenimiento t&eacute;cnico. Algunas de ellas requieren un proceso de autentificaci&oacute;n para el cual es necesario tener acceso por FTP al sitio web.',
-'info_gauche_admin_vider' => '<b>Esta p&aacute;gina s&oacute;lo es accesible para los/las responsables del sitio.</b><p> Da acceso a las distintas funciones de mantenimiento t&eacute;cnico. Algunas de ellas dan lugar a un proceso de autentificaci&oacute;n para el cual es necesario tener acceso por FTP al sitio web.',
+'info_gauche_admin_effacer' => '<b>A esta p&aacute;gina s&oacute;lo pueden acceder  los/las responsables del sitio.</b><p> Da acceso a las distintas funciones de mantenimiento t&eacute;cnico. Algunas de ellas comprenden un proceso de autenticaci&oacute;n, que requiere un acceso FTP al sitio web.</p>',
+'info_gauche_admin_tech' => '<b>S&oacute;lo los y las responsables del sitio acceden a esta p&aacute;gina.</b><p> Da acceso a las distintas funciones de mantenimiento t&eacute;cnico. Algunas de ellas requieren un proceso de autentificaci&oacute;n para el cual es necesario tener acceso por FTP al sitio web.</p>',
+'info_gauche_admin_vider' => '<b>Esta p&aacute;gina s&oacute;lo es accesible para los/las responsables del sitio.</b><p> Da acceso a las distintas funciones de mantenimiento t&eacute;cnico. Algunas de ellas dan lugar a un proceso de autentificaci&oacute;n para el cual es necesario tener acceso por FTP al sitio web.</p>',
 'info_gauche_auteurs' => 'Aqu&iacute; figuran todos los autores y autoras del sitio.
  Su estado se indica con el color de su icono (administrador/a = verde; redactor/a = amarillo).',
 'info_gauche_auteurs_exterieurs' => 'Los autores y autoras exteriores, sin acceso al sitio, est&aacute;n indicados con un icono azul; los que est&aacute;n borrados con una papelera.',
@@ -496,8 +510,7 @@ Los idiomas que ya se utilizan en el sitio (al principio de la lista) no pueden 
 'info_preview_texte' => 'Es posible previsualizar el sitio como si todos los art&iacute;culos y las breves (que tengan al menos el estado &laquo;&nbsp;propuesto&nbsp;&raquo;) estuviesen publicados. Esta posibilidad debe estar disponible para &iquest;&nbsp;los administradores solamente, todos los redactores, o nadie&nbsp;?',
 'info_principaux_correspondants' => 'Tus principales corresponsales',
 'info_procedez_par_etape' => 'proceder etapa por etapa',
-'info_procedure_maj_version' => 'debe ser realizada una actulizaci&amp;oacute;n para adaptar
- la base de datos a esta nueva versi&oacute;n de SPIP.',
+'info_procedure_maj_version' => 'Se debe ejecutar el proceso de actualizaci&oacute;n de la base de datos a esta nueva versi&oacute;n de SPIP.',
 'info_proxy_ok' => 'Test del proxy logrado.',
 'info_ps' => 'P.-S.',
 'info_publier' => 'publicar',
@@ -615,6 +628,7 @@ Los idiomas que ya se utilizan en el sitio (al principio de la lista) no pueden 
 'info_total' => 'Total:',
 'info_tous_articles_en_redaction' => 'Todos los art&iacute;culos en curso de redacci&oacute;n',
 'info_tous_articles_presents' => 'Todos los art&iacute;culos publicados en esta secci&oacute;n',
+'info_tous_articles_refuses' => 'Todos los art&iacute;culos rechazados',
 'info_tous_les' => 'todos los:',
 'info_tous_redacteurs' => 'Anuncios a todos',
 'info_tout_site' => 'Todo el sitio',
@@ -654,7 +668,7 @@ Las traducciones est&aacute;n asociadas al original, en un color que indica su e
 'install_select_langue' => 'Selecciona un idioma y despu&eacute;s pulsa el bot&oacute;n &laquo;siguiente&raquo; para iniciar el proceso de instalaci&oacute;n.',
 'install_select_type_db' => 'Indicar el tipo de base de datos:',
 'install_select_type_mysql' => 'MySQL',
-'install_select_type_pgsql' => 'PostgreSQL',
+'install_select_type_pg' => 'PostgreSQL',
 'install_select_type_sqlite2' => 'SQLite 2',
 'install_select_type_sqlite3' => 'SQLite 3',
 'install_serveur_hebergeur' => 'Servidor de base de datos asignado por tu proveedor',
@@ -737,6 +751,9 @@ Las traducciones est&aacute;n asociadas al original, en un color que indica su e
 'jour_non_connu_nc' => 'n.c.',
 
 // L
+'ldap_correspondance' => 'h&eacute;ritage du champ @champ@', # NEW
+'ldap_correspondance_1' => 'H&eacute;ritage des champs LDAP', # NEW
+'ldap_correspondance_2' => 'Pour chacun des champs SPIP suivants, indiquer le nom du champ LDAP correspondant. Laisser vide pour ne pas le remplir, s&eacute;parer par des espaces ou des virgules pour essayer plusieurs champs LDAP.', # NEW
 'lien_ajout_destinataire' => 'A&ntilde;adir este destinatario o destinataria',
 'lien_ajouter_auteur' => 'A&ntilde;adir esta autor/a',
 'lien_ajouter_participant' => 'A&ntilde;adir un/una participante',
@@ -779,6 +796,9 @@ Las traducciones est&aacute;n asociadas al original, en un color que indica su e
 'module_texte_traduction' => 'El archivo de idioma &laquo;&nbsp;@module@&nbsp;&raquo; est&aacute; disponible en:',
 'mois_non_connu' => 'desconocido',
 
+// N
+'nouvelle_version_spip' => 'La versi&oacute;n @version@ de SPIP est&aacute; disponible',
+
 // O
 'onglet_contenu' => 'Contenido',
 'onglet_declarer_une_autre_base' => 'Declarar otra base',
@@ -788,24 +808,12 @@ Las traducciones est&aacute;n asociadas al original, en un color que indica su e
 'onglet_proprietes' => 'Propriedades',
 'onglet_repartition_actuelle' => 'actualmente',
 'onglet_sous_rubriques' => 'Sub-secciones',
-'ortho_ajouter_ce_mot' => 'A&ntilde;adir esta palabra al diccionario',
-'ortho_aucune_suggestion' => 'No se han encontrado sugerencias para esta palabra.',
-'ortho_avis_privacy' => 'En SPIP se integra un corrector ortogr&aacute;fico. Sin embargo, antes de activar esta caracter&iacute;stica, deber&iacute;as leer atentamente el siguiente p&aacute;rrafo:',
-'ortho_avis_privacy2' => 'Para comprobar la ortograf&iacute;a de un texto, el sitio web enviar&aacute; la lista de palabras a revisar a uno de los &laquo;&nbsp;servidores ortogr&aacute;ficos&nbsp;&raquo; externos puestos a disposici&oacute;n por distintos miembros de la comunidad SPIP. Las palabras se env&iacute;an desordenadas para asegurar un m&iacute;nimo de confidencialidad. Si sientes preocupaci&oacute;n por tus datos, no actives esta opci&oacute;n (y retira enseguida tu informaci&oacute;n de la Red).',
-'ortho_ce_mot_connu' => 'Esta palabra est&aacute; en el diccionario del sitio.',
-'ortho_dico_absent' => 'No se ha encontrado ning&uacute;n diccionario para este idioma',
-'ortho_mode_demploi' => 'Se han subrayado en rojo las palabras no reconocidas. Puedes pulsar sobre cada palabra para mostrar sugerencias para su correcci&oacute;n.',
-'ortho_mots_a_corriger' => 'palabras por corregir',
-'ortho_orthographe' => 'Ortograf&iacute;a',
-'ortho_supprimer_ce_mot' => 'Suprimir esta palabra del diccionario',
-'ortho_trop_de_fautes' => 'Atenci&oacute;n: tu texto contiene demasiadas faltas de ortograf&iacute;a, no se ha sugerido ninguna correcci&oacute;n para no sobrecargar el sistema.',
-'ortho_verif_impossible' => 'El sistema no puede comprobar la ortograf&iacute;a de este texto.',
-'ortho_verifier' => 'Revisar la ortograf&iacute;a',
 
 // P
 'page_pas_proxy' => 'Esta p&aacute;gina no debe pasar por el proxy',
 'pas_de_proxy_pour' => 'Si fuera el caso, indica los servidores o  dominios para los cuales este proxy no debe aplicarse. (por ejemplo: @exemple@)',
 'plugin_charge_paquet' => 'Carga del paquete @name@',
+'plugin_charger' => 'Descargar',
 'plugin_erreur_charger' => 'error: no es posible cargar @zip@',
 'plugin_erreur_droit1' => 'La carpeta <code>@dest@</code> no est&aacute; accesible en modo escritura.',
 'plugin_erreur_droit2' => 'Tendr&aacute;s que verificar los derechos en esta carpeta (o crearla si es el caso), o instalar los archivos por FTP.',
@@ -816,17 +824,20 @@ Las traducciones est&aacute;n asociadas al original, en un color que indica su e
 'plugin_etat_test' => 'en prueba',
 'plugin_impossible_activer' => 'Imposible activar el plugin @plugin@',
 'plugin_info_automatique1' => 'Si quieres autorizar la instalaci&oacute;n autom&aacute;tica de los plugins, tienes que:',
+'plugin_info_automatique1_lib' => 'Si deseas autorizar la instalaci&oacute;n autom&aacute;tica de esta librer&iacute;a, consulta:',
 'plugin_info_automatique2' => 'crear una carpeta <code>@rep@</code>&nbsp;;',
 'plugin_info_automatique3' => 'verificar que el servidor tiene permiso para escribir en esa carpeta.',
 'plugin_info_automatique_creer' => 'que hay que crear en la ra&iacute;z del sitio.',
 'plugin_info_automatique_exemples' => 'ejemplos:',
 'plugin_info_automatique_ftp' => 'Puedes instalar plugins, por FTP, en la carpeta <tt>@rep@</tt>',
-'plugin_info_automatique_lib' => 'Ciertos plugins tambi&eacute;n requieren que se pueda subir archivos a la carpeta <code>lib/</code>, que habr&aacute; que crear, si es el caso, en la ra&iacute;z del sitio.',
+'plugin_info_automatique_lib' => 'Ciertos plugins tambi&eacute;n requieren que se pueda descargar archivos a la carpeta <code>lib/</code>, que habr&aacute; que crear, si es el caso, en la ra&iacute;z del sitio.',
 'plugin_info_automatique_liste' => 'Tus listas de plugins:',
 'plugin_info_automatique_liste_officielle' => 'los plugins oficiales',
 'plugin_info_automatique_liste_update' => 'Actualizar las listas',
 'plugin_info_automatique_ou' => 'donde...',
 'plugin_info_automatique_select' => 'Selecciona un plugin de aqu&iacute;: SPIP lo descargar&aacute; y lo instalar&aacute; en la carpeta <code>@rep@</code>; si el plugin ya existe, se actualizar&aacute;.',
+'plugin_info_extension_1' => 'Las extensiones siguientes se cargan y se activan en la carpeta @extensions@.',
+'plugin_info_extension_2' => 'Ellas no son desactivables.',
 'plugin_info_telecharger' => 'se descargar&aacute; de @url@ y se instalar&aacute; en @rep@',
 'plugin_librairies_installees' => 'Bibliotecas instaladas',
 'plugin_necessite_lib' => 'Este plugin necesita la biblioteca @lib@',
@@ -835,6 +846,7 @@ Las traducciones est&aacute;n asociadas al original, en un color que indica su e
 'plugin_source' => 'fuente:&nbsp;',
 'plugin_titre_automatique' => 'Instalaci&oacute;n autom&aacute;tica',
 'plugin_titre_automatique_ajouter' => 'A&ntilde;adir plugins',
+'plugin_titre_installation' => 'Instalaci&oacute;n del plugin @plugin@',
 'plugin_zip_active' => 'Contin&uacute;a para activarlo',
 'plugin_zip_adresse' => 'indica aqu&iacute; la direcci&oacute;n de un archivo zip de plugin a descargar, o tambi&eacute;n la direcci&oacute;n de una lista de plugins.',
 'plugin_zip_adresse_champ' => 'Direcci&oacute;n del plugin o de la lista&nbsp;',
@@ -843,11 +855,17 @@ Las traducciones est&aacute;n asociadas al original, en un color que indica su e
 'plugin_zip_installe_rep_finie' => 'El archivo @zip@ se ha descomprimido y se ha instalado en la carpeta @rep@',
 'plugin_zip_installer' => 'Ahora puedes instalarlo.',
 'plugin_zip_telecharge' => 'Se ha descargado el archivo @zip@',
+'plugins_actif_aucun' => 'Ning&uacute;n plugin activado.',
+'plugins_actif_un' => 'Un plugin activado.',
 'plugins_actifs' => '@count@ plugins activados.',
+'plugins_actifs_liste' => 'Plugins activos',
 'plugins_compte' => '@count@ plugins',
+'plugins_disponible_un' => 'Un plugin disponible.',
 'plugins_disponibles' => '@count@ plugins disponibles.',
 'plugins_erreur' => 'Error en los plugins: @plugins@',
 'plugins_liste' => 'Lista de plugins',
+'plugins_liste_extensions' => 'Extensiones',
+'plugins_recents' => 'Plugins recientes.',
 'plugins_vue_hierarchie' => 'Jerarqu&iacute;a',
 'plugins_vue_liste' => 'Lista',
 'protocole_ldap' => 'Versi&oacute;n del protocolo:',
@@ -884,7 +902,7 @@ Las traducciones est&aacute;n asociadas al original, en un color que indica su e
 'texte_admin_effacer_01' => 'Este comando borra <i>TODO</i> el contenido de la base de datos, redactoras y administradores inclu&iacute;dos. Despu&eacute;s de ejecutarlo tendr&aacute;s que volver a instalar SPIP, creando una nueva base al igual que un primer acceso de administraci&oacute;n.',
 'texte_admin_effacer_stats' => 'Esta orden borra todos los datos ligados con las estad&iacute;sticas de visitas al sitio, incluyendo la popularidad de los art&iacute;culos.',
 'texte_admin_tech_01' => 'Esta opci&oacute;n permite respaldar el contenido de la base en un archivo que se guardar&aacute; en la carpeta @dossier@. No olvides recuperar adem&aacute;s la totalidad de la carpeta @img@, que contiene las im&aacute;genes y los documentos utilizadas en los art&iacute;culos y las secciones.',
-'texte_admin_tech_02' => '&iexcl;ATENCI&Oacute;N! Esta copia de respaldo S&Oacute;LO PODR&Aacute; ser restaurada en un sitio que utiliza LA MISMA versi&oacute;n de SPIP. Por ning&uacute;n motivo se deber&aacute; &laquo;&nbsp;vaciar la base&nbsp;&raquo; imaginando volver a instalar el respaldo despu&eacute;s de una actualizaci&oacute;n. Consultar la <a href="http://www.spip.net/fr_article12436.html">documentaci&oacute;n de SPIP</a>.',
+'texte_admin_tech_02' => '&iexcl;ATENCI&Oacute;N! Esta copia de respaldo S&Oacute;LO PODR&Aacute; ser restaurada en un sitio que utiliza LA MISMA versi&oacute;n de SPIP. Por ning&uacute;n motivo se deber&aacute; &laquo;&nbsp;vaciar la base&nbsp;&raquo; imaginando volver a instalar el respaldo despu&eacute;s de una actualizaci&oacute;n. Consultar la <a href="@spipnet@">documentaci&oacute;n de SPIP</a>.',
 'texte_admin_tech_03' => 'Puedes elegir de guardar el archivo comprimido, y as&iacute; acortar el tiempo de transferencia hacia tu ordenador o un servidor de respaldo, aparte de ganar espacio en el disco.',
 'texte_admin_tech_04' => 'En caso de fusi&oacute;n con otra base, la copia de respaldo puede limitarse a la secci&oacute;n: ',
 'texte_adresse_annuaire_1' => '(Si tu carpeta est&aacute; instalada en la misma m&aacute;quina que el sitio Web, se trata probablemente de "localhost".)',
@@ -895,7 +913,7 @@ Las traducciones est&aacute;n asociadas al original, en un color que indica su e
 'texte_article_virtuel_reference' => '<b>Art&iacute;culo virtual</b> O sea un art&iacute;culo referenciado en tu sitio pero redirigido hacia otra URL. Para suprimir la redirecci&oacute;n, borra la URL .',
 'texte_aucun_resultat_auteur' => 'Ning&uacute;n resultado por "@cherche_auteur@"',
 'texte_auteur_messagerie' => 'Este sitio puede indicarte permanentemente la lista de personas conectadas, lo que permite intercambiar mensajes en directo. Adem&aacute;s, puedes decidir de no aparecer en la lista (est&aacute;s &laquo;invisible&raquo; para las dem&aacute;s personas).',
-'texte_auteur_messagerie_1' => 'En este sitio, SPIP permite intercambiar mensajes y realizar foros privados entre los participantes . Puedes participar o no en estos intercambios.',
+'texte_auteur_messagerie_1' => 'En este sitio, SPIP permite intercambiar mensajes y realizar foros privados entre los participantes. Puedes participar o no en estos intercambios.',
 'texte_auteurs' => 'LOS AUTORES Y AUTORAS',
 'texte_breves' => 'Las breves son notas cortas y simples que permiten poner r&aacute;pidamente en l&iacute;nea informaciones concisas, por ejemplo para manejar rese&ntilde;as de prensa, un calendario de eventos...',
 'texte_choix_base_1' => 'Elegir la base',
@@ -938,9 +956,9 @@ requiere m&aacute;s potencia del servidor.',
 'texte_en_cours_validation_forum' => 'No dudes en dar tu opini&oacute;n mediante los foros adjuntos.',
 'texte_enrichir_mise_a_jour' => 'Puedes enriquecer el formato de tu texto utilizando "atajos tipogr&aacute;ficos"',
 'texte_fichier_authent' => '<b>&iquest;Debe SPIP crear los archivos especiales <tt>.htpasswd</tt>
- y <tt>.htpasswd-admin</tt> en la carpeta @dossier@?</b><p />
+ y <tt>.htpasswd-admin</tt> en la carpeta @dossier@?</b><p>
 Estos archivos pueden servir para restringir el acceso a las autoras y administradores en otros lugares de tu sitio (programa externo de estad&iacute;sticas, por ejemplo).<p>
-Si no le ves utilidad, puedes dejar esta opci&oacute;n con su valor por omisi&oacute;n (no crear los archivos).',
+Si no le ves utilidad, puedes dejar esta opci&oacute;n con su valor por omisi&oacute;n (no crear los archivos).</p>',
 'texte_informations_personnelles_1' => 'El sistema va a crear ahora un acceso personalizado al sitio.',
 'texte_informations_personnelles_2' => '(Nota: si se trata de una reinstalaci&oacute;n, y tu acceso todav&iacute;a funciona, puedes ',
 'texte_introductif_article' => '(Introducci&oacute;n del art&iacute;culo.)',
@@ -978,7 +996,7 @@ Utiliza este formulario con precauci&oacute;n...',
 'texte_nouveau_message' => 'Nuevo mensaje',
 'texte_nouveau_mot' => 'Nueva palabra',
 'texte_nouvelle_version_spip_1' => 'Has instalado una versi&oacute;n nueva de SPIP.',
-'texte_nouvelle_version_spip_2' => 'Esta nueva versi&oacute;n necesita una actualizaci&oacute;n m&aacute;s completa que de costumbre. Si eres webmaster del sitio, borra el archivo @connect@ y retoma la instalaci&oacute;n con el fin de actualizar los par&aacute;metros de conexi&oacute;n a la base de datos.<p /> (NB.: si has olvidado los par&aacute;metros de conexi&oacute;n, echale una mirada al archivo  @connect@ antes de suprimirlo...)',
+'texte_nouvelle_version_spip_2' => 'Esta nueva versi&oacute;n necesita una actualizaci&oacute;n m&aacute;s completa que de costumbre. Si eres webmaster del sitio, borra el archivo @connect@ y retoma la instalaci&oacute;n con el fin de actualizar los par&aacute;metros de conexi&oacute;n a la base de datos.<p> (NB.: si has olvidado los par&aacute;metros de conexi&oacute;n, echale una mirada al archivo  @connect@ antes de suprimirlo...)</p>',
 'texte_operation_echec' => 'Regresa a la p&aacute;gina anterior, selecciona otra base o crea una nueva. Verifica las informaciones facilitadas por tu proveedor de hospedaje.',
 'texte_plus_trois_car' => 'm&aacute;s de 3 caracteres',
 'texte_plusieurs_articles' => 'Se han encontrado varios autores o autoras para "@cherche_auteur@":',
@@ -994,15 +1012,15 @@ Utiliza este formulario con precauci&oacute;n...',
 'texte_reference_mais_redirige' => 'Art&iacute;culo referenciado en tu sitio y redirigido hacia otra URL.',
 'texte_referencement_automatique' => '<b>Referenciar autom&aacute;ticamente un sitio</b><br />Se puede referenciar r&aacute;pidamente un sitio Web indicando aqu&iacute; la direcci&oacute;n URL deseada, o la direcci&oacute;n de su archivo de sindicaci&oacute;n. SPIP recuperar&aacute; autom&aacute;ticamente las informaciones correspondientes (t&iacute;tulo, descripci&oacute;n...).',
 'texte_referencement_automatique_verifier' => 'Deber&iacute;as verificar la informaci&oacute;n facilitada por <tt>@url@</tt> antes de guardar.',
-'texte_requetes_echouent' => '<b>Cuando algunas peticiones SQL fallan sistem&aacute;ticamente y sin raz&oacute;n aparente, es posible que sea debido a la base de datos enm s&iacute;.</b><p />
-Tu servidor SQL es capaz de repararar sus tablas cuando fueron da&ntilde;adas por accidente.  Puedes intentar aqu&iacute; esta reparaci&oacute;n: si falla, conserva una copia del resultado, que posiblemente contenga indicios de lo que no funciona...<p />
-Si el problema persiste, contacta a tu hospedaje.<p />',
+'texte_requetes_echouent' => '<b>Cuando algunas peticiones SQL fallan sistem&aacute;ticamente y sin raz&oacute;n aparente, es posible que sea debido a la base de datos en s&iacute;.</b><p>
+Tu servidor SQL es capaz de reparar sus tablas cuando fueron da&ntilde;adas por accidente.  Puedes intentar aqu&iacute; esta reparaci&oacute;n: si falla, conserva una copia del resultado, que posiblemente contenga indicios de lo que no funciona...</p><p>
+Si el problema persiste, contacta a tu hospedaje.</p>',
 'texte_restaurer_base' => 'Restaurar el contenido de una copia de respaldo',
 'texte_restaurer_sauvegarde' => 'Esta opci&oacute;n te permite restaurar una copia de respaldo de la base efectuada anteriormente. A tal efecto, se debe haber puesto el archivo que contiene la copia de respaldo en la carpeta  @dossier@.
 Prudencia con esta funcionalidad: <b>las modificaciones o p&eacute;rdidas eventuales son irreversibles.</b>',
 'texte_sauvegarde' => 'Crear una copia de respaldo de la base',
 'texte_sauvegarde_base' => 'Crear una copia de respaldo de la base',
-'texte_sauvegarde_compressee' => 'La copia de respaldo ser&aacute; realizada en un archivo no comprimido @fichier@.',
+'texte_sauvegarde_compressee' => 'La copia de respaldo ser&aacute; guardada en un archivo no comprimido @fichier@.',
 'texte_selection_langue_principale' => 'A continuaci&oacute;n puedes seleccionar el &laquo;idioma principal&raquo; del sitio. Esta selecci&oacute;n no obliga - &iexcl;afortunadamente! - a escribir los art&iacute;culos en el idioma elegido, pero permite determinar:
 <ul><li> el formato predeterminado de las fechas en el sitio p&uacute;blico;</li>
 <li> la naturaleza del motor tipogr&aacute;fico que SPIP debe utilizar para reproducir los textos;</li>
@@ -1156,7 +1174,7 @@ t&iacute;tulos y las descripciones de los art&iacute;culos. <br />- Un segundo m
 'utf8_convert_erreur_orig' => 'Error: el juego de caracteres no est&aacute; soportado.',
 'utf8_convert_termine' => '&iexcl;Se termin&oacute;!',
 'utf8_convert_timeout' => '<b>Importante:</b> en caso de <i>timeout</i> del servidor, vuelve a cargar la p&aacute;gina hasta que indique &laquo;terminado&raquo;.',
-'utf8_convert_verifier' => 'Ahora debes ir a vaciar la cache y verificar que todo funciona bien en las p&aacute;ginas p&uacute;blicas del sitio. En caso de grabes problemas, un respaldo de los datos fue realizada (al formato SQL) en la carpeta @rep@.',
+'utf8_convert_verifier' => 'Ahora debes ir a vaciar la cache y verificar que todo funciona bien en las p&aacute;ginas p&uacute;blicas del sitio. En caso de graves problemas, un respaldo de los datos fue realizado (al formato SQL) en la carpeta @rep@.',
 'utf8_convertir_votre_site' => 'Convertir tu sitio en utf-8',
 
 // V

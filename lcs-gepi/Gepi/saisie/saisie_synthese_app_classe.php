@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: saisie_synthese_app_classe.php 4693 2010-07-06 14:22:39Z crob $
+* $Id: saisie_synthese_app_classe.php 6727 2011-03-29 15:14:30Z crob $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -40,8 +40,8 @@ $periode2=isset($_POST['periode2']) ? $_POST['periode2'] : NULL;
 $num_periode=isset($_POST['num_periode']) ? $_POST['num_periode'] : (isset($_GET['num_periode']) ? $_GET['num_periode'] : NULL);
 
 $url_retour=isset($_POST['url_retour']) ? $_POST['url_retour'] : NULL;
-if(my_ereg("/saisie/saisie_avis1.php",$_SERVER['HTTP_REFERER'])) {$url_retour="../saisie/saisie_avis1.php?id_classe=$id_classe&amp;periode_num=$num_periode";}
-if(my_ereg("/saisie/saisie_avis2.php",$_SERVER['HTTP_REFERER'])) {$url_retour="../saisie/saisie_avis2.php?id_classe=$id_classe&amp;periode_num=$num_periode";}
+if(preg_match("#/saisie/saisie_avis1.php#",$_SERVER['HTTP_REFERER'])) {$url_retour="../saisie/saisie_avis1.php?id_classe=$id_classe&amp;periode_num=$num_periode";}
+if(preg_match("#/saisie/saisie_avis2.php#",$_SERVER['HTTP_REFERER'])) {$url_retour="../saisie/saisie_avis2.php?id_classe=$id_classe&amp;periode_num=$num_periode";}
 
 // Resume session
 $resultat_session = $session_gepi->security_check();
@@ -93,11 +93,16 @@ if((isset($id_classe))&&(isset($num_periode))) {
 	//$synthese="";
 
 	//if(isset($_POST['no_anti_inject_synthese'])) {
-	if (isset($NON_PROTECT["synthese"])){
+	if (isset($NON_PROTECT["synthese"])) {
+		check_token();
+
 		// On enregistre la synthese
 		$synthese=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["synthese"]));
 
-		$synthese=my_ereg_replace('(\\\r\\\n)+',"\r\n",$synthese);
+		//$synthese=my_ereg_replace('(\\\r\\\n)+',"\r\n",$synthese);
+		$synthese=preg_replace('/(\\\r\\\n)+/',"\r\n",$synthese);
+		$synthese=preg_replace('/(\\\r)+/',"\r",$synthese);
+		$synthese=preg_replace('/(\\\n)+/',"\n",$synthese);
 
 		$sql="SELECT 1=1 FROM synthese_app_classe WHERE id_classe='$id_classe' AND periode='$num_periode';";
 		$test=mysql_query($sql);
@@ -332,6 +337,7 @@ if((isset($id_classe))&&(isset($num_periode))) {
 
 	// Formulaire de saisie
 	echo "<form enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
+	echo add_token_field();
 	echo "<input type='hidden' name='id_classe' value='$id_classe' />\n";
 	echo "<input type='hidden' name='num_periode' value='$num_periode' />\n";
 	echo "<input type='hidden' name='periode1' value='$periode1' />\n";

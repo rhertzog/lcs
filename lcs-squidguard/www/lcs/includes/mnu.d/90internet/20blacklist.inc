@@ -1,1 +1,1 @@
-Filtrage «Liste Noire»,../Squidguard/,lcs_is_admin
+Filtrage &#171;Liste Noire&#187;,../Squidguard/,lcs_is_admin

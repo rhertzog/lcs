@@ -2,12 +2,12 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.2 du 25/10/2010
+   VERSION 2.3 du 06/01/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de consultation des absences hebdomadaires -
 			_-=-_
-	
+    "Valid XHTML 1.0 Strict"
    ============================================= */
 session_name("Cdt_Lcs");
 @session_start();
@@ -51,30 +51,32 @@ if (isset($_POST['nomeleve'])) $nom = $_POST['nomeleve'];
 if (isset($_GET['uid'])) $potache =$_GET['uid'];
 if (isset($_POST['gamin'])) $potache = $_POST['gamin'];
 ?>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<META http-equiv="Content-Type" content="text/html; charset=utf-8">
-<LINK href="../style/style.css" rel="stylesheet" type="text/css">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<title>Absences</title>
+<meta name="author" content="Philippe LECLERC -TICE CAEN" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link href="../style/style.css" rel="stylesheet" type="text/css" />
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-</HEAD>
-<BODY>
+</head>
+<body>
 
-<?
+<?php
 
 //Détermination du jour courant
-if (isset($_REQUEST['JourCourant'])) 
+if (isset($_POST['JourCourant'])) 
 	{
-	$JourCourant = $_REQUEST['JourCourant'];
+	$JourCourant = $_POST['JourCourant'];
 	//semaine suivante
-	if (isset($_REQUEST['suiv'])) 
+	if (isset($_POST['suiv'])) 
 		{
 		$Lundi=DebutSemaine($JourCourant + 7 * 86400);
 		} 
 		//semaine précédente
-		elseif (isset($_REQUEST['prec']))
+		elseif (isset($_POST['prec']))
 			{
 			//tableau hebdomadaire commençant au Lundi
 			
@@ -135,7 +137,7 @@ if ($nb>0)
 				{
 				if ($row[$h]!="") {
 				 $plan[$j][$h] = $row[$h];
-				 $why[$j][$h]= $row[$h+13];
+				 $why[$j][$h]= utf8_encode($row[$h+13]);
 					}
 				} 
 				
@@ -147,72 +149,74 @@ if ($nb>0)
 ?>
 
 <!-- affichage du calendrier hebdomadaire -->
-<FORM action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" name="planning" id="planning">
+<form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post"  id="planning">
 <fieldset id="field7">
 <legend id="legende"><?php echo $nom;?></legend>
 <div id="abs-contenu">
 	<!-- Affichage des boutons -->
-	<INPUT name="JourCourant" type="hidden" id="JourCourant" value="<?php echo $Lundi;?>">
-	<INPUT name="gamin" type="hidden"  value="<?php echo $potache;?>">
-	<INPUT name="nomeleve" type="hidden"  value="<?php echo $nom;?>">
-	<TABLE id="btn-plan-cdt">
-		<TR>
-			<TD width="150" align="center" ><INPUT type="submit" name="prec" value="<<" class="bt50"></TD>
-			<TD width="150" align="center" class="hebdo"> <?echo datefr2($Lundi)?> - <?echo datefr2($Samedi);?></TD>
-			<TD width="150" align="center" ><INPUT type="submit" name="suiv" value=">>" class="bt50"></TD>
-		</TR>
-	</TABLE>
+	<input name="JourCourant" type="hidden" id="JourCourant" value="<?php echo $Lundi;?>" />
+	<input name="gamin" type="hidden"  value="<?php echo $potache;?>" />
+	<input name="nomeleve" type="hidden"  value="<?php echo $nom;?>" />
+	<table id="btn-plan-cdt">
+		<tr>
+			<td  ><input type="submit" name="prec" value="&lt;&lt;" class="bt50" /></td>
+			<td class="hebdo"> <?echo datefr2($Lundi)?> - <?echo datefr2($Samedi);?></td>
+			<td ><input type="submit" name="suiv" value="&gt;&gt;" class="bt50" /></td>
+		</tr>
+	</table>
 		
-	<TABLE id="plan-cdt" CELLPADDING=1 CELLSPACING=2>
+	<table id="plan-cdt" cellpadding="1" cellspacing="1">
 		<thead> 
-			<TH>  </TH>
+			<tr><th>  </th>
 <?php
 // Affichage des jours et dates de la semaine en haut du tableau"j-M-Y", 
 	for ($i=0; $i<=5; $i++) {
 		$TS = $Lundi+$i*86400;
-		echo '<td width="15%" > <font face="Arial" size="2" color="#FFFFFF" >'.LeJour($TS)."</TH>\n";
+		echo '<td class="abs" >'.LeJour($TS)."</td>";
 	}
 ?>
-		</thead>
+                        </tr></thead>
 		<tbody>
-			<tr>
+			
 <?php
 	$horaire = array("M1","M2","M3","M4","M5","S1","S2","S3","S4","S5");
 	for ($h=0; $h<=9; $h++) 
 		{
 		//Affichage de la désignation des créneaux horaires 
-		echo "<TH>".$horaire[$h]."</TH>\n";
+		echo "<tr><th>".$horaire[$h]."</th>\n";
 		 		
 		//Affichage du contenu des créneaux horaires
 		for ($j=0; $j<=5; $j++) 
 			{
 			if (isset($plan[$j][$h])) 
 				{
-				if ($plan[$j][$h]=="A") echo '<TD class="absence"><A href="" title="'.$why[$j][$h].'">A</a></TD>'."\n"; 
-				elseif ($plan[$j][$h]=="R") echo '<TD class="retard"><A href="" title="'.$why[$j][$h].'">R</a></TD>'."\n";
-				elseif ($plan[$j][$h]=="") echo '<TD class="libre">-</TD>'."\n"; 
+				if ($plan[$j][$h]=="A") echo '<td class="absence"><a href="" title="'.$why[$j][$h].'">A</a></td>'."\n";
+				elseif ($plan[$j][$h]=="R") echo '<td class="retard"><a href="" title="'.$why[$j][$h].'">R</a></td>'."\n";
+				elseif ($plan[$j][$h]=="") echo '<td class="libre">-</td>'."\n"; 
 				}	
-			else echo '<TD class="libre">-</TD>'."\n"; 
+			else echo '<td class="libre">-</td>'."\n"; 
 							
 			//cellules de séparation à la mi-journée	 	 	
-				if (($h==4)&&($j==5)) echo '<TR border=0><TD class="mi-jour" colspan="7"></TD></TR>';	
+				if (($h==4)&&($j==5)) echo '</tr><tr><td class="mi-jour" colspan="7"></td>';
 				}	//b
-			echo "</TR>\n";
+			echo "</tr>\n";
 		}
 ?>
 </tbody>
-</table>
-</div>
-<?
-echo "<SCRIPT LANGUAGE=\"JavaScript\">
-		document.write('<div id=\"abs-bt\"><A HREF=\"javascript:window.close()\" id=\"bt-close\"></A></div>');
-	</SCRIPT>";
+     </table></div>
+<div><p></p>
+ <?php
+echo "<script type=\"text/javascript\">
+                //<![CDATA[
+		document.write('<a href=\"javascript:window.close()\" id=\"bt-close\"></a></div>');
+                 //]]>
+	</script>";
 ?>	
+</div>
 </fieldset>
-</FORM>
-
-<?
+</form>
+<?php
 Include ('../Includes/pied.inc'); 
 ?>
-</BODY>
-</HTML>
+</body>
+</html>

@@ -1,14 +1,6 @@
 <?php
-/* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/add_group.php
-   [LCS CoreTeam]
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
-   Equipe Tice academie de Caen
-   Derniere modification : 8/11/2008
-   ============================================= */
+/* Annu/add_group.php Derniere modification : 22/04/2011 */
+
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
@@ -86,7 +78,6 @@
         echo "<div class='error_msg'>Attention le groupe <font color='#0080ff'>$cn</font> est d&#233;ja pr&#233;sent dans la base, veuillez choisir un autre nom !</div><BR>\n";
       } else {
         // Ajout du groupe
-        //$description = utf8_encode(stripslashes($description));
         $description = stripslashes($description);
         ### MigreGon
         ### Les Euqipe et Matieres sont desormais des posixgroup

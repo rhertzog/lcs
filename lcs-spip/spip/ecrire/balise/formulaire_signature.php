@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;	#securite
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 //
 // Formulaire de signature d'une petition
@@ -31,15 +31,16 @@ function balise_FORMULAIRE_SIGNATURE ($p) {
 
 // Verification des arguments (contexte + filtres)
 // http://doc.spip.org/@balise_FORMULAIRE_SIGNATURE_stat
-function balise_FORMULAIRE_SIGNATURE_stat($args, $filtres) {
+function balise_FORMULAIRE_SIGNATURE_stat($args, $context_compil) {
 
-	// pas d'id_article => erreur de squelette
-	if (!$args[0])
-		return erreur_squelette(
-			_T('zbug_champ_hors_motif',
-				array ('champ' => '#FORMULAIRE_SIGNATURE',
-					'motif' => 'ARTICLES')), '');
-
+	// pas d'id_article => erreur de contexte
+	if (!$args[0]) {
+		$msg = array('zbug_champ_hors_motif',
+				array ('champ' => 'FORMULAIRE_SIGNATURE',
+				       'motif' => 'ARTICLES'));
+		erreur_squelette($msg, $context_compil);
+		return '';
+	}
 	// article sans petition => pas de balise
 	else if (!$args[1])
 		return '';

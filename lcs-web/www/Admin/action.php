@@ -15,7 +15,7 @@ $action = $_POST[action];
 
 function mail_to ($to, $Subject, $Body, $From) {
 	$mailHeaders = "From: $From";
-	mail ($to, $Subject, $Body, $mailHeaders);
+	mb_send_mail ($to, $Subject, $Body, $mailHeaders);
 }
 
 list ($idpers, $login)= isauth();

@@ -2,9 +2,9 @@
 
 	// lang/player_fr.php
 	
-	// $LastChangedRevision: 19700 $
+	// $LastChangedRevision: 35894 $
 	// $LastChangedBy: paladin@quesaco.org $
-	// $LastChangedDate: 2008-04-01 14:22:40 +0200 (mar, 01 avr 2008) $
+	// $LastChangedDate: 2010-03-07 13:05:17 +0100 (dim, 07 mar 2010) $
 
 $GLOBALS['i18n_'._PLAYER_PREFIX.'_fr'] = array(
 
@@ -95,6 +95,7 @@ $GLOBALS['i18n_'._PLAYER_PREFIX.'_fr'] = array(
 , '_blank' => "Nouvelle fen&ecirc;tre"
 , '_self' => "Fen&ecirc;tre courante"
 
+, 'pas_de_lecteur_video' => 'Pas de lecteur vid&eacute;o disponible.'
+
 ); //
 
-?>

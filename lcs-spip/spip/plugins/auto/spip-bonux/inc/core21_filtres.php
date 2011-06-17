@@ -39,7 +39,7 @@ function lien_ou_expose($url,$libelle,$on=false,$class="",$title="",$rel=""){
 }
 }
 
-if (!function_exists('balise_img')){
+if (!function_exists('filtre_balise_img_dist')){
 /**
  * une fonction pour generer une balise img a partir d'un nom de fichier
  *
@@ -48,7 +48,7 @@ if (!function_exists('balise_img')){
  * @param string $class
  * @return string
  */
-function balise_img($img,$alt="",$class=""){
+function filtre_balise_img_dist($img,$alt="",$class=""){
 	$taille = taille_image($img);
 	list($hauteur,$largeur) = $taille;
 	if (!$hauteur OR !$largeur)
@@ -89,7 +89,7 @@ if (!function_exists('filtre_icone_dist')){
  * @param string $fonction
  * @return string
  */
-function filtre_icone_dist($lien, $texte, $fond, $align="", $fonction="", $class=""){
+function filtre_icone_dist($lien, $texte, $fond, $align="", $fonction="", $class="",$javascript=""){
 	$align = $align?$align:$GLOBALS['spip_lang_left'];
 	global $spip_display;
 
@@ -179,6 +179,18 @@ if (!function_exists('filtre_implode_dist')){
  * @return string
  */
 function filtre_implode_dist($a,$b){return implode($b,$a);}
+}
+
+if (!function_exists('bando_images_background') AND !defined('_DIR_PLUGIN_BANDO')){
+function bando_images_background(){
+	return '';
+}
+}
+
+if (!function_exists('bando_style_prive_theme') AND !defined('_DIR_PLUGIN_BANDO')){
+function bando_style_prive_theme() {
+	return '';
+}
 }
 
 ?>

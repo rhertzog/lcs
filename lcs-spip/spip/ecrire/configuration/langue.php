@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 //
 // Configuration i18n
@@ -36,9 +36,8 @@ function configuration_langue_dist()
 			 "<label for='changer_langue_site'>" .
 			 _T('info_langue_principale') .
 			 "</label>" .
-			 " : <select name='changer_langue_site' id='changer_langue_site' class='fondl'>\n$res</select>\n",
-			 '',
-			 " class='fondo'");
+			 " : <select name='changer_langue_site' id='changer_langue_site'>\n$res</select>\n",
+			 '');
 
  $res =  debut_cadre_couleur("langues-24.gif", true, "", _T('info_langue_principale') . "&nbsp;:&nbsp;" . $langue_site) .
 	   _T('texte_selection_langue_principale') .

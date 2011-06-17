@@ -2,7 +2,7 @@
 <?php
 /*
  * $Id: $
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -95,12 +95,15 @@
 
 	<form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" id='form1'>
 	  <p>
+<?php
+echo add_token_field();
+?>
       En activant le module, l'administrateur peut définir :
+	  </p>
       <ul>
       <li> pour chaque catégorie d'AID, un ou plusieurs "super-gestionnaires" parmi les utilisateurs. Ces utilisateurs auront alors dans leur menu une rubrique supplémentaire leur permettant d'ajouter, supprimer ou modifier des AID, ainsi que des  élèves ou professeurs appartenant à ces AID.</li>
       <li> pour chaque AID un ou plusieurs gestionnaires parmi les utilisateurs. Ces gestionnaires auront alors dans leur menu une rubrique supplémentaire leur permettant d'ajouter ou de supprimer des élèves.</li>
       </ul>
-	  </p>
 
 	  <fieldset class="no_bordure">
 		<legend class="invisible">Activation</legend>

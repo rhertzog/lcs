@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/filtres');
 include_spip('inc/lang');
@@ -59,7 +59,7 @@ function definir_raccourcis_alineas()
 	static $alineas = array();
 	$x = _DIR_RESTREINT ? lang_dir() : lang_dir($GLOBALS['spip_lang']);
 	if (!isset($alineas[$x])) {
-        
+
 		$alineas[$x] = array(
 		array(
 		/* 0 */ 	"/\n(----+|____+)/S",
@@ -102,7 +102,7 @@ function definir_puce() {
 
 // XHTML - Preserver les balises-bloc : on liste ici tous les elements
 // dont on souhaite qu'ils provoquent un saut de paragraphe
-define('_BALISES_BLOCS',
+if (!defined('_BALISES_BLOCS')) define('_BALISES_BLOCS',
 	'div|pre|ul|ol|li|blockquote|h[1-6r]|'
 	.'t(able|[rdh]|body|foot|extarea)|'
 	.'form|object|center|marquee|address|'
@@ -151,7 +151,7 @@ function traiter_echap_html_dist($regs) {
 // http://doc.spip.org/@traiter_echap_code_dist
 function traiter_echap_code_dist($regs) {
 	list(,,$att,$corps) = $regs;
-	$echap = htmlspecialchars($corps); // il ne faut pas passer dans entites_html, ne pas transformer les &#xxx; du code ! 
+	$echap = htmlspecialchars($corps); // il ne faut pas passer dans entites_html, ne pas transformer les &#xxx; du code !
 
 	// ne pas mettre le <div...> s'il n'y a qu'une ligne
 	if (is_int(strpos($echap,"\n"))) {
@@ -209,24 +209,24 @@ $preg='') {
 	if (!is_string($letexte) or !strlen($letexte))
 		return $letexte;
 
-	if (preg_match_all($preg ? $preg : _PROTEGE_BLOCS,
-	$letexte, $matches, PREG_SET_ORDER))
-	foreach ($matches as $regs) {
-		// echappements tels quels ?
-		if ($no_transform) {
-			$echap = $regs[0];
+	if (($preg OR strpos($letexte,"<")!==false) 
+	  AND preg_match_all($preg ? $preg : _PROTEGE_BLOCS, $letexte, $matches, PREG_SET_ORDER))
+		foreach ($matches as $regs) {
+			// echappements tels quels ?
+			if ($no_transform) {
+				$echap = $regs[0];
+			}
+
+			// sinon les traiter selon le cas
+			else if (function_exists($f = 'traiter_echap_'.strtolower($regs[1])))
+				$echap = $f($regs);
+			else if (function_exists($f = $f.'_dist'))
+				$echap = $f($regs);
+
+			$letexte = str_replace($regs[0],
+				code_echappement($echap, $source, $no_transform),
+				$letexte);
 		}
-
-		// sinon les traiter selon le cas
-		else if (function_exists($f = 'traiter_echap_'.strtolower($regs[1])))
-			$echap = $f($regs);
-		else if (function_exists($f = $f.'_dist'))
-			$echap = $f($regs);
-
-		$letexte = str_replace($regs[0],
-			code_echappement($echap, $source, $no_transform),
-			$letexte);
-	}
 
 	if ($no_transform)
 		return $letexte;
@@ -238,7 +238,7 @@ $preg='') {
 	}
 
 	// Echapper le php pour faire joli (ici, c'est pas pour la securite)
-	if (preg_match_all(',<[?].*($|[?]>),UisS',
+	if (strpos($letexte,"<"."?")!==false AND preg_match_all(',<[?].*($|[?]>),UisS',
 	$letexte, $matches, PREG_SET_ORDER))
 	foreach ($matches as $regs) {
 		$letexte = str_replace($regs[0],
@@ -257,10 +257,22 @@ $preg='') {
 function echappe_retour($letexte, $source='', $filtre = "") {
 	if (strpos($letexte,"base64$source")) {
 		# spip_log(htmlspecialchars($letexte));  ## pour les curieux
-		if (preg_match_all(',<(span|div) class=[\'"]base64'.$source.'[\'"]\s.*>\s*</\1>,UmsS',
+		if (strpos($letexte,"<")!==false AND
+		  preg_match_all(',<(span|div) class=[\'"]base64'.$source.'[\'"]\s(.*)>\s*</\1>,UmsS',
 		$letexte, $regs, PREG_SET_ORDER)) {
 			foreach ($regs as $reg) {
 				$rempl = base64_decode(extraire_attribut($reg[0], 'title'));
+				// recherche d'attributs supplementaires
+				$at = array();
+				foreach(array('lang', 'dir') as $attr) {
+					if ($a = extraire_attribut($reg[0], $attr))
+						$at[$attr] = $a;
+				}
+				if ($at) {
+					$rempl = '<'.$reg[1].'>'.$rempl.'</'.$reg[1].'>';
+					foreach($at as $attr => $a)
+						$rempl = inserer_attribut($rempl, $attr, $a);
+				}
 				if ($filtre) $rempl = $filtre($rempl);
 				$letexte = str_replace($reg[0], $rempl, $letexte);
 			}
@@ -319,7 +331,7 @@ function couper($texte, $taille=50, $suite = '&nbsp;(...)') {
 	$texte = unicode2charset(html2unicode($texte, /* secure */ true));
 	$texte = nettoyer_raccourcis_typo($texte);
 
-	// corriger la longueur de coupe 
+	// corriger la longueur de coupe
 	// en fonction de la presence de caracteres utf
 	if ($GLOBALS['meta']['charset']=='utf-8'){
 		$long = charset2unicode($texte);
@@ -364,7 +376,7 @@ function couper($texte, $taille=50, $suite = '&nbsp;(...)') {
 
 // afficher joliment les <script>
 // http://doc.spip.org/@echappe_js
-function echappe_js($t,$class='') {
+function echappe_js($t,$class=' class="echappe-js"') {
 	if (preg_match_all(',<script.*?($|</script.),isS', $t, $r, PREG_SET_ORDER))
 	foreach ($r as $regs)
 		$t = str_replace($regs[0],
@@ -401,12 +413,17 @@ function protege_js_modeles($t) {
 // il ne faut pas desactiver globalement la fonction dans l'espace prive car elle protege
 // aussi les balises des squelettes qui ne passent pas forcement par propre ou typo apres
 // http://doc.spip.org/@interdire_scripts
-function interdire_scripts($t) {
-	// rien ?
-	if (!$t OR !is_string($t) OR !strstr($t, '<')) return $t;
+function interdire_scripts($arg) {
+	// on memorise le resultat sur les arguments non triviaux
+	static $dejavu = array();
+
+	// Attention, si ce n'est pas une chaine, laisser intact
+	if (!$arg OR !is_string($arg) OR !strstr($arg, '<')) return $arg;
+
+	if (isset($dejavu[$GLOBALS['filtrer_javascript']][$arg])) return $dejavu[$GLOBALS['filtrer_javascript']][$arg];
 
 	// echapper les tags asp/php
-	$t = str_replace('<'.'%', '&lt;%', $t);
+	$t = str_replace('<'.'%', '&lt;%', $arg);
 
 	// echapper le php
 	$t = str_replace('<'.'?', '&lt;?', $t);
@@ -418,7 +435,7 @@ function interdire_scripts($t) {
 	switch($GLOBALS['filtrer_javascript']) {
 		case 0:
 			if (!_DIR_RESTREINT)
-				$t = echappe_js($t,' style="color:red"');
+				$t = echappe_js($t);
 			break;
 		case -1:
 			$t = echappe_js($t);
@@ -434,7 +451,7 @@ function interdire_scripts($t) {
 	if (defined('_PROTEGE_PHP_MODELES'))
 		$t = echappe_retour($t,"php"._PROTEGE_PHP_MODELES);
 
-	return $t;
+	return $dejavu[$GLOBALS['filtrer_javascript']][$arg] = $t;
 }
 
 // Securite : utiliser SafeHTML s'il est present dans ecrire/safehtml/
@@ -450,7 +467,7 @@ function safehtml($t) {
 	$t = echappe_js($t);
 
 	if (!isset($safehtml))
-		$safehtml = charger_fonction('safehtml', 'inc');
+		$safehtml = charger_fonction('safehtml', 'inc', true);
 	if ($safehtml)
 		$t = $safehtml($t);
 
@@ -486,7 +503,6 @@ function typo($letexte, $echapper=true, $connect=null) {
 	//
 	// NOTE : propre() ne passe pas par ici mais directement par corriger_typo
 	// cf. inc/lien
-
 	$letexte = traiter_modeles($mem = $letexte, false, $echapper ? 'TYPO' : '', $connect);
 	if ($letexte != $mem) $echapper = true;
 	unset($mem);
@@ -513,7 +529,6 @@ define('_TYPO_BALISE', ",</?[a-z!][^<>]*[".preg_quote(_TYPO_PROTEGER)."][^<>]*>,
 
 // http://doc.spip.org/@corriger_typo
 function corriger_typo($letexte, $lang='') {
-
 	// Plus vite !
 	if (!$letexte) return $letexte;
 
@@ -522,14 +537,8 @@ function corriger_typo($letexte, $lang='') {
 	// Caracteres de controle "illegaux"
 	$letexte = corriger_caracteres($letexte);
 
-	// Charger & appliquer les fonctions de typographie
-
-	if (!$lang) $lang = lang_typo();
-	$typo2 = '';
-	$typographie = charger_fonction($lang, 'typographie');
-
 	// Proteger les caracteres typographiques a l'interieur des tags html
-	if ($typographie AND preg_match_all(_TYPO_BALISE, $letexte, $regs, PREG_SET_ORDER)) {
+	if (preg_match_all(_TYPO_BALISE, $letexte, $regs, PREG_SET_ORDER)) {
 		foreach ($regs as $reg) {
 			$insert = $reg[0];
 			// hack: on transforme les caracteres a proteger en les remplacant
@@ -539,44 +548,21 @@ function corriger_typo($letexte, $lang='') {
 		}
 	}
 
-	// simplifier les blocs multi,
-	// et si la selection est differente de la langue de l'objet, 
-	// (langue de l'objet absente du multi ou langue imposee par forcer_lang)
-	// la typographier selon les regles de celle trouvee si definies
+	// trouver les blocs multi et les traiter a part
+	$letexte = extraire_multi($e = $letexte, $lang, true);
+	$e = ($e === $letexte);
 
-	if (preg_match_all(_EXTRAIRE_MULTI, $letexte, $regs, PREG_SET_ORDER)) {
-		foreach ($regs as $reg) {
-			// chercher la version de la langue du contexte
-			// (= lang_typo() sauf parfois avec forcer_lang = true)
-			$trads = extraire_trads($reg[1]);
-			$l = multi_trads($trads, $GLOBALS['spip_lang']);
-			if ($l) {
-				$trad = $trads[$l];
-				if ($lang != $GLOBALS['spip_lang']
-				AND $typo2 = charger_fonction($GLOBALS['spip_lang'], 'typographie', true)) {
-					$trad = $typo2($trad);
-					$trad = code_echappement($trad, 'multi');
-				}  
-			} else {
-				// langue absente, prendre la premiere dispo
-				$l = key($trads);
-				$trad = $trads[$l];
-				if ($typo2 = charger_fonction($l, 'typographie', true)) {
-					$trad = $typo2($trad);
-					$trad = code_echappement($trad, 'multi');
-				}
-			}
-			$letexte = str_replace($reg[0], $trad, $letexte);
-		}
-	}
+	// Charger & appliquer les fonctions de typographie
+	$typographie = charger_fonction(lang_typo($lang), 'typographie');
+	$letexte = $typographie($letexte);
 
-	if ($typographie) $letexte = $typographie($letexte);
+	// Les citations en une autre langue, s'il y a lieu
+	if (!$e) $letexte = echappe_retour($letexte, 'multi');
 
 	// Retablir les caracteres proteges
 	$letexte = strtr($letexte, _TYPO_PROTECTEUR, _TYPO_PROTEGER);
-	// et les citations en d'autres langues
-	if ($typo2!=='') $letexte = echappe_retour($letexte, 'multi');
 
+	// pipeline
 	$letexte = pipeline('post_typo', $letexte);
 
 	# un message pour abs_url - on est passe en mode texte
@@ -590,7 +576,7 @@ function corriger_typo($letexte, $lang='') {
 // Tableaux
 //
 
-define('_RACCOURCI_TH_SPAN', '\s*(:?{{[^{}]+}}\s*)?|<');
+define('_RACCOURCI_TH_SPAN', '\s*(?:{{[^{}]+}}\s*)?|<');
 
 // http://doc.spip.org/@traiter_tableau
 function traiter_tableau($bloc) {
@@ -620,7 +606,7 @@ function traiter_tableau($bloc) {
 			}
 		// - <thead> sous la forme |{{titre}}|{{titre}}|
 		//   Attention thead oblige a avoir tbody
-			else if (preg_match($reg_line1,	$ligne, $thead)) {
+			else if (preg_match($reg_line1,	$ligne)) {
 			  	preg_match_all('/\|([^|]*)/S', $ligne, $cols);
 				$ligne='';$cols= $cols[1];
 				$colspan=1;
@@ -633,6 +619,8 @@ function traiter_tableau($bloc) {
 						$attr= " colspan='$colspan'";
 						$colspan=1;
 					  }
+					  // inutile de garder le strong qui n'a servi que de marqueur 
+					  $cols[$c] = str_replace(array('{','}'), '', $cols[$c]);
 					  $ligne= "<th scope='col'$attr>$cols[$c]</th>$ligne";
 					}
 				}
@@ -665,6 +653,9 @@ function traiter_tableau($bloc) {
 	$rowspans = $numeric = array();
 	$n = count($lignes[0]);
 	$k = count($lignes);
+	// distinguer les colonnes numeriques a point ou a virgule,
+	// pour les alignements eventuels sur "," ou "."
+	$numeric_class = array('.'=>'point',','=>'virgule');
 	for($i=0;$i<$n;$i++) {
 	  $align = true;
 	  for ($j=0;$j<$k;$j++) $rowspans[$j][$i] = 1;
@@ -676,13 +667,7 @@ function traiter_tableau($bloc) {
 		else if ($r[1]) $align = $r[1];
 	      }
 	  }
-	  $numeric[$i] = !$align ? '' :
-	    (" style='text-align: " .
-	     // http://www.w3.org/TR/REC-CSS2/tables.html#column-alignment
-	     // specifie text-align: "," pour cadrer le long de la virgule
-	     // mais les navigateurs ne l'implementent pas ou mal
-	     (/* $align !== true ?"\"$align\"" : */ 'right') .
-	     "'");
+	  $numeric[$i] = !$align ? '' : (" class='numeric ".$numeric_class[$align]."'");
 	}
 
 	// et on parcourt le tableau a l'envers pour ramasser les
@@ -695,7 +680,7 @@ function traiter_tableau($bloc) {
 		$ligne='';
 
 		for($c=count($cols)-1; $c>=0; $c--) {
-			$attr= $numeric[$c]; 
+			$attr= $numeric[$c];
 			$cell = trim($cols[$c]);
 			if($cell=='<') {
 			  $colspan++;
@@ -740,6 +725,7 @@ function traiter_listes ($texte) {
 	// chaque paragraphe est traite a part
 	while (list(,$para) = each($parags)) {
 		$niveau = 0;
+		$pile_li = $pile_type = array();
 		$lignes = explode("\n-", "\n" . $para);
 
 		// ne pas toucher a la premiere ligne
@@ -779,6 +765,10 @@ function traiter_listes ($texte) {
 				// puis les montees (y compris apres une descente un cran trop bas)
 				while ($niveau < $profond) {
 					if ($niveau == 0) $ajout .= "\n\n";
+					elseif (!isset($pile_li[$niveau])) {
+						$ajout .= "<li$class_spip>";
+						$pile_li[$niveau] = "</li>";
+					}
 					$niveau ++;
 					$ajout .= "<$type$class_spip_plus>";
 					$pile_type[$niveau] = "</$type>";

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: accueil_modules.php 4884 2010-07-25 07:09:32Z regis $
+ * $Id: accueil_modules.php 6475 2011-02-08 19:34:10Z tbelliard $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -537,6 +537,7 @@ if (!suivi_ariane($_SERVER['PHP_SELF'],"Administration des modules"))
 	unset($nouveauItem);
 
 //Module "Admissions Post-Bac"
+/*
 	$nouveauItem = new itemGeneral();
 	$nouveauItem->chemin='/mod_apb/admin.php';	
 	if ($nouveauItem->acces($nouveauItem->chemin,$_SESSION['statut']))
@@ -547,6 +548,7 @@ if (!suivi_ariane($_SERVER['PHP_SELF'],"Administration des modules"))
 		$menuPage[]=$nouveauItem;
 	}
 	unset($nouveauItem);
+*/
 
 //Module Gestionnaires d'AID
 	$nouveauItem = new itemGeneral();

@@ -2,7 +2,7 @@
 <?php
 /*
  * $Id: $
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -95,6 +95,9 @@
   
   <form method="post" action="admin.php" id='form1'>
 	<fieldset class="no_bordure">
+<?php
+echo add_token_field();
+?>
 	  <legend class="invisible">Activation</legend>
 	  <input type='radio' 
 			 name='activer' 

@@ -95,8 +95,8 @@ if ($server > 0
             $http_logout = ($cfg['Server']['auth_type'] == 'http')
                          ? '<a href="./Documentation.html#login_bug" target="documentation">'
                             . ($cfg['ReplaceHelpImg'] ? '<img class="icon" src="' . $pmaThemeImage . 'b_info.png" width="11" height="11" alt="Info" />' : '(*)') . '</a>'
-                                      : '';
-                //modif lcs
+                         : '';
+             //modif lcs
      if ( !isset($_LCS['login']) ) {
         PMA_printListItem('<strong>' . $strLogout . '</strong> ' . $http_logout,
             'li_log_out',

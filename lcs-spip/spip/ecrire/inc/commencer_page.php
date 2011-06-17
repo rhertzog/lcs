@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 //
 // Presentation de l'interface privee, debut du HTML
@@ -27,7 +27,7 @@ function inc_commencer_page_dist($titre = "", $rubrique = "accueil", $sous_rubri
 
 	return init_entete($titre, $id_rubrique, $minipres)
 	. init_body($rubrique, $sous_rubrique, $id_rubrique,$menu)
-	. "<div id='page' class='$spip_ecran'>"
+	. "<div id='page'>"
 	. ($alertes?alertes_auteur($connect_id_auteur):'')
 	. auteurs_recemment_connectes($connect_id_auteur);
 }
@@ -50,10 +50,24 @@ function init_entete($titre='', $id_rubrique=0, $minipres=false) {
 		. envoi_link($nom_site_spip,$minipres);
 
 	// anciennement verifForm
+	// et corriger position des sous-menus principaux (quand intitules sur 2 lignes)
 	$head .= '
 	<script type="text/javascript"><!--
+	function calculer_top_bandeau_sec() {
+		
+		var hauteur_max = 0;
+		var hauteur_bouton = 0;
+	
+		$(".boutons_admin a.boutons_admin .icon_texte").each(function(){
+			hauteur_bouton = parseInt($(this).height());
+			if (hauteur_bouton > hauteur_max) hauteur_max = hauteur_bouton;
+		});
+		$(".boutons_admin a.boutons_admin .icon_texte").height(hauteur_max);
+	}	
+
 	$(document).ready(function(){
 		verifForm();
+		calculer_top_bandeau_sec();
 		$("#page,#bandeau-principal")
 		.mouseover(function(){
 			if (typeof(window["changestyle"])!=="undefined") window.changestyle("garder-recherche");
@@ -81,8 +95,7 @@ function init_body($rubrique='accueil', $sous_rubrique='accueil', $id_rubrique='
 
 	if ($spip_ecran == "large") $largeur = 974; else $largeur = 750;
 
-
-	$res = pipeline('body_prive',"<body class='$rubrique $sous_rubrique "._request('exec')."'"
+	$res = pipeline('body_prive',"<body class='ecrire $rubrique $sous_rubrique $spip_ecran "._request('exec')."'"
 			. ($GLOBALS['spip_lang_rtl'] ? " dir='rtl'" : "")
 			.'>');
 
@@ -213,6 +226,17 @@ function alertes_auteur($id_auteur) {
 	}
 
 	$alertes[] = avertissement_messagerie($id_auteur);
+
+	$alertes = pipeline(
+		'alertes_auteur',
+			array(
+			'args' => array(
+				'id_auteur' => $id_auteur,
+				'exec' => _request('exec'),
+				),
+			'data' => $alertes
+			)
+		);
 
 	if ($alertes = array_filter($alertes))
 		return "<div class='wrap-messages'><div class='messages'>".

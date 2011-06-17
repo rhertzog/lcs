@@ -2,9 +2,9 @@
 
 	// base/player_install.php
 
-	// $LastChangedRevision: 19360 $
+	// $LastChangedRevision: 31146 $
 	// $LastChangedBy: paladin@quesaco.org $
-	// $LastChangedDate: 2008-03-21 15:50:47 +0100 (ven, 21 mar 2008) $
+	// $LastChangedDate: 2009-08-27 20:25:06 +0200 (jeu, 27 aoÃ» 2009) $
 
 // CP-20080321
 
@@ -16,8 +16,8 @@ function player_install ($action) {
 
 	switch($action) {
 		case 'test':
-			// si renvoie true, c'est que la base est à jour, inutile de re-installer
-			// la valise plugin "effacer tout" apparaît.
+			// si renvoie true, c'est que la base est a jour, inutile de re-installer
+			// la valise plugin "effacer tout" apparait.
 			// si renvoie false, SPIP revient avec $action = 'install' (une seule fois)
 			$result = intval(isset($GLOBALS['meta'][_PLAYER_META_PREFERENCES]));
 			return($result);
@@ -26,7 +26,7 @@ function player_install ($action) {
 			return(player_init());
 			break;
 		case 'uninstall':
-			// est appellé lorsque "Effacer tout" dans exec=admin_plugin
+			// est appelle lorsque "Effacer tout" dans exec=admin_plugin
 			return(player_vider_tables());
 			break;
 		default:

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Connection d'un LCS sur l'annuaire ldap SE3
-# Olivier lecluse & Jean-Luc Chretien
-# 15/10/2008
+# Olivier lecluse, Jean-Luc Chretien, Franck Molle
+# 19/05/2011
 
 # recuperation des params bdd
 
@@ -19,16 +19,16 @@ fi
 # Nettoyage preliminaire
 
 if [ -e /tmp/test.ldif ]; then
-	rm /tmp/test.ldif
+        rm /tmp/test.ldif
 fi
 if [ -e /tmp/addse3.ldif ]; then
-	rm /tmp/addse3.ldif
+        rm /tmp/addse3.ldif
 fi
 
 # Recuperation des params ldap
 
 clear
-echo "Ce script va déporter l'annuaire du Lcs sur le SE3"
+echo "Ce script va dÃ©porter l'annuaire du Lcs sur le SE3"
 echo "Il est important que l'annuaire du Lcs ait ete parametre en concordance avec celui du SE3 (meme baseDN, meme pass..."
 echo ""
 echo "Entrez l'adresse du SE3"
@@ -36,42 +36,42 @@ read LDAPIP
 
 OLDLDAPIP=`echo "SELECT value FROM params WHERE name='ldap_server'" | mysql -h $dbhost $dbname -u $dbuser -p$dbpass -N`
 if [ -z "$OLDLDAPIP" ]; then
-        echo "Impossible d'accéder au paramètre LDAPIP"
+        echo "Impossible d'accÃ©der au paramÃ¨tre LDAPIP"
         exit 1
 fi
 BASEDN=`echo "SELECT value FROM params WHERE name='ldap_base_dn'" | mysql -h $dbhost $dbname -u $dbuser -p$dbpass -N`
 if [ -z "$BASEDN" ]; then
-        echo "Impossible d'accéder au paramètre BASEDN"
+        echo "Impossible d'accÃ©der au paramÃ¨tre BASEDN"
         exit 1
 fi
 ADMINRDN=`echo "SELECT value FROM params WHERE name='adminRdn'" | mysql -h $dbhost $dbname -u $dbuser -p$dbpass -N`
 if [ -z "$ADMINRDN" ]; then
-        echo "Impossible d'accéder au paramètre ADMINRDN"
+        echo "Impossible d'accÃ©der au paramÃ¨tre ADMINRDN"
         exit 1
 fi
 ADMINPW=`echo "SELECT value FROM params WHERE name='adminPw'" | mysql -h $dbhost $dbname -u $dbuser -p$dbpass -N`
 if [ -z "$ADMINPW" ]; then
-        echo "Impossible d'accéder au paramètre ADMINPW"
+        echo "Impossible d'accÃ©der au paramÃ¨tre ADMINPW"
         exit 1
 fi
 PEOPLERDN=`echo "SELECT value FROM params WHERE name='peopleRdn'" | mysql -h $dbhost $dbname -u $dbuser -p$dbpass -N`
 if [ -z "$PEOPLERDN" ]; then
-        echo "Impossible d'accéder au paramètre PEOPLERDN"
+        echo "Impossible d'accÃ©der au paramÃ¨tre PEOPLERDN"
         exit 1
 fi
 GROUPSRDN=`echo "SELECT value FROM params WHERE name='groupsRdn'" | mysql -h $dbhost $dbname -u $dbuser -p$dbpass -N`
 if [ -z "$GROUPSRDN" ]; then
-        echo "Impossible d'accéder au paramètre GROUPSRDN"
+        echo "Impossible d'accÃ©der au paramÃ¨tre GROUPSRDN"
         exit 1
 fi
 RIGHTSRDN=`echo "SELECT value FROM params WHERE name='rightsRdn'" | mysql -h $dbhost $dbname -u $dbuser -p$dbpass -N`
 if [ -z "$RIGHTSRDN" ]; then
-        echo "Impossible d'accéder au paramètre RIGHTSRDN"
+        echo "Impossible d'accÃ©der au paramÃ¨tre RIGHTSRDN"
         exit 1
 fi
 DOMAIN=`echo "SELECT value FROM params WHERE name='domain'" | mysql -h $dbhost $dbname -u $dbuser -p$dbpass -N`
 if [ -z "$DOMAIN" ]; then
-        echo "Impossible d'accéder au paramètre DOMAIN"
+        echo "Impossible d'accÃ©der au paramÃ¨tre DOMAIN"
         exit 1
 fi
 
@@ -82,31 +82,30 @@ GROUPSR=`echo $GROUPSRDN |cut -d = -f 2`
 ldapsearch -xLLL -h $LDAPIP -D $ADMINRDN,$BASEDN -w $ADMINPW uid=admin uid> /tmp/test.ldif || ERR=1
 
 if [ "$ERR" = "1" ]; then
-	echo "Erreur de connexion a l'annuaire de SE3"
-	exit 1
+        echo "Erreur de connexion a l'annuaire de SE3"
+        exit 1
 fi
 
-# Sauvegarde de l'annuaire avant moulinage
+# Sauvegarde branche rights
 
-ldapsearch -xLLL -h 127.0.0.1 -D $ADMINRDN,$BASEDN -w $ADMINPW "cn=lcs-users" > /tmp/addse3.ldif
-ldapsearch -xLLL -h 127.0.0.1 -D $ADMINRDN,$BASEDN -w $ADMINPW "cn=lcs_is_admin" >> /tmp/addse3.ldif
-ldapsearch -xLLL -h 127.0.0.1 -D $ADMINRDN,$BASEDN -w $ADMINPW "cn=slis_is_admin" >> /tmp/addse3.ldif
-ldapsearch -xLLL -h 127.0.0.1 -D $ADMINRDN,$BASEDN -w $ADMINPW "cn=stats_can_read" >> /tmp/addse3.ldif
+ldapsearch -xLLL -h 127.0.0.1 -b $RIGHTSRDN,$BASEDN "cn=*" > /tmp/addse3.ldif
+
+
 echo "dn: uid=webmaster.etab,$PEOPLERDN,$BASEDN" >> /tmp/addse3.ldif
 ldapsearch -xLLL -h 127.0.0.1 -D $ADMINRDN,$BASEDN -w $ADMINPW "uid=webmaster.etab" |grep -v uidNumber | grep -v "^dn: " | grep ":" >> /tmp/addse3.ldif
 
 getent passwd 598 || OKW=1
 if [ "$OKW" = "1" ]; then
-	echo "uidNumber: 598" >> /tmp/addse3.ldif
+        echo "uidNumber: 598" >> /tmp/addse3.ldif
 else
-	echo "Entrer un uidNumber libre pour webmaster.etab"
-	read uidn
-	echo "uidNumber: $uidn" >> /tmp/addse3.ldif
+        echo "Entrer un uidNumber libre pour webmaster.etab"
+        read uidn
+        echo "uidNumber: $uidn" >> /tmp/addse3.ldif
 fi
 
 ldapadd -x -c -h $LDAPIP -D $ADMINRDN,$BASEDN -w $ADMINPW -f /tmp/addse3.ldif
 
-# modif de la conf postfix 
+# modif de la conf postfix
 echo "server_host = $LDAPIP">/etc/postfix/ldap-aliases.cf
 echo "search_base = $BASEDN">>/etc/postfix/ldap-aliases.cf
 echo "query_filter = (mail=%s@$DOMAIN)">>/etc/postfix/ldap-aliases.cf
@@ -115,16 +114,17 @@ chmod 644 /etc/postfix/ldap-aliases.cf
 
 # Modif de la conf Lcs pour pointer sur SE3
 echo "ldap_server $OLDLDAPIP $LDAPIP">/tmp/params_lcs
-/usr/share/lcs/scripts/edit_params.sh 
+/usr/share/lcs/scripts/edit_params.sh
 
 # Modif du param ldap_server dans la BDD
 echo "UPDATE params SET value=\"$LDAPIP\" WHERE name='ldap_server'" | mysql -h $dbhost $dbname -u $dbuser -p$dbpass -N
 
 # Application des droits
 if [ -d /home/admin ]; then
-	rm -r /home/admin
+	chown -R admin /home/admin
 fi
 chown -R webmaster.etab /home/webmaster.etab/public_html/
 chgrp -R lcs-users /home/*
 /usr/share/lcs/sbin/groupAddUser.pl www-data lcs-users
 /etc/init.d/apache2 restart
+  

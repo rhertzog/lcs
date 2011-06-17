@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: import_communes.php 3965 2009-12-22 18:45:11Z crob $
+ * $Id: import_communes.php 6746 2011-04-04 05:59:18Z crob $
  *
- * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -193,8 +193,9 @@ if(isset($step)) {
 if($stop=='y') {
 	echo "checked ";
 }
-echo "/> <a href='#' onmouseover=\"afficher_div('div_stop','y',10,20);\">Stop</a>
-</form>\n";
+echo "/> <a href='#' onmouseover=\"afficher_div('div_stop','y',10,20);\">Stop</a>";
+echo add_token_field();
+echo "</form>\n";
 		echo "</div>\n";
 
 		echo creer_div_infobulle("div_stop","","","Ce bouton permet s'il est coché d'interrompre les passages automatiques à la page suivante","",12,0,"n","n","y","n");
@@ -230,7 +231,7 @@ function test_stop(num,compteur,nblig) {
 	if(stop=='n') {
 		//setTimeout(\"document.location.replace('".$_SERVER['PHP_SELF']."?step=1')\",2000);
 		//document.location.replace('".$_SERVER['PHP_SELF']."?step='+num+'&amp;stop='+stop);
-		document.location.replace('".$_SERVER['PHP_SELF']."?step='+num+'&compteur='+compteur+'&nblig='+nblig+'&amp;stop='+stop);
+		document.location.replace('".$_SERVER['PHP_SELF']."?step='+num+'&compteur='+compteur+'&nblig='+nblig+'&stop='+stop+'".add_token_in_url(false)."');
 	}
 }
 
@@ -262,8 +263,8 @@ function test_stop_suite(num) {
 
 	document.location.replace('".$_SERVER['PHP_SELF']."?step='+num";
 // AJOUT A FAIRE VALEUR STOP
-echo "+'&amp;stop='+stop";
-
+echo "+'&stop='+stop";
+echo "+'".add_token_in_url(false)."'";
 echo ");
 }
 
@@ -279,6 +280,7 @@ echo "<a href=\"index.php\"><img src='../images/icons/back.png' alt='Retour' cla
 // On fournit les fichiers CSV générés depuis les XML de SCONET...
 //if (!isset($is_posted)) {
 if(!isset($step)) {
+	echo " | <a href=\"../utilitaires/import_pays.php\">Import des pays</a>";
 	echo "</p>\n";
 
 	echo "<h2>Import des communes de naissance des élèves</h2>\n";
@@ -374,7 +376,7 @@ if(!isset($step)) {
 Ce fichier est volumineux (<i>la France compte quelques communes;o</i>).<br />
 Il serait dommage de faire enfler inutilement votre base en la remplissant avec toutes les communes de France.<br />
 Cette page va donc parcourir le fichier, remplir une table temporaire et n'en retenir finalement que les communes correspondant à vos élèves.<br />
-Le fichier à fournir ci-dessous peut être téléchargé ici&nbsp;: <a href='https://www.sylogix.org/attachments/114/communes.csv.zip'>https://www.sylogix.org/attachments/114/communes.csv.zip</a></p>\n";
+Le fichier à fournir ci-dessous peut être téléchargé ici&nbsp;: <a href='https://www.sylogix.org/attachments/647/communes1102.csv.zip'>https://www.sylogix.org/attachments/647/communes1102.csv.zip</a></p>\n";
 
 		echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
 	
@@ -395,7 +397,9 @@ Le fichier à fournir ci-dessous peut être téléchargé ici&nbsp;: <a href='https:/
 		//echo "<input type='hidden' name='stop' id='id_form_stop' value='$stop' />\n";
 		echo "<input type='checkbox' name='stop' id='id_form_stop' value='y' /><label for='id_form_stop' style='cursor: pointer;'> Désactiver le mode automatique.</label></p>\n";
 		//==============================
-	
+
+		echo add_token_field();
+
 		echo "<p><input type='submit' value='Valider' /></p>\n";
 		echo "</form>\n";
 	
@@ -408,7 +412,10 @@ else {
 	if($step>0) {
 		echo " | <a href=\"".$_SERVER['PHP_SELF']."\">Import des communes</a>";
 	}
+	echo " | <a href=\"../utilitaires/import_pays.php\">Import des pays</a>";
 	echo "</p>\n";
+
+	check_token(false);
 
 	//echo "\$step=$step<br />\n";
 
@@ -577,11 +584,11 @@ else {
 					}
 
 					echo "<script type='text/javascript'>
-	setTimeout(\"test_stop('1',0,$nblig)\",3000);
+	setTimeout(\"test_stop('1',1,$nblig)\",3000);
 </script>\n";
 
 					//echo "<a href=\"javascript:test_stop('1',0,$nblig)\">Suite</a>";
-					echo "<a href=\"".$_SERVER['PHP_SELF']."?step=1&amp;compteur=1&amp;nblig=$nblig\">Suite</a>";
+					echo "<a href=\"".$_SERVER['PHP_SELF']."?step=1&amp;compteur=1&amp;nblig=$nblig".add_token_in_url()."\">Suite</a>";
 
 					require("../lib/footer.inc.php");
 					die();
@@ -677,27 +684,42 @@ else {
 				}
 				else {
 					if($nb_eleves_a_traiter==1) {
-						echo "<p>Un lieu de naissance n'a pas été trouvé et le fichier communes.csv a été entièrement parcouru (???)&nbsp;: \n";
+						echo "<p>Un lieu de naissance n'a pas été trouvé et le fichier communes.csv a été entièrement parcouru&nbsp;: \n";
 					}
 					else {
 						echo "<p>Le lieu de naissance n'a pas été trouvé pour $nb_eleves_a_traiter élèves et le fichier communes.csv a été entièrement parcouru (???)&nbsp;: ";
 					}
 	
 					// A FAIRE: Lister les élèves
-					$sql="SELECT e.login,e.nom,e.prenom,e.lieu_naissance FROM tempo2 t, eleves e WHERE e.login=t.col1 ORDER BY e.nom, e.prenom;";
+					$sql="SELECT e.login,e.nom,e.prenom,e.lieu_naissance, t.col2 FROM tempo2 t, eleves e WHERE e.login=t.col1 ORDER BY e.nom, e.prenom;";
 					$res=mysql_query($sql);
 					$cpt=0;
 					if(mysql_num_rows($res)==0) {
 						echo "Aucun élève trouvé";
+						echo ".</p>\n";
 					}
 					else {
+						echo "<table class='boireaus' summary=\"Tableau des élèves pour lequel le lieu de naissance n'est pas dans le CSV.\">\n";
+						echo "<tr>\n";
+						echo "<th>Élève</th>\n";
+						echo "<th>Lieu</th>\n";
+						echo "</tr>\n";
+						$alt=1;
 						while($lig=mysql_fetch_object($res)) {
-							if($cpt>0) {echo ", ";}
-							echo casse_mot($lig->nom)." ".casse_mot($lig->prenom,'majf2');
-							$cpt++;
+							$alt=$alt*(-1);
+							echo "<tr class='lig$alt white_hover'>\n";
+							echo "<td>".casse_mot($lig->nom)." ".casse_mot($lig->prenom,'majf2')."</td>\n";
+							echo "<td>$lig->col2</td>\n";
+							echo "</tr>\n";
+							//if($cpt>0) {echo ", ";}
+							//echo casse_mot($lig->nom)." ".casse_mot($lig->prenom,'majf2')." (<i>$lig->col2</i>)";
+							//$cpt++;
 						}
+						echo "</table>\n";
 					}
-					echo ".</p>\n";
+					//echo ".</p>\n";
+
+					echo "<p><b>NOTE</b>&nbsp;: Les élèves nés dans une commune étrangère peuvent apparaître comme non trouvés dans le fichier de communes.<br />Si les informations entre parenthèses sont correctes, il n'y a pas lieu de s'alarmer.</p>\n";
 				}
 			}
 			else {
@@ -733,7 +755,7 @@ else {
 </script>\n";
 	
 					//echo "<a href=\"javascript:test_stop('1',$compteur,$nblig)\">Suite</a>";
-					echo "<a href=\"".$_SERVER['PHP_SELF']."?step=1&amp;compteur=$compteur&amp;nblig=$nblig\">Suite</a>";
+					echo "<a href=\"".$_SERVER['PHP_SELF']."?step=1&amp;compteur=$compteur&amp;nblig=$nblig".add_token_in_url()."\">Suite</a>";
 				}
 			}
 			break;

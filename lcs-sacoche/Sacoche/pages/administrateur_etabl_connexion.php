@@ -39,7 +39,7 @@ foreach($tab_connexion_mode as $connexion_mode => $mode_texte)
 	foreach($tab_connexion_info[$connexion_mode] as $connexion_nom => $tab_info)
 	{
 		$i_id++;
-		$checked = ( ($connexion_mode==$_SESSION['CONNEXION_MODE']) && ($connexion_nom==$_SESSION['CONNEXION_NOM']) ) ? ' checked="checked"' : '' ;
+		$checked = ( ($connexion_mode==$_SESSION['CONNEXION_MODE']) && ($connexion_nom==$_SESSION['CONNEXION_NOM']) ) ? ' checked' : '' ;
 		$choix .= '<span class="tab"><label for="input_'.$i_id.'"><input type="radio" id="input_'.$i_id.'" name="connexion_mode_nom" value="'.$connexion_mode.'|'.$connexion_nom.'"'.$checked.' /> '.$mode_texte.' &rarr; '.$tab_info['txt'].'</label></span><br />'."\r\n";
 	}
 }
@@ -53,7 +53,7 @@ foreach($tab_connexion_info['cas'] as $connexion_nom => $tab_info)
 
 ?>
 
-<div class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_mode_identification">DOC : Mode d'identification &amp; intégration aux ENT</a></div>
+<div><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_mode_identification">DOC : Mode d'identification &amp; intégration aux ENT</a></span></div>
 
 <hr />
 

@@ -38,8 +38,8 @@ $(document).ready
 		var memo_pilotage = 'clavier';
 		var memo_input_id = false;
 		// tri du tableau (avec jquery.tablesorter.js).
-		var sorting = [[0,1],[2,0]];
-		$('table.form').tablesorter({ headers:{1:{sorter:false},3:{sorter:false},4:{sorter:false}} });
+		var sorting = [[0,1],[3,0]];
+		$('table.form').tablesorter({ headers:{1:{sorter:false},2:{sorter:false},4:{sorter:false},5:{sorter:false}} });
 		function trier_tableau()
 		{
 			if($('table.form tbody tr td').length>1)
@@ -66,10 +66,11 @@ $(document).ready
 			$('#form0').css('visibility','hidden');
 			var new_tr = '';
 			new_tr += '<tr>';
-			new_tr += '<td><input id="f_date" name="f_date" size="9" type="text" value="'+input_date+'" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></td>';
-			new_tr += '<td><input id="f_eleve_nombre" name="f_eleve_nombre" size="10" type="text" value="0 élève" readonly="readonly" /><input id="f_eleve_liste" name="f_eleve_liste" type="hidden" value="" /><q class="choisir_eleve" title="Voir ou choisir les élèves."></q></td>';
+			new_tr += '<td><input id="f_date" name="f_date" size="9" type="text" value="'+input_date+'" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q></td>';
+			new_tr += '<td><input id="box_date" type="checkbox" checked style="vertical-align:-3px" /> <span style="vertical-align:-2px">identique</span><span class="hide"><input id="f_date_visible" name="f_date_visible" size="9" type="text" value="'+input_date+'" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q></span></td>';
+			new_tr += '<td><input id="f_eleve_nombre" name="f_eleve_nombre" size="10" type="text" value="0 élève" readonly /><input id="f_eleve_liste" name="f_eleve_liste" type="hidden" value="" /><q class="choisir_eleve" title="Voir ou choisir les élèves."></q></td>';
 			new_tr += '<td><input id="f_info" name="f_info" size="20" type="text" value="" /></td>';
-			new_tr += '<td><input id="f_compet_nombre" name="f_compet_nombre" size="10" type="text" value="0 item" readonly="readonly" /><input id="f_compet_liste" name="f_compet_liste" type="hidden" value="" /><q class="choisir_compet" title="Voir ou choisir les items."></q></td>';
+			new_tr += '<td><input id="f_compet_nombre" name="f_compet_nombre" size="10" type="text" value="0 item" readonly /><input id="f_compet_liste" name="f_compet_liste" type="hidden" value="" /><q class="choisir_compet" title="Voir ou choisir les items."></q></td>';
 			new_tr += '<td class="nu"><input id="f_action" name="f_action" type="hidden" value="'+mode+'" /><q class="valider" title="Valider l\'ajout de cette évaluation."></q><q class="annuler" title="Annuler l\'ajout de cette évaluation."></q> <label id="ajax_msg">&nbsp;</label></td>';
 			new_tr += '</tr>';
 			// Ajouter cette nouvelle ligne
@@ -87,22 +88,38 @@ $(document).ready
 			mode = $(this).attr('class');
 			afficher_masquer_images_action('hide');
 			$('#form0').css('visibility','hidden');
+			$('#p_alerte').show();
 			// Récupérer les informations de la ligne concernée
 			var ref           = $(this).parent().attr('lang');
-			var date          = $(this).parent().prev().prev().prev().prev().html();
+			var date          = $(this).parent().prev().prev().prev().prev().prev().html();
+			var date_visible  = $(this).parent().prev().prev().prev().prev().html();
 			var nombre_eleve  = $(this).parent().prev().prev().prev().html();
 			var liste_eleve   = $(this).parent().prev().prev().prev().attr('lang');
 			var info          = $(this).parent().prev().prev().html();
 			var nombre_compet = $(this).parent().prev().html();
 			var liste_compet  = $(this).parent().prev().attr('lang');
-			    date = date.substring(17,date.length); // enlever la date mysql cachée
+			date = date.substring(17,date.length); // enlever la date mysql cachée
+			if(date_visible=='identique')
+			{
+				var checked = ' checked';
+				var classe1 = '';
+				var classe2 = ' class="hide"';
+				date_visible = date;
+			}
+			else
+			{
+				var checked = '';
+				var classe1 = ' class="hide"';
+				var classe2 = '';
+			}
 			// Fabriquer la ligne avec les éléments de formulaires
 			var new_tr = '';
 			new_tr += '<tr>';
-			new_tr += '<td><input id="f_date" name="f_date" size="9" type="text" value="'+date+'" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></td>';
-			new_tr += '<td><input id="f_eleve_nombre" name="f_eleve_nombre" size="10" type="text" value="'+nombre_eleve+'" readonly="readonly" /><input id="f_eleve_liste" name="f_eleve_liste" type="hidden" value="'+liste_eleve+'" /><q class="choisir_eleve" title="Voir ou choisir les élèves."></q></td>';
+			new_tr += '<td><input id="f_date" name="f_date" size="9" type="text" value="'+date+'" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q></td>';
+			new_tr += '<td><input id="box_date" type="checkbox"'+checked+' style="vertical-align:-3px" /> <span'+classe1+' style="vertical-align:-2px">identique</span><span'+classe2+'><input id="f_date_visible" name="f_date_visible" size="9" type="text" value="'+date_visible+'" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q></span></td>';
+			new_tr += '<td><input id="f_eleve_nombre" name="f_eleve_nombre" size="10" type="text" value="'+nombre_eleve+'" readonly /><input id="f_eleve_liste" name="f_eleve_liste" type="hidden" value="'+liste_eleve+'" /><q class="choisir_eleve" title="Voir ou choisir les élèves."></q></td>';
 			new_tr += '<td><input id="f_info" name="f_info" size="'+Math.max(info.length,20)+'" type="text" value="'+info+'" /></td>';
-			new_tr += '<td><input id="f_compet_nombre" name="f_compet_nombre" size="10" type="text" value="'+nombre_compet+'" readonly="readonly" /><input id="f_compet_liste" name="f_compet_liste" type="hidden" value="'+liste_compet+'" /><q class="choisir_compet" title="Voir ou choisir les items."></q></td>';
+			new_tr += '<td><input id="f_compet_nombre" name="f_compet_nombre" size="10" type="text" value="'+nombre_compet+'" readonly /><input id="f_compet_liste" name="f_compet_liste" type="hidden" value="'+liste_compet+'" /><q class="choisir_compet" title="Voir ou choisir les items."></q></td>';
 			new_tr += '<td class="nu"><input id="f_action" name="f_action" type="hidden" value="'+mode+'" /><input id="f_ref" name="f_ref" type="hidden" value="'+ref+'" /><q class="valider" title="Valider les modifications de cette évaluation."></q><q class="annuler" title="Annuler les modifications de cette évaluation."></q> <label id="ajax_msg">&nbsp;</label></td>';
 			new_tr += '</tr>';
 			// Cacher la ligne en cours et ajouter la nouvelle
@@ -123,20 +140,35 @@ $(document).ready
 			$('#form0').css('visibility','hidden');
 			// Récupérer les informations de la ligne concernée
 			var ref           = $(this).parent().attr('lang');
-			var date          = $(this).parent().prev().prev().prev().prev().html();
+			var date          = $(this).parent().prev().prev().prev().prev().prev().html();
+			var date_visible  = $(this).parent().prev().prev().prev().prev().html();
 			var nombre_eleve  = $(this).parent().prev().prev().prev().html();
 			var liste_eleve   = $(this).parent().prev().prev().prev().attr('lang');
 			var info          = $(this).parent().prev().prev().html();
 			var nombre_compet = $(this).parent().prev().html();
 			var liste_compet  = $(this).parent().prev().attr('lang');
-			    date          = date.substring(17,date.length); // enlever la date mysql cachée
+			date = date.substring(17,date.length); // enlever la date mysql cachée
+			if(date_visible=='identique')
+			{
+				var checked = ' checked';
+				var classe1 = '';
+				var classe2 = ' class="hide"';
+				date_visible = date;
+			}
+			else
+			{
+				var checked = '';
+				var classe1 = ' class="hide"';
+				var classe2 = '';
+			}
 			// Fabriquer la ligne avec les éléments de formulaires
 			var new_tr = '';
 			new_tr += '<tr>';
-			new_tr += '<td><input id="f_date" name="f_date" size="9" type="text" value="'+date+'" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></td>';
-			new_tr += '<td><input id="f_eleve_nombre" name="f_eleve_nombre" size="10" type="text" value="'+nombre_eleve+'" readonly="readonly" /><input id="f_eleve_liste" name="f_eleve_liste" type="hidden" value="'+liste_eleve+'" /><q class="choisir_eleve" title="Voir ou choisir les élèves."></q></td>';
+			new_tr += '<td><input id="f_date" name="f_date" size="9" type="text" value="'+date+'" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q></td>';
+			new_tr += '<td><input id="box_date" type="checkbox"'+checked+' style="vertical-align:-3px" /> <span'+classe1+' style="vertical-align:-2px">identique</span><span'+classe2+'><input id="f_date_visible" name="f_date_visible" size="9" type="text" value="'+date_visible+'" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q></span></td>';
+			new_tr += '<td><input id="f_eleve_nombre" name="f_eleve_nombre" size="10" type="text" value="'+nombre_eleve+'" readonly /><input id="f_eleve_liste" name="f_eleve_liste" type="hidden" value="'+liste_eleve+'" /><q class="choisir_eleve" title="Voir ou choisir les élèves."></q></td>';
 			new_tr += '<td><input id="f_info" name="f_info" size="'+Math.max(info.length,20)+'" type="text" value="'+info+'" /></td>';
-			new_tr += '<td><input id="f_compet_nombre" name="f_compet_nombre" size="10" type="text" value="'+nombre_compet+'" readonly="readonly" /><input id="f_compet_liste" name="f_compet_liste" type="hidden" value="'+liste_compet+'" /><q class="choisir_compet" title="Voir ou choisir les items."></q></td>';
+			new_tr += '<td><input id="f_compet_nombre" name="f_compet_nombre" size="10" type="text" value="'+nombre_compet+'" readonly /><input id="f_compet_liste" name="f_compet_liste" type="hidden" value="'+liste_compet+'" /><q class="choisir_compet" title="Voir ou choisir les items."></q></td>';
 			new_tr += '<td class="nu"><input id="f_action" name="f_action" type="hidden" value="'+mode+'" /><input id="f_ref" name="f_ref" type="hidden" value="'+ref+'" /><q class="valider" title="Valider l\'ajout de cette évaluation."></q><q class="annuler" title="Annuler l\'ajout de cette évaluation."></q> <label id="ajax_msg">&nbsp;</label></td>';
 			new_tr += '</tr>';
 			// Ajouter cette nouvelle ligne
@@ -169,7 +201,7 @@ $(document).ready
 			mode = $(this).attr('class');
 			// Récupérer les informations de la ligne concernée
 			var ref    = $(this).parent().attr('lang');
-			var date   = $(this).parent().prev().prev().prev().prev().html();
+			var date   = $(this).parent().prev().prev().prev().prev().prev().html();
 			var groupe = $(this).parent().prev().prev().prev().html();
 			var info   = $(this).parent().prev().prev().html();
 			    date   = date.substring(17,date.length); // garder la date française
@@ -195,6 +227,7 @@ $(document).ready
 				case 'modifier':
 					$(this).parent().parent().remove();
 					$("table.form tr").show(); // $(this).parent().parent().prev().show(); pose pb si tri du tableau entre temps
+					$('#p_alerte').hide();
 					break;
 				case 'supprimer':
 					$(this).parent().remove();
@@ -232,11 +265,12 @@ $(document).ready
 		{
 			mode = $(this).attr('class');
 			// Récupérer les informations de la ligne concernée
-			var ref  = $(this).parent().attr('lang');
-			var date = $(this).parent().prev().prev().prev().prev().html();
-			var info = $(this).parent().prev().prev().html();
-			    date1  = date.substring(3,13); // garder la date mysql
-			    date2  = date.substring(17,date.length); // garder la date française
+			var ref          = $(this).parent().attr('lang');
+			var date         = $(this).parent().prev().prev().prev().prev().prev().html();
+			var date_visible = $(this).parent().prev().prev().prev().prev().html();
+			var info         = $(this).parent().prev().prev().html();
+			date1 = date.substring(3,13); // garder la date mysql
+			date2 = date.substring(17,date.length); // garder la date française
 			// Masquer le tableau ; Afficher la zone associée et charger son contenu
 			$('#form0 , #form1').hide('fast');
 			$('#msg_import').removeAttr("class").html('&nbsp;');
@@ -248,11 +282,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action='+mode+'&f_ref='+ref+'&f_date='+date+'&f_info='+info+'&f_descriptif='+'Élèves sélectionnés'+':::'+info+':::'+date2,
+					data : 'f_action='+mode+'&f_ref='+ref+'&f_date='+date1+'&f_info='+info+'&f_date_visible='+date_visible+'&f_descriptif='+'Élèves sélectionnés'+':::'+info+':::'+date2,
 					dataType : "html",
 					error : function(msg,string)
 					{
-						$('#msg_saisir').removeAttr("class").addClass("alerte").html('Echec de la connexion ! Veuillez recommencer. <button id="fermer_zone_saisir" type="button"><img alt="" src="./_img/bouton/annuler.png" /> Annuler / Retour</button>');
+						$('#msg_saisir').removeAttr("class").addClass("alerte").html('Echec de la connexion ! Veuillez recommencer. <button id="fermer_zone_saisir" type="button"><img alt="" src="./_img/bouton/retourner.png" /> Retour</button>');
 						return false;
 					},
 					success : function(responseHTML)
@@ -260,13 +294,14 @@ $(document).ready
 						maj_clock(1);
 						if(responseHTML.substring(0,1)!='<')
 						{
-							$('#msg_saisir').removeAttr("class").addClass("alerte").html(responseHTML+' <button id="fermer_zone_saisir" type="button"><img alt="" src="./_img/bouton/annuler.png" /> Annuler / Retour</button>');
+							$('#msg_saisir').removeAttr("class").addClass("alerte").html(responseHTML+' <button id="fermer_zone_saisir" type="button"><img alt="" src="./_img/bouton/retourner.png" /> Retour</button>');
 						}
 						else
 						{
 							modification = false;
 							$('#msg_saisir').removeAttr("class").html('&nbsp;');
 							$('#table_saisir').html(responseHTML);
+							$('#table_saisir tbody tr th img').hide(0);
 							$('img[title]').tooltip({showURL:false});
 							$('#export_file1').attr("href", $("#filename").val()+ref+'.zip' );
 							$('#export_file4').attr("href", $("#filename").val()+ref+'_sans_notes.pdf' );
@@ -293,7 +328,7 @@ $(document).ready
 			mode = $(this).attr('class');
 			// Récupérer les informations de la ligne concernée
 			var ref  = $(this).parent().attr('lang');
-			var date = $(this).parent().prev().prev().prev().prev().html();
+			var date = $(this).parent().prev().prev().prev().prev().prev().html();
 			var info = $(this).parent().prev().prev().html();
 			    date = date.substring(17,date.length); // garder la date française
 			// Masquer le tableau ; Afficher la zone associée et charger son contenu
@@ -324,6 +359,7 @@ $(document).ready
 						{
 							$('#msg_voir').removeAttr("class").html('&nbsp;');
 							$('#table_voir').html(responseHTML);
+							$('#table_voir tbody tr th img').hide(0);
 							$('#export_file2').attr("href", $("#filename").val()+ref+'.zip' );
 							$('#export_file3').attr("href", $("#filename").val()+ref+'_sans_notes.pdf' );
 							$('#export_file5').attr("href", $("#filename").val()+ref+'_avec_notes.pdf' );
@@ -344,7 +380,7 @@ $(document).ready
 			mode = $(this).attr('class');
 			// Récupérer les informations de la ligne concernée
 			var ref  = $(this).parent().attr('lang');
-			var date = $(this).parent().prev().prev().prev().prev().html();
+			var date = $(this).parent().prev().prev().prev().prev().prev().html();
 			var info = $(this).parent().prev().prev().html();
 			    date = date.substring(17,date.length); // garder la date française
 			// Masquer le tableau ; Afficher la zone associée et charger son contenu
@@ -417,7 +453,7 @@ $(document).ready
 					var id = 'id_'+tab_id[i];
 					if($('#'+id).length)
 					{
-						$('#'+id).attr('checked','checked');
+						$('#'+id).prop('checked',true);
 						$('#'+id).parent().parent().css("display","block");	// les items
 						$('#'+id).parent().parent().parent().parent().css("display","block");	// le thème
 						$('#'+id).parent().parent().parent().parent().parent().parent().css("display","block");	// le domaine
@@ -456,7 +492,7 @@ $(document).ready
 					var id_debut = 'id_'+tab_id[i]+'_';
 					if($('input[id^='+id_debut+']').length)
 					{
-						$('input[id^='+id_debut+']').attr('checked','checked');
+						$('input[id^='+id_debut+']').prop('checked',true);
 						$('input[id^='+id_debut+']').parent().parent().css("display","block");	// le regroupement
 					}
 				}
@@ -531,6 +567,39 @@ $(document).ready
 		$('q.voir_repart').live(     'click' , voir_repart );
 		$('q.choisir_compet').live(  'click' , choisir_compet );
 		$('q.choisir_eleve').live(   'click' , choisir_eleve );
+
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+//	Clic sur le checkbox pour choisir ou non une date visible différente de la date du devoir
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		$('#box_date').live // live est utilisé pour prendre en compte les nouveaux éléments créés
+		('click',
+			function()
+			{
+				if($(this).is(':checked'))
+				{
+					$('#f_date_visible').val($('#f_date').val());
+					$(this).next().show(0).next().hide(0);
+				}
+				else
+				{
+					$(this).next().hide(0).next().show(0);
+				}
+			}
+		);
+
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+//	Reporter la date visible si modif date du devoir et demande dates identiques
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		$('#f_date').live // live est utilisé pour prendre en compte les nouveaux éléments créés
+		('change',
+			function()
+			{
+				if($('#box_date').is(':checked'))
+				{
+					$('#f_date_visible').val($('#f_date').val());
+				}
+			}
+		);
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 //	Clic sur le bouton pour fermer le cadre des items associés à une évaluation (annuler / retour)
@@ -718,7 +787,7 @@ $(document).ready
 		(
 			function()
 			{
-				$('button').attr('disabled','disabled');
+				$('button').prop('disabled',true);
 				$('#msg_imprimer').removeAttr("class").addClass("loader").html("Génération en cours... Veuillez patienter.");
 				$('#zone_imprimer_retour').html("&nbsp;");
 				$.ajax
@@ -730,14 +799,14 @@ $(document).ready
 						dataType : "html",
 						error : function(msg,string)
 						{
-							$('button').removeAttr('disabled');
+							$('button').prop('disabled',false);
 							$('#msg_imprimer').removeAttr("class").addClass("alerte").html('Echec de la connexion ! Veuillez recommencer.');
 							return false;
 						},
 						success : function(responseHTML)
 						{
 							maj_clock(1);
-							$('button').removeAttr('disabled');
+							$('button').prop('disabled',false);
 							if(responseHTML.substring(0,6)!='<hr />')
 							{
 								$('#msg_imprimer').removeAttr("class").addClass("alerte").html(responseHTML);
@@ -771,13 +840,13 @@ $(document).ready
 		);
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Choix de rétrécir ou pas l'affichage sur #table_saisir
+//	Choix de rétrécir ou pas les colonnes sur #table_saisir
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		$('#table_saisir thead tr td input[type="checkbox"]').live // live est utilisé pour prendre en compte les nouveaux éléments créés
+		$('#table_saisir #check_largeur').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
 			function()
 			{
-				var condense = ($(this).is(':checked')) ? 'v' : 'h' ; // h ou v pour horizontal (non condensé) ou vertical (condensé)
+				var condense = ($(this).is(':checked')) ? 'v' : 'h' ; // 'h' ou 'v' pour horizontal (non condensé) ou vertical (condensé)
 				$('#table_saisir tbody').removeAttr("class").addClass(condense);
 				$("#table_saisir thead tr th img").each
 				(
@@ -792,13 +861,13 @@ $(document).ready
 		);
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Choix de rétrécir ou pas l'affichage sur #table_voir
+//	Choix de rétrécir ou pas les colonnes sur #table_voir
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		$('#table_voir thead tr td input[type="checkbox"]').live // live est utilisé pour prendre en compte les nouveaux éléments créés
+		$('#table_voir #check_largeur').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
 			function()
 			{
-				var condense = ($(this).is(':checked')) ? 'v' : 'h' ; // h ou v pour horizontal (non condensé) ou vertical (condensé)
+				var condense = ($(this).is(':checked')) ? 'v' : 'h' ; // 'h' ou 'v' pour horizontal (non condensé) ou vertical (condensé)
 				$("#table_voir thead tr th img").each
 				(
 					function ()
@@ -821,6 +890,27 @@ $(document).ready
 		);
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+//	Choix de rétrécir ou pas les lignes sur #table_saisir ou #table_voir
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		$('#check_hauteur').live // live est utilisé pour prendre en compte les nouveaux éléments créés
+		('click',
+			function()
+			{
+				var table_id = $(this).parent().parent().parent().parent().parent().attr('id');
+				if($(this).is(':checked'))
+				{
+					$("#"+table_id+" tbody tr th div").hide(0);
+					$("#"+table_id+" tbody tr th img").show(0);
+				}
+				else
+				{
+					$("#"+table_id+" tbody tr th img").hide(0);
+					$("#"+table_id+" tbody tr th div").show(0);
+				}
+			}
+		);
+
+//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 //	Gérer la saisie des acquisitions au clavier
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 		$('#table_saisir tbody td input').live // live est utilisé pour prendre en compte les nouveaux éléments créés
@@ -838,22 +928,27 @@ $(document).ready
 						// Une touche d'item a été pressée
 						switch (e.which)
 						{
-							case 8: $(this).val('X').removeAttr("class").addClass('X'); break;				// backspace
-							case 46: $(this).val('X').removeAttr("class").addClass('X'); break;				// suppr
-							case 49: $(this).val('RR').removeAttr("class").addClass('RR'); break;			// 1
-							case 97: $(this).val('RR').removeAttr("class").addClass('RR'); break;			// 1
-							case 50: $(this).val('R').removeAttr("class").addClass('R'); break;				// 2
-							case 98: $(this).val('R').removeAttr("class").addClass('R'); break;				// 2
-							case 51: $(this).val('V').removeAttr("class").addClass('V'); break;				// 3
-							case 99: $(this).val('V').removeAttr("class").addClass('V'); break;				// 3
-							case 52: $(this).val('VV').removeAttr("class").addClass('VV'); break;			// 4
-							case 100: $(this).val('VV').removeAttr("class").addClass('VV'); break;		// 4
-							case 65: $(this).val('ABS').removeAttr("class").addClass('ABS'); break;		// A
-							case 78: $(this).val('NN').removeAttr("class").addClass('NN'); break; 		// N
-							case 68: $(this).val('DISP').removeAttr("class").addClass('DISP'); break;	// D
+							case   8: $(this).val('X').removeAttr("class").addClass('X'); break;				// backspace
+							case  46: $(this).val('X').removeAttr("class").addClass('X'); break;				// suppr
+							case  49: $(this).val('RR').removeAttr("class").addClass('RR'); break;			// 1
+							case  97: $(this).val('RR').removeAttr("class").addClass('RR'); break;			// 1
+							case  50: $(this).val('R').removeAttr("class").addClass('R'); break;				// 2
+							case  98: $(this).val('R').removeAttr("class").addClass('R'); break;				// 2
+							case  51: $(this).val('V').removeAttr("class").addClass('V'); break;				// 3
+							case  99: $(this).val('V').removeAttr("class").addClass('V'); break;				// 3
+							case  52: $(this).val('VV').removeAttr("class").addClass('VV'); break;			// 4
+							case 100: $(this).val('VV').removeAttr("class").addClass('VV'); break;			// 4
+							case  65: $(this).val('ABS').removeAttr("class").addClass('ABS'); break;		// A
+							case  78: $(this).val('NN').removeAttr("class").addClass('NN'); break; 			// N
+							case  68: $(this).val('DISP').removeAttr("class").addClass('DISP'); break;	// D
 						}
 						$(this).parent().css("background-color","#F6D").focus();
-						modification = true;
+						if(modification==false)
+						{
+							$('#fermer_zone_saisir').html('<img alt="" src="./_img/bouton/annuler.png" /> Annuler / Retour');
+							modification = true;
+						}
+						$('#msg_saisir').removeAttr("class").html("&nbsp;");
 						// Passer à la case suivante
 						ligne++;
 						var new_id = 'C'+colonne+'L'+ligne;
@@ -960,7 +1055,12 @@ $(document).ready
 				$("input#"+memo_input_id).val(valeur).removeAttr("class").addClass(valeur);
 				$(this).parent().children("img").removeAttr("class");
 				$(this).addClass("on").parent().parent().css("background-color","#F6D");
-				modification = true;
+				if(modification==false)
+				{
+					$('#fermer_zone_saisir').html('<img alt="" src="./_img/bouton/annuler.png" /> Annuler / Retour');
+					modification = true;
+				}
+				$('#msg_saisir').removeAttr("class").html("&nbsp;");
 			}
 		);
 
@@ -1002,6 +1102,12 @@ $(document).ready
 					{
 						var s = (compteur>1) ? 's' : '' ;
 						$('#msg_report').removeAttr("class").addClass("valide").html(compteur+' report'+s+' effectué'+s+'.');
+						if(modification==false)
+						{
+							$('#fermer_zone_saisir').html('<img alt="" src="./_img/bouton/annuler.png" /> Annuler / Retour');
+							modification = true;
+						}
+						$('#msg_saisir').removeAttr("class").html("&nbsp;");
 					}
 				}
 			}
@@ -1011,7 +1117,7 @@ $(document).ready
 //	Clic sur une image pour modifier l'ordre des items d'une évaluation
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 
-		$('input[type=image]').live
+		$('#div_ordonner input[type=image]').live
 		('click',
 			function()
 			{
@@ -1020,8 +1126,12 @@ $(document).ready
 				para_next = para_clic.next('div');
 				para_clic.before(para_next);
 				para_clic.after(para_prev);
-				modification = true;
-				$('#ajax_msg').removeAttr("class").html("&nbsp;");
+				if(modification==false)
+				{
+					$('#fermer_zone_ordonner').html('<img alt="" src="./_img/bouton/annuler.png" /> Annuler / Retour');
+					modification = true;
+					$('#ajax_msg').removeAttr("class").html("&nbsp;");
+				}
 				return false;
 			}
 		);
@@ -1034,7 +1144,7 @@ $(document).ready
 		('click',
 			function()
 			{
-				if(!modification)
+				if(modification==false)
 				{
 					$('#ajax_msg').removeAttr("class").addClass("alerte").html("Aucune modification effectuée !");
 				}
@@ -1046,14 +1156,14 @@ $(document).ready
 					(
 						function()
 						{
-							var test_id = $(this).attr('id').substring(1);
-							if(test_id)
+							var test_id = $(this).attr('id');
+							if(typeof(test_id)!='undefined')
 							{
-								tab_id.push(test_id);
+								tab_id.push(test_id.substring(1));
 							}
 						}
 					);
-					$('button').attr('disabled','disabled');
+					$('button').prop('disabled',true);
 					$('#ajax_msg').removeAttr("class").addClass("loader").html("Demande envoyée... Veuillez patienter.");
 					$.ajax
 					(
@@ -1064,14 +1174,14 @@ $(document).ready
 							dataType : "html",
 							error : function(msg,string)
 							{
-								$('button').removeAttr('disabled');
+								$('button').prop('disabled',false);
 								$('#ajax_msg').removeAttr("class").addClass("alerte").html('Echec de la connexion ! Veuillez recommencer.');
 								return false;
 							},
 							success : function(responseHTML)
 							{
 								maj_clock(1);
-								$('button').removeAttr('disabled');
+								$('button').prop('disabled',false);
 								if(responseHTML.substring(0,1)!='<')
 								{
 									$('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);
@@ -1080,6 +1190,7 @@ $(document).ready
 								{
 									modification = false;
 									$('#ajax_msg').removeAttr("class").addClass("valide").html("Ordre enregistré !");
+									$('#fermer_zone_ordonner').html('<img alt="" src="./_img/bouton/retourner.png" /> Retour');
 								}
 							}
 						}
@@ -1096,13 +1207,13 @@ $(document).ready
 		('click',
 			function()
 			{
-				if(!modification)
+				if(modification==false)
 				{
 					$('#msg_saisir').removeAttr("class").addClass("alerte").html("Aucune modification effectuée !");
 				}
 				else
 				{
-					$('button').attr('disabled','disabled');
+					$('button').prop('disabled',true);
 					$('#msg_saisir').removeAttr("class").addClass("loader").html("Demande envoyée... Veuillez patienter.");
 					$.ajax
 					(
@@ -1113,14 +1224,14 @@ $(document).ready
 							dataType : "html",
 							error : function(msg,string)
 							{
-								$('button').removeAttr('disabled');
+								$('button').prop('disabled',false);
 								$('#msg_saisir').removeAttr("class").addClass("alerte").html('Echec de la connexion ! Veuillez recommencer.');
 								return false;
 							},
 							success : function(responseHTML)
 							{
 								maj_clock(1);
-								$('button').removeAttr('disabled');
+								$('button').prop('disabled',false);
 								if(responseHTML.substring(0,1)!='<')
 								{
 									$('#msg_saisir').removeAttr("class").addClass("alerte").html(responseHTML);
@@ -1129,6 +1240,7 @@ $(document).ready
 								{
 									modification = false;
 									$('#msg_saisir').removeAttr("class").addClass("valide").html("Saisies enregistrées !");
+									$('#fermer_zone_saisir').html('<img alt="" src="./_img/bouton/retourner.png" /> Retour');
 									colorer_cellules();
 								}
 							}
@@ -1179,6 +1291,7 @@ $(document).ready
 				rules :
 				{
 					f_date         : { required:true , dateITA:true },
+					f_date_visible : { required:function(){return !$('#box_date').is(':checked');} , dateITA:true },
 					f_eleve_liste  : { required:true },
 					f_info         : { required:false , maxlength:60 },
 					f_compet_liste : { required:true }
@@ -1186,6 +1299,7 @@ $(document).ready
 				messages :
 				{
 					f_date         : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
+					f_date_visible : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
 					f_eleve_liste  : { required:"élève(s) manquant(s)" },
 					f_info         : { maxlength:"60 caractères maximum" },
 					f_compet_liste : { required:"item(s) manquant(s)" }
@@ -1255,7 +1369,7 @@ $(document).ready
 			maj_clock(1);
 			please_wait = false;
 			$('#ajax_msg').parent().children('q').show();
-			if(responseHTML.substring(0,1)!='<')
+			if(responseHTML.substring(0,2)!='<t')
 			{
 				$('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);
 			}
@@ -1266,7 +1380,7 @@ $(document).ready
 				switch (action)
 				{
 					case 'ajouter':
-						$('table.form tbody tr td.nu').parent().remove(); // En cas de tableau avec une ligne vide pour la conformité XHTML
+						$('table.form tbody tr td[colspan]').parent().remove(); // En cas de tableau avec une ligne vide pour la conformité XHTML
 					case 'dupliquer':
 						var new_tr = '<tr class="new">'+responseHTML+'</tr>';
 						$('table.form tbody').append(new_tr);
@@ -1275,6 +1389,7 @@ $(document).ready
 					case 'modifier':
 						$('q.valider').parent().parent().prev().addClass("new").html(responseHTML).show();
 						$('q.valider').parent().parent().remove();
+						$('#p_alerte').hide();
 						break;
 					case 'supprimer':
 						$('q.valider').parent().parent().parent().remove();
@@ -1417,7 +1532,7 @@ $(document).ready
 			}
 			else
 			{
-				$('button').attr('disabled','disabled');
+				$('button').prop('disabled',true);
 				$('#msg_import').removeAttr("class").addClass("loader").html('Fichier envoyé... Veuillez patienter.');
 				return true;
 			}
@@ -1425,7 +1540,7 @@ $(document).ready
 
 		function retourner_fichier(fichier_nom,responseHTML)	// Attention : avec jquery.ajaxupload.js, IE supprime mystérieusement les guillemets et met les éléments en majuscules dans responseHTML.
 		{
-			$('button').removeAttr('disabled');
+			$('button').prop('disabled',false);
 			if(responseHTML.substring(0,1)!='|')
 			{
 				$('#msg_import').removeAttr("class").addClass("alerte").html(responseHTML);

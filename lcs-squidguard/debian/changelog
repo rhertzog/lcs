@@ -1,3 +1,11 @@
+lcs-squidguard (2.4.8) Lcs; urgency=low
+
+  * Fix accentued characters in menu and scipts php 
+  * Change charset to UTF-8 in doc/html 
+  * Make a 2.4.8 stable release
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 May 2011 14:11:44 +0200
+
 lcs-squidguard (2.4.7.1) Lcs; urgency=low
 
   * Modify package for new mnu.d structure

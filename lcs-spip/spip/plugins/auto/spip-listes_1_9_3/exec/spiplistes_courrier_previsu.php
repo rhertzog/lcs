@@ -1,9 +1,11 @@
 <?php
-
-// exec/spiplistes_courrier_previsu.php
-// _SPIPLISTES_EXEC_COURRIER_PREVISUE
-
-// utilise par _SPIPLISTES_EXEC_COURRIER_EDIT
+/**
+ * @version Original From SPIP-Listes-V :: Id: spiplistes_listes_forcer_abonnement.php paladin@quesaco.org
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
 
 /******************************************************************************************/
 /* SPIP-listes est un systeme de gestion de listes d'information par email pour SPIP      */
@@ -23,9 +25,6 @@
 /* Free Software Foundation,                                                              */
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
-// $LastChangedRevision: 28122 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2009-04-27 05:38:18 +0200 (lun, 27 avr 2009) $
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
@@ -67,6 +66,10 @@ function exec_spiplistes_courrier_previsu () {
 	include_spip('inc/spiplistes_api_abstract_sql');
 	include_spip('public/assembler');
 	
+	spiplistes_debug_log ('ACTION: exec_spiplistes_courrier_previsu()');
+
+	$eol = PHP_EOL;
+	
 	$int_values = array(
 		'id_rubrique', 'id_mot', 'id_courrier', 'id_liste'
 		, 'annee', 'mois', 'jour', 'heure', 'minute'
@@ -84,6 +87,10 @@ function exec_spiplistes_courrier_previsu () {
 	);
 	foreach(array_merge($str_values, $int_values) as $key) {
 		$$key = _request($key);
+		// méfiance sur jQuery 1.4.4 qui semble
+		// ne plus transmettre les vars qu'en 1.4.2
+		// @todo: a creuser, verifier les autres vars ajax transmises
+		//spiplistes_debug_log('PREVISU: '.$key.': '.$$key);
 	}
 	foreach($int_values as $key) {
 		$$key = intval($$key);
@@ -109,7 +116,7 @@ function exec_spiplistes_courrier_previsu () {
 		
 	$texte_intro = $texte_patron =
 		$tampon_html = $tampon_texte =
-		$sommaire_html = "";
+		$sommaire_html = '';
 	
 	if(spiplistes_pref_lire('opt_ajout_tampon_editeur') == 'oui') {
 		list($tampon_html, $tampon_texte) = spiplistes_tampon_assembler_patron();
@@ -128,7 +135,7 @@ function exec_spiplistes_courrier_previsu () {
 			
 			//if($plein_ecran) {
 			
-				$texte_html = ""
+				$texte_html = ''
 					. $lien_html
 					. $texte
 					. $pied_html
@@ -154,20 +161,21 @@ function exec_spiplistes_courrier_previsu () {
 					exit(0);
 				}
 				// else 
-				$texte_html = ""
-					. "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Strict//EN\">\n"
-					. (($lang) ? "<html lang='$lang' dir='ltr'>\n" : "")
-					. "<head>\n"
-					. "<meta http-equiv='Content-Type' content='text/html; charset=".$charset."'>\n"
-					. "<meta http-equiv='Pragma' content='no-cache'>\n"
-					. "<title>".textebrut($titre)."</title>\n"
-					. "</head>\n"
-					. "<body style='text-align:center;'>\n"
-					. "<div style='margin:0 auto;'>\n"
+				$texte_html = ''
+					. '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN">'.$eol
+					. (($lang) ? '<html lang="'.$lang.'" dir="ltr">'.$eol : '')
+					. '<head>'.$eol
+					. '<meta http-equiv="Content-Type" content="text/html; charset='.$charset.'">'.$eol
+					. '<meta http-equiv="Pragma" content="no-cache">'.$eol
+					. '<title>'.textebrut($titre).'</title>'.$eol
+					. '</head>'.$eol
+					. '<body style="text-align:center">'.$eol
+					. '<div style="margin:0 auto">'.$eol
 					. $texte_html
-					. "</div>\n"
-					. "</body>\n"
-					. "</html>\n";
+					. '</div>'.$eol
+					. '</body>'.$eol
+					. '</html>'.$eol
+					;
 				ajax_retour($texte_html);
 				exit(0);
 			//} // end if plein_ecran
@@ -181,13 +189,15 @@ function exec_spiplistes_courrier_previsu () {
 	// si nouveau courrier (pas dans la base), generer un apercu
 	else {
 		
+		//spiplistes_debug_log('ACTION: generate preview');
+
 		$intro_html = $intro_texte = 
-			$sommaire_html = $sommaire_texte = "";
+			$sommaire_html = $sommaire_texte = '';
 		
 		if($avec_intro == 'oui') {
 			$ii = propre($message_intro);
-			$intro_html = "<div>$ii</div>\n";
-			$intro_texte = spiplistes_courrier_version_texte($ii)."\n\n";
+			$intro_html = '<div>'.$ii.'</div>'.$eol;
+			$intro_texte = spiplistes_courrier_version_texte($ii).$eol.$eol;
 		} 
 
 		if($avec_patron == 'oui') {
@@ -204,8 +214,8 @@ function exec_spiplistes_courrier_previsu () {
 				, 'message' => $message
 			);
 			
-			$titre_html = _T('spiplistes:lettre_info')." ".$nomsite;
-			$titre_texte = spiplistes_courrier_version_texte($titre_html) . "\n";
+			$titre_html = _T('spiplistes:lettre_info').' '.$nomsite;
+			$titre_texte = spiplistes_courrier_version_texte($titre_html) . $eol;
 
 			list($message_html, $message_texte) = spiplistes_courriers_assembler_patron (
 				_SPIPLISTES_PATRONS_DIR . $patron
@@ -216,15 +226,15 @@ function exec_spiplistes_courrier_previsu () {
 		else {
 			$titre_html = propre($titre);
 			$message_html = propre($message);
-			$titre_texte = spiplistes_courrier_version_texte($titre_html) . "\n";
-			$message_texte = spiplistes_courrier_version_texte($message_html) . "\n";
+			$titre_texte = spiplistes_courrier_version_texte($titre_html) . $eol;
+			$message_texte = spiplistes_courrier_version_texte($message_html) . $eol;
 		}
 		
 		if($avec_sommaire == 'oui') {
 
 			if($id_rubrique > 0) {
 
-				$sql_where = array("id_rubrique=".sql_quote($id_rubrique)
+				$sql_where = array('id_rubrique='.sql_quote($id_rubrique)
 					, "statut=".sql_quote('publie'));
 				
 				if($date_sommaire == 'oui') {
@@ -241,8 +251,8 @@ function exec_spiplistes_courrier_previsu () {
 							: generer_url_entite($row['id_article'], 'article')
 							;
 						$ii = typo($row['titre']);
-						$sommaire_html .= "<li> <a href='" . $url . "'>" . $ii . "</a></li>\n";
-						$sommaire_texte .= " - " . textebrut($ii) . "\n   " . $url . "\n";
+						$sommaire_html .= "<li> <a href='" . $url . "'>" . $ii . '</a></li>'.$eol;
+						$sommaire_texte .= " - " . textebrut($ii) . "\n   " . $url . $eol;
 					}
 				}
 			}
@@ -264,7 +274,7 @@ function exec_spiplistes_courrier_previsu () {
 							: generer_url_entite($row['id_article'], 'article')
 							;
 						$sommaire_html .= "<li> <a href='" . $url . "'> " . $ii . "</a></li>\n";
-						$sommaire_texte .= " - " . textebrut($ii) . "\n   " . $url . "\n";
+						$sommaire_texte .= " - " . textebrut($ii) . "\n   " . $url . $eol;
 					}
 				}
 			}
@@ -278,22 +288,25 @@ function exec_spiplistes_courrier_previsu () {
 					;
 				$message_texte = 
 					($patron_pos == "avant")
-					? $message_texte . "\n" . $sommaire_texte
-					: $sommaire_texte . "\n" . $message_texte
+					? $message_texte . $eol . $sommaire_texte
+					: $sommaire_texte . $eol . $message_texte
 					;
 			}
 		
 		} // end if($avec_sommaire == 'oui')
 
+
 		$form_action = ($id_courrier) 
-			? generer_url_ecrire(_SPIPLISTES_EXEC_COURRIER_GERER,"id_courrier=$id_courrier")
+			? generer_url_ecrire(_SPIPLISTES_EXEC_COURRIER_GERER, 'id_courrier='.$id_courrier)
 			: generer_url_ecrire(_SPIPLISTES_EXEC_COURRIER_GERER)
 			;
 		
-		$message_html = liens_absolus($intro_html . $message_html);
-		$message_texte = liens_absolus($intro_texte . $message_texte);
+		$message_html = spiplistes_liens_absolus ($intro_html . $message_html);
+		$message_texte = spiplistes_liens_absolus ($intro_texte . $message_texte);
 		
-		$page_result = ""
+		spiplistes_debug_log('ACTION: generate page');
+
+		$page_result = ''
 			// boite courrier au format html
 			. debut_cadre_couleur('', true)
 			. "<form id='choppe_patron-1' action='$form_action' method='post' name='choppe_patron-1'>\n"
@@ -338,6 +351,7 @@ function exec_spiplistes_courrier_previsu () {
 			. "<br />\n"
 			;
 		echo($page_result);
+
 	}
 	exit(0);
 }	
@@ -360,4 +374,3 @@ function exec_spiplistes_courrier_previsu () {
 /* Free Software Foundation,                                                              */
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
-?>

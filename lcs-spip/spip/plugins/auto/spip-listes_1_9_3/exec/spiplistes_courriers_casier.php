@@ -1,6 +1,10 @@
 <?php
-
-// exec/spiplistes_courriers_casier.php
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
 
 /******************************************************************************************/
 /* SPIP-listes est un système de gestion de listes d'information par email pour SPIP      */
@@ -20,10 +24,6 @@
 /* Free Software Foundation,                                                              */
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, États-Unis.                   */
 /******************************************************************************************/
-
-// $LastChangedRevision: 24782 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2008-11-30 10:46:48 +0100 (dim, 30 nov 2008) $
 
 // _SPIPLISTES_EXEC_COURRIERS_LISTE
 
@@ -66,18 +66,24 @@ function spiplistes_afficher_pile_messages() {
 	
 		$date_dernier = date(_T('spiplistes:format_date'), strtotime($maj)) ;
 		switch($statut) {
-			case _SPIPLISTES_HEBDO_LIST:
-			case _SPIPLISTES_WEEKLY_LIST:
+			case _SPIPLISTES_LIST_PRIV_HEBDO:
+			case _SPIPLISTES_LIST_PRIV_WEEKLY:
+			case _SPIPLISTES_LIST_PUB_HEBDO:
+			case _SPIPLISTES_LIST_PUB_WEEKLY:
 				$periodicite = _T('spiplistes:Liste_hebdo');
 				break;
-			case _SPIPLISTES_MENSUEL_LIST:
-			case _SPIPLISTES_MONTHLY_LIST:
+			case _SPIPLISTES_LIST_PRIV_MENSUEL:
+			case _SPIPLISTES_LIST_PRIV_MONTHLY:
+			case _SPIPLISTES_LIST_PUB_MENSUEL:
+			case _SPIPLISTES_LIST_PUB_MONTHLY:
 				$periodicite = _T('spiplistes:Liste_mensuelle');
 				break;
-			case _SPIPLISTES_YEARLY_LIST:
+			case _SPIPLISTES_LIST_PRIV_YEARLY:
+			case _SPIPLISTES_LIST_PUB_YEARLY:
 				$periodicite = _T('spiplistes:Liste_annuelle');
 				break;
-			case _SPIPLISTES_DAILY_LIST:
+			case _SPIPLISTES_LIST_PRIV_DAILY:
+			case _SPIPLISTES_LIST_PUB_DAILY:
 				if($periode) {
 					$periodicite = _T('spiplistes:Tous_les_s'
 					, array('s' => spiplistes_singulier_pluriel_str_get($periode, _T('spiplistes:jour'), _T('spiplistes:jours')))
@@ -91,16 +97,17 @@ function spiplistes_afficher_pile_messages() {
 		}
 	
 		$ii = 0;
-		$pile_result .= ""
-			. "<tr " . ((($couleur_ligne++) % 2) ? "class='row-even'" : "") . ">\n"
-			. "<td><a href='" . generer_url_public('patron_switch',"patron=$patron&date=$date_dernier")."'>$patron</a>"
-			. "<br />$periodicite</td>\n"
-			. "<td><a href='" . generer_url_ecrire(_SPIPLISTES_EXEC_LISTE_GERER, "id_liste=$id_liste") . "'>$titre</a>"
-			. "<br />".spiplistes_nb_abonnes_liste_str_get($id_liste)."."
-			. "</td>"
-			. "<td>"
+		$pile_result .= ''
+			. '<tr ' . ((($couleur_ligne++) % 2) ? 'class="row-even"' : '') . '>' . PHP_EOL
+			. '<td><a href="' . generer_url_public('patron_switch',"patron=$patron&date=$date_dernier").'">'.$patron.'</a>'
+			. '<br />'.$periodicite.'</td>' . PHP_EOL
+			. '<td><a href="' . generer_url_ecrire(_SPIPLISTES_EXEC_LISTE_GERER, 'id_liste='.$id_liste) . '">'
+				. $titre . '</a>'
+			. '<br />'.spiplistes_nb_abonnes_liste_str_get($id_liste).'.'
+			. '</td>'
+			. '<td>'
 			. spiplistes_affdate ($date)
-			. "</td></tr>\n"
+			. '</td></tr>' . PHP_EOL
 			;
 	} // end while
 	
@@ -181,11 +188,15 @@ function exec_spiplistes_courriers_casier () {
 				spiplistes_courrier_supprimer_queue_envois('id_courrier', $id_courrier);
 				spiplistes_courrier_remplir_queue_envois($id_courrier, $id_liste, $id_auteur_test);
 				if($id_liste > 0) {
-spiplistes_log("SEND id_courrier #$id_courrier ON id_liste #$id_liste BY id_auteur #$connect_id_auteur"
-			, _SPIPLISTES_LOG_DEBUG);
+					spiplistes_debug_log('SEND id_courrier #'.$id_courrier
+										. ' ON id_liste #'.$id_liste
+										. ' BY id_auteur #'.$connect_id_auteur
+										);
 				} else {
-spiplistes_log("SEND id_courrier #$id_courrier TO #$id_auteur_test TEST BY id_auteur #$connect_id_auteur"
-			, _SPIPLISTES_LOG_DEBUG);
+					spiplistes_debug_log('SEND id_courrier #'.$id_courrier
+										 . ' TO id_auteur #'.$id_auteur_test
+										 . ' TEST BY id_auteur #'.$connect_id_auteur
+										 );
 				}
 			}
 			spiplistes_courrier_statut_modifier($id_courrier, _SPIPLISTES_COURRIER_STATUT_ENCOURS);

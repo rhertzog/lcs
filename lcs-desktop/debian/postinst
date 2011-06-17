@@ -62,5 +62,7 @@ fi
 if [ ! -e /usr/share/doc/lcs-$MODULE ]; then
     ln -s /usr/share/doc/lcs/$MODULE /usr/share/doc/lcs-$MODULE
 fi
-
+# Fixation des droits sur l'arborescence du module
+chown -R www-data:www-data /usr/share/lcs/desktop
+chmod -R 755 /usr/share/lcs/desktop
 

@@ -66,7 +66,6 @@
 		<label for='texte'><:forum_texte|typo:></label>
 		[<span class='erreur_message'>(#ENV**{erreurs}|table_valeur{texte})</span>]
 		<p class='explication'><:info_creation_paragraphe:></p>
-		[(#ENV**{config}|table_valeur{afficher_barre}|?{#VAL{texte}|barre_typo{#LANG,1}})]
 		<textarea name="texte" id="texte" rows="12" cols="60">[(#ENV{texte})]</textarea>
 	</li>
 })]
@@ -136,29 +135,30 @@
 ]
 <script type="text/javascript">/*<!#EVAL{chr(91)}CDATA#EVAL{chr(91)}*/
 if (window.jQuery)(function($){
-	$.getScript('[(#CHEMIN{javascript/jquery.cookie.js}|url_absolue)]',
-	function(){
-		var a = $.cookie('spip_contenu_formulaire_#ENV{_sign}');
-		var saveauto = true;
-		if (a) {
-			$('#formulaire_forum textarea#EVAL{chr(91)}name=texte#EVAL{chr(93)}')
-			.val(a);
-			$.cookie('spip_contenu_formulaire_#ENV{_sign}', null);
+	var a = $.cookie('spip_contenu_formulaire_#ENV{_sign}');
+	var saveauto = true;
+	if (a) {
+		$('#formulaire_forum textarea#EVAL{chr(91)}name=texte#EVAL{chr(93)}')
+		.val(a);
+		$.cookie('spip_contenu_formulaire_#ENV{_sign}', null);
+	}
+	/* virer le cookie a la validation finale du message */
+	$('input#EVAL{chr(91)}name=confirmer_previsu_forum#EVAL{chr(93)}')
+	.live('click', function(e) {
+		saveauto = false;
+	});
+	$(window)
+	.bind('unload', function(){
+		if (saveauto){
+			var s = $('#formulaire_forum textarea#EVAL{chr(91)}name=texte#EVAL{chr(93)}').val();
+			if (s)
+				$.cookie('spip_contenu_formulaire_#ENV{_sign}', s);
+			else
+				$.cookie('spip_contenu_formulaire_#ENV{_sign}', null);
+		}else{
+			/* on vide le champs texte après le submit car refuser_traiter_formulaire_ajax(); va reposter le formulaire, et donc reposer un cookie car saveauto sera false la seconde fois. */
+			$('#formulaire_forum textarea#EVAL{chr(91)}name=texte#EVAL{chr(93)}').val('');
 		}
-		$('#formulaire_forum form')
-		.bind('submit', function() {
-			saveauto = false;
-		});
-		$(window)
-		.bind('unload', function(){
-			if (saveauto){
-				var s = $('#formulaire_forum textarea#EVAL{chr(91)}name=texte#EVAL{chr(93)}').val();
-				if (s)
-					$.cookie('spip_contenu_formulaire_#ENV{_sign}', s);
-				else
-					$.cookie('spip_contenu_formulaire_#ENV{_sign}', null);
-			}
-		});
 	});
 }(jQuery));
 /*#EVAL{chr(93)}[(#EVAL{chr(93)})]>*/</script>

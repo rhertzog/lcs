@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: classes_ajout.php 3429 2009-09-17 17:17:57Z crob $
+* $Id: classes_ajout.php 6604 2011-03-03 13:46:55Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -33,7 +33,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
@@ -47,6 +47,8 @@ $call_classe = mysql_query("SELECT classe FROM classes WHERE id = '$id_classe'")
 $classe = mysql_result($call_classe, "0", "classe");
 
 if (isset($is_posted) and ($is_posted == 1)) {
+	check_token();
+
 	$gepiProfSuivi=getSettingValue("gepi_prof_suivi");
 
 	$call_eleves = mysql_query("SELECT login FROM eleves ORDER BY nom, prenom");
@@ -374,6 +376,8 @@ if($id_class_suiv!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_c
 <p><b>Ajout d'élèves à la classe de <?php echo $classe; ?></b><br />Liste des élèves non affectés à une classe :</p>
 
 <?php
+
+echo add_token_field();
 
 $call_eleves = mysql_query("SELECT * FROM eleves ORDER BY nom, prenom");
 $nombreligne = mysql_num_rows($call_eleves);

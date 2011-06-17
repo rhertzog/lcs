@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: add_eleve.php 5332 2010-09-17 11:19:22Z crob $
+ * $Id: add_eleve.php 6556 2011-02-28 16:21:48Z eabgrall $
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -80,8 +80,10 @@ if (!checkAccess()) {
 
 //================================================
 if (isset($_POST['is_posted']) and ($_POST['is_posted'] == "1")) {
+	check_token();
+
 	// Détermination du format de la date de naissance
-	$call_eleve_test = mysql_query("SELECT naissance FROM eleves WHERE");
+	$call_eleve_test = mysql_query("SELECT naissance FROM eleves WHERE 1");
 	$test_eleve_naissance = @mysql_result($call_eleve_test, "0", "naissance");
 	$format = strlen($test_eleve_naissance);
 
@@ -90,15 +92,15 @@ if (isset($_POST['is_posted']) and ($_POST['is_posted'] == "1")) {
 	$reg_nom = trim($reg_nom);
 	$reg_prenom = trim($reg_prenom);
 	$reg_email = trim($reg_email);
-	if ($reg_resp1 == '(vide)') $reg_resp1 = '';
-	if (!ereg ("^[0-9]{4}$", $birth_year)) $birth_year = "1900";
-	if (!ereg ("^[0-9]{2}$", $birth_month)) $birth_month = "01";
-	if (!ereg ("^[0-9]{2}$", $birth_day)) $birth_day = "01";
-	if ($format == '10'){
+	if ($reg_resp1 == '(vide)') {$reg_resp1 = '';}
+	if (!my_ereg("^[0-9]{4}$", $birth_year)) {$birth_year = "1900";}
+	if (!my_ereg("^[0-9]{2}$", $birth_month)) {$birth_month = "01";}
+	if (!my_ereg("^[0-9]{2}$", $birth_day)) {$birth_day = "01";}
+	if ($format == '10') {
 		// YYYY-MM-DD
 		$reg_naissance = $birth_year."-".$birth_month."-".$birth_day." 00:00:00";
 	}
-	else{
+	else {
 		if ($format == '8') {
 			// YYYYMMDD
 			$reg_naissance = $birth_year.$birth_month.$birth_day;
@@ -226,7 +228,8 @@ if (isset($_POST['is_posted']) and ($_POST['is_posted'] == "1")) {
 						sexe='".$reg_sexe."',
 						naissance='".$reg_naissance."',
 						elenoet = '".$reg_no_gep."',
-						ele_id = '".$ele_id."'
+						ele_id = '".$ele_id."',
+						date_sortie = NULL
 						");
 
 					if($reg_resp1!=""){
@@ -634,8 +637,9 @@ if(!getSettingValue('conv_new_resp_table')){
 
 
 ?>
-<form enctype="multipart/form-data" action="add_eleve.php" method=post>
+<form enctype="multipart/form-data" action="add_eleve.php" method="post">
 <?php
+echo add_token_field();
 echo "<table>\n";
 echo "<tr>\n";
 echo "<td>\n";

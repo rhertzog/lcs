@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /**
- * $Id: trombinoscopes_admin_template.php 5196 2010-09-05 08:25:38Z crob $
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * $Id: trombinoscopes_admin_template.php 6697 2011-03-25 21:54:27Z regis $
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -100,6 +100,9 @@
 	</p>
 	<form action="trombinoscopes_admin.php" id="form1" method="post" title="Configuration générale">
 	  <fieldset>
+<?php
+echo add_token_field();
+?>
 		<legend class="bold">Élèves :</legend>
 		<input type="radio"
 			   name="activer"
@@ -468,6 +471,9 @@ if (!isset($aid_trouve)) {
 	
 	<form method="post" action="trombinoscopes_admin.php" id="formEnvoi" enctype="multipart/form-data">
 	  <fieldset>
+<?php
+echo add_token_field();
+?>
 		<legend class="bold">
 		  Restaurer les photos à partir d'un fichier Zip
 		</legend>
@@ -488,6 +494,8 @@ if (!isset($aid_trouve)) {
 			Sinon, les anciennes photos seront conservées
 		  </em>
 		</p>
+
+		<p>La <b>taille maximale</b> d'un fichier uploadé vers le serveur est de <b><?php echo ini_get('upload_max_filesize');?></b><br />Effectuez si nécessaire votre upload en plusieurs fichiers Zip.</p>
 
 	  </fieldset>
 	</form>

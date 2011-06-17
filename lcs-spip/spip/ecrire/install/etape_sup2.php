@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;	#securite
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/headers');
 include_spip('base/abstract_sql');
@@ -50,7 +50,9 @@ function install_bases_sup($adresse_db, $login_db, $pass_db,  $server_db, $sup_d
 	$pass_db = addcslashes($pass_db,"'\\");
 	$sup_db = addcslashes($sup_db,"'\\");
 	$server_db = addcslashes($server_db,"'\\");
-	$conn = "spip_connect_db("
+
+	$conn = install_mode_appel($server_db)
+	. "spip_connect_db("
 	. "'$adresse_db','$port','$login_db',"
 	. "'$pass_db','$sup_db'"
 	. ",'$server_db', '');\n";

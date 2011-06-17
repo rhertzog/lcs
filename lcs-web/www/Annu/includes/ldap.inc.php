@@ -1,12 +1,5 @@
 <?php
-/* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/includes/ldap.inc.php
-   « jLCF » jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice academie de Caen
-   Derniere version : 16/06/2010
-   ============================================= */
+/* Annu/includes/ldap.inc.php Derniere version : 14/04/2011 */
 
 // Fonctions de comparaison utilisees dans la fonction usort
 
@@ -32,8 +25,8 @@ function cmp_cn ($a, $b) {
 
 // Retourne un login a partir d'un dn
 function extract_login ($dn) {
-  $login = split ("[\,\]",$dn,4);
-  $login = split ("[\=\]",$login[0],2);
+  $login = preg_split ("/,/",$dn,4);
+  $login = preg_split ("/=/",$login[0],2);
   return $login[1];
 }
 
@@ -43,7 +36,7 @@ function getprenom($fullname,$name) {
     $j=0;
     $prenom="";
     for ($i=0; $i<count($expl); $i++) {
-        if (strtolower($expl[$i])!=strtolower($namexpl[$j]))  {
+        if (mb_strtolower($expl[$i])!=mb_strtolower($namexpl[$j]))  {
              if ("$prenom" == "") $prenom=$expl[$i];
 	     else $prenom.=" ".$expl[$i];
         } else $j++;
@@ -54,10 +47,10 @@ function getprenom($fullname,$name) {
 // ---------------------------------------------------------
 // Debug
 function duree ($t0,$t1) {
-  $result0 = split ("[\ \!\?]", $t0, 2);
+  $result0 = preg_split ("[\ \!\?]", $t0, 2);
   $t0ms = $result0[0];
   $t0s  = $result0[1];
-  $result1 = split ("[\ \!\?]", $t1, 2);
+  $result1 = preg_split ("[\ \!\?]", $t1, 2);
   $t1ms = $result1[0];
   $t1s  = $result1[1];
   $tini= ( $t0s +  $t0ms );
@@ -104,18 +97,18 @@ function people_get_variables ($uid, $mode)
         if ( $info["count"]) {
           // Traitement du champ gecos pour extraction de date de naissance, sexe
           $gecos = $info[0]["gecos"][0];
-          $tmp = split ("[\,\]",$info[0]["gecos"][0],4);
+          $tmp = preg_split ("/,/",$info[0]["gecos"][0],4);
           $ret_people = array (
-              "uid"			=> $info[0]["uid"][0],
-              "nom"			=> stripslashes( utf8_decode($info[0]["sn"][0]) ),
-              "fullname"		=> stripslashes( utf8_decode($info[0]["cn"][0]) ),
-              "prenom"		        => utf8_decode($info[0]["givenname"][0]),
-              "pseudo"		        => utf8_decode($info[0]["initials"][0]),
-              "gecos"                   => utf8_decode($info[0]["gecos"][0]),
-              "email"		        => $info[0]["mail"][0],
-              "tel"			=> $info[0]["telephonenumber"][0],
-              "homedirectory" 	        => $info[0]["homedirectory"][0],
-              "description"	        => utf8_decode($info[0]["description"][0]),
+              "uid"				=> $info[0]["uid"][0],
+              "nom"				=> stripslashes( $info[0]["sn"][0] ),
+              "fullname"		=> stripslashes( $info[0]["cn"][0] ),
+              "prenom"			=> $info[0]["givenname"][0],
+              "pseudo"			=> $info[0]["initials"][0],
+              "gecos"			=> $info[0]["gecos"][0],
+              "email"			=> $info[0]["mail"][0],
+              "tel"				=> $info[0]["telephonenumber"][0],
+              "homedirectory"	=> $info[0]["homedirectory"][0],
+              "description"		=> $info[0]["description"][0],
               "shell"			=> $info[0]["loginshell"][0],
               "sexe"			=> $tmp[2]
             );
@@ -134,10 +127,9 @@ function people_get_variables ($uid, $mode)
               //if ($info[$loop]["member"][0] == "") $typegr="posixGroup"; else $typegr="groupOfNames";
               $typegr="posixGroup";
               $ret_group[$loop] = array (
-                "cn"           => $info[$loop]["cn"][0],
-                //"owner"        => $info[$loop]["owner"][0],
-                "description"  => utf8_decode($info[$loop]["description"][0]),
-                "type" => $typegr
+                "cn"			=> $info[$loop]["cn"][0],
+                "description"	=> $info[$loop]["description"][0],
+                "type" 			=> $typegr
               );
             }
             usort($ret_group, "cmp_cn");
@@ -219,9 +211,9 @@ function search_people ($filter) {
         if ( $info["count"]) {
           for ($loop=0; $loop<$info["count"];$loop++) {
             $ret[$loop] = array (
-              "uid"       => $info[$loop]["uid"][0],
-              "fullname"  => utf8_decode($info[$loop]["cn"][0]),
-	      "name"	=> utf8_decode($info[$loop]["sn"][0])
+				"uid"		=> $info[$loop]["uid"][0],
+				"fullname"  => $info[$loop]["cn"][0],
+				"name"		=> $info[$loop]["sn"][0]
             );
           }
         }
@@ -266,7 +258,7 @@ function search_uids ($filter, $mode) {
   if ( $ds ) {
     $r = @ldap_bind ( $ds ); // Bind anonyme
     if ($r) {
-      if ((!ereg("Matiere",$filter,$matche) && !ereg("Equipe",$filter,$matche))||ereg("Classe",$filter,$matche)) {
+      if ((!mb_ereg("Matiere",$filter,$matche) && !mb_ereg("Equipe",$filter,$matche))||mb_ereg("Classe",$filter,$matche)) {
       // Debug
       //echo "filtre 1 memberuid : $filter<BR>";
 
@@ -279,7 +271,7 @@ function search_uids ($filter, $mode) {
           //  dans le tableau $ret
           $init=0;
           for ($loop=0; $loop < $info["count"]; $loop++) {
-            $group=split ("[\_\]",$info[$loop]["cn"][0],2);
+            $group=preg_split ("/_/",$info[$loop]["cn"][0],2);
             for ( $i = 0; $i < $info[$loop]["memberuid"]["count"]; $i++ ) {
               // Ajout de wawa : test si le gus est prof
               $filtre1 = "(memberUid=".$info[$loop]["memberuid"][$i].")";
@@ -298,10 +290,10 @@ function search_uids ($filter, $mode) {
         ldap_free_result ( $result );
       }
       }
-      if (ereg("Classe",$filter,$matche)||ereg("Matiere",$filter,$matche)||ereg("Equipe",$filter,$matche)) {
+      if (mb_ereg("Classe",$filter,$matche)||mb_ereg("Matiere",$filter,$matche)||mb_ereg("Equipe",$filter,$matche)) {
         // Modifie par Wawa: filter2 supprime
          if ($mode=="full") {
-           $filter2 = ereg_replace("Classe_","Equipe_",$filter);
+           $filter2 = mb_ereg_replace("Classe_","Equipe_",$filter);
          } else {  $filter2=$filter; }
         // Debug
         // echo "filtre 2 member : $filter2<BR>";
@@ -312,7 +304,7 @@ function search_uids ($filter, $mode) {
             $init=count($ret);
             $owner = extract_login ($info[0]["owner"][0]);
             for ($loop=0; $loop < $info["count"]; $loop++) {
-              $group=split ("[\_\]",$info[$loop]["cn"][0],2);
+              $group=preg_split ("/_/",$info[$loop]["cn"][0],2);
               for ( $i = 0; $i < $info[$loop]["member"]["count"]; $i++ ) {
 	     		  // Cas ou un champ member est non vide
               		if ( extract_login ($info[$loop]["member"][$i])!="") {
@@ -367,7 +359,7 @@ function search_uids ($filter, $mode) {
           //  dans le tableau $ret
           $init=0;
           for ($loop=0; $loop < $info["count"]; $loop++) {
-            $group=split ("[\_\]",$info[$loop]["cn"][0],2);
+            $group=preg_split ("/_/",$info[$loop]["cn"][0],2);
             for ( $i = 0; $i < $info[$loop]["memberuid"]["count"]; $i++ ) {
               // Ajout de wawa : test si le gus est prof
               $filtre1 = "(memberUid=".$info[$loop]["memberuid"][$i].")";
@@ -417,7 +409,7 @@ function search_groups ($filter) {
         if ( $info["count"]) {
           for ($loop=0; $loop < $info["count"]; $loop++) {
             $groups[$loop]["cn"] = $info[$loop]["cn"][0];
-            $groups[$loop]["description"] = utf8_decode($info[$loop]["description"][0]);
+            $groups[$loop]["description"] = $info[$loop]["description"][0];
             /* Recherche de posixGroup ou groupOfNames
             for ($i=0; $i < $info[$loop]["objectclass"]["count"]; $i++) {
               if  ($info[$loop]["objectclass"][$i] != "top") $type =  $info[$loop]["objectclass"][$i];
@@ -466,17 +458,17 @@ function search_people_groups ($uids,$filter,$order) {
             // echo "debug".$info["count"]." ".$init."<BR>";
             // traitement du gecos pour identification du sexe
             $gecos = $info[0]["gecos"][0];
-            $tmp = split ("[\,\]",$gecos,4);
+            $tmp = preg_split ("/,/",$gecos,4);
             $ret[$init] = array (
-              "uid"       => $uids[$loop]["uid"],
-              "fullname"  => utf8_decode($info[0]["cn"][0]),
-	      "name"	  => utf8_decode($info[0]["sn"][0]),
-              "sexe"      => $tmp[2],
-              "owner"     => $uids[$loop]["owner"],
-              "group"     => $uids[$loop]["group"],
-              "cat"       => $uids[$loop]["cat"],
-              "prof"      => $uids[$loop]["prof"],
-	      "gecos"     => $gecos
+				"uid"       => $uids[$loop]["uid"],
+				"fullname"  => $info[0]["cn"][0],
+				"name"		=> $info[0]["sn"][0],
+				"sexe"      => $tmp[2],
+				"owner"     => $uids[$loop]["owner"],
+				"group"     => $uids[$loop]["group"],
+				"cat"       => $uids[$loop]["cat"],
+				"prof"      => $uids[$loop]["prof"],
+				"gecos"     => $gecos
             );
             $init++;
           }
@@ -562,7 +554,7 @@ function search_machines ($filter,$branch) {
             if ("$branch"=="computers") {
                 $computers[$loop]["ipHostNumber"] = $info[$loop]["iphostnumber"][0];
                 $computers[$loop]["l"] = $info[$loop]["l"][0];
-                $computers[$loop]["description"] = utf8_decode($info[$loop]["description"][0]);
+                $computers[$loop]["description"] = $info[$loop]["description"][0];
             }
           }
         }
@@ -623,7 +615,7 @@ function tstclass($prof,$eleve)
   if (count($grcomm)>0) {
         $i=0;
         while (($i< count($grcomm)) and ($tstclass==0)) {
-                if (ereg("Cours",$grcomm[$i]["cn"],$matche))
+                if (mb_ereg("Cours",$grcomm[$i]["cn"],$matche))
                         $tstclass=1;
                 $i++;
         }
@@ -634,10 +626,85 @@ function tstclass($prof,$eleve)
 // Fonctions de modifications des entrees LDAP
 // -------------------------------------------
 
+function user_enable_ad_auth($uid, $ds = NULL) {
+    global $ldap_server, $ldap_port, $dn, $adminDn, $adminPw;
+    if (! isset($ds)) {
+	$ds = ldap_connect($ldap_server, $ldap_port);
+	if (! $ds) {
+	    return 0;
+	}
+	$r = ldap_bind($ds, $adminDn, $adminPw); // Bind en admin
+	if (! $r) {
+	    return 0;
+	}
+    }
+    $changes["userPassword"] = "{sasl}$uid";
+    return ldap_modify($ds, "uid=$uid," . $dn["people"], $changes);
+}
+
+function user_disable_ad_auth($uid, $ds = NULL) {
+    global $ldap_server, $ldap_port, $dn, $adminDn, $adminPw;
+    if (! isset($ds)) {
+	$ds = ldap_connect($ldap_server, $ldap_port);
+	if (! $ds) {
+	    return 0;
+	}
+	$r = ldap_bind($ds, $adminDn, $adminPw); // Bind en admin
+	if (! $r) {
+	    return 0;
+	}
+    }
+    $sr = ldap_read($ds, "uid=$uid," . $dn["people"], "(objectclass=*)",
+		    array("userPassword", "gecos"));
+    if (! $sr) {
+	return 0;
+    }
+    $entry = ldap_first_entry($ds, $sr);
+    $values = ldap_get_values($ds, $entry, "userPassword");
+    $current_pass = $values[0];
+    $values = ldap_get_values($ds, $entry, "gecos");
+    $gecos = $values[0];
+    $values = explode(",", $gecos);
+    $birthdate = $values[1];
+    if (strpos($current_pass, "{sasl}") === 0) {
+	$changes["userPassword"] = "{crypt}" . crypt($birthdate);
+	return ldap_modify($ds, "uid=$uid," . $dn["people"], $changes);
+    } else {
+	return 1; /* Auth through AD is already not used */
+    }
+}
+
+function user_has_ad_auth($uid, $ds = NULL) {
+    global $ldap_server, $ldap_port, $dn, $adminDn, $adminPw;
+    if (! isset($ds)) {
+	$ds = ldap_connect($ldap_server, $ldap_port);
+	if (! $ds) {
+	    return 0;
+	}
+	$r = ldap_bind($ds, $adminDn, $adminPw); // Bind en admin
+	if (! $r) {
+	    return 0;
+	}
+    }
+    $sr = ldap_read($ds, "uid=$uid," . $dn["people"], "(objectclass=*)",
+		    array("userPassword"));
+    if (! $sr) {
+	return 0;
+    }
+    $entry = ldap_first_entry($ds, $sr);
+    $values = ldap_get_values($ds, $entry, "userPassword");
+    $current_pass = $values[0];
+    if (strpos($current_pass, "{sasl}") === 0) {
+	return true;
+    } else {
+	return false;
+    }
+}
+
 // Changement mot de passe
-function userChangedPwd($uid, $userpwd) {
+function userChangedPwd($uid, $userpwd, $old) {
   global $scriptsbinpath;
-  exec ("$scriptsbinpath/userChangePwd.pl '$uid' '$userpwd'",$AllOutPut,$ReturnValue);
+  exec ("$scriptsbinpath/userChangePwd.pl '$uid' '$userpwd' '$old'",$AllOutPut,$ReturnValue);
   if ($ReturnValue == "0") {
     // Resynchro du mdp admin pour le mode sans echec
     if ( $uid == "admin" ) {

@@ -3,17 +3,16 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
-include_spip('inc/barre');
 
 // http://doc.spip.org/@inc_forum_envoi_dist
 function inc_forum_envoi_dist($id, $id_parent, $script, $statut, $titre_message, $texte, $modif_forum, $nom_site, $url_site) {
@@ -72,7 +71,7 @@ function forum_envoi_form($id, $row, $script, $statut, $titre, $corps, $form, $o
 	  debut_cadre_formulaire(($statut == 'privac') ? "" : 'background-color: #dddddd;', true) .
 $form
 	. "<div style='text-align: right'>"
-	. "<input class='fondo' type='submit' value='"
+	. "<input type='submit' value='"
 	. _T('bouton_voir_message')
 	. "' /></div>"
 	. fin_cadre_formulaire(true);
@@ -205,8 +204,10 @@ function forum_envoi_formulaire($id, $retour, $statut, $texte, $titre, $nom_site
 		."<li class='haut'><label for='texte' >"
 	  	. _T('info_texte_message')
 	  	."</label>"
-	  	.  afficher_textarea_barre($texte, true)
-		."<input type='hidden' name='modif_forum' value='oui' />\n"
+			."<textarea name='texte' id='texte' rows='13' class='textarea'>\n"
+			. $texte
+			. "</textarea>"
+			."<input type='hidden' name='modif_forum' value='oui' />\n"
 	  	."</li>"		
 	  . (!($statut != 'perso')
 		   ? ''
@@ -250,7 +251,7 @@ function forum_envoi_entete($parent, $titre_parent, $texte, $titre, $nom_site, $
 		.  debut_cadre_thread_forum("", true, "", typo($titre))
 		. propre($texte)
 		. (!$nom_site ? '' : "<p><a href='$url_site'>$nom_site</a></p>")
-		. "\n<div style='text-align: right'><input class='fondo' type='submit' name='valider_forum' value='"
+		. "\n<div style='text-align: right'><input type='submit' name='valider_forum' value='"
 		. _T('bouton_envoyer_message')
 		. "'\nonclick='AjaxNamedSubmit(this)' /></div>"
 		. fin_cadre_thread_forum(true)

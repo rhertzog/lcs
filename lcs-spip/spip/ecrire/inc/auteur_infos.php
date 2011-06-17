@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // Affiche la fiche de renseignements d'un auteur
 // eventuellement editable
@@ -185,6 +185,14 @@ function legender_auteur_voir($auteur) {
 		$contenu_auteur .= "<div>"._T('email_2')
 			." <b><a href='mailto:".htmlspecialchars($auteur['email'])."'>"
 			.$auteur['email']."</a></b></div>";
+	// message d'information d'envoi d'email pour modif et de confirmation
+	// on ne fait ici qu'informer, sans aucune action
+	if ($email = _request('email_confirm')){
+		$contenu_auteur .= "<p><strong>"._T('form_auteur_envoi_mail_confirmation',array('email'=>$email))."</strong></p>";
+	}
+	elseif (_request('email_modif')==='ok'){
+		$contenu_auteur .= "<p><strong>"._T('form_auteur_email_modifie')."</strong></p>";
+	}
 
 	if ($auteur['url_site']) {
 		if (!$auteur['nom_site'])

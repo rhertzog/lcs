@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: 152_to_153.inc.php 5544 2010-10-03 18:51:53Z jjacquard $
+ * $Id: 152_to_153.inc.php 6125 2010-12-13 20:09:44Z crob $
  *
  * Fichier de mise à jour de la version 1.5.2 à la version 1.5.3
  * Le code PHP présent ici est exécuté tel quel.
@@ -580,6 +580,21 @@ if (!$req_rank){
 else {
     $result .= "<p style=\"color:blue;\">Ajout du champ jour_creneau à la table <strong>edt_creneaux</strong> : déjà réalisé.</p>";
 
+}
+
+// Sur certaines bases il est arrivé pour une raison inconnue que le champ type_creneaux soit manquant
+$result .= "&nbsp;->Ajout si nécessaire d'un champ 'type_creneaux' à la table 'edt_creneaux'<br />";
+$test_type_creneaux=mysql_num_rows(mysql_query("SHOW COLUMNS FROM edt_creneaux LIKE 'type_creneaux';"));
+if ($test_type_creneaux>0) {
+	$result .= "<font color=\"blue\">Le champ existe déjà.</font><br />";
+}
+else {
+	$query = mysql_query("ALTER TABLE edt_creneaux ADD type_creneaux VARCHAR( 15 ) NOT NULL AFTER suivi_definie_periode;");
+	if ($query) {
+			$result .= "<font color=\"green\">Ok !</font><br />";
+	} else {
+			$result .= "<font color=\"red\">Erreur</font><br />";
+	}
 }
 
 // ============= Insertion d'un champ pour EDT2

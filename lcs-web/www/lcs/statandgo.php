@@ -26,7 +26,7 @@ if ($result) {
 # Traitement des applis non referencees dans la table params
 # comme module ou plugin
 #
-if ( ereg ("^1" , $VER ) ) {
+if ( mb_ereg ("^1" , $VER ) ) {
   # Cas des LCS 1.x traitement de $use Forum ou mail
   if ($use=="Forum") $urluse="../Forum/";
   elseif ( $use=="mail" )  $urluse="../squirrelmail/src/redirect.php";

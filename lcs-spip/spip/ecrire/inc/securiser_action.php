@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 // interface d'appel:
 // - au moins un argument: retourne une URL ou un formulaire securises
@@ -100,17 +100,25 @@ function caracteriser_auteur() {
 
 // http://doc.spip.org/@_action_auteur
 function _action_auteur($action, $id_auteur, $pass, $alea) {
-	if (!isset($GLOBALS['meta'][$alea]) AND _request('exec')!=='install') {
-		include_spip('base/abstract_sql');
-		$GLOBALS['meta'][$alea] = sql_getfetsel('valeur', 'spip_meta', "nom=" . sql_quote($alea));
-		if (!($GLOBALS['meta'][$alea])) {
-			include_spip('inc/minipres');
-			echo minipres();
-			spip_log("$alea indisponible");
-			exit;
+	static $sha = array();
+	if (!isset($sha[$id_auteur.$pass.$alea])){
+		if (!isset($GLOBALS['meta'][$alea]) AND _request('exec')!=='install') {
+			include_spip('base/abstract_sql');
+			$GLOBALS['meta'][$alea] = sql_getfetsel('valeur', 'spip_meta', "nom=" . sql_quote($alea));
+			if (!($GLOBALS['meta'][$alea])) {
+				include_spip('inc/minipres');
+				echo minipres();
+				spip_log("$alea indisponible");
+				exit;
+			}
 		}
+		include_spip('auth/sha256.inc');
+		$sha[$id_auteur.$pass.$alea] = _nano_sha256($id_auteur.$pass.@$GLOBALS['meta'][$alea]);
 	}
-	return md5($action.$id_auteur.$pass.@$GLOBALS['meta'][$alea]);
+	if (function_exists('sha1'))
+		return sha1($action.$sha[$id_auteur.$pass.$alea]);
+	else
+		return md5($action.$sha[$id_auteur.$pass.$alea]);
 }
 
 // http://doc.spip.org/@calculer_action_auteur
@@ -143,10 +151,10 @@ function secret_du_site() {
 		$GLOBALS['meta']['secret_du_site'] = sql_getfetsel('valeur', 'spip_meta', "nom='secret_du_site'");
 	}
 	if (!isset($GLOBALS['meta']['secret_du_site'])
-	OR !strlen($GLOBALS['meta']['secret_du_site'])
-	) {
+	  OR (strlen($GLOBALS['meta']['secret_du_site'])<64)) {
 		include_spip('inc/acces');
-		ecrire_meta('secret_du_site', creer_uniqid(), 'non');
+		include_spip('auth/sha256.inc');
+		ecrire_meta('secret_du_site', _nano_sha256($_SERVER["DOCUMENT_ROOT"] . $_SERVER["SERVER_SIGNATURE"] . creer_uniqid()), 'non');
 		lire_metas(); // au cas ou ecrire_meta() ne fonctionne pas
 	}
 	return $GLOBALS['meta']['secret_du_site'];
@@ -154,7 +162,10 @@ function secret_du_site() {
 
 // http://doc.spip.org/@calculer_cle_action
 function calculer_cle_action($action) {
-	return md5($action . secret_du_site());
+	if (function_exists('sha1'))
+		return sha1($action . secret_du_site());
+	else
+		return md5($action . secret_du_site());
 }
 
 // http://doc.spip.org/@verifier_cle_action

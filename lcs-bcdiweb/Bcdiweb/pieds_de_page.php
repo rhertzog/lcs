@@ -1,7 +1,6 @@
 </DIV><!-- Fin du container -->  
   <DIV class="pdp">
-    Copyleft &copy; 2001 Plugins LCS «<?php echo $NAME_PLUG; ?>» Version : <?php echo $VER_PLUG ; ?>
+    Copyleft &copy; 2001 Module LCS <?php echo 'lcs-bcdiweb'; ?>  Version : <?php echo '2.7.4.1' ; ?>
   </DIV>
-<script language='Javascript' type='text/javascript' src='Includes/wz_tooltip.js'></script>
 </BODY>
 </HTML>

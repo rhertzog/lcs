@@ -12,8 +12,8 @@ else
 
 // Redirects IE5 and IE6 users.
 $ua = $_SERVER['HTTP_USER_AGENT'];
-$ie5 = strpos($ua, 'MSIE 5') !== false;
-$ie6 = strpos($ua, 'MSIE 6') !== false;
+$ie5 = mb_strpos($ua, 'MSIE 5') !== false;
+$ie6 = mb_strpos($ua, 'MSIE 6') !== false;
 // Redirects to desktop if not IE.
 if ( $desktop ==1 && ! $ie5 && ! $ie6 ) header("Location:../desktop/");
 if ( $url_redirect == "accueil.php" || $url_redirect == "../squidGuard/pageinterdite.html" ) $url_accueil = $url_redirect;

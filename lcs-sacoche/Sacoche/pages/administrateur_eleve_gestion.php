@@ -27,7 +27,7 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Gérer les élèves";
-$VERSION_JS_FILE += 1;
+$VERSION_JS_FILE += 2;
 ?>
 
 <?php
@@ -39,7 +39,7 @@ $groupe_id   = clean_entier( substr($groupe,1) );
 $select_f_groupes = afficher_select(DB_STRUCTURE_OPT_regroupements_etabl() , $select_nom='f_groupes' , $option_first='non' , $selection=$groupe , $optgroup='oui');
 ?>
 
-<p class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_eleves">DOC : Gestion des élèves</a></p>
+<p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_eleves">DOC : Gestion des élèves</a></span></p>
 
 <form action="./index.php?page=<?php echo $PAGE ?>" method="POST" id="form0">
 	<div>Restreindre l'affichage : <?php echo $select_f_groupes ?> <button id="actualiser" type="submit"><img alt="" src="./_img/bouton/actualiser.png" /> Actualiser.</button></div>
@@ -48,12 +48,13 @@ $select_f_groupes = afficher_select(DB_STRUCTURE_OPT_regroupements_etabl() , $se
 <hr />
 
 <form action="" id="form1">
-	<table class="form">
+	<table class="form t9">
 		<thead>
 			<tr>
 				<th>Id. ENT</th>
 				<th>Id. GEPI</th>
-				<th>n° Sconet</th>
+				<th>Id Sconet</th>
+				<th>N° Sconet</th>
 				<th>Référence</th>
 				<th>Nom</th>
 				<th>Prénom</th>
@@ -80,7 +81,8 @@ $select_f_groupes = afficher_select(DB_STRUCTURE_OPT_regroupements_etabl() , $se
 					echo'<tr id="id_'.$DB_ROW['user_id'].'">';
 					echo	'<td>'.html($DB_ROW['user_id_ent']).'</td>';
 					echo	'<td>'.html($DB_ROW['user_id_gepi']).'</td>';
-					echo	'<td>'.html($DB_ROW['user_num_sconet']).'</td>';
+					echo	'<td>'.html($DB_ROW['user_sconet_id']).'</td>';
+					echo	'<td>'.html($DB_ROW['user_sconet_elenoet']).'</td>';
 					echo	'<td>'.html($DB_ROW['user_reference']).'</td>';
 					echo	'<td>'.html($DB_ROW['user_nom']).'</td>';
 					echo	'<td>'.html($DB_ROW['user_prenom']).'</td>';

@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/headers');
 include_spip('inc/acces');
@@ -63,14 +63,14 @@ function install_etape_sup1_dist()
 		echo '<!-- ',  sql_version($server_db), ' -->' ;
 		$l = bases_referencees();
 		array_push($l, $sel_db);
-		list(, $res) = install_etape_liste_bases($server_db, $l);
+		list(, $res) = install_etape_liste_bases($server_db, $login_db, $l);
 
 		$hidden = predef_ou_cache($adresse_db,$login_db,$pass_db, $server_db)
 		  . (defined('_INSTALL_NAME_DB')
 		     ? ''
 		     : ("\n<input type='hidden' name='sel_db' value='$sel_db' />\n"));
 
-		echo install_etape_sup1_form($hidden, $checked, $res, 'sup2');
+		echo install_etape_sup1_form($hidden, '', $res, 'sup2');
 		echo '</div>';
 	} else  {
 		echo info_etape(_T('info_connexion_base'));

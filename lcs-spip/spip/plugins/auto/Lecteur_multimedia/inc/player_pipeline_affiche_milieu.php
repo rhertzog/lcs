@@ -2,15 +2,15 @@
 
 	// inc/player_pipeline_affiche_milieu.php
 	
-	// $LastChangedRevision: 19360 $
+	// $LastChangedRevision: 31819 $
 	// $LastChangedBy: paladin@quesaco.org $
-	// $LastChangedDate: 2008-03-21 15:50:47 +0100 (ven, 21 mar 2008) $
+	// $LastChangedDate: 2009-09-27 15:37:46 +0200 (dim, 27 sep 2009) $
 
 	
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
 // pipeline (plugin.xml)
-// Ajoute la boite en fin de page de configuration Fonctions avançées
+// Ajoute la boite en fin de page de configuration Fonctions avancees
 function player_affiche_milieu ($flux) {
 
 	$exec = $flux['args']['exec'];

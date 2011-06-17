@@ -38,7 +38,7 @@ if (defined('_SPIP19300')) {
 
 function remplace_points_de_suite($texte, $id, $racc) {
 	if (strpos($texte, _INTRODUCTION_CODE) === false) return $texte;
-	// precaution sur le tout paragrapher de SPIP 2.0 !
+	// precaution sur le tout paragrapher de SPIP >= 2.0 !
 	$mem = $GLOBALS['toujours_paragrapher'];  
 	$GLOBALS['toujours_paragrapher'] = false;  
 	// des points de suite bien propres
@@ -46,9 +46,11 @@ function remplace_points_de_suite($texte, $id, $racc) {
 	$intro_suite = propre(_INTRODUCTION_SUITE);
 	// si les points de suite sont cliquables
 	if ($id && _INTRODUCTION_LIEN == 1) {
+		$url = (defined('_SPIP19300') && test_espace_prive())
+			?generer_url_entite_absolue($id, $racc, '', '', true):"$racc$id";
 		if (substr($intro_suite, 0, 6) == '<br />') 
-			$intro_suite = propre("<br />[".substr($intro_suite, 6)."->$racc$id]");
-			else $intro_suite = propre("&nbsp;[{$intro_suite}->$racc$id]");
+			$intro_suite = propre("<br />[".substr($intro_suite, 6)."->$url]");
+			else $intro_suite = propre("&nbsp;[{$intro_suite}->$url]");
 		$intro_suite = inserer_attribut($intro_suite, 'class', extraire_attribut($intro_suite,'class') . ' pts_suite');
 	}
 	$GLOBALS['toujours_paragrapher'] = $mem; 
@@ -60,6 +62,7 @@ function remplace_points_de_suite($texte, $id, $racc) {
 // lgr=0 : pas possible
 // TODO : $connect est pour SPIP 2.0
 function cs_introduction($texte, $descriptif, $lgr, $id, $racc, $connect) {
+	@define('_INTRODUCTION_LGR', 100);
 	// fonction couper_intro
 	$couper = $GLOBALS['cs_couper_intro'];
 	if (strlen($descriptif))
@@ -71,7 +74,8 @@ function cs_introduction($texte, $descriptif, $lgr, $id, $racc, $connect) {
 		// pas de maths dans l'intro...
 		$texte = preg_replace(',<math>.*</math>,imsU', '', $texte);
 		// on coupe proprement...
-		$texte = PtoBR(propre(supprimer_tags($couper(cs_introduire($texte), $lgr>0?round($lgr*_INTRODUCTION_LGR/100):-$lgr, _INTRODUCTION_CODE))));
+		$lgr = $lgr>0?round($lgr*_INTRODUCTION_LGR/100):-$lgr;
+		$texte = PtoBR(propre(supprimer_tags($couper(cs_introduire($texte), $lgr, _INTRODUCTION_CODE))));
 	}
 	// si les points de suite ont ete ajoutes
 	return remplace_points_de_suite($texte, $id, $racc);
@@ -89,7 +93,6 @@ if (!function_exists('balise_INTRODUCTION')) {
 		$table_des_traitements['INTRODUCTION_SPIP'] = $table_des_traitements['INTRODUCTION'];
 	// #INTRODUCTION
 	function balise_INTRODUCTION($p) {
-		@define('_INTRODUCTION_LGR', 100);
 		$type = $p->type_requete;
 		$_texte = champ_sql('texte', $p);
 		$_descriptif =  "''";
@@ -113,7 +116,6 @@ if (!function_exists('balise_INTRODUCTION')) {
 		if(($v = interprete_argument_balise(1,$p))!==NULL) $_lgr = "-intval($v)" ;
 		$_id = champ_sql(id_table_objet($racc = objet_type($type)), $p);
 		$p->code = "cs_introduction($_texte, $_descriptif, $_lgr, $_id, '$racc', \$connect)";
-	
 		#$p->interdire_scripts = true;
 		$p->etoile = '*'; // propre est deja fait dans le calcul de l'intro
 		return $p;

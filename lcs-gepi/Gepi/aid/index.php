@@ -1,8 +1,8 @@
 <?php
 /*
- * @version: $Id: index.php 2198 2008-07-26 12:59:16Z crob $
+ * @version: $Id: index.php 5907 2010-11-19 20:30:52Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -33,7 +33,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 
 if (!checkAccess()) {
@@ -59,7 +59,7 @@ if (isset($_POST['sup'])) {
       }
   }
   $_SESSION['chemin_retour'] = $_SERVER['REQUEST_URI']."?sup_all=".$sup_all;
-  header("Location: ../lib/confirm_query.php?liste_cible=$liste_cible&action=del_type_aid");
+  header("Location: ../lib/confirm_query.php?liste_cible=$liste_cible&action=del_type_aid".add_token_in_url(false));
 
 }
   if (isset($_GET['sup_all'])) $sup_all = $_GET['sup_all']; else $sup_all = '';

@@ -187,7 +187,7 @@ function ajouter_log_SACoche($contenu)
 
 function ajouter_log_PHP($log_objet,$log_contenu,$log_fichier,$log_ligne,$only_sesamath=true)
 {
-	if(strpos(SERVEUR_ADRESSE,SERVEUR_PROJET)===0)
+	if( (!$only_sesamath) || (strpos(SERVEUR_ADRESSE,SERVEUR_PROJET)===0) )
 	{
 		$SEP = ' ║ ';
 		error_log('SACoche info' . $SEP . $log_objet . $SEP . 'base '.$_SESSION['BASE'] . $SEP . 'user '.$_SESSION['USER_ID'] . $SEP . basename($log_fichier).' '.$log_ligne . $SEP . $log_contenu,0);
@@ -283,6 +283,34 @@ function charger_parametres_mysql_supplementaires($BASE)
 }
 
 /**
+ * maj_base_si_besoin
+ * Mettre à jour automatiquement la base si besoin ; à effectuer avant toute récupération des données sinon ça peut poser pb...
+ * 
+ * @param int   $BASE
+ * @return void
+ */
+
+function maj_base_si_besoin($BASE)
+{
+	$version_base = DB_version_base();
+	if($version_base != VERSION_BASE)
+	{
+		// On ne met pas à jour la base tant que le webmestre bloque l'accès à l'application, car sinon cela pourrait se produire avant le transfert de tous les fichiers.
+		global $CHEMIN_CONFIG;
+		if(!is_file($CHEMIN_CONFIG.'blocage_webmestre_0.txt'))
+		{
+			// Bloquer l'application
+			bloquer_application('automate',$BASE,'Mise à jour de la base en cours.');
+			// Lancer une mise à jour de la base
+			require_once('./_inc/fonction_maj_base.php');
+			maj_base($version_base);
+			// Débloquer l'application
+			debloquer_application('automate',$BASE);
+		}
+	}
+}
+
+/**
  * fabriquer_login
  * 
  * @param string $prenom
@@ -304,14 +332,19 @@ function fabriquer_login($prenom,$nom,$profil)
 /**
  * fabriquer_mdp
  * 
+ * Certains caractères sont évités :
+ * "e" sinon un tableur peut interpréter le mot de passe comme un nombre avec exposant
+ * "i"j"1"l" pour éviter une confusion entre eux
+ * "m"w" pour éviter la confusion avec "nn"vv"
+ * "o"0" pour éviter une confusion entre eux
+ * 
  * @param void
  * @return string
  */
 
 function fabriquer_mdp()
 {
-	// e enlevé sinon un tableur peut interpréter le mot de passe comme un nombre avec exposant ; hijklmoquvw retirés aussi pour éviter tout risque de confusion
-	return mb_substr(str_shuffle('23456789abcdfgnprstxyz'),0,6);
+	return mb_substr(str_shuffle('2345678923456789abcdfghknpqrstuvxyz'),0,8);
 }
 
 /**
@@ -330,37 +363,23 @@ function crypter_mdp($password)
 /**
  * fabriquer_fichier_hebergeur_info
  * 
- * @param string $hebergeur_installation
- * @param string $hebergeur_denomination
- * @param string $hebergeur_uai
- * @param string $hebergeur_adresse_site
- * @param string $hebergeur_logo
- * @param string $hebergeur_cnil
- * @param string $webmestre_nom
- * @param string $webmestre_prenom
- * @param string $webmestre_courriel
- * @param string $webmestre_password_md5
- * @param int    $webmestre_erreur_date
+ * @param array tableau $constante_nom => $constante_valeur des paramètres à modfifier (sinon, on prend les constantes déjà définies)
  * @return void
  */
 
-function fabriquer_fichier_hebergeur_info($hebergeur_installation,$hebergeur_denomination,$hebergeur_uai,$hebergeur_adresse_site,$hebergeur_logo,$hebergeur_cnil,$webmestre_nom,$webmestre_prenom,$webmestre_courriel,$webmestre_password_md5,$webmestre_erreur_date)
+function fabriquer_fichier_hebergeur_info($tab_constantes_modifiees)
 {
 	global $CHEMIN_CONFIG;
 	$fichier_nom     = $CHEMIN_CONFIG.'constantes.php';
+	$tab_constantes_requises = array('HEBERGEUR_INSTALLATION','HEBERGEUR_DENOMINATION','HEBERGEUR_UAI','HEBERGEUR_ADRESSE_SITE','HEBERGEUR_LOGO','CNIL_NUMERO','CNIL_DATE_ENGAGEMENT','CNIL_DATE_RECEPISSE','WEBMESTRE_NOM','WEBMESTRE_PRENOM','WEBMESTRE_COURRIEL','WEBMESTRE_PASSWORD_MD5','WEBMESTRE_ERREUR_DATE','SERVEUR_PROXY_USED','SERVEUR_PROXY_NAME','SERVEUR_PROXY_PORT','SERVEUR_PROXY_TYPE','SERVEUR_PROXY_AUTH_USED','SERVEUR_PROXY_AUTH_METHOD','SERVEUR_PROXY_AUTH_USER','SERVEUR_PROXY_AUTH_PASS');
 	$fichier_contenu = '<?php'."\r\n";
 	$fichier_contenu.= '// Informations concernant l\'hébergement et son webmestre (n°UAI uniquement pour une installation de type mono-structure)'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_INSTALLATION\',\''.str_replace('\'','\\\'',$hebergeur_installation).'\');'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_DENOMINATION\',\''.str_replace('\'','\\\'',$hebergeur_denomination).'\');'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_UAI\'         ,\''.str_replace('\'','\\\'',$hebergeur_uai)         .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_ADRESSE_SITE\',\''.str_replace('\'','\\\'',$hebergeur_adresse_site).'\');'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_LOGO\'        ,\''.str_replace('\'','\\\'',$hebergeur_logo)        .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'HEBERGEUR_CNIL\'        ,\''.str_replace('\'','\\\'',$hebergeur_cnil)        .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'WEBMESTRE_NOM\'         ,\''.str_replace('\'','\\\'',$webmestre_nom)         .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'WEBMESTRE_PRENOM\'      ,\''.str_replace('\'','\\\'',$webmestre_prenom)      .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'WEBMESTRE_COURRIEL\'    ,\''.str_replace('\'','\\\'',$webmestre_courriel)    .'\');'."\r\n";
-	$fichier_contenu.= 'define(\'WEBMESTRE_PASSWORD_MD5\',\''.str_replace('\'','\\\'',$webmestre_password_md5).'\');'."\r\n";
-	$fichier_contenu.= 'define(\'WEBMESTRE_ERREUR_DATE\' ,\''.str_replace('\'','\\\'',$webmestre_erreur_date) .'\');'."\r\n";
+	foreach($tab_constantes_requises as $constante_nom)
+	{
+		$constante_valeur = (isset($tab_constantes_modifiees[$constante_nom])) ? $tab_constantes_modifiees[$constante_nom] : constant($constante_nom);
+		$espaces = str_repeat(' ',25-strlen($constante_nom));
+		$fichier_contenu.= 'define(\''.$constante_nom.'\''.$espaces.',\''.str_replace('\'','\\\'',$constante_valeur).'\');'."\r\n";
+	}
 	$fichier_contenu.= '?>'."\r\n";
 	Ecrire_Fichier($fichier_nom,$fichier_contenu);
 }
@@ -426,22 +445,23 @@ function modifier_mdp_webmestre($password_ancien,$password_nouveau)
 	}
 	// Remplacer par le nouveau mot de passe
 	$password_nouveau_crypte = crypter_mdp($password_nouveau);
-	fabriquer_fichier_hebergeur_info(HEBERGEUR_INSTALLATION,HEBERGEUR_DENOMINATION,HEBERGEUR_UAI,HEBERGEUR_ADRESSE_SITE,HEBERGEUR_LOGO,HEBERGEUR_CNIL,WEBMESTRE_NOM,WEBMESTRE_PRENOM,WEBMESTRE_COURRIEL,$password_nouveau_crypte,WEBMESTRE_ERREUR_DATE);
+	fabriquer_fichier_hebergeur_info( array('WEBMESTRE_PASSWORD_MD5'=>$password_nouveau_crypte) );
 	return 'ok';
 }
 
 /**
  * bloquer_application
  * 
- * @param string $profil_demandeur
+ * @param string $profil_demandeur (webmestre|administrateur|automate)
+ * @param int    $id_base   (0 si demande mono-structure ou du webmestre multi-structures de bloquer tous les établissements)
  * @param string $motif
  * @return void
  */
 
-function bloquer_application($profil_demandeur,$motif)
+function bloquer_application($profil_demandeur,$id_base,$motif)
 {
 	global $CHEMIN_CONFIG;
-	$fichier_nom = ($profil_demandeur=='webmestre') ? $CHEMIN_CONFIG.'blocage_webmestre.txt' : $CHEMIN_CONFIG.'blocage_admin_'.$_SESSION['BASE'].'.txt' ;
+	$fichier_nom = $CHEMIN_CONFIG.'blocage_'.$profil_demandeur.'_'.$id_base.'.txt' ;
 	Ecrire_Fichier($fichier_nom,$motif);
 	// Log de l'action
 	ajouter_log_SACoche('Blocage de l\'accès à l\'application ['.$motif.'].');
@@ -450,14 +470,15 @@ function bloquer_application($profil_demandeur,$motif)
 /**
  * debloquer_application
  * 
- * @param string $profil_demandeur
+ * @param string $profil_demandeur (webmestre|administrateur|automate)
+ * @param int    $id_base   (0 si demande mono-structure ou du webmestre multi-structures de débloquer tous les établissements)
  * @return void
  */
 
-function debloquer_application($profil_demandeur)
+function debloquer_application($profil_demandeur,$id_base)
 {
 	global $CHEMIN_CONFIG;
-	$fichier_nom = ($profil_demandeur=='webmestre') ? $CHEMIN_CONFIG.'blocage_webmestre.txt' : $CHEMIN_CONFIG.'blocage_admin_'.$_SESSION['BASE'].'.txt' ;
+	$fichier_nom = $CHEMIN_CONFIG.'blocage_'.$profil_demandeur.'_'.$id_base.'.txt' ;
 	@unlink($fichier_nom);
 	// Log de l'action
 	ajouter_log_SACoche('Déblocage de l\'accès à l\'application.');
@@ -465,9 +486,20 @@ function debloquer_application($profil_demandeur)
 
 /**
  * tester_blocage_application
+ * 
  * Blocage des sites sur demande du webmestre ou d'un administrateur (maintenance, sauvegarde/restauration, ...).
+ * 
  * Nécessite que la session soit ouverte.
  * Appelé depuis les pages index.php + ajax.php + lors d'une demande d'identification d'un utilisateur (sauf webmestre)
+ * 
+ * En cas de blocage demandé par le webmestre, on ne laisse l'accès que :
+ * - pour le webmestre déjà identifié
+ * - pour la partie publique, si pas une demande d'identification, sauf demande webmestre
+ * 
+ * En cas de blocage demandé par un administrateur ou par l'automate (sauvegarde/restauration) pour un établissement donné, on ne laisse l'accès que :
+ * - pour le webmestre déjà identifié
+ * - pour un administrateur déjà identifié
+ * - pour la partie publique, si pas une demande d'identification, sauf demande webmestre ou administrateur
  * 
  * @param string $BASE                       car $_SESSION['BASE'] non encore renseigné si demande d'identification
  * @param string $demande_connexion_profil   false si appel depuis index.php ou ajax.php, le profil si demande d'identification
@@ -477,22 +509,38 @@ function debloquer_application($profil_demandeur)
 function tester_blocage_application($BASE,$demande_connexion_profil)
 {
 	global $CHEMIN_CONFIG;
-	// Blocage demandé par le webmestre : on ne laisse l'accès que
-	// + pour le webmestre déjà identifié
-	// + pour la partie publique, si pas une demande d'identification, sauf demande webmestre
-	$fichier_blocage_webmestre = $CHEMIN_CONFIG.'blocage_webmestre.txt';
-	if( (is_file($fichier_blocage_webmestre)) && ($_SESSION['USER_PROFIL']!='webmestre') && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil!=false)) )
+	// Blocage demandé par le webmestre pour tous les établissements (multi-structures) ou pour l'établissement (mono-structure).
+	$fichier_blocage = $CHEMIN_CONFIG.'blocage_webmestre_0.txt';
+	if( (is_file($fichier_blocage)) && ($_SESSION['USER_PROFIL']!='webmestre') && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil!=false)) )
 	{
-		affich_message_exit($titre='Blocage par le webmestre',$contenu='Blocage par le webmestre : '.file_get_contents($fichier_blocage_webmestre) );
+		affich_message_exit($titre='Blocage par le webmestre',$contenu='Blocage par le webmestre - '.file_get_contents($fichier_blocage) );
 	}
-	// Blocage demandé par un administrateur : on ne laisse l'accès que
-	// + pour le webmestre déjà identifié
-	// + pour un administrateur déjà identifié
-	// + pour la partie publique, si pas une demande d'identification, sauf demande webmestre ou administrateur
-	$fichier_blocage_administrateur = $CHEMIN_CONFIG.'blocage_admin_'.$BASE.'.txt';
-	if( (is_file($fichier_blocage_administrateur)) && ($_SESSION['USER_PROFIL']!='webmestre') && ($_SESSION['USER_PROFIL']!='administrateur') && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil!='administrateur')) )
+	// Blocage demandé par le webmestre pour un établissement donné (multi-structures).
+	$fichier_blocage = $CHEMIN_CONFIG.'blocage_webmestre_'.$BASE.'.txt';
+	if( (is_file($fichier_blocage)) && ($_SESSION['USER_PROFIL']!='webmestre') && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil!=false)) )
 	{
-		affich_message_exit($titre='Blocage par un administrateur',$contenu='Blocage par un administrateur : '.file_get_contents($fichier_blocage_administrateur) );
+		affich_message_exit($titre='Blocage par le webmestre',$contenu='Blocage par le webmestre - '.file_get_contents($fichier_blocage) );
+	}
+	// Blocage demandé par un administrateur pour son établissement.
+	$fichier_blocage = $CHEMIN_CONFIG.'blocage_administrateur_'.$BASE.'.txt';
+	if( (is_file($fichier_blocage)) && (!in_array($_SESSION['USER_PROFIL'],array('webmestre','administrateur'))) && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil=='normal')) )
+	{
+		affich_message_exit($titre='Blocage par un administrateur',$contenu='Blocage par un administrateur - '.file_get_contents($fichier_blocage) );
+	}
+	// Blocage demandé par l'automate pour un établissement donné.
+	$fichier_blocage = $CHEMIN_CONFIG.'blocage_automate_'.$BASE.'.txt';
+	if( (is_file($fichier_blocage)) && (!in_array($_SESSION['USER_PROFIL'],array('webmestre','administrateur'))) && (($_SESSION['USER_PROFIL']!='public')||($demande_connexion_profil=='normal')) )
+	{
+		// Au cas où une procédure de sauvegarde / restauration / nettoyage / tranfert échouerait, un fichier de blocage automatique pourrait être créé et ne pas être effacé.
+		// Pour cette raison on teste une durée de vie anormalement longue d'une tel fichier de blocage (puisqu'il ne devrait être que temporaire).
+		if( time() - filemtime($fichier_blocage) < 5*60 )
+		{
+			affich_message_exit($titre='Blocage automatique',$contenu='Blocage automatique - '.file_get_contents($fichier_blocage) );
+		}
+		else
+		{
+			debloquer_application('automate',$BASE);
+		}
 	}
 }
 
@@ -509,7 +557,7 @@ function connecter_webmestre($password)
 	$delai_attente_consomme = time() - WEBMESTRE_ERREUR_DATE ;
 	if($delai_attente_consomme<3)
 	{
-		fabriquer_fichier_hebergeur_info(HEBERGEUR_INSTALLATION,HEBERGEUR_DENOMINATION,HEBERGEUR_UAI,HEBERGEUR_ADRESSE_SITE,HEBERGEUR_LOGO,HEBERGEUR_CNIL,WEBMESTRE_NOM,WEBMESTRE_PRENOM,WEBMESTRE_COURRIEL,WEBMESTRE_PASSWORD_MD5,time());
+		fabriquer_fichier_hebergeur_info( array('WEBMESTRE_ERREUR_DATE'=>time()) );
 		return'Calmez-vous et patientez 10s avant toute nouvelle tentative !';
 	}
 	elseif($delai_attente_consomme<10)
@@ -521,7 +569,7 @@ function connecter_webmestre($password)
 	$password_crypte = crypter_mdp($password);
 	if($password_crypte!=WEBMESTRE_PASSWORD_MD5)
 	{
-		fabriquer_fichier_hebergeur_info(HEBERGEUR_INSTALLATION,HEBERGEUR_DENOMINATION,HEBERGEUR_UAI,HEBERGEUR_ADRESSE_SITE,HEBERGEUR_LOGO,HEBERGEUR_CNIL,WEBMESTRE_NOM,WEBMESTRE_PRENOM,WEBMESTRE_COURRIEL,WEBMESTRE_PASSWORD_MD5,time());
+		fabriquer_fichier_hebergeur_info( array('WEBMESTRE_ERREUR_DATE'=>time()) );
 		return 'Mot de passe incorrect ! Patientez 10s avant une nouvelle tentative.';
 	}
 	// Si on arrive ici c'est que l'identification s'est bien effectuée !
@@ -598,6 +646,24 @@ function connecter_user($BASE,$profil,$login,$password,$mode_connection)
 		return'Utilisez le formulaire approprié aux '.str_replace('eleve','élève',$DB_ROW['user_profil']).'s !';
 	}
 	// Si on arrive ici c'est que l'identification s'est bien effectuée !
+	enregistrer_informations_session($BASE,$DB_ROW);
+	// Mémoriser la date de la (dernière) connexion
+	DB_STRUCTURE_modifier_date('connexion',$_SESSION['USER_ID']);
+	// Enregistrement d'un cookie sur le poste client servant à retenir le dernier établissement sélectionné si identification avec succès
+	setcookie(COOKIE_STRUCTURE,$BASE,time()+60*60*24*365,'/');
+	return'ok';
+}
+
+/**
+ * enregistrer_informations_session
+ * 
+ * @param int     $BASE
+ * @param array   $DB_ROW   ligne issue de la table sacoche_user correspondant à l'utilisateur qui se connecte.
+ * @return void
+ */
+
+function enregistrer_informations_session($BASE,$DB_ROW)
+{
 	// Enregistrer en session le numéro de la base
 	$_SESSION['BASE']             = $BASE;
 	// Enregistrer en session les données associées à l'utilisateur (indices du tableau de session en majuscules).
@@ -607,13 +673,15 @@ function connecter_user($BASE,$profil,$login,$password,$mode_connection)
 	$_SESSION['USER_PRENOM']      = $DB_ROW['user_prenom'];
 	$_SESSION['USER_LOGIN']       = $DB_ROW['user_login'];
 	$_SESSION['USER_DESCR']       = '['.$DB_ROW['user_profil'].'] '.$DB_ROW['user_prenom'].' '.$DB_ROW['user_nom'];
+	$_SESSION['USER_DALTONISME']  = $DB_ROW['user_daltonisme'];
 	$_SESSION['USER_ID_ENT']      = $DB_ROW['user_id_ent'];
 	$_SESSION['USER_ID_GEPI']     = $DB_ROW['user_id_gepi'];
 	$_SESSION['ELEVE_CLASSE_ID']  = (int) $DB_ROW['eleve_classe_id'];
 	$_SESSION['ELEVE_CLASSE_NOM'] = $DB_ROW['groupe_nom'];
+	$_SESSION['ELEVE_LANGUE']     = (int) $DB_ROW['eleve_langue'];
 	// Récupérer et Enregistrer en session les données associées à l'établissement (indices du tableau de session en majuscules).
 	$DB_TAB = DB_STRUCTURE_lister_parametres();
-	$tab_type_entier  = array('SESAMATH_ID','DROIT_ELEVE_DEMANDES','DUREE_INACTIVITE','CALCUL_VALEUR_RR','CALCUL_VALEUR_R','CALCUL_VALEUR_V','CALCUL_VALEUR_VV','CALCUL_SEUIL_R','CALCUL_SEUIL_V','CALCUL_LIMITE','CAS_SERVEUR_PORT');
+	$tab_type_entier  = array('SESAMATH_ID','DUREE_INACTIVITE','CALCUL_VALEUR_RR','CALCUL_VALEUR_R','CALCUL_VALEUR_V','CALCUL_VALEUR_VV','CALCUL_SEUIL_R','CALCUL_SEUIL_V','CALCUL_LIMITE','CAS_SERVEUR_PORT');
 	$tab_type_tableau = array('CSS_BACKGROUND-COLOR','CALCUL_VALEUR','CALCUL_SEUIL','NOTE_TEXTE','NOTE_LEGENDE','ACQUIS_TEXTE','ACQUIS_LEGENDE');
 	foreach($DB_TAB as $DB_ROW)
 	{
@@ -639,12 +707,33 @@ function connecter_user($BASE,$profil,$login,$password,$mode_connection)
 			$_SESSION[$parametre_nom] = $parametre_valeur ;
 		}
 	}
+	// Fabriquer $_SESSION['NOTE_DOSSIER'] et $_SESSION['BACKGROUND_...'] en fonction de $_SESSION['USER_DALTONISME'] à partir de $_SESSION['NOTE_IMAGE_STYLE'] et $_SESSION['CSS_BACKGROUND-COLOR']['...']
+	// remarque : $_SESSION['USER_DALTONISME'] ne peut être utilisé que pour les profils élèves/parents/profs/directeurs, pas les admins ni le webmestre
+	adapter_session_daltonisme() ;
+	// Enregistrer en session le CSS personnalisé
 	actualiser_style_session();
-	// Mémoriser la date de la (dernière) connexion
-	DB_STRUCTURE_modifier_date('connexion',$_SESSION['USER_ID']);
-	// Enregistrement d'un cookie sur le poste client servant à retenir le dernier établissement sélectionné si identification avec succès
-	setcookie(COOKIE_STRUCTURE,$BASE,time()+60*60*24*365,'/');
-	return'ok';
+}
+
+/**
+ * adapter_session_daltonisme
+ * 
+ * @param void
+ * @return void
+ */
+
+function adapter_session_daltonisme()
+{
+	// codes de notation
+	$_SESSION['NOTE_DOSSIER']  = $_SESSION['USER_DALTONISME'] ? 'Dalton'  : $_SESSION['NOTE_IMAGE_STYLE'] ;
+	// couleurs des états d'acquisition
+	$_SESSION['BACKGROUND_NA'] = $_SESSION['USER_DALTONISME'] ? '#909090' : $_SESSION['CSS_BACKGROUND-COLOR']['NA'] ;
+	$_SESSION['BACKGROUND_VA'] = $_SESSION['USER_DALTONISME'] ? '#BEBEBE' : $_SESSION['CSS_BACKGROUND-COLOR']['VA'] ;
+	$_SESSION['BACKGROUND_A']  = $_SESSION['USER_DALTONISME'] ? '#EAEAEA' : $_SESSION['CSS_BACKGROUND-COLOR']['A'] ;
+	// couleurs des états de validation
+	$_SESSION['BACKGROUND_V0'] = $_SESSION['USER_DALTONISME'] ? '#909090' : '#FF9999' ; // validation négative
+	$_SESSION['BACKGROUND_V1'] = $_SESSION['USER_DALTONISME'] ? '#EAEAEA' : '#99FF99' ; // validation positive
+	$_SESSION['BACKGROUND_V2'] = $_SESSION['USER_DALTONISME'] ? '#BEBEBE' : '#BBBBFF' ; // validation en attente
+	$_SESSION['OPACITY']       = $_SESSION['USER_DALTONISME'] ? 1         : 0.3 ;
 }
 
 /**
@@ -657,17 +746,37 @@ function connecter_user($BASE,$profil,$login,$password,$mode_connection)
 function actualiser_style_session()
 {
 	$_SESSION['CSS']  = '';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.RR {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/h/RR.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.RR {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/v/RR.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.R  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/h/R.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.R  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/v/R.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.V  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/h/V.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.V  {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/v/V.gif")  no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.VV {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/h/VV.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.VV {background:#FFF url("./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/v/VV.gif") no-repeat center center;}';
-	$_SESSION['CSS'] .= 'table th.r , table td.r , div.r ,span.r ,label.r {background-color:'.$_SESSION['CSS_BACKGROUND-COLOR']['NA'].'}';
-	$_SESSION['CSS'] .= 'table th.o , table td.o , div.o ,span.o ,label.o {background-color:'.$_SESSION['CSS_BACKGROUND-COLOR']['VA'].'}';
-	$_SESSION['CSS'] .= 'table th.v , table td.v , div.v ,span.v ,label.v {background-color:'.$_SESSION['CSS_BACKGROUND-COLOR']['A'].'}';
+	// codes de notation
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.RR {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/RR.gif) no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.RR {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/RR.gif) no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.R  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/R.gif)  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.R  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/R.gif)  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.V  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/V.gif)  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.V  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/V.gif)  no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.VV {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/VV.gif) no-repeat center center;}';
+	$_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.VV {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/VV.gif) no-repeat center center;}';
+	// couleurs des états d'acquisition
+	$_SESSION['CSS'] .= 'table th.r , table td.r , div.r ,span.r ,label.r {background-color:'.$_SESSION['BACKGROUND_NA'].'}';
+	$_SESSION['CSS'] .= 'table th.o , table td.o , div.o ,span.o ,label.o {background-color:'.$_SESSION['BACKGROUND_VA'].'}';
+	$_SESSION['CSS'] .= 'table th.v , table td.v , div.v ,span.v ,label.v {background-color:'.$_SESSION['BACKGROUND_A'].'}';
+	// couleurs des états de validation
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.down0 {background:'.$_SESSION['BACKGROUND_V0'].' url(./_img/socle/arrow_down.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.down1 {background:'.$_SESSION['BACKGROUND_V1'].' url(./_img/socle/arrow_down.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.down2 {background:'.$_SESSION['BACKGROUND_V2'].' url(./_img/socle/arrow_down.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.left0 {background:'.$_SESSION['BACKGROUND_V0'].' url(./_img/socle/arrow_left.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.left1 {background:'.$_SESSION['BACKGROUND_V1'].' url(./_img/socle/arrow_left.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.left2 {background:'.$_SESSION['BACKGROUND_V2'].' url(./_img/socle/arrow_left.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.diag0 {background:'.$_SESSION['BACKGROUND_V0'].' url(./_img/socle/arrow_diag.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.diag1 {background:'.$_SESSION['BACKGROUND_V1'].' url(./_img/socle/arrow_diag.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody th.diag2 {background:'.$_SESSION['BACKGROUND_V2'].' url(./_img/socle/arrow_diag.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
+	$_SESSION['CSS'] .= 'th.v0 , td.v0 {background:'.$_SESSION['BACKGROUND_V0'].'}';
+	$_SESSION['CSS'] .= 'th.v1 , td.v1 {background:'.$_SESSION['BACKGROUND_V1'].'}';
+	$_SESSION['CSS'] .= 'th.v2 , td.v2 {background:'.$_SESSION['BACKGROUND_V2'].'}';
+	$_SESSION['CSS'] .= '#zone_information .v0 {background:'.$_SESSION['BACKGROUND_V0'].';padding:0 1em;margin-right:1ex}';
+	$_SESSION['CSS'] .= '#zone_information .v1 {background:'.$_SESSION['BACKGROUND_V1'].';padding:0 1em;margin-right:1ex}';
+	$_SESSION['CSS'] .= '#zone_information .v2 {background:'.$_SESSION['BACKGROUND_V2'].';padding:0 1em;margin-right:1ex}';
+	$_SESSION['CSS'] .= '#tableau_validation tbody td[lang=lock] {background:'.$_SESSION['BACKGROUND_V1'].' url(./_img/socle/lock.gif) no-repeat center center;} /* surclasse une classe v0 ou v1 ou v2 car défini après */';
+	$_SESSION['CSS'] .= '#tableau_validation tbody td[lang=done] {background-image:url(./_img/socle/done.gif);background-repeat:no-repeat;background-position:center center;} /* pas background pour ne pas écraser background-color défini avant */';
 }
 
 function envoyer_webmestre_courriel($adresse,$objet,$contenu)
@@ -1022,22 +1131,33 @@ function url_get_contents($url,$tab_post=false,$timeout=5)
 	// Ne pas utiliser file_get_contents() car certains serveurs n'accepent pas d'utiliser une URL comme nom de fichier (gestionnaire fopen non activé).
 	// On utilise donc la bibliothèque cURL en remplacement
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_DNS_CACHE_TIMEOUT, 3600);          // Le temps en seconde que cURL doit conserver les entrées DNS en mémoire. Cette option est définie à 120 secondes (2 minutes) par défaut.
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);             // TRUE retourne directement le transfert sous forme de chaîne de la valeur retournée par curl_exec() au lieu de l'afficher directement.
-	curl_setopt($ch, CURLOPT_FAILONERROR, TRUE);                // TRUE pour que PHP traite silencieusement les codes HTTP supérieurs ou égaux à 400. Le comportement par défaut est de retourner la page normalement, en ignorant ce code.
-	curl_setopt($ch, CURLOPT_HEADER, FALSE);                    // FALSE pour ne pas inclure l'en-tête dans la valeur de retour.
-	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);                // Le temps maximum d'exécution de la fonction cURL (en s) ; éviter de monter cette valeur pour libérer des ressources plus rapidement : 'classiquement', le serveur doit répondre en qq ms, donc si au bout de 5s il a pas répondu c'est qu'il ne répondra plus, alors pas la peine de bloquer une connexion et de la RAM pendant plus longtemps.
-	curl_setopt($ch, CURLOPT_URL, $url);                        // L'URL à récupérer. Vous pouvez aussi choisir cette valeur lors de l'appel à curl_init().
-	if( (!ini_get('safe_mode')) && (!ini_get('open_basedir')) ) // Option CURLOPT_FOLLOWLOCATION sous conditions car certaines installations renvoient "CURLOPT_FOLLOWLOCATION cannot be activated when in safe_mode or an open_basedir is set" (http://www.php.net/manual/fr/features.safe-mode.functions.php#92192)
-	{
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);           // TRUE pour suivre toutes les en-têtes "Location: " que le serveur envoie dans les en-têtes HTTP (notez que cette fonction est récursive et que PHP suivra toutes les en-têtes "Location: " qu'il trouvera à moins que CURLOPT_MAXREDIRS ne soit définie).
-		curl_setopt($ch, CURLOPT_MAXREDIRS, 3);                   // Le nombre maximal de redirections HTTP à suivre. Utilisez cette option avec l'option CURLOPT_FOLLOWLOCATION.
+	curl_setopt($ch, CURLOPT_DNS_CACHE_TIMEOUT, 3600); // Le temps en seconde que cURL doit conserver les entrées DNS en mémoire. Cette option est définie à 120 secondes (2 minutes) par défaut.
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);    // TRUE retourne directement le transfert sous forme de chaîne de la valeur retournée par curl_exec() au lieu de l'afficher directement.
+	curl_setopt($ch, CURLOPT_FAILONERROR, TRUE);       // TRUE pour que PHP traite silencieusement les codes HTTP supérieurs ou égaux à 400. Le comportement par défaut est de retourner la page normalement, en ignorant ce code.
+	curl_setopt($ch, CURLOPT_HEADER, FALSE);           // FALSE pour ne pas inclure l'en-tête dans la valeur de retour.
+	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);       // Le temps maximum d'exécution de la fonction cURL (en s) ; éviter de monter cette valeur pour libérer des ressources plus rapidement : 'classiquement', le serveur doit répondre en qq ms, donc si au bout de 5s il a pas répondu c'est qu'il ne répondra plus, alors pas la peine de bloquer une connexion et de la RAM pendant plus longtemps.
+	curl_setopt($ch, CURLOPT_URL, $url);               // L'URL à récupérer. Vous pouvez aussi choisir cette valeur lors de l'appel à curl_init().
+	if( (!ini_get('safe_mode')) && (!ini_get('open_basedir')) )
+	{                                                 // Option CURLOPT_FOLLOWLOCATION sous conditions car certaines installations renvoient "CURLOPT_FOLLOWLOCATION cannot be activated when in safe_mode or an open_basedir is set" (http://www.php.net/manual/fr/features.safe-mode.functions.php#92192)
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE); // TRUE pour suivre toutes les en-têtes "Location: " que le serveur envoie dans les en-têtes HTTP (notez que cette fonction est récursive et que PHP suivra toutes les en-têtes "Location: " qu'il trouvera à moins que CURLOPT_MAXREDIRS ne soit définie).
+		curl_setopt($ch, CURLOPT_MAXREDIRS, 3);         // Le nombre maximal de redirections HTTP à suivre. Utilisez cette option avec l'option CURLOPT_FOLLOWLOCATION.
+	}
+	if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
+	{                                                                    // Serveur qui nécessite d'utiliser un tunnel à travers un proxy HTTP.
+		curl_setopt($ch, CURLOPT_PROXY, SERVEUR_PROXY_NAME);               // Le nom du proxy HTTP au tunnel qui le demande.
+		curl_setopt($ch, CURLOPT_PROXYPORT, (int)SERVEUR_PROXY_PORT);      // Le numéro du port du proxy à utiliser pour la connexion. Ce numéro de port peut également être défini dans l'option CURLOPT_PROXY.
+		curl_setopt($ch, CURLOPT_PROXYTYPE, constant(SERVEUR_PROXY_TYPE)); // Soit CURLPROXY_HTTP (par défaut), soit CURLPROXY_SOCKS5.
+		if(SERVEUR_PROXY_AUTH_USED)
+		{                                                                                              // Serveur qui nécessite de s'authentifier pour utiliser le proxy.
+			curl_setopt($ch, CURLOPT_PROXYAUTH, constant(SERVEUR_PROXY_AUTH_METHOD));                    // La méthode d'identification HTTP à utiliser pour la connexion à un proxy. Utilisez la même méthode que celle décrite dans CURLOPT_HTTPAUTH. Pour une identification avec un proxy, seuls CURLAUTH_BASIC et CURLAUTH_NTLM sont actuellement supportés.
+			curl_setopt($ch, CURLOPT_PROXYUSERPWD, SERVEUR_PROXY_AUTH_USER.':'.SERVEUR_PROXY_AUTH_PASS); // Un nom d'utilisateur et un mot de passe formatés sous la forme "[username]:[password]" à utiliser pour la connexion avec le proxy.
+		}
 	}
 	if(is_array($tab_post))
 	{
-		curl_setopt($ch, CURLOPT_POST, TRUE);                     // TRUE pour que PHP fasse un HTTP POST. Un POST est un encodage normal application/x-www-from-urlencoded, utilisé couramment par les formulaires HTML. 
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $tab_post);          // Toutes les données à passer lors d'une opération de HTTP POST. Peut être passé sous la forme d'une chaîne encodée URL, comme 'para1=val1&para2=val2&...' ou sous la forme d'un tableau dont le nom du champ est la clé, et les données du champ la valeur. Si le paramètre value est un tableau, l'en-tête Content-Type sera définie à multipart/form-data. 
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));   // Eviter certaines erreurs curl 417 ; voir explication http://fr.php.net/manual/fr/function.curl-setopt.php#82418 ou http://www.gnegg.ch/2007/02/the-return-of-except-100-continue/
+		curl_setopt($ch, CURLOPT_POST, TRUE);                   // TRUE pour que PHP fasse un HTTP POST. Un POST est un encodage normal application/x-www-from-urlencoded, utilisé couramment par les formulaires HTML. 
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $tab_post);        // Toutes les données à passer lors d'une opération de HTTP POST. Peut être passé sous la forme d'une chaîne encodée URL, comme 'para1=val1&para2=val2&...' ou sous la forme d'un tableau dont le nom du champ est la clé, et les données du champ la valeur. Si le paramètre value est un tableau, l'en-tête Content-Type sera définie à multipart/form-data. 
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); // Eviter certaines erreurs curl 417 ; voir explication http://fr.php.net/manual/fr/function.curl-setopt.php#82418 ou http://www.gnegg.ch/2007/02/the-return-of-except-100-continue/
 	}
 	$requete_reponse = curl_exec($ch);
 	if($requete_reponse === false)
@@ -1312,6 +1432,32 @@ function afficher_contenu_referentiel($sesamath_id,$sesamath_key,$referentiel_id
 }
 
 /**
+ * Lister_Contenu_Dossier
+ * Liste le contenu d'un dossier (fichiers et dossiers).
+ * 
+ * @param string   $dossier
+ * @return array
+ */
+
+function Lister_Contenu_Dossier($dossier)
+{
+	return array_diff( scandir($dossier) , array('.','..') );
+}
+
+/**
+ * Lister_Contenu_Dossier_Programme
+ * Liste les noms des fichiers contenus dans un dossier, sans le contenu temporaire ou personnel.
+ * 
+ * @param string   $dossier
+ * @return array
+ */
+
+function Lister_Contenu_Dossier_Programme($dossier)
+{
+	return array_diff( scandir($dossier) , array('.','..','__private','__tmp','webservices','.svn') );
+}
+
+/**
  * Creer_Dossier
  * Tester l'existence d'un dossier, le créer, tester son accès en écriture.
  * 
@@ -1359,11 +1505,30 @@ function Creer_Dossier($dossier)
 
 function Vider_Dossier($dossier)
 {
-	$tab_fichier = scandir($dossier);
-	unset($tab_fichier[0],$tab_fichier[1]);	// fichiers '.' et '..'
+	$tab_fichier = Lister_Contenu_Dossier($dossier);
 	foreach($tab_fichier as $fichier_nom)
 	{
 		unlink($dossier.'/'.$fichier_nom);
+	}
+}
+
+/**
+ * Creer_ou_Vider_Dossier
+ * Créer un dossier s'il n'existe pas, le vider de ses éventueles fichiers sinon.
+ * 
+ * @param string   $dossier
+ * @return void
+ */
+
+function Creer_ou_Vider_Dossier($dossier)
+{
+	if(!is_dir($dossier))
+	{
+		Creer_Dossier($dossier);
+	}
+	else
+	{
+		Vider_Dossier($dossier);
 	}
 }
 
@@ -1377,24 +1542,48 @@ function Vider_Dossier($dossier)
 
 function Supprimer_Dossier($dossier)
 {
-	$tab_contenu = scandir($dossier);
+	$tab_contenu = Lister_Contenu_Dossier($dossier);
 	foreach($tab_contenu as $contenu)
 	{
-		if( ($contenu!='.') && ($contenu!='..') )
+		$chemin_contenu = $dossier.'/'.$contenu;
+		if(is_dir($chemin_contenu))
 		{
-			$chemin_contenu = $dossier.'/'.$contenu;
-			if(is_dir($chemin_contenu))
-			{
-				Supprimer_Dossier($chemin_contenu);
-				rmdir($chemin_contenu);
-			}
-			else
-			{
-				unlink($chemin_contenu);
-			}
+			Supprimer_Dossier($chemin_contenu);
+		}
+		else
+		{
+			unlink($chemin_contenu);
 		}
 	}
 	rmdir($dossier);
+}
+
+/**
+ * Analyser_Dossier
+ * Recense récursivement les dossiers présents et les md5 des fichiers (utiliser pour la maj automatique par le webmestre).
+ * 
+ * @param string   $dossier
+ * @param int      $longueur_prefixe   longueur de $dossier lors du premier appel
+ * @param string   $indice   "avant" ou "apres"
+ * @return void
+ */
+
+function Analyser_Dossier($dossier,$longueur_prefixe,$indice)
+{
+	$tab_contenu = Lister_Contenu_Dossier_Programme($dossier);
+	foreach($tab_contenu as $contenu)
+	{
+		$chemin_contenu = $dossier.'/'.$contenu;
+		if(is_dir($chemin_contenu))
+		{
+			Analyser_Dossier($chemin_contenu,$longueur_prefixe,$indice);
+		}
+		else
+		{
+			$_SESSION['tmp']['fichier'][substr($chemin_contenu,$longueur_prefixe)][$indice] = md5_file($chemin_contenu);
+		}
+	}
+	$_SESSION['tmp']['dossier'][substr($dossier,$longueur_prefixe)][$indice] = TRUE;
 }
 
 /**
@@ -1500,7 +1689,7 @@ function Modifier_RSS($fichier_chemin,$titre,$texte,$guid)
 /**
  * extraire_lignes
  * Pour retourner un tableau de lignes à partir d'un texte en se basant sur les retours chariot.
- * Utilisé notamment lors de la récupération d'un fichier CSS.
+ * Utilisé notamment lors de la récupération d'un fichier CSV.
  * 
  * @param string   $texte
  * @return array
@@ -1532,6 +1721,61 @@ function extraire_separateur_csv($ligne)
 	arsort($tab_separateur);
 	reset($tab_separateur);
 	return key($tab_separateur);
+}
+
+/**
+ * tester_courriel
+ * Tester si une adresse de courriel semble normale.
+ * Utilisé pour une récupération via un CSV parce que pour un champ de saisie javascript fait déjà le ménage.
+ * http://fr2.php.net/manual/fr/function.preg-match.php#96910
+ * 
+ * @param string   $courriel
+ * @return bool
+ */
+
+function tester_courriel($courriel)
+{
+	return preg_match('/^[^@]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$/',$courriel) ? TRUE : FALSE;
+}
+
+/**
+ * tester_UAI
+ * Tester si un numéro UAI est valide.
+ * Utilisé pour une récupération via un CSV parce que pour un champ de saisie javascript fait déjà le ménage.
+ * 
+ * @param string   $uai
+ * @return bool
+ */
+
+function tester_UAI($uai)
+{
+	// Il faut 7 chiffres suivis d'une lettre.
+	if(!preg_match('#^[0-9]{7}[A-Z]{1}$#',$uai))
+	{
+		return FALSE;
+	}
+	// Il faut vérifier la clef de contrôle.
+	$uai_nombre = substr($uai,0,7);
+	$uai_lettre = substr($uai,-1);
+	$reste = $uai_nombre - (23*floor($uai_nombre/23));
+	$alphabet = "ABCDEFGHJKLMNPRSTUVWXYZ";
+	$clef = substr($alphabet,$reste,1);
+	return ($clef==$uai_lettre) ? TRUE : FALSE;
+}
+
+/**
+ * tester_date
+ * Tester si une date est valide : format AAAA-MM-JJ par exemple.
+ * Utilisé pour une récupération via un CSV parce que pour un champ de saisie javascript fait déjà le ménage.
+ * 
+ * @param string   $date
+ * @return bool
+ */
+
+function tester_date($date)
+{
+	$date_unix = strtotime($date);
+	return ( ($date_unix!==FALSE) && ($date_unix!==-1) ) ? TRUE : FALSE ;
 }
 
 ?>

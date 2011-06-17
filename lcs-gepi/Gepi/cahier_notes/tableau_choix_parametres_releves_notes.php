@@ -1,4 +1,8 @@
 <?php
+	/*
+	$Id: tableau_choix_parametres_releves_notes.php 6327 2011-01-11 16:30:58Z crob $
+	*/
+
 	echo "<table class='boireaus' border='1' summary='Tableau des items'>\n";
 	echo "<tr>\n";
 	//echo "<th width='30%'>Item</th>\n";
@@ -47,7 +51,7 @@
 	$alt=1;
 	// Affichage du nom de la classe Nom long  Nom court  Nom long (Nom court)
 	//$alt=$alt*(-1);
-	echo "<tr class='lig$alt'>\n";
+	echo "<tr class='lig$alt white_hover'>\n";
 	echo "<td style='text-align:left;'>Affichage du nom de la classe (<i>relevé PDF</i>)<br />\n";
 	echo "Nom long (1) / Nom court (2) / Nom court (Nom long) (3)";
 	echo "</td>\n";
@@ -79,7 +83,7 @@
 
 		if($affiche_ligne=="y") {
 			$alt=$alt*(-1);
-			echo "<tr class='lig$alt'>\n";
+			echo "<tr class='lig$alt white_hover'>\n";
 			//echo "<td style='text-align:left;'>".$tab_traduc[$tab_item[$k]]."\n";
 			echo "<td style='text-align:left;'>".$tab_traduc[$tab_item[$k]]."\n";
 			echo "</td>\n";
@@ -108,7 +112,7 @@
 	//$tab_item[]='rn_app';
 	//$tab_traduc['rn_app']="Avec l'appréciation (sous réserve d'autorisation par le professeur)";
 	$alt=$alt*(-1);
-	echo "<tr class='lig$alt'>\n";
+	echo "<tr class='lig$alt white_hover'>\n";
 	echo "<td style='text-align:left;'>Avec l'appréciation (<i>sous réserve d'autorisation par le professeur</i>)\n";
 	echo "</td>\n";
 	for($i=0;$i<count($tab_id_classe);$i++) {
@@ -126,9 +130,9 @@
 	//=================================
 	// 20100526
 	// Il ne faut peut-être pas l'autoriser pour tous les utilisateurs?
-	if(($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable')) {
+	//if(($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable')) {
 		$alt=$alt*(-1);
-		echo "<tr class='lig$alt'>\n";
+		echo "<tr class='lig$alt white_hover'>\n";
 		echo "<td style='text-align:left;'>Avec la moyenne de la classe pour chaque devoir\n";
 		echo "</td>\n";
 		for($i=0;$i<count($tab_id_classe);$i++) {
@@ -143,7 +147,7 @@
 		echo "</tr>\n";
 	
 		$alt=$alt*(-1);
-		echo "<tr class='lig$alt'>\n";
+		echo "<tr class='lig$alt white_hover'>\n";
 		echo "<td style='text-align:left;'>Avec les moyennes min/classe/max de chaque devoir\n";
 		echo "</td>\n";
 		for($i=0;$i<count($tab_id_classe);$i++) {
@@ -156,8 +160,52 @@
 		echo "<a href=\"javascript:CocheLigne('rn_moy_min_max_classe')\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheLigne('rn_moy_min_max_classe')\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
 		echo "</td>\n";
 		echo "</tr>\n";
-	}
+
+	//}
 	//=================================
+
+	$rn_retour_ligne_defaut="y";
+	if((isset($_SESSION['pref_rn_retour_ligne']))&&(($_SESSION['pref_rn_retour_ligne']=='y')||($_SESSION['pref_rn_retour_ligne']=='n'))) {
+		$rn_retour_ligne_defaut=$_SESSION['pref_rn_retour_ligne'];
+	}
+
+	$alt=$alt*(-1);
+	echo "<tr class='lig$alt white_hover'>\n";
+	echo "<td style='text-align:left;'>Avec retour à la ligne après chaque devoir si on affiche le nom du devoir ou le commentaire\n";
+	echo "</td>\n";
+	for($i=0;$i<count($tab_id_classe);$i++) {
+		echo "<td>\n";
+		echo "<input type='checkbox' name='rn_retour_ligne[$i]' id='rn_retour_ligne_".$i."' size='2' value='y' ";
+		if($rn_retour_ligne_defaut=='y') {echo "checked ";}
+		echo "/>\n";
+		echo "</td>\n";
+	}
+	echo "<td>\n";
+	echo "<a href=\"javascript:CocheLigne('rn_retour_ligne')\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheLigne('rn_retour_ligne')\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+	echo "</td>\n";
+	echo "</tr>\n";
+
+	if(isset($_SESSION['pref_rn_rapport_standard_min_font'])) {
+		$rn_rapport_standard_min_font_defaut=$_SESSION['pref_rn_rapport_standard_min_font'];
+	}
+	else {
+		$rn_rapport_standard_min_font_defaut=getSettingValue('rn_rapport_standard_min_font_defaut');
+		$rn_rapport_standard_min_font_defaut=(($rn_rapport_standard_min_font_defaut!='')&&(preg_match("/^[0-9.]*$/",$rn_rapport_standard_min_font_defaut))&&($rn_rapport_standard_min_font_defaut>0)) ? $rn_rapport_standard_min_font_defaut : 3;
+	}
+
+	$alt=$alt*(-1);
+	echo "<tr class='lig$alt white_hover'>\n";
+	echo "<td style='text-align:left;'>Rapport taille_standard / taille_minimale_de_police (<i>relevé PDF avec cell_ajustee()</i>)<br />(<i>Si pour que les notes tiennent dans la cellule, il faut réduire davantage la police, on supprime les retours à la ligne.</i>)\n";
+	echo "</td>\n";
+	for($i=0;$i<count($tab_id_classe);$i++) {
+		echo "<td>\n";
+		echo "<input type='text' name='rn_rapport_standard_min_font[$i]' id='rn_rapport_standard_min_font_".$i."' size='2' value='".$rn_rapport_standard_min_font_defaut."' />\n";
+		echo "</td>\n";
+	}
+	echo "<td>\n";
+	echo "<a href=\"javascript:CocheLigne('rn_rapport_standard_min_font')\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheLigne('rn_rapport_standard_min_font')\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+	echo "</td>\n";
+	echo "</tr>\n";
 
 
 	if (($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable')) {
@@ -165,7 +213,7 @@
 		// Non présent dans /classes/modify_nom_class.php?id_classe=...
 		// mais il faudrait peut-être l'y ajouter...
 		$alt=$alt*(-1);
-		echo "<tr class='lig$alt'>\n";
+		echo "<tr class='lig$alt white_hover'>\n";
 		echo "<td style='text-align:left;'>Afficher le bloc adresse du responsable de l'élève\n";
 		echo "</td>\n";
 		for($i=0;$i<count($tab_id_classe);$i++) {
@@ -180,7 +228,7 @@
 
 
 		$alt=$alt*(-1);
-		echo "<tr class='lig$alt'>\n";
+		echo "<tr class='lig$alt white_hover'>\n";
 		echo "<td style='text-align:left;'>Afficher le bloc observations (<i>relevé PDF</i>)\n";
 
 		$titre_infobulle="Bloc observations en PDF\n";
@@ -207,7 +255,7 @@
 
 
 		$alt=$alt*(-1);
-		echo "<tr class='lig$alt'>\n";
+		echo "<tr class='lig$alt white_hover'>\n";
 		echo "<td style='text-align:left;'>Nombre de lignes pour la signature\n";
 		echo "</td>\n";
 		for($i=0;$i<count($tab_id_classe);$i++) {

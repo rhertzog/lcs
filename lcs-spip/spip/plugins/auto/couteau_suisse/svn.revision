@@ -1,15 +1,10 @@
-<svn_revision><text_version>
-Origine svn://zone.spip.org/spip-zone/_plugins_/couteau_suisse le jeudi 4 juin 2009, 19:33:13 (UTC+0200)
-Revision: 28996
-Dernier commit 2009-06-04 12:13:43 +0200 (Thu, 04 Jun 2009)
-Voir http://trac.rezo.net/trac/spip-zone/browser/_plugins_/couteau_suisse
-Archive: http://files.spip.org/spip-zone/couteau_suisse.zip
+<svn_revision>
+<text_version>
+Origine: file:///home/svn/repository/spip-zone/_plugins_/couteau_suisse
+Revision: 47060
+Dernier commit: 2011-04-25 15:01:28 +0200 
 </text_version>
-<uri>http://trac.rezo.net/trac/spip-zone/browser/_plugins_/couteau_suisse</uri>
-<archive>http://files.spip.org/spip-zone/couteau_suisse.zip</archive>
-<origine>svn://zone.spip.org/spip-zone/_plugins_/couteau_suisse</origine>
-<date_production>jeudi 4 juin 2009, 19:33:13 (UTC+0200)</date_production>
-<revision>28996</revision>
-<commit>2009-06-04 12:13:43 +0200 (Thu, 04 Jun 2009)</commit>
+<origine>file:///home/svn/repository/spip-zone/_plugins_/couteau_suisse</origine>
+<revision>47060</revision>
+<commit>2011-04-25 15:01:28 +0200 </commit>
 </svn_revision>
-<archivelist>_plugins_/couteau_suisse;couteau_suisse;couteau_suisse</archivelist>

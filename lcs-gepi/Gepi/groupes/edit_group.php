@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: edit_group.php 5682 2010-10-15 16:28:22Z crob $
+* $Id: edit_group.php 6882 2011-05-07 10:02:30Z crob $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -48,7 +48,7 @@ $ancre=isset($_GET['ancre']) ? $_GET['ancre'] : (isset($_POST['ancre']) ? $_POST
 $id_classe = isset($_GET['id_classe']) ? $_GET['id_classe'] : (isset($_POST['id_classe']) ? $_POST["id_classe"] : NULL);
 $id_groupe = isset($_GET['id_groupe']) ? $_GET['id_groupe'] : (isset($_POST['id_groupe']) ? $_POST["id_groupe"] : NULL);
 
-if (!is_numeric($id_groupe)) $id_groupe = 0;
+if (!is_numeric($id_groupe)) {$id_groupe = 0;}
 $current_group = get_group($id_groupe);
 $reg_nom_groupe = $current_group["name"];
 $reg_nom_complet = $current_group["description"];
@@ -56,6 +56,12 @@ $reg_matiere = $current_group["matiere"]["matiere"];
 $reg_id_classe = $current_group["classes"]["list"][0];
 $reg_clazz = $current_group["classes"]["list"];
 $reg_professeurs = (array)$current_group["profs"]["list"];
+
+/*
+foreach($reg_clazz as $key => $value) {
+echo "\$reg_clazz[$key]=$value<br />";
+}
+*/
 
 $mode = isset($_GET['mode']) ? $_GET['mode'] : (isset($_POST['mode']) ? $_POST["mode"] : null);
 if ($mode == null and $id_classe == null) {
@@ -73,6 +79,8 @@ foreach ($current_group["periodes"] as $period) {
 }
 
 if (isset($_POST['is_posted'])) {
+	check_token();
+
 	$msg="";
 	$error = false;
 	//=======================================
@@ -101,6 +109,9 @@ if (isset($_POST['is_posted'])) {
 	// Classes
 
 	if ($_POST['mode'] == "groupe") {
+		// Ajout sécurité:
+		if((!isset($id_classe))||($id_classe=='')) {$id_classe=$current_group['classes']['list'][0];}
+
 		$clazz[] = $id_classe;
 		$reg_id_classe = $id_classe;
 		$mode = "groupe";
@@ -226,6 +237,13 @@ if (isset($_POST['is_posted'])) {
 
 	$reg_clazz = $clazz;
 
+	/*
+	echo "Apres modif:<br />";
+	foreach($reg_clazz as $key => $value) {
+		echo "\$reg_clazz[$key]=$value<br />";
+	}
+	*/
+
 	if (empty($reg_clazz)) {
 		$error = true;
 		$msg .= "Vous devez sélectionner au moins une classe.<br />\n";
@@ -286,6 +304,8 @@ $titre_page = "Gestion des groupes";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE **********************************
 
+//debug_var();
+
 //echo "\$_SERVER['HTTP_REFERER']=".$_SERVER['HTTP_REFERER']."<br />\n";
 
 /*
@@ -294,20 +314,22 @@ foreach ($reg_clazz as $tmp_classe) {
 }
 */
 ?>
-<p class=bold>
+<p class="bold">
 <?php
 //============================
 // MODIF: boireaus
 //if(isset($_GET['chemin_retour'])){
 if(isset($chemin_retour)){
-	echo "<a href=\"".$_GET['chemin_retour']."\" onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a> |";
+	echo "<a href=\"".$_GET['chemin_retour']."\" onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a> | ";
 }
 else{
-	echo "<a href=\"edit_class.php?id_classe=$id_classe\" onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a> |";
+	echo "<a href=\"edit_class.php?id_classe=$id_classe\" onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a> | ";
 }
 //============================
+
+echo "<a href='mes_listes.php?id_groupe=$id_groupe'>Exporter la composition du groupe</a> | ";
 ?>
-<a href="edit_class.php?id_classe=<?php echo $id_classe;?>&amp;action=delete_group&amp;id_groupe=<?php echo $id_groupe;?>" onclick="return confirmlink(this, 'ATTENTION !!! LISEZ CET AVERTISSEMENT : La suppression d\'un enseignement est irréversible. Une telle suppression ne devrait pas avoir lieu en cours d\'année. Si c\'est le cas, cela peut entraîner la présence de données orphelines dans la base. Si des données officielles (notes et appréciations du bulletin) sont présentes, la suppression sera bloquée. Dans le cas contraire, toutes les données liées au groupe seront supprimées, incluant les notes saisies par les professeurs dans le carnet de notes ainsi que les données présentes dans le cahier de texte. Etes-vous *VRAIMENT SÛR* de vouloir continuer ?', 'Confirmation de la suppression')"> Supprimer le groupe</a>
+<a href="edit_class.php?id_classe=<?php echo $id_classe;?>&amp;action=delete_group&amp;id_groupe=<?php echo $id_groupe;?><?php echo add_token_in_url();?>" onclick="return confirmlink(this, 'ATTENTION !!! LISEZ CET AVERTISSEMENT : La suppression d\'un enseignement est irréversible. Une telle suppression ne devrait pas avoir lieu en cours d\'année. Si c\'est le cas, cela peut entraîner la présence de données orphelines dans la base. Si des données officielles (notes et appréciations du bulletin) sont présentes, la suppression sera bloquée. Dans le cas contraire, toutes les données liées au groupe seront supprimées, incluant les notes saisies par les professeurs dans le carnet de notes ainsi que les données présentes dans le cahier de texte. Etes-vous *VRAIMENT SÛR* de vouloir continuer ?', 'Confirmation de la suppression')"> Supprimer le groupe</a>
 <?php
 if ($mode == "groupe") {
 	echo "<h3>Modifier le groupe</h3>\n";
@@ -324,35 +346,48 @@ if ($mode == "groupe") {
 
 <?php
 
+echo add_token_field();
 
 // Classes
 
 if ($mode == "groupe") {
-	echo "<p>Sélectionnez la classe à laquelle appartient le groupe :\n";
-	echo "<select name='id_classe' size='1'";
-	echo " onchange='changement();'";
-	echo ">\n";
-
-	$call_data = mysql_query("SELECT * FROM classes ORDER BY classe");
-	$nombre_lignes = mysql_num_rows($call_data);
-	if ($nombre_lignes != 0) {
-		$i = 0;
-		while ($i < $nombre_lignes){
-			$id_classe2 = mysql_result($call_data, $i, "id");
-			$classe = mysql_result($call_data, $i, "classe");
-			if (get_period_number($id_classe2) != "0") {
-				echo "<option value='" . $id_classe2 . "'";
-				if (in_array($id_classe2, $reg_clazz)) echo " SELECTED";
-				echo ">$classe</option>\n";
+	echo "<p>\n";
+	if((isset($current_group))&&(count($current_group["eleves"]["all"]["list"])==0)) {
+		echo "Sélectionnez la classe à laquelle appartient le groupe :\n";
+		echo "<select name='id_classe' size='1'";
+		echo " onchange='changement();'";
+		echo ">\n";
+	
+		$call_data = mysql_query("SELECT * FROM classes ORDER BY classe");
+		$nombre_lignes = mysql_num_rows($call_data);
+		if ($nombre_lignes != 0) {
+			$i = 0;
+			while ($i < $nombre_lignes){
+				$id_classe2 = mysql_result($call_data, $i, "id");
+				$classe = mysql_result($call_data, $i, "classe");
+				if (get_period_number($id_classe2) != "0") {
+					echo "<option value='" . $id_classe2 . "'";
+					if (in_array($id_classe2, $reg_clazz)) echo " SELECTED";
+					echo ">$classe</option>\n";
+				}
+			$i++;
 			}
-		$i++;
+		} else {
+			echo "<option value='false'>Aucune classe définie !</option>\n";
 		}
-	} else {
-		echo "<option value='false'>Aucune classe définie !</option>\n";
+		echo "</select>\n";
+		//echo "<br />[-> <a href='edit_group.php?id_classe=".$id_classe."&id_groupe=".$id_groupe."&mode=regroupement'>sélectionner plusieurs classes</a>]</p>\n";
+		echo "<br />\n";
 	}
-	echo "</select>\n";
-	//echo "<br />[-> <a href='edit_group.php?id_classe=".$id_classe."&id_groupe=".$id_groupe."&mode=regroupement'>sélectionner plusieurs classes</a>]</p>\n";
-	echo "<br />[-> <a href='edit_group.php?id_classe=".$id_classe."&amp;id_groupe=".$id_groupe."&amp;mode=regroupement'>sélectionner plusieurs classes</a>]\n";
+	else {
+		echo "<input type='hidden' name='id_classe' value='$id_classe' />\n";
+		if(isset($current_group)) {
+			echo "Enseignement en <b>".$current_group['classlist_string']."</b>.";
+			echo "<br />\n";
+		}
+	}
+
+	echo "[-> <a href='edit_group.php?id_classe=".$id_classe."&amp;id_groupe=".$id_groupe."&amp;mode=regroupement'>sélectionner plusieurs classes</a>]\n";
 
 	// On ne propose de fusionner le groupe avec un/des groupes existants que si le groupe n'a pas déjà de notes,...
 	// ... NON: On fera le test sur les groupes à y associer seulement.

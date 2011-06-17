@@ -1,7 +1,7 @@
 <?php
 // This is a SPIP language file  --  Ceci est un fichier langue de SPIP
-// Fichier source, a modifier dans svn://trac.rezo.net/spip/spip/ecrire/lang/
-if (!defined("_ECRIRE_INC_VERSION")) return;
+// Fichier source, a modifier dans svn://trac.rezo.net/spip/branches/spip-2.1/ecrire/lang/
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -186,7 +186,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'date_saison_2' => 'printemps',
 'date_saison_3' => '&eacute;t&eacute;',
 'date_saison_4' => 'automne',
+'date_secondes' => 'secondes',
 'date_semaines' => 'semaines',
+'date_un_mois' => 'mois',
+'date_une_heure' => 'heure',
+'date_une_minute' => 'minute',
+'date_une_seconde' => 'seconde',
+'date_une_semaine' => 'semaine',
 'dirs_commencer' => ' afin de commencer r&eacute;ellement l\'installation',
 'dirs_preliminaire' => 'Pr&eacute;liminaire : <b>R&eacute;gler les droits d\'acc&egrave;s</b>',
 'dirs_probleme_droits' => 'Probl&egrave;me de droits d\'acc&egrave;s',
@@ -199,7 +205,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
   <p>Pour y rem&eacute;dier, utilisez votre client FTP afin de r&eacute;gler les droits d\'acc&egrave;s de chacun
   de ces r&eacute;pertoires. La proc&eacute;dure est expliqu&eacute;e en d&eacute;tail dans le guide d\'installation.</p>
   <p>Une fois cette manipulation effectu&eacute;e, vous pourrez ',
-'double_occurrence' => 'Double occurrence',
+'double_occurrence' => 'Double occurrence de @balise@',
 
 // E
 'en_cours' => 'en cours',
@@ -214,6 +220,18 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // F
 'fichier_introuvable' => 'Fichier @fichier@ introuvable',
+'form_auteur_confirmation' => 'Confirmez votre adresse email',
+'form_auteur_email_modifie' => 'Votre adresse email a &eacute;t&eacute; modifi&eacute;e.',
+'form_auteur_envoi_mail_confirmation' => 'Un courrier &eacute;lectronique de confirmation vient d\'&ecirc;tre envoy&eacute; &agrave; @email@. Vous devrez visiter l\'adresse Web mentionn&eacute;e dans ce courrier pour valider votre adresse mail.',
+'form_auteur_mail_confirmation' => 'Bonjour,
+
+Vous avez demand&eacute; &agrave; changer votre adresse email.
+Pour confirmer votre nouvelle adresse, il suffit de vous connecter &agrave;
+l\'adresse ci-dessous (dans le cas contraire, votre demande
+sera ignor&eacute;e) :
+
+    @url@
+',
 'form_deja_inscrit' => 'Vous &ecirc;tes d&eacute;j&agrave; inscrit.',
 'form_email_non_valide' => 'Votre adresse email n\'est pas valide.',
 'form_forum_access_refuse' => 'Vous n\'avez plus acc&egrave;s &agrave; ce site.',
@@ -293,7 +311,7 @@ Merci de votre participation
 'forum_lien_hyper' => '<b>Lien hypertexte</b> (optionnel)',
 'forum_message_definitif' => 'Message d&eacute;finitif : envoyer au site',
 'forum_message_trop_long' => 'Votre message est trop long. La taille maximale est de 20000 caract&egrave;res.',
-'forum_ne_repondez_pas' => 'Ne repondez pas a ce mail mais sur le forum a l\'adresse suivante :',
+'forum_ne_repondez_pas' => 'Ne r&eacute;pondez pas &agrave; ce mail mais sur le forum &agrave; l\'adresse suivante :',
 'forum_non_inscrit' => 'Vous n\'&ecirc;tes pas inscrit, ou l\'adresse ou le mot de passe sont erron&eacute;s.',
 'forum_page_url' => '(Si votre message se r&eacute;f&egrave;re &agrave; un article publi&eacute; sur le Web, ou &agrave; une page fournissant plus d\'informations, vous pouvez indiquer ci-apr&egrave;s le titre de la page et son adresse.)',
 'forum_par_auteur' => 'par @auteur@',
@@ -391,19 +409,23 @@ Merci de votre participation
 'info_article_supprime' => 'Article supprim&eacute;',
 'info_articles' => 'Articles',
 'info_articles_a_valider' => 'Les articles &agrave; valider',
+'info_articles_nb' => '@nb@ articles',
 'info_articles_proposes' => 'Articles propos&eacute;s',
+'info_articles_un' => '1 article',
 'info_auteurs_nombre' => 'auteur(s)&nbsp;:',
 'info_authentification_ftp' => 'Authentification (par FTP).',
 'info_bloquer_lien' => 'bloquer ce lien',
 'info_breves_02' => 'Br&egrave;ves',
 'info_breves_2' => 'br&egrave;ves',
+'info_breves_nb' => '@nb@ br&egrave;ves',
+'info_breves_un' => '1 br&egrave;ve',
 'info_breves_valider' => 'Br&egrave;ves &agrave; valider',
 'info_connexion_refusee' => 'Connexion refus&eacute;e',
 'info_contact_developpeur' => 'Veuillez contacter un developpeur.',
 'info_contenance' => 'Ce site contient&nbsp;:',
 'info_contribution' => 'contributions de forum',
 'info_copyright' => '@spip@ est un logiciel libre distribu&eacute; @lien_gpl@.',
-'info_copyright_doc' => 'Pour plus d\'informations, voir le site <a href=\'http://www.spip.net/fr\'>http://www.spip.net/fr</a>.',
+'info_copyright_doc' => 'Pour plus d\'informations, voir le site <a href="@spipnet@">http://www.spip.net/fr</a>.',
 'info_copyright_gpl' => 'sous licence GPL',
 'info_cours_edition' => 'Vos articles en cours de r&eacute;daction',
 'info_creer_repertoire' => 'Veuillez cr&eacute;er un fichier ou un r&eacute;pertoire nomm&eacute;&nbsp;:',
@@ -417,6 +439,8 @@ Merci de votre participation
 'info_document' => 'Document',
 'info_document_indisponible' => 'Ce document n\'est pas disponible',
 'info_documents' => 'Documents',
+'info_documents_nb' => '@nb@ documents',
+'info_documents_un' => '1 document',
 'info_echange_message' => 'SPIP permet l\'&eacute;change de messages et la constitution de forums de discussion
 		priv&eacute;s entre les participants du site. Vous pouvez activer ou
 		d&eacute;sactiver cette fonctionnalit&eacute;.',
@@ -463,6 +487,8 @@ Merci de votre participation
 'info_mail_fournisseur' => 'vous@fournisseur.com',
 'info_message_2' => 'MESSAGE',
 'info_message_supprime' => 'MESSAGE SUPPRIM&Eacute;',
+'info_messages_nb' => '@nb@ messages',
+'info_messages_un' => '1 message',
 'info_mise_en_ligne' => 'Date de mise en ligne&nbsp;:',
 'info_modification_parametres_securite' => 'modifications des param&egrave;tres de s&eacute;curit&eacute;',
 'info_mois_courant' => 'Dans le courant du mois :',
@@ -507,6 +533,8 @@ Merci de votre participation
 'info_retablir_lien' => 'r&eacute;tablir ce lien',
 'info_retirer_mot' => 'Retirer ce mot',
 'info_retirer_mots' => 'Retirer tous les mots',
+'info_rubriques_nb' => '@nb@ rubriques',
+'info_rubriques_un' => '1 rubrique',
 'info_sans_titre_2' => 'sans titre',
 'info_selectionner_fichier' => 'Vous pouvez s&eacute;lectionner un fichier du dossier @upload@',
 'info_selectionner_fichier_2' => 'S&eacute;lectionner un fichier&nbsp;:',
@@ -515,7 +543,9 @@ Merci de votre participation
 'info_site_attente' => 'Site Web en attente de validation',
 'info_site_reference' => 'Site r&eacute;f&eacute;renc&eacute; en ligne',
 'info_site_refuse' => 'Site Web refus&eacute;',
+'info_sites_nb' => '@nb@ sites',
 'info_sites_referencer' => 'R&eacute;f&eacute;rencer un site',
+'info_sites_un' => '1 site',
 'info_supprimer_vignette' => 'supprimer la vignette',
 'info_symbole_bleu' => 'Le symbole <b>bleu</b> indique un <b>pense-b&ecirc;te</b>: c\'est-&agrave;-dire un message &agrave; votre usage personnel.',
 'info_symbole_jaune' => 'Le symbole <b>jaune</b> indique une <b>annonce &agrave; tous les r&eacute;dacteurs</b>&nbsp;: modifiable par tous les administrateurs, et visible par tous les r&eacute;dacteurs.',
@@ -539,14 +569,13 @@ Merci de votre participation
 'info_visites' => 'visites :',
 'info_vos_rendez_vous' => 'Vos rendez-vous &agrave; venir',
 'info_zoom' => 'zoom',
-'infos_vos_pense_bete' => 'Vos pense-b&ecirc;te',
+'infos_vos_pense_bete' => 'Vos pense-b&ecirc;tes',
 'item_breve_proposee' => 'Br&egrave;ve propos&eacute;e',
 
 // L
 'lien_afficher_icones_seuls' => 'Afficher uniquement les icones',
 'lien_afficher_texte_icones' => 'Afficher les icones et le texte',
 'lien_afficher_texte_seul' => 'Afficher uniquement le texte',
-'lien_icones_interface' => 'Les icones de l\'interface sont de <a href=\'http://jimmac.musichall.cz/\'>Jakub \'Jimmac\' Steiner</a>.',
 'lien_liberer' => 'lib&eacute;rer',
 'lien_liberer_tous' => 'lib&eacute;rer ces articles',
 'lien_nouvea_pense_bete' => 'NOUVEAU PENSE-B&Ecirc;TE',
@@ -590,6 +619,7 @@ Merci de votre participation
 'login_retour_site' => 'Retour au site public',
 'login_retoursitepublic' => 'retour&nbsp;au&nbsp;site&nbsp;public',
 'login_sans_cookiie' => 'Identification sans cookie',
+'login_securise' => 'Login s&eacute;curis&eacute;',
 'login_sinscrire' => 's\'inscrire',
 'login_test_navigateur' => 'test navigateur/reconnexion',
 'login_verifiez_navigateur' => '(V&eacute;rifiez toutefois que votre navigateur n\'a pas m&eacute;moris&eacute; votre mot de passe...)',
@@ -622,7 +652,6 @@ Merci de votre participation
 'onglet_repartition_rubrique' => 'R&eacute;partition par rubriques',
 'onglet_save_restaur_base' => 'Sauvegarder/restaurer la base',
 'onglet_vider_cache' => 'Vider le cache',
-'ortho_trop_de_fautes2' => 'Commencez par corriger les fautes les plus &eacute;videntes et r&eacute;essayez ensuite.',
 
 // P
 'pass_choix_pass' => 'Veuillez choisir votre nouveau mot de passe :',
@@ -745,34 +774,34 @@ et vous reconnecter au site.
 
 // Z
 'zbug_balise_b_aval' => '&nbsp;: balise B en aval',
-'zbug_balise_inexistante' => 'erreur @from@: la balise #@balise@ n\'existe pas',
+'zbug_balise_inexistante' => 'Balise @balise@ mal d&eacute;clar&eacute;e pour @from@',
 'zbug_balise_sans_argument' => 'Argument manquant dans la balise @balise@',
 'zbug_boucle' => 'boucle',
-'zbug_boucle_recursive_undef' => 'boucle r&eacute;cursive non d&eacute;finie',
+'zbug_boucle_recursive_undef' => 'Boucle r&eacute;cursive non d&eacute;finie&nbsp;: @nom@',
 'zbug_calcul' => 'calcul',
 'zbug_champ_hors_boucle' => 'Champ @champ@ hors boucle',
-'zbug_champ_hors_motif' => 'Champ @champ@ hors d\'une boucle de motif @motif@',
+'zbug_champ_hors_motif' => 'Champ @champ@ hors d\'un contexte @motif@',
 'zbug_code' => 'code',
-'zbug_critere_inconnu' => 'crit&egrave;re inconnu @critere@',
-'zbug_distant_interdit' => 'externe interdit', # Contexte : une base de donn&eacute;es "externe", pas g&eacute;r&eacute;e par SPIP, mais que SPIP 1.8 sait utiliser dans ses boucles -- seul probl&egrave;mes certaines manipulations sont interdites sur ces bases-l&agrave;.
-'zbug_doublon_table_sans_cle_primaire' => 'doublons sur une table sans clef primaire atomique',
-'zbug_doublon_table_sans_index' => 'doublons sur une table sans index',
-'zbug_erreur_boucle_double' => 'BOUCLE@id@: double d&eacute;finition',
-'zbug_erreur_boucle_fermant' => 'BOUCLE@id@: tag fermant manquant',
-'zbug_erreur_boucle_syntaxe' => 'Syntaxe boucle incorrecte',
+'zbug_critere_inconnu' => 'Crit&egrave;re inconnu @critere@',
+'zbug_distant_interdit' => 'Externe interdit', # Contexte : une base de donn&eacute;es "externe", pas g&eacute;r&eacute;e par SPIP, mais que SPIP 1.8 sait utiliser dans ses boucles -- seul probl&egrave;mes certaines manipulations sont interdites sur ces bases-l&agrave;.
+'zbug_doublon_table_sans_cle_primaire' => 'Doublons sur une table sans clef primaire atomique',
+'zbug_doublon_table_sans_index' => 'Doublons sur une table sans index',
+'zbug_erreur_boucle_double' => 'Double d&eacute;finition de la boucle @id@',
+'zbug_erreur_boucle_fermant' => 'Boucle @id@ non ferm&eacute;e',
+'zbug_erreur_boucle_syntaxe' => 'Syntaxe de la boucle @id@ incorrecte',
 'zbug_erreur_compilation' => 'Erreur de compilation',
-'zbug_erreur_execution_page' => 'erreur d\'ex&eacute;cution de la page',
-'zbug_erreur_filtre' => 'Erreur : filtre <b>&laquo; @filtre@ &raquo;</b> non d&eacute;fini',
-'zbug_erreur_meme_parent' => '{meme_parent} ne s\'applique qu\'aux boucles (FORUMS) ou (RUBRIQUES)',
+'zbug_erreur_execution_page' => 'Erreur d\'ex&eacute;cution',
+'zbug_erreur_filtre' => 'Filtre @filtre@ non d&eacute;fini',
+'zbug_erreur_meme_parent' => 'Le crit&egrave;re {meme_parent} ne s\'applique qu\'aux boucles (FORUMS) ou (RUBRIQUES)',
 'zbug_erreur_squelette' => 'Erreur(s) dans le squelette',
 'zbug_hors_compilation' => 'Hors Compilation',
 'zbug_info_erreur_squelette' => 'Erreur sur le site',
-'zbug_inversion_ordre_inexistant' => 'inversion d\'un ordre inexistant',
-'zbug_pagination_sans_critere' => '#PAGINATION sans crit&egrave;re {pagination} ou employ&eacute; dans une boucle recursive',
-'zbug_parametres_inclus_incorrects' => 'Param&egrave;tres d\'inclusion incorrects',
+'zbug_inversion_ordre_inexistant' => 'Inversion d\'un ordre inexistant',
+'zbug_pagination_sans_critere' => 'Balise #PAGINATION sans crit&egrave;re {pagination} ou employ&eacute; dans une boucle recursive',
+'zbug_parametres_inclus_incorrects' => 'Param&egrave;tre d\'inclusion incorrect&nbsp;: @param@',
 'zbug_profile' => 'Temps de calcul&nbsp;: @time@',
 'zbug_resultat' => 'r&eacute;sultat',
-'zbug_serveur_indefini' => 'serveur SQL ind&eacute;fini',
+'zbug_serveur_indefini' => 'Serveur SQL ind&eacute;fini',
 'zbug_statistiques' => 'Statistiques des requ&ecirc;tes SQL class&eacute;es par dur&eacute;e',
 'zbug_table_inconnue' => 'Table SQL &laquo; @table@ &raquo; inconnue',
 'zxml_connus_attributs' => 'attributs connus',

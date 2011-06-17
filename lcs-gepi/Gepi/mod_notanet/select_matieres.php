@@ -1,7 +1,7 @@
 <?php
-/* $Id: select_matieres.php 4413 2010-05-11 10:50:42Z crob $ */
+/* $Id: select_matieres.php 6522 2011-02-21 20:13:20Z crob $ */
 /*
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -70,7 +70,8 @@ if(!isset($msg)) {$msg="";}
 include("lib_brevets.php");
 
 $id_matiere=array();
-for($j=101;$j<=$indice_max_matieres;$j++){
+//for($j=101;$j<=$indice_max_matieres;$j++){
+for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 	if(isset($_POST['id_matiere'.$j])){
 		$id_matiere[$j]=$_POST['id_matiere'.$j];
 
@@ -83,6 +84,7 @@ $is_posted=isset($_POST['is_posted']) ? $_POST['is_posted'] : NULL;
 
 //if((isset($choix_matieres))&&(isset($type_brevet))) {
 if((isset($is_posted))&&(isset($type_brevet))) {
+	check_token();
 
 	//echo "\$choix_matieres=$choix_matieres<br />";
 	//echo "\$type_brevet=$type_brevet<br />";
@@ -99,7 +101,7 @@ if((isset($is_posted))&&(isset($type_brevet))) {
 		$nb_err=0;
 		$cpt_enr=0;
 		// Enregistrement des choix de matières dans 'notanet_corresp'
-		for($j=101;$j<=$indice_max_matieres;$j++){
+		for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 			//if($tabmatieres[$j][0]!=''){
 			//if(($tabmatieres[$j][0]!='')&&($tabmatieres[$j]['socle']=='n')) {
 			if($tabmatieres[$j][0]!=''){
@@ -261,6 +263,7 @@ else {
 		echo ".</p>\n";
 
 		echo "<form action='".$_SERVER['PHP_SELF']."' name='form_choix_matieres' method='post'>\n";
+		echo add_token_field();
 		//echo "<input type='hidden' name='choix1' value='export' />\n";
 		echo "<input type='hidden' name='type_brevet' value='$type_brevet' />\n";
 
@@ -292,7 +295,7 @@ else {
 		echo "</tr>\n";
 
 		$alt=1;
-		for($j=101;$j<=$indice_max_matieres;$j++){
+		for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 			if($tabmatieres[$j][0]!=''){
 			//if(($tabmatieres[$j][0]!='')&&($tabmatieres[$j]['socle']=='n')) {
 				$alt=$alt*(-1);
@@ -444,7 +447,7 @@ else {
 		}
 
 		// Enregistrement des choix de matières dans 'notanet_corresp'
-		for($j=101;$j<=$indice_max_matieres;$j++){
+		for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 			if($tabmatieres[$j][0]!=''){
 				//$tabmatieres[$j][0]
 

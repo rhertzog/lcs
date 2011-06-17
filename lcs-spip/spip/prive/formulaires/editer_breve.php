@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/actions');
 include_spip('inc/editer');
@@ -26,6 +26,15 @@ function formulaires_editer_breve_charger_dist($id_breve='new', $id_rubrique=0, 
 	return $valeurs;
 }
 
+/**
+ * Identifier le formulaire en faisant abstraction des parametres qui
+ * ne representent pas l'objet edite
+ */
+function formulaires_editer_breve_identifier_dist($id_breve='new', $id_rubrique=0, $retour='', $lier_trad=0, $config_fonc='breves_edit_config', $row=array(), $hidden=''){
+	return serialize(array($id_breve,$lier_trad,$row));
+}
+
+
 // Choix par defaut des options de presentation
 function breves_edit_config($row)
 {
@@ -33,7 +42,6 @@ function breves_edit_config($row)
 
 	$config = $GLOBALS['meta'];
 	$config['lignes'] = ($spip_ecran == "large")? 8 : 5;
-	$config['afficher_barre'] = $spip_display != 4;
 	$config['langue'] = $spip_lang;
 
 	$config['restreint'] = ($row['statut'] == 'publie');

@@ -105,17 +105,14 @@ if(is_file($fichier_constantes))
 		// DEBUT A compter du 02/08/2010, déplacement du port dans le fichier créé à l'installation. [à retirer dans quelques mois]
 		if(!defined('SACOCHE_'.$PATCH.'_BD_PORT'))
 		{
-			$tab_fichier = scandir($CHEMIN_MYSQL);
+			$tab_fichier = Lister_Contenu_Dossier($CHEMIN_MYSQL);
 			$bad = array( "define('SACOCHE_STRUCTURE_BD_NAME" , "define('SACOCHE_WEBMESTRE_BD_NAME" );
 			$bon = array( "define('SACOCHE_STRUCTURE_BD_PORT','3306');	// Port de connexion\r\ndefine('SACOCHE_STRUCTURE_BD_NAME" , "define('SACOCHE_WEBMESTRE_BD_PORT','3306');	// Port de connexion\r\ndefine('SACOCHE_WEBMESTRE_BD_NAME" );
 			foreach($tab_fichier as $fichier)
 			{
-				if( ($fichier!='.') && ($fichier!='..') )
-				{
-					$fichier_contenu = file_get_contents($CHEMIN_MYSQL.'/'.$fichier);
-					$fichier_contenu = str_replace($bad,$bon,$fichier_contenu);
-					Ecrire_Fichier($CHEMIN_MYSQL.'/'.$fichier,$fichier_contenu);
-				}
+				$fichier_contenu = file_get_contents($CHEMIN_MYSQL.'/'.$fichier);
+				$fichier_contenu = str_replace($bad,$bon,$fichier_contenu);
+				Ecrire_Fichier($CHEMIN_MYSQL.'/'.$fichier,$fichier_contenu);
 			}
 			define('SACOCHE_'.$PATCH.'_BD_PORT','3306');	// Port de connexion
 		}
@@ -126,6 +123,52 @@ if(is_file($fichier_constantes))
 	{
 		affich_message_exit($titre='Paramètres BDD manquants',$contenu='Paramètres de connexion à la base de données manquants.<br /><a href="./index.php?page=public_installation">Procédure d\'installation du site SACoche.</a>');
 	}
+	// DEBUT A compter du 05/12/2010, ajout de paramètres dans le fichier de constantes pour paramétrer cURL. [à retirer dans quelques mois]
+	if(!defined('SERVEUR_PROXY_USED') && function_exists('enregistrer_informations_session'))
+	{
+		fabriquer_fichier_hebergeur_info( array('SERVEUR_PROXY_USED'=>'','SERVEUR_PROXY_NAME'=>'','SERVEUR_PROXY_PORT'=>'','SERVEUR_PROXY_TYPE'=>'','SERVEUR_PROXY_AUTH_USED'=>'','SERVEUR_PROXY_AUTH_METHOD'=>'','SERVEUR_PROXY_AUTH_USER'=>'','SERVEUR_PROXY_AUTH_PASS'=>'') );
+	}
+	// FIN A compter du 05/12/2010, ajout de paramètres dans le fichier de constantes pour paramétrer cURL. [à retirer dans quelques mois]
+	// DEBUT A compter du 05/12/2010, 2 users MySQL sont créés par établissement (localhost & %) ; il faut créer les manquants antérieurs sinon erreur lors de la suppression. [à retirer dans quelques mois]
+	if(defined('SACOCHE_WEBMESTRE_BD_HOST'))
+	{
+		$nb_structures = (int)DB_WEBMESTRE_compter_structure();
+		if($nb_structures)
+		{
+			$BDlink = mysql_connect(SACOCHE_WEBMESTRE_BD_HOST.':'.SACOCHE_WEBMESTRE_BD_PORT,SACOCHE_WEBMESTRE_BD_USER,SACOCHE_WEBMESTRE_BD_PASS);
+			$BDres  = mysql_query('SELECT host, user FROM mysql.user WHERE user LIKE "sac_user_%"');
+			$nb_users = mysql_num_rows($BDres);
+			if($nb_users < $nb_structures*2)
+			{
+				$tab_user_host = array();
+				while($BDrow = mysql_fetch_array($BDres,MYSQL_ASSOC))
+				{
+					$tab_user_host[$BDrow['user']][] = $BDrow['host'];
+				}
+				foreach($tab_user_host as $user => $tab_host)
+				{
+					if(count($tab_host)==1)
+					{
+						$fichier_mdp = file_get_contents('./__private/mysql/'.str_replace('sac_user','serveur_sacoche_structure',$user).'.php');
+						$nb_match = preg_match( '#'."SACOCHE_STRUCTURE_BD_PASS','".'(.*?)'."'".'#' , $fichier_mdp , $tab_matches );
+						$host = ($tab_host[0]=='%') ? 'localhost' : '%';
+						$base = str_replace('user','base',$user);
+						$pass = $tab_matches[1];
+						mysql_query('CREATE USER '.$user.'@"'.$host.'" IDENTIFIED BY "'.$pass.'"');
+						mysql_query('GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, SELECT, UPDATE ON '.$base.'.* TO '.$user.'@"'.$host.'"');
+					}
+				}
+			}
+			mysql_close($BDlink);
+		}
+	}
+	// FIN A compter du 05/12/2010, 2 users MySQL sont créés par établissement (localhost & %) ; il faut créer les manquants antérieurs sinon erreur lors de la suppression. [à retirer dans quelques mois]
+	// DEBUT A compter du 26/05/2011, ajout de paramètres dans le fichier de constantes pour les dates CNIL. [à retirer dans quelques mois]
+	if(!defined('CNIL_NUMERO') && function_exists('enregistrer_informations_session'))
+	{
+		fabriquer_fichier_hebergeur_info( array('CNIL_NUMERO'=>HEBERGEUR_CNIL,'CNIL_DATE_ENGAGEMENT'=>'','CNIL_DATE_RECEPISSE'=>'') );
+	}
+	// FIN A compter du 26/05/2011, ajout de paramètres dans le fichier de constantes pour les dates CNIL. [à retirer dans quelques mois]
 }
 elseif($PAGE!='public_installation')
 {
@@ -168,7 +211,7 @@ entete();
 	<link rel="stylesheet" type="text/css" href="<?php echo compacter('./_css/style.css',VERSION_CSS_SCREEN,'mini') ?>" />
 	<link rel="stylesheet" type="text/css" href="<?php echo compacter('./_css/style_print.css',VERSION_CSS_SCREEN,'mini') ?>" media="print" />
 	<?php if(isset($_SESSION['CSS'])){echo'<style type="text/css">'.$_SESSION['CSS'].'</style>';} ?>
-	<script type="text/javascript" charset="utf-8" src="./_js/jquery-librairies-<?php echo VERSION_JS_BIBLIO ?>.js"></script>
+	<script type="text/javascript" charset="utf-8" src="<?php echo compacter('./_js/jquery-librairies.js',VERSION_JS_BIBLIO,'mini') ?>"></script>
 	<script type="text/javascript" charset="utf-8" src="<?php echo compacter('./_js/script.js',VERSION_JS_GLOBAL,'mini') ?>"></script>
 	<title><?php echo $TITRE_NAVIGATEUR ?></title>
 </head>

@@ -1,0 +1,29 @@
+#! /bin/sh
+# preinst script for LCS spip
+
+MODULE="spip"
+PATHMAJ="/var/lib/lcs/$MODULE"
+
+set -e
+case "$1" in
+install)
+
+;;
+abort-upgrade)
+;;
+upgrade)
+	#
+	# Backup spip before upgrade
+    #
+	rm -f $PATHMAJ/Sql/spip_lcs*.sql
+	mysqldump spip_lcs > $PATHMAJ/Sql/spip_lcs_backup.sql
+	rm -Rf $PATHMAJ/spipold
+	mkdir $PATHMAJ/spipold
+	tar zcf $PATHMAJ/spipold/spip_lcs_backup.tgz /usr/share/lcs/spip > /dev/null 2>&1
+;;
+*)
+echo "preinst called with unknown argument \`$1'" >&2
+exit 1
+;;
+esac
+exit 0

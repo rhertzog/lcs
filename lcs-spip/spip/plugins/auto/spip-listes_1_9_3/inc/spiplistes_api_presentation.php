@@ -1,7 +1,13 @@
 <?php
+/**
+ * Fonctions d'affichage et de presentation dans l'espace prive
+ * 
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47063 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 19:00:08 +0200 (Mon, 25 Apr 2011) $
 
-// inc/spiplistes_api_presentation.php
-	
 /******************************************************************************************/
 /* SPIP-Listes est un systeme de gestion de listes d'abonnes et d'envoi d'information     */
 /* par email pour SPIP. http://bloog.net/spip-listes                                      */
@@ -21,18 +27,15 @@
 /* Free Software Foundation,                                                              */
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
-// $LastChangedRevision: 28582 $
-// $LastChangedBy: kent1@arscenic.info $
-// $LastChangedDate: 2009-05-11 00:31:31 +0200 (lun, 11 mai 2009) $
+
 
 include_spip('inc/presentation');
 include_spip('inc/spiplistes_api_journal');
 
-/*
-	Les fonctions affichage et presentation dans l'espace prive
-*/
 
-// retourne la puce qui va bien 
+/**
+ * retourne la puce qui va bien
+ */
 function spiplistes_bullet_titre_liste ($type, $statut, $id=false, $return=false) {
 	$result = $img = $taille = "";
 	switch($type) {
@@ -49,8 +52,13 @@ function spiplistes_bullet_titre_liste ($type, $statut, $id=false, $return=false
 	else echo($result);
 }
 
-// renvoie un element de definition courriers/listes (icone, puce, alternate text, etc.)
-// voir spsiplites_mes_options, tableau $spiplistes_items
+/**
+ * Renvoie un element de definition courriers/listes
+ * (icone, puce, alternate text, etc.)
+ * voir spsiplites_mes_options, tableau $spiplistes_items
+ * @global array $spiplistes_items
+ * @return string|null
+ */
 function spiplistes_items_get_item($item, $statut) {
 	global $spiplistes_items;
 
@@ -340,7 +348,9 @@ function spiplistes_bouton_block_depliable ($titre = "", $deplie = true, $nom_bl
 }
 
 // construit la boite de selection patrons (CP-20071012)
-function spiplistes_boite_selection_patrons ($patron="", $return=false, $chemin="patrons/", $select_nom="patron", $size_select=10, $width='34ex') {
+function spiplistes_boite_selection_patrons ($patron="", $return=false
+						, $chemin="patrons/", $select_nom="patron"
+						, $size_select=10, $width='34ex') {
 	global $couleur_claire;
 	$result = "";
 	// va chercher la liste des patrons
@@ -848,8 +858,10 @@ function spiplistes_envelopper_script ($source, $format) {
 	return($source);
 } // end spiplistes_envelopper_script()
 
-/*
- * complément des deux 'compacte'. supprimer les espaces en trop.
+/**
+ * Complément des deux 'compacte'. supprimer les espaces en trop.
+ * 
+ * @return string
  */ 
 function spiplistes_compacter_script ($source, $format) {
 	$source = trim($source);
@@ -861,20 +873,36 @@ function spiplistes_compacter_script ($source, $format) {
 	return($source);
 } // end spiplistes_compacter_script()
 
-/*
- * @return petite signature de plugin (version plugin, version base, version jquery)
+function spiplistes_plugin_get_infos($plug) {
+	if(version_compare($GLOBALS['spip_version_code'],'15375','>=')) {
+		$get_infos = charger_fonction('get_infos','plugins');
+		$infos = $get_infos($plug);
+	}
+	else {
+		$infos = plugin_get_infos($plug);
+	}
+	return($infos);
+}
+
+/**
+ * Petite signature du plugin
+ *
+ * Signature affichée en bas de formualire en espace privé.
  * @param $prefix string prefix du plugin
  * @param $html bool si true, renvoyer le resultat au format html
  * @param $verifier_svn si true
+ * @return string petite signature de plugin (version plugin, version base, version jquery)
  */
 function spiplistes_html_signature ($prefix, $html = true, $verifier_svn = false) {
-	$info = plugin_get_infos(spiplistes_get_meta_dir($prefix));
+	
+	$info = spiplistes_plugin_get_infos(spiplistes_get_meta_dir($prefix));
 	$nom = typo($info['nom']);
 	$version = typo($info['version']);
 	//$base_version = typo($info['version_base']); // cache ?
 	$base_version = spiplistes_current_version_base_get($prefix);
 	$svnrevision = spiplistes_current_svnrevision_get($prefix, $verifier_svn);
 	$revision = "";
+	
 	if($html) {
 		$version = (($version) ? " <span style='color:gray;'>".$version : "")
 			. (($svnrevision) ? "-".$svnrevision : "")
@@ -882,10 +910,10 @@ function spiplistes_html_signature ($prefix, $html = true, $verifier_svn = false
 			;
 		$base_version = (($base_version) ? " <span style='color:#66c;'>&lt;".$base_version."&gt;</span>" : "");
 	}
-	$result = ""
+	$result = ''
 		. $nom
-		. " " . $version
-		. " " . $base_version
+		. ' ' . $version
+		. ' ' . $base_version
 		;
 	if($html) {
 		$result = "<p class='verdana1 spip_xx-small' style='font-weight:bold;'>$result\n"
@@ -997,7 +1025,7 @@ function spiplistes_boite_meta_info ($prefix) {
 	$result = false;
 	if(!empty($prefix)) {
 		$meta_info = spiplistes_get_meta_infos($prefix); // dir et version
-		$info = plugin_get_infos($meta_info['dir']);
+		$info = spiplistes_plugin_get_infos($meta_info['dir']);
 		$icon = 
 			(isset($info['icon']))
 			? "<div "

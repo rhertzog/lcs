@@ -205,6 +205,7 @@ if (! $GLOBALS['server']) {
 //ajout de cette ligne pour toujours afficher une selectbox
         $list = false;
     }
+
     if (!$list) {
         // more than one database available and LeftFrameLight is true
         // display db selectbox

@@ -30,13 +30,16 @@
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 if($_SESSION['SESAMATH_ID']==ID_DEMO) {}
 
-$palier  = (isset($_POST['f_palier']))  ? clean_entier($_POST['f_palier'])  : 0;
+$palier       = (isset($_POST['f_palier'])) ? clean_entier($_POST['f_palier']) : 0;
+$option_first = (isset($_POST['f_first']))  ? clean_texte($_POST['f_first'])   : '';
 
-if(!$palier)
+if( (!$palier) || (!in_array($option_first,array('oui','val','non'))) )
 {
 	exit('Erreur avec les données transmises !');
 }
 
-echo afficher_select(DB_STRUCTURE_OPT_piliers($palier) , $select_nom=false , $option_first='oui' , $selection=false , $optgroup='non');
+$selection = ($option_first=='non') ? true : false ;
+
+echo afficher_select(DB_STRUCTURE_OPT_piliers($palier) , $select_nom=false , $option_first , $selection , $optgroup='non');
 
 ?>

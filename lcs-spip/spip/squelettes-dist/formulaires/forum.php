@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -77,7 +77,7 @@ $ajouter_mot, $ajouter_groupe, $afficher_texte, $url_param_retour) {
 		
 	$script_hidden .= "<input type='hidden' name='arg' value='$arg' />";
 	$script_hidden .= "<input type='hidden' name='hash' value='$hash' />";
-	$script_hidden .= "<input type='hidden' name='verif_$hash' value='ok' />";
+	$script_hidden .= "<input type='hidden' name='verif_".substr($hash,0,32)."' value='ok' />";
 	$script_hidden .= "<input type='hidden' name='afficher_texte' value='$afficher_texte' />";
 	$script_hidden .= "<input type='hidden' name='retour_forum' value='$retour_forum' />";
 
@@ -304,6 +304,9 @@ $id_rubrique, $id_forum, $id_article, $id_breve, $id_syndic) {
 
 
 function formulaires_forum_traiter_dist() {
+	// le formulaire forum n'est jamais traite en ajax car il s'acheve par une redirection vers
+	// la bonne page qui doit etre reaffichee dans son ensemble
+	refuser_traiter_formulaire_ajax();
 
 	$forum_insert = charger_fonction('forum_insert', 'inc');
 

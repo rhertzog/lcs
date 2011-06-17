@@ -1,0 +1,9 @@
+lcs-zonep (2.4.8~1) UNRELEASED; urgency=low
+
+  [ Cyril Bouthors ]
+  * Initial release
+
+  [ jean-Luc Chretien ]
+  * Modify update_zonep_config.php for SE3 home access
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 16 Jan 2011 16:45:41 +0100

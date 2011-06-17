@@ -1,18 +1,47 @@
-lcs-spip (2.4.7.2) Lcs; urgency=low
+lcs-spip (2.4.8) Lcs; urgency=low
 
+  [ Jean Luc Chretien & Dominique Lepaisant ]
+  * Fix bug with verif ldap in spip_session_lcs.php
+  * Fix bug in path of icon tispip
+  * Update deprecated fonctions spip_abstact_quote and spip_num_rows
+  * fix bug in pagination on cleaning accounts
+  * Update tispip plugin install
+  * Add icons for cleaning accaunts and areas/groups access restricted
+  * Change version num 2.0.5 to 2.4.8
+  * Cleaning postint old apache config
+  * Merge changelog
+  * Modfy layout and change comments on restricted areas/groups
+  * Remove deprecated mes_options.php in postinst
+  * Remove function "accorder compte"
+  * Fix bug in count import with spip
+
+  [ Prepare 2.4.8~x version ]
   * Fix rights on IMG and tmp in chown.sh
-  * Add ecran_securite.php on base 2.0.12
+  * Update spip 2.1.10
+  * Fix bug in plugin.xml for tispip_skelet_lcs and recherche_multicriteres
+  * Update plugins to 2.1.xx
+  * Modify cleaning tmp in maj7.sh
+  * Add backup old spip in preinst script
+  * Remove deprecated plugins 
+  * Fix bug with icons in tispip_skelet_lcs and recherche_multicriteres
+  * Fix bug in tispip_config_import.html
+  * Fix bugs in fonds/cfg_tispip_aide.html
+  * Added the creation of restricted areas from the groups in the LDAP
+  * Added cleaning accounts
+  * Remove deprecated plugins 
+  * Fix bug with icons in tispip_skelet_lcs and recherche_multicriteres
+  * Fix bug in tispip_config_import.html
+  * Fix bugs in fonds/cfg_tispip_aide.html
+  * Redirect stdout et sdterre to /dev/nul for tar command in preinst
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 09 May 2011 15:55:56 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 24 May 2011 17:52:45 +0200
 
-lcs-spip (2.4.7.1) Lcs; urgency=low
+lcs-spip (2.4.7.1~1) Lcs; urgency=low
 
   * Fix bug in right column position
   * Remove dependency on "boucles_sans_tables" 
-  * Change logo
-  * add lcs-notify.html 
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Mon, 20 Sep 2010 15:20:09 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Wed, 22 Sep 2010 03:28:31 +0200
 
 lcs-spip (2.4.7) Lcs; urgency=low
 

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: destinataires_alertes.php 5400 2010-09-23 10:01:22Z crob $
+ * $Id: destinataires_alertes.php 5989 2010-11-25 11:51:39Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stephane Boireau
  *
@@ -49,6 +49,8 @@ if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
 }
 
 if (isset($_POST['action']) and ($_POST['action'] == "reg_dest")) {
+	check_token();
+
 	$msg = '';
 	$notok = false;
 
@@ -120,7 +122,8 @@ echo "</p>\n";
 <?php
 
 	echo "<form action='".$_SERVER['PHP_SELF']."' name='form1' method='post'>\n";
-	
+	echo add_token_field();
+
 	//Ajout Eric
 	$contenu_adresse = "";
 

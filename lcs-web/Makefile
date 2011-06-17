@@ -17,6 +17,10 @@ install:
 	install -d $(DESTDIR)/etc/cron.daily
 	install -m 755 cron.daily/* $(DESTDIR)/etc/cron.daily/
 
+# install lcs web cron.weekly
+	install -d $(DESTDIR)/etc/cron.weekly
+	install -m 755 cron.weekly/* $(DESTDIR)/etc/cron.weekly/
+
 # install lcs web cron.monthly
 	install -d $(DESTDIR)/etc/cron.monthly
 	install -m 755 cron.monthly/* $(DESTDIR)/etc/cron.monthly/
@@ -57,6 +61,9 @@ install:
 # install lcs swekey conf
 	install -d $(DESTDIR)/etc/apache2/lcs-main
 	cp -a swekey/* $(DESTDIR)/etc/apache2/lcs-main/
+
+# install lcs web hooks directory
+	install -d $(DESTDIR)/usr/share/lcs/lcs-web-hooks.d
 
 clean:
 

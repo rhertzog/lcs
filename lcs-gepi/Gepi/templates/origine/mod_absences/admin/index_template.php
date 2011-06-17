@@ -2,7 +2,7 @@
 <?php
 /*
  * $Id: $
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -38,7 +38,7 @@
 <head>
 <!-- on inclut l'entête -->
 	<?php
-	  $tbs_bouton_taille = "..";
+		$tbs_bouton_taille=$gepiPath;
 	  include('../../templates/origine/header_template.php');
 	?>
 
@@ -92,8 +92,10 @@
 <!-- Fin haut de page -->
   
   <form action="index.php" id="form1" method="post">
-	
 	<p class="center grandEspaceHaut">
+<?php
+echo add_token_field();
+?>
 	  <input type="submit" value="Enregistrer"/>
 	</p>
 	

@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/presentation');
 include_spip('inc/date');
@@ -116,7 +116,7 @@ function exec_message_edit_args($id_message, $new, $dest)
 	  . "</textarea></p><br />\n"
 	  . "\n<div style='text-align: right'><input type='submit' value='"
 	  . _T('bouton_valider')
-	  . "' class='fondo'/></div>"	
+	  . "' /></div>"	
 	  . "\n</div>";
 
 	echo redirige_action_post('editer_message', $id_message, 'message',"id_message=$id_message", $res);

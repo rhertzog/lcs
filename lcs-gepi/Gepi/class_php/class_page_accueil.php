@@ -1,9 +1,9 @@
 
 <?php
 /*
- * $Id: class_page_accueil.php 5786 2010-11-02 13:49:19Z jjacquard $
+ * $Id: class_page_accueil.php 6343 2011-01-13 09:42:24Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -1055,11 +1055,17 @@ class class_page_accueil {
 	}
 
 	if ((($this->test_prof_suivi != "0")
-					AND (getSettingValue("GepiProfImprBul")=='yes'))
+				AND (getSettingValue("GepiProfImprBul")=='yes'))
 			OR ($this->statutUtilisateur!='professeur')){
 	  $this->creeNouveauItem("/bulletin/bull_index.php",
 			  "Visualisation et impression des bulletins",
 			  "Cet outil vous permet de visualiser à l'écran et d'imprimer les bulletins, classe par classe.");
+	}
+
+	if ($this->statutUtilisateur=='administrateur'){
+	  $this->creeNouveauItem("/statistiques/index.php",
+			  "Extractions statistiques",
+			  "Cet outil vous permet d'extraire des données à des fins statistiques (des bulletins, ...).");
 	}
 
 	if ($this->b>0){
@@ -1106,9 +1112,27 @@ class class_page_accueil {
 			"Visualisation des équipes pédagogiques",
 			"Ceci vous permet de connaître tous les ".$this->gepiSettings['denomination_professeurs']." des classes dans lesquelles vous intervenez, ainsi que les compositions des groupes concernés.");
 
+	if(($this->statutUtilisateur=='scolarite')||
+			($this->statutUtilisateur=='professeur')||
+			($this->statutUtilisateur=='cpe')){
+	  $this->creeNouveauItem("/groupes/visu_mes_listes.php",
+			  "Visualisation de mes élèves",
+			  "Ce menu permet de vous permet de consulter vos listes d'".$this->gepiSettings['denomination_eleves']." par groupe constitué et enseigné.");
+	}
+
 	$this->creeNouveauItem("/eleves/visu_eleve.php",
 			"Consultation d'un ".$this->gepiSettings['denomination_eleve'],
 			"Ce menu vous permet de consulter dans une même page les informations concernant un ".$this->gepiSettings['denomination_eleve']." (enseignements suivis, bulletins, relevés de notes, ".$this->gepiSettings['denomination_responsables'].",...). Certains éléments peuvent n'être accessibles que pour certaines catégories de visiteurs.");
+
+	if(getSettingValue("active_cahiers_texte")=="y") {
+		if(($this->statutUtilisateur=="professeur") OR
+			(($this->statutUtilisateur=="cpe")&&((getSettingValue("GepiAccesCdtCpe")=="yes")||(getSettingValue("GepiAccesCdtCpeRestreint")=="yes"))) OR
+			(($this->statutUtilisateur == "scolarite")&&((getSettingValue("GepiAccesCdtScol")=="yes")||(getSettingValue("GepiAccesCdtScolRestreint")=="yes")))) {
+				$this->creeNouveauItem("/cahier_texte_2/see_all.php",
+					"Consultation des cahiers de textes",
+					"Ce menu vous permet de consulter les cahiers de textes.");
+		}
+	}
 
 	$this->creeNouveauItem("/impression/impression_serie.php",
 			"Impression PDF de listes",

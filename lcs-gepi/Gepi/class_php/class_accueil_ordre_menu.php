@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: class_accueil_ordre_menu.php 5786 2010-11-02 13:49:19Z jjacquard $
+ * $Id: class_accueil_ordre_menu.php 5752 2010-10-25 12:08:35Z jjacquard $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

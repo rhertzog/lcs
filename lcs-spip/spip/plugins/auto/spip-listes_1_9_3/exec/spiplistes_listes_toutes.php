@@ -1,6 +1,10 @@
 <?php
-
-// exec/spiplistes_listes_toutes.php
+/**
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47068 $
+ // $LastChangedBy: root $
+ // $LastChangedDate: 2011-04-25 21:00:10 +0200 (Mon, 25 Apr 2011) $
 
 /******************************************************************************************/
 /* SPIP-Listes est un systeme de gestion de listes d'abonnes et d'envoi d'information     */
@@ -21,9 +25,6 @@
 /* Free Software Foundation,                                                              */
 /* Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, Etats-Unis.                   */
 /******************************************************************************************/
-// $LastChangedRevision: 24782 $
-// $LastChangedBy: paladin@quesaco.org $
-// $LastChangedDate: 2008-11-30 10:46:48 +0100 (dim, 30 nov 2008) $
 
 if (!defined("_ECRIRE_INC_VERSION")) return;
 

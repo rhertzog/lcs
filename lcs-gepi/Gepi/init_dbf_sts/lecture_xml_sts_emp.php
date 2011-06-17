@@ -2,7 +2,7 @@
 @set_time_limit(0);
 
 // Auteur: Stephane Boireau
-// $Id: lecture_xml_sts_emp.php 3323 2009-08-05 10:06:18Z crob $
+// $Id: lecture_xml_sts_emp.php 5937 2010-11-21 17:42:55Z crob $
 
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
@@ -22,6 +22,8 @@ header("Location: ../logout.php?auto=1");
 die();
 }
 
+// Page bourrinée... la gestion du token n'est pas faite... et ne sera faite que si quelqu'un utilise encore ce mode d'initialisation et le manifeste sur la liste de diffusion gepi-users
+check_token();
 
 //================================================
 // Fonction de génération de mot de passe récupérée sur TotallyPHP

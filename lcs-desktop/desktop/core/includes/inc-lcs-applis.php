@@ -25,7 +25,8 @@ $liste['Ids'] = array();// ajout pour l'ID des fenetres !!Voir si on peut eviter
 	$resultM=mysql_query($queryM);
 	if ($resultM) {
         while ( $r=mysql_fetch_object($resultM) ) {
-            if ( $r->name == "clientftp" ) $ftpclient = true;
+            if ( $r->name == "clientftp" ) $clientftp = true;
+            if ( $r->name == "elfinder" ) $elfinder = true;
             if ( $r->name == "pma" ) $pma = true;
             if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
         }
@@ -55,14 +56,26 @@ if(isset($squirrelmail)){
 	$liste['Titres'][] = "Webmail";
 	$liste['Blocks'][] = "#icon_dock_lcs_squirrelmail";
 	$liste['Ids'][] = "squirrelmail";
-}
-// ftp
-if (isset($ftpclient)) {
+} elseif (isset($roundcube)) {
+	$liste['Images'][] = "../lcs/images/barre1/BP_r1_c5_f3.gif";
+	$liste['Liens'][] = "../lcs/statandgo.php?use=roundcube";
+	$liste['Titres'][] = "Webmail";
+	$liste['Blocks'][] = "#icon_dock_lcs_roundcube";
+	$liste['Ids'][] = "roundcube";	
+}	
+// explorateur de fichier : clientftp ou elfinder
+if (isset($clientftp)) {
 	$liste['Images'][] = "../lcs/images/bt-V1-2.jpg";
 	$liste['Liens'][] = "../clientftp/";
-	$liste['Titres'][] = "Client FTP";
-	$liste['Blocks'][] = "#icon_dock_lcs_ftpclient";
-	$liste['Ids'][] = "ftpclient";
+	$liste['Titres'][] = "Explorateur de fichiers";
+	$liste['Blocks'][] = "#icon_dock_clientftp";
+	$liste['Ids'][] = "clientftp";
+} elseif (isset($elfinder)) {
+	$liste['Images'][] = "../lcs/images/bt-V1-2.jpg";
+	$liste['Liens'][] = "../elfinder/";
+	$liste['Titres'][] = "Explorateur de fichiers";
+	$liste['Blocks'][] = "#icon_dock_elfinder";
+	$liste['Ids'][] = "elfinder";
 }
 // phpmyadmin
 if (isset($pma)) {
@@ -114,6 +127,13 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 			$c_path="./squirrelmail/";
 			$c_title=array("Consulter vos messages", "Envoyer un message");
 			$c_rel=array($liste['Liens'][$x], "../squirrelmail/src/compose.php?mailbox=INBOX&startMessage=1");
+	        break;
+    	case "roundcube":
+			$c="large_win";
+			$c_sb="submenu";
+			$c_path="./roundcube/";
+			$c_title=array("Consulter vos messages", "Envoyer un message");
+			$c_rel=array($liste['Liens'][$x], "../roundcube/?_task=mail&_action=compose");
 	        break;
 	    case "annu":
 			$c="large_win";
@@ -179,7 +199,7 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 	
 	// Split the menu applications into two parts: services and applications
 	// See if it is necessary and so, how to make choices ?	
-	$services=array("ftpclient", "pma", "smbwc", "annu", "maintinfo");
+	$services=array("clientftp", "elfinder", "pma", "smbwc", "annu", "maintinfo");
     if(!in_array($liste['Ids'][$x], $services)){
 	    $html_menu .= "<li>\n".$sbmn."</li>\n";
     }else{

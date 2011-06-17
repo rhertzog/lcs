@@ -27,38 +27,38 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Évaluer des élèves sélectionnés";
-$VERSION_JS_FILE += 12;
+$VERSION_JS_FILE += 19;
 ?>
 
 <?php
 // Dates par défaut de début et de fin
 $annee_debut = (date('n')>8) ? date('Y') : date('Y')-1 ;
-$date_debut  = '01/09/'.$annee_debut;
-$date_fin    = date("d/m/Y");
+$annee_fin   = $annee_debut+1 ;
 ?>
 
 <ul class="puce">
 	<li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_gestion">DOC : Gestion des évaluations.</a></span></li>
 	<li><span class="astuce">Choisir des evaluations existantes à afficher, ou cliquer sur le "<span style="background:transparent url(./_img/sprite10.png) 0 0 no-repeat;background-position:-20px 0;width:16px;height:16px;display:inline-block;vertical-align:middle"></span>" pour créer une nouvelle évaluation.</span></li>
-	<li><span class="danger">Une évaluation dont la saisie a commencé ne devrait pas voir ses élèves ou ses items modifiés (sinon vous n'aurez plus accès à certaines données) !</span></li>
 </ul>
 
 <hr />
 
 <form action="" id="form0"><fieldset>
 	<label class="tab" for="f_aff_periode">Période :</label>
-		du <input id="f_date_debut" name="f_date_debut" size="9" type="text" value="<?php echo $date_debut ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q>
-		au <input id="f_date_fin" name="f_date_fin" size="9" type="text" value="<?php echo $date_fin ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q>
+		du <input id="f_date_debut" name="f_date_debut" size="9" type="text" value="01/09/<?php echo $annee_debut ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q>
+		au <input id="f_date_fin" name="f_date_fin" size="9" type="text" value="01/09/<?php echo $annee_fin ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q>
 	<br />
 	<span class="tab"></span><input type="hidden" name="f_action" value="Afficher_evaluations" /><button id="actualiser" type="submit"><img alt="" src="./_img/bouton/actualiser.png" /> Actualiser l'affichage.</button><label id="ajax_msg0">&nbsp;</label>
 </fieldset></form>
 
 <form action="" id="form1">
 	<hr />
+	<p id="p_alerte" class="danger hide">Une évaluation dont la saisie a commencé ne devrait pas voir ses élèves ou items modifiés.<br />En particulier, retirer des élèves ou des items d'une évaluation efface les scores correspondants qui sont saisis !</p>
 	<table class="form">
 		<thead>
 			<tr>
-				<th>Date</th>
+				<th>Date devoir</th>
+				<th>Date visible</th>
 				<th>Élèves</th>
 				<th>Description</th>
 				<th>Items</th>
@@ -66,7 +66,7 @@ $date_fin    = date("d/m/Y");
 			</tr>
 		</thead>
 		<tbody>
-			<tr><td class="nu" colspan="5"></td></tr>
+			<tr><td class="nu" colspan="6"></td></tr>
 		</tbody>
 	</table>
 </form>
@@ -149,16 +149,16 @@ $date_fin    = date("d/m/Y");
 		<tbody><tr><td></td></tr></tbody>
 	</table>
 	<div id="td_souris_container"><div class="td_souris">
-		<img alt="RR" src="./_img/note/<?php echo $_SESSION['NOTE_IMAGE_STYLE'] ?>/h/RR.gif" /><img alt="ABS" src="./_img/note/commun/h/ABS.gif" /><br />
-		<img alt="R" src="./_img/note/<?php echo $_SESSION['NOTE_IMAGE_STYLE'] ?>/h/R.gif" /><img alt="NN" src="./_img/note/commun/h/NN.gif" /><br />
-		<img alt="V" src="./_img/note/<?php echo $_SESSION['NOTE_IMAGE_STYLE'] ?>/h/V.gif" /><img alt="DISP" src="./_img/note/commun/h/DISP.gif" /><br />
-		<img alt="VV" src="./_img/note/<?php echo $_SESSION['NOTE_IMAGE_STYLE'] ?>/h/VV.gif" /><img alt="X" src="./_img/note/commun/h/X.gif" />
+		<img alt="RR" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/RR.gif" /><img alt="ABS" src="./_img/note/commun/h/ABS.gif" /><br />
+		<img alt="R" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/R.gif" /><img alt="NN" src="./_img/note/commun/h/NN.gif" /><br />
+		<img alt="V" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/V.gif" /><img alt="DISP" src="./_img/note/commun/h/DISP.gif" /><br />
+		<img alt="VV" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/VV.gif" /><img alt="X" src="./_img/note/commun/h/X.gif" />
 	</div></div>
 	<p class="ti" id="aide_en_ligne"><button id="report_note" type="button">Reporter</button> le code 
-		<label for="f_defaut_VV"><input type="radio" id="f_defaut_VV" name="f_defaut" value="VV" checked="checked" /><img alt="VV" src="./_img/note/<?php echo $_SESSION['NOTE_IMAGE_STYLE'] ?>/h/VV.gif" /></label>
-		<label for="f_defaut_V"><input type="radio" id="f_defaut_V" name="f_defaut" value="V" /><img alt="V" src="./_img/note/<?php echo $_SESSION['NOTE_IMAGE_STYLE'] ?>/h/V.gif" /></label>
-		<label for="f_defaut_R"><input type="radio" id="f_defaut_R" name="f_defaut" value="R" /><img alt="R" src="./_img/note/<?php echo $_SESSION['NOTE_IMAGE_STYLE'] ?>/h/R.gif" /></label>
-		<label for="f_defaut_RR"><input type="radio" id="f_defaut_RR" name="f_defaut" value="RR" /><img alt="RR" src="./_img/note/<?php echo $_SESSION['NOTE_IMAGE_STYLE'] ?>/h/RR.gif" /></label>
+		<label for="f_defaut_VV"><input type="radio" id="f_defaut_VV" name="f_defaut" value="VV" checked /><img alt="VV" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/VV.gif" /></label>
+		<label for="f_defaut_V"><input type="radio" id="f_defaut_V" name="f_defaut" value="V" /><img alt="V" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/V.gif" /></label>
+		<label for="f_defaut_R"><input type="radio" id="f_defaut_R" name="f_defaut" value="R" /><img alt="R" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/R.gif" /></label>
+		<label for="f_defaut_RR"><input type="radio" id="f_defaut_RR" name="f_defaut" value="RR" /><img alt="RR" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/RR.gif" /></label>
 		<label for="f_defaut_ABS"><input type="radio" id="f_defaut_ABS" name="f_defaut" value="ABS" /><img alt="ABS" src="./_img/note/commun/h/ABS.gif" /></label>
 		<label for="f_defaut_NN"><input type="radio" id="f_defaut_NN" name="f_defaut" value="NN" /><img alt="NN" src="./_img/note/commun/h/NN.gif" /></label>
 		<label for="f_defaut_DISP"><input type="radio" id="f_defaut_DISP" name="f_defaut" value="DISP" /><img alt="DISP" src="./_img/note/commun/h/DISP.gif" /></label>
@@ -169,9 +169,9 @@ $date_fin    = date("d/m/Y");
 			<input type="hidden" name="filename" id="filename" value="<?php echo './__tmp/export/saisie_'.$_SESSION['BASE'].'_'.$_SESSION['USER_ID'].'_'; ?>" />
 			<span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_saisie_deportee">DOC : Saisie déportée.</a></span>
 			<ul class="puce">
-				<li><a id="export_file1" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Récupérer un fichier vierge au format CSV pour une saisie déportée.</a></li>
-				<li><a id="export_file4" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Récupérer au format PDF un tableau vierge utilisable pour un report manuel des notes.</a></li>
-				<li><button id="import_file" type="button"><img alt="" src="./_img/bouton/fichier_import.png" /> Envoyer un fichier complété au format CSV.</button><label id="msg_import">&nbsp;</label></li>
+				<li><a id="export_file1" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Récupérer un fichier vierge pour une saisie déportée (format <em>csv</em>).</a></li>
+				<li><a id="export_file4" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Imprimer un tableau vierge utilisable pour un report manuel des notes (format <em>pdf</em>).</a></li>
+				<li><button id="import_file" type="button"><img alt="" src="./_img/bouton/fichier_import.png" /> Envoyer un fichier de notes complété (format <em>csv</em>).</button><label id="msg_import">&nbsp;</label></li>
 			</ul>
 		</div>
 	</div>
@@ -187,9 +187,9 @@ $date_fin    = date("d/m/Y");
 		<div id="zone_voir_deport" class="hide">
 			<span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_saisie_deportee">DOC : Saisie déportée.</a></span>
 			<ul class="puce">
-				<li><a id="export_file2" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Récupérer un fichier des scores au format CSV pour archivage ou une saisie déportée.</a></li>
-				<li><a id="export_file3" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Récupérer au format PDF un tableau vierge utilisable pour un report manuel des notes.</a></li>
-				<li><a id="export_file5" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Récupérer au format PDF le tableau avec les scores pour archivage.</a></li>
+				<li><a id="export_file2" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Récupérer un fichier des scores pour une saisie déportée (format <em>csv</em>).</a></li>
+				<li><a id="export_file3" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Imprimer un tableau vierge utilisable pour un report manuel des notes (format <em>pdf</em>).</a></li>
+				<li><a id="export_file5" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Archiver / Imprimer le tableau avec les scores (format <em>pdf</em>).</a></li>
 			</ul>
 		</div>
 	</p>
@@ -202,7 +202,7 @@ $date_fin    = date("d/m/Y");
 	</table>
 	<p />
 	<ul class="puce">
-		<li><a id="export_file6" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Récupérer au format PDF le tableau avec la répartition quantitative des scores.</a></li>
+		<li><a id="export_file6" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Archiver / Imprimer le tableau avec la répartition quantitative des scores (format <em>pdf</em>).</a></li>
 	</ul>
 	<p />
 	<table id="table_voir_repart2" class="scor_eval">
@@ -210,7 +210,7 @@ $date_fin    = date("d/m/Y");
 	</table>
 	<p />
 	<ul class="puce">
-		<li><a id="export_file7" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Récupérer au format PDF le tableau avec la répartition nominative des scores.</a></li>
+		<li><a id="export_file7" class="lien_ext" href=""><img alt="" src="./_img/bouton/fichier_export.png" /> Archiver / Imprimer le tableau avec la répartition nominative des scores (format <em>pdf</em>).</a></li>
 	</ul>
 	<p />
 </div>
@@ -234,7 +234,8 @@ $select_marge_min    = afficher_select($tab_select_marge_min    , $select_nom='f
 	</div>
 	<div class="toggle hide">
 		<span class="tab"></span><a href="#" class="puce_moins toggle">Afficher moins d'options</a><br />
-		<label class="tab" for="f_orientation">Orientation :</label><?php echo $select_orientation ?> <?php echo $select_couleur ?> avec marges minimales de <?php echo $select_marge_min ?><br />
+		<label class="tab">Orientation :</label><?php echo $select_orientation ?> <?php echo $select_couleur ?> <?php echo $select_marge_min ?><br />
+		<label class="tab">Restriction :</label><input type="checkbox" id="f_restriction_req" name="f_restriction_req" value="1" /> <label for="f_restriction_req">Uniquement les items ayant fait l'objet d'une demande d'évaluation (ou dont une note est saisie).</label>
 	</div>
 	<span class="tab"></span><button id="f_submit_imprimer" type="button" value="'.$ref.'"><img alt="" src="./_img/bouton/valider.png" /> Générer le cartouche</button><label id="msg_imprimer">&nbsp;</label>
 	<p id="zone_imprimer_retour"></p>

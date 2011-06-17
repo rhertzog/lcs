@@ -1,12 +1,6 @@
 <?php
-/* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/mod_entry.php
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice academie de Caen
-   Derniere modification 17/06/2008
-   ============================================= */
+/* Annu/mod_entry.php Derniere modification 22/04/2011 */
+
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
@@ -85,8 +79,8 @@
       if ( $ds ) {
         $r = @ldap_bind ( $ds, $adminDn, $adminPw ); // Bind en admin
         if ($r) {
-          $pseudo = ucfirst(strtolower(unac_string_with_underscore($pseudo)));
-          $entry["initials"]=utf8_encode($pseudo);
+          $pseudo = ucfirst(mb_strtolower(unac_string_with_underscore($pseudo)));
+          $entry["initials"]=$pseudo;
           if ( $telephone && verifTel($telephone) )
             $entry["telephonenumber"]=$telephone ; 
           if (@ldap_modify ($ds, "uid=".$people_attr[0]["uid"].",".$dn["people"],$entry)) {

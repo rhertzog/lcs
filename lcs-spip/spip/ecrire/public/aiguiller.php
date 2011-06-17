@@ -3,14 +3,25 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
+
+function securiser_redirect_action($redirect){
+	if (tester_url_absolue($redirect) AND !defined('_AUTORISER_ACTION_ABS_REDIRECT')){
+		$base = $GLOBALS['meta']['adresse_site']."/".(_DIR_RESTREINT?'':_DIR_RESTREINT_ABS);
+		if (strlen($base) AND strncmp($redirect,$base,strlen($base))==0)
+			$redirect = substr($redirect,strlen($base));
+	  else
+		  $redirect = "";
+	}
+	return $redirect;
+}
 
 // http://doc.spip.org/@traiter_appels_actions
 function traiter_appels_actions(){
@@ -19,6 +30,7 @@ function traiter_appels_actions(){
 		include_spip('base/abstract_sql'); // chargement systematique pour les actions
 		include_spip('inc/autoriser');
 		include_spip('inc/headers');
+		include_spip('inc/actions');
 		// si l'action est provoque par un hit {ajax}
 		// il faut transmettre l'env ajax au redirect
 		// on le met avant dans la query string au cas ou l'action fait elle meme sa redirection
@@ -29,13 +41,17 @@ function traiter_appels_actions(){
 			$url = parametre_url($url,'var_ajax',$v,'&');
 			$url = parametre_url($url,'var_ajax_env',$args,'&');
 			set_request('redirect',$url);
-		}		
+		}
+		else if(_request('redirect')){
+			set_request('redirect',securiser_redirect_action(_request('redirect')));
+		}
 		$var_f = charger_fonction($action, 'action');
 		$var_f();
 		if (!isset($GLOBALS['redirect'])) {
 			$GLOBALS['redirect'] = _request('redirect');
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 				$GLOBALS['redirect'] = urldecode($GLOBALS['redirect']);
+			$GLOBALS['redirect'] = securiser_redirect_action($GLOBALS['redirect']);
 		}
 		if ($url = $GLOBALS['redirect']) {
 			// si l'action est provoque par un hit {ajax}

@@ -3,7 +3,7 @@
 // extrait automatiquement de http://www.spip.net/trad-lang/
 // ** ne pas modifier le fichier **
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
@@ -54,7 +54,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'barre_euro' => 'Inserir o s&iacute;mbolo &euro;',
 'barre_gras' => 'Po&ntilde;er en {{gras}}',
 'barre_guillemets' => 'Encerrar entre &laquo; &aacute;ngulos &raquo;',
-'barre_guillemets_simples' => 'Encerrar entre “comas dobres”',
+'barre_guillemets_simples' => 'Encerrar entre â€œcomas dobresâ€',
 'barre_intertitre' => 'Transformar en {{{intert&iacute;tulo}}}',
 'barre_italic' => 'Po&ntilde;er en {cursiva}',
 'barre_lien' => 'Transformar en [ligaz&oacute;n de hipertexto->http://...]',
@@ -188,7 +188,13 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'date_saison_2' => 'primavera',
 'date_saison_3' => 'ver&aacute;n',
 'date_saison_4' => 'outono',
+'date_secondes' => 'segundos',
 'date_semaines' => 'semanas',
+'date_un_mois' => 'mes',
+'date_une_heure' => 'hora',
+'date_une_minute' => 'minuto',
+'date_une_seconde' => 'segundo',
+'date_une_semaine' => 'semana',
 'dirs_commencer' => ' para comezar realmente a instalaci&oacute;n',
 'dirs_preliminaire' => 'Preliminar: <b>Regular os permisos de acceso</b>',
 'dirs_probleme_droits' => 'Problema de permisos de acceso',
@@ -201,7 +207,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
   <p>Para arranxalo, empregue o seu cliente de FTP e cambie os permisos de acceso de cada un
   deles. O procedemento est&aacute; explicado polo mi&uacute;do na gu&iacute;a de instalaci&oacute;n.</p>
   <p>Unha vez feito isto, poder&aacute; ',
-'double_occurrence' => 'Dobre ocorrencia',
+'double_occurrence' => 'Dobre ocorrencia de @balise@',
 
 // E
 'en_cours' => 'en curso',
@@ -216,6 +222,18 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 // F
 'fichier_introuvable' => 'O ficheiro @fichier@ non foi atopado',
+'form_auteur_confirmation' => 'Confirme o seu enderezo de correo',
+'form_auteur_email_modifie' => 'Modificouse o seu enderezo de correo.',
+'form_auteur_envoi_mail_confirmation' => 'Un correo electr&oacute;nico de confirmaci&oacute;n acaba de ser enviado a @email@. Deber&iacute;a visitar ese enderezo web mencionado no correo para validar o seu enderezo de correo.',
+'form_auteur_mail_confirmation' => 'Ola,
+
+Vostede solicitou cambiar o seu enderezo de correo.
+Para confirmar o seu novo enderezo, c&oacute;mpre que se conecta co
+enderezo seguinte (caso contrario, a s&uacute;a solicitude
+sera ignorada) :
+
+    @url@
+',
 'form_deja_inscrit' => 'Xa est&aacute; inscrito.',
 'form_email_non_valide' => 'O seu enderezo de correo-e. non &eacute; v&aacute;lido.',
 'form_forum_access_refuse' => 'Non tes acceso a este web.',
@@ -392,19 +410,23 @@ Grazas pola s&uacute;a participaci&oacute;n
 'info_article_supprime' => 'Artigo eliminado',
 'info_articles' => 'Artigos',
 'info_articles_a_valider' => 'Os artigos por validar',
+'info_articles_nb' => '@nb@ artigos',
 'info_articles_proposes' => 'Artigos propostos',
+'info_articles_un' => '1 artigo',
 'info_auteurs_nombre' => 'autor(as/es):',
 'info_authentification_ftp' => 'Autentificaci&oacute;n (por FTP).',
 'info_bloquer_lien' => 'Bloquear esta ligaz&oacute;n',
 'info_breves_02' => 'Breves',
 'info_breves_2' => 'breves',
+'info_breves_nb' => '@nb@ breves',
+'info_breves_un' => '1 breve',
 'info_breves_valider' => 'Breves por validar',
 'info_connexion_refusee' => 'Conexi&oacute;n rexeitada',
 'info_contact_developpeur' => 'Tes que contactar cun desenrolador.',
 'info_contenance' => 'Este web cont&eacute;n:',
 'info_contribution' => 'contribuci&oacute;ns no foro',
 'info_copyright' => '@spip@ &eacute; un programa libre distribu&iacute;do @lien_gpl@.',
-'info_copyright_doc' => 'Para m&aacute;is informaci&oacute;n, vaia a <a href=\'http://www.spip.net/gl\'>http://www.spip.net/gl</a>.',
+'info_copyright_doc' => 'Para m&aacute;is informaci&oacute;n, vaia a <a href="@spipnet@">http://www.spip.net/gl</a>.',
 'info_copyright_gpl' => 'con licenza GPL',
 'info_cours_edition' => 'Os seus artigos en proceso de edici&oacute;n',
 'info_creer_repertoire' => 'Debe crear un ficheiro ou cartafol chamado&nbsp;:',
@@ -418,6 +440,8 @@ Grazas pola s&uacute;a participaci&oacute;n
 'info_document' => 'Documento',
 'info_document_indisponible' => 'Este documento non est&aacute; dispo&ntilde;ible',
 'info_documents' => 'Documentos',
+'info_documents_nb' => '@nb@ documentos',
+'info_documents_un' => '1 documento',
 'info_echange_message' => 'SPIP permite o intercambio de mensaxes e a constituci&oacute;n de foros de discusi&oacute;n
   privados entre os participantes do web. Pode activar ou
   desactivar esta funcionalidade.',
@@ -464,6 +488,8 @@ Grazas pola s&uacute;a participaci&oacute;n
 'info_mail_fournisseur' => 'oteu@aloxador.com',
 'info_message_2' => 'MENSAXE',
 'info_message_supprime' => 'MENSAXE ELIMINADA',
+'info_messages_nb' => '@nb@ mensaxes',
+'info_messages_un' => '1 mensaxe',
 'info_mise_en_ligne' => 'Data de posta en li&ntilde;a:',
 'info_modification_parametres_securite' => 'modificaci&oacute;ns dos par&aacute;metros de seguridade',
 'info_mois_courant' => 'Neste mes:',
@@ -508,6 +534,8 @@ Grazas pola s&uacute;a participaci&oacute;n
 'info_retablir_lien' => 'reestablecer esta ligaz&oacute;n',
 'info_retirer_mot' => 'Retirar esta palabra',
 'info_retirer_mots' => 'Retirar todas as palabras',
+'info_rubriques_nb' => '@nb@ secci&oacute;ns',
+'info_rubriques_un' => '1 secci&oacute;ns',
 'info_sans_titre_2' => 'sen t&iacute;tulo',
 'info_selectionner_fichier' => 'Pode seleccionar un ficheiro do cartafol @upload@',
 'info_selectionner_fichier_2' => 'Seleccionar un ficheiro:',
@@ -516,7 +544,9 @@ Grazas pola s&uacute;a participaci&oacute;n
 'info_site_attente' => 'Sitio web agardando pola validaci&oacute;n',
 'info_site_reference' => 'Web referido en li&ntilde;a',
 'info_site_refuse' => 'Web rexeitado',
+'info_sites_nb' => '@nb@ webs',
 'info_sites_referencer' => 'Referenciar un web',
+'info_sites_un' => '1 web',
 'info_supprimer_vignette' => 'suprimir a vi&ntilde;eta',
 'info_symbole_bleu' => 'O s&amp;iacute;mbolo <b>azul</b> indica unha <b>nota</b>: ou sexa, unha mensaxe para o seu uso persoal.',
 'info_symbole_jaune' => 'O s&iacute;mbolo <b>amarelo</b> indica un <b>anuncio para todo o equipo de redacci&oacute;n</b>&nbsp;: modificable polo equipo de xesti&oacute;n, e visible por toda a redacci&oacute;n.',
@@ -540,14 +570,13 @@ Grazas pola s&uacute;a participaci&oacute;n
 'info_visites' => 'visitas:',
 'info_vos_rendez_vous' => 'As t&uacute;as citas pendentes',
 'info_zoom' => 'zoom',
-'infos_vos_pense_bete' => 'As t&uacute;as notas',
+'infos_vos_pense_bete' => 'As t&uacute;as notas', # MODIF
 'item_breve_proposee' => 'Breve proposta',
 
 // L
 'lien_afficher_icones_seuls' => 'Amosar s&oacute; as iconas',
 'lien_afficher_texte_icones' => 'Amosar as iconas e o texto',
 'lien_afficher_texte_seul' => 'Amosar s&oacute; o texto',
-'lien_icones_interface' => 'As iconas da interface son do <a href=\'http://jimmac.musichall.cz/\'>Jakub \'Jimmac\' Steiner</a>.',
 'lien_liberer' => 'liberar',
 'lien_liberer_tous' => 'liberar estes artigos',
 'lien_nouvea_pense_bete' => 'NOVA NOTA',
@@ -590,6 +619,7 @@ Grazas pola s&uacute;a participaci&oacute;n
 'login_retour_site' => 'Volver ao web p&uacute;blico',
 'login_retoursitepublic' => 'volver ao web p&uacute;blico',
 'login_sans_cookiie' => 'Identificaci&oacute;n sen cookie',
+'login_securise' => 'Inicio de sesi&oacute;n securizado',
 'login_sinscrire' => 'Inscribirse',
 'login_test_navigateur' => 'proba navegador/reconexi&oacute;n',
 'login_verifiez_navigateur' => '(De todos os xeitos, comprobe que o seu navegador non memorizou a s&uacute;a chave...)',
@@ -622,7 +652,6 @@ Grazas pola s&uacute;a participaci&oacute;n
 'onglet_repartition_rubrique' => 'Distribuci&oacute;n por secci&oacute;ns',
 'onglet_save_restaur_base' => 'Gardar/restaurar a base',
 'onglet_vider_cache' => 'Baleirar a memoria cach&eacute;',
-'ortho_trop_de_fautes2' => 'Comece por corrixir as faltas m&aacute;is evidentes e reint&eacute;nteo logo.',
 
 // P
 'pass_choix_pass' => 'Elixa s&uacute;a nova chave:',
@@ -742,34 +771,34 @@ e reconectar co web.
 
 // Z
 'zbug_balise_b_aval' => '&nbsp;: baliza B en aval',
-'zbug_balise_inexistante' => 'erro @from@: a baliza #@balise@ non existe',
+'zbug_balise_inexistante' => 'A baliza @balise@ est&aacute; mal declarada para @from@',
 'zbug_balise_sans_argument' => 'Falta o argumento na baliza @balise@',
 'zbug_boucle' => 'bucle',
-'zbug_boucle_recursive_undef' => 'bucle recursivo non definido',
+'zbug_boucle_recursive_undef' => 'Bucle recursivo non definido: @nom@',
 'zbug_calcul' => 'c&aacute;lculo',
 'zbug_champ_hors_boucle' => 'Campo @champ@ f&oacute;ra de bucle',
-'zbug_champ_hors_motif' => 'Campo @champ@ f&oacute;ra dun bucle de motivo @motif@',
+'zbug_champ_hors_motif' => 'Campo @champ@ f&oacute;ra dun contexto @motif@',
 'zbug_code' => 'c&oacute;digo',
-'zbug_critere_inconnu' => 'criterio desco&ntilde;ecido @critere@',
-'zbug_distant_interdit' => 'servizo externo prohibido',
-'zbug_doublon_table_sans_cle_primaire' => 'doublons sobre unha t&aacute;boa sen chave primaria at&oacute;mica',
-'zbug_doublon_table_sans_index' => 'doublons nunha t&amp;aacute;boa sen index',
-'zbug_erreur_boucle_double' => 'BOUCLE@id@: dobre definici&oacute;n',
-'zbug_erreur_boucle_fermant' => 'BOUCLE@id@: tag de cerre ausente',
+'zbug_critere_inconnu' => 'Criterio desco&ntilde;ecido @critere@',
+'zbug_distant_interdit' => 'Base externa prohibida',
+'zbug_doublon_table_sans_cle_primaire' => 'Doublons sobre unha t&aacute;boa sen clave primaria at&oacute;mica',
+'zbug_doublon_table_sans_index' => 'Doublons nunha t&aacute;boa sen index',
+'zbug_erreur_boucle_double' => 'Dobre definici&oacute;n do boucle @id@',
+'zbug_erreur_boucle_fermant' => 'Falta o cerre do bucle @id@',
 'zbug_erreur_boucle_syntaxe' => 'Sintaxe de bucle incorrecta',
 'zbug_erreur_compilation' => 'Erro de compilaci&amp;oacute;n',
-'zbug_erreur_execution_page' => 'erro de execuci&oacute;n da p&aacute;xina',
-'zbug_erreur_filtre' => 'Erro : filtro <b>&laquo; @filtre@ &raquo;</b> non definido',
-'zbug_erreur_meme_parent' => '{meme_parent} non &eacute; aplic&aacute;bel m&aacute;is que aos bucles (FORUMS) ou (RUBRIQUES)',
+'zbug_erreur_execution_page' => 'Erro de execuci&oacute;n',
+'zbug_erreur_filtre' => 'Filtro @filtre@ non definido',
+'zbug_erreur_meme_parent' => 'O criterio {meme_parent} non &eacute; aplic&aacute;bel m&aacute;is que aos bucles (FORUMS) ou (RUBRIQUES)',
 'zbug_erreur_squelette' => 'Erro(s) no esqueleto',
 'zbug_hors_compilation' => 'Deixar compilaci&oacute;n',
 'zbug_info_erreur_squelette' => 'Erro no web',
-'zbug_inversion_ordre_inexistant' => 'inversi&oacute;n dunha orde inexistente',
-'zbug_pagination_sans_critere' => '#PAGINATION sen criterio {pagination} ou empregado nun bucle recursivo',
-'zbug_parametres_inclus_incorrects' => 'Par&aacute;metros de inclusi&oacute;n incorrectos',
+'zbug_inversion_ordre_inexistant' => 'Inversi&oacute;n dunha orde inexistente',
+'zbug_pagination_sans_critere' => 'A baliza #PAGINATION est&aacute; sen criterio {pagination} ou est&aacute; empregada nun bucle recursivo',
+'zbug_parametres_inclus_incorrects' => 'Par&aacute;metro de inclusi&oacute;n incorrecto: @param@',
 'zbug_profile' => 'Tempo de c&aacute;lculo&nbsp;: @time@',
 'zbug_resultat' => 'resultado',
-'zbug_serveur_indefini' => 'servidor SQL indefinido',
+'zbug_serveur_indefini' => 'Servidor SQL non definido',
 'zbug_statistiques' => 'Estat&iacute;sticas de consultas SQL ordenadas por duraci&oacute;n',
 'zbug_table_inconnue' => 'T&aacute;boa SQL &laquo; @table@ &raquo; desco&ntilde;ecida',
 'zxml_connus_attributs' => 'atributos co&amp;nacute;ecidos',

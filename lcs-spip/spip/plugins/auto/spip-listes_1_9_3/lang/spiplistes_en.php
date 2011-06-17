@@ -1,7 +1,13 @@
 <?php
-
-// This is a SPIP module file  --  Ceci est un fichier module de SPIP
-
+/**
+ * Pack langue anglais
+ * 
+ * @package spiplistes
+ */
+ // $LastChangedRevision: 47066 $
+ // $LastChangedBy: paladin@quesaco.org $
+ // $LastChangedDate: 2011-04-25 19:54:15 +0200 (Lun 25 avr 2011) $
+ 
 $GLOBALS['i18n_spiplistes_en'] = array(
 
 // CP-20081126: classement par scripts
@@ -133,7 +139,7 @@ $GLOBALS['i18n_spiplistes_en'] = array(
 , 'suspendre_lenvoi_des_courriers' => "This option allows you - in case of congestion - To cancel the sending of letters. Remove this option to resume shipments underway."
 , 'nombre_lot' => 'Number of dispatches per batch'
 , 'php_mail' => 'Use the PHP mail() function'
-, 'Patron_du_tampon' => "Template of the stamp "
+, 'patron_du_tampon_' => "Template of the stamp: "
 , 'Patron_de_pied_' => "Template of the footer "
 , 'personnaliser_le_courrier_label' => "Enable customization of email"
 , 'parametrer_la_meleuse' => "Setting meleuse"
@@ -427,9 +433,9 @@ $GLOBALS['i18n_spiplistes_en'] = array(
 , 'envoi_annule' => 'Send Cancelled'
 , 'sans_adresse' => ' No e-mail has been sent -> please specify a reply-to address'
 , 'erreur_mail' => 'Error: sending impossible (make sure that  mail() of php is available)'
-, 'abonnement_mail_text' => 'To change your subscription, please visit the following webpage: '
+, 'modif_abonnement_text' => 'To change your subscription, please visit the following webpage: '
 , 'msg_abonne_sans_format' => "email format is missing"
-, 'Cliquez_ici_pour_modifier_votre_abonnement' => "<br /> Click here to change your subscription"
+, 'modif_abonnement_html' => "<br /> Click here to change your subscription"
 
 // inc/spiplistes_naviguer_paniers.php
 // inc/spiplistes_pipeline_I2_cfg_form.php
@@ -532,7 +538,7 @@ $GLOBALS['i18n_spiplistes_en'] = array(
 , 'editeur_rcs' => "N&deg; RCS "
 , 'editeur_siret' => "N&deg; SIRET "
 , 'editeur_url' => "Editor website URL "
-, 'editeur_logo' => "Editor logotype URL "
+, 'editeur_logo' => "Editor logotype URL or DATA URL sheme"
 , 'Envoi_abandonne' => "Sending abandoned"
 , 'Liste_prive' => "List private"
 , 'Liste_publique' => "List public"

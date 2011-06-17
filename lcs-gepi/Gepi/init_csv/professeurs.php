@@ -1,9 +1,9 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: professeurs.php 5310 2010-09-15 06:51:52Z delineau $
+* $Id: professeurs.php 6468 2011-02-06 17:21:41Z crob $
 *
-* Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -35,7 +35,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
@@ -110,6 +110,7 @@ if (!isset($_POST["action"])) {
 			"</ul>\n";
 	echo "<p>Veuillez préciser le nom complet du fichier <b>g_professeurs.csv</b>.</p>\n";
 	echo "<form enctype='multipart/form-data' action='professeurs.php' method='post'>\n";
+	echo add_token_field();
 	echo "<input type='hidden' name='action' value='upload_file' />\n";
 	echo "<p><input type=\"file\" size=\"80\" name=\"csv_file\" />\n";
 
@@ -138,6 +139,7 @@ if (!isset($_POST["action"])) {
 	// Quelque chose a été posté
 	//
 	if ($_POST['action'] == "save_data") {
+		check_token(false);
 		//
 		// On enregistre les données dans la base.
 		// Le fichier a déjà été affiché, et l'utilisateur est sûr de vouloir enregistrer
@@ -191,7 +193,7 @@ if (!isset($_POST["action"])) {
 			//if ($reg_civilite != "M." AND $reg_civilite != "MME" AND $reg_civilite != "MLLE") $reg_civilite = "M.";
 			if ($reg_civilite != "M." AND $reg_civilite != "MME" AND $reg_civilite != "MLLE") { $reg_civilite = "";}
 
-			if (!eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $reg_email)) $reg_email = "-";
+			if (!my_eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $reg_email)) $reg_email = "-";
 
 			$reg_login = preg_replace("/[^A-Za-z0-9._]/","",trim(strtoupper($reg_login)));
 			if (strlen($reg_login) > 50) $reg_login = substr($reg_login, 0, 50);
@@ -263,6 +265,7 @@ if (!isset($_POST["action"])) {
 
 
 	} else if ($_POST['action'] == "upload_file") {
+		check_token(false);
 		//
 		// Le fichier vient d'être envoyé et doit être traité
 		// On va donc afficher le contenu du fichier tel qu'il va être enregistré dans Gepi
@@ -322,7 +325,7 @@ if (!isset($_POST["action"])) {
 							if ($tabligne[2] != "M." AND $tabligne[2] != "MME" AND $tabligne[2] != "MLLE") { $tabligne[2] = "";}
 
 							$tabligne[3] = preg_replace("/\"/", "", trim($tabligne[3]));
-							if (!eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $tabligne[3])) $tabligne[3] = "-";
+							if (!my_eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $tabligne[3])) $tabligne[3] = "-";
 
 
 							// On regarde si le prof existe déjà dans la base
@@ -450,6 +453,7 @@ if (!isset($_POST["action"])) {
 				// Maintenant on va afficher tout ça.
 
 				echo "<form enctype='multipart/form-data' action='professeurs.php' method='post'>\n";
+				echo add_token_field();
 				echo "<input type='hidden' name='action' value='save_data' />\n";
 				echo "<table border='1' class='boireaus' summary='Tableau des professeurs'>\n";
 				echo "<tr><th>Login</th><th>Nom</th><th>Prénom</th><th>Civilité</th><th>Email</th><th>Authentification</th></tr>\n";

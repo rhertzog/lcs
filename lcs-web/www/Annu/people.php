@@ -64,7 +64,7 @@
       echo "</A>,<font size=\"-2\"> ".$groups[$loop]["description"]."&nbsp;";
       if (! is_eleve($login) && $listediff && $test_squir=="1")
            echo " <a href=\"mailto:".$groups[$loop]["cn"]."@".$domain."\" >  <img src=\"images/mail.png\" alt=\"Envoyer un mail\"  title=\"Envoyer un mail &#224; ce groupe\" border=0 ></a><br>\n";
-         $login1=split ("[\,\]",ldap_dn2ufn($groups[$loop]["owner"]),2);
+         $login1=preg_split ("/,/",ldap_dn2ufn($groups[$loop]["owner"]),2);
       if ( $uid == $login1[0] ) echo "<strong><font color=\"#ff8f00\">&nbsp;(professeur principal)</font></strong>";
       echo "</font></LI>\n";
       // Teste si n&#233;cessit&#233; d'affichage menu Ouverture/Fermeture Bdd et espace web perso des Eleves
@@ -91,6 +91,13 @@
     <li><a href="add_user_group.php?uid=<? echo $user["uid"] ?>">Ajouter &agrave; des groupes</a><br>
 	<li><a href="del_group_user.php?uid=<? echo $user["uid"] ?>">Supprimer des groupes d'appartenance</a><br>
   <?
+    if ($ad_auth_delegation == "true") {
+	if (user_has_ad_auth($uid)) {
+	    echo "<li>Compte authentifi&eacute; par l'annuaire Active Directory. <a href=\"delegate_auth_ad.php?uid=" . $user["uid"] . "&action=disable&verbose=1\">Basculer vers une authentification g&eacute;r&eacute;e par le LCS.</a>.<br/>";
+	} else {
+	    echo "<li>Compte authentifi&eacute; par le LCS. <a href=\"delegate_auth_ad.php?uid=" . $user["uid"] . "&action=enable&verbose=1\">Basculer vers une authentification g&eacute;r&eacute;e par l'annuaire Active Directory.</a>.<br/>";
+	}
+    }
     if (ldap_get_right("Lcs_is_admin",$login)=="Y") {
     	echo "<li><a href=\"add_user_right.php?uid=" . $user["uid"] ."\">G&#233;rer les droits</a><br>";
     	if ($user["uid"]!=$login && $test_squir=="1") echo "<li><a href=\"mod_mail.php?uid=" . $user["uid"] ."\">Rediriger les mails</a> <br>";
@@ -119,9 +126,9 @@
       }
       // Ouverture/Fermeture Espace bdd perso
       //Creation du nom de la base de donnees
-      $userDb = ereg_replace("\.","",$user["uid"]);
-      $userDb = ereg_replace("-","",$userDb);
-      $userDb = ereg_replace("_","",$userDb);
+      $userDb = mb_ereg_replace("\.","",$user["uid"]);
+      $userDb = mb_ereg_replace("-","",$userDb);
+      $userDb = mb_ereg_replace("_","",$userDb);
       $userDb = $userDb."_db";
       if ( !is_dir ("/var/lib/mysql/$userDb") ) {
         echo "<li><a href=\"adm_BddPerso.php?uid=".$user["uid"]."&toggle=1"."\">Activer la <em>base de donn&eacute;es</em></a><br>\n";

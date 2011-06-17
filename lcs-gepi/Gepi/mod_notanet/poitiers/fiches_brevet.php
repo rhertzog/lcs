@@ -1,7 +1,7 @@
 <?php
-/* $Id: fiches_brevet.php 3323 2009-08-05 10:06:18Z crob $ */
+/* $Id: fiches_brevet.php 6937 2011-05-17 15:26:44Z crob $ */
 /*
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -34,7 +34,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../../logout.php?auto=1");
 	die();
-};
+}
 
 
 
@@ -92,7 +92,7 @@ if (isset($_POST['enregistrer_param'])) {
 
 
 	if (isset($_POST['fb_largeur_tableau'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_largeur_tableau'])) || $_POST['fb_largeur_tableau'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_largeur_tableau'])) || $_POST['fb_largeur_tableau'] < 1) {
 			$_POST['fb_largeur_tableau'] = 950;
 		}
 		if (!saveSetting("fb_largeur_tableau", $_POST['fb_largeur_tableau'])) {
@@ -101,7 +101,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_largeur_col_disc'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_largeur_col_disc'])) || $_POST['fb_largeur_col_disc'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_largeur_col_disc'])) || $_POST['fb_largeur_col_disc'] < 1) {
 			$_POST['fb_largeur_col_disc'] = 31;
 		}
 		if (!saveSetting("fb_largeur_col_disc", $_POST['fb_largeur_col_disc'])) {
@@ -110,7 +110,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_largeur_col_note'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_largeur_col_note'])) || $_POST['fb_largeur_col_note'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_largeur_col_note'])) || $_POST['fb_largeur_col_note'] < 1) {
 			$_POST['fb_largeur_col_note'] = 7;
 		}
 		if (!saveSetting("fb_largeur_col_note", $_POST['fb_largeur_col_note'])) {
@@ -119,7 +119,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_largeur_col_app'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_largeur_col_app'])) || $_POST['fb_largeur_col_app'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_largeur_col_app'])) || $_POST['fb_largeur_col_app'] < 1) {
 			$_POST['fb_largeur_col_app'] = 46;
 		}
 		if (!saveSetting("fb_largeur_col_app", $_POST['fb_largeur_col_app'])) {
@@ -128,7 +128,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_largeur_col_opt'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_largeur_col_opt'])) || $_POST['fb_largeur_col_opt'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_largeur_col_opt'])) || $_POST['fb_largeur_col_opt'] < 1) {
 			$_POST['fb_largeur_col_opt'] = 8;
 		}
 		if (!saveSetting("fb_largeur_col_opt", $_POST['fb_largeur_col_opt'])) {
@@ -137,7 +137,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_nblig_avis_chef'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_nblig_avis_chef'])) || $_POST['fb_nblig_avis_chef'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_nblig_avis_chef'])) || $_POST['fb_nblig_avis_chef'] < 1) {
 			$_POST['fb_nblig_avis_chef'] = 4;
 		}
 		if (!saveSetting("fb_nblig_avis_chef", $_POST['fb_nblig_avis_chef'])) {
@@ -146,7 +146,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_titrepage'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_titrepage'])) || $_POST['fb_titrepage'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_titrepage'])) || $_POST['fb_titrepage'] < 1) {
 			$_POST['fb_titrepage'] = 14;
 		}
 		if (!saveSetting("fb_titrepage", $_POST['fb_titrepage'])) {
@@ -155,7 +155,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_titretab'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_titretab'])) || $_POST['fb_titretab'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_titretab'])) || $_POST['fb_titretab'] < 1) {
 			$_POST['fb_titretab'] = 10;
 		}
 		if (!saveSetting("fb_titretab", $_POST['fb_titretab'])) {
@@ -164,7 +164,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_tittab_lineheight'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_tittab_lineheight'])) || $_POST['fb_tittab_lineheight'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_tittab_lineheight'])) || $_POST['fb_tittab_lineheight'] < 1) {
 			$_POST['fb_tittab_lineheight'] = 14;
 		}
 		if (!saveSetting("fb_tittab_lineheight", $_POST['fb_tittab_lineheight'])) {
@@ -175,7 +175,7 @@ if (isset($_POST['enregistrer_param'])) {
 
 
 	if (isset($_POST['fb_taille_etab'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_taille_etab'])) || $_POST['fb_taille_etab'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_taille_etab'])) || $_POST['fb_taille_etab'] < 1) {
 			$_POST['fb_taille_etab'] = 10;
 		}
 		if (!saveSetting("fb_taille_etab", $_POST['fb_taille_etab'])) {
@@ -185,7 +185,7 @@ if (isset($_POST['enregistrer_param'])) {
 
 
 	if (isset($_POST['fb_taille_acad'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_taille_acad'])) || $_POST['fb_taille_acad'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_taille_acad'])) || $_POST['fb_taille_acad'] < 1) {
 			$_POST['fb_taille_acad'] = 10;
 		}
 		if (!saveSetting("fb_taille_acad", $_POST['fb_taille_acad'])) {
@@ -194,7 +194,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_taille_txt_disc'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_taille_txt_disc'])) || $_POST['fb_taille_txt_disc'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_taille_txt_disc'])) || $_POST['fb_taille_txt_disc'] < 1) {
 			$_POST['fb_taille_txt_disc'] = 10;
 		}
 		if (!saveSetting("fb_taille_txt_disc", $_POST['fb_taille_txt_disc'])) {
@@ -204,7 +204,7 @@ if (isset($_POST['enregistrer_param'])) {
 
 
 	if (isset($_POST['fb_textetab'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_textetab'])) || $_POST['fb_textetab'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_textetab'])) || $_POST['fb_textetab'] < 1) {
 			$_POST['fb_textetab'] = 9;
 		}
 		if (!saveSetting("fb_textetab", $_POST['fb_textetab'])) {
@@ -213,7 +213,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_txttab_lineheight'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_txttab_lineheight'])) || $_POST['fb_txttab_lineheight'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_txttab_lineheight'])) || $_POST['fb_txttab_lineheight'] < 1) {
 			$_POST['fb_txttab_lineheight'] = 11;
 		}
 		if (!saveSetting("fb_txttab_lineheight", $_POST['fb_txttab_lineheight'])) {
@@ -222,7 +222,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_marg_h'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_marg_h'])) || $_POST['fb_marg_h'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_marg_h'])) || $_POST['fb_marg_h'] < 1) {
 			$_POST['fb_marg_h'] = 2;
 		}
 		if (!saveSetting("fb_marg_h", $_POST['fb_marg_h'])) {
@@ -231,7 +231,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_marg_l'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_marg_l'])) || $_POST['fb_marg_l'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_marg_l'])) || $_POST['fb_marg_l'] < 1) {
 			$_POST['fb_marg_l'] = 2;
 		}
 		if (!saveSetting("fb_marg_l", $_POST['fb_marg_l'])) {
@@ -240,7 +240,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_marg_etab'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_marg_etab'])) || $_POST['fb_marg_etab'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_marg_etab'])) || $_POST['fb_marg_etab'] < 1) {
 			$_POST['fb_marg_etab'] = 2;
 		}
 		if (!saveSetting("fb_marg_etab", $_POST['fb_marg_etab'])) {
@@ -249,7 +249,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_marg_h_ele'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_marg_h_ele'])) || $_POST['fb_marg_h_ele'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_marg_h_ele'])) || $_POST['fb_marg_h_ele'] < 1) {
 			$_POST['fb_marg_h_ele'] = 1;
 		}
 		if (!saveSetting("fb_marg_h_ele", $_POST['fb_marg_h_ele'])) {
@@ -258,7 +258,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_taille_txt_ele'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_taille_txt_ele'])) || $_POST['fb_taille_txt_ele'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_taille_txt_ele'])) || $_POST['fb_taille_txt_ele'] < 1) {
 			$_POST['fb_taille_txt_ele'] = 10;
 		}
 		if (!saveSetting("fb_taille_txt_ele", $_POST['fb_taille_txt_ele'])) {
@@ -268,7 +268,7 @@ if (isset($_POST['enregistrer_param'])) {
 
 
 	if (isset($_POST['fb_largeur_b2i'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_largeur_b2i'])) || $_POST['fb_largeur_b2i'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_largeur_b2i'])) || $_POST['fb_largeur_b2i'] < 1) {
 			$_POST['fb_largeur_b2i'] = 12;
 		}
 		if (!saveSetting("fb_largeur_b2i", $_POST['fb_largeur_b2i'])) {
@@ -277,7 +277,7 @@ if (isset($_POST['enregistrer_param'])) {
 	}
 
 	if (isset($_POST['fb_largeur_coche_b2i'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['fb_largeur_coche_b2i'])) || $_POST['fb_largeur_coche_b2i'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['fb_largeur_coche_b2i'])) || $_POST['fb_largeur_coche_b2i'] < 1) {
 			$_POST['fb_largeur_coche_b2i'] = 12;
 		}
 		if (!saveSetting("fb_largeur_coche_b2i", $_POST['fb_largeur_coche_b2i'])) {
@@ -298,7 +298,7 @@ if (isset($_POST['enregistrer_param'])) {
 
 /*
 	if (isset($_POST['sessionMaxLength'])) {
-		if (!(ereg ("^[0-9]{1,}$", $_POST['sessionMaxLength'])) || $_POST['sessionMaxLength'] < 1) {
+		if (!(my_ereg ("^[0-9]{1,}$", $_POST['sessionMaxLength'])) || $_POST['sessionMaxLength'] < 1) {
 			$_POST['sessionMaxLength'] = 30;
 		}
 		if (!saveSetting("sessionMaxLength", $_POST['sessionMaxLength'])) {
@@ -332,7 +332,7 @@ $id_classe = isset($_POST['id_classe']) ? $_POST['id_classe'] : (isset($_GET['id
 
 $type_brevet = isset($_POST['type_brevet']) ? $_POST['type_brevet'] : (isset($_GET['type_brevet']) ? $_GET['type_brevet'] : NULL);
 if(isset($type_brevet)) {
-	if((!ereg("[0-9]",$type_brevet))||(strlen(my_ereg_replace("[0-9]","",$type_brevet))!=0)) {
+	if((!my_ereg("[0-9]",$type_brevet))||(strlen(my_ereg_replace("[0-9]","",$type_brevet))!=0)) {
 		$type_brevet=NULL;
 	}
 }
@@ -708,7 +708,7 @@ else {
 
 		// Calcul des moyennes de classes... pb avec le statut...
 		$moy_classe=array();
-		for($j=101;$j<=122;$j++){
+		for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 			if($tabmatieres[$j][0]!=''){
 				//$somme=0;
 				// Dans la table 'notanet', notanet_mat='PREMIERE LANGUE VIVANTE'
@@ -740,7 +740,7 @@ else {
 
 		// Récupération du statut des matières: ceux validés lors du traitement NOTANET
 		// pour repérer les matières non dispensées.
-		for($j=101;$j<=122;$j++){
+		for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 			if($tabmatieres[$j][0]!=''){
 				//$sql="SELECT * FROM notanet_corresp WHERE notanet_mat='".$tabmatieres[$j][0]."' LIMIT 1";
 				$sql="SELECT * FROM notanet_corresp WHERE notanet_mat='".$tabmatieres[$j][0]."' AND type_brevet='$type_brevet' LIMIT 1";
@@ -1077,7 +1077,7 @@ else {
 					$SUR_TOTAL[1]=0;
 					$SUR_TOTAL[2]=0;
 					$temoin_NOTNONCA=0;
-					for($j=101;$j<=122;$j++){
+					for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 						$temoin_note_non_numerique="n";
 						//if($tabmatieres[$j][0]!=''){
 						if($tabmatieres[$j][0]!=''){
@@ -1445,7 +1445,7 @@ else {
 
 						$num_lig=0;
 						// On repasse en revue toutes les matières en ne retenant que celles qui sont NOTNONCA
-						for($j=101;$j<=122;$j++){
+						for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 							//if($tabmatieres[$j][0]!=''){
 							if(($tabmatieres[$j][0]!='')&&($tabmatieres[$j][-1]=='NOTNONCA')){
 								if($tabmatieres[$j][-4]!='non dispensee dans l etablissement'){

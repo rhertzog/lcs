@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 /*
  * Gestion de l'authentification par sessions
@@ -68,9 +68,9 @@ function ajouter_session($auteur) {
 	} else {
 		include_spip('inc/cookie');
 		$duree = _RENOUVELLE_ALEA *
-		  (!isset($auth['cookie'])
-		  	? 20 : (is_numeric($auth['cookie'])
-				? $auth['cookie'] : 2));
+		  (!isset($auteur['cookie'])
+		  	? 2 : (is_numeric($auteur['cookie'])
+				? $auteur['cookie'] : 20));
 		spip_setcookie(
 			'spip_session',
 			$_COOKIE['spip_session'],
@@ -146,7 +146,8 @@ function ecrire_fichier_session($fichier, $auteur) {
 
 //
 // Cette fonction efface toutes les sessions appartenant a l'auteur
-// On en profite pour effacer toutes les sessions creees il y a plus de 48 h
+// On en profite pour effacer toutes les sessions
+// creees il y a plus de 4*_RENOUVELLE_ALEA
 // Tenir compte de l'ancien format ou les noms commencaient par "session_"
 // et du meme coup des repertoires plats
 
@@ -155,7 +156,7 @@ function supprimer_sessions($id_auteur, $toutes=true) {
 
 	if ($toutes) {
 		$dir = opendir(_DIR_SESSIONS);
-		$t = time()  - (48 * 3600);
+		$t = time()  - (4*_RENOUVELLE_ALEA);
 		while(($f = readdir($dir)) !== false) {
 			if (preg_match(",^\D*(\d+)_\w{32}\.php[3]?$,", $f, $regs)){
 				$f = _DIR_SESSIONS . $f;
@@ -249,28 +250,27 @@ function rejouer_session()
 //
 // http://doc.spip.org/@fichier_session
 function fichier_session($alea, $tantpis=false) {
+
 	if (!isset($GLOBALS['meta'][$alea])) {
 		include_spip('base/abstract_sql');
-		$GLOBALS['meta'][$alea] = sql_getfetsel('valeur', 'spip_meta', "nom=" . sql_quote($alea));
-		if (!$GLOBALS['meta'][$alea]){
-			spip_log("$alea indisponible");
-			if (!$tantpis) {
-				include_spip('inc/minipres');
-				echo minipres();
-				exit;
-			}
-		}
+		$GLOBALS['meta'][$alea]  = sql_getfetsel('valeur', 'spip_meta', "nom=" . sql_quote($alea), '','', '', '', '', 'continue');
 	}
 
-	$repertoire = _DIR_SESSIONS;
-	if(!@file_exists($repertoire)) {
-		if ($tantpis) return '';
-		$repertoire = preg_replace(','._DIR_TMP.',', '', $repertoire);
-		include_spip('inc/flock');
-		$repertoire = sous_repertoire(_DIR_TMP, $repertoire);
+	if (!$GLOBALS['meta'][$alea] AND !$tantpis) {
+		include_spip('inc/minipres');
+		echo minipres();
+	} else {
+
+		$repertoire = _DIR_SESSIONS;
+		if(!@file_exists($repertoire)) {
+			if ($tantpis) return '';
+			$repertoire = preg_replace(','._DIR_TMP.',', '', $repertoire);
+			include_spip('inc/flock');
+			$repertoire = sous_repertoire(_DIR_TMP, $repertoire);
+		}
+		$c = $_COOKIE['spip_session'];
+		return $repertoire . intval($c) .'_' . md5($c.' '.$GLOBALS['meta'][$alea]). '.php';
 	}
-	$c = $_COOKIE['spip_session'];
-	return $repertoire . intval($c) .'_' . md5($c.' '.$GLOBALS['meta'][$alea]). '.php';
 }
 
 //

@@ -27,7 +27,7 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Résultats aux évaluations";
-$VERSION_JS_FILE += 0;
+$VERSION_JS_FILE += 1;
 ?>
 
 <?php
@@ -59,7 +59,7 @@ $date_fin    = date("d/m/Y");
 	</table>
 </form>
 
-<div id="zone_eval_detail" class="comp_view hide">
+<div id="zone_eval_detail" class="vm_nug hide">
 	<hr />
 	<p id="titre_voir" class="ti b"></p>
 	<table id="table_voir">

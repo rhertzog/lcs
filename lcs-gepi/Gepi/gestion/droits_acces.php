@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: droits_acces.php 5197 2010-09-05 10:42:38Z regis $
+* $Id: droits_acces.php 6468 2011-02-06 17:21:41Z crob $
 *
-* Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -82,6 +82,10 @@ if (isset($_POST['OK'])) {
   $droitAffiche= new class_droit_acces_template();
 }
 //debug_var();
+
+if(isset($_POST['is_posted'])) {
+	check_token(false);
+}
 
 /*
 
@@ -988,6 +992,14 @@ $titreItem='autoriser_correction_bulletin';
 $texteItem="peut solliciter des corrections de ses appréciations sur les bulletins une fois la période (<em>partiellement</em>) close (<em>pour reformuler une appréciation, corriger des fautes... de frappe</em>).";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
+
+$titreItem='autoriser_signalement_faute_app_prof';
+$texteItem="peut signaler, en période ouverte ou partiellement close, (<em>aux professeurs concernés</em>) des fautes (<em>de frappe;</em>) dans les appréciations des bulletins (<em>pour leur permettre corriger avant impression des bulletins</em>).";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 /*
 
 			<tr valign='top'>
@@ -1188,6 +1200,15 @@ $titreItem='GepiProfImprBulSettings';
 $texteItem="a accès au paramétrage de l'impression des bulletins (<em>lorsqu'il est autorisé à éditer/imprimer les bulletins</em>)";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
+
+$titreItem='autoriser_signalement_faute_app_pp';
+$texteItem="peut signaler, en période ouverte ou partiellement close, (<em>à ses collègues professeurs</em>) des fautes (<em>de frappe;</em>) dans les appréciations des bulletins (<em>pour leur permettre corriger avant impression des bulletins</em>).";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
 /*
 
 			<tr valign='top'>
@@ -1326,6 +1347,14 @@ $titreItem='GepiScolImprBulSettings';
 $texteItem="a accès au paramétrage de l'impression des bulletins";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
+$titreItem='autoriser_signalement_faute_app_scol';
+$texteItem="peut signaler, en période ouverte ou partiellement close, (<em>aux professeurs concernés</em>) des fautes (<em>de frappe;</em>) dans les appréciations des bulletins (<em>pour leur permettre corriger avant impression des bulletins</em>).";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
 /*
 
 			<tr valign='top'>
@@ -1528,6 +1557,13 @@ $texteItem="a accès aux cahiers de textes des ".$gepiSettings['denomination_elev
 			<em>bloque l'affichage des cahiers de textes de toutes les classes</em>";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
+$titreItem='autoriser_signalement_faute_app_cpe';
+$texteItem="peut signaler, en période ouverte ou partiellement close, (<em>aux professeurs concernés</em>) des fautes (<em>de frappe;</em>) dans les appréciations des bulletins (<em>pour leur permettre corriger avant impression des bulletins</em>).";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 /*
 
 			<tr valign='top'>
@@ -1740,7 +1776,6 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 					$acces_app_ele_resp=getSettingValue('acces_app_ele_resp');
 					if($acces_app_ele_resp=="") {$acces_app_ele_resp='manuel';}
 					$delais_apres_cloture=getSettingValue('delais_apres_cloture');
-					// if(!ereg("^[0-9]*$",$delais_apres_cloture)) {$delais_apres_cloture=0;}
 					if(!my_ereg("^[0-9]*$",$delais_apres_cloture)) {$delais_apres_cloture=0;}
 
 					echo "<span style='font-size:x-small'>";
@@ -1770,7 +1805,6 @@ $texteItem="a accès à ses bulletins simplifiés<br />";
   $acces_app_ele_resp=getSettingValue('acces_app_ele_resp');
   if($acces_app_ele_resp=="") {$acces_app_ele_resp='manuel';}
   $delais_apres_cloture=getSettingValue('delais_apres_cloture');
-  // if(!ereg("^[0-9]*$",$delais_apres_cloture)) {$delais_apres_cloture=0;}
   if(!my_ereg("^[0-9]*$",$delais_apres_cloture)) {$delais_apres_cloture=0;}
   $texteItem.="<em>";
   if($acces_app_ele_resp=='manuel') {

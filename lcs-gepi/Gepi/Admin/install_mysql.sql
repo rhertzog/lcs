@@ -1,11 +1,7 @@
--- phpMyAdmin SQL Dump
--- version 3.3.6
--- http://www.phpmyadmin.net
---
 -- Serveur: localhost
--- Généré le : Ven 05 Novembre 2010 à 02:20
--- Version du serveur: 5.0.32
--- Version de PHP: 5.2.0-8+etch16
+-- Généré le : Jeu 12 Mai 2011 à 14:09
+-- Version du serveur: 5.0.51
+-- Version de PHP: 5.2.17-0.dotdeb.0
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -21,20 +17,19 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 CREATE DATABASE `gepi_plug`;
 USE gepi_plug;
 -- --------------------------------------------------------
-
 --
 -- Structure de la table `absences`
 --
 
 CREATE TABLE IF NOT EXISTS `absences` (
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
   `periode` int(11) NOT NULL default '0',
-  `nb_absences` char(2) NOT NULL default '',
-  `non_justifie` char(2) NOT NULL default '',
-  `nb_retards` char(2) NOT NULL default '',
-  `appreciation` text NOT NULL,
+  `nb_absences` char(2) collate latin1_general_ci NOT NULL default '',
+  `non_justifie` char(2) collate latin1_general_ci NOT NULL default '',
+  `nb_retards` char(2) collate latin1_general_ci NOT NULL default '',
+  `appreciation` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`login`,`periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `absences`
@@ -49,10 +44,10 @@ CREATE TABLE IF NOT EXISTS `absences` (
 
 CREATE TABLE IF NOT EXISTS `absences_actions` (
   `id_absence_action` int(11) NOT NULL auto_increment,
-  `init_absence_action` char(2) NOT NULL default '',
-  `def_absence_action` varchar(255) NOT NULL default '',
+  `init_absence_action` char(2) collate latin1_general_ci NOT NULL default '',
+  `def_absence_action` varchar(255) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id_absence_action`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=6 ;
 
 --
 -- Contenu de la table `absences_actions`
@@ -73,19 +68,19 @@ INSERT INTO `absences_actions` (`id_absence_action`, `init_absence_action`, `def
 
 CREATE TABLE IF NOT EXISTS `absences_eleves` (
   `id_absence_eleve` int(11) NOT NULL auto_increment,
-  `type_absence_eleve` char(1) NOT NULL default '',
-  `eleve_absence_eleve` varchar(25) NOT NULL default '0',
-  `justify_absence_eleve` char(3) NOT NULL default '',
-  `info_justify_absence_eleve` text NOT NULL,
-  `motif_absence_eleve` varchar(4) NOT NULL default '',
-  `info_absence_eleve` text NOT NULL,
+  `type_absence_eleve` char(1) collate latin1_general_ci NOT NULL default '',
+  `eleve_absence_eleve` varchar(25) collate latin1_general_ci NOT NULL default '0',
+  `justify_absence_eleve` char(3) collate latin1_general_ci NOT NULL default '',
+  `info_justify_absence_eleve` text collate latin1_general_ci NOT NULL,
+  `motif_absence_eleve` varchar(4) collate latin1_general_ci NOT NULL default '',
+  `info_absence_eleve` text collate latin1_general_ci NOT NULL,
   `d_date_absence_eleve` date NOT NULL default '0000-00-00',
   `a_date_absence_eleve` date default NULL,
   `d_heure_absence_eleve` time default NULL,
   `a_heure_absence_eleve` time default NULL,
-  `saisie_absence_eleve` varchar(50) NOT NULL default '',
+  `saisie_absence_eleve` varchar(50) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id_absence_eleve`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `absences_eleves`
@@ -99,10 +94,10 @@ CREATE TABLE IF NOT EXISTS `absences_eleves` (
 --
 
 CREATE TABLE IF NOT EXISTS `absences_gep` (
-  `id_seq` char(2) NOT NULL default '',
-  `type` char(1) NOT NULL default '',
+  `id_seq` char(2) collate latin1_general_ci NOT NULL default '',
+  `type` char(1) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id_seq`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `absences_gep`
@@ -117,10 +112,10 @@ CREATE TABLE IF NOT EXISTS `absences_gep` (
 
 CREATE TABLE IF NOT EXISTS `absences_motifs` (
   `id_motif_absence` int(11) NOT NULL auto_increment,
-  `init_motif_absence` char(2) NOT NULL default '',
-  `def_motif_absence` varchar(255) NOT NULL default '',
+  `init_motif_absence` char(2) collate latin1_general_ci NOT NULL default '',
+  `def_motif_absence` varchar(255) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id_motif_absence`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=27 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=27 ;
 
 --
 -- Contenu de la table `absences_motifs`
@@ -162,19 +157,19 @@ INSERT INTO `absences_motifs` (`id_motif_absence`, `init_motif_absence`, `def_mo
 
 CREATE TABLE IF NOT EXISTS `absences_rb` (
   `id` int(5) NOT NULL auto_increment,
-  `eleve_id` varchar(30) NOT NULL,
-  `retard_absence` varchar(1) NOT NULL default 'A',
-  `groupe_id` varchar(8) NOT NULL,
+  `eleve_id` varchar(30) collate latin1_general_ci NOT NULL,
+  `retard_absence` varchar(1) collate latin1_general_ci NOT NULL default 'A',
+  `groupe_id` varchar(8) collate latin1_general_ci NOT NULL,
   `edt_id` int(5) NOT NULL default '0',
-  `jour_semaine` varchar(10) NOT NULL,
+  `jour_semaine` varchar(10) collate latin1_general_ci NOT NULL,
   `creneau_id` int(5) NOT NULL,
   `debut_ts` int(11) NOT NULL,
   `fin_ts` int(11) NOT NULL,
   `date_saisie` int(20) NOT NULL,
-  `login_saisie` varchar(30) NOT NULL,
+  `login_saisie` varchar(30) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `eleve_debut_fin_retard` (`eleve_id`,`debut_ts`,`fin_ts`,`retard_absence`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `absences_rb`
@@ -190,14 +185,52 @@ CREATE TABLE IF NOT EXISTS `absences_rb` (
 CREATE TABLE IF NOT EXISTS `absences_repas` (
   `id` int(5) NOT NULL auto_increment,
   `date_repas` date NOT NULL default '0000-00-00',
-  `id_groupe` varchar(8) NOT NULL,
-  `eleve_id` varchar(30) NOT NULL,
-  `pers_id` varchar(30) NOT NULL,
+  `id_groupe` varchar(8) collate latin1_general_ci NOT NULL,
+  `eleve_id` varchar(30) collate latin1_general_ci NOT NULL,
+  `pers_id` varchar(30) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `absences_repas`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `acces_cdt`
+--
+
+CREATE TABLE IF NOT EXISTS `acces_cdt` (
+  `id` int(11) NOT NULL auto_increment,
+  `description` text collate latin1_general_ci NOT NULL,
+  `chemin` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `date1` datetime NOT NULL default '0000-00-00 00:00:00',
+  `date2` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `acces_cdt`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `acces_cdt_groupes`
+--
+
+CREATE TABLE IF NOT EXISTS `acces_cdt_groupes` (
+  `id` int(11) NOT NULL auto_increment,
+  `id_acces` int(11) NOT NULL,
+  `id_groupe` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `acces_cdt_groupes`
 --
 
 
@@ -208,32 +241,32 @@ CREATE TABLE IF NOT EXISTS `absences_repas` (
 --
 
 CREATE TABLE IF NOT EXISTS `aid` (
-  `id` varchar(100) NOT NULL default '',
-  `nom` varchar(100) NOT NULL default '',
-  `numero` varchar(8) NOT NULL default '0',
+  `id` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `nom` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `numero` varchar(8) collate latin1_general_ci NOT NULL default '0',
   `indice_aid` int(11) NOT NULL default '0',
-  `perso1` varchar(255) NOT NULL default '',
-  `perso2` varchar(255) NOT NULL default '',
-  `perso3` varchar(255) NOT NULL default '',
-  `productions` varchar(100) NOT NULL default '',
-  `resume` text NOT NULL,
+  `perso1` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `perso2` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `perso3` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `productions` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `resume` text collate latin1_general_ci NOT NULL,
   `famille` smallint(6) NOT NULL default '0',
-  `mots_cles` varchar(255) NOT NULL default '',
-  `adresse1` varchar(255) NOT NULL default '',
-  `adresse2` varchar(255) NOT NULL default '',
-  `public_destinataire` varchar(50) NOT NULL default '',
-  `contacts` text NOT NULL,
-  `divers` text NOT NULL,
-  `matiere1` varchar(100) NOT NULL default '',
-  `matiere2` varchar(100) NOT NULL default '',
-  `eleve_peut_modifier` enum('y','n') NOT NULL default 'n',
-  `prof_peut_modifier` enum('y','n') NOT NULL default 'n',
-  `cpe_peut_modifier` enum('y','n') NOT NULL default 'n',
-  `fiche_publique` enum('y','n') NOT NULL default 'n',
-  `affiche_adresse1` enum('y','n') NOT NULL default 'n',
-  `en_construction` enum('y','n') NOT NULL default 'n',
+  `mots_cles` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `adresse1` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `adresse2` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `public_destinataire` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `contacts` text collate latin1_general_ci NOT NULL,
+  `divers` text collate latin1_general_ci NOT NULL,
+  `matiere1` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `matiere2` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `eleve_peut_modifier` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
+  `prof_peut_modifier` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
+  `cpe_peut_modifier` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
+  `fiche_publique` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
+  `affiche_adresse1` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
+  `en_construction` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `aid`
@@ -247,15 +280,15 @@ CREATE TABLE IF NOT EXISTS `aid` (
 --
 
 CREATE TABLE IF NOT EXISTS `aid_appreciations` (
-  `login` varchar(50) NOT NULL default '',
-  `id_aid` varchar(100) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `id_aid` varchar(100) collate latin1_general_ci NOT NULL default '',
   `periode` int(11) NOT NULL default '0',
-  `appreciation` text NOT NULL,
-  `statut` char(10) NOT NULL default '',
+  `appreciation` text collate latin1_general_ci NOT NULL,
+  `statut` char(10) collate latin1_general_ci NOT NULL default '',
   `note` float default NULL,
   `indice_aid` int(11) NOT NULL default '0',
   PRIMARY KEY  (`login`,`id_aid`,`periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `aid_appreciations`
@@ -269,24 +302,24 @@ CREATE TABLE IF NOT EXISTS `aid_appreciations` (
 --
 
 CREATE TABLE IF NOT EXISTS `aid_config` (
-  `nom` char(100) NOT NULL default '',
-  `nom_complet` char(100) NOT NULL default '',
+  `nom` char(100) collate latin1_general_ci NOT NULL default '',
+  `nom_complet` char(100) collate latin1_general_ci NOT NULL default '',
   `note_max` int(11) NOT NULL default '0',
-  `order_display1` char(1) NOT NULL default '0',
+  `order_display1` char(1) collate latin1_general_ci NOT NULL default '0',
   `order_display2` int(11) NOT NULL default '0',
-  `type_note` char(5) NOT NULL default '',
+  `type_note` char(5) collate latin1_general_ci NOT NULL default '',
   `display_begin` int(11) NOT NULL default '0',
   `display_end` int(11) NOT NULL default '0',
-  `message` varchar(40) NOT NULL default '',
-  `display_nom` char(1) NOT NULL default '',
+  `message` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `display_nom` char(1) collate latin1_general_ci NOT NULL default '',
   `indice_aid` int(11) NOT NULL default '0',
-  `display_bulletin` char(1) NOT NULL default 'y',
-  `bull_simplifie` char(1) NOT NULL default 'y',
-  `outils_complementaires` enum('y','n') NOT NULL default 'n',
-  `feuille_presence` enum('y','n') NOT NULL default 'n',
-  `autoriser_inscript_multiples` char(1) NOT NULL default 'n',
+  `display_bulletin` char(1) collate latin1_general_ci NOT NULL default 'y',
+  `bull_simplifie` char(1) collate latin1_general_ci NOT NULL default 'y',
+  `outils_complementaires` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
+  `feuille_presence` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
+  `autoriser_inscript_multiples` char(1) collate latin1_general_ci NOT NULL default 'n',
   PRIMARY KEY  (`indice_aid`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `aid_config`
@@ -302,8 +335,8 @@ CREATE TABLE IF NOT EXISTS `aid_config` (
 CREATE TABLE IF NOT EXISTS `aid_familles` (
   `ordre_affichage` smallint(6) NOT NULL default '0',
   `id` smallint(6) NOT NULL default '0',
-  `type` varchar(250) NOT NULL default ''
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `type` varchar(250) collate latin1_general_ci NOT NULL default ''
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `aid_familles`
@@ -329,9 +362,9 @@ INSERT INTO `aid_familles` (`ordre_affichage`, `id`, `type`) VALUES
 
 CREATE TABLE IF NOT EXISTS `aid_productions` (
   `id` smallint(6) NOT NULL auto_increment,
-  `nom` varchar(100) NOT NULL default '',
+  `nom` varchar(100) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=18 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=18 ;
 
 --
 -- Contenu de la table `aid_productions`
@@ -365,8 +398,8 @@ INSERT INTO `aid_productions` (`id`, `nom`) VALUES
 CREATE TABLE IF NOT EXISTS `aid_public` (
   `ordre_affichage` smallint(6) NOT NULL default '0',
   `id` smallint(6) NOT NULL default '0',
-  `public` varchar(100) NOT NULL default ''
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `public` varchar(100) collate latin1_general_ci NOT NULL default ''
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `aid_public`
@@ -388,31 +421,31 @@ INSERT INTO `aid_public` (`ordre_affichage`, `id`, `public`) VALUES
 
 CREATE TABLE IF NOT EXISTS `archivage_aids` (
   `id` int(11) NOT NULL auto_increment,
-  `annee` varchar(200) NOT NULL default '',
-  `nom` varchar(100) NOT NULL default '',
+  `annee` varchar(200) collate latin1_general_ci NOT NULL default '',
+  `nom` varchar(100) collate latin1_general_ci NOT NULL default '',
   `id_type_aid` int(11) NOT NULL default '0',
-  `productions` varchar(100) NOT NULL default '',
-  `resume` text NOT NULL,
+  `productions` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `resume` text collate latin1_general_ci NOT NULL,
   `famille` smallint(6) NOT NULL default '0',
-  `mots_cles` text NOT NULL,
-  `adresse1` varchar(255) NOT NULL default '',
-  `adresse2` varchar(255) NOT NULL default '',
-  `public_destinataire` varchar(50) NOT NULL default '',
-  `contacts` text NOT NULL,
-  `divers` text NOT NULL,
-  `matiere1` varchar(100) NOT NULL default '',
-  `matiere2` varchar(100) NOT NULL default '',
-  `fiche_publique` enum('y','n') NOT NULL default 'n',
-  `affiche_adresse1` enum('y','n') NOT NULL default 'n',
-  `en_construction` enum('y','n') NOT NULL default 'n',
-  `notes_moyenne` varchar(255) NOT NULL,
-  `notes_min` varchar(255) NOT NULL,
-  `notes_max` varchar(255) NOT NULL,
-  `responsables` text NOT NULL,
-  `eleves` text NOT NULL,
-  `eleves_resp` text NOT NULL,
+  `mots_cles` text collate latin1_general_ci NOT NULL,
+  `adresse1` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `adresse2` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `public_destinataire` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `contacts` text collate latin1_general_ci NOT NULL,
+  `divers` text collate latin1_general_ci NOT NULL,
+  `matiere1` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `matiere2` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `fiche_publique` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
+  `affiche_adresse1` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
+  `en_construction` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
+  `notes_moyenne` varchar(255) collate latin1_general_ci NOT NULL,
+  `notes_min` varchar(255) collate latin1_general_ci NOT NULL,
+  `notes_max` varchar(255) collate latin1_general_ci NOT NULL,
+  `responsables` text collate latin1_general_ci NOT NULL,
+  `eleves` text collate latin1_general_ci NOT NULL,
+  `eleves_resp` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `archivage_aids`
@@ -427,10 +460,10 @@ CREATE TABLE IF NOT EXISTS `archivage_aids` (
 
 CREATE TABLE IF NOT EXISTS `archivage_aid_eleve` (
   `id_aid` int(11) NOT NULL default '0',
-  `id_eleve` varchar(255) NOT NULL,
-  `eleve_resp` char(1) NOT NULL default 'n',
+  `id_eleve` varchar(255) collate latin1_general_ci NOT NULL,
+  `eleve_resp` char(1) collate latin1_general_ci NOT NULL default 'n',
   PRIMARY KEY  (`id_aid`,`id_eleve`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `archivage_aid_eleve`
@@ -444,18 +477,18 @@ CREATE TABLE IF NOT EXISTS `archivage_aid_eleve` (
 --
 
 CREATE TABLE IF NOT EXISTS `archivage_appreciations_aid` (
-  `id_eleve` varchar(255) NOT NULL,
-  `annee` varchar(200) NOT NULL,
-  `classe` varchar(255) NOT NULL,
+  `id_eleve` varchar(255) collate latin1_general_ci NOT NULL,
+  `annee` varchar(200) collate latin1_general_ci NOT NULL,
+  `classe` varchar(255) collate latin1_general_ci NOT NULL,
   `id_aid` int(11) NOT NULL,
   `periode` int(11) NOT NULL default '0',
-  `appreciation` text NOT NULL,
-  `note_eleve` varchar(50) NOT NULL,
-  `note_moyenne_classe` varchar(255) NOT NULL,
-  `note_min_classe` varchar(255) NOT NULL,
-  `note_max_classe` varchar(255) NOT NULL,
+  `appreciation` text collate latin1_general_ci NOT NULL,
+  `note_eleve` varchar(50) collate latin1_general_ci NOT NULL,
+  `note_moyenne_classe` varchar(255) collate latin1_general_ci NOT NULL,
+  `note_min_classe` varchar(255) collate latin1_general_ci NOT NULL,
+  `note_max_classe` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_eleve`,`id_aid`,`periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `archivage_appreciations_aid`
@@ -470,26 +503,26 @@ CREATE TABLE IF NOT EXISTS `archivage_appreciations_aid` (
 
 CREATE TABLE IF NOT EXISTS `archivage_disciplines` (
   `id` int(11) NOT NULL auto_increment,
-  `annee` varchar(200) NOT NULL,
-  `INE` varchar(255) NOT NULL,
-  `classe` varchar(255) NOT NULL,
+  `annee` varchar(200) collate latin1_general_ci NOT NULL,
+  `INE` varchar(255) collate latin1_general_ci NOT NULL,
+  `classe` varchar(255) collate latin1_general_ci NOT NULL,
   `num_periode` tinyint(4) NOT NULL,
-  `nom_periode` varchar(255) NOT NULL,
-  `special` varchar(255) NOT NULL,
-  `matiere` varchar(255) NOT NULL,
-  `prof` varchar(255) NOT NULL,
-  `note` varchar(255) NOT NULL,
-  `moymin` varchar(255) NOT NULL,
-  `moymax` varchar(255) NOT NULL,
-  `moyclasse` varchar(255) NOT NULL,
+  `nom_periode` varchar(255) collate latin1_general_ci NOT NULL,
+  `special` varchar(255) collate latin1_general_ci NOT NULL,
+  `matiere` varchar(255) collate latin1_general_ci NOT NULL,
+  `prof` varchar(255) collate latin1_general_ci NOT NULL,
+  `note` varchar(255) collate latin1_general_ci NOT NULL,
+  `moymin` varchar(255) collate latin1_general_ci NOT NULL,
+  `moymax` varchar(255) collate latin1_general_ci NOT NULL,
+  `moyclasse` varchar(255) collate latin1_general_ci NOT NULL,
   `rang` tinyint(4) NOT NULL,
-  `appreciation` text NOT NULL,
+  `appreciation` text collate latin1_general_ci NOT NULL,
   `nb_absences` int(11) NOT NULL,
   `non_justifie` int(11) NOT NULL,
   `nb_retards` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `INE` (`INE`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `archivage_disciplines`
@@ -504,19 +537,19 @@ CREATE TABLE IF NOT EXISTS `archivage_disciplines` (
 
 CREATE TABLE IF NOT EXISTS `archivage_ects` (
   `id` int(11) NOT NULL auto_increment,
-  `annee` varchar(255) NOT NULL COMMENT 'Annee scolaire',
-  `ine` varchar(255) NOT NULL COMMENT 'Identifiant de l''eleve',
-  `classe` varchar(255) NOT NULL COMMENT 'Classe de l''eleve',
+  `annee` varchar(255) collate latin1_general_ci NOT NULL COMMENT 'Annee scolaire',
+  `ine` varchar(255) collate latin1_general_ci NOT NULL COMMENT 'Identifiant de l''eleve',
+  `classe` varchar(255) collate latin1_general_ci NOT NULL COMMENT 'Classe de l''eleve',
   `num_periode` int(11) NOT NULL COMMENT 'Identifiant de la periode',
-  `nom_periode` varchar(255) NOT NULL COMMENT 'Nom complet de la periode',
-  `special` varchar(255) NOT NULL COMMENT 'Cle utilisee pour isoler certaines lignes (par exemple un credit ECTS pour une periode et non une matiere)',
-  `matiere` varchar(255) default NULL COMMENT 'Nom de l''enseignement',
-  `profs` varchar(255) default NULL COMMENT 'Liste des profs de l''enseignement',
+  `nom_periode` varchar(255) collate latin1_general_ci NOT NULL COMMENT 'Nom complet de la periode',
+  `special` varchar(255) collate latin1_general_ci NOT NULL COMMENT 'Cle utilisee pour isoler certaines lignes (par exemple un credit ECTS pour une periode et non une matiere)',
+  `matiere` varchar(255) collate latin1_general_ci default NULL COMMENT 'Nom de l''enseignement',
+  `profs` varchar(255) collate latin1_general_ci default NULL COMMENT 'Liste des profs de l''enseignement',
   `valeur` decimal(10,0) NOT NULL COMMENT 'Nombre de crÃ©dits obtenus par l''eleve',
-  `mention` varchar(255) NOT NULL COMMENT 'Mention obtenue',
+  `mention` varchar(255) collate latin1_general_ci NOT NULL COMMENT 'Mention obtenue',
   PRIMARY KEY  (`id`,`ine`,`num_periode`,`special`),
   KEY `archivage_ects_FI_1` (`ine`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `archivage_ects`
@@ -530,14 +563,14 @@ CREATE TABLE IF NOT EXISTS `archivage_ects` (
 --
 
 CREATE TABLE IF NOT EXISTS `archivage_eleves` (
-  `ine` varchar(255) NOT NULL,
-  `nom` varchar(255) NOT NULL default '',
-  `prenom` varchar(255) NOT NULL default '',
-  `sexe` char(1) NOT NULL,
+  `ine` varchar(255) collate latin1_general_ci NOT NULL,
+  `nom` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `prenom` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `sexe` char(1) collate latin1_general_ci NOT NULL,
   `naissance` date NOT NULL default '0000-00-00',
   PRIMARY KEY  (`ine`),
   KEY `nom` (`nom`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `archivage_eleves`
@@ -551,12 +584,12 @@ CREATE TABLE IF NOT EXISTS `archivage_eleves` (
 --
 
 CREATE TABLE IF NOT EXISTS `archivage_eleves2` (
-  `annee` varchar(50) NOT NULL default '',
-  `ine` varchar(50) NOT NULL,
-  `doublant` enum('-','R') NOT NULL default '-',
-  `regime` varchar(255) NOT NULL,
+  `annee` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `ine` varchar(50) collate latin1_general_ci NOT NULL,
+  `doublant` enum('-','R') collate latin1_general_ci NOT NULL default '-',
+  `regime` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`ine`,`annee`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `archivage_eleves2`
@@ -571,15 +604,15 @@ CREATE TABLE IF NOT EXISTS `archivage_eleves2` (
 
 CREATE TABLE IF NOT EXISTS `archivage_types_aid` (
   `id` int(11) NOT NULL auto_increment,
-  `annee` varchar(200) NOT NULL default '',
-  `nom` varchar(100) NOT NULL default '',
-  `nom_complet` varchar(100) NOT NULL default '',
+  `annee` varchar(200) collate latin1_general_ci NOT NULL default '',
+  `nom` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `nom_complet` varchar(100) collate latin1_general_ci NOT NULL default '',
   `note_sur` int(11) NOT NULL default '0',
-  `type_note` varchar(5) NOT NULL default '',
-  `display_bulletin` char(1) NOT NULL default 'y',
-  `outils_complementaires` enum('y','n') NOT NULL default 'n',
+  `type_note` varchar(5) collate latin1_general_ci NOT NULL default '',
+  `display_bulletin` char(1) collate latin1_general_ci NOT NULL default 'y',
+  `outils_complementaires` enum('y','n') collate latin1_general_ci NOT NULL default 'n',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `archivage_types_aid`
@@ -593,10 +626,10 @@ CREATE TABLE IF NOT EXISTS `archivage_types_aid` (
 --
 
 CREATE TABLE IF NOT EXISTS `ateliers_config` (
-  `nom_champ` char(100) NOT NULL default '',
-  `content` char(255) NOT NULL default '',
-  `param` char(100) NOT NULL default ''
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `nom_champ` char(100) collate latin1_general_ci NOT NULL default '',
+  `content` char(255) collate latin1_general_ci NOT NULL default '',
+  `param` char(100) collate latin1_general_ci NOT NULL default ''
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `ateliers_config`
@@ -610,13 +643,13 @@ CREATE TABLE IF NOT EXISTS `ateliers_config` (
 --
 
 CREATE TABLE IF NOT EXISTS `avis_conseil_classe` (
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
   `periode` int(11) NOT NULL default '0',
-  `avis` text NOT NULL,
-  `statut` varchar(10) NOT NULL default '',
+  `avis` text collate latin1_general_ci NOT NULL,
+  `statut` varchar(10) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`login`,`periode`),
   KEY `login` (`login`,`periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `avis_conseil_classe`
@@ -631,11 +664,11 @@ CREATE TABLE IF NOT EXISTS `avis_conseil_classe` (
 
 CREATE TABLE IF NOT EXISTS `a_justifications` (
   `id` int(11) NOT NULL auto_increment COMMENT 'cle primaire auto-incrementee',
-  `nom` varchar(250) NOT NULL COMMENT 'Nom de la justification',
-  `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
+  `nom` varchar(250) collate latin1_general_ci NOT NULL COMMENT 'Nom de la justification',
+  `commentaire` text collate latin1_general_ci COMMENT 'commentaire saisi par l''utilisateur',
   `sortable_rank` int(11) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Liste des justifications possibles pour une absence' AUTO_INCREMENT=4 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci COMMENT='Liste des justifications possibles pour une absence' AUTO_INCREMENT=4 ;
 
 --
 -- Contenu de la table `a_justifications`
@@ -654,11 +687,11 @@ INSERT INTO `a_justifications` (`id`, `nom`, `commentaire`, `sortable_rank`) VAL
 
 CREATE TABLE IF NOT EXISTS `a_motifs` (
   `id` int(11) NOT NULL auto_increment COMMENT 'cle primaire auto-incrementee',
-  `nom` varchar(250) NOT NULL COMMENT 'Nom du motif',
-  `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
+  `nom` varchar(250) collate latin1_general_ci NOT NULL COMMENT 'Nom du motif',
+  `commentaire` text collate latin1_general_ci COMMENT 'commentaire saisi par l''utilisateur',
   `sortable_rank` int(11) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Liste des motifs possibles pour une absence' AUTO_INCREMENT=4 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci COMMENT='Liste des motifs possibles pour une absence' AUTO_INCREMENT=4 ;
 
 --
 -- Contenu de la table `a_motifs`
@@ -677,23 +710,23 @@ INSERT INTO `a_motifs` (`id`, `nom`, `commentaire`, `sortable_rank`) VALUES
 
 CREATE TABLE IF NOT EXISTS `a_notifications` (
   `id` int(11) NOT NULL auto_increment,
-  `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui envoi la notification',
+  `utilisateur_id` varchar(100) collate latin1_general_ci default NULL COMMENT 'Login de l''utilisateur professionnel qui envoi la notification',
   `a_traitement_id` int(12) NOT NULL COMMENT 'cle etrangere du traitement qu''on notifie',
   `type_notification` int(5) default NULL COMMENT 'type de notification (0 : email, 1 : courrier, 2 : sms)',
-  `email` varchar(100) default NULL COMMENT 'email de destination (pour le type email)',
-  `telephone` varchar(100) default NULL COMMENT 'numero du telephone de destination (pour le type sms)',
-  `adr_id` varchar(10) default NULL COMMENT 'cle etrangere vers l''adresse de destination (pour le type courrier)',
-  `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
+  `email` varchar(100) collate latin1_general_ci default NULL COMMENT 'email de destination (pour le type email)',
+  `telephone` varchar(100) collate latin1_general_ci default NULL COMMENT 'numero du telephone de destination (pour le type sms)',
+  `adr_id` varchar(10) collate latin1_general_ci default NULL COMMENT 'cle etrangere vers l''adresse de destination (pour le type courrier)',
+  `commentaire` text collate latin1_general_ci COMMENT 'commentaire saisi par l''utilisateur',
   `statut_envoi` int(5) default '0' COMMENT 'Statut de cet envoi (0 : etat initial, 1 : en cours, 2 : echec, 3 : succes, 4 : succes avec accuse de reception)',
   `date_envoi` datetime default NULL COMMENT 'Date envoi',
-  `erreur_message_envoi` text COMMENT 'Message d''erreur retourné par le service d''envoi',
+  `erreur_message_envoi` text collate latin1_general_ci COMMENT 'Message d''erreur retourné par le service d''envoi',
   `created_at` datetime default NULL,
   `updated_at` datetime default NULL,
   PRIMARY KEY  (`id`),
   KEY `a_notifications_FI_1` (`utilisateur_id`),
   KEY `a_notifications_FI_2` (`a_traitement_id`),
   KEY `a_notifications_FI_3` (`adr_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Notification (a la famille) des absences' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci COMMENT='Notification (a la famille) des absences' AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `a_notifications`
@@ -708,9 +741,9 @@ CREATE TABLE IF NOT EXISTS `a_notifications` (
 
 CREATE TABLE IF NOT EXISTS `a_saisies` (
   `id` int(11) NOT NULL auto_increment,
-  `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a saisi l''absence',
+  `utilisateur_id` varchar(100) collate latin1_general_ci default NULL COMMENT 'Login de l''utilisateur professionnel qui a saisi l''absence',
   `eleve_id` int(11) default NULL COMMENT 'id_eleve de l''eleve objet de la saisie, egal à null si aucun eleve n''est saisi',
-  `commentaire` text COMMENT 'commentaire de l''utilisateur',
+  `commentaire` text collate latin1_general_ci COMMENT 'commentaire de l''utilisateur',
   `debut_abs` datetime default NULL COMMENT 'Debut de l''absence en timestamp UNIX',
   `fin_abs` datetime default NULL COMMENT 'Fin de l''absence en timestamp UNIX',
   `id_edt_creneau` int(12) default NULL COMMENT 'identifiant du creneaux de l''emploi du temps',
@@ -719,7 +752,7 @@ CREATE TABLE IF NOT EXISTS `a_saisies` (
   `id_classe` int(11) default NULL COMMENT 'identifiant de la classe pour lequel la saisie a ete effectuee',
   `id_aid` int(11) default NULL COMMENT 'identifiant de l''aid pour lequel la saisie a ete effectuee',
   `id_s_incidents` int(11) default NULL COMMENT 'identifiant de la saisie d''incident discipline',
-  `modifie_par_utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a modifie en dernier le traitement',
+  `modifie_par_utilisateur_id` varchar(100) collate latin1_general_ci default NULL COMMENT 'Login de l''utilisateur professionnel qui a modifie en dernier le traitement',
   `created_at` datetime default NULL,
   `updated_at` datetime default NULL,
   PRIMARY KEY  (`id`),
@@ -730,7 +763,7 @@ CREATE TABLE IF NOT EXISTS `a_saisies` (
   KEY `a_saisies_FI_5` (`id_groupe`),
   KEY `a_saisies_FI_6` (`id_classe`),
   KEY `a_saisies_FI_7` (`id_aid`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Chaque saisie d''absence doit faire l''objet d''une ligne dans ' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci COMMENT='Chaque saisie d''absence doit faire l''objet d''une ligne dans ' AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `a_saisies`
@@ -745,12 +778,12 @@ CREATE TABLE IF NOT EXISTS `a_saisies` (
 
 CREATE TABLE IF NOT EXISTS `a_traitements` (
   `id` int(11) NOT NULL auto_increment COMMENT 'cle primaire auto-incremente',
-  `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a fait le traitement',
+  `utilisateur_id` varchar(100) collate latin1_general_ci default NULL COMMENT 'Login de l''utilisateur professionnel qui a fait le traitement',
   `a_type_id` int(4) default NULL COMMENT 'cle etrangere du type d''absence',
   `a_motif_id` int(4) default NULL COMMENT 'cle etrangere du motif d''absence',
   `a_justification_id` int(4) default NULL COMMENT 'cle etrangere de la justification de l''absence',
-  `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
-  `modifie_par_utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a modifie en dernier le traitement',
+  `commentaire` text collate latin1_general_ci COMMENT 'commentaire saisi par l''utilisateur',
+  `modifie_par_utilisateur_id` varchar(100) collate latin1_general_ci default NULL COMMENT 'Login de l''utilisateur professionnel qui a modifie en dernier le traitement',
   `created_at` datetime default NULL,
   `updated_at` datetime default NULL,
   PRIMARY KEY  (`id`),
@@ -758,7 +791,7 @@ CREATE TABLE IF NOT EXISTS `a_traitements` (
   KEY `a_traitements_FI_2` (`a_type_id`),
   KEY `a_traitements_FI_3` (`a_motif_id`),
   KEY `a_traitements_FI_4` (`a_justification_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Un traitement peut gerer plusieurs saisies et consiste à def' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci COMMENT='Un traitement peut gerer plusieurs saisies et consiste à def' AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `a_traitements`
@@ -773,16 +806,16 @@ CREATE TABLE IF NOT EXISTS `a_traitements` (
 
 CREATE TABLE IF NOT EXISTS `a_types` (
   `id` int(11) NOT NULL auto_increment COMMENT 'Cle primaire auto-incrementee',
-  `nom` varchar(250) NOT NULL COMMENT 'Nom du type d''absence',
+  `nom` varchar(250) collate latin1_general_ci NOT NULL COMMENT 'Nom du type d''absence',
   `justification_exigible` tinyint(4) default NULL COMMENT 'Ce type d''absence doit entrainer une justification de la part de la famille',
-  `sous_responsabilite_etablissement` varchar(255) default 'NON_PRECISE' COMMENT 'L''eleve est sous la responsabilite de l''etablissement. Typiquement : absence infirmerie, mettre la propriété à vrai car l''eleve est encore sous la responsabilité de l''etablissement. Possibilite : ''vrai''/''faux''/''non_precise''',
-  `manquement_obligation_presence` varchar(50) default 'NON_PRECISE' COMMENT 'L''eleve manque à ses obligations de presence (L''absence apparait sur le bulletin). Possibilite : ''vrai''/''faux''/''non_precise''',
-  `retard_bulletin` varchar(50) default 'NON_PRECISE' COMMENT 'La saisie est comptabilisée dans le bulletin en tant que retard. Possibilite : ''vrai''/''faux''/''non_precise''',
-  `type_saisie` varchar(50) default 'NON_PRECISE' COMMENT 'Enumeration des possibilités de l''interface de saisie de l''absence pour ce type : DEBUT_ABS, FIN_ABS, DEBUT_ET_FIN_ABS, NON_PRECISE, COMMENTAIRE_EXIGE, DISCIPLINE',
-  `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
+  `sous_responsabilite_etablissement` varchar(255) collate latin1_general_ci default 'NON_PRECISE' COMMENT 'L''eleve est sous la responsabilite de l''etablissement. Typiquement : absence infirmerie, mettre la propriété à vrai car l''eleve est encore sous la responsabilité de l''etablissement. Possibilite : ''vrai''/''faux''/''non_precise''',
+  `manquement_obligation_presence` varchar(50) collate latin1_general_ci default 'NON_PRECISE' COMMENT 'L''eleve manque à ses obligations de presence (L''absence apparait sur le bulletin). Possibilite : ''vrai''/''faux''/''non_precise''',
+  `retard_bulletin` varchar(50) collate latin1_general_ci default 'NON_PRECISE' COMMENT 'La saisie est comptabilisée dans le bulletin en tant que retard. Possibilite : ''vrai''/''faux''/''non_precise''',
+  `type_saisie` varchar(50) collate latin1_general_ci default 'NON_PRECISE' COMMENT 'Enumeration des possibilités de l''interface de saisie de l''absence pour ce type : DEBUT_ABS, FIN_ABS, DEBUT_ET_FIN_ABS, NON_PRECISE, COMMENTAIRE_EXIGE, DISCIPLINE',
+  `commentaire` text collate latin1_general_ci COMMENT 'commentaire saisi par l''utilisateur',
   `sortable_rank` int(11) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Liste des types d''absences possibles dans l''etablissement' AUTO_INCREMENT=14 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci COMMENT='Liste des types d''absences possibles dans l''etablissement' AUTO_INCREMENT=14 ;
 
 --
 -- Contenu de la table `a_types`
@@ -812,10 +845,10 @@ INSERT INTO `a_types` (`id`, `nom`, `justification_exigible`, `sous_responsabili
 CREATE TABLE IF NOT EXISTS `a_types_statut` (
   `id` int(11) NOT NULL auto_increment COMMENT 'Cle primaire auto-incrementee',
   `id_a_type` int(11) NOT NULL COMMENT 'Cle etrangere de la table a_type',
-  `statut` varchar(20) NOT NULL COMMENT 'Statut de l''utilisateur',
+  `statut` varchar(20) collate latin1_general_ci NOT NULL COMMENT 'Statut de l''utilisateur',
   PRIMARY KEY  (`id`),
   KEY `a_types_statut_FI_1` (`id_a_type`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Liste des statuts autorises à saisir des types d''absences' AUTO_INCREMENT=40 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci COMMENT='Liste des statuts autorises à saisir des types d''absences' AUTO_INCREMENT=40 ;
 
 --
 -- Contenu de la table `a_types_statut`
@@ -865,41 +898,106 @@ INSERT INTO `a_types_statut` (`id`, `id_a_type`, `statut`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `cc_dev`
+--
+
+CREATE TABLE IF NOT EXISTS `cc_dev` (
+  `id` int(11) NOT NULL auto_increment,
+  `id_cn_dev` int(11) NOT NULL default '0',
+  `id_groupe` int(11) NOT NULL default '0',
+  `nom_court` varchar(32) collate latin1_general_ci NOT NULL default '',
+  `nom_complet` varchar(64) collate latin1_general_ci NOT NULL default '',
+  `description` varchar(128) collate latin1_general_ci NOT NULL default '',
+  `arrondir` char(2) collate latin1_general_ci NOT NULL default 's1',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `cc_dev`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `cc_eval`
+--
+
+CREATE TABLE IF NOT EXISTS `cc_eval` (
+  `id` int(11) NOT NULL auto_increment,
+  `id_dev` int(11) NOT NULL default '0',
+  `nom_court` varchar(32) collate latin1_general_ci NOT NULL default '',
+  `nom_complet` varchar(64) collate latin1_general_ci NOT NULL default '',
+  `description` varchar(128) collate latin1_general_ci NOT NULL default '',
+  `date` datetime NOT NULL default '0000-00-00 00:00:00',
+  `note_sur` int(11) default '5',
+  PRIMARY KEY  (`id`),
+  KEY `dev_date` (`id_dev`,`date`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `cc_eval`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `cc_notes_eval`
+--
+
+CREATE TABLE IF NOT EXISTS `cc_notes_eval` (
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `id_eval` int(11) NOT NULL default '0',
+  `note` float(10,1) NOT NULL default '0.0',
+  `statut` char(1) collate latin1_general_ci NOT NULL default '',
+  `comment` text collate latin1_general_ci NOT NULL,
+  PRIMARY KEY  (`login`,`id_eval`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+
+--
+-- Contenu de la table `cc_notes_eval`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `classes`
 --
 
 CREATE TABLE IF NOT EXISTS `classes` (
   `id` smallint(6) unsigned NOT NULL auto_increment,
-  `classe` varchar(100) NOT NULL default '',
-  `nom_complet` varchar(100) NOT NULL default '',
-  `suivi_par` varchar(50) NOT NULL default '',
-  `formule` varchar(100) NOT NULL default '',
-  `format_nom` varchar(5) NOT NULL default '',
-  `display_rang` char(1) NOT NULL default 'n',
-  `display_address` char(1) NOT NULL default 'n',
-  `display_coef` char(1) NOT NULL default 'y',
-  `display_mat_cat` char(1) NOT NULL default 'n',
-  `display_nbdev` char(1) NOT NULL default 'n',
-  `display_moy_gen` char(1) NOT NULL default 'y',
-  `modele_bulletin_pdf` varchar(255) default NULL,
-  `rn_nomdev` char(1) NOT NULL default 'n',
-  `rn_toutcoefdev` char(1) NOT NULL default 'n',
-  `rn_coefdev_si_diff` char(1) NOT NULL default 'n',
-  `rn_datedev` char(1) NOT NULL default 'n',
-  `rn_sign_chefetab` char(1) NOT NULL default 'n',
-  `rn_sign_pp` char(1) NOT NULL default 'n',
-  `rn_sign_resp` char(1) NOT NULL default 'n',
+  `classe` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `nom_complet` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `suivi_par` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `formule` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `format_nom` varchar(5) collate latin1_general_ci NOT NULL default '',
+  `display_rang` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `display_address` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `display_coef` char(1) collate latin1_general_ci NOT NULL default 'y',
+  `display_mat_cat` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `display_nbdev` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `display_moy_gen` char(1) collate latin1_general_ci NOT NULL default 'y',
+  `modele_bulletin_pdf` varchar(255) collate latin1_general_ci default NULL,
+  `rn_nomdev` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `rn_toutcoefdev` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `rn_coefdev_si_diff` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `rn_datedev` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `rn_sign_chefetab` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `rn_sign_pp` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `rn_sign_resp` char(1) collate latin1_general_ci NOT NULL default 'n',
   `rn_sign_nblig` int(11) NOT NULL default '3',
-  `rn_formule` text NOT NULL,
-  `ects_type_formation` varchar(255) NOT NULL default '',
-  `ects_parcours` varchar(255) NOT NULL default '',
-  `ects_code_parcours` varchar(255) NOT NULL default '',
-  `ects_domaines_etude` varchar(255) NOT NULL default '',
-  `ects_fonction_signataire_attestation` varchar(255) NOT NULL default '',
-  `apb_niveau` varchar(15) NOT NULL default '',
+  `rn_formule` text collate latin1_general_ci NOT NULL,
+  `ects_type_formation` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `ects_parcours` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `ects_code_parcours` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `ects_domaines_etude` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `ects_fonction_signataire_attestation` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `apb_niveau` varchar(15) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `classe` (`classe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `classes`
@@ -918,7 +1016,7 @@ CREATE TABLE IF NOT EXISTS `cn_cahier_notes` (
   `periode` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_cahier_notes`,`id_groupe`,`periode`),
   KEY `groupe_periode` (`id_groupe`,`periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `cn_cahier_notes`
@@ -934,20 +1032,20 @@ CREATE TABLE IF NOT EXISTS `cn_cahier_notes` (
 CREATE TABLE IF NOT EXISTS `cn_conteneurs` (
   `id` int(11) NOT NULL auto_increment,
   `id_racine` int(11) NOT NULL default '0',
-  `nom_court` varchar(32) NOT NULL default '',
-  `nom_complet` varchar(64) NOT NULL default '',
-  `description` varchar(128) NOT NULL default '',
-  `mode` char(1) NOT NULL default '2',
+  `nom_court` varchar(32) collate latin1_general_ci NOT NULL default '',
+  `nom_complet` varchar(64) collate latin1_general_ci NOT NULL default '',
+  `description` varchar(128) collate latin1_general_ci NOT NULL default '',
+  `mode` char(1) collate latin1_general_ci NOT NULL default '2',
   `coef` decimal(3,1) NOT NULL default '1.0',
-  `arrondir` char(2) NOT NULL default 's1',
+  `arrondir` char(2) collate latin1_general_ci NOT NULL default 's1',
   `ponderation` decimal(3,1) NOT NULL default '0.0',
-  `display_parents` char(1) NOT NULL default '0',
-  `display_bulletin` char(1) NOT NULL default '1',
+  `display_parents` char(1) collate latin1_general_ci NOT NULL default '0',
+  `display_bulletin` char(1) collate latin1_general_ci NOT NULL default '1',
   `parent` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `parent_racine` (`parent`,`id_racine`),
   KEY `racine_bulletin` (`id_racine`,`display_bulletin`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `cn_conteneurs`
@@ -964,20 +1062,20 @@ CREATE TABLE IF NOT EXISTS `cn_devoirs` (
   `id` int(11) NOT NULL auto_increment,
   `id_conteneur` int(11) NOT NULL default '0',
   `id_racine` int(11) NOT NULL default '0',
-  `nom_court` varchar(32) NOT NULL default '',
-  `nom_complet` varchar(64) NOT NULL default '',
-  `description` varchar(128) NOT NULL default '',
-  `facultatif` char(1) NOT NULL default '',
+  `nom_court` varchar(32) collate latin1_general_ci NOT NULL default '',
+  `nom_complet` varchar(64) collate latin1_general_ci NOT NULL default '',
+  `description` varchar(128) collate latin1_general_ci NOT NULL default '',
+  `facultatif` char(1) collate latin1_general_ci NOT NULL default '',
   `date` datetime NOT NULL default '0000-00-00 00:00:00',
   `coef` decimal(3,1) NOT NULL default '0.0',
   `note_sur` int(11) default '20',
-  `ramener_sur_referentiel` char(1) NOT NULL default 'F',
-  `display_parents` char(1) NOT NULL default '',
-  `display_parents_app` char(1) NOT NULL default '0',
+  `ramener_sur_referentiel` char(1) collate latin1_general_ci NOT NULL default 'F',
+  `display_parents` char(1) collate latin1_general_ci NOT NULL default '',
+  `display_parents_app` char(1) collate latin1_general_ci NOT NULL default '0',
   `date_ele_resp` datetime NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `conteneur_date` (`id_conteneur`,`date`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `cn_devoirs`
@@ -991,13 +1089,13 @@ CREATE TABLE IF NOT EXISTS `cn_devoirs` (
 --
 
 CREATE TABLE IF NOT EXISTS `cn_notes_conteneurs` (
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
   `id_conteneur` int(11) NOT NULL default '0',
   `note` float(10,1) NOT NULL default '0.0',
-  `statut` char(1) NOT NULL default '',
-  `comment` text NOT NULL,
+  `statut` char(1) collate latin1_general_ci NOT NULL default '',
+  `comment` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`login`,`id_conteneur`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `cn_notes_conteneurs`
@@ -1011,14 +1109,14 @@ CREATE TABLE IF NOT EXISTS `cn_notes_conteneurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `cn_notes_devoirs` (
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
   `id_devoir` int(11) NOT NULL default '0',
   `note` float(10,1) NOT NULL default '0.0',
-  `comment` text NOT NULL,
-  `statut` varchar(4) NOT NULL default '',
+  `comment` text collate latin1_general_ci NOT NULL,
+  `statut` varchar(4) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`login`,`id_devoir`),
   KEY `devoir_statut` (`id_devoir`,`statut`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `cn_notes_devoirs`
@@ -1033,11 +1131,11 @@ CREATE TABLE IF NOT EXISTS `cn_notes_devoirs` (
 
 CREATE TABLE IF NOT EXISTS `commentaires_types` (
   `id` int(11) NOT NULL auto_increment,
-  `commentaire` text NOT NULL,
+  `commentaire` text collate latin1_general_ci NOT NULL,
   `num_periode` int(11) NOT NULL,
   `id_classe` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `commentaires_types`
@@ -1052,10 +1150,10 @@ CREATE TABLE IF NOT EXISTS `commentaires_types` (
 
 CREATE TABLE IF NOT EXISTS `commentaires_types_profs` (
   `id` int(11) NOT NULL auto_increment,
-  `login` varchar(255) NOT NULL,
-  `app` text NOT NULL,
+  `login` varchar(255) collate latin1_general_ci NOT NULL,
+  `app` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `commentaires_types_profs`
@@ -1069,11 +1167,11 @@ CREATE TABLE IF NOT EXISTS `commentaires_types_profs` (
 --
 
 CREATE TABLE IF NOT EXISTS `communes` (
-  `code_commune_insee` varchar(50) NOT NULL,
-  `departement` varchar(50) NOT NULL,
-  `commune` varchar(255) NOT NULL,
+  `code_commune_insee` varchar(50) collate latin1_general_ci NOT NULL,
+  `departement` varchar(50) collate latin1_general_ci NOT NULL,
+  `commune` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`code_commune_insee`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `communes`
@@ -1089,11 +1187,11 @@ CREATE TABLE IF NOT EXISTS `communes` (
 CREATE TABLE IF NOT EXISTS `ct_devoirs_documents` (
   `id` int(11) NOT NULL auto_increment,
   `id_ct_devoir` int(11) NOT NULL default '0',
-  `titre` varchar(255) NOT NULL default '',
+  `titre` varchar(255) collate latin1_general_ci NOT NULL default '',
   `taille` int(11) NOT NULL default '0',
-  `emplacement` varchar(255) NOT NULL default '',
+  `emplacement` varchar(255) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ct_devoirs_documents`
@@ -1110,14 +1208,14 @@ CREATE TABLE IF NOT EXISTS `ct_devoirs_entry` (
   `id_ct` int(11) NOT NULL auto_increment,
   `id_groupe` int(11) NOT NULL,
   `date_ct` int(11) NOT NULL default '0',
-  `id_login` varchar(32) NOT NULL default '',
+  `id_login` varchar(32) collate latin1_general_ci NOT NULL default '',
   `id_sequence` int(11) NOT NULL default '0',
-  `contenu` text NOT NULL,
-  `vise` char(1) NOT NULL default 'n',
+  `contenu` text collate latin1_general_ci NOT NULL,
+  `vise` char(1) collate latin1_general_ci NOT NULL default 'n',
   PRIMARY KEY  (`id_ct`),
   KEY `id_groupe` (`id_groupe`),
   KEY `groupe_date` (`id_groupe`,`date_ct`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ct_devoirs_entry`
@@ -1133,11 +1231,11 @@ CREATE TABLE IF NOT EXISTS `ct_devoirs_entry` (
 CREATE TABLE IF NOT EXISTS `ct_documents` (
   `id` int(11) NOT NULL auto_increment,
   `id_ct` int(11) NOT NULL default '0',
-  `titre` varchar(255) NOT NULL default '',
+  `titre` varchar(255) collate latin1_general_ci NOT NULL default '',
   `taille` int(11) NOT NULL default '0',
-  `emplacement` varchar(255) NOT NULL default '',
+  `emplacement` varchar(255) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ct_documents`
@@ -1155,15 +1253,15 @@ CREATE TABLE IF NOT EXISTS `ct_entry` (
   `heure_entry` time NOT NULL default '00:00:00',
   `id_groupe` int(11) NOT NULL,
   `date_ct` int(11) NOT NULL default '0',
-  `id_login` varchar(32) NOT NULL default '',
+  `id_login` varchar(32) collate latin1_general_ci NOT NULL default '',
   `id_sequence` int(11) NOT NULL default '0',
-  `contenu` text NOT NULL,
-  `vise` char(1) NOT NULL default 'n',
-  `visa` char(1) NOT NULL default 'n',
+  `contenu` text collate latin1_general_ci NOT NULL,
+  `vise` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `visa` char(1) collate latin1_general_ci NOT NULL default 'n',
   PRIMARY KEY  (`id_ct`),
   KEY `id_groupe` (`id_groupe`),
   KEY `id_date_heure` (`id_groupe`,`date_ct`,`heure_entry`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ct_entry`
@@ -1180,14 +1278,14 @@ CREATE TABLE IF NOT EXISTS `ct_private_entry` (
   `id_ct` int(11) NOT NULL auto_increment COMMENT 'Cle primaire de la cotice privee',
   `heure_entry` time NOT NULL default '00:00:00' COMMENT 'heure de l''entree',
   `date_ct` int(11) NOT NULL default '0' COMMENT 'date du compte rendu',
-  `contenu` text NOT NULL COMMENT 'contenu redactionnel du compte rendu',
+  `contenu` text collate latin1_general_ci NOT NULL COMMENT 'contenu redactionnel du compte rendu',
   `id_groupe` int(11) NOT NULL COMMENT 'Cle etrangere du groupe auquel appartient le compte rendu',
-  `id_login` varchar(32) default NULL COMMENT 'Cle etrangere de l''utilisateur auquel appartient le compte rendu',
+  `id_login` varchar(32) collate latin1_general_ci default NULL COMMENT 'Cle etrangere de l''utilisateur auquel appartient le compte rendu',
   `id_sequence` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_ct`),
   KEY `ct_private_entry_FI_1` (`id_groupe`),
   KEY `ct_private_entry_FI_2` (`id_login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Notice privee du cahier de texte' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci COMMENT='Notice privee du cahier de texte' AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ct_private_entry`
@@ -1202,12 +1300,12 @@ CREATE TABLE IF NOT EXISTS `ct_private_entry` (
 
 CREATE TABLE IF NOT EXISTS `ct_types_documents` (
   `id_type` bigint(21) NOT NULL auto_increment,
-  `titre` text NOT NULL,
-  `extension` varchar(10) NOT NULL default '',
-  `upload` enum('oui','non') NOT NULL default 'oui',
+  `titre` text collate latin1_general_ci NOT NULL,
+  `extension` varchar(10) collate latin1_general_ci NOT NULL default '',
+  `upload` enum('oui','non') collate latin1_general_ci NOT NULL default 'oui',
   PRIMARY KEY  (`id_type`),
   UNIQUE KEY `extension` (`extension`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=58 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=58 ;
 
 --
 -- Contenu de la table `ct_types_documents`
@@ -1277,19 +1375,19 @@ INSERT INTO `ct_types_documents` (`id_type`, `titre`, `extension`, `upload`) VAL
 --
 
 CREATE TABLE IF NOT EXISTS `droits` (
-  `id` varchar(200) NOT NULL default '',
-  `administrateur` char(1) NOT NULL default '',
-  `professeur` char(1) NOT NULL default '',
-  `cpe` char(1) NOT NULL default '',
-  `scolarite` char(1) NOT NULL default '',
-  `eleve` char(1) NOT NULL default '',
-  `responsable` char(1) NOT NULL default '',
-  `secours` char(1) NOT NULL default '',
-  `autre` char(1) NOT NULL default 'F',
-  `description` varchar(255) NOT NULL default '',
-  `statut` char(1) NOT NULL default '',
+  `id` varchar(200) collate latin1_general_ci NOT NULL default '',
+  `administrateur` char(1) collate latin1_general_ci NOT NULL default '',
+  `professeur` char(1) collate latin1_general_ci NOT NULL default '',
+  `cpe` char(1) collate latin1_general_ci NOT NULL default '',
+  `scolarite` char(1) collate latin1_general_ci NOT NULL default '',
+  `eleve` char(1) collate latin1_general_ci NOT NULL default '',
+  `responsable` char(1) collate latin1_general_ci NOT NULL default '',
+  `secours` char(1) collate latin1_general_ci NOT NULL default '',
+  `autre` char(1) collate latin1_general_ci NOT NULL default 'F',
+  `description` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `statut` char(1) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `droits`
@@ -1414,7 +1512,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/saisie/index.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'F', '', ''),
 ('/saisie/saisie_aid.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'F', 'Saisie des notes et appréciations AID', ''),
 ('/saisie/saisie_appreciations.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'F', 'Saisie des appréciations du bulletins', ''),
-('/saisie/ajax_appreciations.php', 'F', 'V', 'F', 'F', 'F', 'F', 'V', 'F', 'Sauvegarde des appréciations du bulletins', ''),
+('/saisie/ajax_appreciations.php', 'F', 'V', 'V', 'V', 'F', 'F', 'V', 'F', 'Sauvegarde des appréciations du bulletins', ''),
 ('/saisie/saisie_avis.php', 'F', 'V', 'F', 'V', 'F', 'F', 'V', 'F', 'Saisie des avis du conseil de classe', ''),
 ('/saisie/saisie_avis1.php', 'F', 'V', 'F', 'V', 'F', 'F', 'V', 'F', 'Saisie des avis du conseil de classe', ''),
 ('/saisie/saisie_avis2.php', 'F', 'V', 'F', 'V', 'F', 'F', 'V', 'F', 'Saisie des avis du conseil de classe', ''),
@@ -1492,7 +1590,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/visualisation/affiche_eleve.php', 'F', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Visualisation graphique des résultats scolaires', ''),
 ('/visualisation/draw_graphe.php', 'F', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Visualisation graphique des résultats scolaires', ''),
 ('/groupes/mes_listes.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Accès aux CSV des listes d élèves', ''),
-('/groupes/get_csv.php', 'F', 'V', 'V', 'V', 'F', 'F', 'V', 'F', 'Génération de CSV élèves', ''),
+('/groupes/get_csv.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'F', 'Génération de CSV élèves', ''),
 ('/visualisation/choix_couleurs.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Choix des couleurs des graphiques des résultats scolaires', ''),
 ('/visualisation/couleur.php', 'F', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Choix d une couleur pour le graphique des résultats scolaires', ''),
 ('/gestion/config_prefs.php', 'V', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Définition des préférences d utilisateurs', ''),
@@ -1739,7 +1837,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_epreuve_blanche/bilan.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Epreuve blanche: Bilan', ''),
 ('/mod_epreuve_blanche/genere_etiquettes.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Epreuve blanche: Génération étiquettes', ''),
 ('/mod_examen_blanc/saisie_notes.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Examen blanc: Saisie devoir hors enseignement', ''),
-('/mod_examen_blanc/index.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Examen blanc: Accueil', ''),
+('/mod_examen_blanc/index.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Examen blanc: Accueil', ''),
 ('/mod_examen_blanc/releve.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Examen blanc: Relevé', ''),
 ('/mod_examen_blanc/bull_exb.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Examen blanc: Bulletins', ''),
 ('/saisie/saisie_synthese_app_classe.php', 'F', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Synthèse des appréciations sur le groupe classe.', ''),
@@ -1757,7 +1855,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/saisie/ajax_edit_limite.php', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Edition des bulletins simplifiés (documents de travail)', ''),
 ('/mod_discipline/check_nature_incident.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'V', 'Discipline: Recherche de natures d incident', ''),
 ('/groupes/signalement_eleves.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Groupes: signalement des erreurs d affectation élève', ''),
-('/bulletin/envoi_mail.php', 'F', 'F', 'F', 'V', 'F', 'F', 'V', 'F', 'Envoi de mail via ajax', ''),
+('/bulletin/envoi_mail.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Envoi de mail via ajax', ''),
 ('/mod_discipline/destinataires_alertes.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Parametrage des destinataires de mail d alerte', ''),
 ('/init_scribe_ng/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - index', ''),
 ('/init_scribe_ng/etape1.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - etape 1', ''),
@@ -1827,8 +1925,29 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/cahier_texte_2/see_all.php', 'F', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Consultation des cahiers de texte', ''),
 ('/cahier_texte_2/creer_sequence.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - sequences', '1'),
 ('/cahier_texte_2/creer_seq_ajax_step1.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Cahier de texte - sequences', '1'),
-('/mod_trombinoscopes/trombino_pdf.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Trombinoscopes PDF', ''),
-('/mod_trombinoscopes/trombino_decoupe.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Génération d une grille PDF pour les trombinoscopes,...', '');
+('/mod_trombinoscopes/trombino_pdf.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'V', 'Trombinoscopes PDF', ''),
+('/mod_trombinoscopes/trombino_decoupe.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Génération d une grille PDF pour les trombinoscopes,...', ''),
+('/groupes/menage_eleves_groupes.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Groupes: Desinscription des eleves sans notes ni appreciations', ''),
+('/statistiques/export_donnees_bulletins.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Export de données des bulletins', ''),
+('/statistiques/index.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Statistiques: Index', ''),
+('/statistiques/classes_effectifs.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Statistiques: classe, effectifs', ''),
+('/mod_annees_anterieures/ajax_bulletins.php', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'V', 'Accès aux bulletins d années antérieures', ''),
+('/mod_annees_anterieures/ajax_signaler_faute.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'V', 'Possibilité de signaler une faute de frappe dans une appréciation', ''),
+('/eleves/ajax_modif_eleve.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Enregistrement des modifications élève', ''),
+('/classes/ajouter_periode.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Classes: Ajouter des périodes', ''),
+('/classes/supprimer_periode.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Classes: Supprimer des périodes', ''),
+('/groupes/visu_mes_listes.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Accès aux listes d élèves', ''),
+('/cahier_notes/index_cc.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Carnet de notes', '1'),
+('/cahier_notes/add_modif_cc_dev.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Carnet de notes', '1'),
+('/cahier_notes/add_modif_cc_eval.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Carnet de notes', '1'),
+('/cahier_notes/saisie_notes_cc.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Carnet de notes', '1'),
+('/cahier_notes/visu_cc.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Carnet de notes', '1'),
+('/responsables/synchro_mail.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Synchronisation des mail responsables', ''),
+('/eleves/synchro_mail.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Synchronisation des mail élèves', ''),
+('/cahier_texte_2/archivage_cdt.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Archivage des CDT', ''),
+('/documents/archives/index.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'V', 'Archives des CDT', ''),
+('/saisie/saisie_vocabulaire.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Saisie de vocabulaire', ''),
+('/mod_epreuve_blanche/genere_liste_affichage.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Epreuve blanche: Génération liste affichage', '');
 
 -- --------------------------------------------------------
 
@@ -1837,18 +1956,18 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 --
 
 CREATE TABLE IF NOT EXISTS `droits_aid` (
-  `id` varchar(200) NOT NULL default '',
-  `public` char(1) NOT NULL default '',
-  `professeur` char(1) NOT NULL default '',
-  `cpe` char(1) NOT NULL default '',
-  `scolarite` char(1) NOT NULL default '',
-  `eleve` char(1) NOT NULL default '',
-  `responsable` char(1) NOT NULL default 'F',
-  `secours` char(1) NOT NULL default '',
-  `description` varchar(255) NOT NULL default '',
-  `statut` char(1) NOT NULL default '',
+  `id` varchar(200) collate latin1_general_ci NOT NULL default '',
+  `public` char(1) collate latin1_general_ci NOT NULL default '',
+  `professeur` char(1) collate latin1_general_ci NOT NULL default '',
+  `cpe` char(1) collate latin1_general_ci NOT NULL default '',
+  `scolarite` char(1) collate latin1_general_ci NOT NULL default '',
+  `eleve` char(1) collate latin1_general_ci NOT NULL default '',
+  `responsable` char(1) collate latin1_general_ci NOT NULL default 'F',
+  `secours` char(1) collate latin1_general_ci NOT NULL default '',
+  `description` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `statut` char(1) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `droits_aid`
@@ -1887,10 +2006,10 @@ INSERT INTO `droits_aid` (`id`, `public`, `professeur`, `cpe`, `scolarite`, `ele
 CREATE TABLE IF NOT EXISTS `droits_speciaux` (
   `id` int(11) NOT NULL auto_increment,
   `id_statut` int(11) NOT NULL,
-  `nom_fichier` varchar(200) NOT NULL,
-  `autorisation` char(1) NOT NULL,
+  `nom_fichier` varchar(200) collate latin1_general_ci NOT NULL,
+  `autorisation` char(1) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `droits_speciaux`
@@ -1905,9 +2024,9 @@ CREATE TABLE IF NOT EXISTS `droits_speciaux` (
 
 CREATE TABLE IF NOT EXISTS `droits_statut` (
   `id` int(11) NOT NULL auto_increment,
-  `nom_statut` varchar(30) NOT NULL,
+  `nom_statut` varchar(30) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `droits_statut`
@@ -1923,9 +2042,9 @@ CREATE TABLE IF NOT EXISTS `droits_statut` (
 CREATE TABLE IF NOT EXISTS `droits_utilisateurs` (
   `id` int(11) NOT NULL auto_increment,
   `id_statut` int(11) NOT NULL,
-  `login_user` varchar(50) NOT NULL,
+  `login_user` varchar(50) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `droits_utilisateurs`
@@ -1940,15 +2059,15 @@ CREATE TABLE IF NOT EXISTS `droits_utilisateurs` (
 
 CREATE TABLE IF NOT EXISTS `eb_copies` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `login_ele` varchar(255) NOT NULL,
-  `n_anonymat` varchar(255) NOT NULL,
+  `login_ele` varchar(255) collate latin1_general_ci NOT NULL,
+  `n_anonymat` varchar(255) collate latin1_general_ci NOT NULL,
   `id_salle` int(11) NOT NULL default '-1',
-  `login_prof` varchar(255) NOT NULL,
+  `login_prof` varchar(255) collate latin1_general_ci NOT NULL,
   `note` float(10,1) NOT NULL default '0.0',
-  `statut` varchar(255) NOT NULL default '',
+  `statut` varchar(255) collate latin1_general_ci NOT NULL default '',
   `id_epreuve` int(11) unsigned NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `eb_copies`
@@ -1963,13 +2082,13 @@ CREATE TABLE IF NOT EXISTS `eb_copies` (
 
 CREATE TABLE IF NOT EXISTS `eb_epreuves` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `intitule` varchar(255) NOT NULL,
-  `description` text NOT NULL,
-  `type_anonymat` varchar(255) NOT NULL,
+  `intitule` varchar(255) collate latin1_general_ci NOT NULL,
+  `description` text collate latin1_general_ci NOT NULL,
+  `type_anonymat` varchar(255) collate latin1_general_ci NOT NULL,
   `date` date NOT NULL default '0000-00-00',
-  `etat` varchar(255) NOT NULL,
+  `etat` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `eb_epreuves`
@@ -1986,9 +2105,9 @@ CREATE TABLE IF NOT EXISTS `eb_groupes` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `id_epreuve` int(11) unsigned NOT NULL,
   `id_groupe` int(11) unsigned NOT NULL,
-  `transfert` varchar(1) NOT NULL default 'n',
+  `transfert` varchar(1) collate latin1_general_ci NOT NULL default 'n',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `eb_groupes`
@@ -2004,9 +2123,9 @@ CREATE TABLE IF NOT EXISTS `eb_groupes` (
 CREATE TABLE IF NOT EXISTS `eb_profs` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `id_epreuve` int(11) unsigned NOT NULL,
-  `login_prof` varchar(255) NOT NULL default '',
+  `login_prof` varchar(255) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `eb_profs`
@@ -2021,10 +2140,10 @@ CREATE TABLE IF NOT EXISTS `eb_profs` (
 
 CREATE TABLE IF NOT EXISTS `eb_salles` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `salle` varchar(255) NOT NULL,
+  `salle` varchar(255) collate latin1_general_ci NOT NULL,
   `id_epreuve` int(11) unsigned NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `eb_salles`
@@ -2043,12 +2162,12 @@ CREATE TABLE IF NOT EXISTS `ects_credits` (
   `num_periode` int(11) NOT NULL COMMENT 'Identifiant de la periode',
   `id_groupe` int(11) NOT NULL COMMENT 'Identifiant du groupe',
   `valeur` decimal(3,1) default NULL COMMENT 'Nombre de credits obtenus par l''eleve',
-  `mention` varchar(255) default NULL COMMENT 'Mention obtenue',
-  `mention_prof` varchar(255) default NULL COMMENT 'Mention presaisie par le prof',
+  `mention` varchar(255) collate latin1_general_ci default NULL COMMENT 'Mention obtenue',
+  `mention_prof` varchar(255) collate latin1_general_ci default NULL COMMENT 'Mention presaisie par le prof',
   PRIMARY KEY  (`id`,`id_eleve`,`num_periode`,`id_groupe`),
   KEY `ects_credits_FI_1` (`id_eleve`),
   KEY `ects_credits_FI_2` (`id_groupe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ects_credits`
@@ -2064,10 +2183,10 @@ CREATE TABLE IF NOT EXISTS `ects_credits` (
 CREATE TABLE IF NOT EXISTS `ects_global_credits` (
   `id` int(11) NOT NULL auto_increment,
   `id_eleve` int(11) NOT NULL COMMENT 'Identifiant de l''eleve',
-  `mention` varchar(255) NOT NULL COMMENT 'Mention obtenue',
+  `mention` varchar(255) collate latin1_general_ci NOT NULL COMMENT 'Mention obtenue',
   PRIMARY KEY  (`id`,`id_eleve`),
   KEY `ects_global_credits_FI_1` (`id_eleve`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ects_global_credits`
@@ -2082,10 +2201,10 @@ CREATE TABLE IF NOT EXISTS `ects_global_credits` (
 
 CREATE TABLE IF NOT EXISTS `edt_calendrier` (
   `id_calendrier` int(11) NOT NULL auto_increment,
-  `classe_concerne_calendrier` text NOT NULL,
-  `nom_calendrier` varchar(100) NOT NULL default '',
-  `debut_calendrier_ts` varchar(11) NOT NULL,
-  `fin_calendrier_ts` varchar(11) NOT NULL,
+  `classe_concerne_calendrier` text collate latin1_general_ci NOT NULL,
+  `nom_calendrier` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `debut_calendrier_ts` varchar(11) collate latin1_general_ci NOT NULL,
+  `fin_calendrier_ts` varchar(11) collate latin1_general_ci NOT NULL,
   `jourdebut_calendrier` date NOT NULL default '0000-00-00',
   `heuredebut_calendrier` time NOT NULL default '00:00:00',
   `jourfin_calendrier` date NOT NULL default '0000-00-00',
@@ -2094,7 +2213,7 @@ CREATE TABLE IF NOT EXISTS `edt_calendrier` (
   `etabferme_calendrier` tinyint(4) NOT NULL,
   `etabvacances_calendrier` tinyint(4) NOT NULL,
   PRIMARY KEY  (`id_calendrier`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `edt_calendrier`
@@ -2110,17 +2229,17 @@ CREATE TABLE IF NOT EXISTS `edt_calendrier` (
 CREATE TABLE IF NOT EXISTS `edt_classes` (
   `id_edt_classe` int(11) NOT NULL auto_increment,
   `groupe_edt_classe` int(11) NOT NULL,
-  `prof_edt_classe` varchar(25) NOT NULL,
-  `matiere_edt_classe` varchar(10) NOT NULL,
-  `semaine_edt_classe` varchar(5) NOT NULL,
+  `prof_edt_classe` varchar(25) collate latin1_general_ci NOT NULL,
+  `matiere_edt_classe` varchar(10) collate latin1_general_ci NOT NULL,
+  `semaine_edt_classe` varchar(5) collate latin1_general_ci NOT NULL,
   `jour_edt_classe` tinyint(4) NOT NULL,
   `datedebut_edt_classe` date NOT NULL,
   `datefin_edt_classe` date NOT NULL,
   `heuredebut_edt_classe` time NOT NULL,
   `heurefin_edt_classe` time NOT NULL,
-  `salle_edt_classe` varchar(50) NOT NULL,
+  `salle_edt_classe` varchar(50) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_edt_classe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `edt_classes`
@@ -2135,19 +2254,19 @@ CREATE TABLE IF NOT EXISTS `edt_classes` (
 
 CREATE TABLE IF NOT EXISTS `edt_cours` (
   `id_cours` int(3) NOT NULL auto_increment,
-  `id_groupe` varchar(10) NOT NULL,
-  `id_aid` varchar(10) NOT NULL,
-  `id_salle` varchar(3) NOT NULL,
-  `jour_semaine` varchar(10) NOT NULL,
-  `id_definie_periode` varchar(3) NOT NULL,
-  `duree` varchar(10) NOT NULL default '2',
-  `heuredeb_dec` varchar(3) NOT NULL default '0',
-  `id_semaine` varchar(3) NOT NULL default '0',
-  `id_calendrier` varchar(3) NOT NULL default '0',
-  `modif_edt` varchar(3) NOT NULL default '0',
-  `login_prof` varchar(50) NOT NULL,
+  `id_groupe` varchar(10) collate latin1_general_ci NOT NULL,
+  `id_aid` varchar(10) collate latin1_general_ci NOT NULL,
+  `id_salle` varchar(3) collate latin1_general_ci NOT NULL,
+  `jour_semaine` varchar(10) collate latin1_general_ci NOT NULL,
+  `id_definie_periode` varchar(3) collate latin1_general_ci NOT NULL,
+  `duree` varchar(10) collate latin1_general_ci NOT NULL default '2',
+  `heuredeb_dec` varchar(3) collate latin1_general_ci NOT NULL default '0',
+  `id_semaine` varchar(3) collate latin1_general_ci NOT NULL default '0',
+  `id_calendrier` varchar(3) collate latin1_general_ci NOT NULL default '0',
+  `modif_edt` varchar(3) collate latin1_general_ci NOT NULL default '0',
+  `login_prof` varchar(50) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_cours`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `edt_cours`
@@ -2162,15 +2281,15 @@ CREATE TABLE IF NOT EXISTS `edt_cours` (
 
 CREATE TABLE IF NOT EXISTS `edt_creneaux` (
   `id_definie_periode` int(11) NOT NULL auto_increment,
-  `nom_definie_periode` varchar(10) NOT NULL default '',
+  `nom_definie_periode` varchar(10) collate latin1_general_ci NOT NULL default '',
   `heuredebut_definie_periode` time NOT NULL default '00:00:00',
   `heurefin_definie_periode` time NOT NULL default '00:00:00',
   `suivi_definie_periode` tinyint(4) NOT NULL,
-  `type_creneaux` varchar(15) NOT NULL,
-  `jour_creneau` varchar(20) default NULL,
+  `type_creneaux` varchar(15) collate latin1_general_ci NOT NULL,
+  `jour_creneau` varchar(20) collate latin1_general_ci default NULL,
   PRIMARY KEY  (`id_definie_periode`),
   KEY `heures_debut_fin` (`heuredebut_definie_periode`,`heurefin_definie_periode`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=15 ;
 
 --
 -- Contenu de la table `edt_creneaux`
@@ -2200,13 +2319,13 @@ INSERT INTO `edt_creneaux` (`id_definie_periode`, `nom_definie_periode`, `heured
 
 CREATE TABLE IF NOT EXISTS `edt_creneaux_bis` (
   `id_definie_periode` int(11) NOT NULL auto_increment,
-  `nom_definie_periode` varchar(10) NOT NULL default '',
+  `nom_definie_periode` varchar(10) collate latin1_general_ci NOT NULL default '',
   `heuredebut_definie_periode` time NOT NULL default '00:00:00',
   `heurefin_definie_periode` time NOT NULL default '00:00:00',
   `suivi_definie_periode` tinyint(4) NOT NULL,
-  `type_creneaux` varchar(15) NOT NULL,
+  `type_creneaux` varchar(15) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_definie_periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `edt_creneaux_bis`
@@ -2221,11 +2340,11 @@ CREATE TABLE IF NOT EXISTS `edt_creneaux_bis` (
 
 CREATE TABLE IF NOT EXISTS `edt_dates_special` (
   `id_edt_date_special` int(11) NOT NULL auto_increment,
-  `nom_edt_date_special` varchar(200) NOT NULL,
+  `nom_edt_date_special` varchar(200) collate latin1_general_ci NOT NULL,
   `debut_edt_date_special` date NOT NULL,
   `fin_edt_date_special` date NOT NULL,
   PRIMARY KEY  (`id_edt_date_special`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `edt_dates_special`
@@ -2240,11 +2359,11 @@ CREATE TABLE IF NOT EXISTS `edt_dates_special` (
 
 CREATE TABLE IF NOT EXISTS `edt_init` (
   `id_init` int(11) NOT NULL auto_increment,
-  `ident_export` varchar(100) NOT NULL,
-  `nom_export` varchar(200) NOT NULL,
-  `nom_gepi` varchar(200) NOT NULL,
+  `ident_export` varchar(100) collate latin1_general_ci NOT NULL,
+  `nom_export` varchar(200) collate latin1_general_ci NOT NULL,
+  `nom_gepi` varchar(200) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_init`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `edt_init`
@@ -2260,10 +2379,10 @@ CREATE TABLE IF NOT EXISTS `edt_init` (
 CREATE TABLE IF NOT EXISTS `edt_semaines` (
   `id_edt_semaine` int(11) NOT NULL auto_increment,
   `num_edt_semaine` int(11) NOT NULL default '0',
-  `type_edt_semaine` varchar(10) NOT NULL default '',
+  `type_edt_semaine` varchar(10) collate latin1_general_ci NOT NULL default '',
   `num_semaines_etab` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_edt_semaine`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=54 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=54 ;
 
 --
 -- Contenu de la table `edt_semaines`
@@ -2332,10 +2451,10 @@ INSERT INTO `edt_semaines` (`id_edt_semaine`, `num_edt_semaine`, `type_edt_semai
 
 CREATE TABLE IF NOT EXISTS `edt_setting` (
   `id` int(3) NOT NULL auto_increment,
-  `reglage` varchar(30) NOT NULL,
-  `valeur` varchar(30) NOT NULL,
+  `reglage` varchar(30) collate latin1_general_ci NOT NULL,
+  `valeur` varchar(30) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=10 ;
 
 --
 -- Contenu de la table `edt_setting`
@@ -2360,22 +2479,25 @@ INSERT INTO `edt_setting` (`id`, `reglage`, `valeur`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `eleves` (
-  `no_gep` text,
-  `login` varchar(50) NOT NULL default '',
-  `nom` varchar(50) NOT NULL default '',
-  `prenom` varchar(50) NOT NULL default '',
-  `sexe` varchar(1) NOT NULL default '',
+  `no_gep` text collate latin1_general_ci,
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `nom` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `prenom` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `sexe` varchar(1) collate latin1_general_ci NOT NULL default '',
   `naissance` date default NULL,
-  `lieu_naissance` varchar(50) NOT NULL default '',
-  `elenoet` varchar(50) NOT NULL default '',
-  `ereno` varchar(50) NOT NULL default '',
-  `ele_id` varchar(10) NOT NULL default '',
-  `email` varchar(255) NOT NULL default '',
+  `lieu_naissance` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `elenoet` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `ereno` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `ele_id` varchar(10) collate latin1_general_ci NOT NULL default '',
+  `email` varchar(255) collate latin1_general_ci NOT NULL default '',
   `id_eleve` int(11) NOT NULL auto_increment,
+  `id_mef` int(11) default NULL COMMENT 'cle externe pour le jointure avec mef',
+  `date_sortie` datetime default NULL COMMENT 'Timestamp de sortie de l''Ã©lÃ¨ve de l''Ã©tablissement (fin d''inscription)',
   PRIMARY KEY  (`id_eleve`),
   UNIQUE KEY `login` (`login`),
+  KEY `eleves_FI_1` (`id_mef`),
   KEY `ele_id` (`ele_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `eleves`
@@ -2389,12 +2511,12 @@ CREATE TABLE IF NOT EXISTS `eleves` (
 --
 
 CREATE TABLE IF NOT EXISTS `eleves_groupes_settings` (
-  `login` varchar(50) NOT NULL,
+  `login` varchar(50) collate latin1_general_ci NOT NULL,
   `id_groupe` int(11) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `value` varchar(50) NOT NULL,
+  `name` varchar(50) collate latin1_general_ci NOT NULL,
+  `value` varchar(50) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_groupe`,`login`,`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `eleves_groupes_settings`
@@ -2408,14 +2530,14 @@ CREATE TABLE IF NOT EXISTS `eleves_groupes_settings` (
 --
 
 CREATE TABLE IF NOT EXISTS `etablissements` (
-  `id` char(8) NOT NULL default '',
-  `nom` char(50) NOT NULL default '',
-  `niveau` char(50) NOT NULL default '',
-  `type` char(50) NOT NULL default '',
+  `id` char(8) collate latin1_general_ci NOT NULL default '',
+  `nom` char(50) collate latin1_general_ci NOT NULL default '',
+  `niveau` char(50) collate latin1_general_ci NOT NULL default '',
+  `type` char(50) collate latin1_general_ci NOT NULL default '',
   `cp` int(10) NOT NULL default '0',
-  `ville` char(50) NOT NULL default '',
+  `ville` char(50) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `etablissements`
@@ -2432,7 +2554,7 @@ INSERT INTO `etablissements` (`id`, `nom`, `niveau`, `type`, `cp`, `ville`) VALU
 
 CREATE TABLE IF NOT EXISTS `etiquettes_formats` (
   `id_etiquette_format` int(11) NOT NULL auto_increment,
-  `nom_etiquette_format` varchar(150) NOT NULL,
+  `nom_etiquette_format` varchar(150) collate latin1_general_ci NOT NULL,
   `xcote_etiquette_format` float NOT NULL,
   `ycote_etiquette_format` float NOT NULL,
   `espacementx_etiquette_format` float NOT NULL,
@@ -2442,7 +2564,7 @@ CREATE TABLE IF NOT EXISTS `etiquettes_formats` (
   `nbl_etiquette_format` tinyint(4) NOT NULL,
   `nbh_etiquette_format` tinyint(4) NOT NULL,
   PRIMARY KEY  (`id_etiquette_format`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=2 ;
 
 --
 -- Contenu de la table `etiquettes_formats`
@@ -2462,7 +2584,7 @@ CREATE TABLE IF NOT EXISTS `ex_classes` (
   `id_exam` int(11) unsigned NOT NULL,
   `id_classe` int(11) unsigned NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ex_classes`
@@ -2477,12 +2599,12 @@ CREATE TABLE IF NOT EXISTS `ex_classes` (
 
 CREATE TABLE IF NOT EXISTS `ex_examens` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `intitule` varchar(255) NOT NULL,
-  `description` text NOT NULL,
+  `intitule` varchar(255) collate latin1_general_ci NOT NULL,
+  `description` text collate latin1_general_ci NOT NULL,
   `date` date NOT NULL default '0000-00-00',
-  `etat` varchar(255) NOT NULL,
+  `etat` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ex_examens`
@@ -2498,13 +2620,13 @@ CREATE TABLE IF NOT EXISTS `ex_examens` (
 CREATE TABLE IF NOT EXISTS `ex_groupes` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `id_exam` int(11) unsigned NOT NULL,
-  `matiere` varchar(50) NOT NULL,
+  `matiere` varchar(50) collate latin1_general_ci NOT NULL,
   `id_groupe` int(11) unsigned NOT NULL,
-  `type` varchar(255) NOT NULL,
+  `type` varchar(255) collate latin1_general_ci NOT NULL,
   `id_dev` int(11) NOT NULL default '0',
-  `valeur` varchar(255) NOT NULL,
+  `valeur` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ex_groupes`
@@ -2520,12 +2642,12 @@ CREATE TABLE IF NOT EXISTS `ex_groupes` (
 CREATE TABLE IF NOT EXISTS `ex_matieres` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `id_exam` int(11) unsigned NOT NULL,
-  `matiere` varchar(255) NOT NULL,
+  `matiere` varchar(255) collate latin1_general_ci NOT NULL,
   `coef` decimal(3,1) NOT NULL default '1.0',
-  `bonus` char(1) NOT NULL default 'n',
+  `bonus` char(1) collate latin1_general_ci NOT NULL default 'n',
   `ordre` int(11) unsigned NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ex_matieres`
@@ -2541,11 +2663,11 @@ CREATE TABLE IF NOT EXISTS `ex_matieres` (
 CREATE TABLE IF NOT EXISTS `ex_notes` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `id_ex_grp` int(11) unsigned NOT NULL,
-  `login` varchar(255) NOT NULL default '',
+  `login` varchar(255) collate latin1_general_ci NOT NULL default '',
   `note` float(10,1) NOT NULL default '0.0',
-  `statut` varchar(4) NOT NULL default '',
+  `statut` varchar(4) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ex_notes`
@@ -2562,11 +2684,11 @@ CREATE TABLE IF NOT EXISTS `gc_affichages` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `id_aff` int(11) unsigned NOT NULL,
   `id_req` int(11) unsigned NOT NULL,
-  `projet` varchar(255) NOT NULL,
-  `type` varchar(255) NOT NULL,
-  `valeur` varchar(255) NOT NULL,
+  `projet` varchar(255) collate latin1_general_ci NOT NULL,
+  `type` varchar(255) collate latin1_general_ci NOT NULL,
+  `valeur` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `gc_affichages`
@@ -2581,12 +2703,12 @@ CREATE TABLE IF NOT EXISTS `gc_affichages` (
 
 CREATE TABLE IF NOT EXISTS `gc_divisions` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `projet` varchar(255) NOT NULL,
+  `projet` varchar(255) collate latin1_general_ci NOT NULL,
   `id_classe` smallint(6) unsigned NOT NULL,
-  `classe` varchar(100) NOT NULL default '',
-  `statut` enum('actuelle','future','red','arriv') NOT NULL default 'future',
+  `classe` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `statut` enum('actuelle','future','red','arriv') collate latin1_general_ci NOT NULL default 'future',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `gc_divisions`
@@ -2601,18 +2723,18 @@ CREATE TABLE IF NOT EXISTS `gc_divisions` (
 
 CREATE TABLE IF NOT EXISTS `gc_eleves_options` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `login` varchar(255) NOT NULL,
-  `profil` enum('GC','C','RAS','B','TB') NOT NULL default 'RAS',
-  `moy` varchar(255) NOT NULL,
-  `nb_absences` varchar(255) NOT NULL,
-  `non_justifie` varchar(255) NOT NULL,
-  `nb_retards` varchar(255) NOT NULL,
-  `projet` varchar(255) NOT NULL,
-  `id_classe_actuelle` varchar(255) NOT NULL,
-  `classe_future` varchar(255) NOT NULL,
-  `liste_opt` varchar(255) NOT NULL,
+  `login` varchar(255) collate latin1_general_ci NOT NULL,
+  `profil` enum('GC','C','RAS','B','TB') collate latin1_general_ci NOT NULL default 'RAS',
+  `moy` varchar(255) collate latin1_general_ci NOT NULL,
+  `nb_absences` varchar(255) collate latin1_general_ci NOT NULL,
+  `non_justifie` varchar(255) collate latin1_general_ci NOT NULL,
+  `nb_retards` varchar(255) collate latin1_general_ci NOT NULL,
+  `projet` varchar(255) collate latin1_general_ci NOT NULL,
+  `id_classe_actuelle` varchar(255) collate latin1_general_ci NOT NULL,
+  `classe_future` varchar(255) collate latin1_general_ci NOT NULL,
+  `liste_opt` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `gc_eleves_options`
@@ -2626,11 +2748,11 @@ CREATE TABLE IF NOT EXISTS `gc_eleves_options` (
 --
 
 CREATE TABLE IF NOT EXISTS `gc_ele_arriv_red` (
-  `login` varchar(255) NOT NULL,
-  `statut` enum('Arriv','Red') NOT NULL,
-  `projet` varchar(255) NOT NULL,
+  `login` varchar(255) collate latin1_general_ci NOT NULL,
+  `statut` enum('Arriv','Red') collate latin1_general_ci NOT NULL,
+  `projet` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`login`,`projet`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `gc_ele_arriv_red`
@@ -2645,13 +2767,13 @@ CREATE TABLE IF NOT EXISTS `gc_ele_arriv_red` (
 
 CREATE TABLE IF NOT EXISTS `gc_options` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `projet` varchar(255) NOT NULL,
-  `opt` varchar(255) NOT NULL,
-  `type` enum('lv1','lv2','lv3','autre') NOT NULL,
-  `obligatoire` enum('o','n') NOT NULL,
+  `projet` varchar(255) collate latin1_general_ci NOT NULL,
+  `opt` varchar(255) collate latin1_general_ci NOT NULL,
+  `type` enum('lv1','lv2','lv3','autre') collate latin1_general_ci NOT NULL,
+  `obligatoire` enum('o','n') collate latin1_general_ci NOT NULL,
   `exclusive` smallint(6) unsigned NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `gc_options`
@@ -2666,12 +2788,12 @@ CREATE TABLE IF NOT EXISTS `gc_options` (
 
 CREATE TABLE IF NOT EXISTS `gc_options_classes` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `projet` varchar(255) NOT NULL,
-  `opt_exclue` varchar(255) NOT NULL,
-  `classe_future` varchar(255) NOT NULL,
-  `commentaire` text NOT NULL,
+  `projet` varchar(255) collate latin1_general_ci NOT NULL,
+  `opt_exclue` varchar(255) collate latin1_general_ci NOT NULL,
+  `classe_future` varchar(255) collate latin1_general_ci NOT NULL,
+  `commentaire` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `gc_options_classes`
@@ -2686,10 +2808,10 @@ CREATE TABLE IF NOT EXISTS `gc_options_classes` (
 
 CREATE TABLE IF NOT EXISTS `gc_projets` (
   `id` smallint(6) unsigned NOT NULL auto_increment,
-  `projet` varchar(255) NOT NULL,
-  `commentaire` text NOT NULL,
+  `projet` varchar(255) collate latin1_general_ci NOT NULL,
+  `commentaire` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `gc_projets`
@@ -2704,12 +2826,12 @@ CREATE TABLE IF NOT EXISTS `gc_projets` (
 
 CREATE TABLE IF NOT EXISTS `groupes` (
   `id` int(11) NOT NULL auto_increment,
-  `name` varchar(60) NOT NULL default '',
-  `description` text NOT NULL,
-  `recalcul_rang` varchar(10) NOT NULL default '',
+  `name` varchar(60) collate latin1_general_ci NOT NULL default '',
+  `description` text collate latin1_general_ci NOT NULL,
+  `recalcul_rang` varchar(10) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `id_name` (`id`,`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `groupes`
@@ -2725,13 +2847,13 @@ CREATE TABLE IF NOT EXISTS `groupes` (
 CREATE TABLE IF NOT EXISTS `horaires_etablissement` (
   `id_horaire_etablissement` int(11) NOT NULL auto_increment,
   `date_horaire_etablissement` date NOT NULL,
-  `jour_horaire_etablissement` varchar(15) NOT NULL,
+  `jour_horaire_etablissement` varchar(15) collate latin1_general_ci NOT NULL,
   `ouverture_horaire_etablissement` time NOT NULL,
   `fermeture_horaire_etablissement` time NOT NULL,
   `pause_horaire_etablissement` time NOT NULL,
   `ouvert_horaire_etablissement` tinyint(4) NOT NULL,
   PRIMARY KEY  (`id_horaire_etablissement`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=6 ;
 
 --
 -- Contenu de la table `horaires_etablissement`
@@ -2747,16 +2869,56 @@ INSERT INTO `horaires_etablissement` (`id_horaire_etablissement`, `date_horaire_
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `infos_actions`
+--
+
+CREATE TABLE IF NOT EXISTS `infos_actions` (
+  `id` int(11) NOT NULL auto_increment,
+  `titre` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `description` text collate latin1_general_ci NOT NULL,
+  `date` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `id_titre` (`id`,`titre`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `infos_actions`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `infos_actions_destinataires`
+--
+
+CREATE TABLE IF NOT EXISTS `infos_actions_destinataires` (
+  `id` int(11) NOT NULL auto_increment,
+  `id_info` int(11) NOT NULL,
+  `nature` enum('statut','individu') collate latin1_general_ci default 'individu',
+  `valeur` varchar(255) collate latin1_general_ci default '',
+  PRIMARY KEY  (`id`),
+  KEY `id_info` (`id_info`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `infos_actions_destinataires`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `inscription_items`
 --
 
 CREATE TABLE IF NOT EXISTS `inscription_items` (
   `id` int(11) NOT NULL auto_increment,
-  `date` varchar(10) NOT NULL default '',
-  `heure` varchar(20) NOT NULL default '',
-  `description` varchar(200) NOT NULL default '',
+  `date` varchar(10) collate latin1_general_ci NOT NULL default '',
+  `heure` varchar(20) collate latin1_general_ci NOT NULL default '',
+  `description` varchar(200) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `inscription_items`
@@ -2770,9 +2932,9 @@ CREATE TABLE IF NOT EXISTS `inscription_items` (
 --
 
 CREATE TABLE IF NOT EXISTS `inscription_j_login_items` (
-  `login` varchar(20) NOT NULL default '',
+  `login` varchar(20) collate latin1_general_ci NOT NULL default '',
   `id` int(11) NOT NULL default '0'
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `inscription_j_login_items`
@@ -2787,8 +2949,8 @@ CREATE TABLE IF NOT EXISTS `inscription_j_login_items` (
 
 CREATE TABLE IF NOT EXISTS `j_aidcateg_super_gestionnaires` (
   `indice_aid` int(11) NOT NULL,
-  `id_utilisateur` varchar(50) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `id_utilisateur` varchar(50) collate latin1_general_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_aidcateg_super_gestionnaires`
@@ -2803,8 +2965,8 @@ CREATE TABLE IF NOT EXISTS `j_aidcateg_super_gestionnaires` (
 
 CREATE TABLE IF NOT EXISTS `j_aidcateg_utilisateurs` (
   `indice_aid` int(11) NOT NULL,
-  `id_utilisateur` varchar(50) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `id_utilisateur` varchar(50) collate latin1_general_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_aidcateg_utilisateurs`
@@ -2818,11 +2980,11 @@ CREATE TABLE IF NOT EXISTS `j_aidcateg_utilisateurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_aid_eleves` (
-  `id_aid` varchar(100) NOT NULL default '',
-  `login` varchar(60) NOT NULL default '',
+  `id_aid` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `login` varchar(60) collate latin1_general_ci NOT NULL default '',
   `indice_aid` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_aid`,`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_aid_eleves`
@@ -2836,11 +2998,11 @@ CREATE TABLE IF NOT EXISTS `j_aid_eleves` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_aid_eleves_resp` (
-  `id_aid` varchar(100) NOT NULL default '',
-  `login` varchar(60) NOT NULL default '',
+  `id_aid` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `login` varchar(60) collate latin1_general_ci NOT NULL default '',
   `indice_aid` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_aid`,`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_aid_eleves_resp`
@@ -2854,11 +3016,11 @@ CREATE TABLE IF NOT EXISTS `j_aid_eleves_resp` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_aid_utilisateurs` (
-  `id_aid` varchar(100) NOT NULL default '',
-  `id_utilisateur` varchar(50) NOT NULL default '',
+  `id_aid` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `id_utilisateur` varchar(50) collate latin1_general_ci NOT NULL default '',
   `indice_aid` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_aid`,`id_utilisateur`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_aid_utilisateurs`
@@ -2872,11 +3034,11 @@ CREATE TABLE IF NOT EXISTS `j_aid_utilisateurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_aid_utilisateurs_gest` (
-  `id_aid` varchar(100) NOT NULL default '',
-  `id_utilisateur` varchar(50) NOT NULL default '',
+  `id_aid` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `id_utilisateur` varchar(50) collate latin1_general_ci NOT NULL default '',
   `indice_aid` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_aid`,`id_utilisateur`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_aid_utilisateurs_gest`
@@ -2890,14 +3052,14 @@ CREATE TABLE IF NOT EXISTS `j_aid_utilisateurs_gest` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_classes` (
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
   `id_classe` int(11) NOT NULL default '0',
   `periode` int(11) NOT NULL default '0',
   `rang` smallint(6) NOT NULL default '0',
   PRIMARY KEY  (`login`,`id_classe`,`periode`),
   KEY `id_classe` (`id_classe`),
   KEY `login_periode` (`login`,`periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_eleves_classes`
@@ -2911,10 +3073,10 @@ CREATE TABLE IF NOT EXISTS `j_eleves_classes` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_cpe` (
-  `e_login` varchar(50) NOT NULL default '',
-  `cpe_login` varchar(50) NOT NULL default '',
+  `e_login` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `cpe_login` varchar(50) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`e_login`,`cpe_login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_eleves_cpe`
@@ -2928,10 +3090,10 @@ CREATE TABLE IF NOT EXISTS `j_eleves_cpe` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_etablissements` (
-  `id_eleve` varchar(50) NOT NULL default '',
-  `id_etablissement` varchar(8) NOT NULL default '',
+  `id_eleve` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `id_etablissement` varchar(8) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id_eleve`,`id_etablissement`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_eleves_etablissements`
@@ -2945,12 +3107,12 @@ CREATE TABLE IF NOT EXISTS `j_eleves_etablissements` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_groupes` (
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
   `id_groupe` int(11) NOT NULL default '0',
   `periode` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_groupe`,`login`,`periode`),
   KEY `login` (`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_eleves_groupes`
@@ -2964,13 +3126,13 @@ CREATE TABLE IF NOT EXISTS `j_eleves_groupes` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_professeurs` (
-  `login` varchar(50) NOT NULL default '',
-  `professeur` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `professeur` varchar(50) collate latin1_general_ci NOT NULL default '',
   `id_classe` int(11) NOT NULL default '0',
   PRIMARY KEY  (`login`,`professeur`,`id_classe`),
   KEY `classe_professeur` (`id_classe`,`professeur`),
   KEY `professeur_classe` (`professeur`,`id_classe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_eleves_professeurs`
@@ -2984,11 +3146,11 @@ CREATE TABLE IF NOT EXISTS `j_eleves_professeurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_regime` (
-  `login` varchar(50) NOT NULL default '',
-  `doublant` char(1) NOT NULL default '',
-  `regime` varchar(5) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `doublant` char(1) collate latin1_general_ci NOT NULL default '',
+  `regime` varchar(5) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_eleves_regime`
@@ -3009,12 +3171,12 @@ CREATE TABLE IF NOT EXISTS `j_groupes_classes` (
   `categorie_id` int(11) NOT NULL default '1',
   `saisie_ects` tinyint(1) NOT NULL default '0',
   `valeur_ects` int(11) default NULL,
-  `mode_moy` enum('-','sup10','bonus') NOT NULL default '-',
-  `apb_langue_vivante` varchar(3) NOT NULL default '',
+  `mode_moy` enum('-','sup10','bonus') collate latin1_general_ci NOT NULL default '-',
+  `apb_langue_vivante` varchar(3) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id_groupe`,`id_classe`),
   KEY `id_classe_coef` (`id_classe`,`coef`),
   KEY `saisie_ects_id_groupe` (`saisie_ects`,`id_groupe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_groupes_classes`
@@ -3029,9 +3191,9 @@ CREATE TABLE IF NOT EXISTS `j_groupes_classes` (
 
 CREATE TABLE IF NOT EXISTS `j_groupes_matieres` (
   `id_groupe` int(11) NOT NULL default '0',
-  `id_matiere` varchar(50) NOT NULL default '',
+  `id_matiere` varchar(50) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id_groupe`,`id_matiere`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_groupes_matieres`
@@ -3046,11 +3208,11 @@ CREATE TABLE IF NOT EXISTS `j_groupes_matieres` (
 
 CREATE TABLE IF NOT EXISTS `j_groupes_professeurs` (
   `id_groupe` int(11) NOT NULL default '0',
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
   `ordre_prof` smallint(6) NOT NULL default '0',
   PRIMARY KEY  (`id_groupe`,`login`),
   KEY `login` (`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_groupes_professeurs`
@@ -3069,7 +3231,7 @@ CREATE TABLE IF NOT EXISTS `j_matieres_categories_classes` (
   `priority` smallint(6) NOT NULL default '0',
   `affiche_moyenne` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`categorie_id`,`classe_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_matieres_categories_classes`
@@ -3084,10 +3246,10 @@ CREATE TABLE IF NOT EXISTS `j_matieres_categories_classes` (
 
 CREATE TABLE IF NOT EXISTS `j_notifications_resp_pers` (
   `a_notification_id` int(12) NOT NULL COMMENT 'cle etrangere de la notification',
-  `pers_id` varchar(10) NOT NULL COMMENT 'cle etrangere des personnes',
+  `pers_id` varchar(10) collate latin1_general_ci NOT NULL COMMENT 'cle etrangere des personnes',
   PRIMARY KEY  (`a_notification_id`,`pers_id`),
   KEY `j_notifications_resp_pers_FI_2` (`pers_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Table de jointure entre la notification et les personnes don';
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci COMMENT='Table de jointure entre la notification et les personnes don';
 
 --
 -- Contenu de la table `j_notifications_resp_pers`
@@ -3101,11 +3263,11 @@ CREATE TABLE IF NOT EXISTS `j_notifications_resp_pers` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_professeurs_matieres` (
-  `id_professeur` varchar(50) NOT NULL default '',
-  `id_matiere` varchar(50) NOT NULL default '',
+  `id_professeur` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `id_matiere` varchar(50) collate latin1_general_ci NOT NULL default '',
   `ordre_matieres` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_professeur`,`id_matiere`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_professeurs_matieres`
@@ -3119,9 +3281,9 @@ CREATE TABLE IF NOT EXISTS `j_professeurs_matieres` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_scol_classes` (
-  `login` varchar(50) NOT NULL,
+  `login` varchar(50) collate latin1_general_ci NOT NULL,
   `id_classe` int(11) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_scol_classes`
@@ -3136,14 +3298,14 @@ CREATE TABLE IF NOT EXISTS `j_scol_classes` (
 
 CREATE TABLE IF NOT EXISTS `j_signalement` (
   `id_groupe` int(11) NOT NULL default '0',
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
   `periode` int(11) NOT NULL default '0',
-  `nature` varchar(50) NOT NULL default '',
-  `valeur` varchar(50) NOT NULL default '',
-  `declarant` varchar(50) NOT NULL default '',
+  `nature` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `valeur` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `declarant` varchar(50) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`id_groupe`,`login`,`periode`,`nature`),
   KEY `login` (`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `j_signalement`
@@ -3161,7 +3323,7 @@ CREATE TABLE IF NOT EXISTS `j_traitements_saisies` (
   `a_traitement_id` int(12) NOT NULL COMMENT 'cle etrangere du traitement de ces absences',
   PRIMARY KEY  (`a_saisie_id`,`a_traitement_id`),
   KEY `j_traitements_saisies_FI_2` (`a_traitement_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Table de jointure entre la saisie et le traitement des absen';
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci COMMENT='Table de jointure entre la saisie et le traitement des absen';
 
 --
 -- Contenu de la table `j_traitements_saisies`
@@ -3176,16 +3338,16 @@ CREATE TABLE IF NOT EXISTS `j_traitements_saisies` (
 
 CREATE TABLE IF NOT EXISTS `lettres_cadres` (
   `id_lettre_cadre` int(11) NOT NULL auto_increment,
-  `nom_lettre_cadre` varchar(150) NOT NULL,
+  `nom_lettre_cadre` varchar(150) collate latin1_general_ci NOT NULL,
   `x_lettre_cadre` float NOT NULL,
   `y_lettre_cadre` float NOT NULL,
   `l_lettre_cadre` float NOT NULL,
   `h_lettre_cadre` float NOT NULL,
-  `texte_lettre_cadre` text NOT NULL,
+  `texte_lettre_cadre` text collate latin1_general_ci NOT NULL,
   `encadre_lettre_cadre` tinyint(4) NOT NULL,
-  `couleurdefond_lettre_cadre` varchar(11) NOT NULL,
+  `couleurdefond_lettre_cadre` varchar(11) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_lettre_cadre`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=11 ;
 
 --
 -- Contenu de la table `lettres_cadres`
@@ -3211,22 +3373,22 @@ INSERT INTO `lettres_cadres` (`id_lettre_cadre`, `nom_lettre_cadre`, `x_lettre_c
 CREATE TABLE IF NOT EXISTS `lettres_suivis` (
   `id_lettre_suivi` int(11) NOT NULL auto_increment,
   `lettresuitealettren_lettre_suivi` int(11) NOT NULL,
-  `quirecois_lettre_suivi` varchar(50) NOT NULL,
-  `partde_lettre_suivi` varchar(200) NOT NULL,
-  `partdenum_lettre_suivi` text NOT NULL,
-  `quiemet_lettre_suivi` varchar(150) NOT NULL,
+  `quirecois_lettre_suivi` varchar(50) collate latin1_general_ci NOT NULL,
+  `partde_lettre_suivi` varchar(200) collate latin1_general_ci NOT NULL,
+  `partdenum_lettre_suivi` text collate latin1_general_ci NOT NULL,
+  `quiemet_lettre_suivi` varchar(150) collate latin1_general_ci NOT NULL,
   `emis_date_lettre_suivi` date NOT NULL,
   `emis_heure_lettre_suivi` time NOT NULL,
-  `quienvoi_lettre_suivi` varchar(150) NOT NULL,
+  `quienvoi_lettre_suivi` varchar(150) collate latin1_general_ci NOT NULL,
   `envoye_date_lettre_suivi` date NOT NULL,
   `envoye_heure_lettre_suivi` time NOT NULL,
   `type_lettre_suivi` int(11) NOT NULL,
-  `quireception_lettre_suivi` varchar(150) NOT NULL,
+  `quireception_lettre_suivi` varchar(150) collate latin1_general_ci NOT NULL,
   `reponse_date_lettre_suivi` date NOT NULL,
-  `reponse_remarque_lettre_suivi` varchar(250) NOT NULL,
-  `statu_lettre_suivi` varchar(20) NOT NULL,
+  `reponse_remarque_lettre_suivi` varchar(250) collate latin1_general_ci NOT NULL,
+  `statu_lettre_suivi` varchar(20) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_lettre_suivi`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `lettres_suivis`
@@ -3249,7 +3411,7 @@ CREATE TABLE IF NOT EXISTS `lettres_tcs` (
   `h_lettre_tc` float NOT NULL,
   `encadre_lettre_tc` int(1) NOT NULL,
   PRIMARY KEY  (`id_lettre_tc`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=201 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=201 ;
 
 --
 -- Contenu de la table `lettres_tcs`
@@ -3462,11 +3624,11 @@ INSERT INTO `lettres_tcs` (`id_lettre_tc`, `type_lettre_tc`, `cadre_lettre_tc`, 
 
 CREATE TABLE IF NOT EXISTS `lettres_types` (
   `id_lettre_type` int(11) NOT NULL auto_increment,
-  `titre_lettre_type` varchar(250) NOT NULL,
-  `categorie_lettre_type` varchar(250) NOT NULL,
-  `reponse_lettre_type` varchar(3) NOT NULL,
+  `titre_lettre_type` varchar(250) collate latin1_general_ci NOT NULL,
+  `categorie_lettre_type` varchar(250) collate latin1_general_ci NOT NULL,
+  `reponse_lettre_type` varchar(3) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_lettre_type`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=11 ;
 
 --
 -- Contenu de la table `lettres_types`
@@ -3491,19 +3653,19 @@ INSERT INTO `lettres_types` (`id_lettre_type`, `titre_lettre_type`, `categorie_l
 --
 
 CREATE TABLE IF NOT EXISTS `log` (
-  `LOGIN` varchar(50) NOT NULL default '',
+  `LOGIN` varchar(50) collate latin1_general_ci NOT NULL default '',
   `START` datetime NOT NULL default '0000-00-00 00:00:00',
-  `SESSION_ID` varchar(255) NOT NULL default '',
-  `REMOTE_ADDR` varchar(16) NOT NULL default '',
-  `USER_AGENT` varchar(255) NOT NULL default '',
-  `REFERER` varchar(64) NOT NULL default '',
-  `AUTOCLOSE` enum('0','1','2','3','4') NOT NULL default '0',
+  `SESSION_ID` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `REMOTE_ADDR` varchar(16) collate latin1_general_ci NOT NULL default '',
+  `USER_AGENT` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `REFERER` varchar(64) collate latin1_general_ci NOT NULL default '',
+  `AUTOCLOSE` enum('0','1','2','3','4') collate latin1_general_ci NOT NULL default '0',
   `END` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`SESSION_ID`,`START`),
   KEY `start_time` (`START`),
   KEY `end_time` (`END`),
   KEY `login_session_start` (`LOGIN`,`SESSION_ID`,`START`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `log`
@@ -3517,14 +3679,14 @@ CREATE TABLE IF NOT EXISTS `log` (
 --
 
 CREATE TABLE IF NOT EXISTS `matieres` (
-  `matiere` varchar(255) NOT NULL default '',
-  `nom_complet` varchar(200) NOT NULL default '',
+  `matiere` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `nom_complet` varchar(200) collate latin1_general_ci NOT NULL default '',
   `priority` smallint(6) NOT NULL default '0',
   `categorie_id` int(11) NOT NULL default '1',
-  `matiere_aid` char(1) NOT NULL default 'n',
-  `matiere_atelier` char(1) NOT NULL default 'n',
+  `matiere_aid` char(1) collate latin1_general_ci NOT NULL default 'n',
+  `matiere_atelier` char(1) collate latin1_general_ci NOT NULL default 'n',
   PRIMARY KEY  (`matiere`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `matieres`
@@ -3538,12 +3700,12 @@ CREATE TABLE IF NOT EXISTS `matieres` (
 --
 
 CREATE TABLE IF NOT EXISTS `matieres_appreciations` (
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
   `id_groupe` int(11) NOT NULL default '0',
   `periode` int(11) NOT NULL default '0',
-  `appreciation` text NOT NULL,
+  `appreciation` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`login`,`id_groupe`,`periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `matieres_appreciations`
@@ -3558,11 +3720,11 @@ CREATE TABLE IF NOT EXISTS `matieres_appreciations` (
 
 CREATE TABLE IF NOT EXISTS `matieres_appreciations_acces` (
   `id_classe` int(11) NOT NULL,
-  `statut` varchar(255) NOT NULL,
+  `statut` varchar(255) collate latin1_general_ci NOT NULL,
   `periode` int(11) NOT NULL,
   `date` date NOT NULL,
-  `acces` enum('y','n','date','d') NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `acces` enum('y','n','date','d') collate latin1_general_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `matieres_appreciations_acces`
@@ -3578,9 +3740,9 @@ CREATE TABLE IF NOT EXISTS `matieres_appreciations_acces` (
 CREATE TABLE IF NOT EXISTS `matieres_appreciations_grp` (
   `id_groupe` int(11) NOT NULL default '0',
   `periode` int(11) NOT NULL default '0',
-  `appreciation` text NOT NULL,
+  `appreciation` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_groupe`,`periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `matieres_appreciations_grp`
@@ -3594,13 +3756,13 @@ CREATE TABLE IF NOT EXISTS `matieres_appreciations_grp` (
 --
 
 CREATE TABLE IF NOT EXISTS `matieres_appreciations_tempo` (
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
   `id_groupe` int(11) NOT NULL default '0',
   `periode` int(11) NOT NULL default '0',
-  `appreciation` text NOT NULL,
+  `appreciation` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`login`,`id_groupe`,`periode`),
   KEY `groupe_periode` (`id_groupe`,`periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `matieres_appreciations_tempo`
@@ -3614,12 +3776,12 @@ CREATE TABLE IF NOT EXISTS `matieres_appreciations_tempo` (
 --
 
 CREATE TABLE IF NOT EXISTS `matieres_app_corrections` (
-  `login` varchar(255) NOT NULL default '',
+  `login` varchar(255) collate latin1_general_ci NOT NULL default '',
   `id_groupe` int(11) NOT NULL default '0',
   `periode` int(11) NOT NULL default '0',
-  `appreciation` text NOT NULL,
+  `appreciation` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`login`,`id_groupe`,`periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `matieres_app_corrections`
@@ -3638,7 +3800,7 @@ CREATE TABLE IF NOT EXISTS `matieres_app_delais` (
   `date_limite` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`periode`,`id_groupe`),
   KEY `id_groupe` (`id_groupe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `matieres_app_delais`
@@ -3653,11 +3815,11 @@ CREATE TABLE IF NOT EXISTS `matieres_app_delais` (
 
 CREATE TABLE IF NOT EXISTS `matieres_categories` (
   `id` int(11) NOT NULL auto_increment,
-  `nom_court` varchar(255) NOT NULL default '',
-  `nom_complet` varchar(255) NOT NULL default '',
+  `nom_court` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `nom_complet` varchar(255) collate latin1_general_ci NOT NULL default '',
   `priority` smallint(6) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=2 ;
 
 --
 -- Contenu de la table `matieres_categories`
@@ -3673,15 +3835,15 @@ INSERT INTO `matieres_categories` (`id`, `nom_court`, `nom_complet`, `priority`)
 --
 
 CREATE TABLE IF NOT EXISTS `matieres_notes` (
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
   `id_groupe` int(11) NOT NULL default '0',
   `periode` int(11) NOT NULL default '0',
   `note` float(10,1) default NULL,
-  `statut` varchar(10) NOT NULL default '',
+  `statut` varchar(10) collate latin1_general_ci NOT NULL default '',
   `rang` smallint(6) NOT NULL default '0',
   PRIMARY KEY  (`login`,`id_groupe`,`periode`),
   KEY `groupe_periode_statut` (`id_groupe`,`periode`,`statut`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `matieres_notes`
@@ -3696,15 +3858,15 @@ CREATE TABLE IF NOT EXISTS `matieres_notes` (
 
 CREATE TABLE IF NOT EXISTS `messages` (
   `id` int(11) NOT NULL auto_increment,
-  `texte` text NOT NULL,
+  `texte` text collate latin1_general_ci NOT NULL,
   `date_debut` int(11) NOT NULL default '0',
   `date_fin` int(11) NOT NULL default '0',
-  `auteur` varchar(50) NOT NULL default '',
-  `destinataires` varchar(10) NOT NULL default '',
+  `auteur` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `destinataires` varchar(10) collate latin1_general_ci NOT NULL default '',
   `date_decompte` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `date_debut_fin` (`date_debut`,`date_fin`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `messages`
@@ -3719,9 +3881,9 @@ CREATE TABLE IF NOT EXISTS `messages` (
 
 CREATE TABLE IF NOT EXISTS `message_login` (
   `id` int(11) NOT NULL auto_increment,
-  `texte` text NOT NULL,
+  `texte` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `message_login`
@@ -3736,12 +3898,12 @@ CREATE TABLE IF NOT EXISTS `message_login` (
 
 CREATE TABLE IF NOT EXISTS `miseajour` (
   `id_miseajour` int(11) NOT NULL auto_increment,
-  `fichier_miseajour` varchar(250) NOT NULL,
-  `emplacement_miseajour` varchar(250) NOT NULL,
+  `fichier_miseajour` varchar(250) collate latin1_general_ci NOT NULL,
+  `emplacement_miseajour` varchar(250) collate latin1_general_ci NOT NULL,
   `date_miseajour` date NOT NULL,
   `heure_miseajour` time NOT NULL,
   PRIMARY KEY  (`id_miseajour`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `miseajour`
@@ -3756,7 +3918,7 @@ CREATE TABLE IF NOT EXISTS `miseajour` (
 
 CREATE TABLE IF NOT EXISTS `model_bulletin` (
   `id_model_bulletin` int(11) NOT NULL auto_increment,
-  `nom_model_bulletin` varchar(100) NOT NULL default '',
+  `nom_model_bulletin` varchar(100) collate latin1_general_ci NOT NULL default '',
   `active_bloc_datation` decimal(4,0) NOT NULL default '0',
   `active_bloc_eleve` tinyint(4) NOT NULL default '0',
   `active_bloc_adresse_parent` tinyint(4) NOT NULL default '0',
@@ -3785,7 +3947,7 @@ CREATE TABLE IF NOT EXISTS `model_bulletin` (
   `affiche_nom_court` tinyint(4) NOT NULL default '0',
   `affiche_effectif_classe` tinyint(4) NOT NULL default '0',
   `affiche_numero_impression` tinyint(4) NOT NULL default '0',
-  `caractere_utilse` varchar(20) NOT NULL default '',
+  `caractere_utilse` varchar(20) collate latin1_general_ci NOT NULL default '',
   `X_parent` float NOT NULL default '0',
   `Y_parent` float NOT NULL default '0',
   `X_eleve` float NOT NULL default '0',
@@ -3818,7 +3980,7 @@ CREATE TABLE IF NOT EXISTS `model_bulletin` (
   `hauteur_sign_chef` float NOT NULL default '0',
   `cadre_sign_chef` tinyint(4) NOT NULL default '0',
   `affiche_filigrame` tinyint(4) NOT NULL default '0',
-  `texte_filigrame` varchar(100) NOT NULL default '',
+  `texte_filigrame` varchar(100) collate latin1_general_ci NOT NULL default '',
   `affiche_logo_etab` tinyint(4) NOT NULL default '0',
   `entente_mel` tinyint(4) NOT NULL default '0',
   `entente_tel` tinyint(4) NOT NULL default '0',
@@ -3842,11 +4004,11 @@ CREATE TABLE IF NOT EXISTS `model_bulletin` (
   `couleur_moy_general1` smallint(6) NOT NULL default '0',
   `couleur_moy_general2` smallint(6) NOT NULL default '0',
   `couleur_moy_general3` smallint(6) NOT NULL default '0',
-  `titre_entete_matiere` varchar(50) NOT NULL default '',
-  `titre_entete_coef` varchar(20) NOT NULL default '',
-  `titre_entete_nbnote` varchar(20) NOT NULL default '',
-  `titre_entete_rang` varchar(20) NOT NULL default '',
-  `titre_entete_appreciation` varchar(50) NOT NULL default '',
+  `titre_entete_matiere` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `titre_entete_coef` varchar(20) collate latin1_general_ci NOT NULL default '',
+  `titre_entete_nbnote` varchar(20) collate latin1_general_ci NOT NULL default '',
+  `titre_entete_rang` varchar(20) collate latin1_general_ci NOT NULL default '',
+  `titre_entete_appreciation` varchar(50) collate latin1_general_ci NOT NULL default '',
   `active_coef_sousmoyene` tinyint(4) NOT NULL default '0',
   `arrondie_choix` float NOT NULL default '0',
   `nb_chiffre_virgule` tinyint(4) NOT NULL default '0',
@@ -3862,18 +4024,18 @@ CREATE TABLE IF NOT EXISTS `model_bulletin` (
   `taille_texte_date_edition` float NOT NULL,
   `taille_texte_matiere` float NOT NULL,
   `active_moyenne_general` tinyint(4) NOT NULL,
-  `titre_bloc_avis_conseil` varchar(50) NOT NULL,
+  `titre_bloc_avis_conseil` varchar(50) collate latin1_general_ci NOT NULL,
   `taille_titre_bloc_avis_conseil` float NOT NULL,
   `taille_profprincipal_bloc_avis_conseil` float NOT NULL,
   `affiche_fonction_chef` tinyint(4) NOT NULL,
   `taille_texte_fonction_chef` float NOT NULL,
   `taille_texte_identitee_chef` float NOT NULL,
-  `tel_image` varchar(20) NOT NULL,
-  `tel_texte` varchar(20) NOT NULL,
-  `fax_image` varchar(20) NOT NULL,
-  `fax_texte` varchar(20) NOT NULL,
-  `courrier_image` varchar(20) NOT NULL,
-  `courrier_texte` varchar(20) NOT NULL,
+  `tel_image` varchar(20) collate latin1_general_ci NOT NULL,
+  `tel_texte` varchar(20) collate latin1_general_ci NOT NULL,
+  `fax_image` varchar(20) collate latin1_general_ci NOT NULL,
+  `fax_texte` varchar(20) collate latin1_general_ci NOT NULL,
+  `courrier_image` varchar(20) collate latin1_general_ci NOT NULL,
+  `courrier_texte` varchar(20) collate latin1_general_ci NOT NULL,
   `largeur_bloc_eleve` float NOT NULL,
   `hauteur_bloc_eleve` float NOT NULL,
   `largeur_bloc_adresse` float NOT NULL,
@@ -3881,14 +4043,14 @@ CREATE TABLE IF NOT EXISTS `model_bulletin` (
   `largeur_bloc_datation` float NOT NULL,
   `hauteur_bloc_datation` float NOT NULL,
   `taille_texte_classe` float NOT NULL,
-  `type_texte_classe` varchar(1) NOT NULL,
+  `type_texte_classe` varchar(1) collate latin1_general_ci NOT NULL,
   `taille_texte_annee` float NOT NULL,
-  `type_texte_annee` varchar(1) NOT NULL,
+  `type_texte_annee` varchar(1) collate latin1_general_ci NOT NULL,
   `taille_texte_periode` float NOT NULL,
-  `type_texte_periode` varchar(1) NOT NULL,
+  `type_texte_periode` varchar(1) collate latin1_general_ci NOT NULL,
   `taille_texte_categorie_cote` float NOT NULL,
   `taille_texte_categorie` float NOT NULL,
-  `type_texte_date_datation` varchar(1) NOT NULL,
+  `type_texte_date_datation` varchar(1) collate latin1_general_ci NOT NULL,
   `cadre_adresse` tinyint(4) NOT NULL,
   `centrage_logo` tinyint(4) NOT NULL default '0',
   `Y_centre_logo` float NOT NULL default '18',
@@ -3897,7 +4059,7 @@ CREATE TABLE IF NOT EXISTS `model_bulletin` (
   `affiche_moyenne_maxi_general` tinyint(4) NOT NULL default '1',
   `affiche_date_edition` tinyint(4) NOT NULL default '1',
   PRIMARY KEY  (`id_model_bulletin`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=4 ;
 
 --
 -- Contenu de la table `model_bulletin`
@@ -3915,15 +4077,15 @@ INSERT INTO `model_bulletin` (`id_model_bulletin`, `nom_model_bulletin`, `active
 --
 
 CREATE TABLE IF NOT EXISTS `notanet` (
-  `login` varchar(50) NOT NULL default '',
-  `ine` text NOT NULL,
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `ine` text collate latin1_general_ci NOT NULL,
   `id_mat` int(4) NOT NULL,
-  `notanet_mat` varchar(255) NOT NULL,
-  `matiere` varchar(50) NOT NULL,
-  `note` varchar(4) NOT NULL default '',
-  `note_notanet` varchar(4) NOT NULL,
+  `notanet_mat` varchar(255) collate latin1_general_ci NOT NULL,
+  `matiere` varchar(50) collate latin1_general_ci NOT NULL,
+  `note` varchar(4) collate latin1_general_ci NOT NULL default '',
+  `note_notanet` varchar(4) collate latin1_general_ci NOT NULL,
   `id_classe` smallint(6) NOT NULL default '0'
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `notanet`
@@ -3937,13 +4099,13 @@ CREATE TABLE IF NOT EXISTS `notanet` (
 --
 
 CREATE TABLE IF NOT EXISTS `notanet_app` (
-  `login` varchar(50) NOT NULL,
+  `login` varchar(50) collate latin1_general_ci NOT NULL,
   `id_mat` int(4) NOT NULL,
-  `matiere` varchar(50) NOT NULL,
-  `appreciation` text NOT NULL,
+  `matiere` varchar(50) collate latin1_general_ci NOT NULL,
+  `appreciation` text collate latin1_general_ci NOT NULL,
   `id` int(11) NOT NULL auto_increment,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `notanet_app`
@@ -3957,11 +4119,11 @@ CREATE TABLE IF NOT EXISTS `notanet_app` (
 --
 
 CREATE TABLE IF NOT EXISTS `notanet_avis` (
-  `login` varchar(50) NOT NULL,
-  `favorable` enum('O','N') NOT NULL,
-  `avis` text NOT NULL,
+  `login` varchar(50) collate latin1_general_ci NOT NULL,
+  `favorable` enum('O','N') collate latin1_general_ci NOT NULL,
+  `avis` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `notanet_avis`
@@ -3978,11 +4140,11 @@ CREATE TABLE IF NOT EXISTS `notanet_corresp` (
   `id` int(11) NOT NULL auto_increment,
   `type_brevet` tinyint(4) NOT NULL,
   `id_mat` int(4) NOT NULL,
-  `notanet_mat` varchar(255) NOT NULL default '',
-  `matiere` varchar(50) NOT NULL default '',
-  `statut` enum('imposee','optionnelle','non dispensee dans l etablissement') NOT NULL default 'imposee',
+  `notanet_mat` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `matiere` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `statut` enum('imposee','optionnelle','non dispensee dans l etablissement') collate latin1_general_ci NOT NULL default 'imposee',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `notanet_corresp`
@@ -3996,10 +4158,10 @@ CREATE TABLE IF NOT EXISTS `notanet_corresp` (
 --
 
 CREATE TABLE IF NOT EXISTS `notanet_ele_type` (
-  `login` varchar(50) NOT NULL,
+  `login` varchar(50) collate latin1_general_ci NOT NULL,
   `type_brevet` tinyint(4) NOT NULL,
   PRIMARY KEY  (`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `notanet_ele_type`
@@ -4013,12 +4175,12 @@ CREATE TABLE IF NOT EXISTS `notanet_ele_type` (
 --
 
 CREATE TABLE IF NOT EXISTS `notanet_socles` (
-  `login` varchar(50) NOT NULL,
-  `b2i` enum('MS','ME','MN','AB') NOT NULL,
-  `a2` enum('MS','ME','AB') NOT NULL,
-  `lv` varchar(50) NOT NULL,
+  `login` varchar(50) collate latin1_general_ci NOT NULL,
+  `b2i` enum('MS','ME','MN','AB') collate latin1_general_ci NOT NULL,
+  `a2` enum('MS','ME','AB') collate latin1_general_ci NOT NULL,
+  `lv` varchar(50) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `notanet_socles`
@@ -4034,8 +4196,8 @@ CREATE TABLE IF NOT EXISTS `notanet_socles` (
 CREATE TABLE IF NOT EXISTS `notanet_verrou` (
   `id_classe` smallint(6) NOT NULL,
   `type_brevet` tinyint(4) NOT NULL,
-  `verrouillage` char(1) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `verrouillage` char(1) collate latin1_general_ci NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `notanet_verrou`
@@ -4049,10 +4211,10 @@ CREATE TABLE IF NOT EXISTS `notanet_verrou` (
 --
 
 CREATE TABLE IF NOT EXISTS `pays` (
-  `code_pays` varchar(50) NOT NULL,
-  `nom_pays` varchar(255) NOT NULL,
+  `code_pays` varchar(50) collate latin1_general_ci NOT NULL,
+  `nom_pays` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`code_pays`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `pays`
@@ -4066,15 +4228,15 @@ CREATE TABLE IF NOT EXISTS `pays` (
 --
 
 CREATE TABLE IF NOT EXISTS `periodes` (
-  `nom_periode` varchar(50) NOT NULL default '',
+  `nom_periode` varchar(50) collate latin1_general_ci NOT NULL default '',
   `num_periode` int(11) NOT NULL default '0',
-  `verouiller` char(1) NOT NULL default '',
+  `verouiller` char(1) collate latin1_general_ci NOT NULL default '',
   `id_classe` int(11) NOT NULL default '0',
   `date_verrouillage` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   `date_fin` timestamp NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`num_periode`,`id_classe`),
   KEY `id_classe` (`id_classe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `periodes`
@@ -4089,13 +4251,13 @@ CREATE TABLE IF NOT EXISTS `periodes` (
 
 CREATE TABLE IF NOT EXISTS `plugins` (
   `id` int(11) NOT NULL auto_increment,
-  `nom` varchar(100) NOT NULL,
-  `repertoire` varchar(255) NOT NULL,
-  `description` longtext NOT NULL,
-  `ouvert` char(1) default 'n',
+  `nom` varchar(100) collate latin1_general_ci NOT NULL,
+  `repertoire` varchar(255) collate latin1_general_ci NOT NULL,
+  `description` longtext collate latin1_general_ci NOT NULL,
+  `ouvert` char(1) collate latin1_general_ci default 'n',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `nom` (`nom`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `plugins`
@@ -4111,11 +4273,11 @@ CREATE TABLE IF NOT EXISTS `plugins` (
 CREATE TABLE IF NOT EXISTS `plugins_autorisations` (
   `id` int(11) NOT NULL auto_increment,
   `plugin_id` int(11) NOT NULL,
-  `fichier` varchar(100) NOT NULL,
-  `user_statut` varchar(50) NOT NULL,
-  `auth` char(1) default 'n',
+  `fichier` varchar(100) collate latin1_general_ci NOT NULL,
+  `user_statut` varchar(50) collate latin1_general_ci NOT NULL,
+  `auth` char(1) collate latin1_general_ci default 'n',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `plugins_autorisations`
@@ -4131,12 +4293,12 @@ CREATE TABLE IF NOT EXISTS `plugins_autorisations` (
 CREATE TABLE IF NOT EXISTS `plugins_menus` (
   `id` int(11) NOT NULL auto_increment,
   `plugin_id` int(11) NOT NULL,
-  `user_statut` varchar(50) NOT NULL,
-  `titre_item` varchar(255) NOT NULL,
-  `lien_item` varchar(255) NOT NULL,
-  `description_item` varchar(255) NOT NULL,
+  `user_statut` varchar(50) collate latin1_general_ci NOT NULL,
+  `titre_item` varchar(255) collate latin1_general_ci NOT NULL,
+  `lien_item` varchar(255) collate latin1_general_ci NOT NULL,
+  `description_item` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `plugins_menus`
@@ -4150,11 +4312,11 @@ CREATE TABLE IF NOT EXISTS `plugins_menus` (
 --
 
 CREATE TABLE IF NOT EXISTS `preferences` (
-  `login` varchar(50) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `value` text NOT NULL,
+  `login` varchar(50) collate latin1_general_ci NOT NULL,
+  `name` varchar(255) collate latin1_general_ci NOT NULL,
+  `value` text collate latin1_general_ci NOT NULL,
   KEY `login_name` (`login`,`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `preferences`
@@ -4169,11 +4331,11 @@ CREATE TABLE IF NOT EXISTS `preferences` (
 
 CREATE TABLE IF NOT EXISTS `ref_wiki` (
   `id` int(11) NOT NULL auto_increment,
-  `ref` varchar(255) NOT NULL,
-  `url` varchar(255) NOT NULL,
+  `ref` varchar(255) collate latin1_general_ci NOT NULL,
+  `url` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `ref` (`ref`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `ref_wiki`
@@ -4189,21 +4351,21 @@ INSERT INTO `ref_wiki` (`id`, `ref`, `url`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `responsables` (
-  `ereno` varchar(10) NOT NULL default '',
-  `nom1` varchar(50) NOT NULL default '',
-  `prenom1` varchar(50) NOT NULL default '',
-  `adr1` varchar(100) NOT NULL default '',
-  `adr1_comp` varchar(100) NOT NULL default '',
-  `commune1` varchar(50) NOT NULL default '',
-  `cp1` varchar(6) NOT NULL default '',
-  `nom2` varchar(50) NOT NULL default '',
-  `prenom2` varchar(50) NOT NULL default '',
-  `adr2` varchar(100) NOT NULL default '',
-  `adr2_comp` varchar(100) NOT NULL default '',
-  `commune2` varchar(50) NOT NULL default '',
-  `cp2` varchar(6) NOT NULL default '',
+  `ereno` varchar(10) collate latin1_general_ci NOT NULL default '',
+  `nom1` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `prenom1` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `adr1` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `adr1_comp` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `commune1` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `cp1` varchar(6) collate latin1_general_ci NOT NULL default '',
+  `nom2` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `prenom2` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `adr2` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `adr2_comp` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `commune2` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `cp2` varchar(6) collate latin1_general_ci NOT NULL default '',
   PRIMARY KEY  (`ereno`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `responsables`
@@ -4217,14 +4379,14 @@ CREATE TABLE IF NOT EXISTS `responsables` (
 --
 
 CREATE TABLE IF NOT EXISTS `responsables2` (
-  `ele_id` varchar(10) NOT NULL,
-  `pers_id` varchar(10) NOT NULL,
-  `resp_legal` varchar(1) NOT NULL,
-  `pers_contact` varchar(1) NOT NULL,
+  `ele_id` varchar(10) collate latin1_general_ci NOT NULL,
+  `pers_id` varchar(10) collate latin1_general_ci NOT NULL,
+  `resp_legal` varchar(1) collate latin1_general_ci NOT NULL,
+  `pers_contact` varchar(1) collate latin1_general_ci NOT NULL,
   KEY `pers_id` (`pers_id`),
   KEY `ele_id` (`ele_id`),
   KEY `resp_legal` (`resp_legal`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `responsables2`
@@ -4238,16 +4400,16 @@ CREATE TABLE IF NOT EXISTS `responsables2` (
 --
 
 CREATE TABLE IF NOT EXISTS `resp_adr` (
-  `adr_id` varchar(10) NOT NULL,
-  `adr1` varchar(100) NOT NULL,
-  `adr2` varchar(100) NOT NULL,
-  `adr3` varchar(100) NOT NULL,
-  `adr4` varchar(100) NOT NULL,
-  `cp` varchar(6) NOT NULL,
-  `pays` varchar(50) NOT NULL,
-  `commune` varchar(50) NOT NULL,
+  `adr_id` varchar(10) collate latin1_general_ci NOT NULL,
+  `adr1` varchar(100) collate latin1_general_ci NOT NULL,
+  `adr2` varchar(100) collate latin1_general_ci NOT NULL,
+  `adr3` varchar(100) collate latin1_general_ci NOT NULL,
+  `adr4` varchar(100) collate latin1_general_ci NOT NULL,
+  `cp` varchar(6) collate latin1_general_ci NOT NULL,
+  `pays` varchar(50) collate latin1_general_ci NOT NULL,
+  `commune` varchar(50) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`adr_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `resp_adr`
@@ -4261,20 +4423,20 @@ CREATE TABLE IF NOT EXISTS `resp_adr` (
 --
 
 CREATE TABLE IF NOT EXISTS `resp_pers` (
-  `pers_id` varchar(10) NOT NULL,
-  `login` varchar(50) NOT NULL,
-  `nom` varchar(50) NOT NULL,
-  `prenom` varchar(50) NOT NULL,
-  `civilite` varchar(5) NOT NULL,
-  `tel_pers` varchar(255) NOT NULL,
-  `tel_port` varchar(255) NOT NULL,
-  `tel_prof` varchar(255) NOT NULL,
-  `mel` varchar(100) NOT NULL,
-  `adr_id` varchar(10) NOT NULL,
+  `pers_id` varchar(10) collate latin1_general_ci NOT NULL,
+  `login` varchar(50) collate latin1_general_ci NOT NULL,
+  `nom` varchar(50) collate latin1_general_ci NOT NULL,
+  `prenom` varchar(50) collate latin1_general_ci NOT NULL,
+  `civilite` varchar(5) collate latin1_general_ci NOT NULL,
+  `tel_pers` varchar(255) collate latin1_general_ci NOT NULL,
+  `tel_port` varchar(255) collate latin1_general_ci NOT NULL,
+  `tel_prof` varchar(255) collate latin1_general_ci NOT NULL,
+  `mel` varchar(100) collate latin1_general_ci NOT NULL,
+  `adr_id` varchar(10) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`pers_id`),
   KEY `login` (`login`),
   KEY `adr_id` (`adr_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `resp_pers`
@@ -4289,10 +4451,10 @@ CREATE TABLE IF NOT EXISTS `resp_pers` (
 
 CREATE TABLE IF NOT EXISTS `salle_cours` (
   `id_salle` int(3) NOT NULL auto_increment,
-  `numero_salle` varchar(10) NOT NULL,
-  `nom_salle` varchar(50) NOT NULL,
+  `numero_salle` varchar(10) collate latin1_general_ci NOT NULL,
+  `nom_salle` varchar(50) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_salle`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `salle_cours`
@@ -4306,23 +4468,23 @@ CREATE TABLE IF NOT EXISTS `salle_cours` (
 --
 
 CREATE TABLE IF NOT EXISTS `setting` (
-  `NAME` varchar(255) NOT NULL default '',
-  `VALUE` text NOT NULL,
+  `NAME` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `VALUE` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`NAME`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `setting`
 --
 
 INSERT INTO `setting` (`NAME`, `VALUE`) VALUES
-('version', '1.5.3.1'),
+('version', '1.5.4'),
 ('versionRc', ''),
 ('versionBeta', ''),
 ('sessionMaxLength', '30'),
 ('Impression', '<center><p class = "grand">Gestion des Elèves Par Internet</p></center>\r\n<br />\r\n<p class = "grand">Qu''est-ce que GEPI ?</p>\r\n\r\n<p>Afin d''étudier les modalités d''informatisation des bulletins scolaires : notes et appréciations via Internet, une expérimentation (baptisée Gestion des Elèves Par Internet)a été mise en place. Cette expérimentation concerne les classes suivantes : \r\n<br />* ....\r\n<br />* ....\r\n<br />\r\n<br />\r\nCeci vous concerne car vous êtes professeur enseignant dans l''une ou l''autre de ces classes.\r\n<br />\r\n<br />\r\nA partir de la réception de ce document, vous pourrez remplir les bulletins informatisés :\r\n<span class = "norme">\r\n<UL><li>soit au lycée à partir de n''importe quel poste connecté à Internet,\r\n<li>soit chez vous si vous disposez d''une connexion Internet.\r\n</ul>\r\n</span>\r\n<p class = "grand">Comment accéder au module de saisie (notes etappréciations) :</p>\r\n<span class = "norme">\r\n<UL>\r\n    <LI>Se connecter à Internet\r\n    <LI>Lancer un navigateur (FireFox de préférence, Opera, Internet Explorer, ...)\r\n    <LI>Se connecter au site : https://adresse_du_site/gepi\r\n    <LI>Après quelques instants une page apparaît vous invitant à entrer un nom d''identifiant et un mot de passe (cesinformations figurent en haut de cette page).\r\n    <br />ATTENTION : votre mot de passe est strictement confidentiel.\r\n    <br />\r\n    <br />Une fois ces informations fournies, cliquez sur le bouton "Ok".\r\n    <LI> Après quelques instants une page d''accueil apparaît.<br />\r\nLa première fois, Gepi vous demande de changer votre mot de passe.\r\nChoisissez-en un facile à retenir, mais non trivial (évitez toute date\r\nde naissance, nom d''animal familier, prénom, etc.), et contenant\r\nlettre(s), chiffre(s), et caractère(s) non alphanumérique(s).<br />\r\nLes fois suivantes, vous arriverez directement au menu général de\r\nl''application. Pour bien prendre connaissance des possibilités de\r\nl''application, n''hésitez pas à essayer tous les liens disponibles !\r\n</ul></span>\r\n<p class = "grand">Remarque :</p>\r\n<p>GEPI est prévu pour que chaque professeur ne puisse modifier les notes ou les appréciations que dans les rubriques qui le concernent et uniquement pour ses élèves.\r\n<br />\r\nJe reste à votre disposition pour tout renseignement complémentaire.\r\n    <br />\r\n    Le proviseur adjoint\r\n</p>'),
-('gepiYear', '2010/2011'),
-('gepiSchoolName', 'Nom du Lycée'),
+('gepiYear', '2009/2010'),
+('gepiSchoolName', 'Nom de l''établissement'),
 ('gepiSchoolAdress1', 'Adresse'),
 ('gepiSchoolAdress2', 'Boîte postale'),
 ('gepiSchoolZipCode', 'Code postal'),
@@ -4528,17 +4690,17 @@ INSERT INTO `setting` (`NAME`, `VALUE`) VALUES
 
 CREATE TABLE IF NOT EXISTS `suivi_eleve_cpe` (
   `id_suivi_eleve_cpe` int(11) NOT NULL auto_increment,
-  `eleve_suivi_eleve_cpe` varchar(30) NOT NULL default '',
-  `parqui_suivi_eleve_cpe` varchar(150) NOT NULL,
+  `eleve_suivi_eleve_cpe` varchar(30) collate latin1_general_ci NOT NULL default '',
+  `parqui_suivi_eleve_cpe` varchar(150) collate latin1_general_ci NOT NULL,
   `date_suivi_eleve_cpe` date NOT NULL default '0000-00-00',
   `heure_suivi_eleve_cpe` time NOT NULL,
-  `komenti_suivi_eleve_cpe` text NOT NULL,
-  `niveau_message_suivi_eleve_cpe` varchar(1) NOT NULL,
-  `action_suivi_eleve_cpe` varchar(2) NOT NULL,
+  `komenti_suivi_eleve_cpe` text collate latin1_general_ci NOT NULL,
+  `niveau_message_suivi_eleve_cpe` varchar(1) collate latin1_general_ci NOT NULL,
+  `action_suivi_eleve_cpe` varchar(2) collate latin1_general_ci NOT NULL,
   `support_suivi_eleve_cpe` tinyint(4) NOT NULL,
   `courrier_suivi_eleve_cpe` int(11) NOT NULL,
   PRIMARY KEY  (`id_suivi_eleve_cpe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `suivi_eleve_cpe`
@@ -4554,9 +4716,9 @@ CREATE TABLE IF NOT EXISTS `suivi_eleve_cpe` (
 CREATE TABLE IF NOT EXISTS `synthese_app_classe` (
   `id_classe` int(11) NOT NULL default '0',
   `periode` int(11) NOT NULL default '0',
-  `synthese` text NOT NULL,
+  `synthese` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_classe`,`periode`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `synthese_app_classe`
@@ -4572,11 +4734,11 @@ CREATE TABLE IF NOT EXISTS `synthese_app_classe` (
 CREATE TABLE IF NOT EXISTS `s_alerte_mail` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `id_classe` smallint(6) unsigned NOT NULL,
-  `destinataire` varchar(50) NOT NULL default '',
-  `adresse` varchar(250) default NULL,
+  `destinataire` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `adresse` varchar(250) collate latin1_general_ci default NULL,
   PRIMARY KEY  (`id`),
   KEY `id_classe` (`id_classe`,`destinataire`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `s_alerte_mail`
@@ -4593,12 +4755,30 @@ CREATE TABLE IF NOT EXISTS `s_autres_sanctions` (
   `id` int(11) NOT NULL auto_increment,
   `id_sanction` int(11) NOT NULL,
   `id_nature` int(11) NOT NULL,
-  `description` text NOT NULL,
+  `description` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `s_autres_sanctions`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `s_categories`
+--
+
+CREATE TABLE IF NOT EXISTS `s_categories` (
+  `id` int(11) NOT NULL auto_increment,
+  `categorie` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `sigle` varchar(20) collate latin1_general_ci NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `s_categories`
 --
 
 
@@ -4611,14 +4791,33 @@ CREATE TABLE IF NOT EXISTS `s_autres_sanctions` (
 CREATE TABLE IF NOT EXISTS `s_communication` (
   `id_communication` int(11) NOT NULL auto_increment,
   `id_incident` int(11) NOT NULL,
-  `login` varchar(50) NOT NULL,
-  `nature` varchar(255) NOT NULL,
-  `description` text NOT NULL,
+  `login` varchar(50) collate latin1_general_ci NOT NULL,
+  `nature` varchar(255) collate latin1_general_ci NOT NULL,
+  `description` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_communication`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `s_communication`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `s_delegation`
+--
+
+CREATE TABLE IF NOT EXISTS `s_delegation` (
+  `id_delegation` int(11) NOT NULL auto_increment,
+  `fct_delegation` varchar(100) collate latin1_general_ci NOT NULL,
+  `fct_autorite` varchar(50) collate latin1_general_ci NOT NULL,
+  `nom_autorite` varchar(50) collate latin1_general_ci NOT NULL,
+  PRIMARY KEY  (`id_delegation`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `s_delegation`
 --
 
 
@@ -4630,15 +4829,20 @@ CREATE TABLE IF NOT EXISTS `s_communication` (
 
 CREATE TABLE IF NOT EXISTS `s_exclusions` (
   `id_exclusion` int(11) NOT NULL auto_increment,
-  `id_sanction` int(11) NOT NULL,
-  `date_debut` date NOT NULL,
-  `heure_debut` varchar(20) NOT NULL,
-  `date_fin` date NOT NULL,
-  `heure_fin` varchar(20) NOT NULL,
-  `travail` text NOT NULL,
-  `lieu` varchar(255) NOT NULL,
+  `id_sanction` int(11) NOT NULL default '0',
+  `date_debut` date NOT NULL default '0000-00-00',
+  `heure_debut` varchar(20) collate latin1_general_ci NOT NULL default '',
+  `date_fin` date NOT NULL default '0000-00-00',
+  `heure_fin` varchar(20) collate latin1_general_ci NOT NULL default '',
+  `travail` text collate latin1_general_ci NOT NULL,
+  `lieu` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `nombre_jours` varchar(50) collate latin1_general_ci NOT NULL,
+  `qualification_faits` text collate latin1_general_ci NOT NULL,
+  `num_courrier` varchar(50) collate latin1_general_ci NOT NULL,
+  `type_exclusion` varchar(50) collate latin1_general_ci NOT NULL,
+  `id_signataire` int(11) NOT NULL,
   PRIMARY KEY  (`id_exclusion`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `s_exclusions`
@@ -4653,17 +4857,17 @@ CREATE TABLE IF NOT EXISTS `s_exclusions` (
 
 CREATE TABLE IF NOT EXISTS `s_incidents` (
   `id_incident` int(11) NOT NULL auto_increment,
-  `declarant` varchar(50) NOT NULL,
+  `declarant` varchar(50) collate latin1_general_ci NOT NULL,
   `date` date NOT NULL,
-  `heure` varchar(20) NOT NULL,
+  `heure` varchar(20) collate latin1_general_ci NOT NULL,
   `id_lieu` int(11) NOT NULL,
-  `nature` varchar(255) NOT NULL,
+  `nature` varchar(255) collate latin1_general_ci NOT NULL,
   `id_categorie` int(11) default NULL,
-  `description` text NOT NULL,
-  `etat` varchar(20) NOT NULL,
-  `message_id` varchar(50) NOT NULL,
+  `description` text collate latin1_general_ci NOT NULL,
+  `etat` varchar(20) collate latin1_general_ci NOT NULL,
+  `message_id` varchar(50) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_incident`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `s_incidents`
@@ -4678,9 +4882,9 @@ CREATE TABLE IF NOT EXISTS `s_incidents` (
 
 CREATE TABLE IF NOT EXISTS `s_lieux_incidents` (
   `id` int(11) NOT NULL auto_increment,
-  `lieu` varchar(255) NOT NULL,
+  `lieu` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=6 ;
 
 --
 -- Contenu de la table `s_lieux_incidents`
@@ -4701,11 +4905,11 @@ INSERT INTO `s_lieux_incidents` (`id`, `lieu`) VALUES
 
 CREATE TABLE IF NOT EXISTS `s_mesures` (
   `id` int(11) NOT NULL auto_increment,
-  `type` enum('prise','demandee') default NULL,
-  `mesure` varchar(50) NOT NULL,
-  `commentaire` text NOT NULL,
+  `type` enum('prise','demandee') collate latin1_general_ci default NULL,
+  `mesure` varchar(50) collate latin1_general_ci NOT NULL,
+  `commentaire` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=5 ;
 
 --
 -- Contenu de la table `s_mesures`
@@ -4726,12 +4930,12 @@ INSERT INTO `s_mesures` (`id`, `type`, `mesure`, `commentaire`) VALUES
 CREATE TABLE IF NOT EXISTS `s_protagonistes` (
   `id` int(11) NOT NULL auto_increment,
   `id_incident` int(11) NOT NULL,
-  `login` varchar(50) NOT NULL,
-  `statut` varchar(50) NOT NULL,
-  `qualite` varchar(50) NOT NULL,
-  `avertie` enum('N','O') NOT NULL default 'N',
+  `login` varchar(50) collate latin1_general_ci NOT NULL,
+  `statut` varchar(50) collate latin1_general_ci NOT NULL,
+  `qualite` varchar(50) collate latin1_general_ci NOT NULL,
+  `avertie` enum('N','O') collate latin1_general_ci NOT NULL default 'N',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `s_protagonistes`
@@ -4746,9 +4950,9 @@ CREATE TABLE IF NOT EXISTS `s_protagonistes` (
 
 CREATE TABLE IF NOT EXISTS `s_qualites` (
   `id` int(11) NOT NULL auto_increment,
-  `qualite` varchar(50) NOT NULL,
+  `qualite` varchar(50) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=5 ;
 
 --
 -- Contenu de la table `s_qualites`
@@ -4763,6 +4967,28 @@ INSERT INTO `s_qualites` (`id`, `qualite`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `s_reports`
+--
+
+CREATE TABLE IF NOT EXISTS `s_reports` (
+  `id_report` int(11) NOT NULL auto_increment,
+  `id_sanction` int(11) NOT NULL,
+  `id_type_sanction` int(11) NOT NULL,
+  `nature_sanction` varchar(255) collate latin1_general_ci NOT NULL,
+  `date` date NOT NULL,
+  `informations` text collate latin1_general_ci NOT NULL,
+  `motif_report` varchar(255) collate latin1_general_ci NOT NULL,
+  PRIMARY KEY  (`id_report`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
+
+--
+-- Contenu de la table `s_reports`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `s_retenues`
 --
 
@@ -4770,12 +4996,12 @@ CREATE TABLE IF NOT EXISTS `s_retenues` (
   `id_retenue` int(11) NOT NULL auto_increment,
   `id_sanction` int(11) NOT NULL,
   `date` date NOT NULL,
-  `heure_debut` varchar(20) NOT NULL,
+  `heure_debut` varchar(20) collate latin1_general_ci NOT NULL,
   `duree` float NOT NULL,
-  `travail` text NOT NULL,
-  `lieu` varchar(255) NOT NULL,
+  `travail` text collate latin1_general_ci NOT NULL,
+  `lieu` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_retenue`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `s_retenues`
@@ -4790,13 +5016,13 @@ CREATE TABLE IF NOT EXISTS `s_retenues` (
 
 CREATE TABLE IF NOT EXISTS `s_sanctions` (
   `id_sanction` int(11) NOT NULL auto_increment,
-  `login` varchar(50) NOT NULL,
-  `description` text NOT NULL,
-  `nature` varchar(255) NOT NULL,
-  `effectuee` enum('N','O') NOT NULL,
+  `login` varchar(50) collate latin1_general_ci NOT NULL,
+  `description` text collate latin1_general_ci NOT NULL,
+  `nature` varchar(255) collate latin1_general_ci NOT NULL,
+  `effectuee` enum('N','O') collate latin1_general_ci NOT NULL,
   `id_incident` int(11) NOT NULL,
   PRIMARY KEY  (`id_sanction`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `s_sanctions`
@@ -4812,11 +5038,11 @@ CREATE TABLE IF NOT EXISTS `s_sanctions` (
 CREATE TABLE IF NOT EXISTS `s_traitement_incident` (
   `id` int(11) NOT NULL auto_increment,
   `id_incident` int(11) NOT NULL,
-  `login_ele` varchar(50) NOT NULL,
-  `login_u` varchar(50) NOT NULL,
+  `login_ele` varchar(50) collate latin1_general_ci NOT NULL,
+  `login_u` varchar(50) collate latin1_general_ci NOT NULL,
   `id_mesure` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `s_traitement_incident`
@@ -4833,10 +5059,10 @@ CREATE TABLE IF NOT EXISTS `s_travail` (
   `id_travail` int(11) NOT NULL auto_increment,
   `id_sanction` int(11) NOT NULL,
   `date_retour` date NOT NULL,
-  `heure_retour` varchar(20) NOT NULL,
-  `travail` text NOT NULL,
+  `heure_retour` varchar(20) collate latin1_general_ci NOT NULL,
+  `travail` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_travail`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `s_travail`
@@ -4851,9 +5077,9 @@ CREATE TABLE IF NOT EXISTS `s_travail` (
 
 CREATE TABLE IF NOT EXISTS `s_types_sanctions` (
   `id_nature` int(11) NOT NULL auto_increment,
-  `nature` varchar(255) NOT NULL,
+  `nature` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_nature`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=3 ;
 
 --
 -- Contenu de la table `s_types_sanctions`
@@ -4872,8 +5098,8 @@ INSERT INTO `s_types_sanctions` (`id_nature`, `nature`) VALUES
 CREATE TABLE IF NOT EXISTS `tempo` (
   `id_classe` int(11) NOT NULL default '0',
   `max_periode` int(11) NOT NULL default '0',
-  `num` char(32) NOT NULL default '0'
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `num` char(32) collate latin1_general_ci NOT NULL default '0'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `tempo`
@@ -4887,9 +5113,9 @@ CREATE TABLE IF NOT EXISTS `tempo` (
 --
 
 CREATE TABLE IF NOT EXISTS `tempo2` (
-  `col1` varchar(100) NOT NULL default '',
-  `col2` varchar(100) NOT NULL default ''
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `col1` varchar(100) collate latin1_general_ci NOT NULL default '',
+  `col2` varchar(100) collate latin1_general_ci NOT NULL default ''
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `tempo2`
@@ -4903,32 +5129,32 @@ CREATE TABLE IF NOT EXISTS `tempo2` (
 --
 
 CREATE TABLE IF NOT EXISTS `temp_gep_import` (
-  `ID_TEMPO` varchar(40) NOT NULL default '',
-  `LOGIN` varchar(40) NOT NULL default '',
-  `ELENOM` varchar(40) NOT NULL default '',
-  `ELEPRE` varchar(40) NOT NULL default '',
-  `ELESEXE` varchar(40) NOT NULL default '',
-  `ELEDATNAIS` varchar(40) NOT NULL default '',
-  `ELENOET` varchar(40) NOT NULL default '',
-  `ERENO` varchar(40) NOT NULL default '',
-  `ELEDOUBL` varchar(40) NOT NULL default '',
-  `ELENONAT` varchar(40) NOT NULL default '',
-  `ELEREG` varchar(40) NOT NULL default '',
-  `DIVCOD` varchar(40) NOT NULL default '',
-  `ETOCOD_EP` varchar(40) NOT NULL default '',
-  `ELEOPT1` varchar(40) NOT NULL default '',
-  `ELEOPT2` varchar(40) NOT NULL default '',
-  `ELEOPT3` varchar(40) NOT NULL default '',
-  `ELEOPT4` varchar(40) NOT NULL default '',
-  `ELEOPT5` varchar(40) NOT NULL default '',
-  `ELEOPT6` varchar(40) NOT NULL default '',
-  `ELEOPT7` varchar(40) NOT NULL default '',
-  `ELEOPT8` varchar(40) NOT NULL default '',
-  `ELEOPT9` varchar(40) NOT NULL default '',
-  `ELEOPT10` varchar(40) NOT NULL default '',
-  `ELEOPT11` varchar(40) NOT NULL default '',
-  `ELEOPT12` varchar(40) NOT NULL default ''
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `ID_TEMPO` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `LOGIN` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELENOM` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEPRE` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELESEXE` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEDATNAIS` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELENOET` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ERENO` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEDOUBL` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELENONAT` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEREG` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `DIVCOD` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ETOCOD_EP` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT1` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT2` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT3` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT4` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT5` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT6` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT7` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT8` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT9` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT10` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT11` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `ELEOPT12` varchar(40) collate latin1_general_ci NOT NULL default ''
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `temp_gep_import`
@@ -4943,15 +5169,15 @@ CREATE TABLE IF NOT EXISTS `temp_gep_import` (
 
 CREATE TABLE IF NOT EXISTS `tentatives_intrusion` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `login` varchar(255) NOT NULL default '',
-  `adresse_ip` varchar(255) NOT NULL,
+  `login` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `adresse_ip` varchar(255) collate latin1_general_ci NOT NULL,
   `date` datetime NOT NULL,
   `niveau` smallint(6) NOT NULL,
-  `fichier` varchar(255) NOT NULL,
-  `description` text NOT NULL,
-  `statut` varchar(255) NOT NULL,
+  `fichier` varchar(255) collate latin1_general_ci NOT NULL,
+  `description` text collate latin1_general_ci NOT NULL,
+  `statut` varchar(255) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id`,`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `tentatives_intrusion`
@@ -4965,28 +5191,28 @@ CREATE TABLE IF NOT EXISTS `tentatives_intrusion` (
 --
 
 CREATE TABLE IF NOT EXISTS `utilisateurs` (
-  `login` varchar(50) NOT NULL default '',
-  `nom` varchar(50) NOT NULL default '',
-  `prenom` varchar(50) NOT NULL default '',
-  `civilite` varchar(5) NOT NULL default '',
-  `password` varchar(32) NOT NULL default '',
-  `email` varchar(50) NOT NULL default '',
-  `show_email` varchar(3) NOT NULL default 'no',
-  `statut` varchar(20) NOT NULL default '',
-  `etat` varchar(20) NOT NULL default '',
-  `change_mdp` char(1) NOT NULL default 'n',
+  `login` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `nom` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `prenom` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `civilite` varchar(5) collate latin1_general_ci NOT NULL default '',
+  `password` varchar(32) collate latin1_general_ci NOT NULL default '',
+  `email` varchar(50) collate latin1_general_ci NOT NULL default '',
+  `show_email` varchar(3) collate latin1_general_ci NOT NULL default 'no',
+  `statut` varchar(20) collate latin1_general_ci NOT NULL default '',
+  `etat` varchar(20) collate latin1_general_ci NOT NULL default '',
+  `change_mdp` char(1) collate latin1_general_ci NOT NULL default 'n',
   `date_verrouillage` datetime NOT NULL default '2006-01-01 00:00:00',
-  `password_ticket` varchar(255) NOT NULL,
+  `password_ticket` varchar(255) collate latin1_general_ci NOT NULL,
   `ticket_expiration` datetime NOT NULL,
   `niveau_alerte` smallint(6) NOT NULL default '0',
   `observation_securite` tinyint(4) NOT NULL default '0',
-  `temp_dir` varchar(255) NOT NULL,
-  `numind` varchar(255) NOT NULL,
-  `auth_mode` enum('gepi','ldap','sso') NOT NULL default 'gepi',
+  `temp_dir` varchar(255) collate latin1_general_ci NOT NULL,
+  `numind` varchar(255) collate latin1_general_ci NOT NULL,
+  `auth_mode` enum('gepi','ldap','sso') collate latin1_general_ci NOT NULL default 'gepi',
   PRIMARY KEY  (`login`),
   KEY `statut` (`statut`),
   KEY `etat` (`etat`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
 -- Contenu de la table `utilisateurs`
@@ -4998,21 +5224,57 @@ INSERT INTO `utilisateurs` (`login`, `nom`, `prenom`, `civilite`, `password`, `e
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `vocabulaire`
+--
+
+CREATE TABLE IF NOT EXISTS `vocabulaire` (
+  `id` int(11) NOT NULL auto_increment,
+  `terme` varchar(255) collate latin1_general_ci NOT NULL default '',
+  `terme_corrige` varchar(255) collate latin1_general_ci NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=18 ;
+
+--
+-- Contenu de la table `vocabulaire`
+--
+
+INSERT INTO `vocabulaire` (`id`, `terme`, `terme_corrige`) VALUES
+(1, 'il peu', 'il peut'),
+(2, 'elle peu', 'elle peut'),
+(3, 'un peut', 'un peu'),
+(4, 'trop peut', 'trop peu'),
+(5, 'baise', 'baisse'),
+(6, 'baisé', 'baissé'),
+(7, 'baiser', 'baisser'),
+(8, 'courge', 'courage'),
+(9, 'camer', 'calmer'),
+(10, 'camé', 'calmé'),
+(11, 'came', 'calme'),
+(12, 'tu est', 'tu es'),
+(13, 'tu et', 'tu es'),
+(14, 'il et', 'il est'),
+(15, 'il es', 'il est'),
+(16, 'elle et', 'elle est'),
+(17, 'elle es', 'elle est');
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `vs_alerts_eleves`
 --
 
 CREATE TABLE IF NOT EXISTS `vs_alerts_eleves` (
   `id_alert_eleve` int(11) NOT NULL auto_increment,
-  `eleve_alert_eleve` varchar(100) NOT NULL,
+  `eleve_alert_eleve` varchar(100) collate latin1_general_ci NOT NULL,
   `date_alert_eleve` date NOT NULL,
   `groupe_alert_eleve` int(11) NOT NULL,
   `type_alert_eleve` int(11) NOT NULL,
   `nb_trouve` int(11) NOT NULL,
-  `temp_insert` varchar(100) NOT NULL,
+  `temp_insert` varchar(100) collate latin1_general_ci NOT NULL,
   `etat_alert_eleve` tinyint(4) NOT NULL,
-  `etatpar_alert_eleve` varchar(100) NOT NULL,
+  `etatpar_alert_eleve` varchar(100) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_alert_eleve`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `vs_alerts_eleves`
@@ -5027,10 +5289,10 @@ CREATE TABLE IF NOT EXISTS `vs_alerts_eleves` (
 
 CREATE TABLE IF NOT EXISTS `vs_alerts_groupes` (
   `id_alert_groupe` int(11) NOT NULL auto_increment,
-  `nom_alert_groupe` varchar(150) NOT NULL,
-  `creerpar_alert_groupe` varchar(100) NOT NULL,
+  `nom_alert_groupe` varchar(150) collate latin1_general_ci NOT NULL,
+  `creerpar_alert_groupe` varchar(100) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_alert_groupe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `vs_alerts_groupes`
@@ -5046,13 +5308,13 @@ CREATE TABLE IF NOT EXISTS `vs_alerts_groupes` (
 CREATE TABLE IF NOT EXISTS `vs_alerts_types` (
   `id_alert_type` int(11) NOT NULL auto_increment,
   `groupe_alert_type` int(11) NOT NULL,
-  `type_alert_type` varchar(10) NOT NULL,
-  `specifisite_alert_type` varchar(25) NOT NULL,
-  `eleve_concerne` text NOT NULL,
+  `type_alert_type` varchar(10) collate latin1_general_ci NOT NULL,
+  `specifisite_alert_type` varchar(25) collate latin1_general_ci NOT NULL,
+  `eleve_concerne` text collate latin1_general_ci NOT NULL,
   `date_debut_comptage` date NOT NULL,
-  `nb_comptage_limit` varchar(200) NOT NULL,
+  `nb_comptage_limit` varchar(200) collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`id_alert_type`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=1 ;
 
 --
 -- Contenu de la table `vs_alerts_types`

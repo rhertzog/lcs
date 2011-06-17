@@ -33,7 +33,7 @@ function finsession(){
   var depuis2=(maintenant2-debut)/1000;
   if (depuis2>duree) {
   		jouer_musique(31);
-       alert(" Votre session a expiré. \n Les données non enregistrées seront perdues !");
+       alert(" Votre session a expir\351. \n Les donn\351es non enregistr\351es seront perdues !");
        stopper_musique();
     }
   

@@ -1,8 +1,8 @@
 <?php
 /*
- * @version: $Id: index2.php 5310 2010-09-15 06:51:52Z delineau $
+ * @version: $Id: index2.php 6635 2011-03-07 17:58:33Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -32,7 +32,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 
 if (!checkAccess()) {
@@ -59,6 +59,8 @@ $nom_aid = @mysql_result($call_data, 0, "nom");
 $activer_outils_comp = @mysql_result($call_data, 0, "outils_complementaires");
 
 if ((NiveauGestionAid($_SESSION["login"],$indice_aid) >= 10) and (isset($_POST["is_posted"]))) {
+	check_token();
+
     // Enregistrement des données
     // On va chercher les aid déjà existantes
     $calldata = mysql_query("SELECT * FROM aid WHERE indice_aid='$indice_aid'");
@@ -154,7 +156,7 @@ $calldata = mysql_query("SELECT * FROM aid WHERE indice_aid='$indice_aid' ORDER 
 $nombreligne = mysql_num_rows($calldata);
 
 if ((NiveauGestionAid($_SESSION["login"],$indice_aid) >= 10) and ($activer_outils_comp == "y"))
-    echo"<form action=\"index2.php\" name=\"form1\" method=\"post\">\n";
+    echo "<form action=\"index2.php\" name=\"form1\" method=\"post\">\n";
 echo "<table border='1' cellpadding='5' class='boireaus' summary=''>";
 echo "<tr><th><p><a href='index2.php?order_by=numero,nom&amp;indice_aid=$indice_aid'>N°</a></p></th>\n";
 echo "<th><p><a href='index2.php?order_by=nom&amp;indice_aid=$indice_aid'>Nom</a></p></th>";
@@ -267,7 +269,7 @@ while ($i < $nombreligne){
     }
     // colonne "Supprimer"
     if (NiveauGestionAid($_SESSION["login"],$indice_aid,$aid_id) >= 5)
-        echo "<td><p class='medium'><a href='../lib/confirm_query.php?liste_cible=$aid_id&amp;liste_cible3=$indice_aid&amp;action=del_aid'>supprimer</a></p></td></tr>\n";
+        echo "<td><p class='medium'><a href='../lib/confirm_query.php?liste_cible=$aid_id&amp;liste_cible3=$indice_aid&amp;action=del_aid".add_token_in_url()."'>supprimer</a></p></td></tr>\n";
 
 $i++;
 }
@@ -284,6 +286,9 @@ if ((NiveauGestionAid($_SESSION["login"],$indice_aid) >= 10) and ($activer_outil
 	echo "</center>\n";
   echo "<input type=\"hidden\" name=\"indice_aid\" value=\"".$indice_aid."\" />\n";
   echo "<input type=\"hidden\" name=\"is_posted\" value=\"y\" />\n";
+
+  echo add_token_field();
+
   echo "</form>\n";
   echo "<script type='text/javascript'>
   function CocheColonne(i) {

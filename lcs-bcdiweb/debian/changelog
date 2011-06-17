@@ -1,3 +1,24 @@
+lcs-bcdiweb (2.4.7.3) Lcs; urgency=low
+
+  * add compatibility registers_global off
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 09 Dec 2010 14:22:16 +0100
+
+lcs-bcdiweb (2.4.7.2) Lcs; urgency=low
+
+  * display callback from synchro script
+  * change rights on /etc/cron.d/bcdiweb 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 25 Nov 2010 13:48:36 +0100
+
+lcs-bcdiweb (2.4.7.1) Lcs; urgency=low
+
+  * modif links in mnu.d
+  * diplay value of parameters in the form
+  * add path for rsync
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 18 Nov 2010 18:53:54 +0100
+
 lcs-bcdiweb (2.4.7) unstable; urgency=low
 
   * Initial Release.

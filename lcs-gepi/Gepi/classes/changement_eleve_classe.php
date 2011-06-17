@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: changement_eleve_classe.php 5429 2010-09-26 13:42:26Z crob $
+* $Id: changement_eleve_classe.php 6480 2011-02-09 13:39:57Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -136,6 +136,8 @@ function recherche_enfant($id_parent_tmp, $current_group, $periode_num, $id_raci
 $titre_page = "Gestion des classes | Changement de classe";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE **********************************
+
+//debug_var();
 
 echo "<p class='bold'>\n";
 echo "<a href='classes_const.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a>\n";
@@ -293,6 +295,8 @@ else {
 
 		echo "<form enctype='multipart/form-data' name='form_assoc_grp' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
 
+		echo add_token_field();
+
 		echo "<table class='boireaus' border='1' summary='Tableau des enseignements de la classe actuelle et de leurs correspondances dans la classe future'>\n";
 		echo "<tr>\n";
 		echo "<th width='50%'>Enseignements de $classe</th>\n";
@@ -440,6 +444,8 @@ Evitez les 'fantaisies';o).</p>
 </blockquote>\n";
 	}
 	else {
+		check_token(false);
+
 		$tab_per=array($periode_num);
 
 		if($chgt_periode_sup=="y") {
@@ -453,6 +459,10 @@ Evitez les 'fantaisies';o).</p>
 
 		}
 
+		affiche_debug("count(\$tab_per)=".count($tab_per)."<br />\n");
+		for($j=0;$j<count($tab_per);$j++) {
+			affiche_debug("\$tab_per[$j]=$tab_per[$j]<br />");
+		}
 
 		$gepi_denom_boite=getSettingValue("gepi_denom_boite");
 
@@ -597,6 +607,8 @@ Evitez les 'fantaisies';o).</p>
 												facultatif='$lig_cd->facultatif',
 												date='$lig_cd->date',
 												coef='$lig_cd->coef',
+												note_sur='$lig_cd->note_sur',
+												ramener_sur_referentiel='$lig_cd->ramener_sur_referentiel',
 												display_parents='$lig_cd->display_parents',
 												display_parents_app='$lig_cd->display_parents_app';";
 										affiche_debug("$sql<br />");
@@ -692,8 +704,13 @@ Evitez les 'fantaisies';o).</p>
 			echo "</p>\n";
 		}
 
+		affiche_debug("count(\$tab_per)=".count($tab_per)."<br />\n");
 		for($j=0;$j<count($tab_per);$j++) {
-			$current_periode_num=$tab_per[$j];
+			affiche_debug("\$tab_per[$j]=$tab_per[$j]<br />");
+		}
+
+		for($jj=0;$jj<count($tab_per);$jj++) {
+			$current_periode_num=$tab_per[$jj];
 
 			// Inscription dans la nouvelle classe pour la période
 			$sql="INSERT INTO j_eleves_classes SET login='$login_eleve', id_classe='".$id_future_classe."', periode='$current_periode_num';";

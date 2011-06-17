@@ -1,8 +1,0 @@
-<div style="text-align: center">
-<a name="formulaire_recherche" id="formulaire_recherche"></a>
-<form action="[(#ENV{lien})]" method="get" style="display: inline; text-align: center">
-	[(#ENV{lien}|form_hidden)]
-	[<input type="hidden" name="lang" value="(#ENV{lang})" />]
-	<input type="text" class="forml" name="recherche" id="recherche" value="[(#ENV{recherche}|sinon{<:info_rechercher:>" onfocus="this.value='';})]" />
-</form>
-</div>

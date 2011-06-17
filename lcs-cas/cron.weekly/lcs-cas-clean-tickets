@@ -1,0 +1,4 @@
+thedate=$(date +"%Y-%m-%d");
+
+mysql -e "delete from casserver.casserver_lt where created_on <= '$thedate'"
+mysql -e "delete from casserver.casserver_tgt where created_on <= '$thedate'"

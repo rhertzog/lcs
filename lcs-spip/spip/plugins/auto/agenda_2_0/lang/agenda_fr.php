@@ -19,9 +19,15 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'bouton_supprimer' => "Supprimer",
 
 'creer_evenement' => "Cr&eacute;er un &eacute;v&eacute;nement",
+'confirm_suppression_inscription' => "Voulez-vous vraiment supprimer cette inscription ?",
 
 'erreur_article_manquant' => 'Vous devez indiquer un article',
 'erreur_article_interdit' => 'Vous n\'avez pas le droit d\'associer cet &eacute;v&eacute;nement &agrave; cet article',
+'erreur_date' => 'Cette date est incorrecte',
+'erreur_heure' => 'Cette heure est incorrecte',
+'erreur_date_corrigee' => 'La date a &eacute;t&eacute; corrig&eacute;e',
+'erreur_heure_corrigee' => 'L\'heure a &eacute;t&eacute; corrig&eacute;e',
+'erreur_date_avant_apres' => 'Indiquez une date de fin apr&egrave;s la date de d&eacute;but !',
 
 'evenement_article' => 'Associ&eacute; &agrave; l\'article',
 'evenement_autres_occurences' => "Autres occurences :",
@@ -49,18 +55,22 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 'icone_creer_evenement' => 'Cr&eacute;er un nouvel &eacute;v&eacute;nement',
 'item_mots_cles_association_evenements' => 'aux &eacute;v&eacute;nements',
+'indiquez_votre_choix' => 'Indiquez votre choix',
 'info_un_evenement' => '1 &eacute;v&eacute;nement',
 'info_nombre_evenements' => '@nb@ &eacute;v&eacute;nements',
 'info_aucun_evenement' => 'Aucun &eacute;v&eacute;nement',
 'info_evenements' => '&Eacute;v&eacute;nements',
+'inscrits' => 'Inscriptions',
 
 'lien_retirer_evenement' => 'Supprimer',
+'lien_desinscrire' => 'Supprimer',
 'label_inscription' => 'Inscription en ligne',
 'label_places' => 'Limiter le nombre de places',
 'label_reponse_jyparticipe' => 'J\'y serai',
 'label_reponse_jyparticipe_peutetre' => 'J\'y serai peut-&ecirc;tre',
 'label_reponse_jyparticipe_pas' => 'Je n\'y vais pas',
 'label_vous_inscrire' => 'Votre participation',
+'liste_inscrits' => 'Liste des inscriptions',
 
 'mois_precedent' => 'mois pr&eacute;c&eacute;dent',
 'mois_suivant' => 'mois suivant',
@@ -82,6 +92,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 'sans_titre' => "(sans titre)",
 
 'toutes_rubriques' => 'Toutes',
+'telecharger' => 'T&eacute;l&eacute;charger',
 'texte_agenda' => 'AGENDA',
 'titre_sur_l_agenda' => "Sur l'agenda",
 'titre_cadre_ajouter_evenement' => 'Ajouter un &eacute;v&eacute;nement',
