@@ -1,3 +1,11 @@
+lcs-web (2.4.8.1) Lcs; urgency=low
+
+  [ Jean-Luc Chrétien ]
+  * Fix charset in Admin/edit_params.php 
+  * Fix bug in import comptes on scripts/import_comptes.php
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 17 Jun 2011 17:26:51 +0200
+
 lcs-web (2.4.8) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]

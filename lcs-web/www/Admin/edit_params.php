@@ -4,7 +4,7 @@
    Administration serveur LCS «Editions des parametres»
    AdminLCS/edit_params.php
    Equipe Tice academie de Caen
-   derniere mise a jour : 17/06/2010
+   derniere mise a jour : 17/06/2011
    Distribue selon les termes de la licence GPL
    ============================================= */
 if ($_SERVER['SCRIPT_NAME'] != "/setup/index.php") {
@@ -28,6 +28,7 @@ $submit= $_POST['submit'];
 	echo "<html>\n";
 	echo "	<head>\n";
 	echo "		<title>...::: Interface d'administration Serveur LCS :::...</title>\n";
+    echo "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n";
 	echo "		<link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n";
 	echo "	</head>\n";
     	echo "	<body>\n";

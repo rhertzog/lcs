@@ -661,7 +661,7 @@ body{
 </style>
 <!--head-->
 <title>Import de comptes</title>
-<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1' />
 <!--meta http-equiv='Refresh' CONTENT='120;URL=result.$timestamp.html#menu' /-->
 <link type='text/css' rel='stylesheet' href='$stylecss' />
 <body>
