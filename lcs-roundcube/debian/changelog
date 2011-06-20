@@ -1,8 +1,8 @@
-lcs-roundcube (2.4.8~5) Lcs; urgency=low
+lcs-roundcube (2.4.8~6) Lcs; urgency=low
 
   * Initial release.
   * Add plugin lcs-notify-desktop
   * Move 65_roundcube.conf 60_roundcube.conf
   * Modify Makefile
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 16 Jan 2011 16:48:32 +0100
+  * Add CAS authentication plugin
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 20 Jun 2011 17:51:18 +0200
