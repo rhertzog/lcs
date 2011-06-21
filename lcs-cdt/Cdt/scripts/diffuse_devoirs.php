@@ -66,13 +66,13 @@ if (isset($_GET['rubrique']))
 	//classe active 
 	$clas_act=$enrg[0];
 	//matière de la classe active
-	$mat=$enrg[1];
-	
+	$mat=utf8_encode($enrg[1]);
+	$mat_iso=$enrg[1];
 	}
 	
 // Recherche des classes de même niveau dans la matière
 $rq = "SELECT classe,id_prof FROM onglets
- WHERE login='{$_SESSION['login']}' AND classe != '$clas_act' and matiere = '$mat' ORDER BY classe ASC ";
+ WHERE login='{$_SESSION['login']}' AND classe != '$clas_act' and matiere = '$mat_iso' ORDER BY classe ASC ";
  
 // lancer la requête
 $result = @mysql_query ($rq) or die (mysql_error()); 

@@ -1,3 +1,9 @@
+lcs-cdt (2.4.8.3~1) LCS; urgency=low
+
+  * fix bug charset
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 21 Jun 2011 14:38:43 +0200
+
 lcs-cdt (2.4.8.2) LCS; urgency=low
 
   * remove tilde
