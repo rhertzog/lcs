@@ -2,7 +2,10 @@
 
 cd /home
 NBRHOMES=`ls -l | wc -l`
-ldapsearch -xLLL uid ou=people | grep uid: | cut -d ' ' -f 2 | while read PEOPLE
+BASE=`cat /etc/ldap/ldap.conf | grep ^BASE | cut -d ' ' -f 2`
+
+
+ldapsearch -xLLL -b ou=People,$BASE uid | grep uid: | cut -d ' ' -f 2 | while read PEOPLE
 do
        if [ ! -d /home/$PEOPLE ]; then
                 mkdir /home/$PEOPLE

@@ -1,3 +1,9 @@
+lcs-web (2.4.8.2~1) UNRELEASED; urgency=low
+
+  * Fix bug in createmaildir.sh
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 21 Jun 2011 16:46:59 +0200
+
 lcs-web (2.4.8.1) Lcs; urgency=low
 
   [ Jean-Luc Chrétien ]
