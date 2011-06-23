@@ -3,7 +3,6 @@
 /**
  * Theme information
  *
- * @version $Id$
  * @package phpMyAdmin-theme
  * @subpackage Darkblue_orange
  */
@@ -12,5 +11,5 @@
  *
  */
 $theme_name = 'Darkblue/orange';
-$theme_full_version = '2.9';
+$theme_full_version = '2.10';
 ?>
