@@ -1,3 +1,9 @@
+lcs-libjs (2.4.8.1) Lcs; urgency=low
+
+  * Add prototype framework version 1.7
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 24 Jun 2011 15:54:09 +0200
+
 lcs-libjs (2.4.8) Lcs; urgency=low
 
   * Add jquery-ui css theme : classic-blue-domz. 
