@@ -76,5 +76,5 @@ DESTDIR = /
 
 install:
 	install -s -o0 -g0 -m644 pam_cas.so $(DESTDIR)/lib/security
-	install -m640 ../conf/pam_cas.conf $(DESTDIR)/usr/share/doc/libpam-cas-esup2
+	install -m640 ../conf/pam_cas.conf $(DESTDIR)/usr/share/doc/libpam-cas
 	install -s -o0 -g0 -m750 castest  $(DESTDIR)/usr/sbin

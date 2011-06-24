@@ -35,7 +35,7 @@ build-stamp: configure-stamp
 
 	# Add here commands to compile the package.
 	$(MAKE) -C sources
-	#docbook-to-man debian/libpam-cas-esup2.sgml > libpam-cas-esup2.1
+	#docbook-to-man debian/libpam-cas.sgml > libpam-cas.1
 
 	touch $@
 
@@ -55,8 +55,8 @@ install: build
 	dh_clean -k 
 	dh_installdirs
 
-	# Add here commands to install the package into debian/libpam-cas-esup2.
-	$(MAKE) -C sources DESTDIR=$(CURDIR)/debian/libpam-cas-esup2 install
+	# Add here commands to install the package into debian/libpam-cas.
+	$(MAKE) -C sources DESTDIR=$(CURDIR)/debian/libpam-cas install
 
 
 # Build architecture-independent files here.

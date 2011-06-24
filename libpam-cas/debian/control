@@ -1,11 +1,11 @@
-Source: libpam-cas-esup2
+Source: libpam-cas
 Section: devel
 Priority: optional
 Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
 Build-Depends: libpam0g-dev, libssl-dev, debhelper (>= 4.0.0)
 Standards-Version: 3.6.1
 
-Package: libpam-cas-esup2
+Package: libpam-cas
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: CAS Pluggable Authentication Module for PAM
