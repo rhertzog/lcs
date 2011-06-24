@@ -35,7 +35,7 @@ $rcmail_config['cas_imap_caching'] = true;
 $rcmail_config['cas_imap_password'] = '';
 
 // CAS server host name.
-$rcmail_config['cas_hostname'] = '@@LCS@@';
+$rcmail_config['cas_hostname'] = '#HOSTNAME#';
 
 // CAS server port number.
 $rcmail_config['cas_port'] = 8443;

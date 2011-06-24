@@ -38,6 +38,10 @@ configure() {
 	# Make lcs_authentication config
 	cp $CONFIG_PATH/config_auth_lcs.inc.php.dist $CONFIGRCPLUG_PATH/lcs_authentication/config_auth_lcs.inc.php
 	sed -i "s|#PASS#|"$MYSQLPASS"|g" $CONFIGRCPLUG_PATH/lcs_authentication/config_auth_lcs.inc.php
+	# Make rouncube cas authentication config
+    HOSTNAME=`hostname -f`
+    cp $CONFIG_PATH/config_auth_cas.inc.php $CONFIGRCPLUG_PATH/cas_authentication/config.inc.php
+	sed -i "s|#HOSTNAME#|"$HOSTNAME"|g" $CONFIGRCPLUG_PATH/cas_authentication/config.inc.php
     # Fix rights on module
     /var/lib/lcs/roundcube/Scripts/fixrights.sh
     # Reload apache2
