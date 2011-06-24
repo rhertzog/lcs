@@ -5,7 +5,9 @@ all:
 install:
 	# install conf files
 	install -d $(DESTDIR)/etc/lcs/courier
-	install -m 644 conf/* $(DESTDIR)/etc/lcs/courier/
+	install -m 644 courier/* $(DESTDIR)/etc/lcs/courier/
+	install -d $(DESTDIR)/etc/lcs/pam.d
+	install -m 644 pam.d/* $(DESTDIR)/etc/lcs/pam.d/
 	
 	# install main conf script
 	install -d $(DESTDIR)/usr/share/lcs/scripts

@@ -1,0 +1,4 @@
+# PAM configuration file for Courier IMAP daemon
+
+auth sufficient /lib/security/pam_ldap.so
+auth required /lib/security/pam_cas.so -simap://localhost -f/etc/security/pam_cas.conf

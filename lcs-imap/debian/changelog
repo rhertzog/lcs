@@ -1,3 +1,12 @@
+lcs-imap (2.4.9~1) Lcs; urgency=low
+
+  * Modify pacakage for ENT authentication base on pam_cas
+    courier/authdaemonrc.ent courier/aithdaemonrc.lcs 
+    pam.d/imap.ent pam.d/imap.lcs
+    scripts/imap_reconfigure.sh
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 24 Jun 2011 12:06:02 +0200
+
 lcs-imap (2.4.8) Lcs; urgency=low
 
   * Change authldaprc to bind to LDAP to validate credentials so that

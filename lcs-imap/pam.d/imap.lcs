@@ -1,0 +1,6 @@
+# PAM configuration file for Courier IMAP daemon
+
+@include common-auth
+@include common-account
+@include common-password
+@include common-session
