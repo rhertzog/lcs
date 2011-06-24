@@ -1,5 +1,5 @@
 <?php
-/* helpdesk/index.php derniere mise a jour : 01/2010 Auteur MrT Equipe TICE CRDP BAsse Normandie */
+/* helpdesk/index.php derniere mise a jour : 23/06/2011 */
 require_once "./include/common.inc.php";
 
 list ($idpers, $login)= isauth();
@@ -21,11 +21,11 @@ body	{
 </style>
 
 <?php if ($administrator) : ?>
-	<link rel="stylesheet" type="text/css" href="/lib/js/ext/resources/css/ext-all.css"></link>
+	<link rel="stylesheet" type="text/css" href="/libjs/ext/resources/css/ext-all.css"></link>
 	<link rel="stylesheet" type="text/css" href="/helpdesk/css/tree.css"></link>
 <?php endif; ?>
 
-<script type='text/javascript' src='/lib/js/prototype.js'></script>
+<script type='text/javascript' src='/libjs/prototype/prototype.js'></script>
 
 <?php if ($administrator) {  
 	if (!$_SESSION['userHD']) {
@@ -34,9 +34,9 @@ body	{
  }
  ?>	
 	<script type='text/javascript' src='/helpdesk/js/arbo.js'></script>
-	<script type='text/javascript' src='/lib/js/ext/adapter/prototype/ext-prototype-adapter.js'></script>
-	<script type='text/javascript' src='/lib/js/ext/adapter/ext/ext-base.js'></script>
-	<script type='text/javascript' src='/lib/js/ext/ext-all-debug.js'></script>
+	<script type='text/javascript' src='/libjs/ext/adapter/prototype/ext-prototype-adapter.js'></script>
+	<script type='text/javascript' src='/libjs/ext/adapter/ext/ext-base.js'></script>
+	<script type='text/javascript' src='/libjs/ext/ext-all-debug.js'></script>
 	<script type='text/javascript' src='/helpdesk/js/RowExpander.js'></script>
 	<script type="text/javascript" src="/helpdesk/js/helpdesk.js"></script>
 	<script type='text/javascript'>
