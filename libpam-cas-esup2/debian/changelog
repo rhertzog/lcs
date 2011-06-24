@@ -1,7 +1,0 @@
-libpam-cas-esup2 (2.0.11-1~2) Lcs; urgency=low
-
-  * Initial release 
-  * Modif pam_cas.conf for roundcube proxy
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 20 Jun 2011 17:23:33 +0200
-
