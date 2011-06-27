@@ -1,8 +1,8 @@
-lcs-helpdesk (2.4.8.1) Lcs; urgency=low
+lcs-helpdesk (2.4.8) Lcs; urgency=low
 
   * Fix path to prototype framework
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 24 Jun 2011 16:10:55 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 27 Jun 2011 17:27:58 +0200
 
 lcs-helpdesk (2.4.7) Lcs; urgency=low
 
