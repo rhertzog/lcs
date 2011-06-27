@@ -39,6 +39,12 @@ $TITRE = "Élèves";
 <hr />
 
 <?php
+if($SECTION=='parent')
+{
+	// échanger $PAGE et $SECTION pour piocher le bon fichier sans avoir besoin de le dupliquer, tout en gardant ce menu
+	$PAGE    = 'administrateur_'.$SECTION;
+	$SECTION = 'eleve';
+}
 // Afficher la bonne page et appeler le bon js / ajax par la suite
 $fichier_section = './pages/'.$PAGE.'_'.$SECTION.'.php';
 if(is_file($fichier_section))

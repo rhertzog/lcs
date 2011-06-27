@@ -392,7 +392,6 @@ $(document).ready
 			function()
 			{
 				// récupérer le nom de l'item et le reporter
-				item_id  = $(this).parent().parent().attr('id').substring(3);
 				item_nom = htmlspecialchars( entity_convert( $('#f_nom').val() ) );
 				$('#zone_socle span.f_nom').html(item_nom);
 				// récupérer la relation au socle commun et la cocher
@@ -573,7 +572,7 @@ $(document).ready
 									case 'n3' :	// item
 										coef_texte  = '<img src="./_img/x'+coef+'.gif" alt="" title="Coefficient '+coef+'." />';
 										cart_title  = (cart>0) ? 'Demande possible.' : 'Demande interdite.' ;
-										cart_texte  = '<img src="./_img/cart'+cart+'.png" title="'+cart_title+'" /> ';
+										cart_texte  = '<img src="./_img/cart'+cart+'.png" title="'+cart_title+'" />';
 										socle_image = (socle>0) ? 'on' : 'off' ;
 										socle_nom   = $('#f_intitule').val();
 										socle_texte = '<img src="./_img/socle_'+socle_image+'.png" alt="" title="'+socle_nom+'" lang="id_'+socle+'" />';
@@ -696,7 +695,7 @@ $(document).ready
 								{
 									coef_texte  = '<img src="./_img/x'+coef+'.gif" alt="" title="Coefficient '+coef+'." />';
 									cart_title  = (cart>0) ? 'Demande possible.' : 'Demande interdite.' ;
-									cart_texte  = '<img src="./_img/cart'+cart+'.png" title="'+cart_title+'" /> ';
+									cart_texte  = '<img src="./_img/cart'+cart+'.png" title="'+cart_title+'" />';
 									socle_image = (socle>0) ? 'on' : 'off' ;
 									socle_nom   = $('#f_intitule').val();
 									socle_texte = '<img src="./_img/socle_'+socle_image+'.png" alt="" title="'+socle_nom+'" lang="id_'+socle_id+'" />';

@@ -48,8 +48,8 @@ header("Content-type: image/png");
 require_once('../../_inc/fonction_clean.php');
 
 $dossier = isset($_GET['dossier']) ? clean_entier($_GET['dossier'])                : 'x' ;
-$nom     = isset($_GET['nom'])     ? mb_substr(clean_nom($_GET['nom']),0,20)       : ' ' ;
-$prenom  = isset($_GET['prenom'])  ? mb_substr(clean_prenom($_GET['prenom']),0,20) : ' ' ;
+$nom     = isset($_GET['nom'])     ? mb_substr(clean_nom($_GET['nom']),0,25)       : ' ' ;
+$prenom  = isset($_GET['prenom'])  ? mb_substr(clean_prenom($_GET['prenom']),0,25) : ' ' ;
 $br_line = isset($_GET['br'])      ? 2                                             : 1 ; // 2 pour nom / retour à la ligne / prénom ; 1 pour nom / prénom à la suite
 
 $chemin = '../../__tmp/badge/'.$dossier;
@@ -73,7 +73,7 @@ if(!file_exists($fichier))
 	$hauteur_tmp    = $taille_police*2*$br_line;
 	$largeur_tmp    = $taille_police*40;
 	$image_tmp      = imagecreate($largeur_tmp,$hauteur_tmp);
-	$couleur_fond   = imagecolorallocate($image_tmp,204,204,255); // Le premier appel à imagecolorallocate() remplit la couleur de fond.
+	$couleur_fond   = imagecolorallocate($image_tmp,221,221,255); // Le premier appel à imagecolorallocate() remplit la couleur de fond.
 	$couleur_texte  = imagecolorallocate($image_tmp,0,0,0);
 	$police         = './arial.ttf';
 	// imagettftext() : 3e param = angle de rotation ; 4e et 5e param = coordonnées du coin inférieur gauche du premier caractère

@@ -49,7 +49,7 @@ if( (!$palier_id) || (!$palier_nom) || (!$groupe_id) || (!$groupe_nom) || (!coun
 }
 
 // Permet d'avoir des informations accessibles en cas d'erreur type « PHP Fatal error : Allowed memory size of ... bytes exhausted ».
-ajouter_log_PHP( $log_objet='Demande de bilan' , $log_contenu=serialize($_POST) , $log_fichier=__FILE__ , $log_ligne=__LINE__ , $only_sesamath=true );
+// ajouter_log_PHP( $log_objet='Demande de bilan' , $log_contenu=serialize($_POST) , $log_fichier=__FILE__ , $log_ligne=__LINE__ , $only_sesamath=true );
 
 $tab_pilier       = array();	// [pilier_id] => array(pilier_ref,pilier_nom,pilier_nb_entrees);
 $tab_socle        = array();	// [pilier_id][socle_id] => array(section_nom,socle_nom);
@@ -119,19 +119,28 @@ if( ($type=='pourcentage') && ($mode=='auto') )
 
 if($type=='pourcentage')
 {
-	$DB_TAB = DB_STRUCTURE_lister_result_eleves_palier($liste_eleve , $listing_entree_id , $date_debut=false , $date_fin=false , $_SESSION['USER_PROFIL']);
+	$DB_TAB = DB_STRUCTURE_lister_result_eleves_palier_sans_infos_items($liste_eleve , $listing_entree_id , $_SESSION['USER_PROFIL']);
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$test_comptabilise = ($mode=='auto') ? ( !in_array($tab_item_pilier[$DB_ROW['socle_id']],$tab_langue_piliers) || in_array($DB_ROW['matiere_id'],$tab_langues[$tab_eleve_langue[$DB_ROW['eleve_id']]]['tab_matiere_id']) ) : in_array($DB_ROW['matiere_id'],$tab_matiere) ;
 		if($test_comptabilise)
 		{
 			$tab_eval[$DB_ROW['eleve_id']][$DB_ROW['socle_id']][$DB_ROW['item_id']][]['note'] = $DB_ROW['note'];
+			$tab_item[$DB_ROW['item_id']] = TRUE;
+		}
+	}
+	if(count($tab_item))
+	{
+		$listing_item_id = implode(',',array_keys($tab_item));
+		$DB_TAB = DB_STRUCTURE_lister_infos_items($listing_item_id,$detail=FALSE);
+		foreach($DB_TAB as $DB_ROW)
+		{
 			$tab_item[$DB_ROW['item_id']] = array('calcul_methode'=>$DB_ROW['calcul_methode'],'calcul_limite'=>$DB_ROW['calcul_limite']);
 		}
 	}
 }
 
-// Libérer un peu de mémoire : ces tableaux ne servent plus
+// Ces tableaux ne servent plus
 unset($tab_item_pilier,$tab_eleve_langue);
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-

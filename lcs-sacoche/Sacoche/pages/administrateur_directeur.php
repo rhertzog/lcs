@@ -26,8 +26,8 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Gérer les directeurs";
-$VERSION_JS_FILE += 2;
+$TITRE = "Personnels de direction";
+$VERSION_JS_FILE += 3;
 ?>
 
 <p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_directeurs">DOC : Gestion des directeurs</a></span></p>
@@ -74,4 +74,4 @@ $VERSION_JS_FILE += 2;
 	</table>
 </form>
 
-<script type="text/javascript">var select_login="<?php echo $_SESSION['MODELE_PROFESSEUR']; ?>";</script>
+<script type="text/javascript">var select_login="<?php echo $_SESSION['MODELE_DIRECTEUR']; ?>";</script>

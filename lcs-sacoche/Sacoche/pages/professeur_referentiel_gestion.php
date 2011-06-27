@@ -27,7 +27,7 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Créer / paramétrer les référentiels";
-$VERSION_JS_FILE += 10;
+$VERSION_JS_FILE += 12;
 ?>
 
 <script type="text/javascript">
@@ -64,7 +64,7 @@ $VERSION_JS_FILE += 10;
 	var listing_id_niveaux_cycles = "<?php echo LISTING_ID_NIVEAUX_CYCLES ?>";
 </script>
 
-<form id="form_instance" action="">
+<form id="form_instance" action="" class="noprint">
 
 <ul class="puce">
 	<li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=referentiels_socle__referentiel_creer_parametrer">DOC : Créer / paramétrer les référentiels.</a></span></li>
@@ -202,6 +202,8 @@ else
 }
 ?>
 
+<div id="succes_import">
+</div>
 
 <div id="choisir_referentiel" class="hide">
 	<hr />
@@ -222,10 +224,8 @@ else
 	<label id="ajax_msg_choisir">&nbsp;</label>
 </div>
 
-<div id="voir_referentiel">
-</div>
-
 </form>
+
 <form id="form_communautaire" action="" class="hide">
 
 <?php
@@ -255,12 +255,7 @@ $select_niveau  = afficher_select(DB_STRUCTURE_OPT_niveaux()           , $select
 	</div>
 </div>
 
-<div id="voir_referentiel_communautaire" class="hide">
-	<hr />
-	<ul class="ul_m1">
-		<li class="li_m1">
-		</li>
-	</ul>
-</div>
-
 </form>
+
+<div id="voir_referentiel">
+</div>
