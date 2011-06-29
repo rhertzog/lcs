@@ -5,7 +5,7 @@ $msgIntro = "<H1>Gestion LCS OpenVPN</H1>\n";
 list ($idpers, $login)= isauth();
 
 if (ldap_get_right("lcs_is_admin",$login)!="Y")
-  die (gettext("Vous n'avez pas les droits suffisants pour acc�der � cette fonction")."</BODY></HTML>");
+  die (gettext("Vous n'avez pas les droits suffisants pour acc&egrave;der &agrave; cette fonction.")."</BODY></HTML>");
 define ("LOCAL_SECURITY_KEY", true);
 
 session_name ('openvpn-web-gui-session');
