@@ -33,8 +33,8 @@ if [ -n "$Depot" ] || [ "$2" = "remove  --purge" ] ;then
    apt-get $2 -y $3 | sed -e "s/$/<BR>/g" >>  /tmp/ecran_install_$3.html
 
    #on teste l'état du paquet, et on affiche le résultat
-   vartest=`dpkg -l $3 | grep '\(ii \|hi \)' | wc -l`
-   varhold=`dpkg -l $3 | grep 'hi' | wc -l`
+   vartest=`dpkg -l $3 | grep '\(^ii \|^hi \)' | wc -l`
+   varhold=`dpkg -l $3 | grep '^hi' | wc -l`
    if [ $vartest -eq 0 ]; then
        if [ "$2" = "install" ];then
            echo "<FONT color='#FF0000'>Le paquet $3 n'est <B>PAS OPERATIONNEL</B></FONT>" | sed -e "s/$/<BR><BR>/g" >>  /tmp/ecran_install_$3.html
