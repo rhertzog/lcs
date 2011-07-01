@@ -1,3 +1,9 @@
+lcs-openvpn (2.4.9~1) Lcs; urgency=low
+
+  * update windows and mac os client
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 01 Jul 2011 11:35:38 +0200
+
 lcs-openvpn (2.4.8) Lcs; urgency=low
 
   * Fix path in menu.
