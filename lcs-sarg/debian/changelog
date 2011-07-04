@@ -1,3 +1,10 @@
+lcs-sarg (2.4.9~1) Lcs; urgency=low
+
+  * Non-maintainer upload.
+  * add lcs-clean sarg
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 04 Jul 2011 17:57:54 +0200
+
 lcs-sarg (2.4.7) Lcs; urgency=low
 
   *  Modify package for new mnu.d struture

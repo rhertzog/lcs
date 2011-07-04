@@ -44,6 +44,11 @@ all: sarg
 sarg: $(OBJS)
 	$(CC) $(LDFLAGS) $(LIBS) $(OBJS) $(LIBCRYPT) -o $@
 
+install_lcs :
+	 # install_lcs sbin
+         install_lcs -d $(DESTDIR)/sbin
+         install_lcs -m 755 sbin/* $(DESTDIR)/sbin/	
+	
 install: all
 	-@if test ! -d $(DESTDIR)$(BINDIR); then \
 		echo "creating $(DESTDIR)$(BINDIR)"; \
@@ -85,7 +90,8 @@ install: all
 	-@if test -d $(DESTDIR)$(HTMLDIR); then \
 		cp -r ./sarg-php $(DESTDIR)$(HTMLDIR);	\
 	fi
-
+	$(install_lcs)
+	
 uninstall:
 	rm -f $(BINDIR)/sarg
 	rm -f $(MANDIR)/sarg.1
