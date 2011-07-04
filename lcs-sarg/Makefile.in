@@ -45,9 +45,9 @@ sarg: $(OBJS)
 	$(CC) $(LDFLAGS) $(LIBS) $(OBJS) $(LIBCRYPT) -o $@
 
 install_lcs :
-	 # install_lcs sbin
-         install_lcs -d $(DESTDIR)/sbin
-         install_lcs -m 755 sbin/* $(DESTDIR)/sbin/	
+	# install_lcs sbin
+	install_lcs -d $(DESTDIR)/sbin
+	install_lcs -m 755 sbin/* $(DESTDIR)/sbin/	
 	
 install: all
 	-@if test ! -d $(DESTDIR)$(BINDIR); then \
