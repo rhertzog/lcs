@@ -1,0 +1,39 @@
+#!/bin/bash
+# Simon CAVEY
+# Projet LCS - 04/07/2011 
+# Lcs-Sarg
+#
+# Clean squid-reports
+# Script de nettoyage des fichiers squid-report
+# le script a pout but d'eviter la saturation des espaces disque
+# On ne garde que les 3 derniers mois dans squid report.
+
+if [ -d /var/www/squid-reports ]
+then
+# le rep squid report et la on fait le menage
+	# Si le mois est inferieur a 4 on fait le menage sur l'annee N-1
+	if [ $curm -le 04 ] ; then
+	# On calcule l'annee passe
+		oldy=`date '+%Y' --date '1 year ago'`
+		for i in 4 5 6 7 8 9 10 11
+		do
+ 			oldm=`date -R  --date "$i month ago"|cut -f 3 -d " " `
+ 			rm -rf /var/www/squid-reports/Daily/$oldy$oldm
+ 			rm -rf /var/www/squid-reports/Weekly/$oldy$oldm
+ 			rm -rf /var/www/squid-reports/Montly/$oldy$oldm	
+		done
+	# Sinon on fait le menage meme dans le futur mais ca c'est pas grave
+	else
+		for i in 4 5 6 7 8 9 10 11
+		do
+ 		oldm=`date -R  --date "$i month ago"|cut -f 3 -d " " `
+ 		rm -rf /var/www/squid-reports/Daily/$cury$oldm
+ 		rm -rf /var/www/squid-reports/Weekly/$cury$oldm
+ 		rm -rf /var/www/squid-reports/Montly/$cury$oldm	
+	fi
+else
+    echo "pas de dossier squid-report"
+    exit 1
+fi
+
+
