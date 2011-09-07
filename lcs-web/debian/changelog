@@ -1,8 +1,12 @@
 lcs-web (2.4.8.3~1) Lcs; urgency=low
 
-  * change the test status of a module in gestpack.sh
+  [ Philippe LECLERC ]    
+  * Change the test status of a module in gestpack.sh
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 30 Jun 2011 10:36:25 +0200
+  [ Jean-Luc Chretien ]
+  * Fix bug in createmaildir.sh and mkhdir.sh
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 07 Sep 2011 18:23:29 +0200
 
 lcs-web (2.4.8.2) Lcs; urgency=low
 
