@@ -94,13 +94,12 @@ if ($server > 0
                     PMA_printListItem(__('Change password'), 'li_change_password',
                         './user_password.php?' . $common_url_query, null, null, 'change_password_anchor', null, $conditional_class);
                 }
-            //modif lcs
+                //modif lcs
      		if ( !isset($_LCS['login']) ) {
         		PMA_printListItem('<strong>' . $strLogout . '</strong> ' . $http_logout,
             	'li_log_out',
             	'./index.php?' . $common_url_query . '&amp;old_usr=' . urlencode($PHP_AUTH_USER), null, '_parent');
 				}
-                
             } // end if
 
             echo '    <li id="li_select_mysql_collation">';

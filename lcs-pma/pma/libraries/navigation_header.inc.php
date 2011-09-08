@@ -60,6 +60,7 @@ if ($GLOBALS['cfg']['LeftDisplayLogo']) {
                 .' height="16" alt="' . __('Home') . '" />'
             : __('Home'))
         .'</a>' . "\n";
+    // if we have chosen server
     if ($server != 0) {
         // Logout for advanced authentication
         if ($GLOBALS['cfg']['Server']['auth_type'] != 'config') {

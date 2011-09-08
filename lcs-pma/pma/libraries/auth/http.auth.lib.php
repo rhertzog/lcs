@@ -1,10 +1,4 @@
 <?php
-// jlcf modif 3/3 23/03/2006
-  if ( isset($_LCS['login']) ) {
-       $PHP_AUTH_USER =  $_LCS['login'];
-       $PHP_AUTH_PW = $_LCS['pass'];
-   }
-
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * Set of functions used to run http authentication.
@@ -25,6 +19,12 @@
  *
  * @access  public
  */
+ // jlcf modif 3/3 23/03/2006
+  if ( isset($_LCS['login']) ) {
+       $PHP_AUTH_USER =  $_LCS['login'];
+       $PHP_AUTH_PW = $_LCS['pass'];
+   }
+
 function PMA_auth()
 {
     /* Perform logout to custom URL */
