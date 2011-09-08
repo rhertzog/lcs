@@ -139,21 +139,27 @@ function load_cookie_select($page)
 	// Initialisation du tableau retourné au cas où le cookie n'existerait pas ou au cas ou des informations manquerait dans le cookie (ajout ultérieur d'une fonctionnalité)
 	switch($page)
 	{
+		case 'cartouche' :
+			$tab_return = array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'marge_min'=>5 , 'cart_contenu'=>'AVEC_nom_SANS_result' , 'cart_detail'=>'complet' );
+			break;
+		case 'grille_referentiel' :
+			$tab_return = array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'legende'=>'oui' , 'marge_min'=>5 , 'cases_nb'=>3 , 'cases_largeur'=>5 , 'colonne_vide'=>0 );
+			break;
+		case 'matiere' :
+			$tab_return = array( 'matiere_id'=>0 );
+			break;
+		case 'palier' :
+			$tab_return = array( 'palier_id'=>0 );
+			break;
 		case 'releve_synthese' :
 			$tab_return = array( 'couleur'=>'oui' , 'legende'=>'oui' );
 			break;
 		case 'releve_items' :
 			$tab_return = array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'legende'=>'oui' , 'marge_min'=>5 , 'cases_nb'=>5 , 'cases_largeur'=>5 );
-				break;
-		case 'grille_referentiel' :
-			$tab_return = array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'legende'=>'oui' , 'marge_min'=>5 , 'cases_nb'=>3 , 'cases_largeur'=>5 , 'colonne_vide'=>0 );
-			break;
-		case 'cartouche' :
-			$tab_return = array( 'orientation'=>'portrait' , 'couleur'=>'oui' , 'marge_min'=>5 , 'cart_contenu'=>'AVEC_nom_SANS_result' , 'cart_detail'=>'complet' );
 			break;
 	}
 	// Récupération du contenu du cookie
-	$filename = './__tmp/cookie/etabl'.$_SESSION['BASE'].'_user'.$_SESSION['USER_ID'].'_'.$page.'.txt';
+	$filename = './__tmp/cookie/'.$_SESSION['BASE'].'/user'.$_SESSION['USER_ID'].'_'.$page.'.txt';
 	if(is_file($filename))
 	{
 		$contenu = file_get_contents($filename);
@@ -173,6 +179,22 @@ function load_cookie_select($page)
 {
 	switch($page)
 	{
+		case 'cartouche' :
+			global $orientation,$couleur,$legende,$marge_min,$cart_contenu,$cart_detail;
+			$tab_cookie = compact('orientation','couleur','legende','marge_min','cart_contenu','cart_detail');
+			break;
+		case 'grille_referentiel' :
+			global $orientation,$couleur,$legende,$marge_min,$cases_nb,$cases_largeur,$colonne_vide;
+			$tab_cookie = compact('orientation','couleur','legende','marge_min','cases_nb','cases_largeur','colonne_vide');
+			break;
+		case 'matiere' :
+			global $matiere_id;
+			$tab_cookie = compact('matiere_id');
+			break;
+		case 'palier' :
+			global $palier_id;
+			$tab_cookie = compact('palier_id');
+			break;
 		case 'releve_synthese' :
 			global $couleur,$legende;
 			$tab_cookie = compact('couleur','legende');
@@ -181,14 +203,13 @@ function load_cookie_select($page)
 			global $orientation,$couleur,$legende,$marge_min,$cases_nb,$cases_largeur;
 			$tab_cookie = compact('orientation','couleur','legende','marge_min','cases_nb','cases_largeur');
 			break;
-		case 'grille_referentiel' :
-			global $orientation,$couleur,$legende,$marge_min,$cases_nb,$cases_largeur,$colonne_vide;
-			$tab_cookie = compact('orientation','couleur','legende','marge_min','cases_nb','cases_largeur','colonne_vide');
-			break;
-		case 'cartouche' :
-			global $orientation,$couleur,$legende,$marge_min,$contenu,$detail;
-			$tab_cookie = compact('orientation','couleur','legende','marge_min','cart_contenu','cart_detail');
-			break;
+	}
+	// Si le dossier n'existe pas, on le créé (possible car au début tous les Cookies des établissements étaient dans un même dossier commun).
+	$dossier_nom = './__tmp/cookie/'.$_SESSION['BASE'];
+	if(!is_dir($dossier_nom))
+	{
+		Creer_Dossier($dossier_nom);
+		Ecrire_Fichier($dossier_nom.'/index.htm','Circulez, il n\'y a rien à voir par ici !');
 	}
 	/*
 		Remarque : il y a un problème de serialize avec les type float : voir http://fr2.php.net/manual/fr/function.serialize.php#85988
@@ -197,7 +218,7 @@ function load_cookie_select($page)
 		par
 		preg_replace( '/d:([0-9]+(\.[0-9]+)?([Ee][+-]?[0-9]+)?);/e', "'d:'.(round($1,9)).';'", serialize($tab_cookie) );
 	*/
-	$filename = './__tmp/cookie/etabl'.$_SESSION['BASE'].'_user'.$_SESSION['USER_ID'].'_'.$page.'.txt';
+	$filename = $dossier_nom.'/user'.$_SESSION['USER_ID'].'_'.$page.'.txt';
 	Ecrire_Fichier($filename,serialize($tab_cookie));
 }
 

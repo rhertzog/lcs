@@ -36,14 +36,12 @@ $date         = (isset($_POST['f_date']))            ? clean_texte($_POST['f_dat
 $date_visible = (isset($_POST['f_date_visible']))    ? clean_texte($_POST['f_date_visible']) : ''; // Peut valoir une date (JJ/MM/AAAA) ou "identique"
 $info         = (isset($_POST['f_info']))            ? clean_texte($_POST['f_info'])         : '';
 $descriptif   = (isset($_POST['f_descriptif']))      ? clean_texte($_POST['f_descriptif'])   : '';
-$contenu      = (isset($_POST['f_contenu']))         ? clean_texte($_POST['f_contenu'])      : '';
-$detail       = (isset($_POST['f_detail']))          ? clean_texte($_POST['f_detail'])       : '';
+$cart_contenu = (isset($_POST['f_contenu']))         ? clean_texte($_POST['f_contenu'])      : '';
+$cart_detail  = (isset($_POST['f_detail']))          ? clean_texte($_POST['f_detail'])       : '';
 $orientation  = (isset($_POST['f_orientation']))     ? clean_texte($_POST['f_orientation'])  : '';
 $marge_min    = (isset($_POST['f_marge_min']))       ? clean_texte($_POST['f_marge_min'])    : '';
 $couleur      = (isset($_POST['f_couleur']))         ? clean_texte($_POST['f_couleur'])      : '';
 $only_req     = (isset($_POST['f_restriction_req'])) ? true                                  : false;
-
-save_cookie_select('cartouche');
 
 $dossier_export = './__tmp/export/';
 $fnom = 'saisie_'.$_SESSION['BASE'].'_'.$_SESSION['USER_ID'].'_'.$ref;
@@ -346,38 +344,22 @@ if( ($action=='saisir') && $devoir_id && $groupe_id && $date && $date_visible &&
 			$tab_affich[$DB_ROW['item_id']][$DB_ROW['eleve_id']] = str_replace($bad,$bon,$tab_affich[$DB_ROW['item_id']][$DB_ROW['eleve_id']]);
 		}
 	}
-	// affichage
-	foreach($tab_affich as $comp_id => $tab_user)
-	{
-		if(!$comp_id)
-		{
-			echo'<thead>';
-		}
-		echo'<tr>';
-		foreach($tab_user as $user_id => $val)
-		{
-			echo $val;
-		}
-		echo'</tr>';
-		if(!$comp_id)
-		{
-			echo'</thead><tbody class="h">';
-		}
-	}
-	echo'</tbody>';
 	// Enregistrer le csv
 	$export_csv .= str_replace(':::',"\r\n",$descriptif)."\r\n\r\n";
 	$export_csv .= 'CODAGES AUTORISÉS : 1 2 3 4 A N D'."\r\n";
 	$zip = new ZipArchive();
-	if ($zip->open($dossier_export.$fnom.'.zip', ZIPARCHIVE::CREATE)===TRUE)
+	$result_open = $zip->open($dossier_export.$fnom.'.zip', ZIPARCHIVE::CREATE);
+	if($result_open!==TRUE)
 	{
-		$zip->addFromString($fnom.'.csv',csv($export_csv));
-		$zip->close();
+		require('./_inc/tableau_zip_error.php');
+		exit('Problème de création de l\'archive ZIP ('.$result_open.$tab_zip_error[$result_open].') !');
 	}
+	$zip->addFromString($fnom.'.csv',csv($export_csv));
+	$zip->close();
 	//
 	// pdf contenant un tableau de saisie vide ; on a besoin de tourner du texte à 90°
 	//
-	require('./_fpdf/fpdf.php');
+	require('./_lib/FPDF/fpdf.php');
 	require('./_inc/class.PDF.php');
 	$sacoche_pdf = new PDF($orientation='landscape',$marge_min=10,$couleur='non');
 	$sacoche_pdf->tableau_saisie_initialiser($eleve_nb,$item_nb);
@@ -401,6 +383,27 @@ if( ($action=='saisir') && $devoir_id && $groupe_id && $date && $date_visible &&
 		$sacoche_pdf->SetXY($sacoche_pdf->marge_gauche , $sacoche_pdf->GetY()+$sacoche_pdf->cases_hauteur);
 	}
 	$sacoche_pdf->Output($dossier_export.$fnom.'_sans_notes.pdf','F');
+	//
+	// c'est fini ; affichage du retour
+	//
+	foreach($tab_affich as $comp_id => $tab_user)
+	{
+		if(!$comp_id)
+		{
+			echo'<thead>';
+		}
+		echo'<tr>';
+		foreach($tab_user as $user_id => $val)
+		{
+			echo $val;
+		}
+		echo'</tr>';
+		if(!$comp_id)
+		{
+			echo'</thead><tbody class="h">';
+		}
+	}
+	echo'</tbody>';
 	exit();
 }
 
@@ -481,25 +484,6 @@ if( ($action=='voir') && $devoir_id && $groupe_id && $date && $descriptif ) // $
 			$csv_lignes_scores[$DB_ROW['item_id']][$DB_ROW['eleve_id']] = $DB_ROW['saisie_note'];
 		}
 	}
-	// affichage
-	foreach($tab_affich as $comp_id => $tab_user)
-	{
-		if(!$comp_id)
-		{
-			echo'<thead>';
-		}
-		echo'<tr>';
-		foreach($tab_user as $user_id => $val)
-		{
-			echo $val;
-		}
-		echo'</tr>';
-		if(!$comp_id)
-		{
-			echo'</thead><tbody>';
-		}
-	}
-	echo'</tbody>';
 	// assemblage du csv
 	$tab_conversion = array( ''=>' ' , 'RR'=>'1' , 'R'=>'2' , 'V'=>'3' , 'VV'=>'4' , 'ABS'=>'A' , 'NN'=>'N' , 'DISP'=>'D' , 'REQ'=>'?' );
 	foreach($tab_comp_id as $comp_id=>$val_comp)
@@ -517,12 +501,15 @@ if( ($action=='voir') && $devoir_id && $groupe_id && $date && $descriptif ) // $
 	$export_csv .= 'CODAGES AUTORISÉS : 1 2 3 4 A N D'."\r\n";
 	$fnom = 'saisie_'.$_SESSION['BASE'].'_'.$_SESSION['USER_ID'].'_'.$ref;
 	$zip = new ZipArchive();
-	if ($zip->open($dossier_export.$fnom.'.zip', ZIPARCHIVE::CREATE)===TRUE)
+	$result_open = $zip->open($dossier_export.$fnom.'.zip', ZIPARCHIVE::CREATE);
+	if($result_open!==TRUE)
 	{
-		$zip->addFromString($fnom.'.csv',csv($export_csv));
-		$zip->close();
+		require('./_inc/tableau_zip_error.php');
+		exit('Problème de création de l\'archive ZIP ('.$result_open.$tab_zip_error[$result_open].') !');
 	}
-	require('./_fpdf/fpdf.php');
+	$zip->addFromString($fnom.'.csv',csv($export_csv));
+	$zip->close();
+	require('./_lib/FPDF/fpdf.php');
 	require('./_inc/class.PDF.php');
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	// pdf contenant un tableau de saisie vide ; on a besoin de tourner du texte à 90°
@@ -575,8 +562,26 @@ if( ($action=='voir') && $devoir_id && $groupe_id && $date && $descriptif ) // $
 	}
 	$sacoche_pdf->Output($dossier_export.$fnom.'_avec_notes.pdf','F');
 	//
-	// c'est fini...
+	// c'est fini ; affichage du retour
 	//
+	foreach($tab_affich as $comp_id => $tab_user)
+	{
+		if(!$comp_id)
+		{
+			echo'<thead>';
+		}
+		echo'<tr>';
+		foreach($tab_user as $user_id => $val)
+		{
+			echo $val;
+		}
+		echo'</tr>';
+		if(!$comp_id)
+		{
+			echo'</thead><tbody>';
+		}
+	}
+	echo'</tbody>';
 	exit();
 }
 
@@ -674,7 +679,7 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date && $descriptif
 		echo'</tr>';
 	}
 	echo'</tbody>';
-	require('./_fpdf/fpdf.php');
+	require('./_lib/FPDF/fpdf.php');
 	require('./_inc/class.PDF.php');
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	// pdf contenant un tableau avec la répartition quantitative
@@ -709,7 +714,7 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date && $descriptif
 			$sacoche_pdf->Cell($rect_largeur , $rect_hauteur , '' , 0 , 0 , 'C' , true , '');
 			// Écrire le %
 			$sacoche_pdf->SetXY($memo_X , $memo_Y);
-			$sacoche_pdf->SetFont('Arial' , '' , $sacoche_pdf->taille_police*(1+$coefficient));
+			$sacoche_pdf->SetFont('Helvetica' , '' , $sacoche_pdf->taille_police*(1+$coefficient));
 			$sacoche_pdf->Cell($sacoche_pdf->cases_largeur , $sacoche_pdf->cases_hauteur , pdf(round(100*$coefficient).'%') , 1 , 0 , 'C' , false , '');
 		}
 		$sacoche_pdf->SetXY($sacoche_pdf->marge_gauche , $sacoche_pdf->GetY()+$sacoche_pdf->cases_hauteur);
@@ -752,7 +757,7 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date && $descriptif
 				{
 					$taille_police -= 0.5 ;
 				}
-				$sacoche_pdf->SetFont('Arial' , '' , $taille_police);
+				$sacoche_pdf->SetFont('Helvetica' , '' , $taille_police);
 				$sacoche_pdf->Cell($sacoche_pdf->cases_largeur , $sacoche_pdf->lignes_hauteur , pdf($eleve_texte) , 0 , 2 , 'L' , false , '');
 			}
 			// Ajouter la bordure
@@ -829,8 +834,8 @@ if( ($action=='Enregistrer_saisie') && $devoir_id && $date && $date_visible )
 		}
 		unset($tab_post[$key]);
 	}
-	// Il reste dans $tab_post les données à ajouter (mises dans $tab_nouveau_ajouter) et les données vides qui ne servent pas (non enregistrées et non saisies)
-	$tab_nouveau_ajouter = array_filter($tab_post,'non_vide');
+	// Il reste dans $tab_post les données à ajouter (mises dans $tab_nouveau_ajouter) et les données qui ne servent pas (non enregistrées et non saisies)
+	$tab_nouveau_ajouter = array_filter($tab_post,'non_note');
 	// Il n'y a plus qu'à mettre à jour la base
 	if( !count($tab_nouveau_ajouter) && !count($tab_nouveau_modifier) && !count($tab_nouveau_supprimer) )
 	{
@@ -866,10 +871,11 @@ if( ($action=='Enregistrer_saisie') && $devoir_id && $date && $date_visible )
 //	Imprimer un cartouche d'une évaluation
 //	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( ($action=='Imprimer_cartouche') && $devoir_id && $groupe_id && $date && $contenu && $detail && $orientation && $marge_min && $couleur )
+if( ($action=='Imprimer_cartouche') && $devoir_id && $groupe_id && $date && $cart_contenu && $cart_detail && $orientation && $marge_min && $couleur )
 {
-	$with_nom    = (substr($contenu,0,8)=='AVEC_nom')  ? true : false ;
-	$with_result = (substr($contenu,9)=='AVEC_result') ? true : false ;
+	save_cookie_select('cartouche');
+	$with_nom    = (substr($cart_contenu,0,8)=='AVEC_nom')  ? true : false ;
+	$with_result = (substr($cart_contenu,9)=='AVEC_result') ? true : false ;
 	// liste des items
 	$DB_TAB_COMP = DB_STRUCTURE_lister_items_devoir($devoir_id);
 	// liste des élèves
@@ -937,11 +943,11 @@ if( ($action=='Imprimer_cartouche') && $devoir_id && $groupe_id && $date && $con
 	{
 		$tab_user_nb_req = array_fill_keys( array_keys($tab_user_nb_req) , $item_nb );
 	}
-	require('./_fpdf/fpdf.php');
+	require('./_lib/FPDF/fpdf.php');
 	require('./_inc/class.PDF.php');
 	$sacoche_pdf = new PDF($orientation,$marge_min,$couleur);
-	$sacoche_pdf->cartouche_initialiser($detail,$item_nb);
-	if($detail=='minimal')
+	$sacoche_pdf->cartouche_initialiser($cart_detail,$item_nb);
+	if($cart_detail=='minimal')
 	{
 		// dans le cas d'un cartouche minimal
 		foreach($tab_user_id as $user_id=>$val_user)
@@ -971,7 +977,7 @@ if( ($action=='Imprimer_cartouche') && $devoir_id && $groupe_id && $date && $con
 			}
 		}
 	}
-	elseif($detail=='complet')
+	elseif($cart_detail=='complet')
 	{
 		// dans le cas d'un cartouche complet
 		foreach($tab_user_id as $user_id=>$val_user)
@@ -999,11 +1005,14 @@ if( ($action=='Imprimer_cartouche') && $devoir_id && $groupe_id && $date && $con
 	}
 	// On archive le cartouche dans un fichier tableur zippé (csv tabulé)
 	$zip = new ZipArchive();
-	if ($zip->open($dossier_export.$fnom.'.zip', ZIPARCHIVE::CREATE)===TRUE)
+	$result_open = $zip->open($dossier_export.$fnom.'.zip', ZIPARCHIVE::CREATE);
+	if($result_open!==TRUE)
 	{
-		$zip->addFromString($fnom.'.csv',csv($sacoche_csv));
-		$zip->close();
+		require('./_inc/tableau_zip_error.php');
+		exit('Problème de création de l\'archive ZIP ('.$result_open.$tab_zip_error[$result_open].') !');
 	}
+	$zip->addFromString($fnom.'.csv',csv($sacoche_csv));
+	$zip->close();
 	// On archive le cartouche dans un fichier pdf
 	$sacoche_pdf->Output($dossier_export.$fnom.'.pdf','F');
 	// Affichage

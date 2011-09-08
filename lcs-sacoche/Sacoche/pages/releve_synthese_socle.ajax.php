@@ -48,6 +48,8 @@ if( (!$palier_id) || (!$palier_nom) || (!$groupe_id) || (!$groupe_nom) || (!coun
 	exit('Erreur avec les données transmises !');
 }
 
+save_cookie_select('palier');
+
 // Permet d'avoir des informations accessibles en cas d'erreur type « PHP Fatal error : Allowed memory size of ... bytes exhausted ».
 // ajouter_log_PHP( $log_objet='Demande de bilan' , $log_contenu=serialize($_POST) , $log_fichier=__FILE__ , $log_ligne=__LINE__ , $only_sesamath=true );
 
@@ -247,7 +249,7 @@ $releve_html .= '<style type="text/css">thead th{text-align:center}tbody th,tbod
 $releve_html .= '<h1>Synthèse de maîtrise du socle : '.$titre_info1.'</h1>';
 $releve_html .= '<h2>'.html($groupe_nom).' - '.html($titre_info2).'</h2>';
 // Appel de la classe et définition de qqs variables supplémentaires pour la mise en page PDF
-require('./_fpdf/fpdf.php');
+require('./_lib/FPDF/fpdf.php');
 require('./_inc/class.PDF.php');
 $releve_pdf = new PDF($orientation='landscape',$marge_min=7.5,$couleur='oui');
 $releve_pdf->releve_synthese_socle_initialiser($titre_info1,$groupe_nom,$titre_info2,$eleves_nb,$items_nb,$piliers_nb);

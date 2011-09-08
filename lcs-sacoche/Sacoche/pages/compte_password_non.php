@@ -26,6 +26,8 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
+
+require_once('./_inc/tableau_profils.php'); // Charge $tab_profil_libelle[$profil][court|long][1|2]
 ?>
 
-<p class="astuce">Le mode de connexion étant SSO intégré à un ENT, cette fonctionnalité de <em>SACoche</em> est sans objet vous concernant.</p>
+<p class="astuce">Les administrateurs de <em>SACoche</em> pour votre établissement n'ont pas ouvert cette fonctionnalité aux <?php echo $tab_profil_libelle[$_SESSION['USER_PROFIL']]['long'][2] ?>.</p>

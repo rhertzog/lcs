@@ -286,9 +286,11 @@ if($action=='importer_zip')
 	}
 	// Dezipper dans le dossier dump (pas dans un sous-dossier "temporaire" sinon ce dossier n'est pas vidé si l'opération n'arrive pas à son terme).
 	$zip = new ZipArchive();
-	if($zip->open($dossier_import.$fichier_zip_nom)!==true)
+	$result_open = $zip->open($dossier_import.$fichier_zip_nom);
+	if($result_open!==true)
 	{
-		exit('<li><label class="alerte">Erreur : votre archive ZIP n\'a pas pu être ouverte !</label></li>');
+		require('./_inc/tableau_zip_error.php');
+		exit('<li><label class="alerte">Erreur : votre archive ZIP n\'a pas pu être ouverte ('.$result_open.$tab_zip_error[$result_open].') !</label></li>');
 	}
 	$zip->extractTo($dossier_dump);
 	$zip->close();
@@ -331,9 +333,11 @@ if( ($action=='importer') && $num && $max && ($num<$max) )
 	Creer_ou_Vider_Dossier($dossier_temp_sql);
 	// Dezipper dans le dossier temporaire
 	$zip = new ZipArchive();
-	if($zip->open($dossier_dump.$fichier_nom)!==true)
+	$result_open = $zip->open($dossier_dump.$fichier_nom);
+	if($result_open!==true)
 	{
-		exit(']¤['.'<tr>'.$retour_cellules_non.'<td><label class="erreur">Erreur : fichiers de '.html($fichier_nom).' impossible à extraire !</label></td>'.'</tr>');
+		require('./_inc/tableau_zip_error.php');
+		exit(']¤['.'<tr>'.$retour_cellules_non.'<td><label class="erreur">Erreur : fichiers de '.html($fichier_nom).' impossible à extraire ('.$result_open.$tab_zip_error[$result_open].') !</label></td>'.'</tr>');
 	}
 	$zip->extractTo($dossier_temp_sql);
 	$zip->close();
@@ -361,18 +365,22 @@ if( ($action=='importer') && $num && $max && ($num<$max) )
 	// Créer la base de données de la structure
 	// Créer un utilisateur pour la base de données de la structure et lui attribuer ses droits
 	$base_id = DB_WEBMESTRE_ajouter_structure($import_id,$geo_id,$uai,$localisation,$denomination,$contact_nom,$contact_prenom,$contact_courriel,$date);
-	// Créer un dossier pour accueillir les vignettes verticales avec l'identité des élèves
+	// Créer les dossiers de fichiers temporaires par établissement : vignettes verticales, flux RSS des demandes, cookies des choix de formulaires
 	Creer_Dossier('./__tmp/badge/'.$base_id);
 	Ecrire_Fichier('./__tmp/badge/'.$base_id.'/index.htm','Circulez, il n\'y a rien à voir par ici !');
+	Creer_Dossier('./__tmp/cookie/'.$base_id);
+	Ecrire_Fichier('./__tmp/cookie/'.$base_id.'/index.htm','Circulez, il n\'y a rien à voir par ici !');
+	Creer_Dossier('./__tmp/rss/'.$base_id);
+	Ecrire_Fichier('./__tmp/rss/'.$base_id.'/index.htm','Circulez, il n\'y a rien à voir par ici !');
 	// Charger les paramètres de connexion à cette base afin de pouvoir y effectuer des requêtes
 	charger_parametres_mysql_supplementaires($base_id);
 	// Restaurer des fichiers de svg et mettre la base à jour si besoin.
-	$texte_maj = restaurer_tables_base_etablissement($dossier_temp_sql);
+	$texte_etape = restaurer_tables_base_etablissement($dossier_temp_sql,0);
 	// Supprimer le dossier temporaire
 	Supprimer_Dossier($dossier_temp_sql);
 	// Retour du succès, appel suivant
 	$retour_cellules_oui = '<td class="nu"><input type="checkbox" name="f_ids" value="'.$base_id.'" /></td><td class="label">'.$base_id.'</td><td class="label">'.html($localisation.' | '.$denomination.' ['.$uai.']').'</td><td class="label">'.html($contact_nom.' '.$contact_prenom.' ('.$contact_courriel.')').'</td>';
-	exit(']¤['.'<tr>'.$retour_cellules_oui.'<td class="label"><label class="valide">Restauration de la base réalisée'.$texte_maj.' avec succès.</label></td>'.'</tr>');
+	exit(']¤['.'<tr>'.$retour_cellules_oui.'<td class="label"><label class="valide">'.$texte_etape.' avec succès.</label></td>'.'</tr>');
 }
 elseif( ($action=='importer') && $num && $max && ($num==$max) )
 {

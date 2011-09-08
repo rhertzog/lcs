@@ -40,22 +40,41 @@ $TITRE = "Bienvenue dans votre espace identifié !";
 <?php
 if($_SESSION['USER_PROFIL']=='webmestre')
 {
-	echo'<p class="astuce">Pour vous connecter à cet espace, utilisez l\'adresse <b>'.SERVEUR_ADRESSE.'?webmestre</b></p>';
+	echo'<p class="astuce">Pour vous connecter à cet espace, utilisez l\'adresse <b>'.SERVEUR_ADRESSE.'/?webmestre</b></p>';
 }
 else
 {
 	if(HEBERGEUR_INSTALLATION=='multi-structures')
 	{
 		echo'<div class="astuce">Adresse à utiliser pour une sélection automatique de l\'établissement depuis n\'importe quel ordinateur :</div>';
-		echo'<p class="hc"><b>'.SERVEUR_ADRESSE.'?id='.$_SESSION['BASE'].'</b></p>';
+		echo'<p class="hc"><b>'.SERVEUR_ADRESSE.'/?id='.$_SESSION['BASE'].'</b></p>';
 	}
-	if($_SESSION['CONNEXION_MODE']=='cas')
+	if($_SESSION['CONNEXION_MODE']!='normal')
 	{
-		echo'<div class="astuce">Adresse à utiliser pour une connexion automatique avec les identifiants de l\'ENT :</div>';
-		echo'<p class="hc"><b>'.SERVEUR_ADRESSE.'?page=public_login_CAS&amp;f_base='.$_SESSION['BASE'].'</b></p>';
+		$get_base = ($_SESSION['BASE']) ? '&amp;base='.$_SESSION['BASE'] : '' ;
+		echo'<div class="astuce">Adresse à utiliser pour une connexion automatique avec l\'authentification externe :</div>';
+		echo'<p class="hc"><b>'.SERVEUR_ADRESSE.'/?sso'.$get_base.'</b></p>';
 	}
 }
 ?>
 
 <?php
+if($_SESSION['USER_PROFIL']=='parent')
+{
+	echo'<hr />';
+	if($_SESSION['NB_ENFANTS'])
+	{
+		echo'<p class="astuce">Élève(s) associé(s) à votre compte :</p>';
+		echo'<ul class="puce">';
+		foreach($_SESSION['OPT_PARENT_ENFANTS'] as $DB_ROW)
+		{
+			echo'<li id="enfant_'.$DB_ROW['valeur'].'">'.html($DB_ROW['texte']).'</li>';
+		}
+		echo'</ul>';
+	}
+	else
+	{
+		echo'<p class="danger">'.$_SESSION['OPT_PARENT_ENFANTS'].'</p>';
+	}
+}
 ?>

@@ -225,11 +225,10 @@ $(document).ready
 			if( (responseHTML.substring(0,14)!='<ul id="step">') && (responseHTML.substring(0,12)!='<UL id=step>') )
 			{
 				$('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);
-				alert(responseHTML.substring(0,12));
 			}
 			else
 			{
-				maj_clock(1);
+				initialiser_compteur();
 				var texte1 = $('#f_choix_principal option:selected').parent('optgroup').attr('label');
 				var texte2 = $('#f_choix_principal option:selected').text();
 				$('#form1').hide();
@@ -273,7 +272,7 @@ $(document).ready
 						},
 						success : function(responseHTML)
 						{
-							maj_clock(1);
+							initialiser_compteur();
 							if(responseHTML.substring(0,25)!='<p><label class="valide">')
 							{
 								$('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);
@@ -300,30 +299,24 @@ $(document).ready
 			function()
 			{
 				nb_pb = 0;
-				$("select option:selected").each
+				$("#form2 input:checked").each
 				(
 					function()
 					{
-						if($(this).val()=="")
+						if( $(this).attr('id').substring(0,3) == 'add' )
 						{
-							nb_pb++;
-						}
-					}
-				);
-				$("input[id^=add_nom_]").each
-				(
-					function()
-					{
-						if($(this).val()=="")
-						{
-							nb_pb++;
+							var ref = $(this).attr('id').substring(4);
+							if( (!$('#'+'add_niv_'+ref).val()) || (!$('#'+'add_nom_'+ref).val()) )
+							{
+								nb_pb++;
+							}
 						}
 					}
 				);
 				if(nb_pb)
 				{
-					$s = (nb_pb>1) ? 's' : '';
-					$('#ajax_msg').removeAttr("class").addClass("erreur").html('Il reste '+nb_pb+' élément'+$s+' de formulaire à compléter.');
+					var s = (nb_pb>1) ? 's' : '';
+					$('#ajax_msg').removeAttr("class").addClass("erreur").html(nb_pb+' ligne'+s+' de formulaire à compléter.');
 					return false;
 				}
 				else
@@ -337,7 +330,6 @@ $(document).ready
 							type : 'POST',
 							url : 'ajax.php?page='+PAGE,
 							data : 'f_step='+f_step+'&f_action='+f_action+'&'+$("#form2").serialize(),
-							data : 'f_step='+f_step+'&f_action='+f_action+'&'+$("#form2").serialize(),
 							dataType : "html",
 							error : function(msg,string)
 							{
@@ -346,7 +338,7 @@ $(document).ready
 							},
 							success : function(responseHTML)
 							{
-								maj_clock(1);
+								initialiser_compteur();
 								if(responseHTML.substring(0,25)!='<p><label class="valide">')
 								{
 									$('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);
@@ -400,7 +392,7 @@ $(document).ready
 						},
 						success : function(responseHTML)
 						{
-							maj_clock(1);
+							initialiser_compteur();
 							if(responseHTML.substring(0,25)!='<p><label class="valide">')
 							{
 								$('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);
@@ -440,7 +432,7 @@ $(document).ready
 						},
 						success : function(responseHTML)
 						{
-							maj_clock(1);
+							initialiser_compteur();
 							if(responseHTML.substring(0,25)!='<p><label class="alerte">')
 							{
 								$('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);

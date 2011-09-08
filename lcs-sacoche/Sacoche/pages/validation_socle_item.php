@@ -32,23 +32,18 @@ $VERSION_JS_FILE += 13;
 ?>
 
 <?php
-// Indication des profils ayant accès à cette validation
-$tab_texte = array( 'directeur'=>'les directeurs' , 'professeur'=>'les professeurs' , 'profprincipal'=>'les professeurs principaux' );
+// Indication des profils ayant accès à cette page
+require_once('./_inc/tableau_profils.php'); // Charge $tab_profil_libelle[$profil][court|long][1|2]
+$tab_profils = array('directeur','professeur','profprincipal');
 $str_objet = str_replace( array(',aucunprof','aucunprof,','aucunprof') , '' , $_SESSION['DROIT_VALIDATION_ENTREE'] );
-if($str_objet=='')
+foreach($tab_profils as $profil)
 {
-	$texte = 'aucun';
+	$str_objet = str_replace($profil,$tab_profil_libelle[$profil]['long'][2],$str_objet);
 }
-elseif(strpos($str_objet,',')===false)
-{
-	$texte = 'uniquement '.$tab_texte[$str_objet];
-}
-else
-{
-	$texte = str_replace( array('directeur','professeur','profprincipal',',') , array($tab_texte['directeur'],$tab_texte['professeur'],$tab_texte['profprincipal'],' et ') , $str_objet );
-}
+$texte = ($str_objet=='') ? 'aucun' : ( (strpos($str_objet,',')===false) ? 'uniquement les '.$str_objet : str_replace(',',' + ',$str_objet) ) ;
 
 // Fabrication des éléments select du formulaire
+$tab_cookie   = load_cookie_select('palier');
 $tab_paliers  = DB_STRUCTURE_OPT_paliers_etabl($_SESSION['PALIERS']);
 $tab_matieres = DB_STRUCTURE_OPT_matieres_etabl($_SESSION['MATIERES'],$transversal=true);
 if( ($_SESSION['USER_PROFIL']=='directeur') && (strpos($_SESSION['DROIT_VALIDATION_ENTREE'],'directeur')!==false) )
@@ -71,10 +66,11 @@ else
 	$tab_groupes = 'Vous n\'avez pas un profil autorisé pour accéder au formulaire !';
 	$of_g = 'non'; $og_g = 'non'; 
 }
+$of_p = (count($tab_paliers)<2) ? 'non' : 'oui' ;
 
-$select_palier  = afficher_select($tab_paliers  , $select_nom='f_palier' , $option_first='non' , $selection=false , $optgroup='non');
-$select_groupe  = afficher_select($tab_groupes  , $select_nom='f_groupe' , $option_first=$of_g , $selection=false , $optgroup=$og_g);
-$select_matiere = afficher_select($tab_matieres , $select_nom=false      , $option_first='non' , $selection=true  , $optgroup='non');
+$select_palier  = afficher_select($tab_paliers  , $select_nom='f_palier' , $option_first=$of_p , $selection=$tab_cookie['palier_id'] , $optgroup='non');
+$select_groupe  = afficher_select($tab_groupes  , $select_nom='f_groupe' , $option_first=$of_g , $selection=false                    , $optgroup=$og_g);
+$select_matiere = afficher_select($tab_matieres , $select_nom=false      , $option_first='non' , $selection=true                     , $optgroup='non');
 ?>
 
 <script type="text/javascript">

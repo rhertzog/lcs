@@ -262,7 +262,7 @@ $(document).ready
 			{
 				if( ($('#fieldset_normal').length) && !($('#f_mode_normal').is(':checked')) )
 				{
-					document.location.href = './index.php?page=public_login_CAS&f_base='+$('#f_base').val();
+					document.location.href = './index.php?sso&base='+$('#f_base').val();
 					return false;
 				}
 				else
@@ -297,8 +297,7 @@ $(document).ready
 		function retour_form_valide(responseHTML)
 		{
 			$('button').prop('disabled',false);
-			findme = '.'+responseHTML+'.';
-			if('.eleve.professeur.directeur.administrateur.webmestre.'.indexOf(findme)!=-1)
+			if(responseHTML=='ok')
 			{
 				$('#ajax_msg').removeAttr("class").addClass("valide").html("Identification réussie !");
 				document.location.href = './index.php?page=compte_accueil&verif_cookie';

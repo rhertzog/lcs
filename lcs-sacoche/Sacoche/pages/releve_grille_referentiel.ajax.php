@@ -47,13 +47,14 @@ $marge_min     = (isset($_POST['f_marge_min']))    ? clean_texte($_POST['f_marge
 $groupe_id     = (isset($_POST['f_groupe']))       ? clean_entier($_POST['f_groupe'])       : 0;	// en cas de manipulation type Firebug, peut être forcé pour l'élève à $_SESSION['ELEVE_CLASSE_ID']
 $tab_eleve_id  = (isset($_POST['eleves']))         ? array_map('clean_entier',explode(',',$_POST['eleves'])) : array() ;	// en cas de manipulation type Firebug, peut être forcé pour l'élève avec $_SESSION['USER_ID']
 
-save_cookie_select('grille_referentiel');
-
 $tab_eleve_id  = array_filter($tab_eleve_id,'positif');
 $liste_eleve   = implode(',',$tab_eleve_id);
 
 if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && $orientation && $couleur && $legende && $marge_min && $cases_nb && $cases_largeur )
 {
+
+	save_cookie_select('grille_referentiel');
+	save_cookie_select('matiere');
 
 	$tab_domaine    = array();	// [domaine_id] => array(domaine_ref,domaine_nom,domaine_nb_lignes);
 	$tab_theme      = array();	// [domaine_id][theme_id] => array(theme_ref,theme_nom,theme_nb_lignes);
@@ -120,7 +121,7 @@ if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && 
 	{
 		$tab_eleve[] = array('eleve_id'=>$_SESSION['USER_ID'],'eleve_nom'=>$_SESSION['USER_NOM'],'eleve_prenom'=>$_SESSION['USER_PRENOM']);
 	}
-	elseif($groupe_id && count($tab_eleve_id))
+	elseif(count($tab_eleve_id))
 	{
 		$tab_eleve = DB_STRUCTURE_lister_eleves_cibles($liste_eleve,$with_gepi=FALSE,$with_langue=FALSE);
 	}
@@ -132,7 +133,7 @@ if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && 
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 	// Récupération de la liste des résultats (si demandé)
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-	if($groupe_id && count($tab_eleve_id) && $remplissage=='plein')
+	if(count($tab_eleve_id) && $remplissage=='plein')
 	{
 		$DB_TAB = DB_STRUCTURE_lister_result_eleves_matiere($liste_eleve , $liste_item , $date_debut=false , $date_fin=false , $_SESSION['USER_PROFIL']) ;
 		foreach($DB_TAB as $DB_ROW)
@@ -179,7 +180,7 @@ if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && 
 	$releve_HTML .= '<h1>Grille d\'items d\'un référentiel</h1>';
 	$releve_HTML .= '<h2>'.html($matiere_nom.' - Niveau '.$niveau_nom.$only_socle).'</h2>';
 	// Appel de la classe et définition de qqs variables supplémentaires pour la mise en page PDF
-	require('./_fpdf/fpdf.php');
+	require('./_lib/FPDF/fpdf.php');
 	require('./_inc/class.PDF.php');
 	$releve_PDF = new PDF($orientation,$marge_min,$couleur,$legende);
 	$releve_PDF->grille_referentiel_initialiser($cases_nb,$cases_largeur,$lignes_nb,$colonne_vide);
@@ -248,7 +249,7 @@ if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && 
 									else
 									{
 										$releve_HTML .= '<td>&nbsp;</td>';
-										$releve_PDF->Cell($cases_largeur , $cases_hauteur , '' , 1 , floor(($i+1)/$cases_nb) , 'C' , true , '');
+										$releve_PDF->Cell($cases_largeur , $releve_PDF->cases_hauteur , '' , 1 , floor(($i+1)/$cases_nb) , 'C' , true , '');
 									}
 								}
 								$releve_HTML .= '</tr>'."\r\n";
@@ -258,11 +259,12 @@ if( $matiere_id && $niveau_id && $matiere_nom && $niveau_nom && $remplissage && 
 				}
 			}
 		}
+		$releve_HTML .= '</table><p />';
 		if($legende=='oui')
 		{
 			$releve_PDF->grille_referentiel_legende();
+			$releve_HTML .= affich_legende_html($note_Lomer=TRUE,$etat_bilan=FALSE);
 		}
-		$releve_HTML .= '</table><p />';
 	}
 
 	// Chemins d'enregistrement

@@ -31,7 +31,7 @@ $TITRE = "Responsables légaux";
 
 <div class="hc">
 	<a href="./index.php?page=<?php echo $PAGE ?>&amp;section=gestion">Parents (gestion).</a>	||
-	<a href="./index.php?page=<?php echo $PAGE ?>&amp;section=adresse">Parents &amp; Adresses.</a>	||
+	<a href="./index.php?page=<?php echo $PAGE ?>&amp;section=adresse">Parents &amp; adresses.</a>	||
 	<a href="./index.php?page=<?php echo $PAGE ?>&amp;section=eleve">Parents &amp; élèves.</a>
 </div>
 

@@ -3,27 +3,28 @@
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
  * @copyright Thomas Crespin 2010
- * 
+ *
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
  * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
  * ****************************************************************************************************
- * 
+ *
  * Ce fichier est une partie de SACoche.
- * 
+ *
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
  * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
- * 
+ *
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
  * Consultez la Licence Générale Publique GNU pour plus de détails.
- * 
+ *
  * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
+
 $tab_messages_erreur = array();
 
 // Fichier appelé pour l'affichage de chaque page.
@@ -38,20 +39,36 @@ require_once('./_inc/fonction_redirection.php');
 require_once('./_inc/config_serveur.php');
 require_once('./_inc/fonction_sessions.php');
 
-// Page appelée
-$PAGE    = (isset($_GET['page']))    ? $_GET['page']    : 'public_accueil' ;
-$SECTION = (isset($_GET['section'])) ? $_GET['section'] : '';
+// Page et section appelées ; normalement transmis en $_GET mais $_POST possibles depuis GEPI
+    if(isset($_GET['page']))  { $PAGE = $_GET['page']; }
+elseif(isset($_POST['page'])) { $PAGE = $_POST['page']; }
+elseif(isset($_GET['sso']))   { $PAGE = 'compte_accueil'; }
+else                          { $PAGE = 'public_accueil'; }
+    if(isset($_GET['section']))  { $SECTION = $_GET['section']; }
+elseif(isset($_POST['section'])) { $SECTION = $_POST['section']; }
+else                             { $SECTION = ''; }
+
+// Fichier d'informations sur l'hébergement (requis avant la gestion de la session).
+$fichier_constantes = $CHEMIN_CONFIG.'constantes.php';
+if(is_file($fichier_constantes))
+{
+	require_once($fichier_constantes);
+}
+elseif($PAGE!='public_installation')
+{
+	affich_message_exit($titre='Informations hébergement manquantes',$contenu='Informations concernant l\'hébergeur manquantes.',$lien='<a href="./index.php?page=public_installation">Procédure d\'installation de SACoche.</a>');
+}
 
 // Ouverture de la session et gestion des droits d'accès
 require_once('./_inc/tableau_droits.php');
 if(!isset($tab_droits[$PAGE]))
 {
 	$tab_messages_erreur[] = 'Erreur : droits de la page "'.$PAGE.'" manquants.';
-	$PAGE = (substr($PAGE,0,6)=='public') ? 'public_accueil' :'compte_accueil' ;
+	$PAGE = (substr($PAGE,0,6)=='public') ? 'public_accueil' : 'compte_accueil' ;
 }
-gestion_session($TAB_PROFILS_AUTORISES = $tab_droits[$PAGE]);
+gestion_session($tab_droits[$PAGE]);
 
-// Blocage éventuel par le webmestre ou un administrateur (ne peut pas se tester avant car il faut avoir récupéré les données de session)
+// Blocage éventuel par le webmestre ou un administrateur (on ne peut pas le tester avant car il faut avoir récupéré les données de session)
 tester_blocage_application($_SESSION['BASE'],$demande_connexion_profil=false);
 
 // Autres fonctions à charger
@@ -65,16 +82,33 @@ require_once('./_inc/fonction_affichage.php');
 // Annuler un blocage par l'automate anormalement long
 annuler_blocage_anormal();
 
-// Informations sur l'hébergement
-$fichier_constantes = $CHEMIN_CONFIG.'constantes.php';
+// Patch fichier de config
 if(is_file($fichier_constantes))
 {
-	require_once($fichier_constantes);
+	// DEBUT PATCH CONFIG 1
+	// A compter du 05/12/2010, ajout de paramètres dans le fichier de constantes pour paramétrer cURL. [à retirer dans quelques mois]
+	if(!defined('SERVEUR_PROXY_USED') && function_exists('enregistrer_informations_session'))
+	{
+		fabriquer_fichier_hebergeur_info( array('SERVEUR_PROXY_USED'=>'','SERVEUR_PROXY_NAME'=>'','SERVEUR_PROXY_PORT'=>'','SERVEUR_PROXY_TYPE'=>'','SERVEUR_PROXY_AUTH_USED'=>'','SERVEUR_PROXY_AUTH_METHOD'=>'','SERVEUR_PROXY_AUTH_USER'=>'','SERVEUR_PROXY_AUTH_PASS'=>'') );
+	}
+	// FIN PATCH CONFIG 1
+	// DEBUT PATCH CONFIG 2
+	// A compter du 26/05/2011, ajout de paramètres dans le fichier de constantes pour les dates CNIL. [à retirer dans quelques mois]
+	if(!defined('CNIL_NUMERO') && function_exists('enregistrer_informations_session'))
+	{
+		fabriquer_fichier_hebergeur_info( array('CNIL_NUMERO'=>HEBERGEUR_CNIL,'CNIL_DATE_ENGAGEMENT'=>'','CNIL_DATE_RECEPISSE'=>'') );
+	}
+	// FIN PATCH CONFIG 2
+}
+
+// Interface de connexion à la base, chargement et config (test sur $fichier_constantes car à éviter si procédure d'installation non terminée).
+if(is_file($fichier_constantes))
+{
 	// Classe de connexion aux BDD
-	require_once('./_inc/class.DB.php');
+	require_once('./_lib/DB/DB.class.php');
 	// Choix des paramètres de connexion à la base de données adaptée...
 	// ...multi-structure ; base sacoche_structure_***
-	if( (in_array($_SESSION['USER_PROFIL'],array('administrateur','directeur','professeur','eleve'))) && (HEBERGEUR_INSTALLATION=='multi-structures') )
+	if( (in_array($_SESSION['USER_PROFIL'],array('administrateur','directeur','professeur','parent','eleve'))) && (HEBERGEUR_INSTALLATION=='multi-structures') )
 	{
 		$fichier_mysql_config = 'serveur_sacoche_structure_'.$_SESSION['BASE'];
 		$fichier_class_config = 'class.DB.config.sacoche_structure';
@@ -105,7 +139,8 @@ if(is_file($fichier_constantes))
 	if(is_file($fichier_mysql_config))
 	{
 		require_once($fichier_mysql_config);
-		// DEBUT A compter du 02/08/2010, déplacement du port dans le fichier créé à l'installation. [à retirer dans quelques mois]
+		// DEBUT PATCH MYSQL 1
+		// A compter du 02/08/2010, déplacement du port dans le fichier créé à l'installation. [à retirer dans quelques mois]
 		if(!defined('SACOCHE_'.$PATCH.'_BD_PORT'))
 		{
 			$tab_fichier = Lister_Contenu_Dossier($CHEMIN_MYSQL);
@@ -119,20 +154,15 @@ if(is_file($fichier_constantes))
 			}
 			define('SACOCHE_'.$PATCH.'_BD_PORT','3306');	// Port de connexion
 		}
-		// FIN A compter du 02/08/2010, déplacement du port dans le fichier créé à l'installation. [à retirer dans quelques mois]
+		// FIN PATCH MYSQL 1
 		require_once($fichier_class_config);
 	}
 	elseif($PAGE!='public_installation')
 	{
-		affich_message_exit($titre='Paramètres BDD manquants',$contenu='Paramètres de connexion à la base de données manquants.<br /><a href="./index.php?page=public_installation">Procédure d\'installation du site SACoche.</a>');
+		affich_message_exit($titre='Paramètres BDD manquants',$contenu='Paramètres de connexion à la base de données manquants.',$lien='<a href="./index.php?page=public_installation">Procédure d\'installation de SACoche.</a>');
 	}
-	// DEBUT A compter du 05/12/2010, ajout de paramètres dans le fichier de constantes pour paramétrer cURL. [à retirer dans quelques mois]
-	if(!defined('SERVEUR_PROXY_USED') && function_exists('enregistrer_informations_session'))
-	{
-		fabriquer_fichier_hebergeur_info( array('SERVEUR_PROXY_USED'=>'','SERVEUR_PROXY_NAME'=>'','SERVEUR_PROXY_PORT'=>'','SERVEUR_PROXY_TYPE'=>'','SERVEUR_PROXY_AUTH_USED'=>'','SERVEUR_PROXY_AUTH_METHOD'=>'','SERVEUR_PROXY_AUTH_USER'=>'','SERVEUR_PROXY_AUTH_PASS'=>'') );
-	}
-	// FIN A compter du 05/12/2010, ajout de paramètres dans le fichier de constantes pour paramétrer cURL. [à retirer dans quelques mois]
-	// DEBUT A compter du 05/12/2010, 2 users MySQL sont créés par établissement (localhost & %) ; il faut créer les manquants antérieurs sinon erreur lors de la suppression. [à retirer dans quelques mois]
+	// DEBUT PATCH MYSQL 2
+	// A compter du 05/12/2010, 2 users MySQL sont créés par établissement (localhost & %) ; il faut créer les manquants antérieurs sinon erreur lors de la suppression. [à retirer dans quelques mois]
 	if(defined('SACOCHE_WEBMESTRE_BD_HOST'))
 	{
 		$nb_structures = (int)DB_WEBMESTRE_compter_structure();
@@ -165,17 +195,13 @@ if(is_file($fichier_constantes))
 			mysql_close($BDlink);
 		}
 	}
-	// FIN A compter du 05/12/2010, 2 users MySQL sont créés par établissement (localhost & %) ; il faut créer les manquants antérieurs sinon erreur lors de la suppression. [à retirer dans quelques mois]
-	// DEBUT A compter du 26/05/2011, ajout de paramètres dans le fichier de constantes pour les dates CNIL. [à retirer dans quelques mois]
-	if(!defined('CNIL_NUMERO') && function_exists('enregistrer_informations_session'))
-	{
-		fabriquer_fichier_hebergeur_info( array('CNIL_NUMERO'=>HEBERGEUR_CNIL,'CNIL_DATE_ENGAGEMENT'=>'','CNIL_DATE_RECEPISSE'=>'') );
-	}
-	// FIN A compter du 26/05/2011, ajout de paramètres dans le fichier de constantes pour les dates CNIL. [à retirer dans quelques mois]
+	// FIN PATCH MYSQL 2
 }
-elseif($PAGE!='public_installation')
+
+// Authentification requise par SSO
+if(defined('LOGIN_SSO'))
 {
-	affich_message_exit($titre='Informations hébergement manquantes',$contenu='Informations concernant l\'hébergeur manquantes.<br /><a href="./index.php?page=public_installation">Procédure d\'installation du site SACoche.</a>');
+	require('./pages/public_login_SSO.php');
 }
 
 ob_start();
@@ -227,9 +253,9 @@ entete();
 		echo'	<div id="info">'."\r\n";
 		echo'		<span class="button"><img alt="site officiel" src="./_img/favicon.gif" /> <a class="lien_ext" href="'.SERVEUR_PROJET.'">Site officiel</a></span>'."\r\n";
 		echo'		<span class="button"><img alt="structure" src="./_img/home.png" /> '.html($_SESSION['DENOMINATION']).'</span>'."\r\n";
-		echo'		<span class="button"><img alt="'.$_SESSION['USER_PROFIL'].'" src="./_img/menu/profil_'.$_SESSION['USER_PROFIL'].'.png" /> '.html($_SESSION['USER_PRENOM'].' '.$_SESSION['USER_NOM']).' ('.str_replace('eleve','élève',$_SESSION['USER_PROFIL']).')</span>'."\r\n";
+		echo'		<span class="button"><img alt="'.$_SESSION['USER_PROFIL'].'" src="./_img/menu/profil_'.$_SESSION['USER_PROFIL'].'.png" /> '.html($_SESSION['USER_PRENOM'].' '.$_SESSION['USER_NOM']).' ('.$_SESSION['USER_PROFIL'].')</span>'."\r\n";
 		echo'		<span class="button"><span id="clock"><img alt="" src="./_img/clock_fixe.png" /> '.$_SESSION['DUREE_INACTIVITE'].' min</span><img alt="" src="./_img/point.gif" /></span>'."\r\n";
-		echo'		<button id="deconnecter" value="'.$_SESSION['USER_PROFIL'].'"><img alt="" src="./_img/bouton/deconnecter.png" /> Déconnexion</button>'."\r\n";
+		echo'		<button id="deconnecter"><img alt="" src="./_img/bouton/deconnecter.png" /> Déconnexion</button>'."\r\n";
 		echo'	</div>'."\r\n";
 		echo'	<img id="logo" alt="SACoche" src="./_img/logo_petit2.png" />'."\r\n";
 		$fichier_menu = ($_SESSION['USER_PROFIL']!='webmestre') ? '__menu_'.$_SESSION['USER_PROFIL'] : '__menu_'.$_SESSION['USER_PROFIL'].'_'.HEBERGEUR_INSTALLATION ;
@@ -254,13 +280,15 @@ entete();
 		$SACoche_lien   = '<a href="'.SERVEUR_PROJET.'"><img alt="Suivi d\'Acquisition de Compétences" src="./_img/logo_grand.gif" /></a>' ;
 		echo ($PAGE=='public_accueil') ? '<h1 class="logo">'.$SACoche_lien.$hebergeur_lien.'</h1>' : '<h1>» '.$TITRE.'</h1>' ;
 		echo 	$CONTENU_PAGE;
+		// echo'<pre>';var_dump($_SESSION);echo'</pre>';
 		echo'</div>'."\r\n";
 	}
 	?>
 	<script type="text/javascript">
 		var PAGE='<?php echo $PAGE ?>';
 		var DUREE_AUTORISEE='<?php echo $_SESSION['DUREE_INACTIVITE'] ?>';
-		var DUREE_RESTANTE='<?php echo $_SESSION['DUREE_INACTIVITE'] ?>';
+		var DUREE_AFFICHEE='<?php echo $_SESSION['DUREE_INACTIVITE'] ?>';
+		var CONNEXION_USED='<?php echo (isset($_COOKIE[COOKIE_AUTHMODE])) ? $_COOKIE[COOKIE_AUTHMODE] : 'normal' ; ?>';
 	</script>
 	<?php echo $SCRIPT; ?>
 	<!-- Objet flash pour lire un fichier audio grace au génial lecteur de neolao http://flash-mp3-player.net/ -->

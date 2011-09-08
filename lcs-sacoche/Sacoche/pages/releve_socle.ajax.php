@@ -54,6 +54,8 @@ if( (!$palier_id) || (!$palier_nom) || (!count($tab_pilier_id)) || (!in_array($m
 	exit('Erreur avec les données transmises !');
 }
 
+save_cookie_select('palier');
+
 // Permet d'avoir des informations accessibles en cas d'erreur type « PHP Fatal error : Allowed memory size of ... bytes exhausted ».
 // ajouter_log_PHP( $log_objet='Demande de bilan' , $log_contenu=serialize($_POST) , $log_fichier=__FILE__ , $log_ligne=__LINE__ , $only_sesamath=true );
 
@@ -336,7 +338,7 @@ $releve_html  = '<style type="text/css">'.$_SESSION['CSS'].'</style>';
 $releve_html .= '<h1>'.html($titre1).'</h1>';
 $releve_html .= '<h2>'.html($titre2).'</h2>';
 // Appel de la classe et définition de qqs variables supplémentaires pour la mise en page PDF
-require('./_fpdf/fpdf.php');
+require('./_lib/FPDF/fpdf.php');
 require('./_inc/class.PDF.php');
 $releve_pdf = new PDF($orientation='portrait',$marge_min=7.5,$couleur='oui');
 $releve_pdf->releve_socle_initialiser($test_affichage_Pourcentage,$test_affichage_Validation);

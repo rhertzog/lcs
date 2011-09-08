@@ -34,7 +34,7 @@ $(document).ready
 		// Appel en ajax pour lancer un nettoyage
 		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
 
-		$('#bouton_nettoyer , #bouton_purger , #bouton_supprimer , #bouton_effacer').click
+		$('#bouton_numeroter , #bouton_nettoyer , #bouton_purger , #bouton_supprimer , #bouton_effacer').click
 		(
 			function()
 			{
@@ -80,8 +80,8 @@ $(document).ready
 								else
 								{
 									$('#ajax_msg_'+action).removeAttr("class").html('');
-									$('#ajax_info').html(responseHTML).show();
-									maj_clock(1);
+									$('#ajax_info').html(responseHTML).show().appendTo('#form_'+action);
+									initialiser_compteur();
 								}
 							}
 						}
