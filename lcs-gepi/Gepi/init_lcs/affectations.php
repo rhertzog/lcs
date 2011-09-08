@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: affectations.php 5938 2010-11-21 18:14:45Z crob $
+ * $Id: affectations.php 7611 2011-08-08 08:14:38Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -51,7 +51,9 @@ $liste_tables_del = array(
 "j_groupes_matieres",
 "j_groupes_professeurs",
 "eleves_groupes_settings",
-"j_signalement"
+"j_signalement",
+"edt_classes",
+"edt_cours"
 );
 
 

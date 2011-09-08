@@ -1,6 +1,6 @@
 <?php
 /*
-* @version: $Id: archivage_cdt.php 6552 2011-02-28 14:48:15Z crob $
+* @version: $Id: archivage_cdt.php 7928 2011-08-23 16:37:45Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
 *
@@ -86,7 +86,9 @@ $current_ordre='ASC';
 $dossier_etab=get_dossier_etab_cdt_archives();
 //===================================
 
-echo "<p class='bold'><a href='index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
+echo "<p class='bold'><a href='";
+echo "../cahier_texte_admin/index.php";
+echo "'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 
 //echo "<br />\$dossier_etab=$dossier_etab<br />";
 
@@ -131,6 +133,15 @@ if(!isset($step)) {
 	echo "<p><input type='submit' value='Valider' /></p>\n";
 	echo "</form>\n";
 
+	echo "<p><br /></p>\n";
+	echo "<p><em>NOTES&nbsp;:</em></p>\n";
+	echo "<ul>\n";
+	echo "<li><p>La procédure d'archivage est normalement utilisée en fin d'année.</p></li>\n";
+	echo "<li><p>Lors de l'archivage, les cahiers de textes sont parcourus pour mettre en place une arborescence copie de l'arborescence des cahiers de textes.<br />La procédure ne vide pas les tables des cahiers de textes.</p></li>\n";
+	echo "<li><p>Si vous souhaitez tester la procédure d'archivage, vous pouvez, à n'importe quel moment de l'année, effectuer un archivage sans transfert des documents joints.<br />Une arborescence copie sera mise en place.<br />Vous pourrez la consulter... et la supprimer si vous le souhaitez sans impact sur les cahiers de textes en cours d'utilisation.<br />En revanche, si vous cochez Transfert, les documents joints aux cahiers de textes seront déplacés.<br />Un professeur qui consulterait son cahier de textes de l'année courante, trouverait ses comptes-rendus, mais les documents joints ne seraient plus disponibles.</p></li>\n";
+	echo "<li><p>En fin d'année, il est recommandé d'effectuer un archivage avec transfert des documents pour ne pas laisser de scories pour les enseignements des années suivantes (<em>et éviter d'encombrer l'arborescence du serveur de fichiers inutiles</em>).</p><p>Une fois l'archivage de fin d'année effectué, vous pourrez vider les tables des cahiers de textes dans <a href='../utilitaires/clean_tables.php'>Gestion générale/Nettoyage des tables</a><br />(<em>ce nettoyage 'manuel' des tables n'est pas indispensable; il est effectué automatiquement lors de l'initialisation de l'année si vous ne faites pas une initialisation tout à la main</em>)</p></li>\n";
+	echo "<li><p>Dans les archives de CDT, les professeurs ne pourront consulter que leurs propres cahiers de textes.br />Les comptes de statut 'administrateur', 'scolarite' auront accès à toutes les archives de cahiers de textes.<br />Les autres statuts n'y auront aucun accès.</p></li>\n";
+	echo "</ul>\n";
 }
 else {
 	check_token();
@@ -173,7 +184,9 @@ else {
 			die();
 		}
 
-		$sql="INSERT INTO tempo2 SELECT id,name FROM groupes;";
+		//$sql="INSERT INTO tempo2 SELECT id,name FROM groupes;";
+		// On ne retient que les groupes associés à des classes... les autres sont des scories qui devraient être supprimées par un Nettoyage de la base
+		$sql="INSERT INTO tempo2 SELECT id,name FROM groupes WHERE id IN (SELECT DISTINCT id_groupe FROM j_groupes_classes);";
 		$res=mysql_query($sql);
 		if(!$res) {
 			echo "<p style='color:red'>ABANDON&nbsp;: Il s'est produit un problème lors de l'insertion de la liste des groupes dans la table 'tempo2'.</p>\n";
@@ -183,19 +196,19 @@ else {
 		}
 
 		//$sql="CREATE TABLE tempo3 (id_classe int(11) NOT NULL default '0', name varchar(60) NOT NULL default '');";
-		$sql="CREATE TABLE IF NOT EXISTS tempo3 (id_classe int(11) NOT NULL default '0', classe varchar(255) NOT NULL default '', matiere varchar(255) NOT NULL default '', enseignement varchar(255) NOT NULL default '', id_groupe int(11) NOT NULL default '0', fichier varchar(255) NOT NULL default '');";
+		$sql="CREATE TABLE IF NOT EXISTS tempo3_cdt (id_classe int(11) NOT NULL default '0', classe varchar(255) NOT NULL default '', matiere varchar(255) NOT NULL default '', enseignement varchar(255) NOT NULL default '', id_groupe int(11) NOT NULL default '0', fichier varchar(255) NOT NULL default '');";
 		$res=mysql_query($sql);
 		if(!$res) {
-			echo "<p style='color:red'>ABANDON&nbsp;: Erreur lors de la création de la table temporaire 'tempo3'.</p>\n";
+			echo "<p style='color:red'>ABANDON&nbsp;: Erreur lors de la création de la table temporaire 'tempo3_cdt'.</p>\n";
 			echo "<p><br /></p>\n";
 			require("../lib/footer.inc.php");
 			die();
 		}
 
-		$sql="TRUNCATE TABLE tempo3;";
+		$sql="TRUNCATE TABLE tempo3_cdt;";
 		$res=mysql_query($sql);
 		if(!$res) {
-			echo "<p style='color:red'>ABANDON&nbsp;: Il s'est produit un problème lors du nettoyage de la table 'tempo3'.</p>\n";
+			echo "<p style='color:red'>ABANDON&nbsp;: Il s'est produit un problème lors du nettoyage de la table 'tempo3_cdt'.</p>\n";
 			echo "<p><br /></p>\n";
 			require("../lib/footer.inc.php");
 			die();
@@ -212,11 +225,13 @@ else {
 
 		if(!file_exists("../documents/archives/".$dossier_etab)) {
 			//$res=mkdir("../documents/archives/".$dossier_etab);
-			$res=creer_rep_docs_joints("../documents/archives/", $dossier_etab, "../../..");
+			//$res=creer_rep_docs_joints("../documents/archives/", $dossier_etab, "../../..");
+			$res=creer_rep_docs_joints("../documents/archives/", $dossier_etab);
 		}
 
 		if(!file_exists("../documents/archives/".$dossier_etab."/index.html")) {
-			$res=creer_index_logout("../documents/archives/".$dossier_etab, "../../..");
+			//$res=creer_index_logout("../documents/archives/".$dossier_etab, "../../..");
+			$res=creer_index_logout("../documents/archives/".$dossier_etab);
 		}
 
 		// Page HTML à faire à ce niveau pour accéder aux différentes années...
@@ -244,7 +259,8 @@ else {
 		}
 
 		if(!file_exists($dossier_annee."/index.html")) {
-			$res=creer_index_logout($dossier_annee, "../../../..");
+			//$res=creer_index_logout($dossier_annee, "../../../..");
+			$res=creer_index_logout($dossier_annee);
 		}
 
 		if(!file_exists($dossier_cdt)) {
@@ -265,7 +281,8 @@ else {
 		}
 
 		if(!file_exists($dossier_documents."/index.html")) {
-			$res=creer_index_logout($dossier_annee, "../../../../..");
+			//$res=creer_index_logout($dossier_annee, "../../../../..");
+			$res=creer_index_logout($dossier_annee);
 		}
 
 		// On copie les feuilles de style pour:
@@ -336,16 +353,20 @@ else {
 		$sql="SELECT * FROM tempo2 LIMIT $largeur_tranche;";
 		$res_grp=mysql_query($sql);
 		if(mysql_num_rows($res_grp)>0) {
-			echo "<p><b>Archivage de</b>&nbsp;:<br />";
+			echo "<p><b>Archivage de</b>&nbsp;:<br />\n";
 			while($lig_grp=mysql_fetch_object($res_grp)) {
 				$id_groupe=$lig_grp->col1;
-
+				//echo "<p>\$id_groupe=$id_groupe<br />";
 				$current_group=get_group($id_groupe);
-		
+				/*
 				$nom_groupe=preg_replace('/&/','et',unhtmlentities(remplace_accents($current_group['name'],'all')));
 				$description_groupe=preg_replace('/&/','et',unhtmlentities(remplace_accents($current_group['description'],'all')));
 				$classlist_string_groupe=preg_replace('/&/','et',unhtmlentities(remplace_accents($current_group['classlist_string'],'all')));
-				$nom_page_html_groupe=$id_groupe."_".$nom_groupe."_"."$description_groupe"."_".$classlist_string_groupe.".$extension";
+				*/
+				$nom_groupe=preg_replace('/[^A-Za-z0-9\.-]/','_',preg_replace('/&/','et',unhtmlentities(remplace_accents($current_group['name'],'all'))));
+				$description_groupe=preg_replace('/[^A-Za-z0-9\.-]/','_',preg_replace('/&/','et',unhtmlentities(remplace_accents($current_group['description'],'all'))));
+				$classlist_string_groupe=preg_replace('/[^A-Za-z0-9\.-]/','_',preg_replace('/&/','et',unhtmlentities(remplace_accents($current_group['classlist_string'],'all'))));
+				$nom_page_html_groupe=strtr($id_groupe."_".$nom_groupe."_".$description_groupe."_".$classlist_string_groupe.".$extension","/","_");
 
 
 				$nom_complet_matiere=preg_replace('/&/','et',unhtmlentities(remplace_accents($current_group['matiere']['nom_complet'],'all')));
@@ -465,7 +486,9 @@ else {
 
 				$html=html_entete("CDT: ".$nom_detaille_groupe_non_html,1,'y',"$chaine_login_prof").$html;
 				$html.=html_pied_de_page();
-		
+
+				//echo "\$dossier_cdt=$dossier_cdt<br />";
+				//echo "\$nom_fichier=$nom_fichier<br />";
 				$f=fopen($dossier_cdt."/".$nom_fichier,"w+");
 				fwrite($f,$html);
 				fclose($f);
@@ -473,12 +496,13 @@ else {
 				foreach($current_group["classes"]["classes"] as $key => $value) {
 					// Pour ne créer les liens que pour les cahiers de textes non vides
 					if(count($tab_dates)>0) {
-						$sql="INSERT INTO tempo3 SET id_classe='".$value['id']."', classe='".$value['classe']." (".$value['nom_complet'].")"."', matiere='$nom_complet_matiere', enseignement='$nom_enseignement', id_groupe='".$id_groupe."', fichier='$nom_fichier';";
+						//$sql="INSERT INTO tempo3_cdt SET id_classe='".$value['id']."', classe='".$value['classe']." (".$value['nom_complet'].")"."', matiere='$nom_complet_matiere', enseignement='$nom_enseignement', id_groupe='".$id_groupe."', fichier='$nom_fichier';";
+						$sql="INSERT INTO tempo3_cdt SET id_classe='".$value['id']."', classe='".addslashes($value['classe'])." (".addslashes($value['nom_complet']).")"."', matiere='".addslashes($nom_complet_matiere)."', enseignement='".addslashes($nom_enseignement)."', id_groupe='".$id_groupe."', fichier='$nom_fichier';";
 						$insert=mysql_query($sql);
 						if(!$insert) {
 							$temoin_erreur="y";
 		
-							echo "<p style='color:red'>ERREUR lors de l'enregistrement dans 'tempo3'&nbsp;: $sql</p>\n";
+							echo "<p style='color:red'>ERREUR lors de l'enregistrement dans 'tempo3_cdt'&nbsp;: $sql</p>\n";
 						}
 					}
 				}
@@ -515,8 +539,8 @@ else {
 
 			echo "<p>L'archivage des enseignements est réalisé.<br />Les pages d'index vont maintenant être créées.</p>\n";
 
-			//$sql="SELECT * FROM tempo3 ORDER BY classe, matiere;";
-			$sql="SELECT DISTINCT id_classe, classe FROM tempo3 ORDER BY classe;";
+			//$sql="SELECT * FROM tempo3_cdt ORDER BY classe, matiere;";
+			$sql="SELECT DISTINCT id_classe, classe FROM tempo3_cdt ORDER BY classe;";
 			$res=mysql_query($sql);
 			if(mysql_num_rows($res)>0) {
 
@@ -535,7 +559,7 @@ else {
 				while($lig_class=mysql_fetch_object($res)) {
 					//$html.="Classe de <a href='classe_".$lig_class->id_classe.".$extension'>".$lig_class->classe."</a><br />";
 					$html.="<tr><td>Classe de </td><td><a href='classe_".$lig_class->id_classe.".$extension'>".$lig_class->classe."</a></td></tr>\n";
-					//$sql="SELECT * FROM tempo3 WHERE classe='$lig_class->classe';";
+					//$sql="SELECT * FROM tempo3_cdt WHERE classe='$lig_class->classe';";
 				}
 				$html.="</table>\n";
 				$html.="</div>\n";
@@ -551,7 +575,7 @@ else {
 			}
 
 
-			$sql="SELECT DISTINCT id_classe, classe FROM tempo3 ORDER BY classe;";
+			$sql="SELECT DISTINCT id_classe, classe FROM tempo3_cdt ORDER BY classe;";
 			$res=mysql_query($sql);
 			if(mysql_num_rows($res)>0) {
 				while($lig_class=mysql_fetch_object($res)) {
@@ -566,7 +590,8 @@ else {
 	
 					$html.="<h2 style='text-align:center;'>Classe de $lig_class->classe&nbsp;:</h2>\n";
 
-					$sql="SELECT * FROM tempo3 WHERE classe='$lig_class->classe';";
+					$sql="SELECT * FROM tempo3_cdt WHERE classe='".addslashes($lig_class->classe)."';";
+					//echo "$sql<br />";
 					$res2=mysql_query($sql);
 					if(mysql_num_rows($res2)>0) {
 						$html.="<div align='center'>\n";
@@ -574,7 +599,7 @@ else {
 						while($lig_mat=mysql_fetch_object($res2)) {
 							//$html.="<b>$lig_mat->matiere</b>&nbsp;:<a href='$lig_mat->fichier'> $lig_mat->enseignement</a><br />";
 
-							$sql="SELECT DISTINCT u.* FROM utilisateurs u, j_groupes_professeurs jgp, tempo3 t WHERE t.id_groupe=jgp.id_groupe AND u.login=jgp.login AND t.fichier='$lig_mat->fichier';";
+							$sql="SELECT DISTINCT u.* FROM utilisateurs u, j_groupes_professeurs jgp, tempo3_cdt t WHERE t.id_groupe=jgp.id_groupe AND u.login=jgp.login AND t.fichier='$lig_mat->fichier';";
 							$res3=mysql_query($sql);
 							if(mysql_num_rows($res3)>0) {
 								$liste_profs="";
@@ -599,7 +624,7 @@ else {
 				}
 			}
 
-			$sql="SELECT DISTINCT u.* FROM tempo3 t, j_groupes_professeurs jgp, utilisateurs u WHERE jgp.id_groupe=t.id_groupe AND jgp.login=u.login ORDER BY u.nom, u.prenom;";
+			$sql="SELECT DISTINCT u.* FROM tempo3_cdt t, j_groupes_professeurs jgp, utilisateurs u WHERE jgp.id_groupe=t.id_groupe AND jgp.login=u.login ORDER BY u.nom, u.prenom;";
 			$res=mysql_query($sql);
 			if(mysql_num_rows($res)>0) {
 				$html='<div id=\'div_lien_retour\' class=\'noprint\' style=\'float:right; width:6em\'><a href=\'index.'.$extension.'\'>Retour</a></div>';
@@ -616,10 +641,17 @@ else {
 				while($lig_prof=mysql_fetch_object($res)) {
 					$html.="<a href='cdt_".$lig_prof->login.".$extension'> $lig_prof->civilite $lig_prof->nom $lig_prof->prenom</a><br />";
 
-					$sql="SELECT * FROM tempo3 t, j_groupes_professeurs jgp WHERE jgp.id_groupe=t.id_groupe AND jgp.login='$lig_prof->login' ORDER BY classe, matiere;";
+					$sql="SELECT * FROM tempo3_cdt t, j_groupes_professeurs jgp WHERE jgp.id_groupe=t.id_groupe AND jgp.login='$lig_prof->login' ORDER BY classe, matiere;";
 					$res2=mysql_query($sql);
 					if(mysql_num_rows($res2)>0) {
-						$html2='<div id=\'div_lien_retour\' class=\'noprint\' style=\'float:right; width:6em\'><a href=\'index_professeurs.'.$extension.'\'>Retour</a></div>';
+						//$html2='<div id=\'div_lien_retour\' class=\'noprint\' style=\'float:right; width:6em\'><a href=\'index_professeurs.'.$extension.'\'>Retour</a></div>';
+						$html2='<div id=\'div_lien_retour\' class=\'noprint\' style=\'float:right; width:6em\'><a href=\'';
+						$html2.='<?php'."\n";
+						//$html2.='if($_SESSION["statut"]=="professeur") {echo "CDT_".$_SESSION["login"];} else {echo "index_professeurs";}'."\n";
+						$html2.='if($_SESSION["statut"]=="professeur") {echo "../../../index";} else {echo "index_professeurs";}'."\n";
+						$html2.='?>';
+						$html2.='.';
+						$html2.=$extension.'\'>Retour</a></div>';
 
 						$html2.="<h1 style='text-align:center;'>Cahiers de textes (".$gepiSchoolName." - ".$gepiYear.")</h1>\n";
 						$html2.="<p style='text-align:center;'>Extraction du $display_date_debut au $display_date_fin\n";
@@ -711,7 +743,8 @@ echo "<p><br /></p>\n";
 
 // Evaluer le nom du dossier établissement selon le cas multisite ou non.<br />
 // Calculer l'année à archiver selon la date courante ou d'après le paramétrage 'gepiYear'... ou proposer de saisir un autre nom d'année.<br /><br />
-echo "<p style='color:red'>A FAIRE: Ajouter les liens dans le cahier de textes des profs... et scol? cpe?<br /><br />Ne pas proposer le lien vers les années archivées si aucune année n'est archivée pour l'utilisateur courant (variable selon qu'on est prof ou pas)</p>\n";
+//Ajouter les liens dans le cahier de textes des profs... et scol? cpe?<br /><br />
+echo "<p style='color:red'>A FAIRE: Ne pas proposer le lien vers les années archivées si aucune année n'est archivée pour l'utilisateur courant (variable selon qu'on est prof ou pas)</p>\n";
 
 require("../lib/footer.inc.php");
 die();

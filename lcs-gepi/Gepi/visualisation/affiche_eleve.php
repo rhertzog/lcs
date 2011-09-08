@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: affiche_eleve.php 7083 2011-05-31 18:08:46Z crob $
+* $Id: affiche_eleve.php 7226 2011-06-15 15:10:38Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -1396,7 +1396,7 @@ if (!isset($id_classe) and $_SESSION['statut'] != "responsable" AND $_SESSION['s
 			if($temoin_image_escalier=='oui') {$checked=" checked='yes'";} else {$checked="";}
 			echo "<input type='radio' name='temoin_image_escalier' id='temoin_image_escalier_oui' value='oui'$checked /><label for='temoin_image_escalier_oui' style='cursor: pointer;'> Oui </label>/";
 			if($temoin_image_escalier!='oui') {$checked=" checked='yes'";} else {$checked="";}
-			echo "<label for='temoin_image_escalier_non' style='cursor: pointer;'> Non </label><input type='radio' name='temoin_image_escalier' id='temoin_image_escalier_non' value='oui'$checked />";
+			echo "<label for='temoin_image_escalier_non' style='cursor: pointer;'> Non </label><input type='radio' name='temoin_image_escalier' id='temoin_image_escalier_non' value='non'$checked />";
 			echo "</td></tr>\n";
 
 			//echo "<tr><td>Tronquer le nom court<br />de matière à <a href='javascript:alert(\"A zéro caractères, on ne tronque pas le nom court de matière affiché en haut du graphe.\")'>X</a> caractères:</td><td><select name='tronquer_nom_court'>\n";
@@ -3202,8 +3202,22 @@ function eleve_suivant() {
 
 			// Récupération de la liste des matières dans l'ordre souhaité:
 			if ($affiche_categories) {
+				/*
 				$sql="SELECT DISTINCT jgc.id_groupe, m.* FROM matieres m,j_groupes_classes jgc,j_groupes_matieres jgm,j_matieres_categories_classes jmcc WHERE (m.matiere=jgm.id_matiere AND jgm.id_groupe=jgc.id_groupe AND jgc.id_classe='$id_classe' AND jgc.categorie_id = jmcc.categorie_id) ORDER BY jmcc.priority,jgc.priorite,m.matiere";
 				//ORDER BY jmcc.priority,mc.priority,jgc.priorite,m.nom_complet
+				*/
+				$sql="SELECT DISTINCT jgc.id_groupe, m.* FROM matieres m,
+															j_groupes_classes jgc,
+															j_groupes_matieres jgm,
+															j_matieres_categories_classes jmcc,
+															matieres_categories mc
+														WHERE (mc.id=jmcc.categorie_id AND 
+															jgc.id_classe=jmcc.classe_id AND 
+															m.matiere=jgm.id_matiere AND 
+															jgm.id_groupe=jgc.id_groupe AND 
+															jgc.id_classe='$id_classe' AND 
+															jgc.categorie_id = jmcc.categorie_id) 
+															ORDER BY jmcc.priority,mc.priority,jgc.priorite,m.nom_complet";
 			}
 			else{
 				$sql="SELECT DISTINCT jgc.id_groupe, m.* FROM matieres m,j_groupes_classes jgc,j_groupes_matieres jgm WHERE (m.matiere=jgm.id_matiere AND jgm.id_groupe=jgc.id_groupe AND jgc.id_classe='$id_classe') ORDER BY jgc.priorite,m.matiere";

@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: index_template.php 6700 2011-03-25 22:21:51Z regis $
+* $Id: index_template.php 8047 2011-08-30 07:56:13Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -370,8 +370,8 @@ echo add_token_field();
 	<p>
 	  Si vous souhaitez n'utiliser que le module Cahier de textes dans Gepi, consultez la page suivante&nbsp;:
 	  <br />
-	  <a href='https://www.sylogix.org/wiki/gepi/Use_only_cdt'>
-		https://www.sylogix.org/wiki/gepi/Use_only_cdt
+	  <a href='http://www.sylogix.org/projects/gepi/wiki/Use_only_cdt'>
+		http://www.sylogix.org/projects/gepi/wiki/Use_only_cdt
 	  </a>
 	</p>
 

@@ -30,9 +30,9 @@ if(!in_array($_SESSION["statut"],$tab_statuts)) {
 	die();
 }
 
-if(isset($chaine_login_prof)) {
+if((isset($chaine_login_prof))&&($chaine_login_prof!='')) {
 	$tab_login=array($chaine_login_prof);
-	if(($_SESSION["statut"]=="professeur")&&(!in_array($_SESSION["login"],$tab_login))) {
+	if(($_SESSION["statut"]=="professeur")&&(!in_array("'".$_SESSION["login"]."'",$tab_login))) {
 		header("Location: $pref_arbo_include/logout.php?auto=1");
 		die();
 	}
@@ -62,4 +62,32 @@ else {
 	}
 }
 
+// Corriger par la suite les liens de retour Professeur dans l'archivage et mettre avant l'appel entete.php: $liens_retour_ok2="y";
+//if(!isset($liens_retour_ok)) {
+if(!isset($liens_retour_ok2)) {
+	echo "<script type='text/javascript'>
+
+function cacher_div_lien_retour() {
+	t=document.title;
+	if(t.substring(0,16)=='CDT: Professeur ') {
+		if(document.getElementById('div_lien_retour')) {
+			document.getElementById('div_lien_retour').style.display='none';
+		}
+	}
+}
+//setTimeout(\"cacher_div_lien_retour()\",1000);
+
+
+function corriger_div_lien_retour() {
+	t=document.title;
+	if(t.substring(0,16)=='CDT: Professeur ') {
+		if(document.getElementById('div_lien_retour')) {
+			document.getElementById('div_lien_retour').innerHTML='<a href=\'$gepiPath/documents/archives/index.php\'>Retour</a>';
+		}
+	}
+}
+setTimeout(\"corriger_div_lien_retour()\",1000);
+
+</script>\n";
+}
 ?>

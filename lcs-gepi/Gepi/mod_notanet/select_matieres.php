@@ -1,5 +1,5 @@
 <?php
-/* $Id: select_matieres.php 6522 2011-02-21 20:13:20Z crob $ */
+/* $Id: select_matieres.php 7286 2011-06-22 13:14:10Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -281,16 +281,23 @@ else {
 		//echo "<table border='1'>\n";
 		echo "<table class='boireaus' summary='Tableau des associations matière notanet/matière gepi'>\n";
 		echo "<tr style='font-weight:bold; text-align:center'>\n";
-		echo "<th>&nbsp;</th>\n";
+
+		echo "<th colspan='2'>NOTANET</th>\n";
+
 		echo "<th colspan='3'>Matière</th>\n";
-		echo "<th>&nbsp;</th>\n";
+
+		//echo "<th>&nbsp;</th>\n";
+		echo "<th rowspan='2'>Matière GEPI</th>\n";
 
 		echo "<tr style='font-weight:bold; text-align:center'>\n";
-		echo "<th>Intitulé</th>\n";
+
+		echo "<th>Numéro</th>\n";
+		echo "<th>Intitulé de la matière NOTANET</th>\n";
+
 		echo "<th>Imposée</th>\n";
 		echo "<th>Optionnelle</th>\n";
 		echo "<th>Non dispensée dans l'établissement</th>\n";
-		echo "<th>Matière GEPI</th>\n";
+		//echo "<th>Matière GEPI</th>\n";
 
 		echo "</tr>\n";
 
@@ -301,6 +308,9 @@ else {
 				$alt=$alt*(-1);
 				echo "<tr class='lig$alt'>\n";
 				//echo "<td>".strtoupper($tabmatieres[$j][0])."</td>\n";
+				echo "<td>";
+				echo sprintf("%03d", $j);
+				echo "</td>";
 				echo "<td>";
 				//echo "<a name='ancre_$j'></a>";
 				echo strtoupper($tabmatieres[$j][0])."</td>\n";
@@ -367,7 +377,21 @@ else {
 						$cpt=0;
 						echo "<p align='left'>";
 						while($lig_tmp=mysql_fetch_object($res_test)) {
-							echo "<input type='checkbox' name='id_matiere".$j."[]' id='id_matiere".$j."_$cpt' value='$lig_tmp->matiere' checked /><label for='id_matiere".$j."_$cpt'>$lig_tmp->matiere</label><br />";
+							echo "<input type='checkbox' name='id_matiere".$j."[]' id='id_matiere".$j."_$cpt' value='$lig_tmp->matiere' checked /><label for='id_matiere".$j."_$cpt'>$lig_tmp->matiere</label>";
+							$sql="SELECT 1=1 FROM matieres WHERE matiere='$lig_tmp->matiere';";
+							//echo "$sql<br />";
+							$test_matiere=mysql_query($sql);
+							if(mysql_num_rows($test_matiere)==0) {echo "<img src='../images/icons/ico_attention.png' width='22' height='19' title=\"Cette matière ne correspond plus à une matière GEPI cette année (un nouveau nom de matière existe peut-être cette année).\" alt=\"Cette matière ne correspond plus à une matière GEPI cette année (un nouveau nom de matière existe peut-être cette année).\" />\n";}
+							else {
+								$sql="SELECT 1=1 FROM notanet n, notanet_ele_type net WHERE n.matiere='$lig_tmp->matiere' AND n.login=net.login AND net.type_brevet='$type_brevet';";
+								//echo "$sql<br />";
+								$test_matiere=mysql_query($sql);
+								$nb_ele_matiere=mysql_num_rows($test_matiere);
+								if($nb_ele_matiere>0) {
+									echo "&nbsp;(<span style='font-style: italic;' title=\"Matière associée à $nb_ele_matiere enregistrement(s) dans l'extraction notanet pour le type de brevet choisi. Si aucune association n'est signalée, c'est soit que la matière n'est associée à aucune note d'élève, soit que l'extraction n'a pas été effectuée (ou pas avec cette matière présente)\">$nb_ele_matiere</span>)";
+								}
+							}
+							echo "<br />";
 							$cpt++;
 
 						}
@@ -423,6 +447,13 @@ else {
 		echo "<li><p>Dans le cas du 'SOCLE B2I', il n'est pas nécessaire d'associer une matière.<br />L'affectation de la 'note' (<i>MS, ME, MN ou AB</i>) ne se fait pas par extraction des notes de l'année.</p>
 		<p>Pour le 'SOCLE NIVEAU A2 DE LANGUE', les matières ne sont pas exploitées pour le filtrage... seul le statut 'imposee' ou 'optionnelle' selon le type de brevet est utilisé.</p></li>\n";
 		echo "<li><p>Dans certains établissements, la matière Education Civique est considérée comme une sous-matière de Histoire-géographie et EDCIV ne fait alors pas l'objet d'une moyenne séparée de HIGEO.<br />Dans ce cas, il convient d'associer les deux matières notanet Histoire-Géo et Education civique à HIGEO.<br />Dans le cas contraire, l'export CSV sera refusé par l'application Notanet académique.</p></li>\n";
+
+		if(($type_brevet==2)||($type_brevet==3)||($type_brevet==4)||($type_brevet==5)||($type_brevet==6)) {
+				echo "<li><p>Dans certains établissements, on enseigne la LV1, mais pas les SCPHY pour les brevets PRO.<br />
+				Pourtant, l'application académique Notanet n'accepte pas que la matière 104 soit alors déclarée comme Non dispensée et donc n'apparaisse pas dans le fichier CSV généré par Gepi.<br />
+				Dans ce cas, il conviendra d'associer la même matière Gepi pour les deux matières Notanet LV1 (103) et SCPHY (104).<br />
+				De cette façon le fichier CSV généré sera conforme à ce qui est attendu par l'application Notanet académique.</p></li>\n";
+		}
 		echo "</ul>\n";
 
 		if($type_brevet==2){

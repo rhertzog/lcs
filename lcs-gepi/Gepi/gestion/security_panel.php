@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: security_panel.php 7013 2011-05-26 11:29:54Z crob $
+ * $Id: security_panel.php 7482 2011-07-22 09:52:42Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -180,7 +180,16 @@ if(($afficher_les_alertes_d_un_compte=="y")&&($user_login!='')) {
 		//$user=mysql_fetch_object($user_req);
 		$user=mysql_fetch_array($user_req, MYSQL_ASSOC);
 
-		echo "<p>Affichage des alertes concernant le compte <a href='../utilisateurs/modify_user.php?user_login=$user_login'>$user_login</a>";
+		echo "<p>Affichage des alertes concernant le compte ";
+		if($user['statut']=='eleve') {
+			echo "<a href='../eleves/modify_eleve.php?eleve_login=$user_login'>$user_login</a>";
+		}
+		elseif($user['statut']=='responsable') {
+			echo $user_login;
+		}
+		else {
+			echo "<a href='../utilisateurs/modify_user.php?user_login=$user_login'>$user_login</a>";
+		}
 
 		if($user['email']!="") {
 			$lien_mail="<a href=\"mailto:".$user['email']."?subject="."[Gepi]: Votre compte";

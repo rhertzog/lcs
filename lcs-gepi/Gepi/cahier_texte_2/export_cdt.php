@@ -1,6 +1,6 @@
 <?php
 /*
-* @version: $Id: export_cdt.php 6727 2011-03-29 15:14:30Z crob $
+* @version: $Id: export_cdt.php 7372 2011-07-05 10:23:44Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
 *
@@ -1173,7 +1173,7 @@ if($action=='export_zip') {
 	// On fait le ménage
 	for($i=0;$i<count($tab_fichiers_a_zipper);$i++) {
 		//echo "unlink($tab_fichiers_a_zipper[$i]);<br />";
-		unlink($tab_fichiers_a_zipper[$i]);
+		if(file_exists($tab_fichiers_a_zipper[$i])) {unlink($tab_fichiers_a_zipper[$i]);}
 	}
 	
 	rmdir($dossier_export."/cahier_texte");

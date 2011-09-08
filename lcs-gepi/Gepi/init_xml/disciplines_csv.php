@@ -2,7 +2,7 @@
 
 @set_time_limit(0);
 /*
-* $Id: disciplines_csv.php 6598 2011-03-03 09:56:30Z crob $
+* $Id: disciplines_csv.php 7611 2011-08-08 08:14:38Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -91,6 +91,8 @@ $liste_tables_del = array(
 "ct_private_entry",
 "ct_sequences",
 //"setting"
+"edt_classes",
+"edt_cours"
 );
 
 if (!checkAccess()) {

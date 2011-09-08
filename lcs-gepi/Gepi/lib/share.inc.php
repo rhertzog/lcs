@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: share.inc.php 7037 2011-05-28 09:20:21Z crob $
+ * $Id: share.inc.php 7485 2011-07-22 17:13:38Z regis $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
@@ -802,26 +802,28 @@ function mise_a_jour_moyennes_conteneurs($_current_group, $periode_num,$id_racin
     //remarque : les variables $periode_num et id_racine auraient pus être récupérées
     //à partir de $id_conteneur, mais on évite ainsi trop de calculs !
 
-    foreach ($_current_group["eleves"][$periode_num]["list"] as $_eleve_login) {
-		if($_eleve_login!=""){
-			calcule_moyenne($_eleve_login, $id_racine, $id_conteneur);
+	if(isset($_current_group["eleves"][$periode_num])) {
+		foreach ($_current_group["eleves"][$periode_num]["list"] as $_eleve_login) {
+			if($_eleve_login!=""){
+				calcule_moyenne($_eleve_login, $id_racine, $id_conteneur);
+			}
 		}
-    }
-
-    if ($arret != 'yes') {
-        //
-        // Détermination du conteneur parent
-        $query_id_parent = mysql_query("SELECT parent FROM cn_conteneurs WHERE id='$id_conteneur'");
-        $id_parent = mysql_result($query_id_parent, 0, 'parent');
-        if ($id_parent != 0) {
-            $arret = 'no';
-            mise_a_jour_moyennes_conteneurs($_current_group, $periode_num,$id_racine,$id_parent,$arret);
-        } else {
-            $arret = 'yes';
-            mise_a_jour_moyennes_conteneurs($_current_group, $periode_num,$id_racine,$id_racine,$arret);
-        }
-
-    }
+	
+		if ($arret != 'yes') {
+			//
+			// Détermination du conteneur parent
+			$query_id_parent = mysql_query("SELECT parent FROM cn_conteneurs WHERE id='$id_conteneur'");
+			$id_parent = mysql_result($query_id_parent, 0, 'parent');
+			if ($id_parent != 0) {
+				$arret = 'no';
+				mise_a_jour_moyennes_conteneurs($_current_group, $periode_num,$id_racine,$id_parent,$arret);
+			} else {
+				$arret = 'yes';
+				mise_a_jour_moyennes_conteneurs($_current_group, $periode_num,$id_racine,$id_racine,$arret);
+			}
+	
+		}
+	}
 }
 
 
@@ -1747,15 +1749,17 @@ function affiche_tableau($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bor
 
 				echo "<td class='small' ";
 				//echo $bg_color;
-				if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
-					if(strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
-						for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
-							if(preg_replace('/,/','.',$col[$j][$i])<=preg_replace('/,/','.',$vtn_borne_couleur[$loop])) {
-								echo " style='";
-								if($vtn_couleur_texte[$loop]!='') {echo "color:$vtn_couleur_texte[$loop]; ";}
-								if($vtn_couleur_cellule[$loop]!='') {echo "background-color:$vtn_couleur_cellule[$loop]; ";}
-								echo "'";
-								break;
+				if(!preg_match("/Rang de l/",$ligne1[$j])) {
+					if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
+						if(strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
+							for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
+								if(preg_replace('/,/','.',$col[$j][$i])<=preg_replace('/,/','.',$vtn_borne_couleur[$loop])) {
+									echo " style='";
+									if($vtn_couleur_texte[$loop]!='') {echo "color:$vtn_couleur_texte[$loop]; ";}
+									if($vtn_couleur_cellule[$loop]!='') {echo "background-color:$vtn_couleur_cellule[$loop]; ";}
+									echo "'";
+									break;
+								}
 							}
 						}
 					}
@@ -1765,15 +1769,17 @@ function affiche_tableau($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bor
             } else {
 				echo "<td align=\"center\" class='small' ";
 				//echo $bg_color;
-				if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
-					if(strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
-						for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
-							if(preg_replace('/,/','.',$col[$j][$i])<=preg_replace('/,/','.',$vtn_borne_couleur[$loop])) {
-								echo " style='";
-								if($vtn_couleur_texte[$loop]!='') {echo "color:$vtn_couleur_texte[$loop]; ";}
-								if($vtn_couleur_cellule[$loop]!='') {echo "background-color:$vtn_couleur_cellule[$loop]; ";}
-								echo "'";
-								break;
+				if(!preg_match("/Rang de l/",$ligne1[$j])) {
+					if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
+						if(strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
+							for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
+								if(preg_replace('/,/','.',$col[$j][$i])<=preg_replace('/,/','.',$vtn_borne_couleur[$loop])) {
+									echo " style='";
+									if($vtn_couleur_texte[$loop]!='') {echo "color:$vtn_couleur_texte[$loop]; ";}
+									if($vtn_couleur_cellule[$loop]!='') {echo "background-color:$vtn_couleur_cellule[$loop]; ";}
+									echo "'";
+									break;
+								}
 							}
 						}
 					}
@@ -6048,7 +6054,7 @@ function affiche_ariane($validation= FALSE,$themessage="" ){
 	echo "<p class='ariane'>";
 	foreach ($_SESSION['ariane']['lien'] as $index=>$lienActuel){
 	  if ($index!="0"){
-		echo " >> ";
+		echo " &gt;&gt; ";
 	  }
 	  if ($validation){
 	  echo "<a class='bold' href='".$lienActuel."' onclick='return confirm_abandon (this, change, \"".$themessage."\")' >";
@@ -6771,5 +6777,17 @@ function check_mail($email,$mode='simple') {
 			elseif(checkdnsrr($tab[1], 'A')) {return true;}
 		}
 	}
+}
+
+function get_cn_from_id_groupe_periode_num($id_groupe, $periode_num) {
+	$id_cahier_notes="";
+
+	$sql="SELECT id_cahier_notes FROM cn_cahier_notes WHERE id_groupe='$id_groupe' AND periode='$periode_num';";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		$lig=mysql_fetch_object($res);
+		$id_cahier_notes=$lig->id_cahier_notes;
+	}
+	return $id_cahier_notes;
 }
 ?>

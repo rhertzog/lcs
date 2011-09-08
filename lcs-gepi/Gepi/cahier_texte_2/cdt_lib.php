@@ -1,6 +1,6 @@
 <?php
 /*
-* @version: $Id: cdt_lib.php 6643 2011-03-10 07:21:42Z crob $
+* @version: $Id: cdt_lib.php 7928 2011-08-23 16:37:45Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
 *
@@ -131,6 +131,8 @@ if(($_SESSION["statut"]=="professeur")&&(!in_array($_SESSION["login"],$tab_login
 			}
 
 			$entete.='<?php
+// Pour desactiver le correctif temporaire javascript sur les liens de retour professeur.
+$liens_retour_ok2="y";
 
 $niveau_arbo='.$niveau_arbo.';
 $chaine_login_prof="'.$chaine_login_prof.'";
@@ -393,7 +395,11 @@ require_once("'.$pref_arbo.'/entete.php");
 		return $chaineTmp;
 	}
 
-	function creer_index_logout($path, $pref_arbo_logout) {
+	//function creer_index_logout($path, $pref_arbo_logout) {
+	function creer_index_logout($path) {
+		// $pref_arbo_logout n'est plus utilisé
+		global $gepiPath;
+
 		if (!file_exists($path)) {return false;}
 		else {
 			$ok = false;
@@ -403,7 +409,8 @@ require_once("'.$pref_arbo.'/entete.php");
 				include("$path/.test");
 				if($ok) {
 					if ($f = @fopen("$path/index.html", "w")) {
-						@fputs($f, '<script type="text/javascript">document.location.replace("'.$pref_arbo_logout.'/login.php")</script>');
+						//@fputs($f, '<script type="text/javascript">document.location.replace("'.$pref_arbo_logout.'/logout.php")</script>');
+						@fputs($f, '<script type="text/javascript">document.location.replace("'.$gepiPath.'/logout.php?auto=1")</script>');
 						@fclose($f);
 					}
 				}
@@ -412,7 +419,11 @@ require_once("'.$pref_arbo.'/entete.php");
 		}
 	}
 
-	function creer_rep_docs_joints($base, $subdir, $pref_arbo_logout) {
+	//function creer_rep_docs_joints($base, $subdir, $pref_arbo_logout) {
+	function creer_rep_docs_joints($base, $subdir) {
+		// $pref_arbo_logout n'est plus utilisé
+		global $gepiPath;
+
 		$path = $base.'/'.$subdir;
 		if (file_exists($path)) {return true;}
 	
@@ -425,7 +436,8 @@ require_once("'.$pref_arbo.'/entete.php");
 			include("$path/.test");
 			if($ok) {
 				if ($f = @fopen("$path/index.html", "w")) {
-					@fputs($f, '<script type="text/javascript">document.location.replace("'.$pref_arbo_logout.'/login.php")</script>');
+					//@fputs($f, '<script type="text/javascript">document.location.replace("'.$pref_arbo_logout.'/login.php")</script>');
+					@fputs($f, '<script type="text/javascript">document.location.replace("'.$gepiPath.'/logout.php?auto=1")</script>');
 					@fclose($f);
 				}
 			}

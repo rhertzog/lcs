@@ -1,5 +1,5 @@
 <?php
-/* $Id: fiches_brevet.php 7093 2011-06-03 12:53:17Z regis $ */
+/* $Id: fiches_brevet.php 7172 2011-06-09 08:42:12Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -623,6 +623,7 @@ for($i=0;$i<count($id_classe);$i++){
 			$tab_eleves_OOo[$nb_eleve]=array();
 			$tab_eleves_OOo[$nb_eleve]['nom']=$lig1->nom;
 			$tab_eleves_OOo[$nb_eleve]['prenom']=$lig1->prenom;
+			$tab_eleves_OOo[$nb_eleve]['ine']=$lig1->no_gep;
 			$tab_eleves_OOo[$nb_eleve]['fille']="";										// on initialise les champs pour ne pas avoir d'erreurs
 			if($lig1->sexe=='F') {$tab_eleves_OOo[$nb_eleve]['fille']="e";} // ajouter un e à née si l'élève est une fille
 			$tab_eleves_OOo[$nb_eleve]['date_nais']=formate_date($lig1->naissance);
@@ -807,7 +808,9 @@ for($i=0;$i<count($id_classe);$i++){
 			// L'Histoire des arts ne doit pas être dans le total sur les fiches brevet... alors qu'elle y est pour Notanet
 			$tab_eleves_OOo[$nb_eleve]['totalpoints_bis']=$TOTAL_POINTS;
 			$tab_eleves_OOo[$nb_eleve]['totalcoef_bis']=$TOTAL_COEF*20;
-			if($tab_eleves_OOo[$nb_eleve][5][0]!='AB') {
+			// La note AB compte comme un zéro... donc pour le total sans Histoire_des_Arts, il faut décompter les points et coef d'Histoire_des_Arts même si la note est AB
+			//if($tab_eleves_OOo[$nb_eleve][5][0]!='AB') {
+			if($tab_eleves_OOo[$nb_eleve][5][0]!='DI') {
 				$tab_eleves_OOo[$nb_eleve]['totalpoints_bis']-=$tab_eleves_OOo[$nb_eleve][5][1];
 				//$tab_eleves_OOo[$nb_eleve]['totalcoef_bis']-=$tab_eleves_OOo[$nb_eleve][5][-2]*20;
 				// L'Histoire des arts est sur 40... à extraire de là par la suite
@@ -909,7 +912,8 @@ for($i=0;$i<count($id_classe);$i++){
 			// Initialisation
 			$tab_indices_socle=array('116', '116A', '116B', '116C', '116D', '116E', '116F', '116G');
 			for($loop=0;$loop<count($tab_indices_socle);$loop++) {
-				$tab_eleves_OOo[$nb_eleve]['sc']["$loop"]="";
+				$tab_eleves_OOo[$nb_eleve]['sc'][$tab_indices_socle[$loop]]="";
+				//echo "\$tab_eleves_OOo[$nb_eleve]['sc']['$loop']=".$tab_eleves_OOo[$nb_eleve]['sc']["$loop"]."<br />\n";
 			}
 			$tab_eleves_OOo[$nb_eleve]['sc']['nbItemValide']=0;
 
@@ -919,10 +923,11 @@ for($i=0;$i<count($id_classe);$i++){
 				$ligne=0;
 				while($lig_socle=mysql_fetch_object($res_socle)) {
 					$tab_eleves_OOo[$nb_eleve]['sc']["$lig_socle->champ"]=$lig_socle->valeur;
+					//echo "\$tab_eleves_OOo[$nb_eleve]['sc']['$lig_socle->champ']=".$tab_eleves_OOo[$nb_eleve]['sc']["$lig_socle->champ"]."<br />\n";
 					if (($lig_socle->valeur =="MS")&&($ligne!=0)){
 						$tab_eleves_OOo[$nb_eleve]['sc']['nbItemValide']++;
 					}
-				$ligne++;		
+					$ligne++;
 				}
 			}
 
@@ -933,7 +938,11 @@ for($i=0;$i<count($id_classe);$i++){
 
 	// FIN DE LA BOUCLE SUR LA LISTE DES CLASSES
 }
-
+/*
+echo "<pre>";
+print_r($tab_eleves_OOo);
+echo "</pre>";
+*/
 //================================
 // === Fin construction du tableau fiche brevet===
 //================================

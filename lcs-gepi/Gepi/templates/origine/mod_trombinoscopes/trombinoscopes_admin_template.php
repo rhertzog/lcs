@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /**
- * $Id: trombinoscopes_admin_template.php 6697 2011-03-25 21:54:27Z regis $
+ * $Id: trombinoscopes_admin_template.php 8029 2011-08-29 12:13:21Z crob $
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
@@ -535,7 +535,7 @@ echo add_token_field();
   if (isset ($personnel_sans_photo)){
   ?>
 	<table class="boireaus">
-	  <caption>Enseignants sans photos</caption>
+	  <caption>Personnels sans photos</caption>
 	  <tr>
 		<th>Nom</th>
 		<th>Prénom</th>
@@ -551,7 +551,7 @@ echo add_token_field();
   ?>
 	  <tr class="<?php echo $lig ;?>" >
 		<td><?php echo $pas_photo->nom ;?></td>
-		<td><?php echo $pas_photo->prenom ;?></td>
+		<td><?php echo casse_mot($pas_photo->prenom,"majf2") ;?></td>
 	  </tr>
   <?php 
 	}

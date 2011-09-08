@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: prof_disc_classes.php 5935 2010-11-21 16:20:26Z crob $
+* $Id: prof_disc_classes.php 7611 2011-08-08 08:14:38Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -96,6 +96,8 @@ $liste_tables_del = array(
 //tempo2
 //temp_gep_import
 //utilisateurs
+"edt_classes",
+"edt_cours"
 );
 
 //**************** EN-TETE *****************

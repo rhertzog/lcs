@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: accueil_sauve.php 6770 2011-04-11 08:34:41Z crob $
+ * $Id: accueil_sauve.php 7323 2011-06-25 06:51:30Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -290,7 +290,9 @@ function backupMySql($db,$dumpFile,$duree,$rowlimit) {
         $todump.="# ******* debut du fichier ********\n";
         fwrite ($fileHandle,$todump);
     }
-    $result=mysql_list_tables($db);
+    //$result=mysql_list_tables($db);
+	$sql="SHOW TABLES;";
+    $result=mysql_query($sql);
     $numtab=0;
     while ($t = mysql_fetch_array($result)) {
         $tables[$numtab]=$t[0];
@@ -1268,7 +1270,7 @@ if (isset($action) and ($action == 'dump'))  {
 			saveSetting("backup_duree_portion", $_SESSION['defaulttimeout']);
 		}
 	}
-	// SAuvegarde de la base
+	// Sauvegarde de la base
     $nomsql = $dbDb."_le_".date("Y_m_d_\a_H\hi");
     $cur_time=date("Y-m-d H:i");
     $filename=$path.$nomsql.".".$filetype;
@@ -1299,7 +1301,9 @@ if (isset($action) and ($action == 'dump'))  {
 		}
 
 
-        $tab=mysql_list_tables($dbDb);
+        //$tab=mysql_list_tables($dbDb);
+		$sql="SHOW TABLES;";
+		$tab=mysql_query($sql);
         $tot=mysql_num_rows($tab);
         if(isset($offsettable)){
             if ($offsettable>=0)

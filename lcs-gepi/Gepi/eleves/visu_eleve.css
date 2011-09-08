@@ -1,5 +1,5 @@
 /*
-$Id: visu_eleve.css 1913 2008-06-07 08:39:46Z crob $
+$Id: visu_eleve.css 7494 2011-07-23 11:58:08Z crob $
 */
 
 .t_onglet {
@@ -11,6 +11,9 @@ $Id: visu_eleve.css 1913 2008-06-07 08:39:46Z crob $
 	border-radius: 6px 20px;
 	-moz-border-radius-topleft: 6px;
 	-moz-border-radius-topright: 20px;
+
+	-moz-border-radius-bottomleft: 0px;
+	-moz-border-radius-bottomright: 0px;
 
 	padding: 0.2em 0.2em 0 0.2em;
 	z-index:100;

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: ajouter_periode.php 6258 2011-01-01 18:45:39Z crob $
+ * $Id: ajouter_periode.php 7270 2011-06-20 11:46:18Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -287,10 +287,12 @@ if(!isset($nb_ajout_periodes)) {
 				$cpt++;
 			}
 		}
-	
+
+		echo "<p>La classe de <b>$classe</b> a actuellement <b>$max_per</b> périodes.</p>\n";
 		echo "<p>Combien de périodes voulez-vous ajouter pour <b>$classe</b> et la ou les classes liées?</p>\n";
 	}
 	else {
+		echo "<p>La classe de <b>$classe</b> a actuellement <b>$max_per</b> périodes.</p>\n";
 		echo "<p>Combien de périodes voulez-vous ajouter pour <b>$classe</b>?</p>\n";
 	}
 	

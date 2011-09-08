@@ -1,4 +1,4 @@
--- $Id: structure_gepi.sql 6834 2011-04-28 12:27:01Z crob $
+-- $Id: structure_gepi.sql 7128 2011-06-05 09:13:38Z crob $
 DROP TABLE IF EXISTS `absences`;
 CREATE TABLE `absences` (`login` varchar(50) NOT NULL default '', `periode` int(11) NOT NULL default '0', `nb_absences` char(2) NOT NULL default '', `non_justifie` char(2) NOT NULL default '', `nb_retards` char(2) NOT NULL default '', `appreciation` text NOT NULL, PRIMARY KEY  (`login`,`periode`));
 DROP TABLE IF EXISTS `absences_gep`;
@@ -361,3 +361,5 @@ DROP TABLE IF EXISTS acces_cdt_groupes;
 CREATE TABLE IF NOT EXISTS acces_cdt_groupes (id INT(11) NOT NULL auto_increment,id_acces INT(11) NOT NULL,id_groupe INT(11) NOT NULL,PRIMARY KEY (id)) ENGINE=MyISAM;
 DROP TABLE IF EXISTS vocabulaire;
 CREATE TABLE IF NOT EXISTS vocabulaire (id INT(11) NOT NULL auto_increment,terme VARCHAR(255) NOT NULL DEFAULT '',terme_corrige VARCHAR(255) NOT NULL DEFAULT '',PRIMARY KEY (id)) ENGINE=MyISAM;
+DROP TABLE IF EXISTS ct_sequences;
+CREATE TABLE IF NOT EXISTS ct_sequences (id INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,titre VARCHAR( 255 ) NOT NULL , description TEXT NOT NULL);

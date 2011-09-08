@@ -1,7 +1,7 @@
 
 <?php
 /*
- * $Id: class_page_accueil.php 6343 2011-01-13 09:42:24Z crob $
+ * $Id: class_page_accueil.php 7317 2011-06-24 16:44:37Z regis $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -115,11 +115,9 @@ class class_page_accueil {
 	$this->chargeAutreNom('bloc_administration');
 
 /***** Outils de gestion des absences vie scolaire *****/
-	//$this->verif_exist_ordre_menu('bloc_absences_vie_scol');
-	$this->verif_exist_ordre_menu('bloc_absences_professeur');
+	$this->verif_exist_ordre_menu('bloc_absences_vie_scol');
 	if ($this->absences_vie_scol())
-	$this->chargeAutreNom('bloc_absences_professeur');
-	//$this->chargeAutreNom('bloc_absences_vie_scol');
+	$this->chargeAutreNom('bloc_absences_vie_scol');
 
 /***** Outils de gestion des absences par les professeurs *****/
 	$this->verif_exist_ordre_menu('bloc_absences_professeur');

@@ -1,7 +1,7 @@
 <?php
 	@set_time_limit(0);
 
-	// $Id: matieres.php 6320 2011-01-09 10:55:21Z crob $
+	// $Id: matieres.php 7611 2011-08-08 08:14:38Z crob $
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");
@@ -115,6 +115,8 @@
 "ct_private_entry",
 "ct_sequences",
 //"setting"
+"edt_classes",
+"edt_cours"
 );
 
 

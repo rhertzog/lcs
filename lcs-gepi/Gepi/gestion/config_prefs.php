@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: config_prefs.php 5928 2010-11-21 10:47:40Z crob $
+ * $Id: config_prefs.php 7118 2011-06-05 08:00:22Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -885,7 +885,7 @@ else{
 		echo "<p>\n";
 		echo "<input type='checkbox' name='aff_photo_saisie_app' id='aff_photo_saisie_app' value='y' ";
 		if($aff_photo_saisie_app=='y') {echo 'checked';}
-		echo "/><label for='aff_photo_saisie_app'> Afficher par défaut les phtos des élèves lors de la saisie des appréciations sur les bulletins.</label>\n";
+		echo "/><label for='aff_photo_saisie_app'> Afficher par défaut les photos des élèves lors de la saisie des appréciations sur les bulletins.</label>\n";
 		echo "</p>\n";
 	}
 
