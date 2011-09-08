@@ -5,8 +5,9 @@ lcs-web (2.4.8.3~1) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * Fix bug in createmaildir.sh and mkhdir.sh
+  * Add test on folder Profile in open_session function 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 07 Sep 2011 18:23:29 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 08 Sep 2011 13:10:28 +0200
 
 lcs-web (2.4.8.2) Lcs; urgency=low
 

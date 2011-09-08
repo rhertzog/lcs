@@ -1,5 +1,5 @@
 <?php
-/* functions.inc.php Derniere mise a jour 10/12/2010  */
+/* functions.inc.php Derniere mise a jour 08/09/2011  */
 
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
@@ -271,7 +271,8 @@ include ("/var/www/lcs/includes/xoft.php");
                 if ( !@is_dir("/home/".$login) ||  (@is_dir("/home/".$login) && 
                                                   ( !@is_dir("/home/".$login."/public_html")
                                                   || !@is_dir("/home/".$login."/Maildir")
-                                                  || !@is_dir("/home/".$login."/Documents"))) ) {
+                                                  || !@is_dir("/home/".$login."/Documents")
+                                                  || !@is_dir("/home/".$login."/Profile"))) ) {
                       #system ("echo \"DBG >> Creation Espace perso\" >> /tmp/log.lcs"); 
 		      if ( is_eleve($login) ) $group="eleves"; else $group="profs";
 		      exec ("/usr/bin/sudo /usr/share/lcs/scripts/mkhdir.sh $login $group $cryptpasswd > /dev/null 2>&1");
