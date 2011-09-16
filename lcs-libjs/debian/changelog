@@ -1,24 +1,21 @@
+lcs-libjs (2.4.8.1) Lcs; urgency=low
+
+  * Add prototype framework 1.7 version
+  * Merge tild changelog
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 16 Sep 2011 13:35:38 +0200
+
 lcs-libjs (2.4.8) Lcs; urgency=low
 
   * Add jquery-ui css theme : classic-blue-domz. 
   * Rename jquery-ui theme classic-blue-domz in classic-blue-lcs
   * Make a 2.4.8 stable release
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 May 2011 14:07:53 +0200
-
-lcs-libjs (2.4.8~1) Lcs; urgency=low
-
   * Update jquery to version: 1.5 min
   * Update jquery-ui to version: 1.8.9 custom min 
   * Add jquery-ui themes css : ui-lightness, redmond, cupertino
+  * Add file fr.js in tinymce/plugins/example/langs
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 23 Feb 2011 16:17:22 +0100
-
-lcs-libjs (2.4.7.1~1) Lcs; urgency=low
-
-  * add file fr.js in tinymce/plugins/example/langs
-
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 27 Oct 2010 17:19:21 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 May 2011 14:07:53 +0200
 
 lcs-libjs (2.4.7) Lcs; urgency=low
 
@@ -27,7 +24,7 @@ lcs-libjs (2.4.7) Lcs; urgency=low
   * Provide javascript libraries : jquery, jquery-ui, tiny-mce and ext 
 
   [ Philippe Leclerc ]
-  * add skin cdt 
+  * Add skin cdt 
 
 
  -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 09:22:49 +0200
