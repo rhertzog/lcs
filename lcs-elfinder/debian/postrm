@@ -1,0 +1,36 @@
+#! /bin/sh
+set -e
+
+MODULE="elfinder"
+APACHE2CONF="/etc/apache2/lcs-main/70_elfinder.conf"
+
+case "$1" in
+    purge|remove)
+        #
+        # Suppression de l'alias 
+        #
+		rm -f $APACHE2CONF
+        /etc/init.d/apache2 reload > /dev/null 2>&1
+        #
+        # Desinscription du module de la table lcs_db.applis
+        #
+        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1
+        #
+        # Nettoyage des repertoires
+        # 
+        if [ -e /usr/share/lcs/$MODULE ]; then
+	   		rm -Rf /usr/share/lcs/$MODULE
+        fi
+        ;;
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+    ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+
+esac
+
+exit 0

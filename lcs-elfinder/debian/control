@@ -1,0 +1,14 @@
+Source: lcs-elfinder
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: lcs-elfinder
+Architecture: all
+Depends: libapache2-mod-php5 | libapache-mod-php5 | php5, php5-gd, unzip, lcs-web, lcs-libjs
+Replaces: lcs-clientftp
+Conflicts: lcs-clientftp
+Description: Install Web filebrowser ELfinder on LCS server 
+ Install ELfinder 1.1 RC3 for web acces to spaces users on LCS server.
