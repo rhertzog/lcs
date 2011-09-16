@@ -1,9 +1,4 @@
-
-
-
-
-
-<?php   /* lcs/setup_keys.php maj : 8/11/2008 */ 
+<?php   /* lcs/setup_keys.php maj : 16/09/2011 */ 
 require "./includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
 require "../Annu/includes/ihm.inc.php";
@@ -40,7 +35,7 @@ function seed(s) {
  var n=0,nn=0;
  while(n < s.length) {
   while(n<s.length && s.charCodeAt(n)<=32) n++;
-  if(n < s.length) rSeed[nn]=parseInt("0x"+s.mb_substr(n,2));
+  if(n < s.length) rSeed[nn]=parseInt("0x"+s.substr(n,2));
   n+=3; nn++;
  }
 
@@ -358,7 +353,3 @@ seed('<? echo $RandomSeed
 }
 include ("./includes/pieds_de_page.inc.php");
 ?>
-
-
-
-
