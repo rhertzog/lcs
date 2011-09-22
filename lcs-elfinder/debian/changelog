@@ -1,12 +1,11 @@
-lcs-elfinder (2.4.8~11) Lcs; urgency=low
+lcs-elfinder (2.4.8~12) Lcs; urgency=low
 
   * Changing the folder structure
   * Deleting unnecessary files
   * Modification style css
   * Fix bug when downloading file in public_html
-  *
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 30 Sep 2010 21:29:05 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Sep 2011 10:50:17 +0200
 
 lcs-elfinder (2.4.8~10) Lcs; urgency=low
 
