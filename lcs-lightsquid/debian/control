@@ -12,5 +12,4 @@ Conflicts: lcs-sarg, sarg
 Description: lite and fast log analizer for squid proxy
  Install and configure lightsquid on LCS server. Some time your want 
  see how your user eat traffic. Lightsquid analyses SQUID's log file.
- You could see graphical reports through the web CGI. 
- 
+ You could see graphical reports through the web CGI 
