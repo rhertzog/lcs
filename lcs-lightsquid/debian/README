@@ -1,0 +1,7 @@
+The Debian Package lcs-lightsquid
+---------------------------------
+
+This pacakage install lightsquid (http://lightsquid.sourceforge.net/) on LCS server for generates different reports using
+
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 23 Sep 2011 10:50:17 +0200

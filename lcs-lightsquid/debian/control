@@ -1,0 +1,16 @@
+Source: lcs-lightsquid
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.4
+
+Package: lcs-lightsquid
+Architecture: all
+Depends: lcs-web, lcs-squid, perl, libtime-local-perl, libdbi-perl, libgd-gd2-perl
+Conflicts: lcs-sarg, sarg
+Description: lite and fast log analizer for squid proxy
+ Install and configure lightsquid on LCS server. Some time your want 
+ see how your user eat traffic. Lightsquid analyses SQUID's log file.
+ You could see graphical reports through the web CGI. 
+ 

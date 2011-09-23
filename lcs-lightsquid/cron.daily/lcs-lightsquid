@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Regular cron jobs for the lcs-lightsquid package
+#
+if [ -x /usr/share/lcs/lightsquid/lightparser.pl ]; then
+	/usr/share/lcs/lightsquid/lightparser.pl daily
+fi
+
+
