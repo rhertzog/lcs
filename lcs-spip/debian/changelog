@@ -1,3 +1,10 @@
+lcs-spip (2.4.8.2) Lcs; urgency=low
+
+    * Add ecran_securite.php in config folder 
+    * Remove chown on deprecated mes_options.php 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 23 Sep 2011 15:27:38 +0200
+
 lcs-spip (2.4.8) Lcs; urgency=low
 
   [ Jean Luc Chretien & Dominique Lepaisant ]

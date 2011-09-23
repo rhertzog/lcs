@@ -16,8 +16,6 @@ if [ -d /usr/share/lcs/$1/ecrire/data ]; then
     chown spip.manager /usr/share/lcs/$1/ecrire/data
 fi
 
-
-chown spip.manager /usr/share/lcs/$1/config/mes_options.php
 chown -R spip.manager /usr/share/lcs/$1/IMG
 
 # Mise en place d'un repertoire plugins
