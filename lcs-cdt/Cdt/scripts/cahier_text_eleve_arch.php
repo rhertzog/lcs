@@ -67,17 +67,16 @@ $ch="--";
 <title>Cahier de textes num&eacute;rique</title>
 <meta name="author" content="Philippe LECLERC -TICE CAEN" />
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-	<link href="../style/style.css" rel="stylesheet" type="text/css" />
+<link href="../style/style.css" rel="stylesheet" type="text/css" />
 <link  href="../style/deroulant.css" rel="stylesheet" type="text/css" />
 <link  href="../style/navlist-eleve.css" rel="stylesheet" type="text/css" />
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
 	<script type="text/javascript" src="../Includes/cdt_eleve.js"></script>
-	<script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
 	<script type="text/javascript" src="../Includes/JQ/cdt-ele-script.js"></script>
-	<script type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
-	<script type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
+	
 </head>
 
 <body>

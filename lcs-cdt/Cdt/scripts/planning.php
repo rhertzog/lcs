@@ -33,8 +33,13 @@ include_once("../Includes/config.inc.php");
 include_once("../Includes/fonctions.inc.php");
 include_once("../Includes/creneau.inc.php");
 $login=$_SESSION['login'];
-//$point= '<img src="../images/help-info.png" height="" width="" alt="?" >';
-
+//duree max des devoirs en fonction des creneaux off
+if (in_array("M4", $cren_off)) $duremaxmatin=3;
+elseif (in_array("M5", $cren_off)) $duremaxmatin=4;
+else $duremaxmatin=5;
+if (in_array("S4", $cren_off)) $duremaxaprem=8;
+elseif (in_array("M5", $cren_off)) $duremaxaprem=9;
+else $duremaxaprem=10;
 //test si les listes de diffusion sont activees
 if (!isset($_SESSION['liste']))
 	{
@@ -90,9 +95,9 @@ if (isset($_POST['enregistrer']) )
 		$duree= addSlashes(strip_tags(stripslashes($_POST['duree'])));
 	
 		//limitation de duree
-		if ((($_POST['creneau']<=4) && ( ($_POST['creneau'] + $duree) <= 5))
-			//si la fin d'un devoir de l'après-midi <= 18h
-			|| (($_POST['creneau']> 4) && ( ($_POST['creneau'] + $duree) <= 10) ))
+		if ((($_POST['creneau']<=4) && ( ($_POST['creneau'] + $duree) <= $duremaxmatin))
+			//si la fin d'un devoir de l'après-midi 
+			|| (($_POST['creneau']> 4) && ( ($_POST['creneau'] + $duree) <= $duremaxaprem) ))
 			{//pour chaque creneau du devoir 
 			$lezard="false";
 			for ($loop = $_POST['creneau']; $loop <= $_POST['creneau'] + $duree -1; $loop++)
@@ -593,8 +598,8 @@ if ($nb>0)
 	<input name="numrubri" type="hidden" id="numrubri" value="<?php echo $numrub;?>" />
 	<table id="btn-plan-cdt">
 		<tr>
-			<td ><input type="submit" name="mprec" value="&lt;&lt;" title="Mois pr&#233;c&#233dent" class="bt50" /></td>
-			<td><input type="submit" name="prec" value="&lt;" title="Semaine pr&#233c&#233dente" class="bt50" /></td>
+			<td ><input type="submit" name="mprec" value="&lt;&lt;" title="Mois pr&#233;c&#233;dent" class="bt50" /></td>
+			<td><input type="submit" name="prec" value="&lt;" title="Semaine pr&#233;c&#233;dente" class="bt50" /></td>
 			<td><input type="submit" name="quit" id="quit" value="" class="bt-exit" /></td>
 			<td><input type="submit" name="suiv" value="&gt;" title="Semaine suivante" class="bt50" /></td>
 			<td><input type="submit" name="msuiv" value="&gt;&gt;" title="Mois suivant" class="bt50" /></td>
@@ -619,7 +624,12 @@ if ($nb>0)
 	$horaire = array("M1<br />","M2<br />","M3<br />","M4<br />","M5<br />",
 	"S1<br />","S2<br />","S3<br />","S4<br />","S5<br />");
 	for ($h=0; $h<=9; $h++) 
-		{//a
+		{
+            if (in_array(substr($horaire[$h],0,2), $cren_off)) 
+                                    {
+                                         echo '<tr><td class="mi-jour" colspan="13"></td></tr>';
+                                        continue;
+                                    }
 		//Affichage de la désignation des creneaux horaires
 		
 		echo "<tr><th>".$horaire[$h].date('G:i',$deb[$h])."-".date('G:i',$fin[$h])."</th>\n";
@@ -823,11 +833,11 @@ if ($nb>0)
 								elseif ($plan[$j][$h][1]=="R")   
 									{//t
 									echo '<td  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.substr($mat[$j][$h][1],0,10).
-									'<br /><br /><img alt="aide"   src="../images/help-info.png"  title ="'.$suj[$j][$h][1].'" />&nbsp; &nbsp; &nbsp; 
+									'<br /><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][1].'" /> 
 									<a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j].
-									'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&matiere='.$mati.'&amp;suppr=yes&amp;numdev='
+									'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati.'&amp;suppr=yes&amp;numdev='
 									.$num[$j][$h][1].'&amp;numrubr='.$numrub.'" title="Supprimer ce devoir">'.
-									'<img alt="aide"   src="../images/b_drop.png" /> </a>'."</td>\n";
+									'<img alt="aide"   src="../images/planifier-cdt-supp.png" /> </a>'."</td>\n";
 									}//t
 									}//r
 								} //q

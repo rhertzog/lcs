@@ -111,15 +111,12 @@ global 	$dtajadebut, $dtajafin;
 	<title>module &#139;(+_-)/&#155; n°2 </title>
 	<link rel="stylesheet" type="text/css" href="../style/style.css"  media="screen" />
 	<link rel="stylesheet" href="../style/style_imp.css" type="text/css" media="print" />
-	<link  href="../style/ui.all.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.datepicker.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.theme.css" rel="stylesheet" type="text/css" />
+	<link  href="../../../libjs/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
 	<!--[if IE]>
-        <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
-        <![endif]-->
-	<script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
-	<script type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
-	<script type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
+                  <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
+                  <![endif]-->
+	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script>
 	<script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
 
 </head>

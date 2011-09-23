@@ -13,6 +13,7 @@ session_name("Cdt_Lcs");
 @session_start();
 include "../Includes/functions2.inc.php";
 include "../Includes/fonctions.inc.php";
+include ("../Includes/creneau.inc.php");
 //fichiers necessaires a l'exploitation de l'API
 	$BASEDIR="/var/www";
 	//include "../Includes/basedir.inc.php";
@@ -80,16 +81,13 @@ if (isset($_POST['Classe']))
 <meta name="author" content="Philippe LECLERC -TICE CAEN" />
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<link rel="stylesheet" type="text/css" href="../style/style.css"  media="screen"/>
-	<link  href="../style/ui.all.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.datepicker.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.theme.css" rel="stylesheet" type="text/css" />
+	<link  href="../../../libjs/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
 	<link rel="stylesheet" href="../style/style_imp.css" type="text/css" media="print" />
 		<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-	<script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
-	<script type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
-	<script type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
+	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script> 
 	<script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
 </head>
 <body>
@@ -222,6 +220,11 @@ if (isset($_POST['OKeleve']))
 	$horaire = array("M1","M2","M3","M4","M5","S1","S2","S3","S4","S5");
         for ($h=0; $h<=9; $h++) 
 		{
+                                    if (in_array($horaire[$h], $cren_off)) 
+                                     {
+                                         echo "&nbsp;";
+                                        continue;
+                                     }
 		echo ' <input type="checkbox" name="cren[]"   value="'.$horaire[$h].'"';if (in_array($horaire[$h], $tab_cren)) echo ' checked="checked"';
 		echo ' />'.$horaire[$h];
 		}
@@ -268,7 +271,7 @@ if (isset($_POST['OKeleve']))
 		foreach ($classe as $cle => $valeur)
 		  { 
 		  echo '<option value="'.$valeur.'"';
-		  if ($valeur==$ch2) echo 'selected="selected"';
+		  if ($valeur==$ch2) echo ' selected="selected"';
 		  echo '>'.$valeur.'</option>';
 		  }
 	echo '</select></li>';

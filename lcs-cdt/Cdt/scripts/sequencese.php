@@ -58,27 +58,19 @@ if ( mysql_num_rows($result)>0)
 <meta name="author" content="Philippe LECLERC -TICE CAEN" />
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<link href="../style/style.css" rel="stylesheet" type="text/css" />
-        <link href="../style/sequences.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.all.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.datepicker.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.theme.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/my_ui.tabs.css" rel="stylesheet" type="text/css" />
-
+                  <link href="../style/sequences.css" rel="stylesheet" type="text/css" />
+	<link  href="../../../libjs/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
+	
 	<!--[if IE]>
         <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
         <![endif]-->
 
-	<script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
-	<script type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
-	<script type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script>
+	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script>  
 	<script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
-	<script type="text/javascript" src="../Includes/JQ/ui.sortable.js"></script>
-	<script type="text/javascript" src="../Includes/JQ/ui.droppable.js"></script>
-	<script type="text/javascript" src="../Includes/JQ/ui.tabs.js"></script>
-	<script type="text/javascript" src="../Includes/JQ/ui.dialog.js"></script>
-	<script type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+	<script type="text/javascript" src="../../../libjs/tiny-mce/tiny_mce.js"></script>
 	<script type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
-        <script type="text/javascript" src="../Includes/JQ/JQ-sequences.js"></script>
+                  <script type="text/javascript" src="../Includes/JQ/JQ-sequences.js"></script>
 
 	
 </head>
@@ -128,7 +120,7 @@ echo '<div id="tabs">
 <button id="record">Enregistrer</button> <button id="update">Enregistrer les modifications </button> <button id="hider">Fermer</button>
 </div>
 <!-- End masquable -->
-<div id="dialog" title="Aide sur l'utilisation des séquences">
+<div id="dialog" title="Aide sur l'utilisation des s&eacute;quences">
 	<p>Le dispositif de <span style="color: #993300;">s&eacute;quences</span> p&eacute;dagogiques permet de regrouper visuellement plusieurs s&eacute;ances dans l'affichage du cahier de textes.</p>
 <ol >
 <li>Une s&eacute;quence p&eacute;dagogique comporte :

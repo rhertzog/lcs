@@ -175,7 +175,14 @@ if ($nb>0)
 	$horaire = array("M1<br />","M2<br />","M3<br />","M4<br />","M5<br />",
 	"S1<br />","S2<br />","S3<br />","S4<br />","S5<br />");
 	for ($h=0; $h<=9; $h++) 
-		{//a
+		{
+                                    
+                                    if (in_array(substr($horaire[$h],0,2), $cren_off)) 
+                                    {
+                                         echo '<tr><td class="mi-jour" colspan="13"></td></tr>';
+                                        continue;
+                                    }
+                                    
 		//Affichage de la désignation des créneaux horaires
 		echo "<tr><th>".$horaire[$h].date('G:i',$deb[$h])."-".date('G:i',$fin[$h])."</th>\n";
 		//Affichage du contenu des créneaux horaires 
@@ -377,7 +384,7 @@ if ($nb>0)
 						}//l
 							
 					//cellules de séparation à la mi-journée			
-					if (($h==4)&&($j==5)) echo '</tr><tr><td class="mi-jour" colspan="13"></td>';
+					//if (($h==4)&&($j==5)) echo '</tr><tr><td class="mi-jour" colspan="13"></td>';
 				}	//b
 			echo "</tr>\n";
 		

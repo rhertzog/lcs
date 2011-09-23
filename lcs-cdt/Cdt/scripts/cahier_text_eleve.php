@@ -93,9 +93,9 @@ if(isset($_GET['div'])) $ch=$_GET['div'];
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
 	<script type="text/javascript" src="../Includes/cdt_eleve.js"></script>
-	<script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
 	<script type="text/javascript" src="../Includes/JQ/cdt-ele-script.js"></script>
-	<script type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+	<script type="text/javascript" src="../../../libjs/tiny-mce/tiny_mce.js"></script>
 	<script type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
         <script type="text/javascript" src="../Includes/sequence.js"></script>
         <script type="text/javascript" src="../Includes/barre_java.js"></script>

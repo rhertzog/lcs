@@ -7,7 +7,7 @@
 */
 
 	ul.seq  { list-style-type: none; margin-top:5px; padding: 2px;width: 50% ;float :left; }
-	li.ui-state-default.sequ  {position: relative; margin-top: 1px; padding: 0.5em 0.4em .5em 1em; font-size: .8em; height: 16px;color:#1b2c68; }
+	li.ui-state-default.sequ  {position: relative; margin-top: 15px; padding: 0.5em 0.4em .5em 1em; font-size: .8em; height: 16px;color:#1b2c68; }
 	li.sequ span { position: absolute; margin-left: -1.3em; }
 	li.sequ span.buttons {float: right; position: relative;font-size: .8em;}
 	li.sequ span.handdle {position:absolute;margin-left: 250px;cursor: pointer; }
@@ -19,4 +19,4 @@
         #aide {padding-left:10px;margin-left: 20px;vertical-align:bottom;background:url(../images/planifier-cdt-aide.png) no-repeat;}
         #showr.v_no, #record.v_no, #update.v_no, button.showform.v_no,#sortable li.v_no, #aide.v_no { display:none; }
         #showr, .buttons {font-size:0.8em;}
-        #masquable { position: relative;display:none; float: left;text-align: left;font-family: Arial, Helvetica, sans-serif, verdana;color:#1b2c68;padding:2px;font-size: .8em;}
+        #masquable { position: relative;display:none; float: left;margin-top:25px;text-align: left;font-family: Arial, Helvetica, sans-serif, verdana;color:#1b2c68;padding:2px;font-size: .8em;}

@@ -104,10 +104,11 @@ CREATE TABLE IF NOT EXISTS `devoir` (
 CREATE TABLE IF NOT EXISTS `onglets` (
   `id_prof` mediumint(8) unsigned NOT NULL auto_increment,
   `login` varchar(30) NOT NULL default '',
+  `cologin` varchar(30) default NULL,
   `prof` varchar(30) NOT NULL default '',
   `classe` varchar(30) NOT NULL default '',
   `matiere` varchar(30) NOT NULL default '',
-  `prefix` varchar(10) default NULL,
+  `prefix` varchar(15) default NULL,
   `restreint` tinyint(1) NOT NULL default '0',
   `postit` blob,
   `visa` tinyint(2) NOT NULL default '0',

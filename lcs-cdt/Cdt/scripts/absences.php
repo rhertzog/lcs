@@ -57,7 +57,7 @@ function is_present($kan,$logprof,$logelev) {
 
 // Recherche des classes du prof
 $rq = "SELECT classe,id_prof FROM onglets
- WHERE login='{$_SESSION['login']}'  GROUP BY classe ORDER BY classe ASC ";
+ WHERE login='{$_SESSION['login']}'  OR  cologin='{$_SESSION['login']}' GROUP BY classe ORDER BY classe ASC ";
  
 // lancer la requête
 $result = @mysql_query ($rq) or die (mysql_error()); 
@@ -169,8 +169,8 @@ if (isset($_POST['Valider']))
 				// htlmpurifier
 				$mot_x = $_POST['motif_x'][$uidpot];
 				$config = HTMLPurifier_Config::createDefault();
-                                $config->set('Core.Encoding', 'ISO-8859-15');
-                                $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+                                                                        $config->set('Core.Encoding', 'ISO-8859-15');
+                                                                        $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
 		   		$purifier = new HTMLPurifier($config);
 		   		$mot_x = $purifier->purify($mot_x);
 		   		$mot_x=mysql_real_escape_string($mot_x);
@@ -515,18 +515,15 @@ if ($exist=="true")
 	<title>module &#139;(+_-)/&#155;</title>
 	<link href="../style/style.css" rel="stylesheet" type="text/css"/>
 	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.all.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.datepicker.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.theme.css" rel="stylesheet" type="text/css" />
+	<link  href="../../../libjs/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
 	<!--[if IE]>
         <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
         <![endif]-->
 	<script  type="text/javascript" src="../Includes/barre_java.js"></script>
-	<script  type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
-	<script  type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
-	<script  type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
+	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script>  
 	<script  type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
-    <script type="text/javascript" src="../Includes/cdt.js"></script>
+                  <script type="text/javascript" src="../Includes/cdt.js"></script>
 
 </head>
 <body>
@@ -553,11 +550,24 @@ if (!mysql_num_rows($result)==0)
           }
           echo "</select></p>";
           echo "<p>Cr&#233;neaux horaires :";
+          include "../Includes/creneau.inc.php";
         $horaire = array("M1","M2","M3","M4","M5","S1","S2","S3","S4","S5");
+        $creno_prec="";
         for ($h=0; $h<=9; $h++)
                 {
-                echo '<input type="checkbox" name="cren[]"   value="'.$horaire[$h].'"'; if (in_array($horaire[$h], $tab_cren)) echo ' checked="checked"';
-                echo ' />'.$horaire[$h];
+                if (in_array($horaire[$h], $cren_off)) 
+                {
+                    echo "&nbsp;";
+                    continue;
+                }
+                echo '<span class="cadrecheck" ><input type="checkbox"  name="cren[]"   value="'.$horaire[$h].'"'; if (in_array($horaire[$h], $tab_cren)) echo ' checked="checked"';
+                echo ' />'.$horaire[$h].'</span>';
+                //creneau precedent le premier creneau selectionne
+                if ( $creno_prec=="" && in_array($horaire[$h], $tab_cren) && $h>0) 
+                    {
+                    $creno_prec=$horaire[$h-1];
+                    $in10_creno=$h-1;
+                    }
                 }
         echo "<input  class='bt-valid-sel' type='submit' name='OK' value='' />";
         echo '</p></div>';
@@ -586,7 +596,8 @@ if (!mysql_num_rows($result)==0)
         echo '<table id="abs" border="0">';
         echo '<thead>';
         echo '<tr>';
-        echo '<td colspan="2" class="elv">El&egrave;ve</td><td><table class="motif" border="0"><tr><td colspan="2">Cumul au</td></tr><tr><td colspan="2">'.$dtajac_dif.'</td></tr><tr><td class="AR">A</td><td class="AR">R</td></tr></table></td>';
+        echo '<td colspan="2" class="elv">El&egrave;ve</td><td><table class="motif" border="0"><tr><td colspan="2">Cumul au</td></tr><tr><td colspan="2">'.$dtajac_dif.'</td></tr><tr><td class="AR">A</td><td class="AR">R</td></tr></table></td>
+            <td><table class="motif" border="0"><tr><td colspan="2"> Absences </td></tr><tr><td colspan="2"> du jour </td></tr><tr><td colspan="2"> </td></td></tr></table></td>';
 		 
         if (count($cren_n)>0)
              {
@@ -677,15 +688,35 @@ if (!mysql_num_rows($result)==0)
 					}
 				}
 			$uid_e=$users[$loop]['uid'];
+                        
+                       
+                
 				//affichage des noms
         echo "<tr ";
-        if (($loop %2)==0 ) {echo 'class="lgn0"';} else {echo 'class="lgn1"';}
+        if (($loop %2)==0 ) 
+            { echo 'class="lgn0"';} 
+            else 
+            {echo 'class="lgn1"';}
         echo '><td><a href="#" class="open_wi" title="Bilan des absences et retards"
             onclick="open_new_win(\'bilan.php?uid='.$users[$loop]["uid"].'&amp;fn='.$users[$loop]["fullname"].'\')">'
         .$users[$loop]["fullname"].'</a></td>';
-	echo '<td><a href="#" title="Aper&ccedil;u hebdomadaire" onclick="abs_popup(\''.$uid_e.'\',\'' .$users[$loop]["fullname"].'\'); return false" > <img src="../images/b_calendar.png"  alt="hebdo"/></a></td>';
+        echo '<td><a href="#" title="Aper&ccedil;u hebdomadaire" onclick="abs_popup(\''.$uid_e.'\',\'' .$users[$loop]["fullname"].'\'); return false" > <img src="../images/b_calendar.png"  alt="hebdo"/></a></td>';
 	 //affichage des cumuls
         echo '<td><table border="0" class="motif"><tr><td class="nbA">'. $nbabs.'h</td><td class="nbR">'.$nbrtd.'</td></tr></table></td>';
+        echo '<td ><table border="0" class="motif"><tr><td class="cren">'; 
+        for ($h=0; $h<$in10_creno; $h++)
+                {
+             //absences creneau precedent
+                        //$abs_prec=false;
+                        if ($creno_prec!="") {
+                            $rq= "SELECT count(*) FROM absences WHERE uideleve='$uid_e'   AND date ='$dtajac' AND $horaire[$h]='A'";
+                            $result = @mysql_query ($rq) or die (mysql_error()); 
+                            $nb = mysql_fetch_array($result, MYSQL_NUM); 
+                             if ($nb[0]!=0) echo $horaire[$h].' ';
+ 		                   }
+                }
+               
+        echo '</td></tr></table></td>';
          //affichage nouveaux creneaux
 	if (count($cren_n)>0)
 		 {

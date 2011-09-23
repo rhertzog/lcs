@@ -45,7 +45,7 @@ exec("rm -f /usr/share/lcs/Plugins/Cdt/phpmathpublisher/img/*.png");
 		<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-	<script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
 	<script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
 	<script type="text/javascript" src="../Includes/barre_java.js"></script>
 </head>

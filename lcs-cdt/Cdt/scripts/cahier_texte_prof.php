@@ -38,7 +38,7 @@ include ('../Includes/config.inc.php');
 
 // Creer la requ&egrave;ete.
 $rq = "SELECT classe,matiere,id_prof FROM onglets
- WHERE login='{$_SESSION['login']}' ORDER BY classe ASC ";
+ WHERE login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}' ORDER BY classe ASC ";
  
 // lancer la requ&egrave;ete
 $result = @mysql_query ($rq) or die (mysql_error()); 
@@ -85,19 +85,17 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	<link href="../style/style.css" rel="stylesheet" type="text/css" />
 	<link  href="../style/deroulant.css" rel="stylesheet" type="text/css" />
 	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.all.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.datepicker.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.theme.css" rel="stylesheet" type="text/css" />
+	<link  href="../../../libjs/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
+	
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
 	<script type="text/javascript" src="../Includes/barre_java.js"></script>
 	<script type="text/javascript" src="../Includes/alertsession.js"></script>
-	<script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
-	<script type="text/javascript" src="../Includes/JQ/ui.core.js"></script>  
-	<script type="text/javascript" src="../Includes/JQ/ui.datepicker.js"></script> 
+	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script>  
 	<script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
-	<script type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+	<script type="text/javascript" src="../../../libjs/tiny-mce/tiny_mce.js"></script>
 	<script type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
     <script type="text/javascript" src="../Includes/sequence.js"></script>
     <script type="text/javascript" src="../Includes/cdt.js"></script>
@@ -187,7 +185,7 @@ elseif (is_dir("../../Agendas"))
 	// Connexion a la base de donnees Cdt
 	include ('../Includes/config.inc.php');
 	$rq = "SELECT id_prof FROM onglets
-	 WHERE login='{$_SESSION['login']}' AND edt='".$match."'";
+	 WHERE login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}' AND edt='".$match."'";
 	$result = @mysql_query ($rq) or die (mysql_error());
 	if (mysql_num_rows($result) >0) {
 	while ($idr = mysql_fetch_array($result, MYSQL_NUM)) 
@@ -208,14 +206,14 @@ if (isset($_GET['com'])&& isset($_GET['rubrique']) && $_GET['TA']==md5($_SESSION
 	{
 	
 	//l'article existe il ?
-	$rq = "SELECT login  FROM cahiertxt	WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}')";
-	//$rq = "SELECT login FROM cahiertxt WHERE id_rubrique = 'toto' AND  (login='{$_SESSION['login']}')";
+	$rq = "SELECT login  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}')";
+	
  // lancer la requ&egrave;ete
 	$result = @mysql_query ($rq) or die (mysql_error());
 	$nb = mysql_num_rows($result);
 	if ($nb==1) 
 		{
-		$rq = "DELETE  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}') LIMIT 1";
+		$rq = "DELETE  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}') LIMIT 1";
 		$result2 = @mysql_query ($rq) or die (mysql_error());
 		}
 	}
@@ -377,7 +375,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 
 // Creer la requete (Recuperer les rubriques de l'utilisateur) 
 $rq = "SELECT classe,matiere,id_prof,postit,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets
- WHERE login='{$_SESSION['login']}' ORDER BY id_prof ASC ";
+ WHERE login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}' ORDER BY id_prof ASC ";
 
  // lancer la requ&egrave;ete
 $result = @mysql_query ($rq) or die (mysql_error());

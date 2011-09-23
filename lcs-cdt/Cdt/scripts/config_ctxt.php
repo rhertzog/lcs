@@ -156,18 +156,25 @@ if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
 	// nom dela classe (division) sélectionnée 
 	$div = ($_POST['div']);
 	
+                   //prof en doublette
+                   if (isset($_POST['BIPROF']) && $_POST['BIPROF']!="0")
+	{
+	$prof2=preg_split('/#/',$_POST['BIPROF']);
+	$colog=$prof2[0];
+	$prefixe=substr(utf8_decode(addSlashes(strip_tags(stripslashes($prof2[2].' - ')))),0,12);
+                    } else $colog="";
 	// Créer la requête d'écriture pour l'enregistrement des données
 	if (isset($_POST['enregistrer']) && $div!="--")
 			{
-			$rq = "INSERT INTO onglets (login ,prof ,classe, matiere, prefix,edt ) 
-				   VALUES ( '{$_SESSION['login']}', '{$_SESSION['name']}', '$div',
+			$rq = "INSERT INTO onglets (login ,cologin,prof ,classe, matiere, prefix,edt ) 
+				   VALUES ( '{$_SESSION['login']}', '$colog','{$_SESSION['name']}', '$div',
 				   '$matiere', '$prefixe','$val_edt' )";
 			}
 //Créer la requête pour la mise à jour des données	
 	if (isset($_POST['modifier'])&& $div!="--")
 			{
 			$cible= ($_POST['numrub']);
-			$rq = "UPDATE  onglets SET classe='$div', matiere='$matiere', prefix='$prefixe', edt='$val_edt'  
+			$rq = "UPDATE  onglets SET classe='$div', matiere='$matiere', prefix='$prefixe', edt='$val_edt',cologin='$colog'  
 				WHERE id_prof='$cible'";
 			}
 		
@@ -222,7 +229,7 @@ if (isset($_GET['modrub'])&& isset($_GET['num']))
 	$cible=$_GET['num'];
 	
 //la rubrique existe elle ?
-	$rq = "SELECT login,classe, matiere, prefix,edt FROM onglets WHERE id_prof='$cible'  ";
+	$rq = "SELECT login,classe, matiere, prefix,edt,cologin FROM onglets WHERE id_prof='$cible'  ";
 
 // lancer la requête
 	$result = @mysql_query ($rq) or die (mysql_error());
@@ -236,6 +243,7 @@ if (isset($_GET['modrub'])&& isset($_GET['num']))
 		$val_matiere=utf8_encode($enrg[2]);
 		$val_prefix=utf8_encode($enrg[3]);
 		$val_edt=$enrg[4];
+                                    $colo=$enrg[5];
 		}}
 	} 
 //FIN TRAITEMENT FORMULAIRE
@@ -308,10 +316,28 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
   		if (count($tab)>0)  echo '<li>Modifiez s\'il y a lieu le nom de la mati&egrave;re : ';
 		else echo '<li>Indiquez la mati&egrave;re enseign&eacute;e : ';
 		echo '<input type="text" id="lamat" name="matiere" value="'.$val_matiere.'" size="20" maxlength="20" /></li>';
+                                     //add cologin
+                
+                                    echo "<li>S&#233;lectionner s'il  y lieu le professeur qui assure le cours avec vous : ";
+                                    $uids = search_uids ("cn=Profs", "half");
+                                    $people = search_people_groups ($uids,"(sn=*)","cat");
+                                    echo '<select name="BIPROF" >';
+                                    echo '<option value="0">---</option>';
+                                    for ($loop=0; $loop <count($people); $loop++) 
+                                            {
+                                            $uname = $people[$loop]['uid'];
+                                            $nom = $people[$loop]["fullname"];
+                                                      $patronyme=$people[$loop]["name"];
+                                            echo '<option value="'.$uname.'#'.$nom.'#'.$patronyme.'"';
+                                            if ($uname ==$colo) {echo 'selected="selected"';}
+                                            echo '>'.$nom.'</option>';
+                                            }
+                                    echo ' </select></li>';
+                
 ?>
 </ul>
 </li>
-	<li>Sur	les onglets du <b>cahier de textes de vos &eacute;l&egrave;ves</b> apparaitront la mati&egrave;re enseign&eacute;e et votre nom
+	<li>Sur les onglets du <b>cahier de textes de vos &eacute;l&egrave;ves</b> apparaitront la mati&egrave;re enseign&eacute;e et votre nom
 		pr&eacute;c&eacute;d&eacute; d&rsquo;un &quot;&nbsp;pr&eacute;fixe&nbsp;&quot;
 		<ul>
 			<li>Indiquez le <b>pr&eacute;fixe </b> que vous souhaitez voir appara&icirc;tre (M, Mme, pr&eacute;nom abr&eacute;g&eacute;, ....) : 

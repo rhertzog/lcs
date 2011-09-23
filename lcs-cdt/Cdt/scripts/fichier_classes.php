@@ -152,7 +152,8 @@ if (isset($_POST['Creer']) || isset($_POST['Importer']))
 //si clic sur Enregistrer	
 if (isset($_POST['Enregistrer']))
 	{
-		$nom_fichier="../Includes/creneau.inc.php";
+		$crenoff=$_POST['crenoff'];
+                                    $nom_fichier="../Includes/creneau.inc.php";
 		$fichier=fopen($nom_fichier,"w");
 		fputs($fichier, "<?php \n");
 		for ($index=0;$index<10;$index++)
@@ -161,7 +162,27 @@ if (isset($_POST['Enregistrer']))
 			";\$fin[$index]=".mkTime($_POST["hf".$index],$_POST["mf".$index],0).
 			";\$dif[$index]=".(mkTime($_POST["hd".$index],$_POST["md".$index],0)- mkTime(8,0,0)).";\n");
 		}
-		fputs($fichier, " ?>\n");
+                                    
+		$i=0;
+                                    if (in_array("M4", $crenoff)) 
+                                    {
+                                        fputs($fichier,"\$cren_off[$i]=\"M4\";\n");$i++;
+                                        fputs($fichier,"\$cren_off[$i]=\"M5\";\n");$i++;
+                                     }
+                                    elseif (in_array("M5", $crenoff)) 
+                                    {
+                                        fputs($fichier,"\$cren_off[$i]=\"M5\";\n");$i++;
+                                    }
+                                    if (in_array("S4", $crenoff)) 
+                                    {
+                                        fputs($fichier,"\$cren_off[$i]=\"S4\";\n");$i++;
+                                        fputs($fichier,"\$cren_off[$i]=\"S5\";\n");$i++;
+                                     }
+                                    elseif (in_array("S5", $crenoff)) 
+                                    {
+                                        fputs($fichier,"\$cren_off[$i]=\"S5\";\n");
+                                    }
+                                    fputs($fichier, " ?>\n");
 		fclose($fichier);
 	}
 	
@@ -283,9 +304,9 @@ if (isset($_GET['delarch']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_S
 	if (isset($_POST['Vider']))
 			{
 			echo "<script type='text/javascript'>";
-			echo " if (confirm('Confirmer l\'effacement du contenu des tables cahiertxt, absences, devoir, onglets et sequences? ')){";
+			echo " if (confirm('Confirmer l\'effacement du contenu des tables cahiertxt, absences, devoir, onglets,post-it eleves, et sequences? ')){";
 			echo ' location.href = "';
-			echo $_SERVER['PHP_SELF'];
+			echo $_SERVER['PHP_SELF'].'#bdd';
 			echo '"+ "?vidtab=" + "yes" + "&TA=" + "'.md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'";} else {';
 			echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'"   ;} </script> ';
 			}
@@ -301,16 +322,16 @@ if (isset($_GET['vidtab']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SE
  		$rq3 = "TRUNCATE TABLE devoir";
  		$rq4 = "TRUNCATE TABLE absences";
  		$rq5 = "TRUNCATE TABLE postit_eleve";
- 		$rq5 = "TRUNCATE TABLE sequences";
+ 		$rq6 = "TRUNCATE TABLE sequences";
 		// lancer la requete
 		$result1 = @mysql_query ($rq1) or die (mysql_error());
 		$result2 = @mysql_query ($rq2) or die (mysql_error());
 		$result3 = @mysql_query ($rq3) or die (mysql_error());
 		$result4 = @mysql_query ($rq4) or die (mysql_error());
 		$result5 = @mysql_query ($rq5) or die (mysql_error());
-                $result6 = @mysql_query ($rq6) or die (mysql_error());
-		if ($result1 && $result2 && $result3 && $result4 && $result5 && $result6) $mess2="<h3 class='cok'> les tables  ont &#233;t&#233; vid&#233;es";
-		else $mess2="<h3 class='nook'> Une erreur s'est produite lors de l'effacement des donn&#233;es";
+                                    $result6 = @mysql_query ($rq6) or die (mysql_error());
+		if ($result1 && $result2 && $result3 && $result4 && $result5 && $result6) $mess2="<span class='cok'> les tables  ont &#233;t&#233; vid&#233;es </span>";
+		else $mess2="<span class='nook'> Une erreur s'est produite lors de l'effacement des donn&#233;es <br /></span>";
 		
 		
 		}
@@ -494,6 +515,7 @@ if ($mess2!="") echo $mess2;
 //Affichage du formulaire de parametrage des creneaux horaires
 
 		include "../Includes/creneau.inc.php";
+                                    $horaire = array("M1","M2","M3","M4","M5","S1","S2","S3","S4","S5");
 		//pour les dix creneaux
                 echo '<ul class="perso">';
 		for ($index=0;$index<10;$index++)
@@ -549,7 +571,12 @@ if ($mess2!="") echo $mess2;
 		echo ">$min</option> \n";
 		$min+=5;
 		}
-		echo "</select> min \n</li> ";
+		echo "</select> min \n";
+                                    if ($index==3 || $index==4  || $index==8 || $index==9) 
+                                        {echo '<span ><input type="checkbox"  name="crenoff[]"   value="'.$horaire[$index].'"'; if (in_array($horaire[$index], $cren_off)) echo ' checked="checked"';
+                                        echo ' /> masquer ce cr&eacute;neau</span>';
+                                    }
+                                    echo"</li> ";
 		}
 		//fin de boucle 
 		echo '</ul>';

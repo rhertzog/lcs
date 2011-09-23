@@ -182,6 +182,11 @@ if ($nb>0)
 	$horaire = array("M1","M2","M3","M4","M5","S1","S2","S3","S4","S5");
 	for ($h=0; $h<=9; $h++) 
 		{
+                                    if (in_array($horaire[$h], $cren_off)) 
+                                    {
+                                         echo '<tr><td class="mi-jour" colspan="7"></td></tr>';
+                                        continue;
+                                    }
 		//Affichage de la désignation des créneaux horaires 
 		echo "<tr><th>".$horaire[$h]."</th>\n";
 		 		

@@ -20,7 +20,7 @@ include ('../Includes/config.inc.php');
 
 // Creer la requ&egrave;ete.
 $rq = "SELECT classe,matiere,id_prof FROM onglets
- WHERE login='{$_SESSION['aliasprof']}' ORDER BY classe ASC ";
+ WHERE login='{$_SESSION['aliasprof']}' OR cologin='{$_SESSION['aliasprof']}' ORDER BY classe ASC ";
  
 // lancer la requ&egrave;ete
 $result = @mysql_query ($rq) or die (mysql_error()); 
@@ -28,9 +28,9 @@ $result = @mysql_query ($rq) or die (mysql_error());
 // si pas de rubrique, on redirige vers config_ctxt.php
 if (mysql_num_rows($result)==0) 
 	{
-	?>
+	
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html  xmlns="http://www.w3.org/1999/xhtml" >
 <head>
 <title>Cahier de textes num&eacute;rique</title>
@@ -43,12 +43,13 @@ if (mysql_num_rows($result)==0)
 <body>
 	<div id="first">
 	<div class="prg">
-	<h2><br /><br />Le cahier de textes de <?echo $_SESSION['proffull']; ?> ne comporte actuellement aucune rubrique.</h2>
+	<h2><br /><br />Le cahier de textes de '. $_SESSION['proffull'].' ne comporte actuellement aucune rubrique.</h2>
 		
 	</div></div>
 </body>
-</html>
-<?php
+</html>';
+  
+
 	mysql_close();	
 	exit;
 	}
@@ -63,7 +64,7 @@ include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<link href="../style/style.css" rel="stylesheet" type="text/css" />
 	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
-        <script type="text/javascript" src="../Includes/JQ/jquery-1.3.2.min.js"></script>
+        <script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
         <script type="text/javascript" src="../Includes/sequence.js"></script>
 	
 <!--[if IE]>
@@ -120,7 +121,7 @@ if ( isset($_POST['viser']))
 
 // Creer la requete (Recuperer les rubriques de l'utilisateur) 
 $rq = "SELECT classe,matiere,id_prof,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets
- WHERE login='{$_SESSION['aliasprof']}' ORDER BY id_prof ASC ";
+ WHERE login='{$_SESSION['aliasprof']}' OR cologin='{$_SESSION['aliasprof']}' ORDER BY id_prof ASC ";
 
  // lancer la requ&egrave;ete
 $result = @mysql_query ($rq) or die (mysql_error());
@@ -204,7 +205,6 @@ include_once  ('./contenu.php');
 echo "</div>";  //fin du div de la boite 5 : contenu du cahier de texte
 echo '</fieldset>';include ('../Includes/pied.inc');
 echo '</div>'; //fin du div container
-
+echo '</body>
+</html>';
 ?>
-</body>
-</html>
