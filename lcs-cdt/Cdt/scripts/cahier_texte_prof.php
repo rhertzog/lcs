@@ -206,14 +206,14 @@ if (isset($_GET['com'])&& isset($_GET['rubrique']) && $_GET['TA']==md5($_SESSION
 	{
 	
 	//l'article existe il ?
-	$rq = "SELECT login  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}')";
+	$rq = "SELECT login  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}' )";
 	
  // lancer la requ&egrave;ete
 	$result = @mysql_query ($rq) or die (mysql_error());
 	$nb = mysql_num_rows($result);
 	if ($nb==1) 
 		{
-		$rq = "DELETE  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}') LIMIT 1";
+		$rq = "DELETE  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}' ) LIMIT 1";
 		$result2 = @mysql_query ($rq) or die (mysql_error());
 		}
 	}
