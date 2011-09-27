@@ -27,6 +27,7 @@ include_once "$BASEDIR/lcs/includes/headerauth.inc.php";
 include_once "$BASEDIR/Annu/includes/ldap.inc.php";
 include_once "$BASEDIR/Annu/includes/ihm.inc.php";
 mysql_close();
+$cren_off=array();
 include "../Includes/data.inc.php";
 include "../Includes/functions2.inc.php";	
 include_once("../Includes/config.inc.php");

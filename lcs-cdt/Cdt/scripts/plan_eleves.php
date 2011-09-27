@@ -35,6 +35,8 @@ foreach ($_SESSION['saclasse'] as $clé => $valeur)
 return $flg;
 }
 
+$cren_off=array();
+
 //contrôle des paramètres $_GET
 if ((isset($_GET['classe'])) && (isset($_SESSION['saclasse']))) {	
 	if (is_authorized($_GET['classe'])=="false")   exit;

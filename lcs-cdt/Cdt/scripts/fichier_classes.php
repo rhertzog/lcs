@@ -24,7 +24,8 @@ elseif ($_SESSION['login']!="admin") exit;
 include "../Includes/basedir.inc.php";
 include "$BASEDIR/lcs/includes/headerauth.inc.php";
 include "$BASEDIR/Annu/includes/ldap.inc.php";
-include "$BASEDIR/Annu/includes/ihm.inc.php";   
+include "$BASEDIR/Annu/includes/ihm.inc.php"; 
+$cren_off=array();
 if (isset($_POST['Sauver']))
 			{	
 			header ("location: ./export.php");

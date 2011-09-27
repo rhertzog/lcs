@@ -1,3 +1,9 @@
+lcs-cdt (2.4.8.4~3) LCS; urgency=low
+
+  * fix warning in error_reporting
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 25 Sep 2011 02:13:26 +0200
+
 lcs-cdt (2.4.8.4~2) LCS; urgency=low
 
   * fix bug "delete" in cahier_texte_prof.php 

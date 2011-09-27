@@ -40,7 +40,7 @@ elseif (isset($_GET['uid']))
 			&& ( !isset($_SESSION['parentde']) || $parent_ok=="false")
 			) exit;
 	}
-	
+$cren_off=array();	
 include ("../Includes/config.inc.php");
 include ("../Includes/fonctions.inc.php");
 include ("../Includes/creneau.inc.php");

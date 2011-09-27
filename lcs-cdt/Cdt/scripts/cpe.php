@@ -46,6 +46,8 @@ if ($newdate1>$newdate2) return true; else return false;
  
 $tsmp=time();
 $tsmp2=time() -604800;//j-7
+$cren_off=array();
+
 //dates  au jour courant
 if (!isset($_POST['datecren'])) {$datcreno=date('d/m/Y',$tsmp);} else 
 	{

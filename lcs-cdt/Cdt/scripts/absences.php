@@ -36,6 +36,7 @@ if (get_magic_quotes_gpc()) require_once("../Includes/class.inputfilter_clean.ph
 else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 $tsmp=time();
 $tsmp2=time() + 604800;//j+7
+$cren_off=array();
 
 //fichiers nécessaires à l'exploitation de l'API
 $BASEDIR="/var/www";
