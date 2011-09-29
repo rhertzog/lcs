@@ -12,8 +12,8 @@
 # LCS lightsquid
 use LcSe;
 
-print "Content-Type: text/html\n\n";
   if (isAdmin() ne 'Y') {
+	print "Content-Type: text/html\n\n";
     print
       "<p><strong>Erreur :</strong> vous n'avez pas les droits necessaires",
       " pour consulter les statistiques du cache mandataire !</p>";

@@ -19,6 +19,10 @@ install:
 	install -d $(DESTDIR)/usr/share/lcs/lightsquid
 	cp -a lightsquid/* $(DESTDIR)/usr/share/lcs/lightsquid/
 
+# install lightsquid menu
+	install -d $(DESTDIR)/var/www/lcs/includes/mnu.d
+	cp -a mnu.d/* $(DESTDIR)/var/www/lcs/includes/mnu.d/
+
 # install doc
 	install -d $(DESTDIR)/usr/share/doc/lcs/lightsquid/html
 	install -m 0644 doc/html/* $(DESTDIR)/usr/share/doc/lcs/lightsquid/html/
