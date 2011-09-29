@@ -15,6 +15,10 @@ install:
 	install -d $(DESTDIR)/etc/cron.daily
 	install -m 0644 cron.daily/* $(DESTDIR)/etc/cron.daily/
 
+# install lightsquid 
+	install -d $(DESTDIR)/usr/share/share/lcs/lightsquid
+	install -m 0644 lightsquid $(DESTDIR)/usr/share/doc/lcs/lightsquid/html
+
 # install doc
 	install -d $(DESTDIR)/usr/share/doc/lcs/lightsquid/html
 	install -m 0644 doc/html/* $(DESTDIR)/usr/share/doc/lcs/lightsquid/html
