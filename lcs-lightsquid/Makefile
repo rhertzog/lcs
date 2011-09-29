@@ -17,7 +17,7 @@ install:
 
 # install lightsquid 
 	install -d $(DESTDIR)/usr/share/lcs/lightsquid
-	install -m 0644 lightsquid $(DESTDIR)/usr/share/lcs/lightsquid/
+	install -m 0644 lightsquid/* $(DESTDIR)/usr/share/lcs/lightsquid/
 
 # install doc
 	install -d $(DESTDIR)/usr/share/doc/lcs/lightsquid/html
