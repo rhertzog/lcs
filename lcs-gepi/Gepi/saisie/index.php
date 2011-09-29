@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: index.php 2813 2008-12-28 17:13:09Z crob $
+ * $Id: index.php 7192 2011-06-10 19:30:33Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -32,7 +32,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -387,12 +387,16 @@ if ($current_group) {
         //$groups = get_groups_for_prof($_SESSION["login"]);
 		$groups = get_groups_for_prof($_SESSION["login"],"classe puis matière");
         foreach ($groups as $group) {
-		//echo "<p><a href='index.php?id_groupe=" . $group["id"] . "'>" . $group["description"] . "</a> (" . $group["classlist_string"] . ")</p>\n";
-		//echo "<p><a href='index.php?id_groupe=" . $group["id"] . "'>" . htmlentities($group["description"]) . "</a> (" . $group["classlist_string"] . ")</p>\n";
-		//echo "<p><a href='index.php?id_groupe=" . $group["id"] . "'>" . htmlentities($group["description"]) . "</a> (" . $group["classlist_string"] . ")</p>\n";
-		echo "<p><span class='norme'><b>" . $group["classlist_string"] . "</b> : ";
-		echo "<a href='index.php?id_groupe=" . $group["id"] ."'>" . htmlentities($group["description"]) . "</a>";
-		echo "</span></p>\n";
+			$sql="SELECT 1=1 FROM j_groupes_visibilite WHERE id_groupe='".$group["id"]."' AND domaine='bulletins' AND visible='n';";
+			$test_jgv=mysql_query($sql);
+			if(mysql_num_rows($test_jgv)==0) {
+				//echo "<p><a href='index.php?id_groupe=" . $group["id"] . "'>" . $group["description"] . "</a> (" . $group["classlist_string"] . ")</p>\n";
+				//echo "<p><a href='index.php?id_groupe=" . $group["id"] . "'>" . htmlentities($group["description"]) . "</a> (" . $group["classlist_string"] . ")</p>\n";
+				//echo "<p><a href='index.php?id_groupe=" . $group["id"] . "'>" . htmlentities($group["description"]) . "</a> (" . $group["classlist_string"] . ")</p>\n";
+				echo "<p><span class='norme'><b>" . $group["classlist_string"] . "</b> : ";
+				echo "<a href='index.php?id_groupe=" . $group["id"] ."'>" . htmlentities($group["description"]) . "</a>";
+				echo "</span></p>\n";
+			}
         }
     } elseif ($_SESSION["statut"] == "secours") {
         echo "<p>Saisir les moyennes ou appréciations par classe :</p>\n";
@@ -404,7 +408,7 @@ if ($current_group) {
             $nom_classe = mysql_result($appel_donnees, $i, "classe");
             echo "<p><span class='norme'><b>$nom_classe</b> : ";
 			echo "<a href='recopie_moyennes.php?id_classe=$id_classe&amp;retour=saisie_index'><b>Recopie des moyennes</b></a> - ";
-            $groups = get_groups_for_class($id_classe);
+            $groups = get_groups_for_class($id_classe,"","n");
             foreach ($groups as $group) {
 
 		$sql="SELECT u.nom,u.prenom FROM j_groupes_professeurs jgp, utilisateurs u WHERE

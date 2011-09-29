@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 6693 2011-03-25 11:59:05Z crob $
+ * $Id: index.php 7950 2011-08-24 13:53:46Z jjocal $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -56,7 +56,7 @@ $msg="";
 // En multisite, on ajoute le répertoire RNE
 if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 	  // On récupère le RNE de l'établissement
-  $rep_photos='../photos/'.getSettingValue("gepiSchoolRne").'/personnels/';
+  $rep_photos='../photos/'.$_COOKIE['RNE'].'/personnels/';
 }else{
   $rep_photos='../photos/personnels/';
 }

@@ -1,5 +1,5 @@
 <?php
-/* $Id: index.php 6950 2011-05-18 16:47:40Z crob $ */
+/* $Id: index.php 6949 2011-05-18 16:47:33Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: occupation_lieu_heure.php 5400 2010-09-23 10:01:22Z crob $
+ * $Id: occupation_lieu_heure.php 7138 2011-06-05 17:37:14Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -65,7 +65,7 @@ if(!checkdate($tmp_date[1],$tmp_date[0],$tmp_date[2])) {
 }
 
 $l_duree=strlen($duree);
-$duree=my_ereg_replace(",",".",my_ereg_replace("[^0-9.]","",$duree));
+$duree=preg_replace("/,/",".",preg_replace("/[^0-9.]/","",$duree));
 if($duree=="") {
 	$duree=1;
 	$msg.="La durée de retenue saisie n'était pas correcte. Elle a été remplacée par '1'.<r />";

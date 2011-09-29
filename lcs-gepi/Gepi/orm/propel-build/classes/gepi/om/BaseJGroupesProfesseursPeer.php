@@ -31,12 +31,18 @@ abstract class BaseJGroupesProfesseursPeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 2;
+
 	/** the column name for the ID_GROUPE field */
 	const ID_GROUPE = 'j_groupes_professeurs.ID_GROUPE';
 
 	/** the column name for the LOGIN field */
 	const LOGIN = 'j_groupes_professeurs.LOGIN';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of JGroupesProfesseurs objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -52,7 +58,7 @@ abstract class BaseJGroupesProfesseursPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('IdGroupe', 'Login', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('idGroupe', 'login', ),
 		BasePeer::TYPE_COLNAME => array (self::ID_GROUPE, self::LOGIN, ),
@@ -67,7 +73,7 @@ abstract class BaseJGroupesProfesseursPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('IdGroupe' => 0, 'Login' => 1, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('idGroupe' => 0, 'login' => 1, ),
 		BasePeer::TYPE_COLNAME => array (self::ID_GROUPE => 0, self::LOGIN => 1, ),
@@ -197,7 +203,7 @@ abstract class BaseJGroupesProfesseursPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -216,7 +222,7 @@ abstract class BaseJGroupesProfesseursPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -270,7 +276,7 @@ abstract class BaseJGroupesProfesseursPeer {
 	 * @param      JGroupesProfesseurs $value A JGroupesProfesseurs object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(JGroupesProfesseurs $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -425,7 +431,7 @@ abstract class BaseJGroupesProfesseursPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + JGroupesProfesseursPeer::NUM_COLUMNS;
+			$col = $startcol + JGroupesProfesseursPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = JGroupesProfesseursPeer::OM_CLASS;
 			$obj = new $cls();
@@ -434,6 +440,7 @@ abstract class BaseJGroupesProfesseursPeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related Groupe table
@@ -554,7 +561,7 @@ abstract class BaseJGroupesProfesseursPeer {
 		}
 
 		JGroupesProfesseursPeer::addSelectColumns($criteria);
-		$startcol = (JGroupesProfesseursPeer::NUM_COLUMNS - JGroupesProfesseursPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = JGroupesProfesseursPeer::NUM_HYDRATE_COLUMNS;
 		GroupePeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(JGroupesProfesseursPeer::ID_GROUPE, GroupePeer::ID, $join_behavior);
@@ -620,7 +627,7 @@ abstract class BaseJGroupesProfesseursPeer {
 		}
 
 		JGroupesProfesseursPeer::addSelectColumns($criteria);
-		$startcol = (JGroupesProfesseursPeer::NUM_COLUMNS - JGroupesProfesseursPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = JGroupesProfesseursPeer::NUM_HYDRATE_COLUMNS;
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(JGroupesProfesseursPeer::LOGIN, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
@@ -738,13 +745,13 @@ abstract class BaseJGroupesProfesseursPeer {
 		}
 
 		JGroupesProfesseursPeer::addSelectColumns($criteria);
-		$startcol2 = (JGroupesProfesseursPeer::NUM_COLUMNS - JGroupesProfesseursPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = JGroupesProfesseursPeer::NUM_HYDRATE_COLUMNS;
 
 		GroupePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (GroupePeer::NUM_COLUMNS - GroupePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + GroupePeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(JGroupesProfesseursPeer::ID_GROUPE, GroupePeer::ID, $join_behavior);
 
@@ -932,10 +939,10 @@ abstract class BaseJGroupesProfesseursPeer {
 		}
 
 		JGroupesProfesseursPeer::addSelectColumns($criteria);
-		$startcol2 = (JGroupesProfesseursPeer::NUM_COLUMNS - JGroupesProfesseursPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = JGroupesProfesseursPeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(JGroupesProfesseursPeer::LOGIN, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
@@ -1005,10 +1012,10 @@ abstract class BaseJGroupesProfesseursPeer {
 		}
 
 		JGroupesProfesseursPeer::addSelectColumns($criteria);
-		$startcol2 = (JGroupesProfesseursPeer::NUM_COLUMNS - JGroupesProfesseursPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = JGroupesProfesseursPeer::NUM_HYDRATE_COLUMNS;
 
 		GroupePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (GroupePeer::NUM_COLUMNS - GroupePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + GroupePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(JGroupesProfesseursPeer::ID_GROUPE, GroupePeer::ID, $join_behavior);
 
@@ -1096,7 +1103,7 @@ abstract class BaseJGroupesProfesseursPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a JGroupesProfesseurs or Criteria object.
+	 * Performs an INSERT on the database, given a JGroupesProfesseurs or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or JGroupesProfesseurs object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -1135,7 +1142,7 @@ abstract class BaseJGroupesProfesseursPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a JGroupesProfesseurs or Criteria object.
+	 * Performs an UPDATE on the database, given a JGroupesProfesseurs or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or JGroupesProfesseurs object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -1182,11 +1189,12 @@ abstract class BaseJGroupesProfesseursPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the j_groupes_professeurs table.
+	 * Deletes all rows from the j_groupes_professeurs table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(JGroupesProfesseursPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -1211,7 +1219,7 @@ abstract class BaseJGroupesProfesseursPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a JGroupesProfesseurs or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a JGroupesProfesseurs or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or JGroupesProfesseurs object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -1288,7 +1296,7 @@ abstract class BaseJGroupesProfesseursPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(JGroupesProfesseurs $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

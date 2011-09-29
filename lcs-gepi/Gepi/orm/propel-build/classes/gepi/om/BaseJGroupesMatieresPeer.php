@@ -31,12 +31,18 @@ abstract class BaseJGroupesMatieresPeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 2;
+
 	/** the column name for the ID_GROUPE field */
 	const ID_GROUPE = 'j_groupes_matieres.ID_GROUPE';
 
 	/** the column name for the ID_MATIERE field */
 	const ID_MATIERE = 'j_groupes_matieres.ID_MATIERE';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of JGroupesMatieres objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -52,7 +58,7 @@ abstract class BaseJGroupesMatieresPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('IdGroupe', 'IdMatiere', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('idGroupe', 'idMatiere', ),
 		BasePeer::TYPE_COLNAME => array (self::ID_GROUPE, self::ID_MATIERE, ),
@@ -67,7 +73,7 @@ abstract class BaseJGroupesMatieresPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('IdGroupe' => 0, 'IdMatiere' => 1, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('idGroupe' => 0, 'idMatiere' => 1, ),
 		BasePeer::TYPE_COLNAME => array (self::ID_GROUPE => 0, self::ID_MATIERE => 1, ),
@@ -197,7 +203,7 @@ abstract class BaseJGroupesMatieresPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -216,7 +222,7 @@ abstract class BaseJGroupesMatieresPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -270,7 +276,7 @@ abstract class BaseJGroupesMatieresPeer {
 	 * @param      JGroupesMatieres $value A JGroupesMatieres object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(JGroupesMatieres $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -425,7 +431,7 @@ abstract class BaseJGroupesMatieresPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + JGroupesMatieresPeer::NUM_COLUMNS;
+			$col = $startcol + JGroupesMatieresPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = JGroupesMatieresPeer::OM_CLASS;
 			$obj = new $cls();
@@ -434,6 +440,7 @@ abstract class BaseJGroupesMatieresPeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related Groupe table
@@ -554,7 +561,7 @@ abstract class BaseJGroupesMatieresPeer {
 		}
 
 		JGroupesMatieresPeer::addSelectColumns($criteria);
-		$startcol = (JGroupesMatieresPeer::NUM_COLUMNS - JGroupesMatieresPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = JGroupesMatieresPeer::NUM_HYDRATE_COLUMNS;
 		GroupePeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(JGroupesMatieresPeer::ID_GROUPE, GroupePeer::ID, $join_behavior);
@@ -620,7 +627,7 @@ abstract class BaseJGroupesMatieresPeer {
 		}
 
 		JGroupesMatieresPeer::addSelectColumns($criteria);
-		$startcol = (JGroupesMatieresPeer::NUM_COLUMNS - JGroupesMatieresPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = JGroupesMatieresPeer::NUM_HYDRATE_COLUMNS;
 		MatierePeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(JGroupesMatieresPeer::ID_MATIERE, MatierePeer::MATIERE, $join_behavior);
@@ -738,13 +745,13 @@ abstract class BaseJGroupesMatieresPeer {
 		}
 
 		JGroupesMatieresPeer::addSelectColumns($criteria);
-		$startcol2 = (JGroupesMatieresPeer::NUM_COLUMNS - JGroupesMatieresPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = JGroupesMatieresPeer::NUM_HYDRATE_COLUMNS;
 
 		GroupePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (GroupePeer::NUM_COLUMNS - GroupePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + GroupePeer::NUM_HYDRATE_COLUMNS;
 
 		MatierePeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (MatierePeer::NUM_COLUMNS - MatierePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + MatierePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(JGroupesMatieresPeer::ID_GROUPE, GroupePeer::ID, $join_behavior);
 
@@ -932,10 +939,10 @@ abstract class BaseJGroupesMatieresPeer {
 		}
 
 		JGroupesMatieresPeer::addSelectColumns($criteria);
-		$startcol2 = (JGroupesMatieresPeer::NUM_COLUMNS - JGroupesMatieresPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = JGroupesMatieresPeer::NUM_HYDRATE_COLUMNS;
 
 		MatierePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (MatierePeer::NUM_COLUMNS - MatierePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + MatierePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(JGroupesMatieresPeer::ID_MATIERE, MatierePeer::MATIERE, $join_behavior);
 
@@ -1005,10 +1012,10 @@ abstract class BaseJGroupesMatieresPeer {
 		}
 
 		JGroupesMatieresPeer::addSelectColumns($criteria);
-		$startcol2 = (JGroupesMatieresPeer::NUM_COLUMNS - JGroupesMatieresPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = JGroupesMatieresPeer::NUM_HYDRATE_COLUMNS;
 
 		GroupePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (GroupePeer::NUM_COLUMNS - GroupePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + GroupePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(JGroupesMatieresPeer::ID_GROUPE, GroupePeer::ID, $join_behavior);
 
@@ -1096,7 +1103,7 @@ abstract class BaseJGroupesMatieresPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a JGroupesMatieres or Criteria object.
+	 * Performs an INSERT on the database, given a JGroupesMatieres or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or JGroupesMatieres object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -1135,7 +1142,7 @@ abstract class BaseJGroupesMatieresPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a JGroupesMatieres or Criteria object.
+	 * Performs an UPDATE on the database, given a JGroupesMatieres or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or JGroupesMatieres object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -1182,11 +1189,12 @@ abstract class BaseJGroupesMatieresPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the j_groupes_matieres table.
+	 * Deletes all rows from the j_groupes_matieres table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(JGroupesMatieresPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -1211,7 +1219,7 @@ abstract class BaseJGroupesMatieresPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a JGroupesMatieres or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a JGroupesMatieres or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or JGroupesMatieres object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -1288,7 +1296,7 @@ abstract class BaseJGroupesMatieresPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(JGroupesMatieres $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

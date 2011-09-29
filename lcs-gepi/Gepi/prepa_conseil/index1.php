@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: index1.php 6445 2011-01-31 11:47:37Z crob $
+ * $Id: index1.php 7698 2011-08-11 13:06:45Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -62,11 +62,13 @@ if (count($current_group["classes"]["list"]) > 1) {
     $order_by = "nom";
 }
 
+$couleur_alterne=isset($_POST['couleur_alterne']) ? $_POST['couleur_alterne'] : "n";
 
 if((isset($_POST['col_tri']))&&($_POST['col_tri']==1)) {
 	$order_by = "nom";
 }
 
+//debug_var();
 //=====================================================
 if ((isset($_POST['mode']))&&($_POST['mode']=='csv')) {
 
@@ -75,25 +77,13 @@ if ((isset($_POST['mode']))&&($_POST['mode']=='csv')) {
 	$chaine_titre="export";
 	if(isset($current_group)) {
 		//$chaine_titre=$current_group['name']."_".$current_group['description'];
-		$chaine_titre=$current_group['name']."_".my_ereg_replace(",","_",$current_group['classlist_string']);
+		$chaine_titre=$current_group['name']."_".preg_replace("/,/","_",$current_group['classlist_string']);
 	}
 
 	$nom_fic=$chaine_titre."_".$now.".csv";
 
 	// Filtrer les caractères dans le nom de fichier:
-	$nom_fic=my_ereg_replace("[^a-zA-Z0-9_.-]","",remplace_accents($nom_fic,'all'));
-
-	header('Content-Type: text/x-csv');
-	header('Expires: ' . $now);
-	// lem9 & loic1: IE need specific headers
-	if (my_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
-		header('Content-Disposition: inline; filename="' . $nom_fic . '"');
-		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-		header('Pragma: public');
-	} else {
-		header('Content-Disposition: attachment; filename="' . $nom_fic . '"');
-		header('Pragma: no-cache');
-	}
+	$nom_fic=preg_replace("/[^a-zA-Z0-9_\.-]/","",remplace_accents($nom_fic,'all'));
 
 	$fd="";
 	//$fd.=affiche_tableau_csv2($nb_lignes_tableau, $nb_col, $ligne1_csv, $col);
@@ -102,17 +92,287 @@ if ((isset($_POST['mode']))&&($_POST['mode']=='csv')) {
 	//$col_csv=$_POST['col_csv'];
 	$lignes_csv=$_POST['lignes_csv'];
 
-	$fd.=my_ereg_replace(";",",",my_ereg_replace("&#039;","'",html_entity_decode($ligne1_csv[1])));
+	$fd.=preg_replace("/;/",",",preg_replace("/&#039;/","'",html_entity_decode($ligne1_csv[1])));
 	for($i=2;$i<=count($ligne1_csv);$i++) {
-		$fd.=";".my_ereg_replace(";",",",my_ereg_replace("&#039;","'",html_entity_decode($ligne1_csv[$i])));
+		$fd.=";".preg_replace("/;/",",",preg_replace("/&#039;/","'",html_entity_decode($ligne1_csv[$i])));
 	}
 	$fd.="\n";
 
 	for($j=0;$j<count($lignes_csv);$j++) {
-		$fd.=my_ereg_replace("&#039;","'",html_entity_decode($lignes_csv[$j])."\n");
+		$fd.=preg_replace("/&#039;/","'",html_entity_decode($lignes_csv[$j])."\n");
 	}
 
+	send_file_download_headers('text/x-csv',$nom_fic);
 	echo $fd;
+	die();
+}
+if ((isset($_POST['mode']))&&($_POST['mode']=='pdf')) {
+
+	$now = gmdate('D, d M Y H:i:s') . ' GMT';
+
+	$chaine_titre="export";
+	if(isset($current_group)) {
+		$chaine_titre=$current_group['name']."_".preg_replace("/,/","_",$current_group['classlist_string']);
+	}
+
+	$nom_fic=$chaine_titre."_".$now.".pdf";
+
+	// Filtrer les caractères dans le nom de fichier:
+	$nom_fic=preg_replace("/[^a-zA-Z0-9_\.-]/","",remplace_accents($nom_fic,'all'));
+
+	//include("get_param_pdf.php");
+
+	// Extraire les infos générales sur l'établissement
+	//require("../bulletin/header_bulletin_pdf.php");
+
+	require('../fpdf/fpdf.php');
+	require('../fpdf/ex_fpdf.php');
+	require_once("../fpdf/class.multicelltag.php");
+
+	// Fichier d'extension de fpdf pour le bulletin
+	require_once("../class_php/gepi_pdf.class.php");
+
+	// Fonctions php des bulletins pdf
+	require_once("../bulletin/bulletin_fonctions.php");
+	// Ensemble des données communes
+	require_once("../bulletin/bulletin_donnees.php");
+
+	define('FPDF_FONTPATH','../fpdf/font/');
+	/*
+	define('TopMargin','5');
+	define('RightMargin','2');
+	define('LeftMargin','2');
+	define('BottomMargin','5');
+	define('LargeurPage','210');
+	define('HauteurPage','297');
+	*/
+	session_cache_limiter('private');
+
+	$X1 = 0; $Y1 = 0; $X2 = 0; $Y2 = 0;
+	$X3 = 0; $Y3 = 0; $X4 = 0; $Y4 = 0;
+	$X5 = 0; $Y5 = 0; $X6 = 0; $Y6 = 0;
+
+	$annee_scolaire = $gepiYear;
+
+	$gepiSchoolName=getSettingValue('gepiSchoolName');
+
+	$ligne1_csv=$_POST['ligne1_csv'];
+	$lignes_csv=$_POST['lignes_csv'];
+
+
+	$largeur_page=210;
+	$hauteur_page=297;
+
+	$marge_gauche=5;
+	$marge_droite=5;
+	$marge_haute=5;
+	$marge_basse=5;
+
+	$hauteur_police=10;
+	$largeur_col_nom_ele=40;
+
+	// Taille en-dessous de laquelle on passe en format Paysage.
+	$largeur_min_app=55;
+
+	// Hauteur des lignes:
+	//$h_cell=10;
+	$h_cell=isset($_POST['h_cell']) ? $_POST['h_cell'] : 10;
+	if((!preg_match("/^[0-9]+$/", $h_cell)||($h_cell<5))) {$h_cell=10;}
+	$h_ligne_titre_tableau=10;
+
+	// Largeur des colonnes
+	$largeur_col=array();
+	$largeur_col[1]=$largeur_col_nom_ele;
+	$indice_col_app=array();
+
+	$taille_max_police=$hauteur_police;
+	$taille_min_police=ceil($taille_max_police/3);
+
+	$x0=$marge_gauche;
+	$y0=$marge_haute;
+
+	$largeur_nomprenom_classe_et_notes=$marge_gauche+$largeur_col_nom_ele;
+	$nb_col_app=0;
+	for($i=2;$i<=count($ligne1_csv);$i++) {
+
+		if(preg_match("/^Note/", $ligne1_csv[$i])) {
+			$largeur_nomprenom_classe_et_notes+=10;
+			$largeur_col[$i]=10;
+		}
+		elseif(preg_match("/^Classe/", $ligne1_csv[$i])) {
+			$largeur_nomprenom_classe_et_notes+=10;
+			$largeur_col[$i]=10;
+		}
+		elseif(preg_match("/^Rang/", $ligne1_csv[$i])) {
+			$largeur_nomprenom_classe_et_notes+=10;
+			$largeur_col[$i]=10;
+		}
+		elseif(preg_match("/^Moyenne/", $ligne1_csv[$i])) {
+			$largeur_nomprenom_classe_et_notes+=10;
+			$largeur_col[$i]=10;
+		}
+		else {
+			$nb_col_app++;
+			$indice_col_app[]=$i;
+		}
+	}
+
+	$format_page="P";
+	if($nb_col_app>0) {
+		$largeur_col_app=floor(($largeur_page-$marge_droite-$largeur_nomprenom_classe_et_notes)/$nb_col_app);
+
+		if($largeur_col_app<$largeur_min_app) {
+			$format_page="L";
+			$largeur_page=297;
+			$hauteur_page=210;
+
+			$largeur_col_app=floor(($largeur_page-$marge_droite-$largeur_nomprenom_classe_et_notes)/$nb_col_app);
+		}
+	}
+
+	for($i=0;$i<count($indice_col_app);$i++) {
+		$largeur_col[$indice_col_app[$i]]=$largeur_col_app;
+	}
+
+	$pdf=new bul_PDF($format_page, 'mm', 'A4');
+	$pdf->SetCreator($gepiSchoolName);
+	$pdf->SetAuthor($gepiSchoolName);
+	$pdf->SetKeywords('');
+	$pdf->SetSubject('Mes_moyennes');
+	$pdf->SetTitle('Mes_moyennes');
+	$pdf->SetDisplayMode('fullwidth', 'single');
+	$pdf->SetCompression(TRUE);
+	$pdf->SetAutoPageBreak(TRUE, 5);
+
+	$pdf->AddPage();
+	$fonte='Arial';
+
+	$pdf->SetFont($fonte,'B',8);
+
+	$texte_titre=$current_group['profs']['proflist_string']." - ".$current_group['description']." en ".$current_group['classlist_string'];
+
+	$pdf->SetXY($x0,$y0);
+
+	$texte=$texte_titre;
+	$largeur_dispo=$largeur_page-$marge_gauche-$marge_droite;
+	$hauteur_caractere=12;
+	$h_ligne=$h_ligne_titre_tableau;
+	$graisse='B';
+	$alignement='C';
+	$bordure='';
+	cell_ajustee_une_ligne(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$hauteur_caractere,$fonte,$graisse,$alignement,$bordure);
+	$y2=$y0+$h_ligne_titre_tableau;
+
+
+	//===========================
+	// Ligne d'entête du tableau
+	//$pdf->SetXY($x0,$y0);
+	$pdf->SetXY($x0,$y2);
+	$largeur_dispo=$largeur_col_nom_ele;
+	$texte=$ligne1_csv[1];
+
+	$graisse='B';
+	//$alignement='L';
+	$alignement='C';
+	$bordure='LRBT';
+	cell_ajustee_une_ligne(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne_titre_tableau,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+
+	$alignement='C';
+	$largeur_dispo=$largeur_col_nom_ele;
+	$x2=$x0+$largeur_col_nom_ele;
+	for($i=2;$i<=count($ligne1_csv);$i++) {
+		$pdf->SetXY($x2, $y2);
+		$largeur_dispo=$largeur_col[$i];
+
+		$texte=" ".$ligne1_csv[$i]." ";
+		//cell_ajustee(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne_titre_tableau,$taille_max_police,$taille_min_police,'LRBT');
+		cell_ajustee_une_ligne(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne_titre_tableau,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+
+		$x2+=$largeur_dispo;
+	}
+	//===========================
+
+	$graisse='';
+	$alignement='C';
+	$bordure='LRBT';
+
+	$y2=$y2+$h_ligne_titre_tableau;
+	$k=1;
+	for($j=0;$j<count($lignes_csv);$j++) {
+		$tab=explode(";", $lignes_csv[$j]);
+		if(($tab[0]!='Moyenne')&&($tab[0]!='Min.')&&($tab[0]!='Max.')&&($tab[0]!='Quartile 1')&&($tab[0]!='Médiane')&&($tab[0]!='Quartile 3')) {
+			$h_ligne=$h_cell;
+			$graisse="";
+		}
+		else {
+			$h_ligne=$h_ligne_titre_tableau;
+			$graisse="B";
+		}
+
+		//if($y0+$k*$h_cell>$hauteur_page-5-$h_cell) {
+		if($y2+$h_ligne>$hauteur_page-$marge_basse) {
+			$pdf->AddPage();
+
+			//===========================
+			// Ligne d'entête du tableau
+			$pdf->SetXY($x0,$y0);
+			$largeur_dispo=$largeur_col_nom_ele;
+			$texte=$ligne1_csv[1];
+
+			//cell_ajustee(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne_titre_tableau,$taille_max_police,$taille_min_police,'LRBT');
+			$graisse='B';
+			//$alignement='L';
+			$alignement='C';
+			$bordure='LRBT';
+			cell_ajustee_une_ligne(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne_titre_tableau,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+		
+			$alignement='C';
+			$largeur_dispo=$largeur_col_nom_ele;
+			$x2=$x0+$largeur_col_nom_ele;
+			$y2=$y0;
+			for($i=2;$i<=count($ligne1_csv);$i++) {
+				$pdf->SetXY($x2, $y2);
+				$largeur_dispo=$largeur_col[$i];
+		
+				$texte=" ".$ligne1_csv[$i]." ";
+				//$texte=$ligne1_csv[$i];
+				//cell_ajustee(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne_titre_tableau,$taille_max_police,$taille_min_police,'LRBT');
+				cell_ajustee_une_ligne(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne_titre_tableau,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+		
+				$x2+=$largeur_dispo;
+			}
+			//===========================
+
+			$y2=$y0+$h_ligne_titre_tableau;
+
+			$k=1;
+
+			$graisse='';
+			$alignement='C';
+
+		}
+		$x2=$x0;
+
+		for($i=1;$i<=count($ligne1_csv);$i++) {
+			$pdf->SetXY($x2, $y2);
+
+			$largeur_dispo=$largeur_col[$i];
+			$texte=$tab[$i-1];
+			if(preg_match("/^App/", $ligne1_csv[$i])) {
+				cell_ajustee(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$taille_min_police,'LRBT');
+			}
+			else {
+				cell_ajustee_une_ligne(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+			}
+			$x2+=$largeur_dispo;
+		}
+		$y2+=$h_ligne;
+
+		$k++;
+	}
+
+	send_file_download_headers('application/pdf',$nom_fic);
+	$pdf->Output($nom_fic,'I');
 	die();
 }
 //=====================================================
@@ -199,7 +459,7 @@ if (!$current_group) {
 
 			$id_classe = mysql_result($appel_donnees, $i, "id");
 			$aff_class = 'no';
-			$groups = get_groups_for_class($id_classe);
+			$groups = get_groups_for_class($id_classe,"","n");
 			//echo "\$id_classe=$id_classe et count(\$groups)=".count($groups)."<br />";
 
 			foreach($groups as $group) {
@@ -418,18 +678,27 @@ if (!$current_group) {
 
     echo "<form enctype=\"multipart/form-data\" action=\"index1.php\" method=\"post\" name=\"formulaire\">";
     echo "<p class='bold'>Groupe : " . htmlentities($current_group["description"]) ." " . htmlentities($current_group["classlist_string"]) . " | Matière : " . htmlentities($current_group["matiere"]["nom_complet"]) . "&nbsp;&nbsp;<input type='submit' value='Valider' /></p>\n";
-    echo "<p>Choisissez les données à imprimer (vous pouvez cocher plusieurs cases) : </p>\n";
+    echo "<p>Choisissez les données à imprimer (<i>vous pouvez cocher plusieurs cases</i>) : </p>\n";
     $i="1";
+	$cpt=0;
     while ($i < $nb_periode) {
-        $name = "visu_note_".$i;
-        echo "<p><input type='checkbox' name='$name' id='$name' value='yes' /><label for='$name' style='cursor: pointer;'>".ucfirst($nom_periode[$i])." - Extraire les moyennes</label></p>\n";
-    $i++;
+		$name = "visu_note_".$i;
+		echo "<p><input type='checkbox' name='$name' id='$name' value='yes' ";
+		if((isset($_SESSION[$name]))&&($_SESSION[$name]=='yes')) {echo "checked "; $temp_style=" style='font-weight:bold;'";} else {$temp_style="";}
+		echo "onchange=\"checkbox_change(this.id, $cpt)\" ";
+		echo "/><label for='$name' style='cursor: pointer;'><span id='champ_numero_$cpt'$temp_style>".ucfirst($nom_periode[$i])." - Extraire les moyennes</span></label></p>\n";
+		$i++;
+		$cpt++;
     }
     $i="1";
     while ($i < $nb_periode) {
-            $name = "visu_app_".$i;
-            echo "<p><input type='checkbox' name='$name' id='$name' value='yes' /><label for='$name' style='cursor: pointer;'>".ucfirst($nom_periode[$i])." - Extraire les appréciations</label></p>\n";
-    $i++;
+		$name = "visu_app_".$i;
+		echo "<p><input type='checkbox' name='$name' id='$name' value='yes' ";
+		if((isset($_SESSION[$name]))&&($_SESSION[$name]=='yes')) {echo "checked "; $temp_style=" style='font-weight:bold;'";} else {$temp_style="";}
+		echo "onchange=\"checkbox_change(this.id, $cpt)\" ";
+		echo "/><label for='$name' style='cursor: pointer;'><span id='champ_numero_$cpt'$temp_style>".ucfirst($nom_periode[$i])." - Extraire les appréciations</span></label></p>\n";
+	    $i++;
+		$cpt++;
     }
 
 	//==========================================
@@ -463,19 +732,60 @@ if (!$current_group) {
 	}
 	*/
 	if($aff_rang=="y") {
-	    echo "<p><input type='checkbox' name='afficher_rang' id='afficher_rang' value='yes' /><label for='afficher_rang' style='cursor: pointer;'>Afficher le rang des élèves.</label></p>\n";
+		$name="vmm_afficher_rang";
+	    echo "<p><input type='checkbox' name='afficher_rang' id='afficher_rang' value='yes' ";
+		if((isset($_SESSION[$name]))&&($_SESSION[$name]=='yes')) {echo "checked "; $temp_style=" style='font-weight:bold;'";} else {$temp_style="";}
+		echo "onchange=\"checkbox_change(this.id, $cpt)\" ";
+		echo "/><label for='afficher_rang' style='cursor: pointer;'><span id='champ_numero_$cpt'$temp_style>Afficher le rang des élèves.</span></label></p>\n";
+		$cpt++;
 	}
 	//==========================================
+	$name="vmm_afficher_mediane";
+	echo "<p><input type='checkbox' name='afficher_mediane' id='afficher_mediane' value='yes' ";
+	if((isset($_SESSION[$name]))&&($_SESSION[$name]=='yes')) {echo "checked "; $temp_style=" style='font-weight:bold;'";} else {$temp_style="";}
+	echo "onchange=\"checkbox_change(this.id, $cpt)\" ";
+	echo "/><label for='afficher_mediane' style='cursor: pointer;'><span id='champ_numero_$cpt'$temp_style>Afficher les médiane, 1er et 3ème quartiles pour chaque colonne de note.</span></label></p>\n";
+	$cpt++;
+	//==========================================
 
-    echo "<p><input type='checkbox' name='stat' id='stat' value='yes' /><label for='stat' style='cursor: pointer;'>Afficher les statistiques sur les moyennes extraites (moyenne générale, pourcentages, ...)</label></p>\n";
+	$name="vmm_stat";
+    echo "<p><input type='checkbox' name='stat' id='stat' value='yes' ";
+	if((isset($_SESSION[$name]))&&($_SESSION[$name]=='yes')) {echo "checked "; $temp_style=" style='font-weight:bold;'";} else {$temp_style="";}
+	echo "onchange=\"checkbox_change(this.id, $cpt)\" ";
+	echo "/><label for='stat' style='cursor: pointer;'><span id='champ_numero_$cpt'$temp_style>Afficher les statistiques sur les moyennes extraites (<i>moyenne générale, pourcentages,...</i>)</span></label></p>\n";
+	$cpt++;
+
     if ($multiclasses) {
         echo "<p><input type='radio' name='order_by' id='order_by_nom' value='nom' checked /><label for='order_by_nom' style='cursor: pointer;'> Classer les élèves par ordre alphabétique </label>";
         echo "<br/><input type='radio' name='order_by' id='order_by_classe' value='classe' /><label for='order_by_classe' style='cursor: pointer;'> Classer les élèves par classe</label></p>";
     }
+
+	$name="vmm_couleur_alterne";
+    echo "<p><input type='checkbox' name='couleur_alterne' id='couleur_alterne' value='y' ";
+	if((isset($_SESSION[$name]))&&($_SESSION[$name]=='y')) {echo "checked "; $temp_style=" style='font-weight:bold;'";} else {$temp_style="";}
+	echo "onchange=\"checkbox_change(this.id, $cpt)\" ";
+	echo "/><label for='couleur_alterne' style='cursor: pointer;'><span id='champ_numero_$cpt'$temp_style>Colorer les lignes (<i>alterner les couleurs de fond</i>).</span></label></p>\n";
+	$cpt++;
+
     echo "<input type='submit' value='Valider' />\n";
     echo "<input type='hidden' name='id_groupe' value='$id_groupe' />\n";
     echo "<input type='hidden' name='choix_visu' value='yes' />\n";
     echo "</form>\n";
+
+	echo "<script type='text/javascript'>
+function checkbox_change(champ, cpt) {
+	if(document.getElementById(champ)) {
+		if(document.getElementById(champ).checked) {
+			document.getElementById('champ_numero_'+cpt).style.fontWeight='bold';
+		}
+		else {
+			document.getElementById('champ_numero_'+cpt).style.fontWeight='normal';
+		}
+	}
+}
+</script>\n";
+
+
 } else {
 
 
@@ -871,7 +1181,7 @@ if (!$current_group) {
 		for($loop=0;$loop<count($col[$nb_col]);$loop++) {
 			//$tmp_tab[$loop]=$col[$nb_col][$loop];
 			//$tmp_tab[$loop]=$col_csv[$nb_col][$loop];
-			$tmp_tab[$loop]=my_ereg_replace(",",".",$col_csv[$nb_col][$loop]);
+			$tmp_tab[$loop]=preg_replace("/,/",".",$col_csv[$nb_col][$loop]);
 			//echo "\$tmp_tab[$loop]=".$tmp_tab[$loop]."<br />";
 
 			$rg[$loop]=$loop;
@@ -929,14 +1239,23 @@ if (!$current_group) {
 		}
 
 		// Vérifier si $col_tri est bien un entier compris entre 0 et $nb_col ou $nb_col+1
-		if((strlen(my_ereg_replace("[0-9]","",$col_tri))==0)&&($col_tri>0)&&($col_tri<=$nb_colonnes)) {
+		if((strlen(preg_replace("/[0-9]/","",$col_tri))==0)&&($col_tri>0)&&($col_tri<=$nb_colonnes)) {
 			//echo "<table>";
 			//echo "<tr><td valign='top'>";
 			unset($tmp_tab);
 			//for($loop=0;$loop<count($col[$col_tri]);$loop++) {
+			//echo "\$_POST['col_tri']=".$_POST['col_tri']."<br />";
+			//echo "\$nb_col=".$nb_col."<br />";
 			for($loop=0;$loop<count($col_csv[1]);$loop++) {
 				// Il faut le POINT au lieu de la VIRGULE pour obtenir un tri correct sur les notes
-				$tmp_tab[$loop]=my_ereg_replace(",",".",$col_csv[$col_tri][$loop]);
+				$tmp_tab[$loop]=preg_replace("/,/",".",$col_csv[$col_tri][$loop]);
+
+				// La colonne Rang sur la moyenne générale annuelle est ajoutée plus loin dans le code (c'est la seule)
+				if(($_POST['col_tri']>$nb_col)||
+					(preg_match('/^Rang/',$ligne1_csv[$_POST['col_tri']]))) {
+					if($tmp_tab[$loop]=='-') {$tmp_tab[$loop]=1000000;}
+				}
+
 				//echo "\$tmp_tab[$loop]=".$tmp_tab[$loop]."<br />";
 			}
 			/*
@@ -1079,16 +1398,26 @@ if (!$current_group) {
 					$col[$j][$nb_lignes] = "<center>-</center>";
 					$col[$j][$nb_lignes+1] = "<center>-</center>";
 					$col[$j][$nb_lignes+2] = "<center>-</center>";
+					if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+						$col[$j][$nb_lignes+3] = "<center>-</center>";
+						$col[$j][$nb_lignes+4] = "<center>-</center>";
+						$col[$j][$nb_lignes+5] = "<center>-</center>";
+					}
                     $col_csv[$j][$nb_lignes] = '-' ;
                     $col_csv[$j][$nb_lignes+1] = '-' ;
                     $col_csv[$j][$nb_lignes+2] = '-' ;
+					if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+						$col_csv[$j][$nb_lignes+3] = '-' ;
+						$col_csv[$j][$nb_lignes+4] = '-' ;
+						$col_csv[$j][$nb_lignes+5] = '-' ;
+					}
 				}
 			}
 
             $temp = "visu_note_".$k;
             if (isset($_POST[$temp]) or isset($_GET[$temp])) {
+				$j++;
 
-                $j++;
                 $call_moyenne = mysql_query("SELECT round(avg(note),1) moyenne FROM matieres_notes WHERE (id_groupe='$id_groupe' AND statut ='' AND periode='$k')");
                 $call_max = mysql_query("SELECT max(note) note_max FROM matieres_notes WHERE (id_groupe='$id_groupe' AND statut ='' AND periode='$k')");
                 $call_min = mysql_query("SELECT min(note) note_min FROM matieres_notes WHERE (id_groupe='$id_groupe' AND statut ='' AND periode='$k')");
@@ -1122,6 +1451,39 @@ if (!$current_group) {
 					$col[$j][$nb_lignes+2] = "<center>-</center>";
                     $col_csv[$j][$nb_lignes+2] = '-' ;
                 }
+
+				if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+					//echo "\$col[$j][0]=".$col[$j][0]."<br />";
+					//echo "\$col[$j][1]=".$col[$j][1]."<br />";
+					$tab_notes_ele=array();
+					for($loop_ele=0;$loop_ele<$nb_lignes;$loop_ele++) {
+						$tab_notes_ele[]=$col_csv[$j][$loop_ele];
+					}
+					$tab_stat=calcule_moy_mediane_quartiles($tab_notes_ele);
+					/*
+					echo "<pre>";
+					foreach($tab_notes_ele as $key => $value) {
+						echo "\$tab_notes_ele[$key]=$value<br />";
+					}
+					foreach($tab_stat as $key => $value) {
+						echo "\$tab_stat[$key]=$value<br />";
+					}
+					echo "</pre>";
+					*/
+					//$tab_champs_stat=array('Quartile 1', 'Médiane', 'Quartile 3');
+					$tab_code_champs_stat=array('q1', 'mediane', 'q3');
+					for($loop_stat=0;$loop_stat<count($tab_code_champs_stat);$loop_stat++) {
+						if(($tab_stat[$tab_code_champs_stat[$loop_stat]]!='')&&($tab_stat[$tab_code_champs_stat[$loop_stat]]!='-')) {
+							$temp=$tab_stat[$tab_code_champs_stat[$loop_stat]];
+							$col[$j][$nb_lignes+2+1+$loop_stat] = "<center>".number_format($temp,1,',','')."</center>";
+							$col_csv[$j][$nb_lignes+2+1+$loop_stat] = number_format($temp,1,',','') ;
+						}
+						else {
+							$col[$j][$nb_lignes+2+1+$loop_stat] = "<center>-</center>";
+							$col_csv[$j][$nb_lignes+2+1+$loop_stat] = '-' ;
+						}
+					}
+				}
             }
             $temp = "visu_app_".$k;
             if (isset($_POST[$temp]) or isset($_GET[$temp])) {
@@ -1129,9 +1491,19 @@ if (!$current_group) {
                 $col[$j][$nb_lignes] = '-';
                 $col[$j][$nb_lignes+1] = '-';
                 $col[$j][$nb_lignes+2] = '-';
+				if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+					$col[$j][$nb_lignes+3] = '-';
+					$col[$j][$nb_lignes+4] = '-';
+					$col[$j][$nb_lignes+5] = '-';
+				}
                 $col_csv[$j][$nb_lignes] = '-';
                 $col_csv[$j][$nb_lignes+1] = '-';
                 $col_csv[$j][$nb_lignes+2] = '-';
+				if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+					$col_csv[$j][$nb_lignes+3] = '-';
+					$col_csv[$j][$nb_lignes+4] = '-';
+					$col_csv[$j][$nb_lignes+5] = '-';
+				}
             }
             $k++;
         }
@@ -1145,6 +1517,37 @@ if (!$current_group) {
 				$col_csv[$nb_col][$nb_lignes+1] = number_format($min_notes,1,',','');
 				$col[$nb_col][$nb_lignes+2] = "<center>".number_format($max_notes,1,',','')."</center>";
 				$col_csv[$nb_col][$nb_lignes+2] = number_format($max_notes,1,',','');
+
+				if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+					$tab_notes_ele=array();
+					for($loop_ele=0;$loop_ele<$nb_lignes;$loop_ele++) {
+						$tab_notes_ele[]=$col_csv[$nb_col][$loop_ele];
+					}
+					$tab_stat=calcule_moy_mediane_quartiles($tab_notes_ele);
+					/*
+					echo "<pre>";
+					foreach($tab_notes_ele as $key => $value) {
+						echo "\$tab_notes_ele[$key]=$value<br />";
+					}
+					foreach($tab_stat as $key => $value) {
+						echo "\$tab_stat[$key]=$value<br />";
+					}
+					echo "</pre>";
+					*/
+					//$tab_champs_stat=array('Quartile 1', 'Médiane', 'Quartile 3');
+					$tab_code_champs_stat=array('q1', 'mediane', 'q3');
+					for($loop_stat=0;$loop_stat<count($tab_code_champs_stat);$loop_stat++) {
+						if(($tab_stat[$tab_code_champs_stat[$loop_stat]]!='')&&($tab_stat[$tab_code_champs_stat[$loop_stat]]!='-')) {
+							$temp=$tab_stat[$tab_code_champs_stat[$loop_stat]];
+							$col[$nb_col][$nb_lignes+2+1+$loop_stat] = "<center>".number_format($temp,1,',','')."</center>";
+							$col_csv[$nb_col][$nb_lignes+2+1+$loop_stat] = number_format($temp,1,',','') ;
+						}
+						else {
+							$col[$nb_col][$nb_lignes+2+1+$loop_stat] = "<center>-</center>";
+							$col_csv[$nb_col][$nb_lignes+2+1+$loop_stat] = '-' ;
+						}
+					}
+				}
 			}
 			else {
 				$col[$nb_col][$nb_lignes] = "<center>-</center>";
@@ -1154,6 +1557,15 @@ if (!$current_group) {
 				$col_csv[$nb_col][$nb_lignes+1] = "-";
 				$col[$nb_col][$nb_lignes+2] = "<center>-</center>";
 				$col_csv[$nb_col][$nb_lignes+2] = "-";
+
+				if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+					$col[$nb_col][$nb_lignes+3] = "<center>-</center>";
+					$col_csv[$nb_col][$nb_lignes+3] = "-";
+					$col[$nb_col][$nb_lignes+4] = "<center>-</center>";
+					$col_csv[$nb_col][$nb_lignes+4] = "-";
+					$col[$nb_col][$nb_lignes+5] = "<center>-</center>";
+					$col_csv[$nb_col][$nb_lignes+5] = "-";
+				}
 			}
 			//$col_csv[$nb_col][$nb_lignes]=$col[$nb_col][$nb_lignes];
 
@@ -1184,20 +1596,45 @@ if (!$current_group) {
         $col[1][$nb_lignes] = '<b>Moyenne</b>';
         $col[1][$nb_lignes+1] = '<b>Min.</b>';
         $col[1][$nb_lignes+2] = '<b>Max.</b>';
-
+		if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+			$col[1][$nb_lignes+3] = '<b>Quartile 1</b>';
+			$col[1][$nb_lignes+4] = '<b>Médiane</b>';
+			$col[1][$nb_lignes+5] = '<b>Quartile 3</b>';
+		}
         $col_csv[1][$nb_lignes] = 'Moyenne';
         $col_csv[1][$nb_lignes+1] = 'Min.';
         $col_csv[1][$nb_lignes+2] = 'Max.';
+		if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+			$col_csv[1][$nb_lignes+3] = 'Quartile 1';
+			$col_csv[1][$nb_lignes+4] = 'Médiane';
+			$col_csv[1][$nb_lignes+5] = 'Quartile 3';
+		}
+
         if ($multiclasses) {
             $col[2][$nb_lignes] = '&nbsp;';
             $col[2][$nb_lignes+1] = '&nbsp;';
             $col[2][$nb_lignes+2] = '&nbsp;';
+			if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+				$col[2][$nb_lignes+3] = '&nbsp;';
+				$col[2][$nb_lignes+4] = '&nbsp;';
+				$col[2][$nb_lignes+5] = '&nbsp;';
+			}
 
             $col_csv[2][$nb_lignes] = '';
             $col_csv[2][$nb_lignes+1] = '';
             $col_csv[2][$nb_lignes+2] = '';
+			if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+				$col_csv[2][$nb_lignes+3] = '';
+				$col_csv[2][$nb_lignes+4] = '';
+				$col_csv[2][$nb_lignes+5] = '';
+			}
         }
-        $nb_lignes = $nb_lignes + 3;
+		if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+			$nb_lignes = $nb_lignes + 6;
+		}
+		else {
+			$nb_lignes = $nb_lignes + 3;
+		}
     }
 
 	//==============================================
@@ -1212,9 +1649,19 @@ if (!$current_group) {
         $col[$nb_col][$nb_lignes-1] = "<center>-</center>";
         $col[$nb_col][$nb_lignes-2] = "<center>-</center>";
         $col[$nb_col][$nb_lignes-3] = "<center>-</center>";
+		if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+			$col[$nb_col][$nb_lignes-4] = "<center>-</center>";
+			$col[$nb_col][$nb_lignes-5] = "<center>-</center>";
+			$col[$nb_col][$nb_lignes-6] = "<center>-</center>";
+		}
         $col_csv[$nb_col][$nb_lignes-1] = '-';
         $col_csv[$nb_col][$nb_lignes-2] = '-';
         $col_csv[$nb_col][$nb_lignes-3] = '-';
+		if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+			$col_csv[$nb_col][$nb_lignes-4] = '-';
+			$col_csv[$nb_col][$nb_lignes-5] = '-';
+			$col_csv[$nb_col][$nb_lignes-6] = '-';
+		}
 	}
 	//==============================================
 
@@ -1374,6 +1821,7 @@ if (!$current_group) {
 		echo "\n<!-- Formulaire pour l'affichage sans entête -->\n";
 		echo "<form enctype=\"multipart/form-data\" action=\"index1.php\" method=\"post\" name=\"formulaire1\"  target=\"_blank\">\n";
 		echo "<p><input type=\"submit\" value=\"Visualiser sans l'en-tête\" /></p>\n";
+		echo "<input type='hidden' name='couleur_alterne' value='$couleur_alterne' />\n";
 	}
 	else {
 		// On ne place ici cette annonce de formulaire que pour avoir du code HTML valide:
@@ -1468,9 +1916,11 @@ if (!$current_group) {
         $i++;
     }
 
-
 	if((isset($_POST['afficher_rang']))&&($_POST['afficher_rang']=="yes")) {
 		echo "<input type='hidden' name='afficher_rang' value='yes' />\n";
+	}
+	if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+		echo "<input type='hidden' name='afficher_mediane' value='yes' />\n";
 	}
     if ($en_tete == "yes") {
 		echo "<input type='hidden' name='en_tete' value='yes' />\n";
@@ -1485,72 +1935,125 @@ if (!$current_group) {
 		echo "<p><input type='hidden' name='order_by' id='order_by' value='$order_by' />\n";
 	}
 
+    echo "<input type='hidden' name='couleur_alterne' value='$couleur_alterne' />\n";
     echo "</form>\n";
 	//=======================================================
 
 
 
 	//=======================================================
-	echo "\n<!-- Formulaire pour l'export CSV -->\n";
-    echo "<div style='width:10em;float:right;'>\n";
-    echo "<form enctype=\"multipart/form-data\" action=\"index1.php\" method=\"post\" name=\"form_csv\" target='_blank'>\n";
-
-	for($i=1;$i<=count($ligne1_csv);$i++) {
-		echo "<input type='hidden' name='ligne1_csv[$i]' value=\"$ligne1_csv[$i]\" />\n";
-	}
-	echo "<br />\n";
-
-	$lignes_csv=array();
-	for($i=1;$i<=count($col_csv);$i++) {
-		for($j=0;$j<count($col_csv[$i]);$j++) {
-			if(!isset($lignes_csv[$j])) {
-				$lignes_csv[$j]=$col_csv[$i][$j];
-			}
-			else {
-				$lignes_csv[$j].=";".my_ereg_replace('"',"'",my_ereg_replace(";",",",my_ereg_replace("&#039;","'",html_entity_decode($col_csv[$i][$j]))));
-			}
-
-			//echo "<input type='hidden' name='col_csv_".$i."[$j]' value='".$col_csv[$i][$j]."' />\n";
+	if((isset($col_csv))&&(count($col_csv)>0)) {
+		echo "<div style='width:10em;float:right;'>\n";
+		echo "\n<!-- Formulaire pour l'export CSV -->\n";
+		echo "<form enctype=\"multipart/form-data\" action=\"index1.php\" method=\"post\" name=\"form_csv\" target='_blank'>\n";
+	
+		for($i=1;$i<=count($ligne1_csv);$i++) {
+			echo "<input type='hidden' name='ligne1_csv[$i]' value=\"$ligne1_csv[$i]\" />\n";
 		}
-		//echo "<br />\n";
-	}
+		echo "<br />\n";
+	
+		$lignes_csv=array();
+		for($i=1;$i<=count($col_csv);$i++) {
+			for($j=0;$j<count($col_csv[$i]);$j++) {
+				if(!isset($lignes_csv[$j])) {
+					$lignes_csv[$j]=$col_csv[$i][$j];
+				}
+				else {
+					$lignes_csv[$j].=";".preg_replace('/"/',"'",preg_replace("/;/",",",preg_replace("/&#039;/","'",html_entity_decode($col_csv[$i][$j]))));
+				}
+	
+				//echo "<input type='hidden' name='col_csv_".$i."[$j]' value='".$col_csv[$i][$j]."' />\n";
+			}
+			//echo "<br />\n";
+		}
+	
+		for($j=0;$j<count($col_csv[1]);$j++) {
+			echo "<input type='hidden' name='lignes_csv[$j]' value=\"".$lignes_csv[$j]."\" />\n";
+			//echo "<br />\n";
+		}
+	
+		echo "<input type='hidden' name='id_groupe' value='$id_groupe' />\n";
+		echo "<input type='hidden' name='mode' value='csv' />\n";
+		// On ne met le bouton que pour l'affichage avec entête
+		if ($en_tete == "yes") {echo "<input type='submit' value='Générer un CSV' />\n";}
+		echo "</form>\n";
 
-	for($j=0;$j<count($col_csv[1]);$j++) {
-		echo "<input type='hidden' name='lignes_csv[$j]' value=\"".$lignes_csv[$j]."\" />\n";
-		//echo "<br />\n";
-	}
+		echo "\n<!-- Formulaire pour l'export PDF -->\n";
+		echo "<form enctype=\"multipart/form-data\" action=\"index1.php\" method=\"post\" name=\"form_pdf\" target='_blank'>\n";
+	
+		for($i=1;$i<=count($ligne1_csv);$i++) {
+			echo "<input type='hidden' name='ligne1_csv[$i]' value=\"$ligne1_csv[$i]\" />\n";
+		}
+		echo "<br />\n";
+	
+		$lignes_csv=array();
+		for($i=1;$i<=count($col_csv);$i++) {
+			for($j=0;$j<count($col_csv[$i]);$j++) {
+				if(!isset($lignes_csv[$j])) {
+					$lignes_csv[$j]=$col_csv[$i][$j];
+				}
+				else {
+					$lignes_csv[$j].=";".preg_replace('/"/',"'",preg_replace("/;/",",",preg_replace("/&#039;/","'",html_entity_decode($col_csv[$i][$j]))));
+				}
+	
+				//echo "<input type='hidden' name='col_csv_".$i."[$j]' value='".$col_csv[$i][$j]."' />\n";
+			}
+			//echo "<br />\n";
+		}
+	
+		for($j=0;$j<count($col_csv[1]);$j++) {
+			echo "<input type='hidden' name='lignes_csv[$j]' value=\"".$lignes_csv[$j]."\" />\n";
+			//echo "<br />\n";
+		}
+	
+		echo "<input type='hidden' name='id_groupe' value='$id_groupe' />\n";
+		echo "<input type='hidden' name='mode' value='pdf' />\n";
+		// On ne met le bouton que pour l'affichage avec entête
+		if ($en_tete == "yes") {
+			echo "<input type='submit' value='Générer un PDF' />\n";
+			echo "<br />\n";
+			echo "Hauteur de ligne&nbsp;: <input type='text' name='h_cell' id='h_cell' value='10' size='2' onKeyDown=\"clavier_2(this.id,event,5,50);\" AutoComplete=\"off\" />mm\n";
+		}
+		echo "</form>\n";
 
-	echo "<input type='hidden' name='id_groupe' value='$id_groupe' />\n";
-	echo "<input type='hidden' name='mode' value='csv' />\n";
-	// On ne met le bouton que pour l'affichage avec entête
-	if ($en_tete == "yes") {echo "<input type='submit' value='Générer un CSV' />\n";}
-    echo "</form>\n";
-    echo "</div>\n";
+		echo "</div>\n";
+	}
 	//=======================================================
 
 
 	echo "\n<!-- Formulaire pour ... -->\n";
     echo "<form enctype=\"multipart/form-data\" action=\"index1.php\" method=\"post\" name=\"formulaire2\">\n";
-    if ($en_tete == "yes")
+    if ($en_tete == "yes") {
         parametres_tableau($larg_tab, $bord);
+	}
 //    else echo "<p class=small><a href=\"index1.php?id_classe=$id_classe&choix_matiere=$choix_matiere\">Retour</a>";
     echo "<p class='bold'>" . $_SESSION['nom'] . " " . $_SESSION['prenom'] . " | Année : ".getSettingValue("gepiYear")." | Groupe : " . htmlentities($current_group["description"]) . " (" . $current_group["classlist_string"] . ") | Matière : " . htmlentities($current_group["matiere"]["nom_complet"]);
     echo "</p>\n";
     echo "<input type='hidden' name='id_groupe' value='$id_groupe' />\n";
     echo "<input type='hidden' name='choix_visu' value='yes' />\n";
-    if ($stat == "yes") echo "<input type='hidden' name='stat' value='yes' />\n";
+    if ($stat == "yes") {
+		echo "<input type='hidden' name='stat' value='yes' />\n";
+		$_SESSION['vmm_stat']="yes";
+	}
+	elseif(isset($_SESSION['vmm_stat'])) {unset($_SESSION['vmm_stat']);}
     $i="1";
     while ($i < $nb_periode) {
         $name1 = "visu_note_".$i;
         if ((isset($_POST[$name1]))||(isset($_GET[$name1]))) {
             $temp1 = isset($_POST[$name1]) ? $_POST[$name1] : $_GET[$name1];
             echo "<input type='hidden' name='$name1' value='$temp1' />\n";
+            $_SESSION['visu_note_'.$i]=$temp1;
         }
+		elseif(isset($_SESSION['visu_note_'.$i])) {unset($_SESSION['visu_note_'.$i]);}
+
         $name2 = "visu_app_".$i;
         if ((isset($_POST[$name2]))||(isset($_GET[$name2]))) {
             $temp2 = isset($_POST[$name2]) ? $_POST[$name2] : $_GET[$name2];
             echo "<input type='hidden' name='$name2' value='$temp2' />\n";
+            $_SESSION[$name2]=$temp2;
+            $_SESSION['visu_app_'.$i]=$temp2;
         }
+		elseif(isset($_SESSION['visu_app_'.$i])) {unset($_SESSION['visu_app_'.$i]);}
         $i++;
     }
 
@@ -1558,7 +2061,18 @@ if (!$current_group) {
 
 	if((isset($_POST['afficher_rang']))&&($_POST['afficher_rang']=="yes")) {
 		echo "<input type='hidden' name='afficher_rang' value='yes' />\n";
+		$_SESSION['vmm_afficher_rang']="yes";
 	}
+	elseif(isset($_SESSION['vmm_afficher_rang'])) {unset($_SESSION['vmm_afficher_rang']);}
+
+	if((isset($_POST['afficher_mediane']))&&($_POST['afficher_mediane']=="yes")) {
+		echo "<input type='hidden' name='afficher_mediane' value='yes' />\n";
+		$_SESSION['vmm_afficher_mediane']="yes";
+	}
+	elseif(isset($_SESSION['vmm_afficher_mediane'])) {unset($_SESSION['vmm_afficher_mediane']);}
+
+    echo "<input type='hidden' name='couleur_alterne' value='$couleur_alterne' />\n";
+	if($couleur_alterne=="y") {$_SESSION['vmm_couleur_alterne']="y";} else {unset($_SESSION['vmm_couleur_alterne']);}
 
     echo "</form>\n";
 //    $appel_donnees_eleves = mysql_query("SELECT e.* FROM eleves e, j_eleves_classes c WHERE (c.id_classe='$id_classe' AND c.login = e.login) ORDER BY e.nom, e.prenom");
@@ -1570,18 +2084,21 @@ if (!$current_group) {
 
 	//function affiche_tableau_index1($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bord, $col1_centre, $col_centre, $couleur_alterne) {
 
+	// On commence en colonne 1: Nom Prénom
+	//echo "$ligne1[1]<br />";
+
     if (isset($col)) {
-		$couleur_alterne="";
+		//$couleur_alterne="y";
 		$col1_centre=0;
 		$col_centre=0;
-		echo "<table border=\"$bord\" cellspacing=\"0\" width=\"$larg_tab\" cellpadding=\"1\" summary=''>\n";
+		echo "<table border=\"$bord\" class='boireaus' cellspacing=\"0\" width=\"$larg_tab\" cellpadding=\"1\" summary=''>\n";
 		echo "<tr>\n";
 		$j = 1;
 		while($j < $nb_col+1) {
 			echo "<th class='small'>";
-			if(!my_eregi("Appréciation",$ligne1[$j])) {
+			if(!preg_match("/Appréciation/i",$ligne1[$j])) {
 				echo "<a href='#' onclick=\"document.getElementById('col_tri').value='$j';";
-				if(my_eregi("Rang",$ligne1[$j])) {echo "document.getElementById('sens_tri').value='inverse';";}
+				if(preg_match("/Rang/i",$ligne1[$j])) {echo "document.getElementById('sens_tri').value='inverse';";}
 				if($ligne1[$j]=="Classe") {echo "if(document.getElementById('order_by')) {document.getElementById('order_by').value='classe';}";}
 				if($ligne1[$j]=="Nom Prénom") {echo "if(document.getElementById('order_by')) {document.getElementById('order_by').value='nom';}";}
 				echo "document.forms['formulaire_tri'].submit();\">";
@@ -1597,36 +2114,53 @@ if (!$current_group) {
 		echo "</tr>\n";
 		$i = "0";
 		$bg_color = "";
-		$flag = "1";
+		//$flag = "1";
+		$alt=1;
 		while($i < $nb_lignes) {
-			if ($couleur_alterne) {
-				if ($flag==1) $bg_color = "bgcolor=\"#C0C0C0\""; else $bg_color = "     " ;
+			if ($couleur_alterne=="y") {
+				//if ($flag==1) $bg_color = "bgcolor=\"#C0C0C0\""; else $bg_color = "     " ;
+				echo "<tr class='lig$alt white_hover'>\n";
+			}
+			else {
+				echo "<tr>\n";
 			}
 
-			echo "<tr>\n";
 			$j = 1;
 			while($j < $nb_col+1) {
 				if ((($j == 1) and ($col1_centre == 0)) or (($j != 1) and ($col_centre == 0))){
-					echo "<td class='small' ".$bg_color.">{$col[$j][$i]}</td>\n";
+					//echo "<td class='small' ".$bg_color.">{$col[$j][$i]}</td>\n";
+					echo "<td class='small'>{$col[$j][$i]}</td>\n";
 				} else {
-					echo "<td align=\"center\" class='small' ".$bg_color.">{$col[$j][$i]}</td>\n";
+					//echo "<td align=\"center\" class='small' ".$bg_color.">{$col[$j][$i]}</td>\n";
+					echo "<td align=\"center\" class='small'>{$col[$j][$i]}</td>\n";
 				}
 				$j++;
 			}
 			echo "</tr>\n";
-			if ($flag == "1") $flag = "0"; else $flag = "1";
+			//if ($flag == "1") $flag = "0"; else $flag = "1";
+			$alt=$alt*(-1);
 			$i++;
 		}
 		echo "</table>\n";
 	}
 
     if ($test == 1 and  $stat == "yes") {
-        echo "<br /><table border=\"$bord\" cellpadding=\"5\" cellspacing=\"1\" width=\"$larg_tab\" summary=''><tr><td>
-        <b>Moyenne générale de la classe : ".$moy_gen."</b>
-        <br /><br /><b>Pourcentage des élèves ayant une moyenne générale : </b><ul>\n";
-        echo "<li>inférieure strictement à 8 : <b>".$pourcent_i8."</b></li>\n";
-        echo "<li>entre 8 et 12 : <b>".$pourcent_se8_ie12."</b></li>\n";
-        echo "<li>supérieure ou égale à 12 : <b>".$pourcent_se12."</b></li></ul></td></tr></table>\n";
+        echo "<br />\n";
+		echo "<div style=\"border: ".$bord."px solid black; width: ".$larg_tab."px; margin-bottom: 5px;\">
+        <p><b>Moyenne générale de la classe : ".$moy_gen."</b>
+        <br /><br /><b>Pourcentage des élèves ayant une moyenne générale : </b>\n";
+		echo "<table style='margin-left: 3em;' border='0'>\n";
+		echo "<tr>\n";
+        echo "<td>inférieure strictement à 8 : </td><td class='bold'>".$pourcent_i8."</td>\n";
+		echo "</tr>\n";
+		echo "<tr>\n";
+        echo "<td>entre 8 et 12 : </td><td class='bold'>".$pourcent_se8_ie12."</td>\n";
+		echo "</tr>\n";
+		echo "<tr>\n";
+        echo "<td>supérieure ou égale à 12 : </td><td class='bold'>".$pourcent_se12."</td>\n";
+		echo "</tr>\n";
+		echo "</table>\n";
+		echo "</div>\n";
     }
 
 }

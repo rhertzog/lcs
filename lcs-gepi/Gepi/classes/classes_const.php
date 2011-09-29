@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: classes_const.php 6410 2011-01-23 16:11:00Z crob $
+* $Id: classes_const.php 8101 2011-09-01 15:11:26Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -72,7 +72,7 @@ if (isset($is_posted)) {
 		// Récupération du numéro de l'élève dans les saisies:
 		$num_eleve=-1;
 		for($i=0;$i<count($log_eleve);$i++){
-			if($login_eleve==$log_eleve[$i]){
+			if(strtolower($login_eleve)==strtolower($log_eleve[$i])){
 				$num_eleve=$i;
 				break;
 			}
@@ -195,17 +195,22 @@ if (isset($is_posted)) {
 	$autorisation_sup = 'yes';
 	while ($k < $nombreligne){
 		$eleve_login = mysql_result($call_eleves, $k, "login");
+		//echo "<p>\$eleve_login=$eleve_login et ";
 
 		//=========================
 		// AJOUT: boireaus 20071003
 		// Récupération du numéro de l'élève dans les saisies:
 		$num_eleve=-1;
 		for($i=0;$i<count($log_eleve);$i++){
-			if($eleve_login==$log_eleve[$i]){
+			//if($eleve_login==$log_eleve[$i]){
+			if(strtolower($eleve_login)==strtolower($log_eleve[$i])) {
+				//echo " strtolower(".$log_eleve[$i].")=".strtolower($log_eleve[$i])." ";
 				$num_eleve=$i;
 				break;
 			}
 		}
+		//echo "\$num_eleve=$num_eleve<br />";
+
 		if($num_eleve!=-1){
 			$delete=isset($_POST['delete_'.$num_eleve]) ? $_POST['delete_'.$num_eleve] : NULL;
 
@@ -266,7 +271,38 @@ if (isset($is_posted)) {
 	//$affiche_message = 'yes';
 }
 
+if(isset($_GET['add_eleve_classe'])) {
+	check_token();
+	//add_eleve_classe=y&amp;num_periode=$i&amp;id_classe=$id_classe&amp;login_eleve=$login_eleve
+	$login_eleve=isset($_GET['login_eleve']) ? $_GET['login_eleve'] : NULL;
+	$num_periode=isset($_GET['num_periode']) ? $_GET['num_periode'] : NULL;
 
+	if(($num_periode=='')||(preg_match("/[^0-9]/", $num_periode))) {
+		$msg="Numéro de période $num_periode invalide pour l'ajout de $login_eleve dans la classe.";
+	}
+	elseif(($login_eleve=='')||(preg_match("/[^A-Za-z0-9\._-]/", $login_eleve))) {
+		$msg="Login élève $login_eleve invalide pour l'ajout dans la classe en période $num_periode.";
+	}
+	else {
+		//$sql="SELECT id_classe FROM j_eleves_classes WHERE login='$login_eleve' AND id_classe='$id_classe' AND periode='$num_periode';";
+		$sql="SELECT id_classe FROM j_eleves_classes WHERE login='$login_eleve' AND periode='$num_periode';";
+		$test=mysql_query($sql);
+		if(mysql_num_rows($test)>0) {
+			$lig=mysql_fetch_object($test);
+			$msg="$login_eleve est déjà inscrit dans la classe ".get_class_from_id($lig->id_classe)." en période $num_periode.";
+		}
+		else {
+			$sql="INSERT INTO j_eleves_classes SET login='$login_eleve', id_classe='$id_classe', periode='$num_periode';";
+			$insert=mysql_query($sql);
+			if(!$insert) {
+				$msg="Erreur lors de l'ajout de $login_eleve dans la classe en période $num_periode.";
+			}
+			else {
+				$msg="Ajout de $login_eleve dans la classe en période $num_periode effectué.<br />Pensez à définir les <a href='eleve_options.php?login_eleve=$login_eleve&id_classe=$id_classe'>matières suivies</a>.";
+			}
+		}
+	}
+}
 
 // =================================
 // AJOUT: boireaus
@@ -660,7 +696,7 @@ function imposer_cpe() {
 		echo "<input type='hidden' name='log_eleve[$k]' value=\"$login_eleve\" />\n";
 		//=========================
 
-		$ancre_login_eleve=my_ereg_replace("[^A-Za-z0-9_]","",$login_eleve);
+		$ancre_login_eleve=preg_replace("/[^A-Za-z0-9_]/","",$login_eleve);
 		echo "<a name='$ancre_login_eleve'></a>\n";
 
 		echo "<br /><b><a href='eleve_options.php?login_eleve=".$login_eleve."&amp;id_classe=".$id_classe."' onclick=\"return confirm_abandon (this, change, '$themessage')\">Matières suivies</a></b>";
@@ -788,7 +824,12 @@ function imposer_cpe() {
 				$call_classe = mysql_query("SELECT c.classe FROM classes c, j_eleves_classes j WHERE (c.id = j.id_classe and j.periode = '$i' and j.login = '$login_eleve')");
 				$nom_classe = @mysql_result($call_classe, 0, "classe");
 				//echo "<td><p><center>$nom_classe&nbsp;</center></p></td>";
-				echo "<td><p align='center'>$nom_classe&nbsp;</p></td>\n";
+				if($nom_classe!="") {
+					echo "<td><p align='center'>$nom_classe</p></td>\n";
+				}
+				else {
+					echo "<td style='vertical-align: bottom; text-align: right;'><a href='".$_SERVER['PHP_SELF']."?add_eleve_classe=y&amp;num_periode=$i&amp;id_classe=$id_classe&amp;login_eleve=$login_eleve".add_token_in_url()."' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/add.png' width='16' height='16' alt=\"Ajouter ".strtoupper($nom_eleve)." ".$prenom_eleve." à la classe $classe en période $i\" title=\"Ajouter ".strtoupper($nom_eleve)." ".$prenom_eleve." à la classe $classe en période $i\" /></a></td>\n";
+				}
 			}
 			$i++;
 		}

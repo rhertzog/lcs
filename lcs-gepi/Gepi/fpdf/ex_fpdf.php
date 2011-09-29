@@ -1,8 +1,17 @@
 <?php
-/*
+/**
+ * FPDF class extension
+ * 
  * Last modification  : 04/04/2005
  *
+ * @package externe
+ * @subpackage FPDF                        *
 */
+
+/**
+ * @package externe
+ * @subpackage FPDF
+ */
 class PDF extends FPDF
 {
 var $B;

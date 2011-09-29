@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: extraction_demi-journees.php 6321 2011-01-09 12:40:29Z dblanqui $
+ * @version $Id: extraction_demi-journees.php 8056 2011-08-30 20:43:42Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -85,18 +85,26 @@ if ($date_absence_eleve_fin != null) {
 } else {
     $dt_date_absence_eleve_fin = new DateTime('now');
 }
+
+$inverse_date=false;
+if($dt_date_absence_eleve_debut->format("U")>$dt_date_absence_eleve_fin->format("U")){
+    $date2=clone $dt_date_absence_eleve_fin;
+    $dt_date_absence_eleve_fin= $dt_date_absence_eleve_debut;
+    $dt_date_absence_eleve_debut= $date2;
+    $message="Les dates de début et de fin ont été inversées.";
+    $inverse_date=true;
+    $_SESSION['date_absence_eleve_debut'] = $dt_date_absence_eleve_debut->format('d/m/Y');
+    $_SESSION['date_absence_eleve_fin'] = $dt_date_absence_eleve_fin->format('d/m/Y'); 
+}
 $dt_date_absence_eleve_debut->setTime(0,0,0);
 $dt_date_absence_eleve_fin->setTime(23,59,59);
 
 $style_specifique[] = "edt_organisation/style_edt";
 $style_specifique[] = "templates/DefaultEDT/css/small_edt";
 $style_specifique[] = "mod_abs2/lib/abs_style";
-$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
-$javascript_specifique[] = "lib/DHTMLcalendar/calendar";
-$javascript_specifique[] = "lib/DHTMLcalendar/lang/calendar-fr";
-$javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
 //$javascript_specifique[] = "mod_abs2/lib/include";
 $javascript_specifique[] = "edt_organisation/script/fonctions_edt";
+$dojo=true;
 //**************** EN-TETE *****************
 $titre_page = "Les absences";
 if ($affichage != 'ods') {// on affiche pas de html
@@ -106,35 +114,20 @@ if ($affichage != 'ods') {// on affiche pas de html
     include('menu_bilans.inc.php');
     ?>
     <div id="contain_div" class="css-panes">
+         <?php if (isset($message)){
+          echo'<h2 class="no">'.$message.'</h2>';
+        }?>
     <p>
       <strong>Précision:</strong> Un manquement à l'obligation de présence sur une heure, entraine le décompte de la demi-journée correspondante pour l'élève.
     </p>
-    <form name="choix_extraction" action="<?php $_SERVER['PHP_SELF']?>" method="post">
-    <h2>Les demi-journées du
-	<input size="10" id="date_absence_eleve_1" name="date_absence_eleve_debut" value="<?php echo $dt_date_absence_eleve_debut->format('d/m/Y')?>" />
-	<script type="text/javascript">
-	    Calendar.setup({
-		inputField     :    "date_absence_eleve_1",     // id of the input field
-		ifFormat       :    "%d/%m/%Y",      // format of the input field
-		button         :    "date_absence_eleve_1",  // trigger for the calendar (button ID)
-		align          :    "Bl",           // alignment (defaults to "Bl")
-		singleClick    :    true
-	    });
-	</script>
-	au
-	<input size="10" id="date_absence_eleve_2" name="date_absence_eleve_fin" value="<?php echo $dt_date_absence_eleve_fin->format('d/m/Y')?>" />
-	<script type="text/javascript">
-	    Calendar.setup({
-		inputField     :    "date_absence_eleve_2",     // id of the input field
-		ifFormat       :    "%d/%m/%Y",      // format of the input field
-		button         :    "date_absence_eleve_2",  // trigger for the calendar (button ID)
-		align          :    "Bl",           // alignment (defaults to "Bl")
-		singleClick    :    true
-	    });
-	</script>
+    <form dojoType="dijit.form.Form" id="choix_extraction" name="choix_extraction" action="<?php $_SERVER['PHP_SELF']?>" method="post">
+    <h2>Les demi-journées
+    du	
+    <input style="width : 8em;font-size:14px;" type="text" dojoType="dijit.form.DateTextBox" id="date_absence_eleve_debut" name="date_absence_eleve_debut" value="<?php echo $dt_date_absence_eleve_debut->format('Y-m-d')?>" />
+    au               
+    <input style="width : 8em;font-size:14px;" type="text" dojoType="dijit.form.DateTextBox" id="date_absence_eleve_fin" name="date_absence_eleve_fin" value="<?php echo $dt_date_absence_eleve_fin->format('Y-m-d')?>" />
 	</h2>
-	<p>
-    Nom (facultatif) : <input type="text" name="nom_eleve" size="10" value="<?php echo $nom_eleve?>"/>
+    Nom (facultatif) : <input dojoType="dijit.form.TextBox" type="text" style="width : 10em" name="nom_eleve" size="10" value="<?php echo $nom_eleve?>"/>
 
     <?php
     //on affiche une boite de selection avec les classe
@@ -144,7 +137,7 @@ if ($affichage != 'ods') {// on affiche pas de html
 	$classe_col = $utilisateur->getClasses();
     }
     if (!$classe_col->isEmpty()) {
-	    echo ("Classe : <select name=\"id_classe\">");
+	    echo ("Classe : <select dojoType=\"dijit.form.Select\" style=\"width :12em;font-size:12px;\" name=\"id_classe\">");
 	    echo "<option value='-1'>Toutes les classes</option>\n";
 	    foreach ($classe_col as $classe) {
 		    echo "<option value='".$classe->getId()."'";
@@ -160,24 +153,24 @@ if ($affichage != 'ods') {// on affiche pas de html
     ?>
     </p>
 	<p>
-    <button type="submit" name="affichage" value="html">Afficher</button>
-    <button type="submit" name="affichage" value="ods">Enregistrer au format ods</button>
+    <button type="submit"  style="font-size:12px" dojoType="dijit.form.Button" name="affichage" value="html">Afficher</button>
+    <button type="submit"  style="font-size:12px" dojoType="dijit.form.Button" name="affichage" value="ods">Enregistrer au format ods</button>
 	</p>
 	</form>
 
     <?php
 }
 if ($affichage != null && $affichage != '') {
-    $eleve_query = EleveQuery::create()->orderByNom()->orderByPrenom();
+    $eleve_query = EleveQuery::create()->orderByNom()->orderByPrenom()->distinct();
     if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
     } else {
-	$eleve_query->filterByUtilisateurProfessionnel($utilisateur);
+		$eleve_query->filterByUtilisateurProfessionnel($utilisateur);
     }
     if ($id_classe !== null && $id_classe != -1) {
-	$eleve_query->useJEleveClasseQuery()->filterByIdClasse($id_classe)->endUse();
+		$eleve_query->useJEleveClasseQuery()->filterByIdClasse($id_classe)->endUse();
     }
     if ($nom_eleve !== null && $nom_eleve != '') {
-	$eleve_query->filterByNomOrPrenomLike($nom_eleve);
+		$eleve_query->filterByNomOrPrenomLike($nom_eleve);
     }
     $eleve_col = $eleve_query->distinct()->find();
 
@@ -272,12 +265,9 @@ if ($affichage == 'html') {
     echo '</tr>';
     echo '<h5>Extraction faite le '.date("d/m/Y - h:i").'</h5>';
 } else if ($affichage == 'ods') {
-    // load the TinyButStrong libraries
-    if (version_compare(PHP_VERSION,'5')<0) {
-	include_once('../tbs/tbs_class.php'); // TinyButStrong template engine for PHP 4
-    } else {
-	include_once('../tbs/tbs_class_php5.php'); // TinyButStrong template engine
-    }
+    // load the TinyButStrong libraries    
+	include_once('../tbs/tbs_class.php'); // TinyButStrong template engine
+    
     //include_once('../tbs/plugins/tbsdb_php.php');
     $TBS = new clsTinyButStrong; // new instance of TBS
     include_once('../tbs/plugins/tbs_plugin_opentbs.php');
@@ -336,5 +326,13 @@ if ($affichage == 'html') {
 ?>
 	</div>
 <?php
-require("../lib/footer.inc.php");
+$javascript_footer_texte_specifique = '<script type="text/javascript">
+    dojo.require("dojo.parser");
+    dojo.require("dijit.form.Button");    
+    dojo.require("dijit.form.Form");    
+    dojo.require("dijit.form.DateTextBox");
+    dojo.require("dijit.form.TextBox");
+    dojo.require("dijit.form.Select");
+    </script>';
+require_once("../lib/footer.inc.php");
 ?>

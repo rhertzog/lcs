@@ -1,13 +1,48 @@
 <?php
-/*
- * $Id: header_template.inc $
+/**
+ * Construit les tableaux nécessaires au header des gabarits
+ * $Id: header_template.inc 7961 2011-08-25 09:49:50Z regis $
+ * 
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Patrick Duthilleul, Bouguin Régis
+ * 
+ * Variables envoyées au gabarit
+ * - $tbs_gepiSchoolName : nom de l'établissement
+ * - $tbs_message_enregistrement
+ * - $tbs_temps_max : temps maximal de session
+ * - $tbs_gepiPath : chemin de gepi
+ * - $tbs_prototype : fichier de la bibliothèque prototype
+ * - $tbs_charger_observeur
+ * - $tbs_degrade_entete
+ * - tbs_modif_bandeau
+ * - $tbs_bouton_taille : chemin de gepi si on affiche les boutons de réduction de taille du bandeau
+ * - $titre_page
+ * - $tbs_nom_prenom
+ * - $tbs_last_connection
+ * - $tbs_mise_a_jour - chemin de gepi si le module mise à jour est actif
+ * - $tbs_version_gepi
+ * - $tbs_msg - message à afficher en haut de page
  *
- * Basé sur  header.inc 2968 2009-03-03 20:11:00Z jjocal $
- * modifié avec getSettingValue("contact_admin_mailto")=='y'
- 
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Patrick Duthilleul
- *
- * This file is part of GEPI.
+ * - $tbs_refresh = array(tempsmax , lien , debut , id_session ) : initialisation de la méthode refresh
+ * - $tbs_librairies = array( )								bibliothèques à ajouter
+ * - $tbs_CSS = array( fichier , rel , type , media , title ) : fichiers CSS
+ * - $tbs_statut = array(class , texte , ajout ) : statut
+ * - $donnees_enfant = array(nom_enfant , classe_enfant )
+ * - $tbs_premier_menu = array(lien , confirme , image , alt , title , texte ) : menu du bandeau 1ère ligne
+ * - $tbs_deux_menu = array(lien , onclick , texte ) : menu du bandeau 2ème ligne
+ * 
+ * 
+ * @license GNU/GPL v2
+ * @package General
+ * @subpackage Affichage
+ * @see get_noms_classes_from_ele_login()
+ * @see get_enfants_from_resp_login()
+ * @see getPref()
+ * @see getSettingValue()
+ * @todo Il faudra définir un nom de la forme style_screen_ajout_RNE.css pour le multisite
+ * @todo $prefix et $gepiPath2="."; déjà défini dans initialisation.inc.php, on peut économiser un test
+ */
+
+/* This file is part of GEPI.
  *
  * GEPI is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,76 +58,17 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 
- 
- 
+
 // Based off of code from:header.inc
- 
-
-/* ---------Variables envoyées au gabarit
-*	$tbs_gepiSchoolName							nom de l'établissement
-*	$tbs_message_enregistrement
-* $tbs_temps_max									temps maximal de session
-*	$tbs_gepiPath										chemin de gepi
-*	$tbs_prototype									fichier de la bibliothèque prototype
-*	$tbs_charger_observeur
-* $tbs_degrade_entete
-*	tbs_modif_bandeau
-*	$tbs_bouton_taille							chemin de gepi si on affiche les boutons de réduction de taille du bandeau
-*	$titre_page
-*	$tbs_nom_prenom
-*	$tbs_last_connection
-* $tbs_mise_a_jour								chemin de gepi si le module mise à jour est actif
-*	$tbs_version_gepi
-*	$tbs_msg												message à afficher en haut de page
-*
-*	----- tableaux -----
-*	$tbs_refresh										initialisation de la méthode refresh
-*				-> tempsmax								
-*				-> lien
-*				-> debut
-*				-> id_session
-* $tbs_librairies									bibliothèques à ajouter
-*	$tbs_CSS												fichiers CSS
-*				-> fichier
-*				-> rel
-*				-> type
-*				-> media
-*				-> title
-*	$tbs_statut											statut
-*				-> class									modifie la police
-*				-> texte									
-*				-> ajout									pour mettre en évidence du texte
-*	$donnees_enfant
-*				-> nom_enfant
-*				-> classe_enfant
-* $tbs_premier_menu								menu du bandeau 1ère ligne
-*				-> lien
-*				-> confirme
-*				-> image
-*				-> alt
-*				-> title
-*				-> texte
-*	$tbs_deux_menu									menu du bandeau 2ème ligne
-*				-> lien
-*				-> onclick
-*				-> texte
-
-
-$TBS->MergeBlock('tbs_refresh',$tbs_refresh) ;
-$TBS->MergeBlock('tbs_librairies',$tbs_librairies) ;
-$TBS->MergeBlock('tbs_CSS',$tbs_CSS) ;
-$TBS->MergeBlock('tbs_statut',$tbs_statut) ;
-$TBS->MergeBlock('donnees_enfant',$donnees_enfant) ;
-$TBS->MergeBlock('tbs_premier_menu',$tbs_premier_menu	) ;
-$TBS->MergeBlock('tbs_deux_menu',$tbs_deux_menu) ;
-
-unset($tbs_refresh,$tbs_librairies,$tbs_CSS,$tbs_statut,$donnees_enfant,$tbs_premier_menu,$tbs_deux_menu);
-
-*/
  
 $donnees_enfant=array();
 
+/**
+ * Renvoie la date et l'heure de la dernière connexion ou d'une tentative de connexion avec mauvais mot de passe
+ * 
+ * @global string
+ * @return string la date et l'heure
+ */
 function last_connection() {
 	global $gepiPath;
    $sql = "select START, AUTOCLOSE, REMOTE_ADDR from log where LOGIN = '".$_SESSION['login']."' and SESSION_ID != '".session_id()."' order by START desc";
@@ -131,10 +107,21 @@ function last_connection() {
     
 }
 
-$tbs_temps_max = getSettingValue("sessionMaxLength")*60;
-$tbs_gepiPath = $gepiPath;
+$sessionMaxLength=24;
+$session_gc_maxlifetime=ini_get("session.gc_maxlifetime");
+$sessionMaxLength=getSettingValue("sessionMaxLength");
+if(($sessionMaxLength!="")&&(preg_match("/^[0-9]*$/",$sessionMaxLength))) {
+	$sessionMaxLength=$sessionMaxLength*60;
+	if(($session_gc_maxlifetime!="")&&(preg_match("/^[0-9]*$/",$session_gc_maxlifetime))&&($session_gc_maxlifetime<$sessionMaxLength)) {
+		$sessionMaxLength=$session_gc_maxlifetime;
+	}
+}
+elseif(($session_gc_maxlifetime!="")&&(preg_match("/^[0-9]*$/",$session_gc_maxlifetime))) {
+	$sessionMaxLength=$session_gc_maxlifetime;
+}
+$tbs_temps_max=$sessionMaxLength;
 
-//$tbs_refresh[]=array("tempsmax"=> $tbs_temps_max , "lien"=>$gepiPath , "debut"=>urlencode($_SESSION['start']) , "id_session"=>session_id());
+$tbs_gepiPath = $gepiPath;
 
 $tbs_gepiSchoolName = getSettingValue("gepiSchoolName");
 
@@ -148,7 +135,7 @@ if (isset($affiche_message) and ($affiche_message == 'yes')) {
 // ====================== Affichage des javascripts ===================
 
 // Ajout du framework prototype 1.5.1.1 conditionné à la variable $utilisation_prototype="ok"
-$prototype = "ok"; //isset($utilisation_prototype) ? $utilisation_prototype : NULL;
+$prototype = "ok";
 if ($prototype == "ok") {
 	// On affiche alors le lien qui charge Prototype
 	$tbs_librairies[]=$gepiPath."/lib/prototype.js";
@@ -170,17 +157,6 @@ if ($windows == 'oui') {
 	$tbs_CSS[]=array("fichier"=> $gepiPath."/edt_effets/themes/default.css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"" , "title"=>"");
 	$tbs_CSS[]=array("fichier"=> $gepiPath."/edt_effets/themes/alphacube.css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"" , "title"=>"");
 }
-// js spécifique
-/*
-if(isset($javascript_specifique)) {
-	// Il faudrait filtrer le contenu de la variable...
-	// On ajoute le ".js" automatiquement et on exclus les "." qui pourrait permettre des ".." pour remonter dans l'arborescence
-	if(strlen(my_ereg_replace("[A-Za-z0-9_/]","",$javascript_specifique))==0) {
-		// Javascript spécifique à une page:
-		$tbs_librairies[]=$gepiPath/$javascript_specifique.'js';
-	}
-}
-*/
 
 if(isset($javascript_specifique)) {
 	// Il faudrait filtrer le contenu de la variable...
@@ -190,15 +166,13 @@ if(isset($javascript_specifique)) {
 		foreach($javascript_specifique as $current_javascript_specifique) {
 			if(strlen(my_ereg_replace("[A-Za-z0-9_/\-]","",$current_javascript_specifique))==0) {
 				// Javascript spécifique à une page:
-				//echo "<script type='text/javascript' src='$gepiPath/$current_javascript_specifique.js'></script>\n";
-		$tbs_librairies[]=$gepiPath."/".$current_javascript_specifique.'.js';
+              $tbs_librairies[]=$gepiPath."/".$current_javascript_specifique.'.js';
 			}
 		}
 	}
 	else {
 		if(strlen(my_ereg_replace("[A-Za-z0-9_/\-]","",$javascript_specifique))==0) {
 			// Javascript spécifique à une page:
-			//echo "<script type='text/javascript' src='$gepiPath/$javascript_specifique.js'></script>\n";
 			$tbs_librairies[]=$gepiPath."/".$javascript_specifique.'.js';
 		}
 	}
@@ -207,7 +181,6 @@ if(isset($javascript_specifique)) {
 
 // On affiche tout le temps brainjar sauf quand on dit à Gepi de ne pas le faire
 $utilisation_jsdivdrag = isset($utilisation_jsdivdrag) ? $utilisation_jsdivdrag : NULL;
-//if (isset($utilisation_jsdivdrag) AND $utilisation_jsdivdrag == "non") {
 if (isset($utilisation_jsdivdrag) AND ($utilisation_jsdivdrag == "non")) {
 	//echo "<!-- Pas de brainjar-->\n";(
 }else{
@@ -245,17 +218,6 @@ $tbs_CSS[]=array("fichier"=>$gepiPath."/css/".$style.".css"  , "rel"=>"styleshee
 if (!isset($titre_page)) $bgcouleur = "bgcolor= \"#FFFFFF\""; else $bgcouleur = "";
 
 // Styles spécifiques
-/*
-if(isset($style_specifique)) {
-	// Il faudrait filtrer le contenu de la variable...
-	// ne doit contenir que certains types de caractères et se terminer par .css
-	// Non... on ajoute le ".css" automatiquement et on exclus les "." qui pourrait permettre des ".." pour remonter dans l'arborescence
-	if(strlen(my_ereg_replace("[A-Za-z0-9_/]","",$style_specifique))==0) {
-		// Styles spécifiques à une page:
-		$tbs_CSS[]=array("fichier"=> $gepiPath."/".$style_specifique.".css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"" , "title"=>"");
-	}
-}
-*/
 if(isset($style_specifique)) {
   // Il faudrait filtrer le contenu de la variable...
   // ne doit contenir que certains types de caractères et se terminer par .css
@@ -296,12 +258,6 @@ if(isset($accessibilite)) {
 // Feuilles de styles du telephone
 $tbs_CSS[]=array("fichier"=> $gepiPath."/css/style_telephone.css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"handheld" , "title"=>"");
 
-// Feuilles de styles du bandeau
-// $tbs_CSS[]=array("fichier"=> $gepiPath."/css/bandeau_r01.css" , "rel"=>"stylesheet" , "type"=>"text/css","media"=>"screen" , "title"=>"bandeau");
-
-
-// fin modification Régis
-
 if (isset($style_screen_ajout))  {
 
 	// Styles paramétrables depuis l'interface:
@@ -337,6 +293,9 @@ if (isset($style_screen_ajout))  {
 }else{
 }
 
+/**
+ * Définition des couleurs
+ */
 include 'maj_coul_global.inc';
 
 // ============================== FIN des feuilles de style =======================
@@ -397,19 +356,11 @@ if (isset($titre_page)) {
 
 // Bandeau de gauche
 
-	//=====================
-	// AJOUT boireaus 20080806
 	if(!isset($mode_header_reduit)) {
 		$tbs_bouton_taille=$gepiPath;
 	}
-	//=====================
-	// AJOUT boireaus 20080806
-	//=====================
 
-	// insert into setting set name='afficher_temoin_filtrage_html',value='y';
 	$tbs_afficher_temoin_filtrage_html=getSettingValue('afficher_temoin_filtrage_html');
-
-	//=== Titre de la page ===
 	
 	//=== Nom Prénom utilisateur ===
 	if((!isset($_SESSION['prenom']))||(!isset($_SESSION['nom']))) {
@@ -556,7 +507,10 @@ if (isset($titre_page)) {
 
 
 // ==========> On ajoute la barre de menu <========================= //
-
+$tbs_menu_prof= array();
+$tbs_menu_admin = array();
+$tbs_menu_scol = array();
+$tbs_menu_cpe = array();
 if (!isset($nobar)) { $nobar = "non"; }
 if (getSettingValue("utiliserMenuBarre") == "yes" AND $_SESSION["statut"] == "professeur" AND $nobar != 'oui') {
 	// On vérifie que l'utilisateur ne l'a pas enlevée
@@ -564,13 +518,87 @@ if (getSettingValue("utiliserMenuBarre") == "yes" AND $_SESSION["statut"] == "pr
 	if (getPref($_SESSION["login"], "utiliserMenuBarre", "yes") == "yes") {
 		// ne pourrait-on pas utiliser $gepiPath plutôt que construire $prefix un peu plus haut ?
 		if (file_exists($prefix."edt_organisation/fonctions_calendrier.php")) {
+              /**
+               * Fonctions de calendrier
+               */
 			require_once($prefix."edt_organisation/fonctions_calendrier.php");
 		}elseif(file_exists("fonctions_calendrier.php")) {
+              /**
+               * Fonctions de calendrier
+               */
 			require_once("./fonctions_calendrier.php");
 		}
+            /**
+             * Barre de menu de enseignant
+             */
 		include("header_barre_prof_template.php");
 	}
-}else{
+} else if ((getSettingValue("utiliserMenuBarre") == "yes") AND ($_SESSION["statut"] == "administrateur") AND ($nobar != 'oui')) {
+
+		// Il n'y a pas de préférence enregistrée pour des non_prof
+		// Du coup, on récupère la valeur par défaut: 'yes'
+		if (getPref($_SESSION["login"], "utiliserMenuBarre", "yes") == "yes") {
+			if (file_exists($prefix."edt_organisation/fonctions_calendrier.php")) {
+              /**
+               * Fonctions de calendrier
+               */
+				require_once($prefix."edt_organisation/fonctions_calendrier.php");
+			} else if(file_exists("fonctions_calendrier.php")) {
+              /**
+               * Fonctions de calendrier
+               */
+				require_once("./fonctions_calendrier.php");
+			}
+            /**
+             * Barre de menu de administrateur
+             */
+			include("header_barre_admin_template.php");
+		}
+
+} else if ((getSettingValue("utiliserMenuBarre") == "yes") AND ($_SESSION["statut"] == "scolarite") AND ($nobar != 'oui')) {
+
+		// Il n'y a pas de préférence enregistrée pour des non_prof
+		// Du coup, on récupère la valeur par défaut: 'yes'
+		if (getPref($_SESSION["login"], "utiliserMenuBarre", "yes") == "yes") {
+			if (file_exists($prefix."edt_organisation/fonctions_calendrier.php")) {
+              /**
+               * Fonctions de calendrier
+               */
+				require_once($prefix."edt_organisation/fonctions_calendrier.php");
+			} else if(file_exists("fonctions_calendrier.php")) {
+              /**
+               * Fonctions de calendrier
+               */
+				require_once("./fonctions_calendrier.php");
+			}
+            /**
+             * Barre de menu de scolarité
+             */
+			include("header_barre_scolarite_template.php");
+		}
+	
+} else if ((getSettingValue("utiliserMenuBarre") == "yes") AND ($_SESSION["statut"] == "cpe") AND ($nobar != 'oui')) {
+		// Il n'y a pas de préférence enregistrée pour des non_prof
+		// Du coup, on récupère la valeur par défaut: 'yes'
+		if (getPref($_SESSION["login"], "utiliserMenuBarre", "yes") == "yes") {
+			if (file_exists($prefix."edt_organisation/fonctions_calendrier.php")) {
+              /**
+               * Fonctions de calendrier
+               */
+				require_once($prefix."edt_organisation/fonctions_calendrier.php");
+			} else if(file_exists("fonctions_calendrier.php")) {
+              /**
+               * Fonctions de calendrier
+               */
+				require_once("./fonctions_calendrier.php");
+			}
+            /**
+             * Barre de menu de cpe
+             */
+			include("header_barre_cpe_template.php");
+		}
+	
+} else {
 	$tbs_menu_prof=array();
 }
 
@@ -587,6 +615,5 @@ if (getSettingValue("utiliserMenuBarre") == "yes" AND $_SESSION["statut"] == "pr
 // Décommenter la ligne ci -dessous pour afficher les variables $_GET, $_POST, $_SESSION et $_SERVER pour DEBUG:
 //debug_var();
 
-//if (isset($titre_page)) echo "</div>";
 ?>
 

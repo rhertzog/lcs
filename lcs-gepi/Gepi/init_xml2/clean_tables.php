@@ -2,7 +2,7 @@
 
 @set_time_limit(0);
 /*
-* $Id: clean_tables.php 6240 2010-12-28 16:17:03Z crob $
+* $Id: clean_tables.php 7107 2011-06-04 17:05:47Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -164,7 +164,8 @@ if (!isset($is_posted)) {
 					echo "La matière $mat a été supprimée de la base.<br />\n";
 				}
 				else {
-					echo "La matière $mat serait supprimée de la base (<i><a href='../utilisateurs/index.php?mode=personnels&amp;order_by=nom,prenom&amp;display=tous&amp;afficher_statut=professeur' target='_blank'>associer à un professeur</a></i>).<br />\n";
+					//echo "La matière $mat serait supprimée de la base (<i><a href='../utilisateurs/index.php?mode=personnels&amp;order_by=nom,prenom&amp;display=tous&amp;afficher_statut=professeur' target='_blank'>associer à un professeur</a></i>).<br />\n";
+					echo "La matière $mat serait supprimée de la base (<i><a href='../matieres/modify_matiere.php?current_matiere=$mat' target='_blank'>associer à un professeur</a></i>).<br />\n";
 				}
 				$sup = 'yes';
 			}

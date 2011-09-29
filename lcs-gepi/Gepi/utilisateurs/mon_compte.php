@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: mon_compte.php 6513 2011-02-17 12:26:55Z crob $
+* $Id: mon_compte.php 7950 2011-08-24 13:53:46Z jjocal $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -41,6 +41,8 @@ if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
 }
+
+$msg="";
 
 if (($_SESSION['statut'] == 'professeur') or ($_SESSION['statut'] == 'cpe') or ($_SESSION['statut'] == 'responsable') or ($_SESSION['statut'] == 'eleve')) {
 	// Mot de passe comportant des lettres et des chiffres
@@ -111,18 +113,15 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 				}
 
 				// On fait la mise à jour sur la base de données
-				$reg_password_a_c = md5($NON_PROTECT['password_a']);
-				$old_password = mysql_result(mysql_query("SELECT password FROM utilisateurs WHERE (login = '".$session_gepi->login."')"), 0);
-				//if ($old_password == $reg_password_a_c) {
-				if (($old_password == $reg_password_a_c)||($old_password == md5(htmlentities($NON_PROTECT['password_a'])))||($old_password == md5(unhtmlentities($NON_PROTECT['password_a'])))) {
+				if ($session_gepi->authenticate_gepi($session_gepi->login,$NON_PROTECT['password_a'])) {
 					if  ($no_anti_inject_password_a == $no_anti_inject_password1) {
 						$msg = "ERREUR : Vous devez choisir un nouveau mot de passe différent de l'ancien.";
 					} else if (!(verif_mot_de_passe($NON_PROTECT['password1'],$flag))) {
 						$msg = "Erreur lors de la saisie du mot de passe (voir les recommandations), veuillez recommencer !";
 					} else {
-						$reg_password1 = md5($NON_PROTECT['password1']);
-						$reg = mysql_query("UPDATE utilisateurs SET password = '$reg_password1', change_mdp='n' WHERE login = '" . $_SESSION['login'] . "'");
+                        			$reg = Session::change_password_gepi($session_gepi->login,$NON_PROTECT['password1']);
 						if ($reg) {
+                                                        mysql_query("UPDATE utilisateurs SET change_mdp='n' WHERE login = '$session_gepi->login'");
 							$msg = "Le mot de passe a ete modifié !";
 							$no_modif = "no";
 							if (isset($_POST['retour'])) {
@@ -263,7 +262,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 		// En multisite, on ajoute le répertoire RNE
 		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 			  // On récupère le RNE de l'établissement
-		  $repertoire="../photos/".getSettingValue("gepiSchoolRne")."/personnels/";
+		  $repertoire="../photos/".$_COOKIE['RNE']."/personnels/";
 		}else{
 		  $repertoire="../photos/personnels/";
 		}
@@ -379,7 +378,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 		// En multisite, on ajoute le répertoire RNE
 		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 			  // On récupère le RNE de l'établissement
-		  $repertoire="../photos/".getSettingValue("gepiSchoolRne")."/eleves/";
+		  $repertoire="../photos/".$_COOKIE['RNE']."/eleves/";
 		}else{
 		  $repertoire="../photos/eleves/";
 		}
@@ -604,6 +603,24 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 	}
 }
 
+$tab_statuts_barre=array('professeur', 'cpe', 'scolarite', 'administrateur');
+$modifier_barre=isset($_POST['modifier_barre']) ? $_POST['modifier_barre'] : NULL;
+if((isset($modifier_barre))&&(strtolower(substr(getSettingValue('utiliserMenuBarre'),0,1))=='y')&&(in_array($_SESSION['statut'], $tab_statuts_barre))) {
+	$afficher_menu=isset($_POST['afficher_menu']) ? $_POST['afficher_menu'] : NULL;
+	if((strtolower(substr($afficher_menu,0,1))!='y')&&(strtolower(substr($afficher_menu,0,1))!='n')) {
+		if($msg!="") {$msg.="<br />";}
+		$msg.="Le choix '$afficher_menu' pour l'affichage ou non de la barre de menu est invalide.<br />\n";
+	}
+	else {
+		if(!savePref($_SESSION['login'], 'utiliserMenuBarre', $afficher_menu)) {
+			$msg.="Erreur lors de la sauvegarde de la préférence d'affichage ou non de la barre de menu.<br />\n";
+		}
+		else {
+			$msg.="Sauvegarde de la préférence d'affichage ou non de la barre de menu effectué.<br />\n";
+		}
+	}
+}
+
 
 // On appelle les informations de l'utilisateur pour les afficher :
 $call_user_info = mysql_query("SELECT nom,prenom,statut,email,show_email,civilite FROM utilisateurs WHERE login='" . $_SESSION['login'] . "'");
@@ -817,7 +834,7 @@ if(($_SESSION['statut']=='administrateur')||
 				// En multisite, on ajoute le répertoire RNE
 				if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 					// On récupère le RNE de l'établissement
-					$repertoire="../photos/".getSettingValue("gepiSchoolRne")."/personnels/";
+					$repertoire="../photos/".$_COOKIE['RNE']."/personnels/";
 				}
 				else{
 					$repertoire="../photos/personnels/";
@@ -993,6 +1010,48 @@ if ($affiche_bouton_submit=='yes')
 	echo "<input type=\"hidden\" name=\"valid\" value=\"yes\" />\n";
 echo "</form>\n";
 echo "  <hr />\n";
+
+if((strtolower(substr(getSettingValue('utiliserMenuBarre'),0,1))=='y')&&(in_array($_SESSION['statut'], $tab_statuts_barre))) {
+	$aff_barre="n";
+	$sql="SELECT value FROM preferences WHERE login='".$_SESSION['login']."' AND name='utiliserMenuBarre';";
+	$res_barre=mysql_query($sql);
+	if(mysql_num_rows($res_barre)==0) {
+		$aff_barre="y";
+	}
+	else {
+		$lig_barre=mysql_fetch_object($res_barre);
+		$aff_barre=strtolower(substr($lig_barre->value,0,1));
+	}
+
+	echo "<form enctype=\"multipart/form-data\" action=\"mon_compte.php\" method=\"post\">\n";
+	echo add_token_field();
+
+	echo "<fieldset id='afficherBarreMenu' style='border: 1px solid grey;'>\n";
+	echo "<legend style='border: 1px solid grey;'>Gérer la barre horizontale du menu</legend>\n";
+	echo "<input type='hidden' name='modifier_barre' value='ok' />\n";
+
+	echo "<p>\n";
+	echo "<label for='visibleMenu' id='texte_visibleMenu'>Rendre visible la barre de menu horizontale sous l'en-tête.</label>\n";
+	echo "<input type='radio' id='visibleMenu' name='afficher_menu' value='yes'";
+	if($aff_barre=="y") {
+		echo " checked";
+	}
+	echo " />\n";
+	echo "</p>\n";
+	echo "<p>\n";
+	echo "<label for='invisibleMenu' id='texte_invisibleMenu'>Ne pas utiliser la barre de menu horizontale.</label>\n";
+	echo "<input type='radio' id='invisibleMenu' name='afficher_menu' value='no'";
+	if($aff_barre!="y") {
+		echo " checked";
+	}
+	echo " />\n";
+	echo "</p>\n";
+
+	echo "<br /><center><input type=\"submit\" value=\"Enregistrer\" /></center>\n";
+	echo "</fieldset>\n";
+	echo "</form>\n";
+	echo "  <hr />\n";
+}
 
 // Journal des connexions
 echo "<a name=\"connexion\"></a>\n";

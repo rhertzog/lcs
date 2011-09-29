@@ -12,7 +12,10 @@
 * License:  Free for non-commercial use                                     *
 *                                                                           *
 * You may use and modify this software as you wish.                         *
-* PLEASE REPORT ANY BUGS TO THE AUTHOR. THANK YOU   	                    *
+* PLEASE REPORT ANY BUGS TO THE AUTHOR. THANK YOU   
+ * 
+ * @package externe
+ * @subpackage FPDF	 	                    *
 ****************************************************************************/
 
 /**
@@ -28,11 +31,17 @@ Modifications:
     - these modifications does not affect the main class behavior, they are used for further developement and class extensions
 */
 
-require_once('fpdf.php');
+if (!defined('FPDF_VERSION')) {
+	require_once('fpdf.php');
+}
 require_once("class.string_tags.php");
 
 if (!defined('PARAGRAPH_STRING')) define('PARAGRAPH_STRING', '~~~');
 
+/**
+ * @package externe
+ * @subpackage FPDF
+ */
 class FPDF_MULTICELLTAG extends FPDF{
 var $wt_Current_Tag;
 var $wt_FontInfo;//tags font info
@@ -67,7 +76,7 @@ var $wt_TempData; //some temporary info
         			$color - text color
         @return 	nothing
 	*/
-    function SetStyle($tag,$family,$style,$size,$color)
+    function SetStyle2($tag,$family,$style,$size,$color)
 	{
 
 		if ($tag == "ttags") $this->Error (">> ttags << is reserved TAG Name.");
@@ -388,7 +397,8 @@ var $wt_TempData; //some temporary info
         			These paramaters are the same and have the same behavior as at Multicell function
         @return     nothing
 	*/
-	function MultiCellTag($w, $h, $pData, $border=0, $align='J', $fill=0, $pDataIsString = true){
+	//function MultiCellTag($w, $h, $pData, $border=0, $align='J', $fill=0, $pDataIsString = true){
+	function ext_MultiCellTag($w, $h, $pData, $border=0, $align='J', $fill=0, $pDataIsString = true){
 
 		//save the current style settings, this will be the default in case of no style is specified
 		$this->SaveCurrentStyle();

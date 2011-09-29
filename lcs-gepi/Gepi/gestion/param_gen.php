@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: param_gen.php 6675 2011-03-22 16:57:28Z crob $
+* $Id: param_gen.php 8377 2011-09-28 16:39:37Z crob $
 *
 * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -126,8 +126,18 @@ if (isset($_POST['is_posted'])) {
 			}
 		}
 		if (isset($_POST['gepiSchoolRne'])) {
-			if (!saveSetting("gepiSchoolRne", $_POST['gepiSchoolRne'])) {
-				$msg .= "Erreur lors de l'enregistrement du numéro RNE de l'établissement !";
+			$enregistrer_gepiSchoolRne='y';
+			if(($multisite=='y')&&(isset($_COOKIE['RNE']))) {
+				if(($_POST['gepiSchoolRne']!='')&&(strtoupper($_POST['gepiSchoolRne'])!=strtoupper($_COOKIE['RNE']))) {
+					$msg .= "Erreur lors de l'enregistrement du numéro RNE de l'établissement !<br />Le paramètre choisi risque de vous empêcher de vous connecter.<br />Enregistrement refusé!";
+					$enregistrer_gepiSchoolRne='n';
+				}
+			}
+
+			if($enregistrer_gepiSchoolRne=='y') {
+				if (!saveSetting("gepiSchoolRne", $_POST['gepiSchoolRne'])) {
+					$msg .= "Erreur lors de l'enregistrement du numéro RNE de l'établissement !";
+				}
 			}
 		}
 		if (isset($_POST['gepiYear'])) {
@@ -358,6 +368,17 @@ if (isset($_POST['is_posted'])) {
 				$msg .= "Erreur lors de l'enregistrement du paramètre mode_utf8_visu_notes_pdf !";
 			}
 		}
+
+		if (isset($_POST['mode_utf8_listes_pdf'])) {
+			if (!saveSetting("mode_utf8_listes_pdf", $_POST['mode_utf8_listes_pdf'])) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre mode_utf8_listes_pdf !";
+			}
+		}
+		else{
+			if (!saveSetting("mode_utf8_listes_pdf", 'n')) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre mode_utf8_listes_pdf !";
+			}
+		}
 	
 		if (isset($_POST['type_bulletin_par_defaut'])) {
 			if(($_POST['type_bulletin_par_defaut']=='html')||($_POST['type_bulletin_par_defaut']=='pdf')) {
@@ -473,7 +494,18 @@ if (isset($_POST['is_posted'])) {
 				$msg .= "Erreur lors de l'enregistrement de gepi_denom_boite_genre !";
 			}
 		}
-		
+
+		if((isset($_POST['gepi_denom_mention']))&&($_POST['gepi_denom_mention']!="")) {
+			if (!saveSetting("gepi_denom_mention", $_POST['gepi_denom_mention'])) {
+				$msg .= "Erreur lors de l'enregistrement de gepi_denom_mention !";
+			}
+		}
+		else {
+			if (!saveSetting("gepi_denom_mention", "mention")) {
+				$msg .= "Erreur lors de l'initialisation de gepi_denom_mention !";
+			}
+		}
+
 		if (isset($_POST['gepi_stylesheet'])) {
 			if (!saveSetting("gepi_stylesheet", $_POST['gepi_stylesheet'])) {
 				$msg .= "Erreur lors de l'enregistrement de l'année scolaire !";
@@ -783,8 +815,18 @@ echo add_token_field();
 	</tr>
 	<tr>
 		<td style="font-variant: small-caps;">
-		Durée maximum d'inactivité : <br />
-		<span class='small'>(Durée d'inactivité, en minutes, au bout de laquelle un utilisateur est automatiquement déconnecté de Gepi.) Attention, la variable session.maxlifetime dans le fichier php.ini est réglée à <?php echo(ini_get("session.gc_maxlifetime")); ?> secondes, soit un maximum de <?php echo(ini_get("session.gc_maxlifetime")/60); ?> minutes pour la session.</span>
+		<a name='sessionMaxLength'></a>Durée maximum d'inactivité : <br />
+		<span class='small'>(<i>Durée d'inactivité, en minutes, au bout de laquelle un utilisateur est automatiquement déconnecté de Gepi.</i>) <b>Attention</b>, la variable <b>session.maxlifetime</b> dans le fichier <b>php.ini</b> est réglée à <?php 
+			$session_gc_maxlifetime=ini_get("session.gc_maxlifetime");
+			$session_gc_maxlifetime_minutes=$session_gc_maxlifetime/60;
+
+			if((getSettingValue("sessionMaxLength")!="")&&($session_gc_maxlifetime_minutes<getSettingValue("sessionMaxLength"))) {
+				echo "<span style='color:red; font-weight:bold;'>".$session_gc_maxlifetime." secondes</span>, soit un maximum de <span style='color:red; font-weight:bold;'>".$session_gc_maxlifetime_minutes."minutes</span> pour la session (<a href='../mod_serveur/test_serveur.php#reglages_php'>*</a>).";
+			}
+			else {
+				echo $session_gc_maxlifetime." secondes, soit un maximum de ".$session_gc_maxlifetime_minutes."minutes pour la session.";
+			}
+		?></span>
 		</td>
 		<td><input type="text" name="sessionMaxLength" size="20" value="<?php echo(getSettingValue("sessionMaxLength")); ?>" onchange='changement()' />
 		</td>
@@ -833,14 +875,37 @@ echo add_token_field();
 		Désignation des boites/conteneurs/emplacements/sous-matières :</td>
 		<td>
 		<input type="text" name="gepi_denom_boite" size="20" value="<?php echo(getSettingValue("gepi_denom_boite")); ?>" onchange='changement()' /><br />
-		<table summary='Genre'><tr valign='top'><td>Genre:</td><td>
+		<table summary='Genre'><tr valign='top'><td>Genre :</td><td>
 		<input type="radio" name="gepi_denom_boite_genre" id="gepi_denom_boite_genre_m" value="m" <?php if(getSettingValue("gepi_denom_boite_genre")=="m"){echo 'checked';} ?> onchange='changement()' /> <label for='gepi_denom_boite_genre_m' style='cursor: pointer;'>Masculin</label><br />
 		<input type="radio" name="gepi_denom_boite_genre" id="gepi_denom_boite_genre_f" value="f" <?php if(getSettingValue("gepi_denom_boite_genre")=="f"){echo 'checked';} ?> onchange='changement()' /> <label for='gepi_denom_boite_genre_f' style='cursor: pointer;'>Féminin</label><br />
 		</td></tr></table>
 		</td>
 	</tr>
+
+	<tr>
+		<td style="font-variant: small-caps;" valign='top'>
+		<a name='gepi_denom_mention'></a>
+		Désignation des "mentions" pouvant être saisies avec l'avis du conseil de classe :<br />
+		(<i>terme au singulier</i>)<br />
+		<a href='../saisie/saisie_mentions.php' <?php 
+			echo "onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+		?>>Définir des "mentions"</a></td>
+		<td>
+		<input type="text" name="gepi_denom_mention" size="20" value="<?php
+			
+			$gepi_denom_mention=getSettingValue("gepi_denom_mention");
+			if($gepi_denom_mention=="") {
+				$gepi_denom_mention="mention";
+			}
+
+			echo $gepi_denom_mention;
+		?>" onchange='changement()' /><br />
+		</td>
+	</tr>
+
 	<tr>
 		<td style="font-variant: small-caps;">
+		<a name='format_login_resp'></a>
 		Mode de génération automatique des logins :</td>
 	<td>
 	<select name='mode_generation_login' onchange='changement()'>
@@ -938,6 +1003,30 @@ echo add_token_field();
 		onchange='changement()' />
 		</td>
 	</tr>
+	<tr>
+		<td style="font-variant: small-caps;" valign='top'>
+		<label for='mode_utf8_listes_pdf' style='cursor: pointer;'>Traitement UTF8 des caractères accentués dans les listes PDF&nbsp;:</label>
+		</td>
+		<td>
+		<input type="checkbox" id='mode_utf8_listes_pdf' name="mode_utf8_listes_pdf" value="y"
+		<?php
+			if(getSettingValue("mode_utf8_listes_pdf")=='y'){echo " checked";}
+		?>
+		onchange='changement()' />
+		</td>
+	</tr>
+	<tr>
+		<td style="font-variant: small-caps;" valign='top'>
+		<label for='mode_utf8_bulletins_pdf' style='cursor: pointer;'>Traitement UTF8 des caractères accentués des bulletins PDF&nbsp;:</label>
+		</td>
+		<td>
+		<input type="checkbox" id='mode_utf8_bulletins_pdf' name="mode_utf8_bulletins_pdf" value="y"
+		<?php
+			if(getSettingValue("mode_utf8_bulletins_pdf")=='y'){echo " checked";}
+		?>
+		onchange='changement()' />
+		</td>
+	</tr>
 
 	<tr>
 		<td style="font-variant: small-caps;" valign='top'>
@@ -974,19 +1063,6 @@ echo add_token_field();
 	</tr>
 */
 ?>
-	<tr>
-		<td style="font-variant: small-caps;" valign='top'>
-		<label for='mode_utf8_bulletins_pdf' style='cursor: pointer;'>Traitement UTF8 des caractères accentués des bulletins PDF&nbsp;:</label>
-		</td>
-		<td>
-		<input type="checkbox" id='mode_utf8_bulletins_pdf' name="mode_utf8_bulletins_pdf" value="y"
-		<?php
-			if(getSettingValue("mode_utf8_bulletins_pdf")=='y'){echo " checked";}
-		?>
-		onchange='changement()' />
-		</td>
-	</tr>
-
 	<tr>
 		<td style="font-variant: small-caps;">
 		Feuille de style à utiliser :</td>

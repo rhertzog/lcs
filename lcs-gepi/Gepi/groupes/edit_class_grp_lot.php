@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_class_grp_lot.php 5920 2010-11-20 21:04:58Z crob $
+ * $Id: edit_class_grp_lot.php 7192 2011-06-10 19:30:33Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -511,7 +511,8 @@ echo "<p><input type='submit' value='Valider' /></p>\n";
 echo "</form>\n";
 
 /*
-$groups = get_groups_for_class($id_classe);
+//$groups = get_groups_for_class($id_classe);
+$groups = get_groups_for_class($id_classe,"","n");
 foreach ($groups as $group) {
 	//$group["description"]
 	$current_group = get_group($group["id"]);

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 7931 2011-08-23 18:30:38Z dblanqui $
+ * $Id: index.php 7916 2011-08-23 09:50:31Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -85,19 +85,13 @@ if (!checkAccess()) {
     die();
 }
 //===========================================
-$_SESSION['type']=isset($_SESSION['type'])? $_SESSION['type']:'Discip' ;
 
 //**************** EN-TETE *****************
 
-switch ($_SESSION['type']) {
-    case 'Discip':$titre_page = "Discipline: Statistiques";
-        break;
-    case 'Abs':$titre_page = "Absences: Statistiques";
-        break;
-}
+$titre_page = "Discipline: Statistiques";      
 $utilisation_scriptaculous="ok";
 $utilisation_tablekit="ok";
-$utilisation_win = 'oui';
+//$utilisation_win = 'oui';
 $scriptaculous_effet="effects,controls,builder,dragdrop";
 $style_specifique = "mod_discipline/stats2/apps/css/stats";
 $javascript_specifique = "mod_discipline/stats2/apps/js/stats";
@@ -105,7 +99,7 @@ $javascript_specifique = "mod_discipline/stats2/apps/js/stats";
 require_once("../../lib/header.inc");
 
 //**************** FIN EN-TETE *****************
-//debug_var();
+
 $root = dirname(__FILE__) . DIRECTORY_SEPARATOR ;
 set_include_path('.' .
         PATH_SEPARATOR . $root . 'lib' . DIRECTORY_SEPARATOR .

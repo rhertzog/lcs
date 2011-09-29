@@ -6,17 +6,22 @@
 * Date:     2005/12/08                                                      *
 * Author:   Bintintan Andrei  -- klodoma@ar-sd.net                          *
 *                                                                           *
-* $Id: class.string_tags.php 6620 2011-03-03 20:24:07Z crob $
+* $Id: class.string_tags.php 7774 2011-08-15 22:50:16Z regis $
 *                                                                           *
 *                                                                           *
 * License:  Free for non-commercial use	                                    *
 *                                                                           *
 * You may use and modify this software as you wish.                         *
-* PLEASE REPORT ANY BUGS TO THE AUTHOR. THANK YOU   	                    *
+* PLEASE REPORT ANY BUGS TO THE AUTHOR. THANK YOU   
+ * 
+ * @package externe
+ * @subpackage FPDF	                    *	                    *
 ****************************************************************************/
 
 /**
-	Extracts the tags from a string
+ * Extracts the tags from a string
+ * @package externe
+ * @subpackage FPDF	
 */
 class String_TAGS{
 var $aTAGS;

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: saisir_groupe.php 6960 2011-05-20 05:16:14Z dblanqui $
+ * @version $Id: saisir_groupe.php 7888 2011-08-22 11:20:19Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -206,7 +206,10 @@ if (getSettingValue("abs2_saisie_prof_hors_cours")!='y'
 	//donc on affiche pas de selection, le cours est automatiquement selectionné
 } else {
     if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
-	$groupe_col = GroupeQuery::create()->orderByName()->useJGroupesClassesQuery()->useClasseQuery()->orderByNom()->endUse()->endUse()->find();
+	$groupe_col = GroupeQuery::create()->orderByName()->useJGroupesClassesQuery()->useClasseQuery()->orderByNom()->endUse()->endUse()
+						->leftJoinWith('Groupe.JGroupesClasses')
+					    ->leftJoinWith('JGroupesClasses.Classe')
+						->find();
     } else {
 	$groupe_col = $utilisateur->getGroupes();
     }
@@ -279,7 +282,8 @@ if (getSettingValue("abs2_saisie_prof_decale_journee")!='y'
 } else {
     //on affiche une boite de selection avec les cours
     if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
-	$edt_cours_col = EdtEmplacementCoursQuery::create()->find();
+		//la collection entière des cours est trop grosse et inexploitable sous la forme d'une liste. ça consomme de la ressource donc c'est désactivé
+		$edt_cours_col = new PropelCollection();
     } else {
 	$edt_cours_col = $utilisateur->getEdtEmplacementCourssPeriodeCalendrierActuelle();
     }
@@ -651,10 +655,14 @@ foreach($eleve_col as $eleve) {
 					    }
 					    $absences_du_creneau = $absences_du_creneau_du_prof;
 					} else if ($current_creneau != null && $edt_creneau->getHeuredebutDefiniePeriode('U') > $current_creneau->getHeuredebutDefiniePeriode('U')) {
-					    //on affiche pas les informations apres le creneau en cours pour ne pas influencer la saisie
-					    $absences_du_creneau = new PropelCollection();
+					    //on affiche pas les informations apres le creneau en cours pour ne pas influencer la saisie si c'est un enseignant
+                        if($utilisateur->getStatut() == "professeur"){
+                            $absences_du_creneau = new PropelCollection(); 
+                        }else{
+                           $absences_du_creneau = $eleve->getAbsenceEleveSaisiesDuCreneau($edt_creneau, $dt_date_absence_eleve);
+                        }					    
 					}   else {
-					    //on affiche pas les informations apres le creneau en cours pour ne pas influencer la saisie
+					    //on affiche  les informations pour les crenaux avant la saisie
 					    $absences_du_creneau = $eleve->getAbsenceEleveSaisiesDuCreneau($edt_creneau, $dt_date_absence_eleve);
 					}
 
@@ -813,8 +821,8 @@ function redimensionne_image_petit($photo)
 	    $edt_creneau_col = EdtCreneauPeer::retrieveAllEdtCreneauxOrderByTime();
 	    echo "<option value='-1'>choisissez un créneau</option>\n";
 	    foreach ($edt_creneau_col as $edt_creneau) {
-		    if ($edt_creneau->getTypeCreneaux() == EdtCreneau::$TYPE_PAUSE
-			    || $edt_creneau->getTypeCreneaux() == EdtCreneau::$TYPE_REPAS) {
+		    if ($edt_creneau->getTypeCreneaux() == EdtCreneau::TYPE_PAUSE
+			    || $edt_creneau->getTypeCreneaux() == EdtCreneau::TYPE_REPAS) {
 			continue;
 		    }
 		    echo "<option value='".$edt_creneau->getIdDefiniePeriode()."'";
@@ -836,7 +844,7 @@ function redimensionne_image_petit($photo)
 
 	if ($utilisateur->getStatut() != 'professeur' || (getSettingValue("abs2_saisie_prof_decale")=='y' && getSettingValue("abs2_saisie_prof_decale_journee")=='y')) {
 	    $rand_id = rand(0,10000000);
-	    echo '<input size="8" id="date_absence_eleve_'.$rand_id.'" name="date_absence_eleve" value="'.$dt_date_absence_eleve->format('d/m/Y').'" />&nbsp;';
+	    echo '<input size="9" id="date_absence_eleve_'.$rand_id.'" name="date_absence_eleve" value="'.$dt_date_absence_eleve->format('d/m/Y').'" />&nbsp;';
 	    echo '
 	    <script type="text/javascript">
 		Calendar.setup({

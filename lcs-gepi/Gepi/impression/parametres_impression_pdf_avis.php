@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: parametres_impression_pdf_avis.php 5782 2010-10-31 17:54:26Z crob $
+* $Id: parametres_impression_pdf_avis.php 8061 2011-08-30 22:01:10Z jjacquard $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
 *
@@ -32,7 +32,9 @@ Header('Pragma: public');
 require_once("../lib/initialisations.inc.php");
 //=============================
 
-require('../fpdf/fpdf.php');
+if (!defined('FPDF_VERSION')) {
+	require_once('../fpdf/fpdf.php');
+}
 require('../fpdf/ex_fpdf.php');
 
 define('FPDF_FONTPATH','../fpdf/font/');

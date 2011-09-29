@@ -58,8 +58,8 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 		}
 		$notif = false;
 		foreach ($this->getAbsenceEleveNotifications() as $notification) {
-		    if ($notification->getStatutEnvoi() == AbsenceEleveNotification::$STATUT_SUCCES
-			    || $notification->getStatutEnvoi() == AbsenceEleveNotification::$STATUT_SUCCES_AR) {
+		    if ($notification->getStatutEnvoi() == AbsenceEleveNotificationPeer::STATUT_ENVOI_SUCCES
+			    || $notification->getStatutEnvoi() == AbsenceEleveNotificationPeer::STATUT_ENVOI_SUCCES_AVEC_ACCUSE_DE_RECEPTION) {
 			$notif = true;
 			break;
 		    }
@@ -107,7 +107,7 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 
 	    //modifiable uniquement si aucune notifications n'a été envoyé
 	    foreach ($this->getAbsenceEleveNotifications() as $notification) {
-		if ($notification->getStatutEnvoi() != AbsenceEleveNotification::$STATUT_INITIAL) {
+		if ($notification->getStatutEnvoi() != AbsenceEleveNotificationPeer::STATUT_ENVOI_ETAT_INITIAL) {
 		    return false;
 		}
 	    }
@@ -143,7 +143,7 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 	 * une saisie qui est un manquement sera comptee dans le bulletin
 	 * Cette propriété est calculé avec par l'intermediaire des types de traitement
 	 * si on a un type de manquement specifie a non_precise (comme le type 'erreur de saisie'),
-	 * on renvoi un non manquement (sinon l'utilisateur aurait specifier un type $MANQU_OBLIG_PRESE_VRAI)
+	 * on renvoi un non manquement (sinon l'utilisateur aurait specifier un type MANQU_OBLIG_PRESE_VRAI)
 	 *
 	 * @return     boolean
 	 *
@@ -153,7 +153,7 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 		return (getSettingValue("abs2_saisie_par_defaut_sans_manquement")!='y');
 	    } else {
 		return (
-			$this->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_VRAI);
+			$this->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::MANQU_OBLIG_PRESE_VRAI);
 	    }
 	}
 
@@ -163,7 +163,7 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 	 * une saisie qui n'est pas sous la responsabilite de l'etablissement sere comptee dans le bulletin
 	 * une saisie qui est sous la responsabilite de l'etablissement ne sera pas comptee dans le bulletin
 	 * si on a un type de responsabilite specifié a non_precisé (comme le type 'erreur de saisie'),
-	 * on renvoi une resp etab a vrai (sinon l'utilisateur aurait specifier un type $MANQU_OBLIG_PRESE_VRAI)
+	 * on renvoi une resp etab a vrai (sinon l'utilisateur aurait specifier un type MANQU_OBLIG_PRESE_VRAI)
 	 * @return     boolean
 	 *
 	 */
@@ -172,8 +172,8 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 		return (getSettingValue("abs2_saisie_par_defaut_sous_responsabilite_etab")!='y');
 	    } else {
 		return (
-			$this->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::$SOUS_RESP_ETAB_NON_PRECISE
-			|| $this->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::$SOUS_RESP_ETAB_VRAI);
+			$this->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::SOUS_RESP_ETAB_NON_PRECISE
+			|| $this->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::SOUS_RESP_ETAB_VRAI);
 	    }
 	}
 
@@ -194,19 +194,57 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 	 */
 	public function save(PropelPDO $con = null)
 	{
-	    if ($this->isNew()) {
-		if ($this->getUtilisateurId() == null) {
-		    $utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
-		    if ($utilisateur != null) {
-			$this->setUtilisateurProfessionnel($utilisateur);
-		    }
+		if ($this->isNew()) {
+			if ($this->getUtilisateurId() == null) {
+				$utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
+				if ($utilisateur != null) {
+					$this->setUtilisateurProfessionnel($utilisateur);
+				}
+			}
+		} else {
+			$utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
+			if ($utilisateur != null) {
+				$this->setModifieParUtilisateur($utilisateur);
+			}
 		}
-	    } else {
-		$utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
-		if ($utilisateur != null) {
-		    $this->setModifieParUtilisateur($utilisateur);
+	    $result = parent::save($con);
+	    
+	    
+	    return $result;
+	}
+	
+	/**
+	 * Removes this object from datastore and sets delete attribute. Custom : suppression des notifications et jointures associées et calcul de la table d'agrégation
+	 *
+	 * @param      PropelPDO $con
+	 * @return     void
+	 * @throws     PropelException
+	 * @see        BaseObject::setDeleted()
+	 * @see        BaseObject::isDeleted()
+	 */
+	public function delete(PropelPDO $con = null)
+	{
+		$saisieColOld = $this->getAbsenceEleveSaisies();
+		AbsenceEleveNotificationQuery::create()->filterByAbsenceEleveTraitement($this)->delete();
+		//JTraitementSaisieEleveQuery::create()->filterByAbsenceEleveTraitement($this)->delete(); //ne pas supprimer pour pourvoir faire la jointure entre le traitement supprimé et l'élève saisi
+		parent::delete();
+	}
+	
+	/**
+	 * Met à jour la table d'agrégation pour toutes les saisies de ce traitement
+	 *
+	 * @return     void
+	 */
+	public function updateAgregationTable() {
+		foreach($this->getAbsenceEleveSaisies() as $saisie) {
+			if ($saisie->getEleve() != null) {
+				$saisie->getEleve()->updateAbsenceAgregationTable($saisie->getDebutAbs(null),$saisie->getFinAbs(null));
+				$saisie->getEleve()->checkAndUpdateSynchroAbsenceAgregationTable($saisie->getDebutAbs(null),$saisie->getFinAbs(null));
+			}
 		}
-	    }
-	    return parent::save($con);
+	}
+	
+	public function getAlreadyInSave() {
+		return $this->alreadyInSave;
 	}
 } // AbsenceEleveTraitement

@@ -31,6 +31,9 @@ abstract class BaseAidDetailsPeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 24;
+
 	/** the column name for the ID field */
 	const ID = 'aid.ID';
 
@@ -103,6 +106,9 @@ abstract class BaseAidDetailsPeer {
 	/** the column name for the EN_CONSTRUCTION field */
 	const EN_CONSTRUCTION = 'aid.EN_CONSTRUCTION';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of AidDetails objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -118,7 +124,7 @@ abstract class BaseAidDetailsPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('Id', 'Nom', 'Numero', 'IndiceAid', 'Perso1', 'Perso2', 'Perso3', 'Productions', 'Resume', 'Famille', 'MotsCles', 'Adresse1', 'Adresse2', 'PublicDestinataire', 'Contacts', 'Divers', 'Matiere1', 'Matiere2', 'ElevePeutModifier', 'ProfPeutModifier', 'CpePeutModifier', 'FichePublique', 'AfficheAdresse1', 'EnConstruction', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'nom', 'numero', 'indiceAid', 'perso1', 'perso2', 'perso3', 'productions', 'resume', 'famille', 'motsCles', 'adresse1', 'adresse2', 'publicDestinataire', 'contacts', 'divers', 'matiere1', 'matiere2', 'elevePeutModifier', 'profPeutModifier', 'cpePeutModifier', 'fichePublique', 'afficheAdresse1', 'enConstruction', ),
 		BasePeer::TYPE_COLNAME => array (self::ID, self::NOM, self::NUMERO, self::INDICE_AID, self::PERSO1, self::PERSO2, self::PERSO3, self::PRODUCTIONS, self::RESUME, self::FAMILLE, self::MOTS_CLES, self::ADRESSE1, self::ADRESSE2, self::PUBLIC_DESTINATAIRE, self::CONTACTS, self::DIVERS, self::MATIERE1, self::MATIERE2, self::ELEVE_PEUT_MODIFIER, self::PROF_PEUT_MODIFIER, self::CPE_PEUT_MODIFIER, self::FICHE_PUBLIQUE, self::AFFICHE_ADRESSE1, self::EN_CONSTRUCTION, ),
@@ -133,7 +139,7 @@ abstract class BaseAidDetailsPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Nom' => 1, 'Numero' => 2, 'IndiceAid' => 3, 'Perso1' => 4, 'Perso2' => 5, 'Perso3' => 6, 'Productions' => 7, 'Resume' => 8, 'Famille' => 9, 'MotsCles' => 10, 'Adresse1' => 11, 'Adresse2' => 12, 'PublicDestinataire' => 13, 'Contacts' => 14, 'Divers' => 15, 'Matiere1' => 16, 'Matiere2' => 17, 'ElevePeutModifier' => 18, 'ProfPeutModifier' => 19, 'CpePeutModifier' => 20, 'FichePublique' => 21, 'AfficheAdresse1' => 22, 'EnConstruction' => 23, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'nom' => 1, 'numero' => 2, 'indiceAid' => 3, 'perso1' => 4, 'perso2' => 5, 'perso3' => 6, 'productions' => 7, 'resume' => 8, 'famille' => 9, 'motsCles' => 10, 'adresse1' => 11, 'adresse2' => 12, 'publicDestinataire' => 13, 'contacts' => 14, 'divers' => 15, 'matiere1' => 16, 'matiere2' => 17, 'elevePeutModifier' => 18, 'profPeutModifier' => 19, 'cpePeutModifier' => 20, 'fichePublique' => 21, 'afficheAdresse1' => 22, 'enConstruction' => 23, ),
 		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::NOM => 1, self::NUMERO => 2, self::INDICE_AID => 3, self::PERSO1 => 4, self::PERSO2 => 5, self::PERSO3 => 6, self::PRODUCTIONS => 7, self::RESUME => 8, self::FAMILLE => 9, self::MOTS_CLES => 10, self::ADRESSE1 => 11, self::ADRESSE2 => 12, self::PUBLIC_DESTINATAIRE => 13, self::CONTACTS => 14, self::DIVERS => 15, self::MATIERE1 => 16, self::MATIERE2 => 17, self::ELEVE_PEUT_MODIFIER => 18, self::PROF_PEUT_MODIFIER => 19, self::CPE_PEUT_MODIFIER => 20, self::FICHE_PUBLIQUE => 21, self::AFFICHE_ADRESSE1 => 22, self::EN_CONSTRUCTION => 23, ),
@@ -307,7 +313,7 @@ abstract class BaseAidDetailsPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -326,7 +332,7 @@ abstract class BaseAidDetailsPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -380,7 +386,7 @@ abstract class BaseAidDetailsPeer {
 	 * @param      AidDetails $value A AidDetails object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(AidDetails $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -547,7 +553,7 @@ abstract class BaseAidDetailsPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + AidDetailsPeer::NUM_COLUMNS;
+			$col = $startcol + AidDetailsPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = AidDetailsPeer::OM_CLASS;
 			$obj = new $cls();
@@ -556,6 +562,7 @@ abstract class BaseAidDetailsPeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related AidConfiguration table
@@ -626,7 +633,7 @@ abstract class BaseAidDetailsPeer {
 		}
 
 		AidDetailsPeer::addSelectColumns($criteria);
-		$startcol = (AidDetailsPeer::NUM_COLUMNS - AidDetailsPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = AidDetailsPeer::NUM_HYDRATE_COLUMNS;
 		AidConfigurationPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(AidDetailsPeer::INDICE_AID, AidConfigurationPeer::INDICE_AID, $join_behavior);
@@ -742,10 +749,10 @@ abstract class BaseAidDetailsPeer {
 		}
 
 		AidDetailsPeer::addSelectColumns($criteria);
-		$startcol2 = (AidDetailsPeer::NUM_COLUMNS - AidDetailsPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = AidDetailsPeer::NUM_HYDRATE_COLUMNS;
 
 		AidConfigurationPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (AidConfigurationPeer::NUM_COLUMNS - AidConfigurationPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + AidConfigurationPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(AidDetailsPeer::INDICE_AID, AidConfigurationPeer::INDICE_AID, $join_behavior);
 
@@ -831,7 +838,7 @@ abstract class BaseAidDetailsPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a AidDetails or Criteria object.
+	 * Performs an INSERT on the database, given a AidDetails or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or AidDetails object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -874,7 +881,7 @@ abstract class BaseAidDetailsPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a AidDetails or Criteria object.
+	 * Performs an UPDATE on the database, given a AidDetails or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or AidDetails object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -913,11 +920,12 @@ abstract class BaseAidDetailsPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the aid table.
+	 * Deletes all rows from the aid table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(AidDetailsPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -944,7 +952,7 @@ abstract class BaseAidDetailsPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a AidDetails or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a AidDetails or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or AidDetails object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -1099,7 +1107,7 @@ abstract class BaseAidDetailsPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(AidDetails $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

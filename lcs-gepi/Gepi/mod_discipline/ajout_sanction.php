@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: ajout_sanction.php 5400 2010-09-23 10:01:22Z crob $
+ * $Id: ajout_sanction.php 7086 2011-06-02 10:11:15Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -53,6 +53,10 @@ if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
 //$cpt=isset($_GET['cpt']) ? $_GET['cpt'] : NULL;
 $valeur=isset($_GET['valeur']) ? $_GET['valeur'] : NULL;
 $id_sanction=isset($_GET['id_sanction']) ? $_GET['id_sanction'] : NULL;
+$ele_login=isset($_GET['ele_login']) ? $_GET['ele_login'] : NULL;
+$id_incident=isset($_GET['id_incident']) ? $_GET['id_incident'] : NULL;
+
+//echo "plip";
 
 include('saisie_sanction.inc.php');
 

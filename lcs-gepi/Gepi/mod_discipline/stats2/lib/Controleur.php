@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: Controleur.php 4310 2010-04-15 10:13:51Z crob $
+ * $Id: Controleur.php 7826 2011-08-19 10:26:47Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -26,7 +26,11 @@
  * Code adapté du controleur de Philippe Rigaux:
  * http://www.lamsade.dauphine.fr/rigaux/mysqlphp
  */
-//require_once('tbs_class_php5.php');
+// On empêche l'accès direct au fichier
+if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
+    die();
+};
+
 require_once('Class.Vue.php');
 abstract class Controleur {
     // Objets utilitaires

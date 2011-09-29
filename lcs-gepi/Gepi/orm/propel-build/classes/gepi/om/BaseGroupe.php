@@ -286,7 +286,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 4; // 4 = GroupePeer::NUM_COLUMNS - GroupePeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + 4; // 4 = GroupePeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating Groupe object", $e);
@@ -795,11 +795,17 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM.
 	 *                    Defaults to BasePeer::TYPE_PHPNAME.
 	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
+	 * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
 	 *
 	 * @return    array an associative array containing the field names (as keys) and field values
 	 */
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
 	{
+		if (isset($alreadyDumpedObjects['Groupe'][$this->getPrimaryKey()])) {
+			return '*RECURSION*';
+		}
+		$alreadyDumpedObjects['Groupe'][$this->getPrimaryKey()] = true;
 		$keys = GroupePeer::getFieldNames($keyType);
 		$result = array(
 			$keys[0] => $this->getId(),
@@ -807,6 +813,38 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$keys[2] => $this->getDescription(),
 			$keys[3] => $this->getRecalculRang(),
 		);
+		if ($includeForeignObjects) {
+			if (null !== $this->collJGroupesProfesseurss) {
+				$result['JGroupesProfesseurss'] = $this->collJGroupesProfesseurss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collJGroupesMatieress) {
+				$result['JGroupesMatieress'] = $this->collJGroupesMatieress->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collJGroupesClassess) {
+				$result['JGroupesClassess'] = $this->collJGroupesClassess->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collCahierTexteCompteRendus) {
+				$result['CahierTexteCompteRendus'] = $this->collCahierTexteCompteRendus->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collCahierTexteTravailAFaires) {
+				$result['CahierTexteTravailAFaires'] = $this->collCahierTexteTravailAFaires->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collCahierTexteNoticePrivees) {
+				$result['CahierTexteNoticePrivees'] = $this->collCahierTexteNoticePrivees->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collJEleveGroupes) {
+				$result['JEleveGroupes'] = $this->collJEleveGroupes->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collAbsenceEleveSaisies) {
+				$result['AbsenceEleveSaisies'] = $this->collAbsenceEleveSaisies->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collCreditEctss) {
+				$result['CreditEctss'] = $this->collCreditEctss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collEdtEmplacementCourss) {
+				$result['EdtEmplacementCourss'] = $this->collEdtEmplacementCourss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+		}
 		return $result;
 	}
 
@@ -949,13 +987,14 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 *
 	 * @param      object $copyObj An object of Groupe (or compatible) type.
 	 * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
+	 * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
 	 * @throws     PropelException
 	 */
-	public function copyInto($copyObj, $deepCopy = false)
+	public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
 	{
-		$copyObj->setName($this->name);
-		$copyObj->setDescription($this->description);
-		$copyObj->setRecalculRang($this->recalcul_rang);
+		$copyObj->setName($this->getName());
+		$copyObj->setDescription($this->getDescription());
+		$copyObj->setRecalculRang($this->getRecalculRang());
 
 		if ($deepCopy) {
 			// important: temporarily setNew(false) because this affects the behavior of
@@ -1024,9 +1063,10 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 
 		} // if ($deepCopy)
 
-
-		$copyObj->setNew(true);
-		$copyObj->setId(NULL); // this is a auto-increment column, so set to default value
+		if ($makeNew) {
+			$copyObj->setNew(true);
+			$copyObj->setId(NULL); // this is a auto-increment column, so set to default value
+		}
 	}
 
 	/**
@@ -1067,6 +1107,49 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 		return self::$peer;
 	}
 
+
+	/**
+	 * Initializes a collection based on the name of a relation.
+	 * Avoids crafting an 'init[$relationName]s' method name 
+	 * that wouldn't work when StandardEnglishPluralizer is used.
+	 *
+	 * @param      string $relationName The name of the relation to initialize
+	 * @return     void
+	 */
+	public function initRelation($relationName)
+	{
+		if ('JGroupesProfesseurs' == $relationName) {
+			return $this->initJGroupesProfesseurss();
+		}
+		if ('JGroupesMatieres' == $relationName) {
+			return $this->initJGroupesMatieress();
+		}
+		if ('JGroupesClasses' == $relationName) {
+			return $this->initJGroupesClassess();
+		}
+		if ('CahierTexteCompteRendu' == $relationName) {
+			return $this->initCahierTexteCompteRendus();
+		}
+		if ('CahierTexteTravailAFaire' == $relationName) {
+			return $this->initCahierTexteTravailAFaires();
+		}
+		if ('CahierTexteNoticePrivee' == $relationName) {
+			return $this->initCahierTexteNoticePrivees();
+		}
+		if ('JEleveGroupe' == $relationName) {
+			return $this->initJEleveGroupes();
+		}
+		if ('AbsenceEleveSaisie' == $relationName) {
+			return $this->initAbsenceEleveSaisies();
+		}
+		if ('CreditEcts' == $relationName) {
+			return $this->initCreditEctss();
+		}
+		if ('EdtEmplacementCours' == $relationName) {
+			return $this->initEdtEmplacementCourss();
+		}
+	}
+
 	/**
 	 * Clears out the collJGroupesProfesseurss collection
 	 *
@@ -1088,10 +1171,16 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initJGroupesProfesseurss()
+	public function initJGroupesProfesseurss($overrideExisting = true)
 	{
+		if (null !== $this->collJGroupesProfesseurss && !$overrideExisting) {
+			return;
+		}
 		$this->collJGroupesProfesseurss = new PropelObjectCollection();
 		$this->collJGroupesProfesseurss->setModel('JGroupesProfesseurs');
 	}
@@ -1222,10 +1311,16 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initJGroupesMatieress()
+	public function initJGroupesMatieress($overrideExisting = true)
 	{
+		if (null !== $this->collJGroupesMatieress && !$overrideExisting) {
+			return;
+		}
 		$this->collJGroupesMatieress = new PropelObjectCollection();
 		$this->collJGroupesMatieress->setModel('JGroupesMatieres');
 	}
@@ -1356,10 +1451,16 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initJGroupesClassess()
+	public function initJGroupesClassess($overrideExisting = true)
 	{
+		if (null !== $this->collJGroupesClassess && !$overrideExisting) {
+			return;
+		}
 		$this->collJGroupesClassess = new PropelObjectCollection();
 		$this->collJGroupesClassess->setModel('JGroupesClasses');
 	}
@@ -1515,10 +1616,16 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initCahierTexteCompteRendus()
+	public function initCahierTexteCompteRendus($overrideExisting = true)
 	{
+		if (null !== $this->collCahierTexteCompteRendus && !$overrideExisting) {
+			return;
+		}
 		$this->collCahierTexteCompteRendus = new PropelObjectCollection();
 		$this->collCahierTexteCompteRendus->setModel('CahierTexteCompteRendu');
 	}
@@ -1674,10 +1781,16 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initCahierTexteTravailAFaires()
+	public function initCahierTexteTravailAFaires($overrideExisting = true)
 	{
+		if (null !== $this->collCahierTexteTravailAFaires && !$overrideExisting) {
+			return;
+		}
 		$this->collCahierTexteTravailAFaires = new PropelObjectCollection();
 		$this->collCahierTexteTravailAFaires->setModel('CahierTexteTravailAFaire');
 	}
@@ -1833,10 +1946,16 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initCahierTexteNoticePrivees()
+	public function initCahierTexteNoticePrivees($overrideExisting = true)
 	{
+		if (null !== $this->collCahierTexteNoticePrivees && !$overrideExisting) {
+			return;
+		}
 		$this->collCahierTexteNoticePrivees = new PropelObjectCollection();
 		$this->collCahierTexteNoticePrivees->setModel('CahierTexteNoticePrivee');
 	}
@@ -1992,10 +2111,16 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initJEleveGroupes()
+	public function initJEleveGroupes($overrideExisting = true)
 	{
+		if (null !== $this->collJEleveGroupes && !$overrideExisting) {
+			return;
+		}
 		$this->collJEleveGroupes = new PropelObjectCollection();
 		$this->collJEleveGroupes->setModel('JEleveGroupe');
 	}
@@ -2126,10 +2251,16 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initAbsenceEleveSaisies()
+	public function initAbsenceEleveSaisies($overrideExisting = true)
 	{
+		if (null !== $this->collAbsenceEleveSaisies && !$overrideExisting) {
+			return;
+		}
 		$this->collAbsenceEleveSaisies = new PropelObjectCollection();
 		$this->collAbsenceEleveSaisies->setModel('AbsenceEleveSaisie');
 	}
@@ -2381,31 +2512,6 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
 	 * @return     PropelCollection|array AbsenceEleveSaisie[] List of AbsenceEleveSaisie objects
 	 */
-	public function getAbsenceEleveSaisiesJoinModifieParUtilisateur($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$query = AbsenceEleveSaisieQuery::create(null, $criteria);
-		$query->joinWith('ModifieParUtilisateur', $join_behavior);
-
-		return $this->getAbsenceEleveSaisies($query, $con);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this Groupe is new, it will return
-	 * an empty collection; or if this Groupe has previously
-	 * been saved, it will retrieve related AbsenceEleveSaisies from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in Groupe.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-	 * @return     PropelCollection|array AbsenceEleveSaisie[] List of AbsenceEleveSaisie objects
-	 */
 	public function getAbsenceEleveSaisiesJoinAbsenceEleveLieu($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		$query = AbsenceEleveSaisieQuery::create(null, $criteria);
@@ -2435,10 +2541,16 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initCreditEctss()
+	public function initCreditEctss($overrideExisting = true)
 	{
+		if (null !== $this->collCreditEctss && !$overrideExisting) {
+			return;
+		}
 		$this->collCreditEctss = new PropelObjectCollection();
 		$this->collCreditEctss->setModel('CreditEcts');
 	}
@@ -2569,10 +2681,16 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initEdtEmplacementCourss()
+	public function initEdtEmplacementCourss($overrideExisting = true)
 	{
+		if (null !== $this->collEdtEmplacementCourss && !$overrideExisting) {
+			return;
+		}
 		$this->collEdtEmplacementCourss = new PropelObjectCollection();
 		$this->collEdtEmplacementCourss->setModel('EdtEmplacementCours');
 	}
@@ -3026,79 +3144,137 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
-	 * Resets all collections of referencing foreign keys.
+	 * Resets all references to other model objects or collections of model objects.
 	 *
-	 * This method is a user-space workaround for PHP's inability to garbage collect objects
-	 * with circular references.  This is currently necessary when using Propel in certain
-	 * daemon or large-volumne/high-memory operations.
+	 * This method is a user-space workaround for PHP's inability to garbage collect
+	 * objects with circular references (even in PHP 5.3). This is currently necessary
+	 * when using Propel in certain daemon or large-volumne/high-memory operations.
 	 *
-	 * @param      boolean $deep Whether to also clear the references on all associated objects.
+	 * @param      boolean $deep Whether to also clear the references on all referrer objects.
 	 */
 	public function clearAllReferences($deep = false)
 	{
 		if ($deep) {
 			if ($this->collJGroupesProfesseurss) {
-				foreach ((array) $this->collJGroupesProfesseurss as $o) {
+				foreach ($this->collJGroupesProfesseurss as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collJGroupesMatieress) {
-				foreach ((array) $this->collJGroupesMatieress as $o) {
+				foreach ($this->collJGroupesMatieress as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collJGroupesClassess) {
-				foreach ((array) $this->collJGroupesClassess as $o) {
+				foreach ($this->collJGroupesClassess as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collCahierTexteCompteRendus) {
-				foreach ((array) $this->collCahierTexteCompteRendus as $o) {
+				foreach ($this->collCahierTexteCompteRendus as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collCahierTexteTravailAFaires) {
-				foreach ((array) $this->collCahierTexteTravailAFaires as $o) {
+				foreach ($this->collCahierTexteTravailAFaires as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collCahierTexteNoticePrivees) {
-				foreach ((array) $this->collCahierTexteNoticePrivees as $o) {
+				foreach ($this->collCahierTexteNoticePrivees as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collJEleveGroupes) {
-				foreach ((array) $this->collJEleveGroupes as $o) {
+				foreach ($this->collJEleveGroupes as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collAbsenceEleveSaisies) {
-				foreach ((array) $this->collAbsenceEleveSaisies as $o) {
+				foreach ($this->collAbsenceEleveSaisies as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collCreditEctss) {
-				foreach ((array) $this->collCreditEctss as $o) {
+				foreach ($this->collCreditEctss as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collEdtEmplacementCourss) {
-				foreach ((array) $this->collEdtEmplacementCourss as $o) {
+				foreach ($this->collEdtEmplacementCourss as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
+			if ($this->collUtilisateurProfessionnels) {
+				foreach ($this->collUtilisateurProfessionnels as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
+			if ($this->collMatieres) {
+				foreach ($this->collMatieres as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 		} // if ($deep)
 
+		if ($this->collJGroupesProfesseurss instanceof PropelCollection) {
+			$this->collJGroupesProfesseurss->clearIterator();
+		}
 		$this->collJGroupesProfesseurss = null;
+		if ($this->collJGroupesMatieress instanceof PropelCollection) {
+			$this->collJGroupesMatieress->clearIterator();
+		}
 		$this->collJGroupesMatieress = null;
+		if ($this->collJGroupesClassess instanceof PropelCollection) {
+			$this->collJGroupesClassess->clearIterator();
+		}
 		$this->collJGroupesClassess = null;
+		if ($this->collCahierTexteCompteRendus instanceof PropelCollection) {
+			$this->collCahierTexteCompteRendus->clearIterator();
+		}
 		$this->collCahierTexteCompteRendus = null;
+		if ($this->collCahierTexteTravailAFaires instanceof PropelCollection) {
+			$this->collCahierTexteTravailAFaires->clearIterator();
+		}
 		$this->collCahierTexteTravailAFaires = null;
+		if ($this->collCahierTexteNoticePrivees instanceof PropelCollection) {
+			$this->collCahierTexteNoticePrivees->clearIterator();
+		}
 		$this->collCahierTexteNoticePrivees = null;
+		if ($this->collJEleveGroupes instanceof PropelCollection) {
+			$this->collJEleveGroupes->clearIterator();
+		}
 		$this->collJEleveGroupes = null;
+		if ($this->collAbsenceEleveSaisies instanceof PropelCollection) {
+			$this->collAbsenceEleveSaisies->clearIterator();
+		}
 		$this->collAbsenceEleveSaisies = null;
+		if ($this->collCreditEctss instanceof PropelCollection) {
+			$this->collCreditEctss->clearIterator();
+		}
 		$this->collCreditEctss = null;
+		if ($this->collEdtEmplacementCourss instanceof PropelCollection) {
+			$this->collEdtEmplacementCourss->clearIterator();
+		}
 		$this->collEdtEmplacementCourss = null;
+		if ($this->collUtilisateurProfessionnels instanceof PropelCollection) {
+			$this->collUtilisateurProfessionnels->clearIterator();
+		}
+		$this->collUtilisateurProfessionnels = null;
+		if ($this->collMatieres instanceof PropelCollection) {
+			$this->collMatieres->clearIterator();
+		}
+		$this->collMatieres = null;
+	}
+
+	/**
+	 * Return the string representation of this object
+	 *
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return (string) $this->exportTo(GroupePeer::DEFAULT_STRING_FORMAT);
 	}
 
 	/**

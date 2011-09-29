@@ -1,7 +1,7 @@
 <?php
 	@set_time_limit(0);
 
-	// $Id: responsables.php 6320 2011-01-09 10:55:21Z crob $
+	// $Id: responsables.php 7858 2011-08-21 13:12:55Z crob $
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");
@@ -78,54 +78,8 @@
 	}
 	//echo "\$_SESSION['ad_retour']=".$_SESSION['ad_retour']."<br />";
 
-	$liste_tables_del = array(
-//"absences",
-//"aid",
-//"aid_appreciations",
-//"aid_config",
-//"avis_conseil_classe",
-//"classes",
-//"droits",
-//"eleves",
-// ==================================
-// On vide l'ancienne table responsables pour ne pas conserver des infos d'années antérieures:
-"responsables",
-
-"responsables2",
-"resp_pers",
-"resp_adr",
-// ==================================
-//"etablissements",
-//"j_aid_eleves",
-//"j_aid_utilisateurs",
-//"j_eleves_classes",
-//"j_eleves_etablissements",
-//"j_eleves_professeurs",
-//"j_eleves_regime",
-//"j_professeurs_matieres",
-//"log",
-//"matieres",
-//"matieres_appreciations",
-//"matieres_notes",
-//"observatoire",
-//"observatoire_comment",
-//"observatoire_config",
-//"observatoire_niveaux",
-//"observatoire_j_resp_champ",
-//"observatoire_suivi",
-//"periodes",
-//"periodes_observatoire",
-"tempo2",
-//"temp_gep_import",
-"tempo",
-//"utilisateurs",
-//"cn_cahier_notes",
-//"cn_conteneurs",
-//"cn_devoirs",
-//"cn_notes_conteneurs",
-//"cn_notes_devoirs",
-//"setting"
-);
+	include("../lib/initialisation_annee.inc.php");
+	$liste_tables_del = $liste_tables_del_etape_resp;
 
 
 	// On va uploader les fichiers XML dans le tempdir de l'utilisateur (administrateur, ou scolarité pour les màj Sconet)

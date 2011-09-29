@@ -1,6 +1,6 @@
 <?php
 	/*
-		$Id: ctp.php 7003 2011-05-25 17:35:45Z crob $
+		$Id: ctp.php 7004 2011-05-25 17:36:10Z crob $
 	*/
 
 	// Hauteur du DIV des appréciations-types

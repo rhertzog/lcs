@@ -26,10 +26,13 @@ abstract class BaseAbsenceEleveMotifPeer {
 	const TM_CLASS = 'AbsenceEleveMotifTableMap';
 	
 	/** The total number of columns. */
-	const NUM_COLUMNS = 4;
+	const NUM_COLUMNS = 6;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
+
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 6;
 
 	/** the column name for the ID field */
 	const ID = 'a_motifs.ID';
@@ -43,6 +46,15 @@ abstract class BaseAbsenceEleveMotifPeer {
 	/** the column name for the SORTABLE_RANK field */
 	const SORTABLE_RANK = 'a_motifs.SORTABLE_RANK';
 
+	/** the column name for the CREATED_AT field */
+	const CREATED_AT = 'a_motifs.CREATED_AT';
+
+	/** the column name for the UPDATED_AT field */
+	const UPDATED_AT = 'a_motifs.UPDATED_AT';
+
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of AbsenceEleveMotif objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -65,13 +77,13 @@ abstract class BaseAbsenceEleveMotifPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'Nom', 'Commentaire', 'SortableRank', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'nom', 'commentaire', 'sortableRank', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::NOM, self::COMMENTAIRE, self::SORTABLE_RANK, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'NOM', 'COMMENTAIRE', 'SORTABLE_RANK', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'nom', 'commentaire', 'sortable_rank', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, )
+	protected static $fieldNames = array (
+		BasePeer::TYPE_PHPNAME => array ('Id', 'Nom', 'Commentaire', 'SortableRank', 'CreatedAt', 'UpdatedAt', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'nom', 'commentaire', 'sortableRank', 'createdAt', 'updatedAt', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::NOM, self::COMMENTAIRE, self::SORTABLE_RANK, self::CREATED_AT, self::UPDATED_AT, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'NOM', 'COMMENTAIRE', 'SORTABLE_RANK', 'CREATED_AT', 'UPDATED_AT', ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'nom', 'commentaire', 'sortable_rank', 'created_at', 'updated_at', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, )
 	);
 
 	/**
@@ -80,13 +92,13 @@ abstract class BaseAbsenceEleveMotifPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Nom' => 1, 'Commentaire' => 2, 'SortableRank' => 3, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'nom' => 1, 'commentaire' => 2, 'sortableRank' => 3, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::NOM => 1, self::COMMENTAIRE => 2, self::SORTABLE_RANK => 3, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'NOM' => 1, 'COMMENTAIRE' => 2, 'SORTABLE_RANK' => 3, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'nom' => 1, 'commentaire' => 2, 'sortable_rank' => 3, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, )
+	protected static $fieldKeys = array (
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Nom' => 1, 'Commentaire' => 2, 'SortableRank' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'nom' => 1, 'commentaire' => 2, 'sortableRank' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::NOM => 1, self::COMMENTAIRE => 2, self::SORTABLE_RANK => 3, self::CREATED_AT => 4, self::UPDATED_AT => 5, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'NOM' => 1, 'COMMENTAIRE' => 2, 'SORTABLE_RANK' => 3, 'CREATED_AT' => 4, 'UPDATED_AT' => 5, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'nom' => 1, 'commentaire' => 2, 'sortable_rank' => 3, 'created_at' => 4, 'updated_at' => 5, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, )
 	);
 
 	/**
@@ -162,11 +174,15 @@ abstract class BaseAbsenceEleveMotifPeer {
 			$criteria->addSelectColumn(AbsenceEleveMotifPeer::NOM);
 			$criteria->addSelectColumn(AbsenceEleveMotifPeer::COMMENTAIRE);
 			$criteria->addSelectColumn(AbsenceEleveMotifPeer::SORTABLE_RANK);
+			$criteria->addSelectColumn(AbsenceEleveMotifPeer::CREATED_AT);
+			$criteria->addSelectColumn(AbsenceEleveMotifPeer::UPDATED_AT);
 		} else {
 			$criteria->addSelectColumn($alias . '.ID');
 			$criteria->addSelectColumn($alias . '.NOM');
 			$criteria->addSelectColumn($alias . '.COMMENTAIRE');
 			$criteria->addSelectColumn($alias . '.SORTABLE_RANK');
+			$criteria->addSelectColumn($alias . '.CREATED_AT');
+			$criteria->addSelectColumn($alias . '.UPDATED_AT');
 		}
 	}
 
@@ -214,7 +230,7 @@ abstract class BaseAbsenceEleveMotifPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -233,7 +249,7 @@ abstract class BaseAbsenceEleveMotifPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -287,7 +303,7 @@ abstract class BaseAbsenceEleveMotifPeer {
 	 * @param      AbsenceEleveMotif $value A AbsenceEleveMotif object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(AbsenceEleveMotif $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -445,7 +461,7 @@ abstract class BaseAbsenceEleveMotifPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + AbsenceEleveMotifPeer::NUM_COLUMNS;
+			$col = $startcol + AbsenceEleveMotifPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = AbsenceEleveMotifPeer::OM_CLASS;
 			$obj = new $cls();
@@ -454,6 +470,7 @@ abstract class BaseAbsenceEleveMotifPeer {
 		}
 		return array($obj, $col);
 	}
+
 	/**
 	 * Returns the TableMap related to this peer.
 	 * This method is not needed for general use but a specific application could have a need.
@@ -495,7 +512,7 @@ abstract class BaseAbsenceEleveMotifPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a AbsenceEleveMotif or Criteria object.
+	 * Performs an INSERT on the database, given a AbsenceEleveMotif or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or AbsenceEleveMotif object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -538,7 +555,7 @@ abstract class BaseAbsenceEleveMotifPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a AbsenceEleveMotif or Criteria object.
+	 * Performs an UPDATE on the database, given a AbsenceEleveMotif or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or AbsenceEleveMotif object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -577,11 +594,12 @@ abstract class BaseAbsenceEleveMotifPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the a_motifs table.
+	 * Deletes all rows from the a_motifs table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(AbsenceEleveMotifPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -607,7 +625,7 @@ abstract class BaseAbsenceEleveMotifPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a AbsenceEleveMotif or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a AbsenceEleveMotif or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or AbsenceEleveMotif object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -714,7 +732,7 @@ abstract class BaseAbsenceEleveMotifPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(AbsenceEleveMotif $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

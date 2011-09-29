@@ -1,5 +1,5 @@
 <?php
-/* $Id: login_sso.php 6367 2011-01-18 08:07:19Z tbelliard $
+/* $Id: login_sso.php 7827 2011-08-19 10:28:36Z dblanqui $
 *
 * Copyright 2001, 2008 Thomas Belliard
 *
@@ -20,9 +20,14 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+//test version de php
+if (version_compare(PHP_VERSION, '5') < 0) {
+    die('GEPI nécessite PHP5 pour fonctionner');
+}
+
 // Pour le multisite
 if (isset($_GET["rne"])) {
-	setcookie('RNE', $_GET["rne"]);
+	setcookie('RNE', $_GET["rne"], null, '/');
 }
 
 $niveau_arbo = 0;

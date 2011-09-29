@@ -2,10 +2,9 @@
 
 /*
  *
+ * @version $Id: liste_eleves.php 6810 2011-04-20 19:26:12Z crob $
  *
- * @version $Id: liste_eleves.php 6654 2011-03-12 10:09:07Z crob $
- *
- * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
  * This file is part of GEPI.
  *

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: totaux_du_jour.php 6816 2011-04-22 20:43:40Z dblanqui $
+ * @version $Id: totaux_du_jour.php 8359 2011-09-25 16:08:28Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -121,7 +121,7 @@ $query = EleveQuery::create()->orderBy('Nom', Criteria::ASC)->orderBy('Prenom', 
 	->filterById($saisie_col->toKeyValue('Id', 'Id'))
 	->endUse();
 $eleve_col = $query
-                ->where('Eleve.DateSortie=?','0')
+                ->where('Eleve.DateSortie<?','0')
                 ->orWhere('Eleve.DateSortie is NULL')
                 ->orWhere('Eleve.DateSortie>?', $dt_date_absence_eleve->format('U'))
                 ->distinct()->find();
@@ -201,11 +201,11 @@ $eleve_col = $query
 		<input type="hidden" id="id_lieu" name="id_lieu" value=""/>
         <input type="hidden" id="filtre_actif" name="filtre_actif" value="<?php echo $filtre_actif ?>"/>
         <fieldset style="width:380px;display: inline;">
-            <legend>Choix de la date</legend>
+            <legend>Date</legend>
             <p class="expli_page choix_fin">
                 <input type="hidden" name="date_absence_eleve" value="<?php echo $date_absence_eleve?>"/>
                 <button dojoType="dijit.form.Button"  name="nav_date" type="submit"  value="precedent">Jour précédent</button>
-                <input onchange="document.totaux_du_jour.submit()" style="width : 7em" type="text" dojoType="dijit.form.DateTextBox" id="date_absence_eleve" name="date_absence_eleve" value="<?php echo $dt_date_absence_eleve->format('Y-m-d')?>" />
+                <input onchange="document.totaux_du_jour.submit()" style="width : 8em" type="text" dojoType="dijit.form.DateTextBox" id="date_absence_eleve" name="date_absence_eleve" value="<?php echo $dt_date_absence_eleve->format('Y-m-d')?>" />
                 <button dojoType="dijit.form.Button"  name="nav_date" type="submit"  value="suivant">Jour suivant</button>
             </p>
         </fieldset>

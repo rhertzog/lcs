@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id$
+ * $Id: ajax_enregistrement_compte_rendu.php 8369 2011-09-28 12:15:16Z crob $
  *
  * Copyright 2009-2011 Josselin Jacquard
  *
@@ -58,6 +58,7 @@ $id_groupe = isset($_POST["id_groupe"]) ? $_POST["id_groupe"] :(isset($_GET["id_
 //parametre d'enregistrement de fichiers joints
 if (empty($_FILES['doc_file'])) { $doc_file=''; } else { $doc_file=$_FILES['doc_file'];}
 $doc_name = isset($_POST["doc_name"]) ? $_POST["doc_name"] :(isset($_GET["doc_name"]) ? $_GET["doc_name"] :NULL);
+$doc_masque = isset($_POST["doc_masque"]) ? $_POST["doc_masque"] :(isset($_GET["doc_masque"]) ? $_GET["doc_masque"] :NULL);
 
 //parametre de changement de titre de fichier joint.
 $doc_name_modif = isset($_POST["doc_name_modif"]) ? $_POST["doc_name_modif"] :(isset($_GET["doc_name_modif"]) ? $_GET["doc_name_modif"] :NULL);
@@ -66,8 +67,25 @@ $id_document = isset($_POST["id_document"]) ? $_POST["id_document"] :(isset($_GE
 // uid de pour ne pas refaire renvoyer plusieurs fois le mÃªme formulaire
 // autoriser la validation de formulaire $uid_post==$_SESSION['uid_prime']
 $uid_prime = isset($_SESSION['uid_prime']) ? $_SESSION['uid_prime'] : 1;
+// Pour tester la mise en place d'une copie de sauvegarde, décommenter la ligne ci-dessous:
+//$uid_post=$uid_prime;
 if ($uid_post==$uid_prime) {
-	echo("Erreur enregistrement de compte rendu : formulaire dejà posté précédemment.");
+	if(getSettingValue('cdt2_desactiver_copie_svg')!='y') {
+		$contenu_cor = traitement_magic_quotes(corriger_caracteres($contenu),'');
+		$contenu_cor = str_replace("\\r","",$contenu_cor);
+		$contenu_cor = str_replace("\\n","",$contenu_cor);
+		$contenu_cor = stripslashes($contenu_cor);
+		if ($contenu_cor == "" or $contenu_cor == "<br>") {$contenu_cor = "...";}
+	
+		$sql="INSERT INTO ct_private_entry SET date_ct='$date_ct', heure_entry='".strftime("%H:%M:%S")."', id_login='".$_SESSION['login']."', id_groupe='$id_groupe', contenu='<b>COPIE DE SAUVEGARDE</b><br />$contenu_cor';";
+		$insert=mysql_query($sql);
+
+		echo("Erreur enregistrement de compte rendu : formulaire déjà posté précédemment.\nUne copie de sauvegarde a été créée en notice privée.");
+	}
+	else {
+		echo("Erreur enregistrement de compte rendu : formulaire déjà posté précédemment.");
+	}
+
 	die();
 }
 $_SESSION['uid_prime'] = $uid_post;
@@ -120,7 +138,7 @@ $contenu_cor = traitement_magic_quotes(corriger_caracteres($contenu),'');
 $contenu_cor = str_replace("\\r","",$contenu_cor);
 $contenu_cor = str_replace("\\n","",$contenu_cor);
 $contenu_cor = stripslashes($contenu_cor);
-if ($contenu_cor == "" or $contenu_cor == "<br>") $contenu_cor = "...";
+if ($contenu_cor == "" or $contenu_cor == "<br>") {$contenu_cor = "...";}
 $ctCompteRendu->setContenu($contenu_cor);
 $ctCompteRendu->setDateCt($date_ct);
 $ctCompteRendu->setGroupe($groupe);
@@ -134,7 +152,11 @@ if (!empty($doc_file['name'][0])) {
 	require_once("traite_doc.php");
 	$total_max_size = getSettingValue("total_max_size");
 	$max_size = getSettingValue("max_size");
-	$dest_dir = "../documents/cl".$ctCompteRendu->getIdCt();
+        $multi = (isset($multisite) && $multisite == 'y') ? $_COOKIE['RNE'].'/' : NULL;
+        if ((isset($multisite) && $multisite == 'y') && is_dir('../documents/'.$multi) === false){
+            mkdir('../documents/'.$multi);
+        }
+	$dest_dir = '../documents/'.$multi.'cl'.$ctCompteRendu->getIdCt();
 
 	//il y a au plus trois documents joints dans l'interface de saisie
 	for ($index_doc=0; $index_doc < 3; $index_doc++) {
@@ -150,6 +172,12 @@ if (!empty($doc_file['name'][0])) {
 					$ctDocument->setTitre(corriger_caracteres($doc_name[$index_doc]));
 				} else {
 					$ctDocument->setTitre(basename($file_path));
+				}
+				if(isset($doc_masque[$index_doc])) {
+					$ctDocument->setVisibleEleveParent(false);
+				}
+				else {
+					$ctDocument->setVisibleEleveParent(true);
 				}
 				$ctDocument->save();
 				$ctCompteRendu->addCahierTexteCompteRenduFichierJoint($ctDocument);

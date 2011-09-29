@@ -14,7 +14,8 @@
  *
  * @package    propel.generator.gepi.map
  */
-class CahierTexteCompteRenduFichierJointTableMap extends TableMap {
+class CahierTexteCompteRenduFichierJointTableMap extends TableMap
+{
 
 	/**
 	 * The (dot-path) name of this class
@@ -30,7 +31,7 @@ class CahierTexteCompteRenduFichierJointTableMap extends TableMap {
 	 */
 	public function initialize()
 	{
-	  // attributes
+		// attributes
 		$this->setName('ct_documents');
 		$this->setPhpName('CahierTexteCompteRenduFichierJoint');
 		$this->setClassname('CahierTexteCompteRenduFichierJoint');
@@ -42,6 +43,7 @@ class CahierTexteCompteRenduFichierJointTableMap extends TableMap {
 		$this->addColumn('TITRE', 'Titre', 'VARCHAR', true, 255, null);
 		$this->addColumn('TAILLE', 'Taille', 'INTEGER', true, null, 0);
 		$this->addColumn('EMPLACEMENT', 'Emplacement', 'VARCHAR', true, 255, null);
+		$this->addColumn('VISIBLE_ELEVE_PARENT', 'VisibleEleveParent', 'BOOLEAN', false, null, true);
 		// validators
 	} // initialize()
 
@@ -50,7 +52,7 @@ class CahierTexteCompteRenduFichierJointTableMap extends TableMap {
 	 */
 	public function buildRelations()
 	{
-    $this->addRelation('CahierTexteCompteRendu', 'CahierTexteCompteRendu', RelationMap::MANY_TO_ONE, array('id_ct' => 'id_ct', ), 'CASCADE', null);
+		$this->addRelation('CahierTexteCompteRendu', 'CahierTexteCompteRendu', RelationMap::MANY_TO_ONE, array('id_ct' => 'id_ct', ), 'CASCADE', null);
 	} // buildRelations()
 
 } // CahierTexteCompteRenduFichierJointTableMap

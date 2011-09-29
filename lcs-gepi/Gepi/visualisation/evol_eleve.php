@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: evol_eleve.php 4878 2010-07-24 13:54:01Z regis $
+ * $Id: evol_eleve.php 7953 2011-08-24 14:23:50Z regis $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -277,6 +277,7 @@ if (!$id_classe) {
         "jgc.id_classe = '".$id_classe."' AND " .
         "jgm.id_groupe = jgc.id_groupe AND " .
         "m.matiere = jgm.id_matiere" .
+		" AND jgc.id_groupe NOT IN (SELECT id_groupe FROM j_groupes_visibilite WHERE domaine='bulletins' AND visible='n')".
         ") " .
         "ORDER BY jmcc.priority,jgc.priorite,m.nom_complet");
     } else {
@@ -287,6 +288,7 @@ if (!$id_classe) {
         "jgc.id_groupe = jeg.id_groupe AND " .
         "jgc.id_classe = '".$id_classe."' AND " .
         "jgm.id_groupe = jgc.id_groupe" .
+		" AND jgc.id_groupe NOT IN (SELECT id_groupe FROM j_groupes_visibilite WHERE domaine='bulletins' AND visible='n')".
         ") " .
         "ORDER BY jgc.priorite,jgm.id_matiere");
     }
@@ -421,24 +423,10 @@ if (!$id_classe) {
 	$texte="<div align='center'>\n";
 	//$texte.="<tr>\n";
 	if($v_elenoet!=""){
-		/*
-		if(file_exists("../photos/eleves/".$v_elenoet.".jpg")){
-			//$texte.="<td>\n";
-			$texte.="<img src='../photos/eleves/".$v_elenoet.".jpg' width='150' alt=\"$v_eleve_nom_prenom\" />";
-			//$texte.="</td>\n";
-			$texte.="<br />\n";
-		}
-		elseif(file_exists("../photos/eleves/0".$v_elenoet.".jpg")){
-			//$texte.="<td>\n";
-			$texte.="<img src='../photos/eleves/0".$v_elenoet.".jpg' width='150' alt=\"$v_eleve_nom_prenom\" />";
-			//$texte.="</td>\n";
-			$texte.="<br />\n";
-		}
-		*/
+		
 		$photo=nom_photo($v_elenoet);
 		//if("$photo"!=""){
 		if($photo){
-		  //$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$v_eleve_nom_prenom\" />";
 		  $texte.="<img src='".$photo."' width='150' alt=\"$v_eleve_nom_prenom\" />";
 		  $texte.="<br />\n";
 		}
@@ -497,5 +485,12 @@ if (!$id_classe) {
     echo "etiquette=$etiq&amp;titre=$graph_title&amp;compteur=$compteur&amp;nb_data=$nb_periode' alt='Evolution de $prenom_el $nom_el' />\n";
     echo "<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />";
 }
+
+//===========================================================
+echo "<p><em>NOTE&nbsp;:</em></p>\n";
+require("../lib/textes.inc.php");
+echo "<p style='margin-left: 3em;'>$explication_bulletin_ou_graphe_vide</p>\n";
+//===========================================================
+
 require("../lib/footer.inc.php");
 ?>

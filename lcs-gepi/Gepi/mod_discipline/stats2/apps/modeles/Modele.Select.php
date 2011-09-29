@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: Modele.Select.php 7737 2011-08-13 16:54:09Z dblanqui $
+ * $Id: Modele.Select.php 8197 2011-09-11 18:14:36Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -20,6 +20,11 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+// On empêche l'accès direct au fichier
+if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
+    die();
+};
+
 require_once("Class.Date.php");
 require_once('Class.Modele.php');
 Class modele_select extends Modele {
@@ -53,26 +58,28 @@ Class modele_select extends Modele {
   }
 
   public function get_classes_periode() {
-
-    if (isset($_SESSION['stats_periodes']['periode'])) {
-      foreach ($this->periodes_calendrier as $value) {
-        if ($value['id_calendrier']==$_SESSION['stats_periodes']['periode']) {
-          $liste=trim($value['classe_concerne_calendrier'],";");
-          $liste=explode(';',$liste);
+        $liste = false;
+        if (isset($_SESSION['stats_periodes']['periode'])) {
+            foreach ($this->periodes_calendrier as $value) {
+                if ($value['id_calendrier'] == $_SESSION['stats_periodes']['periode']) {
+                    if ($value['classe_concerne_calendrier'] != '') {
+                        $liste = trim($value['classe_concerne_calendrier'], ";");
+                        $liste = explode(';', $liste);
+                    }
+                }
+            }
         }
-      }
-      $this->sql = "SELECT id, classe, nom_complet FROM classes WHERE id IN (".implode(',', $liste)." ) ORDER BY classe ASC ";
-      $this->res = mysql_query($this->sql);
-      $this->classes=parent::set_array('object',$this->res);
-
-    }else {
-      $this->sql = "SELECT id, classe, nom_complet FROM classes ORDER BY classe ASC ";
-      $this->res = mysql_query($this->sql);
-      $this->classes=parent::set_array('object',$this->res);
-
+        if ($liste) {
+            $this->sql = "SELECT id, classe, nom_complet FROM classes WHERE id IN (" . implode(',', $liste) . " ) ORDER BY classe ASC ";
+            $this->res = mysql_query($this->sql);
+            $this->classes = parent::set_array('object', $this->res);
+        } else {
+            $this->sql = "SELECT id, classe, nom_complet FROM classes ORDER BY classe ASC ";
+            $this->res = mysql_query($this->sql);
+            $this->classes = parent::set_array('object', $this->res);
+        }
+        return($this->classes);
     }
-    return($this->classes);
-  }
   public function get_infos_classe($id) {
     $this->sql = 'SELECT id, classe, nom_complet FROM classes where id='.$id;
     $this->res = mysql_query($this->sql);    
@@ -91,7 +98,7 @@ Class modele_select extends Modele {
           if (mysql_num_rows($this->res) > 0) {
                         while ($this->row = mysql_fetch_assoc($this->res)) {
                             $this->individu_identite = $this->row;
-          }
+                        }
                     } else {
                         $this->individu_identite = Array("login" => $ident, "nom" => "eleve inconnu(login:$ident)", "prenom" => "inconnu", "classe" => "classe inconnue");
                     }
@@ -106,12 +113,12 @@ Class modele_select extends Modele {
           if (mysql_num_rows($this->res) > 0) {
                         while ($this->row = mysql_fetch_assoc($this->res)) {
                             $this->individu_identite = $this->row;
-          }
+                        }
                     } else {
                         $this->individu_identite = Array("login" => $ident, "nom" => "personnel inconnu(login:$ident)", "prenom" => "inconnu", "statut" => "statut inconnu");
                     }
 
-          break;
+                    break;
         }
     }
     return($this->individu_identite) ;

@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_socle_commun.php 7256 2011-06-19 13:09:37Z crob $
+* $Id: saisie_socle_commun.php 7254 2011-06-19 13:09:31Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
 *

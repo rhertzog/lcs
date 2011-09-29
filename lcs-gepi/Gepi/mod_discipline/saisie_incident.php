@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: saisie_incident.php 7037 2011-05-28 09:20:21Z crob $
+ * $Id: saisie_incident.php 8383 2011-09-29 10:43:19Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -66,20 +66,24 @@ function choix_heure($champ_heure,$div_choix_heure) {
 		$texte="<table class='boireaus' style='margin: auto;' border='1' summary=\"Choix d'une heure\">\n";
 		while($lig_ac=mysql_fetch_object($res_abs_cren)) {
 			$td_style="";
+			$tmp_bgcolor="";
 			if($lig_ac->type_creneaux=='cours') {
 				$td_style=" style='background-color: lightgreen;'";
+				$tmp_bgcolor="lightgreen";
 			}
 			elseif($lig_ac->type_creneaux=='pause') {
 				$td_style=" style='background-color: lightgrey;'";
+				$tmp_bgcolor="lightgrey";
 			}
 			elseif($lig_ac->type_creneaux=='repas') {
 				$td_style=" style='background-color: lightgrey;'";
+				$tmp_bgcolor="lightgrey";
 			}
 
-			$texte.="<tr$td_style>\n";
+			$texte.="<tr class='white_hover'$td_style onmouseover=\"this.style.backgroundColor='white'\" onmouseout=\"this.style.backgroundColor='$tmp_bgcolor'\">\n";
 			$texte.="<td><a href='#' onclick=\"document.getElementById('$champ_heure').value='$lig_ac->nom_definie_periode';cacher_div('$div_choix_heure');return false;\">".$lig_ac->nom_definie_periode."</a></td>\n";
-			$texte.="<td>".$lig_ac->heuredebut_definie_periode."</td>\n";
-			$texte.="<td>".$lig_ac->heurefin_definie_periode."</td>\n";
+			$texte.="<td><a href='#' onclick=\"document.getElementById('$champ_heure').value='$lig_ac->nom_definie_periode';cacher_div('$div_choix_heure');return false;\" style='text-decoration: none; color: black;'>".$lig_ac->heuredebut_definie_periode."</a></td>\n";
+			$texte.="<td><a href='#' onclick=\"document.getElementById('$champ_heure').value='$lig_ac->nom_definie_periode';cacher_div('$div_choix_heure');return false;\" style='text-decoration: none; color: black;'>".$lig_ac->heurefin_definie_periode."</a></td>\n";
 			$texte.="</tr>\n";
 		}
 		$texte.="</table>\n";
@@ -416,7 +420,6 @@ if($etat_incident!='clos') {
 					$description=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["description"]));
 	
 					// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-					//$description=my_ereg_replace('(\\\r\\\n)+',"\r\n",$description);
 					$description=preg_replace('/(\\\r\\\n)+/',"\r\n",$description);
 					$description=preg_replace('/(\\\r)+/',"\r",$description);
 					$description=preg_replace('/(\\\n)+/',"\n",$description);
@@ -431,7 +434,6 @@ if($etat_incident!='clos') {
 					$commentaire=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["commentaire"]));
 	
 					// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-					//$commentaire=my_ereg_replace('(\\\r\\\n)+',"\r\n",$commentaire);
 					$commentaire=preg_replace('/(\\\r\\\n)+/',"\r\n",$commentaire);
 					$commentaire=preg_replace('/(\\\r)+/',"\r",$commentaire);
 					$commentaire=preg_replace('/(\\\n)+/',"\n",$commentaire);
@@ -538,8 +540,6 @@ if($etat_incident!='clos') {
 					$description=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["description"]));
 	
 					// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-					//$description=my_ereg_replace('(\\\r\\\n)+',"\r\n",$description);
-					//$description=preg_replace('/(\\\r\\\n)+/',"\r\n",$description);
 					$description=preg_replace('/(\\\r\\\n)+/',"\r\n",$description);
 					$description=preg_replace('/(\\\r)+/',"\r",$description);
 					$description=preg_replace('/(\\\n)+/',"\n",$description);
@@ -553,7 +553,6 @@ if($etat_incident!='clos') {
 					$commentaire=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["commentaire"]));
 	
 					// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-					//$commentaire=my_ereg_replace('(\\\r\\\n)+',"\r\n",$commentaire);
 					$commentaire=preg_replace('/(\\\r\\\n)+/',"\r\n",$commentaire);
 					$commentaire=preg_replace('/(\\\r)+/',"\r",$commentaire);
 					$commentaire=preg_replace('/(\\\n)+/',"\n",$commentaire);
@@ -686,7 +685,9 @@ if($etat_incident!='clos') {
 
 					// Recherche des mesures déjà enregistrées:
 					for($i=0;$i<count($mesure_ele_login);$i++) {
-	
+
+						//$msg.="\$mesure_ele_login[$i]=$mesure_ele_login[$i]<br />";
+
 						$tab_mes_enregistree=array();
 						//$sql="SELECT mesure FROM s_traitement_incident WHERE id_incident='$id_incident' AND login_ele='".$mesure_ele_login[$i]."';";
 						$sql="SELECT id_mesure FROM s_traitement_incident WHERE id_incident='$id_incident' AND login_ele='".$mesure_ele_login[$i]."';";
@@ -705,7 +706,115 @@ if($etat_incident!='clos') {
 	
 						//for($i=0;$i<count($mesure_demandee);$i++) {
 						//}
+
+						unset($suppr_doc_joint);
+						$suppr_doc_joint=isset($_POST['suppr_doc_joint_'.$i]) ? $_POST['suppr_doc_joint_'.$i] : array();
+						for($loop=0;$loop<count($suppr_doc_joint);$loop++) {
+							if((preg_match("/\.\./",$suppr_doc_joint[$loop]))||(preg_match("#/#",$suppr_doc_joint[$loop]))) {
+								$msg.="Nom de fichier ".$suppr_doc_joint[$loop]." invalide<br />";
+							}
+							else {
+								$fichier_courant="../$dossier_documents_discipline/incident_".$id_incident."/mesures/".$mesure_ele_login[$i]."/".$suppr_doc_joint[$loop];
+								if(!unlink($fichier_courant)) {
+									$msg.="Erreur lors de la suppression de $fichier_courant<br />";
+								}
+							}
+						}
+
+						unset($document_joint);
+						$document_joint=isset($_FILES["document_joint_".$i]) ? $_FILES["document_joint_".$i] : NULL;
+						if((isset($document_joint['tmp_name']))&&($document_joint['tmp_name']!="")) {
+							/*
+							foreach($document_joint as $key => $value) {
+								echo "\$document_joint[$key]=$value<br />";
+							}
+							// Image PNM
+							$document_joint[name]=
+							$document_joint[type]=image/x-portable-anymap
+							$document_joint[tmp_name]=/tmp/php0zquJ4
+							$document_joint[error]=0
+							$document_joint[size]=69472
+							*/
+
+							//$msg.="\$document_joint['tmp_name']=".$document_joint['tmp_name']."<br />";
+							if(!is_uploaded_file($document_joint['tmp_name'])) {
+								$msg.="L'upload du fichier a échoué.<br />\n";
+							}
+							else{
+								if(!file_exists($document_joint['tmp_name'])) {
+									if($document_joint['name']!="") {
+										$extension_tmp=substr(strrchr($document_joint['name'],'.'),1);
+										if(!in_array($extension, $AllowedFilesExtensions)) {
+											$msg.="Vous avez proposé : ".$document_joint['name']."<br />L'extension $extension n'est pas autorisée.<br />\n";
+										}
+										else {
+											$msg.="Le fichier aurait été uploadé... mais ne serait pas présent/conservé.<br />\n";
+										}
+									}
+									else {
+										$msg.="Le fichier aurait été uploadé... mais ne serait pas présent/conservé.<br />\n";
+										$msg.="Il se peut que l'extension du fichier proposé ne soit pas autorisée.<br />\n";
+										$msg.="Les types autorisés sont ".array_to_chaine($AllowedFilesExtensions)."<br />";
+									}
+								}
+								else {
+									//echo "<p>Le fichier a été uploadé.</p>\n";
+				
+									$source_file=$document_joint['tmp_name'];
+									$dossier_courant="../$dossier_documents_discipline/incident_".$id_incident."/mesures/".$mesure_ele_login[$i];
+									if(!file_exists($dossier_courant)) {
+										mkdir($dossier_courant, 0770, true);
+									}
+									$dest_file=$dossier_courant."/".remplace_accents($document_joint['name'], "all");
+									$res_copy=copy("$source_file" , "$dest_file");
+									if(!$res_copy) {$msg.="Echec de la mise en place du fichier ".$document_joint['name']."<br />";}
+								}
+							}
+						}
+
+						if(count($mesure_demandee)>0) {
+							if (isset($NON_PROTECT["travail_pour_mesure_demandee_".$i])){
+								$texte_travail=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["travail_pour_mesure_demandee_".$i]));
+				
+								// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
+								$texte_travail=preg_replace('/(\\\r\\\n)+/',"\r\n",$texte_travail);
+								$texte_travail=preg_replace('/(\\\r)+/',"\r",$texte_travail);
+								$texte_travail=preg_replace('/(\\\n)+/',"\n",$texte_travail);
 	
+								if($texte_travail=="") {
+									$sql="DELETE FROM s_travail_mesure WHERE id_incident='$id_incident' AND login_ele='".$mesure_ele_login[$i]."';";
+									$res_del=mysql_query($sql);
+								}
+								else {
+									$sql="SELECT * FROM s_travail_mesure WHERE id_incident='$id_incident' AND login_ele='".$mesure_ele_login[$i]."';";
+									$res_mes=mysql_query($sql);
+									if(mysql_num_rows($res_mes)>0) {
+										$sql="UPDATE s_travail_mesure SET travail='".$texte_travail."' WHERE id_incident='$id_incident' AND login_ele='".$mesure_ele_login[$i]."';";
+										$update=mysql_query($sql);
+									}
+									else {
+										$sql="INSERT INTO s_travail_mesure SET travail='".$texte_travail."', id_incident='$id_incident', login_ele='".$mesure_ele_login[$i]."';";
+										$insert=mysql_query($sql);
+									}
+								}
+							}
+						}
+						/*
+						// Mis en commentaire pour ne pas supprimer trop hativement des fichiers
+						if(count($mesure_demandee)==0) {
+							// Supprimer d'éventuels fichiers associés? s'il ne reste plus aucune mesure, oui
+							$tab_documents_joints=get_documents_joints($id_incident, "mesure", $mesure_ele_login[$i]);
+							if(count($tab_documents_joints)>0) {
+								for($loop=0;$loop<count($tab_documents_joints);$loop++) {
+									$fichier_courant="../$dossier_documents_discipline/incident_".$id_incident."/mesures/".$mesure_ele_login[$i]."/".$tab_documents_joints[$loop];
+									if(!unlink($fichier_courant)) {
+										$msg.="Erreur lors de la suppression de $fichier_courant<br />";
+									}
+								}
+							}
+						}
+						*/
+
 						//$tab_mesure_possible=array();
 						//$sql="SELECT mesure FROM s_mesures;";
 						$sql="SELECT * FROM s_mesures;";
@@ -1089,9 +1198,14 @@ if(isset($id_incident)) {
 		//echo "<th>Qualité dans l'incident</th>\n";
 		echo "<th>Rôle dans l'incident</th>\n";
 
-//Eric modèle Ooo
-		if ($gepiSettings['active_mod_ooo'] == 'y') {
-		echo "<th>Retenue</th>\n";
+		//Eric modèle Ooo
+		/*
+		if(($gepiSettings['active_mod_ooo'] == 'y')&&
+		((($_SESSION['statut']=='professeur')&&($gepiSettings['imprDiscProfRetenueOOo']=='yes'))||($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||($_SESSION['statut']=='cpe'))) {
+		*/
+		if(($gepiSettings['active_mod_ooo'] == 'y')&&
+		((($_SESSION['statut']=='professeur')&&(getSettingValue('imprDiscProfRetenueOOo')=='yes'))||($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||($_SESSION['statut']=='cpe'))) {
+			echo "<th>Retenue</th>\n";
 		}
 
 		if($_SESSION['statut']!='professeur') {
@@ -1218,8 +1332,13 @@ if(isset($id_incident)) {
 				}
 				echo "</td>\n";
 			}
-//Eric  modèle Ooo
-			if ($gepiSettings['active_mod_ooo'] == 'y') {
+			//Eric  modèle Ooo
+			/*
+			if(($gepiSettings['active_mod_ooo'] == 'y')&&
+			((($_SESSION['statut']=='professeur')&&($gepiSettings['imprDiscProfRetenueOOo']=='yes'))||($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||($_SESSION['statut']=='cpe'))) {
+			*/
+			if(($gepiSettings['active_mod_ooo'] == 'y')&&
+			((($_SESSION['statut']=='professeur')&&(getSettingValue('imprDiscProfRetenueOOo')=='yes'))||($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||($_SESSION['statut']=='cpe'))) {
 			    echo "<td id='td_retenue_$cpt'>";
 				if ($lig->qualite=='Responsable') { //un retenue seulement pour un responsable !
 		            echo "<a href='../mod_ooo/retenue.php?mode=module_discipline&amp;id_incident=$id_incident&amp;ele_login=$lig->login".add_token_in_url()."' title='Imprimer la retenue'><img src='../images/icons/print.png' width='16' height='16' alt='Imprimer Retenue' /></a>\n";
@@ -1725,7 +1844,7 @@ elseif($step==2) {
 		}
 	}
 
-	echo "<blockquote>\n";
+	echo "<blockquote style='margin-right: 0.5em;'>\n";
 
 	$alt=1;
 	echo "<table class='boireaus' border='1' summary='Details incident'>\n";
@@ -1864,13 +1983,52 @@ elseif($step==2) {
 
 	//$nature="";
 
+	$DisciplineNaturesRestreintes=getSettingValue('DisciplineNaturesRestreintes');
+	//echo "\$DisciplineNaturesRestreintes=$DisciplineNaturesRestreintes<br />";
 	if($etat_incident!='clos') {
-		echo "<input type='text' name='nature' id='nature' size='30' value=\"".$nature."\" ";
-		//echo "onkeyup='check_incident()' ";
-		echo "/>\n";
-		echo "<div id='div_completion_nature' class='infobulle_corps'></div>\n";
+		$saisie_nature_libre="y";
+		if($DisciplineNaturesRestreintes==2) {
+			/*
+			// On limite les natures d'incident au contenu de s_categories
+			$sql="SELECT DISTINCT categorie FROM s_categories ORDER BY categorie;";
+			$res_cat=mysql_query($sql);
+			if(mysql_num_rows($res_cat)>0) {
+				$saisie_nature_libre="n";
 
-		echo "<script type='text/javascript'>
+				echo "<select name='nature' id='nature'>\n";
+				while($lig_cat=mysql_fetch_object($res_cat)) {
+					echo "<option value=\"$lig_cat->categorie\"";
+					if($lig_cat->categorie==$nature) {echo " selected='selected'";}
+					echo ">$lig_cat->categorie</option>\n";
+				}
+				echo "</select>\n";
+			}
+			*/
+
+			// On limite les natures d'incident au contenu de s_natures
+			$sql="SELECT DISTINCT nature FROM s_natures WHERE nature!='' ORDER BY nature;";
+			$res_nat=mysql_query($sql);
+			if(mysql_num_rows($res_nat)>0) {
+				$saisie_nature_libre="n";
+
+				echo "<select name='nature' id='nature'>\n";
+				while($lig_nat=mysql_fetch_object($res_nat)) {
+					echo "<option value=\"$lig_nat->nature\"";
+					if($lig_nat->nature==$nature) {echo " selected='selected'";}
+					echo ">$lig_nat->nature</option>\n";
+				}
+				echo "</select>\n";
+			}
+
+		}
+
+		if($saisie_nature_libre=="y") {
+			echo "<input type='text' name='nature' id='nature' size='30' value=\"".$nature."\" ";
+			//echo "onkeyup='check_incident()' ";
+			echo "/>\n";
+			echo "<div id='div_completion_nature' class='infobulle_corps'></div>\n";
+	
+			echo "<script type='text/javascript'>
 new Ajax.Autocompleter (
 	'nature',      // ID of the source field
 	'div_completion_nature',  // ID of the DOM element to update
@@ -1879,68 +2037,73 @@ new Ajax.Autocompleter (
 );
 </script>\n";
 
-		$sql="SELECT DISTINCT nature FROM s_incidents WHERE nature!='' ORDER BY nature;";
-		$res_nat=mysql_query($sql);
-		if(mysql_num_rows($res_nat)>0) {
-			echo " <a href='#' onclick=\"cacher_toutes_les_infobulles();afficher_div('div_choix_nature','y',10,-40); return false;\">Choix</a>";
-			//echo " <a href='#' onclick=\"afficher_div('div_choix_nature','y',10,-40); return false;\" onmouseover=\"delais_afficher_div('div_explication_choix_nature','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onmouseout=\"cacher_div('div_explication_choix_nature')\">Choix</a>";
-
-			$texte="<table class='boireaus' style='margin: auto;' border='1' summary=\"Choix d'une nature\">\n";
-			$alt2=1;
-			while($lig_nat=mysql_fetch_object($res_nat)) {
-				$alt2=$alt2*(-1);
-				$texte.="<tr class='lig$alt2'>\n";
-				$texte.="<td><a href='#' onclick=\"document.getElementById('nature').value='$lig_nat->nature';cacher_div('div_choix_nature');return false;\">".$lig_nat->nature."</a></td>\n";
-				$texte.="</tr>\n";
+			if($DisciplineNaturesRestreintes!=1) {
+				$sql="SELECT DISTINCT nature FROM s_incidents WHERE nature!='' ORDER BY nature;";
 			}
-			$texte.="</table>\n";
-
-			$tabdiv_infobulle[]=creer_div_infobulle('div_choix_nature',"Nature de l'incident","",$texte,"",14,0,'y','y','n','n');
-
-			echo " <a href='#' onclick=\"return false;\" onmouseover=\"delais_afficher_div('div_explication_choix_nature','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onmouseout=\"cacher_div('div_explication_choix_nature')\"><img src='../images/icons/ico_question_petit.png' width='15' height='15' alt='Choix nature' /></a>";
-
-			$texte="Cliquez pour choisir une nature existante.<br />Ou si aucune nature n'est déjà définie, saisissez la nature d'incident de votre choix.";
-			$tabdiv_infobulle[]=creer_div_infobulle('div_explication_choix_nature',"Choix nature de l'incident","",$texte,"",18,0,'y','y','n','n');
-
-			//====================================================
-
-			/*
-			$titre="Nature de l'incident";
-			$texte="Blabla";
-			$tabdiv_infobulle[]=creer_div_infobulle('div_choix_nature2',"Nature de l'incident","",$texte,"",30,10,'y','y','y','n');
-			*/
-
-			$id_infobulle_nature2='div_choix_nature2';
-			$largeur_infobulle_nature2=35;
-			$hauteur_infobulle_nature2=10;
-		
-			// Conteneur:
-			echo "<div id='$id_infobulle_nature2' class='infobulle_corps' style='color: #000000; border: 1px solid #000000; padding: 0px; position: absolute; width: ".$largeur_infobulle_nature2."em; height: ".$hauteur_infobulle_nature2."em; left: 1600px;'>\n";
-		
-				// Ligne d'entête/titre
-				echo "<div class='infobulle_entete' style='color: #ffffff; cursor: move; font-weight: bold; padding: 0px; width: ".$largeur_infobulle_nature2."em;' onmousedown=\"dragStart(event, '$id_infobulle_nature2')\">\n";
-
-					echo "<div style='color: #ffffff; cursor: move; font-weight: bold; float:right; width: 16px; margin-right: 1px;'>
+			else {
+				$sql="SELECT DISTINCT nature FROM s_natures WHERE nature!='' ORDER BY nature;";
+			}
+			$res_nat=mysql_query($sql);
+			if(mysql_num_rows($res_nat)>0) {
+				echo " <a href='#' onclick=\"cacher_toutes_les_infobulles();afficher_div('div_choix_nature','y',10,-40); return false;\">Choix</a>";
+				//echo " <a href='#' onclick=\"afficher_div('div_choix_nature','y',10,-40); return false;\" onmouseover=\"delais_afficher_div('div_explication_choix_nature','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onmouseout=\"cacher_div('div_explication_choix_nature')\">Choix</a>";
+	
+				$texte="<table class='boireaus' style='margin: auto;' border='1' summary=\"Choix d'une nature\">\n";
+				$alt2=1;
+				while($lig_nat=mysql_fetch_object($res_nat)) {
+					$alt2=$alt2*(-1);
+					$texte.="<tr class='lig$alt2' onmouseover=\"this.style.backgroundColor='white';\" onmouseout=\"this.style.backgroundColor='';\">\n";
+					$texte.="<td ><a href='#' onclick=\"document.getElementById('nature').value='$lig_nat->nature';cacher_div('div_choix_nature');return false;\">".$lig_nat->nature."</a></td>\n";
+					$texte.="</tr>\n";
+				}
+				$texte.="</table>\n";
+	
+				$tabdiv_infobulle[]=creer_div_infobulle('div_choix_nature',"Nature de l'incident","",$texte,"",14,0,'y','y','n','n');
+	
+				echo " <a href='#' onclick=\"return false;\" onmouseover=\"delais_afficher_div('div_explication_choix_nature','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onmouseout=\"cacher_div('div_explication_choix_nature')\"><img src='../images/icons/ico_question_petit.png' width='15' height='15' alt='Choix nature' /></a>";
+	
+				$texte="Cliquez pour choisir une nature existante.<br />Ou si aucune nature n'est déjà définie, saisissez la nature d'incident de votre choix.";
+				$tabdiv_infobulle[]=creer_div_infobulle('div_explication_choix_nature',"Choix nature de l'incident","",$texte,"",18,0,'y','y','n','n');
+	
+				//====================================================
+	
+				/*
+				$titre="Nature de l'incident";
+				$texte="Blabla";
+				$tabdiv_infobulle[]=creer_div_infobulle('div_choix_nature2',"Nature de l'incident","",$texte,"",30,10,'y','y','y','n');
+				*/
+	
+				$id_infobulle_nature2='div_choix_nature2';
+				$largeur_infobulle_nature2=35;
+				$hauteur_infobulle_nature2=10;
+			
+				// Conteneur:
+				echo "<div id='$id_infobulle_nature2' class='infobulle_corps' style='color: #000000; border: 1px solid #000000; padding: 0px; position: absolute; width: ".$largeur_infobulle_nature2."em; height: ".$hauteur_infobulle_nature2."em; left: 1600px;'>\n";
+			
+					// Ligne d'entête/titre
+					echo "<div class='infobulle_entete' style='color: #ffffff; cursor: move; font-weight: bold; padding: 0px; width: ".$largeur_infobulle_nature2."em;' onmousedown=\"dragStart(event, '$id_infobulle_nature2')\">\n";
+	
+						echo "<div style='color: #ffffff; cursor: move; font-weight: bold; float:right; width: 16px; margin-right: 1px;'>
 <a href='#' onClick=\"cacher_div('$id_infobulle_nature2');return false;\">
 <img src='../images/icons/close16.png' width='16' height='16' alt='Fermer' />
 </a>
 </div>\n";
-					echo "<span style='padding-left: 1px; margin-bottom: 3px;'>Natures d'incidents semblables</span>\n";
+						echo "<span style='padding-left: 1px; margin-bottom: 3px;'>Natures d'incidents semblables</span>\n";
+					echo "</div>\n";
+			
+					// Partie texte:
+					$hauteur_hors_titre=$hauteur_infobulle_nature2-1.5;
+					echo "<div id='".$id_infobulle_nature2."_texte' style='width: ".$largeur_infobulle_nature2."em; height: ".$hauteur_hors_titre."em; overflow: auto; padding-left: 1px;'>\n";
+					//$div.=$texte;
+					echo "</div>\n";
 				echo "</div>\n";
-		
-				// Partie texte:
-				$hauteur_hors_titre=$hauteur_infobulle_nature2-1.5;
-				echo "<div id='".$id_infobulle_nature2."_texte' style='width: ".$largeur_infobulle_nature2."em; height: ".$hauteur_hors_titre."em; overflow: auto; padding-left: 1px;'>\n";
-				//$div.=$texte;
-				echo "</div>\n";
-			echo "</div>\n";
-			//=========================================
-
-			/*
-			echo " Bis: <a href='#' onclick=\"return false;\" onmouseover=\"delais_afficher_div('div_choix_nature2','y',10,40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onmouseout=\"cacher_div('div_choix_nature2')\"><img src='../images/icons/ico_question_petit.png' width='15' height='15' alt='Choix nature' /></a>";
-			*/
-
-echo "<script type='text/javascript'>
+				//=========================================
+	
+				/*
+				echo " Bis: <a href='#' onclick=\"return false;\" onmouseover=\"delais_afficher_div('div_choix_nature2','y',10,40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onmouseout=\"cacher_div('div_choix_nature2')\"><img src='../images/icons/ico_question_petit.png' width='15' height='15' alt='Choix nature' /></a>";
+				*/
+	
+				echo "<script type='text/javascript'>
 	function check_incident(event) {
 
 		saisie=document.getElementById('nature').value;
@@ -1972,8 +2135,8 @@ echo "<script type='text/javascript'>
 	}
 
 </script>\n";
-			//====================================================
-
+				//====================================================
+			}
 		}
 	}
 	else {
@@ -1996,8 +2159,50 @@ echo "<script type='text/javascript'>
 	if($etat_incident!='clos') {if ($autorise_commentaires_mod_disc !="yes") echo " colspan='2'";}
 	echo ">\n";
 
+	if(count($ele_login)>0) {
+		$chaine_avertissement="";
+		for($i=0;$i<count($ele_login);$i++) {
+			if(acces_ele_disc($ele_login[$i])) {
+				if($chaine_avertissement=='') {$chaine_avertissement.="Détails visibles de ";}
+				else {$chaine_avertissement.=", ";}
+				$chaine_avertissement.=get_nom_prenom_eleve($ele_login[$i]);
+			}
+			$tab_resp=get_resp_from_ele_login($ele_login[$i]);
+			for($j=0;$j<count($tab_resp);$j++) {
+				if(acces_resp_disc($tab_resp[$j]['login'])) {
+					if($chaine_avertissement=='') {$chaine_avertissement.="Détails visibles de ";}
+					else {$chaine_avertissement.=", ";}
+					$chaine_avertissement.=$tab_resp[$j]['designation'];
+				}
+			}
+		}
+		if($chaine_avertissement!="") {
+			$chaine_avertissement="<div style='float:right; color:red; width:15em; border: 1px solid red; margin: 1px;'>$chaine_avertissement</div>\n";
+			echo $chaine_avertissement;
+		}
+	}
+
 	if($etat_incident!='clos') {
 		echo "<textarea id=\"description\" class='wrap' name=\"no_anti_inject_description\" rows='8' cols='60' onchange=\"changement()\">$description</textarea>\n";
+
+		echo "<div id='div_compteur_caracteres_textarea' style='width:20em; text-align:center'></div>
+
+<script type='text/javascript'>
+function compte_caracteres_textarea(textarea_id, compteur_id) {
+	if(document.getElementById(compteur_id)) {
+		if(document.getElementById(textarea_id)) {
+			document.getElementById(compteur_id).innerHTML=document.getElementById(textarea_id).value.length+' caractere(s).';
+		}
+	}
+}
+
+function comptage_caracteres_textarea() {
+	compte_caracteres_textarea('description', 'div_compteur_caracteres_textarea');
+	setTimeout('comptage_caracteres_textarea()', 1000);
+}
+
+setTimeout('comptage_caracteres_textarea()', 1000);
+</script>\n";
 	}
 	else {
 		echo nl2br($description);
@@ -2075,6 +2280,11 @@ echo "<script type='text/javascript'>
 					echo "Demandées";
 					echo "</a>\n";
 					echo "</th>\n";
+
+					echo "<th>\n";
+					//echo "Document(s) joint(s) à une mesure demandée";
+					echo "Travail et/ou document(s) joint(s) à une mesure demandée";
+					echo "</th>\n";
 				}
 				echo "</tr>\n";
 
@@ -2136,7 +2346,7 @@ echo "<script type='text/javascript'>
 						for($loop=0;$loop<count($tab_mes_demandee);$loop++) {
 							//echo "<input type='checkbox' name='mesure_demandee_".$i."[]' id='mesure_demandee_".$i."_$loop' value=\"".$tab_mes_demandee[$loop]."\" onchange='changement();' ";
 							//if(in_array($tab_mes_demandee[$loop],$tab_mes_eleve)) {echo "checked='checked' ";}
-							echo "<input type='checkbox' name='mesure_demandee_".$i."[]' id='mesure_demandee_".$i."_$loop' value=\"".$tab_id_mes_demandee[$loop]."\" onchange='changement();' ";
+							echo "<input type='checkbox' name='mesure_demandee_".$i."[]' id='mesure_demandee_".$i."_$loop' value=\"".$tab_id_mes_demandee[$loop]."\" onchange='changement(); check_coche_mes_demandee($i);' ";
 							if(in_array($tab_id_mes_demandee[$loop],$tab_mes_eleve)) {echo "checked='checked' ";}
 							echo "/>\n";
 
@@ -2158,6 +2368,53 @@ echo "<script type='text/javascript'>
 						}
 						echo "</td>\n";
 					}
+
+					echo "<td>\n";
+					//echo "Travail&nbsp;: <textarea name='travail_pour_mesure_demandee_".$i."' id='travail_pour_mesure_demandee_".$i."' cols='30'>Nature du travail pour la mesure demandée</textarea>\n";
+
+					$texte_travail="Travail : ";
+					$tmp_pref_texte_travail=getPref($_SESSION['login'], 'mod_discipline_travail_par_defaut', '');
+					if($tmp_pref_texte_travail!='') {
+						$texte_travail=$tmp_pref_texte_travail;
+					}
+					elseif(getSettingValue('mod_discipline_travail_par_defaut')!='') {
+						$texte_travail=getSettingValue('mod_discipline_travail_par_defaut');
+					}
+
+					$sql="SELECT * FROM s_travail_mesure WHERE id_incident='$id_incident' AND login_ele='".$ele_login[$i]."';";
+					$res_travail_mesure_demandee=mysql_query($sql);
+					if(mysql_num_rows($res_travail_mesure_demandee)>0) {
+						$lig_travail_mesure_demandee=mysql_fetch_object($res_travail_mesure_demandee);
+						$texte_travail=$lig_travail_mesure_demandee->travail;
+					}
+
+					echo "<textarea name='no_anti_inject_travail_pour_mesure_demandee_".$i."' id='travail_pour_mesure_demandee_".$i."' cols='30'>$texte_travail</textarea>\n";
+
+					// Liste des fichiers déjà joints
+					$tab_file=get_documents_joints($id_incident, "mesure", $ele_login[$i]);
+					if(count($tab_file)>0) {
+						echo "<table class='boireaus' width='100%'>\n";
+						echo "<tr>\n";
+						echo "<th>Fichier</th>\n";
+						echo "<th>Supprimer</th>\n";
+						echo "</tr>\n";
+						$alt3=1;
+						for($loop=0;$loop<count($tab_file);$loop++) {
+							$alt3=$alt3*(-1);
+							echo "<tr class='lig$alt3 white_hover'>\n";
+							echo "<td>$tab_file[$loop]</td>\n";
+							echo "<td><input type='checkbox' name='suppr_doc_joint_".$i."[]' value=\"$tab_file[$loop]\" /></td>\n";
+							// PB: Est-ce qu'on ne risque pas de permettre d'aller supprimer des fichiers d'un autre incident?
+							//     Tester le nom de fichier et l'id_incident
+							//     Fichier en ../$dossier_documents_discipline/incident_<$id_incident>/mesures/<LOGIN_ELE>
+							echo "</tr>\n";
+						}
+						echo "</table>\n";
+					}
+
+					echo "<input type=\"file\" size=\"15\" name=\"document_joint_".$i."\" id=\"document_joint_".$i."\" /><br />\n";
+					echo "</td>\n";
+
 					echo "</tr>\n";
 				}
 
@@ -2172,90 +2429,8 @@ echo "<script type='text/javascript'>
 		else {
 			echo "<td style='text-align:left;'";
 			echo ">\n";
-
-			// MESURES A AFFICHER
-			//echo "A FAIRE...";
-			/*
-			$texte="";
-
-			$sql="SELECT * FROM s_traitement_incident sti, s_mesures s WHERE sti.id_incident='$id_incident' AND sti.id_mesure=s.id AND s.type='prise' ORDER BY login_ele";
-			//$texte.="<br />$sql";
-			$res_t_incident=mysql_query($sql);
-
-			$sql="SELECT * FROM s_traitement_incident sti, s_mesures s WHERE sti.id_incident='$id_incident' AND sti.id_mesure=s.id AND s.type='demandee' ORDER BY login_ele";
-			//$texte.="<br />$sql";
-			$res_t_incident2=mysql_query($sql);
-
-			if((mysql_num_rows($res_t_incident)>0)||
-				(mysql_num_rows($res_t_incident2)>0)) {
-				$texte.="<br /><table class='boireaus' summary='Mesures' style='margin:1px;'>";
-			}
-
-			if(mysql_num_rows($res_t_incident)>0) {
-				$texte.="<tr class='lig-1'>";
-				$texte.="<td style='font-size:x-small; vertical-align:top;' rowspan='".mysql_num_rows($res_t_incident)."'>";
-				if(mysql_num_rows($res_t_incident)==1) {
-					$texte.="Mesure prise&nbsp;:";
-				}
-				else {
-					$texte.="Mesures prises&nbsp;:";
-				}
-				$texte.="</td>";
-				//$texte.="<td>";
-				$cpt_tmp=0;
-				while($lig_t_incident=mysql_fetch_object($res_t_incident)) {
-					if($cpt_tmp>0) {$texte.="<tr class='lig-1'>\n";}
-					$texte.="<td>";
-					$texte.=p_nom($lig_t_incident->login_ele);
-					$texte.="</td>\n";
-					$texte.="<td>";
-					$texte.="$lig_t_incident->mesure";
-					$texte.="</td>\n";
-					$texte.="</tr>\n";
-					$cpt_tmp++;
-				}
-				//$texte.="</td>\n";
-				//$texte.="</tr>\n";
-			}
-
-			//$possibilite_prof_clore_incident='y';
-			if(mysql_num_rows($res_t_incident2)>0) {
-				if($_SESSION['statut']=='professeur') {$possibilite_prof_clore_incident='n';}
-				$texte.="<tr class='lig1'>";
-				//$texte.="<td style='font-size:x-small; vertical-align:top;'>";
-				$texte.="<td style='font-size:x-small; vertical-align:top;' rowspan='".mysql_num_rows($res_t_incident)."'>";
-				if(mysql_num_rows($res_t_incident2)==1) {
-					$texte.="Mesure demandée&nbsp;:";
-				}
-				else {
-					$texte.="Mesures demandées&nbsp;:";
-				}
-				$texte.="</td>";
-				//$texte.="<td>";
-				$cpt_tmp=0;
-				while($lig_t_incident=mysql_fetch_object($res_t_incident2)) {
-					if($cpt_tmp>0) {$texte.="<tr class='lig1'>\n";}
-					$texte.="<td>";
-					$texte.=p_nom($lig_t_incident->login_ele);
-					$texte.="</td>\n";
-					$texte.="<td>";
-					$texte.="$lig_t_incident->mesure";
-					$texte.="</td>\n";
-					$texte.="</tr>\n";
-					$cpt_tmp++;
-				}
-				//$texte.="</td>\n";
-				//$texte.="</tr>\n";
-			}
-
-			if((mysql_num_rows($res_t_incident)>0)||
-				(mysql_num_rows($res_t_incident2)>0)) {
-				$texte.="</table>";
-			}
-			*/
 			$texte=affiche_mesures_incident($id_incident);
 			echo $texte;
-
 			echo "</td>\n";
 		}
 
@@ -2289,8 +2464,15 @@ echo "<script type='text/javascript'>
 
 		echo "<script type='text/javascript'>
 	function verif_details_incident() {
-		if(document.getElementById('nature').value=='') {
-			alert(\"La nature de l'incident doit être précisé.\");
+";
+		if($saisie_nature_libre=="y") {
+			echo "if(document.getElementById('nature').value=='') {";
+		}
+		else {
+			echo "if(document.getElementById('nature').options[document.getElementById('nature').selectedIndex].value=='') {";
+		}
+		echo "
+			alert(\"La nature de l'incident doit être précisée.\");
 			return false;
 		}
 		else {
@@ -2303,6 +2485,34 @@ echo "<script type='text/javascript'>
 			}
 		}
 	}
+
+	function check_coche_mes_demandee(num) {
+		if(document.getElementById('document_joint_'+num)) {
+			temoin_check='n';
+			for(i=0;i<".count($tab_mes_demandee).";i++) {
+				if(document.getElementById('mesure_demandee_'+num+'_'+i)) {
+					if(document.getElementById('mesure_demandee_'+num+'_'+i).checked==true) {
+						temoin_check='y';
+					}
+					//alert('mesure_demandee_'+num+'_'+i+':'+temoin_check);
+				}
+			}
+			if(temoin_check=='n') {
+				document.getElementById('document_joint_'+num).style.display='none';
+				document.getElementById('travail_pour_mesure_demandee_'+num).style.display='none';
+			}
+			else {
+				document.getElementById('document_joint_'+num).style.display='';
+				document.getElementById('travail_pour_mesure_demandee_'+num).style.display='';
+			}
+		}
+	}
+";
+		for($loop=0;$loop<count($ele_login);$loop++) {
+			echo "check_coche_mes_demandee($loop);\n";
+		}
+
+		echo "
 </script>\n";
 
 		echo "</form>\n";
@@ -2322,14 +2532,6 @@ echo "<script type='text/javascript'>
 	}
 
 }
-
-/*
-}
-else {
-	echo "<p>Vous avez choisi $ele_login</p>\n";
-}
-*/
-
 echo "<p><br /></p>\n";
 
 require("../lib/footer.inc.php");

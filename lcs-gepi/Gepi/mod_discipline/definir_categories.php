@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: definir_categories.php 5989 2010-11-25 11:51:39Z crob $
+ * $Id: definir_categories.php 7504 2011-07-23 20:05:50Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Didier Blanqui
  *
@@ -105,8 +105,9 @@ if ((isset($categorie)) && ($categorie != '')) {
     }
 
     if ($a_enregistrer == 'y') {
-        //$lieu=addslashes(my_ereg_replace('(\\\r\\\n)+',"\r\n",my_ereg_replace("&#039;","'",html_entity_decode($lieu))));
-        $categorie = my_ereg_replace('(\\\r\\\n)+', "\r\n", $categorie);
+		$categorie=preg_replace('/(\\\r\\\n)+/',"\r\n",$categorie);
+		$categorie=preg_replace('/(\\\r)+/',"\r",$categorie);
+		$categorie=preg_replace('/(\\\n)+/',"\n",$categorie);
 
         $sql = "INSERT INTO s_categories SET categorie='" . $categorie . "', sigle='" . $sigle . "';";
         $res = mysql_query($sql);
@@ -117,6 +118,31 @@ if ((isset($categorie)) && ($categorie != '')) {
         }
     }
 }
+
+/*
+if(isset($_POST['is_posted'])) {
+	check_token();
+
+	if(isset($_POST['DisciplineNaturesRestreintes'])) {
+		$DisciplineNaturesRestreintes="y";
+	}
+	else {
+		$DisciplineNaturesRestreintes="n";
+	}
+	$reg_DisciplineNaturesRestreintes=saveSetting("DisciplineNaturesRestreintes", $DisciplineNaturesRestreintes);
+	if(!$reg_DisciplineNaturesRestreintes) {
+		$msg.="Erreur lors de l'enregistrement de 'DisciplineNaturesRestreintes' avec la valeur '$DisciplineNaturesRestreintes'<br />\n";
+	}
+	else {
+		$msg.="Enregistrement de 'DisciplineNaturesRestreintes' avec la valeur '$DisciplineNaturesRestreintes' effectué.<br />\n";
+	}
+}
+
+$DisciplineNaturesRestreintes=getSettingValue('DisciplineNaturesRestreintes');
+if(($DisciplineNaturesRestreintes!='y')&&($DisciplineNaturesRestreintes!='n')) {
+	$DisciplineNaturesRestreintes="n";
+}
+*/
 
 $themessage = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
@@ -180,14 +206,28 @@ if (mysql_num_rows($res) == 0) {
 }
 echo "</blockquote>\n";
 
-echo "<p>Nouvelle catégorie&nbsp;: <input type='text' name='categorie' value='' onchange='changement();' /></p>\n";
-echo "<p>Sigle&nbsp;: <input type='text' name='sigle' value='' onchange='changement();' /></p>\n";
+echo "<table border='0'>\n";
+echo "<tr><td>Nouvelle catégorie&nbsp;: </td><td><input type='text' name='categorie' value='' onchange='changement();' /></td></tr>\n";
+echo "<tr><td>Sigle&nbsp;: </td><td><input type='text' name='sigle' value='' onchange='changement();' /></td></tr>\n";
+echo "</table>\n";
+
 echo "<input type='hidden' name='cpt' value='$cpt' />\n";
 
+/*
+echo "<p><input type='checkbox' name='DisciplineNaturesRestreintes' id='DisciplineNaturesRestreintes' value='y' ";
+if($DisciplineNaturesRestreintes=="y") {
+	echo "checked ";
+}
+echo "/><label for='DisciplineNaturesRestreintes'> Restreindre les natures d'incidents pouvant être sélectionnées aux seules catégories ci-dessus.</label></p>\n";
+*/
+
+echo "<input type='hidden' name='is_posted' value='y' />\n";
 echo "<p><input type='submit' name='valider' value='Valider' /></p>\n";
 echo "</form>\n";
 
 echo "<p><br /></p>\n";
+
+//echo "<p><i>NOTE&nbsp;:</i> Restreindre les natures d'incidents pouvant être sélectionnées aux seules catégories ci-dessus permet d'éviter une trop grande dispersion des natures (<i>on peut sinon avoir 'Insolence', 'Comportement insolent', 'insolent',...</i>).</p>\n";
 
 require("../lib/footer.inc.php");
 ?>

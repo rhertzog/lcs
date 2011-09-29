@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: Frontal.php 4310 2010-04-15 10:13:51Z crob $
+ * $Id: Frontal.php 7799 2011-08-17 08:38:10Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -27,7 +27,10 @@
  * Code adapté du controleur de Philippe Rigaux:
  *  http://www.lamsade.dauphine.fr/rigaux/mysqlphp
  */
-
+// On empêche l'accès direct au fichier
+if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
+    die();
+};
 class Frontal {
     const NOM_CTRL = "ctrl";
     const NOM_ACTION = "action";

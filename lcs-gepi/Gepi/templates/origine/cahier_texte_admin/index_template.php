@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: index_template.php 8047 2011-08-30 07:56:13Z crob $
+* $Id: index_template.php 8045 2011-08-30 07:54:40Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -271,7 +271,7 @@ echo add_token_field();
 			   value="<?php echo getSettingValue("cahiers_texte_passwd_pub"); ?>" 
 			   size="20" />
 	  </p>
-	  
+
 	  <h2>Délai de visualisation des devoirs</h2>
 	  <p class="italic">
 		Indiquez ici le délai en jours pendant lequel les devoirs seront visibles, à compter du jour de
@@ -292,6 +292,19 @@ echo add_token_field();
 		jours
 	  </p>
 
+	  <h2>Visibilité des documents joints</h2>
+	  <p>
+		<input type="checkbox"
+			   name="cdt_possibilite_masquer_pj"
+			   id="cdt_possibilite_masquer_pj"
+			   onchange='changement();'
+			   title="Visibilité des documents joints"
+			   value="y"
+		       <?php if(getSettingValue("cdt_possibilite_masquer_pj")=="y") {echo " checked";} ?>
+			   />
+		<label for='cdt_possibilite_masquer_pj'> Possibilité pour les professeurs de cacher aux élèves et responsables les documents joints aux Cahiers de textes.</label>
+	  </p>
+
 	  <h2>Visa des cahiers de texte</h2>
 	  <fieldset class="no_bordure">
 		<legend class="invisible">Visa</legend>
@@ -302,8 +315,7 @@ echo add_token_field();
 			 onchange='changement();'
 			   <?php if (getSettingValue("visa_cdt_inter_modif_notices_visees") == "yes") echo " checked='checked'";?> />
 		<label for='visa_cdt_inter_modif_notices_visees_y' style='cursor: pointer;'>
-		  Activer l'interdiction pour les enseignants de modifier une notice après la signature des
-		  cahiers de textes
+		 Activer l'interdiction pour les enseignants de modifier une notice antérieure à la date fixée lors du visa de leur cahier de textes.
 		</label>
 	  <br />
 		  <input type='radio'
@@ -375,9 +387,14 @@ echo add_token_field();
 	  </a>
 	</p>
 
+	<hr />
 
+	<h2>Rappel du B.O.</h2>
 
-
+	<?php
+		require("../lib/textes.inc.php");
+		echo $cdt_texte_bo;
+	?>
 
 <!-- Début du pied -->
 	<div id='EmSize' style='visibility:hidden; position:absolute; left:1em; top:1em;'></div>

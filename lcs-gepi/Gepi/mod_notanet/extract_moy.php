@@ -1,5 +1,5 @@
 <?php
-/* $Id: extract_moy.php 7262 2011-06-19 13:12:10Z crob $ */
+/* $Id: extract_moy.php 7260 2011-06-19 13:12:04Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

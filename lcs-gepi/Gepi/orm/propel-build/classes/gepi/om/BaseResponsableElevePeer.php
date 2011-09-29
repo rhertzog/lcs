@@ -31,6 +31,9 @@ abstract class BaseResponsableElevePeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 10;
+
 	/** the column name for the PERS_ID field */
 	const PERS_ID = 'resp_pers.PERS_ID';
 
@@ -61,6 +64,9 @@ abstract class BaseResponsableElevePeer {
 	/** the column name for the ADR_ID field */
 	const ADR_ID = 'resp_pers.ADR_ID';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of ResponsableEleve objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -76,7 +82,7 @@ abstract class BaseResponsableElevePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('PersId', 'Login', 'Nom', 'Prenom', 'Civilite', 'TelPers', 'TelPort', 'TelProf', 'Mel', 'AdrId', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('persId', 'login', 'nom', 'prenom', 'civilite', 'telPers', 'telPort', 'telProf', 'mel', 'adrId', ),
 		BasePeer::TYPE_COLNAME => array (self::PERS_ID, self::LOGIN, self::NOM, self::PRENOM, self::CIVILITE, self::TEL_PERS, self::TEL_PORT, self::TEL_PROF, self::MEL, self::ADR_ID, ),
@@ -91,7 +97,7 @@ abstract class BaseResponsableElevePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('PersId' => 0, 'Login' => 1, 'Nom' => 2, 'Prenom' => 3, 'Civilite' => 4, 'TelPers' => 5, 'TelPort' => 6, 'TelProf' => 7, 'Mel' => 8, 'AdrId' => 9, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('persId' => 0, 'login' => 1, 'nom' => 2, 'prenom' => 3, 'civilite' => 4, 'telPers' => 5, 'telPort' => 6, 'telProf' => 7, 'mel' => 8, 'adrId' => 9, ),
 		BasePeer::TYPE_COLNAME => array (self::PERS_ID => 0, self::LOGIN => 1, self::NOM => 2, self::PRENOM => 3, self::CIVILITE => 4, self::TEL_PERS => 5, self::TEL_PORT => 6, self::TEL_PROF => 7, self::MEL => 8, self::ADR_ID => 9, ),
@@ -237,7 +243,7 @@ abstract class BaseResponsableElevePeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -256,7 +262,7 @@ abstract class BaseResponsableElevePeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -310,7 +316,7 @@ abstract class BaseResponsableElevePeer {
 	 * @param      ResponsableEleve $value A ResponsableEleve object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(ResponsableEleve $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -471,7 +477,7 @@ abstract class BaseResponsableElevePeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + ResponsableElevePeer::NUM_COLUMNS;
+			$col = $startcol + ResponsableElevePeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = ResponsableElevePeer::OM_CLASS;
 			$obj = new $cls();
@@ -480,6 +486,7 @@ abstract class BaseResponsableElevePeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related ResponsableEleveAdresse table
@@ -550,7 +557,7 @@ abstract class BaseResponsableElevePeer {
 		}
 
 		ResponsableElevePeer::addSelectColumns($criteria);
-		$startcol = (ResponsableElevePeer::NUM_COLUMNS - ResponsableElevePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = ResponsableElevePeer::NUM_HYDRATE_COLUMNS;
 		ResponsableEleveAdressePeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(ResponsableElevePeer::ADR_ID, ResponsableEleveAdressePeer::ADR_ID, $join_behavior);
@@ -666,10 +673,10 @@ abstract class BaseResponsableElevePeer {
 		}
 
 		ResponsableElevePeer::addSelectColumns($criteria);
-		$startcol2 = (ResponsableElevePeer::NUM_COLUMNS - ResponsableElevePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = ResponsableElevePeer::NUM_HYDRATE_COLUMNS;
 
 		ResponsableEleveAdressePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (ResponsableEleveAdressePeer::NUM_COLUMNS - ResponsableEleveAdressePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + ResponsableEleveAdressePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(ResponsableElevePeer::ADR_ID, ResponsableEleveAdressePeer::ADR_ID, $join_behavior);
 
@@ -755,7 +762,7 @@ abstract class BaseResponsableElevePeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a ResponsableEleve or Criteria object.
+	 * Performs an INSERT on the database, given a ResponsableEleve or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or ResponsableEleve object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -794,7 +801,7 @@ abstract class BaseResponsableElevePeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a ResponsableEleve or Criteria object.
+	 * Performs an UPDATE on the database, given a ResponsableEleve or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or ResponsableEleve object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -833,11 +840,12 @@ abstract class BaseResponsableElevePeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the resp_pers table.
+	 * Deletes all rows from the resp_pers table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(ResponsableElevePeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -863,7 +871,7 @@ abstract class BaseResponsableElevePeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a ResponsableEleve or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a ResponsableEleve or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or ResponsableEleve object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -977,7 +985,7 @@ abstract class BaseResponsableElevePeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(ResponsableEleve $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

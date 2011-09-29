@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: modify_user.php 6575 2011-03-02 16:06:33Z crob $
+* $Id: modify_user.php 7988 2011-08-26 09:40:40Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -272,7 +272,7 @@ check_token();
 			if ($old_auth_mode == "gepi" && ($_POST['reg_auth_mode'] == "ldap" || $_POST['reg_auth_mode'] == "sso")) {
 				// On passe du mode Gepi à un mode externe : il faut supprimer le mot de passe
 				$oldmd5password = mysql_result(mysql_query("SELECT password FROM utilisateurs WHERE login = '".$user_login."'"), 0);
-				mysql_query("UPDATE utilisateurs SET password = '' WHERE login = '".$user_login."'");
+				mysql_query("UPDATE utilisateurs SET password = '', salt = '' WHERE login = '".$user_login."'");
 				$msg = "Passage à un mode d'authentification externe : ";
 				// Et si on a un accès en écriture au LDAP, il faut créer l'utilisateur !
 				if ($gepiSettings['ldap_write_access'] == "yes") {
@@ -434,7 +434,7 @@ check_token();
 		// En multisite, on ajoute le répertoire RNE
 		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 			  // On récupère le RNE de l'établissement
-		  $repertoire="../photos/".getSettingValue("gepiSchoolRne")."/personnels/";
+		  $repertoire="../photos/".$_COOKIE['RNE']."/personnels/";
 		}else{
 		  $repertoire="../photos/personnels/";
 		}
@@ -455,11 +455,11 @@ check_token();
 					}
 
 					// filephoto
-					if(isset($HTTP_POST_FILES['filephoto']['tmp_name'])){
-						$filephoto_tmp=$HTTP_POST_FILES['filephoto']['tmp_name'];
+					if(isset($_FILES['filephoto']['tmp_name'])){
+						$filephoto_tmp=$_FILES['filephoto']['tmp_name'];
 						if ( $filephoto_tmp != '' and $valide_form === 'oui' ){
-							$filephoto_name=$HTTP_POST_FILES['filephoto']['name'];
-							$filephoto_size=$HTTP_POST_FILES['filephoto']['size'];
+							$filephoto_name=$_FILES['filephoto']['name'];
+							$filephoto_size=$_FILES['filephoto']['size'];
 							// Tester la taille max de la photo?
 
 							if(is_uploaded_file($filephoto_tmp)){
@@ -742,7 +742,7 @@ if(getSettingValue("active_module_trombinoscopes")=='y'){
 	// En multisite, on ajoute le répertoire RNE
 	if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 		  // On récupère le RNE de l'établissement
-	  $repertoire="../photos/".getSettingValue("gepiSchoolRne")."/personnels/";
+	  $repertoire="../photos/".$_COOKIE['RNE']."/personnels/";
 	}else{
 	  $repertoire="../photos/personnels/";
 	}

@@ -31,6 +31,9 @@ abstract class BaseArchiveEctsPeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 11;
+
 	/** the column name for the ID field */
 	const ID = 'archivage_ects.ID';
 
@@ -64,6 +67,9 @@ abstract class BaseArchiveEctsPeer {
 	/** the column name for the MENTION field */
 	const MENTION = 'archivage_ects.MENTION';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of ArchiveEcts objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -79,7 +85,7 @@ abstract class BaseArchiveEctsPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('Id', 'Annee', 'Ine', 'Classe', 'NumPeriode', 'NomPeriode', 'Special', 'Matiere', 'Profs', 'Valeur', 'Mention', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'annee', 'ine', 'classe', 'numPeriode', 'nomPeriode', 'special', 'matiere', 'profs', 'valeur', 'mention', ),
 		BasePeer::TYPE_COLNAME => array (self::ID, self::ANNEE, self::INE, self::CLASSE, self::NUM_PERIODE, self::NOM_PERIODE, self::SPECIAL, self::MATIERE, self::PROFS, self::VALEUR, self::MENTION, ),
@@ -94,7 +100,7 @@ abstract class BaseArchiveEctsPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Annee' => 1, 'Ine' => 2, 'Classe' => 3, 'NumPeriode' => 4, 'NomPeriode' => 5, 'Special' => 6, 'Matiere' => 7, 'Profs' => 8, 'Valeur' => 9, 'Mention' => 10, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'annee' => 1, 'ine' => 2, 'classe' => 3, 'numPeriode' => 4, 'nomPeriode' => 5, 'special' => 6, 'matiere' => 7, 'profs' => 8, 'valeur' => 9, 'mention' => 10, ),
 		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::ANNEE => 1, self::INE => 2, self::CLASSE => 3, self::NUM_PERIODE => 4, self::NOM_PERIODE => 5, self::SPECIAL => 6, self::MATIERE => 7, self::PROFS => 8, self::VALEUR => 9, self::MENTION => 10, ),
@@ -242,7 +248,7 @@ abstract class BaseArchiveEctsPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -261,7 +267,7 @@ abstract class BaseArchiveEctsPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -315,7 +321,7 @@ abstract class BaseArchiveEctsPeer {
 	 * @param      ArchiveEcts $value A ArchiveEcts object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(ArchiveEcts $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -470,7 +476,7 @@ abstract class BaseArchiveEctsPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + ArchiveEctsPeer::NUM_COLUMNS;
+			$col = $startcol + ArchiveEctsPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = ArchiveEctsPeer::OM_CLASS;
 			$obj = new $cls();
@@ -479,6 +485,7 @@ abstract class BaseArchiveEctsPeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related Eleve table
@@ -549,7 +556,7 @@ abstract class BaseArchiveEctsPeer {
 		}
 
 		ArchiveEctsPeer::addSelectColumns($criteria);
-		$startcol = (ArchiveEctsPeer::NUM_COLUMNS - ArchiveEctsPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = ArchiveEctsPeer::NUM_HYDRATE_COLUMNS;
 		ElevePeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(ArchiveEctsPeer::INE, ElevePeer::NO_GEP, $join_behavior);
@@ -665,10 +672,10 @@ abstract class BaseArchiveEctsPeer {
 		}
 
 		ArchiveEctsPeer::addSelectColumns($criteria);
-		$startcol2 = (ArchiveEctsPeer::NUM_COLUMNS - ArchiveEctsPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = ArchiveEctsPeer::NUM_HYDRATE_COLUMNS;
 
 		ElevePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (ElevePeer::NUM_COLUMNS - ElevePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + ElevePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(ArchiveEctsPeer::INE, ElevePeer::NO_GEP, $join_behavior);
 
@@ -754,7 +761,7 @@ abstract class BaseArchiveEctsPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a ArchiveEcts or Criteria object.
+	 * Performs an INSERT on the database, given a ArchiveEcts or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or ArchiveEcts object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -797,7 +804,7 @@ abstract class BaseArchiveEctsPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a ArchiveEcts or Criteria object.
+	 * Performs an UPDATE on the database, given a ArchiveEcts or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or ArchiveEcts object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -860,11 +867,12 @@ abstract class BaseArchiveEctsPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the archivage_ects table.
+	 * Deletes all rows from the archivage_ects table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(ArchiveEctsPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -889,7 +897,7 @@ abstract class BaseArchiveEctsPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a ArchiveEcts or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a ArchiveEcts or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or ArchiveEcts object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -968,7 +976,7 @@ abstract class BaseArchiveEctsPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(ArchiveEcts $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

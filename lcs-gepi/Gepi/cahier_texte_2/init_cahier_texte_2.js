@@ -23,11 +23,13 @@
 // Initialisation... pour que le tableau existe, même si on ne définit pas le tableau dans ../temp/info_jours.js
 var tab_jours_ouverture=new Array();
 
-//page initialisation
-Event.observe(window, 'load', initPage);
+//page initialisation: Déplacé en fin de fichier pour que les fonctions soient chargées avant
+//Event.observe(window, 'load', initPage);
 
 function initPage () {
-	getWinCalendar();
+	// On ajoute un délais pour que Calendar et calendarInstanciation soient définies via les lib JS calendar.js et calendar-setup.js
+	//getWinCalendar();
+	setTimeout('getWinCalendar();', 500);
 
 	//si id_group_init est renseigné on affiche le groupe concerné, sinon on affiche les dernieres notices
 	var id_groupe_init = $('id_groupe_init').value;
@@ -35,20 +37,56 @@ function initPage () {
 	    id_groupe = id_groupe_init;
 	    getWinDernieresNotices().hide();
 	    getWinListeNotices();
+		/*
 	    new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe_init, {encoding: 'ISO-8859-1'});
 	    getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe=' + id_groupe_init + '&today='+getCalendarUnixDate(), {
 		    encoding: 'ISO-8859-1',
 		    onComplete :
 		    function() {
 			    initWysiwyg();
+				debut_alert = new Date();
 				    }
 			    }
 	    );
+		*/
+		// On ajoute un délais pour que le calendrier soit chargé avant
+		setTimeout('initFenetreNotice('+id_groupe_init+')',500);
 	} else {
             getWinDernieresNotices().hide();
 	}
 }
 
+function temporiser_init() {
+	if(typeof(getWinCalendar)=='function') {
+		if(typeof(Calendar)=='function') {
+			if(typeof(Calendar.setup)=='function') {
+				initPage ();
+			}
+			else {
+				setTimeout("temporiser_init()", 500);
+			}
+		}
+		else {
+			setTimeout("temporiser_init()", 500);
+		}
+	}
+	else {
+		setTimeout("temporiser_init()", 500);
+	}
+}
+
+function initFenetreNotice(id_groupe_init) {
+	    new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe_init, {encoding: 'ISO-8859-1'});
+	    getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe=' + id_groupe_init + '&today='+getCalendarUnixDate(), {
+		    encoding: 'ISO-8859-1',
+		    onComplete :
+		    function() {
+			    initWysiwyg();
+				debut_alert = new Date();
+				    }
+			    }
+	    );
+}
 
 function include(filename)
 {
@@ -68,11 +106,33 @@ function include(filename)
 //include('./ajax_functions.js');
 
 include('../lib/DHTMLcalendar/calendar.js');
-include('../lib/DHTMLcalendar/lang/calendar-fr.js');
-include('../lib/DHTMLcalendar/calendar-setup.js');
+// Les deux suivants sont insérés plus bas pour tenter d'éviter des erreurs du type:
+//	Erreur : Calendar is not defined
+//	Fichier Source : https://.../Gepi/lib/DHTMLcalendar/lang/calendar-fr.js
+//	Ligne : 13
+//	Erreur : Calendar is not defined
+//	Fichier Source : https://.../Gepi/lib/DHTMLcalendar/calendar-setup.js
+//	Ligne : 63
+//include('../lib/DHTMLcalendar/lang/calendar-fr.js');
+//include('../lib/DHTMLcalendar/calendar-setup.js');
+
+function temporiser_chargement_js() {
+	if(typeof(Calendar)=='function') {
+		include('../lib/DHTMLcalendar/lang/calendar-fr.js');
+		include('../lib/DHTMLcalendar/calendar-setup.js');
+		setTimeout("temporiser_init()", 500);
+	}
+	else {
+		setTimeout("temporiser_chargement_js()", 500);
+	}
+}
+
+//setTimeout("include('../lib/DHTMLcalendar/calendar-setup.js')", 500);
 include('../ckeditor/ckeditor.js');
 include('../edt_effets/javascripts/window.js');
 include('../temp/info_jours.js');
+
+include('../lib/functions.js');
 
 function getWinListeNotices() {
 	if (typeof winListeNotices=="undefined") {
@@ -116,6 +176,18 @@ function getWinEditionNotice() {
 			color: '#000000'
 		});
 	}
+	/*
+	// On ne recupere pas les variables id_groupe et today
+	else {
+		if(winEditionNotice!='compte_rendu') {
+			getWinDevoirsDeLaClasse();
+		}
+	}
+	*/
+	if (typeof winDevoirsDeLaClasse!="undefined") {
+		winDevoirsDeLaClasse.hide();
+	}
+
 	winEditionNotice.show();
 	winEditionNotice.toFront();
 	return winEditionNotice;
@@ -152,7 +224,24 @@ function getWinDernieresNotices() {
 	}
 	return winDernieresNotices;
 }
-
+/*
+function setWinCalendarContent() {
+	$('win_calendar_content').setStyle({	
+		backgroundColor: '#d0d0d0',
+		color: '#000000'
+	});
+	$('win_calendar_content').innerHTML = '<div id="calendar-container-2" onmouseover="winCalendar.toFront();">';
+	calendarInstanciation = Calendar.setup(
+			{
+				flat         : "calendar-container-2", // ID of the parent element
+				flatCallback : dateChanged,          // our callback function
+				daFormat     : "%s",    			   //date format
+				weekNumbers  : false,
+				dayMouseOverCalendarToFront : true
+			}
+		);
+}
+*/
 function getWinCalendar() {
 	if (typeof winCalendar=="undefined") {
 		winCalendar = new Window(
@@ -168,20 +257,30 @@ function getWinCalendar() {
 				width:155,
 				height:170}
 			);
-		$('win_calendar_content').setStyle({	
-			backgroundColor: '#d0d0d0',
-			color: '#000000'
-		});
-		$('win_calendar_content').innerHTML = '<div id="calendar-container-2" onmouseover="winCalendar.toFront();">';
-		calendarInstanciation = Calendar.setup(
-				{
-					flat         : "calendar-container-2", // ID of the parent element
-					flatCallback : dateChanged,          // our callback function
-					daFormat     : "%s",    			   //date format
-					weekNumbers  : false,
-					dayMouseOverCalendarToFront : true
-				}
-			);
+/*
+		// Pour ajouter un délais... on a parfois des pb avec l'ouverture des fenêtres
+		// Web Developper signale des pb d'init avec Calendar...
+		if(!$('win_calendar_content')) {
+			setTimeout('setWinCalendarContent();winCalendar.show();winCalendar.toFront();return winCalendar;',500);
+		}
+		else {
+			setWinCalendarContent();
+*/
+			$('win_calendar_content').setStyle({	
+				backgroundColor: '#d0d0d0',
+				color: '#000000'
+			});
+			$('win_calendar_content').innerHTML = '<div id="calendar-container-2" onmouseover="winCalendar.toFront();">';
+			calendarInstanciation = Calendar.setup(
+					{
+						flat         : "calendar-container-2", // ID of the parent element
+						flatCallback : dateChanged,          // our callback function
+						daFormat     : "%s",    			   //date format
+						weekNumbers  : false,
+						dayMouseOverCalendarToFront : true
+					}
+				);
+		//}
 	}
 	winCalendar.show();
 	winCalendar.toFront();
@@ -390,14 +489,15 @@ function suppressionCompteRendu(message, id_ct_a_supprimer, csrf_alea) {
     	new Ajax.Request('./ajax_suppression_notice.php?type=CahierTexteCompteRendu&id_objet='+id_ct_a_supprimer+'&csrf_alea='+csrf_alea,
     		{ onComplete:
     			function(transport) {
+					debut_alert = new Date();
     				if (transport.responseText.match('Erreur') || transport.responseText.match('error')) {
     					alert(transport.responseText);
       				} else {
       					if (object_en_cours_edition == 'compte_rendu' && $('id_ct') != null && $F('id_ct') == id_ct_a_supprimer) {
-								getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:	function() {initWysiwyg();}});
+								getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:	function() {initWysiwyg();debut_alert = new Date();}});
 						}
-				      	new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + $F('id_groupe_colonne_gauche'), { onComplete: function() {updateDivModification();}});
-						new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();}});
+				      	new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + $F('id_groupe_colonne_gauche'), { onComplete: function() {updateDivModification();debut_alert = new Date();}});
+						new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();debut_alert = new Date();}});
 					}
 				}
 			}
@@ -410,14 +510,15 @@ function suppressionDevoir(message, id_devoir_a_supprimer, id_groupe, csrf_alea)
     	new Ajax.Request('./ajax_suppression_notice.php?type=CahierTexteTravailAFaire&id_objet='+id_devoir_a_supprimer+'&csrf_alea='+csrf_alea,
     		{ onComplete:
     			function(transport) {
+					debut_alert = new Date();
   					if (transport.responseText.match('Erreur') || transport.responseText.match('error')) {
       					alert(transport.responseText);
       				} else {
       					if (object_en_cours_edition == 'devoir' && $('id_devoir') != null && $F('id_devoir') == id_devoir_a_supprimer) {
-							getWinEditionNotice().setAjaxContent('./ajax_edition_devoir.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:	function() {initWysiwyg();}});
+							getWinEditionNotice().setAjaxContent('./ajax_edition_devoir.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:	function() {initWysiwyg();debut_alert = new Date();}});
 						}
-				      	new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + $F('id_groupe_colonne_gauche'), { onComplete: function() {updateDivModification();}});
-						new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();}});
+				      	new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + $F('id_groupe_colonne_gauche'), { onComplete: function() {updateDivModification();debut_alert = new Date();}});
+						new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();debut_alert = new Date();}});
       				}
     			}
     		}
@@ -430,14 +531,15 @@ function suppressionNoticePrivee(message, id_notice_privee_a_supprimer, id_group
     	new Ajax.Request('./ajax_suppression_notice.php?type=CahierTexteNoticePrivee&id_objet='+id_notice_privee_a_supprimer+'&csrf_alea='+csrf_alea,
     		{ onComplete:
     			function(transport) {
+					debut_alert = new Date();
   					if (transport.responseText.match('Erreur') || transport.responseText.match('error')) {
       					alert(transport.responseText);
       				} else {
       					if (object_en_cours_edition == 'notice_privee' && $('id_ct') != null && $F('id_ct') == id_notice_privee_a_supprimer) {
-							getWinEditionNotice().setAjaxContent('./ajax_edition_notice_privee.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:	function() {initWysiwyg();}});
+							getWinEditionNotice().setAjaxContent('./ajax_edition_notice_privee.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:	function() {initWysiwyg();debut_alert = new Date();}});
 						}
-				      	new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + $F('id_groupe_colonne_gauche'), { onComplete: function() {updateDivModification();}});
-						new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();}});
+				      	new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + $F('id_groupe_colonne_gauche'), { onComplete: function() {updateDivModification();debut_alert = new Date();}});
+						new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();debut_alert = new Date();}});
       				}
     			}
     		}
@@ -450,12 +552,13 @@ function suppressionDocument(message, id_document_a_supprimer, id_ct, csrf_alea)
     	new Ajax.Request('./ajax_suppression_notice.php?type=CahierTexteCompteRenduFichierJoint&id_objet='+id_document_a_supprimer+'&csrf_alea='+csrf_alea,
     		{ onComplete:
     			function(transport) {
+					debut_alert = new Date();
 					if (transport.responseText.match('Erreur') || transport.responseText.match('error')) {
 						alert(transport.responseText);
 					} else {
-	      				getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_ct=' + id_ct, { onComplete: function() {initWysiwyg();}});
-						new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();}});
-						new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();}});
+	      				getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_ct=' + id_ct, { onComplete: function() {initWysiwyg();debut_alert = new Date();}});
+						new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();debut_alert = new Date();}});
+						new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();debut_alert = new Date();}});
 					}
     			}
 			}
@@ -468,12 +571,13 @@ function suppressionDevoirDocument(message, id_document_a_supprimer, id_devoir, 
     	new Ajax.Request('./ajax_suppression_notice.php?type=CahierTexteTravailAFaireFichierJoint&id_objet='+id_document_a_supprimer+'&csrf_alea='+csrf_alea,
     		{ onComplete:
     			function(transport) {
+					debut_alert = new Date();
 					if (transport.responseText.match('Erreur') || transport.responseText.match('error')) {
 						alert(transport.responseText);
 					} else {
-	      				getWinEditionNotice().setAjaxContent('./ajax_edition_devoir.php?id_devoir=' + id_devoir, { onComplete: function(transport) {initWysiwyg();}});
-						new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();}});
-						new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();}});
+	      				getWinEditionNotice().setAjaxContent('./ajax_edition_devoir.php?id_devoir=' + id_devoir, { onComplete: function(transport) {initWysiwyg();debut_alert = new Date();}});
+						new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();debut_alert = new Date();}});
+						new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();debut_alert = new Date();}});
 					}
     			}
 			}
@@ -485,7 +589,12 @@ function suppressionDevoirDocument(message, id_document_a_supprimer, id_devoir, 
 function completeEnregistrementCompteRenduCallback(response) {
 	if (response.match('Erreur') || response.match('error') || response.match('Notice') || response.match('Warning')) {
 		alert(response);
-		getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:function() {initWysiwyg();}});
+		getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:function() {initWysiwyg();debut_alert = new Date();}});
+
+		if((response.match('formulaire d'))&&(response.match('Une copie de sauvegarde a'))) {
+			getWinListeNotices();
+			new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();debut_alert = new Date();}});
+		}
 	} else {
 		//si response ne contient pas le mot erreur, il contient l'id du compte rendu
 		id_ct_en_cours = response;
@@ -504,8 +613,8 @@ function completeEnregistrementCompteRenduCallback(response) {
 			url = './ajax_edition_compte_rendu.php?succes_modification=oui&id_ct=' + id_ct_en_cours + '&id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate();
 		}
 		getWinListeNotices();
-		new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();}});
-		getWinEditionNotice().setAjaxContent(url ,{ onComplete:	function(transport) {initWysiwyg();	}});
+		new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();debut_alert = new Date();}});
+		getWinEditionNotice().setAjaxContent(url ,{ onComplete:	function(transport) {initWysiwyg();debut_alert = new Date();	}});
 
 		//on attend 5 secondes et on enleve les messages de confirmation d'enregistrement.
       	$('bouton_enregistrer_1');
@@ -520,7 +629,12 @@ function completeEnregistrementCompteRenduCallback(response) {
 function completeEnregistrementDevoirCallback(response) {
 	if (response.match('Erreur') || response.match('error') || response.match('Notice') || response.match('Warning')) {
  		alert(response);
-		getWinEditionNotice().setAjaxContent('./ajax_edition_devoir.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:function() {initWysiwyg();}});
+		getWinEditionNotice().setAjaxContent('./ajax_edition_devoir.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:function() {initWysiwyg();debut_alert = new Date();}});
+
+		if((response.match('formulaire d'))&&(response.match('Une copie de sauvegarde a'))) {
+			getWinListeNotices();
+			new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();debut_alert = new Date();}});
+		}
  	} else {
  		//si response ne contient pas le mot erreur, il contient l'id du compte rendu
  		id_ct_en_cours = response;
@@ -532,8 +646,8 @@ function completeEnregistrementDevoirCallback(response) {
 			url = './ajax_edition_devoir.php?succes_modification=oui&id_devoir=' + id_ct_en_cours + '&id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate();
  		}
 		getWinListeNotices();
- 		new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();}});
- 		getWinEditionNotice().setAjaxContent(url ,{ onComplete:	function(transport) {initWysiwyg();	}});
+ 		new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();debut_alert = new Date();}});
+ 		getWinEditionNotice().setAjaxContent(url ,{ onComplete:	function(transport) {initWysiwyg();debut_alert = new Date();	}});
 
  		//on attend 5 secondes et on enleve les messages de confirmation d'enregistrement.
        	$('bouton_enregistrer_1');
@@ -548,14 +662,14 @@ function completeEnregistrementDevoirCallback(response) {
 function completeEnregistrementNoticePriveeCallback(response) {
 	if (response.match('Erreur') || response.match('error') || response.match('Notice') || response.match('Warning')) {
 		alert(response);
-		getWinEditionNotice().setAjaxContent('./ajax_edition_notice_privee.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:function() {initWysiwyg();}});
+		getWinEditionNotice().setAjaxContent('./ajax_edition_notice_privee.php?id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate(), { onComplete:function() {initWysiwyg();debut_alert = new Date();}});
 	} else {
 		//si response ne contient pas le mot erreur, il contient l'id du compte rendu
 		id_ct_en_cours = response;
 		getWinListeNotices();
-		new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();}});
+		new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();debut_alert = new Date();}});
 		var url = './ajax_edition_notice_privee.php?succes_modification=oui&id_ct=' + id_ct_en_cours + '&id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate();
-		getWinEditionNotice().setAjaxContent(url ,{ onComplete:	function() {initWysiwyg();	}});
+		getWinEditionNotice().setAjaxContent(url ,{ onComplete:	function() {initWysiwyg();debut_alert = new Date();	}});
 
 		//on attend 5 secondes et on enleve les messages de confirmation d'enregistrement.
       	$('bouton_enregistrer_1');
@@ -592,7 +706,7 @@ function completeDeplacementNoticeCallback(response) {
 		    }
 		    $('deplacement_notice_form').request({
 			    //une fois le deplacement effectué en base, on mets à jour la fenetre d'edition puis la liste des notices'
-			    onComplete: function (transport) {updateWindows(transport.responseText)}
+			    onComplete: function (transport) {updateWindows(transport.responseText);debut_alert = new Date();}
 		    });
 	    }
 	}
@@ -625,7 +739,7 @@ function completeDuplicationNoticeCallback(response) {
 		    }
 		    $('duplication_notice_form').request({
 			    //une fois le deplacement effectué en base, on mets à jour la fenetre d'edition puis la liste des notices'
-			    onComplete: function (transport) {updateWindows(transport.responseText)}
+			    onComplete: function (transport) {updateWindows(transport.responseText);debut_alert = new Date();}
 		    });
 	    }
 	}
@@ -645,7 +759,8 @@ function updateWindows(message){
 	var id_groupe = $('id_groupe').value;
 	getWinEditionNotice().setAjaxContent(url,
 		{ onComplete: function() {
-				new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();}});
+				debut_alert = new Date();
+				new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();debut_alert = new Date();}});
 				initWysiwyg();
 			}
 		});
@@ -678,7 +793,7 @@ function dateChanged(calendar) {
 		url = './ajax_edition_devoir.php?';
 	}
 	getWinListeNotices().toFront();
-	getWinEditionNotice().setAjaxContent(url + '&id_groupe='+ id_groupe + '&today='+unixdate,{ onComplete:	function() {initWysiwyg();}});
+	getWinEditionNotice().setAjaxContent(url + '&id_groupe='+ id_groupe + '&today='+unixdate,{ onComplete:	function() {initWysiwyg();debut_alert = new Date();}});
 }
 
 function updateCalendarWithUnixDate(dateStamp) {
@@ -801,6 +916,80 @@ function updateListeNoticesChaine() {
 		}
 	}
 }
+
+
+function getWinDevoirsDeLaClasse() {
+	if (typeof winDevoirsDeLaClasse=="undefined") {
+		winDevoirsDeLaClasse = new Window(
+				{id: 'win_dev_classe',
+				title: 'Devoirs &agrave; faire',
+				showEffect: Element.show,
+				hideEffect: Element.hide,
+				top:0, 
+				left:304,
+				width: 600,
+				height: 120}
+			);
+		$('win_dev_classe_content').setStyle({	
+			/*backgroundColor: '#d0d0d0',*/
+			/*backgroundColor: 'plum',*/
+			backgroundColor: '#dda0dd',
+			color: '#000000'
+		});
+		$('win_dev_classe_content').innerHTML = '<div id="dev_classe_container" onmouseover="winDevoirsDeLaClasse.toFront();">';
+	}
+	winDevoirsDeLaClasse.show();
+	winDevoirsDeLaClasse.toFront();
+	return winDevoirsDeLaClasse;
+}
+
+function getWinListeNoticesPrivees() {
+	if (typeof winListeNoticesPrivees=="undefined") {
+		winListeNoticesPrivees = new Window(
+				{id: 'win_liste_notices_privees',
+				title: 'Liste des Notices priv&eacute;es',
+				showEffect: Element.show,
+				hideEffect: Element.hide,
+				top:0, 
+				left:100,
+				width: 600,
+				height: GetHeight() - 220}
+			);
+		$('win_liste_notices_privees_content').setStyle({	
+			backgroundColor: '#fffdbc',
+			color: '#000000'
+		});
+		$('win_liste_notices_privees_content').innerHTML = '<div id="liste_notices_privees_container" onmouseover="winListeNoticesPrivees.toFront();">';
+	}
+	winListeNoticesPrivees.show();
+	winListeNoticesPrivees.toFront();
+	return winListeNoticesPrivees;
+}
+
+function modif_visibilite_doc_joint(notice, id_ct, id_document) {
+	csrf_alea=document.getElementById('csrf_alea').value;
+
+	if(notice=='compte_rendu') {
+		new Ajax.Updater($('span_document_joint_'+id_document),'ajax_edition_compte_rendu.php?id_ct='+id_ct+'&id_document='+id_document+'&change_visibilite=y&csrf_alea='+csrf_alea,{method: 'get'});
+	}
+	else {
+		if(notice=='devoir') {
+			//new Ajax.Updater($('span_document_joint_'+id_document),'ajax_edition_devoir.php?id_ct_devoir='+id_ct+'&id_document='+id_document+'&change_visibilite=y&csrf_alea='+csrf_alea,{method: 'get'});
+			new Ajax.Updater($('span_document_joint_'+id_document),'ajax_edition_devoir.php?id_devoir='+id_ct+'&id_document='+id_document+'&change_visibilite=y&csrf_alea='+csrf_alea,{method: 'get'});
+		}
+	}
+}
+
+//include('../lib/DHTMLcalendar/lang/calendar-fr.js');
+//include('../lib/DHTMLcalendar/calendar-setup.js');
+
+//page initialisation
+//Event.observe(window, 'load', initPage);
+//Event.observe(window, 'load', temporiser_init);
+Event.observe(window, 'load', temporiser_chargement_js);
+
+//setTimeout('getWinCalendar();', 5000);
+
 /**
 *
 *  Fin des fonctions ajax du cahier de texte

@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: logout.php 5620 2010-10-09 16:30:54Z crob $
+ * $Id: logout.php 7960 2011-08-25 09:41:05Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -34,6 +34,11 @@ if (isset($_SESSION['login'])){
   $temp_perso=NULL;
 }
 
+$rne_courant="";
+if(($multisite=='y')&&(isset($_COOKIE['RNE']))) {
+	$rne_courant=$_COOKIE['RNE'];
+}
+
 if ($session_gepi->current_auth_mode == "sso" and $session_gepi->auth_sso == "cas") {
   $session_gepi->close(0);
   $session_gepi->logout_cas();
@@ -49,19 +54,31 @@ if ($session_gepi->current_auth_mode == "sso" and $session_gepi->auth_sso == "ca
   die();
 }
 
-// Ajout pour le multisite
-if (isset($_COOKIE["RNE"])) {
-	unset($_COOKIE['RNE']);
-	setcookie('RNE', 'RNE'); // permet d'effacer le contenu du cookie.
+if (getSettingValue('gepiEnableIdpSaml20') == 'yes' && (!isset($_REQUEST['idploggedout']))) {
+		include_once(dirname(__FILE__).'/lib/simplesaml/lib/_autoload.php');
+		$auth = new SimpleSAML_Auth_GepiSimple();
+		if ($auth->isAuthenticated()) {
+			//on fait le logout de session avec simplesaml en tant que fournisseur d'identité. Ça va déconnecter uniqement les services associés.
+			//Si gepi n'est pas connecté en local, il faut revenir à la page de logout et passer à la déconnexion de gepi 
+			$logout_return_url = $_SERVER['REQUEST_URI'];
+			if (strpos($logout_return_url, '?')) {
+				$logout_return_url .= '&';
+			} else {
+				$logout_return_url .= '?';
+			}
+			$logout_return_url .= 'idploggedout=done';
+			header("Location:./lib/simplesaml/www/saml2/idp/SingleLogoutService.php?ReturnTo=".urlencode($logout_return_url));
+			exit();
+		}
 }
+//print_r($session_gepi);die;
 
-	
-    //$message = "<h1 class='gepi'>Déconnexion</h1>";
+//$message = "<h1 class='gepi'>Déconnexion</h1>";
     $titre= "Déconnexion";
     $message = "";
-	//$message .= "<img src='$gepiPath/images/icons/lock-open.png' alt='lock-open' /><br/><br/>";
-    if (!$_GET['auto']) {
-        $session_gepi->close($_GET['auto']);
+    	
+    if (!isset($_GET['auto']) || !$_GET['auto']) {
+    	$session_gepi->close(0);
         $message .= "Vous avez fermé votre session GEPI.";
         //$message .= "<a href=\"$gepiPath/login.php\">Ouvrir une nouvelle session</a>.";
     } else if ($_GET['auto']==2) {
@@ -81,8 +98,12 @@ if (isset($_COOKIE["RNE"])) {
         } else {
            $message .= "<h1 class='gepi'>Fermeture d'une fenêtre GEPI</h1>";
            $titre= "Fermeture d'une fenêtre GEPI";
-           $message .= "A l'heure ci-dessous, une fenêtre GEPI s'est automatiquement fermée par mesure de sécurité car
+           /*
+			$message .= "A l'heure ci-dessous, une fenêtre GEPI s'est automatiquement fermée par mesure de sécurité car
            le temps maximum d'inactivité (".getSettingValue("sessionMaxLength")." minutes) avait été atteint.<br /><br />
+           Heure et date de fermeture de la fenêtre : ".$date_fermeture;
+           */
+			$message .= "A l'heure ci-dessous, une fenêtre GEPI s'est automatiquement fermée par mesure de sécurité. Le temps maximum de ".getSettingValue("sessionMaxLength")." minutes sans échange avec le serveur a sans doute été atteint.<br /><br />
            Heure et date de fermeture de la fenêtre : ".$date_fermeture;
            //$message .= "<a href=\"$gepiPath/login.php\">Ouvrir une nouvelle session</a>.";
         }
@@ -95,8 +116,6 @@ if (isset($_COOKIE["RNE"])) {
         //$message .= "<a href=\"$gepiPath/login.php\">Ouvrir une nouvelle session</a>.";
     }
 
-include('./templates/origine/logout_template.php');
-
 if(getSettingValue('temporary_dir_no_cleaning')!='yes') {
 	// On efface le dossier temporaire
 	if ($temp_perso) {
@@ -108,4 +127,11 @@ if(getSettingValue('temporary_dir_no_cleaning')!='yes') {
 	unset ($filename);
 	}
 }
+
+// Ajout pour le multisite
+unset($_COOKIE['RNE']);
+setcookie('RNE', 'unset', null, '/'); // permet d'effacer le contenu du cookie.
+include('./templates/origine/logout_template.php');
+
+
 ?>

@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: evol_eleve_classe.php 6729 2011-03-30 09:33:15Z crob $
+* $Id: evol_eleve_classe.php 7120 2011-06-05 08:59:33Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -281,6 +281,7 @@ if (!isset($id_classe)) {
 		"jgc.id_classe = '".$id_classe."' AND " .
 		"jgm.id_groupe = jgc.id_groupe AND " .
 		"m.matiere = jgm.id_matiere" .
+		" AND jgc.id_groupe NOT IN (SELECT id_groupe FROM j_groupes_visibilite WHERE domaine='bulletins' AND visible='n')".
 		") " .
 		"ORDER BY jmcc.priority,jgc.priorite,m.nom_complet");
 	} else {
@@ -291,6 +292,7 @@ if (!isset($id_classe)) {
 		"jgc.id_groupe = jeg.id_groupe AND " .
 		"jgc.id_classe = '".$id_classe."' AND " .
 		"jgm.id_groupe = jgc.id_groupe" .
+		" AND jgc.id_groupe NOT IN (SELECT id_groupe FROM j_groupes_visibilite WHERE domaine='bulletins' AND visible='n')".
 		") " .
 		"ORDER BY jgc.priorite,jgm.id_matiere");
 	}
@@ -493,5 +495,12 @@ if (!isset($id_classe)) {
 
 	echo "<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />\n";
 }
+
+//===========================================================
+echo "<p><em>NOTE&nbsp;:</em></p>\n";
+require("../lib/textes.inc.php");
+echo "<p style='margin-left: 3em;'>$explication_bulletin_ou_graphe_vide</p>\n";
+//===========================================================
+
 require("../lib/footer.inc.php");
 ?>

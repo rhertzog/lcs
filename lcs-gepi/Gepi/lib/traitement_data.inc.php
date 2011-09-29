@@ -1,5 +1,5 @@
 <?php
-// $version : $Id: traitement_data.inc.php 5469 2010-09-28 16:39:45Z crob $
+// $version : $Id: traitement_data.inc.php 7956 2011-08-24 15:22:21Z jjacquard $
 // on force la valeur de magic_quotes_runtime à off de façon à ce que les valeurs récupérées dans la base
 // puissent être affichées directement, sans caractère "\"
 @set_magic_quotes_runtime(0);
@@ -110,6 +110,7 @@ $url = parse_url($_SERVER['REQUEST_URI']);
 if ((!(in_array(substr($url['path'], strlen($gepiPath)),$liste_scripts_non_traites))) OR ((in_array(substr($url['path'], strlen($gepiPath)),$liste_scripts_non_traites)) AND (!(isset($traite_anti_inject)) OR (isset($traite_anti_inject) AND $traite_anti_inject !="no")))) {
   array_walk($_GET, 'anti_inject');
   array_walk($_POST, 'anti_inject');
+  array_walk($_REQUEST, 'anti_inject');
 }
 
 // On nettoie aussi $_SERVER et $_COOKIE de manière systématique

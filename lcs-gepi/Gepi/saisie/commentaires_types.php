@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: commentaires_types.php 5958 2010-11-22 21:39:02Z crob $
+ * $Id: commentaires_types.php 7436 2011-07-18 17:47:38Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -922,6 +922,6 @@ function tout_decocher(){
 ?>
 </form>
 <p><br /></p>
-</div>
-</body>
-</html>
+<?php
+require("../lib/footer.inc.php");
+?>

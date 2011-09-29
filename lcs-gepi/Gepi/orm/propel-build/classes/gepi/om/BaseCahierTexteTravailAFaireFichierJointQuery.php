@@ -11,12 +11,14 @@
  * @method     CahierTexteTravailAFaireFichierJointQuery orderByTitre($order = Criteria::ASC) Order by the titre column
  * @method     CahierTexteTravailAFaireFichierJointQuery orderByTaille($order = Criteria::ASC) Order by the taille column
  * @method     CahierTexteTravailAFaireFichierJointQuery orderByEmplacement($order = Criteria::ASC) Order by the emplacement column
+ * @method     CahierTexteTravailAFaireFichierJointQuery orderByVisibleEleveParent($order = Criteria::ASC) Order by the visible_eleve_parent column
  *
  * @method     CahierTexteTravailAFaireFichierJointQuery groupById() Group by the id column
  * @method     CahierTexteTravailAFaireFichierJointQuery groupByIdCtDevoir() Group by the id_ct_devoir column
  * @method     CahierTexteTravailAFaireFichierJointQuery groupByTitre() Group by the titre column
  * @method     CahierTexteTravailAFaireFichierJointQuery groupByTaille() Group by the taille column
  * @method     CahierTexteTravailAFaireFichierJointQuery groupByEmplacement() Group by the emplacement column
+ * @method     CahierTexteTravailAFaireFichierJointQuery groupByVisibleEleveParent() Group by the visible_eleve_parent column
  *
  * @method     CahierTexteTravailAFaireFichierJointQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     CahierTexteTravailAFaireFichierJointQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -34,12 +36,14 @@
  * @method     CahierTexteTravailAFaireFichierJoint findOneByTitre(string $titre) Return the first CahierTexteTravailAFaireFichierJoint filtered by the titre column
  * @method     CahierTexteTravailAFaireFichierJoint findOneByTaille(int $taille) Return the first CahierTexteTravailAFaireFichierJoint filtered by the taille column
  * @method     CahierTexteTravailAFaireFichierJoint findOneByEmplacement(string $emplacement) Return the first CahierTexteTravailAFaireFichierJoint filtered by the emplacement column
+ * @method     CahierTexteTravailAFaireFichierJoint findOneByVisibleEleveParent(boolean $visible_eleve_parent) Return the first CahierTexteTravailAFaireFichierJoint filtered by the visible_eleve_parent column
  *
  * @method     array findById(int $id) Return CahierTexteTravailAFaireFichierJoint objects filtered by the id column
  * @method     array findByIdCtDevoir(int $id_ct_devoir) Return CahierTexteTravailAFaireFichierJoint objects filtered by the id_ct_devoir column
  * @method     array findByTitre(string $titre) Return CahierTexteTravailAFaireFichierJoint objects filtered by the titre column
  * @method     array findByTaille(int $taille) Return CahierTexteTravailAFaireFichierJoint objects filtered by the taille column
  * @method     array findByEmplacement(string $emplacement) Return CahierTexteTravailAFaireFichierJoint objects filtered by the emplacement column
+ * @method     array findByVisibleEleveParent(boolean $visible_eleve_parent) Return CahierTexteTravailAFaireFichierJoint objects filtered by the visible_eleve_parent column
  *
  * @package    propel.generator.gepi.om
  */
@@ -118,7 +122,7 @@ abstract class BaseCahierTexteTravailAFaireFichierJointQuery extends ModelCriter
 	 * @return    PropelObjectCollection|array|mixed the list of results, formatted by the current formatter
 	 */
 	public function findPks($keys, $con = null)
-	{	
+	{
 		$criteria = $this->isKeepQuery() ? clone $this : $this;
 		return $this
 			->filterByPrimaryKeys($keys)
@@ -152,8 +156,17 @@ abstract class BaseCahierTexteTravailAFaireFichierJointQuery extends ModelCriter
 	/**
 	 * Filter the query on the id column
 	 * 
-	 * @param     int|array $id The value to use as filter.
-	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
+	 * Example usage:
+	 * <code>
+	 * $query->filterById(1234); // WHERE id = 1234
+	 * $query->filterById(array(12, 34)); // WHERE id IN (12, 34)
+	 * $query->filterById(array('min' => 12)); // WHERE id > 12
+	 * </code>
+	 *
+	 * @param     mixed $id The value to use as filter.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    CahierTexteTravailAFaireFichierJointQuery The current query, for fluid interface
@@ -169,8 +182,19 @@ abstract class BaseCahierTexteTravailAFaireFichierJointQuery extends ModelCriter
 	/**
 	 * Filter the query on the id_ct_devoir column
 	 * 
-	 * @param     int|array $idCtDevoir The value to use as filter.
-	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
+	 * Example usage:
+	 * <code>
+	 * $query->filterByIdCtDevoir(1234); // WHERE id_ct_devoir = 1234
+	 * $query->filterByIdCtDevoir(array(12, 34)); // WHERE id_ct_devoir IN (12, 34)
+	 * $query->filterByIdCtDevoir(array('min' => 12)); // WHERE id_ct_devoir > 12
+	 * </code>
+	 *
+	 * @see       filterByCahierTexteTravailAFaire()
+	 *
+	 * @param     mixed $idCtDevoir The value to use as filter.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    CahierTexteTravailAFaireFichierJointQuery The current query, for fluid interface
@@ -200,8 +224,14 @@ abstract class BaseCahierTexteTravailAFaireFichierJointQuery extends ModelCriter
 	/**
 	 * Filter the query on the titre column
 	 * 
+	 * Example usage:
+	 * <code>
+	 * $query->filterByTitre('fooValue');   // WHERE titre = 'fooValue'
+	 * $query->filterByTitre('%fooValue%'); // WHERE titre LIKE '%fooValue%'
+	 * </code>
+	 *
 	 * @param     string $titre The value to use as filter.
-	 *            Accepts wildcards (* and % trigger a LIKE)
+	 *              Accepts wildcards (* and % trigger a LIKE)
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    CahierTexteTravailAFaireFichierJointQuery The current query, for fluid interface
@@ -222,8 +252,17 @@ abstract class BaseCahierTexteTravailAFaireFichierJointQuery extends ModelCriter
 	/**
 	 * Filter the query on the taille column
 	 * 
-	 * @param     int|array $taille The value to use as filter.
-	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
+	 * Example usage:
+	 * <code>
+	 * $query->filterByTaille(1234); // WHERE taille = 1234
+	 * $query->filterByTaille(array(12, 34)); // WHERE taille IN (12, 34)
+	 * $query->filterByTaille(array('min' => 12)); // WHERE taille > 12
+	 * </code>
+	 *
+	 * @param     mixed $taille The value to use as filter.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    CahierTexteTravailAFaireFichierJointQuery The current query, for fluid interface
@@ -253,8 +292,14 @@ abstract class BaseCahierTexteTravailAFaireFichierJointQuery extends ModelCriter
 	/**
 	 * Filter the query on the emplacement column
 	 * 
+	 * Example usage:
+	 * <code>
+	 * $query->filterByEmplacement('fooValue');   // WHERE emplacement = 'fooValue'
+	 * $query->filterByEmplacement('%fooValue%'); // WHERE emplacement LIKE '%fooValue%'
+	 * </code>
+	 *
 	 * @param     string $emplacement The value to use as filter.
-	 *            Accepts wildcards (* and % trigger a LIKE)
+	 *              Accepts wildcards (* and % trigger a LIKE)
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    CahierTexteTravailAFaireFichierJointQuery The current query, for fluid interface
@@ -273,17 +318,53 @@ abstract class BaseCahierTexteTravailAFaireFichierJointQuery extends ModelCriter
 	}
 
 	/**
+	 * Filter the query on the visible_eleve_parent column
+	 * 
+	 * Example usage:
+	 * <code>
+	 * $query->filterByVisibleEleveParent(true); // WHERE visible_eleve_parent = true
+	 * $query->filterByVisibleEleveParent('yes'); // WHERE visible_eleve_parent = true
+	 * </code>
+	 *
+	 * @param     boolean|string $visibleEleveParent The value to use as filter.
+	 *              Non-boolean arguments are converted using the following rules:
+	 *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+	 *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+	 *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+	 *
+	 * @return    CahierTexteTravailAFaireFichierJointQuery The current query, for fluid interface
+	 */
+	public function filterByVisibleEleveParent($visibleEleveParent = null, $comparison = null)
+	{
+		if (is_string($visibleEleveParent)) {
+			$visible_eleve_parent = in_array(strtolower($visibleEleveParent), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+		}
+		return $this->addUsingAlias(CahierTexteTravailAFaireFichierJointPeer::VISIBLE_ELEVE_PARENT, $visibleEleveParent, $comparison);
+	}
+
+	/**
 	 * Filter the query by a related CahierTexteTravailAFaire object
 	 *
-	 * @param     CahierTexteTravailAFaire $cahierTexteTravailAFaire  the related object to use as filter
+	 * @param     CahierTexteTravailAFaire|PropelCollection $cahierTexteTravailAFaire The related object(s) to use as filter
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    CahierTexteTravailAFaireFichierJointQuery The current query, for fluid interface
 	 */
 	public function filterByCahierTexteTravailAFaire($cahierTexteTravailAFaire, $comparison = null)
 	{
-		return $this
-			->addUsingAlias(CahierTexteTravailAFaireFichierJointPeer::ID_CT_DEVOIR, $cahierTexteTravailAFaire->getIdCt(), $comparison);
+		if ($cahierTexteTravailAFaire instanceof CahierTexteTravailAFaire) {
+			return $this
+				->addUsingAlias(CahierTexteTravailAFaireFichierJointPeer::ID_CT_DEVOIR, $cahierTexteTravailAFaire->getIdCt(), $comparison);
+		} elseif ($cahierTexteTravailAFaire instanceof PropelCollection) {
+			if (null === $comparison) {
+				$comparison = Criteria::IN;
+			}
+			return $this
+				->addUsingAlias(CahierTexteTravailAFaireFichierJointPeer::ID_CT_DEVOIR, $cahierTexteTravailAFaire->toKeyValue('PrimaryKey', 'IdCt'), $comparison);
+		} else {
+			throw new PropelException('filterByCahierTexteTravailAFaire() only accepts arguments of type CahierTexteTravailAFaire or PropelCollection');
+		}
 	}
 
 	/**

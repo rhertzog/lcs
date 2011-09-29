@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: imprime_pdf.php 6620 2011-03-03 20:24:07Z crob $
+ * $Id: imprime_pdf.php 8061 2011-08-30 22:01:10Z jjacquard $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -33,7 +33,9 @@ define('LargeurPage','210');
 require_once("../lib/initialisations.inc.php");
 //=============================
 
-require('../fpdf/fpdf.php');
+if (!defined('FPDF_VERSION')) {
+	require_once('../fpdf/fpdf.php');
+}
 //require('../fpdf/fpdf15.php');
 
 // Il faut récupérer l'info sur le mode avant l'appel à ex_fpdf.php pour que les accents de l'entête soient corrects

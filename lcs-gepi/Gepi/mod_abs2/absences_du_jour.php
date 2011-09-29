@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: absences_du_jour.php 6557 2011-02-28 20:41:35Z dblanqui $
+ * @version $Id: absences_du_jour.php 8359 2011-09-25 16:08:28Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -64,6 +64,7 @@ if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") 
 
 if (isset($_POST["creation_traitement"]) || isset($_POST["ajout_traitement"])) {
     include('creation_traitement.php');
+    die();
 }
 
 //récupération des paramètres de la requète
@@ -124,6 +125,8 @@ $style_specifique[] = "mod_abs2/lib/abs_style";
 $javascript_specifique[] = "mod_abs2/lib/include";
 $titre_page = "Absences du jour";
 $utilisation_jsdivdrag = "non";
+$utilisation_scriptaculous="ok";
+$utilisation_win = 'oui';
 $_SESSION['cacher_header'] = "y";
 $dojo = true;
 require_once("../lib/header.inc");
@@ -153,27 +156,30 @@ echo "<table cellspacing='15px' cellpadding='5px'><tr>";
 
 //on affiche une boite de selection avec les groupes et les creneaux
 if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
-    $groupe_col = GroupeQuery::create()->orderByName()->useJGroupesClassesQuery()->useClasseQuery()->orderByNom()->endUse()->endUse()->find();
+    $groupe_col = GroupeQuery::create()->orderByName()->useJGroupesClassesQuery()->useClasseQuery()->orderByNom()->endUse()->endUse()
+		->leftJoinWith('Groupe.JGroupesClasses')
+		->leftJoinWith('JGroupesClasses.Classe')
+		->find();
 } else {
     $groupe_col = $utilisateur->getGroupes();
 }
 if (!$groupe_col->isEmpty()) {
     echo "<td style='border : 1px solid; padding : 10 px;'>";
-    echo "<form action=\"./absences_du_jour.php\" method=\"post\" style=\"width: 100%;\">\n";
+    echo "<form dojoType=\"dijit.form.Form\" action=\"./absences_du_jour.php\" method=\"post\" style=\"width: 100%;\">\n";
 	echo "<p>\n";
     echo '<input type="hidden" name="type_selection" value="id_groupe"/>';
-    echo ("Groupe : <select name=\"id_groupe\" onchange='submit()' class=\"small\">");
+    echo ("Groupe : <select dojoType=\"dijit.form.Select\" maxheight=\"-1\" style=\"width :12em;font-size:12px;\" name=\"id_groupe\" onchange='submit()' class=\"small\">");
     echo "<option value='-1'>choisissez un groupe</option>\n";
     foreach ($groupe_col as $group) {
 	    echo "<option value='".$group->getId()."'";
-	    if ($id_groupe == $group->getId()) echo " SELECTED ";
+	    if ($id_groupe == $group->getId()) echo " selected='SELECTED' ";
 	    echo ">";
 	    echo $group->getNameAvecClasses();
 	    echo "</option>\n";
     }
     echo "</select>&nbsp;";
     echo"<input type='hidden' name='date_absence_eleve' value='$date_absence_eleve'/>";
-    echo '<button type="submit">Afficher les élèves</button>';
+    echo '<button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Afficher les élèves</button>';
 	echo "</p>\n";
     echo "</form>";
     echo "</td>";
@@ -190,18 +196,18 @@ if (!$classe_col->isEmpty()) {
     echo "<form action=\"./absences_du_jour.php\" method=\"post\" style=\"width: 100%;\">\n";
 	echo "<p>\n";
     echo '<input type="hidden" name="type_selection" value="id_classe"/>';
-    echo ("Classe : <select name=\"id_classe\" onchange='submit()' class=\"small\">");
+    echo ("Classe : <select dojoType=\"dijit.form.Select\" maxheight=\"-1\" style=\"width :12em;font-size:12px;\" name=\"id_classe\" onchange='submit()' class=\"small\">");
     echo "<option value='-1'>choisissez une classe</option>\n";
     foreach ($classe_col as $classe) {
 	    echo "<option value='".$classe->getId()."'";
-	    if ($id_classe == $classe->getId()) echo " SELECTED ";
+	    if ($id_classe == $classe->getId()) echo " selected='SELECTED' ";
 	    echo ">";
 	    echo $classe->getNom();
 	    echo "</option>\n";
     }
     echo "</select>&nbsp;";
     echo"<input type='hidden' name='date_absence_eleve' value='$date_absence_eleve'/>";
-    echo '<button type="submit">Afficher les élèves</button>';
+    echo '<button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Afficher les élèves</button>';
 	echo "</p>\n";
     echo "</form>";
     echo "</td>";
@@ -221,18 +227,18 @@ if (!$aid_col->isEmpty()) {
     echo "<form action=\"./absences_du_jour.php\" method=\"post\" style=\"width: 100%;\">\n";
 	echo "<p>\n";
     echo '<input type="hidden" name="type_selection" value="id_aid"/>';
-    echo ("Aid : <select name=\"id_aid\" onchange='submit()' class=\"small\">");
+    echo ("Aid : <select dojoType=\"dijit.form.Select\" maxheight=\"-1\" style=\"width :12em;font-size:12px;\" name=\"id_aid\" onchange='submit()' class=\"small\">");
     echo "<option value='-1'>choisissez une aid</option>\n";
     foreach ($aid_col as $aid) {
 	    echo "<option value='".$aid->getPrimaryKey()."'";
-	    if ($id_aid == $aid->getPrimaryKey()) echo " SELECTED ";
+	    if ($id_aid == $aid->getPrimaryKey()) echo " selected='SELECTED' ";
 	    echo ">";
 	    echo $aid->getNom();
 	    echo "</option>\n";
     }
     echo "</select>&nbsp;";
     echo"<input type='hidden' name='date_absence_eleve' value='$date_absence_eleve'/>";
-    echo '<button type="submit">Afficher les élèves</button>';
+    echo '<button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Afficher les élèves</button>';
 	echo "</p>\n";
     echo "</form>";
     echo "</td>";
@@ -243,9 +249,9 @@ echo "<td style='border : 1px solid; padding : 10 px;'>";
 echo "<form action=\"./absences_du_jour.php\" method=\"post\" style=\"width: 100%;\">\n";
 	echo "<p>\n";
 echo 'Nom : <input type="hidden" name="type_selection" value="nom_eleve"/> ';
-echo '<input type="text" name="nom_eleve" size="10" value="'.$nom_eleve.'"/> ';
+echo '<input dojoType="dijit.form.TextBox" type="text" name="nom_eleve" style="width : 10em" value="'.$nom_eleve.'"/> ';
 echo"<input type='hidden' name='date_absence_eleve' value='$date_absence_eleve'/>";
-echo '<button type="submit">Rechercher</button>';
+echo '<button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Rechercher</button>';
 	echo "</p>\n";
 echo '</form>';
 echo '</td>';
@@ -253,28 +259,28 @@ echo '</td>';
 echo "<td style='border : 1px solid; padding : 10 px;'>";
 echo "<form action=\"./absences_du_jour.php\" method=\"post\" style=\"width: 100%;\">\n";
 	echo "<p>\n";
-    echo ("Régime : <select name=\"filter_regime\" onchange='submit()' class=\"small\">");
+    echo ("Régime : <select dojoType=\"dijit.form.Select\" maxheight=\"-1\" style=\"width :12em;font-size:12px;\" name=\"filter_regime\" onchange='submit()' class=\"small\">");
     echo "<option value='-1'>choisissez un régime</option>\n";
     	    echo "<option value='d/p'";
-	    if (getFiltreRechercheParam('filter_regime') == 'd/p') echo " SELECTED ";
+	    if (getFiltreRechercheParam('filter_regime') == 'd/p') echo " selected='SELECTED' ";
 	    echo ">";
 	    echo 'd/p';
             echo "<option value='ext.'";
-	    if (getFiltreRechercheParam('filter_regime') == 'ext.') echo " SELECTED ";
+	    if (getFiltreRechercheParam('filter_regime') == 'ext.') echo " selected='SELECTED' ";
 	    echo ">";
 	    echo 'ext.';
             echo "<option value='int.'";
-	    if (getFiltreRechercheParam('filter_regime') == 'int.') echo " SELECTED ";
+	    if (getFiltreRechercheParam('filter_regime') == 'int.') echo " selected='SELECTED' ";
 	    echo ">";
 	    echo 'int.';
 	    echo "</option>\n";
     echo "</select>";
     echo "</p>\n";
     echo "<p>\n";
-    echo ("Afficher : <select name=\"filter_manqement_obligation\" onchange='submit()' class=\"small\">");
-    echo "<option value='y'>uniquement les manquements à l'obligation de présence</option>";
+    echo ("Afficher : <select dojoType=\"dijit.form.Select\" maxheight=\"-1\" style=\"font-size:12px;\" name=\"filter_manqement_obligation\" onchange='submit()' class=\"small\">");
+    echo "<option value='y'>Manquements à l'obligation de présence</option>";
     	    echo "<option value='n'";
-	    if (getFiltreRechercheParam('filter_manqement_obligation') == 'n') echo " SELECTED ";
+	    if (getFiltreRechercheParam('filter_manqement_obligation') == 'n') echo " selected='SELECTED' ";
 	    echo ">";
 	    echo 'toutes les saisies';
 	    echo "</option>";
@@ -282,12 +288,49 @@ echo "<form action=\"./absences_du_jour.php\" method=\"post\" style=\"width: 100
     echo "</p>\n";
 
     echo"<input type='hidden' name='date_absence_eleve' value='$date_absence_eleve'/>";
-    echo '<button type="submit">Filtrer</button>';
+    echo '<button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Filtrer</button>';
 echo '</form>';
 echo '</td>';
 
 echo "</tr></table>";
-
+?>
+<div class="legende">
+    <h3 class="legende">Légende  </h3>
+    <table class="legende">
+        <tr>
+            <td>
+            Couleur de fond de cellule     
+            </td>
+            <td>
+              Saisie et traitements  
+            </td>
+            <td>
+              Notifications : Courrier,téléphone,mail ou SMS    
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <font color="orange">&#9632;</font> Retard<br />
+                <font color="red">&#9632;</font> Manquement aux obligations de présence<br />
+                <font color="blue">&#9632;</font> Non manquement aux obligations de présence<br /> 
+                <font color="green">&#9632;</font> Autre saisie.<br />  
+                <?php if (getSettingValue("abs2_alleger_abs_du_jour")!='y'): ?>
+                <font color="purple">&#9632;</font> Saisie conflictuelle<br />
+                <?php endif; ?>
+            </td>
+            <td>
+                <img src="../images/icons/saisie.png" /> Modifier la saisie<br/>  
+               <!-- <img src="../images/icons/flag_green.png" /> Saisie traitée<br/> -->
+                <img src="../images/icons/ico_attention.png" /> Saisie non traitée.<br/>                
+            </td>
+            <td>
+            <img src="../images/icons/courrier_envoi.png" /> Saisie en cours de notification (état initial ou en cours).<br/>
+            <img src="../images/icons/courrier_retour.png" /> Saisie notifiée (reçue ou reçue avec accusé de réception).<br/>
+            </td>    
+        </tr>
+    </table>     
+</div> <br />
+<?php
 if (isset($message_erreur_traitement)) {
     echo $message_erreur_traitement;
 }
@@ -338,7 +381,7 @@ if ($type_selection != 'id_eleve' && $type_selection != 'nom_eleve') {
     }
 }
 $eleve_col = $query
-                ->where('Eleve.DateSortie=?','0')
+                ->where('Eleve.DateSortie<?','0')                
                 ->orWhere('Eleve.DateSortie is NULL')
                 ->orWhere('Eleve.DateSortie>?', $dt_date_absence_eleve->format('U'))
                 ->distinct()->paginate($page_number, $item_per_page);
@@ -346,7 +389,7 @@ $eleve_col = $query
 ?>
 	<div style="text-align: center">
 			    <!-- <p class="expli_page choix_fin"> -->
-				    <form action="./absences_du_jour.php" name="absences_du_jour" id="absences_du_jour" method="post" style="width: 100%;">
+				    <form dojoType="dijit.form.Form" action="./absences_du_jour.php" name="absences_du_jour" id="absences_du_jour" method="post" style="width: 100%;">
 			    <p class="expli_page choix_fin">
 				<input type="hidden" name="type_selection" value="<?php echo $type_selection?>"/>
 				<input type="hidden" name="nom_eleve" value="<?php echo $nom_eleve?>"/>
@@ -371,7 +414,7 @@ $eleve_col = $query
 					return true;">Réinitialiser les filtres</button>
 			    </p>
 			<?php
-			if ($eleve_col->count() != 0) {
+           if ($eleve_col->count() != 0) {
 			    if (method_exists($eleve_col, 'haveToPaginate')) {
 				if ($eleve_col->haveToPaginate()) {
 				    echo "Page ";
@@ -417,10 +460,7 @@ $eleve_col = $query
 			</div>
 			<div dojoType="dijit.form.DropDownButton" style="display: inline">
 			    <span>Ajouter au traitement (popup)</span>
-			    <div dojoType="dijit.Menu" style="display: inline">
-				<button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; pop_it(document.creer_traitement)">
-				    Créer un nouveau traitement dans une popup
-				</button>
+			    <div dojoType="dijit.Menu" style="display: inline">				
 			<?php
 			$id_traitement = isset($_POST["id_traitement"]) ? $_POST["id_traitement"] :(isset($_GET["id_traitement"]) ? $_GET["id_traitement"] :(isset($_SESSION["id_traitement"]) ? $_SESSION["id_traitement"] : NULL));
 			if ($id_traitement != null && AbsenceEleveTraitementQuery::create()->findPk($id_traitement) != null) {
@@ -454,7 +494,7 @@ $eleve_col = $query
     <?php
     $nb_checkbox = 0; //nombre de checkbox
     $compteur = 0;
-    foreach($eleve_col as $eleve) {
+    foreach($eleve_col as $eleve) {        
 	$compteur = $compteur + 1;
         $regime_eleve=EleveRegimeDoublantQuery::create()->findPk($eleve->getlogin())->getRegime();
 		//$eleve = new Eleve();
@@ -494,39 +534,23 @@ $eleve_col = $query
 			for($i = 0; $i<$col_creneaux->count(); $i++){
 					$edt_creneau = $col_creneaux[$i];
 					$absences_du_creneau = $eleve->getAbsenceEleveSaisiesDuCreneau($edt_creneau, $dt_date_absence_eleve);
-
-					$red = false;
 					$violet = false;
-					foreach ($absences_du_creneau as $absence) {
+                    $style = '';
+					foreach ($absences_du_creneau as $absence) {                      
 					    $traitement_col->addCollection($absence->getAbsenceEleveTraitements());
 					    if (getSettingValue("abs2_alleger_abs_du_jour")!='y' && $absence->isSaisiesContradictoiresManquementObligation()) {
 					    //if (!($absence->getSaisiesContradictoiresManquementObligation()->isEmpty())) {
 						$violet = true;
 						break;
-					    }
-					    if ($red || $absence->getManquementObligationPresence()) {
-						$red = true;
-					    }
+					    }else{
+                         $style = 'style="background-color :'.$absence->getColor().'"';   
+                        }					    
 					}
 					if ($violet) {
 					    $style = 'style="background-color : purple"';
-					} elseif ($red) {
-					    $style = 'style="background-color : red"';
-					} else {
-					    $dt_green = clone $dt_date_absence_eleve;
-					    $dt_green->setTime($edt_creneau->getHeuredebutDefiniePeriode('H'), $edt_creneau->getHeuredebutDefiniePeriode('i'), 0);
-					    if (getSettingValue("abs2_alleger_abs_du_jour")!='y' && $eleve->getSousResponsabiliteEtablissement($dt_green)) {
-						$style = 'style="background-color : green"';
-					    } else {
-						if (!$absences_du_creneau->isEmpty()) {
-                                                    $style = 'style="background-color : yellow"';
-                                                } else {
-                                                    $style = '';
-                                                }
-					    }
-					}
+					} 
 					echo '<td '.$style.'>';
-
+                    
 					//si il y a des absences de l'utilisateurs on va proposer de les modifier
 					foreach ($absences_du_creneau as $saisie) {
 					    if (in_array($saisie->getPrimaryKey(), $saisie_affiches)) {
@@ -534,23 +558,35 @@ $eleve_col = $query
 						continue;
 					    }
 					    $saisie_affiches[] = $saisie->getPrimaryKey();
-					    $nb_checkbox = $nb_checkbox + 1;
+					    $nb_checkbox = $nb_checkbox + 1;                        
 					    echo '<nobr><input eleve_id="'.$eleve->getPrimaryKey().'" name="select_saisie[]" value="'.$saisie->getPrimaryKey().'" type="checkbox" ';
-					    if ($saisie->getNotifiee()) {echo 'saisie_notifiee="true"';}
+					    if ($saisie->getNotificationEnCours()){echo 'saisie_notification_en_cours="true"';}
+                        if ($saisie->getNotifiee()) {echo 'saisie_notifiee="true"';}
 					    if ($saisie->getTraitee()) {echo 'saisie_traitee="true"';}
-					    echo '/>';
-					    echo ("<a style='font-size:88%;' href='visu_saisie.php?id_saisie=".$saisie->getPrimaryKey()."'>".$saisie->getPrimaryKey());
-					    if ($saisie->getNotifiee()) {echo " (notifiée)";}
-					    echo '</nobr> ';
-					    echo $saisie->getTypesDescription();
-					    echo '</a>';
-					    //echo '</nobr>';
-					    echo '<br/>';
-					}
-
+					    echo '/>';                        
+                        echo '<a style="font-size:88%;" href="#" onClick="javascript:showwindow(\'visu_saisie.php?id_saisie='.$saisie->getPrimaryKey().'&menu=false\',\'Modifier,traiter ou notifier une saisie\');return false"><img src="../images/icons/saisie.png" title="Voir la saisie n°'.$saisie->getPrimaryKey().'"/>';
+                        //if ($saisie->getNotifiee()) {echo " (notifiée)";}
+					    echo '</nobr> ';                        
+					    //echo $saisie->getTypesDescription();
+					    echo '</a>';                        
+                        if($saisie->getNotificationEnCours()){
+                            echo '<img src="../images/icons/courrier_envoi.png" title="'.$saisie->getTypesNotificationsDescription().'" />';
+                        }                        
+                        if($saisie->getNotifiee()){
+                            echo '<img src="../images/icons/courrier_retour.png" title="'.$saisie->getTypesNotificationsDescription().'" />';
+                        }
+                        echo '<br/>';
+                        if(!$saisie->getTraitee()){
+                            echo '<img src="../images/icons/ico_attention.png" title="Saisie non traitée" />';
+                        }else{
+                            //echo '<img src="../images/icons/flag_green.png" title="'.$saisie->getTypesDescription().'" />';
+                             echo $saisie->getTypesDescription();
+                        }
+                        echo '<br/>';
+					    //echo '</nobr>';					    
+					}                    
 					echo '</td>';
-			    }
-
+			    }             
 					       // Avec ou sans photo
 			if ((getSettingValue("active_module_trombinoscopes")=='y')) {
 			    $nom_photo = $eleve->getNomPhoto(1);
@@ -571,45 +607,46 @@ $eleve_col = $query
 			echo '<div add_select_shorcuts_button="true" eleve_id="'.$eleve->getPrimaryKey().'"></div>';
 			echo '<div dojoType="dijit.form.DropDownButton"  style="white-space: nowrap; display: inline">
 			    <span>Ajouter au traitement</span>
-			    <div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">
-				<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; document.creer_traitement.submit();">
-				    Créer un nouveau traitement
-				</button>';
+			    <div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">';              		
 			foreach ($traitement_col as $traitement) {
 			    echo '<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.creer_traitement.submit();">';
 			    echo ' Ajouter au traitement n° '.$traitement->getId().' ('.$traitement->getDescription().')';
 			    echo '</button>';
 			}
-			echo '</div></div><br/>';
-
-			echo '<div dojoType="dijit.form.DropDownButton"  style="white-space: nowrap; display: inline">
-			    <span>Ajouter (popup)</span>
-			    <div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">
-				<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; pop_it(document.creer_traitement);">
-				    Créer un nouveau traitement (popup)
+            echo'	<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; document.creer_traitement.submit();">
+				    Créer un nouveau traitement
 				</button>';
+			echo '</div></div><br/>';
+			echo '<div dojoType="dijit.form.DropDownButton"  style="white-space: nowrap; display: inline">
+			    <span>Ajouter (fenêtre)</span>
+			    <div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">';				
+			foreach ($traitement_col as $traitement) {
+			    echo '<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; postwindow(document.creer_traitement,\'Traiter et notifier des saisies\');">';
+			    echo ' Ajouter au traitement n° '.$traitement->getId().' ('.$traitement->getDescription().')';
+			    echo '</button>';
+			}
+            echo'<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; postwindow(document.creer_traitement,\'Traiter et notifier des saisies\');">
+				    Créer un nouveau traitement (fenêtre)
+				 </button>';
+			echo '</div></div><br/>';
+            echo '<div dojoType="dijit.form.DropDownButton"  style="white-space: nowrap; display: inline">
+			    <span>Ajouter (popup)</span>
+			    <div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">';				
 			foreach ($traitement_col as $traitement) {
 			    echo '<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; pop_it(document.creer_traitement);">';
 			    echo ' Ajouter au traitement n° '.$traitement->getId().' ('.$traitement->getDescription().')';
 			    echo '</button>';
 			}
+            echo'<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; pop_it(document.creer_traitement);">
+				    Créer un nouveau traitement (popup)
+				 </button>';
 			echo '</div></div>';
 			echo '</td>';
 			echo "</tr>";
     }
 
     echo " </tbody>";
-    echo "</table>";
-    if (getSettingValue("abs2_alleger_abs_du_jour")!='y') {
-	echo '<table><tr><td>Légende : </td></tr></table>';
-	echo '<table><tr><td style="border : 1px solid; background-color : red;">Manquement à l\'obligation de présence</td></tr></table>';
-	echo '<table><tr><td style="border : 1px solid; background-color : green;">Sous la responsabilité de l\'établissement</td></tr></table>';
-	echo '<table><tr><td style="border : 1px solid; background-color : purple;">Saisies conflictuelles</td></tr></table>';
-	echo '<table><tr><td style="border : 1px solid;">Sans couleur : pas de saisie</td></tr></table>';
-        if (isFiltreRechercheParam('filter_manqement_obligation') && getFiltreRechercheParam('filter_manqement_obligation') == 'n') {
-            echo '<table><tr><td style="border : 1px solid; background-color : yellow;"">Saisie sans précisions</td></tr></table>';
-        }
-    }
+    echo "</table>";   
     ?>
     <div dojoType="dijit.form.DropDownButton" style="display: inline">
 	<span>Ajouter Les saisies cochées à un traitement</span>
@@ -650,9 +687,11 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
     dojo.require("dijit.Menu");
     dojo.require("dijit.form.Form");
     dojo.require("dijit.form.CheckBox");
+    dojo.require("dijit.form.TextBox");
+    dojo.require("dijit.form.Select");   
     dojo.require("dijit.form.DateTextBox");
     dojo.require("dojo.parser");
-
+        
     dojo.addOnLoad(function() {
 	dojo.query("[add_select_shorcuts_button=true]").forEach(function(node, index, arr){
 	    var menu = new dijit.Menu({
@@ -689,8 +728,20 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
 		}
 	    });
 	    menu.addChild(menuItem3);
-
+        
 	    var menuItem4 = new dijit.MenuItem({
+		label: "sans notification créée",
+		onClick: function() {
+		    var eleve_id = dojo.attr(node,\'eleve_id\');
+		    var query_string = \'input[type=checkbox][eleve_id=\'+eleve_id+\']\';
+		    dojo.query(query_string).attr(\'checked\', true);
+		    query_string = \'input[type=checkbox][eleve_id=\'+eleve_id+\'][saisie_notification_en_cours=true]\';
+		    dojo.query(query_string).attr(\'checked\', false);
+		}
+	    });
+	    menu.addChild(menuItem4);
+
+	    var menuItem5 = new dijit.MenuItem({
 		label: "non notifiés",
 		onClick: function() {
 		    var eleve_id = dojo.attr(node,\'eleve_id\');
@@ -700,7 +751,7 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
 		    dojo.query(query_string).attr(\'checked\', false);
 		}
 	    });
-	    menu.addChild(menuItem4);
+	    menu.addChild(menuItem5);
 
 	    var button = new dijit.form.DropDownButton({
 		label: "Selectionner",

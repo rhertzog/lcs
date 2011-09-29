@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: definir_autres_sanctions.php 5989 2010-11-25 11:51:39Z crob $
+ * $Id: definir_autres_sanctions.php 7138 2011-06-05 17:37:14Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -103,11 +103,9 @@ if(isset($nature)) {
 
 	if((isset($nature))&&($nature!='')) {
 		if($a_enregistrer=='y') {
-			//$nature=addslashes(my_ereg_replace('(\\\r\\\n)+',"\r\n",my_ereg_replace("&#039;","'",html_entity_decode($nature))));
-			//$nature=addslashes(my_ereg_replace('(\\\r\\\n)+',"\r\n",$nature));
-			//$nature=addslashes(my_ereg_replace('(\\\r\\\n)+',"\r\n",html_entity_decode($nature)));
-			//$nature=addslashes(my_ereg_replace('(\\\r\\\n)+',"\r\n",my_ereg_replace("'","&#039;",$nature)));
-			$nature=my_ereg_replace('(\\\r\\\n)+',"\r\n",$nature);
+			$nature=preg_replace('/(\\\r\\\n)+/',"\r\n",$nature);
+			$nature=preg_replace('/(\\\r)+/',"\r",$nature);
+			$nature=preg_replace('/(\\\n)+/',"\n",$nature);
 
 			$sql="INSERT INTO s_types_sanctions SET nature='".$nature."';";
 			//echo "$sql<br />\n";

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: enregistrement_modif_traitement.php 6313 2011-01-08 22:39:13Z dblanqui $
+ * @version $Id: enregistrement_modif_traitement.php 7437 2011-07-18 19:20:27Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -65,6 +65,7 @@ if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") 
 //récupération des paramètres de la requète
 $id_traitement = isset($_POST["id_traitement"]) ? $_POST["id_traitement"] :(isset($_GET["id_traitement"]) ? $_GET["id_traitement"] :NULL);
 $modif = isset($_POST["modif"]) ? $_POST["modif"] :(isset($_GET["modif"]) ? $_GET["modif"] :null);
+$menu = isset($_POST["menu"]) ? $_POST["menu"] :(isset($_GET["menu"]) ? $_GET["menu"] : Null);
 
 $message_enregistrement = '';
 $traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
@@ -83,10 +84,18 @@ if ($modif == 'type') {
 } elseif ($modif == 'motif') {
     $traitement->setAbsenceEleveMotif(AbsenceEleveMotifQuery::create()->findPk($_POST["id_motif"]));
 } elseif ($modif == 'enlever_saisie') {
-    $count_delete = JTraitementSaisieEleveQuery::create()->filterByAbsenceEleveTraitement($traitement)->filterByASaisieId($_POST["id_saisie"])->limit(1)->delete();
+    $j_saisie_traitement_col = JTraitementSaisieEleveQuery::create()->filterByAbsenceEleveTraitement($traitement)->filterByASaisieId($_POST["id_saisie"])->find();
+    $count_delete = $j_saisie_traitement_col->count();
+    foreach ($j_saisie_traitement_col as $j_saisie_traitement) {
+    	$j_saisie_traitement->delete();
+    }
 } elseif ($modif == 'supprimer') {
     $traitement->delete();
-    include("liste_traitements.php");
+    if($menu){
+        include("visu_saisie.php");
+    }else{
+        include("liste_traitements.php");
+    }    
     die;
 }
 

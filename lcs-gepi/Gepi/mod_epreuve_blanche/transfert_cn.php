@@ -1,8 +1,13 @@
 <?php
-/* $Id: transfert_cn.php 6756 2011-04-08 17:47:31Z crob $ */
+/**
+ *  $Id: transfert_cn.php 7748 2011-08-14 14:10:02Z regis $
+ * 
+ * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * @package Epreuve_blanche
+ * @subpackage Transfert
+ */
+
 /*
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
-*
 * This file is part of GEPI.
 *
 * GEPI is free software; you can redistribute it and/or modify
@@ -66,33 +71,6 @@ if (!checkAccess()) {
 
 // La boite courante est mise à jour...
 // ... mais pas la boite destination.
-// Il faudrait rechercher pour $id_racine les derniers descendants et lancer la mise à jour sur chacun de ces descendants.
-function recherche_enfant($id_parent_tmp) {
-	global $current_group, $periode_num, $id_racine;
-	$sql="SELECT * FROM cn_conteneurs WHERE parent='$id_parent_tmp'";
-	//echo "<!-- $sql -->\n";
-	$res_enfant=mysql_query($sql);
-	if(mysql_num_rows($res_enfant)>0){
-		while($lig_conteneur_enfant=mysql_fetch_object($res_enfant)){
-			/*
-			echo "<!-- nom_court=$lig_conteneur_enfant->nom_court -->\n";
-			echo "<!-- nom_complet=$lig_conteneur_enfant->nom_complet -->\n";
-			echo "<!-- id=$lig_conteneur_enfant->id -->\n";
-			echo "<!-- parent=$lig_conteneur_enfant->parent -->\n";
-			echo "<!-- recherche_enfant($lig_conteneur_enfant->id); -->\n";
-			*/
-			recherche_enfant($lig_conteneur_enfant->id);
-		}
-	}
-	else{
-		$arret = 'no';
-		$id_conteneur_enfant=$id_parent_tmp;
-		//echo "<!-- mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_conteneur_enfant,$arret); -->\n";
-		mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_conteneur_enfant,$arret);
-		//echo "<!-- ========================================== -->\n";
-	}
-}
-
 
 $id_epreuve=isset($_POST['id_epreuve']) ? $_POST['id_epreuve'] : (isset($_GET['id_epreuve']) ? $_GET['id_epreuve'] : NULL);
 

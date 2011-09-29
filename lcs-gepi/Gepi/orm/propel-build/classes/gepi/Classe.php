@@ -42,6 +42,11 @@ class Classe extends BaseClasse {
 	 * @return     PropelObjectCollection EdtEmplacementCours[]
 	 */
 	public function getEdtEmplacementCours($v) {
+        
+        if ( getSettingValue("autorise_edt_tous") != 'y') {
+        	return new PropelObjectCollection();
+        }
+        
 	    // we treat '' as NULL for temporal objects because DateTime('') == DateTime('now')
 	    // -- which is unexpected, to say the least.
 	    //$dt = new DateTime();
@@ -65,14 +70,24 @@ class Classe extends BaseClasse {
 			    throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
 		    }
 	    }
-	    $result = new PropelObjectCollection();
-	    foreach ($this->getGroupes() as $groupe) {
-		$cours = $groupe->getEdtEmplacementCours($dt);
-		if ($cours != null) {
-		    $result->add($cours);
+	    
+		$query = EdtEmplacementCoursQuery::create()->filterByGroupe($this->getGroupes())
+		    ->filterByIdCalendrier(0)
+		    ->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, NULL);
+	    
+		if ($v instanceof EdtCalendrierPeriode) {
+			$query->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, $v->getIdCalendrier());
+		} else {
+			$periodeCalendrier = EdtCalendrierPeriodePeer::retrieveEdtCalendrierPeriodeActuelle($v);
+			if ($periodeCalendrier != null) {
+				$query->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, $periodeCalendrier->getIdCalendrier());
+			}
 		}
-	    }
-	    return $result;
+
+	    $edtCoursCol = $query->find();
+
+		require_once("helpers/EdtEmplacementCoursHelper.php");
+		return EdtEmplacementCoursHelper::getColEdtEmplacementCoursActuel($edtCoursCol, $v);
 	}
 
 	/**
@@ -83,7 +98,11 @@ class Classe extends BaseClasse {
 	 * @return PropelObjectCollection EdtEmplacementCours une collection d'emplacement de cours ordonnée chronologiquement
 	 */
 	public function getEdtEmplacementCourssPeriodeCalendrierActuelle($v = 'now'){
-	    $query = EdtEmplacementCoursQuery::create()->filterByIdGroupe($this->getGroupes()->toKeyValue('Id', 'Id'))
+		if ( getSettingValue("autorise_edt_tous") != 'y') {
+        	return null;
+        }
+        
+		$query = EdtEmplacementCoursQuery::create()->filterByGroupe($this->getGroupes())
 		    ->filterByIdCalendrier(0)
 		    ->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, NULL);
 

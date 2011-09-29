@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: signalement_eleves.php 6438 2011-01-28 13:47:26Z tbelliard $
+ * $Id: signalement_eleves.php 6913 2011-05-13 15:58:05Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -200,7 +200,7 @@ if (isset($_POST['is_posted'])) {
 				$ajout_header="";
 				if($email_declarant!="") {$ajout_header.="Cc: $nom_declarant <".$email_declarant.">\r\n";}
 	
-        $envoi = envoi_mail($sujet_mail, $texte_mail, getSettingValue("gepiAdminAdress"), $ajout_header);	
+				$envoi = envoi_mail($sujet_mail, $texte_mail, getSettingValue("gepiAdminAdress"), $ajout_header);	
 			}
 		}
 

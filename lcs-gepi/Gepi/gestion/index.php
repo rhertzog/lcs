@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: index.php 5354 2010-09-20 17:32:08Z crob $
+ * $Id: index.php 7780 2011-08-16 08:58:17Z crob $
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -74,7 +74,8 @@ $titre_page = "Gestion générale";
 $tbs_last_connection="";
 
 // ====== Inclusion des balises head et du bandeau =====
-include_once("./../lib/header_template.inc");
+//include_once("./../lib/header_template.inc");
+include_once("../lib/header_template.inc");
 // require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 
@@ -389,7 +390,13 @@ if (LDAPServer::is_setup()) {
 	$chemin = array();
   $titre = array();
   $expli = array();
-	
+
+	$chemin="changement_d_annee.php";
+	$titre = "Changement d'année";
+	$expli = "Permet d'effectuer les opérations d'archivage de fin d'année et les opérations précédent l'initialisation de la nouvelle année.";
+	$ancre="chgt_annee";
+	$tbs_menu[$nummenu]['entree'][]=array('lien'=>$chemin , 'titre'=>$titre, 'expli'=>$expli, 'ancre'=>$ancre);
+
 if (LDAPServer::is_setup()) {	
 	
 	$chemin="../init_scribe_ng/index.php";
@@ -435,13 +442,15 @@ if (LDAPServer::is_setup()) {
 
 	$tbs_microtime	="";
 	$tbs_pmv="";
-	require_once ("./../lib/footer_template.inc.php");
+	//require_once ("./../lib/footer_template.inc.php");
+	require_once ("../lib/footer_template.inc.php");
 
 	
 //==================================
 // Décommenter la ligne ci-dessous pour afficher les variables $_GET, $_POST, $_SESSION et $_SERVER pour DEBUG:
 //debug_var();
 
-include('./../templates/origine/gestion_generale_template.php');
+//include('./../templates/origine/gestion_generale_template.php');
+include('../templates/origine/gestion_generale_template.php');
 
 ?>

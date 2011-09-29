@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: options_connect.php 6099 2010-12-11 15:07:02Z tbelliard $
+ * $Id: options_connect.php 7866 2011-08-21 14:33:24Z jjacquard $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -71,6 +71,14 @@ if (isset($_POST['auth_options_posted']) && $_POST['auth_options_posted'] == "1"
 		saveSetting("auth_sso", $_POST['auth_sso']);
 	}
 
+	if (isset($_POST['sso_cas_table'])) {
+	    if ($_POST['sso_cas_table'] != "yes") {
+	    	$_POST['sso_cas_table'] = "no";
+	    }
+	} else {
+		$_POST['sso_cas_table'] = "no";
+	}
+	saveSetting("sso_cas_table", $_POST['sso_cas_table']);
 
 	if (isset($_POST['auth_locale'])) {
 	    if ($_POST['auth_locale'] != "yes") {
@@ -89,6 +97,19 @@ if (isset($_POST['auth_options_posted']) && $_POST['auth_options_posted'] == "1"
 		$_POST['auth_ldap'] = "no";
 	}
 	saveSetting("auth_ldap", $_POST['auth_ldap']);
+
+	if (isset($_POST['auth_simpleSAML'])) {
+	    if ($_POST['auth_simpleSAML'] != "yes") {
+	    	$_POST['auth_simpleSAML'] = "no";
+	    }
+	} else {
+		$_POST['auth_simpleSAML'] = "no";
+	}
+	saveSetting("auth_simpleSAML", $_POST['auth_simpleSAML']);
+
+	if (isset($_POST['auth_simpleSAML_source'])) {
+		saveSetting("auth_simpleSAML_source", $_POST['auth_simpleSAML_source']);
+	}
 
 	if (isset($_POST['ldap_write_access'])) {
 	    if ($_POST['ldap_write_access'] != "yes") {
@@ -142,6 +163,25 @@ if (isset($_POST['auth_options_posted']) && $_POST['auth_options_posted'] == "1"
 	saveSetting("sso_scribe", $_POST['sso_scribe']);
 
 
+	if (isset($_POST['gepiEnableIdpSaml20'])) {
+	    if ($_POST['gepiEnableIdpSaml20'] != "yes") {
+	    	$_POST['gepiEnableIdpSaml20'] = "no";
+	    }
+	} else {
+		$_POST['gepiEnableIdpSaml20'] = "no";
+	}
+	saveSetting("gepiEnableIdpSaml20", $_POST['gepiEnableIdpSaml20']);
+	
+  	if (isset($_POST['sacocheUrl'])) {
+		$sacocheUrl = $_POST['sacocheUrl'];
+		if (substr($sacocheUrl,strlen($sacocheUrl)-1,1) == '/') {$sacocheUrl = substr($sacocheUrl,0, strlen($sacocheUrl)-1);} //on enleve le / a  la fin
+  		saveSetting("sacocheUrl", $_POST['sacocheUrl']);
+	}
+		
+  	if (isset($_POST['sacoche_base'])) {
+		saveSetting("sacoche_base", $_POST['sacoche_base']);
+	}
+		
 	if (isset($_POST['statut_utilisateur_defaut'])) {
 	    if (!in_array($_POST['statut_utilisateur_defaut'], array("professeur","responsable","eleve"))) {
 	    	$_POST['statut_utilisateur_defaut'] = "professeur";
@@ -294,6 +334,33 @@ if (!$ldap_setup_valid) echo " disabled";
 echo " /> <label for='label_auth_ldap' style='cursor: pointer;'>Authentification LDAP";
 if (!$ldap_setup_valid) echo " <em>(sélection impossible : le fichier /secure/config_ldap.inc.php n'est pas présent)</em>\n";
 echo "</label>\n";
+
+
+//on va voir si il y a simplesaml de configuré
+if (file_exists(dirname(__FILE__).'/../lib/simplesaml/config/authsources.php')) {
+	echo "<br/><input type='checkbox' name='auth_simpleSAML' value='yes' id='label_auth_simpleSAML'";
+	if (getSettingValue("auth_simpleSAML")=='yes') echo " checked ";
+	echo " /> <label for='label_auth_simpleSAML' style='cursor: pointer;'>Authentification simpleSAML";
+	echo "</label>\n";
+	
+	echo "<br/>\n<select name=\"auth_simpleSAML_source\" size=\"1\">\n";
+	echo "<option value='unset'></option>";
+	include_once(dirname(__FILE__).'/../lib/simplesaml/lib/_autoload.php');
+	$config = SimpleSAML_Configuration::getOptionalConfig('authsources.php');
+	$sources = $config->getOptions();
+	foreach($sources as $source) {
+		echo "<option value='$source'";
+		if ($source == getSettingValue("auth_simpleSAML_source")) {
+			echo 'selected';
+		}
+		echo ">";
+		echo $source;
+		echo "</option>";
+	}
+	echo "</select>\n";
+} else  {
+	echo "<input type='hidden' name='auth_simpleSAML' value='no' />";
+}
 echo "</p>\n";
 
 echo "<p>Service d'authentification unique : ";
@@ -324,6 +391,22 @@ if (getSettingValue("auth_sso")=='lemon') echo " checked ";
 echo " /> <label for='label_3' style='cursor: pointer;'>LemonLDAP</label>\n";
 echo "</p>\n";
 echo "<p>Remarque : les changements n'affectent pas les sessions en cours.";
+
+//on va voir si il y a simplesaml de configuré
+if (file_exists(dirname(__FILE__).'/../lib/simplesaml/metadata/saml20-idp-hosted.php')) {
+	echo "<p><strong>Fourniture d'identité :</strong></p>\n";
+	echo "<p><input type='checkbox' name='gepiEnableIdpSaml20' value='yes' id='gepiEnableIdpSaml20'";
+	if (getSettingValue("gepiEnableIdpSaml20")=='yes') echo " checked ";
+	echo " /> <label for='gepiEnableIdpSaml20' style='cursor: pointer;'>Fournir une identification SAML 2.0</label>\n";
+	echo "<p>\n";
+	echo "<label for='sacocheUrl' style='cursor: pointer;'>Adresse du service qui va se connecter si possible en https (exemple : https://localhost/mon-appli) </label>\n";
+	echo "<input type='text' size='60' name='sacocheUrl' value='".getSettingValue("sacocheUrl")."' id='sacocheUrl' />\n<br/>";
+	echo "<label for='sacoche_base' style='cursor: pointer;'>Numéro de base sacoche (laisser vide si votre instalation de sacoche est mono établissement)</label>\n";
+	echo "<input type='text' size='5' name='sacoche_base' value='".getSettingValue("sacoche_base")."' id='sacoche_base' />\n<br/>";
+	echo 'pour une configuration manuelle, modifier le fichier /lib/simplesaml/metadate/saml20-sp-remote.php';
+	echo "</p>\n";
+}
+
 
 echo "<p><strong>Options supplémentaires :</strong></p>\n";
 
@@ -406,6 +489,13 @@ echo "<input type='text' size='60' name='login_sso_url' value='".getSettingValue
 echo "</p>\n";
 
 echo "<br/>\n";
+
+echo "<p><input type='checkbox' name='sso_cas_table' value='yes' id='sso_cas_table'";
+if ($gepiSettings['sso_cas_table'] == 'yes') echo " checked='checked' ";
+echo " /> <label for='sso_cas_table' style='cursor: pointer;'>Sessions SSO CAS uniquement : utiliser une table de correspondance .";
+echo "</label>\n";
+echo "</p>\n";
+
 echo "<center><input type=\"submit\" name=\"auth_mode_submit\" value=\"Valider\" onclick=\"return confirmlink(this, 'Êtes-vous sûr de vouloir changer le mode d\' authentification ?', 'Confirmation')\" /></center>\n";
 
 echo "<input type='hidden' name='auth_options_posted' value='1' />\n";

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id$
+ * $Id: ajax_enregistrement_devoir.php 8369 2011-09-28 12:15:16Z crob $
  *
  * Copyright 2009-2011 Josselin Jacquard
  *
@@ -46,6 +46,8 @@ if ($utilisateur == null) {
 
 check_token();
 
+//debug_var();
+
 //récupération des paramètres de la requète
 $id_devoir = isset($_POST["id_devoir"]) ? $_POST["id_devoir"] :(isset($_GET["id_devoir"]) ? $_GET["id_devoir"] :NULL);
 $date_devoir = isset($_POST["date_devoir"]) ? $_POST["date_devoir"] :(isset($_GET["date_devoir"]) ? $_GET["date_devoir"] :NULL);
@@ -54,9 +56,13 @@ $heure_entry = isset($_POST["heure_entry"]) ? $_POST["heure_entry"] :(isset($_GE
 $uid_post = isset($_POST["uid_post"]) ? $_POST["uid_post"] :(isset($_GET["uid_post"]) ? $_GET["uid_post"] :0);
 $id_groupe = isset($_POST["id_groupe"]) ? $_POST["id_groupe"] :(isset($_GET["id_groupe"]) ? $_GET["id_groupe"] :NULL);
 
+$jour_visibilite=isset($_POST["jour_visibilite"]) ? $_POST["jour_visibilite"] :(isset($_GET["jour_visibilite"]) ? $_GET["jour_visibilite"] :NULL);
+$heure_visibilite=isset($_POST["heure_visibilite"]) ? $_POST["heure_visibilite"] :(isset($_GET["heure_visibilite"]) ? $_GET["heure_visibilite"] :NULL);
+
 //parametre d'enregistrement de fichiers joints
 if (empty($_FILES['doc_file'])) { $doc_file=''; } else { $doc_file=$_FILES['doc_file'];}
 $doc_name = isset($_POST["doc_name"]) ? $_POST["doc_name"] :(isset($_GET["doc_name"]) ? $_GET["doc_name"] :NULL);
+$doc_masque = isset($_POST["doc_masque"]) ? $_POST["doc_masque"] :(isset($_GET["doc_masque"]) ? $_GET["doc_masque"] :NULL);
 
 //parametre de changement de titre de fichier joint.
 $doc_name_modif = isset($_POST["doc_name_modif"]) ? $_POST["doc_name_modif"] :(isset($_GET["doc_name_modif"]) ? $_GET["doc_name_modif"] :NULL);
@@ -65,8 +71,25 @@ $id_document = isset($_POST["id_document"]) ? $_POST["id_document"] :(isset($_GE
 // uid de pour ne pas refaire renvoyer plusieurs fois le mÃªme formulaire
 // autoriser la validation de formulaire $uid_post==$_SESSION['uid_prime']
 $uid_prime = isset($_SESSION['uid_prime']) ? $_SESSION['uid_prime'] : 1;
+// Pour tester la mise en place d'une copie de sauvegarde, décommenter la ligne ci-dessous:
+//$uid_post=$uid_prime;
 if ($uid_post==$uid_prime) {
-	echo("Erreur enregistrement de devoir : formulaire dejà  posté précédemment.");
+	if(getSettingValue('cdt2_desactiver_copie_svg')!='y') {
+		$contenu_cor = traitement_magic_quotes(corriger_caracteres($contenu),'');
+		$contenu_cor = str_replace("\\r","",$contenu_cor);
+		$contenu_cor = str_replace("\\n","",$contenu_cor);
+		$contenu_cor = stripslashes($contenu_cor);
+		if ($contenu_cor == "" or $contenu_cor == "<br>") {$contenu_cor = "...";}
+	
+		$sql="INSERT INTO ct_private_entry SET date_ct='$date_devoir', heure_entry='".strftime("%H:%M:%S")."', id_login='".$_SESSION['login']."', id_groupe='$id_groupe', contenu='<b>COPIE DE SAUVEGARDE</b><br />$contenu_cor';";
+		$insert=mysql_query($sql);
+
+		echo("Erreur enregistrement de devoir : formulaire dejà posté précédemment.\nUne copie de sauvegarde a été créée en notice privée.");
+	}
+	else {
+		echo("Erreur enregistrement de devoir : formulaire dejà posté précédemment.");
+	}
+
 	die();
 }
 $_SESSION['uid_prime'] = $uid_post;
@@ -133,6 +156,65 @@ $ctTravailAFaire->setDateCt($date_devoir);
 $ctTravailAFaire->setGroupe($groupe);
 //$ctTravailAFaire->setHeureEntry($heure_entry);
 
+/*
+if(isset($id_devoir)) {
+	$f=fopen("/tmp/gepi_test.txt","a+");
+	fwrite($f, strftime("%d/%m/%Y %H:%M:%S").": id_devoir=$id_devoir\n");
+	fclose($f);
+}
+*/
+
+$date_visibilite_mal_formatee="n";
+//echo "$heure_visibilite<br />\n";
+if(!preg_match("/^[0-9]{1,2}:[0-9]{1,2}$/",$heure_visibilite)) {
+	$heure_courante=strftime("%H:%M");
+	if((!isset($id_devoir))||($id_devoir=="")) {
+		echo "Erreur: Heure de visibilité mal formatée : $heure_visibilite.\nL'heure courante sera utilisée : $heure_courante";
+	}
+	else {
+		echo "Erreur: Heure de visibilité mal formatée : $heure_visibilite.\nLa date de visibilité ne sera pas modifiée (maintenue à ".get_date_heure_from_mysql_date($ctTravailAFaire->getDateVisibiliteEleve()).").";
+	}
+
+	$heure_visibilite=$heure_courante;
+	$date_visibilite_mal_formatee="y";
+}
+$tab_tmp=explode(":",$heure_visibilite);
+$heure_v=$tab_tmp[0];
+$min_v=$tab_tmp[1];
+
+//if(!preg_match("#^[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}$#",$jour_visibilite)) {
+if(!preg_match( '`^\d{1,2}/\d{1,2}/\d{4}$`', $jour_visibilite)) {
+	$jour_courant=strftime("%d/%m/%Y");
+
+	/*
+	$f=fopen("/tmp/gepi_test.txt","a+");
+	fwrite($f, "Date mal formatee: $jour_visibilite\n");
+	fclose($f);
+	*/
+
+	if((!isset($id_devoir))||($id_devoir=="")) {
+		echo "Erreur: Le jour de visibilité est mal formaté : $jour_visibilite.\nLe jour courant sera utilisé : $jour_courant";
+	}
+	else {
+		echo "Erreur: Le jour de visibilité est mal formaté : $jour_visibilite.\nLa date de visibilité ne sera pas modifiée (maintenue à ".get_date_heure_from_mysql_date($ctTravailAFaire->getDateVisibiliteEleve()).").\n";
+	}
+
+	$jour_visibilite=$jour_courant;
+	$date_visibilite_mal_formatee="y";
+}
+$tab_tmp=explode("/",$jour_visibilite);
+$jour_v=$tab_tmp[0];
+$mois_v=$tab_tmp[1];
+$annee_v=$tab_tmp[2];
+
+if((!isset($id_devoir))||($id_devoir=="")||($date_visibilite_mal_formatee=="n")) {
+	$date_visibilite_eleve=mktime($heure_v,$min_v,0,$mois_v,$jour_v,$annee_v);
+}
+else {
+	$date_visibilite_eleve=$ctTravailAFaire->getDateVisibiliteEleve();
+}
+$ctTravailAFaire->setDateVisibiliteEleve($date_visibilite_eleve);
+
 //enregistrement de l'objet
 $ctTravailAFaire->save();
 
@@ -141,7 +223,11 @@ if (!empty($doc_file['name'][0])) {
 	require_once("traite_doc.php");
 	$total_max_size = getSettingValue("total_max_size");
 	$max_size = getSettingValue("max_size");
-	$dest_dir = "../documents/cl_dev".$ctTravailAFaire->getIdCt();
+        $multi = (isset($multisite) && $multisite == 'y') ? $_COOKIE['RNE'].'/' : NULL;
+        if ((isset($multisite) && $multisite == 'y') && is_dir('../documents/'.$multi) === false){
+            mkdir('../documents/'.$multi);
+        }
+	$dest_dir = '../documents/'.$multi.'cl_dev'.$ctTravailAFaire->getIdCt();
 
 	//il y a au plus trois documents joints dans l'interface de saisie
 	for ($index_doc=0; $index_doc < 3; $index_doc++) {
@@ -157,6 +243,12 @@ if (!empty($doc_file['name'][0])) {
 					$ctDocument->setTitre(corriger_caracteres($doc_name[$index_doc]));
 				} else {
 					$ctDocument->setTitre(basename($file_path));
+				}
+				if(isset($doc_masque[$index_doc])) {
+					$ctDocument->setVisibleEleveParent(false);
+				}
+				else {
+					$ctDocument->setVisibleEleveParent(true);
 				}
 				$ctDocument->save();
 				$ctTravailAFaire->addCahierTexteTravailAFaireFichierJoint($ctDocument);

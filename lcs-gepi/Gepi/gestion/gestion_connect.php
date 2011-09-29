@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: gestion_connect.php 6095 2010-12-11 14:13:40Z tbelliard $
+ * $Id: gestion_connect.php 8050 2011-08-30 08:32:43Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -160,17 +160,7 @@ if(isset($_GET['mode'])){
 		$now = gmdate('D, d M Y H:i:s') . ' GMT';
 		$nom_fic=$chaine_titre."_".$now.".csv";
 
-		header('Content-Type: text/x-csv');
-		header('Expires: ' . $now);
-		// lem9 & loic1: IE need specific headers
-		if (my_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
-			header('Content-Disposition: inline; filename="' . $nom_fic . '"');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Pragma: public');
-		} else {
-			header('Content-Disposition: attachment; filename="' . $nom_fic . '"');
-			header('Pragma: no-cache');
-		}
+		send_file_download_headers('text/x-csv',$nom_fic);
 
 		$nb_ligne = count($ligne_csv);
 
@@ -231,14 +221,25 @@ echo "<h3 class='gepi'>Utilisateurs connectés en ce moment</h3>";
 echo "<div title=\"Utilisateurs connectés\">";
 echo "<ul>";
 // compte le nombre d'enregistrement dans la table
-$sql = "select u.login, concat(u.prenom, ' ', u.nom) utilisa, u.email from log l, utilisateurs u where (l.LOGIN = u.login and l.END > now())";
+//$sql = "select u.login, concat(u.prenom, ' ', u.nom) utilisa, u.email from log l, utilisateurs u where (l.LOGIN = u.login and l.END > now())";
+$sql = "select u.login, concat(u.prenom, ' ', u.nom) utilisa, u.email, u.auth_mode from log l, utilisateurs u where (l.LOGIN = u.login and l.END > now())";
 
 $res = sql_query($sql);
 if ($res) {
     for ($i = 0; ($row = sql_row($res, $i)); $i++) {
-		echo("<li>" . $row[1]. " | <a href=\"mailto:" . $row[2] . "\">Envoyer un mail</a> |");
-		if ((getSettingValue('use_sso') != "cas" and getSettingValue("use_sso") != "lemon"  and getSettingValue("use_sso") != "lcs" and getSettingValue("use_sso") != "ldap_scribe")) {
-			echo "<a href=\"../utilisateurs/change_pwd.php?user_login=".$row[0].add_token_in_url()."\">Déconnecter en changeant le mot de passe</a>";
+		echo("<li>" . $row[1]. " | <a href=\"mailto:" . $row[2] . "\">Envoyer un mail</a>");
+
+		$afficher_deconnecter_et_changer_mdp="n";
+		//if ((getSettingValue('use_sso') != "cas" and getSettingValue("use_sso") != "lemon"  and getSettingValue("use_sso") != "lcs" and getSettingValue("use_sso") != "ldap_scribe")) {
+		if ((getSettingValue('use_sso') != "cas" and getSettingValue("use_sso") != "lemon"  and getSettingValue("auth_sso") != "lcs" and getSettingValue("use_sso") != "ldap_scribe")) {
+			$afficher_deconnecter_et_changer_mdp="y";
+		}
+		elseif((getSettingValue("auth_sso") == "lcs")&&($row[3]=='gepi')) {
+			$afficher_deconnecter_et_changer_mdp="y";
+		}
+
+		if($afficher_deconnecter_et_changer_mdp=="y") {
+			echo " | <a href=\"../utilisateurs/change_pwd.php?user_login=".$row[0].add_token_in_url()."\">Déconnecter en changeant le mot de passe</a>";
 		}
 		echo "</li>";
     }
@@ -259,13 +260,13 @@ echo "<h3 class='gepi'>Activation/désactivation des connexions</h3>\n";
 $disable_login=getSettingValue("disable_login");
 
 if($disable_login=="yes"){
-	echo "<p>Les connexions sont actuellement <b>désactivées</b>.</p>\n";
+	echo "<p>Les connexions sont actuellement <span style='font-weight:bold'>désactivées</span>.</p>\n";
 }
 elseif($disable_login=="no"){
-	echo "<p>Les connexions sont actuellement <b>activées</b>.</p>\n";
+	echo "<p>Les connexions sont actuellement <span style='font-weight:bold'>activées</span>.</p>\n";
 }
 else{
-	echo "<p>Les connexions <b>futures</b> sont actuellement <b>désactivées</b>.<br />Aucune nouvelle connexion n'est acceptée.</p>\n";
+	echo "<p>Les connexions <span style='font-weight:bold'>futures</span> sont actuellement <span style='font-weight:bold'>désactivées</span>.<br />Aucune nouvelle connexion n'est acceptée.</p>\n";
 }
 
 echo "<p>En désactivant les connexions, vous rendez impossible la connexion au site pour les utilisateurs, hormis les administrateurs.</p>\n";
@@ -455,7 +456,7 @@ echo "<hr class=\"header\" style=\"margin-top: 32px; margin-bottom: 24px;\" />\n
 //
 if ((getSettingValue('use_sso') != "cas" and getSettingValue("use_sso") != "lemon"  and getSettingValue("use_sso") != "lcs" and getSettingValue("use_sso") != "ldap_scribe")) {
 echo "<h3 class='gepi'>Changement du mot de passe obligatoire lors de la prochaine connexion</h3>";
-echo "<p><b>ATTENTION : </b>En validant le bouton ci-dessous, <b>tous les utilisateurs</b> seront amenés à changer leur mot de passe lors de leur prochaine connexion.</p>";
+echo "<p><span style='font-weight:bold'>ATTENTION : </span>En validant le bouton ci-dessous, <span style='font-weight:bold'>tous les utilisateurs</span> seront amenés à changer leur mot de passe lors de leur prochaine connexion.</p>";
 echo "<form action=\"gestion_connect.php\" name=\"form_chgt_mdp\" method=\"post\">";
 echo "<center><input type=\"submit\" name=\"valid_chgt_mdp\" value=\"Valider\" onclick=\"return confirmlink(this, 'Êtes-vous sûr de vouloir forcer le changement de mot de passe de tous les utilisateurs ?', 'Confirmation')\" /></center>";
 echo "<input type=hidden name=mode_navig value='$mode_navig' />";
@@ -466,7 +467,7 @@ echo "</form><hr class=\"header\" style=\"margin-top: 32px; margin-bottom: 24px;
 //
 
 echo "<h3 class='gepi'>Mode d'authentification</h3>";
-echo "<p><b>ATTENTION :</b> Dans le cas d'une authentification en Single Sign-On avec CAS, LemonLDAP ou LCS, seuls les utilisateurs pour lesquels aucun mot de passe n'est présent dans la base de données pourront se connecter. Toutefois, il est recommandé de conserver un compte administrateur avec un mot de passe afin de pouvoir vous connecter en bloquant le SSO par le biais de la variable 'block_sso' du fichier /lib/global.inc.</p>";
+echo "<p><span style='font-weight:bold'>ATTENTION :</span> Dans le cas d'une authentification en Single Sign-On avec CAS, LemonLDAP ou LCS, seuls les utilisateurs pour lesquels aucun mot de passe n'est présent dans la base de données pourront se connecter. Toutefois, il est recommandé de conserver un compte administrateur avec un mot de passe afin de pouvoir vous connecter en bloquant le SSO par le biais de la variable 'block_sso' du fichier /lib/global.inc.</p>";
 echo "<p>Si vous utilisez CAS, vous devez entrer les coordonnées du serveur CAS dans le fichier /secure/config_cas.inc.php.</p>";
 echo "<p>Si vous utilisez l'authentification sur serveur LDAP, vous devez renseigner le fichier /secure/config_ldap.inc.php avec les informations nécessaires pour se connecter au serveur.</p>";
 echo "<form action=\"gestion_connect.php\" name=\"form_auth\" method=\"post\">";
@@ -543,9 +544,9 @@ $row = sql_row($res, 0);
 $annee = substr($row[0],0,4);
 $mois =  substr($row[0],5,2);
 $jour =  substr($row[0],8,2);
-echo "<p>Nombre d'entrées actuellement présentes dans le journal de connexion : <b>".$logs_number."</b><br />";
-echo "Actuellement, le journal contient l'historique des connexions depuis le <b>".$jour."/".$mois."/".$annee."</b></p>";
-echo "<p><b>ATTENTION : </b>En validant le bouton ci-dessous, <b>toutes les entrées du journal de connexion (hormis les connexions en cours) seront supprimées</b>.</p>";
+echo "<p>Nombre d'entrées actuellement présentes dans le journal de connexion : <span style='font-weight:bold'>".$logs_number."</span><br />";
+echo "Actuellement, le journal contient l'historique des connexions depuis le <span style='font-weight:bold'>".$jour."/".$mois."/".$annee."</span></p>";
+echo "<p><span style='font-weight:bold'>ATTENTION : </span>En validant le bouton ci-dessous, <span style='font-weight:bold'>toutes les entrées du journal de connexion (hormis les connexions en cours) seront supprimées</span>.</p>";
 echo "<form action=\"gestion_connect.php\" name=\"form_sup_logs\" method=\"post\">";
 echo "<center><input type=\"submit\" name=\"valid_sup_logs\" value=\"Valider\" onclick=\"return confirmlink(this, 'Êtes-vous sûr de vouloir supprimer tout l\'historique du journal de connexion ?', 'Confirmation')\" /></center>";
 echo "<input type=hidden name=mode_navig value='$mode_navig' />";
@@ -610,7 +611,7 @@ switch( $duree2 ) {
    break;
 }
 
-echo "<h3 class='gepi'>Journal des connexions <b>".$display_duree."</b></H3>";
+echo "<h3 class='gepi'>Journal des connexions <span style='font-weight:bold'>".$display_duree."</span></h3>";
 
 ?>
 <div title="Journal des connections" style="width: 100%;">
@@ -773,10 +774,10 @@ if ($res) {
         $temp1 = '';
         $temp2 = '';
         if ($end_time > $now) {
-            $temp1 = "<font color='green'>";
-            $temp2 = "</font>";
+            $temp1 = "<span style='color:green'>";
+            $temp2 = "</span>";
         }
-        if ($row[1] == '') {$row[1] = "<font color='red'><b>Utilisateur inconnu</b></font>";}
+        if ($row[1] == '') {$row[1] = "<span style='color:red;font-weight:bold'>Utilisateur inconnu</span>";}
 
         echo "<tr>\n";
 		 echo "<td class=\"col\"><span class='small'>".$temp1.$row[10].$temp2."</span></td>\n";
@@ -794,7 +795,7 @@ if ($res) {
 		$ligne_csv[$nb_ligne] = my_ereg_replace("&nbsp;"," ","$row[10];$row[0];$date_debut;");
 
         if ($row[7] == 4) {
-           echo "<td class=\"col\" style=\"color: red;\"><span class='small'><b>Tentative de connexion<br />avec mot de passe erroné.</b></span></td>\n";
+           echo "<td class=\"col\" style=\"color: red;\"><span class='small'><span style='font-weight:bold'>Tentative de connexion<br />avec mot de passe erroné.</span></span></td>\n";
         } else if ($end_time > $now) {
             echo "<td class=\"col\" style=\"color: green;\"><span class='small'>" .$date_fin_f. "</span></td>\n";
         } else if (($row[7] == 1) or ($row[7] == 2) or ($row[7] == 3)) {
@@ -853,7 +854,7 @@ echo "<p><i>NOTES:</i></p>\n";
 echo "<ul>\n";
 echo "<li><p>La résolution d'adresse IP en nom DNS peut ralentir l'affichage de cette page.<br />
 Dans le cas d'un serveur situé sur un réseau local, il se peut qu'aucun serveur DNS ne soit en mesure d'assurer la résolution IP/NOM.<br />
-Si l'attente vous pèse, vous pouvez modifier le paramétrage de la variable <b>\$active_hostbyaddr</b> dans le fichier <b>lib/global.inc</b></p>\n";
+Si l'attente vous pèse, vous pouvez modifier le paramétrage de la variable <span style='font-weight:bold'>\$active_hostbyaddr</span> dans le fichier <span style='font-weight:bold'>lib/global.inc.php</span></p>\n";
 
 $texte="<p style='text-align:justify;'>L'organisme gérant l'espace d'adressage public (adresses IP routables) est l'Internet Assigned Number Authority (IANA). La RFC 1918 définit un espace d'adressage privé permettant à toute organisation d'attribuer des adresses IP aux machines de son réseau interne sans risque d'entrer en conflit avec une adresse IP publique allouée par l'IANA. Ces adresses dites non-routables correspondent aux plages d'adresses suivantes :</p>
 
@@ -889,7 +890,7 @@ echo "<p>Voici les valeurs possibles pour la variable:</p>
 	Seules les adresses IP de <a href='#' onmouseover=\"afficher_div('ip_priv','y',20,20);\" onclick=\"return false;\">réseaux non-privés</a> sont traduites en noms DNS.</td>
 </tr>
 </table>
-<p>La valeur actuelle de la variable <b>\$active_hostbyaddr</b> sur votre GEPI est: <b>$active_hostbyaddr</b></p>
+<p>La valeur actuelle de la variable <span style='font-weight:bold'>\$active_hostbyaddr</span> sur votre GEPI est: <span style='font-weight:bold'>$active_hostbyaddr</span></p>
 </li>\n";
 echo "</ul>\n";
 

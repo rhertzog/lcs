@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: prof_disc_classes.php 7611 2011-08-08 08:14:38Z crob $
+* $Id: prof_disc_classes.php 7858 2011-08-21 13:12:55Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -42,63 +42,8 @@ if (!checkAccess()) {
     die();
 }
 
-$liste_tables_del = array(
-//absences
-//edt_creneaux
-//absences_eleves
-//absences_gep
-//absences_motifs
-//aid
-//aid_appreciations
-//aid_config
-//avis_conseil_classe
-//classes
-"cn_cahier_notes",
-"cn_conteneurs",
-"cn_devoirs",
-"cn_notes_conteneurs",
-"cn_notes_devoirs",
-"ct_devoirs_entry",
-"ct_documents",
-"ct_entry",
-"ct_devoirs_documents",
-"ct_private_entry",
-"ct_sequences",
-//"ct_types_documents",
-//droits
-//eleves
-"eleves_groupes_settings",
-//etablissements
-"groupes",
-//j_aid_eleves
-//j_aid_utilisateurs
-//"j_eleves_classes",
-//j_eleves_cpe
-//j_eleves_etablissements
-"j_eleves_groupes",
-//j_eleves_professeurs
-//j_eleves_regime
-"j_groupes_classes",
-"j_groupes_matieres",
-"j_groupes_professeurs",
-"j_professeurs_matieres",
-"j_signalement",
-//log
-//matieres
-//matieres_appreciations
-//matieres_notes
-//messages
-//periodes
-//responsables
-//setting
-//suivi_eleve_cpe
-//tempo
-//tempo2
-//temp_gep_import
-//utilisateurs
-"edt_classes",
-"edt_cours"
-);
+include("../lib/initialisation_annee.inc.php");
+$liste_tables_del = $liste_tables_del_etape_professeurs;
 
 //**************** EN-TETE *****************
 $titre_page = "Outil d'initialisation de l'année : Importation des matières";

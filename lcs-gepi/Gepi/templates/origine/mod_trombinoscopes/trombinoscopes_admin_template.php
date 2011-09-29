@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /**
- * $Id: trombinoscopes_admin_template.php 8029 2011-08-29 12:13:21Z crob $
+ * $Id: trombinoscopes_admin_template.php 8275 2011-09-20 13:01:11Z crob $
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
@@ -446,7 +446,7 @@ if (!isset($aid_trouve)) {
 			   id='voir_personnel'
 			   value="yes" />
 		<label for="voir_personnel">
-		  Voir les personnels n'ayant pas de photos
+		  Voir les professeurs n'ayant pas de photos
 		</label>
   <?php } if( file_exists('../photos/'.$repertoire.'eleves/') ) {?>
 		<br/>
@@ -475,7 +475,7 @@ if (!isset($aid_trouve)) {
 echo add_token_field();
 ?>
 		<legend class="bold">
-		  Restaurer les photos à partir d'un fichier Zip
+			Uploader et restaurer les photos à partir d'un fichier ZIP
 		</legend>
 		<input type="hidden" name="action" value="upload" />
 		<input type="file" name="nom_du_fichier" title="Nom du fichier à télécharger"/>
@@ -495,12 +495,14 @@ echo add_token_field();
 		  </em>
 		</p>
 
+		<p>Le fichier ZIP doit contenir une arborescence <b>photos/eleves/</b> et les photos dans le sous-dossier doivent être nommée d'après les ELENOET des élèves (<em>photos/eleves/ELENOET.jpg</em>)<br />Et pour les photos des personnels, elles doivent se trouver dans un sous-dossier <b>photos/personnels/</b></p>
+
 		<p>La <b>taille maximale</b> d'un fichier uploadé vers le serveur est de <b><?php echo ini_get('upload_max_filesize');?></b><br />Effectuez si nécessaire votre upload en plusieurs fichiers Zip.</p>
 
 	  </fieldset>
 	</form>
 
-	<hr/>
+	<hr />
 
   <?php }
   if (isset ($eleves_sans_photo)){
@@ -535,7 +537,7 @@ echo add_token_field();
   if (isset ($personnel_sans_photo)){
   ?>
 	<table class="boireaus">
-	  <caption>Personnels sans photos</caption>
+	  <caption>Professeurs sans photos</caption>
 	  <tr>
 		<th>Nom</th>
 		<th>Prénom</th>
@@ -549,7 +551,7 @@ echo add_token_field();
 		$lig="lig1";
 	  }
   ?>
-	  <tr class="<?php echo $lig ;?>" >
+	  <tr class="<?php echo $lig ;?> white_hover" >
 		<td><?php echo $pas_photo->nom ;?></td>
 		<td><?php echo casse_mot($pas_photo->prenom,"majf2") ;?></td>
 	  </tr>

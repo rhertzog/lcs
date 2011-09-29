@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: liste_pdf.php 6388 2011-01-20 07:34:57Z crob $
+ * $Id: liste_pdf.php 8374 2011-09-28 16:24:51Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -34,7 +34,9 @@
 require_once("../lib/initialisations.inc.php");
 //=============================
 
-require('../fpdf/fpdf.php');
+if (!defined('FPDF_VERSION')) {
+	require_once('../fpdf/fpdf.php');
+}
 require('../fpdf/ex_fpdf.php');
 
 define('FPDF_FONTPATH','../fpdf/font/');
@@ -42,6 +44,8 @@ define('LargeurPage','210');
 define('HauteurPage','297');
 
 //debug_var();
+
+$mode_utf8_pdf=getSettingValue('mode_utf8_listes_pdf');
 
 /*
 // Initialisations files
@@ -525,9 +529,9 @@ if ($id_liste_groupes!=NULL) {
 				$pdf->Setxy($X_tableau,$y_tmp);
 				$pdf->SetFont($caractere_utilise,'B',9);
 				if ($flag_groupe==true) {
-					$texte = strtoupper($donnees_eleves[$nb_eleves_i]['nom'])." ".ucfirst($donnees_eleves[$nb_eleves_i]['prenom']." (".$donnees_eleves[$nb_eleves_i]['nom_court'].")");
+					$texte = traite_accents_utf8(strtoupper($donnees_eleves[$nb_eleves_i]['nom'])." ".ucfirst($donnees_eleves[$nb_eleves_i]['prenom']." (".$donnees_eleves[$nb_eleves_i]['nom_court'].")"));
 				} else {
-					$texte = strtoupper($donnees_eleves[$nb_eleves_i]['nom'])." ".ucfirst($donnees_eleves[$nb_eleves_i]['prenom']);
+					$texte = traite_accents_utf8(strtoupper($donnees_eleves[$nb_eleves_i]['nom'])." ".ucfirst($donnees_eleves[$nb_eleves_i]['prenom']));
 				}
 				$pdf->CellFitScale($l_nomprenom,$h_ligne,$texte,1,0,'L',0); //$l_nomprenom.' - '.$h_ligne.' / '.$X_tableau.' - '.$y_tmp
 				for($i=0; $i < $nb_colonne ; $i++) {

@@ -3,7 +3,7 @@
 /**
  *
  *
- * @version $Id$
+ * @version $Id: fonctions_cdt.inc.php 7938 2011-08-24 07:57:41Z jjocal $
  * @copyright 2008
  */
 

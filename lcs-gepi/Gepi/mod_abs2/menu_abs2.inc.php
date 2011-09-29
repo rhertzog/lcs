@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: menu_abs2.inc.php 7354 2011-06-30 17:04:38Z jjacquard $
+ * @version $Id: menu_abs2.inc.php 7840 2011-08-20 08:22:01Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -42,7 +42,9 @@ if(($_SESSION['statut']=='cpe')||
 	    || $url_end=='tableau_des_appels.php'
 	    || $url_end=='bilan_du_jour.php'
 	    || $url_end=='extraction_saisies.php'
-        || $url_end=='bilan_individuel.php') {echo "class='current' ";}
+        || $url_end=='bilan_individuel.php'
+        || $url_end=='totaux_du_jour.php'
+        || $url_end=='statistiques.php') {echo "class='current' ";}
     echo "title='Bilans'>Bilans</a></li>\n";
 
     echo "<li><a href='saisir_groupe.php' ";
@@ -105,7 +107,7 @@ if(($_SESSION['statut']=='cpe')||
 	echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Saisie_cpe">wiki</a></div>';
     } else if($url_end=='liste_notifications.php') {
 	echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Suivi">wiki</a></div>';
-    } else if($url_end=='tableau_des_appels.php'|| $url_end=='absences_du_jour.php'||$url_end=='bilan_du_jour.php'||$url_end=='totaux_du_jour.php'||$url_end=='extraction_saisies.php'||$url_end=='extraction_demi-journees.php'||$url_end=='bilan_individuel.php') {
+    } else if($url_end=='tableau_des_appels.php'|| $url_end=='absences_du_jour.php'||$url_end=='bilan_du_jour.php'||$url_end=='totaux_du_jour.php'||$url_end=='extraction_saisies.php'||$url_end=='extraction_demi-journees.php'||$url_end=='bilan_individuel.php'||$url_end=='statistiques.php') {
 	echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Bilans">wiki</a></div>';
     } else {
     echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Traitement_notification">wiki</a></div>';

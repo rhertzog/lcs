@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: releve_pdf.php 2752 2008-12-09 21:32:27Z jjocal $
+ * @version: $Id: releve_pdf.php 8061 2011-08-30 22:01:10Z jjacquard $
 *
 * Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
 *
@@ -28,7 +28,9 @@ Header('Pragma: public');
 // On ajoute le bon en tête sur le type de document envoyé sinon FF3 se plante
 header('Content-type: application/pdf');
 
-require('../fpdf/fpdf.php');
+if (!defined('FPDF_VERSION')) {
+	require('../fpdf/fpdf.php');
+}
 require('../fpdf/ex_fpdf.php');
 
 define('FPDF_FONTPATH','../fpdf/font/');

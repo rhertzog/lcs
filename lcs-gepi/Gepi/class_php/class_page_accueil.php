@@ -1,7 +1,7 @@
 
 <?php
 /*
- * $Id: class_page_accueil.php 7317 2011-06-24 16:44:37Z regis $
+ * $Id: class_page_accueil.php 8099 2011-09-01 12:59:16Z jjacquard $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -196,6 +196,12 @@ class class_page_accueil {
 	if ($this->absencesFamille())
 	$this->chargeAutreNom('bloc_absences_famille');
 
+	if (getSettingAOui("active_mod_discipline")) {
+		// Discipline
+		$this->verif_exist_ordre_menu('bloc_module_discipline_famille');
+		if ($this->modDiscFamille())
+		$this->chargeAutreNom('bloc_module_discipline_famille');
+	}
 /***** Outils complémentaires de gestion des AID *****/
 	$this->verif_exist_ordre_menu('bloc_outil_comp_gestion_aid');
 	if ($this->gestionAID())
@@ -822,6 +828,31 @@ class class_page_accueil {
 	}
   }
 
+
+  private function modDiscFamille(){
+	$this->b=0;
+
+	if(($_SESSION['statut']=='eleve')) {
+		if(getSettingValue('visuEleDisc')=='yes') {
+			$this->creeNouveauItem("/mod_discipline/visu_disc.php",
+					"Discipline",
+					"Incidents vous concernant.");
+		}
+	}
+	elseif(($_SESSION['statut']=='responsable')) {
+		if(getSettingValue('visuRespDisc')=='yes') {
+			$this->creeNouveauItem("/mod_discipline/visu_disc.php",
+					"Discipline",
+					"Incidents concernant les élèves/enfants dont vous êtes responsable.");
+		}
+	}
+
+	if ($this->b>0){
+	  $this->creeNouveauTitre('accueil',"Carnet de notes",'images/icons/releve.png');
+	  return true;
+	}
+  }
+
   private function equipePedaFamille(){
 	$this->b=0;
 
@@ -1061,9 +1092,18 @@ class class_page_accueil {
 	}
 
 	if ($this->statutUtilisateur=='administrateur'){
-	  $this->creeNouveauItem("/statistiques/index.php",
+		$this->creeNouveauItem("/statistiques/index.php",
 			  "Extractions statistiques",
 			  "Cet outil vous permet d'extraire des données à des fins statistiques (des bulletins, ...).");
+
+		$gepi_denom_mention=getSettingValue("gepi_denom_mention");
+		if($gepi_denom_mention=="") {
+			$gepi_denom_mention="mention";
+		}
+
+		$this->creeNouveauItem("/saisie/saisie_mentions.php",
+			  ucfirst($gepi_denom_mention)."s des bulletins",
+			  "Cet outil vous permet de définir les ".$gepi_denom_mention."s (<i>Félicitations, Encouragements,...</i>) des bulletins.");
 	}
 
 	if ($this->b>0){
@@ -1118,6 +1158,17 @@ class class_page_accueil {
 			  "Ce menu permet de vous permet de consulter vos listes d'".$this->gepiSettings['denomination_eleves']." par groupe constitué et enseigné.");
 	}
 
+	if(getSettingValue('active_mod_ooo')=='y') {
+		if(($this->statutUtilisateur=='scolarite')||
+				($this->statutUtilisateur=='administrateur')||
+				($this->statutUtilisateur=='professeur')||
+				($this->statutUtilisateur=='cpe')){
+		$this->creeNouveauItem("/mod_ooo/publipostage_ooo.php",
+				"Publipostage OOo",
+				"Ce menu permet de vous permet d'effectuer des publipostages OpenOffice.org à l'aide des données des tables 'eleves' et 'classes'.");
+		}
+	}
+
 	$this->creeNouveauItem("/eleves/visu_eleve.php",
 			"Consultation d'un ".$this->gepiSettings['denomination_eleve'],
 			"Ce menu vous permet de consulter dans une même page les informations concernant un ".$this->gepiSettings['denomination_eleve']." (enseignements suivis, bulletins, relevés de notes, ".$this->gepiSettings['denomination_responsables'].",...). Certains éléments peuvent n'être accessibles que pour certaines catégories de visiteurs.");
@@ -1129,6 +1180,17 @@ class class_page_accueil {
 				$this->creeNouveauItem("/cahier_texte_2/see_all.php",
 					"Consultation des cahiers de textes",
 					"Ce menu vous permet de consulter les cahiers de textes.");
+		}
+
+		if($this->statutUtilisateur=="professeur") {
+			$this->creeNouveauItem("/documents/archives/index.php",
+				"Mes archives de cahiers de textes",
+				"Ce menu vous permet de consulter vos cahiers de textes des années précédentes.");
+		}
+		elseif(($this->statutUtilisateur=="cpe")||($this->statutUtilisateur=="scolarite")||($this->statutUtilisateur=="administrateur")) {
+			$this->creeNouveauItem("/documents/archives/index.php",
+				"Archives de cahiers de textes",
+				"Ce menu vous permet de consulter les cahiers de textes des années précédentes.");
 		}
 	}
 
@@ -1435,17 +1497,35 @@ class class_page_accueil {
 	}
   }
 
-  protected function discipline(){
-	  $this->b=0;
+  protected function discipline() {
+		$this->b=0;
 
-	  $this->creeNouveauItem("/mod_discipline/index.php",
-			  "Discipline",
-			  "Signaler des incidents, prendre des mesures, des sanctions.");
+		/*
+		if(($_SESSION['statut']=='eleve')) {
+			if(getSettingValue('visuEleDisc')=='y') {
+				$this->creeNouveauItem("/mod_discipline/visu_disc.php",
+						"Discipline",
+						"Incidents vous concernant.");
+			}
+		}
+		elseif(($_SESSION['statut']=='responsable')) {
+			if(getSettingValue('visuRespDisc')=='y') {
+				$this->creeNouveauItem("/mod_discipline/visu_disc.php",
+						"Discipline",
+						"Incidents concernant les élèves/enfants dont vous êtes responsable.");
+			}
+		}
+		else {
+		*/
+			$this->creeNouveauItem("/mod_discipline/index.php",
+					"Discipline",
+					"Signaler des incidents, prendre des mesures, des sanctions.");
+		//}
 
-	  if ($this->b>0){
-		$this->creeNouveauTitre('accueil',"Discipline",'images/icons/document.png');
-		return true;
-	  }
+		if ($this->b>0){
+			$this->creeNouveauTitre('accueil',"Discipline",'images/icons/document.png');
+			return true;
+		}
 
   }
 
@@ -1496,14 +1576,14 @@ class class_page_accueil {
 
 		if (($menuItem->user_statut == $this->statutUtilisateur) and ($result_autorisation)) {
 		  $this->creeNouveauItemPlugin("/".$menuItem->lien_item,
-				supprimer_numero(iconv("utf-8","iso-8859-1",$menuItem->titre_item)),
-				iconv("utf-8","iso-8859-1",$menuItem->description_item));
+				supprimer_numero($menuItem->titre_item),
+				$menuItem->description_item);
 		}
 
 	  }
 
 	  if ($this->b>0){
-		$descriptionPlugin= iconv("utf-8","iso-8859-1",$plugin->description);
+        $descriptionPlugin = $plugin->description;
 		$this->creeNouveauTitre('accueil',"$descriptionPlugin",'images/icons/package.png');
 	  }
 
@@ -1627,10 +1707,22 @@ class class_page_accueil {
 	$this->b=0;
 
 //insert into setting set name='active_mod_epreuve_blanche', value='y';
+
 	if (getSettingValue("active_mod_examen_blanc")=='y') {
-	  $this->creeNouveauItem("/mod_examen_blanc/index.php",
-			  "Examens blancs",
-			  "Organisation d'examens blancs,...");
+		$acces_mod_examen_blanc="y";
+		if($_SESSION['statut']=='professeur') {
+			$acces_mod_examen_blanc="n";
+
+			if((is_pp($_SESSION['login']))&&(getSettingValue('modExbPP')=='yes')) {
+				$acces_mod_examen_blanc="y";
+			}
+		}
+
+		if($acces_mod_examen_blanc=="y") {
+			$this->creeNouveauItem("/mod_examen_blanc/index.php",
+					"Examens blancs",
+					"Organisation d'examens blancs,...");
+		}
 	}
 
 	if ($this->b>0){

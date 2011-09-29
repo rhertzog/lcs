@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: saisie_sanction.php 6727 2011-03-29 15:14:30Z crob $
+ * $Id: saisie_sanction.php 7994 2011-08-26 10:03:39Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -66,6 +66,8 @@ $odt = isset($_POST["odt"]) ? $_POST["odt"] : (isset($_GET["odt"]) ? $_GET["odt"
 if(isset($_POST['enregistrer_sanction'])) {
 	check_token();
 
+	$autre_protagoniste_meme_sanction=isset($_POST['autre_protagoniste_meme_sanction']) ? $_POST['autre_protagoniste_meme_sanction'] : array();
+
 	if($_POST['traitement']=='retenue') {
 
 		$date_retenue=isset($_POST['date_retenue']) ? $_POST['date_retenue'] : NULL;
@@ -78,7 +80,6 @@ if(isset($_POST['enregistrer_sanction'])) {
 		$choix_motif_report=isset($_POST['choix_motif_report']) ? $_POST['choix_motif_report'] : NULL;
 		
 
-		//$duree_retenue=my_ereg_replace(",",".",my_ereg_replace("[^0-9.]","",$duree_retenue));
 		$duree_retenue=preg_replace("/[^0-9.]/","",preg_replace("/,/",".",$duree_retenue));
 		if($duree_retenue=="") {
 			$duree_retenue=1;
@@ -109,7 +110,6 @@ if(isset($_POST['enregistrer_sanction'])) {
 		if (isset($NON_PROTECT["travail"])){
 			$travail=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["travail"]));
 			// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-			//$travail=my_ereg_replace('(\\\r\\\n)+',"\r\n",$travail);
 			$travail=preg_replace('/(\\\r\\\n)+/',"\r\n",$travail);
 			$travail=preg_replace('/(\\\r)+/',"\r",$travail);
 			$travail=preg_replace('/(\\\n)+/',"\n",$travail);
@@ -198,6 +198,31 @@ if(isset($_POST['enregistrer_sanction'])) {
 				//echo "$sql<br />\n";
 				$res=mysql_query($sql);
 			}
+
+			if(count($autre_protagoniste_meme_sanction)>0) {
+				for($loop=0;$loop<count($autre_protagoniste_meme_sanction);$loop++) {
+					$sql="INSERT INTO s_sanctions SET login='$autre_protagoniste_meme_sanction[$loop]', nature='retenue', id_incident='$id_incident';";
+					//echo "$sql<br />\n";
+					$res=mysql_query($sql);
+					if(!$res) {
+						$msg.="Erreur lors de l'insertion de la sanction dans 's_sanctions' pour $autre_protagoniste_meme_sanction[$loop].<br />";
+					}
+					else {
+						$tmp_id_sanction=mysql_insert_id();
+						$tab_tmp_id_sanction[]=$tmp_id_sanction;
+						//Eric
+						//choix de l'heure de retenue à conserver (champs sasie manuellement ou par la liste déroulante
+						//par defaut la liste déroulante
+						if ($heure_debut_main !='00:00') {
+							$heure_debut=$heure_debut_main;
+						}
+						//$sql="INSERT INTO s_retenues SET id_sanction='$id_sanction', date='$date_retenue', heure_debut='$heure_debut', duree='$duree_retenue', travail='$travail', lieu='$lieu_retenue', effectuee='N';";
+						$sql="INSERT INTO s_retenues SET id_sanction='$tmp_id_sanction', date='$date_retenue', heure_debut='$heure_debut', duree='$duree_retenue', travail='$travail', lieu='$lieu_retenue';";
+						//echo "$sql<br />\n";
+						$res=mysql_query($sql);
+					}
+				}
+			}
 		}
 
 	}
@@ -285,7 +310,6 @@ if(isset($_POST['enregistrer_sanction'])) {
 		if (isset($NON_PROTECT["travail"])){
 			$travail=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["travail"]));
 			// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-			//$travail=my_ereg_replace('(\\\r\\\n)+',"\r\n",$travail);
 			$travail=preg_replace('/(\\\r\\\n)+/',"\r\n",$travail);
 			$travail=preg_replace('/(\\\r)+/',"\r",$travail);
 			$travail=preg_replace('/(\\\n)+/',"\n",$travail);
@@ -297,7 +321,6 @@ if(isset($_POST['enregistrer_sanction'])) {
 		if (isset($NON_PROTECT["qualification_faits"])){
 			$qualification_faits=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["qualification_faits"]));
 			// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-			//$qualification_faits=my_ereg_replace('(\\\r\\\n)+',"\r\n",$qualification_faits);
 			$qualification_faits=preg_replace('/(\\\r\\\n)+/',"\r\n",$qualification_faits);
 			$qualification_faits=preg_replace('/(\\\r)+/',"\r",$qualification_faits);
 			$qualification_faits=preg_replace('/(\\\n)+/',"\n",$qualification_faits);
@@ -345,6 +368,25 @@ if(isset($_POST['enregistrer_sanction'])) {
 				//echo "$sql<br />\n";
 				$res=mysql_query($sql);
 			}
+
+			if(count($autre_protagoniste_meme_sanction)>0) {
+				for($loop=0;$loop<count($autre_protagoniste_meme_sanction);$loop++) {
+					$sql="INSERT INTO s_sanctions SET login='$autre_protagoniste_meme_sanction[$loop]', nature='exclusion', id_incident='$id_incident';";
+					//echo "$sql<br />\n";
+					$res=mysql_query($sql);
+					if(!$res) {
+						$msg.="Erreur lors de l'insertion de la sanction dans 's_sanctions' pour $autre_protagoniste_meme_sanction[$loop].<br />";
+					}
+					else {
+						$tmp_id_sanction=mysql_insert_id();
+						$tab_tmp_id_sanction[]=$tmp_id_sanction;
+
+						$sql="INSERT INTO s_exclusions SET id_sanction='$tmp_id_sanction', date_debut='$date_debut', heure_debut='$heure_debut', date_fin='$date_fin', heure_fin='$heure_fin', travail='$travail', lieu='$lieu_exclusion', nombre_jours='$nombre_jours', qualification_faits='$qualification_faits', num_courrier='$numero_courrier', type_exclusion='$type_exclusion', id_signataire='$signataire';";
+						//echo "$sql<br />\n";
+						$res=mysql_query($sql);
+					}
+				}
+			}
 		}
 
 	}
@@ -377,7 +419,6 @@ if(isset($_POST['enregistrer_sanction'])) {
 		if (isset($NON_PROTECT["travail"])){
 			$travail=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["travail"]));
 			// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-			//$travail=my_ereg_replace('(\\\r\\\n)+',"\r\n",$travail);
 			$travail=preg_replace('/(\\\r\\\n)+/',"\r\n",$travail);
 			$travail=preg_replace('/(\\\r)+/',"\r",$travail);
 			$travail=preg_replace('/(\\\n)+/',"\n",$travail);
@@ -427,6 +468,26 @@ if(isset($_POST['enregistrer_sanction'])) {
 				//echo "$sql<br />\n";
 				$res=mysql_query($sql);
 			}
+
+			if(count($autre_protagoniste_meme_sanction)>0) {
+				for($loop=0;$loop<count($autre_protagoniste_meme_sanction);$loop++) {
+					$sql="INSERT INTO s_sanctions SET login='$autre_protagoniste_meme_sanction[$loop]', nature='travail', id_incident='$id_incident';";
+					//echo "$sql<br />\n";
+					$res=mysql_query($sql);
+					if(!$res) {
+						$msg.="Erreur lors de l'insertion de la sanction dans 's_sanctions' pour $autre_protagoniste_meme_sanction[$loop]<br />";
+					}
+					else {
+						$tmp_id_sanction=mysql_insert_id();
+						$tab_tmp_id_sanction[]=$tmp_id_sanction;
+
+						//$sql="INSERT INTO s_travail SET id_sanction='$id_sanction', date_retour='$date_retour', heure_retour='$heure_retour', travail='$travail', effectuee='N';";
+						$sql="INSERT INTO s_travail SET id_sanction='$tmp_id_sanction', date_retour='$date_retour', heure_retour='$heure_retour', travail='$travail';";
+						//echo "$sql<br />\n";
+						$res=mysql_query($sql);
+					}
+				}
+			}
 		}
 	}
 	else {
@@ -441,7 +502,6 @@ if(isset($_POST['enregistrer_sanction'])) {
 			if (isset($NON_PROTECT["description"])){
 				$description=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["description"]));
 				// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-				//$description=my_ereg_replace('(\\\r\\\n)+',"\r\n",$description);
 				$description=preg_replace('/(\\\r\\\n)+/',"\r\n",$description);
 				$description=preg_replace('/(\\\r)+/',"\r",$description);
 				$description=preg_replace('/(\\\n)+/',"\n",$description);
@@ -492,13 +552,130 @@ if(isset($_POST['enregistrer_sanction'])) {
 						$msg.="Erreur lors de l'enregistrement de la sanction '$type_sanction' n°$id_sanction.<br />";
 					}
 				}
+
+				if(count($autre_protagoniste_meme_sanction)>0) {
+					for($loop=0;$loop<count($autre_protagoniste_meme_sanction);$loop++) {
+						$sql="INSERT INTO s_sanctions SET login='$autre_protagoniste_meme_sanction[$loop]', nature='autre', id_incident='$id_incident';";
+						//echo "$sql<br />\n";
+						$res=mysql_query($sql);
+						if(!$res) {
+							$msg.="Erreur lors de l'insertion de la sanction dans 's_sanctions' pour $autre_protagoniste_meme_sanction[$loop]<br />";
+						}
+						else {
+							$tmp_id_sanction=mysql_insert_id();
+							$tab_tmp_id_sanction[]=$tmp_id_sanction;
+
+							$sql="INSERT INTO s_autres_sanctions SET id_sanction='$tmp_id_sanction', id_nature='$id_nature', description='$description';";
+							//echo "$sql<br />\n";
+							$res=mysql_query($sql);
+							if(!$res) {
+								$msg.="Erreur lors de l'enregistrement de la sanction '$type_sanction' n°$tmp_id_sanction.<br />";
+							}
+						}
+					}
+				}
 			}
 		}
 	}
+
+
+
+
+	if(isset($id_sanction)) {
+		$temoin_modif_fichier=0;
+
+		unset($suppr_doc_joint);
+		$suppr_doc_joint=isset($_POST['suppr_doc_joint']) ? $_POST['suppr_doc_joint'] : array();
+		for($loop=0;$loop<count($suppr_doc_joint);$loop++) {
+			if((preg_match("/\.\./",$suppr_doc_joint[$loop]))||(preg_match("#/#",$suppr_doc_joint[$loop]))) {
+				$msg.="Nom de fichier ".$suppr_doc_joint[$loop]." invalide<br />";
+			}
+			else {
+				$fichier_courant="../$dossier_documents_discipline/incident_".$id_incident."/sanction_".$id_sanction."/".$suppr_doc_joint[$loop];
+				if(!unlink($fichier_courant)) {
+					$msg.="Erreur lors de la suppression de $fichier_courant<br />";
+				}
+			}
+		}
+		$temoin_modif_fichier+=count($suppr_doc_joint);
+
+		$ajouter_doc_joint=isset($_POST['ajouter_doc_joint']) ? $_POST['ajouter_doc_joint'] : array();
+		for($loop=0;$loop<count($ajouter_doc_joint);$loop++) {
+			if((preg_match("/\.\./",$ajouter_doc_joint[$loop]))||(preg_match("#/#",$ajouter_doc_joint[$loop]))) {
+				$msg.="Nom de fichier ".$ajouter_doc_joint[$loop]." invalide<br />";
+			}
+			else {
+				$chemin_src="../$dossier_documents_discipline/incident_".$id_incident."/mesures/".$ele_login;
+				$chemin_dest="../$dossier_documents_discipline/incident_".$id_incident."/sanction_".$id_sanction;
+
+				$fichier_src=$chemin_src."/".$ajouter_doc_joint[$loop];
+				$fichier_dest=$chemin_dest."/".$ajouter_doc_joint[$loop];
+				if(file_exists($fichier_src)) {
+					@mkdir($chemin_dest,0770,true);
+					copy($fichier_src, $fichier_dest);
+
+					/*
+					if(!unlink($fichier_src)) {
+						$msg.="Erreur lors de la suppression de $fichier_src<br />";
+					}
+					*/
+				}
+
+				if((isset($tab_tmp_id_sanction))&&(count($tab_tmp_id_sanction)>0)) {
+					for($loop2=0;$loop2<count($tab_tmp_id_sanction);$loop2++) {
+						$chemin_dest="../$dossier_documents_discipline/incident_".$id_incident."/sanction_".$tab_tmp_id_sanction[$loop2];
+						$fichier_dest=$chemin_dest."/".$ajouter_doc_joint[$loop];
+						if(file_exists($fichier_src)) {
+							@mkdir($chemin_dest,0770,true);
+							copy($fichier_src, $fichier_dest);
+						}
+					}
+				}
+			}
+		}
+		$temoin_modif_fichier+=count($ajouter_doc_joint);
+
+		unset($document_joint);
+		$document_joint=isset($_FILES["document_joint"]) ? $_FILES["document_joint"] : NULL;
+		if((isset($document_joint['tmp_name']))&&($document_joint['tmp_name']!="")) {
+			//$msg.="\$document_joint['tmp_name']=".$document_joint['tmp_name']."<br />";
+			if(!is_uploaded_file($document_joint['tmp_name'])) {
+				$msg.="L'upload du fichier a échoué.<br />\n";
+			}
+			else{
+				if(!file_exists($document_joint['tmp_name'])){
+					$msg.="Le fichier aurait été uploadé... mais ne serait pas présent/conservé.<br />\n";
+				}
+				else {
+					//echo "<p>Le fichier a été uploadé.</p>\n";
+
+					$source_file=$document_joint['tmp_name'];
+					$dossier_courant="../$dossier_documents_discipline/incident_".$id_incident."/sanction_".$id_sanction;
+					if(!file_exists($dossier_courant)) {
+						mkdir($dossier_courant, 0770, true);
+					}
+					$dest_file=$dossier_courant."/".remplace_accents($document_joint['name'], "all");
+					$res_copy=copy("$source_file" , "$dest_file");
+					if(!$res_copy) {$msg.="Echec de la mise en place du fichier ".$document_joint['name']."<br />";}
+				}
+			}
+			$temoin_modif_fichier++;
+		}
+
+		if($temoin_modif_fichier>0) {
+			$mode="modif";
+			$valeur=$_POST['traitement'];
+		}
+	}
+
+
+
 }
 
 if(($mode=="suppr_sanction")&&(isset($id_sanction))) {
 	check_token();
+
+	$msg.=suppr_doc_joints_sanction($id_sanction);
 
 	$sql="DELETE FROM s_travail WHERE id_sanction='$id_sanction';";
 	$res=mysql_query($sql);
@@ -853,9 +1030,16 @@ if((!isset($mode))||($mode=="suppr_sanction")||($mode=="suppr_report")) {
 						echo "<td>";
 
 						$texte=nl2br($lig_sanction->travail);
+						$tmp_doc_joints=liste_doc_joints_sanction($lig_sanction->id_sanction);
+						if($tmp_doc_joints!="") {
+							if($texte!="") {$texte.="<br />";}
+							$texte.="<b>Documents joints</b>&nbsp;:<br />";
+							$texte.=$tmp_doc_joints;
+						}
+
 						$tabdiv_infobulle[]=creer_div_infobulle("div_travail_sanction_$lig_sanction->id_sanction","Travail (sanction n°$lig_sanction->id_sanction)","",$texte,"",20,0,'y','y','n','n');
 
-						echo " <a href='#' onmouseover=\"delais_afficher_div('div_travail_sanction_$lig_sanction->id_sanction','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onclick=\"return false;\">Details</a>";
+						echo " <a href='#' onmouseover=\"delais_afficher_div('div_travail_sanction_$lig_sanction->id_sanction','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onclick=\"return false;\">Détails</a>";
 						echo "</td>\n";
 //Eric
 						If ($passage_report) {
@@ -918,9 +1102,15 @@ if((!isset($mode))||($mode=="suppr_sanction")||($mode=="suppr_report")) {
 						echo "<td>";
 
 						$texte=nl2br($lig_sanction->travail);
+						$tmp_doc_joints=liste_doc_joints_sanction($lig_sanction->id_sanction);
+						if($tmp_doc_joints!="") {
+							if($texte!="") {$texte.="<br />";}
+							$texte.="<b>Documents joints</b>&nbsp;:<br />";
+							$texte.=$tmp_doc_joints;
+						}
 						$tabdiv_infobulle[]=creer_div_infobulle("div_travail_sanction_$lig_sanction->id_sanction","Travail (sanction n°$lig_sanction->id_sanction)","",$texte,"",20,0,'y','y','n','n');
 
-						echo " <a href='#' onmouseover=\"delais_afficher_div('div_travail_sanction_$lig_sanction->id_sanction','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onclick=\"return false;\">Details</a>";
+						echo " <a href='#' onmouseover=\"delais_afficher_div('div_travail_sanction_$lig_sanction->id_sanction','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onclick=\"return false;\">Détails</a>";
 						echo "</td>\n";
 //Eric						
 						echo "<td>";
@@ -960,9 +1150,15 @@ if((!isset($mode))||($mode=="suppr_sanction")||($mode=="suppr_report")) {
 						echo "<td>";
 
 						$texte=nl2br($lig_sanction->travail);
+						$tmp_doc_joints=liste_doc_joints_sanction($lig_sanction->id_sanction);
+						if($tmp_doc_joints!="") {
+							if($texte!="") {$texte.="<br />";}
+							$texte.="<b>Documents joints</b>&nbsp;:<br />";
+							$texte.=$tmp_doc_joints;
+						}
 						$tabdiv_infobulle[]=creer_div_infobulle("div_travail_sanction_$lig_sanction->id_sanction","Travail (sanction n°$lig_sanction->id_sanction)","",$texte,"",20,0,'y','y','n','n');
 
-						echo " <a href='#' onmouseover=\"delais_afficher_div('div_travail_sanction_$lig_sanction->id_sanction','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onclick=\"return false;\">Details</a>";
+						echo " <a href='#' onmouseover=\"delais_afficher_div('div_travail_sanction_$lig_sanction->id_sanction','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onclick=\"return false;\">Détails</a>";
 						echo "</td>\n";
 
 						echo "<td><a href='".$_SERVER['PHP_SELF']."?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident".add_token_in_url()."' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
@@ -994,7 +1190,7 @@ if((!isset($mode))||($mode=="suppr_sanction")||($mode=="suppr_report")) {
 						$texte=nl2br($lig_sanction->description);
 						$tabdiv_infobulle[]=creer_div_infobulle("div_autre_sanction_$lig_sanction->id_sanction","$lig_sanction->nature (sanction n°$lig_sanction->id_sanction)","",$texte,"",20,0,'y','y','n','n');
 
-						echo " <a href='#' onmouseover=\"delais_afficher_div('div_autre_sanction_$lig_sanction->id_sanction','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onclick=\"return false;\">Details</a>";
+						echo " <a href='#' onmouseover=\"delais_afficher_div('div_autre_sanction_$lig_sanction->id_sanction','y',10,-40,$delais_affichage_infobulle,$largeur_survol_infobulle,$hauteur_survol_infobulle);\" onclick=\"return false;\">Détails</a>";
 						echo "</td>\n";
 
 						echo "<td><a href='".$_SERVER['PHP_SELF']."?mode=suppr_sanction&amp;id_sanction=$lig_sanction->id_sanction&amp;id_incident=$id_incident".add_token_in_url()."' title='Supprimer la sanction n°$lig_sanction->id_sanction'><img src='../images/icons/delete.png' width='16' height='16' alt='Supprimer la sanction n°$lig_sanction->id_sanction' /></a></td>\n";
@@ -1047,7 +1243,7 @@ elseif($mode=='ajout') {
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
 	//echo "<input type='hidden' name='step' value='$step' />\n";
 
-	echo add_token_field();
+	echo add_token_field(true);
 
 	echo "<p class='bold'>Ajout d'une sanction pour ".p_nom($ele_login);
 	echo infobulle_photo($ele_login);
@@ -1122,7 +1318,8 @@ elseif($mode=='ajout') {
 	// Avec cette fonction, on ne fait qu'ajouter des champs dans le formulaire (aucun enregistrement avant validation du formulaire)
 	function maj_traitement() {
 		valeur=$('traitement').value;
-		new Ajax.Updater($('div_details_sanction'),'ajout_sanction.php?cpt=0&valeur='+valeur,{method: 'get'});
+		//new Ajax.Updater($('div_details_sanction'),'ajout_sanction.php?cpt=0&valeur='+valeur,{method: 'get'});
+		new Ajax.Updater($('div_details_sanction'),'ajout_sanction.php?cpt=0&valeur='+valeur+'&ele_login=$ele_login&id_incident=$id_incident',{method: 'get'});
 	}
 </script>\n";
 
@@ -1138,6 +1335,8 @@ echo "<script type='text/javascript'>
 
 	//echo "<div style='clear:both;'></div>\n";
 
+	echo envoi_mail_rappel_js();
+
 	rappel_incident($id_incident);
 
 }
@@ -1148,7 +1347,10 @@ elseif($mode=='modif') {
 	//echo " | <a href='traiter_incident.php'>Liste des incidents</a>\n";
 	echo "</p>\n";
 
-	$valeur=isset($_GET['valeur']) ? $_GET['valeur'] : NULL;
+	if(!isset($temoin_modif_fichier)) {
+		$valeur=isset($_GET['valeur']) ? $_GET['valeur'] : NULL;
+	}
+	//$valeur=isset($_POST['traitement']) ? $_POST['traitement'] : (isset($_GET['valeur']) ? $_GET['valeur'] : NULL);
 	$traitement=$valeur;
 
 	echo "<script type='text/javascript'>
@@ -1163,12 +1365,13 @@ elseif($mode=='modif') {
 
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
 
-	echo add_token_field();
+	echo add_token_field(true);
 
 	echo "<p class='bold'>Sanction (<em>$traitement</em>) n°$id_sanction concernant ".p_nom($ele_login);
 	echo infobulle_photo($ele_login);
 	echo "&nbsp;:</p>\n";
 	echo "<blockquote>\n";
+
 	echo "<input type='hidden' name='ele_login' id='ele_login' value='$ele_login' />\n";
 	include('saisie_sanction.inc.php');
 	echo "</blockquote>\n";
@@ -1177,6 +1380,8 @@ elseif($mode=='modif') {
 	echo "<input type='hidden' name='id_sanction' value='$id_sanction' />\n";
 	echo "<input type='hidden' name='id_incident' value='$id_incident' />\n";
 	echo "</form>\n";
+
+	echo envoi_mail_rappel_js();
 
 	rappel_incident($id_incident);
 

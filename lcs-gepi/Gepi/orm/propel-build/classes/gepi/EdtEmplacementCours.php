@@ -66,7 +66,7 @@ class EdtEmplacementCours extends BaseEdtEmplacementCours {
 		for ($i = 1; $i <= ($duree_modif / 2); $i ++) {
 		    if ($creneau != null) {
 			$lastCreneau = $creneau;
-			$creneau = $creneau->getNextEdtCreneau(EdtCreneau::$TYPE_COURS);
+			$creneau = $creneau->getNextEdtCreneau(EdtCreneau::TYPE_COURS);
 		    }
 		}
 		if ($creneau == null) {
@@ -253,7 +253,7 @@ class EdtEmplacementCours extends BaseEdtEmplacementCours {
 		    $qroupeTableMap = Propel::getDatabaseMap(GroupePeer::DATABASE_NAME)->getTableByPhpName('Groupe');
 		    $relationJGroupesClasses = $qroupeTableMap->getRelation('JGroupesClasses');
 		    $JGroupesClassesJoin->setRelationMap($relationJGroupesClasses);
-		    $width["JGroupesClasses"] = $JGroupesClassesJoin;
+		    $width["JGroupesClasses"] = new ModelWith($JGroupesClassesJoin);
 
 		    $classeJoin = new ModelJoin();
 		    $classeJoin->setJoinType(Criteria::LEFT_JOIN);
@@ -261,7 +261,7 @@ class EdtEmplacementCours extends BaseEdtEmplacementCours {
 		    $relationClasse = $jGroupesClassesTableMap->getRelation('Classe');
 		    $classeJoin->setRelationMap($relationClasse);
 		    $classeJoin->setPreviousJoin($JGroupesClassesJoin);
-		    $width["Classe"] = $classeJoin;
+		    $width["Classe"] = new ModelWith($classeJoin);
 
 		    $formatter->setWith($width);
 		    EdtEmplacementCours::$groupeFormatter = $formatter;

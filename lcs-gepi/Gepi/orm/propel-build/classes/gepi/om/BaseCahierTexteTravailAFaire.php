@@ -70,6 +70,13 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 	protected $id_sequence;
 
 	/**
+	 * The value for the date_visibilite_eleve field.
+	 * Note: this column has a database default value of: (expression) now()
+	 * @var        string
+	 */
+	protected $date_visibilite_eleve;
+
+	/**
 	 * @var        Groupe
 	 */
 	protected $aGroupe;
@@ -194,6 +201,44 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 	public function getIdSequence()
 	{
 		return $this->id_sequence;
+	}
+
+	/**
+	 * Get the [optionally formatted] temporal [date_visibilite_eleve] column value.
+	 * Timestamp précisant quand les devoirs sont portés à la conaissance des élèves
+	 *
+	 * @param      string $format The date/time format string (either date()-style or strftime()-style).
+	 *							If format is NULL, then the raw DateTime object will be returned.
+	 * @return     mixed Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+	 * @throws     PropelException - if unable to parse/validate the date/time value.
+	 */
+	public function getDateVisibiliteEleve($format = 'Y-m-d H:i:s')
+	{
+		if ($this->date_visibilite_eleve === null) {
+			return null;
+		}
+
+
+		if ($this->date_visibilite_eleve === '0000-00-00 00:00:00') {
+			// while technically this is not a default value of NULL,
+			// this seems to be closest in meaning.
+			return null;
+		} else {
+			try {
+				$dt = new DateTime($this->date_visibilite_eleve);
+			} catch (Exception $x) {
+				throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->date_visibilite_eleve, true), $x);
+			}
+		}
+
+		if ($format === null) {
+			// Because propel.useDateTimeClass is TRUE, we return a DateTime object.
+			return $dt;
+		} elseif (strpos($format, '%') !== false) {
+			return strftime($format, $dt->format('U'));
+		} else {
+			return $dt->format($format);
+		}
 	}
 
 	/**
@@ -349,6 +394,28 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 	} // setIdSequence()
 
 	/**
+	 * Sets the value of [date_visibilite_eleve] column to a normalized version of the date/time value specified.
+	 * Timestamp précisant quand les devoirs sont portés à la conaissance des élèves
+	 * @param      mixed $v string, integer (timestamp), or DateTime value.
+	 *               Empty strings are treated as NULL.
+	 * @return     CahierTexteTravailAFaire The current object (for fluent API support)
+	 */
+	public function setDateVisibiliteEleve($v)
+	{
+		$dt = PropelDateTime::newInstance($v, null, 'DateTime');
+		if ($this->date_visibilite_eleve !== null || $dt !== null) {
+			$currentDateAsString = ($this->date_visibilite_eleve !== null && $tmpDt = new DateTime($this->date_visibilite_eleve)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+			$newDateAsString = $dt ? $dt->format('Y-m-d H:i:s') : null;
+			if ($currentDateAsString !== $newDateAsString) {
+				$this->date_visibilite_eleve = $newDateAsString;
+				$this->modifiedColumns[] = CahierTexteTravailAFairePeer::DATE_VISIBILITE_ELEVE;
+			}
+		} // if either are not null
+
+		return $this;
+	} // setDateVisibiliteEleve()
+
+	/**
 	 * Indicates whether the columns in this object are only set to default values.
 	 *
 	 * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -399,6 +466,7 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 			$this->id_groupe = ($row[$startcol + 4] !== null) ? (int) $row[$startcol + 4] : null;
 			$this->id_login = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
 			$this->id_sequence = ($row[$startcol + 6] !== null) ? (int) $row[$startcol + 6] : null;
+			$this->date_visibilite_eleve = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -407,7 +475,7 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 7; // 7 = CahierTexteTravailAFairePeer::NUM_COLUMNS - CahierTexteTravailAFairePeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + 8; // 8 = CahierTexteTravailAFairePeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating CahierTexteTravailAFaire object", $e);
@@ -807,6 +875,9 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 			case 6:
 				return $this->getIdSequence();
 				break;
+			case 7:
+				return $this->getDateVisibiliteEleve();
+				break;
 			default:
 				return null;
 				break;
@@ -823,12 +894,17 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM.
 	 *                    Defaults to BasePeer::TYPE_PHPNAME.
 	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
+	 * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
 	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
 	 *
 	 * @return    array an associative array containing the field names (as keys) and field values
 	 */
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $includeForeignObjects = false)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
 	{
+		if (isset($alreadyDumpedObjects['CahierTexteTravailAFaire'][$this->getPrimaryKey()])) {
+			return '*RECURSION*';
+		}
+		$alreadyDumpedObjects['CahierTexteTravailAFaire'][$this->getPrimaryKey()] = true;
 		$keys = CahierTexteTravailAFairePeer::getFieldNames($keyType);
 		$result = array(
 			$keys[0] => $this->getIdCt(),
@@ -838,16 +914,20 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 			$keys[4] => $this->getIdGroupe(),
 			$keys[5] => $this->getIdLogin(),
 			$keys[6] => $this->getIdSequence(),
+			$keys[7] => $this->getDateVisibiliteEleve(),
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aGroupe) {
-				$result['Groupe'] = $this->aGroupe->toArray($keyType, $includeLazyLoadColumns, true);
+				$result['Groupe'] = $this->aGroupe->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
 			}
 			if (null !== $this->aUtilisateurProfessionnel) {
-				$result['UtilisateurProfessionnel'] = $this->aUtilisateurProfessionnel->toArray($keyType, $includeLazyLoadColumns, true);
+				$result['UtilisateurProfessionnel'] = $this->aUtilisateurProfessionnel->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
 			}
 			if (null !== $this->aCahierTexteSequence) {
-				$result['CahierTexteSequence'] = $this->aCahierTexteSequence->toArray($keyType, $includeLazyLoadColumns, true);
+				$result['CahierTexteSequence'] = $this->aCahierTexteSequence->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+			}
+			if (null !== $this->collCahierTexteTravailAFaireFichierJoints) {
+				$result['CahierTexteTravailAFaireFichierJoints'] = $this->collCahierTexteTravailAFaireFichierJoints->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
 			}
 		}
 		return $result;
@@ -901,6 +981,9 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 			case 6:
 				$this->setIdSequence($value);
 				break;
+			case 7:
+				$this->setDateVisibiliteEleve($value);
+				break;
 		} // switch()
 	}
 
@@ -932,6 +1015,7 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 		if (array_key_exists($keys[4], $arr)) $this->setIdGroupe($arr[$keys[4]]);
 		if (array_key_exists($keys[5], $arr)) $this->setIdLogin($arr[$keys[5]]);
 		if (array_key_exists($keys[6], $arr)) $this->setIdSequence($arr[$keys[6]]);
+		if (array_key_exists($keys[7], $arr)) $this->setDateVisibiliteEleve($arr[$keys[7]]);
 	}
 
 	/**
@@ -950,6 +1034,7 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 		if ($this->isColumnModified(CahierTexteTravailAFairePeer::ID_GROUPE)) $criteria->add(CahierTexteTravailAFairePeer::ID_GROUPE, $this->id_groupe);
 		if ($this->isColumnModified(CahierTexteTravailAFairePeer::ID_LOGIN)) $criteria->add(CahierTexteTravailAFairePeer::ID_LOGIN, $this->id_login);
 		if ($this->isColumnModified(CahierTexteTravailAFairePeer::ID_SEQUENCE)) $criteria->add(CahierTexteTravailAFairePeer::ID_SEQUENCE, $this->id_sequence);
+		if ($this->isColumnModified(CahierTexteTravailAFairePeer::DATE_VISIBILITE_ELEVE)) $criteria->add(CahierTexteTravailAFairePeer::DATE_VISIBILITE_ELEVE, $this->date_visibilite_eleve);
 
 		return $criteria;
 	}
@@ -1007,16 +1092,18 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 	 *
 	 * @param      object $copyObj An object of CahierTexteTravailAFaire (or compatible) type.
 	 * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
+	 * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
 	 * @throws     PropelException
 	 */
-	public function copyInto($copyObj, $deepCopy = false)
+	public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
 	{
-		$copyObj->setDateCt($this->date_ct);
-		$copyObj->setContenu($this->contenu);
-		$copyObj->setVise($this->vise);
-		$copyObj->setIdGroupe($this->id_groupe);
-		$copyObj->setIdLogin($this->id_login);
-		$copyObj->setIdSequence($this->id_sequence);
+		$copyObj->setDateCt($this->getDateCt());
+		$copyObj->setContenu($this->getContenu());
+		$copyObj->setVise($this->getVise());
+		$copyObj->setIdGroupe($this->getIdGroupe());
+		$copyObj->setIdLogin($this->getIdLogin());
+		$copyObj->setIdSequence($this->getIdSequence());
+		$copyObj->setDateVisibiliteEleve($this->getDateVisibiliteEleve());
 
 		if ($deepCopy) {
 			// important: temporarily setNew(false) because this affects the behavior of
@@ -1031,9 +1118,10 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 
 		} // if ($deepCopy)
 
-
-		$copyObj->setNew(true);
-		$copyObj->setIdCt(NULL); // this is a auto-increment column, so set to default value
+		if ($makeNew) {
+			$copyObj->setNew(true);
+			$copyObj->setIdCt(NULL); // this is a auto-increment column, so set to default value
+		}
 	}
 
 	/**
@@ -1113,11 +1201,11 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 		if ($this->aGroupe === null && ($this->id_groupe !== null)) {
 			$this->aGroupe = GroupeQuery::create()->findPk($this->id_groupe, $con);
 			/* The following can be used additionally to
-				 guarantee the related object contains a reference
-				 to this object.  This level of coupling may, however, be
-				 undesirable since it could result in an only partially populated collection
-				 in the referenced object.
-				 $this->aGroupe->addCahierTexteTravailAFaires($this);
+				guarantee the related object contains a reference
+				to this object.  This level of coupling may, however, be
+				undesirable since it could result in an only partially populated collection
+				in the referenced object.
+				$this->aGroupe->addCahierTexteTravailAFaires($this);
 			 */
 		}
 		return $this->aGroupe;
@@ -1162,11 +1250,11 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 		if ($this->aUtilisateurProfessionnel === null && (($this->id_login !== "" && $this->id_login !== null))) {
 			$this->aUtilisateurProfessionnel = UtilisateurProfessionnelQuery::create()->findPk($this->id_login, $con);
 			/* The following can be used additionally to
-				 guarantee the related object contains a reference
-				 to this object.  This level of coupling may, however, be
-				 undesirable since it could result in an only partially populated collection
-				 in the referenced object.
-				 $this->aUtilisateurProfessionnel->addCahierTexteTravailAFaires($this);
+				guarantee the related object contains a reference
+				to this object.  This level of coupling may, however, be
+				undesirable since it could result in an only partially populated collection
+				in the referenced object.
+				$this->aUtilisateurProfessionnel->addCahierTexteTravailAFaires($this);
 			 */
 		}
 		return $this->aUtilisateurProfessionnel;
@@ -1211,14 +1299,30 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 		if ($this->aCahierTexteSequence === null && ($this->id_sequence !== null)) {
 			$this->aCahierTexteSequence = CahierTexteSequenceQuery::create()->findPk($this->id_sequence, $con);
 			/* The following can be used additionally to
-				 guarantee the related object contains a reference
-				 to this object.  This level of coupling may, however, be
-				 undesirable since it could result in an only partially populated collection
-				 in the referenced object.
-				 $this->aCahierTexteSequence->addCahierTexteTravailAFaires($this);
+				guarantee the related object contains a reference
+				to this object.  This level of coupling may, however, be
+				undesirable since it could result in an only partially populated collection
+				in the referenced object.
+				$this->aCahierTexteSequence->addCahierTexteTravailAFaires($this);
 			 */
 		}
 		return $this->aCahierTexteSequence;
+	}
+
+
+	/**
+	 * Initializes a collection based on the name of a relation.
+	 * Avoids crafting an 'init[$relationName]s' method name 
+	 * that wouldn't work when StandardEnglishPluralizer is used.
+	 *
+	 * @param      string $relationName The name of the relation to initialize
+	 * @return     void
+	 */
+	public function initRelation($relationName)
+	{
+		if ('CahierTexteTravailAFaireFichierJoint' == $relationName) {
+			return $this->initCahierTexteTravailAFaireFichierJoints();
+		}
 	}
 
 	/**
@@ -1242,10 +1346,16 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initCahierTexteTravailAFaireFichierJoints()
+	public function initCahierTexteTravailAFaireFichierJoints($overrideExisting = true)
 	{
+		if (null !== $this->collCahierTexteTravailAFaireFichierJoints && !$overrideExisting) {
+			return;
+		}
 		$this->collCahierTexteTravailAFaireFichierJoints = new PropelObjectCollection();
 		$this->collCahierTexteTravailAFaireFichierJoints->setModel('CahierTexteTravailAFaireFichierJoint');
 	}
@@ -1342,6 +1452,7 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 		$this->id_groupe = null;
 		$this->id_login = null;
 		$this->id_sequence = null;
+		$this->date_visibilite_eleve = null;
 		$this->alreadyInSave = false;
 		$this->alreadyInValidation = false;
 		$this->clearAllReferences();
@@ -1352,28 +1463,41 @@ abstract class BaseCahierTexteTravailAFaire extends BaseObject  implements Persi
 	}
 
 	/**
-	 * Resets all collections of referencing foreign keys.
+	 * Resets all references to other model objects or collections of model objects.
 	 *
-	 * This method is a user-space workaround for PHP's inability to garbage collect objects
-	 * with circular references.  This is currently necessary when using Propel in certain
-	 * daemon or large-volumne/high-memory operations.
+	 * This method is a user-space workaround for PHP's inability to garbage collect
+	 * objects with circular references (even in PHP 5.3). This is currently necessary
+	 * when using Propel in certain daemon or large-volumne/high-memory operations.
 	 *
-	 * @param      boolean $deep Whether to also clear the references on all associated objects.
+	 * @param      boolean $deep Whether to also clear the references on all referrer objects.
 	 */
 	public function clearAllReferences($deep = false)
 	{
 		if ($deep) {
 			if ($this->collCahierTexteTravailAFaireFichierJoints) {
-				foreach ((array) $this->collCahierTexteTravailAFaireFichierJoints as $o) {
+				foreach ($this->collCahierTexteTravailAFaireFichierJoints as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 		} // if ($deep)
 
+		if ($this->collCahierTexteTravailAFaireFichierJoints instanceof PropelCollection) {
+			$this->collCahierTexteTravailAFaireFichierJoints->clearIterator();
+		}
 		$this->collCahierTexteTravailAFaireFichierJoints = null;
 		$this->aGroupe = null;
 		$this->aUtilisateurProfessionnel = null;
 		$this->aCahierTexteSequence = null;
+	}
+
+	/**
+	 * Return the string representation of this object
+	 *
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return (string) $this->exportTo(CahierTexteTravailAFairePeer::DEFAULT_STRING_FORMAT);
 	}
 
 	/**

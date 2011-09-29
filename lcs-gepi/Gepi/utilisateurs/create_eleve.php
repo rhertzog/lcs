@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: create_eleve.php 6617 2011-03-03 18:18:36Z crob $
+ * $Id: create_eleve.php 7116 2011-06-05 07:59:30Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -249,7 +249,9 @@ else{
 		echo "<option value='auth_ldap'>Authentification LDAP</option>";
 	}
 	if ($session_gepi->auth_sso) {
-		echo "<option value='auth_sso'>Authentification unique (SSO)</option>";
+		echo "<option value='auth_sso'";
+		if(getSettingValue('auth_sso')=='lcs') {echo " selected='true'";}
+		echo ">Authentification unique (SSO)</option>";
 	}
 	echo "</select>";
 

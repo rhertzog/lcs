@@ -31,6 +31,9 @@ abstract class BaseCategorieMatierePeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 4;
+
 	/** the column name for the ID field */
 	const ID = 'matieres_categories.ID';
 
@@ -43,6 +46,9 @@ abstract class BaseCategorieMatierePeer {
 	/** the column name for the PRIORITY field */
 	const PRIORITY = 'matieres_categories.PRIORITY';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of CategorieMatiere objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -58,7 +64,7 @@ abstract class BaseCategorieMatierePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('Id', 'NomCourt', 'NomComplet', 'Priority', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'nomCourt', 'nomComplet', 'priority', ),
 		BasePeer::TYPE_COLNAME => array (self::ID, self::NOM_COURT, self::NOM_COMPLET, self::PRIORITY, ),
@@ -73,7 +79,7 @@ abstract class BaseCategorieMatierePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'NomCourt' => 1, 'NomComplet' => 2, 'Priority' => 3, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'nomCourt' => 1, 'nomComplet' => 2, 'priority' => 3, ),
 		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::NOM_COURT => 1, self::NOM_COMPLET => 2, self::PRIORITY => 3, ),
@@ -207,7 +213,7 @@ abstract class BaseCategorieMatierePeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -226,7 +232,7 @@ abstract class BaseCategorieMatierePeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -280,7 +286,7 @@ abstract class BaseCategorieMatierePeer {
 	 * @param      CategorieMatiere $value A CategorieMatiere object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(CategorieMatiere $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -438,7 +444,7 @@ abstract class BaseCategorieMatierePeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + CategorieMatierePeer::NUM_COLUMNS;
+			$col = $startcol + CategorieMatierePeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = CategorieMatierePeer::OM_CLASS;
 			$obj = new $cls();
@@ -447,6 +453,7 @@ abstract class BaseCategorieMatierePeer {
 		}
 		return array($obj, $col);
 	}
+
 	/**
 	 * Returns the TableMap related to this peer.
 	 * This method is not needed for general use but a specific application could have a need.
@@ -488,7 +495,7 @@ abstract class BaseCategorieMatierePeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a CategorieMatiere or Criteria object.
+	 * Performs an INSERT on the database, given a CategorieMatiere or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or CategorieMatiere object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -531,7 +538,7 @@ abstract class BaseCategorieMatierePeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a CategorieMatiere or Criteria object.
+	 * Performs an UPDATE on the database, given a CategorieMatiere or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or CategorieMatiere object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -570,11 +577,12 @@ abstract class BaseCategorieMatierePeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the matieres_categories table.
+	 * Deletes all rows from the matieres_categories table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(CategorieMatierePeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -600,7 +608,7 @@ abstract class BaseCategorieMatierePeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a CategorieMatiere or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a CategorieMatiere or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or CategorieMatiere object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -708,7 +716,7 @@ abstract class BaseCategorieMatierePeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(CategorieMatiere $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

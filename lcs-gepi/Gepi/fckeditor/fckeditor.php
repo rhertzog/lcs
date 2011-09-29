@@ -1,8 +1,13 @@
 <?php
-/*
+/**
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
- *
+ * @copyright Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * 
+ * @package externe
+ * @subpackage FCKeditor	
+ */
+
+/*
  * == BEGIN LICENSE ==
  *
  * Licensed under the terms of any of the following licenses at your
@@ -26,6 +31,13 @@
  */
 
 if ( !function_exists('version_compare') || version_compare( phpversion(), '5', '<' ) )
+    /**
+     * appelle fckeditor_php4
+     */
 	include_once( 'fckeditor_php4.php' ) ;
 else
+    /**
+     * appelle fckeditor_php5
+     * @see fckeditor_php5.php
+     */
 	include_once( 'fckeditor_php5.php' ) ;

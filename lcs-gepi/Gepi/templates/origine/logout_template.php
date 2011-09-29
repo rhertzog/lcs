@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: logout_template.php 4889 2010-07-25 09:46:26Z regis $
+ * $Id: logout_template.php 7960 2011-08-25 09:41:05Z crob $
  */
 ?>
  
@@ -35,7 +35,7 @@
 	echo $message;
 ?>
 	<br />
-	<a href="<?php echo $gepiPath;?>/login.php">Ouvrir une nouvelle session</a>
+	<a href="<?php echo $gepiPath;?>/login.php<?php if((isset($rne_courant))&&($rne_courant!='')) {echo "?rne=$rne_courant";}?>">Ouvrir une nouvelle session</a>
 
 <?php
 $agent = $_SERVER['HTTP_USER_AGENT'];

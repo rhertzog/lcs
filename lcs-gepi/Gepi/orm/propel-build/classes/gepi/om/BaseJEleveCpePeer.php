@@ -31,12 +31,18 @@ abstract class BaseJEleveCpePeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 2;
+
 	/** the column name for the E_LOGIN field */
 	const E_LOGIN = 'j_eleves_cpe.E_LOGIN';
 
 	/** the column name for the CPE_LOGIN field */
 	const CPE_LOGIN = 'j_eleves_cpe.CPE_LOGIN';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of JEleveCpe objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -52,7 +58,7 @@ abstract class BaseJEleveCpePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('ELogin', 'CpeLogin', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('eLogin', 'cpeLogin', ),
 		BasePeer::TYPE_COLNAME => array (self::E_LOGIN, self::CPE_LOGIN, ),
@@ -67,7 +73,7 @@ abstract class BaseJEleveCpePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('ELogin' => 0, 'CpeLogin' => 1, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('eLogin' => 0, 'cpeLogin' => 1, ),
 		BasePeer::TYPE_COLNAME => array (self::E_LOGIN => 0, self::CPE_LOGIN => 1, ),
@@ -197,7 +203,7 @@ abstract class BaseJEleveCpePeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -216,7 +222,7 @@ abstract class BaseJEleveCpePeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -270,7 +276,7 @@ abstract class BaseJEleveCpePeer {
 	 * @param      JEleveCpe $value A JEleveCpe object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(JEleveCpe $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -425,7 +431,7 @@ abstract class BaseJEleveCpePeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + JEleveCpePeer::NUM_COLUMNS;
+			$col = $startcol + JEleveCpePeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = JEleveCpePeer::OM_CLASS;
 			$obj = new $cls();
@@ -434,6 +440,7 @@ abstract class BaseJEleveCpePeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related Eleve table
@@ -554,7 +561,7 @@ abstract class BaseJEleveCpePeer {
 		}
 
 		JEleveCpePeer::addSelectColumns($criteria);
-		$startcol = (JEleveCpePeer::NUM_COLUMNS - JEleveCpePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = JEleveCpePeer::NUM_HYDRATE_COLUMNS;
 		ElevePeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(JEleveCpePeer::E_LOGIN, ElevePeer::LOGIN, $join_behavior);
@@ -620,7 +627,7 @@ abstract class BaseJEleveCpePeer {
 		}
 
 		JEleveCpePeer::addSelectColumns($criteria);
-		$startcol = (JEleveCpePeer::NUM_COLUMNS - JEleveCpePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = JEleveCpePeer::NUM_HYDRATE_COLUMNS;
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(JEleveCpePeer::CPE_LOGIN, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
@@ -738,13 +745,13 @@ abstract class BaseJEleveCpePeer {
 		}
 
 		JEleveCpePeer::addSelectColumns($criteria);
-		$startcol2 = (JEleveCpePeer::NUM_COLUMNS - JEleveCpePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = JEleveCpePeer::NUM_HYDRATE_COLUMNS;
 
 		ElevePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (ElevePeer::NUM_COLUMNS - ElevePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + ElevePeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(JEleveCpePeer::E_LOGIN, ElevePeer::LOGIN, $join_behavior);
 
@@ -932,10 +939,10 @@ abstract class BaseJEleveCpePeer {
 		}
 
 		JEleveCpePeer::addSelectColumns($criteria);
-		$startcol2 = (JEleveCpePeer::NUM_COLUMNS - JEleveCpePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = JEleveCpePeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(JEleveCpePeer::CPE_LOGIN, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
@@ -1005,10 +1012,10 @@ abstract class BaseJEleveCpePeer {
 		}
 
 		JEleveCpePeer::addSelectColumns($criteria);
-		$startcol2 = (JEleveCpePeer::NUM_COLUMNS - JEleveCpePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = JEleveCpePeer::NUM_HYDRATE_COLUMNS;
 
 		ElevePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (ElevePeer::NUM_COLUMNS - ElevePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + ElevePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(JEleveCpePeer::E_LOGIN, ElevePeer::LOGIN, $join_behavior);
 
@@ -1096,7 +1103,7 @@ abstract class BaseJEleveCpePeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a JEleveCpe or Criteria object.
+	 * Performs an INSERT on the database, given a JEleveCpe or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or JEleveCpe object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -1135,7 +1142,7 @@ abstract class BaseJEleveCpePeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a JEleveCpe or Criteria object.
+	 * Performs an UPDATE on the database, given a JEleveCpe or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or JEleveCpe object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -1182,11 +1189,12 @@ abstract class BaseJEleveCpePeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the j_eleves_cpe table.
+	 * Deletes all rows from the j_eleves_cpe table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(JEleveCpePeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -1211,7 +1219,7 @@ abstract class BaseJEleveCpePeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a JEleveCpe or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a JEleveCpe or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or JEleveCpe object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -1288,7 +1296,7 @@ abstract class BaseJEleveCpePeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(JEleveCpe $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

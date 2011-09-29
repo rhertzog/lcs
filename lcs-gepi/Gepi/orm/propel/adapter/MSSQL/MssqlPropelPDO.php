@@ -20,6 +20,8 @@ class MssqlPropelPDO extends PropelPDO
 	 *
 	 * It is necessary to override the abstract PDO transaction functions here, as
 	 * the PDO driver for MSSQL does not support transactions.
+	 *
+	 * @return    integer
 	 */
 	public function beginTransaction()
 	{
@@ -35,12 +37,14 @@ class MssqlPropelPDO extends PropelPDO
 		$this->nestedTransactionCount++;
 		return $return;
 	}
-	
+
 	/**
 	 * Commit a transaction.
 	 *
 	 * It is necessary to override the abstract PDO transaction functions here, as
 	 * the PDO driver for MSSQL does not support transactions.
+	 *
+	 * @return    integer
 	 */
 	public function commit()
 	{
@@ -52,8 +56,8 @@ class MssqlPropelPDO extends PropelPDO
 					throw new PropelException('Cannot commit because a nested transaction was rolled back');
 				} else {
 					$return = self::exec('COMMIT TRANSACTION');
-					if ($this->useDebug) {		
-				  	$this->log('Commit transaction', null, __METHOD__);
+					if ($this->useDebug) {
+						$this->log('Commit transaction', null, __METHOD__);
 					}
 
 				}
@@ -68,6 +72,8 @@ class MssqlPropelPDO extends PropelPDO
 	 *
 	 * It is necessary to override the abstract PDO transaction functions here, as
 	 * the PDO driver for MSSQL does not support transactions.
+	 *
+	 * @return    integer
 	 */
 	public function rollBack()
 	{
@@ -75,14 +81,14 @@ class MssqlPropelPDO extends PropelPDO
 		$opcount = $this->getNestedTransactionCount();
 		if ($opcount > 0) {
 			if ($opcount === 1) {
-				$return = self::exec('ROLLBACK TRANSACTION'); 
-				if ($this->useDebug) {		
+				$return = self::exec('ROLLBACK TRANSACTION');
+				if ($this->useDebug) {
 					$this->log('Rollback transaction', null, __METHOD__);
 				}
 			} else {
 				$this->isUncommitable = true;
 			}
-			$this->nestedTransactionCount--; 
+			$this->nestedTransactionCount--;
 		}
 		return $return;
 	}
@@ -93,6 +99,8 @@ class MssqlPropelPDO extends PropelPDO
 	 *
 	 * It is necessary to override the abstract PDO transaction functions here, as
 	 * the PDO driver for MSSQL does not support transactions.
+	 *
+	 * @return    integer
 	 */
 	public function forceRollBack()
 	{
@@ -114,17 +122,28 @@ class MssqlPropelPDO extends PropelPDO
 		return $return;
 	}
 
+	/**
+	 * @param      string  $seqname
+	 * @return     integer
+	 */
 	public function lastInsertId($seqname = null)
 	{
 		$result = self::query('SELECT SCOPE_IDENTITY()');
 		return (int) $result->fetchColumn();
 	}
-	
+
+	/**
+	 * @param      string  $text
+	 * @return     string
+	 */
 	public function quoteIdentifier($text)
 	{
 		return '[' . $text . ']';
 	}
-	
+
+	/**
+	 * @return    boolean
+	 */
 	public function useQuoteIdentifier()
 	{
 		return true;

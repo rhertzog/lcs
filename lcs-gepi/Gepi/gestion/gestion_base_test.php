@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id$
+ * $Id: gestion_base_test.php 7953 2011-08-24 14:23:50Z regis $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

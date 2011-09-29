@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: autorisation_exceptionnelle_saisie_app.php 7037 2011-05-28 09:20:21Z crob $
+ * $Id: autorisation_exceptionnelle_saisie_app.php 7192 2011-06-10 19:30:33Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stephane Boireau
  *
@@ -294,7 +294,7 @@ elseif((!isset($id_groupe))||(!isset($periode))) {
 	echo " | <a href='".$_SERVER['PHP_SELF']."'>Choisir une autre classe</a>\n";
 	echo "</p>\n";
 	echo "<p>Pour quel enseignement souhaitez-vous autoriser un enseignant à proposer des saisies/corrections d'appréciations?</p>\n";
-	$groups=get_groups_for_class($id_classe);
+	$groups=get_groups_for_class($id_classe,"","n");
 
 	include("../lib/periodes.inc.php");
 

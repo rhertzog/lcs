@@ -1,6 +1,6 @@
 
 /*
-*@version $Id: bandeau_r01.css 3311 2009-07-24 14:53:44Z crob $
+*@version $Id: bandeau_r01.css 7804 2011-08-17 12:18:24Z regis $
 *
 * bandeau_r01.css
 * Mise en page du bandeau
@@ -211,7 +211,7 @@
 
 /* barre de menu prof */
 #essaiMenu {
-	margin: -0.3em 0em 0em 0em;
+	margin: 0em 0em 0em 0em;
 	padding: 0.1em;
 	background: #686397;
 	color: #FFF;

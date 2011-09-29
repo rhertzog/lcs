@@ -109,8 +109,38 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 		}
 	    }
 	    return $result;
-	}
-
+	}    
+    /**
+	 *
+	 * Renvoi une liste intelligible des types de notifications
+	 *
+	 * @return     String description
+	 *
+	 */
+	public function getTypesNotificationsDescription() {
+        $traitement_col = $this->getAbsenceEleveTraitements();
+        $result = '';
+        $besoin_echo_type = true;
+        $besoin_echo_virgule = false;
+        foreach ($traitement_col as $bou_traitement) {
+            foreach ($bou_traitement->getAbsenceEleveNotifications() as $notification) {
+                if ($notification->getTypeNotification() != null) {
+                    if ($besoin_echo_type) {
+                        $result .= 'type : ';
+                        $besoin_echo_type = false;
+                    }
+                    if ($besoin_echo_virgule) {
+                        $result .= ', ';
+                        $besoin_echo_virgule = false;
+                    }
+                    $result .= $notification->getTypeNotification();
+                    $besoin_echo_virgule = true;
+                }
+            }
+        }
+        return $result;
+    } 
+    
     /**
 	 *
 	 * Renvoi une liste des types associes ou non traitée sinon
@@ -202,8 +232,8 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 
         $traitements = $this->getAbsenceEleveTraitements();
         foreach ($traitements as $traitement) {
-            if ($traitement->getAbsenceEleveType() != null && $traitement->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::$SOUS_RESP_ETAB_NON_PRECISE
-                    && $traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_NON_PRECISE) {
+            if ($traitement->getAbsenceEleveType() != null && $traitement->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::SOUS_RESP_ETAB_NON_PRECISE
+                    && $traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::MANQU_OBLIG_PRESE_NON_PRECISE) {
                 return true;
             }
         }
@@ -255,7 +285,7 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 		    //on va regarder si il y a un retard dans les types
 		    foreach ($this->getAbsenceEleveTraitements() as $traitement) {
 			if ($traitement->getAbsenceEleveType() != null) {
-			    if ($traitement->getAbsenceEleveType()->getRetardBulletin() == AbsenceEleveType::$RETARD_BULLETIN_VRAI) {
+			    if ($traitement->getAbsenceEleveType()->getRetardBulletin() == AbsenceEleveType::RETARD_BULLETIN_VRAI) {
 				$retard = true;
 				break;
 			    }
@@ -283,11 +313,11 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 		$type_non_precise = false;
 		foreach ($this->getAbsenceEleveTraitements() as $traitement) {
 		    if ($traitement->getAbsenceEleveType() != null) {
-			if ($traitement->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::$SOUS_RESP_ETAB_VRAI) {
+			if ($traitement->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::SOUS_RESP_ETAB_VRAI) {
 			    $type_avec = true;
-			} elseif ($traitement->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::$SOUS_RESP_ETAB_FAUX) {
+			} elseif ($traitement->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::SOUS_RESP_ETAB_FAUX) {
 			    $type_sans = true;
-			} else if ($traitement->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::$SOUS_RESP_ETAB_NON_PRECISE) {
+			} else if ($traitement->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::SOUS_RESP_ETAB_NON_PRECISE) {
 			    $type_non_precise = true;
 			}
 		    }
@@ -304,7 +334,7 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 		    $sousResponsabiliteEtablissement = true;
 		} else {//c'est le dernier cas : ($type_avec == false && $type_sans == false && $type_non_precise == true)
 		    //si on a un type de responsabilite specifie a non_precise (comme le type 'erreur de saisie'),
-		    //on renvoi une resp etab (sinon l'utilisateur aurait specifier un type $MANQU_OBLIG_PRESE_VRAI)
+		    //on renvoi une resp etab (sinon l'utilisateur aurait specifier un type MANQU_OBLIG_PRESE_VRAI)
 		    $sousResponsabiliteEtablissement = true;
 		}
 		$this->sousResponsabiliteEtablissement = $sousResponsabiliteEtablissement;
@@ -330,11 +360,11 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 		$type_non_precise = false;
 		foreach ($this->getAbsenceEleveTraitements() as $traitement) {
 		    if ($traitement->getAbsenceEleveType() != null) {
-			if ($traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_VRAI) {
+			if ($traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::MANQU_OBLIG_PRESE_VRAI) {
 			    $type_avec = true;
-			} else if ($traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_FAUX) {
+			} else if ($traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::MANQU_OBLIG_PRESE_FAUX) {
 			    $type_sans = true;
-			} else if ($traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_NON_PRECISE) {
+			} else if ($traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::MANQU_OBLIG_PRESE_NON_PRECISE) {
 			    $type_non_precise = true;
 			}
 		    }
@@ -352,7 +382,7 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 		    $manquementObligationPresence = true;
 		} else {//c'est le dernier cas : ($type_avec == false && $type_sans == false && $type_non_precise == true)
 		    //si on a un type de manquement specifie a non_precise (comme le type 'erreur de saisie'),
-		    //on renvoi un non manquement (sinon l'utilisateur aurait specifier un type $MANQU_OBLIG_PRESE_VRAI)
+		    //on renvoi un non manquement (sinon l'utilisateur aurait specifier un type MANQU_OBLIG_PRESE_VRAI)
 		    $manquementObligationPresence = false;
 		}
 		$this->manquementObligationPresence = $manquementObligationPresence;
@@ -374,11 +404,11 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 		$type_non_precise = false;
 		foreach ($this->getAbsenceEleveTraitements() as $traitement) {
 		    if ($traitement->getAbsenceEleveType() != null) {
-			if ($traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_VRAI
-				|| $traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_FAUX) {
+			if ($traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::MANQU_OBLIG_PRESE_VRAI
+				|| $traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::MANQU_OBLIG_PRESE_FAUX) {
 			    $type_non_precise = false;
 			    break;
-			} else if ($traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::$MANQU_OBLIG_PRESE_NON_PRECISE) {
+			} else if ($traitement->getAbsenceEleveType()->getManquementObligationPresence() == AbsenceEleveType::MANQU_OBLIG_PRESE_NON_PRECISE) {
 			    $type_non_precise = true;
 			}
 		    }
@@ -554,13 +584,30 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 	public function getNotifiee() {
 	    foreach ($this->getAbsenceEleveTraitements() as $traitement) {
 		foreach ($traitement->getAbsenceEleveNotifications() as $notification) {
-		    if ($notification->getStatutEnvoi() == AbsenceEleveNotification::$STATUT_SUCCES || $notification->getStatutEnvoi() == AbsenceEleveNotification::$STATUT_SUCCES_AR) {
+		    if ($notification->getStatutEnvoi() == AbsenceEleveNotificationPeer::STATUT_ENVOI_SUCCES || $notification->getStatutEnvoi() == AbsenceEleveNotificationPeer::STATUT_ENVOI_SUCCES_AVEC_ACCUSE_DE_RECEPTION) {
 			return true;
 		    }
 		}
 	    }
 	    return false;
 	}
+    /**
+	 *
+	 * Renvoi true si une notification est prête à envoyée ou envoyée à la famille
+	 *
+	 * @return     boolean
+	 *
+	 */
+	public function getNotificationEnCours() {
+        foreach ($this->getAbsenceEleveTraitements() as $traitement) {
+            foreach ($traitement->getAbsenceEleveNotifications() as $notification) {               
+                if ($notification->getStatutEnvoi() == AbsenceEleveNotificationPeer::STATUT_ENVOI_ETAT_INITIAL || $notification->getStatutEnvoi() == AbsenceEleveNotificationPeer::STATUT_ENVOI_EN_COURS) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 	/**
 	 * Gets a collection of AbsenceEleveTraitement objects related by a many-to-many relationship
@@ -596,7 +643,12 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 					//WARNING WARNING WARNING WARNING
 					//si le modele change ca va bugger, il faut utiliser la requete AbsenceEleveTraitementQuery en dessous
 					//le sql a ete generer en activant les logs propel et en recuperant le sql de la requete ci-dessous
-					$sql = "SELECT /* comment_getAbsenceEleveTraitements */ a_traitements.ID, a_traitements.UTILISATEUR_ID, a_traitements.A_TYPE_ID, a_traitements.A_MOTIF_ID, a_traitements.A_JUSTIFICATION_ID, a_traitements.COMMENTAIRE, a_traitements.MODIFIE_PAR_UTILISATEUR_ID, a_traitements.CREATED_AT, a_traitements.UPDATED_AT, a_types.ID, a_types.NOM, a_types.JUSTIFICATION_EXIGIBLE, a_types.SOUS_RESPONSABILITE_ETABLISSEMENT, a_types.MANQUEMENT_OBLIGATION_PRESENCE, a_types.RETARD_BULLETIN, a_types.TYPE_SAISIE, a_types.COMMENTAIRE, a_types.ID_LIEU, a_types.SORTABLE_RANK, a_notifications.ID, a_notifications.UTILISATEUR_ID, a_notifications.A_TRAITEMENT_ID, a_notifications.TYPE_NOTIFICATION, a_notifications.EMAIL, a_notifications.TELEPHONE, a_notifications.ADR_ID, a_notifications.COMMENTAIRE, a_notifications.STATUT_ENVOI, a_notifications.DATE_ENVOI, a_notifications.ERREUR_MESSAGE_ENVOI, a_notifications.CREATED_AT, a_notifications.UPDATED_AT, a_justifications.ID, a_justifications.NOM, a_justifications.COMMENTAIRE, a_justifications.SORTABLE_RANK FROM `a_traitements` INNER JOIN j_traitements_saisies ON (a_traitements.ID=j_traitements_saisies.A_TRAITEMENT_ID) LEFT JOIN a_types ON (a_traitements.A_TYPE_ID=a_types.ID) LEFT JOIN a_notifications ON (a_traitements.ID=a_notifications.A_TRAITEMENT_ID) LEFT JOIN a_justifications ON (a_traitements.A_JUSTIFICATION_ID=a_justifications.ID) WHERE j_traitements_saisies.A_SAISIE_ID='".$this->getId()."'";
+					$sql = "SELECT /* comment_getAbsenceEleveTraitements */ 
+								a_traitements.ID, a_traitements.UTILISATEUR_ID, a_traitements.A_TYPE_ID, a_traitements.A_MOTIF_ID, a_traitements.A_JUSTIFICATION_ID, a_traitements.COMMENTAIRE, a_traitements.MODIFIE_PAR_UTILISATEUR_ID, a_traitements.CREATED_AT, a_traitements.UPDATED_AT, a_traitements.DELETED_AT,
+								a_types.ID, a_types.NOM, a_types.JUSTIFICATION_EXIGIBLE, a_types.SOUS_RESPONSABILITE_ETABLISSEMENT, a_types.MANQUEMENT_OBLIGATION_PRESENCE, a_types.RETARD_BULLETIN, a_types.TYPE_SAISIE, a_types.COMMENTAIRE, a_types.ID_LIEU, a_types.SORTABLE_RANK, a_types.CREATED_AT, a_types.UPDATED_AT,
+								a_notifications.ID, a_notifications.UTILISATEUR_ID, a_notifications.A_TRAITEMENT_ID, a_notifications.TYPE_NOTIFICATION, a_notifications.EMAIL, a_notifications.TELEPHONE, a_notifications.ADR_ID, a_notifications.COMMENTAIRE, a_notifications.STATUT_ENVOI, a_notifications.DATE_ENVOI, a_notifications.ERREUR_MESSAGE_ENVOI, a_notifications.CREATED_AT, a_notifications.UPDATED_AT,
+								a_justifications.ID, a_justifications.NOM, a_justifications.COMMENTAIRE, a_justifications.SORTABLE_RANK, a_justifications.CREATED_AT, a_justifications.UPDATED_AT
+								FROM `a_traitements` INNER JOIN j_traitements_saisies ON (a_traitements.ID=j_traitements_saisies.A_TRAITEMENT_ID) LEFT JOIN a_types ON (a_traitements.A_TYPE_ID=a_types.ID) LEFT JOIN a_notifications ON (a_traitements.ID=a_notifications.A_TRAITEMENT_ID) LEFT JOIN a_justifications ON (a_traitements.A_JUSTIFICATION_ID=a_justifications.ID) WHERE j_traitements_saisies.A_SAISIE_ID='".$this->getId()."' and a_traitements.DELETED_AT IS null";
 					$con = Propel::getConnection(AbsenceEleveTraitementPeer::DATABASE_NAME, Propel::CONNECTION_READ);
 					$stmt = $con->prepare($sql);
 					$stmt->execute();
@@ -622,7 +674,7 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 				    $this->collAbsenceEleveTraitements = new PropelObjectCollection();
 				    $this->collAbsenceEleveTraitements->setModel('AbsenceEleveTraitement');
 				    foreach ($this->collJTraitementSaisieEleves as $jTraitementSaisieEleve) {
-					if ($jTraitementSaisieEleve->getAbsenceEleveTraitement() !== null) {
+					if ($jTraitementSaisieEleve->getAbsenceEleveTraitement() !== null && $jTraitementSaisieEleve->getAbsenceEleveTraitement()->getDeletedAt()==Null) {
 					    $this->collAbsenceEleveTraitements->append($jTraitementSaisieEleve->getAbsenceEleveTraitement());
 					}
 				    }
@@ -663,19 +715,19 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 		    $typeJoin->setJoinType(Criteria::LEFT_JOIN);
 		    $typeRelation = $typeTableMap->getRelation('AbsenceEleveType');
 		    $typeJoin->setRelationMap($typeRelation);
-		    $width["AbsenceEleveType"] = $typeJoin;
+		    $width["AbsenceEleveType"] = new ModelWith($typeJoin);
 
 		    $notificationJoin = new ModelJoin();
 		    $notificationJoin->setJoinType(Criteria::LEFT_JOIN);
 		    $notificationRelation = $typeTableMap->getRelation('AbsenceEleveNotification');
 		    $notificationJoin->setRelationMap($notificationRelation);
-		    $width["AbsenceEleveNotification"] = $notificationJoin;
+		    $width["AbsenceEleveNotification"] = new ModelWith($notificationJoin);
 
 		    $justificationJoin = new ModelJoin();
 		    $justificationJoin->setJoinType(Criteria::LEFT_JOIN);
 		    $justificationRelation = $typeTableMap->getRelation('AbsenceEleveJustification');
 		    $justificationJoin->setRelationMap($justificationRelation);
-		    $width["AbsenceEleveJustification"] = $justificationJoin;
+		    $width["AbsenceEleveJustification"] = new ModelWith($justificationJoin);
 
 		    $formatter->setWith($width);
 		    AbsenceEleveSaisie::$traitementFormatter = $formatter;
@@ -933,19 +985,26 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
 	public function save(PropelPDO $con = null)
 	{
 	    if ($this->isNew()) {
-		if ($this->getUtilisateurId() == null) {
+			if ($this->getUtilisateurId() == null) {
+			    $utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
+			    if ($utilisateur != null) {
+					$this->setUtilisateurProfessionnel($utilisateur);
+			    }
+			}
+	    }
+	    if ($this->getVersionCreatedBy() == null) {
 		    $utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
 		    if ($utilisateur != null) {
-			$this->setUtilisateurProfessionnel($utilisateur);
+				$this->setVersionCreatedBy($utilisateur->getLogin());
 		    }
 		}
-	    } else {
-		$utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
-		if ($utilisateur != null) {
-		    $this->setModifieParUtilisateur($utilisateur);
-		}
-	    }
-	    return parent::save($con);
+
+		//on regarde les changements avec l'ancienne version pour mettre à jour la table d'agrégation
+		$oldVersionNumber = $this->version;
+		
+		$result = parent::save($con);
+		
+		return $result;
 	}
 
 	/**
@@ -990,5 +1049,71 @@ class AbsenceEleveSaisie extends BaseAbsenceEleveSaisie {
             return(false);
         }
     }
-
+    
+    /**
+	 * Undelete a row that was soft_deleted with no versionning
+	 *
+	 * @return		 int The number of rows affected by this update and any referring fk objects' save() operations.
+	 */
+	public function unDelete(PropelPDO $con = null)
+	{
+		AbsenceEleveSaisiePeer::disableVersioning();
+		$this->setDeletedBy(null);
+		$this->setUpdatedAt('now');
+		parent::unDelete($con);
+		AbsenceEleveSaisiePeer::enableVersioning();
+	}
+    
+	/**
+	 * Removes this object from datastore and sets delete attribute.
+	 *
+	 * @param      PropelPDO $con
+	 * @return     void
+	 * @throws     PropelException
+	 * @see        BaseObject::setDeleted()
+	 * @see        BaseObject::isDeleted()
+	 */
+	public function delete(PropelPDO $con = null)
+	{
+	    AbsenceEleveSaisiePeer::disableVersioning();
+	    $utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
+	    if ($utilisateur != null) {
+		    $this->setDeletedBy($utilisateur->getLogin());
+	    }
+	    $this->setUpdatedAt('now');
+	    parent::delete($con);
+	    AbsenceEleveSaisiePeer::enableVersioning();
+	}
+        /**
+	 * Retourne une couleur d'affichage en fonction du type de la saisie.
+	 *
+	 * @return     string
+	 * 
+	 */
+        public function getColor() {
+            if ($this->getRetard()) {
+                return 'orange';
+            }elseif($this->getManquementObligationPresence()){
+                return 'red';
+            }elseif (!$this->getManquementObligationPresenceSpecifie_NON_PRECISE()){
+                return 'blue';
+            }else{
+                return 'green';
+            }
+        }
+        
+        /**
+		 * Sets the properties of the curent object to the value they had at a specific version
+		 *
+		 * @param   integer $versionNumber The version number to read
+		 * @param   PropelPDO $con the connection to use
+		 *
+		 * @return  AbsenceEleveSaisie The current object (for fluent API support)
+		 */
+		public function toVersion($versionNumber, $con = null)
+		{
+			parent::toVersion($versionNumber, $con);
+			$this->setUpdatedAt('now');
+		}
+        
 } // AbsenceEleveSaisie

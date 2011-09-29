@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: modify_nom_class.php 7401 2011-07-08 13:07:00Z crob $
+ * $Id: modify_nom_class.php 7467 2011-07-21 10:18:17Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -44,6 +44,11 @@ if (!checkAccess()) {
 }
 
 $msg = null;
+
+$gepi_denom_mention=getSettingValue("gepi_denom_mention");
+if($gepi_denom_mention=="") {
+	$gepi_denom_mention="mention";
+}
 
 if (isset($is_posted) and ($is_posted == '1')) {
 	check_token();
@@ -626,6 +631,30 @@ if ($gepiSettings['active_mod_ects'] == "y") {
 			}
 			echo "</select>\n";
 		}
+		?>
+	</td>
+</tr>
+
+<tr>
+	<td>&nbsp;&nbsp;&nbsp;</td>
+	<td style="font-variant: small-caps; vertical-align: top;">
+	   <?php echo ucfirst($gepi_denom_mention);?>s pouvant apparaître dans l'avis du conseil de classe sur les bulletins&nbsp;:
+	</td>
+	<td><?php
+		$sql="SELECT DISTINCT m.* FROM j_mentions_classes j, mentions m WHERE j.id_classe='$id_classe' AND j.id_mention=m.id ORDER BY j.ordre, m.mention;";
+		//echo "$sql<br />\n";
+		 $res=mysql_query($sql);
+		if(mysql_num_rows($res)==0) {
+			echo "<p>Aucune $gepi_denom_mention n'est définie pour cette classe.</p>\n";
+		}
+		else {
+			echo "<ol>\n";
+			while($lig=mysql_fetch_object($res)) {
+				echo "<li>".$lig->mention."</li>\n";
+			}
+			echo "</ol>\n";
+		}
+		echo "<p><a href='../saisie/saisie_mentions.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">Paramétrer les ".$gepi_denom_mention."s</a></p>\n";
 		?>
 	</td>
 </tr>

@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: bulletin_simple.inc.php 6453 2011-02-01 18:52:14Z crob $
+* $Id: bulletin_simple.inc.php 7467 2011-07-21 10:18:17Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
@@ -108,6 +108,9 @@ global $affiche_coef;
 global $bull_intitule_app;
 
 global $affiche_deux_moy_gen;
+
+global $gepi_denom_mention;
+if($gepi_denom_mention=='') {$gepi_denom_mention="mention";}
 
 $alt=1;
 
@@ -1222,14 +1225,35 @@ $current_group["classe"]["ver_periode"][$id_classe][$nb]
 	
 		$current_eleve_avis_query = mysql_query("SELECT * FROM avis_conseil_classe WHERE (login='$current_eleve_login' AND periode='$nb')");
 		$current_eleve_avis[$nb] = @mysql_result($current_eleve_avis_query, 0, "avis");
-	// Test pour savoir si l'élève appartient à la classe pour la période considérée
-	$test_eleve_app = sql_query1("select count(login) from j_eleves_classes where login='".$current_eleve_login."' and id_classe='".$id_classe."' and periode='".$nb."'");
-	if (($current_eleve_avis[$nb]== '') or ($tab_acces_app[$nb]!="y") or ($test_eleve_app == 0)) {$current_eleve_avis[$nb] = ' -';}
-	
-	echo "<tr>\n<td valign=\"top\" width =\"$larg_col1\" class='bull_simpl' style='text-align:left; $style_bordure_cell'>$nom_periode[$nb]</td>\n";
-	
-	echo "<td valign=\"top\"  width = \"$larg_col1b\" class='bull_simpl' style='text-align:left; $style_bordure_cell'>$current_eleve_avis[$nb]</td>\n";
-	echo "</tr>\n";
+
+		// **** AJOUT POUR LA MENTION ****
+		$current_eleve_mention[$nb] = @mysql_result($current_eleve_avis_query, 0, "id_mention");
+		// **** FIN D'AJOUT POUR LA MENTION ****
+
+		// Test pour savoir si l'élève appartient à la classe pour la période considérée
+		$test_eleve_app = sql_query1("select count(login) from j_eleves_classes where login='".$current_eleve_login."' and id_classe='".$id_classe."' and periode='".$nb."'");
+		if (($current_eleve_avis[$nb]== '') or ($tab_acces_app[$nb]!="y") or ($test_eleve_app == 0)) {$current_eleve_avis[$nb] = ' -';}
+		
+		echo "<tr>\n<td valign=\"top\" width =\"$larg_col1\" class='bull_simpl' style='text-align:left; $style_bordure_cell'>$nom_periode[$nb]</td>\n";
+		
+		echo "<td valign=\"top\"  width = \"$larg_col1b\" class='bull_simpl' style='text-align:left; $style_bordure_cell'>$current_eleve_avis[$nb]";
+
+		// Ajouter par la suite une option pour faire apparaître les mentions même si c'est "-"
+		//if(($current_eleve_mention[$nb]=="F")||($current_eleve_mention[$nb]=="M")||($current_eleve_mention[$nb]=="E")) {
+		if((!isset($tableau_des_mentions_sur_le_bulletin))||(!is_array($tableau_des_mentions_sur_le_bulletin))||(count($tableau_des_mentions_sur_le_bulletin)==0)) {
+			$tableau_des_mentions_sur_le_bulletin=get_mentions();
+		}
+
+		if(isset($tableau_des_mentions_sur_le_bulletin[$current_eleve_mention[$nb]])) {
+			echo "<br />\n";
+			echo "<br />\n";
+			echo "<b>".$gepi_denom_mention." : </b>";
+			echo $tableau_des_mentions_sur_le_bulletin[$current_eleve_mention[$nb]];
+			//else {echo "-";}
+		}
+
+		echo "</td>\n";
+		echo "</tr>\n";
 		$nb++;
 	}
 	echo "</table>\n";
@@ -1389,6 +1413,7 @@ $tab_acces_app = acces_appreciations($periode1, $periode2, $id_classe);
 $necessaire_signalement_fautes_insere="n";
 function lib_signalement_fautes() {
 	global $necessaire_signalement_fautes_insere, $id_classe;
+	global $inclusion_depuis_graphes;
 
 	if($necessaire_signalement_fautes_insere=="n") {
 
@@ -1467,8 +1492,16 @@ echo "</form>\n";
 		document.getElementById('div_signalement_message').innerHTML='<textarea name=\'signalement_message\' id=\'signalement_message\' cols=\'50\' rows=\'11\'></textarea>';
 
 		document.getElementById('signalement_message').innerHTML=message;
+";
 
-		afficher_div('div_signaler_faute','y',100,100);
+		if((isset($inclusion_depuis_graphes))&&($inclusion_depuis_graphes=='y')) {
+			echo "		afficher_div('div_signaler_faute','n',0,0);\n";
+		}
+		else {
+			echo "		afficher_div('div_signaler_faute','y',100,100);\n";
+		}
+
+echo "
 	}
 
 	function valider_signalement_faute() {

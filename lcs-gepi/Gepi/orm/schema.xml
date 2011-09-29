@@ -6,7 +6,8 @@
 		<column name="nom" type="VARCHAR" required="true" size="50" description="Nom de l'utilisateur" />
 		<column name="prenom" required="true" type="VARCHAR" size="50" description="Prenom de l'utilisateur" />
 		<column name="civilite" required="true" type="VARCHAR" size="5" description="Civilite" />
-		<column name="password" required="true" type="CHAR" size="32" description="Mot de passe" />
+		<column name="password" required="true" type="CHAR" size="128" description="Mot de passe" />
+		<column name="salt" required="false" type="CHAR" size="128" description="sel pour le hmac du mot de passe" />
 		<column name="email" required="true" type="VARCHAR" size="50" description="Email de l'utilisateur" />
 		<column name="show_email" required="true" type="VARCHAR" size="50" default="no" description="L'email de l'utilisateur est-il public (yes/no)" />
 		<column name="statut" required="true" type="VARCHAR" size="20" description="Statut de l'utilisateur" />
@@ -152,6 +153,7 @@
 		<column name="titre" required="true" type="VARCHAR" size="255" description="Titre du document (fichier joint)" />
 		<column name="taille" required="true" default="0" type="INTEGER" description="Taille du document (fichier joint)" />
 		<column name="emplacement" required="true" type="VARCHAR" size="255" description="Chemin du systeme de fichier vers le document (fichier joint)" />
+		<column name="visible_eleve_parent" required="false" type="BOOLEAN" default="true" description="Visibilité élève/parent du document joint" />
 	</table>
 
 	<table name="ct_devoirs_entry" phpName="CahierTexteTravailAFaire" description="Travail Ã  faire (devoir) cahier de texte">
@@ -171,6 +173,7 @@
 		<foreign-key foreignTable="ct_sequences" onDelete="setnull">
 			<reference local="id_sequence" foreign="id" />
 		</foreign-key>
+                <column name="date_visibilite_eleve" required="true" type="TIMESTAMP" defaultExpr="now()" description="Timestamp précisant quand les devoirs sont portés à la conaissance des élèves"/>
 	</table>
 
 	<table name="ct_devoirs_documents" phpName="CahierTexteTravailAFaireFichierJoint" description="Document (fichier joint) appartenant a un travail Ã  faire du cahier de texte">
@@ -182,6 +185,7 @@
 		<column name="titre" required="true" type="VARCHAR" size="255" description="Titre du document (fichier joint)" />
 		<column name="taille" required="true" default="0" type="INTEGER" description="Taille du document (fichier joint)" />
 		<column name="emplacement" required="true" type="VARCHAR" size="255" description="Chemin du systeme de fichier vers le document (fichier joint)" />
+ 		<column name="visible_eleve_parent" required="false" type="BOOLEAN" default="true" description="Visibilité élève/parent du document joint" />
 	</table>
 
 	<table name="ct_private_entry" phpName="CahierTexteNoticePrivee" description="Notice privee du cahier de texte">
@@ -227,13 +231,13 @@
 		<column name="email" required="true" type="VARCHAR" size="255" default="" description="Courriel de l'eleve"/>
 		<column name="id_eleve" required="true" primaryKey="true" autoIncrement="true" type="INTEGER" size="11" description="cle primaire autoincremente"/>
                 <column name="date_sortie" required="false" type="TIMESTAMP" default="NULL" description="Timestamp de sortie de l'élève de l'établissement (fin d'inscription)"/>
-		<column name="id_mef" required="false" type="INTEGER" description="cle externe pour le jointure avec mef"/>
-		<foreign-key foreignTable="mef" onDelete="setnull"><reference local="id_mef" foreign="id"/></foreign-key>
+		<column name="mef_code" required="false" type="INTEGER" description="code mef de la formation de l'eleve"/>
+		<foreign-key foreignTable="mef" onDelete="setnull"><reference local="mef_code" foreign="mef_code"/></foreign-key>
 	</table>
 
 	<table name="mef" description="Module élémentaire de formation">
 		<column name="id" required="true" primaryKey="true" autoIncrement="true" type="INTEGER" description="Cle primaire de la classe" />
-		<column name="ext_id" required="false" type="INTEGER" description="Numero de la nomenclature officielle (numero MEF)" />
+		<column name="mef_code" required="false" type="INTEGER" description="Numero de la nomenclature officielle (numero MEF)" />
                 <column name="libelle_court" required="true" type="VARCHAR" size="50" description="libelle de la formation"/>
                 <column name="libelle_long" required="true" type="VARCHAR" size="300" description="libelle de la formation"/>
                 <column name="libelle_edition" required="true" type="VARCHAR" size="300" description="libelle de la formation pour presentation"/>
@@ -398,6 +402,7 @@
     <column name="nom" required="true" type="VARCHAR" size="250" description="Nom du motif"/>
     <column name="commentaire" required="false" type="LONGVARCHAR" description="commentaire saisi par l'utilisateur"/>
     <behavior name="sortable" />
+    <behavior name="timestampable" />
   </table>
 
   <table name="a_justifications" phpName="AbsenceEleveJustification" description="Liste des justifications possibles pour une absence">
@@ -405,6 +410,7 @@
     <column name="nom" required="true" type="VARCHAR" size="250" description="Nom de la justification"/>
     <column name="commentaire" required="false" type="LONGVARCHAR" description="commentaire saisi par l'utilisateur"/>
     <behavior name="sortable" />
+    <behavior name="timestampable" />
   </table>
 
   <table name="a_types" phpName="AbsenceEleveType" description="Liste des types d'absences possibles dans l'etablissement">
@@ -419,6 +425,7 @@
     <column name="id_lieu" required="false" type="INTEGER" size="11" default="null" description="cle etrangere du lieu ou se trouve l'élève"/>
     <foreign-key foreignTable="a_lieux" onDelete="setnull"><reference local="id_lieu" foreign="id"/></foreign-key>
     <behavior name="sortable" />
+    <behavior name="timestampable" />
   </table>
 
   <table name="a_lieux" phpName="AbsenceEleveLieu" description="Lieu pour les types d'absence ou les saisies">
@@ -456,12 +463,20 @@
     <column name="id_aid" required="false" type="INTEGER" default="null" description="identifiant de l'aid pour lequel la saisie a ete effectuee"/>
     <foreign-key foreignTable="aid" onDelete="setnull"><reference local="id_aid" foreign="id"/></foreign-key>
     <column name="id_s_incidents" required="false" type="INTEGER" default="null" description="identifiant de la saisie d'incident discipline"/>
-    <behavior name="timestampable" />
-    <column name="modifie_par_utilisateur_id" type="VARCHAR" size="100" default="null" description="Login de l'utilisateur professionnel qui a modifie en dernier le traitement"/>
-	<!-- si un utilisateur est supprime, on ne supprime pas les traitements saisis par cet utilisateur, le champ utilisateur_id est alors regle sur null -->
-    <foreign-key foreignTable="utilisateurs" onDelete="none" phpName = "ModifieParUtilisateur" refPhpName = "ModifiedAbsenceEleveSaisie"><reference local="modifie_par_utilisateur_id" foreign="login"/></foreign-key>
     <column name="id_lieu" required="false" type="INTEGER" size="11" default="null" description="cle etrangere du lieu ou se trouve l'eleve"/>
+    <column name="deleted_by" type="VARCHAR" size="100" default="null" description="Login de l'utilisateur professionnel qui a supprimé la saisie"/>
+    <column name="created_at" type="TIMESTAMP" description="Date de creation de la saisie"/>
+    <column name="updated_at" type="TIMESTAMP" description="Date de modification de la saisie, y compris suppression, restauration et changement de version"/>
     <foreign-key foreignTable="a_lieux" onDelete="setnull"><reference local="id_lieu" foreign="id"/></foreign-key>
+    <behavior name="timestampable" />
+	<behavior name="soft_delete" />
+    <behavior name="versionable">
+      <parameter name="log_created_at" value="true" />
+      <parameter name="log_created_by" value="true" />
+    </behavior>
+	<index><index-column name="deleted_at"/></index>
+	<index><index-column name="debut_abs"/></index>
+	<index><index-column name="fin_abs"/></index>
   </table>
 
   <table name="a_traitements" phpName="AbsenceEleveTraitement" description="Un traitement peut gerer plusieurs saisies et consiste à definir les motifs/justifications... de ces absences saisies">
@@ -481,6 +496,8 @@
     <column name="modifie_par_utilisateur_id" type="VARCHAR" size="100" default="null" description="Login de l'utilisateur professionnel qui a modifie en dernier le traitement"/>
 	<!-- si un utilisateur est supprime, on ne supprime pas les traitements saisis par cet utilisateur, le champ utilisateur_id est alors regle sur null -->
     <foreign-key foreignTable="utilisateurs" onDelete="none" phpName = "ModifieParUtilisateur" refPhpName = "ModifiedAbsenceEleveTraitement"><reference local="modifie_par_utilisateur_id" foreign="login"/></foreign-key>
+	<behavior name="soft_delete" />
+	<index><index-column name="deleted_at"/></index>
   </table>
 
   <table name="j_traitements_saisies" phpName="JTraitementSaisieEleve" description="Table de jointure entre la saisie et le traitement des absences" isCrossRef="true">
@@ -496,14 +513,14 @@
     <foreign-key foreignTable="utilisateurs" onDelete="setnull"><reference local="utilisateur_id" foreign="login"/></foreign-key>
     <column name="a_traitement_id" default="null" required="true" type="INTEGER" size="12" description="cle etrangere du traitement qu'on notifie"/>
     <foreign-key foreignTable="a_traitements" onDelete="cascade"><reference local="a_traitement_id" foreign="id"/></foreign-key>
-    <column name="type_notification" required="false" type="INTEGER" size="5" default="null" description="type de notification (0 : email, 1 : courrier, 2 : sms)"/>
+    <column name="type_notification" required="false" type="ENUM" valueSet="courrier, email, sms, communication telephonique" default="null" description="type de notification (0 : courrier, 1 : email, 2 : sms, 3 : telephone"/>
     <column name="email" required="false" type="VARCHAR" size="100" description="email de destination (pour le type email)"/>
     <column name="telephone" required="false" type="VARCHAR" size="100" description="numero du telephone de destination (pour le type sms)"/>
     <column name="adr_id" required="false" type="VARCHAR" size="10" description="cle etrangere vers l'adresse de destination (pour le type courrier)"/>
     <foreign-key foreignTable="resp_adr" onDelete="setnull"><reference local="adr_id" foreign="adr_id"/></foreign-key>
     <!--foreign-key foreignTable="a_type_envois" onDelete="setnull"><reference local="id_type_envoi" foreign="id"/></foreign-key-->
     <column name="commentaire" required="false" type="LONGVARCHAR" description="commentaire saisi par l'utilisateur"/>
-    <column name="statut_envoi" required="false" type="INTEGER" size="5" default="0" description="Statut de cet envoi (0 : etat initial, 1 : en cours, 2 : echec, 3 : succes, 4 : succes avec accuse de reception)"/>
+    <column name="statut_envoi" required="false" type="ENUM" valueSet="etat initial, en cours, echec, succes, succes avec accuse de reception, pret a envoyer" default="etat initial" description="Statut de cet envoi (0 : etat initial, 1 : en cours, 2 : echec, 3 : succes, 4 : succes avec accuse de reception)"/>
     <column name="date_envoi" required="false" type="TIMESTAMP" description="Date envoi"/>
     <column name="erreur_message_envoi" required="false" type="LONGVARCHAR" description="Message d'erreur retourné par le service d'envoi"/>
     <behavior name="timestampable" />
@@ -514,6 +531,20 @@
     <foreign-key foreignTable="a_notifications" onDelete="cascade"><reference local="a_notification_id" foreign="id"/></foreign-key>
     <column name="pers_id" required="true" primaryKey="true" type="VARCHAR" size="10" description="cle etrangere des personnes"/>
     <foreign-key foreignTable="resp_pers" onDelete="cascade"><reference local="pers_id" foreign="pers_id"/></foreign-key>
+  </table>
+
+  <table name="a_agregation_decompte" phpName="AbsenceAgregationDecompte" description="Table d'agregation des decomptes de demi journees d'absence et de retard">
+    <column name="eleve_id" type="INTEGER" size="11" primaryKey="true" description="id de l'eleve"/>
+    <foreign-key foreignTable="eleves" onDelete="cascade"><reference local="eleve_id" foreign="id_eleve"/></foreign-key>
+    <column name="date_demi_jounee" type="TIMESTAMP" default="0000-00-00 00:00:00" required="true" primaryKey="true" description="Date de la demi journée agrégée : 00:00 pour une matinée, 12:00 pour une après midi"/>
+    <column name="manquement_obligation_presence" default="false" type="BOOLEAN" description="Cette demi journée est comptée comme absence"/>
+    <column name="justifiee" default="false" type="BOOLEAN" description="Si cette demi journée est compté comme absence, y a-t-il une justification"/>
+    <column name="notifiee" default="false" type="BOOLEAN" description="Si cette demi journée est compté comme absence, y a-t-il une notification à la famille"/>
+    <column name="nb_retards" default="0" type="INTEGER" description="Nombre de retards décomptés dans la demi journée"/>
+    <column name="nb_retards_justifies" default="0" type="INTEGER" description="Nombre de retards justifiés décomptés dans la demi journée"/>
+    <column name="motifs_absences" type="ARRAY" description="Liste des motifs (table a_motifs) associés à cette demi-journée d'absence"/>
+    <column name="motifs_retards" type="ARRAY" description="Liste des motifs (table a_motifs) associés aux retard de cette demi-journée"/>
+    <behavior name="timestampable"/>    
   </table>
 
 <!-- fin objets propel generes pour absence2-->

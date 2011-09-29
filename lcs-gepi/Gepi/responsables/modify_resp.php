@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: modify_resp.php 6514 2011-02-19 13:14:26Z crob $
+ * $Id: modify_resp.php 7480 2011-07-22 09:45:30Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -1035,7 +1035,13 @@ echo "</td>\n";
 echo "</tr>\n";
 echo "</table>\n";
 
-
+//==============================================
+// Infos compte utilisateur
+if((isset($compte_resp_existe))&&($compte_resp_existe=="y")&&isset($resp_login)&&($_SESSION['statut']=="administrateur")) {
+	echo "<div style='float: right; width:15 em; text-align: center; border: 1px solid black;'>\n";
+	echo affiche_actions_compte($resp_login);
+	echo "</div>\n";
+}
 //==============================================
 
 echo "<a name='adresse'></a>\n";

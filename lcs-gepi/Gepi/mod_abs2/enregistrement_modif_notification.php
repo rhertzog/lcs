@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: enregistrement_modif_notification.php 5545 2010-10-03 20:14:12Z jjacquard $
+ * @version $Id: enregistrement_modif_notification.php 8057 2011-08-30 20:43:44Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -87,6 +87,9 @@ if ( isset($_POST["creation_notification"])) {
 	$notification->setUtilisateurProfessionnel($utilisateur);
 	$notification->setAbsenceEleveTraitement($traitement);
 
+	//on met le type courrier par défaut
+	$notification->setTypeNotification(AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_COURRIER);
+
 	$responsable_eleve1 = null;
 	$responsable_eleve2 = null;
 	foreach ($traitement->getResponsablesInformationsSaisies() as $responsable_information) {
@@ -116,18 +119,10 @@ if ( isset($_POST["creation_notification"])) {
 }
 
 if ( $modif == 'type') {
-    if (isset(AbsenceEleveNotification::$LISTE_LABEL_TYPE[$_POST["type"]])) {
-	$notification->setTypeNotification($_POST["type"]);
-    } else {
-	$notification->setTypeNotification(-1);
-    }
-    $notification->setStatutEnvoi(AbsenceEleveNotification::$STATUT_INITIAL);
+    $notification->setTypeNotification($_POST['type']);
+    $notification->setStatutEnvoi(AbsenceEleveNotificationPeer::STATUT_ENVOI_ETAT_INITIAL);
 } else if ( $modif == 'statut') {
-    if (isset(AbsenceEleveNotification::$LISTE_LABEL_STATUT[$_POST["statut"]])) {
-	$notification->setStatutEnvoi($_POST["statut"]);
-    } else {
-	$notification->setStatutEnvoi(0);
-    }
+    $notification->setStatutEnvoi($_POST["statut"]);
 } else if ( $modif == 'commentaire') {
     $notification->setCommentaire($_POST["commentaire"]);
 } elseif ($modif == 'enlever_responsable') {
@@ -158,7 +153,7 @@ if ( $modif == 'type') {
     $notification->copyInto($clone, true);// deep copy
     $clone->setId($id);
     $clone->setNew(false);
-    $clone->setStatutEnvoi(AbsenceEleveNotification::$STATUT_INITIAL);
+    $clone->setStatutEnvoi(AbsenceEleveNotificationPeer::STATUT_ENVOI_ETAT_INITIAL);
     $clone->setDateEnvoi(null);
     $clone->setErreurMessageEnvoi(null);
     $clone->save();

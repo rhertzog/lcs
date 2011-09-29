@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: config_prefs.php 7118 2011-06-05 08:00:22Z crob $
+ * $Id: config_prefs.php 8383 2011-09-29 10:43:19Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -100,8 +100,79 @@ if($_SESSION['statut']!="administrateur"){
 		return $aff_check;
 	} //function eval_checked()
 
+	if (!isset($niveau_arbo)) {$niveau_arbo = 1;}
+	
+	if ($niveau_arbo == "0") {
+		$chemin_sound="./sounds/";
+	} elseif ($niveau_arbo == "1") {
+		$chemin_sound="../sounds/";
+	} elseif ($niveau_arbo == "2") {
+		$chemin_sound="../../sounds/";
+	} elseif ($niveau_arbo == "3") {
+		$chemin_sound="../../../sounds/";
+	}
+	$tab_sound=get_tab_file($chemin_sound);
+
+	if((count($tab_sound)>0)&&(isset($_POST['footer_sound']))&&(in_array($_POST['footer_sound'],$tab_sound))&&(preg_match('/\.wav/i',$_POST['footer_sound']))&&(file_exists($chemin_sound.$_POST['footer_sound']))) {
+		$footer_sound_pour_qui=isset($_POST['footer_sound_pour_qui']) ? $_POST['footer_sound_pour_qui'] : 'perso';
+		$statut_sound=array();
+		$nb_err_sound=0;
+		$nb_reg_sound=0;
+		if(($footer_sound_pour_qui=='perso')||($_SESSION['statut']!='administrateur')) {
+			if(!savePref($_SESSION['login'],'footer_sound',$_POST['footer_sound'])) {
+				$msg.="Erreur lors de l'enregistrement de l'alerte sonore de fin de session.<br />";
+			}
+			else {
+				$msg.="Enregistrement de l'alerte sonore de fin de session effectué.<br />";
+			}
+		}
+		elseif($footer_sound_pour_qui=='tous_profs') {
+			$statut_sound[]='professeur';
+		}
+		elseif($footer_sound_pour_qui=='tous_personnels') {
+			$statut_sound[]='administrateur';
+			$statut_sound[]='professeur';
+			$statut_sound[]='scolarite';
+			$statut_sound[]='cpe';
+			$statut_sound[]='secours';
+			$statut_sound[]='autre';
+		}
+		elseif($footer_sound_pour_qui=='tous') {
+			$statut_sound[]='administrateur';
+			$statut_sound[]='professeur';
+			$statut_sound[]='scolarite';
+			$statut_sound[]='cpe';
+			$statut_sound[]='secours';
+			$statut_sound[]='autre';
+			$statut_sound[]='eleve';
+			$statut_sound[]='responsable';
+		}
+
+		for($loop=0;$loop<count($statut_sound);$loop++) {
+			$sql="SELECT DISTINCT login FROM utilisateurs WHERE statut='$statut_sound[$loop]';";
+			$res=mysql_query($sql);
+			if(mysql_num_rows($res)>0) {
+				while($lig=mysql_fetch_object($res)) {
+					if(!savePref($lig->login,'footer_sound',$_POST['footer_sound'])) {
+						$nb_err_sound++;
+					}
+					else {
+						$nb_reg_sound++;
+					}
+				}
+			}
+		}
+
+		if($nb_err_sound>0) {
+			$msg.="Erreur ($nb_err_sound) lors de l'enregistrement de l'alerte sonore de fin de session.<br />";
+		}
+		elseif($nb_reg_sound>0) {
+			$msg.="Enregistrement de l'alerte sonore de fin de session effectué.<br />";
+		}
+	}
+
 	// On traite si c'est demandé
-			$messageMenu = '';
+$messageMenu = '';
 if ($modifier_le_menu == "ok") {
 	check_token();
 
@@ -149,7 +220,29 @@ if ($modifier_entete_prof == 'ok') {
 	}
 }
 
+if(($_SESSION['statut']=='professeur')&&(isset($_POST['ouverture_auto_WinDevoirsDeLaClasse']))) {
+	check_token();
 
+	if(($_POST['ouverture_auto_WinDevoirsDeLaClasse']=='y')||($_POST['ouverture_auto_WinDevoirsDeLaClasse']=='n')) {
+		if(!savePref($_SESSION['login'],'ouverture_auto_WinDevoirsDeLaClasse',$_POST['ouverture_auto_WinDevoirsDeLaClasse'])) {
+			$msg.="Erreur lors de l'enregistrement de ouverture_auto_WinDevoirsDeLaClasse.<br />";
+		}
+		else {
+			$msg.="Enregistrement de ouverture_auto_WinDevoirsDeLaClasse.<br />";
+		}
+	}
+}
+
+if(isset($_POST['mod_discipline_travail_par_defaut'])) {
+	check_token();
+
+	if(!savePref($_SESSION['login'],'mod_discipline_travail_par_defaut',traitement_magic_quotes($_POST['mod_discipline_travail_par_defaut']))) {
+		$msg.="Erreur lors de l'enregistrement de mod_discipline_travail_par_defaut.<br />";
+	}
+	else {
+		$msg.="Enregistrement de mod_discipline_travail_par_defaut.<br />";
+	}
+}
 
 // Tester les valeurs de $page
 // Les valeurs autorisées sont (actuellement): accueil, add_modif_dev, add_modif_conteneur
@@ -158,7 +251,7 @@ if((isset($page))&&($_SESSION['statut']=="administrateur")){
 	if(($page!="accueil_simpl")&&($page!="add_modif_dev")&&($page!="add_modif_conteneur")){
 		$page=NULL;
 		$enregistrer=NULL;
-		$msg="La page choisie ne convient pas.";
+		$msg.="La page choisie ne convient pas.";
 	}
 }
 
@@ -327,8 +420,18 @@ if(isset($enregistrer)) {
 				$sql="UPDATE preferences SET value='$aff_photo_saisie_app' WHERE login='".$_SESSION['login']."' AND name='aff_photo_saisie_app';";
 				//echo $sql."<br />\n";
 				if(!mysql_query($sql)){
-					$msg.="Erreur lors de l'enregistrement de $tab[$j] pour ".$_SESSION['login']."<br />\n";
+					$msg.="Erreur lors de l'enregistrement de aff_photo_saisie_app pour ".$_SESSION['login']."<br />\n";
 				}
+			}
+
+			$cn_avec_min_max=isset($_POST['cn_avec_min_max']) ? $_POST['cn_avec_min_max'] : "n";
+			if(!savePref($_SESSION['login'],'cn_avec_min_max',$cn_avec_min_max)) {
+				$msg.="Erreur lors de l'enregistrement de 'cn_avec_min_max'<br />\n";
+			}
+
+			$cn_avec_mediane_q1_q3=isset($_POST['cn_avec_mediane_q1_q3']) ? $_POST['cn_avec_mediane_q1_q3'] : "n";
+			if(!savePref($_SESSION['login'],'cn_avec_mediane_q1_q3',$cn_avec_mediane_q1_q3)) {
+				$msg.="Erreur lors de l'enregistrement de 'cn_avec_mediane_q1_q3'<br />\n";
 			}
 
 		}
@@ -656,8 +759,9 @@ else{
 		}
 		echo "<p>\n";
 		echo "<input type='checkbox' name='aff_quartiles_cn' id='aff_quartiles_cn' value='y' ";
+		echo "onchange=\"checkbox_change('aff_quartiles_cn');changement()\" ";
 		if($aff_quartiles_cn=='y') {echo 'checked';}
-		echo "/><label for='aff_quartiles_cn'> Afficher par défaut, les moyenne, médiane, quartiles, min, max sur les carnets de notes.</label>\n";
+		echo "/><label for='aff_quartiles_cn' id='texte_aff_quartiles_cn'> Afficher par défaut l'infobulle contenant les moyenne, médiane, quartiles, min, max sur les carnets de notes.</label>\n";
 		echo "</p>\n";
 
 		$sql="SELECT * FROM preferences WHERE login='".$_SESSION['login']."' AND name='aff_photo_cn'";
@@ -671,11 +775,27 @@ else{
 		}
 		echo "<p>\n";
 		echo "<input type='checkbox' name='aff_photo_cn' id='aff_photo_cn' value='y' ";
+		echo "onchange=\"checkbox_change('aff_photo_cn');changement()\" ";
 		if($aff_photo_cn=='y') {echo 'checked';}
-		echo "/><label for='aff_photo_cn'> Afficher par défaut la photo des élèves sur les carnets de notes.</label>\n";
+		echo "/><label for='aff_photo_cn' id='texte_aff_photo_cn'> Afficher par défaut la photo des élèves sur les carnets de notes.</label>\n";
+		echo "</p>\n";
+
+		echo "<p>\n";
+		$cn_avec_min_max=getPref($_SESSION['login'], 'cn_avec_min_max', 'y');
+		echo "<input type='checkbox' name='cn_avec_min_max' id='cn_avec_min_max' value='y' ";
+		echo "onchange=\"checkbox_change('cn_avec_min_max');changement()\" ";
+		if($cn_avec_min_max=='y') {echo 'checked';}
+		echo "/><label for='cn_avec_min_max' id='texte_cn_avec_min_max'> Afficher pour chaque colonne de notes les valeurs minimale et maximale.</label>\n";
+		echo "</p>\n";
+
+		echo "<p>\n";
+		$cn_avec_mediane_q1_q3=getPref($_SESSION['login'], 'cn_avec_mediane_q1_q3', 'y');
+		echo "<input type='checkbox' name='cn_avec_mediane_q1_q3' id='cn_avec_mediane_q1_q3' value='y' ";
+		echo "onchange=\"checkbox_change('cn_avec_mediane_q1_q3');changement()\" ";
+		if($cn_avec_mediane_q1_q3=='y') {echo 'checked';}
+		echo "/><label for='cn_avec_mediane_q1_q3' id='texte_cn_avec_mediane_q1_q3'> Afficher pour chaque colonne de notes les valeur médiane, 1er et 3è quartiles.</label>\n";
 		echo "</p>\n";
 	}
-
 
 
 	if(($page=="add_modif_dev")||($_SESSION['statut']=='professeur')){
@@ -884,8 +1004,9 @@ else{
 
 		echo "<p>\n";
 		echo "<input type='checkbox' name='aff_photo_saisie_app' id='aff_photo_saisie_app' value='y' ";
+		echo "onchange=\"checkbox_change('aff_photo_saisie_app');changement()\" ";
 		if($aff_photo_saisie_app=='y') {echo 'checked';}
-		echo "/><label for='aff_photo_saisie_app'> Afficher par défaut les photos des élèves lors de la saisie des appréciations sur les bulletins.</label>\n";
+		echo "/><label for='aff_photo_saisie_app' id='texte_aff_photo_saisie_app'> Afficher par défaut les photos des élèves lors de la saisie des appréciations sur les bulletins.</label>\n";
 		echo "</p>\n";
 	}
 
@@ -901,6 +1022,7 @@ else{
 	echo "<p align='center'><input type=\"submit\" name='enregistrer' value=\"Valider\" style=\"font-variant: small-caps;\" /></p>\n";
 
 	echo "<script type='text/javascript' language='javascript'>
+
 	function modif_coche(item,statut){
 		// statut: true ou false
 		for(k=0;k<$nb_profs;k++){
@@ -974,6 +1096,47 @@ else{
 
 echo "</form>\n";
 
+if ((getSettingValue('active_cahiers_texte')!='n')&&($_SESSION["statut"] == "professeur")) {
+	$ouverture_auto_WinDevoirsDeLaClasse=getPref($_SESSION['login'], 'ouverture_auto_WinDevoirsDeLaClasse', 'y');
+	echo "<form name='form_cdt_pref' method='post' action='./config_prefs.php'>\n";
+	echo add_token_field();
+	echo "<fieldset style='border: 1px solid grey;'>\n";
+	echo "<legend style='border: 1px solid grey;'>Cahier de textes 2</legend>\n";
+	echo "<p>Lors de la saisie de notices de Travaux à faire dans le CDT2,<br />\n";
+	echo "<input type='radio' name='ouverture_auto_WinDevoirsDeLaClasse' id='ouverture_auto_WinDevoirsDeLaClasse_y' value='y' ";
+	echo "onchange=\"checkbox_change('ouverture_auto_WinDevoirsDeLaClasse_y');checkbox_change('ouverture_auto_WinDevoirsDeLaClasse_n');changement()\" ";
+	if($ouverture_auto_WinDevoirsDeLaClasse=='y') {echo " checked";}
+	echo "/><label for='ouverture_auto_WinDevoirsDeLaClasse_y' id='texte_ouverture_auto_WinDevoirsDeLaClasse_y'> ouvrir automatiquement la fenêtre listant les travaux donnés par les autres professeurs,</label><br />\n";
+	echo "<input type='radio' name='ouverture_auto_WinDevoirsDeLaClasse' id='ouverture_auto_WinDevoirsDeLaClasse_n' value='n' ";
+	echo "onchange=\"checkbox_change('ouverture_auto_WinDevoirsDeLaClasse_y');checkbox_change('ouverture_auto_WinDevoirsDeLaClasse_n');changement()\" ";
+	if($ouverture_auto_WinDevoirsDeLaClasse!='y') {echo " checked";}
+	echo "/><label for='ouverture_auto_WinDevoirsDeLaClasse_n' id='texte_ouverture_auto_WinDevoirsDeLaClasse_n'> ne pas ouvrir automatiquement la fenêtre listant les travaux donnés par les autres professeurs.</label><br />\n";
+
+	echo "<input type='submit' name='Valider' value='Valider' />\n";
+
+	echo "</p>\n";
+	echo "</fieldset>\n";
+	echo "</form>\n";
+
+	echo "<br />\n";
+}
+
+if (getSettingValue('active_mod_discipline')!='n') {
+	$mod_discipline_travail_par_defaut=getPref($_SESSION['login'], 'mod_discipline_travail_par_defaut', 'Travail : ');
+	echo "<form name='form_cdt_pref' method='post' action='./config_prefs.php'>\n";
+	echo add_token_field();
+	echo "<fieldset style='border: 1px solid grey;'>\n";
+	echo "<legend style='border: 1px solid grey;'>Module Discipline et sanctions</legend>\n";
+	echo "<p>Lors de la saisie de travail à faire, le texte par défaut proposé sera&nbsp;: ,<br />\n";
+	echo "<input type='text' name='mod_discipline_travail_par_defaut' value='$mod_discipline_travail_par_defaut' size='30' /><br />\n";
+	echo "<input type='submit' name='Valider' value='Valider' />\n";
+	echo "</p>\n";
+	echo "</fieldset>\n";
+	echo "</form>\n";
+
+	echo "<br />\n";
+}
+
 	// On ajoute le réglage pour le menu en barre horizontale
 	$aff = "non";
 if ($_SESSION["statut"] == "administrateur") {
@@ -996,11 +1159,11 @@ if ($aff == "oui") {
 		<legend style="border: 1px solid grey;">Gérer la barre horizontale du menu</legend>
 			<input type="hidden" name="modifier_le_menu" value="ok" />
 		<p>
-			<label for="visibleMenu">Rendre visible la barre de menu horizontale sous l\'en-tête.</label>
+			<label for="visibleMenu" id="texte_visibleMenu">Rendre visible la barre de menu horizontale sous l\'en-tête.</label>
 			<input type="radio" id="visibleMenu" name="afficher_menu" value="yes"'.eval_checked("utiliserMenuBarre", "yes", $_SESSION["statut"], $_SESSION["login"]).' onclick="document.change_menu.submit();" />
 		</p>
 		<p>
-			<label for="invisibleMenu">Ne pas utiliser la barre de menu horizontale.</label>
+			<label for="invisibleMenu" id="texte_invisibleMenu">Ne pas utiliser la barre de menu horizontale.</label>
 			<input type="radio" id="invisibleMenu" name="afficher_menu" value="no"'.eval_checked("utiliserMenuBarre", "no", $_SESSION["statut"], $_SESSION["login"]).' onclick="document.change_menu.submit();" />
 		</p>
 	</fieldset>
@@ -1025,17 +1188,102 @@ if ($_SESSION["statut"] == 'administrateur') {
 				<legend style="border: 1px solid grey;">Gérer la hauteur de l\'entête pour les professeurs</legend>
 				<input type="hidden" name="modifier_entete_prof" value="ok" />
 				<p>
-					<label for="headerBas">Imposer une entête basse</label>
+					<label for="headerBas" id="texte_headerBas">Imposer une entête basse</label>
 					<input type="radio" id="headerBas" name="header_bas" value="y"'.eval_checked("impose_petit_entete_prof", "y", "administrateur", $_SESSION["login"]).' onclick="document.change_header_prof.submit();" />
 				</p>
 				<p>
-					<label for="headerNormal">Ne rien imposer</label>
+					<label for="headerNormal" id="texte_headerNormal">Ne rien imposer</label>
 					<input type="radio" id="headerNormal" name="header_bas" value="n"'.eval_checked("impose_petit_entete_prof", "n", "administrateur", $_SESSION["login"]).' onclick="document.change_header_prof.submit();" />
 				</p>
 				' . $message_header_prof . '
 			</fieldset>
 		</form>';
 }
+
+echo js_checkbox_change_style('checkbox_change', 'texte_', 'y');
+
+//============================================
+// Choix de l'alerte sonore de fin de session
+/*
+if (!isset($niveau_arbo)) {$niveau_arbo = 1;}
+
+if ($niveau_arbo == "0") {
+	$chemin_sound="./sounds/";
+} elseif ($niveau_arbo == "1") {
+	$chemin_sound="../sounds/";
+} elseif ($niveau_arbo == "2") {
+	$chemin_sound="../../sounds/";
+} elseif ($niveau_arbo == "3") {
+	$chemin_sound="../../../sounds/";
+}
+$tab_sound=get_tab_file($chemin_sound);
+*/
+if(count($tab_sound)>=0) {
+	$footer_sound_actuel=getPref($_SESSION['login'],'footer_sound',"");
+
+	echo "<br />\n";
+	echo "<form name='change_footer_sound' method='post' action='".$_SERVER['PHP_SELF']."'>\n";
+	echo add_token_field();
+
+	echo "<fieldset style='border: 1px solid grey;'>
+	<legend style='border: 1px solid grey;'>Choix de l'alerte sonore de fin de session</legend>
+	<p><select name='footer_sound' id='footer_sound' onchange='test_play_footer_sound()'>\n";
+	echo "	<option value=''";
+	if($footer_sound_actuel=='') {echo " selected='true'";}
+	echo ">Aucun son</option>\n";
+	for($i=0;$i<count($tab_sound);$i++) {
+		echo "	<option value='".$tab_sound[$i]."'";
+		if($tab_sound[$i]==$footer_sound_actuel) {echo " selected='true'";}
+		echo ">".$tab_sound[$i]."</option>\n";
+	}
+	echo "	</select>
+	<a href='javascript:test_play_footer_sound()'><img src='../images/icons/sound.png' width='16' height='16' alt='Ecouter le son choisi' title='Ecouter le son choisi' /></a>
+	</p>\n";
+
+	if($_SESSION['statut']=='administrateur') {
+		echo "<p><input type='radio' name='footer_sound_pour_qui' id='footer_sound_pour_qui_perso' value='perso' onchange='maj_style_label_checkbox()' checked /><label for='footer_sound_pour_qui_perso' id='texte_footer_sound_pour_qui_perso'> Appliquer ce choix à mon compte uniquement</label><br />\n";
+		echo "<input type='radio' name='footer_sound_pour_qui' id='footer_sound_pour_qui_tous_profs' value='tous_profs' onchange='maj_style_label_checkbox()' /><label for='footer_sound_pour_qui_tous_profs' id='texte_footer_sound_pour_qui_tous_profs'> Appliquer ce choix à tous les comptes professeurs</label><br />\n";
+		echo "<input type='radio' name='footer_sound_pour_qui' id='footer_sound_pour_qui_tous_personnels' value='tous_personnels' onchange='maj_style_label_checkbox()' /><label for='footer_sound_pour_qui_tous_personnels' id='texte_footer_sound_pour_qui_tous_personnels'> Appliquer ce choix à tous les comptes de personnels</label><br />\n";
+		echo "<input type='radio' name='footer_sound_pour_qui' id='footer_sound_pour_qui_tous' value='tous' onchange='maj_style_label_checkbox()' /><label for='footer_sound_pour_qui_tous' id='texte_footer_sound_pour_qui_tous'> Appliquer ce choix à tous les comptes sans distinction de statut</label></p>\n";
+	}
+	else {
+		echo "<input type='hidden' name='footer_sound_pour_qui' id='footer_sound_pour_qui_perso' value='perso' />\n";
+	}
+
+	echo "
+	<p align='center'><input type='submit' name='enregistrer' value='Enregistrer' style='font-variant: small-caps;' /></p>
+</fieldset>
+</form>\n";
+
+	for($i=0;$i<count($tab_sound);$i++) {
+		echo "<audio id='footer_sound_$i' preload='auto' autobuffer>
+  <source src='$chemin_sound".$tab_sound[$i]."' />
+</audio>\n";
+	}
+
+	echo "<script type='text/javascript'>
+function test_play_footer_sound() {
+	n=document.getElementById('footer_sound').selectedIndex;
+	if(n>0) {
+		n--;
+		if(document.getElementById('footer_sound_'+n)) {
+			document.getElementById('footer_sound_'+n).play();
+		}
+	}
+}
+
+var champs_checkbox=new Array('aff_quartiles_cn', 'aff_photo_cn', 'aff_photo_saisie_app', 'cn_avec_min_max', 'cn_avec_mediane_q1_q3', 'visibleMenu', 'invisibleMenu', 'headerBas', 'headerNormal', 'footer_sound_pour_qui_perso', 'footer_sound_pour_qui_tous_profs', 'footer_sound_pour_qui_tous_personnels', 'footer_sound_pour_qui_tous', 'ouverture_auto_WinDevoirsDeLaClasse_y', 'ouverture_auto_WinDevoirsDeLaClasse_n');
+function maj_style_label_checkbox() {
+	for(i=0;i<champs_checkbox.length;i++) {
+		checkbox_change(champs_checkbox[i]);
+	}
+}
+maj_style_label_checkbox();
+</script>
+";
+}
+
+//============================================
 
 echo "<br />\n";
 require("../lib/footer.inc.php");

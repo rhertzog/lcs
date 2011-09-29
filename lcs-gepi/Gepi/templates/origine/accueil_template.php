@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: accueil_template.php 6697 2011-03-25 21:54:27Z regis $
+ * $Id: accueil_template.php 7332 2011-06-25 17:07:25Z adminpaulbert $
 */
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
@@ -53,6 +53,7 @@
 <!-- Début du corps de la page -->
 <!-- ************************* -->
 <body onload="show_message_deconnexion();<?php if($tbs_charger_observeur) echo $tbs_charger_observeur;?>">
+
 
 <!-- on inclut le bandeau -->
 	<?php include('templates/origine/bandeau_template.php');?>
@@ -192,11 +193,39 @@
 
 <!-- messagerie -->
 <?php
-	if (count($afficheAccueil->message)) {
+	if (count($afficheAccueil->message)) :
 ?>
-	  <div id='messagerie'>
+
+	<div class="panneau_affichage">
+		<div class="panneau_liege">
+			<?php if ($_SESSION['statut'] == "administrateur"): ?>
+			<div style="position:absolute;width:30px;">
+				<a href="./messagerie/index.php"><img src="./images/add_message.png" alt="Ajouter un message" title="Ajouter un message"/></a>
+			</div> 
+			<?php endif ?>
+			<div class="panneau_coingh"></div>
+			<div class="panneau_coindh"></div>
+			<div class="panneau_haut"></div>
+			<div class="panneau_droite"></div>
+			<div class="panneau_gauche"></div>
+			<div class="panneau_coingb"></div>
+			<div class="panneau_coindb"></div>
+			<div class="panneau_bas"></div>
+			<div class="panneau_centre">	
+				<?php foreach ($afficheAccueil->message as $value) : ?>
+				<div class="postit"><?php echo $value['message']; ?></div>
+				<?php endforeach; ?>
+				<?php unset ($value); ?>	
+			</div>
+		</div>
+	</div>
+	<div style="clear:both;"></div>
+
+	<?php endif; ?>
+
+	<!-- <div id='messagerie'> -->
 <?php
-		  foreach ($afficheAccueil->message as $value) {
+		  /* foreach ($afficheAccueil->message as $value) {
 
 		  if ($value['suite']=='') {
 			  echo "";
@@ -213,11 +242,12 @@
 		  }
 
 		}
-		unset ($value);
+		unset ($value); */
 ?>
-		</div>
+	<!--	</div> -->
+<?php /* } */ ?>
+	
 <?php
-	}
 
 	if ($_SESSION['statut'] =="professeur") {
 ?>
@@ -484,6 +514,67 @@
    			";
 		}
 ?>
+<?php
+	$footer_sound=getPref($_SESSION['login'],'footer_sound',"");
+	if($footer_sound=='') {
+		$footer_sound=getSettingValue('footer_sound');
+		if($footer_sound=='') {
+			$footer_sound="KDE_Beep_Pop.wav";
+		}
+	}
+
+	if ($niveau_arbo == "0") {
+		$chemin_sound="./sounds/".$footer_sound;
+	} elseif ($niveau_arbo == "1") {
+		$chemin_sound="../sounds/".$footer_sound;
+	} elseif ($niveau_arbo == "2") {
+		$chemin_sound="../../sounds/".$footer_sound;
+	} elseif ($niveau_arbo == "3") {
+		$chemin_sound="../../../sounds/".$footer_sound;
+	}
+?>
+
+<?php if(file_exists($chemin_sound)) : ?>
+<audio id='id_footer_sound' preload='auto' autobuffer><source src='<?php echo $chemin_sound; ?>' /></audio>
+<script type='text/javascript'>
+	function play_footer_sound() {
+		if ($('id_footer_sound')) {
+			$('id_footer_sound').play();
+		}
+	}
+</script>
+<?php endif ?>
+
+<div id="alert_cache" style="z-index:2000;
+							display:none;
+							position:absolute;
+							top:0px;
+							left:0px;
+							background-color:#000000;
+							width:200px;
+							height:200px;"> &nbsp;</div>
+<div id="alert_entete" style="z-index:2000;
+								display:none;
+								position:absolute;"><img   src="./images/alerte_entete.png" alt="alerte" /></div>
+<div id="alert_popup" style="z-index:2000;
+								text-align:justify;
+								width:600px;
+								height:130px;
+								border:1px solid black;
+								background-color:white;
+								padding-top:10px;
+								padding-left:20px;
+								padding-right:20px;
+								display:none;
+								position:absolute;
+								background-image:url('./images/degrade_noir.png');
+								background-repeat:repeat-x;
+								background-position: left bottom;">
+	<div id="alert_message"></div>
+	<div id="alert_button" style="margin:5px auto;width:90px;">
+		<div id="alert_bouton_ok" style="float:left;"><img src="./images/bouton_continue.png" alt="ok" /></div>
+	</div>
+</div>
 
 
 </body>

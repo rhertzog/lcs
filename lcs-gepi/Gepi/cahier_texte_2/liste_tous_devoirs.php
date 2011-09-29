@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: liste_tous_devoirs.php 1360 2008-01-13 20:03:09Z jjocal $
+ * @version: $Id: liste_tous_devoirs.php 7938 2011-08-24 07:57:41Z jjocal $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -64,7 +64,7 @@ if (!isset($_GET['debut']) || !isset($_GET['classe']) || !intval($_GET['debut'])
     die("<p><em>Paramètres invalides !</em></p>\n</body>\n</html>");
 }
 
-$groups = get_groups_for_class($_GET['classe']);
+$groups = get_groups_for_class($_GET['classe'],"","n");
 ?>
         <div style="width: 240px; margin: auto;">
 

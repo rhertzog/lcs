@@ -3,7 +3,7 @@
 /**
  * Fichier d'initialisation de l'EdT par des fichiers CSV
  *
- * @version $Id: edt_init_csv.php 4592 2010-06-18 13:39:41Z adminpaulbert $
+ * @version $Id: edt_init_csv.php 8315 2011-09-23 05:48:25Z crob $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -184,6 +184,7 @@ $compter_echecs = 2; // pour afficher à la fin le message : Tous ces cours ont b
 
 		// et la durée du cours et le type de semaine
 		// Il faudrait vérifier si la durée est valide ainsi que le type de semaine
+	$tab[6]=preg_replace('/,/','.',$tab[6]);
 	$rep_duree = $tab[6] * 2;
 	$rep_typesemaine = $tab[7];
 

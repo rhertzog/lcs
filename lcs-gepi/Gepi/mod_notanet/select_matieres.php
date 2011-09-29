@@ -1,5 +1,5 @@
 <?php
-/* $Id: select_matieres.php 7286 2011-06-22 13:14:10Z crob $ */
+/* $Id: select_matieres.php 7287 2011-06-22 13:14:15Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: bulletin_pdf_avec_modele_classe.php 6370 2011-01-19 08:54:56Z tbelliard $
+* $Id: bulletin_pdf_avec_modele_classe.php 8270 2011-09-19 14:33:21Z crob $
 *
 * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -65,7 +65,9 @@ mais il se peut que vous ayez des précisions sur ce qui pose problème.<br />
 //================================
 // Inclusion des librairies spécifiques pour la génération du pdf
 
-require('../fpdf/fpdf.php');
+if (!defined('FPDF_VERSION')) {
+	require('../fpdf/fpdf.php');
+}
 require('../fpdf/ex_fpdf.php');
 require_once("../fpdf/class.multicelltag.php");
 
@@ -2204,9 +2206,9 @@ while(!empty($nom_eleve[$nb_eleve_aff])) {
 		$pdf->SetFont('Arial','B',12);
 
 		// gestion des styles
-		$pdf->SetStyle("b","arial","B",8,"0,0,0");
-		$pdf->SetStyle("i","arial","I",8,"0,0,0");
-		$pdf->SetStyle("u","arial","U",8,"0,0,0");
+		$pdf->SetStyle2("b","arial","B",8,"0,0,0");
+		$pdf->SetStyle2("i","arial","I",8,"0,0,0");
+		$pdf->SetStyle2("u","arial","U",8,"0,0,0");
 
 		// style pour la case appréciation générale
 		// identité du professeur principal
@@ -2217,8 +2219,8 @@ while(!empty($nom_eleve[$nb_eleve_aff])) {
 		} else {
 			$taille = '10';
 		}
-		$pdf->SetStyle("bppc","arial","B",$taille,"0,0,0");
-		$pdf->SetStyle("ippc","arial","I",$taille,"0,0,0");
+		$pdf->SetStyle2("bppc","arial","B",$taille,"0,0,0");
+		$pdf->SetStyle2("ippc","arial","I",$taille,"0,0,0");
 
 		// bloc affichage de l'adresse des parents
 		//if($active_bloc_adresse_parent[$classe_id]==='1') {
@@ -3819,7 +3821,8 @@ $cpt_ordre = $cpt_ordre + 1;
 				$pdf->Cell($tab_modele_pdf["largeur_d_une_moyenne"][$classe_id], $espace_entre_matier, $valeur,'TLRB',0,'C');
 				//permet le calcul de la moyenne général de la classe
 				//if(empty($moyenne_classe[$id_classe][$id_periode])) { $total_moyenne_classe_en_calcul=$total_moyenne_classe_en_calcul+($matiere[$ident_eleve_aff][$id_periode][$m]['moy_classe']*$matiere[$ident_eleve_aff][$id_periode][$m]['coef']); }
-				if(empty($moyenne_classe[$id_classe][$id_periode])) { $total_moyenne_classe_en_calcul=$total_moyenne_classe_en_calcul+($matiere[$ident_eleve_aff][$id_periode][$m]['moy_classe']*$matiere[$ident_eleve_aff][$id_periode][$m]['coef']); }
+				if((!isset($moyenne_classe[$id_classe]))||(!isset($moyenne_classe[$id_classe][$id_periode]))||(empty($moyenne_classe[$id_classe][$id_periode]))) {
+					$total_moyenne_classe_en_calcul=$total_moyenne_classe_en_calcul+($matiere[$ident_eleve_aff][$id_periode][$m]['moy_classe']*$matiere[$ident_eleve_aff][$id_periode][$m]['coef']); }
 					//$largeur_utilise = $largeur_utilise + $largeur_d_une_moyenne[$classe_id];
 					$largeur_utilise = $largeur_utilise + $tab_modele_pdf["largeur_d_une_moyenne"][$classe_id];
 				}
@@ -4290,7 +4293,8 @@ $cpt_ordre = $cpt_ordre + 1;
 		}
 	}
 	$info_absence = $info_absence." du suivi : ".$cpe_eleve[$i].")";
-	$pdf->MultiCellTag(200, 5, $info_absence, '', 'J', '');
+	//$pdf->MultiCellTag(200, 5, $info_absence, '', 'J', '');
+	$pdf->ext_MultiCellTag(200, 5, $info_absence, '', 'J', '');
 
 
 	//if ( isset($Y_avis_cons_init) ) { $Y_avis_cons[$classe_id] = $Y_avis_cons_init; }
@@ -4323,7 +4327,8 @@ $cpt_ordre = $cpt_ordre + 1;
 		$pdf->SetXY($tab_modele_pdf["X_absence"][$classe_id], $tab_modele_pdf["Y_absence"][$classe_id]+4);
 		//$pdf->SetFont($caractere_utilse[$classe_id],'',8);
 		$pdf->SetFont($tab_modele_pdf["caractere_utilse"][$classe_id],'',8);
-		$pdf->MultiCellTag(200, 3, $info_absence_appreciation, '', 'J', '');
+		//$pdf->MultiCellTag(200, 3, $info_absence_appreciation, '', 'J', '');
+		$pdf->ext_MultiCellTag(200, 3, $info_absence_appreciation, '', 'J', '');
 		//$hauteur_avis_cons_init = $hauteur_avis_cons[$classe_id];
 		$val = $pdf->GetStringWidth($info_absence_appreciation);
 		// nombre de lignes que prend la remarque cpe
@@ -4430,7 +4435,8 @@ $cpt_ordre = $cpt_ordre + 1;
 		}
 		//$pdf->SetFont($caractere_utilse[$classe_id],'I',$taille);
 		$pdf->SetFont($tab_modele_pdf["caractere_utilse"][$classe_id],'I',$taille);
-		$pdf->MultiCellTag(200, 5, $pp_classe[$i], '', 'J', '');
+		//$pdf->MultiCellTag(200, 5, $pp_classe[$i], '', 'J', '');
+		$pdf->ext_MultiCellTag(200, 5, $pp_classe[$i], '', 'J', '');
 	}
 
 // ======================= bloc du président du conseil de classe ================

@@ -1,6 +1,6 @@
 <?php
 /*
-* @version: $Id: index.php 7927 2011-08-23 16:37:18Z crob $
+* @version: $Id: index.php 7895 2011-08-22 12:24:37Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
 *
@@ -80,6 +80,7 @@ if($_SESSION['statut']=='professeur') {echo "<a href='../../cahier_texte_2/index
 else {echo "<a href='../../accueil.php'>";}
 echo "<img src='../../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 if($_SESSION['statut']=='administrateur') {
+	echo " | <a href='../../cahier_texte_2/archivage_cdt.php'>Archivage des cahiers de textes</a>";
 	echo " | <a href='../../cahier_texte_admin/index.php'>Administration du module Cahiers de textes</a>";
 }
 echo "</p>\n";

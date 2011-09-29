@@ -2,7 +2,7 @@
 
 @set_time_limit(0);
 /*
-* $Id: disciplines_csv.php 7611 2011-08-08 08:14:38Z crob $
+* $Id: disciplines_csv.php 7858 2011-08-21 13:12:55Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -37,63 +37,8 @@ if ($resultat_session == 'c') {
 	die();
 }
 
-$liste_tables_del = array(
-//"absences",
-//"aid",
-//"aid_appreciations",
-//"aid_config",
-//"avis_conseil_classe",
-//"classes",
-//"droits",
-//"eleves",
-//"responsables",
-//"etablissements",
-"groupes",
-//"j_aid_eleves",
-//"j_aid_utilisateurs",
-//"j_eleves_classes",
-//"j_eleves_etablissements",
-"j_eleves_groupes",
-"j_groupes_matieres",
-"j_groupes_professeurs",
-"j_groupes_classes",
-"j_signalement",
-//"j_eleves_professeurs",
-//"j_eleves_regime",
-//"j_professeurs_matieres",
-//"log",
-//"matieres",
-"matieres_appreciations",
-"matieres_notes",
-"matieres_appreciations_grp",
-"matieres_appreciations_tempo",
-//"observatoire",
-//"observatoire_comment",
-//"observatoire_config",
-//"observatoire_niveaux",
-//"observatoire_j_resp_champ",
-//"observatoire_suivi",
-//"periodes",
-//"periodes_observatoire",
-"tempo2",
-//"temp_gep_import",
-"tempo",
-//"utilisateurs",
-"cn_cahier_notes",
-"cn_conteneurs",
-"cn_devoirs",
-"cn_notes_conteneurs",
-"cn_notes_devoirs",
-"ct_devoirs_entry",
-"ct_documents",
-"ct_entry",
-"ct_devoirs_documents",
-"ct_private_entry",
-"ct_sequences",
-//"setting"
-"edt_classes",
-"edt_cours"
-);
+include("../lib/initialisation_annee.inc.php");
+$liste_tables_del = $liste_tables_del_etape_matieres;
 
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");

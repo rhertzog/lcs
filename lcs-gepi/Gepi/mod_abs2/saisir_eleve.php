@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: saisir_eleve.php 6960 2011-05-20 05:16:14Z dblanqui $
+ * @version $Id: saisir_eleve.php 8223 2011-09-14 12:46:16Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -378,7 +378,7 @@ foreach($eleve_col as $eleve) {
 		  <a href="./saisir_eleve.php?type_selection=id_eleve&amp;id_eleve=<?php echo $eleve->getPrimaryKey() ;?>">
 <?php
 		  echo '<span class="td_abs_eleves">'.strtoupper($eleve->getNom()).' '.ucfirst($eleve->getPrenom()).' ('.$eleve->getCivilite().')';
-			if(!isset($current_classe)){
+			if(!isset($current_classe) && $eleve->getClasse()!=null){
                             echo ' '.$eleve->getClasse()->getNom().'';
                         }
                         echo'</span>';
@@ -448,7 +448,7 @@ echo "</td>";
 echo "<td style='width:270px; vertical-align: top;'>";
     echo '<div style="border-width: 1px; border-style: solid; text-align: left; padding : 4px;">';
 	echo '<p>';
-    echo 'Début : <input size="8" id="date_absence_eleve_debut_saisir_eleve" name="date_absence_eleve_debut_saisir_eleve" value="'.$dt_date_absence_eleve_debut_saisir_eleve->format('d/m/Y').'" />&nbsp;';
+    echo 'Début : <input size="9" id="date_absence_eleve_debut_saisir_eleve" name="date_absence_eleve_debut_saisir_eleve" value="'.$dt_date_absence_eleve_debut_saisir_eleve->format('d/m/Y').'" />&nbsp;';
    echo '</p>';
      echo '
     <script type="text/javascript">
@@ -463,7 +463,7 @@ echo "<td style='width:270px; vertical-align: top;'>";
 $edt_creneau_col = EdtCreneauPeer::retrieveAllEdtCreneauxOrderByTime();
 echo '<br/>';
 	echo '<p>';
-echo 'Fin : <input size="8" id="date_absence_eleve_fin_saisir_eleve" name="date_absence_eleve_fin_saisir_eleve" value="'.$dt_date_absence_eleve_fin_saisir_eleve->format('d/m/Y').'" />&nbsp;';
+echo 'Fin : <input size="9" id="date_absence_eleve_fin_saisir_eleve" name="date_absence_eleve_fin_saisir_eleve" value="'.$dt_date_absence_eleve_fin_saisir_eleve->format('d/m/Y').'" />&nbsp;';
 
 	echo '</p>';
 	echo '

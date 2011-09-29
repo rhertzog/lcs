@@ -26,10 +26,13 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 	const TM_CLASS = 'CahierTexteTravailAFaireFichierJointTableMap';
 	
 	/** The total number of columns. */
-	const NUM_COLUMNS = 5;
+	const NUM_COLUMNS = 6;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
+
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 6;
 
 	/** the column name for the ID field */
 	const ID = 'ct_devoirs_documents.ID';
@@ -46,6 +49,12 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 	/** the column name for the EMPLACEMENT field */
 	const EMPLACEMENT = 'ct_devoirs_documents.EMPLACEMENT';
 
+	/** the column name for the VISIBLE_ELEVE_PARENT field */
+	const VISIBLE_ELEVE_PARENT = 'ct_devoirs_documents.VISIBLE_ELEVE_PARENT';
+
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of CahierTexteTravailAFaireFichierJoint objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -61,13 +70,13 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'IdCtDevoir', 'Titre', 'Taille', 'Emplacement', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'idCtDevoir', 'titre', 'taille', 'emplacement', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::ID_CT_DEVOIR, self::TITRE, self::TAILLE, self::EMPLACEMENT, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'ID_CT_DEVOIR', 'TITRE', 'TAILLE', 'EMPLACEMENT', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'id_ct_devoir', 'titre', 'taille', 'emplacement', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, )
+	protected static $fieldNames = array (
+		BasePeer::TYPE_PHPNAME => array ('Id', 'IdCtDevoir', 'Titre', 'Taille', 'Emplacement', 'VisibleEleveParent', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'idCtDevoir', 'titre', 'taille', 'emplacement', 'visibleEleveParent', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::ID_CT_DEVOIR, self::TITRE, self::TAILLE, self::EMPLACEMENT, self::VISIBLE_ELEVE_PARENT, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'ID_CT_DEVOIR', 'TITRE', 'TAILLE', 'EMPLACEMENT', 'VISIBLE_ELEVE_PARENT', ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'id_ct_devoir', 'titre', 'taille', 'emplacement', 'visible_eleve_parent', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, )
 	);
 
 	/**
@@ -76,13 +85,13 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'IdCtDevoir' => 1, 'Titre' => 2, 'Taille' => 3, 'Emplacement' => 4, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'idCtDevoir' => 1, 'titre' => 2, 'taille' => 3, 'emplacement' => 4, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::ID_CT_DEVOIR => 1, self::TITRE => 2, self::TAILLE => 3, self::EMPLACEMENT => 4, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'ID_CT_DEVOIR' => 1, 'TITRE' => 2, 'TAILLE' => 3, 'EMPLACEMENT' => 4, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'id_ct_devoir' => 1, 'titre' => 2, 'taille' => 3, 'emplacement' => 4, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, )
+	protected static $fieldKeys = array (
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'IdCtDevoir' => 1, 'Titre' => 2, 'Taille' => 3, 'Emplacement' => 4, 'VisibleEleveParent' => 5, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'idCtDevoir' => 1, 'titre' => 2, 'taille' => 3, 'emplacement' => 4, 'visibleEleveParent' => 5, ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::ID_CT_DEVOIR => 1, self::TITRE => 2, self::TAILLE => 3, self::EMPLACEMENT => 4, self::VISIBLE_ELEVE_PARENT => 5, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'ID_CT_DEVOIR' => 1, 'TITRE' => 2, 'TAILLE' => 3, 'EMPLACEMENT' => 4, 'VISIBLE_ELEVE_PARENT' => 5, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'id_ct_devoir' => 1, 'titre' => 2, 'taille' => 3, 'emplacement' => 4, 'visible_eleve_parent' => 5, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, )
 	);
 
 	/**
@@ -159,12 +168,14 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 			$criteria->addSelectColumn(CahierTexteTravailAFaireFichierJointPeer::TITRE);
 			$criteria->addSelectColumn(CahierTexteTravailAFaireFichierJointPeer::TAILLE);
 			$criteria->addSelectColumn(CahierTexteTravailAFaireFichierJointPeer::EMPLACEMENT);
+			$criteria->addSelectColumn(CahierTexteTravailAFaireFichierJointPeer::VISIBLE_ELEVE_PARENT);
 		} else {
 			$criteria->addSelectColumn($alias . '.ID');
 			$criteria->addSelectColumn($alias . '.ID_CT_DEVOIR');
 			$criteria->addSelectColumn($alias . '.TITRE');
 			$criteria->addSelectColumn($alias . '.TAILLE');
 			$criteria->addSelectColumn($alias . '.EMPLACEMENT');
+			$criteria->addSelectColumn($alias . '.VISIBLE_ELEVE_PARENT');
 		}
 	}
 
@@ -212,7 +223,7 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -231,7 +242,7 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -285,7 +296,7 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 	 * @param      CahierTexteTravailAFaireFichierJoint $value A CahierTexteTravailAFaireFichierJoint object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(CahierTexteTravailAFaireFichierJoint $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -440,7 +451,7 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + CahierTexteTravailAFaireFichierJointPeer::NUM_COLUMNS;
+			$col = $startcol + CahierTexteTravailAFaireFichierJointPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = CahierTexteTravailAFaireFichierJointPeer::OM_CLASS;
 			$obj = new $cls();
@@ -449,6 +460,7 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related CahierTexteTravailAFaire table
@@ -519,7 +531,7 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 		}
 
 		CahierTexteTravailAFaireFichierJointPeer::addSelectColumns($criteria);
-		$startcol = (CahierTexteTravailAFaireFichierJointPeer::NUM_COLUMNS - CahierTexteTravailAFaireFichierJointPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = CahierTexteTravailAFaireFichierJointPeer::NUM_HYDRATE_COLUMNS;
 		CahierTexteTravailAFairePeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(CahierTexteTravailAFaireFichierJointPeer::ID_CT_DEVOIR, CahierTexteTravailAFairePeer::ID_CT, $join_behavior);
@@ -635,10 +647,10 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 		}
 
 		CahierTexteTravailAFaireFichierJointPeer::addSelectColumns($criteria);
-		$startcol2 = (CahierTexteTravailAFaireFichierJointPeer::NUM_COLUMNS - CahierTexteTravailAFaireFichierJointPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = CahierTexteTravailAFaireFichierJointPeer::NUM_HYDRATE_COLUMNS;
 
 		CahierTexteTravailAFairePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (CahierTexteTravailAFairePeer::NUM_COLUMNS - CahierTexteTravailAFairePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + CahierTexteTravailAFairePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(CahierTexteTravailAFaireFichierJointPeer::ID_CT_DEVOIR, CahierTexteTravailAFairePeer::ID_CT, $join_behavior);
 
@@ -724,7 +736,7 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a CahierTexteTravailAFaireFichierJoint or Criteria object.
+	 * Performs an INSERT on the database, given a CahierTexteTravailAFaireFichierJoint or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or CahierTexteTravailAFaireFichierJoint object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -767,7 +779,7 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a CahierTexteTravailAFaireFichierJoint or Criteria object.
+	 * Performs an UPDATE on the database, given a CahierTexteTravailAFaireFichierJoint or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or CahierTexteTravailAFaireFichierJoint object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -806,11 +818,12 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the ct_devoirs_documents table.
+	 * Deletes all rows from the ct_devoirs_documents table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(CahierTexteTravailAFaireFichierJointPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -835,7 +848,7 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a CahierTexteTravailAFaireFichierJoint or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a CahierTexteTravailAFaireFichierJoint or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or CahierTexteTravailAFaireFichierJoint object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -904,7 +917,7 @@ abstract class BaseCahierTexteTravailAFaireFichierJointPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(CahierTexteTravailAFaireFichierJoint $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

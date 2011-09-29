@@ -1,5 +1,5 @@
 <?php
-/* $Id: genere_emargement.php 6394 2011-01-20 09:16:41Z crob $ */
+/* $Id: genere_emargement.php 8061 2011-08-30 22:01:10Z jjacquard $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -140,7 +140,9 @@ if(isset($imprime)) {
 		}
 		elseif($mode=='pdf') {
 
-			require('../fpdf/fpdf.php');
+if (!defined('FPDF_VERSION')) {
+	require_once('../fpdf/fpdf.php');
+}
 			require('../fpdf/ex_fpdf.php');
 			
 			define('FPDF_FONTPATH','../fpdf/font/');

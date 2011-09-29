@@ -27,6 +27,9 @@
 	$champ_bull_pdf[]="active_regroupement_cote";
 	$champ_bull_pdf[]="active_entete_regroupement";
 	$champ_bull_pdf[]="active_moyenne_regroupement";
+
+	$champ_bull_pdf[]="presentation_proflist";
+
 	$champ_bull_pdf[]="active_rang";
 	$champ_bull_pdf[]="active_graphique_niveau";
 	$champ_bull_pdf[]="active_appreciation";
@@ -56,14 +59,22 @@
 	$champ_bull_pdf[]="largeur_d_une_moyenne";
 	$champ_bull_pdf[]="largeur_niveau";
 	$champ_bull_pdf[]="largeur_rang";
+
 	$champ_bull_pdf[]="X_absence";
 	$champ_bull_pdf[]="Y_absence";
+	$champ_bull_pdf[]="largeur_cadre_absences";
+
 	$champ_bull_pdf[]="hauteur_entete_moyenne_general";
+
 	$champ_bull_pdf[]="X_avis_cons";
 	$champ_bull_pdf[]="Y_avis_cons";
 	$champ_bull_pdf[]="longeur_avis_cons";
 	$champ_bull_pdf[]="hauteur_avis_cons";
 	$champ_bull_pdf[]="cadre_avis_cons";
+	$champ_bull_pdf[]="affich_mentions";
+	$champ_bull_pdf[]="affich_intitule_mentions";
+	$champ_bull_pdf[]="affich_coches_mentions";
+
 	$champ_bull_pdf[]="X_sign_chef";
 	$champ_bull_pdf[]="Y_sign_chef";
 	$champ_bull_pdf[]="longeur_sign_chef";
@@ -75,9 +86,17 @@
 	$champ_bull_pdf[]="entente_mel";
 	$champ_bull_pdf[]="entente_tel";
 	$champ_bull_pdf[]="entente_fax";
+
+	$champ_bull_pdf[]="entete_info_etab_suppl";
+	$champ_bull_pdf[]="entete_info_etab_suppl_texte";
+	$champ_bull_pdf[]="entete_info_etab_suppl_valeur";
+
 	$champ_bull_pdf[]="L_max_logo";
 	$champ_bull_pdf[]="H_max_logo";
 	$champ_bull_pdf[]="toute_moyenne_meme_col";
+	$champ_bull_pdf[]="moyennes_periodes_precedentes";
+	$champ_bull_pdf[]="evolution_moyenne_periode_precedente";
+
 	$champ_bull_pdf[]="active_reperage_eleve";
 	$champ_bull_pdf[]="couleur_reperage_eleve1";
 	$champ_bull_pdf[]="couleur_reperage_eleve2";
@@ -205,6 +224,9 @@
 	$val_defaut_champ_bull_pdf["active_regroupement_cote"]=0;
 	$val_defaut_champ_bull_pdf["active_entete_regroupement"]=0;
 	$val_defaut_champ_bull_pdf["active_moyenne_regroupement"]=0;
+
+	$val_defaut_champ_bull_pdf["presentation_proflist"]=1;
+
 	$val_defaut_champ_bull_pdf["active_rang"]=0;
 	$val_defaut_champ_bull_pdf["active_graphique_niveau"]=0;
 	$val_defaut_champ_bull_pdf["active_appreciation"]=1;
@@ -234,14 +256,22 @@
 	$val_defaut_champ_bull_pdf["largeur_d_une_moyenne"]=10;
 	$val_defaut_champ_bull_pdf["largeur_niveau"]=18;
 	$val_defaut_champ_bull_pdf["largeur_rang"]=5;
+
 	$val_defaut_champ_bull_pdf["X_absence"]=5;
 	$val_defaut_champ_bull_pdf["Y_absence"]=246.3;
+	$val_defaut_champ_bull_pdf["largeur_cadre_absences"]=200;
+
 	$val_defaut_champ_bull_pdf["hauteur_entete_moyenne_general"]=5;
+
 	$val_defaut_champ_bull_pdf["X_avis_cons"]=5;
 	$val_defaut_champ_bull_pdf["Y_avis_cons"]=250;
 	$val_defaut_champ_bull_pdf["longeur_avis_cons"]=130;
 	$val_defaut_champ_bull_pdf["hauteur_avis_cons"]=37;
 	$val_defaut_champ_bull_pdf["cadre_avis_cons"]=1;
+	$val_defaut_champ_bull_pdf["affich_mentions"]='y';
+	$val_defaut_champ_bull_pdf["affich_intitule_mentions"]='y';
+	$val_defaut_champ_bull_pdf["affich_coches_mentions"]='y';
+
 	$val_defaut_champ_bull_pdf["X_sign_chef"]=138;
 	$val_defaut_champ_bull_pdf["Y_sign_chef"]=250;
 	$val_defaut_champ_bull_pdf["longeur_sign_chef"]=67;
@@ -253,9 +283,17 @@
 	$val_defaut_champ_bull_pdf["entente_mel"]=1;
 	$val_defaut_champ_bull_pdf["entente_tel"]=1;
 	$val_defaut_champ_bull_pdf["entente_fax"]=1;
+
+	$val_defaut_champ_bull_pdf["entete_info_etab_suppl"]='n';
+	$val_defaut_champ_bull_pdf["entete_info_etab_suppl_texte"]='Site web';
+	$val_defaut_champ_bull_pdf["entete_info_etab_suppl_valeur"]='http://';
+
 	$val_defaut_champ_bull_pdf["L_max_logo"]=75;
 	$val_defaut_champ_bull_pdf["H_max_logo"]=75;
 	$val_defaut_champ_bull_pdf["toute_moyenne_meme_col"]=0;
+	$val_defaut_champ_bull_pdf["moyennes_periodes_precedentes"]='n';
+	$val_defaut_champ_bull_pdf["evolution_moyenne_periode_precedente"]='n';
+
 	$val_defaut_champ_bull_pdf["active_reperage_eleve"]=1;
 	$val_defaut_champ_bull_pdf["couleur_reperage_eleve1"]=255;
 	$val_defaut_champ_bull_pdf["couleur_reperage_eleve2"]=255;

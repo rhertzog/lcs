@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: droits_acces.php 6468 2011-02-06 17:21:41Z crob $
+* $Id: droits_acces.php 7619 2011-08-08 12:30:53Z crob $
 *
 * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -1116,7 +1116,13 @@ if(getSettingValue('active_mod_discipline')=='y') {
 	<br />(<em>Par défaut un professeur ne voit que les incidents qu'il a déclaré ou le concernant directement comme protagoniste)</em>";
   if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
-  
+
+	if(getSettingValue('active_mod_ooo')=='y') {
+		$titreItem='imprDiscProfRetenueOOo';
+		$texteItem="peut imprimer dans le module Discipline une demande de Retenue au format OpenOffice pour un élève pour lequel le professeur saisit un incident";
+		if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+			$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+	}
 }
 /*
       
@@ -1144,6 +1150,14 @@ if(getSettingValue('active_mod_discipline')=='y') {
   $texteItem="a accès aux récapitulatifs globaux des crédits ECTS pour ses classes.";
   if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+if(getSettingValue('active_mod_ooo')=='y') {
+  $titreItem='OOoUploadProf';
+  $texteItem="a accès à l'upload de fichiers modèles OpenOffice personnels.";
+  if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+}
+//=======================================================================================
 /*
  *
  *
@@ -1308,6 +1322,15 @@ $titreItem='GepiAccesEditionDocsEctsPP';
 $texteItem="peut éditer les relevés ECTS pour sa classe";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
+
+$titreItem='modExbPP';
+$texteItem="peut créer des examens blancs pour les classes dont il est ".getSettingValue('gepi_prof_suivi');
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
 /*
 
  * <tr>
@@ -1515,6 +1538,15 @@ $titreItem='GepiAccesRecapitulatifEctsScolarite';
 $texteItem="a accès aux récapitulatifs globaux des crédits ECTS.";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
+if(getSettingValue('active_mod_ooo')=='y') {
+  $titreItem='OOoUploadScol';
+  $texteItem="a accès à l'upload de fichiers modèles OpenOffice personnels.";
+  if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+}
+//=======================================================================================
 /*
       
 			</table>
@@ -1631,6 +1663,15 @@ $titreItem='GepiAccesAbsTouteClasseCpe';
 $texteItem="a le droit d'accéder à toutes les classes pour saisir les absences";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
+if(getSettingValue('active_mod_ooo')=='y') {
+  $titreItem='OOoUploadCpe';
+  $texteItem="a accès à l'upload de fichiers modèles OpenOffice personnels.";
+  if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+}
+//=======================================================================================
 
 /*
 
@@ -1954,6 +1995,16 @@ $texteItem="a accès au trombinoscope des ".$gepiSettings['denomination_professeu
 				voir aussi le module de gestion du trombinoscope pour une gestion plus fine des droits d'accès)</em>";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
+
+
+$titreItem='visuEleDisc';
+$texteItem="a accès dans le module Discipline aux incidents le concernant.";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
 /*
 
 			</table>
@@ -2151,6 +2202,15 @@ $titreItem='AAResponsable';
 $texteItem="a accès aux données d'années antérieures des ".$gepiSettings['denomination_eleves']." dont il est responsable";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
+
+
+$titreItem='visuRespDisc';
+$texteItem="a accès dans le module Discipline aux incidents concernant les enfants dont il est responsable.";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 /*
 
 			</table>

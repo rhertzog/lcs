@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: prof_suivi.php 6604 2011-03-03 13:46:55Z crob $
+* $Id: prof_suivi.php 8096 2011-09-01 11:41:17Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -36,11 +36,20 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
+}
+
+if(!isset($id_classe)) {
+	$sql="SELECT id FROM classes ORDER BY classe LIMIT 1;";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		$lig=mysql_fetch_object($res);
+		$id_classe=$lig->id;
+	}
 }
 
 include "../lib/periodes.inc.php";
@@ -64,7 +73,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 		// Récupération du numéro de l'élève dans les saisies:
 		$num_eleve=-1;
 		for($i=0;$i<count($log_eleve);$i++){
-			if($login_eleve==$log_eleve[$i]){
+			if(strtolower($login_eleve)==strtolower($log_eleve[$i])){
 				$num_eleve=$i;
 				break;
 			}
@@ -97,15 +106,82 @@ if (isset($is_posted) and ($is_posted == '1')) {
 	die();
 }
 
-
+$themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE **************************************
 $titre_page = "Gestion des classes | ".ucfirst(getSettingValue("gepi_prof_suivi"));
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE **********************************
 $call_classe = mysql_query("SELECT classe FROM classes WHERE id = '$id_classe'");
 $classe = mysql_result($call_classe, "0", "classe");
+
+echo "<form action='".$_SERVER['PHP_SELF']."' name='form1' method='post'>\n";
+echo "<p class='bold'><a href='classes_const.php?id_classe=$id_classe'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a>";
+
+$chaine_options_classes="";
+$sql="SELECT id, classe FROM classes ORDER BY classe";
+$res_class_tmp=mysql_query($sql);
+$num_classe=-1;
+if(mysql_num_rows($res_class_tmp)>0){
+    $id_class_prec=0;
+    $id_class_suiv=0;
+    $temoin_tmp=0;
+    $cpt_classe=0;
+    while($lig_class_tmp=mysql_fetch_object($res_class_tmp)){
+        if($lig_class_tmp->id==$id_classe){
+			// Index de la classe dans les <option>
+			$num_classe=$cpt_classe;
+
+			$chaine_options_classes.="<option value='$lig_class_tmp->id' selected='true'>$lig_class_tmp->classe</option>\n";
+            $temoin_tmp=1;
+            if($lig_class_tmp=mysql_fetch_object($res_class_tmp)){
+				$chaine_options_classes.="<option value='$lig_class_tmp->id'>$lig_class_tmp->classe</option>\n";
+                $id_class_suiv=$lig_class_tmp->id;
+            }
+            else{
+                $id_class_suiv=0;
+            }
+        }
+		else {
+			$chaine_options_classes.="<option value='$lig_class_tmp->id'>$lig_class_tmp->classe</option>\n";
+		}
+
+        if($temoin_tmp==0){
+            $id_class_prec=$lig_class_tmp->id;
+        }
+		$cpt_classe++;
+    }
+}
+
+echo "| <select name='id_classe' id='id_classe' onchange=\"confirm_changement_classe(change, '$themessage');\">
+$chaine_options_classes
+</select> \n";
+
+echo "<script type='text/javascript'>
+	// Initialisation
+	change='no';
+
+	function confirm_changement_classe(thechange, themessage)
+	{
+		if (!(thechange)) thechange='no';
+		if (thechange != 'yes') {
+			document.form1.submit();
+		}
+		else{
+			var is_confirmed = confirm(themessage);
+			if(is_confirmed){
+				document.form1.submit();
+			}
+			else{
+				document.getElementById('id_classe').selectedIndex=$num_classe;
+			}
+		}
+	}
+</script>\n";
+
+echo "|<a href='help.php'> Aide </a></p>\n";
+echo "</form>\n";
 ?>
-<p class='bold'><a href="classes_const.php?id_classe=<?php echo $id_classe;?>"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a>|<a href="help.php"> Aide </a></p>
+
 <p class='bold'>Classe : <?php echo $classe; ?></p>
 <?php
 if (!isset($nb_prof) or ($nb_prof == '')) {
@@ -116,10 +192,10 @@ if (!isset($nb_prof) or ($nb_prof == '')) {
 
 	<p>
 	<?php
-		echo getSettingValue("gepi_prof_suivi");
+		echo ucfirst(getSettingValue("gepi_prof_suivi"));
 	?> : précisez le nombre dans la classe :</p>
 	<form enctype="multipart/form-data" action="prof_suivi.php" method="post">
-	<select size = '1' name='nb_prof'>
+	<select size = '1' name='nb_prof' onchange='changement()'>
 	<?php for ($i=1;$i<6;$i++) {
 		echo "<option value='$i'";
 		// Si il existe déjà des profs de suivi dans la classe, on propose par défaut, un nombre de profs égal au nombre de profs de suivi.

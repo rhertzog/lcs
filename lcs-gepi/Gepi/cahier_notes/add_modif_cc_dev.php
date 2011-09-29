@@ -1,10 +1,25 @@
 <?php
-/*
-* @version: $Id: add_modif_cc_dev.php 6379 2011-01-19 20:27:27Z crob $
-*
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
-*
-* This file is part of GEPI.
+/**
+ * Ajouter, modifier un devoir dans une évaluation cumule
+ * 
+ * $Id: add_modif_cc_dev.php 7742 2011-08-13 23:37:55Z regis $
+ *
+ * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ *
+ * @package Carnet_de_notes
+ * @subpackage Evaluation_cumule
+ * @license GNU/GPL 
+ * @see add_token_field()
+ * @see check_token()
+ * @see checkAccess()
+ * @see get_group()
+ * @see getSettingValue()
+ * @see Session::security_check()
+ * @see traitement_magic_quotes()
+ * @see Verif_prof_cahier_notes()
+ */
+
+/* This file is part of GEPI.
 *
 * GEPI is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,7 +36,9 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Initialisations files
+/**
+ * Fichiers d'initialisation
+ */
 require_once("../lib/initialisations.inc.php");
 
 // Resume session
@@ -43,7 +60,9 @@ if (!checkAccess()) {
 if (getSettingValue("active_carnets_notes")!='y') {
 	die("Le module n'est pas activé.");
 }
-
+/**
+ * Calcul des arrondis
+ */
 require('cc_lib.php');
 
 $id_racine = isset($_POST["id_racine"]) ? $_POST["id_racine"] : (isset($_GET["id_racine"]) ? $_GET["id_racine"] : NULL);
@@ -55,7 +74,7 @@ if(!isset($id_racine)) {
 }
 
 // On teste si le carnet de notes appartient bien à la personne connectée
-if (!(Verif_prof_cahier_notes ($_SESSION['login'],$id_racine))) {
+if (!(Verif_prof_cahier_notes($_SESSION['login'],$id_racine))) {
     $mess=rawurlencode("Vous tentez de pénétrer dans un carnet de notes qui ne vous appartient pas !");
     header("Location: index.php?msg=$mess");
     die();
@@ -65,6 +84,9 @@ $appel_cahier_notes = mysql_query("SELECT * FROM cn_cahier_notes WHERE id_cahier
 $id_groupe = mysql_result($appel_cahier_notes, 0, 'id_groupe');
 $current_group = get_group($id_groupe);
 $periode_num = mysql_result($appel_cahier_notes, 0, 'periode');
+/**
+ * Gestion des périodes
+ */
 include "../lib/periodes.inc.php";
 
 $id_dev = isset($_POST["id_dev"]) ? $_POST["id_dev"] : (isset($_GET["id_dev"]) ? $_GET["id_dev"] : NULL);
@@ -85,25 +107,12 @@ if ($id_dev)  {
 	}
 }
 else {
-	//header("Location: ../logout.php?auto=1");
-	//die();
 
 	$nom_court = "CC";
 	$nom_complet = ucfirst($nom_cc)." n°";
 	$description = "";
 	$precision="s1";
 }
-
-/*
-// A FAIRE LORSQU'ON TENTE DE CREER UN DEVOIR D'APRES LE CC
-
-// On teste si la periode est vérrouillée !
-if ($current_group["classe"]["ver_periode"]["all"][$periode_num] <= 1) {
-	$mess=rawurlencode("Vous tentez de pénétrer dans un carnet de notes dont la période est bloquée !");
-	header("Location: index.php?msg=$mess");
-	die();
-}
-*/
 
 $matiere_nom = $current_group["matiere"]["nom_complet"];
 $matiere_nom_court = $current_group["matiere"]["matiere"];
@@ -141,8 +150,7 @@ if (isset($_POST['is_posted'])) {
 		// S'il est rattaché à un devoir existant dans le carnet de notes, il ne doit pas pouvoir être modifié si la période correspondante est close.
 
 		// Sinon, il faut mettre à jour le devoir associé
-		//$msg.="Traitement non encore implémenté.<br />\n";
-
+		
 		$sql="UPDATE cc_dev SET nom_court='$nom_court', nom_complet='$nom_complet', description='$description', arrondir='$precision' WHERE id_groupe='$id_groupe' AND id='$id_dev';";
 		$update=mysql_query($sql);
 		if(!$update) {
@@ -160,6 +168,9 @@ if (isset($_POST['is_posted'])) {
 
 //**************** EN-TETE *****************
 $titre_page = "Carnet de notes - Ajout/modification d'un $nom_cc";
+/**
+ * Entête de la page
+ */
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 
@@ -173,8 +184,6 @@ echo "</p>\n";
 echo "</div>\n";
 
 echo "<h2 class='gepi'>Configuration du $nom_cc&nbsp;:</h2>\n";
-
-//echo "<p><input type=\"submit\" name='ok' value=\"Enregistrer\" style=\"font-variant: small-caps;\" /></p>\n";
 
 $aff_nom_court="y";
 $aff_nom_complet="y";
@@ -233,7 +242,6 @@ else {
 	echo "<tr style='display:none;'>\n";
 	echo "<td style='background-color: #aae6aa; font-weight: bold;'>Description&nbsp;:</td>\n";
 	echo "<td>\n";
-	//echo "<textarea name='description' rows='2' cols='40' >".$description."</textarea>\n";
 	echo "<input type='hidden' name='description' value='$description' />\n";
 	echo "</td>\n";
 	echo "</tr>\n";
@@ -243,8 +251,7 @@ if($aff_precision=='y') {
 	echo "<tr>\n";
 	echo "<td style='background-color: #aae6aa; font-weight: bold;'>Précision&nbsp;:</td>\n";
 	echo "<td>\n";
-	//echo "<input type='text' name = 'precision' size='40' value = \"".$precision."\" onfocus=\"javascript:this.select()\" />\n";
-
+	
 		echo "<table>\n";
 		$alt=1;
 		echo "<tr class='lig$alt white_hover'>\n";
@@ -350,5 +357,8 @@ if($aff_nom_court=='y') {
 </script>\n";
 }
 
+/**
+ * Pied de page
+ */
 require("../lib/footer.inc.php");
 ?>

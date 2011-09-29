@@ -1,7 +1,7 @@
 <?php
 /*
  *
- *$Id: index.php 6818 2011-04-22 20:52:41Z dblanqui $
+ *$Id: index.php 8056 2011-08-30 20:43:42Z jjacquard $
  *
  * Copyright 2010-2011 Josselin Jacquard
  *
@@ -352,7 +352,7 @@ Normalement, ce module ne devrait être activé que si le module ci-dessus est lui
 <p>
 	<input type="checkbox" name="abs2_modification_saisie_une_heure" value="y"
 	<?php if (getSettingValue("abs2_modification_saisie_une_heure")=='y') echo " checked='checked'"; ?> />
-	<label for="abs2_modification_saisie_une_heure">&nbsp;Permettre la modification d'une saisie dans l'heure qui a suivi sa création</label>
+	<label for="abs2_modification_saisie_une_heure">&nbsp;Permettre la modification d'une saisie par le professeur dans l'heure qui a suivi sa création</label>
 </p>
 <!--p>
 	<input type="checkbox" name="abs2_modification_saisie_sans_limite" value="y"
@@ -463,7 +463,7 @@ entr&eacute;es dans Gepi par le biais du module absences.</p>
 	<a href="admin_motifs_absences.php?action=visualiser">Définir les motifs des absences</a><br />
     <a href="admin_lieux_absences.php?action=visualiser">Définir les lieux des absences</a><br />
 	<a href="admin_justifications_absences.php?action=visualiser">Définir les justifications</a><br />
-	<a href="../../mod_ooo/gerer_modeles_ooo.php">Gérer ses propres modèles de documents du module</a>
+	<a href="../../mod_ooo/gerer_modeles_ooo.php">Gérer ses propres modèles de documents du module</a><br />
 </blockquote>
 
 <?PHP

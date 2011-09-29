@@ -1,6 +1,6 @@
 <?php
 /*
- $Id: draw_graphe.php 6729 2011-03-30 09:33:15Z crob $
+ $Id: draw_graphe.php 7225 2011-06-15 15:07:28Z crob $
 */
 	header("Content-type:image/png");
 
@@ -113,6 +113,9 @@
 	if((strlen(preg_replace("/[0-9]/","",$epaisseur_traits))!=0)||($epaisseur_traits<1)||($epaisseur_traits>6)||($epaisseur_traits=="")){
 		$epaisseur_traits=2;
 	}
+
+	$epaisseur_croissante_traits_periodes=isset($_GET['epaisseur_croissante_traits_periodes']) ? $_GET['epaisseur_croissante_traits_periodes'] : 'non';
+	if(($epaisseur_croissante_traits_periodes!='non')&&($epaisseur_croissante_traits_periodes!='oui')) {$epaisseur_croissante_traits_periodes="non";}
 
 	$epaisseur_axes=2;
 	$epaisseur_grad=1;
@@ -375,8 +378,8 @@
 	$tabcouleurs['Periode_2']['B']=0;
 
 	$tabcouleurs['Periode_3']=array();
-	$tabcouleurs['Periode_3']['R']=255;
-	$tabcouleurs['Periode_3']['V']=0;
+	$tabcouleurs['Periode_3']['R']=0;
+	$tabcouleurs['Periode_3']['V']=200;
 	$tabcouleurs['Periode_3']['B']=0;
 
 	for($i=0;$i<count($tab);$i++){
@@ -784,6 +787,7 @@
 
 
 	//for($k=1;$k<=$nb_series;$k++){
+	$epaisseur = $epaisseur_traits;
 	for($k=1;$k<=$nb_series_bis;$k++){
 		//Placement des points de la courbe:
 		for($i=1;$i<$nbMat+1;$i++){
@@ -802,12 +806,16 @@
 		}
 
 		//Tracé de la courbe:
+		imagesetthickness($img,$epaisseur);
 		for($i=1;$i<$nbMat;$i++){
 			$x1=$x[$i];
 			$x2=$x[$i+1];
 			if(($ycourbe[$k][$i]!=-1)&&($ycourbe[$k][$i+1]!=-1)){
 				imageLine($img,$x1,$ycourbe[$k][$i],$x2,$ycourbe[$k][$i+1],$couleureleve[$k]);
 			}
+		}
+		if($epaisseur_croissante_traits_periodes=='oui') {
+			$epaisseur+=1;
 		}
 	}
 

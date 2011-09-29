@@ -1,5 +1,5 @@
 <?php
-/* $Id: fiches_brevet.php 6937 2011-05-17 15:26:44Z crob $ */
+/* $Id: fiches_brevet.php 6936 2011-05-17 15:26:38Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

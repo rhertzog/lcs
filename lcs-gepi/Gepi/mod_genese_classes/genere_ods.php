@@ -1,5 +1,5 @@
 <?php
-/* $Id: genere_ods.php 7342 2011-06-27 10:37:44Z crob $ */
+/* $Id: genere_ods.php 7341 2011-06-27 10:37:37Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

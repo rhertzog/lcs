@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id$
+ * $Id: ajax_edition_devoir.php 8312 2011-09-22 19:36:19Z crob $
  *
  * Copyright 2009-2011 Josselin Jacquard
  *
@@ -23,7 +23,7 @@
 
 header('Content-Type: text/html; charset=ISO-8859-1');
 // On désamorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
-if (isset($_GET['traite_anti_inject']) OR isset($_POST['traite_anti_inject'])) $traite_anti_inject = "yes";
+if (isset($_GET['traite_anti_inject']) OR isset($_POST['traite_anti_inject'])) {$traite_anti_inject = "yes";}
 include("../lib/initialisationsPropel.inc.php");
 require_once("../lib/initialisations.inc.php");
 
@@ -121,6 +121,34 @@ if ($ctTravailAFaire->getVise() == 'y') {
 	die();
 }
 
+if(isset($_GET['change_visibilite'])) {
+	check_token();
+
+	//$ctDocument->setVisibleEleveParent(false);
+	//$id_ct_devoir=$_GET['id_ct_devoir'];
+	$id_ct_devoir=$id_devoir;
+	$id_document=$_GET['id_document'];
+	if(($id_ct_devoir!='')&&(preg_match("/^[0-9]*$/", $id_ct_devoir))&&($id_document!='')&&(preg_match("/^[0-9]*$/", $id_document))) {
+		$sql="SELECT visible_eleve_parent FROM ct_devoirs_documents WHERE id='$id_document' AND id_ct_devoir='$id_ct_devoir';";
+		$res=mysql_query($sql);
+		if(mysql_num_rows($res)>0) {
+			$lig=mysql_fetch_object($res);
+			if($lig->visible_eleve_parent=='0') {$visible_eleve_parent='1';} else {$visible_eleve_parent='0';}
+			$sql="UPDATE ct_devoirs_documents SET visible_eleve_parent='$visible_eleve_parent' WHERE id='$id_document' AND id_ct_devoir='$id_ct_devoir';";
+			$res=mysql_query($sql);
+			if($res) {
+				if($visible_eleve_parent=='1') {
+					echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des élèves et responsables' title='Document visible des élèves et responsables' />";
+				}
+				else {
+					echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des élèves et responsables' title='Document invisible des élèves et responsables' />";
+				}
+			}
+		}
+	}
+	die();
+}
+
 //on mets le groupe dans le session, pour naviguer entre absence, cahier de texte et autres
 $_SESSION['id_groupe_session'] = $ctTravailAFaire->getIdGroupe();
 
@@ -131,6 +159,25 @@ $type_couleur = "t";
 // Affichage des différents groupes du professeur
 //\$A($('id_groupe_colonne_gauche').options).find(function(option) { return option.selected; }).value is a javascript trick to get selected value.
 echo "<div id=\"div_chaine_edition_notice\" style=\"display:inline;\"><img id=\"chaine_edition_notice\" onLoad=\"updateChaineIcones()\" HEIGHT=\"16\" WIDTH=\"16\" style=\"border: 0px; vertical-align : middle\" src=\"../images/blank.gif\"  alt=\"Lier\" title=\"Lier la liste avec la liste des de notices\" /></div>&nbsp;";
+
+echo "<div style='float:right; width: 150px; text-align: center;'>\n";
+echo "Travaux pour ce jour en";
+$classes=$groupe->getClasses();
+foreach($classes as $classe){
+	$id_classe=$classe->getId();
+	$nomClasse=$classe->getNom();
+	$nomCompletClasse=$classe->getNomComplet();
+	/*
+	echo " <button style='background-color:plum' onclick=\"javascript:
+							getWinDevoirsDeLaClasse().setAjaxContent('./ajax_devoirs_classe.php?id_classe=$id_classe&today='+getCalendarUnixDate(),{ onComplete:function(transport) {initWysiwyg();}});
+						\">$nomClasse</button>";
+	*/
+	echo " <button style='background-color:plum' onclick=\"javascript:
+							getWinDevoirsDeLaClasse().setAjaxContent('./ajax_devoirs_classe.php?id_classe=$id_classe&today='+getCalendarUnixDate());
+						\">$nomClasse</button>";
+}
+echo "</div>\n";
+
 echo ("<select id=\"id_groupe_colonne_droite\" onChange=\"javascript:
 			updateListeNoticesChaine();
 			id_groupe = (\$A($('id_groupe_colonne_droite').options).find(function(option) { return option.selected; }).value);
@@ -152,19 +199,31 @@ echo "</select>&nbsp;&nbsp;";
 echo "<button style='background-color:".$color_fond_notices['c']."' onclick=\"javascript:
 						getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe='+ ".$groupe->getId()." + '&today='+getCalendarUnixDate(),{ onComplete:function(transport) {initWysiwyg();}});
 						object_en_cours_edition = 'compte_rendu';
-					\">Editer les comptes rendus</button>";
+					\">Editer les comptes rendus</button>\n";
 echo "<button style='background-color:".$color_fond_notices['p']."' onclick=\"javascript:
 						getWinEditionNotice().setAjaxContent('./ajax_edition_notice_privee.php?id_groupe='+ ".$groupe->getId()." + '&today='+getCalendarUnixDate(),{ onComplete:function(transport) {initWysiwyg();}});
 						object_en_cours_edition = 'notice_privee';
-					\">Editer les notices priv&eacute;es</button><br><br>\n";
+					\">Editer les notices priv&eacute;es</button>\n";
+/*
+echo " <button style='background-color:".$color_fond_notices['p']."' onclick=\"javascript:
+						getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=".$groupe->getId()."&today='+getCalendarUnixDate(),{ onComplete:function(transport) {initWysiwyg();}});
+					\">Voir NP</button>\n";
+*/
+echo " <button style='background-color:".$color_fond_notices['p']."' onclick=\"javascript:
+						getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=".$groupe->getId()."&today='+getCalendarUnixDate());
+					\">Voir NP</button>\n";
+
+echo "<br><br>\n";
+
+//==============================================
 
 //fin affichage des groupes
 
 echo "<fieldset style=\"border: 1px solid grey; padding-top: 8px; padding-bottom: 8px;  margin-left: auto; margin-right: auto; background: ".$color_fond_notices[$type_couleur].";\">\n";
-echo "<legend style=\"border: 1px solid grey; background: ".$color_fond_notices[$type_couleur]."; font-variant: small-caps;\"> Travaux Personnels ";
+echo "<legend style=\"border: 1px solid grey; background: ".$color_fond_notices[$type_couleur]."; font-variant: small-caps;\"> Travaux Personnels \n";
 
 if (!$ctTravailAFaire->isNew()) {
-	echo " - <b><font color=\"red\">Modification de la notice</font></b>";
+	echo " - <b><font color=\"red\">Modification de la notice</font></b>\n";
 	echo " - <a href=\"#\" onclick=\"javascript:
 				$('dupplication_notice').show();
 				new Ajax.Updater($('dupplication_notice'), 'ajax_affichage_duplication_notice.php?id_groupe=".$groupe->getId()."&type=CahierTexteTravailAFaire&id_ct=".$ctTravailAFaire->getIdCt()."',
@@ -182,7 +241,7 @@ if (!$ctTravailAFaire->isNew()) {
 				);
 				return false;
 				\">
-		Dupliquer la notice</a> - ";
+		Dupliquer la notice</a> - \n";
 
 } else {
 	echo " - <b><font color=\"red\">Nouvelle notice</font></b> - \n";
@@ -208,28 +267,39 @@ echo "
 			);
 			return false;
 			\">
-	Deplacer la notice</a>";
+	Deplacer la notice</a>\n";
 
 echo "</legend>\n";
 
-echo "<div id=\"dupplication_notice\" style='display: none;'></div>";
-echo "<div id=\"deplacement_notice\" style='display: none;'>oulalala</div>";
+echo "<div id=\"dupplication_notice\" style='display: none;'></div>\n";
+echo "<div id=\"deplacement_notice\" style='display: none;'>oulalala</div>\n";
 
 echo "<form enctype=\"multipart/form-data\" name=\"modification_compte_rendu_form\" id=\"modification_compte_rendu_form\" action=\"ajax_enregistrement_devoir.php\" method=\"post\" onsubmit=\"return AIM.submit(this, {'onComplete' : completeEnregistrementDevoirCallback})\" style=\"width: 100%;\">\n";
 echo add_token_field();
 // uid de pour ne pas refaire renvoyer plusieurs fois le meme formulaire
 // autoriser la validation de formulaire $uid_post==$_SESSION['uid_prime']
 $uid = md5(uniqid(microtime(), 1));
-echo("<input type='hidden' name='uid_post' value='".$uid."' />");
-echo("<input type='hidden' id='id_groupe' name='id_groupe' value='".$groupe->getId()."' />");
+echo("<input type='hidden' name='uid_post' value='".$uid."' />\n");
+echo("<input type='hidden' id='id_groupe' name='id_groupe' value='".$groupe->getId()."' />\n");
 
 //hidden input utilise pour indiquer a la fenetre ListeNotice a quel endroit mettre un petit texte rouge "modification"
-echo("<input type='hidden' id='div_id_ct' value='devoir_".$ctTravailAFaire->getIdCt()."' />");
+echo("<input type='hidden' id='div_id_ct' value='devoir_".$ctTravailAFaire->getIdCt()."' />\n");
 
 //si on vient d'efftuer un enregistrement, le label du bonton enregistrer devient Succès
 $succes_modification = isset($_POST["succes_modification"]) ? $_POST["succes_modification"] :(isset($_GET["succes_modification"]) ? $_GET["succes_modification"] :NULL);
 $label_enregistrer = "Enregistrer";
-if ($succes_modification == 'oui') $label_enregistrer='Succès';
+if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
+
+//echo $ctTravailAFaire->getDateVisibiliteEleve();
+if($ctTravailAFaire->getDateVisibiliteEleve()=='') {
+	$heure_courante=strftime("%H:%M");
+	$jour_courant=strftime("%d/%m/%Y");
+}
+else {
+	$heure_courante=get_heure_2pt_minute_from_mysql_date($ctTravailAFaire->getDateVisibiliteEleve());
+	$jour_courant=get_date_slash_from_mysql_date($ctTravailAFaire->getDateVisibiliteEleve());
+}
+
 ?>
 <table border="0" width="99%" summary="Tableau de saisie de notice">
 	<tr>
@@ -239,6 +309,55 @@ if ($succes_modification == 'oui') $label_enregistrer='Succès';
 		<button type="submit" style='font-variant: small-caps;'
 			onClick="javascript:$('passer_a').value = 'passer_compte_rendu';">Enr. et
 		passer aux comptes rendus</button>
+
+		<?php
+/*
+echo "<script type='text/javascript'>
+	function verif_date_visibilite() {
+		date_v=document.getElementById('jour_visibilite').value;
+		tab=date_v.split('/');
+		jour_v=tab[0];
+		mois_v=tab[1];
+		annee_v=tab[2];
+		if(!checkdate(mois_v, jour_v, annee_v)) {
+			alert(\"La date de visibilité saisie n'est pas valide.\");
+		}
+	}
+</script>\n";
+*/
+			echo "<br />\n";
+			echo "<span title='Vous pouvez modifier les dates et heure de visibilité avec les flèches Haut/Bas, PageUp/PageDown du clavier.'>Visibilité</span>&nbsp;:\n";
+			echo " <input type='text' name='jour_visibilite' id='jour_visibilite' value='$jour_courant' size='7' onkeydown='clavier_date(this.id,event)' 
+			onblur=\"date_v=document.getElementById('jour_visibilite').value;
+				tab=date_v.split('/');
+				jour_v=tab[0];
+				mois_v=tab[1];
+				annee_v=tab[2];
+				if(!checkdate(mois_v, jour_v, annee_v)) {
+					alert('La date de visibilité saisie n est pas valide.');
+				}
+			\" />\n";
+		// onblur='verif_date_visibilite()' />\n";
+			echo " à <input type='text' name='heure_visibilite' id='heure_visibilite' value='$heure_courante' size='3' onkeydown='clavier_heure(this.id,event)' 
+			onblur=\"instant_v=document.getElementById('heure_visibilite').value;
+				var exp=new RegExp('^[0-9]{1,2}:[0-9]{0,2}$','g');
+				erreur='n';
+				if (exp.test(instant_v)) {
+					tab=instant_v.split(':');
+					heure_v=eval(tab[0]);
+					min_v=eval(tab[1]);
+
+					if((heure_v<0)||(heure_v>=24)||(min_v<0)||(min_v>=60)) {erreur='y';}
+				}
+				else {
+					erreur='y';
+				}
+
+				if(erreur=='y') {
+					alert('L heure de visibilité saisie n est pas valide.');
+				}
+			\" />\n";
+		?>
 		<input type='hidden' id='passer_a' name='passer_a'
 			value='passer_devoir' /> <input type="hidden" name="date_devoir"
 			value="<?php echo $ctTravailAFaire->getDateCt(); ?>" /> <input
@@ -253,20 +372,43 @@ if ($succes_modification == 'oui') $label_enregistrer='Succès';
 		if (!isset($info)) {
 			$hier = $today - 3600*24;
 			$demain = $today + 3600*24;
-			echo "</td><td><a title=\"Aller au jour précédent\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($hier);dateChanged(calendarInstanciation);'>&lt;&lt;</a></td>
-			<td align=center>Aujourd'hui</td>
-			<td align=right><a title=\"Aller au jour suivant\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($demain);dateChanged(calendarInstanciation);'>&gt;&gt;</a></td></tr>\n";	echo "\n";
+
+			$semaine_precedente= $today - 3600*24*7;
+			$semaine_suivante= $today + 3600*24*7;
+			echo "</td>\n";
+
+			echo "<td>\n";
+			echo "<a href=\"javascript:
+						getWinCalendar().setLocation(0, GetWidth() - 245);
+				\"><img src=\"../images/icons/date.png\" width='16' height='16' alt='Calendrier' /></a>\n";
+			echo "</td>\n";
+
+			echo "<td style='text-align:center; width: 16px;'>\n";
+			echo "<a title=\"Aller à la semaine précédente\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_precedente);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left-double.png' width='16' height='16' title='Aller à la semaine précédente' alt='Aller à la semaine précédente' /></a> ";
+			echo "</td>\n";
+			echo "<td style='text-align:center; width: 16px;'>\n";
+			echo "<a title=\"Aller au jour précédent\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($hier);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left.png' width='16' height='16' title='Aller au jour précédent' alt='Aller au jour précédent' /></a>\n";
+			echo "</td>\n";
+			echo "<td align='center'>Aujourd'hui</td>\n";
+			echo "<td style='text-align:center; width: 16px;'>\n";
+			echo "<a title=\"Aller au jour suivant\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($demain);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-right.png' width='16' height='16' title='Aller au jour suivant' alt='Aller au jour suivant' /></a>\n";
+			echo "</td>\n";
+			echo "<td style='text-align:center; width: 16px;'>\n";
+			echo " <a title=\"Aller à la semaine suivante\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_suivante);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-right-double.png' width='16' height='16' title='Aller à la semaine suivante' alt='Aller à la semaine suivante' /></a>\n";
+			echo "</td>\n";
+			echo "</tr>\n";
+			echo "\n";
 		}
 		?>
 
 	<tr>
 		<td colspan="5"><?php
 
-		echo "<textarea name=\"contenu\" style=\"background-color: white;\" id=\"contenu\">".$ctTravailAFaire->getContenu()."</textarea>";
+		echo "<textarea name=\"contenu\" style=\"background-color: white;\" id=\"contenu\">".$ctTravailAFaire->getContenu()."</textarea>\n";
 
 		//// gestion des fichiers attaché
 		echo '<div style="border-style:solid; border-width:1px; border-color: '.$couleur_bord_tableau_notice.'; background-color: '.$couleur_cellule[$type_couleur].';  padding: 2px; margin: 2px;">';
-		echo "<b>Fichier(s) attaché(s) : </b><br />";
+		echo "<b>Fichier(s) attaché(s) : </b><br />\n";
 		echo '<div id="div_fichier">';
 		// Affichage des documents joints
 		$document = new CahierTexteTravailAFaireFichierJoint(); //for ide completion
@@ -274,6 +416,7 @@ if ($succes_modification == 'oui') $label_enregistrer='Succès';
 		echo "<table style=\"border-style:solid; border-width:0px; border-color: ".$couleur_bord_tableau_notice."; background-color: #000000; width: 100%\" cellspacing=\"1\" summary=\"Tableau des documents joints\">\n";
 		"<tr style=\"border-style:solid; border-width:1px; border-color: ".$couleur_bord_tableau_notice."; background-color: $couleur_entete_fond[$type_couleur];\"><td style=\"text-align: center;\"><b>Titre</b></td><td style=\"text-align: center; width: 100px\"><b>Taille en Ko</b></td><td style=\"text-align: center; width: 100px\"></td></tr>\n";
 		if (!empty($documents)) {
+			$nb_documents_joints=0;
 			foreach ($documents as $document) {
 				//if ($ic=='1') { $ic='2'; $couleur_cellule_=$couleur_cellule[$type_couleur]; } else { $couleur_cellule_=$couleur_cellule_alt[$type_couleur]; $ic='1'; }
 				//			$id_document[$i] = $document->getId();
@@ -282,26 +425,56 @@ if ($succes_modification == 'oui') $label_enregistrer='Succès';
 				//			$emplacement =  $document->getEmplacement();
 				echo "<tr style=\"border-style:solid; border-width:1px; border-color: ".$couleur_bord_tableau_notice."; background-color: #FFFFFF;\"><td>
 						<a href='".$document->getEmplacement()."' target=\"_blank\">".$document->getTitre()."</a></td>
-						<td style=\"text-align: center;\">".round($document->getTaille()/1024,1)."</td>
-						<td style=\"text-align: center;\"><a href='#' onclick=\"javascript:suppressionDevoirDocument('suppression du document joint ".$document->getTitre()." ?', '".$document->getId()."', '".$ctTravailAFaire->getIdCt()."', '".$ctTravailAFaire->getIdGroupe()."','".add_token_in_js_func()."')\">Supprimer</a></td></tr>\n";
+						<td style=\"text-align: center;\">".round($document->getTaille()/1024,1)."</td>\n";
+						if(getSettingValue('cdt_possibilite_masquer_pj')=='y') {
+							echo "<td style=\"text-align: center;\">";
+							echo "<a href='javascript:modif_visibilite_doc_joint(\"devoir\", ".$ctTravailAFaire->getIdCt().", ".$document->getId().")'>";
+							echo "<span id='span_document_joint_".$document->getId()."'>";
+							if($document->getVisibleEleveParent()) {
+								echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des élèves et responsables' title='Document visible des élèves et responsables' />";
+							}
+							else {
+								echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des élèves et responsables' title='Document invisible des élèves et responsables' />";
+							}
+							echo "</span>";
+							echo "</a>";
+							echo "</td>\n";
+						}
+						echo "<td style=\"text-align: center;\"><a href='#' onclick=\"javascript:suppressionDevoirDocument('suppression du document joint ".$document->getTitre()." ?', '".$document->getId()."', '".$ctTravailAFaire->getIdCt()."', '".$ctTravailAFaire->getIdGroupe()."','".add_token_in_js_func()."')\">Supprimer</a></td></tr>\n";
+				$nb_documents_joints++;
 			}
 			echo "</table>\n";
 			//gestion de modification du nom d'un document
 
-			echo "Nouveau nom <input type=\"text\" name=\"doc_name_modif\" size=\"25\" /> pour\n";
-			echo "<select name=\"id_document\">";
-			echo "<option value='-1'>(choisissez)</option>\n";
-			foreach ($documents as $document) {
-				echo "<option value='".$document->getId()."'>".$document->getTitre()."</option>\n";
+			if($nb_documents_joints>0) {
+				echo "Nouveau nom <input type=\"text\" name=\"doc_name_modif\" size=\"25\" /> pour\n";
+				echo "<select name=\"id_document\">\n";
+				echo "<option value='-1'>(choisissez)</option>\n";
+				foreach ($documents as $document) {
+					echo "<option value='".$document->getId()."'>".$document->getTitre()."</option>\n";
+				}
+				echo "</select>\n";
+				echo "<br /><br />\n";
 			}
-			echo "</select>\n<br /><br />";
 		}
+
+		echo add_token_field(true);
+
 		?>
 		<table style="border-style:solid; border-width:0px; border-color: <?php echo $couleur_bord_tableau_notice;?> ; background-color: #000000; width: 100%" cellspacing="1" summary="Tableau de...">
 			<tr style="border-style:solid; border-width:1px; border-color: <?php echo $couleur_bord_tableau_notice; ?>; background-color: <?php echo $couleur_entete_fond[$type_couleur]; ?>;">
 				<td style="font-weight: bold; text-align: center; width: 20%">Titre
 				(facultatif)</td>
 				<td style="font-weight: bold; text-align: center; width: 60%">Emplacement</td>
+				<?php
+					if(getSettingValue('cdt_possibilite_masquer_pj')=='y') {
+						$nb_col_tableau_pj=3;
+						echo "<td style='font-weight: bold; text-align: center;'>Masquer</td>\n";
+					}
+					else {
+						$nb_col_tableau_pj=2;
+					}
+				?>
 			</tr>
 			<?php
 			$nb_doc_choisi='3';
@@ -312,6 +485,14 @@ if ($succes_modification == 'oui') $label_enregistrer='Succès';
 					size="20" /></td>
 				<td style="text-align: center;"><input type="file" name="doc_file[]"
 					size="20" /></td>
+				<?php
+					if(getSettingValue('cdt_possibilite_masquer_pj')=='y') {
+						echo "<td style='border-style: 1px solid $couleur_bord_tableau_notice; background-color: ".$couleur_cellule[$type_couleur]."; text-align: center;'>";
+						echo "<input type='checkbox' name='doc_masque[]' value='y' ";
+						echo "/>";
+						echo "</td>\n";
+					}
+				?>
 			</tr>
 			<?php $nb_doc_choisi_compte++;
 			}
@@ -319,7 +500,7 @@ if ($succes_modification == 'oui') $label_enregistrer='Succès';
 			?>
 
 			<tr style="border-style:solid; border-width:1px; border-color: <?php echo $couleur_bord_tableau_notice;?>; background-color: <?php echo $couleur_cellule[$type_couleur]; ?>;">
-				<td colspan="2" style="text-align: center;">
+				<td colspan="<?php echo $nb_col_tableau_pj;?>" style="text-align: center;">
 				<button type="submit" id="bouton_enregistrer_2" name="Enregistrer"
 					style='font-variant: small-caps;'><?php echo($label_enregistrer); ?></button>
 				<button type="submit" style='font-variant: small-caps;'
@@ -327,13 +508,20 @@ if ($succes_modification == 'oui') $label_enregistrer='Succès';
 				</td>
 			</tr>
 			<tr style="border-style:solid; border-width:1px; border-color: <?php echo $couleur_bord_tableau_notice; ?>; background-color: <?php echo $couleur_entete_fond[$type_couleur]; ?>;">
-				<td colspan="2" style="text-align: center;"><?php  echo "Tous les documents ne sont pas acceptés, voir <a href='javascript:centrerpopup(\"limites_telechargement.php?id_groupe=" . $groupe->getId() . "\",600,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>les limites et restrictions</a>\n"; ?>
+				<td colspan="<?php echo $nb_col_tableau_pj;?>" style="text-align: center;"><?php  echo "Tous les documents ne sont pas acceptés, voir <a href='javascript:centrerpopup(\"limites_telechargement.php?id_groupe=" . $groupe->getId() . "\",600,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>les limites et restrictions</a>\n"; ?>
 				</td>
 			</tr>
 		</table>
 		</td>
 	</tr>
 </table>
-<?php echo "</form>";
-echo "</fieldset>";
+<?php echo "</form>\n";
+echo "</fieldset>\n";
+
+$ouverture_auto_WinDevoirsDeLaClasse=getPref($_SESSION['login'], 'ouverture_auto_WinDevoirsDeLaClasse', 'y');
+if($ouverture_auto_WinDevoirsDeLaClasse=='y') {
+	echo "<script type='text/javascript'>
+	getWinDevoirsDeLaClasse().setAjaxContent('./ajax_devoirs_classe.php?id_classe=$id_classe&today='+getCalendarUnixDate());
+</script>\n";
+}
 ?>

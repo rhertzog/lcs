@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: edit_class.php 6244 2010-12-28 16:20:44Z crob $
+* $Id: edit_class.php 8350 2011-09-24 15:20:10Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -39,6 +39,8 @@ if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
     die();
 }
+
+$msg="";
 
 $id_classe = isset($_GET['id_classe']) ? $_GET['id_classe'] : (isset($_POST['id_classe']) ? $_POST["id_classe"] : NULL);
 if (!is_numeric($id_classe)) {$id_classe = 0;}
@@ -105,15 +107,42 @@ if(mysql_num_rows($res_class_tmp)>0){
 
 $priority_defaut = 5;
 
+//================================
+// Liste de domaines à déplacer par la suite dans global.inc ?
+/*
+$tab_domaines=array('bulletins', 'cahier_notes', 'absences', 'cahier_textes', 'edt');
+$tab_domaines_sigle=array('B', 'CN', 'Abs', 'CDT', 'EDT');
+$tab_domaines_texte=array('Bulletins', 'Cahiers de Notes', 'Absences', 'Cahiers De Textes', 'EDT');
+*/
+$tab_domaines=array('bulletins', 'cahier_notes');
+$tab_domaines_sigle=array('B', 'CN');
+$tab_domaines_texte=array('Bulletins', 'Cahiers de Notes');
+//================================
+$invisibilite_groupe=array();
+for($loop=0;$loop<count($tab_domaines);$loop++) {
+	$invisibilite_groupe[$tab_domaines[$loop]]=array();
+}
+$sql="SELECT jgv.* FROM j_groupes_classes jgc, j_groupes_visibilite jgv WHERE jgv.id_groupe=jgc.id_groupe AND jgc.id_classe='$id_classe' AND jgv.visible='n';";
+$res_jgv=mysql_query($sql);
+if(mysql_num_rows($res_jgv)>0) {
+	while($lig_jgv=mysql_fetch_object($res_jgv)) {
+		$invisibilite_groupe[$lig_jgv->domaine][]=$lig_jgv->id_groupe;
+	}
+}
+//================================
+
 if (isset($_POST['is_posted'])) {
 	check_token();
 
     $error = false;
 
+	$tab_id_groupe=array();
+
     foreach ($_POST as $key => $value) {
         $pattern = "/^priorite\_/";
         if (preg_match($pattern, $key)) {
             $group_id = preg_replace($pattern, "", $key);
+			$tab_id_groupe[]=$group_id;
             $options[$group_id]["priorite"] = $value;
         }
     }
@@ -174,6 +203,56 @@ if (isset($_POST['is_posted'])) {
         $update = update_group_class_options($key, $id_classe, $value);
     }
 
+	for($loo=0;$loo<count($tab_domaines);$loo++) {
+		/*
+		echo "<p>\$tab_domaines[$loo]=$tab_domaines[$loo]<br />";
+		foreach($invisibilite_groupe[$tab_domaines[$loo]] as $key => $value) {
+			echo "\$invisibilite_groupe[$tab_domaines[$loo]][$key]=$value<br />";
+		}
+		*/
+		unset($visibilite_groupe_domaine_courant);
+		$visibilite_groupe_domaine_courant=isset($_POST['visibilite_groupe_'.$tab_domaines[$loo]]) ? $_POST['visibilite_groupe_'.$tab_domaines[$loo]] : array();
+		/*
+		foreach($visibilite_groupe_domaine_courant as $key => $value) {
+			echo "\$visibilite_groupe_domaine_courant[$key]=$value<br />";
+		}
+		*/
+		for($loop=0;$loop<count($tab_id_groupe);$loop++) {
+			//echo "\$tab_id_groupe[$loop]=$tab_id_groupe[$loop]<br />";
+			if(in_array($tab_id_groupe[$loop], $invisibilite_groupe[$tab_domaines[$loo]])) {
+				if(in_array($tab_id_groupe[$loop], $visibilite_groupe_domaine_courant)) {
+					$sql="DELETE FROM j_groupes_visibilite WHERE id_groupe='".$tab_id_groupe[$loop]."' AND domaine='".$tab_domaines[$loo]."';";
+					//echo "$sql<br />";
+					$suppr=mysql_query($sql);
+					if(!$suppr) {$msg.="Erreur lors de la suppression de l'invisibilité du groupe n°".$tab_id_groupe[$loop]." sur les ".$tab_domaines_texte[$loo].".<br />";}
+				}
+			}
+			else {
+				if(!in_array($tab_id_groupe[$loop], $visibilite_groupe_domaine_courant)) {
+					$sql="INSERT j_groupes_visibilite SET id_groupe='".$tab_id_groupe[$loop]."', domaine='".$tab_domaines[$loo]."', visible='n';";
+					//echo "$sql<br />";
+					$insert=mysql_query($sql);
+					if(!$insert) {$msg.="Erreur lors de l'enregistrement de l'invisibilité du groupe n°".$tab_id_groupe[$loop]." sur les ".$tab_domaines_texte[$loo].".<br />";}
+				}
+			}
+
+		}
+	}
+
+	//================================
+	$invisibilite_groupe=array();
+	for($loop=0;$loop<count($tab_domaines);$loop++) {
+		$invisibilite_groupe[$tab_domaines[$loop]]=array();
+	}
+	$sql="SELECT jgv.* FROM j_groupes_classes jgc, j_groupes_visibilite jgv WHERE jgv.id_groupe=jgc.id_groupe AND jgc.id_classe='$id_classe' AND jgv.visible='n';";
+	$res_jgv=mysql_query($sql);
+	if(mysql_num_rows($res_jgv)>0) {
+		while($lig_jgv=mysql_fetch_object($res_jgv)) {
+			$invisibilite_groupe[$lig_jgv->domaine][]=$lig_jgv->id_groupe;
+		}
+	}
+	//================================
+
 	$msg="Enregistrement effectué.";
 
 }
@@ -221,6 +300,7 @@ $titre_page = "Gestion des enseignements";
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE **********************************
 
+//debug_var();
 
 if((isset($_GET['action']))&&($_GET['action']=="delete_group")&&(!isset($_GET['confirm_delete_group']))) {
 	check_token(false);
@@ -491,7 +571,8 @@ echo "</fieldset>\n";
 echo "</form>\n";
 echo "</td>\n</tr>\n</table>\n";
 
-$groups = get_groups_for_class($id_classe);
+//$groups = get_groups_for_class($id_classe);
+$groups = get_groups_for_class($id_classe,"","n");
 if(count($groups)==0){
 
 	if($ouvrir_infobulle_nav=='y') {
@@ -585,6 +666,17 @@ for($i=0;$i<10;$i++){
             echo "<p style='color: red;'>Attention, le total d'ECTS pour un semestre devrait être au moins égal à 30.</p>\n";
         }
     }
+
+	// Mettre un témoin pour repérer le prof principal
+	$tab_prof_suivi=get_tab_prof_suivi($id_classe);
+	$nb_prof_suivi=count($tab_prof_suivi);
+	if($nb_prof_suivi>1) {
+		$liste_prof_suivi="";
+		for($loop=0;$loop<count($tab_prof_suivi);$loop++) {
+			if($loop>0) {$liste_prof_suivi.=", ";}
+			$liste_prof_suivi.=civ_nom_prenom($tab_prof_suivi[$loop]);
+		}
+	}
 
     $cpt_grp=0;
     $res = mysql_query("SELECT id, nom_court, nom_complet, priority FROM matieres_categories");
@@ -739,8 +831,29 @@ for($i=0;$i<10;$i++){
             echo ">";
             echo "<img src='../images/icons/ico_attention.png' width='22' height='19' alt='$message_categorie_aucune' title='$message_categorie_aucune' />\n";
             echo "</a>";
-
         }
+
+		//=========================================================
+		echo "<div style='clear: both; font-size: xx-small;'>&nbsp;</div>\n";
+
+		// Visibilité sur les bulletins, CN,...
+		for($loop=0;$loop<count($tab_domaines);$loop++) {
+			echo "<div style='float: left; width: ".max(2,strlen($tab_domaines_sigle[$loop]))."em; border: 1px solid black; margin: 2px; text-align:center; background-color: white; font-weight: bold;'>\n";
+			if(!in_array($current_group["id"],$invisibilite_groupe[$tab_domaines[$loop]])) {
+				echo "<span style='color: blue;' title='Enseignement visible sur les ".$tab_domaines_texte[$loop]."'>".$tab_domaines_sigle[$loop]."</span><br />\n";
+				echo "<input type='checkbox' name='visibilite_groupe_".$tab_domaines[$loop]."[]' value='".$current_group["id"]."'";
+				echo " checked";
+				echo " />\n";
+			}
+			else {
+				echo "<span style='color: lightgray;' title='Enseignement invisible sur les ".$tab_domaines_texte[$loop]."'>".$tab_domaines_sigle[$loop]."</span><br />\n";
+				echo "<input type='checkbox' name='visibilite_groupe_".$tab_domaines[$loop]."[]' value='".$current_group["id"]."'";
+				echo " />\n";
+			}
+			echo "</div>\n";
+		}
+		//=========================================================
+
         echo "</td>\n";
 
         // Coefficient
@@ -783,13 +896,20 @@ for($i=0;$i<10;$i++){
         echo "</tr>\n";
 
         echo "<tr>\n";
-        echo "<td colspan=4>\n";
+        echo "<td colspan='5'>\n";
         $first = true;
         foreach($current_group["profs"]["list"] as $prof) {
-            if (!$first) echo ", ";
-            echo $current_group["profs"]["users"][$prof]["prenom"];
+            if (!$first) {echo ", ";}
+            //echo $current_group["profs"]["users"][$prof]["prenom"];
+            echo casse_mot($current_group["profs"]["users"][$prof]["prenom"],'majf2');
             echo " ";
             echo $current_group["profs"]["users"][$prof]["nom"];
+
+			if(in_array($current_group["profs"]["users"][$prof]["login"],$tab_prof_suivi)) {
+				echo " <img src='../images/bulle_verte.png' width='9' height='9' title=\"Professeur principal d'au moins un élève de la classe sur une des périodes.";
+				if($nb_prof_suivi>1) {echo " La liste des ".getSettingValue('prof_suivi')." est ".$liste_prof_suivi.".";}
+				echo "\" />\n";
+			}
             $first = false;
         }
         echo "</td>\n";

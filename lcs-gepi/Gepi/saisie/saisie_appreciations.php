@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_appreciations.php 7003 2011-05-25 17:35:45Z crob $
+* $Id: saisie_appreciations.php 7004 2011-05-25 17:36:10Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

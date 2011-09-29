@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_limite.php 4828 2010-07-19 08:50:13Z crob $
+ * $Id: edit_limite.php 7121 2011-06-05 09:06:08Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -451,5 +451,14 @@ if ($choix_edit != '2') {
     }
 
 }
+
+echo "<div class='noprint'>\n";
+//===========================================================
+echo "<p><em>NOTE&nbsp;:</em></p>\n";
+require("../lib/textes.inc.php");
+echo "<p style='margin-left: 3em;'>$explication_bulletin_ou_graphe_vide</p>\n";
+//===========================================================
+echo "</div>\n";
+
 require("../lib/footer.inc.php");
 ?>

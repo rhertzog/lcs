@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: repartition_ele_grp.php 5920 2010-11-20 21:04:58Z crob $
+* $Id: repartition_ele_grp.php 7192 2011-06-10 19:30:33Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -427,7 +427,7 @@ if(!isset($id_groupe)) {
 		$alt=$alt*(-1);
 
 		echo "<td class='lig$alt' style='text-align:left; vertical-align:top;'>\n";
-		$groups = get_groups_for_class($id_classe[$i]);
+		$groups = get_groups_for_class($id_classe[$i],"","n");
 		if(count($groups)==0){
 			echo "<p>Aucun enseignement n'a encore été créé dans cette classe.</p>\n";
 		}

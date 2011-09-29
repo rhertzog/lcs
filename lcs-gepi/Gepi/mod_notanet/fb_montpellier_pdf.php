@@ -1,6 +1,6 @@
 <?php
 
-	/* $Id: fb_montpellier_pdf.php 6937 2011-05-17 15:26:44Z crob $ */
+	/* $Id: fb_montpellier_pdf.php 8061 2011-08-30 22:01:10Z jjacquard $ */
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");
@@ -294,13 +294,13 @@
 	$pdf->SetAutoPageBreak(TRUE, 5);
 
 	// gestion des styles
-	$pdf->SetStyle("b","arial","B",8,"0,0,0");
-	$pdf->SetStyle("i","arial","I",8,"0,0,0");
-	$pdf->SetStyle("u","arial","U",8,"0,0,0");
+	$pdf->SetStyle2("b","arial","B",8,"0,0,0");
+	$pdf->SetStyle2("i","arial","I",8,"0,0,0");
+	$pdf->SetStyle2("u","arial","U",8,"0,0,0");
 
 	$taille=10;
-	$pdf->SetStyle("bppc","arial","B",$taille,"0,0,0");
-	$pdf->SetStyle("ippc","arial","I",$taille,"0,0,0");
+	$pdf->SetStyle2("bppc","arial","B",$taille,"0,0,0");
+	$pdf->SetStyle2("ippc","arial","I",$taille,"0,0,0");
 
 
 	/*

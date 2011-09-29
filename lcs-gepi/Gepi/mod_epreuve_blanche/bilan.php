@@ -1,5 +1,5 @@
 <?php
-/* $Id: bilan.php 6394 2011-01-20 09:16:41Z crob $ */
+/* $Id: bilan.php 8061 2011-08-30 22:01:10Z jjacquard $ */
 /*
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -117,7 +117,9 @@ if(isset($imprime)) {
 
 		if($mode=='pdf') {
 
-			require('../fpdf/fpdf.php');
+if (!defined('FPDF_VERSION')) {
+	require_once('../fpdf/fpdf.php');
+}
 			require('../fpdf/ex_fpdf.php');
 			
 			define('FPDF_FONTPATH','../fpdf/font/');
@@ -444,12 +446,11 @@ if(isset($imprime)) {
 				}
 			}
 
-			//$pdf->Footer();
-
-			$date=date("Ymd_Hi");
+		$date=date("Ymd_Hi");
 			$nom_fich='Bilan_'.$id_epreuve.'_'.$date.'.pdf';
-			send_file_download_headers('application/pdf',$nom_fic);
-			$pdf->Output($nom_fich,'I');
+			//send_file_download_headers('application/pdf',$nom_fic);
+			//$pdf->Output($nom_fich,'I');
+			$pdf->Output($nom_fich,'D');
 			die();
 
 		}

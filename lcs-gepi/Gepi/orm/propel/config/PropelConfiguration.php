@@ -9,7 +9,7 @@
  */
 
 /**
- * PropelConfiguration is a container for all Propel's configuration data.
+ * PropelConfiguration is a container for all Propel's runtime configuration data.
  *
  * PropelConfiguration implements ArrayAccess interface so the configuration
  * can be accessed as an array or using a simple getter and setter. The whole
@@ -23,20 +23,17 @@
 class PropelConfiguration implements ArrayAccess
 {
 	const TYPE_ARRAY = 1;
-
 	const TYPE_ARRAY_FLAT = 2;
-
 	const TYPE_OBJECT = 3;
 
-	/**
-	* @var        array An array of parameters
-	*/
 	protected $parameters = array();
+	protected $flattenedParameters = array();
+	protected $isFlattened = false;
 
 	/**
 	 * Construct a new configuration container
 	 *
-	 * @param      array $parameters
+	 * @param     array  $parameters
 	 */
 	public function __construct(array $parameters = array())
 	{
@@ -44,7 +41,10 @@ class PropelConfiguration implements ArrayAccess
 	}
 
 	/**
-	 * @see        http://www.php.net/ArrayAccess
+	 * @see       http://www.php.net/ArrayAccess
+	 *
+	 * @param     integer  $offset
+	 * @return    boolean
 	 */
 	public function offsetExists($offset)
 	{
@@ -52,15 +52,21 @@ class PropelConfiguration implements ArrayAccess
 	}
 
 	/**
-	 * @see        http://www.php.net/ArrayAccess
+	 * @see       http://www.php.net/ArrayAccess
+	 *
+	 * @param     integer  $offset
+	 * @param     mixed    $value
 	 */
 	public function offsetSet($offset, $value)
 	{
-		$this->parameter[$offset] = $value;
+		$this->parameters[$offset] = $value;
 	}
 
 	/**
-	 * @see        http://www.php.net/ArrayAccess
+	 * @see       http://www.php.net/ArrayAccess
+	 *
+	 * @param     integer  $offset
+	 * @return    array
 	 */
 	public function offsetGet($offset)
 	{
@@ -68,7 +74,9 @@ class PropelConfiguration implements ArrayAccess
 	}
 
 	/**
-	 * @see        http://www.php.net/ArrayAccess
+	 * @see       http://www.php.net/ArrayAccess
+	 *
+	 * @param     integer  $offset
 	 */
 	public function offsetUnset($offset)
 	{
@@ -78,30 +86,25 @@ class PropelConfiguration implements ArrayAccess
 	/**
 	 * Get parameter value from the container
 	 *
-	 * @param      string $name    Parameter name
-	 * @param      mixed  $default Default value to be used if the
-	 *                             requested value is not found
-	 * @return     mixed           Parameter value or the default
+	 * @param     string  $name  Parameter name
+	 * @param     mixed   $default  Default value to be used if the requested value is not found
+	 *
+	 * @return    mixed  Parameter value or the default
 	 */
 	public function getParameter($name, $default = null)
 	{
-		$ret = $this->parameters;
-		$parts = explode('.', $name); //name.space.name
-		while ($part = array_shift($parts)) {
-			if (isset($ret[$part])) {
-				$ret = $ret[$part];
-			} else {
-				return $default;
-			}
+		$flattenedParameters = $this->getFlattenedParameters();
+		if (isset($flattenedParameters[$name])) {
+			return $flattenedParameters[$name];
 		}
-		return $ret;
+		return $default;
 	}
 
 	/**
 	 * Store a value to the container
 	 *
-	 * @param      string $name Configuration item name (name.space.name)
-	 * @param      mixed $value Value to be stored
+	 * @param     string  $name  Configuration item name (name.space.name)
+	 * @param     mixed   $value  Value to be stored
 	 */
 	public function setParameter($name, $value)
 	{
@@ -111,13 +114,14 @@ class PropelConfiguration implements ArrayAccess
 			$param = &$param[$part];
 		}
 		$param = $value;
+		$this->flattenedParameters[$name] = $value;
 	}
 
 	/**
+	 * @throws     PropelException
 	 *
-	 *
-	 * @param      int $type
-	 * @return     mixed
+	 * @param     integer  $type
+	 * @return    mixed
 	 */
 	public function getParameters($type = PropelConfiguration::TYPE_ARRAY)
 	{
@@ -125,22 +129,27 @@ class PropelConfiguration implements ArrayAccess
 			case PropelConfiguration::TYPE_ARRAY:
 				return $this->parameters;
 			case PropelConfiguration::TYPE_ARRAY_FLAT:
-				return $this->toFlatArray();
+				return $this->getFlattenedParameters();
 			case PropelConfiguration::TYPE_OBJECT:
 				return $this;
 			default:
 				throw new PropelException('Unknown configuration type: '. var_export($type, true));
 		}
-
 	}
 
-
 	/**
-	 * Get the configuration as a flat array. ($array['name.space.item'] = 'value')
-	 *
-	 * @return     array
+	 * @return    array
 	 */
-	protected function toFlatArray()
+	public function getFlattenedParameters()
+	{
+		if (!$this->isFlattened) {
+			$this->flattenParameters();
+			$this->isFlattened = true;
+		}
+		return $this->flattenedParameters;
+	}
+
+	protected function flattenParameters()
 	{
 		$result = array();
 		$it = new PropelConfigurationIterator(new RecursiveArrayIterator($this->parameters), RecursiveIteratorIterator::SELF_FIRST);
@@ -150,10 +159,6 @@ class PropelConfiguration implements ArrayAccess
 				$result[$ns] = $value;
 			}
 		}
-
-		return $result;
+		$this->flattenedParameters = array_merge($this->flattenedParameters, $result);
 	}
-
 }
-
-?>

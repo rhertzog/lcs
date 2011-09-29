@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 6677 2011-03-22 17:39:28Z crob $
+ * $Id: index.php 8355 2011-09-25 13:11:49Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -333,6 +333,9 @@ if($_SESSION['statut']=="scolarite") {
 	}
 }
 
+if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||($_SESSION['statut']=='cpe')) {
+	echo " | <a href='infos_parents.php'>Informations élèves/parents, tel, mail et adresse</a>";
+}
 echo "</p>\n";
 
 $_SESSION['chemin_retour'] = $_SERVER['REQUEST_URI'];
@@ -872,8 +875,12 @@ if("$num_resp"=="0"){
 	$sql="SELECT DISTINCT rp.pers_id,rp.nom,rp.prenom,rp.adr_id,rp.civilite FROM resp_pers rp
 		LEFT JOIN responsables2 r ON r.pers_id=rp.pers_id
 		WHERE r.pers_id is NULL;";
-	*/
+
 	$sql="SELECT DISTINCT rp.pers_id,rp.nom,rp.prenom,rp.adr_id,rp.civilite FROM resp_pers rp
+		LEFT JOIN responsables2 r ON r.pers_id=rp.pers_id
+		WHERE r.pers_id is NULL";
+	*/
+	$sql="SELECT DISTINCT rp.login, rp.pers_id,rp.nom,rp.prenom,rp.adr_id,rp.civilite FROM resp_pers rp
 		LEFT JOIN responsables2 r ON r.pers_id=rp.pers_id
 		WHERE r.pers_id is NULL";
 
@@ -953,6 +960,10 @@ if("$num_resp"=="0"){
 				echo "<a href='modify_resp.php?pers_id=$lig1->pers_id'>";
 				if($lig1->civilite!=""){echo "$lig1->civilite \n";}
 				echo "$lig1->nom $lig1->prenom</a>\n";
+
+				$lien_image_compte_utilisateur=lien_image_compte_utilisateur($lig1->login, "responsable", "", "n");
+				if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
+
 				echo "</td>\n";
 
 
@@ -1130,7 +1141,13 @@ else{
 
 				if($num_resp==1){$autre_resp=2;}else{$autre_resp=1;}
 
+				/*
 				$sql="SELECT rp.nom,rp.prenom,rp.civilite,ra.* FROM resp_pers rp, resp_adr ra WHERE
+										rp.adr_id=ra.adr_id AND
+										rp.pers_id='$lig1->pers_id'
+									ORDER BY $order_by";
+				*/
+				$sql="SELECT rp.login, rp.nom,rp.prenom,rp.civilite,ra.* FROM resp_pers rp, resp_adr ra WHERE
 										rp.adr_id=ra.adr_id AND
 										rp.pers_id='$lig1->pers_id'
 									ORDER BY $order_by";
@@ -1151,6 +1168,10 @@ else{
 							echo "<a href='modify_resp.php?pers_id=$lig1->pers_id'>";
 							if($lig2->civilite!=""){echo "$lig2->civilite \n";}
 							echo "$lig2->nom $lig2->prenom</a>\n";
+
+							$lien_image_compte_utilisateur=lien_image_compte_utilisateur($lig2->login, "responsable", "", "n");
+							if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
+
 							echo "</td>\n";
 
 							echo "<td style='text-align:center;'";
@@ -1186,10 +1207,21 @@ else{
 										echo "<tr class='lig$alt'>\n";
 									}
 									echo "<td style='text-align:center;'><a href='../eleves/modify_eleve.php?eleve_login=$lig3->login&amp;quelles_classes=toutes&amp;order_type=nom,prenom'>$lig3->nom $lig3->prenom</a>";
+
+									$lien_image_compte_utilisateur=lien_image_compte_utilisateur($lig3->login, "eleve", "", "n");
+									if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
+
 									echo "<br />".liens_class_from_ele_login($lig3->login);
 									echo "</td>\n";
 
+									/*
 									$sql="SELECT rp.nom,rp.prenom,rp.civilite,r.*,ra.* FROM resp_pers rp, responsables2 r, resp_adr ra WHERE
+										rp.pers_id=r.pers_id AND
+										rp.adr_id=ra.adr_id AND
+										r.ele_id='$lig3->ele_id' AND
+										r.resp_legal=$autre_resp";
+									*/
+									$sql="SELECT rp.login, rp.nom,rp.prenom,rp.civilite,r.*,ra.* FROM resp_pers rp, responsables2 r, resp_adr ra WHERE
 										rp.pers_id=r.pers_id AND
 										rp.adr_id=ra.adr_id AND
 										r.ele_id='$lig3->ele_id' AND
@@ -1203,6 +1235,10 @@ else{
 											echo "<a href='modify_resp.php?pers_id=$lig4->pers_id'>";
 											if($lig4->civilite!=""){echo "$lig4->civilite \n";}
 											echo "$lig4->nom $lig4->prenom</a>\n";
+
+											$lien_image_compte_utilisateur=lien_image_compte_utilisateur($lig4->login, "responsable", "", "n");
+											if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
+
 											echo "</td>\n";
 
 											echo "<td style='text-align:center;'>\n";
@@ -1286,7 +1322,7 @@ else{
 
 				if($num_resp==1){$autre_resp=2;}else{$autre_resp=1;}
 
-				$sql="SELECT rp.nom,rp.prenom,rp.civilite,ra.* FROM resp_pers rp, resp_adr ra WHERE
+				$sql="SELECT rp.login, rp.nom,rp.prenom,rp.civilite,ra.* FROM resp_pers rp, resp_adr ra WHERE
 										rp.adr_id=ra.adr_id AND
 										rp.pers_id='$lig1->pers_id'
 									ORDER BY $order_by";
@@ -1323,6 +1359,10 @@ else{
 											echo "<a href='modify_resp.php?pers_id=$lig4->pers_id'>";
 											if($lig4->civilite!=""){echo "$lig4->civilite \n";}
 											echo "$lig4->nom $lig4->prenom</a>\n";
+
+											$lien_image_compte_utilisateur=lien_image_compte_utilisateur($lig4->login, "responsable", "", "n");
+											if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
+
 											echo "</td>\n";
 
 											echo "<td style='text-align:center;'>\n";
@@ -1353,7 +1393,12 @@ else{
 										echo "<td>&nbsp;</td>\n";
 									}
 
-									echo "<td style='text-align:center;'><a href='../eleves/modify_eleve.php?eleve_login=$lig3->login&amp;quelles_classes=toutes&amp;order_type=nom,prenom'>$lig3->nom $lig3->prenom</a></td>\n";
+									echo "<td style='text-align:center;'><a href='../eleves/modify_eleve.php?eleve_login=$lig3->login&amp;quelles_classes=toutes&amp;order_type=nom,prenom'>$lig3->nom $lig3->prenom</a>";
+
+									$lien_image_compte_utilisateur=lien_image_compte_utilisateur($lig3->login, "eleve", "", "n");
+									if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
+
+									echo "</td>\n";
 
 
 
@@ -1367,6 +1412,10 @@ else{
 										echo "<a href='modify_resp.php?pers_id=$lig1->pers_id'>";
 										if($lig2->civilite!=""){echo "$lig2->civilite \n";}
 										echo "$lig2->nom $lig2->prenom</a>\n";
+
+										$lien_image_compte_utilisateur=lien_image_compte_utilisateur($lig2->login, "responsable", "", "n");
+										if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
+
 										echo "</td>\n";
 
 										echo "<td style='text-align:center;'";
@@ -1493,7 +1542,7 @@ else{
 				*/
 				$alt=$alt*(-1);
 
-				$sql="SELECT rp.nom,rp.prenom,rp.civilite,rp.pers_id,ra.* FROM resp_pers rp, resp_adr ra, responsables2 r WHERE
+				$sql="SELECT rp.login, rp.nom,rp.prenom,rp.civilite,rp.pers_id,ra.* FROM resp_pers rp, resp_adr ra, responsables2 r WHERE
 						r.pers_id=rp.pers_id AND
 						rp.adr_id=ra.adr_id AND
 						r.resp_legal='1' AND
@@ -1512,6 +1561,10 @@ else{
 						echo "<a href='modify_resp.php?pers_id=$lig2->pers_id'>";
 						if($lig2->civilite!=""){echo "$lig2->civilite \n";}
 						echo "$lig2->nom $lig2->prenom</a>\n";
+
+						$lien_image_compte_utilisateur=lien_image_compte_utilisateur($lig2->login, "responsable", "", "n");
+						if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
+
 						echo "</td>\n";
 
 						echo "<td style='text-align:center;'>\n";
@@ -1535,10 +1588,15 @@ else{
 					echo "<td>&nbsp;</td>\n";
 				}
 
-				echo "<td style='text-align:center;'><a href='../eleves/modify_eleve.php?eleve_login=$lig1->login&amp;quelles_classes=toutes&amp;order_type=nom,prenom'>$lig1->nom $lig1->prenom</a></td>\n";
+				echo "<td style='text-align:center;'><a href='../eleves/modify_eleve.php?eleve_login=$lig1->login&amp;quelles_classes=toutes&amp;order_type=nom,prenom'>$lig1->nom $lig1->prenom</a>";
+
+				$lien_image_compte_utilisateur=lien_image_compte_utilisateur($lig1->login, "eleve", "", "n");
+				if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
+
+				echo "</td>\n";
 
 
-				$sql="SELECT rp.nom,rp.prenom,rp.civilite,rp.pers_id,ra.* FROM resp_pers rp, resp_adr ra, responsables2 r WHERE
+				$sql="SELECT rp.login, rp.nom,rp.prenom,rp.civilite,rp.pers_id,ra.* FROM resp_pers rp, resp_adr ra, responsables2 r WHERE
 						r.pers_id=rp.pers_id AND
 						rp.adr_id=ra.adr_id AND
 						r.resp_legal='2' AND
@@ -1551,6 +1609,10 @@ else{
 					echo "<a href='modify_resp.php?pers_id=$lig3->pers_id'>";
 					if($lig3->civilite!=""){echo "$lig3->civilite \n";}
 					echo "$lig3->nom $lig3->prenom</a>\n";
+
+					$lien_image_compte_utilisateur=lien_image_compte_utilisateur($lig3->login, "responsable", "", "n");
+					if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
+
 					echo "</td>\n";
 
 					echo "<td style='text-align:center;'>\n";

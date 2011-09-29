@@ -14,7 +14,8 @@
  *
  * @package    propel.generator.gepi.map
  */
-class CahierTexteTravailAFaireFichierJointTableMap extends TableMap {
+class CahierTexteTravailAFaireFichierJointTableMap extends TableMap
+{
 
 	/**
 	 * The (dot-path) name of this class
@@ -30,7 +31,7 @@ class CahierTexteTravailAFaireFichierJointTableMap extends TableMap {
 	 */
 	public function initialize()
 	{
-	  // attributes
+		// attributes
 		$this->setName('ct_devoirs_documents');
 		$this->setPhpName('CahierTexteTravailAFaireFichierJoint');
 		$this->setClassname('CahierTexteTravailAFaireFichierJoint');
@@ -42,6 +43,7 @@ class CahierTexteTravailAFaireFichierJointTableMap extends TableMap {
 		$this->addColumn('TITRE', 'Titre', 'VARCHAR', true, 255, null);
 		$this->addColumn('TAILLE', 'Taille', 'INTEGER', true, null, 0);
 		$this->addColumn('EMPLACEMENT', 'Emplacement', 'VARCHAR', true, 255, null);
+		$this->addColumn('VISIBLE_ELEVE_PARENT', 'VisibleEleveParent', 'BOOLEAN', false, null, true);
 		// validators
 	} // initialize()
 
@@ -50,7 +52,7 @@ class CahierTexteTravailAFaireFichierJointTableMap extends TableMap {
 	 */
 	public function buildRelations()
 	{
-    $this->addRelation('CahierTexteTravailAFaire', 'CahierTexteTravailAFaire', RelationMap::MANY_TO_ONE, array('id_ct_devoir' => 'id_ct', ), 'CASCADE', null);
+		$this->addRelation('CahierTexteTravailAFaire', 'CahierTexteTravailAFaire', RelationMap::MANY_TO_ONE, array('id_ct_devoir' => 'id_ct', ), 'CASCADE', null);
 	} // buildRelations()
 
 } // CahierTexteTravailAFaireFichierJointTableMap

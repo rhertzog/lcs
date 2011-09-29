@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id$
+ * $Id: ajax_suppression_notice.php 7938 2011-08-24 07:57:41Z jjocal $
  *
  * Copyright 2009-2011 Josselin Jacquard
  *
@@ -47,7 +47,7 @@ if (getSettingValue("active_cahiers_texte")!='y') {
     die("Le module n'est pas activé.");
 }
 
-// Vérification : est-ce que l'utilisateur a le droit de supprimer cette entré ?
+// Vérification : est-ce que l'utilisateur a le droit de supprimer cette entrée ?
 $utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
 if ($utilisateur == null) {
 	header("Location: ../logout.php?auto=1");

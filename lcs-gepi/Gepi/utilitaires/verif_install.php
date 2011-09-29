@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: verif_install.php 4528 2010-06-02 11:59:14Z tbelliard $
+ * $Id: verif_install.php 7854 2011-08-21 12:33:55Z jjocal $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -27,7 +27,7 @@ if (file_exists("./secure/connect.inc.php")) {
     $maj = 'no';
     if (@mysql_connect("$dbHost", "$dbUser", "$dbPass")) {
         if (@mysql_select_db("$dbDb")) {
-            require_once("./lib/global.inc");
+            require_once("./lib/global.inc.php");
             // Premier test
             $liste2 = array();
             

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: disciplines.php 5938 2010-11-21 18:14:45Z crob $
+ * $Id: disciplines.php 7858 2011-08-21 13:12:55Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -63,49 +63,8 @@ if (!checkAccess()) {
 	die();
 }
 
-$liste_tables_del = array(
-//"absences",
-//"aid",
-//"aid_appreciations",
-//"aid_config",
-//"avis_conseil_classe",
-//"classes",
-//"droits",
-//"eleves",
-//"responsables",
-//"etablissements",
-//"j_aid_eleves",
-//"j_aid_utilisateurs",
-//"j_eleves_classes",
-//"j_eleves_etablissements",
-//"j_eleves_professeurs",
-//"j_eleves_regime",
-//"j_professeurs_matieres",
-//"log",
-//"matieres",
-"matieres_appreciations",
-"matieres_notes",
-"matieres_appreciations_grp",
-"matieres_appreciations_tempo",
-//"periodes",
-//"tempo2",
-//"temp_gep_import",
-//"tempo",
-//"utilisateurs",
-"cn_cahier_notes",
-"cn_conteneurs",
-"cn_devoirs",
-"cn_notes_conteneurs",
-"cn_notes_devoirs",
-"groupes",
-"j_eleves_groupes",
-"j_groupes_classes",
-"j_groupes_matieres",
-"j_groupes_professeurs",
-"eleves_groupes_settings",
-"j_signalement"
-//"setting"
-);
+include("../lib/initialisation_annee.inc.php");
+$liste_tables_del = $liste_tables_del_etape_matieres;
 
 // Initialisation
 $lcs_ldap_people_dn = 'ou=people,'.$lcs_ldap_base_dn;

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: SelectCtrl.php 7535 2011-07-31 11:55:45Z dblanqui $
+ * $Id: SelectCtrl.php 7799 2011-08-17 08:38:10Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -20,6 +20,10 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+// On empêche l'accès direct au fichier
+if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
+    die();
+};
 $niveau_arbo = 2;
 require_once("../../lib/initialisations.inc.php");
 require_once ("Controleur.php");
@@ -151,8 +155,7 @@ class SelectCtrl extends Controleur {
   private function set_data_selected() {
     $this->set_data_all_selected();
     $this->set_classes_selected();
-    if(!is_null($this->login)) $this->set_individus_selected($this->login,$this->statut);
-    //   $this->test_type_abs();
+    if(!is_null($this->login)) $this->set_individus_selected($this->login,$this->statut);    
   }
 
   private function set_data_all_selected() {
@@ -194,23 +197,6 @@ class SelectCtrl extends Controleur {
         $_SESSION['individus'][$login]=Array($login,$statut);
     }
   }
-
-  // private function test_type_abs() {
-  //   if ($_SESSION['type']=='Abs')$this->clear_data_selected_for_abs();
-//  }
-
-  //  private function clear_data_selected_for_abs() {
-  //   unset($_SESSION['eleve_all']);
-  //   unset($_SESSION['pers_all']);
-  //   if (isset($_SESSION['individus'])) {
-  //     foreach ($_SESSION['individus'] as $value) {
-  //       if ($value[1]=='personnels') {
-  //         if (count($_SESSION['individus'])==1) unset ($_SESSION['individus']);
-  //        else unset($_SESSION['individus'][$value[0]]);
-  //      }
-  //     }
-  //   }
-  //  }
 
   public function test_data_selected() {
     if (isset($_SESSION['individus'])||isset($_SESSION['stats_classes_selected'])

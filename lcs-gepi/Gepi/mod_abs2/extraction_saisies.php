@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: extraction_saisies.php 5482 2010-09-29 16:02:10Z jjacquard $
+ * @version $Id: extraction_saisies.php 8192 2011-09-10 15:13:31Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -55,7 +55,7 @@ if (getSettingValue("active_module_absence")!='2') {
     die("Le module n'est pas activé.");
 }
 
-if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") {
+if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite" && $utilisateur->getStatut()!="administrateur" ) {
     die("acces interdit");
 }
 
@@ -67,8 +67,10 @@ $nom_eleve = isset($_POST["nom_eleve"]) ? $_POST["nom_eleve"] :(isset($_GET["nom
 $id_classe = isset($_POST["id_classe"]) ? $_POST["id_classe"] :(isset($_GET["id_classe"]) ? $_GET["id_classe"] :(isset($_SESSION["id_classe_abs"]) ? $_SESSION["id_classe_abs"] : NULL));
 $date_absence_eleve_debut = isset($_POST["date_absence_eleve_debut"]) ? $_POST["date_absence_eleve_debut"] :(isset($_GET["date_absence_eleve_debut"]) ? $_GET["date_absence_eleve_debut"] :(isset($_SESSION["date_absence_eleve_debut"]) ? $_SESSION["date_absence_eleve_debut"] : NULL));
 $date_absence_eleve_fin = isset($_POST["date_absence_eleve_fin"]) ? $_POST["date_absence_eleve_fin"] :(isset($_GET["date_absence_eleve_fin"]) ? $_GET["date_absence_eleve_fin"] :(isset($_SESSION["date_absence_eleve_fin"]) ? $_SESSION["date_absence_eleve_fin"] : NULL));
-$type_extrait = isset($_POST["type_extrait"]) ? $_POST["type_extrait"] :(isset($_GET["type_extrait"]) ? $_GET["type_extrait"] : NULL);
+$type_extrait = isset($_POST["type_extrait"]) ? $_POST["type_extrait"] :(isset($_GET["type_extrait"]) ? $_GET["type_extrait"] : 1);
 $affichage = isset($_POST["affichage"]) ? $_POST["affichage"] :(isset($_GET["affichage"]) ? $_GET["affichage"] : NULL);
+$page= isset($_REQUEST['page'])?$_REQUEST['page']:0;
+$traitement_csv_en_cours= isset($_REQUEST['traitement_csv_en_cours'])?$_REQUEST['traitement_csv_en_cours']:'non_defini';
 
 if (isset($id_classe) && $id_classe != null) $_SESSION['id_classe_abs'] = $id_classe;
 if (isset($date_absence_eleve_debut) && $date_absence_eleve_debut != null) $_SESSION['date_absence_eleve_debut'] = $date_absence_eleve_debut;
@@ -91,90 +93,79 @@ $dt_date_absence_eleve_fin->setTime(23,59,59);
 $style_specifique[] = "edt_organisation/style_edt";
 $style_specifique[] = "templates/DefaultEDT/css/small_edt";
 $style_specifique[] = "mod_abs2/lib/abs_style";
-$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
-$javascript_specifique[] = "lib/DHTMLcalendar/calendar";
-$javascript_specifique[] = "lib/DHTMLcalendar/lang/calendar-fr";
-$javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
 //$javascript_specifique[] = "mod_abs2/lib/include";
 $javascript_specifique[] = "edt_organisation/script/fonctions_edt";
+$dojo=true;
 //**************** EN-TETE *****************
 $titre_page = "Les absences";
 if ($affichage != 'ods') {// on affiche pas de html
     require_once("../lib/header.inc");
+    
+    if ($traitement_csv_en_cours != 'true') {
 
-    include('menu_abs2.inc.php');
-    include('menu_bilans.inc.php');
-    ?>
-    <div id="contain_div" class="css-panes">
-    <form name="choix_extraction" action="<?php $_SERVER['PHP_SELF']?>" method="post">
-    <h2>Les saisies du
-	<input size="8" id="date_absence_eleve_1" name="date_absence_eleve_debut" value="<?php echo $dt_date_absence_eleve_debut->format('d/m/Y')?>" />
-	<script type="text/javascript">
-	    Calendar.setup({
-		inputField     :    "date_absence_eleve_1",     // id of the input field
-		ifFormat       :    "%d/%m/%Y",      // format of the input field
-		button         :    "date_absence_eleve_1",  // trigger for the calendar (button ID)
-		align          :    "Bl",           // alignment (defaults to "Bl")
-		singleClick    :    true
-	    });
-	</script>
-	au
-	<input size="8" id="date_absence_eleve_2" name="date_absence_eleve_fin" value="<?php echo $dt_date_absence_eleve_fin->format('d/m/Y')?>" />
-	<script type="text/javascript">
-	    Calendar.setup({
-		inputField     :    "date_absence_eleve_2",     // id of the input field
-		ifFormat       :    "%d/%m/%Y",      // format of the input field
-		button         :    "date_absence_eleve_2",  // trigger for the calendar (button ID)
-		align          :    "Bl",           // alignment (defaults to "Bl")
-		singleClick    :    true
-	    });
-	</script>
-	</h2>
-	  <p>
-    Nom (facultatif) : <input type="text" name="nom_eleve" size="10" value="<?php echo $nom_eleve?>"/>
-
-    <?php
-    //on affiche une boite de selection avec les classe
-    if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
-	$classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->find();
-    } else {
-	$classe_col = $utilisateur->getClasses();
-    }
-    if (!$classe_col->isEmpty()) {
-	    echo ("Classe : <select name=\"id_classe\">");
-	    echo "<option value='-1'>Toutes les classes</option>\n";
-	    foreach ($classe_col as $classe) {
-		    echo "<option value='".$classe->getId()."'";
-		    if ($id_classe == $classe->getId()) echo " selected='selected' ";
-		    echo ">";
-		    echo $classe->getNom();
-		    echo "</option>\n";
-	    }
-	    echo "</select> ";
-    } else {
-	echo 'Aucune classe avec élève affecté n\'a été trouvée';
-    }
-    ?>
-	</p>
-    <p>
-    Type :
-    <select style="width:200px" name="type_extrait">
-    <option value='1' <?php if ($type_extrait == '1') {echo 'selected';}?>>Liste des saisies occasionnant un manquement aux obligations de présence</option>
-    <option value='2' <?php if ($type_extrait == '2') {echo 'selected';}?>>Liste de toutes les saisies</option>
-    </select>
-
-    <button type="submit" name="affichage" value="html">Afficher</button>
-    <button type="submit" name="affichage" value="ods">Enregistrer au format ods</button>
-	</p>
-	</form>
-
-    <?php
+	    include('menu_abs2.inc.php');
+	    include('menu_bilans.inc.php');
+	    ?>
+	    <div id="contain_div" class="css-panes">
+	    <form dojoType="dijit.form.Form" id="choix_extraction" name="choix_extraction" action="<?php $_SERVER['PHP_SELF']?>" method="post">
+	    <h2>Extraire les saisies du 		
+	    <input style="width : 8em;font-size:14px;" type="text" dojoType="dijit.form.DateTextBox" id="date_absence_eleve_debut" name="date_absence_eleve_debut" value="<?php echo $dt_date_absence_eleve_debut->format('Y-m-d')?>" />
+	    au               
+	    <input style="width : 8em;font-size:14px;" type="text" dojoType="dijit.form.DateTextBox" id="date_absence_eleve_fin" name="date_absence_eleve_fin" value="<?php echo $dt_date_absence_eleve_fin->format('Y-m-d')?>" />
+		</h2>
+	    <?php 
+	    if ($utilisateur->getStatut()!="administrateur" ) {
+			echo '<p>Nom (facultatif) : <input dojoType="dijit.form.TextBox" type="text" style="width : 10em" name="nom_eleve" size="10" value="'.$nom_eleve.'"/>';
+		
+		    //on affiche une boite de selection avec les classe
+		    if ($affichage != 'ods')
+		    if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
+			$classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->find();
+		    } else {
+			$classe_col = $utilisateur->getClasses();
+		    }
+		    if (!$classe_col->isEmpty()) {
+			    echo ("Classe : <select dojoType=\"dijit.form.Select\" style=\"width :12em;font-size:12px;\" name=\"id_classe\">");
+			    echo "<option value='-1'>Toutes les classes</option>\n";
+			    foreach ($classe_col as $classe) {
+				    echo "<option value='".$classe->getId()."'";
+				    if ($id_classe == $classe->getId()) echo " selected='selected' ";
+				    echo ">";
+				    echo $classe->getNom();
+				    echo "</option>\n";
+			    }
+			    echo "</select> ";
+		    } else {
+			echo 'Aucune classe avec élève affecté n\'a été trouvée';
+		    }
+	    ?>
+		</p>
+	    <p>
+	    Type :
+	    <select dojoType="dijit.form.Select" style="font-size:12px;" name="type_extrait">
+	    <option value='1' <?php if ($type_extrait == '1') {echo 'selected="selected"';}?>>Liste des saisies occasionnant un manquement aux obligations de présence</option>
+	    <option value='2' <?php if ($type_extrait == '2') {echo 'selected="selected"';}?>>Liste de toutes les saisies</option>
+	    </select>
+	    <br />
+	    <button style="font-size:12px" dojoType="dijit.form.Button" type="submit" name="affichage" value="html">Afficher</button>
+	    <button style="font-size:12px" dojoType="dijit.form.Button" type="submit" name="affichage" value="ods">Enregistrer au format ods</button>
+	    <?php } else {
+	    	?><button style="font-size:12px" dojoType="dijit.form.Button" type="submit" name="affichage" value="csv">Enregistrer au format csv</button>
+	    	<?php
+	    	if (isset($_REQUEST['retour']) && $traitement_csv_en_cours != 'true') {
+				echo '<br/><br/><br/><input type="hidden" name="retour" value="'.$_REQUEST['retour'].'" />';
+			}
+	    }?>
+		</form>
+		 
+	    <?php
+	}
 }
 if ($affichage != null && $affichage != '') {
     $eleve_query = EleveQuery::create();
-    if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
+    if ($utilisateur->getStatut() == 'administrateur' || getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
     } else {
-	$eleve_query->filterByUtilisateurProfessionnel($utilisateur);
+		$eleve_query->filterByUtilisateurProfessionnel($utilisateur);
     }
     if ($id_classe !== null && $id_classe != -1) {
 	$eleve_query->useJEleveClasseQuery()->filterByIdClasse($id_classe)->endUse();
@@ -189,15 +180,17 @@ if ($affichage != null && $affichage != '') {
 	->filterByEleveId($eleve_col->toKeyValue('IdEleve', 'IdEleve'));
 
     if ($type_extrait == '1') {
-	$saisie_query->filterByManquementObligationPresence(true);
+		$saisie_query->filterByManquementObligationPresence(true);
     }
 
     $saisie_query->useEleveQuery()->orderByNom()->orderByPrenom()->endUse();
     $saisie_query->orderByDebutAbs();
-    $saisie_col = $saisie_query->find();
+    $saisie_query->setFormatter('PropelOnDemandFormatter');
+    
 }
 
 if ($affichage == 'html') {
+	$saisie_col = $saisie_query->find();
     echo '<table style="border:1px solid">';
     $precedent_eleve_id = null;
     foreach ($saisie_col as $saisie) {
@@ -233,15 +226,12 @@ if ($affichage == 'html') {
     echo '</td>';
     echo '</tr>';
     echo '</table>';
-    echo '<h5>Extraction faite le '.date("d/m/Y - h:i").'</h5>';
+    echo '<h5>Extraction faite le '.date("d/m/Y - H:i").'</h5>';
     
 } else if ($affichage == 'ods') {
-    // load the TinyButStrong libraries
-    if (version_compare(PHP_VERSION,'5')<0) {
-	include_once('../tbs/tbs_class.php'); // TinyButStrong template engine for PHP 4
-    } else {
-	include_once('../tbs/tbs_class_php5.php'); // TinyButStrong template engine
-    }
+    // load the TinyButStrong libraries    
+	include_once('../tbs/tbs_class.php'); // TinyButStrong template engine
+    
     //include_once('../tbs/plugins/tbsdb_php.php');
     $TBS = new clsTinyButStrong; // new instance of TBS
     include_once('../tbs/plugins/tbs_plugin_opentbs.php');
@@ -263,7 +253,7 @@ if ($affichage == 'html') {
 	$titre .= ' pour les élèves dont le nom ou le prénom contient '.$nom_eleve;
     }
     $TBS->MergeField('titre', $titre);
-
+	$saisie_col = $saisie_query->find();
     $TBS->MergeBlock('saisie_col',$saisie_col);
 
     // Output as a download file (some automatic fields are merged here)
@@ -273,9 +263,117 @@ if ($affichage == 'html') {
     }
     $nom_fichier .=  $dt_date_absence_eleve_fin->format("d_m_Y").'.ods';
     $TBS->Show(OPENTBS_DOWNLOAD+TBS_EXIT, $nom_fichier);
+} else if ($affichage == 'csv' && $utilisateur->getStatut() == "administrateur") {
+	if ($traitement_csv_en_cours == 'false') {
+		//le traitement viens de se finir, on propose le fichier au téléchargement
+		echo '<br/><a href="'.'../backup/'.getSettingValue("backup_directory").'/absences/'.$_REQUEST['filename'].'">Télécharger le résultat</a>';
+		if ($page == 1) {
+			//on s'est arreter à la page 0, il n'y a pas de résultat
+			echo ' (extraction vide)';
+		}
+		echo '<br/>';
+	} else {
+		//print_r($page);die;
+	    // titre des colonnes
+    	$saisie_col = $saisie_query->paginate($page, 750);
+		if ($page == 0) {
+		    $output = '';
+		    $date = new DateTime();
+		    $output .= ('Extraction des saisies d\'absence '.getSettingValue('gepiSchoolName').' '.getSettingValue('gepiYear')."\n");
+		    $output .= 'Extraction faite le '.date("d/m/Y - H:i")."\n";
+		    $output .= ("Nom,Prenom,Classe,Debut absence,Fin absence, Type, Manquement a l'obligation de presence, Sous responsabilite etablissement\n");
+		    $filename = 'extrait_saisies_'.date("d_m_Y_H_i").'.csv';
+		    if (!file_exists('../backup/'.getSettingValue("backup_directory").'/absences')) {
+		    	mkdir('../backup/'.getSettingValue("backup_directory").'/absences');
+		    }
+			$myFile = '../backup/'.getSettingValue("backup_directory").'/absences/'.$filename;
+			$fh = fopen($myFile, 'w');
+		    
+		    fwrite($fh,$output);
+			fclose($fh);
+	    } else {
+	    	$filename = $_REQUEST['filename'];
+	
+		
+			echo '<br/>Veuillez patienter, étape '.$page.' sur '.$saisie_col->getLastPage();
+			if (ob_get_contents()) {
+				ob_flush();
+			}
+			flush();
+			
+	    	$output = '';
+	    	foreach ($saisie_col as $saisie) {
+				if ($type_extrait == '1' && !$saisie->getManquementObligationPresence()) {
+				    continue;
+				}
+				$output .= $saisie->getEleve()->getNom().','.$saisie->getEleve()->getPrenom().','.$saisie->getEleve()->getClasseNom().',';
+				$output .= $saisie->getDebutAbs('d/m/Y - h:i').','.$saisie->getFinAbs('d/m/Y - h:i').',';
+				
+				$traitement_col = $saisie->getAbsenceEleveTraitements();
+				foreach ($traitement_col as $traitement) {
+					if ($traitement->getAbsenceEleveType() != null) {
+						$output .= $traitement->getAbsenceEleveType()->getNom().' - ';
+					}
+				}
+				$output .= ',';
+				if ($saisie->getManquementObligationPresence()) {
+					$output .= 'oui,';
+				} else {
+					$output .= 'non,';
+				}
+				if ($saisie->getSousResponsabiliteEtablissement()) {
+					$output .= 'oui';
+				} else {
+					$output .= 'non';
+				}
+				$output .= "\n";
+		    }
+			$myFile = '../backup/'.getSettingValue("backup_directory").'/absences/'.$filename;
+			$fh = fopen($myFile, 'a');
+		    
+		    fwrite($fh,$output);
+			fclose($fh);
+	    }
+		echo '<form action="extraction_saisies.php" method="post" name="form_table" id="form_table">';
+		echo add_token_field();
+		if (isset($filename)) {
+			echo '<input type="hidden" name="filename" value="'.$filename.'" />';
+		}
+		echo '<input type="hidden" name="affichage" value="'.$affichage.'" />';
+		if ($page == $saisie_col->getLastPage()) {
+			echo '<input type="hidden" name="traitement_csv_en_cours" value="false" />';
+		} else {
+			echo '<input type="hidden" name="traitement_csv_en_cours" value="true" />';
+		}
+		$page++;
+		echo '<input type="hidden" name="page" value="'.$page.'" />';
+		if (isset($_REQUEST['retour'])) {
+			echo '<input type="hidden" name="retour" value="'.$_REQUEST['retour'].'" />';
+		}
+		echo  "<script type='text/javascript'>
+		                    document.form_table.submit();
+		                </script>  
+		                <noscript>
+		                <input type='submit' name='Submit' value='Continuer' />
+		                </noscript>
+		            ";
+		echo "</form><br/>";
+	}
+ }
+ 
+if (isset($_REQUEST['retour']) && $traitement_csv_en_cours != 'true') {
+	echo '<br/><br/><a href="'.$_REQUEST['retour'].'">Retour</a>';
 }
 ?>
 	</div>
 <?php
-require("../lib/footer.inc.php");
+$javascript_footer_texte_specifique = '<script type="text/javascript">
+    dojo.require("dojo.parser");
+    dojo.require("dijit.form.Button");    
+    dojo.require("dijit.form.Form");  
+    dojo.require("dijit.form.DateTextBox");  
+    dojo.require("dijit.form.TextBox");
+    dojo.require("dijit.form.Select");
+    </script>';
+require_once("../lib/footer.inc.php");
 ?>

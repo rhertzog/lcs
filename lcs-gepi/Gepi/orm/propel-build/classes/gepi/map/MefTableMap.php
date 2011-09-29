@@ -14,7 +14,8 @@
  *
  * @package    propel.generator.gepi.map
  */
-class MefTableMap extends TableMap {
+class MefTableMap extends TableMap
+{
 
 	/**
 	 * The (dot-path) name of this class
@@ -30,7 +31,7 @@ class MefTableMap extends TableMap {
 	 */
 	public function initialize()
 	{
-	  // attributes
+		// attributes
 		$this->setName('mef');
 		$this->setPhpName('Mef');
 		$this->setClassname('Mef');
@@ -38,7 +39,7 @@ class MefTableMap extends TableMap {
 		$this->setUseIdGenerator(true);
 		// columns
 		$this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
-		$this->addColumn('EXT_ID', 'ExtId', 'INTEGER', false, null, null);
+		$this->addColumn('MEF_CODE', 'MefCode', 'INTEGER', false, null, null);
 		$this->addColumn('LIBELLE_COURT', 'LibelleCourt', 'VARCHAR', true, 50, null);
 		$this->addColumn('LIBELLE_LONG', 'LibelleLong', 'VARCHAR', true, 300, null);
 		$this->addColumn('LIBELLE_EDITION', 'LibelleEdition', 'VARCHAR', true, 300, null);
@@ -50,7 +51,7 @@ class MefTableMap extends TableMap {
 	 */
 	public function buildRelations()
 	{
-    $this->addRelation('Eleve', 'Eleve', RelationMap::ONE_TO_MANY, array('id' => 'id_mef', ), 'SET NULL', null);
+		$this->addRelation('Eleve', 'Eleve', RelationMap::ONE_TO_MANY, array('mef_code' => 'mef_code', ), 'SET NULL', null, 'Eleves');
 	} // buildRelations()
 
 } // MefTableMap

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_eleves.php 5920 2010-11-20 21:04:58Z crob $
+ * $Id: edit_eleves.php 8261 2011-09-17 07:22:27Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -45,6 +45,10 @@ if (!checkAccess()) {
 $id_classe = isset($_GET['id_classe']) ? $_GET['id_classe'] : (isset($_POST['id_classe']) ? $_POST["id_classe"] : NULL);
 $id_groupe = isset($_GET['id_groupe']) ? $_GET['id_groupe'] : (isset($_POST['id_groupe']) ? $_POST["id_groupe"] : NULL);
 $order_by = isset($_GET['order_by']) ? $_GET['order_by'] : (isset($_POST['order_by']) ? $_POST["order_by"] : "classe");
+
+if(isset($_POST['id_groupe_reference'])) {
+	$_SESSION['id_groupe_reference_copie_assoc']=$_POST['id_groupe_reference'];
+}
 
 function debug_edit_eleves($texte) {
 	$debug_edit_eleves=0;
@@ -402,6 +406,7 @@ echo "</form>\n";
 		echo "<select name='choix_modele_copie' id='choix_modele_copie'>\n";
 		$cpt_ele_grp=0;
 		$chaine_js=array();
+		$id_groupe_js=array();
 		//echo "<option value=''>---</option>\n";
 		while($lig_grp_avec_eleves=mysql_fetch_object($res_grp_avec_eleves)) {
 
@@ -417,7 +422,11 @@ echo "</form>\n";
 			}
 			$chaine_js[$cpt_ele_grp]=substr($chaine_js[$cpt_ele_grp],1);
 
-			echo "<option value='$cpt_ele_grp'>".$tmp_grp['description']." (".$tmp_grp['name']." en ".$tmp_grp["classlist_string"].")</option>\n";
+			$id_groupe_js[$cpt_ele_grp]=$lig_grp_avec_eleves->id_groupe;
+
+			echo "<option value='$cpt_ele_grp'";
+			if((isset($_SESSION['id_groupe_reference_copie_assoc']))&&($_SESSION['id_groupe_reference_copie_assoc']==$lig_grp_avec_eleves->id_groupe)) {echo " selected='true'";}
+			echo ">".$tmp_grp['description']." (".$tmp_grp['name']." en ".$tmp_grp["classlist_string"].")</option>\n";
 
 			$cpt_ele_grp++;
 		}
@@ -431,6 +440,7 @@ echo "</form>\n";
 		echo "<script type='text/javascript'>\n";
 		for($loop=0;$loop<count($chaine_js);$loop++) {
 			echo "tab_grp_ele_".$loop."=new Array(".$chaine_js[$loop].");\n";
+			echo "id_groupe_js_".$loop."=".$id_groupe_js[$loop].";\n";
 		}
 		echo "</script>\n";
 
@@ -478,7 +488,8 @@ $conditions .= ") and c.id = j.id_classe";
 // Définition de l'ordre de la liste
 if ($order_by == "classe") {
 	// Classement par classe puis nom puis prénom
-	$order_conditions = "j.id_classe, e.nom, e.prenom";
+	//$order_conditions = "j.id_classe, e.nom, e.prenom";
+	$order_conditions = "c.classe, j.id_classe, e.nom, e.prenom";
 } elseif ($order_by == "nom") {
 	$order_conditions = "e.nom, e.prenom";
 }
@@ -784,6 +795,9 @@ if(count($total_eleves)>0) {
 	echo "<input type='hidden' name='mode' value='" . $mode . "' />\n";
 	echo "<input type='hidden' name='id_groupe' value='" . $id_groupe . "' />\n";
 	echo "<input type='hidden' name='id_classe' value='" . $id_classe . "' />\n";
+
+	echo "<input type='hidden' name='id_groupe_reference' id='id_groupe_reference' value='' />\n";
+
 	echo "<p align='center'><input type='submit' value='Enregistrer' /></p>\n";
 	
 	
@@ -818,7 +832,9 @@ if(count($total_eleves)>0) {
 	function recopie_grp_ele(num) {
 		tab=eval('tab_grp_ele_'+num);
 		//alert('tab[0]='+tab[0]);
-	
+
+		document.getElementById('id_groupe_reference').value=eval('id_groupe_js_'+num);
+
 		for(j=0;j<$nb_eleves;j++) {
 			DecocheLigne(j);
 		}
@@ -836,6 +852,8 @@ if(count($total_eleves)>0) {
 	function recopie_inverse_grp_ele(num) {
 		tab=eval('tab_grp_ele_'+num);
 		//alert('tab[0]='+tab[0]);
+
+		document.getElementById('id_groupe_reference').value=eval('id_groupe_js_'+num);
 
 		for(j=0;j<$nb_eleves;j++) {
 			CocheLigne(j);

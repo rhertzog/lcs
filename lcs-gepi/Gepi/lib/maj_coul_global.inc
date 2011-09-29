@@ -1,6 +1,10 @@
 <?php
-/*
-@version $Id: maj_coul_global.inc 2484 2008-09-28 20:03:36Z crob $
+/**
+ * Initialisation des couleurs
+ * @version $Id: maj_coul_global.inc 7849 2011-08-20 18:19:12Z regis $
+ * @license GNU/GPL 
+ * @package Initialisation
+ * @subpackage initialisation
 */
 
 function getCouleurGlobal($couleur,$coul_origine) {

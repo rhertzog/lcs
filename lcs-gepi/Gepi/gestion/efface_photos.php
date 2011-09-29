@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: efface_photos.php 5934 2010-11-21 13:33:58Z crob $
+ * $Id: efface_photos.php 7953 2011-08-24 14:23:50Z regis $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -52,7 +52,7 @@ require_once("../lib/header.inc");
 // En multisite, on ajoute le répertoire RNE
 if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 	// On récupère le RNE de l'établissement
-	$rep_photos='../photos/'.getSettingValue("gepiSchoolRne")."/eleves";
+	$rep_photos='../photos/'.$_COOKIE['RNE'].'/eleves';
 }
 else {
 	$rep_photos='../photos/eleves';		

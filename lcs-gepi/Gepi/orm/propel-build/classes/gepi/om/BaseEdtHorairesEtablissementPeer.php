@@ -31,6 +31,9 @@ abstract class BaseEdtHorairesEtablissementPeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 7;
+
 	/** the column name for the ID_HORAIRE_ETABLISSEMENT field */
 	const ID_HORAIRE_ETABLISSEMENT = 'horaires_etablissement.ID_HORAIRE_ETABLISSEMENT';
 
@@ -52,6 +55,9 @@ abstract class BaseEdtHorairesEtablissementPeer {
 	/** the column name for the OUVERT_HORAIRE_ETABLISSEMENT field */
 	const OUVERT_HORAIRE_ETABLISSEMENT = 'horaires_etablissement.OUVERT_HORAIRE_ETABLISSEMENT';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of EdtHorairesEtablissement objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -67,7 +73,7 @@ abstract class BaseEdtHorairesEtablissementPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('IdHoraireEtablissement', 'DateHoraireEtablissement', 'JourHoraireEtablissement', 'OuvertureHoraireEtablissement', 'FermetureHoraireEtablissement', 'PauseHoraireEtablissement', 'OuvertHoraireEtablissement', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('idHoraireEtablissement', 'dateHoraireEtablissement', 'jourHoraireEtablissement', 'ouvertureHoraireEtablissement', 'fermetureHoraireEtablissement', 'pauseHoraireEtablissement', 'ouvertHoraireEtablissement', ),
 		BasePeer::TYPE_COLNAME => array (self::ID_HORAIRE_ETABLISSEMENT, self::DATE_HORAIRE_ETABLISSEMENT, self::JOUR_HORAIRE_ETABLISSEMENT, self::OUVERTURE_HORAIRE_ETABLISSEMENT, self::FERMETURE_HORAIRE_ETABLISSEMENT, self::PAUSE_HORAIRE_ETABLISSEMENT, self::OUVERT_HORAIRE_ETABLISSEMENT, ),
@@ -82,7 +88,7 @@ abstract class BaseEdtHorairesEtablissementPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('IdHoraireEtablissement' => 0, 'DateHoraireEtablissement' => 1, 'JourHoraireEtablissement' => 2, 'OuvertureHoraireEtablissement' => 3, 'FermetureHoraireEtablissement' => 4, 'PauseHoraireEtablissement' => 5, 'OuvertHoraireEtablissement' => 6, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('idHoraireEtablissement' => 0, 'dateHoraireEtablissement' => 1, 'jourHoraireEtablissement' => 2, 'ouvertureHoraireEtablissement' => 3, 'fermetureHoraireEtablissement' => 4, 'pauseHoraireEtablissement' => 5, 'ouvertHoraireEtablissement' => 6, ),
 		BasePeer::TYPE_COLNAME => array (self::ID_HORAIRE_ETABLISSEMENT => 0, self::DATE_HORAIRE_ETABLISSEMENT => 1, self::JOUR_HORAIRE_ETABLISSEMENT => 2, self::OUVERTURE_HORAIRE_ETABLISSEMENT => 3, self::FERMETURE_HORAIRE_ETABLISSEMENT => 4, self::PAUSE_HORAIRE_ETABLISSEMENT => 5, self::OUVERT_HORAIRE_ETABLISSEMENT => 6, ),
@@ -222,7 +228,7 @@ abstract class BaseEdtHorairesEtablissementPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -241,7 +247,7 @@ abstract class BaseEdtHorairesEtablissementPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -295,7 +301,7 @@ abstract class BaseEdtHorairesEtablissementPeer {
 	 * @param      EdtHorairesEtablissement $value A EdtHorairesEtablissement object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(EdtHorairesEtablissement $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -450,7 +456,7 @@ abstract class BaseEdtHorairesEtablissementPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + EdtHorairesEtablissementPeer::NUM_COLUMNS;
+			$col = $startcol + EdtHorairesEtablissementPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = EdtHorairesEtablissementPeer::OM_CLASS;
 			$obj = new $cls();
@@ -459,6 +465,7 @@ abstract class BaseEdtHorairesEtablissementPeer {
 		}
 		return array($obj, $col);
 	}
+
 	/**
 	 * Returns the TableMap related to this peer.
 	 * This method is not needed for general use but a specific application could have a need.
@@ -500,7 +507,7 @@ abstract class BaseEdtHorairesEtablissementPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a EdtHorairesEtablissement or Criteria object.
+	 * Performs an INSERT on the database, given a EdtHorairesEtablissement or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or EdtHorairesEtablissement object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -543,7 +550,7 @@ abstract class BaseEdtHorairesEtablissementPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a EdtHorairesEtablissement or Criteria object.
+	 * Performs an UPDATE on the database, given a EdtHorairesEtablissement or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or EdtHorairesEtablissement object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -582,11 +589,12 @@ abstract class BaseEdtHorairesEtablissementPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the horaires_etablissement table.
+	 * Deletes all rows from the horaires_etablissement table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(EdtHorairesEtablissementPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -611,7 +619,7 @@ abstract class BaseEdtHorairesEtablissementPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a EdtHorairesEtablissement or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a EdtHorairesEtablissement or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or EdtHorairesEtablissement object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -680,7 +688,7 @@ abstract class BaseEdtHorairesEtablissementPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(EdtHorairesEtablissement $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

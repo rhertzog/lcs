@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: step2.php 6600 2011-03-03 11:14:32Z crob $
+ * $Id: step2.php 7858 2011-08-21 13:12:55Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -98,78 +98,8 @@ document.formulaire.elements[i+a].value = b ;
 echo "<center><h3 class='gepi'>Première phase d'initialisation<br />Importation des élèves, constitution des classes et affectation des élèves dans les classes</h3></center>";
 echo "<center><h3 class='gepi'>Deuxième étape : Enregistrement des classes</h3></center>";
 
-$liste_tables_del = array(
-"absences",
-"absences_gep",
-"aid",
-"aid_appreciations",
-//"aid_config",
-"avis_conseil_classe",
-//"classes",
-//"droits",
-"eleves",
-"responsables",
-"responsables2",
-"resp_pers",
-"resp_adr",
-//"etablissements",
-"j_aid_eleves",
-"j_aid_utilisateurs",
-"j_aid_eleves_resp",
-"j_eleves_classes",
-//==========================
-// On ne vide plus la table chaque année
-// Problème avec Sconet qui récupère seulement l'établissement de l'année précédente qui peut être l'établissement courant
-//"j_eleves_etablissements",
-//==========================
-"j_eleves_professeurs",
-"j_eleves_regime",
-//"j_professeurs_matieres",
-//"log",
-//"matieres",
-"matieres_appreciations",
-"matieres_notes",
-"matieres_appreciations_grp",
-"matieres_appreciations_tempo",
-//==========================
-// Tables notanet
-'notanet',
-'notanet_avis',
-'notanet_app',
-'notanet_verrou',
-'notanet_socles',
-'notanet_ele_type',
-//==========================
-"observatoire",
-"observatoire_comment",
-//"observatoire_config",
-//"observatoire_niveaux",
-//"observatoire_j_resp_champ",
-"observatoire_suivi",
-//"periodes",
-//"periodes_observatoire",
-"tempo2",
-//"temp_gep_import",
-"tempo",
-//"utilisateurs",
-"cn_cahier_notes",
-"cn_conteneurs",
-"cn_devoirs",
-"cn_notes_conteneurs",
-"cn_notes_devoirs",
-//"setting"
-"ex_classes",
-"ex_examens",
-"ex_groupes",
-"ex_matieres",
-"ex_notes",
-
-"eb_copies",
-"eb_epreuves",
-"eb_groupes",
-"eb_profs"
-//,"eb_salles"
-);
+include("../lib/initialisation_annee.inc.php");
+$liste_tables_del = $liste_tables_del_etape_eleves;
 
 if (!isset($step2)) {
     $j=0;

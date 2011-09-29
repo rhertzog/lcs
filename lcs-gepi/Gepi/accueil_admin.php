@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: accueil_admin.php 6491 2011-02-11 17:10:43Z jjacquard $
+ * $Id: accueil_admin.php 7787 2011-08-16 12:19:46Z dblanqui $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -143,7 +143,8 @@ $chemin = array(
 //"/groupes/index.php",
 "/aid/index.php",
 "/mod_trombinoscopes/trombinoscopes_admin.php#gestion_fichiers",
-"/mef/admin_mef.php"
+"/mef/admin_mef.php",
+"/mod_sso_table/index.php"    
 );
 
 $titre = array(
@@ -156,7 +157,8 @@ $titre = array(
 //"Gestion des groupes",
 "Gestion des AID",
 "Gestion du trombinoscope",
-"Gestion des mef (niveaux)"
+"Gestion des mef (niveaux)",
+"Gestion de la table SSO "    
 );
 
 $expli = array(
@@ -177,7 +179,8 @@ $expli = array(
 <br />Affecter les ".$gepiSettings['denomination_professeurs']." et les ".$gepiSettings['denomination_eleves'].".",
 "Repérer les personnels/".$gepiSettings['denomination_eleves']." n'ayant pas de photo.
 <br />Vider le dossier des photos,...",
-"Gestion des mef (niveaux)"
+"Gestion des mef (niveaux)",
+"Gestion de la table de correspondance des identifiants pour le SSO "     
 );
 
 $nb_ligne = count($chemin);

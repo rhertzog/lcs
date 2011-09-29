@@ -1,185 +1,68 @@
 <?php
-/*
- * $Id: share.inc.php 7485 2011-07-22 17:13:38Z regis $
+/** Fonctions accessibles dans toutes les pages
+ * 
+ * $Id: share.inc.php 8275 2011-09-20 13:01:11Z crob $
+ * 
+ * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * 
+ * @package Initialisation
+ * @subpackage general
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
 
-function generate_token() {
-    if (!isset($_SESSION["gepi_alea"])) {
-		$length = rand(35, 45);
-		for($len=$length,$r='';strlen($r)<$len;$r.=chr(!mt_rand(0,2)? mt_rand(48,57):(!mt_rand(0,1) ? mt_rand(65,90) : mt_rand(97,122))));
-		// Virer le gepi_alea par la suite
-		$_SESSION["gepi_alea"] = $r;
-		//$_SESSION["token"] = $r;
-	
-		if(getSettingValue('csrf_log')=='y') {
-			$csrf_log_chemin=getSettingValue('csrf_log_chemin');
-			if($csrf_log_chemin=='') {$csrf_log_chemin="/home/root/csrf";}
-			if(isset($_SESSION['login'])) {
-				$f=fopen("$csrf_log_chemin/csrf_".$_SESSION['login'].".log","a+");
-				//$f=fopen("$csrf_log_chemin/csrf_".$login.".log","a+");
-				fwrite($f,"Initialisation de la session ".strftime("%a %d/%m/%Y %H:%M:%S")." avec\n\$_SESSION['gepi_alea']=".$_SESSION['gepi_alea']."\n");
-				fwrite($f,"session_id()=".session_id()."\n");
-				fclose($f);
-			}
-		}
-    }
-}
 
-function add_token_field($avec_id=false) {
-	// Dans une page, il ne devrait y avoir qu'un seul appel à add_token_field(true), les autres... dans les autres formulaires étant avec add_token_field()
-	// A VOIR... on pourrait utiliser une variable globale pour... si l'id csrf_alea est déjà défini ne plus l'ajouter...
-
-	if($avec_id) {
-		return "<input type='hidden' name='csrf_alea' id='csrf_alea' value='".$_SESSION['gepi_alea']."' />\n";
-	}
-	else {
-		return "<input type='hidden' name='csrf_alea' value='".$_SESSION['gepi_alea']."' />\n";
-	}
-}
-
-function add_token_in_url($html_chars = true) {
-	if($html_chars) {
-		return "&amp;csrf_alea=".$_SESSION['gepi_alea'];
-	}
-	else {
-		return "&csrf_alea=".$_SESSION['gepi_alea'];
-	}
-}
-
-function add_token_in_js_func() {
-	return $_SESSION['gepi_alea'];
-}
-
-function check_token($redirection=true) {
-	// Avant le Header, on appelle check_token()
-	// Après le Header, on appelle check_token(false)
-	global $niveau_arbo;
-	global $gepiPath;
-	global $gepiShowGenTime;
-
-	$csrf_alea=isset($_POST['csrf_alea']) ? $_POST['csrf_alea'] : (isset($_GET['csrf_alea']) ? $_GET['csrf_alea'] : "");
-
-	if(isset($niveau_arbo)) {
-		if($niveau_arbo=="0") {
-		}
-		elseif($niveau_arbo==1) {
-			$pref_arbo="..";
-		}
-		elseif($niveau_arbo==2) {
-			$pref_arbo="../..";
-		}
-		elseif($niveau_arbo==3) {
-			$pref_arbo="../../..";
-		}
-		elseif ($niveau_arbo == "public") {
-			$pref_arbo="..";
-			// A REVOIR... SI C'EST PUBLIC, ON N'EST PAS LOGUé
-			// NORMALEMENT, EN PUBLIC on ne devrait pas avoir de page sensible
-		}
-	}
-	else {
-		$pref_arbo="..";
-	}
-
-	if(getSettingValue('csrf_mode')=='strict') {
-		if($csrf_alea!=$_SESSION['gepi_alea']) {
-			action_alea_invalide();
-			if($redirection) {
-				header("Location: $pref_arbo/accueil.php?msg=Opération non autorisée");
-			}
-			else {
-				echo "<p style='color:red'>Opération non autorisée</p>\n";
-				require("$pref_arbo/lib/footer.inc.php");
-			}
-			die();
-		}
-	}
-	elseif(getSettingValue('csrf_mode')=='mail_seul') {
-		if($csrf_alea!=$_SESSION['gepi_alea']) {
-			action_alea_invalide();
-		}
-	}
-	else {
-		if($csrf_alea!=$_SESSION['gepi_alea']) {
-			// Sans mail
-			action_alea_invalide(false);
-		}
-	}
-}
 
 /**
- * Action en cas d'attaque CSRF
- *
+ * Fonctions de manipulation du gepi_alea contre les attaques CRSF
+ * 
+ * @see share-csrf.inc.php
  */
-function action_alea_invalide($envoyer_mail=true) {
-	//debug_var();
-	/*
-	$_SERVER['REQUEST_URI']=	/steph/gepi-trunk/lib/confirm_query.php
-	$_SERVER['SCRIPT_NAME']=	/steph/gepi-trunk/lib/confirm_query.php
-	$_SERVER['PHP_SELF']=	/steph/gepi-trunk/lib/confirm_query.php
-	*/
+include_once dirname(__FILE__).'/share-csrf.inc.php';
+/**
+ * Fonctions qui produisent du code html
+ * 
+ * @see share-html.inc.php
+ */
+include_once dirname(__FILE__).'/share-html.inc.php';
+/**
+ * Fonctions de manipulation des conteneurs et des notes
+ * 
+ * @see share-notes.inc.php
+ */
+include_once dirname(__FILE__).'/share-notes.inc.php';
+/**
+ * Fonctions de manipulation des conteneurs et des notes
+ * 
+ * @see share-aid.inc.php
+ */
+include_once dirname(__FILE__).'/share-aid.inc.php';
+/**
+ * Fonctions de manipulation des conteneurs et des notes
+ * 
+ * @see share-pdf.inc.php
+ */
+include_once dirname(__FILE__).'/share-pdf.inc.php';
 
-	// NE pas donner dans le mail les valeurs du token pour éviter des problèmes lors d'une éventuelle capture du mail.
 
-	$details="La personne victime de l'attaque était ".$_SESSION['login'].".\n";
-	$details.="La page cible était ".$_SERVER['PHP_SELF']." avec les variables suivantes:\n";
-	$details.="Variables en \$_POST:\n";
-	foreach($_POST as $key => $value) {
-		//if(!is_array($value)) {
-			$details.="   \$_POST[$key]=$value\n";
-		/*
-		}
-		else {
 
-		}
-		*/
-	}
 
-	$details.="Variables en \$_GET:\n";
-	foreach($_GET as $key => $value) {
-		$details.="   \$_GET[$key]=$value\n";
-	}
 
-	if($envoyer_mail) {
-		// Envoyer un mail à l'admin
-		$envoi_mail_actif=getSettingValue('envoi_mail_actif');
-		if($envoi_mail_actif!="n") {
-			$destinataire=getSettingValue('gepiAdminAdress');
-			if($destinataire!='') {
-				$sujet="Attaque CSRF";
-				$message="La variable csrf_alea ne coincide pas avec le gepi_alea en SESSION.\n";
-				$message.=$details;
-				envoi_mail($sujet, $message,$destinataire);
-			}
-		}
-	}
 
-	if(getSettingValue('csrf_log')=='y') {
-		$csrf_log_chemin=getSettingValue('csrf_log_chemin');
-		if($csrf_log_chemin=='') {$csrf_log_chemin="/home/root/csrf";}
-		$f=fopen("$csrf_log_chemin/csrf_".$_SESSION['login'].".log","a+");
-		fwrite($f,"Alerte CSRF ".strftime("%a %d/%m/%Y %H:%M:%S")." avec\n");
-		fwrite($f,"\$_SESSION['gepi_alea']=".$_SESSION['gepi_alea']."\n");
-		fwrite($f,$details."\n");
-		fwrite($f,"================================================\n");
-		fclose($f);
-	}
-}
+
 
 /**
- * Envoi de mail
+ * Envoi d'un courriel
  *
+ * @param string $sujet Le sujet du message
+ * @param string $message Le message
+ * @param string $destinataire Le destinataire
+ * @param string $ajout_headers Text à ajouter dans le header
  */
 function envoi_mail($sujet, $message, $destinataire, $ajout_headers='') {
 
 	$gepiPrefixeSujetMail=getSettingValue("gepiPrefixeSujetMail") ? getSettingValue("gepiPrefixeSujetMail") : "";
 
 	if($gepiPrefixeSujetMail!='') {$gepiPrefixeSujetMail.=" ";}
-
-	// Si on ajoute un retour à la ligne de plus, l'ajout_headers est mis dans le corps du message
-	//if($ajout_headers!='') {$ajout_headers="\r\n".$ajout_headers;}
 
   $subject = $gepiPrefixeSujetMail."GEPI : $sujet";
   $subject = "=?ISO-8859-1?B?".base64_encode($subject)."?=\r\n";
@@ -199,38 +82,39 @@ function envoi_mail($sujet, $message, $destinataire, $ajout_headers='') {
 
 /**
  * Verification de la validité d'un mot de passe
+ * 
  * longueur : getSettingValue("longmin_pwd") minimum
- * composé de lettre et d'au moins un chiffre
+ * 
+ * composé de lettres et d'au moins un chiffre
  *
- * @global string $char_spec liste des caractères spéciaux
+
  * @param string $password Mot de passe
  * @param boolean $flag Si $flag = 1, il faut également au moins un caractères spécial (voir $char_spec dans global.inc)
- * @return boolean false/true
+ * @return boolean TRUE si le mot de passe est valable
+ * @see getSettingValue()
+ * @todo on déclare $char_spec alors qu'on ne l'utilise pas, n'y aurait-il pas un problème ?
  */
 function verif_mot_de_passe($password,$flag) {
-	global $char_spec;
 	if ($flag == 1) {
-		//if(ereg("(^[a-zA-Z]*$)|(^[0-9]*$)", $password)) {
 		if(preg_match("/(^[a-zA-Z]*$)|(^[0-9]*$)/", $password)) {
-			return false;
+			return FALSE;
 		}
 		elseif(preg_match("/^[[:alnum:]\W]{".getSettingValue("longmin_pwd").",}$/", $password) and preg_match("/[\W]+/", $password) and preg_match("/[0-9]+/", $password)) {
-			return true;
+			return TRUE;
 		}
 		else {
-			return false;
+			return FALSE;
 		}
 	}
 	else {
-		//if(ereg("(^[a-zA-Z]*$)|(^[0-9]*$)", $password)) {
 		if(preg_match("/(^[a-zA-Z]*$)|(^[0-9]*$)/", $password)) {
-			return false;
+			return FALSE;
 		}
 		elseif (strlen($password) < getSettingValue("longmin_pwd")) {
-			return false;
+			return FALSE;
 		}
 		else {
-			return true;
+			return TRUE;
 		}
 	}
 }
@@ -239,7 +123,7 @@ function verif_mot_de_passe($password,$flag) {
  * Teste si le login existe déjà dans la base
  *
  * @param string $s le login testé
- * @return string yes/no
+ * @return string yes si le login existe, no sinon
  */
 function test_unique_login($s) {
     // On vérifie que le login ne figure pas déjà dans la base utilisateurs
@@ -262,26 +146,17 @@ function test_unique_login($s) {
 }
 
 /**
- * fonction vérifiant l'unicité du login
- * On vérifie que le login ne figure pas déjà dans une des bases élève des années passées (??)
+ * Vérifie l'unicité du login
+ * 
+ * On vérifie que le login ne figure pas déjà dans une des bases élève des années passées 
  *
  * @param string $s le login à vérifier
  * @param <type> $indice ??
- * @return string yes/no
+ * @return string yes si le login existe, no sinon
  */
 function test_unique_e_login($s, $indice) {
-    //  $s
-    //
-/*    $test1 = mysql_num_rows(mysql_query("SELECT login FROM a1_eleves WHERE (login='$s')"));
-    $test2 = mysql_num_rows(mysql_query("SELECT login FROM a2_eleves WHERE (login='$s')"));
-    $test3 = mysql_num_rows(mysql_query("SELECT login FROM a3_eleves WHERE (login='$s')"));
-    $test4 = mysql_num_rows(mysql_query("SELECT login FROM a4_eleves WHERE (login='$s')"));
-    $test5 = mysql_num_rows(mysql_query("SELECT login FROM a5_eleves WHERE (login='$s')"));
-    $test6 = mysql_num_rows(mysql_query("SELECT login FROM a6_eleves WHERE (login='$s')"));
-*/
     // On vérifie que le login ne figure pas déjà dans la base utilisateurs
     $test7 = mysql_num_rows(mysql_query("SELECT login FROM utilisateurs WHERE (login='$s' OR login='".strtoupper($s)."')"));
-//    if (($test1 != "0") or ($test2 != "0") or ($test3 != "0") or ($test4 != "0") or ($test5 != "0") or ($test6 != "0") or ($test7 != "0")) {
 
     if ($test7 != "0") {
 
@@ -301,119 +176,101 @@ function test_unique_e_login($s, $indice) {
     }
 }
 
-//
 /**
- * Fonction pour générer le login à partir du nom et du prénom
+ * Génére le login à partir du nom et du prénom
+ * 
+ * Génère puis nettoie un login pour qu'il soit valide et unique
+ * 
  * Le mode de génération doit être passé en argument
- *
- * @param string $_nom
- * @param string $_prenom
- * @param string $_mode
- * @return string
+ * 
+ * name             à partir du nom
+ * 
+ * name8            à partir du nom, réduit à 8 caractères
+ * 
+ * fname8           première lettre du prénom + nom, réduit à 8 caractères
+ * 
+ * fname19          première lettre du prénom + nom, réduit à 19 caractères
+ * 
+ * firstdotname     prénom.nom
+ * 
+ * firstdotname19   prénom.nom réduit à 19 caractères
+ * 
+ * namef8           nom réduit à 7 caractères + première lettre du prénom
+ * 
+ * si $_mode est NULL, fname8 est utilisé
+ * 
+ * @param string $_nom nom de l'utilisateur
+ * @param string $_prenom prénom de l'utilisateur
+ * @param string $_mode Le mode de génération ou NULL
+ * @return string|booleanLe login généré ou FALSE si on obtient un login vide
+ * @see test_unique_login()
  */
 function generate_unique_login($_nom, $_prenom, $_mode) {
 
-	if ($_mode == null) {
+	if ($_mode == NULL) {
 		$_mode = "fname8";
 	}
     // On génère le login
-    //$_prenom = strtr($_prenom, "éèëêÉÈËÊüûÜÛïÏäàÄÀ", "eeeeEEEEuuUUiIaaAA");
 	$_prenom = strtr($_prenom, "çéèëêÉÈËÊüûùÜÛïîÏÎäâàÄÂÀ", "ceeeeEEEEuuuUUiiIIaaaAAA");
     $_prenom = preg_replace("/[^a-zA-Z.\-]/", "", $_prenom);
-    //$_nom = strtr($_nom, "éèëêÉÈËÊüûÜÛïÏäàÄÀ", "eeeeEEEEuuUUiIaaAA");
 	$_nom = strtr($_nom, "çéèëêÉÈËÊüûùÜÛïîÏÎäâàÄÂÀ", "ceeeeEEEEuuuUUiiIIaaaAAA");
     $_nom = preg_replace("/[^a-zA-Z.\-]/", "", $_nom);
 
-	if($_nom=='') {return false;}
+	if($_nom=='') {return FALSE;}
 
     if ($_mode == "name") {
             $temp1 = $_nom;
-            //$temp1 = strtoupper($temp1);
             $temp1 = preg_replace("/ /","", $temp1);
             $temp1 = preg_replace("/-/","_", $temp1);
             $temp1 = preg_replace("/'/","", $temp1);
-            //$temp1 = substr($temp1,0,8);
         } elseif ($_mode == "name8") {
             $temp1 = $_nom;
-            //$temp1 = strtoupper($temp1);
             $temp1 = preg_replace("/ /","", $temp1);
             $temp1 = preg_replace("/-/","_", $temp1);
             $temp1 = preg_replace("/'/","", $temp1);
             $temp1 = substr($temp1,0,8);
         } elseif ($_mode == "fname8") {
-			if($_prenom=='') {return false;}
+			if($_prenom=='') {return FALSE;}
             $temp1 = $_prenom{0} . $_nom;
-            //$temp1 = strtoupper($temp1);
             $temp1 = preg_replace("/ /","", $temp1);
             $temp1 = preg_replace("/-/","_", $temp1);
             $temp1 = preg_replace("/'/","", $temp1);
             $temp1 = substr($temp1,0,8);
         } elseif ($_mode == "fname19") {
-			if($_prenom=='') {return false;}
+			if($_prenom=='') {return FALSE;}
             $temp1 = $_prenom{0} . $_nom;
-            //$temp1 = strtoupper($temp1);
             $temp1 = preg_replace("/ /","", $temp1);
             $temp1 = preg_replace("/-/","_", $temp1);
             $temp1 = preg_replace("/'/","", $temp1);
             $temp1 = substr($temp1,0,19);
         } elseif ($_mode == "firstdotname") {
-			if($_prenom=='') {return false;}
+			if($_prenom=='') {return FALSE;}
             $temp1 = $_prenom . "." . $_nom;
-            //$temp1 = strtoupper($temp1);
 
             $temp1 = preg_replace("/ /","", $temp1);
             $temp1 = preg_replace("/-/","_", $temp1);
             $temp1 = preg_replace("/'/","", $temp1);
-            //$temp1 = substr($temp1,0,19);
         } elseif ($_mode == "firstdotname19") {
-			if($_prenom=='') {return false;}
+			if($_prenom=='') {return FALSE;}
             $temp1 = $_prenom . "." . $_nom;
-            //$temp1 = strtoupper($temp1);
             $temp1 = preg_replace("/ /","", $temp1);
             $temp1 = preg_replace("/'/","", $temp1);
             $temp1 = substr($temp1,0,19);
         } elseif ($_mode == "namef8") {
-			if($_prenom=='') {return false;}
-			//echo "\$_nom=$_nom<br />";
-			//echo "\$_prenom=$_prenom<br />";
+			if($_prenom=='') {return FALSE;}
             $temp1 =  substr($_nom,0,7) . $_prenom{0};
-            //$temp1 = strtoupper($temp1);
             $temp1 = preg_replace("/ /","", $temp1);
             $temp1 = preg_replace("/-/","_", $temp1);
             $temp1 = preg_replace("/'/","", $temp1);
-            //$temp1 = substr($temp1,0,8);
         } else {
-        	return false;
+        	return FALSE;
         }
 
         $login_user = $temp1;
 
-		//echo "\$login_user=$login_user<br /><hr width='100' />";
-		/*
-        // On teste l'unicité du login que l'on vient de créer
-        $m = '';
-        $test_unicite = 'no';
-        while ($test_unicite != 'yes') {
-            $test_unicite = test_unique_login($login_user.$m);
-            if ($test_unicite != 'yes') {
-            	if ($m == '') {
-            		$m = 2;
-            	} else {
-                	$m++;
-            	}
-            } else {
-            	$login_user = $login_user.$m;
-            }
-        }
-
-		echo "\$login_user=$login_user<br />";
-		*/
-
         // Nettoyage final
         $login_user = substr($login_user, 0, 50);
         $login_user = preg_replace("/[^A-Za-z0-9._\-]/","",trim($login_user));
-
-		//echo "\$login_user=$login_user<br />";
 
         $test1 = $login_user{0};
 		while ($test1 == "_" OR $test1 == "-" OR $test1 == ".") {
@@ -443,32 +300,28 @@ function generate_unique_login($_nom, $_prenom, $_mode) {
             }
         }
 
-		//echo "\$login_user=$login_user<br />";
-
 		return $login_user;
 }
 
 /**
  * Fonction qui propose l'ordre d'affichage du nom, prénom et de la civilité en fonction des réglages de la classe de l'élève
  *
- * @param string $login
- * @param integer $id_classe
- * @return string
+ * @param string $login login de l'utilisateur
+ * @param integer $id_classe Id de la classe
+ * @return string nom, prénom, civilité formaté
  */
 function affiche_utilisateur($login,$id_classe) {
     $req = mysql_query("select nom, prenom, civilite from utilisateurs where login = '".$login."'");
-	//$tmp="mysql_num_rows($req)=".mysql_num_rows($req);
-    $nom = @mysql_result($req, 0, 'nom');
+	$nom = @mysql_result($req, 0, 'nom');
     $prenom = @mysql_result($req, 0, 'prenom');
     $civilite = @mysql_result($req, 0, 'civilite');
     $req_format = mysql_query("select format_nom from classes where id = '".$id_classe."'");
     $format = mysql_result($req_format, 0, 'format_nom');
     $result = "";
     $i='';
-    if ((($format == 'ni') OR ($format == 'in') OR ($format == 'cni') OR ($format == 'cin')) and ($prenom != '')) {
+    if ((($format == 'ni') OR ($format == 'in') OR ($format == 'cni') OR ($format == 'cin')) AND ($prenom != '')) {
         $temp = explode("-", $prenom);
         $i = substr($temp[0], 0, 1);
-        //if (isset($temp[1]) and ($temp[1] != '')) $i .= ".-".substr($temp[1], 0, 1);
         if (isset($temp[1]) and ($temp[1] != '')) $i .= "-".substr($temp[1], 0, 1);
         $i .= ". ";
     }
@@ -505,13 +358,13 @@ function affiche_utilisateur($login,$id_classe) {
 
     }
     return $result;
-    //return $tmp;
 }
 
 /**
  * Verifie si l'extension d_base est active
  *
- * @return echo réponse
+ * Affiche une page d'avertissement si le module dbase n'est pas actif
+ * 
  */
 function verif_active_dbase() {
     if (!function_exists("dbase_open"))  {
@@ -519,190 +372,6 @@ function verif_active_dbase() {
         <br />L'extension d_base n'est pas active. Adressez-vous à l'administrateur du serveur pour corriger le problème.</p></center></body></html>";
         die();
     }
-}
-
-/**
- * Verifie si un groupe appartient bien à la personne connectée
- *
- * @deprecated Cette fonction ne peut plus fonctionner car la requête SQL n'est plus valide
- * @param integer $id_groupe identifiant du groupe
- * @return boolean 0/1
- */
-function verif_groupe_appartient_prof($id_groupe) {
-    $test = mysql_query("select id from groupes where (id='$id_groupe' and login_user = '".$_SESSION['login']."')");
-    if (mysql_num_rows($test) == 0) {
-        return 0;
-    } else {
-        return 1;
-    }
-}
-
-/**
- * Verifie si un élève appartient à un groupe
- *
- * @deprecated La requête SQL n'est plus possible
- * @param integer $id_eleve
- * @param integer $id_groupe
- * @return boolean 0/1
- */
-function verif_eleve_dans_groupe($id_eleve, $id_groupe) {
-    if ($id_groupe != "-1") {
-        // On verifie l'appartenance de id_eleve au groupe id_groupe
-        if (!(verif_groupe_appartient_prof($id_groupe))) {
-            return 0;
-            exit();
-        }
-        $test = mysql_query("select id_eleve from groupe_eleve where (id_eleve='$id_eleve' and id_groupe = '$id_groupe')");
-        if (mysql_num_rows($test) == 0) {
-            return 0;
-        } else {
-            return 1;
-        }
-    } else {
-        // On verifie l'appartenance de id_eleve à un groupe quelconque du professeur connecté
-        $test = mysql_query("select id_eleve from groupe_eleve ge, groupes g where (ge.id_eleve='$id_eleve' and ge.id_groupe = g.id and g.login_user='".$_SESSION['login']."')");
-        if (mysql_num_rows($test) == 0) {
-            return 0;
-        } else {
-            return 1;
-        }
-
-    }
-}
-
-/**
- * Construit un tableau des groupes de l'utilisateur connecté
- *
- * @deprecated La requête SQL n'est plus possible
- * @return array
- */
-function make_tables_of_groupes() {
-    $tab_groupes = array();
-    $test = mysql_query("select id, nom_court, nom_complet from groupes where login_user = '".$_SESSION['login']."'");
-    $nb_test = mysql_num_rows($test);
-    $i = 0;
-    while ($i < $nb_test) {
-      $tab_groupes['id'][$i] = mysql_result($test, $i, "id");
-      $tab_groupes['nom'][$i] = mysql_result($test, $i, "nom_court");
-      $tab_groupes['nom_complet'][$i] = mysql_result($test, $i, "nom_complet");
-      $i++;
-    }
-      return $tab_groupes;
-}
-
-/**
- * Construit un tableau des classes et matières de l'utilisateur connecté (professeur)
- *
- * @return array Liste des classes et matières de ce professeur
- */
-function make_tables_of_classes_matieres () {
-  $tab_class_mat = array();
-  $appel_classes = mysql_query("SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe");
-  $nb_classes = mysql_num_rows($appel_classes);
-  $i = 0;
-  while($i < $nb_classes){
-    $id_classe = mysql_result($appel_classes, $i, "id");
-    $appel_mat = mysql_query("SELECT DISTINCT m.matiere, m.nom_complet " .
-            "FROM matieres m, j_groupes_matieres jgm, j_groupes_classes jgc, j_groupes_professeurs jgp" .
-            " WHERE ( " .
-            "m.matiere = jgm.id_matiere and " .
-            "jgm.id_groupe = jgp.id_groupe and " .
-            "jgp.login = '" . $_SESSION['login'] . "' and " .
-            "jgp.id_groupe = jgc.id_groupe and " .
-            "jgc.id_classe='$id_classe')" .
-            " ORDER BY m.nom_complet");
-    $nb_mat = mysql_num_rows($appel_mat);
-    $j = 0;
-    while($j < $nb_mat){
-      $tab_class_mat['id_c'][] = $id_classe;
-      $tab_class_mat['id_m'][] = mysql_result($appel_mat, $j, "matiere");
-      $tab_class_mat['nom_c'][] = mysql_result($appel_classes, $i, "classe");
-      $tab_class_mat['nom_m'][] = mysql_result($appel_mat, $j, "nom_complet");
-      $j++;
-    }
-    $i++;
-  }
-  return $tab_class_mat;
-}
-
-/**
- * Construit un tableau des classes de l'utilisateur connecté (professeur)
- *
- * @return array Liste des classes (id_classe)
- */
-function make_tables_of_classes () {
-  $tab_class = array();
-  $appel_classes = mysql_query("SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe");
-  $nb_classes = mysql_num_rows($appel_classes);
-  $i = 0;
-  $nb=0;
-  while($i < $nb_classes){
-    $id_classe = mysql_result($appel_classes, $i, "id");
-    $test_prof_classe = mysql_query("SELECT DISTINCT jgc.id_classe FROM j_groupes_classes jgc, j_groupes_professeurs jgp WHERE (" .
-            "jgc.id_classe='$id_classe' and " .
-            "jgc.id_groupe = jgp.id_groupe and " .
-            "jgp.login='".$_SESSION['login']."')");
-    $test = mysql_num_rows($test_prof_classe);
-    if ($test != 0) {
-        $tab_class[$nb] = $id_classe;
-        $nb++;
-    }
-    $i++;
-  }
-  return $tab_class;
-}
-
-/**
- * Construit du html pour les cahiers de textes
- *
- * @deprecated La requête SQL n'est plus valide
- * @param string $link Le lien
- * @param <type> $current_classe
- * @param <type> $current_matiere
- * @param integer $year année
- * @param integer $month le mois
- * @param integer $day le jour
- * @return string echo résultat
- */
-function make_area_list_html($link, $current_classe, $current_matiere, $year, $month, $day) {
-  echo "<strong><em>Cahier&nbsp;de&nbsp;texte&nbsp;de&nbsp;:</em></strong><br />";
-  $appel_donnees = mysql_query("SELECT * FROM classes ORDER BY classe");
-  $lignes = mysql_num_rows($appel_donnees);
-  $i = 0;
-  while($i < $lignes){
-    $id_classe = mysql_result($appel_donnees, $i, "id");
-    $appel_mat = mysql_query("SELECT DISTINCT m.* FROM matieres m, j_classes_matieres_professeurs j WHERE (j.id_classe='$id_classe' AND j.id_matiere=m.matiere) ORDER BY m.nom_complet");
-    $nb_mat = mysql_num_rows($appel_mat);
-    $j = 0;
-    while($j < $nb_mat){
-      $flag2 = "no";
-      $matiere_nom = mysql_result($appel_mat, $j, "nom_complet");
-      $matiere_nom_court = mysql_result($appel_mat, $j, "matiere");
-      $id_matiere = mysql_result($appel_mat, $j, "matiere");
-      $call_profs = mysql_query("SELECT * FROM j_classes_matieres_professeurs WHERE ( id_classe='$id_classe' and id_matiere = '$id_matiere') ORDER BY ordre_prof");
-      $nombre_profs = mysql_num_rows($call_profs);
-      $k = 0;
-      while ($k < $nombre_profs) {
-        $temp = strtoupper(@mysql_result($call_profs, $k, "id_professeur"));
-        if ($temp == $_SESSION['login']) {$flag2 = "yes";}
-        $k++;
-      }
-      if ($flag2 == "yes") {
-        echo "<strong>";
-        $display_class = mysql_result($appel_donnees, $i, "classe");
-        if (($id_classe == $current_classe) and ($id_matiere == $current_matiere)) {
-           echo ">$display_class&nbsp;-&nbsp;$matiere_nom&nbsp;($matiere_nom_court)&nbsp;";
-        } else {
-           //echo "<a href=\"".$link."?id_classe=$id_classe&id_matiere=$id_matiere&year=$year&month=$month&day=$day\">$display_class&nbsp;-&nbsp;$matiere_nom&nbsp;($matiere_nom_court)</a>";
-       echo "<a href=\"".$link."?id_classe=$id_classe&amp;id_matiere=$id_matiere&amp;year=$year&amp;month=$month&amp;day=$day\">$display_class&nbsp;-&nbsp;$matiere_nom&nbsp;($matiere_nom_court)</a>";
-
-        }
-        echo "</strong><br />";
-      }
-      $j++;
-    }
-    $i++;
-  }
 }
 
 /**
@@ -715,6 +384,7 @@ function make_area_list_html($link, $current_classe, $current_matiere, $year, $m
  * @param integer $month
  * @param integer $year
  * @param string $option Si = more_years, on ajoute +5 et -5 années aux années possibles
+ * @see getSettingValue()
  */
 function genDateSelector($prefix, $day, $month, $year, $option)
 {
@@ -722,21 +392,14 @@ function genDateSelector($prefix, $day, $month, $year, $option)
     if($month == 0) $month = date("m");
     if($year  == 0) $year = date("Y");
 
-	// correction w3c : SELECT NAME -> select name + label + <span>
 	 echo "\n<label for=\"${prefix}jour\"><span style='display:none;'>Jour</span></label>\n";
     echo "<select id=\"${prefix}jour\" name=\"${prefix}day\">\n";
 
-	// correction w3c : OPTION -> option + =\"selected\
     for($i = 1; $i <= 31; $i++)
-        //echo "<option" . ($i == $day ? " selected=\"selected\"" : "") . ">$i</option>\n";
         echo "<option value = \"$i\"" . ($i == $day ? " selected=\"selected\"" : "") . ">$i</option>\n";
 
-        //echo "<OPTION" . ($i == $day ? " SELECTED" : "") . ">$i\n";
-
-	// correction w3c : SELECT NAME -> select name
     echo "</select>\n";
 
-	// correction w3c : SELECT NAME -> select name + label + <span>
 	 echo "\n<label for=\"${prefix}mois\"><span style='display:none;'>Mois</span></label>\n";
     echo "<select id=\"${prefix}mois\" name=\"${prefix}month\">\n";
 
@@ -744,19 +407,11 @@ function genDateSelector($prefix, $day, $month, $year, $option)
     {
         $m = strftime("%b", mktime(0, 0, 0, $i, 1, $year));
 
-        //print "<OPTION VALUE=\"$i\"" . ($i == $month ? " SELECTED" : "") . ">$m\n";
-
-        // Si problème avec l'encodage, essayer la ligne suivante
-        //print "<OPTION VALUE=\"$i\"" . ($i == $month ? " SELECTED" : "") . ">".iconv('UTF-8','ISO-8859-1', $m)."</option>\n";
-	// correction w3c : OPTION VALUE -> option value + =\"selected\
         echo "<option value=\"$i\"" . ($i == $month ? " selected=\"selected\"" : "") . ">$m</option>\n";
     }
 
-	// correction w3c : SELECT NAME -> select name
     echo "</select>\n";
 
-    //echo "<select name=\"${prefix}year\">\n";
-	// correction w3c : SELECT NAME -> select name + label + <span>
 	 echo "\n<label for=\"${prefix}annee\"><span style='display:none;'>Année</span></label>\n";
     echo "<select id=\"${prefix}annee\" name=\"${prefix}year\">\n";
 
@@ -767,94 +422,20 @@ function genDateSelector($prefix, $day, $month, $year, $option)
     if ($option == "more_years") $max = date("Y") + 5;
 
     for($i = $min; $i <= $max; $i++)
-	// correction w3c : OPTION SELECTED -> option selected + =\"selected\
         print "<option" . ($i == $year ? " selected=\"selected\"" : "") . ">$i</option>\n";
-        //print "<OPTION" . ($i == $year ? " SELECTED" : "") . ">$i\n";
-
-	// correction w3c : SELECT -> select
+    
     echo "</select>\n";
 }
 
+
 /**
- * Détruit les conteneurs vides qui ne sont pas rattachés à un parent (@à vérifier)
- *
- * @param integer $id_conteneur
- * @param <type> $id_racine ??
+ * Remplit un fichier de suivi des actions
+ * 
+ * Passer la variable $local_debug à "y" pour activer le remplissage du fichier "/tmp/calcule_moyenne.txt" de debug
+ * 
+ * @param string $texte 
  */
-function test_conteneurs_vides($id_conteneur,$id_racine) {
-        // On teste si le conteneur est vide
-        if ($id_conteneur !=0) {
-            $sql= mysql_query("SELECT id FROM cn_devoirs WHERE id_conteneur='$id_conteneur'");
-            $nb_dev = mysql_num_rows($sql);
-            $sql= mysql_query("SELECT id FROM cn_conteneurs WHERE parent='$id_conteneur'");
-            $nb_cont = mysql_num_rows($sql);
-            if (($nb_dev == 0) or ($nb_cont == 0)) {
-                $query_parent = mysql_query("SELECT parent FROM cn_conteneurs WHERE id='$id_conteneur'");
-                $id_par = mysql_result($query_parent, 0, 'parent');
-                $sql = mysql_query("DELETE FROM cn_notes_conteneurs WHERE id_conteneur='$id_conteneur'");
-//                if ($id_conteneur != $id_racine) $sql = mysql_query("DELETE FROM cn_conteneurs WHERE id='$id_conteneur'");
-                test_conteneurs_vides($id_par,$id_racine);
-            }
-        }
-}
-
-function mise_a_jour_moyennes_conteneurs($_current_group, $periode_num,$id_racine,$id_conteneur,&$arret) {
-    //remarque : les variables $periode_num et id_racine auraient pus être récupérées
-    //à partir de $id_conteneur, mais on évite ainsi trop de calculs !
-
-	if(isset($_current_group["eleves"][$periode_num])) {
-		foreach ($_current_group["eleves"][$periode_num]["list"] as $_eleve_login) {
-			if($_eleve_login!=""){
-				calcule_moyenne($_eleve_login, $id_racine, $id_conteneur);
-			}
-		}
-	
-		if ($arret != 'yes') {
-			//
-			// Détermination du conteneur parent
-			$query_id_parent = mysql_query("SELECT parent FROM cn_conteneurs WHERE id='$id_conteneur'");
-			$id_parent = mysql_result($query_id_parent, 0, 'parent');
-			if ($id_parent != 0) {
-				$arret = 'no';
-				mise_a_jour_moyennes_conteneurs($_current_group, $periode_num,$id_racine,$id_parent,$arret);
-			} else {
-				$arret = 'yes';
-				mise_a_jour_moyennes_conteneurs($_current_group, $periode_num,$id_racine,$id_racine,$arret);
-			}
-	
-		}
-	}
-}
-
-
-
-//
-// Liste des sous-conteneur d'un conteneur
-//
-function sous_conteneurs($id_conteneur,&$nb_sous_cont,&$nom_sous_cont,&$coef_sous_cont,&$id_sous_cont,&$display_bulletin_sous_cont,$type) {
-	fdebug("===================================\n");
-	fdebug("LANCEMENT DE sous_conteneurs() SUR\n");
-	fdebug("id_conteneur=$id_conteneur avec type=$type\n");
-
-    $query_sous_cont = mysql_query("SELECT * FROM cn_conteneurs WHERE (parent ='$id_conteneur' and id!='$id_conteneur') order by nom_court");
-    $nb = mysql_num_rows($query_sous_cont);
-    $i=0;
-    while ($i < $nb) {
-        $nom_sous_cont[$nb_sous_cont] = mysql_result($query_sous_cont, $i, 'nom_court');
-        $coef_sous_cont[$nb_sous_cont] = mysql_result($query_sous_cont, $i, 'coef');
-        $id_sous_cont[$nb_sous_cont] = mysql_result($query_sous_cont, $i, 'id');
-        $display_bulletin_sous_cont[$nb_sous_cont] = mysql_result($query_sous_cont, $i, 'display_bulletin');
-        $temp = $id_sous_cont[$nb_sous_cont];
-        $nb_sous_cont++;
-        if ($type=='all') {
-            sous_conteneurs($temp,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'all');
-        }
-        $i++;
-    }
-}
-
 function fdebug($texte){
-	// Passer la variable à "y" pour activer le remplissage du fichier de debug pour calcule_moyenne()
 	$local_debug="n";
 	if($local_debug=="y") {
 		$fich=fopen("/tmp/calcule_moyenne.txt","a+");
@@ -863,608 +444,17 @@ function fdebug($texte){
 	}
 }
 
-//
-// Calcul de la moyenne d'un élève
-//
-function calcule_moyenne($login, $id_racine, $id_conteneur) {
-	fdebug("===================================\n");
-	fdebug("LANCEMENT DE calcule_moyenne SUR\n");
-	fdebug("login=$login: id_racine=$id_racine - id_conteneur=$id_conteneur\n");
 
-    $total_point = 0;
-    $somme_coef = 0;
-    $exist_dev_fac = '';
-    // On efface les moyennes de la table
-    $sql="DELETE FROM cn_notes_conteneurs WHERE (login='$login' and id_conteneur='$id_conteneur');";
-	fdebug("$sql\n");
-    $delete = mysql_query($sql);
-
-    // Appel des paramètres du conteneur
-    $appel_conteneur = mysql_query("SELECT * FROM cn_conteneurs WHERE id ='$id_conteneur'");
-    $arrondir =  mysql_result($appel_conteneur, 0, 'arrondir');
-    $mode =  mysql_result($appel_conteneur, 0, 'mode');
-    $ponderation = mysql_result($appel_conteneur, 0, 'ponderation');
-
-	fdebug("Conteneur n°$id_conteneur\n");
-	fdebug("\$arrondir=$arrondir\n");
-	fdebug("\$mode=$mode\n");
-	fdebug("\$ponderation=$ponderation\n");
-
-
-    // Détermination des sous-conteneurs à prendre en compte
-    $nom_sous_cont = array();
-    $id_sous_cont  = array();
-    $coef_sous_cont = array();
-    $nb_sous_cont = 0;
-    if ($mode==1) {
-        //la moyenne s'effectue sur toutes les notes contenues à la racine ou dans les sous-conteneurs
-        // sans tenir compte des options définies dans cette(ces) boîte(s).
-
-        //
-        // on s'intéresse à tous les conteneurs fils, petit-fils, ...
-        sous_conteneurs($id_conteneur,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'all');
-        //
-        // On fait la moyenne des devoirs du conteneur et des sous-conteneurs
-        $nb_boucle = $nb_sous_cont+1;
-        $id_cont[0] = $id_conteneur;
-        $i=1;
-        while ($i < $nb_boucle) {
-            $id_cont[$i] = $id_sous_cont[$i-1];
-            $i++;
-        }
-
-    } else {
-        //la moyenne s'effectue sur toutes les notes contenues à la racine du conteneur
-        //et sur les moyennes du ou des sous-conteneurs, en tenant compte des options dans ce(s) boîte(s).
-
-        // On s'intéresse uniquement aux conteneurs fils
-        sous_conteneurs($id_conteneur,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'');
-        //
-        // on ne fait la moyenne que des devoirs du conteneur
-        $nb_boucle = 1;
-        $id_cont[0] = $id_conteneur;
-
-    }
-
-
-
-    //
-    // Prise en compte de la pondération
-    // Calcul de l'indice du coefficient à pondérer
-    //
-    if ($ponderation != 0) {
-        $sql="SELECT * FROM cn_devoirs WHERE id_conteneur='$id_conteneur' ORDER BY date,id";
-		fdebug("$sql\n");
-        $appel_dev = mysql_query($sql);
-        $nb_dev  = mysql_num_rows($appel_dev);
-		fdebug("\$nb_dev=$nb_dev\n");
-        $max = 0;
-        $indice_pond = 0;
-        $k = 0;
-        while ($k < $nb_dev) {
-            $id_dev = mysql_result($appel_dev, $k, 'id');
-            $coef[$k] = mysql_result($appel_dev, $k, 'coef');
-			fdebug("\$id_dev=$id_dev : \$coef[$k]=$coef[$k]\n");
-            $sql="SELECT * FROM cn_notes_devoirs WHERE (login='$login' AND id_devoir='$id_dev')";
-			fdebug("$sql\n");
-            $note_query = mysql_query($sql);
-            $statut = @mysql_result($note_query, 0, "statut");
-            $note = @mysql_result($note_query, 0, "note");
-			fdebug("\$nb_dev=$nb_dev\n");
-            if (($statut == '') and ($note!='')) {
-                if (($note > $max) or (($note == $max) and ($coef[$k] > $coef[$indice_pond]))) {
-                    $max = $note;
-                    $indice_pond = $k;
-                }
-            }
-            $k++;
-        }
-    }
-	if(isset($indice_pond)) {
-		fdebug("\$indice_pond=$indice_pond\n");
-		fdebug("\$max=$max\n");
-	}
-
-
-    //
-    // Calcul du total des points et de la somme des coefficients
-    //
-	// Pour $mode==1, pour les devoirs à Bonus, il faudrait faire la liste de tous les devoirs situés dans le conteneur et les sous-conteneurs triés par date et parcourir ici ces devoirs au lieu de faire une boucle sur la liste des sous-conteneurs (while ($j < $nb_boucle))
-    $j=0;
-	//=========================
-	// AJOUT: boireaus 20080202
-	$m=0;
-	//=========================
-    while ($j < $nb_boucle) {
-		//=========================
-		// MODIF: boireaus 20080202
-        //$appel_dev = mysql_query("SELECT * FROM cn_devoirs WHERE id_conteneur='$id_cont[$j]'");
-        $sql="SELECT * FROM cn_devoirs WHERE id_conteneur='$id_cont[$j]' ORDER BY date,id";
-		fdebug("$sql\n");
-        $appel_dev = mysql_query($sql);
-		//=========================
-        $nb_dev  = mysql_num_rows($appel_dev);
-        $k = 0;
-        while ($k < $nb_dev) {
-            $id_dev = mysql_result($appel_dev, $k, 'id');
-			fdebug("\n\$id_dev=$id_dev\n");
-
-            $coef[$k] = mysql_result($appel_dev, $k, 'coef');
-			fdebug("\$coef[$k]=$coef[$k]\n");
-
-            $note_sur[$k] = mysql_result($appel_dev, $k, 'note_sur');
-			fdebug("\$note_sur[$k]=$note_sur[$k]\n");
-
-            $ramener_sur_referentiel[$k] = mysql_result($appel_dev, $k, 'ramener_sur_referentiel');
-			fdebug("\$ramener_sur_referentiel[$k]=$ramener_sur_referentiel[$k]\n");
-
-            // Prise en compte de la pondération
-            if (($ponderation != 0) and ($j==0) and ($k==$indice_pond)) $coef[$k] = $coef[$k] + $ponderation;
-			fdebug("\$ponderation=$ponderation\n");
-
-            $facultatif[$k] = mysql_result($appel_dev, $k, 'facultatif');
-			fdebug("\$facultatif[$k]=$facultatif[$k]\n");
-
-            $note_query = mysql_query("SELECT * FROM cn_notes_devoirs WHERE (login='$login' AND id_devoir='$id_dev')");
-            $statut = @mysql_result($note_query, 0, "statut");
-			fdebug("\$statut=$statut\n");
-
-            $note = @mysql_result($note_query, 0, "note");
-			fdebug("\$note=$note\n");
-
-            if (($statut == '') and ($note!='')) {
-                if ($note_sur[$k] != getSettingValue("referentiel_note")) {
-                    if ($ramener_sur_referentiel[$k] != 'V') {
-                        //on ramene la note sur le referentiel mais on modifie le coefficient pour prendre en compte le référentiel
-                        $note = $note * getSettingValue("referentiel_note") / $note_sur[$k];
-                        $coef[$k] = $coef[$k] * $note_sur[$k] / getSettingValue("referentiel_note");
-                    } else {
-                        //on fait comme si c'était une note sur le referentiel avec une regle de trois ;)
-                        $note = $note * getSettingValue("referentiel_note") / $note_sur[$k];
-                    }
-                }
-                fdebug("Correction note autre que sur referentiel : \$note=$note\n");
-                fdebug("Correction note autre que sur referentiel : \$coef[$k]=$coef[$k]\n");
-
-                if ($facultatif[$k] == 'O') {
-                    // le devoir n'est pas facultatif (Obligatoire) et entre systématiquement dans le calcul de la moyenne si le coef est différent de zéro
-					fdebug("\$total_point = $total_point + $coef[$k] * $note = ");
-                    $total_point = $total_point + $coef[$k]*$note;
-					fdebug("$total_point\n");
-
-					fdebug("\$somme_coef = $somme_coef + $coef[$k] = ");
-                    $somme_coef = $somme_coef + $coef[$k];
-					fdebug("$somme_coef\n");
-                } else if ($facultatif[$k] == 'B') {
-                    //le devoir est facultatif comme un bonus : seuls les points supérieurs à 10 sont pris en compte dans le calcul de la moyenne.
-                    if ($note > ($note_sur[$k]/2)) {
-                        $total_point = $total_point + $coef[$k]*$note;
-                        $somme_coef = $somme_coef + $coef[$k];
-                    }
-                } else {
-                    //$facultatif == 'N' le devoir est facultatif comme une note : Le devoir est pris en compte dans la moyenne uniquement s'il améliore la moyenne de l'élève.
-                    $exist_dev_fac = 'yes';
-					//=========================
-					// MODIF: boireaus 20080202
-                    /*
-					$total_point = $total_point + $coef[$k]*$note;
-                    $somme_coef = $somme_coef + $coef[$k];
-                    $points[$k] = $coef[$k]*$note;
-                    */
-					// On ne compte pas la note dans la moyenne pour le moment.
-					// On regardera plus loin si cela améliore la moyenne ou non.
-					$f_coef[$m]=$coef[$k];
-					$points[$m] = $f_coef[$m]*$note;
-
-					fdebug("\$points[$m]=$points[$m]\n");
-					fdebug("\$f_coef[$m]=$f_coef[$m]\n");
-
-					$m++;
-					//=========================
-                }
-				fdebug("\$total_point=$total_point\n");
-				fdebug("\$somme_coef=$somme_coef\n");
-				/*
-				if(isset($points[$k])){
-					fdebug("\$points[$k]=$points[$k]\n");
-				}
-				*/
-            }
-            $k++;
-        }
-        $j++;
-    }
-
-
-    //
-    // Prise en comptes des sous-conteneurs si mode=2
-    //
-    if ($mode == 2) {
-		fdebug("\$mode=$mode\n");
-        $j=0;
-        while ($j < $nb_sous_cont) {
-            $sql="SELECT coef FROM cn_conteneurs WHERE id='$id_sous_cont[$j]'";
-			fdebug("$sql\n");
-            $appel_cont = mysql_query($sql);
-            $coefficient = mysql_result($appel_cont, 0, 'coef');
-			fdebug("\$coefficient=$coefficient\n");
-
-            $sql="SELECT * FROM cn_notes_conteneurs WHERE (login='$login' AND id_conteneur='$id_sous_cont[$j]')";
-			fdebug("$sql\n");
-            $moyenne_query = mysql_query($sql);
-            $statut_moy = @mysql_result($moyenne_query, 0, "statut");
-			fdebug("\$statut_moy=$statut_moy\n");
-
-            if ($statut_moy == 'y') {
-                $moy = @mysql_result($moyenne_query, 0, "note");
-				fdebug("\$moy=$moy\n");
-
-				fdebug("\$somme_coef = $somme_coef + $coefficient = ");
-                $somme_coef = $somme_coef + $coefficient;
-				fdebug("$somme_coef\n");
-
-				fdebug("\$total_point = $total_point + $coefficient * $moy = ");
-                $total_point = $total_point + $coefficient*$moy;
-				fdebug("$total_point\n");
-            }
-            $j++;
-        }
-    }
-
-
-    //
-    // calcul de la moyenne des évaluations
-    //
-	//=========================
-	// A FAIRE: boireaus 20080202
-	// Il faudrait considérer le cas vicieux: présence de note à bonus et pas d'autre note...
-    if ($somme_coef != 0) {
-	//=========================
-		fdebug("\$moyenne= = $total_point / $somme_coef = ");
-        $moyenne = $total_point/$somme_coef;
-		fdebug($moyenne."\n");
-        //
-        // si un des devoirs a l'option "N", on prend la meilleure moyenne :
-        //
-		// Ca ne fonctionne bien que pour $mode==2
-		// Pour $mode==1, il faudrait faire la liste de tous les devoirs situés dans le conteneur et les sous-conteneurs triés par date et parcourir ces devoirs plus haut au lieu de faire une boucle sur la liste des sous-conteneurs
-        if ($exist_dev_fac == 'yes') {
-			fdebug("\$exist_dev_fac=".$exist_dev_fac."\n");
-			/*
-            $k=0;
-            while ($k < $nb_dev) {
-                if ((($somme_coef - $coef[$k]) != 0) and ($facultatif[$k]=='N')) {
-                    if (isset($points[$k])) {
-                       $points[$k] = ($total_point-$points[$k])/($somme_coef - $coef[$k]);
-						fdebug("\$points[$k]=$points[$k]\n");
-						fdebug("\$moyenne=max($moyenne,$points[$k])=");
-                       $moyenne = max($moyenne,$points[$k]);
-						fdebug("$moyenne\n");
-                    }
-                }
-                $k++;
-            }
-			*/
-			$m=0;
-            while ($m<count($points)) {
-				fdebug("count(\$points)=".count($points)."\n");
-				if((isset($points[$m]))&&(isset($f_coef[$m]))) {
-					fdebug("\$points[$m]=$points[$m] et \$f_coef[$m]=$f_coef[$m]\n");
-					$tmp_moy=($total_point+$points[$m])/($somme_coef+$f_coef[$m]);
-					fdebug("\$tmp_moy=$tmp_moy et \$moyenne=$moyenne\n");
-					if($tmp_moy>$moyenne){
-						$moyenne=$tmp_moy;
-						$total_point=$total_point+$points[$m];
-						$somme_coef=$somme_coef+$f_coef[$m];
-					}
-					fdebug("\$moyenne=$moyenne\n");
-				}
-				$m++;
-			}
-        }
-
-		fdebug("Moyenne avant arrondi: $moyenne\n");
-
-/*
-if(($login=='RUQUIER_S')&&($id_racine=='2916')&&($id_conteneur=='2917')) {
-	echo "<div style='color:red;'><b> ($login, $id_racine, $id_conteneur)</b>
-Moyenne avant arrondi: $moyenne<br />
-   \$moyenne=$moyenne<br />
-   10*\$moyenne=".(10*$moyenne)."<br />
-   ceil(10*\$moyenne)=".ceil(10*$moyenne)."<br />
-   ceil(10*\$moyenne)/10=".(ceil(10*$moyenne)/10)."<br />
-   number_format(ceil(10*\$moyenne)/10,1,'.','')=".number_format(ceil(10*$moyenne)/10,1,'.','')."<br />
-   number_format(ceil(100*\$moyenne)/100,1,'.','')=".number_format(ceil(100*$moyenne)/100,1,'.','')."<br />
-   printf('%.40f', (10*\$moyenne))=".printf('%.40f', (10*$moyenne))."<br />
-   ceil(strval((10*\$moyenne))=".ceil(strval((10*$moyenne)))."
-<div>\n";
-}
-*/
-        //
-        // Calcul des arrondis
-        //
-        if ($arrondir == 's1') {
-            // s1 : arrondir au dixième de point supérieur
-			fdebug("Mode s1:
-   \$moyenne=$moyenne
-   10*\$moyenne=".(10*$moyenne)."
-   ceil(10*\$moyenne)=".ceil(10*$moyenne)."
-   ceil(10*\$moyenne)/10=".(ceil(10*$moyenne)/10)."
-   number_format(ceil(10*\$moyenne)/10,1,'.','')=".number_format(ceil(10*$moyenne)/10,1,'.','')."
-   number_format(ceil(100*\$moyenne)/100,1,'.','')=".number_format(ceil(100*$moyenne)/100,1,'.','')."\n");
-            //$moyenne = number_format(ceil(10*$moyenne)/10,1,'.','');
-			$moyenne = number_format(ceil(strval(10*$moyenne))/10,1,'.','');
-        } else if ($arrondir == 's5') {
-            // s5 : arrondir au demi-point supérieur
-            $moyenne = number_format(ceil(strval(2*$moyenne))/2,1,'.','');
-        } else if ($arrondir == 'se') {
-            // se : arrondir au point entier supérieur
-            $moyenne = number_format(ceil(strval($moyenne)),1,'.','');
-        } else if ($arrondir == 'p1') {
-            // s1 : arrondir au dixième le plus proche
-            $moyenne = number_format(round(strval(10*$moyenne))/10,1,'.','');
-        } else if ($arrondir == 'p5') {
-            // s5 : arrondir au demi-point le plus proche
-            $moyenne = number_format(round(strval(2*$moyenne))/2,1,'.','');
-        } else if ($arrondir == 'pe') {
-            // se : arrondir au point entier le plus proche
-            $moyenne = number_format(round(strval($moyenne)),1,'.','');
-        }
-
-        $sql="INSERT INTO cn_notes_conteneurs SET login='$login', id_conteneur='$id_conteneur',note='$moyenne',statut='y',comment='';";
-		fdebug("$sql\n");
-        $register = mysql_query($sql);
-
-    } else {
-        $sql="INSERT INTO cn_notes_conteneurs SET login='$login', id_conteneur='$id_conteneur',note='0',statut='',comment='';";
-		fdebug("$sql\n");
-        $register = mysql_query($sql);
-
-    }
-
-}
-
-//
-// Affichage de la liste des conteneurs
-//
-function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_periode) {
-	global $tabdiv_infobulle;
-	global $gepiClosedPeriodLabel;
-	global $id_groupe;
-	global $eff_groupe;
-	if((isset($id_groupe))&&(!isset($eff_groupe))) {
-		$sql="SELECT 1=1 FROM j_eleves_groupes WHERE id_groupe='$id_groupe' AND periode='$periode_num';";
-		//echo "$sql<br />";
-		$res_ele_grp=mysql_query($sql);
-		$eff_groupe=mysql_num_rows($res_ele_grp);
-	}
-	//
-	// Cas particulier de la racine
-	//
-	//$message_cont = "Etes-vous sûr de vouloir supprimer le conteneur ci-dessous et les évaluations qu\\'il contient ?";
-	$gepi_denom_boite=getSettingValue("gepi_denom_boite");
-	if(getSettingValue("gepi_denom_boite_genre")=='m'){
-		//$lela="le";$il_ou_elle="il";
-		$message_cont = "Etes-vous sûr de vouloir supprimer le ".getSettingValue("gepi_denom_boite")." ci-dessous ?";
-		$message_cont_non_vide = "Le ".getSettingValue("gepi_denom_boite")." est non vide. Il ne peut pas être supprimé.";
-	}
-	else{
-		//$lela="la";$il_ou_elle="elle";
-		$message_cont = "Etes-vous sûr de vouloir supprimer la ".getSettingValue("gepi_denom_boite")." ci-dessous ?";
-		$message_cont_non_vide = "La ".getSettingValue("gepi_denom_boite")." est non vide. Elle ne peut pas être supprimée.";
-	}
-	//$message_cont = "Etes-vous sûr de vouloir supprimer $lela ".getSettingValue("gepi_denom_boite")." ci-dessous et les évaluations qu\\'il contient ?";
-	//$message_cont = "Etes-vous sûr de vouloir supprimer $lela ".getSettingValue("gepi_denom_boite")." ci-dessous ?";
-	//$message_cont_non_vide = ucfirst($lela)." ".getSettingValue("gepi_denom_boite")." est non vide. ".ucfirst($il_ou_elle)." ne peut pas être supprimé.";
-	$message_dev = "Etes-vous sûr de vouloir supprimer l\\'évaluation ci-dessous et les notes qu\\'elle contient ?";
-	//$appel_conteneurs = mysql_query("SELECT * FROM cn_conteneurs WHERE (parent='0' and id_racine='$id_conteneur')");
-	$sql="SELECT * FROM cn_conteneurs WHERE (parent='0' and id_racine='$id_conteneur')";
-	//echo "$sql<br />\n";
-	$appel_conteneurs = mysql_query($sql);
-	$nb_cont = mysql_num_rows($appel_conteneurs);
-	if ($nb_cont != 0) {
-		echo "<ul>\n";
-		$id_cont = mysql_result($appel_conteneurs, 0, 'id');
-		$id_parent = mysql_result($appel_conteneurs, 0, 'parent');
-		$id_racine = mysql_result($appel_conteneurs, 0, 'id_racine');
-		$nom_conteneur = mysql_result($appel_conteneurs, 0, 'nom_court');
-		echo "<li>\n";
-		echo "$nom_conteneur ";
-		//echo "id=$id_cont id_racine=$id_racine parent=$id_parent ";
-		if ($ver_periode <= 1) {
-			echo " (<strong>".$gepiClosedPeriodLabel."</strong>) ";
-		}
-		echo "- <a href='saisie_notes.php?id_conteneur=$id_cont'>Visualisation</a> - <a href = 'add_modif_conteneur.php?id_conteneur=$id_cont&amp;mode_navig=retour_index'>Configuration</a>\n";
-		$appel_dev = mysql_query("select * from cn_devoirs where id_conteneur='$id_cont' order by date");
-		$nb_dev  = mysql_num_rows($appel_dev);
-		if ($nb_dev != 0) {$empty = 'no';}
-		if ($ver_periode >= 2) {
-			$j = 0;
-			if($nb_dev>0){
-				echo "<ul>\n";
-				while ($j < $nb_dev) {
-					$nom_dev = mysql_result($appel_dev, $j, 'nom_court');
-					$id_dev = mysql_result($appel_dev, $j, 'id');
-					echo "<li>\n";
-					echo "<font color='green'>$nom_dev</font>";
-					echo " - <a href='saisie_notes.php?id_conteneur=$id_cont&amp;id_devoir=$id_dev'>Saisie</a>";
-
-					//$sql="SELECT 1=1 FROM cn_notes_devoirs WHERE id_devoir='$id_dev' AND statut!='-' AND statut!='v';";
-					//$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='-' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
-					$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
-					//echo "$sql<br />";
-					$res_eff_dev=mysql_query($sql);
-					$eff_dev=mysql_num_rows($res_eff_dev);
-					echo " <span title=\"Effectif des notes saisies/effectif total de l'enseignement\" style='font-size:small;";
-					if(isset($eff_groupe)) {if($eff_dev==$eff_groupe) {echo "color:green;";} else {echo "color:red;";}}
-					echo "'>($eff_dev";
-					if(isset($eff_groupe)) {echo "/$eff_groupe";}
-					echo ")</span>";
-
-					// Pour détecter une anomalie:
-					 $sql="SELECT * FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num' AND jec.login not in (select login from j_eleves_groupes where id_groupe='$id_groupe' and periode='$periode_num');";
-					//echo "$sql<br />"; // Décommenter et exécuter dans une console mysql ou dans phpMyAdmin
-					$test_anomalie=mysql_query($sql);
-					if(mysql_num_rows($test_anomalie)>0) {
-						$titre_infobulle="Note pour un fantôme";
-						$texte_infobulle="Une ou des notes existent pour un ou des élèves qui ne sont plus inscrits dans cet enseignement&nbsp;:<br />";
-						$cpt_ele_anomalie=0;
-						while($lig_anomalie=mysql_fetch_object($test_anomalie)) {
-							if($cpt_ele_anomalie>0) {$texte_infobulle.=", ";}
-							$texte_infobulle.=get_nom_prenom_eleve($lig_anomalie->login,'avec_classe')."&nbsp;(<i>";
-							if($lig_anomalie->statut=='') {$texte_infobulle.=$lig_anomalie->note;}
-							elseif($lig_anomalie->statut=='v') {$texte_infobulle.="_";}
-							else {$texte_infobulle.=$lig_anomalie->statut;}
-							$texte_infobulle.="</i>)";
-							$cpt_ele_anomalie++;
-						}
-						$texte_infobulle.="<br />";
-						$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."'>ici</a> pour supprimer les notes associées?";
-						$tabdiv_infobulle[]=creer_div_infobulle('anomalie_'.$id_dev,$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
-
-						echo " <a href=\"#\" onclick=\"afficher_div('anomalie_$id_dev','y',100,100);return false;\"><img src='../images/icons/flag.png' width='17' height='18' /></a>";
-					}
-
-					//echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a> - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
-					echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a>";
-
-					$display_parents=mysql_result($appel_dev, $j, 'display_parents');
-					$coef=mysql_result($appel_dev, $j, 'coef');
-					echo " (<i><span title='Coefficient $coef'>$coef</span> ";
-					if($display_parents==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relevé de notes' alt='Evaluation visible sur le relevé de notes' />";}
-					else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes' alt='Evaluation non visible sur le relevé de notes' />\n";}
-					echo "</i>)";
-					//echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
-					echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
-					echo "</li>\n";
-					$j++;
-				}
-				echo "</ul>\n";
-			}
-		}
-	}
-	if ($ver_periode >= 2) {
-		$appel_conteneurs = mysql_query("SELECT * FROM cn_conteneurs WHERE (parent='$id_conteneur') order by nom_court");
-		$nb_cont = mysql_num_rows($appel_conteneurs);
-		if($nb_cont>0) {
-			echo "<ul>\n";
-			$i = 0;
-			while ($i < $nb_cont) {
-				$id_cont = mysql_result($appel_conteneurs, $i, 'id');
-				$id_parent = mysql_result($appel_conteneurs, $i, 'parent');
-				$id_racine = mysql_result($appel_conteneurs, $i, 'id_racine');
-				$nom_conteneur = mysql_result($appel_conteneurs, $i, 'nom_court');
-				if ($id_cont != $id_parent) {
-					echo "<li>\n";
-					//echo "$nom_conteneur - <a href='saisie_notes.php?id_conteneur=$id_cont'>Visualisation</a> - <a href = 'add_modif_conteneur.php?id_conteneur=$id_cont&amp;mode_navig=retour_index'>Configuration</a> - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
-					echo "$nom_conteneur - <a href='saisie_notes.php?id_conteneur=$id_cont'>Visualisation</a>";
-					echo " - <a href = 'add_modif_conteneur.php?id_conteneur=$id_cont&amp;mode_navig=retour_index'>Configuration</a>\n";
-
-					$display_bulletin=mysql_result($appel_conteneurs, $i, 'display_bulletin');
-					$coef=mysql_result($appel_conteneurs, $i, 'coef');
-					echo " (<i><span title='Coefficient $coef'>$coef</span> ";
-					if($display_bulletin==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='$gepi_denom_boite visible sur le bulletin' alt='$gepi_denom_boite visible sur le bulletin' />";}
-					else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='$gepi_denom_boite non visible sur le bulletin' alt='$gepi_denom_boite non visible sur le bulletin' />\n";}
-					echo "</i>)";
-
-					//$appel_dev = mysql_query("select * from cn_devoirs where id_conteneur='$id_cont'");
-					$appel_dev = mysql_query("select * from cn_devoirs where id_conteneur='$id_cont' order by date");
-					$nb_dev  = mysql_num_rows($appel_dev);
-					if ($nb_dev != 0) {$empty = 'no';}
-
-					// Existe-t-il des sous-conteneurs?
-					$sql="SELECT 1=1 FROM cn_conteneurs WHERE (parent='$id_cont')";
-					$test_sous_cont=mysql_query($sql);
-					$nb_sous_cont=mysql_num_rows($test_sous_cont);
-					//echo "<br />$sql<br />$nb_sous_cont<br />";
-
-					if(($nb_dev==0)&&($nb_sous_cont==0)) {
-						//echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
-						//echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
-						echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
-					}
-					else {
-						echo " - <a href = '#' onclick='alert(\"$message_cont_non_vide\")'><font color='gray'>Suppression</font></a>\n";
-					}
-
-					$j = 0;
-					if($nb_dev>0) {
-						echo "<ul>\n";
-						while ($j < $nb_dev) {
-							$nom_dev = mysql_result($appel_dev, $j, 'nom_court');
-							$id_dev = mysql_result($appel_dev, $j, 'id');
-							echo "<li>\n";
-							echo "<font color='green'>$nom_dev</font> - <a href='saisie_notes.php?id_conteneur=$id_cont&amp;id_devoir=$id_dev'>Saisie</a>";
-
-							//$sql="SELECT 1=1 FROM cn_notes_devoirs WHERE id_devoir='$id_dev' AND statut!='-' AND statut!='v';";
-							$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='-' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
-							//echo "$sql<br />";
-							$res_eff_dev=mysql_query($sql);
-							$eff_dev=mysql_num_rows($res_eff_dev);
-							echo " <span title=\"Effectif des notes saisies/effectif total de l'enseignement\" style='font-size:small;";
-							if(isset($eff_groupe)) {if($eff_dev==$eff_groupe) {echo "color:green;";} else {echo "color:red;";}}
-							echo "'>($eff_dev";
-							if(isset($eff_groupe)) {echo "/$eff_groupe";}
-							echo ")</span>";
-
-							// Pour détecter une anomalie:
-							$sql="SELECT * FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num' AND jec.login not in (select login from j_eleves_groupes where id_groupe='$id_groupe' and periode='$periode_num');";
-							//echo "$sql<br />"; // Décommenter et exécuter dans une console mysql ou dans phpMyAdmin
-							$test_anomalie=mysql_query($sql);
-							if(mysql_num_rows($test_anomalie)>0) {
-								$titre_infobulle="Note pour un fantôme";
-								$texte_infobulle="Une ou des notes existent pour un ou des élèves qui ne sont plus inscrits dans cet enseignement&nbsp;:<br />";
-								$cpt_ele_anomalie=0;
-								while($lig_anomalie=mysql_fetch_object($test_anomalie)) {
-									if($cpt_ele_anomalie>0) {$texte_infobulle.=", ";}
-									$texte_infobulle.=get_nom_prenom_eleve($lig_anomalie->login,'avec_classe')."&nbsp;(<i>";
-									if($lig_anomalie->statut=='') {$texte_infobulle.=$lig_anomalie->note;}
-									elseif($lig_anomalie->statut=='v') {$texte_infobulle.="_";}
-									else {$texte_infobulle.=$lig_anomalie->statut;}
-									$texte_infobulle.="</i>)";
-									$cpt_ele_anomalie++;
-								}
-								$texte_infobulle.="<br />";
-								$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."'>ici</a> pour supprimer les notes associées?";
-								$tabdiv_infobulle[]=creer_div_infobulle('anomalie_'.$id_dev,$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
-		
-								echo " <a href=\"#\" onclick=\"afficher_div('anomalie_$id_dev','y',100,100);return false;\"><img src='../images/icons/flag.png' width='17' height='18' /></a>";
-							}
-
-							//echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a> - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
-							echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a>";
-
-							$display_parents=mysql_result($appel_dev, $j, 'display_parents');
-							$coef=mysql_result($appel_dev, $j, 'coef');
-							echo " (<i><span title='Coefficient $coef'>$coef</span> ";
-							if($display_parents==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relevé de notes' alt='Evaluation visible sur le relevé de notes' />";}
-							else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes' alt='Evaluation non visible sur le relevé de notes' />\n";}
-							echo "</i>)";
-
-							//echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev&amp;alea=".$_SESSION['gepi_alea']."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
-							echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
-							echo "</li>\n";
-							$j++;
-						}
-						echo "</ul>\n";
-					}
-				}
-				if ($id_conteneur != $id_cont) {affiche_devoirs_conteneurs($id_cont,$periode_num, $empty,$ver_periode);}
-				if ($id_cont != $id_parent) {
-					echo "</li>\n";
-				}
-				$i++;
-			}
-			echo "</ul>\n";
-		}
-	}
-	if ($empty != 'no') return 'yes';
-}
-
-
+/**
+ * Vérifie que la page est bien accessible par l'utilisateur
+ *
+ * @global string 
+ * @return booleanTRUE si la page est accessible, FALSE sinon
+ * @see tentative_intrusion()
+ */
 function checkAccess() {
     global $gepiPath;
-    $url = parse_url($_SERVER['REQUEST_URI']);
+    $url = parse_url($_SERVER['SCRIPT_NAME']);
     if ($_SESSION["statut"] == 'autre') {
 
     	$sql = "SELECT autorisation
@@ -1484,35 +474,29 @@ function checkAccess() {
     $dbCheckAccess = sql_query1($sql);
     if (substr($url['path'], 0, strlen($gepiPath)) != $gepiPath) {
         tentative_intrusion(2, "Tentative d'accès avec modification sauvage de gepiPath");
-        return (false);
+        return (FALSE);
     } else {
         if ($dbCheckAccess == 'V') {
-            return (true);
+            return (TRUE);
         } else {
             tentative_intrusion(1, "Tentative d'accès à un fichier sans avoir les droits nécessaires");
-            return (false);
+            return (FALSE);
         }
     }
 }
 
-function Verif_prof_cahier_notes ($_login,$_id_racine) {
-    if(empty($_login) || empty($_id_racine)) {return false;die();}
-    $test_prof = mysql_query("SELECT id_groupe FROM cn_cahier_notes WHERE id_cahier_notes ='" . $_id_racine . "'");
-    $_id_groupe = mysql_result($test_prof, 0, 'id_groupe');
 
-    $call_prof = mysql_query("SELECT login FROM j_groupes_professeurs WHERE (id_groupe='".$_id_groupe."' and login='" . $_login . "')");
-    $nb = mysql_num_rows($call_prof);
-
-    if ($nb != 0) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-
+/**
+ * Vérifie qu'un enseignant enseigne une matière dans une classe
+ *
+ * @deprecated la table j_classes_matieres_professeurs n'existe plus
+ * @param string $login Login de l'enseignant
+ * @param int $id_classe Id de la classe
+ * @param type $matiere
+ * @return boolean
+ */
 function Verif_prof_classe_matiere ($login,$id_classe,$matiere) {
-    if(empty($login) || empty($id_classe) || empty($matiere)) {return false;}
+    if(empty($login) || empty($id_classe) || empty($matiere)) {return FALSE;}
     $call_prof = mysql_query("SELECT id_professeur FROM j_classes_matieres_professeurs WHERE (id_classe='".$id_classe."' AND id_matiere='".$matiere."')");
     $nb_profs = mysql_num_rows($call_prof);
     $k = 0;
@@ -1523,278 +507,31 @@ function Verif_prof_classe_matiere ($login,$id_classe,$matiere) {
         $k++;
     }
     if ($flag == 0) {
-        return false;
+        return FALSE;
     } else {
-        return true;
+        return TRUE;
     }
 }
-//***********************************************************************************************
-function affich_aid($affiche_graph, $affiche_rang, $affiche_coef, $test_coef,$affiche_nbdev,$indice_aid, $aid_id,$current_eleve_login,$periode_num,$id_classe,$style_bulletin) {
-    //============================
-    // AJOUT: boireaus
-    global $min_max_moyclas;
-    //============================
 
-    $call_data = mysql_query("SELECT * FROM aid_config WHERE indice_aid = $indice_aid");
-    $AID_NOM_COMPLET = @mysql_result($call_data, 0, "nom_complet");
-    $note_max = @mysql_result($call_data, 0, "note_max");
-    $type_note = @mysql_result($call_data, 0, "type_note");
-    $message = @mysql_result($call_data, 0, "message");
-    $display_nom = @mysql_result($call_data, 0, "display_nom");
-    $display_end = @mysql_result($call_data, 0, "display_end");
-
-
-    $aid_nom_query = mysql_query("SELECT nom FROM aid WHERE (id='$aid_id' and indice_aid='$indice_aid')");
-    $aid_nom = @mysql_result($aid_nom_query, 0, "nom");
-    //------
-    // On regarde maintenant quelle sont les profs responsables de cette AID
-    $aid_prof_resp_query = mysql_query("SELECT id_utilisateur FROM j_aid_utilisateurs WHERE (id_aid='$aid_id'  and indice_aid='$indice_aid')");
-    $nb_lig = mysql_num_rows($aid_prof_resp_query);
-    $n = '0';
-    while ($n < $nb_lig) {
-        $aid_prof_resp_login[$n] = mysql_result($aid_prof_resp_query, $n, "id_utilisateur");
-        $n++;
-    }
-    //------
-    // On appelle l'appréciation de l'élève, et sa note
-    //------
-    $current_eleve_aid_appreciation_query = mysql_query("SELECT * FROM aid_appreciations WHERE (login='$current_eleve_login' AND periode='$periode_num' and id_aid='$aid_id' and indice_aid='$indice_aid')");
-    $current_eleve_aid_appreciation = @mysql_result($current_eleve_aid_appreciation_query, 0, "appreciation");
-    $periode_query = mysql_query("SELECT * FROM periodes WHERE id_classe = '$id_classe'");
-    $periode_max = mysql_num_rows($periode_query);
-    if ($type_note == 'last') {$last_periode_aid = min($periode_max,$display_end);}
-    if (($type_note == 'every') or (($type_note == 'last') and ($periode_num == $last_periode_aid))) {
-        $place_eleve = "";
-        $current_eleve_aid_note = @mysql_result($current_eleve_aid_appreciation_query, 0, "note");
-        $current_eleve_aid_statut = @mysql_result($current_eleve_aid_appreciation_query, 0, "statut");
-        if (($current_eleve_aid_statut == '') and ($note_max != 20) ) {
-            $current_eleve_aid_appreciation = "(note sur ".$note_max.") ".$current_eleve_aid_appreciation;
-        }
-        if ($current_eleve_aid_note == '') {
-            $current_eleve_aid_note = '-';
-        } else {
-            if ($affiche_graph == 'y')  {
-                if ($current_eleve_aid_note<5) { $place_eleve=6;}
-                if (($current_eleve_aid_note>=5) and ($current_eleve_aid_note<8))  { $place_eleve=5;}
-                if (($current_eleve_aid_note>=8) and ($current_eleve_aid_note<10)) { $place_eleve=4;}
-                if (($current_eleve_aid_note>=10) and ($current_eleve_aid_note<12)) {$place_eleve=3;}
-                if (($current_eleve_aid_note>=12) and ($current_eleve_aid_note<15)) { $place_eleve=2;}
-                if ($current_eleve_aid_note>=15) { $place_eleve=1;}
-            }
-            $current_eleve_aid_note=number_format($current_eleve_aid_note,1, ',', ' ');
-        }
-        $aid_note_min_query = mysql_query("SELECT MIN(note) note_min FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid')");
-
-        $aid_note_min = @mysql_result($aid_note_min_query, 0, "note_min");
-        if ($aid_note_min == '') {
-            $aid_note_min = '-';
-        } else {
-            $aid_note_min=number_format($aid_note_min,1, ',', ' ');
-        }
-        $aid_note_max_query = mysql_query("SELECT MAX(note) note_max FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid')");
-        $aid_note_max = @mysql_result($aid_note_max_query, 0, "note_max");
-
-        if ($aid_note_max == '') {
-            $aid_note_max = '-';
-        } else {
-            $aid_note_max=number_format($aid_note_max,1, ',', ' ');
-        }
-
-        $aid_note_moyenne_query = mysql_query("SELECT round(avg(note),1) moyenne FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid')");
-        $aid_note_moyenne = @mysql_result($aid_note_moyenne_query, 0, "moyenne");
-        if ($aid_note_moyenne == '') {
-            $aid_note_moyenne = '-';
-        } else {
-            $aid_note_moyenne=number_format($aid_note_moyenne,1, ',', ' ');
-        }
-
-    }
-    //------
-    // On affiche l'appréciation aid :
-    //------
-    echo "<tr>\n<td style=\"height: ".getSettingValue("col_hauteur")."px; width: ".getSettingValue("col_matiere_largeur")."px;\"><span class='$style_bulletin'><strong>$AID_NOM_COMPLET</strong><br />";
-    $chaine_prof="";
-    $n = '0';
-    while ($n < $nb_lig) {
-        $chaine_prof.=affiche_utilisateur($aid_prof_resp_login[$n],$id_classe)."<br />";
-        $n++;
-    }
-    if($n!=0){
-	echo "<em>".$chaine_prof."</em>";
-    }
-    echo "</span></td>\n";
-    if ($test_coef != 0 AND $affiche_coef == "y") echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\"><span class='".$style_bulletin."'>-</span></td>\n";
-
-    if ($affiche_nbdev=="y"){echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\"><span class='".$style_bulletin."'>-</span></td>\n";}
-
-    if (($type_note == 'every') or (($type_note == 'last') and ($periode_num == $last_periode_aid))) {
-	//==========================
-	// MODIF: boireaus
-	if($min_max_moyclas!=1){
-		echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\">";
-		echo "<span class='$style_bulletin'>$aid_note_min</span></td>\n";
-
-		echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\">";
-		echo "<span class='$style_bulletin'>$aid_note_max</span></td>\n";
-
-		echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\">";
-		echo "<span class='$style_bulletin'>$aid_note_moyenne</span></td>\n";
-	}
-	else{
-		echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\">";
-		echo "<span class='$style_bulletin'>$aid_note_min<br />\n";
-		echo "$aid_note_max<br />\n";
-		echo "$aid_note_moyenne</span></td>\n";
-	}
-	//==========================
-
-	echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\">";
-	echo "<span class='$style_bulletin'><strong>";
-	if ($current_eleve_aid_statut == '') {
-		echo $current_eleve_aid_note;
-	} else if ($current_eleve_aid_statut == 'other') {
-		echo "-";
-	} else {
-		echo $current_eleve_aid_statut;
-	}
-	echo "</strong></span></td>\n";
-    } else {
-	//==========================
-	// MODIF: boireaus
-	if($min_max_moyclas!=1){
-		echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\"><span class='$style_bulletin'>-</span></td>\n";
-		echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\"><span class='$style_bulletin'>-</span></td>\n";
-		echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\"><span class='$style_bulletin'>-</span></td>\n";
-	}
-	else{
-		// On ne met pas trois tirets.
-		echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\"><span class='$style_bulletin'>-</span></td>\n";
-	}
-	//==========================
-	echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\"><span class='$style_bulletin'>-</span></td>\n";
-    }
-    if ($affiche_graph == 'y')  {
-      if (($type_note == 'every') or (($type_note == 'last') and ($periode_num == $last_periode_aid)))  {
-        $quartile1_classe = sql_query1("SELECT COUNT( a.note ) as quartile1 FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid' AND a.note>=15)");
-        $quartile2_classe = sql_query1("SELECT COUNT( a.note ) as quartile2 FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid' AND a.note>=12 AND a.note<15)");
-        $quartile3_classe = sql_query1("SELECT COUNT( a.note ) as quartile3 FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid' AND a.note>=10 AND a.note<12)");
-        $quartile4_classe = sql_query1("SELECT COUNT( a.note ) as quartile4 FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid' AND a.note>=8 AND a.note<10)");
-        $quartile5_classe = sql_query1("SELECT COUNT( a.note ) as quartile5 FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid' AND a.note>=5 AND a.note<8)");
-        $quartile6_classe = sql_query1("SELECT COUNT( a.note ) as quartile6 FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid' AND a.note<5)");
-        echo "<td style=\"text-align: center; \"><img height=40 witdh=40 src='../visualisation/draw_artichow4.php?place_eleve=$place_eleve&temp1=$quartile1_classe&temp2=$quartile2_classe&temp3=$quartile3_classe&temp4=$quartile4_classe&temp5=$quartile5_classe&temp6=$quartile6_classe&nb_data=7' /></td>\n";
-     } else
-      echo "<td style=\"text-align: center; \"><span class='".$style_bulletin."'>-</span></td>\n";
-    }
-    if ($affiche_rang == 'y') echo "<td style=\"text-align: center; width: ".getSettingValue("col_note_largeur")."px;\"><span class='".$style_bulletin."'>-</span></td>\n";
-    if (getSettingValue("bull_affiche_appreciations") == 'y') {
-        echo "<td style=\"\" colspan=\"2\"><span class='$style_bulletin'>";
-        if (($message != '') or ($display_nom == 'y')) {
-            echo "$message ";
-            if ($display_nom == 'y') {echo "<strong>$aid_nom</strong><br />";}
-        }
-    }
-    echo "$current_eleve_aid_appreciation</span></td>\n</tr>\n";
-    //------
-}
-
+/**
+ * Recherche dans la base l'adresse courriel d'un utilisateur
+ *
+ * @param string $login_u Login de l'utilisateur
+ * @return string adresse courriel de l'utilisateur
+ */
 function retourne_email ($login_u) {
 $call = mysql_query("SELECT email FROM utilisateurs WHERE login = '$login_u'");
 $email = @mysql_result($call, 0, "email");
 return $email;
 
 }
-function parametres_tableau($larg_tab, $bord) {
-    echo "<table border='1' width='680' cellspacing='1' cellpadding='1' summary=\"Tableau de paramètres\">\n";
-    echo "<tr><td><span class=\"norme\">largeur en pixel : <input type=\"text\" name=\"larg_tab\" size=\"3\" value=\"".$larg_tab."\" />\n";
-    echo "bords en pixel : <input type=\"text\" name=\"bord\" size=\"3\" value=\"".$bord."\" />\n";
-    echo "<input type=\"submit\" value=\"Valider\" />\n";
-    echo "</span></td></tr></table>\n";
-}
-function affiche_tableau($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bord, $col1_centre, $col_centre, $couleur_alterne) {
-    // $col1_centre = 1 --> la première colonne est centrée
-    // $col1_centre = 0 --> la première colonne est alignée à gauche
-    // $col_centre = 1 --> toutes les autres colonnes sont centrées.
-    // $col_centre = 0 --> toutes les autres colonnes sont alignées.
-    // $couleur_alterne --> les couleurs de fond des lignes sont alternés
-	global $num_debut_colonnes_matieres, $num_debut_lignes_eleves, $vtn_coloriser_resultats, $vtn_borne_couleur, $vtn_couleur_texte, $vtn_couleur_cellule;
 
-	//echo "\$num_debut_colonnes_matieres=$num_debut_colonnes_matieres<br />";
-	//echo "\$coloriser_resultats=$coloriser_resultats<br />";
-
-    echo "<table border=\"$bord\" class='boireaus' cellspacing=\"0\" width=\"$larg_tab\" cellpadding=\"1\" summary=\"Tableau\">\n";
-    echo "<tr>\n";
-    $j = 1;
-    while($j < $nb_col+1) {
-        //echo "<th class='small'>$ligne1[$j]</th>\n";
-        echo "<th class='small' id='td_ligne1_$j'>$ligne1[$j]</th>\n";
-        $j++;
-    }
-    echo "</tr>\n";
-    $i = "0";
-    $bg_color = "";
-    $flag = "1";
-    $alt=1;
-    while($i < $nombre_lignes) {
-        if((isset($couleur_alterne))&&($couleur_alterne=='y')) {
-            if ($flag==1) {$bg_color = "bgcolor=\"#C0C0C0\"";} else {$bg_color = "     ";}
-        }
-
-	    $alt=$alt*(-1);
-        echo "<tr class='";
-		if((isset($couleur_alterne))&&($couleur_alterne=='y')) {echo "lig$alt ";}
-		echo "white_hover'>\n";
-        $j = 1;
-        while($j < $nb_col+1) {
-            if ((($j == 1) and ($col1_centre == 0)) or (($j != 1) and ($col_centre == 0))) {
-
-				echo "<td class='small' ";
-				//echo $bg_color;
-				if(!preg_match("/Rang de l/",$ligne1[$j])) {
-					if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
-						if(strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
-							for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
-								if(preg_replace('/,/','.',$col[$j][$i])<=preg_replace('/,/','.',$vtn_borne_couleur[$loop])) {
-									echo " style='";
-									if($vtn_couleur_texte[$loop]!='') {echo "color:$vtn_couleur_texte[$loop]; ";}
-									if($vtn_couleur_cellule[$loop]!='') {echo "background-color:$vtn_couleur_cellule[$loop]; ";}
-									echo "'";
-									break;
-								}
-							}
-						}
-					}
-				}
-				echo ">{$col[$j][$i]}</td>\n";
-
-            } else {
-				echo "<td align=\"center\" class='small' ";
-				//echo $bg_color;
-				if(!preg_match("/Rang de l/",$ligne1[$j])) {
-					if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
-						if(strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
-							for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
-								if(preg_replace('/,/','.',$col[$j][$i])<=preg_replace('/,/','.',$vtn_borne_couleur[$loop])) {
-									echo " style='";
-									if($vtn_couleur_texte[$loop]!='') {echo "color:$vtn_couleur_texte[$loop]; ";}
-									if($vtn_couleur_cellule[$loop]!='') {echo "background-color:$vtn_couleur_cellule[$loop]; ";}
-									echo "'";
-									break;
-								}
-							}
-						}
-					}
-				}
-				echo ">{$col[$j][$i]}</td>\n";
-            }
-            $j++;
-        }
-        echo "</tr>\n";
-        if ($flag == "1") {$flag = "0";} else {$flag = "1";}
-        $i++;
-    }
-    echo "</table>\n";
-}
-
+/**
+ * Renvoie une chaine débarassée de l'encodage ASCII
+ *
+ * @param string $s le texte à convertir
+ * @return string le texte avec les lettres accentuées
+ */
 function dbase_filter($s){
   for($i = 0; $i < strlen($s); $i++){
     $code = ord($s[$i]);
@@ -1819,6 +556,12 @@ function dbase_filter($s){
   return $s;
 }
 
+/**
+ * Renvoie le navigateur et sa version
+ *
+ * @param string $HTTP_USER_AGENT
+ * @return string navigateur - version
+ */
 function detect_browser($HTTP_USER_AGENT) {
 	// D'après le fichier db_details_common.php de phpmyadmin
 	/*
@@ -1839,19 +582,6 @@ function detect_browser($HTTP_USER_AGENT) {
 		} elseif(preg_match('/(Konqueror\/)(.*)(;)/', $HTTP_USER_AGENT, $log_version)) {
 			$BROWSER_VER = $log_version[2];
 			$BROWSER_AGENT = 'KONQUEROR';
-		/*
-		} elseif((preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version))&&(preg_match('/Chrome\/([0-9.]*)/', $HTTP_USER_AGENT, $log_version2))) {
-		//} elseif(preg_match('/Chrome/', $HTTP_USER_AGENT, $log_version2)) {
-			//$BROWSER_VER = $log_version[1] . '.' . $log_version2[1];
-			$BROWSER_VER = $log_version2[1];
-			$BROWSER_AGENT = 'GoogleChrome';
-		} elseif((preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version))&&(preg_match('/Safari\/([0-9]*)/', $HTTP_USER_AGENT, $log_version2))) {
-			$BROWSER_VER = $log_version[1] . '.' . $log_version2[1];
-			$BROWSER_AGENT = 'SAFARI';
-		} elseif(preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
-			$BROWSER_VER = $log_version[1];
-			$BROWSER_AGENT = 'MOZILLA';
-		*/
 		} elseif(preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
 			if(preg_match('/Chrome\/([0-9.]*)/', $HTTP_USER_AGENT, $log_version2)) {
 				$BROWSER_VER = $log_version2[1];
@@ -1936,11 +666,18 @@ function detect_browser($HTTP_USER_AGENT) {
 		$BROWSER_AGENT = $HTTP_USER_AGENT;
 	}
 	return  $BROWSER_AGENT." - ".$BROWSER_VER;
-	//return  $BROWSER_AGENT." - ".$BROWSER_VER." ($HTTP_USER_AGENT)";
 }
 
-// Retourne la version de Mysql
-
+/**
+ * Formate une date en jour/mois/année
+ * 
+ * Accepte les dates aux formats YYYY-MM-DD ou YYYYMMDD ou YYYY-MM-DD xx:xx:xx
+ * 
+ * Retourne la date passée en argument si le format n'est pas bon
+ *
+ * @param date $date La date à formater
+ * @return string la date formatée
+ */
 function affiche_date_naissance($date) {
     if (strlen($date) == 10) {
         // YYYY-MM-DD
@@ -1968,6 +705,13 @@ function affiche_date_naissance($date) {
     return $jour."/".$mois."/".$annee ;
 }
 
+/**
+ *
+ * @global mixed 
+ * @global mixed 
+ * @global mixed 
+ * @return booleanTRUE si on a une nouvelle version 
+ */
 function test_maj() {
     global $gepiVersion, $gepiRcVersion, $gepiBetaVersion;
     $version_old = getSettingValue("version");
@@ -1975,19 +719,19 @@ function test_maj() {
     $versionBeta_old = getSettingValue("versionBeta");
 
    if ($version_old =='') {
-       return true;
+       return TRUE;
        die();
    }
    if ($gepiVersion > $version_old) {
         // On a une nouvelle version stable
-       return true;
+       return TRUE;
        die();
    }
    if (($gepiVersion == $version_old) and ($versionRc_old!='')) {
         // On avait une RC
        if (($gepiRcVersion > $versionRc_old) or ($gepiRcVersion=='')) {
             // Soit on a une nouvelle RC, soit on est passé de RC à stable
-           return true;
+           return TRUE;
            die();
        }
    }
@@ -1995,45 +739,66 @@ function test_maj() {
         // On avait une Beta
        if (($gepiBetaVersion > $versionBeta_old) or ($gepiBetaVersion=='')) {
             // Soit on a une nouvelle Beta, soit on est passé à une RC ou une stable
-           return true;
+           return TRUE;
            die();
        }
    }
-   return false;
+   return FALSE;
 }
 
+/**
+ * Recherche si la mise à jour est à faire
+ *
+ * @global mixed 
+ * @global mixed 
+ * @global mixed 
+ * @param mixed $num le numéro de version
+ * @return booleanTRUE s'il faut faire la mise à jour
+ */
 function quelle_maj($num) {
     global $gepiVersion, $gepiRcVersion, $gepiBetaVersion;
     $version_old = getSettingValue("version");
     $versionRc_old = getSettingValue("versionRc");
     $versionBeta_old = getSettingValue("versionBeta");
     if ($version_old < $num) {
-        return true;
+        return TRUE;
         die();
     }
     if ($version_old == $num) {
         if ($gepiRcVersion > $versionRc_old) {
-            return true;
+            return TRUE;
             die();
         }
         if ($gepiRcVersion == $versionRc_old) {
             if ($gepiBetaVersion > $versionBeta_old) {
-                return true;
+                return TRUE;
                 die();
             }
         }
     }
-    return false;
+    return FALSE;
 }
 
+/**
+ *
+ * @global text
+ * @return booleanTRUE si tout c'est bien passé 
+ * @see getSettingValue()
+ * @see saveSetting()
+ */
 function check_backup_directory() {
 
 	global $multisite;
 
+	$pref_multi="";
+	if(($multisite=='y')&&(isset($_COOKIE['RNE']))) {
+		$pref_multi=$_COOKIE['RNE']."_";
+	}
+
     $current_backup_dir = getSettingValue("backup_directory");
-    if ($current_backup_dir == null) $current_backup_dir = "no_folder";
+    if ($current_backup_dir == NULL) {$current_backup_dir = "no_folder";}
     if (!file_exists("./backup/".$current_backup_dir)) {
-        $backupDirName = null;
+        $backupDirName = NULL;
         if ($multisite != 'y') {
         	// On regarde d'abord si le répertoire de backup n'existerait pas déjà...
         	$handle=opendir('./backup');
@@ -2045,22 +810,22 @@ function check_backup_directory() {
         	closedir($handle);
         }
 
-        if ($backupDirName != null) {
+        if ($backupDirName != NULL) {
             // Il existe : on met simplement à jour le nom du répertoire...
             $update = saveSetting("backup_directory",$backupDirName);
         } else {
-            // Il n existe pas
-            // On créé le répertoire de backup
+            // Il n'existe pas
+            // On crée le répertoire de backup
             $length = rand(35, 45);
             for($len=$length,$r='';strlen($r)<$len;$r.=chr(!mt_rand(0,2)? mt_rand(48,57):(!mt_rand(0,1) ? mt_rand(65,90) : mt_rand(97,122))));
-            $dirname = $r;
+            $dirname = $pref_multi.$r;
             $create = mkdir("./backup/" . $dirname, 0700);
             copy("./backup/index.html","./backup/".$dirname."/index.html");
             if ($create) {
                 saveSetting("backup_directory", $dirname);
                 saveSetting("backupdir_lastchange",time());
             } else {
-                return false;
+                return FALSE;
                 die();
             }
 
@@ -2093,25 +858,25 @@ function check_backup_directory() {
         $dirname = getSettingValue("backup_directory");
         $length = rand(35, 45);
         for($len=$length,$r='';strlen($r)<$len;$r.=chr(!mt_rand(0,2) ? mt_rand(48,57):(!mt_rand(0,1)?mt_rand(65,90):mt_rand(97,122))));
-        $newdirname = $r;
+        $newdirname = $pref_multi.$r;
         if (rename("./backup/".$dirname, "./backup/".$newdirname)) {
             saveSetting("backup_directory",$newdirname);
             saveSetting("backupdir_lastchange",time());
-            return true;
+            return TRUE;
         } else {
             echo "Erreur lors du renommage du dossier de sauvegarde.<br />";
-            return false;
+            return FALSE;
         }
     }
-    return true;
+    return TRUE;
 
 }
 
 /**
  * Fonction qui retourne le nombre de périodes pour une classe
  *
- * @param integer $_id_classe identifiant numérique de la classe
- * @return integer Nombre de periodes définies pour cette classe
+ * @param int identifiant numérique de la classe
+ * @return int Nombre de periodes définies pour cette classe
  */
 function get_period_number($_id_classe) {
     $periode_query = mysql_query("SELECT count(*) FROM periodes WHERE id_classe = '" . $_id_classe . "'");
@@ -2120,9 +885,9 @@ function get_period_number($_id_classe) {
 }
 
 /**
- * Renvoie le numéro et le nom de la première période active (O) pour une classe
+ * Renvoie le numéro et le nom de la première période active pour une classe
  *
- * @param integer $_id_classe identifiant unique de la classe
+ * @param int $_id_classe identifiant unique de la classe
  * @return array numéro de la période 'num' et son nom 'nom'
  */
 function get_periode_active($_id_classe){
@@ -2133,8 +898,16 @@ function get_periode_active($_id_classe){
 
 }
 
-// Pour les utilisateurs ayant des versions antérieures à PHP 4.3.0 :
-// la fonction html_entity_decode() est disponible a partir de la version 4.3.0 de php.
+/**
+ *  Equivalent à html_entity_decode()
+ * 
+ * Pour les utilisateurs ayant des versions antérieures à PHP 4.3.0 :
+ * la fonction html_entity_decode() est disponible a partir de la version 4.3.0 de php.
+ * 
+ * @deprecated GEPI ne fonctionne plus sans php 5.2 et plus
+ * @param string $string
+ * @return type 
+ */
 function html_entity_decode_all_version ($string)
 {
    global $use_function_html_entity_decode;
@@ -2150,315 +923,20 @@ function html_entity_decode_all_version ($string)
        return html_entity_decode($string);
 }
 
-function make_classes_select_html($link, $current, $year, $month, $day)
-
-{
-  // Pour le multisite, on doit récupérer le RNE de l'établissement
-  $rne = isset($_GET['rne']) ? $_GET['rne'] : (isset($_POST['rne']) ? $_POST['rne'] : 'aucun');
-  $aff_input_rne = $aff_get_rne = NULL;
-  if ($rne != 'aucun') {
-	$aff_input_rne = '<input type="hidden" name="rne" value="' . $rne . '" />' . "\n";
-	$aff_get_rne = '&amp;rne=' . $rne;
-  }
-  $out_html = "<form name=\"classe\" method=\"post\" action=\"".$_SERVER['PHP_SELF']."\"><strong><em>Classe :</em></strong><br />
-  " . $aff_input_rne . "
-  <select name=\"classe\" onchange=\"classe_go()\">";
-	// correction W3C : onChange = onchange
-  $out_html .= "<option value=\"".$link."?year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;id_classe=-1\">(Choisissez une classe)";
-  // Ligne suivante corrigée sur suggestion tout à fait pertinente de Stéphane, mail du 1er septembre 06
-
-
-  if (isset($_SESSION['statut']) && ($_SESSION['statut']=='scolarite'
-		  && getSettingValue('GepiAccesCdtScolRestreint')=="yes")){
-  $sql = "SELECT DISTINCT c.id, c.classe
-	FROM classes c, j_groupes_classes jgc, ct_entry ct, j_scol_classes jsc
-	WHERE (c.id = jgc.id_classe
-	  AND jgc.id_groupe = ct.id_groupe
-	  AND jsc.id_classe=jgc.id_classe
-	  AND jsc.login='".$_SESSION ['login']."'
-		)
-	ORDER BY classe ;";
-
-  } else if (isset($_SESSION['statut']) && ($_SESSION['statut']=='cpe'
-		  && getSettingValue('GepiAccesCdtCpeRestreint')=="yes")){
-
-
-	$sql = "SELECT DISTINCT c.id, c.classe
-	  FROM classes c, j_groupes_classes jgc, ct_entry ct, j_eleves_cpe jec,j_eleves_classes jecl
-	  WHERE (c.id = jgc.id_classe
-	  AND jgc.id_groupe = ct.id_groupe
-	  AND jec.cpe_login = '".$_SESSION ['login']."'
-	  AND jec.e_login = jecl.login
-	  AND jecl.id_classe = jgc.id_classe)
-	  ORDER BY classe ;";
-  }else{
-
- /* if(getSettingValue('GepiAccesCdtCpeRestreint')!="yes"
-		  || getSettingValue('GepiAccesCdtScolRestreint')!="yes"){*/
-	$sql = "SELECT DISTINCT c.id, c.classe
-	  FROM classes c, j_groupes_classes jgc, ct_entry ct
-	  WHERE (c.id = jgc.id_classe
-	  AND jgc.id_groupe = ct.id_groupe)
-	  ORDER BY classe";
-  }
-
-  //GepiAccesCdtCpeRestreint
-
-  $res = sql_query($sql);
-
-
-  if ($res) for ($i = 0; ($row = sql_row($res, $i)); $i++)
-  {
-    $selected = ($row[0] == $current) ? "selected" : "";
-    $link2 = "$link?year=$year&amp;month=$month&amp;day=$day&amp;id_classe=$row[0]" . $aff_get_rne;
-    $out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[1]);
-  }
-  $out_html .= "</select>
-  <script type=\"text/javascript\">
-  <!--
-  function classe_go()
-  {
-  box = document.forms[\"classe\"].classe;
-  destination = box.options[box.selectedIndex].value;
-  if (destination) location.href = destination;
-  }
-  // -->
-  </script>
-  <noscript>
-  <input type=submit value=\"OK\" />
-  </noscript>
-  </form>";
-  return $out_html;
-}
-
-function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day, $special='')
-{
-	// $id_ref peut être soit l'ID d'une classe, auquel cas on affiche tous les groupes
-	// pour la classe, soit le login d'un élève, auquel cas on affiche tous les groupes
-	// pour l'élève en question
-
-	// correction W3C : onChange = onchange
-	//						  Ajout de balises <p>...</p> pour pouvoir mettre en forme le texte
-	//						  Création d'un label pour passer les tests WAI
-	//						  Ajout de balises <p>...</p> pour encadrer <select>...
-	/*
-	$out_html = "<form name=\"matiere\"  method=\"post\" action=\"".$_SERVER['PHP_SELF']."\"><strong><em>Matière :</em></strong><br />
-	<select name=\"matiere\" onchange=\"matiere_go()\">\n";
-	*/
-	// Pour le multisite, on doit récupérer le RNE de l'établissement
-	$prof="";
-	
-	$rne = isset($_GET['rne']) ? $_GET['rne'] : (isset($_POST['rne']) ? $_POST['rne'] : 'aucun');
-	$aff_input_rne = $aff_get_rne = NULL;
-	if ($rne != 'aucun') {
-		$aff_input_rne = '<input type="hidden" name="rne" value="' . $rne . '" />' . "\n";
-		$aff_get_rne = '&amp;rne=' . $rne;
-	}
-		$out_html = "<form id=\"matiere\"  method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n" . $aff_input_rne . "\n
-	<h2 class='h2_label'> \n<label for=\"enseignement\"><strong><em>Matière :<br /></em></strong></label>\n</h2>\n<p>\n<select id=\"enseignement\" name=\"matiere\" onchange=\"matiere_go()\">\n ";
-	
-		// correction W3C : ajout de la balise de fin </option> à la fin de $out_html
-	if (is_numeric($id_ref)) {
-		//$out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;id_classe=$id_ref\">(Choisissez un enseignement)</option>";
-		$out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;id_classe=$id_ref\">(Choisissez un enseignement)</option>\n";
-	
-		if($special!='') {
-			$selected="";
-			if($special=='Toutes_matieres') {$selected=" selected='true'";}
-			if (is_numeric($id_ref)) {
-				$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;id_classe=$id_ref&amp;id_groupe=Toutes_matieres" . $aff_get_rne;
-			} else {
-				$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;login_eleve=$id_ref&amp;id_groupe=Toutes_matieres" . $aff_get_rne;
-			}
-			$out_html .= "<option $selected value=\"$link2\"$selected>Toutes les matières</option>\n";
-		}
-	
-		$sql = "select DISTINCT g.id, g.name, g.description from j_groupes_classes jgc, groupes g, ct_entry ct where (" .
-				"jgc.id_classe='".$id_ref."' and " .
-				"g.id = jgc.id_groupe and " .
-				"jgc.id_groupe = ct.id_groupe" .
-				") order by g.name";
-	} else {
-		// correction W3C : ajout de la balise de fin </option> à la fin de $out_html
-		//$out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;login_eleve=$id_ref\">(Choisissez un enseignement)</option>";
-		$out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;login_eleve=$id_ref\">(Choisissez un enseignement)</option>\n";
-
-		if($special!='') {
-			$selected="";
-			if($special=='Toutes_matieres') {$selected=" selected='true'";}
-			if (is_numeric($id_ref)) {
-				$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;id_classe=$id_ref&amp;id_groupe=Toutes_matieres" . $aff_get_rne;
-			} else {
-				$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;login_eleve=$id_ref&amp;id_groupe=Toutes_matieres" . $aff_get_rne;
-			}
-			$out_html .= "<option $selected value=\"$link2\"$selected>Toutes les matières</option>\n";
-		}
-
-		$sql = "select DISTINCT g.id, g.name, g.description from j_eleves_groupes jec, groupes g, ct_entry ct where (" .
-				"jec.login='".$id_ref."' and " .
-				"g.id = jec.id_groupe and " .
-				"jec.id_groupe = ct.id_groupe" .
-				") order by g.name";
-	}
-	$res = sql_query($sql);
-	if ($res) for ($i = 0; ($row = sql_row($res, $i)); $i++)
-	{
-		$test_prof = "SELECT nom, prenom FROM j_groupes_professeurs j, utilisateurs u WHERE (j.id_groupe='".$row[0]."' and u.login=j.login) ORDER BY nom, prenom";
-		$res_prof = sql_query($test_prof);
-		$chaine = "";
-		for ($k=0;$prof=sql_row($res_prof,$k);$k++) {
-			if ($k != 0) $chaine .= ", ";
-			$chaine .= htmlspecialchars($prof[0])." ".substr(htmlspecialchars($prof[1]),0,1).".";
-		}
-		//$chaine .= ")";
-		
-		
-		//$selected = ($row[0] == $current) ? "selected" : "";
-		$selected = ($row[0] == $current) ? "selected=\"selected\"" : "";
-		if (is_numeric($id_ref)) {
-			$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;id_classe=$id_ref&amp;id_groupe=$row[0]" . $aff_get_rne;
-		} else {
-			$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;login_eleve=$id_ref&amp;id_groupe=$row[0]" . $aff_get_rne;
-		}
-		// correction W3C : ajout de la balise de fin </option> à la fin de $out_html
-		//$out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[2] . " - ")." ".$chaine."</option>";
-		$out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[2] . " - ")." ".$chaine."</option>";
-	}
-	$out_html .= "\n</select>\n</p>\n
-	
-	<script type=\"text/javascript\">
-	<!--
-	function matiere_go()
-	{
-		box = document.forms[\"matiere\"].matiere;
-		destination = box.options[box.selectedIndex].value;
-		if (destination) location.href = destination;
-	}
-	// -->
-	</script>
-	
-	<noscript><p>\n";
-		if (is_numeric($id_ref)) {
-			$out_html .= "<input type=\"hidden\" name=\"id_classe\" value=\"$id_ref\" />\n";
-		} else {
-			$out_html .= "<input type=\"hidden\" name=\"login_eleve\" value=\"$id_ref\" />\n";
-		}
-		$out_html .= "<input type=\"hidden\" name=\"year\" value=\"$year\" />
-		<input type=\"hidden\" name=\"month\" value=\"$month\" />
-		<input type=\"hidden\" name=\"day\" value=\"$day\" />
-		<input type=\"submit\" value=\"OK\" />
-		</p>
-	</noscript>
-	</form>\n";
-	// correction W3C : ajout de \" pour encadrer submit ci-dessus et de <p>...</p> pour encadrer <input...>
-	return $out_html;
-}
-
-function make_eleve_select_html($link, $login_resp, $current, $year, $month, $day)
-{
-	global $selected_eleve;
-	// $current est le login de l'élève actuellement sélectionné
-	$sql="SELECT e.login, e.nom, e.prenom " .
-			"FROM eleves e, resp_pers r, responsables2 re " .
-			"WHERE (" .
-			"e.ele_id = re.ele_id AND " .
-			"re.pers_id = r.pers_id AND " .
-			"r.login = '".$login_resp."' AND (re.resp_legal='1' OR re.resp_legal='2'));";
-	//echo "$sql<br />\n";
-	$get_eleves = mysql_query($sql);
-
-	if (mysql_num_rows($get_eleves) == 0) {
-			// Aucun élève associé
-		$out_html = "<p>Vous semblez n'être responsable d'aucun élève ! Contactez l'administrateur pour corriger cette erreur.</p>";
-	} elseif (mysql_num_rows($get_eleves) == 1) {
-			// Un seul élève associé : pas de formulaire nécessaire
-		$selected_eleve = mysql_fetch_object($get_eleves);
-		$out_html = "<p class='bold'>Elève : ".$selected_eleve->prenom." ".$selected_eleve->nom."</p>";
-	} else {
-		// Plusieurs élèves : on affiche un formulaire pour choisir l'élève
-	// correction W3C : onChange = onchange + ajout de balise <p> +fermeture balise <option>
-	  $out_html = "<form id=\"eleve\" method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n<h2 class='h2_label'>\n<label for=\"choix_eleve\"><strong><em>Elève :</em></strong></label>\n</h2>\n<p>\n<select id=\"choix_eleve\" name=\"eleve\" onchange=\"eleve_go()\">\n";
-	  $out_html .= "<option value=\"".$link."?year=".$year."&amp;month=".$month."&amp;day=".$day."\">(Choisissez un élève)</option>\n";
-		while ($current_eleve = mysql_fetch_object($get_eleves)) {
-		   if ($current) {
-		   	$selected = ($current_eleve->login == $current->login) ? "selected='selected'" : "";
-		   } else {
-		   	$selected = "";
-		   }
-		   $link2 = "$link?year=$year&amp;month=$month&amp;day=$day&amp;login_eleve=".$current_eleve->login;
-		   $out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($current_eleve->prenom . " - ".$current_eleve->nom)."</option>\n";
-		}
-	// ajout de la fermeture de p </p> et de \" pour encadrer submit
-	  $out_html .= "</select></p>
-	  <script type=\"text/javascript\">
-	  <!--
-	  function eleve_go()
-	  {
-	    box = document.forms[\"eleve\"].eleve;
-	    destination = box.options[box.selectedIndex].value;
-	    if (destination) location.href = destination;
-	  }
-	  // -->
-	  </script>
-
-	  <noscript>
-		<p>
-		  <input type=\"hidden\" name=\"year\" value=\"$year\" />
-		  <input type=\"hidden\" name=\"month\" value=\"$month\" />
-		  <input type=\"hidden\" name=\"day\" value=\"$day\" />
-		  <input type=\"submit\" value=\"OK\" />
-		</p>
-		</noscript>
-	  </form>\n";
-	}
-	return $out_html;
-}
-
-function affiche_docs_joints($id_ct,$type_notice) {
-// documents joints
-$html = '';
-$architecture="/documents/cl_dev";
-if ($type_notice == "t") {
-    $sql = "SELECT titre, emplacement FROM ct_devoirs_documents WHERE id_ct_devoir='$id_ct' ORDER BY 'titre'";
-} else if ($type_notice == "c") {
-    $sql = "SELECT titre, emplacement FROM ct_documents WHERE id_ct='$id_ct' ORDER BY 'titre'";
-}
-
-$res = sql_query($sql);
-  if (($res) and (sql_count($res)!=0)) {
-    $html .= "<span class='petit'>Document(s) joint(s):</span>";
-    //$html .= "<ul type=\"disc\" style=\"padding-left: 15px;\">";
-    $html .= "<ul style=\"padding-left: 15px;\">";
-    for ($i=0; ($row = sql_row($res,$i)); $i++) {
-              $titre = $row[0];
-              $emplacement = $row[1];
-              //$html .= "<li style=\"padding: 0px; margin: 0px; font-family: arial, sans-serif; font-size: 80%;\"><a href=\"$emplacement\" target=\"blank\">$titre</a></li>";
-			// Ouverture dans une autre fenêtre conservée parce que si le fichier est un PDF, un TXT, un HTML ou tout autre document susceptible de s'ouvrir dans le navigateur, on risque de refermer sa session en croyant juste refermer le document.
-			// alternative, utiliser un javascript
-              $html .= "<li style=\"padding: 0px; margin: 0px; font-family: arial, sans-serif; font-size: 80%;\"><a onclick=\"window.open(this.href, '_blank'); return false;\" href=\"$emplacement\">$titre</a></li>";
-
-    }
-    $html .= "</ul>";
-   }
-  return $html;
- }
-
 /**
  * Cette fonction est à appeler dans tous les cas où une tentative
  * d'utilisation illégale de Gepi est manifestement avérée.
  * Elle est à appeler notamment dans tous les tests de sécurité lorsqu'un test est négatif.
  * Possibilité d'envoyer un mail à l'administrateur et de bloquer l'utilisateur
  *
- * @global array $_SERVER obsolète car $_SERVER est une superglobale
- * @global array $_SESSION obsolète car $_SESSION est une super globale
- * @global string $gepiPath Path de Gepi (connect.inc.php)
+ * @global string
  * @param integer $_niveau Niveau d'intrusion enregistré
  * @param string $_description Message enregistré pour cette tentative
+ * @see getSettingValue()
+ * @see mail()
  */
 function tentative_intrusion($_niveau, $_description) {
-	// On permet l'accès à $_SERVER et $_SESSION
-	global $_SERVER;
-	global $_SESSION;
+
 	global $gepiPath;
 
 	// On commence par enregistrer la tentative en question
@@ -2487,12 +965,12 @@ function tentative_intrusion($_niveau, $_description) {
 	// On initialise des marqueurs pour les deux actions possibles : envoie d'un email à l'admin
 	// et blocage du compte de l'utilisateur
 
-	$send_email = false;
-	$block_user = false;
+	$send_email = FALSE;
+	$block_user = FALSE;
 
 	// Est-ce qu'on envoie un mail quoi qu'il arrive ?
 	if (getSettingValue("security_alert_email_admin") == "yes" AND $_niveau >= getSettingValue("security_alert_email_min_level")) {
-		$send_email = true;
+		$send_email = TRUE;
 	}
 
 	// Si la tentative d'intrusion a été effectuée par un utilisateur connecté à Gepi,
@@ -2515,21 +993,21 @@ function tentative_intrusion($_niveau, $_description) {
 
 		$res = mysql_query("UPDATE utilisateurs SET niveau_alerte = '".$nouveau_cumul ."' WHERE (login = '".$user_login."')");
 
-		$seuil1 = false;
-		$seuil2 = false;
+		$seuil1 = FALSE;
+		$seuil2 = FALSE;
 		// Maintenant on regarde les seuils.
 		if ($nouveau_cumul >= getSettingValue("security_alert1_".$obs."_cumulated_level")
 				AND $nouveau_cumul < getSettingValue("security_alert2_".$obs."_cumulated_level")) {
 			// Seuil 1
-			if (getSettingValue("security_alert1_".$obs."_email_admin") == "yes") $send_email = true;
-			if (getSettingValue("security_alert1_".$obs."_block_user") == "yes") $block_user = true;
-			$seuil1 = true;
+			if (getSettingValue("security_alert1_".$obs."_email_admin") == "yes") $send_email = TRUE;
+			if (getSettingValue("security_alert1_".$obs."_block_user") == "yes") $block_user = TRUE;
+			$seuil1 = TRUE;
 
 		} elseif ($nouveau_cumul >= getSettingValue("security_alert2_".$obs."_cumulated_level")) {
 			// Seuil 2
-			if (getSettingValue("security_alert2_".$obs."_email_admin") == "yes") $send_email = true;
-			if (getSettingValue("security_alert2_".$obs."_block_user") == "yes") $block_user = true;
-			$seuil2 = true;
+			if (getSettingValue("security_alert2_".$obs."_email_admin") == "yes") $send_email = TRUE;
+			if (getSettingValue("security_alert2_".$obs."_block_user") == "yes") $block_user = TRUE;
+			$seuil2 = TRUE;
 		}
 
 		// On désactive le compte de l'utilisateur si nécessaire :
@@ -2581,52 +1059,13 @@ function tentative_intrusion($_niveau, $_description) {
 }
 
 /**
- * Fonction destinée à présenter une liste de liens répartis en $nbcol colonnes
- *
- * @param array $tab_txt tableau des textes
- * @param array $tab_lien tableau des liens
- * @param integer $nbcol Nombre de colonnes
- */
-function tab_liste($tab_txt,$tab_lien,$nbcol,$extra_options = null){
-
-	// Nombre d'enregistrements à afficher
-	$nombreligne=count($tab_txt);
-
-	if(!is_int($nbcol)){
-		$nbcol=3;
-	}
-
-	// Nombre de lignes dans chaque colonne:
-	$nb_class_par_colonne=round($nombreligne/$nbcol);
-
-	echo "<table width='100%' summary=\"Tableau de choix\">\n";
-	echo "<tr valign='top' align='center'>\n";
-	echo "<td align='left'>\n";
-
-	$i = 0;
-	while ($i < $nombreligne){
-
-		if(($i>0)&&(round($i/$nb_class_par_colonne)==$i/$nb_class_par_colonne)){
-			echo "</td>\n";
-			echo "<td align='left'>\n";
-		}
-
-		//echo "<br />\n";
-		echo "<a href='".$tab_lien[$i]."'";
-    if ($extra_options) echo ' '.$extra_options;
-    echo ">".$tab_txt[$i]."</a>";
-		echo "<br />\n";
-		$i++;
-	}
-	echo "</td>\n";
-	echo "</tr>\n";
-	echo "</table>\n";
-}
-
-/**
  * Fonction destinée à créer un dossier temporaire aléatoire /temp/<alea>
+ * 
+ * Test le dossier en écriture et le crée au besoin
  *
- * @return boolean true/false
+ * @return booleanTRUE si tout c'est bien passé
+ * @see getSettingValue()
+ * @see saveSetting()
  */
 function check_temp_directory(){
 
@@ -2638,7 +1077,6 @@ function check_temp_directory(){
 		for($len=$length,$r='';strlen($r)<$len;$r.=chr(!mt_rand(0,2)? mt_rand(48,57):(!mt_rand(0,1) ? mt_rand(65,90) : mt_rand(97,122))));
 		$dirname = $r;
 		$create = mkdir("./temp/".$dirname, 0700);
-		//chmod("/temp/".$dirname, 0700);
 
 		if ($create) {
 			$fich=fopen("./temp/".$dirname."/index.html","w+");
@@ -2649,48 +1087,50 @@ function check_temp_directory(){
 			fclose($fich);
 
 			saveSetting("temp_directory", $dirname);
-			//return $dirname;
-			return true;
+			return TRUE;
 		} else {
-			return false;
+			return FALSE;
 			die();
 		}
 	} else {
-		return true;
+		return TRUE;
 	}
-	/*
-	else{
-		return $dirname;
-	}
-	*/
 }
 
 /**
  * Fonction destinée à créer un dossier /temp/<alea> propre au professeur
+ * 
+ * Test le dossier en écriture et le crée au besoin
+ * La fonction est appelée depuis la racine de l'arborescence GEPI (sinon ça peut bugger)
  *
- * @return boolean true/false
+ * @return booleanTRUE si tout c'est bien passé
  */
 function check_user_temp_directory(){
+	global $multisite;
+
+	$pref_multi="";
+	if(($multisite=='y')&&(isset($_COOKIE['RNE']))) {
+		$pref_multi=$_COOKIE['RNE']."_";
+	}
 
 	$sql="SELECT temp_dir FROM utilisateurs WHERE login='".$_SESSION['login']."'";
 	$res_temp_dir=mysql_query($sql);
 
 	if(mysql_num_rows($res_temp_dir)==0){
 		// Cela revient à dire que l'utilisateur n'est pas dans la table utilisateurs???
-		return false;
+		return FALSE;
 	}
 	else{
 		$lig_temp_dir=mysql_fetch_object($res_temp_dir);
 		$dirname=$lig_temp_dir->temp_dir;
 
-		if($dirname==""){
+		if($dirname=="") {
 			// Le dossier n'existe pas
 			// On créé le répertoire temp
 			$length = rand(35, 45);
 			for($len=$length,$r='';strlen($r)<$len;$r.=chr(!mt_rand(0,2)? mt_rand(48,57):(!mt_rand(0,1) ? mt_rand(65,90) : mt_rand(97,122))));
-			$dirname = $_SESSION['login']."_".$r;
+			$dirname = $pref_multi.$_SESSION['login']."_".$r;
 			$create = mkdir("./temp/".$dirname, 0700);
-			//chmod("/temp/".$dirname, 0700);
 
 			if($create){
 				$fich=fopen("./temp/".$dirname."/index.html","w+");
@@ -2703,23 +1143,39 @@ function check_user_temp_directory(){
 				$sql="UPDATE utilisateurs SET temp_dir='$dirname' WHERE login='".$_SESSION['login']."'";
 				$res_update=mysql_query($sql);
 				if($res_update){
-					//return $dirname;
-					return true;
+					return TRUE;
 				}
 				else{
-					return false;
+					return FALSE;
 				}
 			}
 			else{
-				return false;
+				return FALSE;
 			}
 		}
-		else{
+		else {
+			if(($pref_multi!='')&&(!preg_match("/^$pref_multi/", $dirname))&&(file_exists("./temp/".$dirname))) {
+				// Il faut renommer le dossier
+				if(!rename("./temp/".$dirname,"./temp/".$pref_multi.$dirname)) {
+					return FALSE;
+					exit();
+				}
+				else {
+					$dirname=$pref_multi.$dirname;
+
+					$sql="UPDATE utilisateurs SET temp_dir='$dirname' WHERE login='".$_SESSION['login']."'";
+					$res_update=mysql_query($sql);
+					if(!$res_update){
+						return FALSE;
+						exit();
+					}
+				}
+			}
+
 			if(!file_exists("./temp/".$dirname)){
 				// Le dossier n'existe pas
 				// On créé le répertoire temp
 				$create = mkdir("./temp/".$dirname, 0700);
-				//chmod("/temp/".$dirname, 0700);
 
 				if($create){
 					$fich=fopen("./temp/".$dirname."/index.html","w+");
@@ -2728,10 +1184,10 @@ function check_user_temp_directory(){
 </script></head></html>
 ');
 					fclose($fich);
-					return true;
+					return TRUE;
 				}
 				else{
-					return false;
+					return FALSE;
 				}
 			}
 			else{
@@ -2743,10 +1199,10 @@ function check_user_temp_directory(){
 				}
 
 				if(($fich)&&($ecriture)&&($fermeture)){
-					return true;
+					return TRUE;
 				}
 				else{
-					return false;
+					return FALSE;
 				}
 			}
 		}
@@ -2756,7 +1212,7 @@ function check_user_temp_directory(){
 /**
  * Renvoie le nom du répertoire temporaire de l'utilisateur
  *
- * @return string retourne false s'il n'existe pas et le nom du répertoire s'il existe sans le chemin
+ * @return bool|string retourne FALSE s'il n'existe pas et le nom du répertoire s'il existe, sans le chemin
  */
 function get_user_temp_directory(){
 	$sql="SELECT temp_dir FROM utilisateurs WHERE login='".$_SESSION['login']."'";
@@ -2776,18 +1232,24 @@ function get_user_temp_directory(){
 				return $dirname;
 			}
 			else{
-				return false;
+				return FALSE;
 			}
 		}
 		else{
-			return false;
+			return FALSE;
 		}
 	}
 	else{
-		return false;
+		return FALSE;
 	}
 }
 
+/**
+ * Retourne un nombre formaté en Mo, ko ou o suivant ça taille
+ *
+ * @param int $volume le nombre à formater
+ * @return string le nombre formaté
+ */
 function volume_human($volume){
 	if($volume>=1048576){
 		$volume=round(10*$volume/1048576)/10;
@@ -2802,6 +1264,15 @@ function volume_human($volume){
 	}
 }
 
+/**
+ * Renvoie la taille d'un répertoire
+ *
+ * @global int 
+ * @param string $dir Le répertoire à tester
+ * @return string la taille formatée 
+ * @see volume_dir()
+ * @see volume_human()
+ */
 function volume_dir_human($dir){
 	global $totalsize;
 	$totalsize=0;
@@ -2810,6 +1281,13 @@ function volume_dir_human($dir){
 	return volume_human($volume);
 }
 
+/**
+ * Additionne la taille des répertoires et sous-répertoires
+ *
+ * @global int
+ * @param string $dir répertoire à parser
+ * @return int la taille totale du répertoire
+ */
 function volume_dir($dir){
 	global $totalsize;
 
@@ -2817,7 +1295,6 @@ function volume_dir($dir){
 	while ($file = @readdir ($handle)){
 		if (preg_match("/^\.{1,2}$/i",$file))
 			continue;
-		//if(is_dir($dir.$file)){
 		if(is_dir("$dir/$file")){
 			$totalsize+=volume_dir("$dir/$file");
 		}
@@ -2833,24 +1310,30 @@ function volume_dir($dir){
 	return($totalsize);
 }
 
+/**
+ * Supprime les fichiers d'un dossier
+ *
+ * @param string $dir le répertoire à vider
+ * @return boolean TRUE si tout c'est bien passé
+ * @todo En ajoutant un paramètre à la fonction, on pourrait activer la suppression récursive (avec une profondeur par exemple)
+ */
 function vider_dir($dir){
-	$statut=true;
+	$statut=TRUE;
 	$handle = @opendir($dir);
 	while ($file = @readdir ($handle)){
 		if (preg_match("/^\.{1,2}$/i",$file)){
 			continue;
 		}
-		//if(is_dir($dir.$file)){
 		if(is_dir("$dir/$file")){
 			// On ne cherche pas à vider récursivement.
-			$statut=false;
+			$statut=FALSE;
 
 			echo "<!-- DOSSIER: $dir/$file -->\n";
 			// En ajoutant un paramètre à la fonction, on pourrait activer la suppression récursive (avec une profondeur par exemple) lancer ici vider_dir("$dir/$file");
 		}
 		else{
 			if(!unlink($dir."/".$file)) {
-				$statut=false;
+				$statut=FALSE;
 				echo "<!-- Echec suppression: $dir/$file -->\n";
 				break;
 			}
@@ -2862,9 +1345,13 @@ function vider_dir($dir){
 }
 
 
-/*
+/**
  * Cette méthode prend une chaîne de caractères et s'assure qu'elle est bien
  * retournée en ISO-8859-1.
+ * 
+ * @param string La chaine à tester
+ * @return string La chaine traitée
+ * @todo On pourrait au moins passer en ISO-8859-15
  */
 function ensure_iso8859_1($str) {
 	$encoding = mb_detect_encoding($str);
@@ -2875,7 +1362,12 @@ function ensure_iso8859_1($str) {
 	}
 }
 
-
+/**
+ * Encode une chaine en utf8
+ * 
+ * @param string $chaine La chaine à tester
+ * @return string La chaine traitée
+ */
 function caract_ooo($chaine){
 	if(function_exists('utf8_encode')){
 		$retour=utf8_encode($chaine);
@@ -2909,12 +1401,37 @@ function caract_ooo($chaine){
 	return $retour;
 }
 
-//================================================
-// Correspondances de caractères accentués/désaccentués
-$liste_caracteres_accentues   ="ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõø¨ûüùúýÿ¸";
-$liste_caracteres_desaccentues="AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz";
-//================================================
+/**
+ * Correspondances de caractères accentués/désaccentués
+ * 
+ * @global string $GLOBALS['liste_caracteres_accentues']
+ * @name $liste_caracteres_accentues
+ */
+$GLOBALS['liste_caracteres_accentues']="ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõø¨ûüùúýÿ¸";
 
+/**
+ * Correspondances de caractères accentués/désaccentués
+ * 
+ * @global string $GLOBALS['liste_caracteres_desaccentues']
+ * @name $liste_caracteres_desaccentues
+ */
+$GLOBALS['liste_caracteres_desaccentues']="AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz";
+
+/**
+ * Remplace les accents dans une chaine
+ * 
+ * $mode = 'all' On remplace espaces et apostrophes par des '_' et les caractères accentués par leurs équivalents non accentués.
+ * 
+ * $mode = 'all_nospace' On remplace apostrophes par des '_' et les caractères accentués par leurs équivalents non accentués.
+ * 
+ *  Sinon, on remplace les caractères accentués par leurs équivalents non accentués.
+ *
+ * @global string 
+ * @global string 
+ * @param type $chaine La chaine à tester
+ * @param type $mode Mode de conversion
+ * @return type 
+ */
 function remplace_accents($chaine,$mode=''){
 	global $liste_caracteres_accentues, $liste_caracteres_desaccentues;
 
@@ -2924,7 +1441,6 @@ function remplace_accents($chaine,$mode=''){
 	}
 	elseif($mode == 'all_nospace'){
 		// On remplace apostrophes par des '_' et les caractères accentués par leurs équivalents non accentués.
-		//$retour1 = strtr(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe","$chaine")))),"'ÂÄÀÁÃÄÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõ¨ûüùúýÿ¸"," AAAAAAACEEEEIIIINOOOOOSUUUUYYZaaaaaaceeeeiiiinoooooosuuuuyyz");
 		$retour1=strtr(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe","$chaine")))),"'$liste_caracteres_accentues"," $liste_caracteres_desaccentues");
 		// On enlève aussi les guillemets
 		$retour = preg_replace('/"/', '', $retour1);
@@ -2939,7 +1455,7 @@ function remplace_accents($chaine,$mode=''){
 /**
  * Fonction qui renvoie le login d'un élève en échange de son ele_id
  *
- * @param integer $id_eleve ele_id de l'élève
+ * @param int $id_eleve ele_id de l'élève
  * @return string login de l'élève
  */
 function get_login_eleve($id_eleve){
@@ -2986,6 +1502,12 @@ function get_class_from_ele_login($ele_login){
 	return $tab_classe;
 }
 
+/**
+ * Retourne les classes d'un élève ordonnées par périodes puis classes
+ *
+ * @param string $ele_login Login de l'élève
+ * @return array 
+ */
 function get_noms_classes_from_ele_login($ele_login){
 	$sql="SELECT DISTINCT jec.id_classe, c.classe FROM j_eleves_classes jec, classes c WHERE jec.id_classe=c.id AND jec.login='$ele_login' ORDER BY periode,classe;";
 	$res_class=mysql_query($sql);
@@ -2999,6 +1521,14 @@ function get_noms_classes_from_ele_login($ele_login){
 	return $tab_classe;
 }
 
+/**
+ * Renvoie les élèves liés à un responsable
+ *
+ * @param string $resp_login Login du responsable
+ * @param string $mode Si avec_classe renvoie aussi la classe
+ * @return array 
+ * @see get_class_from_ele_login()
+ */
 function get_enfants_from_resp_login($resp_login,$mode='simple'){
 	$sql="SELECT e.nom,e.prenom,e.login FROM eleves e,
 											responsables2 r,
@@ -3032,27 +1562,12 @@ function get_enfants_from_resp_login($resp_login,$mode='simple'){
 	return $tab_ele;
 }
 
-function liens_class_from_ele_login($ele_login){
-	$chaine="";
-	$tab_classe=get_class_from_ele_login($ele_login);
-	if(isset($tab_classe)){
-		if(count($tab_classe)>0){
-			foreach ($tab_classe as $key => $value){
-				if(strlen(preg_replace("/[0-9]/","",$key))==0) {
-					if($_SESSION['statut']=='administrateur') {
-						$chaine.=", <a href='../classes/classes_const.php?id_classe=$key'>$value</a>";
-					}
-					else {
-						$chaine.=", <a href='../eleves/index.php?id_classe=$key&amp;quelles_classes=certaines&amp;case_2=yes'>$value</a>";
-					}
-				}
-			}
-			$chaine="(".substr($chaine,2).")";
-		}
-	}
-	return $chaine;
-}
-
+/**
+ * Renvoie le statut avec des accents
+ *
+ * @param string $user_statut Statut à corriger
+ * @return string Le statut corrigé
+ */
 function statut_accentue($user_statut){
 	switch($user_statut){
 		case "administrateur":
@@ -3083,6 +1598,14 @@ function statut_accentue($user_statut){
 	return $chaine;
 }
 
+/**
+ * Renvoie le nom d'une classe à partir de son Id
+ * 
+ * Renvoie classes.classe
+ *
+ * @param type $id_classe Id de la classe
+ * @return string|bool Le nom d'une classe ou FALSE
+ */
 function get_nom_classe($id_classe){
 	$sql="SELECT classe FROM classes WHERE id='$id_classe';";
 	$res_class=mysql_query($sql);
@@ -3093,10 +1616,16 @@ function get_nom_classe($id_classe){
 		return $classe;
 	}
 	else{
-		return false;
+		return FALSE;
 	}
 }
 
+/**
+ * Formate une date au format jj/mm/aa
+ *
+ * @param string $date
+ * @return string La date formatée
+ */
 function formate_date($date){
 	$tmp_date=explode(" ",$date);
 	$tab_date=explode("-",$tmp_date[0]);
@@ -3104,6 +1633,12 @@ function formate_date($date){
 	return sprintf("%02d",$tab_date[2])."/".sprintf("%02d",$tab_date[1])."/".$tab_date[0];
 }
 
+/**
+ * Convertit les codes régimes de Sconet
+ *
+ * @param int $code_regime Le code Sconet
+ * @return string Le régime dans Gépi
+ */
 function traite_regime_sconet($code_regime){
 	$premier_caractere_code_regime=substr($code_regime,0,1);
 	switch($premier_caractere_code_regime){
@@ -3161,6 +1696,14 @@ function traite_regime_sconet($code_regime){
 	}
 }
 
+/**
+ * Renvoie les préférences d'un utilisateur pour un item en interrogeant la table preferences
+ *
+ * @param string $login Login de l'utilisateur
+ * @param string $item Item recherché
+ * @param string $default Valeur par défaut
+ * @return string La valeur de l'item
+ */
 function getPref($login,$item,$default){
 	$sql="SELECT value FROM preferences WHERE login='$login' AND name='$item'";
 	$res_prefs=mysql_query($sql);
@@ -3174,6 +1717,14 @@ function getPref($login,$item,$default){
 	}
 }
 
+/**
+ * Enregistre les préférences d'un utilisateur pour un item dans la table preferences
+ *
+ * @param string $login Login de l'utilisateur
+ * @param string $item Item recherché
+ * @param string $valeur Valeur à enregistrer
+ * @return boolean TRUE si tout c'est bien passé
+ */
 function savePref($login,$item,$valeur){
 	$sql="SELECT value FROM preferences WHERE login='$login' AND name='$item'";
 	$res_prefs=mysql_query($sql);
@@ -3185,49 +1736,93 @@ function savePref($login,$item,$valeur){
 		$sql="INSERT INTO preferences SET login='$login', name='$item', value='$valeur';";
 	}
 	$res=mysql_query($sql);
-	if($res) {return true;} else {return false;}
+	if($res) {return TRUE;} else {return FALSE;}
 }
 
+/**
+ * Position horizontale initiale pour permettre un affichage sans superposition
+ *
+ * @global int $GLOBALS['$posDiv_infobulle']
+ * @name $posDiv_infobulle
+ */
+$GLOBALS['$posDiv_infobulle'] = 0;
+
+/**
+ * 
+ * @global array $GLOBALS['tabid_infobulle']
+ * @name $tabid_infobulle
+ */
+$GLOBALS['tabid_infobulle'] = array();
+
+/**
+ * 
+ * @global string $GLOBALS['unite_div_infobulle']
+ * @name $unite_div_infobulle
+ */
+$GLOBALS['unite_div_infobulle'] = '';
+
+/**
+ * Les infobulles ne sont pas décallées si à oui
+ * 
+ * @global string $GLOBALS['pas_de_decalage_infobulle']
+ * @name $pas_de_decalage_infobulle
+ */
+$GLOBALS['pas_de_decalage_infobulle'] = '';
+
+/**
+ * Ajoute un argument aux classes du div
+ * 
+ * @global string $GLOBALS['class_special_infobulle']
+ * @name $class_special_infobulle
+ */
+$GLOBALS['class_special_infobulle'] = '';
+
+/**
+ * $bg_titre: Si $bg_titre est vide, on utilise la couleur par défaut correspondant à .infobulle_entete (défini dans style.css et éventuellement modifié dans style_screen_ajout.css)
+ * 
+ * $bg_texte: Si $bg_texte est vide, on utilise la couleur par défaut correspondant à .infobulle_corps (défini dans style.css et éventuellement modifié dans style_screen_ajout.css)
+ * 
+ * $hauteur: En mettant 0, on laisse le DIV s'adapter au contenu (se réduire/s'ajuster)
+ * 
+ * $bouton_close: S'il est affiché, c'est dans la barre de titre. Si la barre de titre n'est pas affichée, ce bouton ne peut pas être affiché.
+		
+ * 
+ * @global type 
+ * @global array 
+ * @global type 
+ * @global type 
+ * @global type 
+ * @global type 
+ * @param string $id Identifiant du DIV conteneur
+ * @param string $titre Texte du titre du DIV
+ * @param string $bg_titre Couleur de fond de la barre de titre.
+ * @param string $texte Texte du contenu du DIV
+ * @param string $bg_texte Couleur de fond du DIV contenant le texte
+ * @param int $largeur Largeur du DIV conteneur
+ * @param int $hauteur Hauteur (minimale) du DIV conteneur
+ * @param string $drag 'y' ou 'n' pour rendre le DIV draggable
+ * @param string $bouton_close 'y' ou 'n' pour afficher le bouton Close
+ * @param string $survol_close 'y' ou 'n' pour refermer le DIV automatiquement lorsque le survol quitte le DIV
+ * @param string $overflow 'y' ou 'n' activer l'overflow automatique sur la partie Texte. Il faut que $hauteur soit non NULLe
+ * @param int $zindex_infobulle 
+ * @return string 
+ */
 function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hauteur,$drag,$bouton_close,$survol_close,$overflow,$zindex_infobulle=1){
-	/*
-		$id:			Identifiant du DIV conteneur
-		$titre:			Texte du titre du DIV
-		$bg_titre:		Couleur de fond de la barre de titre.
-						Si $bg_titre est vide, on utilise la couleur par défaut
-						correspondant à .infobulle_entete (défini dans style.css
-						et éventuellement modifié dans style_screen_ajout.css)
-		$texte:			Texte du contenu du DIV
-		$bg_texte:		Couleur de fond du DIV contenant le texte.
-						Si $bg_texte est vide, on utilise la couleur par défaut
-						correspondant à .infobulle_corps (défini dans style.css
-						et éventuellement modifié dans style_screen_ajout.css)
-		$largeur:		Largeur du DIV conteneur
-		$hauteur:		Hauteur (minimale) du DIV conteneur
-						En mettant 0, on laisse le DIV s'adapter au contenu (se réduire/s'ajuster)
-		$drag:			'y' ou 'n' pour rendre le DIV draggable
-		$bouton_close:	'y' ou 'n' pour afficher le bouton Close
-						S'il est affiché, c'est dans la barre de titre.
-						Si la barre de titre n'est pas affichée, ce bouton ne peut pas être affiché.
-		$survol_close:	'y' ou 'n' pour refermer le DIV automatiquement lorsque le survol quitte le DIV
-		$overflow:		'y' ou 'n' activer l'overflow automatique sur la partie Texte.
-						Il faut que $hauteur soit non nulle
+	/*	
+		
+		$overflow:		
 	*/
 	global $posDiv_infobulle;
 	global $tabid_infobulle;
 	global $unite_div_infobulle;
 	global $niveau_arbo;
 	global $pas_de_decalage_infobulle;
-	//global $style_special_infobulle;
 	global $class_special_infobulle;
 
-	//$style_box="color: #000000; border: 1px solid #000000; padding: 0px; position: absolute;";
 	$style_box="color: #000000; border: 1px solid #000000; padding: 0px; position: absolute; z-index:$zindex_infobulle;";
-	//if((isset($style_special_infobulle))&&($style_special_infobulle!='')) {$style_box.=$style_special_infobulle;}
-
+	
 	$style_bar="color: #ffffff; cursor: move; font-weight: bold; padding: 0px;";
-	//$style_close="color: #ffffff; cursor: move; font-weight: bold; float:right; width: 1em;";
 	$style_close="color: #ffffff; cursor: move; font-weight: bold; float:right; width: 16px; margin-right: 1px;";
-
 
 	// On fait la liste des identifiants de DIV pour cacher les Div avec javascript en fin de chargement de la page (dans /lib/footer.inc.php).
 	$tabid_infobulle[]=$id;
@@ -3267,8 +1862,7 @@ function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hau
 		$div.=">\n";
 
 		if($bouton_close=="y"){
-			//$div.="<div style='$style_close'><a href='#' onClick=\"cacher_div('$id');return false;\">X</a></div>\n";
-			$div.="<div style='$style_close'><a href='#' onclick=\"cacher_div('$id');return false;\">";
+			$div.="<div style='$style_close'><a href='#' onclick=\"cacher_div('$id');return FALSE;\">";
 			if(isset($niveau_arbo)&&$niveau_arbo==0){
 				$div.="<img src='./images/icons/close16.png' width='16' height='16' alt='Fermer' />";
 			}
@@ -3291,7 +1885,6 @@ function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hau
 
 
 	// Partie texte:
-	//$div.="<div";
 	//==================
 	// 20110113
 	$div.="<div id='".$id."_contenu_corps'";
@@ -3304,18 +1897,14 @@ function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hau
 	if(($overflow=='y')&&($hauteur!=0)){
 		$hauteur_hors_titre=$hauteur-1;
 		$div.="<div style='width: ".$largeur.$unite_div_infobulle."; height: ".$hauteur_hors_titre.$unite_div_infobulle."; overflow: auto;'>\n";
-		//$div.="<span style='padding-left: 1px;'>\n";
 		$div.="<div style='padding-left: 1px;'>\n";
 		$div.=$texte;
-		//$div.="</span>\n";
 		$div.="</div>\n";
 		$div.="</div>\n";
 	}
 	else{
-		//$div.="<span style='padding-left: 1px;'>\n";
 		$div.="<div style='padding-left: 1px;'>\n";
 		$div.=$texte;
-		//$div.="</span>\n";
 		$div.="</div>\n";
 	}
 	$div.="</div>\n";
@@ -3333,40 +1922,69 @@ function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hau
 	return $div;
 }
 
+/**
+ * tableau des variables transmises d'une page à l'autre
+ * 
+ * @global array $GLOBALS['debug_var_count']
+ * @name $debug_var_count
+ */
+$GLOBALS['debug_var_count']=array();
+
+/**
+ * indice de la variable transmise
+ * 
+ * @global int $GLOBALS['cpt_debug_debug_var']
+ * @name $cpt_debug_debug_var
+ */
+$GLOBALS['cpt_debug_debug_var']=0;
+
+/**
+ * Affiche les variables transmises d'une page à l'autre: GET, POST, SERVER et SESSION
+ *
+ * @global array
+ * @global int
+ */
 $debug_var_count=array();
+$cpt_debug_debug_var=0;
 function debug_var() {
 	global $debug_var_count;
+	global $cpt_debug_debug_var;
 
 	$debug_var_count['POST']=0;
 	$debug_var_count['GET']=0;
+	$debug_var_count['SESSION']=0;
+	$debug_var_count['SERVER']=0;
 
 	$debug_var_count['COOKIE']=0;
+
+	$debug_var_count['FILES']=0;
 
 	// Fonction destinée à afficher les variables transmises d'une page à l'autre: GET, POST et SESSION
 	echo "<div style='border: 1px solid black; background-color: white; color: black;'>\n";
 
-	$cpt_debug=0;
+	$cpt_debug_debug_var=0;
 
-	echo "<p><strong>Variables transmises en POST, GET, SESSION,...</strong> (<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)</p>\n";
+	echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
+	echo "<p><strong>Variables transmises en POST, GET, SESSION,...</strong> (<a href='#ancre_debug_var_$cpt_debug_debug_var' onclick=\"tab_etat_debug_var[$cpt_debug_debug_var]=tab_etat_debug_var[$cpt_debug_debug_var]*(-1);affiche_debug_var('container_debug_var_$cpt_debug_debug_var',tab_etat_debug_var[$cpt_debug_debug_var]);return FALSE;\">*</a>)</p>\n";
 
-	echo "<div id='container_debug_var_$cpt_debug'>\n";
-	$cpt_debug++;
+	echo "<div id='container_debug_var_$cpt_debug_debug_var'>\n";
+	$cpt_debug_debug_var++;
 
+	echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
 	echo "<p>Variables envoyées en POST: ";
 	if(count($_POST)==0) {
 		echo "aucune";
 	}
 	else {
-		echo "(<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
+		echo "(<a href='#ancre_debug_var_$cpt_debug_debug_var' onclick=\"tab_etat_debug_var[$cpt_debug_debug_var]=tab_etat_debug_var[$cpt_debug_debug_var]*(-1);affiche_debug_var('container_debug_var_$cpt_debug_debug_var',tab_etat_debug_var[$cpt_debug_debug_var]);return FALSE;\">*</a>)";
 	}
 	echo "</p>\n";
 	echo "<blockquote>\n";
-	echo "<div id='container_debug_var_$cpt_debug'>\n";
-	$cpt_debug++;
+	echo "<div id='container_debug_var_$cpt_debug_debug_var'>\n";
+	$cpt_debug_debug_var++;
 
 	echo "<script type='text/javascript'>
 	tab_etat_debug_var=new Array();
-
 	function affiche_debug_var(id,mode) {
 		if(document.getElementById(id)) {
 			if(mode==1) {
@@ -3378,44 +1996,33 @@ function debug_var() {
 		}
 	}
 </script>\n";
-	/*
-	echo "<table summary=\"Tableau de debug\">\n";
-	foreach($_POST as $post => $val){
-		//echo "\$_POST['".$post."']=".$val."<br />\n";
-		//echo "<tr><td>\$_POST['".$post."']=</td><td>".$val."</td></tr>\n";
-		echo "<tr><td valign='top'>\$_POST['".$post."']=</td><td>".$val;
 
-		if(is_array($_POST[$post])) {
-			echo " (<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
-			echo "<table id='container_debug_var_$cpt_debug' summary=\"Tableau de debug\">\n";
-			foreach($_POST[$post] as $key => $value) {
-				echo "<tr><td>\$_POST['$post'][$key]=</td><td>$value</td></tr>\n";
-			}
-			echo "</table>\n";
-			//echo "<script type='text/javascript'>affiche_debug_var('debug_var_$post',tab_etat_debug_var[$cpt_debug]);</script>\n";
-			$cpt_debug++;
-		}
 
-		echo "</td></tr>\n";
-	}
-	echo "</table>\n";
-	*/
-
-	function tab_debug_var($chaine_tab_niv1,$tableau,$pref_chaine,$cpt_debug) {
-		//global $cpt_debug;
+/**
+ * Affiche un tableau des valeurs de GET, POST, SERVER ou SESSION
+ *
+ * @global int 
+ * @global array 
+ * @param type $chaine_tab_niv1
+ * @param type $tableau
+ * @param type $pref_chaine 
+ */
+	function tab_debug_var($chaine_tab_niv1,$tableau,$pref_chaine) {
+		global $cpt_debug_debug_var;
 		global $debug_var_count;
 
-		echo " (<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)\n";
+		echo " (<a href='#ancre_debug_var_$cpt_debug_debug_var' onclick=\"tab_etat_debug_var[$cpt_debug_debug_var]=tab_etat_debug_var[$cpt_debug_debug_var]*(-1);affiche_debug_var('container_debug_var_$cpt_debug_debug_var',tab_etat_debug_var[$cpt_debug_debug_var]);return FALSE;\">*</a>)\n";
 
-		echo "<table id='container_debug_var_$cpt_debug' summary=\"Tableau de debug\">\n";
+		echo "<table id='container_debug_var_$cpt_debug_debug_var' summary=\"Tableau de debug\">\n";
 		foreach($tableau as $post => $val) {
 			echo "<tr><td valign='top'>".$pref_chaine."['".$post."']=</td><td>".$val;
 
 			if(is_array($tableau[$post])) {
+				$cpt_debug_debug_var++;
 
-				tab_debug_var($chaine_tab_niv1,$tableau[$post],$pref_chaine.'['.$post.']',$cpt_debug);
+				tab_debug_var($chaine_tab_niv1,$tableau[$post],$pref_chaine.'['.$post.']');
 
-				$cpt_debug++;
+				$cpt_debug_debug_var++;
 			}
 			elseif(isset($debug_var_count[$chaine_tab_niv1])) {
 				$debug_var_count[$chaine_tab_niv1]++;
@@ -3432,9 +2039,10 @@ function debug_var() {
 		echo "<tr><td valign='top'>\$_POST['".$post."']=</td><td>".$val;
 
 		if(is_array($_POST[$post])) {
-			tab_debug_var('POST',$_POST[$post],'$_POST['.$post.']',$cpt_debug);
+			echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
+			tab_debug_var('POST',$_POST[$post],'$_POST['.$post.']');
 
-			$cpt_debug++;
+			$cpt_debug_debug_var++;
 		}
 		else {
 			$debug_var_count['POST']++;
@@ -3449,28 +2057,28 @@ function debug_var() {
 	echo "</blockquote>\n";
 
 
+	echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
 	echo "<p>Variables envoyées en GET: ";
 	if(count($_GET)==0) {
 		echo "aucune";
 	}
 	else {
-		echo "(<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
+		echo "(<a href='#ancre_debug_var_$cpt_debug_debug_var' onclick=\"tab_etat_debug_var[$cpt_debug_debug_var]=tab_etat_debug_var[$cpt_debug_debug_var]*(-1);affiche_debug_var('container_debug_var_$cpt_debug_debug_var',tab_etat_debug_var[$cpt_debug_debug_var]);return FALSE;\">*</a>)";
 	}
 	echo "</p>\n";
 	echo "<blockquote>\n";
-	echo "<div id='container_debug_var_$cpt_debug'>\n";
-	$cpt_debug++;
+	echo "<div id='container_debug_var_$cpt_debug_debug_var'>\n";
+	$cpt_debug_debug_var++;
 	echo "<table summary=\"Tableau de debug sur GET\">";
 	foreach($_GET as $get => $val){
-		//echo "\$_GET['".$get."']=".$val."<br />\n";
-		//echo "<tr><td>\$_GET['".$get."']=</td><td>".$val."</td></tr>\n";
-
+		
 		echo "<tr><td valign='top'>\$_GET['".$get."']=</td><td>".$val;
 
 		if(is_array($_GET[$get])) {
-			tab_debug_var('GET',$_GET[$get],'$_GET['.$get.']',$cpt_debug);
+			echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
+			tab_debug_var('GET',$_GET[$get],'$_GET['.$get.']');
 
-			$cpt_debug++;
+			$cpt_debug_debug_var++;
 		}
 		else {
 			$debug_var_count['GET']++;
@@ -3479,101 +2087,127 @@ function debug_var() {
 		echo "</td></tr>\n";
 	}
 	echo "</table>\n";
+
+	echo "<p>Nombre de valeurs en GET: <b>".$debug_var_count['GET']."</b></p>\n";
+
 	echo "</div>\n";
 	echo "</blockquote>\n";
 
 
+	echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
 	echo "<p>Variables envoyées en SESSION: ";
 	if(count($_SESSION)==0) {
 		echo "aucune";
 	}
 	else {
-		echo "(<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
+		echo "(<a href='#ancre_debug_var_$cpt_debug_debug_var' onclick=\"tab_etat_debug_var[$cpt_debug_debug_var]=tab_etat_debug_var[$cpt_debug_debug_var]*(-1);affiche_debug_var('container_debug_var_$cpt_debug_debug_var',tab_etat_debug_var[$cpt_debug_debug_var]);return FALSE;\">*</a>)";
 	}
 	echo "</p>\n";
 	echo "<blockquote>\n";
-	echo "<div id='container_debug_var_$cpt_debug'>\n";
-	$cpt_debug++;
+	echo "<div id='container_debug_var_$cpt_debug_debug_var'>\n";
+	$cpt_debug_debug_var++;
 	echo "<table summary=\"Tableau de debug sur SESSION\">";
 	foreach($_SESSION as $variable => $val){
-		//echo "\$_SESSION['".$variable."']=".$val."<br />\n";
-		echo "<tr><td>\$_SESSION['".$variable."']=</td><td>".$val."</td></tr>\n";
+		
+		echo "<tr><td valign='top'>\$_SESSION['".$variable."']=</td><td>".$val;
+		if(is_array($_SESSION[$variable])) {
+			echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
+			tab_debug_var('SESSION',$_SESSION[$variable],'$_SESSION['.$variable.']');
+
+			$cpt_debug_debug_var++;
+		}
+		else {
+			$debug_var_count['SESSION']++;
+		}
+		echo "</td></tr>\n";
+
 	}
 	echo "</table>\n";
+
+	echo "<p>Nombre de valeurs en SESSION: <b>".$debug_var_count['SESSION']."</b></p>\n";
 	echo "</div>\n";
 	echo "</blockquote>\n";
 
 
+	echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
 	echo "<p>Variables envoyées en SERVER: ";
 	if(count($_SERVER)==0) {
 		echo "aucune";
 	}
 	else {
-		echo "(<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
+		echo "(<a href='#ancre_debug_var_$cpt_debug_debug_var' onclick=\"tab_etat_debug_var[$cpt_debug_debug_var]=tab_etat_debug_var[$cpt_debug_debug_var]*(-1);affiche_debug_var('container_debug_var_$cpt_debug_debug_var',tab_etat_debug_var[$cpt_debug_debug_var]);return FALSE;\">*</a>)";
 	}
 	echo "</p>\n";
 	echo "<blockquote>\n";
-	echo "<div id='container_debug_var_$cpt_debug'>\n";
-	$cpt_debug++;
+	echo "<div id='container_debug_var_$cpt_debug_debug_var'>\n";
+	$cpt_debug_debug_var++;
 	echo "<table summary=\"Tableau de debug sur SERVER\">";
 	foreach($_SERVER as $variable => $valeur){
-		//echo "\$_SERVER['".$variable."']=".$valeur."<br />\n";
 		echo "<tr><td>\$_SERVER['".$variable."']=</td><td>".$valeur."</td></tr>\n";
 	}
 	echo "</table>\n";
+
+	echo "<p>Nombre de valeurs en SERVER: <b>".$debug_var_count['SERVER']."</b></p>\n";
 	echo "</div>\n";
 	echo "</blockquote>\n";
 
 
+	echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
 	echo "<p>Variables envoyées en FILES: ";
-	if(count($_FILES)==0) {
+	if((!isset($_FILES))||(count($_FILES)==0)) {
 		echo "aucune";
 	}
 	else {
-		echo "(<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
+		echo "(<a href='#ancre_debug_var_$cpt_debug_debug_var' onclick=\"tab_etat_debug_var[$cpt_debug_debug_var]=tab_etat_debug_var[$cpt_debug_debug_var]*(-1);affiche_debug_var('container_debug_var_$cpt_debug_debug_var',tab_etat_debug_var[$cpt_debug_debug_var]);return FALSE;\">*</a>)";
 	}
 	echo "</p>\n";
-	echo "<blockquote>\n";
-	echo "<div id='container_debug_var_$cpt_debug'>\n";
-	$cpt_debug++;
+	if((isset($_FILES))&&(count($_FILES)>0)) {
+		echo "<blockquote>\n";
+		echo "<div id='container_debug_var_$cpt_debug_debug_var'>\n";
+		$cpt_debug_debug_var++;
 
-	echo "<table summary=\"Tableau de debug\">\n";
-	foreach($_FILES as $key => $val) {
-		echo "<tr><td valign='top'>\$_FILES['".$key."']=</td><td>".$val;
-
-		if(is_array($_FILES[$key])) {
-			tab_debug_var('FILES',$_FILES[$key],'$_FILES['.$key.']',$cpt_debug);
-
-			$cpt_debug++;
+		echo "<table summary=\"Tableau de debug\">\n";
+		foreach($_FILES as $key => $val) {
+			echo "<tr><td valign='top'>\$_FILES['".$key."']=</td><td>".$val;
+	
+			if(is_array($_FILES[$key])) {
+				echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
+				tab_debug_var('FILES',$_FILES[$key],'$_FILES['.$key.']');
+	
+				$cpt_debug_debug_var++;
+			}
+	
+			echo "</td></tr>\n";
 		}
-
-		echo "</td></tr>\n";
+		echo "</table>\n";
+	
+		echo "<p>Nombre de valeurs en FILES: <b>".$debug_var_count['FILES']."</b></p>\n";
+		echo "</div>\n";
+		echo "</blockquote>\n";
 	}
-	echo "</table>\n";
 
-	echo "</div>\n";
-	echo "</blockquote>\n";
-
+	echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
 	echo "<p>Variables COOKIES: ";
 	if(count($_COOKIE)==0) {
 		echo "aucune";
 	}
 	else {
-		echo "(<a href='#' onclick=\"tab_etat_debug_var[$cpt_debug]=tab_etat_debug_var[$cpt_debug]*(-1);affiche_debug_var('container_debug_var_$cpt_debug',tab_etat_debug_var[$cpt_debug]);return false;\">*</a>)";
+		echo "(<a href='#ancre_debug_var_$cpt_debug_debug_var' onclick=\"tab_etat_debug_var[$cpt_debug_debug_var]=tab_etat_debug_var[$cpt_debug_debug_var]*(-1);affiche_debug_var('container_debug_var_$cpt_debug_debug_var',tab_etat_debug_var[$cpt_debug_debug_var]);return FALSE;\">*</a>)";
 	}
 	echo "</p>\n";
 	echo "<blockquote>\n";
-	echo "<div id='container_debug_var_$cpt_debug'>\n";
-	$cpt_debug++;
+	echo "<div id='container_debug_var_$cpt_debug_debug_var'>\n";
+	$cpt_debug_debug_var++;
 	echo "<table summary=\"Tableau de debug sur COOKIE\">";
-	foreach($_COOKIE as $get => $val){
+	foreach($_COOKIE as $variable => $val){
 
-		echo "<tr><td valign='top'>\$_COOKIE['".$get."']=</td><td>".$val;
+		echo "<tr><td valign='top'>\$_COOKIE['".$variable."']=</td><td>".$val;
 
-		if(is_array($_COOKIE[$get])) {
-			tab_debug_var('COOKIE',$_COOKIE[$get],'$_COOKIE['.$get.']',$cpt_debug);
+		if(is_array($val)) {
+			echo "<a name='ancre_debug_var_$cpt_debug_debug_var'></a>\n";
+			tab_debug_var('COOKIE',$val,'$_COOKIE['.$variable.']');
 
-			$cpt_debug++;
+			$cpt_debug_debug_var++;
 		}
 		else {
 			$debug_var_count['COOKIE']++;
@@ -3591,7 +2225,7 @@ function debug_var() {
 	//affiche_debug_var('container_debug_var',var_debug_var_etat);
 
 	//for(i=0;i<tab_etat_debug_var.length;i++) {
-	for(i=0;i<$cpt_debug;i++) {
+	for(i=0;i<$cpt_debug_debug_var;i++) {
 		if(document.getElementById('container_debug_var_'+i)) {
 			affiche_debug_var('container_debug_var_'+i,-1);
 		}
@@ -3604,8 +2238,14 @@ function debug_var() {
 	echo "</div>\n";
 }
 
+/**
+ *permet de vérifier si tel statut peut avoir accès à l'EdT en fonction des settings de l'admin
+ * 
+ * @param string $statut Statut testé
+ * @return string yes si peut avoir accès à l'EdT, no sinon
+ * @see getSettingValue()
+ */
 function param_edt($statut){
-	// Fonction qui permet de vérifier si tel statut peut avoir accès à l'EdT en fonction des settings de l'admin
 		$verif = "";
 	if ($statut == "administrateur") {
 		$verif = getSettingValue("autorise_edt_admin");
@@ -3625,18 +2265,19 @@ function param_edt($statut){
 }
 
 /**
-* Renvoie le nom de la photo de l'élève ou du prof
+ * Renvoie le nom de la photo de l'élève ou du prof
  *
-* Renvoie NULL si :
+ * Renvoie NULL si :
  *
-* - le module trombinoscope n'est pas activé
+ * - le module trombinoscope n'est pas activé
+ * - la photo n'existe pas.
  *
-* - ou bien la photo n'existe pas.
-*
-*@var $_elenoet_ou_login : selon les cas, soir l'elenoet de l'élève ou bien lelogin du professeur
-*@var $repertoire : "eleves" ou "personnels"
-*@var $arbo : niveau d'aborescence (1 ou 2).
-*/
+ * @param string $_elenoet_ou_login selon les cas, soit l'elenoet de l'élève soit le login du professeur
+ * @param string $repertoire "eleves" ou "personnels"
+ * @param int $arbo niveau d'aborescence (1 ou 2).
+ * @return string Le chemin vers la photo ou NULL
+ * @see getSettingValue()
+ */
 function nom_photo($_elenoet_ou_login,$repertoire="eleves",$arbo=1) {
 	if ($arbo==2) {$chemin = "../";} else {$chemin = "";}
 	if (($repertoire != "eleves") and ($repertoire != "personnels")) {
@@ -3649,50 +2290,17 @@ function nom_photo($_elenoet_ou_login,$repertoire="eleves",$arbo=1) {
 	}
 		$photo=NULL;
 
-
 	// En multisite, on ajoute le répertoire RNE
 	if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 		  // On récupère le RNE de l'établissement
-	  $repertoire2=getSettingValue("gepiSchoolRne")."/";
+      $repertoire2=$_COOKIE['RNE']."/";
 	}else{
 	  $repertoire2="";
 	}
 
-
 	// Cas des élèves
 	if ($repertoire == "eleves") {
-	  /*
-		// En multisite, le login est préférable à l'ELENOET
-		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
-			// On récupère l'INE de cet élève
-			$sql = 'SELECT login FROM eleves WHERE elenoet = "'.$_elenoet_ou_login.'"';
-			$query = mysql_query($sql);
-			$_elenoet_ou_login = mysql_result($query, 0,'login');
-		}
-
-		$photo="";
-		if($_elenoet_ou_login!='') {
-			if(file_exists($chemin."../photos/eleves/$_elenoet_ou_login.jpg")) {
-				$photo="$_elenoet_ou_login.jpg";
-			}
-			else {
-				if(file_exists($chemin."../photos/eleves/".sprintf("%05d",$_elenoet_ou_login).".jpg")) {
-					$photo=sprintf("%05d",$_elenoet_ou_login).".jpg";
-				} else {
-					for($i=0;$i<5;$i++){
-						if(substr($_elenoet_ou_login,$i,1)=="0"){
-							$test_photo=substr($_elenoet_ou_login,$i+1);
-							//if(file_exists($chemin."../photos/eleves/".$test_photo.".jpg")){
-							if(($test_photo!='')&&(file_exists($chemin."../photos/eleves/".$test_photo.".jpg"))) {
-								$photo=$test_photo.".jpg";
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-	*/
+	  
 	  if($_elenoet_ou_login!='') {
 
 		// on vérifie si la photo existe
@@ -3720,7 +2328,6 @@ function nom_photo($_elenoet_ou_login,$repertoire="eleves",$arbo=1) {
 					for($i=0;$i<5;$i++){
 						if(substr($_elenoet_ou_login,$i,1)=="0"){
 							$test_photo=substr($_elenoet_ou_login,$i+1);
-							//if(file_exists($chemin."../photos/eleves/".$test_photo.".jpg")){
 							if(($test_photo!='')&&(file_exists($chemin."../photos/".$repertoire2."eleves/".$test_photo.".jpg"))) {
 								$photo=$chemin."../photos/".$repertoire2."eleves/".$test_photo.".jpg";
 								break;
@@ -3738,9 +2345,7 @@ function nom_photo($_elenoet_ou_login,$repertoire="eleves",$arbo=1) {
 	else {
 
 		$_elenoet_ou_login = md5(strtolower($_elenoet_ou_login));
-			//if(file_exists($chemin."../photos/personnels/$_elenoet_ou_login.jpg")){
 			if(file_exists($chemin."../photos/".$repertoire2."personnels/$_elenoet_ou_login.jpg")){
-				//$photo="$_elenoet_ou_login.jpg";
 				$photo=$chemin."../photos/".$repertoire2."personnels/$_elenoet_ou_login.jpg";
 			} else {
 				$photo = NULL;
@@ -3750,8 +2355,22 @@ function nom_photo($_elenoet_ou_login,$repertoire="eleves",$arbo=1) {
 }
 
 
+/**
+ * Le message à afficher
+ * 
+ * @global string $GLOBALS['themessage']
+ * @name $themessage
+ */
+$GLOBALS['themessage'] = '';
 
-
+/**
+ * Affiche un fenêtre de confirmation via javascript
+ * 
+ * Ajoute un attribut onclick à une balise pour appeler une fonction javascript contenant le message
+ *
+ * @global string
+ * @return  string l'attribut onclick ou vide
+ */
 function insert_confirm_abandon(){
 	global $themessage;
 
@@ -3768,6 +2387,30 @@ function insert_confirm_abandon(){
 	}
 }
 
+/**
+ * Largeur maximum désirée
+ * 
+ * @global int $GLOBALS['photo_largeur_max']
+ * @name $photo_largeur_max
+ */
+$GLOBALS['photo_largeur_max'] = 0;
+
+/**
+ * Hauteur maximum désirée;
+ * 
+ * @global int $GLOBALS['photo_hauteur_max']
+ * @name $photo_hauteur_max
+ */
+$GLOBALS['photo_hauteur_max'] = 0;
+
+/**
+ * Redimensionne une image
+ *
+ * @global int 
+ * @global int 
+ * @param string $photo l'adresse de la photo
+ * @return array Les nouvelles dimensions de l'image (largeur, hauteur)
+ */
 function redimensionne_image2($photo){
 	global $photo_largeur_max, $photo_hauteur_max;
 
@@ -3789,8 +2432,15 @@ function redimensionne_image2($photo){
 	return array($nouvelle_largeur, $nouvelle_hauteur);
 }
 
+/**
+ * Enregistre les calculs de moyennes dans un fichier
+ * 
+ * Passer à 1 la variable $debug pour générer un fichier de debug...
+ *
+ * @param string $texte Le calcul à enregistrer
+ * @see get_user_temp_directory()
+ */
 function calc_moy_debug($texte){
-	// Passer à 1 la variable pour générer un fichier de debug...
 	$debug=0;
 	if($debug==1){
 		$tmp_dir=get_user_temp_directory();
@@ -3801,6 +2451,12 @@ function calc_moy_debug($texte){
 	}
 }
 
+/**
+ * Renvoie le nom d'une classe à partir de son Id
+ *
+ * @param int $id_classe Id de la classe recherchée
+ * @return type nom de la classe (classe.classes)
+ */
 function get_class_from_id($id_classe) {
 	$sql="SELECT classe FROM classes c WHERE id='$id_classe';";
 	$res_class=mysql_query($sql);
@@ -3811,306 +2467,12 @@ function get_class_from_id($id_classe) {
 		return $classe;
 	}
 	else{
-		return false;
+		return FALSE;
 	}
 }
-/* Outils complémentaires de gestion des AID
-fonction vérifiant les droits d'accès au module selon l'identifiant
-
-$_login :  identifiant de la personne pour laquelle on vérifie les droits
-           si le login n'est pas précisé, on est dans l'interface publique
-
-$aid_id : identifiant de l'AID
-$indice_aid : identifiant de la catégorie d'AID
-
-$champ : si non vide, on vérifie le droit sur ce champ en particulier
-         si $champ='', on vérifie le droit de modifier la fiche projet
-
-Cas particulier : $champ = 'eleves_profs'
-Cette valeur permet de gérer le fait que n'apparaissent pas sur les fiches publiques :
-    # Les elèves responsables du projet,
-    # les professeurs responsables du projet,
-    # les élèves faisant partie du projet.
-
-$mode : utilisé uniquement si $champ est non vide
-* $mode = W -> l'utilisateur a-t-il accès en écriture ?
-* Autres valeurs de W -> l'utilisateur a-t-il accès en lecture ?
-
-*/
-function VerifAccesFicheProjet($_login,$aid_id,$indice_aid,$champ,$mode,$annee='') {
- //$annee='' signifie qu'il s'agit de l'année courante
- if ($annee=='') {
-    // Les outils complémetaires sont-ils activés ?
-    $test_active = sql_query1("select indice_aid from aid_config WHERE outils_complementaires = 'y' and indice_aid='".$indice_aid."'");
-    // Les outils complémenatires ne sont activés pour aucune AID, on renvoie FALSE
-    if ($test_active == -1) {
-        return false;
-        die();
-    }
-
-    // Si le champ n'est pas activé, on ne l'affiche pas !
-    // Deux valeurs possibles :
-    // 0 -> le champ n'est pas utilisé
-    // 1 -> Le champ est utilisé
-    if ($champ != "") {
-        $statut_champ = sql_query1("select statut from droits_aid where id = '".$champ."'");
-        if ($statut_champ == 0) {
-            return FALSE;
-            die();
-        }
-    }
 
 
-    // Dans la suite,
-    // Les outils complémentaires sont activés
 
-    if ($_login!='') {
-        $statut_login = sql_query1("select statut from utilisateurs where login='".$_login."' and etat='actif' ");
-    } else {
-        // si le login n'est pas précisé, on est dans l'interface publique
-        $statut_login = "public";
-    }
-    // Admin ?
-    if  ($statut_login == "administrateur") {
-        return TRUE;
-        die();
-    }
-
-
-    // S'agit-il d'un super gestionnaire ?
-    $test_super_gestionnaire = sql_query1("select count(id_utilisateur) from j_aidcateg_super_gestionnaires where indice_aid='".$indice_aid."' and id_utilisateur='".$_login."'");
-    if  ($test_super_gestionnaire != "0") {
-        return TRUE;
-        die();
-    }
-
-
-    // S'agit-il d'un utilisateurs ayant des droits sur l'ensemble des AID de la catégorie
-    $test_droits_special = sql_query1("select count(id_utilisateur) from j_aidcateg_utilisateurs where indice_aid='".$indice_aid."' and id_utilisateur='".$_login."'");
-    // Cas d'un élève
-    if (($statut_login=="eleve")) {
-        // s'il s'agit d'un élève, les élèves ont-ils accès en modification ?
-        // Si l'utilisateur a des droits spéciaux, il peut modifier
-        $CheckAccessEleve = sql_query1("select eleve_peut_modifier from aid where id = '".$aid_id."' and indice_aid = '".$indice_aid."'");
-        if ($CheckAccessEleve != "y") {
-            if ($champ == "") {return false; die();}
-        }
-        // L'élève est-il responsable de cet AID ?
-        $CheckAccessEleve2 = sql_query1("select count(login) from j_aid_eleves_resp WHERE (login='".$_SESSION['login']."' and indice_aid='".$indice_aid."' and id_aid='".$aid_id."')");
-        if ($CheckAccessEleve2 == 0) {
-             if ($champ == "") {return false; die();}
-        }
-    }
-    // Cas d'un professeur
-    if (($statut_login=="professeur")) {
-
-        // s'il s'agit d'un prof, les profs ont-ils accès en modification ?
-        $CheckAccessProf = sql_query1("select prof_peut_modifier from aid where id = '".$aid_id."' and indice_aid = '".$indice_aid."'");
-        if (($CheckAccessProf != "y") and ($test_droits_special==0) ) {
-            if ($champ == "") {return false; die();}
-        }
-
-        // Le profeseur est-il responsable de cet AID ?
-        $CheckAccessProf2 = sql_query1("select count(id_utilisateur) from j_aid_utilisateurs WHERE (id_utilisateur='".$_SESSION['login']."' and indice_aid='".$indice_aid."' and id_aid='".$aid_id."')");
-        if (($CheckAccessProf2 == 0) and ($test_droits_special==0) ) {
-            if ($champ == "") {return false; die();}
-        }
-    }
-    // Cas d'un CPE
-    if (($statut_login=="cpe")) {
-        // s'il s'agit d'un CPE, les cpe ont-ils accès en modification ?
-        // Si l'utilisateur a des droits spéciaux, il peut modifier
-        $CheckAccessCPE = sql_query1("select cpe_peut_modifier from aid where id = '".$aid_id."' and indice_aid = '".$indice_aid."'");
-        if (($CheckAccessCPE != "y") and ($test_droits_special==0)) {
-            if ($champ == "") {return false; die();}
-        }
-    }
-    // S'il s'agit d'un responsable, de la scolarité ou de secours, pas d'accès
-    if (($statut_login=="responsable") or ($statut_login=="scolarite") or ($statut_login=="secours")) {
-        return false;
-        die();
-    }
-    // Si le champ n'est pas précisé, c'est terminé
-    // Si le champ est précisé, on regarde si l'utilisateur a les droits de modif de ce champ
-    //
-    if ($champ == "") {
-        // Si $champ == "", cela signifie qu'on demande l'accès à une page privée de modif ou de visualisation
-        if ($_login !="")
-            return TRUE;
-        else
-            return FALSE;
-    } else {
-        // Le champ est précisé. On cherche à savoir si l'utilisateur a le droit de voir et/ou de modifier ce champ
-        $CheckAccess = sql_query1("select ".$statut_login." from droits_aid where id = '".$champ."'");
-        // $CheckAccess='V' -> possibilité de modifier et de voir le champ
-        // $CheckAccess='F' -> possibilité de voir le champ mais pas de le modifier
-        // $CheckAccess='-' -> Interdiction de voir et ou de modifier le champ
-        if (($mode != 'W') and ($CheckAccess != '-'))
-            return (true);
-        else if (($mode == 'W') and ($CheckAccess == 'V'))
-            return (true);
-        else
-            return (false);
-
-    }
-  } else {
-  // il s'agit de projets d'une année passée...
-    // Les outils complémetaires sont-ils activés ?
-    $test_active = sql_query1("select id from archivage_types_aid WHERE outils_complementaires = 'y' and id='".$indice_aid."'");
-    // Les outils complémenatires ne sont activés pour aucune AID, on renvoie FALSE
-    if ($test_active == -1) {
-        return false;
-        die();
-    }
-
-    if ($_login!='') {
-        $statut_login = sql_query1("select statut from utilisateurs where login='".$_login."' and etat='actif' ");
-    } else {
-        // si le login n'est pas précisé, on est dans l'interface publique
-        $statut_login = "public";
-    }
-
-
-    if ($champ == 'eleves_profs') {
-    # Cas particulier du champ eleves_profs : ce champ permet de gérer le fait que n'apparaissent pas sur les fiches publiques :
-    # Les elèves responsables du projet,
-    # les professeurs responsables du projet,
-    # les élèves faisant partie du projet.
-        if ($statut_login == "public")
-            return FALSE;
-        else
-            return TRUE;
-    } else if ($champ != "") {
-    // Si le champ n'est pas activé, on ne l'affiche pas !
-    // Deux valeurs possibles :
-    // 0 -> le champ n'est pas utilisé
-    // 1 -> Le champ est utilisé
-
-        $statut_champ = sql_query1("select statut from droits_aid where id = '".$champ."'");
-        if ($statut_champ == 0) {
-            return FALSE;
-            die();
-        }
-    }
-    // Admin ?
-    if  ($statut_login == "administrateur") {
-        return TRUE;
-        die();
-    }
-    if ($champ == "") {
-    // Si $champ == "", cela signifie qu'on demande l'accès à une page privée de modif ou de visualisation
-       return FALSE;
-    // Si le champ est précisé, on regarde si l'utilisateur a les droits de modif de ce champ
-    } else {
-        // Le champ est précisé. On cherche à savoir si l'utilisateur a le droit de voir et/ou de modifier ce champ
-        $CheckAccess = sql_query1("select ".$statut_login." from droits_aid where id = '".$champ."'");
-        // $CheckAccess='V' -> possibilité de modifier et de voir le champ
-        // $CheckAccess='F' -> possibilité de voir le champ mais pas de le modifier
-        // $CheckAccess='-' -> Interdiction de voir et ou de modifier le champ
-        if (($mode != 'W') and ($CheckAccess != '-'))
-            return (true);
-        else if (($mode == 'W') and ($CheckAccess == 'V'))
-            return (true);
-        else
-            return (false);
-    }
-
-  }
-}
-/* Outils complémentaires de gestion des AID
-fonction vérifiant si les outils complémetaires sont-ils activés
-*/
-function VerifAidIsAcive($indice_aid,$aid_id,$annee='') {
-    if ($annee=='')
-      $test_active = sql_query1("select indice_aid from aid_config WHERE outils_complementaires = 'y' and indice_aid='".$indice_aid."'");
-    else
-      $test_active = sql_query1("select id from archivage_types_aid WHERE outils_complementaires = 'y' and id='".$indice_aid."'");
-    if ($test_active == -1)
-       return FALSE;
-    else {
-       if ($aid_id != "") {
-         if ($annee=='')
-           $test_aid_existe = sql_query1("select count(id) from aid WHERE indice_aid='".$indice_aid."' and id='".$aid_id."'");
-        else
-           $test_aid_existe = sql_query1("select count(id) from archivage_aids WHERE id_type_aid='".$indice_aid."' and id='".$aid_id."'");
-        if ($test_aid_existe != 1)
-           return FALSE;
-        else
-           return TRUE;
-       } else
-           return TRUE;
-
-    }
-}
-/* Outils complémentaires de gestion des AID
-fonction qui renvoie le libellé du champ
-*/
-function LibelleChampAid($champ) {
-    $nom = sql_query1("select description from droits_aid where id = '".$champ."'");
-    return $nom;
-}
-
-/* Gestion des AIDs
-fonction qui calcul le niveau de gestion des AIDs
-0 : aucun droit
-1 : peut uniquement ajouter / supprimer des élèves
-2 : (pas encore implémenter) peut uniquement ajouter / supprimer des élèves et des professeurs responsables
-3 : ...
-10 : Peut tout faire
-*/
-function NiveauGestionAid($_login,$_indice_aid,$_id_aid="") {
-    if ($_SESSION['statut'] == "administrateur") {
-        return 10;
-        die();
-    }
-    if (getSettingValue("active_mod_gest_aid")=="y") {
-      // l'id de l'aid n'est pas défini : on regarde si l'utilisateur est gestionnaire d'au moins une aid dans la catégorie
-      if ($_id_aid == "") {
-        $test1 = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."')");
-        $test2 = sql_query1("SELECT count(id_utilisateur) FROM j_aidcateg_super_gestionnaires WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."')");
-        if ($test2 >= 1) {
-            return 5;
-        } else if ($test1 >= 1) {
-            return 1;
-        } else
-          return 0;
-      } else {
-      // l'id de l'aid est défini : on regarde si l'utilisateur est gestionnaire de cette aid
-        $test1 = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."' and id_aid = '".$_id_aid."')");
-        $test2 = sql_query1("SELECT count(id_utilisateur) FROM j_aidcateg_super_gestionnaires WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_indice_aid."')");
-        if ($test2 >= 1) {
-            return 5;
-        } else if ($test1 >= 1) {
-            return 1;
-        } else
-          return 0;
-      }
-    } else
-      return 0;
-}
-
-/* Gestion des droits d'accès à confirm_query.php
-*/
-function PeutEffectuerActionSuppression($_login,$_action,$_cible1,$_cible2,$_cible3) {
-    if ($_SESSION['statut'] == "administrateur") {
-        return TRUE;
-        die();
-    }
-    if (getSettingValue("active_mod_gest_aid")=="y") {
-      if (($_action=="del_eleve_aid") or ($_action=="del_prof_aid") or ($_action=="del_aid")) {
-      // on regarde si l'utilisateur est gestionnaire de l'aid
-        $test1 = sql_query1("SELECT count(id_utilisateur) FROM j_aid_utilisateurs_gest WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_cible3."' and id_aid = '".$_cible2."')");
-        $test2 = sql_query1("SELECT count(id_utilisateur) FROM j_aidcateg_super_gestionnaires WHERE (id_utilisateur = '" . $_login . "' and indice_aid = '".$_cible3."')");
-        $test = max($test1,$test2);
-        if ($test >= 1) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
-      }
-    } else
-    return FALSE;
-}
 
 /*
 function fdebug_mail_connexion($texte){
@@ -4124,6 +2486,10 @@ function fdebug_mail_connexion($texte){
 }
 */
 
+/**
+ *
+ * @global string  
+ */
 function mail_connexion() {
 	global $active_hostbyaddr;
 
@@ -4142,9 +2508,7 @@ function mail_connexion() {
 			$lig_user=mysql_fetch_object($res_user);
 
 			$adresse_ip = $_SERVER['REMOTE_ADDR'];
-			//$date = strftime("%Y-%m-%d %H:%M:%S");
 			$date = ucfirst(strftime("%A %d-%m-%Y à %H:%M:%S"));
-			//$url = parse_url($_SERVER['REQUEST_URI']);
 
 			if (!(isset($active_hostbyaddr)) or ($active_hostbyaddr == "all")) {
 				$result_hostbyaddr = " - ".@gethostbyaddr($adresse_ip);
@@ -4166,7 +2530,6 @@ function mail_connexion() {
 			else{
 				$result_hostbyaddr = "";
 			}
-
 
 			$message = "** Mail connexion Gepi **\n\n";
 			$message .= "\n";
@@ -4192,8 +2555,16 @@ function mail_connexion() {
 	}
 }
 
-
-
+/**
+ * Envoi un courriel à un utilisateur en cas de connexion avec son compte
+ *
+ * @global string
+ * @param string $sujet Sujet du message
+ * @param string $texte Texte du message
+ * @param type $informer_admin Envoi aussi un courriel à l'administrateur si pas à 'n'
+ * @see envoi_mail()
+ * @see getSettingValue()
+ */
 function mail_alerte($sujet,$texte,$informer_admin='n') {
 	global $active_hostbyaddr;
 
@@ -4254,6 +2625,7 @@ function mail_alerte($sujet,$texte,$informer_admin='n') {
 
 		// On envoie le mail
 		//fdebug_mail_connexion("\$message=$message\n====================\n");
+
 		$destinataire=$lig_user->email;
 		$sujet="GEPI : $sujet $date";
 		envoi_mail($sujet, $message, $destinataire, $ajout);
@@ -4261,20 +2633,49 @@ function mail_alerte($sujet,$texte,$informer_admin='n') {
 	}
 }
 
-
-
+/**
+ * Formate un texte
+ * 
+ * - Si le texte contient des < et >, on affiche tel quel
+ * - Sinon, on transforme les retours à la ligne en <br />
+ *
+ * @param string $texte Le texte à formater
+ * @return string Le texte formaté
+ */
 function texte_html_ou_pas($texte){
-	// Si le texte contient des < et >, on affiche tel quel
 	if((strstr($texte,">"))||(strstr($texte,"<"))){
 		$retour=$texte;
 	}
-	// Sinon, on transforme les retours à la ligne en <br />
 	else{
 		$retour=nl2br($texte);
 	}
 	return $retour;
 }
 
+/**
+ * Activer le mode debug, "y" pour oui
+ *
+ * @global string $GLOBALS['debug']
+ * @name $debug
+ */
+$GLOBALS['debug'] = '';
+
+/**
+ * 
+ *
+ * @global array $GLOBALS['tab_instant']
+ * @name $tab_instant
+ */
+$GLOBALS['tab_instant'] = array();
+
+/**
+ * 
+ *
+ * @global array
+ * @global string
+ * @param type $motif
+ * @param string $texte 
+ */
 function decompte_debug($motif,$texte) {
 	global $tab_instant, $debug;
 	if($debug=="y") {
@@ -4288,27 +2689,32 @@ function decompte_debug($motif,$texte) {
 			else {
 				$diff=$tmp_tab1[0]-$tmp_tab2[0];
 			}
-			//if($debug=="y") {
 				echo "<p style='color:green;'>$texte: ".$diff." s</p>\n";
-			//}
 		}
 		else {
-			//if($debug=="y") {
 				echo "<p style='color:green;'>$texte</p>\n";
-			//}
 		}
 		$tab_instant[$motif]=$instant;
 	}
 }
 
-
-// Fonction qui retourne l'URI des élèves pour les flux rss
+ 
+/**
+ * Retourne l'URI des élèves pour les flux rss
+ *
+ * @global string
+ * @param string $eleve Login de l'élève
+ * @param string $https La page est-elle sécurisée ? en https si 'y'
+ * @param string $type 'cdt' ou ''
+ * @return string
+ * @see getSettingValue()
+ */
 function retourneUri($eleve, $https, $type){
 
 	global $gepiPath;
 	$rep = array();
 
-	// on vérifie que la table e nquestion existe déjà
+	// on vérifie que la table en question existe déjà
 	$test_table = mysql_num_rows(mysql_query("SHOW TABLES LIKE 'rss_users'"));
 	if ($test_table >= 1) {
 
@@ -4341,6 +2747,11 @@ function retourneUri($eleve, $https, $type){
 	return $rep;
 }
 
+/**
+ * Met une date en français
+ *
+ * @return text La date formatée 
+ */
 function get_date_php() {
 	$eng_words = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 	$french_words = array('Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre');
@@ -4349,6 +2760,12 @@ function get_date_php() {
 	return $date_str;
 }
 
+/**
+ * Met en forme un prénom
+ *
+ * @param type $prenom Le prénom à traiter
+ * @return type Le prénom traité
+ */
 function casse_prenom($prenom) {
 	$tab=explode("-",$prenom);
 
@@ -4364,6 +2781,21 @@ function casse_prenom($prenom) {
 	return $retour;
 }
 
+/**
+ * Drapeau pour encoder un texte en utf8 si à "y"
+ *
+ * @global string  $GLOBALS['mode_utf8_pdf']
+ * @name $mode_utf8_pdf
+ */
+$GLOBALS['mode_utf8_pdf'] = '';
+
+/**
+ * Encode une chaine en utf8 si $mode_utf8_pdf="y"
+ *
+ * @global type 
+ * @param type $chaine Chaine à encoder
+ * @return type 
+ */
 function traite_accents_utf8($chaine) {
 	global $mode_utf8_pdf;
 	if($mode_utf8_pdf=="y") {
@@ -4374,6 +2806,13 @@ function traite_accents_utf8($chaine) {
 	}
 }
 
+/**
+ * Arrondi un nombre avec un certain nombre de chiffres après la virgule
+ *
+ * @param type $nombre Le nombre à convertir
+ * @param type $nb_chiffre_apres_virgule
+ * @return decimal Le nombre arrondi
+ */
 function nf($nombre,$nb_chiffre_apres_virgule=1) {
 	// Formatage des nombres
 	// Precision:
@@ -4393,38 +2832,42 @@ function nf($nombre,$nb_chiffre_apres_virgule=1) {
 	else {
 		$nombre=strtr($nombre,",",".");
 		$valeur=number_format(round($nombre/$precision)*$precision, $nb_chiffre_apres_virgule, ',', '');
-		//$valeur=strtr($valeur,".",",");
 	}
 	return $valeur;
 }
 
 
-function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align='C',$align='L',$increment=0.3,$r_interligne=0.3) {
-	global $pdf;
 
-	// $increment:     nombre dont on réduit la police à chaque essai
-	// $r_interligne:  proportion de la taille de police pour les interlignes
-	// $bordure:       LRBT
-	// $v_align:       C(enter) ou T(op)
+/**
+ * Envoit les informations de debug dans un fichier si à 'fichier', vers l'écran sinon
+ *
+ * @global string $GLOBALS['mode_my_echo_debug']
+ * @name $mode_my_echo_debug
+ */
+$GLOBALS['mode_my_echo_debug'] = '';
 
-	// En cas de pb avec cell_ajustee1(), effectuer:
-	// INSERT INTO setting SET name='cell_ajustee_old_way', value='y';
-	// ou
-	// UPDATE setting SET value='y' WHERE name='cell_ajustee_old_way';
-	if(getSettingValue('cell_ajustee_old_way')=='y') {
-		// On vire les balises en utilisant l'ancienne fonction qui ne gérait pas les balises
-		$texte=preg_replace('/<(.*)>/U','',$texte);
-		cell_ajustee0($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align,$align,$increment,$r_interligne);
-	}
-	else {
-		cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align,$align,$increment,$r_interligne);
-	}
-}
+/**
+ * Écrit les informations de debug si à 1
+ *
+ * @global int $GLOBALS['my_echo_debug']
+ * @name $my_echo_debug
+ */
+$GLOBALS['my_echo_debug'] = NULL;
 
+/**
+ * Ecrit des informations de debug dans un fichier ou à l'écran
+ * 
+ * $dossier est à "/tmp" pour simplifier en debug sur une machine perso sous *nix,
+ * Commenter la ligne au besoin
+ * 
+ * @global string 
+ * @global int 
+ * @global int
+ * @param string $texte 
+ * @see get_user_temp_directory()
+ */
 function my_echo_debug($texte) {
-	global $mode_my_echo_debug;
-	global $my_echo_debug;
-	global $niveau_arbo;
+	global $mode_my_echo_debug, $my_echo_debug, $niveau_arbo;
 
 	if($my_echo_debug==1) {
 		if($mode_my_echo_debug!='fichier') {
@@ -4455,823 +2898,19 @@ function my_echo_debug($texte) {
 	}
 }
 
-function cell_ajustee1($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align='C',$align='L',$increment=0.3,$r_interligne=0.3) {
-	global $pdf;
-	// Pour que la variable puisse être récupérée dans la fonction my_echo_debug(), il faut la déclarer comme globale:
-	global $my_echo_debug, $mode_my_echo_debug;
-
-	// $increment:     nombre dont on réduit la police à chaque essai
-	// $r_interligne:  proportion de la taille de police pour les interlignes
-	// $bordure:       LRBT
-	// $v_align:       C(enter) ou T(op)
-
-	$texte=trim($texte);
-	$hauteur_texte=$hauteur_max_font;
-	//$pdf->SetFontSize($hauteur_texte);
-
-	//================================
-	// Options de debug
-	// Passer à 1 pour débugger
-	$my_echo_debug=0;
-	//$my_echo_debug=1;
-
-	// Les modes sont 'fichier' ou n'importe quoi d'autre qui provoque des echo... donc un échec de la génération de PDF... à ouvrir avec un bloc-notes, pas avec un lecteur PDF
-	// Voir la fonction my_echo_debug() pour l'emplacement du fichier généré
-	$mode_my_echo_debug='fichier';
-	//$mode_my_echo_debug='';
-	//================================
-
-	if($my_echo_debug==1) my_echo_debug("\n\n=========================================================\n");
-	if($my_echo_debug==1) my_echo_debug("Lancement de\nmy_cell_ajustee(\$texte=$texte,\n\$x=$x,\n\$y=$y,\n\$largeur_dispo=$largeur_dispo,\n\$h_cell=$h_cell,\n\$hauteur_max_font=$hauteur_max_font,\n\$hauteur_min_font=$hauteur_min_font,\n\$bordure=$bordure,\n\$v_align=$v_align,\n\$align=$align,\n\$increment=$increment,\n\$r_interligne=$r_interligne)\n\n");
-
-	if($my_echo_debug==1) my_echo_debug("\$texte=\"$texte\"\n");
-
-	// Pour réduire la taille du texte, il se peut qu'il faille supprimer les balises,...
-	$supprimer_balises="n";
-	$supprimer_retours_a_la_ligne="n";
-	$tronquer="n";
-
-	// On commence par essayer de remplir la cellule avec la taille de police proposée
-	// Et réduire la taille de police si cela ne tient pas.
-	// Si on arrive à une taille de police trop faible, on va supprimer des retours à la ligne, des balises ou même tronquer.
-
-	// Pour forcer en debug:
-	//$tronquer='y';
-
-	//while(true) {
-	while($tronquer!='y') {
-		// On (re)démarre un essai avec une taille de police
-
-		$pdf->SetFontSize($hauteur_texte);
-
-		// Nombre max de lignes avec la hauteur courante de police
-		// Il manque l'interligne de bas de cellule
-		//$nb_max_lig=max(1,floor($h_cell/((1+$r_interligne)*($hauteur_texte*26/100))));
-		//$nb_max_lig=max(1,floor($h_cell/((1+2*$r_interligne)*($hauteur_texte*26/100))));
-		$nb_max_lig=max(1,floor(($h_cell-$r_interligne*($hauteur_texte*26/100))/((1+$r_interligne)*($hauteur_texte*26/100))));
-		//$nb_max_lig=max(1,floor(($h_cell-$r_interligne*($hauteur_texte*26/100))/((1+$r_interligne)*($hauteur_texte*26/100)))-1);
-
-		if($my_echo_debug==1) my_echo_debug("\nOn lance un tour avec la taille de police:\n\$hauteur_texte=$hauteur_texte\n");
-		if($my_echo_debug==1) my_echo_debug("\$nb_max_lig=$nb_max_lig\n");
-
-		// Lignes dans la cellule
-		unset($ligne);
-		$ligne=array();
-
-		// Compteur des lignes
-		$cpt=0;
-
-		// On prévoit deux... trois espaces de marge en gras pour s'assurer que la ligne ne débordera pas
-		$pdf->SetFont('','B');
-		$un_espace_gras=$pdf->GetStringWidth(' ');
-		if($my_echo_debug==1) my_echo_debug("Un espace en gras mesure $un_espace_gras\n");
-		$marge_espaces=3*$un_espace_gras;
-		if($my_echo_debug==1) my_echo_debug("On compte trois espaces de marge, soit $marge_espaces\n");
-		$largeur_utile=$largeur_dispo-$marge_espaces;
-		if($my_echo_debug==1) my_echo_debug("D'où \$largeur_utile=$largeur_utile\n");
-
-		// CONTROLER QUE \$largeur_utile>0
-		if($largeur_utile<=0) {
-			// On se laisse une chance que cela tienne en tronquant
-			$tronquer="y";
-			break;
-		}
-
-		$style_courant='';
-		$pdf->SetFont('',$style_courant);
-
-		// (Ré-)initialisation du témoin
-		$temoin_reduire_police="n";
-
-		if($supprimer_retours_a_la_ligne=="y") {
-			//$texte=str_replace('\n'," ",$texte);
-			$texte=trim(preg_replace("/\n/"," ",$texte));
-		}
-
-		$chaine_longueur_ligne_courante="0";
-
-		$tab=preg_split('/<(.*)>/U',$texte,-1,PREG_SPLIT_DELIM_CAPTURE);
-		foreach($tab as $i=>$valeur) {
-			//$pdf->Cell(150,7, "\$tab[$i]=$valeur",0,2,'');
-			// Avec $i pair on a le texte et les indices impairs correspondent aux balises (b et /b,...)
-
-			// On initialise la ligne courante si nécessaire pour le cas où on aurait $texte="<b>Blabla..."
-			// Il faut que la ligne soit initialisée pour pouvoir ajouter le <b> dans $i%2!=0
-			if(!isset($ligne[$cpt])) {
-			//if(!isset($test_ligne)) {
-				$ligne[$cpt]='';
-				$longueur_ligne_courante=0;
-				$chaine_longueur_ligne_courante="0";
-				//$test_ligne="";
-			}
-
-			if($i%2==0) {
-				if($my_echo_debug==1) my_echo_debug("\nParcours avec l'élément \$i=$i: \"$tab[$i]\"\n");
-
-
-				//$tab2=preg_split("/[\s]+/",$tab[$i]); // Ca compterait les espaces, tabulations, \n et \r
-				$tab2=explode(" ",$tab[$i]);
-				// Si on gère aussi les virgules et tirets, il y a une difficulté supplémentaire à gérer pour re-concaténer (normalement après une virgule, on doit avoir un espace)... donc on ne gère que les espaces
-
-				if($my_echo_debug==1) my_echo_debug("_____________________________________________\n");
-				for($j=0;$j<count($tab2);$j++) {
-					if($my_echo_debug==1) my_echo_debug("Mot \$tab2[$j]=\"$tab2[$j]\"\n");
-				}
-				if($my_echo_debug==1) my_echo_debug("_____________________________________________\n");
-
-				for($j=0;$j<count($tab2);$j++) {
-					if($my_echo_debug==1) my_echo_debug("Mot \$tab2[$j]=\"$tab2[$j]\"\n");
-
-					// Si un des mots dépasse $largeur_dispo, il faut réduire la police (et si avec la police minimale, ça dépasse $largeur_dispo, il faudra couper n'importe où...)
-					if($pdf->GetStringWidth($tab2[$j])>$largeur_utile) {
-						$temoin_reduire_police="y";
-						break;
-					}
-
-					if($j>0) {
-						// Il ne faut ajouter un espace que si on a augmenté $j... (on n'est plus au premier mot de la ligne ~ voire... pb avec les découpes suivant les balises HTML)
-						$largeur_espace=$pdf->GetStringWidth(' ');
-						$longueur_ligne_courante+=$largeur_espace;
-						$chaine_longueur_ligne_courante.="+".$largeur_espace;
-
-						if($my_echo_debug==1) my_echo_debug("\$longueur_ligne_courante=$longueur_ligne_courante et \$largeur_utile=$largeur_utile\n");
-						if($my_echo_debug==1) my_echo_debug("\$chaine_longueur_ligne_courante=$chaine_longueur_ligne_courante\n");
-
-						if($longueur_ligne_courante>$largeur_utile) {
-							// En ajoutant un espace, on dépasse la largeur_dispo
-							$cpt++;
-							if($cpt+1>$nb_max_lig) {
-								// On dépasse le nombre max de lignes avec la taille de police courante
-								$temoin_reduire_police="y";
-								// On quitte la boucle sur les \n (boucle sur $tab3)
-								break;
-							}
-
-							$ligne[$cpt]='';
-							$longueur_ligne_courante=0;
-							$chaine_longueur_ligne_courante="0";
-						}
-						else {
-							$ligne[$cpt].=' ';
-							if($my_echo_debug==1) my_echo_debug("On a ajouté un espace dans la longueur qui précède.\n");
-							if($my_echo_debug==1) my_echo_debug("Longueur calculée sans gérer les balises ".$pdf->GetStringWidth($ligne[$cpt])."\n");
-						}
-					}
-
-					// Il n'y a pas d'espace dans $tab2[$j]
-					// Si on scinde avec des \n, on aura un mot par indice de $tab3
-					unset($tab3);
-					$tab3=array();
-
-					if($my_echo_debug==1) my_echo_debug("\$supprimer_retours_a_la_ligne=$supprimer_retours_a_la_ligne\n");
-					// Prendre en compte à ce niveau les \n
-					if($supprimer_retours_a_la_ligne=="n") {
-						if($my_echo_debug==1) my_echo_debug("On découpe si nécessaire les retours à la ligne\n");
-						//$tab3=split("\n",$tab2[$j]);
-						$tab3=explode("\n",$tab2[$j]);
-						for($loop=0;$loop<count($tab3);$loop++) {if($my_echo_debug==1) my_echo_debug("   \$tab3[$loop]=\"$tab3[$loop]\"\n");}
-					}
-					else {
-						//$tab3[0]=str_replace("\n"," ",$tab2[$j]);
-						$tab3[0]=$tab2[$j];
-					}
-
-					// Si supprimer_retours_a_la_ligne=='y', on ne fait qu'un tour dans la boucle
-					for($k=0;$k<count($tab3);$k++) {
-						if($k>0) {
-							// On change de ligne
-
-							if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
-							if($my_echo_debug==1) my_echo_debug("\$longueur_ligne_courante=$longueur_ligne_courante\n");
-							if($my_echo_debug==1) my_echo_debug("\$chaine_longueur_ligne_courante=$chaine_longueur_ligne_courante\n");
-
-							$cpt++;
-							if($cpt+1>$nb_max_lig) {
-								// On dépasse le nombre max de lignes avec la taille de police courante
-								$temoin_reduire_police="y";
-								// On quitte la boucle sur les \n (boucle sur $tab3)
-								break;
-							}
-							$ligne[$cpt]='';
-							$longueur_ligne_courante=0;
-							$chaine_longueur_ligne_courante="0";
-							//$test_ligne="";
-						}
-						//$test_ligne.=$tab3[$k];
-						//$longueur_ligne_courante+=$pdf->GetStringWidth($tab3[$k]);
-						$test_longueur_ligne_courante=$longueur_ligne_courante+$pdf->GetStringWidth($tab3[$k]);
-						if($my_echo_debug==1) my_echo_debug("La longueur du mot \$tab3[$k]=\"$tab3[$k]\" est ".$pdf->GetStringWidth($tab3[$k])."\n");
-
-						//if($pdf->GetStringWidth($test_ligne)>$largeur_dispo) {
-						//if($longueur_ligne_courante>$largeur_dispo) {
-						if($test_longueur_ligne_courante>$largeur_utile) {
-							$cpt++;
-							if($cpt+1>$nb_max_lig) {
-								// On dépasse le nombre max de lignes avec la taille de police courante
-								$temoin_reduire_police="y";
-								// On quitte la boucle sur les \n (boucle sur $tab3)
-								break;
-							}
-							$ligne[$cpt]=$tab3[$k];
-							$longueur_mot=$pdf->GetStringWidth($tab3[$k]);
-							$longueur_ligne_courante=$longueur_mot;
-							$chaine_longueur_ligne_courante=$longueur_mot;
-						}
-						else {
-							// Ca tient encore sur la ligne courante
-							$ligne[$cpt].=$tab3[$k];
-							//$ligne[$cpt]=$test_ligne;
-							$longueur_mot=$pdf->GetStringWidth($tab3[$k]);
-							$longueur_ligne_courante+=$longueur_mot;
-							$chaine_longueur_ligne_courante.="+".$longueur_mot;
-						}
-						if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
-						if($my_echo_debug==1) my_echo_debug("\$longueur_ligne_courante=$longueur_ligne_courante\n");
-						if($my_echo_debug==1) my_echo_debug("\$chaine_longueur_ligne_courante=$chaine_longueur_ligne_courante\n");
-					}
-
-					if($temoin_reduire_police=="y") {
-						// On quitte la boucle sur les mots (boucle sur $tab2)
-						break;
-					}
-				}
-			}
-			elseif($supprimer_balises=="n") {
-				// On tient compte des balises
-				if($valeur{0}=='/') {
-					// On referme une balise
-					if(strtoupper($valeur)=='/B') {
-						$style_courant=preg_replace("/B/i","",$style_courant);
-						$pdf->SetFont('',$style_courant);
-						$ligne[$cpt].="</B>";
-					}
-					elseif(strtoupper($valeur)=='/I') {
-						$style_courant=preg_replace("/I/i","",$style_courant);
-						$pdf->SetFont('',$style_courant);
-						$ligne[$cpt].="</I>";
-					}
-					elseif(strtoupper($valeur)=='/U') {
-						$style_courant=preg_replace("/U/i","",$style_courant);
-						$pdf->SetFont('',$style_courant);
-						$ligne[$cpt].="</U>";
-					}
-				}
-				else {
-					// On ouvre une balise
-					if(strtoupper($valeur)=='B') {
-						$style_courant=$style_courant.'B';
-						$pdf->SetFont('',$style_courant);
-						$ligne[$cpt].="<B>";
-					}
-					elseif(strtoupper($valeur)=='I') {
-						$style_courant=$style_courant.'I';
-						$pdf->SetFont('',$style_courant);
-						$ligne[$cpt].="<I>";
-					}
-					elseif(strtoupper($valeur)=='U') {
-						$style_courant=$style_courant.'U';
-						$pdf->SetFont('',$style_courant);
-						$ligne[$cpt].="<U>";
-					}
-				}
-				if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
-				if($my_echo_debug==1) my_echo_debug("\$longueur_ligne_courante=$longueur_ligne_courante\n");
-				if($my_echo_debug==1) my_echo_debug("\$style_courant=$style_courant\n");
-			}
-
-			if($temoin_reduire_police=="y") {
-				$hauteur_texte-=$increment;
-				//if($hauteur_texte<=0) {
-				if(($hauteur_texte<=0)||($hauteur_texte<$hauteur_min_font)) {
-					// Problème... il va falloir:
-					// - ne pas prendre en compte les \n
-					// - ne pas prendre en compte les balises
-					// - tronquer
-
-					if($supprimer_retours_a_la_ligne=='n') {
-						// On va virer les \n en les remplaçant par des espaces
-						$supprimer_retours_a_la_ligne='y';
-						if($my_echo_debug==1) my_echo_debug("+++ On va supprimer les retours à la ligne.\n");
-					}
-					elseif($supprimer_balises=='n') {
-						// On va un cran plus loin... en virant les balises... on ne gagnera que sur les mots en gras qui sont plus larges
-						$supprimer_balises='y';
-						if($my_echo_debug==1) my_echo_debug("+++ On va supprimer les balises.\n");
-					}
-					else {
-						// Il va falloir tronquer... pas cool!
-
-						// A FAIRE
-						$tronquer="y";
-
-						if($my_echo_debug==1) my_echo_debug("+++ On va tronquer.\n");
-					}
-
-					// Réinitialiser la taille de police:
-					$hauteur_texte=$hauteur_max_font;
-				}
-				else {
-					if($my_echo_debug==1) my_echo_debug("+++++++++++++++\n");
-					if($my_echo_debug==1) my_echo_debug("\nOn réduit la taille de police:\n");
-					if($my_echo_debug==1) my_echo_debug("\$hauteur_texte=".$hauteur_texte."\n");
-				}
-
-				// On quitte la boucle sur le tableau des découpages de balises HTML (boucle sur $tab)
-				break;
-			}
-		}
-
-		if($my_echo_debug==1) my_echo_debug("\$temoin_reduire_police=$temoin_reduire_police\n");
-
-		if($temoin_reduire_police!="y") {
-			// On a fini par trouver une taille  de police convenable
-
-			if($my_echo_debug==1) my_echo_debug("\nOn a trouvé la bonne la taille de police:\n");
-
-			// On quitte la boucle pour procéder à l'affichage du contenu de $ligne plus bas
-			break;
-		}
-	}
-
-	if($tronquer=='y') {
-		// A FAIRE: On va remplir en coupant n'importe où dans les mots sans chercher à conserver des mots entiers
-		//          Faut-il faire la boucle sur la taille de police?
-		//          Ou prendre directement la taille minimale?
-
-		if($my_echo_debug==1) my_echo_debug("---------------------------------\n");
-		if($my_echo_debug==1) my_echo_debug("--- On va remplir en tronquant...\n");
-
-		$hauteur_texte=$hauteur_min_font;
-
-		$pdf->SetFontSize($hauteur_texte);
-
-		// Nombre max de lignes avec la hauteur courante de police
-		$nb_max_lig=max(1,floor(($h_cell-$r_interligne*($hauteur_texte*26/100))/((1+$r_interligne)*($hauteur_texte*26/100))));
-
-		if($my_echo_debug==1) my_echo_debug("\$hauteur_texte=$hauteur_texte\n");
-		if($my_echo_debug==1) my_echo_debug("\$nb_max_lig=$nb_max_lig\n");
-
-		// Lignes dans la cellule
-		unset($ligne);
-		$ligne=array();
-
-		// Compteur des lignes
-		$cpt=0;
-
-		$longueur_max_atteinte="n";
-
-		// On prévoit deux... trois espaces de marge en gras pour s'assurer que la ligne ne débordera pas
-		$pdf->SetFont('','B');
-		$marge_espaces=3*$pdf->GetStringWidth(' ');
-		$largeur_utile=$largeur_dispo-$marge_espaces;
-
-		// CONTROLER QUE \$largeur_utile>0
-		if($largeur_utile>0) {
-			$style_courant='';
-			$pdf->SetFont('',$style_courant);
-
-			// On va supprimer les retours à la ligne
-			$texte=trim(preg_replace("/\n/"," ",$texte));
-			if($my_echo_debug==1) my_echo_debug("\$texte=$texte\n");
-
-			// On supprime les balises
-			$texte=preg_replace('/<(.*)>/U','',$texte);
-			if($my_echo_debug==1) my_echo_debug("\$texte=$texte\n");
-			for($j=0;$j<strlen($texte);$j++) {
-
-				if(!isset($ligne[$cpt])) {
-					$ligne[$cpt]='';
-				}
-				if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
-
-				$chaine=$ligne[$cpt].substr($texte,$j,1);
-				if($my_echo_debug==1) my_echo_debug("\$chaine=\"$chaine\"\n");
-
-				if($pdf->GetStringWidth($chaine)>$largeur_utile) {
-
-					if($my_echo_debug==1) my_echo_debug("Avec \$chaine, ça dépasse.\n");
-
-					if($cpt+1>$nb_max_lig) {
-						$longueur_max_atteinte="y";
-
-						if($my_echo_debug==1) my_echo_debug("\$cpt=$cpt et \$nb_max_lig=$nb_max_lig.\nOn ne peut plus ajouter une ligne.\n");
-
-						break;
-					}
-
-					$cpt++;
-					$ligne[$cpt]=substr($texte,$j,1);
-					if($my_echo_debug==1) my_echo_debug("On commence une nouvelle ligne avec le dernier caractère: \"".substr($texte,$j-1,1)."\"\n");
-					if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
-				}
-				else {
-					$ligne[$cpt].=substr($texte,$j,1);
-					if($my_echo_debug==1) my_echo_debug("\$ligne[$cpt]=\"$ligne[$cpt]\"\n");
-				}
-			}
-
-			if($my_echo_debug==1) my_echo_debug("On a fini le texte... ou atteint une limite\n");
-
-		}
-	}
-
-
-	// On va afficher le texte
-
-	// Hauteur de la police en mm
-	$hauteur_texte_mm=$hauteur_texte*26/100;
-	// Hauteur de la police en pt
-	$taille_police=$hauteur_texte;
-	// Hauteur totale du texte
-	$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-	// Marge verticale en mm entre les lignes
-	$marge_verticale=$hauteur_texte_mm*$r_interligne;
-
-
-	if($my_echo_debug==1) my_echo_debug("\$hauteur_texte=".$hauteur_texte."\n");
-	if($my_echo_debug==1) my_echo_debug("\$hauteur_texte_mm=".$hauteur_texte_mm."\n");
-	if($my_echo_debug==1) my_echo_debug("\$hauteur_totale=".$hauteur_totale."\n");
-	if($my_echo_debug==1) my_echo_debug("\$marge_verticale=".$marge_verticale."\n");
-
-
-	// On trace le rectangle (vide) du cadre:
-	$pdf->SetXY($x,$y);
-	$pdf->Cell($largeur_dispo,$h_cell, '',$bordure,2,'');
-
-	// On va écrire les lignes avec la taille de police optimale déterminée (cf. $ifmax)
-	$nb_lig=count($ligne);
-	$h=$nb_lig*$hauteur_texte_mm*(1+$r_interligne);
-	$t=$h_cell-$h;
-	if($my_echo_debug==1) my_echo_debug("\$t=".$t."\n");
-	$bord_debug='';
-	//$bord_debug='LRBT';
-
-	// On ne gère que les v_align Top et Center... et ajout d'un mode aéré
-	if($v_align=='E') {
-		// Mode aéré
-		//$espace_v=($h_cell-2*$marge_verticale-$nb_lig*$hauteur_texte_mm)/max(1,$nb_lig-1);
-		$espace_v=($h_cell-4*$marge_verticale-$nb_lig*$hauteur_texte_mm)/max(1,$nb_lig-1);
-	}
-	elseif($v_align!='T') {
-		// Par défaut c'est Center
-		//$decalage_v_top=($h_cell-$nb_lig*$hauteur_texte_mm-($nb_lig-1)*$marge_verticale)/2;
-		$decalage_v_top=($h_cell-($nb_lig+1)*$hauteur_texte_mm-$nb_lig*$marge_verticale)/2;
-	}
-
-	for($i=0;$i<count($ligne);$i++) {
-
-		if($v_align=='T') {
-			$pdf->SetXY($x,$y+$i*($hauteur_texte_mm+$marge_verticale));
-
-			// Pour pouvoir afficher le $bord_debug
-			$pdf->Cell($largeur_dispo,$hauteur_texte_mm+2*$marge_verticale, '',$bord_debug,1,$align);
-
-			$y_courant=$y+$i*($hauteur_texte_mm+$marge_verticale)-$marge_verticale;
-			$pdf->SetXY($x,$y_courant);
-			if($my_echo_debug==1) {
-				$pdf->myWriteHTML($ligne[$i]." ".$i." ".round($y_courant));
-			}
-			else {
-				$pdf->myWriteHTML($ligne[$i]);
-			}
-		}
-		elseif($v_align=='E') {
-			$y_courant=$y+$marge_verticale+$i*($hauteur_texte_mm+$espace_v);
-			$pdf->SetXY($x,$y_courant);
-
-			// Pour pouvoir afficher le $bord_debug
-			$pdf->Cell($largeur_dispo,$h_cell/$nb_lig, '',$bord_debug,1,$align);
-
-			$pdf->SetXY($x,$y_courant);
-			$pdf->myWriteHTML($ligne[$i]);
-		}
-		else {
-			$y_courant=$y+$decalage_v_top+$i*($hauteur_texte_mm+$marge_verticale);
-
-			// Pour pouvoir afficher le $bord_debug A REFAIRE
-			//$pdf->SetXY($x,$y_courant);
-			//$pdf->Cell($largeur_dispo,$h_cell/count($tab_lig[$ifmax]['lignes']), '',$bord_debug,1,$align);
-
-			$pdf->SetXY($x,$y_courant);
-			/*
-			if(preg_match('/<(.*)>/U',$ligne[$i])) {
-				$pdf->WriteHTML($ligne[$i]);
-			}
-			else {
-				$pdf->Cell($largeur_dispo,$hauteur_texte_mm, $ligne[$i],$bord_debug,1,$align);
-			}
-			*/
-			$pdf->myWriteHTML($ligne[$i]);
-		}
-	}
-}
-
-// Ancienne fonction cell_ajustee() ne gérant pas les balises HTML B,I et U
-function cell_ajustee0($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align='C',$align='L',$increment=0.3,$r_interligne=0.3) {
-	global $pdf;
-
-	// $increment:     nombre dont on réduit la police à chaque essai
-	// $r_interligne:  proportion de la taille de police pour les interlignes
-	// $bordure:       LRBT
-	// $v_align:       C(enter) ou T(op)
-
-	$texte=trim($texte);
-	$hauteur_texte=$hauteur_max_font;
-	$pdf->SetFontSize($hauteur_texte);
-	$taille_texte_total=$pdf->GetStringWidth($texte);
-
-	// Ca nous donne le nombre max de lignes en hauteur avec la taille de police maxi
-	// Il faudrait plutôt déterminer ce nombre d'après une taille minimale acceptable de police
-	$nb_max_lig=max(1,floor($h_cell/((1+$r_interligne)*($hauteur_min_font*26/100))));
-	// echo "\$nb_max_lig=$nb_max_lig<br />";
-
-	//$ifmax=0;
-	//$ifmax=1;
-	$fmax=0;
-
-	$tab_lig=array();
-	for($j=1;$j<=$nb_max_lig;$j++) {
-		$hauteur_texte=$hauteur_max_font;
-
-		unset($ligne);
-		$ligne=array();
-
-		$tab=explode(" ",$texte);
-		$cpt=0;
-		$i=0;
-		while(true) {
-			if(isset($ligne[$cpt])) {$ligne[$cpt].=" ";} else {$ligne[$cpt]="";}
-
-			if(preg_match("/\n/",$tab[$i])) {
-				$tmp_tab=explode("\n",$tab[$i]);
-
-				for($k=0;$k<count($tmp_tab)-1;$k++) {
-					if(!isset($ligne[$cpt])) {$ligne[$cpt]="";}
-					$ligne[$cpt].=$tmp_tab[$k];
-					$cpt++;
-				}
-				if(!isset($ligne[$cpt])) {$ligne[$cpt]="";}
-				$ligne[$cpt].=$tmp_tab[$k];
-			}
-			else {
-				if($pdf->GetStringWidth($ligne[$cpt].$tab[$i])>=$largeur_dispo) {
-					$cpt++;
-					$ligne[$cpt]=$tab[$i];
-				}
-				else {
-					$ligne[$cpt].=$tab[$i];
-				}
-			}
-			$i++;
-			if(!isset($tab[$i])) {break;}
-		}
-
-		// Recherche de la plus longue ligne:
-		$taille_texte_ligne=0;
-		$num=0;
-		for($i=0;$i<count($ligne);$i++) {
-			// echo "\$ligne[$i]=$ligne[$i]<br />";
-			$l=$pdf->GetStringWidth($ligne[$i]);
-			if($taille_texte_ligne<$l) {$taille_texte_ligne=$l;$num=$i;}
-		}
-
-		// On calcule la hauteur en mm de la police (proportionnalité: 100pt -> 26mm)
-		$hauteur_texte_mm=$hauteur_texte*26/100;
-		// Hauteur totale: Nombre de lignes multiplié par la hauteur de police avec les marges verticales
-		$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-
-		// echo "On calcule la taille de la police d'après \$ligne[$num]=".$ligne[$num]."<br/>";
-		// On ajuste la taille de police avec la plus grande ligne pour que cela tienne en largeur
-		// et on contrôle aussi que cela tient en hauteur, sinon on continue à réduire la police.
-		$grandeur_texte='test';
-		while($grandeur_texte!='ok') {
-			//if($largeur_dispo<$taille_texte_ligne) {
-			if(($largeur_dispo<$taille_texte_ligne)||($hauteur_totale>$h_cell)) {
-				$hauteur_texte=$hauteur_texte-$increment;
-				if($hauteur_texte<$hauteur_min_font) {break;}
-				$hauteur_texte_mm=$hauteur_texte*26/100;
-				$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-				//$pdf->SetFont('Arial','',$hauteur_texte);
-				$pdf->SetFontSize($hauteur_texte);
-				$taille_texte_ligne=$pdf->GetStringWidth($ligne[$num]);
-				// echo "\$hauteur_texte=$hauteur_texte -&gt; \$taille_texte_ligne=".$taille_texte_ligne."<br/>";
-			}
-			else {
-				$grandeur_texte='ok';
-			}
-		}
-
-		if($grandeur_texte=='ok') {
-			// Hauteur de la police en mm
-			$hauteur_texte_mm=$hauteur_texte*26/100;
-			$tab_lig[$j]['hauteur_texte_mm']=$hauteur_texte_mm;
-			// Hauteur de la police en pt
-			$tab_lig[$j]['taille_police']=$hauteur_texte;
-			// Hauteur totale du texte
-			$tab_lig[$j]['hauteur_totale']=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-			// Marge verticale en mm entre les lignes
-			$marge_verticale=$hauteur_texte_mm*$r_interligne;
-			$tab_lig[$j]['marge_verticale']=$marge_verticale;
-			// Tableau des lignes
-			$tab_lig[$j]['lignes']=$ligne;
-
-			// On choisit la hauteur de police la plus grande possible pour laquelle les lignes tiennent en hauteur
-			// (la largeur a déjà été utilisée pour découper en lignes).
-			if(($hauteur_texte>$fmax)&&($tab_lig[$j]['hauteur_totale']<=$h_cell)) {
-				$ifmax=$j;
-			}
-		}
-	}
-
-	if((!isset($ifmax))||($tab_lig[$ifmax]['taille_police']<$hauteur_min_font)) {
-		// On relance en remplaçant les retours forcés à la ligne (\n) par des espaces.
-
-		$fmax=0;
-
-		$tab_lig=array();
-		for($j=1;$j<=$nb_max_lig;$j++) {
-			$hauteur_texte=$hauteur_max_font;
-
-			unset($ligne);
-			$ligne=array();
-
-			$tab=explode(" ",trim(preg_replace("/\n/"," ",$texte)));
-			$cpt=0;
-			$i=0;
-			while(true) {
-				if(isset($ligne[$cpt])) {$ligne[$cpt].=" ";} else {$ligne[$cpt]="";}
-
-				if($pdf->GetStringWidth($ligne[$cpt].$tab[$i])>=$largeur_dispo) {
-					$cpt++;
-					$ligne[$cpt]=$tab[$i];
-				}
-				else {
-					$ligne[$cpt].=$tab[$i];
-				}
-				$i++;
-				if(!isset($tab[$i])) {break;}
-			}
-
-			// Recherche de la plus longue ligne:
-			$taille_texte_ligne=0;
-			$num=0;
-			for($i=0;$i<count($ligne);$i++) {
-				// echo "\$ligne[$i]=$ligne[$i]<br />";
-				$l=$pdf->GetStringWidth($ligne[$i]);
-				if($taille_texte_ligne<$l) {$taille_texte_ligne=$l;$num=$i;}
-			}
-
-			// On calcule la hauteur en mm de la police (proportionnalité: 100pt -> 26mm)
-			$hauteur_texte_mm=$hauteur_texte*26/100;
-			// Hauteur totale: Nombre de lignes multiplié par la hauteur de police avec les marges verticales
-			$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-
-			// echo "On calcule la taille de la police d'après \$ligne[$num]=".$ligne[$num]."<br/>";
-			// On ajuste la taille de police avec la plus grande ligne pour que cela tienne en largeur
-			// et on contrôle aussi que cela tient en hauteur, sinon on continue à réduire la police.
-			$grandeur_texte='test';
-			while($grandeur_texte!='ok') {
-				//if($largeur_dispo<$taille_texte_ligne) {
-				if(($largeur_dispo<$taille_texte_ligne)||($hauteur_totale>$h_cell)) {
-					$hauteur_texte=$hauteur_texte-$increment;
-					if($hauteur_texte<$hauteur_min_font) {break;}
-					$hauteur_texte_mm=$hauteur_texte*26/100;
-					$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-					//$pdf->SetFont('Arial','',$hauteur_texte);
-					$pdf->SetFontSize($hauteur_texte);
-					$taille_texte_ligne=$pdf->GetStringWidth($ligne[$num]);
-					// echo "\$hauteur_texte=$hauteur_texte -&gt; \$taille_texte_ligne=".$taille_texte_ligne."<br/>";
-				}
-				else {
-					$grandeur_texte='ok';
-				}
-			}
-
-			if($grandeur_texte=='ok') {
-				// Hauteur de la police en mm
-				$hauteur_texte_mm=$hauteur_texte*26/100;
-				$tab_lig[$j]['hauteur_texte_mm']=$hauteur_texte_mm;
-				// Hauteur de la police en pt
-				$tab_lig[$j]['taille_police']=$hauteur_texte;
-				// Hauteur totale du texte
-				$tab_lig[$j]['hauteur_totale']=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-				// Marge verticale en mm entre les lignes
-				$marge_verticale=$hauteur_texte_mm*$r_interligne;
-				$tab_lig[$j]['marge_verticale']=$marge_verticale;
-				// Tableau des lignes
-				$tab_lig[$j]['lignes']=$ligne;
-
-				// On choisit la hauteur de police la plus grande possible pour laquelle les lignes tiennent en hauteur
-				// (la largeur a déjà été utilisée pour découper en lignes).
-				if(($hauteur_texte>$fmax)&&($tab_lig[$j]['hauteur_totale']<=$h_cell)) {
-					$ifmax=$j;
-				}
-			}
-		}
-
-
-		// Si ça ne passe toujours pas, on prend $hauteur_min_font sans retours à la ligne et on tronque
-		if(!isset($ifmax)) {
-			/*
-			$tab_lig=array();
-			$j=1;
-			$ifmax=$j;
-			$hauteur_texte=$hauteur_min_font;
-			$hauteur_texte_mm=$hauteur_texte*26/100;
-			$tab_lig[$j]['hauteur_texte_mm']=$hauteur_texte_mm;
-			// Hauteur de la police en pt
-			$tab_lig[$j]['taille_police']=$hauteur_texte;
-			// Hauteur totale du texte
-			$tab_lig[$j]['hauteur_totale']=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-			// Marge verticale en mm entre les lignes
-			$marge_verticale=$hauteur_texte_mm*$r_interligne;
-			$tab_lig[$j]['marge_verticale']=$marge_verticale;
-			// Tableau des lignes
-			$tab_lig[$j]['lignes'][]="Texte trop long";
-			*/
-
-			$fmax=0;
-
-			$tab_lig=array();
-			$hauteur_texte=$hauteur_min_font;
-			unset($ligne);
-			$ligne=array();
-
-			$tab=explode(" ",trim(preg_replace("/\n/"," ",$texte)));
-			$cpt=0;
-			$i=0;
-			while(true) {
-				if(isset($ligne[$cpt])) {$ligne[$cpt].=" ";} else {$ligne[$cpt]="";}
-
-				if($pdf->GetStringWidth($ligne[$cpt].$tab[$i])>=$largeur_dispo) {
-
-					if(($cpt+2)*$hauteur_texte*(1+$r_interligne)*26/100>$h_cell) {
-						$d=1;
-						while(($pdf->GetStringWidth(substr($ligne[$cpt],0,strlen($ligne[$cpt])-$d)."...")>=$largeur_dispo)&&($d<strlen($ligne[$cpt]))) {
-							$d++;
-						}
-						$ligne[$cpt]=substr($ligne[$cpt],0,strlen($ligne[$cpt])-$d)."...";
-						break;
-					}
-
-					$cpt++;
-					$ligne[$cpt]=$tab[$i];
-				}
-				else {
-					$ligne[$cpt].=$tab[$i];
-				}
-				$i++;
-				if(!isset($tab[$i])) {break;} // On ne devrait pas quitter sur ça puisque le texte va être trop long
-			}
-
-			$j=1;
-			$ifmax=$j;
-			$hauteur_texte_mm=$hauteur_texte*26/100;
-			$tab_lig[$j]['hauteur_texte_mm']=$hauteur_texte_mm;
-			// Hauteur de la police en pt
-			$tab_lig[$j]['taille_police']=$hauteur_texte;
-			// Hauteur totale du texte
-			$tab_lig[$j]['hauteur_totale']=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-			// Marge verticale en mm entre les lignes
-			$marge_verticale=$hauteur_texte_mm*$r_interligne;
-			$tab_lig[$j]['marge_verticale']=$marge_verticale;
-			// Tableau des lignes
-			$tab_lig[$j]['lignes']=$ligne;
-
-		}
-	}
-
-	// On trace le rectangle (vide) du cadre:
-	$pdf->SetXY($x,$y);
-	$pdf->Cell($largeur_dispo,$h_cell, '',$bordure,2,'');
-
-	// On va écrire les lignes avec la taille de police optimale déterminée (cf. $ifmax)
-	//$marge_h=round(($h_cell-(count($ligne)*$hauteur_texte_mm+(count($ligne)-1)*$marge_verticale))/2);
-	//$marge_h=round(($h_cell-$tab_lig[$ifmax]['hauteur_totale'])/2);
-	$nb_lig=count($tab_lig[$ifmax]['lignes']);
-	$h=count($tab_lig[$ifmax]['lignes'])*$tab_lig[$ifmax]['hauteur_texte_mm']*(1+$r_interligne);
-	$t=$h_cell-$h;
-	$bord_debug='';
-	//$bord_debug='LRBT';
-	for($i=0;$i<count($tab_lig[$ifmax]['lignes']);$i++) {
-
-		//$pdf->SetXY(10,$y+$i*($hauteur_texte_mm+$marge_verticale)+$marge_h);
-		$pdf->SetXY($x,$y+$i*($tab_lig[$ifmax]['hauteur_texte_mm']+$tab_lig[$ifmax]['marge_verticale']));
-
-		//if($i==1) {$bord_debug='LRBT';} else {$bord_debug='';}
-		//$pdf->Cell($largeur_dispo-4,$h_cell/count($tab_lig[$ifmax]['lignes']), $tab_lig[$ifmax]['lignes'][$i],$bord_debug,2,'');
-
-		if($v_align=='T') {
-			$pdf->Cell($largeur_dispo,$tab_lig[$ifmax]['hauteur_texte_mm']+2*$tab_lig[$ifmax]['marge_verticale'], $tab_lig[$ifmax]['lignes'][$i],$bord_debug,1,$align);
-		}
-		else {
-			$pdf->Cell($largeur_dispo,$h_cell/count($tab_lig[$ifmax]['lignes']), $tab_lig[$ifmax]['lignes'][$i],$bord_debug,1,$align);
-		}
-	}
-	//if($tab_lig[$ifmax]['taille_police']!=$hauteur_max_font) {$pdf->Cell(20,$h_cell, $tab_lig[$ifmax]['taille_police'],$bord_debug,2,'');}
-
-}
-
+/**
+ * Retourne une chaine avec la bonne casse
+ * 
+ * $mode
+ * - 'maj'   -> tout en majuscules
+ * - 'min'   -> tout en minuscules
+ * - 'majf'  -> Première lettre en majuscule
+ * - 'majf2' -> Première lettre de tous les mots en majuscule
+ *
+ * @param type $mot chaine à modifier
+ * @param type $mode Mode de conversion
+ * @return type chaine mise en forme
+ */
 function casse_mot($mot,$mode='maj') {
 	if($mode=='maj') {
 		return strtr(strtoupper($mot),"äâàáåãéèëêòóôõöøìíîïùúûüýñçþÿæ½ðø","ÄÂÀÁÅÃÉÈËÊÒÓÔÕÖØÌÍÎÏÙÚÛÜÝÑÇÞÝÆ¼ÐØ");
@@ -5307,202 +2946,18 @@ function casse_mot($mot,$mode='maj') {
 	}
 }
 
-
-function javascript_tab_stat($pref_id,$cpt) {
-	// Fonction à appeler avec une portion de code du type:
-	/*
-	echo "<div style='position: fixed; top: 200px; right: 200px;'>\n";
-	javascript_tab_stat('tab_stat_',$cpt);
-	echo "</div>\n";
-	*/
-
-	$alt=1;
-	echo "<table class='boireaus' summary='Statistiques'>\n";
-	$alt=$alt*(-1);
-	echo "<tr class='lig$alt'>\n";
-	echo "<th>Moyenne</th>\n";
-	echo "<td id='".$pref_id."moyenne'></td>\n";
-	echo "</tr>\n";
-
-	$alt=$alt*(-1);
-	echo "<tr class='lig$alt'>\n";
-	echo "<th>1er quartile</th>\n";
-	echo "<td id='".$pref_id."q1'></td>\n";
-	echo "</tr>\n";
-
-	$alt=$alt*(-1);
-	echo "<tr class='lig$alt'>\n";
-	echo "<th>Médiane</th>\n";
-	echo "<td id='".$pref_id."mediane'></td>\n";
-	echo "</tr>\n";
-
-	$alt=$alt*(-1);
-	echo "<tr class='lig$alt'>\n";
-	echo "<th>3è quartile</th>\n";
-	echo "<td id='".$pref_id."q3'></td>\n";
-	echo "</tr>\n";
-
-	$alt=$alt*(-1);
-	echo "<tr class='lig$alt'>\n";
-	echo "<th>Min</th>\n";
-	echo "<td id='".$pref_id."min'></td>\n";
-	echo "</tr>\n";
-
-	$alt=$alt*(-1);
-	echo "<tr class='lig$alt'>\n";
-	echo "<th>Max</th>\n";
-	echo "<td id='".$pref_id."max'></td>\n";
-	echo "</tr>\n";
-	echo "</table>\n";
-
-	echo "<script type='text/javascript' language='JavaScript'>
-
-function calcul_moy_med() {
-	var eff_utile=0;
-	var total=0;
-	var valeur;
-	var tab_valeur=new Array();
-	var i=0;
-	var j=0;
-	var n=0;
-	var mediane;
-	var moyenne;
-	var q1;
-	var q3;
-	var rang=0;
-
-	for(i=0;i<$cpt;i++) {
-		if(document.getElementById('n'+i)) {
-			valeur=document.getElementById('n'+i).value;
-
-			valeur=valeur.replace(',','.');
-
-			if((valeur!='abs')&&(valeur!='disp')&&(valeur!='-')&&(valeur!='')) {
-				tab_valeur[j]=valeur;
-				// Tambouille pour éviter que 'valeur' soit pris pour une chaine de caractères
-				total=eval((total*100+valeur*100)/100);
-				eff_utile++;
-				j++;
-			}
-		}
-	}
-	if(eff_utile>0) {
-		moyenne=Math.round(10*total/eff_utile)/10;
-		document.getElementById('".$pref_id."moyenne').innerHTML=moyenne;
-
-		tab_valeur.sort((function(a,b){return a - b}));
-		n=tab_valeur.length;
-		if(n/2==Math.round(n/2)) {
-			// Les indices commencent à zéro
-			// Tambouille pour éviter que 'valeur' soit pris pour une chaine de caractères
-			mediane=((eval(100*tab_valeur[n/2-1]+100*tab_valeur[n/2]))/100)/2;
-		}
-		else {
-			mediane=tab_valeur[(n-1)/2];
-		}
-		document.getElementById('".$pref_id."mediane').innerHTML=mediane;
-
-		if(eff_utile>=4) {
-			rang=Math.ceil(eff_utile/4);
-			q1=tab_valeur[rang-1];
-
-			rang=Math.ceil(3*eff_utile/4);
-			q3=tab_valeur[rang-1];
-
-			document.getElementById('".$pref_id."q1').innerHTML=q1;
-			document.getElementById('".$pref_id."q3').innerHTML=q3;
-		}
-		else {
-			document.getElementById('".$pref_id."q1').innerHTML='-';
-			document.getElementById('".$pref_id."q3').innerHTML='-';
-		}
-
-		document.getElementById('".$pref_id."min').innerHTML=tab_valeur[0];
-		document.getElementById('".$pref_id."max').innerHTML=tab_valeur[n-1];
-	}
-	else {
-		document.getElementById('".$pref_id."moyenne').innerHTML='-';
-		document.getElementById('".$pref_id."mediane').innerHTML='-';
-		document.getElementById('".$pref_id."q1').innerHTML='-';
-		document.getElementById('".$pref_id."q3').innerHTML='-';
-		document.getElementById('".$pref_id."min').innerHTML='-';
-		document.getElementById('".$pref_id."max').innerHTML='-';
-	}
-}
-
-calcul_moy_med();
-</script>
-";
-}
-
-
-function calcule_moy_mediane_quartiles($tab) {
-	$tab2=array();
-
-	//echo "<p>";
-	$total=0;
-	for($i=0;$i<count($tab);$i++) {
-		//echo "\$tab[$i]=".$tab[$i]."<br />\n";
-		if(($tab[$i]!='')&&($tab[$i]!='-')&&($tab[$i]!='&nbsp;')&&($tab[$i]!='abs')&&($tab[$i]!='disp')) {
-			$tab2[]=preg_replace('/,/','.',$tab[$i]);
-			$total+=preg_replace('/,/','.',$tab[$i]);
-		}
-	}
-
-	// Initialisation
-	$tab_retour['moyenne']='-';
-	$tab_retour['mediane']='-';
-	$tab_retour['min']='-';
-	$tab_retour['max']='-';
-	$tab_retour['q1']='-';
-	$tab_retour['q3']='-';
-
-	if(count($tab2)>0) {
-		sort($tab2);
-
-		/*
-		echo "<p>";
-		for($i=0;$i<count($tab2);$i++) {
-			echo "\$tab2[$i]=".$tab2[$i]."<br />\n";
-		}
-		*/
-
-		$moyenne=round(10*$total/count($tab2))/10;
-
-		if(count($tab2)%2==0) {
-			$mediane=($tab2[count($tab2)/2-1]+$tab2[count($tab2)/2])/2;
-		}
-		else {
-			$mediane=$tab2[(count($tab2)-1)/2];
-		}
-
-		$min=min($tab2);
-		$max=max($tab2);
-
-		if(count($tab2)>=4) {
-			$q1=$tab2[ceil(count($tab2)/4)-1];
-			$q3=$tab2[ceil(3*count($tab2)/4)-1];
-		}
-
-		$tab_retour['moyenne']=$moyenne;
-		$tab_retour['mediane']=$mediane;
-		$tab_retour['min']=$min;
-		$tab_retour['max']=$max;
-		$tab_retour['q1']=$q1;
-		$tab_retour['q3']=$q3;
-	}
-
-	/*
-	echo "<p>";
-	foreach($tab_retour as $key => $value) {
-		echo "\$tab_retour['$key']=".$value."<br />\n";
-	}
-	*/
-
-	return $tab_retour;
-}
-
-
+/**
+ * Renvoie le nom et le prénom d'un élève
+ * 
+ * ou civilité nom prénom (non-élève) si ce n'est pas un élève
+ *
+ * @param string $login_ele Login de l'élève
+ * @param string $mode si 'avec_classe' on retourne aussi la(les) classe(s)
+ * @return string 
+ * @see civ_nom_prenom()
+ * @see get_class_from_ele_login()
+ * @see casse_mot()
+ */
 function get_nom_prenom_eleve($login_ele,$mode='simple') {
 	$sql="SELECT nom,prenom FROM eleves WHERE login='$login_ele';";
 	$res=mysql_query($sql);
@@ -5523,7 +2978,7 @@ function get_nom_prenom_eleve($login_ele,$mode='simple') {
 		$ajout="";
 		if($mode=='avec_classe') {
 			$tmp_tab_clas=get_class_from_ele_login($login_ele);
-			if($tmp_tab_clas['liste']!='') {
+			if((isset($tmp_tab_clas['liste']))&&($tmp_tab_clas['liste']!='')) {
 				$ajout=" (".$tmp_tab_clas['liste'].")";
 			}
 		}
@@ -5532,6 +2987,18 @@ function get_nom_prenom_eleve($login_ele,$mode='simple') {
 	}
 }
 
+/**
+ * Retourne une commune à partir de son code insee
+ * 
+ * $mode :
+ * - 0 -> la commune
+ * - 1 -> la commune (<em>le département</em>)
+ * - 2 -> la commune (le département)
+ * 
+ * @param string $code_commune_insee
+ * @param int $mode
+ * @return string La commune
+ */
 function get_commune($code_commune_insee,$mode){
 	$retour="";
 
@@ -5558,7 +3025,7 @@ function get_commune($code_commune_insee,$mode){
 				$retour=$lig->commune;
 			}
 			elseif($mode==1) {
-				$retour=$lig->commune." (<i>".$lig->departement."</i>)";
+				$retour=$lig->commune." (<em>".$lig->departement."</em>)";
 			}
 			elseif($mode==2) {
 				$retour=$lig->commune." (".$lig->departement.")";
@@ -5568,7 +3035,13 @@ function get_commune($code_commune_insee,$mode){
 	return $retour;
 }
 
-
+/**
+ * Renvoi civilite nom prénom d'un utilisateur
+ *
+ * @param string $login Login de l'utilisateur recherché
+ * @param string $mode si 'prenom' inverse le nom et le prénom
+ * @return string civilite nom prénom de l'utilisateur
+ */
 function civ_nom_prenom($login,$mode='prenom') {
 	$retour="";
 	$sql="SELECT nom,prenom,civilite FROM utilisateurs WHERE login='$login';";
@@ -5589,285 +3062,36 @@ function civ_nom_prenom($login,$mode='prenom') {
 	return $retour;
 }
 
-// Enleve le numéro des titres numérotés ("1. Titre" -> "Titre")
-// Exemple :  "12. Titre"  donne "Titre"
+/**
+ *Enleve le numéro des titres numérotés ("1. Titre" -> "Titre")
+ * 
+ * Exemple :  "12. Titre"  donne "Titre"
+ * @param string $texte Le titre de départ
+ * @return string  Le titre formaté
+ */
 function supprimer_numero($texte) {
  return preg_replace(",^[[:space:]]*([0-9]+)([.)])[[:space:]]+,S","", $texte);
 }
 
 
-function test_ecriture_dossier($tab_restriction=array()) {
-    global $gepiPath;
-
-	//$tab_dossiers_rw=array("documents","images","secure","photos","backup","temp","mod_ooo/mes_modele","mod_ooo/tmp","mod_notanet/OOo/tmp","lib/standalone/HTMLPurifier/DefinitionCache/Serializer");
-	//$tab_dossiers_rw=array("documents","images","photos","backup","temp","mod_ooo/mes_modele","mod_ooo/tmp","mod_notanet/OOo/tmp","lib/standalone/HTMLPurifier/DefinitionCache/Serializer");
-
-	if(count($tab_restriction)>0) {
-		$tab_dossiers_rw=$tab_restriction;
-	}
-	else {
-		$tab_dossiers_rw=array("artichow/cache","backup","documents","documents/archives","images","images/background","lib/standalone/HTMLPurifier/DefinitionCache/Serializer","mod_ooo/mes_modeles","mod_ooo/tmp","photos","temp");
-	}
-
-	$nom_fichier_test='test_acces_rw';
-
-	echo "<table class='boireaus' summary='Tableau des dossiers qui doivent être accessibles en écriture'>\n";
-	echo "<tr>\n";
-	echo "<th>Dossier</th>\n";
-	echo "<th>Ecriture</th>\n";
-	echo "</tr>\n";
-	$alt=1;
-	for($i=0;$i<count($tab_dossiers_rw);$i++) {
-		$ok_rw="no";
-		if ($f = @fopen("../".$tab_dossiers_rw[$i]."/".$nom_fichier_test, "w")) {
-			@fputs($f, '<'.'?php $ok_rw = "yes"; ?'.'>');
-			@fclose($f);
-			include("../".$tab_dossiers_rw[$i]."/".$nom_fichier_test);
-			$del = @unlink("../".$tab_dossiers_rw[$i]."/".$nom_fichier_test);
-		}
-		$alt=$alt*(-1);
-		echo "<tr class='lig$alt white_hover'>\n";
-		echo "<td style='text-align:left;'>$gepiPath/$tab_dossiers_rw[$i]</td>\n";
-		echo "<td>";
-		if($ok_rw=='yes') {
-			echo "<img src='../images/enabled.png' height='20' width='20' alt=\"Le dossier est accessible en écriture.\" />";
-		}
-		else {
-			echo "<img src='../images/disabled.png' height='20' width='20' alt=\"Le dossier n'est pas accessible en écriture.\" />";
-		}
-		echo "</td>\n";
-		echo "</tr>\n";
-
-		if($tab_dossiers_rw[$i]=="documents/archives") {
-			if(getSettingValue('multisite')=='y') {
-				$dossier_temp='documents/archives/'.$_COOKIE['RNE'];
-			}
-			else {
-				$dossier_temp='documents/archives/etablissement';
-			}
-
-			if(file_exists("../$dossier_temp")) {
-				$ok_rw="no";
-				if ($f = @fopen("../".$dossier_temp."/".$nom_fichier_test, "w")) {
-					@fputs($f, '<'.'?php $ok_rw = "yes"; ?'.'>');
-					@fclose($f);
-					include("../".$dossier_temp."/".$nom_fichier_test);
-					$del = @unlink("../".$dossier_temp."/".$nom_fichier_test);
-				}
-				$alt=$alt*(-1);
-				echo "<tr class='lig$alt white_hover'>\n";
-				echo "<td style='text-align:left;'>$gepiPath/$dossier_temp</td>\n";
-				echo "<td>";
-				if($ok_rw=='yes') {
-					echo "<img src='../images/enabled.png' height='20' width='20' alt=\"Le dossier est accessible en écriture.\" />";
-				}
-				else {
-					echo "<img src='../images/disabled.png' height='20' width='20' alt=\"Le dossier n'est pas accessible en écriture.\" />";
-				}
-				echo "</td>\n";
-				echo "</tr>\n";
-
-			}
-		}
-	}
-	echo "</table>\n";
-}
-
-
+/**
+ * Teste si style_screen_ajout.css existe et est accessible en écriture
+ *
+ * @return boolean TRUE si on peut écrire dans le fichier
+ */
 function test_ecriture_style_screen_ajout() {
 	$nom_fichier='style_screen_ajout.css';
 	$f=@fopen("../".$nom_fichier, "a+");
 	if($f) {
 		$ecriture=fwrite($f, "/* Test d'ecriture dans $nom_fichier */\n");
 		fclose($f);
-		if($ecriture) {return true;} else {return false;}
+		if($ecriture) {return TRUE;} else {return FALSE;}
 	}
 	else {
-		return false;
+		return FALSE;
 	}
 }
 
-function journal_connexions($login,$duree,$page='mon_compte',$pers_id=NULL) {
-	switch( $duree ) {
-	case 7:
-		$display_duree="une semaine";
-		break;
-	case 15:
-		$display_duree="quinze jours";
-		break;
-	case 30:
-		$display_duree="un mois";
-		break;
-	case 60:
-		$display_duree="deux mois";
-		break;
-	case 183:
-		$display_duree="six mois";
-		break;
-	case 365:
-		$display_duree="un an";
-		break;
-	case 'all':
-		$display_duree="le début";
-		break;
-	}
-
-	if($page=='mon_compte') {
-		echo "<h2>Journal de vos connexions depuis <b>".$display_duree."</b>**</h2>\n";
-	}
-	else {
-		echo "<h2>Journal des connexions de ".civ_nom_prenom($login)." depuis <b>".$display_duree."</b>**</h2>\n";
-	}
-	$requete = '';
-	if ($duree != 'all') {$requete = "and START > now() - interval " . $duree . " day";}
-
-	$sql = "select START, SESSION_ID, REMOTE_ADDR, USER_AGENT, AUTOCLOSE, END from log where LOGIN = '".$login."' ".$requete." order by START desc";
-	//echo "$sql<br />";
-	$day_now   = date("d");
-	$month_now = date("m");
-	$year_now  = date("Y");
-	$hour_now  = date("H");
-	$minute_now = date("i");
-	$seconde_now = date("s");
-	$now = mktime($hour_now, $minute_now, $seconde_now, $month_now, $day_now, $year_now);
-
-	echo "<ul>
-<li>Les lignes en rouge signalent une tentative de connexion avec un mot de passe erroné.</li>
-<li>Les lignes en orange signalent une session close pour laquelle vous ne vous êtes pas déconnecté correctement.</li>
-<li>Les lignes en noir signalent une session close normalement.</li>
-<li>Les lignes en vert indiquent les sessions en cours (cela peut correspondre à une connexion actuellement close mais pour laquelle vous ne vous êtes pas déconnecté correctement).</li>
-</ul>
-<table class='col' style='width: 90%; margin-left: auto; margin-right: auto; margin-bottom: 32px;' cellpadding='5' cellspacing='0' summary='Connexions'>
-	<tr>
-		<th class='col'>Début session</th>
-		<th class='col'>Fin session</th>
-		<th class='col'>Adresse IP et nom de la machine cliente</th>
-		<th class='col'>Navigateur</th>
-	</tr>
-";
-
-	$res = sql_query($sql);
-	if ($res) {
-		for ($i = 0; ($row = sql_row($res, $i)); $i++)
-		{
-			$annee_b = substr($row[0],0,4);
-			$mois_b =  substr($row[0],5,2);
-			$jour_b =  substr($row[0],8,2);
-			$heures_b = substr($row[0],11,2);
-			$minutes_b = substr($row[0],14,2);
-			$secondes_b = substr($row[0],17,2);
-			$date_debut = $jour_b."/".$mois_b."/".$annee_b." à ".$heures_b." h ".$minutes_b;
-
-			$annee_f = substr($row[5],0,4);
-			$mois_f =  substr($row[5],5,2);
-			$jour_f =  substr($row[5],8,2);
-			$heures_f = substr($row[5],11,2);
-			$minutes_f = substr($row[5],14,2);
-			$secondes_f = substr($row[5],17,2);
-			$date_fin = $jour_f."/".$mois_f."/".$annee_f." à ".$heures_f." h ".$minutes_f;
-			$end_time = mktime($heures_f, $minutes_f, $secondes_f, $mois_f, $jour_f, $annee_f);
-
-			$temp1 = '';
-			$temp2 = '';
-			if ($end_time > $now) {
-				$temp1 = "<font color='green'>";
-				$temp2 = "</font>";
-			} else if (($row[4] == 1) or ($row[4] == 2) or ($row[4] == 3)) {
-				//$temp1 = "<font color=orange>\n";
-				$temp1 = "<font color='#FFA500'>";
-				$temp2 = "</font>";
-			} else if ($row[4] == 4) {
-				$temp1 = "<b><font color='red'>";
-				$temp2 = "</font></b>";
-
-			}
-
-			echo "<tr>\n";
-			echo "<td class=\"col\">".$temp1.$date_debut.$temp2."</td>\n";
-			if ($row[4] == 2) {
-				echo "<td class=\"col\">".$temp1."Tentative de connexion<br />avec mot de passe erroné.".$temp2."</td>\n";
-			}
-			else {
-				echo "<td class=\"col\">".$temp1.$date_fin.$temp2."</td>\n";
-			}
-			if (!(isset($active_hostbyaddr)) or ($active_hostbyaddr == "all")) {
-				$result_hostbyaddr = " - ".@gethostbyaddr($row[2]);
-			}
-			else if ($active_hostbyaddr == "no_local") {
-				if ((substr($row[2],0,3) == 127) or
-					(substr($row[2],0,3) == 10.) or
-					(substr($row[2],0,7) == 192.168)) {
-					$result_hostbyaddr = "";
-				}
-				else {
-					$tabip=explode(".",$row[2]);
-					if(($tabip[0]==172)&&($tabip[1]>=16)&&($tabip[1]<=31)) {
-						$result_hostbyaddr = "";
-					}
-					else {
-						$result_hostbyaddr = " - ".@gethostbyaddr($row[2]);
-					}
-				}
-			}
-			else {
-				$result_hostbyaddr = "";
-			}
-
-			echo "<td class=\"col\"><span class='small'>".$temp1.$row[2].$result_hostbyaddr.$temp2. "</span></td>\n";
-			echo "<td class=\"col\">".$temp1. detect_browser($row[3]) .$temp2. "</td>\n";
-			echo "</tr>\n";
-			flush();
-		}
-	}
-
-
-	echo "</table>\n";
-
-	echo "<form action=\"".$_SERVER['PHP_SELF']."#connexion\" name=\"form_affiche_log\" method=\"post\">\n";
-
-	if($page=='modify_user') {
-		echo "<input type='hidden' name='user_login' value='$login' />\n";
-		echo "<input type='hidden' name='journal_connexions' value='y' />\n";
-	}
-	elseif($page=='modify_eleve') {
-		echo "<input type='hidden' name='eleve_login' value='$login' />\n";
-		echo "<input type='hidden' name='journal_connexions' value='y' />\n";
-	}
-	elseif($page=='modify_resp') {
-		echo "<input type='hidden' name='pers_id' value='$pers_id' />\n";
-		echo "<input type='hidden' name='journal_connexions' value='y' />\n";
-	}
-
-	echo "Afficher le journal des connexions depuis : <select name=\"duree\" size=\"1\">\n";
-	echo "<option ";
-	if ($duree == 7) echo "selected";
-	echo " value=7>Une semaine</option>\n";
-	echo "<option ";
-	if ($duree == 15) echo "selected";
-	echo " value=15 >Quinze jours</option>\n";
-	echo "<option ";
-	if ($duree == 30) echo "selected";
-	echo " value=30>Un mois</option>\n";
-	echo "<option ";
-	if ($duree == 60) echo "selected";
-	echo " value=60>Deux mois</option>\n";
-	echo "<option ";
-	if ($duree == 183) echo "selected";
-	echo " value=183>Six mois</option>\n";
-	echo "<option ";
-	if ($duree == 365) echo "selected";
-	echo " value=365>Un an</option>\n";
-	echo "<option ";
-	if ($duree == 'all') echo "selected";
-	echo " value='all'>Le début</option>\n";
-	echo "</select>\n";
-	echo "<input type=\"submit\" name=\"Valider\" value=\"Valider\" />\n";
-
-	echo "</form>\n";
-
-	echo "<p class='small'>** Les renseignements ci-dessus peuvent vous permettre de vérifier qu'une connexion pirate n'a pas été effectuée sur votre compte.
-	Dans le cas d'une connexion inexpliquée, vous devez immédiatement en avertir l'<a href=\"mailto:" . getSettingValue("gepiAdminAdress") . "\">administrateur</a>.</p>\n";
-}
 
 /**********************************************************************************************
  *                                  Fonctions Trombinoscope
@@ -5876,12 +3100,13 @@ function journal_connexions($login,$duree,$page='mon_compte',$pers_id=NULL) {
 /**
  * Crée les répertoires photos/RNE_Etablissement, photos/RNE_Etablissement/eleves et
  * photos/RNE_Etablissement/personnels s'ils n'existent pas
- * @return bool true si tout se passe bien ou false si la création d'un répertoire échoue
+ * @return boolean TRUE si tout se passe bien ou FALSE si la création d'un répertoire échoue
+ * @see getSettingValue()
  */
 function cree_repertoire_multisite() {
   if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 		// On récupère le RNE de l'établissement
-	if (!$repertoire=getSettingValue("gepiSchoolRne"))
+	if (!$repertoire=$_COOKIE['RNE'])
 	  return FALSE;
 	//on vérifie que le dossier photos/RNE_Etablissement n'existe pas
 	if (!is_dir("../photos/".$repertoire)){
@@ -5918,6 +3143,7 @@ function cree_repertoire_multisite() {
  * Recherche les élèves sans photos
  *
  * @return array tableau de login - nom - prénom - classe - classe court - eleonet
+ * @see nom_photo()
  */
 function recherche_eleves_sans_photo() {
   $eleve=NULL;
@@ -5939,13 +3165,14 @@ function recherche_eleves_sans_photo() {
 
 /**
  *
- * @param text $statut statut recherché
+ * @param string $statut statut recherché
  * @return array tableau des personnels sans photo ou NULL
+ * @see nom_photo()
  */
 function recherche_personnel_sans_photo($statut='professeur') {
   $personnel=NULL;
   $requete_liste_personnel = "SELECT login,nom,prenom FROM utilisateurs u
-	WHERE u.statut='".$statut."'
+	WHERE u.statut='".$statut."' AND u.etat='actif' 
 	ORDER BY nom, prenom ASC";
   $res_personnel = mysql_query($requete_liste_personnel);
   while ($row = mysql_fetch_object($res_personnel)) {
@@ -5959,8 +3186,10 @@ function recherche_personnel_sans_photo($statut='professeur') {
 
 /**
  * Efface le dossier photo passé en argument
- * @param text $photos le dossier à effacer personnels ou eleves
- * @return text L'état de la suppression
+ * @param string $photos le dossier à effacer personnels ou eleves
+ * @return string L'état de la suppression
+ * @see cree_zip_archive()
+ * @see getSettingValue()
  */
 function efface_photos($photos) {
 // on liste les fichier du dossier photos/personnels ou photos/eleves
@@ -5970,7 +3199,7 @@ function efface_photos($photos) {
 	$fichier_sup=array();
 	if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 		  // On récupère le RNE de l'établissement
-	  if (!$repertoire=getSettingValue("gepiSchoolRne"))
+	  if (!$repertoire=$_COOKIE['RNE'])
 		return ("Erreur lors de la récupération du dossier établissement.");
 	} else {
 	  $repertoire="";
@@ -6013,9 +3242,9 @@ function efface_photos($photos) {
  **********************************************************************************************/
 /**
  * gestion du fil d'ariane en remplissant le tableau $_SESSION['ariane']
- * @param text $lien page atteinte par le lien
- * @param text $texte texte à afficher dans le fil d'ariane
- * @return bool True si tout s'est bien passé, False sinon
+ * @param string $lien page atteinte par le lien
+ * @param string $texte texte à afficher dans le fil d'ariane
+ * @return boolean True si tout s'est bien passé, False sinon
  */
 function suivi_ariane($lien,$texte){
   if (!isset($_SESSION['ariane'])){
@@ -6044,9 +3273,10 @@ function suivi_ariane($lien,$texte){
 
 /**
  * Affiche le fil d'Ariane
- *
- * @param <boolean> $validation si True,
- * une validation sera demandée en cas de modification de la page
+ * 
+ * une validation sera demandée en cas de modification de la page si validation est à TRUE 
+ * et si le javascript est activé
+ * @param <boolean> $validation validation si TRUE,
  * @param <texte> $themessage message à afficher lors de la confirmation
  */
 function affiche_ariane($validation= FALSE,$themessage="" ){
@@ -6078,7 +3308,7 @@ function affiche_ariane($validation= FALSE,$themessage="" ){
 /**
  * Renvoie le chemin relatif pour remonter à la racine du site
  * @param int $niveau niveau dans l'arborescence
- * @return text chemin relatif vers la racine
+ * @return string chemin relatif vers la racine
  */
 function path_niveau($niveau=1){
   switch ($niveau) {
@@ -6097,10 +3327,11 @@ function path_niveau($niveau=1){
 }
 
 /**
+ * Crée une archive Zip des dossiers documents ou photos
  *
- * @param text $dossier_a_archiver limité à documents ou photos
+ * @param string $dossier_a_archiver limité à documents ou photos
  * @param int $niveau niveau dans l'arborescence de la page appelante, racine = 0
- * @return bool
+ * @return boolean
  */
 function cree_zip_archive($dossier_a_archiver,$niveau=1) {
   $path = path_niveau();
@@ -6120,7 +3351,7 @@ function cree_zip_archive($dossier_a_archiver,$niveau=1) {
 	  $chemin_stockage = $path.$dirname."_photos".$suffixe_zip.".zip";
 	  $dossier_a_traiter = $path.'photos/'; //le dossier à traiter
 	  if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
-		$dossier_a_traiter .=getSettingValue("gepiSchoolRne")."/";
+		$dossier_a_traiter .=$_COOKIE['RNE']."/";
 	  }
 	  $dossier_dans_archive = 'photos'; //le nom du dossier dans l'archive créer
 	  break;
@@ -6134,7 +3365,7 @@ function cree_zip_archive($dossier_a_archiver,$niveau=1) {
 			  PCLZIP_OPT_REMOVE_PATH,$dossier_a_traiter,
 			  PCLZIP_OPT_ADD_PATH, $dossier_dans_archive);
 	  if ($v_list == 0) {
-		 die("Error : ".$archive->errorInfo(true));
+		 die("Error : ".$archive->errorInfo(TRUE));
 		return FALSE;
 	  }else {
 		return TRUE;
@@ -6145,8 +3376,8 @@ function cree_zip_archive($dossier_a_archiver,$niveau=1) {
 
 /**
  * Déplace un fichier de $source vers $dest
- * @param text $source : emplacement du fichier à déplacer
- * @param text $dest : Nouvel emplacement du fichier
+ * @param string $source : emplacement du fichier à déplacer
+ * @param string $dest : Nouvel emplacement du fichier
  * @return bool
  */
 function deplacer_upload($source, $dest) {
@@ -6156,21 +3387,25 @@ function deplacer_upload($source, $dest) {
 }
 
 /**
- * Télécharge un fichier dans $dirname après avoir nettoyer son nom si tout se passe bien :
+ * Télécharge un fichier dans $dirname après avoir nettoyer son nom 
+ * 
+ * si tout se passe bien :
  * $sav_file['name']=my_ereg_replace("[^.a-zA-Z0-9_=-]+", "_", $sav_file['name'])
  * @param array $sav_file tableau de type $_FILE["nom_du_fichier"]
- * @param text $dirname
- * @return text ok ou message d'erreur
+ * @param string $dirname
+ * @return string ok ou message d'erreur
+ * @see deplacer_upload()
  */
 function telecharge_fichier($sav_file,$dirname,$type,$ext){
   if (!isset($sav_file['tmp_name']) or ($sav_file['tmp_name'] =='')) {
 	return ("Erreur de téléchargement.");
   } else if (!file_exists($sav_file['tmp_name'])) {
 	return ("Erreur de téléchargement 2.");
-  } else if (!preg_match('/'.$ext.'$/',$sav_file['name'])){
+  } else if (!preg_match('/'.$ext.'$/i',$sav_file['name'])){
 	return ("Erreur : seuls les fichiers ayant l'extension .".$ext." sont autorisés.");
-  } else if ($sav_file['type']!=$type ){
-	return ("Erreur : seuls les fichiers de type '".$type."' sont autorisés.");
+  //} else if ($sav_file['type']!=$type ){
+  } else if (strripos($type,$sav_file['type'])===false) {
+	return ("Erreur : seuls les fichiers de type '".$type."' sont autorisés<br />Votre fichier est de type ".$sav_file['type']);
   } else {
 	$nom_corrige = preg_replace("/[^.a-zA-Z0-9_=-]+/", "_", $sav_file['name']);
 	if (!deplacer_upload($sav_file['tmp_name'], $dirname."/".$nom_corrige)) {
@@ -6184,10 +3419,10 @@ function telecharge_fichier($sav_file,$dirname,$type,$ext){
 
 /**
  * Extrait une archive Zip
- * @param text $fichier le nom du fichier à dézipper
- * @param text $repertoire le répertoire de destination
+ * @param string $fichier le nom du fichier à dézipper
+ * @param string $repertoire le répertoire de destination
  * @param int $niveau niveau dans l'arborescence de la page appelante
- * @return text ok ou message d'erreur
+ * @return string ok ou message d'erreur
  */
 function dezip_PclZip_fichier($fichier,$repertoire,$niveau=1){
   $path = path_niveau();
@@ -6204,7 +3439,13 @@ if ($archive->extract(PCLZIP_OPT_PATH, $repertoire) == 0) {
 /**********************************************************************************************
  *                              Fin Manipulation de fichiers
  **********************************************************************************************/
-
+/**
+ * Vérifie qu'un statut à les droits sur une page
+ *
+ * @param string $id le lien vers la page à tester
+ * @param string $statut Le statut à tester
+ * @return int  
+ */
 function check_droit_acces($id,$statut) {
     $tab_id = explode("?",$id);
     $query_droits = @mysql_query("SELECT * FROM droits WHERE id='$tab_id[0]'");
@@ -6216,7 +3457,16 @@ function check_droit_acces($id,$statut) {
     }
 }
 
-
+/**
+ * Renvoie des balises option contenant les élèves
+ * 
+ * Renvoie une chaine contenant une balise option par élève à insérer dans un select
+ *
+ * @param int $id_classe Id de la classe
+ * @param string $login_eleve_courant Login de l'élève qui sera sélectionné par défaut
+ * @param request $sql_ele requête à utiliser
+ * @return string Les balises options
+ */
 function lignes_options_select_eleve($id_classe,$login_eleve_courant,$sql_ele="") {
 	if($sql_ele!="") {
 		$sql=$sql_ele;
@@ -6239,7 +3489,7 @@ function lignes_options_select_eleve($id_classe,$login_eleve_courant,$sql_ele=""
 		$temoin_tmp=0;
 		while($lig_ele_tmp=mysql_fetch_object($res_ele_tmp)){
 			if($lig_ele_tmp->login==$login_eleve_courant){
-				$chaine_options_login_eleves.="<option value='$lig_ele_tmp->login' selected='true'>$lig_ele_tmp->nom $lig_ele_tmp->prenom</option>\n";
+				$chaine_options_login_eleves.="<option value='$lig_ele_tmp->login' selected='TRUE'>$lig_ele_tmp->nom $lig_ele_tmp->prenom</option>\n";
 	
 				$num_eleve=$cpt_eleve;
 	
@@ -6266,32 +3516,45 @@ function lignes_options_select_eleve($id_classe,$login_eleve_courant,$sql_ele=""
 	return $chaine_options_login_eleves;
 }
 
-function is_pp($login_prof,$id_classe,$login_eleve="") {
-	$retour=false;
+/**
+ *Vérifie si un utilisateur est prof principal (gepi_prof_suivi)
+ * 
+ * $id_classe : identifiant de la classe (si vide, on teste juste si le prof est PP 
+ * (éventuellement pour un élève particulier si login_eleve est non vide))
+ * 
+ * $login_eleve : login de l'élève à tester (si vide, on teste juste si le prof est PP 
+ * (éventuellement pour la classe si id_classe est non vide))
+ * 
+ * @param type $login_prof login de l'utilisateur à tester
+ * @param type $id_classe identifiant de la classe
+ * @param type $login_eleve login de l'élève
+ * @return boolean 
+ */
+function is_pp($login_prof,$id_classe="",$login_eleve="") {
+	$retour=FALSE;
 	if($login_eleve=='') {
-		$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE id_classe='$id_classe' AND professeur='$login_prof';";
+		$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE ";
+		if($id_classe!="") {$sql.="id_classe='$id_classe' AND ";}
+		$sql.="professeur='$login_prof';";
 	}
 	else {
-		$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE id_classe='$id_classe' AND professeur='$login_prof' AND login='$login_eleve';";
+		$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE ";
+		if($id_classe!="") {$sql.="id_classe='$id_classe' AND ";}
+		$sql.="professeur='$login_prof' AND login='$login_eleve';";
 	}
 	$test=mysql_query($sql);
-	if(mysql_num_rows($test)>0) {$retour=true;}
+	if(mysql_num_rows($test)>0) {$retour=TRUE;}
 
 	return $retour;
 }
 
 /**
+ * Vérifie qu'un utilisateur a le droit de voir la page en lien
  *
- * Vérifie qu'un utilisateur à le droit de voir la page en lien
- *
- * @var string $id l'adresse de la page
- * telle qu'enregistrée dans la base droits
- * @var string $statut le statut de l'utilisateur
- *
- * @return entier 1 si l'utilisateur a le droit de voir la page
- * 0 sinon
- *
- *
+ * @param string $id l'adresse de la page telle qu'enregistrée dans la table droits
+ * @param string $statut le statut de l'utilisateur
+ * @return entier 1 si l'utilisateur a le droit de voir la page 0 sinon
+ * @todo Je l'ai déjà vu au-dessus dans le fichier
  */
 function acces($id,$statut) 
 { 
@@ -6323,6 +3586,13 @@ function acces($id,$statut)
 	}
 }
 
+/**
+ * Vérifie que le dossier (et ses sous-dossiers) contient bien un fichier index.html
+ *
+ * @global int
+ * @param string $dossier Le dossier
+ * @return string Un message formaté
+ */
 function ajout_index_sous_dossiers($dossier) {
 	global $niveau_arbo;
 
@@ -6340,7 +3610,6 @@ function ajout_index_sous_dossiers($dossier) {
 	else {
 		$retour.="<p style='color:green'>Succès de l'accès au dossier '$dossier'.</p>\n";
 		while($entree=@readdir($dir)) {
-			//$retour.="$dossier/$entree<br />\n";
 			if(is_dir($dossier.'/'.$entree)&&($entree!='.')&&($entree!='..')) {
 				if(!file_exists($dossier."/".$entree."/index.html")) {
 					if ($f = @fopen($dossier.'/'.$entree."/index.html", "w")) {
@@ -6391,6 +3660,14 @@ function ajout_index_sous_dossiers($dossier) {
 
 // Méthode pour envoyer les en-têtes HTTP nécessaires au téléchargement de fichier.
 // Le content-type est obligatoire, ainsi que le nom du fichier.
+/**
+ * Méthode pour envoyer les en-têtes HTTP nécessaires au téléchargement de fichier.
+ * 
+ * Le content-type est obligatoire, ainsi que le nom du fichier.
+ * @param string $content_type type Mime
+ * @param string $filename Nom du fichier
+ * @param type $content_disposition Content-Disposition 'attachment' par défaut
+ */
 function send_file_download_headers($content_type, $filename, $content_disposition = 'attachment') {
 
   //header('Content-Encoding: utf-8');
@@ -6399,7 +3676,7 @@ function send_file_download_headers($content_type, $filename, $content_dispositi
   header('Content-Disposition: '.$content_disposition.'; filename="' . $filename . '"');
   
   // Contournement d'un bug IE lors d'un téléchargement en HTTPS...
-  if (isset($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false)) {
+  if (isset($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== FALSE)) {
     header('Pragma: private');
     header('Cache-Control: private, must-revalidate');
   } else {
@@ -6407,87 +3684,14 @@ function send_file_download_headers($content_type, $filename, $content_dispositi
   }
 }
 
-
-function affiche_infos_actions() {
-	$sql="SELECT ia.* FROM infos_actions ia, infos_actions_destinataires iad WHERE
-	ia.id=iad.id_info AND
-	((iad.nature='individu' AND iad.valeur='".$_SESSION['login']."') OR
-	(iad.nature='statut' AND iad.valeur='".$_SESSION['statut']."'));";
-	//echo "$sql<br />";
-	$res=mysql_query($sql);
-	$chaine_id="";
-	if(mysql_num_rows($res)>0) {
-		echo "<div id='div_infos_actions' style='width: 60%; border: 2px solid red; padding:3px; margin-left: 20%;'>\n";
-		echo "<div id='info_action_titre' style='font-weight: bold;' class='infobulle_entete'>\n";
-			echo "<div id='info_action_pliage' style='float:right; width: 1em'>\n";
-			echo "<a href=\"javascript:div_alterne_affichage('conteneur')\"><span id='img_pliage_conteneur'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
-			echo "</div>\n";
-			echo "Actions en attente";
-		echo "</div>\n";
-
-		echo "<div id='info_action_corps_conteneur'>\n";
-
-		$cpt_id=0;
-		while($lig=mysql_fetch_object($res)) {
-			echo "<div id='info_action_$lig->id' style='border: 1px solid black; margin:2px;'>\n";
-				echo "<div id='info_action_titre_$lig->id' style='font-weight: bold;' class='infobulle_entete'>\n";
-					echo "<div id='info_action_pliage_$lig->id' style='float:right; width: 1em'>\n";
-					echo "<a href=\"javascript:div_alterne_affichage('$lig->id')\"><span id='img_pliage_$lig->id'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
-					echo "</div>\n";
-					echo $lig->titre;
-				echo "</div>\n";
-
-				echo "<div id='info_action_corps_$lig->id' style='padding:3px;' class='infobulle_corps'>\n";
-					echo "<div style='float:right; width: 9em; text-align: right;'>\n";
-					echo "<a href=\"".$_SERVER['PHP_SELF']."?del_id_info=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->description)."', 'Etes-vous sûr de vouloir supprimer ".traitement_magic_quotes($lig->titre)."')\">Supprimer</span></a>";
-					echo "</div>\n";
-
-					echo nl2br($lig->description);
-				echo "</div>\n";
-			echo "</div>\n";
-			if($cpt_id>0) {$chaine_id.=", ";}
-			$chaine_id.="'$lig->id'";
-			$cpt_id++;
-		}
-		echo "</div>\n";
-		echo "</div>\n";
-
-		echo "<script type='text/javascript'>
-	function div_alterne_affichage(id) {
-		if(document.getElementById('info_action_corps_'+id)) {
-			if(document.getElementById('info_action_corps_'+id).style.display=='none') {
-				document.getElementById('info_action_corps_'+id).style.display='';
-				document.getElementById('img_pliage_'+id).innerHTML='<img src=\'images/icons/remove.png\' width=\'16\' height=\'16\' />'
-			}
-			else {
-				document.getElementById('info_action_corps_'+id).style.display='none';
-				document.getElementById('img_pliage_'+id).innerHTML='<img src=\'images/icons/add.png\' width=\'16\' height=\'16\' />'
-			}
-		}
-	}
-
-	chaine_id_action=new Array($chaine_id);
-	for(i=0;i<chaine_id_action.length;i++) {
-		id_a=chaine_id_action[i];
-		if(document.getElementById('info_action_corps_'+id_a)) {
-			div_alterne_affichage(id_a);
-		}
-	}
-</script>\n";
-	}
-}
-
 /**
- *
  * Enregistrer une action à effectuer pour qu'elle soit par la suite affichée en page d'accueil pour tels ou tels utilisateurs
  *
- * @var string $titre titre de l'action/info
- * @var string $description le détail de l'action à effectuer avec autant que possible un lien vers la page et paramètres utiles pour l'action
- * @var string $destinataire le tableau des login ou statuts des utilisateurs pour lesquels l'affichage sera réalisé
- * @var string $mode vaut 'individu' si $destinataire désigne des logins et 'statut' si ce sont des statuts
- *
- * @return bolean true si l'enregistrement s'est bien effectué
- * false sinon
+ * @param string $titre titre de l'action/info
+ * @param string $description le détail de l'action à effectuer avec autant que possible un lien vers la page et paramètres utiles pour l'action
+ * @param string $destinataire le tableau des login ou statuts des utilisateurs pour lesquels l'affichage sera réalisé
+ * @param string $mode vaut 'individu' si $destinataire désigne des logins et 'statut' si ce sont des statuts
+ * @return int|boolean Id de l'enregistrement s'est bien effectué FALSE sinon
  *
  *
  */
@@ -6502,16 +3706,16 @@ function enregistre_infos_actions($titre,$texte,$destinataire,$mode) {
 	$sql="INSERT INTO infos_actions SET titre='".addslashes($titre)."', description='".addslashes($texte)."', date=NOW();";
 	$insert=mysql_query($sql);
 	if(!$insert) {
-		return false;
+		return FALSE;
 	}
 	else {
-		$return=true;
 		$id_info=mysql_insert_id();
+		$return=$id_info;
 		for($loop=0;$loop<count($tab_dest);$loop++) {
 			$sql="INSERT INTO infos_actions_destinataires SET id_info='$id_info', nature='$mode', valeur='$tab_dest[$loop]';";
 			$insert=mysql_query($sql);
 			if(!$insert) {
-				$return=false;
+				$return=FALSE;
 			}
 		}
 
@@ -6519,6 +3723,12 @@ function enregistre_infos_actions($titre,$texte,$destinataire,$mode) {
 	}
 }
 
+/**
+ * Supprime une action à effectuer de la base
+ *
+ * @param type $id_info Id de l'action a effacer de la base
+ * @return boolean TRUE si l'action a été effacée de la base 
+ */
 function del_info_action($id_info) {
 	// Dans le cas des infos destinées à un statut... c'est le premier qui supprime qui vire pour tout le monde?
 	// S'il s'agit bien de loguer des actions à effectuer... elle ne doit être effectuée qu'une fois.
@@ -6530,23 +3740,30 @@ function del_info_action($id_info) {
 		$sql="DELETE FROM infos_actions_destinataires WHERE id_info='$id_info';";
 		$del=mysql_query($sql);
 		if(!$del) {
-			return false;
+			return FALSE;
 		}
 		else {
 			$sql="DELETE FROM infos_actions WHERE id='$id_info';";
 			$del=mysql_query($sql);
 			if(!$del) {
-				return false;
+				return FALSE;
 			}
 			else {
-				return true;
+				return TRUE;
 			}
 		}
 	}
 }
 
+/**
+ * affiche sous la forme JJ/MM/AAAA la date de sortie d'un élève 
+ * présente dans la base comme un timestamp
+ *
+ * @param date $date_sortie date (timestamp)
+ * @return string La date formatée 
+ */
 function affiche_date_sortie($date_sortie) {
-	//affiche sous la forme JJ/MM/AAAA la date de sortie d'un élève présente dans la base comme un timestamp
+	//
     $eleve_date_de_sortie_time=strtotime($date_sortie);
 	//récupération du jour, du mois et de l'année
 	$eleve_date_sortie_jour=date('j', $eleve_date_de_sortie_time); 
@@ -6555,8 +3772,14 @@ function affiche_date_sortie($date_sortie) {
 	return $eleve_date_sortie_jour."/".$eleve_date_sortie_mois."/".$eleve_date_sortie_annee;
 }
 
+/**
+ * Traite une chaine de caractères JJ/MM/AAAA vers un timestamp AAAA-MM-JJ 00:00:00
+ * 
+ * @param string $date_sortie date (JJ/MM/AAAA)
+ * @return date date (timestamp)
+ */
 function traite_date_sortie_to_timestamp($date_sortie) {
-	//Traite une chaine de caractères JJ/MM/AAAA vers un timestamp AAAA-MM-JJ 00:00:00
+	//
 	$date=explode("/", $date_sortie);
 	$jour = $date[0];
 	$mois = $date[1];
@@ -6565,132 +3788,12 @@ function traite_date_sortie_to_timestamp($date_sortie) {
 	return $annee."-".$mois."-".$jour." 00:00:00"; 
 }
 
-function affiche_acces_cdt() {
-	$retour="";
-
-	$tab_statuts=array('professeur', 'administrateur', 'scolarite');
-	if(in_array($_SESSION['statut'], $tab_statuts)) {
-		$sql="SELECT a.* FROM acces_cdt a ORDER BY date2;";
-		//echo "$sql<br />";
-		$res=mysql_query($sql);
-		$chaine_id="";
-		if(mysql_num_rows($res)>0) {
-			$visible="y";
-			if($_SESSION['statut']=='professeur') {
-				$visible="n";
-				$sql="SELECT ag.id_acces FROM acces_cdt_groupes ag, j_groupes_professeurs jgp WHERE jgp.id_groupe=ag.id_groupe AND jgp.login='".$_SESSION['login']."';";
-				$res2=mysql_query($sql);
-				if(mysql_num_rows($res2)>0) {
-					$visible="y";
-					$tab_id_acces=array();
-					while($lig2=mysql_fetch_object($res2)) {
-						$tab_id_acces[]=$lig2->id_acces;
-					}
-				}
-			}
-	
-			if($visible=="y") {
-				$retour.="<div id='div_infos_acces_cdt' style='width: 60%; border: 2px solid red; padding:3px; margin-left: 20%; margin-top:3px;'>\n";
-				$retour.="<div id='info_acces_cdt_titre' style='font-weight: bold;' class='infobulle_entete'>\n";
-					$retour.="<div id='info_acces_cdt_pliage' style='float:right; width: 1em'>\n";
-					$retour.="<a href=\"javascript:div_alterne_affichage_acces_cdt('conteneur')\"><span id='img_pliage_acces_cdt_conteneur'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
-					$retour.="</div>\n";
-					$retour.="Accès ouvert à des CDT";
-				$retour.="</div>\n";
-		
-				$retour.="<div id='info_acces_cdt_corps_conteneur'>\n";
-		
-				$cpt_id=0;
-				while($lig=mysql_fetch_object($res)) {
-					$visible="y";
-					if(($_SESSION['statut']=='professeur')&&(!in_array($lig->id,$tab_id_acces))) {
-						$visible="n";
-					}
-	
-					if($visible=="y") {
-						$retour.="<div id='info_acces_cdt_$lig->id' style='border: 1px solid black; margin:2px;'>\n";
-							$retour.="<div id='info_acces_cdt_titre_$lig->id' style='font-weight: bold;' class='infobulle_entete'>\n";
-								$retour.="<div id='info_acces_cdt_pliage_$lig->id' style='float:right; width: 1em'>\n";
-								$retour.="<a href=\"javascript:div_alterne_affichage_acces_cdt('$lig->id')\"><span id='img_pliage_acces_cdt_$lig->id'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
-								$retour.="</div>\n";
-								$retour.="Accès CDT jusqu'au ".formate_date($lig->date2);
-							$retour.="</div>\n";
-			
-							$retour.="<div id='info_acces_cdt_corps_$lig->id' style='padding:3px;' class='infobulle_corps'>\n";
-								if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) {
-									$retour.="<div style='float:right; width: 9em; text-align: right;'>\n";
-									$retour.="<a href=\"".$_SERVER['PHP_SELF']."?del_id_acces_cdt=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->description)."', 'Etes-vous sûr de vouloir supprimer cet accès')\">Supprimer l'accès</span></a>";
-									$retour.="</div>\n";
-								}
-	
-								$retour.="<p><b>L'accès a été ouvert pour le motif suivant&nbsp;:</b><br />";
-								$retour.=preg_replace("/\\\\r\\\\n/","<br />",$lig->description);
-								$retour.="</p>\n";
-	
-								$chaine_enseignements="<ul>";
-								$sql="SELECT id_groupe FROM acces_cdt_groupes WHERE id_acces='$lig->id';";
-								$res3=mysql_query($sql);
-								if(mysql_num_rows($res3)>0) {
-									$tab_champs=array('classes', 'professeurs');
-									while($lig3=mysql_fetch_object($res3)) {
-										$current_group=get_group($lig3->id_groupe);
-	
-										$chaine_profs="";
-										$cpt=0;
-										foreach($current_group['profs']['users'] as $login_prof => $current_prof) {
-											if($cpt>0) {$chaine_profs.=", ";}
-											$chaine_profs.=$current_prof['civilite']." ".$current_prof['nom']." ".$current_prof['prenom'];
-											$cpt++;
-										}
-	
-										$chaine_enseignements.="<li>";
-										$chaine_enseignements.=$current_group['name']." (<i>".$current_group['description']."</i>) en ".$current_group['classlist_string']." (<i>".$chaine_profs."</i>)";
-										//$chaine_enseignements.="<br />\n";
-										$chaine_enseignements.="</li>\n";
-									}
-								}
-								$chaine_enseignements.="</ul>";
-								//$retour.="</p>\n";
-	
-								$retour.="<p>Les CDT accessibles à l'adresse <a href='$lig->chemin' target='_blank'>$lig->chemin</a> sont&nbsp;:<br />".$chaine_enseignements."</p>";
-							$retour.="</div>\n";
-						$retour.="</div>\n";
-						if($cpt_id>0) {$chaine_id.=", ";}
-						$chaine_id.="'$lig->id'";
-						$cpt_id++;
-					}
-				}
-				$retour.="</div>\n";
-				$retour.="</div>\n";
-		
-				$retour.="<script type='text/javascript'>
-			function div_alterne_affichage_acces_cdt(id) {
-				if(document.getElementById('info_acces_cdt_corps_'+id)) {
-					if(document.getElementById('info_acces_cdt_corps_'+id).style.display=='none') {
-						document.getElementById('info_acces_cdt_corps_'+id).style.display='';
-						document.getElementById('img_pliage_acces_cdt_'+id).innerHTML='<img src=\'images/icons/remove.png\' width=\'16\' height=\'16\' />'
-					}
-					else {
-						document.getElementById('info_acces_cdt_corps_'+id).style.display='none';
-						document.getElementById('img_pliage_acces_cdt_'+id).innerHTML='<img src=\'images/icons/add.png\' width=\'16\' height=\'16\' />'
-					}
-				}
-			}
-		
-			chaine_id_acces_cdt=new Array($chaine_id);
-			for(i=0;i<chaine_id_acces_cdt.length;i++) {
-				id_a=chaine_id_acces_cdt[i];
-				if(document.getElementById('info_acces_cdt_corps_'+id_a)) {
-					div_alterne_affichage_acces_cdt(id_a);
-				}
-			}
-		</script>\n";
-			}
-		}
-	}
-	echo $retour;
-}
-
+/**
+ * Supprime les accès au cahier de textes
+ *
+ * @param int $id_acces Id du cahier de texte
+ * @return boolean TRUE si tout c'est bien passé 
+ */
 function del_acces_cdt($id_acces) {
 
 	$sql="SELECT * FROM acces_cdt WHERE id='$id_acces';";
@@ -6698,33 +3801,33 @@ function del_acces_cdt($id_acces) {
 	if(mysql_num_rows($res)>0) {
 		$lig=mysql_fetch_object($res);
 
-		$chemin=preg_replace("#/index.html#","",$lig->chemin);
+		$chemin=preg_replace("#/index.(html|php)#","",$lig->chemin);
 		if((!preg_match("#^documents/acces_cdt_#",$chemin))||(strstr($chemin,".."))) {
 			echo "<p><span style='color:red'>Chemin $chemin invalide</span></p>";
-			return false;
+			return FALSE;
 		}
 		else {
-			$suppr=deltree($chemin,true);
+			$suppr=deltree($chemin,TRUE);
 			if(!$suppr) {
 				echo "<p><span style='color:red'>Erreur lors de la suppression de $chemin</span></p>";
-				return false;
+				return FALSE;
 			}
 			else {
 				$sql="DELETE FROM acces_cdt_groupes WHERE id_acces='$id_acces';";
 				$del=mysql_query($sql);
 				if(!$del) {
 					echo "<p><span style='color:red'>Erreur lors de la suppression des groupes associés à l'accès n°$id_acces</span></p>";
-					return false;
+					return FALSE;
 				}
 				else {
 					$sql="DELETE FROM acces_cdt WHERE id='$id_acces';";
 					$del=mysql_query($sql);
 					if(!$del) {
 						echo "<p><span style='color:red'>Erreur lors de la suppression de l'accès n°$id_acces</span></p>";
-						return false;
+						return FALSE;
 					}
 					else {
-						return true;
+						return TRUE;
 					}
 				}
 			}
@@ -6735,22 +3838,29 @@ function del_acces_cdt($id_acces) {
 //=======================================================
 // Fonction récupérée dans /mod_ooo/lib/lib_mod_ooo.php
 
-//$repaussi==true ~> efface aussi $rep
-//retourne true si tout s'est bien passé,
-//false si un fichier est resté (problème de permission ou attribut lecture sous Win
-//dans tous les cas, le maximum possible est supprimé.
-function deltree($rep,$repaussi=true) {
+/**
+ * Supprime une arborescence
+ * 
+ * Retourne TRUE si tout s'est bien passé,
+ * FALSE si un fichier est resté (problème de permission ou attribut lecture sous Win.
+ * Dans tous les cas, le maximum possible est supprimé.
+ * @staticvar int $niv niveau dans l'arborescence
+ * @param string $rep Le répertoire de départ
+ * @param boolean $repaussi TRUE ~> efface aussi $rep
+ * @return boolean TRUE si tout s'est bien passé
+ */
+function deltree($rep,$repaussi=TRUE) {
 	static $niv=0;
 	$niv++;
-	if (!is_dir($rep)) {return false;}
+	if (!is_dir($rep)) {return FALSE;}
 	$handle=opendir($rep);
-	if (!$handle) {return false;}
+	if (!$handle) {return FALSE;}
 	while ($entree=readdir($handle)) {
 		if (is_dir($rep.'/'.$entree)) {
 			if ($entree!='.' && $entree!='..') {
 				$ok=deltree($rep.'/'.$entree);
 			}
-			else {$ok=true;}
+			else {$ok=TRUE;}
 		}
 		else {
 			$ok=@unlink($rep.'/'.$entree);
@@ -6763,31 +3873,745 @@ function deltree($rep,$repaussi=true) {
 }
 //=======================================================
 
+
+/**
+ *
+ * @param type $email
+ * @param type $mode
+ * @return boolean  
+ */
 function check_mail($email,$mode='simple') {
 	if(!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/" , $email)) {
-		return false;
+		return FALSE;
 	}
 	else {
 		if(($mode=='simple')||(!function_exists('checkdnsrr'))) {
-			return true;
+			return TRUE;
 		}
 		else {
 			$tab=explode('@', $email);
-			if(checkdnsrr($tab[1], 'MX')) {return true;}
-			elseif(checkdnsrr($tab[1], 'A')) {return true;}
+			if(checkdnsrr($tab[1], 'MX')) {return TRUE;}
+			elseif(checkdnsrr($tab[1], 'A')) {return TRUE;}
 		}
 	}
 }
 
-function get_cn_from_id_groupe_periode_num($id_groupe, $periode_num) {
-	$id_cahier_notes="";
 
-	$sql="SELECT id_cahier_notes FROM cn_cahier_notes WHERE id_groupe='$id_groupe' AND periode='$periode_num';";
+/**
+ * Fonction destinée à prendre une date mysql aaaa-mm-jj HH:MM:SS 
+ * et à retourner une date au format jj/mm/aaaa
+ * 
+ * @param date $mysql_date date (aaaa-mm-jj HH:MM:SS)
+ * @return string  date (jj/mm/aaaa)
+ * @todo on a déjà cette fonction
+ */
+function get_date_slash_from_mysql_date($mysql_date) {
+	$tmp_tab=explode(" ",$mysql_date);
+	if(isset($tmp_tab[0])) {
+		$tmp_tab2=explode("-",$tmp_tab[0]);
+		if(isset($tmp_tab2[2])) {
+			return $tmp_tab2[2]."/".$tmp_tab2[1]."/".$tmp_tab2[0];
+		}
+		else {
+			return "Date '".$tmp_tab[0]."' mal formatée?";
+		}
+	}
+	else {
+		return "Date '$mysql_date' mal formatée?";
+	}
+}
+
+// Fonction destinée à prendre une date mysql aaaa-mm-jj HH:MM:SS et à retourner une heure au format HH:MM
+
+/**
+ * Fonction destinée à prendre une date mysql aaaa-mm-jj HH:MM:SS 
+ * et à retourner une heure au format HH:MM
+ * 
+ * @param date $mysql_date date (aaaa-mm-jj HH:MM:SS)
+ * @return string  heure (HH:MM)
+ */
+function get_heure_2pt_minute_from_mysql_date($mysql_date) {
+	$tmp_tab=explode(" ",$mysql_date);
+	if(isset($tmp_tab[1])) {
+		$tmp_tab2=explode(":",$tmp_tab[1]);
+		if(isset($tmp_tab2[1])) {
+			return $tmp_tab2[0].":".$tmp_tab2[1];
+		}
+		else {
+			return "Heure '".$tmp_tab[1]."' mal formatée?";
+		}
+	}
+	else {
+		return "Date '$mysql_date' mal formatée?";
+	}
+}
+
+/**
+ * Fonction destinée à prendre une date mysql aaaa-mm-jj HH:MM:SS 
+ * et à retourner une date  au format jj/mm/aaaa HH:MM
+ * 
+ * @param date $mysql_date date (aaaa-mm-jj HH:MM:SS)
+ * @return string  heure (jj/mm/aaaa HH:MM)
+ */
+function get_date_heure_from_mysql_date($mysql_date) {
+	return get_date_slash_from_mysql_date($mysql_date)." ".get_heure_2pt_minute_from_mysql_date($mysql_date);
+}
+
+/**
+ *
+ * @param type $mysql_date
+ * @return type 
+ */
+function mysql_date_to_unix_timestamp($mysql_date) {
+	$tmp_tab=explode(" ",$mysql_date);
+	$tmp_tab2=explode("-",$tmp_tab[0]);
+	if((!isset($tmp_tab[1]))||(!isset($tmp_tab2[2]))) {
+		// Ces retours ne sont pas adaptés... on fait généralement une comparaison sur le retour de cette fonction
+		return "Date '$mysql_date' mal formatée?";
+	}
+	else {
+		$tmp_tab3=explode(":",$tmp_tab[1]);
+
+		if(!isset($tmp_tab3[2])) {
+			// Ces retours ne sont pas adaptés... on fait généralement une comparaison sur le retour de cette fonction
+			return "Date '$mysql_date' mal formatée?";
+		}
+		else {
+			$jour=$tmp_tab2[2];
+			$mois=$tmp_tab2[1];
+			$annee=$tmp_tab2[0];
+		
+			$heure=$tmp_tab3[0];
+			$min=$tmp_tab3[1];
+			$sec=$tmp_tab3[2];
+		
+			return mktime($heure,$min,$sec,$mois,$jour,$annee);
+		}
+	}
+}
+
+/**
+ * Recherche les profs principaux d'une classe
+ *
+ * @param string $id_classe id de la classe
+ * @return array Tableau des logins des profs principaux
+ */
+function get_tab_prof_suivi($id_classe) {
+	$tab=array();
+
+	$sql="SELECT DISTINCT jep.professeur 
+		FROM j_eleves_professeurs jep, j_eleves_classes jec 
+		WHERE jec.id_classe='$id_classe' 
+		AND jec.login=jep.login
+		AND jec.id_classe=jep.id_classe
+		ORDER BY professeur;";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		while($lig=mysql_fetch_object($res)) {
+			$tab[]=$lig->professeur;
+		}
+	}
+
+	return $tab;
+}
+
+/**
+ * Enregistre pour Affichage un message sur la page d'accueil du destinataire (ML 5/2011)
+ * 
+ * Les appels possibles
+ * - message_accueil_utilisateur("UNTEL","Bonjour Untel") : affiche le message "Bonjour Untel" sur la page d'accueil du destinataire de login "UNTEL" dès l'appel de la fonction, pour une durée de 7 jours, avec décompte sur le 7ième jour
+ * - message_accueil_utilisateur("UNTEL","Bonjour Untel",130674844) : affiche le message "Bonjour Untel" sur la page du destinataire de login "UNTEL" à partir de la date 130674844, pour une durée de 7 jours, avec décompte sur le 7ième jour	
+ *  - message_accueil_utilisateur("UNTEL","Bonjour Untel",130674844,130684567) : affiche le message "Bonjour Untel" sur la page du destinataire de login "UNTEL" à partir de la date 130674844, jusqu'à la date 130684567, avec décompte sur la date 130684567
+ * - message_accueil_utilisateur("UNTEL","Bonjour Untel",130674844,130684567,130690844) : affiche le message "Bonjour Untel" sur la page du destinataire de login "UNTEL" à partir de la date 130674844, jusqu'à la date 130684567, avec décompte sur la date 130690844
+ * 
+ * @param type $login_destinataire login du destinataire (obligatoire)
+ * @param type $texte texte du message contenant éventuellement des balises HTML et encodé en iso-8859-1 (obligatoire)
+ * @param type $date_debut date à partir de laquelle est affiché le message (timestamp, optionnel)
+ * @param type $date_fin date à laquelle le message n'est plus affiché (timestamp, optionnel)
+ * @param type $date_decompte date butoir du décompte, la chaîne _DECOMPTE_ dans $texte est remplacée par un décompte (timestamp, optionnel)
+ * @return type TRUE ou FALSE selon que le message a été enregistré ou pas
+ */
+function message_accueil_utilisateur($login_destinataire,$texte,$date_debut=0,$date_fin=0,$date_decompte=0)
+{
+	// On arrondit le timestamp d'appel à l'heure (pas néceassaire mais pour l'esthétique)
+	$t_appel=time()-(time()%3600);
+	// suivant le nombre de paramètres passés :
+	switch (func_num_args())
+		{
+		case 3:
+			$date_fin=$date_debut + 3600*24*7;
+			$date_decompte=$date_fin;
+			break;
+		case 4:
+			$date_decompte=$date_fin;
+			break;
+		case 5:
+			break;
+		default :
+			// valeurs par défaut
+			$date_debut=$t_appel;
+			$date_fin=$t_appel + 3600*24*7;
+			$date_decompte=$date_fin;		
+		}
+	$r_sql="INSERT INTO `messages` values('','".addslashes($texte)."','".$date_debut."','".$date_fin."','".$_SESSION['login']."','_','".$login_destinataire."','".$date_decompte."')";
+	return mysql_query($r_sql);
+}
+
+/**
+ * Transforme un tableau en chaine, les lignes sont séparées par une ,
+ *
+ * @param array $tableau Le tableau à parser
+ * @return string La chaine produite 
+ */
+function array_to_chaine($tableau) {
+	$chaine="";
+	$cpt=0;
+	foreach($tableau as $key => $value) {
+		if($cpt>0) {$chaine.=", ";}
+		$chaine.="'$value'";
+		$cpt++;
+	}
+    unset ($key);
+    unset ($value);
+	return $chaine;
+}
+
+/**
+ * Supprime les sauts de lignes dupliqués
+ * 
+ * @param string $chaine La chaine  à parser
+ * @return string La chaine produite 
+ */
+function suppression_sauts_de_lignes_surnumeraires($chaine) {
+	$retour=preg_replace('/(\\\r\\\n)+/',"\r\n",$chaine);
+	$retour=preg_replace('/(\\\r)+/',"\r",$retour);
+	$retour=preg_replace('/(\\\n)+/',"\n",$retour);
+	return $retour;
+}
+
+/**
+ * Affiche le nombre de notes ou commentaires saisis pour les bulletins
+ *
+ * @param string $type "notes" pour voir les notes sinon commentaires
+ * @param int $id_groupe Id du groupe
+ * @param int $periode_num numéro de la période
+ * @param string $mode Si "couleur" le texte est sur fond orange si tous les élèves ne sont pas notés
+ * @return string le nombre de notes ou commentaires saisis
+ */
+function nb_saisies_bulletin($type, $id_groupe, $periode_num, $mode="") {
+	$retour="";
+
+	if($type=="notes") {
+		$sql="SELECT 1=1 FROM matieres_notes WHERE id_groupe='".$id_groupe."' AND periode='".$periode_num."';";
+	}
+	else {
+		$sql="SELECT 1=1 FROM matieres_appreciations WHERE id_groupe='".$id_groupe."' AND periode='".$periode_num."';";
+	}
+	$test=mysql_query($sql);
+	$nb_saisies_bulletin=mysql_num_rows($test);
+
+	$tab_champs=array('eleves');
+	$current_group=get_group($id_groupe, $tab_champs);
+	$effectif_groupe=count($current_group["eleves"][$periode_num]["users"]);
+
+	if($mode=="couleur") {
+		if($nb_saisies_bulletin==$effectif_groupe){
+			$retour="<span style='font-size: x-small;' title='Saisies complètes'>";
+			$retour.="($nb_saisies_bulletin/$effectif_groupe)";
+			$retour.="</span>";
+		}
+		else {
+			$retour="<span style='font-size: x-small; background-color: orangered;' title='Saisies incomplètes ou non encore effectuées'>";
+			$retour.="($nb_saisies_bulletin/$effectif_groupe)";
+			$retour.="</span>";
+		}
+	}
+	else {
+		$retour="($nb_saisies_bulletin/$effectif_groupe)";
+	}
+
+	return $retour;
+}
+
+/**
+ * Crée un fichier index.html de redirection vers login.php
+ *
+ * @param string $chemin_relatif Le répertoire à protéger
+ * @param int $niveau_arbo Niveau dans l'arborescence GEPI
+ * @return boolean TRUE si le fichier est créé
+ */
+function creation_index_redir_login($chemin_relatif,$niveau_arbo=1) {
+	$retour=TRUE;
+
+	if($niveau_arbo==0) {
+		$pref=".";
+	}
+	else {
+		$pref="";
+		for($i=0;$i<$niveau_arbo;$i++) {
+			if($i>0) {
+				$pref.="/";
+			}
+			$pref.="..";
+		}
+	}
+
+	$fich=fopen($chemin_relatif."/index.html","w+");
+	if(!$fich) {
+		$retour=FALSE;
+	}
+	else {
+		$res=fwrite($fich,'<html><head><script type="text/javascript">
+    document.location.replace("'.$pref.'/login.php")
+</script></head></html>
+');
+		if(!$res) {
+			$retour=FALSE;
+		}
+		fclose($fich);
+	}
+
+	return $retour;
+}
+
+/**
+ * Renvoie un tableau des fichiers contenus dans le dossier
+ *
+ * @param string $path Le dossier à parser
+ * @param array $tab_exclusion Fichiers à ne pas prendre en compte
+ * @return array Tableau des fichiers
+ */
+function get_tab_file($path,$tab_exclusion=array(".", "..", "remove.txt", ".htaccess", ".htpasswd", "index.html")) {
+	$tab_file = array();
+
+	$handle=opendir($path);
+	$n=0;
+	while ($file = readdir($handle)) {
+		if (!in_array(strtolower($file), $tab_exclusion)) {
+			$tab_file[] = $file;
+			$n++;
+		}
+	}
+	closedir($handle);
+	//arsort($tab_file);
+	rsort($tab_file);
+
+	return $tab_file;
+}
+
+
+/**
+ * Tableau des mentions pour les bulletins
+ *
+ * @global array $GLOBALS['tableau_des_mentions_sur_le_bulletin']
+ * @name $tableau_des_mentions_sur_le_bulletin
+ */
+$GLOBALS['tableau_des_mentions_sur_le_bulletin'] = array();
+
+/**
+ * Retourne une mention pour les bulletins à partir de son Id
+ * 
+ * @global array
+ * @param int $code Id de la mention recherchée
+ * @return string 
+ * @see get_mentions()
+ */
+function traduction_mention($code) {
+	global $tableau_des_mentions_sur_le_bulletin;
+
+	if((!is_array($tableau_des_mentions_sur_le_bulletin))||(count($tableau_des_mentions_sur_le_bulletin)==0)) {
+		$tableau_des_mentions_sur_le_bulletin=get_mentions();
+	}
+
+	$retour="";
+	if(!isset($tableau_des_mentions_sur_le_bulletin[$code])) {$retour="-";}
+	else {$retour=$tableau_des_mentions_sur_le_bulletin[$code];}
+
+	return $retour;
+}
+
+/**
+ * Retourne un tableau des mentions pour les bulletins
+ * 
+ * tableau[index de la mention] = texte de la mention;
+ * 
+ * @param int $id_classe Id de la classe
+ * @return array Le tableau des mentions
+ */
+function get_mentions($id_classe=NULL) {
+	$tab=array();
+	if(!isset($id_classe)) {
+		$sql="SELECT * FROM mentions ORDER BY id;";
+	}
+	else {
+		$sql="SELECT m.* FROM mentions m, j_mentions_classes j WHERE j.id_mention=m.id AND j.id_classe='$id_classe' ORDER BY j.ordre, m.mention, m.id;";
+	}
+	//echo "$sql<br />";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		while($lig=mysql_fetch_object($res)) {
+			$tab[$lig->id]=$lig->mention;
+		}
+	}
+	return $tab;
+}
+
+/**
+ * Retourne un tableau des mentions déjà utilisées dans les bulletins
+ *
+ * Pour interdire la suppression d'une mention saisie pour un élève
+ * 
+ * @param int $id_classe Id de la classe
+ * @return array Le tableau des mentions
+ */
+function get_tab_mentions_affectees($id_classe=NULL) {
+	$tab=array();
+	if(!isset($id_classe)) {
+		$sql="SELECT DISTINCT j.id_mention FROM j_mentions_classes j, avis_conseil_classe a WHERE a.id_mention=j.id_mention;";
+	}
+	else {
+		$sql="SELECT DISTINCT j.id_mention FROM j_mentions_classes j, avis_conseil_classe a, j_eleves_classes jec WHERE a.id_mention=j.id_mention AND j.id_classe=jec.id_classe AND jec.periode=a.periode AND jec.login=a.login AND j.id_classe='$id_classe';";
+	}
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		while($lig=mysql_fetch_object($res)) {
+			$tab[]=$lig->id_mention;
+		}
+	}
+	return $tab;
+}
+
+/**
+ * Renvoie une balise <select> avec les mentions de bulletin
+ *
+ * @param string $nom_champ_select valeur des attribut name et id du select
+ * @param int $id_classe Id de la classe
+ * @param string $id_mention_selected Id de la mention à sélectionner par défaut
+ * @return string La balise
+ */
+function champ_select_mention($nom_champ_select,$id_classe,$id_mention_selected='') {
+
+	$tab_mentions=get_mentions($id_classe);
+	$retour="<select name='$nom_champ_select' id='$nom_champ_select'>\n";
+	$retour.="<option value=''";
+	if(($id_mention_selected=="")||(!array_key_exists($id_mention_selected,$tab_mentions))) {
+		$retour.=" selected='selected'";
+	}
+	$retour.="> </option>\n";
+	foreach($tab_mentions as $key => $value) {
+		$retour.="<option value='$key'";
+		if($id_mention_selected==$key) {
+			$retour.=" selected='selected'";
+		}
+		//$retour.=">".$value." ".$key."</option>\n";
+		$retour.=">".$value."</option>\n";
+	}
+	$retour.="</select>\n";
+
+	return $retour;
+}
+
+/**
+ * Teste s'il y a des mentions de bulletin définies pour une classe
+ *
+ * @param type $id_classe Id de la classe
+ * @return boolean TRUE si il y a des mentions 
+ */
+function test_existence_mentions_classe($id_classe) {
+	$sql="SELECT 1=1 FROM j_mentions_classes WHERE id_classe='$id_classe';";
+	$test=mysql_query($sql);
+	if(mysql_num_rows($test)>0) {
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
+
+}
+
+/**
+ * Teste si un compte est actif
+ * 
+ * - 0 si l'utilisateur n'est pas trouvé
+ * - 1 compte actif
+ * - 2 compte non-actif
+ *
+ * @param type $login Login de l'utilisateur
+ * @return int  
+ */
+function check_compte_actif($login) {
+	$sql="SELECT etat FROM utilisateurs WHERE login='$login';";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)==0) {
+		return 0;
+	}
+	else {
+		$lig=mysql_fetch_object($res);
+		if($lig->etat=='actif') {
+			return 1;
+		}
+		else {
+			return 2;
+		}
+	}
+}
+
+/**
+ * Crée un lien derrière une image pour modifier les données d'un utilisateur
+ *
+ * @global string
+ * @param string $login id de l'utilisateur cherché
+ * @param string $statut statut de l'utilisateur (si '', il sera cherché avec get_statut_from_login())
+ * @param string $target pour ouvrir dans une autre fenêtre
+ * @param string $avec_lien 'y' ou absent pour créer un lien
+ * @return string Le code html
+ * @see check_compte_actif()
+ * @see get_statut_from_login()
+ * @see get_infos_from_login_utilisateur()
+ * @todo si $target='_blank' il faudrait ajouter un argument title pour prévenir
+ */
+function lien_image_compte_utilisateur($login, $statut='', $target='', $avec_lien='y') {
+	global $gepiPath;
+
+	$retour="";
+
+	if($target!="") {$target=" target='$target'";}
+
+	$test=check_compte_actif($login);
+	if($test!=0) {
+		if($statut=="") {
+			$statut=get_statut_from_login($login);
+		}
+
+		if($statut!="") {
+			$refermer_lien="y";
+
+			if($avec_lien=="y") {
+				if($statut=='eleve') {
+					$retour.="<a href='".$gepiPath."/eleves/modify_eleve.php?eleve_login=$login'$target>";
+				}
+				elseif($statut=='responsable') {
+					$infos=get_infos_from_login_utilisateur($login);
+					if(isset($infos['pers_id'])) {
+						$retour.="<a href='".$gepiPath."/responsables/modify_resp.php?pers_id=".$infos['pers_id']."'$target>";
+					}
+					else {
+						$refermer_lien="n";
+					}
+				}
+				elseif($statut=='autre') {
+					$retour.="<a href='".$gepiPath."/utilisateurs/creer_statut.php'$target>";
+				}
+				else {
+					$retour.="<a href='".$gepiPath."/utilisateurs/modify_user.php?user_login=$login'$target>";
+				}
+			}
+
+			if($test==1) {
+				$retour.="<img src='".$gepiPath."/images/icons/buddy.png' width='16' height='16' alt='Compte $login actif' title='Compte $login actif' />";
+			}
+			else {
+				$retour.="<img src='".$gepiPath."/images/icons/buddy_no.png' width='16' height='16' alt='Compte $login inactif' title='Compte $login inactif' />";
+			}
+
+			if($avec_lien=="y") {
+				if($refermer_lien=="y") {
+					$retour.="</a>";
+				}
+			}
+		}
+	}
+
+	return $retour;
+}
+
+/**
+ * Renvoie le statut d'un utilisateur à partir de son login
+ *
+ * @param string $login Login de l'utilisateur
+ * @return string Le statut
+ */
+function get_statut_from_login($login) {
+	$sql="SELECT statut FROM utilisateurs WHERE login='$login';";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)==0) {
+		return "";
+	}
+	else {
+		$lig=mysql_fetch_object($res);
+		return $lig->statut;
+	}
+}
+
+/**
+ * Renvoie dans un tableau les informations d'un utilisateur à partir de son login
+ * 
+ * Champs disponibles dans le tableau
+ * - tout utilisateur ->  'nom', 'prenom', 'civilite', 'email','show_email','statut','etat','change_mdp','date_verrouillage','ticket_expiration','niveau_alerte','observation_securite','temp_dir','numind','auth_mode'
+ * - responsable -> pers_id
+ * - eleve -> 'no_gep','sexe','naissance','lieu_naissance','elenoet','ereno','ele_id','id_eleve','id_mef','date_sortie'
+ * 
+ * @param string $login Login de l'utilisateur
+ * @param string $tab_champs Tableau non utilisé
+ * @return array Le tableau des informations
+ * @todo $tab_champs n'est pas utilisé pour l'instant
+ * @todo Déterminer les champs supplémentaires pour le statut autre
+ */
+function get_infos_from_login_utilisateur($login, $tab_champs=array()) {
+	$tab=array();
+
+	$tab_champs_utilisateur=array('nom', 'prenom', 'civilite', 'email','show_email','statut','etat','change_mdp','date_verrouillage','ticket_expiration','niveau_alerte','observation_securite','temp_dir','numind','auth_mode');
+	$sql="SELECT * FROM utilisateurs WHERE login='$login';";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)>0) {
 		$lig=mysql_fetch_object($res);
-		$id_cahier_notes=$lig->id_cahier_notes;
+		foreach($tab_champs_utilisateur as $key => $value) {
+			$tab[$value]=$lig->$value;
+		}
+        unset ($key, $value);
+
+		if($tab['statut']=='responsable') {
+			$sql="SELECT pers_id FROM resp_pers WHERE login='$login';";
+			$res=mysql_query($sql);
+			if(mysql_num_rows($res)>0) {
+				$lig=mysql_fetch_object($res);
+				$tab['pers_id']=$lig->pers_id;
+
+				if(in_array('enfants', $tab_champs)) {
+					// A compléter
+				}
+			}
+		}
+		elseif($tab['statut']=='eleve') {
+			$sql="SELECT * FROM eleves WHERE login='$login';";
+			$res=mysql_query($sql);
+			if(mysql_num_rows($res)>0) {
+				$lig=mysql_fetch_object($res);
+
+				$tab_champs_eleve=array('no_gep','sexe','naissance','lieu_naissance','elenoet','ereno','ele_id','id_eleve','id_mef','date_sortie');
+				foreach($tab_champs_eleve as $key => $value) {
+					$tab[$value]=$lig->$value;
+				}
+                unset ($key, $value);
+
+				if(in_array('parents', $tab_champs)) {
+					// A compléter
+				}
+			}
+
+		}
+		elseif($tab['statut']=='autre') {
+			// A compléter
+			$tab['statut_autre']="A EXTRAIRE";
+		}
 	}
-	return $id_cahier_notes;
+	return $tab;
 }
+
+/**
+ * Vérifie qu'un responsable a accès au module discipline
+ *
+ * @param string $login_resp Login du responsable
+ * @return boolean TRUE si le responsable a accès
+ * @see check_compte_actif()
+ * @see getSettingValue()
+ */
+function acces_resp_disc($login_resp) {
+	if((check_compte_actif($login_resp)!=0)&&(getSettingValue('visuRespDisc')=='yes')) {
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
+}
+
+/**
+ * Vérifie qu'un élève a accès au module discipline
+ *
+ * @param string $login_ele Login de l'élève
+ * @return boolean TRUE si l'élève a accès
+ * @see check_compte_actif()
+ * @see getSettingValue()
+ */
+function acces_ele_disc($login_ele) {
+	if((check_compte_actif($login_ele)!=0)&&(getSettingValue('visuEleDisc')=='yes')) {
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
+}
+
+/**
+ * Renvoie un tableau des responsables d'un élève
+ * 
+ * $tab[indice] = array('login','nom','prenom','civilite','designation'=>civilite nom prenom)
+ *
+ * @param string $ele_login Login de l'élève
+ * @return array Le tableau
+ */
+function get_resp_from_ele_login($ele_login) {
+	$tab="";
+
+	$sql="SELECT rp.* FROM resp_pers rp, responsables2 r, eleves e WHERE e.login='$ele_login' AND rp.pers_id=r.pers_id AND r.ele_id=e.ele_id AND (r.resp_legal='1' OR r.resp_legal='2');";
+	//echo "$sql<br />";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		$cpt=0;
+		while($lig=mysql_fetch_object($res)) {
+			$tab[$cpt]=array();
+
+			$tab[$cpt]['login']=$lig->login;
+			$tab[$cpt]['nom']=$lig->nom;
+			$tab[$cpt]['prenom']=$lig->prenom;
+			$tab[$cpt]['civilite']=$lig->civilite;
+
+			$tab[$cpt]['designation']=$lig->civilite." ".$lig->nom." ".$lig->prenom;
+
+			$cpt++;
+		}
+	}
+
+	//print_r($tab);
+
+	return $tab;
+}
+
+/**
+ *
+ * @param type $callback
+ * @param ArrayAccess $array
+ * @return type 
+ */
+function array_map_deep($callback, $array) {
+    $new = array();
+    if (is_array($array) || $array instanceof ArrayAccess) {
+    	foreach ($array as $key => $val) {
+	        if (is_array($val)) {
+	            $new[$key] = array_map_deep($callback, $val);
+	        } else {
+	            $new[$key] = call_user_func($callback, $val);
+	        }
+    	}
+    }
+    else $new = call_user_func($callback, $array);
+    return $new;
+} 
+
+/**
+ * Vérifie si une variable est en UTF8 et la réencode au besoin
+ * @param string $var La variable à vérifier
+ * @return string La variable décodée 
+ */
+function check_utf8_and_convert($var) {
+	if(function_exists("mb_check_encoding")) {
+		if (!mb_check_encoding($var, 'UTF-8')) {
+    		return utf8_encode($var);
+    	} else {
+    		return $var;
+    	}
+	}
+} 
+
+
 ?>

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: Session.class.php 7965 2011-08-25 10:24:42Z tbelliard $
+ * $Id: Session.class.php 8236 2011-09-15 12:30:20Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard
  *
@@ -22,7 +22,17 @@
  */
 
 $debug_test_mdp="n";
-$debug_test_mdp_file="/tmp/test_mdp.txt";
+if(getSettingValue('debug_test_mdp_file')!='') {
+	$debug_test_mdp_file=getSettingValue('debug_test_mdp_file');
+}
+else {
+	$debug_test_mdp_file="/tmp/test_mdp.txt";
+}
+
+// Passer à 'y' pour loguer les premiers accès (pour expliquer à l'utilisateur ce qu'il fait de travers lors de sa première connexion)
+$debug_login_nouveaux_comptes="n";
+// Ne pas toucher: La variable est déclarée ici pour être globale et modifiée à y ou n par la suite
+$loguer_nouveau_login="n";
 
 # Cette classe sert à manipuler la session en cours.
 # Elle gère notamment l'authentification des utilisateurs
@@ -51,8 +61,9 @@ class Session {
 	public $auth_locale = true; # true, false. Par défaut, on utilise l'authentification locale
 	public $auth_ldap = false; # false, true
 	public $auth_sso = false; # false, cas, lemon, lcs
+	public $auth_simpleSAML = false; # false, cas, lemon, lcs
+	private $login_sso = false; //login (ou uid) du sso auquel on est connecté (peut être différent du login gepi, la correspondance est faite dans mod_sso_table) 
 	public $current_auth_mode = false;  # gepi, ldap, sso, ou false : le mode d'authentification
-										# utilisé par l'utilisateur actuellement connecté
 
 	private $etat = false; 	# actif/inactif. Utilisé simplement en interne pour vérifier que
 							# l'utilisateur authentifié de source externe est bien actif dans Gepi.
@@ -65,14 +76,16 @@ class Session {
       # On initialise la session
       session_name("GEPI");
       set_error_handler("my_warning_handler", E_WARNING);
-      session_start();
+		if(!isset($_SESSION)) {
+			session_start();
+		}
       restore_error_handler();
     }
 
 		# Avant de faire quoi que ce soit, on initialise le fuseau horaire
 		if (isset($GLOBALS['timezone']) && $GLOBALS['timezone'] != '') {
 		    $this->update_timezone($GLOBALS['timezone']);
-                }
+        }
 
 		$this->maxLength = getSettingValue("sessionMaxLength");
 		$this->verif_CAS_multisite();
@@ -82,15 +95,12 @@ class Session {
 		# On charge des éléments de configuration liés à l'authentification
 		$this->auth_locale = getSettingValue("auth_locale") == 'yes' ? true : false;
 		$this->auth_ldap = getSettingValue("auth_ldap") == 'yes' ? true : false;
+		$this->auth_simpleSAML = getSettingValue("auth_simpleSAML") == 'yes' ? true : false;
 		$this->auth_sso = in_array(getSettingValue("auth_sso"), array("lemon", "cas", "lcs")) ? getSettingValue("auth_sso") : false;
+
 		if (!$this->is_anonymous()) {
 		  # Il s'agit d'une session non anonyme qui existait déjà.
       if (!$login_CAS_en_cours) {
-        # On regarde s'il n'y a pas de timeout
-        if ($this->timeout()) {
-          # timeout : on remet à zéro.
-          $debut_session = $_SESSION['start'];
-          $this->reset(3);
           if (isset($GLOBALS['niveau_arbo'])) {
             if ($GLOBALS['niveau_arbo'] == "0") {
               $logout_path = "./logout.php";
@@ -104,8 +114,26 @@ class Session {
           } else {
             $logout_path = "../logout.php";
           }
+      	# On regarde s'il n'y a pas de timeout
+        if ($this->start && $this->timeout()) {
+           # timeout : on remet à zéro.
+          $debut_session = $_SESSION['start'];
+          $this->reset(3);
           header("Location:".$logout_path."?auto=3&debut_session=".$debut_session."&session_id=".session_id());
           exit();
+        } elseif (isset($GLOBALS['multisite']) && $GLOBALS['multisite'] == 'y') {
+        	//echo ($_COOKIE['RNE'].' '.$this->rne);die;
+        	if ($_COOKIE['RNE'] != $this->rne){
+			  //le rne a été modifié en cours de session
+			  $this->reset(2);
+	          header("Location:".$logout_path."?auto=0&session_id=".session_id());
+	          exit();
+            } elseif ((getSettingValue('gepiSchoolRne')!='')&&(strtoupper($_COOKIE['RNE']) != strtoupper(getSettingValue('gepiSchoolRne')))) {
+			  //le rne ne correspond pas à celui de la base
+			  $this->reset(2);
+	          header("Location:".$logout_path."?auto=2&session_id=".session_id());
+	          exit();
+            }
         } else {
           # Pas de timeout : on met à jour le log
           $this->update_log();
@@ -134,7 +162,7 @@ class Session {
 	# 8 : multisite ; impossibilité d'obtenir le RNE de l'utilisateur qui s'est authentifié correctement.
 	# 9 : échec de l'authentification (mauvais couple login/mot de passe, sans doute).
 	public function authenticate($_login = null, $_password = null) {
-		global $debug_test_mdp, $debug_test_mdp_file;
+		global $debug_test_mdp, $debug_test_mdp_file, $debug_login_nouveaux_comptes, $loguer_nouveau_login;
 
 		// Quelques petits tests de sécurité
 
@@ -145,7 +173,7 @@ class Session {
 		  die();
 		}
 
-		if (strtoupper($_login) != strtoupper($this->login)) {
+		if ($_login != null && strtoupper($_login) != strtoupper($this->login)) {
 			//on a une connexion sous un nouveau login, on purge la session
 			$this->reset("4");
 		}
@@ -154,6 +182,20 @@ class Session {
 			$f_tmp=fopen($debug_test_mdp_file,"a+");
 			fwrite($f_tmp,strftime("%a %d/%m/%Y - %H%M%S").": \$_login=$_login et \$_password=$_password\n");
 			fclose($f_tmp);
+		}
+		elseif($debug_login_nouveaux_comptes=="y") {
+			$loguer_nouveau_login="n";
+			if(preg_match("/[A-Za-z0-9_\.-]/", $_login)) {
+				$sql="SELECT 1=1 FROM utilisateurs WHERE login='$_login' AND change_mdp='y';";
+				$test_new_login=mysql_query($sql);
+				if(mysql_num_rows($test_new_login)>0) {
+					$loguer_nouveau_login="y";
+
+					$f_tmp=fopen($debug_test_mdp_file,"a+");
+					fwrite($f_tmp,strftime("%a %d/%m/%Y - %H%M%S").": \$_login=$_login et \$_password=$_password : ");
+					fclose($f_tmp);
+				}
+			}
 		}
 
 	    // On initialise la session de l'utilisateur.
@@ -170,7 +212,10 @@ class Session {
 			case "ldap":
 			  # Authentification sur un serveur LDAP
 			  $auth = $this->authenticate_ldap($_login,$_password);
-			break;
+			  break;
+		  	case "simpleSAML":
+		  		$auth = $this->authenticate_simpleSAML();
+		  	break;
 			case "sso":
 			  # Authentification gérée par un service de SSO
 			  # On n'a pas besoin du login ni du mot de passe
@@ -183,17 +228,19 @@ class Session {
 			  	break;
 			  	case "lcs":
 			  		$auth = $this->authenticate_lcs();
-			  	break;
+		  		break;
 			  }
 			break;
 			case false:
 			  # L'utilisateur n'existe pas dans la base de données ou bien
 			  # n'a pas été passé en paramètre.
-			  # On va donc tenter d'abord une authentification LDAP,
+			  # On va donc tenter d'abord une authentification simpleSAML, puis LDAP,
 			  # puis une authentification SSO, à condition que celles-ci
 			  # soient bien sûr configurées.
 			  if ($this->auth_ldap && $_login != null && $_password != null) {
 			  	$auth = $this->authenticate_ldap($_login,$_password);
+			  }if ($this->auth_simpleSAML) {
+			  	$auth = $this->authenticate_simpleSAML();
 			  } else if ($this->auth_sso && $_login == null) {
 			  	// L'auth LDAP n'a pas marché, on essaie le SSO
 				 switch ($this->auth_sso) {
@@ -205,7 +252,7 @@ class Session {
 				  	break;
 				  	case "lcs":
 				  		$auth = $this->authenticate_lcs();
-				  	break;
+			  		break;
 				 }
 			  } else {
 			  	$auth = false;
@@ -240,7 +287,7 @@ class Session {
 								exit();
               }else{
                 if ($this->current_auth_mode == "sso") {
-									setcookie('RNE', $t_rne);
+									setcookie('RNE', $t_rne, null, '/');
 									header("Location: login_sso.php?rne=".$t_rne);
 									exit();
 								} else {
@@ -249,7 +296,7 @@ class Session {
 								}
               }
             }
-          }elseif (LDAPServer::is_setup()) {
+          } elseif (LDAPServer::is_setup()) {
 						// Le RNE n'a pas été transmis. Il faut le récupérer et recharger la page
 						// pour obtenir la bonne base de données
 						$ldap = new LDAPServer;
@@ -272,7 +319,7 @@ class Session {
 							}else{
 								// Il n'y en a qu'un, on recharge !
 								if ($this->current_auth_mode == "sso") {
-									setcookie('RNE', $user["rne"][0]);
+									setcookie('RNE', $user["rne"][0], null, '/');
 									header("Location: login_sso.php?rne=".$user["rne"][0]);
 									exit();
 								} else {
@@ -342,7 +389,7 @@ class Session {
 
 			# On teste la cohérence de mode de connexion
 		    $auth_mode = self::user_auth_mode($this->login);
-		    if ($auth_mode != $this->current_auth_mode) {
+		    if ($this->current_auth_mode != 'simpleSAML' && $auth_mode != $this->current_auth_mode) {
 		    	$this->reset(2);
 		    	return "5";
 		    	exit;
@@ -395,7 +442,13 @@ class Session {
 		# c = changement forcé de mot de passe
 
 		# D'abord on regarde si on a une tentative d'accès anonyme à une page protégée :
-		if ($this->is_anonymous()) {
+		if ($this->auth_simpleSAML == 'yes') {
+			include_once(dirname(__FILE__).'/simplesaml/lib/_autoload.php');
+			$auth = new SimpleSAML_Auth_GepiSimple();
+			if (!$this->login || !$auth->isAuthenticated()) {
+				$this->authenticate();
+			}
+		} else if ($this->is_anonymous()) {
 			tentative_intrusion(1, "Accès à une page sans être logué (peut provenir d'un timeout de session).");
 			return "0";
 			exit;
@@ -488,7 +541,7 @@ class Session {
 	## METHODE PRIVEES ##
 
 	// Création d'une entrée de log
-	private function insert_log() {
+	public function insert_log() {
 		if (!isset($_SERVER['HTTP_REFERRER'])) $_SERVER['HTTP_REFERER'] = '';
 	    $sql = "INSERT INTO log (LOGIN, START, SESSION_ID, REMOTE_ADDR, USER_AGENT, REFERER, AUTOCLOSE, END) values (
 	                '" . $this->login . "',
@@ -517,7 +570,7 @@ class Session {
 	// Dans le cas du multisite on vérifie si la session a été initialisée dans la bonne base
 	private function verif_CAS_multisite(){
 
-		if (isset($_GET['rne']) AND $GLOBALS['multisite'] == 'y' AND isset($_SESSION["login"])) {
+		if (isset($_GET['rne']) AND $GLOBALS['multisite'] == 'y' AND isset($_SESSION["login"]) && getSettingValue("auth_simpleSAML") != 'yes') {
 			// Alors, on initialise la session ici
 
 			$this->start = mysql_result(mysql_query("SELECT now();"),0);
@@ -575,7 +628,18 @@ class Session {
         $this->register_logout($_auto);
 	    }
 
-	   // Détruit toutes les variables de session
+		if ($this->auth_simpleSAML == 'yes') {
+				include_once(dirname(__FILE__).'/simplesaml/lib/_autoload.php');
+				$auth = new SimpleSAML_Auth_GepiSimple();				
+				if ($auth->isAuthenticated()) {
+					$auth->logout();
+					//attention, cette fonction ->logout() ne retourne, pas, le reste du script ne sera pas éxécuter à partir de cette ligne.
+					//Il à y avoir un refresh automatique de la page suite au ->logout(), et donc le script va être re-éxecuter, avec cette fois
+					//$auth->isAuthenticated() qui vaudra false, et donc le reste du reset va être éxecuter
+				}
+		}
+		
+	    // Détruit toutes les variables de session
 	    session_unset();
 	    $_SESSION = array();
 
@@ -589,6 +653,15 @@ class Session {
 		//on redémarre une nouvelle session
 		session_start();
 		session_regenerate_id();
+		
+		$this->login = null;
+		
+		//si une url de portail est donnée, on redirige
+		if (isset($_REQUEST['portal_return_url'])) {
+			header('Location:'.$_REQUEST['portal_return_url']);
+			die;
+		}
+		
 	}
 
 	private function load_session_data() {
@@ -647,99 +720,104 @@ class Session {
 	}
 	*/
 
-	private function authenticate_gepi($_login,$_password) {
+	function authenticate_gepi($_login,$_password) {
 		global $debug_test_mdp, $debug_test_mdp_file;
+		global $debug_login_nouveaux_comptes, $loguer_nouveau_login;
 
-		/*
-		if ($this->use_uppercase_login($_login)) {
-			# On passe le login en majuscule pour toute la session.
-			$_login = strtoupper($_login);
-		}
-		*/
-		$sql = "SELECT login, password FROM utilisateurs WHERE (login = '" . $_login . "' and etat != 'inactif')";
+        $sql = "SELECT login, password FROM utilisateurs WHERE (login = '" . $_login . "' and etat != 'inactif')";
 		$query = mysql_query($sql);
 		if (mysql_num_rows($query) == "1") {
+			$sql = "SELECT salt FROM utilisateurs WHERE (login = '" . $_login . "' and etat != 'inactif')";
+			$query_salt = mysql_query($sql);
+                if ($query_salt !== false) {
+                    $db_salt = mysql_result($query_salt, 0, "salt");
+                } else {
+                    $db_salt = '';
+                }
+			$db_password = mysql_result($query, 0, "password");
 			# Un compte existe avec ce login
-			if (mysql_result($query, 0, "password") == md5($_password)) {
-				# Le mot de passe correspond. C'est bon !
-				//$this->login = $_login;
-				// On ne prend plus le login fourni dans le formulaire, mais celui dans la base pour avoir la même casse que dans la base (après la 1.5.3.1)
-				$this->login = mysql_result($query, 0, "login");
-				$this->current_auth_mode = "gepi";
-
-				if($debug_test_mdp=="y") {
-					$f_tmp=fopen($debug_test_mdp_file,"a+");
-					fwrite($f_tmp,"Authentification OK sans modification\n");
-					fclose($f_tmp);
-				}
-				return true;
-			} else {
-				//if(getSettingValue('auth_tout_terrain')=="y") {
-					if(getSettingValue('filtrage_html')=='htmlpurifier') {
-
-						$tmp_mdp = get_html_translation_table(HTML_ENTITIES);
-						$tmp_mdp = array_flip ($tmp_mdp);
-						$_password_unhtmlentities = strtr ($_password, $tmp_mdp);
-
-						//if (mysql_result($query, 0, "password") == md5(unhtmlentities($_password))) {
-						if (mysql_result($query, 0, "password") == md5($_password_unhtmlentities)) {
-							# Le mot de passe correspond. C'est bon !
-							//$this->login = $_login;
-							// On ne prend plus le login fourni dans le formulaire, mais celui dans la base pour avoir la même casse que dans la base (après la 1.5.3.1)
-							$this->login = mysql_result($query, 0, "login");
-							$this->current_auth_mode = "gepi";
-	
-							if($debug_test_mdp=="y") {
-								$f_tmp=fopen($debug_test_mdp_file,"a+");
-								fwrite($f_tmp,"Authentification OK avec unhtmlentities()\n");
-								fclose($f_tmp);
-							}
-							return true;
-						} else {
-	
-							if($debug_test_mdp=="y") {
-								$f_tmp=fopen($debug_test_mdp_file,"a+");
-								fwrite($f_tmp,"Authentification en echec avec et sans modification unhtmlentities\n");
-								fclose($f_tmp);
-							}
-							return false;
-						}
-					}
-					else {
-						if (mysql_result($query, 0, "password") == md5(htmlentities($_password))) {
-							# Le mot de passe correspond. C'est bon !
-							//$this->login = $_login;
-							// On ne prend plus le login fourni dans le formulaire, mais celui dans la base pour avoir la même casse que dans la base (après la 1.5.3.1)
-							$this->login = mysql_result($query, 0, "login");
-							$this->current_auth_mode = "gepi";
-	
-							if($debug_test_mdp=="y") {
-								$f_tmp=fopen($debug_test_mdp_file,"a+");
-								fwrite($f_tmp,"Authentification OK avec htmlentities()\n");
-								fclose($f_tmp);
-							}
-							return true;
-						} else {
-							if($debug_test_mdp=="y") {
-								$f_tmp=fopen($debug_test_mdp_file,"a+");
-								fwrite($f_tmp,"Authentification en echec avec et sans modification htmlentities\n");
-								fclose($f_tmp);
-							}
-							return false;
-						}
-					}
-				/*
-				}
-				else {
-					return false;
-				}
-				*/
-			}
+                        if ($db_salt == '') {
+                            //on va tester avec le md5
+                            if ($db_password == md5($_password)) {
+                            } else {
+                                    if(getSettingValue('filtrage_html')=='htmlpurifier') {
+                                            $tmp_mdp = array_flip (get_html_translation_table(HTML_ENTITIES));
+                                            $_password_unhtmlentities = strtr ($_password, $tmp_mdp);
+                                            if ($db_password == md5($_password_unhtmlentities)) {
+                                                    $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Authentification md5 OK avec unhtmlentities()'."\n");
+                                            } else {
+                                                    $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Authentification md5 en echec avec et sans modification unhtmlentities'."\n");
+                                                    return false;
+                                            }
+                                    } else {
+                                            if ($db_password == md5(htmlentities($_password))) {
+                                                    $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Authentification md5 OK avec htmlentities()'."\n");
+                                            } else {
+                                                    $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Authentification md5 en echec avec et sans modification htmlentities'."\n");
+                                                    return false;
+                                            }
+                                    }
+                            }
+                            
+                            //l'authentification est réussie sinon on serait déjà sorti de la fonction
+                            $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Authentification md5 OK'."\n");
+                            if (mysql_num_rows(mysql_query("SHOW COLUMNS FROM utilisateurs LIKE 'salt';"))>0) {
+                                //on va passer le hash en hmac scha256
+                                $salt = md5(uniqid(rand(), 1));
+                                $hmac_password = hash_hmac('sha256', $_password, $salt);
+                                $update_query = mysql_query("UPDATE utilisateurs SET password = '".$hmac_password."', salt = '".$salt."' WHERE login = '".$_login."'");
+                                if ($update_query) {
+                                    $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Password ameliore en hmac'."\n");
+                                } else {
+                                    $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Echec password ameliore en hmac'."\n");
+                                }
+                            }
+                        } else {
+                            //login deja en hmac sha256
+                            if ($db_password == hash_hmac('sha256', $_password, $db_salt)) {
+                                    $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Authentification hmac OK sans modification'."\n");
+                            } else {
+                                    if(getSettingValue('filtrage_html')=='htmlpurifier') {
+                                            $tmp_mdp = array_flip (get_html_translation_table(HTML_ENTITIES));
+                                            $_password_unhtmlentities = strtr ($_password, $tmp_mdp);
+                                            if ($db_password == hash_hmac('sha256', $_password_unhtmlentities, $db_salt)) {
+                                                    $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Authentification hmac OK avec unhtmlentities()'."\n");
+                                            } else {
+                                                    $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Authentification hmac en echec avec et sans modification unhtmlentities'."\n");
+                                                   return false;
+                                            }
+                                    } else {
+                                            if ($db_password == hash_hmac('sha256', htmlentities($_password), $db_salt)) {
+                                                    $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Authentification hmac OK avec htmlentities()'."\n");
+                                            } else {
+                                                    $this->debug_login_mdp($debug_test_mdp, $debug_test_mdp_file, 'Authentification hmac en echec avec et sans modification htmlentities'."\n");
+                                                    return false;
+                                            }
+                                    }
+                            }
+                        }
+                        //si le login fait échec, la fonction a déjà retourné avec false
+                        $this->login = mysql_result($query, 0, "login");
+                        $this->current_auth_mode = "gepi";
+                        return true;
 		} else {
 			# Le login est erroné (n'existe pas dans la base)
 			return false;
 		}
 	}
+
+        static function change_password_gepi($user_login,$password) {
+                if (mysql_num_rows(mysql_query("SHOW COLUMNS FROM utilisateurs LIKE 'salt';"))>0) {
+                    $salt = md5(uniqid(rand(), 1));
+                    $hmac_password = hash_hmac('sha256', $password, $salt);
+                    $result = mysql_query("UPDATE utilisateurs SET password='$hmac_password', salt = '$salt' WHERE login='" . $user_login . "'");
+                    return $result;
+                } else {
+                    $result = mysql_query("UPDATE utilisateurs SET password='".md5($password)."' WHERE login='" . $user_login . "'");
+                    return $result;
+                }
+
+        }
 
 	private function authenticate_ldap($_login,$_password) {
 		if ($_login == null || $_password == null) {
@@ -797,8 +875,21 @@ class Session {
 		// Authentification
 		phpCAS::forceAuthentication();
 */
-
-		$this->login = phpCAS::getUser();
+if (getSettingValue("sso_cas_table") == 'yes') {
+            $this->login_sso = phpCAS::getUser();
+            $test = $this->test_loginsso();
+            if ($test == '0') {
+                //la correspondance n'existe pas dans gépi; on detruit la session avant de rediriger.            
+                session_destroy();
+                header("Location:login_failure.php?error=11&mode=sso_table");
+                exit;
+            } else {
+                $this->login = $test;
+            }
+        } else {
+            $this->login = phpCAS::getUser();
+        }
+		
 /* La session est gérée par phpCAS directement, en amont. On n'y touche plus.
 		session_name("GEPI");
 		session_start();
@@ -828,6 +919,17 @@ class Session {
 		return true;
 	}
 
+    private function test_loginsso()
+  {
+      $requete = "SELECT login_gepi FROM sso_table_correspondance WHERE login_sso='$this->login_sso'";
+      $result = mysql_query($requete);
+      $valeur = mysql_fetch_array($result);
+      if ($valeur[0] == '') {
+          return "0";
+      } else {
+          return $valeur[0];
+      }
+  }
 	public function logout_cas() {
 		include_once('CAS.php');
 
@@ -868,6 +970,26 @@ class Session {
 		return true;
 	}
 
+	private function authenticate_simpleSAML() {
+		include_once(dirname(__FILE__).'/simplesaml/lib/_autoload.php');
+		$auth = new SimpleSAML_Auth_GepiSimple();
+		$auth->requireAuth();
+		$attributes = $auth->getAttributes();
+		
+		//exploitation des attributs
+		if (empty($attributes)) {
+			//authentification échouée
+			return false;
+		}
+		$this->login = $attributes['login_gepi'][0];
+
+		$this->current_auth_mode = "simpleSAML";
+    
+	    // Extractions des attributs supplémentaires, le cas échéant
+	    // inutile pour le moment
+		return true;
+	}
+	
 	private function authenticate_lemon() {
 		#TODO: Vérifier que ça marche bien comme ça !!
 	  if (isset($_GET['login'])) $login = $_GET['login']; else $login = "";
@@ -934,7 +1056,7 @@ class Session {
 
 	# Cette méthode charge en session les données de l'utilisateur,
 	# à la suite d'une authentification réussie.
-	private function load_user_data() {
+	public function load_user_data() {
 		# Petit test de départ pour être sûr :
 		if (!$this->login || $this->login == null) {
 			return false;
@@ -946,6 +1068,8 @@ class Session {
 			$ldap = new LDAPServer;
 			$user = $ldap->get_user_profile($this->login);
 			$this->rne = $user["rne"][0];
+		} elseif (isset($GLOBALS['multisite']) && $GLOBALS['multisite'] == 'y') {
+			$this->rne = $_COOKIE['RNE'];
 		}
 
 		/*
@@ -958,7 +1082,7 @@ class Session {
 		*/
 
 		# On interroge la base de données
-		$query = mysql_query("SELECT nom, prenom, email, statut, etat, now() start, change_mdp, auth_mode FROM utilisateurs WHERE (login = '".$this->login."')");
+		$query = mysql_query("SELECT login, nom, prenom, email, statut, etat, now() start, change_mdp, auth_mode FROM utilisateurs WHERE (login = '".$this->login."')");
 
 		# Est-ce qu'on a bien une entrée ?
 		if (mysql_num_rows($query) != "1") {
@@ -972,9 +1096,14 @@ class Session {
 		$row = mysql_fetch_object($query);
 
 	    $_SESSION['login'] = $this->login;
+		if ($row->login != null) {
+				$_SESSION['login'] = $row->login;
+		} else {
+				$_SESSION['login'] = $this->login;
+		}
 	    $_SESSION['prenom'] = $row->prenom;
 	    $_SESSION['nom'] = $row->nom;
-      $_SESSION['email'] = $row->email;
+		$_SESSION['email'] = $row->email;
 	    $_SESSION['statut'] = $row->statut;
 	    $_SESSION['start'] = $row->start;
 	    $_SESSION['matiere'] = $matiere_principale;
@@ -1013,7 +1142,7 @@ class Session {
 	    return true;
 	}
 
-	private function record_failed_login($_login) {
+	public function record_failed_login($_login) {
 		# Une tentative de login avec un mot de passe erronnée a été détectée.
 		$test_login = sql_count(sql_query("SELECT login FROM utilisateurs WHERE (login = '".$_login."')"));
 
@@ -1384,10 +1513,10 @@ class Session {
   private function update_user_with_cas_attributes(){
     $need_update = false;
     if (isset($GLOBALS['debug_log_file'])){
-      error_log("Mise à jour de l'utilisateur à partir des attributs CAS.", 3, $GLOBALS['debug_log_file']);
-      error_log("Attribut email :".$this->cas_extra_attributes['email'], 3, $GLOBALS['debug_log_file']);
-      error_log("Attribut prenom :".$this->cas_extra_attributes['prenom'], 3, $GLOBALS['debug_log_file']);
-      error_log("Attribut nom :".$this->cas_extra_attributes['nom'], 3, $GLOBALS['debug_log_file']);
+    error_log("Mise à jour de l'utilisateur à partir des attributs CAS\n", 3, $GLOBALS['debug_log_file']);
+    error_log("Attribut email :".$this->cas_extra_attributes['email']."\n", 3, $GLOBALS['debug_log_file']);
+    error_log("Attribut prenom :".$this->cas_extra_attributes['prenom']."\n", 3, $GLOBALS['debug_log_file']);
+    error_log("Attribut nom :".$this->cas_extra_attributes['nom']."\n", 3, $GLOBALS['debug_log_file']);
     }
     if (!empty($this->cas_extra_attributes)) {
       $query = 'UPDATE utilisateurs SET ';
@@ -1406,7 +1535,7 @@ class Session {
         }
       }
       $query .= " WHERE login = '$this->login'";
-			error_log("Détail requête : ".$query, 3, $GLOBALS['debug_log_file']);
+			error_log("Détail requête : ".$query."\n", 3, $GLOBALS['debug_log_file']);
       if ($need_update) $res = mysql_query($query); // On exécute la mise à jour, si nécessaire
       if ($need_update && $this->statut == 'eleve') {
         # On a eu une mise à jour qui concerne un élève, il faut synchroniser l'info dans la table eleves
@@ -1461,5 +1590,18 @@ class Session {
       return true;
     }
   }
+
+  # écrit dans un fichier un message de debug
+  static private function debug_login_mdp($debug_test_mdp,$debug_test_mdp_file,$debug_test_mdp_message) {
+	global $debug_login_nouveaux_comptes, $loguer_nouveau_login;
+
+    if(($debug_test_mdp=="y")||
+		(($debug_login_nouveaux_comptes=="y")&&($loguer_nouveau_login=="y"))) {
+		$f_tmp=fopen($debug_test_mdp_file,"a+");
+		fwrite($f_tmp,$debug_test_mdp_message);
+		fclose($f_tmp);
+    }
+  }
 }
+
 ?>

@@ -60,12 +60,12 @@
  * @method     AbsenceEleveNotification findOneById(int $id) Return the first AbsenceEleveNotification filtered by the id column
  * @method     AbsenceEleveNotification findOneByUtilisateurId(string $utilisateur_id) Return the first AbsenceEleveNotification filtered by the utilisateur_id column
  * @method     AbsenceEleveNotification findOneByATraitementId(int $a_traitement_id) Return the first AbsenceEleveNotification filtered by the a_traitement_id column
- * @method     AbsenceEleveNotification findOneByTypeNotification(int $type_notification) Return the first AbsenceEleveNotification filtered by the type_notification column
+ * @method     AbsenceEleveNotification findOneByTypeNotification(string $type_notification) Return the first AbsenceEleveNotification filtered by the type_notification column
  * @method     AbsenceEleveNotification findOneByEmail(string $email) Return the first AbsenceEleveNotification filtered by the email column
  * @method     AbsenceEleveNotification findOneByTelephone(string $telephone) Return the first AbsenceEleveNotification filtered by the telephone column
  * @method     AbsenceEleveNotification findOneByAdrId(string $adr_id) Return the first AbsenceEleveNotification filtered by the adr_id column
  * @method     AbsenceEleveNotification findOneByCommentaire(string $commentaire) Return the first AbsenceEleveNotification filtered by the commentaire column
- * @method     AbsenceEleveNotification findOneByStatutEnvoi(int $statut_envoi) Return the first AbsenceEleveNotification filtered by the statut_envoi column
+ * @method     AbsenceEleveNotification findOneByStatutEnvoi(string $statut_envoi) Return the first AbsenceEleveNotification filtered by the statut_envoi column
  * @method     AbsenceEleveNotification findOneByDateEnvoi(string $date_envoi) Return the first AbsenceEleveNotification filtered by the date_envoi column
  * @method     AbsenceEleveNotification findOneByErreurMessageEnvoi(string $erreur_message_envoi) Return the first AbsenceEleveNotification filtered by the erreur_message_envoi column
  * @method     AbsenceEleveNotification findOneByCreatedAt(string $created_at) Return the first AbsenceEleveNotification filtered by the created_at column
@@ -74,12 +74,12 @@
  * @method     array findById(int $id) Return AbsenceEleveNotification objects filtered by the id column
  * @method     array findByUtilisateurId(string $utilisateur_id) Return AbsenceEleveNotification objects filtered by the utilisateur_id column
  * @method     array findByATraitementId(int $a_traitement_id) Return AbsenceEleveNotification objects filtered by the a_traitement_id column
- * @method     array findByTypeNotification(int $type_notification) Return AbsenceEleveNotification objects filtered by the type_notification column
+ * @method     array findByTypeNotification(string $type_notification) Return AbsenceEleveNotification objects filtered by the type_notification column
  * @method     array findByEmail(string $email) Return AbsenceEleveNotification objects filtered by the email column
  * @method     array findByTelephone(string $telephone) Return AbsenceEleveNotification objects filtered by the telephone column
  * @method     array findByAdrId(string $adr_id) Return AbsenceEleveNotification objects filtered by the adr_id column
  * @method     array findByCommentaire(string $commentaire) Return AbsenceEleveNotification objects filtered by the commentaire column
- * @method     array findByStatutEnvoi(int $statut_envoi) Return AbsenceEleveNotification objects filtered by the statut_envoi column
+ * @method     array findByStatutEnvoi(string $statut_envoi) Return AbsenceEleveNotification objects filtered by the statut_envoi column
  * @method     array findByDateEnvoi(string $date_envoi) Return AbsenceEleveNotification objects filtered by the date_envoi column
  * @method     array findByErreurMessageEnvoi(string $erreur_message_envoi) Return AbsenceEleveNotification objects filtered by the erreur_message_envoi column
  * @method     array findByCreatedAt(string $created_at) Return AbsenceEleveNotification objects filtered by the created_at column
@@ -162,7 +162,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	 * @return    PropelObjectCollection|array|mixed the list of results, formatted by the current formatter
 	 */
 	public function findPks($keys, $con = null)
-	{	
+	{
 		$criteria = $this->isKeepQuery() ? clone $this : $this;
 		return $this
 			->filterByPrimaryKeys($keys)
@@ -196,8 +196,17 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the id column
 	 * 
-	 * @param     int|array $id The value to use as filter.
-	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
+	 * Example usage:
+	 * <code>
+	 * $query->filterById(1234); // WHERE id = 1234
+	 * $query->filterById(array(12, 34)); // WHERE id IN (12, 34)
+	 * $query->filterById(array('min' => 12)); // WHERE id > 12
+	 * </code>
+	 *
+	 * @param     mixed $id The value to use as filter.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
@@ -213,8 +222,14 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the utilisateur_id column
 	 * 
+	 * Example usage:
+	 * <code>
+	 * $query->filterByUtilisateurId('fooValue');   // WHERE utilisateur_id = 'fooValue'
+	 * $query->filterByUtilisateurId('%fooValue%'); // WHERE utilisateur_id LIKE '%fooValue%'
+	 * </code>
+	 *
 	 * @param     string $utilisateurId The value to use as filter.
-	 *            Accepts wildcards (* and % trigger a LIKE)
+	 *              Accepts wildcards (* and % trigger a LIKE)
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
@@ -235,8 +250,19 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the a_traitement_id column
 	 * 
-	 * @param     int|array $aTraitementId The value to use as filter.
-	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
+	 * Example usage:
+	 * <code>
+	 * $query->filterByATraitementId(1234); // WHERE a_traitement_id = 1234
+	 * $query->filterByATraitementId(array(12, 34)); // WHERE a_traitement_id IN (12, 34)
+	 * $query->filterByATraitementId(array('min' => 12)); // WHERE a_traitement_id > 12
+	 * </code>
+	 *
+	 * @see       filterByAbsenceEleveTraitement()
+	 *
+	 * @param     mixed $aTraitementId The value to use as filter.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
@@ -266,27 +292,28 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the type_notification column
 	 * 
-	 * @param     int|array $typeNotification The value to use as filter.
-	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
+	 * @param     mixed $typeNotification The value to use as filter
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
 	 */
 	public function filterByTypeNotification($typeNotification = null, $comparison = null)
 	{
-		if (is_array($typeNotification)) {
-			$useMinMax = false;
-			if (isset($typeNotification['min'])) {
-				$this->addUsingAlias(AbsenceEleveNotificationPeer::TYPE_NOTIFICATION, $typeNotification['min'], Criteria::GREATER_EQUAL);
-				$useMinMax = true;
+		$valueSet = AbsenceEleveNotificationPeer::getValueSet(AbsenceEleveNotificationPeer::TYPE_NOTIFICATION);
+		if (is_scalar($typeNotification)) {
+			if (!in_array($typeNotification, $valueSet)) {
+				throw new PropelException(sprintf('Value "%s" is not accepted in this enumerated column', $typeNotification));
 			}
-			if (isset($typeNotification['max'])) {
-				$this->addUsingAlias(AbsenceEleveNotificationPeer::TYPE_NOTIFICATION, $typeNotification['max'], Criteria::LESS_EQUAL);
-				$useMinMax = true;
+			$typeNotification = array_search($typeNotification, $valueSet);
+		} elseif (is_array($typeNotification)) {
+			$convertedValues = array();
+			foreach ($typeNotification as $value) {
+				if (!in_array($value, $valueSet)) {
+					throw new PropelException(sprintf('Value "%s" is not accepted in this enumerated column', $value));
+				}
+				$convertedValues []= array_search($value, $valueSet);
 			}
-			if ($useMinMax) {
-				return $this;
-			}
+			$typeNotification = $convertedValues;
 			if (null === $comparison) {
 				$comparison = Criteria::IN;
 			}
@@ -297,8 +324,14 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the email column
 	 * 
+	 * Example usage:
+	 * <code>
+	 * $query->filterByEmail('fooValue');   // WHERE email = 'fooValue'
+	 * $query->filterByEmail('%fooValue%'); // WHERE email LIKE '%fooValue%'
+	 * </code>
+	 *
 	 * @param     string $email The value to use as filter.
-	 *            Accepts wildcards (* and % trigger a LIKE)
+	 *              Accepts wildcards (* and % trigger a LIKE)
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
@@ -319,8 +352,14 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the telephone column
 	 * 
+	 * Example usage:
+	 * <code>
+	 * $query->filterByTelephone('fooValue');   // WHERE telephone = 'fooValue'
+	 * $query->filterByTelephone('%fooValue%'); // WHERE telephone LIKE '%fooValue%'
+	 * </code>
+	 *
 	 * @param     string $telephone The value to use as filter.
-	 *            Accepts wildcards (* and % trigger a LIKE)
+	 *              Accepts wildcards (* and % trigger a LIKE)
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
@@ -341,8 +380,14 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the adr_id column
 	 * 
+	 * Example usage:
+	 * <code>
+	 * $query->filterByAdrId('fooValue');   // WHERE adr_id = 'fooValue'
+	 * $query->filterByAdrId('%fooValue%'); // WHERE adr_id LIKE '%fooValue%'
+	 * </code>
+	 *
 	 * @param     string $adrId The value to use as filter.
-	 *            Accepts wildcards (* and % trigger a LIKE)
+	 *              Accepts wildcards (* and % trigger a LIKE)
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
@@ -363,8 +408,14 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the commentaire column
 	 * 
+	 * Example usage:
+	 * <code>
+	 * $query->filterByCommentaire('fooValue');   // WHERE commentaire = 'fooValue'
+	 * $query->filterByCommentaire('%fooValue%'); // WHERE commentaire LIKE '%fooValue%'
+	 * </code>
+	 *
 	 * @param     string $commentaire The value to use as filter.
-	 *            Accepts wildcards (* and % trigger a LIKE)
+	 *              Accepts wildcards (* and % trigger a LIKE)
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
@@ -385,27 +436,28 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the statut_envoi column
 	 * 
-	 * @param     int|array $statutEnvoi The value to use as filter.
-	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
+	 * @param     mixed $statutEnvoi The value to use as filter
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
 	 */
 	public function filterByStatutEnvoi($statutEnvoi = null, $comparison = null)
 	{
-		if (is_array($statutEnvoi)) {
-			$useMinMax = false;
-			if (isset($statutEnvoi['min'])) {
-				$this->addUsingAlias(AbsenceEleveNotificationPeer::STATUT_ENVOI, $statutEnvoi['min'], Criteria::GREATER_EQUAL);
-				$useMinMax = true;
+		$valueSet = AbsenceEleveNotificationPeer::getValueSet(AbsenceEleveNotificationPeer::STATUT_ENVOI);
+		if (is_scalar($statutEnvoi)) {
+			if (!in_array($statutEnvoi, $valueSet)) {
+				throw new PropelException(sprintf('Value "%s" is not accepted in this enumerated column', $statutEnvoi));
 			}
-			if (isset($statutEnvoi['max'])) {
-				$this->addUsingAlias(AbsenceEleveNotificationPeer::STATUT_ENVOI, $statutEnvoi['max'], Criteria::LESS_EQUAL);
-				$useMinMax = true;
+			$statutEnvoi = array_search($statutEnvoi, $valueSet);
+		} elseif (is_array($statutEnvoi)) {
+			$convertedValues = array();
+			foreach ($statutEnvoi as $value) {
+				if (!in_array($value, $valueSet)) {
+					throw new PropelException(sprintf('Value "%s" is not accepted in this enumerated column', $value));
+				}
+				$convertedValues []= array_search($value, $valueSet);
 			}
-			if ($useMinMax) {
-				return $this;
-			}
+			$statutEnvoi = $convertedValues;
 			if (null === $comparison) {
 				$comparison = Criteria::IN;
 			}
@@ -416,8 +468,19 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the date_envoi column
 	 * 
-	 * @param     string|array $dateEnvoi The value to use as filter.
-	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
+	 * Example usage:
+	 * <code>
+	 * $query->filterByDateEnvoi('2011-03-14'); // WHERE date_envoi = '2011-03-14'
+	 * $query->filterByDateEnvoi('now'); // WHERE date_envoi = '2011-03-14'
+	 * $query->filterByDateEnvoi(array('max' => 'yesterday')); // WHERE date_envoi > '2011-03-13'
+	 * </code>
+	 *
+	 * @param     mixed $dateEnvoi The value to use as filter.
+	 *              Values can be integers (unix timestamps), DateTime objects, or strings.
+	 *              Empty strings are treated as NULL.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
@@ -447,8 +510,14 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the erreur_message_envoi column
 	 * 
+	 * Example usage:
+	 * <code>
+	 * $query->filterByErreurMessageEnvoi('fooValue');   // WHERE erreur_message_envoi = 'fooValue'
+	 * $query->filterByErreurMessageEnvoi('%fooValue%'); // WHERE erreur_message_envoi LIKE '%fooValue%'
+	 * </code>
+	 *
 	 * @param     string $erreurMessageEnvoi The value to use as filter.
-	 *            Accepts wildcards (* and % trigger a LIKE)
+	 *              Accepts wildcards (* and % trigger a LIKE)
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
@@ -469,8 +538,19 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the created_at column
 	 * 
-	 * @param     string|array $createdAt The value to use as filter.
-	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
+	 * Example usage:
+	 * <code>
+	 * $query->filterByCreatedAt('2011-03-14'); // WHERE created_at = '2011-03-14'
+	 * $query->filterByCreatedAt('now'); // WHERE created_at = '2011-03-14'
+	 * $query->filterByCreatedAt(array('max' => 'yesterday')); // WHERE created_at > '2011-03-13'
+	 * </code>
+	 *
+	 * @param     mixed $createdAt The value to use as filter.
+	 *              Values can be integers (unix timestamps), DateTime objects, or strings.
+	 *              Empty strings are treated as NULL.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
@@ -500,8 +580,19 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query on the updated_at column
 	 * 
-	 * @param     string|array $updatedAt The value to use as filter.
-	 *            Accepts an associative array('min' => $minValue, 'max' => $maxValue)
+	 * Example usage:
+	 * <code>
+	 * $query->filterByUpdatedAt('2011-03-14'); // WHERE updated_at = '2011-03-14'
+	 * $query->filterByUpdatedAt('now'); // WHERE updated_at = '2011-03-14'
+	 * $query->filterByUpdatedAt(array('max' => 'yesterday')); // WHERE updated_at > '2011-03-13'
+	 * </code>
+	 *
+	 * @param     mixed $updatedAt The value to use as filter.
+	 *              Values can be integers (unix timestamps), DateTime objects, or strings.
+	 *              Empty strings are treated as NULL.
+	 *              Use scalar values for equality.
+	 *              Use array values for in_array() equivalent.
+	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
@@ -531,15 +622,25 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query by a related UtilisateurProfessionnel object
 	 *
-	 * @param     UtilisateurProfessionnel $utilisateurProfessionnel  the related object to use as filter
+	 * @param     UtilisateurProfessionnel|PropelCollection $utilisateurProfessionnel The related object(s) to use as filter
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
 	 */
 	public function filterByUtilisateurProfessionnel($utilisateurProfessionnel, $comparison = null)
 	{
-		return $this
-			->addUsingAlias(AbsenceEleveNotificationPeer::UTILISATEUR_ID, $utilisateurProfessionnel->getLogin(), $comparison);
+		if ($utilisateurProfessionnel instanceof UtilisateurProfessionnel) {
+			return $this
+				->addUsingAlias(AbsenceEleveNotificationPeer::UTILISATEUR_ID, $utilisateurProfessionnel->getLogin(), $comparison);
+		} elseif ($utilisateurProfessionnel instanceof PropelCollection) {
+			if (null === $comparison) {
+				$comparison = Criteria::IN;
+			}
+			return $this
+				->addUsingAlias(AbsenceEleveNotificationPeer::UTILISATEUR_ID, $utilisateurProfessionnel->toKeyValue('PrimaryKey', 'Login'), $comparison);
+		} else {
+			throw new PropelException('filterByUtilisateurProfessionnel() only accepts arguments of type UtilisateurProfessionnel or PropelCollection');
+		}
 	}
 
 	/**
@@ -595,15 +696,25 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query by a related AbsenceEleveTraitement object
 	 *
-	 * @param     AbsenceEleveTraitement $absenceEleveTraitement  the related object to use as filter
+	 * @param     AbsenceEleveTraitement|PropelCollection $absenceEleveTraitement The related object(s) to use as filter
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
 	 */
 	public function filterByAbsenceEleveTraitement($absenceEleveTraitement, $comparison = null)
 	{
-		return $this
-			->addUsingAlias(AbsenceEleveNotificationPeer::A_TRAITEMENT_ID, $absenceEleveTraitement->getId(), $comparison);
+		if ($absenceEleveTraitement instanceof AbsenceEleveTraitement) {
+			return $this
+				->addUsingAlias(AbsenceEleveNotificationPeer::A_TRAITEMENT_ID, $absenceEleveTraitement->getId(), $comparison);
+		} elseif ($absenceEleveTraitement instanceof PropelCollection) {
+			if (null === $comparison) {
+				$comparison = Criteria::IN;
+			}
+			return $this
+				->addUsingAlias(AbsenceEleveNotificationPeer::A_TRAITEMENT_ID, $absenceEleveTraitement->toKeyValue('PrimaryKey', 'Id'), $comparison);
+		} else {
+			throw new PropelException('filterByAbsenceEleveTraitement() only accepts arguments of type AbsenceEleveTraitement or PropelCollection');
+		}
 	}
 
 	/**
@@ -659,15 +770,25 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	/**
 	 * Filter the query by a related ResponsableEleveAdresse object
 	 *
-	 * @param     ResponsableEleveAdresse $responsableEleveAdresse  the related object to use as filter
+	 * @param     ResponsableEleveAdresse|PropelCollection $responsableEleveAdresse The related object(s) to use as filter
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
 	 */
 	public function filterByResponsableEleveAdresse($responsableEleveAdresse, $comparison = null)
 	{
-		return $this
-			->addUsingAlias(AbsenceEleveNotificationPeer::ADR_ID, $responsableEleveAdresse->getAdrId(), $comparison);
+		if ($responsableEleveAdresse instanceof ResponsableEleveAdresse) {
+			return $this
+				->addUsingAlias(AbsenceEleveNotificationPeer::ADR_ID, $responsableEleveAdresse->getAdrId(), $comparison);
+		} elseif ($responsableEleveAdresse instanceof PropelCollection) {
+			if (null === $comparison) {
+				$comparison = Criteria::IN;
+			}
+			return $this
+				->addUsingAlias(AbsenceEleveNotificationPeer::ADR_ID, $responsableEleveAdresse->toKeyValue('PrimaryKey', 'AdrId'), $comparison);
+		} else {
+			throw new PropelException('filterByResponsableEleveAdresse() only accepts arguments of type ResponsableEleveAdresse or PropelCollection');
+		}
 	}
 
 	/**
@@ -730,8 +851,17 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	 */
 	public function filterByJNotificationResponsableEleve($jNotificationResponsableEleve, $comparison = null)
 	{
-		return $this
-			->addUsingAlias(AbsenceEleveNotificationPeer::ID, $jNotificationResponsableEleve->getANotificationId(), $comparison);
+		if ($jNotificationResponsableEleve instanceof JNotificationResponsableEleve) {
+			return $this
+				->addUsingAlias(AbsenceEleveNotificationPeer::ID, $jNotificationResponsableEleve->getANotificationId(), $comparison);
+		} elseif ($jNotificationResponsableEleve instanceof PropelCollection) {
+			return $this
+				->useJNotificationResponsableEleveQuery()
+					->filterByPrimaryKeys($jNotificationResponsableEleve->getPrimaryKeys())
+				->endUse();
+		} else {
+			throw new PropelException('filterByJNotificationResponsableEleve() only accepts arguments of type JNotificationResponsableEleve or PropelCollection');
+		}
 	}
 
 	/**

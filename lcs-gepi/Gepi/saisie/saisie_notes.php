@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_notes.php 6984 2011-05-23 15:07:36Z crob $
+* $Id: saisie_notes.php 6985 2011-05-23 15:07:43Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *

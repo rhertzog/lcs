@@ -1,5 +1,5 @@
 <?php
-/* $Id: login.php 5744 2010-10-24 16:24:32Z regis $
+/* $Id: login.php 7937 2011-08-24 07:17:49Z jjocal $
 *
 * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -71,13 +71,17 @@ NULL , 'Interface de GEPI', 'origine', 'n'
 
 */
 
+//test version de php
+if (version_compare(PHP_VERSION, '5') < 0) {
+    die('GEPI nécessite PHP5 pour fonctionner');
+}
 
 
 
 
 // Pour le tbs_multisite
 if (isset($_GET["rne"])) {
-	setcookie('RNE', $_GET["rne"]);
+	setcookie('RNE', $_GET["rne"], null, '/');
 }
 
 // Vérification de la bonne installation de GEPI
@@ -103,6 +107,11 @@ if (($session_gepi->auth_sso && !$session_gepi->auth_locale && ! $session_gepi->
 	exit();
 }
 
+if ($session_gepi->auth_simpleSAML == 'yes') {
+	//l'authentification est faite pour chaque page par simpleSAML, pas besoin de page d'authentification
+	header("Location: ./accueil.php");
+	die();
+}
 
 // Test de mise à jour : si on détecte que la base n'est à jour avec les nouveaux
 // paramètres utilisés pour l'authentification, on redirige vers maj.php pour
@@ -159,7 +168,7 @@ $test = 'templates/accueil_externe.php' ;
 //==================================
 //Utilisation tbs_multisite
 	$tbs_multisite = "";
-	if (getSettingValue("tbs_multisite") == "y" AND isset($_GET["rne"]) AND $_GET["rne"] != '') {
+	if ($multisite == "y" AND isset($_GET["rne"]) AND $_GET["rne"] != '') {
 		$tbs_multisite = $_GET["rne"];
 	}
 
@@ -338,18 +347,9 @@ $test = mysql_query("SHOW TABLES LIKE 'gabarits'");
 
 // appel des bibliothèques tinyButStrong
 
-		$testphp = phpversion();
-		// on teste le premier chiffre
-		$version = substr($testphp, 0, 1);
-		if ($version == 5) {
-			$_SESSION['tbs_class'] = 'tbs/tbs_class_php5.php';
-		}elseif($version == 4){
-			$_SESSION['tbs_class'] = 'tbs/tbs_class.php';
-		}else{
-			echo ("GEPI necessite PHP5 pour fonctionner");
-			die();
-		}
-			include_once($_SESSION['tbs_class']);
+		
+$_SESSION['tbs_class'] = 'tbs/tbs_class.php';
+include_once($_SESSION['tbs_class']);
 			
 		
 

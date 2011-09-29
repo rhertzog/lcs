@@ -55,6 +55,12 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	protected $password;
 
 	/**
+	 * The value for the salt field.
+	 * @var        string
+	 */
+	protected $salt;
+
+	/**
 	 * The value for the email field.
 	 * @var        string
 	 */
@@ -182,11 +188,6 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * @var        array AbsenceEleveSaisie[] Collection to store aggregation of AbsenceEleveSaisie objects.
 	 */
 	protected $collAbsenceEleveSaisies;
-
-	/**
-	 * @var        array AbsenceEleveSaisie[] Collection to store aggregation of AbsenceEleveSaisie objects.
-	 */
-	protected $collModifiedAbsenceEleveSaisies;
 
 	/**
 	 * @var        array AbsenceEleveTraitement[] Collection to store aggregation of AbsenceEleveTraitement objects.
@@ -321,6 +322,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	public function getPassword()
 	{
 		return $this->password;
+	}
+
+	/**
+	 * Get the [salt] column value.
+	 * sel pour le hmac du mot de passe
+	 * @return     string
+	 */
+	public function getSalt()
+	{
+		return $this->salt;
 	}
 
 	/**
@@ -610,6 +621,26 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	} // setPassword()
 
 	/**
+	 * Set the value of [salt] column.
+	 * sel pour le hmac du mot de passe
+	 * @param      string $v new value
+	 * @return     UtilisateurProfessionnel The current object (for fluent API support)
+	 */
+	public function setSalt($v)
+	{
+		if ($v !== null) {
+			$v = (string) $v;
+		}
+
+		if ($this->salt !== $v) {
+			$this->salt = $v;
+			$this->modifiedColumns[] = UtilisateurProfessionnelPeer::SALT;
+		}
+
+		return $this;
+	} // setSalt()
+
+	/**
 	 * Set the value of [email] column.
 	 * Email de l'utilisateur
 	 * @param      string $v new value
@@ -712,46 +743,20 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	/**
 	 * Sets the value of [date_verrouillage] column to a normalized version of the date/time value specified.
 	 * Date de verrouillage de l'utilisateur
-	 * @param      mixed $v string, integer (timestamp), or DateTime value.  Empty string will
-	 *						be treated as NULL for temporal objects.
+	 * @param      mixed $v string, integer (timestamp), or DateTime value.
+	 *               Empty strings are treated as NULL.
 	 * @return     UtilisateurProfessionnel The current object (for fluent API support)
 	 */
 	public function setDateVerrouillage($v)
 	{
-		// we treat '' as NULL for temporal objects because DateTime('') == DateTime('now')
-		// -- which is unexpected, to say the least.
-		if ($v === null || $v === '') {
-			$dt = null;
-		} elseif ($v instanceof DateTime) {
-			$dt = $v;
-		} else {
-			// some string/numeric value passed; we normalize that so that we can
-			// validate it.
-			try {
-				if (is_numeric($v)) { // if it's a unix timestamp
-					$dt = new DateTime('@'.$v, new DateTimeZone('UTC'));
-					// We have to explicitly specify and then change the time zone because of a
-					// DateTime bug: http://bugs.php.net/bug.php?id=43003
-					$dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
-				} else {
-					$dt = new DateTime($v);
-				}
-			} catch (Exception $x) {
-				throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
-			}
-		}
-
-		if ( $this->date_verrouillage !== null || $dt !== null ) {
-			// (nested ifs are a little easier to read in this case)
-
-			$currNorm = ($this->date_verrouillage !== null && $tmpDt = new DateTime($this->date_verrouillage)) ? $tmpDt->format('Y-m-d') : null;
-			$newNorm = ($dt !== null) ? $dt->format('Y-m-d') : null;
-
-			if ( ($currNorm !== $newNorm) // normalized values don't match 
-					|| ($dt->format('Y-m-d') === '2006-01-01') // or the entered value matches the default
-					)
-			{
-				$this->date_verrouillage = ($dt ? $dt->format('Y-m-d') : null);
+		$dt = PropelDateTime::newInstance($v, null, 'DateTime');
+		if ($this->date_verrouillage !== null || $dt !== null) {
+			$currentDateAsString = ($this->date_verrouillage !== null && $tmpDt = new DateTime($this->date_verrouillage)) ? $tmpDt->format('Y-m-d') : null;
+			$newDateAsString = $dt ? $dt->format('Y-m-d') : null;
+			if ( ($currentDateAsString !== $newDateAsString) // normalized values don't match 
+				|| ($dt->format('Y-m-d') === '2006-01-01') // or the entered value matches the default
+				 ) {
+				$this->date_verrouillage = $newDateAsString;
 				$this->modifiedColumns[] = UtilisateurProfessionnelPeer::DATE_VERROUILLAGE;
 			}
 		} // if either are not null
@@ -782,45 +787,18 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	/**
 	 * Sets the value of [ticket_expiration] column to a normalized version of the date/time value specified.
 	 * ticket_expiration de l'utilisateur
-	 * @param      mixed $v string, integer (timestamp), or DateTime value.  Empty string will
-	 *						be treated as NULL for temporal objects.
+	 * @param      mixed $v string, integer (timestamp), or DateTime value.
+	 *               Empty strings are treated as NULL.
 	 * @return     UtilisateurProfessionnel The current object (for fluent API support)
 	 */
 	public function setTicketExpiration($v)
 	{
-		// we treat '' as NULL for temporal objects because DateTime('') == DateTime('now')
-		// -- which is unexpected, to say the least.
-		if ($v === null || $v === '') {
-			$dt = null;
-		} elseif ($v instanceof DateTime) {
-			$dt = $v;
-		} else {
-			// some string/numeric value passed; we normalize that so that we can
-			// validate it.
-			try {
-				if (is_numeric($v)) { // if it's a unix timestamp
-					$dt = new DateTime('@'.$v, new DateTimeZone('UTC'));
-					// We have to explicitly specify and then change the time zone because of a
-					// DateTime bug: http://bugs.php.net/bug.php?id=43003
-					$dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
-				} else {
-					$dt = new DateTime($v);
-				}
-			} catch (Exception $x) {
-				throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
-			}
-		}
-
-		if ( $this->ticket_expiration !== null || $dt !== null ) {
-			// (nested ifs are a little easier to read in this case)
-
-			$currNorm = ($this->ticket_expiration !== null && $tmpDt = new DateTime($this->ticket_expiration)) ? $tmpDt->format('Y-m-d') : null;
-			$newNorm = ($dt !== null) ? $dt->format('Y-m-d') : null;
-
-			if ( ($currNorm !== $newNorm) // normalized values don't match 
-					)
-			{
-				$this->ticket_expiration = ($dt ? $dt->format('Y-m-d') : null);
+		$dt = PropelDateTime::newInstance($v, null, 'DateTime');
+		if ($this->ticket_expiration !== null || $dt !== null) {
+			$currentDateAsString = ($this->ticket_expiration !== null && $tmpDt = new DateTime($this->ticket_expiration)) ? $tmpDt->format('Y-m-d') : null;
+			$newDateAsString = $dt ? $dt->format('Y-m-d') : null;
+			if ($currentDateAsString !== $newDateAsString) {
+				$this->ticket_expiration = $newDateAsString;
 				$this->modifiedColumns[] = UtilisateurProfessionnelPeer::TICKET_EXPIRATION;
 			}
 		} // if either are not null
@@ -989,19 +967,20 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 			$this->prenom = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
 			$this->civilite = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
 			$this->password = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
-			$this->email = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
-			$this->show_email = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
-			$this->statut = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
-			$this->etat = ($row[$startcol + 8] !== null) ? (string) $row[$startcol + 8] : null;
-			$this->change_mdp = ($row[$startcol + 9] !== null) ? (string) $row[$startcol + 9] : null;
-			$this->date_verrouillage = ($row[$startcol + 10] !== null) ? (string) $row[$startcol + 10] : null;
-			$this->password_ticket = ($row[$startcol + 11] !== null) ? (string) $row[$startcol + 11] : null;
-			$this->ticket_expiration = ($row[$startcol + 12] !== null) ? (string) $row[$startcol + 12] : null;
-			$this->niveau_alerte = ($row[$startcol + 13] !== null) ? (int) $row[$startcol + 13] : null;
-			$this->observation_securite = ($row[$startcol + 14] !== null) ? (int) $row[$startcol + 14] : null;
-			$this->temp_dir = ($row[$startcol + 15] !== null) ? (string) $row[$startcol + 15] : null;
-			$this->numind = ($row[$startcol + 16] !== null) ? (string) $row[$startcol + 16] : null;
-			$this->auth_mode = ($row[$startcol + 17] !== null) ? (string) $row[$startcol + 17] : null;
+			$this->salt = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
+			$this->email = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
+			$this->show_email = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
+			$this->statut = ($row[$startcol + 8] !== null) ? (string) $row[$startcol + 8] : null;
+			$this->etat = ($row[$startcol + 9] !== null) ? (string) $row[$startcol + 9] : null;
+			$this->change_mdp = ($row[$startcol + 10] !== null) ? (string) $row[$startcol + 10] : null;
+			$this->date_verrouillage = ($row[$startcol + 11] !== null) ? (string) $row[$startcol + 11] : null;
+			$this->password_ticket = ($row[$startcol + 12] !== null) ? (string) $row[$startcol + 12] : null;
+			$this->ticket_expiration = ($row[$startcol + 13] !== null) ? (string) $row[$startcol + 13] : null;
+			$this->niveau_alerte = ($row[$startcol + 14] !== null) ? (int) $row[$startcol + 14] : null;
+			$this->observation_securite = ($row[$startcol + 15] !== null) ? (int) $row[$startcol + 15] : null;
+			$this->temp_dir = ($row[$startcol + 16] !== null) ? (string) $row[$startcol + 16] : null;
+			$this->numind = ($row[$startcol + 17] !== null) ? (string) $row[$startcol + 17] : null;
+			$this->auth_mode = ($row[$startcol + 18] !== null) ? (string) $row[$startcol + 18] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -1010,7 +989,7 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 18; // 18 = UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + 19; // 19 = UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating UtilisateurProfessionnel object", $e);
@@ -1089,8 +1068,6 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 			$this->collJAidUtilisateursProfessionnelss = null;
 
 			$this->collAbsenceEleveSaisies = null;
-
-			$this->collModifiedAbsenceEleveSaisies = null;
 
 			$this->collAbsenceEleveTraitements = null;
 
@@ -1304,14 +1281,6 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 				}
 			}
 
-			if ($this->collModifiedAbsenceEleveSaisies !== null) {
-				foreach ($this->collModifiedAbsenceEleveSaisies as $referrerFK) {
-					if (!$referrerFK->isDeleted()) {
-						$affectedRows += $referrerFK->save($con);
-					}
-				}
-			}
-
 			if ($this->collAbsenceEleveTraitements !== null) {
 				foreach ($this->collAbsenceEleveTraitements as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
@@ -1503,14 +1472,6 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 					}
 				}
 
-				if ($this->collModifiedAbsenceEleveSaisies !== null) {
-					foreach ($this->collModifiedAbsenceEleveSaisies as $referrerFK) {
-						if (!$referrerFK->validate($columns)) {
-							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
-						}
-					}
-				}
-
 				if ($this->collAbsenceEleveTraitements !== null) {
 					foreach ($this->collAbsenceEleveTraitements as $referrerFK) {
 						if (!$referrerFK->validate($columns)) {
@@ -1608,42 +1569,45 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 				return $this->getPassword();
 				break;
 			case 5:
-				return $this->getEmail();
+				return $this->getSalt();
 				break;
 			case 6:
-				return $this->getShowEmail();
+				return $this->getEmail();
 				break;
 			case 7:
-				return $this->getStatut();
+				return $this->getShowEmail();
 				break;
 			case 8:
-				return $this->getEtat();
+				return $this->getStatut();
 				break;
 			case 9:
-				return $this->getChangeMdp();
+				return $this->getEtat();
 				break;
 			case 10:
-				return $this->getDateVerrouillage();
+				return $this->getChangeMdp();
 				break;
 			case 11:
-				return $this->getPasswordTicket();
+				return $this->getDateVerrouillage();
 				break;
 			case 12:
-				return $this->getTicketExpiration();
+				return $this->getPasswordTicket();
 				break;
 			case 13:
-				return $this->getNiveauAlerte();
+				return $this->getTicketExpiration();
 				break;
 			case 14:
-				return $this->getObservationSecurite();
+				return $this->getNiveauAlerte();
 				break;
 			case 15:
-				return $this->getTempDir();
+				return $this->getObservationSecurite();
 				break;
 			case 16:
-				return $this->getNumind();
+				return $this->getTempDir();
 				break;
 			case 17:
+				return $this->getNumind();
+				break;
+			case 18:
 				return $this->getAuthMode();
 				break;
 			default:
@@ -1662,11 +1626,17 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM.
 	 *                    Defaults to BasePeer::TYPE_PHPNAME.
 	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
+	 * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
 	 *
 	 * @return    array an associative array containing the field names (as keys) and field values
 	 */
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
 	{
+		if (isset($alreadyDumpedObjects['UtilisateurProfessionnel'][$this->getPrimaryKey()])) {
+			return '*RECURSION*';
+		}
+		$alreadyDumpedObjects['UtilisateurProfessionnel'][$this->getPrimaryKey()] = true;
 		$keys = UtilisateurProfessionnelPeer::getFieldNames($keyType);
 		$result = array(
 			$keys[0] => $this->getLogin(),
@@ -1674,20 +1644,68 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 			$keys[2] => $this->getPrenom(),
 			$keys[3] => $this->getCivilite(),
 			$keys[4] => $this->getPassword(),
-			$keys[5] => $this->getEmail(),
-			$keys[6] => $this->getShowEmail(),
-			$keys[7] => $this->getStatut(),
-			$keys[8] => $this->getEtat(),
-			$keys[9] => $this->getChangeMdp(),
-			$keys[10] => $this->getDateVerrouillage(),
-			$keys[11] => $this->getPasswordTicket(),
-			$keys[12] => $this->getTicketExpiration(),
-			$keys[13] => $this->getNiveauAlerte(),
-			$keys[14] => $this->getObservationSecurite(),
-			$keys[15] => $this->getTempDir(),
-			$keys[16] => $this->getNumind(),
-			$keys[17] => $this->getAuthMode(),
+			$keys[5] => $this->getSalt(),
+			$keys[6] => $this->getEmail(),
+			$keys[7] => $this->getShowEmail(),
+			$keys[8] => $this->getStatut(),
+			$keys[9] => $this->getEtat(),
+			$keys[10] => $this->getChangeMdp(),
+			$keys[11] => $this->getDateVerrouillage(),
+			$keys[12] => $this->getPasswordTicket(),
+			$keys[13] => $this->getTicketExpiration(),
+			$keys[14] => $this->getNiveauAlerte(),
+			$keys[15] => $this->getObservationSecurite(),
+			$keys[16] => $this->getTempDir(),
+			$keys[17] => $this->getNumind(),
+			$keys[18] => $this->getAuthMode(),
 		);
+		if ($includeForeignObjects) {
+			if (null !== $this->collJGroupesProfesseurss) {
+				$result['JGroupesProfesseurss'] = $this->collJGroupesProfesseurss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collJScolClassess) {
+				$result['JScolClassess'] = $this->collJScolClassess->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collCahierTexteCompteRendus) {
+				$result['CahierTexteCompteRendus'] = $this->collCahierTexteCompteRendus->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collCahierTexteTravailAFaires) {
+				$result['CahierTexteTravailAFaires'] = $this->collCahierTexteTravailAFaires->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collCahierTexteNoticePrivees) {
+				$result['CahierTexteNoticePrivees'] = $this->collCahierTexteNoticePrivees->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collJEleveCpes) {
+				$result['JEleveCpes'] = $this->collJEleveCpes->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collJEleveProfesseurPrincipals) {
+				$result['JEleveProfesseurPrincipals'] = $this->collJEleveProfesseurPrincipals->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collJAidUtilisateursProfessionnelss) {
+				$result['JAidUtilisateursProfessionnelss'] = $this->collJAidUtilisateursProfessionnelss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collAbsenceEleveSaisies) {
+				$result['AbsenceEleveSaisies'] = $this->collAbsenceEleveSaisies->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collAbsenceEleveTraitements) {
+				$result['AbsenceEleveTraitements'] = $this->collAbsenceEleveTraitements->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collModifiedAbsenceEleveTraitements) {
+				$result['ModifiedAbsenceEleveTraitements'] = $this->collModifiedAbsenceEleveTraitements->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collAbsenceEleveNotifications) {
+				$result['AbsenceEleveNotifications'] = $this->collAbsenceEleveNotifications->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collJProfesseursMatieress) {
+				$result['JProfesseursMatieress'] = $this->collJProfesseursMatieress->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collPreferenceUtilisateurProfessionnels) {
+				$result['PreferenceUtilisateurProfessionnels'] = $this->collPreferenceUtilisateurProfessionnels->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+			if (null !== $this->collEdtEmplacementCourss) {
+				$result['EdtEmplacementCourss'] = $this->collEdtEmplacementCourss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+		}
 		return $result;
 	}
 
@@ -1734,42 +1752,45 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 				$this->setPassword($value);
 				break;
 			case 5:
-				$this->setEmail($value);
+				$this->setSalt($value);
 				break;
 			case 6:
-				$this->setShowEmail($value);
+				$this->setEmail($value);
 				break;
 			case 7:
-				$this->setStatut($value);
+				$this->setShowEmail($value);
 				break;
 			case 8:
-				$this->setEtat($value);
+				$this->setStatut($value);
 				break;
 			case 9:
-				$this->setChangeMdp($value);
+				$this->setEtat($value);
 				break;
 			case 10:
-				$this->setDateVerrouillage($value);
+				$this->setChangeMdp($value);
 				break;
 			case 11:
-				$this->setPasswordTicket($value);
+				$this->setDateVerrouillage($value);
 				break;
 			case 12:
-				$this->setTicketExpiration($value);
+				$this->setPasswordTicket($value);
 				break;
 			case 13:
-				$this->setNiveauAlerte($value);
+				$this->setTicketExpiration($value);
 				break;
 			case 14:
-				$this->setObservationSecurite($value);
+				$this->setNiveauAlerte($value);
 				break;
 			case 15:
-				$this->setTempDir($value);
+				$this->setObservationSecurite($value);
 				break;
 			case 16:
-				$this->setNumind($value);
+				$this->setTempDir($value);
 				break;
 			case 17:
+				$this->setNumind($value);
+				break;
+			case 18:
 				$this->setAuthMode($value);
 				break;
 		} // switch()
@@ -1801,19 +1822,20 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 		if (array_key_exists($keys[2], $arr)) $this->setPrenom($arr[$keys[2]]);
 		if (array_key_exists($keys[3], $arr)) $this->setCivilite($arr[$keys[3]]);
 		if (array_key_exists($keys[4], $arr)) $this->setPassword($arr[$keys[4]]);
-		if (array_key_exists($keys[5], $arr)) $this->setEmail($arr[$keys[5]]);
-		if (array_key_exists($keys[6], $arr)) $this->setShowEmail($arr[$keys[6]]);
-		if (array_key_exists($keys[7], $arr)) $this->setStatut($arr[$keys[7]]);
-		if (array_key_exists($keys[8], $arr)) $this->setEtat($arr[$keys[8]]);
-		if (array_key_exists($keys[9], $arr)) $this->setChangeMdp($arr[$keys[9]]);
-		if (array_key_exists($keys[10], $arr)) $this->setDateVerrouillage($arr[$keys[10]]);
-		if (array_key_exists($keys[11], $arr)) $this->setPasswordTicket($arr[$keys[11]]);
-		if (array_key_exists($keys[12], $arr)) $this->setTicketExpiration($arr[$keys[12]]);
-		if (array_key_exists($keys[13], $arr)) $this->setNiveauAlerte($arr[$keys[13]]);
-		if (array_key_exists($keys[14], $arr)) $this->setObservationSecurite($arr[$keys[14]]);
-		if (array_key_exists($keys[15], $arr)) $this->setTempDir($arr[$keys[15]]);
-		if (array_key_exists($keys[16], $arr)) $this->setNumind($arr[$keys[16]]);
-		if (array_key_exists($keys[17], $arr)) $this->setAuthMode($arr[$keys[17]]);
+		if (array_key_exists($keys[5], $arr)) $this->setSalt($arr[$keys[5]]);
+		if (array_key_exists($keys[6], $arr)) $this->setEmail($arr[$keys[6]]);
+		if (array_key_exists($keys[7], $arr)) $this->setShowEmail($arr[$keys[7]]);
+		if (array_key_exists($keys[8], $arr)) $this->setStatut($arr[$keys[8]]);
+		if (array_key_exists($keys[9], $arr)) $this->setEtat($arr[$keys[9]]);
+		if (array_key_exists($keys[10], $arr)) $this->setChangeMdp($arr[$keys[10]]);
+		if (array_key_exists($keys[11], $arr)) $this->setDateVerrouillage($arr[$keys[11]]);
+		if (array_key_exists($keys[12], $arr)) $this->setPasswordTicket($arr[$keys[12]]);
+		if (array_key_exists($keys[13], $arr)) $this->setTicketExpiration($arr[$keys[13]]);
+		if (array_key_exists($keys[14], $arr)) $this->setNiveauAlerte($arr[$keys[14]]);
+		if (array_key_exists($keys[15], $arr)) $this->setObservationSecurite($arr[$keys[15]]);
+		if (array_key_exists($keys[16], $arr)) $this->setTempDir($arr[$keys[16]]);
+		if (array_key_exists($keys[17], $arr)) $this->setNumind($arr[$keys[17]]);
+		if (array_key_exists($keys[18], $arr)) $this->setAuthMode($arr[$keys[18]]);
 	}
 
 	/**
@@ -1830,6 +1852,7 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 		if ($this->isColumnModified(UtilisateurProfessionnelPeer::PRENOM)) $criteria->add(UtilisateurProfessionnelPeer::PRENOM, $this->prenom);
 		if ($this->isColumnModified(UtilisateurProfessionnelPeer::CIVILITE)) $criteria->add(UtilisateurProfessionnelPeer::CIVILITE, $this->civilite);
 		if ($this->isColumnModified(UtilisateurProfessionnelPeer::PASSWORD)) $criteria->add(UtilisateurProfessionnelPeer::PASSWORD, $this->password);
+		if ($this->isColumnModified(UtilisateurProfessionnelPeer::SALT)) $criteria->add(UtilisateurProfessionnelPeer::SALT, $this->salt);
 		if ($this->isColumnModified(UtilisateurProfessionnelPeer::EMAIL)) $criteria->add(UtilisateurProfessionnelPeer::EMAIL, $this->email);
 		if ($this->isColumnModified(UtilisateurProfessionnelPeer::SHOW_EMAIL)) $criteria->add(UtilisateurProfessionnelPeer::SHOW_EMAIL, $this->show_email);
 		if ($this->isColumnModified(UtilisateurProfessionnelPeer::STATUT)) $criteria->add(UtilisateurProfessionnelPeer::STATUT, $this->statut);
@@ -1900,28 +1923,30 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 *
 	 * @param      object $copyObj An object of UtilisateurProfessionnel (or compatible) type.
 	 * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
+	 * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
 	 * @throws     PropelException
 	 */
-	public function copyInto($copyObj, $deepCopy = false)
+	public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
 	{
-		$copyObj->setLogin($this->login);
-		$copyObj->setNom($this->nom);
-		$copyObj->setPrenom($this->prenom);
-		$copyObj->setCivilite($this->civilite);
-		$copyObj->setPassword($this->password);
-		$copyObj->setEmail($this->email);
-		$copyObj->setShowEmail($this->show_email);
-		$copyObj->setStatut($this->statut);
-		$copyObj->setEtat($this->etat);
-		$copyObj->setChangeMdp($this->change_mdp);
-		$copyObj->setDateVerrouillage($this->date_verrouillage);
-		$copyObj->setPasswordTicket($this->password_ticket);
-		$copyObj->setTicketExpiration($this->ticket_expiration);
-		$copyObj->setNiveauAlerte($this->niveau_alerte);
-		$copyObj->setObservationSecurite($this->observation_securite);
-		$copyObj->setTempDir($this->temp_dir);
-		$copyObj->setNumind($this->numind);
-		$copyObj->setAuthMode($this->auth_mode);
+		$copyObj->setLogin($this->getLogin());
+		$copyObj->setNom($this->getNom());
+		$copyObj->setPrenom($this->getPrenom());
+		$copyObj->setCivilite($this->getCivilite());
+		$copyObj->setPassword($this->getPassword());
+		$copyObj->setSalt($this->getSalt());
+		$copyObj->setEmail($this->getEmail());
+		$copyObj->setShowEmail($this->getShowEmail());
+		$copyObj->setStatut($this->getStatut());
+		$copyObj->setEtat($this->getEtat());
+		$copyObj->setChangeMdp($this->getChangeMdp());
+		$copyObj->setDateVerrouillage($this->getDateVerrouillage());
+		$copyObj->setPasswordTicket($this->getPasswordTicket());
+		$copyObj->setTicketExpiration($this->getTicketExpiration());
+		$copyObj->setNiveauAlerte($this->getNiveauAlerte());
+		$copyObj->setObservationSecurite($this->getObservationSecurite());
+		$copyObj->setTempDir($this->getTempDir());
+		$copyObj->setNumind($this->getNumind());
+		$copyObj->setAuthMode($this->getAuthMode());
 
 		if ($deepCopy) {
 			// important: temporarily setNew(false) because this affects the behavior of
@@ -1982,12 +2007,6 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 				}
 			}
 
-			foreach ($this->getModifiedAbsenceEleveSaisies() as $relObj) {
-				if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-					$copyObj->addModifiedAbsenceEleveSaisie($relObj->copy($deepCopy));
-				}
-			}
-
 			foreach ($this->getAbsenceEleveTraitements() as $relObj) {
 				if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
 					$copyObj->addAbsenceEleveTraitement($relObj->copy($deepCopy));
@@ -2026,8 +2045,9 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 
 		} // if ($deepCopy)
 
-
-		$copyObj->setNew(true);
+		if ($makeNew) {
+			$copyObj->setNew(true);
+		}
 	}
 
 	/**
@@ -2068,6 +2088,64 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 		return self::$peer;
 	}
 
+
+	/**
+	 * Initializes a collection based on the name of a relation.
+	 * Avoids crafting an 'init[$relationName]s' method name 
+	 * that wouldn't work when StandardEnglishPluralizer is used.
+	 *
+	 * @param      string $relationName The name of the relation to initialize
+	 * @return     void
+	 */
+	public function initRelation($relationName)
+	{
+		if ('JGroupesProfesseurs' == $relationName) {
+			return $this->initJGroupesProfesseurss();
+		}
+		if ('JScolClasses' == $relationName) {
+			return $this->initJScolClassess();
+		}
+		if ('CahierTexteCompteRendu' == $relationName) {
+			return $this->initCahierTexteCompteRendus();
+		}
+		if ('CahierTexteTravailAFaire' == $relationName) {
+			return $this->initCahierTexteTravailAFaires();
+		}
+		if ('CahierTexteNoticePrivee' == $relationName) {
+			return $this->initCahierTexteNoticePrivees();
+		}
+		if ('JEleveCpe' == $relationName) {
+			return $this->initJEleveCpes();
+		}
+		if ('JEleveProfesseurPrincipal' == $relationName) {
+			return $this->initJEleveProfesseurPrincipals();
+		}
+		if ('JAidUtilisateursProfessionnels' == $relationName) {
+			return $this->initJAidUtilisateursProfessionnelss();
+		}
+		if ('AbsenceEleveSaisie' == $relationName) {
+			return $this->initAbsenceEleveSaisies();
+		}
+		if ('AbsenceEleveTraitement' == $relationName) {
+			return $this->initAbsenceEleveTraitements();
+		}
+		if ('ModifiedAbsenceEleveTraitement' == $relationName) {
+			return $this->initModifiedAbsenceEleveTraitements();
+		}
+		if ('AbsenceEleveNotification' == $relationName) {
+			return $this->initAbsenceEleveNotifications();
+		}
+		if ('JProfesseursMatieres' == $relationName) {
+			return $this->initJProfesseursMatieress();
+		}
+		if ('PreferenceUtilisateurProfessionnel' == $relationName) {
+			return $this->initPreferenceUtilisateurProfessionnels();
+		}
+		if ('EdtEmplacementCours' == $relationName) {
+			return $this->initEdtEmplacementCourss();
+		}
+	}
+
 	/**
 	 * Clears out the collJGroupesProfesseurss collection
 	 *
@@ -2089,10 +2167,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initJGroupesProfesseurss()
+	public function initJGroupesProfesseurss($overrideExisting = true)
 	{
+		if (null !== $this->collJGroupesProfesseurss && !$overrideExisting) {
+			return;
+		}
 		$this->collJGroupesProfesseurss = new PropelObjectCollection();
 		$this->collJGroupesProfesseurss->setModel('JGroupesProfesseurs');
 	}
@@ -2223,10 +2307,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initJScolClassess()
+	public function initJScolClassess($overrideExisting = true)
 	{
+		if (null !== $this->collJScolClassess && !$overrideExisting) {
+			return;
+		}
 		$this->collJScolClassess = new PropelObjectCollection();
 		$this->collJScolClassess->setModel('JScolClasses');
 	}
@@ -2357,10 +2447,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initCahierTexteCompteRendus()
+	public function initCahierTexteCompteRendus($overrideExisting = true)
 	{
+		if (null !== $this->collCahierTexteCompteRendus && !$overrideExisting) {
+			return;
+		}
 		$this->collCahierTexteCompteRendus = new PropelObjectCollection();
 		$this->collCahierTexteCompteRendus->setModel('CahierTexteCompteRendu');
 	}
@@ -2516,10 +2612,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initCahierTexteTravailAFaires()
+	public function initCahierTexteTravailAFaires($overrideExisting = true)
 	{
+		if (null !== $this->collCahierTexteTravailAFaires && !$overrideExisting) {
+			return;
+		}
 		$this->collCahierTexteTravailAFaires = new PropelObjectCollection();
 		$this->collCahierTexteTravailAFaires->setModel('CahierTexteTravailAFaire');
 	}
@@ -2675,10 +2777,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initCahierTexteNoticePrivees()
+	public function initCahierTexteNoticePrivees($overrideExisting = true)
 	{
+		if (null !== $this->collCahierTexteNoticePrivees && !$overrideExisting) {
+			return;
+		}
 		$this->collCahierTexteNoticePrivees = new PropelObjectCollection();
 		$this->collCahierTexteNoticePrivees->setModel('CahierTexteNoticePrivee');
 	}
@@ -2834,10 +2942,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initJEleveCpes()
+	public function initJEleveCpes($overrideExisting = true)
 	{
+		if (null !== $this->collJEleveCpes && !$overrideExisting) {
+			return;
+		}
 		$this->collJEleveCpes = new PropelObjectCollection();
 		$this->collJEleveCpes->setModel('JEleveCpe');
 	}
@@ -2968,10 +3082,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initJEleveProfesseurPrincipals()
+	public function initJEleveProfesseurPrincipals($overrideExisting = true)
 	{
+		if (null !== $this->collJEleveProfesseurPrincipals && !$overrideExisting) {
+			return;
+		}
 		$this->collJEleveProfesseurPrincipals = new PropelObjectCollection();
 		$this->collJEleveProfesseurPrincipals->setModel('JEleveProfesseurPrincipal');
 	}
@@ -3127,10 +3247,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initJAidUtilisateursProfessionnelss()
+	public function initJAidUtilisateursProfessionnelss($overrideExisting = true)
 	{
+		if (null !== $this->collJAidUtilisateursProfessionnelss && !$overrideExisting) {
+			return;
+		}
 		$this->collJAidUtilisateursProfessionnelss = new PropelObjectCollection();
 		$this->collJAidUtilisateursProfessionnelss->setModel('JAidUtilisateursProfessionnels');
 	}
@@ -3261,10 +3387,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initAbsenceEleveSaisies()
+	public function initAbsenceEleveSaisies($overrideExisting = true)
 	{
+		if (null !== $this->collAbsenceEleveSaisies && !$overrideExisting) {
+			return;
+		}
 		$this->collAbsenceEleveSaisies = new PropelObjectCollection();
 		$this->collAbsenceEleveSaisies->setModel('AbsenceEleveSaisie');
 	}
@@ -3525,290 +3657,6 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	}
 
 	/**
-	 * Clears out the collModifiedAbsenceEleveSaisies collection
-	 *
-	 * This does not modify the database; however, it will remove any associated objects, causing
-	 * them to be refetched by subsequent calls to accessor method.
-	 *
-	 * @return     void
-	 * @see        addModifiedAbsenceEleveSaisies()
-	 */
-	public function clearModifiedAbsenceEleveSaisies()
-	{
-		$this->collModifiedAbsenceEleveSaisies = null; // important to set this to NULL since that means it is uninitialized
-	}
-
-	/**
-	 * Initializes the collModifiedAbsenceEleveSaisies collection.
-	 *
-	 * By default this just sets the collModifiedAbsenceEleveSaisies collection to an empty array (like clearcollModifiedAbsenceEleveSaisies());
-	 * however, you may wish to override this method in your stub class to provide setting appropriate
-	 * to your application -- for example, setting the initial array to the values stored in database.
-	 *
-	 * @return     void
-	 */
-	public function initModifiedAbsenceEleveSaisies()
-	{
-		$this->collModifiedAbsenceEleveSaisies = new PropelObjectCollection();
-		$this->collModifiedAbsenceEleveSaisies->setModel('AbsenceEleveSaisie');
-	}
-
-	/**
-	 * Gets an array of AbsenceEleveSaisie objects which contain a foreign key that references this object.
-	 *
-	 * If the $criteria is not null, it is used to always fetch the results from the database.
-	 * Otherwise the results are fetched from the database the first time, then cached.
-	 * Next time the same method is called without $criteria, the cached collection is returned.
-	 * If this UtilisateurProfessionnel is new, it will return
-	 * an empty collection or the current collection; the criteria is ignored on a new object.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @return     PropelCollection|array AbsenceEleveSaisie[] List of AbsenceEleveSaisie objects
-	 * @throws     PropelException
-	 */
-	public function getModifiedAbsenceEleveSaisies($criteria = null, PropelPDO $con = null)
-	{
-		if(null === $this->collModifiedAbsenceEleveSaisies || null !== $criteria) {
-			if ($this->isNew() && null === $this->collModifiedAbsenceEleveSaisies) {
-				// return empty collection
-				$this->initModifiedAbsenceEleveSaisies();
-			} else {
-				$collModifiedAbsenceEleveSaisies = AbsenceEleveSaisieQuery::create(null, $criteria)
-					->filterByModifieParUtilisateur($this)
-					->find($con);
-				if (null !== $criteria) {
-					return $collModifiedAbsenceEleveSaisies;
-				}
-				$this->collModifiedAbsenceEleveSaisies = $collModifiedAbsenceEleveSaisies;
-			}
-		}
-		return $this->collModifiedAbsenceEleveSaisies;
-	}
-
-	/**
-	 * Returns the number of related AbsenceEleveSaisie objects.
-	 *
-	 * @param      Criteria $criteria
-	 * @param      boolean $distinct
-	 * @param      PropelPDO $con
-	 * @return     int Count of related AbsenceEleveSaisie objects.
-	 * @throws     PropelException
-	 */
-	public function countModifiedAbsenceEleveSaisies(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
-	{
-		if(null === $this->collModifiedAbsenceEleveSaisies || null !== $criteria) {
-			if ($this->isNew() && null === $this->collModifiedAbsenceEleveSaisies) {
-				return 0;
-			} else {
-				$query = AbsenceEleveSaisieQuery::create(null, $criteria);
-				if($distinct) {
-					$query->distinct();
-				}
-				return $query
-					->filterByModifieParUtilisateur($this)
-					->count($con);
-			}
-		} else {
-			return count($this->collModifiedAbsenceEleveSaisies);
-		}
-	}
-
-	/**
-	 * Method called to associate a AbsenceEleveSaisie object to this object
-	 * through the AbsenceEleveSaisie foreign key attribute.
-	 *
-	 * @param      AbsenceEleveSaisie $l AbsenceEleveSaisie
-	 * @return     void
-	 * @throws     PropelException
-	 */
-	public function addModifiedAbsenceEleveSaisie(AbsenceEleveSaisie $l)
-	{
-		if ($this->collModifiedAbsenceEleveSaisies === null) {
-			$this->initModifiedAbsenceEleveSaisies();
-		}
-		if (!$this->collModifiedAbsenceEleveSaisies->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collModifiedAbsenceEleveSaisies[]= $l;
-			$l->setModifieParUtilisateur($this);
-		}
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this UtilisateurProfessionnel is new, it will return
-	 * an empty collection; or if this UtilisateurProfessionnel has previously
-	 * been saved, it will retrieve related ModifiedAbsenceEleveSaisies from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in UtilisateurProfessionnel.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-	 * @return     PropelCollection|array AbsenceEleveSaisie[] List of AbsenceEleveSaisie objects
-	 */
-	public function getModifiedAbsenceEleveSaisiesJoinEleve($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$query = AbsenceEleveSaisieQuery::create(null, $criteria);
-		$query->joinWith('Eleve', $join_behavior);
-
-		return $this->getModifiedAbsenceEleveSaisies($query, $con);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this UtilisateurProfessionnel is new, it will return
-	 * an empty collection; or if this UtilisateurProfessionnel has previously
-	 * been saved, it will retrieve related ModifiedAbsenceEleveSaisies from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in UtilisateurProfessionnel.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-	 * @return     PropelCollection|array AbsenceEleveSaisie[] List of AbsenceEleveSaisie objects
-	 */
-	public function getModifiedAbsenceEleveSaisiesJoinEdtCreneau($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$query = AbsenceEleveSaisieQuery::create(null, $criteria);
-		$query->joinWith('EdtCreneau', $join_behavior);
-
-		return $this->getModifiedAbsenceEleveSaisies($query, $con);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this UtilisateurProfessionnel is new, it will return
-	 * an empty collection; or if this UtilisateurProfessionnel has previously
-	 * been saved, it will retrieve related ModifiedAbsenceEleveSaisies from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in UtilisateurProfessionnel.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-	 * @return     PropelCollection|array AbsenceEleveSaisie[] List of AbsenceEleveSaisie objects
-	 */
-	public function getModifiedAbsenceEleveSaisiesJoinEdtEmplacementCours($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$query = AbsenceEleveSaisieQuery::create(null, $criteria);
-		$query->joinWith('EdtEmplacementCours', $join_behavior);
-
-		return $this->getModifiedAbsenceEleveSaisies($query, $con);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this UtilisateurProfessionnel is new, it will return
-	 * an empty collection; or if this UtilisateurProfessionnel has previously
-	 * been saved, it will retrieve related ModifiedAbsenceEleveSaisies from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in UtilisateurProfessionnel.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-	 * @return     PropelCollection|array AbsenceEleveSaisie[] List of AbsenceEleveSaisie objects
-	 */
-	public function getModifiedAbsenceEleveSaisiesJoinGroupe($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$query = AbsenceEleveSaisieQuery::create(null, $criteria);
-		$query->joinWith('Groupe', $join_behavior);
-
-		return $this->getModifiedAbsenceEleveSaisies($query, $con);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this UtilisateurProfessionnel is new, it will return
-	 * an empty collection; or if this UtilisateurProfessionnel has previously
-	 * been saved, it will retrieve related ModifiedAbsenceEleveSaisies from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in UtilisateurProfessionnel.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-	 * @return     PropelCollection|array AbsenceEleveSaisie[] List of AbsenceEleveSaisie objects
-	 */
-	public function getModifiedAbsenceEleveSaisiesJoinClasse($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$query = AbsenceEleveSaisieQuery::create(null, $criteria);
-		$query->joinWith('Classe', $join_behavior);
-
-		return $this->getModifiedAbsenceEleveSaisies($query, $con);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this UtilisateurProfessionnel is new, it will return
-	 * an empty collection; or if this UtilisateurProfessionnel has previously
-	 * been saved, it will retrieve related ModifiedAbsenceEleveSaisies from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in UtilisateurProfessionnel.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-	 * @return     PropelCollection|array AbsenceEleveSaisie[] List of AbsenceEleveSaisie objects
-	 */
-	public function getModifiedAbsenceEleveSaisiesJoinAidDetails($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$query = AbsenceEleveSaisieQuery::create(null, $criteria);
-		$query->joinWith('AidDetails', $join_behavior);
-
-		return $this->getModifiedAbsenceEleveSaisies($query, $con);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this UtilisateurProfessionnel is new, it will return
-	 * an empty collection; or if this UtilisateurProfessionnel has previously
-	 * been saved, it will retrieve related ModifiedAbsenceEleveSaisies from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in UtilisateurProfessionnel.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-	 * @return     PropelCollection|array AbsenceEleveSaisie[] List of AbsenceEleveSaisie objects
-	 */
-	public function getModifiedAbsenceEleveSaisiesJoinAbsenceEleveLieu($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$query = AbsenceEleveSaisieQuery::create(null, $criteria);
-		$query->joinWith('AbsenceEleveLieu', $join_behavior);
-
-		return $this->getModifiedAbsenceEleveSaisies($query, $con);
-	}
-
-	/**
 	 * Clears out the collAbsenceEleveTraitements collection
 	 *
 	 * This does not modify the database; however, it will remove any associated objects, causing
@@ -3829,10 +3677,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initAbsenceEleveTraitements()
+	public function initAbsenceEleveTraitements($overrideExisting = true)
 	{
+		if (null !== $this->collAbsenceEleveTraitements && !$overrideExisting) {
+			return;
+		}
 		$this->collAbsenceEleveTraitements = new PropelObjectCollection();
 		$this->collAbsenceEleveTraitements->setModel('AbsenceEleveTraitement');
 	}
@@ -4013,10 +3867,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initModifiedAbsenceEleveTraitements()
+	public function initModifiedAbsenceEleveTraitements($overrideExisting = true)
 	{
+		if (null !== $this->collModifiedAbsenceEleveTraitements && !$overrideExisting) {
+			return;
+		}
 		$this->collModifiedAbsenceEleveTraitements = new PropelObjectCollection();
 		$this->collModifiedAbsenceEleveTraitements->setModel('AbsenceEleveTraitement');
 	}
@@ -4197,10 +4057,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initAbsenceEleveNotifications()
+	public function initAbsenceEleveNotifications($overrideExisting = true)
 	{
+		if (null !== $this->collAbsenceEleveNotifications && !$overrideExisting) {
+			return;
+		}
 		$this->collAbsenceEleveNotifications = new PropelObjectCollection();
 		$this->collAbsenceEleveNotifications->setModel('AbsenceEleveNotification');
 	}
@@ -4356,10 +4222,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initJProfesseursMatieress()
+	public function initJProfesseursMatieress($overrideExisting = true)
 	{
+		if (null !== $this->collJProfesseursMatieress && !$overrideExisting) {
+			return;
+		}
 		$this->collJProfesseursMatieress = new PropelObjectCollection();
 		$this->collJProfesseursMatieress->setModel('JProfesseursMatieres');
 	}
@@ -4490,10 +4362,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initPreferenceUtilisateurProfessionnels()
+	public function initPreferenceUtilisateurProfessionnels($overrideExisting = true)
 	{
+		if (null !== $this->collPreferenceUtilisateurProfessionnels && !$overrideExisting) {
+			return;
+		}
 		$this->collPreferenceUtilisateurProfessionnels = new PropelObjectCollection();
 		$this->collPreferenceUtilisateurProfessionnels->setModel('PreferenceUtilisateurProfessionnel');
 	}
@@ -4599,10 +4477,16 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initEdtEmplacementCourss()
+	public function initEdtEmplacementCourss($overrideExisting = true)
 	{
+		if (null !== $this->collEdtEmplacementCourss && !$overrideExisting) {
+			return;
+		}
 		$this->collEdtEmplacementCourss = new PropelObjectCollection();
 		$this->collEdtEmplacementCourss->setModel('EdtEmplacementCours');
 	}
@@ -5161,6 +5045,7 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 		$this->prenom = null;
 		$this->civilite = null;
 		$this->password = null;
+		$this->salt = null;
 		$this->email = null;
 		$this->show_email = null;
 		$this->statut = null;
@@ -5184,115 +5069,191 @@ abstract class BaseUtilisateurProfessionnel extends BaseObject  implements Persi
 	}
 
 	/**
-	 * Resets all collections of referencing foreign keys.
+	 * Resets all references to other model objects or collections of model objects.
 	 *
-	 * This method is a user-space workaround for PHP's inability to garbage collect objects
-	 * with circular references.  This is currently necessary when using Propel in certain
-	 * daemon or large-volumne/high-memory operations.
+	 * This method is a user-space workaround for PHP's inability to garbage collect
+	 * objects with circular references (even in PHP 5.3). This is currently necessary
+	 * when using Propel in certain daemon or large-volumne/high-memory operations.
 	 *
-	 * @param      boolean $deep Whether to also clear the references on all associated objects.
+	 * @param      boolean $deep Whether to also clear the references on all referrer objects.
 	 */
 	public function clearAllReferences($deep = false)
 	{
 		if ($deep) {
 			if ($this->collJGroupesProfesseurss) {
-				foreach ((array) $this->collJGroupesProfesseurss as $o) {
+				foreach ($this->collJGroupesProfesseurss as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collJScolClassess) {
-				foreach ((array) $this->collJScolClassess as $o) {
+				foreach ($this->collJScolClassess as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collCahierTexteCompteRendus) {
-				foreach ((array) $this->collCahierTexteCompteRendus as $o) {
+				foreach ($this->collCahierTexteCompteRendus as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collCahierTexteTravailAFaires) {
-				foreach ((array) $this->collCahierTexteTravailAFaires as $o) {
+				foreach ($this->collCahierTexteTravailAFaires as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collCahierTexteNoticePrivees) {
-				foreach ((array) $this->collCahierTexteNoticePrivees as $o) {
+				foreach ($this->collCahierTexteNoticePrivees as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collJEleveCpes) {
-				foreach ((array) $this->collJEleveCpes as $o) {
+				foreach ($this->collJEleveCpes as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collJEleveProfesseurPrincipals) {
-				foreach ((array) $this->collJEleveProfesseurPrincipals as $o) {
+				foreach ($this->collJEleveProfesseurPrincipals as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collJAidUtilisateursProfessionnelss) {
-				foreach ((array) $this->collJAidUtilisateursProfessionnelss as $o) {
+				foreach ($this->collJAidUtilisateursProfessionnelss as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collAbsenceEleveSaisies) {
-				foreach ((array) $this->collAbsenceEleveSaisies as $o) {
-					$o->clearAllReferences($deep);
-				}
-			}
-			if ($this->collModifiedAbsenceEleveSaisies) {
-				foreach ((array) $this->collModifiedAbsenceEleveSaisies as $o) {
+				foreach ($this->collAbsenceEleveSaisies as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collAbsenceEleveTraitements) {
-				foreach ((array) $this->collAbsenceEleveTraitements as $o) {
+				foreach ($this->collAbsenceEleveTraitements as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collModifiedAbsenceEleveTraitements) {
-				foreach ((array) $this->collModifiedAbsenceEleveTraitements as $o) {
+				foreach ($this->collModifiedAbsenceEleveTraitements as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collAbsenceEleveNotifications) {
-				foreach ((array) $this->collAbsenceEleveNotifications as $o) {
+				foreach ($this->collAbsenceEleveNotifications as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collJProfesseursMatieress) {
-				foreach ((array) $this->collJProfesseursMatieress as $o) {
+				foreach ($this->collJProfesseursMatieress as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collPreferenceUtilisateurProfessionnels) {
-				foreach ((array) $this->collPreferenceUtilisateurProfessionnels as $o) {
+				foreach ($this->collPreferenceUtilisateurProfessionnels as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 			if ($this->collEdtEmplacementCourss) {
-				foreach ((array) $this->collEdtEmplacementCourss as $o) {
+				foreach ($this->collEdtEmplacementCourss as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
+			if ($this->collGroupes) {
+				foreach ($this->collGroupes as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
+			if ($this->collAidDetailss) {
+				foreach ($this->collAidDetailss as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
+			if ($this->collMatieres) {
+				foreach ($this->collMatieres as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 		} // if ($deep)
 
+		if ($this->collJGroupesProfesseurss instanceof PropelCollection) {
+			$this->collJGroupesProfesseurss->clearIterator();
+		}
 		$this->collJGroupesProfesseurss = null;
+		if ($this->collJScolClassess instanceof PropelCollection) {
+			$this->collJScolClassess->clearIterator();
+		}
 		$this->collJScolClassess = null;
+		if ($this->collCahierTexteCompteRendus instanceof PropelCollection) {
+			$this->collCahierTexteCompteRendus->clearIterator();
+		}
 		$this->collCahierTexteCompteRendus = null;
+		if ($this->collCahierTexteTravailAFaires instanceof PropelCollection) {
+			$this->collCahierTexteTravailAFaires->clearIterator();
+		}
 		$this->collCahierTexteTravailAFaires = null;
+		if ($this->collCahierTexteNoticePrivees instanceof PropelCollection) {
+			$this->collCahierTexteNoticePrivees->clearIterator();
+		}
 		$this->collCahierTexteNoticePrivees = null;
+		if ($this->collJEleveCpes instanceof PropelCollection) {
+			$this->collJEleveCpes->clearIterator();
+		}
 		$this->collJEleveCpes = null;
+		if ($this->collJEleveProfesseurPrincipals instanceof PropelCollection) {
+			$this->collJEleveProfesseurPrincipals->clearIterator();
+		}
 		$this->collJEleveProfesseurPrincipals = null;
+		if ($this->collJAidUtilisateursProfessionnelss instanceof PropelCollection) {
+			$this->collJAidUtilisateursProfessionnelss->clearIterator();
+		}
 		$this->collJAidUtilisateursProfessionnelss = null;
+		if ($this->collAbsenceEleveSaisies instanceof PropelCollection) {
+			$this->collAbsenceEleveSaisies->clearIterator();
+		}
 		$this->collAbsenceEleveSaisies = null;
-		$this->collModifiedAbsenceEleveSaisies = null;
+		if ($this->collAbsenceEleveTraitements instanceof PropelCollection) {
+			$this->collAbsenceEleveTraitements->clearIterator();
+		}
 		$this->collAbsenceEleveTraitements = null;
+		if ($this->collModifiedAbsenceEleveTraitements instanceof PropelCollection) {
+			$this->collModifiedAbsenceEleveTraitements->clearIterator();
+		}
 		$this->collModifiedAbsenceEleveTraitements = null;
+		if ($this->collAbsenceEleveNotifications instanceof PropelCollection) {
+			$this->collAbsenceEleveNotifications->clearIterator();
+		}
 		$this->collAbsenceEleveNotifications = null;
+		if ($this->collJProfesseursMatieress instanceof PropelCollection) {
+			$this->collJProfesseursMatieress->clearIterator();
+		}
 		$this->collJProfesseursMatieress = null;
+		if ($this->collPreferenceUtilisateurProfessionnels instanceof PropelCollection) {
+			$this->collPreferenceUtilisateurProfessionnels->clearIterator();
+		}
 		$this->collPreferenceUtilisateurProfessionnels = null;
+		if ($this->collEdtEmplacementCourss instanceof PropelCollection) {
+			$this->collEdtEmplacementCourss->clearIterator();
+		}
 		$this->collEdtEmplacementCourss = null;
+		if ($this->collGroupes instanceof PropelCollection) {
+			$this->collGroupes->clearIterator();
+		}
+		$this->collGroupes = null;
+		if ($this->collAidDetailss instanceof PropelCollection) {
+			$this->collAidDetailss->clearIterator();
+		}
+		$this->collAidDetailss = null;
+		if ($this->collMatieres instanceof PropelCollection) {
+			$this->collMatieres->clearIterator();
+		}
+		$this->collMatieres = null;
+	}
+
+	/**
+	 * Return the string representation of this object
+	 *
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return (string) $this->exportTo(UtilisateurProfessionnelPeer::DEFAULT_STRING_FORMAT);
 	}
 
 	/**

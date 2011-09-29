@@ -14,7 +14,8 @@
  *
  * @package    propel.generator.gepi.map
  */
-class AbsenceEleveTraitementTableMap extends TableMap {
+class AbsenceEleveTraitementTableMap extends TableMap
+{
 
 	/**
 	 * The (dot-path) name of this class
@@ -30,7 +31,7 @@ class AbsenceEleveTraitementTableMap extends TableMap {
 	 */
 	public function initialize()
 	{
-	  // attributes
+		// attributes
 		$this->setName('a_traitements');
 		$this->setPhpName('AbsenceEleveTraitement');
 		$this->setClassname('AbsenceEleveTraitement');
@@ -46,6 +47,7 @@ class AbsenceEleveTraitementTableMap extends TableMap {
 		$this->addForeignKey('MODIFIE_PAR_UTILISATEUR_ID', 'ModifieParUtilisateurId', 'VARCHAR', 'utilisateurs', 'LOGIN', false, 100, null);
 		$this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
 		$this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
+		$this->addColumn('DELETED_AT', 'DeletedAt', 'TIMESTAMP', false, null, null);
 		// validators
 	} // initialize()
 
@@ -54,14 +56,14 @@ class AbsenceEleveTraitementTableMap extends TableMap {
 	 */
 	public function buildRelations()
 	{
-    $this->addRelation('UtilisateurProfessionnel', 'UtilisateurProfessionnel', RelationMap::MANY_TO_ONE, array('utilisateur_id' => 'login', ), null, null);
-    $this->addRelation('AbsenceEleveType', 'AbsenceEleveType', RelationMap::MANY_TO_ONE, array('a_type_id' => 'id', ), 'SET NULL', null);
-    $this->addRelation('AbsenceEleveMotif', 'AbsenceEleveMotif', RelationMap::MANY_TO_ONE, array('a_motif_id' => 'id', ), 'SET NULL', null);
-    $this->addRelation('AbsenceEleveJustification', 'AbsenceEleveJustification', RelationMap::MANY_TO_ONE, array('a_justification_id' => 'id', ), 'SET NULL', null);
-    $this->addRelation('ModifieParUtilisateur', 'UtilisateurProfessionnel', RelationMap::MANY_TO_ONE, array('modifie_par_utilisateur_id' => 'login', ), null, null);
-    $this->addRelation('JTraitementSaisieEleve', 'JTraitementSaisieEleve', RelationMap::ONE_TO_MANY, array('id' => 'a_traitement_id', ), 'CASCADE', null);
-    $this->addRelation('AbsenceEleveNotification', 'AbsenceEleveNotification', RelationMap::ONE_TO_MANY, array('id' => 'a_traitement_id', ), 'CASCADE', null);
-    $this->addRelation('AbsenceEleveSaisie', 'AbsenceEleveSaisie', RelationMap::MANY_TO_MANY, array(), 'CASCADE', null);
+		$this->addRelation('UtilisateurProfessionnel', 'UtilisateurProfessionnel', RelationMap::MANY_TO_ONE, array('utilisateur_id' => 'login', ), null, null);
+		$this->addRelation('AbsenceEleveType', 'AbsenceEleveType', RelationMap::MANY_TO_ONE, array('a_type_id' => 'id', ), 'SET NULL', null);
+		$this->addRelation('AbsenceEleveMotif', 'AbsenceEleveMotif', RelationMap::MANY_TO_ONE, array('a_motif_id' => 'id', ), 'SET NULL', null);
+		$this->addRelation('AbsenceEleveJustification', 'AbsenceEleveJustification', RelationMap::MANY_TO_ONE, array('a_justification_id' => 'id', ), 'SET NULL', null);
+		$this->addRelation('ModifieParUtilisateur', 'UtilisateurProfessionnel', RelationMap::MANY_TO_ONE, array('modifie_par_utilisateur_id' => 'login', ), null, null);
+		$this->addRelation('JTraitementSaisieEleve', 'JTraitementSaisieEleve', RelationMap::ONE_TO_MANY, array('id' => 'a_traitement_id', ), 'CASCADE', null, 'JTraitementSaisieEleves');
+		$this->addRelation('AbsenceEleveNotification', 'AbsenceEleveNotification', RelationMap::ONE_TO_MANY, array('id' => 'a_traitement_id', ), 'CASCADE', null, 'AbsenceEleveNotifications');
+		$this->addRelation('AbsenceEleveSaisie', 'AbsenceEleveSaisie', RelationMap::MANY_TO_MANY, array(), 'CASCADE', null, 'AbsenceEleveSaisies');
 	} // buildRelations()
 
 	/**
@@ -74,6 +76,7 @@ class AbsenceEleveTraitementTableMap extends TableMap {
 	{
 		return array(
 			'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', ),
+			'soft_delete' => array('deleted_column' => 'deleted_at', ),
 		);
 	} // getBehaviors()
 

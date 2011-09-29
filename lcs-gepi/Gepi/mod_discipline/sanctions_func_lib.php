@@ -1,6 +1,6 @@
 <?php
 /*
-$Id: sanctions_func_lib.php 6727 2011-03-29 15:14:30Z crob $
+$Id: sanctions_func_lib.php 8264 2011-09-17 10:44:56Z crob $
 */
 
 // Paramètres concernant le délais avant affichage d'une infobulle via delais_afficher_div()
@@ -10,6 +10,16 @@ $hauteur_survol_infobulle=20;
 $largeur_survol_infobulle=100;
 // Délais en ms avant affichage:
 $delais_affichage_infobulle=500;
+
+$dossier_documents_discipline="documents/discipline";
+if(((isset($multisite))&&($multisite=='y'))||(getSettingValue('multisite')=='y')) {
+	if(isset($_COOKIE['RNE'])) {
+		$dossier_documents_discipline.="_".$_COOKIE['RNE'];
+		if(!file_exists("../$dossier_documents_discipline")) {
+			@mkdir("../$dossier_documents_discipline",0770);
+		}
+	}
+}
 
 function p_nom($ele_login,$mode="pn") {
 	$sql="SELECT * FROM eleves e WHERE e.login='".$ele_login."';";
@@ -105,8 +115,9 @@ function infobulle_photo($eleve_login) {
 
 	return $retour;
 }
-
+/*
 function affiche_mesures_incident($id_incident) {
+	global $dossier_documents_discipline;
 	global $possibilite_prof_clore_incident;
 	global $mesure_demandee_non_validee;
 	//global $exclusion_demandee_non_validee;
@@ -176,6 +187,7 @@ function affiche_mesures_incident($id_incident) {
 		$texte.="</td>";
 		//$texte.="<td>";
 		$cpt_tmp=0;
+		$login_ele_prec="";
 		while($lig_t_incident=mysql_fetch_object($res_t_incident2)) {
 			if($cpt_tmp>0) {$texte.="<tr class='lig1'>\n";}
 			$texte.="<td style='font-size:x-small;'>";
@@ -189,7 +201,27 @@ function affiche_mesures_incident($id_incident) {
 			$texte.="</td>\n";
 			$texte.="<td style='font-size:x-small;'>";
 			$texte.="$lig_t_incident->mesure";
+
 			$texte.="</td>\n";
+
+			// Documents joints à la mesure demandée
+			if($lig_t_incident->login_ele!=$login_ele_prec) {
+				$tab_doc_joints=get_documents_joints($id_incident, "mesure", $lig_t_incident->login_ele);
+				$chemin="../$dossier_documents_discipline/incident_".$id_incident."/mesures/".$lig_t_incident->login_ele;
+				if(count($tab_doc_joints)>0) {
+					$texte.="<td>\n";
+					for($loop=0;$loop<count($tab_doc_joints);$loop++) {
+						$texte.="<a href='$chemin/$tab_doc_joints[$loop]' target='_blank'>$tab_doc_joints[$loop]</a><br />";
+					}
+					$texte.="</td>\n";
+				}
+			}
+			else {
+				$texte.="<td>\n";
+				$texte.="&nbsp;";
+				$texte.="</td>\n";
+			}
+			$login_ele_prec=$lig_t_incident->login_ele;
 			$texte.="</tr>\n";
 
 			if(strtolower($lig_t_incident->mesure)=='retenue') {
@@ -228,6 +260,188 @@ function affiche_mesures_incident($id_incident) {
 
 			$cpt_tmp++;
 		}
+		//$texte.="</td>\n";
+		//$texte.="</tr>\n";
+	}
+
+	if((mysql_num_rows($res_t_incident)>0)||
+		(mysql_num_rows($res_t_incident2)>0)) {
+		$texte.="</table>";
+	}
+
+	return $texte;
+}
+*/
+
+function affiche_mesures_incident($id_incident) {
+	global $possibilite_prof_clore_incident;
+	global $mesure_demandee_non_validee;
+	global $dossier_documents_discipline;
+	//global $exclusion_demandee_non_validee;
+	//global $retenue_demandee_non_validee;
+
+	$texte="";
+
+	//$sql="SELECT * FROM s_traitement_incident sti, s_mesures s WHERE sti.id_incident='$id_incident' AND sti.id_mesure=s.id AND s.type='prise' ORDER BY login_ele";
+	$sql="SELECT DISTINCT sti.login_ele FROM s_traitement_incident sti, s_mesures s WHERE sti.id_incident='$id_incident' AND sti.id_mesure=s.id AND s.type='prise'";
+	//$texte.="<br />$sql";
+	$res_t_incident=mysql_query($sql);
+	$nb_login_ele_mesure_prise=mysql_num_rows($res_t_incident);
+
+	//$sql="SELECT * FROM s_traitement_incident sti, s_mesures s WHERE sti.id_incident='$id_incident' AND sti.id_mesure=s.id AND s.type='demandee' ORDER BY login_ele";
+	$sql="SELECT DISTINCT sti.login_ele FROM s_traitement_incident sti, s_mesures s WHERE sti.id_incident='$id_incident' AND sti.id_mesure=s.id AND s.type='demandee' ORDER BY login_ele";
+	//$texte.="<br />$sql";
+	$res_t_incident2=mysql_query($sql);
+	$nb_login_ele_mesure_demandee=mysql_num_rows($res_t_incident2);
+
+	if(($nb_login_ele_mesure_prise>0)||
+		($nb_login_ele_mesure_demandee>0)) {
+		//$texte.="<br /><table class='boireaus' summary='Mesures' style='margin:1px;'>";
+		$texte.="<table class='boireaus' summary='Mesures' style='margin:1px;'>\n";
+	}
+
+	if($nb_login_ele_mesure_prise>0) {
+		$texte.="<tr class='lig-1'>\n";
+		$texte.="<td style='font-size:x-small; vertical-align:top;'>\n";
+		if(mysql_num_rows($res_t_incident)==1) {
+			$texte.="Mesure prise&nbsp;:";
+		}
+		else {
+			$texte.="Mesures prises&nbsp;:";
+		}
+		$texte.="</td>\n";
+		//$texte.="<td>";
+		$texte.="<td style='font-size:x-small;'>\n";
+
+			$texte.="<table class='boireaus'>\n";
+			$cpt_tmp=0;
+			while($lig_t_incident=mysql_fetch_object($res_t_incident)) {
+				$sql="SELECT * FROM s_traitement_incident sti, s_mesures s WHERE sti.id_incident='$id_incident' AND sti.id_mesure=s.id AND s.type='prise' AND login_ele='$lig_t_incident->login_ele' ORDER BY s.mesure;";
+				$res_mes_ele=mysql_query($sql);
+				$nb_mes_ele=mysql_num_rows($res_mes_ele);
+
+				$texte.="<tr class='lig-1'>\n";
+				$texte.="<td style='font-size:x-small;' rowspan='$nb_mes_ele'>\n";
+				$texte.=p_nom($lig_t_incident->login_ele);
+				$tmp_tab=get_class_from_ele_login($lig_t_incident->login_ele);
+				if(isset($tmp_tab['liste_nbsp'])) {
+					$texte.=" (<em>".$tmp_tab['liste_nbsp']."</em>)";
+				}
+				$texte.="</td>\n";
+				$cpt_mes=0;
+				while($lig_mes_ele=mysql_fetch_object($res_mes_ele)) {
+					if($cpt_mes>0) {$texte.="<tr>\n";}
+					$texte.="<td style='font-size:x-small;'>";
+					$texte.="$lig_mes_ele->mesure";
+					$texte.="</td>\n";
+					$texte.="</tr>\n";
+					$cpt_mes++;
+				}
+				//$texte.="</tr>\n";
+				$cpt_tmp++;
+			}
+			$texte.="</table>\n";
+
+		$texte.="</td>\n";
+		$texte.="</tr>\n";
+	}
+
+	//$possibilite_prof_clore_incident='y';
+	if($nb_login_ele_mesure_demandee>0) {
+		if($_SESSION['statut']=='professeur') {$possibilite_prof_clore_incident='n';}
+		$texte.="<tr class='lig1'>";
+		//$texte.="<td style='font-size:x-small; vertical-align:top;'>";
+		//$texte.="<td style='font-size:x-small; vertical-align:top;' rowspan='".mysql_num_rows($res_t_incident2)."'>";
+		$texte.="<td style='font-size:x-small; vertical-align:top;'>";
+		if(mysql_num_rows($res_t_incident2)==1) {
+			$texte.="Mesure demandée&nbsp;:";
+		}
+		else {
+			$texte.="Mesures demandées&nbsp;:";
+		}
+		$texte.="</td>";
+		//$texte.="<td>";
+		$texte.="<td style='font-size:x-small;'>\n";
+
+			$texte.="<table class='boireaus'>\n";
+			$cpt_tmp=0;
+			while($lig_t_incident=mysql_fetch_object($res_t_incident2)) {
+				$sql="SELECT * FROM s_traitement_incident sti, s_mesures s WHERE sti.id_incident='$id_incident' AND sti.id_mesure=s.id AND s.type='demandee' AND login_ele='$lig_t_incident->login_ele' ORDER BY s.mesure;";
+				$res_mes_ele=mysql_query($sql);
+				$nb_mes_ele=mysql_num_rows($res_mes_ele);
+
+				$texte.="<tr class='lig1'>\n";
+				$texte.="<td style='font-size:x-small;' rowspan='$nb_mes_ele'>\n";
+				$texte.=p_nom($lig_t_incident->login_ele);
+				$tmp_tab=get_class_from_ele_login($lig_t_incident->login_ele);
+				if(isset($tmp_tab['liste_nbsp'])) {
+					$texte.=" (<em>".$tmp_tab['liste_nbsp']."</em>)";
+				}
+				$texte.="</td>\n";
+				$cpt_mes=0;
+				while($lig_mes_ele=mysql_fetch_object($res_mes_ele)) {
+					if($cpt_mes>0) {$texte.="<tr>\n";}
+					$texte.="<td style='font-size:x-small;'>\n";
+					$texte.="$lig_mes_ele->mesure";
+					$texte.="</td>\n";
+
+					if($cpt_mes==0) {
+						$tab_doc_joints=get_documents_joints($id_incident, "mesure", $lig_t_incident->login_ele);
+						$chemin="../$dossier_documents_discipline/incident_".$id_incident."/mesures/".$lig_t_incident->login_ele;
+						if(count($tab_doc_joints)>0) {
+							$texte.="<td rowspan='$nb_mes_ele'>\n";
+							for($loop=0;$loop<count($tab_doc_joints);$loop++) {
+								$texte.="<a href='$chemin/$tab_doc_joints[$loop]' target='_blank'>$tab_doc_joints[$loop]</a><br />\n";
+							}
+							$texte.="</td>\n";
+						}
+					}
+
+					$texte.="</tr>\n";
+
+
+					// 
+					if(strtolower($lig_mes_ele->mesure)=='retenue') {
+						$sql="SELECT 1=1 FROM s_retenues sr, s_sanctions s WHERE s.id_sanction=sr.id_sanction AND s.id_incident='$id_incident' AND s.login='$lig_t_incident->login_ele';";
+						//$texte.="<tr><td>$sql</td></tr>";
+						$test=mysql_query($sql);
+						if(mysql_num_rows($test)==0) {
+							$mesure_demandee_non_validee="y";
+							//$retenue_demandee_non_validee="y";
+						}
+					}
+					elseif(strtolower($lig_mes_ele->mesure)=='exclusion') {
+						$sql="SELECT 1=1 FROM s_exclusions se, s_sanctions s WHERE s.id_sanction=se.id_sanction AND s.id_incident='$id_incident' AND s.login='$lig_t_incident->login_ele';";
+						//$texte.="<tr><td>$sql</td></tr>";
+						$test=mysql_query($sql);
+						if(mysql_num_rows($test)==0) {
+							$mesure_demandee_non_validee="y";
+							//$exclusion_demandee_non_validee="y";
+						}
+					}
+					else {
+						$sql="SELECT 1=1 FROM s_types_sanctions sts WHERE sts.nature='".addslashes($lig_mes_ele->mesure)."';";
+						//$texte.="<tr><td>$sql</td></tr>";
+						$test=mysql_query($sql);
+						if(mysql_num_rows($test)>0) {
+							// Il existe un nom de sanction correspondant au nom de la mesure demandée.
+		
+							$sql="SELECT 1=1 FROM s_autres_sanctions sa, s_types_sanctions sts, s_sanctions s WHERE s.id_sanction=sa.id_sanction AND sa.id_nature=sts.id_nature AND sts.nature='".addslashes($lig_mes_ele->mesure)."' AND s.id_incident='$id_incident' AND s.login='$lig_t_incident->login_ele';";
+							//$texte.="<tr><td>$sql</td></tr>";
+							$test=mysql_query($sql);
+							if(mysql_num_rows($test)==0) {
+								$mesure_demandee_non_validee="y";
+							}
+						}
+					}
+
+					$cpt_mes++;
+				}
+	
+				$cpt_tmp++;
+			}
+			$texte.="</table>\n";
+
 		//$texte.="</td>\n";
 		//$texte.="</tr>\n";
 	}
@@ -918,7 +1132,7 @@ function get_destinataires_mail_alerte_discipline($tab_id_classe) {
 					$sql="SELECT DISTINCT u.nom,u.prenom,u.email FROM utilisateurs u, j_eleves_classes jec, j_eleves_groupes jeg, j_groupes_professeurs jgp WHERE jec.id_classe='".$tab_id_classe[$i]."' AND jec.login=jeg.login AND jeg.id_groupe=jgp.id_groupe AND jgp.login=u.login AND u.email!='';";
 				}
 				elseif($lig->destinataire=='pp') {
-					$sql="SELECT DISTINCT u.nom,u.prenom,u.email FROM utilisateurs u, j_eleves_professeurs jep, j_eleves_classes jec WHERE jec.id_classe='".$tab_id_classe[$i]."' AND jec.login=jep.login AND jep.professeur=u.login AND u.email!='';";
+					$sql="SELECT DISTINCT u.nom,u.prenom,u.email FROM utilisateurs u, j_eleves_professeurs jep, j_eleves_classes jec WHERE jec.id_classe='".$tab_id_classe[$i]."' AND jec.id_classe=jep.id_classe AND jec.login=jep.login AND jep.professeur=u.login AND u.email!='';";
 				}
 				elseif($lig->destinataire=='administrateur') {
 					$sql="SELECT DISTINCT u.nom,u.prenom,u.email FROM utilisateurs u WHERE u.statut='administrateur' AND u.email!='';";
@@ -960,7 +1174,8 @@ function get_destinataires_mail_alerte_discipline($tab_id_classe) {
 // Retourne à partir de l'id d'un incident le login du déclarant
 function get_login_declarant_incident($id_incident) {
 	$retour="";
-    $sql_declarant="SELECT DISTINCT SI.id_incident, SI.declarant FROM s_incidents SI, s_sanctions SS WHERE SI.id_incident='$id_incident' AND SI.id_incident=SS.id_incident;";
+    //$sql_declarant="SELECT DISTINCT SI.id_incident, SI.declarant FROM s_incidents SI, s_sanctions SS WHERE SI.id_incident='$id_incident' AND SI.id_incident=SS.id_incident;";
+    $sql_declarant="SELECT DISTINCT SI.id_incident, SI.declarant FROM s_incidents SI WHERE SI.id_incident='$id_incident';";
 		//echo $sql_declarant;
 		$res_declarant=mysql_query($sql_declarant);
         if(mysql_num_rows($res_declarant)>0) {
@@ -1026,5 +1241,440 @@ function nombre_reports($id_sanction,$aucun) {
 	return $cpt;
 }
 
+// Retourne à partir de l'id d'un incident le login du déclarant
+function get_protagonistes($id_incident,$roles=array(),$statuts=array()) {
+	$retour=array();
+
+	$chaine_roles="";
+	if(count($roles)>0) {
+		$chaine_roles=" AND (";
+		for($loop=0;$loop<count($roles);$loop++) {
+			if($loop>0) {$chaine_roles.=" OR ";}
+			$chaine_roles.="qualite='$roles[$loop]'";
+		}
+		$chaine_roles.=")";
+	}
+
+	$chaine_statuts="";
+	if(count($statuts)>0) {
+		$chaine_statuts=" AND (";
+		for($loop=0;$loop<count($statuts);$loop++) {
+			if($loop>0) {$chaine_statuts.=" OR ";}
+			$chaine_statuts.="statut='$statuts[$loop]'";
+		}
+		$chaine_statuts.=")";
+	}
+
+	$sql="SELECT * FROM s_protagonistes WHERE id_incident='$id_incident' $chaine_roles $chaine_statuts ORDER BY qualite, login;";
+	//echo "$sql<br />";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		while($lig=mysql_fetch_object($res)) {
+		  $retour[]=$lig->login;
+		}
+	}
+	return $retour;
+}
+/*
+function get_documents_joints($id, $type) {
+	global $dossier_documents_discipline;
+	// $type: mesure ou sanction
+	$tab_file=array();
+
+	if(($type=="mesure")||($type=="sanction")) {
+		if($type=="mesure") {
+			$sql="SELECT id_incident FROM s_traitement_incident WHERE id='$id';";
+		}
+		else {
+			$sql="SELECT id_incident FROM s_sanctions WHERE id_sanction='$id';";
+		}
+		$res=mysql_query($sql);
+		if(mysql_num_rows($res)>0) {
+			$lig=mysql_fetch_object($res);
+			$id_incident=$lig->id_incident;
+
+			if(file_exists("../$dossier_documents_discipline/incident_".$id_incident."/".$type."_".$id)) {
+				$handle=opendir($path);
+				$n=0;
+				while ($file = readdir($handle)) {
+					if (($file != '.') and ($file != '..') and ($file != 'remove.txt')
+					and ($file != '.htaccess') and ($file != '.htpasswd') and ($file != 'index.html')) {
+						$tab_file[] = $file;
+					}
+				}
+				closedir($handle);
+				sort($tab_file);
+			}
+		}
+	}
+
+	return $tab_file;
+}
+*/
+function get_documents_joints($id, $type, $login_ele="") {
+	// $type: mesure ou sanction
+	// $login_ele doit être non vide pour les mesures
+	global $dossier_documents_discipline;
+	$tab_file=array();
+
+	$id_incident="";
+
+	if(($type=="mesure")||($type=="sanction")) {
+		if($type=="mesure") {
+			$id_incident=$id;
+
+			$path="../$dossier_documents_discipline/incident_".$id_incident."/mesures/$login_ele";
+		}
+		else {
+			$sql="SELECT id_incident FROM s_sanctions WHERE id_sanction='$id';";
+			$res=mysql_query($sql);
+			if(mysql_num_rows($res)>0) {
+				$lig=mysql_fetch_object($res);
+				$id_incident=$lig->id_incident;
+
+				$path="../$dossier_documents_discipline/incident_".$id_incident."/sanction_".$id;
+			}
+		}
+
+		if(isset($path)) {
+			$tab_file=get_file_in_dir($path);
+		}
+	}
+
+	return $tab_file;
+}
+
+function get_file_in_dir($path) {
+	$tab_file=array();
+
+	if(file_exists($path)) {
+		$handle=opendir($path);
+		$n=0;
+		while ($file = readdir($handle)) {
+			if (($file != '.') and ($file != '..') and ($file != 'remove.txt')
+			and ($file != '.htaccess') and ($file != '.htpasswd') and ($file != 'index.html')) {
+				$tab_file[] = $file;
+			}
+		}
+		closedir($handle);
+		sort($tab_file);
+	}
+
+	return $tab_file;
+}
+
+function sanction_documents_joints($id_incident, $ele_login) {
+	global $id_sanction;
+	global $dossier_documents_discipline;
+
+	if((isset($id_sanction))&&($id_sanction!='')) {
+		$tab_doc_joints=get_documents_joints($id_sanction, "sanction", $ele_login);
+		if(count($tab_doc_joints)>0) {
+			$chemin="../$dossier_documents_discipline/incident_".$id_incident."/sanction_".$id_sanction;
+
+			echo "<table class='boireaus' width='100%'>\n";
+			echo "<tr>\n";
+			echo "<th>Fichiers joints</th>\n";
+			echo "<th>Supprimer</th>\n";
+			echo "</tr>\n";
+			$alt3=1;
+			for($loop=0;$loop<count($tab_doc_joints);$loop++) {
+				$alt3=$alt3*(-1);
+				echo "<tr class='lig$alt3 white_hover'>\n";
+				echo "<td><a href='$chemin/$tab_doc_joints[$loop]' target='_blank'>$tab_doc_joints[$loop]</a></td>\n";
+				echo "<td><input type='checkbox' name='suppr_doc_joint[]' value=\"$tab_doc_joints[$loop]\" /></td>\n";
+				// PB: Est-ce qu'on ne risque pas de permettre d'aller supprimer des fichiers d'un autre incident?
+				//     Tester le nom de fichier et l'id_incident
+				//     Fichier en ../$dossier_documents_discipline/incident_<$id_incident>/mesures/<LOGIN_ELE>
+				echo "</tr>\n";
+			}
+			echo "</table>\n";
+		}
+	}
+
+	echo "<p>Joindre un fichier&nbsp;: <input type=\"file\" size=\"15\" name=\"document_joint\" id=\"document_joint\" /><br />\n";
+
+
+	$tab_doc_joints2=get_documents_joints($id_incident, "mesure", $ele_login);
+	if(count($tab_doc_joints2)>0) {
+		$temoin_deja_tous_joints="n";
+		if(isset($tab_doc_joints)) {
+			$temoin_deja_tous_joints="y";
+			for($loop=0;$loop<count($tab_doc_joints2);$loop++) {
+				if(!in_array($tab_doc_joints2[$loop], $tab_doc_joints)) {
+					$temoin_deja_tous_joints="n";
+					break;
+				}
+			}
+		}
+
+		if($temoin_deja_tous_joints=="n") {
+			//echo "Joindre&nbsp;:<br />\n";
+			$chemin="../$dossier_documents_discipline/incident_".$id_incident."/mesures/".$ele_login;
+	
+			echo "<b>Fichiers proposés lors de la saisie des mesures demandées&nbsp;:</b>";
+			echo "<table class='boireaus' width='100%'>\n";
+			echo "<tr>\n";
+			echo "<th>Joindre</th>\n";
+			echo "<th>Fichier</th>\n";
+			echo "</tr>\n";
+			$alt3=1;
+			for($loop=0;$loop<count($tab_doc_joints2);$loop++) {
+				if((!isset($tab_doc_joints))||(!in_array($tab_doc_joints2[$loop],$tab_doc_joints))) {
+					$alt3=$alt3*(-1);
+					echo "<tr class='lig$alt3 white_hover'>\n";
+					echo "<td><input type='checkbox' name='ajouter_doc_joint[]' value=\"$tab_doc_joints2[$loop]\" ";
+					//if((!isset($tab_doc_joints))||(!in_array($tab_doc_joints2[$loop],$tab_doc_joints))) {
+						echo "checked ";
+					//}
+					echo "/>\n";
+					echo "</td>\n";
+					echo "<td><a href='$chemin/$tab_doc_joints2[$loop]' target='_blank'>$tab_doc_joints2[$loop]</a></td>\n";
+					echo "</tr>\n";
+				}
+			}
+			echo "</table>\n";
+		}
+	}
+}
+
+function liste_doc_joints_sanction($id_sanction) {
+	global $dossier_documents_discipline;
+	$retour="";
+
+	$tab_doc_joints=get_documents_joints($id_sanction, "sanction");
+	if(count($tab_doc_joints)>0) {
+		$sql="SELECT id_incident FROM s_sanctions WHERE id_sanction='$id_sanction';";
+		$res=mysql_query($sql);
+		if(mysql_num_rows($res)>0) {
+			$lig=mysql_fetch_object($res);
+			$id_incident=$lig->id_incident;
+
+			$chemin="../$dossier_documents_discipline/incident_".$id_incident."/sanction_".$id_sanction;
+	
+			for($loop=0;$loop<count($tab_doc_joints);$loop++) {
+				$retour.="<a href='$chemin/$tab_doc_joints[$loop]' target='_blank'>$tab_doc_joints[$loop]</a><br />\n";
+			}
+		}
+	}
+
+	return $retour;
+}
+
+function suppr_doc_joints_incident($id_incident, $suppr_doc_sanction='n') {
+	global $dossier_documents_discipline;
+	$retour="";
+
+	$sql="SELECT login FROM s_protagonistes WHERE id_incident='$id_incident';";
+	//echo "$sql<br />";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		$temoin_erreur="n";
+
+		while($lig=mysql_fetch_object($res)) {
+			//echo "\$lig->login=$lig->login<br />";
+			$tab_doc_joints=get_documents_joints($id_incident, "mesure", $lig->login);
+			//echo "count(\$tab_doc_joints)=".count($tab_doc_joints)."<br />";
+			if(count($tab_doc_joints)>0) {
+				$chemin="../$dossier_documents_discipline/incident_".$id_incident."/mesures/".$lig->login;
+				//echo "$chemin<br />";
+				$temoin_erreur="n";
+				for($loop=0;$loop<count($tab_doc_joints);$loop++) {
+					if(!unlink($chemin."/".$tab_doc_joints[$loop])) {
+						$retour.="Erreur lors de la suppression de $chemin/$tab_doc_joints[$loop]<br />";
+						$temoin_erreur="y";
+					}
+				}
+				if($temoin_erreur=="n") {
+					rmdir($chemin);
+				}
+			}
+		}
+
+		if($temoin_erreur=="n") {
+			if($suppr_doc_sanction=='y') {
+				$sql="SELECT id_sanction FROM s_sanctions WHERE id_incident='$id_incident';";
+				$res=mysql_query($sql);
+				if(mysql_num_rows($res)>0) {
+					while($lig=mysql_fetch_object($res)) {
+						$retour.=suppr_doc_joints_sanction($lig->id_sanction);
+					}
+				}
+			}
+
+			if((file_exists("../$dossier_documents_discipline/incident_".$id_incident."/mesures"))&&(rmdir("../$dossier_documents_discipline/incident_".$id_incident."/mesures"))) {
+				if(file_exists("../$dossier_documents_discipline/incident_".$id_incident)) {rmdir("../$dossier_documents_discipline/incident_".$id_incident);}
+			}
+		}
+	}
+
+	return $retour;
+}
+
+function suppr_doc_joints_sanction($id_sanction) {
+	global $dossier_documents_discipline;
+
+	$retour="";
+
+	$sql="SELECT id_incident FROM s_sanctions WHERE id_sanction='$id_sanction';";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		$lig=mysql_fetch_object($res);
+		$id_incident=$lig->id_incident;
+
+		$tab_doc_joints=get_documents_joints($id_sanction, "sanction");
+		if(count($tab_doc_joints)>0) {
+			$chemin="../$dossier_documents_discipline/incident_".$id_incident."/sanction_".$id_sanction;
+			for($loop=0;$loop<count($tab_doc_joints);$loop++) {
+				if(!unlink($chemin."/".$tab_doc_joints[$loop])) {
+					$retour.="Erreur lors de la suppression de $chemin/$tab_doc_joints[$loop]<br />";
+				}
+			}
+			rmdir($chemin);
+		}
+	}
+
+	return $retour;
+}
+
+function lien_envoi_mail_rappel($id_sanction, $num, $id_incident="") {
+	$retour="";
+
+	if(($id_sanction!="")||($id_incident!="")) {
+		$trame_message="Bonjour, \n";
+
+		if($id_sanction=="") {
+			$login_declarant=get_login_declarant_incident($id_incident);
+
+			//pour le mail
+			$mail_declarant = retourne_email($login_declarant);
+			//echo add_token_field(true);
+			$retour.="<input type='hidden' name='sujet_mail_rappel_$num' id='sujet_mail_rappel_$num' value=\"[GEPI] Discipline : Demande de travail pour une sanction\" />\n";
+			$retour.="<input type='hidden' name='destinataire_mail_rappel_$num' id='destinataire_mail_rappel_$num' value=\"".$mail_declarant."\" />\n";
+
+			$num_incident=$id_incident;
+
+			$chaine_protagonistes="";
+			$tab_protagonistes=get_protagonistes($id_incident, array('Responsable'), array('eleve'));
+			for($loop=0;$loop<count($tab_protagonistes);$loop++) {
+				if($loop>0) {$chaine_protagonistes.=", ";}
+				$chaine_protagonistes.=get_nom_prenom_eleve($tab_protagonistes[$loop],'avec_classe');
+			}
+
+			//$trame_message.="La sanction (voir l'incident N°%num_incident%) de %prenom_nom% (%classe%) est planifiée.\n";
+			$trame_message.="La sanction (voir l'incident N°$num_incident) de $chaine_protagonistes est planifiée.\n";
+		}
+		else {
+			$sql="SELECT * FROM s_sanctions WHERE id_sanction='$id_sanction';";
+			$res=mysql_query($sql);
+			if(mysql_num_rows($res)>0) {
+				$lig_sanction=mysql_fetch_object($res);
+	
+				$login_declarant=get_login_declarant_incident($lig_sanction->id_incident);
+			
+				//pour le mail
+				$mail_declarant = retourne_email($login_declarant);
+				//echo add_token_field(true);
+				$retour.="<input type='hidden' name='sujet_mail_rappel_$num' id='sujet_mail_rappel_$num' value=\"[GEPI] Discipline : Demande de travail pour une $lig_sanction->nature\" />\n";
+				$retour.="<input type='hidden' name='destinataire_mail_rappel_$num' id='destinataire_mail_rappel_$num' value=\"".$mail_declarant."\" />\n";
+
+				$num_incident=$lig_sanction->id_incident;
+				$prenom_nom=p_nom($lig_sanction->login) ;
+				$tmp_tab=get_class_from_ele_login($lig_sanction->login);
+				if(isset($tmp_tab['liste_nbsp'])) {$classe= $tmp_tab['liste_nbsp'];}
+		
+				if($lig_sanction->nature="retenue") {
+					//$trame_message.="La $lig_sanction->nature (voir l'incident N°%num_incident%) de %prenom_nom% (%classe%) est planifiée le %jour% en/à %heure% pour une durée de %duree%H \n";
+					$trame_message.="La retenue (voir l'incident N°%num_incident%) de %prenom_nom% (%classe%) est planifiée le %jour% en/à %heure% pour une durée de %duree%H \n";
+		
+					$sql="SELECT * FROM s_retenues WHERE id_sanction='$lig_sanction->id_sanction';";
+					$res2=mysql_query($sql);
+					if(mysql_num_rows($res2)>0) {
+						$lig_retenue=mysql_fetch_object($res2);
+					
+						$date=formate_date($lig_retenue->date);
+						$heure=$lig_retenue->heure_debut;
+						$duree=$lig_retenue->duree;
+		
+						$trame_message=str_replace("%jour%",$date,$trame_message);
+						$trame_message=str_replace("%heure%",$heure,$trame_message);
+						$trame_message=str_replace("%duree%",$duree,$trame_message);
+					}
+				}
+				elseif($lig_sanction->nature="exclusion") {
+					$trame_message.="L'exclusion (voir l'incident N°%num_incident%) de %prenom_nom% (%classe%) est planifiée du %jour_debut% au %jour_fin% \n";
+		
+					$sql="SELECT * FROM s_exclusions WHERE id_sanction='$lig_sanction->id_sanction';";
+					$res2=mysql_query($sql);
+					if(mysql_num_rows($res2)>0) {
+						$lig_exclusion=mysql_fetch_object($res2);
+					
+						$date_debut=formate_date($lig_exclusion->date_debut);
+						$date_fin=formate_date($lig_exclusion->date_fin);
+		
+						$trame_message=str_replace("%jour_debut%",$date_debut,$trame_message);
+						$trame_message=str_replace("%jour_fin%",$date_fin,$trame_message);
+					}
+				}
+				elseif($lig_sanction->nature="travail") {
+					$trame_message.="Le travail (voir l'incident N°%num_incident%) de %prenom_nom% (%classe%) est planifié pour une date de retour au %jour_retour% à %heure_retour% \n";
+		
+					$sql="SELECT * FROM s_travail WHERE id_sanction='$lig_sanction->id_sanction';";
+					$res2=mysql_query($sql);
+					if(mysql_num_rows($res2)>0) {
+						$lig_travail=mysql_fetch_object($res2);
+					
+						$date_retour=formate_date($lig_travail->date_retour);
+						$heure_retour=formate_date($lig_travail->heure_retour);
+		
+						$trame_message=str_replace("%jour_retour%",$date_retour,$trame_message);
+						$trame_message=str_replace("%heure_retour%",$heure_retour,$trame_message);
+					}
+				}
+				else {
+					$trame_message.="La sanction '$lig_sanction->nature' (voir l'incident N°%num_incident%) de %prenom_nom% (%classe%) est planifiée.\n";
+				}
+			}
+
+			$trame_message=str_replace("%num_incident%",$num_incident,$trame_message);
+			$trame_message=str_replace("%prenom_nom%",$prenom_nom,$trame_message);
+			$trame_message=str_replace("%classe%",$classe,$trame_message);
+
+		}
+	
+		//echo "<td>\n";	
+		$ligne_nom_declarant=u_p_nom($login_declarant);
+		$retour.="$ligne_nom_declarant";
+
+		$trame_message.="Merci d'apporter le travail prévu à la vie scolaire.\n\n-- \nLa vie scolaire";
+
+		//echo $trame_message;
+		$retour.="<input type='hidden' name='message_mail_rappel_$num' id='message_mail_rappel_$num' value=\"$trame_message\"/>\n";
+
+		//on autorise l'envoi de mail que pour les statuts Admin / CPE / Scolarite
+		if(($_SESSION['statut']=='administrateur') || ($_SESSION['statut']=='cpe') || ($_SESSION['statut']=='scolarite')) {
+			//if($lig_sanction->effectuee!="O") {
+			if((!isset($lig_sanction))||($lig_sanction->effectuee!="O")) {
+				$retour.="<span id='mail_envoye_$num'><a href='#' onclick=\"envoi_mail_rappel_sanction($num);return false;\"><img src='../images/icons/icone_mail.png' width='25' height='25' alt='Envoyer un mail pour demander le travail au déclarant' title='Envoyer un mail pour demander le travail au déclarant' /></a></span>";
+			}
+		}
+	}
+	return $retour;
+}
+
+function envoi_mail_rappel_js() {
+	$retour="<script type='text/javascript'>
+	// <![CDATA[
+	function envoi_mail_rappel_sanction(num) {
+		csrf_alea=document.getElementById('csrf_alea').value;
+		destinataire=document.getElementById('destinataire_mail_rappel_'+num).value;
+		sujet_mail=document.getElementById('sujet_mail_rappel_'+num).value;
+		message=document.getElementById('message_mail_rappel_'+num).value;
+		new Ajax.Updater($('mail_envoye_'+num),'../bulletin/envoi_mail.php?destinataire='+destinataire+'&sujet_mail='+sujet_mail+'&message='+escape(message)+'&csrf_alea='+csrf_alea,{method: 'get'});
+	}
+	//]]>
+</script>\n";
+	return $retour;
+}
 
 ?>

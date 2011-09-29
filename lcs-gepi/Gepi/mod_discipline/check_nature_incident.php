@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id: check_nature_incident.php 5989 2010-11-25 11:51:39Z crob $
+ * $Id: check_nature_incident.php 7503 2011-07-23 19:50:02Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -64,12 +64,12 @@ if(isset($chaine_rech)) {
 	// echo "Eléments transmis: $chaine_rech<br />";
 
 	// Filtrage des caractères
-	$chaine_rech=my_ereg_replace("[^A-Za-z0-9ÀàÂâÄäÉéÈèÊêËëÎîÏïÔôÖöÙùÛûÜü ._-]","%",$chaine_rech);
+	$chaine_rech=preg_replace("/[^A-Za-z0-9ÀàÂâÄäÉéÈèÊêËëÎîÏïÔôÖöÙùÛûÜü \._-]/","%",$chaine_rech);
 
 	//$chaine_mysql="(";
 	$chaine_mysql=" 1 AND (";
 	//$tab=explode("_",substr($chaine_rech,1)); // On vire le _ de début de chaine
-	//$tab=explode("_",my_ereg_replace("^_","",$chaine_rech)); // On vire le _ de début de chaine
+	//$tab=explode("_",preg_replace("/^_/","",$chaine_rech)); // On vire le _ de début de chaine
 	$tab=explode(" ",$chaine_rech); // On vire le _ de début de chaine
 	for($i=0;$i<count($tab);$i++) {
 		if($tab[$i]!='') {
@@ -79,7 +79,14 @@ if(isset($chaine_rech)) {
 	}
 	$chaine_mysql.=")";
 
-	$sql="SELECT DISTINCT nature FROM s_incidents WHERE $chaine_mysql ORDER BY nature;";
+	$DisciplineNaturesRestreintes=getSettingValue('DisciplineNaturesRestreintes');
+
+	if($DisciplineNaturesRestreintes!=1) {
+		$sql="SELECT DISTINCT nature FROM s_incidents WHERE $chaine_mysql ORDER BY nature;";
+	}
+	else {
+		$sql="SELECT DISTINCT nature FROM s_natures WHERE $chaine_mysql ORDER BY nature;";
+	}
 	//echo "$sql<br />";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)>0) {

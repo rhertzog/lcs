@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 6612 2011-03-03 15:57:19Z crob $
+ * $Id: index.php 7192 2011-06-10 19:30:33Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -97,7 +97,8 @@ if ($nombre_lignes != 0) {
 	        echo "</td>\n";
 	        echo "<td><a href='add_group.php?id_classe=" . $id_classe . "&amp;mode=groupe'>Ajouter groupe</a></td>\n";
 
-			$groups = get_groups_for_class($id_classe);
+			//$groups = get_groups_for_class($id_classe);
+			$groups = get_groups_for_class($id_classe,"","n");
 			echo "<td>\n";
 			foreach ($groups as $group) {
 				$total = count($group["classes"]);

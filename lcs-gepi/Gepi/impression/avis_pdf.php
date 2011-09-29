@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: avis_pdf.php 6653 2011-03-11 17:26:42Z eabgrall $
+ * $Id: avis_pdf.php 8061 2011-08-30 22:01:10Z jjacquard $
  *
  * Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -37,7 +37,9 @@ header('Content-Type: application/pdf');
 require_once("../lib/initialisations.inc.php");
 //=============================
 //debug_var();
-require('../fpdf/fpdf.php');
+if (!defined('FPDF_VERSION')) {
+	require_once('../fpdf/fpdf.php');
+}
 require('../fpdf/ex_fpdf.php');
 
 define('FPDF_FONTPATH','../fpdf/font/');

@@ -31,6 +31,9 @@ abstract class BaseEdtSemainePeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 4;
+
 	/** the column name for the ID_EDT_SEMAINE field */
 	const ID_EDT_SEMAINE = 'edt_semaines.ID_EDT_SEMAINE';
 
@@ -43,6 +46,9 @@ abstract class BaseEdtSemainePeer {
 	/** the column name for the NUM_SEMAINES_ETAB field */
 	const NUM_SEMAINES_ETAB = 'edt_semaines.NUM_SEMAINES_ETAB';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of EdtSemaine objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -58,7 +64,7 @@ abstract class BaseEdtSemainePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('IdEdtSemaine', 'NumEdtSemaine', 'TypeEdtSemaine', 'NumSemainesEtab', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('idEdtSemaine', 'numEdtSemaine', 'typeEdtSemaine', 'numSemainesEtab', ),
 		BasePeer::TYPE_COLNAME => array (self::ID_EDT_SEMAINE, self::NUM_EDT_SEMAINE, self::TYPE_EDT_SEMAINE, self::NUM_SEMAINES_ETAB, ),
@@ -73,7 +79,7 @@ abstract class BaseEdtSemainePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('IdEdtSemaine' => 0, 'NumEdtSemaine' => 1, 'TypeEdtSemaine' => 2, 'NumSemainesEtab' => 3, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('idEdtSemaine' => 0, 'numEdtSemaine' => 1, 'typeEdtSemaine' => 2, 'numSemainesEtab' => 3, ),
 		BasePeer::TYPE_COLNAME => array (self::ID_EDT_SEMAINE => 0, self::NUM_EDT_SEMAINE => 1, self::TYPE_EDT_SEMAINE => 2, self::NUM_SEMAINES_ETAB => 3, ),
@@ -207,7 +213,7 @@ abstract class BaseEdtSemainePeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -226,7 +232,7 @@ abstract class BaseEdtSemainePeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -280,7 +286,7 @@ abstract class BaseEdtSemainePeer {
 	 * @param      EdtSemaine $value A EdtSemaine object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(EdtSemaine $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -435,7 +441,7 @@ abstract class BaseEdtSemainePeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + EdtSemainePeer::NUM_COLUMNS;
+			$col = $startcol + EdtSemainePeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = EdtSemainePeer::OM_CLASS;
 			$obj = new $cls();
@@ -444,6 +450,7 @@ abstract class BaseEdtSemainePeer {
 		}
 		return array($obj, $col);
 	}
+
 	/**
 	 * Returns the TableMap related to this peer.
 	 * This method is not needed for general use but a specific application could have a need.
@@ -485,7 +492,7 @@ abstract class BaseEdtSemainePeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a EdtSemaine or Criteria object.
+	 * Performs an INSERT on the database, given a EdtSemaine or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or EdtSemaine object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -524,7 +531,7 @@ abstract class BaseEdtSemainePeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a EdtSemaine or Criteria object.
+	 * Performs an UPDATE on the database, given a EdtSemaine or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or EdtSemaine object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -563,11 +570,12 @@ abstract class BaseEdtSemainePeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the edt_semaines table.
+	 * Deletes all rows from the edt_semaines table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(EdtSemainePeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -592,7 +600,7 @@ abstract class BaseEdtSemainePeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a EdtSemaine or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a EdtSemaine or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or EdtSemaine object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -661,7 +669,7 @@ abstract class BaseEdtSemainePeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(EdtSemaine $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

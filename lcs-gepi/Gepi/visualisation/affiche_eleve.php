@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: affiche_eleve.php 7226 2011-06-15 15:10:38Z crob $
+* $Id: affiche_eleve.php 7467 2011-07-21 10:18:17Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -61,6 +61,10 @@ function affiche_debug($texte) {
 	}
 }
 
+$gepi_denom_mention=getSettingValue("gepi_denom_mention");
+if($gepi_denom_mention=="") {
+	$gepi_denom_mention="mention";
+}
 
 /*
 $datay1 = array();
@@ -109,6 +113,7 @@ if(isset($_POST['valider_raz_param'])) {
 'graphe_champ_saisie_avis_fixe',
 'graphe_click_plutot_que_survol_aff_app',
 'graphe_epaisseur_traits',
+'graphe_epaisseur_croissante_traits_periodes',
 'graphe_hauteur_affichage_deroulant',
 'graphe_hauteur_graphe',
 'graphe_largeur_graphe',
@@ -169,6 +174,9 @@ tronquer_nom_court
 			if(isset($_POST['hauteur_graphe'])) {save_params_graphe('graphe_hauteur_graphe',$_POST['hauteur_graphe']);}
 			if(isset($_POST['taille_police'])) {save_params_graphe('graphe_taille_police',$_POST['taille_police']);}
 			if(isset($_POST['epaisseur_traits'])) {save_params_graphe('graphe_epaisseur_traits',$_POST['epaisseur_traits']);}
+
+			if(isset($_POST['epaisseur_croissante_traits_periodes'])) {save_params_graphe('graphe_epaisseur_croissante_traits_periodes',$_POST['epaisseur_croissante_traits_periodes']);}
+
 			if(isset($_POST['temoin_image_escalier'])) {save_params_graphe('graphe_temoin_image_escalier',$_POST['temoin_image_escalier']);}
 			else{save_params_graphe('graphe_temoin_image_escalier','non');}
 			if(isset($_POST['tronquer_nom_court'])) {save_params_graphe('graphe_tronquer_nom_court',$_POST['tronquer_nom_court']);}
@@ -211,6 +219,9 @@ if(isset($_POST['parametrage_affichage'])) {
 	if(isset($_POST['hauteur_graphe'])) {savePref($_SESSION['login'],'graphe_hauteur_graphe',$_POST['hauteur_graphe']);}
 	if(isset($_POST['taille_police'])) {savePref($_SESSION['login'],'graphe_taille_police',$_POST['taille_police']);}
 	if(isset($_POST['epaisseur_traits'])) {savePref($_SESSION['login'],'graphe_epaisseur_traits',$_POST['epaisseur_traits']);}
+
+	if(isset($_POST['epaisseur_croissante_traits_periodes'])) {savePref($_SESSION['login'],'graphe_epaisseur_croissante_traits_periodes',$_POST['epaisseur_croissante_traits_periodes']);}
+
 	if(isset($_POST['temoin_image_escalier'])) {savePref($_SESSION['login'],'graphe_temoin_image_escalier',$_POST['temoin_image_escalier']);}
 	else{savePref($_SESSION['login'],'graphe_temoin_image_escalier','non');}
 	if(isset($_POST['tronquer_nom_court'])) {savePref($_SESSION['login'],'graphe_tronquer_nom_court',$_POST['tronquer_nom_court']);}
@@ -303,15 +314,25 @@ if(
 
 			$current_eleve_login_ap = isset($NON_PROTECT["current_eleve_login_ap"]) ? traitement_magic_quotes(corriger_caracteres($NON_PROTECT["current_eleve_login_ap"])) :NULL;
 
+			// ***** AJOUT POUR LES MENTIONS *****
+			$current_eleve_login_me = isset($_POST["current_eleve_login_me"]) ? $_POST["current_eleve_login_me"] : NULL;
+			// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
+
 			//echo "\$current_eleve_login_ap=$current_eleve_login_ap<br />";
 
 			$test_eleve_avis_query = mysql_query("SELECT * FROM avis_conseil_classe WHERE (login='$eleve_saisie_avis' AND periode='$num_periode_saisie')");
 			$test = mysql_num_rows($test_eleve_avis_query);
 			if ($test != "0") {
-				$register = mysql_query("UPDATE avis_conseil_classe SET avis='$current_eleve_login_ap',statut='' WHERE (login='$eleve_saisie_avis' AND periode='$num_periode_saisie')");
+				$sql="UPDATE avis_conseil_classe SET avis='$current_eleve_login_ap',";
+				if(isset($current_eleve_login_me)) {$sql.="id_mention='$current_eleve_login_me',";}
+				$sql.="statut='' WHERE (login='$eleve_saisie_avis' AND periode='$num_periode_saisie');";
+				$register = mysql_query($sql);
 			}
 			else {
-				$register = mysql_query("INSERT INTO avis_conseil_classe SET login='$eleve_saisie_avis',periode='$num_periode_saisie',avis='$current_eleve_login_ap',statut=''");
+				$sql="INSERT INTO avis_conseil_classe SET login='$eleve_saisie_avis',periode='$num_periode_saisie',avis='$current_eleve_login_ap',";
+				if(isset($current_eleve_login_me)) {$sql.="id_mention='$current_eleve_login_me',";}
+				$sql.="statut='';";
+				$register = mysql_query($sql);
 			}
 
 			if (!$register) {
@@ -1116,6 +1137,25 @@ if (!isset($id_classe) and $_SESSION['statut'] != "responsable" AND $_SESSION['s
 	}
 
 
+	if(isset($_POST['epaisseur_croissante_traits_periodes'])) {
+		$epaisseur_croissante_traits_periodes=$_POST['epaisseur_croissante_traits_periodes'];
+	}
+	else{
+		$pref_epaisseur_croissante_traits_periodes=getPref($_SESSION['login'],'graphe_epaisseur_croissante_traits_periodes','');
+		if(($pref_epaisseur_croissante_traits_periodes=='oui')||($pref_epaisseur_croissante_traits_periodes=='non')) {
+			$epaisseur_croissante_traits_periodes=$pref_epaisseur_croissante_traits_periodes;
+		}
+		else {
+			if(getSettingValue('graphe_epaisseur_croissante_traits_periodes')) {
+				$epaisseur_croissante_traits_periodes=getSettingValue('graphe_epaisseur_croissante_traits_periodes');
+			}
+			else{
+				$epaisseur_croissante_traits_periodes="non";
+			}
+		}
+	}
+
+
 	// Pour présenter ou non, les noms longs en entier en travers sous le graphe.
 	if(isset($_POST['temoin_image_escalier'])) {
 		$temoin_image_escalier=$_POST['temoin_image_escalier'];
@@ -1385,6 +1425,15 @@ if (!isset($id_classe) and $_SESSION['statut'] != "responsable" AND $_SESSION['s
 				echo "<option value='$i'$selected>$i</option>\n";
 			}
 			echo "</select></td></tr>\n";
+
+			// - epaisseur croissante des traits
+			echo "<tr><td>Epaisseur croissante des courbes de période en période:</td><td>\n";
+			if($epaisseur_croissante_traits_periodes=='oui') {$checked=" checked='yes'";} else {$checked="";}
+			echo "<input type='radio' name='epaisseur_croissante_traits_periodes' id='epaisseur_croissante_traits_periodes_oui' value='oui'$checked /><label for='epaisseur_croissante_traits_periodes_oui' style='cursor: pointer;'> Oui </label>/";
+			if($epaisseur_croissante_traits_periodes!='oui') {$checked=" checked='yes'";} else {$checked="";}
+			echo "<label for='epaisseur_croissante_traits_periodes_non' style='cursor: pointer;'> Non </label><input type='radio' name='epaisseur_croissante_traits_periodes' id='epaisseur_croissante_traits_periodes_non' value='non'$checked />";
+			echo "</td></tr>\n";
+
 
 			// - modèle de couleurs
 
@@ -1829,6 +1878,7 @@ function eleve_suivant() {
 	echo "<input type='hidden' name='hauteur_graphe' value='$hauteur_graphe' />\n";
 	echo "<input type='hidden' name='taille_police' value='$taille_police' />\n";
 	echo "<input type='hidden' name='epaisseur_traits' value='$epaisseur_traits' />\n";
+	echo "<input type='hidden' name='epaisseur_croissante_traits_periodes' value='$epaisseur_croissante_traits_periodes' />\n";
 	echo "<input type='hidden' name='temoin_image_escalier' value='$temoin_image_escalier' />\n";
 	echo "<input type='hidden' name='tronquer_nom_court' value='$tronquer_nom_court' />\n";
 	echo "<input type='hidden' name='affiche_photo' value='$affiche_photo' />\n";
@@ -2068,15 +2118,21 @@ function eleve_suivant() {
 					if($lig_verr_per->verouiller!='O') {
 	
 						$current_eleve_avis="";
+						// ***** AJOUT POUR LES MENTIONS *****
+						$current_eleve_mention="";
+						// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
 						$sql="SELECT * FROM avis_conseil_classe WHERE login='$eleve1' AND periode='$num_periode_choisie';";
 						//echo "$sql<br />";
 						$res_avis=mysql_query($sql);
 						if(mysql_num_rows($res_avis)>0) {
 							$lig_avis=mysql_fetch_object($res_avis);
 							$current_eleve_avis=$lig_avis->avis;
+							// ***** AJOUT POUR LES MENTIONS *****
+							$current_eleve_mention=$lig_avis->id_mention;
+							// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
 						}
 
-	
+
 						echo "<div style='display:none;'>
 <textarea name='no_anti_inject_current_eleve_login_ap' id='no_anti_inject_current_eleve_login_ap' rows='5' cols='20' wrap='virtual' onchange=\"changement()\">$current_eleve_avis</textarea>
 <input type='hidden' name='num_periode_saisie' value='$num_periode_choisie' />
@@ -2084,10 +2140,24 @@ function eleve_suivant() {
 <input type='hidden' name='enregistrer_avis' id='enregistrer_avis' value='' />
 </div>\n";
 
+						// ***** AJOUT POUR LES MENTIONS *****
+						echo "<div style='display:none;'>
+<textarea name='current_eleve_login_me' id='current_eleve_login_me' rows='1' cols='2' wrap='virtual' onchange=\"changement()\">$current_eleve_mention</textarea>
+<input type='hidden' name='enregistrer_mention' id='enregistrer_mention' value='' />
+</div>\n";
+						// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
+
 							echo "<script type='text/javascript'>
 		function save_avis(mode) {
 			document.getElementById('no_anti_inject_current_eleve_login_ap').value=document.getElementById('no_anti_inject_current_eleve_login_ap2').value;
 			document.getElementById('enregistrer_avis').value='y';
+
+			if(document.getElementById('current_eleve_login_me2')) {
+				document.getElementById('current_eleve_login_me').value=document.getElementById('current_eleve_login_me2').value;
+				document.getElementById('enregistrer_mention').value='y';
+			}
+			//alert('La mention actuelle est : '+document.getElementById('current_eleve_login_me').value+'.');
+
 			if(mode=='suivant') {
 				eleve_suivant();
 			}
@@ -2105,7 +2175,7 @@ function eleve_suivant() {
 	
 						if($graphe_champ_saisie_avis_fixe!="y") {
 						//================
-							echo "<br />\n<a href=\"#graph\" onClick=\"afficher_div('saisie_avis','y',100,100);\">Saisir l'avis du conseil</a>\n";
+							echo "<br />\n<a href=\"#graph\" onClick=\"afficher_div('saisie_avis','y',100,100);return false;\">Saisir l'avis du conseil</a>\n";
 	
 							$titre="Avis du conseil de classe: $lig_verr_per->nom_periode";
 	
@@ -2117,7 +2187,35 @@ function eleve_suivant() {
 							//$texte.="\n";
 							$texte.="$current_eleve_avis";
 							$texte.="</textarea>\n";
+
+							// ***** AJOUT POUR LES MENTIONS *****
+							if(test_existence_mentions_classe($id_classe)) {
+								$texte.="<br/>\n";
+								$texte.=ucfirst($gepi_denom_mention)." : ";
 	
+								$texte.=champ_select_mention('current_eleve_login_me2',$id_classe,$current_eleve_mention);
+								/*
+								// Essai d'ajout de listes déroulantes en vue de l'intégration des mentions au bulletin :
+								$selectedF="";
+								$selectedM="";
+								$selectedE="";
+								$selectedB="";
+								if($current_eleve_mention=='F') {$selectedF=" selected";}
+								else if($current_eleve_mention=='M') {$selectedM=" selected";}
+								else if($current_eleve_mention=='E') {$selectedE=" selected";}
+								else {$selectedB=" selected";}
+								$texte.="<select name='current_eleve_login_me2'>\n";
+								$texte.="<option value='B'$selectedB> </option>\n";
+								$texte.="<option value='E'$selectedE>Encouragements</option>\n";
+								$texte.="<option value='M'$selectedM>Mention honorable</option>\n";
+								$texte.="<option value='F'$selectedF>Félicitations</option>\n";
+								$texte.="</select>\n";
+								*/
+								$texte.="<br/>\n";
+							}
+							// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
+			
+
 							//$texte.="<input type='submit' NAME='ok1' value='Enregistrer' />\n";
 							$texte.="<input type='button' NAME='ok1' value='Enregistrer' onClick=\"save_avis('');\" />\n";
 							if($suivant<$nombreligne+1) {
@@ -2146,6 +2244,34 @@ function eleve_suivant() {
 							//$texte_saisie_avis_fixe.="\n";
 							$texte_saisie_avis_fixe.="$current_eleve_avis";
 							$texte_saisie_avis_fixe.="</textarea>\n";
+
+							// ***** AJOUT POUR LES MENTIONS *****
+							if(test_existence_mentions_classe($id_classe)) {
+								$texte_saisie_avis_fixe.="<br/>\n";
+								$texte_saisie_avis_fixe.=ucfirst($gepi_denom_mention)." : ";
+	
+								$texte_saisie_avis_fixe.=champ_select_mention('current_eleve_login_me2',$id_classe,$current_eleve_mention);
+								/*
+								// Essai d'ajout de listes déroulantes en vue de l'intégration des mentions au bulletin :
+								$selectedF="";
+								$selectedM="";
+								$selectedE="";
+								$selectedB="";
+								if($current_eleve_mention=='F') {$selectedF=" selected";}
+								else if($current_eleve_mention=='M') {$selectedM=" selected";}
+								else if($current_eleve_mention=='E') {$selectedE=" selected";}
+								else {$selectedB=" selected";}
+								$texte_saisie_avis_fixe.="<select name='current_eleve_login_me2'>\n";
+								$texte_saisie_avis_fixe.="<option value='B'$selectedB> </option>\n";
+								$texte_saisie_avis_fixe.="<option value='E'$selectedE>Encouragements</option>\n";
+								$texte_saisie_avis_fixe.="<option value='M'$selectedM>Mention honorable</option>\n";
+								$texte_saisie_avis_fixe.="<option value='F'$selectedF>Félicitations</option>\n";
+								$texte_saisie_avis_fixe.="</select>\n";
+								*/
+								$texte_saisie_avis_fixe.="<br/>\n";
+							}
+							// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
+
 	
 							//$texte_saisie_avis_fixe.="<input type='submit' NAME='ok1' value='Enregistrer' />\n";
 							$texte_saisie_avis_fixe.="<br /><input type='button' NAME='ok1' value='Enregistrer' onClick=\"save_avis('');\" />\n";
@@ -2192,6 +2318,7 @@ function eleve_suivant() {
 						if(mysql_num_rows($res_avis)>0) {
 							$lig_avis=mysql_fetch_object($res_avis);
 							$current_eleve_avis=$lig_avis->avis;
+							$current_eleve_mention=$lig_avis->id_mention;
 						}
 	
 						echo "<div style='display:none;'>
@@ -2230,7 +2357,34 @@ function eleve_suivant() {
 							//$texte.="\n";
 							$texte.="$current_eleve_avis";
 							$texte.="</textarea>\n";
+
+							// ***** AJOUT POUR LES MENTIONS *****
+							if(test_existence_mentions_classe($id_classe)) {
+								$texte.="<br/>\n";
+								$texte.=ucfirst($gepi_denom_mention)." : ";
 	
+								$texte.=champ_select_mention('current_eleve_login_me2',$id_classe,$current_eleve_mention);
+								/*
+								// Essai d'ajout de listes déroulantes en vue de l'intégration des mentions au bulletin :
+								$selectedF="";
+								$selectedM="";
+								$selectedE="";
+								$selectedB="";
+								if($current_eleve_mention=='F') {$selectedF=" selected";}
+								else if($current_eleve_mention=='M') {$selectedM=" selected";}
+								else if($current_eleve_mention=='E') {$selectedE=" selected";}
+								else {$selectedB=" selected";}
+								$texte.="<select name='current_eleve_login_me2'>\n";
+								$texte.="<option value='B'$selectedB> </option>\n";
+								$texte.="<option value='E'$selectedE>Encouragements</option>\n";
+								$texte.="<option value='M'$selectedM>Mention honorable</option>\n";
+								$texte.="<option value='F'$selectedF>Félicitations</option>\n";
+								$texte.="</select>\n";
+								*/
+								$texte.="<br/>\n";
+							}
+							// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
+
 							//$texte.="<input type='submit' NAME='ok1' value='Enregistrer' />\n";
 							$texte.="<input type='button' NAME='ok1' value='Enregistrer' onClick=\"save_avis('');\" />\n";
 							if($suivant<$nombreligne+1) {
@@ -2259,7 +2413,35 @@ function eleve_suivant() {
 							//$texte_saisie_avis_fixe.="\n";
 							$texte_saisie_avis_fixe.="$current_eleve_avis";
 							$texte_saisie_avis_fixe.="</textarea>\n";
+
+							// ***** AJOUT POUR LES MENTIONS *****
+							if(test_existence_mentions_classe($id_classe)) {
+								$texte_saisie_avis_fixe.="<br/>\n";
+								$texte_saisie_avis_fixe.=ucfirst($gepi_denom_mention)." : ";
 	
+								$texte_saisie_avis_fixe.=champ_select_mention('current_eleve_login_me2',$id_classe,$current_eleve_mention);
+								/*
+								// Essai d'ajout de listes déroulantes en vue de l'intégration des mentions au bulletin :
+								$selectedF="";
+								$selectedM="";
+								$selectedE="";
+								$selectedB="";
+								if($current_eleve_mention=='F') {$selectedF=" selected";}
+								else if($current_eleve_mention=='M') {$selectedM=" selected";}
+								else if($current_eleve_mention=='E') {$selectedE=" selected";}
+								else {$selectedB=" selected";}
+								$texte_saisie_avis_fixe.="<select name='current_eleve_login_me2'>\n";
+								$texte_saisie_avis_fixe.="<option value='B'$selectedB> </option>\n";
+								$texte_saisie_avis_fixe.="<option value='E'$selectedE>Encouragements</option>\n";
+								$texte_saisie_avis_fixe.="<option value='M'$selectedM>Mention honorable</option>\n";
+								$texte_saisie_avis_fixe.="<option value='F'$selectedF>Félicitations</option>\n";
+								$texte_saisie_avis_fixe.="</select>\n";
+								*/
+								$texte_saisie_avis_fixe.="<br/>\n";
+							}
+							// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
+			
+
 							//$texte_saisie_avis_fixe.="<input type='submit' NAME='ok1' value='Enregistrer' />\n";
 							$texte_saisie_avis_fixe.="<br /><input type='button' NAME='ok1' value='Enregistrer' onClick=\"save_avis('');\" />\n";
 							if($suivant<$nombreligne+1) {
@@ -2605,44 +2787,44 @@ function eleve_suivant() {
 			//=========================================================
 
 
-	// Ajout Eric 11/12/2010 Boite déroulante pour les appréciations.
-	if ($graphe_affiche_deroulant_appreciations=='oui') {
-	    $graphe_hauteur_affichage_deroulant=$graphe_hauteur_affichage_deroulant."px";
-		echo "<script type='text/javascript'>
-		// <![CDATA[
-			var pas=1;
-			var h_fen='$graphe_hauteur_affichage_deroulant';
-			function scrollmrq(){
-				if (parseInt(mrq.style.top) > -h_mrq ) 
-				mrq.style.top = parseInt(mrq.style.top)-pas+'px'
-				else mrq.style.top=parseInt(h_fen)+'px'
+			// Ajout Eric 11/12/2010 Boite déroulante pour les appréciations.
+			if ($graphe_affiche_deroulant_appreciations=='oui') {
+				$graphe_hauteur_affichage_deroulant=$graphe_hauteur_affichage_deroulant."px";
+				echo "<script type='text/javascript'>
+				// <![CDATA[
+					var pas=1;
+					var h_fen='$graphe_hauteur_affichage_deroulant';
+					function scrollmrq(){
+						if (parseInt(mrq.style.top) > -h_mrq ) 
+						mrq.style.top = parseInt(mrq.style.top)-pas+'px'
+						else mrq.style.top=parseInt(h_fen)+'px'
+					}
+					function init_mrq(){
+						mrq=document.getElementById('appreciations_defile');
+						fen=document.getElementById('appreciations_deroulantes');
+						fen.onmouseover=function(){stoc=pas;pas=0};
+						fen.onmouseout=function(){pas=stoc};fen.style.height=h_fen;
+						h_mrq=mrq.offsetHeight;
+						with(mrq.style){position='absolute';top=h_fen;}
+						setInterval('scrollmrq()',50);
+					}
+		
+					document.getElementById('appreciations_defile').innerHTML='".addslashes($txt_appreciations_deroulantes)."';
+		
+					window.onload =init_mrq;
+				//]]>
+				</script>\n";
+				/*
+				echo "<div class='appreciations_deroulantes_graphe' style='height:$graphe_hauteur_affichage_deroulant'>";
+				echo "<b><i><center>Appréciations - $periode</center></i></b>";
+				echo "<div id='appreciations_deroulantes'>";
+				echo "<span id='appreciations_defile'>";
+				echo $txt_appreciations_deroulantes;
+				echo "</span></div></div>";
+				*/
 			}
-			function init_mrq(){
-				mrq=document.getElementById('appreciations_defile');
-				fen=document.getElementById('appreciations_deroulantes');
-				fen.onmouseover=function(){stoc=pas;pas=0};
-				fen.onmouseout=function(){pas=stoc};fen.style.height=h_fen;
-				h_mrq=mrq.offsetHeight;
-				with(mrq.style){position='absolute';top=h_fen;}
-				setInterval('scrollmrq()',50);
-			}
-
-			document.getElementById('appreciations_defile').innerHTML='".addslashes($txt_appreciations_deroulantes)."';
-
-			window.onload =init_mrq;
-		//]]>
-	    </script>\n";
-		/*
-		echo "<div class='appreciations_deroulantes_graphe' style='height:$graphe_hauteur_affichage_deroulant'>";
-		echo "<b><i><center>Appréciations - $periode</center></i></b>";
-		echo "<div id='appreciations_deroulantes'>";
-		echo "<span id='appreciations_defile'>";
-		echo $txt_appreciations_deroulantes;
-		echo "</span></div></div>";
-		*/
-	}
-	// Fin ajout Eric
-	
+			// Fin ajout Eric
+			
 			// Avis du conseil de classe
 			$temoin_avis_present="n";
 			// Dispositif de restriction des accès aux appréciations pour les comptes responsables/eleves
@@ -2655,7 +2837,21 @@ function eleve_suivant() {
 						$titre_bulle="Avis du Conseil de classe";
 
 						$texte_bulle="<div align='center'>\n";
-						$texte_bulle.=htmlentities($lig_avis->avis)."\n";
+						//$texte_bulle.=htmlentities($lig_avis->avis)."\n";
+						$texte_bulle.=nl2br($lig_avis->avis)."\n";
+						// ***** AJOUT POUR LES MENTIONS *****
+						if((!isset($tableau_des_mentions_sur_le_bulletin))||(!is_array($tableau_des_mentions_sur_le_bulletin))||(count($tableau_des_mentions_sur_le_bulletin)==0)) {
+							$tableau_des_mentions_sur_le_bulletin=get_mentions();
+						}
+
+						//if(($lig_avis->id_mention!='')&&($lig_avis->mention!='-')&&($lig_avis->mention!='B')) {
+						if(isset($tableau_des_mentions_sur_le_bulletin[$lig_avis->id_mention])) {
+							$texte_bulle.="<br />\n";
+							$texte_bulle.="<b>".ucfirst($gepi_denom_mention)."</b> : ";
+							//$texte_bulle.=htmlentities(traduction_mention($lig_avis->mention))."\n";
+							$texte_bulle.=$tableau_des_mentions_sur_le_bulletin[$lig_avis->id_mention]."\n";
+						}
+						// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
 						$texte_bulle.="</div>\n";
 						//$tabdiv_infobulle[]=creer_div_infobulle('div_app_'.$cpt,$titre_bulle,"",$texte_bulle,"",14,0,'y','y','n','n');
 						$tabdiv_infobulle[]=creer_div_infobulle('div_avis_1',$titre_bulle,"",$texte_bulle,"",20,0,'n','n','n','n');
@@ -2664,18 +2860,6 @@ function eleve_suivant() {
 					}
 				}
 			}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 			// ImageMap:
@@ -3000,6 +3184,7 @@ function eleve_suivant() {
 						echo "&amp;hauteur_graphe=$hauteur_graphe";
 						echo "&amp;taille_police=$taille_police";
 						echo "&amp;epaisseur_traits=$epaisseur_traits";
+						echo "&amp;epaisseur_croissante_traits_periodes=$epaisseur_croissante_traits_periodes";
 						if($affiche_minmax=="oui") {
 							echo "&amp;seriemin=$seriemin";
 							echo "&amp;seriemax=$seriemax";
@@ -3104,6 +3289,7 @@ function eleve_suivant() {
 						echo "&amp;hauteur_graphe=$hauteur_graphe";
 						echo "&amp;taille_police=$taille_police";
 						echo "&amp;epaisseur_traits=$epaisseur_traits";
+						echo "&amp;epaisseur_croissante_traits_periodes=$epaisseur_croissante_traits_periodes";
 						if($affiche_minmax=="oui") {
 							echo "&amp;seriemin=$seriemin";
 							echo "&amp;seriemax=$seriemax";
@@ -3157,6 +3343,7 @@ function eleve_suivant() {
 					echo "&amp;hauteur_graphe=$hauteur_graphe";
 					echo "&amp;taille_police=$taille_police";
 					echo "&amp;epaisseur_traits=$epaisseur_traits";
+					echo "&amp;epaisseur_croissante_traits_periodes=$epaisseur_croissante_traits_periodes";
 					if($affiche_minmax=="oui") {
 						echo "&amp;seriemin=$seriemin";
 						echo "&amp;seriemax=$seriemax";
@@ -3203,7 +3390,15 @@ function eleve_suivant() {
 			// Récupération de la liste des matières dans l'ordre souhaité:
 			if ($affiche_categories) {
 				/*
-				$sql="SELECT DISTINCT jgc.id_groupe, m.* FROM matieres m,j_groupes_classes jgc,j_groupes_matieres jgm,j_matieres_categories_classes jmcc WHERE (m.matiere=jgm.id_matiere AND jgm.id_groupe=jgc.id_groupe AND jgc.id_classe='$id_classe' AND jgc.categorie_id = jmcc.categorie_id) ORDER BY jmcc.priority,jgc.priorite,m.matiere";
+				$sql="SELECT DISTINCT jgc.id_groupe, m.* FROM matieres m,
+															j_groupes_classes jgc,
+															j_groupes_matieres jgm,
+															j_matieres_categories_classes jmcc 
+														WHERE (m.matiere=jgm.id_matiere AND 
+															jgm.id_groupe=jgc.id_groupe AND 
+															jgc.id_classe='$id_classe' AND 
+															jgc.categorie_id = jmcc.categorie_id) 
+															ORDER BY jmcc.priority,jgc.priorite,m.matiere";
 				//ORDER BY jmcc.priority,mc.priority,jgc.priorite,m.nom_complet
 				*/
 				$sql="SELECT DISTINCT jgc.id_groupe, m.* FROM matieres m,
@@ -3216,7 +3411,8 @@ function eleve_suivant() {
 															m.matiere=jgm.id_matiere AND 
 															jgm.id_groupe=jgc.id_groupe AND 
 															jgc.id_classe='$id_classe' AND 
-															jgc.categorie_id = jmcc.categorie_id) 
+															jgc.categorie_id = jmcc.categorie_id AND 
+															jgc.id_groupe NOT IN (SELECT id_groupe FROM j_groupes_visibilite WHERE domaine='bulletins' AND visible='n')) 
 															ORDER BY jmcc.priority,mc.priority,jgc.priorite,m.nom_complet";
 			}
 			else{
@@ -3495,10 +3691,10 @@ function eleve_suivant() {
 				//echo "<area href=\"#\" onClick='return false;' onMouseover=\"div_info('div_avis_','1','affiche');\" onMouseout=\"div_info('div_avis_','1','cache');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\">";
 				if($temoin_avis_present=="y") {
 					if($click_plutot_que_survol_aff_app=="y") {
-						echo "<area href=\"#\" onClick=\"affiche_eleve_delais_afficher_div('div_avis_1','y',-10,20,1,$largeurMat,$hauteur_rect_delais_afficher_div);return false;\" onMouseout=\"cacher_div('div_avis_1');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\" alt=\"\">";
+						echo "<area href=\"#\" onClick=\"delais_afficher_div('div_avis_1','y',-10,20,1,$largeurMat,$hauteur_rect_delais_afficher_div);return false;\" onMouseout=\"cacher_div('div_avis_1');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\" alt=\"\">";
 					}
 					else {
-						echo "<area href=\"#\" onClick='return false;' onMouseover=\"affiche_eleve_delais_afficher_div('div_avis_1','y',-10,20,$duree_delais_afficher_div,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_avis_1');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\" alt=\"\">";
+						echo "<area href=\"#\" onClick='return false;' onMouseover=\"delais_afficher_div('div_avis_1','y',-10,20,$duree_delais_afficher_div,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_avis_1');\" shape=\"rect\" coords=\"$x0,0,$x1,$hauteur_graphe\" alt=\"\">";
 					}
 				}
 				echo "</map>\n";
@@ -3714,10 +3910,10 @@ function eleve_suivant() {
 					//echo "<area href=\"#\" onClick='return false;' onMouseover=\"afficher_div('div_app_".$k."','y',-10,20);\" onMouseout=\"cacher_div('div_app_".$k."');\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\">\n";
 
 					if($click_plutot_que_survol_aff_app=="y") {
-						echo "<area href=\"#\" onClick=\"affiche_eleve_delais_afficher_div('div_app_".$k."','y',-10,20,1,50,50);return false;\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\" alt=\"\">\n";
+						echo "<area href=\"#\" onClick=\"delais_afficher_div('div_app_".$k."','y',-10,20,1,50,50);return false;\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\" alt=\"\">\n";
 					}
 					else {
-						echo "<area href=\"#\" onClick='return false;' onMouseover=\"affiche_eleve_delais_afficher_div('div_app_".$k."','y',-10,20,$duree_delais_afficher_div,50,50);\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\" alt=\"\">\n";
+						echo "<area href=\"#\" onClick='return false;' onMouseover=\"delais_afficher_div('div_app_".$k."','y',-10,20,$duree_delais_afficher_div,50,50);\" shape=\"rect\" coords=\"$x,$y,$x2,$y2\" alt=\"\">\n";
 					}
 				}
 
@@ -3770,6 +3966,7 @@ function eleve_suivant() {
 					echo "&amp;hauteur_graphe=$hauteur_graphe";
 					echo "&amp;taille_police=$taille_police";
 					echo "&amp;epaisseur_traits=$epaisseur_traits";
+					echo "&amp;epaisseur_croissante_traits_periodes=$epaisseur_croissante_traits_periodes";
 					if($affiche_moy_annuelle=="oui") {
 						echo "&amp;affiche_moy_annuelle=$affiche_moy_annuelle";
 					}
@@ -3807,10 +4004,10 @@ function eleve_suivant() {
 
 						if(isset($info_imagemap[$i])) {
 							if($click_plutot_que_survol_aff_app=="y") {
-								echo "<div onclick=\"affiche_eleve_delais_afficher_div('div_app_".$i."','y',-10,20,500,$largeurMat,10,1,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_app_".$i."');\" style='position: absolute; left: ".$x0."px; top: 0px; width: ".$largeurMat."px; height: ".$hauteur_graphe."px;'>&nbsp;</div>\n";
+								echo "<div onclick=\"delais_afficher_div('div_app_".$i."','y',-10,20,500,$largeurMat,10,1,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_app_".$i."');\" style='position: absolute; left: ".$x0."px; top: 0px; width: ".$largeurMat."px; height: ".$hauteur_graphe."px;'>&nbsp;</div>\n";
 							}
 							else {
-								echo "<div onMouseover=\"affiche_eleve_delais_afficher_div('div_app_".$i."','y',-10,20,500,$largeurMat,10,$duree_delais_afficher_div,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_app_".$i."');\" style='position: absolute; left: ".$x0."px; top: 0px; width: ".$largeurMat."px; height: ".$hauteur_graphe."px;'>&nbsp;</div>\n";
+								echo "<div onMouseover=\"delais_afficher_div('div_app_".$i."','y',-10,20,500,$largeurMat,10,$duree_delais_afficher_div,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_app_".$i."');\" style='position: absolute; left: ".$x0."px; top: 0px; width: ".$largeurMat."px; height: ".$hauteur_graphe."px;'>&nbsp;</div>\n";
 							}
 						}
 					}
@@ -3819,10 +4016,10 @@ function eleve_suivant() {
 					$x1=$largeur_graphe;
 					if($temoin_avis_present=="y") {
 						if($click_plutot_que_survol_aff_app=="y") {
-							echo "<div onclick=\"affiche_eleve_delais_afficher_div('div_avis_1','y',-10,20,1,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_avis_1');\" style='position: absolute; left: ".$x0."px; top: 0px; width: ".$largeurMat."px; height: ".$hauteur_graphe."px;'>&nbsp;</div>\n";
+							echo "<div onclick=\"delais_afficher_div('div_avis_1','y',-10,20,1,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_avis_1');\" style='position: absolute; left: ".$x0."px; top: 0px; width: ".$largeurMat."px; height: ".$hauteur_graphe."px;'>&nbsp;</div>\n";
 						}
 						else {
-							echo "<div onMouseover=\"affiche_eleve_delais_afficher_div('div_avis_1','y',-10,20,$duree_delais_afficher_div,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_avis_1');\" style='position: absolute; left: ".$x0."px; top: 0px; width: ".$largeurMat."px; height: ".$hauteur_graphe."px;'>&nbsp;</div>\n";
+							echo "<div onMouseover=\"delais_afficher_div('div_avis_1','y',-10,20,$duree_delais_afficher_div,$largeurMat,$hauteur_rect_delais_afficher_div);\" onMouseout=\"cacher_div('div_avis_1');\" style='position: absolute; left: ".$x0."px; top: 0px; width: ".$largeurMat."px; height: ".$hauteur_graphe."px;'>&nbsp;</div>\n";
 						}
 					}
 
@@ -3843,6 +4040,7 @@ function eleve_suivant() {
 					echo "&amp;hauteur_graphe=$hauteur_graphe";
 					echo "&amp;taille_police=$taille_police";
 					echo "&amp;epaisseur_traits=$epaisseur_traits";
+					echo "&amp;epaisseur_croissante_traits_periodes=$epaisseur_croissante_traits_periodes";
 					if($affiche_moy_annuelle=="oui") {
 						echo "&amp;affiche_moy_annuelle=$affiche_moy_annuelle";
 					}
@@ -3879,6 +4077,7 @@ function eleve_suivant() {
 				echo "&amp;hauteur_graphe=$hauteur_graphe";
 				echo "&amp;taille_police=$taille_police";
 				echo "&amp;epaisseur_traits=$epaisseur_traits";
+				echo "&amp;epaisseur_croissante_traits_periodes=$epaisseur_croissante_traits_periodes";
 				if($affiche_moy_annuelle=="oui") {
 					echo "&amp;affiche_moy_annuelle=$affiche_moy_annuelle";
 				}
@@ -3988,12 +4187,14 @@ function eleve_suivant() {
 			if($acces_bull_simp=="y") {
 				echo "<p align='center'>";
 				if($choix_periode=='toutes_periodes') {
+					//echo "<a href=\"../prepa_conseil/edit_limite.php?choix_edit=2&login_eleve=".$eleve1."&id_classe=$id_classe&periode1=1&periode2=$nb_periode\" onclick=\"sauve_desactivation_infobulle();afficher_div('div_bull_simp','y',-100,-200); affiche_bull_simp('$eleve1','$id_classe','1','$nb_periode');restaure_desactivation_infobulle();return false;\" target=\"_blank\">";
 					echo "<a href=\"../prepa_conseil/edit_limite.php?choix_edit=2&login_eleve=".$eleve1."&id_classe=$id_classe&periode1=1&periode2=$nb_periode\" onclick=\"afficher_div('div_bull_simp','y',-100,-200); affiche_bull_simp('$eleve1','$id_classe','1','$nb_periode');return false;\" target=\"_blank\">";
 					echo "Voir le bulletin simplifié";
 					//echo "<img src='../images/icons/bulletin_simp.png' width='17' height='17' alt='Bulletin simple toutes périodes en infobulle' title='Bulletin simple toutes périodes en infobulle' />";
 					echo "</a>";
 				}
 				else {
+					//echo "<a href=\"../prepa_conseil/edit_limite.php?choix_edit=2&login_eleve=".$eleve1."&id_classe=$id_classe&periode1=$num_periode_choisie&periode2=$num_periode_choisie\" onclick=\"sauve_desactivation_infobulle();afficher_div('div_bull_simp','y',-100,-200); affiche_bull_simp('$eleve1','$id_classe','$num_periode_choisie','$num_periode_choisie');restaure_desactivation_infobulle();return false;\" target=\"_blank\">";
 					echo "<a href=\"../prepa_conseil/edit_limite.php?choix_edit=2&login_eleve=".$eleve1."&id_classe=$id_classe&periode1=$num_periode_choisie&periode2=$num_periode_choisie\" onclick=\"afficher_div('div_bull_simp','y',-100,-200); affiche_bull_simp('$eleve1','$id_classe','$num_periode_choisie','$num_periode_choisie');return false;\" target=\"_blank\">";
 					echo "Voir le bulletin simplifié";
 					//echo "<img src='../images/icons/bulletin_simp.png' width='17' height='17' alt='Bulletin simple toutes périodes en infobulle' title='Bulletin simple toutes périodes en infobulle' />";
@@ -4013,6 +4214,7 @@ function eleve_suivant() {
 
 					// A FAIRE:
 					// IL FAUT RECUPERER L'annee_scolaire et num_periode SI JAVASCRIPT N'EST PAS ACTIF
+					//echo "<a href=\"../mod_annees_anterieures/popup_annee_anterieure.php?id_classe=$id_classe&logineleve=$eleve1&annee_scolaire=2008/2009&num_periode=3&mode=bull_simp\" onclick=\"sauve_desactivation_infobulle();afficher_div('div_annees_anterieures','y',-100,-200); affiche_annees_anterieures('$eleve1','$id_classe');restaure_desactivation_infobulle();return false;\" target=\"_blank\">";
 					echo "<a href=\"../mod_annees_anterieures/popup_annee_anterieure.php?id_classe=$id_classe&logineleve=$eleve1&annee_scolaire=2008/2009&num_periode=3&mode=bull_simp\" onclick=\"afficher_div('div_annees_anterieures','y',-100,-200); affiche_annees_anterieures('$eleve1','$id_classe');return false;\" target=\"_blank\">";
 					//echo "<a href=\"javascript:afficher_div('div_annees_anterieures','y',-100,-200); affiche_annees_anterieures('$eleve1', '$id_classe'); return false;\" target=\"_blank\">";
 					echo "Années antérieures";
@@ -4040,7 +4242,14 @@ function eleve_suivant() {
 				if((getSettingValue("active_module_absence")=='y')||
 					(getSettingValue("abs2_import_manuel_bulletin")=='y')||
 					((count($tab_ele['absences'])!=0)&&(getSettingValue("active_module_absence")!='y')&&(getSettingValue("abs2_import_manuel_bulletin")!='y'))) {
-				   
+
+					/*
+					$tmp_p=$num_periode_choisie-1;
+					foreach($tab_ele['absences'][$num_periode_choisie-1] as $key => $value) {
+						echo "\$tab_ele['absences'][".$tmp_p."][$key]=$value<br />";
+					}
+					*/
+
 				   // Affichage ligne
 					if (isset($tab_ele['absences'][$num_periode_choisie-1])) {
 						if($choix_periode!="toutes_periodes") {
@@ -4062,9 +4271,9 @@ function eleve_suivant() {
 									$info_absence = $info_absence.": ".$tab_ele['absences'][$num_periode_choisie-1]['nb_absences']."</b>";
 									if ($tab_ele['absences'][$num_periode_choisie-1]['non_justifie'] != '0')
 									{
-										$info_absence = $info_absence." (dont <b>".$tab_ele['absences'][$num_periode_choisie-1]['non_justifie']."</b> non justifiée";
+										$info_absence = $info_absence." (<em>dont <b>".$tab_ele['absences'][$num_periode_choisie-1]['non_justifie']."</b> non justifiée";
 										if ($tab_ele['absences'][$num_periode_choisie-1]['non_justifie'] != '1') { $info_absence = $info_absence."s"; }
-										$info_absence = $info_absence.")";
+										$info_absence = $info_absence."</em>)";
 									}
 									$info_absence = $info_absence.".";
 								}
@@ -4353,7 +4562,7 @@ function complete_textarea_avis(num) {
 
 
 //===========================================================
-echo "<div id='div_bull_simp' style='position: absolute; top: 220px; right: 20px; width: 700px; text-align:center; color: black; padding: 0px; border:1px solid black; display:none;'>\n";
+echo "<div id='div_bull_simp' class='infobulle_corps' style='position: absolute; top: 220px; right: 20px; width: 700px; text-align:center; color: black; padding: 0px; border:1px solid black; display:none;'>\n";
 
 	echo "<div class='infobulle_entete' style='color: #ffffff; cursor: move; width: 700px; font-weight: bold; padding: 0px;' onmousedown=\"dragStart(event, 'div_bull_simp')\">\n";
 		echo "<div style='color: #ffffff; cursor: move; font-weight: bold; float:right; width: 16px; margin-right: 1px;'>\n";
@@ -4362,10 +4571,33 @@ echo "<div id='div_bull_simp' style='position: absolute; top: 220px; right: 20px
 		echo "</a>\n";
 		echo "</div>\n";
 
-		echo "<div id='titre_entete_bull_simp'></div>\n";
+		echo "<div id='titre_entete_bull_simp'>";
+		echo "Bulletin simplifié de $prenom1 $nom1 ";
+		if($choix_periode=='periode') {
+			echo "en période $num_periode_choisie";
+		}
+		else {
+			echo "de la période 1 à la $nb_periode";
+		}
+		echo "</div>\n";
 	echo "</div>\n";
 	
 	echo "<div id='corps_bull_simp' class='infobulle_corps' style='color: #ffffff; cursor: auto; font-weight: bold; padding: 0px; height: 15em; width: 700px; overflow: auto;'>";
+	if($acces_bull_simp=="y") {
+		if($choix_periode=='periode') {
+			$periode1=$num_periode_choisie;
+			$periode2=$num_periode_choisie;
+		}
+		else {
+			$periode1=1;
+			$periode2=$nb_periode;
+		}
+		$choix_edit=2;
+		$login_eleve=$eleve1;
+		$inclusion_depuis_graphes="y";
+		include "../lib/bulletin_simple.inc.php";
+		include("../saisie/edit_limite.inc.php");
+	}
 	echo "</div>\n";
 
 echo "</div>\n";
@@ -4373,8 +4605,9 @@ echo "</div>\n";
 echo "<script type='text/javascript'>
 	// <![CDATA[
 	function affiche_bull_simp(login_eleve,id_classe,num_per1,num_per2) {
-		document.getElementById('titre_entete_bull_simp').innerHTML='Bulletin simplifié de '+login_eleve+' période '+num_per1+' à '+num_per2;
-		new Ajax.Updater($('corps_bull_simp'),'../saisie/ajax_edit_limite.php?choix_edit=2&login_eleve='+login_eleve+'&id_classe='+id_classe+'&periode1='+num_per1+'&periode2='+num_per2,{method: 'get'});
+		//document.getElementById('titre_entete_bull_simp').innerHTML='Bulletin simplifié de '+login_eleve+' période '+num_per1+' à '+num_per2;
+
+		//new Ajax.Updater($('corps_bull_simp'),'../saisie/ajax_edit_limite.php?choix_edit=2&login_eleve='+login_eleve+'&id_classe='+id_classe+'&periode1='+num_per1+'&periode2='+num_per2,{method: 'get'});
 	}
 
 	/*
@@ -4417,6 +4650,12 @@ if(getSettingValue('active_annees_anterieures')=='y') {
 
 	}
 }
+//===========================================================
+
+//===========================================================
+echo "<p><em>NOTE&nbsp;:</em></p>\n";
+require("../lib/textes.inc.php");
+echo "<p style='margin-left: 3em;'>$explication_bulletin_ou_graphe_vide</p>\n";
 //===========================================================
 
 require("../lib/footer.inc.php");

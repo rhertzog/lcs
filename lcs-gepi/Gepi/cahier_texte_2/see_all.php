@@ -1,8 +1,8 @@
 <?php
 /*
-* @version: $Id$
+* @version: $Id: see_all.php 7938 2011-08-24 07:57:41Z jjocal $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
 *
 * This file is part of GEPI.
 *
@@ -196,7 +196,9 @@ echo "<div class='centre_table'>\n";
 			if ($_SESSION['statut'] != "responsable" and $_SESSION['statut'] != "eleve") {
 				echo make_classes_select_html('see_all.php', $id_classe, $year, $month, $day);
 				if ($id_classe != -1) {
-					if((isset($id_groupe))&&($id_groupe=='Toutes_matieres')) {
+					//if((isset($id_groupe))&&($id_groupe=='Toutes_matieres')) {
+					if((!isset($id_groupe))||($id_groupe=='Toutes_matieres')) {
+						$id_groupe="Toutes_matieres";
 						echo make_matiere_select_html('see_all.php', $id_classe, $id_groupe, $year, $month, $day,"Toutes_matieres");
 					}
 					else {
@@ -349,18 +351,24 @@ if(($id_groupe=='Toutes_matieres')&&
 	//echo "$sql<br />";
 	$res=mysql_query($sql);
 	$cpt=0;
+	$timestamp_courant=time();
 	while($lig=mysql_fetch_object($res)) {
-		//echo "$lig->date_ct<br />";
-		$date_dev=strftime("%a %d %b %y", $lig->date_ct);
-		if(!in_array($date_dev,$tab_dates)) {
-			$tab_dates[]=$date_dev;
-			$tab_dates2[]=$lig->date_ct;
+		if(($lig->date_visibilite_eleve=="")||
+			(($lig->date_visibilite_eleve!="")&&(mysql_date_to_unix_timestamp($lig->date_visibilite_eleve)<=$timestamp_courant))||
+			(verif_groupe_appartient_prof($lig->id_groupe)==1)) {
+			//echo "$lig->date_ct<br />";
+			$date_dev=strftime("%a %d %b %y", $lig->date_ct);
+			if(!in_array($date_dev,$tab_dates)) {
+				$tab_dates[]=$date_dev;
+				$tab_dates2[]=$lig->date_ct;
+			}
+			$tab_dev[$date_dev][$lig->id_groupe][$cpt]['id_ct']=$lig->id_ct;
+			$tab_dev[$date_dev][$lig->id_groupe][$cpt]['id_login']=$lig->id_login;
+			$tab_dev[$date_dev][$lig->id_groupe][$cpt]['contenu']=$lig->contenu;
+			$tab_dev[$date_dev][$lig->id_groupe][$cpt]['date_visibilite_eleve']=$lig->date_visibilite_eleve;
+			//echo " <span style='color:green'>\$tab_dev[$date_notice][$lig->id_groupe][$cpt]['contenu']=$lig->contenu</span><br />";
+			$cpt++;
 		}
-		$tab_dev[$date_dev][$lig->id_groupe][$cpt]['id_ct']=$lig->id_ct;
-		$tab_dev[$date_dev][$lig->id_groupe][$cpt]['id_login']=$lig->id_login;
-		$tab_dev[$date_dev][$lig->id_groupe][$cpt]['contenu']=$lig->contenu;
-		//echo " <span style='color:green'>\$tab_dev[$date_notice][$lig->id_groupe][$cpt]['contenu']=$lig->contenu</span><br />";
-		$cpt++;
 	}
 	//echo "\$current_ordre=$current_ordre<br />";
 	//sort($tab_dates);
@@ -390,13 +398,15 @@ if(($id_groupe=='Toutes_matieres')&&
 	
 				$alt=$alt*(-1);
 				echo "<tr class='lig$alt'>\n";
-				echo "<td width='20%'>".$tab_grp[$tab_id_grp[$j]]['name']."<br />".$tab_grp[$tab_id_grp[$j]]['matiere']['nom_complet']."<br />";
+				echo "<td width='20%'><span style='font-size:x-small'>".$tab_grp[$tab_id_grp[$j]]['name']."</span><br /><span style='font-weight:bold'>".$tab_grp[$tab_id_grp[$j]]['matiere']['nom_complet']."</span><br />";
 				$str="";
 				foreach ($tab_grp[$tab_id_grp[$j]]['profs']['users'] as $tmp_prof) {
 					$str.=$tmp_prof["civilite"]." ".strtoupper($tmp_prof["nom"])." ".strtoupper(substr($tmp_prof["prenom"],0,1)).", ";
 				}
 				$str = substr($str, 0, -2);
+				echo "<span style='font-size:small'>";
 				echo $str;
+				echo "</span>";
 				//echo " <span style='color:red'>$tab_id_grp[$j]</span>";
 				echo "</td>\n";
 	
@@ -405,7 +415,13 @@ if(($id_groupe=='Toutes_matieres')&&
 					//for($k=0;$k<count($tab_dev[$tab_dates[$i]][$tab_id_grp[$j]]);$k++) {
 						//echo "<div class='see_all_notice couleur_bord_tableau_notice color_fond_notices_t' style='margin: 1px; padding: 1px; border: 1px solid black;'>".$tab_dev[$tab_dates[$i]][$tab_id_grp[$j]][$k]['contenu']."</div>\n";
 					foreach($tab_dev[$tab_dates[$i]][$tab_id_grp[$j]] as $key => $value) {
-						echo "<div class='see_all_notice couleur_bord_tableau_notice color_fond_notices_t' style='margin: 1px; padding: 1px; border: 1px solid black; width: 99%;'>".$value['contenu'];
+						echo "<div class='see_all_notice couleur_bord_tableau_notice color_fond_notices_t' style='margin: 1px; padding: 1px; border: 1px solid black; width: 99%;'>";
+
+						if($value['date_visibilite_eleve']!='0000-00-00 00:00:00') {
+							echo "<div style='float:right; width: 6em; border: 1px solid black; margin: 2px; font-size: xx-small; text-align: center;'>Donné le ".formate_date($value['date_visibilite_eleve'])."</div>\n";
+						}
+
+						echo $value['contenu'];
 						$adj=affiche_docs_joints($value['id_ct'],"t");
 						if($adj!='') {
 							echo "<div style='border: 1px dashed black'>\n";
@@ -507,7 +523,7 @@ $res_notices = mysql_query($req_notices);
 $notice = mysql_fetch_object($res_notices);
 
 $req_devoirs =
-	"select 't' type, contenu, date_ct, id_ct
+	"select 't' type, contenu, date_ct, id_ct, date_visibilite_eleve
 	from ct_devoirs_entry
 	where (contenu != ''
 	and id_groupe = '".$id_groupe."'
@@ -518,6 +534,7 @@ $req_devoirs =
 $res_devoirs = mysql_query($req_devoirs);
 $devoir = mysql_fetch_object($res_devoirs);
 
+$timestamp_courant=time();
 // Boucle d'affichage des notices dans la colonne de gauche
 $date_ct_old = -1;
 while (true) {
@@ -527,10 +544,14 @@ while (true) {
 			// Il y a encore une notice et elle est plus récente que le prochain devoir, où il n'y a plus de devoirs
 			$not_dev = $notice;
 			$notice = mysql_fetch_object($res_notices);
+
+			$type_notice="notice";
 		} elseif($devoir) {
 			// Plus de notices et toujours un devoir, ou devoir plus récent
 			$not_dev = $devoir;
 			$devoir = mysql_fetch_object($res_devoirs);
+
+			$type_notice="devoir";
 		} else {
 			// Plus rien à afficher, on sort de la boucle
 			break;
@@ -541,48 +562,82 @@ while (true) {
 			// Il y a encore une notice et elle est plus récente que le prochain devoir, où il n'y a plus de devoirs
 			$not_dev = $notice;
 			$notice = mysql_fetch_object($res_notices);
+
+			$type_notice="notice";
 		} elseif($devoir) {
 			// Plus de notices et toujours un devoir, ou devoir plus récent
 			$not_dev = $devoir;
 			$devoir = mysql_fetch_object($res_devoirs);
+
+			$type_notice="devoir";
 		} else {
 			// Plus rien à afficher, on sort de la boucle
 			break;
 		}
 	}
-	// Passage en HTML
-	$content = &$not_dev->contenu;
-	include ("../lib/transform.php");
-	$html .= affiche_docs_joints($not_dev->id_ct,$not_dev->type);
-	echo "<h3 class='see_all_h3'>\n<strong>\n";
-		if ($not_dev->type == "t") {
-			echo("A faire pour le : ");
-		}
-		echo(strftime("%a %d %b %y", $not_dev->date_ct));
-	echo "</strong>\n</h3>\n";
-	// Numérotation des notices si plusieurs notices sur la même journée
-	if ($not_dev->type == "c") {
-		if ($date_ct_old == $not_dev->date_ct) {
-			$num_notice++;
-			echo " <strong><em>(notice N° ".$num_notice.")</em></strong>";
-		} else {
-			// on afffiche "(notice N° 1)" uniquement s'il y a plusieurs notices dans la même journée
-			$nb_notices = sql_query1("SELECT count(id_ct) FROM ct_entry WHERE (id_groupe='" . $current_group["id"] ."' and date_ct='".$not_dev->date_ct."')");
-			if ($nb_notices > 1)
-				echo " <strong><em>(notice N° 1)</em></strong>";
-			// On réinitialise le compteur
-			$num_notice = 1;
-		}
+
+	/*
+	if($type_notice=="devoir") {
+		echo "<p>".$not_dev->date_visibilite_eleve."<br />";
+		echo mysql_date_to_unix_timestamp($not_dev->date_visibilite_eleve)."<br />";
+		echo $timestamp_courant."<br />";
+		echo $not_dev->contenu."<br />";
+		echo "</p>";
 	}
-	// echo("<table style=\"border-style:solid; border-width:1px; border-color: ".$couleur_bord_tableau_notice.";\" width=\"100%\" cellpadding=\"1\" bgcolor=\"".$color_fond_notices[$not_dev->type]."\">\n<tr>\n<td>\n$html</td>\n</tr>\n</table>\n<br/>\n");
-	echo "<div class='see_all_notice couleur_bord_tableau_notice color_fond_notices_".$not_dev->type."'>";
-	/* if ($not_dev->type == "t") {
-		echo "see_all_a_faire'>\n";
-	} else {
-		echo "see_all_compte_rendu'>\n";
-	}*/
-	echo "$html\n</div>\n";
-	if ($not_dev->type == "c") {$date_ct_old = $not_dev->date_ct;}
+	*/
+
+	if(($type_notice!="devoir")||
+		($not_dev->date_visibilite_eleve=="")||
+		(($not_dev->date_visibilite_eleve!="")&&(mysql_date_to_unix_timestamp($not_dev->date_visibilite_eleve)<=$timestamp_courant))||
+		(verif_groupe_appartient_prof($id_groupe)==1)) {
+
+		// Passage en HTML
+		// INSERT INTO setting SET name='depolluer_MSOffice', value='y';
+		if(getSettingValue('depolluer_MSOffice')=='y') {
+			//$content = &my_ereg_replace('.*<\!\[endif\]-->',"",$not_dev->contenu);
+			$content = &preg_replace('#.*<\!\[endif\]-->#',"",$not_dev->contenu);
+		}
+		else {
+			$content = &$not_dev->contenu;
+		}
+		include ("../lib/transform.php");
+	
+		$html .= affiche_docs_joints($not_dev->id_ct,$not_dev->type);
+		echo "<h3 class='see_all_h3'>\n<strong>\n";
+			if ($not_dev->type == "t") {
+				echo("A faire pour le : ");
+			}
+			echo(strftime("%a %d %b %y", $not_dev->date_ct));
+		echo "</strong>\n</h3>\n";
+		// Numérotation des notices si plusieurs notices sur la même journée
+		if ($not_dev->type == "c") {
+			if ($date_ct_old == $not_dev->date_ct) {
+				$num_notice++;
+				echo " <strong><em>(notice N° ".$num_notice.")</em></strong>";
+			} else {
+				// on afffiche "(notice N° 1)" uniquement s'il y a plusieurs notices dans la même journée
+				$nb_notices = sql_query1("SELECT count(id_ct) FROM ct_entry WHERE (id_groupe='" . $current_group["id"] ."' and date_ct='".$not_dev->date_ct."')");
+				if ($nb_notices > 1)
+					echo " <strong><em>(notice N° 1)</em></strong>";
+				// On réinitialise le compteur
+				$num_notice = 1;
+			}
+		}
+		// echo("<table style=\"border-style:solid; border-width:1px; border-color: ".$couleur_bord_tableau_notice.";\" width=\"100%\" cellpadding=\"1\" bgcolor=\"".$color_fond_notices[$not_dev->type]."\">\n<tr>\n<td>\n$html</td>\n</tr>\n</table>\n<br/>\n");
+		echo "<div class='see_all_notice couleur_bord_tableau_notice color_fond_notices_".$not_dev->type."'>";
+		/* if ($not_dev->type == "t") {
+			echo "see_all_a_faire'>\n";
+		} else {
+			echo "see_all_compte_rendu'>\n";
+		}*/
+
+		if(($type_notice=='devoir')&&($not_dev->date_visibilite_eleve!='0000-00-00 00:00:00')) {
+			echo "<div style='float:right; width: 6em; border: 1px solid black; margin: 2px; font-size: xx-small; text-align: center;'>Donné le ".formate_date($not_dev->date_visibilite_eleve)."</div>\n";
+		}
+
+		echo "$html\n</div>\n";
+		if ($not_dev->type == "c") {$date_ct_old = $not_dev->date_ct;}
+	}
 }
 
 //if ($current_imprime=='n') echo "</td></tr></table>";

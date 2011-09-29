@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id$
+ * $Id: ajax_affichages_liste_notices.php 7938 2011-08-24 07:57:41Z jjocal $
  *
  * Copyright 2009-2011 Josselin Jacquard
  *
@@ -267,10 +267,11 @@ foreach ($ctCompteRenduInfoGenerales as $ctCompteRenduInfoGenerale) {
 						object_en_cours_edition = 'compte_rendu';
 		  \">
 				<img style=\"border: 0px;\" src=\"../images/edit16.png\" alt=\"modifier\" title=\"modifier\" />
-		  </a>");
+		  </a>\n");
 	echo("<a href=\"#\" onclick=\"suppressionCompteRendu('Information générale',".$ctCompteRenduInfoGenerale->getIdCt().",'".add_token_in_js_func()."'); return false;\">
 			<img style=\"border: 0px;\" src=\"../images/delete16.png\" alt=\"supprimer\" title=\"supprimer\" />
-		</a></div>\n");
+		</a>\n");
+	echo ("</div>\n");
 
 	echo($ctCompteRenduInfoGenerale->getContenu());
 	echo(afficheDocuments($ctCompteRenduInfoGenerale->getCahierTexteCompteRenduFichierJoints()));
@@ -281,12 +282,32 @@ foreach ($ctCompteRenduInfoGenerales as $ctCompteRenduInfoGenerale) {
 //
 // Export du cahier de texte au format csv ou ods
 //
-echo "<br />";
-echo "<fieldset style=\"border: 1px solid grey; padding-top: 8px; padding-bottom: 8px;  margin-left: auto; margin-right: auto;\">";
-echo "<legend style=\"border: 1px solid grey; font-variant: small-caps;\">Export</legend>";
+echo "<br />\n";
+echo "<fieldset style=\"border: 1px solid grey; padding-top: 8px; padding-bottom: 8px;  margin-left: auto; margin-right: auto;\">\n";
+echo "<legend style=\"border: 1px solid grey; font-variant: small-caps;\">Export</legend>\n";
 echo "<table border='0' width='100%' summary=\"Tableau de...\">\n";
-echo "<tr><td>";
-echo "<a href='./exportcsv.php?id_groupe=".$current_group->getId()."'>Export au format csv</a> Note : pour ouvrir ce fichier csv avec OpenOffice, garder les réglages par défaut lors de l'ouverture du fichier.";
-echo "</td></tr></table></fieldset>";
+echo "<tr>\n<td>\n";
+echo "<ul style=\"list-style-type:disk\">\n";
+echo "<p>\n";
+echo "<a href='./exportcsv.php?id_groupe=".$current_group->getId()."'>Export au format CSV</a>";
+echo "</p>\n";
+echo "<p style='margin-left:1em'>\n";
+echo "<em>Note&nbsp;:</em> pour ouvrir ce fichier CSV avec OpenOffice, garder les réglages par défaut lors de l'ouverture du fichier.";
+echo "</p>\n";
+echo "<p>\n";
+echo "<a href='./export_cdt.php?id_groupe=".$current_group->getId()."' target=\"_blank\">Export au format HTML</a>.\n";
+echo "</p>\n";
+echo "</td>\n</tr>\n</table>\n</fieldset>\n";
 // fin export
+
+echo "<fieldset style=\"border: 1px solid grey; padding-top: 8px; padding-bottom: 8px;  margin-left: auto; margin-right: auto; margin-top: 3px;\">\n";
+echo "<legend style=\"border: 1px solid grey; font-variant: small-caps;\">B.O.</legend>\n";
+echo "<div style='height: 10em; overflow: auto;'>\n";
+
+require("../lib/textes.inc.php");
+echo $cdt_texte_bo;
+
+echo "</div>\n";
+echo "</fieldset>\n";
+
 ?>

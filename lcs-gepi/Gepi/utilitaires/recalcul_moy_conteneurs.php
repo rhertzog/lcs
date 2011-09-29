@@ -1,9 +1,15 @@
 <?php
+/** Calcule les moyennes d'un conteneur
+ * 
+ * $Id: recalcul_moy_conteneurs.php 7748 2011-08-14 14:10:02Z regis $
+ *
+ * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * @package Notes
+ * @subpackage Conteneur
+ * @license GNU/GPL
+ */
+
 /*
-* $Id: recalcul_moy_conteneurs.php 5934 2010-11-21 13:33:58Z crob $
-*
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
-*
 * This file is part of GEPI.
 *
 * GEPI is free software; you can redistribute it and/or modify
@@ -21,7 +27,9 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Initialisations files
+/**
+ * Fichiers d'initialisation
+ */
 require_once("../lib/initialisations.inc.php");
 
 // Resume session
@@ -52,24 +60,7 @@ if (getSettingValue("active_carnets_notes")!='y') {
 
 // Fonction de recherche des conteneurs derniers enfants (sans enfants (non parents, en somme))
 // avec recalcul des moyennes lancé...
-function recherche_enfant($id_parent_tmp){
-	global $current_group, $periode_num, $id_racine;
-	$sql="SELECT * FROM cn_conteneurs WHERE parent='$id_parent_tmp'";
-	//echo "<!-- $sql -->\n";
-	$res_enfant=mysql_query($sql);
-	if(mysql_num_rows($res_enfant)>0){
-		while($lig_conteneur_enfant=mysql_fetch_object($res_enfant)){
-			recherche_enfant($lig_conteneur_enfant->id);
-		}
-	}
-	else{
-		$arret = 'no';
-		$id_conteneur_enfant=$id_parent_tmp;
-		// Mise_a_jour_moyennes_conteneurs pour un enfant non parent...
-		mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_conteneur_enfant,$arret);
-		//echo "<!-- ========================================== -->\n";
-	}
-}
+
 //recherche_enfant($id_racine);
 
 

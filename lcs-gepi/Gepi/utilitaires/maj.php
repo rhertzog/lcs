@@ -1,10 +1,16 @@
 <?php
-/*
- * $Id: maj.php 6098 2010-12-11 14:15:46Z tbelliard $
+/**
+ * Mise à jour des bases
+ * 
+ * $Id: maj.php 8338 2011-09-23 19:57:59Z crob $
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
- *
- * This file is part of GEPI.
+ * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * @license GNU/GPL,
+ * @package General
+ * @subpackage mise_a jour
+ */
+
+/* This file is part of GEPI.
  *
  * GEPI is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +27,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+//test version de php
+if (version_compare(PHP_VERSION, '5') < 0) {
+    die('GEPI nécessite PHP5 pour fonctionner');
+}
 // On indique qu'il faut crée des variables non protégées (voir fonction cree_variables_non_protegees())
 // cela ici concerne le mot de passe
 $variables_non_protegees = 'yes';
 $pb_maj = '';
 
 // Initialisations files
+/**
+ * Fichier d'initialisation
+ */
 require_once ("../lib/initialisations.inc.php");
+/**
+ * Fonctions de mise à jour
+ */
 require_once ("./update_functions.php");
 
 
@@ -101,14 +117,17 @@ if ($gepiBetaVersion != '') {
 
 
 echo ('
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-	<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+
+<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 		<meta http-equiv="Pragma" content="no-cache" />
 		<meta http-equiv="Cache-Control" content="no-cache" />
 		<meta http-equiv="Expires" content="0" />
+        <meta http-equiv="Content-Style-Type" content="text/css" />
 		<link rel="stylesheet" href="../style.css" type="text/css" />
+		<link rel="stylesheet" href="updates/updates.css" type="text/css" />
 		<title>Mise à jour de la base de donnée GEPI</title>
 		<link rel="shortcut icon" type="image/x-icon" href="../favicon.ico" />
 		<link rel="icon" type="image/ico" href="../favicon.ico" />
@@ -130,42 +149,41 @@ echo ('
 
 
 if (($resultat_session == '0') and ($valid != 'yes')) {
+  
 	echo('
-		<form action="maj.php" method="POST" style="width: 100%; margin-top: 24px; margin-bottom: 48px;">
+		<form action="maj.php" method="post">
 			<div class="center">
-				<H2 align="center">Mise à jour de la base de donnée GEPI<br />(Accès administrateur)</H2>
+				<h1 class="grand center">Mise à jour de la base de donnée GEPI<br />(Accès administrateur)</h1>
 			');
 
 	if (isset ($message)) {
-		echo ("<p align=\"center\"><font color=red>" . $message . "</font></p>");
+		echo ("<p class='center rouge'>" . $message . "</p>");
 	}
 	echo('
-				<fieldset style="padding-top: 8px; padding-bottom: 8px; width: 40%; margin-left: auto; margin-right: auto;">
-					<legend style="font-variant: small-caps;">Identifiez-vous</legend>
-					<table style="width: 100%; border: 0;" cellpadding="5" cellspacing="0" summary="Tableau d\'identification">
-						<tr>
-							<td style="text-align: right; width: 40%; font-variant: small-caps;"><label for="login">Identifiant</label></td>
-							<td style="text-align: center; width: 60%;"><input type="text" name="login" size="16" /></td>
-						</tr>
-						<tr>
-							<td style="text-align: right; width: 40%; font-variant: small-caps;"><label for="no_anti_inject_password">Mot de passe</label></td>
-							<td style="text-align: center; width: 60%;"><input type="password" name="no_anti_inject_password" size="16" /></td>
-						</tr>
-					</table>
-					<input type="submit" name="submit" value="Envoyer" style="font-variant: small-caps;" />
+				<fieldset class="form_identite">
+					<legend class="legend_identite">Identifiez-vous</legend>
+					<p>
+						<label class="colonne droite" for="login">Identifiant</label>
+                    	<input type="text" id="login" name="login" size="16" />
+                    </p>
+					<p>
+                    	<label class="colonne droite" for="no_anti_inject_password">Mot de passe</label>
+                     	<input type="password" id="no_anti_inject_password" name="no_anti_inject_password" size="16" />
+                    </p>
+					<p class="center"><input type="submit" name="submit" value="Envoyer" style="font-variant: small-caps;" /></p>
 				</fieldset>
 			</div>
 		</form>
 	</body>
 </html>
 ');
-
+    
 	die();
 }
 
 if ((isset ($_SESSION['statut'])) and ($_SESSION['statut'] != 'administrateur')) {
 	if(($is_lcs_plugin!='yes')||($login_user!='admin')) {
-		echo "<center><p class=grand><font color=red>Mise à jour de la base MySql de GEPI.<br />Vous n'avez pas les droits suffisants pour accéder à cette page.</font></p></center></body></html>";
+		echo "<p class='grand center rouge'>Mise à jour de la base MySql de GEPI.<br />Vous n'avez pas les droits suffisants pour accéder à cette page.</p></body></html>";
 		die();
 	}
 }
@@ -211,6 +229,10 @@ if (isset ($_POST['maj'])) {
             require 'updates/1531_to_154.inc.php';
 	}
 
+	if (($force_maj == 'yes') or (quelle_maj("1.5.5"))) {
+            require 'updates/154_to_155.inc.php';
+	}
+
 	// Mise à jour du numéro de version
 	saveSetting("version", $gepiVersion);
 	saveSetting("versionRc", $gepiRcVersion);
@@ -253,88 +275,93 @@ if ($gepiBetaVersion != '') {
 $pb_maj_bd = getSettingValue("pb_maj");
 
 if (isset ($mess)) {
-	echo "<center><p class=grand><font color=red>" . $mess . "</font></p></center>";
+	echo "<p class='grand center rouge'>" . $mess . "</p>";
 }
-echo "<center><p class=grand>Mise à jour de la base de données MySql de GEPI</p></center>";
+echo "<h1 class='grand center'>Mise à jour de la base de données MySql de GEPI</h1>";
 
-echo "<hr /><h3>Numéro de version actuel de la base MySql : GEPI " . $version_old . $rc_old . $beta_old . "</h3>";
+echo "<hr /><p class='grand center ecarte'>Numéro de version actuel de la base MySql : GEPI " . $version_old . $rc_old . $beta_old . "</p>";
 echo "<hr />";
 // Mise à jour de la base de donnée
 
 if ($pb_maj_bd != 'yes') {
 	if (test_maj()) {
-		echo "<h3>Mise à jour de la base de données vers la version GEPI " . $gepiVersion . $rc . $beta . "</h3>";
+		echo "<h2 class='grand center'>Mise à jour de la base de données vers la version GEPI " . $gepiVersion . $rc . $beta . "</h3>";
 		if (isset ($_SESSION['statut'])) {
-			echo "<p>Il est vivement conseillé de faire une sauvegarde de la base MySql avant de procéder à la mise à jour</p>";
-			echo "<center><form enctype=\"multipart/form-data\" action=\"../gestion/accueil_sauve.php\" method=post name=formulaire>";
+			echo "<p class='center'>Il est vivement conseillé de faire une sauvegarde de la base MySql avant de procéder à la mise à jour</p>";
+			echo "<form enctype=\"multipart/form-data\" action=\"../gestion/accueil_sauve.php\" method='post' name='formulaire'><p class='center'>";
 			//echo add_token_field();
 			if (getSettingValue("mode_sauvegarde") == "mysqldump") {
 				echo "<input type='hidden' name='action' value='system_dump' />";
 			} else {
 				echo "<input type='hidden' name='action' value='dump' />";
 			}
-			echo "<input type=\"submit\" value=\"Lancer une sauvegarde de la base de données\" /></form></center>";
+			echo "<input type=\"submit\" value=\"Lancer une sauvegarde de la base de données\" /></p></form>";
 		}
-		echo "<p>Remarque : la procédure de mise à jour vers la version <b>GEPI " . $gepiVersion . $rc . $beta . "</b> est utilisable à partir d'une version GEPI 1.2 ou plus récente.</p>";
+		echo "<p class='center'>Remarque : la procédure de mise à jour vers la version <strong>GEPI " . $gepiVersion . $rc . $beta . "</strong> est utilisable à partir d'une version GEPI 1.2 ou plus récente.</p>";
 		echo "<form action=\"maj.php\" method=\"post\">";
 		//echo add_token_field();
-		echo "<p><font color=red><b>ATTENTION : Votre base de données ne semble pas être à jour.";
+		echo "<p class='rouge center'><strong>ATTENTION : Votre base de données ne semble pas être à jour.";
 		if ($version_old != '')
 		echo " Numéro de version de la base de données : GEPI " . $version_old . $rc_old . $beta_old;
-		echo "</b></font><br />";
-		echo "Cliquez sur le bouton suivant pour effectuer la mise à jour vers la version <b>GEPI " . $gepiVersion . $rc . $beta . "</b></p>";
-		echo "<center><input type=submit value='Mettre à jour' /></center>";
-		echo "<input type=hidden name='maj' value='yes' />";
-		echo "<input type=hidden name='valid' value='$valid' />";
+		echo "</strong><br />";
+		echo "Cliquez sur le bouton suivant pour effectuer la mise à jour vers la version <strong>GEPI " . $gepiVersion . $rc . $beta . "</strong>";
+		echo "<p class='center'><span class='center'><input type='submit' value='Mettre à jour' /></span>";
+		echo "<input type='hidden' name='maj' value='yes' />";
+		echo "<input type='hidden' name='valid' value='$valid' /></p>";
 		echo "</form>";
 	} else {
-		echo "<h3>Mise à jour de la base de données</h3>";
-		echo "<p><b>Votre base de données est à jour. Vous n'avez pas de mise à jour à effectuer.</b></p>";
-		echo "<center><p class='grand'><b><a href='../gestion/index.php#maj'>Retour</a></b></p></center>";
+		echo "<h2 class='grand center'>Mise à jour de la base de données</h2>";
+		echo "<p class='center'><strong>Votre base de données est à jour. Vous n'avez pas de mise à jour à effectuer.</strong></p>";
+		if(isset($_SESSION['gepi_alea'])) {
+			echo "<p class='grand center'><strong><a href='../gestion/index.php#maj'>Retour</a></strong></p>";
+		}
+		else {
+			echo "<p class='grand center'><strong><a href='../logout.php'>Se reconnecter</a><br />après une mise à jour</strong></p>";
+		}
 		echo "<form action=\"maj.php\" method=\"post\">";
 		//echo add_token_field();
-		//echo "<p><b>Néanmoins, vous pouvez forcer la mise à jour. Cette procédure, bien que sans risque, n'est utile que dans certains cas précis.</b></font><br />";
-		echo "<p><b>Néanmoins, vous pouvez forcer la mise à jour. Cette procédure, bien que sans risque, n'est utile que dans certains cas précis.</b><br />";
-		echo "Cliquez sur le bouton suivant pour effectuer la mise à jour forcée vers la version <b>GEPI " . $gepiVersion . $rc . $beta . "</b></p>";
-		echo "<center><input type=submit value='Forcer la mise à jour' /></center>";
-		echo "<input type=hidden name='maj' value='yes' />";
-		echo "<input type=hidden name='force_maj' value='yes' />";
-		echo "<input type=hidden name='valid' value='$valid' />";
+		echo "<p class='center'><strong>Néanmoins, vous pouvez forcer la mise à jour. Cette procédure, bien que sans risque, n'est utile que dans certains cas précis.</strong><br />";
+		echo "Cliquez sur le bouton suivant pour effectuer la mise à jour forcée vers la version <strong>GEPI " . $gepiVersion . $rc . $beta . "</strong></p>";
+		echo "<p class='center'><input type='submit' value='Forcer la mise à jour' />";
+		echo "<input type='hidden' name='maj' value='yes' />";
+		echo "<input type='hidden' name='force_maj' value='yes' />";
+		echo "<input type='hidden' name='valid' value='$valid' /></p>";
 		echo "</form>";
 	}
 } else {
-	echo "<h3>Mise à jour de la base de données</h3>";
-	echo "<p><b><font color = 'red'>Une ou plusieurs erreurs ont été rencontrées lors de la dernière mise à jour de la base de données
-.</font></b></p>";
+	echo "<h3 class='center'>Mise à jour de la base de données</h3>";
+	echo "<p class='rouge'><strong>Une ou plusieurs erreurs ont été rencontrées lors de la dernière mise à jour de la base de données</strong></p>";
 	echo "<form action=\"maj.php\" method=\"post\">";
 	//echo add_token_field();
-	echo "<p><b>Si vous pensez avoir réglé les problèmes entraînant ces erreurs, vous pouvez tenter une nouvelle mise à jour</b>";
-	echo " en cliquant sur le bouton suivant pour effectuer la mise à jour vers la version <b>GEPI " . $gepiVersion . $rc . $beta . "</b>.</p>";
-	echo "<center><input type=submit value='Tenter une nouvelle mise à jour' /></center>";
-	echo "<input type=hidden name='maj' value='yes' />";
-	echo "<input type=hidden name='force_maj' value='yes' />";
-	echo "<input type=hidden name='valid' value='$valid' />";
+	echo "<p><strong>Si vous pensez avoir réglé les problèmes entraînant ces erreurs, vous pouvez tenter une nouvelle mise à jour</strong>";
+	echo " en cliquant sur le bouton suivant pour effectuer la mise à jour vers la version <strong>GEPI " . $gepiVersion . $rc . $beta . "</strong>.</p>";
+	echo "<p class='center'><input type='submit' value='Tenter une nouvelle mise à jour' />";
+	echo "<input type='hidden' name='maj' value='yes' />";
+	echo "<input type='hidden' name='force_maj' value='yes' />";
+	echo "<input type='hidden' name='valid' value='$valid' /></p>";
 	echo "</form>";
 }
 echo "<hr />";
 if (isset ($result)) {
-	echo "<center><table width=\"80%\" border=\"1\" cellpadding=\"5\" cellspacing=\"1\" summary='Résultat de mise à jour'><tr><td><h2 align=\"center\">Résultat de la mise à jour</h2>";
-
+	//echo "<table style='width:80%; margin:0 auto;' border=\"1\" cellpadding=\"5\" cellspacing=\"1\" summary='Résultat de mise à jour'><tr><td><h2 style ='text-align:center'>Résultat de la mise à jour</h2>";
+    echo "<div class='cadreMaJ'>";
+	echo "<h2 class='center'>Résultat de la mise à jour</h2>";
 	if(!getSettingValue('conv_new_resp_table')){
 		$sql="SELECT 1=1 FROM responsables";
 		$test=mysql_query($sql);
 		if(mysql_num_rows($test)>0){
-			echo "<p style='font-weight:bold; color:red;'>ATTENTION:</p>\n";
+			echo "<p class='rouge'><strong>ATTENTION:</strong></p>\n";
 			echo "<blockquote>\n";
-			echo "<p>Une conversion des données responsables est requise.</p>\n";
-			echo "<p>Suivez ce lien: <a href='../responsables/conversion.php'>CONVERTIR</a></p>\n";
-			echo "<p>Vous pouvez quand même prendre le temps de lire attentivement les informations de mise à jour ci-dessous.</p>\n";
+			echo "<p class='center'>Une conversion des données responsables est requise.</p>\n";
+			echo "<p class='center'>Suivez ce lien: <a href='../responsables/conversion.php'>CONVERTIR</a></p>\n";
+			echo "<p class='center'>Vous pouvez quand même prendre le temps de lire attentivement les informations de mise à jour ci-dessous.</p>\n";
 			echo "</blockquote>\n";
 		}
 	}
 
 	echo $result;
-	echo "</td></tr></table></center>";
+	//echo "</td></tr></table>";
+	echo '</div>';
 }
 ?>
 </body></html>

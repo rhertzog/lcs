@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: TopCtrl.php 4310 2010-04-15 10:13:51Z crob $
+ * $Id: TopCtrl.php 7799 2011-08-17 08:38:10Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -20,7 +20,10 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-require_once("Modele.Top.php");
+// On empêche l'accès direct au fichier
+if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
+    die();
+};
 require_once ("Controleur.php");
 
 

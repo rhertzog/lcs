@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: eleves.php 6600 2011-03-03 11:14:32Z crob $
+ * $Id: eleves.php 7858 2011-08-21 13:12:55Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -62,79 +62,8 @@ if (!checkAccess()) {
     die();
 }
 
-$liste_tables_del = array(
-"absences",
-"absences_gep",
-"aid",
-"aid_appreciations",
-//"aid_config",
-"avis_conseil_classe",
-//"classes",
-//"droits",
-"eleves",
-"responsables",
-"responsables2",
-"resp_pers",
-"resp_adr",
-//"etablissements",
-"j_aid_eleves",
-"j_aid_eleves_resp",
-"j_aid_utilisateurs",
-"j_aid_utilisateurs_gest",
-"j_eleves_classes",
-//==========================
-// On ne vide plus la table chaque année
-// Problème avec Sconet qui récupère seulement l'établissement de l'année précédente qui peut être l'établissement courant
-//"j_eleves_etablissements",
-//==========================
-"j_eleves_professeurs",
-"j_eleves_regime",
-//"j_professeurs_matieres",
-//"log",
-//"matieres",
-"matieres_appreciations",
-"matieres_notes",
-"matieres_appreciations_grp",
-"matieres_appreciations_tempo",
-//==========================
-// Tables notanet
-'notanet',
-'notanet_avis',
-'notanet_app',
-'notanet_verrou',
-'notanet_socles',
-'notanet_ele_type',
-//==========================
-//"periodes",
-//"periodes_observatoire",
-"tempo2",
-//"temp_gep_import",
-"tempo",
-//"utilisateurs",
-"cn_cahier_notes",
-"cn_conteneurs",
-"cn_devoirs",
-"cn_notes_conteneurs",
-"cn_notes_devoirs",
-//"groupes",
-"j_eleves_groupes",
-"j_groupes_classes",
-//"j_groupes_matieres",
-//"j_groupes_professeurs",
-"eleves_groupes_settings",
-//"setting"
-"ex_classes",
-"ex_examens",
-"ex_groupes",
-"ex_matieres",
-"ex_notes",
-
-"eb_copies",
-"eb_epreuves",
-"eb_groupes",
-"eb_profs"
-//,"eb_salles"
-);
+include("../lib/initialisation_annee.inc.php");
+$liste_tables_del = $liste_tables_del_etape_eleves;
 
 // Initialisation
 $lcs_ldap_people_dn = 'ou=people,'.$lcs_ldap_base_dn;

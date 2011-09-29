@@ -1,9 +1,18 @@
 <?php
+/**
+* $Id: affiche_tri.php 7751 2011-08-14 20:38:17Z regis $
+*
+* @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+*
+ * @package Carnet_de_notes
+ * @subpackage Conteneur
+ * @license GNU/GPL, 
+ * @see Session::security_check()
+ * @see checkAccess()
+ * @see get_nom_prenom_eleve()
+ */
+
 /*
-* $Id: affiche_tri.php 6967 2011-05-20 10:53:46Z crob $
-*
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
-*
 * This file is part of GEPI.
 *
 * GEPI is free software; you can redistribute it and/or modify
@@ -21,7 +30,9 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Initialisations files
+/**
+ * Fichiers d'initialisation
+ */
 require_once("../lib/initialisations.inc.php");
 
 // Resume session
@@ -68,6 +79,9 @@ header('Content-Type: text/xml; charset=ISO-8859-1');
 if($mode!="ajax") {
 	//**************** EN-TETE *****************
 	//$titre_page = "Saisie des notes";
+  /**
+   * Entête de la page
+   */
 	require_once("../lib/header.inc");
 	//**************** FIN EN-TETE *****************
 }
@@ -80,7 +94,6 @@ $tab2=explode('|',$chaine2);
 $tab3=array();
 $rg=array();
 
-//echo "<h2>$titre</h2>\n";
 echo "<table width='100%' class='boireaus'>\n";
 echo "<tr>\n";
 echo "<td>\n";
@@ -144,6 +157,9 @@ echo "</tr>\n";
 echo "</table>\n";
 
 if($mode!="ajax") {
+  /**
+   * Pied de page
+   */
 	require("../lib/footer.inc.php");
 }
 ?>

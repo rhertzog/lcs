@@ -31,6 +31,9 @@ abstract class BaseEleveRegimeDoublantPeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 3;
+
 	/** the column name for the LOGIN field */
 	const LOGIN = 'j_eleves_regime.LOGIN';
 
@@ -40,6 +43,9 @@ abstract class BaseEleveRegimeDoublantPeer {
 	/** the column name for the REGIME field */
 	const REGIME = 'j_eleves_regime.REGIME';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of EleveRegimeDoublant objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -55,7 +61,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('Login', 'Doublant', 'Regime', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('login', 'doublant', 'regime', ),
 		BasePeer::TYPE_COLNAME => array (self::LOGIN, self::DOUBLANT, self::REGIME, ),
@@ -70,7 +76,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('Login' => 0, 'Doublant' => 1, 'Regime' => 2, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('login' => 0, 'doublant' => 1, 'regime' => 2, ),
 		BasePeer::TYPE_COLNAME => array (self::LOGIN => 0, self::DOUBLANT => 1, self::REGIME => 2, ),
@@ -202,7 +208,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -221,7 +227,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -275,7 +281,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 	 * @param      EleveRegimeDoublant $value A EleveRegimeDoublant object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(EleveRegimeDoublant $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -430,7 +436,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + EleveRegimeDoublantPeer::NUM_COLUMNS;
+			$col = $startcol + EleveRegimeDoublantPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = EleveRegimeDoublantPeer::OM_CLASS;
 			$obj = new $cls();
@@ -439,6 +445,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related Eleve table
@@ -509,7 +516,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 		}
 
 		EleveRegimeDoublantPeer::addSelectColumns($criteria);
-		$startcol = (EleveRegimeDoublantPeer::NUM_COLUMNS - EleveRegimeDoublantPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = EleveRegimeDoublantPeer::NUM_HYDRATE_COLUMNS;
 		ElevePeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(EleveRegimeDoublantPeer::LOGIN, ElevePeer::LOGIN, $join_behavior);
@@ -626,10 +633,10 @@ abstract class BaseEleveRegimeDoublantPeer {
 		}
 
 		EleveRegimeDoublantPeer::addSelectColumns($criteria);
-		$startcol2 = (EleveRegimeDoublantPeer::NUM_COLUMNS - EleveRegimeDoublantPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = EleveRegimeDoublantPeer::NUM_HYDRATE_COLUMNS;
 
 		ElevePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (ElevePeer::NUM_COLUMNS - ElevePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + ElevePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(EleveRegimeDoublantPeer::LOGIN, ElevePeer::LOGIN, $join_behavior);
 
@@ -715,7 +722,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a EleveRegimeDoublant or Criteria object.
+	 * Performs an INSERT on the database, given a EleveRegimeDoublant or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or EleveRegimeDoublant object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -754,7 +761,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a EleveRegimeDoublant or Criteria object.
+	 * Performs an UPDATE on the database, given a EleveRegimeDoublant or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or EleveRegimeDoublant object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -793,11 +800,12 @@ abstract class BaseEleveRegimeDoublantPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the j_eleves_regime table.
+	 * Deletes all rows from the j_eleves_regime table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(EleveRegimeDoublantPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -822,7 +830,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a EleveRegimeDoublant or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a EleveRegimeDoublant or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or EleveRegimeDoublant object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -891,7 +899,7 @@ abstract class BaseEleveRegimeDoublantPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(EleveRegimeDoublant $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

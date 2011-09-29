@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: ajouter_periode.php 7270 2011-06-20 11:46:18Z crob $
+ * $Id: ajouter_periode.php 7271 2011-06-20 11:46:28Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

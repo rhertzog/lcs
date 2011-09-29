@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: selection.php 4310 2010-04-15 10:13:51Z crob $
+ * $Id: selection.php 7799 2011-08-17 08:38:10Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -20,6 +20,10 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+// On empêche l'accès direct au fichier
+if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
+    die();
+};
 ?>
 <div id="result">
   <div id="wrap">
@@ -65,13 +69,11 @@
               </p>
               <p class="selected">
                 &Eacute;tablissement
-                <input type="checkbox"  name="etab_all" id="etab_all0" <?php if (isset($_SESSION['etab_all']))echo'checked'; ?>/>
-                <?php if ($_SESSION['type']=='Discip') :?>
+                <input type="checkbox"  name="etab_all" id="etab_all0" <?php if (isset($_SESSION['etab_all']))echo'checked'; ?>/>                
                 &Eacute;lèves
                 <input type="checkbox"  name="eleve_all" id="eleve_all" <?php if (isset($_SESSION['eleve_all']))echo'checked'; ?>/>
                 Personnels
-                <input type="checkbox"  name="pers_all" id="pers_all" <?php if (isset($_SESSION['pers_all']))echo'checked'; ?>/>
-                <?php endif ?>
+                <input type="checkbox"  name="pers_all" id="pers_all" <?php if (isset($_SESSION['pers_all']))echo'checked'; ?>/>                
                 <input type="hidden" name='posted' value='ok'/>
               </p>
               <p class="selected">et/ou :
@@ -84,11 +86,9 @@
               <?php if ($_SESSION['stats_choix']=='eleves'||$_SESSION['stats_choix']=='personnels') {?>
               <div id="recherche_indiv">
                 <input type="radio" name="choix" id="choix" value="eleves" <?php if ($_SESSION['stats_choix']=='eleves'||!isset($_SESSION['choix']))echo'checked'; ?> />
-                &Eacute;lèves
-                  <?php if ($_SESSION['type']=='Discip') :?>
+                &Eacute;lèves                  
                 <input type="radio" name="choix" id="choix2" value="personnels" <?php if ($_SESSION['stats_choix']=='personnels')echo'checked'; ?> />
-                Personnels
-                  <?php endif ; ?>
+                Personnels                 
                 <br /><br />
                 <label for="nom"></label>
                 <input type="text" name="nom" id="nom" value="" />

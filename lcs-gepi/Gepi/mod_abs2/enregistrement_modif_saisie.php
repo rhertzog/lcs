@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: enregistrement_modif_saisie.php 5587 2010-10-06 18:51:43Z jjacquard $
+ * @version $Id: enregistrement_modif_saisie.php 7437 2011-07-18 19:20:27Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -67,23 +67,27 @@ $id_saisie = isset($_POST["id_saisie"]) ? $_POST["id_saisie"] :(isset($_GET["id_
 $date_debut = isset($_POST["date_debut"]) ? $_POST["date_debut"] :(isset($_GET["date_debut"]) ? $_GET["date_debut"] :NULL);
 $date_fin = isset($_POST["date_fin"]) ? $_POST["date_fin"] :(isset($_GET["date_fin"]) ? $_GET["date_fin"] :NULL);
 $commentaire = isset($_POST["commentaire"]) ? $_POST["commentaire"] :(isset($_GET["commentaire"]) ? $_GET["commentaire"] :NULL);
+$menu = isset($_POST["menu"]) ? $_POST["menu"] :(isset($_GET["menu"]) ? $_GET["menu"] : Null);
 
 $message_enregistrement = '';
-$saisie = AbsenceEleveSaisieQuery::create()->findPk($id_saisie);
-//on charge les traitements
-$saisie->getAbsenceEleveTraitements();
+$saisie = AbsenceEleveSaisieQuery::create()->includeDeleted()->findPk($id_saisie);
 if ($saisie == null) {
     $message_enregistrement .= 'Modification impossible : saisie non trouvée.';
     include("visu_saisie.php");
     die();
 }
+//on charge les traitements
+$saisie->getAbsenceEleveTraitements();
 
 if ( isset($_POST["creation_traitement"])) {
-    $traitement = new AbsenceEleveTraitement();
+	//on charge les traitements
+	$saisie->getAbsenceEleveTraitements();
+
+	$traitement = new AbsenceEleveTraitement();
     $traitement->setUtilisateurProfessionnel($utilisateur);
     $traitement->addAbsenceEleveSaisie($saisie);
     $traitement->save();
-    header("Location: ./visu_traitement.php?id_traitement=".$traitement->getId());
+    header("Location: ./visu_traitement.php?id_traitement=".$traitement->getId().'&menu='.$menu);
     die();
 } elseif ( isset($_POST["modifier_type"])) {
     $message_enregistrement .= modif_type($saisie, $utilisateur);
@@ -92,17 +96,66 @@ if ( isset($_POST["creation_traitement"])) {
     }
     include("visu_saisie.php");
     die();
+} elseif (isset($_GET["version"])) {
+	if ($utilisateur->getStatut() != 'cpe' && $utilisateur->getStatut() != 'scolarite') {
+	    $message_enregistrement .= 'Modification non autorisée.';
+	    include("visu_saisie.php");
+	    die();
+	}
+        if ($saisie->getDeletedAt() != null) {
+        $message_enregistrement .= 'Cette saisie est supprimée. Vous devez la restaurer pour la modifier.';
+        include("visu_saisie.php");
+        die();
+        }
+	$saisie->toVersion($_GET["version"]);
+	if ($saisie->isDeleted()) {
+		$saisie->unDelete();
+	} else {
+		AbsenceEleveSaisiePeer::disableVersioning();
+		$saisie->save();
+		AbsenceEleveSaisiePeer::enableVersioning();
+	}
+	include("visu_saisie.php");
+    die();
+} elseif (isset($_POST["action"])) {
+	if ($utilisateur->getStatut() == 'cpe' || $utilisateur->getStatut() == 'scolarite'
+		|| ($utilisateur->getStatut() == 'professeur' && $saisie->getUtilisateurId() == $utilisateur->getPrimaryKey()) ) {
+			//ok
+	} else {
+	    $message_enregistrement .= 'Modification non autorisée.';
+	    include("visu_saisie.php");
+	    die();
+	}
+		
+	if ($_POST["action"] == 'suppression') {
+        
+		$saisie->delete();
+	} else if ($_POST["action"] == 'restauration') {
+		$saisie->unDelete();
+	}
+	include("visu_saisie.php");
+    die();
 }
 
 
 //la saisie est-elle modifiable ?
-//Une saisie est modifiable ssi : elle appartient à l'utilisateur de la session,
+//Une saisie est modifiable ssi : elle appartient à l'utilisateur de la session si c'est un prof,
 //elle date de moins d'une heure et l'option a ete coché partie admin
-if (!getSettingValue("abs2_modification_saisie_une_heure")=='y' || !$saisie->getUtilisateurId() == $utilisateur->getPrimaryKey() || !$saisie->getCreatedAt('U') > (time() - 3600)) {
-    $message_enregistrement .= 'Modification non autorisée.';
-    include("visu_saisie.php");
-    die();
+if ($utilisateur->getStatut() == 'professeur') {
+	if (!getSettingValue("abs2_modification_saisie_une_heure")=='y' || $saisie->getUtilisateurId() != $utilisateur->getPrimaryKey() || $saisie->getVersionCreatedAt('U') < (time() - 3600)) {
+	    $message_enregistrement .= 'Modification non autorisée.';
+	    include("visu_saisie.php");
+	    die();	
+	}
+} else {
+	if ($utilisateur->getStatut() != 'cpe' && $utilisateur->getStatut() != 'scolarite') {
+	    $message_enregistrement .= 'Modification non autorisée.';
+	    include("visu_saisie.php");
+	    die();
+	}
 }
+$saisie->setVersionCreatedBy($utilisateur->getLogin());
+
 
 $saisie->setCommentaire($commentaire);
 $date_debut = new DateTime(str_replace("/",".",$_POST['date_debut']));
@@ -153,6 +206,10 @@ modif_type($saisie, $utilisateur);
 if ($saisie->validate()) {
     $saisie->save();
     $message_enregistrement .= 'Modification enregistrée';
+    if ($saisie->getEleve() != null) {
+    	$saisie->getEleve()->clearAbsenceEleveSaisiesParJour();
+    	$saisie->getEleve()->clearAbsenceEleveSaisies();
+    }
 } else {
     $no_br = true;
     foreach ($saisie->getValidationFailures() as $erreurs) {

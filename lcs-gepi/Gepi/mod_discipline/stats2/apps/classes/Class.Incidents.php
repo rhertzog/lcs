@@ -21,6 +21,10 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+// On empêche l'accès direct au fichier
+if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
+    die();
+};
 
 require_once("Class.Date.php");
 require_once("Class.Modele.php");
@@ -52,7 +56,7 @@ class ClassIncidents {
     private $top_retenues = Null;
     private $top_exclusions = Null;
     private $array_id_incidents=null;
-
+    
     public function __construct() {
 
         $this->modele = new Modele();
@@ -203,9 +207,9 @@ class ClassIncidents {
         }
         return($this->modele->make_list_for_request_in($this->array_id_incidents));
     }
-
+    
     private function make_liste_protagonistes($protagonistes, $statut,$liste_incidents) {
-        foreach ($protagonistes as $id_incident) {
+        foreach ($protagonistes as $id_incident) { 
             foreach ($id_incident as $protagoniste) {
                 if(!in_array($protagoniste->id_incident,$liste_incidents)){
                     continue;

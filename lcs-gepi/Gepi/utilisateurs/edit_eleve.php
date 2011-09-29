@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_eleve.php 6617 2011-03-03 18:18:36Z crob $
+ * $Id: edit_eleve.php 6926 2011-05-14 13:29:13Z jjacquard $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -248,7 +248,7 @@ if (!$error) {
 						if ($old_auth_mode == "gepi" && ($_POST['reg_auth_mode'] == "ldap" || $_POST['reg_auth_mode'] == "sso")) {
 							// On passe du mode Gepi à un mode externe : il faut supprimer le mot de passe
 							$oldmd5password = mysql_result(mysql_query("SELECT password FROM utilisateurs WHERE login = '".$current_eleve->login."'"), 0);
-							mysql_query("UPDATE utilisateurs SET password = '' WHERE login = '".$current_eleve->login."'");
+							mysql_query("UPDATE utilisateurs SET password = '', salt = '' WHERE login = '".$current_eleve->login."'");
 							// Et si on a un accès en écriture au LDAP, il faut créer l'utilisateur !
 							if ($ldap_write_access) {
 								$create_ldap_user = true;

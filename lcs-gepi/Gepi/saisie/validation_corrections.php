@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: validation_corrections.php 7037 2011-05-28 09:20:21Z crob $
+ * $Id: validation_corrections.php 7038 2011-05-28 09:20:46Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id$
+ * $Id: ajax_duplication_notice.php 7938 2011-08-24 07:57:41Z jjocal $
  *
  * Copyright 2009-2011 Josselin Jacquard
  *

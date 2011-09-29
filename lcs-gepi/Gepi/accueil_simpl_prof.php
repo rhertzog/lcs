@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: accueil_simpl_prof.php 6792 2011-04-15 06:36:40Z crob $
+* $Id: accueil_simpl_prof.php 7414 2011-07-13 12:57:47Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -152,7 +152,7 @@ echo "<a href=\"./accueil.php?accueil_simpl=n\">Accès au menu d'accueil</a>";
 //echo "<a href='index.php'> Carnet de notes </a> | \n";
 echo " | \n";
 //echo "<a href='./gestion/config_prefs.php'> Paramétrer mes interfaces simplifiées </a>\n";
-echo "<a href='./gestion/config_prefs.php'> Paramétrer mes interfaces simplifiées </a>\n";
+echo "<a href='./gestion/config_prefs.php'> Paramétrer mon interface </a>\n";
 echo "</p>\n";
 echo "</div>\n";
 
@@ -162,68 +162,21 @@ affiche_acces_cdt();
 echo "<center>\n";
 
 //Affichage des messages
-$today=mktime(0,0,0,date("m"),date("d"),date("Y"));
-$appel_messages = mysql_query("SELECT id, texte, date_debut, date_fin, date_decompte, auteur, destinataires FROM messages
-	WHERE (
-	texte != '' and
-	date_debut <= '".$today."' and
-	date_fin >= '".$today."'
-	)
-    order by date_debut DESC, id DESC;");
-//	order by id DESC");
-$nb_messages = mysql_num_rows($appel_messages);
-$ind = 0;
-$texte_messages = '';
-$affiche_messages = 'no';
-while ($ind < $nb_messages) {
-	$destinataires1 = mysql_result($appel_messages, $ind, 'destinataires');
-	if (strpos($destinataires1, substr($_SESSION['statut'], 0, 1))) {
-	//if ((strtolower($_SESSION['login'])==strtolower($destinataires1)) || ((strpos(strtolower($destinataires1), substr(strtolower($_SESSION['statut']), 0, 1)))&&(substr($destinataires1,0,1)=="_"))) {
-		if ($affiche_messages == 'yes') {$texte_messages .= "<hr />";}
-		$affiche_messages = 'yes';
-		$content = mysql_result($appel_messages, $ind, 'texte');
-		// Mise en forme du texte
-//        $auteur1 = mysql_result($appel_messages, $ind, 'auteur');
-//        $nom_auteur = sql_query1("SELECT nom from utilisateurs where login = '".$auteur1."'");
-//        $prenom_auteur = sql_query1("SELECT prenom from utilisateurs where login = '".$auteur1."'");
-//        $texte_messages .= "<span class='small'>Message de </span>: ".$prenom_auteur." ".$nom_auteur;
-		if(strstr($content, '_DECOMPTE_')) {
-			$nb_sec=mysql_result($appel_messages, $ind, 'date_decompte')-mktime();
-			if($nb_sec>0) {
-				$decompte_remplace="";
-			}
-			elseif($nb_sec==0) {
-				$decompte_remplace=" <span style='color:red'>Vous êtes à l'instant T</span> ";
-			}
-			else {
-				$nb_sec=$nb_sec*(-1);
-				$decompte_remplace=" <span style='color:red'>date dépassée de</span> ";
-			}
+include("affichage_des_messages.inc.php");
 
-			$decompte_j=floor($nb_sec/(24*3600));
-			$decompte_h=floor(($nb_sec-$decompte_j*24*3600)/3600);
-			$decompte_m=floor(($nb_sec-$decompte_j*24*3600-$decompte_h*3600)/60);
-
-			if($decompte_j==1) {$decompte_remplace.=$decompte_j." jour ";}
-			elseif($decompte_j>1) {$decompte_remplace.=$decompte_j." jours ";}
-
-			if($decompte_h==1) {$decompte_remplace.=$decompte_h." heure ";}
-			elseif($decompte_h>1) {$decompte_remplace.=$decompte_h." heures ";}
-
-			if($decompte_m==1) {$decompte_remplace.=$decompte_m." minute";}
-			elseif($decompte_m>1) {$decompte_remplace.=$decompte_m." minutes";}
-
-			$content=preg_replace("/_DECOMPTE_/",$decompte_remplace,$content);
-		}
-		$texte_messages .= $content;
+//================================
+$invisibilite_groupe=array();
+$invisibilite_groupe['bulletins']=array();
+$invisibilite_groupe['cahier_notes']=array();
+$sql="SELECT jgv.* FROM j_groupes_visibilite jgv, j_groupes_professeurs jgp WHERE jgv.id_groupe=jgp.id_groupe AND jgp.login='".$_SESSION['login']."' AND jgv.visible='n';";
+$res_jgv=mysql_query($sql);
+if(mysql_num_rows($res_jgv)>0) {
+	while($lig_jgv=mysql_fetch_object($res_jgv)) {
+		$invisibilite_groupe[$lig_jgv->domaine][]=$lig_jgv->id_groupe;
 	}
-	$ind++;
 }
-if ($affiche_messages == 'yes') {
-	echo "<table id='messagerie' summary=\"Ce tableau contient les informations sur lesquelles on souhaite attirer l'attention\">\n";
-	echo "<tr><td>".$texte_messages;
-	echo "</td></tr></table>\n";
-}
+//================================
+
 
 // Récupérer le nombre max de périodes
 $groups=get_groups_for_prof($_SESSION["login"]);
@@ -890,41 +843,44 @@ for($i=0;$i<count($groups);$i++){
 					//echo "<td class='$class_style'><a href='index.php?id_groupe=".$groups[$i]['id']."&amp;periode_num=".$groups[$i]['periodes'][$j]['num_periode']."'><img src='../images/icons/notes1.png' width='16' height='16' alt='Saisie de notes' border='0' /></a></td>\n";
 					if($pref_accueil_cn=="y"){
 						echo "<td class='$class_style'>\n";
-						echo "<div id='h_cn_".$i."_".$j."'>";
-						//echo "<a href='index.php?id_groupe=".$groups[$i]['id']."&amp;periode_num=".$groups[$i]['periodes'][$j]['num_periode']."'>";
-						echo "<a href='cahier_notes/index.php?id_groupe=".$groups[$i]['id']."&amp;periode_num=".$groups[$i]['periodes'][$j]['num_periode']."'";
-						if($pref_accueil_infobulles=="y"){
-							echo " onmouseover=\"afficher_div('info_cn_".$i."_".$j."','y',10,10);\" onmouseout=\"cacher_div('info_cn_".$i."_".$j."');\"";
+
+						if(!in_array($groups[$i]['id'],$invisibilite_groupe['cahier_notes'])) {
+							echo "<div id='h_cn_".$i."_".$j."'>";
+							//echo "<a href='index.php?id_groupe=".$groups[$i]['id']."&amp;periode_num=".$groups[$i]['periodes'][$j]['num_periode']."'>";
+							echo "<a href='cahier_notes/index.php?id_groupe=".$groups[$i]['id']."&amp;periode_num=".$groups[$i]['periodes'][$j]['num_periode']."'";
+							if($pref_accueil_infobulles=="y"){
+								echo " onmouseover=\"afficher_div('info_cn_".$i."_".$j."','y',10,10);\" onmouseout=\"cacher_div('info_cn_".$i."_".$j."');\"";
+							}
+							echo ">";
+		
+							//if(($accueil_aff_txt_icon==1)||($accueil_aff_txt_icon==3)){
+								//echo "<img src='../images/icons/carnet_notes.png' width='32' height='32' alt='Saisie de notes' border='0' />";
+								echo "<img src='images/icons/carnet_notes.png' width='32' height='32' alt='Saisie de notes' border='0' />";
+							/*
+							}
+							if($accueil_aff_txt_icon==3){
+								echo "<br />";
+							}
+							if($accueil_aff_txt_icon>=2){
+								echo "Saisie de notes sur le carnet de notes";
+							}
+							*/
+							echo "</a>";
+		
+							if($pref_accueil_infobulles=="y"){
+								//echo "<div id='info_cn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_cn_".$i."_".$j."');\">Cet outil vous permet de constituer un carnet de notes pour saisir les notes de toutes vos évaluations du groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+								echo "<div id='info_cn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_cn_".$i."_".$j."');\">Carnet de notes de ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+		
+								$tab_liste_infobulles[]='info_cn_'.$i.'_'.$j;
+							}
+							/*
+							echo "<script type='text/javascript'>
+			cacher_div('info_cn_".$i."_".$j."');
+		</script>\n";
+							*/
+							echo "</div>\n";
 						}
-						echo ">";
-	
-						//if(($accueil_aff_txt_icon==1)||($accueil_aff_txt_icon==3)){
-							//echo "<img src='../images/icons/carnet_notes.png' width='32' height='32' alt='Saisie de notes' border='0' />";
-							echo "<img src='images/icons/carnet_notes.png' width='32' height='32' alt='Saisie de notes' border='0' />";
-						/*
-						}
-						if($accueil_aff_txt_icon==3){
-							echo "<br />";
-						}
-						if($accueil_aff_txt_icon>=2){
-							echo "Saisie de notes sur le carnet de notes";
-						}
-						*/
-						echo "</a>";
-	
-						if($pref_accueil_infobulles=="y"){
-							//echo "<div id='info_cn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_cn_".$i."_".$j."');\">Cet outil vous permet de constituer un carnet de notes pour saisir les notes de toutes vos évaluations du groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
-							echo "<div id='info_cn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_cn_".$i."_".$j."');\">Carnet de notes de ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
-	
-							$tab_liste_infobulles[]='info_cn_'.$i.'_'.$j;
-						}
-	
-						/*
-						echo "<script type='text/javascript'>
-		cacher_div('info_cn_".$i."_".$j."');
-	</script>\n";
-						*/
-						echo "</div>\n";
+						else {echo "&nbsp;";}
 						echo "</td>\n";
 					}
 	
@@ -947,51 +903,54 @@ for($i=0;$i<count($groups);$i++){
 						// Note sur le bulletin:
 						//echo "<td class='$class_style'><a href='../saisie/saisie_notes.php?id_groupe=".$groups[$i]['id']."&amp;periode_num=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'><img src='../images/icons/bulletin.png' width='32' height='34' alt='Notes' border='0' /></a>";
 						echo "<td class='$class_style'>\n";
-						echo "<div id='h_bn_".$i."_".$j."'>";
-						//echo "<a href='../saisie/saisie_notes.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'>";
-						//echo "<a href='saisie/saisie_notes.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'";
-						echo "<a href='saisie/saisie_notes.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."'";
-						if($pref_accueil_infobulles=="y"){
-							echo " onmouseover=\"afficher_div('info_bn_".$i."_".$j."','y',10,10);\" onmouseout=\"cacher_div('info_bn_".$i."_".$j."');\"";
+						if(!in_array($groups[$i]['id'],$invisibilite_groupe['bulletins'])) {
+							echo "<div id='h_bn_".$i."_".$j."'>";
+							//echo "<a href='../saisie/saisie_notes.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'>";
+							//echo "<a href='saisie/saisie_notes.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'";
+							echo "<a href='saisie/saisie_notes.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."'";
+							if($pref_accueil_infobulles=="y"){
+								echo " onmouseover=\"afficher_div('info_bn_".$i."_".$j."','y',10,10);\" onmouseout=\"cacher_div('info_bn_".$i."_".$j."');\"";
+							}
+							echo ">";
+		
+							//if(($accueil_aff_txt_icon==1)||($accueil_aff_txt_icon==3)){
+								//echo "<img src='../images/icons/bulletin.png' width='32' height='34' alt='Notes' border='0' />";
+								echo "<img src='images/icons/bulletin.png' width='32' height='34' alt='Notes' border='0' />";
+							/*
+							}
+							if($accueil_aff_txt_icon==3){
+								echo "<br />";
+							}
+							if($accueil_aff_txt_icon>=2){
+								echo "Saisie de notes sur le bulletin";
+							}
+							*/
+							echo "</a>";
+		
+							echo "<br />\n";
+							echo "<span style='font-size: xx-small;'>";
+							//if($nb_notes_bulletin==$effectif_groupe){echo "<font color='green'>";}else{echo "<font color='red'>";}
+							if($nb_notes_bulletin==$effectif_groupe){echo "<span class='saisies_effectuees'>";}else{echo "<span class='saisies_manquantes'>";}
+							echo "($nb_notes_bulletin/$effectif_groupe)";
+							//echo "</font>";
+							echo "</span>";
+							echo "</span>";
+		
+							if($pref_accueil_infobulles=="y"){
+								//echo "<div id='info_bn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_bn_".$i."_".$j."');\">Cet outil permet de saisir les moyennes du bulletin du groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+								echo "<div id='info_bn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 15em;' onmouseout=\"cacher_div('info_bn_".$i."_".$j."');\">Saisie des moyennes ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+		
+								$tab_liste_infobulles[]='info_bn_'.$i.'_'.$j;
+							}
+		
+							/*
+							echo "<script type='text/javascript'>
+			cacher_div('info_bn_".$i."_".$j."');
+		</script>\n";
+							*/
+							echo "</div>\n";
 						}
-						echo ">";
-	
-						//if(($accueil_aff_txt_icon==1)||($accueil_aff_txt_icon==3)){
-							//echo "<img src='../images/icons/bulletin.png' width='32' height='34' alt='Notes' border='0' />";
-							echo "<img src='images/icons/bulletin.png' width='32' height='34' alt='Notes' border='0' />";
-						/*
-						}
-						if($accueil_aff_txt_icon==3){
-							echo "<br />";
-						}
-						if($accueil_aff_txt_icon>=2){
-							echo "Saisie de notes sur le bulletin";
-						}
-						*/
-						echo "</a>";
-	
-						echo "<br />\n";
-						echo "<span style='font-size: xx-small;'>";
-						//if($nb_notes_bulletin==$effectif_groupe){echo "<font color='green'>";}else{echo "<font color='red'>";}
-						if($nb_notes_bulletin==$effectif_groupe){echo "<span class='saisies_effectuees'>";}else{echo "<span class='saisies_manquantes'>";}
-						echo "($nb_notes_bulletin/$effectif_groupe)";
-						//echo "</font>";
-						echo "</span>";
-						echo "</span>";
-	
-						if($pref_accueil_infobulles=="y"){
-							//echo "<div id='info_bn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_bn_".$i."_".$j."');\">Cet outil permet de saisir les moyennes du bulletin du groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
-							echo "<div id='info_bn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 15em;' onmouseout=\"cacher_div('info_bn_".$i."_".$j."');\">Saisie des moyennes ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
-	
-							$tab_liste_infobulles[]='info_bn_'.$i.'_'.$j;
-						}
-	
-						/*
-						echo "<script type='text/javascript'>
-		cacher_div('info_bn_".$i."_".$j."');
-	</script>\n";
-						*/
-						echo "</div>\n";
+						else {echo "&nbsp;";}
 						echo "</td>\n";
 	
 	
@@ -999,51 +958,54 @@ for($i=0;$i<count($groups);$i++){
 						//echo "<td class='$class_style'><a href='../saisie/saisie_appreciations.php?id_groupe=".$groups[$i]['id']."&amp;periode_num=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'><img src='../images/icons/bulletin.png' width='32' height='34' alt='Appréciations' border='0' /></a>";
 						echo "<td class='$class_style'>\n";
 						echo "<div id='h_ba_".$i."_".$j."'>";
-						//echo "<a href='../saisie/saisie_appreciations.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'>";
-						//echo "<a href='saisie/saisie_appreciations.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'";
-						echo "<a href='saisie/saisie_appreciations.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."'";
-						if($pref_accueil_infobulles=="y"){
-							echo " onmouseover=\"afficher_div('info_ba_".$i."_".$j."','y',10,10);\" onmouseout=\"cacher_div('info_ba_".$i."_".$j."');\"";
+						if(!in_array($groups[$i]['id'],$invisibilite_groupe['bulletins'])) {
+							//echo "<a href='../saisie/saisie_appreciations.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'>";
+							//echo "<a href='saisie/saisie_appreciations.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'";
+							echo "<a href='saisie/saisie_appreciations.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."'";
+							if($pref_accueil_infobulles=="y"){
+								echo " onmouseover=\"afficher_div('info_ba_".$i."_".$j."','y',10,10);\" onmouseout=\"cacher_div('info_ba_".$i."_".$j."');\"";
+							}
+							echo ">";
+		
+							//if(($accueil_aff_txt_icon==1)||($accueil_aff_txt_icon==3)){
+								//echo "<img src='../images/icons/bulletin.png' width='32' height='34' alt='Appréciations' border='0' />";
+								echo "<img src='images/icons/bulletin.png' width='32' height='34' alt='Appréciations' border='0' />";
+							/*
+							}
+							if($accueil_aff_txt_icon==3){
+								echo "<br />";
+							}
+							if($accueil_aff_txt_icon>=2){
+								echo "Saisie des appréciations sur le bulletin";
+							}
+							*/
+							echo "</a>";
+							echo "<br />\n";
+		
+							echo "<span style='font-size: xx-small;'>";
+							//if($nb_app_bulletin==$effectif_groupe){echo "<font color='green'>";}else{echo "<font color='red'>";}
+							if($nb_app_bulletin==$effectif_groupe){echo "<span class='saisies_effectuees'>";}else{echo "<span class='saisies_manquantes'>";}
+							echo "($nb_app_bulletin/$effectif_groupe)";
+							//echo "</font>";
+							echo "</span>";
+							echo "</span>";
+		
+		
+							if($pref_accueil_infobulles=="y"){
+								//echo "<div id='info_ba_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_ba_".$i."_".$j."');\">Cet outil permet de saisir les appréciations du bulletin du groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+								echo "<div id='info_ba_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 15em;' onmouseout=\"cacher_div('info_ba_".$i."_".$j."');\">Saisie des appréciations ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+		
+								$tab_liste_infobulles[]='info_ba_'.$i.'_'.$j;
+							}
+		
+							/*
+							echo "<script type='text/javascript'>
+			cacher_div('info_ba_".$i."_".$j."');
+		</script>\n";
+							*/
+							echo "</div>\n";
 						}
-						echo ">";
-	
-						//if(($accueil_aff_txt_icon==1)||($accueil_aff_txt_icon==3)){
-							//echo "<img src='../images/icons/bulletin.png' width='32' height='34' alt='Appréciations' border='0' />";
-							echo "<img src='images/icons/bulletin.png' width='32' height='34' alt='Appréciations' border='0' />";
-						/*
-						}
-						if($accueil_aff_txt_icon==3){
-							echo "<br />";
-						}
-						if($accueil_aff_txt_icon>=2){
-							echo "Saisie des appréciations sur le bulletin";
-						}
-						*/
-						echo "</a>";
-						echo "<br />\n";
-	
-						echo "<span style='font-size: xx-small;'>";
-						//if($nb_app_bulletin==$effectif_groupe){echo "<font color='green'>";}else{echo "<font color='red'>";}
-						if($nb_app_bulletin==$effectif_groupe){echo "<span class='saisies_effectuees'>";}else{echo "<span class='saisies_manquantes'>";}
-						echo "($nb_app_bulletin/$effectif_groupe)";
-						//echo "</font>";
-						echo "</span>";
-						echo "</span>";
-	
-	
-						if($pref_accueil_infobulles=="y"){
-							//echo "<div id='info_ba_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_ba_".$i."_".$j."');\">Cet outil permet de saisir les appréciations du bulletin du groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
-							echo "<div id='info_ba_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 15em;' onmouseout=\"cacher_div('info_ba_".$i."_".$j."');\">Saisie des appréciations ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
-	
-							$tab_liste_infobulles[]='info_ba_'.$i.'_'.$j;
-						}
-	
-						/*
-						echo "<script type='text/javascript'>
-		cacher_div('info_ba_".$i."_".$j."');
-	</script>\n";
-						*/
-						echo "</div>\n";
+						else {echo "&nbsp;";}
 						echo "</td>\n";
 					}
 	

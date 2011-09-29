@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: categories.php 6224 2010-12-24 14:07:14Z dblanqui $
+ * $Id: categories.php 7799 2011-08-17 08:38:10Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -20,6 +20,11 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+// On empêche l'accès direct au fichier
+if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
+    die();
+};
+
 ?>
 <div id='result'>
     <h3><font class='red'>Organisation des natures d'incidents en catégories:</font></h3>

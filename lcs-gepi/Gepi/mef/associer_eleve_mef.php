@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id$
+ * @version $Id: associer_eleve_mef.php 7953 2011-08-24 14:23:50Z regis $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -173,7 +173,7 @@ if (!$eleve_col->isEmpty()) {
             foreach ($mef_collection as $mef) {
                     echo "<option value='".$mef->getId()."'>";
                     echo $mef->getLibelleEdition().' ';
-                    echo $mef->getExtId();
+                    echo $mef->getMefCode();
                     echo "</option>\n";
             }
             echo "</select>";

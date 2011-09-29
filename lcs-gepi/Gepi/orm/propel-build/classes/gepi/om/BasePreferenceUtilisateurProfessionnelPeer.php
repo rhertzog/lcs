@@ -31,6 +31,9 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 3;
+
 	/** the column name for the NAME field */
 	const NAME = 'preferences.NAME';
 
@@ -40,6 +43,9 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 	/** the column name for the LOGIN field */
 	const LOGIN = 'preferences.LOGIN';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of PreferenceUtilisateurProfessionnel objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -55,7 +61,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('Name', 'Value', 'Login', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('name', 'value', 'login', ),
 		BasePeer::TYPE_COLNAME => array (self::NAME, self::VALUE, self::LOGIN, ),
@@ -70,7 +76,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('Name' => 0, 'Value' => 1, 'Login' => 2, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('name' => 0, 'value' => 1, 'login' => 2, ),
 		BasePeer::TYPE_COLNAME => array (self::NAME => 0, self::VALUE => 1, self::LOGIN => 2, ),
@@ -202,7 +208,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -221,7 +227,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -275,7 +281,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 	 * @param      PreferenceUtilisateurProfessionnel $value A PreferenceUtilisateurProfessionnel object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(PreferenceUtilisateurProfessionnel $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -430,7 +436,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + PreferenceUtilisateurProfessionnelPeer::NUM_COLUMNS;
+			$col = $startcol + PreferenceUtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = PreferenceUtilisateurProfessionnelPeer::OM_CLASS;
 			$obj = new $cls();
@@ -439,6 +445,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related UtilisateurProfessionnel table
@@ -509,7 +516,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 		}
 
 		PreferenceUtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol = (PreferenceUtilisateurProfessionnelPeer::NUM_COLUMNS - PreferenceUtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = PreferenceUtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(PreferenceUtilisateurProfessionnelPeer::LOGIN, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
@@ -625,10 +632,10 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 		}
 
 		PreferenceUtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol2 = (PreferenceUtilisateurProfessionnelPeer::NUM_COLUMNS - PreferenceUtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = PreferenceUtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(PreferenceUtilisateurProfessionnelPeer::LOGIN, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
@@ -714,7 +721,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a PreferenceUtilisateurProfessionnel or Criteria object.
+	 * Performs an INSERT on the database, given a PreferenceUtilisateurProfessionnel or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or PreferenceUtilisateurProfessionnel object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -753,7 +760,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a PreferenceUtilisateurProfessionnel or Criteria object.
+	 * Performs an UPDATE on the database, given a PreferenceUtilisateurProfessionnel or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or PreferenceUtilisateurProfessionnel object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -800,11 +807,12 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the preferences table.
+	 * Deletes all rows from the preferences table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(PreferenceUtilisateurProfessionnelPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -829,7 +837,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a PreferenceUtilisateurProfessionnel or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a PreferenceUtilisateurProfessionnel or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or PreferenceUtilisateurProfessionnel object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -906,7 +914,7 @@ abstract class BasePreferenceUtilisateurProfessionnelPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(PreferenceUtilisateurProfessionnel $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

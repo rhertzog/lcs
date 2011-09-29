@@ -1,7 +1,7 @@
 <?php
 	@set_time_limit(0);
 
-	// $Id: matieres.php 7611 2011-08-08 08:14:38Z crob $
+	// $Id: matieres.php 8335 2011-09-23 17:04:45Z crob $
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");
@@ -30,7 +30,7 @@
 
 	function extr_valeur($lig){
 		unset($tabtmp);
-		$tabtmp=explode(">",my_ereg_replace("<",">",$lig));
+		$tabtmp=explode(">",preg_replace("/</",">",$lig));
 		return trim($tabtmp[2]);
 	}
 
@@ -60,66 +60,8 @@
 	}
 	//echo "\$_SESSION['ad_retour']=".$_SESSION['ad_retour']."<br />";
 
-	$liste_tables_del = array(
-//"absences",
-//"aid",
-//"aid_appreciations",
-//"aid_config",
-//"avis_conseil_classe",
-//"classes",
-//"droits",
-//"eleves",
-//"responsables",
-//"etablissements",
-"groupes",
-//"j_aid_eleves",
-//"j_aid_utilisateurs",
-//"j_eleves_classes",
-//"j_eleves_etablissements",
-"j_eleves_groupes",
-"j_groupes_matieres",
-"j_groupes_professeurs",
-"j_groupes_classes",
-"j_signalement",
-"eleves_groupes_settings",
-//"j_eleves_professeurs",
-//"j_eleves_regime",
-//"j_professeurs_matieres",
-//"log",
-//"matieres",
-"matieres_appreciations",
-"matieres_notes",
-"matieres_appreciations_grp",
-"matieres_appreciations_tempo",
-//"observatoire",
-//"observatoire_comment",
-//"observatoire_config",
-//"observatoire_niveaux",
-//"observatoire_j_resp_champ",
-//"observatoire_suivi",
-//"periodes",
-//"periodes_observatoire",
-"tempo2",
-//"temp_gep_import",
-"tempo",
-//"utilisateurs",
-"cn_cahier_notes",
-"cn_conteneurs",
-"cn_devoirs",
-"cn_notes_conteneurs",
-"cn_notes_devoirs",
-"ct_devoirs_entry",
-"ct_documents",
-"ct_entry",
-"ct_devoirs_documents",
-"ct_private_entry",
-"ct_sequences",
-//"setting"
-"edt_classes",
-"edt_cours"
-);
-
-
+	include("../lib/initialisation_annee.inc.php");
+	$liste_tables_del = $liste_tables_del_etape_matieres;
 
 
 	// On va uploader les fichiers XML dans le tempdir de l'utilisateur (administrateur, ou scolarité pour les màj Sconet)
@@ -195,8 +137,14 @@
 				$flag=0;
 				$chaine_tables="";
 				while (($j < count($liste_tables_del)) and ($flag==0)) {
-					if (mysql_result(mysql_query("SELECT count(*) FROM $liste_tables_del[$j]"),0)!=0) {
-						$flag=1;
+					//if (mysql_result(mysql_query("SELECT count(*) FROM $liste_tables_del[$j]"),0)!=0) {
+					$sql="SELECT 1=1 FROM $liste_tables_del[$j];";
+					//echo "$sql<br />";
+					$test_del=mysql_query($sql);
+					if(mysql_num_rows($test_del)>0) {
+						if (mysql_result($test_del,0)!=0) {
+							$flag=1;
+						}
 					}
 					$j++;
 				}
@@ -354,7 +302,12 @@
 		
 						$nom_racine=$sts_xml->getName();
 						if(strtoupper($nom_racine)!='STS_EDT') {
-							echo "<p style='color:red;'>ERREUR: Le fichier XML fourni n'a pas l'air d'être un fichier XML STS_EMP_&lt;RNE&gt;_&lt;ANNEE&gt;.<br />Sa racine devrait être 'STS_EDT'.</p>\n";
+							echo "<p style='color:red;'><b>ERREUR&nbsp;:</b> Le fichier XML fourni n'a pas l'air d'être un fichier XML STS_EMP_&lt;RNE&gt;_&lt;ANNEE&gt;.<br />Sa racine devrait être 'STS_EDT'.</p>\n";
+
+							if(strtoupper($nom_racine)=='EDT_STS') {
+								echo "<p style='color:red;'>Vous vous êtes trompé d'export.<br />Vous avez probablement utilisé un export de votre logiciel EDT d'Index Education, au lieu de l'export XML provenant de STS.</p>\n";
+							}
+
 							require("../lib/footer.inc.php");
 							die();
 						}
@@ -429,7 +382,7 @@
 
 
 
-						echo "<p>Dans le tableau ci-dessous, les identifiants en rouge correspondent à des nouvelles matières dans la base GEPI. les identifiants en vert correspondent à des identifiants de matières détectés dans le fichier GEP mais déjà présents dans la base GEPI.<br /><br />Il est possible que certaines matières ci-dessous, bien que figurant dans le fichier CSV, ne soient pas utilisées dans votre établissement cette année. C'est pourquoi il vous sera proposé en fin de procédure d'initialsation, un nettoyage de la base afin de supprimer ces données inutiles.</p>\n";
+						echo "<p>Dans le tableau ci-dessous, les identifiants en rouge correspondent à des nouvelles matières dans la base GEPI. les identifiants en vert correspondent à des identifiants de matières détectés dans le fichier GEP mais déjà présents dans la base GEPI.<br /><br />Il est possible que certaines matières ci-dessous, bien que figurant dans le fichier CSV, ne soient pas utilisées dans votre établissement cette année. C'est pourquoi il vous sera proposé en fin de procédure d'initialisation, un nettoyage de la base afin de supprimer ces données inutiles.</p>\n";
 
 						echo "<table border='1' class='boireaus' cellpadding='2' cellspacing='2' summary='Tableau des matières'>\n";
 
@@ -468,6 +421,108 @@
 						}
 
 						echo "</table>\n";
+
+
+
+
+						// Importation des MEF
+						$divisions=array();
+						$tab_mef_code=array();
+						$i=0;
+						foreach($sts_xml->DONNEES->STRUCTURE->DIVISIONS->children() as $objet_division) {
+							$divisions[$i]=array();
+					
+							foreach($objet_division->attributes() as $key => $value) {
+								if(strtoupper($key)=='CODE') {
+									$divisions[$i]['code']=preg_replace('/"/','',trim(traite_utf8($value)));
+									//echo "<p>\$divisions[$i]['code']=".$divisions[$i]['code']."<br />";
+									break;
+								}
+							}
+
+							// Champs de la division
+							foreach($objet_division->MEFS_APPARTENANCE->children() as $mef_appartenance) {
+								foreach($mef_appartenance->attributes() as $key => $value) {
+									// Normalement, on ne devrait faire qu'un tour:
+									$divisions[$i]["mef_code"][]=trim(traite_utf8($value));
+									$tab_mef_code[]=trim(traite_utf8($value));
+									//echo "\$divisions[$i][\"mef_code\"][]=trim(traite_utf8($value))<br />";
+								}
+							}
+							$i++;
+						}
+
+						for($i=0;$i<count($divisions);$i++) {
+							if(isset($divisions[$i]["mef_code"][0])) {
+								$sql="UPDATE eleves SET mef_code='".$divisions[$i]["mef_code"][0]."' WHERE login IN (SELECT j.login FROM j_eleves_classes j, classes c WHERE j.id_classe=c.id AND c.classe='".addslashes($divisions[$i]["code"])."');";
+								//echo "$sql<br />";
+								$update_mef=mysql_query($sql);
+							}
+						}
+
+						$tab_champs_mef=array("LIBELLE_COURT",
+						"LIBELLE_LONG",
+						"LIBELLE_EDITION");
+
+						$mefs=array();
+						$i=0;
+						foreach($sts_xml->NOMENCLATURES->MEFS->children() as $objet_mef) {
+							$mefs[$i]=array();
+					
+							foreach($objet_mef->attributes() as $key => $value) {
+								if(strtoupper($key)=='CODE') {
+									$mefs[$i]['code']=preg_replace('/"/','',trim(traite_utf8($value)));
+									break;
+								}
+							}
+
+							if(in_array($mefs[$i]['code'],$tab_mef_code)) {
+								// Champs MEF
+								foreach($objet_mef->children() as $key => $value) {
+									if(in_array(strtoupper($key),$tab_champs_mef)) {
+										$mefs[$i][strtolower($key)]=trim(preg_replace("/[^A-Za-zÆæ¼½".$liste_caracteres_accentues."0-9&_. -]/","",html_entity_decode_all_version(traite_utf8($value))));
+									}
+								}
+								$i++;
+							}
+						}
+
+						for($i=0;$i<count($mefs);$i++) {
+							$sql="SELECT 1=1 FROM mef WHERE mef_code='".$mefs[$i]['code']."';";
+							$test=mysql_query($sql);
+							if(mysql_num_rows($test)>0) {
+								$sql="UPDATE mef SET ";
+								if(isset($mefs[$i]["libelle_court"])) {
+									$sql.=" libelle_court='".$mefs[$i]["libelle_court"]."',";
+								}
+								//elseif(isset($mefs[$i]["libelle_long"])) {$sql.=" libelle_court='".$mefs[$i]["libelle_long"]."',";}
+								else {
+									$sql.=" libelle_court='',";
+								}
+								if(isset($mefs[$i]["libelle_long"])) {$sql.=" libelle_long='".$mefs[$i]["libelle_long"]."',";}
+								if(isset($mefs[$i]["libelle_edition"])) {$sql.=" libelle_edition='".$mefs[$i]["libelle_edition"]."',";}
+								$sql.=" mef_code='".$mefs[$i]["code"]."' WHERE mef_code='".$mefs[$i]["code"]."';";
+								//echo "$sql<br />";
+								$update_mef=mysql_query($sql);
+							}
+							else{
+								$sql="INSERT INTO mef SET ";
+								//if(isset($mefs[$i]["libelle_court"])) {$sql.=" libelle_court='".$mefs[$i]["libelle_court"]."',";} elseif(isset($mefs[$i]["libelle_long"])) {$sql.=" libelle_court='".$mefs[$i]["libelle_long"]."',";}
+								if(isset($mefs[$i]["libelle_court"])) {
+									$sql.=" libelle_court='".$mefs[$i]["libelle_court"]."',";
+								}
+								//elseif(isset($mefs[$i]["libelle_long"])) {$sql.=" libelle_court='".$mefs[$i]["libelle_long"]."',";}
+								else {
+									$sql.=" libelle_court='',";
+								}
+								if(isset($mefs[$i]["libelle_long"])) {$sql.=" libelle_long='".$mefs[$i]["libelle_long"]."',";}
+								if(isset($mefs[$i]["libelle_edition"])) {$sql.=" libelle_edition='".$mefs[$i]["libelle_edition"]."',";}
+								$sql.=" mef_code='".$mefs[$i]["code"]."';";
+								//echo "$sql<br />";
+								$insert=mysql_query($sql);
+							}
+						}
+
 
 						if ($nb_reg_no != 0) {
 							echo "<p>Lors de l'enregistrement des données il y a eu $nb_reg_no erreurs. Essayez de trouvez la cause de l'erreur et recommencez la procédure avant de passer à l'étape suivante.";

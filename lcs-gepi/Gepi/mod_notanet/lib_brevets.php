@@ -1,7 +1,7 @@
 <?php
 
 /*
-$Id: lib_brevets.php 7262 2011-06-19 13:12:10Z crob $
+$Id: lib_brevets.php 7260 2011-06-19 13:12:04Z crob $
  */
 
 $tab_type_brevet=array();

@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id$
+ * $Id: ajax_edition_compte_rendu.php 8312 2011-09-22 19:36:19Z crob $
  *
  * Copyright 2009-2011 Josselin Jacquard
  *
@@ -80,7 +80,7 @@ if ($ctCompteRendu != null) {
 	}
 
 } else {
-	//si pas de notice précisé, récupération du groupe dans la requete et recherche d'une notice pour la date précisée ou création d'une nouvelle notice
+	//si pas de notice précisée, récupération du groupe dans la requete et recherche d'une notice pour la date précisée ou création d'une nouvelle notice
 	$id_groupe = isset($_POST["id_groupe"]) ? $_POST["id_groupe"] :(isset($_GET["id_groupe"]) ? $_GET["id_groupe"] :NULL);
 	$groupe = GroupePeer::retrieveByPK($id_groupe);
 	if ($groupe == null) {
@@ -123,6 +123,34 @@ if ($ctCompteRendu->getVise() == 'y') {
 	die();
 }
 
+if(isset($_GET['change_visibilite'])) {
+	check_token();
+
+	//$ctDocument->setVisibleEleveParent(false);
+	$id_ct=$_GET['id_ct'];
+	$id_document=$_GET['id_document'];
+	if(($id_ct!='')&&(preg_match("/^[0-9]*$/", $id_ct))&&($id_document!='')&&(preg_match("/^[0-9]*$/", $id_document))) {
+		$sql="SELECT visible_eleve_parent FROM ct_documents WHERE id='$id_document' AND id_ct='$id_ct';";
+		$res=mysql_query($sql);
+		if(mysql_num_rows($res)>0) {
+			$lig=mysql_fetch_object($res);
+			if($lig->visible_eleve_parent=='0') {$visible_eleve_parent='1';} else {$visible_eleve_parent='0';}
+			$sql="UPDATE ct_documents SET visible_eleve_parent='$visible_eleve_parent' WHERE id='$id_document' AND id_ct='$id_ct';";
+			$res=mysql_query($sql);
+			if($res) {
+				if($visible_eleve_parent=='1') {
+					echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des élèves et responsables' title='Document visible des élèves et responsables' />";
+				}
+				else {
+					echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des élèves et responsables' title='Document invisible des élèves et responsables' />";
+				}
+			}
+		}
+	}
+	die();
+}
+
+
 // Initialisation du type de couleur (voir global.inc.php)
 if ($ctCompteRendu->getDateCt() == null) {
 	//CompteRendu information générale
@@ -139,7 +167,7 @@ $_SESSION['id_groupe_session'] = $ctCompteRendu->getIdGroupe();
 // **********************************************
 // Affichage des différents groupes du professeur
 //\$A($('id_groupe_colonne_gauche').options).find(function(option) { return option.selected; }).value is a javascript trick to get selected value.
-echo "<div id=\"div_chaine_edition_notice\" style=\"display:inline;\"><img id=\"chaine_edition_notice\" onLoad=\"updateChaineIcones()\" HEIGHT=\"16\" WIDTH=\"16\" style=\"border: 0px; vertical-align : middle\" src=\"../images/blank.gif\"  alt=\"Lier\" title=\"Lier la liste avec la liste des notices\" /></div>&nbsp;";
+echo "<div id=\"div_chaine_edition_notice\" style=\"display:inline;\"><img id=\"chaine_edition_notice\" onLoad=\"updateChaineIcones()\" HEIGHT=\"16\" WIDTH=\"16\" style=\"border: 0px; vertical-align : middle\" src=\"../images/blank.gif\"  alt=\"Lier\" title=\"Lier la liste avec la liste des notices\" /></div>&nbsp;\n";
 echo ("<select id=\"id_groupe_colonne_droite\" onChange=\"javascript:
 			updateListeNoticesChaine();
 			id_groupe = (\$A($('id_groupe_colonne_droite').options).find(function(option) { return option.selected; }).value);
@@ -147,7 +175,7 @@ echo ("<select id=\"id_groupe_colonne_droite\" onChange=\"javascript:
       			 { onComplete:function() {initWysiwyg();}}
       		);
 			compte_rendu_en_cours_de_modification('aucun');
-		\">");
+		\">\n");
 echo "<option value='-1'>choisissez un groupe</option>\n";
 $groups = $utilisateur->getGroupes();
 foreach ($groups as $group_iter) {
@@ -157,18 +185,29 @@ foreach ($groups as $group_iter) {
 	echo $group_iter->getDescriptionAvecClasses();
 	echo "</option>\n";
 }
-echo "</select>&nbsp;&nbsp;";
+echo "</select>&nbsp;&nbsp;\n";
 //fin affichage des groupes
 
 echo "<button style='background-color:".$color_fond_notices['t']."' onclick=\"javascript:
 						getWinEditionNotice().setAjaxContent('./ajax_edition_devoir.php?id_groupe='+ ".$groupe->getId()." + '&today='+getCalendarUnixDate(),{ onComplete:function(transport) {initWysiwyg();}});
 						object_en_cours_edition = 'devoir';
-					\">Editer les devoirs</button>";
+					\">Editer les devoirs</button>\n";
 
 echo "<button style='background-color:".$color_fond_notices['p']."' onclick=\"javascript:
 						getWinEditionNotice().setAjaxContent('./ajax_edition_notice_privee.php?id_groupe='+ ".$groupe->getId()." + '&today='+getCalendarUnixDate(),{ onComplete:function(transport) {initWysiwyg();}});
 						object_en_cours_edition = 'notice_privee';
-					\">Editer les notices priv&eacute;es</button><br><br>\n";
+					\">Editer les notices priv&eacute;es</button>\n";
+
+/*
+echo " <button style='background-color:".$color_fond_notices['p']."' onclick=\"javascript:
+						getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=".$groupe->getId()."&today='+getCalendarUnixDate(),{ onComplete:function(transport) {initWysiwyg();}});
+					\">Voir NP</button>\n";
+*/
+echo " <button style='background-color:".$color_fond_notices['p']."' onclick=\"javascript:
+						getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=".$groupe->getId()."&today='+getCalendarUnixDate());
+					\">Voir NP</button>\n";
+
+echo "<br><br>\n";
 
 // Nombre de notices pour ce jour :
 $num_notice = NULL;
@@ -193,7 +232,7 @@ if (!$ctCompteRendu->isNew() || isset($info)) {
 				return false;
 			\">
 			Ajouter une notice
-			</a> - ";
+			</a> - \n";
 	echo "<a href=\"#\" onclick=\"javascript:
 				new Ajax.Updater($('dupplication_notice'), 'ajax_affichage_duplication_notice.php?id_groupe=".$groupe->getId()."&type=CahierTexteCompteRendu&id_ct=".$ctCompteRendu->getIdCt()."',
 					{ onComplete:
@@ -215,7 +254,7 @@ if (!$ctCompteRendu->isNew() || isset($info)) {
 				);
 				return false;
 				\">
-		Dupliquer la notice</a> - ";
+		Dupliquer la notice</a> - \n";
 } else {
 	echo " - <b><font color=\"red\">Nouvelle notice</font></b> - \n";
 }
@@ -240,7 +279,7 @@ echo "
 			);
 			return false;
 			\">
-	Deplacer la notice</a>";
+	Deplacer la notice</a>\n";
 
 echo "</legend>\n";
 
@@ -356,6 +395,9 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 		if (!isset($info)) {
 			$hier = $today - 3600*24;
 			$demain = $today + 3600*24;
+
+			$semaine_precedente= $today - 3600*24*7;
+			$semaine_suivante= $today + 3600*24*7;
 			/*
 			if(count($tab_jours_ouverture)>0) {
 				$cpt_jo=0; // Pour éviter une boucle infinie en cas de blague
@@ -365,12 +407,32 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 				}
 			}
 			*/
-			echo "</td><td><a title=\"Aller au jour précédent\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($hier);dateChanged(calendarInstanciation);'>&lt;&lt;</a></td>
-			<td align=center>Aujourd'hui</td>
-			<td align=right><a title=\"Aller au jour suivant\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($demain);dateChanged(calendarInstanciation);'>&gt;&gt;</a></td></tr>\n";	echo "\n";
+			echo "</td>\n";
+
+			echo "<td>\n";
+			echo "<a href=\"javascript:
+						getWinCalendar().setLocation(0, GetWidth() - 245);
+				\"><img src=\"../images/icons/date.png\" width='16' height='16' alt='Calendrier' /></a>\n";
+			echo "</td>\n";
+
+			echo "<td style='text-align:center; width: 16px;'>\n";
+			echo "<a title=\"Aller à la semaine précédente\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_precedente);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left-double.png' width='16' height='16' title='Aller à la semaine précédente' alt='Aller à la semaine précédente' /></a> ";
+			echo "</td>\n";
+			echo "<td style='text-align:center; width: 16px;'>\n";
+			echo "<a title=\"Aller au jour précédent\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($hier);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left.png' width='16' height='16' title='Aller au jour précédent' alt='Aller au jour précédent' /></a>\n";
+			echo "</td>\n";
+			echo "<td align='center'>Aujourd'hui</td>\n";
+			echo "<td style='text-align:center; width: 16px;'>\n";
+			echo "<a title=\"Aller au jour suivant\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($demain);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-right.png' width='16' height='16' title='Aller au jour suivant' alt='Aller au jour suivant' /></a>\n";
+			echo "</td>\n";
+			echo "<td style='text-align:center; width: 16px;'>\n";
+			echo " <a title=\"Aller à la semaine suivante\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_suivante);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-right-double.png' width='16' height='16' title='Aller à la semaine suivante' alt='Aller à la semaine suivante' /></a>\n";
+			echo "</td>\n";
+			echo "</tr>\n";
+			echo "\n";
 		}
 		echo "<tr>
-				<td colspan='5'>";
+				<td colspan='6'>";
 
 		echo "<textarea name=\"contenu\" style=\"background-color: white;\" id=\"contenu\">".$ctCompteRendu->getContenu()."</textarea>";
 
@@ -393,30 +455,63 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 		echo "<table style=\"border-style:solid; border-width:0px; border-color: ".$couleur_bord_tableau_notice."; background-color: #000000; width: 100%\" cellspacing=\"1\" summary=\"Tableau des documents joints\">\n";
 		"<tr style=\"border-style:solid; border-width:1px; border-color: ".$couleur_bord_tableau_notice."; background-color: $couleur_entete_fond[$type_couleur];\"><td style=\"text-align: center;\"><b>Titre</b></td><td style=\"text-align: center; width: 100px\"><b>Taille en Ko</b></td><td style=\"text-align: center; width: 100px\"></td></tr>\n";
 		if (!empty($documents)) {
+			$nb_documents_joints=0;
 			foreach ($documents as $document) {
 				//if ($ic=='1') { $ic='2'; $couleur_cellule_=$couleur_cellule[$type_couleur]; } else { $couleur_cellule_=$couleur_cellule_alt[$type_couleur]; $ic='1'; }
 				echo "<tr style=\"border-style:solid; border-width:1px; border-color: ".$couleur_bord_tableau_notice."; background-color: #FFFFFF;\"><td>
 						<a href='".$document->getEmplacement()."' target=\"_blank\">".$document->getTitre()."</a></td>
-						<td style=\"text-align: center;\">".round($document->getTaille()/1024,1)."</td>
-						<td style=\"text-align: center;\"><a href='#' onclick=\"javascript:suppressionDocument('suppression du document joint ".$document->getTitre()." ?', '".$document->getId()."', '".$ctCompteRendu->getIdCt()."','".add_token_in_js_func()."')\">Supprimer</a></td></tr>\n";
+						<td style=\"text-align: center;\">".round($document->getTaille()/1024,1)."</td>\n";
+				if(getSettingValue('cdt_possibilite_masquer_pj')=='y') {
+					//echo "<td style=\"text-align: center;\" id='td_document_joint_".$document->getId()."'>";
+					echo "<td style=\"text-align: center;\">";
+					//echo "<a href='#' onclick='modif_visibilite_doc_joint(".$document->getId().");return false;'>";
+					echo "<a href='javascript:modif_visibilite_doc_joint(\"compte_rendu\", ".$ctCompteRendu->getIdCt().", ".$document->getId().")'>";
+					echo "<span id='span_document_joint_".$document->getId()."'>";
+					if($document->getVisibleEleveParent()) {
+						echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des élèves et responsables' title='Document visible des élèves et responsables' />";
+					}
+					else {
+						echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des élèves et responsables' title='Document invisible des élèves et responsables' />";
+					}
+					echo "</span>";
+					echo "</a>";
+					echo "</td>\n";
+				}
+				echo "<td style=\"text-align: center;\"><a href='#' onclick=\"javascript:suppressionDocument('suppression du document joint ".$document->getTitre()." ?', '".$document->getId()."', '".$ctCompteRendu->getIdCt()."','".add_token_in_js_func()."')\">Supprimer</a></td></tr>\n";
+				$nb_documents_joints++;
 			}
 			echo "</table>\n";
 			//gestion de modification du nom d'un documents
 
-			echo "Nouveau nom <input type=\"text\" name=\"doc_name_modif\" size=\"25\" /> pour\n";
-			echo "<select name=\"id_document\">";
-			echo "<option value='-1'>(choisissez)</option>\n";
-			foreach ($documents as $document) {
-				echo "<option value='".$document->getId()."'>".$document->getTitre()."</option>\n";
+			if($nb_documents_joints>0) {
+				echo "Nouveau nom <input type=\"text\" name=\"doc_name_modif\" size=\"25\" /> pour\n";
+				echo "<select name=\"id_document\">\n";
+				echo "<option value='-1'>(choisissez)</option>\n";
+				foreach ($documents as $document) {
+					echo "<option value='".$document->getId()."'>".$document->getTitre()."</option>\n";
+				}
+				echo "</select>\n";
+				echo "<br /><br />";
 			}
-			echo "</select>\n<br /><br />";
 		}
+
+		echo add_token_field(true);
+
 		?>
 		<table style="border-style:solid; border-width:0px; border-color: <?php echo $couleur_bord_tableau_notice;?> ; background-color: #000000; width: 100%" cellspacing="1" summary="Tableau de...">
 			<tr style="border-style:solid; border-width:1px; border-color: <?php echo $couleur_bord_tableau_notice; ?>; background-color: <?php echo $couleur_entete_fond[$type_couleur]; ?>;">
 				<td style="font-weight: bold; text-align: center; width: 20%">Titre
 				(facultatif)</td>
 				<td style="font-weight: bold; text-align: center; width: 60%">Emplacement</td>
+				<?php
+					if(getSettingValue('cdt_possibilite_masquer_pj')=='y') {
+						$nb_col_tableau_pj=3;
+						echo "<td style='font-weight: bold; text-align: center;'>Masquer</td>\n";
+					}
+					else {
+						$nb_col_tableau_pj=2;
+					}
+				?>
 			</tr>
 			<?php
 			$nb_doc_choisi='3';
@@ -427,6 +522,14 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 					size="20" /></td>
 				<td style="text-align: center;"><input type="file" name="doc_file[]"
 					size="20" /></td>
+				<?php
+					if(getSettingValue('cdt_possibilite_masquer_pj')=='y') {
+						echo "<td style='border-style: 1px solid $couleur_bord_tableau_notice; background-color: ".$couleur_cellule[$type_couleur]."; text-align: center;'>";
+						echo "<input type='checkbox' name='doc_masque[]' value='y' ";
+						echo "/>";
+						echo "</td>\n";
+					}
+				?>
 			</tr>
 			<?php $nb_doc_choisi_compte++;
 			}
@@ -434,7 +537,7 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 			?>
 
 			<tr style="border-style:solid; border-width:1px; border-color: <?php echo $couleur_bord_tableau_notice;?>; background-color: <?php echo $couleur_cellule[$type_couleur]; ?>;">
-				<td colspan="2" style="text-align: center;">
+				<td colspan="<?php echo $nb_col_tableau_pj;?>" style="text-align: center;">
 				<button type="submit" id="bouton_enregistrer_2" name="Enregistrer"
 					style='font-variant: small-caps;'><?php echo($label_enregistrer); ?></button>
 				<?php if (!isset($info)) { ?>
@@ -445,7 +548,7 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 				</td>
 			</tr>
 			<tr style="border-style:solid; border-width:1px; border-color: <?php echo $couleur_bord_tableau_notice; ?>; background-color: <?php echo $couleur_entete_fond[$type_couleur]; ?>;">
-				<td colspan="2" style="text-align: center;"><?php  echo "Tous les documents ne sont pas acceptés, voir <a href='javascript:centrerpopup(\"limites_telechargement.php?id_groupe=" . $groupe->getId() . "\",600,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>les limites et restrictions</a>\n"; ?>
+				<td colspan="<?php echo $nb_col_tableau_pj;?>" style="text-align: center;"><?php  echo "Tous les documents ne sont pas acceptés, voir <a href='javascript:centrerpopup(\"limites_telechargement.php?id_groupe=" . $groupe->getId() . "\",600,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>les limites et restrictions</a>\n"; ?>
 				</td>
 			</tr>
 		</table>
@@ -454,4 +557,8 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 </table>
 			<?php echo "</form>";
 			echo "</fieldset>";
+
+//echo "<a href=\"#\" onclick=\"javascript: document.getElementById('contenu').value=document.getElementById('contenu').value+'TRUC'; return false;\">CLIC</a>";
+//echo "<a href=\"#\" onclick=\"javascript: document.getElementById('contenu').value='TRUC'; return false;\">CLIC</a>";
+//echo "<a href=\"#\" onclick=\"javascript: alert(document.getElementById('contenu').value); return false;\">CLOC</a>";
 			?>

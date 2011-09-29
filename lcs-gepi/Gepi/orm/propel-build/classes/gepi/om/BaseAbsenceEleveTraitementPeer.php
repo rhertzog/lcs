@@ -26,10 +26,13 @@ abstract class BaseAbsenceEleveTraitementPeer {
 	const TM_CLASS = 'AbsenceEleveTraitementTableMap';
 	
 	/** The total number of columns. */
-	const NUM_COLUMNS = 9;
+	const NUM_COLUMNS = 10;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
+
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 10;
 
 	/** the column name for the ID field */
 	const ID = 'a_traitements.ID';
@@ -58,6 +61,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 	/** the column name for the UPDATED_AT field */
 	const UPDATED_AT = 'a_traitements.UPDATED_AT';
 
+	/** the column name for the DELETED_AT field */
+	const DELETED_AT = 'a_traitements.DELETED_AT';
+
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of AbsenceEleveTraitement objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -73,13 +82,13 @@ abstract class BaseAbsenceEleveTraitementPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'UtilisateurId', 'ATypeId', 'AMotifId', 'AJustificationId', 'Commentaire', 'ModifieParUtilisateurId', 'CreatedAt', 'UpdatedAt', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'utilisateurId', 'aTypeId', 'aMotifId', 'aJustificationId', 'commentaire', 'modifieParUtilisateurId', 'createdAt', 'updatedAt', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::UTILISATEUR_ID, self::A_TYPE_ID, self::A_MOTIF_ID, self::A_JUSTIFICATION_ID, self::COMMENTAIRE, self::MODIFIE_PAR_UTILISATEUR_ID, self::CREATED_AT, self::UPDATED_AT, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'UTILISATEUR_ID', 'A_TYPE_ID', 'A_MOTIF_ID', 'A_JUSTIFICATION_ID', 'COMMENTAIRE', 'MODIFIE_PAR_UTILISATEUR_ID', 'CREATED_AT', 'UPDATED_AT', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'utilisateur_id', 'a_type_id', 'a_motif_id', 'a_justification_id', 'commentaire', 'modifie_par_utilisateur_id', 'created_at', 'updated_at', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
+	protected static $fieldNames = array (
+		BasePeer::TYPE_PHPNAME => array ('Id', 'UtilisateurId', 'ATypeId', 'AMotifId', 'AJustificationId', 'Commentaire', 'ModifieParUtilisateurId', 'CreatedAt', 'UpdatedAt', 'DeletedAt', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'utilisateurId', 'aTypeId', 'aMotifId', 'aJustificationId', 'commentaire', 'modifieParUtilisateurId', 'createdAt', 'updatedAt', 'deletedAt', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::UTILISATEUR_ID, self::A_TYPE_ID, self::A_MOTIF_ID, self::A_JUSTIFICATION_ID, self::COMMENTAIRE, self::MODIFIE_PAR_UTILISATEUR_ID, self::CREATED_AT, self::UPDATED_AT, self::DELETED_AT, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'UTILISATEUR_ID', 'A_TYPE_ID', 'A_MOTIF_ID', 'A_JUSTIFICATION_ID', 'COMMENTAIRE', 'MODIFIE_PAR_UTILISATEUR_ID', 'CREATED_AT', 'UPDATED_AT', 'DELETED_AT', ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'utilisateur_id', 'a_type_id', 'a_motif_id', 'a_justification_id', 'commentaire', 'modifie_par_utilisateur_id', 'created_at', 'updated_at', 'deleted_at', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
 	);
 
 	/**
@@ -88,13 +97,13 @@ abstract class BaseAbsenceEleveTraitementPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'UtilisateurId' => 1, 'ATypeId' => 2, 'AMotifId' => 3, 'AJustificationId' => 4, 'Commentaire' => 5, 'ModifieParUtilisateurId' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'utilisateurId' => 1, 'aTypeId' => 2, 'aMotifId' => 3, 'aJustificationId' => 4, 'commentaire' => 5, 'modifieParUtilisateurId' => 6, 'createdAt' => 7, 'updatedAt' => 8, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::UTILISATEUR_ID => 1, self::A_TYPE_ID => 2, self::A_MOTIF_ID => 3, self::A_JUSTIFICATION_ID => 4, self::COMMENTAIRE => 5, self::MODIFIE_PAR_UTILISATEUR_ID => 6, self::CREATED_AT => 7, self::UPDATED_AT => 8, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'UTILISATEUR_ID' => 1, 'A_TYPE_ID' => 2, 'A_MOTIF_ID' => 3, 'A_JUSTIFICATION_ID' => 4, 'COMMENTAIRE' => 5, 'MODIFIE_PAR_UTILISATEUR_ID' => 6, 'CREATED_AT' => 7, 'UPDATED_AT' => 8, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'utilisateur_id' => 1, 'a_type_id' => 2, 'a_motif_id' => 3, 'a_justification_id' => 4, 'commentaire' => 5, 'modifie_par_utilisateur_id' => 6, 'created_at' => 7, 'updated_at' => 8, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
+	protected static $fieldKeys = array (
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'UtilisateurId' => 1, 'ATypeId' => 2, 'AMotifId' => 3, 'AJustificationId' => 4, 'Commentaire' => 5, 'ModifieParUtilisateurId' => 6, 'CreatedAt' => 7, 'UpdatedAt' => 8, 'DeletedAt' => 9, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'utilisateurId' => 1, 'aTypeId' => 2, 'aMotifId' => 3, 'aJustificationId' => 4, 'commentaire' => 5, 'modifieParUtilisateurId' => 6, 'createdAt' => 7, 'updatedAt' => 8, 'deletedAt' => 9, ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::UTILISATEUR_ID => 1, self::A_TYPE_ID => 2, self::A_MOTIF_ID => 3, self::A_JUSTIFICATION_ID => 4, self::COMMENTAIRE => 5, self::MODIFIE_PAR_UTILISATEUR_ID => 6, self::CREATED_AT => 7, self::UPDATED_AT => 8, self::DELETED_AT => 9, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'UTILISATEUR_ID' => 1, 'A_TYPE_ID' => 2, 'A_MOTIF_ID' => 3, 'A_JUSTIFICATION_ID' => 4, 'COMMENTAIRE' => 5, 'MODIFIE_PAR_UTILISATEUR_ID' => 6, 'CREATED_AT' => 7, 'UPDATED_AT' => 8, 'DELETED_AT' => 9, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'utilisateur_id' => 1, 'a_type_id' => 2, 'a_motif_id' => 3, 'a_justification_id' => 4, 'commentaire' => 5, 'modifie_par_utilisateur_id' => 6, 'created_at' => 7, 'updated_at' => 8, 'deleted_at' => 9, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
 	);
 
 	/**
@@ -175,6 +184,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 			$criteria->addSelectColumn(AbsenceEleveTraitementPeer::MODIFIE_PAR_UTILISATEUR_ID);
 			$criteria->addSelectColumn(AbsenceEleveTraitementPeer::CREATED_AT);
 			$criteria->addSelectColumn(AbsenceEleveTraitementPeer::UPDATED_AT);
+			$criteria->addSelectColumn(AbsenceEleveTraitementPeer::DELETED_AT);
 		} else {
 			$criteria->addSelectColumn($alias . '.ID');
 			$criteria->addSelectColumn($alias . '.UTILISATEUR_ID');
@@ -185,6 +195,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 			$criteria->addSelectColumn($alias . '.MODIFIE_PAR_UTILISATEUR_ID');
 			$criteria->addSelectColumn($alias . '.CREATED_AT');
 			$criteria->addSelectColumn($alias . '.UPDATED_AT');
+			$criteria->addSelectColumn($alias . '.DELETED_AT');
 		}
 	}
 
@@ -220,6 +231,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		if ($con === null) {
 			$con = Propel::getConnection(AbsenceEleveTraitementPeer::DATABASE_NAME, Propel::CONNECTION_READ);
 		}
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		// BasePeer returns a PDOStatement
 		$stmt = BasePeer::doCount($criteria, $con);
 
@@ -232,7 +249,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -251,7 +268,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -289,6 +306,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 
 		// BasePeer returns a PDOStatement
 		return BasePeer::doSelect($criteria, $con);
@@ -305,7 +328,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 	 * @param      AbsenceEleveTraitement $value A AbsenceEleveTraitement object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(AbsenceEleveTraitement $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -466,7 +489,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + AbsenceEleveTraitementPeer::NUM_COLUMNS;
+			$col = $startcol + AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = AbsenceEleveTraitementPeer::OM_CLASS;
 			$obj = new $cls();
@@ -475,6 +498,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related UtilisateurProfessionnel table
@@ -514,6 +538,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doCount($criteria, $con);
 
 		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -564,6 +594,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_TYPE_ID, AbsenceEleveTypePeer::ID, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doCount($criteria, $con);
 
 		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -614,6 +650,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_MOTIF_ID, AbsenceEleveMotifPeer::ID, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doCount($criteria, $con);
 
 		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -664,6 +706,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_JUSTIFICATION_ID, AbsenceEleveJustificationPeer::ID, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doCount($criteria, $con);
 
 		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -714,6 +762,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::MODIFIE_PAR_UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doCount($criteria, $con);
 
 		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -745,11 +799,17 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
-		$startcol = (AbsenceEleveTraitementPeer::NUM_COLUMNS - AbsenceEleveTraitementPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
 
@@ -811,11 +871,17 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
-		$startcol = (AbsenceEleveTraitementPeer::NUM_COLUMNS - AbsenceEleveTraitementPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 		AbsenceEleveTypePeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_TYPE_ID, AbsenceEleveTypePeer::ID, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
 
@@ -877,11 +943,17 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
-		$startcol = (AbsenceEleveTraitementPeer::NUM_COLUMNS - AbsenceEleveTraitementPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 		AbsenceEleveMotifPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_MOTIF_ID, AbsenceEleveMotifPeer::ID, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
 
@@ -943,11 +1015,17 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
-		$startcol = (AbsenceEleveTraitementPeer::NUM_COLUMNS - AbsenceEleveTraitementPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 		AbsenceEleveJustificationPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_JUSTIFICATION_ID, AbsenceEleveJustificationPeer::ID, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
 
@@ -1009,11 +1087,17 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
-		$startcol = (AbsenceEleveTraitementPeer::NUM_COLUMNS - AbsenceEleveTraitementPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::MODIFIE_PAR_UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
 
@@ -1102,6 +1186,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::MODIFIE_PAR_UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doCount($criteria, $con);
 
 		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -1133,22 +1223,22 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
-		$startcol2 = (AbsenceEleveTraitementPeer::NUM_COLUMNS - AbsenceEleveTraitementPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveTypePeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (AbsenceEleveTypePeer::NUM_COLUMNS - AbsenceEleveTypePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + AbsenceEleveTypePeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveMotifPeer::addSelectColumns($criteria);
-		$startcol5 = $startcol4 + (AbsenceEleveMotifPeer::NUM_COLUMNS - AbsenceEleveMotifPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol5 = $startcol4 + AbsenceEleveMotifPeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveJustificationPeer::addSelectColumns($criteria);
-		$startcol6 = $startcol5 + (AbsenceEleveJustificationPeer::NUM_COLUMNS - AbsenceEleveJustificationPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol6 = $startcol5 + AbsenceEleveJustificationPeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol7 = $startcol6 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol7 = $startcol6 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
@@ -1160,6 +1250,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::MODIFIE_PAR_UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
 
@@ -1316,6 +1412,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_JUSTIFICATION_ID, AbsenceEleveJustificationPeer::ID, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doCount($criteria, $con);
 
 		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -1372,6 +1474,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::MODIFIE_PAR_UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doCount($criteria, $con);
 
 		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -1428,6 +1536,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::MODIFIE_PAR_UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doCount($criteria, $con);
 
 		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -1484,6 +1598,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::MODIFIE_PAR_UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doCount($criteria, $con);
 
 		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -1538,6 +1658,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_JUSTIFICATION_ID, AbsenceEleveJustificationPeer::ID, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 		$stmt = BasePeer::doCount($criteria, $con);
 
 		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
@@ -1572,16 +1698,16 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
-		$startcol2 = (AbsenceEleveTraitementPeer::NUM_COLUMNS - AbsenceEleveTraitementPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveTypePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (AbsenceEleveTypePeer::NUM_COLUMNS - AbsenceEleveTypePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + AbsenceEleveTypePeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveMotifPeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (AbsenceEleveMotifPeer::NUM_COLUMNS - AbsenceEleveMotifPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + AbsenceEleveMotifPeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveJustificationPeer::addSelectColumns($criteria);
-		$startcol5 = $startcol4 + (AbsenceEleveJustificationPeer::NUM_COLUMNS - AbsenceEleveJustificationPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol5 = $startcol4 + AbsenceEleveJustificationPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_TYPE_ID, AbsenceEleveTypePeer::ID, $join_behavior);
 
@@ -1589,6 +1715,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_JUSTIFICATION_ID, AbsenceEleveJustificationPeer::ID, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
@@ -1693,19 +1825,19 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
-		$startcol2 = (AbsenceEleveTraitementPeer::NUM_COLUMNS - AbsenceEleveTraitementPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveMotifPeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (AbsenceEleveMotifPeer::NUM_COLUMNS - AbsenceEleveMotifPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + AbsenceEleveMotifPeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveJustificationPeer::addSelectColumns($criteria);
-		$startcol5 = $startcol4 + (AbsenceEleveJustificationPeer::NUM_COLUMNS - AbsenceEleveJustificationPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol5 = $startcol4 + AbsenceEleveJustificationPeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol6 = $startcol5 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol6 = $startcol5 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
@@ -1715,6 +1847,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::MODIFIE_PAR_UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
@@ -1838,19 +1976,19 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
-		$startcol2 = (AbsenceEleveTraitementPeer::NUM_COLUMNS - AbsenceEleveTraitementPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveTypePeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (AbsenceEleveTypePeer::NUM_COLUMNS - AbsenceEleveTypePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + AbsenceEleveTypePeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveJustificationPeer::addSelectColumns($criteria);
-		$startcol5 = $startcol4 + (AbsenceEleveJustificationPeer::NUM_COLUMNS - AbsenceEleveJustificationPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol5 = $startcol4 + AbsenceEleveJustificationPeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol6 = $startcol5 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol6 = $startcol5 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
@@ -1860,6 +1998,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::MODIFIE_PAR_UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
@@ -1983,19 +2127,19 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
-		$startcol2 = (AbsenceEleveTraitementPeer::NUM_COLUMNS - AbsenceEleveTraitementPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveTypePeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (AbsenceEleveTypePeer::NUM_COLUMNS - AbsenceEleveTypePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + AbsenceEleveTypePeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveMotifPeer::addSelectColumns($criteria);
-		$startcol5 = $startcol4 + (AbsenceEleveMotifPeer::NUM_COLUMNS - AbsenceEleveMotifPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol5 = $startcol4 + AbsenceEleveMotifPeer::NUM_HYDRATE_COLUMNS;
 
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
-		$startcol6 = $startcol5 + (UtilisateurProfessionnelPeer::NUM_COLUMNS - UtilisateurProfessionnelPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol6 = $startcol5 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
@@ -2005,6 +2149,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::MODIFIE_PAR_UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
@@ -2128,16 +2278,16 @@ abstract class BaseAbsenceEleveTraitementPeer {
 		}
 
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
-		$startcol2 = (AbsenceEleveTraitementPeer::NUM_COLUMNS - AbsenceEleveTraitementPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveTypePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (AbsenceEleveTypePeer::NUM_COLUMNS - AbsenceEleveTypePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + AbsenceEleveTypePeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveMotifPeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + (AbsenceEleveMotifPeer::NUM_COLUMNS - AbsenceEleveMotifPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol4 = $startcol3 + AbsenceEleveMotifPeer::NUM_HYDRATE_COLUMNS;
 
 		AbsenceEleveJustificationPeer::addSelectColumns($criteria);
-		$startcol5 = $startcol4 + (AbsenceEleveJustificationPeer::NUM_COLUMNS - AbsenceEleveJustificationPeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol5 = $startcol4 + AbsenceEleveJustificationPeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_TYPE_ID, AbsenceEleveTypePeer::ID, $join_behavior);
 
@@ -2145,6 +2295,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 
 		$criteria->addJoin(AbsenceEleveTraitementPeer::A_JUSTIFICATION_ID, AbsenceEleveJustificationPeer::ID, $join_behavior);
 
+		// soft_delete behavior
+		if (AbsenceEleveTraitementQuery::isSoftDeleteEnabled()) {
+			$criteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		} else {
+			AbsenceEleveTraitementPeer::enableSoftDelete();
+		}
 
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
@@ -2267,7 +2423,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a AbsenceEleveTraitement or Criteria object.
+	 * Performs an INSERT on the database, given a AbsenceEleveTraitement or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or AbsenceEleveTraitement object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -2310,7 +2466,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a AbsenceEleveTraitement or Criteria object.
+	 * Performs an UPDATE on the database, given a AbsenceEleveTraitement or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or AbsenceEleveTraitement object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -2349,11 +2505,12 @@ abstract class BaseAbsenceEleveTraitementPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the a_traitements table.
+	 * Deletes all rows from the a_traitements table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doForceDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(AbsenceEleveTraitementPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -2379,7 +2536,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a AbsenceEleveTraitement or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a AbsenceEleveTraitement or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or AbsenceEleveTraitement object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -2389,7 +2546,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	 public static function doDelete($values, PropelPDO $con = null)
+	 public static function doForceDelete($values, PropelPDO $con = null)
 	 {
 		if ($con === null) {
 			$con = Propel::getConnection(AbsenceEleveTraitementPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -2493,7 +2650,7 @@ abstract class BaseAbsenceEleveTraitementPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(AbsenceEleveTraitement $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 
@@ -2567,6 +2724,124 @@ abstract class BaseAbsenceEleveTraitementPeer {
 			$objs = AbsenceEleveTraitementPeer::doSelect($criteria, $con);
 		}
 		return $objs;
+	}
+
+	// soft_delete behavior
+	
+	/**
+	 * Enable the soft_delete behavior for this model
+	 */
+	public static function enableSoftDelete()
+	{
+		AbsenceEleveTraitementQuery::enableSoftDelete();
+		// some soft_deleted objects may be in the instance pool
+		AbsenceEleveTraitementPeer::clearInstancePool();
+	}
+	
+	/**
+	 * Disable the soft_delete behavior for this model
+	 */
+	public static function disableSoftDelete()
+	{
+		AbsenceEleveTraitementQuery::disableSoftDelete();
+	}
+	
+	/**
+	 * Check the soft_delete behavior for this model
+	 * @return boolean true if the soft_delete behavior is enabled
+	 */
+	public static function isSoftDeleteEnabled()
+	{
+		return AbsenceEleveTraitementQuery::isSoftDeleteEnabled();
+	}
+	
+	/**
+	 * Soft delete records, given a AbsenceEleveTraitement or Criteria object OR a primary key value.
+	 *
+	 * @param			 mixed $values Criteria or AbsenceEleveTraitement object or primary key or array of primary keys
+	 *							which is used to create the DELETE statement
+	 * @param			 PropelPDO $con the connection to use
+	 * @return		 int	The number of affected rows (if supported by underlying database driver).
+	 * @throws		 PropelException Any exceptions caught during processing will be
+	 *							rethrown wrapped into a PropelException.
+	 */
+	public static function doSoftDelete($values, PropelPDO $con = null)
+	{
+		if ($con === null) {
+			$con = Propel::getConnection(AbsenceEleveTraitementPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
+		}
+		if ($values instanceof Criteria) {
+			// rename for clarity
+			$selectCriteria = clone $values;
+		} elseif ($values instanceof AbsenceEleveTraitement) {
+			// create criteria based on pk values
+			$selectCriteria = $values->buildPkeyCriteria();
+		} else {
+			// it must be the primary key
+			$selectCriteria = new Criteria(self::DATABASE_NAME);
+			$selectCriteria->add(AbsenceEleveTraitementPeer::ID, (array) $values, Criteria::IN);
+		}
+		// Set the correct dbName
+		$selectCriteria->setDbName(AbsenceEleveTraitementPeer::DATABASE_NAME);
+		$updateCriteria = new Criteria(self::DATABASE_NAME);
+		$updateCriteria->add(AbsenceEleveTraitementPeer::DELETED_AT, time());
+		return BasePeer::doUpdate($selectCriteria, $updateCriteria, $con);
+	}
+	
+	/**
+	 * Delete or soft delete records, depending on AbsenceEleveTraitementPeer::$softDelete
+	 *
+	 * @param			 mixed $values Criteria or AbsenceEleveTraitement object or primary key or array of primary keys
+	 *							which is used to create the DELETE statement
+	 * @param			 PropelPDO $con the connection to use
+	 * @return		 int	The number of affected rows (if supported by underlying database driver).
+	 * @throws		 PropelException Any exceptions caught during processing will be
+	 *							rethrown wrapped into a PropelException.
+	 */
+	public static function doDelete($values, PropelPDO $con = null)
+	{
+		if (AbsenceEleveTraitementPeer::isSoftDeleteEnabled()) {
+			return AbsenceEleveTraitementPeer::doSoftDelete($values, $con);
+		} else {
+			return AbsenceEleveTraitementPeer::doForceDelete($values, $con);
+		} 
+	}
+	/**
+	 * Method to soft delete all rows from the a_traitements table.
+	 *
+	 * @param			 PropelPDO $con the connection to use
+	 * @return		 int The number of affected rows (if supported by underlying database driver).
+	 * @throws		 PropelException Any exceptions caught during processing will be
+	 *							rethrown wrapped into a PropelException.
+	 */
+	public static function doSoftDeleteAll(PropelPDO $con = null)
+	{
+		if ($con === null) {
+			$con = Propel::getConnection(AbsenceEleveTraitementPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
+		}
+		$selectCriteria = new Criteria();
+		$selectCriteria->add(AbsenceEleveTraitementPeer::DELETED_AT, null, Criteria::ISNULL);
+		$selectCriteria->setDbName(AbsenceEleveTraitementPeer::DATABASE_NAME);
+		$modifyCriteria = new Criteria();
+		$modifyCriteria->add(AbsenceEleveTraitementPeer::DELETED_AT, time());
+		return BasePeer::doUpdate($selectCriteria, $modifyCriteria, $con);
+	}
+	
+	/**
+	 * Delete or soft delete all records, depending on AbsenceEleveTraitementPeer::$softDelete
+	 *
+	 * @param			 PropelPDO $con the connection to use
+	 * @return		 int	The number of affected rows (if supported by underlying database driver).
+	 * @throws		 PropelException Any exceptions caught during processing will be
+	 *							rethrown wrapped into a PropelException.
+	 */
+	public static function doDeleteAll(PropelPDO $con = null)
+	{
+		if (AbsenceEleveTraitementPeer::isSoftDeleteEnabled()) {
+			return AbsenceEleveTraitementPeer::doSoftDeleteAll($con);
+		} else {
+			return AbsenceEleveTraitementPeer::doForceDeleteAll($con);
+		} 
 	}
 
 } // BaseAbsenceEleveTraitementPeer

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: tableau_des_appels.php 6557 2011-02-28 20:41:35Z dblanqui $
+ * @version $Id: tableau_des_appels.php 8214 2011-09-13 21:26:17Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -82,12 +82,9 @@ if ($choix_creneau === null) {
 $style_specifique[] = "edt_organisation/style_edt";
 $style_specifique[] = "templates/DefaultEDT/css/small_edt";
 $style_specifique[] = "mod_abs2/lib/abs_style";
-$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
-$javascript_specifique[] = "lib/DHTMLcalendar/calendar";
-$javascript_specifique[] = "lib/DHTMLcalendar/lang/calendar-fr";
-$javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
 //$javascript_specifique[] = "mod_abs2/lib/include";
 $javascript_specifique[] = "edt_organisation/script/fonctions_edt";
+$dojo=true;
 //**************** EN-TETE *****************
 $titre_page = "Les absences";
 require_once("../lib/header.inc");
@@ -95,22 +92,39 @@ include('menu_abs2.inc.php');
 include('menu_bilans.inc.php');
 ?>
 <div id="contain_div" class="css-panes">
-<form name="choix_du_creneau" action="<?php $_SERVER['PHP_SELF']?>" method="post">
+<div class="legende">
+    <h3 class="legende">Légende  </h3>
+    <table class="legende">
+        <tr >
+            <td width="450px"><h4 class="legende">Saisies  </h4>
+            Les saisies de l'élève sur le créneau sont numérotées après son nom. La couleur dépend du type de la saisie.</td>
+            <td width="300px">
+            <font color="orange">&#9632;</font> Retard<br />
+            <font color="red">&#9632;</font> Manquement aux obligations de présence<br />
+            <font color="blue">&#9632;</font> Non manquement aux obligations de présence
+            </td>
+        </tr>
+        <tr>
+            <td rowspan="2"><h4 class="legende">Appels  </h4>
+            La couleur de fond de cellule indique si un appel enseignant a été effectué ou non.
+            </td>
+            <td style="background-color:#ddd;">
+                Appel non fait.
+            </td>    
+        </tr>
+        <tr>
+            <td style="background-color:green;">Appel fait.
+            </td>
+        </tr>
+    </table>    
+</div>    
+<form dojoType="dijit.form.Form" id="choix_du_creneau" name="choix_du_creneau" action="<?php $_SERVER['PHP_SELF']?>" method="post">
 <h2>Les appels du
-    <input size="8" id="date_absence_eleve_1" name="date_absence_eleve" value="<?php echo $dt_date_absence_eleve->format('d/m/Y')?>" />
-    <script type="text/javascript">
-	Calendar.setup({
-	    inputField     :    "date_absence_eleve_1",     // id of the input field
-	    ifFormat       :    "%d/%m/%Y",      // format of the input field
-	    button         :    "date_absence_eleve_1",  // trigger for the calendar (button ID)
-	    align          :    "Bl",           // alignment (defaults to "Bl")
-	    singleClick    :    true
-	});
-    </script>
-    <button type="submit">Changer</button></h2>
+    <input style="width : 8em;font-size:14px;" type="text" dojoType="dijit.form.DateTextBox" id="date_absence_eleve" name="date_absence_eleve" onchange="document.choix_date.submit()" value="<?php echo $dt_date_absence_eleve->format('Y-m-d')?>" />
+    <button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Changer</button></h2>
 
 	<p>Vous devez choisir un cr&eacute;neau pour visionner les absents
-	<select name="choix_creneau" onchange='document.choix_du_creneau.submit();'>
+	<select dojoType="dijit.form.Select"  id="choix_creneau" name="choix_creneau" onchange='document.choix_du_creneau.submit();'>
 		<option value="rien">Choix du cr&eacute;neau</option>
 <?php
 	foreach (EdtCreneauPeer::retrieveAllEdtCreneauxOrderByTime() as $edtCreneau)	 {
@@ -124,7 +138,7 @@ include('menu_bilans.inc.php');
 	}
 ?>
 	</select>
-<br />
+  </p>
 <?php
 $creneau_col = EdtCreneauPeer::retrieveAllEdtCreneauxOrderByTime();
 foreach ($creneau_col as $creneau) {
@@ -133,7 +147,7 @@ foreach ($creneau_col as $creneau) {
     }else{
 	    $color_selected = '';
     }
-    echo '<a href="" '.$color_selected.' onclick="document.choix_du_creneau.choix_creneau.selectedIndex = '.($creneau_col->getPosition() + 1).'; document.choix_du_creneau.submit(); return false;">'.$creneau->getNomDefiniePeriode();
+    echo '<a href="" '.$color_selected.' onclick="dijit.byId(\'choix_creneau\').attr(\'value\',String('.($creneau->getIdDefiniePeriode()).')); document.choix_du_creneau.submit(); return false;">'.$creneau->getNomDefiniePeriode();
     echo '</a>';
     if (!$creneau_col->isLast()) {
 	echo '&nbsp;-&nbsp;';
@@ -152,7 +166,10 @@ if ($choix_creneau_obj != null) {
 <table class="tab_edt" summary="Liste des absents r&eacute;partie par classe">
 <?php
 // On affiche la liste des classes
-$classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->distinct()->find();
+$classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->distinct()
+					    ->leftJoinWith('Classe.JGroupesClasses')
+					    ->leftJoinWith('JGroupesClasses.Groupe')
+						->find();
 $dt_debut_creneau = clone $dt_date_absence_eleve;
 $dt_debut_creneau->setTime($choix_creneau_obj->getHeuredebutDefiniePeriode('H'), $choix_creneau_obj->getHeuredebutDefiniePeriode('i'));
 $dt_fin_creneau = clone $dt_date_absence_eleve;
@@ -174,13 +191,16 @@ foreach($classe_col as $classe){
 //		</td>';
 	echo '	<td><h4>'.$classe->getNom().'</h4></td>';
 
-	//la classe a-t-elle des cours actuellement ?
+	//la classe a-t-elle des cours actuellement ? On récupère la liste des cours pour cette période.
 	//on regarde au debut du creneau et a la fin car il peut y avoir des demi creneau
-	$cours_col = $classe->getEdtEmplacementCours($dt_debut_creneau);
+	//on pourrait appeler $classe->getEdtEmplacementCours deux fois mais on va faire une optimisation à la place.
+	$edtCoursCol = $classe->getEdtEmplacementCourssPeriodeCalendrierActuelle('now');
+	require_once("../orm/helpers/EdtEmplacementCoursHelper.php");
+	$cours_col = EdtEmplacementCoursHelper::getColEdtEmplacementCoursActuel($edtCoursCol, $dt_debut_creneau);
 	$dt_presque_fin_creneau = clone $dt_fin_creneau;
 	$dt_presque_fin_creneau->setTime($choix_creneau_obj->getHeurefinDefiniePeriode('H'), $choix_creneau_obj->getHeurefinDefiniePeriode('i') - 1);
-	$cours_col_2 = $classe->getEdtEmplacementCours($dt_presque_fin_creneau);
-	$cours_col->addCollection($cours_col_2);
+	$cours_col->addCollection( EdtEmplacementCoursHelper::getColEdtEmplacementCoursActuel($edtCoursCol, $dt_presque_fin_creneau));
+	
 
 	//on teste si l'appel a été fait
 	$appel_manquant = false;
@@ -217,10 +237,8 @@ foreach($classe_col as $classe){
 	//$classe = new Classe();
 	//on regarde si il y a d'autres appels
 	$abs_col = AbsenceEleveSaisieQuery::create()->filterByPlageTemps($dt_debut_creneau, $dt_fin_creneau)
-		  ->condition('cond1', 'AbsenceEleveSaisie.IdClasse = ?', $classe->getId()) // create a condition named 'cond1'
-		  ->condition('cond2', 'AbsenceEleveSaisie.IdGroupe IN ?', $classe->getGroupes()->toKeyValue('Id', 'Id'))       // create a condition named 'cond2'
-		  ->where(array('cond1', 'cond2'), 'or')              // combine 'cond1' and 'cond2' with a logical OR
-		  ->find();
+			->filterByClasse($classe)->_or()->filterByGroupe($classe->getGroupes())
+			->find();
     $test_saisies_sorti=false;
     foreach($abs_col as $abs){
         if($abs->isSaisieEleveSorti($dt_debut_creneau)){
@@ -284,25 +302,36 @@ foreach($classe_col as $classe){
 	if (!$abs_col->isEmpty()) {
 	    echo '<br/>';
 	}
+        $current_eleve=Null;
 	foreach ($abs_col as $absenceSaisie) {
         if($absenceSaisie->isSaisieEleveSorti($dt_debut_creneau)){
             continue;
-        }elseif ($absenceSaisie->getManquementObligationPresence()) {
-		echo "<a style='color: red;' href='visu_saisie.php?id_saisie=".$absenceSaisie->getPrimaryKey()."'>";
-	    } elseif (!$absenceSaisie->getManquementObligationPresenceSpecifie_NON_PRECISE()) {
-		echo "<a href='visu_saisie.php?id_saisie=".$absenceSaisie->getPrimaryKey()."'>";
-	    } else {
-                continue;//on affiche pas les saisies du type erreur de saisie
-            }
-	    echo ($absenceSaisie->getEleve()->getCivilite().' '.$absenceSaisie->getEleve()->getNom().' '.$absenceSaisie->getEleve()->getPrenom());
-	    echo "</a>";
-	    if ($utilisateur->getAccesFicheEleve($absenceSaisie->getEleve())) {
-		echo "<a href='../eleves/visu_eleve.php?ele_login=".$absenceSaisie->getEleve()->getLogin()."' target='_blank'>";
-		echo ' (voir fiche)';
-		echo "</a>";
-	    }
-	    echo '<br/>';
-	}
+        }
+        if($absenceSaisie->getManquementObligationPresenceSpecifie_NON_PRECISE()){
+            continue;
+        }
+        if ($absenceSaisie->getEleve()->getIdEleve() !== $current_eleve) {
+            if($current_eleve !=null) echo '<br/>';
+            $num_saisie=1;
+                if ($utilisateur->getAccesFicheEleve($absenceSaisie->getEleve())) {
+                    echo "<a style='color: ".$absenceSaisie->getColor().";' href='../eleves/visu_eleve.php?ele_login=" . $absenceSaisie->getEleve()->getLogin() . "' target='_blank'>";
+                    echo $absenceSaisie->getEleve()->getCivilite() . ' ' . $absenceSaisie->getEleve()->getNom() . ' ' . $absenceSaisie->getEleve()->getPrenom().' : ';
+                    echo "</a>";
+                } else {
+                    echo $absenceSaisie->getEleve()->getCivilite() . ' ' . $absenceSaisie->getEleve()->getNom() . ' ' . $absenceSaisie->getEleve()->getPrenom().' : ';
+                }
+            }else{
+                echo'-';
+            }        
+            echo "<a style='color: ".$absenceSaisie->getColor().";'  href='visu_saisie.php?id_saisie=".$absenceSaisie->getPrimaryKey()."'>";            
+	    echo ($num_saisie);
+	    echo "</a>";	    
+	    $current_eleve=$absenceSaisie->getEleve()->getIdEleve();
+            $num_saisie++;
+        if($abs_col->isLast()){
+            echo '<br /><br />';
+        }    
+	}    
 	echo '</td>';
 	if ($classe_col->isOdd()) {
 	    echo '</tr>';
@@ -319,41 +348,53 @@ foreach($classe_col as $classe){
 	//on affiche les saisies du creneau
 	$abs_col = AbsenceEleveSaisieQuery::create()->filterByPlageTemps($dt_debut_creneau, $dt_fin_creneau)
 			->filterByIdAid(null, Criteria::NOT_EQUAL)
+                        ->useEleveQuery()->orderByNom()->endUse()
 			->useAidDetailsQuery()->orderByNom()->endUse()
 			->find();
 	if (!$abs_col->isEmpty()) {
-	    $aid_deja_sorties = Array();
-	    foreach ($abs_col as $absenceSaisie) {
-            if($absenceSaisie->isSaisieEleveSorti($dt_debut_creneau)){
-            continue;
+        $aid_deja_sorties = Array();
+        $current_eleve = Null;
+        foreach ($abs_col as $absenceSaisie) {
+            if ($absenceSaisie->isSaisieEleveSorti($dt_debut_creneau)) {
+                continue;
             }
-		    if ($absenceSaisie->getIdAid()!==null && !in_array($absenceSaisie->getIdAid(), $aid_deja_sorties)) {
-			echo  $absenceSaisie->getCreatedAt('H:i').' ';
-			echo  $absenceSaisie->getAidDetails()->getNom().' ';
-			echo  $absenceSaisie->getUtilisateurProfessionnel()->getCivilite().' '
-			    .$absenceSaisie->getUtilisateurProfessionnel()->getNom().' '
-			    .strtoupper(substr($absenceSaisie->getUtilisateurProfessionnel()->getPrenom(), 0 ,1)).'. ';
-			$aid_deja_sorties[] = $absenceSaisie->getAidDetails()->getId();
-			echo '<br/>';
-		    }
-		    if ($absenceSaisie->getEleve() != null) {
-			if ($absenceSaisie->getManquementObligationPresence()) {
-			    echo "<a style='color: red;' href='visu_saisie.php?id_saisie=".$absenceSaisie->getPrimaryKey()."'>";
-			} else {
-			    echo "<a href='visu_saisie.php?id_saisie=".$absenceSaisie->getPrimaryKey()."'>";
-			}
-			echo ($absenceSaisie->getEleve()->getCivilite().' '.$absenceSaisie->getEleve()->getNom().' '.$absenceSaisie->getEleve()->getPrenom());
-			echo "</a>";
-			if ($utilisateur->getAccesFicheEleve($absenceSaisie->getEleve())) {
-			    echo "<a href='../eleves/visu_eleve.php?ele_login=".$absenceSaisie->getEleve()->getLogin()."' target='_blank'>";
-			    echo ' (voir fiche)';
-			    echo "</a>";
-			}
-			echo '<br/>';
-		    }
-
-	    }
-	}
+            if ($absenceSaisie->getManquementObligationPresenceSpecifie_NON_PRECISE()) {
+                continue;
+            }
+            if ($absenceSaisie->getIdAid() !== null && !in_array($absenceSaisie->getIdAid(), $aid_deja_sorties)) {
+                echo $absenceSaisie->getCreatedAt('H:i') . ' ';
+                echo $absenceSaisie->getAidDetails()->getNom() . ' ';
+                echo $absenceSaisie->getUtilisateurProfessionnel()->getCivilite() . ' '
+                . $absenceSaisie->getUtilisateurProfessionnel()->getNom() . ' '
+                . strtoupper(substr($absenceSaisie->getUtilisateurProfessionnel()->getPrenom(), 0, 1)) . '. ';
+                $aid_deja_sorties[] = $absenceSaisie->getAidDetails()->getId();
+                echo '<br/>';
+            }
+            if ($absenceSaisie->getEleve() != null) {
+                if ($absenceSaisie->getEleve()->getIdEleve() !== $current_eleve) {
+                    if($current_eleve !=null) echo '<br/>';
+                    $num_saisie = 1;
+                    if ($utilisateur->getAccesFicheEleve($absenceSaisie->getEleve())) {
+                        echo "<a style='color: " . $absenceSaisie->getColor() . ";' href='../eleves/visu_eleve.php?ele_login=" . $absenceSaisie->getEleve()->getLogin() . "' target='_blank'>";
+                        echo $absenceSaisie->getEleve()->getCivilite() . ' ' . $absenceSaisie->getEleve()->getNom() . ' ' . $absenceSaisie->getEleve()->getPrenom() . ' : ';
+                        echo "</a>";
+                    } else {
+                        echo $absenceSaisie->getEleve()->getCivilite() . ' ' . $absenceSaisie->getEleve()->getNom() . ' ' . $absenceSaisie->getEleve()->getPrenom() . ' : ';
+                    }
+                } else {
+                    echo'-';
+                }
+                echo "<a style='color: " . $absenceSaisie->getColor() . ";'  href='visu_saisie.php?id_saisie=" . $absenceSaisie->getPrimaryKey() . "'>";
+                echo ($num_saisie);
+                echo "</a>";
+                $current_eleve = $absenceSaisie->getEleve()->getIdEleve();
+                $num_saisie++;
+                if($abs_col->isLast()){
+                    echo '<br /><br />';
+               }
+            }
+        }
+    }
 ?>
 		</td>
 	</tr>
@@ -362,5 +403,13 @@ foreach($classe_col as $classe){
 <?php
 }
 echo '</div>';
-require("../lib/footer.inc.php");
+
+$javascript_footer_texte_specifique = '<script type="text/javascript">
+    dojo.require("dojo.parser");
+    dojo.require("dijit.form.Button");    
+    dojo.require("dijit.form.Form");    
+    dojo.require("dijit.form.DateTextBox");    
+    dojo.require("dijit.form.Select");
+    </script>';
+require_once("../lib/footer.inc.php");
 ?>

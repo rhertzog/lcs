@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: menu_bilans.inc.php 6311 2011-01-08 17:52:09Z dblanqui $
+ * @version $Id: menu_bilans.inc.php 8056 2011-08-30 20:43:42Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -65,7 +65,7 @@ if(($_SESSION['statut']=='cpe')||
     echo "<li><a href='bilan_individuel.php' ";
     if($onglet_abs=='bilan_individuel.php') {echo "class='current' ";}
     echo "title='Bilan individuel'>Bilan individuel</a></li>\n";
-    
+        
     echo "</ul>\n";
 
 }

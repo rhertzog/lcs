@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: bilan_du_jour.php 6557 2011-02-28 20:41:35Z dblanqui $
+ * @version $Id: bilan_du_jour.php 8359 2011-09-25 16:08:28Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -72,12 +72,9 @@ if ($date_absence_eleve != null) {
 $style_specifique[] = "edt_organisation/style_edt";
 $style_specifique[] = "templates/DefaultEDT/css/small_edt";
 $style_specifique[] = "mod_abs2/lib/abs_style";
-$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
-$javascript_specifique[] = "lib/DHTMLcalendar/calendar";
-$javascript_specifique[] = "lib/DHTMLcalendar/lang/calendar-fr";
-$javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
 //$javascript_specifique[] = "mod_abs2/lib/include";
 $javascript_specifique[] = "edt_organisation/script/fonctions_edt";
+$dojo=true;
 //**************** EN-TETE *****************
 $titre_page = "Les absences";
 require_once("../lib/header.inc");
@@ -85,19 +82,16 @@ include('menu_abs2.inc.php');
 include('menu_bilans.inc.php');
 ?>
 <div id="contain_div" class="css-panes">
-<form id="choix_date" action="<?php $_SERVER['PHP_SELF']?>" method="post">
+<div class="legende">
+    <h3 class="legende">Légende  </h3>
+    <font color="orange">&#9632;</font> Retard<br />
+    <font color="red">&#9632;</font> Manquement aux obligations de présence<br />
+    <font color="blue">&#9632;</font> Non manquement aux obligations de présence<br />     
+</div>        
+<form dojoType="dijit.form.Form" id="choix_date" name="choix_date" action="<?php $_SERVER['PHP_SELF']?>" method="post">
 <h2>Les saisies du
-    <input size="8" id="date_absence_eleve_1" name="date_absence_eleve" onchange="document.getElementById('choix_date').submit()" value="<?php echo $dt_date_absence_eleve->format('d/m/Y')?>" />
-    <script type="text/javascript">
-	Calendar.setup({
-	    inputField     :    "date_absence_eleve_1",     // id of the input field
-	    ifFormat       :    "%d/%m/%Y",      // format of the input field
-	    button         :    "date_absence_eleve_1",  // trigger for the calendar (button ID)
-	    align          :    "Bl",           // alignment (defaults to "Bl")
-	    singleClick    :    true
-	});
-    </script>
-    <button type="submit">Changer</button>
+    <input style="width : 8em;font-size:14px;" type="text" dojoType="dijit.form.DateTextBox" id="date_absence_eleve" name="date_absence_eleve" onchange="document.choix_date.submit()" value="<?php echo $dt_date_absence_eleve->format('Y-m-d')?>" />
+    <button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Changer</button>
 </h2>
 </form>
 
@@ -138,9 +132,9 @@ foreach($classe_col as $classe) {
 		';
 	$eleve_query = EleveQuery::create()
 		->orderByNom()
-		->useAbsenceEleveSaisieQuery()->filterByPlageTemps($dt_debut, $dt_fin)->endUse()
+		->useAbsenceEleveSaisieQuery()->filterByPlageTemps($dt_debut, $dt_fin)->where('AbsenceEleveSaisie.DeletedAt is Null')->endUse()
 		->useJEleveClasseQuery()->filterByIdClasse($classe->getId())->endUse()
-        ->where('Eleve.DateSortie=?','0')
+        ->where('Eleve.DateSortie<?','0')
         ->orWhere('Eleve.DateSortie is NULL')
         ->orWhere('Eleve.DateSortie>?', $dt_date_absence_eleve->format('U'))
 		->distinct();
@@ -155,19 +149,16 @@ foreach($classe_col as $classe) {
 			$affiche = false;
 			foreach($eleve->getAbsenceEleveSaisiesDuJour($dt_debut) as $abs) {
 			    $affiche = false;
-			    if ($abs->getManquementObligationPresence()) {
+			    if (!$abs->getManquementObligationPresenceSpecifie_NON_PRECISE() ) {
 				$affiche = true;
 				break;
 			    }
-			}
-			/*
+			}			
 			if (!$affiche) {
-			    continue;
-			}
-			 * 
-			 */
-			echo '<tr>
-			<td></td>
+                continue;
+			}	
+            echo '<tr>
+                <td></td>
 			<td>';
 			if ($utilisateur->getAccesFicheEleve($eleve)) {
 			    //echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."' target='_blank'>";
@@ -185,15 +176,13 @@ foreach($classe_col as $classe) {
 				echo '<td></td>';
 			    } else {
 				foreach($abs_col as $abs) {
-				    $red = false;
-				    if ($abs->getManquementObligationPresence()) {
-					echo '<td style="background-color:red;"></td>';
-					$red = true;
-					break;
-				    } else {
-					  echo '<td style="background-color:green;"></td>';
-					}
-			break;
+                    if ($abs->getManquementObligationPresenceSpecifie_NON_PRECISE()){
+                        echo '<td></td>';
+                        break;
+                    }else{
+                        echo '<td style="background-color:'.$abs->getColor().';"></td>';
+                        break; 
+                    }				    
 				}
 				/*
 				if (!$red) {
@@ -212,5 +201,11 @@ foreach($classe_col as $classe) {
   <span class="bold">Impression faite le <?php echo date("d/m/Y - H:i"); ?>.</span>
 </div>
 <?php
-require("../lib/footer.inc.php");
+$javascript_footer_texte_specifique = '<script type="text/javascript">
+    dojo.require("dojo.parser");
+    dojo.require("dijit.form.Button");    
+    dojo.require("dijit.form.Form");    
+    dojo.require("dijit.form.DateTextBox");
+    </script>';
+require_once("../lib/footer.inc.php");
 ?>

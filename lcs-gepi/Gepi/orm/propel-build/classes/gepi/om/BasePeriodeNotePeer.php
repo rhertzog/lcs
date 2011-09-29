@@ -31,6 +31,9 @@ abstract class BasePeriodeNotePeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 6;
+
 	/** the column name for the NOM_PERIODE field */
 	const NOM_PERIODE = 'periodes.NOM_PERIODE';
 
@@ -49,6 +52,9 @@ abstract class BasePeriodeNotePeer {
 	/** the column name for the DATE_FIN field */
 	const DATE_FIN = 'periodes.DATE_FIN';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of PeriodeNote objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -64,7 +70,7 @@ abstract class BasePeriodeNotePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('NomPeriode', 'NumPeriode', 'Verouiller', 'IdClasse', 'DateVerrouillage', 'DateFin', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('nomPeriode', 'numPeriode', 'verouiller', 'idClasse', 'dateVerrouillage', 'dateFin', ),
 		BasePeer::TYPE_COLNAME => array (self::NOM_PERIODE, self::NUM_PERIODE, self::VEROUILLER, self::ID_CLASSE, self::DATE_VERROUILLAGE, self::DATE_FIN, ),
@@ -79,7 +85,7 @@ abstract class BasePeriodeNotePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('NomPeriode' => 0, 'NumPeriode' => 1, 'Verouiller' => 2, 'IdClasse' => 3, 'DateVerrouillage' => 4, 'DateFin' => 5, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('nomPeriode' => 0, 'numPeriode' => 1, 'verouiller' => 2, 'idClasse' => 3, 'dateVerrouillage' => 4, 'dateFin' => 5, ),
 		BasePeer::TYPE_COLNAME => array (self::NOM_PERIODE => 0, self::NUM_PERIODE => 1, self::VEROUILLER => 2, self::ID_CLASSE => 3, self::DATE_VERROUILLAGE => 4, self::DATE_FIN => 5, ),
@@ -217,7 +223,7 @@ abstract class BasePeriodeNotePeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -236,7 +242,7 @@ abstract class BasePeriodeNotePeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -290,7 +296,7 @@ abstract class BasePeriodeNotePeer {
 	 * @param      PeriodeNote $value A PeriodeNote object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(PeriodeNote $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -445,7 +451,7 @@ abstract class BasePeriodeNotePeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + PeriodeNotePeer::NUM_COLUMNS;
+			$col = $startcol + PeriodeNotePeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = PeriodeNotePeer::OM_CLASS;
 			$obj = new $cls();
@@ -454,6 +460,7 @@ abstract class BasePeriodeNotePeer {
 		}
 		return array($obj, $col);
 	}
+
 
 	/**
 	 * Returns the number of rows matching criteria, joining the related Classe table
@@ -524,7 +531,7 @@ abstract class BasePeriodeNotePeer {
 		}
 
 		PeriodeNotePeer::addSelectColumns($criteria);
-		$startcol = (PeriodeNotePeer::NUM_COLUMNS - PeriodeNotePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol = PeriodeNotePeer::NUM_HYDRATE_COLUMNS;
 		ClassePeer::addSelectColumns($criteria);
 
 		$criteria->addJoin(PeriodeNotePeer::ID_CLASSE, ClassePeer::ID, $join_behavior);
@@ -640,10 +647,10 @@ abstract class BasePeriodeNotePeer {
 		}
 
 		PeriodeNotePeer::addSelectColumns($criteria);
-		$startcol2 = (PeriodeNotePeer::NUM_COLUMNS - PeriodeNotePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol2 = PeriodeNotePeer::NUM_HYDRATE_COLUMNS;
 
 		ClassePeer::addSelectColumns($criteria);
-		$startcol3 = $startcol2 + (ClassePeer::NUM_COLUMNS - ClassePeer::NUM_LAZY_LOAD_COLUMNS);
+		$startcol3 = $startcol2 + ClassePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(PeriodeNotePeer::ID_CLASSE, ClassePeer::ID, $join_behavior);
 
@@ -729,7 +736,7 @@ abstract class BasePeriodeNotePeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a PeriodeNote or Criteria object.
+	 * Performs an INSERT on the database, given a PeriodeNote or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or PeriodeNote object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -768,7 +775,7 @@ abstract class BasePeriodeNotePeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a PeriodeNote or Criteria object.
+	 * Performs an UPDATE on the database, given a PeriodeNote or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or PeriodeNote object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -815,11 +822,12 @@ abstract class BasePeriodeNotePeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the periodes table.
+	 * Deletes all rows from the periodes table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(PeriodeNotePeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -844,7 +852,7 @@ abstract class BasePeriodeNotePeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a PeriodeNote or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a PeriodeNote or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or PeriodeNote object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -921,7 +929,7 @@ abstract class BasePeriodeNotePeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(PeriodeNote $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

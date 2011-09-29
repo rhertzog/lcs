@@ -31,10 +31,10 @@ abstract class BaseMef extends BaseObject  implements Persistent
 	protected $id;
 
 	/**
-	 * The value for the ext_id field.
+	 * The value for the mef_code field.
 	 * @var        int
 	 */
-	protected $ext_id;
+	protected $mef_code;
 
 	/**
 	 * The value for the libelle_court field.
@@ -84,13 +84,13 @@ abstract class BaseMef extends BaseObject  implements Persistent
 	}
 
 	/**
-	 * Get the [ext_id] column value.
+	 * Get the [mef_code] column value.
 	 * Numero de la nomenclature officielle (numero MEF)
 	 * @return     int
 	 */
-	public function getExtId()
+	public function getMefCode()
 	{
-		return $this->ext_id;
+		return $this->mef_code;
 	}
 
 	/**
@@ -144,24 +144,24 @@ abstract class BaseMef extends BaseObject  implements Persistent
 	} // setId()
 
 	/**
-	 * Set the value of [ext_id] column.
+	 * Set the value of [mef_code] column.
 	 * Numero de la nomenclature officielle (numero MEF)
 	 * @param      int $v new value
 	 * @return     Mef The current object (for fluent API support)
 	 */
-	public function setExtId($v)
+	public function setMefCode($v)
 	{
 		if ($v !== null) {
 			$v = (int) $v;
 		}
 
-		if ($this->ext_id !== $v) {
-			$this->ext_id = $v;
-			$this->modifiedColumns[] = MefPeer::EXT_ID;
+		if ($this->mef_code !== $v) {
+			$this->mef_code = $v;
+			$this->modifiedColumns[] = MefPeer::MEF_CODE;
 		}
 
 		return $this;
-	} // setExtId()
+	} // setMefCode()
 
 	/**
 	 * Set the value of [libelle_court] column.
@@ -256,7 +256,7 @@ abstract class BaseMef extends BaseObject  implements Persistent
 		try {
 
 			$this->id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
-			$this->ext_id = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
+			$this->mef_code = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
 			$this->libelle_court = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
 			$this->libelle_long = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
 			$this->libelle_edition = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
@@ -268,7 +268,7 @@ abstract class BaseMef extends BaseObject  implements Persistent
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 5; // 5 = MefPeer::NUM_COLUMNS - MefPeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + 5; // 5 = MefPeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating Mef object", $e);
@@ -589,7 +589,7 @@ abstract class BaseMef extends BaseObject  implements Persistent
 				return $this->getId();
 				break;
 			case 1:
-				return $this->getExtId();
+				return $this->getMefCode();
 				break;
 			case 2:
 				return $this->getLibelleCourt();
@@ -616,19 +616,30 @@ abstract class BaseMef extends BaseObject  implements Persistent
 	 *                    BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM.
 	 *                    Defaults to BasePeer::TYPE_PHPNAME.
 	 * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
+	 * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+	 * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
 	 *
 	 * @return    array an associative array containing the field names (as keys) and field values
 	 */
-	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true)
+	public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
 	{
+		if (isset($alreadyDumpedObjects['Mef'][$this->getPrimaryKey()])) {
+			return '*RECURSION*';
+		}
+		$alreadyDumpedObjects['Mef'][$this->getPrimaryKey()] = true;
 		$keys = MefPeer::getFieldNames($keyType);
 		$result = array(
 			$keys[0] => $this->getId(),
-			$keys[1] => $this->getExtId(),
+			$keys[1] => $this->getMefCode(),
 			$keys[2] => $this->getLibelleCourt(),
 			$keys[3] => $this->getLibelleLong(),
 			$keys[4] => $this->getLibelleEdition(),
 		);
+		if ($includeForeignObjects) {
+			if (null !== $this->collEleves) {
+				$result['Eleves'] = $this->collEleves->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+			}
+		}
 		return $result;
 	}
 
@@ -663,7 +674,7 @@ abstract class BaseMef extends BaseObject  implements Persistent
 				$this->setId($value);
 				break;
 			case 1:
-				$this->setExtId($value);
+				$this->setMefCode($value);
 				break;
 			case 2:
 				$this->setLibelleCourt($value);
@@ -699,7 +710,7 @@ abstract class BaseMef extends BaseObject  implements Persistent
 		$keys = MefPeer::getFieldNames($keyType);
 
 		if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
-		if (array_key_exists($keys[1], $arr)) $this->setExtId($arr[$keys[1]]);
+		if (array_key_exists($keys[1], $arr)) $this->setMefCode($arr[$keys[1]]);
 		if (array_key_exists($keys[2], $arr)) $this->setLibelleCourt($arr[$keys[2]]);
 		if (array_key_exists($keys[3], $arr)) $this->setLibelleLong($arr[$keys[3]]);
 		if (array_key_exists($keys[4], $arr)) $this->setLibelleEdition($arr[$keys[4]]);
@@ -715,7 +726,7 @@ abstract class BaseMef extends BaseObject  implements Persistent
 		$criteria = new Criteria(MefPeer::DATABASE_NAME);
 
 		if ($this->isColumnModified(MefPeer::ID)) $criteria->add(MefPeer::ID, $this->id);
-		if ($this->isColumnModified(MefPeer::EXT_ID)) $criteria->add(MefPeer::EXT_ID, $this->ext_id);
+		if ($this->isColumnModified(MefPeer::MEF_CODE)) $criteria->add(MefPeer::MEF_CODE, $this->mef_code);
 		if ($this->isColumnModified(MefPeer::LIBELLE_COURT)) $criteria->add(MefPeer::LIBELLE_COURT, $this->libelle_court);
 		if ($this->isColumnModified(MefPeer::LIBELLE_LONG)) $criteria->add(MefPeer::LIBELLE_LONG, $this->libelle_long);
 		if ($this->isColumnModified(MefPeer::LIBELLE_EDITION)) $criteria->add(MefPeer::LIBELLE_EDITION, $this->libelle_edition);
@@ -776,14 +787,15 @@ abstract class BaseMef extends BaseObject  implements Persistent
 	 *
 	 * @param      object $copyObj An object of Mef (or compatible) type.
 	 * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
+	 * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
 	 * @throws     PropelException
 	 */
-	public function copyInto($copyObj, $deepCopy = false)
+	public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
 	{
-		$copyObj->setExtId($this->ext_id);
-		$copyObj->setLibelleCourt($this->libelle_court);
-		$copyObj->setLibelleLong($this->libelle_long);
-		$copyObj->setLibelleEdition($this->libelle_edition);
+		$copyObj->setMefCode($this->getMefCode());
+		$copyObj->setLibelleCourt($this->getLibelleCourt());
+		$copyObj->setLibelleLong($this->getLibelleLong());
+		$copyObj->setLibelleEdition($this->getLibelleEdition());
 
 		if ($deepCopy) {
 			// important: temporarily setNew(false) because this affects the behavior of
@@ -798,9 +810,10 @@ abstract class BaseMef extends BaseObject  implements Persistent
 
 		} // if ($deepCopy)
 
-
-		$copyObj->setNew(true);
-		$copyObj->setId(NULL); // this is a auto-increment column, so set to default value
+		if ($makeNew) {
+			$copyObj->setNew(true);
+			$copyObj->setId(NULL); // this is a auto-increment column, so set to default value
+		}
 	}
 
 	/**
@@ -841,6 +854,22 @@ abstract class BaseMef extends BaseObject  implements Persistent
 		return self::$peer;
 	}
 
+
+	/**
+	 * Initializes a collection based on the name of a relation.
+	 * Avoids crafting an 'init[$relationName]s' method name 
+	 * that wouldn't work when StandardEnglishPluralizer is used.
+	 *
+	 * @param      string $relationName The name of the relation to initialize
+	 * @return     void
+	 */
+	public function initRelation($relationName)
+	{
+		if ('Eleve' == $relationName) {
+			return $this->initEleves();
+		}
+	}
+
 	/**
 	 * Clears out the collEleves collection
 	 *
@@ -862,10 +891,16 @@ abstract class BaseMef extends BaseObject  implements Persistent
 	 * however, you may wish to override this method in your stub class to provide setting appropriate
 	 * to your application -- for example, setting the initial array to the values stored in database.
 	 *
+	 * @param      boolean $overrideExisting If set to true, the method call initializes
+	 *                                        the collection even if it is not empty
+	 *
 	 * @return     void
 	 */
-	public function initEleves()
+	public function initEleves($overrideExisting = true)
 	{
+		if (null !== $this->collEleves && !$overrideExisting) {
+			return;
+		}
 		$this->collEleves = new PropelObjectCollection();
 		$this->collEleves->setModel('Eleve');
 	}
@@ -956,7 +991,7 @@ abstract class BaseMef extends BaseObject  implements Persistent
 	public function clear()
 	{
 		$this->id = null;
-		$this->ext_id = null;
+		$this->mef_code = null;
 		$this->libelle_court = null;
 		$this->libelle_long = null;
 		$this->libelle_edition = null;
@@ -969,25 +1004,38 @@ abstract class BaseMef extends BaseObject  implements Persistent
 	}
 
 	/**
-	 * Resets all collections of referencing foreign keys.
+	 * Resets all references to other model objects or collections of model objects.
 	 *
-	 * This method is a user-space workaround for PHP's inability to garbage collect objects
-	 * with circular references.  This is currently necessary when using Propel in certain
-	 * daemon or large-volumne/high-memory operations.
+	 * This method is a user-space workaround for PHP's inability to garbage collect
+	 * objects with circular references (even in PHP 5.3). This is currently necessary
+	 * when using Propel in certain daemon or large-volumne/high-memory operations.
 	 *
-	 * @param      boolean $deep Whether to also clear the references on all associated objects.
+	 * @param      boolean $deep Whether to also clear the references on all referrer objects.
 	 */
 	public function clearAllReferences($deep = false)
 	{
 		if ($deep) {
 			if ($this->collEleves) {
-				foreach ((array) $this->collEleves as $o) {
+				foreach ($this->collEleves as $o) {
 					$o->clearAllReferences($deep);
 				}
 			}
 		} // if ($deep)
 
+		if ($this->collEleves instanceof PropelCollection) {
+			$this->collEleves->clearIterator();
+		}
 		$this->collEleves = null;
+	}
+
+	/**
+	 * Return the string representation of this object
+	 *
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return (string) $this->exportTo(MefPeer::DEFAULT_STRING_FORMAT);
 	}
 
 	/**

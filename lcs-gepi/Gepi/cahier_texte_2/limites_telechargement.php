@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: limites_telechargement.php 2147 2008-07-23 09:01:04Z tbelliard $
+ * @version: $Id: limites_telechargement.php 7938 2011-08-24 07:57:41Z jjocal $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *

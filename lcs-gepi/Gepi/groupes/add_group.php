@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: add_group.php 5920 2010-11-20 21:04:58Z crob $
+ * $Id: add_group.php 7980 2011-08-25 19:59:52Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -75,6 +75,7 @@ if (isset($_POST['is_posted'])) {
     $reg_nom_complet = html_entity_decode_all_version($_POST['groupe_nom_complet']);
     $reg_matiere = $_POST['matiere'];
     $reg_categorie = $_POST['categorie'];
+	//echo "\$reg_categorie=$reg_categorie<br />";
 
     if (empty($reg_nom_groupe)) {
         $error = true;
@@ -113,6 +114,9 @@ if (isset($_POST['is_posted'])) {
     if (!is_numeric($reg_categorie)) {
         $reg_categorie = 1;
     }
+
+	//echo "\$reg_categorie=$reg_categorie<br />";
+	//$error=true;
 
     if (!$error) {
         // pas d'erreur : on continue avec la création du groupe
@@ -210,7 +214,7 @@ for ($i=0;$i<$nb_mat;$i++) {
     $matiere = mysql_result($query, $i, "matiere");
     $nom_matiere = mysql_result($query, $i, "nom_complet");
     echo "<option value='" . $matiere . "'";
-    if ($reg_matiere == $matiere) echo " SELECTED";
+    if ($reg_matiere == $matiere) {echo " SELECTED";}
     //echo ">" . $nom_matiere . "</option>\n";
     echo ">" . htmlentities($nom_matiere) . "</option>\n";
 }
@@ -229,7 +233,7 @@ if ($mode == "groupe") {
             $id_classe = mysql_result($call_data, $i, "id");
             $classe = mysql_result($call_data, $i, "classe");
                 echo "<option value='" . $id_classe . "'";
-                if ($reg_id_classe == $id_classe) echo " SELECTED";
+                if ($reg_id_classe == $id_classe) {echo " SELECTED";}
                 echo ">$classe</option>\n";
         $i++;
         }
@@ -321,13 +325,16 @@ if ($mode == "groupe") {
     }
 }
 echo "<p>Catégorie de matière à laquelle appartient l'enseignement : ";
-echo "<select size=1 name=categorie>\n";
+echo "<select size='1' name='categorie'>\n";
 $get_cat = mysql_query("SELECT id, nom_court FROM matieres_categories");
 $test = mysql_num_rows($get_cat);
 
+echo "<option value='0'";
+if ($matiere_categorie == 0) {echo " SELECTED";}
+echo ">Aucune</option>\n";
 while ($row = mysql_fetch_array($get_cat, MYSQL_ASSOC)) {
     echo "<option value='".$row["id"]."'";
-    if ($matiere_categorie == $row["id"]) echo " SELECTED";
+    if ($matiere_categorie == $row["id"]) {echo " SELECTED";}
     echo ">".html_entity_decode_all_version($row["nom_court"])."</option>\n";
 }
 echo "</select>\n";
@@ -371,10 +378,12 @@ if ($reg_matiere != null) {
 				echo "<tr class='lig$alt'>\n";
 				echo "<td>\n";
 				echo "<input type='hidden' name='proflogin_".$p."' value='".$prof_login."' />\n";
-				echo "<input type='checkbox' name='prof_".$p."' id='prof_".$p."' />\n";
+				echo "<input type='checkbox' name='prof_".$p."' id='prof_".$p."' ";
+				echo "onchange='checkbox_change($p);changement();'";
+				echo " />\n";
 				echo "</td>\n";
 				echo "<td style='text-align:left;'>\n";
-				echo "<label for='prof_".$p."' style='cursor: pointer;'>\n";
+				echo "<label id='civ_nom_prenom_prof_$p' for='prof_".$p."' style='cursor: pointer;'>\n";
 				echo " " . $prof_list["users"][$prof_login]["nom"] . " " . $prof_list["users"][$prof_login]["prenom"];
 				echo "</label>\n";
 				echo "</td>\n";
@@ -406,6 +415,24 @@ if ($reg_matiere != null) {
 }
 // Fin : professeurs
 
+echo "<script type='text/javascript'>
+function checkbox_change(cpt) {
+	if(document.getElementById('prof_'+cpt)) {
+		if(document.getElementById('prof_'+cpt).checked) {
+			document.getElementById('civ_nom_prenom_prof_'+cpt).style.fontWeight='bold';
+		}
+		else {
+			document.getElementById('civ_nom_prenom_prof_'+cpt).style.fontWeight='normal';
+		}
+	}
+}
+
+for(i=0;i<$p;i++) {
+	checkbox_change(i);
+}
+</script>\n";
+
+
 echo "<div style='float: left; width: 100%'>\n";
 echo "<input type='hidden' name='is_posted' value='1' />\n";
 echo "<input type='hidden' name='mode' value='" . $mode . "' />\n";
@@ -413,7 +440,15 @@ echo "<p align='center'><input type='submit' value='Valider' /></p>\n";
 echo "</div>\n";
 echo "</div>\n";
 
-
+echo "<div style='clear:both;'>&nbsp;</div>
+<p><i>NOTES</i>&nbsp;:</p>
+<ul>
+<li><p>Si vous associez un ou des professeurs à l'enseignement, tous les élèves de la classe seront inscrit dans l'enseignement.<br />
+Vous pourrez par la suite décocher certains élèves si nécessaire.</p></li>
+<li><p>Si vous n'associez aucun professeur à l'enseignement, les élèves ne seront pas affectés automatiquement dans l'enseignement.<br />
+Vous devrez affecter les élèves dans l'enseignement par la suite.</p></li>
+<li><p>Si vous n'associez aucun professeur à un enseignement, vous pouvez néanmoins saisir des moyennes et appréciations sur les bulletins avec un compte disposant du statut 'secours'.</p></li>
+</ul>\n";
 
 ?>
 </form>

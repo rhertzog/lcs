@@ -49,19 +49,24 @@ class AbsencesNotificationHelper {
     //merge des saisies pour modèles du type 1.5.3
     $TBS->MergeBlock('el_col',$eleve_col);
 
-    if ($notification->getAbsenceEleveTraitement() != null) {
-	$query_string = 'AbsenceEleveSaisieQuery::create()->filterByEleveId(%p1%)
+    foreach ($eleve_col as $eleve) {
+            $saisies_string_col = new PropelCollection();
+            $saisies_col = AbsenceEleveSaisieQuery::create()->filterByEleveId($eleve->getIdEleve())
 	    ->useJTraitementSaisieEleveQuery()
-	    ->filterByATraitementId('.$notification->getAbsenceEleveTraitement()->getId().')->endUse()
+                    ->filterByATraitementId($notification->getAbsenceEleveTraitement()->getId())->endUse()
 		->orderBy("DebutAbs", Criteria::ASC)
-		->find()';
-    } else {
-	$query_string = 'AbsenceEleveSaisieQuery::create()->filterByEleveId(%p1%)
-	    ->where(0 <> 0)->find()';
+                    ->find();
+            foreach ($saisies_col as $saisie) {
+
+                $str = $saisie->getDateDescription();
+                if($saisie->getGroupeNameAvecClasses()!=''){
+                    $str.= ', cours de '.$saisie->getGroupeNameAvecClasses();
+                }                
+                $saisies_string_col->append($str);
+
+            }
+            $TBS->MergeBlock('saisies_string_eleve_id_'.$eleve->getIdEleve(), $saisies_string_col);
     }
-
-    $TBS->MergeBlock('saisies', 'php', $query_string);
-
 
     $heure_demi_journee = 11;
     $minute_demi_journee = 50;
@@ -85,7 +90,7 @@ class AbsencesNotificationHelper {
 	foreach($demi_j as $date) {
 	    $str = 'Le ';
 	    $str .= (strftime("%a %d/%m/%Y", $date->format('U')));
-	    if ($date->format('Hi') < $temps_demi_journee) {
+	    if ($date->format('H') < 12) {
 		$next_date = $demi_j->getNext();
 		if ($next_date != null && $next_date->format('Y-m-d') == $date->format('Y-m-d')) {
 		    $str .= ' la journée';
@@ -104,7 +109,7 @@ class AbsencesNotificationHelper {
 	$TBS->MergeBlock('demi_j_string_eleve_id_'.$eleve->getIdEleve(), $demi_journee_string_col);
     }
 
-    if ($notification->getTypeNotification() == AbsenceEleveNotification::$TYPE_COURRIER) {
+    if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_COURRIER) {
 	//on va mettre les champs dans des variables simple
 	//echo $notification->getResponsableEleveAdresse()->getResponsableEleves()->count();
 	if ($notification->getResponsableEleveAdresse() != null && $notification->getResponsableEleves()->count() == 1) {
@@ -132,13 +137,13 @@ class AbsencesNotificationHelper {
 	}
 	$TBS->MergeField('adr',$adr);	
 
-    } else if ($notification->getTypeNotification() == AbsenceEleveNotification::$TYPE_EMAIL) {
+    } else if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_EMAIL) {
 	$destinataire = '';
 	foreach ($notification->getResponsableEleves() as $responsable) {
 	    $destinataire .= $responsable->getCivilite().' '.strtoupper($responsable->getNom()).' '.strtoupper($responsable->getPrenom()).' ';
 	}
 	$TBS->MergeField('destinataire',$destinataire);
-    } else if ($notification->getTypeNotification() == AbsenceEleveNotification::$TYPE_SMS) {
+    } else if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_SMS) {
 	$destinataire = '';
 	foreach ($notification->getResponsableEleves() as $responsable) {
 	    $destinataire .= $responsable->getCivilite().' '.strtoupper($responsable->getNom()).' '.strtoupper($responsable->getPrenom()).' ';
@@ -157,11 +162,7 @@ class AbsencesNotificationHelper {
    */
   public static function MergeInfosEtab($modele){
         // load the TinyButStrong libraries
-    if (version_compare(PHP_VERSION,'5')<0) {
-	include_once('../tbs/tbs_class.php'); // TinyButStrong template engine for PHP 4
-    } else {
-	include_once('../tbs/tbs_class_php5.php'); // TinyButStrong template engine
-    }
+    include_once('../tbs/tbs_class.php'); // TinyButStrong template engine    
     include_once('../tbs/plugins/tbsdb_php.php');
 
     $TBS = new clsTinyButStrong; // new instance of TBS
@@ -199,13 +200,13 @@ class AbsencesNotificationHelper {
    */
   public static function EnvoiNotification($notification, $message){
     $return_message = '';
-    if ($notification->getStatutEnvoi() != AbsenceEleveNotification::$STATUT_INITIAL && $notification->getStatutEnvoi() != AbsenceEleveNotification::$STATUT_INITIAL) {
+    if ($notification->getStatutEnvoi() != AbsenceEleveNotificationPeer::STATUT_ENVOI_ETAT_INITIAL && $notification->getStatutEnvoi() != AbsenceEleveNotificationPeer::STATUT_ENVOI_ETAT_INITIAL) {
 	return 'Seul une notification de statut initial ou prete à envoyer peut être envoyée avec cette méthode';
     }
-    if ($notification->getTypeNotification() != AbsenceEleveNotification::$TYPE_EMAIL &&
-	    $notification->getTypeNotification() != AbsenceEleveNotification::$TYPE_SMS) {
+    if ($notification->getTypeNotification() != AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_EMAIL &&
+	    $notification->getTypeNotification() != AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_SMS) {
 	return 'Seul une notification de type email ou sms peut être envoyée avec cette méthode';
-    } elseif ($notification->getTypeNotification() == AbsenceEleveNotification::$TYPE_EMAIL) {
+    } elseif ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_EMAIL) {
 	if ($notification->getEmail() == null || $notification->getEmail() == '') {
 	    $notification->setErreurMessageEnvoi('email non renseigné');
 	    $notification->save();
@@ -231,17 +232,17 @@ class AbsencesNotificationHelper {
 
 	$notification->setDateEnvoi('now');
 	if ($envoi) {
-	    $notification->setStatutEnvoi(AbsenceEleveNotification::$STATUT_SUCCES);
+	    $notification->setStatutEnvoi(AbsenceEleveNotificationPeer::STATUT_ENVOI_SUCCES);
 	    $return_message = '';
 	} else {
 	    $return_message = 'Non accepté pour livraison.';
 	    $notification->setErreurMessageEnvoi($return_message);
-	    $notification->setStatutEnvoi(AbsenceEleveNotification::$STATUT_ECHEC);
+	    $notification->setStatutEnvoi(AbsenceEleveNotificationPeer::STATUT_ENVOI_ECHEC);
 	}
 	$notification->save();
 	return $return_message;
 
-    } else if ($notification->getTypeNotification() == AbsenceEleveNotification::$TYPE_SMS) {
+    } else if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_SMS) {
 	if (getSettingValue("abs2_sms")!='y') {
 	    return 'Erreur : envoi de sms désactivé.';
 	}
@@ -349,26 +350,26 @@ class AbsencesNotificationHelper {
 	if (getSettingValue("abs2_sms_prestataire")=='tm4b') {
 	    if (substr($reponse, 0, 5) == 'error') {
 		$return_message = 'Erreur : message non envoyé. Code erreur : '.$reponse;
-		$notification->setStatutEnvoi(AbsenceEleveNotification::$STATUT_ECHEC);
+		$notification->setStatutEnvoi(AbsenceEleveNotificationPeer::STATUT_ENVOI_ECHEC);
 		$notification->setErreurMessageEnvoi($reponse);
 	    } else {
-		$notification->setStatutEnvoi(AbsenceEleveNotification::$STATUT_SUCCES);
+		$notification->setStatutEnvoi(AbsenceEleveNotificationPeer::STATUT_ENVOI_ECHEC);
 	    }
 	} else if (getSettingValue("abs2_sms_prestataire")=='123-sms') {
 	    if ($reponse != '80') {
 		$return_message = 'Erreur : message non envoyé. Code erreur : '.$reponse;
-		$notification->setStatutEnvoi(AbsenceEleveNotification::$STATUT_ECHEC);
+		$notification->setStatutEnvoi(AbsenceEleveNotificationPeer::STATUT_ENVOI_ECHEC);
 		$notification->setErreurMessageEnvoi($reponse);
 	    } else {
-		$notification->setStatutEnvoi(AbsenceEleveNotification::$STATUT_SUCCES);
+		$notification->setStatutEnvoi(AbsenceEleveNotificationPeer::STATUT_ENVOI_ECHEC);
 	    }
 	} else if (getSettingValue("abs2_sms_prestataire")=='pluriware') {
             if (substr($reponse, 0, 3) == 'ERR') {
                 $return_message = 'Erreur : message non envoyé. Code erreur : '.$reponse;
-                $notification->setStatutEnvoi(AbsenceEleveNotification::$STATUT_ECHEC);
+                $notification->setStatutEnvoi(AbsenceEleveNotificationPeer::STATUT_ENVOI_ECHEC);
                 $notification->setErreurMessageEnvoi($reponse);
             } else {
-                $notification->setStatutEnvoi(AbsenceEleveNotification::$STATUT_SUCCES);
+                $notification->setStatutEnvoi(AbsenceEleveNotificationPeer::STATUT_ENVOI_SUCCES);
             }
         }
 		

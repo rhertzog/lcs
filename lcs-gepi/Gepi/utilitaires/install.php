@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: install.php 6837 2011-04-28 12:30:09Z crob $
+* $Id: install.php 7972 2011-08-25 12:46:42Z jjocal $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -20,7 +20,11 @@
 * along with GEPI; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-require_once("../lib/global.inc");
+//test version de php
+if (version_compare(PHP_VERSION, '5') < 0) {
+    die('GEPI nécessite PHP5 pour fonctionner');
+}
+require_once("../lib/global.inc.php");
 $nom_fic = "../secure/connect.inc.php";
 
 function test_ecriture_secure() {
@@ -120,14 +124,20 @@ if ($etape == 4) {
 		// MODIF: boireaus d'après P.Chadefaux 20071110
 		//$query = fgets($fd, 5000);
 		// Ligne 113 du structure_gepi.sql, le CREATE TABLE `model_bulletin` comporte 6799 caractères.
-		$query = fgets($fd, 8000);
+		//$query = fgets($fd, 8000);
 		//=============================================
-		$query = trim($query);
+		$query=" ";
+		while ((substr($query,-1)!=";") && (!feof($fd))) {
+			$t_query = fgets($fd, 8000);
+			if (substr($t_query,0,3)!="-- ") $query.=$t_query;
+			$query = trim($query); 
+		}
 		//=============================================
 		// MODIF: boireaus 20080218
 		//if (substr($query,-1)==";") {
-		if((substr($query,-1)==";")&&(substr($query,0,3)!="-- ")) {
+		//if((substr($query,-1)==";")&&(substr($query,0,3)!="-- ")) {
 		//=============================================
+		if ($query!="") {
 			$reg = mysql_query($query);
 			if (!$reg) {
 				echo "<p><font color=red>ERROR</font> : '$query' : ";
@@ -173,6 +183,7 @@ if ($etape == 4) {
 			$gepipath = substr($url['path'], 0, -24);
 			$conn = "<"."?php\n";
 			$conn .= "# La ligne suivante est à modifier si vous voulez utiliser le multisite\n";
+                        $conn .= "# Regardez le fichier modeles/connect-modele.inc.php pour information\n";
 			$conn .= "\$multisite = 'n';\n";
 			$conn .= "# Les cinq lignes suivantes sont à modifier selon votre configuration\n";
 			$conn .= "# Pensez à renommer ce fichier connect.cfg.php en connect.inc.php\n";

@@ -3,7 +3,7 @@
 /**
  * Fichier de gestion de l'emploi du temps dans Gepi version 1.5.x
  *
- * @version     $Id: index_edt.php 5437 2010-09-26 19:08:38Z adminpaulbert $
+ * @version     $Id: index_edt.php 6933 2011-05-14 16:24:55Z adminpaulbert $
  * @package		GEPI
  * @subpackage	EmploiDuTemps
  * @copyright	Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero
@@ -68,10 +68,10 @@ if (param_edt($_SESSION["statut"]) != "yes") {
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
 $ua = getenv("HTTP_USER_AGENT");
 if (strstr($ua, "MSIE 6.0")) {
-	$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt_ie6";
+	$style_specifique[] = "templates/".NameTemplateEDT()."/css/style_edt_ie6";
 }
 else {
-	$style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
+	$style_specifique[] = "templates/".NameTemplateEDT()."/css/style_edt";
 }
 
 //ob_start( 'ob_gzhandler' );

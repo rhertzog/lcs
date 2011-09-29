@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: droit_acces_template.php 6697 2011-03-25 21:54:27Z regis $
+ * $Id: droit_acces_template.php 7678 2011-08-10 09:42:21Z crob $
 */
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
@@ -59,6 +59,8 @@
 <!-- on inclut le bandeau -->
 	<?php include('../templates/origine/bandeau_template.php');?>
 
+	<?php //debug_var();?>
+
 <!-- fin bandeau_template.html      -->
 
 <div  id='container'>
@@ -70,6 +72,7 @@
 <!-- début corps -->
 
   <form action="droits_acces.php" method="post" id="form1">
+	<input type='hidden' name='onglet_courant' id='onglet_courant' value='' />
 	<p class="center">
 		<?php
 			echo add_token_field();
@@ -83,11 +86,11 @@
 	<?php 
 	  foreach (array('Enseignant', 'Professeur_principal', 'Scolarite', 'CPE', 'Administrateur', 'eleve', 'responsable') as $StatutItem){
     ?>
-	  <a class="onglet_0 onglet" id='onglet_<?php echo $StatutItem ;?>' href="#<?php echo $StatutItem ;?>" title="section <?php echo $StatutItem ;?>" onclick="javascript:change_onglet('<?php echo $StatutItem; ?>');return false;">
+	  <a class="onglet_0 onglet" id='onglet_<?php echo $StatutItem ;?>' href="#<?php echo $StatutItem ;?>" title="section <?php echo $StatutItem ;?>" onclick="javascript:change_onglet('<?php echo $StatutItem; ?>');document.getElementById('onglet_courant').value='<?php echo $StatutItem; ?>';return false;">
 	<?php
-		if (my_strtolower($StatutItem) =='responsable') echo $gepiSettings['denomination_responsable'];
-		elseif (my_strtolower($StatutItem) =='eleve') echo $gepiSettings['denomination_eleve'];
-		elseif (my_strtolower($StatutItem) =='professeur_principal') echo getSettingValue("gepi_prof_suivi");
+		if (my_strtolower($StatutItem) =='responsable') echo ucfirst($gepiSettings['denomination_responsable']);
+		elseif (my_strtolower($StatutItem) =='eleve') echo ucfirst($gepiSettings['denomination_eleve']);
+		elseif (my_strtolower($StatutItem) =='professeur_principal') echo ucfirst(getSettingValue("gepi_prof_suivi"));
 		elseif (my_strtolower($StatutItem) =='scolarite') echo "Scolarité";
 		else echo $StatutItem ;
 	 ?>
@@ -160,8 +163,13 @@
 <script type="text/javascript">
 //<!--
 //document.getElementByClassNames('contenu_onglet2').ClassNames = 'contenu_onglet';
-		var anc_onglet = 'Enseignant';
-		change_onglet(anc_onglet);
+	<?php
+		$anc_onglet=isset($_POST['onglet_courant']) ? $_POST['onglet_courant'] : 'Enseignant';
+		if($anc_onglet=='') {$anc_onglet='Enseignant';}
+	?>
+
+	var anc_onglet = '<?php echo $anc_onglet;?>';
+	change_onglet(anc_onglet);
 //-->
 </script>
 

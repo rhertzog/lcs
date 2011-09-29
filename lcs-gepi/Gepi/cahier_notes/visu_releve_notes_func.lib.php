@@ -2,7 +2,7 @@
 
 /*
 *
-* $Id: visu_releve_notes_func.lib.php 6993 2011-05-24 18:08:01Z crob $
+* $Id: visu_releve_notes_func.lib.php 6994 2011-05-24 18:08:08Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *

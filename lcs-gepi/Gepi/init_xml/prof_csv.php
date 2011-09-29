@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: prof_csv.php 5936 2010-11-21 17:32:17Z crob $
+* $Id: prof_csv.php 7858 2011-08-21 13:12:55Z crob $
 *
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -43,53 +43,8 @@ if (!checkAccess()) {
 
 check_token();
 
-$liste_tables_del = array(
-//"absences",
-//"aid",
-//"aid_appreciations",
-//"aid_config",
-//"avis_conseil_classe",
-//"classes",
-//"droits",
-//"eleves",
-//"responsables",
-//"etablissements",
-//"j_aid_eleves",
-"j_aid_utilisateurs",
-"j_aid_utilisateurs_gest",
-"j_aidcateg_super_gestionnaires",
-"j_aidcateg_utilisateurs",
-"j_groupes_professeurs",
-//"j_eleves_classes",
-//"j_eleves_etablissements",
-"j_eleves_professeurs",
-//"j_eleves_regime",
-//"j_professeurs_matieres",
-//"log",
-//"matieres",
-"matieres_appreciations",
-"matieres_notes",
-"matieres_appreciations_grp",
-"matieres_appreciations_tempo",
-//"observatoire",
-//"observatoire_comment",
-//"observatoire_config",
-//"observatoire_niveaux",
-"observatoire_j_resp_champ",
-//"observatoire_suivi",
-//"periodes",
-//"periodes_observatoire",
-"tempo2",
-//"temp_gep_import",
-"tempo",
-//"utilisateurs",
-"cn_cahier_notes",
-"cn_conteneurs",
-"cn_devoirs",
-"cn_notes_conteneurs",
-"cn_notes_devoirs",
-//"setting"
-);
+include("../lib/initialisation_annee.inc.php");
+$liste_tables_del = $liste_tables_del_etape_professeurs;
 
 //**************** EN-TETE *****************
 $titre_page = "Outil d'initialisation de l'année : Importation des matières";

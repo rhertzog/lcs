@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: index_template.php 6697 2011-03-25 21:54:27Z regis $
+* $Id: index_template.php 7866 2011-08-21 14:33:24Z jjacquard $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -205,6 +205,27 @@
 	  </label>
 	</fieldset>
 
+	<h2>
+	  Évaluation par compétence
+	</h2>
+	<p>
+	  Utilisation d'un logiciel externe pour l'évaluation par compétence (beta)
+	  <input type="checkbox" 
+			 name="utiliser_sacoche" 
+			 size="8"
+			 title="utiliser_sacoche"
+			 <?php if (getSettingValue("utiliser_sacoche") == 'yes') {echo 'checked="checked"';} ?> />
+	 <br/>
+	 <?php if (getSettingValue("utiliser_sacoche") == 'yes') {
+	 	echo '<a href="'.getSettingValue("sacocheUrl").'?id='.getSettingValue('sacoche_base').'">Accéder à l\'administration de l\'Évaluation par compétence</a>';
+	 } ?>
+	 <br/>
+	 <label for='sacocheUrl' style='cursor: pointer;'>Adresse du service d'évaluation par compétence si possible en https (exemple : https://localhost/panier) </label>
+	 <input type='text' size='60' name='sacocheUrl' value='<?php echo(getSettingValue("sacocheUrl")); ?>' id='sacocheUrl' /><br/>
+	 <label for='sacoche_base' style='cursor: pointer;'>Numéro technique de «base» (laisser vide si votre instalation du logiciel d'évaluation par compétence est mono établissement)</label>
+	 <input type='text' size='5' name='sacoche_base' value='<?php echo(getSettingValue("sacoche_base")); ?>' id='sacoche_base' /><br/>
+	</p>
+	
 	<p class="center">
 	  <input type="hidden" name="is_posted" value="1" />
 	  <input type="submit" value="Enregistrer" />

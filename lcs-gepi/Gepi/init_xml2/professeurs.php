@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: professeurs.php 7613 2011-08-08 08:35:19Z crob $
+* $Id: professeurs.php 8272 2011-09-19 14:58:27Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -79,51 +79,8 @@ function affiche_debug($texte){
 }
 
 
-$liste_tables_del = array(
-//"absences",
-//"aid",
-//"aid_appreciations",
-//"aid_config",
-//"avis_conseil_classe",
-//"classes",
-//"droits",
-//"eleves",
-//"responsables",
-//"etablissements",
-//"j_aid_eleves",
-"j_aid_utilisateurs",
-"j_aid_utilisateurs_gest",
-"j_groupes_professeurs",
-//"j_eleves_classes",
-//"j_eleves_etablissements",
-"j_eleves_professeurs",
-//"j_eleves_regime",
-//"j_professeurs_matieres",
-//"log",
-//"matieres",
-"matieres_appreciations",
-"matieres_notes",
-"matieres_appreciations_grp",
-"matieres_appreciations_tempo",
-//"observatoire",
-//"observatoire_comment",
-//"observatoire_config",
-//"observatoire_niveaux",
-"observatoire_j_resp_champ",
-//"observatoire_suivi",
-//"periodes",
-//"periodes_observatoire",
-"tempo2",
-//"temp_gep_import",
-"tempo",
-//"utilisateurs",
-"cn_cahier_notes",
-"cn_conteneurs",
-"cn_devoirs",
-"cn_notes_conteneurs",
-"cn_notes_devoirs",
-//"setting"
-);
+include("../lib/initialisation_annee.inc.php");
+$liste_tables_del = $liste_tables_del_etape_professeurs;
 
 //**************** EN-TETE *****************
 $titre_page = "Outil d'initialisation de l'année : Importation des professeurs";
@@ -170,7 +127,7 @@ if (!isset($step1)) {
 		echo "<p>Les tables vidées seront&nbsp;: $chaine_tables</p>\n";
 
 		echo "<ul><li>Seule la table contenant les utilisateurs (professeurs, admin, ...) et la table mettant en relation les matières et les professeurs seront conservées.</li>\n";
-		echo "<li>Les professeurs de l'année passée présents dans la base GEPI et non présents dans la base CSV de cette année ne sont pas effacés de la base GEPI mais simplement déclarés \"inactifs\".</li>\n";
+		echo "<li>Les professeurs de l'année passée présents dans la base GEPI et non présents dans le fichier XML de cette année ne sont pas effacés de la base GEPI mais simplement déclarés \"inactifs\".</li>\n";
 		echo "</ul>\n";
 
 		echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
@@ -205,6 +162,22 @@ if (!isset($is_posted)) {
 			}
 		}
 
+		$sql="SELECT * FROM j_professeurs_matieres ORDER BY ordre_matieres;";
+		$res_matieres_profs=mysql_query($sql);
+		if(mysql_num_rows($res_matieres_profs)>0) {
+			$fich_mp=fopen("../temp/".$dirname."/matieres_profs_an_dernier.csv","w+");
+			if($fich_mp) {
+				echo "<p>Création d'un fichier de sauvegarde des matières (<i>de l'an dernier</i>) de chaque professeur.</p>\n";
+				while($lig_mp=mysql_fetch_object($res_matieres_profs)) {
+					fwrite($fich_mp,"$lig_mp->id_professeur;$lig_mp->id_matiere\n");
+				}
+				fclose($fich_mp);
+			}
+			else {
+				echo "<p style='color:red'>Echec de la création d'un fichier de sauvegarde des matières (<i>de l'an dernier</i>) de chaque professeur.</p>\n";
+			}
+		}
+
 		check_token(false);
 		$j=0;
 		while ($j < count($liste_tables_del)) {
@@ -236,6 +209,10 @@ if (!isset($is_posted)) {
 	}
 	else {
 		$default_login_gen_type="";
+	}
+
+	if(getSettingValue('auth_sso')=="lcs") {
+		echo "<span style='color:red'>Votre Gepi utilise une authentification LCS; Le format de login ci-dessous ne sera pas pris en compte. Les comptes doivent avoir été importés dans l'annuaire LDAP du LCS avant d'effectuer l'import dans GEPI.</span><br />\n";
 	}
 
 	echo "<input type='radio' name='login_gen_type' id='login_gen_type_name' value='name' ";
@@ -303,7 +280,7 @@ if (!isset($is_posted)) {
 	echo "<br />\n";
 
 	// Modifications jjocal dans le cas où c'est un serveur CAS qui s'occupe de tout
-	if (getSettingValue("use_sso") == "cas") {
+	if((getSettingValue("use_sso") == "cas")||(getSettingValue('auth_sso')=="lcs")) {
 		$checked1 = ' checked="checked"';
 		$checked0 = '';
 	}else{
@@ -311,7 +288,7 @@ if (!isset($is_posted)) {
 		$checked0 = ' checked="checked"';
 	}
 
-	echo "<p>Ces comptes seront-ils utilisés en Single Sign-On avec CAS ou LemonLDAP ? (laissez 'non' si vous ne savez pas de quoi il s'agit)</p>\n";
+	echo "<p>Ces comptes seront-ils utilisés en Single Sign-On avec CAS ou LemonLDAP ? (<i>laissez 'non' si vous ne savez pas de quoi il s'agit</i>)</p>\n";
 	echo "<input type='radio' name='sso' id='sso_n' value='no'".$checked0." /> <label for='sso_n' style='cursor: pointer;'>Non</label>\n";
 	echo "<br /><input type='radio' name='sso' id='sso_y' value='yes'".$checked1." /> <label for='sso_y' style='cursor: pointer;'>Oui (aucun mot de passe ne sera généré)</label>\n";
 	echo "<br />\n";
@@ -477,9 +454,15 @@ else {
 	$req = mysql_query("DELETE from setting where NAME = 'display_users'");
 
 
+	if(getSettingValue('auth_sso')=='lcs') {
+		require_once("../lib/lcs.inc.php");
+		$ds = connect_ldap($lcs_ldap_host,$lcs_ldap_port,"","");
+	}
+
 	echo "<p>Dans le tableau ci-dessous, les identifiants en rouge correspondent à des professeurs nouveaux dans la base GEPI. les identifiants en vert correspondent à des professeurs détectés dans les fichiers CSV mais déjà présents dans la base GEPI.<br /><br />Il est possible que certains professeurs ci-dessous, bien que figurant dans le fichier CSV, ne soient plus en exercice dans votre établissement cette année. C'est pourquoi il vous sera proposé en fin de procédure d'initialsation, un nettoyage de la base afin de supprimer ces données inutiles.</p>\n";
 	echo "<table border='1' class='boireaus' cellpadding='2' cellspacing='2' summary='Tableau des professeurs'>\n";
 	echo "<tr><th><p class=\"small\">Identifiant du professeur</p></th><th><p class=\"small\">Nom</p></th><th><p class=\"small\">Prénom</p></th><th>Mot de passe *</th></tr>\n";
+
 
 	srand();
 
@@ -487,31 +470,57 @@ else {
 
 	$tab_nouveaux_profs=array();
 
+	$info_pb_mdp="";
+
 	$alt=1;
 	for($k=0;$k<count($prof);$k++){
-		if(isset($prof[$k]["fonction"])){
-			if($prof[$k]["fonction"]=="ENS"){
-				if($prof[$k]["sexe"]=="1"){
-					$civilite="M.";
-				}
-				else{
-					$civilite="Mme";
-				}
+		//if(isset($prof[$k]["fonction"])) {
+		//	if($prof[$k]["fonction"]=="ENS"){
 
-				switch($prof[$k]["civilite"]){
-					case 1:
-						$civilite="M.";
-						break;
-					case 2:
+		if(((isset($prof[$k]["fonction"]))&&($prof[$k]["fonction"]=="ENS"))||
+			((!isset($prof[$k]["fonction"]))&&(isset($prof[$k]["nom_usage"]))&&(isset($prof[$k]["prenom"])))) {
+
+				$civilite="M.";
+				if(isset($prof[$k]["sexe"])) {
+					if($prof[$k]["sexe"]=="2"){
 						$civilite="Mme";
-						break;
-					case 3:
-						$civilite="Mlle";
-						break;
+					}
+					else{
+						$civilite="M.";
+					}
 				}
 
-				if($_POST['mode_mdp']=="alea"){
+				if(isset($prof[$k]["civilite"])) {
+					switch($prof[$k]["civilite"]){
+						case 1:
+							$civilite="M.";
+							break;
+						case 2:
+							$civilite="Mme";
+							break;
+						case 3:
+							$civilite="Mlle";
+							break;
+					}
+				}
+
+				if($_POST['mode_mdp']=="alea") {
 					$mdp=createRandomPassword();
+				}
+				elseif(!isset($prof[$k]["date_naissance"])) {
+					// Cela peut arriver avec des personnes ajoutées dans STS par le principal
+					// Elles peuvent apparaitre avec
+					/*
+						<INDIVIDU ID="3506" TYPE="local">
+							<SEXE/>
+							<CIVILITE>3</CIVILITE>
+							<NOM_USAGE>ZETOFREY</NOM_USAGE>
+							<NOM_PATRONYMIQUE/>
+							<PRENOM>MELANIE</PRENOM>
+						</INDIVIDU>
+					*/
+					$mdp=createRandomPassword();
+					$info_pb_mdp.="<p style='color:red'>".$prof[$k]["nom_usage"]." ".casse_mot($prof[$k]["prenom"],'majf2')." n'a pas de date de naissance renseignée.<br />Son mot de passe est généré aléatoirement.</p>\n";
 				}
 				else{
 					$date=str_replace("-","",$prof[$k]["date_naissance"]);
@@ -527,249 +536,313 @@ else {
 				$prenom_compose = '';
 				if (isset($prenoms[1])) $prenom_compose = $prenoms[0]."-".$prenoms[1];
 
-
-				// On effectue d'abord un test sur le NUMIND
-				$sql="select login from utilisateurs where (
-				numind='P".$prof[$k]["id"]."' and
-				numind!='' and
-				statut='professeur')";
-				//echo "<tr><td>$sql</td></tr>";
-				$test_exist = mysql_query($sql);
-				$result_test = mysql_num_rows($test_exist);
-				if ($result_test == 0) {
-					// On tente ensuite une reconnaissance sur nom/prénom, si le test NUMIND a échoué
+				$lcs_prof_en_erreur="n";
+				if(getSettingValue('auth_sso')=='lcs') {
+					$lcs_prof_en_erreur="y";
+					$exist = 'no';
+					if($prof[$k]["id"]!='') {
+						$login_prof_gepi=get_lcs_login($prof[$k]["id"], 'professeur');
+						//echo "get_lcs_login(".$prof[$k]["id"].", 'professeur')=".$login_prof_gepi."<br />";
+						if($login_prof_gepi!='') {
+							$lcs_prof_en_erreur="n";
+							$sql="SELECT 1=1 FROM utilisateurs WHERE login='$login_prof_gepi';";
+							$test_exist_prof=mysql_query($sql);
+							if(mysql_num_rows($test_exist_prof)>0) {
+								$exist = 'yes';
+							}
+							else {
+								$exist = 'no';
+							}
+						}
+						else {
+							$lcs_prof_en_erreur="y";
+						}
+					}
+				}
+				else {
+					// On effectue d'abord un test sur le NUMIND
 					$sql="select login from utilisateurs where (
-					nom='".traitement_magic_quotes($prof[$k]["nom_usage"])."' and
-					prenom = '".traitement_magic_quotes($premier_prenom)."' and
+					numind='P".$prof[$k]["id"]."' and
+					numind!='' and
 					statut='professeur')";
-
-					// Pour debug:
-					//echo "$sql<br />";
+					//echo "<tr><td>$sql</td></tr>";
 					$test_exist = mysql_query($sql);
 					$result_test = mysql_num_rows($test_exist);
 					if ($result_test == 0) {
-						if ($prenom_compose != '') {
-							$test_exist2 = mysql_query("select login from utilisateurs
-							where (
-							nom='".traitement_magic_quotes($prof[$k]["nom_usage"])."' and
-							prenom = '".traitement_magic_quotes($prenom_compose)."' and
-							statut='professeur'
-							)");
-							$result_test2 = mysql_num_rows($test_exist2);
-							if ($result_test2 == 0) {
-								$exist = 'no';
+						// On tente ensuite une reconnaissance sur nom/prénom, si le test NUMIND a échoué
+						$sql="select login from utilisateurs where (
+						nom='".traitement_magic_quotes($prof[$k]["nom_usage"])."' and
+						prenom = '".traitement_magic_quotes($premier_prenom)."' and
+						statut='professeur')";
+	
+						// Pour debug:
+						//echo "$sql<br />";
+						$test_exist = mysql_query($sql);
+						$result_test = mysql_num_rows($test_exist);
+						if ($result_test == 0) {
+							if ($prenom_compose != '') {
+								$test_exist2 = mysql_query("select login from utilisateurs
+								where (
+								nom='".traitement_magic_quotes($prof[$k]["nom_usage"])."' and
+								prenom = '".traitement_magic_quotes($prenom_compose)."' and
+								statut='professeur'
+								)");
+								$result_test2 = mysql_num_rows($test_exist2);
+								if ($result_test2 == 0) {
+									$exist = 'no';
+								} else {
+									$exist = 'yes';
+									$login_prof_gepi = mysql_result($test_exist2,0,'login');
+								}
 							} else {
-								$exist = 'yes';
-								$login_prof_gepi = mysql_result($test_exist2,0,'login');
+								$exist = 'no';
 							}
 						} else {
-							$exist = 'no';
+							$exist = 'yes';
+							$login_prof_gepi = mysql_result($test_exist,0,'login');
 						}
 					} else {
 						$exist = 'yes';
 						$login_prof_gepi = mysql_result($test_exist,0,'login');
 					}
-				} else {
-					$exist = 'yes';
-					$login_prof_gepi = mysql_result($test_exist,0,'login');
 				}
 
-				if ($exist == 'no') {
-
-					// Aucun professeur ne porte le même nom dans la base GEPI. On va donc rentrer ce professeur dans la base
-
-					$prof[$k]["prenom"]=traitement_magic_quotes(corriger_caracteres($prof[$k]["prenom"]));
-
-					if ($_POST['login_gen_type'] == "name") {
-						$temp1 = $prof[$k]["nom_usage"];
-						$temp1 = strtoupper($temp1);
-						$temp1 = my_ereg_replace(" ","", $temp1);
-						$temp1 = my_ereg_replace("-","_", $temp1);
-						$temp1 = my_ereg_replace("'","", $temp1);
-						$temp1 = strtoupper(remplace_accents($temp1,"all"));
-						//$temp1 = substr($temp1,0,8);
-
-					} elseif ($_POST['login_gen_type'] == "name8") {
-						$temp1 = $prof[$k]["nom_usage"];
-						$temp1 = strtoupper($temp1);
-						$temp1 = my_ereg_replace(" ","", $temp1);
-						$temp1 = my_ereg_replace("-","_", $temp1);
-						$temp1 = my_ereg_replace("'","", $temp1);
-						$temp1 = strtoupper(remplace_accents($temp1,"all"));
-						$temp1 = substr($temp1,0,8);
-					} elseif ($_POST['login_gen_type'] == "fname8") {
-						$temp1 = $prof[$k]["prenom"]{0} . $prof[$k]["nom_usage"];
-						$temp1 = strtoupper($temp1);
-						$temp1 = my_ereg_replace(" ","", $temp1);
-						$temp1 = my_ereg_replace("-","_", $temp1);
-						$temp1 = my_ereg_replace("'","", $temp1);
-						$temp1 = strtoupper(remplace_accents($temp1,"all"));
-						$temp1 = substr($temp1,0,8);
-					} elseif ($_POST['login_gen_type'] == "fname19") {
-						$temp1 = $prof[$k]["prenom"]{0} . $prof[$k]["nom_usage"];
-						$temp1 = strtoupper($temp1);
-						$temp1 = my_ereg_replace(" ","", $temp1);
-						$temp1 = my_ereg_replace("-","_", $temp1);
-						$temp1 = my_ereg_replace("'","", $temp1);
-						$temp1 = strtoupper(remplace_accents($temp1,"all"));
-						$temp1 = substr($temp1,0,19);
-					} elseif ($_POST['login_gen_type'] == "firstdotname") {
-						if ($prenom_compose != '') {
-							$firstname = $prenom_compose;
-						} else {
-							$firstname = $premier_prenom;
-						}
-
-						$temp1 = $firstname . "." . $prof[$k]["nom_usage"];
-						$temp1 = strtoupper($temp1);
-
-						$temp1 = my_ereg_replace(" ","", $temp1);
-						$temp1 = my_ereg_replace("-","_", $temp1);
-						$temp1 = my_ereg_replace("'","", $temp1);
-						$temp1 = strtoupper(remplace_accents($temp1,"all"));
-						//$temp1 = substr($temp1,0,19);
-					} elseif ($_POST['login_gen_type'] == "firstdotname19") {
-						if ($prenom_compose != '') {
-							$firstname = $prenom_compose;
-						} else {
-							$firstname = $premier_prenom;
-						}
-
-						$temp1 = $firstname . "." . $prof[$k]["nom_usage"];
-						$temp1 = strtoupper($temp1);
-						$temp1 = my_ereg_replace(" ","", $temp1);
-						$temp1 = my_ereg_replace("-","_", $temp1);
-						$temp1 = my_ereg_replace("'","", $temp1);
-						$temp1 = strtoupper(remplace_accents($temp1,"all"));
-						$temp1 = substr($temp1,0,19);
-					} elseif ($_POST['login_gen_type'] == "namef8") {
-						$temp1 =  substr($prof[$k]["nom_usage"],0,7) . $prof[$k]["prenom"]{0};
-						$temp1 = strtoupper($temp1);
-						$temp1 = my_ereg_replace(" ","", $temp1);
-						$temp1 = my_ereg_replace("-","_", $temp1);
-						$temp1 = my_ereg_replace("'","", $temp1);
-						$temp1 = strtoupper(remplace_accents($temp1,"all"));
-						//$temp1 = substr($temp1,0,8);
-					} elseif ($_POST['login_gen_type'] == "lcs") {
-						$nom = $prof[$k]["nom_usage"];
-						$nom = strtolower($nom);
-						if (preg_match("/\s/",$nom)) {
-							$noms = preg_split("/\s/",$nom);
-							$nom1 = $noms[0];
-							if (strlen($noms[0]) < 4) {
-								$nom1 .= "_". $noms[1];
-								$separator = " ";
+				if($lcs_prof_en_erreur=="y") {
+					$alt=$alt*(-1);
+					echo "<tr class='lig$alt'>\n";
+					echo "<td><p><font color='red'>Non trouvé dans l'annuaire LDAP</font></p></td><td><p>".$prof[$k]["nom_usage"]."</p></td><td><p>".$premier_prenom."</p></td><td>&nbsp;</td></tr>\n";
+				}
+				/*
+				elseif(getSettingValue('auth_sso')=='lcs') {
+					if ($exist == 'no') {
+						// On devrait récupérer nom, prénom,... du LDAP du LCS...
+					}
+					else {
+					}
+				}
+				*/
+				else {
+					if ($exist == 'no') {
+	
+						// Aucun professeur ne porte le même nom dans la base GEPI. On va donc rentrer ce professeur dans la base
+	
+						$prof[$k]["prenom"]=traitement_magic_quotes(corriger_caracteres($prof[$k]["prenom"]));
+	
+						if ($_POST['login_gen_type'] == "name") {
+							$temp1 = $prof[$k]["nom_usage"];
+							$temp1 = strtoupper($temp1);
+							$temp1 = preg_replace("/ /","", $temp1);
+							$temp1 = preg_replace("/-/","_", $temp1);
+							$temp1 = preg_replace("/'/","", $temp1);
+							$temp1 = strtoupper(remplace_accents($temp1,"all"));
+							//$temp1 = substr($temp1,0,8);
+	
+						} elseif ($_POST['login_gen_type'] == "name8") {
+							$temp1 = $prof[$k]["nom_usage"];
+							$temp1 = strtoupper($temp1);
+							$temp1 = preg_replace("/ /","", $temp1);
+							$temp1 = preg_replace("/-/","_", $temp1);
+							$temp1 = preg_replace("/'/","", $temp1);
+							$temp1 = strtoupper(remplace_accents($temp1,"all"));
+							$temp1 = substr($temp1,0,8);
+						} elseif ($_POST['login_gen_type'] == "fname8") {
+							$temp1 = $prof[$k]["prenom"]{0} . $prof[$k]["nom_usage"];
+							$temp1 = strtoupper($temp1);
+							$temp1 = preg_replace("/ /","", $temp1);
+							$temp1 = preg_replace("/-/","_", $temp1);
+							$temp1 = preg_replace("/'/","", $temp1);
+							$temp1 = strtoupper(remplace_accents($temp1,"all"));
+							$temp1 = substr($temp1,0,8);
+						} elseif ($_POST['login_gen_type'] == "fname19") {
+							$temp1 = $prof[$k]["prenom"]{0} . $prof[$k]["nom_usage"];
+							$temp1 = strtoupper($temp1);
+							$temp1 = preg_replace("/ /","", $temp1);
+							$temp1 = preg_replace("/-/","_", $temp1);
+							$temp1 = preg_replace("/'/","", $temp1);
+							$temp1 = strtoupper(remplace_accents($temp1,"all"));
+							$temp1 = substr($temp1,0,19);
+						} elseif ($_POST['login_gen_type'] == "firstdotname") {
+							if ($prenom_compose != '') {
+								$firstname = $prenom_compose;
 							} else {
-								$separator = "-";
+								$firstname = $premier_prenom;
 							}
-						} else {
-							$nom1 = $nom;
-							$sn = ucfirst($nom);
+	
+							$temp1 = $firstname . "." . $prof[$k]["nom_usage"];
+							$temp1 = strtoupper($temp1);
+	
+							$temp1 = preg_replace("/ /","", $temp1);
+							$temp1 = preg_replace("/-/","_", $temp1);
+							$temp1 = preg_replace("/'/","", $temp1);
+							$temp1 = strtoupper(remplace_accents($temp1,"all"));
+							//$temp1 = substr($temp1,0,19);
+						} elseif ($_POST['login_gen_type'] == "firstdotname19") {
+							if ($prenom_compose != '') {
+								$firstname = $prenom_compose;
+							} else {
+								$firstname = $premier_prenom;
+							}
+	
+							$temp1 = $firstname . "." . $prof[$k]["nom_usage"];
+							$temp1 = strtoupper($temp1);
+							$temp1 = preg_replace("/ /","", $temp1);
+							$temp1 = preg_replace("/-/","_", $temp1);
+							$temp1 = preg_replace("/'/","", $temp1);
+							$temp1 = strtoupper(remplace_accents($temp1,"all"));
+							$temp1 = substr($temp1,0,19);
+						} elseif ($_POST['login_gen_type'] == "namef8") {
+							$temp1 =  substr($prof[$k]["nom_usage"],0,7) . $prof[$k]["prenom"]{0};
+							$temp1 = strtoupper($temp1);
+							$temp1 = preg_replace("/ /","", $temp1);
+							$temp1 = preg_replace("/-/","_", $temp1);
+							$temp1 = preg_replace("/'/","", $temp1);
+							$temp1 = strtoupper(remplace_accents($temp1,"all"));
+							//$temp1 = substr($temp1,0,8);
+						} elseif ($_POST['login_gen_type'] == "lcs") {
+							$nom = $prof[$k]["nom_usage"];
+							$nom = strtolower($nom);
+							if (preg_match("/\s/",$nom)) {
+								$noms = preg_split("/\s/",$nom);
+								$nom1 = $noms[0];
+								if (strlen($noms[0]) < 4) {
+									$nom1 .= "_". $noms[1];
+									$separator = " ";
+								} else {
+									$separator = "-";
+								}
+							} else {
+								$nom1 = $nom;
+								$sn = ucfirst($nom);
+							}
+							$firstletter_nom = $nom1{0};
+							$firstletter_nom = strtoupper($firstletter_nom);
+							$prenom = $prof[$k]["prenom"];
+							$prenom1 = $prof[$k]["prenom"]{0};
+							$temp1 = $prenom1 . $nom1;
+							$temp1 = remplace_accents($temp1,"all");
 						}
-						$firstletter_nom = $nom1{0};
-						$firstletter_nom = strtoupper($firstletter_nom);
-						$prenom = $prof[$k]["prenom"];
-						$prenom1 = $prof[$k]["prenom"]{0};
-						$temp1 = $prenom1 . $nom1;
-						$temp1 = remplace_accents($temp1,"all");
-					}elseif($_POST['login_gen_type'] == 'ent'){
-
-						if (getSettingValue("use_ent") == "y") {
-							// Charge à l'organisme utilisateur de pourvoir à cette fonctionnalité
-							// le code suivant n'est qu'une méthode proposée pour relier Gepi à un ENT
-							$bx = 'oui';
-							if (isset($bx) AND $bx == 'oui') {
-								// On va chercher le login de l'utilisateur dans la table créée
-								$sql_p = "SELECT login_u FROM ldap_bx
-											WHERE nom_u = '".strtoupper($prof[$k]["nom_usage"])."'
-											AND prenom_u = '".strtoupper($prof[$k]["prenom"])."'
-											AND statut_u = 'teacher'";
-								$query_p = mysql_query($sql_p);
-								$nbre = mysql_num_rows($query_p);
-								if ($nbre >= 1 AND $nbre < 2) {
-									$temp1 = mysql_result($query_p, 0,"login_u");
-								}else{
-									// Il faudrait alors proposer une alternative à ce cas
-									$temp1 = "erreur_".$k;
+						elseif($_POST['login_gen_type'] == 'ent'){
+	
+							if (getSettingValue("use_ent") == "y") {
+								// Charge à l'organisme utilisateur de pourvoir à cette fonctionnalité
+								// le code suivant n'est qu'une méthode proposée pour relier Gepi à un ENT
+								$bx = 'oui';
+								if (isset($bx) AND $bx == 'oui') {
+									// On va chercher le login de l'utilisateur dans la table créée
+									$sql_p = "SELECT login_u FROM ldap_bx
+												WHERE nom_u = '".strtoupper($prof[$k]["nom_usage"])."'
+												AND prenom_u = '".strtoupper($prof[$k]["prenom"])."'
+												AND statut_u = 'teacher'";
+									$query_p = mysql_query($sql_p);
+									$nbre = mysql_num_rows($query_p);
+									if ($nbre >= 1 AND $nbre < 2) {
+										$temp1 = mysql_result($query_p, 0,"login_u");
+									}else{
+										// Il faudrait alors proposer une alternative à ce cas
+										$temp1 = "erreur_".$k;
+									}
 								}
 							}
-						}else{
-							Die('Vous n\'avez pas autorisé Gepi à utiliser un ENT');
+							else{
+								die('Vous n\'avez pas autorisé Gepi à utiliser un ENT');
+							}
 						}
+
+						if(getSettingValue('auth_sso')=='lcs') {
+							$login_prof=$login_prof_gepi;
+						}
+						else {
+							$login_prof = $temp1;
+							//$login_prof = remplace_accents($temp1,"all");
+							// On teste l'unicité du login que l'on vient de créer
+							$m = 2;
+							$test_unicite = 'no';
+							$temp = $login_prof;
+							while ($test_unicite != 'yes') {
+								$test_unicite = test_unique_login($login_prof);
+		
+								if ($test_unicite != 'yes') {
+									$login_prof = $temp.$m;
+									$m++;
+								}
+							}
+						}
+						$prof[$k]["nom_usage"] = traitement_magic_quotes(corriger_caracteres($prof[$k]["nom_usage"]));
+						// Mot de passe et change_mdp
+	
+						$changemdp = 'y';
+	
+						//echo "<tr><td colspan='4'>strlen($affiche[5])=".strlen($affiche[5])."<br />\$affiche[4]=$affiche[4]<br />\$_POST['sso']=".$_POST['sso']."</td></tr>";
+						if(getSettingValue('auth_sso')=="lcs") {
+							$pwd = '';
+							$mess_mdp = "aucun (sso)";
+							$changemdp = 'n';
+						}
+						elseif (strlen($mdp)>2 and (!isset($prof[$k]["fonction"]) or $prof[$k]["fonction"]=="ENS") and $_POST['sso'] == "no") {
+							//
+							$pwd = md5(trim($mdp));
+							//$mess_mdp = "NUMEN";
+							if($_POST['mode_mdp']=='alea'){
+								$mess_mdp = "$mdp";
+							}
+							elseif(!isset($prof[$k]["date_naissance"])) {
+								$mess_mdp = "$mdp";
+							}
+							else{
+								$mess_mdp = "Mot de passe d'après la date de naissance";
+							}
+							//echo "<tr><td colspan='4'>NUMEN: $affiche[5] $pwd</td></tr>";
+						} elseif ($_POST['sso']== "no") {
+							$pwd = md5(rand (1,9).rand (1,9).rand (1,9).rand (1,9).rand (1,9).rand (1,9));
+							$mess_mdp = $pwd;
+							//echo "<tr><td colspan='4'>Choix 2: $pwd</td></tr>";
+							// $mess_mdp = "Inconnu (compte bloqué)";
+						} elseif ($_POST['sso'] == "yes") {
+							$pwd = '';
+							$mess_mdp = "aucun (sso)";
+							$changemdp = 'n';
+							//echo "<tr><td colspan='4'>sso</td></tr>";
+						}
+	
+						// utilise le prénom composé s'il existe, plutôt que le premier prénom
+	
+						//$res = mysql_query("INSERT INTO utilisateurs VALUES ('".$login_prof."', '".$prof[$k]["nom_usage"]."', '".$premier_prenom."', '".$civilite."', '".$pwd."', '', 'professeur', 'actif', 'y', '')");
+						//$sql="INSERT INTO utilisateurs SET login='$login_prof', nom='".$prof[$k]["nom_usage"]."', prenom='$premier_prenom', civilite='$civilite', password='$pwd', statut='professeur', etat='actif', change_mdp='y'";
+						$sql="INSERT INTO utilisateurs SET login='$login_prof', nom='".$prof[$k]["nom_usage"]."', prenom='$premier_prenom', civilite='$civilite', password='$pwd', statut='professeur', etat='actif', change_mdp='".$changemdp."', numind='P".$prof[$k]["id"]."'";
+						if(getSettingValue('auth_sso')=='lcs') {
+							$sql.=", auth_mode='sso'";
+						}
+						$res = mysql_query($sql);
+						// Pour debug:
+						//echo "<tr><td colspan='4'>$sql</td></tr>";
+	
+						$tab_nouveaux_profs[]="$login_prof|$mess_mdp";
+	
+						if(!$res){$nb_reg_no++;}
+						$res = mysql_query("INSERT INTO tempo2 VALUES ('".$login_prof."', '"."P".$prof[$k]["id"]."')");
+	
+						$alt=$alt*(-1);
+						echo "<tr class='lig$alt'>\n";
+						echo "<td><p><font color='red'>".$login_prof."</font></p></td><td><p>".$prof[$k]["nom_usage"]."</p></td><td><p>".$premier_prenom."</p></td><td>".$mess_mdp."</td></tr>\n";
+					} else {
+						//$res = mysql_query("UPDATE utilisateurs set etat='actif' where login = '".$login_prof_gepi."'");
+						// On corrige aussi les nom/prénom/civilité et numind parce que la reconnaissance a aussi pu se faire sur le nom/prénom
+						$sql="UPDATE utilisateurs set etat='actif', nom='".$prof[$k]["nom_usage"]."', prenom='$premier_prenom', civilite='$civilite', numind='P".$prof[$k]["id"]."'";
+						if(getSettingValue('auth_sso')=='lcs') {
+							$sql.=", auth_mode='sso'";
+						}
+						$sql.=" where login = '".$login_prof_gepi."';";
+						$res = mysql_query($sql);
+
+						if(!$res) $nb_reg_no++;
+						$res = mysql_query("INSERT INTO tempo2 VALUES ('".$login_prof_gepi."', '"."P".$prof[$k]["id"]."')");
+	
+						$alt=$alt*(-1);
+						echo "<tr class='lig$alt'>\n";
+						echo "<td><p><font color='green'>".$login_prof_gepi."</font></p></td><td><p>".$prof[$k]["nom_usage"]."</p></td><td><p>".$prof[$k]["prenom"]."</p></td><td>Inchangé</td></tr>\n";
 					}
-
-					$login_prof = $temp1;
-					//$login_prof = remplace_accents($temp1,"all");
-					// On teste l'unicité du login que l'on vient de créer
-					$m = 2;
-					$test_unicite = 'no';
-					$temp = $login_prof;
-					while ($test_unicite != 'yes') {
-						$test_unicite = test_unique_login($login_prof);
-
-						if ($test_unicite != 'yes') {
-							$login_prof = $temp.$m;
-							$m++;
-						}
-					}
-					$prof[$k]["nom_usage"] = traitement_magic_quotes(corriger_caracteres($prof[$k]["nom_usage"]));
-					// Mot de passe et change_mdp
-
-					$changemdp = 'y';
-
-					//echo "<tr><td colspan='4'>strlen($affiche[5])=".strlen($affiche[5])."<br />\$affiche[4]=$affiche[4]<br />\$_POST['sso']=".$_POST['sso']."</td></tr>";
-					if (strlen($mdp)>2 and $prof[$k]["fonction"]=="ENS" and $_POST['sso'] == "no") {
-						//
-						$pwd = md5(trim($mdp)); //NUMEN
-						//$mess_mdp = "NUMEN";
-						if($_POST['mode_mdp']=='alea'){
-							$mess_mdp = "$mdp";
-						}
-						else{
-							$mess_mdp = "Mot de passe d'après la date de naissance";
-						}
-						//echo "<tr><td colspan='4'>NUMEN: $affiche[5] $pwd</td></tr>";
-					} elseif ($_POST['sso']== "no") {
-						$pwd = md5(rand (1,9).rand (1,9).rand (1,9).rand (1,9).rand (1,9).rand (1,9));
-						$mess_mdp = $pwd;
-						//echo "<tr><td colspan='4'>Choix 2: $pwd</td></tr>";
-						// $mess_mdp = "Inconnu (compte bloqué)";
-					} elseif ($_POST['sso'] == "yes") {
-						$pwd = '';
-						$mess_mdp = "aucun (sso)";
-						$changemdp = 'n';
-						//echo "<tr><td colspan='4'>sso</td></tr>";
-					}
-
-					// utilise le prénom composé s'il existe, plutôt que le premier prénom
-
-					//$res = mysql_query("INSERT INTO utilisateurs VALUES ('".$login_prof."', '".$prof[$k]["nom_usage"]."', '".$premier_prenom."', '".$civilite."', '".$pwd."', '', 'professeur', 'actif', 'y', '')");
-					//$sql="INSERT INTO utilisateurs SET login='$login_prof', nom='".$prof[$k]["nom_usage"]."', prenom='$premier_prenom', civilite='$civilite', password='$pwd', statut='professeur', etat='actif', change_mdp='y'";
-					$sql="INSERT INTO utilisateurs SET login='$login_prof', nom='".$prof[$k]["nom_usage"]."', prenom='$premier_prenom', civilite='$civilite', password='$pwd', statut='professeur', etat='actif', change_mdp='".$changemdp."', numind='P".$prof[$k]["id"]."'";
-					$res = mysql_query($sql);
-					// Pour debug:
-					//echo "<tr><td colspan='4'>$sql</td></tr>";
-
-					$tab_nouveaux_profs[]="$login_prof|$mess_mdp";
-
-					if(!$res){$nb_reg_no++;}
-					$res = mysql_query("INSERT INTO tempo2 VALUES ('".$login_prof."', '"."P".$prof[$k]["id"]."')");
-
-					$alt=$alt*(-1);
-					echo "<tr class='lig$alt'>\n";
-					echo "<td><p><font color='red'>".$login_prof."</font></p></td><td><p>".$prof[$k]["nom_usage"]."</p></td><td><p>".$premier_prenom."</p></td><td>".$mess_mdp."</td></tr>\n";
-				} else {
-					//$res = mysql_query("UPDATE utilisateurs set etat='actif' where login = '".$login_prof_gepi."'");
-					// On corrige aussi les nom/prénom/civilité et numind parce que la reconnaissance a aussi pu se faire sur le nom/prénom
-					$res = mysql_query("UPDATE utilisateurs set etat='actif', nom='".$prof[$k]["nom_usage"]."', prenom='$premier_prenom', civilite='$civilite', numind='P".$prof[$k]["id"]."' where login = '".$login_prof_gepi."'");
-					if(!$res) $nb_reg_no++;
-					$res = mysql_query("INSERT INTO tempo2 VALUES ('".$login_prof_gepi."', '"."P".$prof[$k]["id"]."')");
-
-					$alt=$alt*(-1);
-					echo "<tr class='lig$alt'>\n";
-					echo "<td><p><font color='green'>".$login_prof_gepi."</font></p></td><td><p>".$prof[$k]["nom_usage"]."</p></td><td><p>".$prof[$k]["prenom"]."</p></td><td>Inchangé</td></tr>\n";
 				}
-			}
+			//}
 		}
 	}
 	echo "</table>\n";
@@ -785,6 +858,10 @@ else {
 		}
 		echo "<input type='submit' value='Imprimer' /></p>\n";
 		echo "</form>\n";
+	}
+
+	if((isset($info_pb_mdp))&&($info_pb_mdp!="")) {
+		echo $info_pb_mdp;
 	}
 
 	if ($nb_reg_no != 0) {
@@ -854,18 +931,8 @@ else {
 		echo '<p style="text-align: center; font-weight: bold;"><a href="../mod_ent/gestion_ent_profs.php">Vérifier les logins avant de poursuivre</a></p>'."\n";
 
 	} else {
-		/*
-		echo '<p style="text-align: center; font-weight: bold;"><a href="prof_disc_classe_csv.php?a=a'.add_token_in_url().'">Procéder à la cinquième phase d\'initialisation</a></p>'."\n";
 
-		echo "<p style='text-align: center; font-weight: bold;'>Si la remontée vers STS n'a pas encore été effectuée, vous pouvez effectuer l'initialisation des enseignements à partir d'un export CSV de UnDeuxTemps&nbsp;: <a href='traite_csv_udt.php?a=a".add_token_in_url()."'>Procéder à la cinquième phase d'initialisation</a><br />(<i>procédure encore expérimentale... il se peut que vous ayez des groupes en trop</i>)</p>\n";
-		*/
-
-		$nb_modes=2;
-		if(file_exists('init_alternatif.php')) {
-			$nb_modes=3;
-		}
-
-		echo "<p>La création des enseignements peut se faire de $nb_modes façons différentes (<i>par ordre de préférence</i>)&nbsp;:</p>\n";
+		echo "<p>La création des enseignements peut se faire de trois façons différentes (<i>par ordre de préférence</i>)&nbsp;:</p>\n";
 
 		echo "<ul>\n";
 		echo "<li>\n";
@@ -880,11 +947,9 @@ else {
 		echo "<p>Si la remontée vers STS n'a pas encore été effectuée, vous pouvez effectuer l'initialisation des enseignements à partir d'un export CSV de UnDeuxTemps&nbsp;: <br /><a href='traite_csv_udt.php?a=a".add_token_in_url()."'>Procéder à la cinquième phase d'initialisation</a><br />(<i>procédure encore expérimentale... il se peut que vous ayez des groupes en trop</i>)</p>\n";
 		echo "</li>\n";
 
-		if($nb_modes==3) {
-			echo "<li>\n";
-			echo "<p>Si vous n'avez pas non plus d'export CSV d'UnDeuxTemps&nbsp;: <br /><a href='init_alternatif.php?'>Initialisation alternative des enseignements</a><br />(<i>le mode le plus fastidieux</i>)</p>\n";
-			echo "</li>\n";
-		}
+		echo "<li>\n";
+		echo "<p>Si vous n'avez pas non plus d'export CSV d'UnDeuxTemps&nbsp;: <br /><a href='init_alternatif.php?'>Initialisation alternative des enseignements</a><br />(<i>le mode le plus fastidieux</i>)</p>\n";
+		echo "</li>\n";
 
 		echo "</ul>\n";
 

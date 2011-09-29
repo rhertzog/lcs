@@ -31,6 +31,9 @@ abstract class BaseResponsableEleveAdressePeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 8;
+
 	/** the column name for the ADR_ID field */
 	const ADR_ID = 'resp_adr.ADR_ID';
 
@@ -55,6 +58,9 @@ abstract class BaseResponsableEleveAdressePeer {
 	/** the column name for the COMMUNE field */
 	const COMMUNE = 'resp_adr.COMMUNE';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of ResponsableEleveAdresse objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -70,7 +76,7 @@ abstract class BaseResponsableEleveAdressePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
+	protected static $fieldNames = array (
 		BasePeer::TYPE_PHPNAME => array ('AdrId', 'Adr1', 'Adr2', 'Adr3', 'Adr4', 'Cp', 'Pays', 'Commune', ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('adrId', 'adr1', 'adr2', 'adr3', 'adr4', 'cp', 'pays', 'commune', ),
 		BasePeer::TYPE_COLNAME => array (self::ADR_ID, self::ADR1, self::ADR2, self::ADR3, self::ADR4, self::CP, self::PAYS, self::COMMUNE, ),
@@ -85,7 +91,7 @@ abstract class BaseResponsableEleveAdressePeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
+	protected static $fieldKeys = array (
 		BasePeer::TYPE_PHPNAME => array ('AdrId' => 0, 'Adr1' => 1, 'Adr2' => 2, 'Adr3' => 3, 'Adr4' => 4, 'Cp' => 5, 'Pays' => 6, 'Commune' => 7, ),
 		BasePeer::TYPE_STUDLYPHPNAME => array ('adrId' => 0, 'adr1' => 1, 'adr2' => 2, 'adr3' => 3, 'adr4' => 4, 'cp' => 5, 'pays' => 6, 'commune' => 7, ),
 		BasePeer::TYPE_COLNAME => array (self::ADR_ID => 0, self::ADR1 => 1, self::ADR2 => 2, self::ADR3 => 3, self::ADR4 => 4, self::CP => 5, self::PAYS => 6, self::COMMUNE => 7, ),
@@ -227,7 +233,7 @@ abstract class BaseResponsableEleveAdressePeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -246,7 +252,7 @@ abstract class BaseResponsableEleveAdressePeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -300,7 +306,7 @@ abstract class BaseResponsableEleveAdressePeer {
 	 * @param      ResponsableEleveAdresse $value A ResponsableEleveAdresse object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(ResponsableEleveAdresse $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -461,7 +467,7 @@ abstract class BaseResponsableEleveAdressePeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + ResponsableEleveAdressePeer::NUM_COLUMNS;
+			$col = $startcol + ResponsableEleveAdressePeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = ResponsableEleveAdressePeer::OM_CLASS;
 			$obj = new $cls();
@@ -470,6 +476,7 @@ abstract class BaseResponsableEleveAdressePeer {
 		}
 		return array($obj, $col);
 	}
+
 	/**
 	 * Returns the TableMap related to this peer.
 	 * This method is not needed for general use but a specific application could have a need.
@@ -511,7 +518,7 @@ abstract class BaseResponsableEleveAdressePeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a ResponsableEleveAdresse or Criteria object.
+	 * Performs an INSERT on the database, given a ResponsableEleveAdresse or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or ResponsableEleveAdresse object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -550,7 +557,7 @@ abstract class BaseResponsableEleveAdressePeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a ResponsableEleveAdresse or Criteria object.
+	 * Performs an UPDATE on the database, given a ResponsableEleveAdresse or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or ResponsableEleveAdresse object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -589,11 +596,12 @@ abstract class BaseResponsableEleveAdressePeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the resp_adr table.
+	 * Deletes all rows from the resp_adr table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(ResponsableEleveAdressePeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -619,7 +627,7 @@ abstract class BaseResponsableEleveAdressePeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a ResponsableEleveAdresse or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a ResponsableEleveAdresse or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or ResponsableEleveAdresse object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -734,7 +742,7 @@ abstract class BaseResponsableEleveAdressePeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(ResponsableEleveAdresse $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

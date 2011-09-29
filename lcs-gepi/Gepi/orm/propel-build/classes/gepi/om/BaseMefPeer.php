@@ -31,11 +31,14 @@ abstract class BaseMefPeer {
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
 
+	/** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
+	const NUM_HYDRATE_COLUMNS = 5;
+
 	/** the column name for the ID field */
 	const ID = 'mef.ID';
 
-	/** the column name for the EXT_ID field */
-	const EXT_ID = 'mef.EXT_ID';
+	/** the column name for the MEF_CODE field */
+	const MEF_CODE = 'mef.MEF_CODE';
 
 	/** the column name for the LIBELLE_COURT field */
 	const LIBELLE_COURT = 'mef.LIBELLE_COURT';
@@ -46,6 +49,9 @@ abstract class BaseMefPeer {
 	/** the column name for the LIBELLE_EDITION field */
 	const LIBELLE_EDITION = 'mef.LIBELLE_EDITION';
 
+	/** The default string format for model objects of the related table **/
+	const DEFAULT_STRING_FORMAT = 'YAML';
+	
 	/**
 	 * An identiy map to hold any loaded instances of Mef objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -61,12 +67,12 @@ abstract class BaseMefPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
-	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'ExtId', 'LibelleCourt', 'LibelleLong', 'LibelleEdition', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'extId', 'libelleCourt', 'libelleLong', 'libelleEdition', ),
-		BasePeer::TYPE_COLNAME => array (self::ID, self::EXT_ID, self::LIBELLE_COURT, self::LIBELLE_LONG, self::LIBELLE_EDITION, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'EXT_ID', 'LIBELLE_COURT', 'LIBELLE_LONG', 'LIBELLE_EDITION', ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'ext_id', 'libelle_court', 'libelle_long', 'libelle_edition', ),
+	protected static $fieldNames = array (
+		BasePeer::TYPE_PHPNAME => array ('Id', 'MefCode', 'LibelleCourt', 'LibelleLong', 'LibelleEdition', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'mefCode', 'libelleCourt', 'libelleLong', 'libelleEdition', ),
+		BasePeer::TYPE_COLNAME => array (self::ID, self::MEF_CODE, self::LIBELLE_COURT, self::LIBELLE_LONG, self::LIBELLE_EDITION, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'MEF_CODE', 'LIBELLE_COURT', 'LIBELLE_LONG', 'LIBELLE_EDITION', ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'mef_code', 'libelle_court', 'libelle_long', 'libelle_edition', ),
 		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, )
 	);
 
@@ -76,12 +82,12 @@ abstract class BaseMefPeer {
 	 * first dimension keys are the type constants
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
-	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'ExtId' => 1, 'LibelleCourt' => 2, 'LibelleLong' => 3, 'LibelleEdition' => 4, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'extId' => 1, 'libelleCourt' => 2, 'libelleLong' => 3, 'libelleEdition' => 4, ),
-		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::EXT_ID => 1, self::LIBELLE_COURT => 2, self::LIBELLE_LONG => 3, self::LIBELLE_EDITION => 4, ),
-		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'EXT_ID' => 1, 'LIBELLE_COURT' => 2, 'LIBELLE_LONG' => 3, 'LIBELLE_EDITION' => 4, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'ext_id' => 1, 'libelle_court' => 2, 'libelle_long' => 3, 'libelle_edition' => 4, ),
+	protected static $fieldKeys = array (
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'MefCode' => 1, 'LibelleCourt' => 2, 'LibelleLong' => 3, 'LibelleEdition' => 4, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'mefCode' => 1, 'libelleCourt' => 2, 'libelleLong' => 3, 'libelleEdition' => 4, ),
+		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::MEF_CODE => 1, self::LIBELLE_COURT => 2, self::LIBELLE_LONG => 3, self::LIBELLE_EDITION => 4, ),
+		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'MEF_CODE' => 1, 'LIBELLE_COURT' => 2, 'LIBELLE_LONG' => 3, 'LIBELLE_EDITION' => 4, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'mef_code' => 1, 'libelle_court' => 2, 'libelle_long' => 3, 'libelle_edition' => 4, ),
 		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, )
 	);
 
@@ -155,13 +161,13 @@ abstract class BaseMefPeer {
 	{
 		if (null === $alias) {
 			$criteria->addSelectColumn(MefPeer::ID);
-			$criteria->addSelectColumn(MefPeer::EXT_ID);
+			$criteria->addSelectColumn(MefPeer::MEF_CODE);
 			$criteria->addSelectColumn(MefPeer::LIBELLE_COURT);
 			$criteria->addSelectColumn(MefPeer::LIBELLE_LONG);
 			$criteria->addSelectColumn(MefPeer::LIBELLE_EDITION);
 		} else {
 			$criteria->addSelectColumn($alias . '.ID');
-			$criteria->addSelectColumn($alias . '.EXT_ID');
+			$criteria->addSelectColumn($alias . '.MEF_CODE');
 			$criteria->addSelectColumn($alias . '.LIBELLE_COURT');
 			$criteria->addSelectColumn($alias . '.LIBELLE_LONG');
 			$criteria->addSelectColumn($alias . '.LIBELLE_EDITION');
@@ -212,7 +218,7 @@ abstract class BaseMefPeer {
 		return $count;
 	}
 	/**
-	 * Method to select one object from the DB.
+	 * Selects one object from the DB.
 	 *
 	 * @param      Criteria $criteria object used to create the SELECT statement.
 	 * @param      PropelPDO $con
@@ -231,7 +237,7 @@ abstract class BaseMefPeer {
 		return null;
 	}
 	/**
-	 * Method to do selects.
+	 * Selects several row from the DB.
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      PropelPDO $con
@@ -285,7 +291,7 @@ abstract class BaseMefPeer {
 	 * @param      Mef $value A Mef object.
 	 * @param      string $key (optional) key to use for instance map (for performance boost if key was already calculated externally).
 	 */
-	public static function addInstanceToPool(Mef $obj, $key = null)
+	public static function addInstanceToPool($obj, $key = null)
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
@@ -443,7 +449,7 @@ abstract class BaseMefPeer {
 			// We no longer rehydrate the object, since this can cause data loss.
 			// See http://www.propelorm.org/ticket/509
 			// $obj->hydrate($row, $startcol, true); // rehydrate
-			$col = $startcol + MefPeer::NUM_COLUMNS;
+			$col = $startcol + MefPeer::NUM_HYDRATE_COLUMNS;
 		} else {
 			$cls = MefPeer::OM_CLASS;
 			$obj = new $cls();
@@ -452,6 +458,7 @@ abstract class BaseMefPeer {
 		}
 		return array($obj, $col);
 	}
+
 	/**
 	 * Returns the TableMap related to this peer.
 	 * This method is not needed for general use but a specific application could have a need.
@@ -493,7 +500,7 @@ abstract class BaseMefPeer {
 	}
 
 	/**
-	 * Method perform an INSERT on the database, given a Mef or Criteria object.
+	 * Performs an INSERT on the database, given a Mef or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or Mef object containing data that is used to create the INSERT statement.
 	 * @param      PropelPDO $con the PropelPDO connection to use
@@ -536,7 +543,7 @@ abstract class BaseMefPeer {
 	}
 
 	/**
-	 * Method perform an UPDATE on the database, given a Mef or Criteria object.
+	 * Performs an UPDATE on the database, given a Mef or Criteria object.
 	 *
 	 * @param      mixed $values Criteria or Mef object containing data that is used to create the UPDATE statement.
 	 * @param      PropelPDO $con The connection to use (specify PropelPDO connection object to exert more control over transactions).
@@ -575,11 +582,12 @@ abstract class BaseMefPeer {
 	}
 
 	/**
-	 * Method to DELETE all rows from the mef table.
+	 * Deletes all rows from the mef table.
 	 *
+	 * @param      PropelPDO $con the connection to use
 	 * @return     int The number of affected rows (if supported by underlying database driver).
 	 */
-	public static function doDeleteAll($con = null)
+	public static function doDeleteAll(PropelPDO $con = null)
 	{
 		if ($con === null) {
 			$con = Propel::getConnection(MefPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -605,7 +613,7 @@ abstract class BaseMefPeer {
 	}
 
 	/**
-	 * Method perform a DELETE on the database, given a Mef or Criteria object OR a primary key value.
+	 * Performs a DELETE on the database, given a Mef or Criteria object OR a primary key value.
 	 *
 	 * @param      mixed $values Criteria or Mef object or primary key or array of primary keys
 	 *              which is used to create the DELETE statement
@@ -692,8 +700,8 @@ abstract class BaseMefPeer {
 			// set fkey col in related Eleve rows to NULL
 			$selectCriteria = new Criteria(MefPeer::DATABASE_NAME);
 			$updateValues = new Criteria(MefPeer::DATABASE_NAME);
-			$selectCriteria->add(ElevePeer::ID_MEF, $obj->getId());
-			$updateValues->add(ElevePeer::ID_MEF, null);
+			$selectCriteria->add(ElevePeer::MEF_CODE, $obj->getMefCode());
+			$updateValues->add(ElevePeer::MEF_CODE, null);
 
 			BasePeer::doUpdate($selectCriteria, $updateValues, $con); // use BasePeer because generated Peer doUpdate() methods only update using pkey
 
@@ -712,7 +720,7 @@ abstract class BaseMefPeer {
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(Mef $obj, $cols = null)
+	public static function doValidate($obj, $cols = null)
 	{
 		$columns = array();
 

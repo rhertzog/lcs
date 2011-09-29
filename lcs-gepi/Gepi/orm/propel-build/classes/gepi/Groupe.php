@@ -335,7 +335,11 @@ class Groupe extends BaseGroupe {
 	 * @return PropelObjectCollection EdtEmplacementCours une collection d'emplacement de cours ordonnée chronologiquement
 	 */
 	public function getEdtEmplacementCourssPeriodeCalendrierActuelle($v = 'now'){
-	    $query = EdtEmplacementCoursQuery::create()->filterByGroupe($this)
+		if ( getSettingValue("autorise_edt_tous") != 'y') {
+        	return null;
+        }
+        
+		$query = EdtEmplacementCoursQuery::create()->filterByGroupe($this)
 		    ->filterByIdCalendrier(0)
 		    ->addOr(EdtEmplacementCoursPeer::ID_CALENDRIER, NULL);
 
@@ -364,7 +368,11 @@ class Groupe extends BaseGroupe {
 	 * @return EdtEmplacementCours l'emplacement de cours actuel ou null si pas de cours actuellement
 	 */
 	public function getEdtEmplacementCours($v = 'now'){
-
+        
+		if ( getSettingValue("autorise_edt_tous") != 'y') {
+        	return null;
+        }
+        
 	    $edtCoursCol = $this->getEdtEmplacementCourssPeriodeCalendrierActuelle($v);
 
 	    require_once("helpers/EdtEmplacementCoursHelper.php");

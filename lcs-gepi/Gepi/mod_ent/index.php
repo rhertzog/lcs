@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version $Id: index.php 6602 2011-03-03 11:38:21Z crob $
+ * @version $Id: index.php 7950 2011-08-24 13:53:46Z jjocal $
  *
  * Module d'intégration de Gepi dans un ENT réalisé au moment de l'intégration de Gepi dans ARGOS dans l'académie de Bordeaux
  * Fichier permettant de récupérer de nouveaux élèves dans le ldap de l'ENT
@@ -57,7 +57,7 @@ $etape = isset($_GET["etape"]) ? $_GET["etape"] : NULL;
 
 // ======================= Traitement des données ================================
 // On récupère le RNE de l'établissement en question
-$RNE = getSettingValue("gepiSchoolRne");
+$RNE = (isset($multisite) && $multisite == 'y') ? $_COOKIE['RNE'] : getSettingValue("gepiSchoolRne");
 if ($RNE === '') {
 	$msg = "Attention, votre RNE n'est pas renseigné dans la page des <a href=\"gestion/param_gen.php\">paramètres généraux.</a>";
 } else {

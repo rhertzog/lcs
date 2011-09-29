@@ -3,7 +3,7 @@
 /*
  *
  *
- * @version $Id: visu_ele_func.lib.php 6544 2011-02-26 22:31:25Z eabgrall $
+ * @version $Id: visu_ele_func.lib.php 7952 2011-08-24 14:17:16Z jjocal $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -1152,7 +1152,8 @@ function releve_html($tab_rel,$id_classe,$num_periode,$index_per) {
 		echo "<td class='releve'>\n";
 		echo "<b>".htmlentities($tab_rel['periodes'][$index_per]['groupes'][$j]['matiere_nom_complet'])."</b>";
 		$k = 0;
-		While ($k < count($tab_rel['groupes'][$index_grp]['prof'])) {
+                $nbre_professeurs = isset($tab_rel['groupes'][$index_grp]['prof']) ? count($tab_rel['groupes'][$index_grp]['prof']) : NULL;
+		While ($k < $nbre_professeurs) {
 			echo "<br /><i>".affiche_utilisateur(htmlentities($tab_rel['groupes'][$index_grp]['prof'][$k]['prof_login']),$id_classe)."</i>";
 			$k++;
 		}

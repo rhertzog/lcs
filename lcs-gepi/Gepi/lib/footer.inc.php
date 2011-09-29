@@ -1,8 +1,14 @@
 <?php
-/*
- $Id: footer.inc.php 5301 2010-09-14 19:17:23Z jjacquard $
-*/
-// SI on ne souhaite pas utiliser les js de base, on enlève tout ce qui suit :
+/**
+ * Pied de page
+ * 
+ * $Id: footer.inc.php 8081 2011-08-31 15:49:39Z crob $
+ * 
+ * @package General
+ * @subpackage Affichage
+ */
+
+// iI on ne souhaite pas utiliser les js de base, on enlève tout ce qui suit :
 if (isset($utilisation_jsbase) AND $utilisation_jsbase == "non") {
 	echo "<!-- Pas de js en pied -->\n";
 } else {
@@ -28,31 +34,15 @@ if (isset($utilisation_jsbase) AND $utilisation_jsbase == "non") {
 	// au risque de perturber l'affichage de la page si Javascript est désactivé.
 
 	if(isset($tabdiv_infobulle)){
-//echo "1";
 		// Pour éviter des cas de doublons...
 		$temoin_infobulle=array();
 
-		//echo count($tabdiv_infobulle);
 		if(count($tabdiv_infobulle)>0){
-//echo "2";
 			for($i=0;$i<count($tabdiv_infobulle);$i++){
-				//if(!in_array($tabid_infobulle[$i],$temoin_infobulle)) {
 				if((isset($tabid_infobulle[$i]))&&(!in_array($tabid_infobulle[$i],$temoin_infobulle))) {
 					echo $tabdiv_infobulle[$i]."\n";
 					$temoin_infobulle[]=$tabid_infobulle[$i];
 				}
-/*
-				if(isset($tabid_infobulle[$i])) {
-					if(!in_array($tabid_infobulle[$i],$temoin_infobulle)) {
-						//echo "$i ";
-						echo $tabdiv_infobulle[$i]."\n";
-						$temoin_infobulle[]=$tabid_infobulle[$i];
-					}
-				}
-				elseif(isset($tabdiv_infobulle[$i])) {
-					echo $tabdiv_infobulle[$i]."\n";
-				}
-*/
 			}
 		}
 	}
@@ -73,24 +63,17 @@ if (isset($utilisation_jsbase) AND $utilisation_jsbase == "non") {
 				echo "cacher_div('".$tabid_infobulle[$i]."');\n";
 			}
 			echo "</script>\n";
-
-			/*
-			// Remarques:
-			echo "<p><i>Remarque:</i></p><blockquote><p>Pour tester l'effet infobulle-&gt;note de bas de page, désactivez JavaScript et rechargez la page.<br />Par exemple, avec l'extension WebDevelopper de Firefox, cliquez sur la barre: Disable/Disable javascript/All javascripts et rechargez la page.</p></blockquote>\n";
-			*/
-
-			/*
-			// Pour afficher le code source de la page:
-			echo "<div style='width: 800px; border: 1px solid black;'>\n";
-			show_source($_SERVER['SCRIPT_FILENAME']);
-			echo "</div>\n";
-			*/
 		}
 	}
-} // fin du if (isset($utilisation_jsbase) AND $utilisation_jsbase == "non")
+}
 
 	if(getSettingValue("gepi_pmv")!="n"){
-		if (file_exists($gepiPath."/pmv.php")) require ($gepiPath."/pmv.php");
+		if (file_exists($gepiPath."/pmv.php")) {
+          /**
+           * appel de pmv.php
+           */
+          require ($gepiPath."/pmv.php");
+        }
 	}
 	// Affichage de la durée de chargement de la page
 
@@ -154,6 +137,50 @@ if (isset($utilisation_jsbase) AND $utilisation_jsbase == "non") {
 			echo "<div id='div_info_formulaires' style='color:red; border:1px solid black; background-color: white; width: 40em; display:none; margin: 1em;'></div>\n";
 		}
 	}
+
+	$footer_sound= isset ($_SESSION['login']) ? getPref($_SESSION['login'],'footer_sound',"") : '';
+	if($footer_sound=='') {
+		$footer_sound=getSettingValue('footer_sound');
+		if($footer_sound=='') {
+			$footer_sound="KDE_Beep_Pop.wav";
+		}
+	}
+    
+	if ($niveau_arbo == "0") {
+		$chemin_sound="./sounds/".$footer_sound;
+	} elseif ($niveau_arbo == "1") {
+		$chemin_sound="../sounds/".$footer_sound;
+	} elseif ($niveau_arbo == "2") {
+		$chemin_sound="../../sounds/".$footer_sound;
+	} elseif ($niveau_arbo == "3") {
+		$chemin_sound="../../../sounds/".$footer_sound;
+	}
+	else {
+		$chemin_sound="../sounds/".$footer_sound;
+	}
+
+	if(file_exists($chemin_sound)) {
+		echo "<audio id='id_footer_sound' preload='auto' autobuffer>
+  <source src='$chemin_sound' />
+</audio>\n";
+		// Exemple de code d'appel: document.getElementById('id_footer_sound').play();
+		// Décommenter pour tester:
+		//echo "<a href='javascript:play_sound();'>Jouer le son 'footer_sound' : $footer_sound</a>";
+		echo "
+<!--a href='javascript:play_footer_sound();'>Jouer</a-->
+<script type='text/javascript'>
+function play_footer_sound() {
+	if(document.getElementById('id_footer_sound')) {
+		document.getElementById('id_footer_sound').play();
+	}
+}
+</script>
+";
+	}
+
+	
+	include('alerte_popup.php');
+
 ?>
 
 </body>

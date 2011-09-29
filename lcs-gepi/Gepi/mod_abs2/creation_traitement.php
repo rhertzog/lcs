@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: creation_traitement.php 5301 2010-09-14 19:17:23Z jjacquard $
+ * @version $Id: creation_traitement.php 7437 2011-07-18 19:20:27Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -62,6 +62,7 @@ if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") 
     die("acces interdit");
 }
 
+$menu = isset($_POST["menu"]) ? $_POST["menu"] :(isset($_GET["menu"]) ? $_GET["menu"] : Null);
 
 $nb = 100;
 if (isset($_POST["nb_checkbox"])) {
@@ -81,7 +82,11 @@ if ( isset($_POST["creation_traitement"]) && $_POST["creation_traitement"] == 'y
 	$message_erreur_traitement = ' Erreur : aucune saisie sélectionnée';
     } else {
 	$traitement->save();
-	header("Location: ./visu_traitement.php?id_traitement=".$traitement->getId());
+    $url='./visu_traitement.php?id_traitement='.$traitement->getId().'';
+    if($menu){
+        $url.='&menu=false';
+    }
+	header("Location:".$url);
     }
 } else if ( isset($_POST["ajout_traitement"]) && $_POST["ajout_traitement"] == 'yes') {
     $id_traitement = isset($_POST["id_traitement"]) ? $_POST["id_traitement"] :(isset($_GET["id_traitement"]) ? $_GET["id_traitement"] :(isset($_SESSION["id_traitement"]) ? $_SESSION["id_traitement"] : NULL));
@@ -101,7 +106,11 @@ if ( isset($_POST["creation_traitement"]) && $_POST["creation_traitement"] == 'y
 	    $message_erreur_traitement = ' Erreur : aucune saisie sélectionnée';
 	} else {
 	    $traitement->save();
-	    header("Location: ./visu_traitement.php?id_traitement=".$traitement->getId());
+        $url='./visu_traitement.php?id_traitement='.$traitement->getId().'';
+        if($menu){
+            $url.='&menu=false';
+            }
+            header("Location:".$url);
 	}
     }
 }

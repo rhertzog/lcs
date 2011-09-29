@@ -1,11 +1,28 @@
 <?php
-//@set_time_limit(0);
-/*
- * @version: $Id: import_cahier_notes.php 6618 2011-03-03 18:25:55Z crob $
-*
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
-*
-* This file is part of GEPI.
+/**
+ * Import de devoirs dans le carnet de notes
+ * 
+ * $Id: import_cahier_notes.php 7757 2011-08-14 23:52:26Z regis $
+ *
+ * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * 
+ * @license GNU/GPL
+ * @package Carnet_de_notes
+ * @subpackage export
+ * @see add_token_field()
+ * @see checkAccess()
+ * @see check_token()
+ * @see formate_date()
+ * @see get_nom_prenom_eleve()
+ * @see get_group()
+ * @see getSettingValue()
+ * @see mise_a_jour_moyennes_conteneurs()
+ * @see recherche_enfant()
+ * @see Session::security_check()
+ * @see Verif_prof_cahier_notes()
+ */
+
+/* This file is part of GEPI.
 *
 * GEPI is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,8 +39,11 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+//@set_time_limit(0);
 
-// Initialisations files
+/**
+ * Fichiers d'initialisation
+ */
 require_once("../lib/initialisations.inc.php");
 extract($_POST, EXTR_OVERWRITE);
 
@@ -76,7 +96,9 @@ if (count($current_group["classes"]["list"]) > 1) {
     $order_by = "nom";
 }
 
-
+/**
+ * Gestion des périodes
+ */
 include "../lib/periodes.inc.php";
 
 // On teste si la periode est vérouillée !
@@ -106,27 +128,13 @@ $annee=$instant['year'];
 
 
 
-function recherche_enfant($id_parent_tmp){
-	global $current_group, $periode_num, $id_racine;
-	$sql="SELECT * FROM cn_conteneurs WHERE parent='$id_parent_tmp'";
-	//echo "<!-- $sql -->\n";
-	$res_enfant=mysql_query($sql);
-	if(mysql_num_rows($res_enfant)>0){
-		while($lig_conteneur_enfant=mysql_fetch_object($res_enfant)){
-			recherche_enfant($lig_conteneur_enfant->id);
-		}
-	}
-	else{
-		$arret = 'no';
-		$id_conteneur_enfant=$id_parent_tmp;
-		mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_conteneur_enfant,$arret);
-	}
-}
-
 
 
 //**************** EN-TETE *****************
 $titre_page = "Import de devoirs dans le cahier de notes";
+/**
+ * Entête de la page
+ */
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 //debug_var();
@@ -147,12 +155,6 @@ if (!isset($is_posted)) {
 	echo "<input type=hidden name='is_posted' value='yes' />\n";
 	echo "<input type=\"hidden\" name=\"id_racine\" value=\"$id_racine\" />\n";
 	echo "<p><input type=\"file\" size=\"80\" name=\"csv_file\" /></p>\n";
-
-	/*
-	// Ajouter une case à cocher pour ajouter ou remplacer les devoirs de même nom existants... A FAIRE
-	echo "<p><input type=\"radio\" name=\"mode\" value=\"ajouter\" />Ajouter le contenu du CSV comme de nouveaux devoirs,<br />\n";
-	echo "ou <input type=\"radio\" name=\"mode\" value=\"remplacer\" /> remplacer les notes pour les devoirs de même nom.</p>\n";
-	*/
 
 	echo "<p><input type=submit value='Valider' /></p>\n";
 	echo "</form>\n";
@@ -183,19 +185,12 @@ else {
 	if(!isset($_POST['valide_insertion_devoirs'])) {
 		$csv_file = isset($_FILES["csv_file"]) ? $_FILES["csv_file"] : NULL;
 
-		/*
-		foreach($csv_file as $key => $value) {
-			echo "\$csv_file[$key]=$value<br />";
-		}
-		*/
-
 		if (trim($csv_file['name'])=='') {
 			echo "<p>Aucun fichier n'a été sélectionné !<br />\n";
 			echo "<a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine'>Cliquer ici</a> pour recommencer !</center></p>";
 		}
 		else{
 
-			//$fp = dbase_open($csv_file['tmp_name'], 0);
 			$fp=fopen($csv_file['tmp_name'],"r");
 
 			if(!$fp){
@@ -221,7 +216,6 @@ else {
 					for($i=0;$i<count($en_tete);$i++){
 						if(trim($en_tete[$i])==$tabchamps[$k]){
 							$tabindice[$k]=$i;
-							//echo "\$tabindice[$k]=$tabindice[$k]<br />";
 							$temoin++;
 						}
 					}
@@ -230,7 +224,10 @@ else {
 				if($temoin!=count($tabchamps)){
 					echo "<p><b>ERREUR:</b> La ligne d'entête du fichier n'est pas conforme à ce qui est attendu.</p>\n";
 					echo "<p><a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine'>Cliquer ici</a> pour recommencer !</center></p>\n";
-					require("../lib/footer.inc.php");
+					/**
+                     * Pied de page
+                     */
+                    require("../lib/footer.inc.php");
 					die();
 				}
 
@@ -247,7 +244,6 @@ else {
 					$ligne = fgets($fp, 4096);
 					if(trim($ligne)!=""){
 						$ligne=trim($ligne);
-						//echo "<p>ligne=$ligne<br />\n";
 						$tabligne=explode(";",preg_replace('/"/','',$ligne));
 
 						switch($tabligne[$tabindice[0]]){
@@ -261,14 +257,8 @@ else {
 									// On ne compte pas les champs avec un nom de devoir vide
 									// Si: il faut que les nomc_dev, coef_dev et date_dev aient le même nombre de colonnes...
 									// ... le test est fait plus loin pour ne pas créer de devoir avec un nom vide.
-									//if(trim($tabligne[$i])!=""){
-										$nomc_dev[]=preg_replace("/[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_\. - ]/","",corriger_caracteres($tabligne[$i]));
-									//}
-									/*
-									if($mode=="remplacer"){
-										$sql="SELECT id FROM cn_devoirs WHERE (nom_court='".."' AND id_racine='$id_racine')";
-									}
-									*/
+									$nomc_dev[]=preg_replace("/[^a-zA-Z0-9ÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü_\. - ]/","",corriger_caracteres($tabligne[$i]));
+									
 								}
 								break;
 							case "GEPI_DEV_COEF":
@@ -301,18 +291,14 @@ else {
 								$date_dev=array();
 								for($i=$tabindice[2];$i<sizeof($tabligne);$i++){
 									// Comment la date va-t-elle être formatée?
-									//$date_dev[]=$tabligne[$i];
-
-									//echo "\$tabligne[$i]=$tabligne[$i]<br />\n";
-
+									
 									// Dans le cas d'un import de CSV réalisé depuis l'enregistrement ODS->CSV, on a 46 colonnes de devoirs
 									// Le tabeau $date_dev[] est rempli jusqu'à l'indice 45.
 									// Par contre, pour les devoirs, ne sont créés que ceux dont le nomc_dev[] est non vide
 									if((strlen(preg_replace("#[0-9/]#","",$tabligne[$i]))!=0)||($tabligne[$i]=="")){
 										$tabligne[$i]="$jour/$mois/$annee";
 									}
-									//echo "\$tabligne[$i]=$tabligne[$i]<br />\n";
-
+									
 									$tmpdate=explode("/",$tabligne[$i]);
 									if(strlen($tmpdate[0])==4){
 										// Ce cas ne devrait pas se produire...
@@ -324,7 +310,6 @@ else {
 										}
 										$date="$tmpdate[2]-$tmpdate[1]-$tmpdate[0] 00:00:00";
 									}
-									//echo "date=$date<br />\n";
 									$date_dev[]=$date;
 								}
 								break;
@@ -391,7 +376,10 @@ else {
 				if(count($nomc_dev)==0){
 					echo "<p><b>Erreur:</b> Aucun nom de devoir n'a été trouvé.</p>\n";
 					echo "<p><a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine'>Cliquer ici</a> pour recommencer !</center></p>\n";
-					require("../lib/footer.inc.php");
+					/**
+                     * Pied de page
+                     */
+                    require("../lib/footer.inc.php");
 					die();
 				}
 
@@ -401,7 +389,10 @@ else {
                                   ){
 					echo "<p><b>Erreur:</b> Le nombre de champs ne coïncide pas pour les noms courts, coefficients et dates.</p>\n";
 					echo "<p><a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine'>Cliquer ici</a> pour recommencer !</center></p>\n";
-					require("../lib/footer.inc.php");
+					/**
+                     * Pied de page
+                     */
+                    require("../lib/footer.inc.php");
 					die();
 				}
 
@@ -410,9 +401,9 @@ else {
 					$note_sur_dev = array_pad(array(), count($nomc_dev), 20);
 				}
 
-				//================
-				// A FAIRE:
-				// AFFICHER UN TABLEAU DE CE QUI VA ETRE CRéé à CE STADE... AVEC DES CASES à COCHER POUR CONFIRMER.
+/**
+ * @todo AFFICHER UN TABLEAU DE CE QUI VA ETRE CRéé à CE STADE... AVEC DES CASES à COCHER POUR CONFIRMER.
+ */
 
 				echo "<div align='center'>\n";
 				echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
@@ -441,7 +432,6 @@ else {
 				echo "<th>&nbsp;</th>\n";
 				for($i=0;$i<count($nomc_dev);$i++){
 					if($nomc_dev[$i]!=""){
-						//echo "<th>".formate_date($date_dev[$i])."</th>\n";
 						echo "<th>";
 						echo "<input type='hidden' name='date_dev[$i]' value=\"".$date_dev[$i]."\" />\n";
 						echo formate_date($date_dev[$i]);
@@ -454,7 +444,6 @@ else {
 				echo "<th>&nbsp;</th>\n";
 				for($i=0;$i<count($nomc_dev);$i++){
 					if($nomc_dev[$i]!=""){
-						//echo "<th>$coef_dev[$i]</th>\n";
 						echo "<th>";
 						echo "<input type='hidden' name='coef_dev[$i]' value=\"".$coef_dev[$i]."\" />\n";
 						echo $coef_dev[$i];
@@ -467,7 +456,6 @@ else {
 				echo "<th>&nbsp;</th>\n";
 				for($i=0;$i<count($nomc_dev);$i++){
 					if($nomc_dev[$i]!=""){
-						//echo "<th>$note_sur_dev[$i]</th>\n";
 						echo "<th>";
 						echo "<input type='hidden' name='note_sur_dev[$i]' value=\"".$note_sur_dev[$i]."\" />\n";
 						echo $note_sur_dev[$i];
@@ -477,7 +465,6 @@ else {
 				echo "</tr>\n";
 
 				echo "<tr>\n";
-				//echo "<th>&nbsp;</th>\n";
 				echo "<th>Cocher le(s) devoir(s) à importer</th>\n";
 				for($i=0;$i<count($nomc_dev);$i++){
 					if($nomc_dev[$i]!=""){
@@ -494,35 +481,19 @@ else {
 					if(isset($tab_dev[$i]['login'])){
 						echo "<td>";
 						echo "<input type='hidden' name='login_ele[$i]' value=\"".$tab_dev[$i]['login']."\" />\n";
-						//echo $tab_dev[$i]['login'];
 						echo get_nom_prenom_eleve($tab_dev[$i]['login']);
 
 						echo "</td>\n";
-						//for($j=0;$j<count($id_dev);$j++){
 						for($j=0;$j<$nb_dev;$j++){
 							if((isset($tab_dev[$i]['note'][$j]))&&(isset($tab_dev[$i]['statut'][$j]))){
 
 								if($tab_dev[$i]['statut'][$j]!=""){
-									/*
-									//echo "<td>".$tab_dev[$i]['statut'][$j]."</td>\n";
-									echo "<td>";
-									//echo $tab_dev[$i]['statut'][$j];
-									echo "<input type='text' name='tab_dev_".$i."_statut_".$j."' value=\"".$tab_dev[$i]['statut'][$j]."\" />\n";
-									echo "</td>\n";
-									*/
 									$note=$tab_dev[$i]['statut'][$j];
 									if($note=="v"){
 										$note="";
 									}
 								}
 								else{
-									/*
-									//echo "<td>".$tab_dev[$i]['note'][$j]."</td>\n";
-									echo "<td>";
-									//echo $tab_dev[$i]['statut'][$j];
-									echo "<input type='text' name='tab_dev_".$i."_note_".$j."' value=\"".$tab_dev[$i]['note'][$j]."\" />\n";
-									echo "</td>\n";
-									*/
 									$note=$tab_dev[$i]['note'][$j];
 								}
 								echo "<td>";
@@ -539,7 +510,6 @@ else {
 				echo "</form>\n";
 
 				echo "</div>\n";
-				//================
 			}
 		}
 	}
@@ -549,31 +519,46 @@ else {
 		$nomc_dev=isset($_POST['nomc_dev']) ? $_POST['nomc_dev'] : NULL;
 		if(!isset($nomc_dev)){
 			echo "<p>ERREUR: Aucun devoir importé.</p>\n";
-			require("../lib/footer.inc.php");
+			/**
+             * Pied de page
+             */
+            require("../lib/footer.inc.php");
 		}
 
 		$date_dev=isset($_POST['date_dev']) ? $_POST['date_dev'] : NULL;
 		if(!isset($date_dev)){
 			echo "<p>ERREUR: Aucune date définie.</p>\n";
-			require("../lib/footer.inc.php");
+			/**
+             * Pied de page
+             */
+            require("../lib/footer.inc.php");
 		}
 
 		$coef_dev=isset($_POST['coef_dev']) ? $_POST['coef_dev'] : NULL;
 		if(!isset($coef_dev)){
 			echo "<p>ERREUR: Aucun coefficient défini.</p>\n";
-			require("../lib/footer.inc.php");
+			/**
+             * Pied de page
+             */
+            require("../lib/footer.inc.php");
 		}
 
 		$note_sur_dev=isset($_POST['note_sur_dev']) ? $_POST['note_sur_dev'] : NULL;
 		if(!isset($note_sur_dev)){
 			echo "<p>ERREUR: Aucun référentiel de notation défini.</p>\n";
-			require("../lib/footer.inc.php");
+			/**
+             * Pied de page
+             */
+            require("../lib/footer.inc.php");
 		}
 
 		$login_ele=isset($_POST['login_ele']) ? $_POST['login_ele'] : NULL;
 		if(!isset($login_ele)){
 			echo "<p>ERREUR: Aucun élève importé.</p>\n";
-			require("../lib/footer.inc.php");
+			/**
+             * Pied de page
+             */
+            require("../lib/footer.inc.php");
 		}
 
 		$valide_import_dev=isset($_POST['valide_import_dev']) ? $_POST['valide_import_dev'] : NULL;
@@ -587,21 +572,9 @@ else {
 		// On crée les devoirs à la racine... pas de gestion des boites pour le moment
 		$id_conteneur=$id_racine;
 		echo "<p>\n";
-		//unset($temoin_dev);
-		//$temoin_dev=array();
-		//echo "count(\$nomc_dev)=".count($nomc_dev)."<br />";
 		for($i=0;$i<count($nomc_dev);$i++){
 			if($nomc_dev[$i]!=""){
 				if(isset($valide_import_dev[$i])){
-					/*
-					$sql="INSERT INTO cn_devoirs SET id_racine='$id_racine',
-													id_conteneur='$id_conteneur',
-													nom_court='".$nomc_dev[$i]."'
-													nom_complet='".$nomc_dev[$i]."',
-													date='".$date_dev[$i]."',
-													coef='".$coef_dev[$i]."',
-													display_parents='1';";
-					*/
 					$sql="INSERT INTO cn_devoirs SET id_racine='$id_racine',
 													id_conteneur='$id_conteneur',
 													nom_court='Nouveau';";
@@ -613,7 +586,10 @@ else {
 					else{
 						echo "<p><b>Erreur</b> lors de la création du devoir n°$i (<i>$nomc_dev[$i]</i>).</p>\n";
 						echo "<p><a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine'>Cliquer ici</a> pour recommencer !</center></p>\n";
-						require("../lib/footer.inc.php");
+						/**
+                         * Pied de page
+                         */
+                require("../lib/footer.inc.php");
 						die();
 					}
 
@@ -628,15 +604,12 @@ else {
 					//echo "$sql<br />\n";
 					$res_update=mysql_query($sql);
 					if(!$res_update){
-					/*
-						$temoin_dev[$i]="ERREUR";
-					}
-					else{
-						$temoin_dev[$i]="OK";
-					*/
 						echo "<p><b>Erreur</b> lors de la création du devoir n°$i (<i>$nomc_dev[$i]</i>).</p>\n";
 						echo "<p><a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine'>Cliquer ici</a> pour recommencer !</center></p>\n";
-						require("../lib/footer.inc.php");
+						/**
+                         * Pied de page
+                         */
+                    require("../lib/footer.inc.php");
 						die();
 					}
 					flush();
@@ -646,51 +619,12 @@ else {
 		echo "</p>\n";
 
 		// On passe à l'insertion des notes
-		// $tab_dev[$cpt_ele]['login']
-		// $tab_dev[$cpt_ele]['note'][]
-		// $tab_dev[$cpt_ele]['statut'][]
 		echo "<p>Insertion des notes pour ";
-		/*
-		for($i=0;$i<count($tab_dev);$i++){
-			if($i>0){echo ", ";}
-			if(isset($tab_dev[$i]['login'])){
-				echo $tab_dev[$i]['login'];
-				for($j=0;$j<count($id_dev);$j++){
-					if((isset($tab_dev[$i]['note'][$j]))&&(isset($tab_dev[$i]['statut'][$j]))){
-						$sql="INSERT INTO cn_notes_devoirs SET login='".$tab_dev[$i]['login']."',
-																id_devoir='".$id_dev[$j]."',
-																note='".$tab_dev[$i]['note'][$j]."',
-																statut='".$tab_dev[$i]['statut'][$j]."';";
-						//echo "$sql<br />\n";
-						//echo "OK<br />\n";
-						$res_insert=mysql_query($sql);
-						// METTRE LES ERREURS DANS UN $msg?
-					}
 
-					if($i==count($tab_dev)-1){
-						//echo " (recalcul) ";
-						$arret = 'no';
-						mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_conteneur,$arret);
-						// La boite courante est mise à jour...
-						// ... mais pas la boite destination.
-						// Il faudrait rechercher pour $id_racine les derniers descendants et lancer la mise à jour sur chacun de ces descendants.
-						// C'est fait là:
-						recherche_enfant($id_racine);
-					}
-					flush();
-				}
-			}
-		}
-		*/
-
-		//for($i=0;$i<count($tab_dev);$i++){
-		//for($i=0;$i<count($nomc_dev);$i++){
 		for($i=0;$i<count($login_ele);$i++){
 			if($i>0){echo ", ";}
 			if(isset($login_ele[$i])) {
-				//echo $login_ele[$i];
 				echo get_nom_prenom_eleve($login_ele[$i]);
-				//for($j=0;$j<count($id_dev);$j++){
 				for($j=0;$j<count($nomc_dev);$j++){
 					if(isset($valide_import_dev[$j])){
 						if(isset($id_dev[$j])){
@@ -721,26 +655,15 @@ else {
 									$elev_statut='v';
 								}
 
-								/*
-								$sql="INSERT INTO cn_notes_devoirs SET login='".$tab_dev[$i]['login']."',
-																		id_devoir='".$id_dev[$j]."',
-																		note='".$tab_dev[$i]['note'][$j]."',
-																		statut='".$tab_dev[$i]['statut'][$j]."';";
-								*/
 								$sql="INSERT INTO cn_notes_devoirs SET login='".$login_ele[$i]."',
 																		id_devoir='".$id_dev[$j]."',
 																		note='".$note."',
 																		statut='".$elev_statut."';";
-								//echo "$sql<br />\n";
-								//echo "OK<br />\n";
 								$res_insert=mysql_query($sql);
 								// METTRE LES ERREURS DANS UN $msg?
 							}
 
-							//if($i==count($tab_dev)-1){
-							//if($i==count($nomc_dev)-1){
 							if($i==count($login_ele)-1){
-								//echo " (recalcul) ";
 								$arret = 'no';
 								mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_conteneur,$arret);
 								// La boite courante est mise à jour...
@@ -762,5 +685,8 @@ else {
 	}
 }
 echo "<p><br /></p>\n";
+/**
+ * Pied de page
+ */
 require("../lib/footer.inc.php");
 ?>
