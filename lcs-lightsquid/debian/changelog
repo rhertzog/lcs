@@ -1,5 +1,5 @@
-lcs-lightsquid (2.4.9~1) UNRELEASED; urgency=low
+lcs-lightsquid (2.4.9~2) Lcs; urgency=low
 
   * Initial release.
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 23 Sep 2011 10:31:03 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 29 Sep 2011 09:50:17 +0200
