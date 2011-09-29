@@ -9,7 +9,7 @@ case "$1" in
 	chmod +x /usr/share/lcs/lightsquid/*.pl
 	chmod +x /usr/share/lcs/lightsquid/*.cgi
 	chown -R www-data:www-data /usr/share/lcs/lightsquid
-	chown -www-data:www-data /var/www/lcs/includes/mnu.d/50stats/40lightsquid.inc
+	chown www-data:www-data /var/www/lcs/includes/mnu.d/50stats/40lightsquid.inc
 	# Reload apache conf
     /etc/init.d/apache2 reload > /dev/null 2>&1
     	;;
