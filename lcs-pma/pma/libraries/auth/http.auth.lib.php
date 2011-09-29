@@ -19,8 +19,8 @@
  *
  * @access  public
  */
- // jlcf modif 3/3 23/03/2006
-  if ( isset($_LCS['login']) ) {
+ //  modif 
+   if ( isset($_LCS['login']) ) {
        $PHP_AUTH_USER =  $_LCS['login'];
        $PHP_AUTH_PW = $_LCS['pass'];
    }

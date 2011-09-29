@@ -1,13 +1,5 @@
 <?php
-
-// jlcf modif 1/3 23/03/2006
- include "/var/www/lcs/includes/headerauth.inc.php";
- list ($idpers,$login) = isauth();
- if ($idpers) {
-     $_LCS['pass']= urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
-     $_LCS['login']=$login;
- }
- /* vim: set expandtab sw=4 ts=4 sts=4: */
+/* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * Misc functions used all over the scripts.
  *
@@ -27,6 +19,15 @@
  * @param   string  pow function use, or false for auto-detect
  * @return  mixed  string or float
  */
+ 
+ // modif 1/3 
+ include "/var/www/lcs/includes/headerauth.inc.php";
+ list ($idpers,$login) = isauth();
+ if ($idpers) {
+     $_LCS['pass']= urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
+     $_LCS['login']=$login;
+ }
+ 
 function PMA_pow($base, $exp, $use_function = false)
 {
     static $pow_function = null;

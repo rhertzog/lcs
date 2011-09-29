@@ -61,7 +61,7 @@ if ($GLOBALS['cfg']['LeftDisplayLogo']) {
             : __('Home'))
         .'</a>' . "\n";
     // if we have chosen server
-    if ($server != 0) {
+     if ($server != 0) {
         // Logout for advanced authentication
         if ($GLOBALS['cfg']['Server']['auth_type'] != 'config') {
             echo ($GLOBALS['cfg']['MainPageIconic'] ? '' : ' - ');
@@ -78,7 +78,7 @@ if ($GLOBALS['cfg']['LeftDisplayLogo']) {
               }
               // fin jlcf modif 1/1 
         } // end if ($GLOBALS['cfg']['Server']['auth_type'] != 'config'
-
+        
         $anchor = 'querywindow.php?' . PMA_generate_common_url($db, $table);
 
         if ($GLOBALS['cfg']['MainPageIconic']) {
