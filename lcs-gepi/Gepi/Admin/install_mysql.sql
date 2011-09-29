@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: localhost
--- Généré le : Jeu 29 Septembre 2011 à 15:47
+-- Généré le : Jeu 29 Septembre 2011 à 17:28
 -- Version du serveur: 5.0.51
 -- Version de PHP: 5.2.17-0.dotdeb.0
 
@@ -21,7 +21,6 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE `gepi_plug`;
 USE gepi_plug;
-
 
 -- --------------------------------------------------------
 
@@ -483,7 +482,7 @@ CREATE TABLE IF NOT EXISTS `archivage_ects` (
   `special` varchar(255) NOT NULL COMMENT 'Cle utilisee pour isoler certaines lignes (par exemple un credit ECTS pour une periode et non une matiere)',
   `matiere` varchar(255) default NULL COMMENT 'Nom de l''enseignement',
   `profs` varchar(255) default NULL COMMENT 'Liste des profs de l''enseignement',
-  `valeur` decimal(10,0) NOT NULL COMMENT 'Nombre de crédits obtenus par l''eleve',
+  `valeur` decimal(10,0) NOT NULL COMMENT 'Nombre de crÃ©dits obtenus par l''eleve',
   `mention` varchar(255) NOT NULL COMMENT 'Mention obtenue',
   PRIMARY KEY  (`id`,`ine`,`num_periode`,`special`),
   KEY `archivage_ects_FI_1` (`ine`)
@@ -573,7 +572,19 @@ CREATE TABLE IF NOT EXISTS `avis_conseil_classe` (
 
 CREATE TABLE IF NOT EXISTS `a_agregation_decompte` (
   `eleve_id` int(11) NOT NULL COMMENT 'id de l''eleve',
-  `date_demi_jounee` datetime NOT NULL default '0000-00-00 00:00:00' COMMENT 'Date de la demi journ
+  `date_demi_jounee` datetime NOT NULL default '0000-00-00 00:00:00' COMMENT 'Date de la demi journée agrégée : 00:00 pour une matinée, 12:00 pour une après midi',
+  `manquement_obligation_presence` tinyint(4) default '0' COMMENT 'Cette demi journée est comptée comme absence',
+  `justifiee` tinyint(4) default '0' COMMENT 'Si cette demi journée est compté comme absence, y a-t-il une justification',
+  `notifiee` tinyint(4) default '0' COMMENT 'Si cette demi journée est compté comme absence, y a-t-il une notification à la famille',
+  `nb_retards` int(11) default '0' COMMENT 'Nombre de retards décomptés dans la demi journée',
+  `nb_retards_justifies` int(11) default '0' COMMENT 'Nombre de retards justifiés décomptés dans la demi journée',
+  `motifs_absences` text COMMENT 'Liste des motifs (table a_motifs) associés à cette demi-journée d''absence',
+  `motifs_retards` text COMMENT 'Liste des motifs (table a_motifs) associés aux retard de cette demi-journée',
+  `created_at` datetime default NULL,
+  `updated_at` datetime default NULL,
+  PRIMARY KEY  (`eleve_id`,`date_demi_jounee`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Table d''agregation des decomptes de demi journees d''absence ';
+
 -- --------------------------------------------------------
 
 --
@@ -655,7 +666,15 @@ CREATE TABLE IF NOT EXISTS `a_notifications` (
   `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
   `statut_envoi` int(5) default '0' COMMENT 'Statut de cet envoi (0 : etat initial, 1 : en cours, 2 : echec, 3 : succes, 4 : succes avec accuse de reception)',
   `date_envoi` datetime default NULL COMMENT 'Date envoi',
-  `erreur_message_envoi` text COMMENT 'Message d''erreur retourn
+  `erreur_message_envoi` text COMMENT 'Message d''erreur retourné par le service d''envoi',
+  `created_at` datetime default NULL,
+  `updated_at` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `a_notifications_FI_1` (`utilisateur_id`),
+  KEY `a_notifications_FI_2` (`a_traitement_id`),
+  KEY `a_notifications_FI_3` (`adr_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Notification (a la famille) des absences' AUTO_INCREMENT=1 ;
+
 -- --------------------------------------------------------
 
 --
@@ -665,7 +684,38 @@ CREATE TABLE IF NOT EXISTS `a_notifications` (
 CREATE TABLE IF NOT EXISTS `a_saisies` (
   `id` int(11) NOT NULL auto_increment,
   `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a saisi l''absence',
-  `eleve_id` int(11) default NULL COMMENT 'id_eleve de l''eleve objet de la saisie, egal 
+  `eleve_id` int(11) default NULL COMMENT 'id_eleve de l''eleve objet de la saisie, egal à null si aucun eleve n''est saisi',
+  `commentaire` text COMMENT 'commentaire de l''utilisateur',
+  `debut_abs` datetime default NULL COMMENT 'Debut de l''absence en timestamp UNIX',
+  `fin_abs` datetime default NULL COMMENT 'Fin de l''absence en timestamp UNIX',
+  `id_edt_creneau` int(12) default NULL COMMENT 'identifiant du creneaux de l''emploi du temps',
+  `id_edt_emplacement_cours` int(12) default NULL COMMENT 'identifiant du cours de l''emploi du temps',
+  `id_groupe` int(11) default NULL COMMENT 'identifiant du groupe pour lequel la saisie a ete effectuee',
+  `id_classe` int(11) default NULL COMMENT 'identifiant de la classe pour lequel la saisie a ete effectuee',
+  `id_aid` int(11) default NULL COMMENT 'identifiant de l''aid pour lequel la saisie a ete effectuee',
+  `id_s_incidents` int(11) default NULL COMMENT 'identifiant de la saisie d''incident discipline',
+  `id_lieu` int(11) default NULL COMMENT 'cle etrangere du lieu ou se trouve l''eleve',
+  `deleted_by` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a supprimé la saisie',
+  `created_at` datetime default NULL COMMENT 'Date de creation de la saisie',
+  `updated_at` datetime default NULL COMMENT 'Date de modification de la saisie, y compris suppression, restauration et changement de version',
+  `deleted_at` datetime default NULL,
+  `version` int(11) default '0',
+  `version_created_at` datetime default NULL,
+  `version_created_by` varchar(100) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `a_saisies_I_1` (`deleted_at`),
+  KEY `a_saisies_I_2` (`debut_abs`),
+  KEY `a_saisies_I_3` (`fin_abs`),
+  KEY `a_saisies_FI_1` (`utilisateur_id`),
+  KEY `a_saisies_FI_2` (`eleve_id`),
+  KEY `a_saisies_FI_3` (`id_edt_creneau`),
+  KEY `a_saisies_FI_4` (`id_edt_emplacement_cours`),
+  KEY `a_saisies_FI_5` (`id_groupe`),
+  KEY `a_saisies_FI_6` (`id_classe`),
+  KEY `a_saisies_FI_7` (`id_aid`),
+  KEY `a_saisies_FI_8` (`id_lieu`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Chaque saisie d''absence doit faire l''objet d''une ligne dans ' AUTO_INCREMENT=1 ;
+
 -- --------------------------------------------------------
 
 --
@@ -675,7 +725,27 @@ CREATE TABLE IF NOT EXISTS `a_saisies` (
 CREATE TABLE IF NOT EXISTS `a_saisies_version` (
   `id` int(11) NOT NULL,
   `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a saisi l''absence',
-  `eleve_id` int(11) default NULL COMMENT 'id_eleve de l''eleve objet de la saisie, egal 
+  `eleve_id` int(11) default NULL COMMENT 'id_eleve de l''eleve objet de la saisie, egal à null si aucun eleve n''est saisi',
+  `commentaire` text COMMENT 'commentaire de l''utilisateur',
+  `debut_abs` datetime default NULL COMMENT 'Debut de l''absence en timestamp UNIX',
+  `fin_abs` datetime default NULL COMMENT 'Fin de l''absence en timestamp UNIX',
+  `id_edt_creneau` int(12) default NULL COMMENT 'identifiant du creneaux de l''emploi du temps',
+  `id_edt_emplacement_cours` int(12) default NULL COMMENT 'identifiant du cours de l''emploi du temps',
+  `id_groupe` int(11) default NULL COMMENT 'identifiant du groupe pour lequel la saisie a ete effectuee',
+  `id_classe` int(11) default NULL COMMENT 'identifiant de la classe pour lequel la saisie a ete effectuee',
+  `id_aid` int(11) default NULL COMMENT 'identifiant de l''aid pour lequel la saisie a ete effectuee',
+  `id_s_incidents` int(11) default NULL COMMENT 'identifiant de la saisie d''incident discipline',
+  `id_lieu` int(11) default NULL COMMENT 'cle etrangere du lieu ou se trouve l''eleve',
+  `deleted_by` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a supprimé la saisie',
+  `created_at` datetime default NULL COMMENT 'Date de creation de la saisie',
+  `updated_at` datetime default NULL COMMENT 'Date de modification de la saisie, y compris suppression, restauration et changement de version',
+  `deleted_at` datetime default NULL,
+  `version` int(11) NOT NULL default '0',
+  `version_created_at` datetime default NULL,
+  `version_created_by` varchar(100) default NULL,
+  PRIMARY KEY  (`id`,`version`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
 -- --------------------------------------------------------
 
 --
@@ -700,7 +770,8 @@ CREATE TABLE IF NOT EXISTS `a_traitements` (
   KEY `a_traitements_FI_3` (`a_motif_id`),
   KEY `a_traitements_FI_4` (`a_justification_id`),
   KEY `a_traitements_FI_5` (`modifie_par_utilisateur_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Un traitement peut gerer plusieurs saisies et consiste 
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Un traitement peut gerer plusieurs saisies et consiste à def' AUTO_INCREMENT=1 ;
+
 -- --------------------------------------------------------
 
 --
@@ -711,7 +782,19 @@ CREATE TABLE IF NOT EXISTS `a_types` (
   `id` int(11) NOT NULL auto_increment COMMENT 'Cle primaire auto-incrementee',
   `nom` varchar(250) NOT NULL COMMENT 'Nom du type d''absence',
   `justification_exigible` tinyint(4) default NULL COMMENT 'Ce type d''absence doit entrainer une justification de la part de la famille',
-  `sous_responsabilite_etablissement` varchar(255) default 'NON_PRECISE' COMMENT 'L''eleve est sous la responsabilite de l''etablissement. Typiquement : absence infirmerie, mettre la propri
+  `sous_responsabilite_etablissement` varchar(255) default 'NON_PRECISE' COMMENT 'L''eleve est sous la responsabilite de l''etablissement. Typiquement : absence infirmerie, mettre la propriété à vrai car l''eleve est encore sous la responsabilité de l''etablissement. Possibilite : ''vrai''/''faux''/''non_precise''',
+  `manquement_obligation_presence` varchar(50) default 'NON_PRECISE' COMMENT 'L''eleve manque à ses obligations de presence (L''absence apparait sur le bulletin). Possibilite : ''vrai''/''faux''/''non_precise''',
+  `retard_bulletin` varchar(50) default 'NON_PRECISE' COMMENT 'La saisie est comptabilisée dans le bulletin en tant que retard. Possibilite : ''vrai''/''faux''/''non_precise''',
+  `type_saisie` varchar(50) default 'NON_PRECISE' COMMENT 'Enumeration des possibilités de l''interface de saisie de l''absence pour ce type : DEBUT_ABS, FIN_ABS, DEBUT_ET_FIN_ABS, NON_PRECISE, COMMENTAIRE_EXIGE, DISCIPLINE',
+  `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
+  `id_lieu` int(11) default NULL COMMENT 'cle etrangere du lieu ou se trouve l''élève',
+  `sortable_rank` int(11) default NULL,
+  `created_at` datetime default NULL,
+  `updated_at` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `a_types_FI_1` (`id_lieu`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Liste des types d''absences possibles dans l''etablissement' AUTO_INCREMENT=14 ;
+
 --
 -- Contenu de la table `a_types`
 --
@@ -743,7 +826,8 @@ CREATE TABLE IF NOT EXISTS `a_types_statut` (
   `statut` varchar(20) NOT NULL COMMENT 'Statut de l''utilisateur',
   PRIMARY KEY  (`id`),
   KEY `a_types_statut_FI_1` (`id_a_type`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Liste des statuts autorises 
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Liste des statuts autorises à saisir des types d''absences' AUTO_INCREMENT=40 ;
+
 --
 -- Contenu de la table `a_types_statut`
 --
@@ -1042,7 +1126,7 @@ CREATE TABLE IF NOT EXISTS `ct_devoirs_entry` (
   `id_sequence` int(11) NOT NULL default '0',
   `contenu` text NOT NULL,
   `vise` char(1) NOT NULL default 'n',
-  `date_visibilite_eleve` timestamp NOT NULL default CURRENT_TIMESTAMP COMMENT 'Timestamp précisant quand les devoirs sont portés à la conaissance des élèves',
+  `date_visibilite_eleve` timestamp NOT NULL default CURRENT_TIMESTAMP COMMENT 'Timestamp prÃ©cisant quand les devoirs sont portÃ©s Ã  la conaissance des Ã©lÃ¨ves',
   PRIMARY KEY  (`id_ct`),
   KEY `id_groupe` (`id_groupe`),
   KEY `groupe_date` (`id_groupe`,`date_ct`)
@@ -2226,7 +2310,15 @@ CREATE TABLE IF NOT EXISTS `eleves` (
   `ele_id` varchar(10) NOT NULL default '' COMMENT 'cle utilise par Sconet dans ses fichiers xml',
   `email` varchar(255) NOT NULL default '' COMMENT 'Courriel de l''eleve',
   `id_eleve` int(11) NOT NULL auto_increment COMMENT 'cle primaire autoincremente',
-  `date_sortie` datetime default NULL COMMENT 'Timestamp de sortie de l''
+  `date_sortie` datetime default NULL COMMENT 'Timestamp de sortie de l''élève de l''établissement (fin d''inscription)',
+  `mef_code` bigint(20) default NULL COMMENT 'code mef de la formation de l''eleve',
+  PRIMARY KEY  (`id_eleve`),
+  KEY `eleves_FI_1` (`mef_code`),
+  KEY `I_referenced_j_eleves_classes_FK_1_1` (`login`),
+  KEY `I_referenced_responsables2_FK_1_2` (`ele_id`),
+  KEY `I_referenced_archivage_ects_FK_1_3` (`no_gep`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Liste des eleves de l''etablissement' AUTO_INCREMENT=1 ;
+
 -- --------------------------------------------------------
 
 --
@@ -3371,7 +3463,8 @@ CREATE TABLE IF NOT EXISTS `mef` (
   `libelle_long` varchar(300) NOT NULL COMMENT 'libelle de la formation',
   `libelle_edition` varchar(300) NOT NULL COMMENT 'libelle de la formation pour presentation',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Module 
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Module élémentaire de formation' AUTO_INCREMENT=1 ;
+
 -- --------------------------------------------------------
 
 --
@@ -4761,3 +4854,4 @@ CREATE TABLE IF NOT EXISTS `vs_alerts_types` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 GRANT SELECT , INSERT , UPDATE , DELETE , CREATE , DROP , INDEX , ALTER , CREATE TEMPORARY TABLES ON gepi_plug.* TO gepi_user@localhost IDENTIFIED BY '#PASS#';
+
