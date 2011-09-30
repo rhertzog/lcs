@@ -11,9 +11,9 @@ install:
 	install -d $(DESTDIR)/etc/apache2/lcs-main
 	cp -a conf/* $(DESTDIR)/etc/
 
-# install lcs lightsquid cron.daily
-	install -d $(DESTDIR)/etc/cron.daily
-	install -m 0644 cron.daily/* $(DESTDIR)/etc/cron.daily/
+# install lcs lightsquid cron.hourly
+	install -d $(DESTDIR)/etc/cron.hourly
+	install -m 0755 cron.hourly/* $(DESTDIR)/etc/cron.hourly/
 
 # install lightsquid 
 	install -d $(DESTDIR)/usr/share/lcs/lightsquid
@@ -30,7 +30,6 @@ install:
 	install -m 0644 doc/txt/* $(DESTDIR)/usr/share/doc/lcs/lightsquid/txt/
 
 clean:
-
 
 .PHONY: all install clean
 
