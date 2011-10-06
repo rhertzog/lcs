@@ -1,8 +1,9 @@
-lcs-squid (2.4.8~1) lucid; urgency=low
+lcs-squid (2.4.8~2) lucid; urgency=low
 
   * Move index.html in doc-html/html 
+  * Fix accented characters in index.html
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 06 Oct 2011 13:58:46 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 06 Oct 2011 14:48:52 +0200
 
 lcs-squid (2.4.6.2) Lcs; urgency=low
 
